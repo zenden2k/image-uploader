@@ -26,4 +26,4 @@ In order to compile Image Uploader you will need the following libraries:
  2. DirectShow BaseClasses
  3. DirectX 8 SDK
 
-You can download necessary Include files and Libs from here http://code.google.com/p/image-uploader/downloads/list
+You can download necessary Include files and Libs here http://code.google.com/p/image-uploader/downloads/list
