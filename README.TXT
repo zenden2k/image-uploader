@@ -19,14 +19,11 @@
 
 ---  COMPILING IMAGE UPLOADER ----
 
-In order to compile Image Uploader you will need the following libraries:
- 1. WTL: http://wtl.sourceforge.net
-
 You need Microsoft Visual C++ at least 8.0 version (I compiled using Microsoft Visual Studio .NET  2005 & 2008, not tested on 2003 or Express Edition).
 
-Image Uploader uses following libraries:
+In order to compile Image Uploader you will need the following libraries:
+ 1. WTL: http://wtl.sourceforge.net
+ 2. DirectShow BaseClasses
+ 3. DirectX 8 SDK
 
-1. Windows Template Library (WTL)
-2. GDI+ for processing image files 
-3. Ryeol Http Client
-4. C++ XML parser (CMarkup)
+You can download necessary Include files and Libs from here http://code.google.com/p/image-uploader/downloads/list
