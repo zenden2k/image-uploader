@@ -26,7 +26,6 @@
 CGeneralSettings::CGeneralSettings()
 {
 	findfile = NULL;
-	//ZeroMemory(&lf, sizeof(lf));
 }
 
 CGeneralSettings::~CGeneralSettings()
@@ -61,7 +60,7 @@ int CGeneralSettings::GetNextLngFile(LPTSTR szBuffer, int nLength)
 LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	TabBackgroundFix(m_hWnd);
-	// Перевод контролов на выбранный язык
+	// Translating controls
 	TRC(IDOK, "OK");
 	TRC(IDCANCEL, "Отмена");
 	TRC(IDC_INTEGRATIONGROUP, "Интеграция с проводником Windows");
@@ -78,7 +77,6 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	TRC(IDC_CONFIRMONEXIT, "Спрашивать подтверждение при выходе");
 	BOOL temp;
 
-	
 	SetDlgItemText(IDC_IMAGEEDITORPATH, Settings.ImageEditorPath);
 	
 	for(int i=0; i<EnginesList.GetCount(); i++)
