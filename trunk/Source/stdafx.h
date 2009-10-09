@@ -1,3 +1,22 @@
+/*
+    Image Uploader - program for uploading images/files to Internet
+    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+	 
+    HomePage:    http://zenden.ws/imageuploader
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 // stdafx.h : include file for standard system include files,
 //  or project specific include files that are used frequently, but
 //      are changed infrequently
@@ -7,16 +26,10 @@
 
 // Change these values to use different versions
 
-// Закомментируйте строку для "интернациональной версии"
-#define MD_VERSION
-
-#define WINVER		0x0700
+#define WINVER		0x0601 // 0x0601 = Windows 7 
 #define _WIN32_WINNT	0x0501
 #define _WIN32_IE	0x0501
 #define _RICHEDIT_VER	0x0200 
-
-/*#define __AFX_H__
-struct __POSITION { int unused; };*/
 
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -28,27 +41,16 @@ struct __POSITION { int unused; };*/
 
 #include <atlbase.h>
 #include <atlapp.h>
-//#define __allowed(p)
-//#include <specstrings.h>
+#include <atlwin.h>
+#include <atlframe.h>
+#include <atlctrls.h>
+#include <atldlgs.h>
+
 #define APPNAME _T("Image Uploader")
 #define VIDEO_DIALOG_FORMATS _T("Video files (avi, mpg, vob, wmv, flv, etc)\0*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;\0All files\0*.*\0\0")
 #define VIDEO_FORMATS _T("avi\0mpg\0mpeg\0vob\0divx\0flv\0wmv\0asf\0mkv\0mov\0ts\0mp2\0mp4\0")_T("3gp\0rm\0mpeg2ts\0\0")
 #define IMAGE_DIALOG_FORMATS _T("Image files (JPEG, GIF, PNG, etc)\0*.jpg;*.gif;*.png;*.bmp;*.tiff\0All files\0*.*\0\0")
 extern CAppModule _Module;
-
-#ifdef MD_VERSION
-#define MD_VER 1
-#else 
-#define MD_VER 0
-#endif
-
-#define NUMBER_OF_SERVERS 5+3*MD_VER
-//extern TCHAR UploadServers[NUMBER_OF_SERVERS][50];
-#include <atlwin.h>
-
-#include <atlframe.h>
-#include <atlctrls.h>
-#include <atldlgs.h>
 
 // C RunTime Header Files
 #include <stdlib.h>
@@ -61,18 +63,13 @@ extern CAppModule _Module;
 #include <objbase.h>
 #include <streams.h>
 #include <stdio.h>
-#include <atlbase.h>
-
-//#include <qedit.h>
 #include <gdiplus.h>
 #include <GdiPlusPixelFormats.h>
-
 #include <atlddx.h>
 #include <atlgdi.h>
 #include <atlmisc.h>
 #include <atlcoll.h>
 using namespace Gdiplus;
-
 #include "myutils.h"
 #include "Common/CmdLine.h"
 
