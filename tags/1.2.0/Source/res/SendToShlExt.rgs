@@ -1,0 +1,24 @@
+HKCR
+{
+	IUCom.SendToShlExt.1 = s 'SendToShlExt Class'
+	{
+		CLSID = s '{535E39BD-5883-454C-AFFC-C54B66B18206}'
+	}
+	IUCom.SendToShlExt = s 'SendToShlExt Class'
+	{
+		CLSID = s '{535E39BD-5883-454C-AFFC-C54B66B18206}'
+		CurVer = s 'IUCom.SendToShlExt.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {535E39BD-5883-454C-AFFC-C54B66B18206} = s 'SendToShlExt Class'
+		{
+			ProgID = s 'IUCom.SendToShlExt.1'
+			VersionIndependentProgID = s 'IUCom.SendToShlExt'
+			ForceRemove 'Programmable'
+			LocalServer32 = s '%MODULE%'
+			val AppID = s '%APPID%'
+			'TypeLib' = s '{A5AC392C-4CD2-4494-9B45-0A50A4308FDE}'
+		}
+	}
+}
