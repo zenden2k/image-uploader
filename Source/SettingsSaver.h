@@ -97,8 +97,12 @@ CString Font;
 	
 	XML_NODE_START(General);
 		XML_OPTION_MEMBER_VALUE(Settings,Language);
-		XML_OPTION_VALUE(ExplorerImagesContextMenu);
+		
+		
+		XML_OPTION_VALUE(ExplorerContextMenu);
 		XML_OPTION_VALUE(ExplorerVideoContextMenu);
+		XML_OPTION_VALUE(ExplorerCascadedMenu);
+		#ifndef IU_SHELLEXT
 		XML_OPTION_VALUE(ConfirmOnExit);
 		XML_OPTION_VALUE(SendToContextMenu);
 		XML_OPTION_VALUE(ParseSubDirs);
@@ -107,8 +111,9 @@ CString Font;
 		XML_OPTION_VALUE(AutoShowLog);
 		XML_OPTION_VALUE(ImagesFolder);
 		XML_OPTION_VALUE(VideoFolder);
+		#endif
 	XML_NODE_END();
-	
+		#ifndef IU_SHELLEXT
 	XML_NODE_START(Screenshot);
 		XML_OPTION_MEMBER_VALUE(ScreenshotSettings,Delay);
 		XML_OPTION_MEMBER_VALUE(ScreenshotSettings,Format);
@@ -265,6 +270,7 @@ XML_NODE_END();
 		}
 	XML_NODE_END();
 #endif
+	#endif
 	XML_NODE_END(); // end of settings
 	XML_NODE_END(); // end of image uploader
 

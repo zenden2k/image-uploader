@@ -25,6 +25,7 @@
 #include "common/myxml.h"
 #include <map>
 
+#ifndef IU_SHELLEXT
 struct ImageSettingsStruct
 {
 	int NewWidth,NewHeight;
@@ -102,12 +103,19 @@ struct ScreenshotSettingsStruct
 	int Format;
 	int Quality, Delay;
 };
-
+#endif
 
 class CSettings
 {
 	public:
+		bool ExplorerContextMenu;
+		bool ExplorerContextMenu_changed;
+		bool ExplorerVideoContextMenu;
 		// Поля данных
+		CString m_SettingsDir;
+		CString Language;
+		BOOL ExplorerCascadedMenu;
+		#ifndef IU_SHELLEXT
 		int ThumbsPerLine;
 		TCHAR m_szLang[64];
 		ImageSettingsStruct ImageSettings;
@@ -128,28 +136,27 @@ class CSettings
 		//BOOL OldStyleMenu;
 		bool ParseSubDirs;
 		bool UseProxyServer;
-		CString Language;
-		bool ExplorerImagesContextMenu;
-		bool ExplorerImagesContextMenu_changed;
-		bool ExplorerVideoContextMenu;
-		bool ExplorerVideoContextMenu_changed;
+		
+		
 		bool SendToContextMenu;
 		bool SendToContextMenu_changed;
 		bool QuickUpload;
 		std::map<CString,LoginInfo> AuthParams ;
 		CString ImageEditorPath;
 		CString VideoFolder,ImagesFolder;
+		bool SaveSettings();
+#endif IU_SHELLEXT
 	private:
 		TCHAR m_Directory[MAX_PATH];
 		
 	public:
 		CSettings();
 
-		bool LoadSettings();
+		bool LoadSettings(LPCTSTR szDir=NULL);
 		bool MacroLoadSettings(CMyXml &XML);
 		bool MacroSaveSettings(CMyXml &XML);
 int UploadBufferSize;
-		bool SaveSettings();
+	
 int ServerID,
 			QuickServerID;
 void ApplyRegSettingsRightNow();
@@ -167,4 +174,5 @@ CString ServerName, QuickServerName,FileServerName;
 
 	
 };
+
 extern CSettings Settings;

@@ -27,8 +27,6 @@
 #include "uploader.h"
 #include "MainDlg.h"
 #include "wizarddlg.h"
-#include "comstuff.h"
-
 
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
@@ -58,7 +56,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		return 0;
 	}
 	
-	if(CmdLine.GetCount()>1 && CmdLine.IsOption(_T("quickshot")))
+	if((CmdLine.GetCount()>1 && CmdLine.IsOption(_T("quickshot")))|| CmdLine.IsOption(_T("mediainfo")))
 	{
 		dlgMain.ShowWindow(SW_HIDE);
 	}
@@ -76,12 +74,9 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 }
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
-{
-	// If we were started as a local COM server 
-	// (i.e. as explorer context menu DropTarget handler)
-	if(DropTargetHandler(lpstrCmdLine))
-		return 0;
-		
+{		
+	OleInitialize(NULL);
+	HRESULT hRes ;
 	if(CmdLine.IsOption(_T("integration"))) // for Windows Vista+
 	{
 		Settings.LoadSettings();		
@@ -89,11 +84,10 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 		return 0;
 	}
 
-	::CoUninitialize();
-	OleUninitialize();
+	//::CoUninitialize();
+	//OleUninitialize();
 
-	OleInitialize(NULL);
-	HRESULT hRes ;
+	
 
 	// this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
 	::DefWindowProc(NULL, 0, 0, 0L);

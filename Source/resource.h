@@ -108,6 +108,7 @@
 #define IDC_USEAVIINFO                  1036
 #define IDC_SHELLIMGCONTEXTMENUITEM     1036
 #define IDC_AUTOCOPYTOCLIPBOARD         1036
+#define IDC_SHELLINTEGRATION            1036
 #define IDC_CREATETHUMBNAILS            1037
 #define IDC_PROGRESSBAR                 1038
 #define IDC_TEXTOVERTHUMB2              1038
@@ -253,6 +254,7 @@
 #define IDC_PORTLABEL                   1151
 #define IDC_SERVERTYPE                  1152
 #define IDC_SHELLVIDEOCONTEXTMENUITEM   1153
+#define SHELLVIDEOCONTEXTMENUITEM       1153
 #define IDC_SHELLSENDTOITEM             1154
 #define IDC_FILEEXCEEDNAME              1156
 #define IDC_FILEEXCEEDSIZE2             1157
@@ -280,6 +282,8 @@
 #define IDC_RETRIES1LABEL               1182
 #define IDC_RETRIES2LABEL               1183
 #define IDC_RESULTSTAB                  1184
+#define IDC_CHECK3                      1185
+#define IDC_CASCADEDCONTEXTMENU         1185
 #define ID_VIEW_DELETE                  32775
 #define ID_VIEW                         32776
 #define ID_DELETE                       32777
@@ -309,7 +313,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        235
 #define _APS_NEXT_COMMAND_VALUE         32797
-#define _APS_NEXT_CONTROL_VALUE         1185
+#define _APS_NEXT_CONTROL_VALUE         1186
 #define _APS_NEXT_SYMED_VALUE           119
 #endif
 #endif

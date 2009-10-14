@@ -108,12 +108,11 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		if(!Lang.LoadLanguage(Settings.Language));
 		if(MessageBox(TR("Добавить Image Uploader в контекстное меню проводника Windows?"),APPNAME, MB_YESNO|MB_ICONQUESTION)==IDYES)
 		{
-			Settings.ExplorerImagesContextMenu = true;
-			Settings.ExplorerImagesContextMenu_changed = true;
+			Settings.ExplorerContextMenu = true;
+			Settings.ExplorerContextMenu_changed = true;
 			Settings.ExplorerVideoContextMenu = true;
-			Settings.ExplorerVideoContextMenu_changed = true;
-			Settings.SendToContextMenu = true;
-			Settings.SendToContextMenu_changed = true;
+			/*Settings.SendToContextMenu = true;
+			Settings.SendToContextMenu_changed = true;*/
 		}	
 		Settings.SaveSettings();
 	}
@@ -181,6 +180,7 @@ bool CWizardDlg::ParseCmdLine()
 		{
 			CMediaInfoDlg dlg;
 			dlg.ShowInfo(VideoFileName);
+			PostQuitMessage(0);
 			return 0;
 		}
 
@@ -210,7 +210,8 @@ nIndex = 0;
 	if(!Paths.IsEmpty())
 	{
 		QuickUploadMarker = (Settings.QuickUpload && !CmdLine.IsOption(_T("noquick"))) || (CmdLine.IsOption(_T("quick")));
-		FolderAdd.Do(Paths, true);
+		
+		FolderAdd.Do(Paths, CmdLine.IsOption(_T("imagesonly")), true);
 	}
 	return count;
 
@@ -937,7 +938,7 @@ void CWizardDlg::AddFolder(LPCTSTR szFolder, bool SubDirs )
 
 	CStringList Paths;
 	Paths.Add(Folder );
-	FolderAdd.Do(Paths, SubDirs);
+	FolderAdd.Do(Paths, true, SubDirs);
 }
 
 CFolderAdd::CFolderAdd(CWizardDlg *WizardDlg): m_pWizardDlg(WizardDlg)
@@ -945,14 +946,15 @@ CFolderAdd::CFolderAdd(CWizardDlg *WizardDlg): m_pWizardDlg(WizardDlg)
 	m_bSubDirs = true; 
 }
 
-void CFolderAdd::Do(CStringList &Paths,  bool SubDirs)
+void CFolderAdd::Do(CStringList &Paths, bool ImagesOnly, bool SubDirs)
 {
 	count = 0;
+	m_bImagesOnly = ImagesOnly;
 	RECT rc={0,0,0,0},Rec;
 	m_bSubDirs = SubDirs;
    if(!dlg.m_hWnd)
 	dlg.Create(m_pWizardDlg->m_hWnd, rc);
-	dlg.SetWindowTitle(CString(TR("Поиск графических файлов...")));
+	dlg.SetWindowTitle(CString(ImagesOnly?TR("Поиск графических файлов..."):TR("Сбор файлов...")));
 	m_Paths.RemoveAll();
 	m_Paths.Copy(Paths);
 	findfile = 0;
@@ -985,7 +987,7 @@ int CFolderAdd::ProcessDir( CString currentDir, bool bRecursive /* = true  */ )
         }
         else if ( s_Dir.name[ 0 ] != '.' )
 		  {
-				if(IsImage(s_Dir.name))
+				if(!m_bImagesOnly || IsImage(s_Dir.name))
 				 if(SendMessage(m_pWizardDlg->m_hWnd, WM_MY_ADDIMAGE,(WPARAM) (LPCTSTR) (CString(currentDir) + CString(_T("\\"))+ CString( s_Dir.name)),  FALSE))
 					 count++;
 		  }
@@ -1009,6 +1011,7 @@ DWORD CFolderAdd::Run()
 		if(IsDirectory(CurPath))
 			ProcessDir(CurPath, m_bSubDirs);
 		else 
+			if(!m_bImagesOnly || IsImage(CurPath))
 			if(SendMessage(m_pWizardDlg->m_hWnd, WM_MY_ADDIMAGE,(WPARAM) (LPCTSTR) (CurPath),  FALSE))
 				count++;
 		if(dlg.NeedStop()) break;
@@ -1018,7 +1021,7 @@ DWORD CFolderAdd::Run()
 	EnableWindow(m_pWizardDlg->m_hWnd, true);
 
 	if(!count) 
-		MessageBox(m_pWizardDlg->m_hWnd, TR("В этой папке не найдено ни одного файла изображений."), APPNAME, MB_ICONINFORMATION);
+		MessageBox(m_pWizardDlg->m_hWnd, m_bImagesOnly?TR("Не найдено ни одного файла изображений."):TR("Не найдено ни одного файла."), APPNAME, MB_ICONINFORMATION);
 	else 	
 	{
 		if( m_pWizardDlg->QuickUploadMarker)

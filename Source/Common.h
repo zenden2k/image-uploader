@@ -96,6 +96,16 @@ extern CAtlArray< UploadEngine> EnginesList;
 int GetUploadEngineIndex(const CString Name);
 extern CString IUTempFolder;
 extern CCmdLine CmdLine;
-
-
+bool MySaveImage(Image *img,LPTSTR szFilename,LPTSTR szBuffer,int Format,int Quality);
+bool __fastcall CreateShortCut( 
+							 LPCWSTR pwzShortCutFileName, 
+							   LPCTSTR pszPathAndFileName, 
+							   LPCTSTR pszWorkingDirectory, 
+							   LPCTSTR pszArguments, 
+							   WORD wHotKey, 
+							   int iCmdShow, 
+							   LPCTSTR pszIconFileName, 
+							   int iIconIndex) ;
+void DrawStrokedText(Graphics &gr, LPCTSTR Text,RectF Bounds,Gdiplus::Font &font,Color &ColorText,Color &ColorStroke,int HorPos=0,int VertPos=0, int width=1);
+int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 #endif

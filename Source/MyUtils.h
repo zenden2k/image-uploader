@@ -20,11 +20,24 @@
 
 #ifndef _MYUTILS_H_
 #define _MYUTILS_H_
-
+#ifndef IU_SHELLEXT
 #include "stdafx.h"
+#endif
+#include <atlbase.h>
+#include <atlapp.h>
+#include <atlmisc.h>
+#include <windows.h>
+#include <tchar.h>
+#include <stdlib.h>
 #include <gdiplus.h>
 #include <gdiplusheaders.h>
 
+#define APPNAME _T("Image Uploader")
+#define VIDEO_DIALOG_FORMATS _T("Video files (avi, mpg, vob, wmv, flv, etc)\0*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;\0All files\0*.*\0\0")
+#define VIDEO_FORMATS _T("avi\0mpg\0mpeg\0vob\0divx\0flv\0wmv\0asf\0mkv\0mov\0ts\0mp2\0mp4\0")_T("3gp\0rm\0mpeg2ts\0\0")
+#define IMAGE_DIALOG_FORMATS _T("Image files (JPEG, GIF, PNG, etc)\0*.jpg;*.gif;*.png;*.bmp;*.tiff\0All files\0*.*\0\0")
+
+using namespace Gdiplus;
 #define xor(a,b) ((a || b) && !(a && b))	
 
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
@@ -47,17 +60,16 @@ bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont);
 LPTSTR ExtractFilePath(LPCTSTR FileName,LPTSTR buf);
 int GetFontSizeInTwips(int nFontSize);
 LPCTSTR myExtractFileName(LPCTSTR FileName);
-int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
+
 LPCTSTR GetFileExt(LPCTSTR szFileName);
 bool IsImage(LPCTSTR szFileName);
 bool IsVideoFile(LPCTSTR szFileName);
-bool MySaveImage(Image *img,LPTSTR szFilename,LPTSTR szBuffer,int Format,int Quality);
+
 bool GetOnlyFileName(LPCTSTR szFilename,LPTSTR szBuffer);
 bool ReadSetting(LPTSTR szSettingName,int* Value,int DefaultValue,LPTSTR szString=NULL,LPTSTR szDefString=NULL);
 int GetSavingFormat(LPTSTR szFileName);
 bool IsStrInList(LPCTSTR szExt,LPCTSTR szList);
 int MyGetFileSize(LPCTSTR FileName);
-void DrawStrokedText(Graphics &gr, LPCTSTR Text,RectF Bounds,Font &font,Color &ColorText,Color &ColorStroke,int HorPos=0,int VertPos=0, int width=1);
 void MakeLabelBold(HWND Label);
 LPTSTR fgetline(LPTSTR buf,int num,FILE *f);
 #define IsChecked(ctrl) (SendDlgItemMessage(ctrl,BM_GETCHECK,0)==BST_CHECKED)
@@ -69,25 +81,10 @@ void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, b
 bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
 bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...);
 LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int nBufferSize);
-bool __fastcall CreateShortCut( 
-							 LPCWSTR pwzShortCutFileName, 
-							   LPCTSTR pszPathAndFileName, 
-							   LPCTSTR pszWorkingDirectory, 
-							   LPCTSTR pszArguments, 
-							   WORD wHotKey, 
-							   int iCmdShow, 
-							   LPCTSTR pszIconFileName, 
-							   int iIconIndex) ;
 
 
 CString IntToStr(int n);
-Status SaveGIFWithNewColorTable(
-  Image *pImage,
-  const WCHAR* filename,
-  const CLSID* clsidEncoder,
-  DWORD nColors,
-  BOOL fTransparent
-);
+
 void EnableNextN(HWND Control, int n, bool Enable);
 CString DisplayError(int idCode);
 
