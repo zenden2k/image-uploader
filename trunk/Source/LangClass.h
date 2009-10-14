@@ -19,6 +19,9 @@
 */
 
 #pragma once
+#include <atlbase.h>
+#include <atlapp.h>
+#include <atlmisc.h>
 
 #include <atlcoll.h>
 #include "settings.h"

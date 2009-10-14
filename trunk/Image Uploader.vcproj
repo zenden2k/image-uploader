@@ -126,7 +126,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;"
 				ExceptionHandling="1"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -210,10 +210,6 @@
 			</File>
 			<File
 				RelativePath="Source\Common.cpp"
-				>
-			</File>
-			<File
-				RelativePath="Source\ComStuff.cpp"
 				>
 			</File>
 			<File
@@ -457,10 +453,6 @@
 				>
 			</File>
 			<File
-				RelativePath="Source\ComStuff.h"
-				>
-			</File>
-			<File
 				RelativePath="Source\FileInfoHelper.h"
 				>
 			</File>
@@ -655,6 +647,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\res\icon_main.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon_main.png"
+				>
+			</File>
+			<File
 				RelativePath="Source\Image Uploader.rc"
 				>
 			</File>
@@ -664,6 +664,10 @@
 			</File>
 			<File
 				RelativePath="Source\res\imageuploader_wizard.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\imageuploader_wizard.png"
 				>
 			</File>
 			<File
@@ -688,42 +692,6 @@
 			</File>
 			<File
 				RelativePath="Source\res\Warning.ico"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Shell Context Menu"
-			>
-			<File
-				RelativePath="Source\Com2test.idl"
-				>
-			</File>
-			<File
-				RelativePath="Source\Com2test_i.c"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="Source\SendToShlExt.cpp"
-				>
-			</File>
-			<File
-				RelativePath="Source\SendToShlExt.h"
 				>
 			</File>
 		</Filter>

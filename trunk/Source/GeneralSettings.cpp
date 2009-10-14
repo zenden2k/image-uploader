@@ -64,9 +64,11 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	TRC(IDOK, "OK");
 	TRC(IDCANCEL, "Отмена");
 	TRC(IDC_INTEGRATIONGROUP, "Интеграция с проводником Windows");
-	TRC(IDC_SHELLIMGCONTEXTMENUITEM, "Пункт в контекстное меню файлов изображений");
+	TRC(IDC_SHELLINTEGRATION, "Интеграция в контекстное меню оболочки");
+	//TRC(IDC_SHELLIMGCONTEXTMENUITEM, "Пункт в контекстное меню файлов изображений");
 	TRC(IDC_STARTUPLOADINGFROMSHELL, "Сразу начинать загрузку на сервер:");
 	TRC(IDC_SHELLVIDEOCONTEXTMENUITEM, "Пункт в контекстном меню видеофайлов");
+	TRC(IDC_CASCADEDCONTEXTMENU, "Вложенное контекстное меню");
 	TRC(IDC_CHANGESWILLBE, "Внимание: чтобы изменения в языке вступили в силу, программу необходимо перезапустить.");
 	TRC(IDC_LANGUAGELABEL, "Язык интерфейса:");
 	TRC(IDC_VIEWLOG, "Показать лог");
@@ -102,10 +104,11 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	if(Index==-1) Index=0;
 	SendDlgItemMessage(IDC_LANGLIST,CB_SETCURSEL,Index);
 
-	SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_SETCHECK, Settings.ExplorerImagesContextMenu);
+	SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_SETCHECK, Settings.ExplorerContextMenu);
 	SendDlgItemMessage(IDC_SHELLVIDEOCONTEXTMENUITEM, BM_SETCHECK, Settings.ExplorerVideoContextMenu);
 	SendDlgItemMessage(IDC_SHELLSENDTOITEM, BM_SETCHECK, Settings.SendToContextMenu);
 	SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_SETCHECK, Settings.ConfirmOnExit);
+	SendDlgItemMessage(IDC_CASCADEDCONTEXTMENU, BM_SETCHECK, Settings.ExplorerCascadedMenu);
 	
 	SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_SETCHECK, Settings.QuickUpload);
 	SendDlgItemMessage(IDC_AUTOSHOWLOG, BM_SETCHECK, Settings.AutoShowLog);
@@ -147,13 +150,19 @@ bool CGeneralSettings::Apply()
 	TCHAR szBuf[256];
 	GetDlgItemText(IDC_IMAGEEDITORPATH, szBuf, 256);
 	Settings.ImageEditorPath = szBuf;
-	Settings.ExplorerImagesContextMenu_changed = Settings.ExplorerImagesContextMenu; 
-	Settings.ExplorerImagesContextMenu = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK);
-	Settings.ExplorerImagesContextMenu_changed ^= (Settings.ExplorerImagesContextMenu);
+	Settings.ExplorerContextMenu_changed = Settings.ExplorerContextMenu; 
+	Settings.ExplorerContextMenu = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK);
+	Settings.ExplorerContextMenu_changed ^= (Settings.ExplorerContextMenu);
 	
-	Settings.ExplorerVideoContextMenu_changed = Settings.ExplorerVideoContextMenu;
+	bool Temp = Settings.ExplorerVideoContextMenu;
 	Settings.ExplorerVideoContextMenu = SendDlgItemMessage(IDC_SHELLVIDEOCONTEXTMENUITEM, BM_GETCHECK);
-	Settings.ExplorerVideoContextMenu_changed ^= Settings.ExplorerVideoContextMenu;
+	Temp ^= Settings.ExplorerVideoContextMenu;
+	Settings.ExplorerContextMenu_changed|=Temp;
+
+	Temp = Settings.ExplorerCascadedMenu;
+	Settings.ExplorerCascadedMenu = SendDlgItemMessage(IDC_CASCADEDCONTEXTMENU, BM_GETCHECK);
+	Temp ^= Settings.ExplorerCascadedMenu;
+	Settings.ExplorerContextMenu_changed|=Temp;
 
 	Settings.SendToContextMenu_changed = Settings.SendToContextMenu;
 	Settings.SendToContextMenu = SendDlgItemMessage(IDC_SHELLSENDTOITEM, BM_GETCHECK);
@@ -163,6 +172,7 @@ bool CGeneralSettings::Apply()
 	Settings.QuickServerID = SendDlgItemMessage(IDC_SERVERLIST, CB_GETCURSEL, 0, 0);
 	Settings.AutoShowLog = SendDlgItemMessage(IDC_AUTOSHOWLOG,  BM_GETCHECK );
 	Settings.ConfirmOnExit = SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_GETCHECK);
+	
 	return true;
 }
 

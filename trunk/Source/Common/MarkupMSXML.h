@@ -8,7 +8,9 @@
 
 #if !defined(_MARKUPMSXML_H_INCLUDED_)
 #define _MARKUPMSXML_H_INCLUDED_
-
+#include <atlbase.h>
+#include <atlapp.h>
+#include <atlmisc.h>
 #if _MSC_VER > 1000
 #pragma once
 #pragma warning(disable:4996) // suppress VS 2005 deprecated function warnings

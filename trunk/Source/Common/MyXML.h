@@ -22,7 +22,7 @@
 
 #include "MarkupMSXML.h"
 
-using namespace MSXML2;
+//using namespace MSXML2;
 
 class CMyXml: public  CMarkupMSXML
 {
@@ -68,10 +68,10 @@ class CMyXml: public  CMarkupMSXML
 	}
 
 	bool FormatDOMDocument (MSXML2::IXMLDOMDocument *pDoc, IStream *pStream)
-	{
+	{using namespace MSXML2;
 		// Thanks to Google
 		CComPtr <MSXML2::IMXWriter> pMXWriter; // Create the writer
-		if (FAILED (pMXWriter.CoCreateInstance(__uuidof (MXXMLWriter40), NULL, CLSCTX_ALL)))
+		if (FAILED (pMXWriter.CoCreateInstance(__uuidof (MSXML2::MXXMLWriter40), NULL, CLSCTX_ALL)))
 		 {
 			  return false;
 		 }
@@ -99,7 +99,7 @@ class CMyXml: public  CMarkupMSXML
 			 return false;
 		}
 
-		CComPtr <ISAXXMLReader> pSAXReader;
+		CComPtr <MSXML2::ISAXXMLReader> pSAXReader;
 		if (FAILED (pSAXReader.CoCreateInstance (__uuidof (SAXXMLReader), NULL, CLSCTX_ALL)))
 		{
 			return false;

@@ -43,12 +43,13 @@ class CFolderAdd: public CThreadImpl<CFolderAdd>
 {
 	public:
 		CFolderAdd(CWizardDlg *WizardDlg);
-		void Do(CStringList &Paths,  bool SubDirs  = false);
+		void Do(CStringList &Paths, bool ImagesOnly, bool SubDirs  = false);
 		DWORD Run();
 private:
 	int count;
 	CStringList m_Paths;
 	bool m_bSubDirs;
+	bool m_bImagesOnly;
 	CWizardDlg *m_pWizardDlg;
 	TCHAR m_szPath[MAX_PATH];
 	WIN32_FIND_DATA wfd;

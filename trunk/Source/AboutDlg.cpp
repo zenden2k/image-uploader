@@ -28,7 +28,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
 	LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
 	LogoImage.LoadImage(0, 0, IDR_PNG1, false, GetSysColor(COLOR_BTNFACE));
-	SetDlgItemText(IDC_IMAGEUPLOADERLABEL, CString(_T("v1.2 build "))+_T(BUILD)+_T(" (")+_T(TIME)+_T(")"));
+	SetDlgItemText(IDC_IMAGEUPLOADERLABEL, CString(_T("v1.2.1."))+_T(BUILD)+_T(" (")+_T(TIME)+_T(")"));
 	CenterWindow(GetParent());
 
 	// Translating

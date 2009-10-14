@@ -20,7 +20,7 @@
 
 #include "stdafx.h"
 #include "langclass.h"
-
+#include "myutils.h"
 CLang Lang;
 
 BYTE hex_digit(TCHAR f)

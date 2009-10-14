@@ -21,10 +21,11 @@
 #include "stdafx.h"
 
 #include "settings.h"
+#include "myutils.h"
 #include "Common\MyXml.h"
-
+CSettings Settings;
 #define ASSERT
-
+#ifndef IU_SHELLEXT
 BOOL IsVista()
 {
 	OSVERSIONINFO osver;
@@ -88,7 +89,9 @@ IsElevated( __out_opt BOOL * pbElevated ) //= NULL )
 void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ");
 void EncodeString(LPCTSTR szSource,CString &Result,LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ");
 
-CSettings Settings;
+
+
+
 UploadEngine* GetEngineByName(LPCTSTR Name)
 {
 	for(int i=0; i<EnginesList.GetCount(); i++)
@@ -119,19 +122,49 @@ void ApplyRegistrySettings()
 	::ShellExecuteEx(&TempInfo);
 
 }
-CSettings::CSettings(): ServerID(ImageSettings.ServerID),QuickServerID(ImageSettings.QuickServerID)
+
+void RegisterShellExtension(bool Register)
 {
+	SHELLEXECUTEINFO TempInfo = {0};
+
+	TCHAR buf[MAX_PATH];
+	GetModuleFileName(0,buf,MAX_PATH-1);
+	CString s=GetAppFolder();
+
+	CString Command = CString(buf);
+	TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+	TempInfo.fMask = 0;
+	TempInfo.hwnd = NULL;
+	if(IsVista())
+	TempInfo.lpVerb = _T("runas");
+	else 
+		TempInfo.lpVerb = _T("open");
+	TempInfo.lpFile = _T("regsvr32");
+	TempInfo.lpParameters =CString((Register?_T(""):_T("/u ")))+ _T("/s \"")+GetAppFolder()+_T("ExplorerIntegration.dll\"");
+	TempInfo.lpDirectory = s;
+	TempInfo.nShow = SW_NORMAL;
+
+	::ShellExecuteEx(&TempInfo);
+
+}
+#endif
+CSettings::CSettings()
+#ifndef IU_SHELLEXT
+: ServerID(ImageSettings.ServerID),QuickServerID(ImageSettings.QuickServerID)
+#endif
+{
+	ExplorerCascadedMenu = true;
+	#ifndef IU_SHELLEXT
 	// Default values of settings
 	*m_Directory = 0;
 	UseTxtTemplate = false;
 	ServerID = 0;
 	CodeLang = 0;
 	ConfirmOnExit = 1;
-	ExplorerImagesContextMenu = false;
+	ExplorerContextMenu = false;
 	ExplorerVideoContextMenu = false;
-	ExplorerImagesContextMenu_changed = false;
+	ExplorerContextMenu_changed = false;
 	ThumbsPerLine = 4;
-	ExplorerVideoContextMenu_changed = false;
 	SendToContextMenu_changed = false;
 	SendToContextMenu = 0;
 	QuickServerID = 0;
@@ -192,26 +225,29 @@ CSettings::CSettings(): ServerID(ImageSettings.ServerID),QuickServerID(ImageSett
 	ScreenshotSettings.Format =  1;
 	ScreenshotSettings.Quality = 85;
 	ScreenshotSettings.Delay = 3;
+	#endif
 }
 
 #define SETTINGS_READ
 #include "SettingsSaver.h" // Generating a function which reads settings
 
+#ifndef IU_SHELLEXT
 #undef SETTINGS_READ
 #include "SettingsSaver.h" // Generating a function which saves settings
-
-bool CSettings::LoadSettings()
+#endif
+bool CSettings::LoadSettings(LPCTSTR szDir)
 {
 	CMyXml MyXML;
-	CString FileName= GetAppFolder()+_T("Settings.xml");
+	CString FileName= (szDir? CString(szDir):GetAppFolder())+_T("Settings.xml");
 	if(!FileExists(FileName)) return true;
+	
 	if(!MyXML.Load(FileName))
 	{
 		MessageBox(0, MyXML.GetError(),0,0);
 	}
 	return MacroLoadSettings(MyXML);
 }
-
+#ifndef IU_SHELLEXT
 #define MY_CLSID _T("{535E39BD-5883-454C-AFFC-C54B66B18206}")
 
 bool RegisterClsId()
@@ -371,9 +407,12 @@ bool CSettings::SaveSettings()
 	MacroSaveSettings(MyXml);
 	MyXml.Save(GetAppFolder() + _T("Settings.xml"));
 
-	if(SendToContextMenu_changed || ExplorerImagesContextMenu_changed || ExplorerVideoContextMenu_changed) 
+	if(SendToContextMenu_changed || ExplorerContextMenu_changed) 
 	{
 		BOOL b;
+
+		RegisterShellExtension(ExplorerContextMenu);
+
 		if(IsVista() && IsElevated(&b)!=S_OK)
 		ApplyRegistrySettings();
 		else 
@@ -382,8 +421,7 @@ bool CSettings::SaveSettings()
 
 	
 	}}
-	ExplorerImagesContextMenu_changed = false;
-	ExplorerVideoContextMenu_changed = false;
+	ExplorerContextMenu_changed = false;
 	SendToContextMenu_changed = false;
 
 	return true;
@@ -418,28 +456,30 @@ void CSettings::ApplyRegSettingsRightNow()
 		LPTSTR szList = _T("jpg\0jpeg\0png\0bmp\0gif");
 		int Res;
 
-		if(ExplorerImagesContextMenu || ExplorerVideoContextMenu)
+		/*if(ExplorerContextMenu || ExplorerVideoContextMenu)
 			RegisterClsId();
-		else UnRegisterClsId();
+		else */
+			UnRegisterClsId();
 
-		if(ExplorerImagesContextMenu_changed)
+		//if(ExplorerContextMenu_changed)
 		{
 			while ((*szList)!=0)
 			{
-				Res = AddToExplorerContextMenu(szList, (ExplorerImagesContextMenu?TR("Загрузить изображения"):0), szFileName,true);
+				Res = AddToExplorerContextMenu(szList, (/*ExplorerImagesContextMenu?TR("Загрузить изображения"):*/0), szFileName,true);
 				szList += lstrlen(szList)+1;
 			}
 		}
 
-		if( ExplorerVideoContextMenu_changed)
+		//if( ExplorerVideoContextMenu_changed)
 		{
 			szList = VIDEO_FORMATS;
 			while ((*szList)!=0)
 			{
-				Res = AddToExplorerContextMenu(szList, (ExplorerVideoContextMenu?TR("Открыть в Image Uploader"):0), szFileName,false);
+				Res = AddToExplorerContextMenu(szList, (/*ExplorerVideoContextMenu?TR("Открыть в Image Uploader"):*/0), szFileName,false);
 				szList += lstrlen(szList)+1;
 			}
 		}
 	}
 
 }
+#endif
