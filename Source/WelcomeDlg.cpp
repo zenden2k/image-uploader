@@ -236,7 +236,7 @@ LRESULT CWelcomeDlg::OnShowWindow(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
 LRESULT CWelcomeDlg::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	TCHAR Buf[MAX_PATH*4]; //String buffer which will contain filter for CFileDialog
+	/*TCHAR Buf[MAX_PATH*4]; //String buffer which will contain filter for CFileDialog
 	SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),3, 
 			CString(TR("Âטהומ פאיכû"))+ _T(" (avi, mpg, vob, wmv ...)"),
 		_T("*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;*.rm;"),
@@ -255,7 +255,8 @@ LRESULT CWelcomeDlg::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	Settings.VideoFolder = Buffer;
 	CMediaInfoDlg dlg;
 	lstrcpyn(WizardDlg->LastVideoFile, fd.m_szFileName, MAX_PATH);
-	dlg.ShowInfo(fd.m_szFileName);
+	dlg.ShowInfo(fd.m_szFileName);*/
+	WizardDlg->executeFunc(_T("mediainfo"));
 	return 0;
 }
 	

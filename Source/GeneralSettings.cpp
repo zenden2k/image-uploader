@@ -21,7 +21,7 @@
 #include "stdafx.h"
 #include "GeneralSettings.h"
 #include <uxtheme.h>
-
+#include "common.h"
 // CGeneralSettings
 CGeneralSettings::CGeneralSettings()
 {

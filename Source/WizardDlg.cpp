@@ -25,6 +25,7 @@
 #include "common/markupmsxml.h"
 #include "common/regexp.h"
 #include <io.h>
+#include "floatingwindow.h"
 
 // CWizardDlg
 CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
@@ -34,6 +35,7 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 	PrevPage = -1;
 	ZeroMemory(Pages, sizeof(Pages));
 	DragndropEnabled = true;
+	hLocalHotkeys = 0;
 	QuickUploadMarker=false;
 }
 
@@ -49,6 +51,7 @@ CWizardDlg::~CWizardDlg()
 TCHAR MediaInfoDllPath[MAX_PATH] = _T("");
 LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	m_bShowWindow = true;
 	LPDWORD DlgCreationResult = (LPDWORD) lParam; 
 	ATLASSERT(DlgCreationResult != NULL);
 	// center the dialog on the screen
@@ -65,7 +68,6 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	ATLASSERT(pLoop != NULL);
 	pLoop->AddMessageFilter(this);
 	pLoop->AddIdleHandler(this);
-	
 	OleInitialize(NULL);
 	HRESULT res = ::RegisterDragDrop(m_hWnd,this);
 	*MediaInfoDllPath=0;
@@ -88,7 +90,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	}
 	SetWindowText(APPNAME);
 	TCHAR Language[128];
-	Settings.LoadSettings();
+	
 	TCHAR szFileName[256], szPath[256];
 	GetModuleFileName(0, szFileName, 1023);
    ExtractFilePath(szFileName, szPath);
@@ -132,7 +134,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 			return 0;
 		}
 	}
-
+	
 	Settings.ServerID = GetUploadEngineIndex(Settings.ServerName);
 	Settings.FileServerID = GetUploadEngineIndex(Settings.FileServerName);
 
@@ -142,7 +144,10 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	if(!*MediaInfoDllPath)
 		WriteLog(logWarning, APPNAME, TR("Библиотека MediaInfo.dll не найдена. \nПолучение технических данных о файлах мультимедиа будет недоступно.")); 
 	TRC(IDC_ABOUT,"О программе...");
+	if(!CmdLine.IsOption(_T("tray")))
    TRC(IDCANCEL,"Выход");
+	else 
+		TRC(IDCANCEL,"Закрыть");
    TRC(IDC_PREV,"< Назад");
 
 	ACCEL accel;
@@ -151,6 +156,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	accel.key =  VkKeyScan('v') ;
 	hAccel = CreateAcceleratorTable(&accel, 1);
 
+	RegisterLocalHotkeys();
 	if(ParseCmdLine()) return 0;
 
 	CreatePage(0); 
@@ -186,6 +192,19 @@ bool CWizardDlg::ParseCmdLine()
 
 	}
 
+	for(int i=0; i<CmdLine.GetCount(); i++)
+	{
+		CString CurrentParam = CmdLine[i];
+		if(CurrentParam .Left(6)==_T("/func="))
+		{
+			m_bShowWindow=false;
+			CString cmd = CurrentParam.Right(CurrentParam.GetLength()-6);
+			if(!executeFunc(cmd))
+				PostQuitMessage(0);
+			return true;
+		}
+	}
+
 	CString FileName;
 	
 	if(CmdLine.GetNextFile(FileName, nIndex))
@@ -219,16 +238,29 @@ nIndex = 0;
 
 LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	if(CurPage!=0 && CurPage!=4 && Settings.ConfirmOnExit)
-		if(MessageBox(TR("Вы уверены что хотите выйти из программы?"),APPNAME, MB_YESNO|MB_ICONQUESTION) != IDYES) return 0;
-	
-	CloseDialog(wID);
+	//if(CmdLine.IsOption(_T("tray")))
+	if(floatWnd.m_hWnd)
+	{ 
+		ShowWindow(/*SW_HIDE*/SW_HIDE);
+		if(Pages[2])
+		((CMainDlg*)Pages[2])->ThumbsView.MyDeleteAllItems();
+//		EnableExit();
+		/*if(CurPage!=2)*/ ShowPage(0); 
+		return 0;
+	}
+	CloseWizard();
 	return 0;
 }
 
 BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
 {
-	if(TranslateAccelerator(m_hWnd, hAccel, pMsg)) 
+	/*if(TranslateAccelerator(m_hWnd, hAccel, pMsg)) 
+	{
+		return TRUE;
+	}*/
+
+	
+	if(hLocalHotkeys &&TranslateAccelerator(m_hWnd, hLocalHotkeys, pMsg)) 
 	{
 		return TRUE;
 	}
@@ -289,6 +321,7 @@ LRESULT CWizardDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 void CWizardDlg::CloseDialog(int nVal)
 {
+	
 	ShowWindow(SW_HIDE);
 	if(CurPage >= 0)
 	{
@@ -1135,8 +1168,308 @@ void CMyFolderDialog::OnInitialized()
 LRESULT 	CWizardDlg::OnWmShowPage(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	int PageIndex = wParam;
-	//ShowVar(PageIndex);
 	ShowPage(PageIndex);
 	return 0;
 }
 	
+bool CWizardDlg::funcAddImages()
+{
+	TCHAR Buf[MAX_PATH*4];
+	SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
+		CString(TR("Изображения"))+ _T(" (jpeg, bmp, png, gif ...)"),
+		_T("*.jpg;*.gif;*.png;*.bmp;*.tiff"),
+		TR("Любые файлы"),
+		_T("*.*"));
+
+	int nCount=0;
+	CMultiFileDialog fd(0, 0, OFN_HIDEREADONLY, Buf, m_hWnd);
+	
+	TCHAR Buffer[1000];
+	fd.m_ofn.lpstrInitialDir = Settings.ImagesFolder;
+
+	if(fd.DoModal(m_hWnd) != IDOK) return 0;
+	LPCTSTR FileName = 0;
+	fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
+
+	CreatePage(2);
+	do
+	{
+		
+		FileName = (FileName) ? fd.GetNextFileName() : fd.GetFirstFileName();
+		if(!FileName) break;
+		fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
+
+		if(Buffer[lstrlen(Buffer)-1] != '\\')
+		lstrcat(Buffer, _T("\\"));
+		
+		if(FileName)
+		{
+			lstrcat(Buffer, FileName);
+			if(((CMainDlg*)Pages[2])->AddToFileList(Buffer))
+				nCount++;
+		
+		}
+	} while (FileName);
+	 
+	
+	fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
+	Settings.ImagesFolder = Buffer;
+	if(nCount)
+		ShowPage(2, 0, 3);
+
+	if(CurPage == 2)
+		((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
+	ShowWindow(SW_SHOW);
+	m_bShowWindow = true;
+}
+
+bool CWizardDlg::executeFunc(CString funcName)
+{
+	bool LaunchCopy= false;
+
+	if(CurPage == 4) LaunchCopy= true;
+	if(CurPage == 1) LaunchCopy= true;
+
+
+	if(CurPage == 3) ShowPage(2);
+
+	if(!IsWindowEnabled())LaunchCopy= true; 
+
+	if(LaunchCopy)
+	{
+		if(Settings.TrayIconSettings.DontLaunchCopy)
+		{
+			
+				//SetForegroundWindow(m_hWnd);
+			 if(IsWindowVisible() && IsWindowEnabled())
+				SetForegroundWindow(m_hWnd);
+			else if(!IsWindowEnabled()) SetActiveWindow();
+			FlashWindow(true);
+		}
+		else
+			IULaunchCopy(_T("/func=")+funcName,CAtlArray<CString>());
+		return false;
+	}
+	if(funcName == _T("addimages"))
+		return funcAddImages();
+	else if(funcName == _T("importvideo"))
+		return funcImportVideo();
+	else if(funcName == _T("screenshotdlg"))
+		return funcScreenshotDlg();
+	else if(funcName == _T("regionscreenshot"))
+		return funcRegionScreenshot();
+	else if(funcName == _T("fullscreenshot"))
+		return funcFullScreenshot();
+	else if(funcName == _T("windowscreenshot"))
+		return funcWindowScreenshot();
+	else if(funcName == _T("addfolder"))
+		return funcAddFolder();
+	else if(funcName == _T("paste"))
+		return funcPaste();
+	else if(funcName == _T("settings"))
+		return funcSettings();
+	else if(funcName == _T("mediainfo"))
+		return funcMediaInfo();
+}
+
+bool CWizardDlg::funcImportVideo()
+{
+	TCHAR Buf[MAX_PATH*4];
+	SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
+			CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv ...)"),
+		_T("*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;*.rm;"),
+		TR("Все файлы"),
+		_T("*.*"));
+
+	CFileDialog fd(true,0,0,4|2,/*VIDEO_DIALOG_FORMATS*/Buf,m_hWnd);
+	
+	TCHAR Buffer[1000];
+	fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
+	if(fd.DoModal()!=IDOK || !fd.m_szFileName) return 0;
+	ExtractFilePath(fd.m_szFileName, Buffer); // Запоминаем каталог видео
+	Settings.VideoFolder = Buffer;
+	CreatePage(1);
+	lstrcpyn(LastVideoFile, fd.m_szFileName, MAX_PATH);
+	((CVideoGrabber*)Pages[1])->SetFileName(fd.m_szFileName); // C-style conversion .. but i like it :)
+	ShowPage(1,0,(Pages[2])?2:3);
+	ShowWindow(SW_SHOW);
+		m_bShowWindow = true;
+	return true;
+}
+
+bool CWizardDlg::funcScreenshotDlg()
+{
+	CScreenshotDlg dlg;
+	dlg.MainDlg = this;
+	dlg.m_Action = 1;
+
+	if(dlg.DoModal(m_hWnd) != IDOK) return false;
+	
+	CreatePage(2); //Ну типа страничка с картинками!
+	((CMainDlg*)Pages[2])->AddToFileList(dlg.FileName);
+	
+	ShowPage(2,0,3);
+	return true;
+}
+
+bool CWizardDlg::funcRegionScreenshot()
+{
+	ShowWindow(SW_HIDE);
+	RegionSelect.Parent = m_hWnd;
+	RegionSelect.Execute(this);
+	return true;
+}
+
+void CWizardDlg::OnScreenshotFinished(int Result)
+{
+	ShowWindow(SW_SHOW);
+	SetForegroundWindow(m_hWnd);;
+}
+
+void CWizardDlg::OnScreenshotSaving(LPTSTR FileName, Bitmap* Bm)
+{
+	if(FileName && lstrlen(FileName))
+	{
+		CreatePage(2);
+		((CMainDlg*)Pages[2])->AddToFileList(FileName);
+		if(CurPage == 2)
+		((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
+		ShowPage(2,0,3);
+	}
+}
+
+bool CWizardDlg::funcFullScreenshot()
+{
+	_screenShotdlg.MainDlg = this;
+	_screenShotdlg.m_Action = 1;
+
+	_screenShotdlg.Execute(m_hWnd, this, true);
+	return true;
+}
+
+bool CWizardDlg::funcWindowScreenshot()
+{
+	_screenShotdlg.MainDlg = this;
+	_screenShotdlg.m_Action = 1;
+
+	_screenShotdlg.Execute(m_hWnd, this, false);
+	return true;
+}
+
+bool CWizardDlg::funcAddFolder()
+{
+	CMyFolderDialog fd(m_hWnd);
+	fd.m_bSubdirs = Settings.ParseSubDirs;
+	if(fd.DoModal(m_hWnd) == IDOK)
+	{
+		Settings.ParseSubDirs = fd.m_bSubdirs;
+		ShowWindow(SW_SHOW);
+		m_bShowWindow = true;
+		AddFolder(fd.GetFolderPath(),fd.m_bSubdirs);
+		
+		return true;
+	}
+	else return false;
+}
+LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	if(!floatWnd.m_hWnd)
+	  TRC(IDCANCEL,"Выход");
+	else 
+		TRC(IDCANCEL,"Закрыть");
+
+	if(!(m_hotkeys==Settings.Hotkeys))
+	{
+		UnRegisterLocalHotkeys();
+		RegisterLocalHotkeys();}
+	return 0;
+}
+
+void CWizardDlg::CloseWizard()
+{
+	if(CurPage!=0 && CurPage!=4 && Settings.ConfirmOnExit)
+		if(MessageBox(TR("Вы уверены что хотите выйти из программы?"),APPNAME, MB_YESNO|MB_ICONQUESTION) != IDYES) return ;
+	
+	CloseDialog(0);
+}
+
+
+bool CWizardDlg::RegisterLocalHotkeys()
+{
+	ACCEL *Accels;
+	m_hotkeys = Settings.Hotkeys;
+	int n=m_hotkeys.GetCount();
+	Accels = new ACCEL [n];
+	int j =0;
+	for(int i =0; i<n; i++)
+	{
+		if(!m_hotkeys[i].localKey.keyCode) continue;
+		Accels[j]= m_hotkeys[i].localKey.toAccel();
+		Accels[j].cmd = 10000+i;
+		j++;
+			
+	}
+
+	hLocalHotkeys = CreateAcceleratorTable(Accels,j);
+	delete[] Accels;
+	return true;
+}
+
+LRESULT CWizardDlg::OnLocalHotkey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	if(CurPage==3) ShowPage(2);
+	if(!IsWindowEnabled() || (CurPage!=0 && CurPage!=2))
+		return 0;
+	int hotkeyId = wID-ID_HOTKEY_BASE;
+	executeFunc(m_hotkeys[hotkeyId].func);
+	return 0;
+}
+
+bool CWizardDlg::UnRegisterLocalHotkeys()
+{
+	DestroyAcceleratorTable(hLocalHotkeys);
+	m_hotkeys.RemoveAll();
+	hLocalHotkeys = 0;
+	return true;
+}
+
+bool CWizardDlg::funcPaste()
+{
+	BOOL b;
+	OnPaste(0,0,0,b);
+	return true;
+}
+
+bool CWizardDlg::funcSettings()
+{
+	CSettingsDlg dlg(0);
+	dlg.DoModal(m_hWnd);
+	return true;
+}
+
+bool CWizardDlg::funcMediaInfo()
+{
+	TCHAR Buf[MAX_PATH*4]; //String buffer which will contain filter for CFileDialog
+	SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),3, 
+			CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv ...)"),
+		_T("*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;*.rm;"),
+		CString(TR("Аудио файлы"))+ _T(" (mp3, wma, wav ...)"),
+		_T("*.mp3;*.wav;*.wma;*.mid;*.asx"),
+		
+		TR("Все файлы"),
+		_T("*.*"));
+
+	CFileDialog fd(true,0,0,4|2,Buf,m_hWnd);
+	fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
+
+	if(fd.DoModal()!=IDOK || !fd.m_szFileName) return 0;
+	TCHAR Buffer[512];
+	ExtractFilePath(fd.m_szFileName, Buffer);
+	Settings.VideoFolder = Buffer;
+	CMediaInfoDlg dlg;
+	lstrcpyn(LastVideoFile, fd.m_szFileName, MAX_PATH);
+	dlg.ShowInfo(fd.m_szFileName);
+	return true;
+}
+
+CWizardDlg * pWizardDlg;

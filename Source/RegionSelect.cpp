@@ -20,7 +20,7 @@
 
 #include "stdafx.h"
 #include "RegionSelect.h"
-
+#include "common.h"
 CRegionSelect RegionSelect;
 
 // CRegionSelect

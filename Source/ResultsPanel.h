@@ -21,10 +21,11 @@
 #pragma once
 
 #include "resource.h"       // main symbols
-#include "uploaddlg.h"
-#include "wizarddlg.h"
+#include "common.h"
+//#include "uploaddlg.h"
+//#include "wizarddlg.h"
 // CResultsPanel
-
+class CWizardDlg;
 struct IU_Result_Template
 {
 	CString Name,Items,LineSep,LineStart,ItemSep,LineEnd,TemplateText;

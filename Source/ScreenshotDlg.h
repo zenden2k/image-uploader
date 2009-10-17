@@ -19,11 +19,11 @@
 */
 
 #pragma once
-#include "maindlg.h"
+//#include "maindlg.h"
 #include "resource.h"
 #include "regionselect.h"
-#include "wizarddlg.h"
-
+//#include "wizarddlg.h"
+#include "hyperlinkcontrol.h"
 #define IDC_VIEWSETTINGS WM_USER + 220
 #define IDC_SCRACTIVEWINDOW WM_USER + 221
 
@@ -34,12 +34,14 @@ class CScreenshotDlg :
 	public CWinDataExchange<CScreenshotDlg>
 {
 	public:
+		CRegionSelectCallback *m_pCallBack;
 		TCHAR FileName[256];
 		CWindow *MainDlg;
 		HBRUSH WhiteBr;
 		bool m_bExpanded;
 		bool m_bEntireScreen;
-		CWizardDlg *WizardDlg;
+		int m_Action;
+		//CWizardDlg *WizardDlg;
 		int nFullWindowHeight;
 		CScreenshotDlg();
 		~CScreenshotDlg();
@@ -85,4 +87,5 @@ class CScreenshotDlg :
 		void OnScreenshotSaving(LPTSTR szFileName, Bitmap* Bm);
 		void ExpandDialog();
 		void SaveSettings();
+		void Execute(HWND Parent, CRegionSelectCallback *RegionSelectCallback, bool FullScreen = true);
 };

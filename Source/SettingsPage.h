@@ -1,5 +1,6 @@
 #pragma once 
 
+class CWizardDlg;
 class CSettingsDlg;
 class CSettingsPage
 {

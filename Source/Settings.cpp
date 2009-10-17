@@ -23,9 +23,13 @@
 #include "settings.h"
 #include "myutils.h"
 #include "Common\MyXml.h"
+
 CSettings Settings;
-#define ASSERT
 #ifndef IU_SHELLEXT
+#include "FloatingWindow.h"
+
+
+#define ASSERT
 BOOL IsVista()
 {
 	OSVERSIONINFO osver;
@@ -153,9 +157,12 @@ CSettings::CSettings()
 : ServerID(ImageSettings.ServerID),QuickServerID(ImageSettings.QuickServerID)
 #endif
 {
+	// Default values of settings
 	ExplorerCascadedMenu = true;
 	#ifndef IU_SHELLEXT
-	// Default values of settings
+	
+	ShowTrayIcon = false;
+	ShowTrayIcon_changed = false;
 	*m_Directory = 0;
 	UseTxtTemplate = false;
 	ServerID = 0;
@@ -208,7 +215,7 @@ CSettings::CSettings()
 	ThumbSettings.ThumbTextColor = RGB( 255, 255, 255);
 	ThumbSettings.ThumbAlpha = 120;
 	ThumbSettings.Text = _T("%width%x%height% (%size%)");
-
+	
 	VideoSettings.Columns = 3;
 	VideoSettings.TileWidth =  200;
 	VideoSettings.GapWidth = 5;
@@ -225,6 +232,14 @@ CSettings::CSettings()
 	ScreenshotSettings.Format =  1;
 	ScreenshotSettings.Quality = 85;
 	ScreenshotSettings.Delay = 3;
+
+	TrayIconSettings.LeftClickCommand = 0; // without action
+	TrayIconSettings.LeftDoubleClickCommand = 2; // add images
+	TrayIconSettings.RightClickCommand = 1; // context menu
+	TrayIconSettings.MiddleClickCommand = 6; // region screenshot
+	TrayIconSettings.DontLaunchCopy = FALSE;
+
+	Hotkeys_changed = false;
 	#endif
 }
 
@@ -353,8 +368,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command,b
 
 	if(DropTarget)
 	{
-		RegSetValueEx(
-DropTargetKey, _T("Clsid"), 0, REG_SZ,	(LPBYTE)MY_CLSID, (lstrlen(MY_CLSID)+1)*sizeof(TCHAR));
+		RegSetValueEx(DropTargetKey, _T("Clsid"), 0, REG_SZ,	(LPBYTE)MY_CLSID, (lstrlen(MY_CLSID)+1)*sizeof(TCHAR));
 	}
 
 	RegCloseKey(DropTargetKey);
@@ -424,10 +438,63 @@ bool CSettings::SaveSettings()
 	ExplorerContextMenu_changed = false;
 	SendToContextMenu_changed = false;
 
+	if(ShowTrayIcon_changed)
+	{
+		ShowTrayIcon_changed = false;
+		if(ShowTrayIcon)
+		{
+			
+
+			if(!IsRunningFloatingWnd())
+			{
+				CmdLine.AddParam(_T("/tray"));
+				floatWnd.CreateTrayIcon();
+				//CreateFloatWindow();
+			}
+			//ShellExecute(0,_T("open"),CmdLine.ModuleName(),_T("/tray"),0,SW_SHOW);
+		}
+		else
+		{
+
+			HWND TrayWnd = FindWindow(0,_T("ImageUploader_TrayWnd"));
+			if(TrayWnd)
+				::SendMessage(TrayWnd, WM_CLOSETRAYWND,0, 0);
+
+		}
+	}
+	else if(ShowTrayIcon)
+	{
+		HWND TrayWnd = FindWindow(0,_T("ImageUploader_TrayWnd"));
+			if(TrayWnd)
+				SendMessage(TrayWnd, WM_RELOADSETTINGS,  (floatWnd.m_hWnd)?1:0, (Settings.Hotkeys_changed)?0:1);
+	}
+
+
+	// Applying Startup settings
+	if(ShowTrayIcon)
+	{
+		HKEY hKey;
+		CString StartupCommand = _T("\"")+CmdLine.ModuleName()+_T("\" /tray");
+		LONG lRet,lRetOpen;
+		lRet = RegOpenKeyEx( HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"),0,KEY_WRITE,&hKey );
+		if (!lRet)
+			lRetOpen=RegSetValueEx( hKey, _T("ImageUploader"), NULL,REG_SZ, (BYTE *)(LPCTSTR)StartupCommand,(StartupCommand.GetLength()+1)*sizeof(TCHAR));
+      RegCloseKey( hKey );
+	}
+	else //deleting from Startup
+	{
+		HKEY hKey;
+		 LONG lRet,lRetOpen;
+		lRet = RegOpenKeyEx( HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"),0,KEY_WRITE,&hKey );
+		RegDeleteValue(hKey,_T("ImageUploader"));
+	}
+
+	Settings.Hotkeys_changed  = false;
 	return true;
 }
 
-void CSettings::ApplyRegSettingsRightNow()
+// Next code is to be deleted in next releases
+void CSettings::ApplyRegSettingsRightNow() 
 {
 	//MessageBox(0,_T("ApplyRegSettingsRightNow()"),0,0);
 	//if(SendToContextMenu_changed)

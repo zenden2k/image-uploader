@@ -19,32 +19,50 @@
 */
 
 #pragma once
-
+//class CTrayActions;
 #include "resource.h"       // main symbols
+#include <atlcrack.h>
 #include "settingspage.h"
-// CVideoGrabberParams
-struct CSavingOptions
-{
-	int Columns;
-	int TileWidth;
-	int GapWidth;
-	int GapHeight;
-	int NumOfFrames;
-	int JPEGQuality;
-};
+//#include "floatingwindow.h"
+// CHotkeySettingsPage
 
-class CVideoGrabberParams : 
-	public CDialogImpl<CVideoGrabberParams>, public CSettingsPage	
+
+
+#include "hotkeyeditor.h"
+#include <atlctrls.h>
+class CHotkeyList: public CAtlArray<CHotkeyItem>
 {
 public:
-	CVideoGrabberParams();
-	~CVideoGrabberParams();
-	enum { IDD = IDD_VIDEOGRABBERPARARAMS};
+	bool m_bChanged;
+	bool Changed();
 
-    BEGIN_MSG_MAP(CVideoGrabberParams)
+	CHotkeyItem& getByFunc(const CString &func);
+	CHotkeyList();
+	void AddItem( CString name, CString func, DWORD commandId, WORD Code=0, WORD modif=0);
+	CHotkeyList& operator=( const CHotkeyList& );
+	bool operator==( const CHotkeyList& );
+	CString toString();
+	bool DeSerialize(const CString &data);
+		
+};
+
+class CHotkeySettingsPage : 
+	public CDialogImpl<CHotkeySettingsPage>, public CSettingsPage	
+{
+public:
+	CHotkeySettingsPage();
+	~CHotkeySettingsPage();
+	CHotkeyList hotkeyList;
+	enum { IDD = IDD_HOTKEYSETTINGSPAGE};
+
+    BEGIN_MSG_MAP(CHotkeySettingsPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+		  
+		COMMAND_HANDLER(IDC_EDITHOTKEY, BN_CLICKED, OnEditHotkeyBnClicked)
+		NOTIFY_HANDLER_EX(IDC_HOTKEYLIST, NM_DBLCLK, OnHotkeylistNmDblclk)
+		
     END_MSG_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -53,8 +71,13 @@ public:
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnEditHotkeyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	//CSavingOptions *so;
 	bool Apply();
+	CListViewCtrl m_HotkeyList;
+
+	LRESULT OnHotkeylistNmDblclk(LPNMHDR pnmh);
+	void EditHotkey(int index);
 };
 
 

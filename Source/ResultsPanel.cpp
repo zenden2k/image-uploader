@@ -19,9 +19,11 @@
 */
 
 #include "stdafx.h"
+
 #include "ResultsPanel.h"
 #include <uxtheme.h>
 #include "Common/regexp.h"
+#include "mediainfodlg.h"
 
 // CResultsPanel
 CResultsPanel::CResultsPanel(CAtlArray<CUrlListItem> &p,CWizardDlg *dlg):UrlList(p),WizardDlg(dlg)
