@@ -68,13 +68,17 @@ extern CAppModule _Module;
 using namespace Gdiplus;
 #include "myutils.h"
 #include "Common/CmdLine.h"
-
-#include "common.h"
-#include "langclass.h"
 #include "logwindow.h"
+#include "langclass.h"
+#include "settings.h"
+
+/*
+#include "common.h"
+
+
 
 #include "wizarddlg.h"
-#include "settings.h"
+*/
 
 #if defined _M_IX86
   #pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")

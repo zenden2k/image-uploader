@@ -20,7 +20,7 @@
 
 #pragma once
 #include <atlcrack.h>
-
+#include "thread.h"
 #include "ImageView.h"
 
 // CThumbsView

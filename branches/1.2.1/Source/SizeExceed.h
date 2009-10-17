@@ -21,7 +21,9 @@
 #pragma once
 
 #include "resource.h"       // main symbols
-#include "Uploader.h"
+#include "myimage.h"
+//#include "Uploader.h"
+
 // CSizeExceed
 
 class CSizeExceed : 

@@ -20,12 +20,7 @@
 
 #pragma once
 // CWelcomeDlg
-#define IU_IDC_CONST 12255
-#define IDC_SETTINGS		IU_IDC_CONST+1
-#define IDC_REGIONPRINT IU_IDC_CONST+2
-#define IDC_MEDIAFILEINFO IU_IDC_CONST+3
-#define IDC_CLIPBOARD IU_IDC_CONST+4
-#define IDC_ADDFOLDER IU_IDC_CONST+5
+
 
 class CWelcomeDlg ;
 #include "resource.h"       // main symbols

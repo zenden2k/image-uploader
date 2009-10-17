@@ -107,10 +107,23 @@ CString Font;
 		XML_OPTION_VALUE(SendToContextMenu);
 		XML_OPTION_VALUE(ParseSubDirs);
 		XML_OPTION_VALUE(ImageEditorPath);
+		XML_OPTION_VALUE(ShowTrayIcon);
 		XML_OPTION_VALUE(AutoCopyToClipboard);
 		XML_OPTION_VALUE(AutoShowLog);
 		XML_OPTION_VALUE(ImagesFolder);
 		XML_OPTION_VALUE(VideoFolder);
+		CString HotkeysStr;
+		#ifndef  SETTINGS_READ
+			 HotkeysStr= Settings.Hotkeys.toString();
+				//FontToString(&LogoSettings.Font,Font);			
+		#endif
+			
+		XML_OPTION_VALUE(HotkeysStr);
+
+			#ifdef  SETTINGS_READ
+				Settings.Hotkeys.DeSerialize(HotkeysStr);
+				//StringToFont(Font, &LogoSettings.Font);
+			#endif
 		#endif
 	XML_NODE_END();
 		#ifndef IU_SHELLEXT
@@ -194,6 +207,14 @@ CString Font;
 		XML_OPTION_MEMBER_VALUE(VideoSettings, GapHeight);
 		XML_OPTION_MEMBER_VALUE(VideoSettings, NumOfFrames);
 		XML_OPTION_MEMBER_VALUE(VideoSettings,JPEGQuality);
+	XML_NODE_END(); /* end of VideoGrabber */
+
+	XML_NODE_START(TrayIcon);
+		XML_OPTION_MEMBER_VALUE(TrayIconSettings, LeftDoubleClickCommand);
+		XML_OPTION_MEMBER_VALUE(TrayIconSettings, LeftClickCommand);
+		XML_OPTION_MEMBER_VALUE(TrayIconSettings, RightClickCommand);
+		XML_OPTION_MEMBER_VALUE(TrayIconSettings, MiddleClickCommand);
+		XML_OPTION_MEMBER_VALUE(TrayIconSettings, DontLaunchCopy);
 	XML_NODE_END(); /* end of VideoGrabber */
 	
 		

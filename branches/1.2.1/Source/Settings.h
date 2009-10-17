@@ -26,6 +26,7 @@
 #include <map>
 
 #ifndef IU_SHELLEXT
+#include "hotkeysettings.h"
 struct ImageSettingsStruct
 {
 	int NewWidth,NewHeight;
@@ -52,6 +53,20 @@ struct LogoSettingsStruct
 	COLORREF TextColor,StrokeColor;
 };
 
+struct LoginInfo
+{
+	CString Login, Password,Cookies;
+	bool UseIeCookies;
+};
+
+struct TrayIconSettingsStruct
+{
+	int LeftDoubleClickCommand;
+	int LeftClickCommand;
+	int RightClickCommand;
+	int MiddleClickCommand;
+	BOOL DontLaunchCopy;
+};
 struct ThumbSettingsStruct
 {
 	
@@ -116,9 +131,14 @@ class CSettings
 		CString Language;
 		BOOL ExplorerCascadedMenu;
 		#ifndef IU_SHELLEXT
+		CHotkeyList Hotkeys;
+		bool Hotkeys_changed;
+		bool ShowTrayIcon;
+		bool ShowTrayIcon_changed;
 		int ThumbsPerLine;
 		TCHAR m_szLang[64];
 		ImageSettingsStruct ImageSettings;
+		TrayIconSettingsStruct TrayIconSettings;
 		LogoSettingsStruct LogoSettings;
 		ThumbSettingsStruct ThumbSettings;
 		VideoSettingsStruct VideoSettings;

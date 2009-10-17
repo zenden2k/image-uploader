@@ -19,6 +19,7 @@
 */
 
 #include "stdafx.h"
+
 #include "UploadDlg.h"
 #include "shobjidl.h"
 

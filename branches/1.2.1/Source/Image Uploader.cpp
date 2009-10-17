@@ -24,9 +24,11 @@
 #include <shellapi.h>
 #include "resource.h"
 #include "aboutdlg.h"
-#include "uploader.h"
+//#include "uploader.h"
 #include "MainDlg.h"
 #include "wizarddlg.h"
+#include "floatingwindow.h"
+
 
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
@@ -40,28 +42,55 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	_Module.AddMessageLoop(&theLoop);
 
 	CWizardDlg dlgMain;
+	
 
 	DWORD DlgCreationResult = 0;
+	bool ShowMainWindow= true;
+	Settings.LoadSettings();
 
-	if(dlgMain.Create(0,(LPARAM)&DlgCreationResult) == NULL)
+	bool BecomeTray = false;
+	if(Settings.ShowTrayIcon && !CmdLine.IsOption(_T("tray")))
 	{
-		ATLTRACE(_T("Main dialog creation failed!  :( sorry\n"));
-		dlgMain.m_hWnd = 0;
-		return 0;
+		if(!IsRunningFloatingWnd())
+		{
+			BecomeTray = true;
+			CmdLine.AddParam(_T("/tray"));
+		}	
 	}
-	
-	if(DlgCreationResult != 0) 
-	{
-		dlgMain.m_hWnd = 0;
-		return 0;
-	}
-	
-	if((CmdLine.GetCount()>1 && CmdLine.IsOption(_T("quickshot")))|| CmdLine.IsOption(_T("mediainfo")))
-	{
-		dlgMain.ShowWindow(SW_HIDE);
-	}
-	else dlgMain.ShowWindow(nCmdShow);
 
+
+	if(CmdLine.IsOption(_T("tray")) || BecomeTray)
+	{
+		if(!IsRunningFloatingWnd())
+		{
+			ShowMainWindow = BecomeTray;
+			floatWnd.CreateTrayIcon();
+			//CreateFloatWindow();
+		}
+		else return 0;
+	}
+	//else
+	{
+		pWizardDlg = &dlgMain;
+		if(dlgMain.Create(0,(LPARAM)&DlgCreationResult) == NULL)
+		{
+			ATLTRACE(_T("Main dialog creation failed!  :( sorry\n"));
+			dlgMain.m_hWnd = 0;
+			return 0;
+		}
+		
+		if(DlgCreationResult != 0) 
+		{
+			dlgMain.m_hWnd = 0;
+			return 0;
+		}
+		
+		if((CmdLine.GetCount()>1 && CmdLine.IsOption(_T("quickshot")))|| CmdLine.IsOption(_T("mediainfo")) || !ShowMainWindow || !dlgMain.m_bShowWindow)
+		{
+			dlgMain.ShowWindow(SW_HIDE);
+		}
+		else dlgMain.ShowWindow(nCmdShow);
+	}
 	int nRet = theLoop.Run();
 
 	_Module.RemoveMessageLoop();

@@ -43,7 +43,7 @@ class CRegionSelect :
 		CRegionSelectCallback *m_pCallBack;
 	HANDLE m_hTimerQueue, m_hTimer;
 	TCHAR m_szFileName[MAX_PATH];
-	CWizardDlg *m_pWizardDlg;
+//	CWizardDlg *m_pWizardDlg;
 
 	bool Execute(CRegionSelectCallback *RegionSelectCallback = NULL);
 	static VOID CALLBACK WaitOrTimerCallback(PVOID lpParameter, BOOLEAN TimerOrWaitFired);

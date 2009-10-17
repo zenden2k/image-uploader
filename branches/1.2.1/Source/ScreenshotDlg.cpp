@@ -19,12 +19,14 @@
 */
 
 #include "stdafx.h"
+#include "common.h"
 #include "ScreenshotDlg.h"
 
 // CScreenshotDlg
 CScreenshotDlg::CScreenshotDlg()
 {
 	*FileName = 0;
+	m_Action = 0;
 	m_bExpanded = false;
 	m_bEntireScreen = false;
 	WhiteBr = CreateSolidBrush(RGB(255,255,255));;
@@ -95,6 +97,8 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	SendDlgItemMessage(IDC_FORMATLIST, CB_SETCURSEL, Format, 0);
 
 	BOOL b;
+
+	
 
 	CommandBox.SetFocus();
 	return 0;  // Разрешаем системе самостоятельно установить фокус ввода
@@ -169,14 +173,18 @@ LRESULT CScreenshotDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	
 	// Сохранение изображения в файл, имя возвращается в szBuffer
 	MySaveImage(&b,_T("screenshot"), FileName, Format, Quality);
-	
+	if(m_pCallBack) m_pCallBack->OnScreenshotSaving(FileName,&b);
+
 	// Удаление временного битмапа и контекста рисования
 	DeleteObject(SelectObject(memDC, oldbm));
 	DeleteObject(memDC); 
-
+	
+	if(!m_pCallBack)
 	// Завершение диалога
 	EndDialog(1);
 
+	if(m_pCallBack)  
+		m_pCallBack->OnScreenshotFinished((int)1);
 	// Показ главного окна и сообщения о сделаном скриншоте
 	::ShowWindow(GetParent(), SW_SHOW);
 	
@@ -193,7 +201,9 @@ LRESULT CScreenshotDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 	// Установка таймера
 	int Delay = GetDlgItemInt(IDC_DELAYEDIT);
 	if( Delay <1 || Delay > 30 )  Delay = 3;
+	if(!m_pCallBack)
 	SetTimer(1, Delay * 1000);
+	else 	SetTimer(1, 500);
 	
 	// Скрытие окон приложения
 	ShowWindow(SW_HIDE);
@@ -285,4 +295,19 @@ void CScreenshotDlg::SaveSettings()
 	Settings.ScreenshotSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
 
+}
+
+void CScreenshotDlg::Execute(HWND Parent, CRegionSelectCallback *RegionSelectCallback,  bool FullScreen )
+{
+	m_pCallBack = RegionSelectCallback;
+	*FileName = 0;
+	if(!m_hWnd)
+		Create(Parent);
+	ShowWindow(SW_HIDE);
+
+	BOOL b;
+	if(m_Action == 1)
+	{
+		OnClickedOK(0,FullScreen?IDC_SCREENSHOT:0,0,b);
+	}
 }

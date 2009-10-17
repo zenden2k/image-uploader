@@ -20,6 +20,8 @@
 
 #include "stdafx.h"
 #include "ThumbsView.h"
+#include "mydropsource.h"
+#include "mydataobject.h"
 
 #define THUMBNAIL_WIDTH 170   // constants
 #define THUMBNAIL_HEIGHT 120

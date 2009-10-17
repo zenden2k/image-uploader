@@ -172,7 +172,8 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		sub.SetMenuItemInfo(IDM_ADDFOLDER, false, &mi);
 		TCHAR buf[MAX_PATH];
 		lstrcpy(buf, TR("Вставить"));
-		lstrcat(buf, _T("\tCtrl+V"));
+		lstrcat(buf, _T("\t"));
+		lstrcat(buf,Settings.Hotkeys.getByFunc("paste").localKey.toString());
 		mi.dwTypeData = buf;
 		sub.SetMenuItemInfo(IDC_PASTE, false, &mi);
 		mi.dwTypeData = TR("Удалить всё");

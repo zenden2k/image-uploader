@@ -102,7 +102,7 @@ CString CUploader::ReplaceVars(const CString Text)
 
 	return Result;
 }
-
+LoginInfo LoadLogin(int ServerId);
 bool CUploader::UploadFile(LPTSTR FileName,LPTSTR szUrlBuffer,LPTSTR szThumbUrlBuffer,int ThumbWidth)
 {
 	if(CurrentServer<0) return false;

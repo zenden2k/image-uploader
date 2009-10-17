@@ -21,6 +21,7 @@
 #pragma once
 
 #include "resource.h"       // main symbols
+#include "uploader.h"
 #include "maindlg.h"
 #include "thread.h"
 #include "LogoSettings.h"
@@ -28,14 +29,8 @@
 #include "SizeExceed.h"
 #include "welcomedlg.h"
 
-struct CUrlListItem{
-	bool IsImage, IsThumb;
-	CString FileName;
-	TCHAR ImageUrl[256];
-	TCHAR ThumbUrl[256];
-	CString DownloadUrl;
 
-};
+
 
 #include "ResultsPanel.h"
 class CUploadDlg : 
