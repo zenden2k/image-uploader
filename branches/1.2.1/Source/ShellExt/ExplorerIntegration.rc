@@ -95,16 +95,6 @@ IDR_ISHELLCONTEXTMENU   REGISTRY                "IShellContextMenu.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Bitmap
-//
-
-IDB_IULOGO              BITMAP                  "Res\\icon_shell.bmp"
-IDB_UPARROW             BITMAP                  "Res\\arrowup.bmp"
-IDB_INFO                BITMAP                  "Res\\icon-info.bmp"
-IDB_MOVIE               BITMAP                  "Res\\icon-movie.bmp"
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Icon
 //
 

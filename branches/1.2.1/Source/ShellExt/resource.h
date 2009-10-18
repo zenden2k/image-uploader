@@ -6,15 +6,10 @@
 #define IDR_EXPLORERINTEGRATION         101
 #define IDR_ISHELLCONTEXTMENU           102
 #define IDB_BITMAP1                     201
-#define IDB_IULOGO                      201
 #define IDB_BITMAP2                     205
-#define IDB_UPARROW                     205
-#define IDB_INFO                        206
-#define IDB_MOVIE                       207
 #define IDI_ICONMAIN                    208
 #define IDI_ICONINFO                    209
 #define IDI_ICONMOVIE                   210
-#define IDI_ICON1                       211
 #define IDI_ICONUPLOAD                  211
 
 // Next default values for new objects
