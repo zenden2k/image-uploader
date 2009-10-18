@@ -25,36 +25,20 @@
 
 CHotkeyList::CHotkeyList()
 {
-	
-m_bChanged = false;
-AddItem(TR("Контекстное меню значка"), _T(""), IDM_CONTEXTMENU);
+	m_bChanged = false;
+	AddItem(TR("Контекстное меню значка"), _T(""), IDM_CONTEXTMENU);
 	AddItem(TR("Загрузить файлы"),_T("addimages"), IDM_UPLOADFILES);
 	AddItem(TR("Загрузить папку"),_T("addfolder"), IDM_ADDFOLDER);
-	AddItem(TR("Импорт видео"),_T("IDM_ADDFOLDER"), IDM_IMPORTVIDEO);
+	AddItem(TR("Импорт видео"),_T("importvideo"), IDM_IMPORTVIDEO);
 	AddItem(TR("Скриншот"),_T("screenshotdlg"), IDM_SCREENSHOTDLG);
 	AddItem(TR("Скриншот выделенной области"),_T("regionscreenshot"), IDM_REGIONSCREENSHOT);
 	AddItem(TR("Скриншот всего экрана"),_T("fullscreenshot"), IDM_FULLSCREENSHOT);
 	AddItem(TR("Скриншот текущего окна"),_T("windowscreenshot"), IDM_FULLSCREENSHOT);
-AddItem(TR("Показать окно программы"),_T("-"), IDM_SHOWAPPWINDOW);
-AddItem(TR("Настройки"),_T("settings"), IDM_SETTINGS);
-AddItem(TR("Вставить из буфера"),_T("paste"), IDM_PASTEFROMCLIPBOARD,VkKeyScan('v'), MOD_CONTROL);
-AddItem(TR("Информация о медиафайле"),_T("mediainfo"), IDM_MEDIAINFO);
-/*AddTrayAction(TR("Нет действия"), 0);
-		AddTrayAction(TR("Контекстное меню значка"), IDM_CONTEXTMENU);
-		AddTrayAction(TR("Загрузить файлы"), IDM_UPLOADFILES);
-		AddTrayAction(TR("Загрузить папку"), IDM_ADDFOLDER);
-		AddTrayAction(TR("Импорт видео"),IDM_IMPORTVIDEO);
-		AddTrayAction(TR("Скриншот"),IDM_SCREENSHOTDLG);
-		AddTrayAction(TR("Скриншот выделенной области"),IDM_REGIONSCREENSHOT);
-		AddTrayAction(TR("Скриншот всего экрана"),IDM_FULLSCREENSHOT);
-		AddTrayAction(TR("Скриншот текущего окна"),IDM_WINDOWSCREENSHOT);
-		AddTrayAction(TR("Показать окно программы"), IDM_SHOWAPPWINDOW);
-		AddTrayAction(TR("Настройки"), IDM_SETTINGS);
-		
-		AddTrayAction(TR("Выход"), IDM_EXIT);*/
+	AddItem(TR("Показать окно программы"),_T("-"), IDM_SHOWAPPWINDOW);
+	AddItem(TR("Настройки"),_T("settings"), IDM_SETTINGS);
+	AddItem(TR("Вставить из буфера"),_T("paste"), IDM_PASTEFROMCLIPBOARD,/*VkKeyScan('V')*/0x56, MOD_CONTROL);
+	AddItem(TR("Информация о медиафайле"),_T("mediainfo"), IDM_MEDIAINFO);
 }
-
-
 
 CHotkeyItem& CHotkeyList::getByFunc(const CString &func)
 {
@@ -63,17 +47,19 @@ CHotkeyItem& CHotkeyList::getByFunc(const CString &func)
 		if ((*this)[i].func == func) return  (*this)[i];
 	}
 }
-	bool CHotkeyList::operator==( const CHotkeyList& c)
+
+bool CHotkeyList::operator==( const CHotkeyList& c)
+{
+	if(GetCount() != c.GetCount()) return false;
+	for(int i=0; i<c.GetCount(); i++)
 	{
-		if(GetCount() != c.GetCount()) return false;
-		for(int i=0; i<c.GetCount(); i++)
-		{
-			if((*this)[i].localKey!=c[i].localKey || (*this)[i].globalKey!=c[i].globalKey)
+		if((*this)[i].localKey!=c[i].localKey || (*this)[i].globalKey!=c[i].globalKey)
 				return false;
-		//(*this)[i]= c[i];
-		}
-		return false;
+
 	}
+	return false;
+}
+
 void CHotkeyList::AddItem(CString name, CString func, DWORD commandId, WORD code, WORD modif)
 {
 	CHotkeyItem hi;
@@ -97,7 +83,6 @@ CHotkeyList& CHotkeyList::operator=( const CHotkeyList& c)
 	for(int i=0; i<c.GetCount(); i++)
 	{
 		Add( c[i]);
-		//(*this)[i]= c[i];
 	}
 	m_bChanged = true;
 	return *this;
@@ -173,15 +158,14 @@ LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	m_HotkeyList.SetColumnWidth(1,90);
 	m_HotkeyList.SetColumnWidth(2,90);
 	m_HotkeyList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
-		//SetWindowLong(GWL_EXSTYLE,m_HotkeyList.GetExStyle() |LVS_EX_FULLROWSELECT);
-	hotkeyList =Settings.Hotkeys;
+	hotkeyList = Settings.Hotkeys;
+
 	for(int i=0; i< hotkeyList.GetCount(); i++)
 	{
 		m_HotkeyList.AddItem(i,0,Lang.GetString(hotkeyList[i].name));		
 		m_HotkeyList.AddItem(i,1,hotkeyList[i].localKey.toString());
 		m_HotkeyList.AddItem(i,2,hotkeyList[i].globalKey.toString());
 	}
-
 	return 1;  // Let the system set the focus
 }
 
@@ -199,27 +183,23 @@ LRESULT CHotkeySettingsPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 bool CHotkeySettingsPage::Apply()
 {
 	if(!(Settings.Hotkeys == hotkeyList))
-	Settings.Hotkeys_changed = true;
-		Settings.Hotkeys = hotkeyList;
-		//Settings.ShowTrayIcon_changed = true;
+		Settings.Hotkeys_changed = true;
+	Settings.Hotkeys = hotkeyList;
 	return true;
 }
 
 LRESULT CHotkeySettingsPage::OnHotkeylistNmDblclk(LPNMHDR pnmh)
 {
-	//for ListView - (LPNMITEMACTIVATE)pnmh
-	//for StatusBar	- (LPNMMOUSE)pnmh
 	LPNMITEMACTIVATE ia = (LPNMITEMACTIVATE)pnmh;
 	if(ia)
-	//ia->iItem;
-	EditHotkey(ia->iItem);
+		EditHotkey(ia->iItem);
 
 	return 0;
 }
 
 void CHotkeySettingsPage::EditHotkey(int index)
 {
-	if(index<0) return ;
+	if(index < 0) return ;
 
 	CHotkeyEditor hotKeyDlg;
 	hotKeyDlg.m_data = hotkeyList[index];

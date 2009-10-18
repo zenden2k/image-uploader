@@ -140,7 +140,7 @@ class CMyXml: public  CMarkupMSXML
 			CString data = sz;
 			if(!data.IsEmpty())
 			{
-				data.Replace(_T(">\<"), _T(">\r\n<"));
+				data.Replace(_T("><"), _T(">\r\n<"));
 				pStrmDest->Write((LPCTSTR)data, data.GetLength()*sizeof(TCHAR),&res);
 				pStrmDest->Release();
 			}
