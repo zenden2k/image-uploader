@@ -53,8 +53,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 1,0,0,0
+ PRODUCTVERSION 1,0,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -69,14 +69,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "TODO: <Company name>"
-            VALUE "FileDescription", "TODO: <File description>"
-            VALUE "FileVersion", "1.0.0.1"
-            VALUE "LegalCopyright", "TODO: (c) <Company name>.  All rights reserved."
+            VALUE "Comments", "Image Uploader shell extension"
+            VALUE "FileVersion", "1.0.0.0"
             VALUE "InternalName", "ExplorerIntegration.dll"
+            VALUE "LegalCopyright", "Copyright 2009 by ZendeN"
             VALUE "OriginalFilename", "ExplorerIntegration.dll"
-            VALUE "ProductName", "TODO: <Product name>"
-            VALUE "ProductVersion", "1.0.0.1"
+            VALUE "ProductName", "Image Uploader"
+            VALUE "ProductVersion", "1, 0, 0, 0"
         END
     END
     BLOCK "VarFileInfo"
@@ -103,6 +102,18 @@ IDB_IULOGO              BITMAP                  "Res\\icon_shell.bmp"
 IDB_UPARROW             BITMAP                  "Res\\arrowup.bmp"
 IDB_INFO                BITMAP                  "Res\\icon-info.bmp"
 IDB_MOVIE               BITMAP                  "Res\\icon-movie.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICONMAIN            ICON                    "D:\\Projects\\Image Uploader\\image-uploader\\trunk\\Source\\res\\icon_main.ico"
+IDI_ICONINFO            ICON                    "Res\\icon-info-16px.ico"
+IDI_ICONMOVIE           ICON                    "Res\\icon-movie-16px.ico"
+IDI_ICONUPLOAD          ICON                    "Res\\icon-upload-16px.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

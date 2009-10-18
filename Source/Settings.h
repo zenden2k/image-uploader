@@ -24,7 +24,7 @@
 #include "langclass.h"
 #include "common/myxml.h"
 #include <map>
-
+BOOL IsVista();
 #ifndef IU_SHELLEXT
 #include "hotkeysettings.h"
 struct ImageSettingsStruct
@@ -69,7 +69,6 @@ struct TrayIconSettingsStruct
 };
 struct ThumbSettingsStruct
 {
-	
 	LOGFONT ThumbFont;
 	int LogoPosition;
 	int LogoBlend;
@@ -81,8 +80,8 @@ struct ThumbSettingsStruct
 	COLORREF FrameColor,ThumbColor1,ThumbColor2/*TextBackground ,*/,ThumbTextColor;
 	int ThumbAlpha;
 	BOOL TextOverThumb;
-		int ThumbWidth;
-BOOL UseServerThumbs;
+	int ThumbWidth;
+	BOOL UseServerThumbs;
 	BOOL UseThumbTemplate;
 	BOOL DrawFrame;
 	BOOL ThumbAddImageSize;
@@ -114,7 +113,6 @@ struct ConnectionSettingsStruct
 
 struct ScreenshotSettingsStruct
 {
-	//BOOL EntireScr;
 	int Format;
 	int Quality, Delay;
 };
@@ -175,24 +173,11 @@ class CSettings
 		bool LoadSettings(LPCTSTR szDir=NULL);
 		bool MacroLoadSettings(CMyXml &XML);
 		bool MacroSaveSettings(CMyXml &XML);
-int UploadBufferSize;
-	
-int ServerID,
-			QuickServerID;
-void ApplyRegSettingsRightNow();
-int FileServerID;
-CString ServerName, QuickServerName,FileServerName;
-	/**	void PutString(SettingIndex Index, LPCTSTR Name, LPCTSTR Value); 
-
-		LPTSTR GetString(LPCTSTR Name);
-		bool SetDirectory(LPCTSTR Directory);
-		bool LoadLanguage(LPTSTR Lang);
-		bool LoadList();*/
-
-	//	CAtlArray<SettingsListItem> SettingsList;
-		
-
-	
+	int UploadBufferSize;
+	int ServerID, QuickServerID;
+	void ApplyRegSettingsRightNow();
+	int FileServerID;
+	CString ServerName, QuickServerName,FileServerName;
 };
 
 extern CSettings Settings;

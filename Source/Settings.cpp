@@ -25,11 +25,6 @@
 #include "Common\MyXml.h"
 
 CSettings Settings;
-#ifndef IU_SHELLEXT
-#include "FloatingWindow.h"
-
-
-#define ASSERT
 BOOL IsVista()
 {
 	OSVERSIONINFO osver;
@@ -43,6 +38,12 @@ BOOL IsVista()
 
 	return FALSE;
 }
+#ifndef IU_SHELLEXT
+#include "FloatingWindow.h"
+
+
+#define ASSERT
+
 
 HRESULT 
 IsElevated( __out_opt BOOL * pbElevated ) //= NULL )
@@ -470,6 +471,13 @@ bool CSettings::SaveSettings()
 	}
 
 
+	Settings.Hotkeys_changed  = false;
+	return true;
+}
+
+// Next code is to be deleted in next releases
+void CSettings::ApplyRegSettingsRightNow() 
+{
 	// Applying Startup settings
 	if(ShowTrayIcon)
 	{
@@ -489,13 +497,6 @@ bool CSettings::SaveSettings()
 		RegDeleteValue(hKey,_T("ImageUploader"));
 	}
 
-	Settings.Hotkeys_changed  = false;
-	return true;
-}
-
-// Next code is to be deleted in next releases
-void CSettings::ApplyRegSettingsRightNow() 
-{
 	//MessageBox(0,_T("ApplyRegSettingsRightNow()"),0,0);
 	//if(SendToContextMenu_changed)
 	{

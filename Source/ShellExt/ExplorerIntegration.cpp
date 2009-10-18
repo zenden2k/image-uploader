@@ -58,13 +58,9 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRes
 			TCHAR szFileName[256], szPath[256];
 			GetModuleFileName(hInstance, szFileName, 1023);
 			ExtractFilePath(szFileName, szPath);
-			//CLang Lang;
 			Lang.SetDirectory(CString(szPath) + "Lang\\");
 			Lang.LoadList();
-
-			CSettings settings;
 			Settings.LoadSettings(GetDllFolder());
-			
 			Lang.LoadLanguage(Settings.Language);
 		}
 

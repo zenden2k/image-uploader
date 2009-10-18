@@ -805,8 +805,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,2,0,0
- PRODUCTVERSION 1,2,0,0
+ FILEVERSION 1,2,1,0
+ PRODUCTVERSION 1,2,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -822,12 +822,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "Image Uploader"
-            VALUE "FileVersion", "1, 2, 0, 0"
+            VALUE "FileVersion", "1, 2, 1, 0"
             VALUE "InternalName", "Image Uploader"
             VALUE "LegalCopyright", "Copyright 2009 by ZendeN"
             VALUE "OriginalFilename", "Image Uploader.exe"
             VALUE "ProductName", "Image Uploader"
-            VALUE "ProductVersion", "1, 2, 0, 0"
+            VALUE "ProductVersion", "1, 2, 1, 0"
         END
     END
     BLOCK "VarFileInfo"
