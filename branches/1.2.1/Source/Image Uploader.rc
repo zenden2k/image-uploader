@@ -208,7 +208,7 @@ BEGIN
     CONTROL         "Обводить в рамку",IDC_DRAWFRAME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,212,152,122,10
     CTEXT           "Выберите сервер для загрузки изображений:",IDC_SELECTSERVERLABEL,23,187,198,8
     COMBOBOX        IDC_SERVERLIST,223,185,113,129,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "...",IDC_LOGINBUTTON,339,185,17,14
+    PUSHBUTTON      "...",IDC_LOGINBUTTON,340,185,17,14
     LTEXT           "Нажмите кнопку ""Загрузить"" чтобы загрузить изображения на выбранный вами сервер.",IDC_PRESSUPLOADBUTTON,33,220,339,20
     CONTROL         "Надпись поверх эскиза",IDC_TEXTOVERTHUMB2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,48,165,106,10
     CTEXT           "сервер для любых типов файлов:",IDC_STATIC,23,202,198,8
