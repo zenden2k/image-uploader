@@ -26,7 +26,8 @@
 //#include "floatingwindow.h"
 // CHotkeySettingsPage
 
-
+#define IDM_CLEARHOTKEY 10000
+#define IDM_CLEARALLHOTKEYS IDM_CLEARHOTKEY + 1
 
 #include "hotkeyeditor.h"
 #include <atlctrls.h>
@@ -43,6 +44,7 @@ public:
 	bool operator==( const CHotkeyList& );
 	CString toString();
 	bool DeSerialize(const CString &data);
+	int getFuncIndex(const CString &func);
 		
 };
 
@@ -57,10 +59,12 @@ public:
 
     BEGIN_MSG_MAP(CHotkeySettingsPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-        COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-        COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-		  
+		MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
+		COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
+		COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)  
 		COMMAND_HANDLER(IDC_EDITHOTKEY, BN_CLICKED, OnEditHotkeyBnClicked)
+		COMMAND_HANDLER(IDM_CLEARHOTKEY,BN_CLICKED, OnClearHotkey)
+		COMMAND_HANDLER(IDM_CLEARALLHOTKEYS,BN_CLICKED, OnClearAllHotkeys)
 		NOTIFY_HANDLER_EX(IDC_HOTKEYLIST, NM_DBLCLK, OnHotkeylistNmDblclk)
 		
     END_MSG_MAP()
@@ -70,7 +74,10 @@ public:
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnClearHotkey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnClearAllHotkeys(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnEditHotkeyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	//CSavingOptions *so;
 	bool Apply();

@@ -33,7 +33,9 @@ class CWelcomeDlg ;
 #include <atlcrack.h>
 
 class CWelcomeDlg : 
-	public CDialogImpl<CWelcomeDlg>, public CWinDataExchange<CWelcomeDlg>, public CWizardPage, public CRegionSelectCallback
+	public CDialogImpl<CWelcomeDlg>, 
+	public CWinDataExchange<CWelcomeDlg>, 
+	public CWizardPage
 {
 public:
 	 CWelcomeDlg();
@@ -91,8 +93,6 @@ public:
 	HBRUSH br; 
 	bool OnShow();
 	bool QuickRegionPrint;
-	void OnScreenshotFinished(int Result);
-	void OnScreenshotSaving(LPTSTR FileName, Bitmap* Bm);
 	CMyImage LeftImage;CMyImage LogoImage;
 };
 

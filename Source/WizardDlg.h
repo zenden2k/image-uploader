@@ -91,6 +91,7 @@ public:
 	enum { IDD = IDD_WIZARDDLG };
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual BOOL OnIdle();
+	CString m_bCurrentFunc;
 
 	BEGIN_UPDATE_UI_MAP(CWizardDlg)
 	END_UPDATE_UI_MAP()
@@ -154,18 +155,19 @@ public:
 	long m_lRef;
 	bool QuickUploadMarker;
 	TCHAR LastVideoFile[MAX_PATH];
-
+	bool m_bShowAfter;
 	// functions
 	bool funcAddImages();
 	bool funcImportVideo();
 	bool funcScreenshotDlg();
-	bool funcRegionScreenshot();
+	bool funcRegionScreenshot(bool ShowAfter=true);
 	bool funcFullScreenshot();
-	bool funcWindowScreenshot();
+	bool funcWindowScreenshot(bool Delay=false);
 	bool funcAddFolder();
 	bool funcPaste();
 	bool funcSettings();
 	bool funcMediaInfo();
+	bool funcAddFiles();
 	// end of functions
 	bool executeFunc(CString funcName);
 
@@ -210,6 +212,7 @@ HACCEL hLocalHotkeys;
 	bool RegisterLocalHotkeys();
 	bool UnRegisterLocalHotkeys();
 	bool m_bShowWindow;
+	bool m_bHandleCmdLineFunc;
 };
 
 
