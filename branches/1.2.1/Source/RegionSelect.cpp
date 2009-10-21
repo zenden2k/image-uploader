@@ -71,7 +71,7 @@ LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 	RECT rc;
 	GetClientRect(&rc);
 
-	BitBlt(dc,0,0,1280,1024,memDC2,0,0,SRCCOPY);
+	BitBlt(dc,0,0,rc.right,rc.bottom,memDC2,0,0,SRCCOPY);
 	EndPaint(&ps);
 
 	return 0;
@@ -187,7 +187,11 @@ void CRegionSelect::OnTimer(UINT_PTR nIDEvent)
 	HBITMAP bm = ::CreateCompatibleBitmap(dstDC, sz.cx, sz.cy);
 	oldbm = (HBITMAP)::SelectObject(memDC,bm);
 	if(!::BitBlt(memDC, 0, 0, sz.cx, sz.cy, srcDC, xshift, yshift, SRCCOPY|CAPTUREBLT))
-		return ;//ScreenshotError();
+	{
+		if(m_pCallBack)  
+		m_pCallBack->OnScreenshotFinished((int)0);;//ScreenshotError();
+		return ;
+	}
 
 	TCHAR szBuffer[256];
 

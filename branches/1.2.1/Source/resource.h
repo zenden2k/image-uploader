@@ -328,13 +328,15 @@
 #define ID_0_OPENFINOLDER               32794
 #define IDM_OPENFINOLDER                32795
 #define IDM_OPENINFOLDER                32796
+#define ID_Menu                         32797
+#define IDM_ADDFILES                    32798
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        235
-#define _APS_NEXT_COMMAND_VALUE         32797
+#define _APS_NEXT_COMMAND_VALUE         32799
 #define _APS_NEXT_CONTROL_VALUE         1198
 #define _APS_NEXT_SYMED_VALUE           120
 #endif

@@ -26,7 +26,7 @@
 
 CTrayActions::CTrayActions()
 	{
-		AddTrayAction(TR("Нет действия"), 0);
+		/*AddTrayAction(TR("Нет действия"), 0);
 		AddTrayAction(TR("Контекстное меню значка"), IDM_CONTEXTMENU);
 		AddTrayAction(TR("Загрузить файлы"), IDM_UPLOADFILES);
 		AddTrayAction(TR("Загрузить папку"), IDM_ADDFOLDER);
@@ -38,7 +38,7 @@ CTrayActions::CTrayActions()
 		AddTrayAction(TR("Показать окно программы"), IDM_SHOWAPPWINDOW);
 		AddTrayAction(TR("Настройки"), IDM_SETTINGS);
 		
-		AddTrayAction(TR("Выход"), IDM_EXIT);
+		AddTrayAction(TR("Выход"), IDM_EXIT);*/
 	
 	}
 
@@ -63,14 +63,14 @@ LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 	TRC(IDC_MIDDLEBUTTONCLICKLABEL,"Клик средней кнопкой");
 	TRC(IDC_RIGHTBUTTONCLICKLABEL,"Клик правой кнопкой");
 	TRC(IDC_ONEINSTANCE,"Не запускать новые копии программы из трея");
-	CTrayActions trayActions;
-	for(int i=0; i< trayActions.GetCount(); i++)
+	//CTrayActions trayActions;
+	for(int i=0; i< Settings.Hotkeys/*trayActions*/.GetCount(); i++)
 	{
-		SendDlgItemMessage(IDC_LEFTBUTTONDOUBLECLICKCOMBO, CB_ADDSTRING,0, (LPARAM)(LPCTSTR)trayActions[i].text);
-		SendDlgItemMessage(IDC_LEFTBUTTONCLICKCOMBO, CB_ADDSTRING,0, (LPARAM)(LPCTSTR)trayActions[i].text);
-		SendDlgItemMessage(IDC_MIDDLEBUTTONCLICKCOMBO, CB_ADDSTRING,0, (LPARAM)(LPCTSTR)trayActions[i].text);
+		SendDlgItemMessage(IDC_LEFTBUTTONDOUBLECLICKCOMBO, CB_ADDSTRING,0, (LPARAM)(LPCTSTR)Settings.Hotkeys[i].GetDisplayName());
+		SendDlgItemMessage(IDC_LEFTBUTTONCLICKCOMBO, CB_ADDSTRING,0, (LPARAM)(LPCTSTR)Settings.Hotkeys[i].GetDisplayName());
+		SendDlgItemMessage(IDC_MIDDLEBUTTONCLICKCOMBO, CB_ADDSTRING,0, (LPARAM)(LPCTSTR)Settings.Hotkeys[i].GetDisplayName());
 	
-		SendDlgItemMessage(IDC_RIGHTBUTTONCLICKCOMBO, CB_ADDSTRING,0, (LPARAM)(LPCTSTR)trayActions[i].text);
+		SendDlgItemMessage(IDC_RIGHTBUTTONCLICKCOMBO, CB_ADDSTRING,0, (LPARAM)(LPCTSTR)Settings.Hotkeys[i].GetDisplayName());
 	
 	}
 

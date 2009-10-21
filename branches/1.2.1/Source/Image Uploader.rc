@@ -206,14 +206,14 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,212,139,143,10
     CONTROL         " Размер картинки на эскизе",IDC_ADDFILESIZE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,48,151,158,10
     CONTROL         "Обводить в рамку",IDC_DRAWFRAME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,212,152,122,10
-    CTEXT           "Выберите сервер для загрузки изображений:",IDC_SELECTSERVERLABEL,23,187,198,8
-    COMBOBOX        IDC_SERVERLIST,223,185,113,129,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "...",IDC_LOGINBUTTON,340,185,17,14
+    CTEXT           "Выберите сервер для загрузки изображений:",IDC_SELECTSERVERLABEL,10,187,198,8
+    COMBOBOX        IDC_SERVERLIST,213,185,101,129,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Авторизация",IDC_LOGINBUTTON,318,184,58,14
     LTEXT           "Нажмите кнопку ""Загрузить"" чтобы загрузить изображения на выбранный вами сервер.",IDC_PRESSUPLOADBUTTON,33,220,339,20
     CONTROL         "Надпись поверх эскиза",IDC_TEXTOVERTHUMB2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,48,165,106,10
-    CTEXT           "сервер для любых типов файлов:",IDC_STATIC,23,202,198,8
-    COMBOBOX        IDC_SERVERLIST2,223,202,113,129,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "...",IDC_LOGINBUTTON2,340,202,17,13
+    CTEXT           "сервер для любых типов файлов:",IDC_STATIC,10,202,198,8
+    COMBOBOX        IDC_SERVERLIST2,213,202,101,129,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Авторизация",IDC_LOGINBUTTON2,318,202,58,14
 END
 
 IDD_IMAGEVIEW DIALOGEX 0, 0, 186, 95
@@ -251,24 +251,24 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,148,76,53,15
 END
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 199, 143
+IDD_ABOUTBOX DIALOGEX 0, 0, 199, 154
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About Image Uploader"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
-    DEFPUSHBUTTON   "&OK",IDOK,140,125,52,15
+    DEFPUSHBUTTON   "&OK",IDOK,140,136,52,15
     LTEXT           "Image Uploader",IDC_IMAGEUPLOADERLABEL,76,26,112,17
     GROUPBOX        "",IDC_STATIC,5,3,187,74
     CTEXT           "Copyright ZendeN 2007-2009.  All rights reserved.",IDC_STATIC,12,44,174,15
     LTEXT           "zenden2k@gmail.com",IDC_LINK3,100,61,70,8
     CTEXT           "E-mail for contacts:",IDC_CONTACTEMAIL,13,61,83,8
     CTEXT           "Beta-Testers:",IDC_BETATESTERS,8,94,80,8
-    LTEXT           "Mishunika, Testings",IDC_STATIC,93,94,92,8
-    GROUPBOX        "Thanks to:",IDC_THANKSTOGROUP,5,83,187,36
+    LTEXT           "CKA3O4H1K (from ru-board.com)",IDC_STATIC,93,94,92,20
+    GROUPBOX        "Thanks to:",IDC_THANKSTOGROUP,5,83,187,50
     CONTROL         214,IDC_STATICLOGO,"Static",SS_BITMAP,26,11,38,32
     LTEXT           "Image Uploader",IDC_IMAGEUPLOADERLABEL2,76,14,112,12
-    CTEXT           "Переводчикам:",IDC_TRANSLATERS,15,106,73,8
-    LTEXT           "Mishunika, Adrianis",IDC_STATIC,93,106,62,8
+    CTEXT           "Переводчикам:",IDC_TRANSLATERS,15,118,73,8
+    LTEXT           "Mishunika, Adrianis",IDC_STATIC,93,118,62,8
 END
 
 IDD_MAINDLG DIALOGEX 0, 0, 433, 266
@@ -445,7 +445,7 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    CONTROL         "",IDC_HOTKEYLIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,4,11,256,166
+    CONTROL         "",IDC_HOTKEYLIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,4,4,256,166
     PUSHBUTTON      "Edit",IDC_EDITHOTKEY,3,180,71,14
     LTEXT           "Attention!",IDC_ATTENTION,8,202,246,34
 END
@@ -563,7 +563,7 @@ BEGIN
         LEFTMARGIN, 5
         RIGHTMARGIN, 192
         TOPMARGIN, 7
-        BOTTOMMARGIN, 140
+        BOTTOMMARGIN, 151
     END
 
     IDD_MAINDLG, DIALOG
@@ -685,6 +685,7 @@ BEGIN
     POPUP "0"
     BEGIN
         MENUITEM "1",                           IDC_ADDIMAGES
+        MENUITEM "Add files",                   IDM_ADDFILES
         MENUITEM "2",                           IDM_ADDFOLDER
         MENUITEM "3",                           IDC_PASTE
         MENUITEM SEPARATOR

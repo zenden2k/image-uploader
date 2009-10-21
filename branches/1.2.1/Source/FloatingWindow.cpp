@@ -9,19 +9,20 @@ CFloatingWindow::CFloatingWindow()
 {
 	EnableClicks = true;
 	hMutex = NULL;
+	m_PrevActiveWindow = 0;
+	m_bStopCapturingWindows = false;
 }
 
 CFloatingWindow::~CFloatingWindow()
 {
 	CloseHandle(hMutex);
+	m_hWnd = 0;
 }
 
 
 
 LRESULT CFloatingWindow::OnClose(void)
 {
-	//MessageBox(_T("Exiting:("));
-	//PostQuitMessage(0);
 	return 0;
 }
 
@@ -42,8 +43,6 @@ bool MyInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP
 	MenuItem.hbmpUnchecked = bm;
 	MenuItem.dwTypeData = (LPWSTR)szTitle;
 	return InsertMenuItem(hMenu, pos, TRUE, &MenuItem);
-	
-
 }
 
 
@@ -52,8 +51,6 @@ LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
 		IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
 	SetIcon(hIconSmall, FALSE);
-
-	
 
 	RegisterHotkeys();
 	InstallIcon(APPNAME,hIconSmall,/*TrayMenu*/0);
@@ -67,48 +64,46 @@ LRESULT CFloatingWindow::OnExit(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 }
 
 LRESULT CFloatingWindow::OnTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	if(!EnableClicks ) return 0;
+	if (LOWORD(lParam) == WM_LBUTTONDOWN)
 	{
-		CTrayActions trayActions;
-		// Is this the ID we want?
-/*		if (wParam != m_nid.uID)
-			return 0;*/
-		//T* pT = static_cast<T*>(this);
-		// Was the right-button clicked?
-
-		if(!EnableClicks ) return 0;
-		if (LOWORD(lParam) == WM_RBUTTONUP)
-		{
-			SendMessage(WM_COMMAND, MAKEWPARAM(trayActions[Settings.TrayIconSettings.RightClickCommand].commandId,0));
-		}
-		else if (LOWORD(lParam) == WM_LBUTTONDBLCLK)
-		{
-			EnableClicks = false;
-			KillTimer(1);
-			SetTimer(2, GetDoubleClickTime());
-			//MessageBox(_T("double"));
-			SendMessage(WM_COMMAND, MAKEWPARAM(trayActions[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId,0));
-	
-		}
-		else if (LOWORD(lParam) == WM_LBUTTONUP)
-		{
-			if(!trayActions[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId)
-			SendMessage(WM_COMMAND, MAKEWPARAM(trayActions[Settings.TrayIconSettings.LeftClickCommand].commandId,0));
-	
-			else
-			SetTimer(1, (UINT) (1.2*GetDoubleClickTime()));
-			
-			//MessageBox(_T("single"));
-			//if(trayActions[Settings.TrayIconSettings.LeftClickCommand].commandId)
-			//SendMessage(WM_COMMAND, MAKEWPARAM(trayActions[Settings.TrayIconSettings.LeftClickCommand].commandId,0));
-	
-		}
-		else if (LOWORD(lParam) == WM_MBUTTONUP)
-		{
-			SendMessage(WM_COMMAND, MAKEWPARAM(trayActions[Settings.TrayIconSettings.MiddleClickCommand].commandId,0));
-	
-		}
-		return 0;
+		m_bStopCapturingWindows = true;
 	}
+	if (LOWORD(lParam) == WM_MOUSEMOVE)
+	{
+		if(!m_bStopCapturingWindows)
+		{
+			HWND wnd =  GetForegroundWindow();
+			if(wnd != m_hWnd)
+			m_PrevActiveWindow = GetForegroundWindow();
+		}
+	}
+	if (LOWORD(lParam) == WM_RBUTTONUP)
+	{
+		SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys[Settings.TrayIconSettings.RightClickCommand].commandId,0));
+	}
+	else if (LOWORD(lParam) == WM_LBUTTONDBLCLK)
+	{
+		EnableClicks = false;
+		KillTimer(1);
+		SetTimer(2, GetDoubleClickTime());
+		SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId,0));
+	}
+	else if (LOWORD(lParam) == WM_LBUTTONUP)
+	{
+		m_bStopCapturingWindows = false;
+		if(!Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId)
+			SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys[Settings.TrayIconSettings.LeftClickCommand].commandId,0));
+		else
+			SetTimer(1, (UINT) (1.2*GetDoubleClickTime()));
+	}
+	else if (LOWORD(lParam) == WM_MBUTTONUP)
+	{
+		SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys[Settings.TrayIconSettings.MiddleClickCommand].commandId,0));
+	}
+	return 0;
+}
 
 LRESULT CFloatingWindow::OnMenuSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
@@ -120,20 +115,14 @@ LRESULT CFloatingWindow::OnMenuSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl
 
 LRESULT CFloatingWindow::OnCloseTray(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	//if(CmdLine.IsOption(_T("tray"))) 
-	{
-		ShowWindow(SW_HIDE);
-		pWizardDlg->ShowWindow(SW_SHOW);
-		CloseHandle(hMutex);
-		RemoveIcon();
-		UnRegisterHotkeys();
-		DestroyWindow();
-		hMutex = NULL;
-		m_hWnd=0;
-	}
-	/*else 
-		if(IsEnabled
-	PostQuitMessage(0);*/
+	ShowWindow(SW_HIDE);
+	pWizardDlg->ShowWindow(SW_SHOW);
+	CloseHandle(hMutex);
+	RemoveIcon();
+	UnRegisterHotkeys();
+	DestroyWindow();
+	hMutex = NULL;
+	m_hWnd = 0;
 	return 0;
 }
 
@@ -157,7 +146,14 @@ LRESULT CFloatingWindow::OnImportvideo(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 	return 0;
 }
 
-LRESULT CFloatingWindow::OnUploadfiles(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+LRESULT CFloatingWindow::OnUploadFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+{
+	if(pWizardDlg->executeFunc(_T("addfiles")))
+		pWizardDlg->ShowWindow(SW_SHOW);
+	return 0;
+}
+
+LRESULT CFloatingWindow::OnUploadImages(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	if(pWizardDlg->executeFunc(_T("addimages")))
 		pWizardDlg->ShowWindow(SW_SHOW);
@@ -173,7 +169,7 @@ LRESULT CFloatingWindow::OnScreenshotDlg(WORD wNotifyCode, WORD wID, HWND hWndCt
 
 LRESULT CFloatingWindow::OnRegionScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-	if(pWizardDlg->executeFunc(_T("regionscreenshot")));
+	if(pWizardDlg->executeFunc(_T("regionscreenshot_dontshow")));
 		//pWizardDlg->ShowWindow(SW_SHOW);
 	return 0;
 }
@@ -187,8 +183,9 @@ LRESULT CFloatingWindow::OnFullScreenshot(WORD wNotifyCode, WORD wID, HWND hWndC
 
 LRESULT CFloatingWindow::OnWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-	if(pWizardDlg->executeFunc(_T("windowscreenshot")));
-		//pWizardDlg->ShowWindow(SW_SHOW);
+	if(m_PrevActiveWindow) SetForegroundWindow(m_PrevActiveWindow);
+	if(pWizardDlg->executeFunc(_T("windowscreenshot_delayed")));
+
 	return 0;
 }
 
@@ -202,7 +199,7 @@ LRESULT CFloatingWindow::OnAddFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 LRESULT CFloatingWindow::OnShowAppWindow(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	if(pWizardDlg->IsWindowEnabled())
-		pWizardDlg->ShowWindow(SW_SHOW);
+		pWizardDlg->ShowWindow(SW_SHOWNORMAL);
 	else if(pWizardDlg->IsWindowVisible())
 		pWizardDlg->SetActiveWindow();
 	return 0;
@@ -244,10 +241,10 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 	MyInsertMenu(TrayMenu,i++,0,0);
 	MyInsertMenu(TrayMenu,i++,IDM_EXIT,TR("Выход"));
 	m_hTrayIconMenu = TrayMenu;
-	CTrayActions trayActions;
-	if(trayActions[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId)
+	//CTrayActions trayActions;
+	if(Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId)
 	{
-		SetMenuDefaultItem(TrayMenu, trayActions[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId, false);
+		SetMenuDefaultItem(TrayMenu, Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId, false);
 	}
 
 
@@ -259,6 +256,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 	CPoint pos;
 	GetCursorPos(&pos);
 	// Make app the foreground
+	//HWND prev = GetActiveWindow();
 	SetForegroundWindow(m_hWnd);
 	// Set the default menu item
 	/*			if (m_nDefault == 0)
@@ -269,6 +267,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 	oPopup.TrackPopupMenu(TPM_LEFTALIGN, pos.x, pos.y, m_hWnd);
 	// BUGFIX: See "PRB: Menus for Notification Icons Don't Work Correctly"
 	PostMessage(WM_NULL);
+	//::SetActiveWindow(prev);
 	// Done
 	return 0;
 }
@@ -278,8 +277,8 @@ LRESULT CFloatingWindow::OnTimer(UINT id)
 	if(id == 1)
 	{
 		KillTimer(1);
-		CTrayActions trayActions;
-		SendMessage(WM_COMMAND, MAKEWPARAM(trayActions[Settings.TrayIconSettings.LeftClickCommand].commandId,0));
+		//CTrayActions trayActions;
+		SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys[Settings.TrayIconSettings.LeftClickCommand].commandId,0));
 
 	}
 	if(id == 2)
@@ -349,10 +348,17 @@ void  CFloatingWindow::RegisterHotkeys()
 LRESULT CFloatingWindow::OnHotKey(int HotKeyID, UINT flags, UINT vk)
 {
 	if(HotKeyID <0 || HotKeyID > m_hotkeys.GetCount()-1) return 0;
-	SetActiveWindow();
-	SetForegroundWindow(m_hWnd);
-	SendMessage(WM_COMMAND, MAKEWPARAM(m_hotkeys[HotKeyID].commandId,0));
-	
+
+	if(m_hotkeys[HotKeyID].func == _T("windowscreenshot"))
+	{
+		pWizardDlg->executeFunc(_T("windowscreenshot"));
+	}
+	else
+	{
+		SetActiveWindow();
+		SetForegroundWindow(m_hWnd);
+		SendMessage(WM_COMMAND, MAKEWPARAM(m_hotkeys[HotKeyID].commandId,0));
+	}
 	//MessageBox(m_hotkeys[HotKeyID].name);
 	return 0;
 }

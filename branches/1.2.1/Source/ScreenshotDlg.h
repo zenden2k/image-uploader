@@ -41,6 +41,7 @@ class CScreenshotDlg :
 		bool m_bExpanded;
 		bool m_bEntireScreen;
 		int m_Action;
+		bool m_bDelay;
 		//CWizardDlg *WizardDlg;
 		int nFullWindowHeight;
 		CScreenshotDlg();
@@ -81,7 +82,7 @@ class CScreenshotDlg :
 		LRESULT OnEnter(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 			
 		LRESULT OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);
-		int ScreenshotError();
+		int ScreenshotError(LPCTSTR ErrorMsg=NULL);
 		CHyperLinkControl CommandBox;
 		void OnScreenshotFinished(int Result);
 		void OnScreenshotSaving(LPTSTR szFileName, Bitmap* Bm);

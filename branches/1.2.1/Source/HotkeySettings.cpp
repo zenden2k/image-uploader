@@ -26,18 +26,22 @@
 CHotkeyList::CHotkeyList()
 {
 	m_bChanged = false;
-	AddItem(TR("Контекстное меню значка"), _T(""), IDM_CONTEXTMENU);
+	AddItem(TR("Нет действия"), _T(""), 0);
+	AddItem(TR("Контекстное меню значка"), _T("contextmenu"), IDM_CONTEXTMENU);
+	AddItem(TR("Загрузить изображения"),_T("addimages"), IDM_UPLOADIMAGES);
 	AddItem(TR("Загрузить файлы"),_T("addimages"), IDM_UPLOADFILES);
 	AddItem(TR("Загрузить папку"),_T("addfolder"), IDM_ADDFOLDER);
 	AddItem(TR("Импорт видео"),_T("importvideo"), IDM_IMPORTVIDEO);
 	AddItem(TR("Скриншот"),_T("screenshotdlg"), IDM_SCREENSHOTDLG);
 	AddItem(TR("Скриншот выделенной области"),_T("regionscreenshot"), IDM_REGIONSCREENSHOT);
 	AddItem(TR("Скриншот всего экрана"),_T("fullscreenshot"), IDM_FULLSCREENSHOT);
-	AddItem(TR("Скриншот текущего окна"),_T("windowscreenshot"), IDM_FULLSCREENSHOT);
-	AddItem(TR("Показать окно программы"),_T("-"), IDM_SHOWAPPWINDOW);
+	AddItem(TR("Скриншот текущего окна"),_T("windowscreenshot"), IDM_WINDOWSCREENSHOT);
+	AddItem(TR("Показать окно программы"),_T("showmainwindow"), IDM_SHOWAPPWINDOW);
 	AddItem(TR("Настройки"),_T("settings"), IDM_SETTINGS);
-	AddItem(TR("Вставить из буфера"),_T("paste"), IDM_PASTEFROMCLIPBOARD,/*VkKeyScan('V')*/0x56, MOD_CONTROL);
+	AddItem(TR("Вставить из буфера"),_T("paste"), IDM_PASTEFROMCLIPBOARD,0x56, MOD_CONTROL); // Ctrl+V keyboard shortcut
 	AddItem(TR("Информация о медиафайле"),_T("mediainfo"), IDM_MEDIAINFO);
+	AddItem(TR("Выход"),_T("mediainfo"), IDM_EXIT);
+	
 }
 
 CHotkeyItem& CHotkeyList::getByFunc(const CString &func)
@@ -47,6 +51,16 @@ CHotkeyItem& CHotkeyList::getByFunc(const CString &func)
 		if ((*this)[i].func == func) return  (*this)[i];
 	}
 }
+
+int CHotkeyList::getFuncIndex(const CString &func)
+{
+	for(int i=0; i<GetCount(); i++)
+	{
+		if ((*this)[i].func == func) return  i;
+	}
+	return -1;
+}
+
 
 bool CHotkeyList::operator==( const CHotkeyList& c)
 {
@@ -91,9 +105,10 @@ CHotkeyList& CHotkeyList::operator=( const CHotkeyList& c)
 CString CHotkeyList::toString()
 {
 	CString result;
-	for(int i=0; i<GetCount(); i++)
+	for(int i=1; i<GetCount(); i++)
 	{
-		result+=		(*this)[i].localKey.Serialize()+_T(",")+(*this)[i].globalKey.Serialize()+_T(";");
+		if(!((*this)[i].IsNull()))
+		result+=		CString((*this)[i].func) +_T("=")+(*this)[i].localKey.Serialize()+_T(",")+(*this)[i].globalKey.Serialize()+_T(";");
 	}
 	//MessageBox(0, result,0,0);
 	return result;
@@ -106,31 +121,32 @@ bool CHotkeyList::DeSerialize(const CString &data)
 	
 	while(ExtractStrFromList(
            data /* Source string */,
-            i, /* Zero based item index */
+            i++, /* Zero based item index */
             hotkey /* Destination buffer */,
-            sizeof(hotkey), /* Length in characters of destionation buffer */
+            sizeof(hotkey)/sizeof(TCHAR), /* Length in characters of destionation buffer */
             _T(""),
             _T(';')))
 	{
-		
+		TCHAR funcName[30];
 		TCHAR localKeyStr[20],globalKeyStr[20];
-		ExtractStrFromList(
-           hotkey /* Source string */,
-            0, /* Zero based item index */
-           localKeyStr /* Destination buffer */,
-            sizeof(localKeyStr), /* Length in characters of destionation buffer */
-            _T(""),
-            _T(','));
-		(*this)[i].localKey.DeSerialize(localKeyStr);
-		ExtractStrFromList(
-           hotkey /* Source string */,
-            1, /* Zero based item index */
-            globalKeyStr /* Destination buffer */,
-            sizeof(globalKeyStr), /* Length in characters of destionation buffer */
-            _T(""),
-            _T(','));
-		(*this)[i].globalKey.DeSerialize(globalKeyStr);
-		i++;
+
+		ExtractStrFromList(hotkey , 0, funcName,sizeof(funcName)/sizeof(TCHAR), _T(""),_T('='));
+		//(*this)[i].localKey.DeSerialize(localKeyStr);
+
+		int cur = getFuncIndex(funcName);
+		if(cur<0) continue;
+		
+		//(*this)[i].func = funcName;
+
+		ExtractStrFromList(hotkey , 1, funcName,sizeof(funcName)/sizeof(TCHAR), _T(""),_T('='));
+		(*this)[cur].localKey.DeSerialize(localKeyStr);
+
+		ExtractStrFromList(funcName , 0, localKeyStr,sizeof(localKeyStr)/sizeof(TCHAR), _T(""),_T(','));
+		(*this)[cur].localKey.DeSerialize(localKeyStr);
+		
+		ExtractStrFromList(funcName ,1, globalKeyStr ,sizeof(globalKeyStr)/sizeof(TCHAR),_T(""),_T(','));
+		(*this)[cur].globalKey.DeSerialize(globalKeyStr);
+		
 	}
 	/* Character to be separator in list */
 	return true;
@@ -160,11 +176,11 @@ LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	m_HotkeyList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 	hotkeyList = Settings.Hotkeys;
 
-	for(int i=0; i< hotkeyList.GetCount(); i++)
+	for(int i=0; i<hotkeyList.GetCount()-1; i++)
 	{
-		m_HotkeyList.AddItem(i,0,Lang.GetString(hotkeyList[i].name));		
-		m_HotkeyList.AddItem(i,1,hotkeyList[i].localKey.toString());
-		m_HotkeyList.AddItem(i,2,hotkeyList[i].globalKey.toString());
+		m_HotkeyList.AddItem(i, 0, hotkeyList[i+1].GetDisplayName());		
+		m_HotkeyList.AddItem(i, 1, hotkeyList[i+1].localKey.toString());
+		m_HotkeyList.AddItem(i, 2, hotkeyList[i+1].globalKey.toString());
 	}
 	return 1;  // Let the system set the focus
 }
@@ -202,10 +218,10 @@ void CHotkeySettingsPage::EditHotkey(int index)
 	if(index < 0) return ;
 
 	CHotkeyEditor hotKeyDlg;
-	hotKeyDlg.m_data = hotkeyList[index];
+	hotKeyDlg.m_data = hotkeyList[index+1];
 	if(hotKeyDlg.DoModal(m_hWnd)==IDOK)
 	{
-		hotkeyList[index] = hotKeyDlg.m_data ;
+		hotkeyList[index+1] = hotKeyDlg.m_data ;
 		m_HotkeyList.AddItem(index,1,hotKeyDlg.m_data.localKey.toString());
 		m_HotkeyList.AddItem(index,2,hotKeyDlg.m_data.globalKey.toString());
 	}
@@ -214,6 +230,58 @@ void CHotkeySettingsPage::EditHotkey(int index)
 LRESULT CHotkeySettingsPage::OnEditHotkeyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	int index = m_HotkeyList.GetSelectedIndex();
-	EditHotkey(index);
+	if(index>=0)
+		EditHotkey(index);
+	return 0;
+}
+
+LRESULT CHotkeySettingsPage::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	MENUITEMINFO mi;
+	HWND 	hwnd = (HWND) wParam;  
+	POINT ClientPoint, ScreenPoint;
+
+	if(lParam == -1) 
+	{
+		ClientPoint.x = 0;
+		ClientPoint.y = 0;
+		ScreenPoint = ClientPoint;
+		::ClientToScreen(hwnd, &ScreenPoint);
+	}
+	else
+	{
+		ScreenPoint.x = LOWORD(lParam); 
+		ScreenPoint.y = HIWORD(lParam); 
+		ClientPoint = ScreenPoint;
+		::ScreenToClient(hwnd, &ClientPoint);
+	}
+	HMENU TrayMenu = ::CreatePopupMenu();
+	IUInsertMenu(TrayMenu, 0, IDM_CLEARHOTKEY, TR("Clear")); 
+	IUInsertMenu(TrayMenu, 1, IDM_CLEARALLHOTKEYS, TR("Clear all")); 
+	::TrackPopupMenu(TrayMenu, TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, 0,m_hWnd,0);
+	return 0;
+}
+
+
+LRESULT CHotkeySettingsPage::OnClearHotkey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	int index = m_HotkeyList.GetSelectedIndex();
+	if(index)
+	{
+		hotkeyList[index+1].Clear();
+		m_HotkeyList.SetItem(index, 1, LVIF_TEXT,_T(""),0,0,0,0);
+		m_HotkeyList.SetItem(index, 2, LVIF_TEXT,_T(""),0,0,0,0);
+	}
+	return 0;
+}
+
+LRESULT CHotkeySettingsPage::OnClearAllHotkeys(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	for(int i=0; i<hotkeyList.GetCount()-1; i++)
+	{
+		hotkeyList[i+1].Clear();
+		m_HotkeyList.SetItem(i, 1, LVIF_TEXT,_T(""),0,0,0,0);
+		m_HotkeyList.SetItem(i, 2, LVIF_TEXT,_T(""),0,0,0,0);
+	}
 	return 0;
 }

@@ -48,7 +48,7 @@ WORD ConvertPairToHotkey(MYHOTKEY key )
 LRESULT CHotkeyEditor::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	DoDataExchange();
-	SetWindowText(Lang.GetString(m_data.name));
+	SetWindowText(m_data.GetDisplayName());
 	CenterWindow(GetParent());
 	TRC(IDOK, "OK");
 	TRC(IDCANCEL, "Отмена");

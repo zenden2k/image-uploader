@@ -130,6 +130,8 @@ void ApplyRegistrySettings()
 
 void RegisterShellExtension(bool Register)
 {
+
+	if(!FileExists(GetAppFolder()+_T("ExplorerIntegration.dll\""))) return;
 	SHELLEXECUTEINFO TempInfo = {0};
 
 	TCHAR buf[MAX_PATH];
@@ -235,9 +237,9 @@ CSettings::CSettings()
 	ScreenshotSettings.Delay = 3;
 
 	TrayIconSettings.LeftClickCommand = 0; // without action
-	TrayIconSettings.LeftDoubleClickCommand = 2; // add images
+	TrayIconSettings.LeftDoubleClickCommand = 10; // add images
 	TrayIconSettings.RightClickCommand = 1; // context menu
-	TrayIconSettings.MiddleClickCommand = 6; // region screenshot
+	TrayIconSettings.MiddleClickCommand = 7; // region screenshot
 	TrayIconSettings.DontLaunchCopy = FALSE;
 
 	Hotkeys_changed = false;

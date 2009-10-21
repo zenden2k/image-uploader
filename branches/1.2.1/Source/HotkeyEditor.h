@@ -128,6 +128,21 @@ public:
 	CString func;
 	DWORD commandId;
 	CString name;
+	CString GetDisplayName()
+	{
+		return Lang.GetString(name);
+	}
+	void Clear()
+	{
+		localKey.keyCode = 0;
+		localKey.keyModifier = 0;
+		globalKey.keyCode = 0;
+		globalKey.keyModifier = 0;
+	}
+	bool IsNull()
+	{
+		return (localKey.keyCode==0 && globalKey.keyCode==0);
+	}
 };
 class CHotkeyEditor : 
 	public CDialogImpl<CHotkeyEditor>,

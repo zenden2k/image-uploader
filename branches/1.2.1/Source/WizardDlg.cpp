@@ -37,6 +37,8 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 	DragndropEnabled = true;
 	hLocalHotkeys = 0;
 	QuickUploadMarker=false;
+	m_bShowAfter = true;
+	m_bHandleCmdLineFunc = false;
 }
 
 CWizardDlg::~CWizardDlg()
@@ -97,6 +99,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
    Lang.SetDirectory(CString(szPath) + "Lang\\");
    Lang.LoadList();
+	
 
 	if(!lstrlen(Settings.Language))
 	{
@@ -147,7 +150,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	if(!CmdLine.IsOption(_T("tray")))
    TRC(IDCANCEL,"Выход");
 	else 
-		TRC(IDCANCEL,"Закрыть");
+		TRC(IDCANCEL,"Скрыть");
    TRC(IDC_PREV,"< Назад");
 
 	ACCEL accel;
@@ -199,6 +202,7 @@ bool CWizardDlg::ParseCmdLine()
 		{
 			m_bShowWindow=false;
 			CString cmd = CurrentParam.Right(CurrentParam.GetLength()-6);
+			m_bHandleCmdLineFunc = true;
 			if(!executeFunc(cmd))
 				PostQuitMessage(0);
 			return true;
@@ -1238,8 +1242,7 @@ bool CWizardDlg::executeFunc(CString funcName)
 	if(LaunchCopy)
 	{
 		if(Settings.TrayIconSettings.DontLaunchCopy)
-		{
-			
+		{	
 				//SetForegroundWindow(m_hWnd);
 			 if(IsWindowVisible() && IsWindowEnabled())
 				SetForegroundWindow(m_hWnd);
@@ -1252,16 +1255,22 @@ bool CWizardDlg::executeFunc(CString funcName)
 	}
 	if(funcName == _T("addimages"))
 		return funcAddImages();
+	if(funcName == _T("addfiles"))
+		return funcAddFiles();
 	else if(funcName == _T("importvideo"))
 		return funcImportVideo();
 	else if(funcName == _T("screenshotdlg"))
 		return funcScreenshotDlg();
 	else if(funcName == _T("regionscreenshot"))
 		return funcRegionScreenshot();
+	else if(funcName == _T("regionscreenshot_dontshow"))
+		return funcRegionScreenshot(false);
 	else if(funcName == _T("fullscreenshot"))
 		return funcFullScreenshot();
 	else if(funcName == _T("windowscreenshot"))
 		return funcWindowScreenshot();
+	else if(funcName == _T("windowscreenshot_delayed"))
+		return funcWindowScreenshot(true);
 	else if(funcName == _T("addfolder"))
 		return funcAddFolder();
 	else if(funcName == _T("paste"))
@@ -1307,14 +1316,18 @@ bool CWizardDlg::funcScreenshotDlg()
 	
 	CreatePage(2); //Ну типа страничка с картинками!
 	((CMainDlg*)Pages[2])->AddToFileList(dlg.FileName);
-	
+	((CMainDlg*)Pages[2])->ThumbsView.EnsureVisible(((CMainDlg*)Pages[2])->ThumbsView.GetItemCount()-1,true);
+	((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
 	ShowPage(2,0,3);
+	m_bShowWindow = true;
 	return true;
 }
 
-bool CWizardDlg::funcRegionScreenshot()
+bool CWizardDlg::funcRegionScreenshot(bool ShowAfter)
 {
+	m_bShowAfter = ShowAfter;
 	ShowWindow(SW_HIDE);
+	EnableWindow(false);
 	RegionSelect.Parent = m_hWnd;
 	RegionSelect.Execute(this);
 	return true;
@@ -1322,8 +1335,20 @@ bool CWizardDlg::funcRegionScreenshot()
 
 void CWizardDlg::OnScreenshotFinished(int Result)
 {
-	ShowWindow(SW_SHOW);
-	SetForegroundWindow(m_hWnd);;
+	EnableWindow();
+	if(Result || m_bShowAfter)
+	{
+		//if(m_bCurrentFunc
+		ShowWindow(SW_SHOWNORMAL);
+		SetForegroundWindow(m_hWnd);
+	}
+	else if (!Result && m_bHandleCmdLineFunc)
+	{
+		
+		PostQuitMessage(0);
+	}
+	m_bHandleCmdLineFunc = false;
+
 }
 
 void CWizardDlg::OnScreenshotSaving(LPTSTR FileName, Bitmap* Bm)
@@ -1343,15 +1368,17 @@ bool CWizardDlg::funcFullScreenshot()
 	_screenShotdlg.MainDlg = this;
 	_screenShotdlg.m_Action = 1;
 
+	EnableWindow(false); //Disabling window (for disabling tray icon commands possible execution)
 	_screenShotdlg.Execute(m_hWnd, this, true);
 	return true;
 }
 
-bool CWizardDlg::funcWindowScreenshot()
+bool CWizardDlg::funcWindowScreenshot(bool Delay)
 {
 	_screenShotdlg.MainDlg = this;
 	_screenShotdlg.m_Action = 1;
-
+	_screenShotdlg.m_bDelay = Delay;
+	EnableWindow(false); //Disabling window (for disabling tray icon commands possible execution)
 	_screenShotdlg.Execute(m_hWnd, this, false);
 	return true;
 }
@@ -1376,7 +1403,7 @@ LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	if(!floatWnd.m_hWnd)
 	  TRC(IDCANCEL,"Выход");
 	else 
-		TRC(IDCANCEL,"Закрыть");
+		TRC(IDCANCEL,"Скрыть");
 
 	if(!(m_hotkeys==Settings.Hotkeys))
 	{
@@ -1472,4 +1499,50 @@ bool CWizardDlg::funcMediaInfo()
 	return true;
 }
 
+bool CWizardDlg::funcAddFiles()
+{
+	TCHAR Buf[MAX_PATH*4];
+	SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),1, TR("Любые файлы"), _T("*.*"));
+
+	int nCount=0;
+	CMultiFileDialog fd(0, 0, OFN_HIDEREADONLY, Buf, m_hWnd);
+	
+	TCHAR Buffer[1000];
+	fd.m_ofn.lpstrInitialDir = Settings.ImagesFolder;
+
+	if(fd.DoModal(m_hWnd) != IDOK) return 0;
+	LPCTSTR FileName = 0;
+	fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
+
+	CreatePage(2);
+	do
+	{
+		
+		FileName = (FileName) ? fd.GetNextFileName() : fd.GetFirstFileName();
+		if(!FileName) break;
+		fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
+
+		if(Buffer[lstrlen(Buffer)-1] != '\\')
+		lstrcat(Buffer, _T("\\"));
+		
+		if(FileName)
+		{
+			lstrcat(Buffer, FileName);
+			if(((CMainDlg*)Pages[2])->AddToFileList(Buffer))
+				nCount++;
+		
+		}
+	} while (FileName);
+	 
+	
+	fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
+	Settings.ImagesFolder = Buffer;
+	if(nCount)
+		ShowPage(2, 0, 3);
+
+	if(CurPage == 2)
+		((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
+	ShowWindow(SW_SHOW);
+	m_bShowWindow = true;
+}
 CWizardDlg * pWizardDlg;

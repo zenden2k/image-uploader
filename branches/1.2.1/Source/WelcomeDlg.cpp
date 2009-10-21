@@ -25,8 +25,6 @@
 CWelcomeDlg::CWelcomeDlg()
 {
 	br = CreateSolidBrush(RGB(255, 255, 255));
-
-
 	PrevClipboardViewer = NULL;
 }
 
@@ -38,8 +36,7 @@ LRESULT CWelcomeDlg::OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	
 CWelcomeDlg::~CWelcomeDlg()
 {
-	/*	WriteSetting(_T("Main.ImagesFolder"), 0, ImagesFolder);
-	WriteSetting(_T("Main.VideoFolder"), 0, VideoFolder);*/
+
 }
 
 
@@ -107,91 +104,19 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
 LRESULT CWelcomeDlg::OnBnClickedScreenshot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CScreenshotDlg dlg;
-	dlg.MainDlg = this; // Нарушаем каноны ООП?
-
-	if(dlg.DoModal(GetParent()) != IDOK) return 0;
-	
-	WizardDlg->CreatePage(2); //Ну типа страничка с картинками!
-	((CMainDlg*)WizardDlg->Pages[2])->AddToFileList(dlg.FileName);
-	
-	WizardDlg->ShowPage(2,0,3);
-
-	//Сообщаем лузеру что ему повезло
-	//MessageBox(TR("Снимок экрана был успешно сделан."), APPNAME, MB_ICONINFORMATION);
-	
+	WizardDlg->executeFunc(_T("screenshotdlg"));
 	return 0;
 }
 
 LRESULT CWelcomeDlg::OnBnClickedAddvideo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	TCHAR Buf[MAX_PATH*4];
-	SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
-			CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv ...)"),
-		_T("*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;*.rm;"),
-		TR("Все файлы"),
-		_T("*.*"));
-
-	CFileDialog fd(true,0,0,4|2,/*VIDEO_DIALOG_FORMATS*/Buf,m_hWnd);
-	
-	TCHAR Buffer[1000];
-	fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
-	if(fd.DoModal()!=IDOK || !fd.m_szFileName) return 0;
-//	TCHAR Buffer[512];
-	ExtractFilePath(fd.m_szFileName, Buffer); // Запоминаем каталог видео
-	Settings.VideoFolder = Buffer;
-	WizardDlg->CreatePage(1);
-	lstrcpyn(WizardDlg->LastVideoFile, fd.m_szFileName, MAX_PATH);
-	((CVideoGrabber*)WizardDlg->Pages[1])->SetFileName(fd.m_szFileName); // C-style conversion .. but i like it :)
-	WizardDlg->ShowPage(1,0,(WizardDlg->Pages[2])?2:3);
-
+	WizardDlg->executeFunc(_T("importvideo"));
 	return 0;
 }
 
 LRESULT CWelcomeDlg::OnBnClickedAddimages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	TCHAR Buf[MAX_PATH*4];
-	SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
-		CString(TR("Изображения"))+ _T(" (jpeg, bmp, png, gif ...)"),
-		_T("*.jpg;*.gif;*.png;*.bmp;*.tiff"),
-		TR("Любые файлы"),
-		_T("*.*"));
-
-	int nCount=0;
-	CMultiFileDialog fd(0, 0, OFN_HIDEREADONLY, Buf, m_hWnd);
-	
-	TCHAR Buffer[1000];
-	fd.m_ofn.lpstrInitialDir = Settings.ImagesFolder;
-
-	if(fd.DoModal(m_hWnd) != IDOK) return 0;
-	LPCTSTR FileName = 0;
-	fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
-
-	WizardDlg->CreatePage(2);
-	do
-	{
-		
-		FileName = (FileName) ? fd.GetNextFileName() : fd.GetFirstFileName();
-		if(!FileName) break;
-		fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
-
-		if(Buffer[lstrlen(Buffer)-1] != '\\')
-		lstrcat(Buffer, _T("\\"));
-		
-		if(FileName)
-		{
-			lstrcat(Buffer, FileName);
-			if(((CMainDlg*)WizardDlg->Pages[2])->AddToFileList(Buffer))
-				nCount++;
-		
-		}
-	} while (FileName);
-	 
-	
-	fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
-	Settings.ImagesFolder = Buffer;
-	if(nCount)
-		WizardDlg->ShowPage(2, 0, 3);
+	WizardDlg->executeFunc(_T("addimages"));
 
 	return 0;
 }
@@ -214,17 +139,13 @@ bool CWelcomeDlg::OnShow()
 
 LRESULT CWelcomeDlg::OnBnClickedSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CSettingsDlg dlg(0);
-	dlg.DoModal(m_hWnd);
+	WizardDlg->executeFunc(_T("settings"));
 	return 0;
 }
 
 LRESULT CWelcomeDlg::OnBnClickedRegionPrint(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	WizardDlg->ShowWindow(SW_HIDE);
-	RegionSelect.Parent = WizardDlg->m_hWnd;
-	RegionSelect.Execute(this);
-	
+	WizardDlg->executeFunc(_T("regionscreenshot"));	
 	return 0;
 }
 	
@@ -236,26 +157,6 @@ LRESULT CWelcomeDlg::OnShowWindow(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
 LRESULT CWelcomeDlg::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	/*TCHAR Buf[MAX_PATH*4]; //String buffer which will contain filter for CFileDialog
-	SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),3, 
-			CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv ...)"),
-		_T("*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;*.rm;"),
-		CString(TR("Аудио файлы"))+ _T(" (mp3, wma, wav ...)"),
-		_T("*.mp3;*.wav;*.wma;*.mid;*.asx"),
-		
-		TR("Все файлы"),
-		_T("*.*"));
-
-	CFileDialog fd(true,0,0,4|2,Buf,m_hWnd);
-	fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
-
-	if(fd.DoModal()!=IDOK || !fd.m_szFileName) return 0;
-	TCHAR Buffer[512];
-	ExtractFilePath(fd.m_szFileName, Buffer);
-	Settings.VideoFolder = Buffer;
-	CMediaInfoDlg dlg;
-	lstrcpyn(WizardDlg->LastVideoFile, fd.m_szFileName, MAX_PATH);
-	dlg.ShowInfo(fd.m_szFileName);*/
 	WizardDlg->executeFunc(_T("mediainfo"));
 	return 0;
 }
@@ -298,31 +199,8 @@ LRESULT CWelcomeDlg::OnClipboardClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	return 0;
 }
 	
-void CWelcomeDlg::OnScreenshotFinished(int Result)
-{
-	WizardDlg->ShowWindow(SW_SHOW);
-}
-
-void CWelcomeDlg::OnScreenshotSaving(LPTSTR FileName, Bitmap* Bm)
-{
-	if(FileName && lstrlen(FileName))
-	{
-		WizardDlg->CreatePage(2);
-		//((CMainDlg*)WizardDlg->Pages[2])->ThumbsView.LoadThumbnails();
-		((CMainDlg*)WizardDlg->Pages[2])->AddToFileList(RegionSelect.m_szFileName);///MessageBox(Buffer);
-			WizardDlg->ShowPage(2,0,3);
-			//((CMainDlg*)WizardDlg->Pages[2])->ThumbsView.LoadThumbnails();
-	}
-}
-
 LRESULT CWelcomeDlg::OnAddFolderClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CMyFolderDialog fd(m_hWnd);
-	fd.m_bSubdirs = Settings.ParseSubDirs;
-	if(fd.DoModal(m_hWnd) == IDOK)
-	{
-		Settings.ParseSubDirs = fd.m_bSubdirs;
-		WizardDlg->AddFolder(fd.GetFolderPath(),fd.m_bSubdirs);
-	}
+	WizardDlg->executeFunc(_T("addfolder"));
 	return 0;
 }

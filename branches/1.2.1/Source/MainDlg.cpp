@@ -54,22 +54,7 @@ void CMainDlg::CloseDialog(int nVal)
 
 LRESULT CMainDlg::OnBnClickedAddvideo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	TCHAR DialogFilterBuffer[MAX_PATH * 4]; // Contains file name filters separated by "\0"
-	SelectDialogFilter(DialogFilterBuffer, sizeof(DialogFilterBuffer)/sizeof(TCHAR), 2, 
-			CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv ...)"),
-		_T("*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;*.rm;"),
-		TR("Все файлы"),
-		_T("*.*"));
-
-	CFileDialog fd(true, 0, 0, 4|2, DialogFilterBuffer, m_hWnd);
-	
-	TCHAR Buffer[1000];
-	if(fd.DoModal() != IDOK || !fd.m_szFileName) return 0;
-
-	WizardDlg->CreatePage(1);
-	((CVideoGrabber*)WizardDlg->Pages[1])->SetFileName(fd.m_szFileName);
-	WizardDlg->ShowPage(1, 2, 2);
-
+	WizardDlg->executeFunc(_T("importvideo"));
 	return 0;
 }
 
@@ -87,38 +72,8 @@ bool CMainDlg::CheckEditInteger(int Control)
 
 LRESULT CMainDlg::OnBnClickedAddimages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	TCHAR Buf[MAX_PATH*4];
-	SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
-		CString(TR("Изображения"))+ _T(" (jpeg, bmp, png, gif ...)"),
-		_T("*.jpg;*.gif;*.png;*.bmp;*.tiff"),
-		TR("Все файлы"),
-		_T("*.*"));
-
-	CMultiFileDialog fd(0, 0, OFN_HIDEREADONLY, Buf, m_hWnd);
-
-	TCHAR Buffer[1000];
-	
-	if(IDOK == fd.DoModal(m_hWnd))
-   {
-		LPCTSTR FileName=0;
-		fd.GetDirectory(Buffer,sizeof(Buffer)/sizeof(TCHAR));
-	
-		do
-		{
-			FileName = (FileName)?fd.GetNextFileName():fd.GetFirstFileName();
-			if(FileName)
-			{
-				fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
-				if(Buffer[lstrlen(Buffer)-1] != '\\')
-					lstrcat(Buffer,_T("\\"));
-				lstrcat(Buffer, FileName);
-				AddToFileList(Buffer);
-			}
-		} while (FileName);
-	 }
-
-	 ThumbsView.LoadThumbnails();
-	 return 0;
+	WizardDlg->executeFunc(_T("addimages"));
+	return 0;
 }
 
 LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -168,6 +123,8 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		mi.fType = MFT_STRING;
 		mi.dwTypeData = TR("Добавить изображения");
 		sub.SetMenuItemInfo(IDC_ADDIMAGES, false, &mi);
+		mi.dwTypeData = TR("Добавить файлы");
+		sub.SetMenuItemInfo(IDM_ADDFILES, false, &mi);
 		mi.dwTypeData = TR("Добавить каталог");
 		sub.SetMenuItemInfo(IDM_ADDFOLDER, false, &mi);
 		TCHAR buf[MAX_PATH];
@@ -264,13 +221,7 @@ LRESULT CMainDlg::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 
 LRESULT CMainDlg::OnBnClickedScreenshot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CScreenshotDlg dlg;
-	dlg.MainDlg = this;
-	if(dlg.DoModal(GetParent()) != IDOK) return 0;
-	
-	AddToFileList(dlg.FileName);
-	ThumbsView.LoadThumbnails();
-	ThumbsView.EnsureVisible(ThumbsView.GetItemCount()-1,true);
+	WizardDlg->executeFunc(_T("screenshotdlg"));
 	return 0;
 }
 
@@ -403,19 +354,13 @@ LRESULT CMainDlg::OnImageView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 LRESULT CMainDlg::OnMenuItemPaste(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	SendMessage(GetParent(),WM_COMMAND, MAKELONG(ID_PASTE,1),0);
+	WizardDlg->executeFunc(_T("paste"));
 	return 0;
 }
 
 LRESULT CMainDlg::OnAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CMyFolderDialog fd(GetParent());
-	fd.m_bSubdirs = Settings.ParseSubDirs;
-	if(fd.DoModal(m_hWnd) == IDOK)
-	{
-		Settings.ParseSubDirs = fd.m_bSubdirs;
-		WizardDlg->AddFolder(fd.GetFolderPath(), fd.m_bSubdirs);
-	}
+	WizardDlg->executeFunc(_T("addfolder"));
 	return 0;
 }
 	
@@ -450,5 +395,10 @@ LRESULT CMainDlg::OnOpenInFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	// Executing explorer with highlighting the file
 	ShellExecuteW(NULL, NULL, L"explorer.exe", CString(_T("/select, ")) + FileName, NULL, SW_SHOWNORMAL);
 
+	return 0;
+}
+LRESULT CMainDlg::OnAddFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+{
+	WizardDlg->executeFunc(_T("addfiles"));
 	return 0;
 }

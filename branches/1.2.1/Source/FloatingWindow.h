@@ -22,6 +22,7 @@
 #define IDM_CONTEXTMENU IDM_UPLOADFILES+11
 #define IDM_PASTEFROMCLIPBOARD IDM_UPLOADFILES+12
 #define IDM_MEDIAINFO IDM_UPLOADFILES+13
+#define IDM_UPLOADIMAGES IDM_UPLOADFILES+14
 #define WM_CLOSETRAYWND WM_USER+2
 #define WM_RELOADSETTINGS WM_USER+3
 
@@ -33,7 +34,9 @@ public:
 	HANDLE hMutex;
 		HMENU m_hTrayIconMenu;
 		bool EnableClicks;
+		HWND m_PrevActiveWindow;
 		CHotkeyList m_hotkeys;
+		bool m_bStopCapturingWindows;
 	CFloatingWindow();
 	~CFloatingWindow();
 	DECLARE_WND_CLASS(_T("CFloatingWindow"))
@@ -44,7 +47,8 @@ public:
 		COMMAND_ID_HANDLER_EX(IDM_EXIT, OnExit)
 		COMMAND_ID_HANDLER_EX(IDM_SETTINGS, OnMenuSettings)
 		COMMAND_ID_HANDLER_EX(IDM_IMPORTVIDEO, OnImportvideo)
-		COMMAND_ID_HANDLER_EX(IDM_UPLOADFILES, OnUploadfiles)
+		COMMAND_ID_HANDLER_EX(IDM_UPLOADFILES, OnUploadFiles)
+		COMMAND_ID_HANDLER_EX(IDM_UPLOADIMAGES, OnUploadImages)
 		COMMAND_ID_HANDLER_EX(IDM_SCREENSHOTDLG, OnScreenshotDlg)
 		COMMAND_ID_HANDLER_EX(IDM_REGIONSCREENSHOT, OnRegionScreenshot)
 		COMMAND_ID_HANDLER_EX(IDM_FULLSCREENSHOT, OnFullScreenshot)
@@ -75,7 +79,8 @@ public:
 	 LRESULT OnCloseTray(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	 LRESULT OnReloadSettings(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	 LRESULT OnImportvideo(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-	 LRESULT OnUploadfiles(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+	 LRESULT OnUploadFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+	 LRESULT OnUploadImages(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnScreenshotDlg(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnRegionScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnFullScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
