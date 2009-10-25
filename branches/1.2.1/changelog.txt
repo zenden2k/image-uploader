@@ -2,9 +2,13 @@
 #
 # http://zenden.ws/imageuploader
 
---v1.2.1 svn build 1501 [14.10.2009]--
+--v1.2.1 build 1570 [14.10.2009]--
+[+] Tray icon
+[+] Hotkeys support
+[+] New servers added
 [+] New Shell context menu extension
 [+] New command line option "/onlyimages"
+[F] Minor fixes
 
 --v1.2 build 1490 [11.09.2009]--
 [+] GNU GENERAL PUBLIC LICENSE Version 3.

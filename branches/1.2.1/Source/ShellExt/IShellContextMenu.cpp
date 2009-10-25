@@ -168,24 +168,24 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 
 
 	if(AreOnlyImages(m_FileList))
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES, TR("Загрузить изображения"),idCmdFirst,bmUpArrow,IDI_ICONUPLOAD);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES, TR("Загрузить изображения"),idCmdFirst,0,IDI_ICONUPLOAD);
 	else
 	{
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADFILES, TR("Загрузить файлы"),idCmdFirst,bmUpArrow,IDI_ICONUPLOAD);
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES,TR("Загрузить только изображения"),idCmdFirst,bmUpArrow,IDI_ICONUPLOAD);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADFILES, TR("Загрузить файлы"),idCmdFirst,0,IDI_ICONUPLOAD);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES,TR("Загрузить только изображения"),idCmdFirst,0,IDI_ICONUPLOAD);
 	}
 	if(Settings.ExplorerVideoContextMenu&&  m_FileList.GetCount()==1 &&IsVideoFile( m_FileList[0]))
 	{
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO,  TR("Импорт видео"),idCmdFirst,Settings.ExplorerCascadedMenu?0:bmMovie,Settings.ExplorerCascadedMenu?0:IDI_ICONMOVIE);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO,  TR("Импорт видео"),idCmdFirst,0,Settings.ExplorerCascadedMenu?0:IDI_ICONMOVIE);
 		if(m_bMediaInfoInstalled)
-			MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_MEDIAINFO, TR("Информация о файле"),idCmdFirst,Settings.ExplorerCascadedMenu?0:bmInfo,Settings.ExplorerCascadedMenu?0:IDI_ICONINFO);
+			MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_MEDIAINFO, TR("Информация о файле"),idCmdFirst,0 ,Settings.ExplorerCascadedMenu?0:IDI_ICONINFO);
 	}
 	if(Settings.ExplorerCascadedMenu)
 	{
 		MENUITEMINFO MenuItem;
 		MenuItem.cbSize = sizeof(MenuItem);
-		MenuItem.hbmpChecked = bmIULogo;
-		MenuItem.hbmpUnchecked =  bmIULogo;
+		//MenuItem.hbmpChecked = bmIULogo;
+		//MenuItem.hbmpUnchecked =  bmIULogo;
 		MenuItem.fType = MFT_STRING;
 		MenuItem.fMask =MIIM_SUBMENU| MIIM_FTYPE | MIIM_ID | MIIM_BITMAP | MIIM_STRING;//MIIM_SUBMENU | MIIM_TYPE | MIIM_DATA|MIIM_ID|MIIM_BITMAP;//|MIIM_CHECKMARKS;
 		MenuItem.wID = currentCommandID++;
@@ -308,10 +308,6 @@ HRESULT CIShellContextMenu::GetCommandString(UINT_PTR idCmd, UINT uType, UINT *p
 CIShellContextMenu::CIShellContextMenu()
 {
 	m_bMediaInfoInstalled = IsMediaInfoInstalled();
-	bmIULogo = LoadBitmap(hDllInstance, MAKEINTRESOURCE(IDB_IULOGO));
-	bmUpArrow = LoadBitmap(hDllInstance, MAKEINTRESOURCE(IDB_UPARROW));
-	bmMovie = LoadBitmap(hDllInstance, MAKEINTRESOURCE(IDB_MOVIE));
-	bmInfo = LoadBitmap(hDllInstance, MAKEINTRESOURCE(IDB_INFO));
 }
 
 HRESULT CIShellContextMenu::Initialize(LPCITEMIDLIST pidlFolder, LPDATAOBJECT dataObject, HKEY hkeyProgID)
