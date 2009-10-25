@@ -61,7 +61,6 @@ class ATL_NO_VTABLE CIShellContextMenu :
 		CAtlArray<CString> m_FileList;
 		std::map<int, Shell_ContextMenuItem> m_nCommands;
 		std::map<UINT, HBITMAP>		bitmaps;
-		HBITMAP bmIULogo, bmUpArrow,bmInfo,bmMovie;
 		CIShellContextMenu();
 
 		DECLARE_REGISTRY_RESOURCEID(IDR_ISHELLCONTEXTMENU)
@@ -84,10 +83,6 @@ class ATL_NO_VTABLE CIShellContextMenu :
 
 		void FinalRelease()
 		{
-			DeleteObject(bmIULogo);
-			DeleteObject(bmUpArrow);
-			DeleteObject(bmMovie);
-			DeleteObject(bmInfo);
 		}
 		bool MyInsertMenu(HMENU hMenu, int pos, UINT id, int nInternalCommand, const LPTSTR szTitle, int firstCmd, HBITMAP bm=0,WORD resid=0);
 		bool m_bMediaInfoInstalled;
