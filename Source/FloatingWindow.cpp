@@ -11,11 +11,13 @@ CFloatingWindow::CFloatingWindow()
 	hMutex = NULL;
 	m_PrevActiveWindow = 0;
 	m_bStopCapturingWindows = false;
+	WM_TASKBARCREATED = RegisterWindowMessage(_T("TaskbarCreated"));
 }
 
 CFloatingWindow::~CFloatingWindow()
 {
 	CloseHandle(hMutex);
+	DeleteObject(m_hIconSmall);
 	m_hWnd = 0;
 }
 
@@ -48,12 +50,12 @@ bool MyInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP
 
 LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-	HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
+	m_hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
 		IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
-	SetIcon(hIconSmall, FALSE);
+	SetIcon(m_hIconSmall, FALSE);
 
 	RegisterHotkeys();
-	InstallIcon(APPNAME,hIconSmall,/*TrayMenu*/0);
+	InstallIcon(APPNAME,m_hIconSmall,/*TrayMenu*/0);
 	return 0;
 }
 
@@ -169,15 +171,13 @@ LRESULT CFloatingWindow::OnScreenshotDlg(WORD wNotifyCode, WORD wID, HWND hWndCt
 
 LRESULT CFloatingWindow::OnRegionScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-	if(pWizardDlg->executeFunc(_T("regionscreenshot_dontshow")));
-		//pWizardDlg->ShowWindow(SW_SHOW);
+	pWizardDlg->executeFunc(_T("regionscreenshot_dontshow"));
 	return 0;
 }
 
 LRESULT CFloatingWindow::OnFullScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-	if(pWizardDlg->executeFunc(_T("fullscreenshot")));
-		//pWizardDlg->ShowWindow(SW_SHOW);
+	pWizardDlg->executeFunc(_T("fullscreenshot"));
 	return 0;
 }
 
@@ -210,7 +210,9 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 	if(!IsWindowEnabled()) return 0;
 
 	HMENU TrayMenu = ::CreatePopupMenu();
-	int i=0;
+
+	// Inserting menu items
+	int i = 0;
 	MyInsertMenu(TrayMenu,i++,IDM_UPLOADFILES,TR("Загрузить файлы")+CString(_T("...")));
 	MyInsertMenu(TrayMenu,i++,IDM_ADDFOLDER,TR("Загрузить папку")+CString(_T("...")));
 	MyInsertMenu(TrayMenu,i++,0,0);
@@ -241,34 +243,20 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 	MyInsertMenu(TrayMenu,i++,0,0);
 	MyInsertMenu(TrayMenu,i++,IDM_EXIT,TR("Выход"));
 	m_hTrayIconMenu = TrayMenu;
-	//CTrayActions trayActions;
+	
 	if(Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId)
 	{
 		SetMenuDefaultItem(TrayMenu, Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId, false);
 	}
 
-
-	// Get the sub-menu
 	CMenuHandle oPopup(m_hTrayIconMenu);
-	// Prepare
 	PrepareMenu(oPopup);
-	// Get the menu position
 	CPoint pos;
 	GetCursorPos(&pos);
-	// Make app the foreground
-	//HWND prev = GetActiveWindow();
 	SetForegroundWindow(m_hWnd);
-	// Set the default menu item
-	/*			if (m_nDefault == 0)
-	oPopup.SetMenuDefaultItem(0, TRUE);
-	else
-	oPopup.SetMenuDefaultItem(m_nDefault);*/
-	// Track
 	oPopup.TrackPopupMenu(TPM_LEFTALIGN, pos.x, pos.y, m_hWnd);
 	// BUGFIX: See "PRB: Menus for Notification Icons Don't Work Correctly"
 	PostMessage(WM_NULL);
-	//::SetActiveWindow(prev);
-	// Done
 	return 0;
 }
 
@@ -335,13 +323,12 @@ BOOL IsRunningFloatingWnd()
 void  CFloatingWindow::RegisterHotkeys()
 {
 	m_hotkeys=Settings.Hotkeys;
-	//MessageBox(_T("Registering hotkeys"));
+
 	for(int i =0; i< m_hotkeys.GetCount(); i++)
 	{
 		if(m_hotkeys[i].globalKey.keyCode)
 		{
-		RegisterHotKey(m_hWnd,i,m_hotkeys[i].globalKey.keyModifier,m_hotkeys[i].globalKey.keyCode);
-		//MessageBox(_T("Registering ")+m_hotkeys[i].globalKey.toString());
+			RegisterHotKey(m_hWnd,i,m_hotkeys[i].globalKey.keyModifier,m_hotkeys[i].globalKey.keyCode);
 		}
 	}
 }
@@ -359,7 +346,6 @@ LRESULT CFloatingWindow::OnHotKey(int HotKeyID, UINT flags, UINT vk)
 		SetForegroundWindow(m_hWnd);
 		SendMessage(WM_COMMAND, MAKEWPARAM(m_hotkeys[HotKeyID].commandId,0));
 	}
-	//MessageBox(m_hotkeys[HotKeyID].name);
 	return 0;
 }
 
@@ -384,5 +370,11 @@ LRESULT CFloatingWindow::OnMediaInfo(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	if(pWizardDlg->executeFunc(_T("mediainfo")))
 		pWizardDlg->ShowWindow(SW_SHOW);
+	return 0;
+}
+
+LRESULT CFloatingWindow::OnTaskbarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	InstallIcon(APPNAME, m_hIconSmall, 0);
 	return 0;
 }
