@@ -667,7 +667,6 @@ int CUploadDlg::GenerateImages(LPTSTR szFileName, LPTSTR szBufferImage, LPTSTR s
 			if(height>0) newheight=height;
 		}
 
-
 		Graphics g(m_hWnd, true);
 		g.SetPageUnit(UnitPixel);
 		g.SetInterpolationMode(InterpolationModeHighQualityBicubic);
@@ -679,21 +678,15 @@ int CUploadDlg::GenerateImages(LPTSTR szFileName, LPTSTR szBufferImage, LPTSTR s
 			gr.Clear(Color(255,255,255,255));
 		else 
 			gr.Clear(Color(125,255,255,255));
-		//gr.Clear(Color(255,255,255));
+
 		g.SetPageUnit(UnitPixel);
 		gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
 
-
-
-
-
-		//gr.FillRectangle(&br,(float)1, (float)1, (float)width, (float)height);
 		gr.SetPixelOffsetMode(PixelOffsetModeHalf);
-		if(!width && !height)
+		if((!width && !height) || ((int)newwidth==(int)imgwidth && (int)newheight==(int)imgheight))
 			gr.DrawImage(/*backBuffer*/&bm, (int)0, (int)0, (int)newwidth,(int)newheight);
 		else
 			gr.DrawImage(/*backBuffer*/&bm, (int)-1, (int)-1, (int)newwidth+2,(int)newheight+2);
-
 
 		RectF bounds(0, 0, float(newwidth), float(newheight));
 
@@ -716,11 +709,6 @@ int CUploadDlg::GenerateImages(LPTSTR szFileName, LPTSTR szBufferImage, LPTSTR s
 
 			RectF bounds2(1, 1, float(newwidth), float(newheight)+1);
 			DrawStrokedText(gr, Settings.LogoSettings.Text,bounds2,font,MYRGB(255,Settings.LogoSettings.TextColor),MYRGB(180,Settings.LogoSettings.StrokeColor),HAlign[Settings.LogoSettings.TextPosition],VAlign[Settings.LogoSettings.TextPosition], 1);
-
-
-
-
-
 		}
 
 		// Добавляем логотип на картинку (если опция включена)
@@ -743,11 +731,9 @@ int CUploadDlg::GenerateImages(LPTSTR szFileName, LPTSTR szBufferImage, LPTSTR s
 				if(Settings.LogoSettings.LogoPosition==1||Settings.LogoSettings.LogoPosition==4)
 					x=(newwidth-logowidth)/2;
 
-
 				gr.DrawImage(&logo, (int)x, (int)y,logowidth,logoheight);
 			}
 		}
-
 		MySaveImage(&BackBuffer,L"image.jpg",szBufferImage,fileformat,iss.Quality);
 	} 
 
@@ -786,11 +772,9 @@ bool CUploadDlg::OnShow()
 	ShowPrev();
 	MainDlg = (CMainDlg*) WizardDlg->Pages[2];
 	Toolbar.CheckButton(IDC_USETEMPLATE,Settings.UseTxtTemplate);
-	//SendDlgItemMessage(IDC_USETEMPLATE, BM_SETCHECK, Settings.UseTxtTemplate);
 	FileProgress(_T(""), false);
 	UrlList.RemoveAll();
 	ResultsPanel.Clear();
-	//logoparams = WizardDlg->logoparams;
 	EnablePrev(false);
 	EnableNext();
 	EnableExit(false);
@@ -799,7 +783,6 @@ bool CUploadDlg::OnShow()
 	int code = ResultsPanel.GetCodeType();
 	int newcode = code;
 	bool Thumbs = Settings.ThumbSettings.CreateThumbs;
-
 
 	// Корректировка типа кода в зависимости от включения превьюшек
 	if(Thumbs)

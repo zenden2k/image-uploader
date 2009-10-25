@@ -33,9 +33,11 @@ class CFloatingWindow :
 public:
 	HANDLE hMutex;
 		HMENU m_hTrayIconMenu;
+		UINT WM_TASKBARCREATED;
 		bool EnableClicks;
 		HWND m_PrevActiveWindow;
 		CHotkeyList m_hotkeys;
+		HICON m_hIconSmall;
 		bool m_bStopCapturingWindows;
 	CFloatingWindow();
 	~CFloatingWindow();
@@ -63,6 +65,7 @@ public:
 		MESSAGE_HANDLER_EX(WM_RELOADSETTINGS, OnReloadSettings)
 		MSG_WM_TIMER(OnTimer)
 		MSG_WM_HOTKEY(OnHotKey)
+		MESSAGE_HANDLER_EX(WM_TASKBARCREATED, OnTaskbarCreated)
 
 		//CHAIN_MSG_MAP(CTrayIconImpl<CFloatingWindow>)
     END_MSG_MAP()
@@ -95,6 +98,7 @@ public:
 	 void UnRegisterHotkeys();
 	 LRESULT OnHotKey(int HotKeyID, UINT flags, UINT vk);
 	 LRESULT OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+	 LRESULT OnTaskbarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
 extern CFloatingWindow floatWnd;
 void CreateFloatWindow();
