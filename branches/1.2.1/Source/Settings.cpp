@@ -131,7 +131,7 @@ void ApplyRegistrySettings()
 void RegisterShellExtension(bool Register)
 {
 
-	if(!FileExists(GetAppFolder()+_T("ExplorerIntegration.dll\""))) return;
+	if(!FileExists(GetAppFolder()+_T("ExplorerIntegration.dll"))) return;
 	SHELLEXECUTEINFO TempInfo = {0};
 
 	TCHAR buf[MAX_PATH];
