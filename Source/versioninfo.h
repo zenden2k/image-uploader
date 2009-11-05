@@ -1,2 +1,2 @@
-#define BUILD "1571"
-#define TIME "26.10.2009"
+#define BUILD "1572"
+#define TIME "5.11.2009"

@@ -524,7 +524,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	int n = DragQueryFile(hDrop,	0xFFFFFFFF, 0, 0);
 
 	CMainDlg* MainDlg = NULL;
-	
+	CStringList Paths;
 	for (int i=0; i<n; i++)
 	{
 
@@ -545,15 +545,19 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 		else if(CurPage==0||CurPage==2)
 		{
 			filehost:
-			CreatePage(2);
-			MainDlg = (CMainDlg*) Pages[2];
-			MainDlg->AddToFileList(szBuffer);
-			ShowPage(2);
-		
+			if(FileExists(szBuffer) || IsDirectory(szBuffer))
+									 Paths.Add(szBuffer);			
 		}
  
 	}
-	if(MainDlg) MainDlg->ThumbsView.LoadThumbnails();
+	if(!Paths.IsEmpty())
+	{
+		CreatePage(2);
+		FolderAdd.Do(Paths, false, true);
+		ShowPage(2);
+		if(MainDlg) MainDlg->ThumbsView.LoadThumbnails();
+	}
+	
 	DragFinish(hDrop);
 	return 0;
    
@@ -812,7 +816,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 			PVOID hdrop = (PVOID) GlobalLock ( ddd.hGlobal );
 			BOOL b;
 			FILEGROUPDESCRIPTOR *fgd = (FILEGROUPDESCRIPTOR*) hdrop;
-
+			CStringList Paths;
 			for(int i=0; i<fgd->cItems; i++)
 			{
 				FORMATETC tc3 = { RegisterClipboardFormat(CFSTR_FILECONTENTS), 0, DVASPECT_CONTENT, i, TYMED_HGLOBAL };
@@ -846,19 +850,25 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 								dlg->SetFileName(OutFileName);
 								break;
 							}
-							else if(IsImage(OutFileName) && (CurPage==0||CurPage==2))
+							else if((CurPage==0||CurPage==2))
 							{
-								CreatePage(2);
-								CMainDlg* MainDlg = (CMainDlg*) Pages[2];
-								MainDlg->AddToFileList(OutFileName);
-								MainDlg->ThumbsView.LoadThumbnails();
-								ShowPage(2);
+								
+								if(FileExists(OutFileName) || IsDirectory(OutFileName))
+									 Paths.Add(OutFileName);		
 							}
 						}
 					}
 				}
 
 				GlobalUnlock ( hdrop );
+				
+				if(!Paths.IsEmpty())
+				{
+					CreatePage(2);
+					//QuickUploadMarker = (Settings.QuickUpload && !CmdLine.IsOption(_T("noquick"))) || (CmdLine.IsOption(_T("quick")));
+					FolderAdd.Do(Paths, /*CmdLine.IsOption(_T("imagesonly"))*/false, true);
+					ShowPage(2);				
+				}
 				return true;
 			}
 		}
