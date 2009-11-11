@@ -27,3 +27,8 @@ In order to compile Image Uploader you will need the following libraries:
  3. DirectX 8 SDK
 
 You can download necessary Include files and Libs here http://code.google.com/p/image-uploader/downloads/list
+
+Also you have to install Microsoft Windows 7 Platform SDK for enabling Windows 7 related features 
+(if you receive errors related to "TOKEN_ELEVATION" or "ITaskBar3", it means you haven't installed latest Platform SDK. 
+Also you can change WINVER value into "stdafx.h" file to 0x0600 or 0x0501 and compile Image Uploader 
+without Windows 7 TaskBar features support)
