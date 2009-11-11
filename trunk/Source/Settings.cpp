@@ -23,6 +23,7 @@
 #include "settings.h"
 #include "myutils.h"
 #include "Common\MyXml.h"
+
 CSettings Settings;
 #define ASSERT
 #ifndef IU_SHELLEXT
@@ -39,6 +40,16 @@ BOOL IsVista()
 
 	return FALSE;
 }
+
+#if  WINVER	< 0x0600
+
+typedef struct _TOKEN_ELEVATION {
+    DWORD TokenIsElevated;
+} TOKEN_ELEVATION, *PTOKEN_ELEVATION;
+
+#define TokenElevation 20
+
+#endif
 
 HRESULT 
 IsElevated( __out_opt BOOL * pbElevated ) //= NULL )
@@ -62,7 +73,7 @@ IsElevated( __out_opt BOOL * pbElevated ) //= NULL )
 
 	if ( !::GetTokenInformation(
 		hToken,
-		TokenElevation,
+		(TOKEN_INFORMATION_CLASS) TokenElevation,
 		&te,
 		sizeof( te ),
 		&dwReturnLength ) )

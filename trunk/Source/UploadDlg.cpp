@@ -107,7 +107,7 @@ CUploadDlg::CUploadDlg(CWizardDlg *dlg):ResultsPanel(UrlList,dlg)
 	Terminated = false;
 
 	LastUpdate = 0;
-	#if  WINVER	>= 0x0700
+	#if  WINVER	>= 0x0601
 		ptl = NULL;
 	#endif
 }
@@ -121,7 +121,7 @@ Bitmap* BitmapFromResource(HINSTANCE hInstance,LPCTSTR szResName, LPCTSTR szResT
 
 LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-#if  WINVER	>= 0x0700
+#if  WINVER	>= 0x0601
 	const GUID IID_ITaskbarList3 = { 0xea1afb91,0x9e28,0x4b86,{0x90,0xe9,0x9e,0x9f, 0x8a,0x5e,0xef,0xaf}};
 	CoCreateInstance(
 		CLSID_TaskbarList, NULL, CLSCTX_ALL,
@@ -194,7 +194,7 @@ DWORD CUploadDlg::Run()
 
 	CUploader Uploader;
 
-#if  WINVER	>= 0x0700
+#if  WINVER	>= 0x0601
 	if(ptl)
 		ptl->SetProgressState(GetParent(), TBPF_NORMAL); // initialise Windows 7 taskbar button progress 
 #endif
@@ -554,7 +554,7 @@ int CUploadDlg::ThreadTerminated(void)
 	TCHAR szBuffer[MAX_PATH];
 	SetDlgItemText(IDC_COMMONPROGRESS2,TR("Загрузка была завершена."));
 	UploadProgress(MainDlg->FileList.GetCount(), MainDlg->FileList.GetCount());
-#if  WINVER	>= 0x0700
+#if  WINVER	>= 0x0601
 	if(ptl)
 		ptl->SetProgressState(GetParent(), TBPF_NOPROGRESS); // initialise Windows 7 taskbar button progress 
 #endif
@@ -1108,7 +1108,7 @@ LRESULT CUploadDlg::OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 void CUploadDlg::UploadProgress(int CurPos, int Total, int FileProgress)
 {
 	SendDlgItemMessage(IDC_UPLOADPROGRESS,PBM_SETPOS,CurPos);
-#if  WINVER	>= 0x0700
+#if  WINVER	>= 0x0601
 	if(ptl)
 	{
 		int NewCurrent = CurPos * 50 + FileProgress;

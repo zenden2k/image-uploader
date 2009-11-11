@@ -66,7 +66,7 @@ public:
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	#if  WINVER	>= 0x0700
+	#if  WINVER	>= 0x0601
 		ITaskbarList3* ptl;
 	#endif
 	 DWORD Run();
