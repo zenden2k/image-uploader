@@ -106,8 +106,8 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="&quot;$(SolutionDir)\Source\version.exe&quot; &quot;$(SolutionDir)\Source\versioninfo.h&quot; ImageUploader"
-				ExcludedFromBuild="true"
+				CommandLine="&quot;$(SolutionDir)\Utils\Version\version.exe&quot; &quot;$(SolutionDir)\Source\versioninfo.h&quot; ImageUploader"
+				ExcludedFromBuild="false"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
