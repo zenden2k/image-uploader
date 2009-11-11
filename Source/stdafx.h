@@ -56,8 +56,6 @@ extern CAppModule _Module;
 #include <vector>
 #include <map>
 #include <GdiPlus.h>
-#include <objbase.h>
-#include <streams.h>
 #include <stdio.h>
 #include <gdiplus.h>
 #include <GdiPlusPixelFormats.h>

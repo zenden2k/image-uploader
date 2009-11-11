@@ -19,6 +19,12 @@
 */
 
 #include "stdafx.h"
+
+#define __AFX_H__ // little hack for avoiding __POSITION type redefinition
+#include <objbase.h>
+#include <streams.h>
+#undef __AFX_H__
+
 #include "VideoGrabber.h"
 #include "myimage.h"
 #include "mediainfodlg.h"

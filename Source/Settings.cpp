@@ -44,6 +44,15 @@ BOOL IsVista()
 
 #define ASSERT
 
+#if  WINVER	< 0x0600
+
+typedef struct _TOKEN_ELEVATION {
+    DWORD TokenIsElevated;
+} TOKEN_ELEVATION, *PTOKEN_ELEVATION;
+
+#define TokenElevation 20
+
+#endif
 
 HRESULT 
 IsElevated( __out_opt BOOL * pbElevated ) //= NULL )
