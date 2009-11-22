@@ -223,7 +223,7 @@ CSettings::CSettings()
 	ThumbSettings.ThumbColor1 =  RGB( 13, 86, 125);
 	ThumbSettings.ThumbColor2 = RGB( 6, 174, 255);
 	ThumbSettings.UseServerThumbs = false;
-	ThumbSettings.UseThumbTemplate = false;
+	ThumbSettings.UseThumbTemplate = true;
 	ThumbSettings.ThumbTextColor = RGB( 255, 255, 255);
 	ThumbSettings.ThumbAlpha = 120;
 	ThumbSettings.Text = _T("%width%x%height% (%size%)");
