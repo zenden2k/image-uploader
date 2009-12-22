@@ -115,6 +115,7 @@ struct ScreenshotSettingsStruct
 {
 	int Format;
 	int Quality, Delay;
+	COLORREF brushColor;
 };
 #endif
 

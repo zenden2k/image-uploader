@@ -131,6 +131,7 @@ CString Font;
 		XML_OPTION_MEMBER_VALUE(ScreenshotSettings,Delay);
 		XML_OPTION_MEMBER_VALUE(ScreenshotSettings,Format);
 		XML_OPTION_MEMBER_VALUE(ScreenshotSettings,Quality);
+		_XML_OPTION_ATTR(brushColor, COLOR_TO_PINT(ScreenshotSettings.brushColor));
 	XML_NODE_END();
 	
 	XML_NODE_START(Image);

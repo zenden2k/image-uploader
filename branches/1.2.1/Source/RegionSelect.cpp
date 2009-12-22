@@ -27,8 +27,15 @@ CRegionSelect RegionSelect;
 CRegionSelect::CRegionSelect()
 {
 	Down = false;
+	m_brushSize = 0;
 	End.x = -1;
 	End.y = -1;
+	DrawingPen = 0;
+	DrawingBrush = 0;
+	
+	
+	cxOld = -1;
+	cyOld = -1;
 	pen = CreatePen(PS_SOLID, 2, 0); //Solid black line, width = 2 pixels
 	CrossCursor = LoadCursor(NULL,IDC_CROSS);
 }
@@ -79,6 +86,7 @@ LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 
 void CRegionSelect::ShowW(HWND Parent,HBITMAP bmp,int w,int h)
 {
+	setDrawingParams(Settings.ScreenshotSettings.brushColor, 3);
 	Down = false;
 	End.x = -1;
 
@@ -105,7 +113,10 @@ LRESULT CRegionSelect::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
 LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	if(!Down) return 0;
+	int cx = LOWORD(lParam); 
+	int cy = HIWORD(lParam);
+	if(Down)
+	{
 
 	HDC dc = GetDC();
 	SetROP2(dc, R2_NOTXORPEN);
@@ -118,6 +129,42 @@ LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 	Rectangle(dc, Start.x,Start.y, End.x, End.y);
 
+	}
+	if(RButtonDown)
+	{
+		HDC dc = GetDC();
+		HGDIOBJ oldPen = SelectObject(dc, DrawingPen); 
+		HGDIOBJ oldPen2 = SelectObject(memDC2, DrawingPen);
+
+		if(cxOld != -1)
+		{
+
+		MoveToEx(dc, cxOld, cyOld,0);
+		LineTo(dc, cx,cy);
+
+		MoveToEx(memDC2, cxOld, cyOld,0);
+		LineTo(memDC2, cx,cy);
+
+		SelectObject(dc, oldPen);
+		SelectObject(memDC2, oldPen2);
+
+		ReleaseDC(dc);
+		}
+		/*else
+		{
+			SelectObject(dc , DrawingBrush);
+			Ellipse(dc,	(2*cx-m_brushSize)/2,	(2*cy-m_brushSize)/2,	(2*cx+m_brushSize)/2,	  (2*cy+m_brushSize)/2	 );
+		}*/
+		cxOld = cx;
+		cyOld = cy;
+		
+		/*Ellipse(dc,	
+    cx,	
+    cy,	// y-coord. of bounding rectangle's upper-left corner  
+    cx+3,	// x-coord. of bounding rectangle's lower-right corner  
+    cy+3	// y-coord. bounding rectangle's f lower-right corner  
+   );*/
+	}
 	return 0;
 }
 
@@ -138,7 +185,9 @@ LRESULT CRegionSelect::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT CRegionSelect::OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	Hide(false);
+	RButtonDown = true;
+	Down = false;
+	//Hide(false);
 	return 0;
 }
 
@@ -257,7 +306,7 @@ void CRegionSelect::Finish()
 	// Удаление временного битмапа и контекста рисования
 	DeleteObject(SelectObject(memDC,oldbm));
 	DeleteObject(memDC); 
-
+	Settings.ScreenshotSettings.brushColor = m_brushColor;
 	Hide();
 }
 
@@ -291,4 +340,77 @@ BOOL CRegionSelect::OnSetCursor(CWindow wnd, UINT nHitTest, UINT message)
 {
 	SetCursor(CrossCursor);
 	return TRUE;
+}
+
+LRESULT  CRegionSelect::OnRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	RButtonDown=false;
+	
+	int cx = LOWORD(lParam); 
+	int cy = HIWORD(lParam); 
+
+	if(cxOld == -1)
+	{
+		/*cxOld=cx;
+		cyOld=cy;
+		OnMouseMove(uMsg, wParam, lParam,  bHandled);*/
+		HDC dc = GetDC();
+
+		HGDIOBJ oldPen = SelectObject(dc, DrawingPen);
+		HGDIOBJ oldBrush = SelectObject(dc , DrawingBrush);
+
+//cx-m_brushSize/2,	cy-m_brushSize/2,	cx+m_brushSize/2,	  cy+m_brushSize/2
+		Ellipse(dc,	cx,cy,cx+1,cy+1	 );
+		SelectObject(dc, oldPen);	
+		SelectObject(dc, oldBrush);
+		
+		ReleaseDC(dc);
+	}
+			cxOld = -1;
+	cyOld = -1;
+	return 0;
+}
+bool CRegionSelect::setDrawingParams(COLORREF color, int brushSize)
+{
+	if(brushSize<1) brushSize = 1;
+	
+	if(brushSize == m_brushSize && color == m_brushColor) return true;
+
+	if(DrawingPen) DeleteObject(DrawingPen);
+	DrawingPen = CreatePen(PS_SOLID, brushSize, color);
+
+	if(DrawingBrush) DeleteObject(DrawingBrush);
+	DrawingBrush = CreateSolidBrush(color);
+
+	m_brushSize = brushSize;
+	m_brushColor = color;
+	return true;
+}
+
+LRESULT CRegionSelect::OnMButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+
+	CColorDialog ColorDialog(m_brushColor);
+	if(ColorDialog.DoModal(m_hWnd) == IDOK)
+	{
+		COLORREF newColor =  ColorDialog.GetColor();
+		setDrawingParams(newColor, m_brushSize);
+		//Invalidate();
+		return TRUE;
+	}
+	return 0;
+}
+
+LRESULT CRegionSelect::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	TCHAR chCharCode = (TCHAR) wParam;
+	if(chCharCode == _T('['))
+	{
+		setDrawingParams(m_brushColor,m_brushSize-1);
+	}
+	else if(chCharCode == _T(']'))
+	{
+		setDrawingParams(m_brushColor, m_brushSize+1 );
+	}
+	return 0;
 }

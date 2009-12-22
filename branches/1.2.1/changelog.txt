@@ -2,6 +2,9 @@
 #
 # http://zenden.ws/imageuploader
 
+--v1.2.1 build 1576 [18.12.2009]--
+[F] A strange bug in context menu of "All programs" in winxp start menu fixed (by turning off bitmaps in context menu)
+
 --v1.2.1 build 1570 [14.10.2009]--
 [+] Tray icon
 [+] Hotkeys support

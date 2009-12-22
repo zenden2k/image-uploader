@@ -244,6 +244,7 @@ CSettings::CSettings()
 	ScreenshotSettings.Format =  1;
 	ScreenshotSettings.Quality = 85;
 	ScreenshotSettings.Delay = 3;
+	ScreenshotSettings.brushColor = RGB(255,0,0);
 
 	TrayIconSettings.LeftClickCommand = 0; // without action
 	TrayIconSettings.LeftDoubleClickCommand = 10; // add images

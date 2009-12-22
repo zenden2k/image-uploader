@@ -227,10 +227,23 @@ bool MySaveImage(Image *img,LPTSTR szFilename,LPTSTR szBuffer,int Format,int Qua
 	CLSID clsidEncoder;
 	EncoderParameters eps;
 	eps.Count = 1;
-	eps.Parameter[0].Guid = EncoderQuality;
-	eps.Parameter[0].Type = EncoderParameterValueTypeLong;
-	eps.Parameter[0].NumberOfValues = 1;
-	eps.Parameter[0].Value = &Quality;
+
+	if(Format == 0) //JPEG
+	{
+		eps.Parameter[0].Guid = EncoderQuality;
+		eps.Parameter[0].Type = EncoderParameterValueTypeLong;
+		eps.Parameter[0].NumberOfValues = 1;
+		eps.Parameter[0].Value = &Quality;
+	}
+	else if (Format == 1) //PNG
+	{
+		eps.Parameter[0].Guid = EncoderCompression;
+		eps.Parameter[0].Type = EncoderParameterValueTypeLong;
+		eps.Parameter[0].NumberOfValues = 1;
+		eps.Parameter[0].Value = &Quality;
+	}
+
+	
 
 	if(GetEncoderClsid(szMimeTypes[Format], &clsidEncoder)!=-1)
 	{
@@ -397,27 +410,26 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 
 bool IULaunchCopy(CString params, CAtlArray<CString> &files)
 {
-        STARTUPINFO si; 
-        PROCESS_INFORMATION pi; 
+	STARTUPINFO si; 
+	PROCESS_INFORMATION pi; 
         
-        ZeroMemory(&si, sizeof(si));
+	ZeroMemory(&si, sizeof(si));
    si.cb = sizeof(si);                           
    ZeroMemory(&pi, sizeof(pi));
 
 
-        TCHAR Buffer[MAX_PATH*40];
-        GetModuleFileName(0, Buffer, sizeof(Buffer)/sizeof(TCHAR));
+	TCHAR Buffer[MAX_PATH*40];
+	GetModuleFileName(0, Buffer, sizeof(Buffer)/sizeof(TCHAR));
 
 
-        CString TempCmdLine = CString(_T("\"")) + Buffer + CString(_T("\""));
-		  if(!params.IsEmpty())
-			TempCmdLine += _T(" ") + params + _T(" ");
-        for(int i=0;i <files.GetCount(); i++)
-        {
-                        
-                        TempCmdLine = TempCmdLine + " \"" + files[i] + "\""; 
-                }
+	CString TempCmdLine = CString(_T("\"")) + Buffer + CString(_T("\""));
+	if(!params.IsEmpty())
+		TempCmdLine += _T(" ") + params + _T(" ");
 
+	for(int i=0;i <files.GetCount(); i++)
+	{
+		TempCmdLine = TempCmdLine + " \"" + files[i] + "\""; 
+	}
 
     // Start the child process.
     if( !CreateProcess(
@@ -435,11 +447,10 @@ bool IULaunchCopy(CString params, CAtlArray<CString> &files)
     
         return false;
 
-
     // Close process and thread handles. 
-    CloseHandle( pi.hProcess );
-    CloseHandle( pi.hThread );
-        return true;
+	CloseHandle( pi.hProcess );
+	CloseHandle( pi.hThread );
+	return true;
 }
 
 
