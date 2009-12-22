@@ -23,6 +23,7 @@
 #include "resource.h"       // main symbols
 #include "myimage.h"
 #include <atlcrack.h>
+#include "colorpicker.h"
 // CRegionSelect
 
 class CRegionSelectCallback
@@ -59,8 +60,10 @@ class CRegionSelect :
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBg)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown)
 		MESSAGE_HANDLER(WM_RBUTTONDOWN, OnRButtonDown)
-		MESSAGE_HANDLER(WM_MBUTTONDOWN, OnRButtonDown)
+		MESSAGE_HANDLER(WM_MBUTTONUP, OnMButtonUp)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtonUp)
+		MESSAGE_HANDLER(WM_RBUTTONUP, OnRButtonUp)
+		MESSAGE_HANDLER(WM_CHAR, OnChar)
 		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
 		MSG_WM_TIMER(OnTimer)
 		MSG_WM_ACTIVATE(OnActivate)
@@ -79,6 +82,10 @@ class CRegionSelect :
 	LRESULT OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnMButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
+	LRESULT OnRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnEraseBg(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnKillFocus(HWND hwndNewFocus);
@@ -93,16 +100,24 @@ public:
 	void ShowW(HWND Parent, HBITMAP bmp,int w,int h);
 	POINT Start,End;
 	bool Down;
+	bool RButtonDown;
 	HPEN pen;
 	HWND Parent;
 	HBITMAP oldbm;
 	HBITMAP oldbm2;
 	HCURSOR CrossCursor ;
+	bool setDrawingParams(COLORREF color, int brushSize);
 private:
 	SIZE sz;
+	HPEN DrawingPen;
+	HBRUSH DrawingBrush;
 	HDC memDC;	HDC memDC2;
 	HDC dstDC;
+	int cxOld, cyOld;
 	void Hide(bool Res = true);
+	int m_brushSize;
+	COLORREF m_brushColor;
+
 };
 
 extern CRegionSelect RegionSelect;

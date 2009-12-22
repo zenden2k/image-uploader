@@ -84,7 +84,7 @@ class ATL_NO_VTABLE CIShellContextMenu :
 		void FinalRelease()
 		{
 		}
-		bool MyInsertMenu(HMENU hMenu, int pos, UINT id, int nInternalCommand, const LPTSTR szTitle, int firstCmd, HBITMAP bm=0,WORD resid=0);
+		bool MyInsertMenu(HMENU hMenu, int pos, UINT id, int nInternalCommand, const LPTSTR szTitle, int firstCmd, bool UseBitmaps = true, HBITMAP bm=0,WORD resid=0);
 		bool m_bMediaInfoInstalled;
 		IconBitmapUtils m_IconBitmapUtils;
 	HBITMAP IconToBitmap(HINSTANCE hInst, UINT uIcon);
