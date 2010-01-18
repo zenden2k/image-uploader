@@ -113,6 +113,7 @@ private:
 	HBRUSH DrawingBrush;
 	HDC memDC;	HDC memDC2;
 	HDC dstDC;
+	HDC m_dc;
 	int cxOld, cyOld;
 	void Hide(bool Res = true);
 	int m_brushSize;

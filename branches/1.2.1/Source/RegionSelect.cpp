@@ -92,6 +92,8 @@ void CRegionSelect::ShowW(HWND Parent,HBITMAP bmp,int w,int h)
 
 	End.y = -1;
 
+	cxOld = -1;
+	cyOld = -1;
 	bm = bmp;
 	memDC2 = ::CreateCompatibleDC(GetDC());
 
@@ -101,6 +103,7 @@ void CRegionSelect::ShowW(HWND Parent,HBITMAP bmp,int w,int h)
 	MoveWindow(0, 0, w, h);
 	ShowWindow(SW_SHOW);
 	::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
+	m_dc = GetDC();
 }
 
 LRESULT CRegionSelect::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -117,53 +120,39 @@ LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	int cy = HIWORD(lParam);
 	if(Down)
 	{
-
-	HDC dc = GetDC();
-	SetROP2(dc, R2_NOTXORPEN);
-	SelectObject(dc, pen);
-	if(End.x>-1)
-		Rectangle(dc, Start.x,Start.y, End.x, End.y);
-
-	End.x = LOWORD(lParam); 
-	End.y = HIWORD(lParam);
-
-	Rectangle(dc, Start.x,Start.y, End.x, End.y);
-
-	}
-	if(RButtonDown)
-	{
 		HDC dc = GetDC();
-		HGDIOBJ oldPen = SelectObject(dc, DrawingPen); 
+		SetROP2(dc, R2_NOTXORPEN);
+		SelectObject(dc, pen);
+		if(End.x>-1)
+			Rectangle(dc, Start.x,Start.y, End.x, End.y);
+
+		End.x = LOWORD(lParam); 
+		End.y = HIWORD(lParam);
+
+		Rectangle(dc, Start.x,Start.y, End.x, End.y);
+	}
+
+	if(wParam & MK_RBUTTON)
+	{
 		HGDIOBJ oldPen2 = SelectObject(memDC2, DrawingPen);
 
 		if(cxOld != -1)
 		{
+			MoveToEx(memDC2, cxOld, cyOld,0);
+			LineTo(memDC2, cx,cy);
 
-		MoveToEx(dc, cxOld, cyOld,0);
-		LineTo(dc, cx,cy);
-
-		MoveToEx(memDC2, cxOld, cyOld,0);
-		LineTo(memDC2, cx,cy);
-
-		SelectObject(dc, oldPen);
-		SelectObject(memDC2, oldPen2);
-
-		ReleaseDC(dc);
+			RECT RectToRepaint;
+			RectToRepaint.left = min(cxOld, cx) - m_brushSize;
+			RectToRepaint.top = min(cyOld, cy) - m_brushSize;
+			RectToRepaint.right = max(cxOld, cx) + m_brushSize;
+			RectToRepaint.bottom = max(cyOld, cy) + m_brushSize;
+			InvalidateRect(&RectToRepaint);
+			UpdateWindow();
 		}
-		/*else
-		{
-			SelectObject(dc , DrawingBrush);
-			Ellipse(dc,	(2*cx-m_brushSize)/2,	(2*cy-m_brushSize)/2,	(2*cx+m_brushSize)/2,	  (2*cy+m_brushSize)/2	 );
-		}*/
+	
 		cxOld = cx;
 		cyOld = cy;
 		
-		/*Ellipse(dc,	
-    cx,	
-    cy,	// y-coord. of bounding rectangle's upper-left corner  
-    cx+3,	// x-coord. of bounding rectangle's lower-right corner  
-    cy+3	// y-coord. bounding rectangle's f lower-right corner  
-   );*/
 	}
 	return 0;
 }
@@ -265,6 +254,7 @@ bool CRegionSelect::Execute(CRegionSelectCallback *RegionSelectCallback)
 
 void CRegionSelect::Finish()
 {
+	ReleaseDC(m_dc);
 	::SelectObject(memDC2, oldbm2 );
 	DeleteObject(memDC2);
 
@@ -351,22 +341,21 @@ LRESULT  CRegionSelect::OnRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
 	if(cxOld == -1)
 	{
-		/*cxOld=cx;
-		cyOld=cy;
-		OnMouseMove(uMsg, wParam, lParam,  bHandled);*/
-		HDC dc = GetDC();
+		HDC dc = m_dc;
 
 		HGDIOBJ oldPen = SelectObject(dc, DrawingPen);
+		HGDIOBJ oldPen2 = SelectObject(memDC2, DrawingPen);
 		HGDIOBJ oldBrush = SelectObject(dc , DrawingBrush);
-
-//cx-m_brushSize/2,	cy-m_brushSize/2,	cx+m_brushSize/2,	  cy+m_brushSize/2
-		Ellipse(dc,	cx,cy,cx+1,cy+1	 );
+		HGDIOBJ oldBrush2 = SelectObject(memDC2, DrawingBrush);
+		Ellipse(dc,	cx-1,cy-1,cx+1,cy+1);
+		Ellipse(memDC2,	cx-1,cy-1,cx+1,cy+1);
 		SelectObject(dc, oldPen);	
 		SelectObject(dc, oldBrush);
+		SelectObject(memDC2, oldPen);	
+		SelectObject(memDC2, oldBrush);
 		
-		ReleaseDC(dc);
 	}
-			cxOld = -1;
+	cxOld = -1;
 	cyOld = -1;
 	return 0;
 }
