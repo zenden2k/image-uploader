@@ -456,7 +456,6 @@ void CUploader::UploadError(WORD EventType, LPCTSTR Url, LPCTSTR  Error, int Err
 		WriteLog(logWarning,TR("Модуль загрузки"), BoldError, FullErrorString);
 	else
 	WriteLog(logError,TR("Модуль загрузки"), BoldError, FullErrorString);
-
 }
 
 bool CUploader::DoAction(UploadAction &Action)
@@ -486,7 +485,7 @@ bool CUploader::DoAction(UploadAction &Action)
 	CString temp = Current.Url;
 	 Current.Url = ReplaceVars(temp);
 	
-	if(EnginesList[CurrentServer].Debug && Action.Type != _T("post") && Action.Type != _T("upload"))
+	if(EnginesList[CurrentServer].Debug /*&& Action.Type != _T("post") && Action.Type != _T("upload")*/)
 		MessageBox(GetActiveWindow(),  Status+_T("\r\nType:")+Action.Type+_T("\r\nURL: ")+Current.Url,_T("Debug"), MB_ICONINFORMATION);
 
 	if(Action.Type == _T("upload"))
@@ -534,7 +533,7 @@ void CUploader::ConfigureProxy(CHttpClient &objHttpReq)
 	objHttpReq.AddHeader (_T ("Accept-Encoding"), _T("identity")) ;
 	objHttpReq.AddHeader (_T ("Accept"), _T("text/html, *")) ;*/
 
-	objHttpReq.AddHeader (_T ("Referer"), EnginesList[CurrentServer].Actions[0].Url) ;
+	//objHttpReq.AddHeader (_T ("Referer"), EnginesList[CurrentServer].Actions[0].Url) ;
 	
 	if(Settings.ConnectionSettings.UseProxy && Settings.ConnectionSettings.NeedsAuth && Settings.ConnectionSettings.ProxyType==0)
 	{
@@ -571,7 +570,7 @@ void CUploader::ConfigureProxy(CHttpClient &objHttpReq)
 
 void CUploader::AddQueryPostParams(UploadAction &Action, CHttpClient &objHttpReq)
 {
-
+	objHttpReq.AddHeader (_T ("Referer"), Action.Referer.IsEmpty()?Action.Url:Action.Referer) ;
 	RegExp exp;
 	CComBSTR Pat = _T("(.*?)=(.*?[^\\x5c]{0,1});");
 	CComBSTR Txt = Action.PostParams;
