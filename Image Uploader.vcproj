@@ -42,15 +42,16 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
 				WarningLevel="0"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
+				CallingConvention="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -63,10 +64,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="gdiplus.lib strmbasd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zdlld.lib minizipd.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;d:\Projects\Image Uploader\Image Uploader\Libs\"
-				IgnoreDefaultLibraryNames="LIBCMT.lib"
+				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -125,8 +126,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;"
+				Optimization="2"
+				FavorSizeOrSpeed="0"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB"
 				ExceptionHandling="1"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -147,10 +150,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wininet.lib"
+				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wininet.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;d:\Projects\Image Uploader\Image Uploader\Libs\&quot;"
+				GenerateManifest="false"
+				AdditionalManifestDependencies=""
 				IgnoreAllDefaultLibraries="false"
+				IgnoreDefaultLibraryNames="msvcprt.lib MSVCRT"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -205,11 +211,19 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Source\Plugins\base64.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Source\ColorPicker.cpp"
 				>
 			</File>
 			<File
 				RelativePath="Source\Common.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Plugins\CP_RSA.cpp"
 				>
 			</File>
 			<File
@@ -230,6 +244,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\HotkeySettings.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\hyperlink.cpp"
 				>
 			</File>
 			<File
@@ -293,6 +311,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Common\NetworkManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\NewFolderDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\PluginLoader.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Source\RegionSelect.cpp"
 				>
 			</File>
@@ -302,6 +332,14 @@
 			</File>
 			<File
 				RelativePath="Source\ScreenshotDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\ServerFolderSelect.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\ServerParamsDlg.cpp"
 				>
 			</File>
 			<File
@@ -363,11 +401,27 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Source\TextViewDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Source\ThumbsView.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\TraySettings.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Common\Unzipper.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\UpdateDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\UpdatePackage.cpp"
 				>
 			</File>
 			<File
@@ -422,31 +476,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Source\Common\PictureExWnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Common\PictureExWnd.h"
+					>
+				</File>
+				<File
 					RelativePath="Source\Common\RegExp.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Http Client"
-				>
-				<File
-					RelativePath="Source\HttpClient\RyeolErrMgmtFunc.cpp"
-					>
-				</File>
-				<File
-					RelativePath="Source\HttpClient\RyeolException.cpp"
-					>
-				</File>
-				<File
-					RelativePath="Source\HttpClient\RyeolHttpClient.cpp"
-					>
-				</File>
-				<File
-					RelativePath="Source\HttpClient\RyeolStringFunc.cpp"
-					>
-				</File>
-				<File
-					RelativePath="Source\HttpClient\SafeInt.hpp"
 					>
 				</File>
 			</Filter>
@@ -461,11 +499,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Plugins\base64.h"
+				>
+			</File>
+			<File
 				RelativePath="Source\ColorPicker.h"
 				>
 			</File>
 			<File
 				RelativePath="Source\Common.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Plugins\CP_RSA.h"
 				>
 			</File>
 			<File
@@ -486,6 +532,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\HotkeySettings.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\hyperlink.h"
 				>
 			</File>
 			<File
@@ -549,6 +599,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\PluginLoader.h"
+				>
+			</File>
+			<File
 				RelativePath="Source\RegionSelect.h"
 				>
 			</File>
@@ -562,6 +616,18 @@
 			</File>
 			<File
 				RelativePath="Source\ScreenshotDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\ServerFolderSelect.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\ServerParamsDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\ServerSelectDlg.h"
 				>
 			</File>
 			<File
@@ -593,11 +659,31 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\TextViewDlg.h"
+				>
+			</File>
+			<File
 				RelativePath="Source\ThumbsView.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\TraySettings.h"
+				>
+			</File>
+			<File
+				RelativePath=".\tvg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Common\Unzipper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\UpdateDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\UpdatePackage.h"
 				>
 			</File>
 			<File
@@ -711,6 +797,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\res\server.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\server_8bit.bmp"
+				>
+			</File>
+			<File
 				RelativePath="Source\res\toolbar11.bmp"
 				>
 			</File>
@@ -727,6 +821,14 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\Source\res\image uploader.exe.manifest"
+			>
+		</File>
+		<File
+			RelativePath=".\Source\res\progress.gif_"
+			>
+		</File>
 	</Files>
 	<Globals>
 		<Global

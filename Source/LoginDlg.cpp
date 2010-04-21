@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -54,7 +54,7 @@ LoginInfo LoadLogin(int ServerId)
 {
 	LoginInfo Result;
 	UploadEngine UE = EnginesList[ServerId];
-	return Settings.AuthParams[UE.Name];
+	return Settings.ServersSettings[UE.Name].authData;
 }
 
 void EncodeString(LPCTSTR szSource, CString &Result,LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ")
@@ -85,9 +85,8 @@ void EncodeString(LPCTSTR szSource, CString &Result,LPSTR code="{DAb[]=_T('')+b/
 
 bool SaveLogin(int ServerId,LoginInfo li)
 {
-
 	UploadEngine &UE = EnginesList[ServerId];
-	Settings.AuthParams[UE.Name] = li;
+	Settings.ServersSettings[UE.Name].authData = li;
 	return true;
 }
 
@@ -111,13 +110,13 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	SetWindowText(TR("Параметры авторизации"));
 	TRC(IDC_LOGINLABEL, "Логин:");
 	TRC(IDC_PASSWORDLABEL, "Пароль:");
-	TRC(IDC_USEIECOOKIES, "Использовать cookies из Internet Explorer");
+	TRC(IDC_DOAUTH, "Выполнять авторизацию");
 	TRC(IDCANCEL, "Отмена");
 	
 	SetDlgItemText(IDC_LOGINEDIT, li.Login);
 	SetDlgItemText(IDC_PASSWORDEDIT, li.Password);
 	SetDlgItemText(IDC_LOGINFRAME, EnginesList[ServerId].Name);
-	SendDlgItemMessage(IDC_USEIECOOKIES, BM_SETCHECK, (li.UseIeCookies?BST_CHECKED:BST_UNCHECKED));
+	SendDlgItemMessage(IDC_DOAUTH, BM_SETCHECK, (li.DoAuth?BST_CHECKED:BST_UNCHECKED));
 	OnClickedUseIeCookies(0, 0, 0, bHandled);
 	return 1;  // Разрешаем системе самостоятельно установить фокус ввода
 }
@@ -131,7 +130,7 @@ LRESULT CLoginDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& b
 	li.Login = Buffer;
 	GetDlgItemText(IDC_PASSWORDEDIT, Buffer, 256);
 	li.Password = Buffer;
-	li.UseIeCookies = SendDlgItemMessage(IDC_USEIECOOKIES, BM_GETCHECK);
+	li.DoAuth = SendDlgItemMessage(IDC_DOAUTH, BM_GETCHECK);
 	
 	SaveLogin(ServerId, li);
 
@@ -147,7 +146,7 @@ LRESULT CLoginDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOO
 
 LRESULT CLoginDlg::OnClickedUseIeCookies(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	::EnableWindow(GetDlgItem(IDC_LOGINEDIT), !IsChecked(IDC_USEIECOOKIES));
-	::EnableWindow(GetDlgItem(IDC_PASSWORDEDIT), !IsChecked(IDC_USEIECOOKIES));
+	::EnableWindow(GetDlgItem(IDC_LOGINEDIT), IsChecked(IDC_DOAUTH));
+	::EnableWindow(GetDlgItem(IDC_PASSWORDEDIT), IsChecked(IDC_DOAUTH));
 	return 0;
 }

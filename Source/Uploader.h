@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -22,14 +22,12 @@
 #define _UPLOADER_H_
 
 
-#include "HttpClient\RyeolHttpClient.h"
-#include "HttpClient\RyeolErrMgmtFunc.h"
 #include <deque>
 #include "thread.h"
 #include "common.h"
+#include "Common/NetworkManager.h"
 
 
-using namespace Ryeol ;
 class CUploader
 {
 	public:
@@ -45,19 +43,19 @@ class CUploader
 		bool UploadFile(LPTSTR FileName, LPTSTR szUrlBuffer = NULL,LPTSTR szThumbUrlBuffer = NULL, int ThumbWidth = 160);	
 		CString getDownloadUrl();
 	protected:
-		
+		static int pluginProgressFunc (void* userData, double dltotal,double dlnow,double ultotal, double ulnow);
 		int ThumbWidth;
 		CString m_FileName;
 		
 		LPTSTR ThumbUrl, ImgUrl;
 		
-	
+		NetworkManager m_NetworkManager;
 		bool DoAction(UploadAction &Action);
 		bool DoUploadAction(UploadAction &Action, bool bUpload);
 		bool DoGetAction(UploadAction &Action);
 		bool SendHttpRequest(LPTSTR szMethod, LPTSTR szBody, LPTSTR szAddress, int nPort);
 		
-		bool ParseAnswer(UploadAction &Action, LPTSTR Body);
+		bool ParseAnswer(UploadAction &Action, LPCTSTR Body);
 		void UploadError(WORD EventType, LPCTSTR Url, LPCTSTR  Error, int ErrorCode=0, LPCTSTR ErrorExplication=NULL);
 		std::map<CString, CString> m_Vars;
 		std::map<CString, CString> m_Consts;
@@ -65,10 +63,11 @@ class CUploader
 		LoginInfo li;
 		CString m_StatusText;
 		CString ReplaceVars(const CString Text);
-		void ConfigureProxy(CHttpClient &objHttpReq);
-		void AddQueryPostParams(UploadAction &Action, CHttpClient &objHttpReq);
-		bool ReadServerResponse(UploadAction &Action, CHttpResponse *pobjHttpRes);
+		void ConfigureProxy();
+		void AddQueryPostParams(UploadAction &Action);
+		bool ReadServerResponse(UploadAction &Action);
 		
+
 		UploadEngine CurrentEngine;
 		void SetStatusText(CString Text);
 		bool DoTry();
@@ -76,6 +75,7 @@ class CUploader
 		CString m_ImageUrl;
 		CString m_DownloadUrl;
 		CString m_ErrorReason;
+		CAutoCriticalSection m_CS;
 };
 
 #endif

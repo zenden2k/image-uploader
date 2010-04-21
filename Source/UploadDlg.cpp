@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -130,13 +130,13 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 #endif
 
 	TC_ITEM item;
-	item.pszText = TR("Для форума"); 
+	item.pszText = TR("Для форума (BBCode)"); 
 	item.mask = TCIF_TEXT	;
 	TabCtrl_InsertItem(GetDlgItem(IDC_RESULTSTAB), 0, &item);
-	item.pszText = TR("Для сайта"); 
+	item.pszText = TR("Для сайта (HTML)"); 
 	item.mask = TCIF_TEXT	;
 	TabCtrl_InsertItem(GetDlgItem(IDC_RESULTSTAB), 1, &item);
-	item.pszText = TR("Просто ссылки"); 
+	item.pszText = TR("Просто ссылки (URL)"); 
 	item.mask = TCIF_TEXT	;
 	TabCtrl_InsertItem(GetDlgItem(IDC_RESULTSTAB), 2, &item);
 	TabBackgroundFix(GetDlgItem(IDC_CODETYPELABEL));
@@ -150,7 +150,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	if(vg && lstrlen(vg->m_szFileName))
 		IsLastVideo=true;
 
-	ResultsPanel.EnableMediaInfo(IsLastVideo);
+	
 
 	// Creating panel with results
 	RECT rc = {150,3,636,300};
@@ -170,6 +170,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	ResultsPanel.SetWindowPos(0,rc.left,rc.top,rc.right,rc.bottom,SWP_NOSIZE);
 	SetDlgItemInt(IDC_THUMBSPERLINE, 4);
 	SendDlgItemMessage(IDC_THUMBPERLINESPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
+ResultsPanel.EnableMediaInfo(IsLastVideo);
 
 	MakeLabelBold(GetDlgItem(IDC_COMMONPROGRESS));
 	MakeLabelBold(GetDlgItem(IDC_COMMONPERCENTS));
@@ -222,16 +223,27 @@ DWORD CUploadDlg::Run()
 		return 0;
 	}
 
-	SendDlgItemMessage(IDC_UPLOADPROGRESS,PBM_SETPOS,0);
+	UploadEngine &ue =EnginesList[Server];
+	if(ue.SupportsFolders)
+	{
+		ResultsPanel.AddServerId(Server);
+	}
+
+	if(EnginesList[Settings.FileServerID].SupportsFolders)
+	{
+		ResultsPanel.AddServerId(Settings.FileServerID);
+	}
+
 	ShowProgress(false);
-	SendDlgItemMessage(IDC_UPLOADPROGRESS,PBM_SETRANGE,0,MAKELPARAM(0, n));
-	SendDlgItemMessage(IDC_FILEPROGRESS,PBM_SETRANGE,0,MAKELPARAM(0, 100));
-	SetDlgItemText(IDC_COMMONPERCENTS,_T("0%"));
+	SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETPOS, 0);
+	SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, n));
+	SendDlgItemMessage(IDC_FILEPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
+	SetDlgItemText(IDC_COMMONPERCENTS, _T("0%"));
 
 	UploadProgress(0, n);
 
 	int i;
-	LPTSTR FileName;
+	CString FileName;
 	TCHAR szBuffer[MAX_PATH];
 	TCHAR UrlBuffer[256]=_T("\0");
 	int NumUploaded=0;
@@ -266,6 +278,7 @@ DWORD CUploadDlg::Run()
 
 		SendDlgItemMessage(IDC_FILEPROGRESS,PBM_SETPOS,0);
 
+		
 		if(IsImage(MainDlg->FileList[i].FileName))
 		{
 
@@ -294,7 +307,10 @@ DWORD CUploadDlg::Run()
 		{
 			lstrcpy(ImageFileName, MainDlg->FileList[i].FileName);
 			Uploader.SelectServer(Settings.FileServerID);
+			
 		}
+
+		
 
 		FileName = (MainDlg->FileList[i].FileName);
 
@@ -304,6 +320,7 @@ DWORD CUploadDlg::Run()
 		SendDlgItemMessage(IDC_FILEPROGRESS,PBM_SETPOS,0);
 		PrInfo.Total=0;
 		PrInfo.Uploaded=0;
+		PrInfo.Bytes.clear(); // MDA...
 		PrInfo.IsUploading = false;
 		LastUpdate=0;
 		ShowProgress(true);
@@ -316,6 +333,7 @@ DWORD CUploadDlg::Run()
 			continue;
 		}
 
+
 		if(IsImage(MainDlg->FileList[i].FileName)&& EnginesList[Server].MaxFileSize && MyGetFileSize(ImageFileName)>EnginesList[Server].MaxFileSize)
 		{
 			CSizeExceed SE(ImageFileName, iss);
@@ -323,17 +341,18 @@ DWORD CUploadDlg::Run()
 			int res = SE.DoModal(m_hWnd);
 			if(res==IDOK || res==3 )
 			{
-				if(res==3) InitialParams = iss;
+				if(res==3) InitialParams = iss; // if user choose button USE FOR ALL
 
 				i--;
 				continue;
 			}
 		}
 		ShowProgress(true);
+
 		if(IsImage(MainDlg->FileList[i].FileName))
-			FileProgress(TR("Загрузка картинки.."));
+			FileProgress(TR("Загрузка изображения.."));
 		else 
-			FileProgress(CString(TR("Загрузка файла"))+_T(" ")+myExtractFileName(MainDlg->FileList[i].FileName));
+			FileProgress(CString(TR("Загрузка файла")) + _T(" ") + myExtractFileName(MainDlg->FileList[i].FileName));
 
 		*UrlBuffer=0;
 		*ThumbUrl = 0;
@@ -342,6 +361,7 @@ DWORD CUploadDlg::Run()
 		DownloadUrl = Uploader.getDownloadUrl();
 
 		ShowProgress(false);
+
 		if(ShouldStop()) 
 			return ThreadTerminated();
 
@@ -363,6 +383,11 @@ DWORD CUploadDlg::Run()
 
 		if(result  &&  (lstrlen(UrlBuffer)>0 || !DownloadUrl.IsEmpty()))
 		{
+			if(EnginesList[Uploader.CurrentServer].SupportsFolders)
+			{
+					ResultsPanel.AddServerId(Uploader.CurrentServer);
+			}
+
 			NumUploaded++;
 
 
@@ -378,6 +403,7 @@ DWORD CUploadDlg::Run()
 				ShowProgress(true);
 				*ThumbUrl = 0;
 				PrInfo.Total=0;
+				PrInfo.Bytes.clear();
 				PrInfo.Uploaded=0;
 				PrInfo.IsUploading = false;
 				BOOL result = Uploader.UploadFile(ThumbFileName,ThumbUrl,0);
@@ -424,7 +450,6 @@ DWORD CUploadDlg::Run()
 	}
 
 	UploadProgress(n, n);
-	//SendDlgItemMessage(IDC_UPLOADPROGRESS,PBM_SETPOS,n, 0);
 	wsprintf(szBuffer,_T("%d %%"),100);
 	SetDlgItemText(IDC_COMMONPERCENTS,szBuffer);
 
@@ -438,6 +463,7 @@ DWORD CUploadDlg::Run()
 
 	BOOL temp;
 	ResultsPanel.OnCbnSelchangeCodetype(0,0,0,temp);
+
 	FileProgress(szBuffer, false);
 
 	return ThreadTerminated();
@@ -471,6 +497,7 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 		PrInfo.CS.Lock();
 		if(!PrInfo.IsUploading) 
 		{
+			ShowProgress(false);
 			if(m_CurrentUploader)
 			{
 				CString StatusText = m_CurrentUploader->GetStatusText();
@@ -493,6 +520,7 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 			 if(perc<0 || perc>100) perc=0;
 			 if(perc>=100) {
 				 ShowProgress(false);
+				 PrInfo.Bytes.clear();
 				 PrInfo.Uploaded=0;
 				 PrInfo.Total = 0;
 				 PrInfo.IsUploading  = false;
@@ -612,9 +640,8 @@ void DrawRect(Bitmap &gr,Color &color,Rect rect)
 	}
 }
 
-#define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 
-int CUploadDlg::GenerateImages(LPTSTR szFileName, LPTSTR szBufferImage, LPTSTR szBufferThumb,int thumbwidth, ImageSettingsStruct &iss)
+int CUploadDlg::GenerateImages(LPCTSTR szFileName, LPTSTR szBufferImage, LPTSTR szBufferThumb,int thumbwidth, ImageSettingsStruct &iss)
 {
 	RECT rc;
 	GetClientRect(&rc);
@@ -771,7 +798,7 @@ bool CUploadDlg::OnShow()
 	ShowNext();
 	ShowPrev();
 	MainDlg = (CMainDlg*) WizardDlg->Pages[2];
-	Toolbar.CheckButton(IDC_USETEMPLATE,Settings.UseTxtTemplate);
+	//Toolbar.CheckButton(IDC_USETEMPLATE,Settings.UseTxtTemplate);
 	FileProgress(_T(""), false);
 	UrlList.RemoveAll();
 	ResultsPanel.Clear();
@@ -878,7 +905,7 @@ void CUploadDlg::GenThumb(LPCTSTR szImageFileName, Image *bm, int ThumbWidth, in
 	if(Settings.ThumbSettings.UseThumbTemplate)
 	{
 		Graphics g1(m_hWnd);
-		Image templ(GetAppFolder()+_T("Data\\thumb.png"));
+		Image templ(IU_GetDataFolder()+_T("thumb.png"));
 		int ww = templ.GetWidth();
 		CString s;
 

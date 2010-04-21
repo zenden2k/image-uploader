@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -28,6 +28,8 @@
 #define IDC_ADDFOLDER IU_IDC_CONST+5
 #include <deque>
 #include "thread.h"
+#include "pluginloader.h"
+#include <ctime>
 class CWizardDlg;
 class CWizardPage
 {
@@ -80,19 +82,23 @@ struct CUrlListItem{
 	CString DownloadUrl;
 
 };
+
 struct UploadEngine
 {
-	TCHAR Name[64];
+	CString Name;
+	CString PluginName;
+	bool SupportsFolders;
+	bool UsingPlugin;
 	bool Debug;
 	bool ImageHost;
-	bool SupportThumbnails, NeedAuthorization;
+	bool SupportThumbnails;
+	int NeedAuthorization;
 	DWORD MaxFileSize;
-	bool Auth;
+	CString RegistrationUrl;
 	CString CodedLogin;
 	CString CodedPassword;
 	CString ThumbUrlTemplate, ImageUrlTemplate, DownloadUrlTemplate;
 	std::vector<UploadAction> Actions;
-	//--------
 	int RetryLimit;
 	int NumOfTries;
 
@@ -110,7 +116,7 @@ bool IULaunchCopy();
 BOOL CreateTempFolder();
 void ClearTempFolder();
 
-extern CAtlArray< UploadEngine> EnginesList;
+extern std::vector< UploadEngine> EnginesList;
 int GetUploadEngineIndex(const CString Name);
 extern CString IUTempFolder;
 extern CCmdLine CmdLine;
@@ -126,7 +132,25 @@ bool __fastcall CreateShortCut(
 							   int iIconIndex) ;
 void DrawStrokedText(Graphics &gr, LPCTSTR Text,RectF Bounds,Gdiplus::Font &font,Color &ColorText,Color &ColorStroke,int HorPos=0,int VertPos=0, int width=1);
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
+#define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 
 bool IULaunchCopy(CString params, CAtlArray<CString> &files);
 
+extern CPluginManager iuPluginManager;
+
+void IU_ConfigureProxy(NetworkManager& nm);
+CString IU_GetFileMimeType (const CString& filename);
+const CString IU_GetVersion();
+#define IU_NEWFOLDERMARK _T("_iu_create_folder_")
+void DeleteDir2(LPCTSTR Dir);
+bool BytesToString(__int64 nBytes, LPTSTR szBuffer,int nBufSize);
+bool IULaunchCopy(CString additionalParams=_T(""));
+int GetFolderFileList(std::vector<CString> &list, CString folder, CString mask);
+
+void IU_RunElevated(CString params);
+HRESULT IsElevated( __out_opt BOOL * pbElevated );
+#define randomize() (srand((unsigned)time(NULL)))
+#define random(x) (rand() % x)
+bool IU_CopyTextToClipboard(CString text);
+DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
 #endif

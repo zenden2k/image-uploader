@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -36,7 +36,7 @@ LRESULT CWelcomeDlg::OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	
 CWelcomeDlg::~CWelcomeDlg()
 {
-
+	
 }
 
 
@@ -189,6 +189,8 @@ LRESULT CWelcomeDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
 LRESULT CWelcomeDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	LeftImage.UnsubclassWindow();
+	LogoImage.UnsubclassWindow();
 	ChangeClipboardChain(PrevClipboardViewer); //Removing window from the chain of clipboard viewers
 	return 0;
 }

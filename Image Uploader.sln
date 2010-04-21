@@ -23,4 +23,7 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		AMDCaProjectFile = D:\Projects\Image Uploader\image-uploader\trunk\CodeAnalyst\Image Uploader.caw
+	EndGlobalSection
 EndGlobal

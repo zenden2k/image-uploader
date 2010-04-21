@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -22,6 +22,8 @@
 
 #include "resource.h"       // main symbols
 #include "settingspage.h"
+#include "colorpicker.h"
+#include <atlcrack.h>
 // CVideoGrabberParams
 struct CSavingOptions
 {
@@ -32,6 +34,8 @@ struct CSavingOptions
 	int NumOfFrames;
 	int JPEGQuality;
 };
+
+
 
 class CVideoGrabberParams : 
 	public CDialogImpl<CVideoGrabberParams>, public CSettingsPage	
@@ -45,7 +49,9 @@ public:
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-    END_MSG_MAP()
+		COMMAND_ID_HANDLER_EX(IDC_MEDIAINFOFONT, OnMediaInfoFontClicked)
+		COMMAND_HANDLER(IDC_MEDIAINFOONIMAGE,BN_CLICKED, OnShowMediaInfoTextBnClicked)
+     END_MSG_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -55,6 +61,10 @@ public:
 	LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	//CSavingOptions *so;
 	bool Apply();
+	LOGFONT m_Font;
+	CColorPicker Color1;
+	LRESULT OnMediaInfoFontClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+	LRESULT OnShowMediaInfoTextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 };
 
 

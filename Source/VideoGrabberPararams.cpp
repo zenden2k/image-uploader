@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -42,8 +42,9 @@ LRESULT CVideoGrabberParams::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	SetDlgItemInt(IDC_TILEWIDTH,Settings.VideoSettings.TileWidth);
 	SetDlgItemInt(IDC_GAPWIDTH,Settings.VideoSettings.GapWidth);
 	SetDlgItemInt(IDC_GAPHEIGHT,Settings.VideoSettings.GapHeight);
-
+	m_Font = Settings.VideoSettings.Font;
 	SendDlgItemMessage(IDC_USEAVIINFO,BM_SETCHECK, Settings.VideoSettings.UseAviInfo);
+	SendDlgItemMessage(IDC_MEDIAINFOONIMAGE,BM_SETCHECK, Settings.VideoSettings.ShowMediaInfo);
 
 	SetWindowText(TR("Настройки внешнего вида"));
 	TRC(IDCANCEL,"Отмена");
@@ -52,6 +53,16 @@ LRESULT CVideoGrabberParams::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	TRC(IDC_INTERVALHORLABEL,"Горизонтальный промежуток:");	
 	TRC(IDC_INTERVALVERTLABEL,"Вертикальный промежуток:");
 	TRC(IDC_APPEARANCEGROUP,"Параметры компоновки кадров");
+	TRC(IDC_MEDIAINFOONIMAGE, "Отобразить информацию о видеофайле на картинке");
+	TRC(IDC_MEDIAINFOFONT, "Шрифт...");
+	TRC(IDC_TEXTCOLORLABEL, "Цвет текста:");
+
+	Color1.SubclassWindow(GetDlgItem(IDC_TEXTCOLOR));
+	Color1.Color = Settings.VideoSettings.TextColor;
+	Color1.m_pfnSuperWindowProc=::DefWindowProc;
+
+	BOOL b;
+	OnShowMediaInfoTextBnClicked(IDC_MEDIAINFOONIMAGE,0,0,b);
 	return 1;  // Let the system set the focus
 }
 
@@ -74,9 +85,25 @@ bool CVideoGrabberParams::Apply()
 	Settings.VideoSettings.GapWidth = GetDlgItemInt(IDC_GAPWIDTH);
 	Settings.VideoSettings.GapHeight = GetDlgItemInt(IDC_GAPHEIGHT);
 	Settings.VideoSettings.UseAviInfo = SendDlgItemMessage(IDC_USEAVIINFO,BM_GETCHECK);
-
+	Settings.VideoSettings.ShowMediaInfo = SendDlgItemMessage(IDC_MEDIAINFOONIMAGE,BM_GETCHECK);
+	Settings.VideoSettings.Font =	m_Font;
 	CheckBounds(Settings.VideoSettings.TileWidth, 10, 1024, 200);
 	CheckBounds(Settings.VideoSettings.GapWidth, 0, 200, 2);
 	CheckBounds(Settings.VideoSettings.GapHeight, 0, 200, 2);
+	Settings.VideoSettings.TextColor = Color1.Color;
 	return true;
+}
+LRESULT CVideoGrabberParams::OnMediaInfoFontClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+{
+	// Font selection dialog
+	CFontDialog dlg(&m_Font);
+	dlg.DoModal(m_hWnd);
+	return 0;
+}
+
+LRESULT CVideoGrabberParams::OnShowMediaInfoTextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	bool bChecked = SendDlgItemMessage(wID, BM_GETCHECK);
+	EnableNextN(GetDlgItem(wID),3,bChecked);
+	return 0;
 }

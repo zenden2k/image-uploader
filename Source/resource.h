@@ -18,6 +18,12 @@
 #define IDD_STATUSDLG                   117
 #define IDD_LOGWINDOW                   118
 #define IDD_HOTKEYEDITOR                119
+#define IDD_FOLDERSELECT                120
+#define IDD_SERVERFOLDERSELECT          120
+#define IDD_NEWFOLDERDLG                122
+#define IDD_SERVERPARAMSDLG             124
+#define IDD_TEXTVIEWDLG                 125
+#define IDD_UPDATEDLG                   126
 #define IDR_MAINFRAME                   128
 #define IDD_MAINDLG                     129
 #define IDD_LOGINDLG                    130
@@ -51,6 +57,10 @@
 #define IDI_ADDITIONAL                  232
 #define IDI_CLOSE                       233
 #define IDI_WINDOW                      234
+#define IDR_PROGRESSGIF                 241
+#define IDB_BITMAP6                     242
+#define IDB_SERVERTOOLBARBMP2           242
+#define IDR_RT_MANIFEST1                1
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -60,6 +70,8 @@
 #define IDC_MSGLIST                     1002
 #define IDC_COMMANDBOX                  1002
 #define IDC_HOTKEYLIST                  1002
+#define IDC_PARAMLIST                   1002
+#define IDC_UPDATELISTVIEW              1002
 #define IDC_KEEPASIS                    1003
 #define IDC_KEEPPROPORTIONS             1004
 #define IDC_IMAGEWIDTH                  1005
@@ -88,6 +100,7 @@
 #define IDC_CODETYPE                    1025
 #define IDC_LANGLIST                    1025
 #define IDC_LEFTBUTTONDOUBLECLICKCOMBO  1025
+#define IDC_ACCESSTYPECOMBO             1025
 #define IDC_SERVERLIST                  1026
 #define IDC_LEFTBUTTONCLICKCOMBO        1026
 #define IDC_CHECK4                      1027
@@ -107,7 +120,6 @@
 #define IDC_THUMBTEXTCOLOR              1033
 #define IDC_WIDTHLABEL                  1034
 #define IDC_SERVERCONFIG                1035
-#define IDC_CHECK1                      1036
 #define IDC_DEINTERLACE                 1036
 #define IDC_DRAWFRAME                   1036
 #define IDC_TEXTOVERTHUMB               1036
@@ -119,6 +131,7 @@
 #define IDC_SHELLINTEGRATION            1036
 #define IDC_SHOWTRAYICON                1036
 #define IDC_WINDOWBUTTONCHECKBOX        1036
+#define IDC_DOAUTH                      1036
 #define IDC_CREATETHUMBNAILS            1037
 #define IDC_PROGRESSBAR                 1038
 #define IDC_TEXTOVERTHUMB2              1038
@@ -133,7 +146,9 @@
 #define IDC_FILEINFOEDIT                1040
 #define IDC_IMAGEEDITORPATH             1040
 #define IDC_FILERETRYLIMIT              1040
-#define IDC_BUTTON1                     1041
+#define IDC_FOLDERTITLEEDIT             1040
+#define IDC_TEXTEDIT                    1040
+#define IDC_UPDATEINFO                  1040
 #define IDC_SELECTVIDEO                 1041
 #define IDC_STROKECOLOR                 1041
 #define IDC_LOGINBUTTON                 1041
@@ -142,6 +157,8 @@
 #define IDC_BROWSEBUTTON                1041
 #define IDC_ACTIONRETRYLIMIT            1041
 #define IDC_EDITHOTKEY                  1041
+#define IDC_MEDIAINFOFONT               1041
+#define IDC_NEWFOLDERBUTTON             1041
 #define IDC_DONE                        1042
 #define IDC_LOGINBUTTON2                1042
 #define IDC_RADIO1                      1043
@@ -154,10 +171,12 @@
 #define IDC_PASSWORDEDIT                1045
 #define IDC_ADDRESSEDIT                 1045
 #define IDC_THUMBTEXT                   1045
+#define IDC_FOLDERDESCREDIT             1045
 #define IDC_GRABINFOLABEL               1046
 #define IDC_BUTTON3                     1047
 #define IDC_GRABBERPARAMS               1047
 #define IDC_SELECTCOLOR                 1047
+#define IDC_SERVERMENU                  1047
 #define IDC_UPDOWN                      1048
 #define IDC_PROGRESS1                   1049
 #define IDC_UPLOADPROGRESS              1049
@@ -192,6 +211,7 @@
 #define IDC_ABOUT                       1081
 #define IDC_SPIN1                       1083
 #define IDC_THUMBPERLINESPIN            1083
+#define IDC_THUMBWIDTHSPIN              1083
 #define IDC_HEADBITMAP                  1084
 #define IDC_SPEEDLABEL                  1085
 #define IDC_LEFTLABEL                   1086
@@ -255,6 +275,7 @@
 #define IDC_NEEDSAUTH                   1142
 #define IDC_AUTOSHOWLOG                 1142
 #define IDC_ONEINSTANCE                 1142
+#define IDC_MEDIAINFOONIMAGE            1142
 #define IDC_PXLABEL                     1143
 #define IDC_TABCONTROL                  1144
 #define IDC_LANGUAGELABEL               1145
@@ -306,6 +327,20 @@
 #define IDC_LOCALHOTKEYLABEL            1195
 #define IDC_GLOBALHOTKEYLABEL           1196
 #define IDC_ATTENTION                   1197
+#define IDC_TEXTCOLOR                   1199
+#define IDC_FOLDERLISTLABEL             1200
+#define IDC_FOLDERNAMELABEL             1201
+#define IDC_FOLDERDESCRLABEL            1202
+#define IDC_FOLDERLINK                  1203
+#define IDC_ACCESSTYPELABEL             1204
+#define IDC_FOLDERTREE                  1205
+#define IDC_IMAGESERVERGROUPBOX         1206
+#define IDC_FILESERVERGROUPBOX          1207
+#define IDC_ANIMATIONSTATIC             1208
+#define IDC_CURLINFOLABEL               1210
+#define IDC_QUESTIONLABEL               1211
+#define IDC_TITLETEXT                   1212
+#define IDC_UPDATESLABEL                1213
 #define ID_VIEW_DELETE                  32775
 #define ID_VIEW                         32776
 #define ID_DELETE                       32777
@@ -335,9 +370,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        235
+#define _APS_NEXT_RESOURCE_VALUE        245
 #define _APS_NEXT_COMMAND_VALUE         32799
-#define _APS_NEXT_CONTROL_VALUE         1198
-#define _APS_NEXT_SYMED_VALUE           120
+#define _APS_NEXT_CONTROL_VALUE         1214
+#define _APS_NEXT_SYMED_VALUE           127
 #endif
 #endif

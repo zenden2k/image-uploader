@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -45,11 +45,6 @@ LRESULT CMainDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 {
 	WaitThreadStop.Close();
 	return 0;
-}
-
-void CMainDlg::CloseDialog(int nVal)
-{
-	DestroyWindow();
 }
 
 LRESULT CMainDlg::OnBnClickedAddvideo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -176,24 +171,16 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
 bool CMainDlg::AddToFileList(LPCTSTR FileName,  Image *Img)
 {
-	CFileListItem fl;
-	LPTSTR szFilename, szFilepath;
+	CFileListItem fl; //internal list item
 	
 	if(!FileName) return FALSE;
 
 	if(!FileExists(FileName)) return FALSE;
-	ZeroMemory(&fl, sizeof(fl));
-	
+	fl.selected = false;
+
 	int len = lstrlen(FileName);
-	szFilename = new TCHAR[len + 1];
-	szFilepath = new TCHAR[len + 1];
-	
-	if(!szFilename || !szFilepath) return FALSE;
 
-	lstrcpy(szFilename, FileName);
-
-	fl.FileName = szFilename;
-
+	fl.FileName = FileName;
 	
 	TCHAR szBuffer[256] = _T("\0");
 	int FileSize = MyGetFileSize(FileName);
@@ -260,7 +247,7 @@ bool CMainDlg::OnHide()
 	ThumbsView.StopAndWait();
 	if(IsRunning())
 	{
-		WaitThreadStop.SetEvent(); // Sending stop message to child thread
+		WaitThreadStop.SetEvent(); // Sending stop message destinated for child thread
 		WaitForThread(3500);
 	}
 	return false;
@@ -392,7 +379,7 @@ LRESULT CMainDlg::OnOpenInFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
 	if(!FileName) return FALSE;
 	
-	// Executing explorer with highlighting the file
+	// Executing Windows Explorer; file will be highlighted
 	ShellExecuteW(NULL, NULL, L"explorer.exe", CString(_T("/select, ")) + FileName, NULL, SW_SHOWNORMAL);
 
 	return 0;
