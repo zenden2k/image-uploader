@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -27,6 +27,7 @@
 BOOL IsVista();
 #ifndef IU_SHELLEXT
 #include "hotkeysettings.h"
+#include "pluginloader.h"
 struct ImageSettingsStruct
 {
 	int NewWidth,NewHeight;
@@ -56,7 +57,7 @@ struct LogoSettingsStruct
 struct LoginInfo
 {
 	CString Login, Password,Cookies;
-	bool UseIeCookies;
+	bool DoAuth;
 };
 
 struct TrayIconSettingsStruct
@@ -98,6 +99,9 @@ struct VideoSettingsStruct
 	int NumOfFrames;
 	int JPEGQuality;
 	BOOL UseAviInfo;
+	BOOL ShowMediaInfo;
+	LOGFONT Font;
+	COLORREF TextColor;
 };
 
 struct ConnectionSettingsStruct
@@ -117,15 +121,45 @@ struct ScreenshotSettingsStruct
 	int Quality, Delay;
 	COLORREF brushColor;
 };
-#endif
 
+#include <string>
+struct ServerSettingsStruct
+{
+	ServerSettingsStruct(){authData.DoAuth=0;}
+	std::map<CString, CString> params;
+	LoginInfo authData;
+	CFolderItem newFolder;
+	const std::string getParam(const std::string& name)
+	{
+		std::wstring result;
+		std::string pname = name;
+		if(pname=="Password" && authData.DoAuth)
+			result = authData.Password;
+		else if(pname=="Login" && authData.DoAuth)
+			result = authData.Login;
+		else result = params[name.c_str()];
+		return WstringToUtf8(result);
+			
+	}
+
+	void setParam(const std::string& name, const std::string& value)
+	{
+		
+	    params[name.c_str()] = Utf8ToWstring(value).c_str();
+			
+	}
+
+};
+#endif
 class CSettings
 {
 	public:
 		bool ExplorerContextMenu;
 		bool ExplorerContextMenu_changed;
 		bool ExplorerVideoContextMenu;
+		bool UseDirectLinks;
 		// Поля данных
+		CString DataFolder;
 		CString m_SettingsDir;
 		CString Language;
 		BOOL ExplorerCascadedMenu;
@@ -155,12 +189,12 @@ class CSettings
 		//BOOL OldStyleMenu;
 		bool ParseSubDirs;
 		bool UseProxyServer;
-		
+		int LastUpdateTime;
 		
 		bool SendToContextMenu;
 		bool SendToContextMenu_changed;
 		bool QuickUpload;
-		std::map<CString,LoginInfo> AuthParams ;
+		std::map <CString, ServerSettingsStruct> ServersSettings;
 		CString ImageEditorPath;
 		CString VideoFolder,ImagesFolder;
 		bool SaveSettings();

@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -23,17 +23,16 @@
 #include "atlenc.h"
 #include <atlconv.h>
 
-#include <wininet.h>
+//#include <wininet.h>
 
 #include <cstdlib>
 #include <ctime>
 #include "Common/regexp.h"
+#include "TextViewDlg.h"
 
-#define randomize() (srand((unsigned)time(NULL)))
-#define random(x) (rand() % x)
 
-CAtlArray<UploadEngine> EnginesList;
-
+//CAtlArray<UploadEngine> EnginesList;
+//std::vector<UploadEngine> EnginesList;
 #ifdef DEBUG
 void TestExpr(LPCTSTR Expr, LPCTSTR Text)
 {
@@ -103,18 +102,116 @@ CString CUploader::ReplaceVars(const CString Text)
 	return Result;
 }
 LoginInfo LoadLogin(int ServerId);
+
+int CUploader::pluginProgressFunc (void* userData, double dltotal,double dlnow,double ultotal, double ulnow)
+{
+	CUploader *uploader = reinterpret_cast<CUploader*>(userData);
+	
+	if(!uploader) return 0;
+
+	if(*uploader->ShouldStop)
+		return -1;
+
+	if(ultotal<0 || ulnow<0) return 0;
+
+	uploader->PrInfo->CS.Lock();
+
+	if(ultotal == ulnow)
+	{
+		uploader->PrInfo->IsUploading = false;
+		if(uploader->PrInfo->Bytes.size() || (bool)ultotal /*|| uploader->PrInfo->Uploaded*/)
+		uploader->SetStatusText(TR("Ожидание ответа от сервера..."));
+	
+		uploader->PrInfo->Bytes.clear();
+		}
+	else
+	{
+		uploader->PrInfo->IsUploading = true;		
+		uploader->PrInfo->Total = ultotal;
+		uploader->PrInfo->Uploaded = ulnow;
+		
+	}
+	uploader->PrInfo->CS.Unlock();
+
+	return 0;
+}
+	
 bool CUploader::UploadFile(LPTSTR FileName,LPTSTR szUrlBuffer,LPTSTR szThumbUrlBuffer,int ThumbWidth)
 {
 	if(CurrentServer<0) return false;
-
+	CIUUploadParams uparams;
 	CurrentEngine = EnginesList[CurrentServer];
 	UploadEngine& Engine = CurrentEngine;
+
+
+m_NetworkManager.setProgressCallback(pluginProgressFunc, (void*)this);
+	if(Engine.UsingPlugin)
+	{
+		CUploadScript *plugin = iuPluginManager.getPlugin(Engine.PluginName,Settings.ServersSettings[Engine.Name]);
+		if(!plugin)
+		{
+			return false;
+		}
+		plugin->bindNetworkManager(&m_NetworkManager);
+		ConfigureProxy();
+
+		
+		if(!plugin) return false;
+		PrInfo->CS.Lock();
+				PrInfo->Uploaded = 0;
+				PrInfo->Total = 0;
+				PrInfo->Bytes.clear();
+				PrInfo->CS.Unlock();
+
+
+		CFolderItem parent, newFolder = Settings.ServersSettings[Engine.Name].newFolder;
+		CString folderID = Settings.ServersSettings[Engine.Name].params["FolderID"];
+		
+		if(folderID == IU_NEWFOLDERMARK)
+		{
+			SetStatusText((TR("Создание папки \"") + newFolder.title + _T("\"...")).c_str());
+			if( plugin->createFolder(parent,newFolder))
+			{
+				folderID = newFolder.id.c_str();
+				Settings.ServersSettings[Engine.Name].params["FolderID"] = folderID; 
+				Settings.ServersSettings[Engine.Name].params["FolderUrl"] = newFolder.viewUrl.c_str(); 
+			}
+			else folderID.Empty();
+		}
+		
+		uparams.folderId = folderID; 
+			
+		int result = 0;
+		do
+		{
+			if(*ShouldStop) return false;
+			result = plugin->uploadFile(FileName,uparams); 
+			CurrentEngine.NumOfTries++;
+			if(*ShouldStop) return false;
+			if(!result && CurrentEngine.NumOfTries!=CurrentEngine.RetryLimit) 
+			{
+				CString Err;
+				Err.Format(TR("Загрузка на сервер не удалась. Повторяю (%d)..."),CurrentEngine.NumOfTries );
+				UploadError(2, 0,Err); 
+			}
+		}
+		while(!result && CurrentEngine.NumOfTries<CurrentEngine.RetryLimit);
+
+		if(szUrlBuffer)
+			lstrcpy(szUrlBuffer, uparams.DirectUrl.c_str()); 
+
+		if( szThumbUrlBuffer)
+			lstrcpy(szThumbUrlBuffer, uparams.ThumbUrl.c_str()); 
+
+		m_DownloadUrl =  uparams.ViewUrl.c_str();
+		return result;
+	}
 
 	m_Vars.clear();
 	if(Engine.NeedAuthorization)
 	{
 		li = LoadLogin(CurrentServer);
-		if(!li.UseIeCookies)
+		if(li.DoAuth)
 		{
 			m_Consts[_T("_LOGIN")] = li.Login;
 			m_Consts[_T("_PASSWORD")] = li.Password;
@@ -122,6 +219,11 @@ bool CUploader::UploadFile(LPTSTR FileName,LPTSTR szUrlBuffer,LPTSTR szThumbUrlB
 	}
 	CString FileExt = GetFileExt(FileName);
 	FileExt.MakeLower();
+	m_Consts[_T("_FILENAME")] = myExtractFileName(FileName);
+
+	CString OnlyFname;
+	GetOnlyFileName(FileName, OnlyFname.GetBuffer(lstrlen(FileName)*2));
+	m_Consts[_T("_FILENAMEWITHOUTEXT")] = OnlyFname;
 	m_Consts[_T("_FILEEXT")] = FileExt ;
 	m_Consts[_T("_THUMBWIDTH")] = IntToStr(ThumbWidth);
 
@@ -166,6 +268,9 @@ bool CUploader::DoTry()
 {
 	for(int i = 0; i<CurrentEngine.Actions.size(); i++)
 	{
+		PrInfo->CS.Lock();
+		PrInfo->Bytes.clear();
+		PrInfo->CS.Unlock();
 		CurrentEngine.Actions[i].NumOfTries = 0;
 		bool ActionRes = false;
 		do
@@ -213,76 +318,42 @@ bool CUploader::SelectServer(DWORD ServerID)
 }
 
 #define HTTP_UPLOAD_BUFFER_SIZE 1024 * 10
-using namespace Ryeol;
-const DWORD     cbBuff = 1024 * 10 ;
+
+
 
 bool CUploader::DoUploadAction(UploadAction &Action, bool bUpload)
 {
-	CHttpClient         objHttpReq ;
-	CHttpResponse *     pobjHttpRes = NULL ;
-
 	try
 	{	
-		ConfigureProxy(objHttpReq);
-		AddQueryPostParams(Action, objHttpReq);
+		ConfigureProxy();
+		AddQueryPostParams(Action);
 
-		if(bUpload)  // If we do file upload
-		{
 			const DWORD     cbProceed = Settings.UploadBufferSize;
-			objHttpReq.BeginUpload (Action.Url);
+			m_NetworkManager.setUrl(WCstringToUtf8(Action.Url));
 
-			CHttpPostStat       objPostStat ;
-			if(PrInfo)
+			if(bUpload)
 			{
-				PrInfo->CS.Lock();
-				PrInfo->Uploaded = 0;
-				PrInfo->Total = 0;
-				PrInfo->Bytes.clear();
-				PrInfo->CS.Unlock();
-			}
-			do 
-			{
-				if(*ShouldStop) return 0;
-				// Displays progress information
-				objHttpReq.Query (objPostStat) ;
-
-				if(PrInfo)
+				if (Action.Type == _T("put"))
 				{
-					PrInfo->CS.Lock();
-					PrInfo->IsUploading = true;
-					PrInfo->Uploaded =objPostStat.PostedByte();//objPostStat.CurrParamPostedByte ();
-					PrInfo->Total = objPostStat.TotalByte();//objPostStat.CurrParamTotalByte();
-					PrInfo->CS.Unlock();
+					m_NetworkManager.setMethod("PUT");
+					m_NetworkManager.doUpload(WCstringToUtf8(m_FileName), "");
+
 				}
-				if(objPostStat.PostedByte() == objPostStat.TotalByte())
-					SetStatusText(TR("Ожидание ответа от сервера..."));
-			} 
-			while ( !(pobjHttpRes = objHttpReq.Proceed (cbProceed))) ;
-			SetStatusText(TR("Ожидание ответа от сервера..."));
-			PrInfo->CS.Lock();
-			PrInfo->IsUploading = false;		
-			PrInfo->Total = objPostStat.TotalByte();
-			PrInfo->Uploaded = PrInfo->Total;
-			PrInfo->CS.Unlock();
-		} 
-		else // If we do simple post request
-		{
-			pobjHttpRes=objHttpReq.RequestPost(Action.Url);
-		}	
-		bool Res = ReadServerResponse(Action, pobjHttpRes);
+				else
+			m_NetworkManager.doUploadMultipartData();
+			}
+			else
+				m_NetworkManager.doPost();
+			
+		bool Res = ReadServerResponse(Action);
 		SetStatusText(_T(""));
 		return Res;   
 	} 
-	catch (httpclientexception & e) 
+	catch (...) 
 	{
-		if(e.LastError()>400 && e.LastError()<600)
-		{
-			DWORD ErrorCode = e.Win32LastError();
-			UploadError(false, 0, 0, ErrorCode, 0);
-		}
+		
 		return FALSE;
 	}
-
 	return true;
 }
 
@@ -290,43 +361,35 @@ bool CUploader::DoGetAction(UploadAction &Action)
 {
 	bool Result = false;
 
-	CHttpClient         objHttpReq ;
-	CHttpResponse *     pobjHttpRes = NULL ;
-
 	try
 	{	
-		ConfigureProxy(objHttpReq);
-		pobjHttpRes = objHttpReq.RequestGet(Action.Url);
-		SetStatusText(TR("Ожидание ответа от сервера..."));
+		ConfigureProxy();
+		m_NetworkManager.doGet(WCstringToUtf8( Action.Url));
+
 		if(*ShouldStop) return 0;
-		Result = ReadServerResponse(Action, pobjHttpRes);
+		Result = ReadServerResponse(Action);
 		SetStatusText(_T(""));
 	} 
-	catch (httpclientexception & e) 
+	catch (...) 
 	{
-		if(e.LastError()>400 && e.LastError()<600)
-		{
-			DWORD ErrorCode = e.Win32LastError();
-			CHttpResponse p(objHttpReq.m_hLastReq);
-			UploadError(false, 0, 0, ErrorCode, 0);
-		}
+		
 		return FALSE;
 	}
 	return Result;
 }
 
-bool CUploader::ParseAnswer(UploadAction &Action, LPTSTR Body)
+bool CUploader::ParseAnswer(UploadAction &Action, LPCTSTR Body)
 {
+
 	if((!ThumbUrl && !ImgUrl) || !Body) return false;
 
 	if(!Action.RegExp.IsEmpty())
 	{
 		if(EnginesList[CurrentServer].Debug)
 		{
-			TCHAR buf[512];
-			lstrcpyn(buf, Body, 511);
-
-			if(MessageBox(GetActiveWindow(), CString(_T("Server reponse:\r\n"))+buf+_T("\r\n\r\nSave to file?"),APPNAME,MB_YESNO)==IDYES)
+			CTextViewDlg TextViewDlg(Body, CString(_T("Server reponse")), CString(_T("Server reponse:")), _T("Save to file?"));
+	
+			if(TextViewDlg.DoModal(GetActiveWindow())==IDOK)
 			{
 				CFileDialog fd(false, 0, 0, 4|2, _T("*.*\0*.*\0\0") ,GetActiveWindow());
 				lstrcpy(fd.m_szFileName,_T("file.html"));
@@ -382,8 +445,6 @@ bool CUploader::ParseAnswer(UploadAction &Action, LPTSTR Body)
 
 	return true; //ALL OK!
 
-	if(!*ImgUrl) return false;
-	return true;
 }
 
 // WORD EventType { 0 - stores error string into m_ErrorReason, 1 - displays error into error console }
@@ -425,21 +486,7 @@ void CUploader::UploadError(WORD EventType, LPCTSTR Url, LPCTSTR  Error, int Err
 
 		if(Explication.IsEmpty())
 		{
-		if(ErrorCode == ERROR_INTERNET_TIMEOUT)
-		{
-			Explication = TR("Превышен интервал ожидания запроса");
-		}
-		else if (ErrorCode ==ERROR_INTERNET_NAME_NOT_RESOLVED  )
-			Explication= _T("Couldn't resolve host name. ");
-		
-		else if (ErrorCode ==ERROR_INTERNET_CONNECTION_ABORTED  )
-			Explication= _T("The connection with the server has been terminated. ");
-		
-		else if(ErrorCode == ERROR_INTERNET_CONNECTION_RESET )
-			Explication = _T("The connection with the server has been reset.");
 
-		else if(ErrorCode == ERROR_INTERNET_CANNOT_CONNECT  )
-			Explication = _T("The attempt to connect to the server failed.");
 		}
 		BoldError += CString(TR("Код ошибки WinInet: ")) + IntToStr(ErrorCode);
 		
@@ -474,7 +521,7 @@ bool CUploader::DoAction(UploadAction &Action)
 	{
 		if(Action.Type == _T("upload"))
 			Status = TR("Отправка файла на сервер...");
-		else if(Action.Type == _T("login") && (EnginesList[CurrentServer].NeedAuthorization && !li.UseIeCookies))
+		else if(Action.Type == _T("login") && (EnginesList[CurrentServer].NeedAuthorization && li.DoAuth))
 			Status = TR("Авторизация на сервере...");
 		else
 		Status.Format(TR("Выполняю действие #%d..."), Action.Index+1);
@@ -490,11 +537,13 @@ bool CUploader::DoAction(UploadAction &Action)
 
 	if(Action.Type == _T("upload"))
 		Result = DoUploadAction(Current,true);
+	else if(Action.Type == _T("put"))
+		Result = DoUploadAction(Current,true);
 	else if(Action.Type == _T("post"))
 		Result = DoUploadAction(Current, false);
 	else if(Action.Type == _T("login"))
 	{
-		if(EnginesList[CurrentServer].NeedAuthorization && !li.UseIeCookies)
+		if(EnginesList[CurrentServer].NeedAuthorization && li.DoAuth)
 		Result = DoUploadAction(Current, false);
 	}
 	else if(Action.Type == _T("get"))
@@ -511,66 +560,15 @@ bool CUploader::DoAction(UploadAction &Action)
 	else return Result;
 }
 
-void CUploader::ConfigureProxy(CHttpClient &objHttpReq)
+void CUploader::ConfigureProxy()
 {
-	 // Initialize the User Agent
-	if(Settings.ConnectionSettings.UseProxy)
-	{
-		TCHAR Proxy[256];
-		wsprintf(Proxy, _T("%s=%s:%d"), /*( Settings.ConnectionSettings.ProxyType?_T("socks"):_T("http")),*/(Settings.ConnectionSettings.ProxyType?_T("socks"):_T("http")),
-		Settings.ConnectionSettings.ServerAddress, Settings.ConnectionSettings.ProxyPort);
-		objHttpReq.SetInternet (_T ("Mozilla 4.0"),INTERNET_OPEN_TYPE_PROXY , Proxy, _T("localhost")) ;
-		
-	}
-	else objHttpReq.SetInternet (_T ("Mozilla 4.0")) ;
-	
-
-	objHttpReq.SetUseUtf8 (FALSE) ;
-	objHttpReq.SetAnsiCodePage (1251) ;
-	
-	/*objHttpReq.RemoveHeader(_T("Cache-Control") ,0);
-	objHttpReq.RemoveHeader(_T("Accept") ,0);
-	objHttpReq.AddHeader (_T ("Accept-Encoding"), _T("identity")) ;
-	objHttpReq.AddHeader (_T ("Accept"), _T("text/html, *")) ;*/
-
-	//objHttpReq.AddHeader (_T ("Referer"), EnginesList[CurrentServer].Actions[0].Url) ;
-	
-	if(Settings.ConnectionSettings.UseProxy && Settings.ConnectionSettings.NeedsAuth && Settings.ConnectionSettings.ProxyType==0)
-	{
-		// Authorization on http(s) proxy (only basic)
-		CHAR    szUser[128];
-		TCHAR    szHeader[512];
-		int    nLen = 128;
-		TCHAR str[256];
-		CHAR a_str[256];
-		wsprintf(str, _T("%s:%s"),Settings.ConnectionSettings.ProxyUser, Settings.ConnectionSettings.ProxyPassword);
-		::WideCharToMultiByte (CP_ACP	, 0, str, -1, a_str, 256, NULL, NULL);
-
-		BOOL bRes = Base64Encode ((BYTE*)a_str,lstrlen(str), szUser, &nLen); 
-		szUser[nLen]=0;
-		wsprintf (szHeader, _T("Basic %S"), szUser);
-		objHttpReq.AddHeader(_T("Proxy-Authorization"), szHeader);
-	}
-
-	HINTERNET hInternet = objHttpReq.OpenInternet();
-
-	unsigned long SendTimeout = 1000000, RecTimeout = 1000000;
-		BOOL bT = ::InternetSetOption(hInternet, INTERNET_OPTION_SEND_TIMEOUT,
-	&SendTimeout, sizeof(unsigned long));
-	bT = ::InternetSetOption(hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT,
-	&RecTimeout, sizeof(unsigned long));
-
-	bT = ::InternetSetOption(hInternet, INTERNET_OPTION_CONNECT_TIMEOUT,
-	&SendTimeout, sizeof(unsigned long));
-	bT = ::InternetSetOption(hInternet, INTERNET_OPTION_DATA_RECEIVE_TIMEOUT,
-	&RecTimeout, sizeof(unsigned long));
-	bT = ::InternetSetOption(hInternet, INTERNET_OPTION_DATA_SEND_TIMEOUT,
-	&SendTimeout, sizeof(unsigned long));
+	IU_ConfigureProxy(m_NetworkManager);	
 }
 
-void CUploader::AddQueryPostParams(UploadAction &Action, CHttpClient &objHttpReq)
+
+void CUploader::AddQueryPostParams(UploadAction &Action)
 {
-	objHttpReq.AddHeader (_T ("Referer"), Action.Referer.IsEmpty()?Action.Url:Action.Referer) ;
+	m_NetworkManager.setReferer(WCstringToUtf8( Action.Referer.IsEmpty()?Action.Url:Action.Referer));
 	RegExp exp;
 	CComBSTR Pat = _T("(.*?)=(.*?[^\\x5c]{0,1});");
 	CComBSTR Txt = Action.PostParams;
@@ -604,58 +602,62 @@ void CUploader::AddQueryPostParams(UploadAction &Action, CHttpClient &objHttpReq
 		if(NewValue == _T("%filename%"))
 		{
 			_Post+=NewName+_T(" = ** THE FILE IS HERE ** \r\n");
-			objHttpReq.AddParam (NewName, m_FileName, CHttpClient::ParamFile) ;
-			
+			m_NetworkManager.addQueryParamFile( WCstringToUtf8(NewName), WCstringToUtf8(m_FileName),
+			WCstringToUtf8(myExtractFileName(m_FileName)), WCstringToUtf8(IU_GetFileMimeType(m_FileName)));
 		}
 		else 
 		{
 			
 			NewValue = ReplaceVars(NewValue);
 			_Post+=NewName+_T(" = ")+NewValue+_T("\r\n");
-			objHttpReq.AddParam (NewName, NewValue) ;
+			m_NetworkManager.addQueryParam(WCstringToUtf8(NewName),WCstringToUtf8(NewValue));
 		}
 	}
 
 	if(EnginesList[CurrentServer].Debug)
 		MessageBox(GetActiveWindow(), _Post, _T("Debug"),MB_ICONINFORMATION);
-
 }
 
-bool CUploader::ReadServerResponse(UploadAction &Action, CHttpResponse *pobjHttpRes)
+bool CUploader::ReadServerResponse(UploadAction &Action)
 {
-	BYTE byBuff[cbBuff*40];
+	
 	bool Result = false;
 	bool Exit = false;
-	
-	PBYTE buf = byBuff;
-	if(pobjHttpRes)
-	{
-		int StatusCode = pobjHttpRes->GetStatus();
-		if(StatusCode!=200)
+
+	std::map<int,CString> errors;
+	errors[ CURLE_UNSUPPORTED_PROTOCOL]="CURLE_UNSUPPORTED_PROTOCOL";
+	errors[ CURLE_FAILED_INIT]="CURLE_FAILED_INIT";
+	errors[ CURLE_URL_MALFORMAT]="CURLE_URL_MALFORMAT";
+	errors[ CURLE_OBSOLETE4]="CURLE_OBSOLETE4";
+	errors[ CURLE_COULDNT_RESOLVE_PROXY]="CURLE_COULDNT_RESOLVE_PROXY";
+	errors[ CURLE_COULDNT_RESOLVE_HOST]="CURLE_COULDNT_RESOLVE_HOST";
+	errors[ CURLE_COULDNT_CONNECT]="CURLE_COULDNT_CONNECT";
+	errors[ CURLE_FTP_WEIRD_SERVER_REPLY]="CURLE_FTP_WEIRD_SERVER_REPLY";
+	errors[ CURLE_REMOTE_ACCESS_DENIED]="CURLE_REMOTE_ACCESS_DENIED";
+			
+		int StatusCode = m_NetworkManager.responseCode();
+		if(!(StatusCode>=200 && StatusCode<=299) && !(StatusCode>=300 && StatusCode<=304))
 		{
-			UploadError(false, 0, 0, StatusCode, pobjHttpRes->GetStatusText());
-			::InternetCloseHandle (pobjHttpRes->GetRequestHandle()) ;
+			CString error;
+			if(m_NetworkManager.getCurlResult()!=CURLE_OK)
+		{
+			error = _T("Curl error: ")+ errors[m_NetworkManager.getCurlResult()] +_T("\r\n");
+		}
+			if(!StatusCode)StatusCode= m_NetworkManager.getCurlResult();
+			UploadError(false, 0, 0, StatusCode, /*pobjHttpRes->GetStatusText()*//*_T("Some error")*/error + Utf8ToWstring( m_NetworkManager.errorString()).c_str());
 			return false;
 		}
-	}
-
-	*byBuff=0;
+		
 	DWORD           dwRead ;
 	size_t          cbTotal = 0 ;
 
-	while ( dwRead = pobjHttpRes->ReadContent (buf, cbBuff - 1) ) {
-		cbTotal += dwRead ;
-		if(*ShouldStop) return 0;
-		buf[dwRead] = '\0' ;
-		buf += dwRead;
-	}
-
 	// Если нас сервер куда-то перенаправляет
-	LPTSTR Refresh;
-	Refresh = (LPTSTR) pobjHttpRes->GetHeader(_T("Refresh"));
+	CString Refresh;
+	
+	Refresh = Utf8ToWstring( m_NetworkManager.responseHeaderByName("Refresh")).c_str();
 	if(lstrlen(Refresh))
 	{			
-		Refresh = MoveToEndOfW(Refresh,_T("url="));
+		Refresh = MoveToEndOfW((LPTSTR)(LPCTSTR)Refresh,_T("url="));
 		UploadAction Redirect = Action;
 		Redirect.Url = Refresh;
 		Redirect.Referer = Action.Url;
@@ -663,29 +665,14 @@ bool CUploader::ReadServerResponse(UploadAction &Action, CHttpResponse *pobjHttp
 		Result = DoGetAction(Redirect);
 		Exit = true;
 	}
-	if(pobjHttpRes)
-	{
-		::InternetCloseHandle (pobjHttpRes->GetRequestHandle()) ;
-
-	}
 
 	if(!Exit)
 	{
-		LPSTR szData = (LPSTR)byBuff;
-		if(!szData)
-		{
-			UploadError(false, 0, TR("Сервер вернул пустой ответ."));
-			return FALSE;
-		}
-		LPTSTR  ReBuf=(LPTSTR)::VirtualAlloc(NULL, strlen(szData)*2+2, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-
-		MultiByteToWideChar(CP_ACP, 0,szData,strlen(szData),ReBuf,strlen(szData)*2+2);
-
-		Result =  ParseAnswer(Action,ReBuf);
+		CString answer = Utf8ToWstring( m_NetworkManager.responseBody()).c_str();
+		Result =  ParseAnswer(Action,answer);
+		
 		if(!Result) 
 			UploadError(false, 0, TR("Ответ сервера не содержит нужных данных."));
-
-		VirtualFree(ReBuf, strlen(szData)*2+2, MEM_DECOMMIT);
 	}
 	return Result;
 }
@@ -697,10 +684,14 @@ CString CUploader::GetStatusText()
 
 void CUploader::SetStatusText(CString Text)
 {
+	m_CS.Lock();
 	 m_StatusText  = Text;
+	 m_CS.Unlock();
 }
 
 CString CUploader::getDownloadUrl()
 {
+	m_CS.Lock();
 	return m_DownloadUrl;
+	m_CS.Unlock();
 }

@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -299,7 +299,7 @@ bool IsVideoFile(LPCTSTR szFileName)
 
 
 
-bool ReadSetting(LPTSTR szSettingName,int* Value,int DefaultValue,LPTSTR szString,LPTSTR szDefString)
+/*bool ReadSetting(LPTSTR szSettingName,int* Value,int DefaultValue,LPTSTR szString,LPTSTR szDefString)
 {
 	TCHAR szFileName[256],szPath[256];
 	GetModuleFileName(0,szFileName,1023);
@@ -342,8 +342,8 @@ bool WriteSetting(LPCTSTR szSettingName,int Value,LPCTSTR szString)
 	
 	return true;
 }
-
-int GetSavingFormat(LPTSTR szFileName)
+*/
+int GetSavingFormat(LPCTSTR szFileName)
 {
 	if(!szFileName) return -1;
 	LPCTSTR FileType = GetFileExt(szFileName);
@@ -408,13 +408,22 @@ CString GetAppFolder()
 	return szPath;
 }
 
+
 BOOL FileExists(LPCTSTR FileName)
 {
 	if(!FileName || GetFileAttributes(FileName)==-1) return FALSE;
 	return TRUE;
 }
 
-void TrimString(LPTSTR Destination, LPCTSTR Source,  int MaxLen)
+const CString TrimString(const CString& source, int nMaxLen)
+{
+	int nLen = source.GetLength();
+	if(nLen <= nMaxLen) return source;
+
+	int PartSize = (nMaxLen-3) / 2;
+	return source.Left(PartSize)+_T("...")+source.Right(PartSize);
+}
+/*void TrimString(LPTSTR Destination, LPCTSTR Source,  int MaxLen)
 {
 	int Len = lstrlen(Source);
 
@@ -424,7 +433,7 @@ void TrimString(LPTSTR Destination, LPCTSTR Source,  int MaxLen)
 	lstrcpyn(Destination, Source, ots);
 	lstrcat(Destination, _T("..."));
 	lstrcat(Destination, Source+Len-ots);
-}
+}*/
 
 bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...)
 {
@@ -650,3 +659,63 @@ bool IUInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP
 	MenuItem.dwTypeData = (LPWSTR)szTitle;
 	return InsertMenuItem(hMenu, pos, TRUE, &MenuItem);
 }
+
+#ifndef IU_SHELLEXT
+std::wstring strtows(const std::string &str, UINT codePage)
+{
+    std::wstring ws;
+    int n = MultiByteToWideChar(codePage, 0, str.c_str(), str.size()+1, /*dst*/NULL, 0);
+    if(n)
+    {
+        ws.resize(n-1);
+        if(MultiByteToWideChar(codePage, 0, str.c_str(), str.size()+1, /*dst*/&ws[0], n) == 0)
+            ws.clear();
+    }
+    return ws;
+}
+std::string wstostr(const std::wstring &ws, UINT codePage)
+{
+    std::string str;
+    int n = WideCharToMultiByte(codePage, 0, ws.c_str(), ws.size()+1, /*dst*/NULL, 0, /*defchr*/0, NULL);
+    if(n)
+    {
+        str.resize(n-1);
+        if(WideCharToMultiByte(codePage, 0, ws.c_str(), ws.size()+1, /*dst*/&str[0], n, /*defchr*/0, NULL) == 0)
+            str.clear();
+    }
+    return str;
+}
+
+
+const std::string AnsiToUtf8(const std::string &str, int codepage)
+{
+	
+	return wstostr(strtows(str, codepage), CP_UTF8);
+}
+
+const std::string Utf8ToAnsi(const std::string &str, int codepage)
+{
+	
+	return wstostr(strtows(str, CP_UTF8), codepage);
+}
+
+const std::wstring Utf8ToWstring(const std::string &str)
+{
+	
+	return strtows(str, CP_UTF8);
+}
+
+
+
+std::string chcp(const std::string &str, UINT codePageSrc, UINT codePageDst)
+{
+    return wstostr(strtows(str, codePageSrc), codePageDst);
+} 
+
+bool IsDirectory(LPCTSTR szFileName)
+{
+	DWORD res = GetFileAttributes(szFileName);
+	 return (res&FILE_ATTRIBUTE_DIRECTORY) && (res != -1);	
+}
+
+#endif

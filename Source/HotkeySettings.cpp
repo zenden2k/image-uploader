@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -110,7 +110,6 @@ CString CHotkeyList::toString()
 		if(!((*this)[i].IsNull()))
 		result+=		CString((*this)[i].func) +_T("=")+(*this)[i].localKey.Serialize()+_T(",")+(*this)[i].globalKey.Serialize()+_T(";");
 	}
-	//MessageBox(0, result,0,0);
 	return result;
 }
 
@@ -256,8 +255,8 @@ LRESULT CHotkeySettingsPage::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
 		::ScreenToClient(hwnd, &ClientPoint);
 	}
 	HMENU TrayMenu = ::CreatePopupMenu();
-	IUInsertMenu(TrayMenu, 0, IDM_CLEARHOTKEY, TR("Clear")); 
-	IUInsertMenu(TrayMenu, 1, IDM_CLEARALLHOTKEYS, TR("Clear all")); 
+	IUInsertMenu(TrayMenu, 0, IDM_CLEARHOTKEY, TR("Очистить")); 
+	IUInsertMenu(TrayMenu, 1, IDM_CLEARALLHOTKEYS, TR("Очистить всё")); 
 	::TrackPopupMenu(TrayMenu, TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, 0,m_hWnd,0);
 	return 0;
 }

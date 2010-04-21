@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -22,6 +22,10 @@
 
 #include "resource.h"       // main symbols
 #include "common.h"
+#define IDC_OPTIONSMENU 10002
+#define IDC_USEDIRECTLINKS 10003
+#define IDC_COPYFOLDERURL 10004
+#define IDC_RESULTSTOOLBAR 5000
 //#include "uploaddlg.h"
 //#include "wizarddlg.h"
 // CResultsPanel
@@ -44,38 +48,54 @@ class CResultsPanel :
 			COMMAND_HANDLER(IDC_THUMBSPERLINE,EN_CHANGE,OnEditChanged)
 			COMMAND_HANDLER(IDC_CODETYPE, CBN_SELCHANGE, OnCbnSelchangeCodetype)
 			COMMAND_HANDLER(IDC_COPYALL, BN_CLICKED, OnBnClickedCopyall)
-			COMMAND_HANDLER(IDC_USETEMPLATE, BN_CLICKED, OnCbnSelchangeCodetype)
+			COMMAND_HANDLER(IDC_USEDIRECTLINKS, BN_CLICKED, OnUseDirectLinksClicked)
+			COMMAND_HANDLER(IDC_USETEMPLATE, BN_CLICKED, OnUseTemplateClicked)
+			//COMMAND_HANDLER(, BN_CLICKED, OnCopyFolderUrlClicked)
+			
+			COMMAND_RANGE_HANDLER(IDC_COPYFOLDERURL, IDC_COPYFOLDERURL + 1000, OnCopyFolderUrlClicked);
+		
+
 			COMMAND_HANDLER(IDC_MEDIAFILEINFO, BN_CLICKED, OnBnClickedMediaInfo)
 			COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
+			NOTIFY_HANDLER(IDC_RESULTSTOOLBAR, TBN_DROPDOWN, OnOptionsDropDown);
 		END_MSG_MAP()
 
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		CToolBarCtrl Toolbar;
-		void SetPage(int Index);
-		CAtlArray<CUrlListItem> & UrlList;
-		void GenerateOutput();
-		bool LoadTemplate();
-		LPTSTR TemplateHead,TemplateFoot; //TemplateFoot is only pointer to part of TemplateHead 
-		int m_Page;
-		LRESULT OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		LRESULT OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		LRESULT OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		LRESULT OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		LRESULT OnEditChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		int GetCodeType();
-		void SetCodeType(int Index);
-		void Clear();
-		void EnableMediaInfo(bool Enable);
-		CWizardDlg *WizardDlg;
-		CAtlArray<IU_Result_Template> Templates;
-		bool LoadTemplates(CString &Error);
-		std::map<CString, CString> m_Vars;
-		CString ReplaceVars(const CString Text);
-		CAutoCriticalSection UrlListCS;
+	LRESULT OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT OnUseTemplateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnUseDirectLinksClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	 LRESULT OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	
+	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
+	CToolBarCtrl Toolbar;
+	void SetPage(int Index);
+	CAtlArray<CUrlListItem> & UrlList;
+	void GenerateOutput();
+	bool LoadTemplate();
+	LPTSTR TemplateHead,TemplateFoot; //TemplateFoot is only pointer to part of TemplateHead 
+	int m_Page;
+	LRESULT OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnEditChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	int GetCodeType();
+	void SetCodeType(int Index);
+	void Clear();
+	void EnableMediaInfo(bool Enable);
+	CWizardDlg *WizardDlg;
+	CAtlArray<IU_Result_Template> Templates;
+	bool LoadTemplates(CString &Error);
+	std::map<CString, CString> m_Vars;
+	std::map<int,int> m_Servers;
+	CString ReplaceVars(const CString Text);
+	CAutoCriticalSection UrlListCS;
+	int m_nImgServer, m_nFileServer;
+	void AddServerId(int serverId);
 };
 
 

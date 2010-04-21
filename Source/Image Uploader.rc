@@ -107,9 +107,14 @@ BEGIN
     EDITTEXT        IDC_GAPWIDTH,143,60,31,13,ES_AUTOHSCROLL
     RTEXT           "Вертикальный промежуток:",IDC_INTERVALVERTLABEL,23,80,107,8
     EDITTEXT        IDC_GAPHEIGHT,143,78,31,13,ES_AUTOHSCROLL
-    GROUPBOX        "Получение информации о  файле",IDC_GETINFOABOUTFILELABEL,10,107,246,40,NOT WS_VISIBLE
+    CONTROL         "Информация о файле на картинке",IDC_MEDIAINFOONIMAGE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,111,221,10
+    LTEXT           "Цвет текста:",IDC_TEXTCOLORLABEL,38,126,67,8
+    CONTROL         "Button2",IDC_TEXTCOLOR,"Button",BS_OWNERDRAW | WS_TABSTOP,109,125,13,12
+    PUSHBUTTON      "Font...",IDC_MEDIAINFOFONT,161,123,50,14
+    GROUPBOX        "Получение информации о  файле",IDC_GETINFOABOUTFILELABEL,10,165,246,40,NOT WS_VISIBLE
     CONTROL         "Использовать AviInfo для файлов AVI (если установлен)",IDC_USEAVIINFO,
-                    "Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,21,125,208,10
+                    "Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,21,183,208,10
 END
 
 IDD_LOGOSETTINGS DIALOGEX 0, 0, 265, 242
@@ -157,8 +162,9 @@ BEGIN
     PUSHBUTTON      "< Назад",IDC_PREV,159,273,65,15
     DEFPUSHBUTTON   "Далее >",IDC_NEXT,235,273,62,15
     PUSHBUTTON      "EXIT",IDCANCEL,323,273,57,15
-    PUSHBUTTON      "О программе...",IDC_ABOUT,6,273,80,15
+    PUSHBUTTON      "О программе...",IDC_ABOUT,6,273,76,15
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,269,423,1
+    LTEXT           "Static",IDC_UPDATESLABEL,90,276,94,8,WS_TABSTOP
 END
 
 IDD_WELCOMEDLG DIALOGEX 0, 0, 397, 269
@@ -180,40 +186,40 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    GROUPBOX        "Параметры изображения",IDC_IMAGEPARAMETERS,24,3,338,98
+    GROUPBOX        "Параметры изображения",IDC_IMAGEPARAMETERS,20,3,346,90
     CONTROL         " Оставить без изменений",IDC_KEEPASIS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,34,18,140,10
     RTEXT           "Масштабировать по ширине:",IDC_RESIZEBYWIDTH,41,33,113,8
     EDITTEXT        IDC_IMAGEWIDTH,166,30,31,12,ES_AUTOHSCROLL
     CTEXT           "и/или высоте:",IDC_XLABEL,200,32,66,8
     EDITTEXT        IDC_IMAGEHEIGHT,268,30,32,12,ES_AUTOHSCROLL
     CONTROL         " Сохранять пропорции",IDC_SAVEPROPORTIONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,167,46,134,10
-    CONTROL         "Добавить логотип",IDC_YOURLOGO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,49,63,104,10
-    CONTROL         " Добавить текст на картинку",IDC_YOURTEXT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,161,63,165,10
-    RTEXT           "Формат:",IDC_FORMATLABEL,38,83,57,8
-    COMBOBOX        IDC_FORMATLIST,100,81,46,75,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    RTEXT           "Качество:",IDC_QUALITYLABEL,148,83,46,8
-    EDITTEXT        IDC_QUALITYEDIT,199,81,30,13,ES_AUTOHSCROLL
-    CONTROL         "",IDC_QUALITYSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,206,81,11,14
-    LTEXT           "%",IDC_PERCENTLABEL,231,83,11,8
-    PUSHBUTTON      "Дополнительно...",IDC_LOGOOPTIONS,264,80,89,14
-    GROUPBOX        "Настройки эскизов",IDC_THUMBSETTINGS,24,105,337,74
-    CONTROL         " Создавать эскизы",IDC_CREATETHUMBNAILS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,34,122,95,10
-    RTEXT           "Ширина эскиза:",IDC_WIDTHLABEL,169,123,74,8
-    EDITTEXT        IDC_THUMBWIDTH,257,121,28,12,ES_AUTOHSCROLL
-    LTEXT           "px",IDC_PXLABEL,290,123,9,8
-    CONTROL         " Использовать шаблон",IDC_USETHUMBTEMPLATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,48,138,136,10
+    CONTROL         "Добавить логотип",IDC_YOURLOGO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,49,61,104,10
+    CONTROL         " Добавить текст на картинку",IDC_YOURTEXT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,161,61,165,10
+    RTEXT           "Формат:",IDC_FORMATLABEL,38,76,57,8
+    COMBOBOX        IDC_FORMATLIST,100,74,46,75,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    RTEXT           "Качество:",IDC_QUALITYLABEL,148,76,46,8
+    EDITTEXT        IDC_QUALITYEDIT,199,74,30,13,ES_AUTOHSCROLL
+    CONTROL         "",IDC_QUALITYSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,243,74,11,14
+    LTEXT           "%",IDC_PERCENTLABEL,231,76,11,8
+    PUSHBUTTON      "Дополнительно...",IDC_LOGOOPTIONS,264,73,89,14
+    GROUPBOX        "Настройки эскизов",IDC_THUMBSETTINGS,19,98,347,56
+    CONTROL         " Создавать эскизы",IDC_CREATETHUMBNAILS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,34,110,95,10
+    RTEXT           "Ширина эскиза:",IDC_WIDTHLABEL,169,111,74,8
+    EDITTEXT        IDC_THUMBWIDTH,257,109,37,12,ES_AUTOHSCROLL
+    CONTROL         "",IDC_THUMBWIDTHSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,313,106,11,14
+    LTEXT           "px",IDC_PXLABEL,301,111,9,8
+    CONTROL         " Использовать шаблон",IDC_USETHUMBTEMPLATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,48,126,136,10
     CONTROL         " Использовать серверные эскизы",IDC_USESERVERTHUMBNAILS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,212,139,143,10
-    CONTROL         " Размер картинки на эскизе",IDC_ADDFILESIZE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,48,151,158,10
-    CONTROL         "Обводить в рамку",IDC_DRAWFRAME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,212,152,122,10
-    CTEXT           "Выберите сервер для загрузки изображений:",IDC_SELECTSERVERLABEL,10,187,198,8
-    COMBOBOX        IDC_SERVERLIST,213,185,101,129,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Авторизация",IDC_LOGINBUTTON,318,184,58,14
-    LTEXT           "Нажмите кнопку ""Загрузить"" чтобы загрузить изображения на выбранный вами сервер.",IDC_PRESSUPLOADBUTTON,33,220,339,20
-    CONTROL         "Надпись поверх эскиза",IDC_TEXTOVERTHUMB2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,48,165,106,10
-    CTEXT           "сервер для любых типов файлов:",IDC_STATIC,10,202,198,8
-    COMBOBOX        IDC_SERVERLIST2,213,202,101,129,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Авторизация",IDC_LOGINBUTTON2,318,202,58,14
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,212,127,143,10
+    CONTROL         " Размер картинки на эскизе",IDC_ADDFILESIZE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,48,139,158,10
+    CONTROL         "Обводить в рамку",IDC_DRAWFRAME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,212,140,122,10
+    CONTROL         "Надпись поверх эскиза",IDC_TEXTOVERTHUMB2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,242,222,10
+    GROUPBOX        "Сервер для изображений",IDC_IMAGESERVERGROUPBOX,19,157,348,29
+    LTEXT           "Нажмите кнопку ""Загрузить"" чтобы загрузить изображения на выбранный вами сервер.",IDC_PRESSUPLOADBUTTON,29,307,339,20
+    CTEXT           "сервер для любых типов файлов:",IDC_STATIC,5,294,198,8
+    COMBOBOX        IDC_SERVERLIST2,209,294,101,129,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Авторизация",IDC_LOGINBUTTON2,313,294,58,14
+    GROUPBOX        "Сервер для других типов файлов",IDC_FILESERVERGROUPBOX,19,194,348,29
 END
 
 IDD_IMAGEVIEW DIALOGEX 0, 0, 186, 95
@@ -228,12 +234,11 @@ CAPTION "Параметры авторизации"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     GROUPBOX        "",IDC_LOGINFRAME,9,5,173,75
-    LTEXT           "Логин:",IDC_LOGINLABEL,28,22,39,8
-    EDITTEXT        IDC_LOGINEDIT,71,19,90,14,ES_AUTOHSCROLL
-    LTEXT           "Пароль:",IDC_PASSWORDLABEL,28,45,38,8
-    EDITTEXT        IDC_PASSWORDEDIT,71,41,90,14,ES_PASSWORD | ES_AUTOHSCROLL
-    CONTROL         "Использовать cookies Internet Explorer",IDC_USEIECOOKIES,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,63,157,10
+    CONTROL         "Выполнять авторизацию на сервере",IDC_DOAUTH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,16,157,10
+    LTEXT           "Логин:",IDC_LOGINLABEL,28,35,39,8
+    EDITTEXT        IDC_LOGINEDIT,71,32,90,14,ES_AUTOHSCROLL
+    LTEXT           "Пароль:",IDC_PASSWORDLABEL,28,58,38,8
+    EDITTEXT        IDC_PASSWORDEDIT,71,54,90,14,ES_PASSWORD | ES_AUTOHSCROLL
     DEFPUSHBUTTON   "OK",IDOK,76,84,50,15
     PUSHBUTTON      "Отмена",IDCANCEL,133,84,50,15
 END
@@ -251,24 +256,25 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,148,76,53,15
 END
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 199, 154
+IDD_ABOUTBOX DIALOGEX 0, 0, 199, 177
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About Image Uploader"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
-    DEFPUSHBUTTON   "&OK",IDOK,140,136,52,15
-    LTEXT           "Image Uploader",IDC_IMAGEUPLOADERLABEL,76,26,112,17
-    GROUPBOX        "",IDC_STATIC,5,3,187,74
-    CTEXT           "Copyright ZendeN 2007-2010.  All rights reserved.",IDC_STATIC,12,44,174,15
-    LTEXT           "zenden2k@gmail.com",IDC_LINK3,100,61,70,8
-    CTEXT           "E-mail for contacts:",IDC_CONTACTEMAIL,13,61,83,8
-    CTEXT           "Beta-Testers:",IDC_BETATESTERS,8,94,80,8
-    LTEXT           "CKA3O4H1K (from ru-board.com)",IDC_STATIC,93,94,92,20
-    GROUPBOX        "Thanks to:",IDC_THANKSTOGROUP,5,83,187,50
+    DEFPUSHBUTTON   "&OK",IDOK,140,159,52,15
+    LTEXT           "Image Uploader",IDC_IMAGEUPLOADERLABEL,76,26,112,12
+    GROUPBOX        "",IDC_STATIC,5,3,187,80
+    CTEXT           "Copyright ZendeN 2007-2010.  All rights reserved.",IDC_STATIC,12,58,174,11
+    LTEXT           "zenden2k@gmail.com",IDC_LINK3,100,70,70,8
+    CTEXT           "E-mail for contacts:",IDC_CONTACTEMAIL,13,70,83,8
+    CTEXT           "Beta-Testers:",IDC_BETATESTERS,8,105,80,8
+    LTEXT           "CKA3O4H1K (from ru-board.com)",IDC_STATIC,93,105,92,20
+    GROUPBOX        "Thanks to:",IDC_THANKSTOGROUP,5,94,187,59
     CONTROL         214,IDC_STATICLOGO,"Static",SS_BITMAP,26,11,38,32
     LTEXT           "Image Uploader",IDC_IMAGEUPLOADERLABEL2,76,14,112,12
-    CTEXT           "Переводчикам:",IDC_TRANSLATERS,15,118,73,8
-    LTEXT           "Mishunika, Adrianis",IDC_STATIC,93,118,62,8
+    CTEXT           "Переводчикам:",IDC_TRANSLATERS,15,129,73,8
+    LTEXT           "Mishunika, Adrianis, \r\nHessam Mohamadi",IDC_STATIC,93,129,91,19
+    CTEXT           "Static",IDC_CURLINFOLABEL,18,43,174,9
 END
 
 IDD_MAINDLG DIALOGEX 0, 0, 433, 266
@@ -465,6 +471,66 @@ BEGIN
     GROUPBOX        "",IDC_STATIC,7,6,224,76
 END
 
+IDD_SERVERFOLDERSELECT DIALOGEX 0, 0, 224, 204
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    LTEXT           "Folder list for user # on server #",IDC_FOLDERLISTLABEL,5,9,176,16
+    LTEXT           "Static",IDC_ANIMATIONSTATIC,191,7,27,21
+    CONTROL         "",IDC_FOLDERTREE,"SysTreeView32",TVS_HASBUTTONS | TVS_LINESATROOT | TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,30,211,146
+    PUSHBUTTON      "New folder",IDC_NEWFOLDERBUTTON,5,186,59,14
+    DEFPUSHBUTTON   "OK",IDOK,102,185,50,15
+    PUSHBUTTON      "Cancel",IDCANCEL,159,185,50,15
+END
+
+IDD_NEWFOLDERDLG DIALOGEX 0, 0, 208, 158
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "New folder"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,86,139,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,141,139,50,14
+    LTEXT           "Folder name:",IDC_FOLDERNAMELABEL,6,7,138,8
+    EDITTEXT        IDC_FOLDERTITLEEDIT,6,19,196,14,ES_AUTOHSCROLL
+    LTEXT           "Description:",IDC_FOLDERDESCRLABEL,6,37,150,8
+    EDITTEXT        IDC_FOLDERDESCREDIT,6,49,196,69,ES_MULTILINE | ES_AUTOHSCROLL | ES_WANTRETURN
+    COMBOBOX        IDC_ACCESSTYPECOMBO,80,121,122,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "Access:",IDC_ACCESSTYPELABEL,7,123,68,8
+END
+
+IDD_SERVERPARAMSDLG DIALOGEX 0, 0, 246, 202
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,131,179,50,16
+    PUSHBUTTON      "Cancel",IDCANCEL,189,179,50,16
+    LISTBOX         IDC_PARAMLIST,7,7,232,166,LBS_SORT | LBS_OWNERDRAWVARIABLE | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_TEXTVIEWDLG DIALOGEX 0, 0, 276, 223
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "Да",IDOK,92,204,64,15
+    PUSHBUTTON      "Нет",IDCANCEL,167,204,62,15
+    EDITTEXT        IDC_TEXTEDIT,7,23,262,164,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL,WS_EX_TRANSPARENT
+    CTEXT           "Static",IDC_QUESTIONLABEL,7,193,262,8
+    LTEXT           "Static",IDC_TITLETEXT,7,7,262,10
+END
+
+IDD_UPDATEDLG DIALOGEX 0, 0, 334, 148
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,182,126,66,15
+    PUSHBUTTON      "Прервать",IDCANCEL,271,126,55,15
+    CONTROL         "",IDC_UPDATELISTVIEW,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | NOT WS_VISIBLE | WS_BORDER | WS_TABSTOP,7,7,319,115
+    EDITTEXT        IDC_UPDATEINFO,7,19,319,103,ES_MULTILINE | ES_AUTOVSCROLL | WS_VSCROLL
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -528,7 +594,7 @@ BEGIN
 
     IDD_UPLOADSETTINGS, DIALOG
     BEGIN
-        LEFTMARGIN, 7
+        LEFTMARGIN, 6
         RIGHTMARGIN, 382
         TOPMARGIN, 7
         BOTTOMMARGIN, 231
@@ -563,7 +629,7 @@ BEGIN
         LEFTMARGIN, 5
         RIGHTMARGIN, 192
         TOPMARGIN, 7
-        BOTTOMMARGIN, 151
+        BOTTOMMARGIN, 174
     END
 
     IDD_MAINDLG, DIALOG
@@ -659,6 +725,46 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 102
     END
+
+    IDD_SERVERFOLDERSELECT, DIALOG
+    BEGIN
+        LEFTMARGIN, 5
+        RIGHTMARGIN, 216
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 200
+    END
+
+    IDD_NEWFOLDERDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 202
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 153
+    END
+
+    IDD_SERVERPARAMSDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 239
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 195
+    END
+
+    IDD_TEXTVIEWDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 269
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 219
+    END
+
+    IDD_UPDATEDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 326
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 141
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -731,13 +837,21 @@ IDR_PNG2                PNG                     "res\\imageuploader_wizard.png"
 
 IDB_BITMAP3             BITMAP                  "res\\toolbar22.bmp"
 IDB_BITMAP4             BITMAP                  "res\\toolbar11.bmp"
+IDB_SERVERTOOLBARBMP2   BITMAP                  "res\\server_8bit.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// REGISTRY
+// GIF
 //
 
-IDR_REGISTRY1           REGISTRY                "res\\SendToShlExt.rgs"
+IDR_PROGRESSGIF         GIF                     "res\\progress.gif_"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RT_MANIFEST
+//
+
+IDR_RT_MANIFEST1        RT_MANIFEST             "res\\image uploader.exe.manifest"
 #endif    // Russian resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -806,8 +920,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,2,1,0
- PRODUCTVERSION 1,2,1,0
+ FILEVERSION 1,2,5,0
+ PRODUCTVERSION 1,2,5,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -822,13 +936,14 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
+            VALUE "CompanyName", "http://zenden.ws"
             VALUE "FileDescription", "Image Uploader"
-            VALUE "FileVersion", "1, 2, 1, 0"
+            VALUE "FileVersion", "1, 2, 5, 0"
             VALUE "InternalName", "Image Uploader"
-            VALUE "LegalCopyright", "Copyright 2009 by ZendeN"
+            VALUE "LegalCopyright", "Copyright 2007-2010 by ZendeN (http://zenden.ws)"
             VALUE "OriginalFilename", "Image Uploader.exe"
             VALUE "ProductName", "Image Uploader"
-            VALUE "ProductVersion", "1, 2, 1, 0"
+            VALUE "ProductVersion", "1, 2, 5, 0"
         END
     END
     BLOCK "VarFileInfo"

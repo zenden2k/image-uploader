@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -102,7 +102,10 @@ CString Font;
 		XML_OPTION_VALUE(ExplorerContextMenu);
 		XML_OPTION_VALUE(ExplorerVideoContextMenu);
 		XML_OPTION_VALUE(ExplorerCascadedMenu);
+		
+		
 		#ifndef IU_SHELLEXT
+		XML_OPTION_VALUE(LastUpdateTime);
 		XML_OPTION_VALUE(ConfirmOnExit);
 		XML_OPTION_VALUE(SendToContextMenu);
 		XML_OPTION_VALUE(ParseSubDirs);
@@ -208,6 +211,19 @@ CString Font;
 		XML_OPTION_MEMBER_VALUE(VideoSettings, GapHeight);
 		XML_OPTION_MEMBER_VALUE(VideoSettings, NumOfFrames);
 		XML_OPTION_MEMBER_VALUE(VideoSettings,JPEGQuality);
+		XML_OPTION_MEMBER_VALUE(VideoSettings, ShowMediaInfo);
+		_XML_OPTION_ATTR(Color, COLOR_TO_PINT(VideoSettings.TextColor));
+
+		#ifndef  SETTINGS_READ
+				FontToString(&VideoSettings.Font,Font);
+			
+			#endif
+			
+			XML_OPTION_ATTR(Font);
+
+			#ifdef  SETTINGS_READ
+				StringToFont(Font, &VideoSettings.Font);
+			#endif
 	XML_NODE_END(); /* end of VideoGrabber */
 
 	XML_NODE_START(TrayIcon);
@@ -227,6 +243,7 @@ CString Font;
 		XML_OPTION_VALUE(CodeLang);
 		XML_OPTION_VALUE(ThumbsPerLine);
 		XML_OPTION_VALUE(UploadBufferSize);
+		XML_OPTION_VALUE(UseDirectLinks);
 		XML_OPTION_VALUE(UseTxtTemplate);
 		XML_OPTION_VALUE(CodeType);
 		XML_OPTION_VALUE(FileRetryLimit);
@@ -260,19 +277,65 @@ CString Font;
 		{
 			CString v;
 		(XML.GetAttrib(_T("Name"),v));
+		int i=0;
+		for(;;){
+		CString attribName = XML.GetAttribName(i++);
+		
+		if(attribName.IsEmpty()) break;
+	if( attribName.Left(1) ==_T('_'))
+		{
+			
 	
-	XML.GetAttrib(_T("Auth"),AuthParams[v].UseIeCookies);
+			
+			CString attribValue;
+			XML.GetAttrib(attribName,attribValue);
+			attribName.Delete(0);
+			//MessageBox(0,attribName+"="+attribValue, v, 0);
+			if(!attribValue.IsEmpty()){
+				ServersSettings[v].params[attribName]=attribValue;
+			}
+			//else break;
+		}
+		}
+	
+	XML.GetAttrib(_T("Auth"),ServersSettings[v].authData.DoAuth);
 	CString Buffer;
 
 	XML.GetAttrib(_T("Login"),Buffer);
-	DecodeString(Buffer, AuthParams[v].Login);
+	DecodeString(Buffer, ServersSettings[v].authData.Login);
 	
 	XML.GetAttrib(_T("Password"),Buffer);
-	DecodeString(Buffer, AuthParams[v].Password);
+	DecodeString(Buffer, ServersSettings[v].authData.Password);
 	}
 XML_NODE_END();
 #else
 	XML_NODE_START(ServersParams);
+	std::map <CString, ServerSettingsStruct>::iterator it;
+	for(it=ServersSettings.begin(); it!=ServersSettings.end(); it++)
+		{
+				XML.IntoElem();
+			
+			if(XML.AddElem(_T("Server")))
+			{
+				(XML.SetAttrib(_T("Name"),it->first));
+				
+				std::map <CString, CString>::iterator param;
+				for(param=it->second.params.begin(); param!=it->second.params.end(); param++)
+				{	
+					XML.SetAttrib(_T("_")+param->first,param->second);
+				}
+
+				XML.SetAttrib(_T("Auth"),it->second.authData.DoAuth);
+				CString Buffer;
+				EncodeString(it->second.authData.Login,Buffer );
+				XML.SetAttrib(_T("Login"),Buffer);
+				EncodeString( it->second.authData.Password, Buffer);
+				XML.SetAttrib(_T("Password"),Buffer);
+				XML.OutOfElem();
+			}
+		}
+	XML_NODE_END();
+	/*XML_NODE_START(ServersParams);
 		std::map<CString, LoginInfo>::iterator i;
 		for(i=AuthParams.begin(); i!=AuthParams.end(); i++)		
 		{
@@ -290,7 +353,7 @@ XML_NODE_END();
 				XML.OutOfElem();
 			}
 		}
-	XML_NODE_END();
+	XML_NODE_END();*/
 #endif
 	#endif
 	XML_NODE_END(); // end of settings

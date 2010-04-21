@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -33,6 +33,14 @@
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
 	CreateTempFolder();
+	
+	std::vector<CString> fileList;
+	GetFolderFileList(fileList, GetAppFolder() + _T("\\"), _T("*.old"));
+	for(int i=0; i<fileList.size(); i++)
+	{
+		DeleteFile(GetAppFolder()+fileList[i]);
+	}
+
 	GdiplusStartupInput gdiplusStartupInput;
 	
 	ULONG_PTR gdiplusToken;
@@ -65,7 +73,6 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		{
 			ShowMainWindow = BecomeTray;
 			floatWnd.CreateTrayIcon();
-			//CreateFloatWindow();
 		}
 		else return 0;
 	}
@@ -106,6 +113,22 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 {		
 	OleInitialize(NULL);
 	HRESULT hRes ;
+
+
+	for(int i=0; i<CmdLine.GetCount(); i++)
+	{
+		CString CurrentParam = CmdLine[i];
+		if(CurrentParam .Left(12)==_T("/waitforpid="))
+		{
+			CString pidStr = CurrentParam.Right(CurrentParam.GetLength()-12);
+			DWORD pid = _ttoi(pidStr);
+			HANDLE hProcess = OpenProcess(SYNCHRONIZE, false, pid); 
+			WaitForSingleObject(hProcess, 20000);
+
+		}
+	}
+
+
 	if(CmdLine.IsOption(_T("integration"))) // for Windows Vista+
 	{
 		Settings.LoadSettings();		
@@ -127,7 +150,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	ATLASSERT(SUCCEEDED(hRes));
 
 	int nRet = Run(lpstrCmdLine, nCmdShow);
-
+SquirrelVM::Shutdown(); 
 	_Module.Term();
 	OleUninitialize();
 	//::CoUninitialize();
