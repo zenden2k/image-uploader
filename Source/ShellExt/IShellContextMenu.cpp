@@ -25,7 +25,32 @@
 #include "../Settings.h"
 #include "../MyUtils.h"
 #include "IShellContextMenu.h"
+#include <shlobj.h>
 HINSTANCE hDllInstance;
+
+CString GetStartMenuPath() 
+{
+	CString result;
+	LPITEMIDLIST pidl;
+	TCHAR        szSendtoPath [MAX_PATH];
+	HANDLE       hFile;
+	LPMALLOC     pMalloc;
+
+	if(SUCCEEDED( SHGetSpecialFolderLocation ( NULL, CSIDL_STARTMENU, &pidl )))
+	{
+		if(SHGetPathFromIDList(pidl, szSendtoPath))
+		{
+			result = szSendtoPath;
+		}
+
+		if(SUCCEEDED(SHGetMalloc(&pMalloc)))
+		{
+			pMalloc->Free ( pidl );
+			pMalloc->Release();
+		}
+	}
+	return result;
+}
 
 CString GetDllFolder()
 {
@@ -61,30 +86,103 @@ bool AreOnlyImages(CAtlArray<CString> & files)
 {
 	if(files.GetCount()>1000) return false;
 
-		for(int i=0; i<files.GetCount();i++)
-		{
-			if(!IsImage(files[i])) return false;
-		}
-		return true;
+	for(int i=0; i<files.GetCount();i++)
+	{
+		if(!IsImage(files[i])) return false;
+	}
+	return true;
 }
-bool CIShellContextMenu::MyInsertMenu(HMENU hMenu, int pos, UINT id, int nInternalCommand, const LPTSTR szTitle, int firstCmd, HBITMAP bm)
+
+bool CIShellContextMenu::MyInsertMenu(HMENU hMenu, int pos, UINT id, int nInternalCommand, const LPTSTR szTitle, int firstCmd, bool UseBitmaps, HBITMAP bm,WORD resid)
 {
+	MENUITEMINFO MenuItem;
+	
+	MenuItem.cbSize = sizeof(MenuItem);
+	MenuItem.fType = MFT_STRING;
+	MenuItem.hbmpItem = IsVista() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, resid): HBMMENU_CALLBACK;;
+	MenuItem.fMask = MIIM_FTYPE | MIIM_ID | (UseBitmaps?MIIM_BITMAP:0)  | MIIM_STRING;
+	
+	MenuItem.wID = id;
+	MenuItem.dwTypeData = szTitle;
+	if(!InsertMenuItem(hMenu, pos, TRUE, &MenuItem))
+		return false;
+
 	Shell_ContextMenuItem InternalMenuItem;
 	InternalMenuItem.cmd =  nInternalCommand;
 	InternalMenuItem.text = szTitle;
+	//if(resid)
+	InternalMenuItem.icon = resid;
+	InternalMenuItem.id = id;
 	m_nCommands[id-firstCmd]= InternalMenuItem;
-	MENUITEMINFO MenuItem;
-	 
-	MenuItem.cbSize = sizeof(MenuItem);
-	MenuItem.fType = MFT_STRING;
-	MenuItem.fMask = MIIM_TYPE	| MIIM_ID | MIIM_DATA;
-	if(bm)
-		MenuItem.fMask |= MIIM_CHECKMARKS;
-	MenuItem.wID = id;
-	MenuItem.hbmpChecked = bm;
-	MenuItem.hbmpUnchecked = bm;
-	MenuItem.dwTypeData = szTitle;
-	return InsertMenuItem(hMenu, pos, TRUE, &MenuItem);	
+	return true;
+}
+
+STDMETHODIMP CIShellContextMenu::HandleMenuMsg(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	LRESULT res;
+	return HandleMenuMsg2(uMsg, wParam, lParam, &res);
+}
+
+STDMETHODIMP CIShellContextMenu::HandleMenuMsg2(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT *pResult)
+{
+	LRESULT res;
+	if (pResult == NULL)
+		pResult = &res;
+	*pResult = FALSE;
+	
+	switch (uMsg)
+	{
+	case WM_MEASUREITEM:
+		{
+			MEASUREITEMSTRUCT* lpmis = (MEASUREITEMSTRUCT*)lParam;
+			if (lpmis==NULL)
+				break;
+			lpmis->itemWidth += 2;
+			if (lpmis->itemHeight < 16)
+				lpmis->itemHeight = 16;
+			*pResult = TRUE;
+		}
+		break;
+	case WM_DRAWITEM:
+		{
+			LPCTSTR resource;
+			HICON hIcon=0;
+			DRAWITEMSTRUCT* lpdis = (DRAWITEMSTRUCT*)lParam;
+			if ((lpdis==NULL)||(lpdis->CtlType != ODT_MENU))
+				return S_OK;		//not for a menu
+			int i =0;
+			int iconID=0;
+
+			std::map<int, Shell_ContextMenuItem>::iterator it;
+			for(it=m_nCommands.begin(); it!=m_nCommands.end();it++)
+			{
+				if(it->second.id == lpdis->itemID) 
+				{ 
+					iconID = it->second.icon;
+				}
+			}
+
+
+			if(iconID)
+				hIcon = (HICON)LoadImage(hDllInstance, MAKEINTRESOURCE(iconID), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);//m_nCommands[ LOWORD( lpdis->itemID )].icon;//(HICON)LoadImage(g_hResInst, resource, IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
+			else hIcon = NULL;
+			if (hIcon == NULL)
+				return S_OK;
+			
+			DrawIconEx(lpdis->hDC,
+				lpdis->rcItem.left - 16,
+				lpdis->rcItem.top + (lpdis->rcItem.bottom - lpdis->rcItem.top - 16) / 2,
+				hIcon, 16, 16,
+				0, NULL, DI_NORMAL);
+			*pResult = TRUE;
+			DeleteObject(hIcon);
+		}
+		break;
+	default:
+		return S_OK;
+	}
+
+	return S_OK;
 }
 
 // CIShellContextMenu
@@ -94,7 +192,13 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 	if ((uFlags & 0x000F) != CMF_NORMAL  && (uFlags & CMF_VERBSONLY) == 0 && (uFlags & CMF_EXPLORE) == 0)
 		return MAKE_HRESULT(SEVERITY_SUCCESS, 0, currentCommandID);
 
+	m_nCommands.clear(); // Clearing internal map of commands
+
 	HMENU PopupMenu;
+	bool UseBitmaps = true;
+	CString StartMenuFolder = GetStartMenuPath();
+	if(m_FileList.GetCount() == 1 && !lstrcmpi(m_FileList[0], StartMenuFolder))
+		UseBitmaps = false;
 	UINT subIndex = indexMenu;
 	if(Settings.ExplorerCascadedMenu)
 		PopupMenu = CreatePopupMenu();
@@ -102,30 +206,55 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 
 
 	if(AreOnlyImages(m_FileList))
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES, TR("Загрузить изображения"),idCmdFirst,bmUpArrow);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES, TR("Загрузить изображения"),idCmdFirst,UseBitmaps,0,IDI_ICONUPLOAD);
 	else
 	{
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADFILES, TR("Загрузить файлы"),idCmdFirst,bmUpArrow);
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES,TR("Загрузить только изображения"),idCmdFirst,bmUpArrow);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADFILES, TR("Загрузить файлы"),idCmdFirst,UseBitmaps,0,IDI_ICONUPLOAD);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES,TR("Загрузить только изображения"),idCmdFirst,UseBitmaps,0,IDI_ICONUPLOAD);
 	}
 	if(Settings.ExplorerVideoContextMenu&&  m_FileList.GetCount()==1 &&IsVideoFile( m_FileList[0]))
 	{
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO,  TR("Импорт видео"),idCmdFirst,Settings.ExplorerCascadedMenu?0:bmMovie);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO,  TR("Импорт видео"),idCmdFirst,UseBitmaps,0,Settings.ExplorerCascadedMenu?0:IDI_ICONMOVIE);
 		if(m_bMediaInfoInstalled)
-			MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_MEDIAINFO, TR("Информация о файле"),idCmdFirst,Settings.ExplorerCascadedMenu?0:bmInfo);
+			MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_MEDIAINFO, TR("Информация о файле"),idCmdFirst,UseBitmaps,0 ,Settings.ExplorerCascadedMenu?0:IDI_ICONINFO);
 	}
 	if(Settings.ExplorerCascadedMenu)
 	{
 		MENUITEMINFO MenuItem;
 		MenuItem.cbSize = sizeof(MenuItem);
-		MenuItem.hbmpChecked = bmIULogo;
-		MenuItem.hbmpUnchecked =  bmIULogo;
+		//MenuItem.hbmpChecked = bmIULogo;
+		//MenuItem.hbmpUnchecked =  bmIULogo;
 		MenuItem.fType = MFT_STRING;
-		MenuItem.fMask = MIIM_SUBMENU | MIIM_TYPE | MIIM_DATA|MIIM_ID|MIIM_CHECKMARKS;
+		MenuItem.fMask =MIIM_SUBMENU| MIIM_FTYPE | MIIM_ID | (UseBitmaps?MIIM_BITMAP:0) | MIIM_STRING;//MIIM_SUBMENU | MIIM_TYPE | MIIM_DATA|MIIM_ID|MIIM_BITMAP;//|MIIM_CHECKMARKS;
 		MenuItem.wID = currentCommandID++;
 		MenuItem.dwTypeData = _T("Image Uploader");
 		MenuItem.hSubMenu = PopupMenu;
-		InsertMenuItem(hmenu, indexMenu, true, &MenuItem);	
+
+		// Inserting item in our internal list
+		Shell_ContextMenuItem InternalMenuItem;
+		InternalMenuItem.cmd =  -1;
+		InternalMenuItem.text = MenuItem.dwTypeData;
+		
+		InternalMenuItem.icon= IDI_ICONMAIN;
+		MenuItem.hbmpItem = IsVista() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, IDI_ICONMAIN): HBMMENU_CALLBACK;
+		
+		InternalMenuItem.id = MenuItem.wID;
+		if(InsertMenuItem(hmenu, indexMenu, true, &MenuItem))
+			m_nCommands[InternalMenuItem.id -idCmdFirst]= InternalMenuItem;
+			
+	}
+
+	if (IsVista())
+	{
+		MENUINFO MenuInfo;
+
+		memset(&MenuInfo, 0, sizeof(MenuInfo));
+
+		MenuInfo.cbSize  = sizeof(MenuInfo);
+		MenuInfo.fMask   = MIM_STYLE | MIM_APPLYTOSUBMENUS;
+		MenuInfo.dwStyle = MNS_CHECKORBMP;
+
+		SetMenuInfo(hmenu, &MenuInfo);
 	}
 	return MAKE_HRESULT(SEVERITY_SUCCESS, 0, currentCommandID - idCmdFirst);
 }
@@ -171,6 +300,12 @@ bool IULaunchCopy(CAtlArray<CString> & CmdLine,const CString params=_T(""))
 
 HRESULT CIShellContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpici)
 {
+	if(HIWORD( lpici->lpVerb ))
+		return E_INVALIDARG ;	
+
+	if(m_nCommands.empty())
+		return E_INVALIDARG;	
+
 	switch ( m_nCommands[ LOWORD( lpici->lpVerb )].cmd)
 	{
 	case MENUITEM_UPLOADFILES:
@@ -218,10 +353,6 @@ HRESULT CIShellContextMenu::GetCommandString(UINT_PTR idCmd, UINT uType, UINT *p
 CIShellContextMenu::CIShellContextMenu()
 {
 	m_bMediaInfoInstalled = IsMediaInfoInstalled();
-	bmIULogo = LoadBitmap(hDllInstance, MAKEINTRESOURCE(IDB_IULOGO));
-	bmUpArrow = LoadBitmap(hDllInstance, MAKEINTRESOURCE(IDB_UPARROW));
-	bmMovie = LoadBitmap(hDllInstance, MAKEINTRESOURCE(IDB_MOVIE));
-	bmInfo = LoadBitmap(hDllInstance, MAKEINTRESOURCE(IDB_INFO));
 }
 
 HRESULT CIShellContextMenu::Initialize(LPCITEMIDLIST pidlFolder, LPDATAOBJECT dataObject, HKEY hkeyProgID)
@@ -269,6 +400,7 @@ HRESULT CIShellContextMenu::Initialize(LPCITEMIDLIST pidlFolder, LPDATAOBJECT da
 
 	GlobalUnlock ( stg.hGlobal );
 	ReleaseStgMedium ( &stg );
+
 
 	return hr;
 }

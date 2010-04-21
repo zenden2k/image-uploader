@@ -24,7 +24,7 @@
 #include <atlmisc.h>
 
 #include <atlcoll.h>
-#include "settings.h"
+//#include "settings.h"
 struct TranslateListItem
 {
 	int Hash;

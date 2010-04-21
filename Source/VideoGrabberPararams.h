@@ -21,6 +21,7 @@
 #pragma once
 
 #include "resource.h"       // main symbols
+#include "settingspage.h"
 // CVideoGrabberParams
 struct CSavingOptions
 {

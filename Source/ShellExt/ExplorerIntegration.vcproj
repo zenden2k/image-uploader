@@ -226,6 +226,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\IconBitmapUtils.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\IShellContextMenu.cpp"
 				>
 			</File>
@@ -276,6 +280,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\IconBitmapUtils.h"
+				>
+			</File>
+			<File
 				RelativePath=".\IShellContextMenu.h"
 				>
 			</File>
@@ -294,10 +302,6 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\Res\arrowup.bmp"
-				>
-			</File>
-			<File
 				RelativePath=".\ExplorerIntegration.rc"
 				>
 			</File>
@@ -306,15 +310,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Res\icon-info.bmp"
+				RelativePath=".\Res\icon-info-16px.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Res\icon-movie.bmp"
+				RelativePath=".\Res\icon-movie-16px.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Res\icon_shell.bmp"
+				RelativePath=".\Res\icon-upload-16px.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\res\icon_main.ico"
 				>
 			</File>
 			<File

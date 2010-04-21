@@ -22,6 +22,8 @@
 #include "SettingsDlg.h"
 #include "langclass.h"
 #include "langselect.h"
+#include "traysettings.h"
+#include "hotkeysettings.h"
 
 // CSettingsDlg
 CSettingsDlg::CSettingsDlg(int Page)
@@ -34,7 +36,7 @@ CSettingsDlg::CSettingsDlg(int Page)
 
 CSettingsDlg::~CSettingsDlg()
 {
-	for(int i=0; i<4; i++) /* Freeing memory xD */
+	for(int i=0; i<6; i++) /* Freeing memory xD */
 		if(Pages[i]) delete Pages[i];
 }
 
@@ -58,20 +60,28 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	
 	TC_ITEM item;
 	item.pszText = TR("Основные"); 
-	item.mask = TCIF_TEXT	;
+	item.mask = TCIF_TEXT;
 	TabCtrl_InsertItem(GetDlgItem(IDC_TABCONTROL), 0, &item);
 
-	item.pszText = TR("Работа с видео");
-	item.mask=TCIF_TEXT	;
+	item.pszText = TR("Видео");
+	item.mask=TCIF_TEXT;
 	TabCtrl_InsertItem(GetDlgItem(IDC_TABCONTROL), 1, &item);
 
-	item.pszText = TR("Изображения и эскизы");
-	item.mask=TCIF_TEXT	;
+	item.pszText = TR("Изображения");
+	item.mask=TCIF_TEXT;
 	TabCtrl_InsertItem(GetDlgItem(IDC_TABCONTROL), 2, &item);
 	
-	item.pszText = TR("Загрузка на сервер"); 
-	item.mask = TCIF_TEXT	;
+	item.pszText = TR("Загрузка"); 
+	item.mask = TCIF_TEXT;
 	TabCtrl_InsertItem(GetDlgItem(IDC_TABCONTROL), 3, &item);
+
+	item.pszText = TR("Трей"); 
+	item.mask = TCIF_TEXT;
+	TabCtrl_InsertItem(GetDlgItem(IDC_TABCONTROL), 4, &item);
+
+	item.pszText = TR("Горячие клавиши"); 
+	item.mask = TCIF_TEXT;
+	TabCtrl_InsertItem(GetDlgItem(IDC_TABCONTROL), 5, &item);
 
 	ShowPage(PageToShow);
 	return 0;  // Let the system set the focus
@@ -79,7 +89,7 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT CSettingsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	for(int i=0; i<4; i++)
+	for(int i=0; i<6; i++)
 		if(Pages[i] && !Pages[i]->Apply()) return 0; // If some tab cannot apply changes - do not close dialog
 
 	Settings.SaveSettings();
@@ -109,7 +119,7 @@ void CSettingsDlg::CloseDialog(int nVal)
 
 bool CSettingsDlg::ShowPage(int idPage)
 {
-	if(idPage< 0 || idPage> 3) return false;
+	if(idPage< 0 || idPage> 5) return false;
 
 	if(!Pages[idPage]) 
 		CreatePage(idPage);
@@ -127,7 +137,7 @@ bool CSettingsDlg::ShowPage(int idPage)
 
 LRESULT CSettingsDlg::OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-	for(int i=0; i<4; i++)
+	for(int i=0; i<6; i++)
 		if(Pages[i] && !Pages[i]->Apply()) return 0;
 	
 	Settings.SaveSettings();
@@ -220,6 +230,48 @@ bool CSettingsDlg::CreatePage(int PageID)
 		rc.bottom+=p.y;
 		Pages[PageID]->PageWnd = dlg->m_hWnd;
 		dlg->SetWindowPos(0,rc.left,rc.top,rc.right,rc.bottom,/*SWP_NOZORDER*/0);
+	}
+
+	if(PageID==4)
+	{
+		CTraySettingsPage *dlg = new CTraySettingsPage();
+		Pages[PageID]= dlg;
+		dlg->Create(m_hWnd,rc);
+
+		RECT rc={0,0,0,0},Rec;
+		dlg->GetClientRect(&rc);
+		TabCtrl_AdjustRect(GetDlgItem(IDC_TABCONTROL),FALSE, &rc); 	
+		::GetWindowRect(GetDlgItem(IDC_TABCONTROL),&Rec);
+		POINT p={Rec.left, Rec.top};
+		ScreenToClient(&p);
+		rc.left+=p.x;
+		rc.top+=p.y;
+		rc.right+=p.x;
+		rc.bottom+=p.y;
+		Pages[PageID]->PageWnd = dlg->m_hWnd;
+		dlg->SetWindowPos(0,rc.left,rc.top,rc.right,rc.bottom,/*SWP_NOZORDER*/0);
+	}
+	if(PageID==5)
+	{
+		CHotkeySettingsPage *dlg = new CHotkeySettingsPage();
+		Pages[PageID]= dlg;
+		dlg->Create(m_hWnd,rc);
+
+		RECT rc={0,0,0,0},Rec;
+		dlg->GetClientRect(&rc);
+		TabCtrl_AdjustRect(GetDlgItem(IDC_TABCONTROL),FALSE, &rc);
+		
+		::GetWindowRect(GetDlgItem(IDC_TABCONTROL),&Rec);
+		POINT p={Rec.left, Rec.top};
+		ScreenToClient(&p);
+		rc.left+=p.x;
+		rc.top+=p.y;
+		rc.right+=p.x;
+		rc.bottom+=p.y;
+		Pages[PageID]->PageWnd = dlg->m_hWnd;
+		//dlg->MoveWindow(&rc);
+		dlg->SetWindowPos(0,rc.left,rc.top,rc.right,rc.bottom,/*SWP_NOZORDER*/0);
+		
 	}
 	return true;
 }

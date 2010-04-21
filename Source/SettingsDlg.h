@@ -28,7 +28,7 @@ class CSettingsPage;
 #include "maindlg.h"
 #include "videograbber.h"
 #include "uploadsettings.h"
-#include "uploaddlg.h"
+//#include "uploaddlg.h"
 #include "aboutdlg.h"
 
 #include "resource.h"       // main symbols
@@ -80,7 +80,7 @@ public:
 	int CurPage;
 	int PrevPage,NextPage;
 	bool CreatePage(int PageID);
-	CSettingsPage* Pages[4];
+	CSettingsPage* Pages[6];
 	int PageToShow;
 	bool ShowPage(int idPage);
 	LRESULT OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);

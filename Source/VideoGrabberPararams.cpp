@@ -19,6 +19,7 @@
 */
 
 #include "stdafx.h"
+#include "wizarddlg.h"
 #include "VideoGrabberPararams.h"
 
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}

@@ -21,6 +21,7 @@
 #include "stdafx.h"
 #include "langclass.h"
 #include "myutils.h"
+#include "settings.h"
 CLang Lang;
 
 BYTE hex_digit(TCHAR f)

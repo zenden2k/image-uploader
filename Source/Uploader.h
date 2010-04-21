@@ -21,18 +21,13 @@
 #ifndef _UPLOADER_H_
 #define _UPLOADER_H_
 
+
 #include "HttpClient\RyeolHttpClient.h"
 #include "HttpClient\RyeolErrMgmtFunc.h"
 #include <deque>
 #include "thread.h"
+#include "common.h"
 
-struct InfoProgress
-{
-	DWORD Uploaded,Total;
-	bool IsUploading;
-	std::deque<DWORD> Bytes;
-	CAutoCriticalSection CS;
-};
 
 using namespace Ryeol ;
 class CUploader

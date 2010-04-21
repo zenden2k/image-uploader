@@ -2,9 +2,20 @@
 #
 # http://zenden.ws/imageuploader
 
---v1.2.1 svn build 1501 [14.10.2009]--
+--v1.2.1 build 1664 [19.01.2010]--
+[F] An upload bug introduced in previous version  fixed (invalid referer url was used)
+[F] Painting bug under Vista
+
+--v1.2.1 build 1576 [18.12.2009]--
+[F] A strange bug in context menu of "All programs" in winxp start menu fixed (by turning off bitmaps in context menu)
+
+--v1.2.1 build 1570 [14.10.2009]--
+[+] Tray icon
+[+] Hotkeys support
+[+] New servers added
 [+] New Shell context menu extension
 [+] New command line option "/onlyimages"
+[F] Minor fixes
 
 --v1.2 build 1490 [11.09.2009]--
 [+] GNU GENERAL PUBLIC LICENSE Version 3.

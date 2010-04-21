@@ -17,6 +17,7 @@
 #define IDD_SIZEEXCEED                  115
 #define IDD_STATUSDLG                   117
 #define IDD_LOGWINDOW                   118
+#define IDD_HOTKEYEDITOR                119
 #define IDR_MAINFRAME                   128
 #define IDD_MAINDLG                     129
 #define IDD_LOGINDLG                    130
@@ -26,6 +27,8 @@
 #define IDD_GENERALSETTINGS             134
 #define IDD_UPLOADSETTINGSPAGE          135
 #define IDD_RESULTSPANEL                136
+#define IDD_TRAYSETTINGSPAGE            137
+#define IDD_HOTKEYSETTINGSPAGE          138
 #define IDR_CONTEXTMENU                 202
 #define IDI_GRAB                        207
 #define IDI_IMAGES                      209
@@ -56,6 +59,7 @@
 #define IDC_THUMBLIST                   1002
 #define IDC_MSGLIST                     1002
 #define IDC_COMMANDBOX                  1002
+#define IDC_HOTKEYLIST                  1002
 #define IDC_KEEPASIS                    1003
 #define IDC_KEEPPROPORTIONS             1004
 #define IDC_IMAGEWIDTH                  1005
@@ -83,12 +87,16 @@
 #define IDC_LOGOPOSITION                1025
 #define IDC_CODETYPE                    1025
 #define IDC_LANGLIST                    1025
+#define IDC_LEFTBUTTONDOUBLECLICKCOMBO  1025
 #define IDC_SERVERLIST                  1026
+#define IDC_LEFTBUTTONCLICKCOMBO        1026
 #define IDC_CHECK4                      1027
 #define IDC_TEXTPOSITION                1027
 #define IDC_SAVEPROPORTIONS             1027
 #define IDC_STARTUPLOADINGFROMSHELL     1027
+#define IDC_MIDDLEBUTTONCLICKCOMBO      1027
 #define IDC_ADDFILESIZE                 1028
+#define IDC_RIGHTBUTTONCLICKCOMBO       1028
 #define IDC_EDIT4                       1029
 #define IDC_PROXYLOGINEDIT              1029
 #define IDC_SERVERLIST2                 1029
@@ -109,6 +117,8 @@
 #define IDC_SHELLIMGCONTEXTMENUITEM     1036
 #define IDC_AUTOCOPYTOCLIPBOARD         1036
 #define IDC_SHELLINTEGRATION            1036
+#define IDC_SHOWTRAYICON                1036
+#define IDC_WINDOWBUTTONCHECKBOX        1036
 #define IDC_CREATETHUMBNAILS            1037
 #define IDC_PROGRESSBAR                 1038
 #define IDC_TEXTOVERTHUMB2              1038
@@ -131,6 +141,7 @@
 #define IDC_FORALL                      1041
 #define IDC_BROWSEBUTTON                1041
 #define IDC_ACTIONRETRYLIMIT            1041
+#define IDC_EDITHOTKEY                  1041
 #define IDC_DONE                        1042
 #define IDC_LOGINBUTTON2                1042
 #define IDC_RADIO1                      1043
@@ -243,6 +254,7 @@
 #define IDC_USETHUMBTEMPLATE            1142
 #define IDC_NEEDSAUTH                   1142
 #define IDC_AUTOSHOWLOG                 1142
+#define IDC_ONEINSTANCE                 1142
 #define IDC_PXLABEL                     1143
 #define IDC_TABCONTROL                  1144
 #define IDC_LANGUAGELABEL               1145
@@ -284,6 +296,16 @@
 #define IDC_RESULTSTAB                  1184
 #define IDC_CHECK3                      1185
 #define IDC_CASCADEDCONTEXTMENU         1185
+#define IDC_LEFTBUTTONDOUBLECLICKLABEL  1186
+#define IDC_LEFTBUTTONCLICKLABEL        1187
+#define IDC_MIDDLEBUTTONCLICKLABEL      1188
+#define IDC_RIGHTBUTTONCLICKLABEL       1189
+#define IDC_MOUSEREACTIONGROUP          1190
+#define IDC_LOCALHOTKEY                 1193
+#define IDC_GLOBALHOTKEY                1194
+#define IDC_LOCALHOTKEYLABEL            1195
+#define IDC_GLOBALHOTKEYLABEL           1196
+#define IDC_ATTENTION                   1197
 #define ID_VIEW_DELETE                  32775
 #define ID_VIEW                         32776
 #define ID_DELETE                       32777
@@ -306,14 +328,16 @@
 #define ID_0_OPENFINOLDER               32794
 #define IDM_OPENFINOLDER                32795
 #define IDM_OPENINFOLDER                32796
+#define ID_Menu                         32797
+#define IDM_ADDFILES                    32798
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        235
-#define _APS_NEXT_COMMAND_VALUE         32797
-#define _APS_NEXT_CONTROL_VALUE         1186
-#define _APS_NEXT_SYMED_VALUE           119
+#define _APS_NEXT_COMMAND_VALUE         32799
+#define _APS_NEXT_CONTROL_VALUE         1198
+#define _APS_NEXT_SYMED_VALUE           120
 #endif
 #endif
