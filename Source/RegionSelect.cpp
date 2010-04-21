@@ -20,15 +20,22 @@
 
 #include "stdafx.h"
 #include "RegionSelect.h"
-
+#include "common.h"
 CRegionSelect RegionSelect;
 
 // CRegionSelect
 CRegionSelect::CRegionSelect()
 {
 	Down = false;
+	m_brushSize = 0;
 	End.x = -1;
 	End.y = -1;
+	DrawingPen = 0;
+	DrawingBrush = 0;
+	
+	
+	cxOld = -1;
+	cyOld = -1;
 	pen = CreatePen(PS_SOLID, 2, 0); //Solid black line, width = 2 pixels
 	CrossCursor = LoadCursor(NULL,IDC_CROSS);
 }
@@ -71,7 +78,7 @@ LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 	RECT rc;
 	GetClientRect(&rc);
 
-	BitBlt(dc,0,0,1280,1024,memDC2,0,0,SRCCOPY);
+	BitBlt(dc,0,0,rc.right,rc.bottom,memDC2,0,0,SRCCOPY);
 	EndPaint(&ps);
 
 	return 0;
@@ -79,11 +86,14 @@ LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 
 void CRegionSelect::ShowW(HWND Parent,HBITMAP bmp,int w,int h)
 {
+	setDrawingParams(Settings.ScreenshotSettings.brushColor, 3);
 	Down = false;
 	End.x = -1;
 
 	End.y = -1;
 
+	cxOld = -1;
+	cyOld = -1;
 	bm = bmp;
 	memDC2 = ::CreateCompatibleDC(GetDC());
 
@@ -93,6 +103,7 @@ void CRegionSelect::ShowW(HWND Parent,HBITMAP bmp,int w,int h)
 	MoveWindow(0, 0, w, h);
 	ShowWindow(SW_SHOW);
 	::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
+	m_dc = GetDC();
 }
 
 LRESULT CRegionSelect::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -105,19 +116,44 @@ LRESULT CRegionSelect::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
 LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	if(!Down) return 0;
+	int cx = LOWORD(lParam); 
+	int cy = HIWORD(lParam);
+	if(Down)
+	{
+		HDC dc = GetDC();
+		SetROP2(dc, R2_NOTXORPEN);
+		SelectObject(dc, pen);
+		if(End.x>-1)
+			Rectangle(dc, Start.x,Start.y, End.x, End.y);
 
-	HDC dc = GetDC();
-	SetROP2(dc, R2_NOTXORPEN);
-	SelectObject(dc, pen);
-	if(End.x>-1)
+		End.x = LOWORD(lParam); 
+		End.y = HIWORD(lParam);
+
 		Rectangle(dc, Start.x,Start.y, End.x, End.y);
+	}
 
-	End.x = LOWORD(lParam); 
-	End.y = HIWORD(lParam);
+	if(wParam & MK_RBUTTON)
+	{
+		HGDIOBJ oldPen2 = SelectObject(memDC2, DrawingPen);
 
-	Rectangle(dc, Start.x,Start.y, End.x, End.y);
+		if(cxOld != -1)
+		{
+			MoveToEx(memDC2, cxOld, cyOld,0);
+			LineTo(memDC2, cx,cy);
 
+			RECT RectToRepaint;
+			RectToRepaint.left = min(cxOld, cx) - m_brushSize;
+			RectToRepaint.top = min(cyOld, cy) - m_brushSize;
+			RectToRepaint.right = max(cxOld, cx) + m_brushSize;
+			RectToRepaint.bottom = max(cyOld, cy) + m_brushSize;
+			InvalidateRect(&RectToRepaint);
+			UpdateWindow();
+		}
+	
+		cxOld = cx;
+		cyOld = cy;
+		
+	}
 	return 0;
 }
 
@@ -138,7 +174,9 @@ LRESULT CRegionSelect::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT CRegionSelect::OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	Hide(false);
+	RButtonDown = true;
+	Down = false;
+	//Hide(false);
 	return 0;
 }
 
@@ -187,7 +225,11 @@ void CRegionSelect::OnTimer(UINT_PTR nIDEvent)
 	HBITMAP bm = ::CreateCompatibleBitmap(dstDC, sz.cx, sz.cy);
 	oldbm = (HBITMAP)::SelectObject(memDC,bm);
 	if(!::BitBlt(memDC, 0, 0, sz.cx, sz.cy, srcDC, xshift, yshift, SRCCOPY|CAPTUREBLT))
-		return ;//ScreenshotError();
+	{
+		if(m_pCallBack)  
+		m_pCallBack->OnScreenshotFinished((int)0);;//ScreenshotError();
+		return ;
+	}
 
 	TCHAR szBuffer[256];
 
@@ -212,6 +254,7 @@ bool CRegionSelect::Execute(CRegionSelectCallback *RegionSelectCallback)
 
 void CRegionSelect::Finish()
 {
+	ReleaseDC(m_dc);
 	::SelectObject(memDC2, oldbm2 );
 	DeleteObject(memDC2);
 
@@ -253,7 +296,7 @@ void CRegionSelect::Finish()
 	// Удаление временного битмапа и контекста рисования
 	DeleteObject(SelectObject(memDC,oldbm));
 	DeleteObject(memDC); 
-
+	Settings.ScreenshotSettings.brushColor = m_brushColor;
 	Hide();
 }
 
@@ -287,4 +330,76 @@ BOOL CRegionSelect::OnSetCursor(CWindow wnd, UINT nHitTest, UINT message)
 {
 	SetCursor(CrossCursor);
 	return TRUE;
+}
+
+LRESULT  CRegionSelect::OnRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	RButtonDown=false;
+	
+	int cx = LOWORD(lParam); 
+	int cy = HIWORD(lParam); 
+
+	if(cxOld == -1)
+	{
+		HDC dc = m_dc;
+
+		HGDIOBJ oldPen = SelectObject(dc, DrawingPen);
+		HGDIOBJ oldPen2 = SelectObject(memDC2, DrawingPen);
+		HGDIOBJ oldBrush = SelectObject(dc , DrawingBrush);
+		HGDIOBJ oldBrush2 = SelectObject(memDC2, DrawingBrush);
+		Ellipse(dc,	cx-1,cy-1,cx+1,cy+1);
+		Ellipse(memDC2,	cx-1,cy-1,cx+1,cy+1);
+		SelectObject(dc, oldPen);	
+		SelectObject(dc, oldBrush);
+		SelectObject(memDC2, oldPen);	
+		SelectObject(memDC2, oldBrush);
+		
+	}
+	cxOld = -1;
+	cyOld = -1;
+	return 0;
+}
+bool CRegionSelect::setDrawingParams(COLORREF color, int brushSize)
+{
+	if(brushSize<1) brushSize = 1;
+	
+	if(brushSize == m_brushSize && color == m_brushColor) return true;
+
+	if(DrawingPen) DeleteObject(DrawingPen);
+	DrawingPen = CreatePen(PS_SOLID, brushSize, color);
+
+	if(DrawingBrush) DeleteObject(DrawingBrush);
+	DrawingBrush = CreateSolidBrush(color);
+
+	m_brushSize = brushSize;
+	m_brushColor = color;
+	return true;
+}
+
+LRESULT CRegionSelect::OnMButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+
+	CColorDialog ColorDialog(m_brushColor);
+	if(ColorDialog.DoModal(m_hWnd) == IDOK)
+	{
+		COLORREF newColor =  ColorDialog.GetColor();
+		setDrawingParams(newColor, m_brushSize);
+		//Invalidate();
+		return TRUE;
+	}
+	return 0;
+}
+
+LRESULT CRegionSelect::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	TCHAR chCharCode = (TCHAR) wParam;
+	if(chCharCode == _T('['))
+	{
+		setDrawingParams(m_brushColor,m_brushSize-1);
+	}
+	else if(chCharCode == _T(']'))
+	{
+		setDrawingParams(m_brushColor, m_brushSize+1 );
+	}
+	return 0;
 }

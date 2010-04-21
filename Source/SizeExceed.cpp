@@ -20,7 +20,7 @@
 
 #include "stdafx.h"
 #include "SizeExceed.h"
-
+#include "common.h"
 // CSizeExceed
 CSizeExceed::CSizeExceed(LPTSTR szFileName, ImageSettingsStruct &iss): m_ImageSettings(iss)
 {

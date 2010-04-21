@@ -19,6 +19,7 @@
 */
 
 #include "stdafx.h"
+
 #include "LogoSettings.h"
 #include <uxtheme.h>
 

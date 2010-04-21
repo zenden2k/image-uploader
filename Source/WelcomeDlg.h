@@ -20,12 +20,7 @@
 
 #pragma once
 // CWelcomeDlg
-#define IU_IDC_CONST 12255
-#define IDC_SETTINGS		IU_IDC_CONST+1
-#define IDC_REGIONPRINT IU_IDC_CONST+2
-#define IDC_MEDIAFILEINFO IU_IDC_CONST+3
-#define IDC_CLIPBOARD IU_IDC_CONST+4
-#define IDC_ADDFOLDER IU_IDC_CONST+5
+
 
 class CWelcomeDlg ;
 #include "resource.h"       // main symbols
@@ -38,7 +33,9 @@ class CWelcomeDlg ;
 #include <atlcrack.h>
 
 class CWelcomeDlg : 
-	public CDialogImpl<CWelcomeDlg>, public CWinDataExchange<CWelcomeDlg>, public CWizardPage, public CRegionSelectCallback
+	public CDialogImpl<CWelcomeDlg>, 
+	public CWinDataExchange<CWelcomeDlg>, 
+	public CWizardPage
 {
 public:
 	 CWelcomeDlg();
@@ -96,8 +93,6 @@ public:
 	HBRUSH br; 
 	bool OnShow();
 	bool QuickRegionPrint;
-	void OnScreenshotFinished(int Result);
-	void OnScreenshotSaving(LPTSTR FileName, Bitmap* Bm);
 	CMyImage LeftImage;CMyImage LogoImage;
 };
 

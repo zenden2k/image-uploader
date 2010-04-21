@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdiplus.lib STRMBASD.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;d:\Projects\Image Uploader\Image Uploader\Libs\"
 				IgnoreDefaultLibraryNames="LIBCMT.lib"
@@ -106,8 +106,8 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="&quot;$(SolutionDir)\Source\version.exe&quot; &quot;$(SolutionDir)\Source\versioninfo.h&quot; ImageUploader"
-				ExcludedFromBuild="true"
+				CommandLine="&quot;$(SolutionDir)\Utils\Version\version.exe&quot; &quot;$(SolutionDir)\Source\versioninfo.h&quot; ImageUploader"
+				ExcludedFromBuild="false"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -217,7 +217,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\FloatingWindow.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Source\GeneralSettings.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\HotkeyEditor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\HotkeySettings.cpp"
 				>
 			</File>
 			<File
@@ -355,6 +367,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\TraySettings.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Source\UploadDlg.cpp"
 				>
 			</File>
@@ -457,7 +473,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\FloatingWindow.h"
+				>
+			</File>
+			<File
 				RelativePath="Source\GeneralSettings.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\HotkeyEditor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\HotkeySettings.h"
 				>
 			</File>
 			<File
@@ -566,6 +594,10 @@
 			</File>
 			<File
 				RelativePath="Source\ThumbsView.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\TraySettings.h"
 				>
 			</File>
 			<File

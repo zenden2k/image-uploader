@@ -20,6 +20,7 @@
 
 #include "stdafx.h"
 #include "Common.h"
+#include "wizarddlg.h"
 
 CString IUCommonTempFolder, IUTempFolder;
 CCmdLine CmdLine;
@@ -226,10 +227,23 @@ bool MySaveImage(Image *img,LPTSTR szFilename,LPTSTR szBuffer,int Format,int Qua
 	CLSID clsidEncoder;
 	EncoderParameters eps;
 	eps.Count = 1;
-	eps.Parameter[0].Guid = EncoderQuality;
-	eps.Parameter[0].Type = EncoderParameterValueTypeLong;
-	eps.Parameter[0].NumberOfValues = 1;
-	eps.Parameter[0].Value = &Quality;
+
+	if(Format == 0) //JPEG
+	{
+		eps.Parameter[0].Guid = EncoderQuality;
+		eps.Parameter[0].Type = EncoderParameterValueTypeLong;
+		eps.Parameter[0].NumberOfValues = 1;
+		eps.Parameter[0].Value = &Quality;
+	}
+	else if (Format == 1) //PNG
+	{
+		eps.Parameter[0].Guid = EncoderCompression;
+		eps.Parameter[0].Type = EncoderParameterValueTypeLong;
+		eps.Parameter[0].NumberOfValues = 1;
+		eps.Parameter[0].Value = &Quality;
+	}
+
+	
 
 	if(GetEncoderClsid(szMimeTypes[Format], &clsidEncoder)!=-1)
 	{
@@ -393,3 +407,50 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
    free(pImageCodecInfo);
    return -1;  // Failure
 }
+
+bool IULaunchCopy(CString params, CAtlArray<CString> &files)
+{
+	STARTUPINFO si; 
+	PROCESS_INFORMATION pi; 
+        
+	ZeroMemory(&si, sizeof(si));
+   si.cb = sizeof(si);                           
+   ZeroMemory(&pi, sizeof(pi));
+
+
+	TCHAR Buffer[MAX_PATH*40];
+	GetModuleFileName(0, Buffer, sizeof(Buffer)/sizeof(TCHAR));
+
+
+	CString TempCmdLine = CString(_T("\"")) + Buffer + CString(_T("\""));
+	if(!params.IsEmpty())
+		TempCmdLine += _T(" ") + params + _T(" ");
+
+	for(int i=0;i <files.GetCount(); i++)
+	{
+		TempCmdLine = TempCmdLine + " \"" + files[i] + "\""; 
+	}
+
+    // Start the child process.
+    if( !CreateProcess(
+                NULL,                   // No module name (use command line). 
+        (LPWSTR)(LPCTSTR)TempCmdLine, // Command line. 
+        NULL,                   // Process handle not inheritable. 
+        NULL,                   // Thread handle not inheritable. 
+        FALSE,                  // Set handle inheritance to FALSE. 
+        0,                      // No creation flags. 
+        NULL,                   // Use parent's environment block. 
+        NULL,                   // Use parent's starting directory. 
+        &si,                    // Pointer to STARTUPINFO structure.
+        &pi )                   // Pointer to PROCESS_INFORMATION structure.
+    ) 
+    
+        return false;
+
+    // Close process and thread handles. 
+	CloseHandle( pi.hProcess );
+	CloseHandle( pi.hThread );
+	return true;
+}
+
+

@@ -24,8 +24,9 @@
 #include "langclass.h"
 #include "common/myxml.h"
 #include <map>
-
+BOOL IsVista();
 #ifndef IU_SHELLEXT
+#include "hotkeysettings.h"
 struct ImageSettingsStruct
 {
 	int NewWidth,NewHeight;
@@ -52,9 +53,22 @@ struct LogoSettingsStruct
 	COLORREF TextColor,StrokeColor;
 };
 
+struct LoginInfo
+{
+	CString Login, Password,Cookies;
+	bool UseIeCookies;
+};
+
+struct TrayIconSettingsStruct
+{
+	int LeftDoubleClickCommand;
+	int LeftClickCommand;
+	int RightClickCommand;
+	int MiddleClickCommand;
+	BOOL DontLaunchCopy;
+};
 struct ThumbSettingsStruct
 {
-	
 	LOGFONT ThumbFont;
 	int LogoPosition;
 	int LogoBlend;
@@ -66,8 +80,8 @@ struct ThumbSettingsStruct
 	COLORREF FrameColor,ThumbColor1,ThumbColor2/*TextBackground ,*/,ThumbTextColor;
 	int ThumbAlpha;
 	BOOL TextOverThumb;
-		int ThumbWidth;
-BOOL UseServerThumbs;
+	int ThumbWidth;
+	BOOL UseServerThumbs;
 	BOOL UseThumbTemplate;
 	BOOL DrawFrame;
 	BOOL ThumbAddImageSize;
@@ -99,9 +113,9 @@ struct ConnectionSettingsStruct
 
 struct ScreenshotSettingsStruct
 {
-	//BOOL EntireScr;
 	int Format;
 	int Quality, Delay;
+	COLORREF brushColor;
 };
 #endif
 
@@ -116,9 +130,14 @@ class CSettings
 		CString Language;
 		BOOL ExplorerCascadedMenu;
 		#ifndef IU_SHELLEXT
+		CHotkeyList Hotkeys;
+		bool Hotkeys_changed;
+		bool ShowTrayIcon;
+		bool ShowTrayIcon_changed;
 		int ThumbsPerLine;
 		TCHAR m_szLang[64];
 		ImageSettingsStruct ImageSettings;
+		TrayIconSettingsStruct TrayIconSettings;
 		LogoSettingsStruct LogoSettings;
 		ThumbSettingsStruct ThumbSettings;
 		VideoSettingsStruct VideoSettings;
@@ -155,24 +174,11 @@ class CSettings
 		bool LoadSettings(LPCTSTR szDir=NULL);
 		bool MacroLoadSettings(CMyXml &XML);
 		bool MacroSaveSettings(CMyXml &XML);
-int UploadBufferSize;
-	
-int ServerID,
-			QuickServerID;
-void ApplyRegSettingsRightNow();
-int FileServerID;
-CString ServerName, QuickServerName,FileServerName;
-	/**	void PutString(SettingIndex Index, LPCTSTR Name, LPCTSTR Value); 
-
-		LPTSTR GetString(LPCTSTR Name);
-		bool SetDirectory(LPCTSTR Directory);
-		bool LoadLanguage(LPTSTR Lang);
-		bool LoadList();*/
-
-	//	CAtlArray<SettingsListItem> SettingsList;
-		
-
-	
+	int UploadBufferSize;
+	int ServerID, QuickServerID;
+	void ApplyRegSettingsRightNow();
+	int FileServerID;
+	CString ServerName, QuickServerName,FileServerName;
 };
 
 extern CSettings Settings;

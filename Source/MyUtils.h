@@ -100,4 +100,5 @@ LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern);
 	#define ShowVar(n) ShowX(_T(#n),__LINE__,n)
 #endif
 void EnableNextN(HWND Control, int n, bool Enable);
+bool IUInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP bm=0);
 #endif

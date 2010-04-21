@@ -632,3 +632,21 @@ void EnableNextN(HWND Control ,int n, bool Enable)
 		EnableWindow(Control, Enable);
 	}
 }
+
+bool IUInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP bm)
+{
+	MENUITEMINFO MenuItem;
+	 
+	MenuItem.cbSize = sizeof(MenuItem);
+	if(szTitle)
+	MenuItem.fType = MFT_STRING;
+	else MenuItem.fType = MFT_SEPARATOR;
+	MenuItem.fMask = MIIM_TYPE	| MIIM_ID | MIIM_DATA;
+	if(bm)
+		MenuItem.fMask |= MIIM_CHECKMARKS;
+	MenuItem.wID = id;
+	MenuItem.hbmpChecked = bm;
+	MenuItem.hbmpUnchecked = bm;
+	MenuItem.dwTypeData = (LPWSTR)szTitle;
+	return InsertMenuItem(hMenu, pos, TRUE, &MenuItem);
+}
