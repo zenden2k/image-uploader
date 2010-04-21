@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -68,17 +68,17 @@ public:
 	 CMainDlg *MainDlg;
 	 CResultsPanel ResultsPanel;
 	int ThreadTerminated(void);
-	int GenerateImages(LPTSTR szFileName, LPTSTR szBufferImage, LPTSTR szBufferThumb,int thumbwidth, ImageSettingsStruct &iss);
+	int GenerateImages(LPCTSTR szFileName, LPTSTR szBufferImage, LPTSTR szBufferThumb,int thumbwidth, ImageSettingsStruct &iss);
 	CAtlArray<CUrlListItem> UrlList;
 	CUploader *m_CurrentUploader;
 	bool OnShow();
 	bool OnNext();
 	bool OnHide();
+	//CToolBarCtrl Toolbar;
 	void ShowProgress(bool Show=true);
 	DWORD LastUpdate;
 	void FileProgress(const CString Text, bool ShowPrefix=true);
 	void GenThumb(LPCTSTR szImageFileName, Image *bm, int ThumbWidth,int newwidth,int newheight,LPTSTR szBufferThumb, int fileformat);
-	CToolBarCtrl Toolbar;
 	bool CancelByUser;
 	void GenerateOutput();
 	void UploadProgress(int CurPos, int Total,int FileProgress=0);

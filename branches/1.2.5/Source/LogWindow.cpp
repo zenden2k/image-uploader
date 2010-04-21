@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -115,7 +115,7 @@ LRESULT CLogWindow::OnClearList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	return 0;
 }
 	
-void WriteLog(LogMsgType MsgType, CString Sender, CString Msg,LPCTSTR Info)
+void WriteLog(LogMsgType MsgType, LPCWSTR Sender, LPCWSTR Msg,LPCWSTR Info)
 {
 	if(!LogWindow.m_hWnd) return;
 	LogWindow.WriteLog(MsgType, Sender, Msg, Info);

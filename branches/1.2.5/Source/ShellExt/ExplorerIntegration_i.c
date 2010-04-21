@@ -6,7 +6,7 @@
 
 
  /* File created by MIDL compiler version 7.00.0555 */
-/* at Mon Oct 12 00:02:45 2009
+/* at Thu Apr 15 19:32:07 2010
  */
 /* Compiler settings for .\ExplorerIntegration.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 7.00.0555 

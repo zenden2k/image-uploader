@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -25,8 +25,12 @@
 #include "common/markupmsxml.h"
 #include "common/regexp.h"
 #include <io.h>
-#include "floatingwindow.h"
 
+#include "floatingwindow.h"
+#include "updatepackage.h"
+#include "updatedlg.h"
+#include "TextViewDlg.h"
+#include <algorithm>
 // CWizardDlg
 CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 {
@@ -39,10 +43,13 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 	QuickUploadMarker=false;
 	m_bShowAfter = true;
 	m_bHandleCmdLineFunc = false;
+	updateDlg = 0;
+
 }
 
 CWizardDlg::~CWizardDlg()
 {
+	if(updateDlg) delete updateDlg;
 	for(int i=0; i<5; i++) 
 	{
 		CWizardPage *p = Pages[i];
@@ -50,10 +57,16 @@ CWizardDlg::~CWizardDlg()
 	}
 }
 
+bool compareEngines(const UploadEngine& elem1, const UploadEngine& elem2)
+{
+	return elem1.Name.CompareNoCase(elem2.Name)<0;
+		//elem1.< elem2.key1;
+}
 TCHAR MediaInfoDllPath[MAX_PATH] = _T("");
 LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	m_bShowWindow = true;
+	   
 	LPDWORD DlgCreationResult = (LPDWORD) lParam; 
 	ATLASSERT(DlgCreationResult != NULL);
 	// center the dialog on the screen
@@ -83,6 +96,11 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
    RegQueryValueEx(ExtKey,	 _T("installdir"), 0, &Type, (LPBYTE)&ClassName, &BufSize);
 	RegCloseKey(ExtKey);
 
+	m_UpdateLink.ConvertStaticToHyperlink(GetDlgItem(IDC_UPDATESLABEL), _T("http://zenden.ws"));
+	m_UpdateLink.setCommandID(IDC_UPDATESLABEL);
+
+
+
 	CString MediaDll = GetAppFolder()+_T("\\Modules\\MediaInfo.dll");
 	if(FileExists( MediaDll)) lstrcpy(MediaInfoDllPath, MediaDll);
 	else
@@ -92,12 +110,9 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	}
 	SetWindowText(APPNAME);
 	TCHAR Language[128];
-	
-	TCHAR szFileName[256], szPath[256];
-	GetModuleFileName(0, szFileName, 1023);
-   ExtractFilePath(szFileName, szPath);
 
-   Lang.SetDirectory(CString(szPath) + "Lang\\");
+
+   Lang.SetDirectory(GetAppFolder() + "Lang\\");
    Lang.LoadList();
 	
 
@@ -111,14 +126,13 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		}
 		Settings.Language = LS.Language;
 		if(!Lang.LoadLanguage(Settings.Language));
-		if(MessageBox(TR("Добавить Image Uploader в контекстное меню проводника Windows?"),APPNAME, MB_YESNO|MB_ICONQUESTION)==IDYES)
+		
+		/*if(MessageBox(TR("Добавить Image Uploader в контекстное меню проводника Windows?"),APPNAME, MB_YESNO|MB_ICONQUESTION)==IDYES)
 		{
 			Settings.ExplorerContextMenu = true;
 			Settings.ExplorerContextMenu_changed = true;
 			Settings.ExplorerVideoContextMenu = true;
-			/*Settings.SendToContextMenu = true;
-			Settings.SendToContextMenu_changed = true;*/
-		}	
+		}	*/
 		Settings.SaveSettings();
 	}
 	else 
@@ -127,7 +141,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	}
 
 	CString ErrorStr;
-	if(!LoadUploadEngines(ErrorStr))  // Завершаем работу программы, если файл servers.lst отсутствует
+	if(!LoadUploadEngines(_T("servers.xml"),ErrorStr))  // Завершаем работу программы, если файл servers.lst отсутствует
 	{
 		CString ErrBuf ;
 		ErrBuf.Format(TR("Невозможно открыть файл со спиком серверов \"servers.xml\"!\n\nПричина:  %s\n\nПродолжить работу программы?"),ErrorStr);
@@ -137,6 +151,9 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 			return 0;
 		}
 	}
+
+	LoadUploadEngines(_T("userservers.xml"),ErrorStr);
+	std::sort(EnginesList.begin(),EnginesList.end(), compareEngines);
 	
 	Settings.ServerID = GetUploadEngineIndex(Settings.ServerName);
 	Settings.FileServerID = GetUploadEngineIndex(Settings.FileServerName);
@@ -149,8 +166,10 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	TRC(IDC_ABOUT,"О программе...");
 	if(!CmdLine.IsOption(_T("tray")))
    TRC(IDCANCEL,"Выход");
+	
 	else 
 		TRC(IDCANCEL,"Скрыть");
+	TRC(IDC_UPDATESLABEL, "Проверить обновления");
    TRC(IDC_PREV,"< Назад");
 
 	ACCEL accel;
@@ -161,17 +180,35 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
 	RegisterLocalHotkeys();
 	if(ParseCmdLine()) return 0;
-
+ 
 	CreatePage(0); 
 	ShowPage(0);
 	::SetFocus(Pages[0]->PageWnd);
+
+	
+	if(CmdLine.IsOption(_T("update")))
+	{
+		CreateUpdateDlg();
+
+		updateDlg->ShowModal(m_hWnd);
+	}
+	else
+	{
+		if(time(0)  - Settings.LastUpdateTime > 3600 * 24 * 7)
+		{
+				CreateUpdateDlg();
+		//updateDlg = new CUpdateDlg();
+		updateDlg->Create(m_hWnd);
+	
+		//Start();
+		}
+
+	}
+		//um.DoUpdates();
 	return 0;  // Let the system set the focus
 }
 
-bool IsDirectory(LPCTSTR szFileName)
-{
-	 return GetFileAttributes(szFileName)&FILE_ATTRIBUTE_DIRECTORY;	
-}
+
 
 bool CWizardDlg::ParseCmdLine()
 {
@@ -236,6 +273,12 @@ nIndex = 0;
 		
 		FolderAdd.Do(Paths, CmdLine.IsOption(_T("imagesonly")), true);
 	}
+
+
+
+
+
+
 	return count;
 
 }
@@ -257,13 +300,7 @@ LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 }
 
 BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
-{
-	/*if(TranslateAccelerator(m_hWnd, hAccel, pMsg)) 
-	{
-		return TRUE;
-	}*/
-
-	
+{	
 	if(hLocalHotkeys &&TranslateAccelerator(m_hWnd, hLocalHotkeys, pMsg)) 
 	{
 		return TRUE;
@@ -325,14 +362,18 @@ LRESULT CWizardDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 void CWizardDlg::CloseDialog(int nVal)
 {
-	
+	if(updateDlg)
+	updateDlg->Abort();
 	ShowWindow(SW_HIDE);
 	if(CurPage >= 0)
 	{
 		Pages[CurPage]->OnHide();
 	}
+	
 	Exit();
 	DestroyWindow();
+	
+
 	::PostQuitMessage(nVal);
 }
 
@@ -358,6 +399,8 @@ bool CWizardDlg::ShowPage(int idPage,int prev,int next)
 	::ShowWindow(Pages[idPage]->PageWnd, SW_SHOW);
 	::SetFocus(Pages[idPage]->PageWnd);
 	Pages[idPage]->OnShow();
+	
+		::ShowWindow(GetDlgItem(IDC_UPDATESLABEL), idPage == 0);
 	::ShowWindow(GetDlgItem(IDC_ABOUT), idPage == 0);
 	if(CurPage >= 0)
 	{
@@ -563,12 +606,12 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
    
 }
 
-bool CWizardDlg::LoadUploadEngines(CString &Error)
+bool CWizardDlg::LoadUploadEngines(const CString &filename, CString &Error)
 {
 	int i = 0;
 
 	CMarkupMSXML XML;
-	CString XmlFileName = GetAppFolder() + _T("Data\\servers.xml");
+	CString XmlFileName = IU_GetDataFolder() + /*_T("servers.xml")*/filename;
 
 	if(!FileExists(XmlFileName))
 	{
@@ -594,8 +637,8 @@ bool CWizardDlg::LoadUploadEngines(CString &Error)
 	{
 		UploadEngine UE;
 		UE.NumOfTries = 0;
-		UE.NeedAuthorization=(bool) _ttoi(XML.GetAttrib(_T("Authorize")));
-		*UE.Name =0;
+		UE.NeedAuthorization = _ttoi(XML.GetAttrib(_T("Authorize")));
+		//*UE.Name =0;
 		CString RetryLimit = XML.GetAttrib(_T("RetryLimit"));
 		if(RetryLimit.IsEmpty())
 		{
@@ -604,11 +647,15 @@ bool CWizardDlg::LoadUploadEngines(CString &Error)
 		else UE.RetryLimit = _ttoi(RetryLimit);
 
 		CString ServerName = XML.GetAttrib(_T("Name"));
+		UE.SupportsFolders = (bool) _ttoi(XML.GetAttrib(_T("SupportsFolders")));
+		UE.RegistrationUrl = XML.GetAttrib(_T("RegistrationUrl"));
+		UE.PluginName = XML.GetAttrib(_T("Plugin"));
+		UE.UsingPlugin = !UE.PluginName.IsEmpty();
 		UE.Debug =  (bool) _ttoi(XML.GetAttrib(_T("Debug")));
 		UE.ImageHost =  !(bool) _ttoi(XML.GetAttrib(_T("FileHost")));
 		UE.MaxFileSize =   _ttoi(XML.GetAttrib(_T("MaxFileSize")));
 		XML.IntoElem();
-		lstrcpyn(UE.Name, ServerName, 63);
+		UE.Name =  ServerName;
 
 		if(XML.FindElem(_T("Actions")))
 		{
@@ -664,9 +711,11 @@ bool CWizardDlg::LoadUploadEngines(CString &Error)
 			UE.ImageUrlTemplate = XML.GetAttrib(_T("ImageUrlTemplate"));
 			UE.ThumbUrlTemplate = XML.GetAttrib(_T("ThumbUrlTemplate"));
 		}
+
+		UE.SupportThumbnails = !UE.ThumbUrlTemplate.IsEmpty();
 		XML.OutOfElem();
 
-		EnginesList.Add(UE);
+		EnginesList.push_back(UE);
 	}
 	return true;
 
@@ -1049,6 +1098,7 @@ int CFolderAdd::ProcessDir( CString currentDir, bool bRecursive /* = true  */ )
 
 DWORD CFolderAdd::Run()
 {
+	
 	TCHAR Buffer[MAX_PATH];
 	TCHAR FullPath[MAX_PATH*3];
 	EnableWindow(m_pWizardDlg->m_hWnd, false);
@@ -1135,47 +1185,39 @@ LRESULT CWizardDlg::OnAddImages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	LPTSTR szFileName= (LPTSTR) wParam;
 	if(!szFileName) ATLTRACE("Filename = NULL!");
 	return  AddImage(szFileName,  lParam);
-
 }
 
-CMyFolderDialog::CMyFolderDialog(HWND hWnd)
+CMyFolderDialog::CMyFolderDialog(HWND hWnd):
+				CFolderDialogImpl(hWnd, TR("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE|BIF_VALIDATE )
 {
 	OleInitialize(NULL);
-	CFolderDialogImpl::CFolderDialogImpl(hWnd, _T("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE );
 }
 void CMyFolderDialog::OnInitialized()
 {
-	HWND wnd = CreateWindowEx(0, _T("button"), TR("Включая поддиректории"), WS_VISIBLE|BS_CHECKBOX|WS_CHILD|BS_AUTOCHECKBOX, 15,5, 200,30, m_hWnd, 0,0, 0);
+	HWND wnd = CreateWindowEx(0, _T("button"), TR("Включая поддиректории"), WS_VISIBLE|BS_CHECKBOX|WS_CHILD|BS_AUTOCHECKBOX, 15,30, 200,24, m_hWnd, 0,0, 0);
 	SendMessage(wnd, WM_SETFONT, (WPARAM)SendMessage(m_hWnd, WM_GETFONT, 0,0),  MAKELPARAM(false, 0));
 	SendMessage(wnd, BM_SETCHECK, (WPARAM)(m_bSubdirs?BST_CHECKED	:BST_UNCHECKED),0);
-	OldProc =(DLGPROC) SetWindowLong(m_hWnd, DWL_DLGPROC, (DWORD)DialogProc);	
-	SetWindowLong(m_hWnd, GWL_USERDATA	,(DWORD) this);	
+	SetProp(m_hWnd, PROP_OBJECT_PTR, (HANDLE) this);
+	OldProc  = (DLGPROC) SetWindowLong(m_hWnd, DWL_DLGPROC, (DWORD)DialogProc);	
 	SubdirsCheckbox = wnd;
 	m_bSubdirs = true;
 }
 
- BOOL CALLBACK CMyFolderDialog::DialogProc(
-
-    HWND hwndDlg,	// handle to dialog box
-    UINT uMsg,	// message
-    WPARAM wParam,	// first message parameter
-    LPARAM lParam 	// second message parameter
-   )
+//  Overloaded WinProc function for BrowseForFolders dialog
+BOOL CALLBACK CMyFolderDialog::DialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-		//MessageBox(hwndDlg, _T("COMEONE SLICK"), 0, 0);
-	CMyFolderDialog *th =(CMyFolderDialog *) GetWindowLong(hwndDlg, GWL_USERDATA);
-	if(!th) return false;
+	CMyFolderDialog *th = (CMyFolderDialog *) GetProp(hwndDlg, PROP_OBJECT_PTR);
+	if(!th) return FALSE;
 
 	if(uMsg == WM_COMMAND && HIWORD(wParam)== BN_CLICKED && ((HWND) lParam)== th->SubdirsCheckbox)
-		th->m_bSubdirs = SendMessage(th->SubdirsCheckbox, BM_GETCHECK,0,0) == BST_CHECKED	;
-		//MessageBox(hwndDlg, _T("COMEONE SLICK"), 0, 0);
+		th->m_bSubdirs = SendMessage(th->SubdirsCheckbox, BM_GETCHECK,0,0) == BST_CHECKED;
+	
 	return th->OldProc(hwndDlg, uMsg, wParam, lParam);
-	return true;
 }
 
  LRESULT CWizardDlg::OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	bHandled = true; // Не даем системе очистить окно стандартным цветом (предотвращаем мерцание)
+	bHandled = true; 
 	return 1;
 }
 	
@@ -1348,7 +1390,6 @@ void CWizardDlg::OnScreenshotFinished(int Result)
 	EnableWindow();
 	if(Result || m_bShowAfter)
 	{
-		//if(m_bCurrentFunc
 		ShowWindow(SW_SHOWNORMAL);
 		SetForegroundWindow(m_hWnd);
 	}
@@ -1411,14 +1452,15 @@ bool CWizardDlg::funcAddFolder()
 LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	if(!floatWnd.m_hWnd)
-	  TRC(IDCANCEL,"Выход");
+	  TRC(IDCANCEL, "Выход");
 	else 
-		TRC(IDCANCEL,"Скрыть");
+		TRC(IDCANCEL, "Скрыть");
 
-	if(!(m_hotkeys==Settings.Hotkeys))
+	if(!(m_hotkeys == Settings.Hotkeys))
 	{
 		UnRegisterLocalHotkeys();
-		RegisterLocalHotkeys();}
+		RegisterLocalHotkeys();
+	}
 	return 0;
 }
 
@@ -1555,4 +1597,50 @@ bool CWizardDlg::funcAddFiles()
 	ShowWindow(SW_SHOW);
 	m_bShowWindow = true;
 }
+
+
+
+LRESULT CWizardDlg::OnWmMyExit(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if(wParam  == 5)
+	{
+		CloseDialog(0);
+	}
+	return 0;
+}
+
+bool CWizardDlg::CanShowWindow()
+{
+	return (CurPage == 2 || CurPage == 0) && IsWindowVisible() && IsWindowEnabled();
+}
+
+void CWizardDlg::UpdateAvailabilityChanged(bool Available)
+{
+	if(Available)
+	{
+	
+	TRC(IDC_UPDATESLABEL, "Доступны обновления");
+	//#include "hyperlink.h"
+
+	//m///_UpdateLink-
+	}
+}
+    
+LRESULT CWizardDlg::OnUpdateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{	
+	CreateUpdateDlg();
+	updateDlg->ShowModal(m_hWnd);
+	return 0;
+}
+
+void CWizardDlg::CreateUpdateDlg()
+{
+
+	if(!updateDlg)
+	{
+		updateDlg = new CUpdateDlg();
+		updateDlg->setUpdateCallback(this);
+	}
+}
+  
 CWizardDlg * pWizardDlg;

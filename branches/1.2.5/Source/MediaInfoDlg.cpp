@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -73,8 +73,7 @@ void CMediaInfoDlg::ShowInfo(LPCTSTR FileName)
 
 DWORD CMediaInfoDlg::Run()
 {
-	TCHAR ShortFileName[MAX_PATH];
-	TrimString(ShortFileName, myExtractFileName(m_FileName), 40);
+	CString  ShortFileName = TrimString(myExtractFileName(m_FileName), 40);
 	if(!FileExists(m_FileName))
 	{ 
 		SetDlgItemText(IDC_FILEINFOLABEL, CString(TR("Ошибка:")));

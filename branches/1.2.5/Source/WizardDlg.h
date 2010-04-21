@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -32,13 +32,17 @@ class CFolderAdd;
 #include "uploaddlg.h"
 #include "aboutdlg.h"
 #include "statusdlg.h"
+#include "updatedlg.h"
 
 #include "resource.h"       // main symbols
 #include <atlcrack.h>
+#include "hyperlink.h"
+
 #define ID_PASTE 9888
 #define ID_HOTKEY_BASE 10000
 #define WM_MY_ADDIMAGE WM_USER + 222
 #define WM_MY_SHOWPAGE WM_USER + 223
+#define WM_MY_EXIT WM_USER + 224
 // CWizardDlg
 
 class CFolderAdd: public CThreadImpl<CFolderAdd>
@@ -60,10 +64,10 @@ private:
 	int GetNextImgFile(LPTSTR szBuffer, int nLength);
 	int ProcessDir( CString currentDir, bool bRecursive /* = true  */ );
 };
-class CMyFolderDialog: public CFolderDialogImpl<CFolderDialog>
+class CMyFolderDialog: public CFolderDialogImpl<CMyFolderDialog>
 {
-	
-	virtual void OnInitialized();
+public:
+	void OnInitialized();
 	static BOOL CALLBACK DialogProc(
 
     HWND hwndDlg,	// handle to dialog box
@@ -80,9 +84,12 @@ class CMyFolderDialog: public CFolderDialogImpl<CFolderDialog>
 };
 extern CWizardDlg * pWizardDlg;
 extern TCHAR MediaInfoDllPath[MAX_PATH];
+
+
 class CWizardDlg : 
 	public CDialogImpl<CWizardDlg>	, public CUpdateUI<CWizardDlg>,
 		public CMessageFilter, public CIdleHandler, public IDropTarget, public CRegionSelectCallback
+		, public CUpdateDlgCallback
 {
 public:
 	CWizardDlg();
@@ -103,8 +110,12 @@ public:
 		MESSAGE_HANDLER(WM_DROPFILES, OnDropFiles)
 		MESSAGE_HANDLER(WM_MY_ADDIMAGE, OnAddImages)
 		MESSAGE_HANDLER(WM_MY_SHOWPAGE, OnWmShowPage)
+		MESSAGE_HANDLER(WM_MY_EXIT, OnWmMyExit)
+		
 		MESSAGE_HANDLER(WM_ENABLE,OnEnable)
       COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+		COMMAND_HANDLER(IDC_UPDATESLABEL, BN_CLICKED, OnUpdateClicked)
+		
 		COMMAND_HANDLER(ID_PASTE, 1, OnPaste)
 		COMMAND_RANGE_HANDLER(ID_HOTKEY_BASE, ID_HOTKEY_BASE +100, OnLocalHotkey);
 		COMMAND_HANDLER_EX(IDC_PREV, BN_CLICKED, OnPrevBnClicked)
@@ -123,10 +134,12 @@ public:
 	LRESULT OnWmShowPage(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	
+	LRESULT OnUpdateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   
 	LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnLocalHotkey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-
+    LRESULT OnWmMyExit(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    
 	LRESULT OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	void CloseDialog(int nVal);
 	bool DragndropEnabled;
@@ -134,6 +147,8 @@ public:
 	int PrevPage,NextPage;
 bool CreatePage(int PageID);
 	CWizardPage* Pages[5];
+
+	
 
 public:
 	bool ShowPage(int idPage,int prev=-1,int next=-1);
@@ -143,11 +158,12 @@ LRESULT OnNextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 HBITMAP GenHeadBitmap(int PageID);
 	void PasteBitmap(HBITMAP);
 public:
+	int m_StartingThreadId;
 	LRESULT OnBnClickedAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	void Exit();
 	LRESULT OnDropFiles(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	//CSavingOptions SavingOptions;
-	bool LoadUploadEngines(CString &Error);
+	bool LoadUploadEngines(const CString &filename, CString &Error);
 	bool ParseCmdLine();
 
 	CHotkeyList m_hotkeys;
@@ -177,7 +193,11 @@ public:
 
 	public:
 			CScreenshotDlg _screenShotdlg;
+			CUpdateDlg *updateDlg;
+			bool CanShowWindow();
+	void UpdateAvailabilityChanged(bool Available);
 	HACCEL hAccel;
+	CSpecialHyperLink m_UpdateLink;
 HACCEL hLocalHotkeys;
 
 	//    IUnknown methods
@@ -213,6 +233,8 @@ HACCEL hLocalHotkeys;
 	bool UnRegisterLocalHotkeys();
 	bool m_bShowWindow;
 	bool m_bHandleCmdLineFunc;
+	void CreateUpdateDlg();
+
 };
 
 

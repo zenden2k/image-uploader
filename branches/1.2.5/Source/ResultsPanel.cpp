@@ -1,6 +1,6 @@
 /*
     Image Uploader - application for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -28,6 +28,7 @@
 // CResultsPanel
 CResultsPanel::CResultsPanel(CAtlArray<CUrlListItem> &p,CWizardDlg *dlg):UrlList(p),WizardDlg(dlg)
 {
+	m_nImgServer = m_nFileServer = -1;
 	TemplateHead = TemplateFoot = NULL;	
 	CString TemplateLoadError;
 	if(!LoadTemplates(TemplateLoadError))
@@ -45,15 +46,14 @@ bool CResultsPanel::LoadTemplate()
 {
 	if(TemplateHead && TemplateFoot) return true;
 
-	TCHAR szFileName[256], szPath[256];
 	DWORD dwBytesRead, dwFileSize;
-	GetModuleFileName(0, szFileName, 1023);
-	ExtractFilePath(szFileName, szPath);
-	wsprintf(szFileName, _T("%sData\\template.txt"), szPath);
+	CString FileName = IU_GetDataFolder() + _T("template.txt");
+
+	
 	if(TemplateHead) delete[] TemplateHead;
-	TemplateHead=NULL;
+	TemplateHead = NULL;
 	TemplateFoot = NULL;
-	HANDLE hFile = CreateFile(szFileName,	GENERIC_READ	,0,0,OPEN_EXISTING	,0,0);
+	HANDLE hFile = CreateFile(FileName,	GENERIC_READ	,0,0,OPEN_EXISTING	,0,0);
 	if(!hFile) return false;
 
 	dwFileSize = GetFileSize (hFile, NULL) ; 
@@ -72,7 +72,7 @@ bool CResultsPanel::LoadTemplate()
 	if(szStart)
 	{
 		*szStart= 0;
-		TemplateFoot=szStart+8;
+		TemplateFoot = szStart+8;
 	}
 	CloseHandle(hFile);
 	return true;
@@ -117,13 +117,14 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	bool IsLastVideo = false;
 
 	Toolbar.AddButton(IDC_MEDIAFILEINFO, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Инфо о последнем видео"), 0);
-	Toolbar.AddButton(IDC_USETEMPLATE, TBSTYLE_CHECK |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Использовать шаблон"), 0);
-	Toolbar.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Лог ошибок"), 0);
+	Toolbar.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Лог ошибок"), 0);
+	Toolbar.AddButton(/*IDC_USETEMPLATE*/IDC_OPTIONSMENU, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Опции"), 0);
 	
 	if(!IsLastVideo) 
 		Toolbar.HideButton(IDC_MEDIAFILEINFO);
 		
 	Toolbar.AutoSize();
+	Toolbar.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);
 
 	SetDlgItemInt(IDC_THUMBSPERLINE, Settings.ThumbsPerLine);
 	SendDlgItemMessage(IDC_THUMBPERLINESPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)0) );
@@ -136,9 +137,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	{
 		SendDlgItemMessage(IDC_CODETYPE, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)Templates[i].Name);	
 	}
-		
-	Toolbar.CheckButton(IDC_USETEMPLATE,Settings.UseTxtTemplate);
-		
+	
 	SendDlgItemMessage(IDC_CODETYPE,CB_SETCURSEL, 0);
 	LoadTemplate();
 	
@@ -159,10 +158,10 @@ void CResultsPanel::SetPage(int Index)
 	GenerateOutput();
 }
 
-void BBCode_Link(CString &Buffer,CUrlListItem &item)
+void BBCode_Link(CString &Buffer, CUrlListItem &item)
 {
 	Buffer += _T("[url=");
-	if(*item.ImageUrl)
+	if(*item.ImageUrl && (Settings.UseDirectLinks || item.DownloadUrl.IsEmpty()))
 		Buffer += item.ImageUrl;
 	else 
 		Buffer += item.DownloadUrl;
@@ -172,10 +171,10 @@ void BBCode_Link(CString &Buffer,CUrlListItem &item)
 
 }
 
-void HTML_Link(CString &Buffer,CUrlListItem &item)
+void HTML_Link(CString &Buffer, CUrlListItem &item)
 {
 	Buffer += _T("<a href=\"");
-	if(*item.ImageUrl)
+	if(*item.ImageUrl && (Settings.UseDirectLinks || item.DownloadUrl.IsEmpty()))
 		Buffer += item.ImageUrl;
 	else 
 		Buffer += item.DownloadUrl;
@@ -206,9 +205,10 @@ void CResultsPanel::GenerateOutput()
 	if(p>=0 && p<5555)
 		Settings.ThumbsPerLine = p;
 
-	bool UseTemplate = Toolbar.IsButtonChecked(IDC_USETEMPLATE); //IsChecked(IDC_USETEMPLATE);
+	bool UseTemplate = Settings.UseTxtTemplate;
+		//Toolbar.IsButtonChecked(IDC_USETEMPLATE); //IsChecked(IDC_USETEMPLATE);
 	Settings.UseTxtTemplate = UseTemplate;
-	if(UseTemplate && TemplateHead && type!=4)
+	if(UseTemplate && TemplateHead && m_Page!=2)
 		Buffer+=TemplateHead;
 
 
@@ -264,7 +264,7 @@ void CResultsPanel::GenerateOutput()
 		{
 
 			Buffer+=_T("[url=");
-			if(*UrlList[i].ImageUrl)
+			if(*UrlList[i].ImageUrl&& (Settings.UseDirectLinks || UrlList[i].DownloadUrl.IsEmpty()))
 
 				Buffer+=UrlList[i].ImageUrl;
 			else 
@@ -296,7 +296,7 @@ void CResultsPanel::GenerateOutput()
 	{
 		for(int i=0;i<n;i++)
 		{
-			if(*UrlList[i].ImageUrl)
+			if(*UrlList[i].ImageUrl&& (Settings.UseDirectLinks || UrlList[i].DownloadUrl.IsEmpty()))
 			{
 				Buffer+=_T("[img]");
 				Buffer+=UrlList[i].ImageUrl;
@@ -320,7 +320,7 @@ void CResultsPanel::GenerateOutput()
 	{
 		for(int i=0;i<n;i++)
 		{
-			if(*UrlList[i].ImageUrl) 
+			if(*UrlList[i].ImageUrl&& (Settings.UseDirectLinks || UrlList[i].DownloadUrl.IsEmpty())) 
 				Buffer+=UrlList[i].ImageUrl;
 			else 
 				Buffer+=UrlList[i].DownloadUrl;
@@ -334,7 +334,7 @@ void CResultsPanel::GenerateOutput()
 		for(int i=0;i<n;i++)
 		{
 			Buffer+=_T("<a href=\"");
-			if(*UrlList[i].ImageUrl) 
+			if(*UrlList[i].ImageUrl&& (Settings.UseDirectLinks || UrlList[i].DownloadUrl.IsEmpty())) 
 				Buffer+=UrlList[i].ImageUrl;
 			else 
 				Buffer+=UrlList[i].DownloadUrl;
@@ -360,7 +360,7 @@ void CResultsPanel::GenerateOutput()
 	{
 		for(int i=0; i<n; i++)
 		{
-			if(lstrlen(UrlList[i].ImageUrl)>0)
+			if(lstrlen(UrlList[i].ImageUrl)>0 && (Settings.UseDirectLinks || UrlList[i].DownloadUrl.IsEmpty()))
 			{
 				Buffer += _T("<img src=\"");
 				Buffer += UrlList[i].ImageUrl;
@@ -379,7 +379,7 @@ void CResultsPanel::GenerateOutput()
 		}
 	}
 
-	if(UseTemplate && TemplateFoot && type!=4)
+	if(UseTemplate && TemplateFoot && m_Page!=2)
 		Buffer+=TemplateFoot;
 
 	SetDlgItemText(IDC_CODEEDIT,Buffer);
@@ -398,17 +398,14 @@ LRESULT CResultsPanel::OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/
 
 LRESULT CResultsPanel::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	// Копирование текста в буффер обмена
 	SendDlgItemMessage(IDC_CODEEDIT, EM_SETSEL, 0, -1);
 	SendDlgItemMessage(IDC_CODEEDIT, WM_COPY, 0, 0);
 	SendDlgItemMessage(IDC_CODEEDIT, EM_SETSEL, -1, 0);
-	
 	return 0;
 }
 
 LRESULT  CResultsPanel::OnEditChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	// 
 	BOOL temp;
 	OnCbnSelchangeCodetype(0, 0, 0, temp);
 	return 0;
@@ -456,7 +453,7 @@ bool CResultsPanel::LoadTemplates(CString &Error)
 	int i =0;
 
 	CMarkupMSXML XML;
-	CString XmlFileName = GetAppFolder()+_T("Data\\templates.xml");
+	CString XmlFileName = IU_GetDataFolder() + _T("templates.xml");
 
 	if(!FileExists(XmlFileName))
 	{
@@ -528,4 +525,103 @@ CString CResultsPanel::ReplaceVars(const CString Text)
 
 	Result.Replace(_T("\\n"), _T("\r\n"));
 	return Result;
+}
+
+LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+{
+	NMTOOLBAR* pnmtb = (NMTOOLBAR *) pnmh;
+	CMenu sub;	
+	MENUITEMINFO mi;
+	mi.cbSize = sizeof(mi);
+	mi.fMask = MIIM_TYPE|MIIM_ID;
+	mi.fType = MFT_STRING;
+	sub.CreatePopupMenu();
+	RECT rc;
+	
+	::GetWindowRect(GetDlgItem(IDC_RESULTSTOOLBAR),&rc);
+	POINT ScreenPoint ={rc.left,rc.top};
+		
+	std::map<int,int>::iterator it;
+	int count = 0;
+
+	for(it = m_Servers.begin(); it!= m_Servers.end(); it++)
+	{
+		UploadEngine &ue = EnginesList[it->first];
+		CString folderTitle = Settings.ServersSettings[ue.Name].params[_T("FolderTitle")];
+		CString folderUrl = Settings.ServersSettings[ue.Name].params[_T("FolderUrl")];
+
+		if(folderTitle.IsEmpty() || folderUrl.IsEmpty()) continue;
+		CString title = TR("Копировать URL адрес ") + CString(ue.Name)+ _T("->")+folderTitle;
+		mi.wID = IDC_COPYFOLDERURL + it->first;
+		mi.dwTypeData  = (LPWSTR)(LPCTSTR) title;//TR("Параметры авторизации");
+		sub.InsertMenuItem(count++, true, &mi);
+	}
+	if(count)
+	{
+		mi.wID = IDC_FILESERVER_LAST_ID + 1;
+		mi.fType = MFT_SEPARATOR;
+		sub.InsertMenuItem(count, true, &mi);
+		count++;
+	}
+	
+	mi.fType = MFT_STRING;
+	mi.wID = IDC_USEDIRECTLINKS;
+	mi.dwTypeData  = TR("Использовать прямые ссылки");//TR("Параметры авторизации");
+	sub.InsertMenuItem(count++, true, &mi);
+
+	mi.wID = IDC_USETEMPLATE;
+ 	mi.dwTypeData  = TR("Использовать шаблон");
+	sub.InsertMenuItem(count++, true, &mi);
+
+
+	
+			
+	sub.CheckMenuItem(IDC_USEDIRECTLINKS, MF_BYCOMMAND	| (Settings.UseDirectLinks? MF_CHECKED	: MF_UNCHECKED)	);
+	sub.CheckMenuItem(IDC_USETEMPLATE, MF_BYCOMMAND	| (Settings.UseTxtTemplate? MF_CHECKED	: MF_UNCHECKED)	);
+		
+
+
+		
+   ::SendMessage(Toolbar.m_hWnd,TB_GETRECT, pnmtb->iItem, (LPARAM)&rc);
+   Toolbar.ClientToScreen(&rc);
+	TPMPARAMS excludeArea;
+	ZeroMemory(&excludeArea, sizeof(excludeArea));
+	excludeArea.cbSize = sizeof(excludeArea);
+	excludeArea.rcExclude = rc;
+	sub.TrackPopupMenuEx( TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL,
+    rc.left, rc.bottom, m_hWnd, /*&rc, */&excludeArea);
+	bHandled = true;
+	return TBDDRET_DEFAULT;
+}
+
+LRESULT CResultsPanel::OnUseTemplateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	Settings.UseTxtTemplate = !Settings.UseTxtTemplate;
+	GenerateOutput();
+	return 0;
+}
+
+LRESULT CResultsPanel::OnUseDirectLinksClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	Settings.UseDirectLinks = !Settings.UseDirectLinks;
+	GenerateOutput();
+	return 0;
+}
+
+LRESULT CResultsPanel::OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	int ServerID = wID - IDC_COPYFOLDERURL;
+
+	UploadEngine &ue = EnginesList[ServerID];
+CString folderUrl = Settings.ServersSettings[ue.Name].params[_T("FolderUrl")];
+
+	IU_CopyTextToClipboard(folderUrl);
+	return 0;
+}
+
+void CResultsPanel::AddServerId(int serverId)
+{
+	
+	m_Servers[serverId] = serverId;
+	//return 0;
 }

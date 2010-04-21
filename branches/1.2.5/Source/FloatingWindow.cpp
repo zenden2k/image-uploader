@@ -21,13 +21,10 @@ CFloatingWindow::~CFloatingWindow()
 	m_hWnd = 0;
 }
 
-
-
 LRESULT CFloatingWindow::OnClose(void)
 {
 	return 0;
 }
-
 
 bool MyInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP bm=NULL)
 {
@@ -46,7 +43,6 @@ bool MyInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP
 	MenuItem.dwTypeData = (LPWSTR)szTitle;
 	return InsertMenuItem(hMenu, pos, TRUE, &MenuItem);
 }
-
 
 LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -119,6 +115,7 @@ LRESULT CFloatingWindow::OnCloseTray(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	ShowWindow(SW_HIDE);
 	pWizardDlg->ShowWindow(SW_SHOW);
+	pWizardDlg->SetDlgItemText(IDCANCEL, TR("Выход"));
 	CloseHandle(hMutex);
 	RemoveIcon();
 	UnRegisterHotkeys();
@@ -265,9 +262,7 @@ LRESULT CFloatingWindow::OnTimer(UINT id)
 	if(id == 1)
 	{
 		KillTimer(1);
-		//CTrayActions trayActions;
 		SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys[Settings.TrayIconSettings.LeftClickCommand].commandId,0));
-
 	}
 	if(id == 2)
 		EnableClicks = true;
@@ -300,7 +295,7 @@ void CFloatingWindow::CreateTrayIcon()
    
 	 if(!bFound)
 	 {
-		 CRect r(100,100,400,400);
+		CRect r(100,100,400,400);
 		floatWnd.Create(0,r,_T("ImageUploader_TrayWnd"),WS_OVERLAPPED|WS_POPUP|WS_CAPTION );
 		floatWnd.ShowWindow(SW_HIDE);
 	 }

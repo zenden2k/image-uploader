@@ -2,6 +2,30 @@
 #
 # http://zenden.ws/imageuploader
 
+-v.1.2.5 build 3239
+[+] Auto-updates from server
+[+] Now Image Uploader uses libcurl as network core  instead of WinInet library
+[+] SOCKS5 proxy support
+[+] Squirrel scripting support
+[+] FTP support (via Squirrel script)
+[+] Remote folder (or album) selection, creating and modifying
+[+] Information about media files can be displayed on image
+[-] Internet Explorer's cookies support is not available
+[C] Settings.xml  is stored in Data folder
+[C] "Data" directory contents now can be stored in Application Data subfolder
+[F] Browse for Folders dialog is now resizable
+[F] Template.txt now is turn off on "Simple links" tab
+[F] Incredible bug concerning JPEG image quality
+
+[RU]
+[+] Автообновления с сервера
+[+] Теперь Image Uploader использует libcurl вместо ядра internet explorer
+[+] Поддержка авторизации SOCKS5 прокси
+[+] Поддержка серверов, в т.ч. с альбомами при помощи скриптов на языке Squirrel
+[+] поддержка FTP
+[+] Информаци о медиафайлах на картинке
+[+] Добавлены сервера Яндекс.Фотки, Picasa Webalbums, Sendspace, Imgur.com и другие 
+
 --v1.2.1 build 1664 [19.01.2010]--
 [F] An upload bug introduced in previous version  fixed (invalid referer url was used)
 [F] Painting bug under Vista
