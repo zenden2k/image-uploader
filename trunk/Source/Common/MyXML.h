@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -116,8 +116,6 @@ class CMyXml: public  CMarkupMSXML
 			return false;
 		}
 		LPTSTR sz = pDoc->xml;
-		//MessageBox(0,sz,0,0);
-		// Perform the write
 		return SUCCEEDED (pMXWriter ->put_output (CComVariant (pStream))) &&
 				SUCCEEDED (pSAXReader ->parse (CComVariant (sz)));
 	}

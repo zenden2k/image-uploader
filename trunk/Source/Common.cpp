@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -21,6 +21,9 @@
 #include "stdafx.h"
 #include "Common.h"
 #include "wizarddlg.h"
+#include "versioninfo.h"
+
+#pragma comment(lib,"urlmon.lib")
 
 CString IUCommonTempFolder, IUTempFolder;
 CCmdLine CmdLine;
@@ -82,11 +85,11 @@ bool CWizardPage:: OnHide()
 
 int GetUploadEngineIndex(const CString Name)
 {
-	for(int i=0; i<EnginesList.GetCount(); i++)
+	for(int i=0; i<EnginesList.size(); i++)
 	{
 		if(EnginesList[i].Name == Name) return i;
 	}
-	return 0;
+	return -1;
 }
 
 	WIN32_FIND_DATA wfd;
@@ -157,7 +160,43 @@ void ClearTempFolder()
 	}
 }
 
-bool IULaunchCopy()
+int GetFolderFileList(std::vector<CString> &list, CString folder, CString mask)
+{
+	WIN32_FIND_DATA wfd;
+	ZeroMemory(&wfd, sizeof(wfd));
+	HANDLE findfile = 0;
+
+	TCHAR szNameBuffer[MAX_PATH];
+	
+	//GetTempPath(256, TempPath);
+	
+	
+	for(;;)
+	{
+		if(!findfile)
+		{
+			findfile = FindFirstFile(folder+_T("\\")+mask, &wfd);
+			if(!findfile) break;;
+		}
+		else 
+		{
+			if(!FindNextFile(findfile, &wfd))
+				break;
+
+		}
+		if(lstrlen(wfd.cFileName) < 1) break;
+		lstrcpyn(szNameBuffer, wfd.cFileName, 254);
+		list.push_back(szNameBuffer);
+	}
+	//return TRUE;
+
+//error:
+	if(findfile) FindClose(findfile);
+	return list.size();
+	//return FALSE;
+}
+
+bool IULaunchCopy(CString additionalParams)
 {
 	STARTUPINFO si; 
 	PROCESS_INFORMATION pi; 
@@ -169,13 +208,14 @@ bool IULaunchCopy()
 	TCHAR Buffer[MAX_PATH*40];
 	GetModuleFileName(0, Buffer, sizeof(Buffer)/sizeof(TCHAR));
 
-	CString TempCmdLine = CString(_T("\""))+Buffer+CString(_T("\"")); 
+	CString TempCmdLine = CString(_T("\""))+CmdLine[0]+CString(_T("\"")); 
 	for(int i=1;i <CmdLine.GetCount(); i++)
 		{
 			if(!lstrcmpi(CmdLine[i], _T("-Embedding"))) continue;
 			TempCmdLine = TempCmdLine + " \"" + CmdLine[i] + "\""; 
 		}
 
+	TempCmdLine += _T(" ")+additionalParams;
     // Start the child process.
     if( !CreateProcess(
 		NULL,                   // No module name (use command line). 
@@ -190,8 +230,7 @@ bool IULaunchCopy()
         &pi )                   // Pointer to PROCESS_INFORMATION structure.
     ) 
     
-        return false;
-
+       return false;
     // Close process and thread handles. 
     CloseHandle( pi.hProcess );
     CloseHandle( pi.hThread );
@@ -249,6 +288,7 @@ bool MySaveImage(Image *img,LPTSTR szFilename,LPTSTR szBuffer,int Format,int Qua
 	{
 		if(Format == 0)
 			img->Save(szBuffer2,&clsidEncoder,&eps);
+		else
 		img->Save(szBuffer2,&clsidEncoder);
 	}
 	lstrcpy(szBuffer,szBuffer2);
@@ -453,4 +493,132 @@ bool IULaunchCopy(CString params, CAtlArray<CString> &files)
 	return true;
 }
 
+void IU_ConfigureProxy(NetworkManager& nm)
+{
+	if(Settings.ConnectionSettings.UseProxy)
+	{
+		int ProxyTypeList [5] = { CURLPROXY_HTTP, 
+		CURLPROXY_SOCKS4,CURLPROXY_SOCKS4A, CURLPROXY_SOCKS5, CURLPROXY_SOCKS5_HOSTNAME};
+		nm.setProxy(WstringToUtf8((LPCTSTR)Settings.ConnectionSettings.ServerAddress), Settings.ConnectionSettings.ProxyPort,ProxyTypeList[Settings.ConnectionSettings.ProxyType]);
+		nm.setProxyUserPassword(WstringToUtf8((LPCTSTR)Settings.ConnectionSettings.ProxyUser), WstringToUtf8((LPCTSTR)Settings.ConnectionSettings.ProxyPassword));	
+	}
+}
 
+CString IU_GetFileMimeType (const CString& filename)
+{
+	FILE * InputFile = _tfopen(filename,_T("rb"));
+	if(!InputFile) 
+		return _T("");
+
+	BYTE		byBuff[256] ;
+	int nRead = fread(byBuff, 1, 256, InputFile);
+	 
+	fclose(InputFile);
+
+	PWSTR		szMimeW = NULL ;
+	HRESULT		hResult ;
+
+	if ( NOERROR != ::FindMimeFromData(NULL, NULL, byBuff, nRead, NULL, 0, &szMimeW, 0) ) 
+	{
+		return _T("application/octet-stream"); 
+	}
+
+	if(!lstrcmpW(szMimeW,_T("image/x-png"))) lstrcpyW(szMimeW, _T("image/png"));
+
+	return szMimeW ;
+}
+CPluginManager iuPluginManager;
+
+const CString IU_GetVersion()
+{
+	return CString("1.2.5.") + _T(BUILD);
+}
+
+
+void IU_RunElevated(CString params)
+{
+	SHELLEXECUTEINFO TempInfo = {0};
+
+	//TCHAR buf[MAX_PATH];
+	//GetModuleFileName(0,buf,MAX_PATH-1);
+	CString s=GetAppFolder();
+	
+	CString Command = CmdLine[0];
+	CString parameters = _T(" ")+params;
+	TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+	TempInfo.fMask = 0;
+	TempInfo.hwnd = NULL;
+	if(IsVista())
+	TempInfo.lpVerb = _T("runas");
+	else
+		TempInfo.lpVerb = _T("open");
+	TempInfo.lpFile = Command;
+	TempInfo.lpParameters = parameters;
+	TempInfo.lpDirectory = s;
+	TempInfo.nShow = SW_NORMAL;
+
+	::ShellExecuteEx(&TempInfo);
+}
+
+bool IU_CopyTextToClipboard(CString text)
+{
+
+    LPTSTR  lptstrCopy;
+    HGLOBAL hglbCopy;
+    int ich1, ich2, cch = text.GetLength();
+
+    // Открываем буфер обмена и очищаем его.
+    if (!OpenClipboard( NULL))
+        return FALSE;
+
+    EmptyClipboard();
+
+  
+
+    // Если выделен текст, то копируем его, используя формат CF_TEXT.
+    
+    {
+        
+
+        // Размещаем объект для текста в глобальной памяти.
+        hglbCopy = GlobalAlloc(GMEM_MOVEABLE,
+            (cch + 1) * sizeof(TCHAR));
+        if (hglbCopy == NULL)
+        {
+            CloseClipboard();
+            return FALSE;
+        }
+
+        // Блокируем дескриптор и копируем текст в буфер.
+        lptstrCopy = (LPTSTR) GlobalLock(hglbCopy);
+
+        memcpy(lptstrCopy, (LPCTSTR)text, text.GetLength() * sizeof(TCHAR));
+        lptstrCopy[cch] = (TCHAR) 0;    // нулевой символ
+        GlobalUnlock(hglbCopy);
+
+        // Помещаем дескриптор в буфер обмена.
+        SetClipboardData(CF_UNICODETEXT, hglbCopy);
+    }
+CloseClipboard();
+	 }
+
+DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
+{
+	while((MsgWaitForMultipleObjects(1, &pHandle, FALSE, INFINITE, QS_SENDMESSAGE)) != WAIT_OBJECT_0)
+	{
+		MSG msg;
+		while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	}
+	return 1;
+}
+
+const CString IU_GetDataFolder()
+{
+	return Settings.DataFolder;
+}
+
+std::vector< UploadEngine> EnginesList;

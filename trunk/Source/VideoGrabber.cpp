@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -29,6 +29,7 @@
 #include "myimage.h"
 #include "mediainfodlg.h"
 #include <qedit.h>
+#include "fileinfohelper.h"
 
 #ifdef DEBUG
 #define MyInfo(p) SetDlgItemText(IDC_FILEEDIT, p)
@@ -457,18 +458,43 @@ void CVideoGrabber::SavingMethodChanged(void)
   
 int CVideoGrabber::GenPicture(void)
 {
+	RectF TextRect;
+	int infoHeight = 0;
+	CString Report;
+
+	if(Settings.VideoSettings.ShowMediaInfo)
+	{
+		TCHAR buffer[256];
+		GetDlgItemText(IDC_FILEEDIT, buffer, 256);
+		bool bMediaInfoResult = GetMediaFileInfo(buffer, Report);
+
+		Graphics g1(m_hWnd);
+		
+		CString s;
+
+		Font font(::GetDC(0), &Settings.VideoSettings.Font);
+
+		FontFamily ff;
+		font.GetFamily(&ff);
+		g1.SetPageUnit(UnitPixel);
+		g1.MeasureString(Report, -1, &font, PointF(0,0), &TextRect);
+		infoHeight = TextRect.Height;
+	}
+
 	int n = ThumbsView.GetItemCount();
-	int ncols=min(Settings.VideoSettings.Columns,n);
+	int ncols = min(Settings.VideoSettings.Columns,n);
 	int nstrings = n/ncols+((n%ncols)?1:0);
 	int maxwidth = ThumbsView.maxwidth;
-	int maxheight=ThumbsView.maxheight;
-	int gapwidth=Settings.VideoSettings.GapWidth;
-	int gapheight=Settings.VideoSettings.GapHeight;
-	int tilewidth=Settings.VideoSettings.TileWidth;
-	int tileheight=(int)((float)tilewidth)/((float)maxwidth)*((float)maxheight);
-	int needwidth =gapwidth+ncols*(tilewidth+gapwidth);
-	int needheight =gapheight+nstrings*(tileheight+gapheight);
+	int maxheight = ThumbsView.maxheight;
+	int gapwidth = Settings.VideoSettings.GapWidth;
+	int gapheight = Settings.VideoSettings.GapHeight;
+	infoHeight += gapheight;
+	int tilewidth = Settings.VideoSettings.TileWidth;
+	int tileheight =(int)((float)tilewidth)/((float)maxwidth)*((float)maxheight);
+	int needwidth = gapwidth+ncols*(tilewidth+gapwidth);
+	int needheight = gapheight+nstrings*(tileheight+gapheight) + infoHeight;
 
+	
 	RECT rc;
 	GetClientRect(&rc);
 
@@ -484,17 +510,21 @@ int CVideoGrabber::GenPicture(void)
 	LinearGradientBrush br(r, Color(255, 224, 224, 224), Color(255, 243, 243, 243), 
             LinearGradientModeBackwardDiagonal); 
 
+
 	gr.FillRectangle(&br,r);
+
+
 	int x,y;
 	Pen Framepen(Color(90,90,90));
 	TCHAR buf[256]=_T("\0");
-	  Font font(L"Tahoma", 10, FontStyleBold);
-	  Color ColorText(140,255,255,255);Color ColorStroke(120,0,0,0);
-	for(int i=0;i<n;i++)
+	Font font(L"Tahoma", 10, FontStyleBold);
+	Color ColorText(140,255,255,255);Color ColorStroke(120,0,0,0);
+
+	for(int i=0; i<n; i++)
 	{
 		bm=new Image(ThumbsView.GetFileName(i));
 		x=gapwidth+(i%ncols)*(tilewidth+gapwidth);
-		y=gapheight+((i/ncols))*(tileheight+gapheight);
+		y=infoHeight + (infoHeight? gapheight:0)+((i/ncols))*(tileheight+gapheight);
 		ThumbsView.GetItemText(i,0,buf,256);
 		gr.DrawImage(bm, (int)(x/*(tilewidth-newwidth)/2*/), (int)y, (int)tilewidth,(int)tileheight);
 		DrawStrokedText(gr, buf,RectF(x/*(tilewidth-newwidth)/2*/,y, tilewidth,tileheight),font,ColorText,ColorStroke,3,3);
@@ -502,7 +532,21 @@ int CVideoGrabber::GenPicture(void)
 		if(bm) delete bm;
 	}
 	
-	MySaveImage(BackBuffer,_T("grab_custom"),szBufferFileName,0,100);
+	if(infoHeight)
+	{	
+		 StringFormat format;
+		format.SetAlignment(StringAlignmentNear);
+		format.SetLineAlignment(StringAlignmentNear);
+		Font font(::GetDC(0), &Settings.VideoSettings.Font);
+		//Font font(L"Arial", 12, FontStyleBold);
+		SolidBrush br(/*Settings.ThumbSettings.ThumbTextColor*/MYRGB(255, Settings.VideoSettings.TextColor));
+		RectF textBounds(gapwidth, gapheight, needwidth-gapwidth, infoHeight-gapheight);
+		gr.DrawString(Report, -1, &font, textBounds, &format, &br);
+		///DrawStrokedText(gr, Report,textBounds,font,ColorText,ColorStroke,3,3);
+
+	}
+
+	MySaveImage(BackBuffer,_T("grab_custom"),szBufferFileName,1,100);
 	if(BackBuffer) delete BackBuffer;
 	  return 0;
 }

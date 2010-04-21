@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -67,7 +67,7 @@ bool IsVideoFile(LPCTSTR szFileName);
 
 bool GetOnlyFileName(LPCTSTR szFilename,LPTSTR szBuffer);
 bool ReadSetting(LPTSTR szSettingName,int* Value,int DefaultValue,LPTSTR szString=NULL,LPTSTR szDefString=NULL);
-int GetSavingFormat(LPTSTR szFileName);
+int GetSavingFormat(LPCTSTR szFileName);
 bool IsStrInList(LPCTSTR szExt,LPCTSTR szList);
 int MyGetFileSize(LPCTSTR FileName);
 void MakeLabelBold(HWND Label);
@@ -76,7 +76,7 @@ LPTSTR fgetline(LPTSTR buf,int num,FILE *f);
 
 CString GetAppFolder();
 BOOL FileExists(LPCTSTR FileName);
-void TrimString(LPTSTR Destination, LPCTSTR Source, int MaxLen);
+const CString TrimString(const CString& source, int nMaxLen);
 void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, bool Horizontal);
 bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
 bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...);
@@ -99,6 +99,42 @@ LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern);
 	void ShowX(LPCTSTR str,int line,LPCTSTR n);
 	#define ShowVar(n) ShowX(_T(#n),__LINE__,n)
 #endif
+
+	#ifndef IU_SHELLEXT
+	std::wstring strtows(const std::string &str, UINT codePage);
+std::string wstostr(const std::wstring &ws, UINT codePage);
 void EnableNextN(HWND Control, int n, bool Enable);
+#define WstringToUtf8(str) wstostr(str, CP_UTF8)
+#define WCstringToUtf8(str) wstostr(((LPCTSTR)(str)), CP_UTF8)
+const std::wstring Utf8ToWstring(const std::string &str);
+const std::string AnsiToUtf8(const std::string &str, int codepage);
+const std::string Utf8ToAnsi(const std::string &str, int codepage);
 bool IUInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP bm=0);
+
+const CString IU_GetDataFolder();
+#define PROP_OBJECT_PTR			MAKEINTATOM(ga.atom)
+#define PROP_ORIGINAL_PROC		MAKEINTATOM(ga.atom)
+
+/*
+ * typedefs
+ */
+class CGlobalAtom
+{
+public:
+	CGlobalAtom(void)
+	{ atom = GlobalAddAtom(TEXT("_Hyperlink_Object_Pointer_")
+	         TEXT("\\{AFEED740-CC6D-47c5-831D-9848FD916EEF}")); }
+	~CGlobalAtom(void)
+	{ DeleteAtom(atom); }
+
+	ATOM atom;
+};
+
+/*
+ * Local variables
+ */
+static CGlobalAtom ga;
 #endif
+#endif
+
+bool IsDirectory(LPCTSTR szFileName);

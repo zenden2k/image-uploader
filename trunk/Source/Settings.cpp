@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -23,12 +23,49 @@
 #include "settings.h"
 #include "myutils.h"
 #include "Common\MyXml.h"
+#define SETTINGS_FILE_NAME _T("settings.xml")
 
+//CSIDL_COMMON_APPDATA
+
+CString GetSystemSpecialPath(int csidl) 
+{
+	CString result;
+	LPITEMIDLIST pidl;
+	TCHAR        szSendtoPath [MAX_PATH];
+	HANDLE       hFile;
+	LPMALLOC     pMalloc;
+
+	if(SUCCEEDED( SHGetSpecialFolderLocation ( NULL, csidl, &pidl )))
+	{
+		if(SHGetPathFromIDList(pidl, szSendtoPath))
+		{
+			result = szSendtoPath;
+		}
+
+		if(SUCCEEDED(SHGetMalloc(&pMalloc)))
+		{
+			pMalloc->Free ( pidl );
+			pMalloc->Release();
+		}
+	}
+	if(result.Right(1)!=_T("\\")) result+=_T("\\");
+	//MessageBox(0, result, 0,0 );
+	return result;
+}
+
+const CString GetApplicationDataPath()
+{
+	return GetSystemSpecialPath(CSIDL_APPDATA);
+}
+
+const CString GetCommonApplicationDataPath()
+{
+	return GetSystemSpecialPath(CSIDL_COMMON_APPDATA);
+}
 CSettings Settings;
 BOOL IsVista()
 {
 	OSVERSIONINFO osver;
-
 	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
 
 	if (	::GetVersionEx( &osver ) && 
@@ -108,7 +145,7 @@ void EncodeString(LPCTSTR szSource,CString &Result,LPSTR code="{DAb[]=_T('')+b/1
 
 UploadEngine* GetEngineByName(LPCTSTR Name)
 {
-	for(int i=0; i<EnginesList.GetCount(); i++)
+	for(int i=0; i<EnginesList.size(); i++)
 	{
 		if(!lstrcmp(EnginesList[i].Name, Name))  return &EnginesList[i];
 	}
@@ -134,20 +171,18 @@ void ApplyRegistrySettings()
 	TempInfo.nShow = SW_NORMAL;
 
 	::ShellExecuteEx(&TempInfo);
-
 }
 
 void RegisterShellExtension(bool Register)
 {
-
 	if(!FileExists(GetAppFolder()+_T("ExplorerIntegration.dll"))) return;
 	SHELLEXECUTEINFO TempInfo = {0};
 
-	TCHAR buf[MAX_PATH];
-	GetModuleFileName(0,buf,MAX_PATH-1);
+	/*TCHAR buf[MAX_PATH];
+	GetModuleFileName(0,buf,MAX_PATH-1);*/
 	CString s=GetAppFolder();
 
-	CString Command = CString(buf);
+	//CString Command = CString(buf);
 	TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
 	TempInfo.fMask = 0;
 	TempInfo.hwnd = NULL;
@@ -159,9 +194,7 @@ void RegisterShellExtension(bool Register)
 	TempInfo.lpParameters =CString((Register?_T(""):_T("/u ")))+ _T("/s \"")+GetAppFolder()+_T("ExplorerIntegration.dll\"");
 	TempInfo.lpDirectory = s;
 	TempInfo.nShow = SW_NORMAL;
-
 	::ShellExecuteEx(&TempInfo);
-
 }
 #endif
 CSettings::CSettings()
@@ -169,14 +202,44 @@ CSettings::CSettings()
 : ServerID(ImageSettings.ServerID),QuickServerID(ImageSettings.QuickServerID)
 #endif
 {
+	if(IsDirectory(GetAppFolder() + _T("Data")))
+	{	
+		DataFolder = GetAppFolder() + _T("Data\\");
+	}
+	else 
+	{
+		if(FileExists(GetCommonApplicationDataPath()+ SETTINGS_FILE_NAME))
+		{
+			DataFolder = GetCommonApplicationDataPath() + _T("Image Uploader\\");
+		}
+		else
+		{
+			DataFolder = GetApplicationDataPath() + _T("Image Uploader\\");
+		}
+	}
+
+	if(!IsDirectory(DataFolder))
+	{
+		CreateDirectory(DataFolder,0);
+	}
+
+	CString copyFrom = GetAppFolder()+SETTINGS_FILE_NAME;
+	CString copyTo = DataFolder+SETTINGS_FILE_NAME;
+	if(FileExists(copyFrom) && !FileExists(copyTo))
+	{
+		MoveFile(copyFrom, copyTo);
+	}
+
 	// Default values of settings
 	ExplorerCascadedMenu = true;
 	#ifndef IU_SHELLEXT
+	LastUpdateTime = 0;
 	
 	ShowTrayIcon = false;
 	ShowTrayIcon_changed = false;
 	*m_Directory = 0;
 	UseTxtTemplate = false;
+	UseDirectLinks = true;
 	ServerID = 0;
 	CodeLang = 0;
 	ConfirmOnExit = 1;
@@ -213,6 +276,7 @@ CSettings::CSettings()
 	
 	StringToFont(_T("Tahoma,8,,204"), &LogoSettings.Font);
 	StringToFont(_T("Tahoma,7,b,204"), &ThumbSettings.ThumbFont);
+	StringToFont(_T("Tahoma,8,,204"), &VideoSettings.Font);
 
 	ThumbSettings.CreateThumbs = true;
 	ThumbSettings.ThumbWidth = 180;
@@ -235,6 +299,8 @@ CSettings::CSettings()
 	VideoSettings.NumOfFrames = 8;
 	VideoSettings.JPEGQuality =  100;
 	VideoSettings.UseAviInfo = TRUE;
+	VideoSettings.ShowMediaInfo = TRUE;
+	VideoSettings.TextColor = RGB(0,0,0);
 
 	ConnectionSettings.UseProxy =  FALSE;
 	ConnectionSettings.ProxyPort= 0;
@@ -266,7 +332,9 @@ CSettings::CSettings()
 bool CSettings::LoadSettings(LPCTSTR szDir)
 {
 	CMyXml MyXML;
-	CString FileName= (szDir? CString(szDir):GetAppFolder())+_T("Settings.xml");
+	
+
+	CString FileName= szDir? CString(szDir):IU_GetDataFolder()+_T("Settings.xml");
 	if(!FileExists(FileName)) return true;
 	
 	if(!MyXML.Load(FileName))
@@ -316,7 +384,7 @@ bool RegisterClsId()
 
 bool UnRegisterClsId() // Deleting CLSID record from registry
 {
-	TCHAR Buffer[MAX_PATH+1]=_T("CLSID\\");
+	TCHAR Buffer[MAX_PATH+1] = _T("CLSID\\");
 	lstrcat(Buffer, MY_CLSID);
 	return SHDeleteKey(HKEY_CLASSES_ROOT,Buffer)==ERROR_SUCCESS;
 }
@@ -326,7 +394,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command,b
 	HKEY ExtKey = NULL;
 	TCHAR Buffer[MAX_PATH];
 
-	Buffer[0]=_T('.');
+	Buffer[0] = _T('.');
 	lstrcpy(Buffer+1, Extension); //Формируем строку вида ".ext"
 	RegCreateKeyEx(HKEY_CLASSES_ROOT, Buffer, 0, 0, REG_OPTION_NON_VOLATILE, KEY_QUERY_VALUE, 0, &ExtKey, NULL);
 
@@ -362,8 +430,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command,b
 	
 	if(RegCreateKeyEx(ExtKey, _T("command"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_WRITE	, 0, &CommandKey, NULL)!=ERROR_SUCCESS)
 	{
-		//MessageBox(0, _T("Could not create registry command key"), 0,0);
-		//return 0;
+	
 	}
 	HKEY DropTargetKey;
 	if(DropTarget)
@@ -413,41 +480,36 @@ CString GetSendToPath()
 	return result;
 }
 
-void write_simple_doc3()  // ????
-{  
-	
-}  
-
 bool CSettings::SaveSettings()
 {
 	// Converting server id to server name
-	if(ServerID >= 0 && EnginesList.GetCount())
+	if(ServerID >= 0 && EnginesList.size())
 		Settings.ServerName = EnginesList[ServerID].Name;
 
-	if(QuickServerID>=0 && EnginesList.GetCount())
+	if(QuickServerID>=0 && EnginesList.size())
 	Settings.QuickServerName = EnginesList[QuickServerID].Name;
-	if(FileServerID>=0 && EnginesList.GetCount())
+	if(FileServerID>=0 && EnginesList.size())
 		Settings.FileServerName = EnginesList[FileServerID].Name;
 	
 	CMyXml MyXml;
 
 	MacroSaveSettings(MyXml);
-	MyXml.Save(GetAppFolder() + _T("Settings.xml"));
+	MyXml.Save(IU_GetDataFolder()+SETTINGS_FILE_NAME);
 
-	if(SendToContextMenu_changed || ExplorerContextMenu_changed) 
+	if(SendToContextMenu_changed || ExplorerContextMenu_changed || ShowTrayIcon_changed) 
 	{
 		BOOL b;
-
-		RegisterShellExtension(ExplorerContextMenu);
+		if(!Settings.ShowTrayIcon_changed)
+			RegisterShellExtension(ExplorerContextMenu);
 
 		if(IsVista() && IsElevated(&b)!=S_OK)
-		ApplyRegistrySettings();
+			ApplyRegistrySettings();
 		else 
 		{
 			ApplyRegSettingsRightNow();
-
+		}
+	}
 	
-	}}
 	ExplorerContextMenu_changed = false;
 	SendToContextMenu_changed = false;
 
@@ -456,23 +518,17 @@ bool CSettings::SaveSettings()
 		ShowTrayIcon_changed = false;
 		if(ShowTrayIcon)
 		{
-			
-
 			if(!IsRunningFloatingWnd())
 			{
 				CmdLine.AddParam(_T("/tray"));
 				floatWnd.CreateTrayIcon();
-				//CreateFloatWindow();
 			}
-			//ShellExecute(0,_T("open"),CmdLine.ModuleName(),_T("/tray"),0,SW_SHOW);
 		}
 		else
 		{
-
-			HWND TrayWnd = FindWindow(0,_T("ImageUploader_TrayWnd"));
+			HWND TrayWnd = FindWindow(0, _T("ImageUploader_TrayWnd"));
 			if(TrayWnd)
 				::SendMessage(TrayWnd, WM_CLOSETRAYWND,0, 0);
-
 		}
 	}
 	else if(ShowTrayIcon)
@@ -481,7 +537,6 @@ bool CSettings::SaveSettings()
 			if(TrayWnd)
 				SendMessage(TrayWnd, WM_RELOADSETTINGS,  (floatWnd.m_hWnd)?1:0, (Settings.Hotkeys_changed)?0:1);
 	}
-
 
 	Settings.Hotkeys_changed  = false;
 	return true;
@@ -498,7 +553,7 @@ void CSettings::ApplyRegSettingsRightNow()
 		LONG lRet,lRetOpen;
 		lRet = RegOpenKeyEx( HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"),0,KEY_WRITE,&hKey );
 		if (!lRet)
-			lRetOpen=RegSetValueEx( hKey, _T("ImageUploader"), NULL,REG_SZ, (BYTE *)(LPCTSTR)StartupCommand,(StartupCommand.GetLength()+1)*sizeof(TCHAR));
+			lRetOpen = RegSetValueEx( hKey, _T("ImageUploader"), NULL,REG_SZ, (BYTE *)(LPCTSTR)StartupCommand,(StartupCommand.GetLength()+1)*sizeof(TCHAR));
       RegCloseKey( hKey );
 	}
 	else //deleting from Startup
@@ -536,10 +591,7 @@ void CSettings::ApplyRegSettingsRightNow()
 		LPTSTR szList = _T("jpg\0jpeg\0png\0bmp\0gif");
 		int Res;
 
-		/*if(ExplorerContextMenu || ExplorerVideoContextMenu)
-			RegisterClsId();
-		else */
-			UnRegisterClsId();
+		UnRegisterClsId();
 
 		//if(ExplorerContextMenu_changed)
 		{

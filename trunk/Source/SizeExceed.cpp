@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -55,7 +55,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	img.LoadImage(m_szFileName);
 
 	CenterWindow(GetParent());
-	for(int i=0; i<EnginesList.GetCount(); i++)
+	for(int i=0; i<EnginesList.size(); i++)
 	{	
 		TCHAR buf[300]=_T(" ");
 		TCHAR buf2[50];

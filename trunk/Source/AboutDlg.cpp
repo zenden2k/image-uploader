@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -22,13 +22,18 @@
 #include "resource.h"
 #include "aboutdlg.h"
 #include "versioninfo.h" 
+#include <curl/curl.h>
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
 	LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
 	LogoImage.LoadImage(0, 0, IDR_PNG1, false, GetSysColor(COLOR_BTNFACE));
-	SetDlgItemText(IDC_IMAGEUPLOADERLABEL, CString(_T("v1.2.1."))+_T(BUILD)+_T(" (")+_T(TIME)+_T(")"));
+	SetDlgItemText(IDC_CURLINFOLABEL,(_T("using ") + Utf8ToWstring( curl_version())).c_str());
+	
+	CString text = CString(_T("v1.2.5."))+_T(BUILD)+_T(" (")+_T(TIME)+_T(")");
+	text += _T("\r\n\r\n");
+	SetDlgItemText(IDC_IMAGEUPLOADERLABEL, text);
 	CenterWindow(GetParent());
 
 	// Translating

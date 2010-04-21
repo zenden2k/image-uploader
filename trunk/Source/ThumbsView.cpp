@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -22,23 +22,12 @@
 #include "ThumbsView.h"
 #include "mydropsource.h"
 #include "mydataobject.h"
+#include "common.h"
 
 #define THUMBNAIL_WIDTH 170   // constants
 #define THUMBNAIL_HEIGHT 120
 
-DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
-{
-	while((MsgWaitForMultipleObjects(1, &pHandle, FALSE, INFINITE, QS_SENDMESSAGE)) != WAIT_OBJECT_0)
-	{
-		MSG msg;
-		while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-	}
-	return 1;
-}
+
 
 bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
 
