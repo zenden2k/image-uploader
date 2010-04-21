@@ -25,7 +25,9 @@
 #include <atlmisc.h>
 #include <atlcoll.h>
 #include "ExplorerIntegration.h"
+#include "IconBitmapUtils.h"
 #include <shobjidl.h>
+#include <map>
 
 #if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
@@ -39,6 +41,8 @@ struct Shell_ContextMenuItem
 {
 	int cmd;
 	CString text;
+	WORD icon;
+	int id;
 };
 #define MENUITEM_UPLOADFILES 0
 #define MENUITEM_UPLOADONLYIMAGES 1
@@ -50,13 +54,13 @@ CString GetDllFolder();
 class ATL_NO_VTABLE CIShellContextMenu :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CIShellContextMenu, &CLSID_IShellContextMenu>,
-	public IContextMenu, public IShellExtInit,
+	public IContextMenu3, public IShellExtInit,
 	public IDispatchImpl<IIShellContextMenu, &IID_IIShellContextMenu, &LIBID_ExplorerIntegrationLib, /*wMajor =*/ 1, /*wMinor =*/ 0>
 	{
 		public:
 		CAtlArray<CString> m_FileList;
-		CAtlMap<int, Shell_ContextMenuItem> m_nCommands;
-		HBITMAP bmIULogo, bmUpArrow,bmInfo,bmMovie;
+		std::map<int, Shell_ContextMenuItem> m_nCommands;
+		std::map<UINT, HBITMAP>		bitmaps;
 		CIShellContextMenu();
 
 		DECLARE_REGISTRY_RESOURCEID(IDR_ISHELLCONTEXTMENU)
@@ -65,6 +69,8 @@ class ATL_NO_VTABLE CIShellContextMenu :
 			COM_INTERFACE_ENTRY(IIShellContextMenu)
 			COM_INTERFACE_ENTRY(IDispatch)
 			COM_INTERFACE_ENTRY(IContextMenu)
+			COM_INTERFACE_ENTRY(IContextMenu2)
+			COM_INTERFACE_ENTRY(IContextMenu3)
 			COM_INTERFACE_ENTRY(IShellExtInit)
 		END_COM_MAP()
 
@@ -77,15 +83,16 @@ class ATL_NO_VTABLE CIShellContextMenu :
 
 		void FinalRelease()
 		{
-			DeleteObject(bmIULogo);
-			DeleteObject(bmUpArrow);
-			DeleteObject(bmMovie);
-			DeleteObject(bmInfo);
 		}
-		bool MyInsertMenu(HMENU hMenu, int pos, UINT id, int nInternalCommand, const LPTSTR szTitle, int firstCmd, HBITMAP bm=NULL);
+		bool MyInsertMenu(HMENU hMenu, int pos, UINT id, int nInternalCommand, const LPTSTR szTitle, int firstCmd, bool UseBitmaps = true, HBITMAP bm=0,WORD resid=0);
 		bool m_bMediaInfoInstalled;
-
+		IconBitmapUtils m_IconBitmapUtils;
+	HBITMAP IconToBitmap(HINSTANCE hInst, UINT uIcon);
 	public:
+		STDMETHOD(HandleMenuMsg)(UINT uMsg, WPARAM wParam, LPARAM lParam);
+		STDMETHOD(HandleMenuMsg2)(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT *pResult);
+
+	
 		STDMETHOD(QueryContextMenu)(HMENU hmenu, UINT indexMenu,UINT idCmdFirst, UINT idCmdLast, UINT uFlags);
 		STDMETHOD(InvokeCommand)(LPCMINVOKECOMMANDINFO lpici);
 		STDMETHOD(GetCommandString)(UINT_PTR idCmd, UINT uType, UINT *pwReserved, LPSTR pszName, UINT cchMax);

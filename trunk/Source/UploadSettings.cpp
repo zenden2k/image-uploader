@@ -55,7 +55,8 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	TRC(IDC_WIDTHLABEL,"Ширина эскиза:");
 	TRC(IDC_DRAWFRAME,"Обводить в рамку");
 	TRC(IDC_ADDFILESIZE,"Размеры изображения на картинке");
-	TRC(IDC_LOGINBUTTON,"...");
+	TRC(IDC_LOGINBUTTON,"Авторизация");
+	TRC(IDC_LOGINBUTTON2,"Авторизация");
 	TRC(IDC_PRESSUPLOADBUTTON,"Нажмите кнопку \"Загрузить\" чтобы начать процесс загрузки");
 	TRC(IDC_USETHUMBTEMPLATE,"Использовать шаблон");
 	TRC(IDC_TEXTOVERTHUMB2, "Надпись поверх эскиза");

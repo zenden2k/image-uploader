@@ -19,15 +19,19 @@
 */
 
 #include "stdafx.h"
+#include "common.h"
 #include "ScreenshotDlg.h"
 
 // CScreenshotDlg
 CScreenshotDlg::CScreenshotDlg()
 {
 	*FileName = 0;
+	m_Action = 0;
+	m_bDelay = false;
 	m_bExpanded = false;
 	m_bEntireScreen = false;
 	WhiteBr = CreateSolidBrush(RGB(255,255,255));;
+	m_pCallBack = NULL;
 }
 
 CScreenshotDlg::~CScreenshotDlg()
@@ -96,7 +100,9 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
 	BOOL b;
 
-	CommandBox.SetFocus();
+	
+
+	//CommandBox.SetFocus();
 	return 0;  // Разрешаем системе самостоятельно установить фокус ввода
 }
 
@@ -122,11 +128,18 @@ LRESULT CScreenshotDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	if(!hwnd) hwnd = GetDesktopWindow();
 	RECT r;
 
+	/*TCHAR buf[256];
+	::GetWindowText(hwnd, buf,244);
+	MessageBox(buf, _T("Screenshoting"));*/
+
+	if(!EntireScr && !::IsWindowVisible(hwnd))
+		hwnd = GetDesktopWindow();
+		//return ScreenshotError();
 	// Расчет размеров изображения в зависмости от размеров и положения окна 
 	::GetWindowRect(hwnd,&r);
 
 	int xScreen,yScreen;
-	int xshift = 0, yshift = 0;
+	int xshift = r.left, yshift = r.top;
 	xScreen = GetSystemMetrics(SM_CXSCREEN);
 	yScreen = GetSystemMetrics(SM_CYSCREEN);
 	if(r.right > xScreen)
@@ -134,11 +147,11 @@ LRESULT CScreenshotDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	if(r.bottom > yScreen)
 	r.bottom = yScreen;
 	if(r.left < 0){
-		xshift = -r.left;
+		xshift = /*-r.left*/0;
 		r.left = 0;
 	}
 	if(r.top < 0){
-		yshift = -r.top;
+		yshift = /*-r.top*/0;
 		r.top = 0;
 	}
 
@@ -151,7 +164,7 @@ LRESULT CScreenshotDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 	// Подготовка контекста рисования
 	HDC dstDC = ::GetDC(NULL);
-	HDC srcDC = ::GetWindowDC(hwnd);
+	HDC srcDC = ::GetDC(0);//::GetWindowDC(hwnd);
 	HDC memDC = ::CreateCompatibleDC(dstDC);
 
 	// Создание битмапа и копирование на него скриншота
@@ -169,16 +182,21 @@ LRESULT CScreenshotDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	
 	// Сохранение изображения в файл, имя возвращается в szBuffer
 	MySaveImage(&b,_T("screenshot"), FileName, Format, Quality);
-	
+	if(m_pCallBack) m_pCallBack->OnScreenshotSaving(FileName,&b);
+
 	// Удаление временного битмапа и контекста рисования
 	DeleteObject(SelectObject(memDC, oldbm));
 	DeleteObject(memDC); 
-
+	
+	if(!m_pCallBack)
 	// Завершение диалога
-	EndDialog(1);
+	//if(m_bModal)
+		EndDialog(1);
 
+	if(m_pCallBack)  
+		m_pCallBack->OnScreenshotFinished((int)1);
 	// Показ главного окна и сообщения о сделаном скриншоте
-	::ShowWindow(GetParent(), SW_SHOW);
+	::ShowWindow(GetParent(), SW_SHOWNORMAL);
 	
 	return 0;  
 }
@@ -193,7 +211,10 @@ LRESULT CScreenshotDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 	// Установка таймера
 	int Delay = GetDlgItemInt(IDC_DELAYEDIT);
 	if( Delay <1 || Delay > 30 )  Delay = 3;
-	SetTimer(1, Delay * 1000);
+	if(m_pCallBack && !m_bDelay)
+		SetTimer(1, 500);
+	else  SetTimer(1, Delay * 1000);
+		
 	
 	// Скрытие окон приложения
 	ShowWindow(SW_HIDE);
@@ -210,13 +231,14 @@ LRESULT CScreenshotDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl
 }
 
 // Выполняется в случае ошибки при делании скриншота
-int CScreenshotDlg::ScreenshotError()
+int CScreenshotDlg::ScreenshotError(LPCTSTR ErrorMsg)
 {
 	EndDialog(0);
 	MainDlg->ShowWindow(SW_SHOW);
 	::ShowWindow(GetParent(), SW_SHOW);
-	MainDlg->MessageBox(TR("Невозможно сделать снимок экрана!"), APPNAME ,MB_ICONWARNING); //This message need to be translated
-	
+	MainDlg->MessageBox(ErrorMsg?ErrorMsg:TR("Невозможно сделать снимок экрана!"), APPNAME ,MB_ICONWARNING); //This message need to be translated
+	if(m_pCallBack)  
+		m_pCallBack->OnScreenshotFinished((int)0);
 	return 0;
 }
 
@@ -233,7 +255,7 @@ LRESULT CScreenshotDlg::OnBnClickedRegionselect(WORD /*wNotifyCode*/, WORD /*wID
 
 void CScreenshotDlg::OnScreenshotFinished(int Result)
 {
-	::ShowWindow(GetParent(), SW_SHOW);
+	::ShowWindow(GetParent(), SW_SHOWNORMAL);
 	ShowWindow(SW_SHOW);
 	EndDialog(Result?IDOK:IDCANCEL);
 }
@@ -285,4 +307,19 @@ void CScreenshotDlg::SaveSettings()
 	Settings.ScreenshotSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
 
+}
+
+void CScreenshotDlg::Execute(HWND Parent, CRegionSelectCallback *RegionSelectCallback,  bool FullScreen )
+{
+	m_pCallBack = RegionSelectCallback;
+	*FileName = 0;
+	if(!m_hWnd)
+		Create(Parent);
+	ShowWindow(SW_HIDE);
+
+	BOOL b;
+	if(m_Action == 1)
+	{
+		OnClickedOK(0,FullScreen?IDC_SCREENSHOT:0,0,b);
+	}
 }

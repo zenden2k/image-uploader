@@ -19,6 +19,7 @@
 */
 
 #include "stdafx.h"
+#include "wizarddlg.h"
 #include "UploadSettingsPage.h"
 #include <uxtheme.h>
 
