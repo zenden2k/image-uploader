@@ -253,7 +253,7 @@ bool CUploadSettings::OnNext()
 	if(ue.NeedAuthorization ==2 && !Settings.ServersSettings[ue.Name].authData.DoAuth)
 	{
 		CString errorMsg;
-		errorMsg.Format(TR("Вы не задали параметры авторизации на сервере '%s'!"), (LPCTSTR)ue.Name);
+		errorMsg.Format(TR("Загрузка файлов на сервер '%s' невозможна без наличия учетной записи.\nПожалуйста, зарегистрируйтесь на данном сервере и укажите ваши регистрационные данные в программе."), (LPCTSTR)ue.Name);
 		MessageBox(errorMsg, APPNAME, MB_ICONERROR);
 		return false;
 	}

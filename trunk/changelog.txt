@@ -10,6 +10,7 @@
 [+] FTP support (via Squirrel script)
 [+] Remote folder (or album) selection, creating and modifying
 [+] Information about media files can be displayed on image
+[+] Farsi language translation (by Hessam Mohamadi)
 [-] Internet Explorer's cookies support is not available
 [C] Settings.xml  is stored in Data folder
 [C] "Data" directory contents now can be stored in Application Data subfolder
