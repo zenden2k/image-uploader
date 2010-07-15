@@ -56,7 +56,7 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	TRC(IDC_GRADIENTCOLOR2LABEL, "Цвет градиента 2:");
 	TRC(IDC_THUMBFONT, "Шрифт...");
 	TRC(IDC_THUMBTEXTLABEL, "Надпись на эскизе:");
-
+	TRC(IDC_TEXTOVERTHUMB2, "Надпись поверх эскиза");
 	SetWindowText(TR("Дополнительные параметры"));	
 
 	RECT rc = {13, 20, 290, 95};
@@ -79,36 +79,37 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Снизу посередине"));
 	SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Правый нижний угол"));
 
-	SendDlgItemMessage(IDC_LOGOPOSITION, CB_SETCURSEL, Settings.LogoSettings.LogoPosition);
-	SendDlgItemMessage(IDC_TEXTPOSITION, CB_SETCURSEL, Settings.LogoSettings.TextPosition);
-	SetDlgItemText(IDC_LOGOEDIT, Settings.LogoSettings.FileName);
+	SendDlgItemMessage(IDC_LOGOPOSITION, CB_SETCURSEL, Settings.ImageSettings.LogoPosition);
+	SendDlgItemMessage(IDC_TEXTPOSITION, CB_SETCURSEL, Settings.ImageSettings.TextPosition);
+	SetDlgItemText(IDC_LOGOEDIT, Settings.ImageSettings.LogoFileName);
 	
-	if(*Settings.LogoSettings.FileName) 
-		img.LoadImage(Settings.LogoSettings.FileName);
+	if(*Settings.ImageSettings.LogoFileName) 
+		img.LoadImage(Settings.ImageSettings.LogoFileName);
 
-	SetDlgItemText(IDC_EDITYOURTEXT, Settings.LogoSettings.Text);
+	SetDlgItemText(IDC_EDITYOURTEXT, Settings.ImageSettings.Text);
 	SetDlgItemText(IDC_THUMBTEXT, Settings.ThumbSettings.Text);
+	
 	FrameColor.SubclassWindow(GetDlgItem(IDC_FRAMECOLOR));
-	FrameColor.Color = Settings.ThumbSettings.FrameColor;
-	FrameColor.m_pfnSuperWindowProc=::DefWindowProc;
+	FrameColor.SetColor(Settings.ThumbSettings.FrameColor);
 	Color1.SubclassWindow(GetDlgItem(IDC_COLOR1));
-	Color1.Color = Settings.ThumbSettings.ThumbColor1;
-	Color1.m_pfnSuperWindowProc=::DefWindowProc;
+	Color1.SetColor(Settings.ThumbSettings.ThumbColor1);
+	
 
 	Color2.SubclassWindow(GetDlgItem(IDC_COLOR2));
-	Color2.Color = Settings.ThumbSettings.ThumbColor2;
-	Color2.m_pfnSuperWindowProc=::DefWindowProc;
+	Color2.SetColor(Settings.ThumbSettings.ThumbColor2);
+	
 	ThumbTextColor.SubclassWindow(GetDlgItem(IDC_THUMBTEXTCOLOR));
-	ThumbTextColor.Color = Settings.ThumbSettings.ThumbTextColor;
-	ThumbTextColor.m_pfnSuperWindowProc=::DefWindowProc;
+	ThumbTextColor.SetColor(Settings.ThumbSettings.ThumbTextColor);
+	
 	TextColor.SubclassWindow(GetDlgItem(IDC_SELECTCOLOR));
-	TextColor.Color = Settings.LogoSettings.TextColor;
-	TextColor.m_pfnSuperWindowProc=::DefWindowProc;
+	TextColor.SetColor(Settings.ImageSettings.TextColor);
+	
 	StrokeColor.SubclassWindow(GetDlgItem(IDC_STROKECOLOR));
-	StrokeColor.Color = Settings.LogoSettings.StrokeColor;
-	StrokeColor.m_pfnSuperWindowProc=::DefWindowProc;
+	StrokeColor.SetColor(Settings.ImageSettings.StrokeColor);
+	SendDlgItemMessage(IDC_TEXTOVERTHUMB2, BM_SETCHECK, Settings.ThumbSettings.TextOverThumb);
 
-	lf = Settings.LogoSettings.Font;
+
+	lf = Settings.ImageSettings.Font;
 	ThumbFont = Settings.ThumbSettings.ThumbFont;
 
 	return 1;  // Let the system set the focus
@@ -181,28 +182,27 @@ bool CLogoSettings::Apply()
 		if(MessageBox(TR("Вы действительно хотите поместить текст и логотип в одном месте на изображении?"),TR("Параметры изображений"),MB_ICONQUESTION|MB_YESNO)!=IDYES)
 			return 0;
 	}
-	Settings.LogoSettings.LogoPosition = LogoPos;
-	Settings.LogoSettings.TextPosition = TextPos;
+	Settings.ImageSettings.LogoPosition = LogoPos;
+	Settings.ImageSettings.TextPosition = TextPos;
 	TCHAR Buf[256];
 	GetDlgItemText(IDC_LOGOEDIT, Buf, 256);
-	Settings.LogoSettings.FileName = Buf;
+	Settings.ImageSettings.LogoFileName = Buf;
 	GetDlgItemText(IDC_THUMBTEXT, Buf, 256);
 	Settings.ThumbSettings.Text = Buf;
 	GetDlgItemText(IDC_EDITYOURTEXT, Buf, 256);
-	Settings.LogoSettings.Text = Buf;
-	Settings.LogoSettings.Font = lf;
+	Settings.ImageSettings.Text = Buf;
+	Settings.ImageSettings.Font = lf;
 	Settings.ThumbSettings.ThumbFont = ThumbFont;
-
+	Settings.ThumbSettings.FrameColor = FrameColor.GetColor();
 	
-	Settings.ThumbSettings.FrameColor = FrameColor.Color;
+	Settings.ThumbSettings.ThumbColor1 = Color1.GetColor();
 	
-	Settings.ThumbSettings.ThumbColor1 = Color1.Color;
-	
-	Settings.ThumbSettings.ThumbColor2 = Color2.Color;
+	Settings.ThumbSettings.ThumbColor2 = Color2.GetColor();
 		
-	Settings.ThumbSettings.ThumbTextColor=ThumbTextColor.Color;
-	Settings.LogoSettings.TextColor=TextColor.Color;
-	Settings.LogoSettings.StrokeColor=StrokeColor.Color;
+	Settings.ThumbSettings.ThumbTextColor=ThumbTextColor.GetColor();
+	Settings.ImageSettings.TextColor=TextColor.GetColor();
+	Settings.ImageSettings.StrokeColor=StrokeColor.GetColor();
+	Settings.ThumbSettings.TextOverThumb = SendDlgItemMessage(IDC_TEXTOVERTHUMB2, BM_GETCHECK);
 
 	return TRUE;
 }

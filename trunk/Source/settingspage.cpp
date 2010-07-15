@@ -99,6 +99,12 @@ bool CSettingsPage::Apply()
 	return true;
 }
 
+void CSettingsPage::FixBackground()
+{
+	TabBackgroundFix(PageWnd);
+}
+
+
 CSettingsPage::~CSettingsPage()
 {
 }

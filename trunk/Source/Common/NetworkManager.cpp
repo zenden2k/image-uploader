@@ -23,18 +23,24 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-// Необходимые билиотеки!
-//#pragma comment(lib,"curllib.lib")
 #ifndef _DEBUG
-#pragma comment(lib,"libcurl.lib")
+	#pragma comment(lib,"libcurl.lib")
 #else
-#pragma comment(lib,"libcurld_imp.lib")
+	#pragma comment(lib,"libcurld_imp.lib")
 #endif
-
-
+#pragma comment(lib, "Ws2_32.lib")
 size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
 	return  fread(ptr, size, nmemb, (FILE*)stream);
+}
+
+int NetworkManager::set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose) 
+{
+	// See http://support.microsoft.com/kb/823764
+	NetworkManager* nm = reinterpret_cast<NetworkManager*>(clientp);
+	int val = nm->m_UploadBufferSize + 32;
+	setsockopt(sockfd, SOL_SOCKET, SO_SNDBUF, (const char *)&val, sizeof(val));
+	return 0;
 }
 
 int NetworkManager::private_static_writer(char *data, size_t size, size_t nmemb, void *buffer_in)
@@ -45,11 +51,7 @@ int NetworkManager::private_static_writer(char *data, size_t size, size_t nmemb,
 	{
 		if(cbd->funcType == funcTypeBody)
 		{
-			
-
-		return nm->private_writer(data, size, nmemb);
-
-
+			return nm->private_writer(data, size, nmemb);
 		}
 		else
 			return nm->private_header_writer(data, size, nmemb);
@@ -64,7 +66,6 @@ void NetworkManager::setProxy(const NString &host, int port, int type)
 	curl_easy_setopt(curl_handle, CURLOPT_PROXYPORT, port);	
 	curl_easy_setopt(curl_handle, CURLOPT_PROXYTYPE, type);
 	curl_easy_setopt(curl_handle, CURLOPT_NOPROXY, "localhost,127.0.0.1"); // test
-	
 }
 
 void NetworkManager::setProxyUserPassword(const NString &username, const NString password)
@@ -76,7 +77,6 @@ void NetworkManager::setProxyUserPassword(const NString &username, const NString
 		std::string authStr = username+":"+password;
 		curl_easy_setopt(curl_handle, CURLOPT_PROXYUSERPWD, authStr.c_str());
 	}
-	
 }
 
 int NetworkManager::private_writer(char *data, size_t size, size_t nmemb)
@@ -87,7 +87,6 @@ int NetworkManager::private_writer(char *data, size_t size, size_t nmemb)
 					if(!(m_hOutFile = _wfopen(Utf8ToWstring(m_OutFileName).c_str(), L"wb")))
 						return 0;
 				fwrite(data, size,nmemb, m_hOutFile);
-
 			}
 	else
 		internalBuffer.append(data, size * nmemb);
@@ -135,7 +134,7 @@ NetworkManager::NetworkManager(void)
 	curl_handle = curl_easy_init(); // Initializing libcurl
 	m_bodyFuncData.funcType = funcTypeBody;
 	m_bodyFuncData.nmanager = this;
-
+	m_UploadBufferSize = 65536;
 	m_headerFuncData.funcType = funcTypeHeader;
 	m_headerFuncData.nmanager = this;
 	curl_easy_setopt(curl_handle, CURLOPT_COOKIELIST, "");
@@ -150,11 +149,14 @@ NetworkManager::NetworkManager(void)
 	curl_easy_setopt(curl_handle, CURLOPT_PROGRESSDATA, this);
 	curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, TRUE);
 	curl_easy_setopt(curl_handle, CURLOPT_ENCODING, "");
+	curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
+	curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTDATA, this);
 	
    curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L);
    curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0L); 
 	//We want the referrer field set automatically when following locations
 	curl_easy_setopt(curl_handle, CURLOPT_AUTOREFERER, 1L); 
+	curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 32768L);
 }
 
 NetworkManager::~NetworkManager(void)
@@ -189,13 +191,15 @@ void NetworkManager::setUrl(const NString& url)
 	curl_easy_setopt(curl_handle, CURLOPT_URL, url.c_str());
 }
 
-void CloseFileList(const std::vector<FILE *>& files)
+void CloseFileList(std::vector<FILE *>& files)
 {
 	for(int i=0; i<files.size(); i++)
 	{
 		fclose(files[i]);
 	}
+	files.clear();
 }
+
 bool NetworkManager::doUploadMultipartData()
 {
 	private_initTransfer();
@@ -218,6 +222,7 @@ bool NetworkManager::doUploadMultipartData()
 						CloseFileList(openedFiles);
 						return false; /* can't continue */
 					}
+					openedFiles.push_back(curFile);
 					struct stat file_info; 
 				 /* to get the file size */
 					if(fstat(fileno(curFile), &file_info) != 0) {
@@ -491,11 +496,10 @@ void NetworkManager::private_cleanup_after()
 		m_hOutFile = 0;
 	}
 	m_OutFileName.clear();
-	m_method ="";
+	m_method = "";
 
-	m_uploadData="";
+	m_uploadData = "";
 }
-
 
 size_t NetworkManager::read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
@@ -552,7 +556,7 @@ bool NetworkManager::doUpload(const NString& fileName, const NString &data)
 		if(!private_apply_method())
 	curl_easy_setopt(curl_handle, CURLOPT_POST, 1L);
 	curl_easy_setopt(curl_handle,CURLOPT_POSTFIELDS, NULL);
-	curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 8192L);
+	
 	curl_easy_setopt(curl_handle, CURLOPT_READDATA, this);
 
 
@@ -614,4 +618,9 @@ CURL* NetworkManager::getCurlHandle()
 void NetworkManager::setOutputFile(const NString &str)
 {
 	m_OutFileName = str;
+}
+
+void NetworkManager::setUploadBufferSize(const int size)
+{
+	m_UploadBufferSize = size;
 }

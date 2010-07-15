@@ -26,8 +26,7 @@
 #include "thread.h"
 #include "common.h"
 #include "Common/NetworkManager.h"
-
-
+#include "Core/UploadEngine.h"
 class CUploader
 {
 	public:
@@ -35,42 +34,47 @@ class CUploader
 		~CUploader(void);
 		CString GetStatusText();
 		LPTSTR ProgressBuffer;
-		int CurrentServer;
 		bool *ShouldStop;
 		InfoProgress *PrInfo;
-		bool SelectServer(DWORD ServerID);
+		bool SetUploadEngine(CUploadEngine *UploadEngine);
+		void setServerSettings(ServerSettingsStruct* serverSettings);
+		CUploadEngine * getUploadEngine();
 		bool ServerSupportThumbnails(int ServerID);
-		bool UploadFile(LPTSTR FileName, LPTSTR szUrlBuffer = NULL,LPTSTR szThumbUrlBuffer = NULL, int ThumbWidth = 160);	
-		CString getDownloadUrl();
+		void setThumbnailWidth(int width);
+		bool UploadFile(const CString & FileName, const CString &displayFileName);	
+		const CString getDownloadUrl();
+		const CString getDirectUrl();
+		const CString getThumbUrl();
 	protected:
 		static int pluginProgressFunc (void* userData, double dltotal,double dlnow,double ultotal, double ulnow);
-		int ThumbWidth;
+		int m_nThumbWidth;
 		CString m_FileName;
-		
-		LPTSTR ThumbUrl, ImgUrl;
+		CString m_displayFileName;
+		ServerSettingsStruct* m_ServerSettings;
 		
 		NetworkManager m_NetworkManager;
 		bool DoAction(UploadAction &Action);
 		bool DoUploadAction(UploadAction &Action, bool bUpload);
 		bool DoGetAction(UploadAction &Action);
 		bool SendHttpRequest(LPTSTR szMethod, LPTSTR szBody, LPTSTR szAddress, int nPort);
-		
-		bool ParseAnswer(UploadAction &Action, LPCTSTR Body);
+		bool ParseAnswer(UploadAction &Action, std::string& Body);
 		void UploadError(WORD EventType, LPCTSTR Url, LPCTSTR  Error, int ErrorCode=0, LPCTSTR ErrorExplication=NULL);
+		CString ReplaceVars(const CString Text);
+		void ConfigureProxy();
+		void AddQueryPostParams(UploadAction &Action);
+		bool ReadServerResponse(UploadAction &Action);
+		void SetStatusText(CString Text);
+		bool DoTry();
+
 		std::map<CString, CString> m_Vars;
 		std::map<CString, CString> m_Consts;
 		std::map<UINT, boolean> m_PerformedActions;
 		LoginInfo li;
 		CString m_StatusText;
-		CString ReplaceVars(const CString Text);
-		void ConfigureProxy();
-		void AddQueryPostParams(UploadAction &Action);
-		bool ReadServerResponse(UploadAction &Action);
 		
 
-		UploadEngine CurrentEngine;
-		void SetStatusText(CString Text);
-		bool DoTry();
+		CUploadEngine *m_CurrentEngine;
+		
 		CString m_ThumbUrl;
 		CString m_ImageUrl;
 		CString m_DownloadUrl;

@@ -22,7 +22,7 @@
 
 #include "stdafx.h"
 #include "resource.h"
-#include "ExplorerIntegration.h"
+#include "Generated/ExplorerIntegration.h"
 #include "ishellcontextmenu.h"
 
 #include "../LangClass.h"
@@ -60,7 +60,7 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRes
 			ExtractFilePath(szFileName, szPath);
 			Lang.SetDirectory(CString(szPath) + "Lang\\");
 			Lang.LoadList();
-			Settings.LoadSettings(GetDllFolder());
+			Settings.LoadSettings();
 			Lang.LoadLanguage(Settings.Language);
 		}
 

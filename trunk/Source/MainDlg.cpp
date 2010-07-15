@@ -29,7 +29,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	PageWnd = m_hWnd;
 	TRC(IDC_ADDIMAGES, "Добавить файлы");
 	TRC(IDC_ADDVIDEO, "Импорт видео");
-	TRC(IDC_SCREENSHOT, "Сделать снимок экрана");
+	TRC(IDC_SCREENSHOT, "Cнимок экрана");
 	TRC(IDC_PROPERTIES, "Свойства");
 	TRC(IDC_DELETE, "Удалить из списка");
 	
@@ -104,14 +104,8 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		FolderMenu.LoadMenu(IDR_CONTEXTMENU2);
 		CMenu sub = FolderMenu.GetSubMenu(0);
 	
-		bool IsClipboard=false;
-
-		if(OpenClipboard())
-		{
-			IsClipboard = IsClipboardFormatAvailable(CF_BITMAP);
-			CloseClipboard();
-		}
-		
+	
+		bool IsClipboard=	WizardDlg->IsClipboardDataAvailable();
 		sub.EnableMenuItem(IDC_PASTE, (IsClipboard)?MF_ENABLED	:MF_GRAYED	);
 		mi.cbSize = sizeof(mi);
 		mi.fMask = MIIM_TYPE;
@@ -169,7 +163,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	return 0;
 }
 
-bool CMainDlg::AddToFileList(LPCTSTR FileName,  Image *Img)
+bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, Image *Img)
 {
 	CFileListItem fl; //internal list item
 	
@@ -181,19 +175,25 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName,  Image *Img)
 	int len = lstrlen(FileName);
 
 	fl.FileName = FileName;
+
+	if(virtualFileName.IsEmpty())
+	fl.VirtualFileName = myExtractFileName(FileName);
+	else
+	fl.VirtualFileName = virtualFileName;
 	
+
 	TCHAR szBuffer[256] = _T("\0");
 	int FileSize = MyGetFileSize(FileName);
 	if(FileSize<-1) FileSize = 0;
 
 	FileList.Add(fl);
 
-	WCHAR Buf[256];
+	CString Buf;
 	if(IsImage(FileName))
-	GetOnlyFileName(FileName, Buf);
-	else lstrcpy(Buf, myExtractFileName(FileName));
+	Buf = GetOnlyFileName(FileName );
+	else Buf = myExtractFileName(FileName);
 	if(FileName) 
-		ThumbsView.AddImage(FileName, Buf, Img);
+		ThumbsView.AddImage(fl.FileName, fl.VirtualFileName, Img);
 		
 	EnableNext(FileList.GetCount()>0);
 	return TRUE;

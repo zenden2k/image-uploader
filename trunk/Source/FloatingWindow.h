@@ -15,20 +15,31 @@
 #define IDM_REGIONSCREENSHOT IDM_UPLOADFILES+4
 #define IDM_FULLSCREENSHOT IDM_UPLOADFILES+5
 #define IDM_WINDOWSCREENSHOT IDM_UPLOADFILES+6
-#define IDM_ADDFOLDER IDM_UPLOADFILES+7
-#define IDM_SHOWAPPWINDOW IDM_UPLOADFILES+8
-#define IDM_SETTINGS IDM_UPLOADFILES+9
-#define IDM_EXIT IDM_UPLOADFILES+10
-#define IDM_CONTEXTMENU IDM_UPLOADFILES+11
-#define IDM_PASTEFROMCLIPBOARD IDM_UPLOADFILES+12
-#define IDM_MEDIAINFO IDM_UPLOADFILES+13
-#define IDM_UPLOADIMAGES IDM_UPLOADFILES+14
-#define WM_CLOSETRAYWND WM_USER+2
-#define WM_RELOADSETTINGS WM_USER+3
+#define IDM_WINDOWHANDLESCREENSHOT IDM_UPLOADFILES+7
+#define IDM_FREEFORMSCREENSHOT IDM_UPLOADFILES+8
+#define IDM_ADDFOLDER IDM_UPLOADFILES+9
+#define IDM_SHOWAPPWINDOW IDM_UPLOADFILES+10
+#define IDM_SETTINGS IDM_UPLOADFILES+11
+#define IDM_EXIT IDM_UPLOADFILES+12
+#define IDM_CONTEXTMENU IDM_UPLOADFILES+13
+#define IDM_PASTEFROMCLIPBOARD (IDM_UPLOADFILES+14)
+#define IDM_MEDIAINFO (IDM_UPLOADFILES+15)
+#define IDM_UPLOADIMAGES (IDM_UPLOADFILES+16)
+#define IDM_SCREENTSHOTACTION_UPLOAD (IDM_UPLOADFILES+17)
+#define IDM_SCREENTSHOTACTION_TOCLIPBOARD (IDM_UPLOADFILES+18)
+#define IDM_SCREENTSHOTACTION_TOWIZARD (IDM_UPLOADFILES+19)
+#define IDM_PASTEFROMWEB (IDM_UPLOADFILES+20)
+#define IDM_STOPUPLOAD (IDM_UPLOADFILES+21)
 
+#define WM_CLOSETRAYWND (WM_USER+2)
+#define WM_RELOADSETTINGS (WM_USER+3)
+
+#include "Core/FileQueueUploader.h"
 
 class CFloatingWindow :
-	public CWindowImpl<CFloatingWindow>, public CTrayIconImpl<CFloatingWindow>
+	public CWindowImpl<CFloatingWindow>, 
+	public CTrayIconImpl<CFloatingWindow>, 
+	public CFileUploaderCallback
 {
 public:
 	HANDLE hMutex;
@@ -39,6 +50,8 @@ public:
 		CHotkeyList m_hotkeys;
 		HICON m_hIconSmall;
 		bool m_bStopCapturingWindows;
+		bool m_bIsUploading;
+		FileListItem m_LastUploadedItem;
 	CFloatingWindow();
 	~CFloatingWindow();
 	DECLARE_WND_CLASS(_T("CFloatingWindow"))
@@ -54,12 +67,19 @@ public:
 		COMMAND_ID_HANDLER_EX(IDM_SCREENSHOTDLG, OnScreenshotDlg)
 		COMMAND_ID_HANDLER_EX(IDM_REGIONSCREENSHOT, OnRegionScreenshot)
 		COMMAND_ID_HANDLER_EX(IDM_FULLSCREENSHOT, OnFullScreenshot)
+		COMMAND_ID_HANDLER_EX(IDM_WINDOWHANDLESCREENSHOT, OnWindowHandleScreenshot)
+		COMMAND_ID_HANDLER_EX(IDM_FREEFORMSCREENSHOT, OnFreeformScreenshot)
 		COMMAND_ID_HANDLER_EX(IDM_WINDOWSCREENSHOT, OnWindowScreenshot)
 		COMMAND_ID_HANDLER_EX(IDM_ADDFOLDER, OnAddFolder)
 		COMMAND_ID_HANDLER_EX(IDM_SHOWAPPWINDOW, OnShowAppWindow)
+		COMMAND_ID_HANDLER_EX(IDM_PASTEFROMWEB, OnPasteFromWeb)
 		COMMAND_ID_HANDLER_EX(IDM_CONTEXTMENU, OnContextMenu)
 		COMMAND_ID_HANDLER_EX(IDM_PASTEFROMCLIPBOARD, OnPaste)
+		COMMAND_ID_HANDLER_EX(IDM_STOPUPLOAD, OnStopUpload)
 		COMMAND_ID_HANDLER_EX(IDM_MEDIAINFO, OnMediaInfo)
+		COMMAND_ID_HANDLER_EX(IDM_SCREENTSHOTACTION_UPLOAD, OnScreenshotActionChanged)
+		COMMAND_ID_HANDLER_EX(IDM_SCREENTSHOTACTION_TOCLIPBOARD, OnScreenshotActionChanged)
+		COMMAND_ID_HANDLER_EX(IDM_SCREENTSHOTACTION_TOWIZARD, OnScreenshotActionChanged)
 		MESSAGE_HANDLER(WM_TRAYICON, OnTrayIcon)
 		MESSAGE_HANDLER_EX(WM_CLOSETRAYWND, OnCloseTray)
 		MESSAGE_HANDLER_EX(WM_RELOADSETTINGS, OnReloadSettings)
@@ -88,17 +108,30 @@ public:
 	 LRESULT OnRegionScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnFullScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+	 LRESULT OnFreeformScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+	 LRESULT OnWindowHandleScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnAddFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnShowAppWindow(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnMediaInfo(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+	 LRESULT OnScreenshotActionChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+	 LRESULT OnStopUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnTimer(UINT id);
 	 void CreateTrayIcon();
 	 void RegisterHotkeys();
 	 void UnRegisterHotkeys();
 	 LRESULT OnHotKey(int HotKeyID, UINT flags, UINT vk);
 	 LRESULT OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+	  LRESULT OnPasteFromWeb(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnTaskbarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	 void ShowBaloonTip(const CString& text, const CString& title);
+	 void UploadScreenshot(const CString& realName, const CString &displayName);
+	 CString fileName, realFileName;
+	 CFileQueueUploader * m_FileQueueUploader;
+	 bool OnQueueFinished();
+	 bool m_bFromHotkey;
+	 bool OnFileFinished(bool ok, FileListItem& result);
+	 bool OnConfigureNetworkManager(NetworkManager* nm);
 };
 extern CFloatingWindow floatWnd;
 void CreateFloatWindow();

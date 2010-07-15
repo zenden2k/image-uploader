@@ -22,7 +22,7 @@
 #include "ServerParamsDlg.h"
 
 // CServerParamsDlg
-CServerParamsDlg::CServerParamsDlg(UploadEngine &ue): m_ue(ue)
+CServerParamsDlg::CServerParamsDlg(CUploadEngine *ue): m_ue(ue)
 {
 }
 
@@ -37,13 +37,13 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	TRC(IDOK, "OK");
 	DlgResize_Init();
 	CString WindowTitle;
-	WindowTitle.Format(TR("Параметры сервера %s"),m_ue.Name);
+	WindowTitle.Format(TR("Параметры сервера %s"),m_ue->Name);
 	SetWindowText(WindowTitle);
 
 	m_wndParamList.SubclassWindow(GetDlgItem(IDC_PARAMLIST));
 	m_wndParamList.SetExtendedListStyle(PLS_EX_SHOWSELALWAYS | PLS_EX_SINGLECLICKEDIT);
 
-	CUploadScript *m_pluginLoader = iuPluginManager.getPlugin(m_ue.PluginName, Settings.ServersSettings[m_ue.Name]);
+	CUploadScript *m_pluginLoader = iuPluginManager.getPlugin(m_ue->PluginName, Settings.ServersSettings[m_ue->Name]);
 	if(!m_pluginLoader)
 	{
 		return 0;
@@ -53,12 +53,9 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	std::map<std::wstring,std::wstring>::iterator it;
 	for(it = m_paramNameList.begin(); it!= m_paramNameList.end(); it++)
 	{
-
 		CString name = it->first.c_str();
 		CString humanName = it->second.c_str();
-
-		 m_wndParamList.AddItem( PropCreateSimple(humanName, Settings.ServersSettings[m_ue.Name].params[name]) );
-     
+		m_wndParamList.AddItem( PropCreateSimple(humanName, Settings.ServersSettings[m_ue->Name].params[name]) );
 	}
 	return 1;  // Let the system set the focus
 }
@@ -76,7 +73,7 @@ LRESULT CServerParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
 		CComVariant vValue;
       pr->GetValue(&vValue);
 
-		Settings.ServersSettings[m_ue.Name].params[name]= vValue.bstrVal;	      
+		Settings.ServersSettings[m_ue->Name].params[name]= vValue.bstrVal;	      
 	}
 
 	EndDialog(wID);

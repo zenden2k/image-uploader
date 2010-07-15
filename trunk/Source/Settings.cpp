@@ -23,6 +23,7 @@
 #include "settings.h"
 #include "myutils.h"
 #include "Common\MyXml.h"
+#include <Shlobj.h>
 #define SETTINGS_FILE_NAME _T("settings.xml")
 
 //CSIDL_COMMON_APPDATA
@@ -81,7 +82,7 @@ BOOL IsVista()
 
 #define ASSERT
 
-#if  WINVER	< 0x0600
+#if  0//WINVER	< 0x0600
 
 typedef struct _TOKEN_ELEVATION {
     DWORD TokenIsElevated;
@@ -142,15 +143,6 @@ void EncodeString(LPCTSTR szSource,CString &Result,LPSTR code="{DAb[]=_T('')+b/1
 
 
 
-
-UploadEngine* GetEngineByName(LPCTSTR Name)
-{
-	for(int i=0; i<EnginesList.size(); i++)
-	{
-		if(!lstrcmp(EnginesList[i].Name, Name))  return &EnginesList[i];
-	}
-	return 0;
-}
 
 void ApplyRegistrySettings()
 {
@@ -234,7 +226,7 @@ CSettings::CSettings()
 	ExplorerCascadedMenu = true;
 	#ifndef IU_SHELLEXT
 	LastUpdateTime = 0;
-	
+	WatchClipboard = true;
 	ShowTrayIcon = false;
 	ShowTrayIcon_changed = false;
 	*m_Directory = 0;
@@ -258,7 +250,7 @@ CSettings::CSettings()
 	ImageEditorPath = _T("mspaint.exe \"%1\"");
 	AutoCopyToClipboard = false;
 	AutoShowLog = true;
-	UploadBufferSize = 16384;
+	UploadBufferSize = 65536;
 	ImageSettings.KeepAsIs = false;
 	ImageSettings.NewWidth = 0;
 	ImageSettings.NewHeight = 0;
@@ -268,13 +260,13 @@ CSettings::CSettings()
 	ImageSettings.Quality = 85;
 	ImageSettings.SaveProportions = true;
 
-	LogoSettings.LogoPosition = 0;
-	LogoSettings.LogoBlend = 0;
-	LogoSettings.Text = APPNAME;
-	LogoSettings.TextPosition = 5;
-	LogoSettings.TextColor = 0xffffffff;
+	ImageSettings.LogoPosition = 0;
+	ImageSettings.LogoBlend = 0;
+	ImageSettings.Text = APPNAME;
+	ImageSettings.TextPosition = 5;
+	ImageSettings.TextColor = 0xffffffff;
 	
-	StringToFont(_T("Tahoma,8,,204"), &LogoSettings.Font);
+	StringToFont(_T("Tahoma,8,,204"), &ImageSettings.Font);
 	StringToFont(_T("Tahoma,7,b,204"), &ThumbSettings.ThumbFont);
 	StringToFont(_T("Tahoma,8,,204"), &VideoSettings.Font);
 
@@ -283,7 +275,7 @@ CSettings::CSettings()
 	ThumbSettings.DrawFrame = true;
 	ThumbSettings.ThumbAddImageSize  = true;
 	ThumbSettings.FrameColor = RGB( 0, 74, 111) ;
-	LogoSettings.StrokeColor = RGB( 0, 0, 0);
+	ImageSettings.StrokeColor = RGB( 0, 0, 0);
 	ThumbSettings.ThumbColor1 =  RGB( 13, 86, 125);
 	ThumbSettings.ThumbColor2 = RGB( 6, 174, 255);
 	ThumbSettings.UseServerThumbs = false;
@@ -309,14 +301,19 @@ CSettings::CSettings()
 	
 	ScreenshotSettings.Format =  1;
 	ScreenshotSettings.Quality = 85;
-	ScreenshotSettings.Delay = 3;
+	ScreenshotSettings.WindowHidingDelay = 450;
+	ScreenshotSettings.Delay = 1;
 	ScreenshotSettings.brushColor = RGB(255,0,0);
+	ScreenshotSettings.ShowForeground = false;
+	ScreenshotSettings.FilenameTemplate = _T("screenshot %y-%m-%d %c");
+	ScreenshotSettings.CopyToClipboard = false;
 
 	TrayIconSettings.LeftClickCommand = 0; // without action
 	TrayIconSettings.LeftDoubleClickCommand = 10; // add images
 	TrayIconSettings.RightClickCommand = 1; // context menu
 	TrayIconSettings.MiddleClickCommand = 7; // region screenshot
 	TrayIconSettings.DontLaunchCopy = FALSE;
+	TrayIconSettings.TrayScreenshotAction = 0;
 
 	Hotkeys_changed = false;
 	#endif
@@ -481,17 +478,9 @@ CString GetSendToPath()
 }
 
 bool CSettings::SaveSettings()
-{
-	// Converting server id to server name
-	if(ServerID >= 0 && EnginesList.size())
-		Settings.ServerName = EnginesList[ServerID].Name;
-
-	if(QuickServerID>=0 && EnginesList.size())
-	Settings.QuickServerName = EnginesList[QuickServerID].Name;
-	if(FileServerID>=0 && EnginesList.size())
-		Settings.FileServerName = EnginesList[FileServerID].Name;
-	
+{	
 	CMyXml MyXml;
+	MyXml.SetDoc(_T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"));
 
 	MacroSaveSettings(MyXml);
 	MyXml.Save(IU_GetDataFolder()+SETTINGS_FILE_NAME);

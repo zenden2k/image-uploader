@@ -66,13 +66,15 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		}	
 	}
 
+	bool bCreateFloatingWindow = false;
 
 	if(CmdLine.IsOption(_T("tray")) || BecomeTray)
 	{
 		if(!IsRunningFloatingWnd())
 		{
+			bCreateFloatingWindow = true;
 			ShowMainWindow = BecomeTray;
-			floatWnd.CreateTrayIcon();
+			
 		}
 		else return 0;
 	}
@@ -91,7 +93,9 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 			dlgMain.m_hWnd = 0;
 			return 0;
 		}
-		
+		LogWindow.Create(0);
+		if(bCreateFloatingWindow)
+			floatWnd.CreateTrayIcon();
 		if((CmdLine.GetCount()>1 && CmdLine.IsOption(_T("quickshot")))|| CmdLine.IsOption(_T("mediainfo")) || !ShowMainWindow || !dlgMain.m_bShowWindow)
 		{
 			dlgMain.ShowWindow(SW_HIDE);
@@ -114,7 +118,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	OleInitialize(NULL);
 	HRESULT hRes ;
 
-
 	for(int i=0; i<CmdLine.GetCount(); i++)
 	{
 		CString CurrentParam = CmdLine[i];
@@ -124,10 +127,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 			DWORD pid = _ttoi(pidStr);
 			HANDLE hProcess = OpenProcess(SYNCHRONIZE, false, pid); 
 			WaitForSingleObject(hProcess, 20000);
-
 		}
 	}
-
 
 	if(CmdLine.IsOption(_T("integration"))) // for Windows Vista+
 	{
@@ -135,11 +136,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 		Settings.ApplyRegSettingsRightNow();
 		return 0;
 	}
-
-	//::CoUninitialize();
-	//OleUninitialize();
-
-	
 
 	// this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
 	::DefWindowProc(NULL, 0, 0, 0L);
@@ -150,7 +146,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	ATLASSERT(SUCCEEDED(hRes));
 
 	int nRet = Run(lpstrCmdLine, nCmdShow);
-SquirrelVM::Shutdown(); 
+	SquirrelVM::Shutdown(); 
 	_Module.Term();
 	OleUninitialize();
 	//::CoUninitialize();

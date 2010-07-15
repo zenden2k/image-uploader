@@ -58,7 +58,8 @@ int CLangSelect::GetNextLngFile(LPTSTR szBuffer, int nLength)
 
 LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	TCHAR buf[256], buf2[128];
+	TCHAR buf[256];
+	CString buf2;
 	LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
 	LogoImage.LoadImage(0, 0, IDR_PNG1, false, GetSysColor(COLOR_BTNFACE));
 
@@ -71,8 +72,8 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	while(GetNextLngFile(buf,sizeof(buf)/sizeof(TCHAR)) )
 	{
 		if(lstrlen(buf)==0 || lstrcmpi(GetFileExt(buf), _T("lng"))) continue;
-		GetOnlyFileName(buf, buf2);
-		SendDlgItemMessage(IDC_LANGLIST,CB_ADDSTRING,0,(WPARAM)buf2);
+		buf2 = GetOnlyFileName(buf);
+		SendDlgItemMessage(IDC_LANGLIST,CB_ADDSTRING,0,(WPARAM)(LPCTSTR)buf2);
 		n++;
 	}
 	

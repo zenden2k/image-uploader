@@ -24,7 +24,7 @@
 #include <atlapp.h>
 #include <atlmisc.h>
 #include <atlcoll.h>
-#include "ExplorerIntegration.h"
+#include "Generated/ExplorerIntegration.h"
 #include "IconBitmapUtils.h"
 #include <shobjidl.h>
 #include <map>

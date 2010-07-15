@@ -1,3 +1,4 @@
+#include "ResultsPanel.h"
 /*
     Image Uploader - application for uploading images/files to Internet
     Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
@@ -26,10 +27,11 @@
 #include "mediainfodlg.h"
 
 // CResultsPanel
-CResultsPanel::CResultsPanel(CAtlArray<CUrlListItem> &p,CWizardDlg *dlg):UrlList(p),WizardDlg(dlg)
+CResultsPanel::CResultsPanel(CWizardDlg *dlg,CAtlArray<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)
 {
 	m_nImgServer = m_nFileServer = -1;
 	TemplateHead = TemplateFoot = NULL;	
+	rectNeeded.left = -1;
 	CString TemplateLoadError;
 	if(!LoadTemplates(TemplateLoadError))
 	{
@@ -82,6 +84,12 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 {
 	TRC(IDC_IMAGEUPLOADERLABEL, "Картинок в строке:");
 	TRC(IDC_CODETYPELABEL, "Тип кода:");
+	if(rectNeeded.left != -1)
+	{
+	
+	SetWindowPos(  0, rectNeeded.left, rectNeeded.top, rectNeeded.right,  rectNeeded.bottom, 0);
+	}
+	if(GetStyle()&WS_CHILD)
 	TabBackgroundFix(m_hWnd);
 	HBITMAP hBitmap;
 	// Get color depth (minimum requirement is 32-bits for alpha blended images).
@@ -102,12 +110,14 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 		ImageList_AddMasked(m_hToolBarImageList,hBitmap,RGB(255,0,255));
 	}
 
-	RECT rc = {0,0,400,30};
+	RECT rc = {0,0,100,24};
 	GetClientRect(&rc);
-	rc.top = rc.bottom - 24;
-	rc.left = 10;
-	Toolbar.Create(m_hWnd,rc,_T(""), WS_CHILD|WS_VISIBLE|WS_CHILD | TBSTYLE_LIST |TBSTYLE_FLAT| CCS_NORESIZE|CCS_BOTTOM |/*CCS_ADJUSTABLE|*/CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
-	
+	rc.top = rc.bottom - 26;
+	rc.bottom-=dlgY(1);
+	rc.left = dlgX(3);
+	rc.right -=dlgX(3);
+	Toolbar.Create(m_hWnd,rc,_T(""), WS_CHILD|WS_CHILD | TBSTYLE_LIST |TBSTYLE_CUSTOMERASE|TBSTYLE_FLAT| CCS_NORESIZE/*|*/|CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
+	//TabBackgroundFix(Toolbar.m_hWnd);
 	
 	Toolbar.SetButtonStructSize();
 	Toolbar.SetButtonSize(30,18);
@@ -118,13 +128,14 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
 	Toolbar.AddButton(IDC_MEDIAFILEINFO, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Инфо о последнем видео"), 0);
 	Toolbar.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Лог ошибок"), 0);
-	Toolbar.AddButton(/*IDC_USETEMPLATE*/IDC_OPTIONSMENU, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Опции"), 0);
+	Toolbar.AddButton(IDC_OPTIONSMENU, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Опции"), 0);
 	
 	if(!IsLastVideo) 
 		Toolbar.HideButton(IDC_MEDIAFILEINFO);
 		
 	Toolbar.AutoSize();
 	Toolbar.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);
+	Toolbar.ShowWindow(SW_SHOW);
 
 	SetDlgItemInt(IDC_THUMBSPERLINE, Settings.ThumbsPerLine);
 	SendDlgItemMessage(IDC_THUMBPERLINESPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)0) );
@@ -155,7 +166,7 @@ void CResultsPanel::SetPage(int Index)
 	::EnableWindow(GetDlgItem(IDC_THUMBPERLINESPIN), Index!=2);
 	
 	m_Page = Index;
-	GenerateOutput();
+	UpdateOutput();
 }
 
 void BBCode_Link(CString &Buffer, CUrlListItem &item)
@@ -183,10 +194,10 @@ void HTML_Link(CString &Buffer, CUrlListItem &item)
 	Buffer += _T("</a>");
 }
 
-void CResultsPanel::GenerateOutput()
+const CString CResultsPanel::GenerateOutput()
 {
 	CString Buffer;
-	if(!Toolbar.m_hWnd) return ;
+	if(!Toolbar.m_hWnd) return _T("");
 	int Index =	GetCodeType();
 
 	int type=0;
@@ -206,7 +217,7 @@ void CResultsPanel::GenerateOutput()
 		Settings.ThumbsPerLine = p;
 
 	bool UseTemplate = Settings.UseTxtTemplate;
-		//Toolbar.IsButtonChecked(IDC_USETEMPLATE); //IsChecked(IDC_USETEMPLATE);
+	//Toolbar.IsButtonChecked(IDC_USETEMPLATE); //IsChecked(IDC_USETEMPLATE);
 	Settings.UseTxtTemplate = UseTemplate;
 	if(UseTemplate && TemplateHead && m_Page!=2)
 		Buffer+=TemplateHead;
@@ -229,8 +240,8 @@ void CResultsPanel::GenerateOutput()
 			m_Vars[_T("FileName")]=fname;
 			m_Vars[_T("FullFileName")]=UrlList[i].FileName;
 			m_Vars[_T("Index")]=IntToStr(i);
-			TCHAR buffer[600];
-			GetOnlyFileName(UrlList[i].FileName,buffer);
+			CString buffer;
+			buffer = GetOnlyFileName(UrlList[i].FileName);
 			m_Vars[_T("FileNameWithoutExt")]=UrlList[i].FileName;
 			if(p!=0  && !((i)%p))
 
@@ -251,9 +262,8 @@ void CResultsPanel::GenerateOutput()
 		m_Vars["Items"]=Items;
 		Buffer+=ReplaceVars(Templates[TemplateIndex].TemplateText);
 		m_Vars.clear();
-		SetDlgItemText(IDC_CODEEDIT,Buffer);
 		UrlListCS.Unlock();
-		return;
+		return Buffer;
 	}
 
 	if(p<1) p=4;
@@ -382,13 +392,21 @@ void CResultsPanel::GenerateOutput()
 	if(UseTemplate && TemplateFoot && m_Page!=2)
 		Buffer+=TemplateFoot;
 
-	SetDlgItemText(IDC_CODEEDIT,Buffer);
+	
 	UrlListCS.Unlock();
+	return Buffer;
 }
+
+void CResultsPanel::UpdateOutput()
+{
+	CString code = GenerateOutput();
+	SetDlgItemText(IDC_CODEEDIT,code);
+}
+
 
 LRESULT CResultsPanel::OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	GenerateOutput();
+	UpdateOutput();
 	BOOL temp;
 
 	if(Settings.AutoCopyToClipboard)
@@ -398,9 +416,11 @@ LRESULT CResultsPanel::OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/
 
 LRESULT CResultsPanel::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	SendDlgItemMessage(IDC_CODEEDIT, EM_SETSEL, 0, -1);
+	CString buffer = GenerateOutput();
+	IU_CopyTextToClipboard(buffer);
+	/*SendDlgItemMessage(IDC_CODEEDIT, EM_SETSEL, 0, -1);
 	SendDlgItemMessage(IDC_CODEEDIT, WM_COPY, 0, 0);
-	SendDlgItemMessage(IDC_CODEEDIT, EM_SETSEL, -1, 0);
+	SendDlgItemMessage(IDC_CODEEDIT, EM_SETSEL, -1, 0);*/
 	return 0;
 }
 
@@ -452,7 +472,7 @@ bool CResultsPanel::LoadTemplates(CString &Error)
 {
 	int i =0;
 
-	CMarkupMSXML XML;
+	CMarkup XML;
 	CString XmlFileName = IU_GetDataFolder() + _T("templates.xml");
 
 	if(!FileExists(XmlFileName))
@@ -541,18 +561,19 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 	::GetWindowRect(GetDlgItem(IDC_RESULTSTOOLBAR),&rc);
 	POINT ScreenPoint ={rc.left,rc.top};
 		
-	std::map<int,int>::iterator it;
+	
 	int count = 0;
 
-	for(it = m_Servers.begin(); it!= m_Servers.end(); it++)
+	for(int i=0; i<m_Servers.size(); i++)
 	{
-		UploadEngine &ue = EnginesList[it->first];
-		CString folderTitle = Settings.ServersSettings[ue.Name].params[_T("FolderTitle")];
-		CString folderUrl = Settings.ServersSettings[ue.Name].params[_T("FolderUrl")];
+		CUploadEngine *ue = m_EngineList->byName(m_Servers[i]);
+		if(!ue) continue;
+		CString folderTitle = Settings.ServersSettings[ue->Name].params[_T("FolderTitle")];
+		CString folderUrl = Settings.ServersSettings[ue->Name].params[_T("FolderUrl")];
 
 		if(folderTitle.IsEmpty() || folderUrl.IsEmpty()) continue;
-		CString title = TR("Копировать URL адрес ") + CString(ue.Name)+ _T("->")+folderTitle;
-		mi.wID = IDC_COPYFOLDERURL + it->first;
+		CString title = TR("Копировать URL адрес ") + CString(ue->Name)+ _T("->")+folderTitle;
+		mi.wID = IDC_COPYFOLDERURL + i;
 		mi.dwTypeData  = (LPWSTR)(LPCTSTR) title;//TR("Параметры авторизации");
 		sub.InsertMenuItem(count++, true, &mi);
 	}
@@ -577,11 +598,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 	
 			
 	sub.CheckMenuItem(IDC_USEDIRECTLINKS, MF_BYCOMMAND	| (Settings.UseDirectLinks? MF_CHECKED	: MF_UNCHECKED)	);
-	sub.CheckMenuItem(IDC_USETEMPLATE, MF_BYCOMMAND	| (Settings.UseTxtTemplate? MF_CHECKED	: MF_UNCHECKED)	);
-		
-
-
-		
+	sub.CheckMenuItem(IDC_USETEMPLATE, MF_BYCOMMAND	| (Settings.UseTxtTemplate? MF_CHECKED	: MF_UNCHECKED)	);		
    ::SendMessage(Toolbar.m_hWnd,TB_GETRECT, pnmtb->iItem, (LPARAM)&rc);
    Toolbar.ClientToScreen(&rc);
 	TPMPARAMS excludeArea;
@@ -597,31 +614,103 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 LRESULT CResultsPanel::OnUseTemplateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	Settings.UseTxtTemplate = !Settings.UseTxtTemplate;
-	GenerateOutput();
+	UpdateOutput();
 	return 0;
 }
 
 LRESULT CResultsPanel::OnUseDirectLinksClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	Settings.UseDirectLinks = !Settings.UseDirectLinks;
-	GenerateOutput();
+	UpdateOutput();
 	return 0;
 }
 
 LRESULT CResultsPanel::OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	int ServerID = wID - IDC_COPYFOLDERURL;
+	int index = wID - IDC_COPYFOLDERURL;
 
-	UploadEngine &ue = EnginesList[ServerID];
-CString folderUrl = Settings.ServersSettings[ue.Name].params[_T("FolderUrl")];
-
+	CUploadEngine *ue = m_EngineList->byName(m_Servers[index]);
+	if(!ue) return 0;
+	CString folderUrl = Settings.ServersSettings[ue->Name].params[_T("FolderUrl")];
 	IU_CopyTextToClipboard(folderUrl);
 	return 0;
 }
 
-void CResultsPanel::AddServerId(int serverId)
+void CResultsPanel::AddServer(CString server)
 {
-	
-	m_Servers[serverId] = serverId;
+	m_Servers.push_back(server);
 	//return 0;
+}
+LRESULT CResultsPanel::OnResulttoolbarNMCustomDraw(LPNMHDR pnmh)
+{
+	LPNMTBCUSTOMDRAW lpNMCustomDraw = (LPNMTBCUSTOMDRAW)pnmh;
+	HDC dc = lpNMCustomDraw->nmcd.hdc;
+	RECT toolbarRect = lpNMCustomDraw->nmcd.rc;
+	//HTHEME hTheme = OpenThemeData(m_hWnd, _T("TAB"));
+	RECT rc;
+	GetClientRect(&rc);
+
+	HMODULE hinstDll;
+
+    // Check if the application is themed
+
+	bool m_bThemeActive = false;
+    hinstDll = ::LoadLibrary(_T("UxTheme.dll"));
+    if (hinstDll)
+    {
+        typedef BOOL (*ISAPPTHEMEDPROC)();
+        ISAPPTHEMEDPROC pIsAppThemed;
+        pIsAppThemed = 
+          (ISAPPTHEMEDPROC) ::GetProcAddress(hinstDll, "IsAppThemed");
+
+        if(pIsAppThemed)
+            m_bThemeActive = pIsAppThemed();
+
+        ::FreeLibrary(hinstDll);
+    }
+	 if(m_bThemeActive){
+	//rc.top-=10;
+
+	//m_wndTab.GetWindowRect(&rc);
+
+        // Get the tab control DC
+
+      //  HDC hDC = m_wndTab.GetDC();
+
+        // Create a compatible DC
+
+        HDC hDCMem = ::CreateCompatibleDC(dc);
+        HBITMAP hBmp = ::CreateCompatibleBitmap(dc, 
+               rc.right - rc.left, rc.bottom - rc.top);
+        HBITMAP hBmpOld = (HBITMAP)(::SelectObject(hDCMem, hBmp));
+
+        // Tell the tab control to paint in our DC
+
+       /* m_wndTab.*/SendMessage(WM_PRINTCLIENT, (WPARAM)(hDCMem), 
+           (LPARAM)(PRF_ERASEBKGND | PRF_CLIENT | PRF_NONCLIENT));
+	
+		::MapWindowPoints( Toolbar.m_hWnd,m_hWnd, (LPPOINT)&toolbarRect, 2);
+		 BitBlt(dc, 0,0,toolbarRect.right-toolbarRect.left,toolbarRect.bottom - toolbarRect.top,hDCMem,toolbarRect.left,toolbarRect.top,SRCCOPY);
+
+		 SelectObject(hDCMem, hBmpOld);
+		 DeleteObject(hBmp);
+		 DeleteObject(hDCMem);}
+
+	return CDRF_DODEFAULT; // Default handler
+}
+
+
+void CResultsPanel::setEngineList(CUploadEngineList* EngineList)
+{
+	m_EngineList = EngineList;
+}
+
+void CResultsPanel::InitUpload()
+{
+	m_Servers.clear();
+}
+
+void CResultsPanel::setUrlList(CAtlArray<CUrlListItem>  * urlList)
+{
+	//UrlList = urlList;
 }

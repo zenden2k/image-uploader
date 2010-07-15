@@ -65,7 +65,7 @@ LRESULT CMyImage::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 LRESULT CMyImage::OnEraseBkg(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	bHandled = true;
-	return 1;
+	return TRUE;
 }
 	  
 Bitmap* BitmapFromResource(HINSTANCE hInstance,LPCTSTR szResName, LPCTSTR szResType)
@@ -219,7 +219,8 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image *img, int ResourceID, bool Bmp,
 	
 	if(bm && bm!=img)
 		delete bm;
-
+	
+	ReleaseDC(dc);
 	IsImage = true;
 	return false;
 }

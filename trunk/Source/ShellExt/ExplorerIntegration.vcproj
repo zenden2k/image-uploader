@@ -148,6 +148,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;IU_SHELLEXT"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -238,7 +239,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\MarkupMSXML.cpp"
+				RelativePath="..\3rdpart\Markup.cpp"
 				>
 			</File>
 			<File
@@ -339,7 +340,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ExplorerIntegration_i.c"
+				RelativePath=".\Generated\ExplorerIntegration_i.c"
 				>
 			</File>
 		</Filter>

@@ -192,34 +192,7 @@ void FlushSquirrelOutput()
 	}
 
 }
-LPCSTR ExtractFileNameA(LPCSTR FileName)
-{  
-	int i,len = lstrlenA(FileName);
-	for(i=len; i>=0; i--)
-	{
-		if(FileName[i] == _T('\\'))
-			break;
-	}
-	return FileName+i+1;
-}
 
-LPCSTR GetFileExtA(LPCSTR szFileName)
-{
-	if(!szFileName) return 0;
-	int nLen = lstrlenA(szFileName);
-	
-	LPCSTR szReturn = szFileName+nLen;
-	for( int i=nLen-1; i>=0; i-- )
-	{
-		if(szFileName[i] == '.')
-		{
-			szReturn = szFileName + i + 1;
-			break;
-		}
-		else if(szFileName[i] == '\\') break;
-	}
-	return szReturn;
-}
 
 const std::string plugExtractFileName(const std::string& path)
 {
@@ -268,7 +241,7 @@ bool CUploadScript::load(LPCTSTR fileName, ServerSettingsStruct& params)
 		SquirrelVM::RunScript(m_SquirrelScript, &m_Object);
 	}
 	catch (SquirrelError & e) {
-		MessageBoxA(0, e.desc,"bool CUploadScript::load(LPCTSTR fileName, ServerSettingsStruct& params),0);",0);
+		WriteLog(logError, _T("CUploadScript::Load"),CString(_T("Unable to load plugin: ")) + Utf8ToWstring(e.desc).c_str());
 		return false;
   } 
 	FlushSquirrelOutput();
@@ -284,8 +257,7 @@ int CUploadScript::uploadFile(LPCWSTR FileName, CIUUploadParams &params)
 		ival = func(fname.c_str(), &params); // Argument coun*/
 	}
 	catch (SquirrelError & e) {
-    printf("Error: %s, %s\n",e.desc,"Squirrel::helloSqPlus");
-	 MessageBoxA(0,e.desc,0,0);
+		WriteLog(logError, _T("CUploadScript::uploadFile"), Utf8ToWstring(e.desc).c_str());	
   } 
 	FlushSquirrelOutput();
 	return ival;
@@ -306,7 +278,7 @@ int CUploadScript::getAccessTypeList(std::vector<std::wstring> &list)
 		}
 	}
 	catch (SquirrelError & e) {
-		printf("Error: %s, %s\n",e.desc,"Squirrel::helloSqPlus");
+		WriteLog(logError, _T("CUploadScript::getAccessTypeList"), Utf8ToWstring(e.desc).c_str());	
   } 
 	FlushSquirrelOutput();
 	return 1;
@@ -334,7 +306,7 @@ int CUploadScript::getServerParamList(std::map<std::wstring,std::wstring> &list)
 
 	}
 	catch (SquirrelError & e) {
-		printf("Error: %s, %s\n",e.desc,"Squirrel::helloSqPlus");
+		WriteLog(logError, _T("CUploadScript::getServerParamList"), Utf8ToWstring(e.desc).c_str());	
   } 
 	FlushSquirrelOutput();
 	return 1;
@@ -349,7 +321,7 @@ int   CUploadScript::modifyFolder(CFolderItem &folder)
 		int ival = func(&folder);
 	}
 	catch (SquirrelError & e) {
-		printf("Error: %s, %s\n",e.desc,"Squirrel::helloSqPlus");
+		WriteLog(logError, _T("CUploadScript::modifyFolder"), Utf8ToWstring(e.desc).c_str());	
   } 
 	FlushSquirrelOutput();
 	return 1;
@@ -366,8 +338,7 @@ int CUploadScript::getFolderList(CFolderList &FolderList)
 	}
 	catch (SquirrelError & e) 
 	{
-		MessageBoxA(0, e.desc,"int CUploadScript::getFolderList(CFolderList &FolderList)" ,0);
-		//printf("Error: %s, %s\n",e.desc,"Squirrel::helloSqPlus");
+		WriteLog(logError, _T("CUploadScript::getFolderList"), Utf8ToWstring(e.desc).c_str());	
   } 
 	FlushSquirrelOutput();
 	return ival;
@@ -396,7 +367,7 @@ int  CUploadScript::createFolder(CFolderItem &parent, CFolderItem &folder)
 	}
 	catch (SquirrelError & e) 
 	{
-		printf("Error: %s, %s\n",e.desc,"Squirrel::helloSqPlus");
+		WriteLog(logError, _T("CUploadScript::createFolder"), Utf8ToWstring(e.desc).c_str());	
 	
 	} 
 	FlushSquirrelOutput();
@@ -518,6 +489,7 @@ bool CUploadScript::supportsSettings()
 
 	}
 	catch (SquirrelError & e) {
+		WriteLog(logError, _T("CUploadScript::supportsSettings"), Utf8ToWstring(e.desc).c_str());	
 		return false;
   } 
 	//FlushSquirrelOutput();

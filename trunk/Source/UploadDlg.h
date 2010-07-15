@@ -28,11 +28,8 @@
 #include "hyperlinkcontrol.h"
 #include "SizeExceed.h"
 #include "welcomedlg.h"
-
-
-
-
-#include "ResultsPanel.h"
+#include <Shobjidl.h>
+#include "Gui/ResultsWindow.h"
 class CUploadDlg : 
 	public CDialogImpl<CUploadDlg>,public CThreadImpl<CUploadDlg>, public CWizardPage	
 {
@@ -49,11 +46,10 @@ public:
     BEGIN_MSG_MAP(CUploadDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		MESSAGE_HANDLER(WM_TIMER, OnTimer)
-		NOTIFY_HANDLER(IDC_RESULTSTAB, TCN_SELCHANGE, OnTabChanged)
 
 	END_MSG_MAP()
 
-	LRESULT OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	
 	
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -66,7 +62,7 @@ public:
 	#endif
 	 DWORD Run();
 	 CMainDlg *MainDlg;
-	 CResultsPanel ResultsPanel;
+	 CResultsWindow ResultsWindow;
 	int ThreadTerminated(void);
 	int GenerateImages(LPCTSTR szFileName, LPTSTR szBufferImage, LPTSTR szBufferThumb,int thumbwidth, ImageSettingsStruct &iss);
 	CAtlArray<CUrlListItem> UrlList;
@@ -83,6 +79,7 @@ public:
 	void GenerateOutput();
 	void UploadProgress(int CurPos, int Total,int FileProgress=0);
 	int progressCurrent, progressTotal;
+	CUploadEngineList *m_EngineList;
 };
 
 

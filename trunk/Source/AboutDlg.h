@@ -33,6 +33,7 @@ class CAboutDlg : public CDialogImpl<CAboutDlg>
 			COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 		END_MSG_MAP()
 		CMyImage LogoImage;
+		CHyperLink m_WebSiteLink;
 		// Handler prototypes (uncomment arguments if needed):
 		//	LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 		//	LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

@@ -59,7 +59,7 @@ int CGeneralSettings::GetNextLngFile(LPTSTR szBuffer, int nLength)
 
 LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	TabBackgroundFix(m_hWnd);
+	
 	// Translating controls
 	TRC(IDOK, "OK");
 	TRC(IDCANCEL, "Отмена");
@@ -81,23 +81,24 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 	SetDlgItemText(IDC_IMAGEEDITORPATH, Settings.ImageEditorPath);
 	
-	for(int i=0; i<EnginesList.size(); i++)
+	for(int i=0; i<_EngineList->count(); i++)
 	{	
 		TCHAR buf[300] = _T(" ");
-		lstrcat(buf, EnginesList[i].Name);
+		lstrcat(buf, _EngineList->byIndex(i)->Name);
 		SendDlgItemMessage(IDC_SERVERLIST, CB_ADDSTRING, 0, (LPARAM)buf);
 	}
 	SendDlgItemMessage(IDC_SERVERLIST,CB_SETCURSEL, Settings.QuickServerID);
 
-	TCHAR buf[MAX_PATH],buf2[MAX_PATH];
+	TCHAR buf[MAX_PATH];
+	CString buf2;
 
 	SendDlgItemMessage(IDC_LANGLIST,CB_ADDSTRING,0,(WPARAM)_T("Русский"));
 
 	while(GetNextLngFile(buf, sizeof(buf)/sizeof(TCHAR)))
 	{
 		if(lstrlen(buf) == 0 || lstrcmpi(GetFileExt(buf), _T("lng"))) continue;
-		GetOnlyFileName(buf, buf2);
-		SendDlgItemMessage(IDC_LANGLIST,CB_ADDSTRING,0,(WPARAM)buf2);
+		buf2 = GetOnlyFileName(buf );
+		SendDlgItemMessage(IDC_LANGLIST,CB_ADDSTRING,0,(WPARAM)(LPCTSTR)buf2);
 	}
 
 	int Index = SendDlgItemMessage(IDC_LANGLIST,CB_FINDSTRING, 0, (WPARAM)(LPCTSTR)Settings.Language);

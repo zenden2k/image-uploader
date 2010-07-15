@@ -19,54 +19,44 @@
 */
 
 #pragma once
-//#include "maindlg.h"
+
 #include "resource.h"
 #include "regionselect.h"
-//#include "wizarddlg.h"
 #include "hyperlinkcontrol.h"
+#include "Core/ScreenCapture.h"
+
+#define IDC_FULLSCREEN WM_USER + 219
 #define IDC_VIEWSETTINGS WM_USER + 220
 #define IDC_SCRACTIVEWINDOW WM_USER + 221
+#define IDC_FREEFORMREGION WM_USER + 222
+#define IDC_HWNDSREGION WM_USER + 223
 
 // CScreenshotDlg
 class CScreenshotDlg : 
 	public CDialogImpl<CScreenshotDlg>	, 
-	public CRegionSelectCallback,
 	public CWinDataExchange<CScreenshotDlg>
 {
 	public:
-		CRegionSelectCallback *m_pCallBack;
-		TCHAR FileName[256];
-		CWindow *MainDlg;
-		HBRUSH WhiteBr;
-		bool m_bExpanded;
-		bool m_bEntireScreen;
-		int m_Action;
-		bool m_bDelay;
-		//CWizardDlg *WizardDlg;
-		int nFullWindowHeight;
 		CScreenshotDlg();
 		~CScreenshotDlg();
+		CaptureMode captureMode() const;
 		enum { IDD = IDD_SCREENSHOTDLG };
-
+	
+	protected:
 		BEGIN_MSG_MAP(CScreenshotDlg)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			MESSAGE_HANDLER(WM_TIMER, OnTimer)
 			MSG_WM_CTLCOLORDLG(OnCtlColorMsgDlg)
 			MSG_WM_CTLCOLORBTN(OnCtlColorMsgDlg)
 			MSG_WM_CTLCOLORSTATIC(OnCtlColorMsgDlg)
-			COMMAND_HANDLER(IDC_SCREENSHOT, BN_CLICKED, OnClickedOK)
-			
-			COMMAND_HANDLER(IDOK, BN_CLICKED, OnEnter)
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 			COMMAND_ID_HANDLER(IDC_VIEWSETTINGS,  OnSettingsClick)
-			COMMAND_ID_HANDLER(IDC_SCRACTIVEWINDOW,  OnClickedOK)
+			COMMAND_HANDLER(IDC_FULLSCREEN, BN_CLICKED, OnClickedFullscreenCapture)
+			COMMAND_ID_HANDLER(IDC_SCRACTIVEWINDOW,  OnClickedActiveWindowCapture)
 			COMMAND_HANDLER(IDC_REGIONSELECT, BN_CLICKED, OnBnClickedRegionselect)
-		
+			COMMAND_HANDLER(IDC_FREEFORMREGION, BN_CLICKED, OnBnClickedFreeFormRegion)
+			COMMAND_HANDLER(IDC_HWNDSREGION, BN_CLICKED, OnBnClickedWindowHandlesRegion)
 		END_MSG_MAP()
-		
-	BEGIN_DDX_MAP(CScreenshotDlg)
-		DDX_CONTROL(IDC_COMMANDBOX/*IDC_LINKSCONTROL*/,CommandBox)
-    END_DDX_MAP()
+	
 		// Handler prototypes:
 		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -77,16 +67,20 @@ class CScreenshotDlg :
 		LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnBnClickedRegionselect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnSettingsClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnEnter(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-			
 		LRESULT OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);
-		int ScreenshotError(LPCTSTR ErrorMsg=NULL);
+
+		LRESULT OnBnClickedFreeFormRegion(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnBnClickedWindowHandlesRegion(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnClickedFullscreenCapture(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnClickedActiveWindowCapture(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnBnClickedRegionselect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		
+		CBrush m_WhiteBr;
+		//bool m_bExpanded;
+		//int nFullWindowHeight;
 		CHyperLinkControl CommandBox;
-		void OnScreenshotFinished(int Result);
-		void OnScreenshotSaving(LPTSTR szFileName, Bitmap* Bm);
-		void ExpandDialog();
-		void SaveSettings();
-		void Execute(HWND Parent, CRegionSelectCallback *RegionSelectCallback, bool FullScreen = true);
+		CaptureMode m_CaptureMode;
+		void ExpandDialog() const;
 };

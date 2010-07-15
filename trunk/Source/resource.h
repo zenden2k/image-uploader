@@ -2,6 +2,7 @@
 // Microsoft Visual C++ generated include file.
 // Used by Image Uploader.rc
 //
+#define IDR_RT_MANIFEST1                1
 #define IDC_STOP                        2
 #define IDC_FILEINFOLABEL               2
 #define IDD_ABOUTBOX                    100
@@ -35,6 +36,9 @@
 #define IDD_RESULTSPANEL                136
 #define IDD_TRAYSETTINGSPAGE            137
 #define IDD_HOTKEYSETTINGSPAGE          138
+#define IDD_SCREENSHOTSETTINGSPAGE      139
+#define IDD_IMAGEDOWNLOADER             141
+#define IDD_RESULTSWINDOW               142
 #define IDR_CONTEXTMENU                 202
 #define IDI_GRAB                        207
 #define IDI_IMAGES                      209
@@ -60,7 +64,11 @@
 #define IDR_PROGRESSGIF                 241
 #define IDB_BITMAP6                     242
 #define IDB_SERVERTOOLBARBMP2           242
-#define IDR_RT_MANIFEST1                1
+#define IDI_ICONWINDOWS                 245
+#define IDI_FREEFORM                    246
+#define IDI_ICONADD                     248
+#define IDI_ICONADDFOLDER               249
+#define IDI_ICONWEB                     250
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -149,6 +157,7 @@
 #define IDC_FOLDERTITLEEDIT             1040
 #define IDC_TEXTEDIT                    1040
 #define IDC_UPDATEINFO                  1040
+#define IDC_SCREENSHOTFILENAMEEDIT      1040
 #define IDC_SELECTVIDEO                 1041
 #define IDC_STROKECOLOR                 1041
 #define IDC_LOGINBUTTON                 1041
@@ -159,6 +168,7 @@
 #define IDC_EDITHOTKEY                  1041
 #define IDC_MEDIAINFOFONT               1041
 #define IDC_NEWFOLDERBUTTON             1041
+#define IDC_SCREENSHOTFOLDEREDIT        1041
 #define IDC_DONE                        1042
 #define IDC_LOGINBUTTON2                1042
 #define IDC_RADIO1                      1043
@@ -180,6 +190,7 @@
 #define IDC_UPDOWN                      1048
 #define IDC_PROGRESS1                   1049
 #define IDC_UPLOADPROGRESS              1049
+#define IDC_DOWNLOADFILESPROGRESS       1049
 #define IDC_INFOUPLOAD                  1050
 #define IDC_CODEEDIT                    1051
 #define IDC_CANCEL2                     1057
@@ -188,6 +199,7 @@
 #define IDC_DELAYSPIN                   1059
 #define IDC_DELAYEDIT                   1060
 #define IDC_ENTIRESCREEN                1061
+#define IDC_WINDOWHIDINGDELAY           1061
 #define IDC_ACTIVEWINDOW                1062
 #define IDC_TILEWIDTH                   1063
 #define IDC_GAPWIDTH                    1064
@@ -246,8 +258,11 @@
 #define IDC_APPEARANCEGROUP             1114
 #define IDC_DELAYLABEL                  1115
 #define IDC_MAKESCREENLABEL             1116
+#define IDC_DELAYLABEL2                 1116
 #define IDC_SECLABEL                    1117
 #define IDC_THUMBSETTINGS               1118
+#define IDC_SECLABEL2                   1118
+#define IDC_MSECLABEL                   1118
 #define IDC_SELECTSERVERLABEL           1119
 #define IDC_PRESSUPLOADBUTTON           1120
 #define IDC_TEXTONIMAGEGROUP            1121
@@ -266,6 +281,7 @@
 #define IDC_CODETYPELABEL               1134
 #define IDC_LINK1                       1135
 #define IDC_LINK3                       1137
+#define IDC_EMAIL                       1137
 #define IDC_LOGINLABEL                  1138
 #define IDC_PASSWORDLABEL               1139
 #define IDC_PLEASECHOOSE                1140
@@ -311,6 +327,7 @@
 #define IDC_CONFIRMONEXIT               1178
 #define IDC_GROUPPARAMS                 1179
 #define IDC_IGNOREERRORS                1180
+#define IDC_GROUPPARAMS2                1180
 #define IDC_UPLOADERRORLABEL            1181
 #define IDC_RETRIES1LABEL               1182
 #define IDC_RETRIES2LABEL               1183
@@ -341,6 +358,20 @@
 #define IDC_QUESTIONLABEL               1211
 #define IDC_TITLETEXT                   1212
 #define IDC_UPDATESLABEL                1213
+#define IDC_SETTINGSPAGESLIST           1215
+#define IDC_SITELINK                    1216
+#define IDC_FOREGROUNDWHENSHOOTING      1217
+#define IDC_PARAMETERSHINTLABEL         1218
+#define IDC_SCREENSHOTFILENAMELABEL     1220
+#define IDC_SCREENSHOTFOLDERLABEL       1221
+#define IDC_SCREENSHOTSFOLDERSELECT     1222
+#define IDC_WATCHCLIPBOARD              1223
+#define IDC_UPLOADBUFFERLABEL           1224
+#define IDC_UPLOADBUFFERSIZEEDIT        1225
+#define IDC_IMAGEDOWNLOADERTIP          1226
+#define IDC_SCREENSHOTSAVINGPARAMS      1227
+#define IDC_ALWAYSCOPYTOCLIPBOARD       1228
+#define IDC_RESULTSPLACEHOLDER          1229
 #define ID_VIEW_DELETE                  32775
 #define ID_VIEW                         32776
 #define ID_DELETE                       32777
@@ -370,9 +401,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        245
+#define _APS_NEXT_RESOURCE_VALUE        251
 #define _APS_NEXT_COMMAND_VALUE         32799
-#define _APS_NEXT_CONTROL_VALUE         1214
+#define _APS_NEXT_CONTROL_VALUE         1230
 #define _APS_NEXT_SYMED_VALUE           127
 #endif
 #endif

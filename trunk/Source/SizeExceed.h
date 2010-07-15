@@ -22,6 +22,7 @@
 
 #include "resource.h"       // main symbols
 #include "myimage.h"
+#include "Core/UploadEngine.h"
 //#include "Uploader.h"
 
 // CSizeExceed
@@ -30,7 +31,7 @@ class CSizeExceed :
 	public CDialogImpl<CSizeExceed>	
 {
 	public:
-		CSizeExceed(LPTSTR szFileName, ImageSettingsStruct &iss);
+		CSizeExceed(LPCTSTR szFileName, ImageSettingsStruct &iss, CUploadEngineList * EngineList);
 		~CSizeExceed();
 		enum { IDD = IDD_SIZEEXCEED };
 		
@@ -57,6 +58,7 @@ class CSizeExceed :
 		ImageSettingsStruct &m_ImageSettings;
 		void DisplayParams(void);
 		void GetParams();
+		CUploadEngineList *m_EngineList;
 	};
 
 

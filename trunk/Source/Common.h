@@ -26,10 +26,13 @@
 #define IDC_MEDIAFILEINFO IU_IDC_CONST+3
 #define IDC_CLIPBOARD IU_IDC_CONST+4
 #define IDC_ADDFOLDER IU_IDC_CONST+5
+#define IDC_ADDFILES IU_IDC_CONST+6
+#define IDC_DOWNLOADIMAGES IU_IDC_CONST+7
 #include <deque>
 #include "thread.h"
 #include "pluginloader.h"
 #include <ctime>
+#include "Core/UploadEngine.h"
 class CWizardDlg;
 class CWizardPage
 {
@@ -43,66 +46,24 @@ public:
 	void EnableNext(bool Enable=true);
 	void EnablePrev(bool Enable=true);
 	void EnableExit(bool Enable=true);
-	void SetNextCaption(LPTSTR Caption);
+	void SetNextCaption(LPCTSTR Caption);
 	HWND PageWnd;
 	void ShowNext(bool Show=true);
 	void ShowPrev(bool Show=true);
 };
 
 
-struct ActionVariable
-{
-	CString Name;
-	int nIndex;
-};
 
-struct UploadAction
-{
-	UINT Index;
-	bool IgnoreErrors;
-	bool OnlyOnce;
-	CString Url;
-	CString Description;
-	CString Referer;
-	CString PostParams;
-	CString Type;
-	CString RegExp;
-	std::vector<ActionVariable> Variables;
-
-	//----
-	int RetryLimit;
-	int NumOfTries;
-};
 
 struct CUrlListItem{
 	bool IsImage, IsThumb;
 	CString FileName;
-	TCHAR ImageUrl[256];
-	TCHAR ThumbUrl[256];
+	CString ImageUrl;
+	CString ThumbUrl;
 	CString DownloadUrl;
 
 };
 
-struct UploadEngine
-{
-	CString Name;
-	CString PluginName;
-	bool SupportsFolders;
-	bool UsingPlugin;
-	bool Debug;
-	bool ImageHost;
-	bool SupportThumbnails;
-	int NeedAuthorization;
-	DWORD MaxFileSize;
-	CString RegistrationUrl;
-	CString CodedLogin;
-	CString CodedPassword;
-	CString ThumbUrlTemplate, ImageUrlTemplate, DownloadUrlTemplate;
-	std::vector<UploadAction> Actions;
-	int RetryLimit;
-	int NumOfTries;
-
-};
 
 struct InfoProgress
 {
@@ -115,12 +76,9 @@ struct InfoProgress
 bool IULaunchCopy();
 BOOL CreateTempFolder();
 void ClearTempFolder();
-
-extern std::vector< UploadEngine> EnginesList;
-int GetUploadEngineIndex(const CString Name);
 extern CString IUTempFolder;
 extern CCmdLine CmdLine;
-bool MySaveImage(Image *img,LPTSTR szFilename,LPTSTR szBuffer,int Format,int Quality);
+
 bool __fastcall CreateShortCut( 
 							 LPCWSTR pwzShortCutFileName, 
 							   LPCTSTR pszPathAndFileName, 
@@ -153,4 +111,13 @@ HRESULT IsElevated( __out_opt BOOL * pbElevated );
 #define random(x) (rand() % x)
 bool IU_CopyTextToClipboard(CString text);
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
+int dlgX(int WidthInPixels);
+int dlgY(int HeightInPixels);
+CString GenerateFileName(const CString &templateStr, int index,const CPoint size, const CString& originalName=_T(""));
+CString GetUniqFileName(const CString &filePath);
+bool IU_GetClipboardText(CString &text);
+extern CUploadEngineList *_EngineList;
+const CString IU_GetWindowText(HWND wnd);
+std::string ExtractFileNameA(const std::string& FileName);
+LPCSTR GetFileExtA(LPCSTR szFileName);
 #endif

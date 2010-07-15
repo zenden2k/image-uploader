@@ -50,12 +50,12 @@ void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code="{DAb[]=_T('')+b
 }
 
 
-LoginInfo LoadLogin(int ServerId)
+/*LoginInfo LoadLogin(int ServerId)
 {
 	LoginInfo Result;
-	UploadEngine UE = EnginesList[ServerId];
-	return Settings.ServersSettings[UE.Name].authData;
-}
+	CUploadEngine *UE = m_EngineList->byIndex(ServerId);
+	return Settings.ServersSettings[UE->Name].authData;
+}*/
 
 void EncodeString(LPCTSTR szSource, CString &Result,LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ")
 {
@@ -83,17 +83,17 @@ void EncodeString(LPCTSTR szSource, CString &Result,LPSTR code="{DAb[]=_T('')+b/
 	Result = szDestination;
 }
 
-bool SaveLogin(int ServerId,LoginInfo li)
+/*bool SaveLogin(int ServerId,LoginInfo li)
 {
-	UploadEngine &UE = EnginesList[ServerId];
+	CUploadEngine &UE = EnginesList[ServerId];
 	Settings.ServersSettings[UE.Name].authData = li;
 	return true;
-}
+}*/
 
 // CLoginDlg
-CLoginDlg::CLoginDlg(int ServerId)
+CLoginDlg::CLoginDlg(CUploadEngine *ue)
 {
-	this->ServerId = ServerId;
+	m_UploadEngine = ue;
 }
 
 CLoginDlg::~CLoginDlg()
@@ -105,7 +105,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 {
 	CenterWindow(GetParent());
 
-	LoginInfo li = LoadLogin(ServerId);
+	LoginInfo li = Settings.ServersSettings[m_UploadEngine->Name].authData;
 
 	SetWindowText(TR("Параметры авторизации"));
 	TRC(IDC_LOGINLABEL, "Логин:");
@@ -115,10 +115,11 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	
 	SetDlgItemText(IDC_LOGINEDIT, li.Login);
 	SetDlgItemText(IDC_PASSWORDEDIT, li.Password);
-	SetDlgItemText(IDC_LOGINFRAME, EnginesList[ServerId].Name);
+	SetDlgItemText(IDC_LOGINFRAME, m_UploadEngine->Name);
 	SendDlgItemMessage(IDC_DOAUTH, BM_SETCHECK, (li.DoAuth?BST_CHECKED:BST_UNCHECKED));
 	OnClickedUseIeCookies(0, 0, 0, bHandled);
-	return 1;  // Разрешаем системе самостоятельно установить фокус ввода
+	::SetFocus(GetDlgItem(IDC_LOGINEDIT));
+	return 0;  // Разрешаем системе самостоятельно установить фокус ввода
 }
 
 LRESULT CLoginDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -132,7 +133,9 @@ LRESULT CLoginDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& b
 	li.Password = Buffer;
 	li.DoAuth = SendDlgItemMessage(IDC_DOAUTH, BM_GETCHECK);
 	
-	SaveLogin(ServerId, li);
+	Settings.ServersSettings[m_UploadEngine->Name].authData = li;
+
+	//SaveLogin(ServerId, li);
 
 	EndDialog(wID);
 	return 0;

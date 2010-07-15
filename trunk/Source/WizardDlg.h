@@ -37,13 +37,19 @@ class CFolderAdd;
 #include "resource.h"       // main symbols
 #include <atlcrack.h>
 #include "hyperlink.h"
-
+#include "Core/UploadEngine.h"
 #define ID_PASTE 9888
 #define ID_HOTKEY_BASE 10000
 #define WM_MY_ADDIMAGE WM_USER + 222
 #define WM_MY_SHOWPAGE WM_USER + 223
 #define WM_MY_EXIT WM_USER + 224
 // CWizardDlg
+
+struct AddImageStruct
+{
+	CString RealFileName, VirtualFileName;
+	bool show;
+};
 
 class CFolderAdd: public CThreadImpl<CFolderAdd>
 {
@@ -135,29 +141,24 @@ public:
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnUpdateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-   
 	LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnLocalHotkey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnLocalHotkey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnWmMyExit(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    
 	LRESULT OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	void CloseDialog(int nVal);
 	bool DragndropEnabled;
 	int CurPage;
 	int PrevPage,NextPage;
-bool CreatePage(int PageID);
+	bool CreatePage(int PageID);
 	CWizardPage* Pages[5];
-
-	
-
+	int screenshotIndex;
 public:
 	bool ShowPage(int idPage,int prev=-1,int next=-1);
-	bool AddImage(LPCTSTR FileName, bool Show=true);
+	bool AddImage(const CString &FileName, const CString &VirtualFileName, bool Show=true);
 	LRESULT OnPrevBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-LRESULT OnNextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-HBITMAP GenHeadBitmap(int PageID);
+	LRESULT OnNextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+	HBITMAP GenHeadBitmap(int PageID);
 	void PasteBitmap(HBITMAP);
-public:
 	int m_StartingThreadId;
 	LRESULT OnBnClickedAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	void Exit();
@@ -165,25 +166,29 @@ public:
 	//CSavingOptions SavingOptions;
 	bool LoadUploadEngines(const CString &filename, CString &Error);
 	bool ParseCmdLine();
-
 	CHotkeyList m_hotkeys;
 	CFolderAdd FolderAdd;
+	CUploadEngineList m_EngineList;
 	long m_lRef;
 	bool QuickUploadMarker;
-	TCHAR LastVideoFile[MAX_PATH];
+	CString LastVideoFile;
 	bool m_bShowAfter;
+	bool CommonScreenshot(CaptureMode mode);
 	// functions
-	bool funcAddImages();
+	bool funcAddImages(bool AnyFiles = false);
 	bool funcImportVideo();
 	bool funcScreenshotDlg();
 	bool funcRegionScreenshot(bool ShowAfter=true);
 	bool funcFullScreenshot();
+	bool funcWindowHandleScreenshot();
+	bool funcFreeformScreenshot();
 	bool funcWindowScreenshot(bool Delay=false);
 	bool funcAddFolder();
 	bool funcPaste();
 	bool funcSettings();
 	bool funcMediaInfo();
 	bool funcAddFiles();
+	bool funcDownloadImages();
 	// end of functions
 	bool executeFunc(CString funcName);
 
@@ -192,14 +197,12 @@ public:
 	bool HandleDropBitmap(IDataObject *pDataObj);
 
 	public:
-			CScreenshotDlg _screenShotdlg;
-			CUpdateDlg *updateDlg;
-			bool CanShowWindow();
+	CUpdateDlg *updateDlg;
+	bool CanShowWindow();
 	void UpdateAvailabilityChanged(bool Available);
 	HACCEL hAccel;
 	CSpecialHyperLink m_UpdateLink;
-HACCEL hLocalHotkeys;
-
+	HACCEL hLocalHotkeys;
 	//    IUnknown methods
 		 STDMETHODIMP_(ULONG) AddRef();
 
@@ -234,6 +237,8 @@ HACCEL hLocalHotkeys;
 	bool m_bShowWindow;
 	bool m_bHandleCmdLineFunc;
 	void CreateUpdateDlg();
+	INT m_bScreenshotFromTray;
+	bool IsClipboardDataAvailable();
 
 };
 

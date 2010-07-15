@@ -40,8 +40,10 @@ class CSettingsPage;
 #include "generalsettings.h"
 #include "uploadSettingsPage.h"
 #include "VideoGrabberPararams.h"
-
+#include "tablistbox.h"
 // CSettingsDlg
+
+const int SettingsPageCount = 7;
 
 class CSettingsDlg : 
 	public CDialogImpl<CSettingsDlg>	//, public CUpdateUI<CSettingsDlg>
@@ -52,9 +54,6 @@ public:
 	~CSettingsDlg();
 	enum { IDD = IDD_SETTINGSDLG };
 
-	/*BEGIN_UPDATE_UI_MAP(CSettingsDlg)
-	END_UPDATE_UI_MAP()*/
-
     BEGIN_MSG_MAP(CSettingsDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
@@ -62,8 +61,7 @@ public:
         COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 		COMMAND_HANDLER_EX(IDC_APPLY, BN_CLICKED, OnApplyBnClicked)
-
-  
+		COMMAND_HANDLER(IDC_SETTINGSPAGESLIST, LBN_SELCHANGE, OnSettingsPagesSelChanged)
 			REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
     // Handler prototypes:
@@ -76,13 +74,14 @@ public:
 	LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	void CloseDialog(int nVal);
-	
+	LRESULT OnSettingsPagesSelChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	int CurPage;
 	int PrevPage,NextPage;
 	bool CreatePage(int PageID);
-	CSettingsPage* Pages[6];
+	CSettingsPage* Pages[SettingsPageCount];
 	int PageToShow;
 	bool ShowPage(int idPage);
+	CTabListBox m_SettingsPagesListBox;
 	LRESULT OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 };
 
