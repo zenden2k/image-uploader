@@ -24,6 +24,11 @@
 #include "myutils.h"
 #include <shobjidl.h>
 #define STRING MAX_PATH
+#include "Settings.h"
+const CString IU_GetDataFolder()
+{
+	return Settings.DataFolder;
+}
 
 int GetFontSize(int nFontHeight)
 {
@@ -116,6 +121,13 @@ lbl_allok:
 	return true;
 }
 
+const CString StringSection(const CString& str,TCHAR sep, int index)
+{
+	CString result;
+	ExtractStrFromList(str, index, result.GetBuffer(256),256,_T(""),sep);
+	result.ReleaseBuffer();
+	return result;
+}
 
 bool FontToString(LPLOGFONT lFont, CString &Result)
 {
@@ -218,15 +230,18 @@ LPTSTR ExtractFilePath(LPCTSTR FileName, LPTSTR buf)
 
 //  Function doesn't allocate new string, it returns  pointer
 //        to a part of source string
-LPCTSTR myExtractFileName(LPCTSTR FileName)
+const CString myExtractFileName(const CString & FileName)
 {  
-	int i,len = lstrlen(FileName);
-	for(i=len; i>=0; i--)
+	CString temp = FileName;
+	int Qpos = temp.ReverseFind('?');
+	if(Qpos>=0) temp = temp.Left(Qpos);
+	int i,len = lstrlen(temp);
+	for(i=len-1; i>=0; i--)
 	{
-		if(FileName[i] == _T('\\'))
+		if(temp[i] == _T('\\') || temp[i]==_T('/'))
 			break;
 	}
-	return FileName+i+1;
+	return temp.Right(len-i-1);
 	
 }
 
@@ -247,7 +262,7 @@ LPCTSTR GetFileExt(LPCTSTR szFileName)
 			szReturn = szFileName + i + 1;
 			break;
 		}
-		else if(szFileName[i] == '\\') break;
+		else if(szFileName[i] == '\\' || szFileName[i] == '/') break;
 	}
 	return szReturn;
 }
@@ -264,30 +279,21 @@ bool IsStrInList(LPCTSTR szExt,LPCTSTR szList)
 	return false;
 }
 
-bool GetOnlyFileName(LPCTSTR szFilename,LPTSTR szBuffer)
+const CString GetOnlyFileName(const CString& szFilename)
 {
-	if(!szFilename || !szBuffer) return false;
-
-	lstrcpy(szBuffer,myExtractFileName(szFilename));
-	int nLen = lstrlen(szBuffer);
+	CString tempName = myExtractFileName(szFilename);
+	int dotPos = tempName.ReverseFind(_T('.'));
+	if(dotPos != -1)
+		tempName=tempName.Left(dotPos);
 	
-	
-	for( int i=nLen-1; i>=0; i-- )
-	{
-		if(szBuffer[i] == '.')
-		{
-			szBuffer[i]=0;
-			break;
-		}
-	}
-	return true;
+	return tempName;
 }
 
 bool IsImage(LPCTSTR szFileName)
 {
 	LPCTSTR szExt = GetFileExt(szFileName);
 	if(lstrlen(szExt)<1) return false;
-	return IsStrInList(szExt,_T("jpg\0jpeg\0png\0bmp\0gif\0tiff\0\0"));
+	return IsStrInList(szExt,_T("jpg\0jpeg\0png\0bmp\0gif\0tif\0tiff\0\0"));
 }
 
 bool IsVideoFile(LPCTSTR szFileName)
@@ -365,8 +371,6 @@ int MyGetFileSize(LPCTSTR FileName)
 	return fSize;
 }
 
-
-
 void MakeLabelBold(HWND Label)
 {
 	HFONT Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT,0,0));  
@@ -375,7 +379,7 @@ void MakeLabelBold(HWND Label)
 
 	LOGFONT alf;
 
-	if(!::GetObject(Font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT)) return;
+	if(!(::GetObject(Font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT))) return;
 
 	alf.lfWeight = FW_BOLD;
 
@@ -495,7 +499,7 @@ void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, b
 
 	float r, g, b;
 	int n = 256;
-	FillRect.bottom--;
+	//FillRect.bottom--;
 	COLORREF c;
   
 	if(!Horizontal)
@@ -608,9 +612,7 @@ LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern)
 
 	return szString;
 }
-
-#ifdef DEBUG
-
+#if 1
 void ShowX(LPCTSTR str,int line,int n)
 {
 	TCHAR buf[MAX_PATH];
@@ -711,11 +713,10 @@ std::string chcp(const std::string &str, UINT codePageSrc, UINT codePageDst)
 {
     return wstostr(strtows(str, codePageSrc), codePageDst);
 } 
-
+#endif
 bool IsDirectory(LPCTSTR szFileName)
 {
 	DWORD res = GetFileAttributes(szFileName);
 	 return (res&FILE_ATTRIBUTE_DIRECTORY) && (res != -1);	
 }
 
-#endif

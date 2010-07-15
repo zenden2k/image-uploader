@@ -53,6 +53,7 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	TRC(IDC_IGNOREERRORS, "Показывать диалоговое окно в случае ошибки");
 	TRC(IDC_RETRIES1LABEL, "Кол-во попыток загрузки файла:");
 	TRC(IDC_RETRIES2LABEL, "Кол-во попыток для одной операции:");
+	TRC(IDC_UPLOADBUFFERLABEL, "Размер буфера отдачи:");
 	BOOL temp;
 	DoDataExchange(FALSE);
 	SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("HTTP"));
@@ -73,7 +74,7 @@ SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS5(DNS)"))
 	SetDlgItemText(IDC_PROXYLOGINEDIT, Settings.ConnectionSettings.ProxyUser);
 	SetDlgItemText(IDC_PROXYPASSWORDEDIT, Settings.ConnectionSettings.ProxyPassword);
 	TCHAR Buffer[MAX_PATH];
-	
+	SetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT,Settings.UploadBufferSize/1024);
 	if(Settings.ConnectionSettings.ProxyPort) // Только если порт не равен нулю
 		SetDlgItemInt(IDC_PORTEDIT, Settings.ConnectionSettings.ProxyPort);
 
@@ -138,7 +139,8 @@ bool CUploadSettingsPage::Apply()
 	GetDlgItemText(IDC_PROXYPASSWORDEDIT, Buffer, 128);
 	Settings.ConnectionSettings.ProxyPassword = Buffer;
 	Settings.ConnectionSettings.ProxyType = SendDlgItemMessage(IDC_SERVERTYPECOMBO, CB_GETCURSEL);
-
+	Settings.UploadBufferSize = GetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT)*1024;
+	if(!Settings.UploadBufferSize) Settings.UploadBufferSize = 65536;
 	return true;
 }
 

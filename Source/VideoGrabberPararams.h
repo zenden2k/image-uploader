@@ -24,6 +24,8 @@
 #include "settingspage.h"
 #include "colorpicker.h"
 #include <atlcrack.h>
+
+#include "3rdpart/ColorButton.h"
 // CVideoGrabberParams
 struct CSavingOptions
 {
@@ -51,7 +53,8 @@ public:
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 		COMMAND_ID_HANDLER_EX(IDC_MEDIAINFOFONT, OnMediaInfoFontClicked)
 		COMMAND_HANDLER(IDC_MEDIAINFOONIMAGE,BN_CLICKED, OnShowMediaInfoTextBnClicked)
-     END_MSG_MAP()
+		REFLECT_NOTIFICATIONS()
+	END_MSG_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -62,7 +65,7 @@ public:
 	//CSavingOptions *so;
 	bool Apply();
 	LOGFONT m_Font;
-	CColorPicker Color1;
+	CColorButton Color1;
 	LRESULT OnMediaInfoFontClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	LRESULT OnShowMediaInfoTextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 };

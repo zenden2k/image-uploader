@@ -20,7 +20,7 @@
 
 #include "stdafx.h"
 #include "WelcomeDlg.h"
-
+#include "Gui/ImageDownloaderDlg.h"
 // CWelcomeDlg
 CWelcomeDlg::CWelcomeDlg()
 {
@@ -39,8 +39,6 @@ CWelcomeDlg::~CWelcomeDlg()
 	
 }
 
-
-
 LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	DoDataExchange(FALSE);
@@ -54,17 +52,22 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	SetDlgItemText(IDC_TITLE, APPNAME);
 
 	ListBox.Init();
-	ListBox.AddString(TR("Добавить изображения/файлы"), TR("JPEG, PNG, GIF, BMP и любые другие файлы"), IDC_ADDIMAGES, LOADICO(IDI_IMAGES));
+	ListBox.AddString(TR("Добавить изображения"), TR("JPEG, PNG, GIF, BMP и любые другие файлы"), IDC_ADDIMAGES, LOADICO(IDI_IMAGES));
 	
-	ListBox.AddString(TR("Добавить папку..."), 0, IDC_ADDFOLDER, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONFOLDER), IMAGE_ICON	, 16,16,0));
-	ListBox.AddString(TR("Из буфера обмена"), 0, IDC_CLIPBOARD, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_CLIPBOARD), IMAGE_ICON	, 16,16,0),false);
+	ListBox.AddString(TR("Добавить файлы.."), 0, IDC_ADDFILES, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONADD), IMAGE_ICON	, 16,16,0));
 
+	ListBox.AddString(TR("Из интернета"), 0, IDC_DOWNLOADIMAGES, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONWEB), IMAGE_ICON	, 16,16,0),true);
+
+	ListBox.AddString(TR("Добавить папку..."), 0, IDC_ADDFOLDER, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONADDFOLDER), IMAGE_ICON	, 16,16,0),true,0,true);
+
+	ListBox.AddString(TR("Из буфера обмена"), 0, IDC_CLIPBOARD, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_CLIPBOARD), IMAGE_ICON	, 16,16,0),true);
+	
 	ListBox.AddString(TR("Импортировать видео файл"), TR("извлечение кадров из видеоролика"), IDC_ADDVIDEO, LOADICO(IDI_GRAB));
 
 	if(lstrlen(MediaInfoDllPath))
 		ListBox.AddString(TR("Информация о медиа файле..."), 0, IDC_MEDIAFILEINFO, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONINFO), IMAGE_ICON	, 16,16,0));
 	
-	ListBox.AddString(TR("Сделать скриншот"), TR("скриншот всего экрана или окна"), IDC_SCREENSHOT, LOADICO(IDI_SCREENSHOT));
+	ListBox.AddString(TR("Снимок экрана"), TR("всего экрана или выбранной части"), IDC_SCREENSHOT, LOADICO(IDI_SCREENSHOT));
 	ListBox.AddString(TR("Снимок выбранной области..."), 0, IDC_REGIONPRINT,LOADICO(IDI_ICONREGION));
 	
 	ListBox.AddString(TR("Настройки программы"), TR("Для опытных пользователей"), IDC_SETTINGS, LOADICO(IDI_ICONSETTINGS));
@@ -129,8 +132,7 @@ LRESULT CWelcomeDlg::OnCtlColorMsgDlg(HDC hdc, HWND hwndChild)
 bool CWelcomeDlg::OnShow()
 {
 	EnableNext();
-	// Показываем кнопку "Далее" только если страница с картинками существует 
-	// и там есть хотя бы одна картинка
+	
 	ShowNext(WizardDlg->Pages[2] && ((CMainDlg*)WizardDlg->Pages[2])->FileList.GetCount() > 0);
 	EnableExit();
 	ShowPrev(false);
@@ -164,14 +166,14 @@ LRESULT CWelcomeDlg::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 void CWelcomeDlg::OnDrawClipboard()
 {
 	// Checking if there is an bitmap in clipboard
-	bool IsClipboard = IsClipboardFormatAvailable(CF_BITMAP);
+	bool IsClipboard = WizardDlg->IsClipboardDataAvailable();
 
-	if(ListBox.Items[2].Visible != IsClipboard)
+	if(ListBox.Items[4].Visible != IsClipboard)
 	{
-		ListBox.Items[2].Visible = IsClipboard;
-		ListBox.InvalidateRect(&ListBox.Items[2].ItemRect, false); // Stupid OOP
+		ListBox.Items[4].Visible = IsClipboard;
+		ListBox.InvalidateRect(&ListBox.Items[4].ItemRect, false); // Stupid OOP
 	}
-	else ListBox.Items[2].Visible = IsClipboard; 
+	else ListBox.Items[4].Visible = IsClipboard; 
 
 	//Sending WM_DRAWCLIPBOARD msg to the next window in the chain
 	if(PrevClipboardViewer) ::SendMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0); 
@@ -204,5 +206,17 @@ LRESULT CWelcomeDlg::OnClipboardClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 LRESULT CWelcomeDlg::OnAddFolderClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	WizardDlg->executeFunc(_T("addfolder"));
+	return 0;
+}
+
+LRESULT CWelcomeDlg::OnBnClickedAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	WizardDlg->executeFunc(_T("addfiles"));
+	return 0;
+}
+
+LRESULT CWelcomeDlg::OnBnClickedDownloadImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	WizardDlg->executeFunc(_T("downloadimages"));
 	return 0;
 }

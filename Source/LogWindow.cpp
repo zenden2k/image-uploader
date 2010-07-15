@@ -30,7 +30,8 @@ CLogWindow::~CLogWindow()
 {
 	if(m_hWnd) 
 	{
-		DestroyWindow();
+		Detach();
+		//DestroyWindow();
 		m_hWnd = NULL;
 	}
 }
@@ -108,7 +109,13 @@ LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 	return 0;
 }
 	
-	
+LRESULT CLogWindow::OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	CLogWndMsg * msg = (CLogWndMsg*) wParam;
+	WriteLog(msg->MsgType, msg->Sender, msg->Msg, msg->Info);
+	return 0;
+}
+
 LRESULT CLogWindow::OnClearList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	MsgList.Clear();
@@ -118,7 +125,12 @@ LRESULT CLogWindow::OnClearList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 void WriteLog(LogMsgType MsgType, LPCWSTR Sender, LPCWSTR Msg,LPCWSTR Info)
 {
 	if(!LogWindow.m_hWnd) return;
-	LogWindow.WriteLog(MsgType, Sender, Msg, Info);
+	CLogWindow::CLogWndMsg msg;
+	msg.Msg = Msg;
+	msg.Info = Info;
+	msg.Sender = Sender;
+	msg.MsgType = MsgType;
+	LogWindow.SendMessage(MYWM_WRITELOG,(WPARAM)&msg);
 }
 
 CLogWindow LogWindow;

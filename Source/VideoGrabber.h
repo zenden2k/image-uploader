@@ -114,7 +114,7 @@ public:
 	bool OnAddImage(SENDPARAMS *sp);
 	void SavingMethodChanged(void);
 
-	int GenPicture(void);
+	int GenPicture(CString &outFileName);
 	TCHAR szBufferFileName[256];
 
 	LRESULT OnBnClickedButton1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

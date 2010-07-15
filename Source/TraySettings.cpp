@@ -54,8 +54,6 @@ CTraySettingsPage::~CTraySettingsPage()
 
 LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	TabBackgroundFix(m_hWnd);
-
 	TRC(IDC_SHOWTRAYICON,"Показывать значок в трее");
 	TRC(IDC_MOUSEREACTIONGROUP,"Реакция на действия мыши");
 	TRC(IDC_LEFTBUTTONDOUBLECLICKLABEL,"Двойной клик левой кнопкой");

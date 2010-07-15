@@ -37,6 +37,7 @@ CLogListBox::CLogListBox()
 
 CLogListBox::~CLogListBox()
 {
+	Detach();
 }
 
 LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)

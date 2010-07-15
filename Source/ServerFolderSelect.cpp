@@ -24,7 +24,7 @@
 #include "common.h"
 #include "NewFolderDlg.h"
 
-CServerFolderSelect::CServerFolderSelect(UploadEngine* uploadEngine)
+CServerFolderSelect::CServerFolderSelect(CUploadEngine* uploadEngine)
 {
 	m_UploadEngine = uploadEngine;
 }

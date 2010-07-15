@@ -298,8 +298,8 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
 	}
 
 	TCHAR buffer[256];
-	ExtractFilePath(filename,buffer);
-	m_PackageFolder = buffer;//.GetBuffer(256)
+	ExtractFilePath(filename, buffer);
+	m_PackageFolder = buffer;
 	if (m_xml.FindElem(_T("UpdatePackage"))) 
 	{
 		
@@ -428,7 +428,7 @@ CString CUpdateManager::generateReport()
 		time_t t = m_updateList[i].m_TimeStamp;
 		tm * timeinfo = localtime ( &t );
 		CString date;
-		date.Format(_T("[%02d.%02d.%04d]"),(int)timeinfo->tm_mday,(int) timeinfo->tm_mon, (int)1900+timeinfo->tm_year);
+		date.Format(_T("[%02d.%02d.%04d]"),(int)timeinfo->tm_mday,(int) timeinfo->tm_mon+1, (int)1900+timeinfo->tm_year);
 		text += _T(" * ")+m_updateList[i].m_DisplayName+_T("  ")+date+_T("\r\n\r\n");
 		text += m_updateList[i].m_ReadableText;
 		text += _T("\r\n\r\n");		

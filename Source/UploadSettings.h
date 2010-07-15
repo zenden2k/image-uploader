@@ -53,7 +53,7 @@ class CUploadSettings :
 	public CDialogImpl<CUploadSettings>	, public CWizardPage
 {
 	public:
-		CUploadSettings();
+		CUploadSettings(CUploadEngineList * EngineList);
 		~CUploadSettings();
 		enum { IDD = IDD_UPLOADSETTINGS };
 
@@ -73,6 +73,8 @@ class CUploadSettings :
 		COMMAND_HANDLER(IDC_NEWFOLDER+1, BN_CLICKED, OnNewFolder)
 		COMMAND_HANDLER(IDC_OPENINBROWSER, BN_CLICKED, OnOpenInBrowser)	
 		COMMAND_HANDLER(IDC_OPENINBROWSER+1, BN_CLICKED, OnOpenInBrowser)
+		COMMAND_HANDLER(IDC_OPENREGISTERURL, BN_CLICKED, OnOpenSignupPage)	
+		COMMAND_HANDLER(IDC_OPENREGISTERURL+1, BN_CLICKED, OnOpenSignupPage)
 		COMMAND_HANDLER(IDC_SERVERPARAMS, BN_CLICKED, OnServerParamsClicked)	
 		COMMAND_HANDLER(IDC_SERVERPARAMS+1, BN_CLICKED, OnServerParamsClicked)
 		NOTIFY_HANDLER(IDC_IMAGETOOLBAR, TBN_DROPDOWN, OnServerDropDown);
@@ -102,7 +104,8 @@ class CUploadSettings :
 	LRESULT OnOpenInBrowser(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnServerParamsClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	
+	LRESULT OnOpenSignupPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
 	int m_nImageServer, m_nFileServer;
 	void ShowParams();
 	CToolBarCtrl Toolbar;
@@ -117,6 +120,8 @@ class CUploadSettings :
 	int nFileIndex;
 	void OnFolderButtonContextMenu(POINT pt, bool isImageServerToolbar);
 	void OnServerButtonContextMenu(POINT pt, bool isImageServerToolbar);
+protected:
+	CUploadEngineList * m_EngineList;
 };
 
 

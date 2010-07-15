@@ -58,8 +58,7 @@ LRESULT CVideoGrabberParams::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	TRC(IDC_TEXTCOLORLABEL, "Цвет текста:");
 
 	Color1.SubclassWindow(GetDlgItem(IDC_TEXTCOLOR));
-	Color1.Color = Settings.VideoSettings.TextColor;
-	Color1.m_pfnSuperWindowProc=::DefWindowProc;
+	Color1.SetColor(Settings.VideoSettings.TextColor);
 
 	BOOL b;
 	OnShowMediaInfoTextBnClicked(IDC_MEDIAINFOONIMAGE,0,0,b);
@@ -68,7 +67,6 @@ LRESULT CVideoGrabberParams::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 LRESULT CVideoGrabberParams::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	
 	EndDialog(wID);
 	return 0;
 }
@@ -90,7 +88,7 @@ bool CVideoGrabberParams::Apply()
 	CheckBounds(Settings.VideoSettings.TileWidth, 10, 1024, 200);
 	CheckBounds(Settings.VideoSettings.GapWidth, 0, 200, 2);
 	CheckBounds(Settings.VideoSettings.GapHeight, 0, 200, 2);
-	Settings.VideoSettings.TextColor = Color1.Color;
+	Settings.VideoSettings.TextColor = Color1.GetColor();
 	return true;
 }
 LRESULT CVideoGrabberParams::OnMediaInfoFontClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)

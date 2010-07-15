@@ -30,7 +30,7 @@
 #include "mediainfodlg.h"
 #include <qedit.h>
 #include "fileinfohelper.h"
-
+#include "Core/ImageConverter.h"
 #ifdef DEBUG
 #define MyInfo(p) SetDlgItemText(IDC_FILEEDIT, p)
 #else
@@ -300,7 +300,7 @@ LRESULT CVideoGrabber::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 
 LRESULT CVideoGrabber::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	GetDlgItemText(IDC_FILEEDIT, WizardDlg->LastVideoFile , MAX_PATH);
+	WizardDlg->LastVideoFile = IU_GetWindowText(GetDlgItem(IDC_FILEEDIT));
 	RECT WindowRect,ClientRect;
 	
 	Terminated = false;
@@ -362,7 +362,7 @@ bool CVideoGrabber::OnAddImage(SENDPARAMS *sp)
 	Bitmap bm(&bi,pBuffer);
 
 	if(bm.GetLastStatus()!=Ok) return 0;
-		TCHAR buf2[256];
+		CString fileNameBuffer;
 
 	if(SendDlgItemMessage(IDC_DEINTERLACE,BM_GETCHECK)==BST_CHECKED)
 	{
@@ -380,8 +380,8 @@ bool CVideoGrabber::OnAddImage(SENDPARAMS *sp)
 		gr2.DrawImage(&BackBuffer,0,0,iwidth,iheight);
 	}
 
-	MySaveImage(&bm, _T("grab"), buf2, 1, 100);
-	ThumbsView.AddImage(buf2, sp->szTitle, &bm);
+	MySaveImage(&bm, _T("grab"), fileNameBuffer, 1, 100);
+	ThumbsView.AddImage(fileNameBuffer, sp->szTitle, &bm);
 	return true;  
 }
 
@@ -407,7 +407,7 @@ int CVideoGrabber::ThreadTerminated()
 		GrabInfo(TR("Извлечение кадров было остановлено пользователем."));
 	SavingThread.Stop();
 	SavingThread.Reset();
-	// Показать то что скрыто 
+
 	::ShowWindow(GetDlgItem(IDC_FRAMELABEL),SW_SHOW);
 	::ShowWindow(GetDlgItem(IDC_DEINTERLACE),SW_SHOW);
 	::ShowWindow(GetDlgItem(IDC_NUMOFFRAMESEDIT),SW_SHOW);
@@ -439,7 +439,7 @@ int CVideoGrabber::ThreadTerminated()
  }
 LRESULT CVideoGrabber::OnBnClickedGrabberparams(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CSettingsDlg dlg(1);
+	CSettingsDlg dlg(3);
 	dlg.DoModal(m_hWnd);
 	return 0;
 }
@@ -456,7 +456,7 @@ void CVideoGrabber::SavingMethodChanged(void)
 	::EnableWindow(GetDlgItem(IDC_GRABBERPARAMS),!check);
 }
   
-int CVideoGrabber::GenPicture(void)
+int CVideoGrabber::GenPicture(CString &outFileName)
 {
 	RectF TextRect;
 	int infoHeight = 0;
@@ -546,7 +546,7 @@ int CVideoGrabber::GenPicture(void)
 
 	}
 
-	MySaveImage(BackBuffer,_T("grab_custom"),szBufferFileName,1,100);
+	MySaveImage(BackBuffer,_T("grab_custom"),outFileName,1,100);
 	if(BackBuffer) delete BackBuffer;
 	  return 0;
 }
@@ -990,11 +990,10 @@ bool CVideoGrabber::OnNext()
 	}
 	else
 	{
-		szBufferFileName[0] = 0;
-		//Здесь генерируем картинку
-		GenPicture();
-		if(lstrlen(szBufferFileName)>0)
-		MainDlg->AddToFileList(szBufferFileName);
+		CString outFileName;
+		GenPicture(outFileName);
+		if(!outFileName.IsEmpty())
+		MainDlg->AddToFileList(outFileName);
 	}
 
 	ThumbsView.MyDeleteAllItems();

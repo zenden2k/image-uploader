@@ -2,6 +2,17 @@
 #
 # http://zenden.ws/imageuploader
 
+-v1.2.6 build 3760
+[+] Added new mode of screen capture
+[+] Quick upload from tray
+[+] Copy image to cliboard support
+[+] Screenshot file name and folder settings
+[+] Extended hotkey keystrokes support
+[C] Some UI improvements
+[F] Fixed incapability of uploading more that 512 files
+[F] Fixed wrong display of month in update window
+[C] Optimizing disk usage
+
 -v.1.2.5 build 3239
 [+] Auto-updates from server
 [+] Now Image Uploader uses libcurl as network core  instead of WinInet library

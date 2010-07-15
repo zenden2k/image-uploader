@@ -23,10 +23,38 @@
 #include "UploadDlg.h"
 #include "shobjidl.h"
 
+#include "Core/ImageConverter.h"
+class CTempFilesDeleter
+{
+public:
+	CTempFilesDeleter();
+	void AddFile(const CString& fileName);
+	bool Cleanup();
+protected:
+	std::vector<CString> m_files;
+};
+
+CTempFilesDeleter::CTempFilesDeleter()
+{
+
+}
+
+void CTempFilesDeleter::AddFile(const CString& fileName)
+{
+	m_files.push_back(fileName);
+}
+
+bool CTempFilesDeleter::Cleanup()
+{
+	for(int i=0; i<m_files.size(); i++)
+	{
+		DeleteFile(m_files[i]);
+	}
+	m_files.clear();
+	return true;
+}
 
 // Преобразование размера файла в строку
-
-
 bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize)
 {
 	//TCHAR szMeasureNames[4][5]={"Byte","МB","KB","GB"};
@@ -100,13 +128,13 @@ bool BytesToString(__int64 nBytes, LPTSTR szBuffer,int nBufSize)
 }
 
 // CUploadDlg
-CUploadDlg::CUploadDlg(CWizardDlg *dlg):ResultsPanel(UrlList,dlg)
+CUploadDlg::CUploadDlg(CWizardDlg *dlg):ResultsWindow(dlg,UrlList,true)
 {
 	MainDlg = NULL;
 	TimerInc = 0;
 	IsStopTimer = false;
 	Terminated = false;
-
+	m_EngineList = _EngineList;
 	LastUpdate = 0;
 	#if  WINVER	>= 0x0601
 		ptl = NULL;
@@ -122,27 +150,18 @@ Bitmap* BitmapFromResource(HINSTANCE hInstance,LPCTSTR szResName, LPCTSTR szResT
 
 LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-#if  WINVER	>= 0x0601
-	const GUID IID_ITaskbarList3 = { 0xea1afb91,0x9e28,0x4b86,{0x90,0xe9,0x9e,0x9f, 0x8a,0x5e,0xef,0xaf}};
-	CoCreateInstance(
-		CLSID_TaskbarList, NULL, CLSCTX_ALL,
-		IID_ITaskbarList3, (void**)&ptl);
-#endif
+	// Initializing Windows 7 taskbar related stuff
+	RECT rc;
+	::GetWindowRect(GetDlgItem(IDC_RESULTSPLACEHOLDER), &rc);
+	::MapWindowPoints(0,m_hWnd, (POINT*)&rc, 2);
+	ResultsWindow.Create(m_hWnd);
+	ResultsWindow.SetWindowPos(0,&rc,0);
+	#if  WINVER	>= 0x0601
+		const GUID IID_ITaskbarList3 = { 0xea1afb91,0x9e28,0x4b86,{0x90,0xe9,0x9e,0x9f, 0x8a,0x5e,0xef,0xaf}};
+		CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_ALL, IID_ITaskbarList3, (void**)&ptl);
+	#endif
 
-	TC_ITEM item;
-	item.pszText = TR("Для форума (BBCode)"); 
-	item.mask = TCIF_TEXT	;
-	TabCtrl_InsertItem(GetDlgItem(IDC_RESULTSTAB), 0, &item);
-	item.pszText = TR("Для сайта (HTML)"); 
-	item.mask = TCIF_TEXT	;
-	TabCtrl_InsertItem(GetDlgItem(IDC_RESULTSTAB), 1, &item);
-	item.pszText = TR("Просто ссылки (URL)"); 
-	item.mask = TCIF_TEXT	;
-	TabCtrl_InsertItem(GetDlgItem(IDC_RESULTSTAB), 2, &item);
-	TabBackgroundFix(GetDlgItem(IDC_CODETYPELABEL));
-	///----
 	TRC(IDC_COMMONPROGRESS, "Общий прогресс:");
-
 	bool IsLastVideo=lstrlen(MediaInfoDllPath);
 
 	CVideoGrabber *vg =(	CVideoGrabber *) WizardDlg->Pages[1];
@@ -150,38 +169,17 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	if(vg && lstrlen(vg->m_szFileName))
 		IsLastVideo=true;
 
+	ResultsWindow.EnableMediaInfo(IsLastVideo);
 	
-
-	// Creating panel with results
-	RECT rc = {150,3,636,300};
-	ResultsPanel.Create(m_hWnd,rc);
-	RECT Rec;
-	ResultsPanel.GetClientRect(&rc);
-	TabCtrl_AdjustRect(GetDlgItem(IDC_RESULTSTAB),FALSE, &rc); 	
-	::GetWindowRect(GetDlgItem(IDC_RESULTSTAB),&Rec);
-	POINT p={Rec.left, Rec.top};
-	ScreenToClient(&p);
-
-	rc.left+=p.x;
-	rc.top+=p.y;
-	rc.right+=p.x;
-	rc.bottom+=p.y;
-
-	ResultsPanel.SetWindowPos(0,rc.left,rc.top,rc.right,rc.bottom,SWP_NOSIZE);
 	SetDlgItemInt(IDC_THUMBSPERLINE, 4);
 	SendDlgItemMessage(IDC_THUMBPERLINESPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
-ResultsPanel.EnableMediaInfo(IsLastVideo);
-
+	
 	MakeLabelBold(GetDlgItem(IDC_COMMONPROGRESS));
 	MakeLabelBold(GetDlgItem(IDC_COMMONPERCENTS));
-	int codetype = Settings.CodeType;
-	//ReadSetting(_T("Upload.Codetype"),&codetype,0);
-	if(codetype<0|| codetype>4) codetype=0;
-	SendDlgItemMessage(IDC_CODETYPE,CB_SETCURSEL,codetype);	
 	PageWnd = m_hWnd;
-	ResultsPanel.SetPage(Settings.CodeLang);
-	TabCtrl_SetCurSel(GetDlgItem(IDC_RESULTSTAB), Settings.CodeLang);
-	ResultsPanel.SetCodeType(codetype);
+	ResultsWindow.SetPage(Settings.CodeLang);
+	
+	ResultsWindow.SetCodeType(Settings.CodeType);
 
 	return 1;  // Let the system set the focus
 }
@@ -191,15 +189,15 @@ ResultsPanel.EnableMediaInfo(IsLastVideo);
 DWORD CUploadDlg::Run()
 {
 	HRESULT hRes = ::CoInitialize(NULL);
-
+	CTempFilesDeleter  TempFilesDeleter;
 	if(!MainDlg) return 0;
 
 	CUploader Uploader;
 
-#if  WINVER	>= 0x0601
-	if(ptl)
-		ptl->SetProgressState(GetParent(), TBPF_NORMAL); // initialise Windows 7 taskbar button progress 
-#endif
+	#if  WINVER	>= 0x0601
+		if(ptl)
+			ptl->SetProgressState(GetParent(), TBPF_NORMAL); // initialise Windows 7 taskbar button progress 
+	#endif
 	m_CurrentUploader = &Uploader;
 
 	Uploader.ShouldStop=&m_bStopped;
@@ -207,31 +205,38 @@ DWORD CUploadDlg::Run()
 	Uploader.PrInfo=&PrInfo;
 
 	int Server;
-	
+	int FileServer = Settings.FileServerID;
 	int n = MainDlg->FileList.GetCount();
-
 
 	if(Settings.QuickUpload && !WizardDlg->Pages[3])
 		Server = Settings.QuickServerID;
 	else Server = Settings.ServerID;
 
-	if(!Uploader.SelectServer(Server))
+	
+	if(Server == -1)
 	{
-		MessageBox(_T("?"));
-		ThreadTerminated();
-		EndDialog(0);
-		return 0;
+		Server = m_EngineList->getRandomImageServer();
+		if(Server == -1)
+			return ThreadTerminated();
 	}
 
-	UploadEngine &ue =EnginesList[Server];
-	if(ue.SupportsFolders)
+	if(FileServer == -1)
 	{
-		ResultsPanel.AddServerId(Server);
+		FileServer = m_EngineList->getRandomFileServer();
+		if(FileServer == -1)
+			return ThreadTerminated();
 	}
 
-	if(EnginesList[Settings.FileServerID].SupportsFolders)
+	CUploadEngine *ue = m_EngineList->byIndex(Server);
+	Uploader.SetUploadEngine(ue);
+	if(ue->SupportsFolders)
 	{
-		ResultsPanel.AddServerId(Settings.FileServerID);
+		ResultsWindow.AddServer(Server);
+	}
+
+	if(m_EngineList->byIndex(FileServer)->SupportsFolders)
+	{
+		ResultsWindow.AddServer(m_EngineList->byIndex(FileServer)->Name);
 	}
 
 	ShowProgress(false);
@@ -245,13 +250,13 @@ DWORD CUploadDlg::Run()
 	int i;
 	CString FileName;
 	TCHAR szBuffer[MAX_PATH];
-	TCHAR UrlBuffer[256]=_T("\0");
+	
 	int NumUploaded=0;
 	bool CreateThumbs=Settings.ThumbSettings.CreateThumbs;
 
 	int thumbwidth=Settings.ThumbSettings.ThumbWidth;
 	if(thumbwidth<1|| thumbwidth>1024) thumbwidth=150;
-	TCHAR ImageFileName[256]=_T("\0"),ThumbFileName[256]=_T("\0");
+	
 	ImageSettingsStruct iss;
 
 	ImageSettingsStruct InitialParams = Settings.ImageSettings;
@@ -262,16 +267,20 @@ DWORD CUploadDlg::Run()
 
 	for(i=0; i<n; i++)
 	{
+		CString ImageFileName,ThumbFileName;
+
+		CString ThumbUrl;
+		CString DirectUrl;
+		CString DownloadUrl;
 		Server = iss.ServerID;
-
-		if(Server!=Uploader.CurrentServer && IsImage(MainDlg->FileList[i].FileName))
+		ue = m_EngineList->byIndex(Server);
+		if(/*Server!=Uploader.CurrentServer && */IsImage(MainDlg->FileList[i].FileName))
 		{
-
-			Uploader.SelectServer(Server);
+			Uploader.SetUploadEngine(m_EngineList->byIndex(Server));
+			Uploader.setServerSettings(&Settings.ServersSettings[m_EngineList->byIndex(Server)->Name]);
+			//Uploader.SelectServer(Server);
 		}
 
-
-		*UrlBuffer = 0;
 		wsprintf(szBuffer,TR("Обрабатывается файл %d из %d..."),i+1,n/*,ExtractFileName(FileName),UrlBuffer*/);
 
 		SetDlgItemText(IDC_COMMONPROGRESS2,szBuffer);
@@ -281,62 +290,67 @@ DWORD CUploadDlg::Run()
 		
 		if(IsImage(MainDlg->FileList[i].FileName))
 		{
-
-
 			FileProgress(TR("Подготовка файла к отправке.."));
-			// SetDlgItemText(IDC_INFOUPLOAD,TR("Подготовка файла к отправке.."));
-
 			if(ShouldStop()) 
 				return ThreadTerminated();
 
-			*ThumbFileName=0;
-			*ImageFileName=0;
+			
 
-			if(CreateThumbs && ((!Settings.ThumbSettings.UseServerThumbs)||(!Uploader.ServerSupportThumbnails(Server)))/*&&MainDlg->FileList[i].ImageParams.GenThumb*/)
-
-				GenerateImages(MainDlg->FileList[i].FileName,ImageFileName,ThumbFileName,thumbwidth, iss);
+			CImageConverter imageConverter;
+			imageConverter.setImageConvertingParams(iss);
+			imageConverter.setThumbCreatingParams(Settings.ThumbSettings);
+			bool GenThumb = false;
+			if(CreateThumbs && ((!Settings.ThumbSettings.UseServerThumbs)||(!Uploader.ServerSupportThumbnails(Server))))
+				GenThumb = true;
+				//GenerateImages(MainDlg->FileList[i].FileName,ImageFileName,ThumbFileName,thumbwidth, iss);
 			else 
-				if(CreateThumbs && Settings.ThumbSettings.UseServerThumbs/*&&MainDlg->FileList[i].ImageParams.GenThumb*/)
+				GenThumb = false;
+				
+			/*if(CreateThumbs && Settings.ThumbSettings.UseServerThumbs)
 					GenerateImages(MainDlg->FileList[i].FileName,ImageFileName,0,0, iss);
 
 				else
-					GenerateImages(MainDlg->FileList[i].FileName,ImageFileName,0,0, iss);
-
+					GenerateImages(MainDlg->FileList[i].FileName,ImageFileName,0,0, iss);*/
+			imageConverter.setGenerateThumb(GenThumb);
+			imageConverter.Convert(MainDlg->FileList[i].FileName);
+			ImageFileName = imageConverter.getImageFileName();
+			ThumbFileName = imageConverter.getThumbFileName();
+			if(!iss.KeepAsIs)
+			{
+				TempFilesDeleter.AddFile(ImageFileName);
+				if(lstrlen(ThumbFileName))
+				TempFilesDeleter.AddFile(ThumbFileName);
+			}
 		}
 		else // if we upload any type of file
 		{
-			lstrcpy(ImageFileName, MainDlg->FileList[i].FileName);
-			Uploader.SelectServer(Settings.FileServerID);
+			ImageFileName= MainDlg->FileList[i].FileName;
+			Uploader.SetUploadEngine(m_EngineList->byIndex(FileServer));
+			Uploader.setServerSettings(&Settings.ServersSettings[m_EngineList->byIndex(FileServer)->Name]);
+			//Uploader.SelectServer();
 			
 		}
 
-		
-
 		FileName = (MainDlg->FileList[i].FileName);
-
-
-		TCHAR ThumbUrl[256];
-		*ThumbUrl=0;
 		SendDlgItemMessage(IDC_FILEPROGRESS,PBM_SETPOS,0);
 		PrInfo.Total=0;
 		PrInfo.Uploaded=0;
-		PrInfo.Bytes.clear(); // MDA...
+		PrInfo.Bytes.clear(); 
 		PrInfo.IsUploading = false;
 		LastUpdate=0;
 		ShowProgress(true);
 
 		if(!FileExists(ImageFileName))
 		{
-			TCHAR Buf[256];
-			wsprintf(Buf, TR("Файл \"%s\" не найден."),ImageFileName);
+			CString Buf;
+			Buf.Format(TR("Файл \"%s\" не найден."), ImageFileName);
 			WriteLog(logError, TR("Модуль загрузки"),Buf);
 			continue;
 		}
 
-
-		if(IsImage(MainDlg->FileList[i].FileName)&& EnginesList[Server].MaxFileSize && MyGetFileSize(ImageFileName)>EnginesList[Server].MaxFileSize)
+		if(IsImage(MainDlg->FileList[i].FileName)&& ue->MaxFileSize && MyGetFileSize(ImageFileName)>ue->MaxFileSize)
 		{
-			CSizeExceed SE(ImageFileName, iss);
+			CSizeExceed SE(ImageFileName, iss,m_EngineList);
 
 			int res = SE.DoModal(m_hWnd);
 			if(res==IDOK || res==3 )
@@ -354,12 +368,19 @@ DWORD CUploadDlg::Run()
 		else 
 			FileProgress(CString(TR("Загрузка файла")) + _T(" ") + myExtractFileName(MainDlg->FileList[i].FileName));
 
-		*UrlBuffer=0;
-		*ThumbUrl = 0;
-		CString DownloadUrl;
-		BOOL result = Uploader.UploadFile(ImageFileName,UrlBuffer,ThumbUrl,thumbwidth);
-		DownloadUrl = Uploader.getDownloadUrl();
-
+		DirectUrl= _T("");
+		ThumbUrl = _T("");
+		
+		CString virtualName = GetOnlyFileName(MainDlg->FileList[i].VirtualFileName)+_T(".")+GetFileExt(ImageFileName);
+		Uploader.setThumbnailWidth(thumbwidth);
+		BOOL result = Uploader.UploadFile(ImageFileName,virtualName);
+		if(result)
+		{
+			ThumbUrl = Uploader.getThumbUrl();
+			DirectUrl = Uploader.getDirectUrl();
+			DownloadUrl = Uploader.getDownloadUrl();
+		}
+		
 		ShowProgress(false);
 
 		if(ShouldStop()) 
@@ -381,11 +402,12 @@ DWORD CUploadDlg::Run()
 			}
 		}
 
-		if(result  &&  (lstrlen(UrlBuffer)>0 || !DownloadUrl.IsEmpty()))
+		if(result  &&  (!DirectUrl.IsEmpty() || !DownloadUrl.IsEmpty()))
 		{
-			if(EnginesList[Uploader.CurrentServer].SupportsFolders)
+			if(Uploader.getUploadEngine()->SupportsFolders)
 			{
-					ResultsPanel.AddServerId(Uploader.CurrentServer);
+				//MessageBox(_T("MISSED"));
+					ResultsWindow.AddServer(Uploader.getUploadEngine()->Name);
 			}
 
 			NumUploaded++;
@@ -396,17 +418,22 @@ DWORD CUploadDlg::Run()
 			LastUpdate=0;
 
 			// Если мы не используем серверные превьюшки
-			if(IsImage(MainDlg->FileList[i].FileName) &&  !EnginesList[Server].ImageUrlTemplate.IsEmpty() && Settings.ThumbSettings.CreateThumbs && (((!Settings.ThumbSettings.UseServerThumbs)||(!Uploader.ServerSupportThumbnails(Server))) || (lstrlen(ThumbUrl)<1)))
+			if(IsImage(MainDlg->FileList[i].FileName) &&  !ue->ImageUrlTemplate.IsEmpty() && Settings.ThumbSettings.CreateThumbs && (((!Settings.ThumbSettings.UseServerThumbs)||(!ue->SupportThumbnails)) || (lstrlen(ThumbUrl)<1)))
 			{
 	thumb_retry:
 				FileProgress(TR("Загрузка миниатюры.."));
 				ShowProgress(true);
-				*ThumbUrl = 0;
+				ThumbUrl = _T("");
 				PrInfo.Total=0;
 				PrInfo.Bytes.clear();
 				PrInfo.Uploaded=0;
 				PrInfo.IsUploading = false;
-				BOOL result = Uploader.UploadFile(ThumbFileName,ThumbUrl,0);
+				BOOL result = Uploader.UploadFile(ThumbFileName,myExtractFileName(ThumbFileName));
+				
+				if(result)
+				{
+					ThumbUrl = Uploader.getDirectUrl();
+				}
 				if(ShouldStop()) 
 					return ThreadTerminated();
 
@@ -424,17 +451,17 @@ DWORD CUploadDlg::Run()
 			}
 			ShowProgress(false);
 			CUrlListItem item;
-			*item.ImageUrl=0;
-			*item.ThumbUrl=0;
+			item.ImageUrl=_T("");
+			item.ThumbUrl=_T("");
 
-			lstrcpy(item.ImageUrl,UrlBuffer);
+			item.ImageUrl = DirectUrl;
 			item.FileName = MainDlg->FileList[i].FileName;
-			item.DownloadUrl= DownloadUrl;
+			item.DownloadUrl = DownloadUrl;
 			if(CreateThumbs)
-				lstrcpy(item.ThumbUrl,ThumbUrl);
-			ResultsPanel.UrlListCS.Lock();
+				item.ThumbUrl = ThumbUrl;
+			ResultsWindow.Lock();
 			UrlList.Add(item);
-			ResultsPanel.UrlListCS.Unlock();
+			ResultsWindow.Unlock();
 			GenerateOutput();
 
 		}
@@ -443,9 +470,10 @@ DWORD CUploadDlg::Run()
 		wsprintf(szBuffer,_T("%d %%"),(int)((float)(i+1)/(float)n*100));
 		SetDlgItemText(IDC_COMMONPERCENTS,szBuffer);
 
-		*ThumbUrl=0;
-		*UrlBuffer=0;
+		ThumbUrl = _T("");
+		DirectUrl = _T("");
 
+		TempFilesDeleter.Cleanup();
 		iss = InitialParams;
 	}
 
@@ -453,16 +481,16 @@ DWORD CUploadDlg::Run()
 	wsprintf(szBuffer,_T("%d %%"),100);
 	SetDlgItemText(IDC_COMMONPERCENTS,szBuffer);
 
-	SetDlgItemText(IDC_COMMONPROGRESS2,TR("Загрузка была завершена."));
+	
 	int Errors = n-NumUploaded;
 	if(Errors>0)
 		wsprintf(szBuffer,CString(TR("Вcего %d файлов было загружено."))+_T(" ")
 		+TR("%d файлов загружены не были из-за ошибок."),NumUploaded,Errors);
 	else
-		wsprintf(szBuffer,CString(TR("Вcего %d файлов было загружено."))+_T(" ")+TR("Ошибок нет."), NumUploaded, Errors);
+		wsprintf(szBuffer,CString(TR("Вcего %d файлов было загружено."))+_T(" ")+TR("Ошибок нет."), NumUploaded );
 
 	BOOL temp;
-	ResultsPanel.OnCbnSelchangeCodetype(0,0,0,temp);
+//	ResultsWindow.OnCbnSelchangeCodetype(0,0,0,temp);
 
 	FileProgress(szBuffer, false);
 
@@ -474,10 +502,10 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 	if (wParam==1) // This timer is enabled when user pressed "Stop" button
 	{
 		TimerInc--;
-		TCHAR szBuffer[256];
+		CString szBuffer;
 		if(TimerInc>0)
 		{
-			wsprintf(szBuffer,CString(TR("Остановить"))+_T(" (%d)"),TimerInc);
+			szBuffer.Format(CString(TR("Остановить"))+_T(" (%d)"), TimerInc);
 			SetNextCaption(szBuffer);
 		}
 		else
@@ -581,12 +609,12 @@ int CUploadDlg::ThreadTerminated(void)
 {
 	WizardDlg->QuickUploadMarker=false;
 	TCHAR szBuffer[MAX_PATH];
-	SetDlgItemText(IDC_COMMONPROGRESS2,TR("Загрузка была завершена."));
+	SetDlgItemText(IDC_COMMONPROGRESS2, TR("Загрузка завершена."));
 	UploadProgress(MainDlg->FileList.GetCount(), MainDlg->FileList.GetCount());
-#if  WINVER	>= 0x0601
-	if(ptl)
-		ptl->SetProgressState(GetParent(), TBPF_NOPROGRESS); // initialise Windows 7 taskbar button progress 
-#endif
+	#if  WINVER	>= 0x0601
+		if(ptl)
+			ptl->SetProgressState(GetParent(), TBPF_NOPROGRESS);
+	#endif
 	wsprintf(szBuffer,_T("%d %%"),100);
 	SetDlgItemText(IDC_COMMONPERCENTS,szBuffer);
 
@@ -611,177 +639,6 @@ int CUploadDlg::ThreadTerminated(void)
 }
 
 
-void DrawGradient(Graphics &gr,Rect rect,Color &Color1,Color &Color2)
-{
-	Bitmap bm(rect.Width,rect.Height,&gr);
-	Graphics temp(&bm);
-	LinearGradientBrush 
-		brush(/*TextBounds*/Rect(0,0,rect.Width,rect.Height), Color1, Color2,LinearGradientModeVertical);
-
-	temp.FillRectangle(&brush,Rect(0,0,rect.Width,rect.Height));
-	gr.DrawImage(&bm, rect.X,rect.Y);
-}
-
-
-void DrawRect(Bitmap &gr,Color &color,Rect rect)
-{
-	int i;
-	SolidBrush br(color);
-	for(i=rect.X;i<rect.Width;i++)
-	{
-		gr.SetPixel(i,0,color);
-		gr.SetPixel(i,rect.Height-1,color);
-	}
-
-	for(i=rect.Y;i<rect.Height;i++)
-	{
-		gr.SetPixel(0,i,color);
-		gr.SetPixel(rect.Width-1,i,color);
-	}
-}
-
-
-int CUploadDlg::GenerateImages(LPCTSTR szFileName, LPTSTR szBufferImage, LPTSTR szBufferThumb,int thumbwidth, ImageSettingsStruct &iss)
-{
-	RECT rc;
-	GetClientRect(&rc);
-
-	//	UPLOADPARAMS* item = &WizardDlg->UploadParams;
-	//LogoParams params = logoparams;
-
-	int fileformat;
-
-	if( iss.Format < 1 ) 
-		fileformat = GetSavingFormat(szFileName);
-	else 
-		fileformat = iss.Format-1;
-
-	float width,height,imgwidth,imgheight,newwidth,newheight;
-
-	Image bm(szFileName);
-	imgwidth = bm.GetWidth();
-	imgheight = bm.GetHeight();
-
-	width = iss.NewWidth;
-	height = iss.NewHeight;
-
-	newwidth=imgwidth;
-	newheight=imgheight;
-
-
-	// Если включена опция "Оставить без изменений", просто копируем имя исходного файла
-	if(iss.KeepAsIs) 
-		lstrcpy(szBufferImage, szFileName);
-
-	else
-	{
-		if(iss.SaveProportions)
-		{
-			if( width && imgwidth > width )
-			{
-				newwidth = width;
-				newheight = newwidth / imgwidth * imgheight;
-			}
-			else if(height && imgheight > height)
-			{
-				newheight = height;
-				newwidth = newheight/imgheight*imgwidth;
-			}
-		}
-		else
-		{
-			if(width>0) newwidth=width;
-			if(height>0) newheight=height;
-		}
-
-		Graphics g(m_hWnd, true);
-		g.SetPageUnit(UnitPixel);
-		g.SetInterpolationMode(InterpolationModeHighQualityBicubic);
-		Bitmap BackBuffer(newwidth, newheight, &g);
-
-
-		Graphics gr(&BackBuffer);
-		if(fileformat != 2)
-			gr.Clear(Color(255,255,255,255));
-		else 
-			gr.Clear(Color(125,255,255,255));
-
-		g.SetPageUnit(UnitPixel);
-		gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
-
-		gr.SetPixelOffsetMode(PixelOffsetModeHalf);
-		if((!width && !height) || ((int)newwidth==(int)imgwidth && (int)newheight==(int)imgheight))
-			gr.DrawImage(/*backBuffer*/&bm, (int)0, (int)0, (int)newwidth,(int)newheight);
-		else
-			gr.DrawImage(/*backBuffer*/&bm, (int)-1, (int)-1, (int)newwidth+2,(int)newheight+2);
-
-		RectF bounds(0, 0, float(newwidth), float(newheight));
-
-		// Добавляем текст на картинку (если опция включена)
-		if(iss.AddText)
-		{
-
-			SolidBrush brush(Color(GetRValue(Settings.LogoSettings.TextColor),GetGValue(Settings.LogoSettings.TextColor),GetBValue(Settings.LogoSettings.TextColor)));
-
-			int HAlign[6]={0,1,2,0,1,2};	
-			int VAlign[6]={0,0,0,2,2,2};	
-
-			Settings.LogoSettings.Font.lfQuality=Settings.LogoSettings.Font.lfQuality|ANTIALIASED_QUALITY ;
-			Font font(/*L"Tahoma", 10, FontStyleBold*/::GetDC(0),&Settings.LogoSettings.Font);
-
-			WCHAR Buffer[256];
-			//wsprintf(Buffer,_T("%dx%d "),(int)imgwidth,(int)imgheight);
-			// что строка заканчивается нулем    
-			SolidBrush brush2(Color(70,0,0,0));
-
-			RectF bounds2(1, 1, float(newwidth), float(newheight)+1);
-			DrawStrokedText(gr, Settings.LogoSettings.Text,bounds2,font,MYRGB(255,Settings.LogoSettings.TextColor),MYRGB(180,Settings.LogoSettings.StrokeColor),HAlign[Settings.LogoSettings.TextPosition],VAlign[Settings.LogoSettings.TextPosition], 1);
-		}
-
-		// Добавляем логотип на картинку (если опция включена)
-		if(iss.AddLogo)
-		{
-
-			Bitmap logo(Settings.LogoSettings.FileName);
-			if(logo.GetLastStatus()==Ok)
-			{
-				int x,y;
-				int logowidth,logoheight;
-				logowidth=logo.GetWidth();
-				logoheight=logo.GetHeight();
-				if(Settings.LogoSettings.LogoPosition<3) y=0;
-				else y=newheight-logoheight;
-				if(Settings.LogoSettings.LogoPosition==0||Settings.LogoSettings.LogoPosition==3)
-					x=0;
-				if(Settings.LogoSettings.LogoPosition==2||Settings.LogoSettings.LogoPosition==5)
-					x=newwidth-logowidth;
-				if(Settings.LogoSettings.LogoPosition==1||Settings.LogoSettings.LogoPosition==4)
-					x=(newwidth-logowidth)/2;
-
-				gr.DrawImage(&logo, (int)x, (int)y,logowidth,logoheight);
-			}
-		}
-		MySaveImage(&BackBuffer,L"image.jpg",szBufferImage,fileformat,iss.Quality);
-	} 
-
-	if(iss.KeepAsIs)
-
-	{
-		CString Ext = GetFileExt(szFileName);
-		if(Ext == _T("png"))
-			fileformat = 1;
-		else fileformat = 0;
-
-	}
-	if(thumbwidth && szBufferThumb)
-	{
-		// Генерирование превьюшки с шаблоном в отдельной функции
-		GenThumb(szBufferImage,&bm, thumbwidth, newwidth, newheight, szBufferThumb, fileformat);
-	}
-
-	return 0;
-}
-
 bool CUploadDlg::OnShow()
 {
 	bool IsLastVideo=false;
@@ -793,7 +650,8 @@ bool CUploadDlg::OnShow()
 		if(vg && lstrlen(vg->m_szFileName))
 			IsLastVideo=true;
 	}
-	ResultsPanel.EnableMediaInfo(IsLastVideo);
+	ResultsWindow.InitUpload();
+	ResultsWindow.EnableMediaInfo(IsLastVideo);
 	CancelByUser = false;
 	ShowNext();
 	ShowPrev();
@@ -801,13 +659,13 @@ bool CUploadDlg::OnShow()
 	//Toolbar.CheckButton(IDC_USETEMPLATE,Settings.UseTxtTemplate);
 	FileProgress(_T(""), false);
 	UrlList.RemoveAll();
-	ResultsPanel.Clear();
+	ResultsWindow.Clear();
 	EnablePrev(false);
 	EnableNext();
 	EnableExit(false);
 	SetNextCaption(TR("Остановить"));
 
-	int code = ResultsPanel.GetCodeType();
+	int code = ResultsWindow.GetCodeType();
 	int newcode = code;
 	bool Thumbs = Settings.ThumbSettings.CreateThumbs;
 
@@ -822,12 +680,11 @@ bool CUploadDlg::OnShow()
 		if(code<2)
 			newcode=2;
 	}
-	ResultsPanel.SetCodeType(newcode);
-	TabCtrl_SetCurSel(GetDlgItem(IDC_RESULTSTAB), Settings.CodeLang);
-	ResultsPanel.SetPage(Settings.CodeLang);
+	ResultsWindow.SetCodeType(newcode);
+	ResultsWindow.SetPage(Settings.CodeLang);
 
 	::SetFocus(GetDlgItem(IDC_CODEEDIT));
-	Start();		//Запускаем процесс загрузки файлов на сервер (отдельный поток)
+	Start();	
 	return true;
 }
 
@@ -873,11 +730,8 @@ void CUploadDlg::ShowProgress(bool Show)
 	}
 
 	if(Show) 
-	{
 		SetTimer(2, 250); 
-	}
-
-
+	
 	if(!Show)
 	{
 		::ShowWindow(GetDlgItem(IDC_FILEPROGRESS),Show?SW_SHOW:SW_HIDE);
@@ -886,188 +740,13 @@ void CUploadDlg::ShowProgress(bool Show)
 	}
 }
 
-
-
-void CUploadDlg::GenThumb(LPCTSTR szImageFileName, Image *bm, int ThumbWidth, int newwidth, int newheight, LPTSTR szBufferThumb, int fileformat)
-{
-	int FileSize = MyGetFileSize(szImageFileName);
-	TCHAR SizeBuffer[100]=_T("\0");
-	if(FileSize>0)
-		NewBytesToString(FileSize,SizeBuffer,sizeof(SizeBuffer));
-
-	CString ThumbnailText = Settings.ThumbSettings.Text; // Text that will be drawn on thumbnail
-
-	ThumbnailText.Replace(_T("%width%"), IntToStr(newwidth)); //Replacing variables names with their values
-	ThumbnailText.Replace(_T("%height%"), IntToStr(newheight));
-	ThumbnailText.Replace(_T("%size%"), SizeBuffer);
-
-	int thumbwidth=ThumbWidth;
-	if(Settings.ThumbSettings.UseThumbTemplate)
-	{
-		Graphics g1(m_hWnd);
-		Image templ(IU_GetDataFolder()+_T("thumb.png"));
-		int ww = templ.GetWidth();
-		CString s;
-
-
-		Font font(::GetDC(0), &Settings.ThumbSettings.ThumbFont);
-
-		RectF TextRect;
-
-		FontFamily ff;
-		font.GetFamily(&ff);
-		g1.SetPageUnit(UnitPixel);
-		g1.MeasureString(_T("test"),-1,&font,PointF(0,0),&TextRect);
-
-
-		thumbwidth-=4;
-		int thumbheight=((float)thumbwidth/(float)newwidth*newheight);
-
-
-		int LabelHeight=TextRect.Height+1;
-		int RealThumbWidth=thumbwidth+4;
-		int RealThumbHeight=thumbheight+19;
-
-		Bitmap ThumbBuffer(RealThumbWidth, RealThumbHeight, &g1);
-		Graphics thumbgr(&ThumbBuffer);
-		thumbgr.SetPageUnit(UnitPixel);
-		thumbgr.Clear(Color(255,255,255,255));
-		RectF thu((float)(Settings.ThumbSettings.DrawFrame?1:0), (float)(Settings.ThumbSettings.DrawFrame?1:0), (float)thumbwidth,(float)thumbheight);
-		thumbgr.SetInterpolationMode(InterpolationModeHighQualityBicubic  );
-
-		thumbgr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
-		thumbgr.SetSmoothingMode( SmoothingModeHighQuality);
-
-
-		thumbgr.SetSmoothingMode(SmoothingModeAntiAlias);
-		thumbgr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
-
-		RectF t((float)0, (float)12, (float)5,(float)RealThumbHeight);
-
-		thumbgr.DrawImage(&templ,t,0,13,4,4,UnitPixel);
-
-		RectF t2((float)ThumbWidth-6, (float)9, (float)6,(float)RealThumbHeight);
-
-		thumbgr.DrawImage(&templ,t2,158,11,6,6,UnitPixel);
-
-		RectF t3((float)6, (float)0, (float)RealThumbWidth-8,(float)6);
-
-		thumbgr.DrawImage(&templ,t3,12,0,7,5,UnitPixel);
-
-
-		RectF t4((float)0, (float)RealThumbHeight-17, (float)RealThumbWidth,(float)17);
-
-		thumbgr.DrawImage(&templ,t4,71.0,92,4,19,UnitPixel);
-
-		thumbgr.DrawImage(&templ,0.0,0.0,0,0,29,29,UnitPixel);
-		thumbgr.DrawImage(&templ,ThumbWidth-6,0.0,164-6,0.0,6,9,UnitPixel);
-		thumbgr.DrawImage(&templ,0.0,RealThumbHeight-17,0.0,94.0,70,17,UnitPixel);
-		thumbgr.DrawImage(&templ,RealThumbWidth-29,RealThumbHeight-29,135.0,82,29,29,UnitPixel);
-		thumbgr.DrawImage(/*backBuffer*/bm,(float)2.0/*item->DrawFrame?1:0-1*/,(float)2.0/*(int)item->DrawFrame?1:0-1*/,(float)thumbwidth,(float)thumbheight);
-
-		thumbgr.SetPixelOffsetMode(PixelOffsetModeHalf);
-
-		if(Settings.ThumbSettings.ThumbAddImageSize) // If we need to draw text on thumbnail
-		{
-			thumbgr.SetPixelOffsetMode(PixelOffsetModeDefault );
-			SolidBrush   br222(MYRGB(179,RGB(255,255,255)));
-			RectF TextBounds((float)65, (float)RealThumbHeight-17, (float)RealThumbWidth-65-11,(float)17);
-
-			DrawStrokedText(thumbgr,/* Buffer*/ ThumbnailText,TextBounds,font,MYRGB(179,RGB(255,255,255))/*MYRGB(255,params.ThumbTextColor)*/,MYRGB(90,RGB(0,0,0)/*params.StrokeColor*/),1,1, 1);
-
-		}
-
-		Pen p(MYRGB(255,Settings.ThumbSettings.FrameColor));
-
-		if(Settings.ThumbSettings.ThumbAddImageSize){
-			StringFormat format;
-			format.SetAlignment(StringAlignmentCenter);
-			format.SetLineAlignment(StringAlignmentCenter);
-			// Font font(L"Tahoma", 7, FontStyleBold);
-			SolidBrush LabelBackground(Color(255,140,140,140));;
-	
-			int LabelAlpha=(Settings.ThumbSettings.TextOverThumb)?Settings.ThumbSettings.ThumbAlpha:255;
-			RectF TextBounds(1,RealThumbHeight-LabelHeight,RealThumbWidth-1,LabelHeight+1);
-
-			WCHAR Buffer[256];
-			TCHAR SizeBuffer[100]=_T("\0");
-		}
-
-		if(fileformat == 2) 
-			fileformat = 0;
-		MySaveImage(&ThumbBuffer,_T("thumb"),szBufferThumb,fileformat,93);
-	}
-	else
-	{
-		Graphics g1(m_hWnd);
-		Font font(/*L"Tahoma", 10, FontStyleBold*/::GetDC(0),&Settings.ThumbSettings.ThumbFont);
-
-		RectF TextRect;
-
-		FontFamily ff;
-		font.GetFamily(&ff);
-		g1.SetPageUnit(UnitPixel);
-		g1.MeasureString(_T("test"),-1,&font,PointF(0,0),&TextRect);
-
-		if(Settings.ThumbSettings.DrawFrame)
-			thumbwidth-=2;
-		int thumbheight=((float)thumbwidth/(float)newwidth*newheight);
-
-		int LabelHeight=TextRect.Height+1;
-		int RealThumbWidth=thumbwidth+(Settings.ThumbSettings.DrawFrame?2:0);
-		int RealThumbHeight=(Settings.ThumbSettings.DrawFrame?2:0)+thumbheight+((Settings.ThumbSettings.ThumbAddImageSize&&(!Settings.ThumbSettings.TextOverThumb))?LabelHeight:0);
-
-		Bitmap ThumbBuffer(RealThumbWidth, RealThumbHeight, &g1);
-		Graphics thumbgr(&ThumbBuffer);
-		thumbgr.SetPageUnit(UnitPixel);
-		RectF thu((float)(Settings.ThumbSettings.DrawFrame?1:0), (float)(Settings.ThumbSettings.DrawFrame?1:0), (float)thumbwidth,(float)thumbheight);
-		thumbgr.SetInterpolationMode(InterpolationModeHighQualityBicubic  );
-		thumbgr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
-		thumbgr.SetSmoothingMode( SmoothingModeHighQuality);
-		thumbgr.SetSmoothingMode(SmoothingModeAntiAlias);
-		thumbgr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
-		thumbgr.DrawImage(/*backBuffer*/bm,(float)-0.5f/*item->DrawFrame?1:0-1*/,(float)-0.5/*(int)item->DrawFrame?1:0-1*/,(float)RealThumbWidth+1,(float)thumbheight+1.5);
-		thumbgr.SetPixelOffsetMode(PixelOffsetModeHalf);
-		Pen p(MYRGB(255,Settings.ThumbSettings.FrameColor));
-
-		if(Settings.ThumbSettings.ThumbAddImageSize)
-		{
-			StringFormat format;
-			format.SetAlignment(StringAlignmentCenter);
-			format.SetLineAlignment(StringAlignmentCenter);
-
-			SolidBrush LabelBackground(Color(255,140,140,140));;
-			int LabelAlpha=(Settings.ThumbSettings.TextOverThumb)?Settings.ThumbSettings.ThumbAlpha:255;
-			DrawGradient(thumbgr,Rect(0,RealThumbHeight-LabelHeight-(Settings.ThumbSettings.DrawFrame?1:0),RealThumbWidth,LabelHeight),MYRGB(LabelAlpha,Settings.ThumbSettings.ThumbColor1), MYRGB(LabelAlpha,Settings.ThumbSettings.ThumbColor2));
-			RectF TextBounds(1,RealThumbHeight-LabelHeight,RealThumbWidth-1,LabelHeight+1);
-
-			thumbgr.SetPixelOffsetMode(PixelOffsetModeDefault );
-			SolidBrush   br222(MYRGB(255,Settings.ThumbSettings.ThumbTextColor));
-			DrawStrokedText(thumbgr, /*Buffer*/ThumbnailText,TextBounds,font,MYRGB(255,Settings.ThumbSettings.ThumbTextColor),MYRGB(90,0,0,0/*params.StrokeColor*/),1,1, 1);
-		}
-
-		thumbgr.SetPixelOffsetMode(   PixelOffsetModeHalf);
-		thumbgr.SetSmoothingMode(SmoothingModeDefault);
-		p.SetAlignment(PenAlignmentInset);
-
-		if(Settings.ThumbSettings.DrawFrame)
-			DrawRect(ThumbBuffer,MYRGB(255,Settings.ThumbSettings.FrameColor),Rect(0,0,RealThumbWidth,RealThumbHeight));
-
-		if(fileformat == 2) 
-			fileformat = 0;
-
-		// Saving thumbnail (without template)
-		MySaveImage(&ThumbBuffer,_T("thumb"),szBufferThumb,fileformat,85);
-	}
-}
-
 bool CUploadDlg::OnHide()
 {
 	UrlList.RemoveAll();
-	ResultsPanel.Clear();
+	ResultsWindow.Clear();
 	Settings.UseTxtTemplate = SendDlgItemMessage(IDC_USETEMPLATE, BM_GETCHECK);
-	Settings.CodeType = ResultsPanel.GetCodeType();
-	Settings.CodeLang = TabCtrl_GetCurSel(GetDlgItem(IDC_RESULTSTAB));
+	Settings.CodeType = ResultsWindow.GetCodeType();
+	Settings.CodeLang = ResultsWindow.GetPage();
 	return true; 
 }
 
@@ -1106,28 +785,21 @@ void CUploadDlg::FileProgress(const CString Text, bool ShowPrefix)
 
 void CUploadDlg::GenerateOutput()
 {
-	ResultsPanel.GenerateOutput();
-}
-
-LRESULT CUploadDlg::OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
-{
-	int Index = TabCtrl_GetCurSel(GetDlgItem(idCtrl));
-	ResultsPanel.SetPage(Index);
-	return 0;
+	ResultsWindow.UpdateOutput();
 }
 
 void CUploadDlg::UploadProgress(int CurPos, int Total, int FileProgress)
 {
-	SendDlgItemMessage(IDC_UPLOADPROGRESS,PBM_SETPOS,CurPos);
-#if  WINVER	>= 0x0601
-	if(ptl)
-	{
-		int NewCurrent = CurPos * 50 + FileProgress;
-		int NewTotal = Total * 50;
-
-		ptl->SetProgressValue(GetParent(), NewCurrent, NewTotal);
-	}
-#endif
+	SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETPOS, CurPos);
+	#if  WINVER	>= 0x0601
+		if(ptl)
+		{
+			int NewCurrent = CurPos * 50 + FileProgress;
+			int NewTotal = Total * 50;
+			ptl->SetProgressValue(GetParent(), NewCurrent, NewTotal);
+		}
+	#endif
 	progressCurrent = CurPos;
 	progressTotal = Total;
 }
+

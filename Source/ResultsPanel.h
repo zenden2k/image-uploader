@@ -22,6 +22,8 @@
 
 #include "resource.h"       // main symbols
 #include "common.h"
+#include <atlcrack.h>
+#include "Core/UploadEngine.h"
 #define IDC_OPTIONSMENU 10002
 #define IDC_USEDIRECTLINKS 10003
 #define IDC_COPYFOLDERURL 10004
@@ -39,7 +41,7 @@ class CResultsPanel :
 	public CDialogImpl<CResultsPanel>	
 {
 	public:
-		CResultsPanel(CAtlArray<CUrlListItem> &p,CWizardDlg *dlg);
+		CResultsPanel(CWizardDlg *dlg, CAtlArray<CUrlListItem>  & urlList);
 		virtual ~CResultsPanel();
 		enum { IDD = IDD_RESULTSPANEL};
 
@@ -58,6 +60,7 @@ class CResultsPanel :
 			COMMAND_HANDLER(IDC_MEDIAFILEINFO, BN_CLICKED, OnBnClickedMediaInfo)
 			COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
 			NOTIFY_HANDLER(IDC_RESULTSTOOLBAR, TBN_DROPDOWN, OnOptionsDropDown);
+		NOTIFY_HANDLER_EX(IDC_RESULTSTOOLBAR, NM_CUSTOMDRAW, OnResulttoolbarNMCustomDraw)
 		END_MSG_MAP()
 
     // Handler prototypes:
@@ -73,8 +76,10 @@ class CResultsPanel :
 
 	CToolBarCtrl Toolbar;
 	void SetPage(int Index);
-	CAtlArray<CUrlListItem> & UrlList;
-	void GenerateOutput();
+	void setEngineList(CUploadEngineList* EngineList);
+	CAtlArray<CUrlListItem>  &UrlList;
+	const CString GenerateOutput();
+	
 	bool LoadTemplate();
 	LPTSTR TemplateHead,TemplateFoot; //TemplateFoot is only pointer to part of TemplateHead 
 	int m_Page;
@@ -84,18 +89,24 @@ class CResultsPanel :
 	LRESULT OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnEditChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	int GetCodeType();
+	void UpdateOutput();
 	void SetCodeType(int Index);
 	void Clear();
 	void EnableMediaInfo(bool Enable);
 	CWizardDlg *WizardDlg;
+	CUploadEngineList *m_EngineList;
 	CAtlArray<IU_Result_Template> Templates;
 	bool LoadTemplates(CString &Error);
 	std::map<CString, CString> m_Vars;
-	std::map<int,int> m_Servers;
+	std::vector<CString> m_Servers;
 	CString ReplaceVars(const CString Text);
 	CAutoCriticalSection UrlListCS;
 	int m_nImgServer, m_nFileServer;
-	void AddServerId(int serverId);
+	void AddServer(CString server);
+	RECT rectNeeded;
+	void InitUpload();
+	void setUrlList(CAtlArray<CUrlListItem>  * urlList);
+	LRESULT OnResulttoolbarNMCustomDraw(LPNMHDR pnmh);
 };
 
 

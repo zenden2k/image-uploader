@@ -589,3 +589,18 @@ bool CThumbsView::StopAndWait()
 	}
 	return IsRun;
 }
+
+void CThumbsView::SelectLastItem()
+{
+	int nItem = -1;
+	do
+	{
+		nItem = GetNextItem(nItem, LVNI_SELECTED);
+		if(nItem == -1) break;
+		SetItemState(nItem, 0, LVIS_SELECTED	);
+	}
+	while(nItem != -1);
+	SetItemState(GetItemCount() - 1, LVIS_SELECTED, LVIS_SELECTED	);
+	EnsureVisible( GetItemCount() - 1, FALSE);
+
+}

@@ -25,20 +25,20 @@
 #include "NewFolderDlg.h"
 #include "ServerParamsDlg.h"
 
-CUploadSettings::CUploadSettings()
+CUploadSettings::CUploadSettings(CUploadEngineList * EngineList)
 {
 	nImageIndex = nFileIndex = -1;
+	m_EngineList = EngineList;
 }
 
 CUploadSettings::~CUploadSettings()
 {
 }
 
+
 LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-
 	PageWnd = m_hWnd;
-	
 	
 	TRC(IDC_FORMATLABEL,"Формат:");
 	TRC(IDC_QUALITYLABEL,"Качество:");
@@ -51,19 +51,17 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	TRC(IDC_LOGOOPTIONS,"Дополнительно...");
 	
 	TRC(IDC_KEEPASIS,"Оставить без изменения");
-	TRC(IDC_THUMBSETTINGS,"Настройки эскизов");
+	TRC(IDC_THUMBSETTINGS,"Настройки превью");
 
-	TRC(IDC_CREATETHUMBNAILS,"Создавать превьюшки");
+	TRC(IDC_CREATETHUMBNAILS,"Создавать превью");
 	TRC(IDC_IMAGESERVERGROUPBOX,"Cервер для загрузки изображений");
 	TRC(IDC_USESERVERTHUMBNAILS,"Использовать серверные эскизы");
 	TRC(IDC_WIDTHLABEL,"Ширина эскиза:");
 	TRC(IDC_DRAWFRAME,"Обводить в рамку");
 	TRC(IDC_ADDFILESIZE,"Размеры изображения на картинке");
-	/*TRC(IDC_LOGINTOOLBUTTON,"Авторизация");
-	TRC(IDC_LOGINTOOLBUTTON+1,"Авторизация");*/
 	TRC(IDC_PRESSUPLOADBUTTON,"Нажмите кнопку \"Загрузить\" чтобы начать процесс загрузки");
 	TRC(IDC_USETHUMBTEMPLATE,"Использовать шаблон");
-	TRC(IDC_TEXTOVERTHUMB2, "Надпись поверх эскиза");
+
 	TRC(IDC_FILESERVERGROUPBOX, "Сервер для остальных типов файлов");
 
 	m_nImageServer = Settings.ServerID;
@@ -88,19 +86,26 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	}
 	
 	
+	RECT Toolbar1Rect;
+	::GetWindowRect(GetDlgItem(IDC_IMAGESERVERGROUPBOX), &Toolbar1Rect);
+	::MapWindowPoints(0, m_hWnd, (LPPOINT)&Toolbar1Rect, 2);
+	Toolbar1Rect.top += dlgY(9);
+	Toolbar1Rect.bottom -= dlgY(3);
+	Toolbar1Rect.left += dlgX(6);
+	Toolbar1Rect.right -= dlgX(6);
 
-	RECT rc = {10,250,400,290};
-	GetClientRect(&rc);
-	
-	rc.top = 272;
-	rc.bottom  = rc.top +25;
-	rc.right -=40;
-	rc.left+=38;
+	RECT Toolbar2Rect;
+	::GetWindowRect(GetDlgItem(IDC_FILESERVERGROUPBOX), &Toolbar2Rect);
+	::MapWindowPoints(0, m_hWnd, (LPPOINT)&Toolbar2Rect, 2);
+	Toolbar2Rect.top += dlgY(9);
+	Toolbar2Rect.bottom -= dlgY(3);
+	Toolbar2Rect.left += dlgX(6);
+	Toolbar2Rect.right -= dlgX(6);
 
 	for(int i = 0; i<2; i++)
 	{
 		CToolBarCtrl& CurrentToolbar = (i == 0) ? Toolbar: FileServerSelectBar;
-		CurrentToolbar.Create(m_hWnd,rc,_T(""), WS_CHILD|WS_VISIBLE|WS_CHILD | TBSTYLE_LIST |TBSTYLE_FLAT| CCS_NORESIZE|/*CCS_BOTTOM |CCS_ADJUSTABLE|*/CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
+		CurrentToolbar.Create(m_hWnd,i?Toolbar2Rect:Toolbar1Rect,_T(""), WS_CHILD|WS_VISIBLE|WS_CHILD | TBSTYLE_LIST |TBSTYLE_FLAT| CCS_NORESIZE|/*CCS_BOTTOM |CCS_ADJUSTABLE|*/CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
 		
 		CurrentToolbar.SetButtonStructSize();
 		CurrentToolbar.SetButtonSize(30,18);
@@ -114,8 +119,6 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 		
 		CurrentToolbar.AddButton(IDC_SELECTFOLDER, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Выберите папку..."), 0);
 		CurrentToolbar.AutoSize();
-		rc.top = 332;
-		rc.bottom  = rc.top +25;
 	}
 
 	Toolbar.SetWindowLong(GWL_ID, IDC_IMAGETOOLBAR);
@@ -134,15 +137,6 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	ShowParams();
 
 	UpdateAllPlaceSelectors();
-
-
-	//int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
-
-	//SquirrelVM::Init();
-
-	
-	//UploadEngine &ue = EnginesList[m_nImageServer];
-	//CUploadScript *m_pluginLoader = iuPluginManager.getPlugin(ue.PluginName, Settings.ServersSettings[ue.Name]);
 	return 1;  // Let the system set the focus
 }
 
@@ -157,7 +151,6 @@ LRESULT CUploadSettings::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCt
 	EndDialog(wID);
 	return 0;
 }
-
 
 LRESULT CUploadSettings::OnBnClickedKeepasis(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
@@ -203,8 +196,7 @@ void CUploadSettings::ShowParams(/*UPLOADPARAMS params*/)
 	if(!Settings.ThumbSettings.UseThumbTemplate)
 		SendDlgItemMessage(IDC_USESERVERTHUMBNAILS,BM_SETCHECK,Settings.ThumbSettings.UseServerThumbs);
 
-	SendDlgItemMessage(IDC_TEXTOVERTHUMB2, BM_SETCHECK, Settings.ThumbSettings.TextOverThumb);
-
+	
 
 	SendDlgItemMessage(IDC_CREATETHUMBNAILS,BM_SETCHECK,Settings.ThumbSettings.CreateThumbs);
 
@@ -222,7 +214,7 @@ LRESULT CUploadSettings::OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD 
 	::EnableWindow(GetDlgItem(IDC_WIDTHLABEL), checked);
 	::EnableWindow(GetDlgItem(IDC_USETHUMBTEMPLATE), checked);
 	::EnableWindow(GetDlgItem(IDC_USESERVERTHUMBNAILS), checked);
-	::EnableWindow(GetDlgItem(IDC_TEXTOVERTHUMB2), checked);
+	//::EnableWindow(GetDlgItem(IDC_TEXTOVERTHUMB2), checked);
 		
 	if(!checked)
 		::EnableWindow(GetDlgItem(IDC_DRAWFRAME), checked);
@@ -236,7 +228,7 @@ LRESULT CUploadSettings::OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD 
 
 LRESULT CUploadSettings::OnBnClickedLogooptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CSettingsDlg dlg(2); // Open settings dialog and logo options tab
+	CSettingsDlg dlg(1); // Open settings dialog and logo options tab
 	dlg.DoModal(m_hWnd);
 	return 0;
 }
@@ -245,29 +237,32 @@ bool CUploadSettings::OnNext()
 {
 	if(m_nImageServer == -1 || m_nFileServer == -1)
 	{
-		MessageBox(TR("Вы не выбрали сервер!"), APPNAME, MB_ICONWARNING);
-		return false;
-	}
-
-	UploadEngine &ue = EnginesList[m_nImageServer];
-	if(ue.NeedAuthorization ==2 && !Settings.ServersSettings[ue.Name].authData.DoAuth)
-	{
-		CString errorMsg;
-		errorMsg.Format(TR("Загрузка файлов на сервер '%s' невозможна без наличия учетной записи.\nПожалуйста, зарегистрируйтесь на данном сервере и укажите ваши регистрационные данные в программе."), (LPCTSTR)ue.Name);
-		MessageBox(errorMsg, APPNAME, MB_ICONERROR);
-		return false;
-	}
-
-	UploadEngine &ue2 = EnginesList[m_nFileServer];
-	if(ue2.NeedAuthorization ==2 && !Settings.ServersSettings[ue2.Name].authData.DoAuth)
-	{
-		CString errorMsg;
-		errorMsg.Format(TR("Вы не задали параметры авторизации на сервере '%s'!"), (LPCTSTR)ue2.Name);
-		MessageBox(errorMsg, APPNAME, MB_ICONWARNING);
+		//MessageBox(TR("Вы не выбрали сервер!"), APPNAME, MB_ICONWARNING);
 		//return false;
 	}
-
-	Settings.ThumbSettings.TextOverThumb = SendDlgItemMessage(IDC_TEXTOVERTHUMB2, BM_GETCHECK);
+	
+	if(m_nImageServer != -1)
+	{
+		CUploadEngine *ue = m_EngineList->byIndex(m_nImageServer);
+		if(ue->NeedAuthorization ==2 && !Settings.ServersSettings[ue->Name].authData.DoAuth)
+		{ 
+			CString errorMsg;
+			errorMsg.Format(TR("Загрузка файлов на сервер '%s' невозможна без наличия учетной записи.\nПожалуйста, зарегистрируйтесь на данном сервере и укажите ваши регистрационные данные в программе."), (LPCTSTR)ue->Name);
+			MessageBox(errorMsg, APPNAME, MB_ICONERROR);
+			return false;
+		}
+	}
+	if(m_nFileServer != -1)
+	{
+		CUploadEngine *ue2 = m_EngineList->byIndex(m_nFileServer);
+		if(ue2->NeedAuthorization == 2 && !Settings.ServersSettings[ue2->Name].authData.DoAuth)
+		{
+			CString errorMsg;
+			errorMsg.Format(TR("Вы не задали параметры авторизации на сервере '%s'!"), (LPCTSTR)ue2->Name);
+			MessageBox(errorMsg, APPNAME, MB_ICONWARNING);
+			//return false;
+		}
+	}
 	
 	Settings.ImageSettings.KeepAsIs = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
 	Settings.ImageSettings.NewWidth= GetDlgItemInt(IDC_IMAGEWIDTH);
@@ -283,15 +278,9 @@ bool CUploadSettings::OnNext()
 	Settings.ImageSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	Settings.ImageSettings.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);
 	
-
 	Settings.ServerID = m_nImageServer;
-		//SendDlgItemMessage(IDC_SERVERLIST, CB_GETITEMDATA, temp, 0);
-
-
-	//emp= SendDlgItemMessage(IDC_SERVERLIST2, CB_GETCURSEL, 0, 0);
-	Settings.FileServerID = m_nFileServer;
-	//SendDlgItemMessage(IDC_SERVERLIST2, CB_GETITEMDATA, temp, 0);
 	
+	Settings.FileServerID = m_nFileServer;
 	Settings.ThumbSettings.ThumbWidth = GetDlgItemInt(IDC_THUMBWIDTH);
 	
 	return true;
@@ -320,9 +309,9 @@ LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND h
 {
 	bool ImageServer = wID % 2;// (hWndCtl == Toolbar.m_hWnd);	
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
-	CLoginDlg dlg(nServerIndex);
+	CLoginDlg dlg(m_EngineList->byIndex(nServerIndex));
 
-	ServerSettingsStruct & ss = Settings.ServersSettings[ EnginesList[nServerIndex ].Name];
+	ServerSettingsStruct & ss = Settings.ServersSettings[m_EngineList->byIndex(nServerIndex)->Name];
 	CString UserName = ss.authData.Login; 
 
 	if( dlg.DoModal(m_hWnd) == IDOK)
@@ -355,7 +344,7 @@ LRESULT CUploadSettings::OnBnClickedUseThumbTemplate(WORD /*wNotifyCode*/, WORD 
 
 	checked = checked || SendDlgItemMessage(IDC_USESERVERTHUMBNAILS, BM_GETCHECK, 0, 0);
 	::EnableWindow(GetDlgItem(IDC_DRAWFRAME), !checked);
-	::EnableWindow(GetDlgItem(IDC_TEXTOVERTHUMB2),!checked);
+	//::EnableWindow(GetDlgItem(IDC_TEXTOVERTHUMB2),!checked);
 	
 	return 0;
 }
@@ -368,7 +357,7 @@ LRESULT CUploadSettings::OnBnClickedUseServerThumbnails(WORD /*wNotifyCode*/, WO
 	
 	checked = checked || SendDlgItemMessage(IDC_USETHUMBTEMPLATE, BM_GETCHECK, 0, 0);
 	::EnableWindow(GetDlgItem(IDC_DRAWFRAME),!checked);
-	::EnableWindow(GetDlgItem(IDC_TEXTOVERTHUMB2),!checked);
+	//::EnableWindow(GetDlgItem(IDC_TEXTOVERTHUMB2),!checked);
 		
 	return 0;
 }
@@ -379,7 +368,7 @@ LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wI
 bool ImageServer = (hWndCtl == Toolbar.m_hWnd);	
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
 
-	UploadEngine *ue = &EnginesList[nServerIndex];
+	CUploadEngine *ue = m_EngineList->byIndex(nServerIndex);
 
 	if(ue->SupportsFolders){
 		CServerFolderSelect as(ue);
@@ -408,10 +397,10 @@ void CUploadSettings::UpdateToolbarIcons()
 	HICON hImageIcon = NULL, hFileIcon = NULL;
 
 	if(m_nImageServer != -1)
-		hImageIcon = (HICON)LoadImage(0,IU_GetDataFolder()+_T("Favicons\\")+EnginesList[m_nImageServer].Name+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
+		hImageIcon = (HICON)LoadImage(0,IU_GetDataFolder()+_T("Favicons\\")+m_EngineList->byIndex(m_nImageServer)->Name+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
 		
 	if(m_nFileServer != -1)
-		hFileIcon = (HICON)LoadImage(0,IU_GetDataFolder()+_T("Favicons\\")+EnginesList[m_nFileServer].Name+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
+		hFileIcon = (HICON)LoadImage(0,IU_GetDataFolder()+_T("Favicons\\")+m_EngineList->byIndex(m_nFileServer)->Name+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
 	
 	if(hImageIcon)
 	{
@@ -443,36 +432,39 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
 
-	CString serverTitle = (nServerIndex != -1) ? EnginesList[nServerIndex].Name: TR("Выберите сервер");
+	CUploadEngine * uploadEngine = 0;
+	
+	if(nServerIndex == -1)
+	{
+		
+		CurrentToolbar.HideButton(IDC_LOGINTOOLBUTTON + ImageServer ,true);
+		CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR1, true);
+		CurrentToolbar.HideButton(IDC_SELECTFOLDER, true);
+		CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR2, true);
+		return;
+	}
+
+	uploadEngine =  m_EngineList->byIndex(nServerIndex);
+	CString serverTitle = (nServerIndex != -1) ? uploadEngine->Name: TR("Выберите сервер");
 
 	ZeroMemory(&bi, sizeof(bi));
 	bi.cbSize = sizeof(bi);
 	bi.dwMask = TBIF_TEXT;
 	bi.pszText = (LPWSTR)(LPCTSTR) serverTitle ;
-	
-
-	if(nServerIndex == -1)
-	{
-		CurrentToolbar.HideButton(IDC_LOGINTOOLBUTTON + ImageServer ,true);
-		CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR1, true);
-		CurrentToolbar.HideButton(IDC_SELECTFOLDER, true);
-		CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR2, true);	
-		return;
-	}
 	CurrentToolbar.SetButtonInfo(IDC_SERVERBUTTON, &bi);
 
-	LoginInfo& li = Settings.ServersSettings[ EnginesList[nServerIndex ].Name].authData;
+	LoginInfo& li = Settings.ServersSettings[ uploadEngine->Name].authData;
 	CString login = TrimString(li.Login,23);
 	
 	CurrentToolbar.SetImageList(m_PlaceSelectorImageList);
 
-	CurrentToolbar.HideButton(IDC_LOGINTOOLBUTTON + ImageServer,(bool)!EnginesList[nServerIndex].NeedAuthorization);
-	CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR1,(bool)!EnginesList[nServerIndex].NeedAuthorization);
+	CurrentToolbar.HideButton(IDC_LOGINTOOLBUTTON + ImageServer,(bool)!uploadEngine->NeedAuthorization);
+	CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR1,(bool)!uploadEngine->NeedAuthorization);
 	
 	bool ShowLoginButton = !login.IsEmpty() && li.DoAuth;
 	if(!ShowLoginButton)
 	{
-		if(EnginesList[nServerIndex].NeedAuthorization == 2)
+		if(uploadEngine->NeedAuthorization == 2)
 			login = TR("Задать пользователя...");
 		else 
 			login = TR("Аккаунт не выбран");
@@ -481,12 +473,12 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 	bi.pszText = (LPWSTR)(LPCTSTR)login;
 	CurrentToolbar.SetButtonInfo(IDC_LOGINTOOLBUTTON+ImageServer, &bi);
 
-	bool ShowFolderButton = EnginesList[nServerIndex].SupportsFolders && ShowLoginButton;
+	bool ShowFolderButton = uploadEngine->SupportsFolders && ShowLoginButton;
 
 	CurrentToolbar.HideButton(IDC_SELECTFOLDER,!ShowFolderButton);
 	CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR2,!ShowFolderButton);
 		
-	CString title = TrimString(Settings.ServersSettings[EnginesList[nServerIndex].Name].params["FolderTitle"], 27);
+	CString title = TrimString(Settings.ServersSettings[uploadEngine->Name].params["FolderTitle"], 27);
 	if(title.IsEmpty()) title = TR("Папка не выбрана");
 	bi.pszText = (LPWSTR)(LPCTSTR)title;
 	CurrentToolbar.SetButtonInfo(IDC_SELECTFOLDER, &bi);
@@ -498,7 +490,6 @@ void CUploadSettings::UpdateAllPlaceSelectors()
 	UpdatePlaceSelector(true);
 	UpdateToolbarIcons();	
 }
-
 
 LRESULT CUploadSettings::OnImageServerSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
@@ -517,7 +508,6 @@ LRESULT CUploadSettings::OnFileServerSelect(WORD /*wNotifyCode*/, WORD wID, HWND
 	return 0;
 }
 	
-
 LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
 	NMTOOLBAR* pnmtb = (NMTOOLBAR *) pnmh;
@@ -525,6 +515,11 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 	bool ImageServer = (idCtrl == IDC_IMAGETOOLBAR);
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
 
+	CUploadEngine *uploadEngine = 0;
+	if(nServerIndex!=-1)
+	{
+		uploadEngine = m_EngineList->byIndex(nServerIndex);
+	}
 
 	CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
 	
@@ -542,11 +537,11 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 		
 		if(ImageServer)
 		{
-			for(int i=0; i<EnginesList.size(); i++)
+			for(int i=0; i<m_EngineList->count(); i++)
 			{
-				if(!EnginesList[i].ImageHost) continue;
+				if(!m_EngineList->byIndex(i)->ImageHost) continue;
 				mi.wID = (ImageServer?IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
-				mi.dwTypeData  = (LPWSTR)(LPCTSTR) EnginesList[i].Name;//TR("Параметры авторизации");
+				mi.dwTypeData  = (LPWSTR)(LPCTSTR) m_EngineList->byIndex(i)->Name;
 				sub.InsertMenuItem(menuItemCount++, true, &mi);
 			}
 			
@@ -556,11 +551,11 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 		}
 
 		mi.fType = MFT_STRING;
-		for(int i=0; i<EnginesList.size(); i++)
+		for(int i=0; i<m_EngineList->count(); i++)
 		{
-			if(EnginesList[i].ImageHost) continue;
+			if(m_EngineList->byIndex(i)->ImageHost) continue;
 			mi.wID = (ImageServer?IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
-			mi.dwTypeData  =(LPWSTR)(LPCTSTR) EnginesList[i].Name;//TR("Параметры авторизации");
+			mi.dwTypeData  =(LPWSTR)(LPCTSTR) m_EngineList->byIndex(i)->Name;
 			sub.InsertMenuItem(menuItemCount++, true, &mi);	
 		}
 
@@ -568,9 +563,9 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 	}
 	else
 	{
-		if(EnginesList[nServerIndex].UsingPlugin )
+		if(uploadEngine->UsingPlugin )
 		{
-			CUploadScript *plug = iuPluginManager.getPlugin(EnginesList[nServerIndex].PluginName, Settings.ServersSettings[EnginesList[nServerIndex].Name]);
+			CUploadScript *plug = iuPluginManager.getPlugin(uploadEngine->PluginName, Settings.ServersSettings[uploadEngine->Name]);
 			if(!plug) return TBDDRET_TREATPRESSED;
 
 			if(!plug->supportsSettings()) return TBDDRET_TREATPRESSED;
@@ -591,8 +586,8 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 	}
 		
 	RECT rc;
-   ::SendMessage(CurrentToolbar.m_hWnd,TB_GETRECT, pnmtb->iItem, (LPARAM)&rc);
-   CurrentToolbar.ClientToScreen(&rc);
+	::SendMessage(CurrentToolbar.m_hWnd,TB_GETRECT, pnmtb->iItem, (LPARAM)&rc);
+	CurrentToolbar.ClientToScreen(&rc);
 	TPMPARAMS excludeArea;
 	ZeroMemory(&excludeArea, sizeof(excludeArea));
 	excludeArea.cbSize = sizeof(excludeArea);
@@ -615,21 +610,24 @@ LRESULT CUploadSettings::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	{
 		bool ImageServer = (hwnd == Toolbar.m_hWnd);
 		CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
-	
-		::SendMessage(CurrentToolbar.m_hWnd,TB_GETRECT, IDC_SELECTFOLDER, (LPARAM)&rc);
-		CurrentToolbar.ClientToScreen(&rc);
-		if(PtInRect(&rc, pt))
-		{
-			OnFolderButtonContextMenu(pt, ImageServer);
-		}
 
 		::SendMessage(CurrentToolbar.m_hWnd,TB_GETRECT, IDC_SERVERBUTTON, (LPARAM)&rc);
 		CurrentToolbar.ClientToScreen(&rc);
 		if(PtInRect(&rc, pt))
 		{
 			OnServerButtonContextMenu(pt, ImageServer);
+			return 0;
 		}
-		
+		if(!CurrentToolbar.IsButtonHidden(IDC_SELECTFOLDER))
+		{
+			::SendMessage(CurrentToolbar.m_hWnd,TB_GETRECT, IDC_SELECTFOLDER, (LPARAM)&rc);
+			CurrentToolbar.ClientToScreen(&rc);
+			if(PtInRect(&rc, pt))
+			{
+				OnFolderButtonContextMenu(pt, ImageServer);
+				return 0;
+			}
+		}	
 	}
 	return 0;
 }
@@ -663,9 +661,9 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
 
 	
-	UploadEngine &ue = EnginesList[nServerIndex];
+	CUploadEngine *ue = m_EngineList->byIndex(nServerIndex);
 
-	CUploadScript *m_pluginLoader = iuPluginManager.getPlugin(ue.PluginName, Settings.ServersSettings[ue.Name], true);
+	CUploadScript *m_pluginLoader = iuPluginManager.getPlugin(ue->PluginName, Settings.ServersSettings[ue->Name], true);
 	if(!m_pluginLoader) return 0;
 
 	CString title;
@@ -673,17 +671,17 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 
 	m_pluginLoader->getAccessTypeList(accessTypeList);
 	CFolderItem newFolder;
-	if(Settings.ServersSettings[ue.Name].params[_T("FolderID")]	== IU_NEWFOLDERMARK)
-		newFolder = Settings.ServersSettings[ue.Name].newFolder;
+	if(Settings.ServersSettings[ue->Name].params[_T("FolderID")]	== IU_NEWFOLDERMARK)
+		newFolder = Settings.ServersSettings[ue->Name].newFolder;
 
 	 CNewFolderDlg dlg(newFolder, true, accessTypeList);
 	 if(dlg.DoModal(m_hWnd) == IDOK)
 	 {
-		 Settings.ServersSettings[ue.Name].params[_T("FolderTitle")] = newFolder.title.c_str();
-		Settings.ServersSettings[ue.Name].params[_T("FolderID")]	= IU_NEWFOLDERMARK;
-		Settings.ServersSettings[ue.Name].params[_T("FolderUrl")]	= _T("");
+		 Settings.ServersSettings[ue->Name].params[_T("FolderTitle")] = newFolder.title.c_str();
+		Settings.ServersSettings[ue->Name].params[_T("FolderID")]	= IU_NEWFOLDERMARK;
+		Settings.ServersSettings[ue->Name].params[_T("FolderUrl")]	= _T("");
 		
-		Settings.ServersSettings[ue.Name].newFolder = newFolder;
+		Settings.ServersSettings[ue->Name].newFolder = newFolder;
 		UpdateAllPlaceSelectors();
 	 }
 	 return 0;
@@ -694,10 +692,10 @@ LRESULT CUploadSettings::OnOpenInBrowser(WORD /*wNotifyCode*/, WORD wID, HWND /*
 	bool ImageServer = wID % 2;
 	CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
-	UploadEngine &ue = EnginesList[nServerIndex];
+	CUploadEngine *ue = m_EngineList->byIndex(nServerIndex);
 
 
-	CString str = Settings.ServersSettings[ue.Name].params[_T("FolderUrl")];
+	CString str = Settings.ServersSettings[ue->Name].params[_T("FolderUrl")];
 	if(!str.IsEmpty())
 	{
 		ShellExecute(0,_T("open"),str,_T(""),0,SW_SHOWNORMAL);
@@ -728,11 +726,24 @@ LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, H
 	bool ImageServer = wID % 2;
 	CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
-	UploadEngine &ue = EnginesList[nServerIndex];
-	if(!ue.UsingPlugin) return false;
+	CUploadEngine *ue = m_EngineList->byIndex(nServerIndex);
+	if(!ue->UsingPlugin) return false;
 
 	CServerParamsDlg dlg(ue);
 	dlg.DoModal();
 	return 0;
 }
+
+LRESULT CUploadSettings::OnOpenSignupPage(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	bool ImageServer = wID % 2;
+	MessageBox(_T(""));
+	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
+	CUploadEngine *ue = m_EngineList->byIndex(nServerIndex);
+	if(ue && !ue->RegistrationUrl.IsEmpty())
+		ShellExecute(0,_T("open"),ue->RegistrationUrl,_T(""),0,SW_SHOWNORMAL);
+	return 0;
+}
+
+
 	

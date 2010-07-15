@@ -25,6 +25,7 @@
 #include <atlframe.h>
 
 #define IDC_CLEARLIST 12000
+#define MYWM_WRITELOG WM_USER +100
 // CLogWindow
 
 class CLogWindow : public CDialogImpl <CLogWindow>,
@@ -32,6 +33,14 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
 							public CWinDataExchange <CLogWindow>,
 							public CMessageFilter
 {
+	public:
+	struct CLogWndMsg
+	{
+		LogMsgType MsgType;
+		LPCWSTR Sender;
+		LPCWSTR Msg;
+		LPCWSTR Info;
+	};
 	public:
 		CLogWindow();
 		~CLogWindow();
@@ -42,6 +51,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 			MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
+			MESSAGE_HANDLER(MYWM_WRITELOG, OnWmWriteLog)			
 			COMMAND_ID_HANDLER(IDC_CLEARLIST, OnClearList)
 			CHAIN_MSG_MAP(CDialogResize<CLogWindow>)
 			REFLECT_NOTIFICATIONS()
@@ -57,6 +67,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
 		//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+		LRESULT OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		void WriteLog(LogMsgType MsgType, CString Sender, CString Msg,LPCTSTR Info = NULL);
 		CLogListBox MsgList;

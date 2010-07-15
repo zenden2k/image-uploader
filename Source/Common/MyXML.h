@@ -19,55 +19,55 @@
 */
 
 #pragma once
-
-#include "MarkupMSXML.h"
+//#define MARKUP_STL
+#include "../3rdpart/Markup.h"
 
 //using namespace MSXML2;
 
-class CMyXml: public  CMarkupMSXML
+class CMyXml: public  CMarkup
 {
 	public:
 	 bool GetAttrib(LPCTSTR szAttrib, int &Value)
 	 {
-		 CString Res =CMarkupMSXML::GetAttrib(szAttrib);
+		 CString Res =CMarkup::GetAttrib(szAttrib);
 		 if(Res.IsEmpty()) return false;
 		 Value = _ttoi(Res);
 		 return true;
 	 }
 	 bool GetAttrib(LPCTSTR szAttrib, bool &Value)
 	 {
-		 CString Res = CMarkupMSXML::GetAttrib(szAttrib);
+		 CString Res = CMarkup::GetAttrib(szAttrib);
 		 if(Res.IsEmpty()) return false;
 		 Value = (bool) _ttoi(Res);
 		 return true;
 	 }
 	  bool GetAttrib(LPCTSTR szAttrib, CString &Value)
 	 {
-		 Value = CMarkupMSXML::GetAttrib(szAttrib);
+		 Value = CMarkup::GetAttrib(szAttrib);
 		 return Value.IsEmpty();
 	 }
 
 	  bool GetData( int &Value)
 	 {
-		 CString Res =CMarkupMSXML::GetData();
+		 CString Res =CMarkup::GetData();
 		 if(Res.IsEmpty()) return false;
 		 Value = _ttoi(Res);
 		 return true;
 	 }
 	 bool GetData( bool &Value)
 	 {
-		 CString Res = CMarkupMSXML::GetData();
+		 CString Res = CMarkup::GetData();
 		 if(Res.IsEmpty()) return false;
 		 Value = (bool) _ttoi(Res);
 		 return true;
 	 }
 	bool GetData(CString &Value)
 	{
-		 Value = CMarkupMSXML::GetData();
+		 Value = CMarkup::GetData();
 		 return Value.IsEmpty();
 	}
 
-	bool FormatDOMDocument (MSXML2::IXMLDOMDocument *pDoc, IStream *pStream)
+/*	bool FormatDOMDocument (MSXML2::IXMLDOMDocument *pDoc, IStream *pStream)
 	{using namespace MSXML2;
 		// Thanks to Google
 		CComPtr <MSXML2::IMXWriter> pMXWriter; // Create the writer
@@ -150,5 +150,5 @@ class CMyXml: public  CMarkupMSXML
 		}
 		else pStrmDest->Release();
 		return true;
-	}
+	}*/
 };

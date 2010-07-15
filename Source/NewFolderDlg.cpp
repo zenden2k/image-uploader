@@ -20,7 +20,7 @@
 
 #include "stdafx.h"
 #include "NewFolderDlg.h"
-
+#include "Common.h"
 // CNewFolderDlg
 CNewFolderDlg::CNewFolderDlg(CFolderItem &folder, bool CreateNewFolder,std::vector<std::wstring>& accessTypeList):
 					m_folder(folder), m_bCreateNewFolder(CreateNewFolder), m_accessTypeList(accessTypeList)
@@ -60,9 +60,9 @@ LRESULT CNewFolderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
 LRESULT CNewFolderDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	GetDlgItemText(IDC_FOLDERTITLEEDIT, m_sTitle.GetBuffer(256),256);
+	m_sTitle= IU_GetWindowText(GetDlgItem(IDC_FOLDERTITLEEDIT));
 	m_folder.title = m_sTitle;
-	GetDlgItemText(IDC_FOLDERDESCREDIT, m_sDescription.GetBuffer(1256),1256);
+	m_sDescription = IU_GetWindowText(GetDlgItem(IDC_FOLDERDESCREDIT));
 	m_folder.summary = m_sDescription;
 	int nAccessType = SendDlgItemMessage(IDC_ACCESSTYPECOMBO, CB_GETCURSEL);
 	if(nAccessType >= 0)

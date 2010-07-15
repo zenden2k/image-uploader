@@ -33,12 +33,15 @@ CHotkeyList::CHotkeyList()
 	AddItem(TR("Загрузить папку"),_T("addfolder"), IDM_ADDFOLDER);
 	AddItem(TR("Импорт видео"),_T("importvideo"), IDM_IMPORTVIDEO);
 	AddItem(TR("Скриншот"),_T("screenshotdlg"), IDM_SCREENSHOTDLG);
-	AddItem(TR("Скриншот выделенной области"),_T("regionscreenshot"), IDM_REGIONSCREENSHOT);
-	AddItem(TR("Скриншот всего экрана"),_T("fullscreenshot"), IDM_FULLSCREENSHOT);
-	AddItem(TR("Скриншот текущего окна"),_T("windowscreenshot"), IDM_WINDOWSCREENSHOT);
+	AddItem(TR("Снимок прямоугольной области"),_T("regionscreenshot"), IDM_REGIONSCREENSHOT);
+	AddItem(TR("Снимок всего экрана"),_T("fullscreenshot"), IDM_FULLSCREENSHOT);
+	AddItem(TR("Снимок активного окна"),_T("windowscreenshot"), IDM_WINDOWSCREENSHOT);
+	AddItem(TR("Снимок выбранного элемента"),_T("windowhandlescreenshot"), IDM_WINDOWHANDLESCREENSHOT);
+	AddItem(TR("Снимок произвольной формы"),_T("freeformscreenshot"), IDM_WINDOWSCREENSHOT);
 	AddItem(TR("Показать окно программы"),_T("showmainwindow"), IDM_SHOWAPPWINDOW);
 	AddItem(TR("Настройки"),_T("settings"), IDM_SETTINGS);
 	AddItem(TR("Вставить из буфера"),_T("paste"), IDM_PASTEFROMCLIPBOARD,0x56, MOD_CONTROL); // Ctrl+V keyboard shortcut
+	AddItem(TR("Изображения из Web"),_T("downloadimages"), IDM_PASTEFROMWEB); // Ctrl+V keyboard shortcut
 	AddItem(TR("Информация о медиафайле"),_T("mediainfo"), IDM_MEDIAINFO);
 	AddItem(TR("Выход"),_T("mediainfo"), IDM_EXIT);
 	
@@ -169,9 +172,9 @@ LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	m_HotkeyList.AddColumn(TR("Действие"),0);
 	m_HotkeyList.AddColumn(TR("Локальные"),1);
 	m_HotkeyList.AddColumn(TR("Глобальные"),2);
-	m_HotkeyList.SetColumnWidth(0,190);
-	m_HotkeyList.SetColumnWidth(1,90);
-	m_HotkeyList.SetColumnWidth(2,90);
+	m_HotkeyList.SetColumnWidth(0,185);
+	m_HotkeyList.SetColumnWidth(1,87);
+	m_HotkeyList.SetColumnWidth(2,87);
 	m_HotkeyList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 	hotkeyList = Settings.Hotkeys;
 

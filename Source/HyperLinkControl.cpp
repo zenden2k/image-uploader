@@ -60,7 +60,7 @@ int GetTextWidth(HDC dc, LPTSTR Text, HFONT Font)
 	return sz.cx;
 }
 
-int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON hIcon,bool Visible,int Align)
+int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON hIcon,bool Visible,int Align,  bool LineBreak)
 {
 	RECT ClientRect;
 	GetClientRect(&ClientRect);
@@ -94,7 +94,7 @@ int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON
 	{	
 		int TextWidth = GetTextWidth(GetDC(), szTitle, NormalFont);
 
-		if(Align==2)
+		if(Align==2) // right aligned text
 		{
 			SubItemRightY = ClientRect.right - TextWidth - 3 -35;
 		}
@@ -105,8 +105,21 @@ int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON
 			else 
 				SubItemRightY+=20;
 		}
+		if(  LineBreak)
+		{
+			//item->ItemRect.left = 35;
+			SubItemRightY =35;
+			BottomY+=20;
+			//item->ItemRect.top = BottomY;
+			
+		}
+		//else
+		{
+
+		
 		item->ItemRect.left = SubItemRightY;
 		item->ItemRect.top = BottomY + ((BottomY>1)?6:0);
+		}
 		if(!m_bHyperLinks) 
 			item->ItemRect.top+=5;
 		item->ItemRect.right = 1+GetTextWidth(GetDC(), szTitle, NormalFont)+23+item->ItemRect.left;
@@ -254,7 +267,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 {
 	PAINTSTRUCT ps;
 
-	CDC dc = BeginPaint( &ps);
+	CPaintDC dc(m_hWnd);
 	RECT rc;
 	GetClientRect(&rc);
 
@@ -328,13 +341,13 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 		}
 	}
 
-	EndPaint(&ps);
+	//EndPaint(&ps);
 	return 0;
 }
 
 LRESULT CHyperLinkControl::OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	bHandled = true; // Avoidance of flickering
+	bHandled = true; 
 	return 1;
 }
 

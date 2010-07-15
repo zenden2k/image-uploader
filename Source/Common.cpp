@@ -50,50 +50,41 @@ bool CWizardPage:: OnNext()
 void CWizardPage::EnableNext(bool Enable)
 {
 	if(!WizardDlg) return;
-	::EnableWindow(WizardDlg->GetDlgItem(IDC_NEXT),Enable);
+	::EnableWindow(WizardDlg->GetDlgItem(IDC_NEXT), Enable);
 }
 void CWizardPage::EnablePrev(bool Enable)
 {
 	if(!WizardDlg) return;
-	::EnableWindow(WizardDlg->GetDlgItem(IDC_PREV),Enable);
+	::EnableWindow(WizardDlg->GetDlgItem(IDC_PREV), Enable);
 }
 void CWizardPage::EnableExit(bool Enable)
 {
 	if(!WizardDlg) return;
-	::EnableWindow(WizardDlg->GetDlgItem(IDCANCEL),Enable);
+	::EnableWindow(WizardDlg->GetDlgItem(IDCANCEL), Enable);
 }
 
-void CWizardPage::SetNextCaption(LPTSTR Caption)
+void CWizardPage::SetNextCaption(LPCTSTR Caption)
 {
 	if(!WizardDlg) return;
-	WizardDlg->SetDlgItemText(IDC_NEXT,Caption);
+	WizardDlg->SetDlgItemText(IDC_NEXT, Caption);
 }
 void CWizardPage::ShowNext(bool Show)
 {
 	if(!WizardDlg) return;
-	::ShowWindow(WizardDlg->GetDlgItem(IDC_NEXT),Show?SW_SHOW:SW_HIDE);
+	::ShowWindow(WizardDlg->GetDlgItem(IDC_NEXT), Show?SW_SHOW:SW_HIDE);
 }
 void CWizardPage::ShowPrev(bool Show)
 {
 	if(!WizardDlg) return;
-	::ShowWindow(WizardDlg->GetDlgItem(IDC_PREV),Show?SW_SHOW:SW_HIDE);
+	::ShowWindow(WizardDlg->GetDlgItem(IDC_PREV), Show?SW_SHOW:SW_HIDE);
 }
 bool CWizardPage:: OnHide()
 {
 	return false;
 }
 
-int GetUploadEngineIndex(const CString Name)
-{
-	for(int i=0; i<EnginesList.size(); i++)
-	{
-		if(EnginesList[i].Name == Name) return i;
-	}
-	return -1;
-}
-
-	WIN32_FIND_DATA wfd;
-	HANDLE findfile = 0;
+WIN32_FIND_DATA wfd;
+HANDLE findfile = 0;
 
 int GetNextImgFile(LPTSTR szBuffer, int nLength)
 {
@@ -254,47 +245,6 @@ BOOL CreateTempFolder()
 	return TRUE;
 }
 
-bool MySaveImage(Image *img,LPTSTR szFilename,LPTSTR szBuffer,int Format,int Quality)
-{
-	if(Format==-1) Format=0;
-	TCHAR szImgTypes[3][4]={_T("jpg"),_T("png"),_T("gif")};
-	TCHAR szMimeTypes[3][12]={_T("image/jpeg"),_T("image/png"),_T("image/gif")};
-	TCHAR szNameBuffer[MAX_PATH],szBuffer2[MAX_PATH],TempPath[256];
-	GetOnlyFileName(szFilename,szNameBuffer);
-	wsprintf(szBuffer2,_T("%s%s%d.%s"),IUTempFolder,szNameBuffer,(int)GetTickCount(),szImgTypes[Format]);
-	
-	CLSID clsidEncoder;
-	EncoderParameters eps;
-	eps.Count = 1;
-
-	if(Format == 0) //JPEG
-	{
-		eps.Parameter[0].Guid = EncoderQuality;
-		eps.Parameter[0].Type = EncoderParameterValueTypeLong;
-		eps.Parameter[0].NumberOfValues = 1;
-		eps.Parameter[0].Value = &Quality;
-	}
-	else if (Format == 1) //PNG
-	{
-		eps.Parameter[0].Guid = EncoderCompression;
-		eps.Parameter[0].Type = EncoderParameterValueTypeLong;
-		eps.Parameter[0].NumberOfValues = 1;
-		eps.Parameter[0].Value = &Quality;
-	}
-
-	
-
-	if(GetEncoderClsid(szMimeTypes[Format], &clsidEncoder)!=-1)
-	{
-		if(Format == 0)
-			img->Save(szBuffer2,&clsidEncoder,&eps);
-		else
-		img->Save(szBuffer2,&clsidEncoder);
-	}
-	lstrcpy(szBuffer,szBuffer2);
-
-	return true;
-}
 
 #define HOTKEY(modifier,key) ((((modifier)&0xff)<<8)|((key)&0xff)) 
 
@@ -502,6 +452,7 @@ void IU_ConfigureProxy(NetworkManager& nm)
 		nm.setProxy(WstringToUtf8((LPCTSTR)Settings.ConnectionSettings.ServerAddress), Settings.ConnectionSettings.ProxyPort,ProxyTypeList[Settings.ConnectionSettings.ProxyType]);
 		nm.setProxyUserPassword(WstringToUtf8((LPCTSTR)Settings.ConnectionSettings.ProxyUser), WstringToUtf8((LPCTSTR)Settings.ConnectionSettings.ProxyPassword));	
 	}
+	nm.setUploadBufferSize(Settings.UploadBufferSize);
 }
 
 CString IU_GetFileMimeType (const CString& filename)
@@ -531,20 +482,15 @@ CPluginManager iuPluginManager;
 
 const CString IU_GetVersion()
 {
-	return CString("1.2.5.") + _T(BUILD);
+	return CString("1.2.6.") + _T(BUILD);
 }
-
 
 void IU_RunElevated(CString params)
 {
 	SHELLEXECUTEINFO TempInfo = {0};
-
-	//TCHAR buf[MAX_PATH];
-	//GetModuleFileName(0,buf,MAX_PATH-1);
-	CString s=GetAppFolder();
-	
+	CString appDir = GetAppFolder();
 	CString Command = CmdLine[0];
-	CString parameters = _T(" ")+params;
+	CString parameters = _T(" ") + params;
 	TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
 	TempInfo.fMask = 0;
 	TempInfo.hwnd = NULL;
@@ -554,53 +500,47 @@ void IU_RunElevated(CString params)
 		TempInfo.lpVerb = _T("open");
 	TempInfo.lpFile = Command;
 	TempInfo.lpParameters = parameters;
-	TempInfo.lpDirectory = s;
+	TempInfo.lpDirectory = appDir;
 	TempInfo.nShow = SW_NORMAL;
 
 	::ShellExecuteEx(&TempInfo);
 }
 
+bool IU_GetClipboardText(CString &text)
+{
+	if (OpenClipboard(NULL))
+	{
+		HGLOBAL hglb = GetClipboardData(CF_UNICODETEXT);
+		LPCWSTR lpstr = (LPCWSTR)GlobalLock(hglb);
+		text = lpstr;
+		GlobalUnlock(hglb);
+		CloseClipboard();
+		return true;
+	}
+	return false;
+}
+
 bool IU_CopyTextToClipboard(CString text)
 {
-
     LPTSTR  lptstrCopy;
     HGLOBAL hglbCopy;
     int ich1, ich2, cch = text.GetLength();
-
-    // Открываем буфер обмена и очищаем его.
     if (!OpenClipboard( NULL))
         return FALSE;
-
     EmptyClipboard();
-
-  
-
-    // Если выделен текст, то копируем его, используя формат CF_TEXT.
-    
-    {
-        
-
-        // Размещаем объект для текста в глобальной памяти.
-        hglbCopy = GlobalAlloc(GMEM_MOVEABLE,
-            (cch + 1) * sizeof(TCHAR));
-        if (hglbCopy == NULL)
-        {
-            CloseClipboard();
-            return FALSE;
-        }
-
-        // Блокируем дескриптор и копируем текст в буфер.
-        lptstrCopy = (LPTSTR) GlobalLock(hglbCopy);
-
-        memcpy(lptstrCopy, (LPCTSTR)text, text.GetLength() * sizeof(TCHAR));
-        lptstrCopy[cch] = (TCHAR) 0;    // нулевой символ
-        GlobalUnlock(hglbCopy);
-
-        // Помещаем дескриптор в буфер обмена.
-        SetClipboardData(CF_UNICODETEXT, hglbCopy);
-    }
-CloseClipboard();
-	 }
+	hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (cch + 1) * sizeof(TCHAR));
+	if (hglbCopy == NULL)
+	{
+		CloseClipboard();
+		return FALSE;
+	}
+	lptstrCopy = (LPTSTR) GlobalLock(hglbCopy);
+	memcpy(lptstrCopy, (LPCTSTR)text, text.GetLength() * sizeof(TCHAR));
+	lptstrCopy[cch] = (TCHAR) 0;    
+	GlobalUnlock(hglbCopy);
+	SetClipboardData(CF_UNICODETEXT, hglbCopy);
+    CloseClipboard();
+}
 
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
 {
@@ -616,9 +556,96 @@ DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
 	return 1;
 }
 
-const CString IU_GetDataFolder()
+int dlgX(int WidthInPixels)
 {
-	return Settings.DataFolder;
+	LONG units = GetDialogBaseUnits();
+	short baseunitX = LOWORD(units);
+	return WidthInPixels*baseunitX/4;
 }
 
-std::vector< UploadEngine> EnginesList;
+int dlgY(int HeightInPixels)
+{
+	LONG units = GetDialogBaseUnits();
+	short baseunitY = HIWORD(units);
+	return HeightInPixels*baseunitY/8;
+}
+
+CString GetUniqFileName(const CString &filePath)
+{
+	TCHAR path[256];
+	if(!FileExists(filePath)) return filePath;
+	ExtractFilePath(filePath, path);
+	CString name;
+	name = GetOnlyFileName(filePath);
+	CString extension = GetFileExt(filePath);
+	CString result;
+	for(int i=2;;i++)
+	{
+		result = path + name + IntToStr(i)+ (extension.IsEmpty()?_T(""):_T(".")+extension);
+		if(!FileExists(result)) break;
+	}
+	return result;
+}
+const std::string IU_md5(const std::string& data);
+CString GenerateFileName(const CString &templateStr, int index, const CPoint size, const CString& originalName)
+{
+	CString result = templateStr;
+	time_t t = time(0);
+	tm * timeinfo = localtime ( &t );
+	CString indexStr;
+	CString day, month, year;
+	CString hours,seconds,minutes;
+	indexStr.Format(_T("%03d"),index);
+	CString md5 = Utf8ToWstring(IU_md5(WCstringToUtf8(IntToStr(GetTickCount()+random(100))))).c_str();
+	result.Replace(_T("%md5"), (LPCTSTR)md5);
+	result.Replace(_T("%width%"), IntToStr(size.x));
+	result.Replace(_T("%height%"), IntToStr(size.y));
+	year.Format(_T("%04d"), (int)1900+timeinfo->tm_year);
+	month.Format(_T("%02d"), (int) timeinfo->tm_mon+1);
+	day.Format(_T("%02d"), (int) timeinfo->tm_mday);
+	hours.Format(_T("%02d"), (int)timeinfo->tm_hour);
+	seconds.Format(_T("%02d"), (int)timeinfo->tm_sec);
+	minutes.Format(_T("%02d"), (int)timeinfo->tm_min);
+	result.Replace(_T("%y"),year);
+	result.Replace(_T("%m"), month);
+	result.Replace(_T("%d"), day);
+	result.Replace(_T("%h"), hours);
+	result.Replace(_T("%n"), minutes);
+	result.Replace(_T("%s"), seconds);
+	result.Replace(_T("%c"), indexStr);
+	return result;
+}
+
+CUploadEngineList *_EngineList;
+
+const CString IU_GetWindowText(HWND wnd)
+{
+	int len = GetWindowTextLength(wnd);
+	CString buf;
+	GetWindowText(wnd, buf.GetBuffer(len+1),len+1);
+	buf.ReleaseBuffer(-1);
+	return buf;
+}
+
+std::string ExtractFileNameA(const std::string& FileName)
+{  
+	return WCstringToUtf8(myExtractFileName(Utf8ToWstring(FileName).c_str()));
+}
+LPCSTR GetFileExtA(LPCSTR szFileName)
+{
+	if(!szFileName) return 0;
+	int nLen = lstrlenA(szFileName);
+
+	LPCSTR szReturn = szFileName+nLen;
+	for( int i=nLen-1; i>=0; i-- )
+	{
+		if(szFileName[i] == '.')
+		{
+			szReturn = szFileName + i + 1;
+			break;
+		}
+		else if(szFileName[i] == '\\') break;
+	}
+	return szReturn;
+}
+

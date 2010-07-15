@@ -24,6 +24,8 @@ struct LogoParams;
 #include "myimage.h"
 #include "colorpicker.h"
 #include "settingspage.h"
+
+#include "3rdpart/ColorButton.h"
 // CLogoSettings
 
 struct LogoParams
@@ -69,13 +71,13 @@ public:
 		COMMAND_HANDLER(IDC_LOGOBROWSE, BN_CLICKED, OnBnClickedLogobrowse)
 		COMMAND_HANDLER(IDC_SELECTFONT, BN_CLICKED, OnBnClickedSelectfont)
 		COMMAND_HANDLER(IDC_THUMBFONT, BN_CLICKED, OnBnClickedThumbfont)
-		COLOR_BUTTON(IDC_SELECTCOLOR,params->TextColor);
+/*		COLOR_BUTTON(IDC_SELECTCOLOR,params->TextColor);
 		COLOR_BUTTON(IDC_STROKECOLOR,params->StrokeColor);
 		COLOR_BUTTON(IDC_FRAMECOLOR,params->FrameColor);
 		COLOR_BUTTON(IDC_THUMBTEXTCOLOR,params->ThumbTextColor);
 		COLOR_BUTTON(IDC_COLOR1,params->ThumbColor1);
-		COLOR_BUTTON(IDC_COLOR2,params->ThumbColor2);
-		
+		COLOR_BUTTON(IDC_COLOR2,params->ThumbColor2);*/
+		REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -88,8 +90,8 @@ public:
 	LRESULT OnBnClickedLogobrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnBnClickedSelectfont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnBnClickedThumbfont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	CColorPicker FrameColor;
-	CColorPicker Color1,Color2,ThumbTextColor,TextColor, StrokeColor;
+	CColorButton FrameColor;
+	CColorButton Color1,Color2,ThumbTextColor,TextColor, StrokeColor;
 	LogoParams *params;
 	LOGFONT lf,ThumbFont;
 	bool Apply();

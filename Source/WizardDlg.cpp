@@ -22,33 +22,35 @@
 #include "WizardDlg.h"
 #include "langclass.h"
 #include "langselect.h"
-#include "common/markupmsxml.h"
+#include "3rdpart/markup.h"
 #include "common/regexp.h"
 #include <io.h>
-
 #include "floatingwindow.h"
 #include "updatepackage.h"
 #include "updatedlg.h"
 #include "TextViewDlg.h"
-#include <algorithm>
+#include "Gui/ImageDownloaderDlg.h"
+#include "Core/ImageConverter.h"
 // CWizardDlg
 CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 {
-	*LastVideoFile = 0;
+	screenshotIndex = 1;
 	CurPage = -1;
 	PrevPage = -1;
 	ZeroMemory(Pages, sizeof(Pages));
 	DragndropEnabled = true;
 	hLocalHotkeys = 0;
-	QuickUploadMarker=false;
+	QuickUploadMarker = false;
 	m_bShowAfter = true;
 	m_bHandleCmdLineFunc = false;
 	updateDlg = 0;
-
+	_EngineList = &m_EngineList;
+	m_bScreenshotFromTray = false;
 }
 
 CWizardDlg::~CWizardDlg()
 {
+	Detach();
 	if(updateDlg) delete updateDlg;
 	for(int i=0; i<5; i++) 
 	{
@@ -57,11 +59,7 @@ CWizardDlg::~CWizardDlg()
 	}
 }
 
-bool compareEngines(const UploadEngine& elem1, const UploadEngine& elem2)
-{
-	return elem1.Name.CompareNoCase(elem2.Name)<0;
-		//elem1.< elem2.key1;
-}
+
 TCHAR MediaInfoDllPath[MAX_PATH] = _T("");
 LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
@@ -93,13 +91,11 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	TCHAR ClassName[MAX_PATH]=_T("\0");
 	DWORD BufSize = sizeof(ClassName)/sizeof(TCHAR);
 	DWORD Type = REG_SZ;
-   RegQueryValueEx(ExtKey,	 _T("installdir"), 0, &Type, (LPBYTE)&ClassName, &BufSize);
+	RegQueryValueEx(ExtKey,	 _T("installdir"), 0, &Type, (LPBYTE)&ClassName, &BufSize);
 	RegCloseKey(ExtKey);
 
 	m_UpdateLink.ConvertStaticToHyperlink(GetDlgItem(IDC_UPDATESLABEL), _T("http://zenden.ws"));
 	m_UpdateLink.setCommandID(IDC_UPDATESLABEL);
-
-
 
 	CString MediaDll = GetAppFolder()+_T("\\Modules\\MediaInfo.dll");
 	if(FileExists( MediaDll)) lstrcpy(MediaInfoDllPath, MediaDll);
@@ -152,25 +148,20 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		}
 	}
 
-	LoadUploadEngines(_T("userservers.xml"),ErrorStr);
-	std::sort(EnginesList.begin(),EnginesList.end(), compareEngines);
-	
-	Settings.ServerID = GetUploadEngineIndex(Settings.ServerName);
-	Settings.FileServerID = GetUploadEngineIndex(Settings.FileServerName);
+	LoadUploadEngines(_T("userservers.xml"),ErrorStr);	
+	Settings.ServerID = m_EngineList.GetUploadEngineIndex(Settings.ServerName);
+	Settings.FileServerID = m_EngineList.GetUploadEngineIndex(Settings.FileServerName);
 
-	Settings.QuickServerID = GetUploadEngineIndex(Settings.QuickServerName);
-	LogWindow.Create(0);
-
+	Settings.QuickServerID = m_EngineList.GetUploadEngineIndex(Settings.QuickServerName);
 	if(!*MediaInfoDllPath)
 		WriteLog(logWarning, APPNAME, TR("Библиотека MediaInfo.dll не найдена. \nПолучение технических данных о файлах мультимедиа будет недоступно.")); 
 	TRC(IDC_ABOUT,"О программе...");
 	if(!CmdLine.IsOption(_T("tray")))
-   TRC(IDCANCEL,"Выход");
-	
+		TRC(IDCANCEL,"Выход");
 	else 
 		TRC(IDCANCEL,"Скрыть");
 	TRC(IDC_UPDATESLABEL, "Проверить обновления");
-   TRC(IDC_PREV,"< Назад");
+	TRC(IDC_PREV,"< Назад");
 
 	ACCEL accel;
 	accel.cmd = ID_PASTE;
@@ -185,7 +176,6 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	ShowPage(0);
 	::SetFocus(Pages[0]->PageWnd);
 
-	
 	if(CmdLine.IsOption(_T("update")))
 	{
 		CreateUpdateDlg();
@@ -196,15 +186,10 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	{
 		if(time(0)  - Settings.LastUpdateTime > 3600 * 24 * 7)
 		{
-				CreateUpdateDlg();
-		//updateDlg = new CUpdateDlg();
-		updateDlg->Create(m_hWnd);
-	
-		//Start();
+			CreateUpdateDlg();
+			updateDlg->Create(m_hWnd);
 		}
-
 	}
-		//um.DoUpdates();
 	return 0;  // Let the system set the focus
 }
 
@@ -274,28 +259,21 @@ nIndex = 0;
 		FolderAdd.Do(Paths, CmdLine.IsOption(_T("imagesonly")), true);
 	}
 
-
-
-
-
-
 	return count;
 
 }
 
 LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	//if(CmdLine.IsOption(_T("tray")))
 	if(floatWnd.m_hWnd)
 	{ 
-		ShowWindow(/*SW_HIDE*/SW_HIDE);
+		ShowWindow(SW_HIDE);
 		if(Pages[2])
-		((CMainDlg*)Pages[2])->ThumbsView.MyDeleteAllItems();
-//		EnableExit();
-		/*if(CurPage!=2)*/ ShowPage(0); 
-		return 0;
+			((CMainDlg*)Pages[2])->ThumbsView.MyDeleteAllItems();
+			ShowPage(0); 
 	}
-	CloseWizard();
+	else
+		CloseWizard();
 	return 0;
 }
 
@@ -316,7 +294,6 @@ BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
 			return TRUE;
 		}
 
-	
 		if(VK_RETURN == pMsg->wParam  && GetForegroundWindow()==m_hWnd  )
 		{
 			if( !lstrcmpi(Buffer,_T("Button"))){
@@ -372,8 +349,6 @@ void CWizardDlg::CloseDialog(int nVal)
 	
 	Exit();
 	DestroyWindow();
-	
-
 	::PostQuitMessage(nVal);
 }
 
@@ -480,7 +455,7 @@ bool CWizardDlg::CreatePage(int PageID)
 
 		case 3:
 			CUploadSettings *tmp3;
-			tmp3=new CUploadSettings();
+			tmp3=new CUploadSettings(&m_EngineList);
 			Pages[PageID]=tmp3;
 			Pages[PageID]->WizardDlg=this;
 			tmp3->Create(m_hWnd,rc2);
@@ -554,6 +529,15 @@ LRESULT CWizardDlg::OnBnClickedAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 
 void CWizardDlg::Exit()
 {
+	// Converting server id to server name
+	if(Settings.ServerID >= 0 && m_EngineList.count())
+		Settings.ServerName = m_EngineList.byIndex(Settings.ServerID)->Name;
+
+	if(Settings.QuickServerID>=0 && m_EngineList.count())
+		Settings.QuickServerName = m_EngineList.byIndex(Settings.QuickServerID)->Name;
+	if(Settings.FileServerID>=0 && m_EngineList.count())
+		Settings.FileServerName = m_EngineList.byIndex(Settings.FileServerID)->Name;
+
 	Settings.SaveSettings();
 }
 
@@ -608,117 +592,9 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 
 bool CWizardDlg::LoadUploadEngines(const CString &filename, CString &Error)
 {
-	int i = 0;
-
-	CMarkupMSXML XML;
-	CString XmlFileName = IU_GetDataFolder() + /*_T("servers.xml")*/filename;
-
-	if(!FileExists(XmlFileName))
-	{
-		Error = TR("Файл не найден.");
-		return false;
-	}
-
-	if(!XML.Load(XmlFileName))
-	{
-		Error = XML.GetError();
-		return false;
-	}
-
-	if(!XML.FindElem(_T("Servers")))
-	{
-		Error = _T("Unable to find Servers node");
-		return false;	
-	}
-
-	XML.IntoElem();
-
-	while(XML.FindElem(_T("Server")))
-	{
-		UploadEngine UE;
-		UE.NumOfTries = 0;
-		UE.NeedAuthorization = _ttoi(XML.GetAttrib(_T("Authorize")));
-		//*UE.Name =0;
-		CString RetryLimit = XML.GetAttrib(_T("RetryLimit"));
-		if(RetryLimit.IsEmpty())
-		{
-			UE.RetryLimit = Settings.FileRetryLimit;
-		}
-		else UE.RetryLimit = _ttoi(RetryLimit);
-
-		CString ServerName = XML.GetAttrib(_T("Name"));
-		UE.SupportsFolders = (bool) _ttoi(XML.GetAttrib(_T("SupportsFolders")));
-		UE.RegistrationUrl = XML.GetAttrib(_T("RegistrationUrl"));
-		UE.PluginName = XML.GetAttrib(_T("Plugin"));
-		UE.UsingPlugin = !UE.PluginName.IsEmpty();
-		UE.Debug =  (bool) _ttoi(XML.GetAttrib(_T("Debug")));
-		UE.ImageHost =  !(bool) _ttoi(XML.GetAttrib(_T("FileHost")));
-		UE.MaxFileSize =   _ttoi(XML.GetAttrib(_T("MaxFileSize")));
-		XML.IntoElem();
-		UE.Name =  ServerName;
-
-		if(XML.FindElem(_T("Actions")))
-		{
-			XML.IntoElem();
-			int ActionIndex = 0;
-			while(XML.FindElem())
-			{
-				UploadAction UA;
-				UA.NumOfTries = 0;
-				UA.Index = ActionIndex;
-
-				CString RetryLimit = XML.GetAttrib(_T("RetryLimit"));
-				if(RetryLimit.IsEmpty())
-				{
-					UA.RetryLimit =Settings.ActionRetryLimit;
-				}
-				else UA.RetryLimit = _ttoi(RetryLimit);
-				UA.IgnoreErrors = _ttoi(XML.GetAttrib(_T("IgnoreErrors")));
-				UA.Description= XML.GetAttrib(_T("Description"));
-				ActionIndex++;
-				UA.Type = XML.GetAttrib(_T("Type"));
-				UA.Url = XML.GetAttrib(_T("Url"));
-				UA.PostParams = XML.GetAttrib(_T("PostParams"));
-				UA.RegExp = XML.GetAttrib(_T("RegExp"));
-				UA.OnlyOnce = _ttoi(XML.GetAttrib(_T("OnlyOnce")));
-
-				CString AssignVars = XML.GetAttrib(_T("AssignVars"));
-				CComBSTR BstrAssignVars = AssignVars;	
-				RegExp exp;
-				exp.SetPattern(_T("([A-z0-9_]*?):([0-9]{1,3})"));
-				exp.Execute(BstrAssignVars);
-
-				int n = exp.MatchCount();
-
-				for(int i=0; i<n; i++) // count of variables
-				{
-					int nSub =	exp.SubMatchCount(i);
-					CString VariableName, VariableIndex;
-					ActionVariable AV;
-					AV.Name = exp.GetSubMatch(i,0);
-					AV.nIndex = _ttoi(exp.GetSubMatch(i,1));
-					UA.Variables.push_back(AV); //Adding variable name and it's index to the map
-				}
-				UE.Actions.push_back(UA);
-			}
-
-			XML.OutOfElem();
-		}
-
-		if(XML.FindElem(_T("Result")))
-		{
-			UE.DownloadUrlTemplate = XML.GetAttrib(_T("DownloadUrlTemplate"));
-			UE.ImageUrlTemplate = XML.GetAttrib(_T("ImageUrlTemplate"));
-			UE.ThumbUrlTemplate = XML.GetAttrib(_T("ThumbUrlTemplate"));
-		}
-
-		UE.SupportThumbnails = !UE.ThumbUrlTemplate.IsEmpty();
-		XML.OutOfElem();
-
-		EnginesList.push_back(UE);
-	}
-	return true;
-
+	bool Result = m_EngineList.LoadFromFile(filename);
+	Error = m_EngineList.ErrorStr();
+	return Result;
 }
 
 STDMETHODIMP_(ULONG) CWizardDlg::AddRef()
@@ -791,8 +667,8 @@ CString MakeTempFileName(const CString FileName)
 
    if(FileExists(FileNameBuf))
 	{
-		TCHAR OnlyName[MAX_PATH];
-		GetOnlyFileName(FileName, OnlyName);
+		CString OnlyName;
+		OnlyName = GetOnlyFileName(FileName);
 		CString Ext = GetFileExt(FileName);
 		FileNameBuf = IUTempFolder + OnlyName + _T("_")+IntToStr(GetTickCount()^33333) + (Ext? _T("."):_T("")) + Ext;
 	}
@@ -977,11 +853,10 @@ STDMETHODIMP CWizardDlg::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL p
 	if(HandleDropHDROP(pDataObj))
 		return S_OK;
 
-	// Прием файлов через файлдескриптор
+
 	if(HandleDropFiledescriptors(pDataObj))
 		return S_OK;
 
-	// An image was dropped
 	if(HandleDropBitmap(pDataObj))
 		return S_OK;
 
@@ -990,17 +865,27 @@ STDMETHODIMP CWizardDlg::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL p
 
 LRESULT CWizardDlg::OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	if(!OpenClipboard()) return 0;
-
 	if(IsClipboardFormatAvailable(CF_BITMAP)) 
 	{
+		if(!OpenClipboard()) return 0;
 		HBITMAP bmp = (HBITMAP) GetClipboardData(CF_BITMAP);
 
 		if(!bmp) return CloseClipboard();
 
 		PasteBitmap(bmp);
+		CloseClipboard();
 	}
-	CloseClipboard();
+
+	if(IsClipboardFormatAvailable(CF_UNICODETEXT)) 
+	{
+		CString text;
+		IU_GetClipboardText(text);
+		if(CImageDownloaderDlg::LinksAvailableInText(text))
+		{
+			CImageDownloaderDlg dlg(this,CString(text));
+			dlg.DoModal(m_hWnd);
+		}
+	}	
 	return 0;
 }
 
@@ -1008,10 +893,9 @@ void CWizardDlg::PasteBitmap(HBITMAP Bmp)
 {
 	if(CurPage!=0 && CurPage!=2) return;
 
-	TCHAR buf2[256];
+	CString buf2;
 	SIZE dim;
 	GetBitmapDimensionEx(Bmp, &dim);
-	wsprintf(buf2, _T("w=%d, h=%d"),dim);
 	Bitmap bm(Bmp,0);
 	if(bm.GetLastStatus()==Ok)
 	{
@@ -1084,16 +968,19 @@ int CFolderAdd::ProcessDir( CString currentDir, bool bRecursive /* = true  */ )
         else if ( s_Dir.name[ 0 ] != '.' )
 		  {
 				if(!m_bImagesOnly || IsImage(s_Dir.name))
-				 if(SendMessage(m_pWizardDlg->m_hWnd, WM_MY_ADDIMAGE,(WPARAM) (LPCTSTR) (CString(currentDir) + CString(_T("\\"))+ CString( s_Dir.name)),  FALSE))
-					 count++;
+				{
+					AddImageStruct ais;
+					CString name = CString(currentDir) + CString(_T("\\"))+ CString( s_Dir.name);
+					ais.RealFileName = name;
+					if(SendMessage(m_pWizardDlg->m_hWnd, WM_MY_ADDIMAGE,(WPARAM) &ais,0 ))
+						count++;
+				}
 		  }
 	 } while( _tfindnext( hDir, &s_Dir ) == 0 );
 
     _findclose( hDir );
 
     return 0;
-
-
 }
 
 DWORD CFolderAdd::Run()
@@ -1109,8 +996,14 @@ DWORD CFolderAdd::Run()
 			ProcessDir(CurPath, m_bSubDirs);
 		else 
 			if(!m_bImagesOnly || IsImage(CurPath))
-			if(SendMessage(m_pWizardDlg->m_hWnd, WM_MY_ADDIMAGE,(WPARAM) (LPCTSTR) (CurPath),  FALSE))
+			{
+				AddImageStruct ais;
+				CString name = CurPath;
+				ais.RealFileName = CurPath;
+				if(SendMessage(m_pWizardDlg->m_hWnd, WM_MY_ADDIMAGE,(WPARAM) &ais,0 ))
+		
 				count++;
+			}
 		if(dlg.NeedStop()) break;
 	}
 
@@ -1168,12 +1061,12 @@ int CFolderAdd::GetNextImgFile(LPTSTR szBuffer, int nLength)
 	return FALSE;
 }
 
-bool CWizardDlg::AddImage(LPCTSTR FileName, bool Show)
+bool CWizardDlg::AddImage(const CString &FileName, const CString &VirtualFileName, bool Show)
 {
 	CreatePage(2);
 	CMainDlg* MainDlg = (CMainDlg*) Pages[2];
 	if(!MainDlg) return false;
-	MainDlg->AddToFileList(FileName);
+	MainDlg->AddToFileList(FileName, VirtualFileName);
 	if(Show){
 		MainDlg->ThumbsView.LoadThumbnails();
 		ShowPage(2);}
@@ -1182,13 +1075,13 @@ bool CWizardDlg::AddImage(LPCTSTR FileName, bool Show)
 
 LRESULT CWizardDlg::OnAddImages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {	
-	LPTSTR szFileName= (LPTSTR) wParam;
-	if(!szFileName) ATLTRACE("Filename = NULL!");
-	return  AddImage(szFileName,  lParam);
+	AddImageStruct* ais = (AddImageStruct*)wParam;
+	if(!ais) return 0;
+	return  AddImage(ais->RealFileName, ais->VirtualFileName, ais->show);
 }
 
 CMyFolderDialog::CMyFolderDialog(HWND hWnd):
-				CFolderDialogImpl(hWnd, TR("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE|BIF_VALIDATE )
+				CFolderDialogImpl(hWnd, TR("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE|BIF_NONEWFOLDERBUTTON|BIF_VALIDATE )
 {
 	OleInitialize(NULL);
 }
@@ -1228,9 +1121,13 @@ LRESULT 	CWizardDlg::OnWmShowPage(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*
 	return 0;
 }
 	
-bool CWizardDlg::funcAddImages()
+bool CWizardDlg::funcAddImages(bool AnyFiles)
 {
 	TCHAR Buf[MAX_PATH*4];
+	if(AnyFiles)
+		SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),1,TR("Любые файлы"),
+		_T("*.*"));
+	else
 	SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
 		CString(TR("Изображения"))+ _T(" (jpeg, bmp, png, gif ...)"),
 		_T("*.jpg;*.gif;*.png;*.bmp;*.tiff"),
@@ -1279,34 +1176,41 @@ bool CWizardDlg::funcAddImages()
 	m_bShowWindow = true;
 }
 
-bool CWizardDlg::executeFunc(CString funcName)
+bool CWizardDlg::executeFunc(CString funcBody)
 {
-	bool LaunchCopy= false;
+	bool LaunchCopy = false;
 
-	if(CurPage == 4) LaunchCopy= true;
-	if(CurPage == 1) LaunchCopy= true;
-
-
+	if(CurPage == 4) LaunchCopy = true;
+	if(CurPage == 1) LaunchCopy = true;
 	if(CurPage == 3) ShowPage(2);
 
 	if(!IsWindowEnabled())LaunchCopy= true; 
 
+	CString funcName = StringSection(funcBody,  _T(','), 0 );
+	CString funcParam1 = StringSection(funcBody, _T(','), 1);
+
+	//MessageBox(funcBody,funcParam1);
+	if(!funcParam1.IsEmpty())
+	{
+			m_bScreenshotFromTray = _ttoi(funcParam1);
+	}
 	if(LaunchCopy)
 	{
 		if(Settings.TrayIconSettings.DontLaunchCopy)
 		{	
-				//SetForegroundWindow(m_hWnd);
 			 if(IsWindowVisible() && IsWindowEnabled())
 				SetForegroundWindow(m_hWnd);
 			else if(!IsWindowEnabled()) SetActiveWindow();
 			FlashWindow(true);
 		}
 		else
-			IULaunchCopy(_T("/func=")+funcName,CAtlArray<CString>());
+			IULaunchCopy(_T("/func=")+funcBody,CAtlArray<CString>());
 		return false;
 	}
 	if(funcName == _T("addimages"))
 		return funcAddImages();
+	else if(funcName == _T("addfiles"))
+		return funcAddImages(true);
 	if(funcName == _T("addfiles"))
 		return funcAddFiles();
 	else if(funcName == _T("importvideo"))
@@ -1319,6 +1223,12 @@ bool CWizardDlg::executeFunc(CString funcName)
 		return funcRegionScreenshot(false);
 	else if(funcName == _T("fullscreenshot"))
 		return funcFullScreenshot();
+	else if(funcName == _T("windowhandlescreenshot"))
+		return funcWindowHandleScreenshot();
+	else if(funcName == _T("freeformscreenshot"))
+			return funcFreeformScreenshot();
+	else if(funcName == _T("downloadimages"))
+		return funcDownloadImages();
 	else if(funcName == _T("windowscreenshot"))
 		return funcWindowScreenshot();
 	else if(funcName == _T("windowscreenshot_delayed"))
@@ -1347,11 +1257,11 @@ bool CWizardDlg::funcImportVideo()
 	TCHAR Buffer[1000];
 	fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
 	if(fd.DoModal()!=IDOK || !fd.m_szFileName) return 0;
-	ExtractFilePath(fd.m_szFileName, Buffer); // Запоминаем каталог видео
+	ExtractFilePath(fd.m_szFileName, Buffer); 
 	Settings.VideoFolder = Buffer;
 	CreatePage(1);
-	lstrcpyn(LastVideoFile, fd.m_szFileName, MAX_PATH);
-	((CVideoGrabber*)Pages[1])->SetFileName(fd.m_szFileName); // C-style conversion .. but i like it :)
+	LastVideoFile = fd.m_szFileName;
+	((CVideoGrabber*)Pages[1])->SetFileName(fd.m_szFileName); // C-style conversion .. 
 	ShowPage(1,0,(Pages[2])?2:3);
 	ShowWindow(SW_SHOW);
 		m_bShowWindow = true;
@@ -1361,16 +1271,9 @@ bool CWizardDlg::funcImportVideo()
 bool CWizardDlg::funcScreenshotDlg()
 {
 	CScreenshotDlg dlg;
-	dlg.MainDlg = this;
-	dlg.m_Action = 1;
-
 	if(dlg.DoModal(m_hWnd) != IDOK) return false;
 	
-	CreatePage(2); //Ну типа страничка с картинками!
-	((CMainDlg*)Pages[2])->AddToFileList(dlg.FileName);
-	((CMainDlg*)Pages[2])->ThumbsView.EnsureVisible(((CMainDlg*)Pages[2])->ThumbsView.GetItemCount()-1,true);
-	((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
-	ShowPage(2,0,3);
+	CommonScreenshot(dlg.captureMode()); 
 	m_bShowWindow = true;
 	return true;
 }
@@ -1378,10 +1281,7 @@ bool CWizardDlg::funcScreenshotDlg()
 bool CWizardDlg::funcRegionScreenshot(bool ShowAfter)
 {
 	m_bShowAfter = ShowAfter;
-	ShowWindow(SW_HIDE);
-	EnableWindow(false);
-	RegionSelect.Parent = m_hWnd;
-	RegionSelect.Execute(this);
+	CommonScreenshot(cmRectangles);
 	return true;
 }
 
@@ -1390,8 +1290,14 @@ void CWizardDlg::OnScreenshotFinished(int Result)
 	EnableWindow();
 	if(Result || m_bShowAfter)
 	{
+		m_bShowWindow = true;
 		ShowWindow(SW_SHOWNORMAL);
 		SetForegroundWindow(m_hWnd);
+		if((CMainDlg*)Pages[2])
+		{
+			((CMainDlg*)Pages[2])->ThumbsView.SetFocus();
+			((CMainDlg*)Pages[2])->ThumbsView.SelectLastItem();
+		}
 	}
 	else if (!Result && m_bHandleCmdLineFunc)
 	{
@@ -1416,21 +1322,13 @@ void CWizardDlg::OnScreenshotSaving(LPTSTR FileName, Bitmap* Bm)
 
 bool CWizardDlg::funcFullScreenshot()
 {
-	_screenShotdlg.MainDlg = this;
-	_screenShotdlg.m_Action = 1;
-
-	EnableWindow(false); //Disabling window (for disabling tray icon commands possible execution)
-	_screenShotdlg.Execute(m_hWnd, this, true);
+	CommonScreenshot(cmFullScreen);	
 	return true;
 }
 
 bool CWizardDlg::funcWindowScreenshot(bool Delay)
 {
-	_screenShotdlg.MainDlg = this;
-	_screenShotdlg.m_Action = 1;
-	_screenShotdlg.m_bDelay = Delay;
-	EnableWindow(false); //Disabling window (for disabling tray icon commands possible execution)
-	_screenShotdlg.Execute(m_hWnd, this, false);
+	CommonScreenshot(cmActiveWindow);
 	return true;
 }
 
@@ -1526,6 +1424,13 @@ bool CWizardDlg::funcSettings()
 	return true;
 }
 
+bool CWizardDlg::funcDownloadImages()
+{
+	CImageDownloaderDlg dlg(this,CString());
+	dlg.DoModal(m_hWnd);
+	return true;
+}
+
 bool CWizardDlg::funcMediaInfo()
 {
 	TCHAR Buf[MAX_PATH*4]; //String buffer which will contain filter for CFileDialog
@@ -1546,7 +1451,7 @@ bool CWizardDlg::funcMediaInfo()
 	ExtractFilePath(fd.m_szFileName, Buffer);
 	Settings.VideoFolder = Buffer;
 	CMediaInfoDlg dlg;
-	lstrcpyn(LastVideoFile, fd.m_szFileName, MAX_PATH);
+	LastVideoFile = fd.m_szFileName;
 	dlg.ShowInfo(fd.m_szFileName);
 	return true;
 }
@@ -1618,11 +1523,7 @@ void CWizardDlg::UpdateAvailabilityChanged(bool Available)
 {
 	if(Available)
 	{
-	
-	TRC(IDC_UPDATESLABEL, "Доступны обновления");
-	//#include "hyperlink.h"
-
-	//m///_UpdateLink-
+		TRC(IDC_UPDATESLABEL, "Доступны обновления");
 	}
 }
     
@@ -1635,7 +1536,6 @@ LRESULT CWizardDlg::OnUpdateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 
 void CWizardDlg::CreateUpdateDlg()
 {
-
 	if(!updateDlg)
 	{
 		updateDlg = new CUpdateDlg();
@@ -1643,4 +1543,234 @@ void CWizardDlg::CreateUpdateDlg()
 	}
 }
   
+struct BGRA_COLOR
+{
+	BYTE b;
+	BYTE g;
+	BYTE r;
+	BYTE a;
+};
+// hack for stupid GDIplus
+void Gdip_RemoveAlpha(Bitmap& source, Color color )
+{
+	Rect r( 0, 0, source.GetWidth(),source.GetHeight() );
+	BitmapData  bdSrc;
+	BitmapData bdDst;
+	source.LockBits( &r,  ImageLockModeRead , PixelFormat32bppARGB,&bdSrc);
+
+	BYTE* bpSrc = (BYTE*)bdSrc.Scan0;
+	
+	//bpSrc += (int)sourceChannel;
+	
+
+	for ( int i = r.Height * r.Width; i > 0; i-- )
+	{
+		BGRA_COLOR * c = (BGRA_COLOR *)bpSrc;
+	
+		if(c->a!=255)
+		{
+			//c = 255;
+		
+				DWORD * d= (DWORD*)bpSrc;
+			*d= color.ToCOLORREF();
+			c ->a= 255;
+		}
+		bpSrc += 4;
+		
+	}
+	source.UnlockBits( &bdSrc );
+}
+
+
+bool CWizardDlg::CommonScreenshot(CaptureMode mode)
+{
+	bool needToShow = IsWindowVisible();
+	if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD   && !floatWnd.m_hWnd)
+	{
+		m_bScreenshotFromTray = false;
+		//return false;
+	}
+	bool CanceledByUser = false;
+	bool Result = false;
+	if(needToShow)
+		ShowWindow(SW_HIDE);
+	EnableWindow(false);
+	CScreenCaptureEngine engine;
+	
+	CString buf; // file name buffer
+
+	Bitmap *result=0;
+	int WindowHidingDelay = (needToShow||m_bScreenshotFromTray==2)? Settings.ScreenshotSettings.WindowHidingDelay: 0;
+	
+	engine.setDelay(WindowHidingDelay);
+	if(mode == cmFullScreen)
+	{
+		engine.setDelay(WindowHidingDelay + Settings.ScreenshotSettings.Delay*1000);
+		engine.captureScreen();
+		result = engine.capturedBitmap();
+	}
+	else if (mode == cmActiveWindow)
+	{
+		int Delay = Settings.ScreenshotSettings.Delay;
+		if(Delay <1) Delay = 1;
+		engine.setDelay(WindowHidingDelay + Delay*1000);
+		CActiveWindowRegion winRegion;
+		winRegion.SetWindowHidingDelay(Settings.ScreenshotSettings.WindowHidingDelay);
+		engine.captureRegion(&winRegion);
+		result = engine.capturedBitmap();
+	}
+	else if(engine.captureScreen())
+	{
+		RegionSelect.Parent = m_hWnd;
+		SelectionMode selMode;
+		if(mode == cmFreeform)
+			selMode = smFreeform;
+		if(mode == cmRectangles)
+			selMode = smRectangles;
+		if(mode == cmWindowHandles)
+			selMode = smWindowHandles;
+
+		RegionSelect.m_SelectionMode = selMode;
+		Bitmap *res = engine.capturedBitmap();
+		if(res)
+		{
+			HBITMAP gdiBitmap=0;
+			res->GetHBITMAP(Color(255,255,255), &gdiBitmap);
+			if(RegionSelect.Execute(gdiBitmap, res->GetWidth(), res->GetHeight()))
+			{
+				if(RegionSelect.wasImageEdited() || (mode!=cmWindowHandles || !Settings.ScreenshotSettings.ShowForeground) )
+				engine.setSource(gdiBitmap);
+				
+				else{
+					engine.setSource(0);
+
+					
+				}
+				
+				engine.setDelay(0);
+				CScreenshotRegion* rgn = RegionSelect.region();
+				if(rgn)
+				{
+					CWindowHandlesRegion *whr =  dynamic_cast<CWindowHandlesRegion*>(rgn);
+					if(whr)
+						whr->SetWindowHidingDelay(Settings.ScreenshotSettings.WindowHidingDelay*1.2);
+					engine.captureRegion(rgn);	
+					result = engine.capturedBitmap();
+					DeleteObject(gdiBitmap);
+				}
+			}
+			else CanceledByUser = true;
+		}
+	}
+
+	if(!CanceledByUser)
+	{
+		if(result)
+		{
+			Result = true;
+			bool CopyToClipboard = false;
+			if((m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD) || Settings.ScreenshotSettings.CopyToClipboard)
+			{
+
+				CopyToClipboard = true;
+			}
+			int savingFormat = Settings.ScreenshotSettings.Format;
+			if(savingFormat == 0)
+				Gdip_RemoveAlpha(*result,Color(255,255,255,255));
+			MySaveImage(result,GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, screenshotIndex++,CPoint(result->GetWidth(),result->GetHeight())),buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)(Settings.ScreenshotSettings.Folder));
+
+			if(CopyToClipboard)
+			{
+
+				if ( OpenClipboard() )
+				{
+					EmptyClipboard();
+					if(savingFormat != 0)
+					Gdip_RemoveAlpha(*result,Color(255,255,255,255));
+					HBITMAP out=0;
+					result->GetHBITMAP(Color(255,255,255,255),&out);
+					HDC dc = GetDC();
+					CDC origDC,  destDC;
+					origDC.CreateCompatibleDC(dc);
+					CBitmap destBmp;
+					destBmp.CreateCompatibleBitmap(dc, result->GetWidth(), result->GetHeight());
+					HBITMAP oldOrigBmp = origDC.SelectBitmap(out);
+					destDC.CreateCompatibleDC(dc);
+					HBITMAP oldDestBmp = destDC.SelectBitmap(destBmp);
+					destDC.BitBlt(0,0,result->GetWidth(),result->GetHeight(),origDC,0,0,SRCCOPY);
+					destDC.SelectBitmap(oldDestBmp);
+					origDC.SelectBitmap(oldOrigBmp);
+					SetClipboardData(CF_BITMAP, destBmp);
+					CloseClipboard(); //закрываем буфер обмена
+					 DeleteObject(out);
+					 ReleaseDC(dc);
+					if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD)
+					{
+						floatWnd.ShowBaloonTip(TR("Снимок сохранен в буфере обмена"),_T("Image Uploader"));
+						Result = false;
+					}
+				}
+			}
+			if(!m_bScreenshotFromTray || Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_WIZARD)
+			{
+				CreatePage(2); 
+				((CMainDlg*)Pages[2])->AddToFileList(buf);
+				((CMainDlg*)Pages[2])->ThumbsView.EnsureVisible(((CMainDlg*)Pages[2])->ThumbsView.GetItemCount()-1,true);
+				((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
+				((CMainDlg*)Pages[2])->ThumbsView.SetFocus();
+				ShowPage(2,0,3);
+			}
+			else if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD)
+			{
+				Result = false;
+				floatWnd.UploadScreenshot(buf,buf);
+			}
+
+		}
+		else
+		{
+			MessageBox(_T("Невозможно сделать снимок экрана!"));
+		}
+	}
+
+	if(Result || needToShow )
+	{
+		m_bShowAfter = true;
+	}
+	else m_bShowAfter = false;
+	m_bScreenshotFromTray = false;
+	OnScreenshotFinished(Result);
+
+	return Result;
+}
+
+bool CWizardDlg::funcWindowHandleScreenshot()
+{
+	return CommonScreenshot(cmWindowHandles);
+}
+
+bool CWizardDlg::funcFreeformScreenshot()
+{
+	return CommonScreenshot(cmFreeform);
+}
+
+bool CWizardDlg::IsClipboardDataAvailable()
+{
+	bool IsClipboard = IsClipboardFormatAvailable(CF_BITMAP);
+
+	if(!IsClipboard)
+	{
+		if(IsClipboardFormatAvailable(CF_UNICODETEXT)) 
+		{
+			CString text;
+			IU_GetClipboardText(text);
+			if(CImageDownloaderDlg::LinksAvailableInText(text))
+			{
+				IsClipboard = true;
+			}
+		}
+	}
+	return IsClipboard;
+}
+
 CWizardDlg * pWizardDlg;

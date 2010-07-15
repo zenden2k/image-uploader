@@ -115,6 +115,7 @@ CString Font;
 		XML_OPTION_VALUE(AutoShowLog);
 		XML_OPTION_VALUE(ImagesFolder);
 		XML_OPTION_VALUE(VideoFolder);
+		XML_OPTION_VALUE(WatchClipboard);
 		CString HotkeysStr;
 		#ifndef  SETTINGS_READ
 			 HotkeysStr= Settings.Hotkeys.toString();
@@ -131,10 +132,15 @@ CString Font;
 	XML_NODE_END();
 		#ifndef IU_SHELLEXT
 	XML_NODE_START(Screenshot);
+	
 		XML_OPTION_MEMBER_VALUE(ScreenshotSettings,Delay);
 		XML_OPTION_MEMBER_VALUE(ScreenshotSettings,Format);
 		XML_OPTION_MEMBER_VALUE(ScreenshotSettings,Quality);
-		_XML_OPTION_ATTR(brushColor, COLOR_TO_PINT(ScreenshotSettings.brushColor));
+		XML_OPTION_MEMBER_VALUE(ScreenshotSettings,ShowForeground);
+		XML_OPTION_MEMBER_VALUE(ScreenshotSettings,FilenameTemplate);
+		XML_OPTION_MEMBER_VALUE(ScreenshotSettings,Folder);
+		XML_OPTION_MEMBER_VALUE(ScreenshotSettings,CopyToClipboard);
+		_XML_OPTION_VALUE(brushColor, COLOR_TO_PINT(ScreenshotSettings.brushColor));
 	XML_NODE_END();
 	
 	XML_NODE_START(Image);
@@ -146,26 +152,26 @@ CString Font;
 		XML_OPTION_MEMBER_VALUE(ImageSettings, AddLogo);
 		XML_OPTION_MEMBER_VALUE(ImageSettings, AddText);
 
-		XML_NODE_START_VALUE_WITHATTRIB(Logo, LogoSettings.FileName);
-			XML_OPTION_MEMBER_ATTR(LogoSettings,LogoPosition);
-			XML_OPTION_MEMBER_ATTR(LogoSettings, LogoBlend);
+		XML_NODE_START_VALUE_WITHATTRIB(Logo, ImageSettings.LogoFileName);
+			XML_OPTION_MEMBER_ATTR(ImageSettings,LogoPosition);
+			XML_OPTION_MEMBER_ATTR(ImageSettings, LogoBlend);
 			XML.IntoElem();
 		XML_NODE_END();
 				
 			
-		XML_NODE_START_VALUE_WITHATTRIB(Text, LogoSettings.Text);
-			XML_OPTION_MEMBER_ATTR(LogoSettings, TextPosition);
-			_XML_OPTION_ATTR(TextColor, COLOR_TO_PINT(LogoSettings.TextColor));
+		XML_NODE_START_VALUE_WITHATTRIB(Text, ImageSettings.Text);
+			XML_OPTION_MEMBER_ATTR(ImageSettings, TextPosition);
+			_XML_OPTION_ATTR(TextColor, COLOR_TO_PINT(ImageSettings.TextColor));
 
 			
 			#ifndef  SETTINGS_READ
-				FontToString(&LogoSettings.Font,Font);			
+				FontToString(&ImageSettings.Font,Font);			
 			#endif
 			
 			XML_OPTION_ATTR(Font);
 
 			#ifdef  SETTINGS_READ
-				StringToFont(Font, &LogoSettings.Font);
+				StringToFont(Font, &ImageSettings.Font);
 			#endif
 				XML.IntoElem();
 
@@ -178,12 +184,13 @@ CString Font;
 			XML_OPTION_MEMBER_VALUE(ThumbSettings, CreateThumbs);
 			XML_OPTION_MEMBER_VALUE(ThumbSettings, ThumbWidth);
 			_XML_OPTION_VALUE(FrameColor, COLOR_TO_PINT(ThumbSettings.FrameColor));
-			_XML_OPTION_VALUE(StrokeColor, COLOR_TO_PINT(LogoSettings.StrokeColor));
+			_XML_OPTION_VALUE(StrokeColor, COLOR_TO_PINT(ImageSettings.StrokeColor));
 			_XML_OPTION_VALUE(ThumbColor1, COLOR_TO_PINT(ThumbSettings.ThumbColor1));
 			_XML_OPTION_VALUE(ThumbColor2, COLOR_TO_PINT(ThumbSettings.ThumbColor2));
 				XML_OPTION_MEMBER_VALUE(ThumbSettings, UseServerThumbs);
 				XML_OPTION_MEMBER_VALUE(ThumbSettings, UseThumbTemplate);
-
+				XML_OPTION_MEMBER_VALUE(ThumbSettings, ThumbAddImageSize);
+					XML_OPTION_MEMBER_VALUE(ThumbSettings, DrawFrame);
 			XML_NODE_START_VALUE_WITHATTRIB(Text, ThumbSettings.Text);
 			_XML_OPTION_ATTR(Color, COLOR_TO_PINT(ThumbSettings.ThumbTextColor));
 
@@ -232,6 +239,7 @@ CString Font;
 		XML_OPTION_MEMBER_VALUE(TrayIconSettings, RightClickCommand);
 		XML_OPTION_MEMBER_VALUE(TrayIconSettings, MiddleClickCommand);
 		XML_OPTION_MEMBER_VALUE(TrayIconSettings, DontLaunchCopy);
+		XML_OPTION_MEMBER_VALUE(TrayIconSettings, TrayScreenshotAction);
 	XML_NODE_END(); /* end of VideoGrabber */
 	
 		

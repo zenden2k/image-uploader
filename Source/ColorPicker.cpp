@@ -41,16 +41,27 @@ LRESULT CColorPicker::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 	RECT rc;
 	GetClientRect(&rc);
 
-	HDC hdc = ps.hdc;
+	CDC dc = ps.hdc;
+	//HDC hdc = ps.hdc;
 	HBRUSH Background = CreateSolidBrush(Color);
 
-	SelectObject(hdc, Background);
-	Rectangle(hdc, rc.left, rc.top, rc.right, rc.bottom);
-	SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+	HBRUSH oldBrush = dc.SelectBrush(Background);
+	//SelectObject(hdc, Background);
+	
+	
+		CPen pen;
+		pen.CreatePen(PS_SOLID, 1, 0xC1C1C1);
+		dc.SelectPen(pen);
+		dc.RoundRect(&rc, CPoint(2,2));
+	//Rectangle(hdc, rc.left, rc.top, rc.right, rc.bottom);
+	
+	dc.SelectBrush(oldBrush);
+	//SelectObject(hdc, GetStockObject(BLACK_BRUSH));
 
 	DeleteObject(Background);
 
 	EndPaint(&ps);
+	dc.Detach();
 	return 0;
 }
 

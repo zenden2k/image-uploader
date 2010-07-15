@@ -23,6 +23,7 @@
 //
 
 #pragma once
+#define GDIPVER 0x0110
 #ifndef IU_SHELLEXT
 // Change these values to use different versions
 
@@ -63,6 +64,7 @@ extern CAppModule _Module;
 #include <atlgdi.h>
 #include <atlmisc.h>
 #include <atlcoll.h>
+#include <atltheme.h>
 using namespace Gdiplus;
 #include "myutils.h"
 #include "Common/CmdLine.h"

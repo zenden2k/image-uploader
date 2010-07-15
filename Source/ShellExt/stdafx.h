@@ -54,5 +54,6 @@
 #include "resource.h"
 #include <atlbase.h>
 #include <atlcom.h>
-
+#include <atlapp.h>
+#include <atlmisc.h>
 using namespace ATL;

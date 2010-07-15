@@ -64,6 +64,7 @@ WIN32_FIND_DATA wfd;
 int GetNextLngFile(LPTSTR szBuffer, int nLength);
 		HANDLE findfile;
 virtual bool Apply();
+
 };
 
 

@@ -59,13 +59,13 @@ bool FontToString(LPLOGFONT lFont, CString &Result);
 bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont);
 LPTSTR ExtractFilePath(LPCTSTR FileName,LPTSTR buf);
 int GetFontSizeInTwips(int nFontSize);
-LPCTSTR myExtractFileName(LPCTSTR FileName);
+const CString myExtractFileName(const CString & FileName);
 
 LPCTSTR GetFileExt(LPCTSTR szFileName);
 bool IsImage(LPCTSTR szFileName);
 bool IsVideoFile(LPCTSTR szFileName);
 
-bool GetOnlyFileName(LPCTSTR szFilename,LPTSTR szBuffer);
+const CString GetOnlyFileName(const CString& szFilename);
 bool ReadSetting(LPTSTR szSettingName,int* Value,int DefaultValue,LPTSTR szString=NULL,LPTSTR szDefString=NULL);
 int GetSavingFormat(LPCTSTR szFileName);
 bool IsStrInList(LPCTSTR szExt,LPCTSTR szList);
@@ -92,15 +92,16 @@ HFONT MakeFontUnderLine(HFONT font);
 HFONT MakeFontBold(HFONT font);
 LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern);
 
-#ifdef DEBUG
+//#ifdef DEBUG
 	void ShowX(LPCTSTR str,int line,int n);
 
 	void ShowX(LPCTSTR str,int line,float n);
 	void ShowX(LPCTSTR str,int line,LPCTSTR n);
 	#define ShowVar(n) ShowX(_T(#n),__LINE__,n)
-#endif
-
+//#endif
+const CString IU_GetDataFolder();
 	#ifndef IU_SHELLEXT
+	const CString StringSection(const CString& str,TCHAR sep, int index);
 	std::wstring strtows(const std::string &str, UINT codePage);
 std::string wstostr(const std::wstring &ws, UINT codePage);
 void EnableNextN(HWND Control, int n, bool Enable);
@@ -111,7 +112,7 @@ const std::string AnsiToUtf8(const std::string &str, int codepage);
 const std::string Utf8ToAnsi(const std::string &str, int codepage);
 bool IUInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP bm=0);
 
-const CString IU_GetDataFolder();
+
 #define PROP_OBJECT_PTR			MAKEINTATOM(ga.atom)
 #define PROP_ORIGINAL_PROC		MAKEINTATOM(ga.atom)
 

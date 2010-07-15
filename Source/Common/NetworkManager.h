@@ -83,9 +83,11 @@ class NetworkManager
 		void setProxyUserPassword(const NString &username, const NString password);
 		void setReferer(const NString &str);
 		void setOutputFile(const NString &str);
+		void setUploadBufferSize(const int size);
 		int getCurlResult();
 		CURL* getCurlHandle();
 	private:
+		int m_UploadBufferSize;
 		CURL *curl_handle;
 		FILE *m_hOutFile;
 		std::string m_OutFileName;
@@ -108,6 +110,7 @@ class NetworkManager
 		int private_writer(char *data, size_t size, size_t nmemb);
 		int private_header_writer(char *data, size_t size, size_t nmemb);
 		size_t private_read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
+		static int set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose);
 		bool private_apply_method();
 		void private_parse_headers();
 		void private_cleanup_before();

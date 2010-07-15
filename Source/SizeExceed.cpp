@@ -22,7 +22,8 @@
 #include "SizeExceed.h"
 #include "common.h"
 // CSizeExceed
-CSizeExceed::CSizeExceed(LPTSTR szFileName, ImageSettingsStruct &iss): m_ImageSettings(iss)
+CSizeExceed::CSizeExceed(LPCTSTR szFileName, ImageSettingsStruct &iss, CUploadEngineList * EngineList)
+	: m_ImageSettings(iss), m_EngineList(EngineList)
 {
 	m_szFileName = szFileName;
 }
@@ -55,12 +56,13 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	img.LoadImage(m_szFileName);
 
 	CenterWindow(GetParent());
-	for(int i=0; i<EnginesList.size(); i++)
+	for(int i=0; i<m_EngineList->count(); i++)
 	{	
+		CUploadEngine * ue = m_EngineList->byIndex(i);
 		TCHAR buf[300]=_T(" ");
 		TCHAR buf2[50];
-		NewBytesToString(EnginesList[i].MaxFileSize, buf2, 25);
-		wsprintf(buf, EnginesList[i].MaxFileSize?_T(" %s   (%s)"):_T(" %s"), EnginesList[i].Name,buf2);
+		NewBytesToString(ue->MaxFileSize, buf2, 25);
+		wsprintf(buf, ue->MaxFileSize?_T(" %s   (%s)"):_T(" %s"), ue->Name,buf2);
 		SendDlgItemMessage(IDC_SERVERLIST, CB_ADDSTRING, 0, (LPARAM)buf);
 	}
 
@@ -85,10 +87,10 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	wsprintf(szBuf,CString(TR("Файл"))+ _T(" %s (%dx%d, %s)"),myExtractFileName(m_szFileName),(int)img.ImageWidth,(int)img.ImageHeight, buf2 );
 
 	SetDlgItemText(IDC_FILEEXCEEDNAME, szBuf);
-	NewBytesToString(EnginesList[m_ImageSettings.ServerID].MaxFileSize, buf2, 25);
+	NewBytesToString(m_EngineList->byIndex(m_ImageSettings.ServerID)->MaxFileSize, buf2, 25);
 
 	wsprintf(szBuf, TR("Файл превышает максимальный размер, допустимый для загрузки на сервер %s (%s)."),
-	EnginesList[ServerID].Name, buf2);
+	m_EngineList->byIndex(ServerID)->Name, buf2);
 	SetDlgItemText(IDC_FILEEXCEEDSIZE2, szBuf);
 	Translate();
 	DisplayParams();

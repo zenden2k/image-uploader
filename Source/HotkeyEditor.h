@@ -22,7 +22,8 @@
 
 #include "resource.h"       // main symbols
 #include <atlddx.h>
-
+#include "3rdpart/WinHotkeyCtrl.h"
+#include "3rdpart/vkCodes.h"
 // CHotkeyEditor
 struct MYHOTKEY
 {
@@ -83,7 +84,9 @@ struct MYHOTKEY
 	}
     CString toString()
     {
-
+		CString res;
+		HotkeyToString(keyCode,keyModifier, res );
+		return res;
         CString strKeyName;
 		  WORD wCode = keyCode;
 		  WORD wModifiers = keyModifier;
@@ -156,6 +159,8 @@ public:
 	CHotkeyItem m_data;
 	CHotkeyEditor();
 	~CHotkeyEditor();
+	CWinHotkeyCtrl localHotkeyCtrl;
+	CWinHotkeyCtrl globalHotkeyCtrl;
 	enum { IDD = IDD_HOTKEYEDITOR };
 
     BEGIN_MSG_MAP(CHotkeyEditor)

@@ -66,7 +66,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="gdiplus.lib strmbasd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zdlld.lib minizipd.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;d:\Projects\Image Uploader\Image Uploader\Libs\"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;$(SolutionDir)\Libs\Debug&quot;"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -127,11 +127,15 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				FavorSizeOrSpeed="0"
+				FavorSizeOrSpeed="2"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB"
+				StringPooling="true"
+				MinimalRebuild="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="0"
+				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="2"
 				WarningLevel="0"
 				Detect64BitPortabilityProblems="false"
@@ -152,7 +156,7 @@
 				LinkLibraryDependencies="true"
 				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wininet.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;d:\Projects\Image Uploader\Image Uploader\Libs\&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;d:\Projects\Image Uploader\Image Uploader\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
 				GenerateManifest="false"
 				AdditionalManifestDependencies=""
 				IgnoreAllDefaultLibraries="false"
@@ -335,6 +339,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\ScreenshotSettingsPage.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\ServerFolderSelect.cpp"
 				>
 			</File>
@@ -399,6 +407,10 @@
 						UsePrecompiledHeader="1"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Source\TabListBox.cpp"
+				>
 			</File>
 			<File
 				RelativePath=".\Source\TextViewDlg.cpp"
@@ -468,10 +480,6 @@
 					>
 				</File>
 				<File
-					RelativePath="Source\Common\MarkupMSXML.cpp"
-					>
-				</File>
-				<File
 					RelativePath="Source\Common\MyXML.h"
 					>
 				</File>
@@ -485,6 +493,110 @@
 				</File>
 				<File
 					RelativePath="Source\Common\RegExp.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="3rdpart"
+				>
+				<File
+					RelativePath=".\Source\3rdpart\ColorButton.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\3rdpart\Markup.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Source\3rdpart\Markup.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\3rdpart\vkCodes.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\3rdpart\vkCodes.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\3rdpart\WinHotkeyCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\3rdpart\WinHotkeyCtrl.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Core"
+				>
+				<File
+					RelativePath=".\Source\Core\FileDownloader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Core\FileDownloader.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Core\FileQueueUploader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Core\FileQueueUploader.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Core\ImageConverter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Core\ScreenCapture.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Core\ScreenCapture.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Core\UploadEngine.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Core\UploadEngine.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Gui"
+				>
+				<File
+					RelativePath=".\Source\Gui\ImageDownloaderDlg.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Gui\ImageDownloaderDlg.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Gui\ResultsWindow.cpp"
 					>
 				</File>
 			</Filter>
@@ -544,6 +656,10 @@
 			</File>
 			<File
 				RelativePath="Source\Image Uploader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Core\ImageConverter.h"
 				>
 			</File>
 			<File
@@ -615,7 +731,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Gui\ResultsWindow.h"
+				>
+			</File>
+			<File
 				RelativePath="Source\ScreenshotDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\ScreenshotSettingsPage.h"
 				>
 			</File>
 			<File
@@ -733,6 +857,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\res\icon-add.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon-addfolder.ico"
+				>
+			</File>
+			<File
 				RelativePath="Source\res\icon-clipboard.ico"
 				>
 			</File>
@@ -742,6 +874,10 @@
 			</File>
 			<File
 				RelativePath="Source\res\icon-folder.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon-freeform.ico"
 				>
 			</File>
 			<File
@@ -757,7 +893,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\res\icon-web.ico"
+				>
+			</File>
+			<File
 				RelativePath="Source\res\icon-window.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon-windows.ico"
 				>
 			</File>
 			<File
@@ -833,7 +977,7 @@
 	<Globals>
 		<Global
 			Name="RESOURCE_FILE"
-			Value="\Projects\Image Uploader\Source\Image Uploader.rc"
+			Value="Source\Image Uploader.rc"
 		/>
 	</Globals>
 </VisualStudioProject>

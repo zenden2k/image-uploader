@@ -26,23 +26,20 @@
 #include <map>
 BOOL IsVista();
 #ifndef IU_SHELLEXT
+#include "Core/ImageConverter.h"
+
+#define TRAY_SCREENSHOT_UPLOAD 0
+#define TRAY_SCREENSHOT_CLIPBOARD 1
+#define TRAY_SCREENSHOT_WIZARD 2
 #include "hotkeysettings.h"
 #include "pluginloader.h"
-struct ImageSettingsStruct
+struct ImageSettingsStruct: public ImageConvertingParams
 {
-	int NewWidth,NewHeight;
-	BOOL KeepAsIs;
-	BOOL AddLogo;
-	BOOL AddText;
 	BOOL GenThumb;
-	
-	int Format;
-	int Quality;
-	BOOL SaveProportions;
 	int ServerID, QuickServerID;
 };
 
-struct LogoSettingsStruct
+/*struct LogoSettingsStruct
 {
 	LOGFONT Font;
 	int LogoPosition;
@@ -52,7 +49,7 @@ struct LogoSettingsStruct
 	TCHAR FontName[256];
 	CString Text;
 	COLORREF TextColor,StrokeColor;
-};
+};*/
 
 struct LoginInfo
 {
@@ -66,27 +63,30 @@ struct TrayIconSettingsStruct
 	int LeftClickCommand;
 	int RightClickCommand;
 	int MiddleClickCommand;
+	int TrayScreenshotAction;
 	BOOL DontLaunchCopy;
 };
-struct ThumbSettingsStruct
+struct ThumbSettingsStruct: public ThumbCreatingParams
 {
-	LOGFONT ThumbFont;
+	/*LOGFONT ThumbFont;
 	int LogoPosition;
 	int LogoBlend;
-	int TextPosition;
+	int TextPosition;*/
 	//int TextColor;
-	CString Text;
-	TCHAR FileName[256];
+	//CString Text;
+	//TCHAR FileName[256];
 	TCHAR FontName[256];
-	COLORREF FrameColor,ThumbColor1,ThumbColor2/*TextBackground ,*/,ThumbTextColor;
-	int ThumbAlpha;
+	//COLORREF FrameColor,ThumbColor1,ThumbColor2/*TextBackground ,*/,ThumbTextColor;
+	/*int ThumbAlpha;
 	BOOL TextOverThumb;
-	int ThumbWidth;
+	int ThumbWidth;*/
 	BOOL UseServerThumbs;
-	BOOL UseThumbTemplate;
-	BOOL DrawFrame;
+	//BOOL UseThumbTemplate;
+	/*BOOL DrawFrame;
 	BOOL ThumbAddImageSize;
-	BOOL ThumbAddBorder;	BOOL CreateThumbs;
+	BOOL ThumbAddBorder;*/	
+	
+	BOOL CreateThumbs;
 
 };
 
@@ -119,7 +119,12 @@ struct ScreenshotSettingsStruct
 {
 	int Format;
 	int Quality, Delay;
+	int WindowHidingDelay;
+	bool ShowForeground;
+	bool CopyToClipboard;
 	COLORREF brushColor;
+	CString FilenameTemplate;
+	CString Folder;
 };
 
 #include <string>
@@ -172,7 +177,7 @@ class CSettings
 		TCHAR m_szLang[64];
 		ImageSettingsStruct ImageSettings;
 		TrayIconSettingsStruct TrayIconSettings;
-		LogoSettingsStruct LogoSettings;
+//		LogoSettingsStruct LogoSettings;
 		ThumbSettingsStruct ThumbSettings;
 		VideoSettingsStruct VideoSettings;
 		ConnectionSettingsStruct ConnectionSettings;
@@ -184,6 +189,7 @@ class CSettings
 		bool UseTxtTemplate;
 		bool AutoShowLog;
 		bool AutoCopyToClipboard;
+		bool WatchClipboard;
 		int CodeLang;
 		int CodeType;
 		//BOOL OldStyleMenu;

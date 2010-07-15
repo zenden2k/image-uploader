@@ -22,21 +22,23 @@
 #include "Uploader.h"
 #include "atlenc.h"
 #include <atlconv.h>
-
-//#include <wininet.h>
-
 #include <cstdlib>
 #include <ctime>
-#include "Common/regexp.h"
+//#include "Common/regexp.h"
 #include "TextViewDlg.h"
+#include <pcre++.h>
+#ifndef DEBUG
+#pragma comment(lib, "pcreplusplus.lib")
+#pragma comment(lib,"pcre.lib" )
+#else 
+#pragma comment(lib, "pcreplusplusd.lib")
+#pragma comment(lib,"pcred.lib" )
+#endif
 
-
-//CAtlArray<UploadEngine> EnginesList;
-//std::vector<UploadEngine> EnginesList;
 #ifdef DEBUG
 void TestExpr(LPCTSTR Expr, LPCTSTR Text)
 {
-	CComBSTR t1 = Expr;
+	/*CComBSTR t1 = Expr;
 	RegExp exp;
 	MessageBox(0, Text, Expr, 0);
 	 exp.SetPattern(t1);
@@ -56,14 +58,15 @@ void TestExpr(LPCTSTR Expr, LPCTSTR Text)
 		{
 			MessageBox(0,exp.GetSubMatch(i,j),0,0);
 		}
-	 }
+	 }*/
 }
 #endif 
 
 CUploader::CUploader(void)
 {
-	CurrentServer = -1;
 	randomize();
+	PrInfo = 0;
+	m_nThumbWidth = 160;
 }
 
 CUploader::~CUploader(void)
@@ -72,33 +75,32 @@ CUploader::~CUploader(void)
 
 bool CUploader::ServerSupportThumbnails(int ServerID)
 {
-	return EnginesList[ServerID].SupportThumbnails;
+	return m_CurrentEngine->SupportThumbnails;
 
 }
 
 CString CUploader::ReplaceVars(const CString Text)
 {
-	CString Result;
-	Result =  Text;
+	CString Result =  Text;
 
-	RegExp exp;
-	CComBSTR Pat = _T("\\$\\(([A-z0-9_]*?)\\)");
-	CComBSTR Txt = Text;
-	exp.SetPattern(Pat);
-	exp.Execute(Txt);
-	
-	int n = exp.MatchCount();
-
-	for(int i=0; i<n; i++) // count of variables
+	pcrepp::Pcre reg("\\$\\(([A-z0-9_]*?)\\)", "imc");
+	std::string str = WCstringToUtf8(Text);
+	size_t pos = 0;
+	while (pos <= str.length()) 
 	{
-		CComBSTR VarName = exp.GetSubMatch(i, 0);
-		CString vv = VarName;
-		if(!vv.IsEmpty() && vv[0] == _T('_'))
-		Result.Replace(CString(_T("$(")) + vv + _T(")"),m_Consts[vv]);
+		if( reg.search(str, pos)) 
+		{
+			pos = reg.get_match_end()+1;
+			CString vv = Utf8ToWstring(reg[0]).c_str();
+			if(!vv.IsEmpty() && vv[0] == _T('_'))
+				Result.Replace(CString(_T("$(")) + vv + _T(")"),m_Consts[vv]);
+			else
+				Result.Replace(CString(_T("$(")) + vv + _T(")"),m_Vars[vv]);
+		}
 		else
-		Result.Replace(CString(_T("$(")) + vv + _T(")"),m_Vars[vv]);
+			break;
 	}
-
+	
 	return Result;
 }
 LoginInfo LoadLogin(int ServerId);
@@ -113,6 +115,8 @@ int CUploader::pluginProgressFunc (void* userData, double dltotal,double dlnow,d
 		return -1;
 
 	if(ultotal<0 || ulnow<0) return 0;
+
+	if(!uploader->PrInfo) return 0;
 
 	uploader->PrInfo->CS.Lock();
 
@@ -136,18 +140,15 @@ int CUploader::pluginProgressFunc (void* userData, double dltotal,double dlnow,d
 	return 0;
 }
 	
-bool CUploader::UploadFile(LPTSTR FileName,LPTSTR szUrlBuffer,LPTSTR szThumbUrlBuffer,int ThumbWidth)
+bool CUploader::UploadFile(const CString & FileName, const CString &displayFileName)
 {
-	if(CurrentServer<0) return false;
 	CIUUploadParams uparams;
-	CurrentEngine = EnginesList[CurrentServer];
-	UploadEngine& Engine = CurrentEngine;
 
 
 m_NetworkManager.setProgressCallback(pluginProgressFunc, (void*)this);
-	if(Engine.UsingPlugin)
+	if(m_CurrentEngine->UsingPlugin)
 	{
-		CUploadScript *plugin = iuPluginManager.getPlugin(Engine.PluginName,Settings.ServersSettings[Engine.Name]);
+		CUploadScript *plugin = iuPluginManager.getPlugin(m_CurrentEngine->PluginName,Settings.ServersSettings[m_CurrentEngine->Name]);
 		if(!plugin)
 		{
 			return false;
@@ -157,15 +158,17 @@ m_NetworkManager.setProgressCallback(pluginProgressFunc, (void*)this);
 
 		
 		if(!plugin) return false;
-		PrInfo->CS.Lock();
-				PrInfo->Uploaded = 0;
-				PrInfo->Total = 0;
-				PrInfo->Bytes.clear();
-				PrInfo->CS.Unlock();
+		if(PrInfo)
+		{	PrInfo->CS.Lock();
+			PrInfo->Uploaded = 0;
+			PrInfo->Total = 0;
+			PrInfo->Bytes.clear();
+			PrInfo->CS.Unlock();
+		}
 
 
-		CFolderItem parent, newFolder = Settings.ServersSettings[Engine.Name].newFolder;
-		CString folderID = Settings.ServersSettings[Engine.Name].params["FolderID"];
+		CFolderItem parent, newFolder = Settings.ServersSettings[m_CurrentEngine->Name].newFolder;
+		CString folderID = Settings.ServersSettings[m_CurrentEngine->Name].params["FolderID"];
 		
 		if(folderID == IU_NEWFOLDERMARK)
 		{
@@ -173,48 +176,49 @@ m_NetworkManager.setProgressCallback(pluginProgressFunc, (void*)this);
 			if( plugin->createFolder(parent,newFolder))
 			{
 				folderID = newFolder.id.c_str();
-				Settings.ServersSettings[Engine.Name].params["FolderID"] = folderID; 
-				Settings.ServersSettings[Engine.Name].params["FolderUrl"] = newFolder.viewUrl.c_str(); 
+				Settings.ServersSettings[m_CurrentEngine->Name].params["FolderID"] = folderID; 
+				Settings.ServersSettings[m_CurrentEngine->Name].params["FolderUrl"] = newFolder.viewUrl.c_str(); 
 			}
 			else folderID.Empty();
 		}
 		
 		uparams.folderId = folderID; 
-			
+		m_CurrentEngine->NumOfTries = 0;	
 		int result = 0;
 		do
 		{
 			if(*ShouldStop) return false;
 			result = plugin->uploadFile(FileName,uparams); 
-			CurrentEngine.NumOfTries++;
+			m_CurrentEngine->NumOfTries++;
 			if(*ShouldStop) return false;
-			if(!result && CurrentEngine.NumOfTries!=CurrentEngine.RetryLimit) 
+			if(!result && m_CurrentEngine->NumOfTries!=m_CurrentEngine->RetryLimit) 
 			{
 				CString Err;
-				Err.Format(TR("Загрузка на сервер не удалась. Повторяю (%d)..."),CurrentEngine.NumOfTries );
+				Err.Format(TR("Загрузка на сервер не удалась. Повторяю (%d)..."),m_CurrentEngine->NumOfTries );
 				UploadError(2, 0,Err); 
 			}
 		}
-		while(!result && CurrentEngine.NumOfTries<CurrentEngine.RetryLimit);
+		while(!result && m_CurrentEngine->NumOfTries<m_CurrentEngine->RetryLimit);
 
-		if(szUrlBuffer)
-			lstrcpy(szUrlBuffer, uparams.DirectUrl.c_str()); 
+		m_ImageUrl= uparams.DirectUrl.c_str(); 
 
-		if( szThumbUrlBuffer)
-			lstrcpy(szThumbUrlBuffer, uparams.ThumbUrl.c_str()); 
+		m_ThumbUrl = uparams.ThumbUrl.c_str(); 
 
 		m_DownloadUrl =  uparams.ViewUrl.c_str();
 		return result;
 	}
 
 	m_Vars.clear();
-	if(Engine.NeedAuthorization)
+	if(m_CurrentEngine->NeedAuthorization)
 	{
-		li = LoadLogin(CurrentServer);
-		if(li.DoAuth)
+		if(m_ServerSettings)
 		{
-			m_Consts[_T("_LOGIN")] = li.Login;
-			m_Consts[_T("_PASSWORD")] = li.Password;
+			li = m_ServerSettings->authData;
+			if(li.DoAuth)
+			{
+				m_Consts[_T("_LOGIN")] = li.Login;
+				m_Consts[_T("_PASSWORD")] = li.Password;
+			}
 		}
 	}
 	CString FileExt = GetFileExt(FileName);
@@ -222,62 +226,56 @@ m_NetworkManager.setProgressCallback(pluginProgressFunc, (void*)this);
 	m_Consts[_T("_FILENAME")] = myExtractFileName(FileName);
 
 	CString OnlyFname;
-	GetOnlyFileName(FileName, OnlyFname.GetBuffer(lstrlen(FileName)*2));
+	OnlyFname = GetOnlyFileName(FileName);
 	m_Consts[_T("_FILENAMEWITHOUTEXT")] = OnlyFname;
 	m_Consts[_T("_FILEEXT")] = FileExt ;
-	m_Consts[_T("_THUMBWIDTH")] = IntToStr(ThumbWidth);
+	m_Consts[_T("_THUMBWIDTH")] = IntToStr(m_nThumbWidth);
 
 	int n = random(256 * 256);
 	m_Consts[_T("_RAND16BITS")] = IntToStr(n);
-	this->ThumbWidth = ThumbWidth;
 	m_FileName =  FileName;
-	ImgUrl = szUrlBuffer;
-	ThumbUrl = szThumbUrlBuffer;
+	m_displayFileName = displayFileName;
 
 	bool EngineRes = false;
 	do
 	{
 		if(*ShouldStop) return false;
 		EngineRes = DoTry();
-		CurrentEngine.NumOfTries++;
+		m_CurrentEngine->NumOfTries++;
 		if(*ShouldStop) return false;
-		if(!EngineRes && CurrentEngine.NumOfTries!=CurrentEngine.RetryLimit) 
+		if(!EngineRes && m_CurrentEngine->NumOfTries!=m_CurrentEngine->RetryLimit) 
 		{
 			CString Err;
-			Err.Format(TR("Загрузка на сервер не удалась. Повторяю (%d)..."),CurrentEngine.NumOfTries );
+			Err.Format(TR("Загрузка на сервер не удалась. Повторяю (%d)..."),m_CurrentEngine->NumOfTries );
 			UploadError(2, 0,Err); 
 		}
 	}
-	while(!EngineRes && CurrentEngine.NumOfTries<CurrentEngine.RetryLimit);
+	while(!EngineRes && m_CurrentEngine->NumOfTries<m_CurrentEngine->RetryLimit);
 
 	if(!EngineRes) 
 	{
 		UploadError(true, 0,TR("Загрузка не сервер удалась! (лимит попыток исчерпан)"));
 		return false;
 	}
-	if(szUrlBuffer)
-		lstrcpy(szUrlBuffer, m_ImageUrl); 
-
-	if( szThumbUrlBuffer)
-		lstrcpy(szThumbUrlBuffer, m_ThumbUrl); 
 
 	return true;
 }
 
 bool CUploader::DoTry()
 {
-	for(int i = 0; i<CurrentEngine.Actions.size(); i++)
+	for(int i = 0; i<m_CurrentEngine->Actions.size(); i++)
 	{
+		if(PrInfo){
 		PrInfo->CS.Lock();
 		PrInfo->Bytes.clear();
-		PrInfo->CS.Unlock();
-		CurrentEngine.Actions[i].NumOfTries = 0;
+		PrInfo->CS.Unlock();}
+		m_CurrentEngine->Actions[i].NumOfTries = 0;
 		bool ActionRes = false;
 		do
 		{
 			if(*ShouldStop) return false;
-			ActionRes = DoAction(CurrentEngine.Actions[i]);
-			CurrentEngine.Actions[i].NumOfTries++;
+			ActionRes = DoAction(m_CurrentEngine->Actions[i]);
+			m_CurrentEngine->Actions[i].NumOfTries++;
 			if(*ShouldStop) return false;
 			if(!ActionRes )
 			{
@@ -288,32 +286,32 @@ bool CUploader::DoTry()
 					ErrorStr+=CString(_T("\r\n")) + TR("Причина: ") + m_ErrorReason;
 				}
 
-				if(CurrentEngine.Actions[i].NumOfTries == CurrentEngine.Actions[i].RetryLimit)
+				if(m_CurrentEngine->Actions[i].NumOfTries == m_CurrentEngine->Actions[i].RetryLimit)
 					ErrorStr+=CString(_T("\r\n"))+TR("Исчерпан лимит попыток.");
 				else
 				{
 					CString TryIndex ;
-					TryIndex.Format(CString(_T("\r\n"))+TR("Ещё одна попытка (%d)..."),CurrentEngine.Actions[i].NumOfTries);
+					TryIndex.Format(CString(_T("\r\n"))+TR("Ещё одна попытка (%d)..."),m_CurrentEngine->Actions[i].NumOfTries);
 					ErrorStr+=TryIndex ;
 				}
 
-				UploadError(2, ReplaceVars(CurrentEngine.Actions[i].Url), ErrorStr);
+				UploadError(2, ReplaceVars(m_CurrentEngine->Actions[i].Url), ErrorStr);
 			}
 		}
-		while(CurrentEngine.Actions[i].NumOfTries<CurrentEngine.Actions[i].RetryLimit && !ActionRes);
+		while(m_CurrentEngine->Actions[i].NumOfTries<m_CurrentEngine->Actions[i].RetryLimit && !ActionRes);
 		if(!ActionRes) return false;
 	}
-	m_ThumbUrl = ReplaceVars(CurrentEngine.ThumbUrlTemplate); // We are getting results :)
-	m_ImageUrl = ReplaceVars(CurrentEngine.ImageUrlTemplate); // We are getting results :)
-	m_DownloadUrl = ReplaceVars(CurrentEngine.DownloadUrlTemplate); // We are getting results :)
+	m_ThumbUrl = ReplaceVars(m_CurrentEngine->ThumbUrlTemplate); // We are getting results :)
+	m_ImageUrl = ReplaceVars(m_CurrentEngine->ImageUrlTemplate); // We are getting results :)
+	m_DownloadUrl = ReplaceVars(m_CurrentEngine->DownloadUrlTemplate); // We are getting results :)
 	return true;
 }
 
-bool CUploader::SelectServer(DWORD ServerID)
+bool CUploader::SetUploadEngine(CUploadEngine *UploadEngine)
 {
- 	if(CurrentServer == ServerID) return true;
+ 	if(m_CurrentEngine == UploadEngine) return true;
 	m_PerformedActions.clear();
-	CurrentServer = ServerID;
+	m_CurrentEngine = UploadEngine;
 	return true;
 }
 
@@ -378,16 +376,37 @@ bool CUploader::DoGetAction(UploadAction &Action)
 	return Result;
 }
 
-bool CUploader::ParseAnswer(UploadAction &Action, LPCTSTR Body)
+bool reg_single_match(const std::string pattern, const std::string &text, std::string &res)
 {
-
-	if((!ThumbUrl && !ImgUrl) || !Body) return false;
-
+	pcrepp::Pcre reg(pattern, "imc");
+	if(reg.search(text) == true)
+	{
+		if(reg.matches()> 0)
+		{
+			res = reg.get_match(0);
+			
+		}
+		return true;
+	}
+	else return false;	
+}
+bool CUploader::ParseAnswer(UploadAction &Action, std::string& Body)
+{
 	if(!Action.RegExp.IsEmpty())
 	{
-		if(EnginesList[CurrentServer].Debug)
+		std::string codePage;
+		if(reg_single_match("text/html;\\s+charset=([\\w-]+)", Body,codePage))
 		{
-			CTextViewDlg TextViewDlg(Body, CString(_T("Server reponse")), CString(_T("Server reponse:")), _T("Save to file?"));
+			std::string codePageNumStr;
+			if(reg_single_match("windows-(\\d+)", codePage,codePageNumStr))
+			{
+				UINT codePageNum = atoi(codePageNumStr.c_str());
+				Body = AnsiToUtf8(Body, codePageNum);
+			}
+		}
+		if(m_CurrentEngine->Debug)
+		{
+			CTextViewDlg TextViewDlg(Utf8ToWstring(Body).c_str(), CString(_T("Server reponse")), CString(_T("Server reponse:")), _T("Save to file?"));
 	
 			if(TextViewDlg.DoModal(GetActiveWindow())==IDOK)
 			{
@@ -398,53 +417,59 @@ bool CUploader::ParseAnswer(UploadAction &Action, LPCTSTR Body)
 					FILE * f = _tfopen(fd.m_szFileName,_T("wb"));
 					if(f)
 					{
-						WORD BOM = 0xFEFF;
-						fwrite(&BOM, sizeof(BOM),1,f);
-						fwrite(Body, lstrlen(Body), sizeof(TCHAR), f);
+						//WORD BOM = 0xFEFF;
+						//fwrite(&BOM, sizeof(BOM),1,f);
+						fwrite(Body.c_str(), Body.size(), sizeof(TCHAR), f);
 						fclose(f);
 					}
 				}
 			}
 		}
-		RegExp exp;
-		CComBSTR Pat = Action.RegExp;
-
-		exp.SetPattern(Pat);
-		exp.Execute(Body);
-
-		int n = exp.MatchCount();
-
-		CString DebugVars = _T("Regex: ") + Action.RegExp + _T("\r\n\r\n");
-
-		if(!n) 
+		try
 		{
-			if(EnginesList[CurrentServer].Debug)
+			pcrepp::Pcre reg(WCstringToUtf8(Action.RegExp), "imc");
+			//std::string stuff = WCstringToUtf8(Body);
+
+			CString DebugVars = _T("Regex: ") + Action.RegExp + _T("\r\n\r\n");
+			if(reg.search(Body) == true)
 			{
-				DebugVars += _T("NO MATCHES FOUND!");
-				MessageBox(GetActiveWindow(), DebugVars, _T("Debug"), MB_ICONWARNING);
+
+				int n = reg.matches();
+
+				for(int i=0; i < Action.Variables.size(); i++)
+				{
+					ActionVariable &v = Action.Variables[i];
+					CString temp;
+					temp = Utf8ToWstring(reg.get_match(v.nIndex)).c_str();
+					if(!v.Name.IsEmpty() && v.Name[0] == _T('_'))
+						m_Consts[v.Name] = temp;
+					m_Vars[v.Name] = temp;
+					DebugVars += v.Name +_T(" = ") + temp + _T("\r\n");
+				}
+				}
+			
+			else
+			{
+				if(m_CurrentEngine->Debug)
+				{
+					DebugVars += _T("NO MATCHES FOUND!");
+					MessageBox(GetActiveWindow(), DebugVars, _T("Debug"), MB_ICONWARNING);
+				}
+				return false; //ERROR! Current action failed!
+
 			}
-			return false; //ERROR! Current action failed!
+			if(m_CurrentEngine->Debug)
+			{
+				MessageBox(GetActiveWindow(), DebugVars, _T("Debug"), MB_ICONINFORMATION);
+			}
 		}
-
-		DebugVars += _T("\r\nVars assigned:\r\n");
-		for(int i=0; i < Action.Variables.size(); i++)
+		catch(const std::exception& e)
 		{
-			ActionVariable &v = Action.Variables[i];
-			CString temp;
-			temp = exp.GetSubMatch(0, v.nIndex);
-			if(!v.Name.IsEmpty() && v.Name[0] == _T('_'))
-				m_Consts[v.Name] = temp;
-			m_Vars[v.Name] = temp;
-			DebugVars += v.Name +_T(" = ") + temp + _T("\r\n");
+			UploadError(1, 0,CString("Regular expression error:\r\n")+Utf8ToWstring(e.what()).c_str()); 
 		}
-		if(EnginesList[CurrentServer].Debug)
-		{
-			MessageBox(GetActiveWindow(), DebugVars, _T("Debug"), MB_ICONINFORMATION);
-		}
+			
 	}
-
-	return true; //ALL OK!
-
+	return true; 
 }
 
 // WORD EventType { 0 - stores error string into m_ErrorReason, 1 - displays error into error console }
@@ -454,7 +479,7 @@ void CUploader::UploadError(WORD EventType, LPCTSTR Url, LPCTSTR  Error, int Err
 	CString BoldError;
 	if(!m_FileName.IsEmpty())
 	FullErrorString += CString(TR("Файл:"))+_T("   ")+ m_FileName+_T("\n");
-	FullErrorString += CString(TR("Сервер:"))+_T("   ")+EnginesList[CurrentServer].Name;
+	FullErrorString += CString(TR("Сервер:"))+_T("   ")+m_CurrentEngine->Name;
 
 	if(Url && *Url)
 	{
@@ -521,7 +546,7 @@ bool CUploader::DoAction(UploadAction &Action)
 	{
 		if(Action.Type == _T("upload"))
 			Status = TR("Отправка файла на сервер...");
-		else if(Action.Type == _T("login") && (EnginesList[CurrentServer].NeedAuthorization && li.DoAuth))
+		else if(Action.Type == _T("login") && (m_CurrentEngine->NeedAuthorization && li.DoAuth))
 			Status = TR("Авторизация на сервере...");
 		else
 		Status.Format(TR("Выполняю действие #%d..."), Action.Index+1);
@@ -532,7 +557,7 @@ bool CUploader::DoAction(UploadAction &Action)
 	CString temp = Current.Url;
 	 Current.Url = ReplaceVars(temp);
 	
-	if(EnginesList[CurrentServer].Debug /*&& Action.Type != _T("post") && Action.Type != _T("upload")*/)
+	if(m_CurrentEngine->Debug /*&& Action.Type != _T("post") && Action.Type != _T("upload")*/)
 		MessageBox(GetActiveWindow(),  Status+_T("\r\nType:")+Action.Type+_T("\r\nURL: ")+Current.Url,_T("Debug"), MB_ICONINFORMATION);
 
 	if(Action.Type == _T("upload"))
@@ -543,7 +568,7 @@ bool CUploader::DoAction(UploadAction &Action)
 		Result = DoUploadAction(Current, false);
 	else if(Action.Type == _T("login"))
 	{
-		if(EnginesList[CurrentServer].NeedAuthorization && li.DoAuth)
+		if(m_CurrentEngine->NeedAuthorization && li.DoAuth)
 		Result = DoUploadAction(Current, false);
 	}
 	else if(Action.Type == _T("get"))
@@ -569,10 +594,10 @@ void CUploader::ConfigureProxy()
 void CUploader::AddQueryPostParams(UploadAction &Action)
 {
 	m_NetworkManager.setReferer(WCstringToUtf8( Action.Referer.IsEmpty()?Action.Url:Action.Referer));
-	RegExp exp;
-	CComBSTR Pat = _T("(.*?)=(.*?[^\\x5c]{0,1});");
-	CComBSTR Txt = Action.PostParams;
-	int len = Txt.Length();
+	//RegExp exp;
+	//CComBSTR Pat = _T("(.*?)=(.*?[^\\x5c]{0,1});");
+	CString Txt = Action.PostParams;
+	int len = Txt.GetLength();
 	if(len)
 	{
 		if(Txt[len-1]!=_T(';'))
@@ -581,14 +606,56 @@ void CUploader::AddQueryPostParams(UploadAction &Action)
 		}
 	}
 		
-	exp.SetPattern(Pat);
-	exp.Execute(Txt);
+	//exp.SetPattern(Pat);
+	//exp.Execute(Txt);
 	CString _Post = CString(*_T("Post Request to URL: "))+Action.Url+_T("\r\n");
 	
-	int n = exp.MatchCount();
+	pcrepp::Pcre reg("(.*?)=(.*?[^\\x5c]{0,1});", "imc");
+	std::string str = WCstringToUtf8(Txt);
 
-	for(int i=0; i<n; i++) // count of variables
-	{
+
+	size_t pos = 0;
+	while (pos <= str.length()) {
+		if( reg.search(str, pos)) {
+			
+			//cout << "   pos: " << pos << " match: " << reg.get_match(0);
+
+			//CString vv = Utf8ToWstring(reg[0]).c_str();
+			
+			CString VarName = Utf8ToWstring(reg[0]).c_str();
+			CString VarValue= Utf8ToWstring(reg[1]).c_str();
+			pos = reg.get_match_end()+1;
+
+			if(!VarName.GetLength()) continue;
+
+			CString NewValue = VarValue;
+			NewValue.Replace(_T("\\;"),_T(";"));
+			CString NewName = VarName;
+			NewName = ReplaceVars(NewName);
+			CString vv =NewName;
+			if(NewValue == _T("%filename%"))
+			{
+				_Post+=NewName+_T(" = ** THE FILE IS HERE ** \r\n");
+				m_NetworkManager.addQueryParamFile( WCstringToUtf8(NewName), WCstringToUtf8(m_FileName),
+					WCstringToUtf8(myExtractFileName(m_displayFileName)), WCstringToUtf8(IU_GetFileMimeType(m_FileName)));
+			}
+			else 
+			{
+
+				NewValue = ReplaceVars(NewValue);
+				_Post+=NewName+_T(" = ")+NewValue+_T("\r\n");
+				m_NetworkManager.addQueryParam(WCstringToUtf8(NewName),WCstringToUtf8(NewValue));
+			}
+
+		}
+		else
+			break;
+	}
+
+//	int n = exp.MatchCount();
+
+	//for(int i=0; i<n; i++) // count of variables
+	/*{
 		CComBSTR VarName = exp.GetSubMatch(i, 0);
 		CComBSTR VarValue= exp.GetSubMatch(i, 1);
 		
@@ -603,7 +670,7 @@ void CUploader::AddQueryPostParams(UploadAction &Action)
 		{
 			_Post+=NewName+_T(" = ** THE FILE IS HERE ** \r\n");
 			m_NetworkManager.addQueryParamFile( WCstringToUtf8(NewName), WCstringToUtf8(m_FileName),
-			WCstringToUtf8(myExtractFileName(m_FileName)), WCstringToUtf8(IU_GetFileMimeType(m_FileName)));
+			WCstringToUtf8(myExtractFileName(m_displayFileName)), WCstringToUtf8(IU_GetFileMimeType(m_FileName)));
 		}
 		else 
 		{
@@ -612,9 +679,9 @@ void CUploader::AddQueryPostParams(UploadAction &Action)
 			_Post+=NewName+_T(" = ")+NewValue+_T("\r\n");
 			m_NetworkManager.addQueryParam(WCstringToUtf8(NewName),WCstringToUtf8(NewValue));
 		}
-	}
+	}*/
 
-	if(EnginesList[CurrentServer].Debug)
+	if(m_CurrentEngine->Debug)
 		MessageBox(GetActiveWindow(), _Post, _T("Debug"),MB_ICONINFORMATION);
 }
 
@@ -668,7 +735,7 @@ bool CUploader::ReadServerResponse(UploadAction &Action)
 
 	if(!Exit)
 	{
-		CString answer = Utf8ToWstring( m_NetworkManager.responseBody()).c_str();
+		std::string answer =  m_NetworkManager.responseBody();
 		Result =  ParseAnswer(Action,answer);
 		
 		if(!Result) 
@@ -689,9 +756,37 @@ void CUploader::SetStatusText(CString Text)
 	 m_CS.Unlock();
 }
 
-CString CUploader::getDownloadUrl()
+const CString CUploader::getDownloadUrl()
 {
 	m_CS.Lock();
 	return m_DownloadUrl;
+	m_CS.Unlock();
+}
+
+CUploadEngine * CUploader::getUploadEngine()
+{
+	return m_CurrentEngine;
+}
+
+void CUploader::setServerSettings(ServerSettingsStruct* serverSettings)
+{
+	m_ServerSettings = serverSettings;
+}
+
+void CUploader::setThumbnailWidth(int width)
+{
+	m_nThumbWidth = width;
+}
+
+const CString CUploader::getDirectUrl()
+{
+	m_CS.Lock();
+	return m_ImageUrl;
+	m_CS.Unlock();
+}
+const CString CUploader::getThumbUrl()
+{
+	m_CS.Lock();
+	return m_ThumbUrl;
 	m_CS.Unlock();
 }

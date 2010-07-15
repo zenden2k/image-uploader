@@ -21,51 +21,106 @@
 #include "stdafx.h"
 #include "RegionSelect.h"
 #include "common.h"
+#include <math.h>
+//#include <Gdipluseffects.h>
+
+
+struct WindowsListItem
+{
+	HWND handle;
+	RECT rect;
+};
+
+std::vector<WindowsListItem> windowsList;
+
+
+BOOL CALLBACK EnumChildProc(HWND hwnd,	LPARAM lParam)
+{
+	if(IsWindowVisible(hwnd)){
+
+		EnumChildWindows(hwnd,	EnumChildProc,	0	);
+		WindowsListItem newItem;
+		newItem.handle = hwnd;
+		GetWindowRect(hwnd, &newItem.rect); 
+		windowsList.push_back(newItem);
+	}
+	return true;
+}
+
+
+BOOL CALLBACK RegionEnumWindowsProc(HWND hwnd,LPARAM lParam 	)
+{
+	if(IsWindowVisible(hwnd))
+	{
+		EnumChildWindows(hwnd, EnumChildProc, 0);
+		WindowsListItem newItem;
+		newItem.handle = hwnd;
+		GetWindowRect(hwnd, &newItem.rect);
+		windowsList.push_back(newItem);
+		
+	}
+	return true;
+}
+
+HWND WindowUnderCursor(POINT pt, HWND exclude)
+{
+
+	if(windowsList.empty())
+	{
+		EnumWindows(RegionEnumWindowsProc, 0);
+	}
+	for(int i=0; i<windowsList.size(); i++)
+	{
+		WindowsListItem &curItem = windowsList[i];
+		if(::PtInRect(&curItem.rect, pt) && curItem.handle!=exclude && IsWindowVisible(curItem.handle))
+
+			return curItem.handle;
+	}
+}
+
+
+
+//     Region selection window class
+//
+//
+
 CRegionSelect RegionSelect;
 
 // CRegionSelect
 CRegionSelect::CRegionSelect()
 {
+	m_bDocumentChanged = false;
+	m_bFinish = false;
+	m_bSaveAsRegion = false;
+	m_ResultRegion = 0;
+	RectCount = 0;
 	Down = false;
 	m_brushSize = 0;
 	End.x = -1;
 	End.y = -1;
+	Start.x = -1;
+	Start.y = -1;
 	DrawingPen = 0;
 	DrawingBrush = 0;
-	
 	
 	cxOld = -1;
 	cyOld = -1;
 	pen = CreatePen(PS_SOLID, 2, 0); //Solid black line, width = 2 pixels
 	CrossCursor = LoadCursor(NULL,IDC_CROSS);
+	HandCursor = LoadCursor(NULL,IDC_HAND);
 }
+
 
 CRegionSelect::~CRegionSelect()
 { 
 	if(pen)	DeleteObject(pen);
 	if(CrossCursor)  DeleteObject(CrossCursor);
+	Detach();
 }
 
 LRESULT CRegionSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	return 0;  // Let the system set the focus
-}
-
-LRESULT CRegionSelect::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-	Hide(false);
-	return 0;
-}
-
-LRESULT CRegionSelect::OnKillFocus(HWND hwndNewFocus)
-{
-	Hide(false);
-	return 0;
-}
-
-LRESULT CRegionSelect::OnActivate(UINT state, BOOL fMinimized, HWND hwndActDeact)
-{
-	return 0;
 }
 
 LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
@@ -74,36 +129,56 @@ LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 	BeginPaint(&ps);
 
 	HDC dc = ps.hdc;
-	if(Down) return 0;
-	RECT rc;
-	GetClientRect(&rc);
+	
+	int w = ps.rcPaint.right-ps.rcPaint.left;
+	int h = ps.rcPaint.bottom-ps.rcPaint.top;
+	
+	if(m_bPictureChanged)
+	{
+		if(Down) return 0;
+		RECT rc;
+		GetClientRect(&rc);
+		CRgn newRegion;
+		newRegion.CreateRectRgn(0,0,rc.right,rc.bottom);
+		SelectClipRgn(doubleDC, newRegion);
+		BitBlt(doubleDC,ps.rcPaint.left,ps.rcPaint.top,w,h,memDC2,  ps.rcPaint.left,ps.rcPaint.top,SRCCOPY);
+		newRegion.CombineRgn(m_SelectionRegion,RGN_DIFF);
+		CBrush br;
+		SelectClipRgn(doubleDC, newRegion);
+		br.CreateSolidBrush(RGB(200,200,0));
+		BLENDFUNCTION bf ;
+		//настройки прозрачности
+	  bf.BlendOp = AC_SRC_OVER;
+	  bf.BlendFlags = 1;
+	  bf.SourceConstantAlpha = 40; // прозрачность 50% (0 - 255)
+	  bf.AlphaFormat = 0;
+		if(RectCount)
+		AlphaBlend(doubleDC, ps.rcPaint.left, ps.rcPaint.top, w,h, alphaDC, ps.rcPaint.left, ps.rcPaint.top, w,h, bf);
+		newRegion.DeleteObject();
+		newRegion.CreateRectRgn(0,0,rc.right,rc.bottom);
+		SelectClipRgn(doubleDC, newRegion);
+		RECT SelWndRect;
+		  if(hSelWnd)
+		  {
+				CRgn WindowRgn = GetWindowVisibleRegion(hSelWnd);
+				WindowRgn.OffsetRgn(topLeft);
+				WindowRgn.GetRgnBox(&SelWndRect);
+				CRect DrawingRect = SelWndRect;
+				DrawingRect.DeflateRect(2, 2);
+				SelectObject(doubleDC, pen);
+				SetROP2(doubleDC, R2_NOTXORPEN);
+				SelectClipRgn(doubleDC, 0);
+				Rectangle(doubleDC, DrawingRect.left,DrawingRect.top, DrawingRect.right, DrawingRect.bottom);
+		  }
+		m_bPictureChanged = false;
+	}
+	BitBlt(dc,ps.rcPaint.left,
+	ps.rcPaint.top,w,h,doubleDC,ps.rcPaint.left,
+	ps.rcPaint.top,SRCCOPY);
 
-	BitBlt(dc,0,0,rc.right,rc.bottom,memDC2,0,0,SRCCOPY);
 	EndPaint(&ps);
-
+	m_bPainted = true;
 	return 0;
-}
-
-void CRegionSelect::ShowW(HWND Parent,HBITMAP bmp,int w,int h)
-{
-	setDrawingParams(Settings.ScreenshotSettings.brushColor, 3);
-	Down = false;
-	End.x = -1;
-
-	End.y = -1;
-
-	cxOld = -1;
-	cyOld = -1;
-	bm = bmp;
-	memDC2 = ::CreateCompatibleDC(GetDC());
-
-	// Создание битмапа и копирование на него скриншота
-	///HBITMAP bm =::CreateCompatibleBitmap(dstDC, sz.cx, sz.cy);
-	oldbm2 = (HBITMAP)::SelectObject(memDC2, bm);
-	MoveWindow(0, 0, w, h);
-	ShowWindow(SW_SHOW);
-	::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
-	m_dc = GetDC();
 }
 
 LRESULT CRegionSelect::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -111,210 +186,412 @@ LRESULT CRegionSelect::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	Down = true;
 	Start.x = LOWORD(lParam); 
 	Start.y = HIWORD(lParam);
+
+	POINT newPoint  = {LOWORD(lParam), HIWORD(lParam)};
+	m_curvePoints.push_back(newPoint);
 	return 0;
 }
+
 
 LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	int cx = LOWORD(lParam); 
 	int cy = HIWORD(lParam);
-	if(Down)
-	{
-		HDC dc = GetDC();
-		SetROP2(dc, R2_NOTXORPEN);
-		SelectObject(dc, pen);
-		if(End.x>-1)
-			Rectangle(dc, Start.x,Start.y, End.x, End.y);
+	DWORD fwKeys = wParam;
+	POINT point = {cx, cy};
+	HWND hNewSelWnd;
 
-		End.x = LOWORD(lParam); 
-		End.y = HIWORD(lParam);
-
-		Rectangle(dc, Start.x,Start.y, End.x, End.y);
-	}
-
-	if(wParam & MK_RBUTTON)
-	{
-		HGDIOBJ oldPen2 = SelectObject(memDC2, DrawingPen);
-
-		if(cxOld != -1)
-		{
-			MoveToEx(memDC2, cxOld, cyOld,0);
-			LineTo(memDC2, cx,cy);
-
-			RECT RectToRepaint;
-			RectToRepaint.left = min(cxOld, cx) - m_brushSize;
-			RectToRepaint.top = min(cyOld, cy) - m_brushSize;
-			RectToRepaint.right = max(cxOld, cx) + m_brushSize;
-			RectToRepaint.bottom = max(cyOld, cy) + m_brushSize;
-			InvalidateRect(&RectToRepaint);
-			UpdateWindow();
-		}
 	
-		cxOld = cx;
-		cyOld = cy;
+		/*CRect toolbarRC;
+		Toolbar.GetWindowRect(&toolbarRC);
+		toolbarRC.InflateRect(30,70);
+		bool HideToolBar = true;
+		if(toolbarRC.PtInRect(point))
+		{
+			if(!(fwKeys & MK_LBUTTON) && 	!(fwKeys & MK_RBUTTON))
+			{
+				HideToolBar = false;
+				if(!m_btoolWindowTimerRunning)
+				{
+					SetTimer(1,400);
+					m_btoolWindowTimerRunning = true;
+				}
+			}
+		//do smth	
+		}
+		else
+		{
+			if(m_btoolWindowTimerRunning)
+			KillTimer(1);
+			m_btoolWindowTimerRunning = false;
+			Toolbar.ShowWindow(SW_HIDE);
+		}*/
+
+
+	bool bUpdateWindow = false;
+
+	if(m_SelectionMode == smWindowHandles)
+	{
+		POINT newP=point;
+		ClientToScreen(&newP );
+
+      if ((hNewSelWnd = WindowUnderCursor(newP,m_hWnd)) == 0)
+        hNewSelWnd = ::GetDesktopWindow();
+      else
+      {
+        /*HWND hChildWnd = MyChildWindowFromPoint(hNewSelWnd, point);
+        if ( hChildWnd )
+          hNewSelWnd = hChildWnd;*/
+      }
+		if(hNewSelWnd != hSelWnd)
+      {
+			CRgn FullScreenRgn;
 		
+
+			FullScreenRgn.CreateRectRgnIndirect(&m_screenBounds);
+			RECT SelWndRect;
+			::GetWindowRect( hNewSelWnd, &SelWndRect );
+			CRgn WindowRgn;
+			  
+			if(::GetWindowRgn(hNewSelWnd, WindowRgn) != ERROR)
+			{
+				//WindowRegion.GetRgnBox( &WindowRect); 
+				WindowRgn.OffsetRgn( SelWndRect.left, SelWndRect.top);
+			}
+		  
+			CBrush br;
+			br.CreateSolidBrush(RGB(200,0,0));
+		
+			m_bPictureChanged = true;
+			m_PrevWindowRect = SelWndRect;
+		  
+			CRgn repaintRgn;
+			repaintRgn.CreateRectRgnIndirect(&SelWndRect);
+			repaintRgn.OffsetRgn(topLeft);
+
+			if(!m_prevWindowRgn.IsNull())
+			repaintRgn.CombineRgn(m_prevWindowRgn, RGN_OR);
+			
+
+			
+			m_prevWindowRgn = repaintRgn;
+			InvalidateRgn(repaintRgn);
+			repaintRgn.Detach();
+			bUpdateWindow = true;
+      }
+		hSelWnd = hNewSelWnd;
+
+		if(!(wParam & MK_RBUTTON))
+		{
+			bUpdateWindow = true;
+		}
 	}
+	//else
+	{
+		if(fwKeys & MK_LBUTTON && Down	)
+		{
+			HDC dc = GetDC();
+			
+			SelectObject(dc, pen);
+
+			if(m_SelectionMode!=smFreeform)
+			{
+				SetROP2(dc, R2_NOTXORPEN);
+				if(End.x>-1)
+					Rectangle(dc, Start.x,Start.y, End.x, End.y);
+
+				End.x = LOWORD(lParam); 
+				End.y = HIWORD(lParam);
+
+				bool Draw = true;
+				if(m_SelectionMode == smWindowHandles)
+				{
+				
+					if(abs(End.x-Start.x)<7 && abs(End.y-Start.y)<7)
+					{
+						Draw=false;
+					}
+					else 	
+					{
+						m_SelectionMode = smRectangles;
+						hSelWnd = 0;
+						m_bPictureChanged = true;
+						/*Invalidate();*/
+						bUpdateWindow = true;
+					}
+				}
+					if(Draw) Rectangle(dc, Start.x,Start.y, End.x, End.y);
+				
+				
+			}
+			else
+			{
+				SetROP2(doubleDC, R2_COPYPEN);
+				POINT p = m_curvePoints.back();
+				MoveToEx(doubleDC, p.x, p.y,0);
+				SelectObject(doubleDC, pen);
+				POINT newPoint  = {LOWORD(lParam), HIWORD(lParam)};
+				LineTo(doubleDC, newPoint.x, newPoint.y);
+				m_curvePoints.push_back(newPoint);
+
+				RECT RectToRepaint;
+				RectToRepaint.left = min(p.x, newPoint.x) - m_brushSize;
+				RectToRepaint.top = min(p.y, newPoint.y) - m_brushSize;
+				RectToRepaint.right = max(p.x, newPoint.x) + m_brushSize;
+				RectToRepaint.bottom = max(p.y, newPoint.y) + m_brushSize;
+				InvalidateRect(&RectToRepaint, false);
+
+			}
+		}
+}
+		if(wParam & MK_RBUTTON)
+		{
+			HGDIOBJ oldPen2 = SelectObject(memDC2, DrawingPen);
+
+			if(cxOld != -1)
+			{
+				SelectClipRgn(memDC2, 0);
+				MoveToEx(memDC2, cxOld, cyOld,0);
+				LineTo(memDC2, cx,cy);
+
+				RECT RectToRepaint;
+				RectToRepaint.left = min(cxOld, cx) - m_brushSize;
+				RectToRepaint.top = min(cyOld, cy) - m_brushSize;
+				RectToRepaint.right = max(cxOld, cx) + m_brushSize;
+				RectToRepaint.bottom = max(cyOld, cy) + m_brushSize;
+				CRgn rgn;
+				rgn.CreateRectRgnIndirect(&RectToRepaint);
+				m_bPictureChanged = true;
+				m_bDocumentChanged = true;
+				InvalidateRect(&RectToRepaint);
+				UpdateWindow();
+			}
+			cxOld = cx;
+			cyOld = cy;	
+		}
+
+	if(bUpdateWindow) UpdateWindow();
 	return 0;
 }
 
 LRESULT CRegionSelect::OnEraseBg(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	bHandled = true;
-	return 0;
+	bHandled = true; //avoids flickering
+	return TRUE;
 }
 
 LRESULT CRegionSelect::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	if(!Down) return 0;
 	Down = false;
-	End.x = LOWORD(lParam); 
-	End.y = HIWORD(lParam); 
-	Finish();
+	End.x = LOWORD(lParam)+1; 
+	End.y = HIWORD(lParam)+1;
+	CRgn newRegion;	RECT winRect;
+	SHORT shiftState = GetAsyncKeyState(VK_SHIFT);
+
+	WORD fwKeys = wParam; 
+	m_bPictureChanged = true;
+
+	if(m_SelectionMode == smFreeform) 
+	{
+		Finish();
+		return 0;
+	}
+
+	if(m_SelectionMode != smWindowHandles || (abs(End.x-Start.x)>7 && abs(End.y-Start.y)>7))
+	newRegion.CreateRectRgn(Start.x,Start.y,End.x,End.y);
+
+	else
+	{
+		
+		::GetWindowRect(hSelWnd, &winRect);
+
+		newRegion.CreateRectRgnIndirect(&winRect);
+		newRegion.OffsetRgn(topLeft);
+		RECT invRect;
+		newRegion.GetRgnBox(&invRect);
+
+		Start.x = invRect.left;
+		Start.y = invRect.top;
+		End.x = invRect.right;
+		End.y = invRect.bottom;
+		if(fwKeys & MK_CONTROL)
+			m_SelectedWindowsRegion.AddWindow(hSelWnd, false);
+		else m_SelectedWindowsRegion.AddWindow(hSelWnd, true);
+		//hSelWnd = 0;
+	}
+
+	if(fwKeys & MK_CONTROL)	
+	{
+		m_SelectionRegion.CombineRgn(newRegion, RGN_DIFF);
+		
+	}
+	else if(shiftState& 0x8000) // shift is down
+	{
+		m_SelectionRegion.CombineRgn(newRegion, RGN_OR);
+	}
+	else
+	{
+		m_SelectionRegion.CombineRgn(newRegion, RGN_OR);
+		Finish();
+		return 0;
+	}
+	if(!RectCount)
+	{
+		RectCount++;
+		Invalidate();
+	}
+	else{
+	RectCount++;
+
+		RECT RectToRepaint;
+		//if(m_SelectionMode != smWindowHandles)
+		{
+	RectToRepaint.left = min(Start.x, End.x) - m_brushSize;
+	RectToRepaint.top = min(Start.y, End.y) - m_brushSize;
+	RectToRepaint.right = max(Start.x, End.x) + m_brushSize;
+	RectToRepaint.bottom = max(Start.y, End.y) + m_brushSize;
+		
+InvalidateRect(&RectToRepaint);
+		}
+
+	}
+
+	Start.x = -1;
+	Start.y = -1;
+	End.x = -1;
+	End.y = -1;
 	return 0;
 }
 
 LRESULT CRegionSelect::OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	RButtonDown = true;
+	//Down = false;
+	return 1;
+}
+
+bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height)
+{
+	m_bPictureChanged = false;
+	m_bDocumentChanged = false;
+	m_btoolWindowTimerRunning = false;
+	if(!screenshot) return false;
+	m_bFinish = false;
+	m_bResult = false;
+	Cleanup();
+
+	m_SelectionRegion.CreateRectRgn(0,0,0,0);
+	m_curvePoints.clear();
+
+	m_Width = width;
+	m_Height = height;
+
+	HDC dstDC = ::GetDC(0);
+	doubleBm.CreateCompatibleBitmap(dstDC, m_Width, m_Height);
+	doubleDC.CreateCompatibleDC(dstDC);
+	HBITMAP oldDoubleBm = doubleDC.SelectBitmap(doubleBm);
+
+	m_bmScreenShot = screenshot;
+	memDC2.CreateCompatibleDC(dstDC);
+	HBITMAP oldBm = memDC2.SelectBitmap(m_bmScreenShot);
+
+	setDrawingParams(Settings.ScreenshotSettings.brushColor, 3);
 	Down = false;
-	//Hide(false);
-	return 0;
-}
+	Start.x = -1;
+	Start.y = -1;
+	End.x = -1;
+	End.y = -1;
 
-void CRegionSelect::OnTimer(UINT_PTR nIDEvent)
-{
-	KillTimer(nIDEvent);
+	cxOld = -1;
+	cyOld = -1;
 
-	int Quality, Delay, Format, EntireScr;
-	Format = Settings.ScreenshotSettings.Format; 
-	Quality = Settings.ScreenshotSettings.Quality; 
-	Delay = Settings.ScreenshotSettings.Delay;
-
-	// Выбор в качестве цели всего экрана или активного окна, в зависимости от настроек
-	HWND hwnd = GetDesktopWindow();
-
-	RECT r;
-	// Расчет размеров изображения в зависмости от размеров и положения окна 
-	::GetWindowRect(hwnd, &r);
-
-	int xScreen, yScreen;
-	int xshift = 0, yshift = 0;
-	xScreen = GetSystemMetrics(SM_CXSCREEN);
-	yScreen = GetSystemMetrics(SM_CYSCREEN);
-	if(r.right > xScreen)
-		r.right = xScreen;
-	if(r.bottom > yScreen)
-		r.bottom = yScreen;
-	if(r.left < 0){
-		xshift = -r.left;
-		r.left = 0;
-	}
-	if(r.top < 0){
-		yshift = -r.top;
-		r.top = 0;
-	}
-
-	sz.cx = r.right-r.left;
-	sz.cy=r.bottom-r.top;
-
-	// Подготовка контекста рисования
-	dstDC = ::GetDC(NULL);
-	HDC srcDC = ::GetWindowDC(hwnd);
-	memDC = ::CreateCompatibleDC(dstDC);
-
-	// Создание битмапа и копирование на него скриншота
-	HBITMAP bm = ::CreateCompatibleBitmap(dstDC, sz.cx, sz.cy);
-	oldbm = (HBITMAP)::SelectObject(memDC,bm);
-	if(!::BitBlt(memDC, 0, 0, sz.cx, sz.cy, srcDC, xshift, yshift, SRCCOPY|CAPTUREBLT))
-	{
-		if(m_pCallBack)  
-		m_pCallBack->OnScreenshotFinished((int)0);;//ScreenshotError();
-		return ;
-	}
-
-	TCHAR szBuffer[256];
-
-	::SelectObject(memDC,oldbm);
-
-	ShowW(m_hWnd, bm, sz.cx, sz.cy);
-}
-
-bool CRegionSelect::Execute(CRegionSelectCallback *RegionSelectCallback)
-{
-	m_pCallBack = RegionSelectCallback;
-	*m_szFileName = 0;
+	alphaBm.CreateCompatibleBitmap(dstDC, m_Width, m_Height);
+	CBrush br2;
+	br2.CreateSolidBrush(RGB(0,0,150));
+	alphaDC.CreateCompatibleDC(memDC2);
+	HBITMAP oldAlphaBm = alphaDC.SelectBitmap(alphaBm);
+	RECT r = {0, 0, m_Width, m_Height};
+	alphaDC.FillRect(&r, br2);	
+	m_bPictureChanged = true;
+	
 	if(!m_hWnd)
-		Create(Parent);
+	{
+		Create(0,r,_T("ImageUploader_RegionWnd"),WS_POPUP,WS_EX_TOPMOST	);
+	}
+
+	//RECT screenBounds;
+	GetScreenBounds(m_screenBounds);
+	MoveWindow(m_screenBounds.left, m_screenBounds.top,m_screenBounds.Width(), m_screenBounds.Height());
+	topLeft.x = 0;
+	topLeft.y = 0;
+	ScreenToClient(&topLeft);
+
+	InvalidateRect(0,FALSE);
+	ShowWindow(SW_SHOW);
+		
+	MSG msg;
+	while(!m_bFinish && GetMessage(&msg,NULL,NULL,NULL) ) 
+	{  
+		TranslateMessage(&msg);    
+		DispatchMessage(&msg); 
+	}
+
+	memDC2.SelectBitmap(oldBm);
+	memDC2.DeleteDC();
+
+	doubleDC.SelectBitmap(oldDoubleBm);
+	doubleDC.DeleteDC();
+
+	alphaDC.SelectBitmap(oldAlphaBm);
+	alphaDC.DeleteDC();
+
+	alphaBm.DeleteObject();
+
+	::ReleaseDC(0, dstDC);
 	ShowWindow(SW_HIDE);
-
-	if(m_hWnd)
-		SetTimer(1, 340);
-
-	return false;
+	return m_bResult;
 }
 
 void CRegionSelect::Finish()
 {
-	ReleaseDC(m_dc);
-	::SelectObject(memDC2, oldbm2 );
-	DeleteObject(memDC2);
-
-	int Quality, Delay, Format, EntireScr;
-	Format = Settings.ScreenshotSettings.Format; 
-	Quality = Settings.ScreenshotSettings.Quality; 
-	Delay = Settings.ScreenshotSettings.Delay;
-
-
-	::SelectObject(memDC, bm);
-	int x,y,w,h = 0;
-
-	x = min(Start.x, End.x);
-	y = min(Start.y, End.y);
-
-	w = max(Start.x, End.x) - x;
-	h = max(Start.y, End.y) - y;
-
-	if(w==0){x=0;y=0;w=sz.cx;h=sz.cy;}
-
-	HDC mem2 = ::CreateCompatibleDC(dstDC);
-
-	HBITMAP bm2 =::CreateCompatibleBitmap(dstDC, w, h);
-	HBITMAP oldbm = (HBITMAP)::SelectObject(mem2,bm2);
-	if(!::BitBlt(mem2, 0, 0, w, h, memDC, x, y, SRCCOPY|CAPTUREBLT)) 
+	m_bResult = true;
+	if(m_SelectionMode == smRectangles || (m_SelectionMode == smWindowHandles && wasImageEdited()))
 	{
-		Hide(false); 
-		return; 
-	};
+		m_ResultRegion = new CRectRegion(m_SelectionRegion);
+	}
+	else if(m_SelectionMode == smFreeform)
+	{
+		CFreeFormRegion * newRegion = new CFreeFormRegion();
+		for(int i=0; i<m_curvePoints.size(); i++)
+		{
+			newRegion->AddPoint(m_curvePoints[i]);
+		}
+		m_ResultRegion = newRegion;
+	}
+	else if(m_SelectionMode == smWindowHandles)
+	{
+		
+			m_ResultRegion = new CWindowHandlesRegion(m_SelectedWindowsRegion);
+	}
 
-	Bitmap b(bm2,0);
-	TCHAR szBuffer[256];
+	
+	if(m_ResultRegion->IsEmpty()) 
+	{
+		m_bResult = false;
+		
+	}
+	
 
-	MySaveImage(&b,_T("screenshot"), m_szFileName, Format, Quality);
-	if(m_pCallBack) m_pCallBack->OnScreenshotSaving(m_szFileName,&b);
-	// Сохранение изображения в файл, имя возвращается в Filename
-
-	DeleteObject(bm2);
-	// Удаление временного битмапа и контекста рисования
-	DeleteObject(SelectObject(memDC,oldbm));
-	DeleteObject(memDC); 
-	Settings.ScreenshotSettings.brushColor = m_brushColor;
-	Hide();
-}
-
-void CRegionSelect::Hide(bool Res)
-{
-	ShowWindow(SW_HIDE);
-
-	if(m_pCallBack)  
-		m_pCallBack->OnScreenshotFinished((int)Res);
-
-	DestroyWindow();
-	m_hWnd = 0;
+	m_bFinish = true;
 }
 
 void CRegionSelect::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if(nChar == VK_ESCAPE)  // Cancels screenshoting and shows main window
-		Hide(false);
+	if(nChar == VK_ESCAPE)  // Cancel capturing
+	{
+		m_bFinish = true;
+		m_bResult = false;
+	}
 
 	else if (nChar == VK_RETURN) 
 	{
@@ -328,13 +605,16 @@ void CRegionSelect::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 BOOL CRegionSelect::OnSetCursor(CWindow wnd, UINT nHitTest, UINT message)
 {
+	if(m_SelectionMode != smWindowHandles)
 	SetCursor(CrossCursor);
+	else
+	SetCursor(HandCursor);
 	return TRUE;
 }
 
 LRESULT  CRegionSelect::OnRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	RButtonDown=false;
+	/*RButtonDown=false;
 	
 	int cx = LOWORD(lParam); 
 	int cy = HIWORD(lParam); 
@@ -354,7 +634,7 @@ LRESULT  CRegionSelect::OnRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 		SelectObject(memDC2, oldPen);	
 		SelectObject(memDC2, oldBrush);
 		
-	}
+	}*/
 	cxOld = -1;
 	cyOld = -1;
 	return 0;
@@ -378,6 +658,23 @@ bool CRegionSelect::setDrawingParams(COLORREF color, int brushSize)
 
 LRESULT CRegionSelect::OnMButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	MENUITEMINFO mi;
+	HWND 	hwnd = (HWND) wParam;  
+	POINT ClientPoint, ScreenPoint;
+
+	
+	{
+		ScreenPoint.x = LOWORD(lParam); 
+		ScreenPoint.y = HIWORD(lParam); 
+		ClientPoint = ScreenPoint;
+		::ScreenToClient(hwnd, &ClientPoint);
+	}
+
+	/*CMenu FolderMenu;
+	FolderMenu.CreatePopupMenu();
+	FolderMenu.AppendMenu(MF_STRING, IDC_CLEARLIST, TR("Очистить список"));
+	FolderMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);*/
+	
 
 	CColorDialog ColorDialog(m_brushColor);
 	if(ColorDialog.DoModal(m_hWnd) == IDOK)
@@ -402,4 +699,73 @@ LRESULT CRegionSelect::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
 		setDrawingParams(m_brushColor, m_brushSize+1 );
 	}
 	return 0;
+}
+
+void CRegionSelect::Cleanup()
+{
+	delete m_ResultRegion;
+	m_ResultRegion = 0;
+	RectCount = 0 ;
+	windowsList.clear();
+	//childWindowsList.clear();
+	hSelWnd = 0;
+	m_bPictureChanged = true;
+	m_SelectedWindowsRegion.Clear();
+	m_bPainted = false;
+
+	if(!m_SelectionRegion.IsNull())
+		m_SelectionRegion.DeleteObject();
+
+	if(!doubleDC.IsNull())
+		doubleDC.DeleteDC();
+
+	if(!doubleBm.IsNull())
+		doubleBm.DeleteObject();
+}
+
+CScreenshotRegion* CRegionSelect::region() const
+{
+	return m_ResultRegion;
+}
+
+
+LRESULT CRegionSelect::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	RECT rc;
+	GetClientRect(&rc);
+	int toolbarWidth = 30;
+	int toolbarHeight = 200;
+
+	rc.left=0;
+	rc.top = (rc.bottom-toolbarHeight)/2;
+	rc.bottom -= rc.top;
+	rc.right = toolbarWidth;
+	/*Toolbar.Create(m_hWnd,rc,_T(""), WS_POPUP|WS_VISIBLE| TBSTYLE_LIST | CCS_NORESIZE|CCS_LEFT |CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
+		
+	Toolbar.SetButtonStructSize();
+	Toolbar.SetButtonSize(40,24);
+	
+		
+		Toolbar.AddButton(45435, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED | TBSTATE_WRAP, -1, TR(""), 0);
+		Toolbar.AddButton(45436, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED | TBSTATE_WRAP, 2, TR(""), 0);
+		
+		Toolbar.AddButton(44365 + 1, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED | TBSTATE_WRAP, 0, _T(""), 0);
+		Toolbar.AutoSize();*/
+	return 0;
+}
+
+LRESULT CRegionSelect::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if (wParam == 1) // timer ID =1
+	{
+		Toolbar.ShowWindow(SW_SHOW);
+		KillTimer(1);
+		m_btoolWindowTimerRunning = false;
+	}
+	return 0;
+}
+
+bool CRegionSelect::wasImageEdited()
+{
+	return m_bDocumentChanged;
 }

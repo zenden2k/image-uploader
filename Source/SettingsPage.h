@@ -18,6 +18,8 @@ class CSettingsPage
 		HWND PageWnd;
 		void ShowNext(bool Show = true);
 		void ShowPrev(bool Show = true);
+
+		void FixBackground();
 		
 		virtual bool Apply();
 

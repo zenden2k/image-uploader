@@ -81,6 +81,7 @@ public:
 	void UpdateOutdated();
 	void LockImagelist(bool bLock = true);
 	bool StopAndWait();
+	void SelectLastItem();
 };
 
 
