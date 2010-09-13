@@ -13,12 +13,13 @@ function doLogin()
 	
 
 	nm.addQueryHeader("Expect","");
-	nm.setUrl("http://api.sendspace.com/rest/?method=auth.createtoken&api_key=KAAK63MDZJ&api_version=1.0&response_format=xml");
+	
+nm.setUrl("http://api.sendspace.com/rest/?method=auth.createtoken&api_key=KAAK63MDZJ&api_version=1.0&response_format=xml");
 
    nm.doGet("");
    local data =  nm.responseBody();
   
-  
+
   
   local ex = regexp("<token>(.+)</token>");
   local token = "";
@@ -210,7 +211,7 @@ function  UploadFile(FileName, options)
 		if(!doLogin())
 			return 0;
 	}
-
+  
 	local albumID = options.getFolderID();
 	if(albumID == "") albumID = "0";
 	
@@ -229,15 +230,21 @@ function  UploadFile(FileName, options)
 	nm.doGet("");
 
 	local 	data = nm.responseBody();
+
+
 	local uploadUrl ="";
+//print(data + "_"+uploadUrl);
 	 local ex = regexp("upload url=\"(.+)\"");
+
 		local res = ex.capture(data);
+print("okffff");
 		if(res != null){	
 			uploadUrl= data.slice(res[1].begin,res[1].end);
 			
 		}
 	else return 0;
 	
+	print(data);
 	local max_file_size="";
 
 	ex = regexp("max_file_size=\"(.+)\"");

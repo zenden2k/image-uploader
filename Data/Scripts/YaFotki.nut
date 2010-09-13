@@ -101,6 +101,7 @@ function internal_loadAlbumList(list)
 	
 	nm.addQueryHeader("Authorization", "FimpToken realm=\"fotki.yandex.ru\", token=\""+token+"\"");
 	nm.addQueryHeader("Expect", "");
+	nm.addQueryHeader("Connection", "close");
 	nm.setUrl("http://api-fotki.yandex.ru/api/users/"+login+"/albums/");
 	nm.doGet("");
 	internal_parseAlbumList(nm.responseBody(), list,"");
@@ -132,7 +133,7 @@ function CreateFolder(parentAlbum,album)
 	nm.addQueryHeader("Authorization","FimpToken realm=\"fotki.yandex.ru\", token=\""+token+"\"");
   	nm.setUrl("http://api-fotki.yandex.ru/api/users/"+login+"/albums/");
 	nm.addQueryHeader("Content-Type", "application/atom+xml; charset=utf-8; type=entry");
-
+	nm.addQueryHeader("Connection", "close");
 	local data = "<entry xmlns=\"http://www.w3.org/2005/Atom\" xmlns:f=\"yandex:fotki\">\r\n"+
 	"<title>"+title+"</title>\r\n"+
 	"<summary>"+summary+"</summary>\r\n"+
@@ -146,9 +147,9 @@ function CreateFolder(parentAlbum,album)
 		
 	album.setId(id);
 	if(nm.responseCode() != 201) // HTTP Status code 201 = Created
-		return false;
+		return 0;
 	
-	return true;
+	return 1;
 }
 
 function  UploadFile(FileName, options)
@@ -176,7 +177,7 @@ function  UploadFile(FileName, options)
 	   ServerFileName = ExtractFileName(FileName);
 	local 	encodedFname = nm.urlEncode(ServerFileName);
 	nm.addQueryHeader("Slug",encodedFname);
-	
+	nm.addQueryHeader("Connection", "close");
 
 	nm.addQueryHeader("Expect", "");
 	
