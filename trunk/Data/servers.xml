@@ -66,9 +66,9 @@
 		<Actions>
 			<Action Type="login" Url="http://pikucha.ru/entry" PostParams="Action=entry;email=$(_LOGIN);password=$(_PASSWORD);entry=Войти;" OnlyOnce="1"/>
 <Action Type="get" Url="http://pikucha.ru/" RegExp='form(.*?)action="http://(.*?).pikucha.ru/uplaod"' AssignVars="_ServID:1" OnlyOnce="1"/>
-<Action Type="upload" Url="http://$(_ServID).pikucha.ru/uplaod" PostParams="MAX_FILE_SIZE=10485760;images=%filename%;thumbnail_size=180;upload=lol;manual=;" RegExp='\[img\](.*?)\[\/img\]([\s\S]*?)\[img\](.*?)\[\/img\]' AssignVars="Image:2;Thumb:0"/>
+<Action Type="upload" Url="http://$(_ServID).pikucha.ru/uplaod" PostParams="MAX_FILE_SIZE=10485760;images=%filename%;thumbnail_size=180;upload=lol;manual=;" RegExp='\[img\](.*?)\[\/img\]([\s\S]*?)http://pikucha.ru/(\d+)' AssignVars="Image:2;Thumb:0"/>
 		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+		<Result DownloadUrlTemplate="http://pikucha.ru/$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
 	<Server Name="itrash.ru"  MaxFileSize="0"  Authorize="1" Debug="0">
 		<Actions>
@@ -178,14 +178,6 @@
 				<Action Type="upload" Url="http://fastpic.ru/upload?api=1" PostParams="method=file;file1=%filename%;check_thumb=size;uploading=1;orig_rotate=0;thumb_size=$(_THUMBWIDTH)" RegExp='&lt;imagepath&gt;(.*?)&lt;\/imagepath&gt;([\s\S]*?)&lt;thumbpath&gt;(.*?)&lt;\/thumbpath&gt;' AssignVars="Image:0;Thumb:2"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
-	</Server>
-	<Server Name="xtupload.com"  Authorize="1" Debug="0">
-		<Actions>
-			<Action Type="login" Url="http://xtupload.com/actions.php?pmode=login" PostParams="username=$(_LOGIN);password=$(_PASSWORD);autologin=1;" OnlyOnce="1" Description="Authorization on xtupload.com"/>
-			<Action Type="upload" Url="http://xtupload.com/new/upload.php" PostParams="typ=m;f_1=%filename%;" RegExp='URL=(.*?)\"' AssignVars="Url:0"/>
-		<Action Type="get" Url="$(Url)" PostParams="typ=m;f_1=%filename%;" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0"/>
-		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>		
 	<Server Name="p2p.dm"  Authorize="2" Debug="0">
 		<Actions>
@@ -246,4 +238,23 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>
 </Server>
+	<Server Name="youpic.su" Authorize="1">
+		<Actions>
+			<Action Type="login" Url="http://youpic.su/login.php" PostParams="login=$(_LOGIN);pass=$(_PASSWORD);submit=%D0%92%D0%BE%D0%B9%D1%82%D0%B8;"/>
+			<Action Type="upload" Url="http://youpic.su/upload.php" PostParams="imgfile[]=%filename%;tb_label_val[]=;tb_prev_label_val[]=Увеличить;tsm_prev_val[]=$(_THUMBWIDTH);tsm_quality_val[]=0;tsm_resize_val[]=640;rotate_val[]=0;" RegExp="\[img\](.*?)\[" AssignVars="Image:0;"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)"/>
+	</Server>
+	<Server Name="photoload.ru">
+		<Actions>
+			<Action Type="upload" Url="http://photoload.ru/upload.php" PostParams="fileData[]=%filename%;previewEnabled=yes;previewSize=$(_THUMBWIDTH);previewSizeLabelEnabled=yes;resizeTo=640x480;jpegQuality=85;rotate=0;" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Thumb:0;Image:2;"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
+	<Server Name="twitpic.com" Authorize="2">
+		<Actions>
+			<Action Type="upload" Url="http://twitpic.com/api/upload" PostParams="media=%filename%;username=$(_LOGIN);password=$(_PASSWORD)" RegExp="&lt;mediaid&gt;(.*?)&lt;\/mediaid&gt;([\s\S]*?)&lt;mediaurl&gt;(.*?)&lt;\/mediaurl&gt;" AssignVars="ImageID:0;Image:2;"/>
+		</Actions>
+		<Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="http://twitpic.com/show/thumb/$(ImageID)"/>
+	</Server>
 </Servers>
