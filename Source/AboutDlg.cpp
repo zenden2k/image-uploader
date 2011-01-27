@@ -23,7 +23,8 @@
 #include "aboutdlg.h"
 #include "versioninfo.h" 
 #include <curl/curl.h>
-
+#include "LangClass.h"
+#include "Settings.h"
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
@@ -33,7 +34,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	m_WebSiteLink.SubclassWindow(GetDlgItem(IDC_SITELINK));
 	CString buildInfo = CString("Build ")+_T(BUILD) +_T(" (")+_T(TIME)+_T(")")+(_T("\r\n") + Utf8ToWstring( curl_version())).c_str();
 
-	CString text = CString(TR("v"))+CString(_T("1.2.6"));
+	CString text = CString(TR("v"))+CString(_T("1.2.6 beta"));
 	SetDlgItemText(IDC_CURLINFOLABEL, text);
 	SetDlgItemText(IDC_IMAGEUPLOADERLABEL, buildInfo);
 	CenterWindow(GetParent());

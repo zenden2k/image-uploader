@@ -20,7 +20,7 @@
 
 #pragma once
 #include <atlcrack.h>
-
+#include <gdiplus.h>
 // CMyImage
 
 class CMyImage :
@@ -42,7 +42,7 @@ public:
 	
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	Bitmap *bm;
+	Gdiplus::Bitmap *bm;
 	bool IsImage;
 	bool HideParent; // —пециально дл€ всплывающего окна просмотра
 	LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);
@@ -51,7 +51,7 @@ public:
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
-	bool LoadImage(LPCTSTR FileName,Image *img=NULL, int ResourceID=0,bool Bitmap=false, COLORREF transp=0);
+	bool LoadImage(LPCTSTR FileName,Gdiplus::Image *img=NULL, int ResourceID=0,bool Bitmap=false, COLORREF transp=0);
 	LRESULT OnLButtonDown(UINT Flags, CPoint Pt);
 	int ImageWidth, ImageHeight;
 	HBITMAP BackBufferBm;

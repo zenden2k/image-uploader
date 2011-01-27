@@ -22,7 +22,7 @@
 
 #include "resource.h"       // main symbols
 #include <atlcrack.h>
-
+#include "SettingsPage.h"
 class CScreenshotSettingsPagePage : 
 	public CDialogImpl<CScreenshotSettingsPagePage>, public CSettingsPage	
 {

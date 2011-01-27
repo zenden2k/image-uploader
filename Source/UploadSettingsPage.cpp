@@ -32,12 +32,9 @@ CUploadSettingsPage::CUploadSettingsPage()
 CUploadSettingsPage::~CUploadSettingsPage()
 {
 }
-	
-LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
 
-	TabBackgroundFix(m_hWnd);
-	// Перевод контролов на выбранный язык
+void CUploadSettingsPage::TranslateUI()
+{
 	TRC(IDOK, "OK");
 	TRC(IDCANCEL, "Отмена");
 	TRC(IDC_CONNECTIONSETTINGS, "Параметры подключения");
@@ -54,6 +51,13 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	TRC(IDC_RETRIES1LABEL, "Кол-во попыток загрузки файла:");
 	TRC(IDC_RETRIES2LABEL, "Кол-во попыток для одной операции:");
 	TRC(IDC_UPLOADBUFFERLABEL, "Размер буфера отдачи:");
+}
+	
+LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	TabBackgroundFix(m_hWnd);
+	TranslateUI();
+
 	BOOL temp;
 	DoDataExchange(FALSE);
 	SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("HTTP"));
@@ -61,7 +65,7 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS4"));
 	SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS4A"));
 	SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS5"));
-SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS5(DNS)"));
+	SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS5(DNS)"));
 
 	// ---- Инициализация элементов (заполнение) ----
 	
@@ -100,8 +104,6 @@ LRESULT CUploadSettingsPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 	return 0;
 }
 
-
-
 LRESULT CUploadSettingsPage::OnClickedUseProxy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& bHandled)
 {
 	bool Checked = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK);
@@ -118,10 +120,9 @@ LRESULT CUploadSettingsPage::OnClickedUseProxyAuth(WORD /*wNotifyCode*/, WORD wI
 {
 	bool Checked = SendDlgItemMessage(wID, BM_GETCHECK);
 	EnableNextN(GetDlgItem(wID), 4, Checked);
-	//::EnableWindow(GetDlgItem(IDC_ADDRESSEDIT), Checked);
 	return 0;
 }
-	
+
 bool CUploadSettingsPage::Apply()
 {
 	DoDataExchange(TRUE);
@@ -143,6 +144,3 @@ bool CUploadSettingsPage::Apply()
 	if(!Settings.UploadBufferSize) Settings.UploadBufferSize = 65536;
 	return true;
 }
-
-
-

@@ -18,11 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
 
 #include "stdafx.h"
 #include "CmdLine.h"
-
+#include "../MyUtils.h"
 CCmdLine::CCmdLine()
 {
 	Parse(GetCommandLine());
@@ -80,7 +79,7 @@ CString CCmdLine::ModuleName()
 
 bool CCmdLine::GetNextFile(CString &FileName, int &nIndex)
 {
-	for(int i=nIndex+1; i<m_Params.GetCount(); i++)
+	for(size_t i=nIndex+1; i<m_Params.GetCount(); i++)
 	{
 		if(m_Params[i].GetLength() && m_Params[i][0]!=_T('/'))
 		{
@@ -104,7 +103,7 @@ bool CCmdLine::IsOption(LPCTSTR Option, bool bUsePrefix)
 	CString Temp;
 	if(bUsePrefix) Temp = CString("/"); 
 	Temp += Option;
-	for(int i=1; i<m_Params.GetCount(); i++)
+	for(size_t i=1; i<m_Params.GetCount(); i++)
 	{
 		if(lstrcmpi(m_Params[i], Temp)==0)
 			return true;
@@ -123,3 +122,5 @@ size_t CCmdLine::GetCount()
 {
 	return m_Params.GetCount();
 }
+
+CCmdLine CmdLine;

@@ -24,7 +24,7 @@
 // about  video/audio file that user had selected
 
 #pragma once
-
+class CResultsWindow;
 #include "../resource.h"       
 #include "../ResultsPanel.h"
 
@@ -101,6 +101,7 @@ class CResultsWindow:	 public CDialogIndirectImpl<CResultsWindow>
 		int GetPage();
 		void AddServer(CString server);
 		void InitUpload();
+		void FinishUpload();
 		void Lock();
 		void Unlock();
 		void EnableMediaInfo(bool Enable);
@@ -116,15 +117,7 @@ class CResultsWindow:	 public CDialogIndirectImpl<CResultsWindow>
 			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 			NOTIFY_HANDLER(IDC_RESULTSTAB, TCN_SELCHANGE, OnTabChanged)
 		END_MSG_MAP()
-
-	/*	BEGIN_DLGRESIZE_MAP(CResultsWindow)
-			DLGRESIZE_CONTROL(IDC_FILEINFOEDIT, DLSZ_SIZE_X|DLSZ_SIZE_Y)
-			DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X|DLSZ_MOVE_Y)
-			DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X|DLSZ_MOVE_Y)
-			DLGRESIZE_CONTROL(IDC_DOWNLOADFILESPROGRESS, DLSZ_SIZE_X|DLSZ_MOVE_Y)
-			DLGRESIZE_CONTROL(IDC_IMAGEDOWNLOADERTIP, DLSZ_SIZE_X)
-		END_DLGRESIZE_MAP()*/
-		
+	
 	private:
 		// Handler prototypes:
 		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -135,7 +128,7 @@ class CResultsWindow:	 public CDialogIndirectImpl<CResultsWindow>
 		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		CResultsPanel ResultsPanel;
+		CResultsPanel *ResultsPanel;
 		bool m_childWindow;
 };
 

@@ -28,12 +28,10 @@
 #include "../resource.h"       
 #include "../Core/FileDownloader.h"
 #include "../WizardDlg.h"
-// CImageDownloaderDlg
 
+// CImageDownloaderDlg
 class CImageDownloaderDlg:		public CDialogImpl <CImageDownloaderDlg>,
-								public CDialogResize <CImageDownloaderDlg>,
-								public CFileDownloaderCallback//,
-								//public CThreadImpl <CImageDownloaderDlg>
+								public CDialogResize <CImageDownloaderDlg>
 {
 	private:
 		CString m_FileName;
@@ -80,9 +78,9 @@ class CImageDownloaderDlg:		public CDialogImpl <CImageDownloaderDlg>,
 		int m_nFilesCount;
 		int m_nFileDownloaded;
 		CString m_InitialBuffer;
-		bool OnQueueFinished();
-		bool OnFileFinished(bool ok, const std::string& url, const std::string& fileName, const std::string& displayName);
-		bool OnConfigureNetworkManager(NetworkManager* nm);
+		void OnQueueFinished();
+		bool OnFileFinished(bool ok, DownloadFileListItem it);
+		void OnConfigureNetworkManager(NetworkManager* nm);
 };
 
 

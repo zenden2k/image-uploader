@@ -28,6 +28,7 @@ class CVideoGrabber;
 #include "videograbberpararams.h"
 #include "WizardDlg.h"
 #include "thumbsview.h"
+#include "Gui\WizardCommon.h"
 
 #define WM_MYADDIMAGE (WM_USER+22)
 // CVideoGrabber

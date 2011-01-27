@@ -25,6 +25,7 @@
 #include "resource.h"
 #include "aboutdlg.h"
 //#include "uploader.h"
+#include "LogWindow.h"
 #include "MainDlg.h"
 #include "wizarddlg.h"
 #include "floatingwindow.h"
@@ -80,6 +81,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	}
 	//else
 	{
+		//CScriptUploadEngine::InitScriptEngine();
 		pWizardDlg = &dlgMain;
 		if(dlgMain.Create(0,(LPARAM)&DlgCreationResult) == NULL)
 		{
@@ -87,7 +89,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 			dlgMain.m_hWnd = 0;
 			return 0;
 		}
-		
+		 
 		if(DlgCreationResult != 0) 
 		{
 			dlgMain.m_hWnd = 0;
@@ -108,6 +110,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	GdiplusShutdown(gdiplusToken);
 	
+	CScriptUploadEngine::DestroyScriptEngine();
 	ClearTempFolder(); // Удаляем временные файлы
 	
 	return /*nRet*/0;
@@ -146,7 +149,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	ATLASSERT(SUCCEEDED(hRes));
 
 	int nRet = Run(lpstrCmdLine, nCmdShow);
-	SquirrelVM::Shutdown(); 
+
 	_Module.Term();
 	OleUninitialize();
 	//::CoUninitialize();

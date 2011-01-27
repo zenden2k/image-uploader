@@ -30,7 +30,8 @@ BOOL IsVista();
 
 #define TRAY_SCREENSHOT_UPLOAD 0
 #define TRAY_SCREENSHOT_CLIPBOARD 1
-#define TRAY_SCREENSHOT_WIZARD 2
+#define TRAY_SCREENSHOT_SHOWWIZARD 2
+#define TRAY_SCREENSHOT_ADDTOWIZARD 3
 #include "hotkeysettings.h"
 #include "pluginloader.h"
 struct ImageSettingsStruct: public ImageConvertingParams
@@ -51,11 +52,7 @@ struct ImageSettingsStruct: public ImageConvertingParams
 	COLORREF TextColor,StrokeColor;
 };*/
 
-struct LoginInfo
-{
-	CString Login, Password,Cookies;
-	bool DoAuth;
-};
+
 
 struct TrayIconSettingsStruct
 {
@@ -128,33 +125,7 @@ struct ScreenshotSettingsStruct
 };
 
 #include <string>
-struct ServerSettingsStruct
-{
-	ServerSettingsStruct(){authData.DoAuth=0;}
-	std::map<CString, CString> params;
-	LoginInfo authData;
-	CFolderItem newFolder;
-	const std::string getParam(const std::string& name)
-	{
-		std::wstring result;
-		std::string pname = name;
-		if(pname=="Password" && authData.DoAuth)
-			result = authData.Password;
-		else if(pname=="Login" && authData.DoAuth)
-			result = authData.Login;
-		else result = params[name.c_str()];
-		return WstringToUtf8(result);
-			
-	}
 
-	void setParam(const std::string& name, const std::string& value)
-	{
-		
-	    params[name.c_str()] = Utf8ToWstring(value).c_str();
-			
-	}
-
-};
 #endif
 class CSettings
 {
@@ -169,7 +140,9 @@ class CSettings
 		CString Language;
 		BOOL ExplorerCascadedMenu;
 		#ifndef IU_SHELLEXT
+#ifndef IU_SERVERLISTTOOL
 		CHotkeyList Hotkeys;
+#endif
 		bool Hotkeys_changed;
 		bool ShowTrayIcon;
 		bool ShowTrayIcon_changed;
@@ -217,6 +190,8 @@ class CSettings
 	int UploadBufferSize;
 	int ServerID, QuickServerID;
 	void ApplyRegSettingsRightNow();
+	ServerSettingsStruct& ServerByName(CString name);
+	ServerSettingsStruct& ServerByUtf8Name(std::string name);
 	int FileServerID;
 	CString ServerName, QuickServerName,FileServerName;
 };

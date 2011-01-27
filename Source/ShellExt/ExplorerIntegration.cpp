@@ -62,6 +62,7 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRes
 			Lang.LoadList();
 			Settings.LoadSettings();
 			Lang.LoadLanguage(Settings.Language);
+			ShowVar(Settings.ExplorerCascadedMenu);
 		}
 
 		return _AtlModule.DllMain(dwReason, lpReserved); 

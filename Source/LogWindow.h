@@ -22,8 +22,9 @@
 
 #include "resource.h"       // main symbols
 #include "loglistbox.h"
+#include <atlddx.h>
 #include <atlframe.h>
-
+#include "Core/Upload//CommonTypes.h"
 #define IDC_CLEARLIST 12000
 #define MYWM_WRITELOG WM_USER +100
 // CLogWindow
@@ -80,3 +81,10 @@ extern CLogWindow LogWindow;
 
 void WriteLog(LogMsgType MsgType, LPCWSTR Sender, LPCWSTR Msg,LPCWSTR Info = NULL);
 //void WriteLog(LogMsgType MsgType, CString Sender, CString Msg, LPCTSTR Info = NULL);
+
+namespace DefaultErrorHandling
+{
+//public:
+	void ErrorMessage(/*MessageType mt, ErrorType error, const std::string& param1, int param2*/ErrorInfo);
+	void DebugMessage(const std::string&, bool);
+};

@@ -23,8 +23,10 @@
 #include "pluginloader.h"
 #include "common.h"
 #include "NewFolderDlg.h"
-
-CServerFolderSelect::CServerFolderSelect(CUploadEngine* uploadEngine)
+#include "LogWindow.h"
+#include "LangClass.h"
+#include "Settings.h"
+CServerFolderSelect::CServerFolderSelect(CUploadEngineData* uploadEngine)
 {
 	m_UploadEngine = uploadEngine;
 }
@@ -80,16 +82,16 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	IU_ConfigureProxy(m_NetworkManager);
 	
 	m_FolderOperationType = foGetFolders;
-	m_pluginLoader = iuPluginManager.getPlugin(m_UploadEngine->PluginName, Settings.ServersSettings[m_UploadEngine->Name]);
+	m_pluginLoader = iuPluginManager.getPlugin(m_UploadEngine->PluginName, Settings.ServerByUtf8Name(m_UploadEngine->Name));
 	if(!m_pluginLoader) 
 	{
 		SetDlgItemText(IDC_FOLDERLISTLABEL, TR("Ошибка при загрузке squirrel скрипта."));
 		return 0;
 	}
 	CString title;
-	title.Format(TR("Список папок на сервере %s для учетной записи '%s':"), m_UploadEngine->Name, Settings.ServersSettings[m_UploadEngine->Name].authData.Login);
+	title.Format(TR("Список папок на сервере %s для учетной записи '%s':"), (LPCTSTR)Utf8ToWCstring(m_UploadEngine->Name), (LPCTSTR)Utf8ToWCstring(Settings.ServerByUtf8Name(m_UploadEngine->Name).authData.Login));
 	SetDlgItemText(IDC_FOLDERLISTLABEL, title);
-	m_pluginLoader->bindNetworkManager(&m_NetworkManager);
+	m_pluginLoader->setNetworkManager(&m_NetworkManager);
 	m_pluginLoader->getAccessTypeList(m_accessTypeList);
 	if(m_pluginLoader)
 	{
@@ -148,7 +150,7 @@ LRESULT CServerFolderSelect::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 
 		m_FolderTree.DeleteAllItems();
 		BuildFolderTree(m_FolderList.m_folderItems, "");
-		m_FolderTree.SelectItem(m_FolderMap[m_SelectedFolder.id]);
+		m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_SelectedFolder.id)]);
 		OnLoadFinished();
 	}
 
@@ -157,7 +159,7 @@ LRESULT CServerFolderSelect::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 			m_pluginLoader->createFolder(CFolderItem(),m_newFolder);
 			m_FolderOperationType = foGetFolders;
 			Run();
-			m_FolderTree.SelectItem(m_FolderMap[m_newFolder.id]);
+			m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_newFolder.id)]);
 	 }
 
 	 else if(m_FolderOperationType == foModifyFolder) // Modifying an existing folder
@@ -165,7 +167,7 @@ LRESULT CServerFolderSelect::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 			m_pluginLoader->modifyFolder(m_newFolder);
 			m_FolderOperationType = foGetFolders;
 			Run();
-			m_FolderTree.SelectItem(m_FolderMap[m_newFolder.id]);
+			m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_newFolder.id)]);
 	 }
 	BlockWindow(false);
 	return 0;
@@ -183,7 +185,7 @@ void CServerFolderSelect::NewFolder(const CString& parentFolderId)
 	if(dlg.DoModal(m_hWnd) == IDOK)
 	{
 		m_newFolder = newFolder;
-		m_newFolder.parentid = parentFolderId;
+		m_newFolder.parentid = WCstringToUtf8(parentFolderId);
 		m_FolderOperationType = foCreateFolder;
 		if(!IsRunning())
 		{
@@ -328,14 +330,14 @@ void CServerFolderSelect::BuildFolderTree(std::vector<CFolderItem> &list,const C
 		CFolderItem& cur = list[i] ;
 		if(cur.parentid.c_str() == parentFolderId)
 		{
-			CString title = cur.title.c_str();
+			CString title = Utf8ToWCstring(cur.title);
 				if(cur.itemCount != -1)
 					title+= _T(" (") + IntToStr(cur.itemCount) + _T(")");
-				HTREEITEM res = m_FolderTree.InsertItem(title,1,1, m_FolderMap[cur.parentid],TVI_SORT	);
+				HTREEITEM res = m_FolderTree.InsertItem(title,1,1, m_FolderMap[Utf8ToWstring(cur.parentid)],TVI_SORT	);
 				m_FolderTree.SetItemData(res, i);
 
-			m_FolderMap[cur.id] = res;
-			if(cur.id != _T(""))
+			m_FolderMap[Utf8ToWstring(cur.id)] = res;
+			if(cur.id != "")
 				BuildFolderTree(list, cur.id.c_str());
 			if(parentFolderId==_T(""))
 			m_FolderTree.Expand(res);

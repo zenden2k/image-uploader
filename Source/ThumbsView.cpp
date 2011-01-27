@@ -23,6 +23,8 @@
 #include "mydropsource.h"
 #include "mydataobject.h"
 #include "common.h"
+#include "LogWindow.h"
+#include "LangClass.h"
 
 #define THUMBNAIL_WIDTH 170   // constants
 #define THUMBNAIL_HEIGHT 120
@@ -424,11 +426,11 @@ bool CThumbsView::LoadThumbnail(int ItemID, Image *Img)
 				lstrcpy(FileExt,_T("JPEG"));
 			if(IsImage(filename) && bm)
 			{
-				wsprintf(Buffer,_T("%s %dx%d (%s)"),FileExt,(int)bm->GetWidth(),(int)bm->GetHeight(), buf2 );
+				wsprintf(Buffer,_T("%s %dx%d (%s)"),(LPCTSTR)FileExt,(int)bm->GetWidth(),(int)bm->GetHeight(), (LPCTSTR)buf2 );
 			}
 			else
 			{
-				wsprintf(Buffer,_T("%s")/*,FileExt*/, buf2 );
+				wsprintf(Buffer,_T("%s"), (LPCTSTR)buf2 );
 
 			}
 			gr.DrawString(Buffer, -1, &font, bounds, &format, &brush);

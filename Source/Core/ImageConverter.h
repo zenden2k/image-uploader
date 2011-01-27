@@ -1,6 +1,7 @@
 #ifndef IU_IMAGECONVERTER_H
 #define IU_IMAGECONVERTER_H
 
+#include <GdiPlus.h>
 struct ImageConvertingParams
 {
 	int NewWidth,NewHeight;
@@ -60,8 +61,10 @@ class CImageConverter
 		bool createThumb(Gdiplus::Image *bm, int fileformat);
 };
 
+using namespace Gdiplus;
 bool MySaveImage(Image *img, const CString& szFilename,CString& szBuffer,int Format,int Quality,LPCTSTR Folder=0);
 void DrawGradient(Graphics &gr,Rect rect,Color &Color1,Color &Color2);
 void DrawRect(Bitmap &gr,Color &color,Rect rect);
-
+void DrawStrokedText(Graphics &gr, LPCTSTR Text,RectF Bounds,Gdiplus::Font &font,Color &ColorText,Color &ColorStroke,int HorPos=0,int VertPos=0, int width=1);
+int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 #endif

@@ -1,9 +1,9 @@
-#include "stdafx.h"
 #include "UpdatePackage.h"
 #include "Common/unzipper.h"
 #include "Common.h"
 #include "pluginloader.h"
 #include "TextViewDlg.h"
+#include "LogWindow.h"
 #include <time.h>
 
 BOOL CreateFolder(LPCTSTR szFolder)
@@ -94,28 +94,25 @@ bool CUpdateInfo::Parse(CMyXml &m_xml)
 {
 	if (m_xml.FindElem(_T("UpdateInfo"))) 
 	{
-		
 		CString packageName, UpdateUrl;
-			m_xml.GetAttrib(_T("Name"), m_PackageName);
-			m_xml.GetAttrib(_T("UpdateUrl"), m_UpdateUrl);
-				m_xml.GetAttrib(_T("DownloadUrl"), m_DownloadUrl);
-				m_xml.GetAttrib(_T("Hash"), m_Hash);
-				m_xml.GetAttrib(_T("TimeStamp"), m_TimeStamp);
-				m_xml.GetAttrib(_T("DisplayName"), m_DisplayName);
+		m_xml.GetAttrib(_T("Name"), m_PackageName);
+		m_xml.GetAttrib(_T("UpdateUrl"), m_UpdateUrl);
+		m_xml.GetAttrib(_T("DownloadUrl"), m_DownloadUrl);
+		m_xml.GetAttrib(_T("Hash"), m_Hash);
+		m_xml.GetAttrib(_T("TimeStamp"), m_TimeStamp);
+		m_xml.GetAttrib(_T("DisplayName"), m_DisplayName);
 
-				if(m_PackageName.IsEmpty() || m_UpdateUrl.IsEmpty() || m_DownloadUrl.IsEmpty() || m_Hash.IsEmpty()  || !m_TimeStamp)
-					return false;
-				int core=0;
-
-				m_xml.GetAttrib(_T("CoreUpdate"), core);
-				m_CoreUpdate = core;
-				m_xml.IntoElem();
-				if(m_xml.FindElem(_T("Info")))
-				{
-					 m_xml.GetData(m_ReadableText);
-					 m_ReadableText.Replace(_T("\n"),_T("\r\n"));
-				}
-
+		if(m_PackageName.IsEmpty() || m_UpdateUrl.IsEmpty() || m_DownloadUrl.IsEmpty() || m_Hash.IsEmpty()  || !m_TimeStamp)
+			return false;
+		int core = 0;
+		m_xml.GetAttrib(_T("CoreUpdate"), core);
+		m_CoreUpdate = core;
+		m_xml.IntoElem();
+		if(m_xml.FindElem(_T("Info")))
+		{
+			m_xml.GetData(m_ReadableText);
+			m_ReadableText.Replace(_T("\n"),_T("\r\n"));
+		}
 	}
 	return true;
 }
@@ -129,7 +126,6 @@ bool CUpdateInfo::CanUpdate(const CUpdateInfo& newInfo)
 
 bool CUpdateInfo::CheckUpdates()
 {
-	
 	return true;
 }
 
@@ -143,19 +139,21 @@ bool CUpdateInfo::operator< (const CUpdateInfo& p)
 	return m_TimeStamp < p.m_TimeStamp;
 }
 
-
-	
-
-
 bool CUpdateManager::CheckUpdates()
 {
+	m_ErrorStr.Empty();
 	Clear();
 	std::vector<CString> fileList;
 	GetFolderFileList(fileList, IU_GetDataFolder() +_T("Update"),_T("*.xml"));
 
 	bool Result = true;
-	//return true;
-	
+
+	if(fileList.size() == 0)
+	{
+		m_ErrorStr = "No update files found in folder '" +IU_GetDataFolder() + _T("Update\\'");
+		return false;
+	}
+
 	for(int i=0; i<fileList.size(); i++)
 	{
 		CString fileName = IU_GetDataFolder()+_T("Update\\") + fileList[i];
@@ -163,10 +161,13 @@ bool CUpdateManager::CheckUpdates()
 			Result= false;
 	}
 
-	if(m_updateList.size())
-		Result = true;
-
+	//Result = m_updateList.size()!=0;
 	return Result;
+}
+
+const CString CUpdateManager::ErrorString()
+{
+	return m_ErrorStr;
 }
 
 bool CUpdateManager::DoUpdates()
@@ -179,6 +180,7 @@ bool CUpdateManager::DoUpdates()
 	}
 	return true;
 }
+
 bool CUpdateManager::internal_load_update(CString name)
 {
 	
@@ -252,7 +254,6 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 	if(!unzipper.UnzipTo(unzipFolder))
 	{
 		updateStatus(0, TR("Невозможно распаковать архив ")+ filename);
-		//MessageBox(0, _T("Error"), 0, 0);
 		return 0;
 	}
 
@@ -261,7 +262,6 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 	if(!updatePackage.LoadUpdateFromFile(unzipFolder + _T("\\")+_T("package.xml")))
 	{
 		MessageBox(0,TR("Не могу прочитать ") + ui.m_PackageName,0,0);
-		return 0;
 		return false;
 	}
 
@@ -269,7 +269,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 		return false;
 	CString finishText;
 	finishText.Format(TR("Обновление завершено. Обновлено %d из %d файлов "), updatePackage.m_nUpdatedFiles, updatePackage.m_nTotalFiles);
-	m_statusCallback->updateStatus(nCurrentIndex,finishText );
+	m_statusCallback->updateStatus(nCurrentIndex, finishText );
 
 	ui.SaveToFile(ui.m_FileName);
 	m_nSuccessPackageUpdates++;
@@ -468,7 +468,7 @@ int CUpdateManager::progressCallback(void *clientp, double dltotal, double dlnow
 	if(dltotal != 0 )
 	percent = (dlnow/ dltotal) * 100;
 	if(percent > 100) percent = 0;
-	text.Format(TR("Скачано %s из %s (%d %%)"),buf1, buf2,percent);
+	text.Format(TR("Скачано %s из %s (%d %%)"),(LPCTSTR)buf1, (LPCTSTR)buf2,percent);
 	um->updateStatus(0, text);
 	if(um->m_stop) return 1;
 	return 0;

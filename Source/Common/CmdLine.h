@@ -19,7 +19,8 @@
 */
 
 #pragma once
-
+#include <atlmisc.h>
+#include <atlcoll.h>
 typedef CAtlArray<CString> CStringList;
 
 class CCmdLine
@@ -40,3 +41,5 @@ class CCmdLine
 		bool IsOption(LPCTSTR Option, bool bUsePrefix = true);
 		size_t GetCount();
 };
+
+extern CCmdLine CmdLine;

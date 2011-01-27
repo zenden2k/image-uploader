@@ -21,8 +21,11 @@
 #include "stdafx.h"
 #include "NewFolderDlg.h"
 #include "Common.h"
+#include "LogWindow.h"
+#include "LangClass.h"
+#include "Settings.h"
 // CNewFolderDlg
-CNewFolderDlg::CNewFolderDlg(CFolderItem &folder, bool CreateNewFolder,std::vector<std::wstring>& accessTypeList):
+CNewFolderDlg::CNewFolderDlg(CFolderItem &folder, bool CreateNewFolder,std::vector<std::string>& accessTypeList):
 					m_folder(folder), m_bCreateNewFolder(CreateNewFolder), m_accessTypeList(accessTypeList)
 {
 }
@@ -46,11 +49,14 @@ LRESULT CNewFolderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 		SetWindowText(TR("Новая папка (альбом)"));
 	else
 		SetWindowText(TR("Редактирование папки"));
-	SetDlgItemText(IDC_FOLDERTITLEEDIT, m_folder.title.c_str());
-	SetDlgItemText(IDC_FOLDERDESCREDIT, m_folder.summary.c_str());
+	SetDlgItemText(IDC_FOLDERTITLEEDIT, Utf8ToWCstring(m_folder.title));
+	CString text = Utf8ToWCstring(m_folder.summary);
+	text.Replace(_T("\r"), _T(""));
+	text.Replace(_T("\n"), _T("\r\n"));
+	SetDlgItemText(IDC_FOLDERDESCREDIT, text);
 	for(int i=0; i< m_accessTypeList.size(); i++)
 	{
-		SendDlgItemMessage(IDC_ACCESSTYPECOMBO, CB_ADDSTRING, 0, (LPARAM) (LPCTSTR)m_accessTypeList[i].c_str());
+		SendDlgItemMessage(IDC_ACCESSTYPECOMBO, CB_ADDSTRING, 0, (LPARAM) (LPCTSTR)Utf8ToWCstring(m_accessTypeList[i].c_str()));
 	}
 	SendDlgItemMessage(IDC_ACCESSTYPECOMBO, CB_SETCURSEL, m_folder.accessType);
 	
@@ -61,9 +67,9 @@ LRESULT CNewFolderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 LRESULT CNewFolderDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	m_sTitle= IU_GetWindowText(GetDlgItem(IDC_FOLDERTITLEEDIT));
-	m_folder.title = m_sTitle;
+	m_folder.title = WCstringToUtf8(m_sTitle);
 	m_sDescription = IU_GetWindowText(GetDlgItem(IDC_FOLDERDESCREDIT));
-	m_folder.summary = m_sDescription;
+	m_folder.summary = WCstringToUtf8(m_sDescription);
 	int nAccessType = SendDlgItemMessage(IDC_ACCESSTYPECOMBO, CB_GETCURSEL);
 	if(nAccessType >= 0)
 	m_folder.accessType = nAccessType;

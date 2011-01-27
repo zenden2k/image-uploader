@@ -24,13 +24,13 @@
 #include <atlframe.h>
 #include "common.h"
 #include "Common\PropertyList.h"
-#include "core/UploadEngine.h"
+#include "core/Upload/UploadEngine.h"
 class CServerParamsDlg : 
 	public CDialogImpl<CServerParamsDlg>,
 	public CDialogResize<CServerParamsDlg>	
 {
 	public:
-		CServerParamsDlg(CUploadEngine *ue);
+		CServerParamsDlg(CUploadEngineData *ue);
 		~CServerParamsDlg();
 		enum { IDD = IDD_SERVERPARAMSDLG };
 
@@ -57,8 +57,8 @@ class CServerParamsDlg :
 
 	protected:
 		CPropertyListCtrl m_wndParamList;
-		std::map<std::wstring,std::wstring> m_paramNameList;
-		CUploadEngine *m_ue;
+		std::map<std::string,std::string> m_paramNameList;
+		CUploadEngineData *m_ue;
 };
 
 

@@ -27,6 +27,9 @@
 #ifndef IU_SHELLEXT
 // Change these values to use different versions
 
+#ifdef WINVER
+#undef WINVER
+#endif
 #define WINVER		0x0601 // 0x0601 = Windows 7 
 #define _WIN32_WINNT	0x0501
 #define _WIN32_IE	0x0501
@@ -65,20 +68,7 @@ extern CAppModule _Module;
 #include <atlmisc.h>
 #include <atlcoll.h>
 #include <atltheme.h>
-using namespace Gdiplus;
-#include "myutils.h"
-#include "Common/CmdLine.h"
-#include "logwindow.h"
-#include "langclass.h"
-#include "settings.h"
 
-/*
-#include "common.h"
-
-
-
-#include "wizarddlg.h"
-*/
 
 #if defined _M_IX86
   #pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")

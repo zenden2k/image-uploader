@@ -33,11 +33,11 @@ class CFolderAdd;
 #include "aboutdlg.h"
 #include "statusdlg.h"
 #include "updatedlg.h"
-
+#include "Common\cmdline.h"
 #include "resource.h"       // main symbols
 #include <atlcrack.h>
 #include "hyperlink.h"
-#include "Core/UploadEngine.h"
+#include "Core/Upload/UploadEngine.h"
 #define ID_PASTE 9888
 #define ID_HOTKEY_BASE 10000
 #define WM_MY_ADDIMAGE WM_USER + 222
@@ -168,7 +168,7 @@ public:
 	bool ParseCmdLine();
 	CHotkeyList m_hotkeys;
 	CFolderAdd FolderAdd;
-	CUploadEngineList m_EngineList;
+	CMyEngineList m_EngineList;
 	long m_lRef;
 	bool QuickUploadMarker;
 	CString LastVideoFile;

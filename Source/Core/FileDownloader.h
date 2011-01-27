@@ -24,38 +24,40 @@
 #include <atlmisc.h>
 #include "../thread.h"
 #include <atlcoll.h>
-#include "../Common/NetworkManager.h"
+#include "Network/NetworkManager.h"
+#include "../3rdpart/FastDelegate.h"
 
-class CFileDownloaderCallback
+struct DownloadFileListItem
 {
-public:
-	virtual bool OnFileFinished(bool ok, const std::string& url, const std::string& fileName, const std::string& displayName)
-	{
-		return true;
-	};
-	virtual bool OnQueueFinished() { return true;}
-	virtual bool OnConfigureNetworkManager(NetworkManager* nm){return true;}
+	std::string fileName;
+	std::string displayName;
+	std::string url;
+	int id;
 };
+
+using namespace fastdelegate;
 
 class CFileDownloader
 {
 	private:
 		CString m_ErrorStr;
-		std::vector<std::string> m_fileList;
+		std::vector<DownloadFileListItem> m_fileList;
 		int m_nThreadCount;
 		int m_nRunningThreads;
 		public:
 			CFileDownloader();
-			void AddFile(const std::string& url);
+			void AddFile(const std::string& url, int id);
 			bool start();
 			static void thread_func(void * param);
-			std::string getNextJob(std::string& saveAs);
+			void memberThreadFunc();
+			bool getNextJob(DownloadFileListItem& item);
 			void setThreadCount();
 			CAutoCriticalSection m_CS;
-			CFileDownloaderCallback *m_CallBack;
-			void setCallback(CFileDownloaderCallback* callback);
 			bool m_NeedStop;
 			bool m_IsRunning;
 			void stop();
 			bool IsRunning();
+			FastDelegate0<> onQueueFinished;
+			FastDelegate1<NetworkManager*> onConfigureNetworkManager;
+			FastDelegate2<bool, DownloadFileListItem, bool> onFileFinished;
 };

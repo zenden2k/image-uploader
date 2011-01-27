@@ -1,5 +1,5 @@
 #pragma once
-
+#include <atlcrack.h>
 #define WM_KEY                      (WM_USER + 444)
 // CWinHotkeyCtrl
 

@@ -20,39 +20,18 @@
 
 #ifndef COMMON_H
 #define COMMON_H
-#define IU_IDC_CONST 12255
-#define IDC_SETTINGS		IU_IDC_CONST+1
-#define IDC_REGIONPRINT IU_IDC_CONST+2
-#define IDC_MEDIAFILEINFO IU_IDC_CONST+3
-#define IDC_CLIPBOARD IU_IDC_CONST+4
-#define IDC_ADDFOLDER IU_IDC_CONST+5
-#define IDC_ADDFILES IU_IDC_CONST+6
-#define IDC_DOWNLOADIMAGES IU_IDC_CONST+7
+
 #include <deque>
 #include "thread.h"
+#include <atlcoll.h>
 #include "pluginloader.h"
 #include <ctime>
-#include "Core/UploadEngine.h"
-class CWizardDlg;
-class CWizardPage
-{
-public:
-	CWizardDlg *WizardDlg;
-	virtual ~CWizardPage()=NULL;
-	HBITMAP HeadBitmap;
-	virtual bool OnShow();
-	virtual bool OnHide();
-	virtual bool OnNext();
-	void EnableNext(bool Enable=true);
-	void EnablePrev(bool Enable=true);
-	void EnableExit(bool Enable=true);
-	void SetNextCaption(LPCTSTR Caption);
-	HWND PageWnd;
-	void ShowNext(bool Show=true);
-	void ShowPrev(bool Show=true);
-};
-
-
+#include "PluginLoader.h"
+#include "Core/Upload/ScriptUploadEngine.h"
+#include "Func/MyEngineList.h"
+class CPluginManager;
+//class CWizardDlg;
+class CCmdLine;
 
 
 struct CUrlListItem{
@@ -65,13 +44,6 @@ struct CUrlListItem{
 };
 
 
-struct InfoProgress
-{
-	DWORD Uploaded,Total;
-	bool IsUploading;
-	std::deque<DWORD> Bytes;
-	CAutoCriticalSection CS;
-};
 
 bool IULaunchCopy();
 BOOL CreateTempFolder();
@@ -88,8 +60,6 @@ bool __fastcall CreateShortCut(
 							   int iCmdShow, 
 							   LPCTSTR pszIconFileName, 
 							   int iIconIndex) ;
-void DrawStrokedText(Graphics &gr, LPCTSTR Text,RectF Bounds,Gdiplus::Font &font,Color &ColorText,Color &ColorStroke,int HorPos=0,int VertPos=0, int width=1);
-int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 
 bool IULaunchCopy(CString params, CAtlArray<CString> &files);
@@ -97,9 +67,9 @@ bool IULaunchCopy(CString params, CAtlArray<CString> &files);
 extern CPluginManager iuPluginManager;
 
 void IU_ConfigureProxy(NetworkManager& nm);
-CString IU_GetFileMimeType (const CString& filename);
+
 const CString IU_GetVersion();
-#define IU_NEWFOLDERMARK _T("_iu_create_folder_")
+#define IU_NEWFOLDERMARK ("_iu_create_folder_")
 void DeleteDir2(LPCTSTR Dir);
 bool BytesToString(__int64 nBytes, LPTSTR szBuffer,int nBufSize);
 bool IULaunchCopy(CString additionalParams=_T(""));
@@ -116,8 +86,10 @@ int dlgY(int HeightInPixels);
 CString GenerateFileName(const CString &templateStr, int index,const CPoint size, const CString& originalName=_T(""));
 CString GetUniqFileName(const CString &filePath);
 bool IU_GetClipboardText(CString &text);
-extern CUploadEngineList *_EngineList;
+extern CMyEngineList *_EngineList;
 const CString IU_GetWindowText(HWND wnd);
 std::string ExtractFileNameA(const std::string& FileName);
 LPCSTR GetFileExtA(LPCSTR szFileName);
+BOOL IU_CreateFolder(LPCTSTR szFolder);
+BOOL IU_CreateFilePath(LPCTSTR szFilePath);
 #endif

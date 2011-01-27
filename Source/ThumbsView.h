@@ -60,7 +60,7 @@ public:
 	LRESULT OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	int maxwidth,maxheight;
 	void Init(bool Extended=false);
-	int AddImage(LPCTSTR FileName, LPCTSTR Title, Image* Img=NULL);
+	int AddImage(LPCTSTR FileName, LPCTSTR Title, Gdiplus::Image* Img=NULL);
 	bool MyDeleteItem(int ItemIndex);
 	int DeleteSelected();
 	void UpdateImageIndexes(int StartIndex = 0);
@@ -68,7 +68,7 @@ public:
 	bool SimpleDelete(int ItemIndex, bool DeleteThumb = true);
 	LPCTSTR GetFileName(int ItemIndex);
 	LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);
-	bool LoadThumbnail(int ItemID, Image *Img=NULL);
+	bool LoadThumbnail(int ItemID, Gdiplus::Image *Img=NULL);
 	int GetImageIndex(int ItemIndex);
 	CImageView ImageView;
 	LRESULT OnLButtonDblClk(UINT Flags, CPoint Pt);

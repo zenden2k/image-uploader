@@ -24,6 +24,8 @@ struct LogoParams;
 #include "myimage.h"
 #include "colorpicker.h"
 #include "settingspage.h"
+#include "Gui/WizardCommon.h"
+#include "Settings.h"
 // CUploadSettingsPage
 
 class CUploadSettingsPage : 
@@ -58,6 +60,7 @@ virtual ~CUploadSettingsPage();
 	LRESULT OnClickedUseProxy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnClickedUseProxyAuth(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	virtual bool Apply();
+	void TranslateUI();
 };
 
 

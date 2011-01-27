@@ -20,7 +20,7 @@
 
 #include "stdafx.h"
 #include "HyperLinkControl.h"
-
+#include "Common.h"
 // CHyperLinkControl
 CHyperLinkControl::CHyperLinkControl()
 {

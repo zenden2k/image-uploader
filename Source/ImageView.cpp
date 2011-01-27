@@ -20,6 +20,9 @@
 
 #include "stdafx.h"
 #include "ImageView.h"
+#include "LogWindow.h"
+#include "LangClass.h"
+#include "Settings.h"
 
 // CImageView
 CImageView::CImageView()

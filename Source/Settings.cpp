@@ -18,12 +18,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
-
 #include "settings.h"
 #include "myutils.h"
 #include "Common\MyXml.h"
+#include "LogWindow.h"
 #include <Shlobj.h>
+#include "Common\CmdLine.h"
 #define SETTINGS_FILE_NAME _T("settings.xml")
 
 //CSIDL_COMMON_APPDATA
@@ -50,7 +50,6 @@ CString GetSystemSpecialPath(int csidl)
 		}
 	}
 	if(result.Right(1)!=_T("\\")) result+=_T("\\");
-	//MessageBox(0, result, 0,0 );
 	return result;
 }
 
@@ -64,21 +63,11 @@ const CString GetCommonApplicationDataPath()
 	return GetSystemSpecialPath(CSIDL_COMMON_APPDATA);
 }
 CSettings Settings;
-BOOL IsVista()
-{
-	OSVERSIONINFO osver;
-	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
 
-	if (	::GetVersionEx( &osver ) && 
-		osver.dwPlatformId == VER_PLATFORM_WIN32_NT && 
-		(osver.dwMajorVersion >= 6 ) )
-		return TRUE;
-
-	return FALSE;
-}
 #ifndef IU_SHELLEXT
+#ifndef IU_SERVERLISTTOOL
 #include "FloatingWindow.h"
-
+#endif
 
 #define ASSERT
 
@@ -307,9 +296,16 @@ CSettings::CSettings()
 	ScreenshotSettings.ShowForeground = false;
 	ScreenshotSettings.FilenameTemplate = _T("screenshot %y-%m-%d %c");
 	ScreenshotSettings.CopyToClipboard = false;
-
-	TrayIconSettings.LeftClickCommand = 0; // without action
-	TrayIconSettings.LeftDoubleClickCommand = 10; // add images
+	if(!IsVista())
+	{
+		TrayIconSettings.LeftClickCommand = 0; // without action
+		TrayIconSettings.LeftDoubleClickCommand = 12; // add images
+	}
+	else
+	{
+		TrayIconSettings.LeftClickCommand = 12; // without action
+		TrayIconSettings.LeftDoubleClickCommand = 0; // add images
+	}
 	TrayIconSettings.RightClickCommand = 1; // context menu
 	TrayIconSettings.MiddleClickCommand = 7; // region screenshot
 	TrayIconSettings.DontLaunchCopy = FALSE;
@@ -323,8 +319,10 @@ CSettings::CSettings()
 #include "SettingsSaver.h" // Generating a function which reads settings
 
 #ifndef IU_SHELLEXT
+#ifndef  IU_SERVERLISTTOOL
 #undef SETTINGS_READ
 #include "SettingsSaver.h" // Generating a function which saves settings
+#endif
 #endif
 bool CSettings::LoadSettings(LPCTSTR szDir)
 {
@@ -404,15 +402,15 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command,b
 	if(Title == 0)
 	{
 		// Deleting
-		wsprintf(Buffer, _T("%s\\shell\\iuploader"), ClassName);
+		wsprintf(Buffer, _T("%s\\shell\\iuploader"), (LPCTSTR)ClassName);
 		SHDeleteKey(HKEY_CLASSES_ROOT, Buffer);
 		return 0;
 	}
 
-	wsprintf(Buffer, _T("%s\\shell\\iuploader\\command"), ClassName);
+	wsprintf(Buffer, _T("%s\\shell\\iuploader\\command"), (LPCTSTR)ClassName);
 
 	if(!lstrlen(Buffer)) return false;
-	wsprintf(Buffer, _T("%s\\shell\\iuploader"), ClassName);
+	wsprintf(Buffer, _T("%s\\shell\\iuploader"), (LPCTSTR)ClassName);
 	DWORD res  = RegCreateKeyEx(HKEY_CLASSES_ROOT, Buffer, 0, 0, REG_OPTION_NON_VOLATILE,  KEY_WRITE	, 0, &ExtKey, NULL);
 	
 	if(res != ERROR_SUCCESS)
@@ -479,6 +477,7 @@ CString GetSendToPath()
 
 bool CSettings::SaveSettings()
 {	
+	#ifndef IU_SERVERLISTTOOL
 	CMyXml MyXml;
 	MyXml.SetDoc(_T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"));
 
@@ -528,6 +527,7 @@ bool CSettings::SaveSettings()
 	}
 
 	Settings.Hotkeys_changed  = false;
+	#endif
 	return true;
 }
 
@@ -548,7 +548,7 @@ void CSettings::ApplyRegSettingsRightNow()
 	else //deleting from Startup
 	{
 		HKEY hKey;
-		 LONG lRet,lRetOpen;
+		 LONG lRet;
 		lRet = RegOpenKeyEx( HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"),0,KEY_WRITE,&hKey );
 		RegDeleteValue(hKey,_T("ImageUploader"));
 	}
@@ -602,5 +602,15 @@ void CSettings::ApplyRegSettingsRightNow()
 		}
 	}
 
+}
+
+ServerSettingsStruct& CSettings::ServerByName(CString name)
+{
+	return ServersSettings[name];
+}
+
+ServerSettingsStruct&  CSettings::ServerByUtf8Name(std::string name)
+{
+	return ServerByName(Utf8ToWCstring(name));
 }
 #endif

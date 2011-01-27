@@ -21,7 +21,7 @@
 #pragma once
 
 #include "resource.h"       // main symbols
-#include "uploader.h"
+#include "Core/Upload/Uploader.h"
 #include "maindlg.h"
 #include "thread.h"
 #include "LogoSettings.h"
@@ -30,6 +30,13 @@
 #include "welcomedlg.h"
 #include <Shobjidl.h>
 #include "Gui/ResultsWindow.h"
+
+struct CUploadDlgProgressInfo
+{
+	InfoProgress ip;
+	CAutoCriticalSection CS;
+	std::deque<DWORD> Bytes;
+};
 class CUploadDlg : 
 	public CDialogImpl<CUploadDlg>,public CThreadImpl<CUploadDlg>, public CWizardPage	
 {
@@ -40,8 +47,8 @@ public:
 	int TimerInc;
 	bool IsStopTimer;
 	bool Terminated;
-	TCHAR ProgressBuffer[256];
-	InfoProgress PrInfo;
+	//TCHAR ProgressBuffer[256];
+	CUploadDlgProgressInfo PrInfo;
 
     BEGIN_MSG_MAP(CUploadDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -62,7 +69,7 @@ public:
 	#endif
 	 DWORD Run();
 	 CMainDlg *MainDlg;
-	 CResultsWindow ResultsWindow;
+	 CResultsWindow *ResultsWindow;
 	int ThreadTerminated(void);
 	int GenerateImages(LPCTSTR szFileName, LPTSTR szBufferImage, LPTSTR szBufferThumb,int thumbwidth, ImageSettingsStruct &iss);
 	CAtlArray<CUrlListItem> UrlList;
@@ -79,7 +86,12 @@ public:
 	void GenerateOutput();
 	void UploadProgress(int CurPos, int Total,int FileProgress=0);
 	int progressCurrent, progressTotal;
-	CUploadEngineList *m_EngineList;
+	CMyEngineList *m_EngineList;
+	CString m_StatusText;
+	bool OnUploaderNeedStop();
+	void OnUploaderProgress(InfoProgress pi);
+	void OnUploaderStatusChanged(StatusType status, int actionIndex, std::string text);
+	void OnUploaderConfigureNetworkClient(NetworkManager *nm);	
 };
 
 

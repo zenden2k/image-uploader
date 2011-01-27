@@ -1,7 +1,39 @@
-#include "stdafx.h"
 #include "ScreenCapture.h"
 #include "../common.h"
 #include <math.h>
+
+#include <Dwmapi.h>
+#include "../MyUtils.h"
+typedef HRESULT (WINAPI *DwmGetWindowAttribute_Func)(HWND, DWORD, PVOID, DWORD);
+typedef HRESULT (WINAPI *DwmIsCompositionEnabled_Func)(BOOL*);
+
+BOOL MyGetWindowRect(HWND hWnd, RECT *res)
+{
+	if(!IsVista()) 
+	{
+		return GetWindowRect(hWnd, res);
+	}
+	static HMODULE DllModule =  LoadLibrary(_T("dwmapi.dll"));
+	if(DllModule)
+	{
+		DwmIsCompositionEnabled_Func IsCompEnabledFunc = (DwmIsCompositionEnabled_Func) GetProcAddress(DllModule, "DwmIsCompositionEnabled");
+		if(IsCompEnabledFunc)
+		{
+			BOOL isEnabled = false;
+			if(S_OK == IsCompEnabledFunc( &isEnabled))
+				if(isEnabled)
+				{
+					DwmGetWindowAttribute_Func Func = (DwmGetWindowAttribute_Func) GetProcAddress(DllModule, "DwmGetWindowAttribute");
+					if(Func)
+					{
+						if(S_OK == Func( hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, res, sizeof(RECT)))
+							return TRUE;
+					}
+			}
+		}	
+	}
+	return GetWindowRect(hWnd, res);
+}
 HWND GetTopParent(HWND wnd)
 {
 	//HWND res;
@@ -172,7 +204,7 @@ void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsig
 HRGN GetWindowRegion(HWND wnd)
 {
 	RECT WndRect;
-	::GetWindowRect(wnd, &WndRect );
+	::MyGetWindowRect(wnd, &WndRect );
 	CRgn WindowRgn;
 
 	WindowRgn.CreateRectRgnIndirect(&WndRect);
@@ -194,7 +226,7 @@ HRGN GetWindowVisibleRegion(HWND wnd)
 		winReg = GetWindowRegion(wnd);
 		return winReg.Detach();
 	}
-	GetWindowRect(wnd, &result);
+	MyGetWindowRect(wnd, &result);
 	while(GetWindowLong(wnd,GWL_STYLE) & WS_CHILD)
 	{
 		wnd = GetParent(wnd);

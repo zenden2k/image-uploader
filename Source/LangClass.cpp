@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
+
 #include "langclass.h"
 #include "myutils.h"
 #include "settings.h"
@@ -44,7 +44,6 @@ int hexstr2int(LPTSTR hex)
 	int c =0;
 
 	BYTE b[4];
-	int temp;
 	if(len>8) return 0;
 	for(int i=0; i<len; i+=2)
 	{

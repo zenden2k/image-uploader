@@ -18,7 +18,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
 #include "FileDownloader.h"
 #include "../myutils.h"
 #include <algorithm>
@@ -26,81 +25,99 @@
 CFileDownloader::CFileDownloader()
 {
 	m_nThreadCount = 4;
-	m_CallBack = 0;
 	m_NeedStop = false;
 	m_IsRunning = false;
+	m_nRunningThreads = 0;
 }
 
-void CFileDownloader::AddFile(const std::string& url)
+void CFileDownloader::AddFile(const std::string& url, int id)
 {
-	m_fileList.push_back(url);
+	m_CS.Lock();
+	DownloadFileListItem newItem;
+	newItem.url = url;
+	newItem.id = id;
+	m_fileList.push_back(newItem);
+	m_CS.Unlock();
 }
 
 bool CFileDownloader::start()
 {
 	m_NeedStop = false;
-	m_IsRunning = true;
-	int numThreads = min(m_nThreadCount, m_fileList.size());
-	m_nRunningThreads = numThreads;
+	
+	m_CS.Lock();
+	int numThreads = min(m_nThreadCount - m_nRunningThreads, (int)m_fileList.size());
+	//m_nRunningThreads = numThreads;
+
 	for(int i=0; i<numThreads; i++)
 	{
+		m_nRunningThreads++;
+		m_IsRunning = true;
 		_beginthread(thread_func, 0, this);
 	}
+	m_CS.Unlock();
 	return 0;
 }
 void CFileDownloader::thread_func(void * param)
 {
 	CFileDownloader * p = reinterpret_cast<CFileDownloader*>(param);
+	p->memberThreadFunc();
+}
+
+void CFileDownloader::memberThreadFunc()
+{
 	NetworkManager nm;
-	p->m_CS.Lock();
-	if(p->m_CallBack)
-		p->m_CallBack->OnConfigureNetworkManager(&nm);
-	p->m_CS.Unlock();
+	m_CS.Lock();
+	if(onConfigureNetworkManager)
+	onConfigureNetworkManager(&nm);
+	m_CS.Unlock();
 	for(;;)
 	{
-		std::string filePath;
-		std::string url = p->getNextJob(filePath);
-		if(url.empty()) break; ;
-		
-		nm.setOutputFile( filePath);
+		DownloadFileListItem curItem;
+		if(!getNextJob(curItem)) break;
+		std::string url = curItem.url;
+		if(url.empty()) break; 
+
+		nm.setOutputFile( curItem.fileName);
 		nm.doGet(url);
 
-		p->m_CS.Lock();
+		m_CS.Lock();
 		if(nm.responseCode()>=200 && nm.responseCode()<=299)
 		{
-			//ShowVar((int)p->m_CallBack);
+			
 			std::string name = ExtractFileNameA(url.c_str());
-			if(p->m_CallBack)
-				p->m_CallBack->OnFileFinished(true,url, filePath, name);
+			if(!onFileFinished.empty())
+				onFileFinished(true, curItem); // delegate call
 		}
 		else
 		{
-
-			if(p->m_CallBack)
-				p->m_CallBack->OnFileFinished(false,url,"", "");
+			if(!onFileFinished.empty())
+				onFileFinished(false, curItem); // delegate call
 		}
-		p->m_CS.Unlock();
-		
-	}
-	p->m_CS.Lock();
-	p->m_nRunningThreads--;
-	if(!p->m_nRunningThreads)
-	{
-		p->m_IsRunning = false;
-		if(p->m_CallBack)
-			p->m_CallBack->OnQueueFinished();
-	}
-		p->m_CS.Unlock();
-	return ;
-}
+		m_CS.Unlock();
 
-std::string CFileDownloader::getNextJob(std::string& saveAs)
+	}
+	m_CS.Lock();
+	m_nRunningThreads--;
+	if(!m_nRunningThreads)
+	{
+		m_IsRunning = false;
+		if(onQueueFinished)
+			onQueueFinished(); // delegate call
+	}
+	m_CS.Unlock();
+	return ;
+
+}
+bool CFileDownloader::getNextJob(DownloadFileListItem& item)
 {
-	std::string url;
+	bool result=false;
+	
 	m_CS.Lock();
 	if(!m_fileList.empty() && !m_NeedStop)
 	{
-		url = *m_fileList.begin();
+		item = *m_fileList.begin();
+		std::string url;
+		url = item.url;
 		m_fileList.erase(m_fileList.begin());
 		std::string ext = GetFileExtA(url.c_str());
 		std::string fileName =  ExtractFileNameA(url.c_str());
@@ -110,16 +127,13 @@ std::string CFileDownloader::getNextJob(std::string& saveAs)
 		if(f) fclose(f);
 			//WCstringToUtf8(GenerateFileName(_T("%md5"),0,CPoint()));
 
-		 
-		saveAs = filePath;
+		 item.fileName = filePath;
+		//saveAs = filePath;
+		result = true;
 	}
+	
 	m_CS.Unlock();
-	return url;
-}
-
-void CFileDownloader::setCallback(CFileDownloaderCallback* callback)
-{
-	m_CallBack = callback;
+	return result;
 }
 
 void CFileDownloader::stop()

@@ -25,7 +25,7 @@
 #include "logosettings.h"
 #include "logindlg.h"
 #include "atlctrlx.h"
-
+#include "Gui\WizardCommon.h"
 #define IDC_SELECTFOLDER 4050
 #define IDC_SERVERBUTTON 4000
 #define IDC_IMAGETOOLBAR 4010
@@ -53,7 +53,7 @@ class CUploadSettings :
 	public CDialogImpl<CUploadSettings>	, public CWizardPage
 {
 	public:
-		CUploadSettings(CUploadEngineList * EngineList);
+		CUploadSettings(CMyEngineList * EngineList);
 		~CUploadSettings();
 		enum { IDD = IDD_UPLOADSETTINGS };
 
@@ -121,7 +121,8 @@ class CUploadSettings :
 	void OnFolderButtonContextMenu(POINT pt, bool isImageServerToolbar);
 	void OnServerButtonContextMenu(POINT pt, bool isImageServerToolbar);
 protected:
-	CUploadEngineList * m_EngineList;
+	CMyEngineList * m_EngineList;
+	void TranslateUI();
 };
 
 

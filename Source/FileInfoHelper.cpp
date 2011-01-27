@@ -21,7 +21,8 @@
 #include "stdafx.h"
 #include "FileInfoHelper.h"
 #include "Common/MediaInfoDLL.h" //Dynamicly-loaded library (.dll)
-
+#include "LangClass.h"
+#include "Settings.h"
 using namespace MediaInfoDLL;
 
 void AddStr(CString &Str, CString &Str2)

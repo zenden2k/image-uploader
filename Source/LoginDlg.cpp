@@ -22,76 +22,8 @@
 #include "LoginDlg.h"
 #include "wizarddlg.h"
 
-// 
-void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ")
-{
-	TCHAR szDestination[1024];
-   int br = strlen(code);
-   int n = lstrlen(szSource) / 2;
-   int j = 0;
-	ZeroMemory(szDestination, n*2);
-
-	int i;
-   PBYTE data = (PBYTE)szDestination;
-   *szDestination=0;
-
-   for(i=0; i<n; i++)
-   {
-      if(j >= br) j=0;
-
-      BYTE b;
-		b = (szSource[i*2] - _T('A'))*16 + (szSource[i*2+1] - _T('A'));
-      b = b^code[j];
-		data[i] = b;
-      j++;
-   }
-   data[i]=0;
-	Result = szDestination;
-}
-
-
-/*LoginInfo LoadLogin(int ServerId)
-{
-	LoginInfo Result;
-	CUploadEngine *UE = m_EngineList->byIndex(ServerId);
-	return Settings.ServersSettings[UE->Name].authData;
-}*/
-
-void EncodeString(LPCTSTR szSource, CString &Result,LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ")
-{
-	TCHAR szDestination[1024];
-	int br = strlen(code);
-	int n = lstrlen(szSource) * 2;
-	int j = 0;
-
-	PBYTE data = (PBYTE)szSource;
-	*szDestination = 0;
-	for(int i=0; i<n; i++)
-	{
-		if(j>=br)j=0;
-
-		BYTE b;
-		b = data[i]^code[j];
-		TCHAR bb[2]={0,0};
-		bb[0]=_T('A')+b/16;
-		lstrcat(szDestination,bb);
-		bb[0]=_T('A')+b%16;
-		lstrcat(szDestination,bb);
-		j++;
-
-	}
-	Result = szDestination;
-}
-
-/*bool SaveLogin(int ServerId,LoginInfo li)
-{
-	CUploadEngine &UE = EnginesList[ServerId];
-	Settings.ServersSettings[UE.Name].authData = li;
-	return true;
-}*/
-
 // CLoginDlg
-CLoginDlg::CLoginDlg(CUploadEngine *ue)
+CLoginDlg::CLoginDlg(CUploadEngineData *ue)
 {
 	m_UploadEngine = ue;
 }
@@ -105,7 +37,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 {
 	CenterWindow(GetParent());
 
-	LoginInfo li = Settings.ServersSettings[m_UploadEngine->Name].authData;
+	LoginInfo li = Settings.ServerByUtf8Name(m_UploadEngine->Name).authData;
 
 	SetWindowText(TR("Параметры авторизации"));
 	TRC(IDC_LOGINLABEL, "Логин:");
@@ -113,9 +45,9 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	TRC(IDC_DOAUTH, "Выполнять авторизацию");
 	TRC(IDCANCEL, "Отмена");
 	
-	SetDlgItemText(IDC_LOGINEDIT, li.Login);
-	SetDlgItemText(IDC_PASSWORDEDIT, li.Password);
-	SetDlgItemText(IDC_LOGINFRAME, m_UploadEngine->Name);
+	SetDlgItemText(IDC_LOGINEDIT, Utf8ToWCstring(li.Login));
+	SetDlgItemText(IDC_PASSWORDEDIT, Utf8ToWCstring(li.Password));
+	SetDlgItemText(IDC_LOGINFRAME, Utf8ToWCstring(m_UploadEngine->Name));
 	SendDlgItemMessage(IDC_DOAUTH, BM_SETCHECK, (li.DoAuth?BST_CHECKED:BST_UNCHECKED));
 	OnClickedUseIeCookies(0, 0, 0, bHandled);
 	::SetFocus(GetDlgItem(IDC_LOGINEDIT));
@@ -128,12 +60,12 @@ LRESULT CLoginDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& b
 	TCHAR Buffer[256];
 
 	GetDlgItemText(IDC_LOGINEDIT, Buffer, 256);
-	li.Login = Buffer;
+	li.Login = WCstringToUtf8(Buffer);
 	GetDlgItemText(IDC_PASSWORDEDIT, Buffer, 256);
-	li.Password = Buffer;
+	li.Password = WCstringToUtf8(Buffer);
 	li.DoAuth = SendDlgItemMessage(IDC_DOAUTH, BM_GETCHECK);
 	
-	Settings.ServersSettings[m_UploadEngine->Name].authData = li;
+	Settings.ServerByUtf8Name(m_UploadEngine->Name).authData = li;
 
 	//SaveLogin(ServerId, li);
 

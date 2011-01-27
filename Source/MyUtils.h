@@ -21,7 +21,6 @@
 #ifndef _MYUTILS_H_
 #define _MYUTILS_H_
 #ifndef IU_SHELLEXT
-#include "stdafx.h"
 #endif
 #include <atlbase.h>
 #include <atlapp.h>
@@ -31,11 +30,25 @@
 #include <stdlib.h>
 #include <gdiplus.h>
 #include <gdiplusheaders.h>
-
+#include <string>
 #define APPNAME _T("Image Uploader")
 #define VIDEO_DIALOG_FORMATS _T("Video files (avi, mpg, vob, wmv, flv, etc)\0*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;\0All files\0*.*\0\0")
 #define VIDEO_FORMATS _T("avi\0mpg\0mpeg\0vob\0divx\0flv\0wmv\0asf\0mkv\0mov\0ts\0mp2\0mp4\0")_T("3gp\0rm\0mpeg2ts\0\0")
 #define IMAGE_DIALOG_FORMATS _T("Image files (JPEG, GIF, PNG, etc)\0*.jpg;*.gif;*.png;*.bmp;*.tiff\0All files\0*.*\0\0")
+
+#ifndef IU_SHELLEXT
+const CString StringSection(const CString& str,TCHAR sep, int index);
+std::wstring strtows(const std::string &str, UINT codePage);
+std::string wstostr(const std::wstring &ws, UINT codePage);
+void EnableNextN(HWND Control, int n, bool Enable);
+#define WstrToUtf8(str) IuCoreUtils::WstringToUtf8(str)
+//wstostr(str, CP_UTF8)
+#define WCstringToUtf8(str) wstostr(((LPCTSTR)(str)), CP_UTF8)
+const std::wstring Utf8ToWstring(const std::string &str);
+#define Utf8ToWCstring(str) CString(Utf8ToWstring(str).c_str())
+const std::string AnsiToUtf8(const std::string &str, int codepage);
+const std::string Utf8ToAnsi(const std::string &str, int codepage);
+#endif
 
 using namespace Gdiplus;
 #define xor(a,b) ((a || b) && !(a && b))	
@@ -100,16 +113,8 @@ LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern);
 	#define ShowVar(n) ShowX(_T(#n),__LINE__,n)
 //#endif
 const CString IU_GetDataFolder();
-	#ifndef IU_SHELLEXT
-	const CString StringSection(const CString& str,TCHAR sep, int index);
-	std::wstring strtows(const std::string &str, UINT codePage);
-std::string wstostr(const std::wstring &ws, UINT codePage);
-void EnableNextN(HWND Control, int n, bool Enable);
-#define WstringToUtf8(str) wstostr(str, CP_UTF8)
-#define WCstringToUtf8(str) wstostr(((LPCTSTR)(str)), CP_UTF8)
-const std::wstring Utf8ToWstring(const std::string &str);
-const std::string AnsiToUtf8(const std::string &str, int codepage);
-const std::string Utf8ToAnsi(const std::string &str, int codepage);
+#ifndef IU_SHELLEXT
+
 bool IUInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP bm=0);
 
 
@@ -139,3 +144,7 @@ static CGlobalAtom ga;
 #endif
 
 bool IsDirectory(LPCTSTR szFileName);
+BOOL IsVista();
+CString IU_GetFileMimeType (const CString& filename);
+FILE * fopen_utf8(const char * filename, const char * mode);
+bool CheckFileName(const CString fileName);

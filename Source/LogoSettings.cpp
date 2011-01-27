@@ -22,6 +22,9 @@
 
 #include "LogoSettings.h"
 #include <uxtheme.h>
+#include "LogWindow.h"
+#include "LangClass.h"
+#include "Settings.h"
 
 #pragma comment( lib, "uxtheme.lib" )
 // CLogoSettings

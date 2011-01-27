@@ -20,6 +20,9 @@
 
 #include "stdafx.h"
 #include "StatusDlg.h"
+#include "Common.h"
+#include "MyUtils.h"
+#include "LangClass.h"
 
 // CStatusDlg
 CStatusDlg::CStatusDlg()
