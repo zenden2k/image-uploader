@@ -22,7 +22,7 @@
 #include "HotkeySettings.h"
 #include "traysettings.h"
 #include "hotkeyeditor.h"
-
+ 
 CHotkeyList::CHotkeyList()
 {
 	m_bChanged = false;

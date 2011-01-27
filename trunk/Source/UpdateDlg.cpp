@@ -144,16 +144,15 @@ void CUpdateDlg::CheckUpdates()
 	{
 		TRC(IDCANCEL, "Закрыть");
 		m_Checked = false;
-		SetDlgItemText(IDC_UPDATEINFO, TR("Ошибка при получении данных об обновлениях."));
+		CString errorStr = TR("Ошибка при получении данных об обновлениях.");
+		errorStr+= "\r\n";
+		errorStr+= m_UpdateManager.ErrorString();
+		SetDlgItemText(IDC_UPDATEINFO, errorStr);
 		return;
-			; //FAIL
 	}
-
 
 	if(m_UpdateManager.AreUpdatesAvailable())
 	{
-		
-		
 		if(CmdLine.IsOption(_T("update")))
 		{
 			DoUpdates();
@@ -175,18 +174,12 @@ void CUpdateDlg::CheckUpdates()
 
 		SetDlgItemText(IDC_UPDATEINFO, text);
 		
-		return ;
-//		if(CmdLine.IsOption(_T("update")) || dlg.DoModal(m_hWnd) == IDOK)
-		{
-			
-		}
+		return;
 	}
 	else
-
-	{	//if(m_InteractiveUpdate)
-			TRC(IDCANCEL, "Закрыть");
-			SetDlgItemText(IDC_UPDATEINFO,TR("Обновление не требуется."));
-		//Settings.LastUpdateTime = time(0);
+	{	
+		TRC(IDCANCEL, "Закрыть");
+		SetDlgItemText(IDC_UPDATEINFO, TR("Обновление не требуется."));
 	}
 
 	

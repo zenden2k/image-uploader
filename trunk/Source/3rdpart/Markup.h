@@ -8,7 +8,7 @@
 
 #if !defined(_MARKUP_H_INCLUDED_)
 #define _MARKUP_H_INCLUDED_
-
+#define MARKUP_WCHAR
 #include <stdlib.h>
 #include <string.h> // memcpy, memset, strcmp...
 #include <atlbase.h>

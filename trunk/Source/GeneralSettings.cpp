@@ -22,6 +22,9 @@
 #include "GeneralSettings.h"
 #include <uxtheme.h>
 #include "common.h"
+#include "LangClass.h"
+#include "Settings.h"
+#include "LogWindow.h"
 // CGeneralSettings
 CGeneralSettings::CGeneralSettings()
 {
@@ -83,9 +86,10 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	
 	for(int i=0; i<_EngineList->count(); i++)
 	{	
-		TCHAR buf[300] = _T(" ");
-		lstrcat(buf, _EngineList->byIndex(i)->Name);
-		SendDlgItemMessage(IDC_SERVERLIST, CB_ADDSTRING, 0, (LPARAM)buf);
+		CString buf = _T(" ");
+		//TCHAR buf[300] = _T(" ");
+		buf+= Utf8ToWCstring(_EngineList->byIndex(i)->Name);
+		SendDlgItemMessage(IDC_SERVERLIST, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)buf);
 	}
 	SendDlgItemMessage(IDC_SERVERLIST,CB_SETCURSEL, Settings.QuickServerID);
 

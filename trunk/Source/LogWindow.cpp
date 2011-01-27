@@ -18,9 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
 #include "LogWindow.h"
-
+#include "LangClass.h"
+#include "Settings.h"
+#include "TextViewDlg.h"
 // CLogWindow
 CLogWindow::CLogWindow()
 {
@@ -41,10 +42,10 @@ LRESULT CLogWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	CenterWindow();
 	DlgResize_Init();
 	MsgList.SubclassWindow(GetDlgItem(IDC_MSGLIST));
-	
-	CMessageLoop* pLoop = _Module.GetMessageLoop();
+	// TODO
+	/*CMessageLoop* pLoop = _Module.GetMessageLoop();
 	ATLASSERT(pLoop != NULL);
-	pLoop->AddMessageFilter(this); 
+	pLoop->AddMessageFilter(this); */
 
 	TRC(IDCANCEL, "Скрыть");
 	SetWindowText(TR("Лог ошибок"));
@@ -81,7 +82,6 @@ void CLogWindow::Show()
 
 LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	MENUITEMINFO mi;
 	HWND 	hwnd = (HWND) wParam;  
 	POINT ClientPoint, ScreenPoint;
 	if(hwnd != GetDlgItem(IDC_FILELIST)) return 0;
@@ -134,3 +134,87 @@ void WriteLog(LogMsgType MsgType, LPCWSTR Sender, LPCWSTR Msg,LPCWSTR Info)
 }
 
 CLogWindow LogWindow;
+
+namespace DefaultErrorHandling
+{
+
+
+void ErrorMessage(/*MessageType mt, ErrorType error, const std::string& param1, int param2*/ErrorInfo errorInfo)
+{
+	LogMsgType type = errorInfo.messageType == (mtWarning)? logWarning: logError;
+	CString errorMsg;
+
+	CString infoText;
+	if(!errorInfo.FileName.empty())
+		infoText += TR("Файл: ") + Utf8ToWCstring(errorInfo.FileName)+ _T("\n");
+
+	if(!errorInfo.ServerName.empty())
+	{
+		CString serverName = Utf8ToWCstring(errorInfo.ServerName);
+		if(!errorInfo.sender.empty())
+		serverName+= _T("(")+Utf8ToWCstring(errorInfo.sender)+_T(")");
+		infoText += TR("Сервер: ") +serverName +  _T("\n");
+	}
+
+	if(!errorInfo.Url.empty())
+		infoText += _T("URL: ") + Utf8ToWCstring(errorInfo.Url)+ _T("\n");
+
+
+	if(errorInfo.ActionIndex != -1)
+		infoText += _T("Действие:") +CString(_T(" #")) + IntToStr(errorInfo.ActionIndex);
+
+	
+
+	if(infoText.Right(1)==_T("\n"))
+		infoText.Delete(infoText.GetLength()-1);
+	if(!errorInfo.error.empty())
+	{
+		errorMsg += Utf8ToWCstring(errorInfo.error);
+	
+	}else
+	{
+		if(errorInfo.errorType == etRepeating)
+
+		{
+			errorMsg.Format(TR("Загрузка на сервер не удалась. Повторяю (%d)..."), errorInfo.RetryIndex );
+		}
+		else if (errorInfo.errorType == etRetriesLimitReached)
+		{
+			errorMsg = TR("Загрузка не сервер удалась! (лимит попыток исчерпан)");
+		}
+	}
+
+	CString sender = TR("Модуль загрузки");
+	if(!errorMsg.IsEmpty())
+		WriteLog(type, sender, errorMsg, infoText);
+	
+}
+
+void DebugMessage(const std::string& msg, bool isResponseBody)
+{
+	if(!isResponseBody)
+		MessageBox(0, Utf8ToWCstring(msg.c_str()), _T("Uploader"), MB_ICONINFORMATION);
+	else
+	{
+CTextViewDlg TextViewDlg(Utf8ToWstring(msg).c_str(), CString(_T("Server reponse")), CString(_T("Server reponse:")), _T("Save to file?"));
+        
+                        if(TextViewDlg.DoModal(GetActiveWindow())==IDOK)
+                        {
+                                CFileDialog fd(false, 0, 0, 4|2, _T("*.*\0*.*\0\0") ,GetActiveWindow());
+                                lstrcpy(fd.m_szFileName,_T("file.html"));
+                                if(fd.DoModal() == IDOK) 
+                                {
+                                        FILE * f = _tfopen(fd.m_szFileName,_T("wb"));
+                                        if(f)
+                                        {
+                                                //WORD BOM = 0xFEFF;
+                                                //fwrite(&BOM, sizeof(BOM),1,f);
+                                                fwrite(msg.c_str(), msg.size(), sizeof(char), f);
+                                                fclose(f);
+                                        }
+                                }
+                        }
+	}
+}
+
+}

@@ -23,11 +23,13 @@
 #include "resource.h"       // main symbols
 #include "common.h"
 #include <atlcrack.h>
-#include "Core/UploadEngine.h"
+#include "Core/Upload/UploadEngine.h"
 #define IDC_OPTIONSMENU 10002
 #define IDC_USEDIRECTLINKS 10003
 #define IDC_COPYFOLDERURL 10004
 #define IDC_RESULTSTOOLBAR 5000
+class CResultsPanel;
+#include "Gui\WizardCommon.h"
 //#include "uploaddlg.h"
 //#include "wizarddlg.h"
 // CResultsPanel
@@ -53,10 +55,7 @@ class CResultsPanel :
 			COMMAND_HANDLER(IDC_USEDIRECTLINKS, BN_CLICKED, OnUseDirectLinksClicked)
 			COMMAND_HANDLER(IDC_USETEMPLATE, BN_CLICKED, OnUseTemplateClicked)
 			//COMMAND_HANDLER(, BN_CLICKED, OnCopyFolderUrlClicked)
-			
 			COMMAND_RANGE_HANDLER(IDC_COPYFOLDERURL, IDC_COPYFOLDERURL + 1000, OnCopyFolderUrlClicked);
-		
-
 			COMMAND_HANDLER(IDC_MEDIAFILEINFO, BN_CLICKED, OnBnClickedMediaInfo)
 			COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
 			NOTIFY_HANDLER(IDC_RESULTSTOOLBAR, TBN_DROPDOWN, OnOptionsDropDown);
@@ -76,7 +75,7 @@ class CResultsPanel :
 
 	CToolBarCtrl Toolbar;
 	void SetPage(int Index);
-	void setEngineList(CUploadEngineList* EngineList);
+	void setEngineList(CMyEngineList* EngineList);
 	CAtlArray<CUrlListItem>  &UrlList;
 	const CString GenerateOutput();
 	
@@ -94,7 +93,7 @@ class CResultsPanel :
 	void Clear();
 	void EnableMediaInfo(bool Enable);
 	CWizardDlg *WizardDlg;
-	CUploadEngineList *m_EngineList;
+	CMyEngineList *m_EngineList;
 	CAtlArray<IU_Result_Template> Templates;
 	bool LoadTemplates(CString &Error);
 	std::map<CString, CString> m_Vars;

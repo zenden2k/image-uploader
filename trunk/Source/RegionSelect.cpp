@@ -22,6 +22,9 @@
 #include "RegionSelect.h"
 #include "common.h"
 #include <math.h>
+#include "LogWindow.h"
+#include "LangClass.h"
+#include "Settings.h"
 //#include <Gdipluseffects.h>
 
 

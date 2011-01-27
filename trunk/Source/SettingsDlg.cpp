@@ -44,8 +44,12 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 {
 	// center the dialog on the screen
 	CenterWindow();
-
-
+	HWND parent = GetParent();
+	if(!parent || !::IsWindowVisible(parent))
+	{
+		SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) & WS_EX_APPWINDOW);
+		//MessageBox(L"OF COURSE WI SET");
+	}
 	m_SettingsPagesListBox.SubclassWindow(GetDlgItem(IDC_SETTINGSPAGESLIST));
 	m_SettingsPagesListBox.AddString(TR("Основные"));
 	m_SettingsPagesListBox.AddString(TR("Изображения"));
@@ -76,7 +80,13 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 LRESULT CSettingsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	for(int i=0; i<SettingsPageCount; i++)
-		if(Pages[i] && !Pages[i]->Apply()) return 0; // If some tab cannot apply changes - do not close dialog
+	{
+		if(Pages[i] && !Pages[i]->Apply()) 
+		{
+			ShowPage(i);
+			return 0;
+		}// If some tab cannot apply changes - do not close dialog
+	}
 
 	Settings.SaveSettings();
 	EndDialog(wID);
@@ -118,15 +128,20 @@ bool CSettingsDlg::ShowPage(int idPage)
 	if(CurPage != -1 && Pages[CurPage]) ::ShowWindow(Pages[CurPage]->PageWnd, SW_HIDE);
 	CurPage = idPage;
 
-	if(CurPage !=	TabCtrl_GetCurSel(GetDlgItem(IDC_TABCONTROL)))
-	TabCtrl_SetCurSel(GetDlgItem(IDC_TABCONTROL), CurPage);
+	m_SettingsPagesListBox.SetCurSel(CurPage);
+	/*if(CurPage !=	TabCtrl_GetCurSel(GetDlgItem(IDC_TABCONTROL)))
+	TabCtrl_SetCurSel(GetDlgItem(IDC_TABCONTROL), CurPage);*/
 	return true;
 }
 
 LRESULT CSettingsDlg::OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	for(int i=0; i<SettingsPageCount; i++)
-		if(Pages[i] && !Pages[i]->Apply()) return 0;
+		if(Pages[i] && !Pages[i]->Apply()) 
+		{
+			ShowPage(i);
+			return 0;
+		}
 	
 	Settings.SaveSettings();
 	return 0;

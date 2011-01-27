@@ -4,6 +4,7 @@
 #pragma once
 
 #include "resource.h"
+#include <atlmisc.h>
 #include <atlcrack.h>
 #define LOGMSGTYPE
 typedef enum LogMsgType { logError = 1, logWarning };

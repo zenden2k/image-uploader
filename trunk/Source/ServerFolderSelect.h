@@ -25,7 +25,7 @@
 #include "common.h"
 #include <atlcrack.h>
 #include "common/PictureExWnd.h"
-#include "Core/UploadEngine.h"
+#include "Core/Upload/UploadEngine.h"
 typedef enum FolderOperationType            /* Defines an enumeration type    */
 {
    foGetFolders = 0, foCreateFolder, foModifyFolder 
@@ -39,7 +39,7 @@ class CServerFolderSelect :
 	public CDialogImpl<CServerFolderSelect>	, public CThreadImpl<CServerFolderSelect>, public CDialogResize<CServerFolderSelect>	
 {
 public:
-	CServerFolderSelect(CUploadEngine* uploadEngine);
+	CServerFolderSelect(CUploadEngineData* uploadEngine);
 	~CServerFolderSelect();
 	enum { IDD = IDD_SERVERFOLDERSELECT};
 
@@ -81,11 +81,11 @@ public:
  CFolderItem m_SelectedFolder;
 protected:
 	CPictureExWnd m_wndAnimation;
-	CUploadScript *m_pluginLoader;
-	CUploadEngine *m_UploadEngine;
+	CScriptUploadEngine *m_pluginLoader;
+	CUploadEngineData *m_UploadEngine;
 	CFolderList m_FolderList;
 	CFolderItem m_newFolder;
-	std::vector<std::wstring> m_accessTypeList;
+	std::vector<std::string> m_accessTypeList;
 	std::map<std::wstring,HTREEITEM> m_FolderMap;
 	CTreeViewCtrl m_FolderTree;
 	//IU_PLUGIN_FolderItem * m_folderItems;

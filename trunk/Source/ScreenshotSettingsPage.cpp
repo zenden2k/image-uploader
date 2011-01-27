@@ -21,6 +21,9 @@
 #include "stdafx.h"
 #include "ScreenshotSettingsPage.h"
 #include "Common.h"
+#include "LogWindow.h"
+#include "LangClass.h"
+#include "Settings.h"
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
 
 // CScreenshotSettingsPagePage
@@ -79,6 +82,15 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
 
 bool CScreenshotSettingsPagePage::Apply()
 {
+	CString fileName = IU_GetWindowText(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
+	if(!CheckFileName(fileName))
+	{
+		MessageBox(TR("Имя файла содержит запрещенные символы!"));
+		::SetFocus(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
+		return false;
+	}
+	Settings.ScreenshotSettings.FilenameTemplate = fileName;
+	
 	Settings.ScreenshotSettings.Format = SendDlgItemMessage(IDC_FORMATLIST,CB_GETCURSEL,0,0);
 	Settings.ScreenshotSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
@@ -90,7 +102,7 @@ bool CScreenshotSettingsPagePage::Apply()
 	Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
 	Settings.ScreenshotSettings.ShowForeground = SendDlgItemMessage(IDC_FOREGROUNDWHENSHOOTING, BM_GETCHECK);
 	Settings.ScreenshotSettings.CopyToClipboard =  SendDlgItemMessage(IDC_ALWAYSCOPYTOCLIPBOARD, BM_GETCHECK);
-	Settings.ScreenshotSettings.FilenameTemplate = IU_GetWindowText(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
+	
 	Settings.ScreenshotSettings.WindowHidingDelay = GetDlgItemInt(IDC_WINDOWHIDINGDELAY);
 	return true;
 }

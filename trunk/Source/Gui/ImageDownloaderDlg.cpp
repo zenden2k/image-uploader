@@ -18,11 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
 #include "ImageDownloaderDlg.h"
 #include "../Common.h"
 #include <pcre++.h>
-
+#include "../LogWindow.h"
 
 // CImageDownloaderDlg
 CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg,const CString &initialBuffer)
@@ -138,15 +137,15 @@ CString GetExtensionByMime(CString mime)
 	}
 	return _T(".dat");
 }
-bool CImageDownloaderDlg::OnFileFinished(bool ok, const std::string& url, const std::string& fileName, const std::string& displayName)
+bool CImageDownloaderDlg::OnFileFinished(bool ok, DownloadFileListItem it)
 {
 	
 	if(ok)
 	{
 		AddImageStruct ais;
 		ais.show =true;
-		ais.RealFileName = Utf8ToWstring(fileName).c_str();
-		ais.VirtualFileName =  Utf8ToWstring(displayName).c_str();
+		ais.RealFileName = Utf8ToWstring(it.fileName).c_str();
+		ais.VirtualFileName =  Utf8ToWstring(it.displayName).c_str();
 		bool add = true;
 		if(!IsImage(ais.RealFileName))
 		{
@@ -165,7 +164,7 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, const std::string& url, const 
 			else 
 			{add = false;
 			CString errorStr;
-			errorStr.Format(TR("Файл '%s' не является файлом изображения (Mime-Type: %s)."),(LPCTSTR)(Utf8ToWstring(url).c_str()),(LPCTSTR)mimeType);
+			errorStr.Format(TR("Файл '%s' не является файлом изображения (Mime-Type: %s)."),(LPCTSTR)(Utf8ToWstring(it.url).c_str()),(LPCTSTR)mimeType);
 			WriteLog(logWarning,_T("Image Downloader"),errorStr);
 			}
 
@@ -179,17 +178,19 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, const std::string& url, const 
 	return true;
 }
 
-bool CImageDownloaderDlg::OnQueueFinished()
+void CImageDownloaderDlg::OnQueueFinished()
 {
 	if(!m_InitialBuffer.IsEmpty())
-		return EndDialog(0);
+	{
+		EndDialog(0);
+		return;
+	}
 	::EnableWindow(GetDlgItem(IDOK),true);
 	::EnableWindow(GetDlgItem(IDC_FILEINFOEDIT),true);
 	TRC(IDCANCEL, "Закрыть");
 	SetDlgItemText(IDC_FILEINFOEDIT, _T(""));
 	::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS),SW_HIDE);
 	::EnableWindow(GetDlgItem(IDC_WATCHCLIPBOARD),true);
-	return true;
 }
 
 bool CImageDownloaderDlg::BeginDownloading()
@@ -203,7 +204,7 @@ bool CImageDownloaderDlg::BeginDownloading()
 	m_nFileDownloaded = 0;
 	for(int i=0; i<tokens.size(); i++)
 	{
-		m_FileDownloader.AddFile(nm_trimStr(tokens[i]));
+		m_FileDownloader.AddFile(nm_trimStr(tokens[i]), i);
 		m_nFilesCount++;
 	}
 	if(m_nFilesCount)
@@ -215,7 +216,11 @@ bool CImageDownloaderDlg::BeginDownloading()
 		::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS),SW_SHOW);
 		SendDlgItemMessage(IDC_DOWNLOADFILESPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, m_nFilesCount));
 		SendDlgItemMessage(IDC_DOWNLOADFILESPROGRESS, PBM_SETPOS,  0);
-		m_FileDownloader.setCallback(this);
+		m_FileDownloader.onFileFinished.bind(this, &CImageDownloaderDlg::OnFileFinished);
+		m_FileDownloader.onQueueFinished.bind(this, &CImageDownloaderDlg::OnQueueFinished);
+		m_FileDownloader.onConfigureNetworkManager.bind(this, &CImageDownloaderDlg::OnConfigureNetworkManager);
+
+		//m_FileDownloader.setCallback(this);
 		m_FileDownloader.start();
 		return true;
 	}
@@ -243,8 +248,7 @@ void CImageDownloaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)
 	SetDlgItemText(IDC_FILEINFOEDIT, text);
 }
 
-bool CImageDownloaderDlg::OnConfigureNetworkManager(NetworkManager* nm)
+void CImageDownloaderDlg::OnConfigureNetworkManager(NetworkManager* nm)
 {
 	IU_ConfigureProxy(*nm);
-	return false;
 }

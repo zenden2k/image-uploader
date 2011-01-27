@@ -6,6 +6,7 @@
 #include "resource.h"       // main symbols
 #include <atlframe.h>
 #include <atlmisc.h>
+#include "LangClass.h"
 // CTextViewDlg
 using namespace WTL;
 class CTextViewDlg : 

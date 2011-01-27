@@ -23,7 +23,6 @@
 #include "langclass.h"
 #include "langselect.h"
 #include "3rdpart/markup.h"
-#include "common/regexp.h"
 #include <io.h>
 #include "floatingwindow.h"
 #include "updatepackage.h"
@@ -31,6 +30,7 @@
 #include "TextViewDlg.h"
 #include "Gui/ImageDownloaderDlg.h"
 #include "Core/ImageConverter.h"
+#include "LogWindow.h"
 // CWizardDlg
 CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 {
@@ -137,17 +137,17 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	}
 
 	CString ErrorStr;
-	if(!LoadUploadEngines(_T("servers.xml"),ErrorStr))  // Завершаем работу программы, если файл servers.lst отсутствует
+	if(!LoadUploadEngines(IU_GetDataFolder()+_T("servers.xml"),ErrorStr))  // Завершаем работу программы, если файл servers.lst отсутствует
 	{
 		CString ErrBuf ;
-		ErrBuf.Format(TR("Невозможно открыть файл со спиком серверов \"servers.xml\"!\n\nПричина:  %s\n\nПродолжить работу программы?"),ErrorStr);
+		ErrBuf.Format(TR("Невозможно открыть файл со спиком серверов \"servers.xml\"!\n\nПричина:  %s\n\nПродолжить работу программы?"),(LPCTSTR)ErrorStr);
 		if(MessageBox(ErrBuf, APPNAME, MB_ICONERROR|MB_YESNO)==IDNO)
 		{
 			*DlgCreationResult = 2;
 			return 0;
 		}
 	}
-
+	iuPluginManager.setScriptsDirectory(WCstringToUtf8(IU_GetDataFolder()+_T("\\Scripts\\")));
 	LoadUploadEngines(_T("userservers.xml"),ErrorStr);	
 	Settings.ServerID = m_EngineList.GetUploadEngineIndex(Settings.ServerName);
 	Settings.FileServerID = m_EngineList.GetUploadEngineIndex(Settings.FileServerName);
@@ -268,7 +268,7 @@ LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 	if(floatWnd.m_hWnd)
 	{ 
 		ShowWindow(SW_HIDE);
-		if(Pages[2])
+		if(Pages[2] && CurPage == 4)
 			((CMainDlg*)Pages[2])->ThumbsView.MyDeleteAllItems();
 			ShowPage(0); 
 	}
@@ -531,12 +531,12 @@ void CWizardDlg::Exit()
 {
 	// Converting server id to server name
 	if(Settings.ServerID >= 0 && m_EngineList.count())
-		Settings.ServerName = m_EngineList.byIndex(Settings.ServerID)->Name;
+		Settings.ServerName = Utf8ToWstring(m_EngineList.byIndex(Settings.ServerID)->Name).c_str();
 
 	if(Settings.QuickServerID>=0 && m_EngineList.count())
-		Settings.QuickServerName = m_EngineList.byIndex(Settings.QuickServerID)->Name;
+		Settings.QuickServerName = Utf8ToWstring(m_EngineList.byIndex(Settings.QuickServerID)->Name).c_str();
 	if(Settings.FileServerID>=0 && m_EngineList.count())
-		Settings.FileServerName = m_EngineList.byIndex(Settings.FileServerID)->Name;
+		Settings.FileServerName = Utf8ToWstring(m_EngineList.byIndex(Settings.FileServerID)->Name).c_str();
 
 	Settings.SaveSettings();
 }
@@ -592,6 +592,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 
 bool CWizardDlg::LoadUploadEngines(const CString &filename, CString &Error)
 {
+	m_EngineList.setNumOfRetries(Settings.FileRetryLimit, Settings.ActionRetryLimit);
 	bool Result = m_EngineList.LoadFromFile(filename);
 	Error = m_EngineList.ErrorStr();
 	return Result;
@@ -1037,7 +1038,7 @@ int CFolderAdd::GetNextImgFile(LPTSTR szBuffer, int nLength)
 	TCHAR szNameBuffer[MAX_PATH], szBuffer2[MAX_PATH], TempPath[256];
 	
 	GetTempPath(256, TempPath);
-	wsprintf(szBuffer2,_T("%s*.*"), m_szPath);
+	wsprintf(szBuffer2,_T("%s*.*"), (LPCTSTR)m_szPath);
 	
 	
 	if(!findfile)
@@ -1189,7 +1190,6 @@ bool CWizardDlg::executeFunc(CString funcBody)
 	CString funcName = StringSection(funcBody,  _T(','), 0 );
 	CString funcParam1 = StringSection(funcBody, _T(','), 1);
 
-	//MessageBox(funcBody,funcParam1);
 	if(!funcParam1.IsEmpty())
 	{
 			m_bScreenshotFromTray = _ttoi(funcParam1);
@@ -1288,11 +1288,16 @@ bool CWizardDlg::funcRegionScreenshot(bool ShowAfter)
 void CWizardDlg::OnScreenshotFinished(int Result)
 {
 	EnableWindow();
-	if(Result || m_bShowAfter)
+
+	if(m_bShowAfter || (Result && !floatWnd.m_hWnd))
 	{
 		m_bShowWindow = true;
 		ShowWindow(SW_SHOWNORMAL);
 		SetForegroundWindow(m_hWnd);
+	}
+
+	if(Result )
+	{
 		if((CMainDlg*)Pages[2])
 		{
 			((CMainDlg*)Pages[2])->ThumbsView.SetFocus();
@@ -1420,7 +1425,11 @@ bool CWizardDlg::funcPaste()
 bool CWizardDlg::funcSettings()
 {
 	CSettingsDlg dlg(0);
-	dlg.DoModal(m_hWnd);
+	//dlg.DoModal(m_hWnd);
+	if(!IsWindowVisible())
+		dlg.DoModal(0);
+	else
+		dlg.DoModal(m_hWnd);
 	return true;
 }
 
@@ -1677,8 +1686,10 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 			int savingFormat = Settings.ScreenshotSettings.Format;
 			if(savingFormat == 0)
 				Gdip_RemoveAlpha(*result,Color(255,255,255,255));
-			MySaveImage(result,GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, screenshotIndex++,CPoint(result->GetWidth(),result->GetHeight())),buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)(Settings.ScreenshotSettings.Folder));
 
+			CString saveFolder = GenerateFileName(Settings.ScreenshotSettings.Folder, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
+			MySaveImage(result,GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight())),buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
+			screenshotIndex++;
 			if(CopyToClipboard)
 			{
 
@@ -1711,7 +1722,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 					}
 				}
 			}
-			if(!m_bScreenshotFromTray || Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_WIZARD)
+			if(!m_bScreenshotFromTray || (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD || Settings.TrayIconSettings.TrayScreenshotAction== TRAY_SCREENSHOT_SHOWWIZARD))
 			{
 				CreatePage(2); 
 				((CMainDlg*)Pages[2])->AddToFileList(buf);
@@ -1733,10 +1744,14 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 		}
 	}
 
+	m_bShowAfter  = false;
 	if(Result || needToShow )
 	{
-		m_bShowAfter = true;
-	}
+		if(needToShow || (!m_bScreenshotFromTray ||Settings.TrayIconSettings.TrayScreenshotAction!= TRAY_SCREENSHOT_ADDTOWIZARD))
+		{
+			m_bShowAfter = true;
+		}
+	} 
 	else m_bShowAfter = false;
 	m_bScreenshotFromTray = false;
 	OnScreenshotFinished(Result);

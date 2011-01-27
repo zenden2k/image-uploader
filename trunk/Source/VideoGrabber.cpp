@@ -31,6 +31,7 @@
 #include <qedit.h>
 #include "fileinfohelper.h"
 #include "Core/ImageConverter.h"
+#include "LogWindow.h"
 #ifdef DEBUG
 #define MyInfo(p) SetDlgItemText(IDC_FILEEDIT, p)
 #else
@@ -670,7 +671,7 @@ int CVideoGrabber::GrabBitmaps(TCHAR * szFile )
 	LPCTSTR szFileName=myExtractFileName(szFile);
 	if(szFileName)
 	{
-		wsprintf(szBuffer,CString(TR("Извлечение кадров из видео файла")) + _T(" \"%s\" ..."),szFileName);
+		wsprintf(szBuffer,CString(TR("Извлечение кадров из видео файла")) + _T(" \"%s\" ..."),(LPCTSTR)szFileName);
 		GrabInfo(szBuffer);
 	}
 

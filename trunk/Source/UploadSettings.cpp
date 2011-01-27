@@ -25,7 +25,7 @@
 #include "NewFolderDlg.h"
 #include "ServerParamsDlg.h"
 
-CUploadSettings::CUploadSettings(CUploadEngineList * EngineList)
+CUploadSettings::CUploadSettings(CMyEngineList * EngineList)
 {
 	nImageIndex = nFileIndex = -1;
 	m_EngineList = EngineList;
@@ -35,11 +35,8 @@ CUploadSettings::~CUploadSettings()
 {
 }
 
-
-LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+void CUploadSettings::TranslateUI()
 {
-	PageWnd = m_hWnd;
-	
 	TRC(IDC_FORMATLABEL,"Формат:");
 	TRC(IDC_QUALITYLABEL,"Качество:");
 	TRC(IDC_RESIZEBYWIDTH,"Изменение ширины:");
@@ -49,7 +46,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	TRC(IDC_YOURTEXT,"Добавить текст на картинку");
 	TRC(IDC_IMAGEPARAMETERS,"Параметры изображений");
 	TRC(IDC_LOGOOPTIONS,"Дополнительно...");
-	
+
 	TRC(IDC_KEEPASIS,"Оставить без изменения");
 	TRC(IDC_THUMBSETTINGS,"Настройки превью");
 
@@ -63,6 +60,12 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	TRC(IDC_USETHUMBTEMPLATE,"Использовать шаблон");
 
 	TRC(IDC_FILESERVERGROUPBOX, "Сервер для остальных типов файлов");
+}
+
+LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	PageWnd = m_hWnd;
+	TranslateUI();
 
 	m_nImageServer = Settings.ServerID;
 	m_nFileServer = Settings.FileServerID;
@@ -124,7 +127,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	Toolbar.SetWindowLong(GWL_ID, IDC_IMAGETOOLBAR);
 	FileServerSelectBar.SetWindowLong(GWL_ID, IDC_FILETOOLBAR);
 
-	SendDlgItemMessage(IDC_THUMBWIDTHSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)40, (short)1000) );
+	SendDlgItemMessage(IDC_THUMBWIDTHSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)1000, (short)40) );
 	
 
 	SendDlgItemMessage(IDC_QUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
@@ -243,24 +246,24 @@ bool CUploadSettings::OnNext()
 	
 	if(m_nImageServer != -1)
 	{
-		CUploadEngine *ue = m_EngineList->byIndex(m_nImageServer);
-		if(ue->NeedAuthorization ==2 && !Settings.ServersSettings[ue->Name].authData.DoAuth)
+		CUploadEngineData *ue = m_EngineList->byIndex(m_nImageServer);
+		if(ue->NeedAuthorization ==2 && !Settings.ServersSettings[Utf8ToWstring(ue->Name).c_str()].authData.DoAuth)
 		{ 
 			CString errorMsg;
-			errorMsg.Format(TR("Загрузка файлов на сервер '%s' невозможна без наличия учетной записи.\nПожалуйста, зарегистрируйтесь на данном сервере и укажите ваши регистрационные данные в программе."), (LPCTSTR)ue->Name);
+			errorMsg.Format(TR("Загрузка файлов на сервер '%s' невозможна без наличия учетной записи.\nПожалуйста, зарегистрируйтесь на данном сервере и укажите ваши регистрационные данные в программе."), (LPCTSTR)Utf8ToWCstring(ue->Name));
 			MessageBox(errorMsg, APPNAME, MB_ICONERROR);
 			return false;
 		}
 	}
 	if(m_nFileServer != -1)
 	{
-		CUploadEngine *ue2 = m_EngineList->byIndex(m_nFileServer);
-		if(ue2->NeedAuthorization == 2 && !Settings.ServersSettings[ue2->Name].authData.DoAuth)
+		CUploadEngineData *ue2 = m_EngineList->byIndex(m_nFileServer);
+		if(ue2->NeedAuthorization == 2 && !Settings.ServersSettings[Utf8ToWstring(ue2->Name).c_str()].authData.DoAuth)
 		{
 			CString errorMsg;
-			errorMsg.Format(TR("Вы не задали параметры авторизации на сервере '%s'!"), (LPCTSTR)ue2->Name);
+			errorMsg.Format(TR("Вы не задали параметры авторизации на сервере '%s'!"), (LPCTSTR)Utf8ToWstring(ue2->Name).c_str());
 			MessageBox(errorMsg, APPNAME, MB_ICONWARNING);
-			//return false;
+			return false;
 		}
 	}
 	
@@ -311,16 +314,16 @@ LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND h
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
 	CLoginDlg dlg(m_EngineList->byIndex(nServerIndex));
 
-	ServerSettingsStruct & ss = Settings.ServersSettings[m_EngineList->byIndex(nServerIndex)->Name];
-	CString UserName = ss.authData.Login; 
+	ServerSettingsStruct & ss = Settings.ServersSettings[Utf8ToWstring(m_EngineList->byIndex(nServerIndex)->Name).c_str()];
+	std::string UserName = ss.authData.Login; 
 
 	if( dlg.DoModal(m_hWnd) == IDOK)
 	{
 		if(UserName != ss.authData.Login)
 		{
-			ss.params[_T("FolderID")]=_T("");
-			ss.params[_T("FolderTitle")]=_T("");
-			ss.params[_T("FolderUrl")]=_T("");
+			ss.params["FolderID"]="";
+			ss.params["FolderTitle"]="";
+			ss.params["FolderUrl"]="";
 			iuPluginManager.UnloadPlugins();
 		}
 			
@@ -368,22 +371,22 @@ LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wI
 bool ImageServer = (hWndCtl == Toolbar.m_hWnd);	
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
 
-	CUploadEngine *ue = m_EngineList->byIndex(nServerIndex);
+	CUploadEngineData *ue = m_EngineList->byIndex(nServerIndex);
 
 	if(ue->SupportsFolders){
 		CServerFolderSelect as(ue);
-		as.m_SelectedFolder.id= Settings.ServersSettings[ue->Name].params["FolderID"];
+		as.m_SelectedFolder.id= Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderID"];
 		
 		if(as.DoModal() == IDOK){
 			if(!as.m_SelectedFolder.id.empty()){
-				Settings.ServersSettings[ue->Name].params["FolderID"] = CString(as.m_SelectedFolder.id.c_str());
-				Settings.ServersSettings[ue->Name].params["FolderTitle"]=CString(as.m_SelectedFolder.title.c_str());
-				Settings.ServersSettings[ue->Name].params["FolderUrl"]= CString(as.m_SelectedFolder.viewUrl.c_str());
+				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderID"] = as.m_SelectedFolder.id;
+				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderTitle"] = as.m_SelectedFolder.title;
+				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderUrl"]= as.m_SelectedFolder.viewUrl;
 			}
 			else {
-				Settings.ServersSettings[ue->Name].params["FolderID"]="";
-				Settings.ServersSettings[ue->Name].params["FolderTitle"]="";
-				Settings.ServersSettings[ue->Name].params["FolderUrl"]="";
+				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderID"]="";
+				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderTitle"]="";
+				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderUrl"]="";
 
 			}
 		UpdateAllPlaceSelectors();
@@ -397,10 +400,10 @@ void CUploadSettings::UpdateToolbarIcons()
 	HICON hImageIcon = NULL, hFileIcon = NULL;
 
 	if(m_nImageServer != -1)
-		hImageIcon = (HICON)LoadImage(0,IU_GetDataFolder()+_T("Favicons\\")+m_EngineList->byIndex(m_nImageServer)->Name+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
+		hImageIcon = (HICON)LoadImage(0,IU_GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(m_EngineList->byIndex(m_nImageServer)->Name)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
 		
 	if(m_nFileServer != -1)
-		hFileIcon = (HICON)LoadImage(0,IU_GetDataFolder()+_T("Favicons\\")+m_EngineList->byIndex(m_nFileServer)->Name+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
+		hFileIcon = (HICON)LoadImage(0,IU_GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(m_EngineList->byIndex(m_nFileServer)->Name)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
 	
 	if(hImageIcon)
 	{
@@ -432,7 +435,7 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
 
-	CUploadEngine * uploadEngine = 0;
+	CUploadEngineData * uploadEngine = 0;
 	
 	if(nServerIndex == -1)
 	{
@@ -445,7 +448,7 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 	}
 
 	uploadEngine =  m_EngineList->byIndex(nServerIndex);
-	CString serverTitle = (nServerIndex != -1) ? uploadEngine->Name: TR("Выберите сервер");
+	CString serverTitle = (nServerIndex != -1) ? Utf8ToWCstring(uploadEngine->Name): TR("Выберите сервер");
 
 	ZeroMemory(&bi, sizeof(bi));
 	bi.cbSize = sizeof(bi);
@@ -453,8 +456,8 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 	bi.pszText = (LPWSTR)(LPCTSTR) serverTitle ;
 	CurrentToolbar.SetButtonInfo(IDC_SERVERBUTTON, &bi);
 
-	LoginInfo& li = Settings.ServersSettings[ uploadEngine->Name].authData;
-	CString login = TrimString(li.Login,23);
+	LoginInfo& li = Settings.ServersSettings[ Utf8ToWCstring(uploadEngine->Name)].authData;
+	CString login = TrimString(Utf8ToWCstring(li.Login),23);
 	
 	CurrentToolbar.SetImageList(m_PlaceSelectorImageList);
 
@@ -478,7 +481,7 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 	CurrentToolbar.HideButton(IDC_SELECTFOLDER,!ShowFolderButton);
 	CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR2,!ShowFolderButton);
 		
-	CString title = TrimString(Settings.ServersSettings[uploadEngine->Name].params["FolderTitle"], 27);
+	CString title = TrimString(Utf8ToWCstring(Settings.ServersSettings[Utf8ToWCstring(uploadEngine->Name)].params["FolderTitle"]), 27);
 	if(title.IsEmpty()) title = TR("Папка не выбрана");
 	bi.pszText = (LPWSTR)(LPCTSTR)title;
 	CurrentToolbar.SetButtonInfo(IDC_SELECTFOLDER, &bi);
@@ -515,7 +518,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 	bool ImageServer = (idCtrl == IDC_IMAGETOOLBAR);
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
 
-	CUploadEngine *uploadEngine = 0;
+	CUploadEngineData *uploadEngine = 0;
 	if(nServerIndex!=-1)
 	{
 		uploadEngine = m_EngineList->byIndex(nServerIndex);
@@ -541,7 +544,8 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 			{
 				if(!m_EngineList->byIndex(i)->ImageHost) continue;
 				mi.wID = (ImageServer?IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
-				mi.dwTypeData  = (LPWSTR)(LPCTSTR) m_EngineList->byIndex(i)->Name;
+				CString name =Utf8ToWCstring(m_EngineList->byIndex(i)->Name); 
+				mi.dwTypeData  = (LPWSTR)(LPCTSTR) name;
 				sub.InsertMenuItem(menuItemCount++, true, &mi);
 			}
 			
@@ -555,7 +559,8 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 		{
 			if(m_EngineList->byIndex(i)->ImageHost) continue;
 			mi.wID = (ImageServer?IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
-			mi.dwTypeData  =(LPWSTR)(LPCTSTR) m_EngineList->byIndex(i)->Name;
+			CString name =Utf8ToWCstring(m_EngineList->byIndex(i)->Name); 
+			mi.dwTypeData  =(LPWSTR)(LPCTSTR) name;
 			sub.InsertMenuItem(menuItemCount++, true, &mi);	
 		}
 
@@ -565,7 +570,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 	{
 		if(uploadEngine->UsingPlugin )
 		{
-			CUploadScript *plug = iuPluginManager.getPlugin(uploadEngine->PluginName, Settings.ServersSettings[uploadEngine->Name]);
+			CScriptUploadEngine *plug = iuPluginManager.getPlugin(uploadEngine->PluginName, Settings.ServersSettings[Utf8ToWCstring(uploadEngine->Name)]);
 			if(!plug) return TBDDRET_TREATPRESSED;
 
 			if(!plug->supportsSettings()) return TBDDRET_TREATPRESSED;
@@ -661,27 +666,27 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
 
 	
-	CUploadEngine *ue = m_EngineList->byIndex(nServerIndex);
+	CUploadEngineData *ue = m_EngineList->byIndex(nServerIndex);
 
-	CUploadScript *m_pluginLoader = iuPluginManager.getPlugin(ue->PluginName, Settings.ServersSettings[ue->Name], true);
+	CScriptUploadEngine *m_pluginLoader = iuPluginManager.getPlugin(ue->PluginName, Settings.ServersSettings[Utf8ToWCstring(ue->Name)], true);
 	if(!m_pluginLoader) return 0;
 
 	CString title;
-	std::vector<std::wstring> accessTypeList;
+	std::vector<std::string> accessTypeList;
 
 	m_pluginLoader->getAccessTypeList(accessTypeList);
 	CFolderItem newFolder;
-	if(Settings.ServersSettings[ue->Name].params[_T("FolderID")]	== IU_NEWFOLDERMARK)
-		newFolder = Settings.ServersSettings[ue->Name].newFolder;
+	if(Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderID"]	== IU_NEWFOLDERMARK)
+		newFolder = Settings.ServersSettings[Utf8ToWCstring(ue->Name)].newFolder;
 
 	 CNewFolderDlg dlg(newFolder, true, accessTypeList);
 	 if(dlg.DoModal(m_hWnd) == IDOK)
 	 {
-		 Settings.ServersSettings[ue->Name].params[_T("FolderTitle")] = newFolder.title.c_str();
-		Settings.ServersSettings[ue->Name].params[_T("FolderID")]	= IU_NEWFOLDERMARK;
-		Settings.ServersSettings[ue->Name].params[_T("FolderUrl")]	= _T("");
+		 Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderTitle"] = newFolder.title.c_str();
+		Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderID"]	= IU_NEWFOLDERMARK;
+		Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderUrl"]	= "";
 		
-		Settings.ServersSettings[ue->Name].newFolder = newFolder;
+		Settings.ServersSettings[Utf8ToWCstring(ue->Name)].newFolder = newFolder;
 		UpdateAllPlaceSelectors();
 	 }
 	 return 0;
@@ -692,10 +697,10 @@ LRESULT CUploadSettings::OnOpenInBrowser(WORD /*wNotifyCode*/, WORD wID, HWND /*
 	bool ImageServer = wID % 2;
 	CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
-	CUploadEngine *ue = m_EngineList->byIndex(nServerIndex);
+	CUploadEngineData *ue = m_EngineList->byIndex(nServerIndex);
 
 
-	CString str = Settings.ServersSettings[ue->Name].params[_T("FolderUrl")];
+	CString str = Utf8ToWCstring(Settings.ServerByUtf8Name(ue->Name).params["FolderUrl"]);
 	if(!str.IsEmpty())
 	{
 		ShellExecute(0,_T("open"),str,_T(""),0,SW_SHOWNORMAL);
@@ -726,7 +731,7 @@ LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, H
 	bool ImageServer = wID % 2;
 	CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
-	CUploadEngine *ue = m_EngineList->byIndex(nServerIndex);
+	CUploadEngineData *ue = m_EngineList->byIndex(nServerIndex);
 	if(!ue->UsingPlugin) return false;
 
 	CServerParamsDlg dlg(ue);
@@ -737,11 +742,10 @@ LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, H
 LRESULT CUploadSettings::OnOpenSignupPage(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	bool ImageServer = wID % 2;
-	MessageBox(_T(""));
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
-	CUploadEngine *ue = m_EngineList->byIndex(nServerIndex);
-	if(ue && !ue->RegistrationUrl.IsEmpty())
-		ShellExecute(0,_T("open"),ue->RegistrationUrl,_T(""),0,SW_SHOWNORMAL);
+	CUploadEngineData *ue = m_EngineList->byIndex(nServerIndex);
+	if(ue && !ue->RegistrationUrl.empty())
+		ShellExecute(0,_T("open"),Utf8ToWCstring(ue->RegistrationUrl), _T(""),0,SW_SHOWNORMAL);
 	return 0;
 }
 

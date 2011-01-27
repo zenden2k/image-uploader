@@ -3,7 +3,6 @@
  * This code is in the public domain; do with it what you wish.
  *
  **/
-#include "stdafx.h"
 #if defined(__DEBUG__)
 #include <cstdio>
 #endif
@@ -838,7 +837,7 @@ void CCryptoProviderRSA::Encrypt(const char *inbuf, size_t in_size,char *outbuf,
 
 		EncryptPortion(portbuf, cur_size, cpbuf, cp_size);
 
-		for (i=0; i<portion_len; i++)
+		for (size_t i=0; i<portion_len; i++)
 			prev_crypted[i] = i < cp_size ? cpbuf[i] : 0;
 
 		lm=cur_size;
@@ -891,7 +890,7 @@ void CCryptoProviderRSA::Decrypt(const char *inbuf, size_t in_size,char *outbuf,
 		for (i=0; i<lmi; i++)
 			portbuf[i] ^= prev_crypted[i];
 
-		for (i=0; i<portion_len; i++)
+		for (size_t i=0; i<portion_len; i++)
 			prev_crypted[i] = i < cp_size ? cpbuf[i] : 0;
 
 		memcpy (outbuf+out_size,portbuf,lmi);

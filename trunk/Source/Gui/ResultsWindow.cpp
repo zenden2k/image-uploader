@@ -18,20 +18,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
 #include "ResultsWindow.h"
 #include "../Common.h"
 
 // CResultsWindow
-CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,CAtlArray<CUrlListItem>  & urlList,bool ChildWindow):ResultsPanel(wizardDlg,urlList)
+CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,CAtlArray<CUrlListItem>  & urlList,bool ChildWindow)
 {
 	m_WizardDlg = wizardDlg;
+	ResultsPanel = new CResultsPanel(wizardDlg,urlList);
 	m_childWindow = ChildWindow;
 }
 
 CResultsWindow::~CResultsWindow()
 {
-	
+	delete ResultsPanel;
 }
 
 LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -77,13 +77,13 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	::GetWindowPlacement(GetDlgItem(IDC_RESULTSTAB), &wp);
 	TabCtrl_AdjustRect(GetDlgItem(IDC_RESULTSTAB),FALSE, &wp.rcNormalPosition); 	
 	RECT rc =  { wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left+wp.rcNormalPosition.right,  -wp.rcNormalPosition.top+wp.rcNormalPosition.bottom };
-	ResultsPanel.rectNeeded = rc;
+	ResultsPanel->rectNeeded = rc;
 	::MapWindowPoints(0, m_hWnd, (LPPOINT)&rc, 2);
- 	ResultsPanel.setEngineList(_EngineList);
-	ResultsPanel.Create(m_hWnd,rc);
+ 	ResultsPanel->setEngineList(_EngineList);
+	ResultsPanel->Create(m_hWnd,rc);
 
 	RECT Rec;
-	ResultsPanel.GetClientRect(&rc);
+	ResultsPanel->GetClientRect(&rc);
 	BOOL b;
 	OnTabChanged(IDC_RESULTSTAB,0,b);
 	return 0; 
@@ -110,33 +110,33 @@ LRESULT CResultsWindow::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
 int CResultsWindow::GetCodeType()
 {
-	return ResultsPanel.GetCodeType();
+	return ResultsPanel->GetCodeType();
 }
 
 void CResultsWindow::UpdateOutput()
 {
-	ResultsPanel.UpdateOutput();
+	ResultsPanel->UpdateOutput();
 }
 
 void CResultsWindow::SetCodeType(int Index)
 {
-	ResultsPanel.SetCodeType(Index);
+	ResultsPanel->SetCodeType(Index);
 }
 
 void CResultsWindow::Clear()
 {
-	ResultsPanel.Clear();
+	ResultsPanel->Clear();
 }
 
 void CResultsWindow::EnableMediaInfo(bool Enable)
 {
-	ResultsPanel.EnableMediaInfo(Enable);
+	ResultsPanel->EnableMediaInfo(Enable);
 }
 
 void CResultsWindow::SetPage(int Index)
 {
 	TabCtrl_SetCurSel(GetDlgItem(IDC_RESULTSTAB), Index);
-	ResultsPanel.SetPage(Index);
+	ResultsPanel->SetPage(Index);
 }
 
 int CResultsWindow::GetPage()
@@ -145,33 +145,33 @@ int CResultsWindow::GetPage()
 }
 void CResultsWindow::AddServer(CString server)
 {
-	ResultsPanel.AddServer( server);
+	ResultsPanel->AddServer( server);
 }
 
 void CResultsWindow::InitUpload()
 {
-	ResultsPanel.InitUpload();
+	ResultsPanel->InitUpload();
 }
 
 void CResultsWindow::Lock()
 {
-	ResultsPanel.UrlListCS.Lock();
+	ResultsPanel->UrlListCS.Lock();
 }
 
 void CResultsWindow::Unlock()
 {
-	ResultsPanel.UrlListCS.Unlock();
+	ResultsPanel->UrlListCS.Unlock();
 }
 
 void CResultsWindow::setUrlList(CAtlArray<CUrlListItem>  * urlList)
 {
-	ResultsPanel.setUrlList(urlList);
+	ResultsPanel->setUrlList(urlList);
 }
 
 LRESULT CResultsWindow::OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
 	int Index = TabCtrl_GetCurSel(GetDlgItem(idCtrl));
-	ResultsPanel.SetPage(Index);
+	ResultsPanel->SetPage(Index);
 	return 0;
 }
 
@@ -199,4 +199,10 @@ DLGTEMPLATE* CResultsWindow::GetTemplate()
 		pMyDlgTemplate->style = pMyDlgTemplate->style |  WS_POPUP | WS_CAPTION;
 	}
 	return (DLGTEMPLATE*)pMyDlgTemplate;
+}
+
+void CResultsWindow::FinishUpload()
+{
+	BOOL b;
+	ResultsPanel->OnCbnSelchangeCodetype(0,0,0, b);
 }

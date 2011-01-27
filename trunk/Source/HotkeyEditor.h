@@ -24,6 +24,7 @@
 #include <atlddx.h>
 #include "3rdpart/WinHotkeyCtrl.h"
 #include "3rdpart/vkCodes.h"
+#include "LangClass.h"
 // CHotkeyEditor
 struct MYHOTKEY
 {

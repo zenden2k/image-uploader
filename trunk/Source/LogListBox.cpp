@@ -18,9 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
-#include "LogListBox.h"
 
+#include "LogListBox.h"
+#include "Myutils.h"
 const int LLB_VertDivider = 10;
 const int LLB_VertMargin = 5;
 
@@ -49,8 +49,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
 	if(!item) return FALSE;
 	
    CDCHandle dc = dis->hDC;
-   SIZE s;
-   
+
    if(dis->itemAction & (ODA_DRAWENTIRE|ODA_SELECT))
    {
 		dc.SetBkColor(GetSysColor(COLOR_WINDOW));
@@ -158,7 +157,7 @@ CString trim(const CString Str)
 {
 	CString Result = Str;
 	if(!Result.IsEmpty())
-		for(int i = Result.GetLength()-1; i--; i>=0)
+		for(int i = Result.GetLength()-1;  i>=0;i--)
 		{
 			if(Result[i]==_T('\n'))
 			Result.Delete(i);

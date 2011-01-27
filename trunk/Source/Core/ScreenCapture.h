@@ -1,7 +1,9 @@
 #pragma once
 #include <gdiplus.h>
+#include <vector>
 // CRegionSelect
 
+using namespace Gdiplus;
 bool GetScreenBounds(RECT &rect);
 HRGN GetWindowVisibleRegion(HWND wnd);
 

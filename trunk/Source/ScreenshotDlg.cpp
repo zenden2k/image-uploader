@@ -21,6 +21,9 @@
 #include "stdafx.h"
 #include "common.h"
 #include "ScreenshotDlg.h"
+#include "LogWindow.h"
+#include "LangClass.h"
+#include "Settings.h"
 
 
 // CScreenshotDlg

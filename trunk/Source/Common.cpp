@@ -18,77 +18,58 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
 #include "Common.h"
-#include "wizarddlg.h"
+#include "Common/CmdLine.h"
+//#include "wizarddlg.h"
 #include "versioninfo.h"
-
+#include "settings.h"
 #pragma comment(lib,"urlmon.lib")
-
+#include <openssl/md5.h>
+#include "MyUtils.h"
 CString IUCommonTempFolder, IUTempFolder;
-CCmdLine CmdLine;
-CAppModule _Module;
 
-CWizardPage::~CWizardPage()
+
+CString IU_md5_file(const CString& filename)
 {
+	CString result;
+	MD5_CTX context;
+
+	MD5_Init(&context);
+	FILE *f = _wfopen(filename,_T("rb"));
+
+	if(f)
+	{
+		unsigned char buf[4096];
+		while(!feof(f))
+		{	
+			size_t bytesRead = fread(buf, 1, sizeof(buf), f);
+
+
+			MD5_Update(&context, (unsigned char*)buf, bytesRead);
+		}
+		unsigned char buff[16] = "";    
+
+		MD5_Final(buff, &context);
+
+		fclose(f);
+
+		for(int i=0; i<16; i++)
+		{
+			TCHAR temp[5];
+			swprintf(temp, _T("%02x"),buff[i]);
+			result += temp;
+		}
+	}
+	return result;
 }
 
-bool CWizardPage::OnShow()
-{
-	EnableNext();
-	EnablePrev();
-	ShowNext();
-	ShowPrev();
-
-	return true;
-}
-bool CWizardPage:: OnNext()
-{
-	return true;
-}
-
-void CWizardPage::EnableNext(bool Enable)
-{
-	if(!WizardDlg) return;
-	::EnableWindow(WizardDlg->GetDlgItem(IDC_NEXT), Enable);
-}
-void CWizardPage::EnablePrev(bool Enable)
-{
-	if(!WizardDlg) return;
-	::EnableWindow(WizardDlg->GetDlgItem(IDC_PREV), Enable);
-}
-void CWizardPage::EnableExit(bool Enable)
-{
-	if(!WizardDlg) return;
-	::EnableWindow(WizardDlg->GetDlgItem(IDCANCEL), Enable);
-}
-
-void CWizardPage::SetNextCaption(LPCTSTR Caption)
-{
-	if(!WizardDlg) return;
-	WizardDlg->SetDlgItemText(IDC_NEXT, Caption);
-}
-void CWizardPage::ShowNext(bool Show)
-{
-	if(!WizardDlg) return;
-	::ShowWindow(WizardDlg->GetDlgItem(IDC_NEXT), Show?SW_SHOW:SW_HIDE);
-}
-void CWizardPage::ShowPrev(bool Show)
-{
-	if(!WizardDlg) return;
-	::ShowWindow(WizardDlg->GetDlgItem(IDC_PREV), Show?SW_SHOW:SW_HIDE);
-}
-bool CWizardPage:: OnHide()
-{
-	return false;
-}
 
 WIN32_FIND_DATA wfd;
 HANDLE findfile = 0;
 
 int GetNextImgFile(LPTSTR szBuffer, int nLength)
 {
-	TCHAR szNameBuffer[MAX_PATH], szBuffer2[MAX_PATH], TempPath[256];
+	TCHAR szBuffer2[MAX_PATH], TempPath[256];
 	
 	GetTempPath(256, TempPath);
 	wsprintf(szBuffer2, _T("%s*.*"), (LPCTSTR)IUTempFolder);
@@ -134,7 +115,7 @@ void DeleteDir2(LPCTSTR Dir)
 void ClearTempFolder()
 {
 	TCHAR szBuffer[256] = _T("\0");
-	TCHAR szNameBuffer[MAX_PATH], szBuffer2[MAX_PATH], TempPath[256];
+	TCHAR szBuffer2[MAX_PATH], TempPath[256];
 	GetTempPath(256, TempPath);
 	
 	while(GetNextImgFile(szBuffer, 256))
@@ -142,7 +123,7 @@ void ClearTempFolder()
 		#ifdef DEBUG
 			if(!lstrcmpi(szBuffer, _T("log.txt"))) continue;
 		#endif
-		wsprintf(szBuffer2,_T("%s%s"), (LPCTSTR) IUTempFolder, szBuffer);
+		wsprintf(szBuffer2,_T("%s%s"), (LPCTSTR) IUTempFolder, (LPCTSTR)szBuffer);
 		DeleteFile(szBuffer2);
 	}
 	if(!RemoveDirectory(IUTempFolder))
@@ -200,7 +181,7 @@ bool IULaunchCopy(CString additionalParams)
 	GetModuleFileName(0, Buffer, sizeof(Buffer)/sizeof(TCHAR));
 
 	CString TempCmdLine = CString(_T("\""))+CmdLine[0]+CString(_T("\"")); 
-	for(int i=1;i <CmdLine.GetCount(); i++)
+	for(size_t i=1;i <CmdLine.GetCount(); i++)
 		{
 			if(!lstrcmpi(CmdLine[i], _T("-Embedding"))) continue;
 			TempCmdLine = TempCmdLine + " \"" + CmdLine[i] + "\""; 
@@ -234,7 +215,7 @@ BOOL CreateTempFolder()
 	TCHAR TempPath[256];
 	GetTempPath(256, TempPath);
 	DWORD pid = GetCurrentProcessId() ^ 0xa1234568;
-	IUCommonTempFolder.Format(_T("%stmd_iu_temp"), TempPath);
+	IUCommonTempFolder.Format(_T("%stmd_iu_temp"), (LPCTSTR)TempPath);
 	
 	CreateDirectory(IUCommonTempFolder,0);
 	IUTempFolder.Format(_T("%s\\iu_temp_%x"),(LPCTSTR) IUCommonTempFolder, pid);
@@ -318,85 +299,9 @@ bool __fastcall CreateShortCut(
 
 }  
 
-void DrawStrokedText(Graphics &gr, LPCTSTR Text,RectF Bounds,Font &font,Color &ColorText,Color &ColorStroke,int HorPos,int VertPos, int width)
-{
-	RectF OriginalTextRect, NewTextRect;
-	FontFamily ff;
-	font.GetFamily(&ff);
-	gr.SetPageUnit(UnitPixel);
-	gr.MeasureString(Text,-1,&font,PointF(0,0),&OriginalTextRect);
 
-	Font NewFont(&ff,48,font.GetStyle(),UnitPixel);
-	gr.MeasureString(Text,-1,&NewFont,RectF(0,0,5000,1600),&NewTextRect);
-	OriginalTextRect.Height = OriginalTextRect.Height-OriginalTextRect.Y;
-	float newwidth,newheight;
-	newheight = OriginalTextRect.Height;
-	newwidth=OriginalTextRect.Height/NewTextRect.Height*NewTextRect.Width;
-	float k = 2*width*NewTextRect.Height/OriginalTextRect.Height;
-	SolidBrush br(ColorText);
-	Bitmap temp(NewTextRect.Width,NewTextRect.Height,&gr);
 
-	Graphics gr_temp(&temp);
-	StringFormat format;
-	gr_temp.SetPageUnit(UnitPixel);
-	GraphicsPath path;
-	gr_temp.SetSmoothingMode( SmoothingModeHighQuality);
-	path.AddString(Text, -1,&ff, (int)NewFont.GetStyle(), NewFont.GetSize(), Point(0,0), &format);
 
-	Pen pen(ColorStroke,(float)k);
-	pen.SetAlignment(PenAlignmentCenter);
-
-	float x,y;
-	gr_temp.DrawPath(&pen, &path);
-	gr_temp.FillPath(&br, &path);
-	gr.SetSmoothingMode( SmoothingModeHighQuality); 
-	gr.SetInterpolationMode(InterpolationModeHighQualityBicubic  );
-
-	if(HorPos == 0)
-		x = 2;
-	else if(HorPos == 1)
-		x = (Bounds.Width-newwidth)/2;
-	else x=(Bounds.Width-newwidth)-2;
-
-	if(VertPos==0)
-		y=2;
-	else if(VertPos==1)
-		y=(Bounds.Height-newheight)/2;
-	else y=(Bounds.Height-newheight)-2;
-	 
-	gr.DrawImage(&temp,(int)(Bounds.GetLeft()+x),(int)(Bounds.GetTop()+y),(int)(newwidth),(int)(newheight));
-}
-
-int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
-{
-   UINT  num = 0;          // number of image encoders
-   UINT  size = 0;         // size of the image encoder array in bytes
-
-   ImageCodecInfo* pImageCodecInfo = NULL;
-
-   GetImageEncodersSize(&num, &size);
-   if(size == 0)
-      return -1;  // Failure
-
-   pImageCodecInfo = (ImageCodecInfo*)(malloc(size));
-   if(pImageCodecInfo == NULL)
-      return -1;  // Failure
-
-   GetImageEncoders(num, size, pImageCodecInfo);
-
-   for(UINT j = 0; j < num; ++j)
-   {
-      if( wcscmp(pImageCodecInfo[j].MimeType, format) == 0 )
-      {
-         *pClsid = pImageCodecInfo[j].Clsid;
-         free(pImageCodecInfo);
-         return j;  // Success
-      }    
-   }
-
-   free(pImageCodecInfo);
-   return -1;  // Failure
-}
 
 bool IULaunchCopy(CString params, CAtlArray<CString> &files)
 {
@@ -416,7 +321,7 @@ bool IULaunchCopy(CString params, CAtlArray<CString> &files)
 	if(!params.IsEmpty())
 		TempCmdLine += _T(" ") + params + _T(" ");
 
-	for(int i=0;i <files.GetCount(); i++)
+	for(size_t i=0;i <files.GetCount(); i++)
 	{
 		TempCmdLine = TempCmdLine + " \"" + files[i] + "\""; 
 	}
@@ -449,8 +354,8 @@ void IU_ConfigureProxy(NetworkManager& nm)
 	{
 		int ProxyTypeList [5] = { CURLPROXY_HTTP, 
 		CURLPROXY_SOCKS4,CURLPROXY_SOCKS4A, CURLPROXY_SOCKS5, CURLPROXY_SOCKS5_HOSTNAME};
-		nm.setProxy(WstringToUtf8((LPCTSTR)Settings.ConnectionSettings.ServerAddress), Settings.ConnectionSettings.ProxyPort,ProxyTypeList[Settings.ConnectionSettings.ProxyType]);
-		nm.setProxyUserPassword(WstringToUtf8((LPCTSTR)Settings.ConnectionSettings.ProxyUser), WstringToUtf8((LPCTSTR)Settings.ConnectionSettings.ProxyPassword));	
+		nm.setProxy(WstrToUtf8((LPCTSTR)Settings.ConnectionSettings.ServerAddress), Settings.ConnectionSettings.ProxyPort,ProxyTypeList[Settings.ConnectionSettings.ProxyType]);
+		nm.setProxyUserPassword(WstrToUtf8((LPCTSTR)Settings.ConnectionSettings.ProxyUser), WstrToUtf8((LPCTSTR)Settings.ConnectionSettings.ProxyPassword));	
 	}
 	nm.setUploadBufferSize(Settings.UploadBufferSize);
 }
@@ -524,10 +429,10 @@ bool IU_CopyTextToClipboard(CString text)
 {
     LPTSTR  lptstrCopy;
     HGLOBAL hglbCopy;
-    int ich1, ich2, cch = text.GetLength();
+    int cch = text.GetLength();
     if (!OpenClipboard( NULL))
-        return FALSE;
-    EmptyClipboard();
+		return FALSE;
+	EmptyClipboard();
 	hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (cch + 1) * sizeof(TCHAR));
 	if (hglbCopy == NULL)
 	{
@@ -540,6 +445,7 @@ bool IU_CopyTextToClipboard(CString text)
 	GlobalUnlock(hglbCopy);
 	SetClipboardData(CF_UNICODETEXT, hglbCopy);
     CloseClipboard();
+	return true;
 }
 
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
@@ -586,6 +492,41 @@ CString GetUniqFileName(const CString &filePath)
 	}
 	return result;
 }
+BOOL IU_CreateFolder(LPCTSTR szFolder)
+{
+	if (!szFolder || !lstrlen(szFolder))
+		return FALSE;
+
+	DWORD dwAttrib = GetFileAttributes(szFolder);
+
+	// already exists ?
+	if (dwAttrib != 0xffffffff)
+		return ((dwAttrib & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY);
+
+	// recursively create from the top down
+	TCHAR* szPath = _tcsdup(szFolder);
+	TCHAR* p = _tcsrchr(szPath, '\\');
+
+	if (p) 
+	{
+		// The parent is a dir, not a drive
+		*p = '\0';
+
+		// if can't create parent
+		if (!IU_CreateFolder(szPath))
+		{
+			free(szPath);
+			return FALSE;
+		}
+		free(szPath);
+
+		if (!::CreateDirectory(szFolder, NULL)) 
+			return FALSE;
+	}
+
+	return TRUE;
+}
+
 const std::string IU_md5(const std::string& data);
 CString GenerateFileName(const CString &templateStr, int index, const CPoint size, const CString& originalName)
 {
@@ -612,11 +553,11 @@ CString GenerateFileName(const CString &templateStr, int index, const CPoint siz
 	result.Replace(_T("%h"), hours);
 	result.Replace(_T("%n"), minutes);
 	result.Replace(_T("%s"), seconds);
-	result.Replace(_T("%c"), indexStr);
+	result.Replace(_T("%i"), indexStr);
 	return result;
 }
 
-CUploadEngineList *_EngineList;
+CMyEngineList *_EngineList;
 
 const CString IU_GetWindowText(HWND wnd)
 {
@@ -649,3 +590,73 @@ LPCSTR GetFileExtA(LPCSTR szFileName)
 	return szReturn;
 }
 
+void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ")
+{
+	TCHAR szDestination[1024];
+	int br = strlen(code);
+	int n = lstrlen(szSource) / 2;
+	int j = 0;
+	ZeroMemory(szDestination, n*2);
+
+	int i;
+	PBYTE data = (PBYTE)szDestination;
+	*szDestination=0;
+
+	for(i=0; i<n; i++)
+	{
+		if(j >= br) j=0;
+
+		BYTE b;
+		b = (szSource[i*2] - _T('A'))*16 + (szSource[i*2+1] - _T('A'));
+		b = b^code[j];
+		data[i] = b;
+		j++;
+	}
+	data[i]=0;
+	Result = szDestination;
+}
+
+void EncodeString(LPCTSTR szSource, CString &Result,LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ")
+{
+	TCHAR szDestination[1024];
+	int br = strlen(code);
+	int n = lstrlen(szSource) * 2;
+	int j = 0;
+
+	PBYTE data = (PBYTE)szSource;
+	*szDestination = 0;
+	for(int i=0; i<n; i++)
+	{
+		if(j>=br)j=0;
+
+		BYTE b;
+		b = data[i]^code[j];
+		TCHAR bb[2]={0,0};
+		bb[0]=_T('A')+b/16;
+		lstrcat(szDestination,bb);
+		bb[0]=_T('A')+b%16;
+		lstrcat(szDestination,bb);
+		j++;
+
+	}
+	Result = szDestination;
+}
+
+BOOL IU_CreateFilePath(LPCTSTR szFilePath)
+{
+	TCHAR* szPath = _tcsdup(szFilePath);
+	TCHAR* p = _tcsrchr(szPath,'\\');
+
+	BOOL bRes = FALSE;
+
+	if (p)
+	{
+		*p = '\0';
+
+		bRes = IU_CreateFolder(szPath);
+	}
+
+	free(szPath);
+
+	return bRes;
+}

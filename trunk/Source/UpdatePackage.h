@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Common/MyXML.h"
+#include "Core/Network/NetworkManager.h"
 class CUpdateItem
 {
 	public:
@@ -65,6 +67,7 @@ public:
 	bool CheckUpdates();
 	CUpdateStatusCallback *m_statusCallback;
 	bool DoUpdates();
+	const CString ErrorString();
 	NetworkManager nm;
 	static int progressCallback(void *clientp,
                                       double dltotal,
@@ -83,5 +86,7 @@ public:
 	bool internal_load_update(CString name);
 	bool internal_do_update(CUpdateInfo& ui);
 	void setUpdateStatusCallback(CUpdateStatusCallback * callback);
+private:
+	CString m_ErrorStr;
 };
 

@@ -38,13 +38,13 @@ class CMyXml: public  CMarkup
 	 {
 		 CString Res = CMarkup::GetAttrib(szAttrib);
 		 if(Res.IsEmpty()) return false;
-		 Value = (bool) _ttoi(Res);
+		 Value =  _ttoi(Res)!=0;
 		 return true;
 	 }
 	  bool GetAttrib(LPCTSTR szAttrib, CString &Value)
 	 {
 		 Value = CMarkup::GetAttrib(szAttrib);
-		 return Value.IsEmpty();
+		 return Value.IsEmpty()!=0;
 	 }
 
 	  bool GetData( int &Value)
@@ -58,13 +58,13 @@ class CMyXml: public  CMarkup
 	 {
 		 CString Res = CMarkup::GetData();
 		 if(Res.IsEmpty()) return false;
-		 Value = (bool) _ttoi(Res);
+		 Value =  _ttoi(Res)!=0;
 		 return true;
 	 }
 	bool GetData(CString &Value)
 	{
 		 Value = CMarkup::GetData();
-		 return Value.IsEmpty();
+		 return Value.IsEmpty()!=0;
 	}
 
 /*	bool FormatDOMDocument (MSXML2::IXMLDOMDocument *pDoc, IStream *pStream)

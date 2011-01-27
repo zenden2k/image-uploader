@@ -89,8 +89,7 @@ bool CSettings::MacroLoadSettings(CMyXml &XML)
  	bool CSettings::MacroSaveSettings(CMyXml &XML)
 	{
 #endif
-	TCHAR szFont[1024];
-CString Font;
+	CString Font;
 
 	XML_NODE_START(ImageUploader);
 	XML_NODE_START(Settings);
@@ -116,6 +115,7 @@ CString Font;
 		XML_OPTION_VALUE(ImagesFolder);
 		XML_OPTION_VALUE(VideoFolder);
 		XML_OPTION_VALUE(WatchClipboard);
+#ifndef IU_SERVERLISTTOOL
 		CString HotkeysStr;
 		#ifndef  SETTINGS_READ
 			 HotkeysStr= Settings.Hotkeys.toString();
@@ -125,9 +125,11 @@ CString Font;
 		XML_OPTION_VALUE(HotkeysStr);
 
 			#ifdef  SETTINGS_READ
+
 				Settings.Hotkeys.DeSerialize(HotkeysStr);
 				//StringToFont(Font, &LogoSettings.Font);
 			#endif
+#endif
 		#endif
 	XML_NODE_END();
 		#ifndef IU_SHELLEXT
@@ -290,19 +292,16 @@ CString Font;
 		CString attribName = XML.GetAttribName(i++);
 		
 		if(attribName.IsEmpty()) break;
-	if( attribName.Left(1) ==_T('_'))
+		if( attribName.Left(1) ==_T('_'))
 		{
-			
-	
-			
 			CString attribValue;
 			XML.GetAttrib(attribName,attribValue);
 			attribName.Delete(0);
-			//MessageBox(0,attribName+"="+attribValue, v, 0);
+
 			if(!attribValue.IsEmpty()){
-				ServersSettings[v].params[attribName]=attribValue;
+				ServersSettings[v].params[WCstringToUtf8(attribName)]=WCstringToUtf8(attribValue);
 			}
-			//else break;
+
 		}
 		}
 	
@@ -310,10 +309,13 @@ CString Font;
 	CString Buffer;
 
 	XML.GetAttrib(_T("Login"),Buffer);
-	DecodeString(Buffer, ServersSettings[v].authData.Login);
-	
+	CString decodedLogin;
+	DecodeString(Buffer, decodedLogin);
+	ServersSettings[v].authData.Login = WCstringToUtf8(decodedLogin);
 	XML.GetAttrib(_T("Password"),Buffer);
-	DecodeString(Buffer, ServersSettings[v].authData.Password);
+	CString decodedPass;
+	DecodeString(Buffer, decodedPass);
+	ServersSettings[v].authData.Password  = WCstringToUtf8(decodedPass);
 	}
 XML_NODE_END();
 #else
@@ -327,17 +329,17 @@ XML_NODE_END();
 			{
 				(XML.SetAttrib(_T("Name"),it->first));
 				
-				std::map <CString, CString>::iterator param;
+				std::map <std::string, std::string>::iterator param;
 				for(param=it->second.params.begin(); param!=it->second.params.end(); param++)
 				{	
-					XML.SetAttrib(_T("_")+param->first,param->second);
+					XML.SetAttrib(_T("_")+Utf8ToWCstring(param->first), Utf8ToWCstring(param->second));
 				}
 
 				XML.SetAttrib(_T("Auth"),it->second.authData.DoAuth);
 				CString Buffer;
-				EncodeString(it->second.authData.Login,Buffer );
+				EncodeString(Utf8ToWCstring(it->second.authData.Login),Buffer );
 				XML.SetAttrib(_T("Login"),Buffer);
-				EncodeString( it->second.authData.Password, Buffer);
+				EncodeString( Utf8ToWCstring(it->second.authData.Password), Buffer);
 				XML.SetAttrib(_T("Password"),Buffer);
 				XML.OutOfElem();
 			}

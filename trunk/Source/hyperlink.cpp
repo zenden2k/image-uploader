@@ -20,7 +20,7 @@
  */
 #include "stdafx.h"
 #include "hyperlink.h"
-
+#include "Common.h"
 /*
  * If you do not wish to link with the windebug module,
  * comment out the next include directive and uncomment the

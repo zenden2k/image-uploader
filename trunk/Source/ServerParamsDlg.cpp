@@ -20,9 +20,10 @@
 
 #include "stdafx.h"
 #include "ServerParamsDlg.h"
-
+#include "LangClass.h"
+#include "Settings.h"
 // CServerParamsDlg
-CServerParamsDlg::CServerParamsDlg(CUploadEngine *ue): m_ue(ue)
+CServerParamsDlg::CServerParamsDlg(CUploadEngineData *ue): m_ue(ue)
 {
 }
 
@@ -37,32 +38,33 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	TRC(IDOK, "OK");
 	DlgResize_Init();
 	CString WindowTitle;
-	WindowTitle.Format(TR("Параметры сервера %s"),m_ue->Name);
+	CString serverName = Utf8ToWCstring(m_ue->Name);
+	WindowTitle.Format(TR("Параметры сервера %s"),(LPCTSTR)serverName);
 	SetWindowText(WindowTitle);
 
 	m_wndParamList.SubclassWindow(GetDlgItem(IDC_PARAMLIST));
 	m_wndParamList.SetExtendedListStyle(PLS_EX_SHOWSELALWAYS | PLS_EX_SINGLECLICKEDIT);
 
-	CUploadScript *m_pluginLoader = iuPluginManager.getPlugin(m_ue->PluginName, Settings.ServersSettings[m_ue->Name]);
+	CScriptUploadEngine *m_pluginLoader = iuPluginManager.getPlugin(m_ue->PluginName, Settings.ServerByUtf8Name(m_ue->Name));
 	if(!m_pluginLoader)
 	{
 		return 0;
 	}
 	m_pluginLoader->getServerParamList(m_paramNameList);
 
-	std::map<std::wstring,std::wstring>::iterator it;
-	for(it = m_paramNameList.begin(); it!= m_paramNameList.end(); it++)
+	std::map<std::string,std::string>::iterator it;
+	for( it = m_paramNameList.begin(); it!= m_paramNameList.end(); it++)
 	{
 		CString name = it->first.c_str();
 		CString humanName = it->second.c_str();
-		m_wndParamList.AddItem( PropCreateSimple(humanName, Settings.ServersSettings[m_ue->Name].params[name]) );
+		m_wndParamList.AddItem( PropCreateSimple(humanName, Utf8ToWCstring(Settings.ServerByUtf8Name(m_ue->Name).params[WCstringToUtf8(name)])) );
 	}
 	return 1;  // Let the system set the focus
 }
 
 LRESULT CServerParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	std::map<std::wstring,std::wstring>::iterator it;
+	std::map<std::string,std::string>::iterator it;
 	for(it = m_paramNameList.begin(); it!= m_paramNameList.end(); it++)
 	{
 
@@ -71,9 +73,9 @@ LRESULT CServerParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
 	
 		HPROPERTY pr = m_wndParamList.FindProperty(humanName);
 		CComVariant vValue;
-      pr->GetValue(&vValue);
+		pr->GetValue(&vValue);
 
-		Settings.ServersSettings[m_ue->Name].params[name]= vValue.bstrVal;	      
+		Settings.ServerByUtf8Name(m_ue->Name).params[WCstringToUtf8(name)]= WCstringToUtf8(vValue.bstrVal);	      
 	}
 
 	EndDialog(wID);

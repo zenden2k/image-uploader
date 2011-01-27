@@ -1,4 +1,3 @@
-#include "ResultsPanel.h"
 /*
     Image Uploader - application for uploading images/files to Internet
     Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
@@ -23,9 +22,9 @@
 
 #include "ResultsPanel.h"
 #include <uxtheme.h>
-#include "Common/regexp.h"
 #include "mediainfodlg.h"
-
+#include <pcre++.h>
+#include "LogWindow.h"
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg,CAtlArray<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)
 {
@@ -166,7 +165,13 @@ void CResultsPanel::SetPage(int Index)
 	::EnableWindow(GetDlgItem(IDC_THUMBPERLINESPIN), Index!=2);
 	
 	m_Page = Index;
+
+	
 	UpdateOutput();
+	BOOL temp;
+
+	if(!UrlList.IsEmpty() && Settings.AutoCopyToClipboard)
+		OnBnClickedCopyall(0,0,0,temp);
 }
 
 void BBCode_Link(CString &Buffer, CUrlListItem &item)
@@ -418,9 +423,6 @@ LRESULT CResultsPanel::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 {
 	CString buffer = GenerateOutput();
 	IU_CopyTextToClipboard(buffer);
-	/*SendDlgItemMessage(IDC_CODEEDIT, EM_SETSEL, 0, -1);
-	SendDlgItemMessage(IDC_CODEEDIT, WM_COPY, 0, 0);
-	SendDlgItemMessage(IDC_CODEEDIT, EM_SETSEL, -1, 0);*/
 	return 0;
 }
 
@@ -525,25 +527,27 @@ bool CResultsPanel::LoadTemplates(CString &Error)
 
 CString CResultsPanel::ReplaceVars(const CString Text)
 {
-	CString Result;
-	Result =  Text;
+	CString Result =  Text;
 
-	RegExp exp;
-	CComBSTR Pat = _T("\\$\\(([A-z_]*?)\\)");
-	CComBSTR Txt = Text;
-	exp.SetPattern(Pat);
-	exp.Execute(Txt);
-
-	int n = exp.MatchCount();
-
-	for(int i=0; i<n; i++) 
+	pcrepp::Pcre reg("\\$\\(([A-z0-9_]*?)\\)", "imc");
+	std::string str = WCstringToUtf8(Text);
+	size_t pos = 0;
+	while (pos <= str.length()) 
 	{
-		CComBSTR VarName = exp.GetSubMatch(i, 0);
-		CString vv = VarName;
-		Result.Replace(CString(_T("$(")) + vv + _T(")"), m_Vars[vv]);
+		if( reg.search(str, pos)) 
+		{
+			pos = reg.get_match_end()+1;
+			CString vv = Utf8ToWstring(reg[0]).c_str();
+			/*if(!vv.IsEmpty() && vv[0] == _T('_'))
+				Result.Replace(CString(_T("$(")) + vv + _T(")"),m_Consts[vv]);
+			else*/
+				Result.Replace(CString(_T("$(")) + vv + _T(")"),m_Vars[vv]);
+		}
+		else
+			break;
 	}
+	Result.Replace(L"\\n",L"\r\n");
 
-	Result.Replace(_T("\\n"), _T("\r\n"));
 	return Result;
 }
 
@@ -566,13 +570,13 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 
 	for(int i=0; i<m_Servers.size(); i++)
 	{
-		CUploadEngine *ue = m_EngineList->byName(m_Servers[i]);
+		CUploadEngineData *ue = m_EngineList->byName(m_Servers[i]);
 		if(!ue) continue;
-		CString folderTitle = Settings.ServersSettings[ue->Name].params[_T("FolderTitle")];
-		CString folderUrl = Settings.ServersSettings[ue->Name].params[_T("FolderUrl")];
+		CString folderTitle = Utf8ToWCstring(Settings.ServerByUtf8Name(ue->Name).params["FolderTitle"]);
+		CString folderUrl = Utf8ToWCstring(Settings.ServerByUtf8Name(ue->Name).params["FolderUrl"]);
 
 		if(folderTitle.IsEmpty() || folderUrl.IsEmpty()) continue;
-		CString title = TR("Копировать URL адрес ") + CString(ue->Name)+ _T("->")+folderTitle;
+		CString title = TR("Копировать URL адрес ") + Utf8ToWCstring(ue->Name)+ _T("->")+folderTitle;
 		mi.wID = IDC_COPYFOLDERURL + i;
 		mi.dwTypeData  = (LPWSTR)(LPCTSTR) title;//TR("Параметры авторизации");
 		sub.InsertMenuItem(count++, true, &mi);
@@ -629,15 +633,18 @@ LRESULT CResultsPanel::OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND h
 {
 	int index = wID - IDC_COPYFOLDERURL;
 
-	CUploadEngine *ue = m_EngineList->byName(m_Servers[index]);
+	CUploadEngineData *ue = m_EngineList->byName(m_Servers[index]);
 	if(!ue) return 0;
-	CString folderUrl = Settings.ServersSettings[ue->Name].params[_T("FolderUrl")];
+	CString folderUrl = Utf8ToWCstring(Settings.ServerByUtf8Name(ue->Name).params[("FolderUrl")]);
 	IU_CopyTextToClipboard(folderUrl);
 	return 0;
 }
 
 void CResultsPanel::AddServer(CString server)
 {
+	for(int i=0; i<m_Servers.size(); i++)
+		if (m_Servers[i] == server)
+			return;
 	m_Servers.push_back(server);
 	//return 0;
 }
@@ -700,7 +707,7 @@ LRESULT CResultsPanel::OnResulttoolbarNMCustomDraw(LPNMHDR pnmh)
 }
 
 
-void CResultsPanel::setEngineList(CUploadEngineList* EngineList)
+void CResultsPanel::setEngineList(CMyEngineList* EngineList)
 {
 	m_EngineList = EngineList;
 }

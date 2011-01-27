@@ -18,8 +18,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
-
 
 #include "myutils.h"
 #include <shobjidl.h>
@@ -659,7 +657,7 @@ bool IUInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP
 	MenuItem.hbmpChecked = bm;
 	MenuItem.hbmpUnchecked = bm;
 	MenuItem.dwTypeData = (LPWSTR)szTitle;
-	return InsertMenuItem(hMenu, pos, TRUE, &MenuItem);
+	return InsertMenuItem(hMenu, pos, TRUE, &MenuItem)!=0;
 }
 
 #ifndef IU_SHELLEXT
@@ -720,3 +718,20 @@ bool IsDirectory(LPCTSTR szFileName)
 	 return (res&FILE_ATTRIBUTE_DIRECTORY) && (res != -1);	
 }
 
+BOOL IsVista()
+{
+	OSVERSIONINFO osver;
+	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
+
+	if (	::GetVersionEx( &osver ) && 
+		osver.dwPlatformId == VER_PLATFORM_WIN32_NT && 
+		(osver.dwMajorVersion >= 6 ) )
+		return TRUE;
+
+	return FALSE;
+}
+
+bool CheckFileName(const CString fileName)
+{
+	return (fileName.FindOneOf(_T("\\/:*?\"<>|")) < 0);
+}

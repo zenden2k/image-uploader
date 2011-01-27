@@ -7,9 +7,6 @@
 // This software is provided "as is", with no warranty.
 //
 
-#ifndef IU_SHELLEXT
-//#include "stdafx.h"
-#endif
 #include <stdio.h>
 #include "Markup.h"
 
