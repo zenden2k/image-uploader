@@ -1,0 +1,36 @@
+// ExplorerIntegration.idl : IDL source for ExplorerIntegration
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (ExplorerIntegration.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(2AAE4044-B77F-4BF2-95EB-F6AD0A3332C8),
+	dual,
+	nonextensible,
+	helpstring("IIShellContextMenu Interface"),
+	pointer_default(unique)
+]
+interface IIShellContextMenu : IDispatch{
+};
+[
+	uuid(95453956-224E-4996-9224-20829C6F0AAD),
+	version(1.0),
+	helpstring("ExplorerIntegration 1.0 Type Library")
+]
+library ExplorerIntegrationLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(7CA585C4-DF37-4712-9FC7-D64BFEF801F9),
+		helpstring("IShellContextMenu Class")
+	]
+	coclass IShellContextMenu
+	{
+		[default] interface IIShellContextMenu;
+	};
+};

@@ -1,0 +1,90 @@
+# Image Uploader changelog 
+#
+# http://zenden.ws/imageuploader
+
+-v1.2.6 build 3760
+[+] Added new mode of screen capture
+[+] Quick upload from tray
+[+] Copy image to cliboard support
+[+] Screenshot file name and folder settings
+[+] Extended hotkey keystrokes support
+[C] Some UI improvements
+[F] Fixed incapability of uploading more that 512 files
+[F] Fixed wrong display of month in update window
+[C] Optimizing disk usage
+
+-v.1.2.5 build 3239
+[+] Auto-updates from server
+[+] Now Image Uploader uses libcurl as network core  instead of WinInet library
+[+] SOCKS5 proxy support
+[+] Squirrel scripting support
+[+] FTP support (via Squirrel script)
+[+] Remote folder (or album) selection, creating and modifying
+[+] Information about media files can be displayed on image
+[+] Farsi language translation (by Hessam Mohamadi)
+[-] Internet Explorer's cookies support is not available
+[C] Settings.xml  is stored in Data folder
+[C] "Data" directory contents now can be stored in Application Data subfolder
+[F] Browse for Folders dialog is now resizable
+[F] Template.txt now is turn off on "Simple links" tab
+[F] Incredible bug concerning JPEG image quality
+
+[RU]
+[+] Автообновления с сервера
+[+] Теперь Image Uploader использует libcurl вместо ядра internet explorer
+[+] Поддержка авторизации SOCKS5 прокси
+[+] Поддержка серверов, в т.ч. с альбомами при помощи скриптов на языке Squirrel
+[+] поддержка FTP
+[+] Информаци о медиафайлах на картинке
+[+] Добавлены сервера Яндекс.Фотки, Picasa Webalbums, Sendspace, Imgur.com и другие 
+
+--v1.2.1 build 1664 [19.01.2010]--
+[F] An upload bug introduced in previous version  fixed (invalid referer url was used)
+[F] Painting bug under Vista
+
+--v1.2.1 build 1576 [18.12.2009]--
+[F] A strange bug in context menu of "All programs" in winxp start menu fixed (by turning off bitmaps in context menu)
+
+--v1.2.1 build 1570 [14.10.2009]--
+[+] Tray icon
+[+] Hotkeys support
+[+] New servers added
+[+] New Shell context menu extension
+[+] New command line option "/onlyimages"
+[F] Minor fixes
+
+--v1.2 build 1490 [11.09.2009]--
+[+] GNU GENERAL PUBLIC LICENSE Version 3.
+[+] Open folder with file menu item
+[F] Minor fixes
+[F] Bug with not selecting image hosting server if it was behind file server into servers.xml
+
+--v1.2 build 1469 [17.08.2009]--
+
+[F] Program hadn't process any files except pictures while launching using SendTo shortcut
+[F] "Language can be changed only once" label was removed
+[F] Upload speed fix
+
+[+] Zippyshare.com has been added to list of servers (by request)
+[-] Notification window shown after screen capturing has been taken away
+
+--v1.2 build 1449 [06.08.2009]--
+[F] Shell context menu integration in Vista's with UAC turned on (probably fixed)
+[F] Index of audio streams
+[C] PNG by default for screenshoting
+
+--v1.2 build 1424 [07.27.2009]--
+[+] Custom output templates support (templates.xml)
+
+--v.1.2 beta [22.03.2009]--
+[+] Proxy server support
+[+] Command line support
+[+] Shell context menu integration
+[+] Getting technical and tag information about a video or audio file (thx to http://mediainfo.sourceforge.net/)
+[+] File size exceeding warning window
+[F] Minor UI tweaks
+[F] Some tweaks in video grabber module
+[F] Several bugs fixed
+ 
+
+ 

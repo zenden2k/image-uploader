@@ -1,0 +1,2 @@
+
+bool DropTargetHandler(LPTSTR szCmdLine);
