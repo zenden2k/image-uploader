@@ -20,4 +20,4 @@
 
 #pragma once
 
-BOOL GetMediaFileInfo(LPCWSTR FileName, CString &Buffer);
+bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer);

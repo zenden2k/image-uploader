@@ -2,6 +2,8 @@
 
 #include "Common/MyXML.h"
 #include "Core/Network/NetworkManager.h"
+#include "Core/Utils/SimpleXml.h"
+
 class CUpdateItem
 {
 	public:
@@ -19,7 +21,7 @@ public:
 	bool LoadUpdateFromBuffer(const CString& buffer);
 	bool DoUpdate(const CUpdateInfo &newPackage);
 	bool SaveToFile(const CString& filename);
-	bool Parse(CMyXml &m_xml);
+	bool Parse(ZSimpleXml &xml);
 	
 	CString m_ReadableText;
 	CString m_PackageName, m_DownloadUrl, m_UpdateUrl,m_Hash;
@@ -36,13 +38,14 @@ bool	operator<(const CUpdateInfo& p);
 
 class CUpdateStatusCallback
 {
-public:virtual void updateStatus(int packageIndex, const CString status)=0;
+	public:
+		virtual void updateStatus(int packageIndex, const CString status)=0;
 };
 
 class CUpdatePackage
 {
 public:
-	CMyXml m_xml;
+	ZSimpleXml m_xml;
 	CString m_PackageName;
 	CString m_PackageFolder;
 	int m_TimeStamp;

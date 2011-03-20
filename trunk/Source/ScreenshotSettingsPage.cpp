@@ -94,14 +94,14 @@ bool CScreenshotSettingsPagePage::Apply()
 	Settings.ScreenshotSettings.Format = SendDlgItemMessage(IDC_FORMATLIST,CB_GETCURSEL,0,0);
 	Settings.ScreenshotSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
-	Settings.ScreenshotSettings.ShowForeground = SendDlgItemMessage(IDC_FOREGROUNDWHENSHOOTING, BM_GETCHECK);
+	Settings.ScreenshotSettings.ShowForeground = SendDlgItemMessage(IDC_FOREGROUNDWHENSHOOTING, BM_GETCHECK) == BST_CHECKED;
 
 	Settings.ScreenshotSettings.Folder = IU_GetWindowText(GetDlgItem(IDC_SCREENSHOTFOLDEREDIT));
 	Settings.ScreenshotSettings.Format = SendDlgItemMessage(IDC_FORMATLIST,CB_GETCURSEL,0,0);
 	Settings.ScreenshotSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
-	Settings.ScreenshotSettings.ShowForeground = SendDlgItemMessage(IDC_FOREGROUNDWHENSHOOTING, BM_GETCHECK);
-	Settings.ScreenshotSettings.CopyToClipboard =  SendDlgItemMessage(IDC_ALWAYSCOPYTOCLIPBOARD, BM_GETCHECK);
+	Settings.ScreenshotSettings.ShowForeground = SendDlgItemMessage(IDC_FOREGROUNDWHENSHOOTING, BM_GETCHECK) == BST_CHECKED;
+	Settings.ScreenshotSettings.CopyToClipboard =  SendDlgItemMessage(IDC_ALWAYSCOPYTOCLIPBOARD, BM_GETCHECK) == BST_CHECKED;
 	
 	Settings.ScreenshotSettings.WindowHidingDelay = GetDlgItemInt(IDC_WINDOWHIDINGDELAY);
 	return true;

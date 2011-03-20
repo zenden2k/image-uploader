@@ -42,7 +42,7 @@ public:
 	void AddItem( CString name, CString func, DWORD commandId, WORD Code=0, WORD modif=0);
 	CHotkeyList& operator=( const CHotkeyList& );
 	bool operator==( const CHotkeyList& );
-	CString toString();
+	CString toString() const;
 	bool DeSerialize(const CString &data);
 	int getFuncIndex(const CString &func);
 		

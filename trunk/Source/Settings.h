@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -18,22 +18,25 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef IU_SETTINGS_H
+#define IU_SETTINGS_H
+
 #pragma once
 
 #include <atlcoll.h>
 #include "langclass.h"
-#include "common/myxml.h"
 #include <map>
-BOOL IsVista();
-#ifndef IU_SHELLEXT
+#include <string>
 #include "Core/ImageConverter.h"
-
+#include "hotkeysettings.h"
+#include "pluginloader.h"
+#include "Core/SettingsManager.h"
+#include "Common.h"
 #define TRAY_SCREENSHOT_UPLOAD 0
 #define TRAY_SCREENSHOT_CLIPBOARD 1
 #define TRAY_SCREENSHOT_SHOWWIZARD 2
 #define TRAY_SCREENSHOT_ADDTOWIZARD 3
-#include "hotkeysettings.h"
-#include "pluginloader.h"
+
 struct ImageSettingsStruct: public ImageConvertingParams
 {
 	BOOL GenThumb;
@@ -83,7 +86,8 @@ struct ThumbSettingsStruct: public ThumbCreatingParams
 	BOOL ThumbAddImageSize;
 	BOOL ThumbAddBorder;*/	
 	
-	BOOL CreateThumbs;
+	bool CreateThumbs;
+	CString thumbFileName;
 
 };
 
@@ -101,6 +105,46 @@ struct VideoSettingsStruct
 	COLORREF TextColor;
 };
 
+class CEncodedPassword
+{
+	public:
+		CEncodedPassword()
+		{
+		}
+		CEncodedPassword(CString d) 
+		{ 
+			 data_ = d; 
+		}
+		CString toEncodedData() const
+		{
+			CString res;
+			EncodeString(data_, res);
+			return res;
+		}
+		void fromPlainText(CString data)
+		{
+			data = data_;
+		}
+		void fromEncodedData(CString data)
+		{
+			DecodeString(data, data_);
+		}
+		operator CString&()
+		{
+			return data_;
+		}
+		operator const TCHAR*()
+		{
+			return data_;
+		}
+		CEncodedPassword& operator=(const CString& text)
+		{
+			data_ = text;
+			return *this;
+		}
+	private:
+		CString data_;
+};
 struct ConnectionSettingsStruct
 {
 	BOOL UseProxy;
@@ -108,7 +152,7 @@ struct ConnectionSettingsStruct
 	int ProxyPort;
 	BOOL NeedsAuth;
 	CString ProxyUser;
-	CString ProxyPassword;
+	CEncodedPassword ProxyPassword;
 	int ProxyType;
 };
 
@@ -124,9 +168,6 @@ struct ScreenshotSettingsStruct
 	CString Folder;
 };
 
-#include <string>
-
-#endif
 class CSettings
 {
 	public:
@@ -183,17 +224,21 @@ class CSettings
 		
 	public:
 		CSettings();
-
 		bool LoadSettings(LPCTSTR szDir=NULL);
-		bool MacroLoadSettings(CMyXml &XML);
-		bool MacroSaveSettings(CMyXml &XML);
 	int UploadBufferSize;
 	int ServerID, QuickServerID;
 	void ApplyRegSettingsRightNow();
+	bool LoadAccounts(ZSimpleXmlNode root);
+	bool SaveAccounts(ZSimpleXmlNode root);
+	#ifndef IU_SHELLEXT
 	ServerSettingsStruct& ServerByName(CString name);
 	ServerSettingsStruct& ServerByUtf8Name(std::string name);
+#endif
 	int FileServerID;
 	CString ServerName, QuickServerName,FileServerName;
+	SettingsManager mgr_;
 };
 
 extern CSettings Settings;
+
+#endif

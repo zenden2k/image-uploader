@@ -7,6 +7,8 @@
 #include "LangClass.h"
 #include "Settings.h"
 #include "LogWindow.h"
+#include "Func/Base.h"
+#include "Func/HistoryManager.h"
 
 // FloatingWindow
 CFloatingWindow::CFloatingWindow()
@@ -210,8 +212,7 @@ LRESULT CFloatingWindow::OnPasteFromWeb(WORD wNotifyCode, WORD wID, HWND hWndCtl
 
 LRESULT CFloatingWindow::OnScreenshotDlg(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-	if(pWizardDlg->executeFunc(_T("screenshotdlg,2")));
-		//pWizardDlg->ShowWindow(SW_SHOW);
+	pWizardDlg->executeFunc(_T("screenshotdlg,2"));
 	return 0;
 }
 
@@ -240,7 +241,7 @@ LRESULT CFloatingWindow::OnFreeformScreenshot(WORD wNotifyCode, WORD wID, HWND h
 LRESULT CFloatingWindow::OnWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	if(m_PrevActiveWindow) SetForegroundWindow(m_PrevActiveWindow);
-	if(pWizardDlg->executeFunc(_T("windowscreenshot_delayed,")+(m_bFromHotkey?CString(_T("1")):CString(_T("2")))));
+	pWizardDlg->executeFunc(_T("windowscreenshot_delayed,")+(m_bFromHotkey?CString(_T("1")):CString(_T("2"))));
 
 	return 0;
 }
@@ -293,7 +294,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 
 		if(OpenClipboard())
 		{
-			IsClipboard = IsClipboardFormatAvailable(CF_BITMAP);
+			IsClipboard = IsClipboardFormatAvailable(CF_BITMAP)!=0;
 			CloseClipboard();
 		}
 		if(IsClipboard)
@@ -413,7 +414,7 @@ void  CFloatingWindow::RegisterHotkeys()
 {
 	m_hotkeys=Settings.Hotkeys;
 
-	for(int i =0; i< m_hotkeys.GetCount(); i++)
+	for(size_t i =0; i< m_hotkeys.GetCount(); i++)
 	{
 		if(m_hotkeys[i].globalKey.keyCode)
 		{
@@ -429,7 +430,7 @@ void  CFloatingWindow::RegisterHotkeys()
 
 LRESULT CFloatingWindow::OnHotKey(int HotKeyID, UINT flags, UINT vk)
 {
-	if(HotKeyID <0 || HotKeyID > m_hotkeys.GetCount()-1) return 0;
+	if(HotKeyID <0 || HotKeyID > int(m_hotkeys.GetCount())-1) return 0;
 	if(m_bIsUploading) return 0;
 
 	if(m_hotkeys[HotKeyID].func == _T("windowscreenshot"))
@@ -449,7 +450,7 @@ LRESULT CFloatingWindow::OnHotKey(int HotKeyID, UINT flags, UINT vk)
 
 void  CFloatingWindow::UnRegisterHotkeys()
 {
-	for(int i =0; i< m_hotkeys.GetCount(); i++)
+	for(size_t i =0; i< m_hotkeys.GetCount(); i++)
 	{
 		if(m_hotkeys[i].globalKey.keyCode)
 		UnregisterHotKey(m_hWnd, i);
@@ -482,7 +483,11 @@ LRESULT CFloatingWindow::OnScreenshotActionChanged(WORD wNotifyCode, WORD wID, H
 	Settings.SaveSettings();
 	return 0;
 }
-#define ARRAYSIZE(a) (sizeof(a)/sizeof(a[0]))
+
+#ifndef ARRAYSIZE
+	#define ARRAYSIZE(a) (sizeof(a)/sizeof(a[0]))
+#endif
+
 void  CFloatingWindow::ShowBaloonTip(const CString& text, const CString& title)
 {
 	NOTIFYICONDATA nid;
@@ -523,7 +528,7 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString &d
 	
 	CString thumbFileName = imageConverter.getThumbFileName();
 	if(!thumbFileName.IsEmpty())
-	m_FileQueueUploader->AddFile(WCstringToUtf8(thumbFileName),WCstringToUtf8(thumbFileName),1);
+	m_FileQueueUploader->AddFile(WCstringToUtf8(thumbFileName),WCstringToUtf8(thumbFileName), reinterpret_cast<void*>(1));
 	
 	m_bIsUploading = true;
 	m_FileQueueUploader->start();
@@ -546,6 +551,18 @@ bool  CFloatingWindow::OnQueueFinished()
 		ShowBaloonTip(TR("Не удалось загрузить снимок :("), _T("Image Uploader"));
 		return true;
 	}
+
+	CHistoryManager * mgr = ZBase::get()->historyManager();
+	CHistorySession session = mgr->newSession();	
+	HistoryItem hi;
+	//	hi.localFilePath = WCstringToUtf8(m_LastUploadedItem.FileName);
+	//hi.serverName = ue->Name;
+	hi.directUrl =  (m_LastUploadedItem.imageUrl);
+	hi.thumbUrl = (m_LastUploadedItem.thumbUrl);
+	hi.viewUrl = (m_LastUploadedItem.downloadUrl);
+	hi.uploadFileSize = 0;//IuCoreUtils::getFileSize(WCstringToUtf8(ImageFileName));
+	session.AddItem(hi);
+			
 	IU_CopyTextToClipboard(url);
 	ShowBaloonTip(TrimString(url, 70) + CString("\r\n")+TR("Нажмите на это сообщение для открытия окна с кодом..."), TR("Снимок успешно загружен"));
 
@@ -556,11 +573,11 @@ bool  CFloatingWindow::OnFileFinished(bool ok, FileListItem& result)
 {
 	if(ok)
 	{
-		if(result.id == 0)
+		if(result.user_data == 0)
 		{
 			m_LastUploadedItem = result;
 		}
-		else if(result.id == 1)
+		else if(int(result.user_data) == 1)
 		{
 			m_LastUploadedItem.thumbUrl = result.imageUrl;
 		}

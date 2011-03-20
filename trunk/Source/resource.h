@@ -39,6 +39,10 @@
 #define IDD_SCREENSHOTSETTINGSPAGE      139
 #define IDD_IMAGEDOWNLOADER             141
 #define IDD_RESULTSWINDOW               142
+#define IDD_CONVERTPRESETDLG            143
+#define IDD_THUMBSETTINGSPAGE           144
+#define IDD_HISTORYWINDOW               145
+#define IDD_THUMBEDITOR                 146
 #define IDR_CONTEXTMENU                 202
 #define IDI_GRAB                        207
 #define IDI_IMAGES                      209
@@ -96,12 +100,17 @@
 #define IDC_QUALITYEDIT                 1015
 #define IDC_PERCENTLABEL                1016
 #define IDC_APPLY                       1017
+#define IDC_THUMBFORMATLABEL            1017
 #define IDC_LOGOOPTIONS                 1018
 #define IDC_ENABLEPREVIEW               1019
+#define IDC_THUMBFORMATLIST             1019
 #define IDC_FRAME                       1020
+#define IDC_THUMBQUALITYLABEL           1020
 #define IDC_PREVIEW                     1021
+#define IDC_THUMBQUALITYEDIT            1021
 #define IDC_IMAGEPARAMETERS             1022
 #define IDC_CHECK7                      1023
+#define IDC_THUMBQUALITYSPIN            1023
 #define IDC_USESERVERTHUMBNAILS         1024
 #define IDC_COMBO1                      1025
 #define IDC_LOGOPOSITION                1025
@@ -109,8 +118,10 @@
 #define IDC_LANGLIST                    1025
 #define IDC_LEFTBUTTONDOUBLECLICKCOMBO  1025
 #define IDC_ACCESSTYPECOMBO             1025
+#define IDC_PERCENTLABEL2               1025
 #define IDC_SERVERLIST                  1026
 #define IDC_LEFTBUTTONCLICKCOMBO        1026
+#define IDC_COMBO2                      1026
 #define IDC_CHECK4                      1027
 #define IDC_TEXTPOSITION                1027
 #define IDC_SAVEPROPORTIONS             1027
@@ -118,6 +129,7 @@
 #define IDC_MIDDLEBUTTONCLICKCOMBO      1027
 #define IDC_ADDFILESIZE                 1028
 #define IDC_RIGHTBUTTONCLICKCOMBO       1028
+#define IDC_SAVEPROPORTIONS2            1028
 #define IDC_EDIT4                       1029
 #define IDC_PROXYLOGINEDIT              1029
 #define IDC_SERVERLIST2                 1029
@@ -127,6 +139,7 @@
 #define IDC_BUTTON5                     1033
 #define IDC_THUMBTEXTCOLOR              1033
 #define IDC_WIDTHLABEL                  1034
+#define IDC_THUMBTEXTCOLOR2             1034
 #define IDC_SERVERCONFIG                1035
 #define IDC_DEINTERLACE                 1036
 #define IDC_DRAWFRAME                   1036
@@ -158,6 +171,7 @@
 #define IDC_TEXTEDIT                    1040
 #define IDC_UPDATEINFO                  1040
 #define IDC_SCREENSHOTFILENAMEEDIT      1040
+#define IDC_FRAMEWIDTH                  1040
 #define IDC_SELECTVIDEO                 1041
 #define IDC_STROKECOLOR                 1041
 #define IDC_LOGINBUTTON                 1041
@@ -187,6 +201,7 @@
 #define IDC_GRABBERPARAMS               1047
 #define IDC_SELECTCOLOR                 1047
 #define IDC_SERVERMENU                  1047
+#define IDC_NEWTHUMBNAIL                1047
 #define IDC_UPDOWN                      1048
 #define IDC_PROGRESS1                   1049
 #define IDC_UPLOADPROGRESS              1049
@@ -278,6 +293,7 @@
 #define IDC_GRADIENTCOLOR1LABEL         1131
 #define IDC_GRADIENTCOLOR2LABEL         1132
 #define IDC_IMAGESPERLINELABEL          1133
+#define IDC_THUMBSTROKECOLOR            1133
 #define IDC_CODETYPELABEL               1134
 #define IDC_LINK1                       1135
 #define IDC_LINK3                       1137
@@ -372,6 +388,23 @@
 #define IDC_SCREENSHOTSAVINGPARAMS      1227
 #define IDC_ALWAYSCOPYTOCLIPBOARD       1228
 #define IDC_RESULTSPLACEHOLDER          1229
+#define IDC_COLORSGROUP                 1230
+#define IDC_HISTORYTREE                 1232
+#define IDC_TIMEPERIODLABEL             1233
+#define IDC_MONTHCOMBO                  1234
+#define IDC_DOWNLOADTHUMBS              1235
+#define IDC_SESSIONSCOUNTLABEL          1237
+#define IDC_FILESCOUNTLABEL             1238
+#define IDC_SESSIONSCOUNTDESCR          1239
+#define IDC_FILESCOUNTDESCR             1240
+#define IDC_EDITTHUMBNAILPRESET         1241
+#define IDC_THUMBSCOMBO                 1242
+#define IDC_THUMBSCOMBOLABEL            1243
+#define IDC_COMBOPREVIEW                1244
+#define IDC_UPLOADTRAFFICDESCR          1245
+#define IDC_UPLOADTRAFFICLABEL          1246
+#define IDC_FRAMEWIDTHLABEL             1250
+#define IDC_THUMBTEXTCHECKBOX           1252
 #define ID_VIEW_DELETE                  32775
 #define ID_VIEW                         32776
 #define ID_DELETE                       32777
@@ -403,7 +436,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        251
 #define _APS_NEXT_COMMAND_VALUE         32799
-#define _APS_NEXT_CONTROL_VALUE         1230
+#define _APS_NEXT_CONTROL_VALUE         1253
 #define _APS_NEXT_SYMED_VALUE           127
 #endif
 #endif

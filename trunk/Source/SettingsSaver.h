@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -192,6 +192,8 @@ bool CSettings::MacroLoadSettings(CMyXml &XML)
 				XML_OPTION_MEMBER_VALUE(ThumbSettings, UseServerThumbs);
 				XML_OPTION_MEMBER_VALUE(ThumbSettings, UseThumbTemplate);
 				XML_OPTION_MEMBER_VALUE(ThumbSettings, ThumbAddImageSize);
+				XML_OPTION_MEMBER_VALUE(ThumbSettings, thumbFileName);
+//				XML_OPTION_MEMBER_VALUE(ThumbSettings, ThumbFormat);
 					XML_OPTION_MEMBER_VALUE(ThumbSettings, DrawFrame);
 			XML_NODE_START_VALUE_WITHATTRIB(Text, ThumbSettings.Text);
 			_XML_OPTION_ATTR(Color, COLOR_TO_PINT(ThumbSettings.ThumbTextColor));
@@ -269,14 +271,14 @@ bool CSettings::MacroLoadSettings(CMyXml &XML)
 			XML_OPTION_MEMBER_VALUE(ConnectionSettings, ProxyUser);
 			CString buf;
 
-			#ifndef SETTINGS_READ
+		/*	#ifndef SETTINGS_READ
 			EncodeString(ConnectionSettings.ProxyPassword, buf );
 			#endif
 			_XML_OPTION_VALUE(Password,buf);
 
 			#ifdef SETTINGS_READ
 			DecodeString( buf, ConnectionSettings.ProxyPassword);
-			#endif
+			#endif*/
 		XML_NODE_END(); 
 
 	XML_NODE_END();

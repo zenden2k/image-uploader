@@ -85,27 +85,7 @@ int pluginRandom()
 	return rand();
 }
 
-// FIXME: I don't know if it works with binary data
-const std::string IU_md5(const std::string& data)
-{
-	std::string result;
-	MD5_CTX context;
 
-	MD5_Init(&context);
-	MD5_Update(&context, (unsigned char*)data.c_str(), data.length());
-
-	unsigned char buff[16] = "";    
-
-	MD5_Final(buff, &context);
-
-	for(int i=0;i<16; i++)
-	{
-		char temp[5];
-		sprintf(temp, "%02x",buff[i]);
-		result += temp;
-	}
-	return result;
-}
 
 std::string squirrelOutput;
 const Utf8String IuNewFolderMark = "_iu_create_folder_";
@@ -234,6 +214,11 @@ const std::string scriptUtf8ToAnsi(const std::string &str, int codepage )
 	return IuCoreUtils::ConvertToUtf8(str,NameByCodepage(codepage));
 }
 
+const std::string scriptMD5(const std::string& data)
+{
+	return IuCoreUtils::CalcMD5Hash(data);
+}
+
 bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params)
 {  
 	if(!IuCoreUtils::FileExists(fileName))
@@ -293,14 +278,14 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 			func(&CFolderItem::getItemCount,"getItemCount");
 
 		RegisterGlobal(pluginRandom, "random");
-		RegisterGlobal(IU_md5, "md5");
+		RegisterGlobal(scriptMD5, "md5");
 		RegisterGlobal(scriptAnsiToUtf8, "AnsiToUtf8");
 		RegisterGlobal(YandexRsaEncrypter,"YandexRsaEncrypter");
 		RegisterGlobal(scriptUtf8ToAnsi, "Utf8ToAnsi");
 		RegisterGlobal(plugExtractFileName, "ExtractFileName");
 		RegisterGlobal(plugGetFileExtension, "GetFileExtension");
 		RegisterGlobal(scriptGetFileMimeType, "GetFileMimeType");
-		srand(time(0));
+		srand(unsigned int(time(0)));
 	
 	BindVariable(m_Object, &m_ServersSettings, "ServerParams");
 
@@ -313,13 +298,6 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		Log(mtError, "CScriptUploadEngine::Load\r\n" + std::string("Unable to load plugin: ") + e.desc);
 		return false;
 	} 
-
-
-	/*catch (SquirrelError & e) {
-		Log(mtError, "CScriptUploadEngine::Load\r\n" + std::string("Unable to load plugin: ") + e.desc);
-		return false;
-	}*/
-
 	FlushSquirrelOutput();
 	return true;
 }
@@ -375,7 +353,7 @@ int CScriptUploadEngine::getServerParamList(std::map<Utf8String, Utf8String> &li
 
 }
 
-int   CScriptUploadEngine::modifyFolder(CFolderItem &folder)
+int CScriptUploadEngine::modifyFolder(CFolderItem &folder)
 {
 	try {
 		SquirrelFunction<int> func(m_Object, _SC("ModifyFolder"));
@@ -458,7 +436,6 @@ bool CScriptUploadEngine::supportsSettings()
 	} 
 	FlushSquirrelOutput();
 	return true;
-
 }
 
 int CScriptUploadEngine::RetryLimit()

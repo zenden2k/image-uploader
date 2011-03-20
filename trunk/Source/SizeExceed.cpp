@@ -22,6 +22,7 @@
 #include "SizeExceed.h"
 #include "common.h"
 #include "LangClass.h"
+
 // CSizeExceed
 CSizeExceed::CSizeExceed(LPCTSTR szFileName, ImageSettingsStruct &iss, CMyEngineList * EngineList)
 	: m_ImageSettings(iss), m_EngineList(EngineList)

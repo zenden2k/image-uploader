@@ -103,10 +103,10 @@ LRESULT CImageView::OnActivate(UINT state, BOOL fMinimized, HWND hwndActDeact)
 {
 	if (state == WA_INACTIVE) 
 		return ShowWindow(SW_HIDE);
+	return 0;
 }
 
 LRESULT CImageView::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
 {
 	return ShowWindow(SW_HIDE);
-	return 0;
 }

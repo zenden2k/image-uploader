@@ -98,7 +98,7 @@ LRESULT CTraySettingsPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWnd
 bool CTraySettingsPage::Apply()
 {
 	Settings.ShowTrayIcon_changed = Settings.ShowTrayIcon;
-	Settings.ShowTrayIcon = SendDlgItemMessage(IDC_SHOWTRAYICON, BM_GETCHECK);
+	Settings.ShowTrayIcon = SendDlgItemMessage(IDC_SHOWTRAYICON, BM_GETCHECK)==BST_CHECKED;
 	Settings.ShowTrayIcon_changed ^= Settings.ShowTrayIcon;
 
 	//Settings.ExplorerContextMenu_changed = true;
@@ -113,7 +113,7 @@ bool CTraySettingsPage::Apply()
 }
 LRESULT CTraySettingsPage::OnShowTrayIconBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-	bool bShowTrayIcon = SendDlgItemMessage(IDC_SHOWTRAYICON, BM_GETCHECK);
+	bool bShowTrayIcon = SendDlgItemMessage(IDC_SHOWTRAYICON, BM_GETCHECK) == BST_CHECKED;
 	EnableNextN(GetDlgItem(wID),10,bShowTrayIcon);
 	return 0;
 }

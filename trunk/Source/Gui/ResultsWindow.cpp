@@ -82,10 +82,9 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
  	ResultsPanel->setEngineList(_EngineList);
 	ResultsPanel->Create(m_hWnd,rc);
 
-	RECT Rec;
 	ResultsPanel->GetClientRect(&rc);
 	BOOL b;
-	OnTabChanged(IDC_RESULTSTAB,0,b);
+	OnTabChanged(IDC_RESULTSTAB, 0, b);
 	return 0; 
 }
 

@@ -21,6 +21,8 @@
 #include "stdafx.h"
 #include "WelcomeDlg.h"
 #include "Gui/ImageDownloaderDlg.h"
+#include "Gui/Dialogs/HistoryWindow.h"
+
 // CWelcomeDlg
 CWelcomeDlg::CWelcomeDlg()
 {
@@ -71,7 +73,8 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	ListBox.AddString(TR("Снимок выбранной области..."), 0, IDC_REGIONPRINT,LOADICO(IDI_ICONREGION));
 	
 	ListBox.AddString(TR("Настройки программы"), TR("Для опытных пользователей"), IDC_SETTINGS, LOADICO(IDI_ICONSETTINGS));
-	
+	ListBox.AddString(TR("История"), 0, ID_VIEWHISTORY,LOADICO(IDI_ICONREGION));
+
 	HFONT font = GetFont();
 	LOGFONT alf;
 	PageWnd = m_hWnd;
@@ -220,3 +223,11 @@ LRESULT CWelcomeDlg::OnBnClickedDownloadImages(WORD /*wNotifyCode*/, WORD /*wID*
 	WizardDlg->executeFunc(_T("downloadimages"));
 	return 0;
 }
+
+LRESULT CWelcomeDlg::OnViewHistoryClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CHistoryWindow dlg;
+	dlg.DoModal(m_hWnd);
+	return 0;
+}
+	

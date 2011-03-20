@@ -77,7 +77,7 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, Image* Img)
 
 	TVI->ThumbOutDate = FALSE;
 	TVI->FileName = FileName;
-	SetItemData(n, (DWORD)TVI);
+	SetItemData(n, reinterpret_cast<DWORD_PTR>(TVI));
 
 	// ≈сли уже есть загруженна€ картинка, генерируем эскиз немедленно
 	// Ёто нужно дл€ Video Grabber-a
@@ -215,19 +215,7 @@ LPCTSTR CThumbsView::GetFileName(int ItemIndex)
 	return TVI->FileName;
 }
 
-HICON GetAssociatedIcon (LPCTSTR filename, bool Small)
-{
-	SHFILEINFO Info;
-	DWORD Flags;
 
-
-	if (Small) 
-		Flags = SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES;
-	else
-		Flags = SHGFI_ICON | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES|SHGFI_ADDOVERLAYS;
-	SHGetFileInfo (filename, FILE_ATTRIBUTE_NORMAL, &Info, sizeof(Info), Flags);
-	return Info.hIcon;
-}
 
 LRESULT CThumbsView::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
 {
@@ -403,9 +391,6 @@ bool CThumbsView::LoadThumbnail(int ItemID, Image *Img)
 				br2(bounds, Color(240, 255, 255, 255), Color(200, 210, 210, 210), 
 				LinearGradientModeBackwardDiagonal /*LinearGradientModeVertical*/); 
 			gr.FillRectangle(&br2,(float)1, (float)height+1, (float)width-2, (float)height+20-1);
-
-
-
 		}
 
 		if(ItemID>=0)
@@ -419,7 +404,9 @@ bool CThumbsView::LoadThumbnail(int ItemID, Image *Img)
 			WCHAR Buffer[256];
 			int f = MyGetFileSize(GetFileName(ItemID));
 			WCHAR buf2[25];
-			NewBytesToString(f, buf2, 25);
+			Utf8String fileSizeStr = IuCoreUtils::fileSizeToString(IuCoreUtils::getFileSize(WCstringToUtf8(Filename)));
+			lstrcpy(buf2, Utf8ToWCstring(fileSizeStr));
+			//NewBytesToString(f, buf2, 25);
 			WCHAR FileExt[25];
 			lstrcpy(FileExt, GetFileExt(Filename));
 			if(!lstrcmpi(FileExt, _T("jpg"))) 

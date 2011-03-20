@@ -21,9 +21,12 @@
 
 #include "langclass.h"
 #include "myutils.h"
-#include "settings.h"
+
+
 CLang Lang;
 
+// TODO: rewrite this shit
+// check it's compatibility with 64 bit platforms
 BYTE hex_digit(TCHAR f)
 {
 	BYTE p;
@@ -49,10 +52,9 @@ int hexstr2int(LPTSTR hex)
 	{
 		ATLASSERT(i/2<=3);
 		b[i/2]=hex_digit(hex[i])*16 + hex_digit(hex[i+1]);
-		TCHAR buf[256];
 		step*=16;
 	}
-	return *(int*)&b;
+	return *(DWORD*)&b;
 }
 
 int myhash(PBYTE key, int len)
@@ -84,6 +86,7 @@ bool CLang::LoadList()
 
 bool CLang::LoadLanguage(LPCTSTR Lang)
 {
+	StringList.RemoveAll();
 	if(!Lang) return false;
 
 	CString Filename = CString(m_Directory) + Lang + _T(".lng");
@@ -132,9 +135,7 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
 	}
 
 	fclose(f);
-
-	lstrcpy(m_szLang, Lang); // Сохраняем название языка
-	Settings.Language =  Lang; 
+	m_sLang = Lang;
 	return true;
 }
 
@@ -152,7 +153,7 @@ LPTSTR CLang::GetString(LPCTSTR Name)
 }
 
 
-LPCTSTR CLang::GetLanguageName()
+CString CLang::GetLanguageName()
 {
-	return m_szLang;
+	return m_sLang;
 }

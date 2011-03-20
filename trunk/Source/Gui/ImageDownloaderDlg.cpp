@@ -60,7 +60,7 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 bool ExtractLinks(CString text, std::vector<CString> &result)
 {
-	pcrepp::Pcre reg("((http|https|ftp)://[\\w\\d:#@%/;$()~_?\+-=\\\\\\.&]*)", "imcu");
+	pcrepp::Pcre reg("((http|https|ftp)://[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)", "imcu");
 	std::string str = WCstringToUtf8(text);
 	size_t pos = 0;
 	while (pos <= str.length()) 
@@ -89,7 +89,7 @@ LRESULT CImageDownloaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 		m_FileDownloader.stop();
 	else
 	{
-		Settings.WatchClipboard = SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_GETCHECK);
+		Settings.WatchClipboard = SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_GETCHECK) != 0;
 		EndDialog(wID);
 	}
 	return 0;
@@ -107,7 +107,7 @@ LRESULT CImageDownloaderDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lP
 
 void CImageDownloaderDlg::OnDrawClipboard()
 {
-	bool IsClipboard = IsClipboardFormatAvailable(CF_TEXT);
+	bool IsClipboard = IsClipboardFormatAvailable(CF_TEXT)!=0;
 
 	if(IsClipboard && SendDlgItemMessage(IDC_WATCHCLIPBOARD,BM_GETCHECK)==BST_CHECKED && !m_FileDownloader.IsRunning()	)
 	{
@@ -149,7 +149,7 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, DownloadFileListItem it)
 		bool add = true;
 		if(!IsImage(ais.RealFileName))
 		{
-			CString mimeType = IU_GetFileMimeType(ais.RealFileName);
+			CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8(ais.RealFileName)));
 			if(mimeType.Find(_T("image/"))>=0)
 			{
 				CString ext = GetExtensionByMime(mimeType);
@@ -202,9 +202,9 @@ bool CImageDownloaderDlg::BeginDownloading()
 	nm_splitString(links,"\n",tokens,-1);
 	m_nFilesCount =0;
 	m_nFileDownloaded = 0;
-	for(int i=0; i<tokens.size(); i++)
+	for(size_t i=0; i<tokens.size(); i++)
 	{
-		m_FileDownloader.AddFile(nm_trimStr(tokens[i]), i);
+		m_FileDownloader.AddFile(nm_trimStr(tokens[i]), (void*)i);
 		m_nFilesCount++;
 	}
 	if(m_nFilesCount)
@@ -231,7 +231,7 @@ bool CImageDownloaderDlg::LinksAvailableInText(const CString &text)
 {
 	std::vector<CString> links;
 	ExtractLinks(text,links);
-	return links.size();
+	return links.size()!=0;
 }
 
 void CImageDownloaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)
@@ -239,7 +239,7 @@ void CImageDownloaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)
 	std::vector<CString> links;
 	ExtractLinks(buffer,links);
 	CString text = IU_GetWindowText(GetDlgItem(IDC_FILEINFOEDIT));
-	for(int i=0;i<links.size(); i++)
+	for(size_t i=0; i<links.size(); i++)
 	{
 		CString fileName = myExtractFileName(links[i]);
 		if((!OnlyImages && CString(GetFileExt(fileName)).IsEmpty()) || IsImage(fileName))

@@ -24,7 +24,7 @@
 
 CUploader::CUploader(void)
 {
-	srand(time(0));
+	srand((unsigned int)time(0));
 	m_bShouldStop = false;
 	m_nThumbWidth = 160;
 	m_CurrentStatus = stNone;
@@ -64,8 +64,8 @@ int CUploader::pluginProgressFunc (void* userData, double dltotal,double dlnow,d
 	else
 	{
 		uploader->m_PrInfo.IsUploading = true;		
-		uploader->m_PrInfo.Total = ultotal;
-		uploader->m_PrInfo.Uploaded = ulnow;	
+		uploader->m_PrInfo.Total = (unsigned long) ultotal;
+		uploader->m_PrInfo.Uploaded = (unsigned long) ulnow;	
 	}
 
 	if(!uploader->onProgress.empty())

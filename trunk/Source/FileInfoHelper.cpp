@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -18,12 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
 #include "FileInfoHelper.h"
 #include "Common/MediaInfoDLL.h" //Dynamicly-loaded library (.dll)
 #include "LangClass.h"
 #include "Settings.h"
-using namespace MediaInfoDLL;
 
 void AddStr(CString &Str, CString &Str2)
 {
@@ -44,8 +42,9 @@ inline CString& replace(CString &text, CString s, CString d)
 #define VIDEO(a) MI.Get(Stream_Video, 0, _T(a), Info_Text, Info_Name)
 #define AUDIO(n, a) MI.Get(Stream_Audio, n, _T(a), Info_Text, Info_Name)
 
-BOOL GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
+bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
 {
+	using namespace MediaInfoDLL;
 	MediaInfo MI;
 
 	if(!MI.IsReady())
@@ -202,6 +201,7 @@ BOOL GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
 	}
 
 	MI.Close();
+	Result.Replace(_T("iB"), _T("B")); // MiB --> MB
 	Buffer = Result;
 	return TRUE;
 }

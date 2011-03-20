@@ -18,7 +18,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
 #include "MediaInfoDlg.h"
 #include "fileinfohelper.h"
 
@@ -49,7 +48,6 @@ LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
 	Start(); // Starting thread which will load in background
 				// information about file m_FileName
-	
 	return 0; 
 }
 
@@ -82,10 +80,10 @@ DWORD CMediaInfoDlg::Run()
 	}
 
 	SetDlgItemText(IDC_FILEINFOLABEL,CString(TR("Информация о файле"))+_T(" \"")+ ShortFileName+_T("\" :"));
-	
 	CString Report;
 	GetMediaFileInfo(m_FileName, Report);
 	SetDlgItemText(IDC_FILEINFOEDIT, Report);
+	return 0;
 }
 
 LRESULT CMediaInfoDlg::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

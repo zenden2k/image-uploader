@@ -89,12 +89,12 @@ BOOL CSpecialHyperLink::ConvertStaticToHyperlink(HWND hwndCtl, LPCTSTR strURL)
 	HWND hwndParent = GetParent(hwndCtl);
 	if (NULL != hwndParent)
 	{
-		WNDPROC pfnOrigProc = (WNDPROC) GetWindowLong(hwndParent, GWL_WNDPROC);
+		WNDPROC pfnOrigProc = (WNDPROC) GetWindowLongPtr(hwndParent, GWLP_WNDPROC);
 		if (pfnOrigProc != _HyperlinkParentProc)
 		{
 			SetProp( hwndParent, PROP_ORIGINAL_PROC, (HANDLE)pfnOrigProc );
-			SetWindowLong( hwndParent, GWL_WNDPROC,
-				           (LONG) (WNDPROC) _HyperlinkParentProc );
+			SetWindowLongPtr( hwndParent, GWLP_WNDPROC,
+				          (LONG_PTR) _HyperlinkParentProc );
 		}
 	}
 
@@ -114,9 +114,9 @@ BOOL CSpecialHyperLink::ConvertStaticToHyperlink(HWND hwndCtl, LPCTSTR strURL)
 
 	// Subclass the existing control.
 
-	m_pfnOrigCtlProc = (WNDPROC) GetWindowLong(hwndCtl, GWL_WNDPROC);
+	m_pfnOrigCtlProc = (WNDPROC) GetWindowLongPtr(hwndCtl, GWLP_WNDPROC);
 	SetProp(hwndCtl, PROP_OBJECT_PTR, (HANDLE) this);
-	SetWindowLong(hwndCtl, GWL_WNDPROC, (LONG) (WNDPROC) _HyperlinkProc);
+	SetWindowLongPtr(hwndCtl, GWLP_WNDPROC, (LONG_PTR) _HyperlinkProc);
 
 	return TRUE;
 }
@@ -190,7 +190,7 @@ LRESULT CALLBACK CSpecialHyperLink::_HyperlinkParentProc(HWND hwnd, UINT message
 		}
 	case WM_DESTROY:
 		{
-			SetWindowLong(hwnd, GWL_WNDPROC, (LONG) pfnOrigProc);
+			SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR) pfnOrigProc);
 			RemoveProp(hwnd, PROP_ORIGINAL_PROC);
 			break;
 		}
@@ -326,8 +326,8 @@ LRESULT CALLBACK CSpecialHyperLink::_HyperlinkProc(HWND hwnd, UINT message,
 		}
 	case WM_DESTROY:
 		{
-			SetWindowLong(hwnd, GWL_WNDPROC,
-				          (LONG) pHyperLink->m_pfnOrigCtlProc);
+			SetWindowLongPtr(hwnd, GWLP_WNDPROC,
+				          (LONG_PTR) pHyperLink->m_pfnOrigCtlProc);
 
 			SendMessage(hwnd, WM_SETFONT, (WPARAM) pHyperLink->m_StdFont, 0);
 

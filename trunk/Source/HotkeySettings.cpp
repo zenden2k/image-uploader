@@ -105,7 +105,7 @@ CHotkeyList& CHotkeyList::operator=( const CHotkeyList& c)
 	return *this;
 }
 
-CString CHotkeyList::toString()
+CString CHotkeyList::toString() const
 {
 	CString result;
 	for(int i=1; i<GetCount(); i++)

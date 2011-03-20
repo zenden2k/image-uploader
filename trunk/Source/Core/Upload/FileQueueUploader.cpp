@@ -19,23 +19,22 @@
 */
 
 #include "FileQueueUploader.h"
-#include "../../myutils.h"
 #include <algorithm>
-#include "../../Common.h"
 #include "../../LogWindow.h"
+
 CFileQueueUploader::CFileQueueUploader()
 {
 	m_nThreadCount = 1;
-	m_CallBack = 0;
+	callback_ = 0;
 	m_NeedStop = false;
 	m_IsRunning = false;
 	m_engine = 0;
 }
 
-void CFileQueueUploader::AddFile(std::string fileName, std::string displayName, int id)
+void CFileQueueUploader::AddFile(const std::string& fileName, const std::string& displayName, void* user_data)
 {
 	FileListItem newFileListItem;
-	newFileListItem.id = id;
+	newFileListItem.user_data = user_data;
 	newFileListItem.displayName = displayName;
 	newFileListItem.fileName = fileName;
 	m_fileList.push_back(newFileListItem);
@@ -45,69 +44,20 @@ bool CFileQueueUploader::start()
 {
 	m_NeedStop = false;
 	m_IsRunning = true;
-	int numThreads = min(m_nThreadCount, m_fileList.size());
+	int numThreads = min(size_t(m_nThreadCount), m_fileList.size());
 	m_nRunningThreads = numThreads;
-	for(int i=0; i<numThreads; i++)
+	for(int i = 0; i < numThreads; i++)
 	{
-		_beginthread(thread_func, 0, this);
+		ZThread::Thread t1(this); // starting new thread
 	}
 	return 0;
 }
-void CFileQueueUploader::thread_func(void * param)
-{
-	CFileQueueUploader * p = reinterpret_cast<CFileQueueUploader*>(param);
-	CUploader uploader;
-	uploader.onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
-	p->m_CS.Lock();
 
-	p->m_CS.Unlock();
-	for(;;)
-	{
-		FileListItem it;
-		if(!p->getNextJob(&it)) break;
-		TCHAR buf[256];
-		//bool stopu=false;
-//		uploader.ProgressBuffer=buf;
-		//uploader.ShouldStop = &p->m_NeedStop;
-		//uploader.setServerSettings(&p->m_serverSettings);
-		uploader.setUploadEngine(p->m_engine);
-		bool res = uploader.UploadFile(it.fileName, it.displayName.c_str());
-		
-		p->m_CS.Lock();
-
-		if(res)
-		{
-			it.imageUrl = (uploader.getDirectUrl());
-			it.downloadUrl = (uploader.getDownloadUrl());
-			it.thumbUrl = (uploader.getThumbUrl());
-			if(p->m_CallBack)
-				p->m_CallBack->OnFileFinished(true,it);
-		}
-		else
-		{
-
-			if(p->m_CallBack)
-				p->m_CallBack->OnFileFinished(false,it);
-		}
-		p->m_CS.Unlock();
-		
-	}
-	p->m_CS.Lock();
-	p->m_nRunningThreads--;
-	if(!p->m_nRunningThreads)
-	{
-		p->m_IsRunning = false;
-		if(p->m_CallBack)
-			p->m_CallBack->OnQueueFinished();
-	}
-		p->m_CS.Unlock();
-	return ;
-}
 bool CFileQueueUploader::getNextJob(FileListItem* item)
 {
 	if(m_NeedStop) return false;
 	std::string url;
-	m_CS.Lock();
+	mutex_.acquire();
 	bool result = false;
 	if(!m_fileList.empty() && !m_NeedStop)
 	{
@@ -115,13 +65,13 @@ bool CFileQueueUploader::getNextJob(FileListItem* item)
 		m_fileList.erase(m_fileList.begin());
 		result = true;
 	}
-	m_CS.Unlock();
+	mutex_.release();
 	return result;
 }
 
 void CFileQueueUploader::setCallback(CFileUploaderCallback* callback)
 {
-	m_CallBack = callback;
+	callback_ = callback;
 }
 
 /*int CUploader::pluginProgressFunc (void* userData, double dltotal,double dlnow,double ultotal, double ulnow)
@@ -143,5 +93,44 @@ bool CFileQueueUploader::IsRunning()
 void CFileQueueUploader::setUploadSettings(CAbstractUploadEngine * engine)
 {
 	m_engine = engine;
-	//m_serverSettings = serverSettings;
+}
+
+void CFileQueueUploader::run()
+{
+	CUploader uploader;
+	uploader.onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
+
+	for(;;)
+	{
+		FileListItem it;
+		if(!getNextJob(&it)) break;
+		uploader.setUploadEngine(m_engine);
+		bool res = uploader.UploadFile(it.fileName, it.displayName.c_str());
+		mutex_.acquire();
+		//m_CS.Lock();
+
+		if(res)
+		{
+			it.imageUrl = (uploader.getDirectUrl());
+			it.downloadUrl = (uploader.getDownloadUrl());
+			it.thumbUrl = (uploader.getThumbUrl());
+			if(callback_)
+				callback_->OnFileFinished(true,it);
+		}
+		else
+		{
+			if(callback_)
+				callback_->OnFileFinished(false,it);
+		}
+		mutex_.release();
+	}
+	mutex_.acquire();
+	m_nRunningThreads--;
+	if(!m_nRunningThreads)
+	{
+		m_IsRunning = false;
+		if(callback_)
+			callback_->OnQueueFinished();
+	}
+	mutex_.release();
 }

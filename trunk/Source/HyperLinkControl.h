@@ -37,7 +37,7 @@ struct HyperLinkControlItem
 // CHyperLinkControl
 
 class CHyperLinkControl :
-	public CWindowImpl<CHyperLinkControl>
+	public CWindowImpl<CHyperLinkControl>, public CThemeImpl<CHyperLinkControl>
 {
 public:
 	CHyperLinkControl();

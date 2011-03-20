@@ -26,6 +26,8 @@
 #pragma comment(lib,"urlmon.lib")
 #include <openssl/md5.h>
 #include "MyUtils.h"
+#include "Settings.h"
+
 CString IUCommonTempFolder, IUTempFolder;
 
 
@@ -254,7 +256,7 @@ bool __fastcall CreateShortCut(
 					   IShellLink * pSL; 
 	IPersistFile * pPF; 
 	HRESULT hRes; 
-	if( CoInitialize(NULL) != S_OK);
+	CoInitialize(NULL);
 		//return false;
 	// Получение экземпляра компонента "Ярлык" 
 	hRes = CoCreateInstance(CLSID_ShellLink, 0,	CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID *)&pSL); 
@@ -360,29 +362,6 @@ void IU_ConfigureProxy(NetworkManager& nm)
 	nm.setUploadBufferSize(Settings.UploadBufferSize);
 }
 
-CString IU_GetFileMimeType (const CString& filename)
-{
-	FILE * InputFile = _tfopen(filename,_T("rb"));
-	if(!InputFile) 
-		return _T("");
-
-	BYTE		byBuff[256] ;
-	int nRead = fread(byBuff, 1, 256, InputFile);
-	 
-	fclose(InputFile);
-
-	PWSTR		szMimeW = NULL ;
-	HRESULT		hResult ;
-
-	if ( NOERROR != ::FindMimeFromData(NULL, NULL, byBuff, nRead, NULL, 0, &szMimeW, 0) ) 
-	{
-		return _T("application/octet-stream"); 
-	}
-
-	if(!lstrcmpW(szMimeW,_T("image/x-png"))) lstrcpyW(szMimeW, _T("image/png"));
-
-	return szMimeW ;
-}
 CPluginManager iuPluginManager;
 
 const CString IU_GetVersion()
@@ -527,7 +506,7 @@ BOOL IU_CreateFolder(LPCTSTR szFolder)
 	return TRUE;
 }
 
-const std::string IU_md5(const std::string& data);
+
 CString GenerateFileName(const CString &templateStr, int index, const CPoint size, const CString& originalName)
 {
 	CString result = templateStr;
@@ -537,7 +516,7 @@ CString GenerateFileName(const CString &templateStr, int index, const CPoint siz
 	CString day, month, year;
 	CString hours,seconds,minutes;
 	indexStr.Format(_T("%03d"),index);
-	CString md5 = Utf8ToWstring(IU_md5(WCstringToUtf8(IntToStr(GetTickCount()+random(100))))).c_str();
+	CString md5 = Utf8ToWstring(IuCoreUtils::CalcMD5Hash(WCstringToUtf8(IntToStr(GetTickCount()+random(100))))).c_str();
 	result.Replace(_T("%md5"), (LPCTSTR)md5);
 	result.Replace(_T("%width%"), IntToStr(size.x));
 	result.Replace(_T("%height%"), IntToStr(size.y));
@@ -568,29 +547,7 @@ const CString IU_GetWindowText(HWND wnd)
 	return buf;
 }
 
-std::string ExtractFileNameA(const std::string& FileName)
-{  
-	return WCstringToUtf8(myExtractFileName(Utf8ToWstring(FileName).c_str()));
-}
-LPCSTR GetFileExtA(LPCSTR szFileName)
-{
-	if(!szFileName) return 0;
-	int nLen = lstrlenA(szFileName);
-
-	LPCSTR szReturn = szFileName+nLen;
-	for( int i=nLen-1; i>=0; i-- )
-	{
-		if(szFileName[i] == '.')
-		{
-			szReturn = szFileName + i + 1;
-			break;
-		}
-		else if(szFileName[i] == '\\') break;
-	}
-	return szReturn;
-}
-
-void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ")
+void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code)
 {
 	TCHAR szDestination[1024];
 	int br = strlen(code);
@@ -616,7 +573,7 @@ void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code="{DAb[]=_T('')+b
 	Result = szDestination;
 }
 
-void EncodeString(LPCTSTR szSource, CString &Result,LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ")
+void EncodeString(LPCTSTR szSource, CString &Result,LPSTR code)
 {
 	TCHAR szDestination[1024];
 	int br = strlen(code);
@@ -659,4 +616,188 @@ BOOL IU_CreateFilePath(LPCTSTR szFilePath)
 	free(szPath);
 
 	return bRes;
+}
+
+HICON GetAssociatedIcon (LPCTSTR filename, bool Small)
+{
+	SHFILEINFO Info;
+	DWORD Flags;
+
+
+	if (Small) 
+		Flags = SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES;
+	else
+		Flags = SHGFI_ICON | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES|SHGFI_ADDOVERLAYS;
+	SHGetFileInfo (filename, FILE_ATTRIBUTE_NORMAL, &Info, sizeof(Info), Flags);
+	return Info.hIcon;
+}
+
+BOOL IsWinXP()
+{
+	// Проверка операционной системы
+	DWORD dwVersion = GetVersion();
+
+	// Get major and minor version numbers of Windows
+	DWORD dwWindowsMajorVersion = (DWORD)(LOBYTE(LOWORD(dwVersion)));
+	DWORD dwWindowsMinorVersion = (DWORD)(HIBYTE(LOWORD(dwVersion)));
+
+	// Check for Windows XP
+	if ((dwVersion < 0x80000000) &&                 // The OS is a NT family
+	(dwWindowsMajorVersion >= 5) &&
+	(dwWindowsMinorVersion >= 1))             // Windows NT 5.1 is an Windows XP version
+	return TRUE;
+	return FALSE;
+}
+
+int ScreenBPP()
+{
+// Возвращает количество битов на точку в данном режиме
+   int iRet;
+   HDC hdc = GetDC(NULL);
+   if (hdc != NULL)
+   {
+       iRet = GetDeviceCaps(hdc, BITSPIXEL);
+       ReleaseDC(NULL, hdc);
+   }
+   return iRet;
+}
+
+BOOL Is32BPP()
+{
+   return (IsWinXP() & (ScreenBPP() >= 32));
+}
+
+
+const CString IU_GetDataFolder()
+{
+	return Settings.DataFolder;
+}
+
+
+CString GetSystemSpecialPath(int csidl) 
+{
+	CString result;
+	LPITEMIDLIST pidl;
+	TCHAR        szSendtoPath [MAX_PATH];
+	HANDLE       hFile;
+	LPMALLOC     pMalloc;
+
+	if(SUCCEEDED( SHGetSpecialFolderLocation ( NULL, csidl, &pidl )))
+	{
+		if(SHGetPathFromIDList(pidl, szSendtoPath))
+		{
+			result = szSendtoPath;
+		}
+
+		if(SUCCEEDED(SHGetMalloc(&pMalloc)))
+		{
+			pMalloc->Free ( pidl );
+			pMalloc->Release();
+		}
+	}
+	if(result.Right(1)!=_T("\\")) result+=_T("\\");
+	return result;
+}
+
+const CString GetApplicationDataPath()
+{
+	return GetSystemSpecialPath(CSIDL_APPDATA);
+}
+
+const CString GetCommonApplicationDataPath()
+{
+	return GetSystemSpecialPath(CSIDL_COMMON_APPDATA);
+}
+
+
+HRESULT IsElevated( __out_opt BOOL * pbElevated ) //= NULL )
+{
+	ATLASSERT( IsVista() );
+
+	HRESULT hResult = E_FAIL; // assume an error occured
+	HANDLE hToken	= NULL;
+
+	if ( !::OpenProcessToken( 
+		::GetCurrentProcess(), 
+		TOKEN_QUERY, 
+		&hToken ) )
+	{
+		ATLASSERT( FALSE );
+		return hResult;
+	}
+
+	TOKEN_ELEVATION te = { 0 };
+	DWORD dwReturnLength = 0;
+
+	if ( !::GetTokenInformation(
+		hToken,
+		(TOKEN_INFORMATION_CLASS) TokenElevation,
+		&te,
+		sizeof( te ),
+		&dwReturnLength ) )
+	{
+		ATLASSERT( FALSE );
+	}
+	else
+	{
+		ATLASSERT( dwReturnLength == sizeof( te ) );
+
+		hResult = te.TokenIsElevated ? S_OK : S_FALSE; 
+
+		if ( pbElevated)
+			*pbElevated = (te.TokenIsElevated != 0);
+	}
+
+	::CloseHandle( hToken );
+
+	return hResult;
+}
+
+// Function that gets path to SendTo folder
+CString GetSendToPath() 
+{
+	CString result;
+	LPITEMIDLIST pidl;
+	TCHAR        szSendtoPath [MAX_PATH];
+	LPMALLOC     pMalloc;
+
+	if(SUCCEEDED( SHGetSpecialFolderLocation ( NULL, CSIDL_SENDTO, &pidl )))
+	{
+		if(SHGetPathFromIDList(pidl, szSendtoPath))
+		{
+			result = szSendtoPath;
+		}
+
+		if(SUCCEEDED(SHGetMalloc(&pMalloc)))
+		{
+			pMalloc->Free ( pidl );
+			pMalloc->Release();
+		}
+	}
+	return result;
+}
+
+Bitmap* BitmapFromResource(HINSTANCE hInstance,LPCTSTR szResName, LPCTSTR szResType)
+{
+	HRSRC hrsrc=FindResource(hInstance, szResName, szResType);
+	if(!hrsrc) return 0;
+	// "Fake" HGLOBAL - look at MSDN
+	HGLOBAL hg1 = LoadResource(hInstance, hrsrc);
+	DWORD sz = SizeofResource(hInstance, hrsrc);
+	void* ptr1 = LockResource(hg1);
+	HGLOBAL hg2 = GlobalAlloc(GMEM_FIXED, sz);
+	
+	// Copy raster data
+	CopyMemory(LPVOID(hg2), ptr1, sz);
+	IStream *pStream;
+	
+	// TRUE means free memory at Release
+	HRESULT hr = CreateStreamOnHGlobal(hg2, TRUE, &pStream);
+	if(FAILED(hr)) return 0;
+
+	// use load from IStream
+	Bitmap *image = Bitmap::FromStream(pStream);
+	pStream->Release();
+
+	return image;
 }

@@ -21,12 +21,9 @@
 
 #include "myutils.h"
 #include <shobjidl.h>
+
 #define STRING MAX_PATH
-#include "Settings.h"
-const CString IU_GetDataFolder()
-{
-	return Settings.DataFolder;
-}
+
 
 int GetFontSize(int nFontHeight)
 {
@@ -42,7 +39,6 @@ int GetFontSizeInTwips(int nFontSize)
 {
    return MulDiv(nFontSize, 1440, 72);
 }
-
 
 bool ExtractStrFromList(
             LPCTSTR szString /* Source string */,
@@ -127,7 +123,7 @@ const CString StringSection(const CString& str,TCHAR sep, int index)
 	return result;
 }
 
-bool FontToString(LPLOGFONT lFont, CString &Result)
+bool FontToString(const LOGFONT const * lFont, CString &Result)
 {
 	TCHAR  szBuffer[1024];
 	if( !lFont || !szBuffer ) return false;
@@ -410,7 +406,6 @@ CString GetAppFolder()
 	return szPath;
 }
 
-
 BOOL FileExists(LPCTSTR FileName)
 {
 	if(!FileName || GetFileAttributes(FileName)==-1) return FALSE;
@@ -425,24 +420,13 @@ const CString TrimString(const CString& source, int nMaxLen)
 	int PartSize = (nMaxLen-3) / 2;
 	return source.Left(PartSize)+_T("...")+source.Right(PartSize);
 }
-/*void TrimString(LPTSTR Destination, LPCTSTR Source,  int MaxLen)
-{
-	int Len = lstrlen(Source);
-
-	if(Len<=MaxLen) { lstrcpy(Destination, Source); return; }
-
-	int ots = (MaxLen-3)/2;
-	lstrcpyn(Destination, Source, ots);
-	lstrcat(Destination, _T("..."));
-	lstrcat(Destination, Source+Len-ots);
-}*/
 
 bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...)
 {
 	*szBuffer = 0;
 	LPCTSTR *pszName, *pszFilter;
-	pszName = &szName;//(LPTSTR*)(&nCount+1);
-	pszFilter = &szFilter; //(LPTSTR*)(&nCount+2);
+	pszName = &szName;
+	pszFilter = &szFilter; 
 
 	for(int i=0; i<nCount; i++)
 	{
@@ -718,7 +702,7 @@ bool IsDirectory(LPCTSTR szFileName)
 	 return (res&FILE_ATTRIBUTE_DIRECTORY) && (res != -1);	
 }
 
-BOOL IsVista()
+bool IsVista()
 {
 	OSVERSIONINFO osver;
 	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );

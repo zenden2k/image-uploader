@@ -2,6 +2,7 @@
 #define IU_IMAGECONVERTER_H
 
 #include <GdiPlus.h>
+#include "Images/Thumbnail.h"
 struct ImageConvertingParams
 {
 	int NewWidth,NewHeight;
@@ -20,6 +21,8 @@ struct ImageConvertingParams
 	COLORREF TextColor,StrokeColor;
 };
 
+enum ThumbFormatEnum { tfSameAsImageFormat = 0, tfJPEG, tfPNG };
+
 struct ThumbCreatingParams
 {
 	LOGFONT ThumbFont;
@@ -36,8 +39,10 @@ struct ThumbCreatingParams
 	BOOL UseThumbTemplate;
 	BOOL DrawFrame;
 	BOOL ThumbAddImageSize;
-	BOOL ThumbAddBorder;	
+	BOOL ThumbAddBorder;
+	ThumbFormatEnum ThumbFormat;
 };
+
 class CImageConverter
 {
 	protected:
@@ -54,11 +59,21 @@ class CImageConverter
 		void setGenerateThumb(bool generate);
 		void setImageConvertingParams(const ImageConvertingParams &params);
 		void setThumbCreatingParams(const ThumbCreatingParams &params);
+		void setThumbnail(Thumbnail * thumb);
 		bool Convert(const CString& sourceFile);
 		const CString getThumbFileName();
 		const CString getImageFileName();
+		bool createThumbnail(Gdiplus::Image *image, Gdiplus::Image ** outResult); 
 	protected:
 		bool createThumb(Gdiplus::Image *bm, int fileformat);
+		Thumbnail* thumbnail_template_;
+		std::map<std::string, std::string> m_Vars;
+		bool EvaluateRect(const std::string& rectStr, RECT * out);
+		int EvaluateExpression(const std::string& expr);
+		unsigned int EvaluateColor(const std::string& expr);
+		std::string ReplaceVars(const std::string& expr);
+		zint64 EvaluateSimpleExpression(const std::string& expr) const;
+		Gdiplus::Brush * CreateBrushFromString(const std::string& br,  RECT rect);
 };
 
 using namespace Gdiplus;

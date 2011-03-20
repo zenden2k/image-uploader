@@ -67,7 +67,6 @@ BOOL CALLBACK RegionEnumWindowsProc(HWND hwnd,LPARAM lParam 	)
 
 HWND WindowUnderCursor(POINT pt, HWND exclude)
 {
-
 	if(windowsList.empty())
 	{
 		EnumWindows(RegionEnumWindowsProc, 0);
@@ -79,6 +78,7 @@ HWND WindowUnderCursor(POINT pt, HWND exclude)
 
 			return curItem.handle;
 	}
+	return 0;
 }
 
 

@@ -25,6 +25,7 @@
 
 #include "Core/ImageConverter.h"
 #include "LogWindow.h"
+#include "Func/Base.h"
 
 class CTempFilesDeleter
 {
@@ -48,7 +49,7 @@ void CTempFilesDeleter::AddFile(const CString& fileName)
 
 bool CTempFilesDeleter::Cleanup()
 {
-	for(int i=0; i<m_files.size(); i++)
+	for(size_t i=0; i<m_files.size(); i++)
 	{
 		DeleteFile(m_files[i]);
 	}
@@ -191,7 +192,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	#endif
 
 	TRC(IDC_COMMONPROGRESS, "Общий прогресс:");
-	bool IsLastVideo=lstrlen(MediaInfoDllPath);
+	bool IsLastVideo = lstrlen(MediaInfoDllPath)!=0;
 
 	CVideoGrabber *vg =(	CVideoGrabber *) WizardDlg->Pages[1];
 
@@ -281,7 +282,7 @@ DWORD CUploadDlg::Run()
 	TCHAR szBuffer[MAX_PATH];
 	
 	int NumUploaded=0;
-	bool CreateThumbs=Settings.ThumbSettings.CreateThumbs;
+	bool CreateThumbs = Settings.ThumbSettings.CreateThumbs;
 
 	int thumbwidth=Settings.ThumbSettings.ThumbWidth;
 	if(thumbwidth<1|| thumbwidth>1024) thumbwidth=150;
@@ -293,6 +294,8 @@ DWORD CUploadDlg::Run()
 
 	iss = InitialParams;
 
+	CHistoryManager * mgr = ZBase::get()->historyManager();
+	CHistorySession session = mgr->newSession();
 
 	for(i=0; i<n; i++)
 	{
@@ -494,6 +497,18 @@ DWORD CUploadDlg::Run()
 				item.ThumbUrl = ThumbUrl;
 			ResultsWindow->Lock();
 			UrlList.Add(item);
+
+			
+			HistoryItem hi;
+			hi.localFilePath = WCstringToUtf8(item.FileName);
+			hi.serverName = ue->Name;
+			hi.directUrl =  WCstringToUtf8(DirectUrl);
+			hi.thumbUrl = WCstringToUtf8(item.ThumbUrl);
+			hi.viewUrl = WCstringToUtf8(item.DownloadUrl);
+			hi.uploadFileSize = IuCoreUtils::getFileSize(WCstringToUtf8(ImageFileName));
+			session.AddItem(hi);
+			
+			
 			ResultsWindow->Unlock();
 			GenerateOutput();
 
@@ -522,11 +537,8 @@ DWORD CUploadDlg::Run()
 	else
 		wsprintf(szBuffer,CString(TR("Вcего %d файлов было загружено."))+_T(" ")+TR("Ошибок нет."), NumUploaded );
 
-	BOOL temp;
 	ResultsWindow->FinishUpload();
-
 	FileProgress(szBuffer, false);
-
 	return ThreadTerminated();
 }
 
@@ -574,7 +586,7 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 			BytesToString(PrInfo.ip.Uploaded,buf1,sizeof(buf1));
 			BytesToString(PrInfo.ip.Total,buf2,sizeof(buf2));
 
-			int perc = ((float)PrInfo.ip.Uploaded/(float)PrInfo.ip.Total)*100;
+			int perc = int(((float)PrInfo.ip.Uploaded/(float)PrInfo.ip.Total)*100);
 			if(perc<0 || perc>100) perc=0;
 			if(perc>=100) 
 			{
@@ -609,8 +621,10 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 
 
 			int speed=0;
-			if(PrInfo.Bytes.size()){
-				speed= ((double)(Current-/*LastUpdate*/PrInfo.Bytes[0])/(double)PrInfo.Bytes.size())*4;}
+			if(PrInfo.Bytes.size())
+			{
+				speed= int(((double)(Current-/*LastUpdate*/PrInfo.Bytes[0])/(double)PrInfo.Bytes.size())*4);
+			}
 			PrInfo.Bytes.push_back(Current);
 			if(PrInfo.Bytes.size()>11)
 			{
@@ -694,7 +708,7 @@ bool CUploadDlg::OnShow()
 
 	int code = ResultsWindow->GetCodeType();
 	int newcode = code;
-	bool Thumbs = Settings.ThumbSettings.CreateThumbs;
+	bool Thumbs = Settings.ThumbSettings.CreateThumbs!=0;
 
 	// Корректировка типа кода в зависимости от включения превьюшек
 	if(Thumbs)
@@ -771,7 +785,7 @@ bool CUploadDlg::OnHide()
 {
 	UrlList.RemoveAll();
 	ResultsWindow->Clear();
-	Settings.UseTxtTemplate = SendDlgItemMessage(IDC_USETEMPLATE, BM_GETCHECK);
+	Settings.UseTxtTemplate = (SendDlgItemMessage(IDC_USETEMPLATE, BM_GETCHECK) == BST_CHECKED);
 	Settings.CodeType = ResultsWindow->GetCodeType();
 	Settings.CodeLang = ResultsWindow->GetPage();
 	return true; 
@@ -797,7 +811,7 @@ void CUploadDlg::FileProgress(const CString Text, bool ShowPrefix)
 	Temp += Text;
 	SetDlgItemText(IDC_INFOUPLOAD, Temp);
 
-	bool IsProgressBar = ::IsWindowVisible(GetDlgItem(IDC_FILEPROGRESS)) /*&& PrInfo.Total==0*/;
+	bool IsProgressBar = ::IsWindowVisible(GetDlgItem(IDC_FILEPROGRESS))!=0;
 
 	RECT rc;
 	HWND Ctrl = GetDlgItem(IDC_INFOUPLOAD);

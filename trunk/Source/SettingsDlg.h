@@ -43,7 +43,7 @@ class CSettingsPage;
 #include "tablistbox.h"
 // CSettingsDlg
 
-const int SettingsPageCount = 7;
+const int SettingsPageCount = 8;
 
 class CSettingsDlg : 
 	public CDialogImpl<CSettingsDlg>	//, public CUpdateUI<CSettingsDlg>

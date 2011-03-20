@@ -104,6 +104,61 @@ Utf8String GetFileMimeType(const Utf8String fileName)
 	return result;
 }
 
+bool DirectoryExists(const Utf8String path)
+{
+
+	DWORD dwFileAttributes = GetFileAttributes(Utf8ToWstring(path).c_str());
+	if(dwFileAttributes != INVALID_FILE_ATTRIBUTES && (dwFileAttributes &
+		FILE_ATTRIBUTE_DIRECTORY)) {
+		return true;
+	}
+	return false;
 }
+
+bool createDirectory(const Utf8String path)
+{
+	if(path.empty()) return false;
+	std::wstring wstrFolder = Utf8ToWstring(path);
+	
+	DWORD dwAttrib = GetFileAttributes(wstrFolder.c_str());
+
+	// already exists ?
+	if (dwAttrib != 0xffffffff)
+		return ((dwAttrib & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY);
+
+	// recursively create from the top down
+	char* szPath = _strdup(path.c_str());
+	char * p = 0;
+	for(int i=path.length()-1; i>=0; i--)
+	{
+		if(szPath[i] == '\\' || szPath[i] == '/')
+		{
+			p = szPath + i;
+			break;
+		}
+	}
+	if (p) 
+	{
+		// The parent is a dir, not a drive
+		*p = '\0';
+
+		// if can't create parent
+		if (!createDirectory(szPath))
+		{
+			free(szPath);
+			return false;
+		}
+		free(szPath);
+
+		if (!::CreateDirectory(wstrFolder.c_str(), NULL)) 
+			return false;
+	}
+
+	return TRUE;
+}
+
+}
+
+
 
 #endif
