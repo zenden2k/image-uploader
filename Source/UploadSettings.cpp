@@ -24,6 +24,8 @@
 #include "ServerFolderSelect.h"
 #include "NewFolderDlg.h"
 #include "ServerParamsDlg.h"
+#include "Gui/GuiTools.h"
+#include "Gui/Dialogs/ConvertPresetDlg.h"
 
 CUploadSettings::CUploadSettings(CMyEngineList * EngineList)
 {
@@ -74,7 +76,6 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 
 	// Get color depth (minimum requirement is 32-bits for alpha blended images).
 	int iBitsPixel = GetDeviceCaps(::GetDC(HWND_DESKTOP),BITSPIXEL);
-	HIMAGELIST m_hToolBarImageList;
 	/*if (iBitsPixel >= 32)
 	{
 		hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_BITMAP5));
@@ -131,12 +132,14 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	
 
 	SendDlgItemMessage(IDC_QUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
+	SendDlgItemMessage(IDC_THUMBQUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
+	
 	
 	SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)TR("Авто"));
 	SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("JPEG"));
 	SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("PNG"));
 	SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("GIF"));
-
+	
 	ShowParams();
 
 	UpdateAllPlaceSelectors();
@@ -192,6 +195,7 @@ void CUploadSettings::ShowParams(/*UPLOADPARAMS params*/)
 	SendDlgItemMessage(IDC_YOURTEXT,BM_SETCHECK, Settings.ImageSettings.AddText);
 	SendDlgItemMessage(IDC_DRAWFRAME,BM_SETCHECK, Settings.ThumbSettings.DrawFrame);
 	SendDlgItemMessage(IDC_FORMATLIST,CB_SETCURSEL, Settings.ImageSettings.Format);
+	SendDlgItemMessage(IDC_THUMBFORMATLIST,CB_SETCURSEL, Settings.ThumbSettings.ThumbFormat);
 	SendDlgItemMessage(IDC_CREATETHUMBNAILS,BM_SETCHECK,Settings.ThumbSettings.CreateThumbs);
 	SendDlgItemMessage(IDC_SAVEPROPORTIONS,BM_SETCHECK,Settings.ImageSettings.SaveProportions);
 	SendDlgItemMessage(IDC_ADDFILESIZE,BM_SETCHECK,Settings.ThumbSettings.ThumbAddImageSize);
@@ -209,7 +213,6 @@ void CUploadSettings::ShowParams(/*UPLOADPARAMS params*/)
 
 LRESULT CUploadSettings::OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
 {
-	int id;
 	BOOL checked = SendDlgItemMessage(IDC_CREATETHUMBNAILS, BM_GETCHECK, 0, 0);
 	
 	::EnableWindow(GetDlgItem(IDC_THUMBWIDTH), checked);
@@ -231,7 +234,8 @@ LRESULT CUploadSettings::OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD 
 
 LRESULT CUploadSettings::OnBnClickedLogooptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CSettingsDlg dlg(1); // Open settings dialog and logo options tab
+	CConvertPresetDlg dlg(0);
+	/*CSettingsDlg dlg(1);*/ // Open settings dialog and logo options tab
 	dlg.DoModal(m_hWnd);
 	return 0;
 }
@@ -310,7 +314,7 @@ bool CUploadSettings::OnShow()
 
 LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-	bool ImageServer = wID % 2;// (hWndCtl == Toolbar.m_hWnd);	
+	bool ImageServer = (wID % 2)!=0;// (hWndCtl == Toolbar.m_hWnd);	
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
 	CLoginDlg dlg(m_EngineList->byIndex(nServerIndex));
 
@@ -360,12 +364,9 @@ LRESULT CUploadSettings::OnBnClickedUseServerThumbnails(WORD /*wNotifyCode*/, WO
 	
 	checked = checked || SendDlgItemMessage(IDC_USETHUMBTEMPLATE, BM_GETCHECK, 0, 0);
 	::EnableWindow(GetDlgItem(IDC_DRAWFRAME),!checked);
-	//::EnableWindow(GetDlgItem(IDC_TEXTOVERTHUMB2),!checked);
-		
 	return 0;
 }
 	
-
 LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
 bool ImageServer = (hWndCtl == Toolbar.m_hWnd);	
@@ -639,29 +640,27 @@ LRESULT CUploadSettings::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 void CUploadSettings::OnFolderButtonContextMenu(POINT pt, bool isImageServerToolbar)
 {
-		CMenu sub;	
-		MENUITEMINFO mi;
-		mi.cbSize = sizeof(mi);	
-		mi.fMask = MIIM_TYPE | MIIM_ID;
-		mi.fType = MFT_STRING;
+	CMenu sub;	
+	MENUITEMINFO mi;
+	mi.cbSize = sizeof(mi);	
+	mi.fMask = MIIM_TYPE | MIIM_ID;
+	mi.fType = MFT_STRING;
 
-		sub.CreatePopupMenu();
-		RECT rc;
+	sub.CreatePopupMenu();
+	mi.wID = IDC_NEWFOLDER + (int)isImageServerToolbar;
+	mi.dwTypeData  = TR("Новая папка");
+	sub.InsertMenuItem(0, true, &mi);
 
-		mi.wID = IDC_NEWFOLDER + (int)isImageServerToolbar;
- 		mi.dwTypeData  = TR("Новая папка");
-		sub.InsertMenuItem(0, true, &mi);
-
-		mi.wID = IDC_OPENINBROWSER + (int)isImageServerToolbar;
-		mi.dwTypeData  = TR("Открыть в браузере");
-		sub.InsertMenuItem(1, true, &mi);
+	mi.wID = IDC_OPENINBROWSER + (int)isImageServerToolbar;
+	mi.dwTypeData  = TR("Открыть в браузере");
+	sub.InsertMenuItem(1, true, &mi);
 			
-		sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, pt.x, pt.y, m_hWnd);
+	sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, pt.x, pt.y, m_hWnd);
 }
 
 LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	bool ImageServer = wID % 2;
+	bool ImageServer = (wID % 2)!=0;
 	CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
 
@@ -694,7 +693,7 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 	
 LRESULT CUploadSettings::OnOpenInBrowser(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	bool ImageServer = wID % 2;
+	bool ImageServer = (wID % 2)!=0;
 	CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
 	CUploadEngineData *ue = m_EngineList->byIndex(nServerIndex);
@@ -716,7 +715,6 @@ void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerTool
 	mi.fMask = MIIM_TYPE | MIIM_ID;
 	mi.fType = MFT_STRING;
 	sub.CreatePopupMenu();
-	RECT rc;
 	mi.wID = IDC_SERVERPARAMS + (int)isImageServerToolbar;
 	mi.dwTypeData  = TR("Настройки сервера");
 	sub.InsertMenuItem(0, true, &mi);
@@ -728,7 +726,7 @@ void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerTool
 
 LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	bool ImageServer = wID % 2;
+	bool ImageServer = (wID % 2)!=0;
 	CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
 	CUploadEngineData *ue = m_EngineList->byIndex(nServerIndex);
@@ -741,7 +739,7 @@ LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, H
 
 LRESULT CUploadSettings::OnOpenSignupPage(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	bool ImageServer = wID % 2;
+	bool ImageServer = (wID % 2)!=0;
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
 	CUploadEngineData *ue = m_EngineList->byIndex(nServerIndex);
 	if(ue && !ue->RegistrationUrl.empty())

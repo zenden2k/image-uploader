@@ -20,117 +20,71 @@
 
 #include "settings.h"
 #include "myutils.h"
-#include "Common\MyXml.h"
 #include "LogWindow.h"
 #include <Shlobj.h>
 #include "Common\CmdLine.h"
+#include "3rdpart/Registry.h"
+#include "Core/SettingsManager.h"
+
+/* CString support for  SettingsManager */
+			
+inline std::string myToString(const CString& value)
+{
+	return WCstringToUtf8(value);
+}
+
+inline void myFromString(const std::string& text, CString& value)
+{
+	value= Utf8ToWCstring(text);
+}
+		
+/* LOGFONT serialization support */				
+inline std::string myToString(const LOGFONT& value)
+{
+	CString res;
+	FontToString(&value, res);
+	return WCstringToUtf8(res);
+}
+
+inline void myFromString(const std::string& text, LOGFONT& value)
+{
+	CString wide_text = Utf8ToWCstring(text);
+	LOGFONT font;
+	StringToFont(wide_text, &font);
+	value= font;
+}
+
+inline std::string myToString(const CEncodedPassword& value)
+{
+	return WCstringToUtf8(value.toEncodedData());
+}
+
+inline void myFromString(const std::string& text, CEncodedPassword& value)
+{
+	value.fromEncodedData(Utf8ToWCstring(text));
+}
+
+inline std::string myToString(const CHotkeyList& value)
+{
+	return WCstringToUtf8(value.toString());
+}
+
+inline void myFromString(const std::string& text, CHotkeyList& value)
+{
+	value.DeSerialize(Utf8ToWCstring(text));
+}
+
 #define SETTINGS_FILE_NAME _T("settings.xml")
 
-//CSIDL_COMMON_APPDATA
-
-CString GetSystemSpecialPath(int csidl) 
-{
-	CString result;
-	LPITEMIDLIST pidl;
-	TCHAR        szSendtoPath [MAX_PATH];
-	HANDLE       hFile;
-	LPMALLOC     pMalloc;
-
-	if(SUCCEEDED( SHGetSpecialFolderLocation ( NULL, csidl, &pidl )))
-	{
-		if(SHGetPathFromIDList(pidl, szSendtoPath))
-		{
-			result = szSendtoPath;
-		}
-
-		if(SUCCEEDED(SHGetMalloc(&pMalloc)))
-		{
-			pMalloc->Free ( pidl );
-			pMalloc->Release();
-		}
-	}
-	if(result.Right(1)!=_T("\\")) result+=_T("\\");
-	return result;
-}
-
-const CString GetApplicationDataPath()
-{
-	return GetSystemSpecialPath(CSIDL_APPDATA);
-}
-
-const CString GetCommonApplicationDataPath()
-{
-	return GetSystemSpecialPath(CSIDL_COMMON_APPDATA);
-}
 CSettings Settings;
 
-#ifndef IU_SHELLEXT
 #ifndef IU_SERVERLISTTOOL
-#include "FloatingWindow.h"
+	#include "FloatingWindow.h"
 #endif
 
 #define ASSERT
 
-#if  0//WINVER	< 0x0600
-
-typedef struct _TOKEN_ELEVATION {
-    DWORD TokenIsElevated;
-} TOKEN_ELEVATION, *PTOKEN_ELEVATION;
-
-#define TokenElevation 20
-
-#endif
-
-HRESULT 
-IsElevated( __out_opt BOOL * pbElevated ) //= NULL )
-{
-	ASSERT( IsVista() );
-
-	HRESULT hResult = E_FAIL; // assume an error occured
-	HANDLE hToken	= NULL;
-
-	if ( !::OpenProcessToken( 
-		::GetCurrentProcess(), 
-		TOKEN_QUERY, 
-		&hToken ) )
-	{
-		ASSERT( FALSE );
-		return hResult;
-	}
-
-	TOKEN_ELEVATION te = { 0 };
-	DWORD dwReturnLength = 0;
-
-	if ( !::GetTokenInformation(
-		hToken,
-		(TOKEN_INFORMATION_CLASS) TokenElevation,
-		&te,
-		sizeof( te ),
-		&dwReturnLength ) )
-	{
-		ASSERT( FALSE );
-	}
-	else
-	{
-		ASSERT( dwReturnLength == sizeof( te ) );
-
-		hResult = te.TokenIsElevated ? S_OK : S_FALSE; 
-
-		if ( pbElevated)
-			*pbElevated = (te.TokenIsElevated != 0);
-	}
-
-	::CloseHandle( hToken );
-
-	return hResult;
-}
-
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
-
-void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ");
-void EncodeString(LPCTSTR szSource,CString &Result,LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ");
-
-
 
 
 void ApplyRegistrySettings()
@@ -158,17 +112,12 @@ void RegisterShellExtension(bool Register)
 {
 	if(!FileExists(GetAppFolder()+_T("ExplorerIntegration.dll"))) return;
 	SHELLEXECUTEINFO TempInfo = {0};
-
-	/*TCHAR buf[MAX_PATH];
-	GetModuleFileName(0,buf,MAX_PATH-1);*/
 	CString s=GetAppFolder();
-
-	//CString Command = CString(buf);
 	TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
 	TempInfo.fMask = 0;
 	TempInfo.hwnd = NULL;
 	if(IsVista())
-	TempInfo.lpVerb = _T("runas");
+		TempInfo.lpVerb = _T("runas");
 	else 
 		TempInfo.lpVerb = _T("open");
 	TempInfo.lpFile = _T("regsvr32");
@@ -177,7 +126,7 @@ void RegisterShellExtension(bool Register)
 	TempInfo.nShow = SW_NORMAL;
 	::ShellExecuteEx(&TempInfo);
 }
-#endif
+
 CSettings::CSettings()
 #ifndef IU_SHELLEXT
 : ServerID(ImageSettings.ServerID),QuickServerID(ImageSettings.QuickServerID)
@@ -272,7 +221,8 @@ CSettings::CSettings()
 	ThumbSettings.ThumbTextColor = RGB( 255, 255, 255);
 	ThumbSettings.ThumbAlpha = 120;
 	ThumbSettings.Text = _T("%width%x%height% (%size%)");
-	
+	ThumbSettings.ThumbFormat = tfSameAsImageFormat;
+	ThumbSettings.thumbFileName = "default";
 	VideoSettings.Columns = 3;
 	VideoSettings.TileWidth =  200;
 	VideoSettings.GapWidth = 5;
@@ -310,35 +260,146 @@ CSettings::CSettings()
 	TrayIconSettings.MiddleClickCommand = 7; // region screenshot
 	TrayIconSettings.DontLaunchCopy = FALSE;
 	TrayIconSettings.TrayScreenshotAction = 0;
-
 	Hotkeys_changed = false;
-	#endif
+
+
+	/* binding settings */
+
+	SettingsNode& general = mgr_["General"];
+		general.n_bind(Language);
+		general.n_bind(ExplorerContextMenu);
+		general.n_bind(ExplorerVideoContextMenu);
+		general.n_bind(ExplorerCascadedMenu);
+		general.n_bind(LastUpdateTime);
+		general.n_bind(ConfirmOnExit);
+		general.n_bind(SendToContextMenu);
+		general.n_bind(ParseSubDirs);
+		general.n_bind(ImageEditorPath);
+		general.n_bind(ShowTrayIcon);
+		general.n_bind(AutoCopyToClipboard);
+		general.n_bind(AutoShowLog);
+		general.n_bind(ImagesFolder);
+		general.n_bind(VideoFolder);
+		general.n_bind(WatchClipboard);
+		general.n_bind(Hotkeys);
+		 
+	SettingsNode& screenshot = mgr_["Screenshot"];
+		screenshot.nm_bind(ScreenshotSettings,Delay);
+		screenshot.nm_bind(ScreenshotSettings,Format);
+		screenshot.nm_bind(ScreenshotSettings,Quality);
+		screenshot.nm_bind(ScreenshotSettings,ShowForeground);
+		screenshot.nm_bind(ScreenshotSettings,FilenameTemplate);
+		screenshot.nm_bind(ScreenshotSettings,Folder);
+		screenshot.nm_bind(ScreenshotSettings,CopyToClipboard);
+		screenshot.nm_bind(ScreenshotSettings,brushColor);
+	
+	SettingsNode& image = mgr_["Image"];
+		image.nm_bind(ImageSettings, Quality);
+		image.nm_bind(ImageSettings, Format);
+		image.nm_bind(ImageSettings, KeepAsIs);
+		image.nm_bind(ImageSettings, NewWidth);
+		image.nm_bind(ImageSettings, NewHeight);
+		image.nm_bind(ImageSettings, AddLogo);
+		image.nm_bind(ImageSettings, AddText);
+
+	image["Logo"].bind(ImageSettings.LogoFileName);
+	image["Logo"]["@LogoPosition"].bind(ImageSettings.LogoPosition);
+	image["Logo"]["@LogoBlend"].bind(ImageSettings.LogoBlend);
+			
+	image["Text"].bind(ImageSettings.Text);
+	image["Text"]["@TextPosition"].bind(ImageSettings.TextPosition);		
+	image["Text"]["@TextColor"].bind(ImageSettings.TextColor);	
+	image["Text"]["@Font"].bind(ImageSettings.Font);
+
+
+	SettingsNode& thumbnails = mgr_["Thumbnails"];
+		thumbnails.nm_bind(ThumbSettings, CreateThumbs);
+
+	
+		thumbnails.nm_bind(ThumbSettings, CreateThumbs);
+		thumbnails.nm_bind(ThumbSettings, ThumbWidth);
+		thumbnails.nm_bind(ThumbSettings, FrameColor);
+		thumbnails.nm_bind(ImageSettings, StrokeColor);
+		thumbnails.nm_bind(ThumbSettings, ThumbColor1);
+		thumbnails.nm_bind(ThumbSettings, ThumbColor2);
+		thumbnails.nm_bind(ThumbSettings, UseServerThumbs);
+		thumbnails.nm_bind(ThumbSettings, UseThumbTemplate);
+		thumbnails.nm_bind(ThumbSettings, ThumbAddImageSize);
+		thumbnails.nm_bind(ThumbSettings, DrawFrame);
+		
+		thumbnails.nm_bind(ThumbSettings, Text);
+		thumbnails["Text"]["@Color"].bind(ThumbSettings.ThumbTextColor);
+		thumbnails["Text"]["@Font"].bind(ThumbSettings.ThumbFont);
+		thumbnails["Text"]["@TextOverThumb"].bind(ThumbSettings.TextOverThumb);
+		thumbnails["Text"]["@ThumbAlpha"].bind(ThumbSettings.ThumbAlpha);
+
+		
+	SettingsNode& video = mgr_["VideoGrabber"];
+		video.nm_bind(VideoSettings, Columns);
+		video.nm_bind(VideoSettings, TileWidth);
+		video.nm_bind(VideoSettings, GapWidth);
+		video.nm_bind(VideoSettings, GapHeight);
+		video.nm_bind(VideoSettings, NumOfFrames);
+		video.nm_bind(VideoSettings, JPEGQuality);
+		video.nm_bind(VideoSettings, ShowMediaInfo);
+		video.nm_bind(VideoSettings, TextColor);
+		video.nm_bind(VideoSettings, Font);
+
+	SettingsNode& tray = mgr_["TrayIcon"];
+		tray.nm_bind(TrayIconSettings, LeftDoubleClickCommand);
+		tray.nm_bind(TrayIconSettings, LeftClickCommand);
+		tray.nm_bind(TrayIconSettings, RightClickCommand);
+		tray.nm_bind(TrayIconSettings, MiddleClickCommand);
+		tray.nm_bind(TrayIconSettings, DontLaunchCopy);
+		tray.nm_bind(TrayIconSettings, TrayScreenshotAction);
+	
+	SettingsNode& upload = mgr_["Uploading"];
+		upload.n_bind(ServerName);
+		upload.n_bind(FileServerName);
+		upload.n_bind(QuickUpload);
+		upload.n_bind(QuickServerName);
+		upload.n_bind(CodeLang);
+		upload.n_bind(ThumbsPerLine);
+		upload.n_bind(UploadBufferSize);
+		upload.n_bind(UseDirectLinks);
+		upload.n_bind(UseTxtTemplate);
+		upload.n_bind(CodeType);
+		upload.n_bind(FileRetryLimit);
+		upload.n_bind(ShowUploadErrorDialog);
+		upload.n_bind(ActionRetryLimit);
+	//	upload.n_bind(Proxy);	
+		SettingsNode& proxy = upload["Proxy"];
+		proxy["@UseProxy"].bind(ConnectionSettings.UseProxy);
+		proxy["@NeedsAuth"].bind(ConnectionSettings.NeedsAuth);
+		proxy.nm_bind(ConnectionSettings,ServerAddress);
+		proxy.nm_bind(ConnectionSettings, ProxyPort);
+		proxy.nm_bind(ConnectionSettings, ProxyType);
+		proxy.nm_bind(ConnectionSettings, ProxyUser);
+		proxy.nm_bind(ConnectionSettings, ProxyPassword);
 }
-
-#define SETTINGS_READ
-#include "SettingsSaver.h" // Generating a function which reads settings
-
-#ifndef IU_SHELLEXT
-#ifndef  IU_SERVERLISTTOOL
-#undef SETTINGS_READ
-#include "SettingsSaver.h" // Generating a function which saves settings
 #endif
-#endif
+
 bool CSettings::LoadSettings(LPCTSTR szDir)
 {
-	CMyXml MyXML;
 	
-
 	CString FileName= szDir? CString(szDir):IU_GetDataFolder()+_T("Settings.xml");
 	if(!FileExists(FileName)) return true;
 	
-	if(!MyXML.Load(FileName))
+	/*if(!MyXML.Load(FileName))
 	{
 		MessageBox(0, MyXML.GetError(),0,0);
-	}
-	return MacroLoadSettings(MyXML);
+	}*/
+	 //MacroLoadSettings(MyXML);
+	 ZSimpleXml xml;
+	 
+	 xml.LoadFromFile(WCstringToUtf8(FileName));
+	 mgr_.loadFromXmlNode(xml.getRoot("ImageUploader"));
+	 LoadAccounts(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("ServersParams"));
+	
+	
+	 return true;
 }
-#ifndef IU_SHELLEXT
+
 #define MY_CLSID _T("{535E39BD-5883-454C-AFFC-C54B66B18206}")
 
 bool RegisterClsId()
@@ -450,39 +511,30 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command,b
 	return 1; // That's means ALL OK! :)
 }
 
-// Function that gets path to SendTo folder
-CString GetSendToPath() 
-{
-	CString result;
-	LPITEMIDLIST pidl;
-	TCHAR        szSendtoPath [MAX_PATH];
-	HANDLE       hFile;
-	LPMALLOC     pMalloc;
-
-	if(SUCCEEDED( SHGetSpecialFolderLocation ( NULL, CSIDL_SENDTO, &pidl )))
-	{
-		if(SHGetPathFromIDList(pidl, szSendtoPath))
-		{
-			result = szSendtoPath;
-		}
-
-		if(SUCCEEDED(SHGetMalloc(&pMalloc)))
-		{
-			pMalloc->Free ( pidl );
-			pMalloc->Release();
-		}
-	}
-	return result;
-}
-
 bool CSettings::SaveSettings()
 {	
+	ZSimpleXml xml;
+	mgr_.saveToXmlNode(xml.getRoot("ImageUploader"));
+	SaveAccounts(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("ServersParams"));
+	xml.SaveToFile(WCstringToUtf8(IU_GetDataFolder()+SETTINGS_FILE_NAME));
+
 	#ifndef IU_SERVERLISTTOOL
-	CMyXml MyXml;
+	
+	/*CMyXml MyXml;
 	MyXml.SetDoc(_T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"));
 
 	MacroSaveSettings(MyXml);
 	MyXml.Save(IU_GetDataFolder()+SETTINGS_FILE_NAME);
+*/
+	CRegistry Reg;
+	Reg.SetRootKey(HKEY_CURRENT_USER);
+	if (Reg.SetKey("Software\\Image Uploader", TRUE))
+	{
+		Reg.WriteBool("ExplorerCascadedMenu", ExplorerCascadedMenu);
+		Reg.WriteBool("ExplorerContextMenu", ExplorerContextMenu);
+		Reg.WriteBool("ExplorerVideoContextMenu", ExplorerVideoContextMenu);
+		Reg.WriteString("Language", Language);
+	}
 
 	if(SendToContextMenu_changed || ExplorerContextMenu_changed || ShowTrayIcon_changed) 
 	{
@@ -613,4 +665,72 @@ ServerSettingsStruct&  CSettings::ServerByUtf8Name(std::string name)
 {
 	return ServerByName(Utf8ToWCstring(name));
 }
-#endif
+
+bool CSettings::LoadAccounts(ZSimpleXmlNode root)
+{
+	std::vector<ZSimpleXmlNode> servers;
+	root.GetChilds("Server", servers);
+
+	for(size_t i=0; i<servers.size(); i++)
+	{
+		std::string server_name = servers[i].Attribute("Name");
+		std::vector<std::string> attribs;
+		servers[i].GetAttributes(attribs);
+		CString wideName = Utf8ToWCstring(server_name);
+
+		for(size_t j=0; j<attribs.size(); j++)
+		{
+			std::string attribName = attribs[j];
+		
+			if(attribName.empty()) continue;
+			if( attribName.substr(0,1) == "_")
+			{
+				std::string value = servers[i].Attribute(attribName);
+				attribName = attribName.substr(1, attribName.size()-1);
+				if(!value.empty())
+					ServersSettings[wideName].params[attribName]=value;
+			}
+
+		}
+		ServersSettings[wideName].authData.DoAuth = servers[i].AttributeBool("Auth");
+		
+
+		std::string encodedLogin = servers[i].Attribute("Login");
+		CEncodedPassword login;
+		login.fromEncodedData(encodedLogin.c_str());
+		ServersSettings[wideName].authData.Login = WCstringToUtf8(login);
+	
+		std::string encodedPass = servers[i].Attribute("Password");
+		CEncodedPassword pass;
+		pass.fromEncodedData(encodedPass.c_str());
+		ServersSettings[wideName].authData.Password = WCstringToUtf8(pass);
+	}
+	return true;
+}
+
+bool CSettings::SaveAccounts(ZSimpleXmlNode root)
+{
+	std::map <CString, ServerSettingsStruct>::iterator it;
+	for(it=ServersSettings.begin(); it!=ServersSettings.end(); it++)
+	{
+		ZSimpleXmlNode serverNode = root.CreateChild("Server");	
+		serverNode.SetAttribute("Name", WCstringToUtf8(it->first));
+			
+		std::map <std::string, std::string>::iterator param;
+		for(param=it->second.params.begin(); param!=it->second.params.end(); param++)
+		{	
+				serverNode.SetAttribute("_"+param->first, param->second);
+		}
+
+		serverNode.SetAttributeBool("Auth",it->second.authData.DoAuth);
+		
+		CEncodedPassword login(Utf8ToWCstring(it->second.authData.Login));
+		serverNode.SetAttribute("Login",WCstringToUtf8(login.toEncodedData()));
+
+		CEncodedPassword pass(Utf8ToWCstring(it->second.authData.Password));
+		serverNode.SetAttribute("Password",WCstringToUtf8(pass.toEncodedData()));
+	
+			
+	}
+	return true;
+}

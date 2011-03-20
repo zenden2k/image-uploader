@@ -4,6 +4,8 @@
 #pragma once
 
 #include "resource.h"
+#include <atlbase.h>
+#include <atlctrls.h>
 #include <atlmisc.h>
 #include <atlcrack.h>
 #define LOGMSGTYPE

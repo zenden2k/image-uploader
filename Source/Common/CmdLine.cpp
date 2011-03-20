@@ -62,7 +62,7 @@ int CCmdLine::AddParam(LPCTSTR szParam)
 
 CString CCmdLine::operator[](int nIndex)
 {
-	if(nIndex < 0 || nIndex > m_Params.GetCount()-1)
+	if(nIndex < 0 || nIndex > int(m_Params.GetCount())-1)
 		return _T("");
 	return m_Params[nIndex];
 }

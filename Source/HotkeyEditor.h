@@ -33,7 +33,7 @@ struct MYHOTKEY
 		keyCode = 0;
 		keyModifier = 0;
 	}
-	CString Serialize()
+	 CString Serialize() const
 	{
 		DWORD data = MAKELONG(keyCode, keyModifier);
 		CString res;
@@ -147,7 +147,7 @@ public:
 		globalKey.keyCode = 0;
 		globalKey.keyModifier = 0;
 	}
-	bool IsNull()
+	 bool IsNull() const
 	{
 		return (localKey.keyCode==0 && globalKey.keyCode==0);
 	}

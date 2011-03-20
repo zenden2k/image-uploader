@@ -77,7 +77,6 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 		SendDlgItemMessage(IDC_USEPROXYSERVER, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.UseProxy);
 	SetDlgItemText(IDC_PROXYLOGINEDIT, Settings.ConnectionSettings.ProxyUser);
 	SetDlgItemText(IDC_PROXYPASSWORDEDIT, Settings.ConnectionSettings.ProxyPassword);
-	TCHAR Buffer[MAX_PATH];
 	SetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT,Settings.UploadBufferSize/1024);
 	if(Settings.ConnectionSettings.ProxyPort) // Только если порт не равен нулю
 		SetDlgItemInt(IDC_PORTEDIT, Settings.ConnectionSettings.ProxyPort);
@@ -106,7 +105,7 @@ LRESULT CUploadSettingsPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 
 LRESULT CUploadSettingsPage::OnClickedUseProxy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& bHandled)
 {
-	bool Checked = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK);
+	bool Checked = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK)!=0;
 	EnableNextN(GetDlgItem(wID),Checked? 8: 11, Checked);
 
 	if(Checked)
@@ -118,7 +117,7 @@ LRESULT CUploadSettingsPage::OnClickedUseProxy(WORD /*wNotifyCode*/, WORD wID, H
 	
 LRESULT CUploadSettingsPage::OnClickedUseProxyAuth(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	bool Checked = SendDlgItemMessage(wID, BM_GETCHECK);
+	bool Checked = SendDlgItemMessage(wID, BM_GETCHECK)!=0;
 	EnableNextN(GetDlgItem(wID), 4, Checked);
 	return 0;
 }
@@ -128,7 +127,7 @@ bool CUploadSettingsPage::Apply()
 	DoDataExchange(TRUE);
 	Settings.ConnectionSettings.UseProxy = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK);
 	Settings.ConnectionSettings.NeedsAuth = SendDlgItemMessage(IDC_NEEDSAUTH, BM_GETCHECK);
-	Settings.AutoCopyToClipboard = SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_GETCHECK);
+	Settings.AutoCopyToClipboard = SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_GETCHECK)!=0;
 	TCHAR Buffer[128];
 
 	GetDlgItemText(IDC_ADDRESSEDIT,Buffer, 128);

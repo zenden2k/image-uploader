@@ -35,7 +35,7 @@ class CLang
 {
 	private:
 		TCHAR m_Directory[MAX_PATH];
-		TCHAR m_szLang[64];
+		CString m_sLang;
 	public:
 		CLang();
 
@@ -46,7 +46,7 @@ class CLang
 
 		CAtlArray<TranslateListItem> StringList;
 		CAtlArray<CString> LanguagesList;
-		LPCTSTR GetLanguageName();
+		CString GetLanguageName();
 	
 };
 extern CLang Lang;

@@ -30,10 +30,11 @@
 #define IDC_SCRACTIVEWINDOW WM_USER + 221
 #define IDC_FREEFORMREGION WM_USER + 222
 #define IDC_HWNDSREGION WM_USER + 223
-
+#include <atlctrlx.h> 
+#include "3rdpart/wtlaero.h"
 // CScreenshotDlg
 class CScreenshotDlg : 
-	public CDialogImpl<CScreenshotDlg>	, 
+	public /*aero::*/CDialogImpl<CScreenshotDlg>	, 
 	public CWinDataExchange<CScreenshotDlg>
 {
 	public:
@@ -44,6 +45,7 @@ class CScreenshotDlg :
 	
 	protected:
 		BEGIN_MSG_MAP(CScreenshotDlg)
+//			CHAIN_MSG_MAP(aero::CDialogImpl<CScreenshotDlg>)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			MSG_WM_CTLCOLORDLG(OnCtlColorMsgDlg)
 			MSG_WM_CTLCOLORBTN(OnCtlColorMsgDlg)

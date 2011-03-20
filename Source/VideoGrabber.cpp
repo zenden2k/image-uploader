@@ -167,9 +167,8 @@ class CSampleGrabberCB : public ISampleGrabberCB
 		STDMETHODIMP BufferCB( double SampleTime, BYTE * pBuffer, long BufferSize )
 		{
 			if(!Grab) return 0; //Контроль ложноых вызовов
-			TCHAR szFilename[MAX_PATH];
 
-			LONGLONG time=SampleTime * 10000000;
+			LONGLONG time= LONGLONG(SampleTime * 10000000);
 			prev=time;
 			TCHAR   buf[256];
 			wsprintf(buf, TEXT("%02d:%02d:%02d"),int(SampleTime/3600),(int)(long(SampleTime)/60)%60, (int)long(long(SampleTime)%60) /*,long(SampleTime/100)*/);
@@ -302,8 +301,7 @@ LRESULT CVideoGrabber::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 LRESULT CVideoGrabber::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	WizardDlg->LastVideoFile = IU_GetWindowText(GetDlgItem(IDC_FILEEDIT));
-	RECT WindowRect,ClientRect;
-	
+
 	Terminated = false;
 	IsStopTimer=false;
 
@@ -479,7 +477,7 @@ int CVideoGrabber::GenPicture(CString &outFileName)
 		font.GetFamily(&ff);
 		g1.SetPageUnit(UnitPixel);
 		g1.MeasureString(Report, -1, &font, PointF(0,0), &TextRect);
-		infoHeight = TextRect.Height;
+		infoHeight = int(TextRect.Height);
 	}
 
 	int n = ThumbsView.GetItemCount();
@@ -491,7 +489,7 @@ int CVideoGrabber::GenPicture(CString &outFileName)
 	int gapheight = Settings.VideoSettings.GapHeight;
 	infoHeight += gapheight;
 	int tilewidth = Settings.VideoSettings.TileWidth;
-	int tileheight =(int)((float)tilewidth)/((float)maxwidth)*((float)maxheight);
+	int tileheight = int(((float)tilewidth)/((float)maxwidth)*((float)maxheight));
 	int needwidth = gapwidth+ncols*(tilewidth+gapwidth);
 	int needheight = gapheight+nstrings*(tileheight+gapheight) + infoHeight;
 
@@ -616,7 +614,6 @@ DWORD CImgSavingThread::Run()
 		{
 			SavingEvent.ResetEvent();
 
-			BOOL b;
 			DataCriticalSection.Lock();
 	#ifdef DEBUG
 			vg->GrabInfo(_T("Saving image(); ..."));
@@ -680,7 +677,7 @@ int CVideoGrabber::GrabBitmaps(TCHAR * szFile )
 	IsWMV = IsStrInList(GetFileExt(szFileName), _T("wmv\0asf\0\0"));
 
 	if(!IsWMV)
-		IsOther=IsStrInList(GetFileExt(szFileName),_T("mkv\0wmv\0\mpg\0"));
+		IsOther=IsStrInList(GetFileExt(szFileName),_T("mkv\0wmv\0mpg\0"));
 
 	// Create the sample grabber
 	//
@@ -908,7 +905,7 @@ int CVideoGrabber::GrabBitmaps(TCHAR * szFile )
 	}
 
 	LONGLONG step = duration/NumOfFrames;
-	CHAR buf[256];
+
 
 	CB.step = step;
 	CComQIPtr< IMediaControl, &IID_IMediaControl > pControl( pGraph );

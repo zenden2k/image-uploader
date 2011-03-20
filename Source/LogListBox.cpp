@@ -148,7 +148,7 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
 	CString str;
 	lpmis->itemWidth = ItemWidth;
 	lpmis->itemHeight = LLB_VertMargin + item->TitleHeight + LLB_VertDivider + item->TextHeight + (item->InfoHeight?(LLB_VertDivider + item->InfoHeight):0) + LLB_VertMargin+2;
-
+	lpmis->itemHeight = max(lpmis->itemHeight, 35);
 	ReleaseDC(dc);
 	return 0;
 }

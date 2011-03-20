@@ -25,6 +25,8 @@
 #include "traysettings.h"
 #include "hotkeysettings.h"
 #include "ScreenshotSettingsPage.h"
+#include "Gui/Dialogs/ThumbSettingsPage.h"
+
 // CSettingsDlg
 CSettingsDlg::CSettingsDlg(int Page)
 {
@@ -53,6 +55,7 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	m_SettingsPagesListBox.SubclassWindow(GetDlgItem(IDC_SETTINGSPAGESLIST));
 	m_SettingsPagesListBox.AddString(TR("Основные"));
 	m_SettingsPagesListBox.AddString(TR("Изображения"));
+	m_SettingsPagesListBox.AddString(TR("Миниатюры"));
 	m_SettingsPagesListBox.AddString(TR("Снимок экрана"));
 	m_SettingsPagesListBox.AddString(TR("Видео"));
 	m_SettingsPagesListBox.AddString(TR("Загрузка"));
@@ -167,7 +170,14 @@ bool CSettingsDlg::CreatePage(int PageID)
 		Pages[PageID]->PageWnd = dlg->m_hWnd;
 	}
 
-	if(PageID==2)
+	else if(PageID == 2)
+	{
+		CThumbSettingsPage *dlg = new CThumbSettingsPage();
+		Pages[PageID]= dlg;
+		dlg->Create(m_hWnd,rc);
+		Pages[PageID]->PageWnd = dlg->m_hWnd;
+	}
+	else if(PageID==3)
 	{
 		CScreenshotSettingsPagePage *dlg = new CScreenshotSettingsPagePage();
 		Pages[PageID]= dlg;
@@ -176,7 +186,7 @@ bool CSettingsDlg::CreatePage(int PageID)
 		
 	}
 
-	if(PageID == 3)
+	else if(PageID == 4)
 	{
 		CVideoGrabberParams *dlg = new CVideoGrabberParams();
 		Pages[PageID]= dlg;
@@ -184,7 +194,7 @@ bool CSettingsDlg::CreatePage(int PageID)
 		Pages[PageID]->PageWnd=dlg->m_hWnd;
 	}
 
-	if(PageID==4)
+	 else if(PageID==5)
 	{
 		CUploadSettingsPage *dlg = new CUploadSettingsPage();
 		Pages[PageID]= dlg;
@@ -193,14 +203,14 @@ bool CSettingsDlg::CreatePage(int PageID)
 	}
 
 
-	if(PageID==5)
+	if(PageID==6)
 	{
 		CTraySettingsPage *dlg = new CTraySettingsPage();
 		Pages[PageID]= dlg;
 		dlg->Create(m_hWnd,rc);
 		Pages[PageID]->PageWnd=dlg->m_hWnd;
 	}
-	if(PageID==6)
+	else if(PageID==7)
 	{
 		CHotkeySettingsPage *dlg = new CHotkeySettingsPage();
 		Pages[PageID]= dlg;

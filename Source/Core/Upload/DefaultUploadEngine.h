@@ -25,38 +25,34 @@
 #include <string>
 #include "CommonTypes.h"
 #include "UploadEngine.h"
+
 class CDefaultUploadEngine: public CAbstractUploadEngine
 {
 	public:
 		CDefaultUploadEngine();
 		virtual bool doUpload(Utf8String FileName,Utf8String DisplayName, CIUUploadParams &params);
-protected:
-
-	bool DoAction(UploadAction &Action);
-	bool DoUploadAction(UploadAction &Action, bool bUpload);
-	bool DoGetAction(UploadAction &Action);
-	bool ParseAnswer(UploadAction &Action, std::string& Body);
-	std::string ReplaceVars(const std::string& Text);
-	int RetryLimit();
-	//void ConfigureProxy();
-	void AddQueryPostParams(UploadAction &Action);
-	bool ReadServerResponse(UploadAction &Action);
-	void SetStatus(StatusType status, std::string param = "");
+	protected:
+		bool DoAction(UploadAction &Action);
+		bool DoUploadAction(UploadAction &Action, bool bUpload);
+		bool DoGetAction(UploadAction &Action);
+		bool ParseAnswer(UploadAction &Action, std::string& Body);
+		std::string ReplaceVars(const std::string& Text);
+		int RetryLimit();
+		void AddQueryPostParams(UploadAction &Action);
+		bool ReadServerResponse(UploadAction &Action);
+		void SetStatus(StatusType status, std::string param = "");
 		bool needStop();
 		Utf8String m_ErrorReason;
-
 		Utf8String m_FileName;
 		Utf8String m_displayFileName;
 		LoginInfo li;
 		ErrorInfo m_LastError;
 		std::string m_ErrorBuffer;
 		void UploadError(bool error, const std::string errorStr, UploadAction* m_CurrentAction, bool writeToBuffer = true);
-	//bool DoTry();
-	int m_CurrentActionIndex;
-	
-	std::map<std::string, std::string> m_Vars;
-	std::map<std::string, std::string> m_Consts;
-	std::map<size_t, boolean> m_PerformedActions;
+		int m_CurrentActionIndex;
+		std::map<std::string, std::string> m_Vars;
+		std::map<std::string, std::string> m_Consts;
+		std::map<size_t, bool> m_PerformedActions;
 };
 
 #endif

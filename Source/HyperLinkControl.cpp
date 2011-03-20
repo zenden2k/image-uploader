@@ -32,6 +32,7 @@ CHyperLinkControl::CHyperLinkControl()
 	CursorHand = false;
 	m_bHyperLinks = true;
 	HandCursor = LoadCursor(NULL, IDC_HAND); // Loading "Hand" cursor into memory
+	 SetThemeClassList ( L"globals" );
 }
 
 CHyperLinkControl::~CHyperLinkControl()
@@ -49,6 +50,7 @@ void CHyperLinkControl::Init(COLORREF BkColor)
 	UnderlineFont = MakeFontUnderLine(NormalFont);
 	BoldUnderLineFont = MakeFontUnderLine(BoldFont);
 	m_BkColor = BkColor;
+	OpenThemeData();
 }
 
 int GetTextWidth(HDC dc, LPTSTR Text, HFONT Font)
@@ -274,7 +276,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	HyperLinkControlItem item;
 	CRect r(rc);
 	CBrush br;
-
+	//br.CreateSolidBrush(RGB(0,0,0));
 	br.CreateSolidBrush(m_BkColor);
 	dc.FillRect(r,br);
 
@@ -314,12 +316,46 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 				textY += (33-TextDims.cy)/2;
 
 			}
+		
+
 			ExtTextOutW(dc.m_hDC, TextRect.left, textY, ETO_CLIPPED, &TextRect, item.szTitle, wcslen(item.szTitle), 0);
 			if(Selected==i && m_bHyperLinks)
 				dc.SelectFont(UnderlineFont); else 
 				dc.SelectFont(GetFont());
 			dc.SetTextColor(RGB(100,100,100));
+		/*	LOGFONT lf = {0};
+ 
+  
+ CFont m_font;
+			if ( !IsThemeActive() )
+    GetThemeSysFont ( TMT_MSGBOXFONT, &lf );
+  else
+    {
+    NONCLIENTMETRICS ncm = { sizeof(NONCLIENTMETRICS) };
+ 
+    SystemParametersInfo (
+        SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS),
+        &ncm, false );
+ 
+    lf = ncm.lfMessageFont;
+    }
+ 
+  //lf.lfHeight *= 3;
+  m_font.CreateFontIndirect ( &lf );
+	dc.SelectFont(m_font);
+ DTTOPTS dto = { sizeof(DTTOPTS) };
+    const UINT uFormat = DT_SINGLELINE|DT_CENTER|DT_VCENTER|DT_NOPREFIX;
+    CRect rcText2 = TextRect;
+		rcText2.left=TextRect.left;
+		rcText2.top =textY;
+		
+		dto.dwFlags = DTT_COMPOSITED|DTT_GLOWSIZE;
+    dto.iGlowSize =1;
+  //  rcText2 -= rcText2.TopLeft(); // same rect but with (0,0) as the top-left
 
+ 
+    DrawThemeTextEx (  dc.m_hDC, 0, 0, item.szTitle, -1,
+                      uFormat, &rcText2, &dto );*/
 			ExtTextOutW(dc.m_hDC, TextRect.left, item.ItemRect.top+18, ETO_CLIPPED, &TextRect, item.szTip, wcslen(item.szTip), 0);
 
 			dc.SetBkMode(TRANSPARENT);
@@ -337,6 +373,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 				dc.SelectFont(GetFont());
 
 			dc.DrawIconEx(item.ItemRect.left,item.ItemRect.top+1,item.hIcon,16,16);
+				
 			dc.ExtTextOut(item.ItemRect.left+23, item.ItemRect.top+1, ETO_CLIPPED/*|ETO_OPAQUE/**/, &item.ItemRect, item.szTitle, wcslen(item.szTitle), 0);
 		}
 	}

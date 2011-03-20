@@ -191,7 +191,7 @@ void CUpdateDlg::DoUpdates()
 	::ShowWindow(GetDlgItem(IDC_UPDATEINFO), SW_HIDE);
 	m_listView.DeleteAllItems();
 		
-	for(int i=0; i< m_UpdateManager.m_updateList.size(); i++)
+	for(size_t i=0; i< m_UpdateManager.m_updateList.size(); i++)
 	{
 		m_listView.AddItem(i, 0, m_UpdateManager.m_updateList[i].m_DisplayName);
 		m_listView.AddItem(i, 1, TR("В очереди"));
@@ -234,7 +234,7 @@ void CUpdateDlg::updateStatus(int packageIndex, const CString status)
 bool CUpdateDlg::ShowModal(HWND parent)
 {
 	m_Modal = true;
-		Settings.LastUpdateTime = time(0);
+	Settings.LastUpdateTime = static_cast<int>(time(0));
 	if(!m_hWnd) Create(parent);
 	m_bClose = false;
 

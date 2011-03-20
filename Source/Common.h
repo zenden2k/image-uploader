@@ -29,21 +29,18 @@
 #include "PluginLoader.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Func/MyEngineList.h"
+
 class CPluginManager;
-//class CWizardDlg;
 class CCmdLine;
 
-
-struct CUrlListItem{
+struct CUrlListItem
+{
 	bool IsImage, IsThumb;
 	CString FileName;
 	CString ImageUrl;
 	CString ThumbUrl;
 	CString DownloadUrl;
-
 };
-
-
 
 bool IULaunchCopy();
 BOOL CreateTempFolder();
@@ -88,8 +85,20 @@ CString GetUniqFileName(const CString &filePath);
 bool IU_GetClipboardText(CString &text);
 extern CMyEngineList *_EngineList;
 const CString IU_GetWindowText(HWND wnd);
-std::string ExtractFileNameA(const std::string& FileName);
-LPCSTR GetFileExtA(LPCSTR szFileName);
 BOOL IU_CreateFolder(LPCTSTR szFolder);
 BOOL IU_CreateFilePath(LPCTSTR szFilePath);
+HICON GetAssociatedIcon (LPCTSTR filename, bool Small);
+BOOL IsWinXP();
+int ScreenBPP();
+BOOL Is32BPP();
+const CString IU_GetDataFolder();
+CString GetSystemSpecialPath(int csidl);
+const CString GetApplicationDataPath();
+const CString GetCommonApplicationDataPath();
+HRESULT IsElevated( __out_opt BOOL * pbElevated );
+// Function that gets path to SendTo folder
+CString GetSendToPath() ;
+Bitmap* BitmapFromResource(HINSTANCE hInstance,LPCTSTR szResName, LPCTSTR szResType);
+void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ");
+void EncodeString(LPCTSTR szSource, CString &Result,LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ");
 #endif

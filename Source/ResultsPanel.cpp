@@ -1,6 +1,6 @@
 /*
     Image Uploader - application for uploading images/files to Internet
-    Copyright (C) 2007-2010 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -19,12 +19,12 @@
 */
 
 #include "stdafx.h"
-
 #include "ResultsPanel.h"
 #include <uxtheme.h>
 #include "mediainfodlg.h"
 #include <pcre++.h>
 #include "LogWindow.h"
+
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg,CAtlArray<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)
 {
@@ -50,7 +50,6 @@ bool CResultsPanel::LoadTemplate()
 	DWORD dwBytesRead, dwFileSize;
 	CString FileName = IU_GetDataFolder() + _T("template.txt");
 
-	
 	if(TemplateHead) delete[] TemplateHead;
 	TemplateHead = NULL;
 	TemplateFoot = NULL;
@@ -91,10 +90,9 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	if(GetStyle()&WS_CHILD)
 	TabBackgroundFix(m_hWnd);
 	HBITMAP hBitmap;
-	// Get color depth (minimum requirement is 32-bits for alpha blended images).
-	int iBitsPixel = GetDeviceCaps(::GetDC(HWND_DESKTOP),BITSPIXEL);
+
 	HIMAGELIST m_hToolBarImageList;
-	if (iBitsPixel >= 32)
+	if (Is32BPP())
 	{
 		hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_BITMAP3));
 		
@@ -143,14 +141,13 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	SendDlgItemMessage(IDC_CODETYPE, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)(TR("Изображения")));
 	SendDlgItemMessage(IDC_CODETYPE, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)(TR("Ссылки на картинки/файлы")));	
 		
-	for(int i=0;i<Templates.GetCount(); i++)
+	for(size_t i=0;i<Templates.GetCount(); i++)
 	{
 		SendDlgItemMessage(IDC_CODETYPE, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)Templates[i].Name);	
 	}
 	
 	SendDlgItemMessage(IDC_CODETYPE,CB_SETCURSEL, 0);
 	LoadTemplate();
-	
 	return 1;  // Let the system set the focus
 }
 
@@ -474,7 +471,7 @@ bool CResultsPanel::LoadTemplates(CString &Error)
 {
 	int i =0;
 
-	CMarkup XML;
+	ZSimpleXml XML;
 	CString XmlFileName = IU_GetDataFolder() + _T("templates.xml");
 
 	if(!FileExists(XmlFileName))
@@ -483,42 +480,40 @@ bool CResultsPanel::LoadTemplates(CString &Error)
 		return false;
 	}
 
-	if(!XML.Load(XmlFileName))
+	if(!XML.LoadFromFile(WCstringToUtf8(XmlFileName)))
 	{
-		Error = XML.GetError();
+		Error = _T("xml loading error");
 		return false;
 	}
 
-	if(!XML.FindElem(_T("Templates")))
+	ZSimpleXmlNode templatesNode = XML.getRoot("Templates");
+	if(templatesNode.IsNull())
 	{
 		Error = _T("Unable to find Templates node");
 		return false;
-	}; 
+	}
 
-	XML.IntoElem();
+	std::vector<ZSimpleXmlNode> templates;
+	templatesNode.GetChilds("Template",templates);
 
-	while(XML.FindElem(_T("Template")))
+	for(size_t i=0; i<templates.size(); i++)
 	{
 		IU_Result_Template Template;
-		Template.Name = XML.GetAttrib(_T("Name"));
+		Template.Name = Utf8ToWCstring(templates[i].Attribute("Name"));
 		
-		XML.IntoElem();
+		Template.TemplateText = Utf8ToWCstring(templates[i]["Text"].Text());
 		
-		if(XML.FindElem(_T("Text")))
+		ZSimpleXmlNode itemsNode = templates[i]["Items"];
+		if(!itemsNode.IsNull())
 		{
-			Template.TemplateText = XML.GetData();
-		}
-
-		if(XML.FindElem(_T("Items")))
-		{
-			Template.LineStart = XML.GetAttrib(_T("LineStart"));
-			Template.LineEnd = XML.GetAttrib(_T("LineEnd"));
-			Template.LineSep = XML.GetAttrib(_T("LineSep"));
-			Template.ItemSep = XML.GetAttrib(_T("ItemSep"));
+			Template.LineStart = Utf8ToWCstring(itemsNode.Attribute("LineStart"));
+			Template.LineEnd = Utf8ToWCstring(itemsNode.Attribute("LineEnd"));
+			Template.LineSep = Utf8ToWCstring(itemsNode.Attribute("LineSep"));
+			Template.ItemSep = Utf8ToWCstring(itemsNode.Attribute("ItemSep"));
 			
-			Template.Items = XML.GetData();
+			Template.Items = Utf8ToWCstring(itemsNode.Text());
 		}
-		XML.OutOfElem();
+	
 
 		Templates.Add(Template);
 	}
@@ -568,7 +563,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 	
 	int count = 0;
 
-	for(int i=0; i<m_Servers.size(); i++)
+	for(size_t i=0; i<m_Servers.size(); i++)
 	{
 		CUploadEngineData *ue = m_EngineList->byName(m_Servers[i]);
 		if(!ue) continue;
@@ -642,7 +637,7 @@ LRESULT CResultsPanel::OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND h
 
 void CResultsPanel::AddServer(CString server)
 {
-	for(int i=0; i<m_Servers.size(); i++)
+	for(size_t i=0; i<m_Servers.size(); i++)
 		if (m_Servers[i] == server)
 			return;
 	m_Servers.push_back(server);
@@ -671,7 +666,7 @@ LRESULT CResultsPanel::OnResulttoolbarNMCustomDraw(LPNMHDR pnmh)
           (ISAPPTHEMEDPROC) ::GetProcAddress(hinstDll, "IsAppThemed");
 
         if(pIsAppThemed)
-            m_bThemeActive = pIsAppThemed();
+            m_bThemeActive = pIsAppThemed() != FALSE;
 
         ::FreeLibrary(hinstDll);
     }

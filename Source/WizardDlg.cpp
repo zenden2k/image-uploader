@@ -31,6 +31,9 @@
 #include "Gui/ImageDownloaderDlg.h"
 #include "Core/ImageConverter.h"
 #include "LogWindow.h"
+#include "Func/Base.h"
+#include "Func/HistoryManager.h"
+
 // CWizardDlg
 CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 {
@@ -59,10 +62,10 @@ CWizardDlg::~CWizardDlg()
 	}
 }
 
-
 TCHAR MediaInfoDllPath[MAX_PATH] = _T("");
 LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	srand(unsigned int(time(0)));
 	m_bShowWindow = true;
 	   
 	LPDWORD DlgCreationResult = (LPDWORD) lParam; 
@@ -105,13 +108,10 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		if(FileExists( MediaDll2)) lstrcpy(MediaInfoDllPath, MediaDll2);
 	}
 	SetWindowText(APPNAME);
-	TCHAR Language[128];
-
 
    Lang.SetDirectory(GetAppFolder() + "Lang\\");
    Lang.LoadList();
 	
-
 	if(!lstrlen(Settings.Language))
 	{
 		CLangSelect LS;
@@ -121,7 +121,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 			return 0;
 		}
 		Settings.Language = LS.Language;
-		if(!Lang.LoadLanguage(Settings.Language));
+		Lang.LoadLanguage(Settings.Language);
 		
 		/*if(MessageBox(TR("Добавить Image Uploader в контекстное меню проводника Windows?"),APPNAME, MB_YESNO|MB_ICONQUESTION)==IDYES)
 		{
@@ -148,10 +148,9 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		}
 	}
 	iuPluginManager.setScriptsDirectory(WCstringToUtf8(IU_GetDataFolder()+_T("\\Scripts\\")));
-	LoadUploadEngines(_T("userservers.xml"),ErrorStr);	
-	Settings.ServerID = m_EngineList.GetUploadEngineIndex(Settings.ServerName);
-	Settings.FileServerID = m_EngineList.GetUploadEngineIndex(Settings.FileServerName);
-
+	LoadUploadEngines(_T("userservers.xml"), ErrorStr);	
+	Settings.ServerID		  = m_EngineList.GetUploadEngineIndex(Settings.ServerName);
+	Settings.FileServerID  = m_EngineList.GetUploadEngineIndex(Settings.FileServerName);
 	Settings.QuickServerID = m_EngineList.GetUploadEngineIndex(Settings.QuickServerName);
 	if(!*MediaInfoDllPath)
 		WriteLog(logWarning, APPNAME, TR("Библиотека MediaInfo.dll не найдена. \nПолучение технических данных о файлах мультимедиа будет недоступно.")); 
@@ -179,27 +178,26 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	if(CmdLine.IsOption(_T("update")))
 	{
 		CreateUpdateDlg();
-
 		updateDlg->ShowModal(m_hWnd);
 	}
 	else
 	{
-		if(time(0)  - Settings.LastUpdateTime > 3600 * 24 * 7)
+		if(time(0) - Settings.LastUpdateTime > 3600*24*7 /* 1 week */)
 		{
+			
 			CreateUpdateDlg();
 			updateDlg->Create(m_hWnd);
+		
 		}
 	}
+	
 	return 0;  // Let the system set the focus
 }
 
-
-
 bool CWizardDlg::ParseCmdLine()
-{
-	LPCTSTR szBuffer; 
+{ 
 	int type = 0;
-	int count=0;
+	int count = 0;
 
 	int nIndex = 0;
 
@@ -214,10 +212,9 @@ bool CWizardDlg::ParseCmdLine()
 			PostQuitMessage(0);
 			return 0;
 		}
-
 	}
 
-	for(int i=0; i<CmdLine.GetCount(); i++)
+	for(size_t i=0; i<CmdLine.GetCount(); i++)
 	{
 		CString CurrentParam = CmdLine[i];
 		if(CurrentParam .Left(6)==_T("/func="))
@@ -245,7 +242,7 @@ bool CWizardDlg::ParseCmdLine()
 		}
 		
 	}
-nIndex = 0;
+	nIndex = 0;
 	CStringList Paths;
 	while(CmdLine.GetNextFile(FileName, nIndex))
 	{
@@ -254,13 +251,10 @@ nIndex = 0;
 	}
 	if(!Paths.IsEmpty())
 	{
-		QuickUploadMarker = (Settings.QuickUpload && !CmdLine.IsOption(_T("noquick"))) || (CmdLine.IsOption(_T("quick")));
-		
+		QuickUploadMarker = (Settings.QuickUpload && !CmdLine.IsOption(_T("noquick"))) || (CmdLine.IsOption(_T("quick")));	
 		FolderAdd.Do(Paths, CmdLine.IsOption(_T("imagesonly")), true);
 	}
-
-	return count;
-
+	return count!=0;
 }
 
 LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -288,7 +282,7 @@ BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
 	{
 		TCHAR Buffer[MAX_PATH];
 		GetClassName(pMsg->hwnd, Buffer, sizeof(Buffer)/sizeof(TCHAR));
-		if( pMsg->wParam == /*VkKeyScan('a')*/'A' && !lstrcmpi(Buffer,_T("Edit") ) && GetKeyState(VK_CONTROL)<0)
+		if( pMsg->wParam == 'A' && !lstrcmpi(Buffer,_T("Edit") ) && GetKeyState(VK_CONTROL)<0)
 		{
 			::SendMessage(pMsg->hwnd, EM_SETSEL, 0, -1);	
 			return TRUE;
@@ -299,20 +293,19 @@ BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
 			if( !lstrcmpi(Buffer,_T("Button"))){
 				::SendMessage(pMsg->hwnd, BM_CLICK, 0 ,0); return TRUE;}
 			else if (Pages[0] && pMsg->hwnd==::GetDlgItem(Pages[0]->PageWnd,IDC_LISTBOX))
-			
 				return FALSE;
 		}
 		
 		if(VK_BACK == pMsg->wParam)
 		{
-			if(Pages[CurPage]  && VK_BACK == pMsg->wParam  && GetForegroundWindow()==m_hWnd && lstrcmpi(Buffer,_T("Edit") ))
+			if(Pages[CurPage] && VK_BACK == pMsg->wParam  && GetForegroundWindow() == m_hWnd && lstrcmpi(Buffer,_T("Edit") ))
 			{
 				if(pMsg->message==WM_KEYDOWN && ::IsWindowEnabled(GetDlgItem(IDC_PREV)))
 				{ 
 					OnPrevBnClicked(0,0,0); 
 					return TRUE;
 				}
-				else if (pMsg->message==WM_KEYUP) 
+				else if (pMsg->message == WM_KEYUP) 
 					return TRUE;
 			}
 		}
@@ -333,19 +326,16 @@ LRESULT CWizardDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ATLASSERT(pLoop != NULL);
 	pLoop->RemoveMessageFilter(this);
 	pLoop->RemoveIdleHandler(this);
-
 	return 0;
 }
 
 void CWizardDlg::CloseDialog(int nVal)
 {
 	if(updateDlg)
-	updateDlg->Abort();
+		updateDlg->Abort();
 	ShowWindow(SW_HIDE);
 	if(CurPage >= 0)
-	{
 		Pages[CurPage]->OnHide();
-	}
 	
 	Exit();
 	DestroyWindow();
@@ -357,7 +347,9 @@ bool CWizardDlg::ShowPage(int idPage,int prev,int next)
 	if(idPage == CurPage) return true;
 
 	if(GetCurrentThreadId()!=GetWindowThreadProcessId(m_hWnd, NULL))
-	{return SendMessage(WM_MY_SHOWPAGE, (WPARAM)idPage);}
+	{
+		return SendMessage(WM_MY_SHOWPAGE, (WPARAM)idPage)!=FALSE;
+	}
    
  	if(!CreatePage(idPage)) return false;
 
@@ -482,7 +474,7 @@ HBITMAP CWizardDlg::GenHeadBitmap(int PageID)
 	if(PageID!=3 && PageID!=4) return 0;
 	RECT rc;
 	GetClientRect(&rc);
-	float width=(float)rc.right-(float)rc.left;
+	int width=rc.right-rc.left;
 	RectF bounds(0,0,width,50);
 	Bitmap *BackBuffer;
 	Graphics g(m_hWnd,true);
@@ -740,10 +732,9 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 		if(pDataObj->GetData(&tc2, &ddd)==S_OK ){
 
 			PVOID hdrop = (PVOID) GlobalLock ( ddd.hGlobal );
-			BOOL b;
 			FILEGROUPDESCRIPTOR *fgd = (FILEGROUPDESCRIPTOR*) hdrop;
 			CStringList Paths;
-			for(int i=0; i<fgd->cItems; i++)
+			for(size_t i=0; i<fgd->cItems; i++)
 			{
 				FORMATETC tc3 = { RegisterClipboardFormat(CFSTR_FILECONTENTS), 0, DVASPECT_CONTENT, i, TYMED_HGLOBAL };
 				if(pDataObj->QueryGetData(&tc3)==S_OK )
@@ -755,8 +746,6 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 						CString OutFileName;
 						bool FileWasSaved = false;
 
-						TCHAR buf[256];
-						PVOID hdrop2;
 						if(ddd2.tymed == TYMED_HGLOBAL)
 						{
 							FileWasSaved = SaveFromHGlobal(ddd2.hGlobal, fgd->fgd[i].cFileName, OutFileName);
@@ -805,7 +794,6 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 bool CWizardDlg::HandleDropHDROP(IDataObject *pDataObj)
 {
 	FORMATETC tc = { CF_HDROP, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
-	FORMATETC ftc;
 	if(pDataObj->QueryGetData(&tc)==S_OK ) 
 	{
 		STGMEDIUM ddd;
@@ -823,7 +811,7 @@ bool CWizardDlg::HandleDropHDROP(IDataObject *pDataObj)
 
 bool CWizardDlg::HandleDropBitmap(IDataObject *pDataObj)
 {
-	FORMATETC FtcBitmap, ftc;
+	FORMATETC FtcBitmap;
 	FtcBitmap.cfFormat = CF_BITMAP;
 	FtcBitmap.ptd = 0;
 	FtcBitmap.dwAspect = 1;
@@ -931,7 +919,7 @@ void CFolderAdd::Do(CStringList &Paths, bool ImagesOnly, bool SubDirs)
 {
 	count = 0;
 	m_bImagesOnly = ImagesOnly;
-	RECT rc={0,0,0,0},Rec;
+	RECT rc={0,0,0,0};
 	m_bSubDirs = SubDirs;
    if(!dlg.m_hWnd)
 	dlg.Create(m_pWizardDlg->m_hWnd, rc);
@@ -986,11 +974,8 @@ int CFolderAdd::ProcessDir( CString currentDir, bool bRecursive /* = true  */ )
 
 DWORD CFolderAdd::Run()
 {
-	
-	TCHAR Buffer[MAX_PATH];
-	TCHAR FullPath[MAX_PATH*3];
 	EnableWindow(m_pWizardDlg->m_hWnd, false);
-	for(int i=0; i<m_Paths.GetCount(); i++)
+	for(size_t i=0; i<m_Paths.GetCount(); i++)
 	{
 		CString CurPath = m_Paths[i];
 		if(IsDirectory(CurPath))
@@ -1035,11 +1020,10 @@ DWORD CFolderAdd::Run()
 
 int CFolderAdd::GetNextImgFile(LPTSTR szBuffer, int nLength)
 {
-	TCHAR szNameBuffer[MAX_PATH], szBuffer2[MAX_PATH], TempPath[256];
+	TCHAR szBuffer2[MAX_PATH], TempPath[256];
 	
 	GetTempPath(256, TempPath);
 	wsprintf(szBuffer2,_T("%s*.*"), (LPCTSTR)m_szPath);
-	
 	
 	if(!findfile)
 	{
@@ -1092,7 +1076,7 @@ void CMyFolderDialog::OnInitialized()
 	SendMessage(wnd, WM_SETFONT, (WPARAM)SendMessage(m_hWnd, WM_GETFONT, 0,0),  MAKELPARAM(false, 0));
 	SendMessage(wnd, BM_SETCHECK, (WPARAM)(m_bSubdirs?BST_CHECKED	:BST_UNCHECKED),0);
 	SetProp(m_hWnd, PROP_OBJECT_PTR, (HANDLE) this);
-	OldProc  = (DLGPROC) SetWindowLong(m_hWnd, DWL_DLGPROC, (DWORD)DialogProc);	
+	OldProc  = (DLGPROC) SetWindowLongPtr(m_hWnd, DWLP_DLGPROC, (LONG_PTR)DialogProc);	
 	SubdirsCheckbox = wnd;
 	m_bSubdirs = true;
 }
@@ -1175,6 +1159,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 		((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
 	ShowWindow(SW_SHOW);
 	m_bShowWindow = true;
+	return true;
 }
 
 bool CWizardDlg::executeFunc(CString funcBody)
@@ -1241,6 +1226,7 @@ bool CWizardDlg::executeFunc(CString funcBody)
 		return funcSettings();
 	else if(funcName == _T("mediainfo"))
 		return funcMediaInfo();
+	return false;
 }
 
 bool CWizardDlg::funcImportVideo()
@@ -1510,9 +1496,8 @@ bool CWizardDlg::funcAddFiles()
 		((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
 	ShowWindow(SW_SHOW);
 	m_bShowWindow = true;
+	return true;
 }
-
-
 
 LRESULT CWizardDlg::OnWmMyExit(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
@@ -1564,7 +1549,6 @@ void Gdip_RemoveAlpha(Bitmap& source, Color color )
 {
 	Rect r( 0, 0, source.GetWidth(),source.GetHeight() );
 	BitmapData  bdSrc;
-	BitmapData bdDst;
 	source.LockBits( &r,  ImageLockModeRead , PixelFormat32bppARGB,&bdSrc);
 
 	BYTE* bpSrc = (BYTE*)bdSrc.Scan0;
@@ -1593,7 +1577,7 @@ void Gdip_RemoveAlpha(Bitmap& source, Color color )
 
 bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 {
-	bool needToShow = IsWindowVisible();
+	bool needToShow = IsWindowVisible()!=FALSE;
 	if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD   && !floatWnd.m_hWnd)
 	{
 		m_bScreenshotFromTray = false;
@@ -1662,7 +1646,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 				{
 					CWindowHandlesRegion *whr =  dynamic_cast<CWindowHandlesRegion*>(rgn);
 					if(whr)
-						whr->SetWindowHidingDelay(Settings.ScreenshotSettings.WindowHidingDelay*1.2);
+						whr->SetWindowHidingDelay(int(Settings.ScreenshotSettings.WindowHidingDelay*1.2));
 					engine.captureRegion(rgn);	
 					result = engine.capturedBitmap();
 					DeleteObject(gdiBitmap);
@@ -1771,7 +1755,7 @@ bool CWizardDlg::funcFreeformScreenshot()
 
 bool CWizardDlg::IsClipboardDataAvailable()
 {
-	bool IsClipboard = IsClipboardFormatAvailable(CF_BITMAP);
+	bool IsClipboard = IsClipboardFormatAvailable(CF_BITMAP)!=FALSE;
 
 	if(!IsClipboard)
 	{

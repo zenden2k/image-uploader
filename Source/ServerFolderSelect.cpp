@@ -62,19 +62,10 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 	// Get color depth (minimum requirement is 32-bits for alpha blended images).
 	int iBitsPixel = GetDeviceCaps(::GetDC(HWND_DESKTOP),BITSPIXEL);
-	HIMAGELIST m_hToolBarImageList;
-	/*if (iBitsPixel >= 32)
-	{
-		hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_BITMAP5));
-		m_PlaceSelectorImageList.Create(16,16,ILC_COLOR32,0,6);
-		m_PlaceSelectorImageList.Add(hBitmap, (HBITMAP) NULL);
-	}
-	else*/
-	{
-		hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_SERVERTOOLBARBMP2));
-		m_PlaceSelectorImageList.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
-		m_PlaceSelectorImageList.Add(hBitmap,RGB(255,0,255));
-	}
+	
+	hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_SERVERTOOLBARBMP2));
+	m_PlaceSelectorImageList.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
+	m_PlaceSelectorImageList.Add(hBitmap,RGB(255,0,255));
 
 	m_FolderTree.SetImageList(m_PlaceSelectorImageList);
 	m_FolderMap[L""] = 0;
@@ -325,7 +316,7 @@ LRESULT CServerFolderSelect::OnCreateNestedFolder(WORD wNotifyCode, WORD wID, HW
 
 void CServerFolderSelect::BuildFolderTree(std::vector<CFolderItem> &list,const CString& parentFolderId)
 {
-	for(int i=0; i<list.size(); i++)
+	for(size_t i=0; i<list.size(); i++)
 	{
 		CFolderItem& cur = list[i] ;
 		if(cur.parentid.c_str() == parentFolderId)

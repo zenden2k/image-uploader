@@ -27,6 +27,7 @@
 
 #include <string>
 #include <vector>
+#include "../Utils/CoreUtils.h"
 
 #define NString std::string
 
@@ -102,7 +103,7 @@ class NetworkManager
 		NString m_url;
 		void* m_progressData;
 		CURLcode curl_result;
-		double m_CurrentFileSize;
+		zint64 m_CurrentFileSize;
 		std::vector<QueryParam> m_QueryParams;
 		std::vector<CustomHeaderItem> m_QueryHeaders;
 		std::vector<CustomHeaderItem> m_ResponseHeaders;

@@ -19,12 +19,12 @@
 */
 // IShellContextMenu.cpp : Implementation of CIShellContextMenu
 
-#include "stdafx.h"
 #include <atlbase.h>
 #include <atlcoll.h>
-#include "../Settings.h"
 #include "../MyUtils.h"
 #include "IShellContextMenu.h"
+#include "../3rdpart/Registry.h"
+#include "../LangClass.h"
 #include <shlobj.h>
 HINSTANCE hDllInstance;
 
@@ -129,12 +129,12 @@ STDMETHODIMP CIShellContextMenu::HandleMenuMsg2(UINT uMsg, WPARAM wParam, LPARAM
 	if (pResult == NULL)
 		pResult = &res;
 	*pResult = FALSE;
-	
+
 	switch (uMsg)
 	{
-	case WM_MEASUREITEM:
+		case WM_MEASUREITEM:
 		{
-			MEASUREITEMSTRUCT* lpmis = (MEASUREITEMSTRUCT*)lParam;
+			MEASUREITEMSTRUCT* lpmis = reinterpret_cast<MEASUREITEMSTRUCT*>(lParam);
 			if (lpmis==NULL)
 				break;
 			lpmis->itemWidth += 2;
@@ -147,7 +147,7 @@ STDMETHODIMP CIShellContextMenu::HandleMenuMsg2(UINT uMsg, WPARAM wParam, LPARAM
 		{
 			LPCTSTR resource;
 			HICON hIcon=0;
-			DRAWITEMSTRUCT* lpdis = (DRAWITEMSTRUCT*)lParam;
+			DRAWITEMSTRUCT* lpdis = reinterpret_cast<DRAWITEMSTRUCT*>(lParam);
 			if ((lpdis==NULL)||(lpdis->CtlType != ODT_MENU))
 				return S_OK;		//not for a menu
 			int i =0;
@@ -168,7 +168,7 @@ STDMETHODIMP CIShellContextMenu::HandleMenuMsg2(UINT uMsg, WPARAM wParam, LPARAM
 			else hIcon = NULL;
 			if (hIcon == NULL)
 				return S_OK;
-			
+
 			DrawIconEx(lpdis->hDC,
 				lpdis->rcItem.left - 16,
 				lpdis->rcItem.top + (lpdis->rcItem.bottom - lpdis->rcItem.top - 16) / 2,
@@ -188,6 +188,25 @@ STDMETHODIMP CIShellContextMenu::HandleMenuMsg2(UINT uMsg, WPARAM wParam, LPARAM
 // CIShellContextMenu
 HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags)
 {
+	bool ExplorerCascadedMenu;
+	bool ExplorerContextMenu;
+	bool ExplorerVideoContextMenu;
+	CRegistry Reg;
+	Reg.SetRootKey(HKEY_CURRENT_USER);
+	if (Reg.SetKey("Software\\Image Uploader", TRUE))
+	{
+		ExplorerCascadedMenu = Reg.ReadBool("ExplorerCascadedMenu");
+		ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
+		ExplorerVideoContextMenu = Reg.ReadBool("ExplorerVideoContextMenu");
+		CString lang = Reg.ReadString("Language");
+		//MessageBox(0, lang,0,0);
+		if(lang != Lang.GetLanguageName())
+		{
+			Lang.LoadLanguage(lang);
+		}
+	}
+	else return S_OK;
+
 	UINT currentCommandID = idCmdFirst;
 	if ((uFlags & 0x000F) != CMF_NORMAL  && (uFlags & CMF_VERBSONLY) == 0 && (uFlags & CMF_EXPLORE) == 0)
 		return MAKE_HRESULT(SEVERITY_SUCCESS, 0, currentCommandID);
@@ -200,7 +219,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 	if(m_FileList.GetCount() == 1 && !lstrcmpi(m_FileList[0], StartMenuFolder))
 		UseBitmaps = false;
 	UINT subIndex = indexMenu;
-	if(Settings.ExplorerCascadedMenu)
+	if(ExplorerCascadedMenu)
 		PopupMenu = CreatePopupMenu();
 	else PopupMenu = hmenu;
 
@@ -212,13 +231,13 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADFILES, TR("Загрузить файлы"),idCmdFirst,UseBitmaps,0,IDI_ICONUPLOAD);
 		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES,TR("Загрузить только изображения"),idCmdFirst,UseBitmaps,0,IDI_ICONUPLOAD);
 	}
-	if(Settings.ExplorerVideoContextMenu&&  m_FileList.GetCount()==1 &&IsVideoFile( m_FileList[0]))
+	if(ExplorerVideoContextMenu&&  m_FileList.GetCount()==1 &&IsVideoFile( m_FileList[0]))
 	{
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO,  TR("Импорт видео"),idCmdFirst,UseBitmaps,0,Settings.ExplorerCascadedMenu?0:IDI_ICONMOVIE);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO,  TR("Импорт видео"),idCmdFirst,UseBitmaps,0,ExplorerCascadedMenu?0:IDI_ICONMOVIE);
 		if(m_bMediaInfoInstalled)
-			MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_MEDIAINFO, TR("Информация о файле"),idCmdFirst,UseBitmaps,0 ,Settings.ExplorerCascadedMenu?0:IDI_ICONINFO);
+			MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_MEDIAINFO, TR("Информация о файле"),idCmdFirst,UseBitmaps,0 ,ExplorerCascadedMenu?0:IDI_ICONINFO);
 	}
-	if(Settings.ExplorerCascadedMenu)
+	if(ExplorerCascadedMenu)
 	{
 		MENUITEMINFO MenuItem;
 		MenuItem.cbSize = sizeof(MenuItem);

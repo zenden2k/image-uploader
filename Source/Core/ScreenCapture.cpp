@@ -60,31 +60,13 @@ bool GetScreenBounds(RECT &rect)
 	monitorsRects.clear();
 	EnumDisplayMonitors(0,0, MonitorEnumProc, 0);
 	CRect result;
-	//POINT topLeft = {0,0};
-	//POINT bottomRight ={0, 0};
-	for(int i=0; i< monitorsRects.size(); i++)
+
+	for(size_t i=0; i< monitorsRects.size(); i++)
 	{
 			CRect Bounds = monitorsRects[i];
-			
 			result.UnionRect(result,Bounds);
-			/*if (Bounds.TopLeft().x < topLeft.x) topLeft.x = Bounds.TopLeft().x;
-			if (Bounds.TopLeft().y< topLeft.y) topLeft.y = Bounds.TopLeft().y;
-			if ((Bounds.TopLeft().x + Bounds.Width()) > bottomRight.x) 
-				bottomRight.x = Bounds.TopLeft().x + Bounds.Width();
-			if ((Bounds.TopLeft().y + Bounds.Height()) > bottomRight.y) 
-				bottomRight.y = Bounds.TopLeft().y + Bounds.Height();
-			//if ((screen.Bounds.Y + screen.Bounds.Height) > bottomRight.Y) bottomRight.Y = screen.Bounds.Y + screen.Bounds.Height;
-		*/
-		}
-
-		rect = result;
-		/*rect.left = topLeft.x;
-		rect.top = topLeft.y;
-		rect.bottom = rect.top + bottomRight.y +abs(topLeft.y);
-		rect.right = rect.left + bottomRight.x +abs(topLeft.x);*/
-
-	//return new Rectangle(topLeft.X, topLeft.Y, bottomRight.X + Math.Abs(topLeft.X), bottomRight.Y + Math.Abs(topLeft.Y));
-
+	}
+	rect = result;
 	return true;
 }
 
@@ -162,7 +144,6 @@ void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsig
 		unsigned i, j;
 		for(j = 0; j < path.size(); j++)
 		{
-			double x, y;
 			tmp.push_back(path[j]);
 		}
 
@@ -271,7 +252,7 @@ bool CRectRegion::IsEmpty()
 {
 	CRect rect(0,0,0,0);
 	m_ScreenRegion.GetRgnBox(&rect);
-	return rect.IsRectEmpty();
+	return rect.IsRectEmpty()!=0;
 }
 
 bool CRectRegion::GetImage(HDC src, Bitmap ** res)
@@ -354,7 +335,7 @@ bool CWindowHandlesRegion::GetImage(HDC src, Bitmap ** res)
 	if(m_bFromScreen)
 	{
 		topWindow = GetTopParent(m_hWnds[0].wnd);
-		for(int i=1; i<m_hWnds.size(); i++)
+		for(size_t i=1; i<m_hWnds.size(); i++)
 		{
 			HWND curTopWindow = GetTopParent(m_hWnds[i].wnd);
 			if(topWindow != curTopWindow)
@@ -376,7 +357,7 @@ bool CWindowHandlesRegion::GetImage(HDC src, Bitmap ** res)
 		}
 	}
 
-	for(int i=0; i<m_hWnds.size(); i++)
+	for(size_t i=0; i<m_hWnds.size(); i++)
 	{
 		CRgn newRegion=GetWindowVisibleRegion(m_hWnds[i].wnd);
 		//GetWindowRect(m_hWnds[i].wnd, &captureRect);
@@ -420,7 +401,7 @@ void CWindowHandlesRegion::AddWindow(HWND wnd, bool Include)
 
 void CWindowHandlesRegion::RemoveWindow(HWND wnd)
 {
-	for(int i=0; i< m_hWnds.size(); i++)
+	for(size_t i=0; i< m_hWnds.size(); i++)
 	{
 		if(m_hWnds[i].wnd == wnd) 
 		{
@@ -509,7 +490,7 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
 			TimerWait(m_captureDelay);
 		}
 	}
-	region->PrepareShooting(!(bool)m_source);
+	region->PrepareShooting(!(bool)(m_source != 0));
 	bool result =  region->GetImage(srcDC, &m_capturedBitmap);	
 	region->AfterShooting();
 	if(m_source)
@@ -545,7 +526,7 @@ bool CFreeFormRegion::IsEmpty()
 	std::vector<POINT> curveAvgPoints;
 	
 	average_polyline(m_curvePoints, curveAvgPoints, 29);
-	for(int i=0; i<curveAvgPoints.size(); i++)
+	for(size_t i=0; i<curveAvgPoints.size(); i++)
 	{
 		points.push_back(Point(curveAvgPoints[i].x,curveAvgPoints[i].y));
 	}
@@ -568,7 +549,7 @@ bool CFreeFormRegion::GetImage(HDC src, Bitmap ** res)
 	POINT prevPoint={-1,-1};
 	std::vector<POINT> curveAvgPoints;
 	average_polyline(m_curvePoints, curveAvgPoints, 29);
-	for(int i=0; i<curveAvgPoints.size(); i++)
+	for(size_t i=0; i<curveAvgPoints.size(); i++)
 	{
 		points.push_back(Point(curveAvgPoints[i].x,curveAvgPoints[i].y));
 	}
@@ -584,10 +565,10 @@ bool CFreeFormRegion::GetImage(HDC src, Bitmap ** res)
 	CBitmap bm2;
 	bm2.CreateCompatibleBitmap(src, bmWidth, bmHeight);
 	HBITMAP oldBm = mem2.SelectBitmap(bm2);
-	!::BitBlt(mem2, 0, 0, bmWidth, bmHeight, src, grPathRect.GetLeft(), grPathRect.GetTop(), SRCCOPY|CAPTUREBLT);
+	::BitBlt(mem2, 0, 0, bmWidth, bmHeight, src, grPathRect.GetLeft(), grPathRect.GetTop(), SRCCOPY|CAPTUREBLT);
 	mem2.SelectBitmap(oldBm);
 
-	Matrix matrix(1.0f, 0.0f, 0.0f, 1.0f, -grPathRect.GetLeft(), -grPathRect.GetTop());
+	Matrix matrix(1.0f, 0.0f, 0.0f, 1.0f, REAL(-grPathRect.GetLeft()), REAL(-grPathRect.GetTop()));
 	grPath.Transform(&matrix);
 
 	Bitmap b(bm2,0);

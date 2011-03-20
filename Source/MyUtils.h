@@ -68,7 +68,7 @@ bool ExtractStrFromList(
             TCHAR cSeparator = _T(',') /* Character to be separator in list */);
 #define LOADICO(ico) LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(ico))
 
-bool FontToString(LPLOGFONT lFont, CString &Result);
+bool FontToString(LOGFONT const * lFont, CString &Result);
 bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont);
 LPTSTR ExtractFilePath(LPCTSTR FileName,LPTSTR buf);
 int GetFontSizeInTwips(int nFontSize);
@@ -144,7 +144,6 @@ static CGlobalAtom ga;
 #endif
 
 bool IsDirectory(LPCTSTR szFileName);
-BOOL IsVista();
-CString IU_GetFileMimeType (const CString& filename);
+bool IsVista();
 FILE * fopen_utf8(const char * filename, const char * mode);
 bool CheckFileName(const CString fileName);

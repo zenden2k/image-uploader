@@ -55,7 +55,7 @@ LRESULT CMyImage::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 		GetClientRect(&rc);
 		SetBkMode(hdc, TRANSPARENT);
 		HBRUSH br = CreateSolidBrush(RGB(0x52,0xaa,0x99));
-		FillRect(hdc, &rc, br);
+		//FillRect(hdc, &rc, br);
 		DeleteObject(br);
 		BitBlt(hdc, 0,0, BackBufferWidth, BackBufferHeight, BackBufferDc, 0, 0, SRCCOPY);
 	}
@@ -71,30 +71,7 @@ LRESULT CMyImage::OnEraseBkg(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BO
 	return TRUE;
 }
 	  
-Bitmap* BitmapFromResource(HINSTANCE hInstance,LPCTSTR szResName, LPCTSTR szResType)
-{
-	HRSRC hrsrc=FindResource(hInstance, szResName, szResType);
-	if(!hrsrc) return 0;
-	// "Fake" HGLOBAL - look at MSDN
-	HGLOBAL hg1 = LoadResource(hInstance, hrsrc);
-	DWORD sz = SizeofResource(hInstance, hrsrc);
-	void* ptr1 = LockResource(hg1);
-	HGLOBAL hg2 = GlobalAlloc(GMEM_FIXED, sz);
-	
-	// Copy raster data
-	CopyMemory(LPVOID(hg2), ptr1, sz);
-	IStream *pStream;
-	
-	// TRUE means free memory at Release
-	HRESULT hr = CreateStreamOnHGlobal(hg2, TRUE, &pStream);
-	if(FAILED(hr)) return 0;
 
-	// use load from IStream
-	Bitmap *image = Bitmap::FromStream(pStream);
-	pStream->Release();
-
-	return image;
-}
 
 bool CMyImage::LoadImage(LPCTSTR FileName, Image *img, int ResourceID, bool Bmp, COLORREF transp)
 {
@@ -216,15 +193,19 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image *img, int ResourceID, bool Bmp,
 			gr.FillRectangle(&br,(float)1, (float)1, (float)width, (float)height);
 
 		IsImage = true;
-		if(!FileName && !ResourceID) return 0;		
+		//if(FileName || ResourceID){ //return 0;		
+		if(bm)
 		gr.DrawImage(bm, (int)((ResourceID)?0:1+(width-newwidth)/2), (int)((ResourceID)?0:1+(height-newheight)/2), (int)newwidth,(int)newheight);
-	}
+		
+		}
 	
 	if(bm && bm!=img)
 		delete bm;
 	
 	ReleaseDC(dc);
+	
 	IsImage = true;
+	Invalidate();
 	return false;
 }
 

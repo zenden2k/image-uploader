@@ -3,7 +3,7 @@
     Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
-
+ 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -19,15 +19,14 @@
 */
 // ExplorerIntegration.cpp : Implementation of DLL Exports.
 
-
-#include "stdafx.h"
 #include "resource.h"
+#include <atlbase.h>
+#include <atlapp.h>
 #include "Generated/ExplorerIntegration.h"
 #include "ishellcontextmenu.h"
-
 #include "../LangClass.h"
-#include "../Settings.h"
 #include "../MyUtils.h"
+#include "../3rdpart/Registry.h"
 
 class CExplorerIntegrationModule : public CAtlDllModuleT< CExplorerIntegrationModule >
 {
@@ -59,10 +58,16 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRes
 			GetModuleFileName(hInstance, szFileName, 1023);
 			ExtractFilePath(szFileName, szPath);
 			Lang.SetDirectory(CString(szPath) + "Lang\\");
-			Lang.LoadList();
-			Settings.LoadSettings();
-			Lang.LoadLanguage(Settings.Language);
-			ShowVar(Settings.ExplorerCascadedMenu);
+
+			CRegistry Reg;
+			CString lang;
+			Reg.SetRootKey(HKEY_CURRENT_USER);
+			if (Reg.SetKey("Software\\Image Uploader", TRUE))
+			{
+				lang = Reg.ReadString("Language");
+			}
+
+			Lang.LoadLanguage(lang);
 		}
 
 		return _AtlModule.DllMain(dwReason, lpReserved); 

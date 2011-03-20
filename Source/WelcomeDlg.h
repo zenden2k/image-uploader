@@ -32,6 +32,7 @@ class CWelcomeDlg ;
 #include "regionselect.h"
 #include <atlcrack.h>
 
+#define ID_VIEWHISTORY 36220
 class CWelcomeDlg : 
 	public CDialogImpl<CWelcomeDlg>, 
 	public CWinDataExchange<CWelcomeDlg>, 
@@ -50,6 +51,7 @@ public:
 		///	MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBkg)
 		COMMAND_ID_HANDLER(IDC_CLIPBOARD,  OnClipboardClick)
 		COMMAND_ID_HANDLER(IDC_ADDFOLDER,  OnAddFolderClick)
+		COMMAND_ID_HANDLER(ID_VIEWHISTORY, OnViewHistoryClick)
 		COMMAND_HANDLER(IDC_SCREENSHOT, BN_CLICKED, OnBnClickedScreenshot)
 		COMMAND_HANDLER(IDC_SETTINGS, BN_CLICKED, OnBnClickedSettings)
 		COMMAND_HANDLER(IDC_ADDIMAGES, BN_CLICKED, OnBnClickedAddimages)
@@ -86,6 +88,7 @@ public:
 	LRESULT OnBnClickedAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnClipboardClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAddFolderClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnViewHistoryClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	void OnDrawClipboard();
 	LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

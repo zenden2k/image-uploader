@@ -415,7 +415,6 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction &Action)
 		DebugMessage(_Post);
 }
 
-
 std::string  CDefaultUploadEngine::ReplaceVars(const std::string& Text)
 {
 	std::string  Result =  Text;

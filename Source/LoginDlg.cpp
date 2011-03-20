@@ -63,7 +63,7 @@ LRESULT CLoginDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& b
 	li.Login = WCstringToUtf8(Buffer);
 	GetDlgItemText(IDC_PASSWORDEDIT, Buffer, 256);
 	li.Password = WCstringToUtf8(Buffer);
-	li.DoAuth = SendDlgItemMessage(IDC_DOAUTH, BM_GETCHECK);
+	li.DoAuth = SendDlgItemMessage(IDC_DOAUTH, BM_GETCHECK) != FALSE;
 	
 	Settings.ServerByUtf8Name(m_UploadEngine->Name).authData = li;
 

@@ -113,7 +113,7 @@ int NetworkManager::ProgressFunc(void *clientp, double dltotal, double dlnow, do
 	if(nm && nm->m_progressCallbackFunc)
 	{
 		if(ultotal<0 && nm->m_CurrentFileSize>0)
-			ultotal = nm->m_CurrentFileSize;
+			ultotal = double(nm->m_CurrentFileSize);
 		return nm->m_progressCallbackFunc(nm->m_progressData, dltotal, dlnow, ultotal, ulnow);
 	}
 	return 0;
@@ -231,7 +231,7 @@ bool NetworkManager::doUploadMultipartData()
 					openedFiles.push_back(curFile);
 					struct stat file_info; 
 				 /* to get the file size */
-					if(fstat(fileno(curFile), &file_info) != 0) {
+					if(fstat(_fileno(curFile), &file_info) != 0) {
 						
 						return false; /* can't continue */
 						} 
@@ -519,7 +519,7 @@ size_t NetworkManager::private_read_callback(void *ptr, size_t size, size_t nmem
 	else
 	{
 		// dont event try to remove "<>" brackets!!
-		int canRead = std::min<>((long)m_uploadData.size()-m_nUploadDataOffset, (long)wantsToRead);
+		int canRead = std::min<>((int)m_uploadData.size()-m_nUploadDataOffset, (int)wantsToRead);
 		memcpy(ptr, m_uploadData.c_str(),canRead);
 		m_nUploadDataOffset+=canRead;
 		retcode = canRead;
@@ -530,8 +530,6 @@ size_t NetworkManager::private_read_callback(void *ptr, size_t size, size_t nmem
 
 bool NetworkManager::doUpload(const NString& fileName, const NString &data)
 {
-	struct stat file_info; 
-  
 	if(data.empty())
 	{
 		m_uploadingFile = IuCoreUtils::fopen_utf8(fileName.c_str(), "rb"); /* open file to upload */
@@ -539,13 +537,10 @@ bool NetworkManager::doUpload(const NString& fileName, const NString &data)
 		{
 			return false; /* can't continue */
 		}
-
-	  /* to get the file size */
-	  if(fstat(fileno(m_uploadingFile), &file_info) != 0) {
-
-		 return false; /* can't continue */
-	  } 
-	  m_CurrentFileSize = file_info.st_size;
+		/* to get the file size */
+		m_CurrentFileSize = IuCoreUtils::getFileSize(fileName);
+		if(m_CurrentFileSize < 0) 
+			return false;
 	}
 	else
 	{
@@ -557,37 +552,25 @@ bool NetworkManager::doUpload(const NString& fileName, const NString &data)
 		if(!private_apply_method())
 	curl_easy_setopt(curl_handle, CURLOPT_POST, 1L);
 	curl_easy_setopt(curl_handle,CURLOPT_POSTFIELDS, NULL);
-	
 	curl_easy_setopt(curl_handle, CURLOPT_READDATA, this);
-
-
-	char buf[25];
-	sprintf(buf, "%d", (int)m_CurrentFileSize);
-	addQueryHeader("Content-Length", buf);
 	
+	addQueryHeader("Content-Length", IuCoreUtils::zint64ToString(m_CurrentFileSize));
 	private_initTransfer();
-	
-	curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE,
-                     (curl_off_t)m_CurrentFileSize); 
+	curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, (curl_off_t)m_CurrentFileSize); 
 	curl_result = curl_easy_perform(curl_handle);
-
-	std::cout<<m_errorBuffer;
-
 	if(m_uploadingFile)
 		 fclose(m_uploadingFile);
 	bool res = private_on_finish_request();
 	return res;
-
 }
-
 
 bool NetworkManager::private_apply_method()
 {
-	if(m_method=="POST")
+	if(m_method == "POST")
 		curl_easy_setopt(curl_handle, CURLOPT_POST, 1L);
-	else 	if(m_method=="GET")
+	else 	if(m_method == "GET")
 		curl_easy_setopt(curl_handle, CURLOPT_HTTPGET, 1L);
-	else if (m_method=="PUT")
+	else if (m_method == "PUT")
 			curl_easy_setopt(curl_handle, CURLOPT_UPLOAD, 1L);
 	else if (!m_method.empty())
 	{

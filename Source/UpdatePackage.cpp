@@ -1,3 +1,23 @@
+/*
+    Image Uploader - program for uploading images/files to Internet
+    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+	 
+    HomePage:    http://zenden.ws/imageuploader
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "UpdatePackage.h"
 #include "Common/unzipper.h"
 #include "Common.h"
@@ -48,13 +68,13 @@ CUpdateInfo::CUpdateInfo()
 
 bool CUpdateInfo::LoadUpdateFromFile(const CString& filename)
 {
-	CMyXml m_xml;
-	if(!m_xml.Load(filename))	
+	ZSimpleXml xml;
+	if(!xml.LoadFromFile(WCstringToUtf8(filename)))	
 	{
-		WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file "))+filename+_T("\r\n")+m_xml.GetError());
+		WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file "))+filename+_T("\r\n"));
 	}
 	m_FileName = filename;
-	Parse(m_xml);
+	Parse(xml);
 	return true;
 }
 
@@ -71,10 +91,10 @@ bool CUpdateInfo::SaveToFile(const CString& filename)
 
 bool CUpdateInfo::LoadUpdateFromBuffer(const CString& buffer)
 {
-	CMyXml m_xml;
-	if(!m_xml.SetDoc(buffer))
+	ZSimpleXml m_xml;
+	if(!m_xml.LoadFromString(WCstringToUtf8(buffer)))
 	{
-		WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file \r\n"))+m_xml.GetError()+_T("\r\nServer answer:\r\n")+buffer);
+		WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file \r\n"))+_T("\r\nServer answer:\r\n")+buffer);
 		return false;
 	}
 	m_Buffer = buffer;
@@ -90,30 +110,39 @@ bool CUpdateInfo::DoUpdate(const CUpdateInfo &newPackage)
 	return true;
 }
 
-bool CUpdateInfo::Parse(CMyXml &m_xml)
+bool CUpdateInfo::Parse( ZSimpleXml &xml)
 {
-	if (m_xml.FindElem(_T("UpdateInfo"))) 
-	{
-		CString packageName, UpdateUrl;
-		m_xml.GetAttrib(_T("Name"), m_PackageName);
+	ZSimpleXmlNode root = xml.getRoot("UpdateInfo", false);
+	if(root.IsNull()) return false;
+	
+	CString packageName, UpdateUrl;
+	m_PackageName = Utf8ToWCstring(root.Attribute("Name"));
+	m_UpdateUrl = Utf8ToWCstring(root.Attribute("UpdateUrl"));
+	m_DownloadUrl = Utf8ToWCstring(root.Attribute("DownloadUrl"));
+	m_Hash = Utf8ToWCstring(root.Attribute("Hash"));
+	m_TimeStamp = root.AttributeInt("TimeStamp");
+	m_DisplayName = Utf8ToWCstring(root.Attribute("DisplayName"));
+		
+	/*m_xml.GetAttrib(_T("Name"), m_PackageName);
 		m_xml.GetAttrib(_T("UpdateUrl"), m_UpdateUrl);
 		m_xml.GetAttrib(_T("DownloadUrl"), m_DownloadUrl);
 		m_xml.GetAttrib(_T("Hash"), m_Hash);
 		m_xml.GetAttrib(_T("TimeStamp"), m_TimeStamp);
-		m_xml.GetAttrib(_T("DisplayName"), m_DisplayName);
+		m_xml.GetAttrib(_T("DisplayName"), m_DisplayName);*/
 
 		if(m_PackageName.IsEmpty() || m_UpdateUrl.IsEmpty() || m_DownloadUrl.IsEmpty() || m_Hash.IsEmpty()  || !m_TimeStamp)
 			return false;
 		int core = 0;
-		m_xml.GetAttrib(_T("CoreUpdate"), core);
-		m_CoreUpdate = core;
-		m_xml.IntoElem();
-		if(m_xml.FindElem(_T("Info")))
-		{
-			m_xml.GetData(m_ReadableText);
+		core=root.AttributeInt("CoreUpdate");
+		m_CoreUpdate = core!=0;
+		
+		//if(m_xml.FindElem(_T("Info")))
+	//	{
+			m_ReadableText = Utf8ToWCstring(root["Info"].Text());
+			//m_xml.GetData(m_ReadableText);
 			m_ReadableText.Replace(_T("\n"),_T("\r\n"));
-		}
-	}
+		//}
+	
 	return true;
 }
 
@@ -154,7 +183,7 @@ bool CUpdateManager::CheckUpdates()
 		return false;
 	}
 
-	for(int i=0; i<fileList.size(); i++)
+	for(size_t i=0; i<fileList.size(); i++)
 	{
 		CString fileName = IU_GetDataFolder()+_T("Update\\") + fileList[i];
 		if(!internal_load_update(fileName))
@@ -172,7 +201,7 @@ const CString CUpdateManager::ErrorString()
 
 bool CUpdateManager::DoUpdates()
 {
-	for(int i=0; i<m_updateList.size(); i++)
+	for(size_t i=0; i<m_updateList.size(); i++)
 	{
 		nCurrentIndex = i;
 		if(m_stop) return 0;
@@ -225,7 +254,7 @@ bool CUpdateManager::internal_load_update(CString name)
 
 bool CUpdateManager::AreCoreUpdates()
 {
-	return m_nCoreUpdates;
+	return m_nCoreUpdates!=0;
 }
 
 bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
@@ -289,60 +318,58 @@ CUpdatePackage::CUpdatePackage()
 bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
 {
 	if(!FileExists(filename)) return false;
-	if(!m_xml.Load(filename))
+	if(!m_xml.LoadFromFile(WCstringToUtf8(filename)))
 	{
 		WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file \'"))+myExtractFileName(filename));
-			
-		MessageBox(0, m_xml.GetError(),0,0);
 		return false;
 	}
 
 	TCHAR buffer[256];
 	ExtractFilePath(filename, buffer);
 	m_PackageFolder = buffer;
-	if (m_xml.FindElem(_T("UpdatePackage"))) 
-	{
+
+	ZSimpleXmlNode root = m_xml.getRoot("UpdatePackage", false);
+	if(root.IsNull()) return false;
+
 		
 		CString packageName, UpdateUrl;
-		m_xml.GetAttrib(_T("Name"), m_PackageName);
-		m_xml.GetAttrib(_T("TimeStamp"), m_TimeStamp);
-		int core=0;
-		m_xml.GetAttrib(_T("CoreUpdate"), core);
-		m_CoreUpdate = core;
-		m_xml.IntoElem();
-		if (m_xml.FindElem(_T("Entries"))) 
+		packageName = Utf8ToWCstring(root.Attribute("Name"));
+		m_TimeStamp =  root.AttributeInt("TimeStamp");
+		
+		int core=root.AttributeInt("CoreUpdate");
+		
+		m_CoreUpdate = (core != 0);
+		
+		ZSimpleXmlNode entry = root["Entries"];
+		std::vector<ZSimpleXmlNode> entries;
+		entry.GetChilds("Entry", entries);
+
+		for(size_t i=0; i< entries.size(); i++)
 		{
-			m_xml.IntoElem();
-			while(m_xml.FindElem(_T("Entry")))
-			{
 				CUpdateItem ui;
-				m_xml.GetAttrib(_T("Name"), ui.name);
-				m_xml.GetAttrib(_T("Hash"), ui.hash);
-				m_xml.GetAttrib(_T("SaveTo"), ui.saveTo);
-				m_xml.GetAttrib(_T("Action"), ui.action);
+				ui.name = Utf8ToWCstring(entries[i].Attribute("Name"));
+				ui.hash = Utf8ToWCstring(entries[i].Attribute("Hash"));
+				ui.saveTo = Utf8ToWCstring(entries[i].Attribute("SaveTo"));
+				ui.action = Utf8ToWCstring(entries[i].Attribute("Action"));
 				
 				if(ui.name.IsEmpty()  || (ui.hash.IsEmpty() &&  ui.action!=_T("delete") )|| ui.saveTo.IsEmpty())
 					continue;
-					m_entries.push_back(ui);
-
-
-			}
+				m_entries.push_back(ui);
+			
 		}
-	}
+	
 	return true;
 
 }
 
 bool CUpdatePackage::doUpdate()
 {
-
-	for(int i=0; i< m_entries.size(); i++)
-	
-	{CUpdateItem &ue = m_entries[i];
+	for(size_t i=0; i< m_entries.size(); i++)
+	{
+		CUpdateItem &ue = m_entries[i];
 		CString copyFrom, copyTo;
 		copyFrom = m_PackageFolder + ue.name;
 		copyTo = ue.saveTo;
-		
 		if( (ue.hash != IU_md5_file(copyFrom) || ue.hash.IsEmpty()) && ue.action != _T("delete"))
 		{
 			setStatusText( CString(TR("Не совпал MD5 хэш файла "))+myExtractFileName( copyTo));
@@ -350,7 +377,7 @@ bool CUpdatePackage::doUpdate()
 		}
 	}
 
-	for(int i=0; i< m_entries.size(); i++)
+	for(size_t i=0; i< m_entries.size(); i++)
 	{
 		CUpdateItem &ue = m_entries[i];
 	
@@ -423,7 +450,7 @@ CString CUpdateManager::generateReport()
 {
 	CString text;
 	
-	for(int i=0; i<m_updateList.size(); i++)
+	for(size_t i=0; i<m_updateList.size(); i++)
 	{
 		time_t t = m_updateList[i].m_TimeStamp;
 		tm * timeinfo = localtime ( &t );
@@ -431,11 +458,9 @@ CString CUpdateManager::generateReport()
 		date.Format(_T("[%02d.%02d.%04d]"),(int)timeinfo->tm_mday,(int) timeinfo->tm_mon+1, (int)1900+timeinfo->tm_year);
 		text += _T(" * ")+m_updateList[i].m_DisplayName+_T("  ")+date+_T("\r\n\r\n");
 		text += m_updateList[i].m_ReadableText;
-		text += _T("\r\n\r\n");		
+		text += _T("\r\n");		
 	}
-	
 	return text;
-	
 }
 void CUpdatePackage::setUpdateStatusCallback(CUpdateStatusCallback * callback)
 {
@@ -454,19 +479,19 @@ void CUpdateManager::updateStatus(int packageIndex, const CString status)
 
 bool CUpdateManager::AreUpdatesAvailable()
 {
-	return m_updateList.size();
+	return (m_updateList.size() != 0);
 }
 
 int CUpdateManager::progressCallback(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
 {
 	CUpdateManager * um = reinterpret_cast<CUpdateManager*>( clientp);
 	CString text;
-	TCHAR buf1[100], buf2[100];
-	BytesToString(dlnow, buf1, 100);
-	BytesToString(dltotal, buf2, 100);
+	CString buf1, buf2;
+	buf1 = Utf8ToWCstring(IuCoreUtils::fileSizeToString(zint64(dlnow)));
+	buf2 = Utf8ToWCstring(IuCoreUtils::fileSizeToString(zint64(dltotal)));
 	int percent = 0;
 	if(dltotal != 0 )
-	percent = (dlnow/ dltotal) * 100;
+	percent = int((dlnow/ dltotal) * 100);
 	if(percent > 100) percent = 0;
 	text.Format(TR("Скачано %s из %s (%d %%)"),(LPCTSTR)buf1, (LPCTSTR)buf2,percent);
 	um->updateStatus(0, text);

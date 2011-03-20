@@ -32,7 +32,7 @@ struct DownloadFileListItem
 	std::string fileName;
 	std::string displayName;
 	std::string url;
-	int id;
+	void* id;
 };
 
 using namespace fastdelegate;
@@ -44,20 +44,24 @@ class CFileDownloader
 		std::vector<DownloadFileListItem> m_fileList;
 		int m_nThreadCount;
 		int m_nRunningThreads;
+		std::vector<HANDLE> m_hThreads;
 		public:
 			CFileDownloader();
-			void AddFile(const std::string& url, int id);
+			void AddFile(const std::string& url, void* id);
 			bool start();
-			static void thread_func(void * param);
+			static unsigned int __stdcall thread_func(void * param);
 			void memberThreadFunc();
+			bool waitForFinished(unsigned int msec = -1);
 			bool getNextJob(DownloadFileListItem& item);
-			void setThreadCount();
+			void setThreadCount(int n);
 			CAutoCriticalSection m_CS;
 			bool m_NeedStop;
 			bool m_IsRunning;
 			void stop();
+			void kill();
 			bool IsRunning();
 			FastDelegate0<> onQueueFinished;
 			FastDelegate1<NetworkManager*> onConfigureNetworkManager;
 			FastDelegate2<bool, DownloadFileListItem, bool> onFileFinished;
+			static int ProgressFunc (void* userData, double dltotal,double dlnow,double ultotal, double ulnow);
 };

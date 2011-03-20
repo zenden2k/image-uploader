@@ -80,8 +80,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	TRC(IDC_AUTOSHOWLOG, "Автоматически показывать окно лога в случае ошибок");
 	TRC(IDC_SHELLSENDTOITEM, "Добавить Image Uploader в меню \"Отправить\"");
 	TRC(IDC_CONFIRMONEXIT, "Спрашивать подтверждение при выходе");
-	BOOL temp;
-
+	
 	SetDlgItemText(IDC_IMAGEEDITORPATH, Settings.ImageEditorPath);
 	
 	for(int i=0; i<_EngineList->count(); i++)
@@ -110,6 +109,9 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	SendDlgItemMessage(IDC_LANGLIST,CB_SETCURSEL,Index);
 
 	SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_SETCHECK, Settings.ExplorerContextMenu);
+	
+	bool shellIntegrationAvailable = FileExists(GetAppFolder() + "ExplorerIntegration.dll")!=0;
+
 	SendDlgItemMessage(IDC_SHELLVIDEOCONTEXTMENUITEM, BM_SETCHECK, Settings.ExplorerVideoContextMenu);
 	SendDlgItemMessage(IDC_SHELLSENDTOITEM, BM_SETCHECK, Settings.SendToContextMenu);
 	SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_SETCHECK, Settings.ConfirmOnExit);
@@ -117,6 +119,10 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	
 	SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_SETCHECK, Settings.QuickUpload);
 	SendDlgItemMessage(IDC_AUTOSHOWLOG, BM_SETCHECK, Settings.AutoShowLog);
+
+	::EnableWindow(GetDlgItem(IDC_SHELLVIDEOCONTEXTMENUITEM), shellIntegrationAvailable);
+	::EnableWindow(GetDlgItem(IDC_CASCADEDCONTEXTMENU), shellIntegrationAvailable);
+	::EnableWindow(GetDlgItem(IDC_SHELLIMGCONTEXTMENUITEM), shellIntegrationAvailable);
 	
 	BOOL b;
 	OnClickedQuickUpload(0, IDC_STARTUPLOADINGFROMSHELL,0, b);
@@ -156,34 +162,34 @@ bool CGeneralSettings::Apply()
 	GetDlgItemText(IDC_IMAGEEDITORPATH, szBuf, 256);
 	Settings.ImageEditorPath = szBuf;
 	Settings.ExplorerContextMenu_changed = Settings.ExplorerContextMenu; 
-	Settings.ExplorerContextMenu = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK);
+	Settings.ExplorerContextMenu = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED;
 	Settings.ExplorerContextMenu_changed ^= (Settings.ExplorerContextMenu);
 	
 	bool Temp = Settings.ExplorerVideoContextMenu;
-	Settings.ExplorerVideoContextMenu = SendDlgItemMessage(IDC_SHELLVIDEOCONTEXTMENUITEM, BM_GETCHECK);
+	Settings.ExplorerVideoContextMenu = SendDlgItemMessage(IDC_SHELLVIDEOCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED;
 	Temp ^= Settings.ExplorerVideoContextMenu;
 	Settings.ExplorerContextMenu_changed|=Temp;
 
 	Temp = Settings.ExplorerCascadedMenu;
-	Settings.ExplorerCascadedMenu = SendDlgItemMessage(IDC_CASCADEDCONTEXTMENU, BM_GETCHECK);
+	Settings.ExplorerCascadedMenu = SendDlgItemMessage(IDC_CASCADEDCONTEXTMENU, BM_GETCHECK)==BST_CHECKED;
 	Temp ^= Settings.ExplorerCascadedMenu;
 	Settings.ExplorerContextMenu_changed|=Temp;
 
 	Settings.SendToContextMenu_changed = Settings.SendToContextMenu;
-	Settings.SendToContextMenu = SendDlgItemMessage(IDC_SHELLSENDTOITEM, BM_GETCHECK);
+	Settings.SendToContextMenu = SendDlgItemMessage(IDC_SHELLSENDTOITEM, BM_GETCHECK)==BST_CHECKED;
 	Settings.SendToContextMenu_changed ^= Settings.SendToContextMenu;
 
-	Settings.QuickUpload = SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_GETCHECK);
+	Settings.QuickUpload = SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_GETCHECK)==BST_CHECKED;
 	Settings.QuickServerID = SendDlgItemMessage(IDC_SERVERLIST, CB_GETCURSEL, 0, 0);
-	Settings.AutoShowLog = SendDlgItemMessage(IDC_AUTOSHOWLOG,  BM_GETCHECK );
-	Settings.ConfirmOnExit = SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_GETCHECK);
+	Settings.AutoShowLog = SendDlgItemMessage(IDC_AUTOSHOWLOG,  BM_GETCHECK )==BST_CHECKED;
+	Settings.ConfirmOnExit = SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_GETCHECK)==BST_CHECKED;
 	
 	return true;
 }
 
 LRESULT CGeneralSettings::OnClickedQuickUpload(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	bool Checked = SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_GETCHECK);
+	bool Checked = SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_GETCHECK)==BST_CHECKED;
 	EnableNextN(GetDlgItem(wID), 1, Checked);
 	return 0;
 }
