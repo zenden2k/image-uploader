@@ -1,0 +1,2 @@
+call create_installer
+call create_installer_win2000
