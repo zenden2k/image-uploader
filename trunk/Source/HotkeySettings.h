@@ -28,9 +28,11 @@
 
 #define IDM_CLEARHOTKEY 10000
 #define IDM_CLEARALLHOTKEYS IDM_CLEARHOTKEY + 1
-
+class CHotkeyItem;
 #include "hotkeyeditor.h"
 #include <atlctrls.h>
+
+
 class CHotkeyList: public CAtlArray<CHotkeyItem>
 {
 public:
@@ -45,7 +47,6 @@ public:
 	CString toString() const;
 	bool DeSerialize(const CString &data);
 	int getFuncIndex(const CString &func);
-		
 };
 
 class CHotkeySettingsPage : 

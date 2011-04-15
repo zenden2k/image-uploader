@@ -58,8 +58,8 @@ class CLogListBox :
 		LRESULT OnKillFocus(HWND hwndNewFocus);
 	public:
 		int NotifyParent(int nItem);
-		HICON ErrorIcon, WarningIcon;
-		HFONT UnderlineFont, NormalFont, BoldFont;
+		CIcon ErrorIcon, WarningIcon;
+		CFont UnderlineFont, NormalFont, BoldFont;
 		BOOL SubclassWindow(HWND hWnd);
 		void Init();
 		void Clear();

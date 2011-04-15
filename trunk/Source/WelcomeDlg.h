@@ -100,6 +100,7 @@ public:
 	bool OnShow();
 	bool QuickRegionPrint;
 	CMyImage LeftImage;CMyImage LogoImage;
+	CFont NewFont;
 };
 
 

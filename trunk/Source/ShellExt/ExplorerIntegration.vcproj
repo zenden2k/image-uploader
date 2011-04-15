@@ -601,7 +601,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release optimized|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)Build\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfATL="0"
@@ -647,7 +647,7 @@
 				RuntimeTypeInfo="false"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				WarnAsError="true"
+				WarnAsError="false"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
@@ -702,8 +702,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release optimized|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)Build\$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)Build\Temp\$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -741,8 +741,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				FavorSizeOrSpeed="2"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;IU_SHELLEXT"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;IU_SHELLEXT;_WIN64"
 				RuntimeLibrary="0"
 				RuntimeTypeInfo="false"
 				UsePrecompiledHeader="0"
@@ -826,14 +826,38 @@
 			<File
 				RelativePath=".\IShellContextMenu.cpp"
 				>
+				<FileConfiguration
+					Name="Release optimized|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						WarnAsError="false"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\LangClass.cpp"
 				>
+				<FileConfiguration
+					Name="Release optimized|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						WarnAsError="false"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\MyUtils.cpp"
 				>
+				<FileConfiguration
+					Name="Release optimized|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						WarnAsError="false"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\MyUtils.h"
@@ -842,6 +866,14 @@
 			<File
 				RelativePath="..\3rdpart\Registry.cpp"
 				>
+				<FileConfiguration
+					Name="Release optimized|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						WarnAsError="false"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\stdafx.cpp"

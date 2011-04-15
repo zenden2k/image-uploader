@@ -277,7 +277,7 @@ public:
 		else
 		{
 			TCHAR szText [256];
-			if (LoadString (_Module .GetResourceInstance (),
+			if (LoadString (GetModuleHandle(0),
 				nID, szText, sizeof (szText) / sizeof (szText [0])) == 0)
 				return;
 			SetCustomText (szText);
@@ -305,7 +305,7 @@ public:
 		else
 		{
 			TCHAR szText [256];
-			if (LoadString (_Module .GetResourceInstance (),
+			if (LoadString (GetModuleHandle(0),
 				nID, szText, sizeof (szText) / sizeof (szText [0])) == 0)
 				return;
 			SetDefaultText (szText);

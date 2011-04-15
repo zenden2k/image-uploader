@@ -1,16 +1,29 @@
+/*
+Image Uploader - program for uploading images/files to Internet
+Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+
+HomePage:    http://zenden.ws/imageuploader
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #ifndef _IU_CORE_UTILS_H
 #define _IU_CORE_UTILS_H
 
 #include <cstdio>
 #include <string>
-
-
-typedef std::string Utf8String;
-#ifdef _MSC_VER
-	#define zint64 __int64
-#else
-	#define zint64  long long
-#endif
+#include "CoreTypes.h"
 
 namespace IuCoreUtils
 {
@@ -38,5 +51,6 @@ namespace IuCoreUtils
 	const std::string timeStampToString(time_t t);
 	Utf8String fileSizeToString(zint64 nBytes);
 	bool createDirectory(const Utf8String path);
+	bool copyFile(const std::string& src, const std::string & dest, bool overwrite = true);
 };
 #endif

@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
+#include "atlheaders.h"
 #include "RegionSelect.h"
 #include "common.h"
 #include <math.h>
@@ -71,7 +71,7 @@ HWND WindowUnderCursor(POINT pt, HWND exclude)
 	{
 		EnumWindows(RegionEnumWindowsProc, 0);
 	}
-	for(int i=0; i<windowsList.size(); i++)
+	for(size_t i=0; i<windowsList.size(); i++)
 	{
 		WindowsListItem &curItem = windowsList[i];
 		if(::PtInRect(&curItem.rect, pt) && curItem.handle!=exclude && IsWindowVisible(curItem.handle))
@@ -116,6 +116,9 @@ CRegionSelect::CRegionSelect()
 
 CRegionSelect::~CRegionSelect()
 { 
+	delete m_ResultRegion;
+	if(DrawingPen) DeleteObject(DrawingPen);
+	if(DrawingBrush) DeleteObject(DrawingBrush);
 	if(pen)	DeleteObject(pen);
 	if(CrossCursor)  DeleteObject(CrossCursor);
 	Detach();
@@ -132,10 +135,10 @@ LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 	BeginPaint(&ps);
 
 	HDC dc = ps.hdc;
-	
+
 	int w = ps.rcPaint.right-ps.rcPaint.left;
 	int h = ps.rcPaint.bottom-ps.rcPaint.top;
-	
+
 	if(m_bPictureChanged)
 	{
 		if(Down) return 0;
@@ -151,33 +154,37 @@ LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 		br.CreateSolidBrush(RGB(200,200,0));
 		BLENDFUNCTION bf ;
 		//настройки прозрачности
-	  bf.BlendOp = AC_SRC_OVER;
-	  bf.BlendFlags = 1;
-	  bf.SourceConstantAlpha = 40; // прозрачность 50% (0 - 255)
-	  bf.AlphaFormat = 0;
-		if(RectCount)
-		AlphaBlend(doubleDC, ps.rcPaint.left, ps.rcPaint.top, w,h, alphaDC, ps.rcPaint.left, ps.rcPaint.top, w,h, bf);
+		bf.BlendOp = AC_SRC_OVER;
+		bf.BlendFlags = 1;
+		bf.SourceConstantAlpha = 40; // прозрачность 50% (0 - 255)
+		bf.AlphaFormat = 0;///*0 */ /*AC_SRC_ALPHA*/0;
+		
+		if(RectCount) 
+			if(AlphaBlend(doubleDC, ps.rcPaint.left, ps.rcPaint.top, w,h, alphaDC, ps.rcPaint.left, ps.rcPaint.top, w,h, bf)==FALSE)
+			{
+				//MessageBox(_T("Alphablend failed"));
+			};
 		newRegion.DeleteObject();
 		newRegion.CreateRectRgn(0,0,rc.right,rc.bottom);
 		SelectClipRgn(doubleDC, newRegion);
 		RECT SelWndRect;
-		  if(hSelWnd)
-		  {
-				CRgn WindowRgn = GetWindowVisibleRegion(hSelWnd);
-				WindowRgn.OffsetRgn(topLeft);
-				WindowRgn.GetRgnBox(&SelWndRect);
-				CRect DrawingRect = SelWndRect;
-				DrawingRect.DeflateRect(2, 2);
-				SelectObject(doubleDC, pen);
-				SetROP2(doubleDC, R2_NOTXORPEN);
-				SelectClipRgn(doubleDC, 0);
-				Rectangle(doubleDC, DrawingRect.left,DrawingRect.top, DrawingRect.right, DrawingRect.bottom);
-		  }
+		if(hSelWnd)
+		{
+			CRgn WindowRgn = GetWindowVisibleRegion(hSelWnd);
+			WindowRgn.OffsetRgn(topLeft);
+			WindowRgn.GetRgnBox(&SelWndRect);
+			CRect DrawingRect = SelWndRect;
+			DrawingRect.DeflateRect(2, 2);
+			SelectObject(doubleDC, pen);
+			SetROP2(doubleDC, R2_NOTXORPEN);
+			SelectClipRgn(doubleDC, 0);
+			Rectangle(doubleDC, DrawingRect.left,DrawingRect.top, DrawingRect.right, DrawingRect.bottom);
+		}
 		m_bPictureChanged = false;
 	}
 	BitBlt(dc,ps.rcPaint.left,
-	ps.rcPaint.top,w,h,doubleDC,ps.rcPaint.left,
-	ps.rcPaint.top,SRCCOPY);
+		ps.rcPaint.top,w,h,doubleDC,ps.rcPaint.left,
+		ps.rcPaint.top,SRCCOPY);
 
 	EndPaint(&ps);
 	m_bPainted = true;
@@ -345,6 +352,7 @@ LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 				InvalidateRect(&RectToRepaint, false);
 
 			}
+			ReleaseDC(dc);
 		}
 }
 		if(wParam & MK_RBUTTON)
@@ -488,8 +496,19 @@ bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height)
 
 	m_Width = width;
 	m_Height = height;
+	BITMAPINFOHEADER    bmi;
+	memset(&bmi, 0, sizeof(bmi));
+	bmi.biSize        = sizeof(bmi);
+    bmi.biWidth        = m_Width;
+    bmi.biHeight        = m_Height;
+    bmi.biPlanes        = 1;
+    bmi.biBitCount        = 4 * 8;
+    bmi.biCompression    = BI_RGB;
 
 	HDC dstDC = ::GetDC(0);
+	 //doubleBm.
+  ///* m_hBitmap = */CreateDIBSection(dstDC, (BITMAPINFO*)&bmi, DIB_RGB_COLORS, 0, NULL, NULL);
+
 	doubleBm.CreateCompatibleBitmap(dstDC, m_Width, m_Height);
 	doubleDC.CreateCompatibleDC(dstDC);
 	HBITMAP oldDoubleBm = doubleDC.SelectBitmap(doubleBm);
@@ -507,11 +526,16 @@ bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height)
 
 	cxOld = -1;
 	cyOld = -1;
+   // HDC hDC;
+    //hDC = GetDC(NULL);
+	 //alphaBm.
+   ///* m_hBitmap =*/ CreateDIBSection(dstDC, (BITMAPINFO*)&bmi, DIB_RGB_COLORS, 0, NULL, NULL);
 
 	alphaBm.CreateCompatibleBitmap(dstDC, m_Width, m_Height);
+	
 	CBrush br2;
 	br2.CreateSolidBrush(RGB(0,0,150));
-	alphaDC.CreateCompatibleDC(memDC2);
+	alphaDC.CreateCompatibleDC(dstDC);
 	HBITMAP oldAlphaBm = alphaDC.SelectBitmap(alphaBm);
 	RECT r = {0, 0, m_Width, m_Height};
 	alphaDC.FillRect(&r, br2);	
@@ -565,7 +589,7 @@ void CRegionSelect::Finish()
 	else if(m_SelectionMode == smFreeform)
 	{
 		CFreeFormRegion * newRegion = new CFreeFormRegion();
-		for(int i=0; i<m_curvePoints.size(); i++)
+		for(size_t i=0; i<m_curvePoints.size(); i++)
 		{
 			newRegion->AddPoint(m_curvePoints[i]);
 		}
@@ -661,30 +685,19 @@ bool CRegionSelect::setDrawingParams(COLORREF color, int brushSize)
 
 LRESULT CRegionSelect::OnMButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	MENUITEMINFO mi;
 	HWND 	hwnd = (HWND) wParam;  
 	POINT ClientPoint, ScreenPoint;
 
+	ScreenPoint.x = LOWORD(lParam); 
+	ScreenPoint.y = HIWORD(lParam); 
+	ClientPoint = ScreenPoint;
+	::ScreenToClient(hwnd, &ClientPoint);
 	
-	{
-		ScreenPoint.x = LOWORD(lParam); 
-		ScreenPoint.y = HIWORD(lParam); 
-		ClientPoint = ScreenPoint;
-		::ScreenToClient(hwnd, &ClientPoint);
-	}
-
-	/*CMenu FolderMenu;
-	FolderMenu.CreatePopupMenu();
-	FolderMenu.AppendMenu(MF_STRING, IDC_CLEARLIST, TR("Очистить список"));
-	FolderMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);*/
-	
-
 	CColorDialog ColorDialog(m_brushColor);
 	if(ColorDialog.DoModal(m_hWnd) == IDOK)
 	{
 		COLORREF newColor =  ColorDialog.GetColor();
 		setDrawingParams(newColor, m_brushSize);
-		//Invalidate();
 		return TRUE;
 	}
 	return 0;

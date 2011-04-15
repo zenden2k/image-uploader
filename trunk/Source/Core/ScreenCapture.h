@@ -9,6 +9,13 @@ HRGN GetWindowVisibleRegion(HWND wnd);
 
 void TimerWait(int Delay);
 enum CaptureMode {cmFullScreen, cmActiveWindow, cmRectangles, cmFreeform, cmWindowHandles };
+
+struct WindowCapturingFlags
+{
+	bool RemoveCorners;
+	bool AddShadow;
+	bool RemoveBackground;
+};
 class CScreenshotRegion
 {
 public:
@@ -56,12 +63,17 @@ public:
 	void RemoveWindow(HWND wnd);
 	void Clear();
 	void SetWindowHidingDelay(int delay);
+	void setWindowCapturingFlags(WindowCapturingFlags flags);
 	virtual bool GetImage(HDC src, Bitmap ** res);
 	bool IsEmpty();
 	~CWindowHandlesRegion();
 protected:
+	Bitmap* CaptureWithTransparencyUsingDWM();
 	HWND topWindow;
 	int m_WindowHidingDelay;
+	bool m_ClearBackground;
+	bool m_RemoveCorners;
+	bool m_PreserveShadow;
 	std::vector<CWindowHandlesRegionItem> m_hWnds;
 };
 
@@ -98,6 +110,8 @@ public:
 	bool captureRegion(CScreenshotRegion* region);
 	void setDelay(int msec);
 	Gdiplus::Bitmap* capturedBitmap();
+	Gdiplus::Bitmap* releaseCapturedBitmap();
+
 private:
 	int m_captureDelay;
 	Gdiplus::Bitmap *m_capturedBitmap;

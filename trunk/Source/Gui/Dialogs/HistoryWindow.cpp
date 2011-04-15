@@ -17,6 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "../../atlheaders.h"
 #include "HistoryWindow.h"
 #include "../../LangClass.h"
 #include "../../Settings.h"
@@ -28,6 +29,7 @@
 CHistoryWindow::CHistoryWindow()
 {
 	m_historyReader = 0;
+	delayed_closing_ = false;
 }
 
 CHistoryWindow::~CHistoryWindow()
@@ -45,16 +47,29 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	CenterWindow();
 	DlgResize_Init();
 	m_treeView.SubclassWindow(GetDlgItem(IDC_HISTORYTREE));
+	m_treeView.onThreadsFinished.bind(this, &CHistoryWindow::threadsFinished);
+	m_treeView.onThreadsStarted.bind(this, &CHistoryWindow::threadsStarted);
 	TRC(IDCANCEL, "Закрыть");
 	TRC(IDC_SESSIONSCOUNTDESCR, "Всего сессий:");
 	TRC(IDC_FILESCOUNTDESCR, "Всего файлов:");
 	TRC(IDC_UPLOADTRAFFICDESCR, "Общий объем:");
 	SetWindowText(TR("История загрузок"));
+	TRC(IDC_TIMEPERIODLABEL, "Период времени:");
+	TRC(IDC_DOWNLOADTHUMBS, "Загружать миниатюры из Интернета");
+
+	HWND hWnd = GetDlgItem(IDC_ANIMATIONSTATIC);
+	if (hWnd)
+	{
+		m_wndAnimation.SubclassWindow(hWnd);
+		if (m_wndAnimation.Load(MAKEINTRESOURCE(IDR_PROGRESSGIF),_T("GIF")))
+			m_wndAnimation.Draw();
+		m_wndAnimation.ShowWindow(SW_HIDE);
+	};
+
 	std::string fName = ZBase::get()->historyManager()->makeFileName();
 	
-	TRC(IDC_DOWNLOADTHUMBS, "Загружать миниатюры из Интернета");
 	std::vector<CString> files;
-	historyFolder = IU_GetDataFolder()+_T("\\History\\");
+	historyFolder = Settings.SettingsFolder+_T("\\History\\");
 	GetFolderFileList(files, historyFolder , _T("history*.xml"));
 	for(size_t i=0; i<files.size(); i++)
 	{
@@ -68,10 +83,11 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	int selectedIndex = files.size()-1;
 	SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETCURSEL, selectedIndex, 0);
 	
+	SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_SETCHECK, (WPARAM)Settings.HistorySettings.EnableDownloading);
 	BOOL bDummy;
 	OnMonthChanged(0,0, 0,bDummy);
 	m_treeView.SetFocus();
-	return 0;  // Let the system set the focus
+	return 1;  // Let the system set the focus
 }
 
 BOOL CHistoryWindow::PreTranslateMessage(MSG* pMsg)
@@ -81,10 +97,22 @@ BOOL CHistoryWindow::PreTranslateMessage(MSG* pMsg)
 
 LRESULT CHistoryWindow::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	::EnableWindow(GetDlgItem(IDCANCEL), false);
-	m_treeView.abortLoadingThreads();
-
-	EndDialog(0);
+	delayed_closing_ = true;
+	if(!m_treeView.isRunning())
+	{
+		
+		
+		Settings.HistorySettings. EnableDownloading = SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_GETCHECK) == BST_CHECKED;
+	
+		EndDialog(0);
+	}
+	else
+	{
+		::EnableWindow(GetDlgItem(IDCANCEL), false);
+		::EnableWindow(GetDlgItem(IDC_MONTHCOMBO), true);
+		m_treeView.EnableWindow(true);
+		m_treeView.abortLoadingThreads();
+	}
 	return 0;
 }
 
@@ -146,6 +174,8 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 
 void CHistoryWindow::FillList(CHistoryReader * mgr)
 {
+	bool enabledDownload = SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_GETCHECK) == BST_CHECKED;
+	m_treeView.setDownloadingEnabled(enabledDownload);
 	int nSessionsCount = mgr->getSessionCount();
 
 	m_treeView.SetRedraw(false);
@@ -266,16 +296,69 @@ LRESULT CHistoryWindow::OnMonthChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 	int nIndex = SendDlgItemMessage(IDC_MONTHCOMBO, CB_GETCURSEL);
 	if(nIndex == -1) return 0;
 	LoadHistoryFile(m_HistoryFiles[nIndex]);
+	m_treeView.SetFocus();
 	return 0;
 }
 		
 void CHistoryWindow::LoadHistoryFile(CString fileName)
 {
-	m_treeView.abortLoadingThreads();
-	m_treeView.ResetContent();
+	m_delayedFileName = fileName;
+	if(!m_treeView.isRunning())
+	{
+		
+		m_treeView.ResetContent();
 
-	delete m_historyReader;
-	m_historyReader = new CHistoryReader();
-	m_historyReader->loadFromFile(WCstringToUtf8(historyFolder + fileName));
-	FillList(m_historyReader);
+		delete m_historyReader;
+		m_historyReader = new CHistoryReader();
+		m_historyReader->loadFromFile(WCstringToUtf8(historyFolder + fileName));
+		FillList(m_historyReader);
+		m_delayedFileName = "";
+	}
+	else
+	{
+		::EnableWindow(GetDlgItem(IDC_MONTHCOMBO), false);
+		::EnableWindow(GetDlgItem(IDCANCEL), false);
+		m_treeView.EnableWindow(false);
+		m_treeView.abortLoadingThreads();
+	}
+}
+
+void CHistoryWindow::threadsFinished()
+{
+	m_wndAnimation.ShowWindow(SW_HIDE);
+	
+	if(!m_delayedFileName.IsEmpty())
+	{
+		SendMessage(WM_MY_OPENHISTORYFILE, (WPARAM)(LPCTSTR)m_delayedFileName);
+		//LoadHistoryFile(m_delayedFileName);
+		
+	}
+	else if(delayed_closing_)
+	{
+		EndDialog(0);
+		return;
+	}
+	::EnableWindow(GetDlgItem(IDC_MONTHCOMBO), true);
+	m_treeView.EnableWindow(true);
+	::EnableWindow(GetDlgItem(IDCANCEL), true);
+}
+
+void CHistoryWindow::threadsStarted()
+{
+	m_wndAnimation.ShowWindow(SW_SHOW);
+}
+
+LRESULT CHistoryWindow::OnDownloadThumbsCheckboxChecked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	Settings.HistorySettings.EnableDownloading = SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_GETCHECK) == BST_CHECKED;
+	m_treeView.setDownloadingEnabled(Settings.HistorySettings.EnableDownloading);
+	return 0;
+}
+		
+LRESULT CHistoryWindow::OnWmOpenHistoryFile(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	LPCTSTR fileName = reinterpret_cast<TCHAR*>(wParam);
+	//m_treeView.setDownloadingEnabled(false);
+	LoadHistoryFile(fileName);
+	return 0;
 }

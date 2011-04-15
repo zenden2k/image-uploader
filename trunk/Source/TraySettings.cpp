@@ -18,12 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
+#include "atlheaders.h"
 #include "TraySettings.h"
-
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
-
-
+ 
 CTrayActions::CTrayActions()
 	{
 		/*AddTrayAction(TR("Нет действия"), 0);
@@ -61,6 +59,7 @@ LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 	TRC(IDC_MIDDLEBUTTONCLICKLABEL,"Клик средней кнопкой");
 	TRC(IDC_RIGHTBUTTONCLICKLABEL,"Клик правой кнопкой");
 	TRC(IDC_ONEINSTANCE,"Не запускать новые копии программы из трея");
+	TRC(IDC_AUTOSTARTUP, "Запуск программы при старте Windows");
 	//CTrayActions trayActions;
 	for(int i=0; i< Settings.Hotkeys/*trayActions*/.GetCount(); i++)
 	{
@@ -73,6 +72,8 @@ LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 	}
 
 	SendDlgItemMessage(IDC_SHOWTRAYICON, BM_SETCHECK,Settings.ShowTrayIcon);
+	SendDlgItemMessage(IDC_AUTOSTARTUP, BM_SETCHECK,Settings.AutoStartup);
+
 	SendDlgItemMessage(IDC_ONEINSTANCE, BM_SETCHECK,Settings.TrayIconSettings.DontLaunchCopy);
 	OnShowTrayIconBnClicked(BN_CLICKED, IDC_SHOWTRAYICON, 0);
 
@@ -101,6 +102,11 @@ bool CTraySettingsPage::Apply()
 	Settings.ShowTrayIcon = SendDlgItemMessage(IDC_SHOWTRAYICON, BM_GETCHECK)==BST_CHECKED;
 	Settings.ShowTrayIcon_changed ^= Settings.ShowTrayIcon;
 
+
+	Settings.AutoStartup_changed = Settings.AutoStartup;
+	Settings.AutoStartup = SendDlgItemMessage(IDC_AUTOSTARTUP, BM_GETCHECK)==BST_CHECKED;
+	Settings.AutoStartup_changed ^= Settings.AutoStartup;
+
 	//Settings.ExplorerContextMenu_changed = true;
 	Settings.TrayIconSettings.LeftDoubleClickCommand = SendDlgItemMessage(IDC_LEFTBUTTONDOUBLECLICKCOMBO, CB_GETCURSEL);
 	Settings.TrayIconSettings.LeftClickCommand = SendDlgItemMessage(IDC_LEFTBUTTONCLICKCOMBO, CB_GETCURSEL);
@@ -114,6 +120,7 @@ bool CTraySettingsPage::Apply()
 LRESULT CTraySettingsPage::OnShowTrayIconBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	bool bShowTrayIcon = SendDlgItemMessage(IDC_SHOWTRAYICON, BM_GETCHECK) == BST_CHECKED;
-	EnableNextN(GetDlgItem(wID),10,bShowTrayIcon);
+	SendDlgItemMessage(IDC_AUTOSTARTUP, BM_SETCHECK, FALSE);
+	EnableNextN(GetDlgItem(wID),11,bShowTrayIcon);
 	return 0;
 }

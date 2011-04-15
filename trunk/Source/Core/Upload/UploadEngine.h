@@ -100,9 +100,9 @@ struct ServerSettingsStruct
 	{
 		std::string result;
 		std::string pname = name;
-		if(pname=="Password" && authData.DoAuth)
+		if(pname == "Password" && authData.DoAuth)
 			result = authData.Password;
-		else if(pname=="Login" && authData.DoAuth)
+		else if(pname == "Login" && authData.DoAuth)
 			result = authData.Login;
 		else result = params[name.c_str()];
 		return result;
@@ -111,11 +111,8 @@ struct ServerSettingsStruct
 
 	void setParam(const std::string& name, const std::string& value)
 	{
-
 		params[name] = value;
-
 	}
-
 };
 
 class CUploadEngineData
@@ -143,6 +140,8 @@ class CUploadEngineData
 struct CIUUploadParams
 {
 	int apiVersion;
+	int thumbWidth;
+	int thumbHeight;
 	Utf8String serverName;
 	Utf8String data;
 	Utf8String folderId;
@@ -151,6 +150,16 @@ struct CIUUploadParams
 	Utf8String ThumbUrl;
 	Utf8String ViewUrl;
 	Utf8String ServerFileName;
+	Utf8String temp_;
+	const std::string getParam(const std::string& name)
+	{
+		temp_ = "";
+		if(name == "THUMBWIDTH")
+			temp_= IuCoreUtils::toString(thumbWidth);
+		else if (name == "THUMBHEIGHT")
+			temp_ =  IuCoreUtils::toString(thumbHeight);
+		return temp_;
+	}
 
 	const std::string getFolderID() { return (folderId); }
 	void setDirectUrl(const std::string& url) { DirectUrl = (url);}

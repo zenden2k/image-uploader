@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
+#include "atlheaders.h"
 #include "ThumbsView.h"
 #include "mydropsource.h"
 #include "mydataobject.h"
@@ -28,8 +28,6 @@
 
 #define THUMBNAIL_WIDTH 170   // constants
 #define THUMBNAIL_HEIGHT 120
-
-
 
 bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
 
@@ -237,7 +235,6 @@ LRESULT CThumbsView::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
 	return 0;
 }
 
-
 bool CThumbsView::LoadThumbnail(int ItemID, Image *Img)
 {
 	if(ItemID>GetItemCount()-1) 
@@ -254,8 +251,6 @@ bool CThumbsView::LoadThumbnail(int ItemID, Image *Img)
 
 	if(IsImage(filename))
 	{
-
-
 		if(Img)
 			bm=Img;
 		else 
@@ -438,7 +433,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Image *Img)
 		SetItem(ItemID, 0, LVIF_IMAGE	, 0,ItemID+1, 0, 0, 0);
 	}
 	DeleteObject(bmp);
-	if(!Img && bm) delete bm;
+	if(Img!=bm && bm) delete bm;
 	if(ImgBuffer) delete ImgBuffer;
 	return true;
 }
@@ -592,4 +587,13 @@ void CThumbsView::SelectLastItem()
 	SetItemState(GetItemCount() - 1, LVIS_SELECTED, LVIS_SELECTED	);
 	EnsureVisible( GetItemCount() - 1, FALSE);
 
+}
+
+LRESULT CThumbsView::OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+{
+	LPNMLISTVIEW pNotificationInfo = reinterpret_cast<LPNMLISTVIEW>(pnmh);
+	if(pNotificationInfo->iItem == -1) return FALSE;
+	ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem*>(pNotificationInfo->lParam);
+	delete TVI;
+	return 0;
 }

@@ -18,6 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "atlheaders.h"
 #include "Common.h"
 #include "Common/CmdLine.h"
 //#include "wizarddlg.h"
@@ -27,6 +28,8 @@
 #include <openssl/md5.h>
 #include "MyUtils.h"
 #include "Settings.h"
+
+
 
 CString IUCommonTempFolder, IUTempFolder;
 
@@ -69,12 +72,12 @@ CString IU_md5_file(const CString& filename)
 WIN32_FIND_DATA wfd;
 HANDLE findfile = 0;
 
-int GetNextImgFile(LPTSTR szBuffer, int nLength)
+int GetNextImgFile(LPCTSTR folder, LPTSTR szBuffer, int nLength)
 {
 	TCHAR szBuffer2[MAX_PATH], TempPath[256];
 	
 	GetTempPath(256, TempPath);
-	wsprintf(szBuffer2, _T("%s*.*"), (LPCTSTR)IUTempFolder);
+	wsprintf(szBuffer2, _T("%s*.*"), (LPCTSTR)folder);
 	
 	if(!findfile)
 	{
@@ -114,23 +117,23 @@ void DeleteDir2(LPCTSTR Dir)
 	SHFileOperation(&FileOp);
 }
 
-void ClearTempFolder()
+void ClearTempFolder(LPCTSTR folder)
 {
 	TCHAR szBuffer[256] = _T("\0");
 	TCHAR szBuffer2[MAX_PATH], TempPath[256];
 	GetTempPath(256, TempPath);
-	
-	while(GetNextImgFile(szBuffer, 256))
+	findfile = 0;
+	while(GetNextImgFile(folder, szBuffer, 256))
 	{
 		#ifdef DEBUG
 			if(!lstrcmpi(szBuffer, _T("log.txt"))) continue;
 		#endif
-		wsprintf(szBuffer2,_T("%s%s"), (LPCTSTR) IUTempFolder, (LPCTSTR)szBuffer);
+		wsprintf(szBuffer2,_T("%s%s"), (LPCTSTR) folder, (LPCTSTR)szBuffer);
 		DeleteFile(szBuffer2);
 	}
-	if(!RemoveDirectory(IUTempFolder))
+	if(!RemoveDirectory(folder))
 	{
-		DeleteDir2(IUTempFolder);
+		DeleteDir2(folder);
 	}
 }
 
@@ -429,7 +432,7 @@ bool IU_CopyTextToClipboard(CString text)
 
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
 {
-	while((MsgWaitForMultipleObjects(1, &pHandle, FALSE, INFINITE, QS_SENDMESSAGE)) != WAIT_OBJECT_0)
+	while((MsgWaitForMultipleObjects(1, &pHandle, FALSE, dwMilliseconds, /*QS_ALLEVENTS*/0)) != WAIT_OBJECT_0)
 	{
 		MSG msg;
 		while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -798,6 +801,6 @@ Bitmap* BitmapFromResource(HINSTANCE hInstance,LPCTSTR szResName, LPCTSTR szResT
 	// use load from IStream
 	Bitmap *image = Bitmap::FromStream(pStream);
 	pStream->Release();
-
+	//GlobalFree(hg2);
 	return image;
 }

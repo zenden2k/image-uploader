@@ -82,8 +82,7 @@
 //                Thanks to Piotr Sawicki for the suggestion.
 //
 /////////////////////////////////////////////////////////////////////
-
-#include "stdafx.h"
+#include "../atlheaders.h"
 #include "PictureExWnd.h"
 #include <math.h>
 #include <process.h>

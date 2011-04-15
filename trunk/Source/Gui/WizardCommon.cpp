@@ -1,6 +1,6 @@
+#include "../atlheaders.h"
 #include "WizardCommon.h"
 
-CAppModule _Module;
 CWizardPage::~CWizardPage()
 {
 }

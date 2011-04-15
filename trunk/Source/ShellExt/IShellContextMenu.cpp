@@ -185,18 +185,22 @@ STDMETHODIMP CIShellContextMenu::HandleMenuMsg2(UINT uMsg, WPARAM wParam, LPARAM
 	return S_OK;
 }
 
-// CIShellContextMenu
+// CIShellContextMenu 
 HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags)
 {
-	bool ExplorerCascadedMenu;
-	bool ExplorerContextMenu;
-	bool ExplorerVideoContextMenu;
+	bool ExplorerCascadedMenu = true;
+	// #ifdef _WIN64
+	bool ExplorerContextMenu= true;
+//#else 
+	//bool ExplorerContextMenu= false;
+//#endif
+	bool ExplorerVideoContextMenu= true;
 	CRegistry Reg;
 	Reg.SetRootKey(HKEY_CURRENT_USER);
-	if (Reg.SetKey("Software\\Image Uploader", TRUE))
+	if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
 	{
 		ExplorerCascadedMenu = Reg.ReadBool("ExplorerCascadedMenu");
-		ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
+	//	ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
 		ExplorerVideoContextMenu = Reg.ReadBool("ExplorerVideoContextMenu");
 		CString lang = Reg.ReadString("Language");
 		//MessageBox(0, lang,0,0);
@@ -205,7 +209,24 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 			Lang.LoadLanguage(lang);
 		}
 	}
-	else return S_OK;
+	#ifdef _WIN64
+		else 
+		{	
+			Reg.SetWOW64Flag(KEY_WOW64_32KEY);
+			if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
+			{
+				ExplorerCascadedMenu = Reg.ReadBool("ExplorerCascadedMenu");
+			//	ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
+				ExplorerVideoContextMenu = Reg.ReadBool("ExplorerVideoContextMenu");
+				CString lang = Reg.ReadString("Language");
+				//MessageBox(0, lang,0,0);
+				if(lang != Lang.GetLanguageName())
+				{
+					Lang.LoadLanguage(lang);
+				}
+			}
+		}
+	#endif
 
 	UINT currentCommandID = idCmdFirst;
 	if ((uFlags & 0x000F) != CMF_NORMAL  && (uFlags & CMF_VERBSONLY) == 0 && (uFlags & CMF_EXPLORE) == 0)

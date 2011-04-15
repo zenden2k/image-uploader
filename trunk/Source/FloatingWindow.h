@@ -135,6 +135,8 @@ public:
 	 bool m_bFromHotkey;
 	 bool OnFileFinished(bool ok, FileListItem& result);
 	 bool OnConfigureNetworkManager(NetworkManager* nm);
+	 std::string source_file_name_;
+	 std::string server_name_;
 };
 extern CFloatingWindow floatWnd;
 void CreateFloatWindow();

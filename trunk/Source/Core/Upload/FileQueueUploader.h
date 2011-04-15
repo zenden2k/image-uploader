@@ -25,9 +25,6 @@
 
 #include "../Network/NetworkManager.h"
 #include "UploadEngine.h"
-#include "Uploader.h"
-#include <zthread/thread.h>
-#include <zthread/mutex.h>
 
 struct FileListItem
 {
@@ -47,29 +44,21 @@ class CFileUploaderCallback
 		virtual bool OnConfigureNetworkManager(NetworkManager* nm){return true;}
 };
 
-class CFileQueueUploader: public ZThread::Runnable
+class CFileQueueUploader
 {
 	public:
 		CFileQueueUploader();
 		void AddFile(const std::string& fileName, const std::string& displayName, void* user_data);
 		void setUploadSettings(CAbstractUploadEngine * engine);
 		void setCallback(CFileUploaderCallback* callback);
-
+		~CFileQueueUploader();
 		bool start();
 		void stop();
-		bool IsRunning();
+		bool IsRunning() const;
 	private:
-		virtual void run();
-		bool getNextJob(FileListItem* item);
-		ZThread::Mutex mutex_;
-		CFileUploaderCallback *callback_;
-		bool m_NeedStop;
-		bool m_IsRunning;
-		CAbstractUploadEngine *m_engine;
-		ServerSettingsStruct m_serverSettings;
-		std::vector<FileListItem> m_fileList;
-		int m_nThreadCount;
-		int m_nRunningThreads;
+		CFileQueueUploader(const CFileQueueUploader&);
+		class Impl;
+		Impl* _impl;
 };
 
 #endif

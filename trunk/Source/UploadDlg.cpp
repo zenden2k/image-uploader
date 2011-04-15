@@ -18,11 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h" 
-
+#include "atlheaders.h"
 #include "UploadDlg.h"
 #include "shobjidl.h"
-
 #include "Core/ImageConverter.h"
 #include "LogWindow.h"
 #include "Func/Base.h"
@@ -284,13 +282,26 @@ DWORD CUploadDlg::Run()
 	int NumUploaded=0;
 	bool CreateThumbs = Settings.ThumbSettings.CreateThumbs;
 
+	Thumbnail thumb;
+	
+	if(!thumb.LoadFromFile(WCstringToUtf8(IU_GetDataFolder()+_T("\\Thumbnails\\")+Settings.ThumbSettings.FileName+_T(".xml"))))
+	{
+		WriteLog(logError, _T("CThumbSettingsPage"), TR("Не могу загрузить файл миниатюры!"));
+		return ThreadTerminated();
+	}
+
 	int thumbwidth=Settings.ThumbSettings.ThumbWidth;
 	if(thumbwidth<1|| thumbwidth>1024) thumbwidth=150;
 	
-	ImageSettingsStruct iss;
 
-	ImageSettingsStruct InitialParams = Settings.ImageSettings;
-	InitialParams.ServerID = Server;
+	FullUploadProfile iss;
+
+
+	FullUploadProfile InitialParams;
+   InitialParams.convert_profile = Settings.ConvertProfiles[Settings.CurrentConvertProfileName];
+	InitialParams.upload_profile = Settings.UploadProfile;
+	//= Settings.ImageSettings;
+   InitialParams.upload_profile.ServerID = Server;
 
 	iss = InitialParams;
 
@@ -304,7 +315,7 @@ DWORD CUploadDlg::Run()
 		CString ThumbUrl;
 		CString DirectUrl;
 		CString DownloadUrl;
-		Server = iss.ServerID;
+      Server = iss.upload_profile.ServerID;
 		ue = m_EngineList->byIndex(Server);
 		if(/*Server!=Uploader.CurrentServer && */IsImage(MainDlg->FileList[i].FileName))
 		{
@@ -331,7 +342,9 @@ DWORD CUploadDlg::Run()
 				return ThreadTerminated();
 
 			CImageConverter imageConverter;
-			imageConverter.setImageConvertingParams(iss);
+         imageConverter.setImageConvertingParams(iss.convert_profile);
+         imageConverter.setEnableProcessing(!iss.upload_profile.KeepAsIs);
+			imageConverter.setThumbnail(&thumb);
 			imageConverter.setThumbCreatingParams(Settings.ThumbSettings);
 			bool GenThumb = false;
 			if(CreateThumbs && ((!Settings.ThumbSettings.UseServerThumbs)||(!ue->SupportThumbnails)))
@@ -349,7 +362,7 @@ DWORD CUploadDlg::Run()
 			imageConverter.Convert(MainDlg->FileList[i].FileName);
 			ImageFileName = imageConverter.getImageFileName();
 			ThumbFileName = imageConverter.getThumbFileName();
-			if(!iss.KeepAsIs)
+         if(!iss.upload_profile.KeepAsIs)
 			{
 				TempFilesDeleter.AddFile(ImageFileName);
 				if(lstrlen(ThumbFileName))
@@ -498,10 +511,13 @@ DWORD CUploadDlg::Run()
 			ResultsWindow->Lock();
 			UrlList.Add(item);
 
-			
+			CAbstractUploadEngine *upEngine = Uploader.getUploadEngine();
+			std::string serverName = ue->Name;
+			if(upEngine)
+				serverName = upEngine->getUploadData()->Name;
 			HistoryItem hi;
 			hi.localFilePath = WCstringToUtf8(item.FileName);
-			hi.serverName = ue->Name;
+			hi.serverName = serverName;
 			hi.directUrl =  WCstringToUtf8(DirectUrl);
 			hi.thumbUrl = WCstringToUtf8(item.ThumbUrl);
 			hi.viewUrl = WCstringToUtf8(item.DownloadUrl);

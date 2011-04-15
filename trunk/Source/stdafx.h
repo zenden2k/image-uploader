@@ -23,52 +23,11 @@
 //
 
 #pragma once
-#define GDIPVER 0x0110
-#ifndef IU_SHELLEXT
-// Change these values to use different versions
-
-#ifdef WINVER
-#undef WINVER
-#endif
-#define WINVER		0x0601 // 0x0601 = Windows 7 
-#define _WIN32_WINNT	0x0601
-#define _WIN32_IE	0x0501
-#define _RICHEDIT_VER	0x0200 
-
-#define _CRT_SECURE_NO_DEPRECATE
-
-#ifdef _ATL_MIN_CRT
-#undef _ATL_MIN_CRT
-#endif
-
-#undef SPECSTRINGS_H
-
-#include <atlbase.h>
-#include <atlapp.h>
-#include <atlwin.h>
-#include <atlframe.h>
-#include <atlctrls.h>
-#include <atldlgs.h>
-
-extern CAppModule _Module;
-
-// C RunTime Header Files
-#include <stdlib.h>
-#include <malloc.h>
-#include <memory.h>
-#include <tchar.h>
+#define _CRT_SECURE_NO_WARNINGS
+#include "atlheaders.h"
+#include <GdiPlus.h>
 #include <vector>
 #include <map>
-#include <GdiPlus.h>
-#include <stdio.h>
-#include <gdiplus.h>
-#include <GdiPlusPixelFormats.h>
-#include <atlddx.h>
-#include <atlgdi.h>
-#include <atlmisc.h>
-#include <atlcoll.h>
-#include <atltheme.h>
-
 
 #if defined _M_IX86
   #pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
@@ -78,5 +37,4 @@ extern CAppModule _Module;
   #pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #else
   #pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#endif
 #endif

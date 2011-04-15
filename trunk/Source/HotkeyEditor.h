@@ -24,6 +24,7 @@
 #include <atlddx.h>
 #include "3rdpart/WinHotkeyCtrl.h"
 #include "3rdpart/vkCodes.h"
+#include "HotkeySettings.h"
 #include "LangClass.h"
 // CHotkeyEditor
 struct MYHOTKEY
@@ -128,6 +129,7 @@ struct MYHOTKEY
 		
 };
 
+
 class CHotkeyItem
 {
 public:
@@ -152,6 +154,10 @@ public:
 		return (localKey.keyCode==0 && globalKey.keyCode==0);
 	}
 };
+
+
+
+
 class CHotkeyEditor : 
 	public CDialogImpl<CHotkeyEditor>,
 	public CWinDataExchange<CHotkeyEditor>	

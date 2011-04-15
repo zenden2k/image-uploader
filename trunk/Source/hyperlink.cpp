@@ -18,7 +18,8 @@
  *            - Use dynamic memory allocation for the URL string
  *            - Use of the MAKEINTATOM macro
  */
-#include "stdafx.h"
+
+#include "atlheaders.h"
 #include "hyperlink.h"
 #include "Common.h"
 /*

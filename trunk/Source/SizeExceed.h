@@ -30,7 +30,7 @@ class CSizeExceed :
 	public CDialogImpl<CSizeExceed>	
 {
 	public:
-		CSizeExceed(LPCTSTR szFileName, ImageSettingsStruct &iss, CMyEngineList * EngineList);
+      CSizeExceed(LPCTSTR szFileName, FullUploadProfile &iss, CMyEngineList * EngineList);
 		~CSizeExceed();
 		enum { IDD = IDD_SIZEEXCEED };
 		
@@ -54,7 +54,8 @@ class CSizeExceed :
 	private:
 		CMyImage img;
 		CString m_szFileName;
-		ImageSettingsStruct &m_ImageSettings;
+		FullUploadProfile &m_UploadProfile;
+      ImageConvertingParams& m_ImageSettings;
 		void DisplayParams(void);
 		void GetParams();
 		CMyEngineList *m_EngineList;

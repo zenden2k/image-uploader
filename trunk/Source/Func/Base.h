@@ -22,6 +22,8 @@
 #define IU_BASE_H
 
 #include "HistoryManager.h"
+#include <map>
+#include <vector>
 
 class ZBase
 {

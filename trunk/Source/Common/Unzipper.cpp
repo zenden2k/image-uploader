@@ -3,7 +3,8 @@
 //////////////////////////////////////////////////////////////////////
 // http://www.codeproject.com/KB/cpp/zipunzip.aspx
 //
-#include "stdafx.h"
+
+#include "../atlheaders.h"
 #include "Unzipper.h"
 #define ZLIB_WIN32_NODLL
 #include "zlib\unzip.h"

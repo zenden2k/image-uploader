@@ -28,7 +28,8 @@
 struct TranslateListItem
 {
 	int Hash;
-	LPTSTR Name, Text;
+	TCHAR *Name;
+	TCHAR *Text;
 };
 
 class CLang
@@ -36,18 +37,15 @@ class CLang
 	private:
 		TCHAR m_Directory[MAX_PATH];
 		CString m_sLang;
+		CAtlArray<TranslateListItem> StringList;
+		CAtlArray<CString> LanguagesList;
 	public:
 		CLang();
-
+		~CLang();
 		LPTSTR GetString(LPCTSTR Name);
 		bool SetDirectory(LPCTSTR Directory);
 		bool LoadLanguage(LPCTSTR Lang);
-		bool LoadList();
-
-		CAtlArray<TranslateListItem> StringList;
-		CAtlArray<CString> LanguagesList;
 		CString GetLanguageName();
-	
 };
 extern CLang Lang;
 

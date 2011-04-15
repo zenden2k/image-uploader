@@ -18,8 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
-
+#include "atlheaders.h"
 #include <gdiplus.h>
 #include <shellapi.h>
 #include "resource.h"
@@ -30,6 +29,19 @@
 #include "wizarddlg.h"
 #include "floatingwindow.h"
 
+CAppModule &_Module = *(new CAppModule());
+
+bool IsProcessRunning(DWORD pid)
+{
+	HANDLE process = 
+	OpenProcess(SYNCHRONIZE, FALSE, pid);
+	if(!process)
+		return false;
+		
+		CloseHandle(process);
+	
+	return true;
+}
 
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
@@ -49,14 +61,19 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
-
-	CWizardDlg dlgMain;
+	CWizardDlg  dlgMain;
 	
 
 	DWORD DlgCreationResult = 0;
 	bool ShowMainWindow= true;
 	Settings.LoadSettings();
 
+	if(CmdLine.IsOption(_T("uninstall")))
+	{
+		
+		Settings.Uninstall();
+		return 0;
+	}
 	bool BecomeTray = false;
 	if(Settings.ShowTrayIcon && !CmdLine.IsOption(_T("tray")))
 	{
@@ -90,9 +107,9 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 			dlgMain.m_hWnd = 0;
 			return 0;
 		}
-		
 		if(DlgCreationResult != 0) 
 		{
+			
 			dlgMain.m_hWnd = 0;
 			return 0;
 		}
@@ -106,19 +123,28 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		else dlgMain.ShowWindow(nCmdShow);
 	}
 	int nRet = theLoop.Run();
-
 	_Module.RemoveMessageLoop();
 
 	GdiplusShutdown(gdiplusToken);
+
+	// Удаляем временные файлы
+	ClearTempFolder(IUTempFolder); 
+	std::vector<CString> folders;
+	GetFolderFileList(folders, IUCommonTempFolder, "iu_temp_*" );
+	for(int i=0; i<folders.size(); i++)
+	{
+		CString pidStr = folders[i];
+		pidStr.Replace(_T("iu_temp_"), _T(""));
+		unsigned int pid =  wcstoul (pidStr, 0, 16) ^  0xa1234568;
+		if(pid && !IsProcessRunning(pid))
+			ClearTempFolder(IUCommonTempFolder+_T("\\")+folders[i]);
+	}
 	
-	CScriptUploadEngine::DestroyScriptEngine();
-	ClearTempFolder(); // Удаляем временные файлы
-	
-	return /*nRet*/0;
+	return 0;
 }
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
-{		
+{	
 	OleInitialize(NULL);
 	HRESULT hRes ;
 
@@ -136,7 +162,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 	if(CmdLine.IsOption(_T("integration"))) // for Windows Vista+
 	{
-		Settings.LoadSettings();		
+		Settings.LoadSettings(0, false);		
 		Settings.ApplyRegSettingsRightNow();
 		return 0;
 	}
@@ -150,10 +176,10 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	ATLASSERT(SUCCEEDED(hRes));
 
 	int nRet = Run(lpstrCmdLine, nCmdShow);
-
 	_Module.Term();
+	CScriptUploadEngine::DestroyScriptEngine();
 	OleUninitialize();
 	//::CoUninitialize();
-
-	return nRet;
+	//NetworkManager::Uninitialize() ;*/
+	return 0;
 }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Thumbnail>
+    <Definitions>
+        <Sprite Source="default.png" />
+        <Params>
+            <Param Name="DrawFrame" Value="1" />
+            <Param Name="DrawText" Value="1" />
+            <Param Name="Font" Value="Tahoma, 7, b, 204" />
+            <Param Name="FrameColor" Value="#005500" />
+            <Param Name="FrameWidth" Value="1" />
+            <Param Name="GradientColor" Value="0" />
+            <Param Name="GradientColor1" Value="#0d567d" />
+            <Param Name="GradientColor2" Value="#0656ff" />
+            <Param Name="StrokeColor" Value="#000000" />
+            <Param Name="Text" Value="" />
+            <Param Name="TextColor" Value="#ffffff" />
+        </Params>
+    </Definitions>
+    <Drawing AddWidth="$(DrawFrame)*2*$(FrameWidth)" AddHeight="$(DrawFrame)*2*$(FrameWidth)">
+        <Operation Type="blt" Rect="$(DrawFrame)*$(FrameWidth);$(DrawFrame)*$(FrameWidth);0;0" Source="image" SourceRect="135;82;29;29" />
+        <Operation Type="fillrect" Rect="0;$(Height)-$(TextHeight)-1-$(DrawFrame)*$(FrameWidth); $(Width);$(TextHeight)+2" Brush="gradient:#87000000+$(GradientColor1) #87000000+$(GradientColor2) vert" Condition="$(DrawText)" />
+        <!-- правый бордер -->
+        <Operation Type="drawrect" Rect="0;0;$(Width);$(Height)" Pen="$(FrameColor) $(FrameWidth)" Condition="$(DrawFrame)" />
+        <!-- правый бордер -->
+        <Operation Type="text" Rect="0;$(Height)-$(TextHeight)-1-$(DrawFrame)*$(FrameWidth); $(Width);$(TextHeight)+1" Brush="gradient:#920D567D #9206AEFF vert" TextColors="$(TextColor) #a5000000+$(StrokeColor)" Condition="$(DrawText)" />
+        <!-- правый бордер -->
+    </Drawing>
+</Thumbnail>

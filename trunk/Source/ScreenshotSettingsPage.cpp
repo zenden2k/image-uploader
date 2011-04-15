@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
+#include "atlheaders.h"
 #include "ScreenshotSettingsPage.h"
 #include "Common.h"
 #include "LogWindow.h"
@@ -52,6 +52,10 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
 	TRC(IDC_SCREENSHOTSAVINGPARAMS, "Параметры сохранения снимков");
 	TRC(IDC_FOREGROUNDWHENSHOOTING, "Выводить окно на передний план при выборе мышью");
 	TRC(IDC_PARAMETERSHINTLABEL, "%y - год, %m - месяц, %d - день\n%h - час, %n - минута, %s - секунда\n %i - порядковый номер,\n%width% - ширина,  %height% - высота изображения");
+	TRC(IDC_ADDSHADOW, "Добавлять тень окна");
+	TRC(IDC_REMOVECORNERS, "Удалять уголки у окна");
+	TRC(IDC_REMOVEBACKGROUND, "Удалять фон окна");
+	
 	SetDlgItemText(IDC_SCREENSHOTFILENAMEEDIT, Settings.ScreenshotSettings.FilenameTemplate);
 
 	SetDlgItemText(IDC_SCREENSHOTFOLDEREDIT, Settings.ScreenshotSettings.Folder);
@@ -62,6 +66,10 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
 	SendDlgItemMessage(IDC_FORMATLIST, CB_ADDSTRING, 0, (LPARAM)_T("PNG"));
 	SendDlgItemMessage(IDC_FOREGROUNDWHENSHOOTING, BM_SETCHECK,Settings.ScreenshotSettings.ShowForeground);
 	SendDlgItemMessage(IDC_ALWAYSCOPYTOCLIPBOARD, BM_SETCHECK, Settings.ScreenshotSettings.CopyToClipboard);
+
+	SendDlgItemMessage(IDC_REMOVECORNERS, BM_SETCHECK, Settings.ScreenshotSettings.RemoveCorners);
+	SendDlgItemMessage(IDC_ADDSHADOW, BM_SETCHECK, Settings.ScreenshotSettings.AddShadow);
+	SendDlgItemMessage(IDC_REMOVEBACKGROUND, BM_SETCHECK, Settings.ScreenshotSettings.RemoveBackground);
 
 	int Quality, Delay, Format;
 	Quality = Settings.ScreenshotSettings.Quality;
@@ -77,6 +85,11 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
 	SetDlgItemInt(IDC_WINDOWHIDINGDELAY, Settings.ScreenshotSettings.WindowHidingDelay);
 	SendDlgItemMessage(IDC_FORMATLIST, CB_SETCURSEL, Format, 0);
 
+	bool isVista = IsVista();
+	::EnableWindow(GetDlgItem(IDC_AEROONLY), isVista);
+	::EnableWindow(GetDlgItem(IDC_REMOVECORNERS), isVista);
+	::EnableWindow(GetDlgItem(IDC_ADDSHADOW), isVista);
+	::EnableWindow(GetDlgItem(IDC_REMOVEBACKGROUND), isVista);
 	return 1;  // Let the system set the focus
 }
 
@@ -104,6 +117,11 @@ bool CScreenshotSettingsPagePage::Apply()
 	Settings.ScreenshotSettings.CopyToClipboard =  SendDlgItemMessage(IDC_ALWAYSCOPYTOCLIPBOARD, BM_GETCHECK) == BST_CHECKED;
 	
 	Settings.ScreenshotSettings.WindowHidingDelay = GetDlgItemInt(IDC_WINDOWHIDINGDELAY);
+
+	Settings.ScreenshotSettings.RemoveCorners = SendDlgItemMessage(IDC_REMOVECORNERS, BM_GETCHECK );
+	Settings.ScreenshotSettings.AddShadow = SendDlgItemMessage(IDC_ADDSHADOW, BM_GETCHECK);
+	Settings.ScreenshotSettings.RemoveBackground = SendDlgItemMessage(IDC_REMOVEBACKGROUND, BM_GETCHECK);
+
 	return true;
 }
 

@@ -23,9 +23,13 @@
 #include <algorithm>
 #include "../Common.h"
 
+// TODO: 1. use ZThread classes instead  CThread with , 
+// 2. remove dependency from non-core headers ( "../myutils.h", "../Common.h")
+// 3. Use pimpl
+
 CFileDownloader::CFileDownloader()
 {
-	m_nThreadCount = 4;
+	m_nThreadCount = 3;
 	m_NeedStop = false;
 	m_IsRunning = false;
 	m_nRunningThreads = 0;
@@ -48,10 +52,11 @@ void CFileDownloader::setThreadCount(int n)
 
 bool CFileDownloader::start()
 {
+	//TODO: Rewrite this using ZThread features
 	m_NeedStop = false;
 	
 	m_CS.Lock();
-	size_t numThreads = min(m_nThreadCount - m_nRunningThreads, m_fileList.size());
+	size_t numThreads = min(m_nThreadCount - m_nRunningThreads, int(m_fileList.size()));
 
 	for(size_t i=0; i<numThreads; i++)
 	{
@@ -62,6 +67,7 @@ bool CFileDownloader::start()
 	m_CS.Unlock();
 	return 0;
 }
+
 unsigned int __stdcall CFileDownloader::thread_func(void * param)
 {
 	CFileDownloader * p = reinterpret_cast<CFileDownloader*>(param);
@@ -105,15 +111,8 @@ void CFileDownloader::memberThreadFunc()
 		m_CS.Unlock();
 
 	}
-	if(m_NeedStop) return ;
+
 	m_CS.Lock();
-	m_nRunningThreads--;
-	if(!m_nRunningThreads)
-	{
-		m_IsRunning = false;
-		if(onQueueFinished)
-			onQueueFinished(); // delegate call
-	}
 	HANDLE hThread = GetCurrentThread();
 	for(size_t i=0; i<m_hThreads.size(); i++)
 	{
@@ -123,14 +122,22 @@ void CFileDownloader::memberThreadFunc()
 			break;
 		}
 	}
-	m_CS.Unlock();
+	m_nRunningThreads--;
+	m_CS.Unlock(); // We need to release  mutex before calling  onQueueFinished()
+						// otherwise we may get a deadlock
+	
+	if(!m_nRunningThreads)
+	{
+		m_IsRunning = false;
+		if(onQueueFinished) // it is a delegate
+			onQueueFinished(); 
+	}
 	return ;
-
 }
+
 bool CFileDownloader::getNextJob(DownloadFileListItem& item)
 {
 	bool result = false;
-	
 	m_CS.Lock();
 	if(!m_fileList.empty() && !m_NeedStop)
 	{
@@ -145,7 +152,7 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
 		// Creating file
 		FILE *f = _tfopen(wFileName, L"wb");
 		if(f) fclose(f);
-		 item.fileName = filePath;
+		item.fileName = filePath;
 		result = true;
 	}
 	
@@ -173,15 +180,16 @@ bool CFileDownloader::waitForFinished(unsigned int msec)
 	memcpy(threads, &m_hThreads[0], sizeof(HANDLE) * nCount);
 	m_CS.Unlock();
 
-	DWORD res = WaitForMultipleObjects(nCount, threads, FALSE, msec);
-	if(res == WAIT_TIMEOUT || WAIT_FAILED)
+	DWORD res = WaitForMultipleObjects(nCount, threads, TRUE, msec);
+	if(res == WAIT_TIMEOUT || res == WAIT_FAILED)
 		return false;
 	else return true;
 }
-
+/*
 void CFileDownloader::kill()
 {
 	if(!m_IsRunning) return;
+	Beep(1000,200);
 	m_CS.Lock();
 
 	HANDLE hThread = 0;
@@ -195,7 +203,7 @@ void CFileDownloader::kill()
 	m_hThreads.clear();
 	
 	m_CS.Unlock();
-}
+}*/
 
 int CFileDownloader::ProgressFunc (void* userData, double dltotal,double dlnow,double ultotal, double ulnow)
 {

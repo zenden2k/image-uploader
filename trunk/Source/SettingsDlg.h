@@ -76,6 +76,8 @@ public:
 	void CloseDialog(int nVal);
 	LRESULT OnSettingsPagesSelChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	int CurPage;
+	CIcon hIcon;
+	CIcon hIconSmall;
 	int PrevPage,NextPage;
 	bool CreatePage(int PageID);
 	CSettingsPage* Pages[SettingsPageCount];

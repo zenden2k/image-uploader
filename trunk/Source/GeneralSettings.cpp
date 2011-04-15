@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
+#include "atlheaders.h"
 #include "GeneralSettings.h"
 #include <uxtheme.h>
 #include "common.h"
@@ -126,6 +126,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	
 	BOOL b;
 	OnClickedQuickUpload(0, IDC_STARTUPLOADINGFROMSHELL,0, b);
+	ShellIntegrationChanged();
 	return 1;  // Let the system set the focus
 }
 
@@ -157,8 +158,10 @@ bool CGeneralSettings::Apply()
 	int Index = SendDlgItemMessage(IDC_LANGLIST, CB_GETCURSEL);
 	if(Index < 0) return 0;
 	
-	SendDlgItemMessage(IDC_LANGLIST, CB_GETLBTEXT, Index, (WPARAM)(LPCTSTR)Settings.Language);
 	TCHAR szBuf[256];
+	SendDlgItemMessage(IDC_LANGLIST, CB_GETLBTEXT, Index, (WPARAM)szBuf);
+	Settings.Language = szBuf;
+
 	GetDlgItemText(IDC_IMAGEEDITORPATH, szBuf, 256);
 	Settings.ImageEditorPath = szBuf;
 	Settings.ExplorerContextMenu_changed = Settings.ExplorerContextMenu; 
@@ -168,12 +171,10 @@ bool CGeneralSettings::Apply()
 	bool Temp = Settings.ExplorerVideoContextMenu;
 	Settings.ExplorerVideoContextMenu = SendDlgItemMessage(IDC_SHELLVIDEOCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED;
 	Temp ^= Settings.ExplorerVideoContextMenu;
-	Settings.ExplorerContextMenu_changed|=Temp;
 
 	Temp = Settings.ExplorerCascadedMenu;
 	Settings.ExplorerCascadedMenu = SendDlgItemMessage(IDC_CASCADEDCONTEXTMENU, BM_GETCHECK)==BST_CHECKED;
 	Temp ^= Settings.ExplorerCascadedMenu;
-	Settings.ExplorerContextMenu_changed|=Temp;
 
 	Settings.SendToContextMenu_changed = Settings.SendToContextMenu;
 	Settings.SendToContextMenu = SendDlgItemMessage(IDC_SHELLSENDTOITEM, BM_GETCHECK)==BST_CHECKED;
@@ -198,4 +199,16 @@ LRESULT CGeneralSettings::OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/,
 {
 	LogWindow.Show();
 	return 0;
+}
+
+LRESULT CGeneralSettings::OnShellIntegrationCheckboxChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	ShellIntegrationChanged();
+	return 0;
+}
+	
+void CGeneralSettings::ShellIntegrationChanged()
+{
+	bool checked = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED;
+	EnableNextN(GetDlgItem(IDC_SHELLINTEGRATION), 2, checked);
 }

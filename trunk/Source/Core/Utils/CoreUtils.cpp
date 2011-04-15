@@ -1,12 +1,31 @@
+/*
+Image Uploader - program for uploading images/files to Internet
+Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+
+HomePage:    http://zenden.ws/imageuploader
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "CoreUtils.h"
 #include <cstdio>
-//#include "../../myutils.h"
 #include <io.h>
 #include "Utils_Win.h"
 #include <openssl/md5.h>
 #include <time.h> 
-namespace IuCoreUtils
-{
+
+namespace IuCoreUtils {
 
 FILE * fopen_utf8(const char * filename, const char * mode)
 {
@@ -112,13 +131,13 @@ bool ReadUtf8TextFile(Utf8String utf8Filename, Utf8String& data)
 	fread(buf, 1, 3, stream);	
 
 
-	if(buf[0] == 0xEF || buf[1] == 0xBB || buf[2] == 0xBF)
-	{
-		size -= 3;
-		
+	if(buf[0] == 0xEF || buf[1] == 0xBB || buf[2] == 0xBF) // UTF8 Byte Order Mark (BOM)
+	{	
+		size -= 3;	
 	}
 	else if(buf[0] == 0xFF || buf[1] == 0xFE )
 	{
+		// UTF-16LE encoding
 		size -= 2;
 		fseek( stream, 2L,  SEEK_SET );
 		std::wstring res;
@@ -133,12 +152,12 @@ bool ReadUtf8TextFile(Utf8String utf8Filename, Utf8String& data)
 
 	else 
 	{
-		
+		// no BOM was found; seeking backward
 		fseek( stream, 0L,  SEEK_SET );
 	}
-	data.resize(size+1);
+	data.resize(size + 1);
 	size_t bytesRead = fread(&data[0], 1, size, stream);	
-	data[bytesRead]=0;
+	data[bytesRead] = 0;
 	fclose(stream);
 	return true;
 }
@@ -163,8 +182,6 @@ const std::string CalcMD5Hash(const void* data, size_t size)
 	}
 	return result;
 }
-
-
 
 // FIXME: I don't know if it works with binary data
 const std::string CalcMD5Hash(const std::string& data)
@@ -211,7 +228,12 @@ zint64 stringTozint64(const Utf8String fileName)
 
 zint64 getFileSize(Utf8String utf8Filename)
 {
+#ifdef _MSC_VER
 	_stat64 stats;
+#else
+	_stati64 stats;
+#endif
+
 	 _wstati64(Utf8ToWstring(utf8Filename).c_str(), &stats); 
 	 return stats.st_size;
 }
@@ -238,7 +260,7 @@ Utf8String fileSizeToString(zint64 nBytes)
 		number = (double)nBytes / 1024.0;
 		postfix = "kB";
 	}
-	else if(nBytes<(__int64(1073741824))) /*< 1 GB*/
+	else if(nBytes<((zint64)1073741824)) /*< 1 GB*/
 	{
 		postfix= "mB";
 		number= (double)nBytes / 1048576.0;
@@ -259,4 +281,4 @@ Utf8String toString(double value, int precision)
 	return buffer;
 }
 
-}
+} // end of namespace IuCoreUtils

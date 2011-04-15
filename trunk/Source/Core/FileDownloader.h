@@ -56,9 +56,9 @@ class CFileDownloader
 			void setThreadCount(int n);
 			CAutoCriticalSection m_CS;
 			bool m_NeedStop;
-			bool m_IsRunning;
+			volatile bool m_IsRunning;
 			void stop();
-			void kill();
+			//void kill();
 			bool IsRunning();
 			FastDelegate0<> onQueueFinished;
 			FastDelegate1<NetworkManager*> onConfigureNetworkManager;

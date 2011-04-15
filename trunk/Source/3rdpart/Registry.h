@@ -20,7 +20,7 @@ protected:
 	HKEY m_hRootKey;
 	BOOL m_bLazyWrite;
 	CString m_strCurrentPath;
-
+	DWORD m_wow64Flag;
 public:
 	inline BOOL PathIsValid() {
 		return (m_strCurrentPath.GetLength() > 0); }
@@ -69,6 +69,8 @@ public:
 	BOOL WriteSize(CString strName, CSize* pSize);
 	BOOL WriteRect(CString strName, CRect* pRect);
 	BOOL WriteDword(CString strName, DWORD dwValue);
+
+	void SetWOW64Flag(DWORD flag);
 
 };// end of CRegistry class definition
 

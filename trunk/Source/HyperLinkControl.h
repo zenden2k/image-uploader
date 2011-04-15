@@ -19,12 +19,11 @@
 */
 
 #pragma once
-#include "stdafx.h"
 #include "resource.h"
 #include <atlcrack.h>
 
 struct HyperLinkControlItem
-{
+{~HyperLinkControlItem(){DeleteObject(hIcon);}
 	TCHAR szTitle[256];
 	TCHAR szTip[256];
 	HICON hIcon;
@@ -79,12 +78,12 @@ public:
 	int NotifyParent(int nItem);
 	CAtlArray<HyperLinkControlItem> Items;
 	int BottomY, SubItemRightY;
-	HFONT BoldFont, UnderlineFont,BoldUnderLineFont;
-	int Selected;
+	CFont BoldFont, UnderlineFont,BoldUnderLineFont;
+	int Selected; 
 	void SelectItem(int Index);
 	bool CursorHand;
 	HCURSOR HandCursor;
-	HFONT NormalFont;
+	CFont NormalFont;
 	COLORREF m_BkColor;
 };
 

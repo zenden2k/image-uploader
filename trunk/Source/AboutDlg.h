@@ -34,6 +34,7 @@ class CAboutDlg : public CDialogImpl<CAboutDlg>
 		END_MSG_MAP()
 		CMyImage LogoImage;
 		CHyperLink m_WebSiteLink;
+		CHyperLink m_GoogleCodeLink;
 		// Handler prototypes (uncomment arguments if needed):
 		//	LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 		//	LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

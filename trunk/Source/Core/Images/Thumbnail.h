@@ -21,8 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef IU_CORE_IMAGES_THUMBNAIL_H
 #define IU_CORE_IMAGES_THUMBNAIL_H
 
+#include <string>
 #include <map>
-#include "../Utils/SimpleXml.h"
+#include <vector>
 
 enum PresetColorRole { kFrameColor, kStrokeColor, kGradientColor1, kTextColor };
 
@@ -52,6 +53,7 @@ class Thumbnail
 {
 	public:
 		Thumbnail();
+		virtual ~Thumbnail();
 		bool LoadFromFile(const std::string& filename);
 		void CreateNew();
 		bool SaveToFile(const std::string& filename = "" );
@@ -61,6 +63,7 @@ class Thumbnail
 		std::string getWidthAddition() const;
 		std::string getHeightAddition() const;
 
+		bool existsParam(const std::string& name) const;
 		unsigned int getColor(const std::string& name);
 		unsigned int getParam(const std::string& name);
 

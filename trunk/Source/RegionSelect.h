@@ -23,7 +23,7 @@
 #include "resource.h"       // main symbols
 #include "myimage.h"
 #include <atlcrack.h>
-#include "colorpicker.h"
+//#include "colorpicker.h"
 #include "Core/ScreenCapture.h"
 
 

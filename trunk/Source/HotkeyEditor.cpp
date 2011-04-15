@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
+#include "atlheaders.h"
 #include "HotkeyEditor.h"
 
 // CHotkeyEditor
@@ -72,7 +72,7 @@ LRESULT CHotkeyEditor::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	SendDlgItemMessage(IDC_WINDOWBUTTONCHECKBOX,BM_SETCHECK,m_data.globalKey.keyModifier&MOD_WIN); 
 	return 1;  // Let the system set the focus
 }
-
+ 
 
 LRESULT CHotkeyEditor::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {	

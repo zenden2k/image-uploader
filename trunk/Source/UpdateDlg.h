@@ -9,10 +9,11 @@
 
 class CUpdateDlgCallback
 {
-public:
-	virtual bool CanShowWindow()=0;
-	virtual void UpdateAvailabilityChanged(bool Available)=0;
+	public:
+		virtual bool CanShowWindow() = 0;
+		virtual void UpdateAvailabilityChanged(bool Available) = 0;
 };
+
 class CUpdateDlg : 
 	public CDialogImpl<CUpdateDlg>,
 	public CDialogResize<CUpdateDlg>,
@@ -24,6 +25,7 @@ class CUpdateDlg :
 		~CUpdateDlg();
 		enum { IDD = IDD_UPDATEDLG };
 
+	protected:
 		BEGIN_MSG_MAP(CUpdateDlg)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			MESSAGE_HANDLER(WM_TIMER, OnTimer)
@@ -46,7 +48,7 @@ class CUpdateDlg :
 	LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	//CUpdateManager m_updateManager; 
+	
 	CListViewCtrl m_listView;
 	bool m_bUpdateFinished;
 	CUpdateDlgCallback* m_UpdateCallback;
@@ -59,8 +61,6 @@ class CUpdateDlg :
 	void DoUpdates();
 	CEvent m_UpdateEvent;
 	int m_bClose;
-
-	
 	bool m_InteractiveUpdate;
 	CUpdateManager m_UpdateManager;
 	bool ShowModal(HWND parent);

@@ -133,6 +133,7 @@ NetworkManager::NetworkManager(void)
 		curl_global_init(CURL_GLOBAL_ALL);	
 	}
 	m_hOutFile = 0;
+	chunk_ = 0;
 	m_CurrentFileSize = -1;
 	m_uploadingFile = NULL;
 	*m_errorBuffer = 0;
@@ -270,6 +271,7 @@ bool NetworkManager::doUploadMultipartData()
 	curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 2L);
 	curl_result = curl_easy_perform(curl_handle);
 	CloseFileList(openedFiles);
+	curl_formfree(formpost);
 	return private_on_finish_request();
 }
 
@@ -366,14 +368,14 @@ void NetworkManager::private_initTransfer()
 	curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, m_userAgent.c_str());
 
 	std::vector<CustomHeaderItem>::iterator it, end = m_QueryHeaders.end();
-	struct curl_slist *chunk = NULL;
+	chunk_ = NULL;
 
 	for(it = m_QueryHeaders.begin(); it!=end; it++)
 	{
-		chunk = curl_slist_append(chunk, (it->name + ": " + it->value).c_str());
+		chunk_ = curl_slist_append(chunk_, (it->name + ": " + it->value).c_str());
 	}
 
-	curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, chunk);
+	curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, chunk_);
 }
 
 NString NetworkManager::responseHeaderText()
@@ -501,6 +503,11 @@ void NetworkManager::private_cleanup_after()
 	m_method = "";
 
 	m_uploadData = "";
+	if(chunk_)
+	{
+		curl_slist_free_all(chunk_);
+		chunk_ = 0;
+	}
 }
 
 size_t NetworkManager::read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
@@ -616,4 +623,12 @@ const NString  NetworkManager::getCurlResultString()
 	res+="";
 	//curl_free(str);
 	return res;
+}
+
+void NetworkManager::Uninitialize()
+{
+	if(private_Init)
+	{
+		curl_global_cleanup();	
+	}
 }

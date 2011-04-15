@@ -1,5 +1,7 @@
 #pragma once
+#include "../atlheaders.h"
 #include <atlcrack.h>
+#include <atlmisc.h>
 #define WM_KEY                      (WM_USER + 444)
 // CWinHotkeyCtrl
 

@@ -24,8 +24,8 @@
 #pragma once
 
 #include <string>
-#include "../Core/Utils/CoreUtils.h"
-#include "../Core/Utils/SimpleXml.h"
+#include "../Core/Utils/CoreTypes.h"
+#include <vector>
 
 struct HistoryItem
 {
@@ -38,17 +38,20 @@ struct HistoryItem
 	zint64 uploadFileSize;
 };
 
+class ZSimpleXmlNode;
+class CHistoryReader_impl;
+
 class CHistorySession
 {
 	public:
 		CHistorySession(const std::string& filename, const std::string& sessionId);
 		bool AddItem(const HistoryItem &ht);
-		void loadFromXml(ZSimpleXmlNode sessionNode);
+		
 		int entriesCount() const;
 		HistoryItem entry(const int index) const;
 		std::string serverName() const;
 		time_t timeStamp() const;
-
+		void loadFromXml(ZSimpleXmlNode& sessionNode);
 	private:
 		std::string m_historyXmlFileName;
 		std::string m_sessId;
@@ -71,16 +74,17 @@ class CHistoryManager
 		std::string m_historyFileNamePrefix;	
 };
 
+
 class CHistoryReader
 {
 	public:
 		CHistoryReader();
+		virtual ~CHistoryReader();
 		bool loadFromFile(const std::string& filename);
 		int getSessionCount() const;
 		CHistorySession* getSession(const int index);
-
 	private:
-		std::vector<CHistorySession> m_sessions;
-		ZSimpleXml m_xml;	 
+		CHistoryReader(const CHistoryReader&);
+		CHistoryReader_impl *_impl;
 };
 #endif

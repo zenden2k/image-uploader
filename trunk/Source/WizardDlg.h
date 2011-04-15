@@ -57,18 +57,18 @@ class CFolderAdd: public CThreadImpl<CFolderAdd>
 		CFolderAdd(CWizardDlg *WizardDlg);
 		void Do(CStringList &Paths, bool ImagesOnly, bool SubDirs  = false);
 		DWORD Run();
-private:
-	int count;
-	CStringList m_Paths;
-	bool m_bSubDirs;
-	bool m_bImagesOnly;
-	CWizardDlg *m_pWizardDlg;
-	TCHAR m_szPath[MAX_PATH];
-	WIN32_FIND_DATA wfd;
-	HANDLE findfile;
-		CStatusDlg dlg;
-	int GetNextImgFile(LPTSTR szBuffer, int nLength);
-	int ProcessDir( CString currentDir, bool bRecursive /* = true  */ );
+	private:
+		int count;
+		CStringList m_Paths;
+		bool m_bSubDirs;
+		bool m_bImagesOnly;
+		CWizardDlg *m_pWizardDlg;
+		TCHAR m_szPath[MAX_PATH];
+		WIN32_FIND_DATA wfd;
+		HANDLE findfile;
+			CStatusDlg dlg;
+		int GetNextImgFile(LPTSTR szBuffer, int nLength);
+		int ProcessDir( CString currentDir, bool bRecursive /* = true  */ );
 };
 class CMyFolderDialog: public CFolderDialogImpl<CMyFolderDialog>
 {
@@ -166,6 +166,8 @@ public:
 	//CSavingOptions SavingOptions;
 	bool LoadUploadEngines(const CString &filename, CString &Error);
 	bool ParseCmdLine();
+	CIcon hIcon;
+	CIcon hIconSmall;
 	CHotkeyList m_hotkeys;
 	CFolderAdd FolderAdd;
 	CMyEngineList m_EngineList;

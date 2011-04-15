@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#include "../../atlheaders.h"
 #include "ThumbEditor.h"
 #include "../../LangClass.h"
 #include "../../Settings.h"
@@ -36,11 +36,24 @@ LRESULT CThumbEditor::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	TRC(IDCANCEL, "Отмена");
 	TRC(IDOK, "OK");
 	TRC(IDC_THUMBSTROKECOLOR, "Цвет каймы:");
+	TRC(IDC_COLORSGROUP, "Цвета");
+	TRC(IDC_FRAMECOLORLABEL, "Цвет рамки:");
+	TRC(IDC_GRADIENTCOLOR1LABEL, "Цвет градиента 1:");
+	TRC(IDC_GRADIENTCOLOR2LABEL, "Цвет градиента 2:");
+	TRC(IDC_DRAWFRAME, "Обводить в рамку");
+	TRC(IDC_FRAMEWIDTHLABEL, "Толщина:");
+	TRC(IDC_THUMBPARAMS, "Параметры текста:");
+	TRC(IDC_THUMBTEXTCOLORLABEL, "Цвет текста:");
+	TRC(IDC_THUMBSTROKECOLORLABEL, "Цвет обводки:");
+	TRC(IDC_THUMBTEXTLABEL, "Текст:");
+	TRC(IDC_THUMBFONT, "Шрифт...");
+	TRC(IDC_ADDFILESIZE, "Выводить текст");
+	
 	SetWindowText(TR("Редактирование шаблона миниатюры"));
 	FrameColor.SubclassWindow(GetDlgItem(IDC_FRAMECOLOR));
 	Color1.SubclassWindow(GetDlgItem(IDC_COLOR1));
 	Color2.SubclassWindow(GetDlgItem(IDC_COLOR2));
-	
+	StrokeColor.SubclassWindow(GetDlgItem(IDC_THUMBTEXTCOLOR2));
 	ThumbTextColor.SubclassWindow(GetDlgItem(IDC_THUMBTEXTCOLOR));
 	CenterWindow(GetParent());
 
@@ -71,44 +84,122 @@ LRESULT CThumbEditor::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
 	return 0;
 }
 
-COLORREF RGB2COLORREF(unsigned int color)
-{
-	return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
-}
 
-unsigned int COLORREF2RGB( COLORREF color)
-{
-	return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
-}
 void CThumbEditor::LoadParams()
 {
-	bool DrawFrame = thumb_->getParam("DrawFrame")!=0;
-	SendDlgItemMessage(IDC_DRAWFRAME, BM_SETCHECK, DrawFrame);
+	StringToFont(_T("Tahoma,7,b,204"), &ThumbFont);
+	if(thumb_->existsParam("Font"))
+	{
+		std::string font = thumb_->getParamString("Font");
+		CString wide_text = Utf8ToWCstring(font);
+		StringToFont(wide_text, &ThumbFont);
+	}
+
+	if(thumb_->existsParam("FrameWidth"))
+		SetDlgItemInt(IDC_FRAMEWIDTH, thumb_->getParam("FrameWidth"));
+	else 
+		::EnableWindow(GetDlgItem(IDC_FRAMEWIDTH), false);
+
+	if(thumb_->existsParam("DrawFrame"))
+	{
+		bool DrawFrame = thumb_->getParam("DrawFrame")!=0;
+		SendDlgItemMessage(IDC_DRAWFRAME, BM_SETCHECK, DrawFrame);
+	}
+	else
+	{
+		EnableNextN(GetDlgItem(IDC_DRAWFRAME), 3, false);
+		::EnableWindow(GetDlgItem(IDC_DRAWFRAME), false);
+	}
 
 	bool DrawText = thumb_->getParam("DrawText")!=0;
 	SendDlgItemMessage(IDC_ADDFILESIZE, BM_SETCHECK, DrawText);
 
-	SetDlgItemInt(IDC_FRAMEWIDTH, thumb_->getParam("FrameWidth"));
-	FrameColor.SetColor(RGB2COLORREF(thumb_->getColor("FrameColor")));
-	Color1.SetColor(RGB2COLORREF(thumb_->getColor("GradientColor1")));
-	ThumbTextColor.SetColor(RGB2COLORREF(thumb_->getColor("TextColor")));
+	
+
+	if(thumb_->existsParam("FrameColor"))
+		FrameColor.SetColor(RGB2COLORREF(thumb_->getColor("FrameColor")));
+	else 
+	{
+		FrameColor.EnableWindow(false);
+		::EnableWindow(GetDlgItem(IDC_FRAMECOLORLABEL), false);
+	}
+
+	if(thumb_->existsParam("GradientColor1"))
+		Color1.SetColor(RGB2COLORREF(thumb_->getColor("GradientColor1")));
+	else
+	{
+		Color1.EnableWindow(false);
+		::EnableWindow(GetDlgItem(IDC_GRADIENTCOLOR1LABEL), false);
+	}
+
+	if(thumb_->existsParam("TextColor"))
+	{
+		ThumbTextColor.SetColor(RGB2COLORREF(thumb_->getColor("TextColor")));
+	}
+	else
+	{
+		ThumbTextColor.EnableWindow(false);
+		::EnableWindow(GetDlgItem(IDC_THUMBTEXTCOLORLABEL), false);
+	}
+
+	if(thumb_->existsParam("StrokeColor"))
+	{
+		StrokeColor.SetColor(RGB2COLORREF(thumb_->getColor("StrokeColor")));
+	}
+	else
+	{
+		StrokeColor.EnableWindow(false);
+		::EnableWindow(GetDlgItem(IDC_THUMBSTROKECOLORLABEL), false);
+	}
+
+
+	if(thumb_->existsParam("GradientColor2"))
 	Color2.SetColor(RGB2COLORREF(thumb_->getColor("GradientColor2")));
+	else
+	{
+		Color2.EnableWindow(false);
+		::EnableWindow(GetDlgItem(IDC_GRADIENTCOLOR2LABEL), false);
+	}
 	SetDlgItemText(IDC_THUMBTEXT, Utf8ToWCstring(thumb_->getParamString("Text")));
 }
 
 void CThumbEditor::SaveParams()
 {
-	thumb_->setColor("FrameColor", COLORREF2RGB(FrameColor.GetColor()));
-	thumb_->setColor("GradientColor1", COLORREF2RGB(Color1.GetColor()));
-	thumb_->setColor("TextColor", COLORREF2RGB(ThumbTextColor.GetColor()));
+	if(FrameColor.IsWindowEnabled())
+		thumb_->setColor("FrameColor", COLORREF2RGB(FrameColor.GetColor()));
+	if(Color1.IsWindowEnabled())
+		thumb_->setColor("GradientColor1", COLORREF2RGB(Color1.GetColor()));
+	if(ThumbTextColor.IsWindowEnabled())
+		thumb_->setColor("TextColor", COLORREF2RGB(ThumbTextColor.GetColor()));
+
+	if(StrokeColor.IsWindowEnabled())
+		thumb_->setColor("StrokeColor", COLORREF2RGB(StrokeColor.GetColor()));
+	
+	if(Color2.IsWindowEnabled())
 	thumb_->setColor("GradientColor2", COLORREF2RGB(Color2.GetColor()));
-	bool DrawFrame = SendDlgItemMessage(IDC_DRAWFRAME, BM_GETCHECK)!=0;
-	thumb_->setParam("DrawFrame", DrawFrame);
-	thumb_->setParam("FrameWidth", GetDlgItemInt(IDC_FRAMEWIDTH));
+	
+	if(thumb_->existsParam("DrawFrame"))
+	{
+		bool DrawFrame = SendDlgItemMessage(IDC_DRAWFRAME, BM_GETCHECK)!=0;
+		thumb_->setParam("DrawFrame", DrawFrame);
+	}
+	if(thumb_->existsParam("FrameWidth"))
+		thumb_->setParam("FrameWidth", GetDlgItemInt(IDC_FRAMEWIDTH));
+	
 	CString text  = IU_GetWindowText(GetDlgItem(IDC_THUMBTEXT));
 	bool AddText  = SendDlgItemMessage(IDC_ADDFILESIZE, BM_GETCHECK)!=0;
+	
 	thumb_->setParamString("Text", WCstringToUtf8(text));
-	thumb_->setParam("DrawText", AddText);
+	if(thumb_->existsParam("DrawText"))
+		thumb_->setParam("DrawText", AddText);
+
+	//if(thumb_->existsParam("Font"))
+	{
+		CString res;
+		FontToString(&ThumbFont, res);
+		thumb_->setParamString("Font", WCstringToUtf8(res));
+	}
+
 }
 
 LRESULT  CThumbEditor::OnShowTextCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -133,4 +224,13 @@ void CThumbEditor::DrawFrameCheckboxChanged()
 {
 	bool bChecked = SendDlgItemMessage(IDC_DRAWFRAME, BM_GETCHECK)!=0;
 	EnableNextN(GetDlgItem(IDC_DRAWFRAME), 3, bChecked);
+}
+
+
+LRESULT CThumbEditor::OnFontSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	// Font selection dialog
+	CFontDialog dlg(&ThumbFont);
+	dlg.DoModal(m_hWnd);
+	return 0;
 }

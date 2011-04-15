@@ -3,7 +3,8 @@
 
 #include <cstdio>
 #include <string>
-#include "CoreUtils.h"
+#include <vector>
+#include "CoreTypes.h"
 
 namespace IuStringUtils
 {

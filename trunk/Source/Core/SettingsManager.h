@@ -22,7 +22,9 @@
 #define IU_CORE_SETTINGSMANAGER_H
 
 #include "Utils/SimpleXml.h"
-
+#include <map>
+#include <iostream>
+#include <sstream>
 #define n_bind(a) operator[]( #a ).bind(a)
 #define nm_bind(b,a) operator[]( #a ).bind(b.a)
 
@@ -31,16 +33,24 @@ class SettingsNodeBase
 	public:
 		virtual std::string getValue()=0;
 		virtual void setValue(const std::string)=0;
+		virtual ~SettingsNodeBase(){};
 };
 
 template<class T> std::string myToString(const T& value)
 {
-	std::stringstream str;
-	str << value;
-	return str.str();
+        std::stringstream str;
+        str << value;
+        return str.str();
 }
 
+
 template<class T> void myFromString(const std::string& text, T & value)
+{
+   std::stringstream str(text);
+   str >> value;
+}
+
+template<class T, class T2> void myFromString(const std::string& text, T & value)
 {
    std::stringstream str(text);
    str >> value;
@@ -59,11 +69,15 @@ template<class T> class SettingsNodeVariant: public SettingsNodeBase
 
 		virtual std::string getValue()
 		{
-			return myToString(*value_);
+			return 
+				myToString(*value_);
 		}
 		virtual void setValue(const std::string text)
 		{
 			myFromString(text, *value_ );
+		}
+		virtual ~SettingsNodeVariant()
+		{
 		}
 };
 
@@ -74,11 +88,12 @@ class SettingsNode
 		virtual ~SettingsNode();
 		template<class T> void bind(T& var)
 		{
+			delete binded_value_;
 			binded_value_ = new SettingsNodeVariant<T>(&var);
 		}
 		SettingsNode& operator[](const std::string&);
-		void saveToXmlNode(ZSimpleXmlNode parentNode, const std::string& name) const;
-		void loadFromXmlNode(ZSimpleXmlNode parentNode, const std::string& name);
+		void saveToXmlNode(ZSimpleXmlNode parentNode, const std::string& name, bool isRoot = false) const;
+		void loadFromXmlNode(ZSimpleXmlNode parentNode, const std::string& name, bool isRoot = false);
 	protected:
 		SettingsNodeBase * binded_value_;
 		std::map<std::string, SettingsNode*> childs_; 
