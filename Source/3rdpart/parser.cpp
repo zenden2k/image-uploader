@@ -4,7 +4,7 @@
 // Written by Chaos Master, 11th of Febrary, 2000.
 
 // Includes
-//#include "stdafx.h"
+
 #include <math.h>
 #include "parser.h"
 

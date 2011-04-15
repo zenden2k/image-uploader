@@ -43,6 +43,7 @@
 #define IDD_THUMBSETTINGSPAGE           144
 #define IDD_HISTORYWINDOW               145
 #define IDD_THUMBEDITOR                 146
+#define IDD_INPUTDIALOG                 147
 #define IDR_CONTEXTMENU                 202
 #define IDI_GRAB                        207
 #define IDI_IMAGES                      209
@@ -73,6 +74,13 @@
 #define IDI_ICONADD                     248
 #define IDI_ICONADDFOLDER               249
 #define IDI_ICONWEB                     250
+#define IDI_ICON2                       251
+#define IDI_ICONEDIT                    251
+#define IDI_ICONWHITEPAGE               252
+#define IDI_ICONSAVE                    253
+#define IDI_ICONHISTORY                 254
+#define IDI_ICON3                       255
+#define IDI_ICONDELETE                  255
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -172,6 +180,7 @@
 #define IDC_UPDATEINFO                  1040
 #define IDC_SCREENSHOTFILENAMEEDIT      1040
 #define IDC_FRAMEWIDTH                  1040
+#define IDC_WIDTHEDIT                   1040
 #define IDC_SELECTVIDEO                 1041
 #define IDC_STROKECOLOR                 1041
 #define IDC_LOGINBUTTON                 1041
@@ -183,12 +192,14 @@
 #define IDC_MEDIAINFOFONT               1041
 #define IDC_NEWFOLDERBUTTON             1041
 #define IDC_SCREENSHOTFOLDEREDIT        1041
+#define IDC_HEIGHTEDIT                  1041
 #define IDC_DONE                        1042
 #define IDC_LOGINBUTTON2                1042
 #define IDC_RADIO1                      1043
 #define IDC_MULTIPLEFILES               1043
 #define IDC_RADIO2                      1044
 #define IDC_SAVEASONE                   1044
+#define IDC_HEIGHTRADIO                 1044
 #define IDC_EDIT2                       1045
 #define IDC_TRANSPARENCY                1045
 #define IDC_QUALITY                     1045
@@ -212,6 +223,7 @@
 #define IDC_SCREENSHOT                  1058
 #define IDI_SCREENSHOT                  1058
 #define IDC_DELAYSPIN                   1059
+#define IDI_DROPDOWN                    1059
 #define IDC_DELAYEDIT                   1060
 #define IDC_ENTIRESCREEN                1061
 #define IDC_WINDOWHIDINGDELAY           1061
@@ -294,6 +306,7 @@
 #define IDC_GRADIENTCOLOR2LABEL         1132
 #define IDC_IMAGESPERLINELABEL          1133
 #define IDC_THUMBSTROKECOLOR            1133
+#define IDC_THUMBSTROKECOLORLABEL       1133
 #define IDC_CODETYPELABEL               1134
 #define IDC_LINK1                       1135
 #define IDC_LINK3                       1137
@@ -308,6 +321,7 @@
 #define IDC_AUTOSHOWLOG                 1142
 #define IDC_ONEINSTANCE                 1142
 #define IDC_MEDIAINFOONIMAGE            1142
+#define IDC_REMOVECORNERS               1142
 #define IDC_PXLABEL                     1143
 #define IDC_TABCONTROL                  1144
 #define IDC_LANGUAGELABEL               1145
@@ -350,6 +364,7 @@
 #define IDC_RESULTSTAB                  1184
 #define IDC_CHECK3                      1185
 #define IDC_CASCADEDCONTEXTMENU         1185
+#define IDC_ADDSHADOW                   1185
 #define IDC_LEFTBUTTONDOUBLECLICKLABEL  1186
 #define IDC_LEFTBUTTONCLICKLABEL        1187
 #define IDC_MIDDLEBUTTONCLICKLABEL      1188
@@ -405,6 +420,37 @@
 #define IDC_UPLOADTRAFFICLABEL          1246
 #define IDC_FRAMEWIDTHLABEL             1250
 #define IDC_THUMBTEXTCHECKBOX           1252
+#define IDC_DESCRIPTIONLABEL            1253
+#define IDC_VALUEEDIT                   1254
+#define IDC_RESIZEPRESETSBUTTON         1255
+#define IDC_EDITPROFILE                 1256
+#define IDC_PROFILETOOBLARPLACEBUTTON   1257
+#define IDC_RESIZEMODECOMBO             1258
+#define IDC_SMARTCONVERTING             1259
+#define IDC_PROFILECOMBO                1260
+#define IDC_WIDTHRADIO                  1262
+#define IDC_BUTTON1                     1263
+#define IDC_THUMBBACKGROUND             1263
+#define IDC_THUMBBACKGROUNDLABEL        1264
+#define IDC_GOOGLECODELINK              1265
+#define IDC_CURRENTPROFILELABEL         1266
+#define IDC_RESIZEMODELABEL             1267
+#define IDC_PROFILELABEL                1268
+#define IDC_REMOVEBACKGROUND            1269
+#define IDC_AEROONLY                    1270
+#define IDC_IMAGE                       1271
+#define IDC_CHECK1                      1272
+#define IDC_AUTOSTARTUP                 1272
+#define IDR_bottomLeftShadow            15001
+#define IDR_bottomRightShadow           15002
+#define IDR_bottomShadow                15003
+#define IDR_leftShadow                  15004
+#define IDR_rightShadow                 15005
+#define IDR_topLeftShadow               15006
+#define IDR_topRightShadow              15007
+#define IDR_topShadow                   15008
+#define IDR_topLeftShadowSquare         15009
+#define IDR_topRightShadowSquare        15010
 #define ID_VIEW_DELETE                  32775
 #define ID_VIEW                         32776
 #define ID_DELETE                       32777
@@ -434,9 +480,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        251
+#define _APS_NEXT_RESOURCE_VALUE        256
 #define _APS_NEXT_COMMAND_VALUE         32799
-#define _APS_NEXT_CONTROL_VALUE         1253
+#define _APS_NEXT_CONTROL_VALUE         1273
 #define _APS_NEXT_SYMED_VALUE           127
 #endif
 #endif

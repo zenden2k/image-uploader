@@ -26,6 +26,13 @@
 #include <time.h>
 #include <sstream>
 
+class CHistoryReader_impl
+{
+	public:
+		ZSimpleXml m_xml;
+		std::vector<CHistorySession> m_sessions;
+};
+
 CHistoryManager::CHistoryManager()
 {
 	
@@ -39,6 +46,7 @@ CHistoryManager::~CHistoryManager()
 void CHistoryManager::setHistoryFileName(const std::string& filepath, const std::string& nameprefix)
 {
 	m_historyFilePath = filepath;
+	IuCoreUtils::createDirectory(m_historyFilePath);
 	m_historyFileNamePrefix = nameprefix;
 }
 
@@ -58,7 +66,7 @@ CHistorySession::CHistorySession(const std::string& filename, const std::string&
 	m_sessId = sessionId;
 }
 
-void CHistorySession::loadFromXml(ZSimpleXmlNode sessionNode)
+void CHistorySession::loadFromXml(ZSimpleXmlNode& sessionNode)
 {
 	m_timeStamp = sessionNode.AttributeInt("TimeStamp" );
 	m_serverName = sessionNode.Attribute("ServerName" );
@@ -178,18 +186,19 @@ std::string CHistoryManager::makeFileName() const
 //
 CHistoryReader::CHistoryReader()
 {
+	_impl = new CHistoryReader_impl();
 }
 
 int CHistoryReader::getSessionCount() const
 {
-	return m_sessions.size();
+	return _impl->m_sessions.size();
 }
 
 // The pointer returned by this function is only valid
 //  during lifetime of CHistoryReader object
 CHistorySession* CHistoryReader::getSession(const int index)
 {
-	return &m_sessions[index];
+	return &_impl->m_sessions[index];
 }
 
 // filename must be utf-8 encoded
@@ -197,11 +206,11 @@ bool CHistoryReader::loadFromFile(const std::string& filename)
 {
 	if(IuCoreUtils::FileExists(filename))
 	{
-		m_xml.LoadFromFile(filename);
+		_impl->m_xml.LoadFromFile(filename);
 	}
 	else 
 		return false;
-	ZSimpleXmlNode root = m_xml.getRoot("History");
+	ZSimpleXmlNode root = _impl->m_xml.getRoot("History");
 	std::vector<ZSimpleXmlNode> allSessions;
 	root.GetChilds("Session", allSessions);
 
@@ -210,7 +219,12 @@ bool CHistoryReader::loadFromFile(const std::string& filename)
 		std::string fName = filename;
 		CHistorySession session(fName, "0");
 		session.loadFromXml(allSessions[i]);
-		m_sessions.push_back(session);
+		_impl->m_sessions.push_back(session);
 	}
 	return true;
+}
+
+CHistoryReader::~CHistoryReader()
+{
+	delete _impl;
 }

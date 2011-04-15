@@ -17,12 +17,19 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#include <stdlib.h>
 #include "Thumbnail.h"
+#include "../Utils/CoreUtils.h"
+#include "../Utils/SimpleXml.h"
 #include "../../3rdpart/parser.h"
 #include "../Utils/StringUtils.h"
+#include "string.h"
 
 Thumbnail::Thumbnail()
+{
+}
+
+Thumbnail::~Thumbnail()
 {
 }
 
@@ -31,9 +38,6 @@ bool Thumbnail::LoadFromFile(const std::string& filename)
 	ZSimpleXml xml;
 	 if(!xml.LoadFromFile(filename))
 		 return false;
-
-
-
 	ZSimpleXmlNode root = xml.getRoot("Thumbnail", false);
 	if(root.IsNull()) return false;
 	data_.sprite_source_file = root["Definitions"]["Sprite"].Attribute("Source");
@@ -134,7 +138,6 @@ unsigned int Thumbnail::getColor(const std::string& name)
 {
 	std::string res = data_.colors_[name];
 	res = IuStringUtils::Replace(res, "#", "0x");
-	//MessageBoxA(0, res.c_str(), name.c_str(), 0);
 	return strtoul(res.c_str(),0,0);
 }
 
@@ -164,4 +167,9 @@ void Thumbnail::setParamString(const std::string& name, const std::string& value
 std::string Thumbnail::getParamString(const std::string& name)
 {
 	return data_.colors_[name];
+}
+
+bool Thumbnail::existsParam(const std::string& name) const
+{
+	return data_.colors_.count(name)>0;
 }

@@ -17,8 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-#include "stdafx.h"
+#include "atlheaders.h"
 #include "WelcomeDlg.h"
 #include "Gui/ImageDownloaderDlg.h"
 #include "Gui/Dialogs/HistoryWindow.h"
@@ -38,7 +37,7 @@ LRESULT CWelcomeDlg::OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	
 CWelcomeDlg::~CWelcomeDlg()
 {
-	
+	DeleteObject(br);
 }
 
 LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -73,7 +72,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	ListBox.AddString(TR("Снимок выбранной области..."), 0, IDC_REGIONPRINT,LOADICO(IDI_ICONREGION));
 	
 	ListBox.AddString(TR("Настройки программы"), TR("Для опытных пользователей"), IDC_SETTINGS, LOADICO(IDI_ICONSETTINGS));
-	ListBox.AddString(TR("История"), 0, ID_VIEWHISTORY,LOADICO(IDI_ICONREGION));
+	ListBox.AddString(TR("История"), 0, ID_VIEWHISTORY,LOADICO(IDI_ICONHISTORY));
 
 	HFONT font = GetFont();
 	LOGFONT alf;
@@ -85,14 +84,14 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	{
 		alf.lfWeight = FW_BOLD;
 
-		HFONT NewFont=CreateFontIndirect(&alf);
+		NewFont=CreateFontIndirect(&alf);
 
-		SendDlgItemMessage(IDC_SELECTOPTION,WM_SETFONT,(WPARAM)NewFont,MAKELPARAM(false, 0));
-
-		alf.lfHeight  =  - MulDiv(13, GetDeviceCaps(::GetDC(0), LOGPIXELSY), 72);
-
+		SendDlgItemMessage(IDC_SELECTOPTION,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
+		HDC dc = ::GetDC(0);
+		alf.lfHeight  =  - MulDiv(13, GetDeviceCaps(dc, LOGPIXELSY), 72);
+		ReleaseDC(dc);
 		NewFont = CreateFontIndirect(&alf);
-		SendDlgItemMessage(IDC_TITLE,WM_SETFONT,(WPARAM)NewFont,MAKELPARAM(false, 0));
+		SendDlgItemMessage(IDC_TITLE,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
 	}
 
 	ShowNext(false);

@@ -62,10 +62,22 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRes
 			CRegistry Reg;
 			CString lang;
 			Reg.SetRootKey(HKEY_CURRENT_USER);
-			if (Reg.SetKey("Software\\Image Uploader", TRUE))
+			if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
 			{
 				lang = Reg.ReadString("Language");
 			}
+			else
+			{
+				#ifdef _WIN64
+					Reg.SetWOW64Flag(KEY_WOW64_32KEY);
+					Reg.SetRootKey(HKEY_CURRENT_USER);
+					if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
+					{
+						lang = Reg.ReadString("Language");
+					}
+				#endif
+			}
+			
 
 			Lang.LoadLanguage(lang);
 		}

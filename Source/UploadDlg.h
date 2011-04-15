@@ -71,7 +71,7 @@ public:
 	 CMainDlg *MainDlg;
 	 CResultsWindow *ResultsWindow;
 	int ThreadTerminated(void);
-	int GenerateImages(LPCTSTR szFileName, LPTSTR szBufferImage, LPTSTR szBufferThumb,int thumbwidth, ImageSettingsStruct &iss);
+//	int GenerateImages(LPCTSTR szFileName, LPTSTR szBufferImage, LPTSTR szBufferThumb,int thumbwidth, ImageConvertingParams &iss);
 	CAtlArray<CUrlListItem> UrlList;
 	CUploader *m_CurrentUploader;
 	bool OnShow();

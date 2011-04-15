@@ -46,7 +46,7 @@ struct QueryParam
 	NString contentType;
 };
 
-typedef enum CallBackFuncType{funcTypeBody,funcTypeHeader};
+enum CallBackFuncType{funcTypeBody,funcTypeHeader};
 class NetworkManager;
 
 struct CallBackData
@@ -89,6 +89,7 @@ class NetworkManager
 		void setUploadBufferSize(const int size);
 		int getCurlResult();
 		CURL* getCurlHandle();
+		static void Uninitialize();
 	private:
 		int m_UploadBufferSize;
 		CURL *curl_handle;
@@ -125,6 +126,7 @@ class NetworkManager
 		char m_errorBuffer[CURL_ERROR_SIZE];
 		void private_initTransfer();
 		std::string m_method;
+		struct curl_slist * chunk_;
 };
 
 #endif

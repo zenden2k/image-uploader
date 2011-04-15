@@ -47,7 +47,8 @@ public:
 		MSG_WM_KEYDOWN(OnKeyDown)
 		MSG_WM_LBUTTONDBLCLK(OnLButtonDblClk)
 		REFLECTED_NOTIFY_CODE_HANDLER(LVN_BEGINDRAG, OnLvnBeginDrag)
-		
+		REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEITEM, OnDeleteItem)
+		REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEALLITEMS, OnDeleteItem)
     END_MSG_MAP()
 
     // Handler prototypes:
@@ -82,6 +83,7 @@ public:
 	void LockImagelist(bool bLock = true);
 	bool StopAndWait();
 	void SelectLastItem();
+	LRESULT OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 };
 
 

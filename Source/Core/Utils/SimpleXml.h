@@ -23,19 +23,26 @@
 #define IU_CORE_UTILS_SIMPLEXML_H
 
 #pragma once
-#define TIXML_USE_STL
-#include <tinyxml.h>
+
 #include <vector>
-#include "CoreUtils.h"
+#include "CoreTypes.h"
+
+class ZSimpleXml_impl;
+class ZSimpleXmlNode_impl;
 
 class ZSimpleXmlNode
 {
+	protected:
+		ZSimpleXmlNode(void *el);
 	public:
-		ZSimpleXmlNode();
-		ZSimpleXmlNode(TiXmlElement *el);
+		explicit ZSimpleXmlNode();
+		ZSimpleXmlNode(const ZSimpleXmlNode& node);
+		virtual ~ZSimpleXmlNode();
 		ZSimpleXmlNode operator[](const std::string& name);
 		std::string Attribute(const std::string& name) const;
 		bool GetAttribute(const std::string& name, std::string& value) const;
+      bool GetAttributeBool(const std::string& name, bool & value) const;
+      bool GetAttributeInt(const std::string& name, int & value) const;
 		int AttributeInt(const std::string& name) const;
 		zint64 AttributeInt64(const std::string& name) const;
 		bool AttributeBool(const std::string& name) const;
@@ -55,8 +62,10 @@ class ZSimpleXmlNode
 		bool GetChilds(const std::string& name,std::vector<ZSimpleXmlNode> &out) const;
 		bool GetAttributes(std::vector<std::string> &out) const;
 		void DeleteChilds();
+		ZSimpleXmlNode& operator = (const ZSimpleXmlNode& node);
 	private:
-		TiXmlElement *m_el;
+		ZSimpleXmlNode_impl *impl_;
+		friend class ZSimpleXml;
 };
 
 /* A simple tiny wrapper of TinyXML library which covers all xml needs of the app.
@@ -74,8 +83,7 @@ class ZSimpleXml
 		bool SaveToFile(const std::string& fileName) const;
 		ZSimpleXmlNode getRoot(const std::string& name, bool create = true);
 	private:
-		TiXmlDocument doc;
-		TiXmlHandle *docHandle;
+		ZSimpleXml_impl *impl_;
 };
 
 #endif

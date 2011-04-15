@@ -17,9 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-#include "stdafx.h"
-
+#include "atlheaders.h"
 #include "UploadSettings.h"
 #include "ServerFolderSelect.h"
 #include "NewFolderDlg.h"
@@ -27,10 +25,13 @@
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ConvertPresetDlg.h"
 
-CUploadSettings::CUploadSettings(CMyEngineList * EngineList)
+
+CUploadSettings::CUploadSettings(CMyEngineList * EngineList):сonvert_profiles_(Settings.ConvertProfiles)
 {
 	nImageIndex = nFileIndex = -1;
 	m_EngineList = EngineList;
+   m_ProfileChanged  = false;
+   m_CatchChanges = false;
 }
 
 CUploadSettings::~CUploadSettings()
@@ -42,40 +43,37 @@ void CUploadSettings::TranslateUI()
 	TRC(IDC_FORMATLABEL,"Формат:");
 	TRC(IDC_QUALITYLABEL,"Качество:");
 	TRC(IDC_RESIZEBYWIDTH,"Изменение ширины:");
-	TRC(IDC_SAVEPROPORTIONS,"Сохранять пропорции");
-	TRC(IDC_YOURLOGO,"Добавить водяной знак");
+	//TRC(IDC_SAVEPROPORTIONS,"Сохранять пропорции");
+	//TRC(IDC_YOURLOGO,"Добавить водяной знак");
 	TRC(IDC_XLABEL,"и/или высоты:");
+	TRC(IDC_PROFILELABEL,"Профиль:");
 	TRC(IDC_YOURTEXT,"Добавить текст на картинку");
 	TRC(IDC_IMAGEPARAMETERS,"Параметры изображений");
 	TRC(IDC_LOGOOPTIONS,"Дополнительно...");
-
-	TRC(IDC_KEEPASIS,"Оставить без изменения");
-	TRC(IDC_THUMBSETTINGS,"Настройки превью");
-
-	TRC(IDC_CREATETHUMBNAILS,"Создавать превью");
+	TRC(IDC_KEEPASIS,"Обрабатывать изображения");
+	TRC(IDC_THUMBSETTINGS,"Миниаютюры");
+	TRC(IDC_CREATETHUMBNAILS,"Создавать миниатюры (превью)");
 	TRC(IDC_IMAGESERVERGROUPBOX,"Cервер для загрузки изображений");
-	TRC(IDC_USESERVERTHUMBNAILS,"Использовать серверные эскизы");
-	TRC(IDC_WIDTHLABEL,"Ширина эскиза:");
-	TRC(IDC_DRAWFRAME,"Обводить в рамку");
-	TRC(IDC_ADDFILESIZE,"Размеры изображения на картинке");
+	TRC(IDC_USESERVERTHUMBNAILS,"Использовать серверные миниатюры");
+	TRC(IDC_WIDTHLABEL,"Ширина миниатюры:");
+	TRC(IDC_ADDFILESIZE,"Надпись на миниатюре");
 	TRC(IDC_PRESSUPLOADBUTTON,"Нажмите кнопку \"Загрузить\" чтобы начать процесс загрузки");
-	TRC(IDC_USETHUMBTEMPLATE,"Использовать шаблон");
-
 	TRC(IDC_FILESERVERGROUPBOX, "Сервер для остальных типов файлов");
 }
 
 LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	PageWnd = m_hWnd;
+	//m_ThumbSizeEdit.SubclassWindow(GetDlgItem(IDC_QUALITYEDIT));
 	TranslateUI();
 
 	m_nImageServer = Settings.ServerID;
 	m_nFileServer = Settings.FileServerID;
 
-	HBITMAP hBitmap;
-
+	CBitmap hBitmap;
+	HDC dc = ::GetDC(HWND_DESKTOP);
 	// Get color depth (minimum requirement is 32-bits for alpha blended images).
-	int iBitsPixel = GetDeviceCaps(::GetDC(HWND_DESKTOP),BITSPIXEL);
+	int iBitsPixel = GetDeviceCaps(dc,BITSPIXEL);
 	/*if (iBitsPixel >= 32)
 	{
 		hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_BITMAP5));
@@ -88,10 +86,33 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 		m_PlaceSelectorImageList.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
 		m_PlaceSelectorImageList.Add(hBitmap,RGB(255,0,255));
 	}
+	::ReleaseDC(HWND_DESKTOP,dc) ;
+   HICON ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON	, 16,16,0);
+	SendDlgItemMessage(
+      IDC_RESIZEPRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
+   m_ResizePresetIconButton.SubclassWindow(GetDlgItem(IDC_RESIZEPRESETSBUTTON));
 	
-	
-	RECT Toolbar1Rect;
+   
+   
+   ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONEDIT), IMAGE_ICON	, 16,16,0);
+   RECT profileRect;
+    ::GetWindowRect(GetDlgItem(IDC_EDITPROFILE), &profileRect);
+   ::MapWindowPoints(0, m_hWnd, (LPPOINT)&profileRect, 2);
+   
+   m_ProfileEditToolbar.Create(m_hWnd,profileRect,_T(""), WS_CHILD|WS_VISIBLE|WS_CHILD | TBSTYLE_LIST |TBSTYLE_FLAT| CCS_NORESIZE|/*CCS_BOTTOM |CCS_ADJUSTABLE|*/TBSTYLE_TOOLTIPS|CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
+	m_ProfileEditToolbar.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
+   m_ProfileEditToolbar.SetButtonStructSize();
+	m_ProfileEditToolbar.SetButtonSize(17,17);
+		
+	CImageList list;
+	list.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
+	list.AddIcon(ico);
+	m_ProfileEditToolbar.SetImageList(list);
+	m_ProfileEditToolbar.AddButton(IDC_EDITPROFILE, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Редактировать профиль"), 0);
+
+   RECT Toolbar1Rect;
 	::GetWindowRect(GetDlgItem(IDC_IMAGESERVERGROUPBOX), &Toolbar1Rect);
+  
 	::MapWindowPoints(0, m_hWnd, (LPPOINT)&Toolbar1Rect, 2);
 	Toolbar1Rect.top += dlgY(9);
 	Toolbar1Rect.bottom -= dlgY(3);
@@ -141,7 +162,8 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("GIF"));
 	
 	ShowParams();
-
+	ShowParams(Settings.CurrentConvertProfileName);
+	UpdateProfileList();
 	UpdateAllPlaceSelectors();
 	return 1;  // Let the system set the focus
 }
@@ -160,55 +182,20 @@ LRESULT CUploadSettings::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCt
 
 LRESULT CUploadSettings::OnBnClickedKeepasis(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	// TODO: Add your control notification handler code here
-	int id;
-	BOOL checked = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0, 0);
-
-	for(id=1004; id<1017; id++)
-		::EnableWindow(GetDlgItem(id), !checked);
-
-	::EnableWindow(GetDlgItem(IDC_SAVEPROPORTIONS), !checked);
-
+	bool checked = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0, 0)!=FALSE;
+	EnableNextN(GetDlgItem(IDC_KEEPASIS), 13, checked);
+	m_ProfileEditToolbar.EnableWindow(checked);
 	return 0;
 }
 
 void CUploadSettings::ShowParams(/*UPLOADPARAMS params*/)
 {
-	SendDlgItemMessage(IDC_KEEPASIS,BM_SETCHECK,Settings.ImageSettings.KeepAsIs);
-	if(Settings.ImageSettings.NewWidth)
-		SetDlgItemInt(IDC_IMAGEWIDTH,Settings.ImageSettings.NewWidth);
-	else
-		SetDlgItemText(IDC_IMAGEWIDTH,_T(""));
-
-	if(Settings.ImageSettings.NewHeight)
-		SetDlgItemInt(IDC_IMAGEHEIGHT,Settings.ImageSettings.NewHeight);
-	else
-		SetDlgItemText(IDC_IMAGEHEIGHT,_T(""));
-
-	if(Settings.ImageSettings.Quality)
-		SetDlgItemInt(IDC_QUALITYEDIT,Settings.ImageSettings.Quality);
-	else
-		SetDlgItemText(IDC_QUALITYEDIT,_T(""));
-
-
-	SendDlgItemMessage(IDC_YOURLOGO,BM_SETCHECK, Settings.ImageSettings.AddLogo);
-	SendDlgItemMessage(IDC_YOURTEXT,BM_SETCHECK, Settings.ImageSettings.AddText);
-	SendDlgItemMessage(IDC_DRAWFRAME,BM_SETCHECK, Settings.ThumbSettings.DrawFrame);
-	SendDlgItemMessage(IDC_FORMATLIST,CB_SETCURSEL, Settings.ImageSettings.Format);
-	SendDlgItemMessage(IDC_THUMBFORMATLIST,CB_SETCURSEL, Settings.ThumbSettings.ThumbFormat);
+	SendDlgItemMessage(IDC_KEEPASIS,BM_SETCHECK,!Settings.UploadProfile.KeepAsIs);
+	SendDlgItemMessage(IDC_THUMBFORMATLIST,CB_SETCURSEL, Settings.ThumbSettings.Format);
 	SendDlgItemMessage(IDC_CREATETHUMBNAILS,BM_SETCHECK,Settings.ThumbSettings.CreateThumbs);
-	SendDlgItemMessage(IDC_SAVEPROPORTIONS,BM_SETCHECK,Settings.ImageSettings.SaveProportions);
 	SendDlgItemMessage(IDC_ADDFILESIZE,BM_SETCHECK,Settings.ThumbSettings.ThumbAddImageSize);
-	SendDlgItemMessage(IDC_USETHUMBTEMPLATE,BM_SETCHECK,Settings.ThumbSettings.UseThumbTemplate);
-	if(!Settings.ThumbSettings.UseThumbTemplate)
-		SendDlgItemMessage(IDC_USESERVERTHUMBNAILS,BM_SETCHECK,Settings.ThumbSettings.UseServerThumbs);
-
-	
-
+	SendDlgItemMessage(IDC_USESERVERTHUMBNAILS,BM_SETCHECK,Settings.ThumbSettings.UseServerThumbs);
 	SendDlgItemMessage(IDC_CREATETHUMBNAILS,BM_SETCHECK,Settings.ThumbSettings.CreateThumbs);
-
-
-	SetDlgItemInt(IDC_THUMBWIDTH,Settings.ThumbSettings.ThumbWidth);
 }
 
 LRESULT CUploadSettings::OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
@@ -234,9 +221,7 @@ LRESULT CUploadSettings::OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD 
 
 LRESULT CUploadSettings::OnBnClickedLogooptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CConvertPresetDlg dlg(0);
-	/*CSettingsDlg dlg(1);*/ // Open settings dialog and logo options tab
-	dlg.DoModal(m_hWnd);
+	// TODO: remove me! 
 	return 0;
 }
 
@@ -271,33 +256,42 @@ bool CUploadSettings::OnNext()
 		}
 	}
 	
-	Settings.ImageSettings.KeepAsIs = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
-	Settings.ImageSettings.NewWidth= GetDlgItemInt(IDC_IMAGEWIDTH);
-	Settings.ImageSettings.NewHeight = GetDlgItemInt(IDC_IMAGEHEIGHT);
-	Settings.ImageSettings.AddLogo = IsChecked(IDC_YOURLOGO);
-	Settings.ImageSettings.AddText = IsChecked(IDC_YOURTEXT);
+   if(!Settings.ThumbSettings.ScaleByHeight)
+   {
+      
+     Settings.ThumbSettings.ThumbWidth = GetDlgItemInt(IDC_THUMBWIDTH);
+   }
+   else
+   {
+       Settings.ThumbSettings.ThumbHeight=  GetDlgItemInt(IDC_THUMBWIDTH);
+   }
+
+	Settings.UploadProfile.KeepAsIs = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) != BST_CHECKED;
+
 	Settings.ThumbSettings.CreateThumbs = IsChecked(IDC_CREATETHUMBNAILS);
 	Settings.ThumbSettings.UseServerThumbs = IsChecked(IDC_USESERVERTHUMBNAILS);
-	Settings.ThumbSettings.UseThumbTemplate = IsChecked(IDC_USETHUMBTEMPLATE);
-	Settings.ThumbSettings.DrawFrame = IsChecked(IDC_DRAWFRAME);
+	//Settings.ThumbSettings.UseThumbTemplate = IsChecked(IDC_USETHUMBTEMPLATE);
+	//Settings.ThumbSettings.DrawFrame = IsChecked(IDC_DRAWFRAME);
 	Settings.ThumbSettings.ThumbAddImageSize = IsChecked(IDC_ADDFILESIZE);
-	Settings.ImageSettings.SaveProportions = IsChecked(IDC_SAVEPROPORTIONS);
+	/*Settings.ImageSettings.SaveProportions = IsChecked(IDC_SAVEPROPORTIONS);
 	Settings.ImageSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
-	Settings.ImageSettings.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);
+	Settings.ImageSettings.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);*/
 	
 	Settings.ServerID = m_nImageServer;
 	
 	Settings.FileServerID = m_nFileServer;
 	Settings.ThumbSettings.ThumbWidth = GetDlgItemInt(IDC_THUMBWIDTH);
-	
+
+   SaveCurrentProfile();
+
 	return true;
 }
 
 bool CUploadSettings::OnShow()
 {
 	BOOL temp;
-	
-
+   ShowParams(Settings.CurrentConvertProfileName);
+   UpdateProfileList();
 	OnBnClickedCreatethumbnails(0, 0, 0, temp);
 	OnBnClickedKeepasis(0, 0, 0, temp);
 	EnableNext();
@@ -398,7 +392,7 @@ bool ImageServer = (hWndCtl == Toolbar.m_hWnd);
 	
 void CUploadSettings::UpdateToolbarIcons()
 {
-	HICON hImageIcon = NULL, hFileIcon = NULL;
+	CIcon hImageIcon = NULL, hFileIcon = NULL;
 
 	if(m_nImageServer != -1)
 		hImageIcon = (HICON)LoadImage(0,IU_GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(m_EngineList->byIndex(m_nImageServer)->Name)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
@@ -748,4 +742,171 @@ LRESULT CUploadSettings::OnOpenSignupPage(WORD /*wNotifyCode*/, WORD wID, HWND /
 }
 
 
+
+LRESULT CUploadSettings::OnResizePresetButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+{
+   RECT rc;
+   ::GetWindowRect(hWndCtl, &rc );
+   POINT menuOrigin = {rc.left,rc.bottom};
+
+	CMenu FolderMenu;
+   int id =  IDC_RESIZEPRESETMENU_FIRST_ID;
+	FolderMenu.CreatePopupMenu();
+   FolderMenu.AppendMenu(MF_STRING, id++, TR("Без изменения"));
+   FolderMenu.AppendMenu(MF_SEPARATOR, -1, _T(""));
+   FolderMenu.AppendMenu(MF_STRING, id++, _T("800x600"));
+	FolderMenu.AppendMenu(MF_STRING, id++, _T("1024x768"));
+   FolderMenu.AppendMenu(MF_STRING, id++, _T("1600x1200"));
+   FolderMenu.AppendMenu(MF_SEPARATOR, -1,  _T(""));
+     FolderMenu.AppendMenu(MF_STRING, id++, _T("25%"));
+      FolderMenu.AppendMenu(MF_STRING, id++, _T("50%"));
+FolderMenu.AppendMenu(MF_STRING, id++, _T("75%"));
+	FolderMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd);
 	
+   return 0;
+}
+
+LRESULT CUploadSettings::OnResizePresetMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+  struct resize_preset
+ {
+    
+      char *width;
+      char * height;
+   };
+ 
+   resize_preset p[] =  {{"", ""},{"800", "600"}, {"1024","768"},
+   {"1600","1200"},
+    {"25%","25%"},
+    {"50%","50%"},
+    {"75%","75%"}};
+
+   int presetIndex = wID - IDC_RESIZEPRESETMENU_FIRST_ID;
+   int presetCount = sizeof(p)/sizeof(p[0]);
+   if(presetIndex > presetCount -1) 
+      return 0;
+   ::SetDlgItemTextA(m_hWnd, IDC_IMAGEWIDTH,(p[presetIndex].width));
+   ::SetDlgItemTextA(m_hWnd, IDC_IMAGEHEIGHT, (p[presetIndex].height));
+   return 0;
+}
+LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+{
+   SaveCurrentProfile();
+   CSettingsDlg dlg(1);
+	dlg.DoModal(m_hWnd);
+   CurrentProfileName = "";
+   ShowParams(Settings.CurrentConvertProfileName);
+   UpdateProfileList();
+   ShowParams(Settings.CurrentConvertProfileName);
+   return 0;
+}
+
+ void CUploadSettings::UpdateProfileList()
+ {
+    SendDlgItemMessage(IDC_PROFILECOMBO, CB_RESETCONTENT);
+    std::map<CString, ImageConvertingParams> ::const_iterator it;
+    bool found = false;
+    for(it = сonvert_profiles_.begin(); it!=сonvert_profiles_.end(); ++it)
+    {
+      ZGuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
+      if(it->first == CurrentProfileName) found = true;
+    }
+    if(!found) ZGuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, CurrentProfileName);
+    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, -1,(LPARAM)(LPCTSTR) CurrentProfileName); 
+ }
+
+ void CUploadSettings::ShowParams(const ImageConvertingParams& params)
+ {
+   m_ProfileChanged = false;
+   m_CatchChanges = false;
+   if(params.Quality)
+		SetDlgItemInt(IDC_QUALITYEDIT,params.Quality);
+	else
+		SetDlgItemText(IDC_QUALITYEDIT,_T(""));
+   
+   SendDlgItemMessage(IDC_FORMATLIST,CB_SETCURSEL, params.Format);
+   SendDlgItemMessage(IDC_YOURLOGO,BM_SETCHECK,  params.AddLogo);
+   SendDlgItemMessage(IDC_YOURTEXT,BM_SETCHECK,  params.AddText);
+   SetDlgItemText(IDC_IMAGEWIDTH,params.strNewWidth);
+	SetDlgItemText(IDC_IMAGEHEIGHT,params.strNewHeight);
+   m_ProfileChanged = false;
+    m_CatchChanges = true;
+ }
+
+ void CUploadSettings::ShowParams(const CString profileName)
+ {
+    if(!Settings.ThumbSettings.ScaleByHeight)
+   {
+      TRC(IDC_WIDTHLABEL,"Ширина:");
+      SetDlgItemInt(IDC_THUMBWIDTH,Settings.ThumbSettings.ThumbWidth);
+   }
+   else
+   {
+      TRC(IDC_WIDTHLABEL,"Высота:");
+      SetDlgItemInt(IDC_THUMBWIDTH,Settings.ThumbSettings.ThumbHeight);
+   }
+    if(CurrentProfileName == profileName) return;
+   CurrentProfileName = profileName;
+   CurrentProfileOriginalName = profileName; 
+   ShowParams(сonvert_profiles_[profileName]);
+   
+    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, -1,(LPARAM)(LPCTSTR) profileName); 
+ }
+
+ bool CUploadSettings::SaveParams(ImageConvertingParams& params)
+ {
+   params.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
+	params.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);
+
+   params.strNewWidth = IU_GetWindowText( GetDlgItem(IDC_IMAGEWIDTH));
+
+  params.strNewHeight =  IU_GetWindowText( GetDlgItem(IDC_IMAGEHEIGHT));
+   return true;
+ }
+
+ void  CUploadSettings::ProfileChanged()
+ {
+if(!m_CatchChanges) return;
+    if(!m_ProfileChanged)
+    {
+       CurrentProfileOriginalName = CurrentProfileName;
+       CurrentProfileName.Replace(CString(_T(" "))+TR("(изменен)"), _T(""));
+      CurrentProfileName = CurrentProfileName + _T(" ")+ TR("(изменен)");
+     // ::SetWindowText(GetDlgItem(IDC_PROFILECOMBO), CurrentProfileName);
+        m_ProfileChanged = true;
+        UpdateProfileList();
+    }
+ }
+
+LRESULT CUploadSettings::OnProfileEditedCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   ProfileChanged();
+   return 0;
+}
+
+void CUploadSettings::SaveCurrentProfile()
+{
+     CString saveToProfile = CurrentProfileName;
+   if(CurrentProfileOriginalName == _T("Default"))
+saveToProfile = CurrentProfileOriginalName;
+
+   if(!SaveParams(сonvert_profiles_[saveToProfile]))
+      return;
+
+  Settings.CurrentConvertProfileName  = saveToProfile;
+}
+
+bool  CUploadSettings::OnHide()
+{
+   SaveCurrentProfile();
+   return true;
+}
+LRESULT CUploadSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+{
+    CString profile = IU_GetWindowText(GetDlgItem(IDC_PROFILECOMBO));
+
+    ShowParams(profile);
+    UpdateProfileList();
+   return 0;
+}
+

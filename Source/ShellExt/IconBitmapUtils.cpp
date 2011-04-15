@@ -18,8 +18,7 @@
 //
 #include "stdafx.h"
 #include "IconBitmapUtils.h"
-#include "../settings.h"
-
+#include "../MyUtils.h"
 IconBitmapUtils::IconBitmapUtils()
 	: hUxTheme(NULL)
 {

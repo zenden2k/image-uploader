@@ -10,6 +10,8 @@
 #include "../../thread.h"
 #include <queue>
 #include "../../Core/FileDownloader.h"
+#include <map>
+#include <atltheme.h>
 struct HistoryTreeItem 
 {
 /*public:
@@ -27,7 +29,7 @@ struct HistoryTreeItem
 class CHistoryTreeControl :  
 	public CCustomTreeControlImpl<CHistoryTreeControl>,
 	public CThemeImpl <CHistoryTreeControl>, 
-	public CThreadImpl<CHistoryTreeControl>,
+	protected CThreadImpl<CHistoryTreeControl>,
 	public TreeItemCallback
 {
 	public:
@@ -50,8 +52,13 @@ class CHistoryTreeControl :
 		DWORD OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
 		bool LoadThumbnail(HistoryTreeItem * ItemID);
 	public:
+		FastDelegate0<> onThreadsFinished;
+		FastDelegate0<> onThreadsStarted;
+		void setDownloadingEnabled(bool enabled);
 		int NotifyParent(int nItem);
+		bool m_bIsRunning;
 		int m_thumbWidth;
+		bool downloading_enabled_;
 		void addSubEntry(TreeItem* res, HistoryItem it, bool autoExpand);
 		TreeItem*  addEntry(CHistorySession* session, const CString text);
 		void Init();
@@ -60,6 +67,7 @@ class CHistoryTreeControl :
 		TreeItem * selectedItem();
 		void TreeItemSize( TreeItem *item, SIZE *sz);
 		DWORD Run();
+		bool isRunning() const;
 		void StartLoadingThumbnails();
 		void OnTreeItemDelete(TreeItem* item) ;
 		void CreateDownloader();
@@ -83,6 +91,9 @@ class CHistoryTreeControl :
 		void DownloadThumb(HistoryTreeItem * it);
 		int m_SessionItemHeight;
 		int m_SubItemHeight;	
+		void QueueFinishedEvent();
+		void threadsFinished();
+
 };
 
 

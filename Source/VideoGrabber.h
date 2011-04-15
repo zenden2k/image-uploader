@@ -19,7 +19,7 @@
 */
 
 #pragma once
-#include "stdafx.h"
+
 class CVideoGrabber;
 #include "resource.h"       // main symbols
 #include "maindlg.h"

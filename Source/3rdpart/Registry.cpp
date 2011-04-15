@@ -18,6 +18,7 @@
  
 CRegistry::CRegistry()
 {
+	m_wow64Flag = 0;
 	m_hRootKey = HKEY_CURRENT_USER;
 	m_bLazyWrite = TRUE;
 	m_nLastError = ERROR_SUCCESS;
@@ -89,7 +90,7 @@ BOOL CRegistry::DeleteKey(CString strKey)
 	DeleteKey returns False. */
 	
 	// need to open the key first with RegOpenKeyEx
-	ATLASSERT(FALSE); // not yet implemented
+//	ATLASSERT(FALSE); // not yet implemented
 	ATLASSERT(strKey[0] != '\\');
 
 	if (!KeyExists(strKey)) return TRUE;
@@ -260,7 +261,7 @@ BOOL CRegistry::SetKey(CString strKey, BOOL bCanCreate)
 
 	ATLASSERT(strKey[0] != '\\');
 	HKEY hKey;
-
+	DWORD access = bCanCreate? KEY_ALL_ACCESS: KEY_READ;
 
 	// close the current key if it is open
 	if (strKey.GetLength() == 0)
@@ -273,7 +274,7 @@ BOOL CRegistry::SetKey(CString strKey, BOOL bCanCreate)
 	if (bCanCreate) // open the key with RegCreateKeyEx
 	{
 		if (::RegCreateKeyEx(m_hRootKey, LPCTSTR(strKey), 0, NULL, 
-			REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey,
+			REG_OPTION_NON_VOLATILE, access|m_wow64Flag, NULL, &hKey,
 				&dwDisposition) != ERROR_SUCCESS) return FALSE;
 		m_strCurrentPath = strKey;
 		if (!m_bLazyWrite) ::RegFlushKey(hKey);
@@ -284,7 +285,7 @@ BOOL CRegistry::SetKey(CString strKey, BOOL bCanCreate)
 	// otherwise, open the key without creating
 	// open key requires no initial slash
 	m_nLastError = ::RegOpenKeyEx(m_hRootKey, LPCTSTR(strKey), 0,
-		KEY_ALL_ACCESS, &hKey);
+		access|m_wow64Flag, &hKey);
 	if (m_nLastError != ERROR_SUCCESS) return FALSE;
 	m_strCurrentPath = strKey;
 	if (!m_bLazyWrite) ::RegFlushKey(hKey);
@@ -380,7 +381,7 @@ CString CRegistry::ReadString(CString strName, CString strDefault)
 	}
 
 	m_nLastError = ::RegOpenKeyEx(m_hRootKey, LPCTSTR(m_strCurrentPath), 0,
-		KEY_READ, &hKey);
+		KEY_READ|m_wow64Flag, &hKey);
 	if (m_nLastError != ERROR_SUCCESS) return strDefault;
 
 	m_nLastError = ::RegQueryValueEx(hKey, LPCTSTR(strName), NULL,
@@ -437,7 +438,7 @@ BOOL CRegistry::ReadBool(CString strName, BOOL bDefault)
 
 	ATLASSERT(m_strCurrentPath.GetLength() > 0);
 	if (::RegOpenKeyEx(m_hRootKey, LPCTSTR(m_strCurrentPath), 0,
-		KEY_READ, &hKey) != ERROR_SUCCESS) return bDefault;
+		KEY_READ|m_wow64Flag, &hKey) != ERROR_SUCCESS) return bDefault;
 
 	if (::RegQueryValueEx(hKey, LPCTSTR(strName), NULL,
 		&dwType, (LPBYTE)&b, &dwSize) != ERROR_SUCCESS) b = bDefault;
@@ -745,3 +746,7 @@ BOOL CRegistry::WriteRect(CString strName, CRect* pRect)
 	return bSuccess;
 }
 
+void CRegistry::SetWOW64Flag(DWORD flag)
+{
+	m_wow64Flag = flag;
+}

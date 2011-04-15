@@ -21,8 +21,45 @@
 #include "FileQueueUploader.h"
 #include <algorithm>
 #include "../../LogWindow.h"
+#include <zthread/thread.h>
+#include <zthread/mutex.h>
+#include "Uploader.h"
 
-CFileQueueUploader::CFileQueueUploader()
+class CFileQueueUploader::Impl
+{
+	public:
+		Impl();
+		virtual ~Impl();
+		void AddFile(const std::string& fileName, const std::string& displayName, void* user_data);
+		void start();
+		virtual void run();
+		bool getNextJob(FileListItem* item);
+		
+		ZThread::Mutex mutex_;
+		CFileUploaderCallback *callback_;
+		volatile bool m_NeedStop;
+		bool m_IsRunning;
+		CAbstractUploadEngine *m_engine;
+		ServerSettingsStruct m_serverSettings;
+		std::vector<FileListItem> m_fileList;
+		int m_nThreadCount;
+		int m_nRunningThreads;
+	protected:
+		class Runnable;
+		bool onNeedStopHandler();
+};
+
+class CFileQueueUploader::Impl::Runnable: public ZThread::Runnable
+{
+	public:
+		CFileQueueUploader::Impl* uploader_;
+		Runnable(CFileQueueUploader::Impl *uploader){uploader_ = uploader;}
+		virtual void run(){uploader_->run();}
+};
+
+/* private CFileQueueUploader::Impl class */
+
+CFileQueueUploader::Impl::Impl()
 {
 	m_nThreadCount = 1;
 	callback_ = 0;
@@ -31,29 +68,17 @@ CFileQueueUploader::CFileQueueUploader()
 	m_engine = 0;
 }
 
-void CFileQueueUploader::AddFile(const std::string& fileName, const std::string& displayName, void* user_data)
+CFileQueueUploader::Impl::~Impl()
 {
-	FileListItem newFileListItem;
-	newFileListItem.user_data = user_data;
-	newFileListItem.displayName = displayName;
-	newFileListItem.fileName = fileName;
-	m_fileList.push_back(newFileListItem);
+
 }
 
-bool CFileQueueUploader::start()
+bool CFileQueueUploader::Impl::onNeedStopHandler()
 {
-	m_NeedStop = false;
-	m_IsRunning = true;
-	int numThreads = min(size_t(m_nThreadCount), m_fileList.size());
-	m_nRunningThreads = numThreads;
-	for(int i = 0; i < numThreads; i++)
-	{
-		ZThread::Thread t1(this); // starting new thread
-	}
-	return 0;
+	return m_NeedStop;
 }
 
-bool CFileQueueUploader::getNextJob(FileListItem* item)
+bool CFileQueueUploader::Impl::getNextJob(FileListItem* item)
 {
 	if(m_NeedStop) return false;
 	std::string url;
@@ -69,33 +94,28 @@ bool CFileQueueUploader::getNextJob(FileListItem* item)
 	return result;
 }
 
-void CFileQueueUploader::setCallback(CFileUploaderCallback* callback)
+void CFileQueueUploader::Impl::AddFile(const std::string& fileName, const std::string& displayName, void* user_data)
 {
-	callback_ = callback;
+	FileListItem newFileListItem;
+	newFileListItem.user_data = user_data;
+	newFileListItem.displayName = displayName;
+	newFileListItem.fileName = fileName;
+	m_fileList.push_back(newFileListItem);
 }
 
-/*int CUploader::pluginProgressFunc (void* userData, double dltotal,double dlnow,double ultotal, double ulnow)
+void CFileQueueUploader::Impl::start()
 {
-	if(m_NeedStop) return -1;
-	return 0;
-}*/
-
-void CFileQueueUploader::stop()
-{
-	m_NeedStop = true;
+	m_NeedStop = false;
+	m_IsRunning = true;
+	int numThreads = min(size_t(m_nThreadCount), m_fileList.size());
+	m_nRunningThreads = numThreads;
+	for(int i = 0; i < numThreads; i++)
+	{
+		ZThread::Thread t1(new Runnable(this)); // starting new thread
+	}
 }
 
-bool CFileQueueUploader::IsRunning()
-{
-	return m_IsRunning;
-}
-
-void CFileQueueUploader::setUploadSettings(CAbstractUploadEngine * engine)
-{
-	m_engine = engine;
-}
-
-void CFileQueueUploader::run()
+void CFileQueueUploader::Impl::run()
 {
 	CUploader uploader;
 	uploader.onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
@@ -105,6 +125,7 @@ void CFileQueueUploader::run()
 		FileListItem it;
 		if(!getNextJob(&it)) break;
 		uploader.setUploadEngine(m_engine);
+		uploader.onNeedStop.bind(this, &Impl::onNeedStopHandler);
 		bool res = uploader.UploadFile(it.fileName, it.displayName.c_str());
 		mutex_.acquire();
 		//m_CS.Lock();
@@ -133,4 +154,52 @@ void CFileQueueUploader::run()
 			callback_->OnQueueFinished();
 	}
 	mutex_.release();
+}
+
+/* public CFileQueueUploader class */
+
+CFileQueueUploader::CFileQueueUploader()
+{
+	_impl = new Impl();
+}
+
+void CFileQueueUploader::AddFile(const std::string& fileName, const std::string& displayName, void* user_data)
+{
+	_impl->AddFile(fileName, displayName, user_data);
+}
+
+bool CFileQueueUploader::start()
+{
+	_impl->start();
+	return true;
+}
+
+
+void CFileQueueUploader::setCallback(CFileUploaderCallback* callback)
+{
+	_impl->callback_ = callback;
+}
+
+
+
+void CFileQueueUploader::stop()
+{
+	_impl->m_NeedStop = true;
+}
+
+bool CFileQueueUploader::IsRunning() const
+{
+	return _impl->m_IsRunning;
+}
+
+void CFileQueueUploader::setUploadSettings(CAbstractUploadEngine * engine)
+{
+	_impl->m_engine = engine;
+}
+
+
+
+CFileQueueUploader::~CFileQueueUploader()
+{
+	delete _impl;
 }

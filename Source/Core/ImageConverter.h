@@ -3,10 +3,54 @@
 
 #include <GdiPlus.h>
 #include "Images/Thumbnail.h"
+#include "../common.h"
+enum ImageResizeMode { 
+   irmFit,  irmCrop, irmStretch
+};
+
+template<class T> struct EnumWrapper
+{
+	T value_;
+	operator T&()
+	{
+		return value_;
+	}
+	T& operator =(const T& value)
+	{
+		value_ = value;
+		return *this;
+	}
+	bool operator ==( const T value)
+	{
+		return value_ == value;
+	}
+};
+
 struct ImageConvertingParams
 {
-	int NewWidth,NewHeight;
-	BOOL KeepAsIs;
+   ImageConvertingParams()
+   {
+      StrokeColor = RGB( 0, 0, 0);
+/*	   NewWidth = 0;
+	   NewHeight = 0;*/
+		SmartConverting = false;
+	   AddLogo  = false;
+	   AddText = false;
+	   Format = 1;
+	   Quality = 85;
+	   SaveProportions = true;
+		ResizeMode = irmFit;
+	   LogoPosition = 0;
+	   LogoBlend = 0;
+	   Text = APPNAME;
+	   TextPosition = 5;
+	   TextColor = 0x00ffffff;
+	   StringToFont(_T("Tahoma,8,,204"), &Font);
+   }
+
+   CString strNewWidth, strNewHeight;
+	//int NewWidth,NewHeight;
+	
 	BOOL AddText;
 	CString Text;
 	int Format;
@@ -17,11 +61,15 @@ struct ImageConvertingParams
 	int LogoPosition;
 	int LogoBlend;
 	int TextPosition;
+   bool SmartConverting;
 	CString LogoFileName;
 	COLORREF TextColor,StrokeColor;
+   EnumWrapper<ImageResizeMode> ResizeMode;
 };
 
-enum ThumbFormatEnum { tfSameAsImageFormat = 0, tfJPEG, tfPNG };
+enum ThumbFormatEnum { tfSameAsImageFormat = 0, tfJPEG, tfPNG, tfGIF };
+
+
 
 struct ThumbCreatingParams
 {
@@ -29,6 +77,7 @@ struct ThumbCreatingParams
 	int LogoPosition;
 	int LogoBlend;
 	int TextPosition;
+	unsigned int Quality;
 	CString Text;
 	CString FileName;
 	//TCHAR FontName[256];
@@ -36,11 +85,13 @@ struct ThumbCreatingParams
 	int ThumbAlpha;
 	BOOL TextOverThumb;
 	int ThumbWidth;
-	BOOL UseThumbTemplate;
+   int ThumbHeight;
+   bool ScaleByHeight;
 	BOOL DrawFrame;
 	BOOL ThumbAddImageSize;
 	BOOL ThumbAddBorder;
-	ThumbFormatEnum ThumbFormat;
+	EnumWrapper<ThumbFormatEnum> Format;
+   COLORREF BackgroundColor;
 };
 
 class CImageConverter
@@ -57,13 +108,14 @@ class CImageConverter
 		CImageConverter();
 		void setDestinationFolder(const CString &folder);
 		void setGenerateThumb(bool generate);
+      void setEnableProcessing(bool enable);
 		void setImageConvertingParams(const ImageConvertingParams &params);
 		void setThumbCreatingParams(const ThumbCreatingParams &params);
 		void setThumbnail(Thumbnail * thumb);
 		bool Convert(const CString& sourceFile);
 		const CString getThumbFileName();
 		const CString getImageFileName();
-		bool createThumbnail(Gdiplus::Image *image, Gdiplus::Image ** outResult); 
+		bool createThumbnail(Gdiplus::Image *image, Gdiplus::Image ** outResult, zint64 fileSize, int fileFormat = 1); 
 	protected:
 		bool createThumb(Gdiplus::Image *bm, int fileformat);
 		Thumbnail* thumbnail_template_;
@@ -74,6 +126,7 @@ class CImageConverter
 		std::string ReplaceVars(const std::string& expr);
 		zint64 EvaluateSimpleExpression(const std::string& expr) const;
 		Gdiplus::Brush * CreateBrushFromString(const std::string& br,  RECT rect);
+      bool processing_enabled;
 };
 
 using namespace Gdiplus;

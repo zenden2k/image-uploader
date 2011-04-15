@@ -95,6 +95,8 @@ bool CUploader::UploadFile(const std::string & FileName, const std::string displ
 	if(displayName.empty())
 		displayName = IuCoreUtils::ExtractFileName(FileName);
 	CIUUploadParams uparams;
+	uparams.thumbWidth = m_nThumbWidth;
+	//uparams.thumbHeight = 
 	m_NetworkManager.setProgressCallback(pluginProgressFunc, (void*)this);
 	bool EngineRes = false;
 	int i=0;

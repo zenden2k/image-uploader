@@ -237,14 +237,14 @@ function  UploadFile(FileName, options)
 	 local ex = regexp("upload url=\"(.+)\"");
 
 		local res = ex.capture(data);
-print("okffff");
+//print("okffff");
 		if(res != null){	
 			uploadUrl= data.slice(res[1].begin,res[1].end);
 			
 		}
 	else return 0;
 	
-	print(data);
+	//print(data);
 	local max_file_size="";
 
 	ex = regexp("max_file_size=\"(.+)\"");

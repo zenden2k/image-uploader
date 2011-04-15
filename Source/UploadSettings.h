@@ -26,6 +26,9 @@
 #include "logindlg.h"
 #include "atlctrlx.h"
 #include "Gui\WizardCommon.h"
+#include "Gui/Controls/IconButton.h"
+#include <atlcrack.h>
+#include "Gui/Controls/PercentEdit.h"
 #define IDC_SELECTFOLDER 4050
 #define IDC_SERVERBUTTON 4000
 #define IDC_IMAGETOOLBAR 4010
@@ -48,6 +51,8 @@
 #define IDC_FILESERVER_FIRST_ID 16000
 #define IDC_FILESERVER_LAST_ID 17000
 
+#define IDC_RESIZEPRESETMENU_FIRST_ID 18000
+#define IDC_RESIZEPRESETMENU_LAST_ID 18100
 
 class CUploadSettings : 
 	public CDialogImpl<CUploadSettings>	, public CWizardPage
@@ -77,12 +82,27 @@ class CUploadSettings :
 		COMMAND_HANDLER(IDC_OPENREGISTERURL+1, BN_CLICKED, OnOpenSignupPage)
 		COMMAND_HANDLER(IDC_SERVERPARAMS, BN_CLICKED, OnServerParamsClicked)	
 		COMMAND_HANDLER(IDC_SERVERPARAMS+1, BN_CLICKED, OnServerParamsClicked)
+     /* COMMAND_HANDLER(IDC_QUALITYEDIT, EN_KILLFOCUS, OnQualityEditKillFocus)
+      COMMAND_HANDLER(IDC_QUALITYEDIT, EN_SETFOCUS, OnQualityEditKillFocus)*/
 		NOTIFY_HANDLER(IDC_IMAGETOOLBAR, TBN_DROPDOWN, OnServerDropDown);
 		NOTIFY_HANDLER(IDC_FILETOOLBAR, TBN_DROPDOWN, OnServerDropDown);
 		MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu);
+
+       COMMAND_HANDLER(IDC_FORMATLIST, CBN_SELCHANGE, OnProfileEditedCommand)
+      COMMAND_HANDLER(IDC_QUALITYEDIT, EN_CHANGE, OnProfileEditedCommand)
+      COMMAND_HANDLER(IDC_IMAGEWIDTH, EN_CHANGE, OnProfileEditedCommand)
+COMMAND_HANDLER(IDC_IMAGEHEIGHT, EN_CHANGE, OnProfileEditedCommand)
+     
+
 		COMMAND_RANGE_HANDLER(IDC_IMAGESERVER_FIRST_ID, IDC_IMAGESERVER_LAST_ID, OnImageServerSelect);
 		COMMAND_RANGE_HANDLER(IDC_FILESERVER_FIRST_ID, IDC_FILESERVER_LAST_ID, OnFileServerSelect);
-	 END_MSG_MAP()
+      COMMAND_RANGE_HANDLER(IDC_RESIZEPRESETMENU_FIRST_ID, IDC_RESIZEPRESETMENU_LAST_ID, OnResizePresetMenuItemClick);
+      
+      COMMAND_HANDLER_EX(IDC_RESIZEPRESETSBUTTON, BN_CLICKED, OnResizePresetButtonClicked)
+      COMMAND_ID_HANDLER_EX(IDC_EDITPROFILE, OnEditProfileClicked)
+      COMMAND_HANDLER_EX(IDC_PROFILECOMBO, CBN_SELCHANGE, OnProfileComboSelChange)
+	   REFLECT_NOTIFICATIONS()
+    END_MSG_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -105,13 +125,17 @@ class CUploadSettings :
 	LRESULT OnServerParamsClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnOpenSignupPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
+   LRESULT OnQualityEditKillFocus(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnResizePresetMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnProfileEditedCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+   
 	int m_nImageServer, m_nFileServer;
 	void ShowParams();
 	CToolBarCtrl Toolbar;
 	CToolBarCtrl FileServerSelectBar;
 	bool OnNext();
 	bool OnShow();
+   virtual bool OnHide();
 	void UpdateAllPlaceSelectors();
 	void UpdatePlaceSelector(bool ImageServer);
 	void UpdateToolbarIcons();
@@ -123,6 +147,25 @@ class CUploadSettings :
 protected:
 	CMyEngineList * m_EngineList;
 	void TranslateUI();
+   CIconButton m_ResizePresetIconButton;
+   CIconButton m_ProfileEditButton;
+   CToolBarCtrl m_ProfileEditToolbar;
+	CPercentEdit m_ThumbSizeEdit;
+    void UpdateProfileList();
+public:
+   LRESULT OnResizePresetButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+   LRESULT OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+    std::map<CString, ImageConvertingParams>& ñonvert_profiles_;
+     void ShowParams(const ImageConvertingParams& params);
+   void ShowParams(const CString profileName);
+   bool SaveParams(ImageConvertingParams& params);
+    CString CurrentProfileName;
+   void ProfileChanged();
+   bool m_CatchChanges;
+   bool m_ProfileChanged;
+   void SaveCurrentProfile();
+   CString CurrentProfileOriginalName;
+   LRESULT OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 };
 
 

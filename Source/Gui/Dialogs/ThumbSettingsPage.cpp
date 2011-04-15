@@ -17,9 +17,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-
+#include "../../atlheaders.h"
+#include <gdiplus.h>
+#include <GdiPlusPixelFormats.h>
 #include "ThumbSettingsPage.h"
+
 #include <uxtheme.h>
 #include "../../LogWindow.h"
 #include "../../LangClass.h"
@@ -28,12 +30,14 @@
 #include "../../Core/Images/Thumbnail.h"
 #include "../../MyUtils.h"
 #include "ThumbEditor.h"
+#include "InputDialog.h"
+
 #pragma comment( lib, "uxtheme.lib" )
 // CThumbSettingsPage
 CThumbSettingsPage::CThumbSettingsPage()
 {
-	ZeroMemory(&lf, sizeof(lf));
 	params_ = Settings.ThumbSettings;
+   m_CatchFormChanges = false;
 }
 
 CThumbSettingsPage::~CThumbSettingsPage()
@@ -48,154 +52,71 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
 {
 	TabBackgroundFix(m_hWnd);
 	// Translating controls
-	TRC(IDCANCEL, "Отмена");
-	TRC(IDC_FILENAMELABEL, "Имя файла:");
-	TRC(IDC_LOGOPOSITIONLABEL, "Позиция логотипа:");
-	TRC(IDC_LOGOGROUP, "Водяной знак");
+
 	TRC(IDC_TEXTONIMAGEGROUP, "Текст на картинке");
 	TRC(IDC_ENTERYOURTEXTLABEL, "Введите текст:");
-	TRC(IDC_TEXTCOLORLABEL, "Цвет текста:");
-	TRC(IDC_TEXTSTROKECOLOR, "Цвет обводки:");
-	TRC(IDC_SELECTFONT, "Шрифт...");
-	TRC(IDC_TEXTPOSITIONLABEL, "Позиция логотипа:");
-	TRC(IDC_THUMBPARAMS, "Параметры эскизов");
-	TRC(IDC_FRAMECOLORLABEL, "Цвет рамки");
-	TRC(IDC_THUMBTEXTCOLORLABEL, "Цвет текста:");
-	TRC(IDC_GRADIENTCOLOR1LABEL, "Цвет градиента 1:");
-	TRC(IDC_GRADIENTCOLOR2LABEL, "Цвет градиента 2:");
 	TRC(IDC_THUMBFONT, "Шрифт...");
-	TRC(IDC_THUMBTEXTLABEL, "Надпись на эскизе:");
-	TRC(IDC_TEXTOVERTHUMB2, "Надпись на градиентном фоне эскиза");
-	SetWindowText(TR("Дополнительные параметры"));	
-
+	TRC(IDC_THUMBTEXTCHECKBOX, "Надпись на миниатюре:");
+	TRC(IDC_THUMBBACKGROUNDLABEL, "Цвет фона:");
+	TRC(IDC_WIDTHRADIO, "Ширина:");
+	TRC(IDC_HEIGHTRADIO, "Высота:");
+	TRC(IDC_THUMBSCOMBOLABEL, "Шаблон миниатюры:");
+	TRC(IDC_EDITTHUMBNAILPRESET, "Редактировать");
+	TRC(IDC_NEWTHUMBNAIL, "Создать копию");
+	TRC(IDC_THUMBFORMATLABEL,"Формат:");
+	TRC(IDC_THUMBQUALITYLABEL,"Качество:");
 	
+	ThumbBackground.SubclassWindow(GetDlgItem(IDC_THUMBBACKGROUND));
 	RECT rc = {13, 170, 290, 400};
 	img.SubclassWindow(GetDlgItem(IDC_COMBOPREVIEW));
 	//img.Create(m_hWnd, rc);
 	img.LoadImage(0);
 
-	SendDlgItemMessage(IDC_TRANSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)0) );
-	
-	SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Верхний левый угол"));
-	SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Сверху посередине"));
-	SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Правый верхний угол"));
-	SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Левый нижний угол"));
-	SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Снизу посередине"));
-	SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Правый нижний угол"));
-
-	SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Верхний левый угол"));
-	SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Сверху посередине"));
-	SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Правый верхний угол"));
-	SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Левый нижний угол"));
-	SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Снизу посередине"));
-	SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Правый нижний угол"));
-
-	SendDlgItemMessage(IDC_LOGOPOSITION, CB_SETCURSEL, Settings.ImageSettings.LogoPosition);
-	SendDlgItemMessage(IDC_TEXTPOSITION, CB_SETCURSEL, Settings.ImageSettings.TextPosition);
-	SetDlgItemText(IDC_LOGOEDIT, Settings.ImageSettings.LogoFileName);
-	
-	if(*Settings.ImageSettings.LogoFileName) 
-		img.LoadImage(Settings.ImageSettings.LogoFileName);
-
-	SetDlgItemText(IDC_EDITYOURTEXT, Settings.ImageSettings.Text);
-	
-	 SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_SETCHECK, Settings.ThumbSettings.ThumbAddImageSize);
-	
-	
-	/*TextColor.SubclassWindow(GetDlgItem(IDC_SELECTCOLOR));
-	TextColor.SetColor(Settings.ImageSettings.TextColor);
-	
-	StrokeColor.SubclassWindow(GetDlgItem(IDC_STROKECOLOR));
-	StrokeColor.SetColor(Settings.ImageSettings.StrokeColor);*/
-	SendDlgItemMessage(IDC_TEXTOVERTHUMB2, BM_SETCHECK, Settings.ThumbSettings.TextOverThumb);
+	SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );	
+	SetDlgItemText(IDC_THUMBTEXT, Settings.ThumbSettings.Text);
 
 	ZGuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 4, TR("Как у изображения"),
 		_T("JPEG"), _T("PNG"), _T("GIF"));
 
-	lf = Settings.ImageSettings.Font;
-	ThumbFont = Settings.ThumbSettings.ThumbFont;
-	
 	std::vector<CString> files;
 	CString folder = IU_GetDataFolder()+_T("\\Thumbnails\\");
 	GetFolderFileList(files, folder , _T("*.xml"));
 	for(size_t i=0; i<files.size(); i++)
 		ZGuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt( WCstringToUtf8( files[i]))) );
 	
-	SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, -1, (LPARAM) (LPCTSTR) Settings.ThumbSettings.thumbFileName);
+	
+	SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_SETCHECK, Settings.ThumbSettings.ThumbAddImageSize);
+	SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, -1, (LPARAM) (LPCTSTR) Settings.ThumbSettings.FileName);
 	SetDlgItemText(IDC_THUMBTEXT, params_.Text);
-	
-
-	SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, Settings.ThumbSettings.ThumbFormat);
-	BOOL b;
+	SetDlgItemInt(IDC_THUMBQUALITYEDIT, Settings.ThumbSettings.Quality);
+	SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, Settings.ThumbSettings.Format);
+    SendDlgItemMessage(IDC_WIDTHRADIO, BM_SETCHECK,  !Settings.ThumbSettings.ScaleByHeight);
+	 SendDlgItemMessage(IDC_HEIGHTRADIO, BM_SETCHECK,  Settings.ThumbSettings.ScaleByHeight);
+	SetDlgItemInt(IDC_WIDTHEDIT,Settings.ThumbSettings.ThumbWidth);
+   SetDlgItemInt(IDC_HEIGHTEDIT,Settings.ThumbSettings.ThumbHeight);
+    BOOL b;
+	ThumbBackground.SetColor(Settings.ThumbSettings.BackgroundColor);
 	OnThumbComboChanged(0,0,0,b);
-//	ThumbTextCheckboxChange();
+    ::EnableWindow(GetDlgItem(IDC_WIDTHEDIT), !params_.ScaleByHeight);
+   ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT), params_.ScaleByHeight);
+ m_CatchFormChanges = true;
 	return 1;  // Let the system set the focus
-}
-
-LRESULT CThumbSettingsPage::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-	EndDialog(wID);
-	return 0;
-}
-
-LRESULT CThumbSettingsPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-	EndDialog(wID);
-	return 0;
-}
-
-LRESULT CThumbSettingsPage::OnBnClickedLogobrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	TCHAR Buf[MAX_PATH*4];
-	SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
-		CString(TR("Изображения"))+ _T(" (jpeg, bmp, png, gif ...)"),
-		_T("*.jpg;*.gif;*.png;*.bmp;*.tiff"),
-		TR("Все файлы"),
-		_T("*.*"));
-
-	CFileDialog fd(true, 0, 0, 4|2, Buf, m_hWnd);
-	
-	CString s;
-	s = GetAppFolder();
-	fd.m_ofn.lpstrInitialDir = s;
-	if ( fd.DoModal() != IDOK || !fd.m_szFileName ) return 0;
-
-	LPTSTR FileName = fd.m_szFileName;
-
-	SetDlgItemText(IDC_LOGOEDIT, FileName);
-	img.LoadImage(FileName);
-	img.Invalidate();
-
-	return 0;
-}
-
-LRESULT CThumbSettingsPage::OnBnClickedSelectfont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	// Font selection dialog
-	CFontDialog dlg(&lf);
-	dlg.DoModal(m_hWnd);
-
-	return 0;
-}
-
-LRESULT CThumbSettingsPage::OnBnClickedThumbfont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	// Font selection dialog
-	CFontDialog dlg(&ThumbFont);
-	dlg.DoModal(m_hWnd);
-	return 0;
 }
 
 bool CThumbSettingsPage::Apply()
 {
-	Settings.ThumbSettings.ThumbFont = ThumbFont;
-	Settings.ThumbSettings.ThumbAddImageSize =  SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK);
+	Settings.ThumbSettings.ThumbAddImageSize =  SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
 	TCHAR buf[256] =_T("\0");
 	GetDlgItemText(IDC_THUMBSCOMBO, buf, 255);
- 	Settings.ThumbSettings.thumbFileName =buf;
-	Settings.ThumbSettings.ThumbFormat = (ThumbFormatEnum) SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_GETCURSEL );
-	
-	for(std::map<std::string, Thumbnail*>::const_iterator it = thumb_cache_.begin(); it!= thumb_cache_.end(); ++it)
+ 	Settings.ThumbSettings.FileName =buf;
+	Settings.ThumbSettings.Format = (ThumbFormatEnum) SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_GETCURSEL );
+	Settings.ThumbSettings.Quality = GetDlgItemInt(IDC_THUMBQUALITYEDIT);
+   Settings.ThumbSettings.ScaleByHeight = SendDlgItemMessage(IDC_WIDTHRADIO, BM_GETCHECK) == FALSE;
+	Settings.ThumbSettings.Text = IU_GetWindowText(GetDlgItem(IDC_THUMBTEXT));
+	Settings.ThumbSettings.ThumbWidth = GetDlgItemInt(IDC_WIDTHEDIT);
+   Settings.ThumbSettings.ThumbHeight = GetDlgItemInt(IDC_HEIGHTEDIT);
+	Settings.ThumbSettings.BackgroundColor = ThumbBackground.GetColor();
+   for(std::map<std::string, Thumbnail*>::const_iterator it = thumb_cache_.begin(); it!= thumb_cache_.end(); ++it)
 	{
 		it->second->SaveToFile();
 	}
@@ -204,10 +125,34 @@ bool CThumbSettingsPage::Apply()
 
 LRESULT  CThumbSettingsPage::OnBnClickedNewThumbnail(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	CString folder = IU_GetDataFolder()+_T("\\Thumbnails\\");
-	Thumbnail thumb;
-	thumb.CreateNew();
-	thumb.SaveToFile(WCstringToUtf8(folder + "new.xml"));
+	std::string fileName = getSelectedThumbnailFileName();
+	if(fileName.empty())
+		return 0;
+	std::string newName = "copy_" + IuCoreUtils::ExtractFileNameNoExt(fileName);
+	CInputDialog dlg(TR("Окно ввода"), TR("Введите имя нового шаблона миниатюры:"), Utf8ToWCstring(newName));
+	if(dlg.DoModal() == IDOK)
+	{
+		newName = WCstringToUtf8(dlg.getValue());
+	}
+	else return 0;
+	std::string destination = IuCoreUtils::ExtractFilePath(fileName) +"/" + newName + ".xml";
+	if(IuCoreUtils::FileExists(destination))
+	{
+		MessageBox(TR("Шаблон с таким именем уже существует!"), APPNAME, MB_ICONERROR);
+		return 0;
+	}
+	if(IuCoreUtils::copyFile(fileName, destination))
+	{
+		ZGuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(newName) );
+		Thumbnail * thumb = 0;
+		if(thumb_cache_.count(fileName))
+		{
+			thumb  = thumb_cache_[fileName];
+			thumb->SaveToFile(destination);
+		}
+	}
+	SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, -1, (LPARAM) (LPCTSTR)Utf8ToWCstring( newName));
+	showSelectedThumbnailPreview();
 	return 0;
 }
 
@@ -254,10 +199,7 @@ std::string CThumbSettingsPage::getSelectedThumbnailFileName()
 	CString thumbFileName = buf;
 	Thumbnail thumb;
 	CString folder = IU_GetDataFolder()+_T("\\Thumbnails\\");
-	
-	std::string fileName = WCstringToUtf8(folder + thumbFileName+".xml");
-	//MessageBoxA(0, fileName.c_str(), 0, 0);
-	return fileName;
+	return WCstringToUtf8(folder + thumbFileName+".xml");
 }
 
 void CThumbSettingsPage::showSelectedThumbnailPreview()
@@ -287,18 +229,16 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
 	Bitmap * bm = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_PNG2),_T("PNG"));
 	if(!bm) 
 	{
-		MessageBox(_T("Не могу загрузить из ресурсов результат"));
+		MessageBox(TR("Не могу загрузить файл миниатюры!"));
 		return ;
 	}
 	
 	Bitmap *toUse = bm->Clone(0,300, bm->GetWidth(), bm->GetHeight()-300, PixelFormatDontCare);
 	
 	Image *result = 0;
-	conv.createThumbnail(toUse, &result);
+	conv.createThumbnail(toUse, &result, 50*1024);
 	if(result)	
 	img.LoadImage(0, result);
-	else
-		MessageBox(_T("Пустой результат"));
 
 	delete toUse;
 	delete result;
@@ -322,8 +262,20 @@ void CThumbSettingsPage::ThumbTextCheckboxChange()
 
 LRESULT CThumbSettingsPage::OnThumbTextChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
+   if(!m_CatchFormChanges) return 0;
 	params_.Text = IU_GetWindowText(GetDlgItem(IDC_THUMBTEXT));
 	showSelectedThumbnailPreview();
 	return 0;
 }
-	
+
+LRESULT CThumbSettingsPage::OnWidthEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+{
+   if(!m_CatchFormChanges) return 0;
+   params_.ScaleByHeight = SendDlgItemMessage(IDC_WIDTHRADIO, BM_GETCHECK) == FALSE;
+   ::EnableWindow(GetDlgItem(IDC_WIDTHEDIT), !params_.ScaleByHeight);
+   ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT), params_.ScaleByHeight);
+	params_.ThumbWidth = GetDlgItemInt(IDC_WIDTHEDIT);
+	params_.ThumbHeight = GetDlgItemInt(IDC_HEIGHTEDIT);
+   showSelectedThumbnailPreview();
+   return 0;
+}

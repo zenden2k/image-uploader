@@ -5,6 +5,7 @@ codepagebyname.h
 #ifndef INCLUDE_CODEPAGEBYNAME_H
 #define INCLUDE_CODEPAGEBYNAME_H
 
+#include <string.h>
 int CodepageByName( const char * name );
 std::string NameByCodepage( int code );
 #endif

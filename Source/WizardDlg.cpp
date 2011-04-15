@@ -17,15 +17,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-#include "stdafx.h"
+#include "atlheaders.h"
 #include "WizardDlg.h"
 #include "langclass.h"
 #include "langselect.h"
-#include "3rdpart/markup.h"
 #include <io.h>
 #include "floatingwindow.h"
-#include "updatepackage.h"
 #include "updatedlg.h"
 #include "TextViewDlg.h"
 #include "Gui/ImageDownloaderDlg.h"
@@ -33,10 +30,10 @@
 #include "LogWindow.h"
 #include "Func/Base.h"
 #include "Func/HistoryManager.h"
-
+ 
 // CWizardDlg
 CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
-{
+{ 
 	screenshotIndex = 1;
 	CurPage = -1;
 	PrevPage = -1;
@@ -53,7 +50,7 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 
 CWizardDlg::~CWizardDlg()
 {
-	Detach();
+	//Detach();
 	if(updateDlg) delete updateDlg;
 	for(int i=0; i<5; i++) 
 	{
@@ -69,13 +66,14 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	m_bShowWindow = true;
 	   
 	LPDWORD DlgCreationResult = (LPDWORD) lParam; 
+	
 	ATLASSERT(DlgCreationResult != NULL);
 	// center the dialog on the screen
 	CenterWindow();
-	HICON hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
+	hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
 		IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
 	SetIcon(hIcon, TRUE);
-	HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
+	hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
 		IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
 	SetIcon(hIconSmall, FALSE);
 
@@ -85,6 +83,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	pLoop->AddMessageFilter(this);
 	pLoop->AddIdleHandler(this);
 	OleInitialize(NULL);
+	
 	HRESULT res = ::RegisterDragDrop(m_hWnd,this);
 	*MediaInfoDllPath=0;
 	TCHAR Buffer[MAX_PATH];
@@ -99,7 +98,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
 	m_UpdateLink.ConvertStaticToHyperlink(GetDlgItem(IDC_UPDATESLABEL), _T("http://zenden.ws"));
 	m_UpdateLink.setCommandID(IDC_UPDATESLABEL);
-
+	
 	CString MediaDll = GetAppFolder()+_T("\\Modules\\MediaInfo.dll");
 	if(FileExists( MediaDll)) lstrcpy(MediaInfoDllPath, MediaDll);
 	else
@@ -110,9 +109,8 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	SetWindowText(APPNAME);
 
    Lang.SetDirectory(GetAppFolder() + "Lang\\");
-   Lang.LoadList();
-	
-	if(!lstrlen(Settings.Language))
+
+	if(Settings.Language.IsEmpty())
 	{
 		CLangSelect LS;
 		if(LS.DoModal(m_hWnd) == IDCANCEL)
@@ -136,11 +134,14 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		Lang.LoadLanguage(Settings.Language);
 	}
 
+	
 	CString ErrorStr;
 	if(!LoadUploadEngines(IU_GetDataFolder()+_T("servers.xml"),ErrorStr))  // Завершаем работу программы, если файл servers.lst отсутствует
 	{
 		CString ErrBuf ;
+		
 		ErrBuf.Format(TR("Невозможно открыть файл со спиком серверов \"servers.xml\"!\n\nПричина:  %s\n\nПродолжить работу программы?"),(LPCTSTR)ErrorStr);
+	
 		if(MessageBox(ErrBuf, APPNAME, MB_ICONERROR|MB_YESNO)==IDNO)
 		{
 			*DlgCreationResult = 2;
@@ -148,6 +149,15 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		}
 	}
 	iuPluginManager.setScriptsDirectory(WCstringToUtf8(IU_GetDataFolder()+_T("\\Scripts\\")));
+	std::vector<CString> list;
+	CString serversFolder = IU_GetDataFolder()+_T("\\Servers\\");
+	GetFolderFileList(list, serversFolder,_T("*.xml"));
+
+	for(int i=0; i<list.size(); i++)
+	{
+		LoadUploadEngines(serversFolder+list[i], ErrorStr);
+	}
+
 	LoadUploadEngines(_T("userservers.xml"), ErrorStr);	
 	Settings.ServerID		  = m_EngineList.GetUploadEngineIndex(Settings.ServerName);
 	Settings.FileServerID  = m_EngineList.GetUploadEngineIndex(Settings.FileServerName);
@@ -190,7 +200,6 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		
 		}
 	}
-	
 	return 0;  // Let the system set the focus
 }
 
@@ -236,11 +245,9 @@ bool CWizardDlg::ParseCmdLine()
 		{
 			ShowPage(1, CurPage, (Pages[2])?2:3);
 			CVideoGrabber* dlg = (CVideoGrabber*) Pages[1];
-			dlg->SetFileName(FileName);
-			
+			dlg->SetFileName(FileName);			
 			return true;
-		}
-		
+		}	
 	}
 	nIndex = 0;
 	CStringList Paths;
@@ -508,6 +515,7 @@ HBITMAP CWizardDlg::GenHeadBitmap(int PageID)
 
 	HBITMAP bmp=0;
 	BackBuffer->GetHBITMAP(Color(255,255,255), &bmp);
+	delete BackBuffer;
 	return bmp;
 }
 
@@ -649,7 +657,6 @@ STDMETHODIMP CWizardDlg::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect
     
 STDMETHODIMP CWizardDlg::DragLeave( void)
 {
-	
 	return S_OK;
 }
 
@@ -959,6 +966,7 @@ int CFolderAdd::ProcessDir( CString currentDir, bool bRecursive /* = true  */ )
 				if(!m_bImagesOnly || IsImage(s_Dir.name))
 				{
 					AddImageStruct ais;
+					ais.show = !m_pWizardDlg->QuickUploadMarker;
 					CString name = CString(currentDir) + CString(_T("\\"))+ CString( s_Dir.name);
 					ais.RealFileName = name;
 					if(SendMessage(m_pWizardDlg->m_hWnd, WM_MY_ADDIMAGE,(WPARAM) &ais,0 ))
@@ -984,6 +992,7 @@ DWORD CFolderAdd::Run()
 			if(!m_bImagesOnly || IsImage(CurPath))
 			{
 				AddImageStruct ais;
+				ais.show = !m_pWizardDlg->QuickUploadMarker;
 				CString name = CurPath;
 				ais.RealFileName = CurPath;
 				if(SendMessage(m_pWizardDlg->m_hWnd, WM_MY_ADDIMAGE,(WPARAM) &ais,0 ))
@@ -1054,13 +1063,14 @@ bool CWizardDlg::AddImage(const CString &FileName, const CString &VirtualFileNam
 	MainDlg->AddToFileList(FileName, VirtualFileName);
 	if(Show){
 		MainDlg->ThumbsView.LoadThumbnails();
-		ShowPage(2);}
+		ShowPage(2);
+	}
 	return true;
 }
 
 LRESULT CWizardDlg::OnAddImages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {	
-	AddImageStruct* ais = (AddImageStruct*)wParam;
+	AddImageStruct* ais = reinterpret_cast<AddImageStruct*>(wParam);
 	if(!ais) return 0;
 	return  AddImage(ais->RealFileName, ais->VirtualFileName, ais->show);
 }
@@ -1593,6 +1603,10 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 	CString buf; // file name buffer
 
 	Bitmap *result=0;
+	WindowCapturingFlags wcfFlags;
+	wcfFlags.AddShadow = Settings.ScreenshotSettings.AddShadow;
+	wcfFlags.RemoveBackground = 	Settings.ScreenshotSettings.RemoveBackground;
+	wcfFlags.RemoveCorners = Settings.ScreenshotSettings.RemoveCorners;
 	int WindowHidingDelay = (needToShow||m_bScreenshotFromTray==2)? Settings.ScreenshotSettings.WindowHidingDelay: 0;
 	
 	engine.setDelay(WindowHidingDelay);
@@ -1608,6 +1622,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 		if(Delay <1) Delay = 1;
 		engine.setDelay(WindowHidingDelay + Delay*1000);
 		CActiveWindowRegion winRegion;
+		winRegion.setWindowCapturingFlags(wcfFlags);
 		winRegion.SetWindowHidingDelay(Settings.ScreenshotSettings.WindowHidingDelay);
 		engine.captureRegion(&winRegion);
 		result = engine.capturedBitmap();
@@ -1631,13 +1646,11 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 			res->GetHBITMAP(Color(255,255,255), &gdiBitmap);
 			if(RegionSelect.Execute(gdiBitmap, res->GetWidth(), res->GetHeight()))
 			{
-				if(RegionSelect.wasImageEdited() || (mode!=cmWindowHandles || !Settings.ScreenshotSettings.ShowForeground) )
+				if(RegionSelect.wasImageEdited() || (mode!=cmWindowHandles /*|| !Settings.ScreenshotSettings.ShowForeground*/) )
 				engine.setSource(gdiBitmap);
 				
 				else{
 					engine.setSource(0);
-
-					
 				}
 				
 				engine.setDelay(0);
@@ -1646,7 +1659,10 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 				{
 					CWindowHandlesRegion *whr =  dynamic_cast<CWindowHandlesRegion*>(rgn);
 					if(whr)
+					{
 						whr->SetWindowHidingDelay(int(Settings.ScreenshotSettings.WindowHidingDelay*1.2));
+						whr->setWindowCapturingFlags(wcfFlags);
+					}
 					engine.captureRegion(rgn);	
 					result = engine.capturedBitmap();
 					DeleteObject(gdiBitmap);

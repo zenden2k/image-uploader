@@ -17,7 +17,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#include <atlbase.h>
+#include <atlapp.h>
+#include <atlctrls.h>
 #include "HistoryTreeControl.h"
 #include "../../Myutils.h"
 #include "../../Core/Utils/CoreUtils.h"
@@ -31,6 +33,8 @@ CHistoryTreeControl::CHistoryTreeControl()
 	m_SessionItemHeight = 0;
 	m_SubItemHeight = 0;
 	m_FileDownloader = 0;
+	downloading_enabled_ = true;
+	m_bIsRunning = false;
 }	
 
 CHistoryTreeControl::~CHistoryTreeControl()
@@ -48,6 +52,7 @@ void CHistoryTreeControl::CreateDownloader()
 	{
 		m_FileDownloader = new CFileDownloader();
 		m_FileDownloader->onFileFinished.bind(this, &CHistoryTreeControl::OnFileFinished);
+		m_FileDownloader->onQueueFinished.bind(this, &CHistoryTreeControl::QueueFinishedEvent);
 	}
 }
 
@@ -66,21 +71,24 @@ void CHistoryTreeControl::abortLoadingThreads()
 	if(m_FileDownloader && m_FileDownloader->IsRunning())
 	{
 		m_FileDownloader->stop();
-		m_FileDownloader->waitForFinished(4000);
-		m_FileDownloader->kill();
-		m_FileDownloader->waitForFinished(-1);
-		delete m_FileDownloader;
-		m_FileDownloader = 0;
+		
+		/*if(!m_FileDownloader->waitForFinished(4000))
+		{
+			m_FileDownloader->kill();
+			m_FileDownloader->waitForFinished(-1);
+			delete m_FileDownloader;
+			m_FileDownloader = 0;
+		}*/
 	}
 	
 	if(IsRunning())
 	{
 		SignalStop();
-		if(!WaitForThread(2100))
+		/*if(!WaitForThread(2100))
 		{
 			Terminate();
 			WaitForThread();
-		}
+		}*/
 	}
 }
 
@@ -152,6 +160,10 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
 	CHistorySession* ses = reinterpret_cast<CHistorySession*>(item->userData());
 	std::string label = "["+ IuCoreUtils::timeStampToString(ses->timeStamp()) +"]";
 	std::string serverName = ses->serverName();
+	if(ses->entriesCount())
+	{
+		serverName  = ses->entry(0).serverName;
+	}
 		if(serverName.empty()) serverName = "uknown server";
 	std::string lowText = 
 	serverName+ " (" + IuCoreUtils::toString(ses->entriesCount())+" files)"; 
@@ -632,6 +644,7 @@ HBITMAP CHistoryTreeControl::GetItemThumbnail(HistoryTreeItem* item)
 	{
 		return 0;
 	}
+	
 	if(IuCoreUtils::FileExists(stdLocalFileName))
 	{
 		m_thumbLoadingQueue.push(item);
@@ -658,16 +671,22 @@ void CHistoryTreeControl::DownloadThumb(HistoryTreeItem * it)
 			StartLoadingThumbnails();
 			return;
 		}
-		CreateDownloader();
-		m_FileDownloader->AddFile(thumbUrl, it);
-		m_FileDownloader->start();
+		if(downloading_enabled_)
+		{
+			CreateDownloader();
+			m_FileDownloader->AddFile(thumbUrl, it);
+			if(onThreadsStarted)	
+				onThreadsStarted();
+			m_FileDownloader->start();
+		}
 	}
 }
 DWORD CHistoryTreeControl::Run()
 {
+	
 	while(!m_thumbLoadingQueue.empty())
 	{
-		if(m_bStopped) return 0;
+		if(m_bStopped) break;
 		HistoryTreeItem * it = m_thumbLoadingQueue.front();
 		m_thumbLoadingQueue.pop();
 		if(!LoadThumbnail(it) && it->thumbnailSource.empty())
@@ -680,13 +699,22 @@ DWORD CHistoryTreeControl::Run()
 			Invalidate();
 		}
 	}
+	m_bIsRunning = false;
+	if(!m_FileDownloader || !m_FileDownloader->IsRunning()) 
+		threadsFinished();
+	
 	return 0;
 }
 
 void CHistoryTreeControl::StartLoadingThumbnails()
 {
 	if(!IsRunning())
+	{
+		if(onThreadsStarted)	
+			onThreadsStarted();
+		m_bIsRunning = true;
 		this->Start();
+	}
 }
 
 bool CHistoryTreeControl::OnFileFinished(bool ok, DownloadFileListItem it)
@@ -708,4 +736,26 @@ void CHistoryTreeControl::OnTreeItemDelete(TreeItem* item)
 	HBITMAP bm = hti->thumbnail;
 	if(bm) DeleteObject(bm);
 	delete hti;
+}
+
+void CHistoryTreeControl::threadsFinished()
+{
+	if(onThreadsFinished)
+	onThreadsFinished();
+}
+
+void CHistoryTreeControl::QueueFinishedEvent()
+{
+	if(!IsRunning())
+		threadsFinished();
+}
+
+bool CHistoryTreeControl::isRunning() const
+{
+	return (m_bIsRunning || (m_FileDownloader && m_FileDownloader->IsRunning()) );
+}
+
+void CHistoryTreeControl::setDownloadingEnabled(bool enabled)
+{
+	downloading_enabled_ = enabled;
 }

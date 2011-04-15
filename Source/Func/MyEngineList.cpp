@@ -96,5 +96,10 @@ CAbstractUploadEngine* CMyEngineList::getUploadEngine(int index)
 
 bool CMyEngineList::LoadFromFile(const CString filename)
 {
+	if(!IuCoreUtils::FileExists(WCstringToUtf8(filename)))
+	{
+		m_ErrorStr = "File not found.";
+		return 0;
+	}
 	return CUploadEngineList::LoadFromFile(WCstringToUtf8(filename));
 }

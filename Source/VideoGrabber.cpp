@@ -17,9 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-#include "stdafx.h"
-
+#include "atlheaders.h"
 #define __AFX_H__ // little hack for avoiding __POSITION type redefinition
 #include <objbase.h>
 #include <streams.h>
@@ -438,7 +436,7 @@ int CVideoGrabber::ThreadTerminated()
  }
 LRESULT CVideoGrabber::OnBnClickedGrabberparams(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CSettingsDlg dlg(3);
+	CSettingsDlg dlg(4);
 	dlg.DoModal(m_hWnd);
 	return 0;
 }
@@ -493,26 +491,18 @@ int CVideoGrabber::GenPicture(CString &outFileName)
 	int needwidth = gapwidth+ncols*(tilewidth+gapwidth);
 	int needheight = gapheight+nstrings*(tileheight+gapheight) + infoHeight;
 
-	
 	RECT rc;
 	GetClientRect(&rc);
-
 	Bitmap *BackBuffer;
 	Graphics g(m_hWnd,true);
 	BackBuffer = new Bitmap(needwidth, needheight, &g);
-	
 	Graphics gr(BackBuffer);
-	
 	Image *bm=NULL;
 	Rect r(0,0,needwidth,needheight);
 	gr.Clear(Color(255,180,180,180));
 	LinearGradientBrush br(r, Color(255, 224, 224, 224), Color(255, 243, 243, 243), 
             LinearGradientModeBackwardDiagonal); 
-
-
 	gr.FillRectangle(&br,r);
-
-
 	int x,y;
 	Pen Framepen(Color(90,90,90));
 	TCHAR buf[256]=_T("\0");

@@ -24,7 +24,7 @@
 
 
 #ifdef _MSC_VER
-#ifndef DEBUG
+#ifdef NDEBUG
 #pragma comment(lib, "pcreplusplus.lib")
 #pragma comment(lib,"pcre.lib" )
 #else 
@@ -206,7 +206,7 @@ bool CDefaultUploadEngine::ParseAnswer(UploadAction &Action, std::string& Body)
 			if(reg.search(Body) == true)
 			{
 
-				int n = reg.matches();
+				reg.matches();
 				if(Action.Variables.empty())
 				{
 					DebugVars += "Variables list is empty!\r\n";

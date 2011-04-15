@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
+#include "atlheaders.h"
 #include "resource.h"
 #include "aboutdlg.h"
 #include "versioninfo.h" 
@@ -32,9 +32,10 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	LogoImage.LoadImage(0, 0, IDR_PNG1, false, GetSysColor(COLOR_BTNFACE));
 	
 	m_WebSiteLink.SubclassWindow(GetDlgItem(IDC_SITELINK));
+	m_GoogleCodeLink.SubclassWindow(GetDlgItem(IDC_GOOGLECODELINK));
 	CString buildInfo = CString("Build ")+_T(BUILD) +_T(" (")+_T(TIME)+_T(")")+(_T("\r\n") + Utf8ToWstring( curl_version())).c_str();
 
-	CString text = CString(TR("v"))+CString(_T("1.2.6 beta"));
+	CString text = CString(TR("v"))+CString(_T("1.2.7 alpha"));
 	SetDlgItemText(IDC_CURLINFOLABEL, text);
 	SetDlgItemText(IDC_IMAGEUPLOADERLABEL, buildInfo);
 	CenterWindow(GetParent());

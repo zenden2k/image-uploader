@@ -18,10 +18,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
+#include "atlheaders.h"
 #include "ServerParamsDlg.h"
 #include "LangClass.h"
 #include "Settings.h"
+
 // CServerParamsDlg
 CServerParamsDlg::CServerParamsDlg(CUploadEngineData *ue): m_ue(ue)
 {

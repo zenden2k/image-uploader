@@ -17,11 +17,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-
+#include "atlheaders.h"
 #include "langclass.h"
 #include "myutils.h"
-
 
 CLang Lang;
 
@@ -76,11 +74,6 @@ CLang::CLang()
 bool CLang::SetDirectory(LPCTSTR Directory)
 {
 	lstrcpyn(m_Directory, Directory, sizeof(m_Directory)/sizeof(TCHAR));
-	return true;
-}
-
-bool CLang::LoadList()
-{
 	return true;
 }
 
@@ -149,6 +142,7 @@ LPTSTR CLang::GetString(LPCTSTR Name)
 			return StringList[i].Text;
 	}
 
+	//return _T("$NO_SUCH_STRING");
 	return (LPTSTR)Name;
 }
 
@@ -156,4 +150,8 @@ LPTSTR CLang::GetString(LPCTSTR Name)
 CString CLang::GetLanguageName()
 {
 	return m_sLang;
+}
+
+CLang::~CLang()
+{
 }

@@ -22,7 +22,7 @@
 struct LogoParams;
 #include "resource.h"       // main symbols
 #include "myimage.h"
-#include "colorpicker.h"
+//#include "colorpicker.h"
 #include "settingspage.h"
 // CGeneralSettings
 
@@ -36,10 +36,9 @@ virtual ~CGeneralSettings();
 
     BEGIN_MSG_MAP(CGeneralSettings)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-       // COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-		  COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
-		   COMMAND_HANDLER(IDC_BROWSEBUTTON, BN_CLICKED, OnBnClickedBrowse)
-     //   COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+		COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
+		COMMAND_HANDLER(IDC_BROWSEBUTTON, BN_CLICKED, OnBnClickedBrowse)
+		COMMAND_HANDLER(IDC_SHELLINTEGRATION, BN_CLICKED, OnShellIntegrationCheckboxChanged)
 	
 		COMMAND_HANDLER(IDC_STARTUPLOADINGFROMSHELL, BN_CLICKED, OnClickedQuickUpload)
 		
@@ -52,7 +51,10 @@ virtual ~CGeneralSettings();
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	//LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	//LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-CMyImage img;
+	LRESULT OnShellIntegrationCheckboxChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	
+	void ShellIntegrationChanged();
+	CMyImage img;
 public:
 	LRESULT OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 LRESULT OnClickedQuickUpload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

@@ -18,14 +18,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
+#include "atlheaders.h"
 #include "SizeExceed.h"
 #include "common.h"
 #include "LangClass.h"
 
 // CSizeExceed
-CSizeExceed::CSizeExceed(LPCTSTR szFileName, ImageSettingsStruct &iss, CMyEngineList * EngineList)
-	: m_ImageSettings(iss), m_EngineList(EngineList)
+CSizeExceed::CSizeExceed(LPCTSTR szFileName, FullUploadProfile &iss, CMyEngineList * EngineList)
+: m_UploadProfile(iss), m_EngineList(EngineList), m_ImageSettings(iss.convert_profile)
 {
 	m_szFileName = szFileName;
 }
@@ -75,7 +75,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("GIF"));
 	SendDlgItemMessage(IDC_QUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
 	
-	int ServerID = m_ImageSettings.ServerID;
+	int ServerID =  m_UploadProfile.upload_profile.ServerID;
 	
 	SendDlgItemMessage(IDC_SERVERLIST,CB_SETCURSEL,Settings.ServerID);
 
@@ -89,7 +89,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	wsprintf(szBuf,CString(TR("Файл"))+ _T(" %s (%dx%d, %s)"),(LPCTSTR)myExtractFileName(m_szFileName),(int)img.ImageWidth,(int)img.ImageHeight, (LPCTSTR)buf2 );
 
 	SetDlgItemText(IDC_FILEEXCEEDNAME, szBuf);
-	NewBytesToString(m_EngineList->byIndex(m_ImageSettings.ServerID)->MaxFileSize, buf2, 25);
+	NewBytesToString(m_EngineList->byIndex( m_UploadProfile.upload_profile.ServerID)->MaxFileSize, buf2, 25);
 
 	wsprintf(szBuf, TR("Файл превышает максимальный размер, допустимый для загрузки на сервер %s (%s)."),
 		Utf8ToWstring(m_EngineList->byIndex(ServerID)->Name).c_str(), buf2);
@@ -115,17 +115,14 @@ LRESULT CSizeExceed::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 
 void CSizeExceed::DisplayParams(void)
 {
-	SendDlgItemMessage(IDC_KEEPASIS, BM_SETCHECK, m_ImageSettings.KeepAsIs);
+    
+   SendDlgItemMessage(IDC_KEEPASIS, BM_SETCHECK, m_UploadProfile.upload_profile.KeepAsIs);
 	
-	if(m_ImageSettings.NewWidth)
-		SetDlgItemInt(IDC_IMAGEWIDTH,m_ImageSettings.NewWidth);
-	else
-		SetDlgItemText(IDC_IMAGEWIDTH, _T(""));
 
-	if(m_ImageSettings.NewHeight)
-		SetDlgItemInt(IDC_IMAGEHEIGHT,m_ImageSettings.NewHeight);
-	else
-		SetDlgItemText(IDC_IMAGEHEIGHT,_T(""));
+		SetDlgItemText(IDC_IMAGEWIDTH, m_ImageSettings.strNewWidth);
+
+	
+		SetDlgItemText(IDC_IMAGEHEIGHT,m_ImageSettings.strNewHeight);
 
 	if(m_ImageSettings.Quality)
 		SetDlgItemInt(IDC_QUALITYEDIT,m_ImageSettings.Quality);
@@ -135,20 +132,20 @@ void CSizeExceed::DisplayParams(void)
 	SendDlgItemMessage(IDC_SAVEPROPORTIONS,BM_SETCHECK,m_ImageSettings.SaveProportions);
 	SendDlgItemMessage(IDC_FORMATLIST,CB_SETCURSEL, m_ImageSettings.Format);
 		
-	SendDlgItemMessage(IDC_SERVERLIST,CB_SETCURSEL,m_ImageSettings.ServerID);
+	SendDlgItemMessage(IDC_SERVERLIST,CB_SETCURSEL, m_UploadProfile.upload_profile.ServerID);
 	BOOL temp;
 	OnBnClickedKeepasis(0,0, 0, temp);
 }
 
 void CSizeExceed::GetParams()
 {
-	m_ImageSettings.KeepAsIs = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
-	m_ImageSettings.NewWidth= GetDlgItemInt(IDC_IMAGEWIDTH);
-	m_ImageSettings.NewHeight = GetDlgItemInt(IDC_IMAGEHEIGHT);
+   m_UploadProfile.upload_profile.KeepAsIs = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
+	m_ImageSettings.strNewWidth= IU_GetWindowText(GetDlgItem(IDC_IMAGEWIDTH));
+   m_ImageSettings.strNewHeight = IU_GetWindowText(GetDlgItem(IDC_IMAGEHEIGHT));
 	m_ImageSettings.SaveProportions = IsChecked(IDC_SAVEPROPORTIONS);
 	m_ImageSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	m_ImageSettings.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);
-	m_ImageSettings.ServerID = SendDlgItemMessage(IDC_SERVERLIST, CB_GETCURSEL, 0, 0);
+	m_UploadProfile.upload_profile.ServerID = SendDlgItemMessage(IDC_SERVERLIST, CB_GETCURSEL, 0, 0);
 }
 
 LRESULT CSizeExceed::OnBnClickedForall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

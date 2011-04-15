@@ -43,7 +43,7 @@ SettingsNode& SettingsNode::operator[](const std::string& name)
 	return *childs_[name];
 }
 
-void SettingsNode::saveToXmlNode(ZSimpleXmlNode parentNode, const std::string& name) const
+void SettingsNode::saveToXmlNode(ZSimpleXmlNode parentNode, const std::string& name, bool isRoot) const
 {
 	int namelen = name.length();
 	if(namelen>0 && name[0] == '@')
@@ -52,9 +52,14 @@ void SettingsNode::saveToXmlNode(ZSimpleXmlNode parentNode, const std::string& n
 	}
 	else
 	{
-		ZSimpleXmlNode child = parentNode.GetChild(name);
-		if(binded_value_)
-		child.SetText(binded_value_->getValue());
+		ZSimpleXmlNode child = parentNode;
+         
+      if(!isRoot)
+      {
+         child = parentNode.GetChild(name);
+		   if(binded_value_)
+		      child.SetText(binded_value_->getValue());
+      }
 	
 	for(std::map<std::string, SettingsNode*>::const_iterator it=childs_.begin(); it!=childs_.end(); ++it)
 	{
@@ -63,7 +68,7 @@ void SettingsNode::saveToXmlNode(ZSimpleXmlNode parentNode, const std::string& n
 	}
 }
 
-void SettingsNode::loadFromXmlNode(ZSimpleXmlNode parentNode, const std::string& name)
+void SettingsNode::loadFromXmlNode(ZSimpleXmlNode parentNode, const std::string& name, bool isRoot)
 {
 	int namelen = name.length();
 	if(namelen>0 && name[0] == '@')
@@ -74,7 +79,11 @@ void SettingsNode::loadFromXmlNode(ZSimpleXmlNode parentNode, const std::string&
 	}
 	else
 	{
-		ZSimpleXmlNode child = parentNode.GetChild(name, false);
+		ZSimpleXmlNode child = parentNode;
+      if(!isRoot)
+      {
+         child = parentNode.GetChild(name, false);
+      }
 		if(!child.IsNull())
 		{
 			if(binded_value_ )
@@ -98,10 +107,10 @@ SettingsNode::~SettingsNode()
 
 void SettingsManager::saveToXmlNode(ZSimpleXmlNode parentNode) const
 {
-	root_.saveToXmlNode(parentNode, "Settings");
+	root_.saveToXmlNode(parentNode, "Settings", true);
 }
 
 void SettingsManager::loadFromXmlNode(ZSimpleXmlNode parentNode)
 {
-	root_.loadFromXmlNode(parentNode, "Settings");
+	root_.loadFromXmlNode(parentNode, "Settings", true);
 }

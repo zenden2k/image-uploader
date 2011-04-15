@@ -46,10 +46,9 @@ CUploadEngineData* CUploadEngineList_Base::byName(const std::string &name)
 {
 	for(size_t i=0; i<m_list.size(); i++)
 	{
-                if(!strcmp(m_list[i].Name.c_str(), name.c_str())) return &m_list[i];
+		if(!strcmp(m_list[i].Name.c_str(), name.c_str())) return &m_list[i];
 	}
 	return 0;
-	
 }
 
 int CUploadEngineList_Base::getRandomImageServer()

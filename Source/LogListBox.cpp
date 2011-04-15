@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+#include "atlheaders.h"
 #include "LogListBox.h"
 #include "Myutils.h"
 const int LLB_VertDivider = 10;
@@ -95,12 +95,12 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
 		SelectObject(dc.m_hDC, NormalFont);
 		RECT ItemRect={r.left+56, r.top + LLB_VertMargin + LLB_VertDivider + item->TitleHeight, 
 							r.right - 10, r.bottom-LLB_VertMargin};
-		dc.DrawText(item->Info, item->Info.GetLength() , &ItemRect, 0);
+		dc.DrawText(item->Info, item->Info.GetLength() , &ItemRect, DT_NOPREFIX);
 			
 		// Writing error text with bold (explication of error)
 		SelectObject(dc.m_hDC, BoldFont);
 		RECT TextRect = {r.left+56, LLB_VertMargin +r.top+ item->TitleHeight+LLB_VertDivider+((item->Info.GetLength())?(item->InfoHeight+LLB_VertDivider):0), r.right - 10, r.bottom-LLB_VertMargin};
-		dc.DrawText(item->strText,  wcslen(item->strText), &TextRect, 0);
+		dc.DrawText(item->strText,  wcslen(item->strText), &TextRect, DT_NOPREFIX);
 
 		if(item->Type == logError)
 			dc.DrawIcon(12,r.top+8,ErrorIcon);

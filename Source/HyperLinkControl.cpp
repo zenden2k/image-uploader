@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
+#include "atlheaders.h"
 #include "HyperLinkControl.h"
 #include "Common.h"
 // CHyperLinkControl
@@ -37,6 +37,7 @@ CHyperLinkControl::CHyperLinkControl()
 
 CHyperLinkControl::~CHyperLinkControl()
 {
+
 }
 
 /* CHyperLinkControl::Init
@@ -94,8 +95,9 @@ int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON
 	}
 	else
 	{	
-		int TextWidth = GetTextWidth(GetDC(), szTitle, NormalFont);
-
+		HDC dc = GetDC();
+		int TextWidth = GetTextWidth(dc, szTitle, NormalFont);
+		ReleaseDC(dc);
 		if(Align==2) // right aligned text
 		{
 			SubItemRightY = ClientRect.right - TextWidth - 3 -35;
@@ -129,6 +131,7 @@ int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON
 		SubItemRightY+=item->ItemRect.right-item->ItemRect.left;
 	}
 	Items.Add(*item);
+	delete item;
 	return TRUE;
 }
 
@@ -147,7 +150,7 @@ LRESULT CHyperLinkControl::OnMouseMove(UINT Flags, CPoint Pt)
 		Track = true;
 	}
 
-	for(int i=0;i< Items.GetCount(); i++)
+	for(size_t i=0;i< Items.GetCount(); i++)
 	{
 		if(!Items[i].Visible) continue;
 		CRect rc(Items[i].ItemRect);
@@ -208,7 +211,7 @@ LRESULT CHyperLinkControl::OnLButtonUp(UINT Flags, CPoint Pt)
 	RECT ClientRect;
 	GetClientRect(&ClientRect);
 
-	for(int i=0;i< Items.GetCount(); i++)
+	for(size_t i=0;i< Items.GetCount(); i++)
 	{
 		if(!Items[i].Visible) continue;
 		CRect rc(Items[i].ItemRect);
@@ -267,8 +270,6 @@ int CHyperLinkControl::NotifyParent(int nItem)
 
 LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	PAINTSTRUCT ps;
-
 	CPaintDC dc(m_hWnd);
 	RECT rc;
 	GetClientRect(&rc);
@@ -282,7 +283,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 	dc.SetBkMode(TRANSPARENT);
 
-	for(int i=0; i<Items.GetCount(); i++)
+	for(size_t i=0; i<Items.GetCount(); i++)
 	{
 		if(!Items[i].Visible) continue;
 		item = Items[i];

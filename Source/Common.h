@@ -44,8 +44,10 @@ struct CUrlListItem
 
 bool IULaunchCopy();
 BOOL CreateTempFolder();
-void ClearTempFolder();
+void ClearTempFolder(LPCTSTR folder);
 extern CString IUTempFolder;
+
+extern CString IUCommonTempFolder;
 extern CCmdLine CmdLine;
 
 bool __fastcall CreateShortCut( 
@@ -71,7 +73,15 @@ void DeleteDir2(LPCTSTR Dir);
 bool BytesToString(__int64 nBytes, LPTSTR szBuffer,int nBufSize);
 bool IULaunchCopy(CString additionalParams=_T(""));
 int GetFolderFileList(std::vector<CString> &list, CString folder, CString mask);
+inline COLORREF RGB2COLORREF(unsigned int color)
+{
+	return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
+}
 
+inline unsigned int COLORREF2RGB( COLORREF color)
+{
+	return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
+}
 void IU_RunElevated(CString params);
 HRESULT IsElevated( __out_opt BOOL * pbElevated );
 #define randomize() (srand((unsigned)time(NULL)))

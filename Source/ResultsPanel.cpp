@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
+#include "atlheaders.h"
 #include "ResultsPanel.h"
 #include <uxtheme.h>
 #include "mediainfodlg.h"
@@ -89,7 +89,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	}
 	if(GetStyle()&WS_CHILD)
 	TabBackgroundFix(m_hWnd);
-	HBITMAP hBitmap;
+	CBitmap hBitmap;
 
 	HIMAGELIST m_hToolBarImageList;
 	if (Is32BPP())

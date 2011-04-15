@@ -22,7 +22,7 @@
 
 #include "resource.h"       // main symbols
 #include "settingspage.h"
-#include "colorpicker.h"
+//#include "colorpicker.h"
 #include <atlcrack.h>
 
 #include "3rdpart/ColorButton.h"

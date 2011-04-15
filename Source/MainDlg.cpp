@@ -18,9 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
+#include "atlheaders.h"
 #include "resource.h"
-
 #include "aboutdlg.h"
 #include "MainDlg.h"
 
@@ -95,7 +94,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	}
 
 	CMenu menu;
-   LV_HITTESTINFO hti;
+	LV_HITTESTINFO hti;
 	hti.pt = ClientPoint;
 	ThumbsView.HitTest(&hti);
 
@@ -104,8 +103,6 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		CMenu FolderMenu;
 		FolderMenu.LoadMenu(IDR_CONTEXTMENU2);
 		CMenu sub = FolderMenu.GetSubMenu(0);
-	
-	
 		bool IsClipboard=	WizardDlg->IsClipboardDataAvailable();
 		sub.EnableMenuItem(IDC_PASTE, (IsClipboard)?MF_ENABLED	:MF_GRAYED	);
 		mi.cbSize = sizeof(mi);
@@ -225,7 +222,7 @@ bool CMainDlg::OnShow()
 	return true;
 }
 
-LRESULT CMainDlg::OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandled*/)
+LRESULT CMainDlg::OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& bHandled)
 {
 	NM_LISTVIEW * pnmv = reinterpret_cast <NM_LISTVIEW *>  (pNMHDR);  
 	if(!pnmv) return 0;
@@ -233,6 +230,7 @@ LRESULT CMainDlg::OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandl
 	FileList.RemoveAt(pnmv->iItem);
 
 	EnableNext(FileList.GetCount()>0);
+	bHandled = false;
 	return 0;
 }
 
@@ -363,7 +361,6 @@ DWORD CMainDlg::Run()
 	HANDLE Events[2];
 	Events[0] = m_EditorProcess;
 	Events[1] = WaitThreadStop.m_hEvent;
-	
 	DWORD res = WaitForMultipleObjects(2, Events, FALSE, INFINITE);
 	ThumbsView.UpdateOutdated();
 	WaitThreadStop.ResetEvent();

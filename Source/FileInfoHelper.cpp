@@ -18,6 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "atlheaders.h"
 #include "FileInfoHelper.h"
 #include "Common/MediaInfoDLL.h" //Dynamicly-loaded library (.dll)
 #include "LangClass.h"

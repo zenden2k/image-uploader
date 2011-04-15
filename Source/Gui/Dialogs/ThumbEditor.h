@@ -40,7 +40,7 @@ public:
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 		  COMMAND_HANDLER(IDC_ADDFILESIZE, BN_CLICKED, OnShowTextCheckboxClicked)
 		  COMMAND_HANDLER(IDC_DRAWFRAME, BN_CLICKED, OnDrawFrameCheckboxClicked)
-		  
+		  COMMAND_HANDLER(IDC_THUMBFONT, BN_CLICKED, OnFontSelect);
 			REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
 
@@ -54,10 +54,12 @@ public:
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnShowTextCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnDrawFrameCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnFontSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		
 		void LoadParams();
 		void SaveParams();
 		CColorButton FrameColor;
+		LOGFONT ThumbFont;
 		Thumbnail * thumb_;
 		CColorButton Color1,Color2,ThumbTextColor,TextColor, StrokeColor;
 		void ShowTextCheckboxChanged();

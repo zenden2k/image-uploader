@@ -22,6 +22,12 @@
 /* This module contains uploading engine which uses SqPlus binding library
  for executing Squirrel scripts */
 
+#ifdef _MSC_VER
+   #include "../../atlheaders.h"
+   #include "../../Common.h"
+   #include "../../Gui/Dialogs/InputDialog.h"
+#include "../../LangClass.h"
+#endif
 #include "ScriptUploadEngine.h"
 
 #undef UNICODE
@@ -34,6 +40,7 @@
 #include <openssl/md5.h>
 
 #include "../../3rdpart/codepages.h"
+
 
 #ifdef _MSC_VER
 #ifdef _DEBUG
@@ -60,6 +67,22 @@ DECLARE_INSTANCE_TYPE(CFolderItem);
 DECLARE_INSTANCE_TYPE(CIUUploadParams);
 
 
+const std::string AskUserCaptcha(NetworkManager *nm, const std::string& url)
+{
+	#ifdef _MSC_VER
+	CString wFileName = GetUniqFileName(IUTempFolder+Utf8ToWstring("captcha").c_str());
+	
+	nm->setOutputFile(IuCoreUtils::WstringToUtf8((const TCHAR*)wFileName));
+	if(!nm->doGet(url))
+		return "";
+	CInputDialog dlg(_T("Image Uploader"), TR("¬ведите текст с картинки:"), CString(IuCoreUtils::Utf8ToWstring("").c_str()),wFileName);
+	
+	if(dlg.DoModal()==IDOK)
+		return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
+	nm->setOutputFile("");
+#endif
+	return "";
+}
 
 void CFolderList::AddFolder(const std::string& title, const std::string& summary, const std::string& id, const std::string& parentid, int accessType)
 {
@@ -260,7 +283,8 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 			func(&CIUUploadParams::setDirectUrl,"setDirectUrl").
 			func(&CIUUploadParams::setThumbUrl,"setThumbUrl").
 			func(&CIUUploadParams::getServerFileName,"getServerFileName").
-			func(&CIUUploadParams::setViewUrl,"setViewUrl");	
+			func(&CIUUploadParams::setViewUrl,"setViewUrl").	
+			func(&CIUUploadParams::getParam,"getParam");	
 
 		SQClassDef<CFolderItem>("CFolderItem").
 			func(&CFolderItem::getId,"getId").
@@ -284,8 +308,9 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		RegisterGlobal(scriptUtf8ToAnsi, "Utf8ToAnsi");
 		RegisterGlobal(plugExtractFileName, "ExtractFileName");
 		RegisterGlobal(plugGetFileExtension, "GetFileExtension");
+		RegisterGlobal(AskUserCaptcha, "AskUserCaptcha");
 		RegisterGlobal(scriptGetFileMimeType, "GetFileMimeType");
-		srand(unsigned int(time(0)));
+		srand(static_cast<unsigned int>(time(0)));
 	
 	BindVariable(m_Object, &m_ServersSettings, "ServerParams");
 
@@ -358,7 +383,7 @@ int CScriptUploadEngine::modifyFolder(CFolderItem &folder)
 	try {
 		SquirrelFunction<int> func(m_Object, _SC("ModifyFolder"));
 		if(func.func.IsNull()) return -1;
-		int ival = func(&folder);
+		func(&folder);
 	}
 	catch (SquirrelError & e) {
 		Log(mtError, "CScriptUploadEngine::getServerParamList\r\n"+ Utf8String(e.desc));	

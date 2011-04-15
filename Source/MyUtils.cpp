@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+#include "atlheaders.h"
 #include "myutils.h"
 #include <shobjidl.h>
 
@@ -130,7 +130,7 @@ bool FontToString(const LOGFONT const * lFont, CString &Result)
 
 	int nPixelsPerInch;
 	int nFontSize;
-	HDC hScreenDC;
+	//HDC hScreenDC;
 	bool bBold = false;
 	bool bItalic = false;
 	bool bUnderline = false;
@@ -140,11 +140,12 @@ bool FontToString(const LOGFONT const * lFont, CString &Result)
 	TCHAR szUnderline[2][2]={_T("\0"),_T("u")};
 	TCHAR szStrikeOut[2][2]={_T("\0"),_T("s")};
 
-	hScreenDC = ::GetDC( NULL );
+	//hScreenDC = ::GetDC( NULL );
 
-	if( !hScreenDC ) return false;
-
-	nPixelsPerInch = GetDeviceCaps( ::GetDC(0), LOGPIXELSY );
+	//if( !hScreenDC ) return false;
+	HDC dc = ::GetDC(0);
+	nPixelsPerInch = GetDeviceCaps(dc , LOGPIXELSY );
+	ReleaseDC(0, dc);
 
 	if( nPixelsPerInch <= 0 ) return false;
 
@@ -198,8 +199,9 @@ bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont)
 
 
 	lstrcpy(lFont->lfFaceName,szFontName);
-	lFont->lfHeight = -MulDiv(nFontSize, GetDeviceCaps(::GetDC(0), LOGPIXELSY), 72);
-
+	HDC dc = ::GetDC(0);
+	lFont->lfHeight = -MulDiv(nFontSize, GetDeviceCaps(dc , LOGPIXELSY), 72);
+	ReleaseDC(0, dc);
 
 	lFont->lfItalic=bItalic;
 	lFont->lfStrikeOut=bStrikeOut;

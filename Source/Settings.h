@@ -23,26 +23,41 @@
 
 #pragma once
 
+struct UploadProfileStruct;
+
 #include <atlcoll.h>
 #include "langclass.h"
 #include <map>
 #include <string>
 #include "Core/ImageConverter.h"
-#include "hotkeysettings.h"
 #include "pluginloader.h"
 #include "Core/SettingsManager.h"
 #include "Common.h"
+#include "HotkeySettings.h"
 #define TRAY_SCREENSHOT_UPLOAD 0
 #define TRAY_SCREENSHOT_CLIPBOARD 1
 #define TRAY_SCREENSHOT_SHOWWIZARD 2
 #define TRAY_SCREENSHOT_ADDTOWIZARD 3
 
-struct ImageSettingsStruct: public ImageConvertingParams
+
+/*struct ImageSettingsStruct: public ImageConvertingParams
 {
 	BOOL GenThumb;
 	int ServerID, QuickServerID;
+};*/
+
+struct UploadProfileStruct
+{
+	BOOL GenThumb;
+   bool KeepAsIs;
+	int ServerID, QuickServerID;
 };
 
+struct FullUploadProfile
+{
+   UploadProfileStruct upload_profile;
+   ImageConvertingParams convert_profile;
+};
 /*struct LogoSettingsStruct
 {
 	LOGFONT Font;
@@ -87,7 +102,7 @@ struct ThumbSettingsStruct: public ThumbCreatingParams
 	BOOL ThumbAddBorder;*/	
 	
 	bool CreateThumbs;
-	CString thumbFileName;
+	//CString thumbFileName;
 
 };
 
@@ -166,6 +181,14 @@ struct ScreenshotSettingsStruct
 	COLORREF brushColor;
 	CString FilenameTemplate;
 	CString Folder;
+	bool RemoveCorners;
+	bool AddShadow;
+	bool RemoveBackground;
+};
+
+struct HistorySettingsStruct
+{
+	bool EnableDownloading;
 };
 
 class CSettings
@@ -187,15 +210,18 @@ class CSettings
 		bool Hotkeys_changed;
 		bool ShowTrayIcon;
 		bool ShowTrayIcon_changed;
+		bool AutoStartup;
+		bool AutoStartup_changed;
 		int ThumbsPerLine;
 		TCHAR m_szLang[64];
-		ImageSettingsStruct ImageSettings;
+		//ImageSettingsStruct ImageSettings;
 		TrayIconSettingsStruct TrayIconSettings;
 //		LogoSettingsStruct LogoSettings;
 		ThumbSettingsStruct ThumbSettings;
 		VideoSettingsStruct VideoSettings;
 		ConnectionSettingsStruct ConnectionSettings;
 		ScreenshotSettingsStruct ScreenshotSettings;
+		HistorySettingsStruct HistorySettings;
 		bool ConfirmOnExit;
 		bool ShowUploadErrorDialog;
 		int FileRetryLimit;
@@ -210,6 +236,7 @@ class CSettings
 		bool ParseSubDirs;
 		bool UseProxyServer;
 		int LastUpdateTime;
+    UploadProfileStruct UploadProfile;
 		
 		bool SendToContextMenu;
 		bool SendToContextMenu_changed;
@@ -218,18 +245,29 @@ class CSettings
 		CString ImageEditorPath;
 		CString VideoFolder,ImagesFolder;
 		bool SaveSettings();
+      std::map<CString, ImageConvertingParams> ConvertProfiles;
+      CString CurrentConvertProfileName;
+		
 #endif IU_SHELLEXT
 	private:
 		TCHAR m_Directory[MAX_PATH];
 		
 	public:
 		CSettings();
-		bool LoadSettings(LPCTSTR szDir=NULL);
+		~CSettings();
+		void Uninstall();
+		void FindDataFolder();
+		bool LoadSettings(LPCTSTR szDir=NULL, bool LoadFromRegistry  = true);
 	int UploadBufferSize;
+	void EnableAutostartup(bool enable);
 	int ServerID, QuickServerID;
 	void ApplyRegSettingsRightNow();
 	bool LoadAccounts(ZSimpleXmlNode root);
 	bool SaveAccounts(ZSimpleXmlNode root);
+   bool LoadConvertProfiles(ZSimpleXmlNode root);
+   bool LoadConvertProfile(const CString& name, ZSimpleXmlNode profileNode);
+	bool SaveConvertProfiles(ZSimpleXmlNode root);
+   void BindConvertProfile(SettingsNode& mgr,  ImageConvertingParams &params);
 	#ifndef IU_SHELLEXT
 	ServerSettingsStruct& ServerByName(CString name);
 	ServerSettingsStruct& ServerByUtf8Name(std::string name);
@@ -237,6 +275,7 @@ class CSettings
 	int FileServerID;
 	CString ServerName, QuickServerName,FileServerName;
 	SettingsManager mgr_;
+	CString SettingsFolder;
 };
 
 extern CSettings Settings;

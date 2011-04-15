@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#include "../atlheaders.h"
 #include "ImageDownloaderDlg.h"
 #include "../Common.h"
 #include <pcre++.h>
@@ -40,7 +40,7 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	CenterWindow(GetParent());
 	PrevClipboardViewer = SetClipboardViewer();
 	DlgResize_Init(false, true, 0); // resizable dialog without "griper"
-
+ 
 	::SetFocus(GetDlgItem(IDOK));
 	SetWindowText(TR("Загрузчик изображений"));
 	TRC(IDOK, "Добавить");
@@ -49,13 +49,14 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	TRC(IDC_IMAGEDOWNLOADERTIP, "Введите список ссылок (http:// или ftp://, по одной ccылке в строке)");
 	::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS), SW_HIDE);
 	SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_SETCHECK, Settings.WatchClipboard?BST_CHECKED:BST_UNCHECKED);
-	
+	 
 	if(!m_InitialBuffer.IsEmpty())
 	{
 		ParseBuffer(m_InitialBuffer, false);
-		BeginDownloading();
+		BeginDownloading(); 
 	}
-	return 0; 
+	::SetFocus(GetDlgItem(IDC_FILEINFOEDIT));
+	return 1; 
 }
 
 bool ExtractLinks(CString text, std::vector<CString> &result)
@@ -162,15 +163,15 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, DownloadFileListItem it)
 				}
 			}
 			else 
-			{add = false;
-			CString errorStr;
-			errorStr.Format(TR("Файл '%s' не является файлом изображения (Mime-Type: %s)."),(LPCTSTR)(Utf8ToWstring(it.url).c_str()),(LPCTSTR)mimeType);
-			WriteLog(logWarning,_T("Image Downloader"),errorStr);
+			{
+				add = false;
+				CString errorStr;
+				errorStr.Format(TR("Файл '%s' не является файлом изображения (Mime-Type: %s)."),(LPCTSTR)(Utf8ToWstring(it.url).c_str()),(LPCTSTR)mimeType);
+				WriteLog(logWarning,_T("Image Downloader"),errorStr);
 			}
-
 		}
 		if(add)
-		SendMessage(m_WizardDlg->m_hWnd, WM_MY_ADDIMAGE,(WPARAM)&ais,  0);
+			SendMessage(m_WizardDlg->m_hWnd, WM_MY_ADDIMAGE,(WPARAM)&ais,  0);
 
 	}
 	m_nFileDownloaded++;
@@ -219,7 +220,6 @@ bool CImageDownloaderDlg::BeginDownloading()
 		m_FileDownloader.onFileFinished.bind(this, &CImageDownloaderDlg::OnFileFinished);
 		m_FileDownloader.onQueueFinished.bind(this, &CImageDownloaderDlg::OnQueueFinished);
 		m_FileDownloader.onConfigureNetworkManager.bind(this, &CImageDownloaderDlg::OnConfigureNetworkManager);
-
 		//m_FileDownloader.setCallback(this);
 		m_FileDownloader.start();
 		return true;

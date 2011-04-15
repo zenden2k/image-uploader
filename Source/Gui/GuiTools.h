@@ -21,10 +21,13 @@
 #define IU_GUITOOLS_H
 
 #pragma once
-
+#include <windows.h>
 namespace ZGuiTools
 {
 	int AddComboBoxItem(HWND hDlg, int itemId, LPCTSTR item);
 	bool AddComboBoxItems(HWND hDlg, int itemId, int itemCount, LPCTSTR item, ...);
+  // bool IsChecked(HWND dlg, int id);
+   void GetCheck(HWND dlg, int id, bool& check);
+   void SetCheck(HWND dlg, int id, bool check);
 };
 #endif

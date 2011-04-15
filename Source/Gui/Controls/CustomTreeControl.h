@@ -50,8 +50,9 @@
 // Include property base class
 
 #include <vector>
+#include <atlctrls.h>
 #include <atlmisc.h>
-
+#include <atlframe.h>
 class TreeItem;
 class TreeItemCallback
 {
