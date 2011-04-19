@@ -134,10 +134,10 @@ bool CImageConverter::Convert(const CString& sourceFile)
 		BackBuffer.reset(new Bitmap((int)newwidth,( int)newheight));
 
 		Graphics gr(BackBuffer.get());
-		if(fileformat != 2)
-			gr.Clear(Color(255,255,255,255));
+		if(fileformat != 2) /* not GIF */
+			gr.Clear(Color(0,255,255,255));
 		else 
-			gr.Clear(Color(125,255,255,255));
+			gr.Clear(Color(255,255,255,255));
 
 		//g.SetPageUnit(UnitPixel);
 		gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
