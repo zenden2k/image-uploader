@@ -190,7 +190,7 @@ LRESULT CLogoSettings::OnBnClickedThumbfont(WORD /*wNotifyCode*/, WORD /*wID*/, 
 
 bool CLogoSettings::Apply()
 {
-	int LogoPos, TextPos;
+	/*int LogoPos, TextPos;
 
 	LogoPos = SendDlgItemMessage(IDC_LOGOPOSITION, CB_GETCURSEL);
 	TextPos = SendDlgItemMessage(IDC_TEXTPOSITION, CB_GETCURSEL);
@@ -199,7 +199,7 @@ bool CLogoSettings::Apply()
 	{
 		if(MessageBox(TR("Вы действительно хотите поместить текст и логотип в одном месте на изображении?"),TR("Параметры изображений"),MB_ICONQUESTION|MB_YESNO)!=IDYES)
 			return 0;
-	}
+	}*/
 
    CString saveToProfile = CurrentProfileName;
    if(CurrentProfileOriginalName == _T("Default"))
@@ -266,10 +266,12 @@ void CLogoSettings::ShowParams(const ImageConvertingParams& params)
 
 bool CLogoSettings::SaveParams(ImageConvertingParams& params)
 {
+	bool addLogo = SendDlgItemMessage(IDC_YOURLOGO,BM_GETCHECK) == BST_CHECKED;
+	bool addText = SendDlgItemMessage(IDC_YOURTEXT,BM_GETCHECK) == BST_CHECKED;
 	int LogoPos = SendDlgItemMessage(IDC_LOGOPOSITION, CB_GETCURSEL);
 	int TextPos = SendDlgItemMessage(IDC_TEXTPOSITION, CB_GETCURSEL);
 	
-	if(LogoPos == TextPos) // если "водяной знак" и надпись поставлены в одно и то же место на картинке
+	if(LogoPos == TextPos && addLogo && addText) // если "водяной знак" и надпись поставлены в одно и то же место на картинке
 	{
 		if(MessageBox(TR("Вы действительно хотите поместить текст и логотип в одном месте на изображении?"),TR("Параметры изображений"),MB_ICONQUESTION|MB_YESNO)!=IDYES)
 			return false;
@@ -280,8 +282,8 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
    params.LogoFileName = IU_GetWindowText(GetDlgItem(IDC_LOGOEDIT));
 	params.Text = IU_GetWindowText(GetDlgItem(IDC_EDITYOURTEXT));;
 	params.Font = lf;
-	params.AddLogo = SendDlgItemMessage(IDC_YOURLOGO,BM_GETCHECK) == BST_CHECKED;
-   params.AddText = SendDlgItemMessage(IDC_YOURTEXT,BM_GETCHECK) == BST_CHECKED;
+	params.AddLogo = addLogo;
+   params.AddText = addText;
 
 	ZGuiTools::GetCheck(m_hWnd, IDC_SMARTCONVERTING, params.SmartConverting);
 	params.TextColor=TextColor.GetColor();
