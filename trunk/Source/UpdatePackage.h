@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common/MyXML.h"
+//#include "Common/MyXML.h"
 #include "Core/Network/NetworkManager.h"
 #include "Core/Utils/SimpleXml.h"
 

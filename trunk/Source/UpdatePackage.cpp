@@ -20,7 +20,7 @@
 
 #include "atlheaders.h"
 #include "UpdatePackage.h"
-#include "Common/unzipper.h"
+#include "3rdpart/unzipper.h"
 #include "Common.h"
 #include "pluginloader.h"
 #include "TextViewDlg.h"

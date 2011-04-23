@@ -26,7 +26,7 @@
 #include <atlframe.h>
 #include "../Controls/HistoryTreeControl.h"
 #include "../../Func/HistoryManager.h"
-#include "../../Common/PictureExWnd.h"
+#include "../../Gui/Controls/PictureExWnd.h"
 // CHistoryWindow
 
 #define ID_OPENINBROWSER 13000

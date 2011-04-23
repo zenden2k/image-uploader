@@ -151,7 +151,7 @@ public:
 	int PrevPage,NextPage;
 	bool CreatePage(int PageID);
 	CWizardPage* Pages[5];
-	int screenshotIndex;
+	int screenshotIndex; 
 public:
 	bool ShowPage(int idPage,int prev=-1,int next=-1);
 	bool AddImage(const CString &FileName, const CString &VirtualFileName, bool Show=true);

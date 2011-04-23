@@ -9,25 +9,25 @@
 
 class CRegistry
 {
-public:
-	CRegistry();
-	~CRegistry();
+	public:
+		CRegistry();
+		~CRegistry();
 
-int m_nLastError;
+	int m_nLastError;
 
-// CRegistry properties	
-protected:
-	HKEY m_hRootKey;
-	BOOL m_bLazyWrite;
-	CString m_strCurrentPath;
-	DWORD m_wow64Flag;
-public:
-	inline BOOL PathIsValid() {
-		return (m_strCurrentPath.GetLength() > 0); }
-	inline CString GetCurrentPath() {
-		return m_strCurrentPath; }
-	inline HKEY GetRootKey() {
-		return m_hRootKey; }
+	// CRegistry properties	
+	protected:
+		HKEY m_hRootKey;
+		BOOL m_bLazyWrite;
+		CString m_strCurrentPath;
+		DWORD m_wow64Flag;
+	public:
+		inline BOOL PathIsValid() {
+			return (m_strCurrentPath.GetLength() > 0); }
+		inline CString GetCurrentPath() {
+			return m_strCurrentPath; }
+		inline HKEY GetRootKey() {
+			return m_hRootKey; }
 
 
 //CRegistry	methods
@@ -69,10 +69,9 @@ public:
 	BOOL WriteSize(CString strName, CSize* pSize);
 	BOOL WriteRect(CString strName, CRect* pRect);
 	BOOL WriteDword(CString strName, DWORD dwValue);
-
+	
+	// Compatibility flag for 64-bit systems
 	void SetWOW64Flag(DWORD flag);
-
 };// end of CRegistry class definition
-
 
 #endif
