@@ -1342,10 +1342,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Source\3rdpart\Demo.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Source\3rdpart\Markup.cpp"
 					>
 				</File>
