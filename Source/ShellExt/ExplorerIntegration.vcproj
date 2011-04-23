@@ -55,6 +55,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
