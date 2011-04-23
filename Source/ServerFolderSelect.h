@@ -24,7 +24,7 @@
 #include "thread.h"
 #include "common.h"
 #include <atlcrack.h>
-#include "common/PictureExWnd.h"
+#include "Gui/Controls/PictureExWnd.h"
 #include "Core/Upload/UploadEngine.h"
 typedef enum FolderOperationType            /* Defines an enumeration type    */
 {

@@ -36,7 +36,7 @@ inline std::string myToString(const CString& value)
 
 inline void myFromString(const std::string& text, CString& value)
 {
-	value= Utf8ToWCstring(text);
+	value = Utf8ToWCstring(text);
 }
 
 template<class T> std::string myToString(const EnumWrapper<T>& value)
@@ -46,7 +46,7 @@ template<class T> std::string myToString(const EnumWrapper<T>& value)
 
 template<class T>  void myFromString(const std::string& text,  EnumWrapper<T>& value)
 {
-	value = static_cast<T>(atoi(text.c_str()));
+	value = static_cast<T>(atoi(text.c_str())); 
 }
 
 /* LOGFONT serialization support */				
