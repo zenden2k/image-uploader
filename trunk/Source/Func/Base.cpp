@@ -19,7 +19,7 @@
 */
  
 #include "Base.h"
-#include "../Settings.h"
+#include "../Func/Settings.h"
 #include "../Core/Utils/CoreUtils.h"
 
 ZBase* ZBase::m_base;

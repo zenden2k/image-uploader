@@ -14,6 +14,7 @@
 #include <atlmisc.h>
 #include <atlcoll.h>
 #include <atltheme.h>
+#include "Func/LangClass.h"
 
-extern CAppModule& _Module;
+extern CAppModule _Module;
 #endif

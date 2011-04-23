@@ -26,7 +26,7 @@ public:
 	void ShowPrev(bool Show=true);
 };
 
-#include "../WizardDlg.h"
+#include "Dialogs/WizardDlg.h"
 
 
 

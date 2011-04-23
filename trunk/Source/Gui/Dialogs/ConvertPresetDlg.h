@@ -29,9 +29,9 @@ class CSettingsPage;
 #include "../../resource.h"       // main symbols
 #include <atlcrack.h>
 
-#include "../../logosettings.h"
+#include "logosettings.h"
 
-#include "../../settingspage.h"
+#include "settingspage.h"
 // CConvertPresetDlg
 
 const int ConvertPageCount = 2;

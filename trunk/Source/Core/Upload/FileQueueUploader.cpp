@@ -20,7 +20,7 @@
 
 #include "FileQueueUploader.h"
 #include <algorithm>
-#include "../../LogWindow.h"
+#include "../../Gui/Dialogs/LogWindow.h"
 #include <zthread/thread.h>
 #include <zthread/mutex.h>
 #include "Uploader.h"

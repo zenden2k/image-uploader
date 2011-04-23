@@ -19,13 +19,13 @@
 */
 
 
-#include "../MyUtils.h"
-#include "../Common.h"
-#include "../Settings.h"
+#include "../Func/MyUtils.h"
+#include "../Func/Common.h"
+#include "../Func/Settings.h"
 #include "../Core/Upload/DefaultUploadEngine.h"
 #include "../Core/Upload/ScriptUploadEngine.h"
 #include "MyEngineList.h"
-#include "../LogWindow.h"
+#include "../Gui/Dialogs/LogWindow.h"
 
 CMyEngineList::CMyEngineList()
 {

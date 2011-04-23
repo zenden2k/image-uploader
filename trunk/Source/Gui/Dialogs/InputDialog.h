@@ -24,7 +24,7 @@
 #include <atlframe.h>
 #include "../../3rdpart/ColorButton.h"
 #include "../../Core/Images/Thumbnail.h"
-#include "../../MyImage.h"
+#include "../../Gui/Controls/MyImage.h"
 // CInputDialog
 
 class CInputDialog : 

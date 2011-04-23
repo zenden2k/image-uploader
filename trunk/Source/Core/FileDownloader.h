@@ -22,7 +22,7 @@
 #include <atlbase.h>
 #include <atlapp.h>
 #include <atlmisc.h>
-#include "../thread.h"
+#include "../3rdpart/thread.h"
 #include <atlcoll.h>
 #include "Network/NetworkManager.h"
 #include "../3rdpart/FastDelegate.h"

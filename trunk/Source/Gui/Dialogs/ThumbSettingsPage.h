@@ -21,9 +21,9 @@
 #pragma once
 struct LogoParams;
 #include "../../resource.h"       // main symbols
-#include "../../myimage.h"
-#include "../../settingspage.h"
-#include "../../Settings.h"
+#include "../Controls/myimage.h"
+#include "settingspage.h"
+#include "../../Func/Settings.h"
 #include "../../3rdpart/ColorButton.h"
 #include <atlcrack.h>
 // CThumbSettingsPage

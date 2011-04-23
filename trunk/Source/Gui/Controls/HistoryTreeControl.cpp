@@ -21,9 +21,9 @@
 #include <atlapp.h>
 #include <atlctrls.h>
 #include "HistoryTreeControl.h"
-#include "../../Myutils.h"
+#include "../../Func/Myutils.h"
 #include "../../Core/Utils/CoreUtils.h"
-#include "../../Common.h"
+#include "../../Func/Common.h"
 #include "../../Func/Base.h"
 
 // CHistoryTreeControl

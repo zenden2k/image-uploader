@@ -24,9 +24,9 @@
 
 #ifdef _MSC_VER
    #include "../../atlheaders.h"
-   #include "../../Common.h"
+   #include "../../Func/Common.h"
    #include "../../Gui/Dialogs/InputDialog.h"
-#include "../../LangClass.h"
+#include "../../Func/LangClass.h"
 #endif
 #include "ScriptUploadEngine.h"
 
@@ -35,8 +35,8 @@
 #include <sqplus.h>
 #include <sqstdsystem.h>
 
-#include "../../Plugins/CP_RSA.h"
-#include "../../Plugins/base64.h"
+#include "../../3rdpart/CP_RSA.h"
+#include "../../3rdpart/base64.h"
 #include <openssl/md5.h>
 
 #include "../../3rdpart/codepages.h"

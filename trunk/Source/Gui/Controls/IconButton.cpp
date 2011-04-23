@@ -23,7 +23,7 @@
 #include <atlbase.h>
 #include <atlapp.h>
 #include "IconButton.h"
-#include "../../Common.h"
+#include "../../Func/Common.h"
 // local functions
 static int image_left (int cx, const CRect& Rect, DWORD style);
 static int image_top (int cy, const CRect& Rect, DWORD style);

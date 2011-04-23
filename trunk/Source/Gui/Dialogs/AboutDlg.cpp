@@ -18,13 +18,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "atlheaders.h"
-#include "resource.h"
+#include "../../atlheaders.h"
+#include "../../resource.h"
 #include "aboutdlg.h"
-#include "versioninfo.h" 
+#include "../../versioninfo.h" 
 #include <curl/curl.h>
-#include "LangClass.h"
-#include "Settings.h"
+#include "../../Func/Settings.h"
+
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));

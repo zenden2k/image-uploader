@@ -23,12 +23,12 @@
 #include "ThumbSettingsPage.h"
 
 #include <uxtheme.h>
-#include "../../LogWindow.h"
-#include "../../LangClass.h"
-#include "../../Settings.h"
+#include "LogWindow.h"
+#include "../../Func/LangClass.h"
+#include "../../Func/Settings.h"
 #include "../GuiTools.h"
 #include "../../Core/Images/Thumbnail.h"
-#include "../../MyUtils.h"
+#include "../../Func/MyUtils.h"
 #include "ThumbEditor.h"
 #include "InputDialog.h"
 

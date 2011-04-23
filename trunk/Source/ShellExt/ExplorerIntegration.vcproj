@@ -250,7 +250,7 @@
 				RuntimeTypeInfo="false"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				WarnAsError="true"
+				WarnAsError="false"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
@@ -836,28 +836,12 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\LangClass.cpp"
+				RelativePath="..\Func\LangClass.cpp"
 				>
-				<FileConfiguration
-					Name="Release optimized|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						WarnAsError="false"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\MyUtils.cpp"
+				RelativePath="..\Func\MyUtils.cpp"
 				>
-				<FileConfiguration
-					Name="Release optimized|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						WarnAsError="false"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\MyUtils.h"

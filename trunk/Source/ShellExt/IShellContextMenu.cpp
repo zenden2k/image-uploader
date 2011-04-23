@@ -21,10 +21,10 @@
 
 #include <atlbase.h>
 #include <atlcoll.h>
-#include "../MyUtils.h"
+#include "../Func/MyUtils.h"
 #include "IShellContextMenu.h"
 #include "../3rdpart/Registry.h"
-#include "../LangClass.h"
+#include "../Func/LangClass.h"
 #include <shlobj.h>
 HINSTANCE hDllInstance;
 
