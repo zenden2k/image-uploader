@@ -20,7 +20,7 @@
 
 #include "../atlheaders.h"
 #include "CmdLine.h"
-#include "../MyUtils.h"
+#include "../Func/MyUtils.h"
 CCmdLine::CCmdLine()
 {
 	Parse(GetCommandLine());

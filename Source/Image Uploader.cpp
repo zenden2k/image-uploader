@@ -20,16 +20,15 @@
 
 #include "atlheaders.h"
 #include <gdiplus.h>
-#include <shellapi.h>
+#include <shellapi.h> 
 #include "resource.h"
-#include "aboutdlg.h"
-//#include "uploader.h"
-#include "LogWindow.h"
-#include "MainDlg.h"
-#include "wizarddlg.h"
-#include "floatingwindow.h"
+#include "Gui/Dialogs/aboutdlg.h"
+#include "Gui/Dialogs/LogWindow.h"
+#include "Gui/Dialogs/MainDlg.h"
+#include "Gui/Dialogs/wizarddlg.h"
+#include "Gui/Dialogs/floatingwindow.h"
 
-CAppModule &_Module = *(new CAppModule());
+CAppModule _Module;
 
 bool IsProcessRunning(DWORD pid)
 {

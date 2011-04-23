@@ -19,8 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "../atlheaders.h"
 #include "ImageConverter.h"
-#include "../Common.h"
-#include "../LogWindow.h"
+#include "../Func/Common.h"
+#include "../Gui/Dialogs/LogWindow.h"
 #include "Utils/StringUtils.h"
 #include "../3rdpart/parser.h"
 #include <pcre++.h>

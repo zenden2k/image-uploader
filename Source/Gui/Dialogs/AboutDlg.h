@@ -21,7 +21,8 @@
 #pragma once
 
 #include "atlctrlx.h"
-#include "myimage.h"
+#include "../Controls/myimage.h"
+
 class CAboutDlg : public CDialogImpl<CAboutDlg>
 {
 	public:

@@ -19,9 +19,9 @@
 */
 
 #include "FileDownloader.h"
-#include "../myutils.h"
+#include "../Func/myutils.h"
 #include <algorithm>
-#include "../Common.h"
+#include "../Func/Common.h"
 
 // TODO: 1. use ZThread classes instead  CThread with , 
 // 2. remove dependency from non-core headers ( "../myutils.h", "../Common.h")

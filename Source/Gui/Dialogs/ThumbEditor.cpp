@@ -19,8 +19,7 @@
 */
 #include "../../atlheaders.h"
 #include "ThumbEditor.h"
-#include "../../LangClass.h"
-#include "../../Settings.h"
+#include "../../Func/Settings.h"
 // CThumbEditor
 CThumbEditor::CThumbEditor(Thumbnail *thumb)
 {

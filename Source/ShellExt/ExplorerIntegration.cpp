@@ -24,8 +24,8 @@
 #include <atlapp.h>
 #include "Generated/ExplorerIntegration.h"
 #include "ishellcontextmenu.h"
-#include "../LangClass.h"
-#include "../MyUtils.h"
+#include "../Func/LangClass.h"
+#include "../Func/MyUtils.h"
 #include "../3rdpart/Registry.h"
 
 class CExplorerIntegrationModule : public CAtlDllModuleT< CExplorerIntegrationModule >

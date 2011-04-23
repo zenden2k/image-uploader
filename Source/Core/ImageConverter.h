@@ -3,7 +3,7 @@
 
 #include <GdiPlus.h>
 #include "Images/Thumbnail.h"
-#include "../common.h"
+#include "../Func/common.h"
 enum ImageResizeMode { 
    irmFit,  irmCrop, irmStretch
 };

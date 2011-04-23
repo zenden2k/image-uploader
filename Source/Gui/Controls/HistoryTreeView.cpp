@@ -20,9 +20,9 @@
 
 
 #include "HistoryTreeView.h"
-#include "../../Myutils.h"
+#include "../../Func/Myutils.h"
 #include "../../Core/Utils/CoreUtils.h"
-#include "../../Common.h"
+#include "../../Func/Common.h"
 const int LLB_VertDivider = 10;
 const int LLB_VertMargin = 5;
 

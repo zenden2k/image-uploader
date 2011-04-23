@@ -7,7 +7,7 @@
 #include <atlcrack.h>
 #include "../../Func/HistoryManager.h"
 #include "CustomTreeControl.h"
-#include "../../thread.h"
+#include "../../3rdpart/thread.h"
 #include <queue>
 #include "../../Core/FileDownloader.h"
 #include <map>

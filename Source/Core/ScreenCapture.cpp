@@ -1,10 +1,10 @@
 #include "../atlheaders.h"
 #include "ScreenCapture.h"
-#include "../common.h"
+#include "../Func/common.h"
 #include <math.h>
 
 #include <Dwmapi.h>
-#include "../MyUtils.h"
+#include "../Func/MyUtils.h"
 #include "../resource.h"
 typedef HRESULT (WINAPI *DwmGetWindowAttribute_Func)(HWND, DWORD, PVOID, DWORD);
 typedef HRESULT (WINAPI *DwmIsCompositionEnabled_Func)(BOOL*);
