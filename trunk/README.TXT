@@ -1,6 +1,6 @@
 
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2009 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -19,14 +19,24 @@
 
 ---  COMPILING IMAGE UPLOADER ----
 
-You need Microsoft Visual C++ at least 8.0 version (I compiled using Microsoft Visual Studio .NET  2005 & 2008, not tested on 2003 or Express Edition).
+You need Microsoft Visual C++ at least 8.0 version (I compiled using Microsoft Visual Studio .NET  2005 & 2008, NOT tested on 2003 and Express Editions).
 
 In order to compile Image Uploader you will need the following libraries:
- 1. WTL: http://wtl.sourceforge.net
- 2. DirectShow BaseClasses
- 3. DirectX 8 SDK
 
-You can download necessary Include files and Libs here http://code.google.com/p/image-uploader/downloads/list
+ 1.  WTL: http://wtl.sourceforge.net
+ 2.  DirectShow BaseClasses
+ 3.  DirectX 8 SDK
+ 4.  libcurl (with openssl support enabled) 
+ 5.  openssl
+ 6.  zlib
+ 7.  squirrel
+ 8.  sqplus
+ 9.  tinyxml (with STL support enabled)
+ 10.  pcre
+ 11. zthread
+ 12. minizip
+	
+You can download necessary Include files and Libs by following link: http://code.google.com/p/image-uploader/downloads/list
 
 Also you have to install Microsoft Windows 7 Platform SDK for enabling Windows 7 related features. 
 
