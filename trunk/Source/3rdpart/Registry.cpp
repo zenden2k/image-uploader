@@ -429,7 +429,7 @@ int CRegistry::ReadInt(CString strName, int nDefault)
 	return n;
 }
 
-BOOL CRegistry::ReadBool(CString strName, BOOL bDefault)
+bool CRegistry::ReadBool(CString strName, bool bDefault)
 {
 	DWORD dwType = REG_DWORD;
 	BOOL b;
@@ -443,7 +443,7 @@ BOOL CRegistry::ReadBool(CString strName, BOOL bDefault)
 	if (::RegQueryValueEx(hKey, LPCTSTR(strName), NULL,
 		&dwType, (LPBYTE)&b, &dwSize) != ERROR_SUCCESS) b = bDefault;
 	::RegCloseKey(hKey);	
-	return b;
+	return b == TRUE;
 }
 
 

@@ -39,9 +39,8 @@ class CHistoryTreeView :
 			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 			MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnLButtonDoubleClick)
 			MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown)
-			MESSAGE_HANDLER(WM_RBUTTONDOWN, OnLButtonDown)
-			
-			 CHAIN_MSG_MAP(CCustomDraw<CHistoryTreeView>,1)
+			MESSAGE_HANDLER(WM_RBUTTONDOWN, OnLButtonDown)	
+			 CHAIN_MSG_MAP(CCustomDraw<CHistoryTreeView>)
 			 //REFLECT_NOTIFICATIONS()
 		 END_MSG_MAP()
 

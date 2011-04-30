@@ -153,11 +153,11 @@ ImageAttributes attr;
 			   gr.DrawImage(/*backBuffer*/&bm, (int)0, (int)0, (int)newwidth,(int)newheight);
 		   else
             gr.DrawImage(&bm,
-                     RectF((int)0, (int)0, (int)newwidth,(int)newheight),
+                     RectF(0.0, 0.0, float(newwidth), float(newheight)),
                      0,
                      0,
-                    bm.GetWidth(),
-                     bm.GetHeight(),
+                    float(bm.GetWidth()),
+                     float(bm.GetHeight()),
                      UnitPixel,
                      &attr);
 			   //gr.DrawImage(/*backBuffer*/&bm, (int)-1, (int)-1, (int)newwidth+2,(int)newheight+2);
@@ -169,36 +169,31 @@ ImageAttributes attr;
 			double k = 1;
          if(newwidth > newheight)
          {
-            newVisibleWidth = min(newwidth, imgwidth);
+            newVisibleWidth = static_cast<int>(min(newwidth, imgwidth));
 				k = newVisibleWidth/imgwidth;
-            newVisibleHeight = newVisibleWidth/imgwidth*imgheight; 
+            newVisibleHeight = static_cast<int>(newVisibleWidth/imgwidth*imgheight); 
          }
          else
          {
-            newVisibleHeight = min(newheight, imgheight);
+            newVisibleHeight = static_cast<int>(min(newheight, imgheight));
 				k =newVisibleHeight/imgheight;
-            newVisibleWidth = newVisibleHeight/imgheight*imgwidth; 
+            newVisibleWidth = static_cast<int>(newVisibleHeight/imgheight*imgwidth); 
          }
          CRect r(0,0, newVisibleWidth, newVisibleHeight);
-         CRect destRect = CenterRect(r, CRect(0,0,newwidth, newheight));
+         CRect destRect = CenterRect(r, CRect(0,0, static_cast<int>(newwidth), static_cast<int>(newheight)));
 			CRect croppedRect;
-			croppedRect.IntersectRect(CRect(0,0,newwidth, newheight), destRect);
+			croppedRect.IntersectRect(CRect(0,0,int(newwidth), int(newheight)), destRect);
 			CRect sourceRect = croppedRect;
 			sourceRect.OffsetRect(/*(destRect.left < 0)?*/-destRect.left, /*(destRect.top < 0)?*/-destRect.top);
-			sourceRect.left /= k; 
-			sourceRect.top /= k; 
-			sourceRect.right /= k; 
-			sourceRect.bottom /= k; 
+			sourceRect.left = int(sourceRect.left / k); 
+			sourceRect.top = int(sourceRect.top / k); 
+			sourceRect.right = int(sourceRect.right / k); 
+			sourceRect.bottom = int(sourceRect.bottom / k); 
 			//= sourceRect.MulDiv(1, k);
 			gr.DrawImage(&bm,
-                     RectF(croppedRect.left, croppedRect.top, croppedRect.Width(), croppedRect.Height())
-                     , sourceRect.left, sourceRect.top, sourceRect.Width(), sourceRect.Height(), UnitPixel,
+                     RectF(float(croppedRect.left), float(croppedRect.top), float(croppedRect.Width()), float(croppedRect.Height()))
+                     , float(sourceRect.left), float(sourceRect.top), float(sourceRect.Width()), float(sourceRect.Height()), UnitPixel,
                      &attr);
-         /*gr.DrawImage(&bm,
-                     RectF((int)0, (int)0, (int)newwidth,(int)newheight),
-                     destRect.left, destRect.top, destRect.Width(), destRect.Height(),
-                     UnitPixel,
-                     &attr);*/
       }
 		RectF bounds(0, 0, float(newwidth), float(newheight));
 
@@ -473,7 +468,7 @@ void changeAplhaChannel(Bitmap& source, Bitmap& dest, int sourceChannel, int des
 	{
 		//if(*bpSrc != 255)
 		{
-			*bpDst = (float(255-*bpSrc)/255) *  *bpDst;
+			*bpDst = static_cast<BYTE>((float(255-*bpSrc)/255) *  *bpDst);
 		}
 		
 		/*if(*bpDst == 0)
@@ -646,7 +641,7 @@ StringFormat format;
 
 					unsigned int color = EvaluateColor(tokens[0]);
 					int size = EvaluateExpression( tokens[1]);
-					Gdiplus::Pen  p(color, size);
+					Gdiplus::Pen  p(color, float(size));
 					if(size == 1)
 					{
 						rc.right --;
@@ -660,7 +655,7 @@ StringFormat format;
 			{
 				RECT sourceRect;
 				EvaluateRect(data->drawing_operations_[i].source_rect, &sourceRect);
-				Rect t((float)rc.left, (float)rc.top, (float)rc.right,(float)rc.bottom);
+				Rect t(int(rc.left), int(rc.top), int(rc.right), int(rc.bottom));
 				
 				
 				if(data->drawing_operations_[i].source == "image")
@@ -1048,7 +1043,7 @@ bool CImageConverter::EvaluateRect(const std::string& rectStr,  RECT * out)
 int CImageConverter::EvaluateExpression(const std::string& expr)
 {
 	std::string processedExpr = ReplaceVars(expr);
-	return EvaluateSimpleExpression(processedExpr);
+	return static_cast<int>(EvaluateSimpleExpression(processedExpr));
 }
 
 
@@ -1058,7 +1053,7 @@ zint64 CImageConverter::EvaluateSimpleExpression(const std::string& expr) const
 	try
 	{
 		parser.Compile(expr.c_str());
-		res = (parser.Evaluate());
+		res = static_cast<zint64>(parser.Evaluate());
 	}
 	catch(...)
 	{
@@ -1151,7 +1146,7 @@ Gdiplus::Brush * CImageConverter::CreateBrushFromString(const std::string& brStr
 					type = LinearGradientModeBackwardDiagonal;
 				}
 				//return new LinearGradientBrush(Rect(0,0, /*rect.left+*/rect.right , /*rect.top+*/rect.bottom ), Color(color1), Color(color2), LinearGradientMode(type));
-				return new LinearGradientBrush(RectF(rect.left,-0.5+rect.top, /*rect.left+*/rect.right , /*rect.top+*/rect.bottom ), Color(color1), Color(color2), LinearGradientMode(type));
+				return new LinearGradientBrush(RectF(float(rect.left), float(-0.5+rect.top), float(rect.right) , /*rect.top+*/float(rect.bottom) ), Color(color1), Color(color2), LinearGradientMode(type));
 			}
 		}
 		SolidBrush*   br = new SolidBrush(0);

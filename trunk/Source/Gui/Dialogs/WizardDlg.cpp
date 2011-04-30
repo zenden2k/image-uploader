@@ -152,7 +152,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	CString serversFolder = IU_GetDataFolder()+_T("\\Servers\\");
 	GetFolderFileList(list, serversFolder,_T("*.xml"));
 
-	for(int i=0; i<list.size(); i++)
+	for(size_t i=0; i<list.size(); i++)
 	{
 		LoadUploadEngines(serversFolder+list[i], ErrorStr);
 	}
@@ -481,7 +481,7 @@ HBITMAP CWizardDlg::GenHeadBitmap(int PageID)
 	RECT rc;
 	GetClientRect(&rc);
 	int width=rc.right-rc.left;
-	RectF bounds(0,0,width,50);
+	RectF bounds(0.0,0.0, float(width), float(50));
 	Bitmap *BackBuffer;
 	Graphics g(m_hWnd,true);
 	

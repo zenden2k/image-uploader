@@ -120,7 +120,7 @@ HRESULT __stdcall CMyDataObject::GetData(FORMATETC *pFormatEtc, STGMEDIUM *pStgM
 	DP->pFiles = sizeof(DROPFILES);
 
 	LPTSTR Files = (LPTSTR)((PBYTE)DP+ DP->pFiles);
-	for(int i =0; i<m_FileItems.GetCount(); i++)
+	for(size_t i =0; i<m_FileItems.GetCount(); i++)
 	{
 		lstrcpy(Files, m_FileItems[i]);
 		Files += m_FileItems[i].GetLength()+1;

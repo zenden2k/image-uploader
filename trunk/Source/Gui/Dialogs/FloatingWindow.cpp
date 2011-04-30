@@ -51,7 +51,7 @@ bool MyInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP
 	MenuItem.hbmpChecked = bm;
 	MenuItem.hbmpUnchecked = bm;
 	MenuItem.dwTypeData = (LPWSTR)szTitle;
-	return InsertMenuItem(hMenu, pos, TRUE, &MenuItem);
+	return InsertMenuItem(hMenu, pos, TRUE, &MenuItem)!=0;
 }
 
 LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -288,7 +288,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 		// Inserting menu items
 		int i = 0;
 		MyInsertMenu(TrayMenu,i++,IDM_UPLOADFILES,TR("Загрузить файлы")+CString(_T("...")));
-		MyInsertMenu(TrayMenu,i++,IDM_ADDFOLDER,TR("Загрузить папку")+CString(_T("...")));
+		MyInsertMenu(TrayMenu,i++,IDM_ADDFOLDERS,TR("Загрузить папку")+CString(_T("...")));
 		MyInsertMenu(TrayMenu,i++,0,0);
 		bool IsClipboard=false;
 

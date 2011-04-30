@@ -48,7 +48,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	
 	std::vector<CString> fileList;
 	GetFolderFileList(fileList, GetAppFolder() + _T("\\"), _T("*.old"));
-	for(int i=0; i<fileList.size(); i++)
+	for(size_t i=0; i<fileList.size(); i++)
 	{
 		DeleteFile(GetAppFolder()+fileList[i]);
 	}
@@ -130,7 +130,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	ClearTempFolder(IUTempFolder); 
 	std::vector<CString> folders;
 	GetFolderFileList(folders, IUCommonTempFolder, "iu_temp_*" );
-	for(int i=0; i<folders.size(); i++)
+	for(size_t i=0; i<folders.size(); i++)
 	{
 		CString pidStr = folders[i];
 		pidStr.Replace(_T("iu_temp_"), _T(""));
@@ -147,7 +147,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	OleInitialize(NULL);
 	HRESULT hRes ;
 
-	for(int i=0; i<CmdLine.GetCount(); i++)
+	for(size_t i=0; i<CmdLine.GetCount(); i++)
 	{
 		CString CurrentParam = CmdLine[i];
 		if(CurrentParam .Left(12)==_T("/waitforpid="))
