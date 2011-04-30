@@ -202,7 +202,7 @@ class CSettings
 		CString DataFolder;
 		CString m_SettingsDir;
 		CString Language;
-		BOOL ExplorerCascadedMenu;
+		bool ExplorerCascadedMenu;
 		#ifndef IU_SHELLEXT
 #ifndef IU_SERVERLISTTOOL
 		CHotkeyList Hotkeys;

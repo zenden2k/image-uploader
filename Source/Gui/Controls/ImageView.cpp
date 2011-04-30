@@ -56,10 +56,10 @@ bool CImageView::ViewImage(LPCTSTR FileName,HWND Parent)
 {
 	Image img(FileName);
 	
-	float width = GetSystemMetrics(SM_CXSCREEN)-12;
-	float height = GetSystemMetrics(SM_CYSCREEN)-50;
-	float imgwidth = img.GetWidth();
-	float imgheight = img.GetHeight();
+	float width = static_cast<float>(GetSystemMetrics(SM_CXSCREEN)-12);
+	float height = static_cast<float>(GetSystemMetrics(SM_CYSCREEN)-50);
+	float imgwidth = static_cast<float>(img.GetWidth());
+	float imgheight = static_cast<float>(img.GetHeight());
 	float newheight, newwidth;
 	newwidth = imgwidth;
 	newheight = imgheight;
@@ -80,8 +80,8 @@ bool CImageView::ViewImage(LPCTSTR FileName,HWND Parent)
 		}
 	}
 	
-	int realwidth = newwidth+2;
-	int realheight = newheight+2;
+	int realwidth = static_cast<int>(newwidth + 2);
+	int realheight = static_cast<int>(newheight + 2);
 
 	if(realwidth<200) realwidth = 200;
 	if(realheight<180) realheight = 180;

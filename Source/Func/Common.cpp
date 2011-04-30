@@ -682,7 +682,6 @@ CString GetSystemSpecialPath(int csidl)
 	CString result;
 	LPITEMIDLIST pidl;
 	TCHAR        szSendtoPath [MAX_PATH];
-	HANDLE       hFile;
 	LPMALLOC     pMalloc;
 
 	if(SUCCEEDED( SHGetSpecialFolderLocation ( NULL, csidl, &pidl )))

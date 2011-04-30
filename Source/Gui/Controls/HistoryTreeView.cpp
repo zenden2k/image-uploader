@@ -285,24 +285,15 @@ HICON CHistoryTreeView::getIconForExtension(const CString ext)
 
 HTREEITEM CHistoryTreeView::addEntry(CHistorySession* session, const CString text)
 {
-	//HTREEITEM item = InsertItem(TVIF_PARAM|TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE, L"______________________________________________", 1, 1, 0,0, reinterpret_cast<LPARAM>(session), /*no parent nod*/0, TVI_SORT);
-	TVITEMEX p;
 	TVINSERTSTRUCT is;
 	memset(&is, 0, sizeof(is));
 	is.itemex.mask = TVIF_PARAM|TVIF_TEXT|TVIF_INTEGRAL;
-	//p.hItem = item;
 	TCHAR buf[500];
 	lstrcpyn(buf, text, sizeof(buf)/sizeof(TCHAR));
 	is.itemex.pszText = buf;
 	is.itemex.lParam = reinterpret_cast<LPARAM>(session);
 	//SetItem(&p); // If we won't do this we will get access violation
 	is.itemex.iIntegral = 30;
-
-	
-//p.iIntegral = CalcItemHeight(30);
-	/*p.mask = TVIF_INTEGRAL;
-	p.iIntegral = CalcItemHeight(item);
-	SetItem(&p);*/
 	HTREEITEM item = InsertItem(&is);
 	return item;
 }
@@ -336,7 +327,6 @@ void CHistoryTreeView::DrawItem(HTREEITEM item, HDC hdc, DWORD itemState, RECT i
 	dc.SetTextColor(RGB(0,0,0));
 	CBrush backgroundBrush;
 	
-	RECT fullRect;
 	//GetItemRect(item, &fullRect, false);
 	DWORD color=RGB(255,255,255);
 	if(itemState & CDIS_SELECTED)
@@ -375,7 +365,7 @@ void CHistoryTreeView::DrawItem(HTREEITEM item, HDC hdc, DWORD itemState, RECT i
 	
 	if(draw)
 	{
-		bool isItemExpanded = (GetItemState(item,TVIS_EXPANDED)&TVIS_EXPANDED);	
+		bool isItemExpanded = (GetItemState(item,TVIS_EXPANDED)&TVIS_EXPANDED)!=0;	
 		CRect plusIconRect;
 		SIZE plusIconSize = {9,9};
 		HTHEME theme = OpenThemeData(_T("treeview"));
@@ -460,7 +450,7 @@ void CHistoryTreeView::DrawSubItem(HTREEITEM item, HDC hdc, DWORD itemState, REC
 		dc.SetTextColor(RGB(0,0,0));
 
 		DWORD color=RGB(255,255,255);
-		int indent = GetIndent()*1.5;
+		int indent = static_cast<int>(GetIndent()*1.5);
 		if(itemState & CDIS_SELECTED)
 			color=0x9fd5ff;
 		RECT fullRect;
@@ -602,7 +592,7 @@ bool CHistoryTreeView::IsItemAtPos(int x, int y, bool &isRoot)
 	UINT flags = 0;
 	POINT pt = {x, y};
 	HTREEITEM item = HitTest(pt, &flags);
-	bool result = (flags & TVHT_ONITEM);
+	bool result = (flags & TVHT_ONITEM)!=0;
 	if(result)
 	{
 		isRoot = TreeView_GetParent(m_hWnd, item )==0;

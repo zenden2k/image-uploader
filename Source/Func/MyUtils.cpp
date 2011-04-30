@@ -123,7 +123,7 @@ const CString StringSection(const CString& str,TCHAR sep, int index)
 	return result;
 }
 
-bool FontToString(const LOGFONT const * lFont, CString &Result)
+bool FontToString(const LOGFONT * lFont, CString &Result)
 {
 	TCHAR  szBuffer[1024];
 	if( !lFont || !szBuffer ) return false;
@@ -511,11 +511,11 @@ void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, b
 	{
 		//Взависимости от того, кто мы - горизонтальный или вертикальный градиент
 		if(!Horizontal)
-			SetRect(&rectFill, FillRect.left, (int)(i * fStep)+FillRect.top,
-							FillRect.right+1, (int)FillRect.top+(i+1) * fStep); 
+			SetRect(&rectFill, FillRect.left, int((i * fStep)+FillRect.top),
+							FillRect.right+1, int(FillRect.top+(i+1) * fStep)); 
 		else 
-			SetRect(&rectFill, (int)FillRect.left+(i * fStep), FillRect.top,
-						(int)FillRect.left+((i+1) * fStep), FillRect.bottom+1); 
+			SetRect(&rectFill, static_cast<int>(FillRect.left+(i * fStep)), FillRect.top,
+						int(FillRect.left+((i+1) * fStep)), FillRect.bottom+1); 
 		if(i == n-1)
 			c = finish;
 		else

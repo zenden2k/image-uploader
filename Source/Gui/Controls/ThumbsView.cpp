@@ -79,7 +79,7 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, Image* Img)
 
 	// ≈сли уже есть загруженна€ картинка, генерируем эскиз немедленно
 	// Ёто нужно дл€ Video Grabber-a
-	bool IsRun = IsRunning();
+	bool IsRun = IsRunning()!=0;
 
 	if(Img && !IsRun) LoadThumbnail(n, Img);
 
@@ -134,7 +134,7 @@ LRESULT CThumbsView::OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 
 int CThumbsView::DeleteSelected(void)
 {
-	bool IsRun = IsRunning();
+	bool IsRun = IsRunning()!=0;
 	if(IsRun)
 	{
 		SignalStop();
@@ -169,7 +169,6 @@ void CThumbsView::UpdateImageIndexes(int StartIndex)
 {
 	if(StartIndex==-1) return;
 	int n = GetItemCount();
-	LV_ITEM item;
 	for (int i=StartIndex;i<n;i++)
 	{
 		if(GetImageIndex(i)>0)
@@ -179,7 +178,7 @@ void CThumbsView::UpdateImageIndexes(int StartIndex)
 
 void CThumbsView::MyDeleteAllItems()
 {
-	bool IsRun = IsRunning();
+	bool IsRun = IsRunning()!=0;
 	if(IsRun)
 	{
 		SignalStop();
@@ -283,7 +282,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Image *Img)
 			else
 			{
 				newwidth=width;
-				newheight=(float)newwidth/imgwidth*imgheight;}
+				newheight=static_cast<int>((float)newwidth/imgwidth*imgheight);}
 		}
 		else
 		{
@@ -295,7 +294,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Image *Img)
 			else
 			{
 				newheight=height;
-				newwidth=(float)newheight/imgheight*imgwidth;
+				newwidth=static_cast<int>((float)newheight/imgheight*imgwidth);
 			}
 		}
 	}

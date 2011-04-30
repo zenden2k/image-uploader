@@ -516,7 +516,7 @@ int CVideoGrabber::GenPicture(CString &outFileName)
 		y=infoHeight + (infoHeight? gapheight:0)+((i/ncols))*(tileheight+gapheight);
 		ThumbsView.GetItemText(i,0,buf,256);
 		gr.DrawImage(bm, (int)(x/*(tilewidth-newwidth)/2*/), (int)y, (int)tilewidth,(int)tileheight);
-		DrawStrokedText(gr, buf,RectF(x/*(tilewidth-newwidth)/2*/,y, tilewidth,tileheight),font,ColorText,ColorStroke,3,3);
+		DrawStrokedText(gr, buf,RectF(float(x),float(y), float(tilewidth),float(tileheight)),font,ColorText,ColorStroke,3,3);
 		gr.DrawRectangle(&Framepen,Rect(x/*(tilewidth-newwidth)/2*/,(int)y, (int)tilewidth,(int)tileheight));
 		if(bm) delete bm;
 	}
@@ -529,7 +529,7 @@ int CVideoGrabber::GenPicture(CString &outFileName)
 		Font font(::GetDC(0), &Settings.VideoSettings.Font);
 		//Font font(L"Arial", 12, FontStyleBold);
 		SolidBrush br(/*Settings.ThumbSettings.ThumbTextColor*/MYRGB(255, Settings.VideoSettings.TextColor));
-		RectF textBounds(gapwidth, gapheight, needwidth-gapwidth, infoHeight-gapheight);
+		RectF textBounds(float(gapwidth), float(gapheight), float(needwidth-gapwidth), float(infoHeight-gapheight));
 		gr.DrawString(Report, -1, &font, textBounds, &format, &br);
 		///DrawStrokedText(gr, Report,textBounds,font,ColorText,ColorStroke,3,3);
 

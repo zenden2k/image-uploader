@@ -398,7 +398,7 @@ DWORD CUploadDlg::Run()
 			continue;
 		}
 
-		if(IsImage(MainDlg->FileList[i].FileName)&& ue->MaxFileSize && MyGetFileSize(ImageFileName)>ue->MaxFileSize)
+		if(IsImage(MainDlg->FileList[i].FileName)&& ue->MaxFileSize && MyGetFileSize(ImageFileName)>static_cast<int>(ue->MaxFileSize))
 		{
 			CSizeExceed SE(ImageFileName, iss,m_EngineList);
 

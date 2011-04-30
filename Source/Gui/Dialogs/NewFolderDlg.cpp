@@ -53,7 +53,7 @@ LRESULT CNewFolderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	text.Replace(_T("\r"), _T(""));
 	text.Replace(_T("\n"), _T("\r\n"));
 	SetDlgItemText(IDC_FOLDERDESCREDIT, text);
-	for(int i=0; i< m_accessTypeList.size(); i++)
+	for(size_t i=0; i< m_accessTypeList.size(); i++)
 	{
 		SendDlgItemMessage(IDC_ACCESSTYPECOMBO, CB_ADDSTRING, 0, (LPARAM) (LPCTSTR)Utf8ToWCstring(m_accessTypeList[i].c_str()));
 	}

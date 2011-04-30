@@ -50,7 +50,7 @@ public:
 	double ReadFloat(CString strName, double fDefault);
 	CString ReadString(CString strName, CString strDefault=_T(""));
 	int ReadInt(CString strName, int nDefault);
-	BOOL ReadBool(CString strName, BOOL bDefault = false);
+	bool ReadBool(CString strName, bool bDefault = false);
 	COLORREF ReadColor(CString strName, COLORREF rgbDefault);
 	BOOL ReadFont(CString strName, CFont* pFont);
 	BOOL ReadPoint(CString strName, CPoint* pPoint);

@@ -29,8 +29,6 @@
 bool compareEngines(const CUploadEngineData& elem1, const CUploadEngineData& elem2)
 {
 	return strcmpi(elem1.Name.c_str(), elem2.Name.c_str()) < 0;
-	//elem1.Name.CompareNoCase(elem2.Name)*<0;
-	//elem1.< elem2.key1;
 }
 
 

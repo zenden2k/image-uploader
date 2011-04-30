@@ -822,7 +822,7 @@ void CCryptoProviderRSA::Encrypt(const char *inbuf, size_t in_size,char *outbuf,
 
 	// must ensure that any data block would be < key's modulus
 	// hence -1
-	int portion_len = (prkface.m.bits() - 1)  / 8;
+	size_t portion_len = (prkface.m.bits() - 1)  / 8;
 	std::cout<<"portion = "<<portion_len;
 	char prev_crypted[/*portion_len*/63];
 	memset(&prev_crypted, 0, portion_len);
@@ -890,8 +890,8 @@ void CCryptoProviderRSA::Decrypt(const char *inbuf, size_t in_size,char *outbuf,
 		for (i=0; i<lmi; i++)
 			portbuf[i] ^= prev_crypted[i];
 
-		for (size_t i=0; i<portion_len; i++)
-			prev_crypted[i] = i < cp_size ? cpbuf[i] : 0;
+		for (int i=0; i< portion_len; i++)
+			prev_crypted[i] = i < int(cp_size) ? cpbuf[i] : 0;
 
 		memcpy (outbuf+out_size,portbuf,lmi);
 		out_size += lmi;

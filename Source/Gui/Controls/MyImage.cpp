@@ -84,8 +84,8 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image *img, int ResourceID, bool Bmp,
 	BackBufferWidth = rc.right;
 	BackBufferHeight = rc.bottom;
 	float width, height, imgwidth, imgheight, newwidth, newheight;
-   	width = rc.right ;
-	height = rc.bottom ;
+   	width = static_cast<float>(rc.right) ;
+	height = static_cast<float>(rc.bottom) ;
 
 	if(!ResourceID)
 	{
@@ -125,10 +125,10 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image *img, int ResourceID, bool Bmp,
 
 	if(bm){
 	
-		imgwidth=bm->GetWidth();
-		imgheight=bm->GetHeight();
-		ImageWidth = imgwidth;
-		ImageHeight = imgheight;
+		imgwidth = static_cast<float>(bm->GetWidth());
+		imgheight = static_cast<float>(bm->GetHeight());
+		ImageWidth = static_cast<int>(imgwidth);
+		ImageHeight = static_cast<int>(imgheight);
 		if(imgwidth/imgheight>width/height)
 		{
 			if(imgwidth<=width)
@@ -157,7 +157,10 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image *img, int ResourceID, bool Bmp,
 		}
 	}
 
-	if(ResourceID) {newwidth=bm->GetWidth();newheight=bm->GetHeight();}
+	if(ResourceID) {
+		newwidth = static_cast<float>(bm->GetWidth());
+		newheight = static_cast<float>(bm->GetHeight());
+	}
 
 	if(WhiteBg)
 		gr.Clear(Color(GetRValue(transp),GetGValue(transp),GetBValue(transp)));

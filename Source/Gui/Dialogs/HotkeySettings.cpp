@@ -167,7 +167,7 @@ CHotkeyList::CHotkeyList()
 	AddItem(TR("Контекстное меню значка"), _T("contextmenu"), IDM_CONTEXTMENU);
 	AddItem(TR("Загрузить изображения"),_T("addimages"), IDM_UPLOADIMAGES);
 	AddItem(TR("Загрузить файлы"),_T("addimages"), IDM_UPLOADFILES);
-	AddItem(TR("Загрузить папку"),_T("addfolder"), IDM_ADDFOLDER);
+	AddItem(TR("Загрузить папку"),_T("addfolder"), IDM_ADDFOLDERS);
 	AddItem(TR("Импорт видео"),_T("importvideo"), IDM_IMPORTVIDEO);
 	AddItem(TR("Скриншот"),_T("screenshotdlg"), IDM_SCREENSHOTDLG);
 	AddItem(TR("Снимок прямоугольной области"),_T("regionscreenshot"), IDM_REGIONSCREENSHOT);

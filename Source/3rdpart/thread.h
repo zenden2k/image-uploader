@@ -114,12 +114,12 @@ public:
       m_bSuspended = false;
       return TRUE;
    }
-   BOOL IsSuspended() const
+   bool IsSuspended() const
    {
       _ASSERTE(m_hThread);
       return m_bSuspended == true;
    }
-   BOOL IsRunning() const
+   bool IsRunning() const
    {
       if( m_hThread == NULL ) return FALSE;
       DWORD dwCode = 0;
