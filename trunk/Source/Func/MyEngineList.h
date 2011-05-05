@@ -40,6 +40,7 @@ class CMyEngineList: public CUploadEngineList
 		CAbstractUploadEngine* getUploadEngine(std::string name);
 		CAbstractUploadEngine* getUploadEngine(int index);
 		bool LoadFromFile(const CString filename);
+		bool DestroyCachedEngine(const std::string& name);
 	private:
 		CDefaultUploadEngine * m_prevUpEngine;
 };

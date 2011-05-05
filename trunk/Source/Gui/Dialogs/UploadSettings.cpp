@@ -258,7 +258,6 @@ bool CUploadSettings::OnNext()
 	
    if(!Settings.ThumbSettings.ScaleByHeight)
    {
-      
      Settings.ThumbSettings.ThumbWidth = GetDlgItemInt(IDC_THUMBWIDTH);
    }
    else
@@ -267,7 +266,6 @@ bool CUploadSettings::OnNext()
    }
 
 	Settings.UploadProfile.KeepAsIs = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) != BST_CHECKED;
-
 	Settings.ThumbSettings.CreateThumbs = IsChecked(IDC_CREATETHUMBNAILS);
 	Settings.ThumbSettings.UseServerThumbs = IsChecked(IDC_USESERVERTHUMBNAILS);
 	//Settings.ThumbSettings.UseThumbTemplate = IsChecked(IDC_USETHUMBTEMPLATE);
@@ -277,13 +275,10 @@ bool CUploadSettings::OnNext()
 	Settings.ImageSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	Settings.ImageSettings.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);*/
 	
-	Settings.ServerID = m_nImageServer;
-	
+	Settings.ServerID = m_nImageServer;	
 	Settings.FileServerID = m_nFileServer;
 	Settings.ThumbSettings.ThumbWidth = GetDlgItemInt(IDC_THUMBWIDTH);
-
    SaveCurrentProfile();
-
 	return true;
 }
 
@@ -295,14 +290,7 @@ bool CUploadSettings::OnShow()
 	OnBnClickedCreatethumbnails(0, 0, 0, temp);
 	OnBnClickedKeepasis(0, 0, 0, temp);
 	EnableNext();
-	//MessageBox(Settings.ServersSettings[EnginesList[ServerID].Name].params["FolderTitle"]);
-	//if(ServerID >=0)
-	{
-		
-//		m_FolderLink.SetWindowText(Settings.ServersSettings[EnginesList[ServerID].Name].params["FolderTitle"]);
-	
-	}
-		SetNextCaption(TR("&Загрузить"));
+	SetNextCaption(TR("&Загрузить"));
 	return true;
 }
 
@@ -314,15 +302,16 @@ LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND h
 
 	ServerSettingsStruct & ss = Settings.ServersSettings[Utf8ToWstring(m_EngineList->byIndex(nServerIndex)->Name).c_str()];
 	std::string UserName = ss.authData.Login; 
-
+	bool prevAuthEnabled = ss.authData.DoAuth;
 	if( dlg.DoModal(m_hWnd) == IDOK)
 	{
-		if(UserName != ss.authData.Login)
+		if(UserName != ss.authData.Login || ss.authData.DoAuth!=prevAuthEnabled)
 		{
 			ss.params["FolderID"]="";
 			ss.params["FolderTitle"]="";
 			ss.params["FolderUrl"]="";
 			iuPluginManager.UnloadPlugins();
+			m_EngineList->DestroyCachedEngine(m_EngineList->byIndex(nServerIndex)->Name);
 		}
 			
 		UpdateAllPlaceSelectors();
@@ -740,8 +729,6 @@ LRESULT CUploadSettings::OnOpenSignupPage(WORD /*wNotifyCode*/, WORD wID, HWND /
 		ShellExecute(0,_T("open"),Utf8ToWCstring(ue->RegistrationUrl), _T(""),0,SW_SHOWNORMAL);
 	return 0;
 }
-
-
 
 LRESULT CUploadSettings::OnResizePresetButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {

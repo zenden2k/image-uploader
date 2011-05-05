@@ -71,7 +71,6 @@ CAbstractUploadEngine* CMyEngineList::getUploadEngine(CUploadEngineData* data)
 					m_prevUpEngine = 0;
 				}
 		}
-	
 		if(!m_prevUpEngine)
 			m_prevUpEngine = new CDefaultUploadEngine();
 		result = m_prevUpEngine;
@@ -102,4 +101,21 @@ bool CMyEngineList::LoadFromFile(const CString filename)
 		return 0;
 	}
 	return CUploadEngineList::LoadFromFile(WCstringToUtf8(filename));
+}
+
+bool CMyEngineList::DestroyCachedEngine(const std::string& name)
+{
+	if(m_prevUpEngine == 0) 
+		return false;
+
+	CUploadEngineData * ued = m_prevUpEngine->getUploadData();
+	if(!ued) return false;
+	if (ued->Name == name)
+	{
+		delete m_prevUpEngine;
+		m_prevUpEngine = 0;
+		return true;
+	}
+	return false;
+
 }
