@@ -124,14 +124,18 @@ void NetworkManager::setMethod(const NString &str)
 	m_method = str;
 }
 
-bool private_Init = false;
+bool  NetworkManager::_curl_init = false;
+ZThread::Mutex NetworkManager::_mutex;
 
 NetworkManager::NetworkManager(void)
 {
-	if(!private_Init)
+	_mutex.acquire();
+	if(!_curl_init)
 	{
 		curl_global_init(CURL_GLOBAL_ALL);	
+		_curl_init = true;
 	}
+	_mutex.release();
 	m_hOutFile = 0;
 	chunk_ = 0;
 	m_CurrentFileSize = -1;
@@ -164,6 +168,7 @@ NetworkManager::NetworkManager(void)
 	//We want the referrer field set automatically when following locations
 	curl_easy_setopt(curl_handle, CURLOPT_AUTOREFERER, 1L); 
 	curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 32768L);
+	
 }
 
 NetworkManager::~NetworkManager(void)
@@ -627,7 +632,7 @@ const NString  NetworkManager::getCurlResultString()
 
 void NetworkManager::Uninitialize()
 {
-	if(private_Init)
+	if(_curl_init)
 	{
 		curl_global_cleanup();	
 	}

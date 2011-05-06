@@ -26,7 +26,7 @@ namespace IuCoreUtils
 	ZGlobalMutex::ZGlobalMutex(const std::string &name)
 	{
 		m_data = ::CreateMutexA(NULL, TRUE, name.c_str());
-		if(GetLastError() == ERROR_ALREADY_EXISTS)
+		if(!m_data && GetLastError() == ERROR_ALREADY_EXISTS)
 		{
 			m_data = OpenMutexA(0, 0, name.c_str());
 		}

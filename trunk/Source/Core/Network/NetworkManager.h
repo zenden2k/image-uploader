@@ -27,6 +27,7 @@
 
 #include <string>
 #include <vector>
+#include <zthread/Mutex.h>
 #include "../Utils/CoreUtils.h"
 
 #define NString std::string
@@ -127,6 +128,8 @@ class NetworkManager
 		void private_initTransfer();
 		std::string m_method;
 		struct curl_slist * chunk_;
+		static ZThread::Mutex _mutex;
+		static bool _curl_init;
 };
 
 #endif
