@@ -47,6 +47,7 @@ class CFileQueueUploader::Impl
 	protected:
 		class Runnable;
 		bool onNeedStopHandler();
+		void OnConfigureNetworkManager(NetworkManager* nm);
 };
 
 class CFileQueueUploader::Impl::Runnable: public ZThread::Runnable
@@ -76,6 +77,12 @@ CFileQueueUploader::Impl::~Impl()
 bool CFileQueueUploader::Impl::onNeedStopHandler()
 {
 	return m_NeedStop;
+}
+
+void CFileQueueUploader::Impl::OnConfigureNetworkManager(NetworkManager* nm)
+{
+	if(callback_)
+		callback_->OnConfigureNetworkManager(nm);
 }
 
 bool CFileQueueUploader::Impl::getNextJob(FileListItem* item)
@@ -118,8 +125,9 @@ void CFileQueueUploader::Impl::start()
 void CFileQueueUploader::Impl::run()
 {
 	CUploader uploader;
+	uploader.onConfigureNetworkManager.bind(this, &CFileQueueUploader::Impl::OnConfigureNetworkManager);
 	uploader.onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
-
+	
 	for(;;)
 	{
 		FileListItem it;
