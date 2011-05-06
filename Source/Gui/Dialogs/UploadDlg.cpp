@@ -222,7 +222,7 @@ DWORD CUploadDlg::Run()
 	if(!MainDlg) return 0;
 
 	CUploader  Uploader;
-
+	
 	#if  WINVER	>= 0x0601
 		if(ptl)
 			ptl->SetProgressState(GetParent(), TBPF_NORMAL); // initialise Windows 7 taskbar button progress 
@@ -233,7 +233,7 @@ DWORD CUploadDlg::Run()
 	Uploader.onDebugMessage.bind(DefaultErrorHandling::DebugMessage);
 	Uploader.onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
 	Uploader.onStatusChanged.bind(this, &CUploadDlg::OnUploaderStatusChanged);
-	
+	Uploader.onConfigureNetworkManager.bind(this, &CUploadDlg::OnUploaderConfigureNetworkClient);
 	int Server;
 	int FileServer = Settings.FileServerID;
 	int n = MainDlg->FileList.GetCount();
