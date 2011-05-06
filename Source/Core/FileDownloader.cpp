@@ -56,8 +56,8 @@ bool CFileDownloader::start()
 	m_NeedStop = false;
 	
 	m_CS.Lock();
-	size_t numThreads = min(m_nThreadCount - m_nRunningThreads, int(m_fileList.size()));
-
+	size_t numThreads = min(m_nThreadCount - m_nRunningThreads, int(m_fileList.size()));/*min(m_nThreadCount - m_nRunningThreads, int(m_fileList.size()));*/
+	//ShowVar((int)numThreads);
 	for(size_t i=0; i<numThreads; i++)
 	{
 		m_nRunningThreads++;
@@ -78,6 +78,7 @@ unsigned int __stdcall CFileDownloader::thread_func(void * param)
 void CFileDownloader::memberThreadFunc()
 {
 	NetworkManager nm;
+
 	// Providing callback function to stop downloading
 	nm.setProgressCallback(CFileDownloader::ProgressFunc, this);
 	m_CS.Lock();
@@ -91,10 +92,11 @@ void CFileDownloader::memberThreadFunc()
 		if(!getNextJob(curItem)) break;
 		std::string url = curItem.url;
 		if(url.empty()) break; 
-
+		//
 		nm.setOutputFile( curItem.fileName);
 		nm.doGet(url);
 		if(m_NeedStop) break;
+
 		m_CS.Lock();
 		if(nm.responseCode()>=200 && nm.responseCode()<=299)
 		{
@@ -128,6 +130,7 @@ void CFileDownloader::memberThreadFunc()
 	
 	if(!m_nRunningThreads)
 	{
+		//MessageBox(0,0,0,0);
 		m_IsRunning = false;
 		if(onQueueFinished) // it is a delegate
 			onQueueFinished(); 
