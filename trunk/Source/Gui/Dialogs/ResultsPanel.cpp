@@ -336,6 +336,7 @@ const CString CResultsPanel::GenerateOutput()
 				Buffer+=UrlList[i].ImageUrl;
 			else 
 				Buffer+=UrlList[i].DownloadUrl;
+			if(i != n-1)
 			Buffer+=_T("\r\n");
 		}
 	}

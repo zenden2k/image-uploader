@@ -432,7 +432,7 @@ bool IU_CopyTextToClipboard(CString text)
 
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
 {
-	while((MsgWaitForMultipleObjects(1, &pHandle, FALSE, dwMilliseconds, /*QS_ALLEVENTS*/0)) != WAIT_OBJECT_0)
+	while((MsgWaitForMultipleObjects(1, &pHandle, FALSE, dwMilliseconds, /*QS_ALLEVENTS*/QS_SENDMESSAGE)) != WAIT_OBJECT_0)
 	{
 		MSG msg;
 		while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))

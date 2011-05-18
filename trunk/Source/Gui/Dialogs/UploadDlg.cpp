@@ -362,8 +362,9 @@ DWORD CUploadDlg::Run()
 			imageConverter.Convert(MainDlg->FileList[i].FileName);
 			ImageFileName = imageConverter.getImageFileName();
 			ThumbFileName = imageConverter.getThumbFileName();
-         if(!iss.upload_profile.KeepAsIs)
+         if(!iss.upload_profile.KeepAsIs && ImageFileName != MainDlg->FileList[i].FileName)
 			{
+				//MessageBox(ImageFileName);
 				TempFilesDeleter.AddFile(ImageFileName);
 				if(lstrlen(ThumbFileName))
 				TempFilesDeleter.AddFile(ThumbFileName);

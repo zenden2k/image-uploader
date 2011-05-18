@@ -226,13 +226,7 @@ LRESULT CUploadSettings::OnBnClickedLogooptions(WORD /*wNotifyCode*/, WORD /*wID
 }
 
 bool CUploadSettings::OnNext()
-{
-	if(m_nImageServer == -1 || m_nFileServer == -1)
-	{
-		//MessageBox(TR("Вы не выбрали сервер!"), APPNAME, MB_ICONWARNING);
-		//return false;
-	}
-	
+{	
 	if(m_nImageServer != -1)
 	{
 		CUploadEngineData *ue = m_EngineList->byIndex(m_nImageServer);

@@ -62,7 +62,7 @@ Source: "..\Data\Update\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Up
 Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Flags: ignoreversion
 Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
 #ifdef WIN64FILES
-Source: "..\Build\x64\release optimized\ExplorerIntegration.dll";DestDir: "{app}";Check: isWin64;
+Source: "..\Build\x64\release optimized\ExplorerIntegration64.dll";DestDir: "{app}";Check: isWin64;
 #endif
 Source: "..\Build\release optimized\ExplorerIntegration.dll";DestDir: "{app}";Check: not isWin64
 #ifdef GDIPLUS

@@ -22,6 +22,11 @@
 #include "myutils.h"
 #include <shobjidl.h>
 
+typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
+typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
+
+
+
 #define STRING MAX_PATH
 
 
@@ -715,6 +720,20 @@ bool IsVista()
 		return TRUE;
 
 	return FALSE;
+}
+
+bool IsWindows64Bit()
+{
+	SYSTEM_INFO si;
+	PGNSI pGNSI;
+	ZeroMemory(&si, sizeof(SYSTEM_INFO));
+	// Call GetNativeSystemInfo if supported or GetSystemInfo otherwise.
+	pGNSI = (PGNSI) GetProcAddress(GetModuleHandle(_T("kernel32.dll")), 
+		"GetNativeSystemInfo");
+	if(NULL != pGNSI)
+		pGNSI(&si);
+	else GetSystemInfo(&si);
+	return si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;	
 }
 
 bool CheckFileName(const CString fileName)

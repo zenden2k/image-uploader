@@ -265,7 +265,6 @@ BOOL CMainDlg::FileProp()
 	ZeroMemory(&lvItem, sizeof(LV_ITEM));
 
 	LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
-
 	ZeroMemory(&ShInfo, sizeof(SHELLEXECUTEINFO));
 	ShInfo.cbSize = sizeof(SHELLEXECUTEINFO);
 	ShInfo.nShow = SW_SHOW;
@@ -273,9 +272,7 @@ BOOL CMainDlg::FileProp()
 	ShInfo.hwnd = m_hWnd;
 	ShInfo.lpVerb = TEXT("properties");
 	ShInfo.lpFile = FileName;
-	
 	ShellExecuteEx(&ShInfo);
-
 	return TRUE;
 }
 
@@ -379,7 +376,6 @@ LRESULT CMainDlg::OnOpenInFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	
 	// Executing Windows Explorer; file will be highlighted
 	ShellExecuteW(NULL, NULL, L"explorer.exe", CString(_T("/select, ")) + FileName, NULL, SW_SHOWNORMAL);
-
 	return 0;
 }
 LRESULT CMainDlg::OnAddFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl)

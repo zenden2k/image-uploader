@@ -3,6 +3,7 @@
 //#include "Common/MyXML.h"
 #include "../Core/Network/NetworkManager.h"
 #include "../Core/Utils/SimpleXml.h"
+#include <string>
 
 class CUpdateItem
 {
@@ -11,6 +12,7 @@ class CUpdateItem
 		CString hash;
 		CString saveTo;
 		CString action;
+		std::string flags;
 };
 
 class CUpdateInfo

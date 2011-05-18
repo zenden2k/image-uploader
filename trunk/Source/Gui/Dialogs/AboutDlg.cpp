@@ -35,7 +35,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	m_GoogleCodeLink.SubclassWindow(GetDlgItem(IDC_GOOGLECODELINK));
 	CString buildInfo = CString("Build ")+_T(BUILD) +_T(" (")+_T(TIME)+_T(")")+(_T("\r\n") + Utf8ToWstring( curl_version())).c_str();
 
-	CString text = CString(TR("v"))+CString(_T("1.2.7 alpha"));
+	CString text = CString(TR("v"))+CString(_T("1.2.7 RC"));
 	SetDlgItemText(IDC_CURLINFOLABEL, text);
 	SetDlgItemText(IDC_IMAGEUPLOADERLABEL, buildInfo);
 	CenterWindow(GetParent());

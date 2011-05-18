@@ -26,6 +26,9 @@
 #include "../Gui/Dialogs/TextViewDlg.h"
 #include "../Gui/Dialogs/LogWindow.h"
 #include <time.h>
+#include "../Core/Utils/StringUtils.h"
+
+
 
 BOOL CreateFolder(LPCTSTR szFolder)
 {
@@ -262,8 +265,8 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 {
 	CString filename = IUTempFolder + ui.m_PackageName+_T(".zip");
 	std::string filenamea= WCstringToUtf8(filename);
+	IU_ConfigureProxy(nm); 
 	nm.setOutputFile( filenamea);
-
 	m_statusCallback->updateStatus(nCurrentIndex, TR("Скачивание файла ")+ ui.m_DownloadUrl);
 	
 	nm.doGet(WCstringToUtf8( ui.m_DownloadUrl));
@@ -352,11 +355,10 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
 				ui.hash = Utf8ToWCstring(entries[i].Attribute("Hash"));
 				ui.saveTo = Utf8ToWCstring(entries[i].Attribute("SaveTo"));
 				ui.action = Utf8ToWCstring(entries[i].Attribute("Action"));
-				
+				ui.flags = entries[i].Attribute("Flags");
 				if(ui.name.IsEmpty()  || (ui.hash.IsEmpty() &&  ui.action!=_T("delete") )|| ui.saveTo.IsEmpty())
 					continue;
 				m_entries.push_back(ui);
-			
 		}
 	
 	return true;
@@ -394,7 +396,24 @@ bool CUpdatePackage::doUpdate()
 		CString renameTo = copyTo + _T(".")+IntToStr(random(10000))+ _T(".old");
 		TCHAR buffer[MAX_PATH];
 		ExtractFilePath(copyTo, buffer);
-		
+		std::vector<std::string> tokens;
+		IuStringUtils::Split(ue.flags, ",", tokens, -1);
+		bool skipFile = false;
+		bool isWin64Os = IsWindows64Bit();
+		for(size_t i=0; i<tokens.size(); i++)
+		{
+			if(tokens[i] == "os_win64bit")
+			{
+				skipFile = !isWin64Os;
+			}
+			else if(tokens[i] == "os_win32bit")
+			{
+				skipFile = isWin64Os;
+			}
+		}
+		if(skipFile) {
+			continue;
+		}
 		m_nTotalFiles ++;
 
 		if(ue.action == _T("delete"))
