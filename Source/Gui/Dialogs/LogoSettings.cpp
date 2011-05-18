@@ -189,17 +189,6 @@ LRESULT CLogoSettings::OnBnClickedThumbfont(WORD /*wNotifyCode*/, WORD /*wID*/, 
 
 bool CLogoSettings::Apply()
 {
-	/*int LogoPos, TextPos;
-
-	LogoPos = SendDlgItemMessage(IDC_LOGOPOSITION, CB_GETCURSEL);
-	TextPos = SendDlgItemMessage(IDC_TEXTPOSITION, CB_GETCURSEL);
-	
-	if(LogoPos == TextPos) // если "водяной знак" и надпись поставлены в одно и то же место на картинке
-	{
-		if(MessageBox(TR("Вы действительно хотите поместить текст и логотип в одном месте на изображении?"),TR("Параметры изображений"),MB_ICONQUESTION|MB_YESNO)!=IDYES)
-			return 0;
-	}*/
-
    CString saveToProfile = CurrentProfileName;
    if(CurrentProfileOriginalName == _T("Default"))
 	saveToProfile = CurrentProfileOriginalName;

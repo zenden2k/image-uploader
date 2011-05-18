@@ -369,6 +369,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
+				OutputFile="$(OutDir)\$(ProjectName)64.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile=".\ExplorerIntegration.def"
 				GenerateDebugInformation="true"
@@ -766,6 +767,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
+				OutputFile="$(OutDir)\$(ProjectName)64.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile=".\ExplorerIntegration.def"
 				GenerateDebugInformation="true"

@@ -130,7 +130,6 @@ void CFileDownloader::memberThreadFunc()
 	
 	if(!m_nRunningThreads)
 	{
-		//MessageBox(0,0,0,0);
 		m_IsRunning = false;
 		if(onQueueFinished) // it is a delegate
 			onQueueFinished(); 

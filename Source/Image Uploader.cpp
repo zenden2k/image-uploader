@@ -22,9 +22,7 @@
 #include <gdiplus.h>
 #include <shellapi.h> 
 #include "resource.h"
-#include "Gui/Dialogs/aboutdlg.h"
 #include "Gui/Dialogs/LogWindow.h"
-#include "Gui/Dialogs/MainDlg.h"
 #include "Gui/Dialogs/wizarddlg.h"
 #include "Gui/Dialogs/floatingwindow.h"
 
@@ -139,6 +137,8 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 			ClearTempFolder(IUCommonTempFolder+_T("\\")+folders[i]);
 	}
 	
+	// deletes empty temp directory
+	RemoveDirectory(IUCommonTempFolder);
 	return 0;
 }
 

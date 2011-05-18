@@ -52,7 +52,6 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	if(!parent || !::IsWindowVisible(parent))
 	{
 		SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) & WS_EX_APPWINDOW);
-		//MessageBox(L"OF COURSE WI SET");
 	}
 	m_SettingsPagesListBox.SubclassWindow(GetDlgItem(IDC_SETTINGSPAGESLIST));
 	m_SettingsPagesListBox.AddString(TR("Основные"));

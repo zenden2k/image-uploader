@@ -139,9 +139,16 @@ void ApplyRegistrySettings()
 	::ShellExecuteEx(&TempInfo);
 }
 
+CString CSettings::getShellExtensionFileName() const
+{
+	CString file = GetAppFolder()+(IsWindows64Bit()?_T("ExplorerIntegration64.dll"):_T("ExplorerIntegration.dll"));
+	return file;
+}
+
 void RegisterShellExtension(bool Register)
 {
-	if(!FileExists(GetAppFolder()+_T("ExplorerIntegration.dll"))) return;
+	CString moduleName = Settings.getShellExtensionFileName();
+	if(!FileExists(moduleName)) return;
 	
 	CRegistry Reg;
 	Reg.SetRootKey(HKEY_LOCAL_MACHINE);
@@ -167,7 +174,7 @@ void RegisterShellExtension(bool Register)
 	else 
 		TempInfo.lpVerb = _T("open");
 	TempInfo.lpFile = _T("regsvr32");
-	TempInfo.lpParameters = CString((Register?_T(""):_T("/u ")))+ _T("/s \"")+GetAppFolder()+_T("ExplorerIntegration.dll\"");
+	TempInfo.lpParameters = CString((Register?_T(""):_T("/u ")))+ _T("/s \"") + moduleName + _T("\"");
 	TempInfo.lpDirectory = s;
 	TempInfo.nShow = SW_NORMAL;
 	::ShellExecuteEx(&TempInfo);
@@ -196,7 +203,6 @@ void CSettings::FindDataFolder()
 			
 			if(!dir.IsEmpty() && IsDirectory(dir))
 			{
-				//MessageBox(0,dir,_T("user"),0);
 				DataFolder = dir;
 				return;
 			}
@@ -212,7 +218,6 @@ void CSettings::FindDataFolder()
 		
 			if(!dir.IsEmpty() && IsDirectory(dir))
 			{
-				//	MessageBox(0,dir,_T("coommon"),0);
 				DataFolder = dir;
 				return;
 			}
@@ -477,12 +482,10 @@ bool CSettings::LoadSettings(LPCTSTR szDir, bool LoadFromRegistry)
 	// Loading some settings from registry
 	if(LoadFromRegistry)
 	{
-		//MessageBox(0,0,0,0);
 		CRegistry Reg;
 		Reg.SetRootKey(HKEY_LOCAL_MACHINE);
 		if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
 		{
-			//MessageBox(0,0,0,0);
 			ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
 		}
 	}

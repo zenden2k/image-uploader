@@ -44,7 +44,6 @@ LRESULT CConvertPresetDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 	if(!parent || !::IsWindowVisible(parent))
 	{
 		SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) & WS_EX_APPWINDOW);
-		//MessageBox(L"OF COURSE WI SET");
 	}
 	
 	TC_ITEM item;

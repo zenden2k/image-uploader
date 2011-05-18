@@ -244,7 +244,6 @@ LRESULT CIconButton::OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
     DWORD style = GetStyle ();
     if ((style & (BS_BITMAP | BS_ICON)) == 0 || !IsAppThemed () || !IsThemeActive () || IsVista())
 	{
-		//MessageBox(0);
 		// not icon or bitmap button, or themes not active - draw normally
 		return  CDRF_DODEFAULT;
 

@@ -247,7 +247,7 @@ class CSettings
 		bool SaveSettings();
       std::map<CString, ImageConvertingParams> ConvertProfiles;
       CString CurrentConvertProfileName;
-		
+		CString getShellExtensionFileName() const;
 #endif IU_SHELLEXT
 	private:
 		TCHAR m_Directory[MAX_PATH];
