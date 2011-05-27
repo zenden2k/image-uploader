@@ -21,13 +21,9 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <deque>
-#include "../3rdpart/thread.h"
 #include <atlcoll.h>
-#include "pluginloader.h"
 #include <ctime>
 #include "PluginLoader.h"
-#include "../Core/Upload/ScriptUploadEngine.h"
 #include "MyEngineList.h"
 
 class CPluginManager;
@@ -111,4 +107,5 @@ CString GetSendToPath() ;
 Bitmap* BitmapFromResource(HINSTANCE hInstance,LPCTSTR szResName, LPCTSTR szResType);
 void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ");
 void EncodeString(LPCTSTR szSource, CString &Result,LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ");
+CString IU_md5_file(const CString& filename);
 #endif

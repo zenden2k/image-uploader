@@ -20,9 +20,12 @@
 
 #include "FileQueueUploader.h"
 #include <algorithm>
-#include "../../Gui/Dialogs/LogWindow.h"
-#include <zthread/thread.h>
-#include <zthread/mutex.h>
+#include <zthread/Thread.h>
+#include <zthread/Mutex.h>
+
+#ifndef IU_CLI
+	#include "../../Gui/Dialogs/LogWindow.h"
+#endif
 #include "Uploader.h"
 
 class CFileQueueUploader::Impl
@@ -107,6 +110,7 @@ void CFileQueueUploader::Impl::AddFile(const std::string& fileName, const std::s
 	newFileListItem.user_data = user_data;
 	newFileListItem.displayName = displayName;
 	newFileListItem.fileName = fileName;
+	newFileListItem.fileSize = IuCoreUtils::getFileSize(fileName);
 	m_fileList.push_back(newFileListItem);
 }
 
@@ -114,7 +118,7 @@ void CFileQueueUploader::Impl::start()
 {
 	m_NeedStop = false;
 	m_IsRunning = true;
-	int numThreads = min(size_t(m_nThreadCount), m_fileList.size());
+        int numThreads = std::min<int>(size_t(m_nThreadCount), m_fileList.size());
 	m_nRunningThreads = numThreads;
 	for(int i = 0; i < numThreads; i++)
 	{
@@ -126,8 +130,10 @@ void CFileQueueUploader::Impl::run()
 {
 	CUploader uploader;
 	uploader.onConfigureNetworkManager.bind(this, &CFileQueueUploader::Impl::OnConfigureNetworkManager);
-	uploader.onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
-	
+#ifndef IU_CLI
+        // TODO
+        uploader.onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
+#endif
 	for(;;)
 	{
 		FileListItem it;

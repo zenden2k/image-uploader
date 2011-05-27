@@ -18,17 +18,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../atlheaders.h"
 #include "UpdatePackage.h"
+#include <time.h>
+#include "../atlheaders.h"
 #include "../3rdpart/unzipper.h"
-#include "Common.h"
-#include "pluginloader.h"
 #include "../Gui/Dialogs/TextViewDlg.h"
 #include "../Gui/Dialogs/LogWindow.h"
-#include <time.h>
 #include "../Core/Utils/StringUtils.h"
-
-
+#include "Common.h"
+#include "pluginloader.h"
 
 BOOL CreateFolder(LPCTSTR szFolder)
 {
@@ -127,18 +125,11 @@ bool CUpdateInfo::Parse( ZSimpleXml &xml)
 	m_TimeStamp = root.AttributeInt("TimeStamp");
 	m_DisplayName = Utf8ToWCstring(root.Attribute("DisplayName"));
 		
-	/*m_xml.GetAttrib(_T("Name"), m_PackageName);
-		m_xml.GetAttrib(_T("UpdateUrl"), m_UpdateUrl);
-		m_xml.GetAttrib(_T("DownloadUrl"), m_DownloadUrl);
-		m_xml.GetAttrib(_T("Hash"), m_Hash);
-		m_xml.GetAttrib(_T("TimeStamp"), m_TimeStamp);
-		m_xml.GetAttrib(_T("DisplayName"), m_DisplayName);*/
-
-		if(m_PackageName.IsEmpty() || m_UpdateUrl.IsEmpty() || m_DownloadUrl.IsEmpty() || m_Hash.IsEmpty()  || !m_TimeStamp)
-			return false;
-		int core = 0;
-		core=root.AttributeInt("CoreUpdate");
-		m_CoreUpdate = core!=0;
+	if(m_PackageName.IsEmpty() || m_UpdateUrl.IsEmpty() || m_DownloadUrl.IsEmpty() || m_Hash.IsEmpty()  || !m_TimeStamp)
+		return false;
+	int core = 0;
+	core = root.AttributeInt("CoreUpdate");
+	m_CoreUpdate = core!=0;
 		
 		//if(m_xml.FindElem(_T("Info")))
 	//	{
@@ -172,6 +163,51 @@ bool CUpdateInfo::operator< (const CUpdateInfo& p)
 	return m_TimeStamp < p.m_TimeStamp;
 }
 
+bool CUpdateInfo::isCoreUpdate() const
+{
+	return m_CoreUpdate;
+}
+
+CString CUpdateInfo::displayName() const
+{
+	return m_DisplayName;
+}
+
+CString CUpdateInfo::downloadUrl() const
+{
+	return m_DownloadUrl;
+}
+
+CString CUpdateInfo::fileName() const
+{
+	return m_FileName;
+}
+
+CString CUpdateInfo::packageName() const
+{
+	return m_PackageName;
+}
+
+CString CUpdateInfo::readableText() const
+{
+	return m_ReadableText;
+}
+
+CString CUpdateInfo::updateUrl() const
+{
+	return m_UpdateUrl;
+}
+
+int CUpdateInfo::timeStamp() const
+{
+	return m_TimeStamp;
+}
+
+void CUpdateInfo::setFileName(const CString & name)
+{
+	m_FileName = name;
+}
+
 bool CUpdateManager::CheckUpdates()
 {
 	m_ErrorStr.Empty();
@@ -194,7 +230,6 @@ bool CUpdateManager::CheckUpdates()
 			Result= false;
 	}
 
-	//Result = m_updateList.size()!=0;
 	return Result;
 }
 
@@ -215,10 +250,8 @@ bool CUpdateManager::DoUpdates()
 }
 
 bool CUpdateManager::internal_load_update(CString name)
-{
-	
+{	
 	CUpdateInfo localPackage;
-
 
 	if(!localPackage.LoadUpdateFromFile(name))
 	{
@@ -230,15 +263,15 @@ bool CUpdateManager::internal_load_update(CString name)
 	NetworkManager nm;
 	IU_ConfigureProxy(nm);	
 
-	CString url = localPackage.m_UpdateUrl;
+	CString url = localPackage.updateUrl();
 	url.Replace(_T("%appver%"), IU_GetVersion());
-	url.Replace(_T("%name%"), localPackage.m_PackageName);
+	url.Replace(_T("%name%"), localPackage.packageName());
 
 	nm.doGet(WCstringToUtf8( url));
 
 	if(nm.responseCode() != 200)
 	{
-		WriteLog(logWarning,_T("Update Engine"), _T("Невозможно загрузить информацию о пакете обновления ") + localPackage.m_PackageName + CString(_T("\r\nHTTP response code: "))+IntToStr(nm.responseCode())+_T("\r\n")+ Utf8ToWstring(nm.errorString()).c_str(),CString("URL=")+url);		
+		WriteLog(logWarning,_T("Update Engine"), _T("Невозможно загрузить информацию о пакете обновления ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: "))+IntToStr(nm.responseCode())+_T("\r\n")+ Utf8ToWstring(nm.errorString()).c_str(),CString("URL=")+url);		
 		return false;
 	}
 
@@ -249,10 +282,10 @@ bool CUpdateManager::internal_load_update(CString name)
 	}
 
 	if(!localPackage.CanUpdate(remotePackage )) return true;
-	remotePackage.m_FileName = localPackage.m_FileName;
+	remotePackage.setFileName(localPackage.fileName());
 
 	m_updateList.push_back(remotePackage);
-	if(remotePackage.m_CoreUpdate) m_nCoreUpdates++;	
+	if(remotePackage.isCoreUpdate()) m_nCoreUpdates++;	
 	return true;
 }
 
@@ -263,16 +296,16 @@ bool CUpdateManager::AreCoreUpdates()
 
 bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 {
-	CString filename = IUTempFolder + ui.m_PackageName+_T(".zip");
+	CString filename = IUTempFolder + ui.packageName() +_T(".zip");
 	std::string filenamea= WCstringToUtf8(filename);
 	IU_ConfigureProxy(nm); 
 	nm.setOutputFile( filenamea);
-	m_statusCallback->updateStatus(nCurrentIndex, TR("Скачивание файла ")+ ui.m_DownloadUrl);
+	m_statusCallback->updateStatus(nCurrentIndex, TR("Скачивание файла ")+ ui.downloadUrl());
 	
-	nm.doGet(WCstringToUtf8( ui.m_DownloadUrl));
+	nm.doGet(WCstringToUtf8( ui.downloadUrl()));
 	if(nm.responseCode() != 200)
 	{
-		WriteLog(logError,_T("Update Engine"),TR("Ошибка обновления компонента ") + ui.m_PackageName + CString(_T("\r\nHTTP response code: "))+IntToStr(nm.responseCode())+_T("\r\n")+ Utf8ToWstring(nm.errorString()).c_str(),CString("URL=")+ui.m_DownloadUrl);		
+		WriteLog(logError,_T("Update Engine"),TR("Ошибка обновления компонента ") + ui.packageName() + CString(_T("\r\nHTTP response code: "))+IntToStr(nm.responseCode())+_T("\r\n")+ Utf8ToWstring(nm.errorString()).c_str(),CString("URL=")+ui.downloadUrl());		
 		return 0;
 	}
 
@@ -283,7 +316,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 	}
 
 	CUnzipper unzipper(filename);
-	CString unzipFolder = IUTempFolder + ui.m_PackageName;
+	CString unzipFolder = IUTempFolder + ui.packageName();
 	if(!unzipper.UnzipTo(unzipFolder))
 	{
 		updateStatus(0, TR("Невозможно распаковать архив ")+ filename);
@@ -294,17 +327,17 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 	updatePackage.setUpdateStatusCallback(this);
 	if(!updatePackage.LoadUpdateFromFile(unzipFolder + _T("\\")+_T("package.xml")))
 	{
-		MessageBox(0,TR("Не могу прочитать ") + ui.m_PackageName,0,0);
+		MessageBox(0,TR("Не могу прочитать ") + ui.packageName(),0,0);
 		return false;
 	}
 
 	if(!updatePackage.doUpdate())
 		return false;
 	CString finishText;
-	finishText.Format(TR("Обновление завершено. Обновлено %d из %d файлов "), updatePackage.m_nUpdatedFiles, updatePackage.m_nTotalFiles);
+	finishText.Format(TR("Обновление завершено. Обновлено %d из %d файлов "), updatePackage.updatedFileCount(), updatePackage.totalFileCount());
 	m_statusCallback->updateStatus(nCurrentIndex, finishText );
 
-	ui.SaveToFile(ui.m_FileName);
+	ui.SaveToFile(ui.fileName());
 	m_nSuccessPackageUpdates++;
 	return true;
 }
@@ -322,8 +355,7 @@ CUpdatePackage::CUpdatePackage()
 bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
 {
 	if(!FileExists(filename)) return false;
-	if(!m_xml.LoadFromFile(WCstringToUtf8(filename)))
-	{
+	if(!m_xml.LoadFromFile(WCstringToUtf8(filename))) {
 		WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file \'"))+myExtractFileName(filename));
 		return false;
 	}
@@ -335,34 +367,40 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
 	ZSimpleXmlNode root = m_xml.getRoot("UpdatePackage", false);
 	if(root.IsNull()) return false;
 
+	CString packageName, UpdateUrl;
+	packageName = Utf8ToWCstring(root.Attribute("Name"));
+	m_TimeStamp =  root.AttributeInt("TimeStamp");
 		
-		CString packageName, UpdateUrl;
-		packageName = Utf8ToWCstring(root.Attribute("Name"));
-		m_TimeStamp =  root.AttributeInt("TimeStamp");
+	int core=root.AttributeInt("CoreUpdate");
 		
-		int core=root.AttributeInt("CoreUpdate");
+	m_CoreUpdate = (core != 0);
 		
-		m_CoreUpdate = (core != 0);
-		
-		ZSimpleXmlNode entry = root["Entries"];
-		std::vector<ZSimpleXmlNode> entries;
-		entry.GetChilds("Entry", entries);
+	ZSimpleXmlNode entry = root["Entries"];
+	std::vector<ZSimpleXmlNode> entries;
+	entry.GetChilds("Entry", entries);
 
-		for(size_t i=0; i< entries.size(); i++)
-		{
-				CUpdateItem ui;
-				ui.name = Utf8ToWCstring(entries[i].Attribute("Name"));
-				ui.hash = Utf8ToWCstring(entries[i].Attribute("Hash"));
-				ui.saveTo = Utf8ToWCstring(entries[i].Attribute("SaveTo"));
-				ui.action = Utf8ToWCstring(entries[i].Attribute("Action"));
-				ui.flags = entries[i].Attribute("Flags");
-				if(ui.name.IsEmpty()  || (ui.hash.IsEmpty() &&  ui.action!=_T("delete") )|| ui.saveTo.IsEmpty())
-					continue;
-				m_entries.push_back(ui);
-		}
-	
+	for(size_t i=0; i< entries.size(); i++){
+		CUpdateItem ui;
+		ui.name = Utf8ToWCstring(entries[i].Attribute("Name"));
+		ui.hash = Utf8ToWCstring(entries[i].Attribute("Hash"));
+		ui.saveTo = Utf8ToWCstring(entries[i].Attribute("SaveTo"));
+		ui.action = Utf8ToWCstring(entries[i].Attribute("Action"));
+		ui.flags = entries[i].Attribute("Flags");
+		if(ui.name.IsEmpty()  || (ui.hash.IsEmpty() &&  ui.action!=_T("delete") )|| ui.saveTo.IsEmpty())
+			continue;
+			m_entries.push_back(ui);
+		}	
 	return true;
+}
 
+int CUpdatePackage::updatedFileCount() const
+{
+	return m_nUpdatedFiles;
+}
+
+int CUpdatePackage::totalFileCount() const
+{
+	return m_nTotalFiles;
 }
 
 bool CUpdatePackage::doUpdate()
@@ -472,12 +510,12 @@ CString CUpdateManager::generateReport()
 	
 	for(size_t i=0; i<m_updateList.size(); i++)
 	{
-		time_t t = m_updateList[i].m_TimeStamp;
+		time_t t = m_updateList[i].timeStamp();
 		tm * timeinfo = localtime ( &t );
 		CString date;
 		date.Format(_T("[%02d.%02d.%04d]"),(int)timeinfo->tm_mday,(int) timeinfo->tm_mon+1, (int)1900+timeinfo->tm_year);
-		text += _T(" * ")+m_updateList[i].m_DisplayName+_T("  ")+date+_T("\r\n\r\n");
-		text += m_updateList[i].m_ReadableText;
+		text += _T(" * ")+m_updateList[i].displayName()+_T("  ")+date+_T("\r\n\r\n");
+		text += m_updateList[i].readableText();
 		text += _T("\r\n");		
 	}
 	return text;
@@ -491,7 +529,7 @@ void CUpdateManager::setUpdateStatusCallback(CUpdateStatusCallback * callback)
 {
 	m_statusCallback = callback;
 }
-void CUpdateManager::updateStatus(int packageIndex, const CString status)
+void CUpdateManager::updateStatus(int packageIndex, const CString& status)
 {
 	if(m_statusCallback)
 		m_statusCallback->updateStatus(nCurrentIndex, status);
@@ -525,4 +563,14 @@ void CUpdateManager::Clear()
 	m_nCoreUpdates = 0;
 	m_nSuccessPackageUpdates = 0;
 	m_stop = false;
+}
+
+int CUpdateManager::successPackageUpdatesCount() const
+{
+	return m_nSuccessPackageUpdates;
+}
+
+void CUpdateManager::stop()
+{
+	m_stop = true;
 }

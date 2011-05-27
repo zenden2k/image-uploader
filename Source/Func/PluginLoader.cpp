@@ -18,13 +18,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../atlheaders.h"
 #include "PluginLoader.h"
+#include <io.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <windows.h>
+#include <sqstdsystem.h>
+
+#include "../atlheaders.h"
 #include "../Core/Network/NetworkManager.h"
-#include <io.h>
 #include "Settings.h"
 #include "../Gui/Dialogs/LogWindow.h"
 

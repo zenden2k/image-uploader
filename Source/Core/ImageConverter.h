@@ -4,6 +4,7 @@
 #include <GdiPlus.h>
 #include "Images/Thumbnail.h"
 #include "../Func/common.h"
+
 enum ImageResizeMode { 
    irmFit,  irmCrop, irmStretch
 };
@@ -30,9 +31,7 @@ struct ImageConvertingParams
 {
    ImageConvertingParams()
    {
-      StrokeColor = RGB( 0, 0, 0);
-/*	   NewWidth = 0;
-	   NewHeight = 0;*/
+      StrokeColor = RGB(0, 0, 0);
 		SmartConverting = false;
 	   AddLogo  = false;
 	   AddText = false;
@@ -49,8 +48,6 @@ struct ImageConvertingParams
    }
 
    CString strNewWidth, strNewHeight;
-	//int NewWidth,NewHeight;
-	
 	BOOL AddText;
 	CString Text;
 	int Format;
@@ -80,8 +77,7 @@ struct ThumbCreatingParams
 	unsigned int Quality;
 	CString Text;
 	CString FileName;
-	//TCHAR FontName[256];
-	COLORREF FrameColor,ThumbColor1,ThumbColor2/*TextBackground ,*/,ThumbTextColor;
+	COLORREF FrameColor, ThumbColor1, ThumbColor2, ThumbTextColor;
 	int ThumbAlpha;
 	BOOL TextOverThumb;
 	int ThumbWidth;
@@ -129,10 +125,9 @@ class CImageConverter
       bool processing_enabled;
 };
 
-using namespace Gdiplus;
-bool MySaveImage(Image *img, const CString& szFilename,CString& szBuffer,int Format,int Quality,LPCTSTR Folder=0);
-void DrawGradient(Graphics &gr,Rect rect,Color &Color1,Color &Color2);
-void DrawRect(Bitmap &gr,Color &color,Rect rect);
-void DrawStrokedText(Graphics &gr, LPCTSTR Text,RectF Bounds,Gdiplus::Font &font,Color &ColorText,Color &ColorStroke,int HorPos=0,int VertPos=0, int width=1);
+bool MySaveImage(Gdiplus::Image *img, const CString& szFilename,CString& szBuffer,int Format,int Quality,LPCTSTR Folder=0);
+void DrawGradient(Gdiplus::Graphics &gr,Gdiplus::Rect rect,Gdiplus::Color &Color1,Gdiplus::Color &Color2);
+void DrawRect(Gdiplus::Bitmap &gr,Gdiplus::Color &color,Gdiplus::Rect rect);
+void DrawStrokedText(Gdiplus::Graphics &gr, LPCTSTR Text,Gdiplus::RectF Bounds,Gdiplus::Font &font,Gdiplus::Color &ColorText,Gdiplus::Color &ColorStroke,int HorPos=0,int VertPos=0, int width=1);
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 #endif

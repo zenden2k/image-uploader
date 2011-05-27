@@ -48,9 +48,12 @@ void CHistoryTreeControl::Init()
 
 void CHistoryTreeControl::CreateDownloader()
 {
+	//delete m_FileDownloader;
+	//m_FileDownloader = 0;
 	if(!m_FileDownloader)
 	{
 		m_FileDownloader = new CFileDownloader();
+		m_FileDownloader->onConfigureNetworkManager.bind(this, &CHistoryTreeControl::OnConfigureNetworkManager);
 		m_FileDownloader->onFileFinished.bind(this, &CHistoryTreeControl::OnFileFinished);
 		m_FileDownloader->onQueueFinished.bind(this, &CHistoryTreeControl::QueueFinishedEvent);
 	}
@@ -70,8 +73,10 @@ void CHistoryTreeControl::abortLoadingThreads()
 	}
 	if(m_FileDownloader && m_FileDownloader->IsRunning())
 	{
-		m_FileDownloader->stop();
 		
+		m_FileDownloader->stop();
+		//m_FileDownloader->onFileFinished.clear();
+		//m_FileDownloader->onQueueFinished.clear();
 		/*if(!m_FileDownloader->waitForFinished(4000))
 		{
 			m_FileDownloader->kill();
@@ -130,7 +135,7 @@ HistoryItem* CHistoryTreeControl::getItemData(TreeItem* res)
 	return reinterpret_cast<HistoryItem*> (res->userData());
 }
 
-HICON CHistoryTreeControl::getIconForExtension(const CString ext)
+HICON CHistoryTreeControl::getIconForExtension(const CString& ext)
 {
 	if(m_fileIconCache[ext] != 0)
 	{
@@ -142,7 +147,7 @@ HICON CHistoryTreeControl::getIconForExtension(const CString ext)
 	return res;
 }
 
-TreeItem*  CHistoryTreeControl::addEntry(CHistorySession* session, const CString text)
+TreeItem*  CHistoryTreeControl::addEntry(CHistorySession* session, const CString& text)
 {
 	TreeItem *item = AddItem(text, session);
 	return item;
@@ -414,7 +419,7 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
 		if(outHeight) *outHeight = m_thumbWidth+3;
 }
 
-HICON CHistoryTreeControl::getIconForServer(const CString serverName)
+HICON CHistoryTreeControl::getIconForServer(const CString& serverName)
 {
 	HICON ico = 0;
 	
@@ -633,6 +638,7 @@ HBITMAP CHistoryTreeControl::GetItemThumbnail(HistoryTreeItem* item)
 {
 	if(item->thumbnail!=0)
 		return item->thumbnail;
+	if(m_bStopped) return 0;
 	if(item->ThumbnailRequested) return 0;
 
 	item->ThumbnailRequested = true;
@@ -644,10 +650,10 @@ HBITMAP CHistoryTreeControl::GetItemThumbnail(HistoryTreeItem* item)
 	{
 		return 0;
 	}
-	
+
 	if(IuCoreUtils::FileExists(stdLocalFileName))
 	{
-		m_thumbLoadingQueue.push(item);
+		m_thumbLoadingQueue.push_back(item);
 		StartLoadingThumbnails();
 	}
 	else
@@ -659,6 +665,7 @@ HBITMAP CHistoryTreeControl::GetItemThumbnail(HistoryTreeItem* item)
 
 void CHistoryTreeControl::DownloadThumb(HistoryTreeItem * it)
 {
+	if(m_bStopped) return;
 	if(it->thumbnailSource.empty())
 	{
 		std::string thumbUrl = it->hi.thumbUrl;
@@ -667,7 +674,7 @@ void CHistoryTreeControl::DownloadThumb(HistoryTreeItem * it)
 		if(!cacheFile.empty() && IuCoreUtils::FileExists(cacheFile))
 		{
 			it->thumbnailSource = cacheFile;
-			m_thumbLoadingQueue.push(it);
+			m_thumbLoadingQueue.push_back(it);
 			StartLoadingThumbnails();
 			return;
 		}
@@ -683,12 +690,11 @@ void CHistoryTreeControl::DownloadThumb(HistoryTreeItem * it)
 }
 DWORD CHistoryTreeControl::Run()
 {
-	
 	while(!m_thumbLoadingQueue.empty())
 	{
 		if(m_bStopped) break;
 		HistoryTreeItem * it = m_thumbLoadingQueue.front();
-		m_thumbLoadingQueue.pop();
+		m_thumbLoadingQueue.pop_front();
 		if(!LoadThumbnail(it) && it->thumbnailSource.empty())
 		{
 			// Try downloading it
@@ -702,7 +708,6 @@ DWORD CHistoryTreeControl::Run()
 	m_bIsRunning = false;
 	if(!m_FileDownloader || !m_FileDownloader->IsRunning()) 
 		threadsFinished();
-	
 	return 0;
 }
 
@@ -722,9 +727,13 @@ bool CHistoryTreeControl::OnFileFinished(bool ok, DownloadFileListItem it)
 	if(ok && !it.fileName.empty())
 	{
 		HistoryTreeItem * hit = reinterpret_cast<HistoryTreeItem*> (it.id);
+		if(!hit)
+		{
+			//MessageBox(Utf8ToWCstring(it.url));
+		}
 		hit->thumbnailSource = it.fileName;
 		ZBase::get()->addToGlobalCache(it.fileName, it.url);
-		m_thumbLoadingQueue.push(hit);
+		m_thumbLoadingQueue.push_back(hit);
 		StartLoadingThumbnails();
 	}
 	return true;
@@ -740,6 +749,7 @@ void CHistoryTreeControl::OnTreeItemDelete(TreeItem* item)
 
 void CHistoryTreeControl::threadsFinished()
 {
+	m_thumbLoadingQueue.clear();
 	if(onThreadsFinished)
 	onThreadsFinished();
 }
@@ -758,4 +768,20 @@ bool CHistoryTreeControl::isRunning() const
 void CHistoryTreeControl::setDownloadingEnabled(bool enabled)
 {
 	downloading_enabled_ = enabled;
+}
+
+void CHistoryTreeControl::ResetContent()
+{
+	if(m_bIsRunning || (m_FileDownloader && m_FileDownloader->IsRunning()))
+	{
+		//MessageBox(_T("Cannot reset list while threads are still running!"));
+		return;
+	}
+	CCustomTreeControlImpl<CHistoryTreeControl>::ResetContent();
+}
+
+void CHistoryTreeControl::OnConfigureNetworkManager(NetworkManager* nm)
+{
+	//MessageBox(_T("OnConfigureNetworkManager"),0,0);
+	IU_ConfigureProxy(*nm);
 }

@@ -147,4 +147,4 @@ bool IsDirectory(LPCTSTR szFileName);
 bool IsVista();
 bool IsWindows64Bit();
 FILE * fopen_utf8(const char * filename, const char * mode);
-bool CheckFileName(const CString fileName);
+bool CheckFileName(const CString& fileName);

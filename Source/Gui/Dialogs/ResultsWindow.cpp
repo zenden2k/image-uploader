@@ -17,9 +17,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "../../atlheaders.h"
 #include "ResultsWindow.h"
+
+#include "../../atlheaders.h"
 #include "../../Func/Common.h"
+#include "../../Func/Settings.h"
 
 // CResultsWindow
 CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,CAtlArray<CUrlListItem>  & urlList,bool ChildWindow)

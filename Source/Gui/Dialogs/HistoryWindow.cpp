@@ -17,13 +17,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "../../atlheaders.h"
+
 #include "HistoryWindow.h"
+#include "../../atlheaders.h"
 #include "../../Func/LangClass.h"
 #include "../../Func/Settings.h"
 #include "../../Func/HistoryManager.h"
 #include "../../Func/Base.h"
 #include "ResultsPanel.h"
+#include "ResultsWindow.h"
+#include "../WizardCommon.h"
 
 // CHistoryWindow
 CHistoryWindow::CHistoryWindow()
@@ -100,10 +103,7 @@ LRESULT CHistoryWindow::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl
 	delayed_closing_ = true;
 	if(!m_treeView.isRunning())
 	{
-		
-		
-		Settings.HistorySettings. EnableDownloading = SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_GETCHECK) == BST_CHECKED;
-	
+		Settings.HistorySettings.EnableDownloading = SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_GETCHECK) == BST_CHECKED;
 		EndDialog(0);
 	}
 	else
@@ -150,7 +150,6 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	 isSessionItem = item->level()==0;
 	
 	 HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
-	//if(!m_treeView.IsItemAtPos(ClientPoint.x, ClientPoint.y, isSessionItem)) return 0;
 	CMenu menu;
 	menu.CreatePopupMenu();
 	if(!isSessionItem)
@@ -246,6 +245,7 @@ CUrlListItem fromHistoryItem(HistoryItem historyItem)
 	it.DownloadUrl = Utf8ToWstring(historyItem.viewUrl).c_str();
 	return it;
 }
+
 LRESULT CHistoryWindow::OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	TreeItem* item = m_treeView.selectedItem();
@@ -325,6 +325,7 @@ void CHistoryWindow::LoadHistoryFile(CString fileName)
 
 void CHistoryWindow::threadsFinished()
 {
+	//MessageBoxA(0,IuCoreUtils::toString((int)GetTickCount()).c_str(), "threadsFinished",0);
 	m_wndAnimation.ShowWindow(SW_HIDE);
 	
 	if(!m_delayedFileName.IsEmpty())

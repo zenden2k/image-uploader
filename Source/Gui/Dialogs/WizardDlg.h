@@ -96,7 +96,7 @@ extern TCHAR MediaInfoDllPath[MAX_PATH];
 class CWizardDlg : 
 	public CDialogImpl<CWizardDlg>	, public CUpdateUI<CWizardDlg>,
 		public CMessageFilter, public CIdleHandler, public IDropTarget, public CRegionSelectCallback
-		, public CUpdateDlgCallback
+		, public CUpdateDlg::CUpdateDlgCallback
 {
 public:
 	CWizardDlg();

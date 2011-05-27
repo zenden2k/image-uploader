@@ -18,23 +18,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif 
+
 #include "NetworkManager.h"
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <memory.h>
 #include <cstdio>
-#include "../Utils/CoreUtils.h"
 #include <algorithm>
-
-#ifdef _MSC_VER
-	
-	#ifndef _DEBUG
-		#pragma comment(lib,"libcurl.lib")
-	#else
-	#pragma comment(lib,"libcurld_imp.lib")
-	#endif
-	#pragma comment(lib, "Ws2_32.lib")
-#endif
+#include "../Utils/CoreUtils.h"
 
 size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
@@ -158,7 +152,7 @@ NetworkManager::NetworkManager(void)
 	curl_easy_setopt(curl_handle, CURLOPT_PROGRESSFUNCTION, &ProgressFunc);
 	curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 0);
 	curl_easy_setopt(curl_handle, CURLOPT_PROGRESSDATA, this);
-	curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, TRUE);
+        curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1);
 	curl_easy_setopt(curl_handle, CURLOPT_ENCODING, "");
 	curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
 	curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTDATA, this);
@@ -228,6 +222,7 @@ bool NetworkManager::doUploadMultipartData()
 			if(it->isFile)
 			{
 					curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, simple_read_callback);
+                                        std::string fileName = it->value;
 					FILE * curFile = IuCoreUtils::fopen_utf8(it->value.c_str(), "rb"); /* open file to upload */
 					if(!curFile) 
 					{
@@ -235,13 +230,8 @@ bool NetworkManager::doUploadMultipartData()
 						return false; /* can't continue */
 					}
 					openedFiles.push_back(curFile);
-					struct stat file_info; 
-				 /* to get the file size */
-					if(fstat(_fileno(curFile), &file_info) != 0) {
-						
-						return false; /* can't continue */
-						} 
-					int  curFileSize = file_info.st_size;
+					// FIXME: 64bit file size support!
+					int  curFileSize = IuCoreUtils::getFileSize(fileName);
 
 				if(it->contentType.empty())
 					curl_formadd(&formpost,
@@ -273,7 +263,7 @@ bool NetworkManager::doUploadMultipartData()
 	}
 
 	curl_easy_setopt(curl_handle, CURLOPT_HTTPPOST, formpost);
-	curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 2L);
+   curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 0L);
 	curl_result = curl_easy_perform(curl_handle);
 	CloseFileList(openedFiles);
 	curl_formfree(formpost);
@@ -522,7 +512,7 @@ size_t NetworkManager::read_callback(void *ptr, size_t size, size_t nmemb, void 
 	return nm->private_read_callback(ptr, size, nmemb, stream);
 } 
 
-size_t NetworkManager::private_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
+size_t NetworkManager::private_read_callback(void *ptr, size_t size, size_t nmemb, void *)
 {
 	size_t retcode;
 	int wantsToRead = size * nmemb;

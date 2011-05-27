@@ -42,7 +42,7 @@ struct ThumbnailDrawOperation
 
 struct ThumbnailData
 {
-	std::map <std::string, std::string> colors_;
+	std::map<std::string, std::string> colors_;
 	std::vector<ThumbnailDrawOperation> drawing_operations_;
 	std::string width_addition;
 	std::string height_addition;

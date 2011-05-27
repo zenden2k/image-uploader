@@ -18,11 +18,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
 #include "MyImage.h"
+#include "../../atlheaders.h"
 #include "../Dialogs/LogWindow.h"
 #include "../../Func/LangClass.h"
 #include "../../Func/Settings.h"
+
 using namespace Gdiplus;
 // CMyImage
 CMyImage::CMyImage()

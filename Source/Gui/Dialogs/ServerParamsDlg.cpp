@@ -54,7 +54,7 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	m_pluginLoader->getServerParamList(m_paramNameList);
 
 	std::map<std::string,std::string>::iterator it;
-	for( it = m_paramNameList.begin(); it!= m_paramNameList.end(); it++)
+	for( it = m_paramNameList.begin(); it!= m_paramNameList.end(); ++it)
 	{
 		CString name = it->first.c_str();
 		CString humanName = it->second.c_str();
@@ -66,7 +66,7 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 LRESULT CServerParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	std::map<std::string,std::string>::iterator it;
-	for(it = m_paramNameList.begin(); it!= m_paramNameList.end(); it++)
+	for(it = m_paramNameList.begin(); it!= m_paramNameList.end(); ++it)
 	{
 
 		CString name = it->first.c_str();

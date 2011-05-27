@@ -736,7 +736,7 @@ bool IsWindows64Bit()
 	return si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;	
 }
 
-bool CheckFileName(const CString fileName)
+bool CheckFileName(const CString& fileName)
 {
 	return (fileName.FindOneOf(_T("\\/:*?\"<>|")) < 0);
 }

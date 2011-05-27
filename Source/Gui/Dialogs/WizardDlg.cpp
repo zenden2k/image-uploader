@@ -659,7 +659,7 @@ STDMETHODIMP CWizardDlg::DragLeave( void)
 	return S_OK;
 }
 
-CString MakeTempFileName(const CString FileName)
+CString MakeTempFileName(const CString& FileName)
 {
 	CString FileNameBuf;
 	FileNameBuf = IUTempFolder + FileName;
@@ -674,7 +674,7 @@ CString MakeTempFileName(const CString FileName)
 	return FileNameBuf;
 }
 
-bool SaveFromHGlobal(HGLOBAL Data, const CString FileName, CString &OutName)
+bool SaveFromHGlobal(HGLOBAL Data, const CString& FileName, CString& OutName)
 {
 	if(!Data) return false;
 	CString FileNameBuf = MakeTempFileName(FileName);  
@@ -703,7 +703,7 @@ bool SaveFromHGlobal(HGLOBAL Data, const CString FileName, CString &OutName)
 	return true;
 }
 
-bool SaveFromIStream(IStream *pStream, const CString FileName, CString &OutName)
+bool SaveFromIStream(IStream *pStream, const CString& FileName, CString &OutName)
 {
 	if(!pStream) return false;
 	CString FileNameBuf = MakeTempFileName(FileName);  

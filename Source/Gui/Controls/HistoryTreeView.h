@@ -65,7 +65,7 @@ class CHistoryTreeView :
 		int m_thumbWidth;
 		BOOL SubclassWindow(HWND hWnd);
 		void addSubEntry(HTREEITEM res, HistoryItem it);
-		HTREEITEM addEntry(CHistorySession* session, const CString text);
+		HTREEITEM addEntry(CHistorySession* session, const CString& text);
 		void Init();
 		void Clear();
 		bool IsItemAtPos(int x, int y, bool &isRoot);
@@ -74,8 +74,8 @@ private:
 	HistoryItem* getItemData(HTREEITEM res);
 	std::map<CString, HICON> m_fileIconCache;
 	std::map<CString, HICON> m_serverIconCache;
-	HICON getIconForExtension(const CString serverName);
-	HICON getIconForServer(const CString serverName);
+	HICON getIconForExtension(const CString& serverName);
+	HICON getIconForServer(const CString& serverName);
 	int CalcItemHeight(HTREEITEM item); 
 	LRESULT OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	void DrawItem(HTREEITEM res, HDC dc, DWORD itemState,RECT invRC, int* outHeight);

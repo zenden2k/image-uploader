@@ -46,8 +46,8 @@ public:
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	void SetInfo(const CString Title, const CString Text);
-	void SetWindowTitle(const CString WindowTitle);
+	void SetInfo(const CString& Title, const CString& Text);
+	void SetWindowTitle(const CString& WindowTitle);
 	bool NeedStop();
 	void Hide();
 };

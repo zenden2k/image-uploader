@@ -686,6 +686,7 @@ LRESULT CUploadSettings::OnOpenInBrowser(WORD /*wNotifyCode*/, WORD wID, HWND /*
 	
 void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerToolbar)
 {
+	int nServerIndex = isImageServerToolbar? m_nImageServer: m_nFileServer;
 	CMenu sub;	
 	MENUITEMINFO mi;
 	mi.cbSize = sizeof(mi);	
@@ -695,9 +696,12 @@ void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerTool
 	mi.wID = IDC_SERVERPARAMS + (int)isImageServerToolbar;
 	mi.dwTypeData  = TR("Настройки сервера");
 	sub.InsertMenuItem(0, true, &mi);
-	mi.wID = IDC_OPENREGISTERURL + (int)isImageServerToolbar;
-	mi.dwTypeData  = TR("Открыть страницу регистрации");
-	sub.InsertMenuItem(1, true, &mi);
+	if(!m_EngineList->byIndex(nServerIndex)->RegistrationUrl.empty())
+	{
+		mi.wID = IDC_OPENREGISTERURL + (int)isImageServerToolbar;
+		mi.dwTypeData  = TR("Открыть страницу регистрации");
+		sub.InsertMenuItem(1, true, &mi);
+	}
 	sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, pt.x, pt.y, m_hWnd);
 }
 
@@ -720,7 +724,7 @@ LRESULT CUploadSettings::OnOpenSignupPage(WORD /*wNotifyCode*/, WORD wID, HWND /
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
 	CUploadEngineData *ue = m_EngineList->byIndex(nServerIndex);
 	if(ue && !ue->RegistrationUrl.empty())
-		ShellExecute(0,_T("open"),Utf8ToWCstring(ue->RegistrationUrl), _T(""),0,SW_SHOWNORMAL);
+		ShellExecute(0,_T("open"), Utf8ToWCstring(ue->RegistrationUrl), _T(""), 0, SW_SHOWNORMAL);
 	return 0;
 }
 

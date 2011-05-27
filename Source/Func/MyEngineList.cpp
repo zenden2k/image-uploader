@@ -93,7 +93,7 @@ CAbstractUploadEngine* CMyEngineList::getUploadEngine(int index)
 	return getUploadEngine(CUploadEngineList_Base::byIndex(index));
 }
 
-bool CMyEngineList::LoadFromFile(const CString filename)
+bool CMyEngineList::LoadFromFile(const CString& filename)
 {
 	if(!IuCoreUtils::FileExists(WCstringToUtf8(filename)))
 	{

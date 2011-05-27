@@ -18,8 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _IU_DEFAULT_UPLOAD_ENGINE_H
-#define _IU_DEFAULT_UPLOAD_ENGINE_H
+#ifndef IU_DEFAULT_UPLOAD_ENGINE_H
+#define IU_DEFAULT_UPLOAD_ENGINE_H
 
 #include <vector>
 #include <string>
@@ -30,7 +30,8 @@ class CDefaultUploadEngine: public CAbstractUploadEngine
 {
 	public:
 		CDefaultUploadEngine();
-		virtual bool doUpload(Utf8String FileName,Utf8String DisplayName, CIUUploadParams &params);
+		virtual bool doUpload(Utf8String FileName, Utf8String DisplayName, CIUUploadParams& params);
+	
 	protected:
 		bool DoAction(UploadAction &Action);
 		bool DoUploadAction(UploadAction &Action, bool bUpload);
@@ -38,21 +39,24 @@ class CDefaultUploadEngine: public CAbstractUploadEngine
 		bool ParseAnswer(UploadAction &Action, std::string& Body);
 		std::string ReplaceVars(const std::string& Text);
 		int RetryLimit();
-		void AddQueryPostParams(UploadAction &Action);
-		bool ReadServerResponse(UploadAction &Action);
+		void AddQueryPostParams(UploadAction& Action);
+		bool ReadServerResponse(UploadAction& Action);
 		void SetStatus(StatusType status, std::string param = "");
 		bool needStop();
+		void UploadError(bool error, const std::string errorStr, UploadAction* m_CurrentAction, bool writeToBuffer = true);
+
 		Utf8String m_ErrorReason;
 		Utf8String m_FileName;
 		Utf8String m_displayFileName;
 		LoginInfo li;
 		ErrorInfo m_LastError;
 		std::string m_ErrorBuffer;
-		void UploadError(bool error, const std::string errorStr, UploadAction* m_CurrentAction, bool writeToBuffer = true);
 		int m_CurrentActionIndex;
 		std::map<std::string, std::string> m_Vars;
 		std::map<std::string, std::string> m_Consts;
 		std::map<size_t, bool> m_PerformedActions;
+	private:
+		DISALLOW_COPY_AND_ASSIGN(CDefaultUploadEngine);
 };
 
 #endif

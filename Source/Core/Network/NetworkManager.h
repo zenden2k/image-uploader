@@ -21,40 +21,18 @@
 #ifndef _NETWORK_MANAGER_H_
 #define _NETWORK_MANAGER_H_
 
+#include <string>
+#include <vector>
+
 #include <curl/curl.h>
 #include <curl/types.h>
 #include <curl/easy.h>
-
-#include <string>
-#include <vector>
 #include <zthread/Mutex.h>
+
 #include "../Utils/CoreUtils.h"
 
 #define NString std::string
 
-struct CustomHeaderItem
-{
-	NString name;
-	NString value;
-};
-
-struct QueryParam
-{
-	bool isFile;
-	NString name;
-	NString value; // also filename
-	NString displayName; 
-	NString contentType;
-};
-
-enum CallBackFuncType{funcTypeBody,funcTypeHeader};
-class NetworkManager;
-
-struct CallBackData
-{
-	CallBackFuncType funcType;
-	NetworkManager* nmanager;
-};
 std::string nm_trimStr(const std::string& str);
 void nm_splitString(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount = -1);
 
@@ -92,6 +70,43 @@ class NetworkManager
 		CURL* getCurlHandle();
 		static void Uninitialize();
 	private:
+		enum CallBackFuncType{funcTypeBody,funcTypeHeader};
+
+		struct CallBackData
+		{
+			CallBackFuncType funcType;
+			NetworkManager* nmanager;
+		};
+
+		struct CustomHeaderItem
+		{
+			NString name;
+			NString value;
+		};
+
+		struct QueryParam
+		{
+			bool isFile;
+			NString name;
+			NString value; // also filename
+			NString displayName; 
+			NString contentType;
+		};
+
+		static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
+		static int ProgressFunc(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
+		static int private_static_writer(char *data, size_t size, size_t nmemb, void *buffer_in);
+		int private_writer(char *data, size_t size, size_t nmemb);
+		int private_header_writer(char *data, size_t size, size_t nmemb);
+		size_t private_read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
+		static int set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose);
+		bool private_apply_method();
+		void private_parse_headers();
+		void private_cleanup_before();
+		void private_cleanup_after();
+		bool private_on_finish_request();
+		void private_initTransfer();
+
 		int m_UploadBufferSize;
 		CURL *curl_handle;
 		FILE *m_hOutFile;
@@ -109,23 +124,10 @@ class NetworkManager
 		std::vector<QueryParam> m_QueryParams;
 		std::vector<CustomHeaderItem> m_QueryHeaders;
 		std::vector<CustomHeaderItem> m_ResponseHeaders;
-		static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
-		static int ProgressFunc(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
-		static int private_static_writer(char *data, size_t size, size_t nmemb, void *buffer_in);
-		int private_writer(char *data, size_t size, size_t nmemb);
-		int private_header_writer(char *data, size_t size, size_t nmemb);
-		size_t private_read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
-		static int set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose);
-		bool private_apply_method();
-		void private_parse_headers();
-		void private_cleanup_before();
-		void private_cleanup_after();
-		bool private_on_finish_request();
 		std::string internalBuffer;
 		std::string m_headerBuffer;
 		NString m_userAgent;
-		char m_errorBuffer[CURL_ERROR_SIZE];
-		void private_initTransfer();
+		char m_errorBuffer[CURL_ERROR_SIZE];;
 		std::string m_method;
 		struct curl_slist * chunk_;
 		static ZThread::Mutex _mutex;

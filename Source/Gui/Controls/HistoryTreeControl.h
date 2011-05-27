@@ -2,24 +2,21 @@
 // LogListBox.h : Declaration of the CLogListBox
 
 #pragma once
-#include "../../resource.h"
-#include <atlmisc.h>
-#include <atlcrack.h>
-#include "../../Func/HistoryManager.h"
-#include "CustomTreeControl.h"
-#include "../../3rdpart/thread.h"
 #include <queue>
-#include "../../Core/FileDownloader.h"
 #include <map>
 #include <atltheme.h>
+#include <atlmisc.h>
+#include <atlcrack.h>
+
+#include "../../3rdpart/thread.h"
+#include "../../Func/HistoryManager.h"
+#include "../../Core/FileDownloader.h"
+#include "../../Core/3rdpart/FastDelegate.h"
+#include "../../resource.h"
+#include "CustomTreeControl.h"
+
 struct HistoryTreeItem 
 {
-/*public:
-	~HistoryTreeItem()
-	{
-		if(thumbnail)
-			DeleteObject(thumbnail);
-	}*/
 	HistoryItem hi;
 	HBITMAP thumbnail;
 	bool ThumbnailRequested;
@@ -52,15 +49,15 @@ class CHistoryTreeControl :
 		DWORD OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
 		bool LoadThumbnail(HistoryTreeItem * ItemID);
 	public:
-		FastDelegate0<> onThreadsFinished;
-		FastDelegate0<> onThreadsStarted;
+		fastdelegate::FastDelegate0<> onThreadsFinished;
+		fastdelegate::FastDelegate0<> onThreadsStarted;
 		void setDownloadingEnabled(bool enabled);
 		int NotifyParent(int nItem);
 		bool m_bIsRunning;
 		int m_thumbWidth;
 		bool downloading_enabled_;
 		void addSubEntry(TreeItem* res, HistoryItem it, bool autoExpand);
-		TreeItem*  addEntry(CHistorySession* session, const CString text);
+		TreeItem*  addEntry(CHistorySession* session, const CString& text);
 		void Init();
 		void Clear();
 		bool IsItemAtPos(int x, int y, bool &isRoot);
@@ -73,19 +70,20 @@ class CHistoryTreeControl :
 		void CreateDownloader();
 		void abortLoadingThreads();
 		LRESULT ReflectContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+		void ResetContent();
 	private:
 		HistoryItem* getItemData(TreeItem* res);
 		std::map<CString, HICON> m_fileIconCache;
 		std::map<CString, HICON> m_serverIconCache;
-		HICON getIconForExtension(const CString serverName);
-		HICON getIconForServer(const CString serverName);
+		HICON getIconForExtension(const CString& serverName);
+		HICON getIconForServer(const CString& serverName);
 		int CalcItemHeight(TreeItem* item); 
 		LRESULT OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		void _DrawItem(TreeItem* res, HDC dc, DWORD itemState,RECT invRC, int* outHeight);
 		void DrawSubItem(TreeItem* res, HDC dc, DWORD itemState, RECT invRC,  int* outHeight);
 		LRESULT OnLButtonDoubleClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		HBITMAP GetItemThumbnail(HistoryTreeItem* item);
-		std::queue<HistoryTreeItem*> m_thumbLoadingQueue;
+		std::deque<HistoryTreeItem*> m_thumbLoadingQueue;
 		CFileDownloader *m_FileDownloader;
 		bool OnFileFinished(bool ok, DownloadFileListItem it);
 		void DownloadThumb(HistoryTreeItem * it);
@@ -93,7 +91,7 @@ class CHistoryTreeControl :
 		int m_SubItemHeight;	
 		void QueueFinishedEvent();
 		void threadsFinished();
-
+		void OnConfigureNetworkManager(NetworkManager* nm);
 };
 
 

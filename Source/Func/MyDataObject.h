@@ -22,14 +22,6 @@
 
 class CMyDataObject : public IDataObject
 {
-	private:
-		long m_lRefCount;
-		FORMATETC m_FormatEtc;
-		STGMEDIUM m_StgMedium;
-		int TotalLength;
-		CAtlArray<CString> m_FileItems;
-		bool IsFormatSupported(FORMATETC *pFormatEtc);
-
 	public:
 		CMyDataObject();
 		~CMyDataObject();
@@ -52,4 +44,11 @@ class CMyDataObject : public IDataObject
 		 HRESULT __stdcall DAdvise(FORMATETC *pFormatEtc,DWORD advf,IAdviseSink *,DWORD *);
 		 HRESULT __stdcall DUnadvise(DWORD dwConnection);
 		 HRESULT __stdcall EnumDAdvise(IEnumSTATDATA **ppEnumAdvise);
+	private:
+		long m_lRefCount;
+		FORMATETC m_FormatEtc;
+		STGMEDIUM m_StgMedium;
+		int TotalLength;
+		CAtlArray<CString> m_FileItems;
+		bool IsFormatSupported(FORMATETC *pFormatEtc);
 };

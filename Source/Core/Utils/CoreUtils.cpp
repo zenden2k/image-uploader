@@ -19,19 +19,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "CoreUtils.h"
-#include <cstdio>
-#include <io.h>
-#include "Utils_Win.h"
-#include <openssl/md5.h>
+
 #include <time.h> 
+#include <locale>
+#include <cstdio>
+#include <openssl/md5.h>
+#ifdef _WIN32
+    #include <io.h>
+    #include "utils_Win.h"
+#elif defined(__unix__)
+	#include <sys/io.h>
+   #include <sys/stat.h>
+	#include "utils_unix.h"
+#endif
 
 namespace IuCoreUtils {
 
 FILE * fopen_utf8(const char * filename, const char * mode)
 {
-	#ifdef _WIN32
+#ifdef _WIN32
 	return _wfopen(Utf8ToWstring(filename).c_str(), Utf8ToWstring(mode).c_str());
-	#endif
+#else
+   return fopen(Utf8ToSystemLocale(filename).c_str(), mode);
+#endif
 }
 
 bool FileExists(Utf8String fileName)
@@ -39,9 +49,46 @@ bool FileExists(Utf8String fileName)
 	#ifdef WIN32
 		if(GetFileAttributes(Utf8ToWstring(fileName).c_str())== (unsigned long)-1) return false;
 	#else
+      if(getFileSize(fileName)==-1) return false;
 		//TODO
 	#endif
 	return true;
+}
+
+typedef std::codecvt_base::result res;
+typedef std::codecvt<wchar_t, char, mbstate_t> codecvt_type; // internal, external, state
+std::mbstate_t state;
+
+std::codecvt_base::result fromWstring (const std::wstring & str,
+   const std::locale & loc, std::string & out)
+{
+  const codecvt_type& cdcvt = std::use_facet<codecvt_type>(loc);
+  std::codecvt_base::result r;
+
+  const wchar_t *in_next = 0;
+  char *out_next = 0;
+
+  std::wstring::size_type len = str.size () << 2;
+
+  char * chars = new char [len + 1];
+
+  r = cdcvt.out (state, str.c_str (), str.c_str () + str.size (), in_next,
+                 chars, chars + len, out_next);
+  *out_next = '\0';
+  out = chars;
+
+  delete [] chars;
+
+  return r;
+}
+
+std::string Utf8ToSystemLocale(const Utf8String& str)
+{
+   std::wstring wideStr = Utf8ToWstring(str);
+   std::locale const oloc = std::locale ("");
+   std::string out;
+   std::codecvt_base::result r = fromWstring (wideStr, oloc, out);
+   return out;
 }
 
 Utf8String ExtractFileName(const Utf8String fileName)
@@ -121,12 +168,11 @@ Utf8String StrReplace(Utf8String text, Utf8String s, Utf8String d)
 	return text;
 }
 
-
 bool ReadUtf8TextFile(Utf8String utf8Filename, Utf8String& data)
 {
 	FILE *stream = fopen_utf8(utf8Filename.c_str(), "rb");
 	if(!stream) return false;
-	long size = _filelength(_fileno(stream));	
+        long size = getFileSize(utf8Filename);
 	unsigned char buf[3];
 	fread(buf, 1, 3, stream);	
 
@@ -214,27 +260,156 @@ const std::string timeStampToString(time_t t)
 	return buf;
 }
 
+std::string ulonglongToStr(zint64 l, int base)
+{
+    char buff[67]; // length of MAX_ULLONG in base 2
+    buff[66] = 0;
+    char *p = buff + 65;
+    const char _zero = '0';
+
+    if (base != 10 || _zero == '0') {
+        while (l != 0) {
+            int c = l % base;
+
+            --p;
+
+            if (c < 10)
+                *p = '0' + c;
+            else
+                *p = c - 10 + 'a';
+
+            l /= base;
+        }
+    }
+    else {
+        while (l != 0) {
+            int c = l % base;
+
+            *(--p) = _zero + c;
+
+            l /= base;
+        }
+    }
+
+    return p;
+}
+
+std::string longlongtoStr(zint64 l, int base)
+{
+   std::string res = ulonglongToStr(l<0 ? -l: l, base);
+   if(l < 0)
+     res = "-" + res;
+   return res;
+}
+
+
 Utf8String zint64ToString(zint64 value)
 {
-	char buf[200];
-	_i64toa(value, buf, 10);
-	return buf;
+   return longlongtoStr(value, 10);
+}
+
+#ifndef LLONG_MIN
+   #define LLONG_MIN (-9223372036854775807-1)
+   #define LLONG_MAX (-9223372036854775807-1)
+#endif
+
+static zint64 zstrtoll(const char *nptr, const char **endptr, register int base, bool *ok)
+{
+    register const char *s;
+    register  zuint64 acc;
+    register unsigned char c;
+    register  zuint64 qbase, cutoff;
+    register int neg, any, cutlim;
+
+    /*
+     * Skip white space and pick up leading +/- sign if any.
+     * If base is 0, allow 0x for hex and 0 for octal, else
+     * assume decimal; if base is already 16, allow 0x.
+     */
+    s = nptr;
+    do {
+        c = *s++;
+    } while (isspace(c));
+    if (c == '-') {
+        neg = 1;
+        c = *s++;
+    } else {
+        neg = 0;
+        if (c == '+')
+            c = *s++;
+    }
+    if ((base == 0 || base == 16) &&
+        c == '0' && (*s == 'x' || *s == 'X')) {
+        c = s[1];
+        s += 2;
+        base = 16;
+    }
+    if (base == 0)
+        base = c == '0' ? 8 : 10;
+
+    qbase = unsigned(base);
+    cutoff = neg ? ((zint64)(0-(LLONG_MIN + LLONG_MAX))) + LLONG_MAX : LLONG_MAX;
+    cutlim = cutoff % qbase;
+    cutoff /= qbase;
+    for (acc = 0, any = 0;; c = *s++) {
+        if (!isascii(c))
+            break;
+        if (isdigit(c))
+            c -= '0';
+        else if (isalpha(c))
+            c -= isupper(c) ? 'A' - 10 : 'a' - 10;
+        else
+            break;
+        if (c >= base)
+            break;
+        if (any < 0 || acc > cutoff || (acc == cutoff && c > cutlim))
+            any = -1;
+        else {
+            any = 1;
+            acc *= qbase;
+            acc += c;
+        }
+    }
+    if (any < 0) {
+        acc = neg ? LLONG_MIN : LLONG_MAX;
+        if (ok != 0)
+            *ok = false;
+    } else if (neg) {
+        acc = (~acc) + 1;
+    }
+    if (endptr != 0)
+        *endptr = (any >= 0 ? s - 1 : nptr);
+
+    if (ok != 0)
+        *ok = any > 0;
+
+    return acc;
 }
 
 zint64 stringTozint64(const Utf8String fileName)
 {
-	return _atoi64(fileName.c_str());
+    return zstrtoll(fileName.c_str(), 0, 10 , 0);
 }
 
 zint64 getFileSize(Utf8String utf8Filename)
 {
-#ifdef _MSC_VER
-	_stat64 stats;
+#ifdef _WIN32
+   #ifdef _MSC_VER
+      _stat64 stats;
+   #else
+      _stati64 stats;
+   #endif
+
+   _wstati64(Utf8ToWstring(utf8Filename).c_str(), &stats);
 #else
-	_stati64 stats;
+   struct stat64 stats;
+   std::string path = Utf8ToSystemLocale(utf8Filename);
+   if(-1 == stat64(path.c_str(), &stats))
+   {
+      return -1;
+   }
 #endif
 
-	 _wstati64(Utf8ToWstring(utf8Filename).c_str(), &stats); 
 	 return stats.st_size;
 }
 

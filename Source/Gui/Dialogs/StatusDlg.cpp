@@ -54,7 +54,7 @@ LRESULT CStatusDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 	return 0;
 }
 
-void CStatusDlg::SetInfo(const CString Title, const CString Text)
+void CStatusDlg::SetInfo(const CString& Title, const CString& Text)
 {
 	CriticalSection.Lock();
 	m_Title=Title;
@@ -71,7 +71,7 @@ LRESULT CStatusDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 	return 0;
 }
 
-void CStatusDlg::SetWindowTitle(const CString WindowTitle)
+void CStatusDlg::SetWindowTitle(const CString& WindowTitle)
 {
 	CriticalSection.Lock();
 	SetWindowText(WindowTitle);

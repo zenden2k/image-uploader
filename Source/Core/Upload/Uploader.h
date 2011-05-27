@@ -21,18 +21,11 @@
 #ifndef _UPLOADER_H_
 #define _UPLOADER_H_
 
-#include <vector>
-#include <map>
-#include <deque>
 #include <string>
-
+#include "../Utils/CoreTypes.h"
 #include "../Network/NetworkManager.h"
 #include "UploadEngine.h"
-//#include "DefaultUploadEngine.h"
-//#include "ScriptUploadEngine.h"
-#include "../../3rdpart/FastDelegate.h"
-
-using namespace fastdelegate;
+#include "../3rdpart/FastDelegate.h"
 
 class CUploader
 {
@@ -43,7 +36,6 @@ class CUploader
 		bool setUploadEngine(CAbstractUploadEngine* UploadEngine);
 		CAbstractUploadEngine * getUploadEngine();
 		
-		//void setServerSettings(ServerSettingsStruct* serverSettings);
 		void setThumbnailWidth(int width);
 		bool UploadFile(const std::string & FileName, const std::string displayFileName);
 		const std::string  getDownloadUrl();
@@ -52,12 +44,12 @@ class CUploader
 		void stop();
 		bool needStop();
 		// events
-		FastDelegate0<bool> onNeedStop;
-		FastDelegate1<InfoProgress> onProgress;
-		FastDelegate3<StatusType, int, std::string> onStatusChanged;
-		FastDelegate2<const std::string&, bool> onDebugMessage;
-		FastDelegate1<ErrorInfo> onErrorMessage;
-		FastDelegate1<NetworkManager*> onConfigureNetworkManager;
+		fastdelegate::FastDelegate0<bool> onNeedStop;
+		fastdelegate::FastDelegate1<InfoProgress> onProgress;
+		fastdelegate::FastDelegate3<StatusType, int, std::string> onStatusChanged;
+		fastdelegate::FastDelegate2<const std::string&, bool> onDebugMessage;
+		fastdelegate::FastDelegate1<ErrorInfo> onErrorMessage;
+		fastdelegate::FastDelegate1<NetworkManager*> onConfigureNetworkManager;
 
 		void DebugMessage(const std::string& message, bool isServerResponseBody = false);
 		void SetStatus(StatusType status, int param1=0, std::string param="");
@@ -82,8 +74,8 @@ class CUploader
 		NetworkManager m_NetworkManager;
 		CAbstractUploadEngine *m_CurrentEngine;
 		void Cleanup();
-	
-		
+	private:
+		DISALLOW_COPY_AND_ASSIGN(CUploader);
 };
 
 #endif

@@ -17,21 +17,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#ifndef IU_FUNC_PLUGINLOADER_H
+#define IU_FUNC_PLUGINLOADER_H
 #pragma once
+
 #include <windows.h>
-#include "MyUtils.h"
 #include "../Core/Network/NetworkManager.h"
+#include "../Core/Upload/ScriptUploadEngine.h"
+#include "../Core/Utils/CoreUtils.h"
+#include "MyUtils.h"
 #include "Common.h"
-#include "../Core\Upload\ScriptUploadEngine.h"
-#include "../Core\Utils\CoreUtils.h"
-CString IU_md5_file(const CString& filename);
-
-
-
-
-struct ServerSettingsStruct;
-
 
 class CPluginManager
 {
@@ -44,4 +39,8 @@ class CPluginManager
 	protected:
 		CScriptUploadEngine* m_plugin;
 		Utf8String m_ScriptsDirectory;
+	private:
+		DISALLOW_COPY_AND_ASSIGN(CPluginManager);
 };
+
+#endif // IU_FUNC_PLUGINLOADER_H

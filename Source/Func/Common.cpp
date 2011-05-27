@@ -18,21 +18,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../atlheaders.h"
 #include "Common.h"
+
+#include <openssl/md5.h>
+
+#include "../atlheaders.h"
 #include "../Common/CmdLine.h"
-//#include "wizarddlg.h"
 #include "../versioninfo.h"
 #include "../Func/settings.h"
-#pragma comment(lib,"urlmon.lib")
-#include <openssl/md5.h>
 #include "MyUtils.h"
 #include "Settings.h"
 
-
-
 CString IUCommonTempFolder, IUTempFolder;
-
 
 CString IU_md5_file(const CString& filename)
 {
@@ -142,11 +139,7 @@ int GetFolderFileList(std::vector<CString> &list, CString folder, CString mask)
 	WIN32_FIND_DATA wfd;
 	ZeroMemory(&wfd, sizeof(wfd));
 	HANDLE findfile = 0;
-
 	TCHAR szNameBuffer[MAX_PATH];
-	
-	//GetTempPath(256, TempPath);
-	
 	
 	for(;;)
 	{
@@ -444,6 +437,7 @@ DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
 	return 1;
 }
 
+// Converts pixels to Win32 dialog units
 int dlgX(int WidthInPixels)
 {
 	LONG units = GetDialogBaseUnits();
@@ -451,6 +445,7 @@ int dlgX(int WidthInPixels)
 	return WidthInPixels*baseunitX/4;
 }
 
+// Converts pixels to Win32 dialog units
 int dlgY(int HeightInPixels)
 {
 	LONG units = GetDialogBaseUnits();
@@ -474,6 +469,7 @@ CString GetUniqFileName(const CString &filePath)
 	}
 	return result;
 }
+
 BOOL IU_CreateFolder(LPCTSTR szFolder)
 {
 	if (!szFolder || !lstrlen(szFolder))

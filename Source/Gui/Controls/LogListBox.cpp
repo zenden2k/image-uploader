@@ -153,7 +153,7 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
 	return 0;
 }
 
-CString trim(const CString Str)
+CString trim(const CString& Str)
 {
 	CString Result = Str;
 	if(!Result.IsEmpty())

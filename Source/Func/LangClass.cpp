@@ -17,8 +17,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "../atlheaders.h"
+
 #include "langclass.h"
+#include "../atlheaders.h"
 #include "myutils.h"
 
 CLang Lang;
@@ -38,6 +39,7 @@ BYTE hex_digit(TCHAR f)
 	} 
 	return p;
 }
+
 int hexstr2int(LPTSTR hex)
 {
 	int len = lstrlen(hex);
@@ -145,7 +147,6 @@ LPTSTR CLang::GetString(LPCTSTR Name)
 	//return _T("$NO_SUCH_STRING");
 	return (LPTSTR)Name;
 }
-
 
 CString CLang::GetLanguageName()
 {

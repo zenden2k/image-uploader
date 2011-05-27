@@ -3,11 +3,22 @@
 
 #include <cstdio>
 #include <string>
+
 typedef std::string Utf8String;
+
 #ifdef _MSC_VER
-	#define zint64 __int64
+   typedef __int64 zint64;
+   typedef unsigned __int64 zuint64;
+
 #else
-	#define zint64  long long
+   typedef long long zint64;
+   typedef unsigned long long zuint64;
 #endif
+
+	// A macro to disallow the copy constructor and operator= functions
+	// This should be used in the private: declarations for a class
+#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
+	TypeName(const TypeName&);               \
+	void operator=(const TypeName&)
 
 #endif

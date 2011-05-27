@@ -18,28 +18,36 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef IU_FUNC_CMDLINE_H
+#define IU_FUNC_CMDLINE_H
+
 #pragma once
 #include <atlmisc.h>
 #include <atlcoll.h>
+
 typedef CAtlArray<CString> CStringList;
 
 class CCmdLine
 {
-	private:
-		CStringList m_Params;
-		CString m_OnlyParams;	
 	public:
 		CCmdLine();
 		CCmdLine& operator=(const CCmdLine &p);
 		CCmdLine(LPCTSTR szCmdLine);
 		void Parse(LPCTSTR szCmdLine);
 		int AddParam(LPCTSTR szParam);
+	
+		//Returns command line without module name
 		CString OnlyParams();
 		CString operator[](int nIndex);
 		CString ModuleName();
-		bool GetNextFile(CString &FileName, int &nIndex);
+		bool GetNextFile(CString& FileName, int &nIndex);
 		bool IsOption(LPCTSTR Option, bool bUsePrefix = true);
 		size_t GetCount();
+	private:
+		CStringList m_Params;
+		CString m_OnlyParams;	
 };
 
 extern CCmdLine CmdLine;
+
+#endif // IU_FUNC_CMDLINE_H

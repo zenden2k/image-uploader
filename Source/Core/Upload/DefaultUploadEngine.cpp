@@ -19,19 +19,8 @@
 */
 
 #include "DefaultUploadEngine.h"
-#include "../../3rdpart/codepages.h"
-#include <pcre++.h>
-
-
-#ifdef _MSC_VER
-#ifdef NDEBUG
-#pragma comment(lib, "pcreplusplus.lib")
-#pragma comment(lib,"pcre.lib" )
-#else 
-#pragma comment(lib, "pcreplusplusd.lib")
-#pragma comment(lib,"pcred.lib" )
-#endif
-#endif
+#include "../3rdpart/codepages.h"
+#include "../3rdpart/pcreplusplus.h"
 
 CDefaultUploadEngine::CDefaultUploadEngine():CAbstractUploadEngine()
 {
