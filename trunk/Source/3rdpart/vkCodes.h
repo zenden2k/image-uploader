@@ -1,7 +1,10 @@
-// vkCodes.h
+#ifndef VKCODES_H
+#define VKCODES_H
+
 #include "../atlheaders.h"
-//namespace NVkCodes {
+
 PCTSTR GetKeyName(UINT);
 BOOL HotkeyToString(UINT, UINT, CString&);
 BOOL HotkeyToString(DWORD, CString&);
-//}
+
+#endif // VKCODES_H

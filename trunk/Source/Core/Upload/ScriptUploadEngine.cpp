@@ -22,64 +22,48 @@
 /* This module contains uploading engine which uses SqPlus binding library
  for executing Squirrel scripts */
 
-#ifdef _MSC_VER
+#include "ScriptUploadEngine.h"
+#include <stdarg.h>
+#ifndef IU_CLI
    #include "../../atlheaders.h"
    #include "../../Func/Common.h"
    #include "../../Gui/Dialogs/InputDialog.h"
-#include "../../Func/LangClass.h"
+	#include "../../Func/LangClass.h"
 #endif
-#include "ScriptUploadEngine.h"
 
+#include <openssl/md5.h>
 #undef UNICODE
 #undef _UNICODE
 #include <sqplus.h>
 #include <sqstdsystem.h>
 
-#include "../../3rdpart/CP_RSA.h"
-#include "../../3rdpart/base64.h"
-#include <openssl/md5.h>
-
-#include "../../3rdpart/codepages.h"
-
-
-#ifdef _MSC_VER
-#ifdef _DEBUG
-	#pragma comment(lib,"squirrelD.lib")
-	#pragma comment(lib,"sqstdlibD.lib")
-	#pragma comment(lib,"sqplusD.lib")
-#else
-#pragma comment(lib,"squirrel.lib")
-#pragma comment(lib, "sqstdlib.lib")
-#pragma comment(lib,"sqplus.lib")
-#endif
-#pragma comment(lib, "libeay32.lib")
-#endif
+#include "../3rdpart/CP_RSA.h"
+#include "../3rdpart/base64.h"
+#include "../3rdpart/codepages.h"
 
 using namespace SqPlus;
-
 // Squirrel types should be defined in the same module where they are used
 // otherwise we will catch SqPlus exception while executing Squirrel functions
-
 DECLARE_INSTANCE_TYPE(ServerSettingsStruct);
 DECLARE_INSTANCE_TYPE(NetworkManager);
 DECLARE_INSTANCE_TYPE(CFolderList);
 DECLARE_INSTANCE_TYPE(CFolderItem);
 DECLARE_INSTANCE_TYPE(CIUUploadParams);
 
-
 const std::string AskUserCaptcha(NetworkManager *nm, const std::string& url)
 {
-	#ifdef _MSC_VER
+#ifndef IU_CLI
 	CString wFileName = GetUniqFileName(IUTempFolder+Utf8ToWstring("captcha").c_str());
 	
 	nm->setOutputFile(IuCoreUtils::WstringToUtf8((const TCHAR*)wFileName));
 	if(!nm->doGet(url))
 		return "";
 	CInputDialog dlg(_T("Image Uploader"), TR("¬ведите текст с картинки:"), CString(IuCoreUtils::Utf8ToWstring("").c_str()),wFileName);
-	
+	nm->setOutputFile("");
 	if(dlg.DoModal()==IDOK)
 		return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
-	nm->setOutputFile("");
+#else
+	return "<not implemented>";
 #endif
 	return "";
 }
@@ -125,11 +109,10 @@ static void printFunc(HSQUIRRELVM v,const SQChar * s,...)
 	delete[] buffer;	
 } 
 
-
 void CScriptUploadEngine::InitScriptEngine()
 {
-	//SquirrelVM::Init();
-	//SquirrelVM::PushRootTable();
+	SquirrelVM::Init();
+	SquirrelVM::PushRootTable();
 }
 
 void CScriptUploadEngine::DestroyScriptEngine()
@@ -201,7 +184,7 @@ bool CScriptUploadEngine::needStop()
 CScriptUploadEngine::CScriptUploadEngine(Utf8String pluginName):CAbstractUploadEngine()
 {
 	m_sName = pluginName;
-	m_CreationTime = GetTickCount(); 
+	m_CreationTime = time(0); 
 	
 }
 
@@ -436,7 +419,7 @@ int  CScriptUploadEngine::createFolder(CFolderItem &parent, CFolderItem &folder)
 	return ival;	
 } 
 
-DWORD CScriptUploadEngine::getCreationTime()
+time_t CScriptUploadEngine::getCreationTime()
 {
 	return m_CreationTime;
 }

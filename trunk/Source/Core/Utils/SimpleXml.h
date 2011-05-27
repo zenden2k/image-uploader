@@ -32,8 +32,6 @@ class ZSimpleXmlNode_impl;
 
 class ZSimpleXmlNode
 {
-	protected:
-		ZSimpleXmlNode(void *el);
 	public:
 		explicit ZSimpleXmlNode();
 		ZSimpleXmlNode(const ZSimpleXmlNode& node);
@@ -63,6 +61,8 @@ class ZSimpleXmlNode
 		bool GetAttributes(std::vector<std::string> &out) const;
 		void DeleteChilds();
 		ZSimpleXmlNode& operator = (const ZSimpleXmlNode& node);
+	protected:
+		ZSimpleXmlNode(void *el);
 	private:
 		ZSimpleXmlNode_impl *impl_;
 		friend class ZSimpleXml;
@@ -84,6 +84,7 @@ class ZSimpleXml
 		ZSimpleXmlNode getRoot(const std::string& name, bool create = true);
 	private:
 		ZSimpleXml_impl *impl_;
+		DISALLOW_COPY_AND_ASSIGN(ZSimpleXml);
 };
 
 #endif

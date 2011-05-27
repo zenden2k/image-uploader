@@ -49,8 +49,6 @@ public:
 
     BEGIN_MSG_MAP(CVideoGrabberParams)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-        COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-        COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 		COMMAND_ID_HANDLER_EX(IDC_MEDIAINFOFONT, OnMediaInfoFontClicked)
 		COMMAND_HANDLER(IDC_MEDIAINFOONIMAGE,BN_CLICKED, OnShowMediaInfoTextBnClicked)
 		REFLECT_NOTIFICATIONS()
@@ -60,8 +58,6 @@ public:
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	//CSavingOptions *so;
 	bool Apply();
 	LOGFONT m_Font;

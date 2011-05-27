@@ -23,7 +23,7 @@
 #include "../../Func/Settings.h"
 #include <GdiPlus.h>
 // CInputDialog
-CInputDialog::CInputDialog(const CString& title, const CString& descr, const CString defaultValue, const CString image)	
+CInputDialog::CInputDialog(const CString& title, const CString& descr, const CString& defaultValue, const CString& image)	
 {
 	title_ = title;;
 	description_ = descr;

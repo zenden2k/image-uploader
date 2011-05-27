@@ -17,15 +17,18 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#ifndef IU_CORE_FILEDOWNLOADER_H
+#define IU_CORE_FILEDOWNLOADER_H
 #pragma once
+
 #include <atlbase.h>
 #include <atlapp.h>
 #include <atlmisc.h>
-#include "../3rdpart/thread.h"
 #include <atlcoll.h>
+#include "../3rdpart/thread.h"
+#include "3rdpart/FastDelegate.h"
 #include "Network/NetworkManager.h"
-#include "../3rdpart/FastDelegate.h"
+#include "Utils/CoreTypes.h"
 
 struct DownloadFileListItem
 {
@@ -35,33 +38,38 @@ struct DownloadFileListItem
 	void* id;
 };
 
-using namespace fastdelegate;
-
 class CFileDownloader
 {
-	private:
+	public:
+		CFileDownloader();
+		virtual ~CFileDownloader();
+		void AddFile(const std::string& url, void* id);
+		bool start();	
+		bool waitForFinished(unsigned int msec = -1);
+		void setThreadCount(int n);
+		void stop();
+		bool IsRunning();
+
+		fastdelegate::FastDelegate0<> onQueueFinished;
+		fastdelegate::FastDelegate1<NetworkManager*> onConfigureNetworkManager;
+		fastdelegate::FastDelegate2<bool, DownloadFileListItem, bool> onFileFinished;
+		
+	protected:
 		CString m_ErrorStr;
+		CAutoCriticalSection m_CS;
 		std::vector<DownloadFileListItem> m_fileList;
 		int m_nThreadCount;
 		int m_nRunningThreads;
 		std::vector<HANDLE> m_hThreads;
-		public:
-			CFileDownloader();
-			void AddFile(const std::string& url, void* id);
-			bool start();
-			static unsigned int __stdcall thread_func(void * param);
-			void memberThreadFunc();
-			bool waitForFinished(unsigned int msec = -1);
-			bool getNextJob(DownloadFileListItem& item);
-			void setThreadCount(int n);
-			CAutoCriticalSection m_CS;
-			bool m_NeedStop;
-			volatile bool m_IsRunning;
-			void stop();
-			//void kill();
-			bool IsRunning();
-			FastDelegate0<> onQueueFinished;
-			FastDelegate1<NetworkManager*> onConfigureNetworkManager;
-			FastDelegate2<bool, DownloadFileListItem, bool> onFileFinished;
-			static int ProgressFunc (void* userData, double dltotal,double dlnow,double ultotal, double ulnow);
+		bool m_NeedStop;
+		volatile bool m_IsRunning;
+		static int ProgressFunc (void* userData, double dltotal,double dlnow,double ultotal, double ulnow);
+		static unsigned int __stdcall thread_func(void * param);
+		void memberThreadFunc();
+		bool getNextJob(DownloadFileListItem& item);
+
+	private:
+		DISALLOW_COPY_AND_ASSIGN(CFileDownloader);
 };
+
+#endif

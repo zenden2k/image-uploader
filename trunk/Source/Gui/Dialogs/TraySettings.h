@@ -18,10 +18,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef TRAYSETTINGS_H
+#define TRAYSETTINGS_H
+
 #pragma once
-class CTrayActions;
-#include "../../resource.h"       // main symbols
+
 #include <atlcrack.h>
+#include "../../resource.h"       // main symbols
+
 #include "floatingwindow.h"
 // CTraySettingsPage
 
@@ -55,8 +59,6 @@ public:
 
     BEGIN_MSG_MAP(CTraySettingsPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-        COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-        COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 		COMMAND_HANDLER_EX(IDC_SHOWTRAYICON, BN_CLICKED, OnShowTrayIconBnClicked)
     END_MSG_MAP()
     // Handler prototypes:
@@ -64,11 +66,10 @@ public:
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	//CSavingOptions *so;
 	bool Apply();
 	LRESULT OnShowTrayIconBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 };
 
 
+
+#endif // TRAYSETTINGS_H

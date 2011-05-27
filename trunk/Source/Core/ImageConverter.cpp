@@ -17,14 +17,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "../atlheaders.h"
+
 #include "ImageConverter.h"
+#include <cassert>
+#include "../atlheaders.h"
 #include "../Func/Common.h"
 #include "../Gui/Dialogs/LogWindow.h"
 #include "Utils/StringUtils.h"
-#include "../3rdpart/parser.h"
-#include <pcre++.h>
-#include <cassert>
+#include "3rdpart/parser.h"
+#include "3rdpart/pcreplusplus.h"
 #include "../3rdpart/QColorQuantizer.h"
 
 CImageConverter::CImageConverter()
@@ -722,7 +723,7 @@ bool MySaveImage(Image *img, const CString& szFilename, CString& szBuffer, int F
 	if(Folder)
 		userFolder= Folder;
 	if(userFolder.Right(1)!=_T('\\')) userFolder += _T('\\');
-	wsprintf(szBuffer2,_T("%s%s.%s"),(LPCTSTR)Folder?userFolder:IUTempFolder,(LPCTSTR)szNameBuffer,/*(int)GetTickCount(),*/szImgTypes[Format]);
+	wsprintf(szBuffer2,_T("%s%s.%s"),(LPCTSTR)(Folder?userFolder:IUTempFolder),(LPCTSTR)szNameBuffer,/*(int)GetTickCount(),*/szImgTypes[Format]);
 	CString resultFilename=GetUniqFileName(szBuffer2);
 	IU_CreateFilePath(resultFilename);
 	CLSID clsidEncoder;

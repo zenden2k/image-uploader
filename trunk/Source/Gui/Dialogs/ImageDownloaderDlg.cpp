@@ -17,10 +17,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "../../atlheaders.h"
 #include "ImageDownloaderDlg.h"
+#include "../../atlheaders.h"
 #include "../../Func/Common.h"
-#include <pcre++.h>
+#include "../../Core/3rdpart/pcreplusplus.h"
 #include "LogWindow.h"
 
 // CImageDownloaderDlg

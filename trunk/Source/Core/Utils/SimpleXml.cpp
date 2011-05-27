@@ -18,9 +18,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "SimpleXml.h"
+#ifndef TIXML_USE_STL
 #define TIXML_USE_STL
-#include <tinyxml.h>
+#endif
+
+#include "SimpleXml.h"
+#include "../3rdpart/tinyxml.h"
 #include "CoreUtils.h"
 
 class ZSimpleXml_impl

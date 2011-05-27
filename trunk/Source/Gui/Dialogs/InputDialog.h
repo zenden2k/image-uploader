@@ -31,7 +31,7 @@ class CInputDialog :
 	public CDialogImpl<CInputDialog>
 {
 public:
-	CInputDialog(const CString& title, const CString& descr, const CString defaultValue = _T(""), const CString image =_T(""));
+	CInputDialog(const CString& title, const CString& descr, const CString& defaultValue = _T(""), const CString& image =_T(""));
 	~CInputDialog();
 	enum { IDD = IDD_INPUTDIALOG };
 
@@ -48,19 +48,14 @@ public:
 		 //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		 //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		 //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		CString title_;
-		CString description_;
-		CString value_;
-		CString image_;
-
-
-
-
-
-		CMyImage imgControl;
+	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	CString title_;
+	CString description_;
+	CString value_;
+	CString image_;
+	CMyImage imgControl;
 };
 
 

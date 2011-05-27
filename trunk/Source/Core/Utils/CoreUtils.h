@@ -27,7 +27,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace IuCoreUtils
 {
+	// A version of fopen() function which supports utf8 file names
 	FILE * fopen_utf8(const char * filename, const char * mode);
+
 	bool FileExists(const Utf8String fileName);
 	bool DirectoryExists(const Utf8String path);
 	Utf8String ExtractFilePath(const Utf8String fileName);
@@ -37,12 +39,16 @@ namespace IuCoreUtils
 	Utf8String toString(int value);
 	Utf8String toString(unsigned int value);
 	Utf8String toString(double value, int precision);
+   std::string Utf8ToSystemLocale(const Utf8String& str);
 	Utf8String zint64ToString(zint64 value);
 	zint64 stringTozint64(const Utf8String fileName);
 	Utf8String GetFileMimeType(const Utf8String);
 	Utf8String StrReplace(Utf8String text, Utf8String s, Utf8String d);
 	Utf8String ConvertToUtf8(const Utf8String &text, const Utf8String codePage);
 	bool ReadUtf8TextFile(Utf8String utf8Filename, Utf8String& data);
+
+	// getFileSize retrieves the size of the specified file, in bytes.
+	// It supports large files; filename must be utf8 encoded
 	zint64 getFileSize(Utf8String utf8Filename);
 	const std::wstring Utf8ToWstring(const Utf8String &str);
 	const Utf8String WstringToUtf8(const std::wstring &str);

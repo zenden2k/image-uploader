@@ -271,7 +271,7 @@ HistoryItem* CHistoryTreeView::getItemData(HTREEITEM res)
 	return reinterpret_cast<HistoryItem*> (GetItemData(res));
 }
 
-HICON CHistoryTreeView::getIconForExtension(const CString ext)
+HICON CHistoryTreeView::getIconForExtension(const CString& ext)
 {
 	if(m_fileIconCache[ext] != 0)
 	{
@@ -283,7 +283,7 @@ HICON CHistoryTreeView::getIconForExtension(const CString ext)
 	return res;
 }
 
-HTREEITEM CHistoryTreeView::addEntry(CHistorySession* session, const CString text)
+HTREEITEM CHistoryTreeView::addEntry(CHistorySession* session, const CString& text)
 {
 	TVINSERTSTRUCT is;
 	memset(&is, 0, sizeof(is));
@@ -512,7 +512,7 @@ void CHistoryTreeView::DrawSubItem(HTREEITEM item, HDC hdc, DWORD itemState, REC
 		dc.Detach();
 }
 
-HICON CHistoryTreeView::getIconForServer(const CString serverName)
+HICON CHistoryTreeView::getIconForServer(const CString& serverName)
 {
 	HICON ico = 0;
 	

@@ -33,13 +33,14 @@ struct FileListItem
 	std::string imageUrl;
 	std::string thumbUrl;
 	std::string downloadUrl;
+	zint64 fileSize;
 	void * user_data;
 };
 
 class CFileUploaderCallback
 {
 	public:
-		virtual bool OnFileFinished(bool ok, FileListItem& result){return true;};
+      virtual bool OnFileFinished(bool ok, FileListItem& result){return true;}
 		virtual bool OnQueueFinished() { return true;}
 		virtual bool OnConfigureNetworkManager(NetworkManager* nm){return true;}
 };

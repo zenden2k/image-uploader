@@ -163,6 +163,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	{
 		Settings.LoadSettings(0, false);		
 		Settings.ApplyRegSettingsRightNow();
+		CScriptUploadEngine::DestroyScriptEngine();
 		return 0;
 	}
 

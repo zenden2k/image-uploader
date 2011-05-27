@@ -18,11 +18,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
 #include "ResultsPanel.h"
 #include <uxtheme.h>
+#include "../../atlheaders.h"
+#include "../../Core/3rdpart/pcreplusplus.h"
 #include "mediainfodlg.h"
-#include <pcre++.h>
 #include "LogWindow.h"
 
 // CResultsPanel
@@ -521,7 +521,7 @@ bool CResultsPanel::LoadTemplates(CString &Error)
 	return true;
 }
 
-CString CResultsPanel::ReplaceVars(const CString Text)
+CString CResultsPanel::ReplaceVars(const CString& Text)
 {
 	CString Result =  Text;
 

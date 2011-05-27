@@ -818,7 +818,7 @@ int GetWindowLeft(HWND Wnd)
 	return WindowRect.left;
 }
 
-void CUploadDlg::FileProgress(const CString Text, bool ShowPrefix)
+void CUploadDlg::FileProgress(const CString& Text, bool ShowPrefix)
 {
 	CString Temp;
 	if(ShowPrefix){ 

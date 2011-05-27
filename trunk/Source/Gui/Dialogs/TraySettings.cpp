@@ -18,8 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
 #include "TraySettings.h"
+#include "../../atlheaders.h"
+
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
  
 CTrayActions::CTrayActions()
@@ -85,17 +86,6 @@ LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 	return 1;  // Let the system set the focus
 }
 
-LRESULT CTraySettingsPage::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-	EndDialog(wID);
-	return 0;
-}
-
-LRESULT CTraySettingsPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-	EndDialog(wID);
-	return 0;
-}
 bool CTraySettingsPage::Apply()
 {
 	Settings.ShowTrayIcon_changed = Settings.ShowTrayIcon;

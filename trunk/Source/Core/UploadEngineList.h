@@ -20,15 +20,15 @@
 
 #pragma once
 
+#include <string>
 #include "Upload/UploadEngine.h"
 
 class CUploadEngineList: public CUploadEngineList_Base
 {
-	private:
-		public:
-			CUploadEngineList();
-			bool LoadFromFile(const std::string& filename);
-			void setNumOfRetries(int Engine, int Action);
+	public:
+		CUploadEngineList();
+		bool LoadFromFile(const std::string& filename);
+		void setNumOfRetries(int Engine, int Action);
 	protected:
 		int m_EngineNumOfRetries;
 		int m_ActionNumOfRetries;

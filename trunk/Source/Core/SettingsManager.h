@@ -21,10 +21,13 @@
 #ifndef IU_CORE_SETTINGSMANAGER_H
 #define IU_CORE_SETTINGSMANAGER_H
 
-#include "Utils/SimpleXml.h"
+#include <string>
 #include <map>
 #include <iostream>
 #include <sstream>
+#include "Utils/CoreTypes.h"
+#include "Utils/SimpleXml.h"
+
 #define n_bind(a) operator[]( #a ).bind(a)
 #define nm_bind(b,a) operator[]( #a ).bind(b.a)
 
@@ -42,7 +45,6 @@ template<class T> std::string myToString(const T& value)
         str << value;
         return str.str();
 }
-
 
 template<class T> void myFromString(const std::string& text, T & value)
 {
@@ -97,6 +99,7 @@ class SettingsNode
 	protected:
 		SettingsNodeBase * binded_value_;
 		std::map<std::string, SettingsNode*> childs_; 
+		DISALLOW_COPY_AND_ASSIGN(SettingsNode);
 };
 
 class SettingsManager
@@ -108,5 +111,6 @@ class SettingsManager
 		void loadFromXmlNode(ZSimpleXmlNode parentNode);
 	protected:
 		SettingsNode root_;
+		DISALLOW_COPY_AND_ASSIGN(SettingsManager);
 };
 #endif

@@ -7,13 +7,6 @@
 #include "../../Func/UpdatePackage.h"
 #include "../../3rdpart/thread.h"
 
-class CUpdateDlgCallback
-{
-	public:
-		virtual bool CanShowWindow() = 0;
-		virtual void UpdateAvailabilityChanged(bool Available) = 0;
-};
-
 class CUpdateDlg : 
 	public CDialogImpl<CUpdateDlg>,
 	public CDialogResize<CUpdateDlg>,
@@ -25,6 +18,12 @@ class CUpdateDlg :
 		~CUpdateDlg();
 		enum { IDD = IDD_UPDATEDLG };
 
+		class CUpdateDlgCallback
+		{
+			public:
+				virtual bool CanShowWindow() = 0;
+				virtual void UpdateAvailabilityChanged(bool Available) = 0;
+		};
 	protected:
 		BEGIN_MSG_MAP(CUpdateDlg)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -65,7 +64,7 @@ class CUpdateDlg :
 	CUpdateManager m_UpdateManager;
 	bool ShowModal(HWND parent);
 	void Abort();
-	void updateStatus(int packageIndex, const CString status);
+	void updateStatus(int packageIndex, const CString& status);
 };
 
 

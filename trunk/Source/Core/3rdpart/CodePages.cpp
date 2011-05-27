@@ -1,6 +1,7 @@
 
 #include <string>
 #include "codepages.h"
+#include "../Utils/StringUtils.h"
 
 namespace {
 
@@ -278,7 +279,7 @@ int CodepageByName( const char * name )
         int centre = ( begin + end ) / 2;
         if( centre == begin )
             return -1;
-        int cmp = strcmpi( name, langs[ centre ].name );
+		  int cmp = IuStringUtils::stricmp( name, langs[ centre ].name );
         if( !cmp ) 
             return langs[ centre ].codepage_id;
         ( ( cmp < 0 ) ? end : begin ) = centre;

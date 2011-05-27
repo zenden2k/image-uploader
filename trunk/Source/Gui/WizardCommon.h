@@ -1,12 +1,16 @@
+#ifndef WIZARDCOMMON_H
+#define WIZARDCOMMON_H
 #pragma once
+
 #define IU_IDC_CONST 12255
-#define IDC_SETTINGS		IU_IDC_CONST+1
-#define IDC_REGIONPRINT IU_IDC_CONST+2
-#define IDC_MEDIAFILEINFO IU_IDC_CONST+3
-#define IDC_CLIPBOARD IU_IDC_CONST+4
-#define IDC_ADDFOLDER IU_IDC_CONST+5
-#define IDC_ADDFILES IU_IDC_CONST+6
-#define IDC_DOWNLOADIMAGES IU_IDC_CONST+7
+#define IDC_SETTINGS		(IU_IDC_CONST+1)
+#define IDC_REGIONPRINT (IU_IDC_CONST+2)
+#define IDC_MEDIAFILEINFO (IU_IDC_CONST+3)
+#define IDC_CLIPBOARD (IU_IDC_CONST+4)
+#define IDC_ADDFOLDER (IU_IDC_CONST+5)
+#define IDC_ADDFILES (IU_IDC_CONST+6)
+#define IDC_DOWNLOADIMAGES (IU_IDC_CONST+7)
+
 class CWizardDlg;
 class CWizardPage
 {
@@ -26,7 +30,10 @@ public:
 	void ShowPrev(bool Show=true);
 };
 
-#include "Dialogs/WizardDlg.h"
+extern CWizardDlg* pWizardDlg;
+#endif // WIZARDCOMMON_H
+
+
 
 
 

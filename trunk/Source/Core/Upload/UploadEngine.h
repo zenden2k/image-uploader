@@ -23,14 +23,14 @@
 #include <vector>
 #include <string>
 #include <map>
-#include "../../3rdpart/FastDelegate.h"
+#include "../3rdpart/FastDelegate.h"
 #include "../Utils/CoreUtils.h"
 #include "../Network/NetworkManager.h"
 #include "CommonTypes.h"
 
 struct LoginInfo
 {
-	std::string Login, Password,Cookies;
+	std::string Login, Password, Cookies;
 	bool DoAuth;
 };
 
@@ -52,8 +52,6 @@ struct UploadAction
 	std::string Type;
 	std::string RegExp;
 	std::vector<ActionVariable> Variables;
-
-	//----
 	int RetryLimit;
 	int NumOfTries;
 };
@@ -126,7 +124,7 @@ class CUploadEngineData
 		bool ImageHost;
 		bool SupportThumbnails;
 		int NeedAuthorization;
-		DWORD MaxFileSize;
+		zint64 MaxFileSize;
 		std::string RegistrationUrl;
 		std::string CodedLogin;
 		std::string CodedPassword;
@@ -182,7 +180,6 @@ class  CUploadEngineList_Base
 		int GetUploadEngineIndex(const std::string Name);
 };
 
-using namespace fastdelegate;
 class CAbstractUploadEngine
 {
 	public:
@@ -196,13 +193,12 @@ class CAbstractUploadEngine
 		void setUploadData(CUploadEngineData* data);
 		CUploadEngineData* getUploadData() const;
 		// Events
-		FastDelegate0<bool> onNeedStop;
-		FastDelegate1<InfoProgress> onProgress;
-		FastDelegate3<StatusType, int, std::string> onStatusChanged;
-		FastDelegate2< const std::string&, bool> onDebugMessage;
-		FastDelegate1<ErrorInfo> onErrorMessage;
+		fastdelegate::FastDelegate0<bool> onNeedStop;
+		fastdelegate::FastDelegate1<InfoProgress> onProgress;
+		fastdelegate::FastDelegate3<StatusType, int, std::string> onStatusChanged;
+		fastdelegate::FastDelegate2< const std::string&, bool> onDebugMessage;
+		fastdelegate::FastDelegate1<ErrorInfo> onErrorMessage;
 	protected:
-		
 		bool m_bShouldStop;
 		NetworkManager * m_NetworkManager;
 		CUploadEngineData * m_UploadData;
@@ -210,11 +206,6 @@ class CAbstractUploadEngine
 		int m_ThumbnailWidth;
 		bool DebugMessage(const std::string& message, bool isServerResponseBody = false);
 		bool ErrorMessage(ErrorInfo);
-		
 		bool needStop();
-		
-		//static int ProgressFunc(void* userData, double dltotal,double dlnow,double ultotal, double ulnow);
-		
-		void SetStatus(StatusType status, std::string param = "");
-		
+		void SetStatus(StatusType status, std::string param = "");		
 };

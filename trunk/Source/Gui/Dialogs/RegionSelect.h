@@ -23,7 +23,6 @@
 #include "../../resource.h"       // main symbols
 #include "../Controls/myimage.h"
 #include <atlcrack.h>
-//#include "colorpicker.h"
 #include "../../Core/ScreenCapture.h"
 
 
@@ -31,7 +30,7 @@ class CRegionSelectCallback
 {
 public: 
 	virtual void OnScreenshotFinished(int Result)=NULL;
-	virtual void OnScreenshotSaving(LPTSTR FileName, Bitmap* Bm)=NULL;
+	virtual void OnScreenshotSaving(LPTSTR FileName, Gdiplus::Bitmap* Bm)=NULL;
 };
 
 enum SelectionMode {smRectangles, smFreeform, smWindowHandles };
@@ -113,9 +112,9 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
 		bool m_bFinish;
 		CBitmap doubleBm;
 		CDC doubleDC;
-		Bitmap *m_DoubleBuffer;
+		Gdiplus::Bitmap *m_DoubleBuffer;
 		int RectCount;
-		Bitmap *gdipBm ;
+		Gdiplus::Bitmap *gdipBm ;
 		HPEN DrawingPen;
 		HBRUSH DrawingBrush;
 		HDC dstDC;

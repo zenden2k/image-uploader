@@ -18,18 +18,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../atlheaders.h"
 #include "FileInfoHelper.h"
+#include "../atlheaders.h"
 #include "../Common/MediaInfoDLL.h" //Dynamicly-loaded library (.dll)
 #include "LangClass.h"
 #include "Settings.h"
 
-void AddStr(CString &Str, CString &Str2)
+void AddStr(CString &Str, const CString& Str2)
 {
 	if(Str2.GetLength()>0) Str+=Str2;
 }
 
-void AddStr(CString &Str, CString &Str2, CString &StrPostfix, CString &StrPrefix = CString(_T("")))
+void AddStr(CString &Str, const CString& Str2, const CString& StrPostfix, const CString& StrPrefix = CString(_T("")))
 {
 	if(Str2.GetLength() > 0) Str += StrPrefix + Str2 + StrPostfix;
 }

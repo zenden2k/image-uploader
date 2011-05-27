@@ -65,17 +65,6 @@ LRESULT CVideoGrabberParams::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	return 1;  // Let the system set the focus
 }
 
-LRESULT CVideoGrabberParams::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-	EndDialog(wID);
-	return 0;
-}
-
-LRESULT CVideoGrabberParams::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-	EndDialog(wID);
-	return 0;
-}
 bool CVideoGrabberParams::Apply()
 {
 	Settings.VideoSettings.Columns = GetDlgItemInt(IDC_COLUMNSEDIT);

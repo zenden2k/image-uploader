@@ -19,12 +19,13 @@
 */
 
 #include "FileDownloader.h"
-#include "../Func/myutils.h"
 #include <algorithm>
+
+#include "../Func/myutils.h"
 #include "../Func/Common.h"
 
 // TODO: 1. use ZThread classes instead  CThread with , 
-// 2. remove dependency from non-core headers ( "../myutils.h", "../Common.h")
+// 2. remove dependency from non-core headers ( "myutils.h", "Common.h")
 // 3. Use pimpl
 
 CFileDownloader::CFileDownloader()
@@ -35,8 +36,13 @@ CFileDownloader::CFileDownloader()
 	m_nRunningThreads = 0;
 }
 
+CFileDownloader::~CFileDownloader()
+{
+}
+
 void CFileDownloader::AddFile(const std::string& url, void* id)
 {
+	if(m_NeedStop) return; //Cannot add file to queue while stopping process
 	m_CS.Lock();
 	DownloadFileListItem newItem;
 	newItem.url = url;
@@ -110,11 +116,13 @@ void CFileDownloader::memberThreadFunc()
 			if(!onFileFinished.empty())
 				onFileFinished(false, curItem); // delegate call
 		}
+		if(m_NeedStop)
+			m_fileList.clear();
 		m_CS.Unlock();
-
 	}
 
 	m_CS.Lock();
+
 	HANDLE hThread = GetCurrentThread();
 	for(size_t i=0; i<m_hThreads.size(); i++)
 	{
@@ -125,12 +133,17 @@ void CFileDownloader::memberThreadFunc()
 		}
 	}
 	m_nRunningThreads--;
+
+	if(m_NeedStop)
+		m_fileList.clear();
+
 	m_CS.Unlock(); // We need to release  mutex before calling  onQueueFinished()
 						// otherwise we may get a deadlock
 	
 	if(!m_nRunningThreads)
 	{
 		m_IsRunning = false;
+		m_NeedStop = false;
 		if(onQueueFinished) // it is a delegate
 			onQueueFinished(); 
 	}

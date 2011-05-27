@@ -17,13 +17,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <stdlib.h>
+
 #include "Thumbnail.h"
+#include <stdlib.h>
+#include <string.h>
 #include "../Utils/CoreUtils.h"
 #include "../Utils/SimpleXml.h"
-#include "../../3rdpart/parser.h"
+#include "../3rdpart/parser.h"
 #include "../Utils/StringUtils.h"
-#include "string.h"
 
 Thumbnail::Thumbnail()
 {
@@ -109,7 +110,6 @@ bool Thumbnail::SaveToFile(const std::string& filename)
 		colorNode.SetAttribute("Name", it->first);
 		colorNode.SetAttribute("Value", it->second);
 	}
-	//root.CreateChild("Drawing");
 	xml.SaveToFile(fileToSave); 
 	return true;
 }

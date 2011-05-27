@@ -18,8 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
 #include "HotkeyEditor.h"
+#include "../../atlheaders.h"
+
 
 // CHotkeyEditor
 CHotkeyEditor::CHotkeyEditor()

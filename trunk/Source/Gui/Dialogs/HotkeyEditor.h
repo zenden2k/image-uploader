@@ -20,8 +20,9 @@
 
 #pragma once
 
-#include "../../resource.h"       // main symbols
 #include <atlddx.h>
+#include "../../resource.h"       // main symbols
+
 #include "../../3rdpart/WinHotkeyCtrl.h"
 #include "../../3rdpart/vkCodes.h"
 #include "HotkeySettings.h"

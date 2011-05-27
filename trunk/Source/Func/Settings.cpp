@@ -797,13 +797,13 @@ bool CSettings::LoadAccounts(ZSimpleXmlNode root)
 bool CSettings::SaveAccounts(ZSimpleXmlNode root)
 {
 	std::map <CString, ServerSettingsStruct>::iterator it;
-	for(it=ServersSettings.begin(); it!=ServersSettings.end(); it++)
+	for(it=ServersSettings.begin(); it!=ServersSettings.end(); ++it)
 	{
 		ZSimpleXmlNode serverNode = root.CreateChild("Server");	
 		serverNode.SetAttribute("Name", WCstringToUtf8(it->first));
 			
 		std::map <std::string, std::string>::iterator param;
-		for(param=it->second.params.begin(); param!=it->second.params.end(); param++)
+		for(param=it->second.params.begin(); param!=it->second.params.end(); ++param)
 		{	
 				serverNode.SetAttribute("_"+param->first, param->second);
 		}

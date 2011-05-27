@@ -30,8 +30,8 @@
 #define IDC_RESULTSTOOLBAR 5000
 class CResultsPanel;
 #include "../WizardCommon.h"
-//#include "uploaddlg.h"
-//#include "wizarddlg.h"
+#include "../../3rdpart/thread.h"
+
 // CResultsPanel
 class CWizardDlg;
 struct IU_Result_Template
@@ -98,7 +98,7 @@ class CResultsPanel :
 	bool LoadTemplates(CString &Error);
 	std::map<CString, CString> m_Vars;
 	std::vector<CString> m_Servers;
-	CString ReplaceVars(const CString Text);
+	CString ReplaceVars(const CString& Text);
 	CAutoCriticalSection UrlListCS;
 	int m_nImgServer, m_nFileServer;
 	void AddServer(CString server);

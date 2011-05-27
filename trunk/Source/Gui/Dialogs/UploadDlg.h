@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include <deque>
+#include <Shobjidl.h>
 #include "../../resource.h"       // main symbols
 #include "../../Core/Upload/Uploader.h"
 #include "maindlg.h"
@@ -28,7 +30,7 @@
 #include "../Controls/HyperLinkControl.h"
 #include "SizeExceed.h"
 #include "welcomedlg.h"
-#include <Shobjidl.h>
+
 #include "ResultsWindow.h"
 
 struct CUploadDlgProgressInfo
@@ -37,6 +39,7 @@ struct CUploadDlgProgressInfo
 	CAutoCriticalSection CS;
 	std::deque<DWORD> Bytes;
 };
+
 class CUploadDlg : 
 	public CDialogImpl<CUploadDlg>,public CThreadImpl<CUploadDlg>, public CWizardPage	
 {
@@ -80,7 +83,7 @@ public:
 	//CToolBarCtrl Toolbar;
 	void ShowProgress(bool Show=true);
 	DWORD LastUpdate;
-	void FileProgress(const CString Text, bool ShowPrefix=true);
+	void FileProgress(const CString& Text, bool ShowPrefix=true);
 	void GenThumb(LPCTSTR szImageFileName, Image *bm, int ThumbWidth,int newwidth,int newheight,LPTSTR szBufferThumb, int fileformat);
 	bool CancelByUser;
 	void GenerateOutput();

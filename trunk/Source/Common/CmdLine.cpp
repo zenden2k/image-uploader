@@ -18,9 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../atlheaders.h"
 #include "CmdLine.h"
+#include "../atlheaders.h"
 #include "../Func/MyUtils.h"
+
 CCmdLine::CCmdLine()
 {
 	Parse(GetCommandLine());

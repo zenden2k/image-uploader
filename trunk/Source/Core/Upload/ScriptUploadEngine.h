@@ -23,15 +23,15 @@
 
 #include <vector>
 #include <string>
-#include "CommonTypes.h"
-#include "UploadEngine.h"
 
 #undef UNICODE
 #undef _UNICODE
 #include <sqplus.h>
-#include <sqstdsystem.h>
 #define UNICODE
 #define _UNICODE
+
+#include "CommonTypes.h"
+#include "UploadEngine.h"
 
 extern const Utf8String IuNewFolderMark;
 class CFolderList
@@ -44,7 +44,6 @@ class CFolderList
 		void AddFolder(const std::string& title, const std::string& summary, const std::string& id, const std::string& parentid, int accessType);
 		void AddFolderItem(const CFolderItem& item);
 };
-
 
 class CScriptUploadEngine: public CAbstractUploadEngine
 {
@@ -78,7 +77,7 @@ protected:
 		//void setServerParams(ServerSettingsStruct& params);
 		bool supportsSettings();
 		Utf8String name();
-		DWORD getCreationTime();
+		time_t getCreationTime();
 		int RetryLimit();
 		
 	protected:
@@ -86,7 +85,7 @@ protected:
 		Utf8String m_sName;
 		//ServerSettingsStruct *m_pServerParams;
 		SquirrelObject m_SquirrelScript;
-		DWORD m_CreationTime;
+		time_t m_CreationTime;
 		void Log(MessageType mt, const std::string& error);
 		bool m_bIsPluginLoaded;
 };
