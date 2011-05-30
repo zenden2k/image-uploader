@@ -517,7 +517,11 @@ Pcre::Pcre(const string& expression, const string& flags) {
     case 'm': FLAG |= PCRE_MULTILINE;                  break;
     case 's': FLAG |= PCRE_DOTALL;                     break;
     case 'x': FLAG |= PCRE_EXTENDED;                   break;
+#ifdef PCRE_UCP
 	case 'u': FLAG |= PCRE_UTF8|PCRE_UCP;						break;
+#else 
+	case 'u': FLAG |= PCRE_UTF8;						break;
+#endif
     case 'g':                         global_t = true; break;
     }
   }

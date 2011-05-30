@@ -823,7 +823,7 @@ void CCryptoProviderRSA::Encrypt(const char *inbuf, size_t in_size,char *outbuf,
 	// must ensure that any data block would be < key's modulus
 	// hence -1
 	size_t portion_len = (prkface.m.bits() - 1)  / 8;
-	std::cout<<"portion = "<<portion_len;
+	//std::cout<<"portion = "<<portion_len;
 	char prev_crypted[/*portion_len*/63];
 	memset(&prev_crypted, 0, portion_len);
 

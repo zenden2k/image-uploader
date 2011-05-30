@@ -82,6 +82,36 @@ std::codecvt_base::result fromWstring (const std::wstring & str,
   return r;
 }
 
+std::codecvt_base::result toWstring (const std::string & str, 
+   const std::locale & loc, std::wstring & out)
+{ 
+  const codecvt_type& cdcvt = std::use_facet<codecvt_type>(loc);
+  std::codecvt_base::result r;
+  
+  wchar_t * wchars = new wchar_t [str.size () + 1];
+  
+  const char *in_next = 0;
+  wchar_t *out_next = 0;
+  
+  r = cdcvt.in (state, str.c_str (), str.c_str () + str.size (), in_next,
+                wchars, wchars + str.size () + 1, out_next);
+  *out_next = '\0';
+  out = wchars;    
+  
+  delete [] wchars;
+  
+  return r;
+}
+
+std::string SystemLocaleToUtf8(const Utf8String& str)
+{
+	std::locale const oloc = std::locale ("");
+   std::wstring out;
+   std::wstring wideStr;
+	toWstring (str, oloc, wideStr);
+	return WstringToUtf8(wideStr);
+}
+
 std::string Utf8ToSystemLocale(const Utf8String& str)
 {
    std::wstring wideStr = Utf8ToWstring(str);
@@ -264,7 +294,7 @@ std::string ulonglongToStr(zint64 l, int base)
 {
     char buff[67]; // length of MAX_ULLONG in base 2
     buff[66] = 0;
-    char *p = buff + 65;
+    char *p = buff + 66;
     const char _zero = '0';
 
     if (base != 10 || _zero == '0') {

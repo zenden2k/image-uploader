@@ -31,7 +31,7 @@ namespace IuStringUtils
 	std::string Trim(const std::string& str);
 	Utf8String Replace(const Utf8String& text, const Utf8String& s, const Utf8String& d);
 	void Split(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount);
-	
+	std::string toLower(const std::string& str);
 	//  The stricmp() function compares the two strings s1 and s2, 
 	//  ignoring the case of the characters. It returns an integer less than, 
 	//	 equal to, or greater than zero if s1 is found, respectively, to be less than, 
