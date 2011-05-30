@@ -29,6 +29,9 @@ CUploader::CUploader(void)
 	m_nThumbWidth = 160;
 	m_CurrentStatus = stNone;
 	m_CurrentEngine = NULL;
+	m_PrInfo.IsUploading = false;		
+	m_PrInfo.Total = 0;
+	m_PrInfo.Uploaded = 0;	
 }
 
 CUploader::~CUploader(void)
@@ -80,6 +83,9 @@ bool CUploader::UploadFile(const std::string & FileName, const std::string displ
 		Error(true, "Cannnot proceed: m_CurrentEngine is NULL!");
 		return false;
 	}
+	m_PrInfo.IsUploading = false;		
+	m_PrInfo.Total = 0;
+	m_PrInfo.Uploaded = 0;	
 	m_FileName = FileName;
 	m_bShouldStop = false;
 	if(onConfigureNetworkManager)

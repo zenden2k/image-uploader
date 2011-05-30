@@ -137,7 +137,7 @@ bool CDefaultUploadEngine::DoUploadAction(UploadAction &Action, bool bUpload)
 	catch (...) 
 	{
 
-		return FALSE;
+		return false;
 	}
 	return true;
 }
@@ -155,7 +155,7 @@ bool CDefaultUploadEngine::DoGetAction(UploadAction &Action)
 	catch (...) 
 	{
 
-		return FALSE;
+		return false;
 	}
 	return Result;
 }

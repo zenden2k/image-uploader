@@ -1,4 +1,8 @@
+#include <stdio.h>
 #include "../3rdpart/utf8.h"
+#include <sstream> // ostringstream
+#include <iostream>
+#include "StringUtils.h"
 
 namespace IuCoreUtils
 {
@@ -47,10 +51,23 @@ Utf8String ConvertToUtf8(const Utf8String &text, const Utf8String codePage)
    return text;
 }
 
-Utf8String GetFileMimeType(const Utf8String)
+Utf8String GetFileMimeType(const Utf8String name)
 {
-   // FIXME: stub
-   return "application/unknown";
+	std::string defaultType = "application/octet-stream";
+	FILE* stream = popen( Utf8ToSystemLocale("file -b --mime-type '" + name + "'").c_str(), "r" );
+	if(!stream) 
+		return defaultType;
+    std::ostringstream output;
+
+    while( !feof( stream ) && !ferror( stream ))
+    {
+        char buf[128];
+        int bytesRead = fread( buf, 1, 128, stream );
+        output.write( buf, bytesRead );
+    }
+	pclose(stream);
+   std::string result = IuStringUtils::Trim(output.str());
+   return result;
 }
 
 }

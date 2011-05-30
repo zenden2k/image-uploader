@@ -22,6 +22,7 @@
 
 #include <ctype.h>
 #include <cstdio>
+#include <algorithm>
 
 namespace IuStringUtils
 {
@@ -82,6 +83,16 @@ int stricmp(const char *s1, const char *s2)
 {
 	for (; *s1 && *s2 && (toupper((unsigned char)*s1) == toupper((unsigned char)*s2)); ++s1, ++s2);
 	return *s1 - *s2;
+}
+
+std::string toLower(const std::string& str)
+{
+	std::string s1 = str;
+	for(int i=0; i < s1.length(); i++)
+		s1[i] = ::tolower(s1[i]);
+	//std::string s1;
+	//std::transform(str.begin(), str.end(), std::back_inserter(s1), std::tolower); 
+	return s1;
 }
 
 }

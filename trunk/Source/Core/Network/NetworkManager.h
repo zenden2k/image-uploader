@@ -26,7 +26,6 @@
 
 #include <curl/curl.h>
 #include <curl/types.h>
-#include <curl/easy.h>
 #include <zthread/Mutex.h>
 
 #include "../Utils/CoreUtils.h"

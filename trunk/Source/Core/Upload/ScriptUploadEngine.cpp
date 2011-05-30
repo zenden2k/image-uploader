@@ -24,6 +24,7 @@
 
 #include "ScriptUploadEngine.h"
 #include <stdarg.h>
+#include <iostream>
 #ifndef IU_CLI
    #include "../../atlheaders.h"
    #include "../../Func/Common.h"
@@ -195,6 +196,8 @@ CScriptUploadEngine::~CScriptUploadEngine()
 
 const std::string YandexRsaEncrypter(const std::string& key, const std::string& data)
 {
+	if(key.empty()) return ""; // otherwise we get segfault
+	//std::cout<<"key="<<key<<"  data="<<data<<std::endl;
 	CCryptoProviderRSA encrypter;
 	encrypter.ImportPublicKey(key.c_str());	
 	char crypted_data[MAX_CRYPT_BITS / sizeof(char)] = "\0";
@@ -211,13 +214,21 @@ const std::string scriptGetFileMimeType(const std::string& filename)
 
 const std::string scriptAnsiToUtf8(const std::string &str, int codepage)
 {
+#ifdef _WIN32
 	return IuCoreUtils::ConvertToUtf8(str,NameByCodepage(codepage));
+#else
+	return str; //FIXME
+#endif
+
 }
 
 const std::string scriptUtf8ToAnsi(const std::string &str, int codepage )
 {
-	// FIXME
+#ifdef _WIN32
 	return IuCoreUtils::ConvertToUtf8(str,NameByCodepage(codepage));
+#else
+	return str; //FIXME
+#endif
 }
 
 const std::string scriptMD5(const std::string& data)
