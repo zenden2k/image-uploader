@@ -18,14 +18,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../atlheaders.h"
-#include "../Func/settings.h"
-#include "../Func/myutils.h"
-#include "../Gui/Dialogs/LogWindow.h"
+#include "Func/Settings.h"
 #include <Shlobj.h>
-#include "../Common\CmdLine.h"
-#include "../3rdpart/Registry.h"
-#include "../Core/SettingsManager.h"
+#include "Core/SettingsManager.h"
+#include "Func/myutils.h"
+#include "Gui/Dialogs/LogWindow.h"
+#include "Common/CmdLine.h"
+#include "3rdpart/Registry.h"
 
 /* CString support for  SettingsManager */
 
@@ -90,7 +89,7 @@ inline void myFromString(const std::string& text, CHotkeyList& value)
 CSettings Settings;
 
 #ifndef IU_SERVERLISTTOOL
-	#include "../Gui/Dialogs/FloatingWindow.h"
+	#include "Gui/Dialogs/FloatingWindow.h"
 #endif
 
 #define ASSERT
@@ -304,7 +303,7 @@ CSettings::CSettings()
 	ThumbSettings.ThumbTextColor = RGB( 255, 255, 255);
 	ThumbSettings.ThumbAlpha = 120;
 	ThumbSettings.Text = _T("%width%x%height% (%size%)");
-	ThumbSettings.Format = tfJPEG;
+	ThumbSettings.Format = ThumbCreatingParams::tfJPEG;
 	ThumbSettings.FileName = "default";
 	ThumbSettings.Quality = 85;
 

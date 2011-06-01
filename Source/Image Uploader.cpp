@@ -25,6 +25,7 @@
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/wizarddlg.h"
 #include "Gui/Dialogs/floatingwindow.h"
+#include "Common/CmdLine.h"
 
 CAppModule _Module;
 

@@ -17,14 +17,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "../../atlheaders.h"
+#include "atlheaders.h"
 #include "UploadSettings.h"
 #include "ServerFolderSelect.h"
 #include "NewFolderDlg.h"
 #include "ServerParamsDlg.h"
-#include "../GuiTools.h"
+#include "Gui/GuiTools.h"
 #include "ConvertPresetDlg.h"
-
+#include "Func/MyEngineList.h"
 
 CUploadSettings::CUploadSettings(CMyEngineList * EngineList):ñonvert_profiles_(Settings.ConvertProfiles)
 {

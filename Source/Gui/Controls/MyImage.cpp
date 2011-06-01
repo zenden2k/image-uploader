@@ -19,10 +19,10 @@
 */
 
 #include "MyImage.h"
-#include "../../atlheaders.h"
-#include "../Dialogs/LogWindow.h"
-#include "../../Func/LangClass.h"
-#include "../../Func/Settings.h"
+
+#include "Gui/Dialogs/LogWindow.h"
+#include "Func/LangClass.h"
+#include "Func/Settings.h"
 
 using namespace Gdiplus;
 // CMyImage

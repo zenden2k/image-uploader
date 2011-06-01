@@ -1,7 +1,7 @@
 
 #include <string>
 #include "codepages.h"
-#include "../Utils/StringUtils.h"
+#include "Core/Utils/StringUtils.h"
 
 namespace {
 

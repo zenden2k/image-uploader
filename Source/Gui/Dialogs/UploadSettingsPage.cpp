@@ -18,10 +18,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <uxtheme.h>
-#include "../../atlheaders.h"
-#include "wizarddlg.h"
 #include "UploadSettingsPage.h"
+#include <uxtheme.h>
+
+#include "wizarddlg.h"
+
 
 // CUploadSettingsPage
 CUploadSettingsPage::CUploadSettingsPage()

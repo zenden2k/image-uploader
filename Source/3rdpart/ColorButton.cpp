@@ -95,7 +95,7 @@
 //      Created in $/Omni_V2/exe_cnf
 //
 //-----------------------------------------------------------------------------
-#include "../atlheaders.h"
+#include "atlheaders.h"
 #include <atlbase.h>
 #include <atlapp.h>
 #include "ColorButton.h"

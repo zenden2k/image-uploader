@@ -1,11 +1,16 @@
+#ifndef SETTINGSPAGE_H
+#define SETTINGSPAGE_H
+
 #pragma once 
+
+#include <windows.h>
 
 class CWizardDlg;
 class CSettingsDlg;
 class CSettingsPage
 {
 	public:
-		virtual ~CSettingsPage()=NULL;
+		virtual ~CSettingsPage()=0;
 		CWizardDlg *WizardDlg;
 		HBITMAP HeadBitmap;
 		virtual bool OnShow();
@@ -25,3 +30,5 @@ class CSettingsPage
 
 };
 void TabBackgroundFix(HWND hwnd);
+
+#endif // SETTINGSPAGE_H

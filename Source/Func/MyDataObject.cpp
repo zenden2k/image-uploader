@@ -19,7 +19,7 @@
 */
 
 #include "MyDataObject.h"
-#include "../atlheaders.h"
+
 
 CMyDataObject::CMyDataObject()
 {

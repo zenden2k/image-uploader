@@ -22,10 +22,10 @@
 #define _UPLOADER_H_
 
 #include <string>
-#include "../Utils/CoreTypes.h"
-#include "../Network/NetworkManager.h"
-#include "UploadEngine.h"
-#include "../3rdpart/FastDelegate.h"
+#include "Core/Utils/CoreTypes.h"
+#include "Core/Network/NetworkManager.h"
+#include "Core/Upload/UploadEngine.h"
+#include "Core/3rdpart/FastDelegate.h"
 
 class CUploader
 {

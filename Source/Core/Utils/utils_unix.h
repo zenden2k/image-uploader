@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../3rdpart/utf8.h"
+#include "Core/3rdpart/utf8.h"
 #include <sstream> // ostringstream
 #include <iostream>
 #include "StringUtils.h"

@@ -19,14 +19,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ImageConverter.h"
+
 #include <cassert>
-#include "../atlheaders.h"
-#include "../Func/Common.h"
-#include "../Gui/Dialogs/LogWindow.h"
-#include "Utils/StringUtils.h"
-#include "3rdpart/parser.h"
-#include "3rdpart/pcreplusplus.h"
-#include "../3rdpart/QColorQuantizer.h"
+#include "atlheaders.h"
+#include "Func/Common.h"
+#include "Gui/Dialogs/LogWindow.h"
+#include "Core/Utils/StringUtils.h"
+#include "Core/3rdpart/parser.h"
+#include "Core/3rdpart/pcreplusplus.h"
+#include "3rdpart/QColorQuantizer.h"
+
+int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
+
+ImageConvertingParams::ImageConvertingParams()
+{
+	StrokeColor = RGB(0, 0, 0);
+	SmartConverting = false;
+	AddLogo  = false;
+	AddText = false;
+	Format = 1;
+	Quality = 85;
+	SaveProportions = true;
+	ResizeMode = irmFit;
+	LogoPosition = 0;
+	LogoBlend = 0;
+	Text = APPNAME;
+	TextPosition = 5;
+	TextColor = 0x00ffffff;
+	StringToFont(_T("Tahoma,8,,204"), &Font);
+}
 
 CImageConverter::CImageConverter()
 {
@@ -95,7 +116,7 @@ bool CImageConverter::Convert(const CString& sourceFile)
 		m_resultFileName = sourceFile;
 	else
 	{
-      if(m_imageConvertingParams.ResizeMode == irmFit)
+		if(m_imageConvertingParams.ResizeMode == ImageConvertingParams::irmFit)
 		{
          if(width && height && ( imgwidth > width || imgheight > height) )
          {
@@ -140,14 +161,13 @@ bool CImageConverter::Convert(const CString& sourceFile)
 		else 
 			gr.Clear(Color(255,255,255,255));
 
-		//g.SetPageUnit(UnitPixel);
 		gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
 
 		gr.SetPixelOffsetMode(PixelOffsetModeHalf);
 
-ImageAttributes attr;
-					attr.SetWrapMode( WrapModeTileFlipXY);
-      if(m_imageConvertingParams.ResizeMode == irmFit || m_imageConvertingParams.ResizeMode == irmStretch)
+		ImageAttributes attr;
+		attr.SetWrapMode( WrapModeTileFlipXY);
+		if(m_imageConvertingParams.ResizeMode == ImageConvertingParams::irmFit || m_imageConvertingParams.ResizeMode == ImageConvertingParams::irmStretch)
       {
 		   
          if((!width && !height) || ((int)newwidth==(int)imgwidth && (int)newheight==(int)imgheight))
@@ -163,7 +183,7 @@ ImageAttributes attr;
                      &attr);
 			   //gr.DrawImage(/*backBuffer*/&bm, (int)-1, (int)-1, (int)newwidth+2,(int)newheight+2);
       }
-      else if(m_imageConvertingParams.ResizeMode == irmCrop)
+		else if(m_imageConvertingParams.ResizeMode == ImageConvertingParams::irmCrop)
       {
          int newVisibleWidth = 0;
          int newVisibleHeight = 0;
@@ -252,11 +272,11 @@ ImageAttributes attr;
 	{
 		// Генерирование превьюшки с шаблоном в отдельной функции
 		int thumbFormat = fileformat;
-		if(m_thumbCreatingParams.Format == tfJPEG)
+		if(m_thumbCreatingParams.Format == ThumbCreatingParams::tfJPEG)
 			thumbFormat = 0;
-		else if(m_thumbCreatingParams.Format == tfPNG)
+		else if(m_thumbCreatingParams.Format == ThumbCreatingParams::tfPNG)
 			thumbFormat = 1;
-		else if(m_thumbCreatingParams.Format == tfGIF)
+		else if(m_thumbCreatingParams.Format == ThumbCreatingParams::tfGIF)
 			thumbFormat = 2;
 		createThumb(thumbSource, thumbFormat);
 	}
@@ -491,7 +511,7 @@ bool CImageConverter::createThumbnail(Gdiplus::Image *image, Gdiplus::Image ** o
 {
 	assert(thumbnail_template_);
 	bool result = false;
-	const ThumbnailData* data = thumbnail_template_->getData();
+	const Thumbnail::ThumbnailData* data = thumbnail_template_->getData();
 	CDC dc = ::GetDC(0);
 	int newwidth = image->GetWidth();
 	int newheight = image->GetHeight();

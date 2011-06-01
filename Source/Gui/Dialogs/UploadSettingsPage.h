@@ -18,13 +18,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef IU_GUI_DIALOGS_UPLOADSETTINGSPAGE_H
+#define IU_GUI_DIALOGS_UPLOADSETTINGSPAGE_H
+
+
 #pragma once
-struct LogoParams;
-#include "../../resource.h"       // main symbols
-#include "../Controls/MyImage.h"
+
+#include "atlheaders.h"
+#include "resource.h"       // main symbols
+#include "Gui/Controls/MyImage.h"
 #include "settingspage.h"
-#include "../WizardCommon.h"
-#include "../../Func/Settings.h"
+#include "Gui/WizardCommon.h"
+#include "Func/Settings.h"
 // CUploadSettingsPage
 
 class CUploadSettingsPage : 
@@ -61,5 +66,7 @@ virtual ~CUploadSettingsPage();
 	virtual bool Apply();
 	void TranslateUI();
 };
+
+#endif // IU_GUI_DIALOGS_UPLOADSETTINGSPAGE_H
 
 

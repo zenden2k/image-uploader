@@ -17,19 +17,19 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef SERVERFOLDERSELECT_H
+#define SERVERFOLDERSELECT_H
+
 
 #pragma once
-#include "../../Func/pluginloader.h"
-#include "../../resource.h"       // main symbols
-#include "../../3rdpart/thread.h"
-#include "../../Func/common.h"
+#include "atlheaders.h"
+#include "Func/pluginloader.h"
+#include "resource.h"       // main symbols
+#include "3rdpart/thread.h"
+#include "Func/common.h"
 #include <atlcrack.h>
-#include "../Controls/PictureExWnd.h"
-#include "../../Core/Upload/UploadEngine.h"
-typedef enum FolderOperationType            /* Defines an enumeration type    */
-{
-   foGetFolders = 0, foCreateFolder, foModifyFolder 
-};
+#include "Gui/Controls/PictureExWnd.h"
+#include "Core/Upload/UploadEngine.h"
 
 // CServerFolderSelect
 #define ID_EDITFOLDER 10001
@@ -38,19 +38,18 @@ typedef enum FolderOperationType            /* Defines an enumeration type    */
 class CServerFolderSelect : 
 	public CDialogImpl<CServerFolderSelect>	, public CThreadImpl<CServerFolderSelect>, public CDialogResize<CServerFolderSelect>	
 {
-public:
-	CServerFolderSelect(CUploadEngineData* uploadEngine);
-	~CServerFolderSelect();
-	enum { IDD = IDD_SERVERFOLDERSELECT};
-
+	public:
+		CServerFolderSelect(CUploadEngineData* uploadEngine);
+		~CServerFolderSelect();
+		enum { IDD = IDD_SERVERFOLDERSELECT};
+	protected:
     BEGIN_MSG_MAP(CServerFolderSelect)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
         COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 		  COMMAND_HANDLER(ID_OPENINBROWSER, BN_CLICKED, OnOpenInBrowser)
-		  COMMAND_HANDLER(ID_CREATENESTEDFOLDER, BN_CLICKED, OnCreateNestedFolder)
-		  
+		  COMMAND_HANDLER(ID_CREATENESTEDFOLDER, BN_CLICKED, OnCreateNestedFolder)	  
 		  COMMAND_HANDLER(IDC_NEWFOLDERBUTTON, BN_CLICKED, OnBnClickedNewfolderbutton)
 		COMMAND_ID_HANDLER(ID_EDITFOLDER, OnEditFolder)
 		CHAIN_MSG_MAP(CDialogResize<CServerFolderSelect>)
@@ -80,6 +79,10 @@ public:
  CImageList m_PlaceSelectorImageList;
  CFolderItem m_SelectedFolder;
 protected:
+	typedef enum FolderOperationType            /* Defines an enumeration type    */
+	{
+		foGetFolders = 0, foCreateFolder, foModifyFolder 
+	};
 	CPictureExWnd m_wndAnimation;
 	CScriptUploadEngine *m_pluginLoader;
 	CUploadEngineData *m_UploadEngine;
@@ -105,3 +108,5 @@ public:
 };
 
 
+
+#endif // SERVERFOLDERSELECT_H

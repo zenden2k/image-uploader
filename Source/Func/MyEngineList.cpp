@@ -18,14 +18,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "Func/MyEngineList.h"
 
-#include "../Func/MyUtils.h"
-#include "../Func/Common.h"
-#include "../Func/Settings.h"
-#include "../Core/Upload/DefaultUploadEngine.h"
-#include "../Core/Upload/ScriptUploadEngine.h"
-#include "MyEngineList.h"
-#include "../Gui/Dialogs/LogWindow.h"
+#include "Func/MyUtils.h"
+#include "Func/Common.h"
+#include "Func/Settings.h"
+#include "Core/Upload/DefaultUploadEngine.h"
+#include "Core/Upload/ScriptUploadEngine.h"
+#include "Gui/Dialogs/LogWindow.h"
 
 CMyEngineList::CMyEngineList()
 {

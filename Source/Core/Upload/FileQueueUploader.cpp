@@ -24,9 +24,9 @@
 #include <zthread/Mutex.h>
 
 #ifndef IU_CLI
-	#include "../../Gui/Dialogs/LogWindow.h"
+	#include "Gui/Dialogs/LogWindow.h"
 #endif
-#include "Uploader.h"
+#include "Core/Upload/Uploader.h"
 
 class CFileQueueUploader::Impl
 {

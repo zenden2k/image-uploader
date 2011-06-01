@@ -18,13 +18,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
+#include "atlheaders.h"
 #include "RegionSelect.h"
-#include "../../Func/common.h"
+#include "Func/common.h"
 #include <math.h>
 #include "LogWindow.h"
-#include "../../Func/LangClass.h"
-#include "../../Func/Settings.h"
+#include "Func/LangClass.h"
+#include "Func/Settings.h"
 //#include <Gdipluseffects.h>
 
 

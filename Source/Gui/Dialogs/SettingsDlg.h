@@ -17,48 +17,39 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef SETTINGSDLG_H
+#define SETTINGSDLG_H
 
 #pragma once
-
-class CSettingsDlg;
-
-class CSettingsPage;
-
+#include "atlheaders.h"
 #include "welcomedlg.h"
 #include "maindlg.h"
 #include "videograbber.h"
 #include "uploadsettings.h"
-//#include "uploaddlg.h"
 #include "aboutdlg.h"
-
-#include "../../resource.h"       // main symbols
+#include "resource.h"       // main symbols
 #include <atlcrack.h>
-
 #include "logosettings.h"
-
 #include "settingspage.h"
-
-#include "../Controls/tablistbox.h"
+#include "Gui/Controls/tablistbox.h"
 // CSettingsDlg
 
 const int SettingsPageCount = 8;
 
-class CSettingsDlg : 
-	public CDialogImpl<CSettingsDlg>	//, public CUpdateUI<CSettingsDlg>
-	//	public CMessageFilter, public CIdleHandler
+class CSettingsDlg : public CDialogImpl<CSettingsDlg>
 {
-public:
-	CSettingsDlg(int Page);
-	~CSettingsDlg();
-	enum { IDD = IDD_SETTINGSDLG };
-
-    BEGIN_MSG_MAP(CSettingsDlg)
-		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-		NOTIFY_HANDLER(IDC_TABCONTROL, TCN_SELCHANGE, OnTabChanged)
-        COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-        COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-		COMMAND_HANDLER_EX(IDC_APPLY, BN_CLICKED, OnApplyBnClicked)
+	public:
+		CSettingsDlg(int Page);
+		~CSettingsDlg();
+		enum { IDD = IDD_SETTINGSDLG };
+	protected:
+		BEGIN_MSG_MAP(CSettingsDlg)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+			NOTIFY_HANDLER(IDC_TABCONTROL, TCN_SELCHANGE, OnTabChanged)
+			COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
+			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+			COMMAND_HANDLER_EX(IDC_APPLY, BN_CLICKED, OnApplyBnClicked)
 		COMMAND_HANDLER(IDC_SETTINGSPAGESLIST, LBN_SELCHANGE, OnSettingsPagesSelChanged)
 			REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
@@ -85,4 +76,4 @@ public:
 	LRESULT OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 };
 
-
+#endif // SETTINGSDLG_H

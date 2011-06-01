@@ -20,10 +20,10 @@
 
 #pragma once
 
-#include "../../resource.h"       // main symbols
+#include "resource.h"       // main symbols
 #include <atlframe.h>
-#include "../../3rdpart/ColorButton.h"
-#include "../../Core/Images/Thumbnail.h"
+#include "3rdpart/ColorButton.h"
+#include "Core/Images/Thumbnail.h"
 // CThumbEditor
 
 class CThumbEditor : 

@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "../../resource.h"       // main symbols
-#include "../../Func/UpdatePackage.h"
-#include "../../3rdpart/thread.h"
+#include "resource.h"       // main symbols
+#include "Func/UpdatePackage.h"
+#include "3rdpart/thread.h"
 
 class CUpdateDlg : 
 	public CDialogImpl<CUpdateDlg>,

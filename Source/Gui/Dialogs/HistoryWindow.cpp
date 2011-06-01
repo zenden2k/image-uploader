@@ -19,14 +19,14 @@
 */
 
 #include "HistoryWindow.h"
-#include "../../atlheaders.h"
-#include "../../Func/LangClass.h"
-#include "../../Func/Settings.h"
-#include "../../Func/HistoryManager.h"
-#include "../../Func/Base.h"
+
+#include "Func/LangClass.h"
+#include "Func/Settings.h"
+#include "Func/HistoryManager.h"
+#include "Func/Base.h"
 #include "ResultsPanel.h"
 #include "ResultsWindow.h"
-#include "../WizardCommon.h"
+#include "Gui/WizardCommon.h"
 
 // CHistoryWindow
 CHistoryWindow::CHistoryWindow()

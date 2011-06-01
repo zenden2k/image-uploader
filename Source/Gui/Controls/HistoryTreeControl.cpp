@@ -17,14 +17,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <atlbase.h>
-#include <atlapp.h>
-#include <atlctrls.h>
+
 #include "HistoryTreeControl.h"
-#include "../../Func/Myutils.h"
-#include "../../Core/Utils/CoreUtils.h"
-#include "../../Func/Common.h"
-#include "../../Func/Base.h"
+#include "Func/Myutils.h"
+#include "Core/Utils/CoreUtils.h"
+#include "Func/Common.h"
+#include "Func/Base.h"
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl()
@@ -722,7 +720,7 @@ void CHistoryTreeControl::StartLoadingThumbnails()
 	}
 }
 
-bool CHistoryTreeControl::OnFileFinished(bool ok, DownloadFileListItem it)
+bool CHistoryTreeControl::OnFileFinished(bool ok, CFileDownloader::DownloadFileListItem it)
 {
 	if(ok && !it.fileName.empty())
 	{

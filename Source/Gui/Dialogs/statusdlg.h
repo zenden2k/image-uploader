@@ -17,11 +17,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef STATUSDLG_H
+#define STATUSDLG_H
 
 #pragma once
+#include "atlheaders.h"
+#include "resource.h"       // main symbols
+#include "3rdpart/thread.h"
 
-#include "../../resource.h"       // main symbols
-#include "../../3rdpart/thread.h"
 // CStatusDlg
 
 class CStatusDlg : 
@@ -53,3 +56,5 @@ public:
 };
 
 
+
+#endif // STATUSDLG_H

@@ -21,12 +21,12 @@
 #pragma once
 
 
-#include "../../atlheaders.h"
-#include "../../resource.h"       // main symbols
-#include "../Controls/loglistbox.h"
+#include "atlheaders.h"
+#include "resource.h"       // main symbols
+#include "Gui/Controls/loglistbox.h"
 #include <atlddx.h>
 #include <atlframe.h>
-#include "../../Core/Upload/CommonTypes.h"
+#include "Core/Upload/CommonTypes.h"
 
 #define IDC_CLEARLIST 12000
 #define MYWM_WRITELOG WM_USER +100

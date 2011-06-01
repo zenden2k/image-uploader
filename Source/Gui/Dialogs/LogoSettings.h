@@ -17,17 +17,20 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef LOGOSETTINGS_H
+#define LOGOSETTINGS_H
+
 
 #pragma once
-struct LogoParams;
-#include "../../resource.h"       // main symbols
-#include "../Controls/myimage.h"
-//#include "colorpicker.h"
-#include "settingspage.h"
 
-#include "../../3rdpart/ColorButton.h"
-#include "../../Core/ImageConverter.h"
+#include "atlheaders.h"
+#include "resource.h"       // main symbols
+#include "Gui/Controls/myimage.h"
+#include "settingspage.h"
+#include "3rdpart/ColorButton.h"
+#include "Core/ImageConverter.h"
 #include <atlcrack.h>
+
 // CLogoSettings
 #define IDC_NEWPROFILE 10001
 #define IDC_SAVEPROFILE 10002
@@ -136,5 +139,7 @@ protected:
 		void TranslateUI();
 	
 };
+
+#endif // LOGOSETTINGS_H
 
 

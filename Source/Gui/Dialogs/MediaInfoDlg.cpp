@@ -18,9 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
+#include "atlheaders.h"
 #include "MediaInfoDlg.h"
-#include "../../Func/fileinfohelper.h"
+#include "Func/fileinfohelper.h"
 
 // CMediaInfoDlg
 CMediaInfoDlg::CMediaInfoDlg()

@@ -18,14 +18,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
 #include "LangSelect.h"
+#include "Func/Common.h"
+
 
 // CLangSelect
 CLangSelect::CLangSelect() 
 {
-		findfile = NULL;
-		*Language = 0; 
+	findfile = NULL;
+	*Language = 0; 
 }
 
 CLangSelect::~CLangSelect()

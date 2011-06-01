@@ -19,15 +19,16 @@
 */
 
 #pragma once
-
-#include "atlctrlx.h"
-#include "../Controls/myimage.h"
+#include "atlheaders.h"
+#include "Gui/Controls/myimage.h"
+#include "resource.h"
 
 class CAboutDlg : public CDialogImpl<CAboutDlg>
 {
 	public:
 		enum { IDD = IDD_ABOUTBOX };
 
+	protected:
 		BEGIN_MSG_MAP(CAboutDlg)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_ID_HANDLER(IDOK, OnCloseCmd)

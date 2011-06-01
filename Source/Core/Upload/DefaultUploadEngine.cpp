@@ -19,8 +19,8 @@
 */
 
 #include "DefaultUploadEngine.h"
-#include "../3rdpart/codepages.h"
-#include "../3rdpart/pcreplusplus.h"
+#include "Core/3rdpart/codepages.h"
+#include "Core/3rdpart/pcreplusplus.h"
 
 CDefaultUploadEngine::CDefaultUploadEngine():CAbstractUploadEngine()
 {

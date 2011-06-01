@@ -21,12 +21,13 @@
 #define IU_FUNC_PLUGINLOADER_H
 #pragma once
 
+#include "atlheaders.h"
 #include <windows.h>
-#include "../Core/Network/NetworkManager.h"
-#include "../Core/Upload/ScriptUploadEngine.h"
-#include "../Core/Utils/CoreUtils.h"
-#include "MyUtils.h"
-#include "Common.h"
+#include "Core/Network/NetworkManager.h"
+#include "Core/Upload/ScriptUploadEngine.h"
+#include "Core/Utils/CoreUtils.h"
+#include "Func/MyUtils.h"
+#include "Func/Common.h"
 
 class CPluginManager
 {

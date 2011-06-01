@@ -28,7 +28,7 @@
 #include <curl/types.h>
 #include <zthread/Mutex.h>
 
-#include "../Utils/CoreUtils.h"
+#include "Core/Utils/CoreUtils.h"
 
 #define NString std::string
 

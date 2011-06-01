@@ -20,13 +20,13 @@
 
 #pragma once
 
+#include "atlheaders.h"
 #include <atlddx.h>
-#include "../../resource.h"       // main symbols
-
-#include "../../3rdpart/WinHotkeyCtrl.h"
-#include "../../3rdpart/vkCodes.h"
+#include "resource.h"       // main symbols
+#include "3rdpart/WinHotkeyCtrl.h"
+#include "3rdpart/vkCodes.h"
 #include "HotkeySettings.h"
-#include "../../Func/LangClass.h"
+#include "Func/LangClass.h"
 // CHotkeyEditor
 struct MYHOTKEY
 {

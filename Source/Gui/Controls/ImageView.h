@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "../../resource.h"       // main symbols
+#include "resource.h"       // main symbols
 #include "myimage.h"
 #include <atlcrack.h>
 // CImageView

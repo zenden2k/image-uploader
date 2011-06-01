@@ -22,25 +22,27 @@
 // 
 // This dialog window shows technical information 
 // about  video/audio file that user had selected
+#ifndef IMAGEDOWNLOADERDLG_H
+#define IMAGEDOWNLOADERDLG_H
+
 
 #pragma once
 
-#include "../../resource.h"       
-#include "../../Core/FileDownloader.h"
+#include "atlheaders.h"
+#include "resource.h"       
+#include "Core/FileDownloader.h"
 #include "WizardDlg.h"
 
 // CImageDownloaderDlg
-class CImageDownloaderDlg:		public CDialogImpl <CImageDownloaderDlg>,
-								public CDialogResize <CImageDownloaderDlg>
+class CImageDownloaderDlg:	public CDialogImpl <CImageDownloaderDlg>,
+                           public CDialogResize <CImageDownloaderDlg>
 {
-	private:
-		CString m_FileName;
 	public:
+		enum { IDD = IDD_IMAGEDOWNLOADER };
 		CImageDownloaderDlg(CWizardDlg *wizardDlg,const CString &initialBuffer);
 		~CImageDownloaderDlg();
 
-		enum { IDD = IDD_IMAGEDOWNLOADER };
-
+	protected:	
 		BEGIN_MSG_MAP(CImageDownloaderDlg)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
@@ -73,14 +75,18 @@ class CImageDownloaderDlg:		public CDialogImpl <CImageDownloaderDlg>,
 		bool BeginDownloading();
 		static bool LinksAvailableInText(const CString &text);
 		void ParseBuffer(const CString& text, bool OnlyImages);
+		void OnQueueFinished();
+		bool OnFileFinished(bool ok, CFileDownloader::DownloadFileListItem it);
+		void OnConfigureNetworkManager(NetworkManager* nm);
+
+		CString m_FileName;
 		CFileDownloader m_FileDownloader;
 		CWizardDlg * m_WizardDlg;
 		int m_nFilesCount;
 		int m_nFileDownloaded;
 		CString m_InitialBuffer;
-		void OnQueueFinished();
-		bool OnFileFinished(bool ok, DownloadFileListItem it);
-		void OnConfigureNetworkManager(NetworkManager* nm);
 };
 
 
+
+#endif // IMAGEDOWNLOADERDLG_H

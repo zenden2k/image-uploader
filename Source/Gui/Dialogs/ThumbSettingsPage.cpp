@@ -17,18 +17,18 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "../../atlheaders.h"
+#include "atlheaders.h"
 #include <gdiplus.h>
 #include <GdiPlusPixelFormats.h>
 #include "ThumbSettingsPage.h"
 
 #include <uxtheme.h>
 #include "LogWindow.h"
-#include "../../Func/LangClass.h"
-#include "../../Func/Settings.h"
-#include "../GuiTools.h"
-#include "../../Core/Images/Thumbnail.h"
-#include "../../Func/MyUtils.h"
+#include "Func/LangClass.h"
+#include "Func/Settings.h"
+#include "Gui/GuiTools.h"
+#include "Core/Images/Thumbnail.h"
+#include "Func/MyUtils.h"
 #include "ThumbEditor.h"
 #include "InputDialog.h"
 
@@ -109,7 +109,7 @@ bool CThumbSettingsPage::Apply()
 	TCHAR buf[256] =_T("\0");
 	GetDlgItemText(IDC_THUMBSCOMBO, buf, 255);
  	Settings.ThumbSettings.FileName =buf;
-	Settings.ThumbSettings.Format = (ThumbFormatEnum) SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_GETCURSEL );
+	Settings.ThumbSettings.Format = static_cast<ThumbCreatingParams::ThumbFormatEnum>(SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_GETCURSEL ));
 	Settings.ThumbSettings.Quality = GetDlgItemInt(IDC_THUMBQUALITYEDIT);
    Settings.ThumbSettings.ScaleByHeight = SendDlgItemMessage(IDC_WIDTHRADIO, BM_GETCHECK) == FALSE;
 	Settings.ThumbSettings.Text = IU_GetWindowText(GetDlgItem(IDC_THUMBTEXT));

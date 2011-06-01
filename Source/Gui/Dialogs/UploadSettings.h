@@ -20,15 +20,15 @@
 
 #pragma once
 
-#include "../../resource.h"       // main symbols
+#include "resource.h"       // main symbols
 #include "maindlg.h"
 #include "logosettings.h"
 #include "logindlg.h"
 #include "atlctrlx.h"
-#include "../WizardCommon.h"
-#include "../Controls/IconButton.h"
+#include "Gui/WizardCommon.h"
+#include "Gui/Controls/IconButton.h"
 #include <atlcrack.h>
-#include "../Controls/PercentEdit.h"
+#include "Gui/Controls/PercentEdit.h"
 #define IDC_SELECTFOLDER 4050
 #define IDC_SERVERBUTTON 4000
 #define IDC_IMAGETOOLBAR 4010
@@ -53,6 +53,8 @@
 
 #define IDC_RESIZEPRESETMENU_FIRST_ID 18000
 #define IDC_RESIZEPRESETMENU_LAST_ID 18100
+
+class CMyEngineList;
 
 class CUploadSettings : 
 	public CDialogImpl<CUploadSettings>	, public CWizardPage

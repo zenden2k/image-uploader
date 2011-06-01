@@ -18,9 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
+#include "atlheaders.h"
 #include "LogListBox.h"
-#include "../../Func/Myutils.h"
+#include "Func/Myutils.h"
 const int LLB_VertDivider = 10;
 const int LLB_VertMargin = 5;
 

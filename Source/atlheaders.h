@@ -14,7 +14,10 @@
 #include <atlmisc.h>
 #include <atlcoll.h>
 #include <atltheme.h>
+#include <atlcrack.h>
+#include "atlctrlx.h"
 #include "Func/LangClass.h"
 
+typedef CAtlArray<CString> CStringList;
 extern CAppModule _Module;
 #endif

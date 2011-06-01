@@ -25,33 +25,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 #include <vector>
 
-enum PresetColorRole { kFrameColor, kStrokeColor, kGradientColor1, kTextColor };
-
-struct ThumbnailDrawOperation
-{
-	std::string type;
-	std::string rect;
-	std::string brush;
-	std::string source_rect;
-	std::string source;
-	std::string destination;
-	std::string pen;
-	std::string condition;
-	std::string text_colors;
-};
-
-struct ThumbnailData
-{
-	std::map<std::string, std::string> colors_;
-	std::vector<ThumbnailDrawOperation> drawing_operations_;
-	std::string width_addition;
-	std::string height_addition;
-	std::string sprite_source_file;
-};
-
 class Thumbnail
 {
 	public:
+		enum PresetColorRole { kFrameColor, kStrokeColor, kGradientColor1, kTextColor };
+
+		struct ThumbnailDrawOperation
+		{
+			std::string type;
+			std::string rect;
+			std::string brush;
+			std::string source_rect;
+			std::string source;
+			std::string destination;
+			std::string pen;
+			std::string condition;
+			std::string text_colors;
+		};
+
+		struct ThumbnailData
+		{
+			std::map<std::string, std::string> colors_;
+			std::vector<ThumbnailDrawOperation> drawing_operations_;
+			std::string width_addition;
+			std::string height_addition;
+			std::string sprite_source_file;
+		};
+
 		Thumbnail();
 		virtual ~Thumbnail();
 		bool LoadFromFile(const std::string& filename);

@@ -25,8 +25,8 @@
 #include <map>
 #include <iostream>
 #include <sstream>
-#include "Utils/CoreTypes.h"
-#include "Utils/SimpleXml.h"
+#include "Core/Utils/CoreTypes.h"
+#include "Core/Utils/SimpleXml.h"
 
 #define n_bind(a) operator[]( #a ).bind(a)
 #define nm_bind(b,a) operator[]( #a ).bind(b.a)

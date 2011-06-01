@@ -18,10 +18,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
-#include "../../resource.h"
+#include "atlheaders.h"
+#include "resource.h"
 #include "aboutdlg.h"
 #include "MainDlg.h"
+#include "Common/CmdLine.h"
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {

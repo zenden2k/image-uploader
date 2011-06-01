@@ -20,9 +20,9 @@
 
 #include "HistoryManager.h"
 
-#include "../Core/Utils/SimpleXml.h"
-#include "../Core/Utils/CoreUtils.h"
-#include "../Core/Utils/GlobalMutex.h"
+#include "Core/Utils/SimpleXml.h"
+#include "Core/Utils/CoreUtils.h"
+#include "Core/Utils/GlobalMutex.h"
 #include <time.h>
 #include <sstream>
 

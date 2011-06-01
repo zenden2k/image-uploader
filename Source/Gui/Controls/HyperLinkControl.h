@@ -19,7 +19,7 @@
 */
 
 #pragma once
-#include "../../resource.h"
+#include "resource.h"
 #include <atlcrack.h>
 
 struct HyperLinkControlItem

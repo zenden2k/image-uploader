@@ -18,12 +18,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
+#include "atlheaders.h"
 #include "LogoSettings.h"
 #include <uxtheme.h>
 #include "LogWindow.h"
-#include "../../Func/Settings.h"
-#include "../GuiTools.h"
+#include "Func/Settings.h"
+#include "Gui/GuiTools.h"
 #include "InputDialog.h"
 
 // CLogoSettings
@@ -237,7 +237,7 @@ void CLogoSettings::ShowParams(const ImageConvertingParams& params)
 		SetDlgItemText(IDC_QUALITYEDIT,_T(""));
    SendDlgItemMessage(IDC_FORMATLIST,CB_SETCURSEL, params.Format);
    
-   SendDlgItemMessage(IDC_RESIZEMODECOMBO,CB_SETCURSEL, (WPARAM)(int)(ImageResizeMode&)params.ResizeMode);
+	SendDlgItemMessage(IDC_RESIZEMODECOMBO,CB_SETCURSEL, (WPARAM)(int)(ImageConvertingParams::ImageResizeMode&)params.ResizeMode);
    
    SendDlgItemMessage(IDC_YOURLOGO,BM_SETCHECK,  params.AddLogo);
    SendDlgItemMessage(IDC_YOURTEXT,BM_SETCHECK,  params.AddText);
@@ -278,7 +278,7 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
 	params.StrokeColor=StrokeColor.GetColor();
    params.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	params.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);
-	params.ResizeMode =(ImageResizeMode) SendDlgItemMessage(IDC_RESIZEMODECOMBO,CB_GETCURSEL);
+	params.ResizeMode = static_cast<ImageConvertingParams::ImageResizeMode>(SendDlgItemMessage(IDC_RESIZEMODECOMBO,CB_GETCURSEL));
    params.strNewWidth = IU_GetWindowText( GetDlgItem(IDC_IMAGEWIDTH));
    params.strNewHeight =  IU_GetWindowText( GetDlgItem(IDC_IMAGEHEIGHT));
 	return true;

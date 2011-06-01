@@ -18,12 +18,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
 #include "UploadDlg.h"
+
 #include "shobjidl.h"
-#include "../../Core/ImageConverter.h"
-#include "LogWindow.h"
-#include "../../Func/Base.h"
+#include "Core/ImageConverter.h"
+#include "Func/Base.h"
+#include "Gui/Dialogs/LogWindow.h"
+#include "Gui/Dialogs/InputDialog.h"
 
 class CTempFilesDeleter
 {
@@ -881,4 +882,19 @@ void CUploadDlg::OnUploaderStatusChanged(StatusType status, int actionIndex, std
 void CUploadDlg::OnUploaderConfigureNetworkClient(NetworkManager *nm)
 {
 	IU_ConfigureProxy(*nm);
+}
+
+
+const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url)
+{
+	CString wFileName = GetUniqFileName(IUTempFolder+Utf8ToWstring("captcha").c_str());
+
+	nm->setOutputFile(IuCoreUtils::WstringToUtf8((const TCHAR*)wFileName));
+	if(!nm->doGet(url))
+		return "";
+	CInputDialog dlg(_T("Image Uploader"), TR("¬ведите текст с картинки:"), CString(IuCoreUtils::Utf8ToWstring("").c_str()),wFileName);
+	nm->setOutputFile("");
+	if(dlg.DoModal()==IDOK)
+		return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
+	return "";
 }

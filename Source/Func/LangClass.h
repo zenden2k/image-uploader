@@ -18,6 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef LANGCLASS_H
+#define LANGCLASS_H
+
 #pragma once
 #include <atlbase.h>
 #include <atlapp.h>
@@ -54,3 +57,5 @@ extern CLang Lang;
 #define TR(str) Lang.GetString(_T(str))
 #define TRC(c,str) SetDlgItemText(c,Lang.GetString(_T(str)))
 // End
+
+#endif // LANGCLASS_H

@@ -18,11 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
 #include "NewFolderDlg.h"
-#include "../../Func/Common.h"
+#include "Func/Common.h"
 #include "LogWindow.h"
-#include "../../Func/Settings.h"
+#include "Func/Settings.h"
 // CNewFolderDlg
 CNewFolderDlg::CNewFolderDlg(CFolderItem &folder, bool CreateNewFolder,std::vector<std::string>& accessTypeList):
 					m_folder(folder), m_bCreateNewFolder(CreateNewFolder), m_accessTypeList(accessTypeList)

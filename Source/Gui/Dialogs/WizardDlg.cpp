@@ -17,18 +17,27 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "../../atlheaders.h"
 #include "WizardDlg.h"
-#include "langselect.h"
 #include <io.h>
+
+#include "Core/ImageConverter.h"
+#include "Func/Base.h"
+#include "Func/HistoryManager.h"
+
+#include "atlheaders.h"
+#include "welcomedlg.h"
+#include "maindlg.h"
+#include "videograbber.h"
+#include "uploadsettings.h"
+#include "uploaddlg.h"
+#include "aboutdlg.h"
+#include "langselect.h"
 #include "floatingwindow.h"
 #include "updatedlg.h"
 #include "TextViewDlg.h"
 #include "ImageDownloaderDlg.h"
-#include "../../Core/ImageConverter.h"
 #include "LogWindow.h"
-#include "../../Func/Base.h"
-#include "../../Func/HistoryManager.h"
+#include "Common/CmdLine.h"
  
 // CWizardDlg
 CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
@@ -193,10 +202,8 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	{
 		if(time(0) - Settings.LastUpdateTime > 3600*24*7 /* 1 week */)
 		{
-			
 			CreateUpdateDlg();
 			updateDlg->Create(m_hWnd);
-		
 		}
 	}
 	return 0;  // Let the system set the focus
@@ -1602,7 +1609,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 	CString buf; // file name buffer
 
 	Bitmap *result=0;
-	WindowCapturingFlags wcfFlags;
+	CWindowHandlesRegion::WindowCapturingFlags wcfFlags;
 	wcfFlags.AddShadow = Settings.ScreenshotSettings.AddShadow;
 	wcfFlags.RemoveBackground = 	Settings.ScreenshotSettings.RemoveBackground;
 	wcfFlags.RemoveCorners = Settings.ScreenshotSettings.RemoveCorners;

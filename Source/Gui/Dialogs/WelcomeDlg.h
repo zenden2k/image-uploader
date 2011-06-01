@@ -17,16 +17,17 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef WELCOMEDLG_H
+#define WELCOMEDLG_H
+
 
 #pragma once
 // CWelcomeDlg
-
-
-class CWelcomeDlg ;
-#include "../../resource.h"       // main symbols
+#include "atlheaders.h"
+#include "resource.h"       // main symbols
 #include "wizarddlg.h"
 #include "Screenshotdlg.h"
-#include "../Controls/hyperlinkcontrol.h"
+#include "Gui/Controls/hyperlinkcontrol.h"
 #include "settingsdlg.h"
 #include "mediainfodlg.h"
 #include "regionselect.h"
@@ -104,3 +105,5 @@ public:
 };
 
 
+
+#endif // WELCOMEDLG_H

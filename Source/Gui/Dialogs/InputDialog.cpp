@@ -18,9 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
+#include "atlheaders.h"
 #include "InputDialog.h"
-#include "../../Func/Settings.h"
+#include "Func/Settings.h"
 #include <GdiPlus.h>
 // CInputDialog
 CInputDialog::CInputDialog(const CString& title, const CString& descr, const CString& defaultValue, const CString& image)	

@@ -19,9 +19,9 @@
 */
 #include "ResultsWindow.h"
 
-#include "../../atlheaders.h"
-#include "../../Func/Common.h"
-#include "../../Func/Settings.h"
+#include "atlheaders.h"
+#include "Func/Common.h"
+#include "Func/Settings.h"
 
 // CResultsWindow
 CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,CAtlArray<CUrlListItem>  & urlList,bool ChildWindow)

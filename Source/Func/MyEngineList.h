@@ -22,11 +22,12 @@
 #ifndef IU_MY_ENGINE_LIST_H
 #define IU_MY_ENGINE_LIST_H
 
-#include <atlapp.h>
 #include <atlbase.h>
+#include <atlapp.h>
 #include <atlmisc.h>
-#include "../Core/UploadEngineList.h"
-#include "../Core/Upload/DefaultUploadEngine.h"
+#include "Core/UploadEngineList.h"
+#include "Core/Upload/DefaultUploadEngine.h"
+
 class CMyEngineList: public CUploadEngineList
 {
 	public:

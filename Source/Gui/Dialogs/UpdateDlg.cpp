@@ -3,9 +3,11 @@
 
 #include "UpdateDlg.h"
 
-#include "../../atlheaders.h"
-#include "../../Func/common.h"
+#include "atlheaders.h"
+#include "Func/common.h"
 #include "wizarddlg.h"
+#include "Common/CmdLine.h"
+#include "Func/Settings.h"
 
 // CUpdateDlg
 

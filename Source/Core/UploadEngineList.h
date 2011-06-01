@@ -18,6 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef IU_CORE_UPLOADENGINELIST_H
+#define IU_CORE_UPLOADENGINELIST_H
+
 #pragma once
 
 #include <string>
@@ -33,3 +36,5 @@ class CUploadEngineList: public CUploadEngineList_Base
 		int m_EngineNumOfRetries;
 		int m_ActionNumOfRetries;
 };
+
+#endif // IU_CORE_UPLOADENGINELIST_H
