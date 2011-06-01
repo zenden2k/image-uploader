@@ -22,7 +22,7 @@
 #include <atlbase.h>
 #include <atlapp.h>
 #include "PercentEdit.h"
-#include "../../Func/Common.h"
+#include "Func/Common.h"
 
 CPercentEdit::CPercentEdit()
 {

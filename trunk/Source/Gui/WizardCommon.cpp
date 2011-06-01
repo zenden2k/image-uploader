@@ -19,7 +19,7 @@
 */
 
 #include "WizardCommon.h"
-#include "../atlheaders.h"
+#include "atlheaders.h"
 #include "Dialogs/WizardDlg.h"
 
 CWizardPage::~CWizardPage()

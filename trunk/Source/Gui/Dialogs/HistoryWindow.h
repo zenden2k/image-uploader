@@ -20,13 +20,11 @@
 
 #pragma once
 
-#include "../../resource.h"       // main symbols
-
-#include <atlddx.h>
-#include <atlframe.h>
-#include "../Controls/HistoryTreeControl.h"
-#include "../../Func/HistoryManager.h"
-#include "../../Gui/Controls/PictureExWnd.h"
+#include "atlheaders.h"
+#include "resource.h"       // main symbols
+#include "Gui/Controls/HistoryTreeControl.h"
+#include "Func/HistoryManager.h"
+#include "Gui/Controls/PictureExWnd.h"
 // CHistoryWindow
 
 #define ID_OPENINBROWSER 13000

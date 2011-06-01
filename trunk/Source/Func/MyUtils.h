@@ -20,12 +20,8 @@
 
 #ifndef _MYUTILS_H_
 #define _MYUTILS_H_
-#ifndef IU_SHELLEXT
-#endif
-#include <atlbase.h>
-#include <atlapp.h>
-#include <atlmisc.h>
-#include <windows.h>
+
+#include "atlheaders.h"
 #include <tchar.h>
 #include <stdlib.h>
 #include <gdiplus.h>

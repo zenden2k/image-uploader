@@ -17,11 +17,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef THUMBSVIEW_H
+#define THUMBSVIEW_H
+
 
 #pragma once
-#include <atlcrack.h>
-#include "../../3rdpart/thread.h"
-#include "ImageView.h"
+#include "atlheaders.h"
+#include "3rdpart/thread.h"
+#include "Gui/Controls/ImageView.h"
 
 // CThumbsView
 
@@ -87,3 +90,5 @@ public:
 };
 
 
+
+#endif // THUMBSVIEW_H

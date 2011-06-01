@@ -1,13 +1,10 @@
 #ifndef IU_IMAGECONVERTER_H
 #define IU_IMAGECONVERTER_H
 
+#include "atlheaders.h"
 #include <GdiPlus.h>
 #include "Images/Thumbnail.h"
-#include "../Func/common.h"
-
-enum ImageResizeMode { 
-   irmFit,  irmCrop, irmStretch
-};
+#include "Core/Utils/CoreTypes.h"
 
 template<class T> struct EnumWrapper
 {
@@ -29,23 +26,8 @@ template<class T> struct EnumWrapper
 
 struct ImageConvertingParams
 {
-   ImageConvertingParams()
-   {
-      StrokeColor = RGB(0, 0, 0);
-		SmartConverting = false;
-	   AddLogo  = false;
-	   AddText = false;
-	   Format = 1;
-	   Quality = 85;
-	   SaveProportions = true;
-		ResizeMode = irmFit;
-	   LogoPosition = 0;
-	   LogoBlend = 0;
-	   Text = APPNAME;
-	   TextPosition = 5;
-	   TextColor = 0x00ffffff;
-	   StringToFont(_T("Tahoma,8,,204"), &Font);
-   }
+	enum ImageResizeMode { irmFit,  irmCrop, irmStretch };
+	ImageConvertingParams();
 
    CString strNewWidth, strNewHeight;
 	BOOL AddText;
@@ -64,12 +46,10 @@ struct ImageConvertingParams
    EnumWrapper<ImageResizeMode> ResizeMode;
 };
 
-enum ThumbFormatEnum { tfSameAsImageFormat = 0, tfJPEG, tfPNG, tfGIF };
-
-
-
 struct ThumbCreatingParams
 {
+	enum ThumbFormatEnum { tfSameAsImageFormat = 0, tfJPEG, tfPNG, tfGIF };
+
 	LOGFONT ThumbFont;
 	int LogoPosition;
 	int LogoBlend;
@@ -127,7 +107,6 @@ class CImageConverter
 
 bool MySaveImage(Gdiplus::Image *img, const CString& szFilename,CString& szBuffer,int Format,int Quality,LPCTSTR Folder=0);
 void DrawGradient(Gdiplus::Graphics &gr,Gdiplus::Rect rect,Gdiplus::Color &Color1,Gdiplus::Color &Color2);
-void DrawRect(Gdiplus::Bitmap &gr,Gdiplus::Color &color,Gdiplus::Rect rect);
+//void DrawRect(Gdiplus::Bitmap &gr,Gdiplus::Color &color,Gdiplus::Rect rect);
 void DrawStrokedText(Gdiplus::Graphics &gr, LPCTSTR Text,Gdiplus::RectF Bounds,Gdiplus::Font &font,Gdiplus::Color &ColorText,Gdiplus::Color &ColorStroke,int HorPos=0,int VertPos=0, int width=1);
-int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 #endif

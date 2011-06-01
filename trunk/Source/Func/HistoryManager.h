@@ -24,8 +24,8 @@
 #pragma once
 
 #include <string>
-#include "../Core/Utils/CoreTypes.h"
 #include <vector>
+#include "Core/Utils/CoreTypes.h"
 
 struct HistoryItem
 {

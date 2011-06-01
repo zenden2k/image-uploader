@@ -18,14 +18,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../atlheaders.h"
 #include "myutils.h"
+
+#include "atlheaders.h"
 #include <shobjidl.h>
 
 typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
 typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
-
-
 
 #define STRING MAX_PATH
 

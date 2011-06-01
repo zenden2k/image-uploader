@@ -20,19 +20,14 @@
 
 #pragma once
 
-class CConvertPresetDlg;
-
-class CSettingsPage;
-
-
-
-#include "../../resource.h"       // main symbols
+#include "atlheaders.h"
+#include "resource.h"       // main symbols
 #include <atlcrack.h>
-
 #include "logosettings.h"
-
 #include "settingspage.h"
-// CConvertPresetDlg
+
+class CConvertPresetDlg;
+class CSettingsPage;
 
 const int ConvertPageCount = 2;
 

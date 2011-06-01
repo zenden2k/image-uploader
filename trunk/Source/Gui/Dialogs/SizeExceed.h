@@ -20,10 +20,11 @@
 
 #pragma once
 
-#include "../../resource.h"       // main symbols
-#include "../Controls/myimage.h"
-#include "../../Core/Upload/UploadEngine.h"
-#include "../../Func/Settings.h"
+#include "atlheaders.h"
+#include "resource.h"       // main symbols
+#include "Gui/Controls/myimage.h"
+#include "Core/Upload/UploadEngine.h"
+#include "Func/Settings.h"
 
 
 class CSizeExceed : 

@@ -28,7 +28,7 @@
 #include <memory.h>
 #include <cstdio>
 #include <algorithm>
-#include "../Utils/CoreUtils.h"
+#include "Core/Utils/CoreUtils.h"
 
 size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {

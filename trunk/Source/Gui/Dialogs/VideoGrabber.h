@@ -17,18 +17,18 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef VIDEOGRABBER_H
+#define VIDEOGRABBER_H
 
-#pragma once
+#include "atlheaders.h"
+#include "resource.h"       // main symbols
+#include "3rdpart/thread.h"
+#include "Gui/WizardCommon.h"
+#include "Gui/Dialogs/maindlg.h"
+#include "Gui/Dialogs/videograbberparams.h"
+#include "Gui/Dialogs/WizardDlg.h"
+#include "Gui/Controls/thumbsview.h"
 
-class CVideoGrabber;
-#include "../../resource.h"       // main symbols
-#include "maindlg.h"
-#include "../../3rdpart/thread.h"
-//#include "picturelist.h"
-#include "videograbberparams.h"
-#include "WizardDlg.h"
-#include "../Controls/thumbsview.h"
-#include "..\WizardCommon.h"
 
 #define WM_MYADDIMAGE (WM_USER+22)
 // CVideoGrabber
@@ -127,3 +127,5 @@ public:
 };
 
 
+
+#endif // VIDEOGRABBER_H

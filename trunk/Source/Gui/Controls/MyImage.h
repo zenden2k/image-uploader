@@ -18,8 +18,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef MYIMAGE_H
+#define MYIMAGE_H
+
 #pragma once
-#include <atlcrack.h>
+#include "atlheaders.h"
 #include <gdiplus.h>
 // CMyImage
 
@@ -58,3 +61,5 @@ public:
 	HDC BackBufferDc;
 	int BackBufferWidth, BackBufferHeight;
 };
+
+#endif // MYIMAGE_H

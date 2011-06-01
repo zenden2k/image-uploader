@@ -18,14 +18,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "UploadEngineList.h"
+
 #include <algorithm>
 #include <iostream>
 #include <vector>
-#include "Upload/DefaultUploadEngine.h"
-#include "Utils/SimpleXml.h"
-#include "Utils/StringUtils.h"
+#include "Core/Upload/DefaultUploadEngine.h"
+#include "Core/Utils/SimpleXml.h"
+#include "Core/Utils/StringUtils.h"
 
 bool compareEngines(const CUploadEngineData& elem1, const CUploadEngineData& elem2)
 {

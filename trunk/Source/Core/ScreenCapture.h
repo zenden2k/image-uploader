@@ -21,24 +21,16 @@
 #ifndef IU_CORE_SCREEN_CAPTURE_H
 #define IU_CORE_SCREEN_CAPTURE_H
 
-#pragma once
-#include <windows.h>
+#include "atlheaders.h"
 #include <gdiplus.h>
 #include <vector>
-// CRegionSelect
+
 
 bool GetScreenBounds(RECT &rect);
 HRGN GetWindowVisibleRegion(HWND wnd);
 
 void TimerWait(int Delay);
 enum CaptureMode {cmFullScreen, cmActiveWindow, cmRectangles, cmFreeform, cmWindowHandles };
-
-struct WindowCapturingFlags
-{
-	bool RemoveCorners;
-	bool AddShadow;
-	bool RemoveBackground;
-};
 
 class CScreenshotRegion
 {
@@ -71,15 +63,16 @@ class CRectRegion: public CScreenshotRegion
 		CRgn m_ScreenRegion;
 };
 
-struct CWindowHandlesRegionItem
-{
-	HWND wnd;
-	bool Include;
-};
 
 class CWindowHandlesRegion: public CRectRegion
 {
 	public:
+		struct WindowCapturingFlags
+		{
+			bool RemoveCorners;
+			bool AddShadow;
+			bool RemoveBackground;
+		};
 		CWindowHandlesRegion();
 		CWindowHandlesRegion(HWND wnd);
 		void AddWindow(HWND wnd, bool Include);
@@ -91,6 +84,11 @@ class CWindowHandlesRegion: public CRectRegion
 		bool IsEmpty();
 		~CWindowHandlesRegion();
 	protected:
+		struct CWindowHandlesRegionItem
+		{
+			HWND wnd;
+			bool Include;
+		};
 		Gdiplus::Bitmap* CaptureWithTransparencyUsingDWM();
 		HWND topWindow;
 		int m_WindowHidingDelay;

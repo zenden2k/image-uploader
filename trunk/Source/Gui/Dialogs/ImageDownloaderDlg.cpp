@@ -18,10 +18,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "ImageDownloaderDlg.h"
-#include "../../atlheaders.h"
-#include "../../Func/Common.h"
-#include "../../Core/3rdpart/pcreplusplus.h"
+#include "atlheaders.h"
+#include "Func/Common.h"
+#include "Core/3rdpart/pcreplusplus.h"
 #include "LogWindow.h"
+#include "Func/Settings.h"
 
 // CImageDownloaderDlg
 CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg,const CString &initialBuffer)
@@ -138,9 +139,9 @@ CString GetExtensionByMime(CString mime)
 	}
 	return _T(".dat");
 }
-bool CImageDownloaderDlg::OnFileFinished(bool ok, DownloadFileListItem it)
+
+bool CImageDownloaderDlg::OnFileFinished(bool ok, CFileDownloader::DownloadFileListItem it)
 {
-	
 	if(ok)
 	{
 		AddImageStruct ais;
@@ -220,7 +221,6 @@ bool CImageDownloaderDlg::BeginDownloading()
 		m_FileDownloader.onFileFinished.bind(this, &CImageDownloaderDlg::OnFileFinished);
 		m_FileDownloader.onQueueFinished.bind(this, &CImageDownloaderDlg::OnQueueFinished);
 		m_FileDownloader.onConfigureNetworkManager.bind(this, &CImageDownloaderDlg::OnConfigureNetworkManager);
-		//m_FileDownloader.setCallback(this);
 		m_FileDownloader.start();
 		return true;
 	}

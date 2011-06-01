@@ -20,11 +20,11 @@
 
 #pragma once
 
-#include "../../resource.h"       // main symbols
-#include "../Controls/myimage.h"
+#include "atlheaders.h"
 #include <atlcrack.h>
-#include "../../Core/ScreenCapture.h"
-
+#include "resource.h"       // main symbols
+#include "Gui/Controls/myimage.h"
+#include "Core/ScreenCapture.h"
 
 class CRegionSelectCallback
 {

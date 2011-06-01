@@ -18,13 +18,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
 #include "ServerFolderSelect.h"
-#include "../../Func/pluginloader.h"
-#include "../../Func/common.h"
+#include "atlheaders.h"
+#include "Func/pluginloader.h"
+#include "Func/common.h"
 #include "NewFolderDlg.h"
 #include "LogWindow.h"
-#include "../../Func/Settings.h"
+#include "Func/Settings.h"
 CServerFolderSelect::CServerFolderSelect(CUploadEngineData* uploadEngine)
 {
 	m_UploadEngine = uploadEngine;

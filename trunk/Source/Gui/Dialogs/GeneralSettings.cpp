@@ -18,12 +18,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
+#include "atlheaders.h"
 #include "GeneralSettings.h"
 #include <uxtheme.h>
-#include "../../Func/common.h"
+#include "Func/common.h"
 
-#include "../../Func/Settings.h"
+#include "Func/Settings.h"
 #include "LogWindow.h"
 // CGeneralSettings
 CGeneralSettings::CGeneralSettings()

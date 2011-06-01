@@ -19,8 +19,8 @@
 */
 
 #include "FileInfoHelper.h"
-#include "../atlheaders.h"
-#include "../Common/MediaInfoDLL.h" //Dynamicly-loaded library (.dll)
+#include "atlheaders.h"
+#include "Common/MediaInfoDLL.h" //Dynamicly-loaded library (.dll)
 #include "LangClass.h"
 #include "Settings.h"
 

@@ -21,10 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Thumbnail.h"
 #include <stdlib.h>
 #include <string.h>
-#include "../Utils/CoreUtils.h"
-#include "../Utils/SimpleXml.h"
-#include "../3rdpart/parser.h"
-#include "../Utils/StringUtils.h"
+
+#include "Core/Utils/CoreUtils.h"
+#include "Core/Utils/SimpleXml.h"
+#include "Core/3rdpart/parser.h"
+#include "Core/Utils/StringUtils.h"
 
 Thumbnail::Thumbnail()
 {
@@ -129,7 +130,7 @@ std::string Thumbnail::getHeightAddition() const
 	return data_.height_addition;
 }
 
-const ThumbnailData* Thumbnail::getData() const
+const Thumbnail::ThumbnailData* Thumbnail::getData() const
 {
 	return &data_;
 }

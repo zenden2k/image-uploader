@@ -17,15 +17,17 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef IU_CORE_UPLOADENGINE_H
+#define IU_CORE_UPLOADENGINE_H
 
 #pragma once
 
 #include <vector>
 #include <string>
 #include <map>
-#include "../3rdpart/FastDelegate.h"
-#include "../Utils/CoreUtils.h"
-#include "../Network/NetworkManager.h"
+#include "Core/3rdpart/FastDelegate.h"
+#include "Core/Utils/CoreUtils.h"
+#include "Core/Network/NetworkManager.h"
 #include "CommonTypes.h"
 
 struct LoginInfo
@@ -209,3 +211,5 @@ class CAbstractUploadEngine
 		bool needStop();
 		void SetStatus(StatusType status, std::string param = "");		
 };
+
+#endif // IU_CORE_UPLOADENGINE_H

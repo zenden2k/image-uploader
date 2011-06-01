@@ -22,7 +22,7 @@
 //
 // Version 1.0 (c) 2004, Sjaak Priester, Amsterdam.
 // mailto:sjaak@sjaakpriester.nl
-#include "../atlheaders.h"
+#include "atlheaders.h"
 #include <cassert>
 #include <gdiplus.h>
 #include "QColorQuantizer.h"

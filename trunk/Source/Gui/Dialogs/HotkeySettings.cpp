@@ -19,7 +19,7 @@
 */
 
 #include "HotkeySettings.h"
-#include "../../atlheaders.h"
+
 #include "traysettings.h"
 #include "hotkeyeditor.h"
  

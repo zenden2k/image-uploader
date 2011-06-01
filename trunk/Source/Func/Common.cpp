@@ -22,12 +22,12 @@
 
 #include <openssl/md5.h>
 
-#include "../atlheaders.h"
-#include "../Common/CmdLine.h"
-#include "../versioninfo.h"
-#include "../Func/settings.h"
-#include "MyUtils.h"
-#include "Settings.h"
+#include "atlheaders.h"
+#include "Common/CmdLine.h"
+#include "versioninfo.h"
+#include "Func/settings.h"
+#include "Func/MyUtils.h"
+#include "Func/Settings.h"
 
 CString IUCommonTempFolder, IUTempFolder;
 

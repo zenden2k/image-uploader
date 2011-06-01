@@ -21,10 +21,8 @@
 #ifndef IU_CORE_UPLOAD_FILEQUEUEUPLOADER_H
 #define IU_CORE_UPLOAD_FILEQUEUEUPLOADER_H
 
-#pragma once
-
-#include "../Network/NetworkManager.h"
-#include "UploadEngine.h"
+#include "Core/Network/NetworkManager.h"
+#include "Core/Upload/UploadEngine.h"
 
 struct FileListItem
 {

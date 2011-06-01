@@ -22,10 +22,9 @@
 #define TRAYSETTINGS_H
 
 #pragma once
-
+#include "atlheaders.h"
 #include <atlcrack.h>
-#include "../../resource.h"       // main symbols
-
+#include "resource.h"       // main symbols
 #include "floatingwindow.h"
 // CTraySettingsPage
 

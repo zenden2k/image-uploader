@@ -24,14 +24,19 @@
 #include <vector>
 #include <string>
 
-#undef UNICODE
-#undef _UNICODE
-#include <sqplus.h>
-#define UNICODE
-#define _UNICODE
+#ifdef UNICODE
+	#undef UNICODE // We do not want to compile sqplus with unicode support
+	#undef _UNICODE
+	#include <sqplus.h>
+	#define UNICODE
+	#define _UNICODE
+#else
+	#include <sqplus.h>
+#endif
 
 #include "CommonTypes.h"
 #include "UploadEngine.h"
+#include "Core/Utils/CoreTypes.h"
 
 extern const Utf8String IuNewFolderMark;
 class CFolderList
@@ -48,46 +53,47 @@ class CFolderList
 class CScriptUploadEngine: public CAbstractUploadEngine
 {
 	public:
-	bool doUpload(Utf8String FileName, Utf8String DisplayName, CIUUploadParams &params);
-protected:
+		bool doUpload(Utf8String FileName, Utf8String DisplayName, CIUUploadParams &params);
+	protected:
 		bool needStop();
 		Utf8String m_ErrorReason;
 		Utf8String m_FileName;
 		Utf8String m_displayFileName;
 		LoginInfo li;
-	int m_CurrentActionIndex;
-	int m_nThumbWidth;
+		int m_CurrentActionIndex;
+		int m_nThumbWidth;
 	
 	public:
+		CScriptUploadEngine(Utf8String pluginName);
+		~CScriptUploadEngine();
 		static void InitScriptEngine();
 		static void DestroyScriptEngine();
 		void FlushSquirrelOutput();
-		SquirrelObject m_Object; 
-		CScriptUploadEngine(Utf8String pluginName);
-		~CScriptUploadEngine();
 		void setNetworkManager(NetworkManager* nm);
 		bool load(Utf8String fileName, ServerSettingsStruct& params);
-		//void bindNetworkManager(NetworkManager * nm);
 		int getFolderList(CFolderList &FolderList);
 		int  createFolder(CFolderItem &parent, CFolderItem &folder);
 		int  modifyFolder(CFolderItem &folder);
 		int getAccessTypeList(std::vector<Utf8String> &list);
 		int getServerParamList(std::map<Utf8String, Utf8String> &list);
 		bool isLoaded();
-		//void setServerParams(ServerSettingsStruct& params);
 		bool supportsSettings();
 		Utf8String name();
 		time_t getCreationTime();
 		int RetryLimit();
 		
+		SquirrelObject m_Object; 		
 	protected:
+		void Log(MessageType mt, const std::string& error);
 		CFolderList m_FolderList;
 		Utf8String m_sName;
-		//ServerSettingsStruct *m_pServerParams;
 		SquirrelObject m_SquirrelScript;
 		time_t m_CreationTime;
-		void Log(MessageType mt, const std::string& error);
 		bool m_bIsPluginLoaded;
+		DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
 };
+
+// You must implement this function
+const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url);
 
 #endif

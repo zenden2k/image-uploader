@@ -17,8 +17,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef MYDATAOBJECT_H
+#define MYDATAOBJECT_H
+
 
 #pragma once
+#include "atlheaders.h"
 
 class CMyDataObject : public IDataObject
 {
@@ -52,3 +56,5 @@ class CMyDataObject : public IDataObject
 		CAtlArray<CString> m_FileItems;
 		bool IsFormatSupported(FORMATETC *pFormatEtc);
 };
+
+#endif // MYDATAOBJECT_H

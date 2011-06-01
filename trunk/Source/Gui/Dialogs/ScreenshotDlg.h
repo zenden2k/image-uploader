@@ -18,21 +18,24 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef SCREENSHOTDLG_H
+#define SCREENSHOTDLG_H
+
+
 #pragma once
 
-#include "../../resource.h"
+#include "atlheaders.h"
+#include "resource.h"
 #include "regionselect.h"
-#include "../Controls/hyperlinkcontrol.h"
-#include "../../Core/ScreenCapture.h"
+#include "Gui/Controls/hyperlinkcontrol.h"
+#include "Core/ScreenCapture.h"
 
 #define IDC_FULLSCREEN WM_USER + 219
 #define IDC_VIEWSETTINGS WM_USER + 220
 #define IDC_SCRACTIVEWINDOW WM_USER + 221
 #define IDC_FREEFORMREGION WM_USER + 222
 #define IDC_HWNDSREGION WM_USER + 223
-#include <atlctrlx.h> 
-//#include "../../3rdpart/wtlaero.h"
-// CScreenshotDlg
+
 class CScreenshotDlg : 
 	public /*aero::*/CDialogImpl<CScreenshotDlg>	, 
 	public CWinDataExchange<CScreenshotDlg>
@@ -45,7 +48,6 @@ class CScreenshotDlg :
 	
 	protected:
 		BEGIN_MSG_MAP(CScreenshotDlg)
-//			CHAIN_MSG_MAP(aero::CDialogImpl<CScreenshotDlg>)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			MSG_WM_CTLCOLORDLG(OnCtlColorMsgDlg)
 			MSG_WM_CTLCOLORBTN(OnCtlColorMsgDlg)
@@ -79,10 +81,11 @@ class CScreenshotDlg :
 		LRESULT OnClickedActiveWindowCapture(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnBnClickedRegionselect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		
+		void ExpandDialog() const;
+
 		CBrush m_WhiteBr;
-		//bool m_bExpanded;
-		//int nFullWindowHeight;
 		CHyperLinkControl CommandBox;
 		CaptureMode m_CaptureMode;
-		void ExpandDialog() const;
 };
+
+#endif // SCREENSHOTDLG_H

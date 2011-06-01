@@ -19,7 +19,7 @@
 */
 
 #include "langclass.h"
-#include "../atlheaders.h"
+#include "atlheaders.h"
 #include "myutils.h"
 
 CLang Lang;

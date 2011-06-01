@@ -1,7 +1,8 @@
 #ifndef IU_COMMONTYPES_H
 #define IU_COMMONTYPES_H
 
-#include "../Utils/CoreUtils.h"
+#include "Core/Utils/CoreUtils.h"
+
 struct InfoProgress
 {
 	unsigned long Uploaded,Total;

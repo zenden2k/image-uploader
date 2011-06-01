@@ -19,8 +19,8 @@
 */
 
 #include "CmdLine.h"
-#include "../atlheaders.h"
-#include "../Func/MyUtils.h"
+
+#include "Func/MyUtils.h"
 
 CCmdLine::CCmdLine()
 {

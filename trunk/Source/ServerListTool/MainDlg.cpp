@@ -2,54 +2,20 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
-#include "resource.h"
-
 #include "MainDlg.h"
-#include "../Func/Myutils.h"
-#include "../Core/Upload/Uploader.h"
+#include "resource.h"
+#include "Func/Myutils.h"
+#include "Core/Upload/Uploader.h"
 
-#include "../Func/Settings.h"
-#include "../Gui/Dialogs/LogWindow.h"
+#include "Func/Settings.h"
+#include "Gui/Dialogs/LogWindow.h"
 #include <GdiPlus.h>
-
+#include "Gui/Dialogs/InputDialog.h"
+#include "Core/Utils/CoreUtils.h"
 
 const CString MyBytesToString(__int64 nBytes )
 {
-	int nBufSize = 90;
-	TCHAR szBuffer[100]=_T("");
-	LPTSTR szName;
-	szName = _T("Bytes");
-	double number=0;
-	int id=0;
-	if(nBytes<1024)
-	{
-		wsprintf(szBuffer,_T("%d %s"),(int)nBytes,szName);
-	}
-	else{
-
-		if(nBytes>=1024 && nBytes<(1048576))
-		{
-			number= (double)nBytes / 1024.0;
-			szName=_T("KB");
-			wsprintf(szBuffer,_T("%d %s"),(int)number,szName);
-			//return TRUE;
-
-		}
-		else if(nBytes>=1048576 && (nBytes<(__int64(1073741824) /*1 GB*/)))
-		{
-			szName=_T("MB");
-			number= (double)nBytes / 1048576.0;
-		}
-
-		else
-		{
-			szName = _T("GB");
-			number = (double)nBytes / 1073741824.0;
-		}
-		swprintf(szBuffer,_T("%3.2f %s"),number,szName);
-	}
-	return szBuffer;
+	return IuCoreUtils::fileSizeToString(nBytes).c_str();
 }
 
 CString IU_GetFileInfo(CString fileName,MyFileInfo* mfi=0)
@@ -334,7 +300,7 @@ DWORD CMainDlg::Run()
 	return 0;
 }
 
-bool CMainDlg::OnFileFinished(bool ok, DownloadFileListItem it)
+bool CMainDlg::OnFileFinished(bool ok, CFileDownloader::DownloadFileListItem it)
 {
 	int serverId = reinterpret_cast<int>(it.id) /10;
 	int fileId = reinterpret_cast<int>(it.id) % 10;
@@ -481,4 +447,18 @@ bool CMainDlg::isRunning()
 bool CMainDlg::OnNeedStop()
 {
 	return m_NeedStop;
+}
+
+const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url)
+{
+	CString wFileName = GetUniqFileName(IUTempFolder+Utf8ToWstring("captcha").c_str());
+
+	nm->setOutputFile(IuCoreUtils::WstringToUtf8((const TCHAR*)wFileName));
+	if(!nm->doGet(url))
+		return "";
+	CInputDialog dlg(_T("Image Uploader"), TR("¬ведите текст с картинки:"), CString(IuCoreUtils::Utf8ToWstring("").c_str()),wFileName);
+	nm->setOutputFile("");
+	if(dlg.DoModal()==IDOK)
+		return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
+	return "";
 }

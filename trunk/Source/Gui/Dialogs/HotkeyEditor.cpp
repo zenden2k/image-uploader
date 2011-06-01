@@ -19,7 +19,7 @@
 */
 
 #include "HotkeyEditor.h"
-#include "../../atlheaders.h"
+
 
 
 // CHotkeyEditor

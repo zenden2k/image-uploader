@@ -17,30 +17,27 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 #ifndef IU_CORE_FILEDOWNLOADER_H
 #define IU_CORE_FILEDOWNLOADER_H
-#pragma once
 
-#include <atlbase.h>
-#include <atlapp.h>
-#include <atlmisc.h>
-#include <atlcoll.h>
-#include "../3rdpart/thread.h"
-#include "3rdpart/FastDelegate.h"
-#include "Network/NetworkManager.h"
-#include "Utils/CoreTypes.h"
-
-struct DownloadFileListItem
-{
-	std::string fileName;
-	std::string displayName;
-	std::string url;
-	void* id;
-};
+#include "atlheaders.h"
+#include "3rdpart/thread.h"
+#include "Core/3rdpart/FastDelegate.h"
+#include "Core/Network/NetworkManager.h"
+#include "Core/Utils/CoreTypes.h"
 
 class CFileDownloader
 {
 	public:
+		struct DownloadFileListItem
+		{
+			std::string fileName;
+			std::string displayName;
+			std::string url;
+			void* id;
+		};
+
 		CFileDownloader();
 		virtual ~CFileDownloader();
 		void AddFile(const std::string& url, void* id);
@@ -53,7 +50,6 @@ class CFileDownloader
 		fastdelegate::FastDelegate0<> onQueueFinished;
 		fastdelegate::FastDelegate1<NetworkManager*> onConfigureNetworkManager;
 		fastdelegate::FastDelegate2<bool, DownloadFileListItem, bool> onFileFinished;
-		
 	protected:
 		CString m_ErrorStr;
 		CAutoCriticalSection m_CS;

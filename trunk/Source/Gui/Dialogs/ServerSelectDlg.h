@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include "../../resource.h"       // main symbols
+#include "atlheaders.h"
+#include "resource.h"       // main symbols
 #include <atlframe.h>
 #include <atlcrack.h>
 // CServerSelectDlg

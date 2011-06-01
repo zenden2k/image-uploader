@@ -19,9 +19,9 @@
  *            - Use of the MAKEINTATOM macro
  */
 
-#include "../../atlheaders.h"
 #include "hyperlink.h"
-#include "../../Func/Common.h"
+#include "atlheaders.h"
+#include "Func/Common.h"
 /*
  * If you do not wish to link with the windebug module,
  * comment out the next include directive and uncomment the

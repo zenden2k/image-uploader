@@ -21,30 +21,20 @@
 #ifndef IU_SETTINGS_H
 #define IU_SETTINGS_H
 
-#pragma once
-
-struct UploadProfileStruct;
-
-#include <atlcoll.h>
-#include "langclass.h"
 #include <map>
 #include <string>
-#include "../Core/ImageConverter.h"
-#include "pluginloader.h"
-#include "../Core/SettingsManager.h"
-#include "Common.h"
-#include "../Gui/Dialogs/HotkeySettings.h"
+#include "Core/ImageConverter.h"
+#include "Core/SettingsManager.h"
+#include "atlheaders.h"
+#include "Func/langclass.h"
+#include "Func/pluginloader.h"
+#include "Func/Common.h"
+#include "Gui/Dialogs/HotkeySettings.h"
+
 #define TRAY_SCREENSHOT_UPLOAD 0
 #define TRAY_SCREENSHOT_CLIPBOARD 1
 #define TRAY_SCREENSHOT_SHOWWIZARD 2
 #define TRAY_SCREENSHOT_ADDTOWIZARD 3
-
-
-/*struct ImageSettingsStruct: public ImageConvertingParams
-{
-	BOOL GenThumb;
-	int ServerID, QuickServerID;
-};*/
 
 struct UploadProfileStruct
 {
@@ -58,19 +48,6 @@ struct FullUploadProfile
    UploadProfileStruct upload_profile;
    ImageConvertingParams convert_profile;
 };
-/*struct LogoSettingsStruct
-{
-	LOGFONT Font;
-	int LogoPosition;
-	int LogoBlend;
-	int TextPosition;
-	CString FileName;
-	TCHAR FontName[256];
-	CString Text;
-	COLORREF TextColor,StrokeColor;
-};*/
-
-
 
 struct TrayIconSettingsStruct
 {
@@ -83,27 +60,9 @@ struct TrayIconSettingsStruct
 };
 struct ThumbSettingsStruct: public ThumbCreatingParams
 {
-	/*LOGFONT ThumbFont;
-	int LogoPosition;
-	int LogoBlend;
-	int TextPosition;*/
-	//int TextColor;
-	//CString Text;
-	//TCHAR FileName[256];
 	TCHAR FontName[256];
-	//COLORREF FrameColor,ThumbColor1,ThumbColor2/*TextBackground ,*/,ThumbTextColor;
-	/*int ThumbAlpha;
-	BOOL TextOverThumb;
-	int ThumbWidth;*/
 	BOOL UseServerThumbs;
-	//BOOL UseThumbTemplate;
-	/*BOOL DrawFrame;
-	BOOL ThumbAddImageSize;
-	BOOL ThumbAddBorder;*/	
-	
 	bool CreateThumbs;
-	//CString thumbFileName;
-
 };
 
 struct VideoSettingsStruct
@@ -214,9 +173,7 @@ class CSettings
 		bool AutoStartup_changed;
 		int ThumbsPerLine;
 		TCHAR m_szLang[64];
-		//ImageSettingsStruct ImageSettings;
 		TrayIconSettingsStruct TrayIconSettings;
-//		LogoSettingsStruct LogoSettings;
 		ThumbSettingsStruct ThumbSettings;
 		VideoSettingsStruct VideoSettings;
 		ConnectionSettingsStruct ConnectionSettings;
@@ -232,7 +189,6 @@ class CSettings
 		bool WatchClipboard;
 		int CodeLang;
 		int CodeType;
-		//BOOL OldStyleMenu;
 		bool ParseSubDirs;
 		bool UseProxyServer;
 		int LastUpdateTime;
@@ -268,7 +224,7 @@ class CSettings
    bool LoadConvertProfile(const CString& name, ZSimpleXmlNode profileNode);
 	bool SaveConvertProfiles(ZSimpleXmlNode root);
    void BindConvertProfile(SettingsNode& mgr,  ImageConvertingParams &params);
-	#ifndef IU_SHELLEXT
+#ifndef IU_SHELLEXT
 	ServerSettingsStruct& ServerByName(CString name);
 	ServerSettingsStruct& ServerByUtf8Name(std::string name);
 #endif

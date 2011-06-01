@@ -18,11 +18,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
+#include "atlheaders.h"
 #include "StatusDlg.h"
-#include "../../Func/Common.h"
-#include "../../Func/MyUtils.h"
-#include "../../Func/LangClass.h"
+#include "Func/Common.h"
+#include "Func/MyUtils.h"
+#include "Func/LangClass.h"
 
 // CStatusDlg
 CStatusDlg::CStatusDlg()

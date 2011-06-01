@@ -20,7 +20,7 @@
 
 #include "UploadEngine.h"
 #include <stdlib.h>
-#include "../Utils/StringUtils.h"
+#include "Core/Utils/StringUtils.h"
 
 CUploadEngineData::CUploadEngineData()
 {

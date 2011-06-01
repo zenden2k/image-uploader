@@ -18,8 +18,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef MYDROPSOURCE_H
+#define MYDROPSOURCE_H
 
+
+#pragma once
+#include "atlheaders.h"
 class CMyDropSource : public IDropSource
 {
 private:
@@ -38,3 +42,5 @@ public:
     HRESULT __stdcall QueryContinueDrag(BOOL fEscapePressed,DWORD grfKeyState);
     HRESULT __stdcall GiveFeedback(DWORD dwEffect);
 };
+
+#endif // MYDROPSOURCE_H

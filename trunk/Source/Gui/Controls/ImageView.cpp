@@ -18,10 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
+#include "atlheaders.h"
 #include "ImageView.h"
-#include "../Dialogs/LogWindow.h"
-#include "../../Func/Settings.h"
+#include "Gui/Dialogs/LogWindow.h"
+#include "Func/Settings.h"
 
 // CImageView
 CImageView::CImageView()

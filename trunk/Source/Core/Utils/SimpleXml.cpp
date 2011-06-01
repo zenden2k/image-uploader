@@ -23,7 +23,7 @@
 #endif
 
 #include "SimpleXml.h"
-#include "../3rdpart/tinyxml.h"
+#include "Core/3rdpart/tinyxml.h"
 #include "CoreUtils.h"
 
 class ZSimpleXml_impl

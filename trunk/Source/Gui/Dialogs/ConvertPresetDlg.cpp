@@ -19,7 +19,7 @@
 */
 
 #include "ConvertPresetDlg.h"
-#include "../../Func/langclass.h"
+#include "Func/langclass.h"
 #include "ThumbSettingsPage.h"
 // CConvertPresetDlg
 CConvertPresetDlg::CConvertPresetDlg(int Page)

@@ -17,28 +17,22 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef WIZARDDLG_H
+#define WIZARDDLG_H
+
 
 #pragma once
 
-class CWizardDlg;
-
-class CWizardPage;
-class CFolderAdd;
-#include "screenshotdlg.h"
-#include "welcomedlg.h"
-#include "maindlg.h"
-#include "videograbber.h"
-#include "uploadsettings.h"
-#include "uploaddlg.h"
-#include "aboutdlg.h"
+#include "atlheaders.h"
 #include "statusdlg.h"
 #include "updatedlg.h"
-#include "../../Common\cmdline.h"
-#include "../../resource.h"       // main symbols
-#include <atlcrack.h>
-#include "../Controls/hyperlink.h"
-#include "../../Core/Upload/UploadEngine.h"
+#include "Func/MyEngineList.h"
 #include "HotkeySettings.h"
+#include "Gui/Controls/hyperlink.h"
+#include "Core/ScreenCapture.h"
+#include "resource.h"       // main symbols
+#include "screenshotdlg.h"
+
 #define ID_PASTE 9888
 #define ID_HOTKEY_BASE 10000
 #define WM_MY_ADDIMAGE WM_USER + 222
@@ -51,6 +45,11 @@ struct AddImageStruct
 	CString RealFileName, VirtualFileName;
 	bool show;
 };
+
+
+class CFolderAdd;
+class CWizardPage;
+class CWizardDlg;
 
 class CFolderAdd: public CThreadImpl<CFolderAdd>
 {
@@ -233,7 +232,7 @@ public:
 	
 	//CRegionSelectCallback
 	void OnScreenshotFinished(int Result);
-	void OnScreenshotSaving(LPTSTR FileName, Bitmap* Bm);
+	void OnScreenshotSaving(LPTSTR FileName, Gdiplus::Bitmap* Bm);
 	void CloseWizard();
 	bool RegisterLocalHotkeys();
 	bool UnRegisterLocalHotkeys();
@@ -246,3 +245,5 @@ public:
 };
 
 
+
+#endif // WIZARDDLG_H

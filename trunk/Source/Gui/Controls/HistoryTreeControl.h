@@ -4,15 +4,16 @@
 #pragma once
 #include <queue>
 #include <map>
+#include "atlheaders.h"
 #include <atltheme.h>
 #include <atlmisc.h>
 #include <atlcrack.h>
 
-#include "../../3rdpart/thread.h"
-#include "../../Func/HistoryManager.h"
-#include "../../Core/FileDownloader.h"
-#include "../../Core/3rdpart/FastDelegate.h"
-#include "../../resource.h"
+#include "3rdpart/thread.h"
+#include "Func/HistoryManager.h"
+#include "Core/FileDownloader.h"
+#include "Core/3rdpart/FastDelegate.h"
+#include "resource.h"
 #include "CustomTreeControl.h"
 
 struct HistoryTreeItem 
@@ -85,7 +86,7 @@ class CHistoryTreeControl :
 		HBITMAP GetItemThumbnail(HistoryTreeItem* item);
 		std::deque<HistoryTreeItem*> m_thumbLoadingQueue;
 		CFileDownloader *m_FileDownloader;
-		bool OnFileFinished(bool ok, DownloadFileListItem it);
+		bool OnFileFinished(bool ok, CFileDownloader::DownloadFileListItem it);
 		void DownloadThumb(HistoryTreeItem * it);
 		int m_SessionItemHeight;
 		int m_SubItemHeight;	

@@ -20,17 +20,18 @@
 
 #pragma once
 
-#include "../../resource.h"       // main symbols
-#include "../../Func/common.h"
-#include <atlcrack.h>
-#include "../../Core/Upload/UploadEngine.h"
+#include "atlheaders.h"
+#include "resource.h"       // main symbols
+#include "Func/common.h"
+#include "Core/Upload/UploadEngine.h"
+#include "Gui/WizardCommon.h"
+#include "3rdpart/thread.h"
+
 #define IDC_OPTIONSMENU 10002
 #define IDC_USEDIRECTLINKS 10003
 #define IDC_COPYFOLDERURL 10004
 #define IDC_RESULTSTOOLBAR 5000
 class CResultsPanel;
-#include "../WizardCommon.h"
-#include "../../3rdpart/thread.h"
 
 // CResultsPanel
 class CWizardDlg;

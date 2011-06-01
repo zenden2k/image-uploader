@@ -20,8 +20,8 @@
 
 #include "ResultsPanel.h"
 #include <uxtheme.h>
-#include "../../atlheaders.h"
-#include "../../Core/3rdpart/pcreplusplus.h"
+#include "atlheaders.h"
+#include "Core/3rdpart/pcreplusplus.h"
 #include "mediainfodlg.h"
 #include "LogWindow.h"
 

@@ -18,9 +18,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef LANGSELECT_H
+#define LANGSELECT_H
+
 #pragma once
-#include "maindlg.h"
-#include "../../resource.h"       // main symbols
+
+#include "atlheaders.h"
+#include "resource.h"       // main symbols
+#include "Gui/Controls/MyImage.h"
 // CLangSelect
 
 
@@ -31,7 +36,7 @@ class CLangSelect : public CDialogImpl<CLangSelect>
 		~CLangSelect();
 	
 		enum { IDD = IDD_LANGSELECT };
-
+	protected:
 		BEGIN_MSG_MAP(CLangSelect)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
@@ -54,3 +59,4 @@ class CLangSelect : public CDialogImpl<CLangSelect>
 };
 
 
+#endif // LANGSELECT_H

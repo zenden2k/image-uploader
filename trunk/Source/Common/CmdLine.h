@@ -22,10 +22,8 @@
 #define IU_FUNC_CMDLINE_H
 
 #pragma once
-#include <atlmisc.h>
-#include <atlcoll.h>
 
-typedef CAtlArray<CString> CStringList;
+#include "atlheaders.h"
 
 class CCmdLine
 {

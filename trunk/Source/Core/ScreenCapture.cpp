@@ -23,10 +23,10 @@
 #include <math.h>
 #include <deque>
 #include <Dwmapi.h>
-#include "../atlheaders.h"
-#include "../Func/common.h"
-#include "../Func/MyUtils.h"
-#include "../resource.h"
+#include "atlheaders.h"
+#include "Func/common.h"
+#include "Func/MyUtils.h"
+#include "resource.h"
 
 typedef HRESULT (WINAPI *DwmGetWindowAttribute_Func)(HWND, DWORD, PVOID, DWORD);
 typedef HRESULT (WINAPI *DwmIsCompositionEnabled_Func)(BOOL*);

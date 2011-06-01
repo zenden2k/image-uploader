@@ -18,14 +18,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef MEDIAINFODLG_H
+#define MEDIAINFODLG_H
+
 // MediaInfoDlg.h : Declaration of the CMediaInfoDlg
 // 
 // This dialog window shows technical information 
 // about  video/audio file that user had selected
 
+
 #pragma once
 #include "maindlg.h"
-#include "../../resource.h"       
+#include "resource.h"       
 
 // CMediaInfoDlg
 
@@ -33,15 +37,13 @@ class CMediaInfoDlg:		public CDialogImpl <CMediaInfoDlg>,
 								public CDialogResize <CMediaInfoDlg>,
 								public CThreadImpl <CMediaInfoDlg>
 {
-	private:
-		CString m_FileName;
 	public:
 		CMediaInfoDlg();
 		~CMediaInfoDlg();
 		void ShowInfo(LPCTSTR FileName);
 
 		enum { IDD = IDD_MEDIAINFODLG };
-
+	protected:
 		BEGIN_MSG_MAP(CMediaInfoDlg)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
@@ -67,6 +69,11 @@ class CMediaInfoDlg:		public CDialogImpl <CMediaInfoDlg>,
 		LRESULT OnClickedUseIeCookies(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		DWORD Run();
+
+		CString m_FileName;
 };
 
 
+
+
+#endif // MEDIAINFODLG_H

@@ -20,13 +20,13 @@
 
 #include "UpdatePackage.h"
 #include <time.h>
-#include "../atlheaders.h"
-#include "../3rdpart/unzipper.h"
-#include "../Gui/Dialogs/TextViewDlg.h"
-#include "../Gui/Dialogs/LogWindow.h"
-#include "../Core/Utils/StringUtils.h"
-#include "Common.h"
-#include "pluginloader.h"
+#include "atlheaders.h"
+#include "3rdpart/unzipper.h"
+#include "Gui/Dialogs/TextViewDlg.h"
+#include "Gui/Dialogs/LogWindow.h"
+#include "Core/Utils/StringUtils.h"
+#include "Func/Common.h"
+#include "Func/PluginLoader.h"
 
 BOOL CreateFolder(LPCTSTR szFolder)
 {

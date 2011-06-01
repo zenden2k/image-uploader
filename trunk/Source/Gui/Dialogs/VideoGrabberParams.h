@@ -17,27 +17,18 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef VIDEOGRABBERPARAMS_H
+#define VIDEOGRABBERPARAMS_H
+
 
 #pragma once
 
-#include "../../resource.h"       // main symbols
+#include "atlheaders.h"
+#include "resource.h"       // main symbols
 #include "settingspage.h"
-//#include "colorpicker.h"
 #include <atlcrack.h>
-
-#include "../../3rdpart/ColorButton.h"
+#include "3rdpart/ColorButton.h"
 // CVideoGrabberParams
-struct CSavingOptions
-{
-	int Columns;
-	int TileWidth;
-	int GapWidth;
-	int GapHeight;
-	int NumOfFrames;
-	int JPEGQuality;
-};
-
-
 
 class CVideoGrabberParams : 
 	public CDialogImpl<CVideoGrabberParams>, public CSettingsPage	
@@ -67,3 +58,5 @@ public:
 };
 
 
+
+#endif // VIDEOGRABBERPARAMS_H

@@ -1,6 +1,7 @@
 #ifndef DSSI_COLORBUTTON_H
 #define DSSI_COLORBUTTON_H
 
+#include "atlheaders.h"
 //-----------------------------------------------------------------------------
 // 
 // @doc

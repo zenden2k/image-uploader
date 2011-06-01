@@ -3,21 +3,17 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-#include "../3rdpart/thread.h"
-//#include "../Uploader.h"
-#include "../Core/Upload/UploadEngine.h"
-#include "../Core/FileDownloader.h"
-#include "../Func/MyEngineList.h"
-#include "../Core/Utils/SimpleXml.h"
+#include "resource.h"
+#include "3rdpart/thread.h"
+#include "Core/Upload/UploadEngine.h"
+#include "Core/FileDownloader.h"
+#include "Func/MyEngineList.h"
+#include "Core/Utils/SimpleXml.h"
 #include <map>
 struct ServerData
 {
 	int stars[3];
-	 COLORREF color;
-	//bool failed;
-	/*int imageUrlOk;
-	int downloadUrlOk;
-	int thumbUrlOk;*/
+	COLORREF color;
 	int fileToCheck;
 	int filesChecked;
 	int timeElapsed;
@@ -80,7 +76,7 @@ public:
 	CImageList m_ImageList;
 	CString m_srcFileHash;
 	MyFileInfo m_sourceFileInfo;
-	virtual bool OnFileFinished(bool ok, DownloadFileListItem it);
+	virtual bool OnFileFinished(bool ok,  CFileDownloader::DownloadFileListItem it);
 	void MarkServer(int id);
 	CFileDownloader m_FileDownloader;
 	LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);

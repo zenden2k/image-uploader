@@ -24,9 +24,10 @@
 #pragma once
 
 #include <string>
-#include "../Core/Utils/CoreTypes.h"
-#include "../Core/Network/NetworkManager.h"
-#include "../Core/Utils/SimpleXml.h"
+#include "atlheaders.h"
+#include "Core/Utils/CoreTypes.h"
+#include "Core/Network/NetworkManager.h"
+#include "Core/Utils/SimpleXml.h"
 
 struct CUpdateItem
 {

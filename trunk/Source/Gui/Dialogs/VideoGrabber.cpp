@@ -17,25 +17,28 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "../../atlheaders.h"
+
+#include "VideoGrabber.h"
+#include "atlheaders.h"
+
 #define __AFX_H__ // little hack for avoiding __POSITION type redefinition
 #include <objbase.h>
 #include <streams.h>
 #undef __AFX_H__
 
-#include "VideoGrabber.h"
-#include "../Controls/MyImage.h"
+
+#include "Gui/Controls/MyImage.h"
 #include "mediainfodlg.h"
 #include <qedit.h>
-#include "../../Func/fileinfohelper.h"
-#include "../../Core/ImageConverter.h"
+#include "Func/fileinfohelper.h"
+#include "Core/ImageConverter.h"
 #include "LogWindow.h"
 #ifdef DEBUG
 #define MyInfo(p) SetDlgItemText(IDC_FILEEDIT, p)
 #else
 #define MyInfo
 #endif
-#pragma comment(lib, "winmm.lib")
+
 
 typedef struct tagVIDEOINFOHEADER2 {
     RECT                rcSource;

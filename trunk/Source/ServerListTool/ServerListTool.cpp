@@ -8,7 +8,7 @@
 #include "MainDlg.h"
 #include <Gdiplus.h>
 CAppModule _Module;
-#include "../Func/Common.h"
+#include "Func/Common.h"
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*lpstrCmdLine*/, int /*nCmdShow*/)
 {
 	HRESULT hRes = ::CoInitialize(NULL);

@@ -2,10 +2,10 @@
 // LogListBox.h : Declaration of the CLogListBox
 
 #pragma once
-#include "../../resource.h"
-#include <atlmisc.h>
-#include <atlcrack.h>
-#include "../../Func/HistoryManager.h"
+#include "atlheaders.h"
+#include "resource.h"
+#include "Func/HistoryManager.h"
+#include <map>
 
 struct HistoryTreeViewItem
 {

@@ -18,13 +18,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../atlheaders.h"
 #include "ThumbsView.h"
-#include "../../Func/mydropsource.h"
-#include "../../Func/mydataobject.h"
-#include "../../Func/common.h"
-#include "../Dialogs/LogWindow.h"
-#include "../../Func/LangClass.h"
+#include "Func/mydropsource.h"
+#include "Func/mydataobject.h"
+#include "Func/common.h"
+#include "Gui/Dialogs/LogWindow.h"
+#include "Func/LangClass.h"
 
 #define THUMBNAIL_WIDTH 170   // constants
 #define THUMBNAIL_HEIGHT 120

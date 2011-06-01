@@ -17,10 +17,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef HOTKEYSETTINGS_H
+#define HOTKEYSETTINGS_H
+
 
 #pragma once
 
-#include "../../resource.h"       // main symbols
+#include "atlheaders.h"
+#include <resource.h>       // main symbols
 #include <atlcrack.h>
 #include <atlctrls.h>
 #include "settingspage.h"
@@ -86,5 +90,7 @@ class CHotkeySettingsPage :
 		CListViewCtrl m_HotkeyList;
 		CHotkeyList hotkeyList;
 };
+
+#endif // HOTKEYSETTINGS_H
 
 

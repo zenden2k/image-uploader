@@ -25,22 +25,14 @@
 #include "ScriptUploadEngine.h"
 #include <stdarg.h>
 #include <iostream>
-#ifndef IU_CLI
-   #include "../../atlheaders.h"
-   #include "../../Func/Common.h"
-   #include "../../Gui/Dialogs/InputDialog.h"
-	#include "../../Func/LangClass.h"
-#endif
 
 #include <openssl/md5.h>
-#undef UNICODE
-#undef _UNICODE
 #include <sqplus.h>
 #include <sqstdsystem.h>
 
-#include "../3rdpart/CP_RSA.h"
-#include "../3rdpart/base64.h"
-#include "../3rdpart/codepages.h"
+#include "Core/3rdpart/CP_RSA.h"
+#include "Core/3rdpart/base64.h"
+#include "Core/3rdpart/codepages.h"
 
 using namespace SqPlus;
 // Squirrel types should be defined in the same module where they are used
@@ -54,15 +46,7 @@ DECLARE_INSTANCE_TYPE(CIUUploadParams);
 const std::string AskUserCaptcha(NetworkManager *nm, const std::string& url)
 {
 #ifndef IU_CLI
-	CString wFileName = GetUniqFileName(IUTempFolder+Utf8ToWstring("captcha").c_str());
-	
-	nm->setOutputFile(IuCoreUtils::WstringToUtf8((const TCHAR*)wFileName));
-	if(!nm->doGet(url))
-		return "";
-	CInputDialog dlg(_T("Image Uploader"), TR("¬ведите текст с картинки:"), CString(IuCoreUtils::Utf8ToWstring("").c_str()),wFileName);
-	nm->setOutputFile("");
-	if(dlg.DoModal()==IDOK)
-		return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
+	Impl_AskUserCaptcha(nm, url);
 #else
 	return "<not implemented>";
 #endif
@@ -86,14 +70,11 @@ void CFolderList::AddFolderItem(const CFolderItem& item)
 		  m_folderItems.push_back(item);
 }
 
-// Kind of hack
 // older versions of Squirrel Standart Library have broken srand() function 
 int pluginRandom()
 {
 	return rand();
 }
-
-
 
 std::string squirrelOutput;
 const Utf8String IuNewFolderMark = "_iu_create_folder_";

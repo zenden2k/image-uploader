@@ -23,7 +23,7 @@
 #define IU_FUNC_FILEINFOHELPER_H
 #pragma once
 
-#include "../atlheaders.h"
+#include "atlheaders.h"
 bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer);
 
 #endif // IU_FUNC_FILEINFOHELPER_H

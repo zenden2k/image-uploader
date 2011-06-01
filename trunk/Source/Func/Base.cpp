@@ -19,8 +19,8 @@
 */
  
 #include "Base.h"
-#include "../Func/Settings.h"
-#include "../Core/Utils/CoreUtils.h"
+#include "Func/Settings.h"
+#include "Core/Utils/CoreUtils.h"
 
 ZBase* ZBase::m_base;
 
