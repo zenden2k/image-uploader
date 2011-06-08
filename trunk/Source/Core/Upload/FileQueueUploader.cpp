@@ -1,7 +1,7 @@
 /*
     Image Uploader - program for uploading images/files to Internet
     Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
-	 
+
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 #include "FileQueueUploader.h"
 #include <algorithm>
@@ -37,28 +37,36 @@ class CFileQueueUploader::Impl
 		void start();
 		virtual void run();
 		bool getNextJob(FileListItem* item);
-		
+
 		ZThread::Mutex mutex_;
-		CFileUploaderCallback *callback_;
+		Callback* callback_;
 		volatile bool m_NeedStop;
 		bool m_IsRunning;
-		CAbstractUploadEngine *m_engine;
+		CAbstractUploadEngine* m_engine;
 		ServerSettingsStruct m_serverSettings;
 		std::vector<FileListItem> m_fileList;
 		int m_nThreadCount;
 		int m_nRunningThreads;
+
 	protected:
 		class Runnable;
 		bool onNeedStopHandler();
 		void OnConfigureNetworkManager(NetworkManager* nm);
 };
 
-class CFileQueueUploader::Impl::Runnable: public ZThread::Runnable
+class CFileQueueUploader::Impl::Runnable : public ZThread::Runnable
 {
 	public:
 		CFileQueueUploader::Impl* uploader_;
-		Runnable(CFileQueueUploader::Impl *uploader){uploader_ = uploader;}
-		virtual void run(){uploader_->run();}
+		Runnable(CFileQueueUploader::Impl* uploader)
+		{
+			uploader_ = uploader;
+		}
+
+		virtual void run()
+		{
+			uploader_->run();
+		}
 };
 
 /* private CFileQueueUploader::Impl class */
@@ -74,7 +82,6 @@ CFileQueueUploader::Impl::Impl()
 
 CFileQueueUploader::Impl::~Impl()
 {
-
 }
 
 bool CFileQueueUploader::Impl::onNeedStopHandler()
@@ -84,17 +91,18 @@ bool CFileQueueUploader::Impl::onNeedStopHandler()
 
 void CFileQueueUploader::Impl::OnConfigureNetworkManager(NetworkManager* nm)
 {
-	if(callback_)
+	if (callback_)
 		callback_->OnConfigureNetworkManager(nm);
 }
 
 bool CFileQueueUploader::Impl::getNextJob(FileListItem* item)
 {
-	if(m_NeedStop) return false;
+	if (m_NeedStop)
+		return false;
 	std::string url;
 	mutex_.acquire();
 	bool result = false;
-	if(!m_fileList.empty() && !m_NeedStop)
+	if (!m_fileList.empty() && !m_NeedStop)
 	{
 		*item = *m_fileList.begin();
 		m_fileList.erase(m_fileList.begin());
@@ -118,9 +126,9 @@ void CFileQueueUploader::Impl::start()
 {
 	m_NeedStop = false;
 	m_IsRunning = true;
-        int numThreads = std::min<int>(size_t(m_nThreadCount), m_fileList.size());
+	int numThreads = std::min<int>(size_t(m_nThreadCount), m_fileList.size());
 	m_nRunningThreads = numThreads;
-	for(int i = 0; i < numThreads; i++)
+	for (int i = 0; i < numThreads; i++)
 	{
 		ZThread::Thread t1(new Runnable(this)); // starting new thread
 	}
@@ -131,40 +139,41 @@ void CFileQueueUploader::Impl::run()
 	CUploader uploader;
 	uploader.onConfigureNetworkManager.bind(this, &CFileQueueUploader::Impl::OnConfigureNetworkManager);
 #ifndef IU_CLI
-        // TODO
-        uploader.onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
+	// TODO
+	uploader.onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
 #endif
-	for(;;)
+	for (;; )
 	{
-		FileListItem it;
-		if(!getNextJob(&it)) break;
+		CFileQueueUploader::FileListItem it;
+		if (!getNextJob(&it))
+			break;
 		uploader.setUploadEngine(m_engine);
 		uploader.onNeedStop.bind(this, &Impl::onNeedStopHandler);
 		bool res = uploader.UploadFile(it.fileName, it.displayName.c_str());
 		mutex_.acquire();
-		//m_CS.Lock();
+		// m_CS.Lock();
 
-		if(res)
+		if (res)
 		{
 			it.imageUrl = (uploader.getDirectUrl());
 			it.downloadUrl = (uploader.getDownloadUrl());
 			it.thumbUrl = (uploader.getThumbUrl());
-			if(callback_)
-				callback_->OnFileFinished(true,it);
+			if (callback_)
+				callback_->OnFileFinished(true, it);
 		}
 		else
 		{
-			if(callback_)
-				callback_->OnFileFinished(false,it);
+			if (callback_)
+				callback_->OnFileFinished(false, it);
 		}
 		mutex_.release();
 	}
 	mutex_.acquire();
 	m_nRunningThreads--;
-	if(!m_nRunningThreads)
+	if (!m_nRunningThreads)
 	{
 		m_IsRunning = false;
-		if(callback_)
+		if (callback_)
 			callback_->OnQueueFinished();
 	}
 	mutex_.release();
@@ -188,13 +197,10 @@ bool CFileQueueUploader::start()
 	return true;
 }
 
-
-void CFileQueueUploader::setCallback(CFileUploaderCallback* callback)
+void CFileQueueUploader::setCallback(Callback* callback)
 {
 	_impl->callback_ = callback;
 }
-
-
 
 void CFileQueueUploader::stop()
 {
@@ -206,12 +212,10 @@ bool CFileQueueUploader::IsRunning() const
 	return _impl->m_IsRunning;
 }
 
-void CFileQueueUploader::setUploadSettings(CAbstractUploadEngine * engine)
+void CFileQueueUploader::setUploadSettings(CAbstractUploadEngine* engine)
 {
 	_impl->m_engine = engine;
 }
-
-
 
 CFileQueueUploader::~CFileQueueUploader()
 {

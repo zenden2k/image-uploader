@@ -21,35 +21,38 @@
 #ifndef IU_CORE_UPLOAD_FILEQUEUEUPLOADER_H
 #define IU_CORE_UPLOAD_FILEQUEUEUPLOADER_H
 
-#include "Core/Network/NetworkManager.h"
+#include <string>
+#include "Core/Utils/CoreTypes.h"
 #include "Core/Upload/UploadEngine.h"
 
-struct FileListItem
-{
-	std::string fileName;
-	std::string displayName;
-	std::string imageUrl;
-	std::string thumbUrl;
-	std::string downloadUrl;
-	zint64 fileSize;
-	void * user_data;
-};
-
-class CFileUploaderCallback
-{
-	public:
-      virtual bool OnFileFinished(bool ok, FileListItem& result){return true;}
-		virtual bool OnQueueFinished() { return true;}
-		virtual bool OnConfigureNetworkManager(NetworkManager* nm){return true;}
-};
+class NetworkManager;
 
 class CFileQueueUploader
 {
 	public:
+		struct FileListItem
+		{
+			std::string fileName;
+			std::string displayName;
+			std::string imageUrl;
+			std::string thumbUrl;
+			std::string downloadUrl;
+			int64_t fileSize;
+			void * user_data;
+		};
+
+		class Callback
+		{
+		public:
+			virtual bool OnFileFinished(bool ok, FileListItem& result){return true;}
+			virtual bool OnQueueFinished() { return true;}
+			virtual bool OnConfigureNetworkManager(NetworkManager* nm){return true;}
+		};
+
 		CFileQueueUploader();
 		void AddFile(const std::string& fileName, const std::string& displayName, void* user_data);
 		void setUploadSettings(CAbstractUploadEngine * engine);
-		void setCallback(CFileUploaderCallback* callback);
+		void setCallback(Callback* callback);
 		~CFileQueueUploader();
 		bool start();
 		void stop();

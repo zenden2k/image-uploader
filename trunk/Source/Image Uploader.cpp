@@ -26,6 +26,7 @@
 #include "Gui/Dialogs/wizarddlg.h"
 #include "Gui/Dialogs/floatingwindow.h"
 #include "Common/CmdLine.h"
+#include "Func/Settings.h"
 
 CAppModule _Module;
 

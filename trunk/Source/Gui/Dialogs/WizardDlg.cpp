@@ -18,13 +18,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "WizardDlg.h"
-#include <io.h>
 
+#include <io.h>
 #include "Core/ImageConverter.h"
 #include "Func/Base.h"
 #include "Func/HistoryManager.h"
 
-#include "atlheaders.h"
 #include "welcomedlg.h"
 #include "maindlg.h"
 #include "videograbber.h"
@@ -33,12 +32,14 @@
 #include "aboutdlg.h"
 #include "langselect.h"
 #include "floatingwindow.h"
-#include "updatedlg.h"
 #include "TextViewDlg.h"
 #include "ImageDownloaderDlg.h"
 #include "LogWindow.h"
 #include "Common/CmdLine.h"
- 
+#include "Gui/Dialogs/UpdateDlg.h"
+#include "Func/Settings.h"
+#include "Gui/Dialogs/MediaInfoDlg.h"
+
 // CWizardDlg
 CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 { 
@@ -200,7 +201,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	}
 	else
 	{
-		if(time(0) - Settings.LastUpdateTime > 3600*24*7 /* 1 week */)
+		if(time(0) - Settings.LastUpdateTime > 3600*24*3 /* 3 days */)
 		{
 			CreateUpdateDlg();
 			updateDlg->Create(m_hWnd);
@@ -971,7 +972,7 @@ int CFolderAdd::ProcessDir( CString currentDir, bool bRecursive /* = true  */ )
 		  {
 				if(!m_bImagesOnly || IsImage(s_Dir.name))
 				{
-					AddImageStruct ais;
+					CWizardDlg::AddImageStruct ais;
 					ais.show = !m_pWizardDlg->QuickUploadMarker;
 					CString name = CString(currentDir) + CString(_T("\\"))+ CString( s_Dir.name);
 					ais.RealFileName = name;
@@ -997,7 +998,7 @@ DWORD CFolderAdd::Run()
 		else 
 			if(!m_bImagesOnly || IsImage(CurPath))
 			{
-				AddImageStruct ais;
+				CWizardDlg::AddImageStruct ais;
 				ais.show = !m_pWizardDlg->QuickUploadMarker;
 				CString name = CurPath;
 				ais.RealFileName = CurPath;

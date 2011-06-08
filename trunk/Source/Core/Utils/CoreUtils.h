@@ -41,8 +41,8 @@ namespace IuCoreUtils
 	Utf8String toString(double value, int precision);
    std::string Utf8ToSystemLocale(const Utf8String& str);
 	std::string SystemLocaleToUtf8(const Utf8String& str);
-	Utf8String zint64ToString(zint64 value);
-	zint64 stringTozint64(const Utf8String fileName);
+	Utf8String int64_tToString(int64_t value);
+	int64_t stringToint64_t(const Utf8String fileName);
 	Utf8String GetFileMimeType(const Utf8String);
 	Utf8String StrReplace(Utf8String text, Utf8String s, Utf8String d);
 	Utf8String ConvertToUtf8(const Utf8String &text, const Utf8String codePage);
@@ -50,13 +50,13 @@ namespace IuCoreUtils
 
 	// getFileSize retrieves the size of the specified file, in bytes.
 	// It supports large files; filename must be utf8 encoded
-	zint64 getFileSize(Utf8String utf8Filename);
+	int64_t getFileSize(Utf8String utf8Filename);
 	const std::wstring Utf8ToWstring(const Utf8String &str);
 	const Utf8String WstringToUtf8(const std::wstring &str);
 	const std::string CalcMD5Hash(const void* data, size_t size);
 	const std::string CalcMD5Hash(const std::string &data);
 	const std::string timeStampToString(time_t t);
-	Utf8String fileSizeToString(zint64 nBytes);
+	Utf8String fileSizeToString(int64_t nBytes);
 	bool createDirectory(const Utf8String path);
 	bool copyFile(const std::string& src, const std::string & dest, bool overwrite = true);
 };

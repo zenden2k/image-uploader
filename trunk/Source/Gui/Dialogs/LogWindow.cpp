@@ -1,7 +1,7 @@
 /*
     Image Uploader - program for uploading images/files to Internet
     Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
-	 
+
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
@@ -17,9 +17,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-#include "atlheaders.h"
 #include "LogWindow.h"
+#include "atlheaders.h"
 #include "Func/Settings.h"
 #include "TextViewDlg.h"
 
@@ -30,10 +29,10 @@ CLogWindow::CLogWindow()
 
 CLogWindow::~CLogWindow()
 {
-	if(m_hWnd) 
+	if (m_hWnd)
 	{
 		Detach();
-		//DestroyWindow();
+		// DestroyWindow();
 		m_hWnd = NULL;
 	}
 }
@@ -44,10 +43,6 @@ LRESULT CLogWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	DlgResize_Init();
 	MsgList.SubclassWindow(GetDlgItem(IDC_MSGLIST));
 	// TODO
-	/*CMessageLoop* pLoop = _Module.GetMessageLoop();
-	ATLASSERT(pLoop != NULL);
-	pLoop->AddMessageFilter(this); */
-
 	TRC(IDCANCEL, "Скрыть");
 	SetWindowText(TR("Лог ошибок"));
 	return 1;  // Let the system set the focus
@@ -67,7 +62,7 @@ LRESULT CLogWindow::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 void CLogWindow::WriteLog(LogMsgType MsgType, CString Sender, CString Msg, LPCTSTR Info)
 {
 	MsgList.AddString(MsgType, Sender, _T("") + Msg, Info);
-	if(MsgType == logError && Settings.AutoShowLog)
+	if (MsgType == logError && Settings.AutoShowLog)
 	{
 		Show();
 	}
@@ -75,19 +70,19 @@ void CLogWindow::WriteLog(LogMsgType MsgType, CString Sender, CString Msg, LPCTS
 
 void CLogWindow::Show()
 {
-	if(!IsWindowVisible())
-			ShowWindow(SW_SHOW);
+	if (!IsWindowVisible())
+		ShowWindow(SW_SHOW);
 	SetForegroundWindow(m_hWnd);
 }
 
-
 LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	HWND 	hwnd = (HWND) wParam;  
+	HWND hwnd = (HWND) wParam;
 	POINT ClientPoint, ScreenPoint;
-	if(hwnd != GetDlgItem(IDC_FILELIST)) return 0;
+	if (hwnd != GetDlgItem(IDC_FILELIST))
+		return 0;
 
-	if(lParam == -1) 
+	if (lParam == -1)
 	{
 		ClientPoint.x = 0;
 		ClientPoint.y = 0;
@@ -96,8 +91,8 @@ LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 	}
 	else
 	{
-		ScreenPoint.x = LOWORD(lParam); 
-		ScreenPoint.y = HIWORD(lParam); 
+		ScreenPoint.x = LOWORD(lParam);
+		ScreenPoint.y = HIWORD(lParam);
 		ClientPoint = ScreenPoint;
 		::ScreenToClient(hwnd, &ClientPoint);
 	}
@@ -105,14 +100,13 @@ LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 	CMenu FolderMenu;
 	FolderMenu.CreatePopupMenu();
 	FolderMenu.AppendMenu(MF_STRING, IDC_CLEARLIST, TR("Очистить список"));
-	FolderMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
-	
+	FolderMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
 	return 0;
 }
-	
+
 LRESULT CLogWindow::OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	CLogWndMsg * msg = (CLogWndMsg*) wParam;
+	CLogWndMsg* msg = (CLogWndMsg*) wParam;
 	WriteLog(msg->MsgType, msg->Sender, msg->Msg, msg->Info);
 	return 0;
 }
@@ -122,60 +116,54 @@ LRESULT CLogWindow::OnClearList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	MsgList.Clear();
 	return 0;
 }
-	
-void WriteLog(LogMsgType MsgType, LPCWSTR Sender, LPCWSTR Msg,LPCWSTR Info)
+
+void WriteLog(LogMsgType MsgType, LPCWSTR Sender, LPCWSTR Msg, LPCWSTR Info)
 {
-	if(!LogWindow.m_hWnd) return;
+	if (!LogWindow.m_hWnd)
+		return;
 	CLogWindow::CLogWndMsg msg;
 	msg.Msg = Msg;
 	msg.Info = Info;
 	msg.Sender = Sender;
 	msg.MsgType = MsgType;
-	LogWindow.SendMessage(MYWM_WRITELOG,(WPARAM)&msg);
+	LogWindow.SendMessage(MYWM_WRITELOG, (WPARAM)&msg);
 }
 
 CLogWindow LogWindow;
 
-namespace DefaultErrorHandling
+namespace DefaultErrorHandling {
+void ErrorMessage(ErrorInfo errorInfo)
 {
-
-
-void ErrorMessage(/*MessageType mt, ErrorType error, const std::string& param1, int param2*/ErrorInfo errorInfo)
-{
-	LogMsgType type = errorInfo.messageType == (mtWarning)? logWarning: logError;
+	LogMsgType type = errorInfo.messageType == (ErrorInfo::mtWarning) ? logWarning : logError;
 	CString errorMsg;
 
 	CString infoText;
-	if(!errorInfo.FileName.empty())
-		infoText += TR("Файл: ") + Utf8ToWCstring(errorInfo.FileName)+ _T("\n");
+	if (!errorInfo.FileName.empty())
+		infoText += TR("Файл: ") + Utf8ToWCstring(errorInfo.FileName) + _T("\n");
 
-	if(!errorInfo.ServerName.empty())
+	if (!errorInfo.ServerName.empty())
 	{
 		CString serverName = Utf8ToWCstring(errorInfo.ServerName);
-		if(!errorInfo.sender.empty())
-		serverName+= _T("(")+Utf8ToWCstring(errorInfo.sender)+_T(")");
-		infoText += TR("Сервер: ") +serverName +  _T("\n");
+		if (!errorInfo.sender.empty())
+			serverName += _T("(") + Utf8ToWCstring(errorInfo.sender) + _T(")");
+		infoText += TR("Сервер: ") + serverName +  _T("\n");
 	}
 
-	if(!errorInfo.Url.empty())
-		infoText += _T("URL: ") + Utf8ToWCstring(errorInfo.Url)+ _T("\n");
+	if (!errorInfo.Url.empty())
+		infoText += _T("URL: ") + Utf8ToWCstring(errorInfo.Url) + _T("\n");
 
+	if (errorInfo.ActionIndex != -1)
+		infoText += _T("Действие:") + CString(_T(" #")) + IntToStr(errorInfo.ActionIndex);
 
-	if(errorInfo.ActionIndex != -1)
-		infoText += _T("Действие:") +CString(_T(" #")) + IntToStr(errorInfo.ActionIndex);
-
-	
-
-	if(infoText.Right(1)==_T("\n"))
-		infoText.Delete(infoText.GetLength()-1);
-	if(!errorInfo.error.empty())
+	if (infoText.Right(1) == _T("\n"))
+		infoText.Delete(infoText.GetLength() - 1);
+	if (!errorInfo.error.empty())
 	{
 		errorMsg += Utf8ToWCstring(errorInfo.error);
-	
-	}else
+	}
+	else
 	{
-		if(errorInfo.errorType == etRepeating)
-
+		if (errorInfo.errorType == etRepeating)
 		{
 			errorMsg.Format(TR("Загрузка на сервер не удалась. Повторяю (%d)..."), errorInfo.RetryIndex );
 		}
@@ -186,36 +174,35 @@ void ErrorMessage(/*MessageType mt, ErrorType error, const std::string& param1, 
 	}
 
 	CString sender = TR("Модуль загрузки");
-	if(!errorMsg.IsEmpty())
+	if (!errorMsg.IsEmpty())
 		WriteLog(type, sender, errorMsg, infoText);
-	
 }
 
 void DebugMessage(const std::string& msg, bool isResponseBody)
 {
-	if(!isResponseBody)
+	if (!isResponseBody)
 		MessageBox(0, Utf8ToWCstring(msg.c_str()), _T("Uploader"), MB_ICONINFORMATION);
 	else
 	{
-CTextViewDlg TextViewDlg(Utf8ToWstring(msg).c_str(), CString(_T("Server reponse")), CString(_T("Server reponse:")), _T("Save to file?"));
-        
-                        if(TextViewDlg.DoModal(GetActiveWindow())==IDOK)
-                        {
-                                CFileDialog fd(false, 0, 0, 4|2, _T("*.*\0*.*\0\0") ,GetActiveWindow());
-                                lstrcpy(fd.m_szFileName,_T("file.html"));
-                                if(fd.DoModal() == IDOK) 
-                                {
-                                        FILE * f = _tfopen(fd.m_szFileName,_T("wb"));
-                                        if(f)
-                                        {
-                                                //WORD BOM = 0xFEFF;
-                                                //fwrite(&BOM, sizeof(BOM),1,f);
-                                                fwrite(msg.c_str(), msg.size(), sizeof(char), f);
-                                                fclose(f);
-                                        }
-                                }
-                        }
+		CTextViewDlg TextViewDlg(Utf8ToWstring(msg).c_str(), CString(_T("Server reponse")), CString(_T("Server reponse:")),
+		                         _T("Save to file?"));
+
+		if (TextViewDlg.DoModal(GetActiveWindow()) == IDOK)
+		{
+			CFileDialog fd(false, 0, 0, 4 | 2, _T("*.*\0*.*\0\0"), GetActiveWindow());
+			lstrcpy(fd.m_szFileName, _T("file.html"));
+			if (fd.DoModal() == IDOK)
+			{
+				FILE* f = _tfopen(fd.m_szFileName, _T("wb"));
+				if (f)
+				{
+					// WORD BOM = 0xFEFF;
+					// fwrite(&BOM, sizeof(BOM),1,f);
+					fwrite(msg.c_str(), msg.size(), sizeof(char), f);
+					fclose(f);
+				}
+			}
+		}
 	}
 }
-
 }

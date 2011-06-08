@@ -18,12 +18,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef THUMBEDITOR_H
+#define THUMBEDITOR_H
+
 #pragma once
 
+#include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include <atlframe.h>
 #include "3rdpart/ColorButton.h"
-#include "Core/Images/Thumbnail.h"
+
+class Thumbnail;
 // CThumbEditor
 
 class CThumbEditor : 
@@ -67,3 +72,5 @@ public:
 };
 
 
+
+#endif // THUMBEDITOR_H

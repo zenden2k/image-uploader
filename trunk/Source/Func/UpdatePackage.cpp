@@ -545,8 +545,8 @@ int CUpdateManager::progressCallback(void *clientp, double dltotal, double dlnow
 	CUpdateManager * um = reinterpret_cast<CUpdateManager*>( clientp);
 	CString text;
 	CString buf1, buf2;
-	buf1 = Utf8ToWCstring(IuCoreUtils::fileSizeToString(zint64(dlnow)));
-	buf2 = Utf8ToWCstring(IuCoreUtils::fileSizeToString(zint64(dltotal)));
+	buf1 = Utf8ToWCstring(IuCoreUtils::fileSizeToString(int64_t(dlnow)));
+	buf2 = Utf8ToWCstring(IuCoreUtils::fileSizeToString(int64_t(dltotal)));
 	int percent = 0;
 	if(dltotal != 0 )
 	percent = int((dlnow/ dltotal) * 100);

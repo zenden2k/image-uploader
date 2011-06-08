@@ -17,9 +17,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "atlheaders.h"
+
 #include "ThumbEditor.h"
+
 #include "Func/Settings.h"
+#include "Core/Images/Thumbnail.h"
+
 // CThumbEditor
 CThumbEditor::CThumbEditor(Thumbnail *thumb)
 {

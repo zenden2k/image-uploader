@@ -14,7 +14,7 @@ struct ZUploadObject
    std::string serverName;
    std::string displayFileName;
    time_t timeStamp;
-   zint64 uploadFileSize;
+   int64_t uploadFileSize;
 };
 
 class ZOutputCodeGenerator

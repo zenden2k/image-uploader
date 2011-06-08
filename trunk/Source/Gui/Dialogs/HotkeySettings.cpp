@@ -22,7 +22,8 @@
 
 #include "traysettings.h"
 #include "hotkeyeditor.h"
- 
+#include "Func/Settings.h"
+
 // CHotkeySettingsPage
 CHotkeySettingsPage::CHotkeySettingsPage()
 {

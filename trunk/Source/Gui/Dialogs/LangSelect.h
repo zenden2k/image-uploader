@@ -46,9 +46,9 @@ class CLangSelect : public CDialogImpl<CLangSelect>
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		
-		TCHAR Language[128];
+	
  		int GetNextLngFile(LPTSTR szBuffer, int nLength);
+		TCHAR Language[128];
 
 	private:
 		WIN32_FIND_DATA wfd;

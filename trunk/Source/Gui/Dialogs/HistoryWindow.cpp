@@ -180,7 +180,7 @@ void CHistoryWindow::FillList(CHistoryReader * mgr)
 	m_treeView.SetRedraw(false);
 	TreeItem* res = 0;
 	int nFilesCount = 0;
-	zint64 totalFileSize = 0;
+	int64_t totalFileSize = 0;
 	for(int i=0; i<nSessionsCount; i++)
 	{
 		 CHistorySession* ses = mgr->getSession(i);

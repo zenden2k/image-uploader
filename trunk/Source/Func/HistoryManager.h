@@ -1,7 +1,7 @@
 /*
     Image Uploader - program for uploading images/files to Internet
     Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
-	 
+
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ struct HistoryItem
 	std::string thumbUrl;
 	std::string serverName;
 	time_t timeStamp;
-	zint64 uploadFileSize;
+	int64_t uploadFileSize;
 };
 
 class ZSimpleXmlNode;
@@ -45,8 +45,8 @@ class CHistorySession
 {
 	public:
 		CHistorySession(const std::string& filename, const std::string& sessionId);
-		bool AddItem(const HistoryItem &ht);
-		
+		bool AddItem(const HistoryItem& ht);
+
 		int entriesCount() const;
 		HistoryItem entry(const int index) const;
 		std::string serverName() const;
@@ -60,7 +60,7 @@ class CHistorySession
 		std::vector<HistoryItem> m_entries;
 };
 
-class CHistoryManager 
+class CHistoryManager
 {
 	public:
 		CHistoryManager();
@@ -71,9 +71,8 @@ class CHistoryManager
 
 	private:
 		std::string m_historyFilePath;
-		std::string m_historyFileNamePrefix;	
+		std::string m_historyFileNamePrefix;
 };
-
 
 class CHistoryReader
 {
@@ -85,6 +84,6 @@ class CHistoryReader
 		CHistorySession* getSession(const int index);
 	private:
 		CHistoryReader(const CHistoryReader&);
-		CHistoryReader_impl *_impl;
+		CHistoryReader_impl* _impl;
 };
 #endif

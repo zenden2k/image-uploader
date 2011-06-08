@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-MP$(NUMBER_OF_PROCESSORS)"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -58,6 +58,7 @@
 				DebugInformationFormat="4"
 				CallingConvention="0"
 				ForcedIncludeFiles="stdafx.h"
+				ForcedUsingFiles="stdafx.h"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -222,7 +223,7 @@
 				Optimization="0"
 				FavorSizeOrSpeed="0"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC;TIXML_USE_STL;PCRE_STATIC"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -235,6 +236,7 @@
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="0"
 				ForcedIncludeFiles="stdafx.h"
+				ForcedUsingFiles=""
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -261,7 +263,7 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				LinkTimeCodeGeneration="1"
+				LinkTimeCodeGeneration="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -323,7 +325,7 @@
 				Optimization="0"
 				FavorSizeOrSpeed="2"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -422,7 +424,7 @@
 				Optimization="0"
 				FavorSizeOrSpeed="2"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -434,6 +436,7 @@
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="0"
 				ForcedIncludeFiles="stdafx.h"
+				ForcedUsingFiles="stdafx.h"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -623,7 +626,7 @@
 				Optimization="3"
 				FavorSizeOrSpeed="2"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -636,6 +639,7 @@
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="0"
 				ForcedIncludeFiles="stdafx.h"
+				ForcedUsingFiles="stdafx.h"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -651,7 +655,7 @@
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="true"
 				AdditionalOptions="/CRINKLER"
-				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wininet.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib uxtheme.lib pcre.lib curl.lib"
+				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;d:\Projects\Image Uploader\Image Uploader\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
 				GenerateManifest="false"
@@ -801,246 +805,242 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath="Source\AboutDlg.h"
+			<Filter
+				Name="Gui"
 				>
-			</File>
-			<File
-				RelativePath=".\Source\Plugins\base64.h"
+				<File
+					RelativePath=".\Source\Gui\WizardCommon.h"
+					>
+				</File>
+				<Filter
+					Name="Dialogs"
+					>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\AboutDlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\ConvertPresetDlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\FloatingWindow.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\GeneralSettings.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\HotkeyEditor.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\HotkeySettings.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\ImageDownloaderDlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\LangSelect.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\LoginDlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\LogoSettings.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\LogWindow.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\MainDlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\MediaInfoDlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\NewFolderDlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\RegionSelect.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\ResultsPanel.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\ResultsWindow.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\ScreenshotDlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\ScreenshotSettingsPage.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\ServerFolderSelect.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\ServerParamsDlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\ServerSelectDlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\SettingsDlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\SettingsPage.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\SizeExceed.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\statusdlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\TextViewDlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\TraySettings.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\UpdateDlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\UploadDlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\UploadSettings.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\UploadSettingsPage.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\VideoGrabber.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\VideoGrabberParams.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\WelcomeDlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\WizardDlg.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Controls"
+					>
+					<File
+						RelativePath=".\Source\Gui\Controls\CustomTreeControl.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Controls\DialogIndirect.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Controls\HistoryTreeView.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Controls\hyperlink.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Controls\HyperLinkControl.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Controls\ImageView.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Controls\LogListBox.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Controls\MyImage.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Controls\TabListBox.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Controls\ThumbsView.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="Func"
 				>
-			</File>
-			<File
-				RelativePath="Source\ColorPicker.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\Common.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\Core\Utils\CoreUtils.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\Plugins\CP_RSA.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\Core\Upload\DefaultUploadEngine.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\FileInfoHelper.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\FloatingWindow.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\GeneralSettings.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\HotkeyEditor.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\HotkeySettings.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\hyperlink.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\HyperLinkControl.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\Image Uploader.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\Core\ImageConverter.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\ImageView.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\LangClass.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\LangSelect.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\LoginDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\LogoSettings.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\LogWindow.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\MainDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\MediaInfoDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\MyDataObject.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\MyDropSource.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\MyImage.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\MyUtils.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\PictureList.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\PluginLoader.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\RegionSelect.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\resource.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\ResultsPanel.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\Gui\ResultsWindow.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\ScreenshotDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\ScreenshotSettingsPage.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\Core\Upload\ScriptUploadEngine.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\ServerFolderSelect.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\ServerParamsDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\ServerSelectDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\Settings.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\SettingsDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\SettingsPage.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\SizeExceed.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\statusdlg.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\TextViewDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\ThumbsView.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\TraySettings.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\UpdateDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\UpdatePackage.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\UploadDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\Core\UploadEngineList.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\Uploader.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\UploadSettings.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\UploadSettingsPage.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\VideoGrabber.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\VideoGrabberPararams.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\WelcomeDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\WizardDlg.h"
-				>
-			</File>
+				<File
+					RelativePath=".\Source\Func\Common.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Func\FileInfoHelper.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Func\HistoryManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Func\LangClass.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Func\MyUtils.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Func\PluginLoader.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Func\Settings.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Func\UpdatePackage.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -1453,6 +1453,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Source\Core\ImageConverter.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Core\OutputCodeGenerator.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Source\Core\ScreenCapture.cpp"
 					>
 				</File>
@@ -1468,6 +1476,10 @@
 					RelativePath=".\Source\Core\SettingsManager.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Source\Core\UploadEngineList.h"
+					>
+				</File>
 				<Filter
 					Name="Upload"
 					>
@@ -1477,6 +1489,10 @@
 					</File>
 					<File
 						RelativePath=".\Source\Core\Upload\DefaultUploadEngine.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\Upload\DefaultUploadEngine.h"
 						>
 					</File>
 					<File
@@ -1492,7 +1508,19 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Source\Core\Upload\ScriptUploadEngine.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\Upload\ScriptUploadEngine_Sqrat.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Source\Core\Upload\UploadEngine.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\Upload\UploadEngine.h"
 						>
 					</File>
 					<File
@@ -1523,6 +1551,10 @@
 				<Filter
 					Name="Utils"
 					>
+					<File
+						RelativePath=".\Source\Core\Utils\CoreTypes.h"
+						>
+					</File>
 					<File
 						RelativePath=".\Source\Core\Utils\CoreUtils.cpp"
 						>
@@ -1576,6 +1608,10 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath=".\Source\Core\Utils\CoreUtils.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Source\Core\Utils\GlobalMutex.cpp"
 						>
 					</File>
@@ -1597,6 +1633,14 @@
 					</File>
 					<File
 						RelativePath=".\Source\Core\Utils\StringUtils.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\Utils\utils_unix.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\Utils\utils_win.h"
 						>
 					</File>
 				</Filter>

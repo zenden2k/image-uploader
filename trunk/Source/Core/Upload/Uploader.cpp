@@ -1,7 +1,7 @@
 /*
     Image Uploader - program for uploading images/files to Internet
     Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
-	 
+
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
@@ -29,9 +29,9 @@ CUploader::CUploader(void)
 	m_nThumbWidth = 160;
 	m_CurrentStatus = stNone;
 	m_CurrentEngine = NULL;
-	m_PrInfo.IsUploading = false;		
+	m_PrInfo.IsUploading = false;
 	m_PrInfo.Total = 0;
-	m_PrInfo.Uploaded = 0;	
+	m_PrInfo.Uploaded = 0;
 }
 
 CUploader::~CUploader(void)
@@ -46,49 +46,51 @@ void CUploader::Cleanup()
 	m_CurrentEngine->onErrorMessage.clear();
 }
 
-int CUploader::pluginProgressFunc (void* userData, double dltotal,double dlnow,double ultotal, double ulnow)
+int CUploader::pluginProgressFunc (void* userData, double dltotal, double dlnow, double ultotal, double ulnow)
 {
-	CUploader *uploader = reinterpret_cast<CUploader*>(userData);
-	
-	if(!uploader) return 0;
+	CUploader* uploader = reinterpret_cast<CUploader*>(userData);
 
-	if(uploader->needStop())
+	if (!uploader)
+		return 0;
+
+	if (uploader->needStop())
 		return -1;
 
-	if(ultotal<0 || ulnow<0) return 0;
+	if (ultotal < 0 || ulnow < 0)
+		return 0;
 
-	if(ultotal == ulnow)
+	if (ultotal == ulnow)
 	{
 		uploader->m_PrInfo.IsUploading = false;
 
-		if(ultotal != 0 && uploader->m_CurrentStatus == stUploading)
+		if (ultotal != 0 && uploader->m_CurrentStatus == stUploading)
 			uploader->SetStatus(stWaitingAnswer);
 	}
 	else
 	{
-		uploader->m_PrInfo.IsUploading = true;		
+		uploader->m_PrInfo.IsUploading = true;
 		uploader->m_PrInfo.Total = (unsigned long) ultotal;
-		uploader->m_PrInfo.Uploaded = (unsigned long) ulnow;	
+		uploader->m_PrInfo.Uploaded = (unsigned long) ulnow;
 	}
 
-	if(!uploader->onProgress.empty())
+	if (!uploader->onProgress.empty())
 		uploader->onProgress(uploader->m_PrInfo);
 	return 0;
 }
 
-bool CUploader::UploadFile(const std::string & FileName, const std::string displayFileName)
+bool CUploader::UploadFile(const std::string& FileName, const std::string displayFileName)
 {
-	if(!m_CurrentEngine)
+	if (!m_CurrentEngine)
 	{
 		Error(true, "Cannnot proceed: m_CurrentEngine is NULL!");
 		return false;
 	}
-	m_PrInfo.IsUploading = false;		
+	m_PrInfo.IsUploading = false;
 	m_PrInfo.Total = 0;
-	m_PrInfo.Uploaded = 0;	
+	m_PrInfo.Uploaded = 0;
 	m_FileName = FileName;
 	m_bShouldStop = false;
-	if(onConfigureNetworkManager)
+	if (onConfigureNetworkManager)
 		onConfigureNetworkManager(&m_NetworkManager);
 	m_CurrentEngine->setNetworkManager(&m_NetworkManager);
 	m_CurrentEngine->onDebugMessage.bind(this, &CUploader::DebugMessage);
@@ -98,48 +100,54 @@ bool CUploader::UploadFile(const std::string & FileName, const std::string displ
 
 	m_CurrentEngine->setThumbnailWidth(m_nThumbWidth);
 	std::string displayName = displayFileName;
-	if(displayName.empty())
+	if (displayName.empty())
 		displayName = IuCoreUtils::ExtractFileName(FileName);
 	CIUUploadParams uparams;
 	uparams.thumbWidth = m_nThumbWidth;
-	//uparams.thumbHeight = 
 	m_NetworkManager.setProgressCallback(pluginProgressFunc, (void*)this);
 	bool EngineRes = false;
-	int i=0;
+	int i = 0;
 	do
 	{
-		if(needStop()) { Cleanup(); return false;}
-		EngineRes = m_CurrentEngine->doUpload(FileName,displayName, uparams);
+		if (needStop())
+		{
+			Cleanup();
+			return false;
+		}
+		EngineRes = m_CurrentEngine->doUpload(FileName, displayName, uparams);
 		i++;
-		if(needStop()) { Cleanup(); return false;}
-		if(!EngineRes && i!=m_CurrentEngine->RetryLimit()) 
+		if (needStop())
+		{
+			Cleanup();
+			return false;
+		}
+		if (!EngineRes && i != m_CurrentEngine->RetryLimit())
 		{
 			Error(false, "", etRepeating, i);
 		}
 	}
-	while(!EngineRes && i < m_CurrentEngine->RetryLimit());
+	while (!EngineRes && i < m_CurrentEngine->RetryLimit());
 
-	
-	if(!EngineRes) 
+	if (!EngineRes)
 	{
 		Error(true, "", etRetriesLimitReached);
 		Cleanup();
 		return false;
 	}
 
-	m_ImageUrl= (uparams.DirectUrl); 
+	m_ImageUrl = (uparams.DirectUrl);
 
-	m_ThumbUrl = (uparams.ThumbUrl); 
+	m_ThumbUrl = (uparams.ThumbUrl);
 
 	m_DownloadUrl =  (uparams.ViewUrl);
-
 
 	return true;
 }
 
 bool CUploader::setUploadEngine(CAbstractUploadEngine* UploadEngine)
 {
- 	if(m_CurrentEngine == UploadEngine) return true;
+	if (m_CurrentEngine == UploadEngine)
+		return true;
 	m_CurrentEngine = UploadEngine;
 	return true;
 }
@@ -147,7 +155,7 @@ bool CUploader::setUploadEngine(CAbstractUploadEngine* UploadEngine)
 void CUploader::SetStatus(StatusType status, int param1, std::string param)
 {
 	m_CurrentStatus = status;
-	if(onStatusChanged)
+	if (onStatusChanged)
 		onStatusChanged(status, param1,  param);
 }
 
@@ -156,7 +164,7 @@ const std::string CUploader::getDownloadUrl()
 	return m_DownloadUrl;
 }
 
-CAbstractUploadEngine * CUploader::getUploadEngine()
+CAbstractUploadEngine* CUploader::getUploadEngine()
 {
 	return m_CurrentEngine;
 }
@@ -170,6 +178,7 @@ const std::string CUploader::getDirectUrl()
 {
 	return m_ImageUrl;
 }
+
 const std::string CUploader::getThumbUrl()
 {
 	return m_ThumbUrl;
@@ -182,32 +191,30 @@ void CUploader::stop()
 
 bool CUploader::needStop()
 {
-	if(m_bShouldStop)
+	if (m_bShouldStop)
 		return m_bShouldStop;
-	if(onNeedStop)
-		m_bShouldStop = onNeedStop(); // delegate call
+	if (onNeedStop)
+		m_bShouldStop = onNeedStop();  // delegate call
 	return m_bShouldStop;
 }
 
 void CUploader::DebugMessage(const std::string& message, bool isServerResponseBody)
 {
-	if(onDebugMessage)
+	if (onDebugMessage)
 		onDebugMessage(message, isServerResponseBody);
 }
 
 void CUploader::ErrorMessage(ErrorInfo error)
 {
-	if(onErrorMessage)
+	if (onErrorMessage)
 		onErrorMessage(error);
-
 }
-
 
 void CUploader::Error(bool error, std::string message, ErrorType type, int retryIndex)
 {
 	ErrorInfo err;
 	err.ActionIndex  = -1;
-	err.messageType = error? mtError: mtWarning;
+	err.messageType = error ? ErrorInfo::mtError : ErrorInfo::mtWarning;
 	err.error = message;
 	err.FileName = m_FileName;
 	err.errorType = type;

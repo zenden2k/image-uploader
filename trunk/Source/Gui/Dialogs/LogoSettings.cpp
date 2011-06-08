@@ -18,8 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "atlheaders.h"
 #include "LogoSettings.h"
+#include "atlheaders.h"
 #include <uxtheme.h>
 #include "LogWindow.h"
 #include "Func/Settings.h"

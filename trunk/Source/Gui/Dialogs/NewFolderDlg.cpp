@@ -22,6 +22,8 @@
 #include "Func/Common.h"
 #include "LogWindow.h"
 #include "Func/Settings.h"
+#include "Func/pluginloader.h"
+
 // CNewFolderDlg
 CNewFolderDlg::CNewFolderDlg(CFolderItem &folder, bool CreateNewFolder,std::vector<std::string>& accessTypeList):
 					m_folder(folder), m_bCreateNewFolder(CreateNewFolder), m_accessTypeList(accessTypeList)

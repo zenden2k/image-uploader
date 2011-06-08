@@ -26,4 +26,4 @@
 #include "atlheaders.h"
 bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer);
 
-#endif // IU_FUNC_FILEINFOHELPER_H
+#endif  // IU_FUNC_FILEINFOHELPER_H

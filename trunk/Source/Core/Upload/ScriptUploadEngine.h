@@ -84,7 +84,7 @@ class CScriptUploadEngine: public CAbstractUploadEngine
 		
 		SquirrelObject m_Object; 		
 	protected:
-		void Log(MessageType mt, const std::string& error);
+		void Log(ErrorInfo::MessageType mt, const std::string& error);
 		CFolderList m_FolderList;
 		Utf8String m_sName;
 		SquirrelObject m_SquirrelScript;

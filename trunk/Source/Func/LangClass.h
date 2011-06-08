@@ -20,28 +20,15 @@
 
 #ifndef LANGCLASS_H
 #define LANGCLASS_H
-
 #pragma once
+
 #include <atlbase.h>
 #include <atlapp.h>
 #include <atlmisc.h>
-
 #include <atlcoll.h>
-//#include "settings.h"
-struct TranslateListItem
-{
-	int Hash;
-	TCHAR *Name;
-	TCHAR *Text;
-};
 
 class CLang
 {
-	private:
-		TCHAR m_Directory[MAX_PATH];
-		CString m_sLang;
-		CAtlArray<TranslateListItem> StringList;
-		CAtlArray<CString> LanguagesList;
 	public:
 		CLang();
 		~CLang();
@@ -49,13 +36,23 @@ class CLang
 		bool SetDirectory(LPCTSTR Directory);
 		bool LoadLanguage(LPCTSTR Lang);
 		CString GetLanguageName();
+	private:
+		struct TranslateListItem
+		{
+			int Hash;
+			TCHAR *Name;
+			TCHAR *Text;
+		};
+		TCHAR m_Directory[MAX_PATH];
+		CString m_sLang;
+		CAtlArray<TranslateListItem> StringList;
+		CAtlArray<CString> LanguagesList;
 };
 extern CLang Lang;
 
-
 // Begin: translation macros
 #define TR(str) Lang.GetString(_T(str))
-#define TRC(c,str) SetDlgItemText(c,Lang.GetString(_T(str)))
+#define TRC(c, str) SetDlgItemText(c, Lang.GetString(_T(str)))
 // End
 
-#endif // LANGCLASS_H
+#endif  // LANGCLASS_H

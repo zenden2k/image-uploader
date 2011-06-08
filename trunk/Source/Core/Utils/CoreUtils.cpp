@@ -18,19 +18,19 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "CoreUtils.h"
+#include "Core/Utils/CoreUtils.h"
 
-#include <time.h> 
+#include <time.h>
 #include <locale>
 #include <cstdio>
 #include <openssl/md5.h>
 #ifdef _WIN32
     #include <io.h>
-    #include "utils_Win.h"
+    #include "Core/Utils/utils_Win.h"
 #elif defined(__unix__)
 	#include <sys/io.h>
-   #include <sys/stat.h>
-	#include "utils_unix.h"
+	#include <sys/stat.h>
+	#include "Core/Utils/utils_unix.h"
 #endif
 
 namespace IuCoreUtils {
@@ -40,7 +40,7 @@ FILE * fopen_utf8(const char * filename, const char * mode)
 #ifdef _WIN32
 	return _wfopen(Utf8ToWstring(filename).c_str(), Utf8ToWstring(mode).c_str());
 #else
-   return fopen(Utf8ToSystemLocale(filename).c_str(), mode);
+	return fopen(Utf8ToSystemLocale(filename).c_str(), mode);
 #endif
 }
 
@@ -49,14 +49,14 @@ bool FileExists(Utf8String fileName)
 	#ifdef WIN32
 		if(GetFileAttributes(Utf8ToWstring(fileName).c_str())== (unsigned long)-1) return false;
 	#else
-      if(getFileSize(fileName)==-1) return false;
-		//TODO
+		if(getFileSize(fileName) == -1) return false;
+		// TODO
 	#endif
 	return true;
 }
 
 typedef std::codecvt_base::result res;
-typedef std::codecvt<wchar_t, char, mbstate_t> codecvt_type; // internal, external, state
+typedef std::codecvt<wchar_t, char, mbstate_t> codecvt_type;
 std::mbstate_t state;
 
 std::codecvt_base::result fromWstring (const std::wstring & str,
@@ -85,22 +85,22 @@ std::codecvt_base::result fromWstring (const std::wstring & str,
 std::codecvt_base::result toWstring (const std::string & str, 
    const std::locale & loc, std::wstring & out)
 { 
-  const codecvt_type& cdcvt = std::use_facet<codecvt_type>(loc);
-  std::codecvt_base::result r;
+	const codecvt_type& cdcvt = std::use_facet<codecvt_type>(loc);
+	std::codecvt_base::result r;
   
-  wchar_t * wchars = new wchar_t [str.size () + 1];
+	wchar_t * wchars = new wchar_t[str.size() + 1];
+ 
+	const char *in_next = 0;
+	wchar_t *out_next = 0;
   
-  const char *in_next = 0;
-  wchar_t *out_next = 0;
-  
-  r = cdcvt.in (state, str.c_str (), str.c_str () + str.size (), in_next,
+	r = cdcvt.in (state, str.c_str (), str.c_str () + str.size (), in_next,
                 wchars, wchars + str.size () + 1, out_next);
-  *out_next = '\0';
-  out = wchars;    
+	*out_next = '\0';
+	out = wchars;    
   
-  delete [] wchars;
+	delete [] wchars;
   
-  return r;
+	return r;
 }
 
 std::string SystemLocaleToUtf8(const Utf8String& str)
@@ -155,7 +155,7 @@ Utf8String ExtractFileExt(const Utf8String fileName)
 Utf8String ExtractFilePath(const Utf8String fileName)
 {
 	int i, len = fileName.length();
-	for(i=len; i>=0; i--)
+	for(i = len; i >= 0; i--)
 	{
 		if(fileName[i] == '\\' || fileName[i]=='/')
 		{
@@ -211,8 +211,7 @@ bool ReadUtf8TextFile(Utf8String utf8Filename, Utf8String& data)
 	{	
 		size -= 3;	
 	}
-	else if(buf[0] == 0xFF || buf[1] == 0xFE )
-	{
+	else if(buf[0] == 0xFF || buf[1] == 0xFE ) {
 		// UTF-16LE encoding
 		size -= 2;
 		fseek( stream, 2L,  SEEK_SET );
@@ -224,10 +223,8 @@ bool ReadUtf8TextFile(Utf8String utf8Filename, Utf8String& data)
 		fclose(stream);
 		data = WstringToUtf8(res);
 		return true;
-	}
-
-	else 
-	{
+	} 
+	else {
 		// no BOM was found; seeking backward
 		fseek( stream, 0L,  SEEK_SET );
 	}
@@ -290,7 +287,7 @@ const std::string timeStampToString(time_t t)
 	return buf;
 }
 
-std::string ulonglongToStr(zint64 l, int base)
+std::string ulonglongToStr(int64_t l, int base)
 {
     char buff[67]; // length of MAX_ULLONG in base 2
     buff[66] = 0;
@@ -324,31 +321,31 @@ std::string ulonglongToStr(zint64 l, int base)
     return p;
 }
 
-std::string longlongtoStr(zint64 l, int base)
+std::string longlongtoStr(int64_t l, int base)
 {
    std::string res = ulonglongToStr(l<0 ? -l: l, base);
-   if(l < 0)
+   if (l < 0)
      res = "-" + res;
    return res;
 }
 
 
-Utf8String zint64ToString(zint64 value)
+Utf8String int64_tToString(int64_t value)
 {
-   return longlongtoStr(value, 10);
+	return longlongtoStr(value, 10);
 }
 
 #ifndef LLONG_MIN
-   #define LLONG_MIN (-9223372036854775807-1)
-   #define LLONG_MAX (-9223372036854775807-1)
-#endif
+	#define LLONG_MIN (-9223372036854775807-1)
+	#define LLONG_MAX (-9223372036854775807-1)
+#endif 
 
-static zint64 zstrtoll(const char *nptr, const char **endptr, register int base, bool *ok)
+static int64_t zstrtoll(const char *nptr, const char **endptr, register int base, bool *ok)
 {
     register const char *s;
-    register  zuint64 acc;
+    register  uint64_t acc;
     register unsigned char c;
-    register  zuint64 qbase, cutoff;
+    register  uint64_t qbase, cutoff;
     register int neg, any, cutlim;
 
     /*
@@ -378,7 +375,7 @@ static zint64 zstrtoll(const char *nptr, const char **endptr, register int base,
         base = c == '0' ? 8 : 10;
 
     qbase = unsigned(base);
-    cutoff = neg ? ((zint64)(0-(LLONG_MIN + LLONG_MAX))) + LLONG_MAX : LLONG_MAX;
+    cutoff = neg ? ((int64_t)(0-(LLONG_MIN + LLONG_MAX))) + LLONG_MAX : LLONG_MAX;
     cutlim = cutoff % qbase;
     cutoff /= qbase;
     for (acc = 0, any = 0;; c = *s++) {
@@ -416,12 +413,12 @@ static zint64 zstrtoll(const char *nptr, const char **endptr, register int base,
     return acc;
 }
 
-zint64 stringTozint64(const Utf8String fileName)
+int64_t stringToint64_t(const Utf8String fileName)
 {
     return zstrtoll(fileName.c_str(), 0, 10 , 0);
 }
 
-zint64 getFileSize(Utf8String utf8Filename)
+int64_t getFileSize(Utf8String utf8Filename)
 {
 #ifdef _WIN32
    #ifdef _MSC_VER
@@ -439,15 +436,13 @@ zint64 getFileSize(Utf8String utf8Filename)
       return -1;
    }
 #endif
-
 	 return stats.st_size;
 }
 
 // Преобразование размера файла в строку
-Utf8String fileSizeToString(zint64 nBytes)
+Utf8String fileSizeToString(int64_t nBytes)
 {
-	double number=0;
-	int id=0;
+	double number = 0;
 	Utf8String postfix;
 	int precision = 0;
 	if(nBytes < 0)
@@ -463,16 +458,16 @@ Utf8String fileSizeToString(zint64 nBytes)
 	else if( nBytes < 1048576)
 	{
 		number = (double)nBytes / 1024.0;
-		postfix = "kB";
+		postfix = "KB";
 	}
-	else if(nBytes<((zint64)1073741824)) /*< 1 GB*/
+	else if(nBytes<((int64_t)1073741824)) /*< 1 GB*/
 	{
-		postfix= "mB";
+		postfix= "MB";
 		number= (double)nBytes / 1048576.0;
 	}
 	else if(nBytes>=1073741824)
 	{
-		postfix= "gB";
+		postfix= "GB";
 		precision = 1;
 		number = (double)nBytes / 1073741824.0;
 	}

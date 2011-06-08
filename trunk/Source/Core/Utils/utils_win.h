@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define _IU_UTILS_WIN_H
 
 #include <windows.h>
-#include "codepages.h"
+#include "Core/3rdpart/codepages.h"
 
 namespace IuCoreUtils
 {

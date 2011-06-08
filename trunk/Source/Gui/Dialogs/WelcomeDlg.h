@@ -25,12 +25,9 @@
 // CWelcomeDlg
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include "wizarddlg.h"
-#include "Screenshotdlg.h"
+#include "Gui/WizardCommon.h"
 #include "Gui/Controls/hyperlinkcontrol.h"
-#include "settingsdlg.h"
-#include "mediainfodlg.h"
-#include "regionselect.h"
+#include "Gui/Controls/MyImage.h"
 #include <atlcrack.h>
 
 #define ID_VIEWHISTORY 36220

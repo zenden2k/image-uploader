@@ -24,7 +24,10 @@
 #pragma once
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include "Func/pluginloader.h"
+#include <string>
+#include <vector>
+
+struct CFolderItem;
 
 class CNewFolderDlg : 
 	public CDialogImpl<CNewFolderDlg>,

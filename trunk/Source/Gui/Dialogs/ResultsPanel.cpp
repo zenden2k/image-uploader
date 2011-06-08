@@ -24,6 +24,7 @@
 #include "Core/3rdpart/pcreplusplus.h"
 #include "mediainfodlg.h"
 #include "LogWindow.h"
+#include "Func/Settings.h"
 
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg,CAtlArray<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)

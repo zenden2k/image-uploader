@@ -25,13 +25,14 @@
 
 #include "atlheaders.h"
 #include "statusdlg.h"
-#include "updatedlg.h"
+
 #include "Func/MyEngineList.h"
 #include "HotkeySettings.h"
 #include "Gui/Controls/hyperlink.h"
 #include "Core/ScreenCapture.h"
 #include "resource.h"       // main symbols
 #include "screenshotdlg.h"
+#include "Gui/Dialogs/UpdateDlg.h"
 
 #define ID_PASTE 9888
 #define ID_HOTKEY_BASE 10000
@@ -40,16 +41,10 @@
 #define WM_MY_EXIT WM_USER + 224
 // CWizardDlg
 
-struct AddImageStruct
-{
-	CString RealFileName, VirtualFileName;
-	bool show;
-};
-
-
 class CFolderAdd;
 class CWizardPage;
 class CWizardDlg;
+class CUpdateDlg;
 
 class CFolderAdd: public CThreadImpl<CFolderAdd>
 {
@@ -98,6 +93,12 @@ class CWizardDlg :
 		, public CUpdateDlg::CUpdateDlgCallback
 {
 public:
+	struct AddImageStruct
+	{
+		CString RealFileName, VirtualFileName;
+		bool show;
+	};
+
 	CWizardDlg();
 	~CWizardDlg();
 	CStringList m_Paths;

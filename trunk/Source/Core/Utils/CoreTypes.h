@@ -5,13 +5,14 @@
 
 typedef std::string Utf8String;
 
-#ifdef _MSC_VER
-   typedef __int64 zint64;
+#include "Core/3rdpart/pstdint.h"
+/*#ifdef _MSC_VER
+   typedef __int64 int64_t;
    typedef unsigned __int64 zuint64;
 #else
-   typedef long long zint64;
+   typedef long long int64_t;
    typedef unsigned long long zuint64;
-#endif
+#endif*/
 
 // A macro to disallow the copy constructor and operator= functions
 // This should be used in the private: declarations for a class
