@@ -25,6 +25,8 @@
 #include "Gui/GuiTools.h"
 #include "ConvertPresetDlg.h"
 #include "Func/MyEngineList.h"
+#include "Func/Settings.h"
+#include "Gui/Dialogs/SettingsDlg.h"
 
 CUploadSettings::CUploadSettings(CMyEngineList * EngineList):ñonvert_profiles_(Settings.ConvertProfiles)
 {

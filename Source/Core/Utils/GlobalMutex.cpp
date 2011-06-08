@@ -1,7 +1,7 @@
 /*
     Image Uploader - program for uploading images/files to Internet
     Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
-	 
+
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
@@ -21,31 +21,31 @@
 #include "GlobalMutex.h"
 #include <windows.h>
 
-namespace IuCoreUtils
+namespace IuCoreUtils {
+
+ZGlobalMutex::ZGlobalMutex(const std::string& name)
 {
-	ZGlobalMutex::ZGlobalMutex(const std::string &name)
+	m_data = ::CreateMutexA(NULL, TRUE, name.c_str());
+	if (!m_data && GetLastError() == ERROR_ALREADY_EXISTS)
 	{
-		m_data = ::CreateMutexA(NULL, TRUE, name.c_str());
-		if(!m_data && GetLastError() == ERROR_ALREADY_EXISTS)
-		{
-			m_data = OpenMutexA(0, 0, name.c_str());
-		}
-		lock();
+		m_data = OpenMutexA(0, 0, name.c_str());
 	}
+	lock();
+}
 
-	void ZGlobalMutex::lock()
-	{
-		WaitForSingleObject(m_data, INFINITE); 
-	}
+void ZGlobalMutex::lock()
+{
+	WaitForSingleObject(m_data, INFINITE);
+}
 
-	void ZGlobalMutex::unlock()
-	{
-		ReleaseMutex(reinterpret_cast<HANDLE>(m_data));
-	}
+void ZGlobalMutex::unlock()
+{
+	ReleaseMutex(reinterpret_cast<HANDLE>(m_data));
+}
 
-	ZGlobalMutex::~ZGlobalMutex()
-	{
-		unlock();
-		CloseHandle(reinterpret_cast<HANDLE>(m_data));
-	}
+ZGlobalMutex::~ZGlobalMutex()
+{
+	unlock();
+	CloseHandle(reinterpret_cast<HANDLE>(m_data));
+}
 }

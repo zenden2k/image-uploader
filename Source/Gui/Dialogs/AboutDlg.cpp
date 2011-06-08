@@ -1,7 +1,7 @@
 /*
     Image Uploader - program for uploading images/files to Internet
     Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
-	 
+
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 
 #include "resource.h"
 
-#include "versioninfo.h" 
+#include "versioninfo.h"
 #include <curl/curl.h>
 #include "Func/Settings.h"
 
@@ -31,12 +31,13 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
 	LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
 	LogoImage.LoadImage(0, 0, IDR_PNG1, false, GetSysColor(COLOR_BTNFACE));
-	
+
 	m_WebSiteLink.SubclassWindow(GetDlgItem(IDC_SITELINK));
 	m_GoogleCodeLink.SubclassWindow(GetDlgItem(IDC_GOOGLECODELINK));
-	CString buildInfo = CString("Build ")+_T(BUILD) +_T(" (")+_T(TIME)+_T(")")+(_T("\r\n") + Utf8ToWstring( curl_version())).c_str();
+	CString buildInfo = CString("Build ") + _T(BUILD) + _T(" (") + _T(TIME) + _T(")") +
+	   (_T("\r\n") + Utf8ToWstring( curl_version())).c_str();
 
-	CString text = CString(TR("v"))+CString(_T("1.2.7 RC"));
+	CString text = CString(TR("v")) + CString(_T("1.2.7 RC"));
 	SetDlgItemText(IDC_CURLINFOLABEL, text);
 	SetDlgItemText(IDC_IMAGEUPLOADERLABEL, buildInfo);
 	CenterWindow(GetParent());

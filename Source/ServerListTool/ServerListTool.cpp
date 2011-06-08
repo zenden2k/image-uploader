@@ -1,26 +1,25 @@
 // ServerListTool.cpp : main source file for ServerListTool.exe
 //
 
-
-
 #include "resource.h"
-
 #include "MainDlg.h"
 #include <Gdiplus.h>
-CAppModule _Module;
 #include "Func/Common.h"
+
+CAppModule _Module;
+
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*lpstrCmdLine*/, int /*nCmdShow*/)
 {
 	HRESULT hRes = ::CoInitialize(NULL);
-// If you are running on NT 4.0 or higher you can use the following call instead to 
-// make the EXE free threaded. This means that calls come in on a random RPC thread.
-//	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	// If you are running on NT 4.0 or higher you can use the following call instead to
+	// make the EXE free threaded. This means that calls come in on a random RPC thread.
+	//	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	ATLASSERT(SUCCEEDED(hRes));
 
 	// this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
 	::DefWindowProc(NULL, 0, 0, 0L);
 
-	AtlInitCommonControls(ICC_BAR_CLASSES);	// add flags to support other controls
+	AtlInitCommonControls(ICC_BAR_CLASSES);   // add flags to support other controls
 
 	hRes = _Module.Init(NULL, hInstance);
 	ATLASSERT(SUCCEEDED(hRes));
@@ -38,8 +37,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
 	}
 
 	_Module.Term();
-	SquirrelVM::Shutdown(); 
+	SquirrelVM::Shutdown();
 	::CoUninitialize();
-	ClearTempFolder(IUTempFolder); 
+	ClearTempFolder(IUTempFolder);
 	return nRet;
 }

@@ -42,7 +42,7 @@ class ZSimpleXmlNode
       bool GetAttributeBool(const std::string& name, bool & value) const;
       bool GetAttributeInt(const std::string& name, int & value) const;
 		int AttributeInt(const std::string& name) const;
-		zint64 AttributeInt64(const std::string& name) const;
+		int64_t AttributeInt64(const std::string& name) const;
 		bool AttributeBool(const std::string& name) const;
 		std::string Name() const;
 		std::string Text() const;
@@ -52,7 +52,7 @@ class ZSimpleXmlNode
 		ZSimpleXmlNode GetChild(const std::string& name, bool create = true);
 		void SetAttribute(const std::string& name, const std::string& value);
 		void SetAttribute(const std::string& name, int value);
-		void SetAttribute(const std::string& name, zint64 value);
+		void SetAttribute(const std::string& name, int64_t value);
 		void SetAttributeBool(const std::string& name, bool value);
 		void SetText(const std::string& value);
 

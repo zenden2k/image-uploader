@@ -22,6 +22,10 @@
 #include "ImageDownloaderDlg.h"
 #include "HistoryWindow.h"
 #include "Common/CmdLine.h"
+#include "settingsdlg.h"
+#include "mediainfodlg.h"
+#include "regionselect.h"
+#include "Screenshotdlg.h"
 
 // CWelcomeDlg
 CWelcomeDlg::CWelcomeDlg()

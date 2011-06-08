@@ -20,7 +20,7 @@
 
 #pragma once
 #include "atlheaders.h"
-#include "Gui/Controls/myimage.h"
+#include "Gui/Controls/MyImage.h"
 #include "resource.h"
 
 class CAboutDlg : public CDialogImpl<CAboutDlg>

@@ -19,7 +19,7 @@
 */
 
 #include "TraySettings.h"
-
+#include "Func/Settings.h"
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
  
 CTrayActions::CTrayActions()

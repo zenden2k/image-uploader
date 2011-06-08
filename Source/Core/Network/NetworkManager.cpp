@@ -157,8 +157,8 @@ NetworkManager::NetworkManager(void)
 	curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
 	curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTDATA, this);
 	
-   curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L);
-   curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0L); 
+   curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L); //FIXME
+   curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 1L); 
 	//We want the referrer field set automatically when following locations
 	curl_easy_setopt(curl_handle, CURLOPT_AUTOREFERER, 1L); 
 	curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 32768L);
@@ -555,7 +555,7 @@ bool NetworkManager::doUpload(const NString& fileName, const NString &data)
 	curl_easy_setopt(curl_handle,CURLOPT_POSTFIELDS, NULL);
 	curl_easy_setopt(curl_handle, CURLOPT_READDATA, this);
 	
-	addQueryHeader("Content-Length", IuCoreUtils::zint64ToString(m_CurrentFileSize));
+	addQueryHeader("Content-Length", IuCoreUtils::int64_tToString(m_CurrentFileSize));
 	private_initTransfer();
 	curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, (curl_off_t)m_CurrentFileSize); 
 	curl_result = curl_easy_perform(curl_handle);

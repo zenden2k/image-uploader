@@ -68,9 +68,6 @@ LRESULT CLoginDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& b
 	li.DoAuth = SendDlgItemMessage(IDC_DOAUTH, BM_GETCHECK) != FALSE;
 	
 	Settings.ServerByUtf8Name(m_UploadEngine->Name).authData = li;
-
-	//SaveLogin(ServerId, li);
-
 	EndDialog(wID);
 	return 0;
 }

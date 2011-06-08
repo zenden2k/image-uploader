@@ -35,32 +35,6 @@
 #define IDC_NEWPROFILE 10001
 #define IDC_SAVEPROFILE 10002
 #define IDC_DELETEPROFILE 10003
-struct LogoParams
-{
-	LOGFONT Font;
-	LOGFONT ThumbFont;
-	int LogoPosition;
-	int LogoBlend;
-	int TextPosition;
-	TCHAR FileName[256];
-	TCHAR FontName[256];
-	TCHAR Text[256];
-	COLORREF TextColor,StrokeColor,FrameColor,ThumbColor1,ThumbColor2/*TextBackground ,*/,ThumbTextColor;
-	int ThumbAlpha;
-	BOOL TextOverThumb;
-};
-
-#define COLOR_BUTTON(id, member) \
-	if (uMsg == WM_COMMAND && BN_CLICKED == HIWORD(wParam) && id == LOWORD(wParam)) \
-	{ \
-		SetMsgHandled(TRUE); \
-		CColorDialog ColorDialog(member);\
-	if(ColorDialog.DoModal(m_hWnd)==IDOK)\
-	{\
-		member=ColorDialog.GetColor();\
-	}\
-			return TRUE; \
-	}
 
 
 class CLogoSettings : 
@@ -115,7 +89,7 @@ protected:
 	LRESULT OnBnClickedThumbfont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	CColorButton FrameColor;
 	CColorButton Color1,Color2,ThumbTextColor,TextColor, StrokeColor;
-	LogoParams *params;
+	//LogoParams *params;
 	LOGFONT lf,ThumbFont;
    CString CurrentProfileOriginalName;
 	bool Apply();

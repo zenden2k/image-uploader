@@ -17,19 +17,22 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef THUMBSETTINGSPAGE_H
+#define THUMBSETTINGSPAGE_H
+
 
 #pragma once
-struct LogoParams;
+
 #include "resource.h"       // main symbols
-#include "Gui/Controls/myimage.h"
-#include "settingspage.h"
+#include "Gui/Controls/MyImage.h"
+#include "SettingsPage.h"
 #include "Func/Settings.h"
 #include "3rdpart/ColorButton.h"
 #include <atlcrack.h>
 // CThumbSettingsPage
 
-class CThumbSettingsPage : 
-	public CDialogImpl<CThumbSettingsPage>, public CSettingsPage	
+class CThumbSettingsPage : public CDialogImpl<CThumbSettingsPage>, 
+                           public CSettingsPage	
 {
 public:
 	CThumbSettingsPage();
@@ -68,12 +71,13 @@ public:
 		LRESULT OnThumbComboChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnBnClickedNewThumbnail(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		void showSelectedThumbnailPreview();
+		LRESULT OnWidthEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 		ThumbCreatingParams params_;
 		std::map<std::string, Thumbnail*> thumb_cache_;
       bool m_CatchFormChanges;
 		CColorButton ThumbBackground;
-public:
-   LRESULT OnWidthEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+   
 };
 
+#endif // THUMBSETTINGSPAGE_H
 

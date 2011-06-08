@@ -29,7 +29,8 @@
 #include <atlcrack.h>
 #include "Common/trayicon.h"
 #include "SettingsDlg.h"
-#include "traysettings.h"
+#include "TraySettings.h"
+#include "Core/Upload/FileQueueUploader.h"
 // FloatingWindow
 
 #define IDM_UPLOADFILES 20001
@@ -59,12 +60,12 @@
 #define WM_CLOSETRAYWND (WM_USER+2)
 #define WM_RELOADSETTINGS (WM_USER+3)
 
-#include "Core/Upload/FileQueueUploader.h"
+
 
 class CFloatingWindow :
 	public CWindowImpl<CFloatingWindow>, 
 	public CTrayIconImpl<CFloatingWindow>, 
-	public CFileUploaderCallback
+	public CFileQueueUploader::Callback
 {
 public:
 	HANDLE hMutex;
@@ -77,7 +78,7 @@ public:
 		HICON m_hIconSmall;
 		bool m_bStopCapturingWindows;
 		bool m_bIsUploading;
-		FileListItem m_LastUploadedItem;
+		CFileQueueUploader::FileListItem m_LastUploadedItem;
 	CFloatingWindow();
 	~CFloatingWindow();
 	DECLARE_WND_CLASS(_T("CFloatingWindow"))
@@ -157,7 +158,7 @@ public:
 	 CFileQueueUploader * m_FileQueueUploader;
 	 bool OnQueueFinished();
 	 bool m_bFromHotkey;
-	 bool OnFileFinished(bool ok, FileListItem& result);
+	 bool OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result);
 	 bool OnConfigureNetworkManager(NetworkManager* nm);
 	 std::string source_file_name_;
 	 std::string server_name_;

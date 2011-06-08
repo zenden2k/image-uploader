@@ -119,7 +119,7 @@ class NetworkManager
 		NString m_url;
 		void* m_progressData;
 		CURLcode curl_result;
-		zint64 m_CurrentFileSize;
+		int64_t m_CurrentFileSize;
 		std::vector<QueryParam> m_QueryParams;
 		std::vector<CustomHeaderItem> m_QueryHeaders;
 		std::vector<CustomHeaderItem> m_ResponseHeaders;

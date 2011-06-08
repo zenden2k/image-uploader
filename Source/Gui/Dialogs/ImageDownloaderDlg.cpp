@@ -144,7 +144,7 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, CFileDownloader::DownloadFileL
 {
 	if(ok)
 	{
-		AddImageStruct ais;
+		CWizardDlg::AddImageStruct ais;
 		ais.show =true;
 		ais.RealFileName = Utf8ToWstring(it.fileName).c_str();
 		ais.VirtualFileName =  Utf8ToWstring(it.displayName).c_str();

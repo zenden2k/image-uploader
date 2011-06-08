@@ -18,10 +18,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "atlheaders.h"
 #include "SizeExceed.h"
+#include "atlheaders.h"
 #include "Func/common.h"
-
+#include "Core/Upload/UploadEngine.h"
+#include "Func/Settings.h"
+#include "Core/ScreenCapture.h"
 // CSizeExceed
 CSizeExceed::CSizeExceed(LPCTSTR szFileName, FullUploadProfile &iss, CMyEngineList * EngineList)
 : m_UploadProfile(iss), m_EngineList(EngineList), m_ImageSettings(iss.convert_profile)

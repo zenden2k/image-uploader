@@ -1,7 +1,7 @@
 /*
     Image Uploader - program for uploading images/files to Internet
     Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
-	 
+
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
@@ -41,7 +41,7 @@ class CFileDownloader
 		CFileDownloader();
 		virtual ~CFileDownloader();
 		void AddFile(const std::string& url, void* id);
-		bool start();	
+		bool start();
 		bool waitForFinished(unsigned int msec = -1);
 		void setThreadCount(int n);
 		void stop();
@@ -59,8 +59,8 @@ class CFileDownloader
 		std::vector<HANDLE> m_hThreads;
 		bool m_NeedStop;
 		volatile bool m_IsRunning;
-		static int ProgressFunc (void* userData, double dltotal,double dlnow,double ultotal, double ulnow);
-		static unsigned int __stdcall thread_func(void * param);
+		static int ProgressFunc (void* userData, double dltotal, double dlnow, double ultotal, double ulnow);
+		static unsigned int __stdcall thread_func(void* param);
 		void memberThreadFunc();
 		bool getNextJob(DownloadFileListItem& item);
 

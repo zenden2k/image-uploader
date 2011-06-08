@@ -25,6 +25,8 @@
 #include "Func/Base.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/InputDialog.h"
+#include "Func/Settings.h"
+#include "Core/Upload/UploadEngine.h"
 
 class CTempFilesDeleter
 {
@@ -86,74 +88,14 @@ CString UploaderStatusToString(StatusType status, int actionIndex, std::string p
 // Преобразование размера файла в строку
 bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize)
 {
-	//TCHAR szMeasureNames[4][5]={"Byte","МB","KB","GB"};
-	LPTSTR szName;
-	szName=_T("Bytes");
-	double number=0;
-	int id=0;
-
-	if(nBytes<1024)
-	{
-		wsprintf(szBuffer,_T("%d %s"),(int)nBytes, szName);
-	}
-	else{
-
-		if(nBytes>=1024 && nBytes<(1048576))
-		{
-			number= (double)nBytes / 1024.0;
-			szName=_T("kB");
-
-		}
-		else if(nBytes>=1048576 && (nBytes<(__int64(1073741824) /*1 GB*/)))
-		{
-			szName=_T("mB");
-			number= (double)nBytes / 1048576.0;
-		}
-
-		else if(nBytes>=1073741824)
-		{
-			szName=_T("gB");
-			number= (double)nBytes / 1073741824.0;
-		}
-		swprintf(szBuffer,_T("%1.0f %s"),number,szName);
-	}
+	std::string res = IuCoreUtils::fileSizeToString(nBytes);
+	lstrcpyn(szBuffer, Utf8ToWstring(res).c_str(), nBufSize);
 	return TRUE;
 }
 
 bool BytesToString(__int64 nBytes, LPTSTR szBuffer,int nBufSize)
 {
-	LPTSTR szName;
-	szName = _T("Bytes");
-	double number=0;
-	int id=0;
-	if(nBytes<1024)
-	{
-		wsprintf(szBuffer,_T("%d %s"),(int)nBytes,szName);
-	}
-	else{
-
-		if(nBytes>=1024 && nBytes<(1048576))
-		{
-			number= (double)nBytes / 1024.0;
-			szName=_T("KB");
-			wsprintf(szBuffer,_T("%d %s"),(int)number,szName);
-			return TRUE;
-
-		}
-		else if(nBytes>=1048576 && (nBytes<(__int64(1073741824) /*1 GB*/)))
-		{
-			szName=_T("MB");
-			number= (double)nBytes / 1048576.0;
-		}
-
-		else
-		{
-			szName = _T("GB");
-			number = (double)nBytes / 1073741824.0;
-		}
-		swprintf(szBuffer,_T("%3.2f %s"),number,szName);
-	}
-	return TRUE;
+	return NewBytesToString(nBytes, szBuffer, nBufSize);
 }
 
 // CUploadDlg

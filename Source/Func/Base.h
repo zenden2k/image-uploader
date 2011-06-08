@@ -1,7 +1,7 @@
 /*
     Image Uploader - program for uploading images/files to Internet
     Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
-	 
+
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
@@ -33,10 +33,10 @@ class ZBase
 		CHistoryManager* historyManager();
 		void addToGlobalCache(const std::string fileName, const std::string url);
 		std::string getFromCache(const std::string url);
+
 	private:
 		static ZBase* m_base;
 		CHistoryManager m_hm;
 		std::map<std::string, std::string> m_UrlCache;
-
 };
 #endif

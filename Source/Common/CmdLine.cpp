@@ -17,7 +17,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 #include "CmdLine.h"
 
 #include "Func/MyUtils.h"
@@ -35,34 +34,37 @@ CCmdLine::CCmdLine(LPCTSTR szCmdLine)
 void CCmdLine::Parse(LPCTSTR szCmdLine)
 {
 	m_Params.RemoveAll();
+
 	LPCTSTR Cur = szCmdLine;
 	TCHAR Buffer[MAX_PATH];
 
-	while(Cur && *Cur)
+	while (Cur && *Cur)
 	{
-		*Buffer=0;
-		if(*Cur=='"') 
-			Cur = CopyToStartOfW(++Cur, _T("\""), Buffer, sizeof(Buffer)/sizeof(TCHAR));
-		else 
-			Cur = CopyToStartOfW(Cur, _T(" "), Buffer, sizeof(Buffer)/sizeof(TCHAR));
+		*Buffer = 0;
+		if (*Cur == '"')
+			Cur = CopyToStartOfW(++Cur, _T("\""), Buffer, sizeof(Buffer) / sizeof(TCHAR));
+		else
+			Cur = CopyToStartOfW(Cur, _T(" "), Buffer, sizeof(Buffer) / sizeof(TCHAR));
 
 		AddParam(Buffer);
-		while(*Cur && *Cur==' ') Cur++;
-		if(m_Params.GetCount()==1)
-			m_OnlyParams=Cur;
+		while (*Cur && *Cur == ' ')
+			Cur++;
+		if (m_Params.GetCount() == 1)
+			m_OnlyParams = Cur;
 	}
+
 	return;
 }
 
 int CCmdLine::AddParam(LPCTSTR szParam)
 {
 	m_Params.Add(szParam);
-	return m_Params.GetCount()-1;
+	return m_Params.GetCount() - 1;
 }
 
 CString CCmdLine::operator[](int nIndex)
 {
-	if(nIndex < 0 || nIndex > int(m_Params.GetCount())-1)
+	if (nIndex < 0 || nIndex > int(m_Params.GetCount()) - 1)
 		return _T("");
 	return m_Params[nIndex];
 }
@@ -74,24 +76,25 @@ CString CCmdLine::OnlyParams()
 
 CString CCmdLine::ModuleName()
 {
-	return m_Params.GetCount()? m_Params[0] : _T("");
+	return m_Params.GetCount() ? m_Params[0] : _T("");
 }
 
-bool CCmdLine::GetNextFile(CString &FileName, int &nIndex)
+bool CCmdLine::GetNextFile(CString& FileName, int& nIndex)
 {
-	for(size_t i=nIndex+1; i<m_Params.GetCount(); i++)
+	for (size_t i = nIndex + 1; i < m_Params.GetCount(); i++)
 	{
-		if(m_Params[i].GetLength() && m_Params[i][0]!=_T('/'))
+		if (m_Params[i].GetLength() && m_Params[i][0] != _T('/'))
 		{
 			FileName = m_Params[i];
 			nIndex = i;
 			return true;
 		}
 	}
+
 	return false;
 }
 
-CCmdLine& CCmdLine::operator=(const CCmdLine &p)
+CCmdLine &CCmdLine::operator=(const CCmdLine& p)
 {
 	m_Params.RemoveAll();
 	m_Params.Copy(p.m_Params);
@@ -101,13 +104,15 @@ CCmdLine& CCmdLine::operator=(const CCmdLine &p)
 bool CCmdLine::IsOption(LPCTSTR Option, bool bUsePrefix)
 {
 	CString Temp;
-	if(bUsePrefix) Temp = CString("/"); 
+	if (bUsePrefix)
+		Temp = CString("/");
 	Temp += Option;
-	for(size_t i=1; i<m_Params.GetCount(); i++)
+	for (size_t i = 1; i < m_Params.GetCount(); i++)
 	{
-		if(lstrcmpi(m_Params[i], Temp)==0)
+		if (lstrcmpi(m_Params[i], Temp) == 0)
 			return true;
 	}
+
 	return false;
 }
 

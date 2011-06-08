@@ -1,7 +1,7 @@
-		/*
+/*
     Image Uploader - program for uploading images/files to Internet
     Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
-	 
+
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
@@ -21,12 +21,11 @@
 #ifndef IU_CORE_SCREEN_CAPTURE_H
 #define IU_CORE_SCREEN_CAPTURE_H
 
+#include <vector>
 #include "atlheaders.h"
 #include <gdiplus.h>
-#include <vector>
 
-
-bool GetScreenBounds(RECT &rect);
+bool GetScreenBounds(RECT& rect);
 HRGN GetWindowVisibleRegion(HWND wnd);
 
 void TimerWait(int Delay);
@@ -34,37 +33,45 @@ enum CaptureMode {cmFullScreen, cmActiveWindow, cmRectangles, cmFreeform, cmWind
 
 class CScreenshotRegion
 {
-public:
-	virtual bool GetImage(HDC src, Gdiplus::Bitmap ** res)=0;
-	virtual ~CScreenshotRegion(){};
-	virtual bool PrepareShooting(bool fromScreen)
-	{
-		m_bFromScreen = fromScreen;
-		return true;
-	}
-	virtual void AfterShooting()
-	{
-	}
-	virtual bool IsEmpty(){return false;}
-protected:
-	bool m_bFromScreen;
+	public:
+		virtual bool GetImage(HDC src, Gdiplus::Bitmap** res) = 0;
+		virtual ~CScreenshotRegion()
+		{
+		}
+
+		virtual bool PrepareShooting(bool fromScreen)
+		{
+			m_bFromScreen = fromScreen;
+			return true;
+		}
+
+		virtual void AfterShooting()
+		{
+		}
+
+		virtual bool IsEmpty()
+		{
+			return false;
+		}
+
+	protected:
+		bool m_bFromScreen;
 };
 
-class CRectRegion: public CScreenshotRegion
+class CRectRegion : public CScreenshotRegion
 {
 	public:
 		CRectRegion();
 		CRectRegion(int x, int y, int width, int height);
 		CRectRegion(HRGN region);
-		virtual bool GetImage(HDC src, Gdiplus::Bitmap ** res);
+		virtual bool GetImage(HDC src, Gdiplus::Bitmap** res);
 		bool IsEmpty();
 		~CRectRegion();
 	protected:
 		CRgn m_ScreenRegion;
 };
 
-
-class CWindowHandlesRegion: public CRectRegion
+class CWindowHandlesRegion : public CRectRegion
 {
 	public:
 		struct WindowCapturingFlags
@@ -80,7 +87,7 @@ class CWindowHandlesRegion: public CRectRegion
 		void Clear();
 		void SetWindowHidingDelay(int delay);
 		void setWindowCapturingFlags(WindowCapturingFlags flags);
-		virtual bool GetImage(HDC src, Gdiplus::Bitmap ** res);
+		virtual bool GetImage(HDC src, Gdiplus::Bitmap** res);
 		bool IsEmpty();
 		~CWindowHandlesRegion();
 	protected:
@@ -98,21 +105,21 @@ class CWindowHandlesRegion: public CRectRegion
 		std::vector<CWindowHandlesRegionItem> m_hWnds;
 };
 
-class CActiveWindowRegion: public CWindowHandlesRegion
+class CActiveWindowRegion : public CWindowHandlesRegion
 {
 	public:
 		CActiveWindowRegion();
-		virtual bool GetImage(HDC src, Gdiplus::Bitmap ** res);
+		virtual bool GetImage(HDC src, Gdiplus::Bitmap** res);
 };
 
-class CFreeFormRegion: public CRectRegion
+class CFreeFormRegion : public CRectRegion
 {
 	public:
 		CFreeFormRegion();
 		void AddPoint(POINT point);
 		void Clear();
 		bool IsEmpty();
-		virtual bool GetImage(HDC src, Gdiplus::Bitmap ** res);
+		virtual bool GetImage(HDC src, Gdiplus::Bitmap** res);
 		~CFreeFormRegion();
 	protected:
 		std::vector<POINT> m_curvePoints;
@@ -132,8 +139,8 @@ class CScreenCaptureEngine
 
 	private:
 		int m_captureDelay;
-		Gdiplus::Bitmap *m_capturedBitmap;
+		Gdiplus::Bitmap* m_capturedBitmap;
 		HBITMAP m_source;
 };
 
-#endif // IU_CORE_SCREEN_CAPTURE_H
+#endif  // IU_CORE_SCREEN_CAPTURE_H

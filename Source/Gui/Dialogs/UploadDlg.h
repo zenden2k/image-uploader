@@ -34,7 +34,6 @@
 #include "Gui/Dialogs/maindlg.h"
 #include "Gui/Dialogs/LogoSettings.h"
 #include "Gui/Dialogs/SizeExceed.h"
-#include "Gui/Dialogs/welcomedlg.h"
 #include "Gui/Dialogs/ResultsWindow.h"
 
 

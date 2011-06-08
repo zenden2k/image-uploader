@@ -745,10 +745,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ServerListTool.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\Core\SettingsManager.cpp"
 				>
 			</File>
@@ -925,6 +921,10 @@
 				</File>
 				<File
 					RelativePath="..\Core\Upload\ScriptUploadEngine.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ServerListTool.cpp"
 					>
 				</File>
 				<File

@@ -1,7 +1,7 @@
 /*
     Image Uploader - program for uploading images/files to Internet
     Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
-	 
+
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
@@ -30,21 +30,21 @@
 CMyEngineList::CMyEngineList()
 {
 	m_prevUpEngine = 0;
-} 
+}
 
 CMyEngineList::~CMyEngineList()
 {
 	delete m_prevUpEngine;
 }
 
-CUploadEngineData* CMyEngineList::byName(const CString &name)
+CUploadEngineData* CMyEngineList::byName(const CString& name)
 {
-return CUploadEngineList_Base::byName(WCstringToUtf8(name));
+	return CUploadEngineList_Base::byName(WCstringToUtf8(name));
 }
 
 int CMyEngineList::GetUploadEngineIndex(const CString Name)
 {
-return CUploadEngineList_Base::GetUploadEngineIndex(WCstringToUtf8(Name));
+	return CUploadEngineList_Base::GetUploadEngineIndex(WCstringToUtf8(Name));
 }
 
 const CString CMyEngineList::ErrorStr()
@@ -54,28 +54,28 @@ const CString CMyEngineList::ErrorStr()
 
 CAbstractUploadEngine* CMyEngineList::getUploadEngine(CUploadEngineData* data)
 {
-	CAbstractUploadEngine * result = NULL;
-	if(data->UsingPlugin)
+	CAbstractUploadEngine* result = NULL;
+	if (data->UsingPlugin)
 	{
 		result = iuPluginManager.getPlugin(data->PluginName, Settings.ServerByUtf8Name(data->Name));
 	}
 	else
 	{
-		if(m_prevUpEngine)
+		if (m_prevUpEngine)
 		{
-			if(m_prevUpEngine->getUploadData()->Name == data->Name)	
+			if (m_prevUpEngine->getUploadData()->Name == data->Name)
 				result = m_prevUpEngine;
-			 else
-				{
-					delete m_prevUpEngine;
-					m_prevUpEngine = 0;
-				}
+			else
+			{
+				delete m_prevUpEngine;
+				m_prevUpEngine = 0;
+			}
 		}
-		if(!m_prevUpEngine)
+		if (!m_prevUpEngine)
 			m_prevUpEngine = new CDefaultUploadEngine();
 		result = m_prevUpEngine;
 	}
-	if(!result)
+	if (!result)
 		return 0;
 	result->setUploadData(data);
 	result->setServerSettings(Settings.ServerByUtf8Name(data->Name));
@@ -95,7 +95,7 @@ CAbstractUploadEngine* CMyEngineList::getUploadEngine(int index)
 
 bool CMyEngineList::LoadFromFile(const CString& filename)
 {
-	if(!IuCoreUtils::FileExists(WCstringToUtf8(filename)))
+	if (!IuCoreUtils::FileExists(WCstringToUtf8(filename)))
 	{
 		m_ErrorStr = "File not found.";
 		return 0;
@@ -105,11 +105,12 @@ bool CMyEngineList::LoadFromFile(const CString& filename)
 
 bool CMyEngineList::DestroyCachedEngine(const std::string& name)
 {
-	if(m_prevUpEngine == 0) 
+	if (m_prevUpEngine == 0)
 		return false;
 
-	CUploadEngineData * ued = m_prevUpEngine->getUploadData();
-	if(!ued) return false;
+	CUploadEngineData* ued = m_prevUpEngine->getUploadData();
+	if (!ued)
+		return false;
 	if (ued->Name == name)
 	{
 		delete m_prevUpEngine;
@@ -117,5 +118,4 @@ bool CMyEngineList::DestroyCachedEngine(const std::string& name)
 		return true;
 	}
 	return false;
-
 }

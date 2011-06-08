@@ -1,7 +1,7 @@
 /*
     Image Uploader - program for uploading images/files to Internet
     Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
-	 
+
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ScreenCapture.h"
+#include "Core/ScreenCapture.h"
 
 #include <math.h>
 #include <deque>
@@ -28,84 +28,85 @@
 #include "Func/MyUtils.h"
 #include "resource.h"
 
-typedef HRESULT (WINAPI *DwmGetWindowAttribute_Func)(HWND, DWORD, PVOID, DWORD);
-typedef HRESULT (WINAPI *DwmIsCompositionEnabled_Func)(BOOL*);
+typedef HRESULT (WINAPI * DwmGetWindowAttribute_Func)(HWND, DWORD, PVOID, DWORD);
+typedef HRESULT (WINAPI * DwmIsCompositionEnabled_Func)(BOOL*);
 RECT MaximizedWindowFix(HWND handle, RECT windowRect);
 
 void ProcessEvents(void)
 {
 	MSG msg;
 	bool wasPaint = false;
-	while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
 }
 
-bool IsWindowMaximized(HWND  handle)
+bool IsWindowMaximized(HWND handle)
 {
 	WINDOWPLACEMENT wp;
-   GetWindowPlacement(handle, &wp);
-   return wp.showCmd == (int)SW_MAXIMIZE;
+	GetWindowPlacement(handle, &wp);
+	return wp.showCmd == (int)SW_MAXIMIZE;
 }
 
 void ActivateWindowRepeat(HWND handle, int count)
 {
 	for (int i = 0; GetForegroundWindow() != handle && i < count; i++)
-   {
+	{
 		BringWindowToTop(handle);
-                Sleep(1);
-                ProcessEvents();
-            }
-        }
+		Sleep(1);
+		ProcessEvents();
+	}
+}
 
-BOOL MyGetWindowRect(HWND hWnd, RECT *res, bool MaximizedFix = true)
+BOOL MyGetWindowRect(HWND hWnd, RECT* res, bool MaximizedFix = true)
 {
-	if(!IsVista()) 
+	if (!IsVista())
 	{
 		return GetWindowRect(hWnd, res);
 	}
 	static HMODULE DllModule =  LoadLibrary(_T("dwmapi.dll"));
-	if(DllModule)
+	if (DllModule)
 	{
-		DwmIsCompositionEnabled_Func IsCompEnabledFunc = (DwmIsCompositionEnabled_Func) GetProcAddress(DllModule, "DwmIsCompositionEnabled");
-		if(IsCompEnabledFunc)
+		DwmIsCompositionEnabled_Func IsCompEnabledFunc = (DwmIsCompositionEnabled_Func) GetProcAddress(
+		      DllModule, "DwmIsCompositionEnabled");
+		if (IsCompEnabledFunc)
 		{
 			BOOL isEnabled = false;
-			if(S_OK == IsCompEnabledFunc( &isEnabled))
-				if(isEnabled)
+			if (S_OK == IsCompEnabledFunc( &isEnabled))
+				if (isEnabled)
 				{
-					DwmGetWindowAttribute_Func Func = (DwmGetWindowAttribute_Func) GetProcAddress(DllModule, "DwmGetWindowAttribute");
-					if(Func)
+					DwmGetWindowAttribute_Func Func = (DwmGetWindowAttribute_Func) GetProcAddress(DllModule,
+					                                                                              "DwmGetWindowAttribute");
+					if (Func)
 					{
-						if(S_OK == Func( hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, res, sizeof(RECT)))
-							
+						if (S_OK == Func( hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, res, sizeof(RECT)))
 						{
-							if(MaximizedFix)
-								*res = MaximizedWindowFix(hWnd, *res); 
+							if (MaximizedFix)
+								*res = MaximizedWindowFix(hWnd, *res);
 							return TRUE;
-
 						}
 					}
-			}
-		}	
+				}
+		}
 	}
 	return GetWindowRect(hWnd, res);
 }
+
 HRGN CloneRegion(HRGN source)
 {
 	HRGN resultRgn = CreateRectRgn(0, 0, 0, 0);
 	CombineRgn(resultRgn, source, resultRgn, RGN_OR);
 	return resultRgn;
 }
+
 HWND GetTopParent(HWND wnd)
 {
-	//HWND res;
-//while(GetParent(wnd)!=(HWND)0)
-	if(GetWindowLong(wnd,GWL_STYLE) & WS_CHILD)
+	// HWND res;
+// while(GetParent(wnd)!=(HWND)0)
+	if (GetWindowLong(wnd, GWL_STYLE) & WS_CHILD)
 	{
-
 		wnd = ::GetParent(wnd);
 	}
 	return wnd;
@@ -114,111 +115,73 @@ HWND GetTopParent(HWND wnd)
 std::vector<RECT> monitorsRects;
 BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
 {
-	if(lprcMonitor)
+	if (lprcMonitor)
 	{
 		monitorsRects.push_back(*lprcMonitor);
 	}
 	return TRUE;
 }
+
 RECT ScreenFromRectangle(RECT rc)
 {
 	monitorsRects.clear();
-	EnumDisplayMonitors(0,0, MonitorEnumProc, 0);
+	EnumDisplayMonitors(0, 0, MonitorEnumProc, 0);
 	CRect result;
-
-	int max=0;
+	int max = 0;
 	int iMax = 0;
-	for(size_t i=0; i< monitorsRects.size(); i++)
+	for (size_t i = 0; i < monitorsRects.size(); i++)
 	{
-			CRect Bounds = monitorsRects[i];
-			Bounds.IntersectRect(&Bounds, &rc);
-			if(Bounds.Width() *Bounds.Height() >max)
-			{
-				max = Bounds.Width() *Bounds.Height();
-				iMax = i;
-			}
-
-
-			//result.UnionRect(result,Bounds);
+		CRect Bounds = monitorsRects[i];
+		Bounds.IntersectRect(&Bounds, &rc);
+		if (Bounds.Width() * Bounds.Height() > max)
+		{
+			max = Bounds.Width() * Bounds.Height();
+			iMax = i;
+		}
+		// result.UnionRect(result,Bounds);
 	}
-	
 	return monitorsRects[iMax];
 }
 
- RECT MaximizedWindowFix(HWND handle, RECT windowRect)
+RECT MaximizedWindowFix(HWND handle, RECT windowRect)
 {
 	RECT res = windowRect;
 	if (IsWindowMaximized(handle))
-            {
-                RECT screenRect = ScreenFromRectangle(windowRect);
+	{
+		RECT screenRect = ScreenFromRectangle(windowRect);
+		if (windowRect.left < screenRect.left)
+		{
+			windowRect.right -= (screenRect.left - windowRect.left) /** 2*/;
+			windowRect.left = screenRect.left;
+		}
+		if (windowRect.top < screenRect.top)
+		{
+			windowRect.bottom -= (screenRect.top - windowRect.top) /** 2*/;
+			windowRect.top = screenRect.top;
+		}
+		IntersectRect(&res, &windowRect, &screenRect);
+		//  windowRect.Intersect(screenRect);
+	}
+	return res;
+}
 
-
-                if (windowRect.left < screenRect.left)
-                {
-                    windowRect.right -= (screenRect.left - windowRect.left) /** 2*/;
-                    windowRect.left = screenRect.left;
-                }
-
-
-                if (windowRect.top < screenRect.top)
-                {
-                    windowRect.bottom -= (screenRect.top - windowRect.top) /** 2*/;
-                    windowRect.top = screenRect.top;
-                }
-
-					 IntersectRect(&res, &windowRect, &screenRect);
-              //  windowRect.Intersect(screenRect);
-            }
-
-
-            return res;
-        }
-
-bool GetScreenBounds(RECT &rect)
+bool GetScreenBounds(RECT& rect)
 {
 	monitorsRects.clear();
-	EnumDisplayMonitors(0,0, MonitorEnumProc, 0);
+	EnumDisplayMonitors(0, 0, MonitorEnumProc, 0);
 	CRect result;
-
-	for(size_t i=0; i< monitorsRects.size(); i++)
+	for (size_t i = 0; i < monitorsRects.size(); i++)
 	{
-			CRect Bounds = monitorsRects[i];
-			result.UnionRect(result,Bounds);
+		CRect Bounds = monitorsRects[i];
+		result.UnionRect(result, Bounds);
 	}
 	rect = result;
 	return true;
 }
 
-
-
-/*int GetScreenWidth()
-{
-	HDC dc = GetDC(0);
-	int result =  GetDeviceCaps(dc, DESKTOPHORZRES);
-	ReleaseDC(0, dc);
-	return result;
-	/*HWND wnd = GetDesktopWindow();
-	RECT rect;
-	GetWindowRect(wnd, &rect);*
-	//return rect.right;
-}
-
-int GetScreenHeight()
-{
-	HDC dc = GetDC(0);
-	int result = GetDeviceCaps(dc, DESKTOPVERTRES	);
-	ReleaseDC(0, dc);
-	return result;
-	/HWND wnd = GetDesktopWindow();
-	RECT rect;
-	GetWindowRect(wnd, &rect);*
-	//return rect.bottom;
-}
-*/
 void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsigned n);
 
-typedef enum ChannelARGB
-{
+typedef enum ChannelARGB {
 	Blue = 0,
 	Green = 1,
 	Red = 2,
@@ -226,29 +189,28 @@ typedef enum ChannelARGB
 };
 
 // hack for stupid GDIplus
-void transferOneARGBChannelFromOneBitmapToAnother(Bitmap& source, Bitmap& dest, ChannelARGB sourceChannel, ChannelARGB destChannel )
+void transferOneARGBChannelFromOneBitmapToAnother(Bitmap& source, Bitmap& dest, ChannelARGB sourceChannel,
+                                                  ChannelARGB destChannel )
 {
-	Rect r( 0, 0, source.GetWidth(),source.GetHeight() );
-	BitmapData  bdSrc;
+	Rect r( 0, 0, source.GetWidth(), source.GetHeight() );
+	BitmapData bdSrc;
 	BitmapData bdDst;
-	source.LockBits( &r,  ImageLockModeRead , PixelFormat32bppARGB,&bdSrc);
-	dest.LockBits( &r,  ImageLockModeWrite   , PixelFormat32bppARGB , &bdDst);
-
+	source.LockBits( &r,  ImageLockModeRead, PixelFormat32bppARGB, &bdSrc);
+	dest.LockBits( &r,  ImageLockModeWrite, PixelFormat32bppARGB, &bdDst);
 	BYTE* bpSrc = (BYTE*)bdSrc.Scan0;
 	BYTE* bpDst = (BYTE*)bdDst.Scan0;
 	bpSrc += (int)sourceChannel;
 	bpDst += (int)destChannel;
-
 	for ( int i = r.Height * r.Width; i > 0; i-- )
 	{
 		*bpDst = *bpSrc;
-		if(*bpDst == 0)
+		if (*bpDst == 0)
 		{
-			bpDst -=(int)destChannel;
+			bpDst -= (int)destChannel;
 			*bpDst = 0;
-			*(bpDst+1) = 0;
-			*(bpDst+2) = 0;
-			bpDst +=(int)destChannel;
+			*(bpDst + 1) = 0;
+			*(bpDst + 2) = 0;
+			bpDst += (int)destChannel;
 		}
 		bpSrc += 4;
 		bpDst += 4;
@@ -259,42 +221,40 @@ void transferOneARGBChannelFromOneBitmapToAnother(Bitmap& source, Bitmap& dest, 
 
 void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsigned n)
 {
-	if(path.size() > 2)
+	if (path.size() > 2)
 	{
 		std::deque<POINT> tmp;
 		unsigned i, j;
-		for(j = 0; j < path.size(); j++)
+		for (j = 0; j < path.size(); j++)
 		{
 			tmp.push_back(path[j]);
 		}
-
-		for(i = 0; i < n; i++)
+		for (i = 0; i < n; i++)
 		{
 			path2.clear();
-			for(j = 0; j < tmp.size(); j++)
+			for (j = 0; j < tmp.size(); j++)
 			{
-				POINT p={tmp[j].x, tmp[j].y};
+				POINT p = {tmp[j].x, tmp[j].y};
 				int d = 1;
-				if(j) 
+				if (j)
 				{
-					p.x += tmp[j-1].x;
-					p.y += tmp[j-1].y;
+					p.x += tmp[j - 1].x;
+					p.y += tmp[j - 1].y;
 					++d;
 				}
-				if(j + 1 < tmp.size()) 
+				if (j + 1 < tmp.size())
 				{
-					p.x += tmp[j+1].x;
-					p.y += tmp[j+1].y;
+					p.x += tmp[j + 1].x;
+					p.y += tmp[j + 1].y;
 					++d;
 				}
 				POINT newP = {p.x / d, p.y / d};
-				path2.push_back(newP);	
+				path2.push_back(newP);
 			}
-
-			if(i < n-1)
+			if (i < n - 1)
 			{
 				tmp.clear();
-				for(j = 0; j < path2.size(); j++)
+				for (j = 0; j < path2.size(); j++)
 				{
 					tmp.push_back(path2[j]);
 				}
@@ -308,11 +268,10 @@ HRGN GetWindowRegion(HWND wnd)
 	RECT WndRect;
 	::MyGetWindowRect(wnd, &WndRect );
 	CRgn WindowRgn;
-
 	WindowRgn.CreateRectRgnIndirect(&WndRect);
-	if(::GetWindowRgn(wnd, WindowRgn) != ERROR)
+	if (::GetWindowRgn(wnd, WindowRgn) != ERROR)
 	{
-		//WindowRegion.GetRgnBox( &WindowRect); 
+		// WindowRegion.GetRgnBox( &WindowRect);
 		WindowRgn.OffsetRgn( WndRect.left, WndRect.top);
 	}
 	return WindowRgn.Detach();
@@ -322,33 +281,30 @@ HRGN GetWindowVisibleRegion(HWND wnd)
 {
 	CRgn winReg;
 	CRect result;
-
-	if(!(GetWindowLong(wnd,GWL_STYLE) & WS_CHILD))
+	if (!(GetWindowLong(wnd, GWL_STYLE) & WS_CHILD))
 	{
 		winReg = GetWindowRegion(wnd);
 		return winReg.Detach();
 	}
 	MyGetWindowRect(wnd, &result);
-	while(GetWindowLong(wnd,GWL_STYLE) & WS_CHILD)
+	while (GetWindowLong(wnd, GWL_STYLE) & WS_CHILD)
 	{
 		wnd = GetParent(wnd);
 		CRgn parentRgn;
 		RECT rc;
-		if(GetClientRect(wnd,&rc))
+		if (GetClientRect(wnd, &rc))
 		{
-			MapWindowPoints(wnd,0,(POINT*)&rc,2);
-			//parentRgn.CreateRectRgnIndirect(&rc);
+			MapWindowPoints(wnd, 0, (POINT*)&rc, 2);
+			// parentRgn.CreateRectRgnIndirect(&rc);
 		}
 		result.IntersectRect(&result, &rc);
 	}
-
 	winReg.CreateRectRgnIndirect(&result);
-	return winReg.Detach(); 
+	return winReg.Detach();
 }
 
 CRectRegion::CRectRegion()
 {
-
 }
 
 CRectRegion::~CRectRegion()
@@ -357,63 +313,55 @@ CRectRegion::~CRectRegion()
 
 CRectRegion::CRectRegion(int x, int y, int width, int height)
 {
-	if(!m_ScreenRegion.IsNull())
+	if (!m_ScreenRegion.IsNull())
 		m_ScreenRegion.DeleteObject();
-	m_ScreenRegion.CreateRectRgn(x, y, x+width, y+height);
+	m_ScreenRegion.CreateRectRgn(x, y, x + width, y + height);
 }
 
 CRectRegion::CRectRegion(HRGN region)
 {
-	if(!m_ScreenRegion.IsNull())
+	if (!m_ScreenRegion.IsNull())
 		m_ScreenRegion.DeleteObject();
 	m_ScreenRegion = region;
 }
 
 bool CRectRegion::IsEmpty()
 {
-	CRect rect(0,0,0,0);
+	CRect rect(0, 0, 0, 0);
 	m_ScreenRegion.GetRgnBox(&rect);
-	return rect.IsRectEmpty()!=0;
+	return rect.IsRectEmpty() != 0;
 }
 
-bool CRectRegion::GetImage(HDC src, Bitmap ** res)
+bool CRectRegion::GetImage(HDC src, Bitmap** res)
 {
 	RECT regionBoundingRect;
-
 	CRgn screenRegion = CloneRegion(m_ScreenRegion);
-
-	//int screenWidth = 	GetScreenWidth();//GetDeviceCaps(src, HORZRES);
-	//int screenHeight = GetScreenHeight();//	GetDeviceCaps(src, VERTRES);
+	// int screenWidth =    GetScreenWidth();//GetDeviceCaps(src, HORZRES);
+	// int screenHeight = GetScreenHeight();//	GetDeviceCaps(src, VERTRES);
 	RECT screenBounds;
 	GetScreenBounds(screenBounds);
 	CRgn FullScreenRgn;
-		FullScreenRgn.CreateRectRgnIndirect(&screenBounds);
-	if(!m_bFromScreen)
-		FullScreenRgn.OffsetRgn(-screenBounds.left,-screenBounds.top);
-	else screenRegion.OffsetRgn(screenBounds.left,screenBounds.top);
+	FullScreenRgn.CreateRectRgnIndirect(&screenBounds);
+	if (!m_bFromScreen)
+		FullScreenRgn.OffsetRgn(-screenBounds.left, -screenBounds.top);
+	else screenRegion.OffsetRgn(screenBounds.left, screenBounds.top);
 	screenRegion.CombineRgn(FullScreenRgn, RGN_AND);
 	screenRegion.GetRgnBox(&regionBoundingRect);
-
-	int bmWidth = regionBoundingRect.right - regionBoundingRect.left; 
-	int bmHeight = regionBoundingRect.bottom  - regionBoundingRect.top; 
-
-	Bitmap *resultBm = new Bitmap(bmWidth, bmHeight,PixelFormat32bppARGB);
+	int bmWidth = regionBoundingRect.right - regionBoundingRect.left;
+	int bmHeight = regionBoundingRect.bottom  - regionBoundingRect.top;
+	Bitmap* resultBm = new Bitmap(bmWidth, bmHeight, PixelFormat32bppARGB);
 	Graphics gr(resultBm);
-
 	HDC gdipDC = gr.GetHDC();
-
 	screenRegion.OffsetRgn( -regionBoundingRect.left, -regionBoundingRect.top);
 	SelectClipRgn(gdipDC, screenRegion);
-
-	if(!::BitBlt(gdipDC, 0, 0, bmWidth, 
-		bmHeight, src, regionBoundingRect.left, regionBoundingRect.top, SRCCOPY|CAPTUREBLT))
+	if (!::BitBlt(gdipDC, 0, 0, bmWidth,
+	              bmHeight, src, regionBoundingRect.left, regionBoundingRect.top, SRCCOPY | CAPTUREBLT))
 	{
 		gr.ReleaseHDC(gdipDC);
 		delete resultBm;
 		return false;
 	}
-
-	//Each call to the Graphics::GetHDC should be paired with a call to the Graphics::ReleaseHDC 
+	// Each call to the Graphics::GetHDC should be paired with a call to the Graphics::ReleaseHDC
 	gr.ReleaseHDC(gdipDC);
 	/*Blur blur;
 	BlurParams myBlurParams;
@@ -426,12 +374,11 @@ bool CRectRegion::GetImage(HDC src, Bitmap ** res)
 	return true;
 }
 
-
 CWindowHandlesRegion::CWindowHandlesRegion()
 {
 	topWindow = 0;
 	m_WindowHidingDelay = 0;
-		m_ClearBackground = false;
+	m_ClearBackground = false;
 	m_RemoveCorners = true;
 	m_PreserveShadow = true;
 }
@@ -439,7 +386,7 @@ CWindowHandlesRegion::CWindowHandlesRegion()
 CWindowHandlesRegion::CWindowHandlesRegion(HWND wnd)
 {
 	CWindowHandlesRegionItem newItem;
-	newItem.Include= true;
+	newItem.Include = true;
 	newItem.wnd = wnd;
 	m_hWnds.push_back(newItem);
 }
@@ -447,7 +394,6 @@ CWindowHandlesRegion::CWindowHandlesRegion(HWND wnd)
 void CWindowHandlesRegion::SetWindowHidingDelay(int delay)
 {
 	m_WindowHidingDelay = delay;
-
 }
 
 void CWindowHandlesRegion::setWindowCapturingFlags(WindowCapturingFlags flags)
@@ -464,140 +410,93 @@ bool AreImagesEqual(Bitmap* b1, Bitmap* b2)
 	bool result = true;
 	int width = b1->GetWidth();
 	int height = b1->GetHeight();
-	Rect rect(0,0,width, height);
-   BitmapData b1Data;
+	Rect rect(0, 0, width, height);
+	BitmapData b1Data;
 	b1->LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, &b1Data);
-   BitmapData b2Data;
+	BitmapData b2Data;
 	b2->LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, &b2Data);
-	assert(sizeof(unsigned long*)==4);
-	unsigned long* pImage1 = (	unsigned long*) b1Data.Scan0;
-   unsigned long* pImage2 = (	unsigned long*)b2Data.Scan0;
-	
+	assert(sizeof(unsigned long*) == 4);
+	unsigned long* pImage1 = ( unsigned long*) b1Data.Scan0;
+	unsigned long* pImage2 = ( unsigned long*)b2Data.Scan0;
 	for (int y = 0; y < height; y++)
 	{
 		for (int x = 0; x < width; x++)
-      {
-							  if(*(pImage1++)!=*(pImage2++))
-							  {  
-								  result = false;
-								  break;
-							  }
-						  }
-
+		{
+			if (*(pImage1++) != *(pImage2++))
+			{
+				result = false;
+				break;
+			}
+		}
 	}
 	b1->UnlockBits(&b1Data);
-   b2->UnlockBits(&b2Data);
-				
+	b2->UnlockBits(&b2Data);
 	return result;
 }
 
-
-bool ComputeOriginal(Bitmap* whiteBGImage, Bitmap* blackBGImage, Bitmap **out)
+bool ComputeOriginal(Bitmap* whiteBGImage, Bitmap* blackBGImage, Bitmap** out)
 {
 	assert(whiteBGImage);
-//	assert(whiteBGImage2);
 	assert(blackBGImage);
 	assert(out);
+
 	int width = whiteBGImage->GetWidth();
 	int height = whiteBGImage->GetHeight();
-	Bitmap *resultImage = new Bitmap(width, height, PixelFormat32bppARGB);
+	Bitmap* resultImage = new Bitmap(width, height, PixelFormat32bppARGB);
 	Gdiplus::Rect rect(0, 0, blackBGImage->GetWidth(), blackBGImage->GetHeight());
-
 	// Access the image data directly for faster image processing
-
 	BitmapData blackImageData;
 	blackBGImage->LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, &blackImageData);
 	BitmapData whiteImageData;
-
 	whiteBGImage->LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, &whiteImageData);
-	//BitmapData whiteImageData2;
-
-//	whiteBGImage2->LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, &whiteImageData2);
 	BitmapData resultImageData;
 	resultImage->LockBits(&rect, ImageLockModeWrite, PixelFormat32bppARGB, &resultImageData);
-
-		void* pBlackImage = blackImageData.Scan0;
-		void* pWhiteImage = whiteImageData.Scan0;
-	//	void* pWhiteImage2 = whiteImageData2.Scan0;
-		void* pResultImage = resultImageData.Scan0;
-
-
-		//int bytes = blackImageData.Stride * blackImageData.Height;
-		unsigned char* blackBGImageRGB = ( unsigned char*)pBlackImage /*new unsigned char[bytes]*/;
-		unsigned char* whiteBGImageRGB = ( unsigned char*)pWhiteImage/*new unsigned char[bytes]*/;
-//		unsigned char* whiteBGImage2RGB = ( unsigned char*)pWhiteImage2/*new unsigned char[bytes]*/;
-
-		unsigned char* resultImageRGB = ( unsigned char*)pResultImage/* new unsigned char[bytes]*/;
-
-
-
-
-		int offset = 0;
-
-
-		int b0, g0, r0, b1, g1, r1, alphaR, alphaG, alphaB, resultR, resultG, resultB;
-
-
-		for (int y = 0; y < height; y++)
+	void* pBlackImage = blackImageData.Scan0;
+	void* pWhiteImage = whiteImageData.Scan0;
+	void* pResultImage = resultImageData.Scan0;
+	unsigned char* blackBGImageRGB = ( unsigned char*)pBlackImage /*new unsigned char[bytes]*/;
+	unsigned char* whiteBGImageRGB = ( unsigned char*)pWhiteImage /*new unsigned char[bytes]*/;
+	unsigned char* resultImageRGB = ( unsigned char*)pResultImage /* new unsigned char[bytes]*/;
+	int offset = 0;
+	int b0, g0, r0, b1, g1, r1, alphaR, alphaG, alphaB, resultR, resultG, resultB;
+	for (int y = 0; y < height; y++)
+	{
+		for (int x = 0; x < width; x++)
 		{
-			for (int x = 0; x < width; x++)
+			// ARGB is in fact BGRA (little endian)
+			b0 = blackBGImageRGB[offset + 0];
+			g0 = blackBGImageRGB[offset + 1];
+			r0 = blackBGImageRGB[offset + 2];
+			b1 = whiteBGImageRGB[offset + 0];
+			g1 = whiteBGImageRGB[offset + 1];
+			r1 = whiteBGImageRGB[offset + 2];
+			alphaR = r0 - r1 + 255;
+			alphaG = g0 - g1 + 255;
+			alphaB = b0 - b1 + 255;
+			if (alphaG != 0)
 			{
-				/*if((*(unsigned long*)(whiteBGImage2RGB+offset))!=(*(unsigned long*)(whiteBGImageRGB+offset)))
-				{
-				resultImageRGB[offset + 3] = whiteBGImageRGB[offset + 3];
-				resultImageRGB[offset + 2] = whiteBGImageRGB[offset + 2];
-				resultImageRGB[offset + 1] = whiteBGImageRGB[offset + 1];
-				resultImageRGB[offset + 0] = whiteBGImageRGB[offset + 0];
-				offset += 4;
-				continue;
-				}*/
-				// ARGB is in fact BGRA (little endian)
-				b0 = blackBGImageRGB[offset + 0];
-				g0 = blackBGImageRGB[offset + 1];
-				r0 = blackBGImageRGB[offset + 2];
-
-
-				b1 = whiteBGImageRGB[offset + 0];
-				g1 = whiteBGImageRGB[offset + 1];
-				r1 = whiteBGImageRGB[offset + 2];
-
-
-				alphaR = r0 - r1 + 255;
-				alphaG = g0 - g1 + 255;
-				alphaB = b0 - b1 + 255;
-
-
-				if (alphaG != 0)
-				{
-					resultR = r0 * 255 / alphaG;
-					resultG = g0 * 255 / alphaG;
-					resultB = b0 * 255 / alphaG;
-				}
-				else
-				{
-					// Could be any color since it is fully transparent.
-					resultR = 255;
-					resultG = 255;
-					resultB = 255;
-				}
-
-
-				resultImageRGB[offset + 3] = (byte)alphaR;
-				resultImageRGB[offset + 2] = (byte)resultR;
-				resultImageRGB[offset + 1] = (byte)resultG;
-				resultImageRGB[offset + 0] = (byte)resultB;
-
-
-				offset += 4;
+				resultR = r0 * 255 / alphaG;
+				resultG = g0 * 255 / alphaG;
+				resultB = b0 * 255 / alphaG;
 			}
+			else
+			{
+				// Could be any color since it is fully transparent.
+				resultR = 255;
+				resultG = 255;
+				resultB = 255;
+			}
+			resultImageRGB[offset + 3] = (byte)alphaR;
+			resultImageRGB[offset + 2] = (byte)resultR;
+			resultImageRGB[offset + 1] = (byte)resultG;
+			resultImageRGB[offset + 0] = (byte)resultB;
+			offset += 4;
 		}
-
+	}
 	blackBGImage->UnlockBits(&blackImageData);
 	whiteBGImage->UnlockBits(&whiteImageData);
-	//whiteBGImage2->UnlockBits(&whiteImageData2);
+	// whiteBGImage2->UnlockBits(&whiteImageData2);
 	resultImage->UnlockBits(&resultImageData);
-
-
 	*out = resultImage;
 	return true;
 }
@@ -605,7 +504,7 @@ bool ComputeOriginal(Bitmap* whiteBGImage, Bitmap* blackBGImage, Bitmap **out)
 void OnEraseBgrnd(HWND hWnd)
 {
 	PAINTSTRUCT ps;
-	HDC dc = BeginPaint(hWnd,&ps);
+	HDC dc = BeginPaint(hWnd, &ps);
 	HBRUSH br = CreateSolidBrush(bgColor);
 	RECT rc;
 	GetClientRect(hWnd, &rc);
@@ -616,28 +515,30 @@ void OnEraseBgrnd(HWND hWnd)
 
 LRESULT CALLBACK WndProcedure(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-    switch(Msg)
-    {
-    // If the user wants to close the application
-    case WM_DESTROY:
-        // then close it
-       // PostQuitMessage(WM_QUIT);
-        break;
-	 case WM_PAINT:
-		 OnEraseBgrnd(hWnd);
+	switch (Msg)
+	{
+	// If the user wants to close the application
+	case WM_DESTROY:
+		// then close it
+		// PostQuitMessage(WM_QUIT);
+		break;
+
+	case WM_PAINT:
+		OnEraseBgrnd(hWnd);
 		return 1;
 		break;
-    default:
-        // Process the left-over messages
-        return DefWindowProc(hWnd, Msg, wParam, lParam);
-    }
-    // If something was not done, let it go
-    return 0;
+
+	default:
+		// Process the left-over messages
+		return DefWindowProc(hWnd, Msg, wParam, lParam);
+	}
+	// If something was not done, let it go
+	return 0;
 }
 
 HWND CreateDummyWindow(RECT rc)
 {
-	HWND       hWnd;
+	HWND hWnd;
 	WNDCLASSEX WndClsEx;
 	TCHAR* clsName = _T("DummyWindow");
 	// Create the application window
@@ -653,56 +554,43 @@ HWND CreateDummyWindow(RECT rc)
 	WndClsEx.lpszClassName = clsName;
 	WndClsEx.hInstance     = GetModuleHandle(0);
 	WndClsEx.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
-
 	// Register the application
 	RegisterClassEx(&WndClsEx);
-
 	// Create the window object
-	hWnd = CreateWindowEx( WS_EX_TOPMOST,clsName,
-		_T(""), WS_POPUP, rc.left, rc.top,
-			  rc.right - rc.left,
-			  rc.bottom - rc.top,
-			  NULL,
-			  NULL,
-			  GetModuleHandle(0),
-			  NULL);
-	
-	if( !hWnd ) 
-		return 0; 
+	hWnd = CreateWindowEx( WS_EX_TOPMOST, clsName,
+	                       _T(""), WS_POPUP, rc.left, rc.top,
+	                       rc.right - rc.left,
+	                       rc.bottom - rc.top,
+	                       NULL,
+	                       NULL,
+	                       GetModuleHandle(0),
+	                       NULL);
+	if ( !hWnd )
+		return 0;
 	return hWnd;
 }
 
 BOOL BringWindowToForeground(HWND hWnd)
 {
-    DWORD dwTimeout;
-
-    ::SystemParametersInfo(SPI_GETFOREGROUNDLOCKTIMEOUT, 0, &dwTimeout, 0);
-    ::SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, 0, 0);
-
-    BOOL bNeedTopmost = !(::GetWindowLong(hWnd, GWL_EXSTYLE) & WS_EX_TOPMOST);
-
-    if(bNeedTopmost)
-        ::SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-
-    HWND hCurWnd;
-
-    for(int i = 0; (i < 10) && ((hCurWnd = ::GetForegroundWindow()) != hWnd); i++)
-    {
-        int nMyTID  = ::GetCurrentThreadId();
-        int nCurTID = ::GetWindowThreadProcessId(hCurWnd, 0);
-
-        ::AttachThreadInput(nMyTID, nCurTID, TRUE);
-
-        ::SetForegroundWindow(hWnd);
-
-        ::AttachThreadInput(nMyTID, nCurTID, FALSE);
-
-        Sleep(20);
-    }
-    if(bNeedTopmost)
-        ::SetWindowPos(hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+	DWORD dwTimeout;
+	::SystemParametersInfo(SPI_GETFOREGROUNDLOCKTIMEOUT, 0, &dwTimeout, 0);
+	::SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, 0, 0);
+	BOOL bNeedTopmost = !(::GetWindowLong(hWnd, GWL_EXSTYLE) & WS_EX_TOPMOST);
+	if (bNeedTopmost)
+		::SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+	HWND hCurWnd;
+	for (int i = 0; (i < 10) && ((hCurWnd = ::GetForegroundWindow()) != hWnd); i++)
+	{
+		int nMyTID  = ::GetCurrentThreadId();
+		int nCurTID = ::GetWindowThreadProcessId(hCurWnd, 0);
+		::AttachThreadInput(nMyTID, nCurTID, TRUE);
+		::SetForegroundWindow(hWnd);
+		::AttachThreadInput(nMyTID, nCurTID, FALSE);
+		Sleep(20);
+	}
+	if (bNeedTopmost)
+		::SetWindowPos(hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 	::SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, &dwTimeout, 0);
-
 	return TRUE;
 }
 
@@ -729,33 +617,28 @@ void RemoveCornerPixel(Bitmap* bmp, Graphics* g, int y, int x)
 	}
 	if (remove)
 	{
-
 		Region region (Rect(x, y, 1, 1));
 		g->SetClip(&region, CombineModeExclude);
 	}
 }
-    
- /// <summary>
-/// Removes a corner from the clipping region of the given graphics object.
-/// </summary>
-/// <param name="bmp">The bitmap with the form corners masked in red</param>
+
+// / <summary>
+// / Removes a corner from the clipping region of the given graphics object.
+// / </summary>
+// / <param name="bmp">The bitmap with the form corners masked in red</param>
 void RemoveCorner(Bitmap* bmp, Graphics* g, int minx, int miny, int maxx, Corner corner)
 {
 	int s1[5] = { 5, 3, 2, 1, 1 };
 	int s2[5] = { 1, 1, 2, 3, 5 };
-	int *shape;
+	int* shape;
 	if (corner == TopLeft || corner == TopRight)
 	{
-
 		shape = s1;
 	}
 	else
 	{
-
 		shape = s2;
 	}
-
-
 	int maxy = miny + 5;
 	if (corner == TopLeft || corner == BottomLeft)
 	{
@@ -782,20 +665,21 @@ void RemoveCorner(Bitmap* bmp, Graphics* g, int minx, int miny, int maxx, Corner
 bool RemoveCorners(Bitmap* windowImage, Bitmap* redBGImage, Bitmap** outResult)
 {
 	const int cornerSize = 5;
-   if (windowImage->GetWidth() > cornerSize * 2 && windowImage->GetHeight() > cornerSize * 2)
-   {
+	if (windowImage->GetWidth() > cornerSize * 2 && windowImage->GetHeight() > cornerSize * 2)
+	{
 		Bitmap* result = new Bitmap(windowImage->GetWidth(),  windowImage->GetHeight(), PixelFormat32bppARGB);
-      Graphics g(result);
+		Graphics g(result);
 		g.Clear(Color::Transparent);
 		// Remove the transparent pixels in the four corners
-		RemoveCorner(redBGImage,&g, 0, 0, cornerSize, TopLeft);
+		RemoveCorner(redBGImage, &g, 0, 0, cornerSize, TopLeft);
 		RemoveCorner(redBGImage, &g, windowImage->GetWidth() - cornerSize, 0, windowImage->GetWidth(), TopRight);
 		RemoveCorner(redBGImage, &g, 0, windowImage->GetHeight() - cornerSize, cornerSize, BottomLeft);
-		RemoveCorner(redBGImage, &g, windowImage->GetWidth() - cornerSize, windowImage->GetHeight() - cornerSize, windowImage->GetWidth(), BottomRight);
+		RemoveCorner(redBGImage, &g, windowImage->GetWidth() - cornerSize,
+		             windowImage->GetHeight() - cornerSize, windowImage->GetWidth(), BottomRight);
 		g.DrawImage(windowImage, 0, 0);
 		*outResult = result;
 		return true;
-   }
+	}
 	return false;
 }
 
@@ -811,63 +695,62 @@ void DrawShadow(Graphics& g, Bitmap* shadowBitmap, int x, int y, int width, int 
 	}
 }
 
-bool AddBorderShadow(Bitmap* input, bool roundedShadowCorners, Bitmap **out)
+bool AddBorderShadow(Bitmap* input, bool roundedShadowCorners, Bitmap** out)
 {
 	int width = input->GetWidth();
 	int height = input->GetHeight();
 	Color c;
-	input->GetPixel(0,0, &c);
-	bool topLeftRound = c.GetAlpha()< 20;
-
-	input->GetPixel(width-1,0, &c);
-	bool topRightRound = c.GetAlpha()< 20;
-
-	input->GetPixel(0,height-1, &c);
-	bool bottomLeftRound = c.GetAlpha()< 20;
-
-	input->GetPixel(width-1,height-1, &c);
-	bool bottomRightRound = c.GetAlpha()< 20;
-
-	Bitmap* leftShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_leftShadow),_T("PNG"));//Resources.leftShadow;
-	Bitmap* rightShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_rightShadow),_T("PNG"));
-	Bitmap* topShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_topShadow),_T("PNG"));
-	Bitmap *bottomShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomShadow),_T("PNG"));
-	Bitmap *topLeftShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(topLeftRound ?IDR_topLeftShadow:IDR_topLeftShadowSquare),_T("PNG"));
-	Bitmap *topRightShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(topRightRound ? IDR_topRightShadow : IDR_topRightShadowSquare),_T("PNG"));
-	Bitmap *bottomLeftShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomLeftShadow),_T("PNG"));
-	Bitmap *bottomRightShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomRightShadow),_T("PNG"));
+	input->GetPixel(0, 0, &c);
+	bool topLeftRound = c.GetAlpha() < 20;
+	input->GetPixel(width - 1, 0, &c);
+	bool topRightRound = c.GetAlpha() < 20;
+	input->GetPixel(0, height - 1, &c);
+	bool bottomLeftRound = c.GetAlpha() < 20;
+	input->GetPixel(width - 1, height - 1, &c);
+	bool bottomRightRound = c.GetAlpha() < 20;
+	Bitmap* leftShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_leftShadow), _T("PNG")); // Resources.leftShadow;
+	Bitmap* rightShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_rightShadow), _T("PNG"));
+	Bitmap* topShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_topShadow), _T("PNG"));
+	Bitmap* bottomShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomShadow), _T("PNG"));
+	Bitmap* topLeftShadow =
+	   BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(
+	                         topLeftRound ? IDR_topLeftShadow : IDR_topLeftShadowSquare), _T("PNG"));
+	Bitmap* topRightShadow =
+	   BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(
+	                         topRightRound ? IDR_topRightShadow : IDR_topRightShadowSquare), _T("PNG"));
+	Bitmap* bottomLeftShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomLeftShadow), _T("PNG"));
+	Bitmap* bottomRightShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomRightShadow), _T("PNG"));
 	int leftMargin = leftShadow->GetWidth();
 	int rightMargin = rightShadow->GetWidth();
 	int topMargin = topShadow->GetHeight();
 	int bottomMargin = bottomShadow->GetHeight();
 	int resultWidth = leftMargin + width + rightMargin;
 	int resultHeight = topMargin + height + bottomMargin;
-
 	if (resultHeight - topRightShadow->GetHeight() - bottomRightShadow->GetHeight() <= 0
-		|| resultWidth - bottomLeftShadow->GetWidth() - bottomRightShadow->GetWidth() <= 0)
+	    || resultWidth - bottomLeftShadow->GetWidth() - bottomRightShadow->GetWidth() <= 0)
 	{
-		*out = input->Clone(0,0,input->GetWidth(), input->GetHeight(), PixelFormat32bppARGB);
-		
+		*out = input->Clone(0, 0, input->GetWidth(), input->GetHeight(), PixelFormat32bppARGB);
 	}
 	else
 	{
-		Bitmap *bmpResult = new Bitmap(resultWidth, resultHeight, PixelFormat32bppARGB);
+		Bitmap* bmpResult = new Bitmap(resultWidth, resultHeight, PixelFormat32bppARGB);
 		Graphics g(bmpResult);
-
-	g.DrawImage(topLeftShadow, 0, 0);
-	g.DrawImage(topRightShadow, resultWidth - topRightShadow->GetWidth(), 0);
-	g.DrawImage(bottomLeftShadow, 0, resultHeight - bottomLeftShadow->GetHeight());
-	g.DrawImage(bottomRightShadow, (float)resultWidth - bottomRightShadow->GetWidth(), (float)resultHeight - bottomRightShadow->GetHeight());
-
-
-	DrawShadow(g, leftShadow, 0, topLeftShadow->GetHeight(), leftShadow->GetWidth(), resultHeight - topLeftShadow->GetHeight() - bottomLeftShadow->GetHeight());
-	DrawShadow(g, rightShadow, resultWidth - rightShadow->GetWidth(), topRightShadow->GetHeight(),
-		rightShadow->GetWidth(), resultHeight - topRightShadow->GetHeight() - bottomRightShadow->GetHeight());
-	DrawShadow( g, topShadow, topLeftShadow->GetWidth(), 0, resultWidth - topLeftShadow->GetWidth() - topRightShadow->GetWidth(), topShadow->GetHeight());
-	DrawShadow(g, bottomShadow, bottomLeftShadow->GetWidth(), resultHeight - bottomShadow->GetHeight(),
-		resultWidth - bottomLeftShadow->GetWidth() - bottomRightShadow->GetWidth(), bottomShadow->GetHeight());
-	g.DrawImage(input, leftMargin, topMargin);
-	*out = bmpResult;
+		g.DrawImage(topLeftShadow, 0, 0);
+		g.DrawImage(topRightShadow, resultWidth - topRightShadow->GetWidth(), 0);
+		g.DrawImage(bottomLeftShadow, 0, resultHeight - bottomLeftShadow->GetHeight());
+		g.DrawImage(bottomRightShadow,
+		            (float)resultWidth - bottomRightShadow->GetWidth(), (float)resultHeight -
+		            bottomRightShadow->GetHeight());
+		DrawShadow(g, leftShadow, 0, topLeftShadow->GetHeight(),
+		           leftShadow->GetWidth(), resultHeight - topLeftShadow->GetHeight() - bottomLeftShadow->GetHeight());
+		DrawShadow(g, rightShadow, resultWidth - rightShadow->GetWidth(), topRightShadow->GetHeight(),
+		           rightShadow->GetWidth(), resultHeight - topRightShadow->GetHeight() - bottomRightShadow->GetHeight());
+		DrawShadow( g, topShadow, topLeftShadow->GetWidth(), 0,
+		            resultWidth - topLeftShadow->GetWidth() - topRightShadow->GetWidth(), topShadow->GetHeight());
+		DrawShadow(g, bottomShadow, bottomLeftShadow->GetWidth(), resultHeight - bottomShadow->GetHeight(),
+		           resultWidth - bottomLeftShadow->GetWidth() - bottomRightShadow->GetWidth(), bottomShadow->GetHeight());
+		g.DrawImage(input, leftMargin, topMargin);
+		*out = bmpResult;
 	}
 	delete leftShadow ;
 	delete rightShadow ;
@@ -877,13 +760,13 @@ bool AddBorderShadow(Bitmap* input, bool roundedShadowCorners, Bitmap **out)
 	delete topRightShadow ;
 	delete bottomLeftShadow;
 	delete bottomRightShadow;
-	return *out!=0;
+	return *out != 0;
 }
- 
+
 bool CheckRect(RECT rect, COLORREF color)
 {
-	HDC screenDC = ::GetDC(0); 
-	COLORREF pixel = GetPixel(screenDC, (rect.right-rect.left)/2, (rect.bottom-rect.bottom/2)-1);
+	HDC screenDC = ::GetDC(0);
+	COLORREF pixel = GetPixel(screenDC, (rect.right - rect.left) / 2, (rect.bottom - rect.bottom / 2) - 1);
 	bool result = pixel == color;
 	ReleaseDC(0, screenDC);
 	return result;
@@ -891,61 +774,53 @@ bool CheckRect(RECT rect, COLORREF color)
 
 Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
 {
-	Bitmap *resultBm = 0;
-	Bitmap *original = 0;
-	Bitmap *redBgBitmap = 0;
+	Bitmap* resultBm = 0;
+	Bitmap* original = 0;
+	Bitmap* redBgBitmap = 0;
 	bool move = false;
 	HWND target = topWindow;
 	TCHAR Buffer[MAX_PATH];
-	GetClassName(target, Buffer, sizeof(Buffer)/sizeof(TCHAR));
-	if(lstrcmpi(Buffer,_T("Shell_TrayWnd")))
+	GetClassName(target, Buffer, sizeof(Buffer) / sizeof(TCHAR));
+	if (lstrcmpi(Buffer, _T("Shell_TrayWnd")))
 	{
 		BringWindowToForeground(target);
 		move = true;
 	}
 	SetForegroundWindow(target);
-	//CRgn newRegion=GetWindowVisibleRegion(target);
+	// CRgn newRegion=GetWindowVisibleRegion(target);
 	CRect actualWindowRect;
 	MyGetWindowRect(target, &actualWindowRect, false);
 //	bool IsSimpleRectWindow = newRegion.GetRgnBox(&windowRect)==SIMPLEREGION;
-	bgColor = RGB(255,255,255);
-
+	bgColor = RGB(255, 255, 255);
 	HWND wnd;
 	CScreenCaptureEngine eng;
 	CRectRegion reg(m_ScreenRegion);
-
-	Bitmap  *bm1 = 0;
-	Bitmap  *bm2 = 0;
-	Bitmap  *bm3 = 0;HTHUMBNAIL thumb = 0;
-	if(m_ClearBackground || m_RemoveCorners || m_PreserveShadow)
+	Bitmap* bm1 = 0;
+	Bitmap* bm2 = 0;
+	Bitmap* bm3 = 0;
+	HTHUMBNAIL thumb = 0;
+	if (m_ClearBackground || m_RemoveCorners || m_PreserveShadow)
 	{
 		wnd = CreateDummyWindow(actualWindowRect);
 	}
-
-	
-
-	if(wnd)
+	if (wnd)
 	{
-		int i=0;
-		while(!CheckRect(actualWindowRect, bgColor))
+		int i = 0;
+		while (!CheckRect(actualWindowRect, bgColor))
 		{
 			TimerWait(50);
-			if(i++>10) break;
+			if (i++ > 10) break;
 		}
-
-		if(DwmRegisterThumbnail(wnd, m_hWnds[0].wnd, &thumb)!=S_OK)
+		if (DwmRegisterThumbnail(wnd, m_hWnds[0].wnd, &thumb) != S_OK)
 		{
 			DestroyWindow(wnd);
 			return 0;
 		}
-
-		if(m_ClearBackground)
+		if (m_ClearBackground)
 			ShowWindow(wnd, SW_SHOWNOACTIVATE);
-
 		SIZE size;
-		if(DwmQueryThumbnailSourceSize(thumb, &size) != S_OK)
+		if (DwmQueryThumbnailSourceSize(thumb, &size) != S_OK)
 			return 0;
-
 		DWM_THUMBNAIL_PROPERTIES props;
 		props.dwFlags = DWM_TNP_VISIBLE | DWM_TNP_RECTDESTINATION | DWM_TNP_OPACITY;
 		props.fVisible = true;
@@ -957,89 +832,79 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
 		eng.captureRegion(&reg);
 		bm1 = eng.releaseCapturedBitmap();
 	}
-
-	if(m_ClearBackground)
+	if (m_ClearBackground)
 	{
-
-		bgColor = RGB(0,0,0);
+		bgColor = RGB(0, 0, 0);
 		::InvalidateRect(wnd, NULL, true);
 		ProcessEvents();
 		DwmFlush();
 		eng.captureRegion(&reg);
-		bm2 = eng.releaseCapturedBitmap();	
+		bm2 = eng.releaseCapturedBitmap();
 	}
-
-	if(m_ClearBackground || m_RemoveCorners)
+	if (m_ClearBackground || m_RemoveCorners)
 	{
-
 		ShowWindow(wnd, SW_SHOWNOACTIVATE);
-		bgColor = RGB(255,255,255);
+		bgColor = RGB(255, 255, 255);
 		::InvalidateRect(wnd, NULL, true);
 		ProcessEvents();
 		eng.captureRegion(&reg);
 		bm3 = eng.releaseCapturedBitmap();
 	}
-
-	Bitmap *preResult = 0;
-	if(m_ClearBackground)
+	Bitmap* preResult = 0;
+	if (m_ClearBackground)
 	{
 		int width1 = bm1->GetWidth();
 		int height1 = bm1->GetHeight();
 		int width2 = bm2->GetWidth();
 		int height2 = bm2->GetHeight();
-
-		if(AreImagesEqual(bm1, bm3))
+		if (AreImagesEqual(bm1, bm3))
 		{
 			ComputeOriginal(bm1, bm2, &original);
-			if(original)
-			{ 
+			if (original)
+			{
 				preResult = original;
 			}
-			else 
+			else
 			{
 				assert(bm3);
 				preResult = bm3;
 				bm3 = 0;
 			}
 		}
-		else 
+		else
 		{
 			assert(bm3);
 			preResult = bm3;
 			bm3 = 0;
 		}
 	}
-
-	if((m_RemoveCorners || (m_PreserveShadow)) /*&& !preResult*/ && !IsWindowMaximized(target)) // We don't have to clear window corners if we already have capture with aplha-channel
-	{	
-		bgColor = RGB(255,0,0);	
+	if ((m_RemoveCorners || (m_PreserveShadow)) /*&& !preResult*/ && !IsWindowMaximized(target))   // We don't have to clear window corners if we already have capture with aplha-channel
+	{
+		bgColor = RGB(255, 0, 0);
 		ShowWindow(wnd, SW_SHOWNOACTIVATE);
 		::InvalidateRect(wnd, NULL, false);
 		ProcessEvents();
 		ActivateWindowRepeat(target, 250);
-
 		eng.captureRegion(&reg);
 		redBgBitmap = eng.releaseCapturedBitmap();
-		Bitmap * ress = 0;
-		if(RemoveCorners(preResult?preResult:bm1, redBgBitmap, &ress))
+		Bitmap* ress = 0;
+		if (RemoveCorners(preResult ? preResult : bm1, redBgBitmap, &ress))
 		{
 			assert(ress);
 			delete preResult;
 			preResult = ress;
 		}
 	}
-
-	if(preResult && m_PreserveShadow && !IsWindowMaximized(target))
+	if (preResult && m_PreserveShadow && !IsWindowMaximized(target))
 	{
-		Bitmap *shadowed = 0;
+		Bitmap* shadowed = 0;
 		AddBorderShadow(preResult, true, &shadowed);
 		delete preResult;
 		preResult = shadowed;
 	}
 	resultBm = preResult;
-
-	if(target && move)
-		::SetWindowPos(target, HWND_NOTOPMOST, 0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
+	if (target && move)
+		::SetWindowPos(target, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 	DestroyWindow(wnd);
 	delete bm1;
 	delete bm2;
@@ -1049,73 +914,66 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
 	return resultBm;
 }
 
-//TODO : fix vista maximized window capturing
-bool CWindowHandlesRegion::GetImage(HDC src, Bitmap ** res)
+// TODO : fix vista maximized window capturing
+bool CWindowHandlesRegion::GetImage(HDC src, Bitmap** res)
 {
-	if(m_hWnds.empty()) return false;
-	RECT captureRect={0,0,0,0};
-	if(!m_ScreenRegion.IsNull())
+	if (m_hWnds.empty()) return false;
+	RECT captureRect = {0, 0, 0, 0};
+	if (!m_ScreenRegion.IsNull())
 		m_ScreenRegion.DeleteObject();
 	m_ScreenRegion.CreateRectRgnIndirect(&captureRect);
-
-	for(size_t i=0; i<m_hWnds.size(); i++)
+	for (size_t i = 0; i < m_hWnds.size(); i++)
 	{
-		CRgn newRegion=GetWindowVisibleRegion(m_hWnds[i].wnd);
-		m_ScreenRegion.CombineRgn(newRegion, m_hWnds[i].Include ? RGN_OR: RGN_DIFF);	
+		CRgn newRegion = GetWindowVisibleRegion(m_hWnds[i].wnd);
+		m_ScreenRegion.CombineRgn(newRegion, m_hWnds[i].Include ? RGN_OR : RGN_DIFF);
 	}
-
 	bool move = false;
 	bool parentIsInList = false;
-	if(m_bFromScreen)
+	if (m_bFromScreen)
 	{
 		topWindow = GetTopParent(m_hWnds[0].wnd);
-		if(topWindow == m_hWnds[0].wnd)
+		if (topWindow == m_hWnds[0].wnd)
 			parentIsInList = true;
-		for(size_t i=1; i<m_hWnds.size(); i++)
+		for (size_t i = 1; i < m_hWnds.size(); i++)
 		{
 			HWND curTopWindow = GetTopParent(m_hWnds[i].wnd);
-			if(curTopWindow == m_hWnds[i].wnd)
+			if (curTopWindow == m_hWnds[i].wnd)
 				parentIsInList = true;
-			if(topWindow != curTopWindow)
+			if (topWindow != curTopWindow)
 			{
 				topWindow = 0;
 			}
 		}
-		if(topWindow)
+		if (topWindow)
 		{
 			TCHAR Buffer[MAX_PATH];
-			GetClassName(topWindow, Buffer, sizeof(Buffer)/sizeof(TCHAR));
-			if(lstrcmpi(Buffer,_T("Shell_TrayWnd")))
+			GetClassName(topWindow, Buffer, sizeof(Buffer) / sizeof(TCHAR));
+			if (lstrcmpi(Buffer, _T("Shell_TrayWnd")))
 			{
 				move = true;
-				::SetWindowPos(topWindow, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
+				::SetWindowPos(topWindow, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 				TimerWait(m_WindowHidingDelay);
-			}	
+			}
 		}
 	}
-
 	CRect scr;
 	GetScreenBounds(scr);
-	m_ScreenRegion.OffsetRgn(-scr.left,-scr.top);
-
-	
-	
-	Bitmap *resultBm = 0;
-	if(m_bFromScreen && parentIsInList /*&& GetParent(topWindow)==HWND_DESKTOP */&&  IsVista() && IsCompositionActive() && topWindow && !(GetWindowLong(topWindow, GWL_STYLE)&WS_CHILD) 
-		&& (m_ClearBackground || m_RemoveCorners || m_PreserveShadow))
+	m_ScreenRegion.OffsetRgn(-scr.left, -scr.top);
+	Bitmap* resultBm = 0;
+	if (m_bFromScreen && parentIsInList /*&& GetParent(topWindow)==HWND_DESKTOP */ &&  IsVista() &&
+	    IsCompositionActive() && topWindow && !(GetWindowLong(topWindow, GWL_STYLE) & WS_CHILD)
+	    && (m_ClearBackground || m_RemoveCorners || m_PreserveShadow))
 	{
 		resultBm = CaptureWithTransparencyUsingDWM();
 	}
-
 	*res = resultBm;
-	
-	if(!resultBm)
-	{	
+	if (!resultBm)
+	{
 		bool result = CRectRegion::GetImage(src, res);
-		if(topWindow && move)
-			::SetWindowPos(topWindow,HWND_NOTOPMOST,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
+		if (topWindow && move)
+			::SetWindowPos(topWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 	}
-	return resultBm!=0;
+	return resultBm != 0;
 }
 
 CWindowHandlesRegion::~CWindowHandlesRegion()
@@ -1133,11 +991,12 @@ void CWindowHandlesRegion::AddWindow(HWND wnd, bool Include)
 
 void CWindowHandlesRegion::RemoveWindow(HWND wnd)
 {
-	for(size_t i=0; i< m_hWnds.size(); i++)
+	for (size_t i = 0; i < m_hWnds.size(); i++)
 	{
-		if(m_hWnds[i].wnd == wnd) 
+		if (m_hWnds[i].wnd == wnd)
 		{
-			m_hWnds.erase(m_hWnds.begin()+i); return; 
+			m_hWnds.erase(m_hWnds.begin() + i);
+			return;
 		}
 	}
 }
@@ -1146,22 +1005,22 @@ bool CWindowHandlesRegion::IsEmpty()
 {
 	return m_hWnds.empty();
 }
+
 void CWindowHandlesRegion::Clear()
 {
 	m_hWnds.clear();
 }
 
-
 void TimerWait(int Delay)
 {
 	HANDLE hTimer = CreateWaitableTimer(0, TRUE, 0);
 	LARGE_INTEGER interval;
-
 	interval.QuadPart = -Delay * 10000;
-	SetWaitableTimer(hTimer,&interval,0,0,0,0);
+	SetWaitableTimer(hTimer, &interval, 0, 0, 0, 0);
 	MsgWaitForSingleObject(hTimer, INFINITE);
 	CloseHandle(hTimer);
 }
+
 CScreenCaptureEngine::CScreenCaptureEngine()
 {
 	m_capturedBitmap = NULL;
@@ -1178,10 +1037,11 @@ bool CScreenCaptureEngine::captureScreen()
 {
 	CRect screenBounds;
 	GetScreenBounds(screenBounds);
-	screenBounds.OffsetRect(-screenBounds.left,-screenBounds.top);
-	//int screenWidth = GetScreenWidth();//GetSystemMetrics(SM_CXSCREEN);
-	//int screenHeight = GetScreenWidth();//GetSystemMetrics(SM_CYSCREEN);
-	CRectRegion capturingRegion(screenBounds.left, screenBounds.top, screenBounds.right-screenBounds.left, screenBounds.bottom-screenBounds.top);
+	screenBounds.OffsetRect(-screenBounds.left, -screenBounds.top);
+	// int screenWidth = GetScreenWidth();//GetSystemMetrics(SM_CXSCREEN);
+	// int screenHeight = GetScreenWidth();//GetSystemMetrics(SM_CYSCREEN);
+	CRectRegion capturingRegion(screenBounds.left, screenBounds.top, screenBounds.right - screenBounds.left,
+	                            screenBounds.bottom - screenBounds.top);
 	return captureRegion(&capturingRegion);
 }
 
@@ -1199,15 +1059,15 @@ void CScreenCaptureEngine::setSource(HBITMAP src)
 {
 	m_source = src;
 }
+
 bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
 {
 	delete m_capturedBitmap;
 	m_capturedBitmap = NULL;
 	HDC srcDC;
-	HDC screenDC = ::GetDC(0); 
-
+	HDC screenDC = ::GetDC(0);
 	HGDIOBJ oldBm;
-	if(m_source)
+	if (m_source)
 	{
 		HDC sourceDC = CreateCompatibleDC(screenDC);
 		srcDC = sourceDC;
@@ -1216,15 +1076,15 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
 	else
 	{
 		srcDC = screenDC;
-		if(m_captureDelay)
+		if (m_captureDelay)
 		{
 			TimerWait(m_captureDelay);
 		}
 	}
 	region->PrepareShooting(!(bool)(m_source != 0));
-	bool result =  region->GetImage(srcDC, &m_capturedBitmap);	
+	bool result =  region->GetImage(srcDC, &m_capturedBitmap);
 	region->AfterShooting();
-	if(m_source)
+	if (m_source)
 	{
 		SelectObject(srcDC, oldBm);
 		DeleteDC(srcDC);
@@ -1239,6 +1099,7 @@ Gdiplus::Bitmap* CScreenCaptureEngine::releaseCapturedBitmap()
 	m_capturedBitmap = 0;
 	return res;
 }
+
 CFreeFormRegion::CFreeFormRegion()
 {
 }
@@ -1255,79 +1116,66 @@ void CFreeFormRegion::Clear()
 
 bool CFreeFormRegion::IsEmpty()
 {
-	if(m_curvePoints.empty()) return true;
+	if (m_curvePoints.empty()) return true;
 	GraphicsPath grPath;
 	std::vector<Point> points;
-
-	POINT prevPoint={-1, -1};
+	POINT prevPoint = {-1, -1};
 	std::vector<POINT> curveAvgPoints;
-	
 	average_polyline(m_curvePoints, curveAvgPoints, 29);
-	for(size_t i=0; i<curveAvgPoints.size(); i++)
+	for (size_t i = 0; i < curveAvgPoints.size(); i++)
 	{
-		points.push_back(Point(curveAvgPoints[i].x,curveAvgPoints[i].y));
+		points.push_back(Point(curveAvgPoints[i].x, curveAvgPoints[i].y));
 	}
-	if(points.empty()) return true;
-	grPath.AddCurve(&points[0],points.size());
+	if (points.empty()) return true;
+	grPath.AddCurve(&points[0], points.size());
 	Rect grPathRect;
 	grPath.GetBounds(&grPathRect);
-
 	int bmWidth = grPathRect.GetRight() - grPathRect.GetLeft();
 	int bmHeight = grPathRect.GetBottom() - grPathRect.GetTop();
-
-	return !(bmWidth*bmHeight);
+	return !(bmWidth * bmHeight);
 }
 
-bool CFreeFormRegion::GetImage(HDC src, Bitmap ** res)
+bool CFreeFormRegion::GetImage(HDC src, Bitmap** res)
 {
 	GraphicsPath grPath;
 	std::vector<Point> points;
-
-	POINT prevPoint={-1,-1};
+	POINT prevPoint = {-1, -1};
 	std::vector<POINT> curveAvgPoints;
 	average_polyline(m_curvePoints, curveAvgPoints, 29);
-	for(size_t i=0; i<curveAvgPoints.size(); i++)
+	for (size_t i = 0; i < curveAvgPoints.size(); i++)
 	{
-		points.push_back(Point(curveAvgPoints[i].x,curveAvgPoints[i].y));
+		points.push_back(Point(curveAvgPoints[i].x, curveAvgPoints[i].y));
 	}
-	grPath.AddCurve(&points[0],points.size());
+	grPath.AddCurve(&points[0], points.size());
 	Rect grPathRect;
 	grPath.GetBounds(&grPathRect);
-
 	int bmWidth = grPathRect.GetRight() - grPathRect.GetLeft();
 	int bmHeight = grPathRect.GetBottom() - grPathRect.GetTop();
-
 	CDC mem2;
 	mem2.CreateCompatibleDC(src);
 	CBitmap bm2;
 	bm2.CreateCompatibleBitmap(src, bmWidth, bmHeight);
 	HBITMAP oldBm = mem2.SelectBitmap(bm2);
-	::BitBlt(mem2, 0, 0, bmWidth, bmHeight, src, grPathRect.GetLeft(), grPathRect.GetTop(), SRCCOPY|CAPTUREBLT);
+	::BitBlt(mem2, 0, 0, bmWidth, bmHeight, src, grPathRect.GetLeft(), grPathRect.GetTop(), SRCCOPY | CAPTUREBLT);
 	mem2.SelectBitmap(oldBm);
-
 	Matrix matrix(1.0f, 0.0f, 0.0f, 1.0f, REAL(-grPathRect.GetLeft()), REAL(-grPathRect.GetTop()));
 	grPath.Transform(&matrix);
-
-	Bitmap b(bm2,0);
-
-	SolidBrush   gdipBrush(Color(255,0,0,0));
+	Bitmap b(bm2, 0);
+	SolidBrush gdipBrush(Color(255, 0, 0, 0));
 	Bitmap alphaBm(bmWidth, bmHeight, PixelFormat32bppARGB);
-
 	Graphics alphaGr(&alphaBm);
 	alphaGr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
 	alphaGr.SetSmoothingMode(SmoothingModeAntiAlias);
 	alphaGr.FillPath(&gdipBrush, &grPath);
-
-	Bitmap *finalbm = new Bitmap(bmWidth, bmHeight, PixelFormat32bppARGB);
+	Bitmap* finalbm = new Bitmap(bmWidth, bmHeight, PixelFormat32bppARGB);
 	Graphics gr(finalbm);
 	gr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
 	gr.SetSmoothingMode(SmoothingModeAntiAlias);
-
-	gr.DrawImage(&b, 0,0);
-	SolidBrush   gdipBrush2(Color(100,123,0,0));
-	Pen pn(Color(255,40,255), 1.0f) ;
-	Pen pn2(Color(40,0,255), 1.0f) ;
-	transferOneARGBChannelFromOneBitmapToAnother(alphaBm, *finalbm,Alpha,Alpha);
+	gr.DrawImage(&b, 0, 0);
+	SolidBrush gdipBrush2(Color(100, 123, 0, 0));
+	Pen pn(Color(255, 40, 255), 1.0f) ;
+	Pen pn2(Color(40, 0, 255), 1.0f) ;
+	transferOneARGBChannelFromOneBitmapToAnother(alphaBm, *finalbm, Alpha, Alpha);
 	*res = finalbm;
 	return true;
 }
@@ -1338,10 +1186,9 @@ CFreeFormRegion::~CFreeFormRegion()
 
 CActiveWindowRegion::CActiveWindowRegion()
 {
-
 }
 
-bool CActiveWindowRegion::GetImage(HDC src, Bitmap ** res)
+bool CActiveWindowRegion::GetImage(HDC src, Bitmap** res)
 {
 	Clear();
 	AddWindow(GetForegroundWindow(), true);
