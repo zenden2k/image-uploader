@@ -45,7 +45,7 @@ DECLARE_INSTANCE_TYPE(CIUUploadParams);
 const std::string AskUserCaptcha(NetworkManager* nm, const std::string& url)
 {
 #ifndef IU_CLI
-	Impl_AskUserCaptcha(nm, url);
+	return Impl_AskUserCaptcha(nm, url);
 #else
 	return "<not implemented>";
 #endif
@@ -289,7 +289,7 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		RegisterGlobal(scriptGetFileMimeType, "GetFileMimeType");
 		srand(static_cast<unsigned int>(time(0)));
 
-		BindVariable(m_Object, &m_ServersSettings, "ServerParams");
+		BindVariable(m_Object, &params, "ServerParams");
 
 		std::string scriptText;
 		IuCoreUtils::ReadUtf8TextFile(fileName, scriptText);
