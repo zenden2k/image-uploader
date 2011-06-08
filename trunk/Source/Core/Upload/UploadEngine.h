@@ -106,7 +106,6 @@ struct ServerSettingsStruct
 			result = authData.Login;
 		else result = params[name.c_str()];
 		return result;
-
 	}
 
 	void setParam(const std::string& name, const std::string& value)

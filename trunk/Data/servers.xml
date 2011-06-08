@@ -20,14 +20,11 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<Server Name="habreffect.ru"  Debug="0">
+	<Server Name="habrastorage.org"  Debug="0" Plugin="habrastorage" Authorize="2">
 		<Actions>
-			<!--	<Action Type="get" Url="http://habreffect.ru/" RegExp='name=&quot;key&quot;(\s\S*?)value="(.*?)"' AssignVars="Key:1;"/>-->
-			<Action Type="upload" Url="http://habreffect.ru/upload" PostParams="file=%filename%;key=$(Key);yt0=" RegExp='\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:0;"/>
 		</Actions>
-		<Result ImageUrlTemplate="$(Image)"/>
-	</Server>	
-	<Server Name="pinpic.ru"  Authorize="0">
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>		<Server Name="pinpic.ru"  Authorize="0">
 		<Actions>
 			<Action Type="upload" Url="http://pinpic.ru/upload.html" PostParams="userfile=%filename%;load_type=2;disable_off=1;string_small=Увеличить;quality=85;rotate=0;thumb_resize=$(_THUMBWIDTH);status=1;" RegExp='http://pinpic.ru/hot-preview/([\w0-9\.]+)([\s\S]*?)http://pinpic.ru/hot-img/([\w0-9\.]+)' AssignVars="Image:2;Preview:0"/>
 		</Actions>
