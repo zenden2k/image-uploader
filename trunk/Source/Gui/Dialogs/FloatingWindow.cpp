@@ -29,6 +29,7 @@
 #include "LogWindow.h"
 #include "Func/Base.h"
 #include "Func/HistoryManager.h"
+#include "Core/Utils/CoreTypes.h"
 
 // FloatingWindow
 CFloatingWindow::CFloatingWindow()
@@ -536,9 +537,6 @@ LRESULT CFloatingWindow::OnScreenshotActionChanged(WORD wNotifyCode, WORD wID, H
 	return 0;
 }
 
-#ifndef ARRAYSIZE
-	#define ARRAYSIZE(a) (sizeof(a) / sizeof(a[0]))
-#endif
 
 void CFloatingWindow::ShowBaloonTip(const CString& text, const CString& title)
 {
@@ -549,8 +547,8 @@ void CFloatingWindow::ShowBaloonTip(const CString& text, const CString& title)
 	nid.uTimeout = 5500;
 	nid.uFlags = NIF_INFO;
 	nid.dwInfoFlags = NIIF_INFO;
-	lstrcpyn(nid.szInfo, text, ARRAYSIZE(nid.szInfo) - 1);
-	lstrcpyn(nid.szInfoTitle, title, ARRAYSIZE(nid.szInfoTitle) - 1);
+	lstrcpyn(nid.szInfo, text, ARRAY_SIZE(nid.szInfo) - 1);
+	lstrcpyn(nid.szInfoTitle, title, ARRAY_SIZE(nid.szInfoTitle) - 1);
 	Shell_NotifyIcon(NIM_MODIFY, &nid);
 }
 

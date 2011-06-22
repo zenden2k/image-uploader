@@ -23,6 +23,7 @@
 #include "traysettings.h"
 #include "hotkeyeditor.h"
 #include "Func/Settings.h"
+#include "Gui/GuiTools.h"
 
 // CHotkeySettingsPage
 CHotkeySettingsPage::CHotkeySettingsPage()
@@ -128,8 +129,8 @@ LRESULT CHotkeySettingsPage::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
 		::ScreenToClient(hwnd, &ClientPoint);
 	}
 	HMENU TrayMenu = ::CreatePopupMenu();
-	IUInsertMenu(TrayMenu, 0, IDM_CLEARHOTKEY, TR("Очистить")); 
-	IUInsertMenu(TrayMenu, 1, IDM_CLEARALLHOTKEYS, TR("Очистить всё")); 
+	ZGuiTools::IUInsertMenu(TrayMenu, 0, IDM_CLEARHOTKEY, TR("Очистить")); 
+	ZGuiTools::IUInsertMenu(TrayMenu, 1, IDM_CLEARALLHOTKEYS, TR("Очистить всё")); 
 	::TrackPopupMenu(TrayMenu, TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, 0,m_hWnd,0);
 	return 0;
 }

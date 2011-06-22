@@ -34,6 +34,7 @@
 #include "LogWindow.h"
 #include "mediainfodlg.h"
 #include "Func/Settings.h"
+#include "Gui/GuiTools.h"
 
 
 #ifdef DEBUG
@@ -299,7 +300,7 @@ LRESULT CVideoGrabber::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 
 LRESULT CVideoGrabber::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	WizardDlg->LastVideoFile = IU_GetWindowText(GetDlgItem(IDC_FILEEDIT));
+	WizardDlg->LastVideoFile = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_FILEEDIT));
 
 	Terminated = false;
 	IsStopTimer = false;
@@ -352,6 +353,7 @@ DWORD CVideoGrabber::Run()
 
 bool CVideoGrabber::OnAddImage(SENDPARAMS* sp)
 {
+	using namespace Gdiplus;
 	if (!sp)
 		return 0;
 	BYTE* pBuffer = sp->pBuffer;
@@ -465,6 +467,7 @@ void CVideoGrabber::SavingMethodChanged(void)
 
 int CVideoGrabber::GenPicture(CString& outFileName)
 {
+	using namespace Gdiplus;
 	RectF TextRect;
 	int infoHeight = 0;
 	CString Report;

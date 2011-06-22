@@ -18,13 +18,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "atlheaders.h"
 #include "GeneralSettings.h"
+
 #include <uxtheme.h>
 #include "Func/common.h"
-
 #include "Func/Settings.h"
 #include "LogWindow.h"
+#include "Gui/GuiTools.h"
+
 // CGeneralSettings
 CGeneralSettings::CGeneralSettings()
 {
@@ -132,7 +133,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 LRESULT CGeneralSettings::OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	TCHAR Buf[MAX_PATH*4];
-	SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
+	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
 		CString(TR("Исполняемые файлы")),
 		_T("*.exe;*.com;*.bat;*.cmd;"),
 		TR("Все файлы"),
@@ -190,7 +191,7 @@ bool CGeneralSettings::Apply()
 LRESULT CGeneralSettings::OnClickedQuickUpload(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	bool Checked = SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_GETCHECK)==BST_CHECKED;
-	EnableNextN(GetDlgItem(wID), 1, Checked);
+	ZGuiTools::EnableNextN(GetDlgItem(wID), 1, Checked);
 	return 0;
 }
 
@@ -209,5 +210,5 @@ LRESULT CGeneralSettings::OnShellIntegrationCheckboxChanged(WORD wNotifyCode, WO
 void CGeneralSettings::ShellIntegrationChanged()
 {
 	bool checked = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED;
-	EnableNextN(GetDlgItem(IDC_SHELLINTEGRATION), 2, checked);
+	ZGuiTools::EnableNextN(GetDlgItem(IDC_SHELLINTEGRATION), 2, checked);
 }

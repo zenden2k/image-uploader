@@ -27,6 +27,7 @@
 #include "Func/MyEngineList.h"
 #include "Func/Settings.h"
 #include "Gui/Dialogs/SettingsDlg.h"
+#include "Gui/GuiTools.h"
 
 CUploadSettings::CUploadSettings(CMyEngineList * EngineList):ñonvert_profiles_(Settings.ConvertProfiles)
 {
@@ -116,18 +117,18 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	::GetWindowRect(GetDlgItem(IDC_IMAGESERVERGROUPBOX), &Toolbar1Rect);
   
 	::MapWindowPoints(0, m_hWnd, (LPPOINT)&Toolbar1Rect, 2);
-	Toolbar1Rect.top += dlgY(9);
-	Toolbar1Rect.bottom -= dlgY(3);
-	Toolbar1Rect.left += dlgX(6);
-	Toolbar1Rect.right -= dlgX(6);
+	Toolbar1Rect.top += ZGuiTools::dlgY(9);
+	Toolbar1Rect.bottom -= ZGuiTools::dlgY(3);
+	Toolbar1Rect.left += ZGuiTools::dlgX(6);
+	Toolbar1Rect.right -= ZGuiTools::dlgX(6);
 
 	RECT Toolbar2Rect;
 	::GetWindowRect(GetDlgItem(IDC_FILESERVERGROUPBOX), &Toolbar2Rect);
 	::MapWindowPoints(0, m_hWnd, (LPPOINT)&Toolbar2Rect, 2);
-	Toolbar2Rect.top += dlgY(9);
-	Toolbar2Rect.bottom -= dlgY(3);
-	Toolbar2Rect.left += dlgX(6);
-	Toolbar2Rect.right -= dlgX(6);
+	Toolbar2Rect.top += ZGuiTools::dlgY(9);
+	Toolbar2Rect.bottom -= ZGuiTools::dlgY(3);
+	Toolbar2Rect.left += ZGuiTools::dlgX(6);
+	Toolbar2Rect.right -= ZGuiTools::dlgX(6);
 
 	for(int i = 0; i<2; i++)
 	{
@@ -185,7 +186,7 @@ LRESULT CUploadSettings::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCt
 LRESULT CUploadSettings::OnBnClickedKeepasis(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	bool checked = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0, 0)!=FALSE;
-	EnableNextN(GetDlgItem(IDC_KEEPASIS), 13, checked);
+	ZGuiTools::EnableNextN(GetDlgItem(IDC_KEEPASIS), 13, checked);
 	m_ProfileEditToolbar.EnableWindow(checked);
 	return 0;
 }
@@ -262,11 +263,11 @@ bool CUploadSettings::OnNext()
    }
 
 	Settings.UploadProfile.KeepAsIs = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) != BST_CHECKED;
-	Settings.ThumbSettings.CreateThumbs = IsChecked(IDC_CREATETHUMBNAILS);
-	Settings.ThumbSettings.UseServerThumbs = IsChecked(IDC_USESERVERTHUMBNAILS);
+	Settings.ThumbSettings.CreateThumbs = IS_CHECKED(IDC_CREATETHUMBNAILS);
+	Settings.ThumbSettings.UseServerThumbs = IS_CHECKED(IDC_USESERVERTHUMBNAILS);
 	//Settings.ThumbSettings.UseThumbTemplate = IsChecked(IDC_USETHUMBTEMPLATE);
 	//Settings.ThumbSettings.DrawFrame = IsChecked(IDC_DRAWFRAME);
-	Settings.ThumbSettings.ThumbAddImageSize = IsChecked(IDC_ADDFILESIZE);
+	Settings.ThumbSettings.ThumbAddImageSize = IS_CHECKED(IDC_ADDFILESIZE);
 	/*Settings.ImageSettings.SaveProportions = IsChecked(IDC_SAVEPROPORTIONS);
 	Settings.ImageSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	Settings.ImageSettings.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);*/
@@ -845,9 +846,9 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
    params.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	params.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);
 
-   params.strNewWidth = IU_GetWindowText( GetDlgItem(IDC_IMAGEWIDTH));
+   params.strNewWidth = ZGuiTools::IU_GetWindowText( GetDlgItem(IDC_IMAGEWIDTH));
 
-  params.strNewHeight =  IU_GetWindowText( GetDlgItem(IDC_IMAGEHEIGHT));
+  params.strNewHeight =  ZGuiTools::IU_GetWindowText( GetDlgItem(IDC_IMAGEHEIGHT));
    return true;
  }
 
@@ -890,7 +891,7 @@ bool  CUploadSettings::OnHide()
 }
 LRESULT CUploadSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    CString profile = IU_GetWindowText(GetDlgItem(IDC_PROFILECOMBO));
+    CString profile = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_PROFILECOMBO));
 
     ShowParams(profile);
     UpdateProfileList();

@@ -24,6 +24,8 @@
 #include "Core/Upload/UploadEngine.h"
 #include "Func/Settings.h"
 #include "Core/ScreenCapture.h"
+#include "Gui/GuiTools.h"
+
 // CSizeExceed
 CSizeExceed::CSizeExceed(LPCTSTR szFileName, FullUploadProfile &iss, CMyEngineList * EngineList)
 : m_UploadProfile(iss), m_EngineList(EngineList), m_ImageSettings(iss.convert_profile)
@@ -80,7 +82,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	
 	SendDlgItemMessage(IDC_SERVERLIST,CB_SETCURSEL,Settings.ServerID);
 
-	MakeLabelBold(GetDlgItem(IDC_FILEEXCEEDNAME));
+	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_FILEEXCEEDNAME));
 	
 	int f = MyGetFileSize(m_szFileName);
 	WCHAR buf2[25];
@@ -141,9 +143,9 @@ void CSizeExceed::DisplayParams(void)
 void CSizeExceed::GetParams()
 {
    m_UploadProfile.upload_profile.KeepAsIs = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
-	m_ImageSettings.strNewWidth= IU_GetWindowText(GetDlgItem(IDC_IMAGEWIDTH));
-   m_ImageSettings.strNewHeight = IU_GetWindowText(GetDlgItem(IDC_IMAGEHEIGHT));
-	m_ImageSettings.SaveProportions = IsChecked(IDC_SAVEPROPORTIONS);
+	m_ImageSettings.strNewWidth= ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_IMAGEWIDTH));
+   m_ImageSettings.strNewHeight = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_IMAGEHEIGHT));
+	m_ImageSettings.SaveProportions = IS_CHECKED(IDC_SAVEPROPORTIONS);
 	m_ImageSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	m_ImageSettings.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);
 	m_UploadProfile.upload_profile.ServerID = SendDlgItemMessage(IDC_SERVERLIST, CB_GETCURSEL, 0, 0);

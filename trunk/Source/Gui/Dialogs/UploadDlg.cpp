@@ -20,13 +20,14 @@
 
 #include "UploadDlg.h"
 
-#include "shobjidl.h"
+#include <shobjidl.h>
 #include "Core/ImageConverter.h"
 #include "Func/Base.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/InputDialog.h"
 #include "Func/Settings.h"
 #include "Core/Upload/UploadEngine.h"
+#include "Gui/GuiTools.h"
 
 class CTempFilesDeleter
 {
@@ -34,6 +35,7 @@ class CTempFilesDeleter
 		CTempFilesDeleter();
 		void AddFile(const CString& fileName);
 		bool Cleanup();
+
 	protected:
 		std::vector<CString> m_files;
 };
@@ -117,7 +119,7 @@ CUploadDlg::~CUploadDlg()
 	delete ResultsWindow;
 }
 
-Bitmap* BitmapFromResource(HINSTANCE hInstance,LPCTSTR szResName, LPCTSTR szResType);
+//Gdiplus::Bitmap* BitmapFromResource(HINSTANCE hInstance,LPCTSTR szResName, LPCTSTR szResType);
 
 LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
@@ -135,7 +137,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	TRC(IDC_COMMONPROGRESS, "Общий прогресс:");
 	bool IsLastVideo = lstrlen(MediaInfoDllPath)!=0;
 
-	CVideoGrabber *vg =(	CVideoGrabber *) WizardDlg->Pages[1];
+	CVideoGrabber *vg = static_cast<CVideoGrabber*>(WizardDlg->Pages[1]);
 
 	if(vg && lstrlen(vg->m_szFileName))
 		IsLastVideo=true;
@@ -145,14 +147,12 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	SetDlgItemInt(IDC_THUMBSPERLINE, 4);
 	SendDlgItemMessage(IDC_THUMBPERLINESPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
 	
-	MakeLabelBold(GetDlgItem(IDC_COMMONPROGRESS));
-	MakeLabelBold(GetDlgItem(IDC_COMMONPERCENTS));
+	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPROGRESS));
+	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPERCENTS));
 	PageWnd = m_hWnd;
 	ResultsWindow->SetPage(Settings.CodeLang);
-	
 	ResultsWindow->SetCodeType(Settings.CodeType);
-
-	return 1;  // Let the system set the focus
+	return 1;  
 }
 
 #define Terminat() {Terminated=true; return 0;}
@@ -764,8 +764,10 @@ int GetWindowLeft(HWND Wnd)
 void CUploadDlg::FileProgress(const CString& Text, bool ShowPrefix)
 {
 	CString Temp;
-	if(ShowPrefix){ 
-		Temp+=TR("Текущий файл:"); Temp+=_T("  ");
+	if(ShowPrefix)
+	{ 
+		Temp += TR("Текущий файл:"); 
+		Temp += _T("  ");
 	}
 
 	Temp += Text;
@@ -792,14 +794,14 @@ void CUploadDlg::GenerateOutput()
 void CUploadDlg::UploadProgress(int CurPos, int Total, int FileProgress)
 {
 	SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETPOS, CurPos);
-	#if  WINVER	>= 0x0601
-		if(ptl)
-		{
-			int NewCurrent = CurPos * 50 + FileProgress;
-			int NewTotal = Total * 50;
-			ptl->SetProgressValue(GetParent(), NewCurrent, NewTotal);
-		}
-	#endif
+#if  WINVER	>= 0x0601 // Windows 7 related stuff
+	if(ptl)
+	{
+		int NewCurrent = CurPos * 50 + FileProgress;
+		int NewTotal = Total * 50;
+		ptl->SetProgressValue(GetParent(), NewCurrent, NewTotal);
+	}
+#endif
 	progressCurrent = CurPos;
 	progressTotal = Total;
 }

@@ -22,7 +22,7 @@
 #include <uxtheme.h>
 
 #include "wizarddlg.h"
-
+#include "Gui/GuiTools.h"
 
 // CUploadSettingsPage
 CUploadSettingsPage::CUploadSettingsPage()
@@ -107,7 +107,7 @@ LRESULT CUploadSettingsPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 LRESULT CUploadSettingsPage::OnClickedUseProxy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& bHandled)
 {
 	bool Checked = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK)!=0;
-	EnableNextN(GetDlgItem(wID),Checked? 8: 11, Checked);
+	ZGuiTools::EnableNextN(GetDlgItem(wID),Checked? 8: 11, Checked);
 
 	if(Checked)
 		OnClickedUseProxyAuth(BN_CLICKED, IDC_NEEDSAUTH, 0, bHandled);
@@ -119,7 +119,7 @@ LRESULT CUploadSettingsPage::OnClickedUseProxy(WORD /*wNotifyCode*/, WORD wID, H
 LRESULT CUploadSettingsPage::OnClickedUseProxyAuth(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	bool Checked = SendDlgItemMessage(wID, BM_GETCHECK)!=0;
-	EnableNextN(GetDlgItem(wID), 4, Checked);
+	ZGuiTools::EnableNextN(GetDlgItem(wID), 4, Checked);
 	return 0;
 }
 

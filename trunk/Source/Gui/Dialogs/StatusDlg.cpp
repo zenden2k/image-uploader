@@ -23,7 +23,7 @@
 #include "Func/Common.h"
 #include "Func/MyUtils.h"
 #include "Func/LangClass.h"
-
+#include "Gui/GuiTools.h"
 // CStatusDlg
 CStatusDlg::CStatusDlg()
 {
@@ -40,7 +40,7 @@ LRESULT CStatusDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	m_bNeedStop = false;
 	SetTimer(1, 500);
 	TRC(IDCANCEL, "Остановить");
-	MakeLabelBold(GetDlgItem(IDC_TITLE));
+	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_TITLE));
 	return 1;  // Let the system set the focus
 }
 

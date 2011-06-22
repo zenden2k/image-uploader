@@ -442,21 +442,7 @@ DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
 	return 1;
 }
 
-// Converts pixels to Win32 dialog units
-int dlgX(int WidthInPixels)
-{
-	LONG units = GetDialogBaseUnits();
-	short baseunitX = LOWORD(units);
-	return WidthInPixels * baseunitX / 4;
-}
 
-// Converts pixels to Win32 dialog units
-int dlgY(int HeightInPixels)
-{
-	LONG units = GetDialogBaseUnits();
-	short baseunitY = HIWORD(units);
-	return HeightInPixels * baseunitY / 8;
-}
 
 CString GetUniqFileName(const CString& filePath)
 {
@@ -542,15 +528,6 @@ CString GenerateFileName(const CString& templateStr, int index, const CPoint siz
 }
 
 CMyEngineList* _EngineList;
-
-const CString IU_GetWindowText(HWND wnd)
-{
-	int len = GetWindowTextLength(wnd);
-	CString buf;
-	GetWindowText(wnd, buf.GetBuffer(len + 1), len + 1);
-	buf.ReleaseBuffer(-1);
-	return buf;
-}
 
 void DecodeString(LPCTSTR szSource, CString& Result, LPSTR code)
 {
@@ -779,8 +756,9 @@ CString GetSendToPath()
 	return result;
 }
 
-Bitmap* BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szResType)
+Gdiplus::Bitmap* BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szResType)
 {
+	using namespace Gdiplus;
 	HRSRC hrsrc = FindResource(hInstance, szResName, szResType);
 	if (!hrsrc)
 		return 0;
@@ -800,7 +778,7 @@ Bitmap* BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szRes
 		return 0;
 
 	// use load from IStream
-	Bitmap* image = Bitmap::FromStream(pStream);
+	Gdiplus::Bitmap* image = Bitmap::FromStream(pStream);
 	pStream->Release();
 	// GlobalFree(hg2);
 	return image;

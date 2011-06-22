@@ -163,7 +163,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	return 0;
 }
 
-bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, Image *Img)
+bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, Gdiplus::Image *Img)
 {
 	CFileListItem fl; //internal list item
 	

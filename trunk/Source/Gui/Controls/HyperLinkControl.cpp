@@ -21,6 +21,8 @@
 #include "atlheaders.h"
 #include "HyperLinkControl.h"
 #include "Func/Common.h"
+#include "Gui/GuiTools.h"
+
 // CHyperLinkControl
 CHyperLinkControl::CHyperLinkControl()
 {
@@ -297,7 +299,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 				CRect rec = item.ItemRect;
 				rec.right = rc.right-6;
 				rec.InflateRect(3,6);
-				FillRectGradient(dc.m_hDC, rec, 0xEAE2D9, 0xD3C1AF, false);
+				ZGuiTools::FillRectGradient(dc.m_hDC, rec, 0xEAE2D9, 0xD3C1AF, false);
 			}
 
 			TextRect.left += 40;

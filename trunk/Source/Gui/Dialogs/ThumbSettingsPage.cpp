@@ -112,7 +112,7 @@ bool CThumbSettingsPage::Apply()
 	Settings.ThumbSettings.Format = static_cast<ThumbCreatingParams::ThumbFormatEnum>(SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_GETCURSEL ));
 	Settings.ThumbSettings.Quality = GetDlgItemInt(IDC_THUMBQUALITYEDIT);
    Settings.ThumbSettings.ScaleByHeight = SendDlgItemMessage(IDC_WIDTHRADIO, BM_GETCHECK) == FALSE;
-	Settings.ThumbSettings.Text = IU_GetWindowText(GetDlgItem(IDC_THUMBTEXT));
+	Settings.ThumbSettings.Text = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_THUMBTEXT));
 	Settings.ThumbSettings.ThumbWidth = GetDlgItemInt(IDC_WIDTHEDIT);
    Settings.ThumbSettings.ThumbHeight = GetDlgItemInt(IDC_HEIGHTEDIT);
 	Settings.ThumbSettings.BackgroundColor = ThumbBackground.GetColor();
@@ -204,6 +204,7 @@ std::string CThumbSettingsPage::getSelectedThumbnailFileName()
 
 void CThumbSettingsPage::showSelectedThumbnailPreview()
 {
+	using namespace Gdiplus;
 	std::string fileName = getSelectedThumbnailFileName();
 	if(fileName.empty())
 		return ;
@@ -263,7 +264,7 @@ void CThumbSettingsPage::ThumbTextCheckboxChange()
 LRESULT CThumbSettingsPage::OnThumbTextChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
    if(!m_CatchFormChanges) return 0;
-	params_.Text = IU_GetWindowText(GetDlgItem(IDC_THUMBTEXT));
+	params_.Text = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_THUMBTEXT));
 	showSelectedThumbnailPreview();
 	return 0;
 }

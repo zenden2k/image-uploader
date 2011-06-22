@@ -7,13 +7,13 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<Server Name="Immage.de"  Authorize="1">
+	<!--<Server Name="Immage.de"  Authorize="1">
 		<Actions>
 			<Action Type="login" Url="http://immage.de/login.html" PostParams="username=$(_LOGIN);passwort=$(_PASSWORD);autologin=1;" OnlyOnce="0" Description="Authorization on Immage.de"/>
 			<Action Type="upload" Url="http://immage.de/upload.html" PostParams="dat[0]=%filename%;drehen0=0;umwandeln0=0;thumbg0=1;thumbinfos0=0;" RegExp='\[\/img\]([\s\S]*?)\[img\](.*?)\[\/img\]*' AssignVars="Image:1;"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)"/>
-	</Server>
+	</Server>-->
 	<Server Name="ImageBan.ru"  Authorize="1" Debug="0">
 		<Actions>
 			<Action Type="upload" Url="http://api.imageban.ru/upload_api.php" PostParams="userfile=%filename%;user=$(_LOGIN);passwd=$(_PASSWORD)" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0"/>

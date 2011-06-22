@@ -20,7 +20,7 @@
 
 #include "TraySettings.h"
 #include "Func/Settings.h"
-#define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
+#include "Gui/GuiTools.h"
  
 CTrayActions::CTrayActions()
 	{
@@ -110,6 +110,6 @@ LRESULT CTraySettingsPage::OnShowTrayIconBnClicked(WORD wNotifyCode, WORD wID, H
 {
 	bool bShowTrayIcon = SendDlgItemMessage(IDC_SHOWTRAYICON, BM_GETCHECK) == BST_CHECKED;
 	SendDlgItemMessage(IDC_AUTOSTARTUP, BM_SETCHECK, FALSE);
-	EnableNextN(GetDlgItem(wID),11,bShowTrayIcon);
+	ZGuiTools::EnableNextN(GetDlgItem(wID),11,bShowTrayIcon);
 	return 0;
 }

@@ -39,7 +39,9 @@
 #include "Gui/Dialogs/UpdateDlg.h"
 #include "Func/Settings.h"
 #include "Gui/Dialogs/MediaInfoDlg.h"
+#include "Gui/GuiTools.h"
 
+using namespace Gdiplus;
 // CWizardDlg
 CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 { 
@@ -1127,10 +1129,10 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 {
 	TCHAR Buf[MAX_PATH*4];
 	if(AnyFiles)
-		SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),1,TR("Любые файлы"),
+		ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),1,TR("Любые файлы"),
 		_T("*.*"));
 	else
-	SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
+	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
 		CString(TR("Изображения"))+ _T(" (jpeg, bmp, png, gif ...)"),
 		_T("*.jpg;*.gif;*.png;*.bmp;*.tiff"),
 		TR("Любые файлы"),
@@ -1249,7 +1251,7 @@ bool CWizardDlg::executeFunc(CString funcBody)
 bool CWizardDlg::funcImportVideo()
 {
 	TCHAR Buf[MAX_PATH*4];
-	SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
+	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
 			CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv ...)"),
 		_T("*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;*.rm;"),
 		TR("Все файлы"),
@@ -1446,7 +1448,7 @@ bool CWizardDlg::funcDownloadImages()
 bool CWizardDlg::funcMediaInfo()
 {
 	TCHAR Buf[MAX_PATH*4]; //String buffer which will contain filter for CFileDialog
-	SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),3, 
+	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),3, 
 			CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv ...)"),
 		_T("*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;*.rm;"),
 		CString(TR("Аудио файлы"))+ _T(" (mp3, wma, wav ...)"),
@@ -1471,7 +1473,7 @@ bool CWizardDlg::funcMediaInfo()
 bool CWizardDlg::funcAddFiles()
 {
 	TCHAR Buf[MAX_PATH*4];
-	SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),1, TR("Любые файлы"), _T("*.*"));
+	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),1, TR("Любые файлы"), _T("*.*"));
 
 	int nCount=0;
 	CMultiFileDialog fd(0, 0, OFN_HIDEREADONLY, Buf, m_hWnd);

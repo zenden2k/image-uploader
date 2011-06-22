@@ -31,6 +31,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 
+using namespace Gdiplus;
+
 ImageConvertingParams::ImageConvertingParams()
 {
 	StrokeColor = RGB(0, 0, 0);

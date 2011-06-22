@@ -24,8 +24,7 @@
 #include "atlheaders.h"
 #include <tchar.h>
 #include <stdlib.h>
-#include <gdiplus.h>
-#include <gdiplusheaders.h>
+
 #include <string>
 #define APPNAME _T("Image Uploader")
 #define VIDEO_DIALOG_FORMATS _T("Video files (avi, mpg, vob, wmv, flv, etc)\0*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;\0All files\0*.*\0\0")
@@ -36,7 +35,6 @@
 const CString StringSection(const CString& str,TCHAR sep, int index);
 std::wstring strtows(const std::string &str, UINT codePage);
 std::string wstostr(const std::wstring &ws, UINT codePage);
-void EnableNextN(HWND Control, int n, bool Enable);
 #define WstrToUtf8(str) IuCoreUtils::WstringToUtf8(str)
 //wstostr(str, CP_UTF8)
 #define WCstringToUtf8(str) wstostr(((LPCTSTR)(str)), CP_UTF8)
@@ -46,7 +44,6 @@ const std::string AnsiToUtf8(const std::string &str, int codepage);
 const std::string Utf8ToAnsi(const std::string &str, int codepage);
 #endif
 
-using namespace Gdiplus;
 #define xor(a,b) ((a || b) && !(a && b))	
 
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
@@ -79,22 +76,18 @@ bool ReadSetting(LPTSTR szSettingName,int* Value,int DefaultValue,LPTSTR szStrin
 int GetSavingFormat(LPCTSTR szFileName);
 bool IsStrInList(LPCTSTR szExt,LPCTSTR szList);
 int MyGetFileSize(LPCTSTR FileName);
-void MakeLabelBold(HWND Label);
-LPTSTR fgetline(LPTSTR buf,int num,FILE *f);
-#define IsChecked(ctrl) (SendDlgItemMessage(ctrl,BM_GETCHECK,0)==BST_CHECKED)
 
+LPTSTR fgetline(LPTSTR buf,int num,FILE *f);
 CString GetAppFolder();
 BOOL FileExists(LPCTSTR FileName);
 const CString TrimString(const CString& source, int nMaxLen);
-void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, bool Horizontal);
+
 bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
-bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...);
+
 LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int nBufferSize);
-
-
 CString IntToStr(int n);
 
-void EnableNextN(HWND Control, int n, bool Enable);
+
 CString DisplayError(int idCode);
 
 HFONT MakeFontUnderLine(HFONT font);
@@ -110,8 +103,6 @@ LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern);
 //#endif
 const CString IU_GetDataFolder();
 #ifndef IU_SHELLEXT
-
-bool IUInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP bm=0);
 
 
 #define PROP_OBJECT_PTR			MAKEINTATOM(ga.atom)

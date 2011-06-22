@@ -21,6 +21,8 @@
 #include "atlheaders.h"
 #include "LogListBox.h"
 #include "Func/Myutils.h"
+#include "Gui/GuiTools.h"
+
 const int LLB_VertDivider = 10;
 const int LLB_VertMargin = 5;
 
@@ -67,7 +69,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
 		if(dis->itemState & ODS_SELECTED )
 		{
 			CRect rd(dis->rcItem);
-			FillRectGradient(dis->hDC,rd,0xEAE2D9, 0xD3C1AF, false);
+			ZGuiTools::FillRectGradient(dis->hDC,rd,0xEAE2D9, 0xD3C1AF, false);
 		}
 		else if(dis->itemID != GetCount()-1) // If it isn't last item
 		{

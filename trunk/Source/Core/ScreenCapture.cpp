@@ -32,6 +32,8 @@ typedef HRESULT (WINAPI * DwmGetWindowAttribute_Func)(HWND, DWORD, PVOID, DWORD)
 typedef HRESULT (WINAPI * DwmIsCompositionEnabled_Func)(BOOL*);
 RECT MaximizedWindowFix(HWND handle, RECT windowRect);
 
+using namespace Gdiplus;
+
 void ProcessEvents(void)
 {
 	MSG msg;

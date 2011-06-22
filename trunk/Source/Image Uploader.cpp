@@ -53,10 +53,10 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		DeleteFile(GetAppFolder()+fileList[i]);
 	}
 
-	GdiplusStartupInput gdiplusStartupInput;
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 	
 	ULONG_PTR gdiplusToken;
-	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+	Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
@@ -124,7 +124,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	int nRet = theLoop.Run();
 	_Module.RemoveMessageLoop();
 
-	GdiplusShutdown(gdiplusToken);
+	Gdiplus::GdiplusShutdown(gdiplusToken);
 
 	// Удаляем временные файлы
 	ClearTempFolder(IUTempFolder); 

@@ -30,6 +30,7 @@
 #include "Func/MyEngineList.h"
 #include "Core/Utils/SimpleXml.h"
 
+class NetworkManager;
 
 struct ServerData
 {
@@ -59,7 +60,9 @@ public:
 		COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
 		COMMAND_ID_HANDLER(IDOK, OnOK)
 		COMMAND_ID_HANDLER(IDC_BUTTONSKIP, OnSkip)
+		COMMAND_ID_HANDLER(IDC_BUTTONSKIPALL, OnSkipAll)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
+		COMMAND_ID_HANDLER(IDC_ERRORLOGBUTTON, OnErrorLogButtonClicked)
 		COMMAND_ID_HANDLER(IDC_TOOLBROWSEBUTTON, OnBrowseButton)
 		NOTIFY_HANDLER(IDC_TOOLSERVERLIST, NM_CUSTOMDRAW, OnListViewNMCustomDraw)
 		CHAIN_MSG_MAP(CDialogResize<CMainDlg>)
@@ -67,9 +70,11 @@ public:
 
 	BEGIN_DLGRESIZE_MAP(CMainDlg)
 		DLGRESIZE_CONTROL(IDC_TOOLSERVERLIST, DLSZ_SIZE_X|DLSZ_SIZE_Y)
-		DLGRESIZE_CONTROL(ID_APP_ABOUT, DLSZ_MOVE_Y)
+		DLGRESIZE_CONTROL(ID_APP_ABOUT, DLSZ_MOVE_X)
 		DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X|DLSZ_MOVE_Y)
 		DLGRESIZE_CONTROL(IDC_BUTTONSKIP, DLSZ_MOVE_Y)
+		DLGRESIZE_CONTROL(IDC_BUTTONSKIPALL, DLSZ_MOVE_Y)
+		DLGRESIZE_CONTROL(IDC_ERRORLOGBUTTON, DLSZ_MOVE_Y)
 		DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X|DLSZ_MOVE_Y)
 	END_DLGRESIZE_MAP()
 
@@ -84,6 +89,8 @@ public:
 	LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSkip(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnBrowseButton(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnErrorLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	CListViewCtrl m_ListView;
 	CMyEngineList m_ServerList;
@@ -97,11 +104,12 @@ public:
 	CImageList m_ImageList;
 	CString m_srcFileHash;
 	MyFileInfo m_sourceFileInfo;
+	void OnConfigureNetworkManager(NetworkManager *nm);
 	virtual bool OnFileFinished(bool ok,  CFileDownloader::DownloadFileListItem it);
 	void MarkServer(int id);
 	CFileDownloader m_FileDownloader;
 	LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	bool OnNeedStop();
-
+	
 	ZSimpleXml xml;
 };

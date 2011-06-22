@@ -745,7 +745,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Core\SettingsManager.cpp"
+				RelativePath=".\ServerListTool.cpp"
 				>
 			</File>
 			<File
@@ -864,6 +864,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Gui\GuiTools.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Core\ImageConverter.cpp"
 					>
 				</File>
@@ -924,11 +928,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\ServerListTool.cpp"
+					RelativePath="..\Func\Settings.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\Func\Settings.cpp"
+					RelativePath="..\Core\SettingsManager.cpp"
 					>
 				</File>
 				<File
