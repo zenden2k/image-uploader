@@ -54,7 +54,7 @@ LRESULT CImageView::OnKillFocus(HWND hwndNewFocus)
 
 bool CImageView::ViewImage(LPCTSTR FileName,HWND Parent)
 {
-	Image img(FileName);
+	Gdiplus::Image img(FileName);
 	
 	float width = static_cast<float>(GetSystemMetrics(SM_CXSCREEN)-12);
 	float height = static_cast<float>(GetSystemMetrics(SM_CYSCREEN)-50);

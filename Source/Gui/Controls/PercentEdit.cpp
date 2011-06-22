@@ -23,6 +23,7 @@
 #include <atlapp.h>
 #include "PercentEdit.h"
 #include "Func/Common.h"
+#include "Gui/GuiTools.h"
 
 CPercentEdit::CPercentEdit()
 {
@@ -35,7 +36,7 @@ CPercentEdit::~CPercentEdit()
 
 LRESULT CPercentEdit::OnKillFocus(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	SetWindowText(IU_GetWindowText(m_hWnd));
+	SetWindowText(ZGuiTools::IU_GetWindowText(m_hWnd));
 	return 0;
 }
 
@@ -46,7 +47,7 @@ void CPercentEdit::setUnit(const CString& text)
 
 LRESULT CPercentEdit::OnSetFocus(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	 int quality = _wtoi(IU_GetWindowText(m_hWnd));
+	 int quality = _wtoi(ZGuiTools::IU_GetWindowText(m_hWnd));
 	 SetWindowText( IntToStr(quality));
 	 return 0;
 }

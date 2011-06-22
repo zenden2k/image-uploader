@@ -22,6 +22,7 @@
 #include "Func/Myutils.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Func/Common.h"
+#include "Gui/GuiTools.h"
 
 const int LLB_VertDivider = 10;
 const int LLB_VertMargin = 5;
@@ -72,7 +73,7 @@ LRESULT CHistoryTreeView::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 		if (dis->itemState & ODS_SELECTED )
 		{
 			CRect rd(dis->rcItem);
-			FillRectGradient(dis->hDC, rd, 0xEAE2D9, 0xD3C1AF, false);
+			ZGuiTools::FillRectGradient(dis->hDC, rd, 0xEAE2D9, 0xD3C1AF, false);
 		}
 /*		else if(dis->itemID != GetCount()-1) // If it isn't last item
       {
@@ -364,7 +365,7 @@ void CHistoryTreeView::DrawItem(HTREEITEM item, HDC hdc, DWORD itemState, RECT i
 	gradientLineRect.bottom--;
 	gradientLineRect.top = gradientLineRect.bottom;
 	if (draw)
-		FillRectGradient(hdc, gradientLineRect, 0xc8c8c8, 0xFFFFFF, true);
+		ZGuiTools::FillRectGradient(hdc, gradientLineRect, 0xc8c8c8, 0xFFFFFF, true);
 	// rc.top = curY+3;
 	calcRect = rc;
 	DrawText(dc.m_hDC, Utf8ToWCstring(lowText), lowText.length(), &calcRect, DT_CALCRECT);

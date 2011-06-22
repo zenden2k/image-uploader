@@ -23,6 +23,8 @@
 #include "Func/Common.h"
 #include "LogWindow.h"
 #include "Func/Settings.h"
+#include "Gui/GuiTools.h"
+
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
 
 // CScreenshotSettingsPagePage
@@ -94,7 +96,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
 
 bool CScreenshotSettingsPagePage::Apply()
 {
-	CString fileName = IU_GetWindowText(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
+	CString fileName = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
 	if(!CheckFileName(fileName))
 	{
 		MessageBox(TR("Имя файла содержит запрещенные символы!"));
@@ -108,7 +110,7 @@ bool CScreenshotSettingsPagePage::Apply()
 	Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
 	Settings.ScreenshotSettings.ShowForeground = SendDlgItemMessage(IDC_FOREGROUNDWHENSHOOTING, BM_GETCHECK) == BST_CHECKED;
 
-	Settings.ScreenshotSettings.Folder = IU_GetWindowText(GetDlgItem(IDC_SCREENSHOTFOLDEREDIT));
+	Settings.ScreenshotSettings.Folder = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_SCREENSHOTFOLDEREDIT));
 	Settings.ScreenshotSettings.Format = SendDlgItemMessage(IDC_FORMATLIST,CB_GETCURSEL,0,0);
 	Settings.ScreenshotSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
@@ -127,7 +129,7 @@ bool CScreenshotSettingsPagePage::Apply()
 LRESULT CScreenshotSettingsPagePage::OnScreenshotsFolderSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	CFolderDialog fd(m_hWnd,TR("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE );
-	CString path = IU_GetWindowText(GetDlgItem(IDC_SCREENSHOTFOLDEREDIT));
+	CString path = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_SCREENSHOTFOLDEREDIT));
 	fd.SetInitialFolder(path,true);
 	if(fd.DoModal(m_hWnd) == IDOK)
 	{

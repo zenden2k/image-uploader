@@ -21,10 +21,12 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include "atlheaders.h"
 #include <atlcoll.h>
 #include <ctime>
 #include "PluginLoader.h"
 #include "MyEngineList.h"
+#include <GdiPlus.h>
 
 class CPluginManager;
 class CCmdLine;
@@ -84,13 +86,12 @@ HRESULT IsElevated( __out_opt BOOL * pbElevated );
 #define random(x) (rand() % x)
 bool IU_CopyTextToClipboard(CString text);
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
-int dlgX(int WidthInPixels);
-int dlgY(int HeightInPixels);
+
 CString GenerateFileName(const CString &templateStr, int index,const CPoint size, const CString& originalName=_T(""));
 CString GetUniqFileName(const CString &filePath);
 bool IU_GetClipboardText(CString &text);
 extern CMyEngineList *_EngineList;
-const CString IU_GetWindowText(HWND wnd);
+
 BOOL IU_CreateFolder(LPCTSTR szFolder);
 BOOL IU_CreateFilePath(LPCTSTR szFilePath);
 HICON GetAssociatedIcon (LPCTSTR filename, bool Small);
@@ -104,7 +105,7 @@ const CString GetCommonApplicationDataPath();
 HRESULT IsElevated( __out_opt BOOL * pbElevated );
 // Function that gets path to SendTo folder
 CString GetSendToPath() ;
-Bitmap* BitmapFromResource(HINSTANCE hInstance,LPCTSTR szResName, LPCTSTR szResType);
+Gdiplus::Bitmap* BitmapFromResource(HINSTANCE hInstance,LPCTSTR szResName, LPCTSTR szResType);
 void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ");
 void EncodeString(LPCTSTR szSource, CString &Result,LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ");
 CString IU_md5_file(const CString& filename);

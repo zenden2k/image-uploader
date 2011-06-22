@@ -55,7 +55,7 @@ void CThumbsView::Init(bool Extended)
 	SendMessage(LVM_SETICONSPACING, 0, MAKELONG(THUMBNAIL_WIDTH+5, THUMBNAIL_HEIGHT+25+(ExtendedView?20:0)));
 }
 
-int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, Image* Img)
+int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, Gdiplus::Image* Img)
 {
 	if( !FileName ) return false;
 
@@ -233,8 +233,9 @@ LRESULT CThumbsView::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
 	return 0;
 }
 
-bool CThumbsView::LoadThumbnail(int ItemID, Image *Img)
+bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
 {
+	using namespace Gdiplus;
 	if(ItemID>GetItemCount()-1) 
 	{
 		return false;

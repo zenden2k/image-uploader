@@ -23,6 +23,7 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Func/Common.h"
 #include "Func/Base.h"
+#include "Gui/GuiTools.h"
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl()
@@ -209,7 +210,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
 	RECT gradientLineRect = invRC;
 	gradientLineRect.bottom--;
 	gradientLineRect.top = gradientLineRect.bottom;
-	if(draw)FillRectGradient(hdc, gradientLineRect,0xc8c8c8, 0xFFFFFF, true);
+	if(draw) ZGuiTools::FillRectGradient(hdc, gradientLineRect,0xc8c8c8, 0xFFFFFF, true);
 	
 	calcRect = rc;
 	DrawText(dc.m_hDC, Utf8ToWCstring(lowText), lowText.length(), &calcRect, DT_CALCRECT);
@@ -499,6 +500,7 @@ TreeItem * CHistoryTreeControl::selectedItem()
 #define THUMBNAIL_HEIGHT 54
 bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * ItemID)
 {
+	using namespace Gdiplus;
 	Bitmap *ImgBuffer=NULL;
 	Image *bm=NULL;
 

@@ -25,10 +25,11 @@
 #include "versioninfo.h"
 #include <curl/curl.h>
 #include "Func/Settings.h"
+#include "Gui/GuiTools.h"
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
+	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
 	LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
 	LogoImage.LoadImage(0, 0, IDR_PNG1, false, GetSysColor(COLOR_BTNFACE));
 

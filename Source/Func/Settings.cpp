@@ -26,6 +26,16 @@
 #include "Common/CmdLine.h"
 #include "3rdpart/Registry.h"
 
+#ifndef IU_SERVERLISTTOOL
+	#include "Gui/Dialogs/FloatingWindow.h"
+#endif
+
+#ifndef CheckBounds
+	#define CheckBounds(n, a, b, d) {if ((n < a) || (n > b)) n = d; }
+#endif
+
+#define SETTINGS_FILE_NAME _T("settings.xml")
+
 /* CString support for  SettingsManager */
 
 inline std::string myToString(const CString& value)
@@ -84,17 +94,10 @@ inline void myFromString(const std::string& text, CHotkeyList& value)
 	value.DeSerialize(Utf8ToWCstring(text));
 }
 
-#define SETTINGS_FILE_NAME _T("settings.xml")
 
 CSettings Settings;
 
-#ifndef IU_SERVERLISTTOOL
-	#include "Gui/Dialogs/FloatingWindow.h"
-#endif
 
-#define ASSERT
-
-#define CheckBounds(n, a, b, d) {if ((n < a) || (n > b)) n = d; }
 
 void RunIuElevated(CString params)
 {

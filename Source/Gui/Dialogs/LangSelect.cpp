@@ -20,6 +20,7 @@
 
 #include "LangSelect.h"
 #include "Func/Common.h"
+#include "Gui/GuiTools.h"
 
 // CLangSelect
 CLangSelect::CLangSelect()
@@ -66,7 +67,7 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
 	LogoImage.LoadImage(0, 0, IDR_PNG1, false, GetSysColor(COLOR_BTNFACE));
 
-	MakeLabelBold(GetDlgItem(IDC_PLEASECHOOSE));
+	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_PLEASECHOOSE));
 
 	// Russian language is always in language list
 	SendDlgItemMessage(IDC_LANGLIST, CB_ADDSTRING, 0, (WPARAM)_T("Русский"));

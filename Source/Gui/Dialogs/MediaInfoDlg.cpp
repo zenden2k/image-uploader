@@ -21,6 +21,7 @@
 #include "atlheaders.h"
 #include "MediaInfoDlg.h"
 #include "Func/fileinfohelper.h"
+#include "Gui/GuiTools.h"
 
 // CMediaInfoDlg
 CMediaInfoDlg::CMediaInfoDlg()
@@ -36,7 +37,7 @@ CMediaInfoDlg::~CMediaInfoDlg()
 LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	CenterWindow(GetParent());
-	MakeLabelBold(GetDlgItem(IDC_FILEINFOLABEL));
+	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_FILEINFOLABEL));
 	DlgResize_Init(false, true, 0); // resizable dialog without "griper"
 
 	// Translating controls' text

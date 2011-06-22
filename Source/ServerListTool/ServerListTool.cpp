@@ -5,6 +5,7 @@
 #include "MainDlg.h"
 #include <Gdiplus.h>
 #include "Func/Common.h"
+#include <GdiPlus.h>
 
 CAppModule _Module;
 
@@ -24,7 +25,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
 	hRes = _Module.Init(NULL, hInstance);
 	ATLASSERT(SUCCEEDED(hRes));
 
-	GdiplusStartupInput gdiplusStartupInput;
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 
 	ULONG_PTR gdiplusToken;
 	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);

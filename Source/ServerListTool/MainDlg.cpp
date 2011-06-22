@@ -12,6 +12,7 @@
 #include <GdiPlus.h>
 #include "Gui/Dialogs/InputDialog.h"
 #include "Core/Utils/CoreUtils.h"
+#include "Gui/GuiTools.h"
 
 const CString MyBytesToString(__int64 nBytes )
 {
@@ -22,7 +23,7 @@ CString IU_GetFileInfo(CString fileName,MyFileInfo* mfi=0)
 {
 	CString result;
 	int fileSize = MyGetFileSize(fileName);
-	result =  MyBytesToString(fileSize)+_T("(")+IntToStr(fileSize)+_T(");");
+	result =  MyBytesToString(fileSize)+_T("(")+IntToStr(fileSize)+_T(" bytes);");
    CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8(fileName)));
 	result+=mimeType+_T(";");
 	if(mfi) mfi->mimeType = mimeType;
@@ -62,7 +63,6 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	m_ListView = GetDlgItem(IDC_TOOLSERVERLIST);
 
 	LogWindow.Create(0);
-	LogWindow.Show();
 	m_ListView.AddColumn(_T("N"), 0);
 	m_ListView.AddColumn(_T("Server"), 1);
 	m_ListView.AddColumn(_T("Status"), 2);
@@ -72,10 +72,10 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	m_ListView.AddColumn(_T("Time"), 6);
 	m_ListView.SetColumnWidth(0, 30);
 	m_ListView.SetColumnWidth(1, 80);
-	m_ListView.SetColumnWidth(2, 120);
-	m_ListView.SetColumnWidth(3, 240);
-	m_ListView.SetColumnWidth(4, 240);
-	m_ListView.SetColumnWidth(5, 240);
+	m_ListView.SetColumnWidth(2, 100);
+	m_ListView.SetColumnWidth(3, 205);
+	m_ListView.SetColumnWidth(4, 205);
+	m_ListView.SetColumnWidth(5, 205);
 	m_ListView.SetColumnWidth(6, 50);
 
 	SendDlgItemMessage(IDC_RADIOWITHACCS, BM_SETCHECK, 1);
@@ -110,13 +110,14 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 		m_ListView.SetItemText(i, 1, Utf8ToWstring(m_ServerList.byIndex(i)->Name).c_str());
 	}
 
+	m_FileDownloader.onConfigureNetworkManager.bind(this, &CMainDlg::OnConfigureNetworkManager);
 	m_FileDownloader.onFileFinished.bind(this, &CMainDlg::OnFileFinished);
 	return TRUE;
 }
 
 LRESULT CMainDlg::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CSimpleDialog<IDD_ABOUTBOX, FALSE> dlg;
+	CSimpleDialog<IDD_ABOUTBOX, TRUE> dlg;
 	dlg.DoModal();
 	return 0;
 }
@@ -135,7 +136,7 @@ LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /
 		m_ListView.SetItemText(i, 1, Utf8ToWstring( m_ServerList.byIndex(i)->Name).c_str());
 		//m_ListView.AddItem(i+1,0,_T(""));
 	}
-	CString fileName = IU_GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
+	CString fileName = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
 	m_srcFileHash = IU_md5_file(fileName);
 	CString report = _T("Source file: ")+IU_GetFileInfo(fileName, &m_sourceFileInfo);
 	SetDlgItemText(IDC_TOOLSOURCEFILE,report);
@@ -155,7 +156,7 @@ LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 	else 
 	{
 		ZSimpleXml savexml;
-		CString fileName = IU_GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
+		CString fileName = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
 		ZSimpleXmlNode root = savexml.getRoot("ServerListTool");
 		root.SetAttribute("FileName", WstrToUtf8((LPCTSTR)fileName));
 		root.SetAttribute("Time", int(GetTickCount()));
@@ -173,7 +174,7 @@ DWORD CMainDlg::Run()
 
 	bool CheckImageServers = SendDlgItemMessage(IDC_CHECKIMAGESERVERS,BM_GETCHECK) == BST_CHECKED;
 	bool CheckFileServers = SendDlgItemMessage(IDC_CHECKFILESERVERS,BM_GETCHECK) == BST_CHECKED;
-	CString fileName = IU_GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
+	CString fileName = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
 	if(!FileExists(fileName))
 	{
 			return -1;
@@ -185,7 +186,7 @@ DWORD CMainDlg::Run()
 		if(m_skipMap[i]) continue;
 		CUploader uploader;
 		
-		
+		uploader.onConfigureNetworkManager.bind(this, &CMainDlg::OnConfigureNetworkManager);
 		uploader.setThumbnailWidth(160);
 		uploader.onNeedStop.bind(this, &CMainDlg::OnNeedStop);
 		//uploader.ShouldStop = &m_NeedStop;
@@ -461,4 +462,25 @@ const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url
 	if(dlg.DoModal()==IDOK)
 		return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
 	return "";
+}
+
+void CMainDlg::OnConfigureNetworkManager(NetworkManager *nm)
+{
+	IU_ConfigureProxy(*nm);
+}
+
+LRESULT CMainDlg::OnErrorLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	LogWindow.ShowWindow(LogWindow.IsWindowVisible()? SW_HIDE:  SW_SHOW);
+	return 0;
+}
+
+LRESULT CMainDlg::OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	for(int i = 0; i < m_ServerList.count(); i++)
+	{
+		m_skipMap[i] = true;
+		m_ListView.SetItemText(i, 2, _T("<SKIP>"));
+	}
+	return 0;
 }

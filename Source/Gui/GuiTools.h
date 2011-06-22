@@ -21,7 +21,10 @@
 #define IU_GUITOOLS_H
 #pragma once
 
+#include "atlheaders.h"
 #include <windows.h>
+
+#define IS_CHECKED(ctrl) (SendDlgItemMessage(ctrl,BM_GETCHECK,0)==BST_CHECKED)
 
 namespace ZGuiTools
 {
@@ -29,5 +32,16 @@ namespace ZGuiTools
 	bool AddComboBoxItems(HWND hDlg, int itemId, int itemCount, LPCTSTR item, ...);
    void GetCheck(HWND dlg, int id, bool& check);
    void SetCheck(HWND dlg, int id, bool check);
+	void MakeLabelBold(HWND Label);
+	void EnableNextN(HWND Control, int n, bool Enable);
+	bool IUInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP bm=0);
+	void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, bool Horizontal);
+	bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...);
+	
+	// Converts pixels to Win32 dialog units
+	int dlgX(int WidthInPixels);
+	int dlgY(int HeightInPixels);
+
+	CString IU_GetWindowText(HWND wnd);
 };
 #endif

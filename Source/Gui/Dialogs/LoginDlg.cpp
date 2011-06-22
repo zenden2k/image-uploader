@@ -23,6 +23,7 @@
 #include "wizarddlg.h"
 #include "Func/Common.h"
 #include "Func/Settings.h"
+#include "Gui/GuiTools.h"
 
 // CLoginDlg
 CLoginDlg::CLoginDlg(CUploadEngineData *ue)
@@ -80,7 +81,7 @@ LRESULT CLoginDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOO
 
 LRESULT CLoginDlg::OnClickedUseIeCookies(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	::EnableWindow(GetDlgItem(IDC_LOGINEDIT), IsChecked(IDC_DOAUTH));
-	::EnableWindow(GetDlgItem(IDC_PASSWORDEDIT), IsChecked(IDC_DOAUTH));
+	::EnableWindow(GetDlgItem(IDC_LOGINEDIT), IS_CHECKED(IDC_DOAUTH));
+	::EnableWindow(GetDlgItem(IDC_PASSWORDEDIT), IS_CHECKED(IDC_DOAUTH));
 	return 0;
 }

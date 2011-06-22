@@ -25,6 +25,7 @@
 #include "mediainfodlg.h"
 #include "LogWindow.h"
 #include "Func/Settings.h"
+#include "Gui/GuiTools.h"
 
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg,CAtlArray<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)
@@ -111,9 +112,9 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	RECT rc = {0,0,100,24};
 	GetClientRect(&rc);
 	rc.top = rc.bottom - 26;
-	rc.bottom-=dlgY(1);
-	rc.left = dlgX(3);
-	rc.right -=dlgX(3);
+	rc.bottom-= ZGuiTools::dlgY(1);
+	rc.left = ZGuiTools::dlgX(3);
+	rc.right -= ZGuiTools::dlgX(3);
 	Toolbar.Create(m_hWnd,rc,_T(""), WS_CHILD|WS_CHILD | TBSTYLE_LIST |TBSTYLE_CUSTOMERASE|TBSTYLE_FLAT| CCS_NORESIZE/*|*/|CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
 	//TabBackgroundFix(Toolbar.m_hWnd);
 	

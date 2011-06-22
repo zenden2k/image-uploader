@@ -22,6 +22,8 @@
 
 #include "atlheaders.h"
 #include <shobjidl.h>
+#include <gdiplus.h>
+#include <gdiplusheaders.h>
 
 typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
 typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
@@ -371,22 +373,6 @@ int MyGetFileSize(LPCTSTR FileName)
 	return fSize;
 }
 
-void MakeLabelBold(HWND Label)
-{
-	HFONT Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT,0,0));  
-	
-	if(!Font) return;
-
-	LOGFONT alf;
-
-	if(!(::GetObject(Font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT))) return;
-
-	alf.lfWeight = FW_BOLD;
-
-	HFONT NewFont = CreateFontIndirect(&alf);
-	SendMessage(Label,WM_SETFONT,(WPARAM)NewFont,MAKELPARAM(false, 0));
-	alf.lfHeight = -MulDiv(13, GetDeviceCaps(::GetDC(0), LOGPIXELSY), 72);
-}
 
 LPTSTR fgetline(LPTSTR buf,int num,FILE *f)
 {
@@ -427,30 +413,6 @@ const CString TrimString(const CString& source, int nMaxLen)
 	return source.Left(PartSize)+_T("...")+source.Right(PartSize);
 }
 
-bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...)
-{
-	*szBuffer = 0;
-	LPCTSTR *pszName, *pszFilter;
-	pszName = &szName;
-	pszFilter = &szFilter; 
-
-	for(int i=0; i<nCount; i++)
-	{
-		int nLen = lstrlen(*pszName);
-		lstrcpy(szBuffer, *pszName);
-		szBuffer[nLen]=0;
-		szBuffer+=nLen+1;
-
-		nLen = lstrlen(*pszFilter);
-		lstrcpy(szBuffer, *pszFilter);
-		szBuffer[nLen]=0;
-		szBuffer+=nLen+1;
-		pszName+=2;
-		pszFilter+=2;
-	}
-	*szBuffer=0;
-	return true;
-}
 
 LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int nBufferSize)
 {
@@ -478,60 +440,6 @@ LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int n
 #define PixelFormat8bppIndexed (3 | ( 8 << 8) | PixelFormatIndexed | PixelFormatGDI)
 
 
-void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, bool Horizontal)
-{
-	RECT rectFill;          
-	float fStep;            //The size of each band in pixels
-	HBRUSH hBrush;
-	int i;  // Loop index
-
-	float r, g, b;
-	int n = 256;
-	//FillRect.bottom--;
-	COLORREF c;
-  
-	if(!Horizontal)
-		fStep = (float)(FillRect.bottom - FillRect.top) / 256;
-	else 
-		fStep = (float)(FillRect.right - FillRect.left) / 256;
-
-	if( fStep < 1)
-	{
-		fStep = 1;
-		if(!Horizontal)
-			n = FillRect.bottom - FillRect.top;
-		else 
-			n = (FillRect.right - FillRect.left);
-	}
-
-	r = (float)(GetRValue(finish)-GetRValue(start))/(n-1);
-
-	g = (float)(GetGValue(finish)-GetGValue(start))/(n-1);
-
-	b = (float)(GetBValue(finish)-GetBValue(start))/(n-1);
-	
-	//Ќачало прорисовки
-	for (i = 0; i < n; i++) 
-	{
-		//¬зависимости от того, кто мы - горизонтальный или вертикальный градиент
-		if(!Horizontal)
-			SetRect(&rectFill, FillRect.left, int((i * fStep)+FillRect.top),
-							FillRect.right+1, int(FillRect.top+(i+1) * fStep)); 
-		else 
-			SetRect(&rectFill, static_cast<int>(FillRect.left+(i * fStep)), FillRect.top,
-						int(FillRect.left+((i+1) * fStep)), FillRect.bottom+1); 
-		if(i == n-1)
-			c = finish;
-		else
-			c = RGB((int)GetRValue(start)+(r*i/**zR*/),(int)GetGValue(start)+(g*i/*zG*/),(int)GetBValue(start)+(b*i/**zB*/));
-	   
-		hBrush=CreateSolidBrush(c);
-	  
-		::FillRect(hdc, &rectFill, hBrush);
-
-		DeleteObject(hBrush);
-  }
-}
 
 CString DisplayError(int idCode)
 {
@@ -621,34 +529,6 @@ void ShowX(LPCTSTR str,int line,LPCTSTR n)
 	::MessageBox(0,buf,0,0);
 }
 #endif
-
-
-void EnableNextN(HWND Control ,int n, bool Enable)
-{
-	for(int i=0;i< n; i++)
-	{
-		Control = GetNextWindow(Control, GW_HWNDNEXT);
-		EnableWindow(Control, Enable);
-	}
-}
-
-bool IUInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP bm)
-{
-	MENUITEMINFO MenuItem;
-	 
-	MenuItem.cbSize = sizeof(MenuItem);
-	if(szTitle)
-	MenuItem.fType = MFT_STRING;
-	else MenuItem.fType = MFT_SEPARATOR;
-	MenuItem.fMask = MIIM_TYPE	| MIIM_ID | MIIM_DATA;
-	if(bm)
-		MenuItem.fMask |= MIIM_CHECKMARKS;
-	MenuItem.wID = id;
-	MenuItem.hbmpChecked = bm;
-	MenuItem.hbmpUnchecked = bm;
-	MenuItem.dwTypeData = (LPWSTR)szTitle;
-	return InsertMenuItem(hMenu, pos, TRUE, &MenuItem)!=0;
-}
 
 #ifndef IU_SHELLEXT
 std::wstring strtows(const std::string &str, UINT codePage)

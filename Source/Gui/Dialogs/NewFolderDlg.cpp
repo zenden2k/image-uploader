@@ -23,6 +23,7 @@
 #include "LogWindow.h"
 #include "Func/Settings.h"
 #include "Func/pluginloader.h"
+#include "Gui/GuiTools.h"
 
 // CNewFolderDlg
 CNewFolderDlg::CNewFolderDlg(CFolderItem &folder, bool CreateNewFolder,std::vector<std::string>& accessTypeList):
@@ -66,9 +67,9 @@ LRESULT CNewFolderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
 LRESULT CNewFolderDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	m_sTitle= IU_GetWindowText(GetDlgItem(IDC_FOLDERTITLEEDIT));
+	m_sTitle= ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_FOLDERTITLEEDIT));
 	m_folder.title = WCstringToUtf8(m_sTitle);
-	m_sDescription = IU_GetWindowText(GetDlgItem(IDC_FOLDERDESCREDIT));
+	m_sDescription = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_FOLDERDESCREDIT));
 	m_folder.summary = WCstringToUtf8(m_sDescription);
 	int nAccessType = SendDlgItemMessage(IDC_ACCESSTYPECOMBO, CB_GETCURSEL);
 	if(nAccessType >= 0)
