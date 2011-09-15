@@ -270,7 +270,7 @@ public:
 	   //SetRedraw(false);
 	   for(int i=0; i< item->ItemCount(); i++)
 	   {
-		   //MessageBox(0);
+		   
 		   int insertedIndex =  TBase::InsertString(++index, (LPCTSTR)item->item(i));
 		   //TBase::SetItemData(insertedIndex, (DWORD_PTR) item->item(i));
 	   }

@@ -95,7 +95,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	pLoop->AddIdleHandler(this);
 	OleInitialize(NULL);
 	
-	HRESULT res = ::RegisterDragDrop(m_hWnd,this);
+	HRESULT res = ::RegisterDragDrop(m_hWnd, this);
 	*MediaInfoDllPath=0;
 	TCHAR Buffer[MAX_PATH];
 	HKEY ExtKey;
@@ -104,17 +104,17 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	TCHAR ClassName[MAX_PATH]=_T("\0");
 	DWORD BufSize = sizeof(ClassName)/sizeof(TCHAR);
 	DWORD Type = REG_SZ;
-	RegQueryValueEx(ExtKey,	 _T("installdir"), 0, &Type, (LPBYTE)&ClassName, &BufSize);
+	RegQueryValueEx(ExtKey, _T("installdir"), 0, &Type, (LPBYTE)&ClassName, &BufSize);
 	RegCloseKey(ExtKey);
 
 	m_UpdateLink.ConvertStaticToHyperlink(GetDlgItem(IDC_UPDATESLABEL), _T("http://zenden.ws"));
 	m_UpdateLink.setCommandID(IDC_UPDATESLABEL);
 	
-	CString MediaDll = GetAppFolder()+_T("\\Modules\\MediaInfo.dll");
+	CString MediaDll = GetAppFolder() + _T("\\Modules\\MediaInfo.dll");
 	if(FileExists( MediaDll)) lstrcpy(MediaInfoDllPath, MediaDll);
 	else
 	{
-		CString MediaDll2 =CString(ClassName)+_T("\\Tools\\MediaInfo.dll");
+		CString MediaDll2 = CString(ClassName) + _T("\\Tools\\MediaInfo.dll");
 		if(FileExists( MediaDll2)) lstrcpy(MediaInfoDllPath, MediaDll2);
 	}
 	SetWindowText(APPNAME);
@@ -145,12 +145,10 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		Lang.LoadLanguage(Settings.Language);
 	}
 
-	
 	CString ErrorStr;
-	if(!LoadUploadEngines(IU_GetDataFolder()+_T("servers.xml"),ErrorStr))  // Завершаем работу программы, если файл servers.lst отсутствует
+	if(!LoadUploadEngines(IU_GetDataFolder()+_T("servers.xml"), ErrorStr))  // Завершаем работу программы, если файл servers.lst отсутствует
 	{
-		CString ErrBuf ;
-		
+		CString ErrBuf;
 		ErrBuf.Format(TR("Невозможно открыть файл со спиком серверов \"servers.xml\"!\n\nПричина:  %s\n\nПродолжить работу программы?"),(LPCTSTR)ErrorStr);
 	
 		if(MessageBox(ErrBuf, APPNAME, MB_ICONERROR|MB_YESNO)==IDNO)
@@ -159,10 +157,10 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 			return 0;
 		}
 	}
-	iuPluginManager.setScriptsDirectory(WCstringToUtf8(IU_GetDataFolder()+_T("\\Scripts\\")));
+	iuPluginManager.setScriptsDirectory(WCstringToUtf8(IU_GetDataFolder() + _T("\\Scripts\\")));
 	std::vector<CString> list;
-	CString serversFolder = IU_GetDataFolder()+_T("\\Servers\\");
-	GetFolderFileList(list, serversFolder,_T("*.xml"));
+	CString serversFolder = IU_GetDataFolder() + _T("\\Servers\\");
+	GetFolderFileList(list, serversFolder, _T("*.xml"));
 
 	for(size_t i=0; i<list.size(); i++)
 	{
@@ -563,7 +561,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	CStringList Paths;
 	for (int i=0; i<n; i++)
 	{
-
+		
 		DragQueryFile(hDrop,	i, szBuffer, sizeof(szBuffer)/sizeof(TCHAR));
 		if(IsVideoFile(szBuffer) && n==1)
 		{
@@ -578,7 +576,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 			
 			break;
 		}
-		else if(CurPage==0||CurPage==2)
+		else if(CurPage == 0 || CurPage == 2)
 		{
 			filehost:
 			if(FileExists(szBuffer) || IsDirectory(szBuffer))
@@ -646,13 +644,12 @@ STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POI
 STDMETHODIMP CWizardDlg::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
 {
 	bool AcceptFile = true;
-	if(!IsWindowEnabled() || !DragndropEnabled ) 
-	{
-	AcceptFile = false;
-		
+	if(!IsWindowEnabled() || !DragndropEnabled ) {
+		AcceptFile = false;
 	}
 
-	if(CurPage!=0&&CurPage!=2&&CurPage!=1) AcceptFile = false;
+	if(CurPage != 0 && CurPage!=2 && CurPage!=1) 
+		AcceptFile = false;
 
 	if(!AcceptFile) 
 	{
@@ -660,7 +657,6 @@ STDMETHODIMP CWizardDlg::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect
 		return S_FALSE;
 	}
 	*pdwEffect = DROPEFFECT_COPY;
-	
 	return S_OK;
 }
     
@@ -740,12 +736,11 @@ bool SaveFromIStream(IStream *pStream, const CString& FileName, CString &OutName
 bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 {
 	FORMATETC tc2 = { RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR), 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
-
 	if(pDataObj->QueryGetData(&tc2)==S_OK )
 	{
 		STGMEDIUM ddd;
 
-		if(pDataObj->GetData(&tc2, &ddd)==S_OK ){
+		if(pDataObj->GetData(&tc2, &ddd) == S_OK ){
 
 			PVOID hdrop = (PVOID) GlobalLock ( ddd.hGlobal );
 			FILEGROUPDESCRIPTOR *fgd = (FILEGROUPDESCRIPTOR*) hdrop;
@@ -753,21 +748,21 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 			for(size_t i=0; i<fgd->cItems; i++)
 			{
 				FORMATETC tc3 = { RegisterClipboardFormat(CFSTR_FILECONTENTS), 0, DVASPECT_CONTENT, i, TYMED_HGLOBAL };
-				if(pDataObj->QueryGetData(&tc3)==S_OK )
+				if(pDataObj->QueryGetData(&tc3) == S_OK )
 				{
 					STGMEDIUM ddd2;
-					ddd2.tymed= TYMED_HGLOBAL;
-					if(pDataObj->GetData(&tc3, &ddd2)==S_OK )
+					ddd2.tymed = TYMED_HGLOBAL;
+					if(pDataObj->GetData(&tc3, &ddd2) == S_OK )
 					{
 						CString OutFileName;
 						bool FileWasSaved = false;
-
+						
 						if(ddd2.tymed == TYMED_HGLOBAL)
 						{
 							FileWasSaved = SaveFromHGlobal(ddd2.hGlobal, fgd->fgd[i].cFileName, OutFileName);
 						}
 
-						if(ddd2.tymed== TYMED_ISTREAM)
+						if(ddd2.tymed == TYMED_ISTREAM)
 						{	
 							FileWasSaved = SaveFromIStream(ddd2.pstm, fgd->fgd[i].cFileName, OutFileName); 
 						}
@@ -776,7 +771,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 						{
 							if(IsVideoFile(OutFileName))
 							{
-								ShowPage(1, CurPage, (Pages[2])?2:3);
+								ShowPage(1, CurPage, (Pages[2])? 2 : 3);
 								CVideoGrabber* dlg = (CVideoGrabber*) Pages[1];
 								dlg->SetFileName(OutFileName);
 								break;
@@ -810,10 +805,10 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 bool CWizardDlg::HandleDropHDROP(IDataObject *pDataObj)
 {
 	FORMATETC tc = { CF_HDROP, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
-	if(pDataObj->QueryGetData(&tc)==S_OK ) 
+	if(pDataObj->QueryGetData(&tc) == S_OK ) 
 	{
 		STGMEDIUM ddd;
-		if(pDataObj->GetData(&tc, &ddd)==S_OK)
+		if(pDataObj->GetData(&tc, &ddd) == S_OK)
 		{
 			PVOID hdrop = (PVOID) GlobalLock ( ddd.hGlobal );
 			BOOL b;
@@ -837,10 +832,9 @@ bool CWizardDlg::HandleDropBitmap(IDataObject *pDataObj)
 	if(pDataObj->QueryGetData(&FtcBitmap) == S_OK ) 
 	{
 		STGMEDIUM ddd;
-		if(pDataObj->GetData(&FtcBitmap, &ddd)==S_OK)
+		if(pDataObj->GetData(&FtcBitmap, &ddd) == S_OK)
 		{
 			PasteBitmap(ddd.hBitmap);
-
 			return true;
 		}
 	}
@@ -855,11 +849,12 @@ STDMETHODIMP CWizardDlg::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL p
 		return S_FALSE;
 	}
 
-	if(HandleDropHDROP(pDataObj))
+	// This should be called first 
+	// otherwise dragndrop from Firefox will not work
+	if(HandleDropFiledescriptors(pDataObj))
 		return S_OK;
 
-
-	if(HandleDropFiledescriptors(pDataObj))
+	if(HandleDropHDROP(pDataObj))
 		return S_OK;
 
 	if(HandleDropBitmap(pDataObj))
@@ -1127,24 +1122,24 @@ LRESULT 	CWizardDlg::OnWmShowPage(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*
 	
 bool CWizardDlg::funcAddImages(bool AnyFiles)
 {
-	TCHAR Buf[MAX_PATH*4];
+	TCHAR Buf[MAX_PATH * 4];
 	if(AnyFiles)
-		ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),1,TR("Любые файлы"),
-		_T("*.*"));
+		ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 1, TR("Любые файлы"),
+		                              _T("*.*"));
 	else
-	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
-		CString(TR("Изображения"))+ _T(" (jpeg, bmp, png, gif ...)"),
-		_T("*.jpg;*.gif;*.png;*.bmp;*.tiff"),
-		TR("Любые файлы"),
-		_T("*.*"));
+	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 2, 
+		                           CString(TR("Изображения")) + _T(" (jpeg, bmp, png, gif ...)"),
+		                           _T("*.jpg;*.gif;*.png;*.bmp;*.tiff"), TR("Любые файлы"),
+		                           _T("*.*"));
 
-	int nCount=0;
+	int nCount = 0;  
 	CMultiFileDialog fd(0, 0, OFN_HIDEREADONLY, Buf, m_hWnd);
 	
 	TCHAR Buffer[1000];
 	fd.m_ofn.lpstrInitialDir = Settings.ImagesFolder;
-
+	
 	if(fd.DoModal(m_hWnd) != IDOK) return 0;
+	
 	LPCTSTR FileName = 0;
 	fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
 
@@ -1153,18 +1148,17 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 	{
 		
 		FileName = (FileName) ? fd.GetNextFileName() : fd.GetFirstFileName();
-		if(!FileName) break;
+		if (!FileName) break;
 		fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
 
 		if(Buffer[lstrlen(Buffer)-1] != '\\')
 		lstrcat(Buffer, _T("\\"));
 		
-		if(FileName)
+		if (FileName)
 		{
 			lstrcat(Buffer, FileName);
-			if(((CMainDlg*)Pages[2])->AddToFileList(Buffer))
+			if (((CMainDlg*)Pages[2])->AddToFileList(Buffer))
 				nCount++;
-		
 		}
 	} while (FileName);
 	 
