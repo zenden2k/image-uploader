@@ -142,21 +142,15 @@
 		</Actions>
 		<Result ImageUrlTemplate="http://expic.ru/pictures/$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="http://expic.ru/show-image.php$(View)"/>
 	</Server>-->
-	<Server Name="epikz.net" Authorize="0" Plugin="epikz.net">
-		<Actions>
-			<Action Type="upload" Url="http://epikz.net/upload.php" PostParams="image[]=%filename%;" RegExp='http:\/\/epikz.net\/i\/(.*?)\"([\s\S]*?)\[URL=(.*?)\]\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:0;Thumb:3;View:2"/>
-		</Actions>
-		<Result ImageUrlTemplate="http://epikz.net/i/$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)"/>
-	</Server>
+
 	<Server Name="image2you.ru" Authorize="2" Debug="0">
 		<Actions>
-			<Action Type="login" Url="http://image2you.ru/login/" PostParams="email=$(_LOGIN);pass=$(_PASSWORD)"/>
-			<Action Type="upload" Url="http://image2you.ru/cabinet/upload/" PostParams="width=2;image_name[]=$(_FILENAME);image[]=%filename%;Submit3=Загрузить на сервер;"/>
-			<Action Type="get" Url="http://image2you.ru/cabinet/upload/" RegExp='&lt;div id=\"result_register\"&gt;' AssignVars=""/>			
-			<Action Type="get" Url="http://image2you.ru/cabinet/gallery/"  RegExp='\/cabinet\/gallery\/code(\d+)' AssignVars="ImageId:0"/>
-			<Action Type="get" Url="http://image2you.ru/cabinet/gallery/code$(ImageId)/" RegExp='\[URL=(.*?)\]\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="View:0;Image:1;Thumb:3"/>
+			<Action Type="login" Url="http://image2you.ru/index_ajax.php?task=users&amp;sub_task=login&amp;email=$(_LOGIN)&amp;pass=$(_PASSWORD)" RegExp="iSuccess&quot;:1" />
+			<Action Type="get" Url="http://image2you.ru/cabinet/gallery/folder-0/upload/" RegExp="session&#039;: &#039;(\w+)&#039;" AssignVars="SessionId:0"/>
+			<Action Type="upload" Url="http://image2you.ru/ajax/cabinet/gallery/folder-0/" PostParams="Filename=$(_FILENAME);folder=/uploads;session=$(SessionId);Filedata=%filename%;Upload=Submit Query;" RegExp="\d+"/>
+			<Action Type="get" Url="http://image2you.ru/cabinet/gallery/folder-0/" RegExp='__code_link_(\d+)&quot; value=&quot;(\S+?)&quot;([\s\S]*?)__code_preview_(\d+)&quot; value=&quot;(\S+?)&quot;' AssignVars="Image:1;Thumb:4;"/>			
 		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)"/>
+		<Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" />
 	</Server>
 	<Server Name="iceimg.com" Plugin="iceimg" >
 	<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
@@ -262,8 +256,16 @@
 	<Server Name="pix.am"  Authorize="1" Debug="0">
 		<Actions>
 			<Action Type="login" Url="http://pix.am/api/auth/" PostParams="email=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="1" RegExp='user_id&quot;: (\d*), &quot;user_hash&quot;: &quot;(.*?)&quot;' AssignVars="_UserId:0;_UserHash:1"/>
-			<Action Type="upload" Url="http://pix.am/post/" PostParams="user_id=$(_UserId);user_hash=$(_UserHash);image=%filename%" RegExp="http://pix.am/(\S*)" AssignVars="Image:0;"/>
+			<Action Type="upload" Url="http://pix.am/post/" PostParams="user_id=$(_UserId);user_hash=$(_UserHash);image=%filename%" RegExp="http:\/\/pix\.am\/(\S*)\/" AssignVars="ID:0;"/>
+			<Action Type="get" Url="http://pix.am/full/$(ID)/" RegExp="Direct link([\s\S]*?)http:\/\/pix\.am\/([^&quot;]*)" AssignVars="Link:1;"/>
 		</Actions>
-		<Result ImageUrlTemplate="http://pix.am/$(Image)"/>
+		<Result ImageUrlTemplate="http://pix.am/$(Link)"/>
+	</Server>
+	<Server Name="hostingkartinok.com"  Authorize="1" Debug="0">
+		<Actions>
+			<Action Type="upload" Url="http://hostingkartinok.com/login.php" PostParams="autologin=1;email=$(_LOGIN);password=$(_PASSWORD);login=Войти" OnlyOnce="1" />
+			<Action Type="upload" Url="http://hostingkartinok.com/process.php" PostParams="image_1=%filename%;image_2=;jpeg_quality=70%;resize_to=50px;upload_type=standard;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:0;Image:2;"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" />
 	</Server>
 </Servers>
