@@ -30,56 +30,49 @@
 #include "Func/Settings.h"
 #include "Gui/Dialogs/LogWindow.h"
 
-CPluginManager:: CPluginManager()
-{
+CPluginManager::CPluginManager() {
 	SquirrelVM::Init();
 	SquirrelVM::PushRootTable();	
-	sqstd_register_systemlib(SquirrelVM::GetVMPtr());
+	sqstd_register_systemlib( SquirrelVM::GetVMPtr() );
 }
 
-CScriptUploadEngine* CPluginManager::getPlugin(Utf8String name, ServerSettingsStruct& params, bool UseExisting)
-{
+CScriptUploadEngine* CPluginManager::getPlugin(Utf8String name, ServerSettingsStruct& params, bool UseExisting) {
 	DWORD curTime = GetTickCount();
-	if(m_plugin && (GetTickCount() - m_plugin->getCreationTime()<1000*60*5))
+	if (m_plugin && (GetTickCount() - m_plugin->getCreationTime() < 1000 * 60 * 5))
 		UseExisting = true;
 
-	if(m_plugin && UseExisting && m_plugin->name() == name)
-	{
-		m_plugin->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
+	if(m_plugin && UseExisting && m_plugin->name() == name) {
+		m_plugin->onErrorMessage.bind( DefaultErrorHandling::ErrorMessage );
 		return m_plugin;
 	}
 
-	if(m_plugin)
-	{	
+	if (m_plugin) {	
 		delete m_plugin; 
 		m_plugin = 0;
 	}
 	
-	CScriptUploadEngine* newPlugin = new CScriptUploadEngine(name);
-	newPlugin->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
-	if(newPlugin->load(m_ScriptsDirectory+name+".nut", params))
-	{
+	CScriptUploadEngine* newPlugin = new CScriptUploadEngine( name );
+	newPlugin->onErrorMessage.bind( DefaultErrorHandling::ErrorMessage );
+	if (newPlugin->load( m_ScriptsDirectory + name + ".nut", params ) ) {
 		m_plugin = newPlugin; 
 		return newPlugin;
-	}
-	else 
+	} else {
 		delete newPlugin;
+	}
 	return NULL;
 }
 
-CPluginManager::~CPluginManager()
-{
+CPluginManager::~CPluginManager() {
 	delete m_plugin;
 }
 
-void CPluginManager::UnloadPlugins()
-{
-	if(m_plugin)
-	delete m_plugin;
+void CPluginManager::UnloadPlugins() {
+	if ( m_plugin ) {
+		delete m_plugin;
+	}
 	m_plugin = NULL;
 }
 
-void CPluginManager::setScriptsDirectory(const Utf8String & directory)
-{
+void CPluginManager::setScriptsDirectory(const Utf8String & directory) {
 	m_ScriptsDirectory = directory;
 }

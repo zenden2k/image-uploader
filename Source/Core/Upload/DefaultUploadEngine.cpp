@@ -22,123 +22,112 @@
 #include "Core/3rdpart/codepages.h"
 #include "Core/3rdpart/pcreplusplus.h"
 
-CDefaultUploadEngine::CDefaultUploadEngine() : CAbstractUploadEngine()
+CDefaultUploadEngine::CDefaultUploadEngine() : CAbstractUploadEngine() 
 {
 	m_CurrentActionIndex = -1;
 }
 
 bool CDefaultUploadEngine::doUpload(Utf8String FileName, Utf8String DisplayName, CIUUploadParams& params)
 {
-	if (FileName.empty())
-	{
-		UploadError(true, "Filename should not be empty!", 0);
+	if ( FileName.empty() ) {
+		UploadError( true, "Filename should not be empty!", 0 );
 		return false;
 	}
 
-	if (!m_UploadData)
-	{
-		UploadError(true, "m_UploadData should not be NULL!", 0);
+	if ( !m_UploadData ) {
+		UploadError( true, "m_UploadData should not be NULL!", 0 );
 		return false;
 	}
 	m_FileName = FileName;
 	m_displayFileName = DisplayName;
 
 	m_Vars.clear();
-	if (m_UploadData->NeedAuthorization)
-	{
+	if ( m_UploadData->NeedAuthorization ) {
 		li = m_ServersSettings.authData;
-		if (li.DoAuth)
-		{
-			m_Consts["_LOGIN"] = (li.Login);
-			m_Consts["_PASSWORD"] = (li.Password);
+		if ( li.DoAuth ) {
+			m_Consts["_LOGIN"]    = li.Login;
+			m_Consts["_PASSWORD"] = li.Password;
 		}
 	}
 	std::string FileExt = IuCoreUtils::ExtractFileExt(DisplayName);
-	m_Consts["_FILENAME"] = IuCoreUtils::ExtractFileName(FileName);
+	m_Consts["_FILENAME"]           = IuCoreUtils::ExtractFileName(FileName);
 	std::string OnlyFname;
 	OnlyFname = IuCoreUtils::ExtractFileNameNoExt(FileName);
 	m_Consts["_FILENAMEWITHOUTEXT"] = OnlyFname;
-	m_Consts["_FILEEXT"] = FileExt;
-	m_Consts["_THUMBWIDTH"] = IuCoreUtils::toString(m_ThumbnailWidth);
+	m_Consts["_FILEEXT"]            = FileExt;
+	m_Consts["_THUMBWIDTH"]         = IuCoreUtils::toString( m_ThumbnailWidth );
 
 	int n = rand() % (256 * 256);
-	m_Consts["_RAND16BITS"] = IuCoreUtils::toString(n);
+	m_Consts["_RAND16BITS"]         = IuCoreUtils::toString(n);
 
-	for (size_t i = 0; i < m_UploadData->Actions.size(); i++)
-	{
+	for (size_t i = 0; i < m_UploadData->Actions.size(); i++) {
 		m_UploadData->Actions[i].NumOfTries = 0;
 		bool ActionRes = false;
-		do
-		{
+		do {
+			if ( needStop() ) {
+				return false;
+			}
+			ActionRes = DoAction( m_UploadData->Actions[i] );
+			m_UploadData->Actions[i].NumOfTries ++;
 			if (needStop())
 				return false;
-			ActionRes = DoAction(m_UploadData->Actions[i]);
-			m_UploadData->Actions[i].NumOfTries++;
-			if (needStop())
-				return false;
-			if (!ActionRes )
-			{
-				std::string ErrorStr = m_ErrorReason;
+
+			if (!ActionRes ) {
+				// Prepare error string which will be displayed in Log Window
+				std::string ErrorStr = m_ErrorReason; 
 				ErrorType errorType;
 				ErrorInfo::MessageType mt = ErrorInfo::mtWarning;
-				if (!m_ErrorReason.empty())
-				{
+				if (!m_ErrorReason.empty()) {
 					ErrorStr += m_ErrorReason;
 				}
 
-				if (m_UploadData->Actions[i].NumOfTries == m_UploadData->Actions[i].RetryLimit)
-				{
+				if (m_UploadData->Actions[i].NumOfTries == m_UploadData->Actions[i].RetryLimit) {
 					errorType = etActionRetriesLimitReached;
 				}
-				else
-				{
+				else {
 					errorType = etActionRepeating;
 					ErrorStr += "retrying... ";
 					ErrorStr += "(" + IuCoreUtils::toString(m_UploadData->Actions[i].NumOfTries + 1)
 					   + " of " + IuCoreUtils::toString(m_UploadData->Actions[i].RetryLimit) + ")";
 				}
-				UploadError(mt == ErrorInfo::mtError, ErrorStr, /*&m_UploadData->Actions[i]*/ 0, false);
+				UploadError( mt == ErrorInfo::mtError, ErrorStr, 0, false );
 			}
 		}
 		while (m_UploadData->Actions[i].NumOfTries < m_UploadData->Actions[i].RetryLimit && !ActionRes);
-		if (!ActionRes)
+		if ( !ActionRes ) {
 			return false;
+		}
 	}
-	Utf8String m_ThumbUrl = ReplaceVars(m_UploadData->ThumbUrlTemplate); // We are getting results :)
-	Utf8String m_ImageUrl = ReplaceVars(m_UploadData->ImageUrlTemplate); // We are getting results :)
-	Utf8String m_DownloadUrl = ReplaceVars(m_UploadData->DownloadUrlTemplate); // We are getting results :)
+	Utf8String m_ThumbUrl    = ReplaceVars( m_UploadData->ThumbUrlTemplate ); 
+	Utf8String m_ImageUrl    = ReplaceVars( m_UploadData->ImageUrlTemplate ); 
+	Utf8String m_DownloadUrl = ReplaceVars( m_UploadData->DownloadUrlTemplate ); 
 
-	params.ThumbUrl = m_ThumbUrl;
+	params.ThumbUrl  = m_ThumbUrl;
 	params.DirectUrl = m_ImageUrl;
-	params.ViewUrl = m_DownloadUrl;
+	params.ViewUrl   = m_DownloadUrl;
 	return true;
 }
 
 bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
 {
-	try
-	{
+	try {
 		AddQueryPostParams(Action);
 		m_NetworkManager->setUrl(Action.Url);
 
-		if (bUpload)
-		{
-			if (Action.Type == "put")
-			{
-				m_NetworkManager->setMethod("PUT");
-				m_NetworkManager->doUpload(m_FileName, "");
-			}
-			else
+		if ( bUpload ) {
+			if (Action.Type == "put") {
+				m_NetworkManager->setMethod( "PUT" );
+				m_NetworkManager->doUpload( m_FileName, "" );
+			} else {
 				m_NetworkManager->doUploadMultipartData();
-		}
-		else
+			}
+		} else {
 			m_NetworkManager->doPost();
+		}
 
-		bool Res = ReadServerResponse(Action);
-		return Res;
+		return ReadServerResponse(Action);
 	}
-	catch (...)
-	{
+	catch (...) {
 		return false;
 	}
 	return true;
@@ -148,11 +137,11 @@ bool CDefaultUploadEngine::DoGetAction(UploadAction& Action)
 {
 	bool Result = false;
 
-	try
-	{
-		m_NetworkManager->doGet(Action.Url);
-		if (needStop())
-			return 0;
+	try {
+		m_NetworkManager->doGet( Action.Url );
+		if (needStop()) {
+			return false;
+		}
 		Result = ReadServerResponse(Action);
 	}
 	catch (...)
@@ -164,47 +153,39 @@ bool CDefaultUploadEngine::DoGetAction(UploadAction& Action)
 
 bool reg_single_match(const std::string pattern, const std::string& text, std::string& res)
 {
-	pcrepp::Pcre reg(pattern, "imc");
-	if (reg.search(text) == true)
-	{
-		if (reg.matches() > 0)
-		{
+	pcrepp::Pcre reg(pattern, "imc"); // Case insensitive match
+	if ( reg.search(text) == true ) {
+		if ( reg.matches() > 0 ) {
 			res = reg.get_match(0);
 		}
 		return true;
 	}
-	else
-		return false;
+	
+	return false;
 }
 
 bool CDefaultUploadEngine::ParseAnswer(UploadAction& Action, std::string& Body)
 {
-	if (!Action.RegExp.empty())
-	{
+	if ( !Action.RegExp.empty() ) {
 		std::string codePage;
-		if (reg_single_match("text/html;\\s+charset=([\\w-]+)", Body, codePage))
-		{
-			IuCoreUtils::ConvertToUtf8(Body, codePage);
+		if ( reg_single_match( "text/html;\\s+charset=([\\w-]+)", Body, codePage ) ) {
+			IuCoreUtils::ConvertToUtf8( Body, codePage );
 		}
-		if (m_UploadData->Debug)
-		{
-			DebugMessage(Body, true);
+		if ( m_UploadData->Debug ) {
+			DebugMessage( Body, true );
 		}
-		try
-		{
-			pcrepp::Pcre reg(Action.RegExp, "imc");
+
+		try {
+			pcrepp::Pcre reg( Action.RegExp, "imc" );
 
 			std::string DebugVars = "Regex: " + Action.RegExp + "\r\n\r\n";
-			if (reg.search(Body) == true)
-			{
+			if ( reg.search(Body) ) {
 				reg.matches();
-				if (Action.Variables.empty())
-				{
+				if (Action.Variables.empty()) {
 					DebugVars += "Variables list is empty!\r\n";
 				}
 
-				for (size_t i = 0; i < Action.Variables.size(); i++)
-				{
+				for (size_t i = 0; i < Action.Variables.size(); i++) {
 					ActionVariable& v = Action.Variables[i];
 					std::string temp;
 					temp = reg.get_match(v.nIndex);
@@ -214,25 +195,20 @@ bool CDefaultUploadEngine::ParseAnswer(UploadAction& Action, std::string& Body)
 					DebugVars += v.Name + " = " + temp + "\r\n";
 				}
 			}
-
-			else
-			{
-				if (m_UploadData->Debug)
-				{
+			else {
+				if (m_UploadData->Debug) {
 					DebugVars += "NO MATCHES FOUND!";
-					DebugMessage(DebugVars);
+					DebugMessage( DebugVars );
 				}
-				UploadError(false, "Cannot obtain the necessary information from server response.", &Action);
+				UploadError( false, "Cannot obtain the necessary information from server response.", &Action );
 				return false; // ERROR! Current action failed!
 			}
-			if (m_UploadData->Debug)
-			{
-				DebugMessage(DebugVars);
+			if (m_UploadData->Debug) {
+				DebugMessage( DebugVars );
 			}
 		}
-		catch (const std::exception& e)
-		{
-			UploadError(true, std::string("Regular expression error:") + e.what(), &Action, false);
+		catch (const std::exception& e) {
+			UploadError( true, std::string("Regular expression error:") + e.what(), &Action, false );
 		}
 	}
 	return true;
