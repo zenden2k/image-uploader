@@ -30,8 +30,7 @@
 
 CAppModule _Module;
 
-bool IsProcessRunning(DWORD pid)
-{
+bool IsProcessRunning(DWORD pid) {
 	HANDLE process = OpenProcess(SYNCHRONIZE, FALSE, pid);
 	if(!process) {
 		return false;
