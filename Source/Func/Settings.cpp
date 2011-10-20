@@ -59,137 +59,131 @@ template<class T> void myFromString(const std::string& text,  EnumWrapper<T>& va
 }
 
 /* LOGFONT serialization support */
-inline std::string myToString(const LOGFONT& value)
-{
+inline std::string myToString(const LOGFONT& value) {
 	CString res;
-	FontToString(&value, res);
+	FontToString( &value, res );
 	return WCstringToUtf8(res);
 }
 
-inline void myFromString(const std::string& text, LOGFONT& value)
-{
+inline void myFromString(const std::string& text, LOGFONT& value) {
 	CString wide_text = Utf8ToWCstring(text);
 	LOGFONT font;
 	StringToFont(wide_text, &font);
 	value = font;
 }
 
-inline std::string myToString(const CEncodedPassword& value)
-{
+inline std::string myToString(const CEncodedPassword& value) {
 	return WCstringToUtf8(value.toEncodedData());
 }
 
-inline void myFromString(const std::string& text, CEncodedPassword& value)
-{
+inline void myFromString(const std::string& text, CEncodedPassword& value) {
 	value.fromEncodedData(Utf8ToWCstring(text));
 }
 
-inline std::string myToString(const CHotkeyList& value)
-{
+inline std::string myToString(const CHotkeyList& value) {
 	return WCstringToUtf8(value.toString());
 }
 
-inline void myFromString(const std::string& text, CHotkeyList& value)
-{
+inline void myFromString(const std::string& text, CHotkeyList& value) {
 	value.DeSerialize(Utf8ToWCstring(text));
 }
 
 
 CSettings Settings;
 
-
-
-void RunIuElevated(CString params)
-{
+void RunIuElevated(CString params) {
 	SHELLEXECUTEINFO TempInfo = {0};
 
 	TCHAR buf[MAX_PATH];
-	GetModuleFileName(0, buf, MAX_PATH - 1);
+	GetModuleFileName( 0, buf, MAX_PATH - 1 );
 	CString s = GetAppFolder();
 
 	CString Command = CString(buf);
-	TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
-	TempInfo.fMask = 0;
-	TempInfo.hwnd = NULL;
-	TempInfo.lpVerb = _T("runas");
-	TempInfo.lpFile = Command;
+	TempInfo.cbSize       = sizeof(SHELLEXECUTEINFOA);
+	TempInfo.fMask        = 0;
+	TempInfo.hwnd         = NULL;
+	TempInfo.lpVerb       = _T("runas");
+	TempInfo.lpFile       = Command;
 	TempInfo.lpParameters = params;
-	TempInfo.lpDirectory = s;
+	TempInfo.lpDirectory  = s;
 	TempInfo.nShow = SW_NORMAL;
 
 	::ShellExecuteEx(&TempInfo);
 }
 
-void ApplyRegistrySettings()
-{
+/*
+	This function starts a new process of Image Uploader with admin rights (Windows Vista and later)
+	The created process registers shell extensions and terminates
+*/
+void ApplyRegistrySettings() {
 	SHELLEXECUTEINFO TempInfo = {0};
 
 	TCHAR buf[MAX_PATH];
-	GetModuleFileName(0, buf, MAX_PATH - 1);
+	GetModuleFileName( 0, buf, MAX_PATH - 1 );
 	CString s = GetAppFolder();
 
 	CString Command = CString(buf);
-	TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
-	TempInfo.fMask = 0;
-	TempInfo.hwnd = NULL;
-	TempInfo.lpVerb = _T("runas");
-	TempInfo.lpFile = Command;
+	TempInfo.cbSize       = sizeof(SHELLEXECUTEINFOA);
+	TempInfo.fMask        = 0;
+	TempInfo.hwnd         = NULL;
+	TempInfo.lpVerb       = _T("runas");
+	TempInfo.lpFile       = Command;
 	TempInfo.lpParameters = _T(" /integration");
-	TempInfo.lpDirectory = s;
-	TempInfo.nShow = SW_NORMAL;
+	TempInfo.lpDirectory  = s;
+	TempInfo.nShow        = SW_NORMAL;
 
-	::ShellExecuteEx(&TempInfo);
+	::ShellExecuteEx( &TempInfo );
 }
 
-CString CSettings::getShellExtensionFileName() const
-{
+CString CSettings::getShellExtensionFileName() const {
 	CString file = GetAppFolder() + (IsWindows64Bit() ? _T("ExplorerIntegration64.dll") : _T("ExplorerIntegration.dll"));
 	return file;
 }
 
-void RegisterShellExtension(bool Register)
-{
+void RegisterShellExtension(bool Register) {
 	CString moduleName = Settings.getShellExtensionFileName();
-	if (!FileExists(moduleName))
+	if ( !FileExists( moduleName ) ) {
 		return;
+	}
 
 	CRegistry Reg;
-	Reg.SetRootKey(HKEY_LOCAL_MACHINE);
-	// if(ExplorerContextMenu)
-	{
-		if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", TRUE))
-		{
-			Reg.WriteBool("ExplorerContextMenu", Register);
-		}
+	Reg.SetRootKey( HKEY_LOCAL_MACHINE );
+
+	bool canCreateRegistryKey = Register;
+	
+	if ( Reg.SetKey( "Software\\Zenden.ws\\Image Uploader", canCreateRegistryKey ) ) {
+		Reg.WriteBool( "ExplorerContextMenu", Register );
 	}
 
 	SHELLEXECUTEINFO TempInfo = {0};
 	CString s = GetAppFolder();
 	TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
-	TempInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-	TempInfo.hwnd = NULL;
+	TempInfo.fMask  = SEE_MASK_NOCLOSEPROCESS;
+	TempInfo.hwnd   = NULL;
 	BOOL b = FALSE;
-	IsElevated(&b);
-	if (IsVista() && !b)
-	{
+	IsElevated( &b );
+	if ( IsVista() && !b ) {
 		TempInfo.lpVerb = _T("runas");
-	}
-	else
+	} else {
 		TempInfo.lpVerb = _T("open");
-	TempInfo.lpFile = _T("regsvr32");
+	}
+	TempInfo.lpFile       = _T("regsvr32");
 	TempInfo.lpParameters = CString((Register ? _T("") : _T("/u "))) + _T("/s \"") + moduleName + _T("\"");
-	TempInfo.lpDirectory = s;
-	TempInfo.nShow = SW_NORMAL;
+	TempInfo.lpDirectory  = s;
+	TempInfo.nShow        = SW_NORMAL;
 	::ShellExecuteEx(&TempInfo);
-	WaitForSingleObject(TempInfo.hProcess, INFINITE);
-	CloseHandle(TempInfo.hProcess);
+	WaitForSingleObject( TempInfo.hProcess, INFINITE );
+	CloseHandle( TempInfo.hProcess );
 }
 
+/*
+	Determine where data folder is situated
+	and store it's path into DataFolder member
+*/
 void CSettings::FindDataFolder()
 {
-	if (IsDirectory(GetAppFolder() + _T("Data")))
-	{
-		DataFolder = GetAppFolder() + _T("Data\\");
+	if (IsDirectory(GetAppFolder() + _T("Data"))) {
+		DataFolder     = GetAppFolder() + _T("Data\\");
 		SettingsFolder = DataFolder;
 		return;
 	}
@@ -226,12 +220,10 @@ void CSettings::FindDataFolder()
 		}
 	}
 
-	if (FileExists(GetCommonApplicationDataPath() + SETTINGS_FILE_NAME))
-	{
+	if (FileExists(GetCommonApplicationDataPath() + SETTINGS_FILE_NAME)) {
 		DataFolder = GetCommonApplicationDataPath() + _T("Image Uploader\\");
 	}
-	else
-	{
+	else {
 		DataFolder = GetApplicationDataPath() + _T("Image Uploader\\");
 	}
 }
@@ -460,49 +452,41 @@ CSettings::CSettings()
 
 #endif
 
-	bool CSettings::LoadSettings(LPCTSTR szDir, bool LoadFromRegistry)
-	{
-		CString FileName = szDir ? CString(szDir) : SettingsFolder + _T("Settings.xml");
-		if (!FileExists(FileName))
-			return true;
-		ZSimpleXml xml;
-		xml.LoadFromFile(WCstringToUtf8(FileName));
-		mgr_.loadFromXmlNode(xml.getRoot("ImageUploader").GetChild("Settings"));
-
-		ZSimpleXmlNode settingsNode = xml.getRoot("ImageUploader").GetChild("Settings");
-
-		std::string temp;
-		if (!settingsNode["Image"]["Format"].IsNull())
-		{
-			// for compatibility with old version configuration file
-			LoadConvertProfile("Old profile", settingsNode);
-		}
-
-		LoadConvertProfiles(settingsNode.GetChild("Image").GetChild("Profiles"));
-		LoadAccounts(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("ServersParams"));
-
-		// Loading some settings from registry
-		if (LoadFromRegistry)
-		{
-			CRegistry Reg;
-			Reg.SetRootKey(HKEY_LOCAL_MACHINE);
-			if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
-			{
-				ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
-			}
-		}
-
-		CRegistry Reg2;
-		Reg2.SetRootKey(HKEY_CURRENT_USER);
-		{
-			if (Reg2.SetKey("Software\\Zenden.ws\\Image Uploader", TRUE))
-			{
-				AutoStartup = Reg2.ReadBool("AutoStartup", false);
-			}
-		}
-
+bool CSettings::LoadSettings(LPCTSTR szDir, bool LoadFromRegistry) {
+	CString FileName = szDir ? CString(szDir) : SettingsFolder + _T("Settings.xml");
+	if ( !FileExists( FileName ) )
 		return true;
+	ZSimpleXml xml;
+	xml.LoadFromFile( WCstringToUtf8( FileName ) );
+	mgr_.loadFromXmlNode( xml.getRoot("ImageUploader").GetChild("Settings") );
+
+	ZSimpleXmlNode settingsNode = xml.getRoot( "ImageUploader" ).GetChild( "Settings" );
+
+	std::string temp;
+	if ( !settingsNode["Image"]["Format"].IsNull() ) {
+		// for compatibility with old version configuration file
+		LoadConvertProfile( "Old profile", settingsNode );
 	}
+
+	LoadConvertProfiles( settingsNode.GetChild("Image").GetChild("Profiles") );
+	LoadAccounts( xml.getRoot( "ImageUploader" ).GetChild( "Settings" ).GetChild( "ServersParams" ) );
+
+	// Loading some settings from registry
+	if ( LoadFromRegistry ) {
+		CRegistry Reg;
+		Reg.SetRootKey( HKEY_LOCAL_MACHINE );
+		if ( Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false ) ) {
+			ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
+		}
+	}
+
+	CRegistry Reg2;
+	Reg2.SetRootKey(HKEY_CURRENT_USER);
+	if ( Reg2.SetKey("Software\\Zenden.ws\\Image Uploader", false ) ) {
+		AutoStartup = Reg2.ReadBool("AutoStartup", false);
+	}
+	return true;
+}
 
 #define MY_CLSID _T("{535E39BD-5883-454C-AFFC-C54B66B18206}")
 
@@ -553,13 +537,12 @@ CSettings::CSettings()
 	}
 
 /* Obsolete function; will be removed in future */
-	int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, bool DropTarget)
-	{
-		HKEY ExtKey = NULL;
-		TCHAR Buffer[MAX_PATH];
+int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, bool DropTarget) {
+	HKEY ExtKey = NULL;
+	TCHAR Buffer[MAX_PATH];
 
-		Buffer[0] = _T('.');
-		lstrcpy(Buffer + 1, Extension); // Формируем строку вида ".ext"
+	Buffer[0] = _T('.');
+	lstrcpy(Buffer + 1, Extension); // Формируем строку вида ".ext"
 		RegCreateKeyEx(HKEY_CLASSES_ROOT, Buffer, 0, 0, REG_OPTION_NON_VOLATILE, KEY_QUERY_VALUE, 0, &ExtKey, NULL);
 
 		TCHAR ClassName[MAX_PATH] = _T("\0");
@@ -638,12 +621,12 @@ CSettings::CSettings()
 		Reg.SetRootKey(HKEY_CURRENT_USER);
 		// if(ExplorerContextMenu)
 		{
-			if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", TRUE))
-			{
-				Reg.WriteBool("ExplorerCascadedMenu", ExplorerCascadedMenu);
+			bool canCreateRegistryKey = ( ExplorerContextMenu );
+			if ( Reg.SetKey("Software\\Zenden.ws\\Image Uploader", canCreateRegistryKey ) ) {
+				Reg.WriteBool( "ExplorerCascadedMenu", ExplorerCascadedMenu );
 				// Reg.WriteBool("ExplorerContextMenu", ExplorerContextMenu);
-				Reg.WriteBool("ExplorerVideoContextMenu", ExplorerVideoContextMenu);
-				Reg.WriteString("Language", Language);
+				Reg.WriteBool( "ExplorerVideoContextMenu", ExplorerVideoContextMenu );
+				Reg.WriteString( "Language", Language );
 			}
 		}
 		/*else
@@ -652,14 +635,14 @@ CSettings::CSettings()
 		}*/
 		EnableAutostartup(AutoStartup);
 
-		if (SendToContextMenu_changed   || ExplorerContextMenu_changed)
-		{
+		if (SendToContextMenu_changed   || ExplorerContextMenu_changed) {
 			AutoStartup_changed = false;
 			BOOL b;
-			if (IsVista() && IsElevated(&b) != S_OK)
+			if ( IsVista() && IsElevated(&b) != S_OK ) {
+				// Start new elevated process 
 				ApplyRegistrySettings();
-			else
-			{
+			} else {
+				// Process has already admin rights
 				ApplyRegSettingsRightNow();
 			}
 		}
@@ -681,8 +664,9 @@ CSettings::CSettings()
 			else
 			{
 				HWND TrayWnd = FindWindow(0, _T("ImageUploader_TrayWnd"));
-				if (TrayWnd)
-					::SendMessage(TrayWnd, WM_CLOSETRAYWND, 0, 0);
+				if (TrayWnd) {
+					::SendMessage( TrayWnd, WM_CLOSETRAYWND, 0, 0 );
+				}
 			}
 		}
 		else if (ShowTrayIcon)
@@ -702,7 +686,7 @@ CSettings::CSettings()
 	{
 		// Applying Startup settings
 		// EnableAutostartup(AutoStartup);
-		RegisterShellExtension(ExplorerContextMenu);
+		RegisterShellExtension( ExplorerContextMenu );
 
 		// if(SendToContextMenu_changed)
 		{
@@ -899,62 +883,55 @@ CSettings::CSettings()
 		image["Text"]["@Font"].bind(params.Font);
 	}
 
-	CSettings::~CSettings()
-	{
+CSettings::~CSettings() {
+}
+
+void CSettings::Uninstall() {
+	BOOL b;
+	if (IsVista() && IsElevated(&b) != S_OK) {
+		RunIuElevated("/uninstall");
+		return;
+	}
+	AutoStartup = false;
+	SendToContextMenu  = false;
+	RegisterShellExtension(false);
+	EnableAutostartup(false);
+	CRegistry Reg;
+	Reg.SetRootKey(HKEY_CURRENT_USER);
+	Reg.DeleteKey( "Software\\Zenden.ws\\Image Uploader" );
+	Reg.SetRootKey( HKEY_LOCAL_MACHINE );
+	Reg.DeleteKey( "Software\\Zenden.ws\\Image Uploader" );
+
+	CString ShortcutName = GetSendToPath() + _T("\\Image Uploader.lnk");
+	DeleteFile(ShortcutName);
+}
+
+void CSettings::EnableAutostartup(bool enable) {
+	CRegistry Reg;
+	Reg.SetRootKey( HKEY_CURRENT_USER );
+	bool canCreateRegistryKey = enable;
+
+	if ( Reg.SetKey( "Software\\Zenden.ws\\Image Uploader", canCreateRegistryKey ) ) {
+		Reg.WriteBool( "AutoStartup", enable );
 	}
 
-	void CSettings::Uninstall()
-	{
-		BOOL b;
-		if (IsVista() && IsElevated(&b) != S_OK)
-		{
-			RunIuElevated("/uninstall");
-			return;
+	if ( enable ) {
+		HKEY hKey;
+		CString StartupCommand = _T("\"") + CmdLine.ModuleName() + _T("\" /tray");
+		LONG lRet, lRetOpen;
+		lRet = RegOpenKeyEx( HKEY_CURRENT_USER, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"), 
+		                      0, KEY_WRITE, &hKey );
+		if (!lRet) {
+			lRetOpen = RegSetValueEx( hKey, _T("ImageUploader"), NULL, REG_SZ, (BYTE*)(LPCTSTR)StartupCommand,
+			                            (StartupCommand.GetLength() + 1) * sizeof(TCHAR));
 		}
-		AutoStartup = false;
-		SendToContextMenu  = false;
-		RegisterShellExtension(false);
-		EnableAutostartup(false);
-		CRegistry Reg;
-		Reg.SetRootKey(HKEY_CURRENT_USER);
-		Reg.DeleteKey("Software\\Zenden.ws\\Image Uploader");
-
-		Reg.SetRootKey(HKEY_LOCAL_MACHINE);
-		Reg.DeleteKey("Software\\Zenden.ws\\Image Uploader");
-
-		CString ShortcutName = GetSendToPath() + _T("\\Image Uploader.lnk");
-		DeleteFile(ShortcutName);
+		RegCloseKey( hKey );
+	} else { 
+		// deleting from Startup (autorun)
+		HKEY hKey;
+		LONG lRet;
+		lRet = RegOpenKeyEx( HKEY_CURRENT_USER, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"), 0, KEY_WRITE,
+									&hKey );
+		RegDeleteValue( hKey, _T("ImageUploader") );
 	}
-
-	void CSettings::EnableAutostartup(bool enable)
-	{
-		CRegistry Reg;
-		Reg.SetRootKey(HKEY_CURRENT_USER);
-
-		if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", TRUE))
-		{
-			Reg.WriteBool("AutoStartup", enable);
-		}
-
-		if (enable)
-		{
-			HKEY hKey;
-			CString StartupCommand = _T("\"") + CmdLine.ModuleName() + _T("\" /tray");
-			LONG lRet, lRetOpen;
-			lRet = RegOpenKeyEx( HKEY_CURRENT_USER, _T(
-			                        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"), 0, KEY_WRITE, &hKey );
-			if (!lRet)
-				lRetOpen =
-				   RegSetValueEx( hKey, _T("ImageUploader"), NULL, REG_SZ, (BYTE*)(LPCTSTR)StartupCommand,
-				                  (StartupCommand.GetLength() + 1) * sizeof(TCHAR));
-			RegCloseKey( hKey );
-		}
-		else // deleting from Startup
-		{
-			HKEY hKey;
-			LONG lRet;
-			lRet = RegOpenKeyEx( HKEY_CURRENT_USER, _T(
-			                        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"), 0, KEY_WRITE, &hKey );
-			RegDeleteValue(hKey, _T("ImageUploader"));
-		}
-	}
+}
