@@ -338,40 +338,45 @@ bool CRectRegion::GetImage(HDC src, Bitmap** res)
 {
 	RECT regionBoundingRect;
 	CRgn screenRegion = CloneRegion(m_ScreenRegion);
-	// int screenWidth =    GetScreenWidth();//GetDeviceCaps(src, HORZRES);
-	// int screenHeight = GetScreenHeight();//	GetDeviceCaps(src, VERTRES);
 	RECT screenBounds;
-	GetScreenBounds(screenBounds);
+
+	GetScreenBounds( screenBounds );
 	CRgn FullScreenRgn;
 	FullScreenRgn.CreateRectRgnIndirect(&screenBounds);
-	if (!m_bFromScreen)
+	if ( !m_bFromScreen ) {
 		FullScreenRgn.OffsetRgn(-screenBounds.left, -screenBounds.top);
+	}
 	else screenRegion.OffsetRgn(screenBounds.left, screenBounds.top);
 	screenRegion.CombineRgn(FullScreenRgn, RGN_AND);
 	screenRegion.GetRgnBox(&regionBoundingRect);
 	int bmWidth = regionBoundingRect.right - regionBoundingRect.left;
 	int bmHeight = regionBoundingRect.bottom  - regionBoundingRect.top;
-	Bitmap* resultBm = new Bitmap(bmWidth, bmHeight, PixelFormat32bppARGB);
-	Graphics gr(resultBm);
-	HDC gdipDC = gr.GetHDC();
+	
+	CBitmap tempBm; // Temporary bitmap and device context
+	CDC tempDC;    //  which were added to avoid artefacts with BitBlt
+	HDC dc = GetDC( 0 );
+	tempBm.CreateCompatibleBitmap( dc, bmWidth, bmHeight );
+	tempDC.CreateCompatibleDC( dc );
+	HBITMAP oldBm = tempDC.SelectBitmap( tempBm );
+	ReleaseDC( 0, dc );
+	
 	screenRegion.OffsetRgn( -regionBoundingRect.left, -regionBoundingRect.top);
-	SelectClipRgn(gdipDC, screenRegion);
-	if (!::BitBlt(gdipDC, 0, 0, bmWidth,
-	              bmHeight, src, regionBoundingRect.left, regionBoundingRect.top, SRCCOPY | CAPTUREBLT))
-	{
-		gr.ReleaseHDC(gdipDC);
-		delete resultBm;
+
+	if (!::BitBlt(tempDC, 0, 0, bmWidth,
+	              bmHeight, src, regionBoundingRect.left, regionBoundingRect.top, SRCCOPY | CAPTUREBLT)) {
 		return false;
 	}
+
+	Bitmap* resultBm = new Bitmap(bmWidth, bmHeight, PixelFormat32bppARGB);
+	Graphics gr( resultBm );
+
+	Bitmap srcBm( tempBm, 0);
+	gr.SetClip( screenRegion );
+	
 	// Each call to the Graphics::GetHDC should be paired with a call to the Graphics::ReleaseHDC
-	gr.ReleaseHDC(gdipDC);
-	/*Blur blur;
-	BlurParams myBlurParams;
-	myBlurParams.expandEdge = TRUE;
-	myBlurParams.radius = 5;
-	blur.SetParameters(&myBlurParams);
-	RECT r={0,0,bmWidth, bmHeight};
-	resultBm->ApplyEffect(&blur,&r);*/
+	gr.DrawImage( &srcBm, 0, 0);
+	gr.Flush();
+	tempDC.SelectBitmap( oldBm );
 	*res = resultBm;
 	return true;
 }
