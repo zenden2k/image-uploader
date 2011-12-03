@@ -178,7 +178,7 @@ function  UploadFile(FileName, options)
 	local 	encodedFname = nm.urlEncode(ServerFileName);
 	nm.addQueryHeader("Slug",encodedFname);
 	nm.addQueryHeader("Connection", "close");
-
+	nm.addQueryHeader("Content-Type", GetFileMimeType( FileName ) );
 	nm.addQueryHeader("Expect", "");
 	
 	nm.doUpload(FileName, "");
