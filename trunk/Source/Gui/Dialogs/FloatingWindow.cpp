@@ -634,7 +634,8 @@ bool CFloatingWindow::OnQueueFinished()
 	session.AddItem(hi);
 
 	IU_CopyTextToClipboard(url);
-	ShowBaloonTip(TrimString(url, 70) + CString("\r\n") + TR("Нажмите на это сообщение для открытия окна с кодом..."), TR("Снимок успешно загружен"));
+	ShowBaloonTip(TrimString(url, 70) + CString("\r\n") + TR("Нажмите на это сообщение для открытия окна с кодом...") + CString("\r\n")
+		+ TR("(адрес был автоматически помещен в буфер обмена)"), TR("Снимок успешно загружен"));
 	return true;
 }
 

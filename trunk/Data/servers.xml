@@ -46,10 +46,10 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<Server Name="keep4u.ru"  Authorize="1" MaxFileSize="10000000" Debug="0">
+	<Server Name="keep4u.ru"  Authorize="1" MaxFileSize="10000000" Debug="1">
 		<Actions>
 			<Action Type="login" Url="http://keep4u.ru/login.php" PostParams="login=$(_LOGIN);mem=on;password=$(_PASSWORD);ok=Войти" OnlyOnce="1" RegExp='(.*?)'/>
-			<Action Type="upload" Url="http://keep4u.ru/uploadfile.php" PostParams="disable_effects=On;preview=yes;preview_size=$(_THUMBWIDTH);sbmt=;code=3;preview_title=yes;preview_title_set=size;pfile[]=%filename%" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:0;Thumb:2"/>
+			<Action Type="upload" Url="http://keep4u.ru/upld?X-Progress-ID=0a06fcb20fdbfad30d733e69bd886321" PostParams="pfile[]=%filename%;disable_effects=On;preview=yes;preview_size=$(_THUMBWIDTH);sbmt=;code=3;preview_title=yes;preview_title_set=size;" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:0;Thumb:2"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
@@ -111,7 +111,7 @@
 	</Server>
 	<Server Name="vfl.ru" Authorize="0" Debug="0">
 		<Actions>
-			<Action Type="upload" Url="http://vfl.ru/index.sema" PostParams="a=foto;sa=upload;img_id=$(_RAND16BITS)$(_RAND16BITS);upload_file=%filename%;subbut=Загрузить" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0"/>
+			<Action Type="upload" Referer="http://vfl.ru/" Url="http://vfl.ru/index.sema" PostParams="a=fotos;sa=upload;img_id=1;upload_file3=%filename%;upload_nazv2=;subbut=Загрузить;del2=1;tags=;resize2=2;rotate2=90;preview_x=640;preview_y=480;del2=1;" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)Прямая ссылка([\s\S]*?)&lt;textarea[^&gt;]*&gt;([\S&gt;]+)' AssignVars="Image:3;Thumb:0"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
@@ -201,19 +201,12 @@
 		</Actions>
 		<Result DownloadUrlTemplate="http://zalil.ru/$(File)"/>
 	</Server>
-<Server Name="rghost.ru" FileHost="1" Debug="0" Plugin="rghost">
+	<Server Name="rghost.ru" FileHost="1" Debug="0" Plugin="rghost">
 		<Actions>
 			<Action Type="get" Url="http://rghost.ru/multiple/upload_host" RegExp='upload_host\":\"(.*?)\"([\s\S]*?)authenticity_token\":\"(.*?)\"' AssignVars="ServerId:0;Token:2"/>
 			 <Action Type="upload" Url="http://$(ServerId)/files" PostParams="authenticity_token=$(Token);file=%filename%;" RegExp='http://rghost\.(\w+)/(\d+)' AssignVars="File:1;"/>
 		</Actions>
 		<Result DownloadUrlTemplate="http://rghost.ru/$(File)" ImageUrlTemplate="$(Stub)" ThumbUrlTemplate="$(Stub)"/>
-	</Server>
-	<Server Name="uploadbox.com" FileHost="1" Debug="0">
-		<Actions>
-				<Action Type="get" Url="http://uploadbox.com/"  RegExp='name=\"server\" value=\"(\w*?)\"([\s\S]*?)http:\/\/progress(\d*).uploadbox.com' AssignVars="ServerName:0;ServerId:2"/>
-			 <Action Type="upload" Url="http://progress$(ServerId).uploadbox.com/upload/index.cgi?X-Progress-ID=$(_RAND16BITS)" PostParams="filepc=%filename%;server=$(ServerName)" RegExp='http://uploadbox.com/files/(\w*)' AssignVars="File:0"/>
-		</Actions>
-		<Result DownloadUrlTemplate="http://uploadbox.com/files/$(File)"/>
 	</Server>
 	<Server Name="FTP Server" Debug="0" Plugin="ftp" FileHost="1" Authorize="1">
 		<Actions>
@@ -267,5 +260,12 @@
 			<Action Type="upload" Url="http://hostingkartinok.com/process.php" PostParams="image_1=%filename%;image_2=;jpeg_quality=70%;resize_to=50px;upload_type=standard;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:0;Image:2;"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" />
+	</Server>
+	<Server Name="zippyshare.com"  Authorize="1" Debug="0" FileHost="1"> 
+		<Actions>
+			<Action Type="get" Url="http://www.zippyshare.com/" RegExp="uploadId\s*=\s*[&apos;&quot;]([^&apos;&quot;]+)([\s\S]+)server\s*=\s*[&apos;&quot;]([^&apos;&quot;]+)" AssignVars="UploadId:0;ServerId:2"/>
+			<Action Type="upload" Url="http://$(ServerId).zippyshare.com/upload?uploadId=$(UploadId)" PostParams="uploadId=$(UploadId);username=$(_LOGIN);password=$(_PASSWORD);$(_FILENAME)=%filename%;private=ON;" RegExp="\[url=(.+?)\]" AssignVars="DownloadUrl:0;"/>
+		</Actions>
+		<Result DownloadUrlTemplate="$(DownloadUrl)" />
 	</Server>
 </Servers>
