@@ -866,20 +866,11 @@ const CString CImageConverter::getImageFileName()
 	return m_resultFileName;
 }
 
-Rect MeasureDisplayString(Graphics& graphics, CString text, RectF boundingRect,
-                          Font& font)
-{
+Rect MeasureDisplayString(Graphics& graphics, CString text, RectF boundingRect, Font& font) {
 	CharacterRange charRange(0, text.GetLength());
 	Region pCharRangeRegions;
 	StringFormat strFormat;
 	strFormat.SetMeasurableCharacterRanges(1, &charRange);
-	/*System.Drawing.CharacterRange[] ranges  =
-	                                    { new System.Drawing.CharacterRange(0,
-	                                                            text.Length) };*/
-	// / System.Drawing.Region[]         regions = new System.Drawing.Region[1];
-
-	//   strFormat.SetMeasurableCharacterRanges (pCharRangeRegions);
-
 	graphics.MeasureCharacterRanges (text, text.GetLength(), &font, boundingRect, &strFormat, 1, &pCharRangeRegions);
 	Rect rc;
 	pCharRangeRegions.GetBounds (&rc, &graphics);

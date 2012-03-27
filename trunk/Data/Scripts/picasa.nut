@@ -177,7 +177,21 @@ function  UploadFile(FileName, options)
  	local data = nm.responseBody();
 	
 	local directUrl = regex_simple(data, "content type='image/.+src='(.+)'", 0);
-		
+	
+	local slashRegexp = regexp( "/"  ); 
+	local slashPos = slashRegexp.search( directUrl);
+	local newPos = slashPos;
+	while ( true ) {
+		newPos = slashRegexp.search( directUrl, newPos.begin + 1 ); 
+		if ( newPos == null) {
+			break;
+		}
+		slashPos = newPos;
+	}	
+	
+	if ( slashPos != null ) {
+		directUrl =  directUrl.slice( 0, slashPos.begin)+ "/s0/" + directUrl.slice(  slashPos.begin+1);
+	}
 	local thumbUrl = regex_simple(data, "<media:thumbnail.+<media:thumbnail.+<media:thumbnail url='(.+)'", 0);
 	
 	local viewUrl = 

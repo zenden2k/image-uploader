@@ -30,12 +30,12 @@ CUploadEngineList_Base::CUploadEngineList_Base()
 {
 }
 
-CUploadEngineData* CUploadEngineList_Base::byIndex(size_t index)
-{
-	if (index < m_list.size())
+CUploadEngineData* CUploadEngineList_Base::byIndex(size_t index) {
+	if (index >=0 && index < m_list.size() ) {
 		return &m_list[index];
-	else
-		return 0;
+	} else {
+		return NULL;
+	}
 }
 
 int CUploadEngineList_Base::count()
