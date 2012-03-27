@@ -22,6 +22,7 @@
 
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/CoreUtils.h"
+#include "Core/Utils/CryptoUtils.h"
 #include "Core/Utils/GlobalMutex.h"
 #include <time.h>
 #include <sstream>
@@ -56,7 +57,7 @@ CHistorySession CHistoryManager::newSession()
 	tm * timeinfo = localtime ( &t );
 	std::string fileName = m_historyFilePath + m_historyFileNamePrefix +"_" + IuCoreUtils::toString(1900+timeinfo->tm_year)+"_" + IuCoreUtils::toString(timeinfo->tm_mon+1) + ".xml";
 	std::string str = IuCoreUtils::toString(rand()%(256 * 256)) + IuCoreUtils::toString(int(t));
-	std::string id = IuCoreUtils::CalcMD5Hash(str + IuCoreUtils::toString(rand()%(256))).substr(0, 16);
+	std::string id = IuCoreUtils::CryptoUtils::CalcMD5HashFromString(str + IuCoreUtils::toString(rand()%(256))).substr(0, 16);
 	return CHistorySession(fileName, id);
 }
 

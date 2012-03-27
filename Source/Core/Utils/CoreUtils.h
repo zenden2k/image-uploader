@@ -53,8 +53,7 @@ namespace IuCoreUtils
 	int64_t getFileSize(Utf8String utf8Filename);
 	const std::wstring Utf8ToWstring(const Utf8String &str);
 	const Utf8String WstringToUtf8(const std::wstring &str);
-	const std::string CalcMD5Hash(const void* data, size_t size);
-	const std::string CalcMD5Hash(const std::string &data);
+
 	const std::string timeStampToString(time_t t);
 	Utf8String fileSizeToString(int64_t nBytes);
 	bool createDirectory(const Utf8String path);

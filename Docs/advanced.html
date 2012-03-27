@@ -213,10 +213,50 @@
 </ol></div>
 <p>
 В общем случае необходимо реализовать 1 функцию — <i>UploadFile</i>. Если нужна поддержка серверных альбомов, то необходимо реализовать еще 4 функции — <i>GetFolderList, CreateFolder, ModifyFolder, GetFolderAccessTypeList</i>.</p>
+<p>
+<h3>API доступный скриптам:</h3>
+<p>
+<b>print()</b> - стандартная функция squirrel, выводящая текст на стандартный вывод. Его можно увидеть в окне лога ошибок.<br/>
+<br>все остальные стандартные функции можно посмотреть в документации языка Squirrel.<p>
+
+<b>random(int)</b> - возвращает случайное число не меньше заданного<br/>
+<b>md5</b> - возвращает md5-хэш строки в виде строки<br/>
+<b>md5_file</b> - возвращает md5-хэш файла (доступно начиная с IU 1.2.7 <b>build 4176</b>)<br/>
+<b>sha1</b> - возвращает sha1-хэш строки в виде строки (доступно начиная с IU 1.2.7 <b>build 4176</b>)<br/>
+<b>sha1_file</b> - возвращает sha1-хэш файла (доступно начиная с IU 1.2.7 <b>build 4176</b>)<br/>
+<b>AnsiToUtf8</b>(<i>text</i>, <i>codepage</i>) - конвертирует строку из ANSI в UTF8. codepage - номер кодировки.<br/>
+<b>ExtractFileName</b>(<i>filePath</i>) - извлекает имя файла с расширением из пути<br/>
+<b>GetFileExtension</b>- извлекает расширение файла из пути<br/>
+<b>AskUserCaptcha</b>(<i>nm</i>,<i>url</i>) - запрос ввода каптчи. nm - network manager, url - адрес картинки с каптчей. Возвращаемое значение - введенный пользователем текст.(доступно начиная с IU 1.2.7)<br/>
+<b>GetFileMimeType</b>(<i>fileName</i>) - возвращает MIME тип файла <br/>
+<b>DebugMessage</b>(<i>text</i>, <i>isResponseBody</i>) - вывод диагностического текстового сообщения<br/>
+<br>
+<b>nm</b> - глобальный объект, являющийся экземпляром класса <b>NetworkManager</b>.<br>
+NetworkManager - класс HTTP/FTP клиента. Обращение к методам класса: <i>nm.имяМетода(параметры)</i><br>
+Методы класса:
+<i>doGet(url)</i> - выполнение GET запроса(протокол HTTP)<br/><BR>
+<i>responseBody()</i>  - возвращает тело ответа сервера ( как правило это текст HTML страницы, JSON, XML или другой формат)<BR><BR>
+<i>responseCode()</i>  - возвращает код ответа (например 200 означает HTTP OK)<BR><BR>
+<i>setUrl(url)</i>  - устанавливает адрес URL для следующего запроса<br><BR><BR>
+<i>doPost(data)</i>  - выполняет POST запрос. data - тело запроса (например, "param1=value&amp;param2=value2" ). Если data - пустая строка, используются параметры,
+ предварительно заданные с помощью функции addQueryParam()<br><BR>
+<i>addQueryHeader(name, value)</i>  - устанавливает значение заголовка HTTP запроса<br><BR>
+<i>addQueryParam(name, value)</i>  - добавляет к POST запросу параметр с именем и значением<br><BR>
+<i>addQueryParamFile(name, fileName, displayName, contentType)</i>  - добавляет к MULTIPART/DATA POST запросу параметр - файл. name - имя параметра запроса, filename - физический путь к файлу,
+displayname - отображаемое имя(то имя, которое передается серверу, не содержит пути), contentType - mime тип файла, может быть пустой строкой или получен с помощью функции GetFileMimeType)
+Метод аналогичен элементу HTML формы -  &lt;input type="file"&gt;.
+<br><BR>
+<i>responseHeaderCount()<i> - количество параметров в  HTTP -заголовке ответa<br> <BR>
+<i>urlEncode(text)</i> - процентное кодирование строки, необходимо при подготовке правильного GET-запроса<br><BR>
+<i>errorString</i> - содержит текст ошибки (например, HTTP 404 not found )<br><BR>
+<i>doUpload(filename, data)</i> - отправка файла или данных непосредственно в теле POST запроса ( не используется MULTIPART кодирование )<br><BR>
+<i>setMethod</i> - позволяет вручную задать тип запроса - POST, GET, PUT ...<BR><BR>
+<i>doUploadMultipartData</i> - посылает запрос по адресу, установленному функцией setUrl в виде параметров и файлов, закодированных в формате MULTIPART/FORM-DATA. Аналогичен отправке формы с файлом с веб-страницы.<BR><BR>
+
 </div>
 </div>
 <div id="footer">
-<p> Последнее обновление данного документа — 8 июня 2011 года. Copyright &copy; 2007 - 2011, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
+<p> Последнее обновление данного документа — 27 марта 2012 года. Copyright &copy; 2007 - 2012, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
 </div>
 </body>
 </html>

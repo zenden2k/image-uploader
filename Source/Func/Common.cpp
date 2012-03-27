@@ -28,6 +28,7 @@
 #include "Func/settings.h"
 #include "Func/MyUtils.h"
 #include "Func/Settings.h"
+#include "Core/Utils/CryptoUtils.h"
 
 CString IUCommonTempFolder, IUTempFolder;
 
@@ -507,7 +508,7 @@ CString GenerateFileName(const CString& templateStr, int index, const CPoint siz
 	CString day, month, year;
 	CString hours, seconds, minutes;
 	indexStr.Format(_T("%03d"), index);
-	CString md5 = Utf8ToWstring(IuCoreUtils::CalcMD5Hash(WCstringToUtf8(IntToStr(GetTickCount() + random(100))))).c_str();
+	CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(WCstringToUtf8(IntToStr(GetTickCount() + random(100))))).c_str();
 	result.Replace(_T("%md5"), (LPCTSTR)md5);
 	result.Replace(_T("%width%"), IntToStr(size.x));
 	result.Replace(_T("%height%"), IntToStr(size.y));
