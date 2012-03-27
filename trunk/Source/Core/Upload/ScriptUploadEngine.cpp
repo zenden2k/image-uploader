@@ -33,9 +33,13 @@
 #include "Core/3rdpart/base64.h"
 #include "Core/3rdpart/codepages.h"
 
+#include "Core/Utils/CryptoUtils.h"
+#include "gui/Dialogs/LogWindow.h"
+
 using namespace SqPlus;
 // Squirrel types should be defined in the same module where they are used
 // otherwise we will catch SqPlus exception while executing Squirrel functions
+///DECLARE_INSTANCE_TYPE(std::string);
 DECLARE_INSTANCE_TYPE(ServerSettingsStruct);
 DECLARE_INSTANCE_TYPE(NetworkManager);
 DECLARE_INSTANCE_TYPE(CFolderList);
@@ -216,8 +220,12 @@ const std::string scriptUtf8ToAnsi(const std::string& str, int codepage )
 
 const std::string scriptMD5(const std::string& data)
 {
-	return IuCoreUtils::CalcMD5Hash(data);
+	return IuCoreUtils::CryptoUtils::CalcMD5HashFromString(data);
 }
+
+/*bool ShowText(const std::string& data) {
+	return DebugMessage( data, true );
+}*/
 
 bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params)
 {
@@ -287,7 +295,14 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		RegisterGlobal(plugGetFileExtension, "GetFileExtension");
 		RegisterGlobal(AskUserCaptcha, "AskUserCaptcha");
 		RegisterGlobal(scriptGetFileMimeType, "GetFileMimeType");
+
+		using namespace IuCoreUtils;
+		RegisterGlobal(&CryptoUtils::CalcMD5HashFromFile, "md5_file");
+		RegisterGlobal(&CryptoUtils::CalcSHA1HashFromString, "sha1");
+		RegisterGlobal(&CryptoUtils::CalcSHA1HashFromFile, "sha1_file");
 		srand(static_cast<unsigned int>(time(0)));
+
+		RegisterGlobal(DefaultErrorHandling::DebugMessage, "DebugMessage" );
 
 		BindVariable(m_Object, &params, "ServerParams");
 

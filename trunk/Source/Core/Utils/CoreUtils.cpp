@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <time.h>
 #include <locale>
 #include <cstdio>
-#include <openssl/md5.h>
+
 #ifdef _WIN32
     #include <io.h>
     #include "Core/Utils/utils_Win.h"
@@ -233,49 +233,6 @@ bool ReadUtf8TextFile(Utf8String utf8Filename, Utf8String& data)
 	data[bytesRead] = 0;
 	fclose(stream);
 	return true;
-}
-
-const std::string CalcMD5Hash(const void* data, size_t size)
-{
-	std::string result;
-	MD5_CTX context;
-
-	MD5_Init(&context);
-	MD5_Update(&context, data, size);
-
-	unsigned char buff[16] = "";    
-
-	MD5_Final(buff, &context);
-
-	for(int i=0;i<16; i++)
-	{
-		char temp[5];
-		sprintf(temp, "%02x",buff[i]);
-		result += temp;
-	}
-	return result;
-}
-
-// FIXME: I don't know if it works with binary data
-const std::string CalcMD5Hash(const std::string& data)
-{
-	std::string result;
-	MD5_CTX context;
-
-	MD5_Init(&context);
-	MD5_Update(&context, (unsigned char*)data.c_str(), data.length());
-
-	unsigned char buff[16] = "";    
-
-	MD5_Final(buff, &context);
-
-	for(int i=0;i<16; i++)
-	{
-		char temp[5];
-		sprintf(temp, "%02x",buff[i]);
-		result += temp;
-	}
-	return result;
 }
 
 const std::string timeStampToString(time_t t)

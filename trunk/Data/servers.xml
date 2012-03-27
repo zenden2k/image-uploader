@@ -134,6 +134,9 @@
 	<Server Name="Picasa WebAlbums" Debug="0"  Authorize="2" Plugin="picasa" SupportsFolders="1">
 	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
+<Server Name="Mediafire.com" FileHost="1" Debug="0"  Authorize="1" Plugin="mediafire" SupportsFolders="0">
+	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
 	<!--<Server Name="expic.ru" Authorize="1">
 		<Actions>
 			<Action Type="login" 	Url="http://expic.ru/login.php" PostParams="login=Вход;username=$(_LOGIN);password=$(_PASSWORD)" />

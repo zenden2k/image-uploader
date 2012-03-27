@@ -1612,6 +1612,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Source\Core\Utils\CryptoUtils.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\Utils\CryptoUtils.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Source\Core\Utils\GlobalMutex.cpp"
 						>
 					</File>
