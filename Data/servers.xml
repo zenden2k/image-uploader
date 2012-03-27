@@ -92,8 +92,7 @@
 	</Server>
 	<Server Name="Imageshack.us"  Authorize="1" MaxFileSize="5000000" Debug="0">
 		<Actions>
-			<Action Type="login" Url="http://imageshack.us/auth.php" PostParams="format=json;session=$(SESSION);username=$(_LOGIN);password=$(_PASSWORD);stay_logged_in=true;" OnlyOnce="1"/>
-			<Action Type="upload" Url="http://imageshack.us/" PostParams="uploadtype=on;fileupload=%filename%;" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:0;Thumb:3"/>
+			<Action Type="upload" Url="http://www.imageshack.us/upload_api.php" Url2="http://post.imageshack.us/" PostParams="uploadtype=on;fileupload=%filename%;MAX_FILE_SIZE=13145728;refer=http://imageshack.us/;key=8FNSUVWY7f7fe5ef74599411c7ed4a75028f94b3;rembar=0;a_username=$(_LOGIN);a_password=$(_PASSWORD);" RegExp='&lt;image_link&gt;(.*?)&lt;([\s\S]*?)&lt;thumb_link&gt;(.*?)&lt;' AssignVars="Image:0;Thumb:2"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
