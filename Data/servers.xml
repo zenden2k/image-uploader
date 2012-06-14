@@ -46,7 +46,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<Server Name="keep4u.ru"  Authorize="1" MaxFileSize="10000000" Debug="1">
+	<Server Name="keep4u.ru"  Authorize="1" MaxFileSize="10000000" Debug="0">
 		<Actions>
 			<Action Type="login" Url="http://keep4u.ru/login.php" PostParams="login=$(_LOGIN);mem=on;password=$(_PASSWORD);ok=Войти" OnlyOnce="1" RegExp='(.*?)'/>
 			<Action Type="upload" Url="http://keep4u.ru/upld?X-Progress-ID=0a06fcb20fdbfad30d733e69bd886321" PostParams="pfile[]=%filename%;disable_effects=On;preview=yes;preview_size=$(_THUMBWIDTH);sbmt=;code=3;preview_title=yes;preview_title_set=size;" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:0;Thumb:2"/>
@@ -135,6 +135,9 @@
 	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
 <Server Name="Mediafire.com" FileHost="1" Debug="0"  Authorize="1" Plugin="mediafire" SupportsFolders="0">
+	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
+<Server Name="Dropbox" FileHost="1" Debug="0"  Authorize="0" Plugin="dropbox" SupportsFolders="1">
 	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
 	<!--<Server Name="expic.ru" Authorize="1">
