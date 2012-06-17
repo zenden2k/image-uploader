@@ -164,7 +164,7 @@ function  UploadFile(FileName, options) {
 	}
 	
 	local userPath = ServerParams.getParam("UploadPath");
-	if ( userPath[userPath.len()-1] != "/") {
+	if ( userPath!="" && userPath[userPath.len()-1] != "/") {
 		userPath+= "/";
 	}
 	local path = "sandbox/" + userPath + ExtractFileName(FileName);

@@ -34,6 +34,8 @@ Copy "..\Data\Thumbnails\*.*" %temp_dir%\Data\Thumbnails\
 Copy "..\Data\Servers\*.xml" %temp_dir%\Data\Servers\
 Copy "..\Build\release optimized\ExplorerIntegration.dll" %temp_dir%\
 Copy "..\Build\x64\release optimized\ExplorerIntegration64.dll" %temp_dir%\
+Copy "..\Build\release\*.dll" %temp_dir%\
+
 del "%temp_dir%\Lang\default.lng"
 
 cd %temp_dir%

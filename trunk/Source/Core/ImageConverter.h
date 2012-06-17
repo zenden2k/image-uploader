@@ -95,7 +95,7 @@ class CImageConverter
 		const CString getImageFileName();
 		bool createThumbnail(Gdiplus::Image* image, Gdiplus::Image** outResult, int64_t fileSize, int fileFormat = 1);
 	protected:
-		bool createThumb(Gdiplus::Image* bm, int fileformat);
+		bool createThumb(Gdiplus::Image* bm, const CString& imageFile, int fileformat);
 		Thumbnail* thumbnail_template_;
 		std::map<std::string, std::string> m_Vars;
 		bool EvaluateRect(const std::string& rectStr, RECT* out);

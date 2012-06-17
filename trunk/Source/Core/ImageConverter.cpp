@@ -79,7 +79,7 @@ bool CImageConverter::Convert(const CString& sourceFile)
 	m_sourceFile = sourceFile;
 	int fileformat;
 	double width, height, imgwidth, imgheight, newwidth, newheight;
-
+	CString imageFile = sourceFile;
 	Image bm(sourceFile);
 	Image* thumbSource = &bm;
 	std::auto_ptr<Bitmap> BackBuffer;
@@ -267,6 +267,7 @@ bool CImageConverter::Convert(const CString& sourceFile)
 		MySaveImage(BackBuffer.get(), GenerateFileName(L"img%md5.jpg", 1,
 		                                               CPoint()), m_resultFileName, fileformat,
 		            m_imageConvertingParams.Quality);
+		imageFile = m_resultFileName;
 	}
 
 	if (!processing_enabled)
@@ -289,199 +290,19 @@ bool CImageConverter::Convert(const CString& sourceFile)
 		else
 		if (m_thumbCreatingParams.Format == ThumbCreatingParams::tfGIF)
 			thumbFormat = 2;
-		createThumb(thumbSource, thumbFormat);
+		createThumb(thumbSource, imageFile, thumbFormat);
 	}
 	return true;
 }
 
-bool CImageConverter::createThumb(Gdiplus::Image* bm, int fileformat)
+bool CImageConverter::createThumb(Gdiplus::Image* bm, const CString& imageFile, int fileformat)
 {
 	bool result = false;
 	HDC dc = ::GetDC(0);
 	int newwidth = bm->GetWidth();
 	int newheight = bm->GetHeight();
-	int64_t FileSize = IuCoreUtils::getFileSize(WCstringToUtf8((m_sourceFile)));
-	// TCHAR SizeBuffer[100]=_T("\0");
-	// if(FileSize>0)
-	//	NewBytesToString(FileSize,SizeBuffer,sizeof(SizeBuffer));
+	int64_t FileSize = IuCoreUtils::getFileSize(WCstringToUtf8((imageFile)));
 
-	// CString ThumbnailText = m_thumbCreatingParams.Text; // Text that will be drawn on thumbnail
-
-	// ThumbnailText.Replace(_T("%width%"), IntToStr(newwidth)); //Replacing variables names with their values
-	// ThumbnailText.Replace(_T("%height%"), IntToStr(newheight));
-//	ThumbnailText.Replace(_T("%size%"), SizeBuffer);
-
-#if 0
-	int thumbwidth = m_thumbCreatingParams.ThumbWidth;
-	if (m_thumbCreatingParams.UseThumbTemplate)
-	{
-		Graphics g1(dc);
-		Image templ(IU_GetDataFolder() + _T("thumb.png"));
-		int ww = templ.GetWidth();
-		CString s;
-
-		Font font(dc, &m_thumbCreatingParams.ThumbFont);
-
-		RectF TextRect;
-
-		FontFamily ff;
-		font.GetFamily(&ff);
-		g1.SetPageUnit(UnitPixel);
-		g1.MeasureString(_T("test"), -1, &font, PointF(0, 0), &TextRect);
-
-		thumbwidth -= 4;
-		int thumbheight = int((float)thumbwidth / (float)newwidth * newheight);
-
-		int LabelHeight = int(TextRect.Height + 1);
-		int RealThumbWidth = thumbwidth + 4;
-		int RealThumbHeight = thumbheight + 19;
-
-		Bitmap ThumbBuffer(RealThumbWidth, RealThumbHeight, &g1);
-		Graphics thumbgr(&ThumbBuffer);
-		thumbgr.SetPageUnit(UnitPixel);
-		thumbgr.Clear(Color(255, 255, 255, 255));
-		RectF thu((float)(m_thumbCreatingParams.DrawFrame ? 1 : 0), (float)(m_thumbCreatingParams.DrawFrame ? 1 : 0),
-		          (float)thumbwidth,
-		          (float)thumbheight);
-		thumbgr.SetInterpolationMode(InterpolationModeHighQualityBicubic  );
-
-		thumbgr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
-		thumbgr.SetSmoothingMode( SmoothingModeHighQuality);
-
-		thumbgr.SetSmoothingMode(SmoothingModeAntiAlias);
-		thumbgr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
-
-		RectF t((float)0, (float)12, (float)5, (float)RealThumbHeight);
-
-		thumbgr.DrawImage(&templ, t, 0, 13, 4, 4, UnitPixel);
-
-		RectF t2((float)m_thumbCreatingParams.ThumbWidth - 6, (float)9, (float)6, (float)RealThumbHeight);
-
-		thumbgr.DrawImage(&templ, t2, 158, 11, 6, 6, UnitPixel);
-
-		RectF t3((float)6, (float)0, (float)RealThumbWidth - 8, (float)6);
-
-		thumbgr.DrawImage(&templ, t3, 12, 0, 7, 5, UnitPixel);
-
-		RectF t4((float)0, (float)RealThumbHeight - 17, (float)RealThumbWidth, (float)17);
-
-		thumbgr.DrawImage(&templ, t4, 71.0, 92, 4, 19, UnitPixel);
-
-		thumbgr.DrawImage(&templ, 0.0, 0.0, 0, 0, 29, 29, UnitPixel);
-		thumbgr.DrawImage(&templ, m_thumbCreatingParams.ThumbWidth - 6, 0.0, 164 - 6, 0.0, 6, 9, UnitPixel);
-		thumbgr.DrawImage(&templ, 0.0, RealThumbHeight - 17, 0.0, 94.0, 70, 17, UnitPixel);
-		thumbgr.DrawImage(&templ, RealThumbWidth - 29, RealThumbHeight - 29, 135.0, 82, 29, 29, UnitPixel);
-
-		SolidBrush whiteBr(Color(255, 255, 255));
-		thumbgr.FillRectangle(&whiteBr, 2, 2, thumbwidth, thumbheight);
-		thumbgr.DrawImage(bm, (float)2.0 /*item->DrawFrame?1:0-1*/, (float)2.0 /*(int)item->DrawFrame?1:0-1*/,
-		                  (float)thumbwidth,
-		                  (float)thumbheight);
-
-		thumbgr.SetPixelOffsetMode(PixelOffsetModeHalf);
-
-		if (m_thumbCreatingParams.ThumbAddImageSize) // If we need to draw text on thumbnail
-		{
-			thumbgr.SetPixelOffsetMode(PixelOffsetModeDefault );
-			SolidBrush br222(MYRGB(179, RGB(255, 255, 255)));
-			RectF TextBounds((float)65, (float)RealThumbHeight - 17, (float)RealThumbWidth - 65 - 11, (float)17);
-
-			DrawStrokedText(thumbgr, /* Buffer*/ ThumbnailText, TextBounds, font, MYRGB(179, RGB(255, 255,
-			                                                                                     255)) /*MYRGB(255,params.ThumbTextColor)*/,
-			                MYRGB(90, RGB(0, 0, 0) /*params.StrokeColor*/), 1, 1, 1);
-		}
-
-		Pen p(MYRGB(255, m_thumbCreatingParams.FrameColor));
-
-		if (m_thumbCreatingParams.ThumbAddImageSize)
-		{
-			StringFormat format;
-			format.SetAlignment(StringAlignmentCenter);
-			format.SetLineAlignment(StringAlignmentCenter);
-			// Font font(L"Tahoma", 7, FontStyleBold);
-			SolidBrush LabelBackground(Color(255, 140, 140, 140));
-			;
-
-			int LabelAlpha = (m_thumbCreatingParams.TextOverThumb) ? m_thumbCreatingParams.ThumbAlpha : 255;
-			RectF TextBounds((float)1, float(RealThumbHeight - LabelHeight), float(RealThumbWidth - 1),
-			                 float(LabelHeight + 1));
-		}
-
-		if (fileformat == 2)
-			fileformat = 0;
-
-		result = MySaveImage(&ThumbBuffer, _T("thumb"), m_thumbFileName, fileformat, 93);
-	}
-	else
-	{
-		// Old styled thumb
-		Graphics g1(dc);
-		Font font(dc, &m_thumbCreatingParams.ThumbFont);
-
-		RectF TextRect;
-
-		FontFamily ff;
-		font.GetFamily(&ff);
-		g1.SetPageUnit(UnitPixel);
-		g1.MeasureString(_T("test"), -1, &font, PointF(0, 0), &TextRect);
-
-		if (m_thumbCreatingParams.DrawFrame)
-			thumbwidth -= 2;
-		int thumbheight = int((float)thumbwidth / (float)newwidth * newheight);
-
-		int LabelHeight = int(TextRect.Height + 1);
-		int RealThumbWidth = thumbwidth + (m_thumbCreatingParams.DrawFrame ? 2 : 0);
-		int RealThumbHeight = (m_thumbCreatingParams.DrawFrame ? 2 : 0) + thumbheight +
-		   ((m_thumbCreatingParams.ThumbAddImageSize && (!m_thumbCreatingParams.TextOverThumb)) ? LabelHeight : 0);
-
-		Bitmap ThumbBuffer(RealThumbWidth, RealThumbHeight, &g1);
-		Graphics thumbgr(&ThumbBuffer);
-		thumbgr.SetPageUnit(UnitPixel);
-		RectF thu((float)(m_thumbCreatingParams.DrawFrame ? 1 : 0), (float)(m_thumbCreatingParams.DrawFrame ? 1 : 0),
-		          (float)thumbwidth,
-		          (float)thumbheight);
-		thumbgr.SetInterpolationMode(InterpolationModeHighQualityBicubic  );
-		thumbgr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
-		thumbgr.SetSmoothingMode( SmoothingModeHighQuality);
-		thumbgr.SetSmoothingMode(SmoothingModeAntiAlias);
-		thumbgr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
-		thumbgr.DrawImage(/*backBuffer*/ bm, (float)-0.5f /*item->DrawFrame?1:0-1*/, (float)-0.5 /*(int)item->DrawFrame?1:0-1*/,
-		                                 (float)RealThumbWidth + 1, (float)thumbheight + 1.5);
-		thumbgr.SetPixelOffsetMode(PixelOffsetModeHalf);
-		Pen p(MYRGB(255, m_thumbCreatingParams.FrameColor));
-
-		if (m_thumbCreatingParams.ThumbAddImageSize)
-		{
-			StringFormat format;
-			format.SetAlignment(StringAlignmentCenter);
-			format.SetLineAlignment(StringAlignmentCenter);
-
-			SolidBrush LabelBackground(Color(255, 140, 140, 140));
-			;
-			int LabelAlpha = (m_thumbCreatingParams.TextOverThumb) ? m_thumbCreatingParams.ThumbAlpha : 255;
-			DrawGradient(thumbgr,
-			             Rect(0, RealThumbHeight - LabelHeight - (m_thumbCreatingParams.DrawFrame ? 1 : 0), RealThumbWidth,
-			                  LabelHeight),
-			             MYRGB(LabelAlpha,
-			                   m_thumbCreatingParams.ThumbColor1), MYRGB(LabelAlpha, m_thumbCreatingParams.ThumbColor2));
-			RectF TextBounds(1.0, (float)RealThumbHeight - LabelHeight, (float)RealThumbWidth - 1, float(LabelHeight + 1));
-
-			thumbgr.SetPixelOffsetMode(PixelOffsetModeDefault );
-			SolidBrush br222(MYRGB(255, m_thumbCreatingParams.ThumbTextColor));
-			DrawStrokedText(thumbgr, /*Buffer*/ ThumbnailText, TextBounds, font,
-			                MYRGB(255, m_thumbCreatingParams.ThumbTextColor), MYRGB(90, 0, 0,
-			                                                                        0 /*params.StrokeColor*/), 1, 1, 1);
-		}
-
-		thumbgr.SetPixelOffsetMode(   PixelOffsetModeHalf);
-		thumbgr.SetSmoothingMode(SmoothingModeDefault);
-		p.SetAlignment(PenAlignmentInset);
-
-		if (m_thumbCreatingParams.DrawFrame)
-			DrawRect(ThumbBuffer, MYRGB(255, m_thumbCreatingParams.FrameColor), Rect(0, 0, RealThumbWidth, RealThumbHeight));
-#endif
-	/*if(fileformat == 2)
-	   fileformat = 0;*/
 
 	// Saving thumbnail (without template)
 	Image* res = 0;
@@ -759,6 +580,10 @@ void CImageConverter::setThumbCreatingParams(const ThumbCreatingParams& params)
 
 bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int Format, int Quality, LPCTSTR Folder)
 {
+	CString form;
+	form.Format(_T("Width=%d, height=%d"), img->GetWidth(), img->GetHeight());
+	//MessageBox( 0, form, 0, 0);
+	//return true;
 	if (Format == -1)
 		Format = 0;
 	std::auto_ptr<Bitmap> quantizedImage;

@@ -1247,11 +1247,11 @@ bool CWizardDlg::funcImportVideo()
 	TCHAR Buf[MAX_PATH*4];
 	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
 			CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv ...)"),
-		_T("*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;*.rm;"),
+			Settings.prepareVideoDialogFilters(),
 		TR("Все файлы"),
 		_T("*.*"));
 
-	CFileDialog fd(true,0,0,4|2,/*VIDEO_DIALOG_FORMATS*/Buf,m_hWnd);
+	CFileDialog fd(true,0,0,4|2,Buf,m_hWnd);
 	
 	TCHAR Buffer[1000];
 	fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
@@ -1444,7 +1444,8 @@ bool CWizardDlg::funcMediaInfo()
 	TCHAR Buf[MAX_PATH*4]; //String buffer which will contain filter for CFileDialog
 	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),3, 
 			CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv ...)"),
-		_T("*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;*.rm;"),
+		/*_T("*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;*.rm;")*/
+		Settings.prepareVideoDialogFilters(),
 		CString(TR("Аудио файлы"))+ _T(" (mp3, wma, wav ...)"),
 		_T("*.mp3;*.wav;*.wma;*.mid;*.asx"),
 		

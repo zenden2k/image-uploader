@@ -27,6 +27,8 @@
 #undef __AFX_H__
 #include <qedit.h>
 
+#include <Core/Video/AvcodecFrameGrabber.h>
+
 #include "Gui/Controls/MyImage.h"
 #include "Gui/Dialogs/SettingsDlg.h"
 #include "Func/fileinfohelper.h"
@@ -35,6 +37,7 @@
 #include "mediainfodlg.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
+
 
 
 #ifdef DEBUG
@@ -123,30 +126,18 @@ IPin* GetOutPin( IBaseFilter* pFilter, int nPin )
 //
 // this object is a SEMI-COM object, and can only be created statically.
 
-class CSampleGrabberCB : public ISampleGrabberCB
-{
-	public:
-		SENDPARAMS sp;
-		CImgSavingThread* SavingThread;
-		CVideoGrabber* vg;
-		// Эти параметры устанавливаются главным потоком
-		long Width;
-		long Height;
-		bool Grab; // для избавления от дубликатов
-		CEvent ImageProcessEvent;
-		HANDLE BufferEvent;
-		LONGLONG prev, step; // не используется
+
 
 		// Fake out any COM ref counting
-		STDMETHODIMP_(ULONG) AddRef() {
+		STDMETHODIMP_(ULONG) CSampleGrabberCB::AddRef() {
 			return 2;
 		}
-		STDMETHODIMP_(ULONG) Release() {
+		STDMETHODIMP_(ULONG) CSampleGrabberCB::Release() {
 			return 1;
 		}
 
 		// Fake out any COM QI'ing
-		STDMETHODIMP QueryInterface(REFIID riid, void** ppv)
+		STDMETHODIMP CSampleGrabberCB::QueryInterface(REFIID riid, void** ppv)
 		{
 			CheckPointer(ppv, E_POINTER);
 
@@ -161,14 +152,14 @@ class CSampleGrabberCB : public ISampleGrabberCB
 
 		// Не используется
 		//
-		STDMETHODIMP SampleCB( double SampleTime, IMediaSample* pSample )
+		STDMETHODIMP CSampleGrabberCB::SampleCB( double SampleTime, IMediaSample* pSample )
 		{
 			return 0;
 		}
 
 		// Callback ф-ия вызываемая SampleGrabber-ом, в другом потоке
 		//
-		STDMETHODIMP BufferCB( double SampleTime, BYTE* pBuffer, long BufferSize )
+		STDMETHODIMP CSampleGrabberCB::BufferCB( double SampleTime, BYTE* pBuffer, long BufferSize )
 		{
 			if (!Grab)
 				return 0;        // Контроль ложноых вызовов
@@ -209,7 +200,7 @@ class CSampleGrabberCB : public ISampleGrabberCB
 			Grab = false;
 			return 0;
 		}
-};
+
 
 //      Класс CVideoGrabber
 //
@@ -259,6 +250,16 @@ LRESULT CVideoGrabber::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	TRC(IDC_QUALITYLABEL, "Качество:");
 	TRC(IDC_GRABBERPARAMS, "Параметры...");
 	TRC(IDC_FILEINFOBUTTON, "Информация о файле");
+
+	ZGuiTools::AddComboBoxItems(m_hWnd, IDC_VIDEOENGINECOMBO, 3, CSettings::VideoEngineAuto, CSettings::VideoEngineDirectshow,CSettings::VideoEngineFFmpeg);
+	int itemIndex = SendDlgItemMessage( IDC_VIDEOENGINECOMBO, CB_FINDSTRING, 0, (LPARAM)(LPCTSTR) Settings.VideoSettings.Engine );
+	if ( itemIndex == CB_ERR){
+		itemIndex = 0;
+	}
+	if ( !CSettings::IsFFmpegAvailable() ){
+		::EnableWindow( GetDlgItem(IDC_VIDEOENGINECOMBO), false);
+	}
+	SendDlgItemMessage(IDC_VIDEOENGINECOMBO, CB_SETCURSEL, itemIndex );
 	// Заносим в текстовое поле имя файла, полученное от главного окна
 	SetDlgItemText(IDC_FILEEDIT, m_szFileName);
 
@@ -301,7 +302,7 @@ LRESULT CVideoGrabber::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 LRESULT CVideoGrabber::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	WizardDlg->LastVideoFile = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_FILEEDIT));
-
+	
 	Terminated = false;
 	IsStopTimer = false;
 
@@ -309,6 +310,7 @@ LRESULT CVideoGrabber::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	::ShowWindow(GetDlgItem(IDC_DEINTERLACE), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_NUMOFFRAMESEDIT), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_UPDOWN), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_VIDEOENGINECOMBO), SW_HIDE);
 
 	::ShowWindow(GetDlgItem(IDCANCEL), SW_SHOW);
 
@@ -316,6 +318,20 @@ LRESULT CVideoGrabber::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	::EnableWindow(GetDlgItem(IDC_FILEEDIT), 0);
 	::EnableWindow(GetDlgItem(IDC_SELECTVIDEO), 0);
 	::ShowWindow(GetDlgItem(IDC_PROGRESSBAR), SW_SHOW);
+
+	int videoEngineIndex = SendDlgItemMessage(IDC_VIDEOENGINECOMBO, CB_GETCURSEL );
+	TCHAR buf[256];
+	SendDlgItemMessage(IDC_VIDEOENGINECOMBO, CB_GETLBTEXT, videoEngineIndex, (LPARAM)buf );
+	Settings.VideoSettings.Engine = buf;
+	/*if (  videoEngineIndex == 0) {
+	Settings.VideoSettings.Engine = CSettings::VideoEngineFFmpeg;
+	}else if (  videoEngineIndex == 1) {
+		Settings.VideoSettings.Engine = CSettings::VideoEngineFFmpeg;
+	}else if (  videoEngineIndex == 2) {
+		Settings.VideoSettings.Engine = CSettings::VideoEngineFFmpeg;
+	}*/
+	//videoEngineIndex ? CSettings::VideoEngineFFmpeg : CSettings::VideoEngineDirectshow;
+
 	SetNextCaption(TR("Далее >"));
 	EnableNext(false);
 	EnablePrev(false);
@@ -326,7 +342,8 @@ LRESULT CVideoGrabber::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	if (!NumOfFrames)
 		NumOfFrames = 5;
 	SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETPOS, 0);
-	SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETRANGE, 0, MAKELPARAM(0, NumOfFrames));
+	
+	SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETRANGE, 0, MAKELPARAM(0, NumOfFrames*10));
 	CanceledByUser = false;
 
 	m_hThread = NULL;
@@ -358,6 +375,7 @@ bool CVideoGrabber::OnAddImage(SENDPARAMS* sp)
 		return 0;
 	BYTE* pBuffer = sp->pBuffer;
 	BITMAPINFO bi = sp->bi;
+	bi.bmiHeader.biHeight *= 1;
 	if (bi.bmiHeader.biWidth > 10000)
 		return 0;
 	if (bi.bmiHeader.biHeight > 10000)
@@ -420,6 +438,7 @@ int CVideoGrabber::ThreadTerminated()
 	::ShowWindow(GetDlgItem(IDC_DEINTERLACE), SW_SHOW);
 	::ShowWindow(GetDlgItem(IDC_NUMOFFRAMESEDIT), SW_SHOW);
 	::ShowWindow(GetDlgItem(IDC_UPDOWN), SW_SHOW);
+	::ShowWindow(GetDlgItem(IDC_VIDEOENGINECOMBO), SW_SHOW);
 	CheckEnableNext();
 	::EnableWindow(GetDlgItem(IDC_FILEEDIT), 1);
 	::EnableWindow(GetDlgItem(IDC_SELECTVIDEO), 1);
@@ -558,7 +577,14 @@ int CVideoGrabber::GenPicture(CString& outFileName)
 
 LRESULT CVideoGrabber::OnBnClickedButton1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CFileDialog fd(true, 0, 0, 4 | 2, VIDEO_DIALOG_FORMATS, m_hWnd);
+	TCHAR Buf[MAX_PATH*4];
+	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
+		CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv, mkv ...)"),
+		Settings.prepareVideoDialogFilters(),
+		TR("Все файлы"),
+		_T("*.*"));
+
+	CFileDialog fd(true,0,0,4|2,Buf,m_hWnd);
 
 	if (fd.DoModal() != IDOK || !fd.m_szFileName)
 		return 0;
@@ -608,6 +634,7 @@ void CImgSavingThread::Save(SENDPARAMS sp)
 
 DWORD CImgSavingThread::Run()
 {
+
 	HANDLE EvArray[2] = {StopEvent, SavingEvent};
 	DWORD EventIndex = -1;
 	do
@@ -661,6 +688,37 @@ CImgSavingThread::~CImgSavingThread()
 
 int CVideoGrabber::GrabBitmaps(TCHAR* szFile )
 {
+	CSampleGrabberCB CB;
+
+	CString videoEngine = Settings.VideoSettings.Engine;
+
+	if ( videoEngine == CSettings::VideoEngineAuto) {
+		if ( !Settings.IsFFmpegAvailable() ) {
+			videoEngine = CSettings::VideoEngineDirectshow;
+		} else {
+			videoEngine = CSettings::VideoEngineFFmpeg;
+			Utf8String ext = ( IuCoreUtils::ExtractFileExt( IuCoreUtils::WstringToUtf8(szFile) ) );
+			if ( ext == "wmv" || ext == "asf" ) {
+				videoEngine = CSettings::VideoEngineDirectshow;
+			}
+		}
+	}
+
+	if ( videoEngine == CSettings::VideoEngineFFmpeg) {
+
+
+			CB.vg=this;
+
+			CB.SavingThread = &SavingThread;
+			CB.BufferEvent = CreateEvent(0, FALSE, FALSE, 0);
+			SavingThread.vg=this;
+			SavingThread.Start();
+
+			av_grab_frames(NumOfFrames, szFile, &CB, GetDlgItem(IDC_PROGRESSBAR), false, true);
+			GrabInfo(TR("Извлечение кадров было завершено."));
+			return 0;
+
+	}
 	USES_CONVERSION;
 	bool IsWMV = false;
 	bool IsOther = false;
@@ -812,7 +870,7 @@ int CVideoGrabber::GrabBitmaps(TCHAR* szFile )
 	//
 	CComPtr<IPin> pSourcePin;
 	CComPtr<IPin> pGrabPin;
-	CSampleGrabberCB CB;
+//	CSampleGrabberCB CB;
 	if (IsWMV)
 		pSourcePin = GetOutPin( pASF, 1 );
 	else
@@ -937,7 +995,7 @@ int CVideoGrabber::GrabBitmaps(TCHAR* szFile )
 		CB.Grab = true;
 		hr = pControl->Run( );
 		hr = pEvent->WaitForCompletion( INFINITE, &EvCode );
-		SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETPOS, i + 1);
+		SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETPOS, (i + 1)*10);
 	}
 	pControl->Stop();
 

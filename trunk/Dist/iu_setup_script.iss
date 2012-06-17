@@ -25,8 +25,12 @@ AllowNoIcons=yes
 OutputDir=output\
 #ifdef GDIPLUS
 OutputBaseFilename=image-uploader-{#_APP_VER}-build-{#BUILD}-setup-gdiplus
-#else
+#else 
+#ifdef FFMPEG
+OutputBaseFilename=image-uploader-{#_APP_VER}-build-{#BUILD}-setup-ffmpeg
+#else 
 OutputBaseFilename=image-uploader-{#_APP_VER}-build-{#BUILD}-setup
+#endif
 #endif
 Compression=lzma/max 
 SolidCompression=yes
@@ -60,9 +64,13 @@ Source: "..\Data\Favicons\*.ico"; DestDir: "{code:GetDataFolder}\Image Uploader\
 Source: "..\Data\Scripts\*.nut"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts"; Flags: ignoreversion
 Source: "..\Data\Update\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
 Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Flags: ignoreversion
-Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
+;Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
 #ifdef WIN64FILES
 Source: "..\Build\x64\release optimized\ExplorerIntegration64.dll";DestDir: "{app}";Check: isWin64;
+#endif
+#ifdef FFMPEG
+Source: "..\Build\release\av*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Build\release\swscale*.dll"; DestDir: "{app}"; Flags: ignoreversion
 #endif
 Source: "..\Build\release optimized\ExplorerIntegration.dll";DestDir: "{app}";Check: not isWin64
 #ifdef GDIPLUS
