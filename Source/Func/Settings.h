@@ -77,6 +77,7 @@ struct VideoSettingsStruct
 	BOOL ShowMediaInfo;
 	LOGFONT Font;
 	COLORREF TextColor;
+	CString Engine;
 };
 
 class CEncodedPassword
@@ -232,6 +233,12 @@ class CSettings
 	CString ServerName, QuickServerName,FileServerName;
 	SettingsManager mgr_;
 	CString SettingsFolder;
+	static const TCHAR VideoEngineDirectshow[];
+	static const TCHAR VideoEngineFFmpeg[];
+	static const TCHAR VideoEngineAuto[];
+	static bool IsFFmpegAvailable();
+
+	CString prepareVideoDialogFilters();
 };
 
 extern CSettings Settings;

@@ -19,5 +19,7 @@
 #include "Func/LangClass.h"
 
 typedef CAtlArray<CString> CStringList;
+#ifndef IU_SHELLEXT
 extern CAppModule _Module;
+#endif
 #endif

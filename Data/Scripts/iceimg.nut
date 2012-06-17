@@ -23,11 +23,12 @@ function reg_replace(str, pattern, replace_with)
 function  UploadFile(FileName, options)
 {	
 	nm.setUrl("http://iceimg.com/upload.php");
+	nm.addQueryParam("Filename",ExtractFileName(FileName));
 	nm.addQueryParamFile("img",FileName, ExtractFileName(FileName),"");
+	nm.addQueryParam("Upload", "Submit Query");
 	nm.doUploadMultipartData();
 
  	local data = nm.responseBody();
-	//local ex = regexp("full\":\"(.+)\"");
 	local directUrl = regex_simple(data, "full\":\"(.+)\"", 0);
 	local thumbUrl = regex_simple(data, "thumb\":\"(.+)\"", 0);
 	local viewUrl = regex_simple(data, "view\":\"(.+)\"", 0);

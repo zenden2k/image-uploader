@@ -72,7 +72,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="-MP4"
-				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zdlld.lib minizipd.lib zthread.lib gdiplus.lib strmbasd.lib libcurld_imp.lib Ws2_32.lib"
+				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zdlld.lib minizipd.lib zthread.lib gdiplus.lib strmbasd.lib libcurld_imp.lib Ws2_32.lib avcodec.lib avdevice.lib avformat.lib avutil.lib swscale.lib dwmapi.lib sqplus.lib"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;$(SolutionDir)\Libs\Debug&quot;"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				DelayLoadDLLs="uxtheme.dll;dwmapi.dll"
@@ -224,7 +224,7 @@
 				FavorSizeOrSpeed="0"
 				WholeProgramOptimization="false"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC;TIXML_USE_STL;PCRE_STATIC"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC;TIXML_USE_STL;PCRE_STATIC;GOOGLE_GLOG_DLL_DECL="
 				StringPooling="true"
 				MinimalRebuild="false"
 				ExceptionHandling="1"
@@ -251,15 +251,17 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib"
+				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avdevice.lib avformat.lib avutil.lib swscale.lib avcodec.lib libglog_static.lib log4cplusUS.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;d:\Projects\Image Uploader\Image Uploader\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
 				GenerateManifest="false"
 				AdditionalManifestDependencies=""
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="msvcprt.lib MSVCRT"
-				DelayLoadDLLs="uxtheme.dll;dwmapi.dll"
+				DelayLoadDLLs="uxtheme.dll;dwmapi.dll;avcodec-53.dll;avdevice-53.dll;avfilter-2.dll;avformat-53.dll;avutil-51.dll;postproc-51.dll;swscale-2.dll"
 				GenerateDebugInformation="true"
+				AssemblyDebug="1"
+				GenerateMapFile="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -655,14 +657,14 @@
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="true"
 				AdditionalOptions="/CRINKLER"
-				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib"
+				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avdevice.lib avformat.lib avutil.lib swscale.lib avcodec.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;d:\Projects\Image Uploader\Image Uploader\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
 				GenerateManifest="false"
 				AdditionalManifestDependencies=""
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="msvcprt.lib MSVCRT"
-				DelayLoadDLLs="uxtheme.dll;dwmapi.dll"
+				DelayLoadDLLs="uxtheme.dll;dwmapi.dll;avcodec-53.dll;avdevice-53.dll;avfilter-2.dll;avformat-53.dll;avutil-51.dll;postproc-51.dll;swscale-2.dll"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -805,6 +807,14 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\Source\resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\versioninfo.h"
+				>
+			</File>
 			<Filter
 				Name="Gui"
 				>
@@ -1773,6 +1783,26 @@
 					</File>
 					<File
 						RelativePath=".\Source\Core\3rdpart\tinyxmlparser.cpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Video"
+					>
+					<File
+						RelativePath=".\Source\Core\Video\AvcodecFrameGrabber.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\Video\AvcodecFrameGrabber.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\Video\VideoUtils.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\Video\VideoUtils.h"
 						>
 					</File>
 				</Filter>

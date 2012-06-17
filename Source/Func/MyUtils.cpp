@@ -24,6 +24,11 @@
 #include <shobjidl.h>
 #include <gdiplus.h>
 #include <gdiplusheaders.h>
+#include <Core/Utils/CoreUtils.h>
+#include <Core/Utils/StringUtils.h>
+#include <algorithm>
+//#include <Func/Settings.h>
+#include <Core/Video/VideoUtils.h>
 
 typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
 typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
@@ -300,9 +305,14 @@ bool IsImage(LPCTSTR szFileName)
 
 bool IsVideoFile(LPCTSTR szFileName)
 {
-	LPCTSTR szExt = GetFileExt(szFileName);
-	if(lstrlen(szExt)<1) return false;
-	return IsStrInList(szExt,VIDEO_FORMATS);
+	std::string ext = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt(IuCoreUtils::WstringToUtf8(szFileName)) );
+	std::vector<std::string>& extensions = VideoUtils::Instance().videoFilesExtensions;
+	if(std::find(extensions.begin(), extensions.end(), ext) != extensions.end()) {
+		return true;
+	} else {
+	return false;
+	}
+
 }
 
 

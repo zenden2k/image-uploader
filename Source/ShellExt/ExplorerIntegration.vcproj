@@ -245,7 +245,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				FavorSizeOrSpeed="2"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Source\&quot;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;IU_SHELLEXT"
 				RuntimeLibrary="0"
 				RuntimeTypeInfo="false"
@@ -345,7 +345,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				FavorSizeOrSpeed="2"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Source&quot;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;IU_SHELLEXT"
 				RuntimeLibrary="0"
 				RuntimeTypeInfo="false"
@@ -743,7 +743,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				FavorSizeOrSpeed="2"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Source&quot;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;IU_SHELLEXT;_WIN64"
 				RuntimeLibrary="0"
 				RuntimeTypeInfo="false"
@@ -810,6 +810,14 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath="..\Core\3rdpart\CodePages.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Core\Utils\CoreUtils.cpp"
+				>
+			</File>
 			<File
 				RelativePath=".\ExplorerIntegration.cpp"
 				>
@@ -929,6 +937,14 @@
 						UsePrecompiledHeader="1"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\Core\Utils\StringUtils.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Core\Video\VideoUtils.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter

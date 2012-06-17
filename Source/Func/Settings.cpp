@@ -25,6 +25,8 @@
 #include "Gui/Dialogs/LogWindow.h"
 #include "Common/CmdLine.h"
 #include "3rdpart/Registry.h"
+#include <Core/Utils/StringUtils.h>
+#include <Core/Video/VideoUtils.h>
 
 #ifndef IU_SERVERLISTTOOL
 	#include "Gui/Dialogs/FloatingWindow.h"
@@ -36,6 +38,9 @@
 
 #define SETTINGS_FILE_NAME _T("settings.xml")
 
+ const TCHAR CSettings::VideoEngineDirectshow[] = _T("Directshow");
+ const TCHAR CSettings::VideoEngineFFmpeg[]     = _T("FFmpeg");
+ const TCHAR CSettings::VideoEngineAuto[]       = _T("Auto");
 /* CString support for  SettingsManager */
 
 inline std::string myToString(const CString& value)
@@ -249,6 +254,10 @@ CSettings::CSettings()
 		MoveFile(copyFrom, copyTo);
 	}
 
+	
+		if ( !IsFFmpegAvailable() ){
+		VideoSettings.Engine = VideoEngineDirectshow;
+	}
 	// Default values of settings
 	ExplorerCascadedMenu = true;
 #ifndef IU_SHELLEXT
@@ -309,7 +318,8 @@ CSettings::CSettings()
 	VideoSettings.UseAviInfo = TRUE;
 	VideoSettings.ShowMediaInfo = TRUE;
 	VideoSettings.TextColor = RGB(0, 0, 0);
-
+	
+	VideoSettings.Engine = IsFFmpegAvailable() ? VideoEngineAuto : VideoEngineDirectshow;
 	ConnectionSettings.UseProxy =  FALSE;
 	ConnectionSettings.ProxyPort = 0;
 	ConnectionSettings.NeedsAuth = false;
@@ -412,6 +422,7 @@ CSettings::CSettings()
 	video.nm_bind(VideoSettings, ShowMediaInfo);
 	video.nm_bind(VideoSettings, TextColor);
 	video.nm_bind(VideoSettings, Font);
+	video.nm_bind(VideoSettings, Engine);
 
 	SettingsNode& tray = mgr_["TrayIcon"];
 	tray.nm_bind(TrayIconSettings, LeftDoubleClickCommand);
@@ -484,6 +495,13 @@ bool CSettings::LoadSettings(LPCTSTR szDir, bool LoadFromRegistry) {
 	Reg2.SetRootKey(HKEY_CURRENT_USER);
 	if ( Reg2.SetKey("Software\\Zenden.ws\\Image Uploader", false ) ) {
 		AutoStartup = Reg2.ReadBool("AutoStartup", false);
+	}
+
+	if ( VideoSettings.Engine != VideoEngineDirectshow &&  VideoSettings.Engine != VideoEngineFFmpeg && VideoSettings.Engine != VideoEngineAuto   ){
+		VideoSettings.Engine = VideoEngineAuto;
+	}
+	if ( !IsFFmpegAvailable() ){
+		VideoSettings.Engine = VideoEngineDirectshow;
 	}
 	return true;
 }
@@ -934,4 +952,21 @@ void CSettings::EnableAutostartup(bool enable) {
 									&hKey );
 		RegDeleteValue( hKey, _T("ImageUploader") );
 	}
+}
+
+bool CSettings::IsFFmpegAvailable() {
+	CString appFolder = GetAppFolder();
+	return FileExists( appFolder + "avcodec-53.dll") 
+		 && FileExists( appFolder + "avformat-53.dll")
+		 && FileExists( appFolder + "avutil-51.dll")
+		 && FileExists( appFolder + "swscale-2.dll");
+}
+
+CString CSettings::prepareVideoDialogFilters() {
+	CString result;
+	std::vector<std::string>& extensions = VideoUtils::Instance().videoFilesExtensions;
+	for ( int i = 0; i < extensions.size(); i++ ) {
+		result += CString("*.") + CString(extensions[i].c_str()) + _T(";");
+	}
+	return result;
 }

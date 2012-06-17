@@ -7,18 +7,10 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<!--<Server Name="Immage.de"  Authorize="1">
+	<Server Name="ImageBan.ru"  Authorize="1" Debug="0" Plugin="imageban">
 		<Actions>
-			<Action Type="login" Url="http://immage.de/login.html" PostParams="username=$(_LOGIN);passwort=$(_PASSWORD);autologin=1;" OnlyOnce="0" Description="Authorization on Immage.de"/>
-			<Action Type="upload" Url="http://immage.de/upload.html" PostParams="dat[0]=%filename%;drehen0=0;umwandeln0=0;thumbg0=1;thumbinfos0=0;" RegExp='\[\/img\]([\s\S]*?)\[img\](.*?)\[\/img\]*' AssignVars="Image:1;"/>
 		</Actions>
-		<Result ImageUrlTemplate="$(Image)"/>
-	</Server>-->
-	<Server Name="ImageBan.ru"  Authorize="1" Debug="0">
-		<Actions>
-			<Action Type="upload" Url="http://api.imageban.ru/upload_api.php" PostParams="userfile=%filename%;user=$(_LOGIN);passwd=$(_PASSWORD)" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0"/>
-		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
 	<Server Name="habrastorage.org"  Debug="0" Plugin="habrastorage" Authorize="2">
 		<Actions>
@@ -90,11 +82,11 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<Server Name="Imageshack.us"  Authorize="1" MaxFileSize="5000000" Debug="0">
+	<Server Name="Imageshack.us" Authorize="1" MaxFileSize="5000000" Debug="0">
 		<Actions>
-			<Action Type="upload" Url="http://www.imageshack.us/upload_api.php" Url2="http://post.imageshack.us/" PostParams="uploadtype=on;fileupload=%filename%;MAX_FILE_SIZE=13145728;refer=http://imageshack.us/;key=8FNSUVWY7f7fe5ef74599411c7ed4a75028f94b3;rembar=0;a_username=$(_LOGIN);a_password=$(_PASSWORD);" RegExp='&lt;image_link&gt;(.*?)&lt;([\s\S]*?)&lt;thumb_link&gt;(.*?)&lt;' AssignVars="Image:0;Thumb:2"/>
+			<Action Type="upload" Url="http://www.imageshack.us/upload_api.php" PostParams="fileupload=%filename%;uploadtype=on;key=BXT1Z35V8f6ee0522939d8d7852dbe67b1eb9595;rembar=0;a_username=$(_LOGIN);a_password=$(_PASSWORD);" RegExp='&lt;image_link&gt;(.*?)&lt;([\s\S]*?)&lt;thumb_bb&gt;.*?\[IMG\](.+?)\[([\s\S]*?)&lt;is_link&gt;(.*?)&lt;' AssignVars="Image:0;Thumb:2;View:4"/>
 		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)"/>
 	</Server>
 	<Server Name="share.te.ua" Authorize="0">
 		<Actions>
@@ -138,7 +130,7 @@
 	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
 <Server Name="Dropbox" FileHost="1" Debug="0"  Authorize="0" Plugin="dropbox" SupportsFolders="1">
-	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	<Result ImageUrlTemplate="stub" />
 	</Server>
 	<!--<Server Name="expic.ru" Authorize="1">
 		<Actions>

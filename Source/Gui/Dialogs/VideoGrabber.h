@@ -29,6 +29,12 @@
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Gui/Controls/ThumbsView.h"
 
+#define __AFX_H__ // little hack for avoiding __POSITION type redefinition
+#include <objbase.h>
+#include <streams.h>
+#undef __AFX_H__
+#include <qedit.h>
+
 #define WM_MYADDIMAGE (WM_USER + 22)
 
 class CVideoGrabber;
@@ -56,6 +62,33 @@ class CImgSavingThread : public CThreadImpl<CImgSavingThread>
 		void Stop();
 		~CImgSavingThread();
 		void Reset();
+};
+
+class CSampleGrabberCB : public ISampleGrabberCB
+{
+public:
+	SENDPARAMS sp;
+	CImgSavingThread* SavingThread;
+	CVideoGrabber* vg;
+	// Эти параметры устанавливаются главным потоком
+	long Width;
+	long Height;
+	bool Grab; // для избавления от дубликатов
+	CEvent ImageProcessEvent;
+	HANDLE BufferEvent;
+	LONGLONG prev, step; // не используется
+
+	// Fake out any COM ref counting
+	STDMETHODIMP_(ULONG) AddRef();
+	STDMETHODIMP_(ULONG) Release();
+
+	// Fake out any COM QI'ing
+	STDMETHODIMP QueryInterface(REFIID riid, void** ppv);
+	STDMETHODIMP SampleCB( double SampleTime, IMediaSample* pSample );
+
+
+	STDMETHODIMP BufferCB( double SampleTime, BYTE* pBuffer, long BufferSize );
+	
 };
 
 class CVideoGrabber :
