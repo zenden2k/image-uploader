@@ -1,0 +1,1 @@
+"c:\Program Files\Inno Setup 5\iscc.exe" /cc /dWIN2000 /dGDIPLUS "iu_setup_script.iss"
