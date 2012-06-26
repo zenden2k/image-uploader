@@ -28,6 +28,7 @@
 #include "Func/Settings.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/GuiTools.h"
+#include "mediainfodlg.h"
 
 class CTempFilesDeleter
 {
@@ -112,6 +113,11 @@ CUploadDlg::CUploadDlg(CWizardDlg *dlg):ResultsWindow(new CResultsWindow(dlg,Url
 	#if  WINVER	>= 0x0601
 		ptl = NULL;
 	#endif
+	queueUploader_.setCallback(this);
+	queueUploader_.setMaxThreadCount( 4 );
+	mutex_ = new ZThread::Mutex();
+	tempFileDeleter_ = new CTempFilesDeleter();
+	filesFinished_ = 0;
 }
 
 CUploadDlg::~CUploadDlg()
@@ -123,6 +129,15 @@ CUploadDlg::~CUploadDlg()
 
 LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	createToolbar();
+
+	uploadListView_.m_hWnd  = GetDlgItem(IDC_UPLOADTABLE);
+	uploadListView_.AddColumn( TR("Файл"), 1);
+	uploadListView_.AddColumn( TR("Статус"), 1);
+	uploadListView_.AddColumn( TR("Миниатюра"), 2);
+	uploadListView_.SetColumnWidth(0, 170);
+	uploadListView_.SetColumnWidth(1, 170);
+	uploadListView_.SetColumnWidth(2, 170);
 	// Initializing Windows 7 taskbar related stuff
 	RECT rc;
 	::GetWindowRect(GetDlgItem(IDC_RESULTSPLACEHOLDER), &rc);
@@ -142,7 +157,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	if(vg && lstrlen(vg->m_szFileName))
 		IsLastVideo=true;
 
-	ResultsWindow->EnableMediaInfo(IsLastVideo);
+	EnableMediaInfo(IsLastVideo);
 	
 	SetDlgItemInt(IDC_THUMBSPERLINE, 4);
 	SendDlgItemMessage(IDC_THUMBPERLINESPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
@@ -152,31 +167,24 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	PageWnd = m_hWnd;
 	ResultsWindow->SetPage(Settings.CodeLang);
 	ResultsWindow->SetCodeType(Settings.CodeType);
+	currentTab_ = -1;
+	showUploadProgressTab();
 	return 1;  
 }
 
 #define Terminat() {Terminated=true; return 0;}
 
-DWORD CUploadDlg::Run()
-{
+DWORD CUploadDlg::Run() {
+	showUploadProgressTab();
+	filesFinished_ = 0;
 	m_bStopped = false;
 	HRESULT hRes = ::CoInitialize(NULL);
-	CTempFilesDeleter  TempFilesDeleter;
-	if(!MainDlg) return 0;
-
-	CUploader  Uploader;
 	
-	#if  WINVER	>= 0x0601
-		if(ptl)
-			ptl->SetProgressState(GetParent(), TBPF_NORMAL); // initialise Windows 7 taskbar button progress 
-	#endif
-	m_CurrentUploader = &Uploader;
-	Uploader.onNeedStop.bind(this, &CUploadDlg::OnUploaderNeedStop);
-	Uploader.onProgress.bind(this, &CUploadDlg::OnUploaderProgress);
-	Uploader.onDebugMessage.bind(DefaultErrorHandling::DebugMessage);
-	Uploader.onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
-	Uploader.onStatusChanged.bind(this, &CUploadDlg::OnUploaderStatusChanged);
-	Uploader.onConfigureNetworkManager.bind(this, &CUploadDlg::OnUploaderConfigureNetworkClient);
+	if ( !MainDlg ) {
+		return 0;
+	}
+
+
 	int Server;
 	int FileServer = Settings.FileServerID;
 	int n = MainDlg->FileList.GetCount();
@@ -185,321 +193,60 @@ DWORD CUploadDlg::Run()
 		Server = Settings.QuickServerID;
 	else Server = Settings.ServerID;
 
-	if(Server == -1)
-	{
+	if(Server == -1) {
 		Server = m_EngineList->getRandomImageServer();
-		if(Server == -1)
+		if(Server == -1) {
 			return ThreadTerminated();
+		}
 	}
 
 	if(FileServer == -1)
 	{
 		FileServer = m_EngineList->getRandomFileServer();
-		if(FileServer == -1)
+		if(FileServer == -1) {
 			return ThreadTerminated();
+		}
 	}
 
 	CUploadEngineData *ue = m_EngineList->byIndex(Server);
-	if(ue->SupportsFolders)
-	{
-		ResultsWindow->AddServer(Server);
-	}
 
-	if(m_EngineList->byIndex(FileServer)->SupportsFolders)
-	{
-		ResultsWindow->AddServer(Utf8ToWCstring(m_EngineList->byIndex(FileServer)->Name));
-	}
-
-	ShowProgress(false);
-	SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETPOS, 0);
-	SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, n));
-	SendDlgItemMessage(IDC_FILEPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
-	SetDlgItemText(IDC_COMMONPERCENTS, _T("0%"));
-
-	UploadProgress(0, n);
-
-	int i;
-	CString FileName;
-	TCHAR szBuffer[MAX_PATH];
-	
-	int NumUploaded=0;
-	bool CreateThumbs = Settings.ThumbSettings.CreateThumbs;
-
-	Thumbnail thumb;
-	
-	if(!thumb.LoadFromFile(WCstringToUtf8(IU_GetDataFolder()+_T("\\Thumbnails\\")+Settings.ThumbSettings.FileName+_T(".xml"))))
-	{
-		WriteLog(logError, _T("CThumbSettingsPage"), TR("Не могу загрузить файл миниатюры!"));
-		return ThreadTerminated();
-	}
-
-	int thumbwidth=Settings.ThumbSettings.ThumbWidth;
-	if(thumbwidth<1|| thumbwidth>1024) thumbwidth=150;
-	
-
-	FullUploadProfile iss;
-
-
-	FullUploadProfile InitialParams;
-   InitialParams.convert_profile = Settings.ConvertProfiles[Settings.CurrentConvertProfileName];
-	InitialParams.upload_profile = Settings.UploadProfile;
-	//= Settings.ImageSettings;
-   InitialParams.upload_profile.ServerID = Server;
-
-	iss = InitialParams;
-
+#if  WINVER	>= 0x0601
+	if(ptl)
+		ptl->SetProgressState(GetParent(), TBPF_NORMAL); // initialise Windows 7 taskbar button progress 
+#endif
 	CHistoryManager * mgr = ZBase::get()->historyManager();
-	CHistorySession session = mgr->newSession();
+//	session_ = mgr->newSession();
+	fileProcessingQueue_.clear();
+	uploadListView_.DeleteAllItems();
 
-	for(i=0; i<n; i++)
-	{
-		CString ImageFileName,ThumbFileName;
-
-		CString ThumbUrl;
-		CString DirectUrl;
-		CString DownloadUrl;
-      Server = iss.upload_profile.ServerID;
-		ue = m_EngineList->byIndex(Server);
-		if(/*Server!=Uploader.CurrentServer && */IsImage(MainDlg->FileList[i].FileName))
-		{
-			CAbstractUploadEngine * e = m_EngineList->getUploadEngine(Server);
-			if(!e) 
-			{
-				WriteLog(logError, _T("Custom Uploader"), _T("Cannot create image upload engine!"));
-				continue;
-			}
-			Uploader.setUploadEngine(e);
-		}
-
-		wsprintf(szBuffer,TR("Обрабатывается файл %d из %d..."),i+1,n/*,ExtractFileName(FileName),UrlBuffer*/);
-
-		SetDlgItemText(IDC_COMMONPROGRESS2,szBuffer);
-
-		SendDlgItemMessage(IDC_FILEPROGRESS,PBM_SETPOS,0);
-
-		
-		if(IsImage(MainDlg->FileList[i].FileName))
-		{
-			FileProgress(TR("Подготовка файла к отправке.."));
-			if(ShouldStop()) 
-				return ThreadTerminated();
-
-			CImageConverter imageConverter;
-         imageConverter.setImageConvertingParams(iss.convert_profile);
-         imageConverter.setEnableProcessing(!iss.upload_profile.KeepAsIs);
-			imageConverter.setThumbnail(&thumb);
-			imageConverter.setThumbCreatingParams(Settings.ThumbSettings);
-			bool GenThumb = false;
-			if(CreateThumbs && ((!Settings.ThumbSettings.UseServerThumbs)||(!ue->SupportThumbnails)))
-				GenThumb = true;
-				//GenerateImages(MainDlg->FileList[i].FileName,ImageFileName,ThumbFileName,thumbwidth, iss);
-			else 
-				GenThumb = false;
-				
-			/*if(CreateThumbs && Settings.ThumbSettings.UseServerThumbs)
-					GenerateImages(MainDlg->FileList[i].FileName,ImageFileName,0,0, iss);
-
-				else
-					GenerateImages(MainDlg->FileList[i].FileName,ImageFileName,0,0, iss);*/
-			imageConverter.setGenerateThumb(GenThumb);
-			imageConverter.Convert(MainDlg->FileList[i].FileName);
-			ImageFileName = imageConverter.getImageFileName();
-			ThumbFileName = imageConverter.getThumbFileName();
-         if(!iss.upload_profile.KeepAsIs && ImageFileName != MainDlg->FileList[i].FileName)
-			{
-				//MessageBox(ImageFileName);
-				TempFilesDeleter.AddFile(ImageFileName);
-				if(lstrlen(ThumbFileName))
-				TempFilesDeleter.AddFile(ThumbFileName);
-			}
-		}
-		else // if we upload any type of file
-		{
-			ImageFileName = MainDlg->FileList[i].FileName;
-			CAbstractUploadEngine * fileUploadEngine = m_EngineList->getUploadEngine(FileServer);
-			if(!fileUploadEngine)
-			{
-				WriteLog(logError, _T("Custom Uploader"), _T("Cannot create file upload engine!"));
-				continue;
-			}
-			Uploader.setUploadEngine(fileUploadEngine);			
-		}
-
-		FileName = (MainDlg->FileList[i].FileName);
-		SendDlgItemMessage(IDC_FILEPROGRESS,PBM_SETPOS,0);
-		PrInfo.ip.Total=0;
-		PrInfo.ip.Uploaded=0;
-		PrInfo.Bytes.clear(); 
-		PrInfo.ip.IsUploading = false;
-		LastUpdate=0;
-		ShowProgress(true);
-
-		if(!FileExists(ImageFileName))
-		{
-			CString Buf;
-			Buf.Format(TR("Файл \"%s\" не найден."), (LPCTSTR)ImageFileName);
-			WriteLog(logError, TR("Модуль загрузки"),Buf);
-			continue;
-		}
-
-		if(IsImage(MainDlg->FileList[i].FileName)&& ue->MaxFileSize && MyGetFileSize(ImageFileName)>static_cast<int>(ue->MaxFileSize))
-		{
-			CSizeExceed SE(ImageFileName, iss,m_EngineList);
-
-			int res = SE.DoModal(m_hWnd);
-			if(res==IDOK || res==3 )
-			{
-				if(res==3) InitialParams = iss; // if user choose button USE FOR ALL
-
-				i--;
-				continue;
-			}
-		}
-		ShowProgress(true);
-
-		if(IsImage(MainDlg->FileList[i].FileName))
-			FileProgress(TR("Загрузка изображения.."));
-		else 
-			FileProgress(CString(TR("Загрузка файла")) + _T(" ") + myExtractFileName(MainDlg->FileList[i].FileName));
-
-		DirectUrl= _T("");
-		ThumbUrl = _T("");
-		
-		CString virtualName = GetOnlyFileName(MainDlg->FileList[i].VirtualFileName)+_T(".")+GetFileExt(ImageFileName);
-		Uploader.setThumbnailWidth(thumbwidth);
-		BOOL result = Uploader.UploadFile(WCstringToUtf8(ImageFileName),WCstringToUtf8(virtualName));
-		if(result)
-		{
-			ThumbUrl = Utf8ToWstring(Uploader.getThumbUrl()).c_str();
-			DirectUrl = Utf8ToWstring(Uploader.getDirectUrl()).c_str();
-			DownloadUrl = Utf8ToWstring(Uploader.getDownloadUrl()).c_str();
-		}
-		
-		ShowProgress(false);
-
-		if(ShouldStop()) 
-			return ThreadTerminated();
-
-		if(!result)
-		{
-			CString Err;
-			Err.Format(TR("Не удалось загрузить файл \"%s\" на сервер. "), (LPCTSTR)MainDlg->FileList[i].FileName );
-			if(Settings.ShowUploadErrorDialog)
-			{
-				int res = MessageBox(Err,APPNAME, MB_ABORTRETRYIGNORE|MB_ICONERROR);
-				if(res == IDABORT) { ThreadTerminated();FileProgress(TR("Загрузка файлов прервана пользователем."), false);return 0;}
-				else if(res == IDRETRY)
-				{
-					i--;
-					continue;
-				}
-			}
-		}
-
-		if(result  &&  (!DirectUrl.IsEmpty() || !DownloadUrl.IsEmpty()))
-		{
-			if(ue->SupportsFolders)
-			{
-				ResultsWindow->AddServer(Utf8ToWCstring(ue->Name));
-			}
-
-			NumUploaded++;
-
-
-			PrInfo.ip.Total=0;
-			PrInfo.ip.Uploaded=0;
-			LastUpdate=0;
-
-			// Если мы не используем серверные превьюшки
-			if(IsImage(MainDlg->FileList[i].FileName) &&  !ue->ImageUrlTemplate.empty() && Settings.ThumbSettings.CreateThumbs && (((!Settings.ThumbSettings.UseServerThumbs)||(!ue->SupportThumbnails)) || (lstrlen(ThumbUrl)<1)))
-			{
-	thumb_retry:
-				FileProgress(TR("Загрузка миниатюры.."));
-				ShowProgress(true);
-				ThumbUrl = _T("");
-				PrInfo.ip.Total=0;
-				PrInfo.Bytes.clear();
-				PrInfo.ip.Uploaded=0;
-				PrInfo.ip.IsUploading = false;
-				BOOL result = Uploader.UploadFile(WCstringToUtf8(ThumbFileName),WCstringToUtf8(myExtractFileName(ThumbFileName)));
-				
-				if(result)
-				{
-					ThumbUrl = Utf8ToWstring(Uploader.getDirectUrl()).c_str();
-				}
-				if(ShouldStop()) 
-					return ThreadTerminated();
-
-				if(!result && Settings.ShowUploadErrorDialog)
-				{
-					CString Err;
-					Err.Format(TR("Не удалось загрузить миниатюру к изображению \"%s\" на сервер. "), (LPCTSTR)MainDlg->FileList[i].FileName );
-					int res = MessageBox(Err,APPNAME, MB_ABORTRETRYIGNORE|MB_ICONERROR);
-					if(res == IDABORT) { ThreadTerminated();FileProgress(TR("Загрузка файлов прервана пользователем."), false);return 0;}
-					else if(res == IDRETRY)
-					{
-						goto thumb_retry;
-					}
-				}
-			}
-			ShowProgress(false);
-			CUrlListItem item;
-			item.ImageUrl=_T("");
-			item.ThumbUrl=_T("");
-
-			item.ImageUrl = DirectUrl;
-			item.FileName = MainDlg->FileList[i].FileName;
-			item.DownloadUrl = DownloadUrl;
-			if(CreateThumbs)
-				item.ThumbUrl = ThumbUrl;
-			ResultsWindow->Lock();
-			UrlList.Add(item);
-
-			CAbstractUploadEngine *upEngine = Uploader.getUploadEngine();
-			std::string serverName = ue->Name;
-			if(upEngine)
-				serverName = upEngine->getUploadData()->Name;
-			HistoryItem hi;
-			hi.localFilePath = WCstringToUtf8(item.FileName);
-			hi.serverName = serverName;
-			hi.directUrl =  WCstringToUtf8(DirectUrl);
-			hi.thumbUrl = WCstringToUtf8(item.ThumbUrl);
-			hi.viewUrl = WCstringToUtf8(item.DownloadUrl);
-			hi.uploadFileSize = IuCoreUtils::getFileSize(WCstringToUtf8(ImageFileName));
-			session.AddItem(hi);
-			
-			
-			ResultsWindow->Unlock();
-			GenerateOutput();
-
-		}
-		ShowProgress(false);
-		UploadProgress(i+1, n);
-		wsprintf(szBuffer,_T("%d %%"),(int)((float)(i+1)/(float)n*100));
-		SetDlgItemText(IDC_COMMONPERCENTS,szBuffer);
-
-		ThumbUrl = _T("");
-		DirectUrl = _T("");
-
-		TempFilesDeleter.Cleanup();
-		iss = InitialParams;
+	for ( int i = 0; i < n ; i++ ) {
+		FileProcessingStruct fps;
+		fps.fileName = WCstringToUtf8( MainDlg->FileList[i].FileName );
+		fps.uploadEngineData = ue;
+		fps.tableRow = i;
+		fileProcessingQueue_.push_back(fps);
+		uploadListView_.AddItem(i, 0, Utf8ToWCstring( IuCoreUtils::ExtractFileName(fps.fileName ) ));
+		uploadListView_.AddItem(i, 1, TR("В очереди"));
 	}
+	/*m_CurrentUploader = &Uploader;
+	Uploader.onNeedStop.bind(this, &CUploadDlg::OnUploaderNeedStop);
+	Uploader.onProgress.bind(this, &CUploadDlg::OnUploaderProgress);
+	Uploader.onDebugMessage.bind(DefaultErrorHandling::DebugMessage);
+	Uploader.onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
+	Uploader.onStatusChanged.bind(this, &CUploadDlg::OnUploaderStatusChanged);
+	Uploader.onConfigureNetworkManager.bind(this, &CUploadDlg::OnUploaderConfigureNetworkClient);*/
 
-	UploadProgress(n, n);
-	wsprintf(szBuffer,_T("%d %%"),100);
-	SetDlgItemText(IDC_COMMONPERCENTS,szBuffer);
-
+	addNewFilesToUploadQueue();
 	
-	int Errors = n-NumUploaded;
+	/*int Errors = n-NumUploaded;
 	if(Errors>0)
 		wsprintf(szBuffer,CString(TR("Вcего %d файлов было загружено."))+_T(" ")
 		+TR("%d файлов загружены не были из-за ошибок."),NumUploaded,Errors);
 	else
 		wsprintf(szBuffer,CString(TR("Вcего %d файлов было загружено."))+_T(" ")+TR("Ошибок нет."), NumUploaded );
-
-	ResultsWindow->FinishUpload();
-	FileProgress(szBuffer, false);
-	return ThreadTerminated();
+	*/
+	//Sleep(100000);
+	return 0;
 }
 
 LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -573,7 +320,7 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 			wsprintf (ProgressBuffer,_T ("%d %%"),(int)perc);
 			SetDlgItemText(IDC_PERCENTLABEL,ProgressBuffer);
 			SendDlgItemMessage(IDC_FILEPROGRESS,PBM_SETPOS,(int)perc);
-			UploadProgress(progressCurrent, progressTotal, perc/2);
+//			UploadProgress(progressCurrent, progressTotal, perc/2);
 
 			DWORD Current =  PrInfo.ip.Uploaded;
 			TCHAR SpeedBuffer[256]=_T("\0");
@@ -607,12 +354,14 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 	return 0;
 }
 
-int CUploadDlg::ThreadTerminated(void)
-{
+int CUploadDlg::ThreadTerminated(void) {
+	ResultsWindow->FinishUpload();
+//	FileProgress(szBuffer, false);
+
 	WizardDlg->QuickUploadMarker = false;
 	TCHAR szBuffer[MAX_PATH];
 	SetDlgItemText(IDC_COMMONPROGRESS2, TR("Загрузка завершена."));
-	UploadProgress(MainDlg->FileList.GetCount(), MainDlg->FileList.GetCount());
+//	UploadProgress(MainDlg->FileList.GetCount(), MainDlg->FileList.GetCount());
 	#if  WINVER	>= 0x0601
 		if(ptl)
 			ptl->SetProgressState(GetParent(), TBPF_NOPROGRESS);
@@ -620,8 +369,9 @@ int CUploadDlg::ThreadTerminated(void)
 	wsprintf(szBuffer,_T("%d %%"),100);
 	SetDlgItemText(IDC_COMMONPERCENTS,szBuffer);
 
-	if(CancelByUser)
+	if(CancelByUser) {
 		FileProgress(TR("Загрузка файлов прервана пользователем."), false);
+	}
 	else
 	{
 
@@ -652,7 +402,7 @@ bool CUploadDlg::OnShow()
 			IsLastVideo=true;
 	}
 	ResultsWindow->InitUpload();
-	ResultsWindow->EnableMediaInfo(IsLastVideo);
+	EnableMediaInfo(IsLastVideo);
 	CancelByUser = false;
 	ShowNext();
 	ShowPrev();
@@ -721,8 +471,7 @@ bool CUploadDlg::OnNext()
 	return false;
 }
 
-void CUploadDlg::ShowProgress(bool Show)
-{
+void CUploadDlg::ShowProgress(bool Show) {
 	if(Show)
 	{
 		SetDlgItemText(IDC_SPEEDLABEL, _T(""));
@@ -741,8 +490,7 @@ void CUploadDlg::ShowProgress(bool Show)
 	}
 }
 
-bool CUploadDlg::OnHide()
-{
+bool CUploadDlg::OnHide() {
 	UrlList.RemoveAll();
 	ResultsWindow->Clear();
 	Settings.UseTxtTemplate = (SendDlgItemMessage(IDC_USETEMPLATE, BM_GETCHECK) == BST_CHECKED);
@@ -786,12 +534,11 @@ void CUploadDlg::FileProgress(const CString& Text, bool ShowPrefix)
 	}
 }
 
-void CUploadDlg::GenerateOutput()
-{
+void CUploadDlg::GenerateOutput() {
 	ResultsWindow->UpdateOutput();
 }
 
-void CUploadDlg::UploadProgress(int CurPos, int Total, int FileProgress)
+void CUploadDlg::SetUploadProgress(int CurPos, int Total, int FileProgress)
 {
 	SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETPOS, CurPos);
 #if  WINVER	>= 0x0601 // Windows 7 related stuff
@@ -823,9 +570,9 @@ void CUploadDlg::OnUploaderStatusChanged(StatusType status, int actionIndex, std
 	m_StatusText = UploaderStatusToString(status, actionIndex,text);
 }
 
-void CUploadDlg::OnUploaderConfigureNetworkClient(NetworkManager *nm)
-{
+bool CUploadDlg::OnConfigureNetworkManager(NetworkManager *nm) {
 	IU_ConfigureProxy(*nm);
+	return true;
 }
 
 
@@ -841,4 +588,551 @@ const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url
 	if(dlg.DoModal()==IDOK)
 		return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
 	return "";
+}
+
+bool CUploadDlg::OnFileFinished(bool ok,CFileQueueUploader:: FileListItem& result) {
+	if ( !ok ) {
+		//MessageBox( _T("Fail("));
+		return false;
+	} else {
+		//MessageBoxA(0,result.fileName.c_str(),result.imageUrl.c_str(),0);
+	}
+	UploadTaskData *uploadTaskData =  reinterpret_cast<UploadTaskData*>( result.uploadTask->userData );
+	if ( !uploadTaskData ) {
+		return false;
+	}
+	UploadItem* uploadItem = uploadTaskData->uploadItem;
+
+	if ( !uploadItem ) {
+		return false;
+	}
+
+	if ( uploadTaskData->isThumb ) {
+		uploadItem->thumbnailResult = result; 
+		uploadItem->thumbnailResult.uploadTask = 0;
+		uploadItem->thumbUploaded = true;
+		uploadListView_.SetItemText(uploadItem->tableIndex, 2, _T("Миниатюра загружена"));
+	} else {
+		uploadItem->fileResult = result;
+		uploadItem->fileUploaded = true;
+		uploadItem->fileResult.uploadTask = 0;
+	}
+	
+	ResultsWindow->Lock();
+	mutex_->acquire();
+	CUrlListItem item;
+	int i = uploadItem->tableIndex;
+	if ( uploadItem->needThumb && uploadItem->thumbUploaded && uploadItem->fileUploaded ) {
+		item.ImageUrl = Utf8ToWCstring(uploadItem->fileResult.imageUrl);
+		item.FileName = Utf8ToWCstring(uploadItem->fileResult.fileName);
+		item.DownloadUrl = Utf8ToWCstring( uploadItem->fileResult.downloadUrl);
+
+		item.ThumbUrl = Utf8ToWCstring( uploadItem->thumbnailResult.imageUrl);
+		int columnIndex = uploadTaskData->isThumb ? 2 : 1;
+		uploadListView_.SetItemText(i, 1, _T("Готово"));
+		filesFinished_ ++;
+		SetUploadProgress(filesFinished_,uploadItems_.size(),0);
+		UrlList.Add(item);
+	} else if ( uploadItem->fileUploaded && !uploadItem->needThumb  ) {
+		item.ImageUrl = Utf8ToWCstring(uploadItem->fileResult.imageUrl);
+		item.FileName = Utf8ToWCstring(uploadItem->fileResult.fileName);
+		item.DownloadUrl = Utf8ToWCstring( uploadItem->fileResult.downloadUrl);
+		item.ThumbUrl = Utf8ToWCstring( uploadItem->fileResult.thumbUrl);
+		int columnIndex = uploadTaskData->isThumb ? 2 : 1;
+		uploadListView_.SetItemText(i, 1, _T("Готово"));
+		UrlList.Add(item);
+		filesFinished_ ++;
+		SetUploadProgress(filesFinished_,uploadItems_.size(),0);
+	}
+
+	CString res;
+	res.Format(_T(" (%d)"), filesFinished_);
+	 Toolbar.SetButtonInfo(IDC_UPLOADRESULTSTAB, TBIF_TEXT, 0, 0, CString(TR("Ссылки на файлы"))  +res , 
+		0, 0,0, 0);
+	//Toolbar.SetButtonInfo(TR("Ссылки на файлы"));
+
+	
+/*			CAbstractUploadEngine *upEngine = Uploader.getUploadEngine();*/
+			std::string serverName =  "unknown";
+			/*if(upEngine)
+				serverName = upEngine->getUploadData()->Name;*/
+			HistoryItem hi;
+			hi.localFilePath = WCstringToUtf8(item.FileName);
+			hi.serverName = serverName;
+			hi.directUrl =  WCstringToUtf8(item.ImageUrl);
+			hi.thumbUrl = WCstringToUtf8(item.ThumbUrl);
+			hi.viewUrl = WCstringToUtf8(item.DownloadUrl);
+			hi.uploadFileSize = result.fileSize;
+			
+			//session_.AddItem(hi);
+			mutex_->release();
+			
+			ResultsWindow->Unlock();
+			GenerateOutput();
+addNewFilesToUploadQueue();
+	return true;
+}
+
+bool CUploadDlg::OnQueueFinished(){
+	//MessageBox(_T("OnQueueFinished"));
+	tempFileDeleter_->Cleanup();
+	SetUploadProgress(100,100,0);
+	ThreadTerminated();
+	showUploadResultsTab();
+	return true;
+}
+
+bool CUploadDlg::OnUploadProgress(UploadProgress progress, UploadTask* task, NetworkManager* nm) {
+	if ( !task)  {
+		return false;
+	}
+	UploadTaskData *uploadTaskData =  reinterpret_cast<UploadTaskData*>(task->userData );
+	if ( !uploadTaskData ) {
+		return false;
+	}
+	UploadItem* uploadItem = uploadTaskData->uploadItem;
+	if ( !uploadItem ) {
+		return false;
+	}
+	int i = uploadItem->tableIndex;
+	if ( i < 0 ) {
+		return false;
+	}
+	
+	int percent = 0;
+	if ( progress.totalUpload ) {
+		percent = 100 * ((float)progress.uploaded) / progress.totalUpload;
+	}
+	TCHAR ProgressBuffer[256]=_T("");
+	_stprintf (ProgressBuffer,TR("Загружено %s из %s (%d%% )"),(LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress.uploaded)),
+		(LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress.totalUpload)), percent);
+	int columnIndex = uploadTaskData->isThumb ? 2 : 1;
+	uploadListView_.SetItemText(i, columnIndex, ProgressBuffer);
+	return true;
+}
+LRESULT CUploadDlg::OnLvnItemchangedUploadtable(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandled*/)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	return 0;
+}
+
+void CUploadDlg::createToolbar() {
+	CBitmap hBitmap;
+	HIMAGELIST m_hToolBarImageList;
+	if (Is32BPP()) {
+		hBitmap				  = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_BITMAP3));
+		m_hToolBarImageList = ImageList_Create(16,16,ILC_COLOR32,0,6);
+		ImageList_Add(m_hToolBarImageList,hBitmap,NULL);
+	} else {
+		hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_BITMAP4));
+		m_hToolBarImageList = ImageList_Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
+		ImageList_AddMasked(m_hToolBarImageList,hBitmap,RGB(255,0,255));
+	}
+
+	RECT rc = {0,0,100,24};
+	GetClientRect(&rc);
+	rc.top     = ZGuiTools::dlgY(24);
+	rc.bottom  = rc.top + ZGuiTools::dlgY(16);
+	rc.left    = ZGuiTools::dlgX(6);
+	rc.right  -= ZGuiTools::dlgX(6);
+	Toolbar.Create(m_hWnd,rc,_T(""), WS_CHILD|WS_CHILD | TBSTYLE_LIST |TBSTYLE_CUSTOMERASE|TBSTYLE_FLAT| CCS_NORESIZE/*|*/|CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
+
+	Toolbar.SetButtonStructSize();
+	Toolbar.SetButtonSize(30,18);
+	Toolbar.SetImageList(m_hToolBarImageList);
+	Toolbar.AddButton(IDC_UPLOADPROCESSTAB, BTNS_CHECK|BTNS_AUTOSIZE ,TBSTATE_ENABLED|TBSTATE_PRESSED, 0, TR("Процесс загрузки"), 0);
+	Toolbar.AddButton(IDC_UPLOADRESULTSTAB, BTNS_CHECK |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Ссылки на файлы"), 0);
+	bool IsLastVideo = false;
+	Toolbar.AddButton(IDC_MEDIAFILEINFO, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Инфо о последнем видео"), 0);
+	Toolbar.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Лог ошибок"), 0);
+
+
+	if ( !IsLastVideo ) { 
+		Toolbar.HideButton( IDC_MEDIAFILEINFO );
+	}
+
+	Toolbar.AutoSize();
+	Toolbar.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);
+	Toolbar.ShowWindow(SW_SHOW);
+}
+
+LRESULT CUploadDlg::OnUploadProcessButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	showUploadProgressTab();
+	return 0;
+}
+
+LRESULT CUploadDlg::OnUploadResultsButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	showUploadResultsTab();
+	return 0;
+}
+
+LRESULT CUploadDlg::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(!*WizardDlg->LastVideoFile) {
+		return 0;
+	}
+	CMediaInfoDlg dlg ;
+	dlg.ShowInfo(WizardDlg->LastVideoFile);
+	return 0;
+}
+
+LRESULT CUploadDlg::OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {	
+	LogWindow.Show();
+	return 0;
+}
+
+void CUploadDlg::showUploadResultsTab() {
+	if ( currentTab_ == IDC_UPLOADRESULTSTAB ) {
+		return;
+	}
+	Toolbar.SetButtonInfo(IDC_UPLOADPROCESSTAB, TBIF_STATE, 0, TBSTATE_ENABLED, 0 ,  0, 0,0, 0);
+	Toolbar.SetButtonInfo(IDC_UPLOADRESULTSTAB, TBIF_STATE, 0, TBSTATE_ENABLED|TBSTATE_PRESSED, 0 ,  0, 0,0, 0);
+
+	currentTab_ = IDC_UPLOADRESULTSTAB;
+	uploadListView_.ShowWindow( SW_HIDE);
+	ResultsWindow->ShowWindow( SW_SHOW );
+}
+
+void CUploadDlg::showUploadProgressTab() {
+	if ( currentTab_ == IDC_UPLOADPROCESSTAB ) {
+		return;
+	}
+	currentTab_= IDC_UPLOADPROCESSTAB;
+	Toolbar.SetButtonInfo(IDC_UPLOADRESULTSTAB, TBIF_STATE, 0, TBSTATE_ENABLED, 0, 
+		0, 0,0, 0);
+	Toolbar.SetButtonInfo(IDC_UPLOADPROCESSTAB, TBIF_STATE, 0, TBSTATE_ENABLED|TBSTATE_PRESSED, 0 ,  0, 0,0, 0);
+
+	uploadListView_.ShowWindow( SW_SHOW);
+	ResultsWindow->ShowWindow( SW_HIDE );
+}
+void  CUploadDlg::EnableMediaInfo(bool Enable) {
+	Toolbar.HideButton(IDC_MEDIAFILEINFO,!Enable);
+}
+
+bool CUploadDlg::getNextUploadItem() {
+	if ( fileProcessingQueue_.empty() ) {
+		return false;
+	}
+	FileProcessingStruct fps = fileProcessingQueue_.front();
+	fileProcessingQueue_.pop_front();
+	std::string fileName = fps.fileName;
+	CUploadEngineData * uploadEngineData = fps.uploadEngineData;
+	if ( uploadEngineData->SupportsFolders ) {
+//		ResultsWindow->AddServer(Server);
+	}
+	std::string	sourceFileName = fileName;
+
+/*	if(m_EngineList->byIndex(FileServer)->SupportsFolders) {
+		//ResultsWindow->AddServer(Utf8ToWCstring(m_EngineList->byIndex(FileServer)->Name));
+	}*/
+	
+
+//	//ShowProgress(false);
+	//SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETPOS, 0);
+//	SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, n));
+	//SendDlgItemMessage(IDC_FILEPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
+	//SetDlgItemText(IDC_COMMONPERCENTS, _T("0%"));
+
+	//	UploadProgress(0, n);
+
+	CString FileName;
+	TCHAR szBuffer[MAX_PATH];
+
+	int NumUploaded=0;
+	bool CreateThumbs = Settings.ThumbSettings.CreateThumbs;
+
+	Thumbnail thumb;
+
+	if(!thumb.LoadFromFile(WCstringToUtf8(IU_GetDataFolder()+_T("\\Thumbnails\\")+Settings.ThumbSettings.FileName+_T(".xml"))))
+	{
+		WriteLog(logError, _T("CThumbSettingsPage"), TR("Не могу загрузить файл миниатюры!"));
+		return ThreadTerminated();
+	}
+
+	int thumbwidth = Settings.ThumbSettings.ThumbWidth;
+	if ( thumbwidth < 1 || thumbwidth > 1024) {
+		thumbwidth = 150;
+	}
+
+	FullUploadProfile iss;
+
+	FullUploadProfile InitialParams;
+	InitialParams.convert_profile = Settings.ConvertProfiles[Settings.CurrentConvertProfileName];
+	InitialParams.upload_profile = Settings.UploadProfile;
+	//= Settings.ImageSettings;
+//	InitialParams.upload_profile.ServerID = Server;
+
+	iss = InitialParams;
+
+	UploadItem * newItem = new UploadItem;
+		newItem->fileName   = fileName;
+		newItem->tableIndex = fps.tableRow;
+		newItem->needThumb  = false;
+		uploadItems_.push_back(newItem);
+		
+		SendDlgItemMessage(IDC_FILEPROGRESS,PBM_SETPOS,0);
+		CString ThumbFileName;
+
+		CString ThumbUrl;
+		CString DirectUrl;
+		CString DownloadUrl;
+//      Server = iss.upload_profile.ServerID;
+		//ue = m_EngineList->byIndex(Server);
+		CAbstractUploadEngine * e = 0;
+		if(/*Server!=Uploader.CurrentServer && */IsImage(Utf8ToWCstring(fileName)))
+		{
+//			CUploadEngineData* data = m_EngineList->byIndex(Server);
+			CUploadEngineData* newData = new CUploadEngineData();
+			*newData =* uploadEngineData;
+			e = new CDefaultUploadEngine();
+			e->setUploadData(newData);
+			ServerSettingsStruct& settings = Settings.ServerByUtf8Name(newData->Name);
+			e->setServerSettings(settings);
+			// e = m_EngineList->getUploadEngine(Server);
+			if(!e) 
+			{
+				WriteLog(logError, _T("Custom Uploader"), _T("Cannot create image upload engine!"));
+//				continue;
+			}
+//			Uploader.setUploadEngine(e);
+		}
+
+		SetDlgItemText(IDC_COMMONPROGRESS2,szBuffer);
+
+		if(IsImage(Utf8ToWCstring(fileName)))
+		{
+			uploadListView_.SetItemText(fps.tableRow, 1, _T("Подготовка изображения"));
+			//FileProgress(TR("Подготовка файла к отправке.."));
+			if(ShouldStop()) 
+				return ThreadTerminated();
+
+			CImageConverter imageConverter;
+         imageConverter.setImageConvertingParams(iss.convert_profile);
+         imageConverter.setEnableProcessing(!iss.upload_profile.KeepAsIs);
+			imageConverter.setThumbnail(&thumb);
+			imageConverter.setThumbCreatingParams(Settings.ThumbSettings);
+			bool GenThumb = false;
+			if(CreateThumbs && ((!Settings.ThumbSettings.UseServerThumbs)||(!uploadEngineData->SupportThumbnails)))
+				GenThumb = true;
+				//GenerateImages(MainDlg->FileList[i].FileName,ImageFileName,ThumbFileName,thumbwidth, iss);
+			else 
+				GenThumb = false;
+				
+			/*if(CreateThumbs && Settings.ThumbSettings.UseServerThumbs)
+					GenerateImages(MainDlg->FileList[i].FileName,ImageFileName,0,0, iss);
+
+				else
+					GenerateImages(MainDlg->FileList[i].FileName,ImageFileName,0,0, iss);*/
+			imageConverter.setGenerateThumb(GenThumb);
+			imageConverter.Convert(Utf8ToWCstring(fileName));
+			sourceFileName = WCstringToUtf8( imageConverter.getImageFileName() );
+			ThumbFileName = imageConverter.getThumbFileName();
+         if(!iss.upload_profile.KeepAsIs && sourceFileName != (fileName)) {
+				//MessageBox(ImageFileName);
+				tempFileDeleter_->AddFile(Utf8ToWCstring( sourceFileName ));
+				if(lstrlen(ThumbFileName)) {
+					tempFileDeleter_->AddFile(ThumbFileName);
+				}
+			}
+		}
+		else // if we upload any type of file
+		{
+			/*ImageFileName = Utf8ToWCstring(fileName);
+			CAbstractUploadEngine * fileUploadEngine = m_EngineList->getUploadEngine(FileServer);
+			if(!fileUploadEngine)
+			{
+				WriteLog(logError, _T("Custom Uploader"), _T("Cannot create file upload engine!"));
+//				continue;
+			}
+			e = fileUploadEngine;	*/	
+		}
+	//	uploadListView_.SetItemText(fps.tableRow, 2, _T("Начинаем з"));
+		FileName = Utf8ToWCstring(fileName);
+
+		if ( !IuCoreUtils::FileExists ( sourceFileName ) ) {
+			CString Buf;
+			Buf.Format(TR("Файл \"%s\" не найден."), (LPCTSTR)IuCoreUtils::Utf8ToWstring(sourceFileName).c_str());
+			WriteLog(logError, TR("Модуль загрузки"),Buf);
+		//	continue;
+		}
+
+		if(IsImage(Utf8ToWCstring(fileName))&& uploadEngineData->MaxFileSize && IuCoreUtils::getFileSize(sourceFileName)>static_cast<int64_t>(uploadEngineData->MaxFileSize))
+		{
+			CSizeExceed SE(Utf8ToWCstring(sourceFileName), iss,m_EngineList);
+
+			int res = SE.DoModal(m_hWnd);
+			if(res==IDOK || res==3 )
+			{
+				if(res==3) InitialParams = iss; // if user choose button USE FOR ALL
+
+//				i--;
+				//continue;
+			}
+		}
+		ShowProgress(true);
+
+		/*if(IsImage(Utf8ToWCstring(fileName)))
+			FileProgress(TR("Загрузка изображения.."));
+		else 
+			FileProgress(CString(TR("Загрузка файла")) + _T(" ") + myExtractFileName(Utf8ToWCstring(fileName)));*/
+
+		DirectUrl= _T("");
+		ThumbUrl = _T("");
+		
+//		CString virtualName = GetOnlyFileName(MainDlg->FileList[i].VirtualFileName)+_T(".")+GetFileExt(ImageFileName);
+	//	Uploader.setThumbnailWidth(thumbwidth);
+		
+		queueUploader_.setUploadSettings(e);
+
+		UploadTaskData * uploadTaskData = new UploadTaskData(newItem, false);
+		uploadListView_.SetItemText(fps.tableRow, 1, _T("Ожидание загрузки"));
+		queueUploader_.AddFile(sourceFileName, sourceFileName, uploadTaskData, e );
+
+		queueUploader_.start();
+
+		
+
+		if(ShouldStop()) {
+			return ThreadTerminated();
+		}
+
+
+					// Если мы не используем серверные превьюшки
+			if(IsImage(Utf8ToWCstring(fileName)) &&  !uploadEngineData->ImageUrlTemplate.empty() 
+				&& Settings.ThumbSettings.CreateThumbs 
+				&& (((!Settings.ThumbSettings.UseServerThumbs)||(!uploadEngineData->SupportThumbnails)) 
+				/*|| (lstrlen(ThumbUrl)<1)*/))
+			{
+//	thumb_retry:
+			//	FileProgress(TR("Загрузка миниатюры.."));
+			//	ShowProgress(true);
+				ThumbUrl = _T("");
+			/*	PrInfo.ip.Total=0;
+				PrInfo.Bytes.clear();
+				PrInfo.ip.Uploaded=0;
+				PrInfo.ip.IsUploading = false;*/
+				BOOL result = true
+					/*Uploader.UploadFile(WCstringToUtf8(ThumbFileName),WCstringToUtf8(myExtractFileName(ThumbFileName)))*/;
+				
+				UploadTaskData * uploadTaskData = new UploadTaskData(newItem, true);
+				newItem->needThumb = true;
+				CDefaultUploadEngine * thumbEngine = new CDefaultUploadEngine();
+				thumbEngine->setUploadData(uploadEngineData);
+				ServerSettingsStruct& settings = Settings.ServerByUtf8Name(uploadEngineData->Name);
+				thumbEngine->setServerSettings(settings);
+			//	MessageBox(_T("Need !!!"));
+				uploadListView_.SetItemText(fps.tableRow, 2, _T("Ожидание загрузки"));
+				queueUploader_.AddFile(WCstringToUtf8(ThumbFileName), WCstringToUtf8(myExtractFileName(ThumbFileName)), uploadTaskData, thumbEngine);
+				queueUploader_.start();
+				/*if(result)
+				{
+					ThumbUrl = Utf8ToWstring(Uploader.getDirectUrl()).c_str();
+				}*/
+				if(ShouldStop()) 
+					return ThreadTerminated();
+
+				/*if(!result && Settings.ShowUploadErrorDialog)
+				{
+					CString Err;
+					Err.Format(TR("Не удалось загрузить миниатюру к изображению \"%s\" на сервер. "), (LPCTSTR)MainDlg->FileList[i].FileName );
+					int res = MessageBox(Err,APPNAME, MB_ABORTRETRYIGNORE|MB_ICONERROR);
+					if(res == IDABORT) { ThreadTerminated();FileProgress(TR("Загрузка файлов прервана пользователем."), false);return 0;}
+					else if(res == IDRETRY)
+					{
+						goto thumb_retry;
+					}
+				}*/
+			}
+
+		/*if(!result)
+		{
+			CString Err;
+			Err.Format(TR("Не удалось загрузить файл \"%s\" на сервер. "), (LPCTSTR)MainDlg->FileList[i].FileName );
+			if(Settings.ShowUploadErrorDialog)
+			{
+				int res = MessageBox(Err,APPNAME, MB_ABORTRETRYIGNORE|MB_ICONERROR);
+				if(res == IDABORT) { ThreadTerminated();FileProgress(TR("Загрузка файлов прервана пользователем."), false);return 0;}
+				else if(res == IDRETRY)
+				{
+					i--;
+					continue;
+				}
+			}
+		}*/
+
+
+
+/*		if(result  &&  (!DirectUrl.IsEmpty() || !DownloadUrl.IsEmpty()))
+		{
+			if(uploadEngineData->SupportsFolders)
+			{
+//				ResultsWindow->AddServer(Utf8ToWCstring(ue->Name));
+			}
+
+			NumUploaded++;
+
+
+			PrInfo.ip.Total=0;
+			PrInfo.ip.Uploaded=0;
+			LastUpdate=0;
+
+
+			ShowProgress(false);
+			CUrlListItem item;
+			item.ImageUrl=_T("");
+			item.ThumbUrl=_T("");
+
+			item.ImageUrl = DirectUrl;
+			item.FileName = Utf8ToWCstring(fileName);
+			item.DownloadUrl = DownloadUrl;
+			if(CreateThumbs)
+				item.ThumbUrl = ThumbUrl;
+			ResultsWindow->Lock();
+			UrlList.Add(item);
+
+/*			CAbstractUploadEngine *upEngine = Uploader.getUploadEngine();
+			std::string serverName = ue->Name;
+			if(upEngine)
+				serverName = upEngine->getUploadData()->Name;
+			HistoryItem hi;
+			hi.localFilePath = WCstringToUtf8(item.FileName);
+			hi.serverName = serverName;
+			hi.directUrl =  WCstringToUtf8(DirectUrl);
+			hi.thumbUrl = WCstringToUtf8(item.ThumbUrl);
+			hi.viewUrl = WCstringToUtf8(item.DownloadUrl);
+			hi.uploadFileSize = IuCoreUtils::getFileSize(WCstringToUtf8(ImageFileName));
+			session.AddItem(hi);
+			
+			
+			//ResultsWindow->Unlock();
+		//	GenerateOutput();
+
+		}*/
+		ShowProgress(false);
+//		UploadProgress(i+1, n);
+//		wsprintf(szBuffer,_T("%d %%"),(int)((float)(i+1)/(float)n*100));
+//		SetDlgItemText(IDC_COMMONPERCENTS,szBuffer);
+
+//		ThumbUrl = _T("");
+		DirectUrl = _T("");
+
+		
+		iss = InitialParams;
+	
+}
+
+bool CUploadDlg::addNewFilesToUploadQueue() {
+	CUploadEngineData * uploadEngineData = 0;
+	int currentServerMaxThreads = 0;
+	int addedFileCount = 0;
+	do {
+		if ( fileProcessingQueue_.empty() ) {
+			break;
+		}
+		FileProcessingStruct nextProcessingItem = fileProcessingQueue_.front();
+		uploadEngineData =  nextProcessingItem.uploadEngineData;
+		currentServerMaxThreads = uploadEngineData->MaxThreadCount ? uploadEngineData->MaxThreadCount : 4;
+		getNextUploadItem();
+		addedFileCount ++;
+	} while ( queueUploader_.isSlotAvailableForServer( uploadEngineData->Name, currentServerMaxThreads ) );
+	return addedFileCount != 0;
 }

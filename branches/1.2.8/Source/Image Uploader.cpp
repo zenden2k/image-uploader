@@ -28,6 +28,8 @@
 #include "Common/CmdLine.h"
 #include "Func/Settings.h"
 
+#include <Core/3rdpart/base64.h>
+
 CAppModule _Module;
 
 bool IsProcessRunning(DWORD pid) {
@@ -134,6 +136,9 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {	
+	std::string str ="something"; 
+	std::string encodedString = base64_encode((const unsigned char*)str.c_str(), str.length());
+	MessageBoxA( 0, encodedString.c_str(), 0, 0);
 	OleInitialize(NULL);
 	HRESULT hRes ;
 

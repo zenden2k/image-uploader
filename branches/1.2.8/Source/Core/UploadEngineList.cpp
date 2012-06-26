@@ -72,7 +72,10 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename)
 			UE.Debug =   cur.AttributeBool("Debug");
 			UE.ImageHost =  !cur.AttributeBool("FileHost");
 			UE.MaxFileSize =   cur.AttributeInt("MaxFileSize");
-
+			UE.MaxThreadCount = cur.AttributeInt("MaxThreadCount");
+			if ( UE.MaxThreadCount <= 0 ) {
+				 UE.MaxThreadCount = 0;
+			}
 			std::vector<ZSimpleXmlNode> actions;
 			cur["Actions"].GetChilds("Action", actions);
 

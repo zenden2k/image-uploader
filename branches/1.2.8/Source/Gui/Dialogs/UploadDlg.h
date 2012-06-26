@@ -35,16 +35,21 @@
 #include "Gui/Dialogs/LogoSettings.h"
 #include "Gui/Dialogs/SizeExceed.h"
 #include "Gui/Dialogs/ResultsWindow.h"
+#include <Core/Upload/FileQueueUploader.h>
+#include <Func/HistoryManager.h>
 
+class CTempFilesDeleter;
 
 class CUploadDlg : public CDialogImpl<CUploadDlg>,
                    public CThreadImpl<CUploadDlg>, 
+						 public CFileQueueUploader::Callback,
 						 public CWizardPage	
 {
 	public:
 		CUploadDlg(CWizardDlg *dlg);
 		~CUploadDlg();
 		enum { IDD = IDD_UPLOADDLG };
+		enum {  IDC_UPLOADPROCESSTAB = WM_USER +100, IDC_UPLOADRESULTSTAB = IDC_UPLOADPROCESSTAB+1};
 		int TimerInc;
 		bool IsStopTimer;
 		bool Terminated;
@@ -52,8 +57,12 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		 BEGIN_MSG_MAP(CUploadDlg)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			MESSAGE_HANDLER(WM_TIMER, OnTimer)
-
-		END_MSG_MAP()
+			COMMAND_HANDLER(IDC_UPLOADPROCESSTAB, BN_CLICKED, OnUploadProcessButtonClick)
+			COMMAND_HANDLER(IDC_UPLOADRESULTSTAB, BN_CLICKED, OnUploadResultsButtonClick)
+			NOTIFY_HANDLER(IDC_UPLOADTABLE, LVN_ITEMCHANGED, OnLvnItemchangedUploadtable)
+			COMMAND_HANDLER(IDC_MEDIAFILEINFO, BN_CLICKED, OnBnClickedMediaInfo)
+			COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
+		 END_MSG_MAP()
 
 		 // Handler prototypes:
 		 //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -61,6 +70,10 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		 //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+		LRESULT OnUploadProcessButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnUploadResultsButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		 DWORD Run();
 		 CMainDlg *MainDlg;
 		 CResultsWindow *ResultsWindow;
@@ -76,14 +89,23 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		void GenThumb(LPCTSTR szImageFileName, Gdiplus::Image *bm, int ThumbWidth,int newwidth,int newheight,LPTSTR szBufferThumb, int fileformat);
 		bool CancelByUser;
 		void GenerateOutput();
-		void UploadProgress(int CurPos, int Total,int FileProgress=0);
+		//void UploadProgress(int CurPos, int Total,int FileProgress=0);
 		int progressCurrent, progressTotal;
 		CMyEngineList *m_EngineList;
 		CString m_StatusText;
 		bool OnUploaderNeedStop();
 		void OnUploaderProgress(InfoProgress pi);
 		void OnUploaderStatusChanged(StatusType status, int actionIndex, std::string text);
-		void OnUploaderConfigureNetworkClient(NetworkManager *nm);	
+	   bool OnConfigureNetworkManager(NetworkManager* nm);
+		bool OnUploadProgress(UploadProgress progress, UploadTask* task, NetworkManager* nm);
+
+//upload stuff
+		bool OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result);
+		bool OnQueueFinished();
+		void SetUploadProgress(int CurPos, int Total, int FileProgress);
+		void createToolbar();
+		void EnableMediaInfo(bool Enable);
+		CToolBarCtrl Toolbar;
 	protected:
 		struct CUploadDlgProgressInfo
 		{
@@ -95,6 +117,55 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		#if  WINVER	>= 0x0601
 				ITaskbarList3* ptl;
 		#endif
+		CFileQueueUploader queueUploader_;
+		CTempFilesDeleter*  tempFileDeleter_;
+		//CHistorySession session_;
+		ZThread::Mutex *mutex_;
+		int filesFinished_;
+		int currentTab_;
+
+		struct UploadItem {
+			UploadItem() {
+				fileUploaded = false;
+				thumbUploaded = false;
+				needThumb = false;
+				tableIndex = -1;
+			}
+			std::string fileName;
+			bool fileUploaded;
+			bool thumbUploaded;
+			bool needThumb;
+			CFileQueueUploader::FileListItem fileResult;
+			CFileQueueUploader::FileListItem thumbnailResult;
+			int tableIndex;
+			CUploadEngineData *uploadEngineData;
+		};
+
+		struct FileProcessingStruct {
+			std::string fileName;
+			CUploadEngineData *uploadEngineData;
+			int tableRow;
+		};
+
+		struct UploadTaskData {
+			UploadTaskData(UploadItem * item, bool isThumb) {
+				uploadItem = item;
+				this->isThumb = isThumb;
+			}
+			UploadItem *uploadItem;
+			bool isThumb;
+		};
+		
+		std::deque<UploadItem*> uploadItems_;
+		std::deque<FileProcessingStruct> fileProcessingQueue_;
+		CListViewCtrl uploadListView_;
+		void showUploadResultsTab();
+		void showUploadProgressTab();
+		bool getNextUploadItem();
+		bool addNewFilesToUploadQueue();
+		
+public:
+	LRESULT OnLvnItemchangedUploadtable(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandled*/);
 };
 
 

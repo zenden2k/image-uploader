@@ -28,34 +28,43 @@
 #endif
 #include "Core/Upload/Uploader.h"
 
-class CFileQueueUploader::Impl
-{
+struct ServerThreadsInfo {
+	//int maxThreads;
+	int runningThreads;
+	int waitingFileCount;
+};
+class CFileQueueUploader::Impl {
 	public:
 		Impl();
 		virtual ~Impl();
-		void AddFile(const std::string& fileName, const std::string& displayName, void* user_data);
+		void AddFile(const std::string& fileName, const std::string& displayName, void* user_data,CAbstractUploadEngine *uploadEngine);
+		void AddFile(UploadTask task);
 		void start();
 		virtual void run();
-		bool getNextJob(FileListItem* item);
+		bool getNextJob(UploadTask* item);
 
 		ZThread::Mutex mutex_;
+		ZThread::Mutex callMutex_;
 		Callback* callback_;
 		volatile bool m_NeedStop;
 		bool m_IsRunning;
 		CAbstractUploadEngine* m_engine;
 		ServerSettingsStruct m_serverSettings;
-		std::vector<FileListItem> m_fileList;
+		std::vector<UploadTask> m_fileList;
 		int m_nThreadCount;
 		int m_nRunningThreads;
-
+		friend class CFileQueueUploader;
 	protected:
 		class Runnable;
 		bool onNeedStopHandler();
 		void OnConfigureNetworkManager(NetworkManager* nm);
+		void onProgress(CUploader*, InfoProgress progress );
+		std::map<CUploader*, UploadTask*> tasks_;
+		std::map<std::string, ServerThreadsInfo> serverThreads_;
+		
 };
 
-class CFileQueueUploader::Impl::Runnable : public ZThread::Runnable
-{
+class CFileQueueUploader::Impl::Runnable : public ZThread::Runnable {
 	public:
 		CFileQueueUploader::Impl* uploader_;
 		Runnable(CFileQueueUploader::Impl* uploader)
@@ -71,32 +80,39 @@ class CFileQueueUploader::Impl::Runnable : public ZThread::Runnable
 
 /* private CFileQueueUploader::Impl class */
 
-CFileQueueUploader::Impl::Impl()
-{
+CFileQueueUploader::Impl::Impl() {
 	m_nThreadCount = 1;
 	callback_ = 0;
 	m_NeedStop = false;
 	m_IsRunning = false;
+	m_nRunningThreads = 0;
 	m_engine = 0;
 }
 
-CFileQueueUploader::Impl::~Impl()
-{
+CFileQueueUploader::Impl::~Impl() {
 }
 
-bool CFileQueueUploader::Impl::onNeedStopHandler()
-{
+bool CFileQueueUploader::Impl::onNeedStopHandler() {
 	return m_NeedStop;
+}
+
+void CFileQueueUploader::Impl::onProgress(CUploader* uploader, InfoProgress progress ) {
+	UploadProgress prog;
+	prog.totalUpload = progress.Total;
+	prog.uploaded    = progress.Uploaded;
+	if ( callback_ ) {
+		callback_->OnUploadProgress(prog, tasks_[uploader], 0);
+	}
 }
 
 void CFileQueueUploader::Impl::OnConfigureNetworkManager(NetworkManager* nm)
 {
-	if (callback_)
+	if (callback_) {
 		callback_->OnConfigureNetworkManager(nm);
+	}
 }
 
-bool CFileQueueUploader::Impl::getNextJob(FileListItem* item)
-{
+bool CFileQueueUploader::Impl::getNextJob(UploadTask* item) {
 	if (m_NeedStop)
 		return false;
 	std::string url;
@@ -112,26 +128,34 @@ bool CFileQueueUploader::Impl::getNextJob(FileListItem* item)
 	return result;
 }
 
-void CFileQueueUploader::Impl::AddFile(const std::string& fileName, const std::string& displayName, void* user_data)
-{
-	FileListItem newFileListItem;
-	newFileListItem.user_data = user_data;
-	newFileListItem.displayName = displayName;
-	newFileListItem.fileName = fileName;
-	newFileListItem.fileSize = IuCoreUtils::getFileSize(fileName);
-	m_fileList.push_back(newFileListItem);
+void CFileQueueUploader::Impl::AddFile(const std::string& fileName, const std::string& displayName, void* user_data, CAbstractUploadEngine *uploadEngine) {
+	UploadTask newTask;
+	newTask.userData = user_data;
+	newTask.displayFileName = displayName;
+	newTask.fileName = fileName;
+	newTask.uploadEngine = uploadEngine;
+	newTask.fileSize = IuCoreUtils::getFileSize(fileName);
+	newTask.serverName = uploadEngine->getUploadData()->Name;
+	AddFile( newTask );
 }
 
-void CFileQueueUploader::Impl::start()
-{
+void CFileQueueUploader::Impl::start() {
+	mutex_.acquire();
 	m_NeedStop = false;
 	m_IsRunning = true;
-	int numThreads = std::min<int>(size_t(m_nThreadCount), m_fileList.size());
-	m_nRunningThreads = numThreads;
+	int numThreads = std::min<int>(size_t(m_nThreadCount-m_nRunningThreads), m_fileList.size());
+	
 	for (int i = 0; i < numThreads; i++)
 	{
+		m_nRunningThreads++;
 		ZThread::Thread t1(new Runnable(this)); // starting new thread
 	}
+	mutex_.release();
+}
+
+void CFileQueueUploader::Impl::AddFile(UploadTask task){
+	m_fileList.push_back(task);
+	serverThreads_[task.serverName].waitingFileCount++;
 }
 
 void CFileQueueUploader::Impl::run()
@@ -144,39 +168,57 @@ void CFileQueueUploader::Impl::run()
 #endif
 	for (;; )
 	{
-		CFileQueueUploader::FileListItem it;
+		UploadTask it;
 		if (!getNextJob(&it))
 			break;
-		uploader.setUploadEngine(m_engine);
-		uploader.onNeedStop.bind(this, &Impl::onNeedStopHandler);
-		bool res = uploader.UploadFile(it.fileName, it.displayName.c_str());
-		mutex_.acquire();
-		// m_CS.Lock();
+		serverThreads_[it.serverName].waitingFileCount--;
 
-		if (res)
-		{
-			it.imageUrl = (uploader.getDirectUrl());
-			it.downloadUrl = (uploader.getDownloadUrl());
-			it.thumbUrl = (uploader.getThumbUrl());
-			if (callback_)
-				callback_->OnFileFinished(true, it);
+		std::string serverName = it.serverName;
+		serverThreads_[serverName].runningThreads ++;	
+		uploader.setUploadEngine(it.uploadEngine);
+		uploader.onNeedStop.bind(this, &Impl::onNeedStopHandler);
+		uploader.onProgress.bind(this, &Impl::onProgress);
+		mutex_.acquire();
+		tasks_[&uploader] = &it;
+mutex_.release();
+		bool res = uploader.UploadFile(it.fileName, it.displayFileName.c_str());
+
+		mutex_.acquire();
+		serverThreads_[serverName].runningThreads --;
+		mutex_.release();
+		
+		// m_CS.Lock();
+		callMutex_.acquire();
+		FileListItem result;
+		result.uploadTask = &it;
+		if (res) {
+			
+			result.imageUrl = (uploader.getDirectUrl());
+			result.downloadUrl = (uploader.getDownloadUrl());
+			result.thumbUrl = (uploader.getThumbUrl());
+			if (callback_) {
+				callback_->OnFileFinished(true, result);
+			}
 		}
 		else
 		{
-			if (callback_)
-				callback_->OnFileFinished(false, it);
+			if (callback_) {
+				callback_->OnFileFinished(false, result);
+			}
 		}
-		mutex_.release();
+		callMutex_.release();
 	}
 	mutex_.acquire();
 	m_nRunningThreads--;
+	mutex_.release();
 	if (!m_nRunningThreads)
 	{
 		m_IsRunning = false;
-		if (callback_)
+		if (callback_) {
 			callback_->OnQueueFinished();
+		}
 	}
-	mutex_.release();
+	
 }
 
 /* public CFileQueueUploader class */
@@ -186,9 +228,9 @@ CFileQueueUploader::CFileQueueUploader()
 	_impl = new Impl();
 }
 
-void CFileQueueUploader::AddFile(const std::string& fileName, const std::string& displayName, void* user_data)
+void CFileQueueUploader::AddFile(const std::string& fileName, const std::string& displayName, void* user_data, CAbstractUploadEngine *uploadEngine)
 {
-	_impl->AddFile(fileName, displayName, user_data);
+	_impl->AddFile(fileName, displayName, user_data, uploadEngine);
 }
 
 bool CFileQueueUploader::start()
@@ -207,8 +249,7 @@ void CFileQueueUploader::stop()
 	_impl->m_NeedStop = true;
 }
 
-bool CFileQueueUploader::IsRunning() const
-{
+bool CFileQueueUploader::IsRunning() const {
 	return _impl->m_IsRunning;
 }
 
@@ -217,7 +258,16 @@ void CFileQueueUploader::setUploadSettings(CAbstractUploadEngine* engine)
 	_impl->m_engine = engine;
 }
 
-CFileQueueUploader::~CFileQueueUploader()
-{
+CFileQueueUploader::~CFileQueueUploader() {
 	delete _impl;
+}
+
+
+void CFileQueueUploader::setMaxThreadCount(int threadCount) {
+	_impl->m_nThreadCount = threadCount;
+}
+
+bool CFileQueueUploader::isSlotAvailableForServer(std::string serverName, int maxThreads) {
+	int threads = _impl->serverThreads_[serverName].runningThreads + _impl->serverThreads_[serverName].waitingFileCount;
+	return threads < maxThreads && threads < _impl->m_nThreadCount;
 }

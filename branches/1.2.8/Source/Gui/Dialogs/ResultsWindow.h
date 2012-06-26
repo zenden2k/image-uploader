@@ -51,7 +51,7 @@ class CResultsWindow:	 public CDialogIndirectImpl<CResultsWindow>
 		void FinishUpload();
 		void Lock();
 		void Unlock();
-		void EnableMediaInfo(bool Enable);
+	
 		DLGTEMPLATE* GetTemplate();
 		void setUrlList(CAtlArray<CUrlListItem>  * urlList);
 		enum { IDD = IDD_RESULTSWINDOW };

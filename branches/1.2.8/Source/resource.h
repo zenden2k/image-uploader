@@ -442,6 +442,8 @@
 #define IDC_CHECK1                      1272
 #define IDC_AUTOSTARTUP                 1272
 #define IDC_VIDEOENGINECOMBO            1273
+#define IDC_UPLOADTABLE                 1274
+#define IDC_UPLOADGROUPBOX              1276
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -483,7 +485,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        256
 #define _APS_NEXT_COMMAND_VALUE         32799
-#define _APS_NEXT_CONTROL_VALUE         1274
+#define _APS_NEXT_CONTROL_VALUE         1277
 #define _APS_NEXT_SYMED_VALUE           127
 #endif
 #endif

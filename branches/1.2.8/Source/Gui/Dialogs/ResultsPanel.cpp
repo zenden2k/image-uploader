@@ -22,10 +22,11 @@
 #include <uxtheme.h>
 #include "atlheaders.h"
 #include "Core/3rdpart/pcreplusplus.h"
-#include "mediainfodlg.h"
+
 #include "LogWindow.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
+#include "UploadSettings.h"
 
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg,CAtlArray<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)
@@ -125,8 +126,8 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	
 	bool IsLastVideo = false;
 
-	Toolbar.AddButton(IDC_MEDIAFILEINFO, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Инфо о последнем видео"), 0);
-	Toolbar.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Лог ошибок"), 0);
+	//Toolbar.AddButton(IDC_MEDIAFILEINFO, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Инфо о последнем видео"), 0);
+	//Toolbar.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Лог ошибок"), 0);
 	Toolbar.AddButton(IDC_OPTIONSMENU, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Опции"), 0);
 	
 	if(!IsLastVideo) 
@@ -433,20 +434,6 @@ LRESULT  CResultsPanel::OnEditChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	return 0;
  }
 
-LRESULT CResultsPanel::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	if(!*WizardDlg->LastVideoFile) return 0;
-	CMediaInfoDlg dlg ;
-	dlg.ShowInfo(WizardDlg->LastVideoFile);
-	return 0;
-	
-}
-	
-LRESULT CResultsPanel::OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{	
-	LogWindow.Show();
-	return 0;
-}
 
 int CResultsPanel::GetCodeType()
 {
@@ -465,10 +452,7 @@ void CResultsPanel::Clear()
 	SetDlgItemText(IDC_CODEEDIT, _T(" "));
 }
 
-void  CResultsPanel::EnableMediaInfo(bool Enable)
-{
-	Toolbar.HideButton(IDC_MEDIAFILEINFO,!Enable);
-}
+
 
 bool CResultsPanel::LoadTemplates(CString &Error)
 {
