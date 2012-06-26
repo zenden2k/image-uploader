@@ -21,6 +21,7 @@
 #include <math.h>
 #include <curl/curl.h>
 #include <iostream>
+
 #include "Core/Upload/Uploader.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Network/NetworkManager.h"
@@ -73,7 +74,7 @@ void destr()
 
 }
 
-void OnProgress(InfoProgress info)
+void OnProgress(CUploader *uploader, InfoProgress info)
 {
     int totaldotz=40;
     if(info.Total == 0)

@@ -107,7 +107,7 @@ struct ServerSettingsStruct
 		else result = params[name.c_str()];
 		return result;
 	}
-
+ 
 	void setParam(const std::string& name, const std::string& value)
 	{
 		params[name] = value;
@@ -126,6 +126,7 @@ class CUploadEngineData
 		bool SupportThumbnails;
 		int NeedAuthorization;
 		int64_t MaxFileSize;
+		unsigned int MaxThreadCount;
 		std::string RegistrationUrl;
 		std::string CodedLogin;
 		std::string CodedPassword;

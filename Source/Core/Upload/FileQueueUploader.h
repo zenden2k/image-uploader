@@ -27,6 +27,24 @@
 
 class NetworkManager;
 
+class UploadTask {
+public:
+	std::string fileName;
+	std::string displayFileName; // without path
+	void *userData;
+	int64_t fileSize;
+	CAbstractUploadEngine *uploadEngine;
+	std::string serverName;
+	//FullUploadProfile fullUploadProfile;
+};
+
+class UploadProgress {
+public:
+	std::string statusText;
+	int stage;
+	int64_t uploaded;
+	int64_t totalUpload;
+};
 class CFileQueueUploader
 {
 	public:
@@ -38,7 +56,8 @@ class CFileQueueUploader
 			std::string thumbUrl;
 			std::string downloadUrl;
 			int64_t fileSize;
-			void * user_data;
+			UploadTask * uploadTask;
+			//void * user_data;
 		};
 
 		class Callback
@@ -47,16 +66,20 @@ class CFileQueueUploader
 			virtual bool OnFileFinished(bool ok, FileListItem& result){return true;}
 			virtual bool OnQueueFinished() { return true;}
 			virtual bool OnConfigureNetworkManager(NetworkManager* nm){return true;}
+			virtual bool OnUploadProgress(UploadProgress progress, UploadTask* task, NetworkManager* nm){return true;}
 		};
 
 		CFileQueueUploader();
-		void AddFile(const std::string& fileName, const std::string& displayName, void* user_data);
+		void AddFile(const std::string& fileName, const std::string& displayName, void* user_data, CAbstractUploadEngine *uploadEngine);
+		void AddFile(UploadTask task);
 		void setUploadSettings(CAbstractUploadEngine * engine);
 		void setCallback(Callback* callback);
 		~CFileQueueUploader();
 		bool start();
 		void stop();
 		bool IsRunning() const;
+		void setMaxThreadCount(int threadCount);
+		bool isSlotAvailableForServer(std::string serverName, int maxThreads);
 	private:
 		CFileQueueUploader(const CFileQueueUploader&);
 		class Impl;

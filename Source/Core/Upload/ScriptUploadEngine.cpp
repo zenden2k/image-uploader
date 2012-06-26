@@ -34,7 +34,9 @@
 #include "Core/3rdpart/codepages.h"
 
 #include "Core/Utils/CryptoUtils.h"
+#ifndef IU_CLI
 #include "gui/Dialogs/LogWindow.h"
+#endif
 
 using namespace SqPlus;
 // Squirrel types should be defined in the same module where they are used
@@ -302,7 +304,9 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		RegisterGlobal(&CryptoUtils::CalcSHA1HashFromFile, "sha1_file");
 		srand(static_cast<unsigned int>(time(0)));
 
+#ifndef IU_CLI
 		RegisterGlobal(DefaultErrorHandling::DebugMessage, "DebugMessage" );
+#endif
 
 		BindVariable(m_Object, &params, "ServerParams");
 

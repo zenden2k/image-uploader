@@ -68,7 +68,7 @@
 			
 		<Result ImageUrlTemplate="http://s$(ServID).itrash.ru/idb$(ItemPath)$(ItemImage)" ThumbUrlTemplate="http://s$(ServID).itrash.ru/idb$(ItemPath)t$(ItemImage)"/>
 	</Server>-->
-	<Server Name="imgur.com" MaxFileSize="10485760"  Authorize="0" Debug="0">
+	<Server Name="imgur.com" MaxFileSize="10485760"  Authorize="0" Debug="0" MaxThreads="1">
 		<Actions>
 			<Action Type="login" Url="http://imgur.com/signin" PostParams="username=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="0" Description="Authorization on imgur.com"/>
 			<Action Type="upload" Url="http://imgur.com/api/upload.xml" PostParams="image=%filename%;key=2dd16e2e19119996855ae9312b7a1305;" RegExp='&lt;original_image&gt;(.*?)&lt;\/original_image&gt;([\s\S]*?)&lt;small_thumbnail>(.*?)&lt;\/small_thumbnail&gt;' AssignVars="Image:0;Thumb:2"/>
@@ -130,6 +130,9 @@
 	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
 <Server Name="Dropbox" FileHost="1" Debug="0"  Authorize="0" Plugin="dropbox" SupportsFolders="1">
+	<Result ImageUrlTemplate="stub" />
+	</Server>
+<Server Name="Yandex.Disk" FileHost="1" Debug="0"  Authorize="1" Plugin="yandexdisk" SupportsFolders="1">
 	<Result ImageUrlTemplate="stub" />
 	</Server>
 	<!--<Server Name="expic.ru" Authorize="1">

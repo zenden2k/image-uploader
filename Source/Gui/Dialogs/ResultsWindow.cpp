@@ -129,11 +129,6 @@ void CResultsWindow::Clear()
 	ResultsPanel->Clear();
 }
 
-void CResultsWindow::EnableMediaInfo(bool Enable)
-{
-	ResultsPanel->EnableMediaInfo(Enable);
-}
-
 void CResultsWindow::SetPage(int Index)
 {
 	TabCtrl_SetCurSel(GetDlgItem(IDC_RESULTSTAB), Index);
