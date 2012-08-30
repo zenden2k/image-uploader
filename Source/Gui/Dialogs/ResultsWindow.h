@@ -32,6 +32,7 @@
 #include "resource.h"       
 #include "ResultsPanel.h"
 #include "Gui/Controls/DialogIndirect.h"
+#include <Func/CommonTypes.h>
 
 class CResultsWindow:	 public CDialogIndirectImpl<CResultsWindow>								
 {

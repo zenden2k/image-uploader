@@ -27,6 +27,9 @@
 #include "ResultsPanel.h"
 #include "ResultsWindow.h"
 #include "Gui/WizardCommon.h"
+#include <Func/WinUtils.h>
+#include <Func/Myutils.h>
+#include <Func/Common.h>
 
 // CHistoryWindow
 CHistoryWindow::CHistoryWindow()
@@ -73,7 +76,7 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	
 	std::vector<CString> files;
 	historyFolder = Settings.SettingsFolder+_T("\\History\\");
-	GetFolderFileList(files, historyFolder , _T("history*.xml"));
+	WinUtils::GetFolderFileList(files, historyFolder , _T("history*.xml"));
 	for(size_t i=0; i<files.size(); i++)
 	{
 		m_HistoryFiles.push_back(files[i]);
@@ -233,16 +236,16 @@ LRESULT CHistoryWindow::OnCopyToClipboard(WORD wNotifyCode, WORD wID, HWND hWndC
 	if(!item) return 0;
 	HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
 	std::string url = historyItem->directUrl.length()?historyItem->directUrl:historyItem->viewUrl;
-	IU_CopyTextToClipboard(Utf8ToWCstring(url));
+	WinUtils::CopyTextToClipboard(Utf8ToWCstring(url));
 	return 0;
 }
 
 CUrlListItem fromHistoryItem(HistoryItem historyItem)
 {
 	CUrlListItem it;
-	it.ImageUrl = Utf8ToWstring(historyItem.directUrl).c_str();
-	it.ThumbUrl =  Utf8ToWstring(historyItem.thumbUrl).c_str();
-	it.DownloadUrl = Utf8ToWstring(historyItem.viewUrl).c_str();
+	it.ImageUrl = IuCoreUtils::Utf8ToWstring(historyItem.directUrl).c_str();
+	it.ThumbUrl =  IuCoreUtils::Utf8ToWstring(historyItem.thumbUrl).c_str();
+	it.DownloadUrl = IuCoreUtils::Utf8ToWstring(historyItem.viewUrl).c_str();
 	return it;
 }
 

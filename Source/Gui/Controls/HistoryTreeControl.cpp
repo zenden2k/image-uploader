@@ -19,12 +19,13 @@
 */
 
 #include "HistoryTreeControl.h"
-#include "Func/Myutils.h"
+
 #include "Core/Utils/CoreUtils.h"
 #include "Func/Common.h"
 #include "Func/Base.h"
 #include "Gui/GuiTools.h"
-
+#include <Func/WinUtils.h>
+#include "Func/Myutils.h"
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl()
 {
@@ -140,7 +141,7 @@ HICON CHistoryTreeControl::getIconForExtension(const CString& ext)
 	{
 		return m_fileIconCache[ext];
 	}
-	HICON res = GetAssociatedIcon(ext, false);
+	HICON res = WinUtils::GetAssociatedIcon(ext, false);
 	if(!res) return 0;
 	m_fileIconCache[ext]=res;
 	return res;
@@ -210,7 +211,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
 	RECT gradientLineRect = invRC;
 	gradientLineRect.bottom--;
 	gradientLineRect.top = gradientLineRect.bottom;
-	if(draw) ZGuiTools::FillRectGradient(hdc, gradientLineRect,0xc8c8c8, 0xFFFFFF, true);
+	if(draw) GuiTools::FillRectGradient(hdc, gradientLineRect,0xc8c8c8, 0xFFFFFF, true);
 	
 	calcRect = rc;
 	DrawText(dc.m_hDC, Utf8ToWCstring(lowText), lowText.length(), &calcRect, DT_CALCRECT);
@@ -376,13 +377,13 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
 			dc.FrameRect(&thumbRect, br);
 		HistoryItem * it2 = getItemData(item);
 		std::string fileName = IuCoreUtils::ExtractFileName(it2->localFilePath);
-		CString ext = Utf8ToWstring(IuCoreUtils::ExtractFileExt(fileName)).c_str();
+		CString ext = IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFileExt(fileName)).c_str();
 		
 		CString iconSourceFileName = Utf8ToWCstring(it2->localFilePath);
 		if(iconSourceFileName.IsEmpty())
 			iconSourceFileName = Utf8ToWCstring(it2->directUrl);
 		HICON ico = getIconForExtension(iconSourceFileName);
-		CString text = Utf8ToWstring(fileName).c_str();
+		CString text = IuCoreUtils::Utf8ToWstring(fileName).c_str();
 		int iconWidth= 32;
 		int iconHeight = 32;
 		HistoryTreeItem * hti  = reinterpret_cast<HistoryTreeItem*>(item->userData());
@@ -606,11 +607,11 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * ItemID)
 			Font font(L"Tahoma", 8, FontStyleRegular );
 			LPCTSTR Filename = filename;
 			WCHAR Buffer[256];
-			int f = MyGetFileSize(filename);
+			int64_t f = IuCoreUtils::getFileSize( WCstringToUtf8( filename ) );
 			WCHAR buf2[25];
-			NewBytesToString(f, buf2, 25);
+			WinUtils::NewBytesToString(f, buf2, 25);
 			WCHAR FileExt[25];
-			lstrcpy(FileExt, GetFileExt(Filename));
+			lstrcpy(FileExt, WinUtils::GetFileExt(Filename));
 			if(!lstrcmpi(FileExt, _T("jpg"))) 
 				lstrcpy(FileExt,_T("JPEG"));
 			if(IsImage(filename) && bm)

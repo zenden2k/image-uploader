@@ -24,6 +24,8 @@
 #include "hotkeyeditor.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
+#include <Func/Myutils.h>
+#include <Func/WinUtils.h>
 
 // CHotkeySettingsPage
 CHotkeySettingsPage::CHotkeySettingsPage()
@@ -129,8 +131,8 @@ LRESULT CHotkeySettingsPage::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
 		::ScreenToClient(hwnd, &ClientPoint);
 	}
 	HMENU TrayMenu = ::CreatePopupMenu();
-	ZGuiTools::IUInsertMenu(TrayMenu, 0, IDM_CLEARHOTKEY, TR("Очистить")); 
-	ZGuiTools::IUInsertMenu(TrayMenu, 1, IDM_CLEARALLHOTKEYS, TR("Очистить всё")); 
+	GuiTools::InsertMenu(TrayMenu, 0, IDM_CLEARHOTKEY, TR("Очистить")); 
+	GuiTools::InsertMenu(TrayMenu, 1, IDM_CLEARALLHOTKEYS, TR("Очистить всё")); 
 	::TrackPopupMenu(TrayMenu, TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, 0,m_hWnd,0);
 	return 0;
 }
@@ -258,7 +260,7 @@ bool CHotkeyList::DeSerialize(const CString &data)
 	TCHAR hotkey[200];
 	int i =0;
 	
-	while(ExtractStrFromList(
+	while(WinUtils::ExtractStrFromList(
            data /* Source string */,
             i++, /* Zero based item index */
             hotkey /* Destination buffer */,
@@ -269,7 +271,7 @@ bool CHotkeyList::DeSerialize(const CString &data)
 		TCHAR funcName[30];
 		TCHAR localKeyStr[20],globalKeyStr[20];
 
-		ExtractStrFromList(hotkey , 0, funcName,sizeof(funcName)/sizeof(TCHAR), _T(""),_T('='));
+		WinUtils::ExtractStrFromList(hotkey , 0, funcName,sizeof(funcName)/sizeof(TCHAR), _T(""),_T('='));
 		//(*this)[i].localKey.DeSerialize(localKeyStr);
 
 		int cur = getFuncIndex(funcName);
@@ -277,13 +279,13 @@ bool CHotkeyList::DeSerialize(const CString &data)
 		
 		//(*this)[i].func = funcName;
 
-		ExtractStrFromList(hotkey , 1, funcName,sizeof(funcName)/sizeof(TCHAR), _T(""),_T('='));
+		WinUtils::ExtractStrFromList(hotkey , 1, funcName,sizeof(funcName)/sizeof(TCHAR), _T(""),_T('='));
 		(*this)[cur].localKey.DeSerialize(localKeyStr);
 
-		ExtractStrFromList(funcName , 0, localKeyStr,sizeof(localKeyStr)/sizeof(TCHAR), _T(""),_T(','));
+		WinUtils::ExtractStrFromList(funcName , 0, localKeyStr,sizeof(localKeyStr)/sizeof(TCHAR), _T(""),_T(','));
 		(*this)[cur].localKey.DeSerialize(localKeyStr);
 		
-		ExtractStrFromList(funcName ,1, globalKeyStr ,sizeof(globalKeyStr)/sizeof(TCHAR),_T(""),_T(','));
+		WinUtils::ExtractStrFromList(funcName ,1, globalKeyStr ,sizeof(globalKeyStr)/sizeof(TCHAR),_T(""),_T(','));
 		(*this)[cur].globalKey.DeSerialize(globalKeyStr);
 		
 	}

@@ -26,10 +26,6 @@
 const int LLB_VertDivider = 10;
 const int LLB_VertMargin = 5;
 
-HFONT MakeFontBold(HFONT font);
-
-HFONT MakeFontUnderLine(HFONT font);
-
 // CLogListBox
 CLogListBox::CLogListBox()
 {
@@ -69,7 +65,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
 		if(dis->itemState & ODS_SELECTED )
 		{
 			CRect rd(dis->rcItem);
-			ZGuiTools::FillRectGradient(dis->hDC,rd,0xEAE2D9, 0xD3C1AF, false);
+			GuiTools::FillRectGradient(dis->hDC,rd,0xEAE2D9, 0xD3C1AF, false);
 		}
 		else if(dis->itemID != GetCount()-1) // If it isn't last item
 		{
@@ -210,9 +206,9 @@ BOOL  CLogListBox::SubclassWindow(HWND hWnd)
 
 void CLogListBox::Init()
 {
-	NormalFont = GetFont();
-	UnderlineFont =  MakeFontUnderLine(NormalFont);
-	BoldFont = MakeFontBold(NormalFont);
+	NormalFont    = GetFont();
+	UnderlineFont = GuiTools::MakeFontUnderLine(NormalFont);
+	BoldFont	     = GuiTools::MakeFontBold(NormalFont);
 }
 
 LRESULT CLogListBox::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)

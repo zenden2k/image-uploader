@@ -22,6 +22,7 @@
 #include "MediaInfoDlg.h"
 #include "Func/fileinfohelper.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
 
 // CMediaInfoDlg
 CMediaInfoDlg::CMediaInfoDlg()
@@ -37,7 +38,7 @@ CMediaInfoDlg::~CMediaInfoDlg()
 LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	CenterWindow(GetParent());
-	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_FILEINFOLABEL));
+	GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEINFOLABEL));
 	DlgResize_Init(false, true, 0); // resizable dialog without "griper"
 
 	// Translating controls' text
@@ -73,8 +74,8 @@ void CMediaInfoDlg::ShowInfo(LPCTSTR FileName)
 
 DWORD CMediaInfoDlg::Run()
 {
-	CString  ShortFileName = TrimString(myExtractFileName(m_FileName), 40);
-	if(!FileExists(m_FileName))
+	CString  ShortFileName = WinUtils::TrimString(WinUtils::myExtractFileName(m_FileName), 40);
+	if(!WinUtils::FileExists(m_FileName))
 	{ 
 		SetDlgItemText(IDC_FILEINFOLABEL, CString(TR("Ошибка:")));
 		SetDlgItemText(IDC_FILEINFOEDIT, CString(TR("Файл \"")) + ShortFileName + TR("\" не найден!"));

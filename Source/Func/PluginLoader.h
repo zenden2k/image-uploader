@@ -26,8 +26,6 @@
 #include "Core/Network/NetworkManager.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Core/Utils/CoreUtils.h"
-#include "Func/MyUtils.h"
-#include "Func/Common.h"
 
 class CPluginManager
 {

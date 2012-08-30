@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "atlheaders.h"
+
 #include "SettingsDlg.h"
 #include "langselect.h"
 #include "traysettings.h"
@@ -28,6 +28,7 @@
 #include "generalsettings.h"
 #include "uploadSettingsPage.h"
 #include "VideoGrabberParams.h"
+#include <Gui/Dialogs/NetworkSettingsPage.h>
 
 // CSettingsDlg
 CSettingsDlg::CSettingsDlg(int Page)
@@ -60,6 +61,7 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	m_SettingsPagesListBox.AddString(TR("Снимок экрана"));
 	m_SettingsPagesListBox.AddString(TR("Видео"));
 	m_SettingsPagesListBox.AddString(TR("Загрузка"));
+	m_SettingsPagesListBox.AddString(TR("Сеть"));
 	m_SettingsPagesListBox.AddString(TR("Трей"));
 	m_SettingsPagesListBox.AddString(TR("Горячие клавиши"));
 	// set icons
@@ -203,15 +205,21 @@ bool CSettingsDlg::CreatePage(int PageID)
 		Pages[PageID]->PageWnd=dlg->m_hWnd;
 	}
 
-
 	if(PageID==6)
+	{
+		CNetworkSettingsPage *dlg = new CNetworkSettingsPage();
+		Pages[PageID]= dlg;
+		dlg->Create(m_hWnd,rc);
+		Pages[PageID]->PageWnd=dlg->m_hWnd;
+	}
+	if(PageID==7)
 	{
 		CTraySettingsPage *dlg = new CTraySettingsPage();
 		Pages[PageID]= dlg;
 		dlg->Create(m_hWnd,rc);
 		Pages[PageID]->PageWnd=dlg->m_hWnd;
 	}
-	else if(PageID==7)
+	else if(PageID==8)
 	{
 		CHotkeySettingsPage *dlg = new CHotkeySettingsPage();
 		Pages[PageID]= dlg;

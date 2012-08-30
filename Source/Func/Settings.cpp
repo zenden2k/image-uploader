@@ -27,22 +27,54 @@
 #include "3rdpart/Registry.h"
 #include <Core/Utils/StringUtils.h>
 #include <Core/Video/VideoUtils.h>
+#include <Func/WinUtils.h>
+#include <Func/Common.h>
+
+#define VIDEO_FORMATS _T("avi\0mpg\0mpeg\0vob\0divx\0flv\0wmv\0asf\0mkv\0mov\0ts\0mp2\0mp4\0")_T("3gp\0rm\0mpeg2ts\0\0")
 
 #ifndef IU_SERVERLISTTOOL
 	#include "Gui/Dialogs/FloatingWindow.h"
 #endif
 
-#ifndef CheckBounds
-	#define CheckBounds(n, a, b, d) {if ((n < a) || (n > b)) n = d; }
-#endif
-
 #define SETTINGS_FILE_NAME _T("settings.xml")
 
- const TCHAR CSettings::VideoEngineDirectshow[] = _T("Directshow");
- const TCHAR CSettings::VideoEngineFFmpeg[]     = _T("FFmpeg");
- const TCHAR CSettings::VideoEngineAuto[]       = _T("Auto");
-/* CString support for  SettingsManager */
+const TCHAR CSettings::VideoEngineDirectshow[] = _T("Directshow");
+const TCHAR CSettings::VideoEngineFFmpeg[]     = _T("FFmpeg");
+const TCHAR CSettings::VideoEngineAuto[]       = _T("Auto");
 
+ServerProfile::ServerProfile() {
+
+}
+
+ServerProfile::ServerProfile(CString newServerName){
+	serverName_ = newServerName;
+}
+
+void ServerProfile::setProfileName(CString newProfileName) {
+	profileName_ = newProfileName;
+}
+
+CString ServerProfile::profileName() const {
+	return profileName_;
+}
+
+void ServerProfile::setServerName(CString newServerName){
+	serverName_ = newServerName;
+}
+
+CString ServerProfile::serverName() const {
+	return serverName_;
+}
+
+ServerSettingsStruct ServerProfile::serverSettings() {
+	return Settings.ServersSettings[serverName_][profileName_];
+}
+
+CUploadEngineData* ServerProfile::uploadEngineData() const {
+	return _EngineList->byName(serverName_);
+}
+
+ /* CString support for  SettingsManager */
 inline std::string myToString(const CString& value)
 {
 	return WCstringToUtf8(value);
@@ -66,14 +98,14 @@ template<class T> void myFromString(const std::string& text,  EnumWrapper<T>& va
 /* LOGFONT serialization support */
 inline std::string myToString(const LOGFONT& value) {
 	CString res;
-	FontToString( &value, res );
+	WinUtils::FontToString( &value, res );
 	return WCstringToUtf8(res);
 }
 
 inline void myFromString(const std::string& text, LOGFONT& value) {
 	CString wide_text = Utf8ToWCstring(text);
 	LOGFONT font;
-	StringToFont(wide_text, &font);
+	WinUtils::StringToFont(wide_text, &font);
 	value = font;
 }
 
@@ -101,7 +133,7 @@ void RunIuElevated(CString params) {
 
 	TCHAR buf[MAX_PATH];
 	GetModuleFileName( 0, buf, MAX_PATH - 1 );
-	CString s = GetAppFolder();
+	CString s = WinUtils::GetAppFolder();
 
 	CString Command = CString(buf);
 	TempInfo.cbSize       = sizeof(SHELLEXECUTEINFOA);
@@ -125,7 +157,7 @@ void ApplyRegistrySettings() {
 
 	TCHAR buf[MAX_PATH];
 	GetModuleFileName( 0, buf, MAX_PATH - 1 );
-	CString s = GetAppFolder();
+	CString s = WinUtils::GetAppFolder();
 
 	CString Command = CString(buf);
 	TempInfo.cbSize       = sizeof(SHELLEXECUTEINFOA);
@@ -141,13 +173,13 @@ void ApplyRegistrySettings() {
 }
 
 CString CSettings::getShellExtensionFileName() const {
-	CString file = GetAppFolder() + (IsWindows64Bit() ? _T("ExplorerIntegration64.dll") : _T("ExplorerIntegration.dll"));
+	CString file = WinUtils::GetAppFolder() + (WinUtils::IsWindows64Bit() ? _T("ExplorerIntegration64.dll") : _T("ExplorerIntegration.dll"));
 	return file;
 }
 
 void RegisterShellExtension(bool Register) {
 	CString moduleName = Settings.getShellExtensionFileName();
-	if ( !FileExists( moduleName ) ) {
+	if ( !WinUtils::FileExists( moduleName ) ) {
 		return;
 	}
 
@@ -161,13 +193,13 @@ void RegisterShellExtension(bool Register) {
 	}
 
 	SHELLEXECUTEINFO TempInfo = {0};
-	CString s = GetAppFolder();
+	CString s = WinUtils::GetAppFolder();
 	TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
 	TempInfo.fMask  = SEE_MASK_NOCLOSEPROCESS;
 	TempInfo.hwnd   = NULL;
 	BOOL b = FALSE;
-	IsElevated( &b );
-	if ( IsVista() && !b ) {
+
+	if ( WinUtils::IsVista() && !WinUtils::IsElevated() ) {
 		TempInfo.lpVerb = _T("runas");
 	} else {
 		TempInfo.lpVerb = _T("open");
@@ -187,13 +219,13 @@ void RegisterShellExtension(bool Register) {
 */
 void CSettings::FindDataFolder()
 {
-	if (IsDirectory(GetAppFolder() + _T("Data"))) {
-		DataFolder     = GetAppFolder() + _T("Data\\");
+	if (WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"))) {
+		DataFolder     = WinUtils::GetAppFolder() + _T("Data\\");
 		SettingsFolder = DataFolder;
 		return;
 	}
 
-	SettingsFolder =  GetApplicationDataPath() + _T("\\Image Uploader\\");
+	SettingsFolder =  WinUtils::GetApplicationDataPath() + _T("\\Image Uploader\\");
 	{
 		CRegistry Reg;
 		CString lang;
@@ -203,7 +235,7 @@ void CSettings::FindDataFolder()
 		{
 			CString dir = Reg.ReadString("DataPath");
 
-			if (!dir.IsEmpty() && IsDirectory(dir))
+			if (!dir.IsEmpty() && WinUtils::IsDirectory(dir))
 			{
 				DataFolder = dir;
 				return;
@@ -217,7 +249,7 @@ void CSettings::FindDataFolder()
 		{
 			CString dir = Reg.ReadString("DataPath");
 
-			if (!dir.IsEmpty() && IsDirectory(dir))
+			if (!dir.IsEmpty() && WinUtils::IsDirectory(dir))
 			{
 				DataFolder = dir;
 				return;
@@ -225,11 +257,11 @@ void CSettings::FindDataFolder()
 		}
 	}
 
-	if (FileExists(GetCommonApplicationDataPath() + SETTINGS_FILE_NAME)) {
-		DataFolder = GetCommonApplicationDataPath() + _T("Image Uploader\\");
+	if (WinUtils::FileExists(WinUtils::GetCommonApplicationDataPath() + SETTINGS_FILE_NAME)) {
+		DataFolder = WinUtils::GetCommonApplicationDataPath() + _T("Image Uploader\\");
 	}
 	else {
-		DataFolder = GetApplicationDataPath() + _T("Image Uploader\\");
+		DataFolder = WinUtils::GetApplicationDataPath() + _T("Image Uploader\\");
 	}
 }
 
@@ -239,23 +271,21 @@ CSettings::CSettings()
 #endif
 {
 	FindDataFolder();
-	if (!IsDirectory(DataFolder))
+	if (!WinUtils::IsDirectory(DataFolder))
 	{
 		CreateDirectory(DataFolder, 0);
 	}
-	if (!IsDirectory(SettingsFolder))
+	if (!WinUtils::IsDirectory(SettingsFolder))
 	{
 		CreateDirectory(SettingsFolder, 0);
 	}
-	CString copyFrom = GetAppFolder() + SETTINGS_FILE_NAME;
+	CString copyFrom = WinUtils::GetAppFolder() + SETTINGS_FILE_NAME;
 	CString copyTo = DataFolder + SETTINGS_FILE_NAME;
-	if (FileExists(copyFrom) && !FileExists(copyTo))
-	{
+	if ( WinUtils::FileExists(copyFrom) && !WinUtils::FileExists(copyTo) ) {
 		MoveFile(copyFrom, copyTo);
 	}
-
 	
-		if ( !IsFFmpegAvailable() ){
+	if ( !IsFFmpegAvailable() ) {
 		VideoSettings.Engine = VideoEngineDirectshow;
 	}
 	// Default values of settings
@@ -288,8 +318,8 @@ CSettings::CSettings()
 	AutoShowLog = true;
 	UploadBufferSize = 65536;
 
-	StringToFont(_T("Tahoma,7,b,204"), &ThumbSettings.ThumbFont);
-	StringToFont(_T("Tahoma,8,,204"), &VideoSettings.Font);
+	WinUtils::StringToFont(_T("Tahoma,7,b,204"), &ThumbSettings.ThumbFont);
+	WinUtils::StringToFont(_T("Tahoma,8,,204"), &VideoSettings.Font);
 
 	ThumbSettings.CreateThumbs = true;
 	ThumbSettings.ThumbWidth = 180;
@@ -337,7 +367,7 @@ CSettings::CSettings()
 	ScreenshotSettings.AddShadow = true;
 	ScreenshotSettings.RemoveBackground = false;
 
-	if (!IsVista())
+	if (!WinUtils::IsVista())
 	{
 		TrayIconSettings.LeftClickCommand = 0; // without action
 		TrayIconSettings.LeftDoubleClickCommand = 12; // add images
@@ -465,7 +495,7 @@ CSettings::CSettings()
 
 bool CSettings::LoadSettings(LPCTSTR szDir, bool LoadFromRegistry) {
 	CString FileName = szDir ? CString(szDir) : SettingsFolder + _T("Settings.xml");
-	if ( !FileExists( FileName ) )
+	if ( !WinUtils::FileExists( FileName ) )
 		return true;
 	ZSimpleXml xml;
 	xml.LoadFromFile( WCstringToUtf8( FileName ) );
@@ -589,7 +619,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		{
 			WriteLog(logWarning, TR("Настройки"), CString(TR(
 			                                                 "Не могу создать запись в реестре для расширения ")) +
-			         Extension + _T("\r\n") + DisplayError(res));
+			         Extension + _T("\r\n") + WinUtils::FormatWindowsErrorMessage(res));
 			return 0;
 		}
 
@@ -656,7 +686,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		if (SendToContextMenu_changed   || ExplorerContextMenu_changed) {
 			AutoStartup_changed = false;
 			BOOL b;
-			if ( IsVista() && IsElevated(&b) != S_OK ) {
+			if ( WinUtils::IsVista() && !WinUtils::IsElevated() ) {
 				// Start new elevated process 
 				ApplyRegistrySettings();
 			} else {
@@ -708,14 +738,14 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 
 		// if(SendToContextMenu_changed)
 		{
-			CString ShortcutName = GetSendToPath() + _T("\\Image Uploader.lnk");
+			CString ShortcutName = WinUtils::GetSendToPath() + _T("\\Image Uploader.lnk");
 
 			if (SendToContextMenu )
 			{
-				if (FileExists(ShortcutName))
+				if (WinUtils::FileExists(ShortcutName))
 					DeleteFile(ShortcutName);
 
-				CreateShortCut(ShortcutName, CmdLine.ModuleName(), GetAppFolder(), _T(
+				WinUtils::CreateShortCut(ShortcutName, CmdLine.ModuleName(), WinUtils::GetAppFolder(), _T(
 				                  " /upload"), 0, SW_SHOW, CmdLine.ModuleName(), 0);
 			}
 			else
@@ -765,7 +795,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 
 	ServerSettingsStruct& CSettings::ServerByName(CString name)
 	{
-		return ServersSettings[name];
+		return ServersSettings[name][_T("")];
 	}
 
 	ServerSettingsStruct& CSettings::ServerByUtf8Name(std::string name)
@@ -781,10 +811,11 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		for (size_t i = 0; i < servers.size(); i++)
 		{
 			std::string server_name = servers[i].Attribute("Name");
+			std::string profileName = servers[i].Attribute("ProfileName");
 			std::vector<std::string> attribs;
 			servers[i].GetAttributes(attribs);
 			CString wideName = Utf8ToWCstring(server_name);
-
+			CString wideProfileName = Utf8ToWCstring(profileName);
 			for (size_t j = 0; j < attribs.size(); j++)
 			{
 				std::string attribName = attribs[j];
@@ -796,45 +827,52 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 					std::string value = servers[i].Attribute(attribName);
 					attribName = attribName.substr(1, attribName.size() - 1);
 					if (!value.empty())
-						ServersSettings[wideName].params[attribName] = value;
+						ServersSettings[wideName][wideProfileName].params[attribName] = value;
 				}
 			}
-			ServersSettings[wideName].authData.DoAuth = servers[i].AttributeBool("Auth");
+			ServersSettings[wideName][wideProfileName].authData.DoAuth = servers[i].AttributeBool("Auth");
 
 			std::string encodedLogin = servers[i].Attribute("Login");
 			CEncodedPassword login;
 			login.fromEncodedData(encodedLogin.c_str());
-			ServersSettings[wideName].authData.Login = WCstringToUtf8(login);
+			ServersSettings[wideName][wideProfileName].authData.Login = WCstringToUtf8(login);
 
 			std::string encodedPass = servers[i].Attribute("Password");
 			CEncodedPassword pass;
 			pass.fromEncodedData(encodedPass.c_str());
-			ServersSettings[wideName].authData.Password = WCstringToUtf8(pass);
+			ServersSettings[wideName][wideProfileName].authData.Password = WCstringToUtf8(pass);
 		}
 		return true;
 	}
 
 	bool CSettings::SaveAccounts(ZSimpleXmlNode root)
 	{
-		std::map <CString, ServerSettingsStruct>::iterator it;
-		for (it = ServersSettings.begin(); it != ServersSettings.end(); ++it)
+		std::map <CString, std::map<CString,ServerSettingsStruct> >::iterator it2;
+		std::map<CString,ServerSettingsStruct>::iterator it;
+		for (it2 = ServersSettings.begin(); it2!= ServersSettings.end(); ++it2)
 		{
-			ZSimpleXmlNode serverNode = root.CreateChild("Server");
-			serverNode.SetAttribute("Name", WCstringToUtf8(it->first));
+			for ( it = it2->second.begin(); it != it2->second.end(); ++it) {
+				if ( it->second.isEmpty()) {
+					continue;
+				}
+				ZSimpleXmlNode serverNode = root.CreateChild("Server");
+				serverNode.SetAttribute("Name", WCstringToUtf8(it2->first));
+				serverNode.SetAttribute("ProfileName", WCstringToUtf8(it->first));
 
-			std::map <std::string, std::string>::iterator param;
-			for (param = it->second.params.begin(); param != it->second.params.end(); ++param)
-			{
-				serverNode.SetAttribute("_" + param->first, param->second);
+				std::map <std::string, std::string>::iterator param;
+				for (param = it->second.params.begin(); param != it->second.params.end(); ++param)
+				{
+					serverNode.SetAttribute("_" + param->first, param->second);
+				}
+
+				serverNode.SetAttributeBool("Auth", it->second.authData.DoAuth);
+
+				CEncodedPassword login(Utf8ToWCstring(it->second.authData.Login));
+				serverNode.SetAttribute("Login", WCstringToUtf8(login.toEncodedData()));
+
+				CEncodedPassword pass(Utf8ToWCstring(it->second.authData.Password));
+				serverNode.SetAttribute("Password", WCstringToUtf8(pass.toEncodedData()));
 			}
-
-			serverNode.SetAttributeBool("Auth", it->second.authData.DoAuth);
-
-			CEncodedPassword login(Utf8ToWCstring(it->second.authData.Login));
-			serverNode.SetAttribute("Login", WCstringToUtf8(login.toEncodedData()));
-
-			CEncodedPassword pass(Utf8ToWCstring(it->second.authData.Password));
-			serverNode.SetAttribute("Password", WCstringToUtf8(pass.toEncodedData()));
 		}
 		return true;
 	}
@@ -906,7 +944,7 @@ CSettings::~CSettings() {
 
 void CSettings::Uninstall() {
 	BOOL b;
-	if (IsVista() && IsElevated(&b) != S_OK) {
+	if (WinUtils::IsVista() && WinUtils::IsElevated()) {
 		RunIuElevated("/uninstall");
 		return;
 	}
@@ -920,7 +958,7 @@ void CSettings::Uninstall() {
 	Reg.SetRootKey( HKEY_LOCAL_MACHINE );
 	Reg.DeleteKey( "Software\\Zenden.ws\\Image Uploader" );
 
-	CString ShortcutName = GetSendToPath() + _T("\\Image Uploader.lnk");
+	CString ShortcutName = WinUtils::GetSendToPath() + _T("\\Image Uploader.lnk");
 	DeleteFile(ShortcutName);
 }
 
@@ -955,11 +993,11 @@ void CSettings::EnableAutostartup(bool enable) {
 }
 
 bool CSettings::IsFFmpegAvailable() {
-	CString appFolder = GetAppFolder();
-	return FileExists( appFolder + "avcodec-53.dll") 
-		 && FileExists( appFolder + "avformat-53.dll")
-		 && FileExists( appFolder + "avutil-51.dll")
-		 && FileExists( appFolder + "swscale-2.dll");
+	CString appFolder = WinUtils::GetAppFolder();
+	return WinUtils::FileExists( appFolder + "avcodec-53.dll") 
+		 && WinUtils::FileExists( appFolder + "avformat-53.dll")
+		 && WinUtils::FileExists( appFolder + "avutil-51.dll")
+		 && WinUtils::FileExists( appFolder + "swscale-2.dll");
 }
 
 CString CSettings::prepareVideoDialogFilters() {
@@ -969,4 +1007,37 @@ CString CSettings::prepareVideoDialogFilters() {
 		result += CString("*.") + CString(extensions[i].c_str()) + _T(";");
 	}
 	return result;
+}
+
+CEncodedPassword::CEncodedPassword() {
+}
+
+CEncodedPassword::CEncodedPassword(CString d) { 
+	data_ = d; 
+}
+
+CString CEncodedPassword::toEncodedData() const {
+	CString res;
+	EncodeString(data_, res);
+	return res;
+}
+void CEncodedPassword::fromPlainText(CString data) {
+	data = data_;
+}
+
+void CEncodedPassword::fromEncodedData(CString data) {
+	DecodeString(data, data_);
+}
+	
+CEncodedPassword::operator CString&() {
+	return data_;
+}
+
+CEncodedPassword::operator const TCHAR*() {
+	return data_;
+}
+
+CEncodedPassword& CEncodedPassword::operator=(const CString& text) {
+	data_ = text;
+	return *this;
 }

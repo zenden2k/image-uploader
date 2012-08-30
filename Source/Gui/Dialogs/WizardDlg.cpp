@@ -34,12 +34,18 @@
 #include "floatingwindow.h"
 #include "TextViewDlg.h"
 #include "ImageDownloaderDlg.h"
+#include "Gui/Dialogs/ImageReuploaderDlg.h"
 #include "LogWindow.h"
 #include "Common/CmdLine.h"
 #include "Gui/Dialogs/UpdateDlg.h"
 #include "Func/Settings.h"
 #include "Gui/Dialogs/MediaInfoDlg.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
+#include <Func/Myutils.h>
+#include <Func/Common.h>
+#include <Gui/Dialogs/SettingsDlg.h>
+#include <Gui/Dialogs/QuickSetupDlg.h>
 
 using namespace Gdiplus;
 // CWizardDlg
@@ -109,22 +115,26 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
 	m_UpdateLink.ConvertStaticToHyperlink(GetDlgItem(IDC_UPDATESLABEL), _T("http://zenden.ws"));
 	m_UpdateLink.setCommandID(IDC_UPDATESLABEL);
+
+	toolTipControl_.Create( m_hWnd );
+	toolTipControl_.AddTool(GetDlgItem(IDC_ABOUT),TR("О программе"));
 	
-	CString MediaDll = GetAppFolder() + _T("\\Modules\\MediaInfo.dll");
-	if(FileExists( MediaDll)) lstrcpy(MediaInfoDllPath, MediaDll);
+	CString MediaDll = WinUtils::GetAppFolder() + _T("\\Modules\\MediaInfo.dll");
+	if(WinUtils::FileExists( MediaDll)) lstrcpy(MediaInfoDllPath, MediaDll);
 	else
 	{
 		CString MediaDll2 = CString(ClassName) + _T("\\Tools\\MediaInfo.dll");
-		if(FileExists( MediaDll2)) lstrcpy(MediaInfoDllPath, MediaDll2);
+		if(WinUtils::FileExists( MediaDll2)) lstrcpy(MediaInfoDllPath, MediaDll2);
 	}
 	SetWindowText(APPNAME);
 
-   Lang.SetDirectory(GetAppFolder() + "Lang\\");
-
+   Lang.SetDirectory(WinUtils::GetAppFolder() + "Lang\\");
+	bool isFirstRun = Settings.Language.IsEmpty();
 	if(Settings.Language.IsEmpty())
 	{
+		
 		CLangSelect LS;
-		if(LS.DoModal(m_hWnd) == IDCANCEL)
+		if(LS.DoModal(m_hWnd) != IDOK)
 		{
 			*DlgCreationResult = 1;
 			return 0;
@@ -138,12 +148,17 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 			Settings.ExplorerContextMenu_changed = true;
 			Settings.ExplorerVideoContextMenu = true;
 		}	*/
+
+		
+		
 		Settings.SaveSettings();
 	}
 	else 
 	{
 		Lang.LoadLanguage(Settings.Language);
 	}
+
+
 
 	CString ErrorStr;
 	if(!LoadUploadEngines(IU_GetDataFolder()+_T("servers.xml"), ErrorStr))  // Завершаем работу программы, если файл servers.lst отсутствует
@@ -160,7 +175,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	iuPluginManager.setScriptsDirectory(WCstringToUtf8(IU_GetDataFolder() + _T("\\Scripts\\")));
 	std::vector<CString> list;
 	CString serversFolder = IU_GetDataFolder() + _T("\\Servers\\");
-	GetFolderFileList(list, serversFolder, _T("*.xml"));
+	WinUtils::GetFolderFileList(list, serversFolder, _T("*.xml"));
 
 	for(size_t i=0; i<list.size(); i++)
 	{
@@ -168,12 +183,19 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	}
 
 	LoadUploadEngines(_T("userservers.xml"), ErrorStr);	
+
+	if ( isFirstRun ) {
+		CQuickSetupDlg quickSetupDialog;
+		quickSetupDialog.DoModal(m_hWnd);
+	}
+
 	Settings.ServerID		  = m_EngineList.GetUploadEngineIndex(Settings.ServerName);
 	Settings.FileServerID  = m_EngineList.GetUploadEngineIndex(Settings.FileServerName);
 	Settings.QuickServerID = m_EngineList.GetUploadEngineIndex(Settings.QuickServerName);
+
 	if(!*MediaInfoDllPath)
 		WriteLog(logWarning, APPNAME, TR("Библиотека MediaInfo.dll не найдена. \nПолучение технических данных о файлах мультимедиа будет недоступно.")); 
-	TRC(IDC_ABOUT,"О программе...");
+	TRC(IDC_ABOUT,"?");
 	if(!CmdLine.IsOption(_T("tray")))
 		TRC(IDCANCEL,"Выход");
 	else 
@@ -260,7 +282,7 @@ bool CWizardDlg::ParseCmdLine()
 	CStringList Paths;
 	while(CmdLine.GetNextFile(FileName, nIndex))
 	{
-		if(FileExists(FileName) || IsDirectory(FileName))
+		if(WinUtils::FileExists(FileName) || WinUtils::IsDirectory(FileName))
 		 Paths.Add(FileName);		
 	}
 	if(!Paths.IsEmpty())
@@ -324,7 +346,11 @@ BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
 			}
 		}
 	}
-	
+
+	if ( pMsg->message == WM_LBUTTONDOWN || pMsg->message == WM_LBUTTONUP || pMsg->message == WM_MOUSEMOVE ) {
+		toolTipControl_.RelayEvent(pMsg);
+	}
+
 	return CWindow::IsDialogMessage(pMsg);
 }
 
@@ -498,8 +524,7 @@ HBITMAP CWizardDlg::GenHeadBitmap(int PageID)
 	Graphics gr(BackBuffer);
 	COLORREF color=GetSysColor(COLOR_BTNFACE);
 	
-	LinearGradientBrush 
-		brush(bounds, Color(255, 255, 255, 255), Color(255, 235,235,235), 
+	LinearGradientBrush brush(bounds, Color(255, 255, 255, 255), Color(255, 235,235,235), 
             LinearGradientModeVertical);
 	gr.FillRectangle(&brush,bounds);
 
@@ -507,12 +532,10 @@ HBITMAP CWizardDlg::GenHeadBitmap(int PageID)
 		br2(bounds, Color(130, 190, 190, 190), Color(255, 70, 70, 70), 
             LinearGradientModeBackwardDiagonal); 
 
-
-		 StringFormat format;
+	StringFormat format;
     format.SetAlignment(StringAlignmentCenter);
     format.SetLineAlignment(StringAlignmentCenter);
     Font font(L"Arial", 12, FontStyleBold);
-
     
 	LPTSTR Buffer = NULL;
 	if(PageID == 3)
@@ -538,12 +561,12 @@ void CWizardDlg::Exit()
 {
 	// Converting server id to server name
 	if(Settings.ServerID >= 0 && m_EngineList.count())
-		Settings.ServerName = Utf8ToWstring(m_EngineList.byIndex(Settings.ServerID)->Name).c_str();
+		Settings.ServerName = IuCoreUtils::Utf8ToWstring(m_EngineList.byIndex(Settings.ServerID)->Name).c_str();
 
 	if(Settings.QuickServerID>=0 && m_EngineList.count())
-		Settings.QuickServerName = Utf8ToWstring(m_EngineList.byIndex(Settings.QuickServerID)->Name).c_str();
+		Settings.QuickServerName = IuCoreUtils::Utf8ToWstring(m_EngineList.byIndex(Settings.QuickServerID)->Name).c_str();
 	if(Settings.FileServerID>=0 && m_EngineList.count())
-		Settings.FileServerName = Utf8ToWstring(m_EngineList.byIndex(Settings.FileServerID)->Name).c_str();
+		Settings.FileServerName = IuCoreUtils::Utf8ToWstring(m_EngineList.byIndex(Settings.FileServerID)->Name).c_str();
 
 	Settings.SaveSettings();
 }
@@ -579,7 +602,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 		else if(CurPage == 0 || CurPage == 2)
 		{
 			filehost:
-			if(FileExists(szBuffer) || IsDirectory(szBuffer))
+			if(WinUtils::FileExists(szBuffer) || WinUtils::IsDirectory(szBuffer))
 									 Paths.Add(szBuffer);			
 		}
  
@@ -594,7 +617,6 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	
 	DragFinish(hDrop);
 	return 0;
-   
 }
 
 bool CWizardDlg::LoadUploadEngines(const CString &filename, CString &Error)
@@ -670,12 +692,12 @@ CString MakeTempFileName(const CString& FileName)
 	CString FileNameBuf;
 	FileNameBuf = IUTempFolder + FileName;
 
-   if(FileExists(FileNameBuf))
+   if(WinUtils::FileExists(FileNameBuf))
 	{
 		CString OnlyName;
-		OnlyName = GetOnlyFileName(FileName);
-		CString Ext = GetFileExt(FileName);
-		FileNameBuf = IUTempFolder + OnlyName + _T("_")+IntToStr(GetTickCount()^33333) + (Ext? _T("."):_T("")) + Ext;
+		OnlyName = WinUtils::GetOnlyFileName(FileName);
+		CString Ext = WinUtils::GetFileExt(FileName);
+		FileNameBuf = IUTempFolder + OnlyName + _T("_")+WinUtils::IntToStr(GetTickCount()^33333) + (Ext? _T("."):_T("")) + Ext;
 	}
 	return FileNameBuf;
 }
@@ -779,7 +801,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 							else if((CurPage==0||CurPage==2))
 							{
 								
-								if(FileExists(OutFileName) || IsDirectory(OutFileName))
+								if(WinUtils::FileExists(OutFileName) || WinUtils::IsDirectory(OutFileName))
 									 Paths.Add(OutFileName);		
 							}
 						}
@@ -879,7 +901,7 @@ LRESULT CWizardDlg::OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHan
 	if(IsClipboardFormatAvailable(CF_UNICODETEXT)) 
 	{
 		CString text;
-		IU_GetClipboardText(text);
+		WinUtils::GetClipboardText(text);
 		if(CImageDownloaderDlg::LinksAvailableInText(text))
 		{
 			CImageDownloaderDlg dlg(this,CString(text));
@@ -990,7 +1012,7 @@ DWORD CFolderAdd::Run()
 	for(size_t i=0; i<m_Paths.GetCount(); i++)
 	{
 		CString CurPath = m_Paths[i];
-		if(IsDirectory(CurPath))
+		if(WinUtils::IsDirectory(CurPath))
 			ProcessDir(CurPath, m_bSubDirs);
 		else 
 			if(!m_bImagesOnly || IsImage(CurPath))
@@ -1124,10 +1146,10 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 {
 	TCHAR Buf[MAX_PATH * 4];
 	if(AnyFiles)
-		ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 1, TR("Любые файлы"),
+		GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 1, TR("Любые файлы"),
 		                              _T("*.*"));
 	else
-	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 2, 
+	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 2, 
 		                           CString(TR("Изображения")) + _T(" (jpeg, bmp, png, gif ...)"),
 		                           _T("*.jpg;*.gif;*.png;*.bmp;*.tiff"), TR("Любые файлы"),
 		                           _T("*.*"));
@@ -1185,8 +1207,8 @@ bool CWizardDlg::executeFunc(CString funcBody)
 
 	if(!IsWindowEnabled())LaunchCopy= true; 
 
-	CString funcName = StringSection(funcBody,  _T(','), 0 );
-	CString funcParam1 = StringSection(funcBody, _T(','), 1);
+	CString funcName = WinUtils::StringSection(funcBody,  _T(','), 0 );
+	CString funcParam1 = WinUtils::StringSection(funcBody, _T(','), 1);
 
 	if(!funcParam1.IsEmpty())
 	{
@@ -1227,6 +1249,8 @@ bool CWizardDlg::executeFunc(CString funcBody)
 			return funcFreeformScreenshot();
 	else if(funcName == _T("downloadimages"))
 		return funcDownloadImages();
+	else if(funcName == _T("reuploadimages"))
+		return funcReuploadImages();
 	else if(funcName == _T("windowscreenshot"))
 		return funcWindowScreenshot();
 	else if(funcName == _T("windowscreenshot_delayed"))
@@ -1245,7 +1269,7 @@ bool CWizardDlg::executeFunc(CString funcBody)
 bool CWizardDlg::funcImportVideo()
 {
 	TCHAR Buf[MAX_PATH*4];
-	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
+	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
 			CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv ...)"),
 			Settings.prepareVideoDialogFilters(),
 		TR("Все файлы"),
@@ -1256,7 +1280,7 @@ bool CWizardDlg::funcImportVideo()
 	TCHAR Buffer[1000];
 	fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
 	if(fd.DoModal()!=IDOK || !fd.m_szFileName) return 0;
-	ExtractFilePath(fd.m_szFileName, Buffer); 
+	WinUtils::ExtractFilePath(fd.m_szFileName, Buffer); 
 	Settings.VideoFolder = Buffer;
 	CreatePage(1);
 	LastVideoFile = fd.m_szFileName;
@@ -1442,7 +1466,7 @@ bool CWizardDlg::funcDownloadImages()
 bool CWizardDlg::funcMediaInfo()
 {
 	TCHAR Buf[MAX_PATH*4]; //String buffer which will contain filter for CFileDialog
-	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),3, 
+	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),3, 
 			CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv ...)"),
 		/*_T("*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;*.rm;")*/
 		Settings.prepareVideoDialogFilters(),
@@ -1457,7 +1481,7 @@ bool CWizardDlg::funcMediaInfo()
 
 	if(fd.DoModal()!=IDOK || !fd.m_szFileName) return 0;
 	TCHAR Buffer[512];
-	ExtractFilePath(fd.m_szFileName, Buffer);
+	WinUtils::ExtractFilePath(fd.m_szFileName, Buffer);
 	Settings.VideoFolder = Buffer;
 	CMediaInfoDlg dlg;
 	LastVideoFile = fd.m_szFileName;
@@ -1468,7 +1492,7 @@ bool CWizardDlg::funcMediaInfo()
 bool CWizardDlg::funcAddFiles()
 {
 	TCHAR Buf[MAX_PATH*4];
-	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),1, TR("Любые файлы"), _T("*.*"));
+	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),1, TR("Любые файлы"), _T("*.*"));
 
 	int nCount=0;
 	CMultiFileDialog fd(0, 0, OFN_HIDEREADONLY, Buf, m_hWnd);
@@ -1778,11 +1802,11 @@ bool CWizardDlg::IsClipboardDataAvailable()
 	bool IsClipboard = IsClipboardFormatAvailable(CF_BITMAP)!=FALSE;
 
 	if(!IsClipboard)
-	{
+	{ 
 		if(IsClipboardFormatAvailable(CF_UNICODETEXT)) 
 		{
 			CString text;
-			IU_GetClipboardText(text);
+			WinUtils::GetClipboardText(text);
 			if(CImageDownloaderDlg::LinksAvailableInText(text))
 			{
 				IsClipboard = true;
@@ -1792,4 +1816,9 @@ bool CWizardDlg::IsClipboardDataAvailable()
 	return IsClipboard;
 }
 
+bool CWizardDlg::funcReuploadImages() {
+	CImageReuploaderDlg dlg(this, _EngineList,  CString());
+	dlg.DoModal(m_hWnd);
+	return false;
+}
 CWizardDlg * pWizardDlg;

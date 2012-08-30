@@ -26,6 +26,7 @@
 #include <atlcrack.h>
 #include "resource.h"       // main symbols
 #include "floatingwindow.h"
+#include <Gui/Dialogs/SettingsPage.h>
 // CTraySettingsPage
 
 struct TrayItem

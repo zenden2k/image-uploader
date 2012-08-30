@@ -18,6 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "WelcomeDlg.h"
+
 #include "atlheaders.h"
 #include "ImageDownloaderDlg.h"
 #include "HistoryWindow.h"
@@ -26,6 +27,8 @@
 #include "mediainfodlg.h"
 #include "regionselect.h"
 #include "Screenshotdlg.h"
+#include <Func/Myutils.h>
+#include <Func/Common.h>
 
 // CWelcomeDlg
 CWelcomeDlg::CWelcomeDlg()
@@ -77,6 +80,8 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	ListBox.AddString(TR("Снимок выбранной области..."), 0, IDC_REGIONPRINT,LOADICO(IDI_ICONREGION));
 	
 	ListBox.AddString(TR("Настройки программы"), TR("Для опытных пользователей"), IDC_SETTINGS, LOADICO(IDI_ICONSETTINGS));
+	ListBox.AddString(TR("Перезаливка картинок"), TR(""), IDC_REUPLOADIMAGES, LOADICO(IDI_ICONSETTINGS));
+	
 	ListBox.AddString(TR("История"), 0, ID_VIEWHISTORY,LOADICO(IDI_ICONHISTORY));
 
 	HFONT font = GetFont();
@@ -235,3 +240,7 @@ LRESULT CWelcomeDlg::OnViewHistoryClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	return 0;
 }
 	
+LRESULT CWelcomeDlg::OnBnClickedReuploadImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	WizardDlg->executeFunc(_T("reuploadimages"));
+	return 0;
+}

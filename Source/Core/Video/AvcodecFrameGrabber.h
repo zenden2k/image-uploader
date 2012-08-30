@@ -5,7 +5,7 @@
 #include "Gui/Dialogs/videograbber.h"
 
 class CSampleGrabberCB;
-int av_grab_frames(int numOfFrames, CString fname, CSampleGrabberCB * cb, HWND progressBar, bool Jump=true, bool SeekToKeyFrame = true);
+int av_grab_frames(int numOfFrames, CString fname, CSampleGrabberCB * cb, HWND progressBar, bool& NeedStop, bool Jump=true, bool SeekToKeyFrame = true);
 
 
 #endif // FRAMEGRABBER_H

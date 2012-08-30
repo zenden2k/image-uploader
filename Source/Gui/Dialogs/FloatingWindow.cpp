@@ -30,6 +30,12 @@
 #include "Func/Base.h"
 #include "Func/HistoryManager.h"
 #include "Core/Utils/CoreTypes.h"
+#include <Func/WinUtils.h>
+#include <Func/Myutils.h>
+#include <Func/Common.h>
+#include <Gui/Dialogs/WizardDlg.h>
+#include <Gui/Dialogs/ResultsWindow.h>
+#include <Gui/Dialogs/SettingsDlg.h>
 
 // FloatingWindow
 CFloatingWindow::CFloatingWindow()
@@ -158,9 +164,9 @@ LRESULT CFloatingWindow::OnTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 	{
 		CAtlArray<CUrlListItem> items;
 		CUrlListItem it;
-		it.ImageUrl = Utf8ToWstring(m_LastUploadedItem.imageUrl).c_str();
-		it.ThumbUrl =  Utf8ToWstring(m_LastUploadedItem.thumbUrl).c_str();
-		it.DownloadUrl = Utf8ToWstring(m_LastUploadedItem.downloadUrl).c_str();
+		it.ImageUrl = IuCoreUtils::Utf8ToWstring(m_LastUploadedItem.imageUrl).c_str();
+		it.ThumbUrl =  IuCoreUtils::Utf8ToWstring(m_LastUploadedItem.thumbUrl).c_str();
+		it.DownloadUrl = IuCoreUtils::Utf8ToWstring(m_LastUploadedItem.downloadUrl).c_str();
 		items.Add(it);
 		if (it.ImageUrl.IsEmpty() && it.DownloadUrl.IsEmpty())
 			return 0;
@@ -602,19 +608,19 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
 	m_bIsUploading = true;
 	m_FileQueueUploader->start();
 	CString msg;
-	msg.Format(TR("Идет загрузка \"%s\" на сервер %s"), (LPCTSTR) GetOnlyFileName(displayName),
-	           (LPCTSTR)Utf8ToWstring(engineData->Name).c_str());
+	msg.Format(TR("Идет загрузка \"%s\" на сервер %s"), (LPCTSTR) WinUtils::GetOnlyFileName(displayName),
+	           (LPCTSTR)IuCoreUtils::Utf8ToWstring(engineData->Name).c_str());
 	ShowBaloonTip(msg, TR("Загрузка снимка"));
 }
 
-bool CFloatingWindow::OnQueueFinished()
+bool CFloatingWindow::OnQueueFinished(CFileQueueUploader*)
 {
 	m_bIsUploading = false;
 	CString url;
 	if ((Settings.UseDirectLinks || m_LastUploadedItem.downloadUrl.empty()) && !m_LastUploadedItem.imageUrl.empty() )
-		url = Utf8ToWstring(m_LastUploadedItem.imageUrl).c_str();
+		url = IuCoreUtils::Utf8ToWstring(m_LastUploadedItem.imageUrl).c_str();
 	else if ((!Settings.UseDirectLinks || m_LastUploadedItem.imageUrl.empty()) && !m_LastUploadedItem.downloadUrl.empty() )
-		url = Utf8ToWstring(m_LastUploadedItem.downloadUrl).c_str();
+		url = IuCoreUtils::Utf8ToWstring(m_LastUploadedItem.downloadUrl).c_str();
 
 	if (url.IsEmpty())
 	{
@@ -633,8 +639,8 @@ bool CFloatingWindow::OnQueueFinished()
 	hi.uploadFileSize = m_LastUploadedItem.fileSize; // IuCoreUtils::getFileSize(WCstringToUtf8(ImageFileName));
 	session.AddItem(hi);
 
-	IU_CopyTextToClipboard(url);
-	ShowBaloonTip(TrimString(url, 70) + CString("\r\n") + TR("Нажмите на это сообщение для открытия окна с кодом...") + CString("\r\n")
+	WinUtils::CopyTextToClipboard(url);
+	ShowBaloonTip(WinUtils::TrimString(url, 70) + CString("\r\n") + TR("Нажмите на это сообщение для открытия окна с кодом...") + CString("\r\n")
 		+ TR("(адрес был автоматически помещен в буфер обмена)"), TR("Снимок успешно загружен"));
 	return true;
 }
@@ -651,7 +657,7 @@ bool CFloatingWindow::OnFileFinished(bool ok, CFileQueueUploader::FileListItem& 
 	return true;
 }
 
-bool CFloatingWindow::OnConfigureNetworkManager(NetworkManager* nm)
+bool CFloatingWindow::OnConfigureNetworkManager(CFileQueueUploader*,NetworkManager* nm)
 {
 	IU_ConfigureProxy(*nm);
 	return true;

@@ -12,7 +12,7 @@ namespace AvCodec
  
 using namespace AvCodec;
 
-bool NeedStop;
+//bool NeedStop;
 
 CString timestamp_to_str(int64_t duration,int64_t units) {
 	CString s;
@@ -59,7 +59,7 @@ void SaveFrame(AVFrame *pFrame, int width, int height, int iFrame,int headerlen,
 #define INT64_MAX 0x7fffffffffffffffLL
 #define INT64_MIN (-INT64_MAX - 1LL)
 
-int av_grab_frames(int numOfFrames, CString fname, CSampleGrabberCB * cb,HWND progressBar,  bool Jump, bool SeekToKeyFrame)
+int av_grab_frames(int numOfFrames, CString fname, CSampleGrabberCB * cb,HWND progressBar, bool& NeedStop, bool Jump, bool SeekToKeyFrame )
 {
 	CString msg;
 	if(numOfFrames<=0) return -1;

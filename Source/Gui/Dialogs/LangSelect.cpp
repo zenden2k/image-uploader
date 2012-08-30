@@ -21,6 +21,7 @@
 #include "LangSelect.h"
 #include "Func/Common.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
 
 // CLangSelect
 CLangSelect::CLangSelect()
@@ -39,7 +40,7 @@ int CLangSelect::GetNextLngFile(LPTSTR szBuffer, int nLength)
 
 	if (!findfile)
 	{
-		findfile = FindFirstFile(GetAppFolder() + "Lang\\*.lng", &wfd);
+		findfile = FindFirstFile(WinUtils::GetAppFolder() + "Lang\\*.lng", &wfd);
 		if (!findfile)
 			goto error;
 	}
@@ -67,7 +68,7 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
 	LogoImage.LoadImage(0, 0, IDR_PNG1, false, GetSysColor(COLOR_BTNFACE));
 
-	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_PLEASECHOOSE));
+	GuiTools::MakeLabelBold(GetDlgItem(IDC_PLEASECHOOSE));
 
 	// Russian language is always in language list
 	SendDlgItemMessage(IDC_LANGLIST, CB_ADDSTRING, 0, (WPARAM)_T("Русский"));
@@ -75,9 +76,9 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	int n = 0;
 	while (GetNextLngFile(buf, sizeof(buf) / sizeof(TCHAR)) )
 	{
-		if (lstrlen(buf) == 0 || lstrcmpi(GetFileExt(buf), _T("lng")))
+		if (lstrlen(buf) == 0 || lstrcmpi(WinUtils::GetFileExt(buf), _T("lng")))
 			continue;
-		buf2 = GetOnlyFileName(buf);
+		buf2 = WinUtils::GetOnlyFileName(buf);
 		SendDlgItemMessage(IDC_LANGLIST, CB_ADDSTRING, 0, (WPARAM)(LPCTSTR)buf2);
 		n++;
 	}

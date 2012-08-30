@@ -27,6 +27,8 @@
 #include "Gui/Dialogs/floatingwindow.h"
 #include "Common/CmdLine.h"
 #include "Func/Settings.h"
+#include <Func/WinUtils.h>
+#include <Func/Common.h>
 
 #include <Core/3rdpart/base64.h>
 
@@ -47,9 +49,9 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	CreateTempFolder();
 	
 	std::vector<CString> fileList;
-	GetFolderFileList( fileList, GetAppFolder() + _T("\\"), _T("*.old") );
+	WinUtils::GetFolderFileList( fileList, WinUtils::GetAppFolder() + _T("\\"), _T("*.old") );
 	for ( size_t i=0; i<fileList.size(); i++ ) {
-		DeleteFile( GetAppFolder() + fileList[i] );
+		DeleteFile( WinUtils::GetAppFolder() + fileList[i] );
 	}
 
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
@@ -119,7 +121,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	// Удаляем временные файлы
 	ClearTempFolder( IUTempFolder ); 
 	std::vector<CString> folders;
-	GetFolderFileList( folders, IUCommonTempFolder, "iu_temp_*" );
+	WinUtils::GetFolderFileList( folders, IUCommonTempFolder, "iu_temp_*" );
 	for ( size_t i=0; i < folders.size(); i++ ) {
 		// Extract Proccess ID from temp folder name
 		CString pidStr = folders[i]; 
@@ -135,10 +137,10 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 }
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
-{	
+{	/*
 	std::string str ="something"; 
 	std::string encodedString = base64_encode((const unsigned char*)str.c_str(), str.length());
-	MessageBoxA( 0, encodedString.c_str(), 0, 0);
+	MessageBoxA( 0, encodedString.c_str(), 0, 0);*/
 	OleInitialize(NULL);
 	HRESULT hRes ;
 

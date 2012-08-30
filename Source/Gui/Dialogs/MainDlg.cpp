@@ -24,6 +24,10 @@
 #include "aboutdlg.h"
 #include "Func/Settings.h"
 #include "Common/CmdLine.h"
+#include <Func/WinUtils.h>
+#include <Func/Myutils.h>
+#include <Func/Common.h>
+#include <Gui/GuiTools.h>
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -149,6 +153,10 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
 		mi.dwTypeData  = TR("Открыть папку с файлом");
 		sub.SetMenuItemInfo(IDM_OPENINFOLDER, false, &mi);
+
+		mi.dwTypeData  = TR("Сохранить как...");
+		sub.SetMenuItemInfo(IDM_SAVEAS, false, &mi);
+
 		mi.dwTypeData  = TR("Удалить");
 		sub.SetMenuItemInfo(IDM_DELETE, false, &mi);
 		mi.dwTypeData  = TR("Свойства");
@@ -169,7 +177,7 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, G
 	
 	if(!FileName) return FALSE;
 
-	if(!FileExists(FileName)) return FALSE;
+	if(!WinUtils::FileExists(FileName)) return FALSE;
 	fl.selected = false;
 
 	int len = lstrlen(FileName);
@@ -177,21 +185,21 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, G
 	fl.FileName = FileName;
 
 	if(virtualFileName.IsEmpty())
-	fl.VirtualFileName = myExtractFileName(FileName);
+	fl.VirtualFileName = WinUtils::myExtractFileName(FileName);
 	else
 	fl.VirtualFileName = virtualFileName;
 	
 
 	TCHAR szBuffer[256] = _T("\0");
-	int FileSize = MyGetFileSize(FileName);
+	int FileSize = IuCoreUtils::getFileSize(WCstringToUtf8( FileName ));
 	if(FileSize<-1) FileSize = 0;
 
 	FileList.Add(fl);
 
 	CString Buf;
 	if(IsImage(FileName))
-	Buf = GetOnlyFileName(FileName );
-	else Buf = myExtractFileName(FileName);
+	Buf = WinUtils::GetOnlyFileName(FileName );
+	else Buf = WinUtils::myExtractFileName(FileName);
 	if(FileName) 
 		ThumbsView.AddImage(fl.FileName, fl.VirtualFileName, Img);
 		
@@ -300,7 +308,7 @@ LRESULT CMainDlg::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
 	EditorCmdLine.Format(EditorCmd, (LPCTSTR)FileName);
 	
 	TCHAR FilePathBuffer[256];
-	ExtractFilePath(FileName, FilePathBuffer);
+	WinUtils::ExtractFilePath(FileName, FilePathBuffer);
 
 	CCmdLine EditorLine(EditorCmdLine);
 
@@ -383,5 +391,60 @@ LRESULT CMainDlg::OnOpenInFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 LRESULT CMainDlg::OnAddFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	WizardDlg->executeFunc(_T("addfiles"));
+	return 0;
+}
+
+LRESULT  CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int nCurItem = -1;
+
+	std::deque<CString> selectedFiles;
+	while ((nCurItem = ThumbsView.GetNextItem(nCurItem, LVNI_ALL|LVNI_SELECTED)) >= 0 ) {
+		LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
+		if ( ! FileName ) {
+			continue;
+		}
+		selectedFiles.push_back( FileName );
+		
+	}
+	if ( selectedFiles.empty() ) {
+		return FALSE;
+	}
+	
+	if ( selectedFiles.size() == 1 ) {
+
+		TCHAR Buf[MAX_PATH*4];
+		CString FileName = selectedFiles[0];
+		CString fileExt = WinUtils::GetFileExt(FileName);
+		GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2,
+			TR("Файлы")+CString(" *.")+fileExt, CString(_T("*."))+fileExt,
+			TR("Все файлы"),_T("*.*"));
+
+		CFileDialog fd(false, fileExt, FileName,4|2,Buf,m_hWnd);
+
+		TCHAR Buffer[1000];
+		//fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
+		if(fd.DoModal()!=IDOK || !fd.m_szFileName) return 0;
+
+		CopyFile( FileName, fd.m_szFileName, false );
+	} else {
+		CString newPath = GuiTools::SelectFolderDialog(m_hWnd, CString());
+		if ( !newPath.IsEmpty() ) {
+			int fileCount = selectedFiles.size();
+			for ( int i = 0; i < fileCount; i++ ) {
+				CopyFile( selectedFiles[i], newPath + _T("\\") + WinUtils::myExtractFileName(selectedFiles[i] ) , false );
+			}
+		}
+		/*CFolderDialog fd(m_hWnd,TR("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE );
+		if(fd.DoModal(m_hWnd) == IDOK)
+		{
+			CString newPath = fd.GetFolderPath();
+			int fileCount = selectedFiles.size();
+			for ( int i = 0; i < fileCount; i++ ) {
+				CopyFile( selectedFiles[i], newPath + _T("\\") + WinUtils::myExtractFileName(selectedFiles[i] ) , false );
+			}
+			return true;
+		}*/
+	}
+
 	return 0;
 }

@@ -23,6 +23,9 @@
 
 #include "wizarddlg.h"
 #include "Gui/GuiTools.h"
+#include <Gui/Dialogs/ServerSelectorControl.h>
+#include <Func/Common.h>
+#include <Func/MyUtils.h>
 
 // CUploadSettingsPage
 CUploadSettingsPage::CUploadSettingsPage()
@@ -58,6 +61,33 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 {
 	TabBackgroundFix(m_hWnd);
 	TranslateUI();
+	RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERSELECTORPLACE);
+	
+	imageServerSelector_ = new CServerSelectorControl();
+	imageServerSelector_->Create(m_hWnd, serverSelectorRect);
+	imageServerSelector_->setTitle(TR("Сервер для хранения изображений"));
+	imageServerSelector_->ShowWindow( SW_SHOW );
+	imageServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
+	ServerProfile imageServerProfile;
+	if ( Settings.ServerID != -1 ) {
+		imageServerProfile.setServerName( Utf8ToWCstring( _EngineList->byIndex(Settings.ServerID)->Name ) );
+	}
+	///imageServerProfile.serverSettings = Settings.ServersSettings[imageServerProfile.serverName()];
+	imageServerSelector_->setServerProfile(imageServerProfile);
+
+	serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_FILESERVERSELECTORPLACE);
+	fileServerSelector_ = new CServerSelectorControl();
+	fileServerSelector_->Create(m_hWnd, serverSelectorRect);
+	fileServerSelector_->ShowWindow( SW_SHOW );
+	fileServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
+	ServerProfile fileServerProfile;
+	if ( Settings.FileServerID != -1 ) {
+		fileServerProfile.setServerName(Utf8ToWCstring( _EngineList->byIndex(Settings.FileServerID)->Name ));
+	}
+	//fileServerProfile.serverSettings = Settings.ServersSettings[fileServerProfile.serverName()];
+	fileServerSelector_->setServerProfile(fileServerProfile);
+	fileServerSelector_->setTitle(TR("Сервер для хранения других типов файлов"));
+
 
 	BOOL temp;
 	DoDataExchange(FALSE);
@@ -107,7 +137,7 @@ LRESULT CUploadSettingsPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 LRESULT CUploadSettingsPage::OnClickedUseProxy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& bHandled)
 {
 	bool Checked = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK)!=0;
-	ZGuiTools::EnableNextN(GetDlgItem(wID),Checked? 8: 11, Checked);
+	GuiTools::EnableNextN(GetDlgItem(wID),Checked? 8: 11, Checked);
 
 	if(Checked)
 		OnClickedUseProxyAuth(BN_CLICKED, IDC_NEEDSAUTH, 0, bHandled);
@@ -119,7 +149,7 @@ LRESULT CUploadSettingsPage::OnClickedUseProxy(WORD /*wNotifyCode*/, WORD wID, H
 LRESULT CUploadSettingsPage::OnClickedUseProxyAuth(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	bool Checked = SendDlgItemMessage(wID, BM_GETCHECK)!=0;
-	ZGuiTools::EnableNextN(GetDlgItem(wID), 4, Checked);
+	GuiTools::EnableNextN(GetDlgItem(wID), 4, Checked);
 	return 0;
 }
 

@@ -55,7 +55,7 @@ std::string wstostr(const std::wstring &ws, UINT codePage)
 	 return str;
 }
 
-const std::string AnsiToUtf8(const std::string &str, int codepage)
+std::string AnsiToUtf8(const std::string &str, int codepage)
 {
 
 	return wstostr(strtows(str, codepage), CP_UTF8);
@@ -70,12 +70,6 @@ const std::wstring Utf8ToWstring(const Utf8String &str)
 {
 
 	return strtows(str, CP_UTF8);
-}
-
-const std::string Utf8ToAnsi(const std::string &str, int codepage)
-{
-
-	return wstostr(strtows(str, CP_UTF8), codepage);
 }
 
 

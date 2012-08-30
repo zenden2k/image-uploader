@@ -25,6 +25,8 @@
 #include "Func/Settings.h"
 #include "LogWindow.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
+#include <Func/Myutils.h>
 
 // CGeneralSettings
 CGeneralSettings::CGeneralSettings()
@@ -43,7 +45,7 @@ int CGeneralSettings::GetNextLngFile(LPTSTR szBuffer, int nLength)
 	
 	if(!findfile)
 	{
-		findfile = FindFirstFile(GetAppFolder() + "Lang\\*.lng", &wfd);
+		findfile = FindFirstFile(WinUtils::GetAppFolder() + "Lang\\*.lng", &wfd);
 		if(!findfile) goto error;
 	}
 	else if(!FindNextFile(findfile,&wfd)) goto error;
@@ -100,8 +102,8 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 	while(GetNextLngFile(buf, sizeof(buf)/sizeof(TCHAR)))
 	{
-		if(lstrlen(buf) == 0 || lstrcmpi(GetFileExt(buf), _T("lng"))) continue;
-		buf2 = GetOnlyFileName(buf );
+		if(lstrlen(buf) == 0 || lstrcmpi(WinUtils::GetFileExt(buf), _T("lng"))) continue;
+		buf2 = WinUtils::GetOnlyFileName(buf );
 		SendDlgItemMessage(IDC_LANGLIST,CB_ADDSTRING,0,(WPARAM)(LPCTSTR)buf2);
 	}
 
@@ -111,7 +113,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 	SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_SETCHECK, Settings.ExplorerContextMenu);
 	
-	bool shellIntegrationAvailable = FileExists(Settings.getShellExtensionFileName())!=0;
+	bool shellIntegrationAvailable = WinUtils::FileExists(Settings.getShellExtensionFileName())!=0;
 
 	SendDlgItemMessage(IDC_SHELLVIDEOCONTEXTMENUITEM, BM_SETCHECK, Settings.ExplorerVideoContextMenu);
 	SendDlgItemMessage(IDC_SHELLSENDTOITEM, BM_SETCHECK, Settings.SendToContextMenu);
@@ -133,7 +135,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 LRESULT CGeneralSettings::OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	TCHAR Buf[MAX_PATH*4];
-	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
+	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
 		CString(TR("Исполняемые файлы")),
 		_T("*.exe;*.com;*.bat;*.cmd;"),
 		TR("Все файлы"),
@@ -141,7 +143,7 @@ LRESULT CGeneralSettings::OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, 
 
 	CFileDialog fd(true, 0, 0, 4|2, Buf, m_hWnd);
 	CString s;
-	s = GetAppFolder();
+	s = WinUtils::GetAppFolder();
 	fd.m_ofn.lpstrInitialDir = s;
 	if ( fd.DoModal() != IDOK || !fd.m_szFileName ) return 0;
 
@@ -191,7 +193,7 @@ bool CGeneralSettings::Apply()
 LRESULT CGeneralSettings::OnClickedQuickUpload(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	bool Checked = SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_GETCHECK)==BST_CHECKED;
-	ZGuiTools::EnableNextN(GetDlgItem(wID), 1, Checked);
+	GuiTools::EnableNextN(GetDlgItem(wID), 1, Checked);
 	return 0;
 }
 
@@ -210,5 +212,5 @@ LRESULT CGeneralSettings::OnShellIntegrationCheckboxChanged(WORD wNotifyCode, WO
 void CGeneralSettings::ShellIntegrationChanged()
 {
 	bool checked = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED;
-	ZGuiTools::EnableNextN(GetDlgItem(IDC_SHELLINTEGRATION), 2, checked);
+	GuiTools::EnableNextN(GetDlgItem(IDC_SHELLINTEGRATION), 2, checked);
 }

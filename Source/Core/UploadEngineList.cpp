@@ -76,6 +76,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename)
 			if ( UE.MaxThreadCount <= 0 ) {
 				 UE.MaxThreadCount = 0;
 			}
+			UE.LoginLabel =  cur.Attribute("LoginLabel");
 			std::vector<ZSimpleXmlNode> actions;
 			cur["Actions"].GetChilds("Action", actions);
 

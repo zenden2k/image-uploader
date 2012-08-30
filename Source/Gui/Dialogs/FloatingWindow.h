@@ -28,9 +28,9 @@
 #include "atlheaders.h"
 #include <atlcrack.h>
 #include "Common/trayicon.h"
-#include "SettingsDlg.h"
 #include "TraySettings.h"
 #include "Core/Upload/FileQueueUploader.h"
+#include <Gui/Dialogs/HotkeySettings.h>
 // FloatingWindow
 
 #define IDM_UPLOADFILES 20001
@@ -156,10 +156,10 @@ public:
 	 void UploadScreenshot(const CString& realName, const CString &displayName);
 	 CString fileName, realFileName;
 	 CFileQueueUploader * m_FileQueueUploader;
-	 bool OnQueueFinished();
+	 bool OnQueueFinished(CFileQueueUploader*);
 	 bool m_bFromHotkey;
 	 bool OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result);
-	 bool OnConfigureNetworkManager(NetworkManager* nm);
+	 bool OnConfigureNetworkManager(CFileQueueUploader*,NetworkManager* nm);
 	 std::string source_file_name_;
 	 std::string server_name_;
 };

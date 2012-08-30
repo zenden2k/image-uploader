@@ -37,6 +37,7 @@
 #include "Gui/Dialogs/ResultsWindow.h"
 #include <Core/Upload/FileQueueUploader.h>
 #include <Func/HistoryManager.h>
+#include <Func/CommonTypes.h>
 
 class CTempFilesDeleter;
 
@@ -101,7 +102,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 
 //upload stuff
 		bool OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result);
-		bool OnQueueFinished();
+		bool OnQueueFinished(CFileQueueUploader*);
 		void SetUploadProgress(int CurPos, int Total, int FileProgress);
 		void createToolbar();
 		void EnableMediaInfo(bool Enable);

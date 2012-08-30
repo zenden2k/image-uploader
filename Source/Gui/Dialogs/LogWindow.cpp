@@ -21,6 +21,8 @@
 #include "atlheaders.h"
 #include "Func/Settings.h"
 #include "TextViewDlg.h"
+#include <Func/WinUtils.h>
+#include <Func/Myutils.h>
 
 // CLogWindow
 CLogWindow::CLogWindow()
@@ -153,7 +155,7 @@ void ErrorMessage(ErrorInfo errorInfo)
 		infoText += _T("URL: ") + Utf8ToWCstring(errorInfo.Url) + _T("\n");
 
 	if (errorInfo.ActionIndex != -1)
-		infoText += _T("Действие:") + CString(_T(" #")) + IntToStr(errorInfo.ActionIndex);
+		infoText += _T("Действие:") + CString(_T(" #")) + WinUtils::IntToStr(errorInfo.ActionIndex);
 
 	if (infoText.Right(1) == _T("\n"))
 		infoText.Delete(infoText.GetLength() - 1);
@@ -184,7 +186,7 @@ void DebugMessage(const std::string& msg, bool isResponseBody)
 		MessageBox(0, Utf8ToWCstring(msg.c_str()), _T("Uploader"), MB_ICONINFORMATION);
 	else
 	{
-		CTextViewDlg TextViewDlg(Utf8ToWstring(msg).c_str(), CString(_T("Server reponse")), CString(_T("Server reponse:")),
+		CTextViewDlg TextViewDlg(IuCoreUtils::Utf8ToWstring(msg).c_str(), CString(_T("Server reponse")), CString(_T("Server reponse:")),
 		                         _T("Save to file?"));
 
 		if (TextViewDlg.DoModal(GetActiveWindow()) == IDOK)

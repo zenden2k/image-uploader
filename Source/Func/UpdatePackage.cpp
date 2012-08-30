@@ -27,43 +27,11 @@
 #include "Core/Utils/StringUtils.h"
 #include "Func/Common.h"
 #include "Func/PluginLoader.h"
+#include <Core/Utils/CryptoUtils.h>
+#include <Func/WinUtils.h>
+#include <Func/Myutils.h>
 
-BOOL CreateFolder(LPCTSTR szFolder)
-{
-	if (!szFolder || !lstrlen(szFolder))
-		return FALSE;
-
-	DWORD dwAttrib = GetFileAttributes(szFolder);
-
-	// already exists ?
-	if (dwAttrib != 0xffffffff)
-		return ((dwAttrib & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY);
-
-	// recursively create from the top down
-	TCHAR* szPath = _tcsdup(szFolder);
-	TCHAR* p = _tcsrchr(szPath, '\\');
-
-	if (p) 
-	{
-		// The parent is a dir, not a drive
-		*p = '\0';
-			
-		// if can't create parent
-		if (!CreateFolder(szPath))
-		{
-			free(szPath);
-			return FALSE;
-		}
-		free(szPath);
-
-		if (!::CreateDirectory(szFolder, NULL)) 
-			return FALSE;
-	}
-	
-	return TRUE;
-}
-
-CUpdateInfo::CUpdateInfo()
+CUpdateInfo::CUpdateInfo() 
 {
 
 }
@@ -131,12 +99,8 @@ bool CUpdateInfo::Parse( ZSimpleXml &xml)
 	core = root.AttributeInt("CoreUpdate");
 	m_CoreUpdate = core!=0;
 		
-		//if(m_xml.FindElem(_T("Info")))
-	//	{
-			m_ReadableText = Utf8ToWCstring(root["Info"].Text());
-			//m_xml.GetData(m_ReadableText);
-			m_ReadableText.Replace(_T("\n"),_T("\r\n"));
-		//}
+	m_ReadableText = Utf8ToWCstring(root["Info"].Text());
+	m_ReadableText.Replace(_T("\n"),_T("\r\n"));
 	
 	return true;
 }
@@ -213,7 +177,7 @@ bool CUpdateManager::CheckUpdates()
 	m_ErrorStr.Empty();
 	Clear();
 	std::vector<CString> fileList;
-	GetFolderFileList(fileList, IU_GetDataFolder() +_T("Update"),_T("*.xml"));
+	WinUtils::GetFolderFileList(fileList, IU_GetDataFolder() +_T("Update"),_T("*.xml"));
 
 	bool Result = true;
 
@@ -271,11 +235,14 @@ bool CUpdateManager::internal_load_update(CString name)
 
 	if(nm.responseCode() != 200)
 	{
-		WriteLog(logWarning,_T("Update Engine"), _T("Невозможно загрузить информацию о пакете обновления ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: "))+IntToStr(nm.responseCode())+_T("\r\n")+ Utf8ToWstring(nm.errorString()).c_str(),CString("URL=")+url);		
+		WriteLog(logWarning,_T("Update Engine"), _T("Невозможно загрузить информацию о пакете обновления ") +
+			localPackage.packageName() + CString(_T("\r\nHTTP response code: "))+
+			WinUtils::IntToStr(nm.responseCode())+_T("\r\n")+ 
+			IuCoreUtils::Utf8ToWstring(nm.errorString()).c_str(),CString("URL=")+url);		
 		return false;
 	}
 
-	std::wstring res = Utf8ToWstring( nm.responseBody());
+	std::wstring res = IuCoreUtils::Utf8ToWstring( nm.responseBody());
 	if(!remotePackage.LoadUpdateFromBuffer(res.c_str()))
 	{
 		return false;
@@ -305,13 +272,14 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 	nm.doGet(WCstringToUtf8( ui.downloadUrl()));
 	if(nm.responseCode() != 200)
 	{
-		WriteLog(logError,_T("Update Engine"),TR("Ошибка обновления компонента ") + ui.packageName() + CString(_T("\r\nHTTP response code: "))+IntToStr(nm.responseCode())+_T("\r\n")+ Utf8ToWstring(nm.errorString()).c_str(),CString("URL=")+ui.downloadUrl());		
+		WriteLog(logError,_T("Update Engine"),TR("Ошибка обновления компонента ") + ui.packageName() + CString(_T("\r\nHTTP response code: "))+WinUtils::IntToStr(nm.responseCode())+_T("\r\n")+ 
+			IuCoreUtils::Utf8ToWstring(nm.errorString()).c_str(),CString("URL=")+ui.downloadUrl());		
 		return 0;
 	}
 
-	if( ui.getHash() != IU_md5_file(filename) || ui.getHash().IsEmpty())
+	if( ui.getHash() != IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(WCstringToUtf8(filename)).c_str() || ui.getHash().IsEmpty())
 	{
-		updateStatus(0, CString(TR("Не совпал MD5 хэш пакета обновления "))+myExtractFileName( filename));
+		updateStatus(0, CString(TR("Не совпал MD5 хэш пакета обновления "))+WinUtils::myExtractFileName( filename));
 		return 0;
 	}
 
@@ -346,7 +314,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 CUpdatePackage::CUpdatePackage()
 {
 	m_statusCallback = 0;
-	randomize();
+	IuCoreUtils::randomize();
 	m_nUpdatedFiles = 0;
 	m_nTotalFiles = 0;
 	m_CoreUpdate = false;
@@ -354,14 +322,14 @@ CUpdatePackage::CUpdatePackage()
 
 bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
 {
-	if(!FileExists(filename)) return false;
+	if(!WinUtils::FileExists(filename)) return false;
 	if(!m_xml.LoadFromFile(WCstringToUtf8(filename))) {
-		WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file \'"))+myExtractFileName(filename));
+		WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file \'"))+WinUtils::myExtractFileName(filename));
 		return false;
 	}
 
 	TCHAR buffer[256];
-	ExtractFilePath(filename, buffer);
+	WinUtils::ExtractFilePath(filename, buffer);
 	m_PackageFolder = buffer;
 
 	ZSimpleXmlNode root = m_xml.getRoot("UpdatePackage", false);
@@ -411,9 +379,9 @@ bool CUpdatePackage::doUpdate()
 		CString copyFrom, copyTo;
 		copyFrom = m_PackageFolder + ue.name;
 		copyTo = ue.saveTo;
-		if( (ue.hash != IU_md5_file(copyFrom) || ue.hash.IsEmpty()) && ue.action != _T("delete"))
+		if( (ue.hash != IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(WCstringToUtf8(copyFrom)).c_str() || ue.hash.IsEmpty()) && ue.action != _T("delete"))
 		{
-			setStatusText( CString(TR("Не совпал MD5 хэш файла "))+myExtractFileName( copyTo));
+			setStatusText( CString(TR("Не совпал MD5 хэш файла "))+WinUtils::myExtractFileName( copyTo));
 			return false;
 		}
 	}
@@ -425,19 +393,19 @@ bool CUpdatePackage::doUpdate()
 		CString copyFrom, copyTo;
 		copyFrom = m_PackageFolder + ue.name;
 		copyTo = ue.saveTo;
-		CString appFolder = GetAppFolder();
+		CString appFolder = WinUtils::GetAppFolder();
 		if(appFolder.Right(1) == _T("\\"))
 			appFolder.Delete(appFolder.GetLength()-1);
 
 		copyTo.Replace(_T("%datapath%"), IU_GetDataFolder());
 		copyTo.Replace(_T("%apppath%"), appFolder);
-		CString renameTo = copyTo + _T(".")+IntToStr(random(10000))+ _T(".old");
+		CString renameTo = copyTo + _T(".")+WinUtils::IntToStr(IuCoreUtils::random(10000))+ _T(".old");
 		TCHAR buffer[MAX_PATH];
-		ExtractFilePath(copyTo, buffer);
+		WinUtils::ExtractFilePath(copyTo, buffer);
 		std::vector<std::string> tokens;
 		IuStringUtils::Split(ue.flags, ",", tokens, -1);
 		bool skipFile = false;
-		bool isWin64Os = IsWindows64Bit();
+		bool isWin64Os = WinUtils::IsWindows64Bit();
 		for(size_t i=0; i<tokens.size(); i++)
 		{
 			if(tokens[i] == "os_win64bit")
@@ -462,7 +430,7 @@ bool CUpdatePackage::doUpdate()
 		}
 		else
 		{
-			CreateFolder(buffer);
+			WinUtils::CreateFolder(buffer);
 			if(m_CoreUpdate)
 			{
 				
@@ -474,7 +442,7 @@ bool CUpdatePackage::doUpdate()
 			
 			if(!CopyFile(copyFrom,copyTo,FALSE))
 			{
-				WriteLog(logWarning,_T("Update Engine"),CString(_T("Не могу записать файл "))+myExtractFileName(copyTo));
+				WriteLog(logWarning,_T("Update Engine"),CString(_T("Не могу записать файл "))+WinUtils::myExtractFileName(copyTo));
 				
 			}
 			else 
@@ -484,7 +452,7 @@ bool CUpdatePackage::doUpdate()
 			}
 		}
 	}
-	DeleteDir2(m_PackageFolder);
+	WinUtils::DeleteDir2(m_PackageFolder);
 	return true;
 }
 

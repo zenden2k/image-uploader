@@ -112,6 +112,10 @@ struct ServerSettingsStruct
 	{
 		params[name] = value;
 	}
+
+	bool isEmpty() const {
+		return !authData.DoAuth && authData.Login.empty() && authData.Password.empty() && params.empty();
+	}
 };
 
 class CUploadEngineData
@@ -119,6 +123,7 @@ class CUploadEngineData
 	public:
 		std::string Name;
 		std::string PluginName;
+		std::string LoginLabel;
 		bool SupportsFolders;
 		bool UsingPlugin;
 		bool Debug;

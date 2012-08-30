@@ -27,6 +27,9 @@
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
 #include "UploadSettings.h"
+#include <Func/WinUtils.h>
+#include <Func/Myutils.h>
+#include <Func/Common.h>
 
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg,CAtlArray<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)
@@ -95,7 +98,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	CBitmap hBitmap;
 
 	HIMAGELIST m_hToolBarImageList;
-	if (Is32BPP())
+	if (GuiTools::Is32BPP())
 	{
 		hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_BITMAP3));
 		
@@ -113,9 +116,9 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	RECT rc = {0,0,100,24};
 	GetClientRect(&rc);
 	rc.top = rc.bottom - 26;
-	rc.bottom-= ZGuiTools::dlgY(1);
-	rc.left = ZGuiTools::dlgX(3);
-	rc.right -= ZGuiTools::dlgX(3);
+	rc.bottom-= GuiTools::dlgY(1);
+	rc.left = GuiTools::dlgX(3);
+	rc.right -= GuiTools::dlgX(3);
 	Toolbar.Create(m_hWnd,rc,_T(""), WS_CHILD|WS_CHILD | TBSTYLE_LIST |TBSTYLE_CUSTOMERASE|TBSTYLE_FLAT| CCS_NORESIZE/*|*/|CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
 	//TabBackgroundFix(Toolbar.m_hWnd);
 	
@@ -182,7 +185,7 @@ void BBCode_Link(CString &Buffer, CUrlListItem &item)
 	else 
 		Buffer += item.DownloadUrl;
 	Buffer += _T("]");
-	Buffer += myExtractFileName(item.FileName);
+	Buffer += WinUtils::myExtractFileName(item.FileName);
 	Buffer += _T("[/url]");
 
 }
@@ -195,7 +198,7 @@ void HTML_Link(CString &Buffer, CUrlListItem &item)
 	else 
 		Buffer += item.DownloadUrl;
 	Buffer += _T("\">");
-	Buffer += myExtractFileName(item.FileName);
+	Buffer += WinUtils::myExtractFileName(item.FileName);
 	Buffer += _T("</a>");
 }
 
@@ -237,16 +240,16 @@ const CString CResultsPanel::GenerateOutput()
 
 		for(int i=0; i<n; i++)
 		{
-			LPCTSTR fname=myExtractFileName(UrlList[i].FileName);
+			LPCTSTR fname=WinUtils::myExtractFileName(UrlList[i].FileName);
 
 			m_Vars[_T("DownloadUrl")]=UrlList[i].DownloadUrl;
 			m_Vars[_T("ImageUrl")]=UrlList[i].ImageUrl;
 			m_Vars[_T("ThumbUrl")]=UrlList[i].ThumbUrl;
 			m_Vars[_T("FileName")]=fname;
 			m_Vars[_T("FullFileName")]=UrlList[i].FileName;
-			m_Vars[_T("Index")]=IntToStr(i);
+			m_Vars[_T("Index")]=WinUtils::IntToStr(i);
 			CString buffer;
-			buffer = GetOnlyFileName(UrlList[i].FileName);
+			buffer = WinUtils::GetOnlyFileName(UrlList[i].FileName);
 			m_Vars[_T("FileNameWithoutExt")]=UrlList[i].FileName;
 			if(p!=0  && !((i)%p))
 
@@ -294,7 +297,7 @@ const CString CResultsPanel::GenerateOutput()
 			}
 			else
 			{
-				Buffer+=myExtractFileName(UrlList[i].FileName);
+				Buffer+=WinUtils::myExtractFileName(UrlList[i].FileName);
 			}
 
 			Buffer+=_T("[/url]");
@@ -362,7 +365,7 @@ const CString CResultsPanel::GenerateOutput()
 				Buffer+=_T("\" border=0>");
 			}
 			else
-				Buffer+=myExtractFileName(UrlList[i].FileName);
+				Buffer+=WinUtils::myExtractFileName(UrlList[i].FileName);
 			Buffer+=_T("</a>");
 			if(((i+1)%p)&&type==4)
 				Buffer+=_T("&nbsp;&nbsp;");
@@ -423,7 +426,7 @@ LRESULT CResultsPanel::OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/
 LRESULT CResultsPanel::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CString buffer = GenerateOutput();
-	IU_CopyTextToClipboard(buffer);
+	WinUtils::CopyTextToClipboard(buffer);
 	return 0;
 }
 
@@ -461,7 +464,7 @@ bool CResultsPanel::LoadTemplates(CString &Error)
 	ZSimpleXml XML;
 	CString XmlFileName = IU_GetDataFolder() + _T("templates.xml");
 
-	if(!FileExists(XmlFileName))
+	if(!WinUtils::FileExists(XmlFileName))
 	{
 		Error = TR("Файл не найден.");
 		return false;
@@ -519,7 +522,7 @@ CString CResultsPanel::ReplaceVars(const CString& Text)
 		if( reg.search(str, pos)) 
 		{
 			pos = reg.get_match_end()+1;
-			CString vv = Utf8ToWstring(reg[0]).c_str();
+			CString vv = IuCoreUtils::Utf8ToWstring(reg[0]).c_str();
 			/*if(!vv.IsEmpty() && vv[0] == _T('_'))
 				Result.Replace(CString(_T("$(")) + vv + _T(")"),m_Consts[vv]);
 			else*/
@@ -618,7 +621,7 @@ LRESULT CResultsPanel::OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND h
 	CUploadEngineData *ue = m_EngineList->byName(m_Servers[index]);
 	if(!ue) return 0;
 	CString folderUrl = Utf8ToWCstring(Settings.ServerByUtf8Name(ue->Name).params[("FolderUrl")]);
-	IU_CopyTextToClipboard(folderUrl);
+	WinUtils::CopyTextToClipboard(folderUrl);
 	return 0;
 }
 

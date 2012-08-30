@@ -19,16 +19,20 @@
 */
 
 #include "PluginLoader.h"
+
+#include "atlheaders.h"
 #include <io.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <windows.h>
 #include <sqstdsystem.h>
 
-#include "atlheaders.h"
+
 #include "Core/Network/NetworkManager.h"
 #include "Func/Settings.h"
 #include "Gui/Dialogs/LogWindow.h"
+#include "Func/MyUtils.h"
+#include "Func/Common.h"
 
 CPluginManager::CPluginManager() {
 	SquirrelVM::Init();
