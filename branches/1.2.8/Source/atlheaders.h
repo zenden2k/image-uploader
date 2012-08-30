@@ -2,6 +2,7 @@
 #define IU_ATLHEADERS_H
 
 #pragma once
+
 #include "winheaders.h"
 #include <atlbase.h>
 #include <atlapp.h>
@@ -22,4 +23,5 @@ typedef CAtlArray<CString> CStringList;
 #ifndef IU_SHELLEXT
 extern CAppModule _Module;
 #endif
+
 #endif

@@ -29,6 +29,7 @@
 #include "Gui/Controls/IconButton.h"
 #include <atlcrack.h>
 #include "Gui/Controls/PercentEdit.h"
+#include <Func/Settings.h>
 #define IDC_SELECTFOLDER 4050
 #define IDC_SERVERBUTTON 4000
 #define IDC_IMAGETOOLBAR 4010
@@ -132,6 +133,7 @@ COMMAND_HANDLER(IDC_IMAGEHEIGHT, EN_CHANGE, OnProfileEditedCommand)
    LRESULT OnProfileEditedCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
    
 	int m_nImageServer, m_nFileServer;
+	ServerProfile imageServer, fileServer;
 	void ShowParams();
 	CToolBarCtrl Toolbar;
 	CToolBarCtrl FileServerSelectBar;

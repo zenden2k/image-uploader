@@ -28,10 +28,9 @@
 
 #include "Func/MyEngineList.h"
 #include "HotkeySettings.h"
+#include <Gui/Dialogs/RegionSelect.h>
 #include "Gui/Controls/hyperlink.h"
-#include "Core/ScreenCapture.h"
 #include "resource.h"       // main symbols
-#include "screenshotdlg.h"
 #include "Gui/Dialogs/UpdateDlg.h"
 
 #define ID_PASTE 9888
@@ -172,6 +171,7 @@ public:
 	CHotkeyList m_hotkeys;
 	CFolderAdd FolderAdd;
 	CMyEngineList m_EngineList;
+	CToolTipCtrl toolTipControl_;
 	long m_lRef;
 	bool QuickUploadMarker;
 	CString LastVideoFile;
@@ -192,6 +192,7 @@ public:
 	bool funcMediaInfo();
 	bool funcAddFiles();
 	bool funcDownloadImages();
+	bool funcReuploadImages();
 	// end of functions
 	bool executeFunc(CString funcName);
 

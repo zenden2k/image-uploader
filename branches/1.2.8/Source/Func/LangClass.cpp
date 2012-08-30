@@ -21,6 +21,7 @@
 #include "langclass.h"
 #include "atlheaders.h"
 #include "myutils.h"
+#include <Func/WinUtils.h>
 
 CLang Lang;
 
@@ -104,8 +105,8 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
 
 		if (*Buffer == _T('#'))
 			continue;
-		ExtractStrFromList(Buffer, 0, Name, sizeof(Name) / sizeof(TCHAR), _T(""), _T('='));
-		ExtractStrFromList(Buffer, 1, Text, sizeof(Text) / sizeof(TCHAR), _T(""), _T('='));
+		WinUtils::ExtractStrFromList(Buffer, 0, Name, sizeof(Name) / sizeof(TCHAR), _T(""), _T('='));
+		WinUtils::ExtractStrFromList(Buffer, 1, Text, sizeof(Text) / sizeof(TCHAR), _T(""), _T('='));
 
 		if (Name[lstrlen(Name) - 1] == _T(' '))
 			Name[lstrlen(Name) - 1] = 0;

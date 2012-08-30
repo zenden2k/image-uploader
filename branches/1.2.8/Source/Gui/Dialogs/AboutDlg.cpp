@@ -29,16 +29,16 @@
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
+	GuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
 	LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
 	LogoImage.LoadImage(0, 0, IDR_PNG1, false, GetSysColor(COLOR_BTNFACE));
 
 	m_WebSiteLink.SubclassWindow(GetDlgItem(IDC_SITELINK));
 	m_GoogleCodeLink.SubclassWindow(GetDlgItem(IDC_GOOGLECODELINK));
 	CString buildInfo = CString("Build ") + _T(BUILD) + _T(" (") + _T(TIME) + _T(")") +
-	   (_T("\r\n") + Utf8ToWstring( curl_version())).c_str();
+	   (_T("\r\n") + IuCoreUtils::Utf8ToWstring( curl_version())).c_str();
 
-	CString text = CString(TR("v")) + _APP_VER/*CString(_T("1.2.7")*/;
+	CString text = CString(TR("v")) + _APP_VER;
 	SetDlgItemText(IDC_CURLINFOLABEL, text);
 	SetDlgItemText(IDC_IMAGEUPLOADERLABEL, buildInfo);
 	CenterWindow(GetParent());

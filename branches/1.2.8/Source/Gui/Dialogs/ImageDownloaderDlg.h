@@ -74,6 +74,8 @@ class CImageDownloaderDlg:	public CDialogImpl <CImageDownloaderDlg>,
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		bool BeginDownloading();
 		static bool LinksAvailableInText(const CString &text);
+		static bool ExtractLinks(CString text, std::vector<CString> &result);
+		static CString GetExtensionByMime(CString mime);
 		void ParseBuffer(const CString& text, bool OnlyImages);
 		void OnQueueFinished();
 		bool OnFileFinished(bool ok, CFileDownloader::DownloadFileListItem it);

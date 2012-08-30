@@ -116,12 +116,7 @@ bool CCmdLine::IsOption(LPCTSTR Option, bool bUsePrefix)
 	return false;
 }
 
-CString IntToStr(int n)
-{
-	CString Result;
-	Result.Format(_T("%d"), n);
-	return Result;
-}
+
 
 size_t CCmdLine::GetCount()
 {

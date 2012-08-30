@@ -22,6 +22,10 @@
 #include "hyperlink.h"
 #include "atlheaders.h"
 #include "Func/Common.h"
+#include <Func/MyUtils.h>
+
+
+
 /*
  * If you do not wish to link with the windebug module,
  * comment out the next include directive and uncomment the

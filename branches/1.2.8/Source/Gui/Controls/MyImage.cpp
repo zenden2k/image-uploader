@@ -23,6 +23,7 @@
 #include "Gui/Dialogs/LogWindow.h"
 #include "Func/LangClass.h"
 #include "Func/Settings.h"
+#include <Func/Common.h>
 
 using namespace Gdiplus;
 // CMyImage

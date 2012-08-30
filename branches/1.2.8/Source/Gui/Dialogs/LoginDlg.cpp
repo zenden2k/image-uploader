@@ -24,6 +24,7 @@
 #include "Func/Common.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
+#include <Func/Myutils.h>
 
 // CLoginDlg
 CLoginDlg::CLoginDlg(CUploadEngineData *ue)

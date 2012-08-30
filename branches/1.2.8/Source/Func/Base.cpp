@@ -21,6 +21,7 @@
 #include "Base.h"
 #include "Func/Settings.h"
 #include "Core/Utils/CoreUtils.h"
+#include <Func/MyUtils.h>
 
 ZBase* ZBase::m_base;
 

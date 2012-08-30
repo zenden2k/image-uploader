@@ -23,6 +23,8 @@
 #include "Func/Settings.h"
 #include "Core/Images/Thumbnail.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
+#include "Func/Myutils.h"
 
 // CThumbEditor
 CThumbEditor::CThumbEditor(Thumbnail *thumb)
@@ -90,12 +92,12 @@ LRESULT CThumbEditor::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
 
 void CThumbEditor::LoadParams()
 {
-	StringToFont(_T("Tahoma,7,b,204"), &ThumbFont);
+	WinUtils::StringToFont(_T("Tahoma,7,b,204"), &ThumbFont);
 	if(thumb_->existsParam("Font"))
 	{
 		std::string font = thumb_->getParamString("Font");
 		CString wide_text = Utf8ToWCstring(font);
-		StringToFont(wide_text, &ThumbFont);
+		WinUtils::StringToFont(wide_text, &ThumbFont);
 	}
 
 	if(thumb_->existsParam("FrameWidth"))
@@ -110,7 +112,7 @@ void CThumbEditor::LoadParams()
 	}
 	else
 	{
-		ZGuiTools::EnableNextN(GetDlgItem(IDC_DRAWFRAME), 3, false);
+		GuiTools::EnableNextN(GetDlgItem(IDC_DRAWFRAME), 3, false);
 		::EnableWindow(GetDlgItem(IDC_DRAWFRAME), false);
 	}
 
@@ -120,7 +122,7 @@ void CThumbEditor::LoadParams()
 	
 
 	if(thumb_->existsParam("FrameColor"))
-		FrameColor.SetColor(RGB2COLORREF(thumb_->getColor("FrameColor")));
+		FrameColor.SetColor(WinUtils::RGB2COLORREF(thumb_->getColor("FrameColor")));
 	else 
 	{
 		FrameColor.EnableWindow(false);
@@ -128,7 +130,7 @@ void CThumbEditor::LoadParams()
 	}
 
 	if(thumb_->existsParam("GradientColor1"))
-		Color1.SetColor(RGB2COLORREF(thumb_->getColor("GradientColor1")));
+		Color1.SetColor(WinUtils::RGB2COLORREF(thumb_->getColor("GradientColor1")));
 	else
 	{
 		Color1.EnableWindow(false);
@@ -137,7 +139,7 @@ void CThumbEditor::LoadParams()
 
 	if(thumb_->existsParam("TextColor"))
 	{
-		ThumbTextColor.SetColor(RGB2COLORREF(thumb_->getColor("TextColor")));
+		ThumbTextColor.SetColor(WinUtils::RGB2COLORREF(thumb_->getColor("TextColor")));
 	}
 	else
 	{
@@ -147,7 +149,7 @@ void CThumbEditor::LoadParams()
 
 	if(thumb_->existsParam("StrokeColor"))
 	{
-		StrokeColor.SetColor(RGB2COLORREF(thumb_->getColor("StrokeColor")));
+		StrokeColor.SetColor(WinUtils::RGB2COLORREF(thumb_->getColor("StrokeColor")));
 	}
 	else
 	{
@@ -157,7 +159,7 @@ void CThumbEditor::LoadParams()
 
 
 	if(thumb_->existsParam("GradientColor2"))
-	Color2.SetColor(RGB2COLORREF(thumb_->getColor("GradientColor2")));
+	Color2.SetColor(WinUtils::RGB2COLORREF(thumb_->getColor("GradientColor2")));
 	else
 	{
 		Color2.EnableWindow(false);
@@ -169,17 +171,17 @@ void CThumbEditor::LoadParams()
 void CThumbEditor::SaveParams()
 {
 	if(FrameColor.IsWindowEnabled())
-		thumb_->setColor("FrameColor", COLORREF2RGB(FrameColor.GetColor()));
+		thumb_->setColor("FrameColor", WinUtils::COLORREF2RGB(FrameColor.GetColor()));
 	if(Color1.IsWindowEnabled())
-		thumb_->setColor("GradientColor1", COLORREF2RGB(Color1.GetColor()));
+		thumb_->setColor("GradientColor1", WinUtils::COLORREF2RGB(Color1.GetColor()));
 	if(ThumbTextColor.IsWindowEnabled())
-		thumb_->setColor("TextColor", COLORREF2RGB(ThumbTextColor.GetColor()));
+		thumb_->setColor("TextColor", WinUtils::COLORREF2RGB(ThumbTextColor.GetColor()));
 
 	if(StrokeColor.IsWindowEnabled())
-		thumb_->setColor("StrokeColor", COLORREF2RGB(StrokeColor.GetColor()));
+		thumb_->setColor("StrokeColor", WinUtils::COLORREF2RGB(StrokeColor.GetColor()));
 	
 	if(Color2.IsWindowEnabled())
-	thumb_->setColor("GradientColor2", COLORREF2RGB(Color2.GetColor()));
+	thumb_->setColor("GradientColor2", WinUtils::COLORREF2RGB(Color2.GetColor()));
 	
 	if(thumb_->existsParam("DrawFrame"))
 	{
@@ -189,7 +191,7 @@ void CThumbEditor::SaveParams()
 	if(thumb_->existsParam("FrameWidth"))
 		thumb_->setParam("FrameWidth", GetDlgItemInt(IDC_FRAMEWIDTH));
 	
-	CString text  = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_THUMBTEXT));
+	CString text  = GuiTools::GetWindowText(GetDlgItem(IDC_THUMBTEXT));
 	bool AddText  = SendDlgItemMessage(IDC_ADDFILESIZE, BM_GETCHECK)!=0;
 	
 	thumb_->setParamString("Text", WCstringToUtf8(text));
@@ -199,7 +201,7 @@ void CThumbEditor::SaveParams()
 	//if(thumb_->existsParam("Font"))
 	{
 		CString res;
-		FontToString(&ThumbFont, res);
+		WinUtils::FontToString(&ThumbFont, res);
 		thumb_->setParamString("Font", WCstringToUtf8(res));
 	}
 
@@ -214,7 +216,7 @@ LRESULT  CThumbEditor::OnShowTextCheckboxClicked(WORD wNotifyCode, WORD wID, HWN
 void CThumbEditor::ShowTextCheckboxChanged()
 {
 	bool bChecked = SendDlgItemMessage(IDC_ADDFILESIZE, BM_GETCHECK)!=0;
-	ZGuiTools::EnableNextN(GetDlgItem(IDC_ADDFILESIZE), 7, bChecked);
+	GuiTools::EnableNextN(GetDlgItem(IDC_ADDFILESIZE), 7, bChecked);
 }
 
 LRESULT CThumbEditor::OnDrawFrameCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -226,7 +228,7 @@ LRESULT CThumbEditor::OnDrawFrameCheckboxClicked(WORD wNotifyCode, WORD wID, HWN
 void CThumbEditor::DrawFrameCheckboxChanged()
 {
 	bool bChecked = SendDlgItemMessage(IDC_DRAWFRAME, BM_GETCHECK)!=0;
-	ZGuiTools::EnableNextN(GetDlgItem(IDC_DRAWFRAME), 3, bChecked);
+	GuiTools::EnableNextN(GetDlgItem(IDC_DRAWFRAME), 3, bChecked);
 }
 
 

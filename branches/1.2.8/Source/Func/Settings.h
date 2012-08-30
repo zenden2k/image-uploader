@@ -28,13 +28,30 @@
 #include "atlheaders.h"
 #include "Func/langclass.h"
 #include "Func/pluginloader.h"
-#include "Func/Common.h"
 #include "Gui/Dialogs/HotkeySettings.h"
 
 #define TRAY_SCREENSHOT_UPLOAD 0
 #define TRAY_SCREENSHOT_CLIPBOARD 1
 #define TRAY_SCREENSHOT_SHOWWIZARD 2
 #define TRAY_SCREENSHOT_ADDTOWIZARD 3
+
+class ServerProfile {
+	public:
+		ServerProfile();
+		ServerProfile(CString newServerName);
+		ServerSettingsStruct serverSettings();
+		CUploadEngineData* uploadEngineData() const;
+
+		void setProfileName(CString newProfileName);
+		CString profileName() const;
+
+		void setServerName(CString newProfileName);
+		CString serverName() const;
+
+	protected:
+		CString serverName_;
+		CString profileName_;
+};
 
 struct UploadProfileStruct
 {
@@ -83,40 +100,14 @@ struct VideoSettingsStruct
 class CEncodedPassword
 {
 	public:
-		CEncodedPassword()
-		{
-		}
-		CEncodedPassword(CString d) 
-		{ 
-			 data_ = d; 
-		}
-		CString toEncodedData() const
-		{
-			CString res;
-			EncodeString(data_, res);
-			return res;
-		}
-		void fromPlainText(CString data)
-		{
-			data = data_;
-		}
-		void fromEncodedData(CString data)
-		{
-			DecodeString(data, data_);
-		}
-		operator CString&()
-		{
-			return data_;
-		}
-		operator const TCHAR*()
-		{
-			return data_;
-		}
-		CEncodedPassword& operator=(const CString& text)
-		{
-			data_ = text;
-			return *this;
-		}
+		CEncodedPassword();
+		CEncodedPassword(CString d);
+		CString toEncodedData() const;
+		void fromPlainText(CString data);
+		void fromEncodedData(CString data);
+		operator CString&();
+		operator const TCHAR*();
+		CEncodedPassword& operator=(const CString& text);
 	private:
 		CString data_;
 };
@@ -198,7 +189,7 @@ class CSettings
 		bool SendToContextMenu;
 		bool SendToContextMenu_changed;
 		bool QuickUpload;
-		std::map <CString, ServerSettingsStruct> ServersSettings;
+		std::map <CString, std::map<CString,ServerSettingsStruct> > ServersSettings;
 		CString ImageEditorPath;
 		CString VideoFolder,ImagesFolder;
 		bool SaveSettings();
@@ -218,6 +209,7 @@ class CSettings
 	int UploadBufferSize;
 	void EnableAutostartup(bool enable);
 	int ServerID, QuickServerID;
+	ServerProfile imageServer, fileServer;
 	void ApplyRegSettingsRightNow();
 	bool LoadAccounts(ZSimpleXmlNode root);
 	bool SaveAccounts(ZSimpleXmlNode root);

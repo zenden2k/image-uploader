@@ -37,6 +37,7 @@
 #include "mediainfodlg.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
 
 
 
@@ -251,7 +252,7 @@ LRESULT CVideoGrabber::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	TRC(IDC_GRABBERPARAMS, "Параметры...");
 	TRC(IDC_FILEINFOBUTTON, "Информация о файле");
 
-	ZGuiTools::AddComboBoxItems(m_hWnd, IDC_VIDEOENGINECOMBO, 3, CSettings::VideoEngineAuto, CSettings::VideoEngineDirectshow,CSettings::VideoEngineFFmpeg);
+	GuiTools::AddComboBoxItems(m_hWnd, IDC_VIDEOENGINECOMBO, 3, CSettings::VideoEngineAuto, CSettings::VideoEngineDirectshow,CSettings::VideoEngineFFmpeg);
 	int itemIndex = SendDlgItemMessage( IDC_VIDEOENGINECOMBO, CB_FINDSTRING, 0, (LPARAM)(LPCTSTR) Settings.VideoSettings.Engine );
 	if ( itemIndex == CB_ERR){
 		itemIndex = 0;
@@ -301,7 +302,7 @@ LRESULT CVideoGrabber::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 
 LRESULT CVideoGrabber::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	WizardDlg->LastVideoFile = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_FILEEDIT));
+	WizardDlg->LastVideoFile = GuiTools::GetWindowText(GetDlgItem(IDC_FILEEDIT));
 	
 	Terminated = false;
 	IsStopTimer = false;
@@ -578,7 +579,7 @@ int CVideoGrabber::GenPicture(CString& outFileName)
 LRESULT CVideoGrabber::OnBnClickedButton1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	TCHAR Buf[MAX_PATH*4];
-	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
+	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
 		CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv, mkv ...)"),
 		Settings.prepareVideoDialogFilters(),
 		TR("Все файлы"),
@@ -681,8 +682,7 @@ void CImgSavingThread::Stop()
 	WaitForThread();
 }
 
-CImgSavingThread::~CImgSavingThread()
-{
+CImgSavingThread::~CImgSavingThread() {
 	Stop();
 }
 
@@ -704,20 +704,15 @@ int CVideoGrabber::GrabBitmaps(TCHAR* szFile )
 		}
 	}
 
-	if ( videoEngine == CSettings::VideoEngineFFmpeg) {
-
-
+	if ( videoEngine == CSettings::VideoEngineFFmpeg ) {
 			CB.vg=this;
-
 			CB.SavingThread = &SavingThread;
 			CB.BufferEvent = CreateEvent(0, FALSE, FALSE, 0);
 			SavingThread.vg=this;
 			SavingThread.Start();
-
-			av_grab_frames(NumOfFrames, szFile, &CB, GetDlgItem(IDC_PROGRESSBAR), false, true);
+			av_grab_frames(NumOfFrames, szFile, &CB, GetDlgItem(IDC_PROGRESSBAR), m_bStopped, false, true);
 			GrabInfo(TR("Извлечение кадров было завершено."));
 			return 0;
-
 	}
 	USES_CONVERSION;
 	bool IsWMV = false;
@@ -732,7 +727,7 @@ int CVideoGrabber::GrabBitmaps(TCHAR* szFile )
 	if (!szFile)
 		return -1;
 	TCHAR szBuffer[256];
-	LPCTSTR szFileName = myExtractFileName(szFile);
+	LPCTSTR szFileName = WinUtils::myExtractFileName(szFile);
 	if (szFileName)
 	{
 		wsprintf(szBuffer, CString(TR("Извлечение кадров из видео файла")) + _T(" \"%s\" ..."), (LPCTSTR)szFileName);
@@ -740,11 +735,11 @@ int CVideoGrabber::GrabBitmaps(TCHAR* szFile )
 	}
 
 	IsOther = true;
-	bool IsAVI = IsStrInList(GetFileExt(szFileName), _T("avi\0\0"));
-	IsWMV = IsStrInList(GetFileExt(szFileName), _T("wmv\0asf\0\0"));
+	bool IsAVI = WinUtils::IsStrInList(WinUtils::GetFileExt(szFileName), _T("avi\0\0"));
+	IsWMV = WinUtils::IsStrInList(WinUtils::GetFileExt(szFileName), _T("wmv\0asf\0\0"));
 
 	if (!IsWMV)
-		IsOther = IsStrInList(GetFileExt(szFileName), _T("mkv\0wmv\0mpg\0"));
+		IsOther = WinUtils::IsStrInList(WinUtils::GetFileExt(szFileName), _T("mkv\0wmv\0mpg\0"));
 
 	// Create the sample grabber
 	//

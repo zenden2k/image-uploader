@@ -19,12 +19,15 @@
  */
 
 #include "ServerFolderSelect.h"
+
 #include "atlheaders.h"
 #include "Func/pluginloader.h"
 #include "Func/common.h"
 #include "NewFolderDlg.h"
 #include "LogWindow.h"
 #include "Func/Settings.h"
+#include <Func/WinUtils.h>
+#include <Func/Myutils.h>
 
 CServerFolderSelect::CServerFolderSelect(CUploadEngineData* uploadEngine)
 {
@@ -146,7 +149,7 @@ DWORD CServerFolderSelect::Run()
 
 		m_FolderTree.DeleteAllItems();
 		BuildFolderTree(m_FolderList.m_folderItems, "");
-		m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_SelectedFolder.id)]);
+		m_FolderTree.SelectItem(m_FolderMap[IuCoreUtils::Utf8ToWstring(m_SelectedFolder.id)]);
 		OnLoadFinished();
 	}
 
@@ -155,7 +158,7 @@ DWORD CServerFolderSelect::Run()
 		m_pluginLoader->createFolder(CFolderItem(), m_newFolder);
 		m_FolderOperationType = foGetFolders;
 		Run();
-		m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_newFolder.id)]);
+		m_FolderTree.SelectItem(m_FolderMap[IuCoreUtils::Utf8ToWstring(m_newFolder.id)]);
 	}
 
 	else if (m_FolderOperationType == foModifyFolder) // Modifying an existing folder
@@ -163,7 +166,7 @@ DWORD CServerFolderSelect::Run()
 		m_pluginLoader->modifyFolder(m_newFolder);
 		m_FolderOperationType = foGetFolders;
 		Run();
-		m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_newFolder.id)]);
+		m_FolderTree.SelectItem(m_FolderMap[IuCoreUtils::Utf8ToWstring(m_newFolder.id)]);
 	}
 	BlockWindow(false);
 	return 0;
@@ -332,11 +335,11 @@ void CServerFolderSelect::BuildFolderTree(std::vector<CFolderItem>& list, const 
 		{
 			CString title = Utf8ToWCstring(cur.title);
 			if (cur.itemCount != -1)
-				title += _T(" (") + IntToStr(cur.itemCount) + _T(")");
-			HTREEITEM res = m_FolderTree.InsertItem(title, 1, 1, m_FolderMap[Utf8ToWstring(cur.parentid)], TVI_SORT  );
+				title += _T(" (") + WinUtils::IntToStr(cur.itemCount) + _T(")");
+			HTREEITEM res = m_FolderTree.InsertItem(title, 1, 1, m_FolderMap[IuCoreUtils::Utf8ToWstring(cur.parentid)], TVI_SORT  );
 			m_FolderTree.SetItemData(res, i);
 
-			m_FolderMap[Utf8ToWstring(cur.id)] = res;
+			m_FolderMap[IuCoreUtils::Utf8ToWstring(cur.id)] = res;
 			if (cur.id != "")
 				BuildFolderTree(list, cur.id.c_str());
 			if (parentFolderId == _T(""))

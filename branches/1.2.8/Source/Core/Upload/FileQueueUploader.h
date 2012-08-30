@@ -64,8 +64,8 @@ class CFileQueueUploader
 		{
 		public:
 			virtual bool OnFileFinished(bool ok, FileListItem& result){return true;}
-			virtual bool OnQueueFinished() { return true;}
-			virtual bool OnConfigureNetworkManager(NetworkManager* nm){return true;}
+			virtual bool OnQueueFinished(CFileQueueUploader* queueUploader) { return true;}
+			virtual bool OnConfigureNetworkManager(CFileQueueUploader*, NetworkManager* nm){return true;}
 			virtual bool OnUploadProgress(UploadProgress progress, UploadTask* task, NetworkManager* nm){return true;}
 		};
 

@@ -49,9 +49,9 @@ Must be called before adding any items
 void CHyperLinkControl::Init(COLORREF BkColor)
 {
 	NormalFont = GetFont();
-	BoldFont = MakeFontBold(NormalFont);
-	UnderlineFont = MakeFontUnderLine(NormalFont);
-	BoldUnderLineFont = MakeFontUnderLine(BoldFont);
+	BoldFont = GuiTools::MakeFontBold(NormalFont);
+	UnderlineFont = GuiTools::MakeFontUnderLine(NormalFont);
+	BoldUnderLineFont = GuiTools::MakeFontUnderLine(BoldFont);
 	m_BkColor = BkColor;
 	OpenThemeData();
 }
@@ -299,7 +299,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 				CRect rec = item.ItemRect;
 				rec.right = rc.right-6;
 				rec.InflateRect(3,6);
-				ZGuiTools::FillRectGradient(dc.m_hDC, rec, 0xEAE2D9, 0xD3C1AF, false);
+				GuiTools::FillRectGradient(dc.m_hDC, rec, 0xEAE2D9, 0xD3C1AF, false);
 			}
 
 			TextRect.left += 40;

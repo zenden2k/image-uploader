@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <cstdio>
 #include <string>
 #include "CoreTypes.h"
+#include <stdlib.h>
+#include <time.h>
 
 namespace IuCoreUtils
 {
@@ -53,10 +55,21 @@ namespace IuCoreUtils
 	int64_t getFileSize(Utf8String utf8Filename);
 	const std::wstring Utf8ToWstring(const Utf8String &str);
 	const Utf8String WstringToUtf8(const std::wstring &str);
+	std::string AnsiToUtf8(const std::string &str, int codepage);
+	std::string Utf8ToAnsi(const std::string &str, int codepage);
+	std::string wstostr(const std::wstring &ws, UINT codePage);
+	std::wstring strtows(const std::string &str, UINT codePage);
 
 	const std::string timeStampToString(time_t t);
 	Utf8String fileSizeToString(int64_t nBytes);
 	bool createDirectory(const Utf8String path);
 	bool copyFile(const std::string& src, const std::string & dest, bool overwrite = true);
+
+	inline void randomize(){ 
+		srand((unsigned)time(NULL));
+	}
+	inline int random(int x) { 
+		return rand() % x;
+	}
 };
 #endif

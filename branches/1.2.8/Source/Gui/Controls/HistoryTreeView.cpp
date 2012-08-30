@@ -23,13 +23,10 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Func/Common.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
 
 const int LLB_VertDivider = 10;
 const int LLB_VertMargin = 5;
-
-HFONT MakeFontBold(HFONT font);
-
-HFONT MakeFontUnderLine(HFONT font);
 
 // CHistoryTreeView
 CHistoryTreeView::CHistoryTreeView()
@@ -73,7 +70,7 @@ LRESULT CHistoryTreeView::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 		if (dis->itemState & ODS_SELECTED )
 		{
 			CRect rd(dis->rcItem);
-			ZGuiTools::FillRectGradient(dis->hDC, rd, 0xEAE2D9, 0xD3C1AF, false);
+			GuiTools::FillRectGradient(dis->hDC, rd, 0xEAE2D9, 0xD3C1AF, false);
 		}
 /*		else if(dis->itemID != GetCount()-1) // If it isn't last item
       {
@@ -203,9 +200,9 @@ BOOL CHistoryTreeView::SubclassWindow(HWND hWnd)
 
 void CHistoryTreeView::Init()
 {
-	NormalFont = GetFont();
-	UnderlineFont =  MakeFontUnderLine(NormalFont);
-	BoldFont = MakeFontBold(NormalFont);
+	NormalFont    = GetFont();
+	UnderlineFont = GuiTools::MakeFontUnderLine(NormalFont);
+	BoldFont      = GuiTools::MakeFontBold(NormalFont);
 	SetItemHeight(1);
 }
 
@@ -284,7 +281,7 @@ HICON CHistoryTreeView::getIconForExtension(const CString& ext)
 	{
 		return m_fileIconCache[ext];
 	}
-	HICON res = GetAssociatedIcon(ext, false);
+	HICON res = WinUtils::GetAssociatedIcon(ext, false);
 	if (!res)
 		return 0;
 	m_fileIconCache[ext] = res;
@@ -365,7 +362,7 @@ void CHistoryTreeView::DrawItem(HTREEITEM item, HDC hdc, DWORD itemState, RECT i
 	gradientLineRect.bottom--;
 	gradientLineRect.top = gradientLineRect.bottom;
 	if (draw)
-		ZGuiTools::FillRectGradient(hdc, gradientLineRect, 0xc8c8c8, 0xFFFFFF, true);
+		GuiTools::FillRectGradient(hdc, gradientLineRect, 0xc8c8c8, 0xFFFFFF, true);
 	// rc.top = curY+3;
 	calcRect = rc;
 	DrawText(dc.m_hDC, Utf8ToWCstring(lowText), lowText.length(), &calcRect, DT_CALCRECT);
@@ -489,10 +486,10 @@ void CHistoryTreeView::DrawSubItem(HTREEITEM item, HDC hdc, DWORD itemState, REC
 	dc.FrameRect(&thumbRect, br);
 	HistoryItem* it2 = getItemData(item);
 	std::string fileName = IuCoreUtils::ExtractFileName(it2->localFilePath);
-	CString ext = Utf8ToWstring(IuCoreUtils::ExtractFileExt(fileName)).c_str();
+	CString ext = IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFileExt(fileName)).c_str();
 
 	HICON ico = getIconForExtension(Utf8ToWCstring(it2->localFilePath));
-	CString text = Utf8ToWstring(fileName).c_str();
+	CString text = IuCoreUtils::Utf8ToWstring(fileName).c_str();
 	int iconWidth = 32;
 	int iconHeight = 32;
 	if (ico != 0)

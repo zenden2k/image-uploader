@@ -25,8 +25,6 @@
 #include "LogWindow.h"
 #include "Func/LangClass.h"
 #include "Func/Settings.h"
-//#include <Gdipluseffects.h>
-
 
 struct WindowsListItem
 {
@@ -80,8 +78,6 @@ HWND WindowUnderCursor(POINT pt, HWND exclude)
 	}
 	return 0;
 }
-
-
 
 //     Region selection window class
 //

@@ -23,6 +23,7 @@
 #include "ScreenshotDlg.h"
 #include "LogWindow.h"
 #include "Func/Settings.h"
+#include <Func/Myutils.h>
 
 
 // CScreenshotDlg

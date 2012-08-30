@@ -19,8 +19,9 @@
 */
 
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
 
-namespace ZGuiTools
+namespace GuiTools
 {
 	int AddComboBoxItem(HWND hDlg, int itemId, LPCTSTR item)
 	{
@@ -47,6 +48,10 @@ namespace ZGuiTools
    {
       check = ::SendDlgItemMessage(dlg, id,BM_GETCHECK,0,0)==BST_CHECKED;
    }
+
+	bool GetCheck(HWND dlg, int id) {
+		return ::SendDlgItemMessage(dlg, id,BM_GETCHECK,0,0) == BST_CHECKED;
+	}
 
    void  SetCheck(HWND dlg, int id, bool check)
    {
@@ -79,26 +84,24 @@ namespace ZGuiTools
 		}
 	}
 
-	bool IUInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP bm)
-	{
-		MENUITEMINFO MenuItem;
+bool InsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP bm){
+	MENUITEMINFO MenuItem;
 
-		MenuItem.cbSize = sizeof(MenuItem);
-		if(szTitle)
-			MenuItem.fType = MFT_STRING;
-		else MenuItem.fType = MFT_SEPARATOR;
-		MenuItem.fMask = MIIM_TYPE	| MIIM_ID | MIIM_DATA;
-		if(bm)
-			MenuItem.fMask |= MIIM_CHECKMARKS;
-		MenuItem.wID = id;
-		MenuItem.hbmpChecked = bm;
-		MenuItem.hbmpUnchecked = bm;
-		MenuItem.dwTypeData = (LPWSTR)szTitle;
-		return InsertMenuItem(hMenu, pos, TRUE, &MenuItem)!=0;
-	}
+	MenuItem.cbSize = sizeof(MenuItem);
+	if(szTitle)
+		MenuItem.fType = MFT_STRING;
+	else MenuItem.fType = MFT_SEPARATOR;
+	MenuItem.fMask = MIIM_TYPE	| MIIM_ID | MIIM_DATA;
+	if(bm)
+		MenuItem.fMask |= MIIM_CHECKMARKS;
+	MenuItem.wID = id;
+	MenuItem.hbmpChecked = bm;
+	MenuItem.hbmpUnchecked = bm;
+	MenuItem.dwTypeData = (LPWSTR)szTitle;
+	return InsertMenuItem(hMenu, pos, TRUE, &MenuItem)!=0;
+}
 
-	void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, bool Horizontal)
-	{
+void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, bool Horizontal) {
 		RECT rectFill;          
 		float fStep;            //The size of each band in pixels
 		HBRUSH hBrush;
@@ -150,7 +153,7 @@ namespace ZGuiTools
 
 			DeleteObject(hBrush);
 		}
-	}
+}
 
 	bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...)
 	{
@@ -185,22 +188,161 @@ namespace ZGuiTools
 		return WidthInPixels * baseunitX / 4;
 	}
 
-	// Converts pixels to Win32 dialog units
-	int dlgY(int HeightInPixels)
-	{
-		LONG units = GetDialogBaseUnits();
-		short baseunitY = HIWORD(units);
-		return HeightInPixels * baseunitY / 8;
+// Converts pixels to Win32 dialog units
+int dlgY(int HeightInPixels) {
+	LONG units = GetDialogBaseUnits();
+	short baseunitY = HIWORD(units);
+	return HeightInPixels * baseunitY / 8;
+}
+
+CString GetWindowText(HWND wnd) {
+	int len = GetWindowTextLength(wnd);
+	CString buf;
+	GetWindowText(wnd, buf.GetBuffer(len + 1), len + 1);
+	buf.ReleaseBuffer(-1);
+	return buf;
+}
+
+CString GetDlgItemText(HWND dialog, int controlId) {
+	return GetWindowText(::GetDlgItem(dialog, controlId ) );
+}
+
+/* MakeFontBold
+	MakeFontUnderLine
+
+	-----------------------
+	These functions create bold/underlined fonts based on given font
+*/
+HFONT MakeFontBold(HFONT font) {
+	if ( !font ) {
+		return 0;
 	}
 
+	LOGFONT alf;
 
-	CString IU_GetWindowText(HWND wnd)
-	{
-		int len = GetWindowTextLength(wnd);
-		CString buf;
-		GetWindowText(wnd, buf.GetBuffer(len + 1), len + 1);
-		buf.ReleaseBuffer(-1);
-		return buf;
+	bool ok = ::GetObject(font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT);
+
+	if(!ok) return 0;
+
+	alf.lfWeight = FW_BOLD;
+
+	HFONT NewFont = CreateFontIndirect(&alf);
+	return NewFont;
+}
+
+HFONT MakeFontUnderLine(HFONT font)
+{
+	if(!font) return 0;
+
+	LOGFONT alf;
+
+	bool ok = ::GetObject(font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT);
+
+	if(!ok) return 0;
+
+	alf.lfUnderline = 1;
+	HFONT NewFont = CreateFontIndirect(&alf);
+
+	return NewFont;
+}
+
+int GetFontSize(int nFontHeight) {
+	return - MulDiv( nFontHeight, 72, GetDeviceCaps(::GetDC(0), LOGPIXELSY));
+}
+
+int GetFontHeight(int nFontSize) {
+	return - MulDiv(nFontSize, GetDeviceCaps(::GetDC(0), LOGPIXELSY), 72);
+}
+
+int ScreenBPP(){
+	int iRet;
+	HDC hdc = GetDC(NULL);
+	if (hdc != NULL) {
+		iRet = GetDeviceCaps(hdc, BITSPIXEL);
+		ReleaseDC(NULL, hdc);
 	}
+	return iRet;
+}
+
+BOOL Is32BPP(){
+	return (WinUtils::IsWinXP() & (ScreenBPP() >= 32));
+}
+
+CString SelectFolderDialog(HWND hWndParent, CString initialDir){
+	CString result;
+	if ( WinUtils::IsVista() ) {
+		// CoCreate the File Open Dialog object.
+		IFileDialog *pfd = NULL;
+		IShellItem *pInitDir = NULL;
+		HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
+
+		if ( SUCCEEDED(hr) ) {
+			// Set the options on the dialog.
+			DWORD dwFlags;
+
+			// Before setting, always get the options first in order 
+			// not to override existing options.
+			hr = pfd->GetOptions(&dwFlags);
+			if (SUCCEEDED(hr)) {
+				if (!initialDir.IsEmpty()){
+					SHCreateItemFromParsingName(initialDir, NULL, __uuidof(IShellItem), (LPVOID *)&pInitDir);
+					pfd->SetFolder(pInitDir);
+				}
+				// In this case, get shell items only for file system items.
+				hr = pfd->SetOptions(dwFlags | FOS_FORCEFILESYSTEM | FOS_PICKFOLDERS);
+				if (SUCCEEDED(hr)) {
+					// Show the dialog
+					hr = pfd->Show(NULL);
+					if (SUCCEEDED(hr)) {
+						// Obtain the result once the user clicks 
+						// the 'Open' button.
+						// The result is an IShellItem object.
+						IShellItem *psiResult;
+						hr = pfd->GetResult(&psiResult);
+						if (SUCCEEDED(hr))
+						{
+							// We are just going to print out the 
+							// name of the file for sample sake.
+							PWSTR pszFilePath = NULL;
+							hr = psiResult->GetDisplayName(SIGDN_FILESYSPATH, 
+								&pszFilePath);
+							if (SUCCEEDED(hr))
+							{
+
+								result = pszFilePath;
+								CoTaskMemFree(pszFilePath);
+							}
+							psiResult->Release();
+						}
+					}
+				}
+			}
+
+			pfd->Release();
+		}
+		
+	} else {
+		CFolderDialog fd(hWndParent,TR("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE );
+		if ( !initialDir.IsEmpty() ) {
+			fd.SetInitialFolder(initialDir, true);
+		}
+		if(fd.DoModal(hWndParent) == IDOK) {
+			return  fd.GetFolderPath();
+		}
+	}
+	return result;
+}
+
+RECT GetDialogItemRect(HWND dialog, int itemId) {
+	HWND control = ::GetDlgItem( dialog, itemId );
+	RECT controlRect;
+	GetWindowRect(control, &controlRect );
+	MapWindowPoints(0 /*means desktop*/, dialog, reinterpret_cast<LPPOINT>(&controlRect), 2);
+	return controlRect;
+}
+
+void ShowDialogItem(HWND dlg, int itemId, bool show) {
+	::ShowWindow(GetDlgItem(dlg, itemId), show? SW_SHOW : SW_HIDE);
+}
 
 };

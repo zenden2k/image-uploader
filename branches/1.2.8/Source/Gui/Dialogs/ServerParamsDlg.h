@@ -23,23 +23,29 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include <atlframe.h>
-#include "Func/common.h"
 #include "3rdpart/PropertyList.h"
 #include "Core/Upload/UploadEngine.h"
+#include <map>
+#include <vector>
+#include <Func/Settings.h>
+
+class ServerProfile;
 
 class CServerParamsDlg : 
 	public CDialogImpl<CServerParamsDlg>,
 	public CDialogResize<CServerParamsDlg>	
 {
 	public:
-		CServerParamsDlg(CUploadEngineData *ue);
+		CServerParamsDlg(const ServerProfile& serverProfile);
 		~CServerParamsDlg();
 		enum { IDD = IDD_SERVERPARAMSDLG };
+		enum {  BUTTON_NEWPROFILE = 10001, BUTTON_SAVEPROFILE = 10002, BUTTON_DELETEPROFILE = 10003 };
 
 		BEGIN_MSG_MAP(CServerParamsDlg)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+			COMMAND_HANDLER(IDC_DOAUTH, BN_CLICKED, OnClickedDoAuth)
 			CHAIN_MSG_MAP(CDialogResize<CServerParamsDlg>)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
@@ -48,6 +54,7 @@ class CServerParamsDlg :
 			DLGRESIZE_CONTROL(IDC_PARAMLIST, DLSZ_SIZE_X|DLSZ_SIZE_Y)
 			DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X| DLSZ_MOVE_Y)
 			DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X|DLSZ_MOVE_Y)
+			DLGRESIZE_CONTROL(IDC_LOGINFRAME, DLSZ_SIZE_X|DLSZ_SIZE_Y)
 		END_DLGRESIZE_MAP()
 		 // Handler prototypes:
 		 //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -56,11 +63,18 @@ class CServerParamsDlg :
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-
+		LRESULT OnClickedDoAuth(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		ServerProfile serverProfile() const;
 	protected:
 		CPropertyListCtrl m_wndParamList;
 		std::map<std::string,std::string> m_paramNameList;
 		CUploadEngineData *m_ue;
+		ServerProfile serverProfile_;
+		CToolBarCtrl m_ProfileEditToolbar;
+		CComboBox profileListCombobox_;
+		void createToolbar();
+		void doAuthChanged();
+		void saveCurrentProfile();
 };
 
 

@@ -29,6 +29,10 @@
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/GuiTools.h"
 #include "mediainfodlg.h"
+#include <Gui/GuiTools.h>
+#include <Func/WinUtils.h>
+#include <Func/Myutils.h>
+#include <Func/Common.h>
 
 class CTempFilesDeleter
 {
@@ -71,7 +75,7 @@ CString UploaderStatusToString(StatusType status, int actionIndex, std::string p
 			result = TR("Ожидание ответа от сервера...");
 			break;
 		case stCreatingFolder:
-			result = CString(TR("Создание папки \"")) + Utf8ToWstring(param).c_str() + _T("\"...");
+			result = CString(TR("Создание папки \"")) + IuCoreUtils::Utf8ToWstring(param).c_str() + _T("\"...");
 			break;
 		case stUploading:
 			result = TR("Отправка файла на сервер...");
@@ -83,22 +87,15 @@ CString UploaderStatusToString(StatusType status, int actionIndex, std::string p
 			result.Format(TR("Выполняю действие #%d..."), actionIndex);
 			break;
 		case stUserDescription:
-			result = Utf8ToWstring(param).c_str();
+			result = IuCoreUtils::Utf8ToWstring(param).c_str();
 	}
 	return result;
 };
 
-// Преобразование размера файла в строку
-bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize)
-{
-	std::string res = IuCoreUtils::fileSizeToString(nBytes);
-	lstrcpyn(szBuffer, Utf8ToWstring(res).c_str(), nBufSize);
-	return TRUE;
-}
 
 bool BytesToString(__int64 nBytes, LPTSTR szBuffer,int nBufSize)
 {
-	return NewBytesToString(nBytes, szBuffer, nBufSize);
+	return WinUtils::NewBytesToString(nBytes, szBuffer, nBufSize);
 }
 
 // CUploadDlg
@@ -162,8 +159,8 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	SetDlgItemInt(IDC_THUMBSPERLINE, 4);
 	SendDlgItemMessage(IDC_THUMBPERLINESPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
 	
-	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPROGRESS));
-	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPERCENTS));
+	GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPROGRESS));
+	GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPERCENTS));
 	PageWnd = m_hWnd;
 	ResultsWindow->SetPage(Settings.CodeLang);
 	ResultsWindow->SetCodeType(Settings.CodeType);
@@ -578,7 +575,7 @@ bool CUploadDlg::OnConfigureNetworkManager(NetworkManager *nm) {
 
 const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url)
 {
-	CString wFileName = GetUniqFileName(IUTempFolder+Utf8ToWstring("captcha").c_str());
+	CString wFileName = WinUtils::GetUniqFileName(IUTempFolder+IuCoreUtils::Utf8ToWstring("captcha").c_str());
 
 	nm->setOutputFile(IuCoreUtils::WstringToUtf8((const TCHAR*)wFileName));
 	if(!nm->doGet(url))
@@ -673,7 +670,7 @@ addNewFilesToUploadQueue();
 	return true;
 }
 
-bool CUploadDlg::OnQueueFinished(){
+bool CUploadDlg::OnQueueFinished(CFileQueueUploader*){
 	//MessageBox(_T("OnQueueFinished"));
 	tempFileDeleter_->Cleanup();
 	SetUploadProgress(100,100,0);
@@ -719,7 +716,7 @@ LRESULT CUploadDlg::OnLvnItemchangedUploadtable(int /*idCtrl*/, LPNMHDR pNMHDR, 
 void CUploadDlg::createToolbar() {
 	CBitmap hBitmap;
 	HIMAGELIST m_hToolBarImageList;
-	if (Is32BPP()) {
+	if (GuiTools::Is32BPP()) {
 		hBitmap				  = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_BITMAP3));
 		m_hToolBarImageList = ImageList_Create(16,16,ILC_COLOR32,0,6);
 		ImageList_Add(m_hToolBarImageList,hBitmap,NULL);
@@ -731,10 +728,10 @@ void CUploadDlg::createToolbar() {
 
 	RECT rc = {0,0,100,24};
 	GetClientRect(&rc);
-	rc.top     = ZGuiTools::dlgY(24);
-	rc.bottom  = rc.top + ZGuiTools::dlgY(16);
-	rc.left    = ZGuiTools::dlgX(6);
-	rc.right  -= ZGuiTools::dlgX(6);
+	rc.top     = GuiTools::dlgY(24);
+	rc.bottom  = rc.top + GuiTools::dlgY(16);
+	rc.left    = GuiTools::dlgX(6);
+	rc.right  -= GuiTools::dlgX(6);
 	Toolbar.Create(m_hWnd,rc,_T(""), WS_CHILD|WS_CHILD | TBSTYLE_LIST |TBSTYLE_CUSTOMERASE|TBSTYLE_FLAT| CCS_NORESIZE/*|*/|CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
 
 	Toolbar.SetButtonStructSize();
@@ -1021,7 +1018,7 @@ bool CUploadDlg::getNextUploadItem() {
 				thumbEngine->setServerSettings(settings);
 			//	MessageBox(_T("Need !!!"));
 				uploadListView_.SetItemText(fps.tableRow, 2, _T("Ожидание загрузки"));
-				queueUploader_.AddFile(WCstringToUtf8(ThumbFileName), WCstringToUtf8(myExtractFileName(ThumbFileName)), uploadTaskData, thumbEngine);
+				queueUploader_.AddFile(WCstringToUtf8(ThumbFileName), WCstringToUtf8(WinUtils::myExtractFileName(ThumbFileName)), uploadTaskData, thumbEngine);
 				queueUploader_.start();
 				/*if(result)
 				{

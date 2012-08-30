@@ -33,9 +33,11 @@ CConvertPresetDlg::CConvertPresetDlg(int Page)
 
 CConvertPresetDlg::~CConvertPresetDlg()
 {
-	for (int i = 0; i < ConvertPageCount; i++)
-		if (Pages[i])
+	for ( int i = 0; i < ConvertPageCount; i++ ) {
+		if ( Pages[i] ) {
 			delete Pages[i];
+		}
+	}
 }
 
 LRESULT CConvertPresetDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -137,28 +139,19 @@ bool CConvertPresetDlg::ShowPage(int idPage)
 
 LRESULT CConvertPresetDlg::OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-	for (int i = 0; i < ConvertPageCount; i++)
-		if (Pages[i] && !Pages[i]->Apply())
-		{
+	for ( int i = 0; i < ConvertPageCount; i++ ) {
+		if (Pages[i] && !Pages[i]->Apply()) {
 			ShowPage(i);
 			return 0;
 		}
+	}
 
-//	Settings.SaveSettings();
 	return 0;
 }
 
 bool CConvertPresetDlg::CreatePage(int PageID)
 {
 	RECT rc = {150, 3, 636, 400};
-
-	/*if(PageID == 0)
-	   {
-	   CGeneralSettings *dlg = new CGeneralSettings();
-	   Pages[PageID]= dlg;
-	   dlg->Create(m_hWnd,rc);
-	   Pages[PageID]->PageWnd=dlg->m_hWnd;
-	   }*/
 
 	if (PageID == 0)
 	{

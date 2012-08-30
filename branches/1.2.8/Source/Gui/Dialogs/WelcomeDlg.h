@@ -57,6 +57,7 @@ public:
 		COMMAND_HANDLER(IDC_REGIONPRINT, BN_CLICKED, OnBnClickedRegionPrint)
 		COMMAND_HANDLER(IDC_MEDIAFILEINFO, BN_CLICKED, OnBnClickedMediaInfo)
 		COMMAND_HANDLER(IDC_DOWNLOADIMAGES, BN_CLICKED, OnBnClickedDownloadImages)
+		COMMAND_HANDLER(IDC_REUPLOADIMAGES, BN_CLICKED, OnBnClickedReuploadImages)
 		COMMAND_HANDLER(IDC_ADDFILES, BN_CLICKED, OnBnClickedAddFiles)
 		MESSAGE_HANDLER(WM_SHOWWINDOW, OnShowWindow)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
@@ -83,6 +84,7 @@ public:
 	LRESULT OnBnClickedRegionPrint(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnBnClickedDownloadImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnBnClickedReuploadImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnBnClickedAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnClipboardClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAddFolderClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

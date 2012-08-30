@@ -1,4 +1,4 @@
-/*
+ /*
     Image Uploader - program for uploading images/files to Internet
     Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
 
@@ -29,7 +29,6 @@ CInputDialog::CInputDialog(const CString& title, const CString& descr, const CSt
                            const CString& image)
 {
 	title_ = title;
-	;
 	description_ = descr;
 	value_ = defaultValue;
 	image_ = image;
@@ -77,7 +76,7 @@ LRESULT CInputDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT CInputDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	value_ = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_VALUEEDIT));
+	value_ = GuiTools::GetWindowText(GetDlgItem(IDC_VALUEEDIT));
 	EndDialog(wID);
 	return 0;
 }

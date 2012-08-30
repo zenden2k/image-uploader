@@ -28,10 +28,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Core/3rdpart/parser.h"
 #include "Core/3rdpart/pcreplusplus.h"
 #include "3rdpart/QColorQuantizer.h"
+#include <Func/WinUtils.h>
+#include <Func/Myutils.h>
 
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 
 using namespace Gdiplus;
+
+int GetSavingFormat(LPCTSTR szFileName) {
+	if(!szFileName) return -1;
+	LPCTSTR FileType = WinUtils::GetFileExt(szFileName);
+	if(WinUtils::IsStrInList(FileType,_T("jpg\0jpeg\0\0")))
+		return 0;
+	else if(WinUtils::IsStrInList(FileType,_T("png\0\0")))
+		return 1;
+	else if(WinUtils::IsStrInList(FileType,_T("gif\0\0")))
+		return 2;
+	else return 0;
+}
 
 ImageConvertingParams::ImageConvertingParams()
 {
@@ -48,7 +62,7 @@ ImageConvertingParams::ImageConvertingParams()
 	Text = APPNAME;
 	TextPosition = 5;
 	TextColor = 0x00ffffff;
-	StringToFont(_T("Tahoma,8,,204"), &Font);
+	WinUtils::StringToFont(_T("Tahoma,8,,204"), &Font);
 }
 
 CImageConverter::CImageConverter()
@@ -272,7 +286,7 @@ bool CImageConverter::Convert(const CString& sourceFile)
 
 	if (!processing_enabled)
 	{
-		CString Ext = GetFileExt(sourceFile);
+		CString Ext = WinUtils::GetFileExt(sourceFile);
 		if (Ext == _T("png"))
 			fileformat = 1;
 		else
@@ -361,7 +375,7 @@ bool CImageConverter::createThumbnail(Gdiplus::Image* image, Gdiplus::Image** ou
 	CDC dc = ::GetDC(0);
 	int newwidth = image->GetWidth();
 	int newheight = image->GetHeight();
-	int FileSize = MyGetFileSize(m_sourceFile);
+	int FileSize = IuCoreUtils::getFileSize(WCstringToUtf8( m_sourceFile ));
 	/*TCHAR SizeBuffer[100]=_T("\0");
 	if(FileSize>0)
 	   NewBytesToString(FileSize,SizeBuffer,sizeof(SizeBuffer));*/
@@ -369,8 +383,8 @@ bool CImageConverter::createThumbnail(Gdiplus::Image* image, Gdiplus::Image** ou
 	CString sizeString = Utf8ToWCstring(IuCoreUtils::fileSizeToString(fileSize));
 	CString ThumbnailText = m_thumbCreatingParams.Text; // Text that will be drawn on thumbnail
 
-	ThumbnailText.Replace(_T("%width%"), IntToStr(newwidth)); // Replacing variables names with their values
-	ThumbnailText.Replace(_T("%height%"), IntToStr(newheight));
+	ThumbnailText.Replace(_T("%width%"), WinUtils::IntToStr(newwidth)); // Replacing variables names with their values
+	ThumbnailText.Replace(_T("%height%"), WinUtils::IntToStr(newheight));
 	ThumbnailText.Replace(_T("%size%"), sizeString);
 
 	int thumbwidth = m_thumbCreatingParams.ThumbWidth;
@@ -382,12 +396,12 @@ bool CImageConverter::createThumbnail(Gdiplus::Image* image, Gdiplus::Image** ou
 	CString s;
 
 	LOGFONT lf;
-	StringToFont(_T("Tahoma,7,b,204"), &lf);
+	WinUtils::StringToFont(_T("Tahoma,7,b,204"), &lf);
 	if (thumbnail_template_->existsParam("Font"))
 	{
 		std::string font = thumbnail_template_->getParamString("Font");
 		CString wide_text = Utf8ToWCstring(font);
-		StringToFont(wide_text, &lf);
+		WinUtils::StringToFont(wide_text, &lf);
 	}
 	Font font(dc, &lf);
 	RectF TextRect;
@@ -592,7 +606,7 @@ bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int F
 	CString szNameBuffer;
 	TCHAR szBuffer2[MAX_PATH];
 	if (IsImage(szFilename) )
-		szNameBuffer = GetOnlyFileName(szFilename);
+		szNameBuffer = WinUtils::GetOnlyFileName(szFilename);
 	else
 		szNameBuffer = szFilename;
 	CString userFolder;
@@ -603,8 +617,8 @@ bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int F
 	wsprintf(szBuffer2, _T(
 	            "%s%s.%s"), (LPCTSTR)(Folder ? userFolder : IUTempFolder), (LPCTSTR)szNameBuffer,
 	         /*(int)GetTickCount(),*/ szImgTypes[Format]);
-	CString resultFilename = GetUniqFileName(szBuffer2);
-	IU_CreateFilePath(resultFilename);
+	CString resultFilename = WinUtils::GetUniqFileName(szBuffer2);
+	WinUtils::CreateFilePath(resultFilename);
 	CLSID clsidEncoder;
 	EncoderParameters eps;
 	eps.Count = 1;

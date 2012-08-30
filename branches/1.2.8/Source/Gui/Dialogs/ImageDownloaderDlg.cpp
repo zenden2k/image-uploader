@@ -24,12 +24,15 @@
 #include "LogWindow.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
+#include <Func/Myutils.h>
 
 // CImageDownloaderDlg
 CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg,const CString &initialBuffer)
 {
 	m_WizardDlg = wizardDlg;
 	m_InitialBuffer = initialBuffer;
+	
 }
 
 CImageDownloaderDlg::~CImageDownloaderDlg()
@@ -61,33 +64,30 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	return 1; 
 }
 
-bool ExtractLinks(CString text, std::vector<CString> &result)
-{
+bool CImageDownloaderDlg::ExtractLinks(CString text, std::vector<CString> &result) {
 	pcrepp::Pcre reg("((http|https|ftp)://[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)", "imcu");
 	std::string str = WCstringToUtf8(text);
 	size_t pos = 0;
-	while (pos <= str.length()) 
-	{
-		if( reg.search(str, pos)) 
-		{ 
+
+	while (pos <= str.length()) {
+		if( reg.search(str, pos)) { 
 			pos = reg.get_match_end()+1;
-			CString temp = Utf8ToWstring(reg[0]).c_str();
+			CString temp = IuCoreUtils::Utf8ToWstring(reg[0]).c_str();
 			result.push_back(temp);
 		}
-		else
+		else {
 			break;
+		}
 	}
 	return true;
 }
 
-LRESULT CImageDownloaderDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{	
+LRESULT CImageDownloaderDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {	
 	BeginDownloading();
 	return 0;
 }
 
-LRESULT CImageDownloaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
+LRESULT CImageDownloaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
 	if(m_FileDownloader.IsRunning()) 
 		m_FileDownloader.stop();
 	else
@@ -115,7 +115,7 @@ void CImageDownloaderDlg::OnDrawClipboard()
 	if(IsClipboard && SendDlgItemMessage(IDC_WATCHCLIPBOARD,BM_GETCHECK)==BST_CHECKED && !m_FileDownloader.IsRunning()	)
 	{
 		CString str;  
-		IU_GetClipboardText(str);
+		WinUtils::GetClipboardText(str);
 		ParseBuffer(str, true);
 		
 	}
@@ -129,14 +129,13 @@ LRESULT CImageDownloaderDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	return 0;
 }
 
-CString GetExtensionByMime(CString mime)
-{
-	TCHAR szImgTypes[3][4]={_T("jpg"),_T("png"),_T("gif")};
-	TCHAR szMimeTypes[3][12]={_T("jpeg"),_T("png"),_T("gif")};
-	for(int i=0;i<3;i++)
-	{
-		if(mime.Find(szMimeTypes[i])>=0)
+CString CImageDownloaderDlg::GetExtensionByMime(CString mime) {
+	TCHAR szImgTypes[3][4]   = {_T("jpg"),_T("png"),_T("gif") };
+	TCHAR szMimeTypes[3][12] = {_T("jpeg"),_T("png"),_T("gif")};
+	for(int i=0;i<3;i++) {
+		if ( mime.Find( szMimeTypes[i]) >= 0 ) {
 			return szImgTypes[i];
+		}
 	}
 	return _T(".dat");
 }
@@ -147,8 +146,8 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, CFileDownloader::DownloadFileL
 	{
 		CWizardDlg::AddImageStruct ais;
 		ais.show =true;
-		ais.RealFileName = Utf8ToWstring(it.fileName).c_str();
-		ais.VirtualFileName =  Utf8ToWstring(it.displayName).c_str();
+		ais.RealFileName = IuCoreUtils::Utf8ToWstring(it.fileName).c_str();
+		ais.VirtualFileName =  IuCoreUtils::Utf8ToWstring(it.displayName).c_str();
 		bool add = true;
 		if(!IsImage(ais.RealFileName))
 		{
@@ -168,7 +167,7 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, CFileDownloader::DownloadFileL
 			{
 				add = false;
 				CString errorStr;
-				errorStr.Format(TR("Файл '%s' не является файлом изображения (Mime-Type: %s)."),(LPCTSTR)(Utf8ToWstring(it.url).c_str()),(LPCTSTR)mimeType);
+				errorStr.Format(TR("Файл '%s' не является файлом изображения (Mime-Type: %s)."),(LPCTSTR)(IuCoreUtils::Utf8ToWstring(it.url).c_str()),(LPCTSTR)mimeType);
 				WriteLog(logWarning,_T("Image Downloader"),errorStr);
 			}
 		}
@@ -200,7 +199,7 @@ bool CImageDownloaderDlg::BeginDownloading()
 {
 	int index=0;
 
-	std::string links = WCstringToUtf8(ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_FILEINFOEDIT)));
+	std::string links = WCstringToUtf8(GuiTools::GetWindowText(GetDlgItem(IDC_FILEINFOEDIT)));
 	std::vector<std::string> tokens;
 	nm_splitString(links,"\n",tokens,-1);
 	m_nFilesCount =0;
@@ -228,10 +227,9 @@ bool CImageDownloaderDlg::BeginDownloading()
 	return false;
 }
 
-bool CImageDownloaderDlg::LinksAvailableInText(const CString &text)
-{
+bool CImageDownloaderDlg::LinksAvailableInText(const CString &text) {
 	std::vector<CString> links;
-	ExtractLinks(text,links);
+	ExtractLinks(text, links);
 	return links.size()!=0;
 }
 
@@ -239,11 +237,11 @@ void CImageDownloaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)
 {
 	std::vector<CString> links;
 	ExtractLinks(buffer,links);
-	CString text = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_FILEINFOEDIT));
+	CString text = GuiTools::GetWindowText(GetDlgItem(IDC_FILEINFOEDIT));
 	for(size_t i=0; i<links.size(); i++)
 	{
-		CString fileName = myExtractFileName(links[i]);
-		if((!OnlyImages && CString(GetFileExt(fileName)).IsEmpty()) || IsImage(fileName))
+		CString fileName = WinUtils::myExtractFileName(links[i]);
+		if((!OnlyImages && CString(WinUtils::GetFileExt(fileName)).IsEmpty()) || IsImage(fileName))
 			text+=links[i]+_T("\r\n");
 	}
 	SetDlgItemText(IDC_FILEINFOEDIT, text);

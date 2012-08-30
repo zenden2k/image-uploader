@@ -35,7 +35,7 @@ class CLangSelect : public CDialogImpl<CLangSelect>
 		CLangSelect();
 		~CLangSelect();
 	
-		enum { IDD = IDD_LANGSELECT };
+		enum { IDD = IDD_LANGSELECTDLG };
 	protected:
 		BEGIN_MSG_MAP(CLangSelect)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)

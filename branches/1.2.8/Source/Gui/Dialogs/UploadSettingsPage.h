@@ -31,7 +31,7 @@
 #include "Gui/WizardCommon.h"
 #include "Func/Settings.h"
 // CUploadSettingsPage
-
+class CServerSelectorControl;
 class CUploadSettingsPage : 
 	public CDialogImpl<CUploadSettingsPage>, public CSettingsPage,
 		public CWinDataExchange <CUploadSettingsPage >
@@ -65,6 +65,8 @@ virtual ~CUploadSettingsPage();
 	LRESULT OnClickedUseProxyAuth(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	virtual bool Apply();
 	void TranslateUI();
+	CServerSelectorControl *imageServerSelector_;
+	CServerSelectorControl *fileServerSelector_; 
 };
 
 #endif // IU_GUI_DIALOGS_UPLOADSETTINGSPAGE_H

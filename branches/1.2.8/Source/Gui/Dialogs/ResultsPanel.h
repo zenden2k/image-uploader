@@ -22,10 +22,10 @@
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include "Func/common.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/WizardCommon.h"
 #include "3rdpart/thread.h"
+#include <Func/CommonTypes.h>
 
 #define IDC_OPTIONSMENU 10002
 #define IDC_USEDIRECTLINKS 10003
@@ -35,6 +35,7 @@ class CResultsPanel;
 
 // CResultsPanel
 class CWizardDlg;
+class CMyEngineList;
 struct IU_Result_Template
 {
 	CString Name,Items,LineSep,LineStart,ItemSep,LineEnd,TemplateText;

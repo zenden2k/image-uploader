@@ -25,6 +25,8 @@
 #include "Func/Settings.h"
 #include "Core/ScreenCapture.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
+#include <Func/Myutils.h>
 
 // CSizeExceed
 CSizeExceed::CSizeExceed(LPCTSTR szFileName, FullUploadProfile &iss, CMyEngineList * EngineList)
@@ -66,8 +68,8 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 		CUploadEngineData * ue = m_EngineList->byIndex(i);
 		TCHAR buf[300]=_T(" ");
 		TCHAR buf2[50];
-		NewBytesToString(ue->MaxFileSize, buf2, 25);
-		wsprintf(buf, ue->MaxFileSize?_T(" %s   (%s)"):_T(" %s"), (LPCTSTR)Utf8ToWstring(ue->Name).c_str(),(LPCTSTR)buf2);
+		WinUtils::NewBytesToString(ue->MaxFileSize, buf2, 25);
+		wsprintf(buf, ue->MaxFileSize?_T(" %s   (%s)"):_T(" %s"), (LPCTSTR)IuCoreUtils::Utf8ToWstring(ue->Name).c_str(),(LPCTSTR)buf2);
 		SendDlgItemMessage(IDC_SERVERLIST, CB_ADDSTRING, 0, (LPARAM)buf);
 	}
 
@@ -82,20 +84,20 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	
 	SendDlgItemMessage(IDC_SERVERLIST,CB_SETCURSEL,Settings.ServerID);
 
-	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_FILEEXCEEDNAME));
+	GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEEXCEEDNAME));
 	
-	int f = MyGetFileSize(m_szFileName);
+	int f = IuCoreUtils::getFileSize(WCstringToUtf8(m_szFileName));
 	WCHAR buf2[25];
-	NewBytesToString(f, buf2, 25);
+	WinUtils::NewBytesToString(f, buf2, 25);
 
 	TCHAR szBuf[1000];
-	wsprintf(szBuf,CString(TR("Файл"))+ _T(" %s (%dx%d, %s)"),(LPCTSTR)myExtractFileName(m_szFileName),(int)img.ImageWidth,(int)img.ImageHeight, (LPCTSTR)buf2 );
+	wsprintf(szBuf,CString(TR("Файл"))+ _T(" %s (%dx%d, %s)"),(LPCTSTR)WinUtils::myExtractFileName(m_szFileName),(int)img.ImageWidth,(int)img.ImageHeight, (LPCTSTR)buf2 );
 
 	SetDlgItemText(IDC_FILEEXCEEDNAME, szBuf);
-	NewBytesToString(m_EngineList->byIndex( m_UploadProfile.upload_profile.ServerID)->MaxFileSize, buf2, 25);
+	WinUtils::NewBytesToString(m_EngineList->byIndex( m_UploadProfile.upload_profile.ServerID)->MaxFileSize, buf2, 25);
 
 	wsprintf(szBuf, TR("Файл превышает максимальный размер, допустимый для загрузки на сервер %s (%s)."),
-		Utf8ToWstring(m_EngineList->byIndex(ServerID)->Name).c_str(), buf2);
+		IuCoreUtils::Utf8ToWstring(m_EngineList->byIndex(ServerID)->Name).c_str(), buf2);
 	SetDlgItemText(IDC_FILEEXCEEDSIZE2, szBuf);
 	Translate();
 	DisplayParams();
@@ -143,8 +145,8 @@ void CSizeExceed::DisplayParams(void)
 void CSizeExceed::GetParams()
 {
    m_UploadProfile.upload_profile.KeepAsIs = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
-	m_ImageSettings.strNewWidth= ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_IMAGEWIDTH));
-   m_ImageSettings.strNewHeight = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_IMAGEHEIGHT));
+	m_ImageSettings.strNewWidth= GuiTools::GetWindowText(GetDlgItem(IDC_IMAGEWIDTH));
+   m_ImageSettings.strNewHeight = GuiTools::GetWindowText(GetDlgItem(IDC_IMAGEHEIGHT));
 	m_ImageSettings.SaveProportions = IS_CHECKED(IDC_SAVEPROPORTIONS);
 	m_ImageSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	m_ImageSettings.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);

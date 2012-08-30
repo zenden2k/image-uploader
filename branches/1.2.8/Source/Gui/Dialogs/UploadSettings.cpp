@@ -17,8 +17,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "atlheaders.h"
+
 #include "UploadSettings.h"
+
 #include "ServerFolderSelect.h"
 #include "NewFolderDlg.h"
 #include "ServerParamsDlg.h"
@@ -28,6 +29,10 @@
 #include "Func/Settings.h"
 #include "Gui/Dialogs/SettingsDlg.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
+#include <Func/Myutils.h>
+#include <Func/Common.h>
+
 
 CUploadSettings::CUploadSettings(CMyEngineList * EngineList):сonvert_profiles_(Settings.ConvertProfiles)
 {
@@ -70,8 +75,12 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	//m_ThumbSizeEdit.SubclassWindow(GetDlgItem(IDC_QUALITYEDIT));
 	TranslateUI();
 
+	// FIXME
 	m_nImageServer = Settings.ServerID;
 	m_nFileServer = Settings.FileServerID;
+
+	imageServer = Settings.imageServer;
+	fileServer = Settings.fileServer;
 
 	CBitmap hBitmap;
 	HDC dc = ::GetDC(HWND_DESKTOP);
@@ -117,18 +126,18 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	::GetWindowRect(GetDlgItem(IDC_IMAGESERVERGROUPBOX), &Toolbar1Rect);
   
 	::MapWindowPoints(0, m_hWnd, (LPPOINT)&Toolbar1Rect, 2);
-	Toolbar1Rect.top += ZGuiTools::dlgY(9);
-	Toolbar1Rect.bottom -= ZGuiTools::dlgY(3);
-	Toolbar1Rect.left += ZGuiTools::dlgX(6);
-	Toolbar1Rect.right -= ZGuiTools::dlgX(6);
+	Toolbar1Rect.top += GuiTools::dlgY(9);
+	Toolbar1Rect.bottom -= GuiTools::dlgY(3);
+	Toolbar1Rect.left += GuiTools::dlgX(6);
+	Toolbar1Rect.right -= GuiTools::dlgX(6);
 
 	RECT Toolbar2Rect;
 	::GetWindowRect(GetDlgItem(IDC_FILESERVERGROUPBOX), &Toolbar2Rect);
 	::MapWindowPoints(0, m_hWnd, (LPPOINT)&Toolbar2Rect, 2);
-	Toolbar2Rect.top += ZGuiTools::dlgY(9);
-	Toolbar2Rect.bottom -= ZGuiTools::dlgY(3);
-	Toolbar2Rect.left += ZGuiTools::dlgX(6);
-	Toolbar2Rect.right -= ZGuiTools::dlgX(6);
+	Toolbar2Rect.top += GuiTools::dlgY(9);
+	Toolbar2Rect.bottom -= GuiTools::dlgY(3);
+	Toolbar2Rect.left += GuiTools::dlgX(6);
+	Toolbar2Rect.right -= GuiTools::dlgX(6);
 
 	for(int i = 0; i<2; i++)
 	{
@@ -186,7 +195,7 @@ LRESULT CUploadSettings::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCt
 LRESULT CUploadSettings::OnBnClickedKeepasis(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	bool checked = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0, 0)!=FALSE;
-	ZGuiTools::EnableNextN(GetDlgItem(IDC_KEEPASIS), 13, checked);
+	GuiTools::EnableNextN(GetDlgItem(IDC_KEEPASIS), 13, checked);
 	m_ProfileEditToolbar.EnableWindow(checked);
 	return 0;
 }
@@ -232,8 +241,8 @@ bool CUploadSettings::OnNext()
 {	
 	if(m_nImageServer != -1)
 	{
-		CUploadEngineData *ue = m_EngineList->byIndex(m_nImageServer);
-		if(ue->NeedAuthorization ==2 && !Settings.ServersSettings[Utf8ToWstring(ue->Name).c_str()].authData.DoAuth)
+		CUploadEngineData *ue = imageServer.uploadEngineData();
+		if(ue->NeedAuthorization ==2 && !imageServer.serverSettings().authData.DoAuth)
 		{ 
 			CString errorMsg;
 			errorMsg.Format(TR("Загрузка файлов на сервер '%s' невозможна без наличия учетной записи.\nПожалуйста, зарегистрируйтесь на данном сервере и укажите ваши регистрационные данные в программе."), (LPCTSTR)Utf8ToWCstring(ue->Name));
@@ -243,11 +252,11 @@ bool CUploadSettings::OnNext()
 	}
 	if(m_nFileServer != -1)
 	{
-		CUploadEngineData *ue2 = m_EngineList->byIndex(m_nFileServer);
-		if(ue2->NeedAuthorization == 2 && !Settings.ServersSettings[Utf8ToWstring(ue2->Name).c_str()].authData.DoAuth)
+		CUploadEngineData *ue2 = fileServer.uploadEngineData();
+		if(ue2->NeedAuthorization == 2 && !fileServer.serverSettings().authData.DoAuth)
 		{
 			CString errorMsg;
-			errorMsg.Format(TR("Вы не задали параметры авторизации на сервере '%s'!"), (LPCTSTR)Utf8ToWstring(ue2->Name).c_str());
+			errorMsg.Format(TR("Вы не задали параметры авторизации на сервере '%s'!"), (LPCTSTR)IuCoreUtils::Utf8ToWstring(ue2->Name).c_str());
 			MessageBox(errorMsg, APPNAME, MB_ICONWARNING);
 			return false;
 		}
@@ -294,10 +303,10 @@ bool CUploadSettings::OnShow()
 LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/)
 {
 	bool ImageServer = (wID % 2)!=0;// (hWndCtl == Toolbar.m_hWnd);	
-	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
-	CLoginDlg dlg(m_EngineList->byIndex(nServerIndex));
+	ServerProfile& server = ImageServer? imageServer: fileServer;
+	CLoginDlg dlg(server.uploadEngineData());
 
-	ServerSettingsStruct & ss = Settings.ServersSettings[Utf8ToWstring(m_EngineList->byIndex(nServerIndex)->Name).c_str()];
+	ServerSettingsStruct & ss = server.serverSettings();
 	std::string UserName = ss.authData.Login; 
 	bool prevAuthEnabled = ss.authData.DoAuth;
 	if( dlg.DoModal(m_hWnd) == IDOK)
@@ -308,7 +317,7 @@ LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND h
 			ss.params["FolderTitle"]="";
 			ss.params["FolderUrl"]="";
 			iuPluginManager.UnloadPlugins();
-			m_EngineList->DestroyCachedEngine(m_EngineList->byIndex(nServerIndex)->Name);
+			m_EngineList->DestroyCachedEngine(server.uploadEngineData()->Name);
 		}
 			
 		UpdateAllPlaceSelectors();
@@ -320,7 +329,7 @@ LRESULT CUploadSettings::OnBnClickedUseThumbTemplate(WORD /*wNotifyCode*/, WORD 
 {
 	BOOL checked = SendDlgItemMessage(IDC_USETHUMBTEMPLATE, BM_GETCHECK, 0, 0);
 
-	if(checked && !FileExists(IU_GetDataFolder() + _T("thumb.png")) && wID == IDC_USETHUMBTEMPLATE)
+	if(checked && !WinUtils::FileExists(IU_GetDataFolder() + _T("thumb.png")) && wID == IDC_USETHUMBTEMPLATE)
 	{
 		MessageBox(TR("Невозможно использовать шаблон для миниатюры. Файл шаблона \"Data\\Thumb.png\" не найден."), APPNAME, MB_ICONWARNING);
 		SendDlgItemMessage(IDC_USETHUMBTEMPLATE, BM_SETCHECK, false);
@@ -350,24 +359,24 @@ LRESULT CUploadSettings::OnBnClickedUseServerThumbnails(WORD /*wNotifyCode*/, WO
 LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
 bool ImageServer = (hWndCtl == Toolbar.m_hWnd);	
-	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
+	ServerProfile& server = ImageServer? imageServer: fileServer;
 
-	CUploadEngineData *ue = m_EngineList->byIndex(nServerIndex);
+	CUploadEngineData *ue = server.uploadEngineData();
 
 	if(ue->SupportsFolders){
 		CServerFolderSelect as(ue);
-		as.m_SelectedFolder.id= Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderID"];
+		as.m_SelectedFolder.id= server.serverSettings().params["FolderID"];
 		
 		if(as.DoModal() == IDOK){
 			if(!as.m_SelectedFolder.id.empty()){
-				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderID"] = as.m_SelectedFolder.id;
-				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderTitle"] = as.m_SelectedFolder.title;
-				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderUrl"]= as.m_SelectedFolder.viewUrl;
+				Settings.ServersSettings[Utf8ToWCstring(ue->Name)][server.profileName()].params["FolderID"] = as.m_SelectedFolder.id;
+				Settings.ServersSettings[Utf8ToWCstring(ue->Name)][server.profileName()].params["FolderTitle"] = as.m_SelectedFolder.title;
+				Settings.ServersSettings[Utf8ToWCstring(ue->Name)][server.profileName()].params["FolderUrl"]= as.m_SelectedFolder.viewUrl;
 			}
 			else {
-				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderID"]="";
-				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderTitle"]="";
-				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderUrl"]="";
+				Settings.ServersSettings[Utf8ToWCstring(ue->Name)][server.profileName()].params["FolderID"]="";
+				Settings.ServersSettings[Utf8ToWCstring(ue->Name)][server.profileName()].params["FolderTitle"]="";
+				Settings.ServersSettings[Utf8ToWCstring(ue->Name)][server.profileName()].params["FolderUrl"]="";
 
 			}
 		UpdateAllPlaceSelectors();
@@ -414,11 +423,11 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 	TBBUTTONINFO bi;
 	CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
 
-	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
-
+	//int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
+	ServerProfile& server = ImageServer? imageServer: fileServer;
 	CUploadEngineData * uploadEngine = 0;
 	
-	if(nServerIndex == -1)
+	if( server.serverName().IsEmpty() )
 	{
 		
 		CurrentToolbar.HideButton(IDC_LOGINTOOLBUTTON + ImageServer ,true);
@@ -428,8 +437,8 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 		return;
 	}
 
-	uploadEngine =  m_EngineList->byIndex(nServerIndex);
-	CString serverTitle = (nServerIndex != -1) ? Utf8ToWCstring(uploadEngine->Name): TR("Выберите сервер");
+	uploadEngine =  server.uploadEngineData();
+	CString serverTitle = (!server.serverName().IsEmpty()) ? Utf8ToWCstring(uploadEngine->Name): TR("Выберите сервер");
 
 	ZeroMemory(&bi, sizeof(bi));
 	bi.cbSize = sizeof(bi);
@@ -437,8 +446,8 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 	bi.pszText = (LPWSTR)(LPCTSTR) serverTitle ;
 	CurrentToolbar.SetButtonInfo(IDC_SERVERBUTTON, &bi);
 
-	LoginInfo& li = Settings.ServersSettings[ Utf8ToWCstring(uploadEngine->Name)].authData;
-	CString login = TrimString(Utf8ToWCstring(li.Login),23);
+	LoginInfo& li = Settings.ServersSettings[ Utf8ToWCstring(uploadEngine->Name)][server.profileName()].authData;
+	CString login = WinUtils::TrimString(Utf8ToWCstring(li.Login),23);
 	
 	CurrentToolbar.SetImageList(m_PlaceSelectorImageList);
 
@@ -462,7 +471,7 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 	CurrentToolbar.HideButton(IDC_SELECTFOLDER,!ShowFolderButton);
 	CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR2,!ShowFolderButton);
 		
-	CString title = TrimString(Utf8ToWCstring(Settings.ServersSettings[Utf8ToWCstring(uploadEngine->Name)].params["FolderTitle"]), 27);
+	CString title = WinUtils::TrimString(Utf8ToWCstring(Settings.ServersSettings[Utf8ToWCstring(uploadEngine->Name)][server.profileName()].params["FolderTitle"]), 27);
 	if(title.IsEmpty()) title = TR("Папка не выбрана");
 	bi.pszText = (LPWSTR)(LPCTSTR)title;
 	CurrentToolbar.SetButtonInfo(IDC_SELECTFOLDER, &bi);
@@ -498,6 +507,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 
 	bool ImageServer = (idCtrl == IDC_IMAGETOOLBAR);
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
+	ServerProfile& server = ImageServer? imageServer: fileServer;
 
 	CUploadEngineData *uploadEngine = 0;
 	if(nServerIndex!=-1)
@@ -551,7 +561,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 	{
 		if(uploadEngine->UsingPlugin )
 		{
-			CScriptUploadEngine *plug = iuPluginManager.getPlugin(uploadEngine->PluginName, Settings.ServersSettings[Utf8ToWCstring(uploadEngine->Name)]);
+			CScriptUploadEngine *plug = iuPluginManager.getPlugin(uploadEngine->PluginName, Settings.ServersSettings[server.serverName()][server.profileName()]);
 			if(!plug) return TBDDRET_TREATPRESSED;
 
 			if(!plug->supportsSettings()) return TBDDRET_TREATPRESSED;
@@ -643,11 +653,11 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 	bool ImageServer = (wID % 2)!=0;
 	CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
-
+	ServerProfile& server = ImageServer? imageServer: fileServer;
 	
-	CUploadEngineData *ue = m_EngineList->byIndex(nServerIndex);
-
-	CScriptUploadEngine *m_pluginLoader = iuPluginManager.getPlugin(ue->PluginName, Settings.ServersSettings[Utf8ToWCstring(ue->Name)], true);
+	CUploadEngineData *ue = server.uploadEngineData();
+	
+	CScriptUploadEngine *m_pluginLoader = iuPluginManager.getPlugin(ue->PluginName, server.serverSettings(), true);
 	if(!m_pluginLoader) return 0;
 
 	CString title;
@@ -655,17 +665,17 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 
 	m_pluginLoader->getAccessTypeList(accessTypeList);
 	CFolderItem newFolder;
-	if(Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderID"]	== IU_NEWFOLDERMARK)
+	if(Settings.ServersSettings[Utf8ToWCstring(ue->Name)][server.profileName()].params["FolderID"]	== IU_NEWFOLDERMARK)
 		newFolder = Settings.ServersSettings[Utf8ToWCstring(ue->Name)].newFolder;
 
 	 CNewFolderDlg dlg(newFolder, true, accessTypeList);
 	 if(dlg.DoModal(m_hWnd) == IDOK)
 	 {
-		 Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderTitle"] = newFolder.title.c_str();
-		Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderID"]	= IU_NEWFOLDERMARK;
-		Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderUrl"]	= "";
+		 Settings.ServersSettings[Utf8ToWCstring(ue->Name)][server.profileName()].params["FolderTitle"] = newFolder.title.c_str();
+		Settings.ServersSettings[Utf8ToWCstring(ue->Name)][server.profileName()].params["FolderID"]	= IU_NEWFOLDERMARK;
+		Settings.ServersSettings[Utf8ToWCstring(ue->Name)][server.profileName()].params["FolderUrl"]	= "";
 		
-		Settings.ServersSettings[Utf8ToWCstring(ue->Name)].newFolder = newFolder;
+		Settings.ServersSettings[Utf8ToWCstring(ue->Name)][server.profileName()].newFolder = newFolder;
 		UpdateAllPlaceSelectors();
 	 }
 	 return 0;
@@ -716,7 +726,9 @@ LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, H
 	CUploadEngineData *ue = m_EngineList->byIndex(nServerIndex);
 	if(!ue->UsingPlugin) return false;
 
-	CServerParamsDlg dlg(ue);
+	ServerProfile serverProfile;
+	serverProfile.setServerName( Utf8ToWCstring( ue->Name ) );
+	CServerParamsDlg dlg(serverProfile);
 	dlg.DoModal();
 	return 0;
 }
@@ -796,10 +808,10 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
     bool found = false;
     for(it = сonvert_profiles_.begin(); it!=сonvert_profiles_.end(); ++it)
     {
-      ZGuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
+      GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
       if(it->first == CurrentProfileName) found = true;
     }
-    if(!found) ZGuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, CurrentProfileName);
+    if(!found) GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, CurrentProfileName);
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, -1,(LPARAM)(LPCTSTR) CurrentProfileName); 
  }
 
@@ -846,9 +858,9 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
    params.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	params.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);
 
-   params.strNewWidth = ZGuiTools::IU_GetWindowText( GetDlgItem(IDC_IMAGEWIDTH));
+   params.strNewWidth = GuiTools::GetWindowText( GetDlgItem(IDC_IMAGEWIDTH));
 
-  params.strNewHeight =  ZGuiTools::IU_GetWindowText( GetDlgItem(IDC_IMAGEHEIGHT));
+  params.strNewHeight =  GuiTools::GetWindowText( GetDlgItem(IDC_IMAGEHEIGHT));
    return true;
  }
 
@@ -891,7 +903,7 @@ bool  CUploadSettings::OnHide()
 }
 LRESULT CUploadSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    CString profile = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_PROFILECOMBO));
+    CString profile = GuiTools::GetWindowText(GetDlgItem(IDC_PROFILECOMBO));
 
     ShowParams(profile);
     UpdateProfileList();

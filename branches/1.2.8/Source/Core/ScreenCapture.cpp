@@ -26,6 +26,7 @@
 #include "atlheaders.h"
 #include "Func/common.h"
 #include "Func/MyUtils.h"
+#include <Func/WinUtils.h>
 #include "resource.h"
 
 typedef HRESULT (WINAPI * DwmGetWindowAttribute_Func)(HWND, DWORD, PVOID, DWORD);
@@ -64,7 +65,7 @@ void ActivateWindowRepeat(HWND handle, int count)
 
 BOOL MyGetWindowRect(HWND hWnd, RECT* res, bool MaximizedFix = true)
 {
-	if (!IsVista())
+	if (!WinUtils::IsVista())
 	{
 		return GetWindowRect(hWnd, res);
 	}
@@ -967,7 +968,7 @@ bool CWindowHandlesRegion::GetImage(HDC src, Bitmap** res)
 	GetScreenBounds(scr);
 	m_ScreenRegion.OffsetRgn(-scr.left, -scr.top);
 	Bitmap* resultBm = 0;
-	if (m_bFromScreen && parentIsInList /*&& GetParent(topWindow)==HWND_DESKTOP */ &&  IsVista() &&
+	if (m_bFromScreen && parentIsInList /*&& GetParent(topWindow)==HWND_DESKTOP */ &&  WinUtils::IsVista() &&
 	    IsCompositionActive() && topWindow && !(GetWindowLong(topWindow, GWL_STYLE) & WS_CHILD)
 	    && (m_ClearBackground || m_RemoveCorners || m_PreserveShadow))
 	{
@@ -1024,7 +1025,7 @@ void TimerWait(int Delay)
 	LARGE_INTEGER interval;
 	interval.QuadPart = -Delay * 10000;
 	SetWaitableTimer(hTimer, &interval, 0, 0, 0, 0);
-	MsgWaitForSingleObject(hTimer, INFINITE);
+	WinUtils::MsgWaitForSingleObject(hTimer, INFINITE);
 	CloseHandle(hTimer);
 }
 

@@ -13,17 +13,20 @@
 #include "Gui/Dialogs/InputDialog.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
+#include <Core/Utils/CryptoUtils.h>
+#include <Func/Common.h>
 
 const CString MyBytesToString(__int64 nBytes )
 {
 	return IuCoreUtils::fileSizeToString(nBytes).c_str();
 }
 
-CString IU_GetFileInfo(CString fileName,MyFileInfo* mfi=0)
+CString IU_GetFileInfo(CString fileName, MyFileInfo* mfi=0)
 {
 	CString result;
-	int fileSize = MyGetFileSize(fileName);
-	result =  MyBytesToString(fileSize)+_T("(")+IntToStr(fileSize)+_T(" bytes);");
+	int fileSize = IuCoreUtils::getFileSize( WCstringToUtf8( fileName ) );
+	result =  MyBytesToString(fileSize)+_T("(")+WinUtils::IntToStr(fileSize)+_T(" bytes);");
    CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8(fileName)));
 	result+=mimeType+_T(";");
 	if(mfi) mfi->mimeType = mimeType;
@@ -37,7 +40,7 @@ CString IU_GetFileInfo(CString fileName,MyFileInfo* mfi=0)
 			mfi->width = width;
 			mfi->height = height;
 		}
-		result+= IntToStr(width)+_T("x")+IntToStr(height);
+		result+= WinUtils::IntToStr(width)+_T("x")+WinUtils::IntToStr(height);
 	}
 	return result;
 }
@@ -83,19 +86,19 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	m_ListView.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 
 	
-	CString serversFileName = GetAppFolder() + "Data/" + _T("servers.xml");
-	CString testFileName = GetAppFolder() + "testfile.jpg";
-	if(xml.LoadFromFile( WCstringToUtf8((GetAppFolder() + "servertool.xml"))))
+	CString serversFileName = WinUtils::GetAppFolder() + "Data/" + _T("servers.xml");
+	CString testFileName = WinUtils::GetAppFolder() + "testfile.jpg";
+	if(xml.LoadFromFile( WCstringToUtf8((WinUtils::GetAppFolder() + "servertool.xml"))))
 	{
 		ZSimpleXmlNode root = xml.getRoot("ServerListTool");
 		std::string name = root.Attribute("FileName");
 		if(!name.empty())
-			testFileName = Utf8ToWstring(name.c_str()).c_str();
+			testFileName = Utf8ToWCstring(name.c_str());
 	}
 	
 	SetDlgItemText(IDC_TOOLFILEEDIT, testFileName);
 	Settings.LoadSettings();
-	iuPluginManager.setScriptsDirectory(WstrToUtf8((LPCTSTR)(GetAppFolder() + "Data/Scripts/")));
+	iuPluginManager.setScriptsDirectory(WCstringToUtf8((LPCTSTR)(WinUtils::GetAppFolder() + "Data/Scripts/")));
 	if(!m_ServerList.LoadFromFile(serversFileName))
 	{
 		MessageBox(_T("Cannot load server list!"));
@@ -106,8 +109,8 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	for(int i=0; i<m_ServerList.count(); i++)
 	{
 		m_skipMap[i]=false;
-		m_ListView.AddItem(i, 0, IntToStr(i), i);
-		m_ListView.SetItemText(i, 1, Utf8ToWstring(m_ServerList.byIndex(i)->Name).c_str());
+		m_ListView.AddItem(i, 0, WinUtils::IntToStr(i), i);
+		m_ListView.SetItemText(i, 1, Utf8ToWCstring(m_ServerList.byIndex(i)->Name));
 	}
 
 	m_FileDownloader.onConfigureNetworkManager.bind(this, &CMainDlg::OnConfigureNetworkManager);
@@ -132,12 +135,18 @@ LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /
 		
 
 		m_CheckedServersMap[i]=sd;
-		m_ListView.AddItem(i,0,IntToStr(i));
-		m_ListView.SetItemText(i, 1, Utf8ToWstring( m_ServerList.byIndex(i)->Name).c_str());
+		m_ListView.AddItem(i,0,WinUtils::IntToStr(i));
+		m_ListView.SetItemText(i, 1, Utf8ToWCstring( m_ServerList.byIndex(i)->Name));
 		//m_ListView.AddItem(i+1,0,_T(""));
 	}
-	CString fileName = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
-	m_srcFileHash = IU_md5_file(fileName);
+	CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
+	if ( !WinUtils::FileExists( fileName ) ) {
+		CString message;
+		message.Format(TR("Файл '%s' не существует"), (LPCTSTR) fileName );
+		MessageBox(message, APPNAME, MB_ICONERROR );
+		return 0;
+	}
+	m_srcFileHash = IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(WCstringToUtf8( fileName ) ).c_str();
 	CString report = _T("Source file: ")+IU_GetFileInfo(fileName, &m_sourceFileInfo);
 	SetDlgItemText(IDC_TOOLSOURCEFILE,report);
 	::EnableWindow(GetDlgItem(IDOK),false);
@@ -156,11 +165,11 @@ LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 	else 
 	{
 		ZSimpleXml savexml;
-		CString fileName = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
+		CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
 		ZSimpleXmlNode root = savexml.getRoot("ServerListTool");
-		root.SetAttribute("FileName", WstrToUtf8((LPCTSTR)fileName));
+		root.SetAttribute("FileName", WCstringToUtf8((LPCTSTR)fileName));
 		root.SetAttribute("Time", int(GetTickCount()));
-		savexml.SaveToFile(WstrToUtf8((LPCTSTR)(GetAppFolder()+"servertool.xml")));
+		savexml.SaveToFile(WCstringToUtf8((LPCTSTR)(WinUtils::GetAppFolder() + "servertool.xml")));
 		EndDialog(wID);
 	}
 	return 0;
@@ -174,8 +183,8 @@ DWORD CMainDlg::Run()
 
 	bool CheckImageServers = SendDlgItemMessage(IDC_CHECKIMAGESERVERS,BM_GETCHECK) == BST_CHECKED;
 	bool CheckFileServers = SendDlgItemMessage(IDC_CHECKFILESERVERS,BM_GETCHECK) == BST_CHECKED;
-	CString fileName = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
-	if(!FileExists(fileName))
+	CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
+	if(!WinUtils::FileExists(fileName))
 	{
 			return -1;
 	}
@@ -196,7 +205,7 @@ DWORD CMainDlg::Run()
 		if(!ue->ImageHost && !CheckFileServers)
 			continue;
 
-		ServerSettingsStruct  ss = Settings.ServersSettings[Utf8ToWstring(ue->Name).c_str()];
+		ServerSettingsStruct  ss = Settings.ServersSettings[Utf8ToWCstring(ue->Name)];
 		if(!useAccounts)
 		{
 			ss.authData.DoAuth  = false;
@@ -223,7 +232,7 @@ DWORD CMainDlg::Run()
 		
 		m_ListView.SetItemText(i,2,CString(_T("Uploading file..")));
 		DWORD startTime = GetTickCount();
-		if(!uploader.UploadFile(WCstringToUtf8(fileName),WCstringToUtf8(myExtractFileName(fileName))))
+		if(!uploader.UploadFile(WCstringToUtf8(fileName),WCstringToUtf8(WinUtils::myExtractFileName(fileName))))
 		{
 			MarkServer(i);
 		}
@@ -231,9 +240,9 @@ DWORD CMainDlg::Run()
 		DWORD endTime = GetTickCount() - startTime;
 		m_CheckedServersMap[i].timeElapsed = endTime;
 		
-		CString imgUrl = Utf8ToWstring(uploader.getDirectUrl()).c_str();
-		CString thumbUrl = Utf8ToWstring(uploader.getThumbUrl()).c_str();
-		CString viewUrl = Utf8ToWstring(uploader.getDownloadUrl()).c_str();
+		CString imgUrl = Utf8ToWCstring(uploader.getDirectUrl());
+		CString thumbUrl = Utf8ToWCstring(uploader.getThumbUrl());
+		CString viewUrl = Utf8ToWCstring(uploader.getDownloadUrl());
 		int nFilesToCheck=0;
 		if(!imgUrl.IsEmpty())
 		{
@@ -310,14 +319,14 @@ bool CMainDlg::OnFileFinished(bool ok, CFileDownloader::DownloadFileListItem it)
 		columnIndex = 3 +fileId;
 	m_CheckedServersMap[serverId].filesChecked++;
 	m_CheckedServersMap[serverId].fileToCheck--;
-	CString fileName = Utf8ToWstring(it.fileName).c_str();
+	CString fileName = Utf8ToWCstring(it.fileName);
 	
 	if(!ok)
 	{
 		m_CheckedServersMap[serverId].stars[fileId] = 0;
 		m_ListView.SetItemText(serverId,columnIndex, _T("Cannot download file"));
 	}
-	if(IU_md5_file(fileName)== m_srcFileHash)
+	if(m_srcFileHash == IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(WCstringToUtf8( fileName ) ).c_str() )
 	{
 		if(fileId == 0)
 		m_CheckedServersMap[serverId].stars[fileId] = 5;
@@ -452,7 +461,7 @@ bool CMainDlg::OnNeedStop()
 
 const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url)
 {
-	CString wFileName = GetUniqFileName(IUTempFolder+Utf8ToWstring("captcha").c_str());
+	CString wFileName = WinUtils::GetUniqFileName(IUTempFolder+Utf8ToWCstring("captcha"));
 
 	nm->setOutputFile(IuCoreUtils::WstringToUtf8((const TCHAR*)wFileName));
 	if(!nm->doGet(url))

@@ -35,7 +35,7 @@ struct ServerThreadsInfo {
 };
 class CFileQueueUploader::Impl {
 	public:
-		Impl();
+		Impl(CFileQueueUploader* queueUploader);
 		virtual ~Impl();
 		void AddFile(const std::string& fileName, const std::string& displayName, void* user_data,CAbstractUploadEngine *uploadEngine);
 		void AddFile(UploadTask task);
@@ -46,6 +46,7 @@ class CFileQueueUploader::Impl {
 		ZThread::Mutex mutex_;
 		ZThread::Mutex callMutex_;
 		Callback* callback_;
+		CFileQueueUploader *queueUploader_;
 		volatile bool m_NeedStop;
 		bool m_IsRunning;
 		CAbstractUploadEngine* m_engine;
@@ -80,13 +81,14 @@ class CFileQueueUploader::Impl::Runnable : public ZThread::Runnable {
 
 /* private CFileQueueUploader::Impl class */
 
-CFileQueueUploader::Impl::Impl() {
+CFileQueueUploader::Impl::Impl(CFileQueueUploader* queueUploader) {
 	m_nThreadCount = 1;
 	callback_ = 0;
 	m_NeedStop = false;
 	m_IsRunning = false;
 	m_nRunningThreads = 0;
 	m_engine = 0;
+	queueUploader_ = queueUploader;
 }
 
 CFileQueueUploader::Impl::~Impl() {
@@ -108,7 +110,7 @@ void CFileQueueUploader::Impl::onProgress(CUploader* uploader, InfoProgress prog
 void CFileQueueUploader::Impl::OnConfigureNetworkManager(NetworkManager* nm)
 {
 	if (callback_) {
-		callback_->OnConfigureNetworkManager(nm);
+		callback_->OnConfigureNetworkManager(queueUploader_,nm);
 	}
 }
 
@@ -215,7 +217,7 @@ mutex_.release();
 	{
 		m_IsRunning = false;
 		if (callback_) {
-			callback_->OnQueueFinished();
+			callback_->OnQueueFinished(queueUploader_);
 		}
 	}
 	
@@ -225,7 +227,7 @@ mutex_.release();
 
 CFileQueueUploader::CFileQueueUploader()
 {
-	_impl = new Impl();
+	_impl = new Impl(this);
 }
 
 void CFileQueueUploader::AddFile(const std::string& fileName, const std::string& displayName, void* user_data, CAbstractUploadEngine *uploadEngine)

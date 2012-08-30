@@ -24,6 +24,8 @@
 #include "LogWindow.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
+#include <Func/Myutils.h>
 
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
 
@@ -86,7 +88,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
 	SetDlgItemInt(IDC_WINDOWHIDINGDELAY, Settings.ScreenshotSettings.WindowHidingDelay);
 	SendDlgItemMessage(IDC_FORMATLIST, CB_SETCURSEL, Format, 0);
 
-	bool isVista = IsVista();
+	bool isVista = WinUtils::IsVista();
 	::EnableWindow(GetDlgItem(IDC_AEROONLY), isVista);
 	::EnableWindow(GetDlgItem(IDC_REMOVECORNERS), isVista);
 	::EnableWindow(GetDlgItem(IDC_ADDSHADOW), isVista);
@@ -96,7 +98,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
 
 bool CScreenshotSettingsPagePage::Apply()
 {
-	CString fileName = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
+	CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
 	if(!CheckFileName(fileName))
 	{
 		MessageBox(TR("Имя файла содержит запрещенные символы!"));
@@ -110,7 +112,7 @@ bool CScreenshotSettingsPagePage::Apply()
 	Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
 	Settings.ScreenshotSettings.ShowForeground = SendDlgItemMessage(IDC_FOREGROUNDWHENSHOOTING, BM_GETCHECK) == BST_CHECKED;
 
-	Settings.ScreenshotSettings.Folder = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_SCREENSHOTFOLDEREDIT));
+	Settings.ScreenshotSettings.Folder = GuiTools::GetWindowText(GetDlgItem(IDC_SCREENSHOTFOLDEREDIT));
 	Settings.ScreenshotSettings.Format = SendDlgItemMessage(IDC_FORMATLIST,CB_GETCURSEL,0,0);
 	Settings.ScreenshotSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
@@ -128,13 +130,11 @@ bool CScreenshotSettingsPagePage::Apply()
 
 LRESULT CScreenshotSettingsPagePage::OnScreenshotsFolderSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	CFolderDialog fd(m_hWnd,TR("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE );
-	CString path = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_SCREENSHOTFOLDEREDIT));
-	fd.SetInitialFolder(path,true);
-	if(fd.DoModal(m_hWnd) == IDOK)
-	{
-		SetDlgItemText(IDC_SCREENSHOTFOLDEREDIT,fd.GetFolderPath());
-		return true;
+	CString path = GuiTools::GetWindowText(GetDlgItem(IDC_SCREENSHOTFOLDEREDIT));
+	CString newPath = GuiTools::SelectFolderDialog(m_hWnd, path);
+
+	if ( !newPath.IsEmpty() ) {
+		SetDlgItemText(IDC_SCREENSHOTFOLDEREDIT, newPath);
 	}
 	return 0;
 }

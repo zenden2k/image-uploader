@@ -24,11 +24,11 @@
 #include "Func/common.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Func/LangClass.h"
+#include <Func/WinUtils.h>
+#include <Func/MyUtils.h>
 
 #define THUMBNAIL_WIDTH 170   // constants
 #define THUMBNAIL_HEIGHT 120
-
-bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
 
 // CThumbsView
 CThumbsView::CThumbsView()
@@ -137,7 +137,7 @@ int CThumbsView::DeleteSelected(void)
 	if(IsRun)
 	{
 		SignalStop();
-		MsgWaitForSingleObject(m_hThread, INFINITE);
+		WinUtils::MsgWaitForSingleObject(m_hThread, INFINITE);
 		ATLTRACE(_T("MsgWait stopped!!!\r\n"));
 	}
 
@@ -181,7 +181,7 @@ void CThumbsView::MyDeleteAllItems()
 	if(IsRun)
 	{
 		SignalStop();
-		MsgWaitForSingleObject(m_hThread, INFINITE);
+		WinUtils::MsgWaitForSingleObject(m_hThread, INFINITE);
 		ATLTRACE(_T("MsgWait stopped!!!\r\n"));
 	}
 	int n = GetItemCount();
@@ -396,13 +396,13 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
 			Font font(L"Tahoma", 8, FontStyleRegular );
 			LPCTSTR Filename = GetFileName(ItemID);
 			WCHAR Buffer[256];
-			int f = MyGetFileSize(GetFileName(ItemID));
+			int f = IuCoreUtils::getFileSize(WCstringToUtf8( GetFileName(ItemID) ));
 			WCHAR buf2[25];
 			Utf8String fileSizeStr = IuCoreUtils::fileSizeToString(IuCoreUtils::getFileSize(WCstringToUtf8(Filename)));
 			lstrcpy(buf2, Utf8ToWCstring(fileSizeStr));
 			//NewBytesToString(f, buf2, 25);
 			WCHAR FileExt[25];
-			lstrcpy(FileExt, GetFileExt(Filename));
+			lstrcpy(FileExt, WinUtils::GetFileExt(Filename));
 			if(!lstrcmpi(FileExt, _T("jpg"))) 
 				lstrcpy(FileExt,_T("JPEG"));
 			if(IsImage(filename) && bm)
@@ -567,7 +567,7 @@ bool CThumbsView::StopAndWait()
 	if(IsRun)
 	{
 		SignalStop();
-		MsgWaitForSingleObject(m_hThread, INFINITE);
+		WinUtils::MsgWaitForSingleObject(m_hThread, INFINITE);
 		ATLTRACE(_T("StopAndWait() finished!!!\r\n"));
 	}
 	return IsRun;
