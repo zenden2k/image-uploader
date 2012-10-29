@@ -43,8 +43,6 @@ virtual ~CUploadSettingsPage();
 
     BEGIN_MSG_MAP(CUploadSettingsPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-		COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-		COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 		COMMAND_HANDLER(IDC_USEPROXYSERVER, BN_CLICKED, OnClickedUseProxy)
 		COMMAND_HANDLER(IDC_NEEDSAUTH, BN_CLICKED, OnClickedUseProxyAuth)
 	END_MSG_MAP()
@@ -67,6 +65,7 @@ virtual ~CUploadSettingsPage();
 	void TranslateUI();
 	CServerSelectorControl *imageServerSelector_;
 	CServerSelectorControl *fileServerSelector_; 
+	CServerSelectorControl *trayServerSelector_;
 };
 
 #endif // IU_GUI_DIALOGS_UPLOADSETTINGSPAGE_H

@@ -50,6 +50,7 @@ namespace GuiTools
 
 	HFONT MakeFontUnderLine(HFONT font);
 	HFONT MakeFontBold(HFONT font);
+	HFONT MakeFontSmaller(HFONT font);
 
 	int GetFontSize(int nFontHeight);
 	int GetFontHeight(int nFontSize);

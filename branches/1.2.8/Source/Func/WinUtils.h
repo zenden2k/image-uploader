@@ -45,9 +45,11 @@ namespace WinUtils {
 	const CString TrimString(const CString& source, int nMaxLen);
 	bool IsStrInList(LPCTSTR szExt,LPCTSTR szList);
 	bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
+	bool ShowFilePropertiesDialog(HWND hWnd, const CString& fileName);
 	CString IntToStr(int n);
 
 	CString GetAppFolder();
+	CString GetAppFileName();
 	CString FormatWindowsErrorMessage(int idCode);
 	bool IsElevated();
 	void DeleteDir2(LPCTSTR Dir);

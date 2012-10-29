@@ -93,7 +93,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 		buf+= Utf8ToWCstring(_EngineList->byIndex(i)->Name);
 		SendDlgItemMessage(IDC_SERVERLIST, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)buf);
 	}
-	SendDlgItemMessage(IDC_SERVERLIST,CB_SETCURSEL, Settings.QuickServerID);
+	SendDlgItemMessage(IDC_SERVERLIST,CB_SETCURSEL, Settings.QuickServerID());
 
 	TCHAR buf[MAX_PATH];
 	CString buf2;
@@ -182,8 +182,8 @@ bool CGeneralSettings::Apply()
 	Settings.SendToContextMenu = SendDlgItemMessage(IDC_SHELLSENDTOITEM, BM_GETCHECK)==BST_CHECKED;
 	Settings.SendToContextMenu_changed ^= Settings.SendToContextMenu;
 
-	Settings.QuickUpload = SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_GETCHECK)==BST_CHECKED;
-	Settings.QuickServerID = SendDlgItemMessage(IDC_SERVERLIST, CB_GETCURSEL, 0, 0);
+	/*Settings.QuickUpload = SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_GETCHECK)==BST_CHECKED;
+	Settings.QuickServerID = SendDlgItemMessage(IDC_SERVERLIST, CB_GETCURSEL, 0, 0);*/
 	Settings.AutoShowLog = SendDlgItemMessage(IDC_AUTOSHOWLOG,  BM_GETCHECK )==BST_CHECKED;
 	Settings.ConfirmOnExit = SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_GETCHECK)==BST_CHECKED;
 	

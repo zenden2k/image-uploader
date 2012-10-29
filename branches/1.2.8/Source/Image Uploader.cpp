@@ -44,8 +44,64 @@ bool IsProcessRunning(DWORD pid) {
 	return true;
 }
 
+void WaitForUrlRedirection() {
+	HANDLE hNamedPipe;
+	LPCTSTR  lpszPipeName = _T("\\\\.\\pipe\\imageuploader");
+	hNamedPipe = CreateNamedPipe(
+		lpszPipeName,
+		PIPE_ACCESS_DUPLEX,
+		PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
+		PIPE_UNLIMITED_INSTANCES,
+		2048, 2048, 5000, NULL);
+	bool fConnected = ConnectNamedPipe(hNamedPipe, NULL);
+	//MessageBox(0,_T("Connected!"),0,0);
+	TCHAR szBuf[1024];
+	DWORD cbRead;
+	DWORD cbWritten;
+
+	while(1)
+	{
+		
+		if(ReadFile(hNamedPipe, szBuf, 2048, &cbRead, NULL))
+		{
+			
+			// ¬ыводим прин€тую команду на консоль 
+			MessageBox(0, szBuf,0,0);
+			//printf("Received: <%s>\n", szBuf);
+
+			if(!WriteFile(hNamedPipe, szBuf, lstrlen(szBuf) + 2,
+				&cbWritten, NULL))
+				break;
+
+		
+
+			// ≈сли пришла команда "exit", 
+			// завершаем работу приложени€
+			if(!lstrcmp(szBuf, _T("exit")))
+				break;
+		}
+		else
+		{
+			//fprintf(stdout,"ReadFile: Error %ld\n"#330033, 
+			//	GetLastError());
+			//getch();
+			break;
+		}
+	}
+	 CloseHandle(hNamedPipe);
+}
+
+void SendUrlToPipe(CString url) {
+	TCHAR inBuffer[1024], outBuffer[1024];
+	lstrcpy(inBuffer, url);
+	//MessageBox(0,_T("Sending to pipe!"),0,0);
+	DWORD bytesRead;
+	CallNamedPipe(_T("\\\\.\\pipe\\imageuploader"),inBuffer, sizeof(inBuffer), outBuffer, sizeof(outBuffer), &bytesRead, 5000 );
+}
+
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
+	
 	CreateTempFolder();
 	
 	std::vector<CString> fileList;
@@ -72,6 +128,30 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		Settings.Uninstall();
 		return 0;
 	}
+
+	if ( CmdLine.IsOption( _T("openUrl") ) ) {
+		if ( CmdLine.GetCount() < 3 ) {
+			return 0;
+		}
+		CString url = CmdLine[2];
+		SendUrlToPipe(url);
+		//MessageBox(0, _T("Opening url"), CmdLine[2], 0);
+		return 0; 
+	}
+
+
+	if ( CmdLine.IsOption(_T("server")) ) {
+		WaitForUrlRedirection();
+			return 0; 
+	}
+
+
+	/*if ( CmdLine.IsOption(_T("client")) ) {
+		SendToPipe();
+		*	return 0; 
+	}*/
+
+	
 
 	bool BecomeTray = false;
 	if ( Settings.ShowTrayIcon && !CmdLine.IsOption( _T("tray") ) ) {
@@ -137,12 +217,10 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 }
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
-{	/*
-	std::string str ="something"; 
-	std::string encodedString = base64_encode((const unsigned char*)str.c_str(), str.length());
-	MessageBoxA( 0, encodedString.c_str(), 0, 0);*/
+{	
 	OleInitialize(NULL);
 	HRESULT hRes ;
+	//MessageBox(0, WinUtils::IsElevated() ? _T("Is elevated") : _T("Is NOT elevated!"), 0,0);
 
 	for( size_t i = 0; i < CmdLine.GetCount(); i++ ) {
 		CString CurrentParam = CmdLine[i];

@@ -20,6 +20,7 @@
 
 #include "Gui/GuiTools.h"
 #include <Func/WinUtils.h>
+#include <Shobjidl.h>
 
 namespace GuiTools
 {
@@ -246,6 +247,21 @@ HFONT MakeFontUnderLine(HFONT font)
 	return NewFont;
 }
 
+HFONT MakeFontSmaller(HFONT font) {
+	if ( !font ) {
+		return 0;
+	}
+
+	LOGFONT alf;
+	bool ok = ::GetObject(font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT);
+	if ( !ok ) {
+		return 0;
+	}
+
+	alf.lfHeight = GetFontSize( 12 );
+	HFONT NewFont = CreateFontIndirect(&alf);
+	return NewFont;
+}
 int GetFontSize(int nFontHeight) {
 	return - MulDiv( nFontHeight, 72, GetDeviceCaps(::GetDC(0), LOGPIXELSY));
 }

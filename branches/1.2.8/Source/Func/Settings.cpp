@@ -267,7 +267,7 @@ void CSettings::FindDataFolder()
 
 CSettings::CSettings()
 #ifndef IU_SHELLEXT
-	: ServerID(UploadProfile.ServerID), QuickServerID(UploadProfile.QuickServerID)
+	//: ServerID(UploadProfile.ServerID), QuickServerID(UploadProfile.QuickServerID)
 #endif
 {
 	FindDataFolder();
@@ -298,7 +298,7 @@ CSettings::CSettings()
 	*m_Directory = 0;
 	UseTxtTemplate = false;
 	UseDirectLinks = true;
-	ServerID = 0;
+
 	CodeLang = 0;
 	ConfirmOnExit = 1;
 	ExplorerContextMenu = false;
@@ -307,7 +307,6 @@ CSettings::CSettings()
 	ThumbsPerLine = 4;
 	SendToContextMenu_changed = false;
 	SendToContextMenu = 0;
-	QuickServerID = 0;
 	QuickUpload = 0;
 	ParseSubDirs = 1;
 	FileRetryLimit = 3;
@@ -466,10 +465,13 @@ CSettings::CSettings()
 	history.nm_bind(HistorySettings, EnableDownloading);
 
 	SettingsNode& upload = mgr_["Uploading"];
-	upload.n_bind(ServerName);
-	upload.n_bind(FileServerName);
+	upload["ServerName"].bind(imageServer.serverName_);
+	upload["ServerName"]["@Profile"].bind(imageServer.profileName_);	
+	upload["FileServerName"].bind(fileServer.serverName_);
+	upload["FileServerName"]["@Profile"].bind(fileServer.profileName_);	
 	upload.n_bind(QuickUpload);
-	upload.n_bind(QuickServerName);
+	upload["QuickServerName"].bind(quickServer.serverName_);
+	upload["QuickServerName"]["@Profile"].bind(quickServer.profileName_);	
 	upload.n_bind(CodeLang);
 	upload.n_bind(ThumbsPerLine);
 	upload.n_bind(UploadBufferSize);
@@ -532,6 +534,15 @@ bool CSettings::LoadSettings(LPCTSTR szDir, bool LoadFromRegistry) {
 	}
 	if ( !IsFFmpegAvailable() ){
 		VideoSettings.Engine = VideoEngineDirectshow;
+	}
+	if ( LoadFromRegistry ) {
+		if ( !IsUrlHandlerRegistered() ) {
+			if ( WinUtils::IsVista() && !WinUtils::IsElevated() ) {
+				ApplyRegistrySettings();
+			} else {
+				CSettings::ApplyRegSettingsRightNow();
+			}
+		}
 	}
 	return true;
 }
@@ -682,7 +693,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		   //Reg.DeleteKey("Software\\Zenden.ws\\Image Uploader");
 		}*/
 		EnableAutostartup(AutoStartup);
-
+	
 		if (SendToContextMenu_changed   || ExplorerContextMenu_changed) {
 			AutoStartup_changed = false;
 			BOOL b;
@@ -698,6 +709,10 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		ExplorerContextMenu_changed = false;
 		SendToContextMenu_changed = false;
 
+		if ( !WinUtils::IsVista() || WinUtils::IsElevated() ) {
+			MessageBox(0, _T("Registering URL handler"), 0, 0);
+			RegisterURLHandler();
+		}
 		if (ShowTrayIcon_changed)
 		{
 			ShowTrayIcon_changed = false;
@@ -735,6 +750,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		// Applying Startup settings
 		// EnableAutostartup(AutoStartup);
 		RegisterShellExtension( ExplorerContextMenu );
+		CSettings::RegisterURLHandler();
 
 		// if(SendToContextMenu_changed)
 		{
@@ -929,6 +945,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		image.nm_bind(params, AddText);
 		image.nm_bind(params, ResizeMode);
 		image.nm_bind(params, SmartConverting);
+		image.nm_bind(params, AllowImageEnlarging);
 		image["Logo"].bind(params.LogoFileName);
 		image["Logo"]["@LogoPosition"].bind(params.LogoPosition);
 		image["Logo"]["@LogoBlend"].bind(params.LogoBlend);
@@ -1009,6 +1026,68 @@ CString CSettings::prepareVideoDialogFilters() {
 	return result;
 }
 
+bool CSettings::RegisterURLHandler() {
+	CRegistry Reg;
+	Reg.SetRootKey( HKEY_CLASSES_ROOT );
+	bool canCreateRegistryKey = true;
+	CString handlerName = URLHandlerName();
+
+	if ( Reg.SetKey( handlerName, canCreateRegistryKey ) ) {
+		Reg.WriteString(_T(""), _T("URL:imageuploader Protocol") );
+		Reg.WriteString(_T("URL Protocol"), _T("") );
+		CRegistry Reg2;
+		Reg2.SetRootKey(HKEY_CLASSES_ROOT);
+		if ( Reg2.SetKey( handlerName + "\\shell\\open\\command", true ) ) {
+			CString command;
+			command.Format(_T("\"%s\" /openUrl \"%%1\""), WinUtils::GetAppFileName());
+			Reg2.WriteString( _T(""),  command);
+		}
+	}
+	return true;
+}
+
+bool CSettings::IsUrlHandlerRegistered() {
+	CRegistry Reg;
+	Reg.SetRootKey( HKEY_CLASSES_ROOT );
+	if ( Reg.SetKey( URLHandlerName() + "\\shell\\open\\command", false ) ) {
+		CString command = Reg.ReadString(_T(""));
+		
+		CCmdLine cmdLine(command);
+		if ( cmdLine.GetCount() < 3 ) {
+			return false;
+		}
+		CString appFileName = cmdLine[0];
+
+		if ( WinUtils::FileExists( appFileName ) ) {
+			return true;
+		}
+	} 
+	return false;
+}
+
+CString CSettings::URLHandlerName() {
+	return _T("imageuploader");
+}
+
+CString CSettings::ServerName() {
+	return imageServer.serverName();
+}
+CString CSettings::QuickServerName() {
+	return quickServer.serverName();
+}
+CString CSettings::FileServerName() {
+	return fileServer.serverName();
+}
+
+int CSettings::ServerID() {
+	return _EngineList->GetUploadEngineIndex(ServerName());
+}
+int CSettings::QuickServerID() {
+	return _EngineList->GetUploadEngineIndex(QuickServerName());
+}
+int CSettings::FileServerID() {
+	return _EngineList->GetUploadEngineIndex(FileServerName());
+}
 CEncodedPassword::CEncodedPassword() {
 }
 

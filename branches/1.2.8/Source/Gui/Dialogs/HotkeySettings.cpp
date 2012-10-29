@@ -178,7 +178,7 @@ CHotkeyList::CHotkeyList()
 	AddItem(TR("Снимок всего экрана"),_T("fullscreenshot"), IDM_FULLSCREENSHOT);
 	AddItem(TR("Снимок активного окна"),_T("windowscreenshot"), IDM_WINDOWSCREENSHOT);
 	AddItem(TR("Снимок выбранного элемента"),_T("windowhandlescreenshot"), IDM_WINDOWHANDLESCREENSHOT);
-	AddItem(TR("Снимок произвольной формы"),_T("freeformscreenshot"), IDM_WINDOWSCREENSHOT);
+	AddItem(TR("Снимок произвольной формы"),_T("freeformscreenshot"), IDM_FREEFORMSCREENSHOT);
 	AddItem(TR("Показать окно программы"),_T("showmainwindow"), IDM_SHOWAPPWINDOW);
 	AddItem(TR("Настройки"),_T("settings"), IDM_SETTINGS);
 	AddItem(TR("Вставить из буфера"),_T("paste"), IDM_PASTEFROMCLIPBOARD,0x56, MOD_CONTROL); // Ctrl+V keyboard shortcut

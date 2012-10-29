@@ -68,26 +68,28 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	imageServerSelector_->setTitle(TR("Сервер для хранения изображений"));
 	imageServerSelector_->ShowWindow( SW_SHOW );
 	imageServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
-	ServerProfile imageServerProfile;
-	if ( Settings.ServerID != -1 ) {
-		imageServerProfile.setServerName( Utf8ToWCstring( _EngineList->byIndex(Settings.ServerID)->Name ) );
-	}
-	///imageServerProfile.serverSettings = Settings.ServersSettings[imageServerProfile.serverName()];
-	imageServerSelector_->setServerProfile(imageServerProfile);
-
+	imageServerSelector_->setServerProfile(Settings.imageServer);
+	
 	serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_FILESERVERSELECTORPLACE);
+	
 	fileServerSelector_ = new CServerSelectorControl();
+	fileServerSelector_->setServersMask(CServerSelectorControl::smFileServers);
 	fileServerSelector_->Create(m_hWnd, serverSelectorRect);
 	fileServerSelector_->ShowWindow( SW_SHOW );
 	fileServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
 	ServerProfile fileServerProfile;
-	if ( Settings.FileServerID != -1 ) {
-		fileServerProfile.setServerName(Utf8ToWCstring( _EngineList->byIndex(Settings.FileServerID)->Name ));
-	}
-	//fileServerProfile.serverSettings = Settings.ServersSettings[fileServerProfile.serverName()];
-	fileServerSelector_->setServerProfile(fileServerProfile);
+	fileServerSelector_->setServerProfile(Settings.fileServer);
 	fileServerSelector_->setTitle(TR("Сервер для хранения других типов файлов"));
 
+	serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_TRAYSERVERSELECTOR);
+	trayServerSelector_ = new CServerSelectorControl();
+	trayServerSelector_->setShowDefaultServerItem(true);
+	trayServerSelector_->Create(m_hWnd, serverSelectorRect);
+	trayServerSelector_->ShowWindow( SW_SHOW );
+	trayServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
+
+	trayServerSelector_->setServerProfile(Settings.fileServer);
+	trayServerSelector_->setTitle(TR("Сервер для быстрой загрузки скриншотов"));
 
 	BOOL temp;
 	DoDataExchange(FALSE);
@@ -122,17 +124,6 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	return 1;  // Let the system set the focus
 }
 
-LRESULT CUploadSettingsPage::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-	EndDialog(wID);
-	return 0;
-}
-
-LRESULT CUploadSettingsPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-	EndDialog(wID);
-	return 0;
-}
 
 LRESULT CUploadSettingsPage::OnClickedUseProxy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& bHandled)
 {
@@ -156,21 +147,9 @@ LRESULT CUploadSettingsPage::OnClickedUseProxyAuth(WORD /*wNotifyCode*/, WORD wI
 bool CUploadSettingsPage::Apply()
 {
 	DoDataExchange(TRUE);
-	Settings.ConnectionSettings.UseProxy = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK)!=0;
-	Settings.ConnectionSettings.NeedsAuth = SendDlgItemMessage(IDC_NEEDSAUTH, BM_GETCHECK);
+	Settings.fileServer = fileServerSelector_->serverProfile();
+	Settings.imageServer = imageServerSelector_->serverProfile();
 	Settings.AutoCopyToClipboard = SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_GETCHECK)!=0;
-	TCHAR Buffer[128];
 
-	GetDlgItemText(IDC_ADDRESSEDIT,Buffer, 128);
-	Settings.ConnectionSettings.ServerAddress = Buffer;
-	Settings.ConnectionSettings.ProxyPort = GetDlgItemInt(IDC_PORTEDIT);
-	
-	GetDlgItemText(IDC_PROXYLOGINEDIT, Buffer, 128);
-	Settings.ConnectionSettings.ProxyUser = Buffer;
-	GetDlgItemText(IDC_PROXYPASSWORDEDIT, Buffer, 128);
-	Settings.ConnectionSettings.ProxyPassword = Buffer;
-	Settings.ConnectionSettings.ProxyType = SendDlgItemMessage(IDC_SERVERTYPECOMBO, CB_GETCURSEL);
-	Settings.UploadBufferSize = GetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT)*1024;
-	if(!Settings.UploadBufferSize) Settings.UploadBufferSize = 65536;
 	return true;
 }

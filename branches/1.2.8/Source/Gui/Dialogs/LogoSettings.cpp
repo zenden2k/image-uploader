@@ -25,7 +25,6 @@
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
 #include "InputDialog.h"
-#include "Gui/GuiTools.h"
 #include <Func/WinUtils.h>
 #include <Func/Common.h>
 
@@ -45,8 +44,6 @@ void CLogoSettings::TranslateUI()
 	TRC(IDC_RESIZEBYWIDTH,"Изменение ширины:");
 	TRC(IDC_YOURLOGO,"Добавить водяной знак");
 	TRC(IDC_SMARTCONVERTING, "Не обрабатывать изображение, если оно уже в нужном формате");
-	//TRC(IDC_SAVEPROPORTIONS,"Сохранять пропорции");
-	//TRC(IDC_YOURLOGO,"Добавить водяной знак");
 	TRC(IDC_YOURTEXT,"Добавить текст на картинку");
 	TRC(IDC_XLABEL,"и/или высоты:");
 	TRC(IDC_RESIZEMODELABEL, "Режим:");
@@ -64,6 +61,7 @@ void CLogoSettings::TranslateUI()
 	TRC(IDC_THUMBTEXTCOLORLABEL, "Цвет текста:");
 	TRC(IDC_GRADIENTCOLOR1LABEL, "Цвет градиента 1:");
 	TRC(IDC_GRADIENTCOLOR2LABEL, "Цвет градиента 2:");
+	TRC(IDC_ENLARGEIMAGECHECKBOX, "Разрешить увеличение изображения");
 	SetWindowText(TR("Дополнительные параметры"));	
 }
 
@@ -81,35 +79,31 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	RECT rc = {13, 20, 290, 95};
 	img.Create(GetDlgItem(IDC_LOGOGROUP), rc);
    img.ShowWindow(SW_HIDE);
-	img.LoadImage(0);
+	img.LoadImage(NULL);
 
    GuiTools::AddComboBoxItems(m_hWnd, IDC_RESIZEMODECOMBO, 3, TR("Подогнать"), TR("По центру"), TR("Растянуть"));
    GuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 4, TR("Авто"), _T("JPEG"), _T("PNG"),_T("GIF"));
   
 	SendDlgItemMessage(IDC_TRANSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)0) );
 	SendDlgItemMessage(IDC_QUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
+
+	std::map<ImageConvertingParams::LogoPositionEnum, CString> logoPositions;
+	logoPositions[ImageConvertingParams::lpTopLeft]      = TR("Верхний левый угол");
+	logoPositions[ImageConvertingParams::lpTopCenter]    = TR("Сверху посередине");
+	logoPositions[ImageConvertingParams::lpTopRight]     = TR("Правый верхний угол");
+	logoPositions[ImageConvertingParams::lpBottomLeft]   = TR("Левый нижний угол");
+	logoPositions[ImageConvertingParams::lpBottomCenter] = TR("Снизу посередине");
+	logoPositions[ImageConvertingParams::lpBottomRight]  = TR("Правый нижний угол");
+
+	for( std::map<ImageConvertingParams::LogoPositionEnum, CString>::const_iterator it = logoPositions.begin(); it != logoPositions.end(); ++it ) {
+		GuiTools::AddComboBoxItem(m_hWnd, IDC_LOGOPOSITION, it->second);
+		GuiTools::AddComboBoxItem(m_hWnd, IDC_TEXTPOSITION, it->second);
+	}
 	
-	SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Верхний левый угол"));
-	SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Сверху посередине"));
-	SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Правый верхний угол"));
-	SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Левый нижний угол"));
-	SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Снизу посередине"));
-	SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Правый нижний угол"));
-
-	SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Верхний левый угол"));
-	SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Сверху посередине"));
-	SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Правый верхний угол"));
-   SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Левый нижний угол"));
-   SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Снизу посередине"));
-   SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Правый нижний угол"));
-
    TextColor.SubclassWindow(GetDlgItem(IDC_SELECTCOLOR));
-
-
    StrokeColor.SubclassWindow(GetDlgItem(IDC_STROKECOLOR));
 
    CIcon ico = (HICON)LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONWHITEPAGE));
-   //LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONWHITEPAGE), IMAGE_ICON	, 16,16,0);
    RECT profileRect;
    ::GetWindowRect(GetDlgItem(IDC_PROFILETOOBLARPLACEBUTTON), &profileRect);
    ::MapWindowPoints(0, m_hWnd, (LPPOINT)&profileRect, 2);
@@ -157,7 +151,7 @@ LRESULT CLogoSettings::OnBnClickedLogobrowse(WORD /*wNotifyCode*/, WORD /*wID*/,
 		TR("Все файлы"),
 		_T("*.*"));
 
-	CFileDialog fd(true, 0, 0, 4|2, Buf, m_hWnd);
+	CFileDialog fd(true, 0, 0, OFN_OVERWRITEPROMPT, Buf, m_hWnd);
 	
 	CString s;
 	s = WinUtils::GetAppFolder();
@@ -225,12 +219,14 @@ void CLogoSettings::ShowParams(const ImageConvertingParams& params)
    m_CatchChanges = false;
    SetDlgItemText(IDC_LOGOEDIT, params.LogoFileName);
 	
-	if(*params.LogoFileName) 
+	if ( !params.LogoFileName.IsEmpty() )  {
 		img.LoadImage(params.LogoFileName);
+	}
 
 	SetDlgItemText(IDC_EDITYOURTEXT,params.Text);
    SendDlgItemMessage(IDC_LOGOPOSITION, CB_SETCURSEL, params.LogoPosition);
 	SendDlgItemMessage(IDC_TEXTPOSITION, CB_SETCURSEL, params.TextPosition);
+	GuiTools::SetCheck(m_hWnd, IDC_ENLARGEIMAGECHECKBOX, params.AllowImageEnlarging);
 	TextColor.SetColor(params.TextColor);
    StrokeColor.SetColor(params.StrokeColor);
    lf = params.Font;
@@ -275,6 +271,7 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
 	params.Font = lf;
 	params.AddLogo = addLogo;
    params.AddText = addText;
+	params.AllowImageEnlarging = GuiTools::GetCheck(m_hWnd, IDC_ENLARGEIMAGECHECKBOX);
 
 	GuiTools::GetCheck(m_hWnd, IDC_SMARTCONVERTING, params.SmartConverting);
 	params.TextColor=TextColor.GetColor();

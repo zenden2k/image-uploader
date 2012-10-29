@@ -140,6 +140,8 @@ class CUploadEngineData
 		int RetryLimit;
 		int NumOfTries;
 		CUploadEngineData();
+
+		enum NeedAuthorizationEnum { naNotAvailable = 0, naAvailable, naObligatory };
 };
 
 struct CIUUploadParams

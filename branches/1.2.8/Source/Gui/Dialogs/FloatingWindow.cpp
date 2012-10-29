@@ -272,6 +272,7 @@ LRESULT CFloatingWindow::OnWindowHandleScreenshot(WORD wNotifyCode, WORD wID, HW
 
 LRESULT CFloatingWindow::OnFreeformScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
+	MessageBox( TR("freeformscreenshot"), 0, 0);
 	pWizardDlg->executeFunc(_T("freeformscreenshot,") + (m_bFromHotkey ? CString(_T("1")) : CString(_T("2"))));
 	return 0;
 }
@@ -354,19 +355,19 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 		SubMenu.CreatePopupMenu();
 		SubMenu.InsertMenu(
 		   0, MFT_STRING | MFT_RADIOCHECK |
-		   (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD ? MFS_CHECKED : 0),
+			(Settings.TrayIconSettings.TrayScreenshotAction == CSettings::TRAY_SCREENSHOT_UPLOAD ? MFS_CHECKED : 0),
 		   IDM_SCREENTSHOTACTION_UPLOAD, TR("Загрузить на сервер"));
 		SubMenu.InsertMenu(
 		   1, MFT_STRING | MFT_RADIOCHECK |
-		   (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD ? MFS_CHECKED : 0),
+		   (Settings.TrayIconSettings.TrayScreenshotAction == CSettings::TRAY_SCREENSHOT_CLIPBOARD ? MFS_CHECKED : 0),
 		   IDM_SCREENTSHOTACTION_TOCLIPBOARD, TR("Копировать в буфер обмена"));
 		SubMenu.InsertMenu(
 		   2, MFT_STRING | MFT_RADIOCHECK |
-		   (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_SHOWWIZARD ? MFS_CHECKED : 0),
+		   (Settings.TrayIconSettings.TrayScreenshotAction == CSettings::TRAY_SCREENSHOT_SHOWWIZARD ? MFS_CHECKED : 0),
 		   IDM_SCREENTSHOTACTION_SHOWWIZARD, TR("Открыть в окне мастера"));
 		SubMenu.InsertMenu(
 		   3, MFT_STRING | MFT_RADIOCHECK |
-		   (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD ? MFS_CHECKED : 0),
+		   (Settings.TrayIconSettings.TrayScreenshotAction == CSettings::TRAY_SCREENSHOT_ADDTOWIZARD ? MFS_CHECKED : 0),
 		   IDM_SCREENTSHOTACTION_ADDTOWIZARD, TR("Добавить в мастер"));
 
 		MENUITEMINFO mi;
@@ -565,7 +566,7 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
 	m_LastUploadedItem = CFileQueueUploader::FileListItem();
 	m_FileQueueUploader = new CFileQueueUploader();
 	m_FileQueueUploader->setCallback(this);
-	CUploadEngineData* engineData = _EngineList->byIndex(Settings.ServerID);
+	CUploadEngineData* engineData = _EngineList->byIndex(Settings.ServerID());
 	if (!engineData)
 		engineData = _EngineList->byIndex(_EngineList->getRandomImageServer());
 	if (!engineData)

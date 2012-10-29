@@ -192,7 +192,6 @@ bool CImageConverter::Convert(const CString& sourceFile)
 				             float(bm.GetHeight()),
 				             UnitPixel,
 				             &attr);
-			// gr.DrawImage(/*backBuffer*/&bm, (int)-1, (int)-1, (int)newwidth+2,(int)newheight+2);
 		}
 		else
 		if (m_imageConvertingParams.ResizeMode == ImageConvertingParams::irmCrop)
@@ -202,13 +201,13 @@ bool CImageConverter::Convert(const CString& sourceFile)
 			double k = 1;
 			if (newwidth > newheight)
 			{
-				newVisibleWidth = static_cast<int>(min(newwidth, imgwidth));
+				newVisibleWidth = m_imageConvertingParams.AllowImageEnlarging? newwidth : static_cast<int>(min(newwidth, imgwidth));
 				k = newVisibleWidth / imgwidth;
 				newVisibleHeight = static_cast<int>(newVisibleWidth / imgwidth * imgheight);
 			}
 			else
 			{
-				newVisibleHeight = static_cast<int>(min(newheight, imgheight));
+				newVisibleHeight = m_imageConvertingParams.AllowImageEnlarging? newheight : static_cast<int>(min(newheight, imgheight));
 				k = newVisibleHeight / imgheight;
 				newVisibleWidth = static_cast<int>(newVisibleHeight / imgheight * imgwidth);
 			}
@@ -222,7 +221,6 @@ bool CImageConverter::Convert(const CString& sourceFile)
 			sourceRect.top = int(sourceRect.top / k);
 			sourceRect.right = int(sourceRect.right / k);
 			sourceRect.bottom = int(sourceRect.bottom / k);
-			// = sourceRect.MulDiv(1, k);
 			gr.DrawImage(&bm,
 			             RectF(float(croppedRect.left), float(croppedRect.top), float(croppedRect.Width()),
 			                   float(croppedRect.Height()))
@@ -716,109 +714,6 @@ Rect MeasureDisplayString(Graphics& graphics, CString text, RectF boundingRect, 
 
 	return rc;
 }
-
-/*
-void DrawStrokedText(Graphics &gr, LPCTSTR Text,RectF Bounds,Font &font,Color &ColorText,Color &ColorStroke,int HorPos,int VertPos, int width)
-{
-   RectF OriginalTextRect;
-   //	, NewTextRect;
-   FontFamily ff;
-   font.GetFamily(&ff);
-
-   gr.SetPageUnit(UnitPixel);
-   gr.MeasureString(Text,-1,&font,PointF(0,0),&OriginalTextRect);
-
-
-
-   Font NewFont(&ff,48,font.GetStyle(),UnitPixel);
-   Rect realSize = MeasureDisplayString(gr, Text, RectF(0,0,1000,200), NewFont);
-
-   GraphicsPath path;
-   StringFormat format;
-
-   //format.SetAlignment(StringAlignmentCenter);
-   //format.SetLineAlignment ( StringAlignmentCenter);
-   StringFormat * f = format.GenericTypographic()->Clone();
-   f->SetTrimming(StringTrimmingNone);
-   f->SetFormatFlags( StringFormatFlagsMeasureTrailingSpaces);
-
-   path.AddString(Text, -1,&ff, (int)NewFont.GetStyle(), NewFont.GetSize(), Point(0,0), f);
-   RectF realTextBounds;
-   path.GetBounds(&realTextBounds);
-
-   float k = 2*width*realTextBounds.Height/OriginalTextRect.Height;
-   Pen pen(ColorStroke,(float)k);
-   realTextBounds.Inflate(k, k);
-   pen.SetAlignment(PenAlignmentCenter);
-   //path.GetBounds(&realTextBounds,0,&pen);
-   k = 2*width*realTextBounds.Height/OriginalTextRect.Height; // recalculate K
-   //Matrix matrix(1.0f, 0.0f, 0.0f, 1.0f, -realTextBounds.X,-realTextBounds.Y );
-   //path.Transform(&matrix);
-   //path.GetBounds(&realTextBounds,0,&pen);
-   //gr.SetPageUnit(UnitPixel);
-
-
-   //Font NewFont(&ff,48,font.GetStyle(),UnitPixel);
-
-   RectF NewTextRect;
-
-gr.MeasureString(Text,-1,&NewFont,RectF(0,0,5000,1600),f, &NewTextRect);
-
-   RectF RectWithPaddings;
-   StringFormat f2;
-gr.MeasureString(Text,-1,&NewFont,RectF(0,0,5000,1600),&f2, &RectWithPaddings);
-
-
-   OriginalTextRect.Height = OriginalTextRect.Height-OriginalTextRect.Y;
-   float newwidth,newheight;
-   newheight = OriginalTextRect.Height;
-   newwidth=OriginalTextRect.Height/realTextBounds.Height*realTextBounds.Width;
-
-   SolidBrush br(ColorText);
-
-   Bitmap temp((int)(realTextBounds.Width+realTextBounds.X),(int)(realTextBounds.Height+realTextBounds.Y),&gr);
-   //Bitmap temp((int)NewTextRect.Width,(int)NewTextRect.Height,&gr);
-
-   Graphics gr_temp(&temp);
-
-   gr_temp.SetPageUnit(UnitPixel);
-//	GraphicsPath path;
-   gr_temp.SetSmoothingMode( SmoothingModeHighQuality);
-   //path.AddString(Text, -1,&ff, (int)NewFont.GetStyle(), NewFont.GetSize(), Point(0,0), &format);
-   gr_temp.SetSmoothingMode( SmoothingModeHighQuality);
-
-
-   SolidBrush br2(Color(255,0,0));
-   float x,y;
-   //gr_temp.FillRectangle(&br2, (int)realTextBounds.X, (int)realTextBounds.Y,(int)(realTextBounds.Width),(int)(realTextBounds.Height));
-   //gr_temp.Set( SmoothingModeHighQuality);
-   gr_temp.SetInterpolationMode(InterpolationModeHighQualityBicubic  );
-   gr_temp.DrawPath(&pen, &path);
-   gr_temp.FillPath(&br, &path);
-
-   gr.SetSmoothingMode( SmoothingModeHighQuality);
-   gr.SetInterpolationMode(InterpolationModeHighQualityBicubic  );
-
-   if(HorPos == 0)
-      x = 2;
-   else if(HorPos == 1)
-      x = (Bounds.Width-newwidth)/2;
-   else x=(Bounds.Width-newwidth)-2;
-
-   if(VertPos==0)
-      y=2;
-   else if(VertPos==1)
-      y=(Bounds.Height-newheight)/2;
-   else y=(Bounds.Height-newheight)-2;
-
-
-   Rect destRect ((int)(Bounds.GetLeft()+x), (int)(Bounds.GetTop()+y), (int)(newwidth),(int)(newheight));
-//	gr.SolidBrush br3(Color(0,255,0));
-
-   //gr.FillRectangle(&br2, 0,0,(int)(realTextBounds.Width+realTextBounds.X),(int)(realTextBounds.Height+realTextBounds.Y));
-
-   gr.DrawImage(&temp, destRect,(int)realTextBounds.X, (int)realTextBounds.Y,(int)(realTextBounds.Width),(int)(realTextBounds.Height), UnitPixel);
-}*/
 
 void DrawStrokedText(Graphics& gr, LPCTSTR Text, RectF Bounds, Font& font, Color& ColorText, Color& ColorStroke,
                      int HorPos, int VertPos,

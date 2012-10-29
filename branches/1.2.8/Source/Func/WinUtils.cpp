@@ -25,27 +25,8 @@ bool IsWinXP()
 }
 
 // Function that gets path to SendTo folder
-CString GetSendToPath()
-{
-	CString result;
-	LPITEMIDLIST pidl;
-	TCHAR szSendtoPath [MAX_PATH];
-	LPMALLOC pMalloc;
-
-	if (SUCCEEDED( SHGetSpecialFolderLocation ( NULL, CSIDL_SENDTO, &pidl )))
-	{
-		if (SHGetPathFromIDList(pidl, szSendtoPath))
-		{
-			result = szSendtoPath;
-		}
-
-		if (SUCCEEDED(SHGetMalloc(&pMalloc)))
-		{
-			pMalloc->Free ( pidl );
-			pMalloc->Release();
-		}
-	}
-	return result;
+CString GetSendToPath() {
+	return GetSystemSpecialPath(CSIDL_SENDTO);
 }
 
 CString GetApplicationDataPath()
@@ -340,6 +321,12 @@ CString GetAppFolder()
 	GetModuleFileName(0, szFileName, 1023);
 	ExtractFilePath(szFileName, szPath);
 	return szPath;
+}
+
+CString GetAppFileName() {
+	TCHAR szFileName[1024];
+	GetModuleFileName(0, szFileName, 1023);
+	return szFileName;
 }
 
 LPTSTR ExtractFilePath(LPCTSTR FileName, LPTSTR buf)
@@ -713,12 +700,24 @@ lbl_allok:
 	return true;
 }
 
-const CString StringSection(const CString& str,TCHAR sep, int index)
-{
+const CString StringSection(const CString& str,TCHAR sep, int index) {
 	CString result;
 	ExtractStrFromList(str, index, result.GetBuffer(256),256,_T(""),sep);
 	result.ReleaseBuffer();
 	return result;
+}
+
+bool ShowFilePropertiesDialog(HWND hWnd, const CString& fileName) {
+
+	SHELLEXECUTEINFO ShInfo;
+	ZeroMemory(&ShInfo, sizeof(SHELLEXECUTEINFO));
+	ShInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+	ShInfo.nShow  = SW_SHOW;
+	ShInfo.fMask  = SEE_MASK_INVOKEIDLIST | SEE_MASK_IDLIST;
+	ShInfo.hwnd   = hWnd;
+	ShInfo.lpVerb = TEXT("properties");
+	ShInfo.lpFile = fileName;
+	return ShellExecuteEx(&ShInfo) != FALSE;
 }
 
 };

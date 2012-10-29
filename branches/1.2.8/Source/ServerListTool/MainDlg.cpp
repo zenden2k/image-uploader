@@ -16,6 +16,7 @@
 #include <Func/WinUtils.h>
 #include <Core/Utils/CryptoUtils.h>
 #include <Func/Common.h>
+#include "AboutDlg.h"
 
 const CString MyBytesToString(__int64 nBytes )
 {
@@ -120,7 +121,8 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 LRESULT CMainDlg::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CSimpleDialog<IDD_ABOUTBOX, TRUE> dlg;
+	CAboutDlg dlg;
+	
 	dlg.DoModal();
 	return 0;
 }
@@ -205,7 +207,7 @@ DWORD CMainDlg::Run()
 		if(!ue->ImageHost && !CheckFileServers)
 			continue;
 
-		ServerSettingsStruct  ss = Settings.ServersSettings[Utf8ToWCstring(ue->Name)];
+		ServerSettingsStruct  ss = Settings.ServersSettings[Utf8ToWCstring(ue->Name)][""];
 		if(!useAccounts)
 		{
 			ss.authData.DoAuth  = false;
@@ -397,17 +399,20 @@ void CMainDlg::MarkServer(int id)
 	
 }
 
-LRESULT CMainDlg::OnSkip(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	int nIndex = m_ListView.GetSelectedIndex();
-	if(nIndex>=0)
-	{
-	
-	m_skipMap[nIndex] = !m_skipMap[nIndex];
-	if(m_skipMap[nIndex])
-	m_ListView.SetItemText(nIndex,2,_T("<SKIP>"));
-	else m_ListView.SetItemText(nIndex,2,_T(""));
-	}
+LRESULT CMainDlg::OnSkip(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int nItem = -1;
+
+	do {
+		nItem = m_ListView.GetNextItem(nItem, LVNI_SELECTED	);
+		if ( nItem == -1 ) break;
+		m_skipMap[nItem] = !m_skipMap[nItem];
+		if(m_skipMap[nItem]) {
+			m_ListView.SetItemText(nItem, 2, _T("<SKIP>"));
+		} else {
+			m_ListView.SetItemText(nItem, 2, _T(""));
+		}
+	} while ( nItem != -1 );
+
 	return 0;
 }
 
@@ -488,8 +493,12 @@ LRESULT CMainDlg::OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 {
 	for(int i = 0; i < m_ServerList.count(); i++)
 	{
-		m_skipMap[i] = true;
-		m_ListView.SetItemText(i, 2, _T("<SKIP>"));
+		m_skipMap[i] = !m_skipMap[i];
+		if(m_skipMap[i]) {
+			m_ListView.SetItemText(i, 2, _T("<SKIP>"));
+		} else {
+			m_ListView.SetItemText(i, 2, _T(""));
+		}
 	}
 	return 0;
 }

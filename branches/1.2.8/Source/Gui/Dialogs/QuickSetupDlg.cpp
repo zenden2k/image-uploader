@@ -45,6 +45,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	TRC(IDC_SERVERLABEL, "На какой сервер будем загружать картинки?");
 	TRC(IDC_AUTOSTARTUPCHECKBOX, "Запуск программы при старте Windows");
 	TRC(IDC_CAPTUREPRINTSCREENCHECKBOX, "Перехватывать нажатия PrintScreen и Alt+PrintScreen");
+	TRC(IDC_EXPLORERINTEGRATION, "Добавить пункт в контекстное меню проводника Windows");
 	SetWindowText( APPNAME );
 	CString titleText;
 	titleText.Format(TR("%s - быстрая настройка"), APPNAME );
@@ -61,6 +62,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	serverComboBox_.m_hWnd = GetDlgItem( IDC_SERVERCOMBOBOX );
 	SendDlgItemMessage( IDC_AUTOSTARTUPCHECKBOX, BM_SETCHECK, BST_CHECKED, 0);
 	SendDlgItemMessage( IDC_CAPTUREPRINTSCREENCHECKBOX, BM_SETCHECK, BST_CHECKED, 0);
+	SendDlgItemMessage( IDC_EXPLORERINTEGRATION, BM_SETCHECK, BST_CHECKED, 0);
 	LogoImage.SubclassWindow(GetDlgItem( IDC_STATICLOGO ) );
 	LogoImage.LoadImage(0, 0, IDR_PNG1, false, GetSysColor(COLOR_BTNFACE));
 
@@ -90,7 +92,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	CIcon hImageIcon = NULL, hFileIcon = NULL;
 	int selectedIndex = 0;
 
-	CUploadEngineData *uploadEngine = _EngineList->byIndex( Settings.ServerID );
+	CUploadEngineData *uploadEngine = _EngineList->byIndex( Settings.ServerID() );
 	std::string selectedServerName = "Imageshack.us" ;
 	for( int i = 0; i < _EngineList->count(); i++) {	
 		CUploadEngineData * ue = _EngineList->byIndex( i ); 
@@ -121,6 +123,8 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 	GuiTools::GetCheck(m_hWnd, IDC_AUTOSTARTUPCHECKBOX, Settings.AutoStartup);
 	Settings.AutoStartup_changed = Settings.AutoStartup;
 	Settings.ShowTrayIcon        = true;
+	Settings.ExplorerContextMenu = GuiTools::GetCheck(m_hWnd, IDC_EXPLORERINTEGRATION);
+	Settings.ExplorerContextMenu_changed = Settings.ExplorerContextMenu;
 	Settings.SaveSettings();
 
 	bool capturePrintScreen = GuiTools::GetCheck( m_hWnd, IDC_CAPTUREPRINTSCREENCHECKBOX );
@@ -137,7 +141,7 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 	if ( serverComboElementIndex > 0 ) {
 		int serverIndex = serverComboElementIndex - 1;
 		CUploadEngineData * uploadEngineData = _EngineList->byIndex( serverIndex );
-		Settings.ServerName = Utf8ToWCstring( uploadEngineData->Name );
+		Settings.imageServer.setServerName( Utf8ToWCstring( uploadEngineData->Name ) );
 		bool needAuth = GuiTools::GetCheck( m_hWnd, IDC_DOAUTHCHECKBOX );
 		if ( needAuth ) {
 			CString login = GuiTools::GetDlgItemText( m_hWnd, IDC_LOGINEDIT );
@@ -146,13 +150,13 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 				MessageBox(TR("Введите данные учетной записи"), APPNAME, MB_ICONEXCLAMATION);
 				return 0;
 			}
-			LoginInfo& loginInfo = Settings.ServersSettings[Settings.ServerName][_T("")].authData;
+			LoginInfo& loginInfo = Settings.ServersSettings[Settings.ServerName()][_T("")].authData;
 			loginInfo.DoAuth = true;
 			loginInfo.Login = WCstringToUtf8( login );
 			loginInfo.Password = WCstringToUtf8( password );
 		}
 	} else {
-		Settings.ServerName.Empty();
+		Settings.imageServer.setServerName(CString());
 	}
 
 	

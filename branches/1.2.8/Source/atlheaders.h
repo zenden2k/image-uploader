@@ -2,6 +2,7 @@
 #define IU_ATLHEADERS_H
 
 #pragma once
+#define _WTL_USE_CSTRING
 
 #include "winheaders.h"
 #include <atlbase.h>

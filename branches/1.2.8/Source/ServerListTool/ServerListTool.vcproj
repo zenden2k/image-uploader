@@ -738,6 +738,10 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
+				RelativePath=".\AboutDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MainDlg.cpp"
 				>
 			</File>

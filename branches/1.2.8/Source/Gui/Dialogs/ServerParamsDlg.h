@@ -39,13 +39,22 @@ class CServerParamsDlg :
 		CServerParamsDlg(const ServerProfile& serverProfile);
 		~CServerParamsDlg();
 		enum { IDD = IDD_SERVERPARAMSDLG };
-		enum {  BUTTON_NEWPROFILE = 10001, BUTTON_SAVEPROFILE = 10002, BUTTON_DELETEPROFILE = 10003 };
+		enum {  BUTTON_NEWPROFILE = 10001, BUTTON_RENAMEPROFILE, BUTTON_SAVEPROFILE, BUTTON_DELETEPROFILE };
 
 		BEGIN_MSG_MAP(CServerParamsDlg)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 			COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 			COMMAND_HANDLER(IDC_DOAUTH, BN_CLICKED, OnClickedDoAuth)
+			COMMAND_HANDLER(BUTTON_NEWPROFILE, BN_CLICKED, OnNewProfile)
+			COMMAND_HANDLER(BUTTON_RENAMEPROFILE, BN_CLICKED, OnRenameProfile)
+			COMMAND_HANDLER(BUTTON_SAVEPROFILE, BN_CLICKED, OnSaveProfile)
+			COMMAND_HANDLER(BUTTON_DELETEPROFILE, BN_CLICKED, OnDeleteProfile)
+			COMMAND_HANDLER(IDC_BROWSESERVERFOLDERS, BN_CLICKED, OnBrowseServerFolders)
+			COMMAND_HANDLER(IDC_LOGINEDIT, EN_CHANGE, OnLoginEditChange)
+			COMMAND_HANDLER(IDC_PROFILELISTCOMBO, CBN_SELCHANGE, OnProfileListSelectChange)
+			NOTIFY_HANDLER( IDC_PARAMLIST, PIN_ITEMCHANGED, OnParamsListItemChange );
 			CHAIN_MSG_MAP(CDialogResize<CServerParamsDlg>)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
@@ -61,20 +70,37 @@ class CServerParamsDlg :
 		 //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		 //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+		LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedDoAuth(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnNewProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnSaveProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnDeleteProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnRenameProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnProfileListSelectChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnParamsListItemChange(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+
 		ServerProfile serverProfile() const;
+		CString kNewProfileName;
 	protected:
 		CPropertyListCtrl m_wndParamList;
+		bool catchChanges_;
 		std::map<std::string,std::string> m_paramNameList;
 		CUploadEngineData *m_ue;
 		ServerProfile serverProfile_;
 		CToolBarCtrl m_ProfileEditToolbar;
 		CComboBox profileListCombobox_;
+		CString oldLogin_;
 		void createToolbar();
 		void doAuthChanged();
+		void updateDialog(ServerProfile serverProfile);
+		void updateCurrentProfileName();
+		void renameCurrentProfile(CString newProfileName);
 		void saveCurrentProfile();
+		CString getSelectedProfileName();
 };
 
 

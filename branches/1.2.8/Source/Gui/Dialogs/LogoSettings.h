@@ -32,10 +32,6 @@
 #include <atlcrack.h>
 
 // CLogoSettings
-#define IDC_NEWPROFILE 10001
-#define IDC_SAVEPROFILE 10002
-#define IDC_DELETEPROFILE 10003
-
 
 class CLogoSettings : 
 	public CDialogImpl<CLogoSettings>, public CSettingsPage	
@@ -44,6 +40,7 @@ public:
 	CLogoSettings();
 	virtual ~CLogoSettings();
 	enum { IDD = IDD_LOGOSETTINGS };
+	enum { IDC_NEWPROFILE = 10001, IDC_SAVEPROFILE, IDC_DELETEPROFILE };
 
     BEGIN_MSG_MAP(CLogoSettings)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -89,7 +86,6 @@ protected:
 	LRESULT OnBnClickedThumbfont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	CColorButton FrameColor;
 	CColorButton Color1,Color2,ThumbTextColor,TextColor, StrokeColor;
-	//LogoParams *params;
 	LOGFONT lf,ThumbFont;
    CString CurrentProfileOriginalName;
 	bool Apply();
