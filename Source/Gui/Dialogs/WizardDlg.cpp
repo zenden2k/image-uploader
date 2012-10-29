@@ -52,27 +52,23 @@ using namespace Gdiplus;
 CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 { 
 	screenshotIndex = 1;
-	CurPage = -1;
-	PrevPage = -1;
+	CurPage = PageNone;
+	PrevPage = PageNone;
 	ZeroMemory(Pages, sizeof(Pages));
 	DragndropEnabled = true;
 	hLocalHotkeys = 0;
 	QuickUploadMarker = false;
 	m_bShowAfter = true;
 	m_bHandleCmdLineFunc = false;
-	updateDlg = 0;
+	updateDlg = NULL;
 	_EngineList = &m_EngineList;
 	m_bScreenshotFromTray = false;
 }
 
-CWizardDlg::~CWizardDlg()
-{
-	//Detach();
-	if(updateDlg) delete updateDlg;
-	for(int i=0; i<5; i++) 
-	{
-		CWizardPage *p = Pages[i];
-		if(Pages[i]) delete p;
+CWizardDlg::~CWizardDlg() {
+	delete updateDlg;
+	for(int i = 0; i < ARRAY_SIZE(Pages); i++) {
+		delete Pages[i];
 	}
 }
 
@@ -189,10 +185,6 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		quickSetupDialog.DoModal(m_hWnd);
 	}
 
-	Settings.ServerID		  = m_EngineList.GetUploadEngineIndex(Settings.ServerName);
-	Settings.FileServerID  = m_EngineList.GetUploadEngineIndex(Settings.FileServerName);
-	Settings.QuickServerID = m_EngineList.GetUploadEngineIndex(Settings.QuickServerName);
-
 	if(!*MediaInfoDllPath)
 		WriteLog(logWarning, APPNAME, TR("Библиотека MediaInfo.dll не найдена. \nПолучение технических данных о файлах мультимедиа будет недоступно.")); 
 	TRC(IDC_ABOUT,"?");
@@ -212,9 +204,9 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	RegisterLocalHotkeys();
 	if(ParseCmdLine()) return 0;
  
-	CreatePage(0); 
-	ShowPage(0);
-	::SetFocus(Pages[0]->PageWnd);
+	CreatePage(PageWelcome); 
+	ShowPage(PageWelcome);
+	::SetFocus(Pages[PageWelcome]->PageWnd);
 
 	if(CmdLine.IsOption(_T("update")))
 	{
@@ -272,8 +264,8 @@ bool CWizardDlg::ParseCmdLine()
 	{
 		if(IsVideoFile(FileName) && !CmdLine.IsOption(_T("upload")))
 		{
-			ShowPage(1, CurPage, (Pages[2])?2:3);
-			CVideoGrabber* dlg = (CVideoGrabber*) Pages[1];
+			ShowPage(PageVideoGrabber, CurPage, (Pages[PageMain]) ? PageMain : PageUploadSettings);
+			CVideoGrabber* dlg = (CVideoGrabber*) Pages[PageVideoGrabber];
 			dlg->SetFileName(FileName);			
 			return true;
 		}	
@@ -298,9 +290,9 @@ LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 	if(floatWnd.m_hWnd)
 	{ 
 		ShowWindow(SW_HIDE);
-		if(Pages[2] && CurPage == 4)
-			((CMainDlg*)Pages[2])->ThumbsView.MyDeleteAllItems();
-			ShowPage(0); 
+		if(Pages[PageMain] && CurPage == PageUpload)
+			((CMainDlg*)Pages[PageMain])->ThumbsView.MyDeleteAllItems();
+			ShowPage(PageWelcome); 
 	}
 	else
 		CloseWizard();
@@ -328,7 +320,7 @@ BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
 		{
 			if( !lstrcmpi(Buffer,_T("Button"))){
 				::SendMessage(pMsg->hwnd, BM_CLICK, 0 ,0); return TRUE;}
-			else if (Pages[0] && pMsg->hwnd==::GetDlgItem(Pages[0]->PageWnd,IDC_LISTBOX))
+			else if (Pages[PageWelcome] && pMsg->hwnd==::GetDlgItem(Pages[PageWelcome]->PageWnd,IDC_LISTBOX))
 				return FALSE;
 		}
 		
@@ -374,7 +366,7 @@ void CWizardDlg::CloseDialog(int nVal)
 	if(updateDlg)
 		updateDlg->Abort();
 	ShowWindow(SW_HIDE);
-	if(CurPage >= 0)
+	if(CurPage >= PageWelcome)
 		Pages[CurPage]->OnHide();
 	
 	Exit();
@@ -382,8 +374,7 @@ void CWizardDlg::CloseDialog(int nVal)
 	::PostQuitMessage(nVal);
 }
 
-bool CWizardDlg::ShowPage(int idPage,int prev,int next)
-{
+bool CWizardDlg::ShowPage(WizardPage idPage, WizardPage prev,WizardPage next) {
 	if(idPage == CurPage) return true;
 
 	if(GetCurrentThreadId()!=GetWindowThreadProcessId(m_hWnd, NULL))
@@ -407,11 +398,9 @@ bool CWizardDlg::ShowPage(int idPage,int prev,int next)
 	::SetFocus(Pages[idPage]->PageWnd);
 	Pages[idPage]->OnShow();
 	
-		::ShowWindow(GetDlgItem(IDC_UPDATESLABEL), idPage == 0);
-	::ShowWindow(GetDlgItem(IDC_ABOUT), idPage == 0);
-	if(CurPage >= 0)
-	{
-		
+	::ShowWindow(GetDlgItem(IDC_UPDATESLABEL), idPage == PageWelcome);
+	::ShowWindow(GetDlgItem(IDC_ABOUT), idPage == PageWelcome);
+	if ( CurPage >= PageWelcome ) {
 		::ShowWindow(Pages[CurPage]->PageWnd, SW_HIDE);
 		Pages[CurPage]->OnHide();
 	}
@@ -422,16 +411,16 @@ bool CWizardDlg::ShowPage(int idPage,int prev,int next)
 	return false;
 }
 
-LRESULT CWizardDlg::OnPrevBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
-{
-	if(PrevPage<0)
-	{
-		PrevPage = CurPage-1;
-		if(PrevPage<0 || PrevPage==1)  PrevPage = 0;
+LRESULT CWizardDlg::OnPrevBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+	if(PrevPage < 0) {
+		PrevPage = static_cast<WizardPage>( CurPage - 1 );
+		if(PrevPage < 0 || PrevPage == PageVideoGrabber ) {
+			PrevPage = PageWelcome;
+		}
 	}	
 
 	ShowPage(PrevPage);
-	PrevPage=-1;
+	PrevPage = PageNone;
 	return 0;
 }
 
@@ -441,12 +430,12 @@ LRESULT CWizardDlg::OnNextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 	if(!Pages[CurPage]->OnNext()) return 0;
 	if(NextPage < 0)
 	{
-		NextPage = CurPage+1;
-		if(NextPage>4 ) NextPage=0;
-		if(NextPage==1) NextPage=2;
+		NextPage = static_cast<WizardPage>( CurPage + 1 );
+		if ( NextPage > PageUpload ) NextPage = PageWelcome;
+		if(NextPage==PageVideoGrabber ) NextPage=PageMain;
 	}	
 	ShowPage(NextPage);
-	NextPage = -1;
+	NextPage = PageNone;
 	return 0;
 }
 
@@ -461,7 +450,7 @@ bool CWizardDlg::CreatePage(int PageID)
 	if(((PVOID)Pages[PageID])!=0) return true;;
 	switch(PageID)
 	{
-		case 0:
+		case PageWelcome /*0*/:
 			CWelcomeDlg *tmp;
 			tmp = new CWelcomeDlg();
 			Pages[PageID] = tmp;
@@ -469,7 +458,7 @@ bool CWizardDlg::CreatePage(int PageID)
 			tmp->Create(m_hWnd,rc);
 			break;
 
-		case 1:
+		case PageVideoGrabber /*1*/:
 			CVideoGrabber *tmp1;
 			tmp1=new CVideoGrabber();
 			Pages[PageID]=tmp1;
@@ -477,7 +466,7 @@ bool CWizardDlg::CreatePage(int PageID)
 			tmp1->Create(m_hWnd,rc);
 			break;
 
-		case 2:
+		case PageMain /*2*/:
 			CMainDlg *tmp2;
 			tmp2=new CMainDlg();
 			Pages[PageID]=tmp2;
@@ -485,7 +474,7 @@ bool CWizardDlg::CreatePage(int PageID)
 			tmp2->Create(m_hWnd,rc);
 			break;
 
-		case 3:
+		case PageUploadSettings /*3*/:
 			CUploadSettings *tmp3;
 			tmp3=new CUploadSettings(&m_EngineList);
 			Pages[PageID]=tmp3;
@@ -493,7 +482,7 @@ bool CWizardDlg::CreatePage(int PageID)
 			tmp3->Create(m_hWnd,rc2);
 			tmp3->SetWindowPos(0,0,50,0,0,SWP_NOSIZE);
 			break;
-		case 4:
+		case PageUpload /*4*/:
 			CUploadDlg *tmp4;
 			tmp4=new CUploadDlg(this);
 			Pages[PageID]=tmp4;
@@ -511,7 +500,7 @@ bool CWizardDlg::CreatePage(int PageID)
 // Функция генерации заголовка страницы (если он нужен)
 HBITMAP CWizardDlg::GenHeadBitmap(int PageID)
 {
-	if(PageID!=3 && PageID!=4) return 0;
+	if(PageID!=PageUploadSettings && PageID!=PageUpload ) return 0;
 	RECT rc;
 	GetClientRect(&rc);
 	int width=rc.right-rc.left;
@@ -538,9 +527,9 @@ HBITMAP CWizardDlg::GenHeadBitmap(int PageID)
     Font font(L"Arial", 12, FontStyleBold);
     
 	LPTSTR Buffer = NULL;
-	if(PageID == 3)
+	if(PageID == PageUploadSettings )
 		gr.DrawString(TR("Параметры изображений и выбор сервера"), -1, &font, bounds, &format, &br2);
-	else if(PageID==4)
+	else if(PageID==PageUpload )
 		gr.DrawString(TR("Загрузка файлов на сервер"), -1, &font, bounds, &format, &br2);
 
 	HBITMAP bmp=0;
@@ -560,14 +549,14 @@ LRESULT CWizardDlg::OnBnClickedAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 void CWizardDlg::Exit()
 {
 	// Converting server id to server name
-	if(Settings.ServerID >= 0 && m_EngineList.count())
-		Settings.ServerName = IuCoreUtils::Utf8ToWstring(m_EngineList.byIndex(Settings.ServerID)->Name).c_str();
+	/*if(Settings.ServerID() >= 0 && m_EngineList.count())
+		Settings.imageServer.setServerName(IuCoreUtils::Utf8ToWstring(m_EngineList.byIndex(Settings.ServerID())->Name).c_str() );
 
-	if(Settings.QuickServerID>=0 && m_EngineList.count())
-		Settings.QuickServerName = IuCoreUtils::Utf8ToWstring(m_EngineList.byIndex(Settings.QuickServerID)->Name).c_str();
-	if(Settings.FileServerID>=0 && m_EngineList.count())
-		Settings.FileServerName = IuCoreUtils::Utf8ToWstring(m_EngineList.byIndex(Settings.FileServerID)->Name).c_str();
-
+	if(Settings.QuickServerID()>=0 && m_EngineList.count())
+		Settings.quickServer.setServerName( IuCoreUtils::Utf8ToWstring(m_EngineList.byIndex(Settings.QuickServerID())->Name).c_str() );
+	if(Settings.FileServerID()>=0 && m_EngineList.count())
+		Settings.fileServer.setServerName( IuCoreUtils::Utf8ToWstring(m_EngineList.byIndex(Settings.FileServerID())->Name).c_str() );
+*/
 	Settings.SaveSettings();
 }
 
@@ -576,7 +565,9 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	bHandled = true;
 	HDROP hDrop = (HDROP) wParam;
 	TCHAR szBuffer[256] = _T("\0");
-	if(CurPage > 2) return 0;
+	if(CurPage > PageMain ) {
+		return 0;
+	}
 
 	int n = DragQueryFile(hDrop,	0xFFFFFFFF, 0, 0);
 
@@ -588,18 +579,18 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 		DragQueryFile(hDrop,	i, szBuffer, sizeof(szBuffer)/sizeof(TCHAR));
 		if(IsVideoFile(szBuffer) && n==1)
 		{
-			if(CurPage == 2)
+			if(CurPage == PageMain)
 			{
 				if(MessageBox(TR("Вы хотите извлечь кадры из этого видеофайла? \r\n(иначе файл будет просто добавлен в список)"),APPNAME,MB_YESNO)==IDNO)
 					goto filehost;
 			}
-			ShowPage(1, CurPage, (Pages[2])?2:3);
-			CVideoGrabber* dlg = (CVideoGrabber*) Pages[1];
+			ShowPage(PageVideoGrabber , CurPage, (Pages[PageMain ])?PageMain:PageUploadSettings );
+			CVideoGrabber* dlg = (CVideoGrabber*) Pages[PageVideoGrabber ];
 			dlg->SetFileName(szBuffer);
 			
 			break;
 		}
-		else if(CurPage == 0 || CurPage == 2)
+		else if(CurPage == PageWelcome  || CurPage == PageMain )
 		{
 			filehost:
 			if(WinUtils::FileExists(szBuffer) || WinUtils::IsDirectory(szBuffer))
@@ -609,9 +600,9 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	}
 	if(!Paths.IsEmpty())
 	{
-		CreatePage(2);
+		CreatePage(PageMain);
 		FolderAdd.Do(Paths, false, true);
-		ShowPage(2);
+		ShowPage(PageMain);
 		if(MainDlg) MainDlg->ThumbsView.LoadThumbnails();
 	}
 	
@@ -670,7 +661,7 @@ STDMETHODIMP CWizardDlg::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect
 		AcceptFile = false;
 	}
 
-	if(CurPage != 0 && CurPage!=2 && CurPage!=1) 
+	if(CurPage != PageWelcome  && CurPage!=PageMain  && CurPage!=PageVideoGrabber ) 
 		AcceptFile = false;
 
 	if(!AcceptFile) 
@@ -793,12 +784,12 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 						{
 							if(IsVideoFile(OutFileName))
 							{
-								ShowPage(1, CurPage, (Pages[2])? 2 : 3);
-								CVideoGrabber* dlg = (CVideoGrabber*) Pages[1];
+								ShowPage(PageVideoGrabber, CurPage, (Pages[PageMain ])? PageMain  : PageUploadSettings);
+								CVideoGrabber* dlg = (CVideoGrabber*) Pages[PageVideoGrabber];
 								dlg->SetFileName(OutFileName);
 								break;
 							}
-							else if((CurPage==0||CurPage==2))
+							else if((CurPage==PageWelcome ||CurPage==PageMain ))
 							{
 								
 								if(WinUtils::FileExists(OutFileName) || WinUtils::IsDirectory(OutFileName))
@@ -812,10 +803,10 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 				
 				if(!Paths.IsEmpty())
 				{
-					CreatePage(2);
+					CreatePage(PageMain );
 					//QuickUploadMarker = (Settings.QuickUpload && !CmdLine.IsOption(_T("noquick"))) || (CmdLine.IsOption(_T("quick")));
 					FolderAdd.Do(Paths, /*CmdLine.IsOption(_T("imagesonly"))*/false, true);
-					ShowPage(2);				
+					ShowPage(PageMain);				
 				}
 				return true;
 			}
@@ -913,7 +904,7 @@ LRESULT CWizardDlg::OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHan
 
 void CWizardDlg::PasteBitmap(HBITMAP Bmp)
 {
-	if(CurPage!=0 && CurPage!=2) return;
+	if(CurPage!=PageWelcome && CurPage!=PageMain ) return;
 
 	CString buf2;
 	SIZE dim;
@@ -923,11 +914,11 @@ void CWizardDlg::PasteBitmap(HBITMAP Bmp)
 	{
 		MySaveImage(&bm,_T("clipboard"),buf2,1,100);
 
-		CreatePage(2);
-		CMainDlg* MainDlg = (CMainDlg*) Pages[2];
+		CreatePage(PageMain);
+		CMainDlg* MainDlg = (CMainDlg*) Pages[PageMain];
 		MainDlg->AddToFileList( buf2);
 		MainDlg->ThumbsView.LoadThumbnails();
-		ShowPage(2);
+		ShowPage(PageMain);
 	}
 }
 
@@ -1038,14 +1029,14 @@ DWORD CFolderAdd::Run()
 		if( m_pWizardDlg->QuickUploadMarker)
 		{
 
-			m_pWizardDlg->ShowPage(4);
+			m_pWizardDlg->ShowPage(CWizardDlg::PageUpload);
 		}
 		else
 		{
 
-			m_pWizardDlg->ShowPage(2);
+			m_pWizardDlg->ShowPage(CWizardDlg::PageMain);
 
-			((CMainDlg*) m_pWizardDlg->Pages[2])->ThumbsView.LoadThumbnails();
+			((CMainDlg*) m_pWizardDlg->Pages[CWizardDlg::PageMain])->ThumbsView.LoadThumbnails();
 		}
 	}
 	dlg.DestroyWindow();
@@ -1083,13 +1074,13 @@ int CFolderAdd::GetNextImgFile(LPTSTR szBuffer, int nLength)
 
 bool CWizardDlg::AddImage(const CString &FileName, const CString &VirtualFileName, bool Show)
 {
-	CreatePage(2);
-	CMainDlg* MainDlg = (CMainDlg*) Pages[2];
+	CreatePage(PageMain);
+	CMainDlg* MainDlg = (CMainDlg*) Pages[PageMain];
 	if(!MainDlg) return false;
 	MainDlg->AddToFileList(FileName, VirtualFileName);
 	if(Show){
 		MainDlg->ThumbsView.LoadThumbnails();
-		ShowPage(2);
+		ShowPage(PageMain);
 	}
 	return true;
 }
@@ -1137,7 +1128,7 @@ BOOL CALLBACK CMyFolderDialog::DialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam
 	
 LRESULT 	CWizardDlg::OnWmShowPage(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	int PageIndex = wParam;
+	WizardPage PageIndex = static_cast<WizardPage>( wParam );
 	ShowPage(PageIndex);
 	return 0;
 }
@@ -1165,7 +1156,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 	LPCTSTR FileName = 0;
 	fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
 
-	CreatePage(2);
+	CreatePage(PageMain);
 	do
 	{
 		
@@ -1179,7 +1170,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 		if (FileName)
 		{
 			lstrcat(Buffer, FileName);
-			if (((CMainDlg*)Pages[2])->AddToFileList(Buffer))
+			if (((CMainDlg*)Pages[PageMain])->AddToFileList(Buffer))
 				nCount++;
 		}
 	} while (FileName);
@@ -1188,10 +1179,10 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 	fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
 	Settings.ImagesFolder = Buffer;
 	if(nCount)
-		ShowPage(2, 0, 3);
+		ShowPage(PageMain, PageWelcome, PageUploadSettings);
 
-	if(CurPage == 2)
-		((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
+	if(CurPage == PageMain)
+		((CMainDlg*)Pages[PageMain])->ThumbsView.LoadThumbnails();
 	ShowWindow(SW_SHOW);
 	m_bShowWindow = true;
 	return true;
@@ -1201,9 +1192,9 @@ bool CWizardDlg::executeFunc(CString funcBody)
 {
 	bool LaunchCopy = false;
 
-	if(CurPage == 4) LaunchCopy = true;
-	if(CurPage == 1) LaunchCopy = true;
-	if(CurPage == 3) ShowPage(2);
+	if(CurPage == PageUpload) LaunchCopy = true;
+	if(CurPage == PageVideoGrabber) LaunchCopy = true;
+	if(CurPage == PageUploadSettings) ShowPage(PageMain);
 
 	if(!IsWindowEnabled())LaunchCopy= true; 
 
@@ -1275,7 +1266,7 @@ bool CWizardDlg::funcImportVideo()
 		TR("Все файлы"),
 		_T("*.*"));
 
-	CFileDialog fd(true,0,0,4|2,Buf,m_hWnd);
+	CFileDialog fd(true,0,0,OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,Buf,m_hWnd);
 	
 	TCHAR Buffer[1000];
 	fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
@@ -1284,8 +1275,8 @@ bool CWizardDlg::funcImportVideo()
 	Settings.VideoFolder = Buffer;
 	CreatePage(1);
 	LastVideoFile = fd.m_szFileName;
-	((CVideoGrabber*)Pages[1])->SetFileName(fd.m_szFileName); // C-style conversion .. 
-	ShowPage(1,0,(Pages[2])?2:3);
+	((CVideoGrabber*)Pages[PageVideoGrabber])->SetFileName(fd.m_szFileName); // C-style conversion .. 
+	ShowPage(PageVideoGrabber, PageWelcome, (Pages[PageMain]) ? PageMain : PageUploadSettings);
 	ShowWindow(SW_SHOW);
 		m_bShowWindow = true;
 	return true;
@@ -1321,10 +1312,10 @@ void CWizardDlg::OnScreenshotFinished(int Result)
 
 	if(Result )
 	{
-		if((CMainDlg*)Pages[2])
+		if((CMainDlg*)Pages[PageMain])
 		{
-			((CMainDlg*)Pages[2])->ThumbsView.SetFocus();
-			((CMainDlg*)Pages[2])->ThumbsView.SelectLastItem();
+			((CMainDlg*)Pages[PageMain])->ThumbsView.SetFocus();
+			((CMainDlg*)Pages[PageMain])->ThumbsView.SelectLastItem();
 		}
 	}
 	else if (!Result && m_bHandleCmdLineFunc)
@@ -1340,11 +1331,11 @@ void CWizardDlg::OnScreenshotSaving(LPTSTR FileName, Bitmap* Bm)
 {
 	if(FileName && lstrlen(FileName))
 	{
-		CreatePage(2);
-		((CMainDlg*)Pages[2])->AddToFileList(FileName);
-		if(CurPage == 2)
-		((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
-		ShowPage(2,0,3);
+		CreatePage(PageMain);
+		((CMainDlg*)Pages[PageMain])->AddToFileList(FileName);
+		if(CurPage == PageMain)
+		((CMainDlg*)Pages[PageMain])->ThumbsView.LoadThumbnails();
+		ShowPage(PageMain, PageWelcome, PageUploadSettings);
 	}
 }
 
@@ -1392,7 +1383,7 @@ LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 void CWizardDlg::CloseWizard()
 {
-	if(CurPage!=0 && CurPage!=4 && Settings.ConfirmOnExit)
+	if(CurPage!=PageWelcome && CurPage!=PageUpload && Settings.ConfirmOnExit)
 		if(MessageBox(TR("Вы уверены что хотите выйти из программы?"),APPNAME, MB_YESNO|MB_ICONQUESTION) != IDYES) return ;
 	
 	CloseDialog(0);
@@ -1422,8 +1413,8 @@ bool CWizardDlg::RegisterLocalHotkeys()
 
 LRESULT CWizardDlg::OnLocalHotkey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	if(CurPage==3) ShowPage(2);
-	if(!IsWindowEnabled() || (CurPage!=0 && CurPage!=2))
+	if(CurPage==PageUploadSettings) ShowPage(PageMain);
+	if(!IsWindowEnabled() || (CurPage!=PageWelcome  && CurPage!=PageMain ))
 		return 0;
 	int hotkeyId = wID-ID_HOTKEY_BASE;
 	executeFunc(m_hotkeys[hotkeyId].func);
@@ -1448,7 +1439,6 @@ bool CWizardDlg::funcPaste()
 bool CWizardDlg::funcSettings()
 {
 	CSettingsDlg dlg(0);
-	//dlg.DoModal(m_hWnd);
 	if(!IsWindowVisible())
 		dlg.DoModal(0);
 	else
@@ -1504,7 +1494,7 @@ bool CWizardDlg::funcAddFiles()
 	LPCTSTR FileName = 0;
 	fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
 
-	CreatePage(2);
+	CreatePage(PageMain);
 	do
 	{
 		
@@ -1518,7 +1508,7 @@ bool CWizardDlg::funcAddFiles()
 		if(FileName)
 		{
 			lstrcat(Buffer, FileName);
-			if(((CMainDlg*)Pages[2])->AddToFileList(Buffer))
+			if(((CMainDlg*)Pages[PageMain])->AddToFileList(Buffer))
 				nCount++;
 		
 		}
@@ -1528,10 +1518,10 @@ bool CWizardDlg::funcAddFiles()
 	fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
 	Settings.ImagesFolder = Buffer;
 	if(nCount)
-		ShowPage(2, 0, 3);
+		ShowPage(PageMain, PageWelcome, PageUploadSettings);
 
-	if(CurPage == 2)
-		((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
+	if(CurPage == PageMain)
+		((CMainDlg*)Pages[PageMain])->ThumbsView.LoadThumbnails();
 	ShowWindow(SW_SHOW);
 	m_bShowWindow = true;
 	return true;
@@ -1548,7 +1538,7 @@ LRESULT CWizardDlg::OnWmMyExit(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
 bool CWizardDlg::CanShowWindow()
 {
-	return (CurPage == 2 || CurPage == 0) && IsWindowVisible() && IsWindowEnabled();
+	return (CurPage == PageMain || CurPage == PageWelcome) && IsWindowVisible() && IsWindowEnabled();
 }
 
 void CWizardDlg::UpdateAvailabilityChanged(bool Available)
@@ -1616,7 +1606,7 @@ void Gdip_RemoveAlpha(Bitmap& source, Color color )
 bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 {
 	bool needToShow = IsWindowVisible()!=FALSE;
-	if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD   && !floatWnd.m_hWnd)
+	if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == CSettings::TRAY_SCREENSHOT_UPLOAD   && !floatWnd.m_hWnd)
 	{
 		m_bScreenshotFromTray = false;
 		//return false;
@@ -1706,7 +1696,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 		{
 			Result = true;
 			bool CopyToClipboard = false;
-			if((m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD) || Settings.ScreenshotSettings.CopyToClipboard)
+			if((m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == CSettings::TRAY_SCREENSHOT_CLIPBOARD) || Settings.ScreenshotSettings.CopyToClipboard)
 			{
 
 				CopyToClipboard = true;
@@ -1743,23 +1733,23 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 					CloseClipboard(); //закрываем буфер обмена
 					 DeleteObject(out);
 					 ReleaseDC(dc);
-					if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD)
+					if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == CSettings::TRAY_SCREENSHOT_CLIPBOARD)
 					{
 						floatWnd.ShowBaloonTip(TR("Снимок сохранен в буфере обмена"),_T("Image Uploader"));
 						Result = false;
 					}
 				}
 			}
-			if(!m_bScreenshotFromTray || (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD || Settings.TrayIconSettings.TrayScreenshotAction== TRAY_SCREENSHOT_SHOWWIZARD))
+			if(!m_bScreenshotFromTray || (Settings.TrayIconSettings.TrayScreenshotAction == CSettings::TRAY_SCREENSHOT_ADDTOWIZARD || Settings.TrayIconSettings.TrayScreenshotAction== CSettings::TRAY_SCREENSHOT_SHOWWIZARD))
 			{
-				CreatePage(2); 
-				((CMainDlg*)Pages[2])->AddToFileList(buf);
-				((CMainDlg*)Pages[2])->ThumbsView.EnsureVisible(((CMainDlg*)Pages[2])->ThumbsView.GetItemCount()-1,true);
-				((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
-				((CMainDlg*)Pages[2])->ThumbsView.SetFocus();
-				ShowPage(2,0,3);
+				CreatePage(PageMain); 
+				((CMainDlg*)Pages[PageMain])->AddToFileList(buf);
+				((CMainDlg*)Pages[PageMain])->ThumbsView.EnsureVisible(((CMainDlg*)Pages[PageMain])->ThumbsView.GetItemCount()-1,true);
+				((CMainDlg*)Pages[PageMain])->ThumbsView.LoadThumbnails();
+				((CMainDlg*)Pages[PageMain])->ThumbsView.SetFocus();
+				ShowPage(PageMain, PageWelcome, PageUploadSettings );
 			}
-			else if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD)
+			else if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == CSettings::TRAY_SCREENSHOT_UPLOAD)
 			{
 				Result = false;
 				floatWnd.UploadScreenshot(buf,buf);
@@ -1775,7 +1765,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 	m_bShowAfter  = false;
 	if(Result || needToShow )
 	{
-		if(needToShow || (!m_bScreenshotFromTray ||Settings.TrayIconSettings.TrayScreenshotAction!= TRAY_SCREENSHOT_ADDTOWIZARD))
+		if(needToShow || (!m_bScreenshotFromTray ||Settings.TrayIconSettings.TrayScreenshotAction!= CSettings::TRAY_SCREENSHOT_ADDTOWIZARD))
 		{
 			m_bShowAfter = true;
 		}

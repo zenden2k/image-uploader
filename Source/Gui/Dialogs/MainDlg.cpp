@@ -175,35 +175,32 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, G
 {
 	CFileListItem fl; //internal list item
 	
-	if(!FileName) return FALSE;
+	if ( !FileName || !WinUtils::FileExists(FileName) ) {
+		return FALSE;
+	}
 
-	if(!WinUtils::FileExists(FileName)) return FALSE;
 	fl.selected = false;
-
-	int len = lstrlen(FileName);
-
 	fl.FileName = FileName;
 
-	if(virtualFileName.IsEmpty())
-	fl.VirtualFileName = WinUtils::myExtractFileName(FileName);
-	else
-	fl.VirtualFileName = virtualFileName;
-	
-
-	TCHAR szBuffer[256] = _T("\0");
-	int FileSize = IuCoreUtils::getFileSize(WCstringToUtf8( FileName ));
-	if(FileSize<-1) FileSize = 0;
-
+	if ( virtualFileName.IsEmpty() ) {
+		fl.VirtualFileName = WinUtils::myExtractFileName(FileName);
+	} else {
+		fl.VirtualFileName = virtualFileName;
+	}
+		
 	FileList.Add(fl);
 
 	CString Buf;
-	if(IsImage(FileName))
-	Buf = WinUtils::GetOnlyFileName(FileName );
-	else Buf = WinUtils::myExtractFileName(FileName);
-	if(FileName) 
+	if ( IsImage(FileName) ) {
+		Buf = WinUtils::GetOnlyFileName(FileName );
+	} else {
+		Buf = WinUtils::myExtractFileName(FileName);
+	}
+	if ( FileName ) {
 		ThumbsView.AddImage(fl.FileName, fl.VirtualFileName, Img);
+	}
 		
-	EnableNext(FileList.GetCount()>0);
+	EnableNext( FileList.GetCount() > 0 );
 	return TRUE;
 }
 
@@ -251,11 +248,9 @@ LRESULT CMainDlg::OnBnClickedDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	return 0;
 }
 
-bool CMainDlg::OnHide()
-{
+bool CMainDlg::OnHide() {
 	ThumbsView.StopAndWait();
-	if(IsRunning())
-	{
+	if ( IsRunning() ) {
 		WaitThreadStop.SetEvent(); // Sending stop message destinated for child thread
 		WaitForThread(3500);
 	}
@@ -263,26 +258,16 @@ bool CMainDlg::OnHide()
 }
 
 // Системный диалог свойств файла
-BOOL CMainDlg::FileProp()
-{
+BOOL CMainDlg::FileProp() {
 	LV_ITEM lvItem;
 	int nCurItem;
-	SHELLEXECUTEINFO ShInfo;
-
-	if ((nCurItem = ThumbsView.GetNextItem(-1, LVNI_ALL|LVNI_SELECTED))<0)
-		return FALSE;
-
 	ZeroMemory(&lvItem, sizeof(LV_ITEM));
-
-	LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
-	ZeroMemory(&ShInfo, sizeof(SHELLEXECUTEINFO));
-	ShInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	ShInfo.nShow = SW_SHOW;
-	ShInfo.fMask = SEE_MASK_INVOKEIDLIST | SEE_MASK_IDLIST;
-	ShInfo.hwnd = m_hWnd;
-	ShInfo.lpVerb = TEXT("properties");
-	ShInfo.lpFile = FileName;
-	ShellExecuteEx(&ShInfo);
+	
+	if ((nCurItem = ThumbsView.GetNextItem(-1, LVNI_ALL|LVNI_SELECTED))<0) {
+		return FALSE;
+	}
+	LPCTSTR fileName = ThumbsView.GetFileName(nCurItem);
+	WinUtils::ShowFilePropertiesDialog(m_hWnd, fileName);
 	return TRUE;
 }
 
@@ -394,7 +379,7 @@ LRESULT CMainDlg::OnAddFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 	return 0;
 }
 
-LRESULT  CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int nCurItem = -1;
 
 	std::deque<CString> selectedFiles;
@@ -411,7 +396,6 @@ LRESULT  CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	}
 	
 	if ( selectedFiles.size() == 1 ) {
-
 		TCHAR Buf[MAX_PATH*4];
 		CString FileName = selectedFiles[0];
 		CString fileExt = WinUtils::GetFileExt(FileName);
@@ -419,9 +403,8 @@ LRESULT  CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 			TR("Файлы")+CString(" *.")+fileExt, CString(_T("*."))+fileExt,
 			TR("Все файлы"),_T("*.*"));
 
-		CFileDialog fd(false, fileExt, FileName,4|2,Buf,m_hWnd);
+		CFileDialog fd(false, fileExt, FileName,OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,Buf,m_hWnd);
 
-		TCHAR Buffer[1000];
 		//fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
 		if(fd.DoModal()!=IDOK || !fd.m_szFileName) return 0;
 
@@ -434,16 +417,6 @@ LRESULT  CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 				CopyFile( selectedFiles[i], newPath + _T("\\") + WinUtils::myExtractFileName(selectedFiles[i] ) , false );
 			}
 		}
-		/*CFolderDialog fd(m_hWnd,TR("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE );
-		if(fd.DoModal(m_hWnd) == IDOK)
-		{
-			CString newPath = fd.GetFolderPath();
-			int fileCount = selectedFiles.size();
-			for ( int i = 0; i < fileCount; i++ ) {
-				CopyFile( selectedFiles[i], newPath + _T("\\") + WinUtils::myExtractFileName(selectedFiles[i] ) , false );
-			}
-			return true;
-		}*/
 	}
 
 	return 0;

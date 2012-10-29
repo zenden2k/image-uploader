@@ -39,10 +39,13 @@ struct ImageConvertingParams
 	BOOL SaveProportions;
 	LOGFONT Font;
 	BOOL AddLogo;
+	enum LogoPositionEnum { lpTopLeft = 0, lpTopCenter, lpTopRight, lpBottomLeft, lpBottomCenter, lpBottomRight };
+
 	int LogoPosition;
 	int LogoBlend;
 	int TextPosition;
 	bool SmartConverting;
+	bool AllowImageEnlarging;
 	CString LogoFileName;
 	COLORREF TextColor, StrokeColor;
 	EnumWrapper<ImageResizeMode> ResizeMode;

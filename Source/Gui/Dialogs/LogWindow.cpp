@@ -47,6 +47,9 @@ LRESULT CLogWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	// TODO
 	TRC(IDCANCEL, "Скрыть");
 	SetWindowText(TR("Лог ошибок"));
+	/*WriteLog(logError, "Log Windows", "Test log message", _T("Info"));
+	WriteLog(logError, "Log Windows2", "Test log message2\nBlablabla\nBlablabla\nBlablabla\nBlablabla\nBlablabla\nBlablabla\nBlablabla\nBlablabla\nBlablabla\nBlablabla\nBlablabla\nBlablabla", _T("Info2"));
+	*/
 	return 1;  // Let the system set the focus
 }
 
@@ -98,10 +101,16 @@ LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 		ClientPoint = ScreenPoint;
 		::ScreenToClient(hwnd, &ClientPoint);
 	}
+	BOOL bOutside;
+	int index = MsgList.ItemFromPoint(ClientPoint, bOutside);
+	if ( !bOutside ) {
+		MsgList.SetCurSel( index );
+	}
 
 	CMenu FolderMenu;
 	FolderMenu.CreatePopupMenu();
 	FolderMenu.AppendMenu(MF_STRING, IDC_CLEARLIST, TR("Очистить список"));
+	FolderMenu.AppendMenu(MF_STRING, IDC_COPYTEXTTOCLIPBOARD, TR("Копировать"));
 	FolderMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
 	return 0;
 }
@@ -116,6 +125,15 @@ LRESULT CLogWindow::OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 LRESULT CLogWindow::OnClearList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	MsgList.Clear();
+	return 0;
+}
+
+LRESULT CLogWindow::OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/) {
+	int messageIndex = MsgList.GetCurSel();
+	LogListBoxItem* item = MsgList.getItemFromIndex( messageIndex );
+	CString text;
+	text.Format(_T("[%s] %s\r\n%s\r\n\r\n%s"), (LPCTSTR)item->Time, (LPCTSTR)item->Info, (LPCTSTR)item->strTitle, (LPCTSTR)item->strText);
+	WinUtils::CopyTextToClipboard(text);
 	return 0;
 }
 

@@ -18,8 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "atlheaders.h"
 #include "LogListBox.h"
+
+#include "atlheaders.h"
 #include "Func/Myutils.h"
 #include "Gui/GuiTools.h"
 
@@ -231,3 +232,6 @@ void CLogListBox::Clear()
 	SetRedraw(true);
 }
 
+LogListBoxItem*  CLogListBox::getItemFromIndex(int index) {
+	return reinterpret_cast<LogListBoxItem *>( GetItemDataPtr(index) );
+}

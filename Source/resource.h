@@ -140,6 +140,7 @@
 #define IDC_SAVEPROPORTIONS             1027
 #define IDC_STARTUPLOADINGFROMSHELL     1027
 #define IDC_MIDDLEBUTTONCLICKCOMBO      1027
+#define IDC_EXPLORERINTEGRATION         1027
 #define IDC_ADDFILESIZE                 1028
 #define IDC_RIGHTBUTTONCLICKCOMBO       1028
 #define IDC_SAVEPROPORTIONS2            1028
@@ -455,6 +456,7 @@
 #define IDC_CHECK1                      1272
 #define IDC_AUTOSTARTUP                 1272
 #define IDC_AUTOSTARTUPCHECKBOX         1272
+#define IDC_ENLARGEIMAGECHECKBOX        1272
 #define IDC_VIDEOENGINECOMBO            1273
 #define IDC_UPLOADTABLE                 1274
 #define IDC_UPLOADGROUPBOX              1276
@@ -465,8 +467,12 @@
 #define IDC_FILESERVERSELECTORPLACE     1283
 #define IDC_SERVERGROUPBOX              1283
 #define IDC_ACCOUNTINFO                 1284
+#define IDC_FILESERVERSELECTORPLACE2    1284
+#define IDC_TRAYSERVERSELECTOR          1284
 #define IDC_TOOLBARPLACEHOLDER          1285
 #define IDC_PROFILELISTCOMBO            1286
+#define IDC_FOUNDABUG                   1287
+#define IDC_FOLDERLABEL                 1288
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -510,7 +516,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        256
 #define _APS_NEXT_COMMAND_VALUE         32801
-#define _APS_NEXT_CONTROL_VALUE         1287
+#define _APS_NEXT_CONTROL_VALUE         1290
 #define _APS_NEXT_SYMED_VALUE           127
 #endif
 #endif

@@ -30,10 +30,7 @@
 #include "Func/pluginloader.h"
 #include "Gui/Dialogs/HotkeySettings.h"
 
-#define TRAY_SCREENSHOT_UPLOAD 0
-#define TRAY_SCREENSHOT_CLIPBOARD 1
-#define TRAY_SCREENSHOT_SHOWWIZARD 2
-#define TRAY_SCREENSHOT_ADDTOWIZARD 3
+
 
 class ServerProfile {
 	public:
@@ -51,6 +48,7 @@ class ServerProfile {
 	protected:
 		CString serverName_;
 		CString profileName_;
+		friend class CSettings;
 };
 
 struct UploadProfileStruct
@@ -90,8 +88,8 @@ struct VideoSettingsStruct
 	int GapHeight;
 	int NumOfFrames;
 	int JPEGQuality;
-	BOOL UseAviInfo;
-	BOOL ShowMediaInfo;
+	bool UseAviInfo;
+	bool ShowMediaInfo;
 	LOGFONT Font;
 	COLORREF TextColor;
 	CString Engine;
@@ -113,10 +111,10 @@ class CEncodedPassword
 };
 struct ConnectionSettingsStruct
 {
-	BOOL UseProxy;
+	bool UseProxy;
 	CString ServerAddress;
 	int ProxyPort;
-	BOOL NeedsAuth;
+	bool NeedsAuth;
 	CString ProxyUser;
 	CEncodedPassword ProxyPassword;
 	int ProxyType;
@@ -196,6 +194,9 @@ class CSettings
       std::map<CString, ImageConvertingParams> ConvertProfiles;
       CString CurrentConvertProfileName;
 		CString getShellExtensionFileName() const;
+		enum { DefaultUploadBufferSize = 65536 };
+		enum TrayScreenshotAction { TRAY_SCREENSHOT_UPLOAD = 0, TRAY_SCREENSHOT_CLIPBOARD, TRAY_SCREENSHOT_SHOWWIZARD, TRAY_SCREENSHOT_ADDTOWIZARD };
+
 #endif IU_SHELLEXT
 	private:
 		TCHAR m_Directory[MAX_PATH];
@@ -208,8 +209,9 @@ class CSettings
 		bool LoadSettings(LPCTSTR szDir=NULL, bool LoadFromRegistry  = true);
 	int UploadBufferSize;
 	void EnableAutostartup(bool enable);
-	int ServerID, QuickServerID;
-	ServerProfile imageServer, fileServer;
+	int ServerID();//deprecated
+	int QuickServerID();//deprecated
+	ServerProfile imageServer, fileServer, quickServer;
 	void ApplyRegSettingsRightNow();
 	bool LoadAccounts(ZSimpleXmlNode root);
 	bool SaveAccounts(ZSimpleXmlNode root);
@@ -221,8 +223,10 @@ class CSettings
 	ServerSettingsStruct& ServerByName(CString name);
 	ServerSettingsStruct& ServerByUtf8Name(std::string name);
 #endif
-	int FileServerID;
-	CString ServerName, QuickServerName,FileServerName;
+	int FileServerID();
+	CString ServerName();
+	CString QuickServerName();
+	CString FileServerName();
 	SettingsManager mgr_;
 	CString SettingsFolder;
 	static const TCHAR VideoEngineDirectshow[];
@@ -231,6 +235,9 @@ class CSettings
 	static bool IsFFmpegAvailable();
 
 	CString prepareVideoDialogFilters();
+	static bool IsUrlHandlerRegistered();
+	static bool RegisterURLHandler();
+	static CString URLHandlerName();
 };
 
 extern CSettings Settings;

@@ -76,8 +76,8 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	TranslateUI();
 
 	// FIXME
-	m_nImageServer = Settings.ServerID;
-	m_nFileServer = Settings.FileServerID;
+	m_nImageServer = Settings.ServerID();
+	m_nFileServer = Settings.FileServerID();
 
 	imageServer = Settings.imageServer;
 	fileServer = Settings.fileServer;
@@ -231,12 +231,6 @@ LRESULT CUploadSettings::OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD 
 	return 0;
 }
 
-LRESULT CUploadSettings::OnBnClickedLogooptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	// TODO: remove me! 
-	return 0;
-}
-
 bool CUploadSettings::OnNext()
 {	
 	if(m_nImageServer != -1)
@@ -281,8 +275,8 @@ bool CUploadSettings::OnNext()
 	Settings.ImageSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	Settings.ImageSettings.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);*/
 	
-	Settings.ServerID = m_nImageServer;	
-	Settings.FileServerID = m_nFileServer;
+/*	Settings.ServerID = m_nImageServer;	
+	Settings.FileServerID = m_nFileServer;*/
 	Settings.ThumbSettings.ThumbWidth = GetDlgItemInt(IDC_THUMBWIDTH);
    SaveCurrentProfile();
 	return true;
@@ -666,7 +660,7 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 	m_pluginLoader->getAccessTypeList(accessTypeList);
 	CFolderItem newFolder;
 	if(Settings.ServersSettings[Utf8ToWCstring(ue->Name)][server.profileName()].params["FolderID"]	== IU_NEWFOLDERMARK)
-		newFolder = Settings.ServersSettings[Utf8ToWCstring(ue->Name)].newFolder;
+		newFolder = Settings.ServersSettings[Utf8ToWCstring(ue->Name)][server.profileName()].newFolder;
 
 	 CNewFolderDlg dlg(newFolder, true, accessTypeList);
 	 if(dlg.DoModal(m_hWnd) == IDOK)

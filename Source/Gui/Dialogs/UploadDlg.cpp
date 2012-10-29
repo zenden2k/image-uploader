@@ -183,12 +183,12 @@ DWORD CUploadDlg::Run() {
 
 
 	int Server;
-	int FileServer = Settings.FileServerID;
+	int FileServer = Settings.FileServerID();
 	int n = MainDlg->FileList.GetCount();
 
 	if(Settings.QuickUpload && !WizardDlg->Pages[3])
-		Server = Settings.QuickServerID;
-	else Server = Settings.ServerID;
+		Server = Settings.QuickServerID();
+	else Server = Settings.ServerID();
 
 	if(Server == -1) {
 		Server = m_EngineList->getRandomImageServer();

@@ -147,13 +147,14 @@ public:
 	LRESULT OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	void CloseDialog(int nVal);
 	bool DragndropEnabled;
-	int CurPage;
-	int PrevPage,NextPage;
 	bool CreatePage(int PageID);
 	CWizardPage* Pages[5];
+	enum WizardPage { PageNone = -1, PageWelcome = 0, PageVideoGrabber, PageMain, PageUploadSettings, PageUpload };
+	WizardPage CurPage;
+	WizardPage PrevPage,NextPage;
 	int screenshotIndex; 
 public:
-	bool ShowPage(int idPage,int prev=-1,int next=-1);
+	bool ShowPage(WizardPage idPage, WizardPage prev = PageNone, WizardPage next = PageNone);
 	bool AddImage(const CString &FileName, const CString &VirtualFileName, bool Show=true);
 	LRESULT OnPrevBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	LRESULT OnNextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);

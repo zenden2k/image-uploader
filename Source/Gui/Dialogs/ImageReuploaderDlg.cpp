@@ -125,7 +125,7 @@ bool CImageReuploaderDlg::OnFileFinished(bool ok, CFileDownloader::DownloadFileL
 {
 	if ( ok ) {
 			int Server;
-		 Server = Settings.ServerID;
+		 Server = Settings.ServerID();
 
 		if(Server == -1) {
 			Server = m_EngineList->getRandomImageServer();

@@ -119,3 +119,6 @@ bool CMyEngineList::DestroyCachedEngine(const std::string& name)
 	}
 	return false;
 }
+
+char CMyEngineList::DefaultServer[] = "default";
+char CMyEngineList::RandomServer[]  = "random";

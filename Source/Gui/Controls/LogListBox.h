@@ -60,6 +60,7 @@ class CLogListBox :
 		LRESULT OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
 		int AddString(LogMsgType Type, LPCTSTR szTitle,LPCTSTR szText, LPCTSTR szInfo=NULL);
 		LRESULT OnKillFocus(HWND hwndNewFocus);
+		LogListBoxItem* getItemFromIndex(int index);
 	public:
 		int NotifyParent(int nItem);
 		CIcon ErrorIcon, WarningIcon;

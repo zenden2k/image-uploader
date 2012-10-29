@@ -43,7 +43,9 @@ virtual ~CServerSelectorControl();
     BEGIN_MSG_MAP(CServerSelectorControl)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		COMMAND_ID_HANDLER(IDC_EDIT, OnClickedEdit)
+		NOTIFY_HANDLER(IDC_SERVERCOMBOBOX, CBEN_ENDEDIT, OnServerComboEndEdit)
 		COMMAND_HANDLER(IDC_SERVERCOMBOBOX, CBN_SELCHANGE, OnServerComboSelChange)
+	
 		
 	END_MSG_MAP()
 		
@@ -54,16 +56,24 @@ virtual ~CServerSelectorControl();
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClickedEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnServerComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnServerComboEndEdit(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
 	void TranslateUI();
 	void setTitle(CString title);
 	void setServerProfile(ServerProfile serverProfile);
-	ServerProfile getServerProfile() const;
+	void setShowDefaultServerItem(bool show);
+	void setServersMask(int mask);
+	enum ServerMaskEnum{ smAll = 0xffff, smImageServers = 0x1, smFileServers = 0x2};
+
+	ServerProfile serverProfile() const;
 private:
 	CComboBoxEx serverComboBox_;
 	CImageList comboBoxImageList_;
 	ServerProfile serverProfile_;
+	bool showDefaultServerItem_;
+	int serversMask_;
 	void serverChanged();
+	void updateInfoLabel();
 };
 
 #endif // IU_GUI_DIALOGS_ServerSelectorControl_H
