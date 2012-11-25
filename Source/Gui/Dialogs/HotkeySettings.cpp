@@ -168,23 +168,23 @@ CHotkeyList::CHotkeyList()
 {
 	m_bChanged = false;
 	AddItem(TR("Нет действия"), _T(""), 0);
-	AddItem(TR("Контекстное меню значка"), _T("contextmenu"), IDM_CONTEXTMENU);
-	AddItem(TR("Загрузить изображения"),_T("addimages"), IDM_UPLOADIMAGES);
-	AddItem(TR("Загрузить файлы"),_T("addimages"), IDM_UPLOADFILES);
-	AddItem(TR("Загрузить папку"),_T("addfolder"), IDM_ADDFOLDERS);
-	AddItem(TR("Импорт видео"),_T("importvideo"), IDM_IMPORTVIDEO);
-	AddItem(TR("Скриншот"),_T("screenshotdlg"), IDM_SCREENSHOTDLG);
-	AddItem(TR("Снимок прямоугольной области"),_T("regionscreenshot"), IDM_REGIONSCREENSHOT);
-	AddItem(TR("Снимок всего экрана"),_T("fullscreenshot"), IDM_FULLSCREENSHOT);
-	AddItem(TR("Снимок активного окна"),_T("windowscreenshot"), IDM_WINDOWSCREENSHOT);
-	AddItem(TR("Снимок выбранного элемента"),_T("windowhandlescreenshot"), IDM_WINDOWHANDLESCREENSHOT);
-	AddItem(TR("Снимок произвольной формы"),_T("freeformscreenshot"), IDM_FREEFORMSCREENSHOT);
-	AddItem(TR("Показать окно программы"),_T("showmainwindow"), IDM_SHOWAPPWINDOW);
-	AddItem(TR("Настройки"),_T("settings"), IDM_SETTINGS);
-	AddItem(TR("Вставить из буфера"),_T("paste"), IDM_PASTEFROMCLIPBOARD,0x56, MOD_CONTROL); // Ctrl+V keyboard shortcut
-	AddItem(TR("Изображения из Web"),_T("downloadimages"), IDM_PASTEFROMWEB); // Ctrl+V keyboard shortcut
-	AddItem(TR("Информация о медиафайле"),_T("mediainfo"), IDM_MEDIAINFO);
-	AddItem(TR("Выход"),_T("mediainfo"), IDM_EXIT);
+	AddItem(TR("Контекстное меню значка"), _T("contextmenu"), CFloatingWindow::IDM_CONTEXTMENU);
+	AddItem(TR("Загрузить изображения"),_T("addimages"), CFloatingWindow::IDM_UPLOADIMAGES);
+	AddItem(TR("Загрузить файлы"),_T("addimages"), CFloatingWindow::IDM_UPLOADFILES);
+	AddItem(TR("Загрузить папку"),_T("addfolder"), CFloatingWindow::IDM_ADDFOLDERS);
+	AddItem(TR("Импорт видео"),_T("importvideo"), CFloatingWindow::IDM_IMPORTVIDEO);
+	AddItem(TR("Скриншот"),_T("screenshotdlg"), CFloatingWindow::IDM_SCREENSHOTDLG);
+	AddItem(TR("Снимок прямоугольной области"),_T("regionscreenshot"), CFloatingWindow::IDM_REGIONSCREENSHOT);
+	AddItem(TR("Снимок всего экрана"),_T("fullscreenshot"), CFloatingWindow::IDM_FULLSCREENSHOT);
+	AddItem(TR("Снимок активного окна"),_T("windowscreenshot"), CFloatingWindow::IDM_WINDOWSCREENSHOT);
+	AddItem(TR("Снимок выбранного элемента"),_T("windowhandlescreenshot"), CFloatingWindow::IDM_WINDOWHANDLESCREENSHOT);
+	AddItem(TR("Снимок произвольной формы"),_T("freeformscreenshot"), CFloatingWindow::IDM_FREEFORMSCREENSHOT);
+	AddItem(TR("Показать окно программы"),_T("showmainwindow"), CFloatingWindow::IDM_SHOWAPPWINDOW);
+	AddItem(TR("Настройки"),_T("settings"), CFloatingWindow::IDM_SETTINGS);
+	AddItem(TR("Вставить из буфера"),_T("paste"), CFloatingWindow::IDM_PASTEFROMCLIPBOARD,0x56, MOD_CONTROL); // Ctrl+V keyboard shortcut
+	AddItem(TR("Изображения из Web"),_T("downloadimages"), CFloatingWindow::IDM_PASTEFROMWEB); // Ctrl+V keyboard shortcut
+	AddItem(TR("Информация о медиафайле"),_T("mediainfo"), CFloatingWindow::IDM_MEDIAINFO);
+	AddItem(TR("Выход"),_T("mediainfo"), CFloatingWindow::IDM_EXIT);
 }
 
 CHotkeyItem& CHotkeyList::getByFunc(const CString &func)

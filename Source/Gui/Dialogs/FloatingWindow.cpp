@@ -37,6 +37,8 @@
 #include <Gui/Dialogs/ResultsWindow.h>
 #include <Gui/Dialogs/SettingsDlg.h>
 
+const TCHAR CFloatingWindow::WindowTitle[] = _T("ImageUploader_TrayWnd"); 
+
 // FloatingWindow
 CFloatingWindow::CFloatingWindow()
 {
@@ -432,7 +434,7 @@ inline BOOL SetOneInstance(LPCTSTR szName)
 	return bFound;
 }
 
-CFloatingWindow floatWnd;
+CFloatingWindow* floatWnd;
 
 void CFloatingWindow::CreateTrayIcon()
 {
@@ -446,8 +448,8 @@ void CFloatingWindow::CreateTrayIcon()
 	if (!bFound)
 	{
 		CRect r(100, 100, 400, 400);
-		floatWnd.Create(0, r, _T("ImageUploader_TrayWnd"), WS_OVERLAPPED | WS_POPUP | WS_CAPTION );
-		floatWnd.ShowWindow(SW_HIDE);
+		floatWnd->Create(0, r, WindowTitle, WS_OVERLAPPED | WS_POPUP | WS_CAPTION );
+		floatWnd->ShowWindow(SW_HIDE);
 	}
 }
 

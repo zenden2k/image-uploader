@@ -29,7 +29,6 @@
 #include "Func/MyEngineList.h"
 #include "HotkeySettings.h"
 #include <Gui/Dialogs/RegionSelect.h>
-#include "Gui/Controls/hyperlink.h"
 #include "resource.h"       // main symbols
 #include "Gui/Dialogs/UpdateDlg.h"
 
@@ -206,7 +205,7 @@ public:
 	bool CanShowWindow();
 	void UpdateAvailabilityChanged(bool Available);
 	HACCEL hAccel;
-	CSpecialHyperLink m_UpdateLink;
+	CHyperLink m_UpdateLink;
 	HACCEL hLocalHotkeys;
 	//    IUnknown methods
 		 STDMETHODIMP_(ULONG) AddRef();

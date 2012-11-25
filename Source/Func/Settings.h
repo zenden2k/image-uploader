@@ -196,7 +196,7 @@ class CSettings
 		CString getShellExtensionFileName() const;
 		enum { DefaultUploadBufferSize = 65536 };
 		enum TrayScreenshotAction { TRAY_SCREENSHOT_UPLOAD = 0, TRAY_SCREENSHOT_CLIPBOARD, TRAY_SCREENSHOT_SHOWWIZARD, TRAY_SCREENSHOT_ADDTOWIZARD };
-
+		static COLORREF DefaultLinkColor;
 #endif IU_SHELLEXT
 	private:
 		TCHAR m_Directory[MAX_PATH];

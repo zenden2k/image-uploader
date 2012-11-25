@@ -49,6 +49,8 @@
 #define IDD_LANGSELECTDLG               149
 #define IDD_NETWORKSETTINGSPAGE         150
 #define IDD_SERVERSELECTORCONTROL       151
+#define IDD_UPLOADSETTINGS1             152
+#define IDD_UPLOADPARAMSDLG             152
 #define IDR_CONTEXTMENU                 202
 #define IDI_GRAB                        207
 #define IDI_IMAGES                      209
@@ -86,6 +88,9 @@
 #define IDI_ICONHISTORY                 254
 #define IDI_ICON3                       255
 #define IDI_ICONDELETE                  255
+#define IDI_ICONRENAME                  256
+#define IDI_ICONUSER                    257
+#define IDI_ICONSETTINGS2               261
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -473,6 +478,11 @@
 #define IDC_PROFILELISTCOMBO            1286
 #define IDC_FOUNDABUG                   1287
 #define IDC_FOLDERLABEL                 1288
+#define IDC_USERICON                    1290
+#define IDC_FOLDERICON                  1291
+#define IDC_IMAGEPROCESSINGPARAMS       1292
+#define IDC_SETTINGSBUTTONPLACEHOLDER   1293
+#define IDC_SETTINGSBUTTONPLACEHOLDER2  1294
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -514,9 +524,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        256
+#define _APS_NEXT_RESOURCE_VALUE        262
 #define _APS_NEXT_COMMAND_VALUE         32801
-#define _APS_NEXT_CONTROL_VALUE         1290
+#define _APS_NEXT_CONTROL_VALUE         1294
 #define _APS_NEXT_SYMED_VALUE           127
 #endif
 #endif

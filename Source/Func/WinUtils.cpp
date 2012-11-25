@@ -451,7 +451,7 @@ bool IsElevated()
 
 		hResult = te.TokenIsElevated ? S_OK : S_FALSE;
 
-		if ( pbElevated)
+		//if ( pbElevated)
 			pbElevated = (te.TokenIsElevated != 0);
 	}
 
@@ -719,5 +719,7 @@ bool ShowFilePropertiesDialog(HWND hWnd, const CString& fileName) {
 	ShInfo.lpFile = fileName;
 	return ShellExecuteEx(&ShInfo) != FALSE;
 }
+
+
 
 };

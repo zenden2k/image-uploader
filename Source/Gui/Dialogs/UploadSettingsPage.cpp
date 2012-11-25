@@ -74,6 +74,7 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	
 	fileServerSelector_ = new CServerSelectorControl();
 	fileServerSelector_->setServersMask(CServerSelectorControl::smFileServers);
+	fileServerSelector_->setShowImageProcessingParamsLink(false);
 	fileServerSelector_->Create(m_hWnd, serverSelectorRect);
 	fileServerSelector_->ShowWindow( SW_SHOW );
 	fileServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);

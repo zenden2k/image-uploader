@@ -26,6 +26,7 @@
 #include <atlapp.h>
 #include <atlmisc.h>
 #include <atlcoll.h>
+#include <map>
 
 class CLang
 {
@@ -39,14 +40,14 @@ class CLang
 	private:
 		struct TranslateListItem
 		{
-			int Hash;
 			TCHAR *Name;
 			TCHAR *Text;
 		};
-		TCHAR m_Directory[MAX_PATH];
+		CString directory_;
 		CString m_sLang;
-		CAtlArray<TranslateListItem> StringList;
 		CAtlArray<CString> LanguagesList;
+		std::map<int, TranslateListItem> stringList_;
+
 };
 extern CLang Lang;
 

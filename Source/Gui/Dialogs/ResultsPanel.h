@@ -27,10 +27,6 @@
 #include "3rdpart/thread.h"
 #include <Func/CommonTypes.h>
 
-#define IDC_OPTIONSMENU 10002
-#define IDC_USEDIRECTLINKS 10003
-#define IDC_COPYFOLDERURL 10004
-#define IDC_RESULTSTOOLBAR 5000
 class CResultsPanel;
 
 // CResultsPanel
@@ -47,7 +43,11 @@ class CResultsPanel :
 	public:
 		CResultsPanel(CWizardDlg *dlg, CAtlArray<CUrlListItem>  & urlList);
 		virtual ~CResultsPanel();
+	
+
 		enum { IDD = IDD_RESULTSPANEL};
+
+		enum { IDC_OPTIONSMENU = 10002, IDC_USEDIRECTLINKS = 10003,  IDC_COPYFOLDERURL = 10004, IDC_RESULTSTOOLBAR = 5000};
 
 		BEGIN_MSG_MAP(CResultsPanel)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -56,13 +56,13 @@ class CResultsPanel :
 			COMMAND_HANDLER(IDC_COPYALL, BN_CLICKED, OnBnClickedCopyall)
 			COMMAND_HANDLER(IDC_USEDIRECTLINKS, BN_CLICKED, OnUseDirectLinksClicked)
 			COMMAND_HANDLER(IDC_USETEMPLATE, BN_CLICKED, OnUseTemplateClicked)
-			//COMMAND_HANDLER(, BN_CLICKED, OnCopyFolderUrlClicked)
 			COMMAND_RANGE_HANDLER(IDC_COPYFOLDERURL, IDC_COPYFOLDERURL + 1000, OnCopyFolderUrlClicked);
 			
 			NOTIFY_HANDLER(IDC_RESULTSTOOLBAR, TBN_DROPDOWN, OnOptionsDropDown);
 		NOTIFY_HANDLER_EX(IDC_RESULTSTOOLBAR, NM_CUSTOMDRAW, OnResulttoolbarNMCustomDraw)
 		END_MSG_MAP()
 
+	protected:
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -70,42 +70,47 @@ class CResultsPanel :
 	LRESULT OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnUseTemplateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnUseDirectLinksClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	 LRESULT OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	
+	LRESULT OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	
+	LRESULT OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnEditChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnResulttoolbarNMCustomDraw(LPNMHDR pnmh);
 
-	CToolBarCtrl Toolbar;
+public:
+	LRESULT OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
 	void SetPage(int Index);
 	void setEngineList(CMyEngineList* EngineList);
-	CAtlArray<CUrlListItem>  &UrlList;
 	const CString GenerateOutput();
-	
-	bool LoadTemplate();
-	LPTSTR TemplateHead,TemplateFoot; //TemplateFoot is only pointer to part of TemplateHead 
-	int m_Page;
-	LRESULT OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
-	LRESULT OnEditChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	int GetCodeType();
 	void UpdateOutput();
 	void SetCodeType(int Index);
 	void Clear();
+	void AddServer(CString server);
+	void setUrlList(CAtlArray<CUrlListItem>  * urlList);
+	void setRectNeeded(RECT rect);
+	void InitUpload();
 
+	CAutoCriticalSection UrlListCS;
+
+private:
+	bool LoadTemplate();
+	bool LoadTemplates(CString &Error);
+	CString ReplaceVars(const CString& Text);
+
+
+	CToolBarCtrl Toolbar;
+	CAtlArray<CUrlListItem>  &UrlList;
+	LPTSTR TemplateHead,TemplateFoot; //TemplateFoot is only pointer to part of TemplateHead 
+	int m_Page;
 	CWizardDlg *WizardDlg;
 	CMyEngineList *m_EngineList;
 	CAtlArray<IU_Result_Template> Templates;
-	bool LoadTemplates(CString &Error);
 	std::map<CString, CString> m_Vars;
 	std::vector<CString> m_Servers;
-	CString ReplaceVars(const CString& Text);
-	CAutoCriticalSection UrlListCS;
 	int m_nImgServer, m_nFileServer;
-	void AddServer(CString server);
 	RECT rectNeeded;
-	void InitUpload();
-	void setUrlList(CAtlArray<CUrlListItem>  * urlList);
-	LRESULT OnResulttoolbarNMCustomDraw(LPNMHDR pnmh);
 };
 
 

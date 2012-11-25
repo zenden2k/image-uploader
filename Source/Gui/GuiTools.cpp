@@ -361,4 +361,22 @@ void ShowDialogItem(HWND dlg, int itemId, bool show) {
 	::ShowWindow(GetDlgItem(dlg, itemId), show? SW_SHOW : SW_HIDE);
 }
 
+RECT AutoSizeStaticControl(HWND control) {
+	CString text = GuiTools::GetWindowText(control);
+	HDC dc = ::GetDC(control);
+	HFONT font = (HFONT) SendMessage(control, WM_GETFONT, 0, 0);
+
+	SIZE textSize;
+	HGDIOBJ oldFont = SelectObject(dc, font);
+	GetTextExtentPoint32(dc, text, text.GetLength(), &textSize);
+	SetWindowPos(control,0, 0,0, textSize.cx, textSize.cy, SWP_NOMOVE );
+	RECT controlRect;
+	GetWindowRect(control, &controlRect);
+	MapWindowPoints(0 /*means desktop*/, GetParent(control), reinterpret_cast<LPPOINT>(&controlRect), 2);
+	SelectObject(dc, oldFont);
+	ReleaseDC(control, dc);
+	::InvalidateRect(control, 0, FALSE);
+	return controlRect;
+}
+
 };

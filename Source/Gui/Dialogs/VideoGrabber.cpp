@@ -1072,10 +1072,8 @@ LRESULT CVideoGrabber::OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*b
 
 LRESULT CVideoGrabber::OnBnClickedFileinfobutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CMediaInfoDlg dlg;
-	TCHAR buffer[256];
-	GetDlgItemText(IDC_FILEEDIT, buffer, 256);
-
-	dlg.ShowInfo(buffer);
+	CString fileName = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
+	CMediaInfoDlg dlg(fileName);
+	dlg.DoModal();
 	return 0;
 }

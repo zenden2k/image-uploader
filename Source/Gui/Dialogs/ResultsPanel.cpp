@@ -706,3 +706,7 @@ void CResultsPanel::setUrlList(CAtlArray<CUrlListItem>  * urlList)
 {
 	//UrlList = urlList;
 }
+
+void CResultsPanel::setRectNeeded(RECT rect) {
+	rectNeeded = rect;
+}

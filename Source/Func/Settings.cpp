@@ -42,6 +42,8 @@ const TCHAR CSettings::VideoEngineDirectshow[] = _T("Directshow");
 const TCHAR CSettings::VideoEngineFFmpeg[]     = _T("FFmpeg");
 const TCHAR CSettings::VideoEngineAuto[]       = _T("Auto");
 
+COLORREF CSettings::DefaultLinkColor = RGB(0x0C,0x32, 0x50);
+
 ServerProfile::ServerProfile() {
 
 }
@@ -721,22 +723,22 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 				if (!IsRunningFloatingWnd())
 				{
 					CmdLine.AddParam(_T("/tray"));
-					floatWnd.CreateTrayIcon();
+					floatWnd->CreateTrayIcon();
 				}
 			}
 			else
 			{
-				HWND TrayWnd = FindWindow(0, _T("ImageUploader_TrayWnd"));
+				HWND TrayWnd = FindWindow(0, CFloatingWindow::WindowTitle);
 				if (TrayWnd) {
-					::SendMessage( TrayWnd, WM_CLOSETRAYWND, 0, 0 );
+					::SendMessage( TrayWnd, CFloatingWindow::WM_CLOSETRAYWND, 0, 0 );
 				}
 			}
 		}
 		else if (ShowTrayIcon)
 		{
-			HWND TrayWnd = FindWindow(0, _T("ImageUploader_TrayWnd"));
+			HWND TrayWnd = FindWindow(0, CFloatingWindow::WindowTitle);
 			if (TrayWnd)
-				SendMessage(TrayWnd, WM_RELOADSETTINGS,  (floatWnd.m_hWnd) ? 1 : 0, (Settings.Hotkeys_changed) ? 0 : 1);
+				SendMessage(TrayWnd, CFloatingWindow::WM_RELOADSETTINGS,  (floatWnd->m_hWnd) ? 1 : 0, (Settings.Hotkeys_changed) ? 0 : 1);
 		}
 
 		Settings.Hotkeys_changed  = false;

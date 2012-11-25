@@ -18,16 +18,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "atlheaders.h"
 #include "MediaInfoDlg.h"
+
+
 #include "Func/fileinfohelper.h"
 #include "Gui/GuiTools.h"
 #include <Func/WinUtils.h>
 
 // CMediaInfoDlg
-CMediaInfoDlg::CMediaInfoDlg()
-{
-
+CMediaInfoDlg::CMediaInfoDlg(const CString& fileName){
+	fileName_ = fileName;
 }
 
 CMediaInfoDlg::~CMediaInfoDlg()
@@ -66,25 +66,20 @@ LRESULT CMediaInfoDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 	return 0;
 }
 
-void CMediaInfoDlg::ShowInfo(LPCTSTR FileName)
-{
-	m_FileName = FileName;
-	DoModal();
-}
-
 DWORD CMediaInfoDlg::Run()
 {
-	CString  ShortFileName = WinUtils::TrimString(WinUtils::myExtractFileName(m_FileName), 40);
-	if(!WinUtils::FileExists(m_FileName))
+	CString  ShortFileName = WinUtils::TrimString(WinUtils::myExtractFileName(fileName_), 40);
+	if(!WinUtils::FileExists(fileName_))
 	{ 
 		SetDlgItemText(IDC_FILEINFOLABEL, CString(TR("Ошибка:")));
 		SetDlgItemText(IDC_FILEINFOEDIT, CString(TR("Файл \"")) + ShortFileName + TR("\" не найден!"));
 		return 0;
 	}
 
+	
 	SetDlgItemText(IDC_FILEINFOLABEL,CString(TR("Информация о файле"))+_T(" \"")+ ShortFileName+_T("\" :"));
 	CString Report;
-	GetMediaFileInfo(m_FileName, Report);
+	GetMediaFileInfo(fileName_, Report);
 	SetDlgItemText(IDC_FILEINFOEDIT, Report);
 	return 0;
 }
