@@ -110,10 +110,6 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	ListBox.SetFocus();
 	ShowWindow(SW_HIDE);
 
-	if(CmdLine.IsOption(_T("quickshot")))
-	{
-		OnBnClickedRegionPrint(0,0,0,bHandled);
-	}
 	return 0;  // Let the system set the focus
 }
 

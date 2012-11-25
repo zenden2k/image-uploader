@@ -109,8 +109,10 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	RegQueryValueEx(ExtKey, _T("installdir"), 0, &Type, (LPBYTE)&ClassName, &BufSize);
 	RegCloseKey(ExtKey);
 
-	m_UpdateLink.ConvertStaticToHyperlink(GetDlgItem(IDC_UPDATESLABEL), _T("http://zenden.ws"));
-	m_UpdateLink.setCommandID(IDC_UPDATESLABEL);
+	
+	m_UpdateLink.SubclassWindow(GetDlgItem(IDC_UPDATESLABEL));
+	m_UpdateLink.m_dwExtendedStyle |= HLINK_COMMANDBUTTON | HLINK_UNDERLINEHOVER; 
+	m_UpdateLink.m_clrLink = CSettings::DefaultLinkColor;
 
 	toolTipControl_.Create( m_hWnd );
 	toolTipControl_.AddTool(GetDlgItem(IDC_ABOUT),TR("О программе"));
@@ -154,8 +156,6 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		Lang.LoadLanguage(Settings.Language);
 	}
 
-
-
 	CString ErrorStr;
 	if(!LoadUploadEngines(IU_GetDataFolder()+_T("servers.xml"), ErrorStr))  // Завершаем работу программы, если файл servers.lst отсутствует
 	{
@@ -192,7 +192,8 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		TRC(IDCANCEL,"Выход");
 	else 
 		TRC(IDCANCEL,"Скрыть");
-	TRC(IDC_UPDATESLABEL, "Проверить обновления");
+	m_UpdateLink.SetLabel(TR("Проверить обновления"));
+
 	TRC(IDC_PREV,"< Назад");
 
 	ACCEL accel;
@@ -237,11 +238,19 @@ bool CWizardDlg::ParseCmdLine()
 		CString VideoFileName;
 		if(CmdLine.GetNextFile(VideoFileName, nIndex))
 		{
-			CMediaInfoDlg dlg;
-			dlg.ShowInfo(VideoFileName);
+			CMediaInfoDlg dlg(VideoFileName);
+			dlg.DoModal();
 			PostQuitMessage(0);
 			return 0;
 		}
+	}
+
+	if ( CmdLine.IsOption(_T("quickshot")) ) {
+		m_bShowWindow = false;
+		m_bHandleCmdLineFunc = true;
+		if(!executeFunc(_T("regionscreenshot")))
+			PostQuitMessage(0);
+		return true;
 	}
 
 	for(size_t i=0; i<CmdLine.GetCount(); i++)
@@ -287,7 +296,7 @@ bool CWizardDlg::ParseCmdLine()
 
 LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	if(floatWnd.m_hWnd)
+	if(floatWnd->m_hWnd)
 	{ 
 		ShowWindow(SW_HIDE);
 		if(Pages[PageMain] && CurPage == PageUpload)
@@ -1303,7 +1312,7 @@ void CWizardDlg::OnScreenshotFinished(int Result)
 {
 	EnableWindow();
 
-	if(m_bShowAfter || (Result && !floatWnd.m_hWnd))
+	if(m_bShowAfter || (Result && !floatWnd->m_hWnd))
 	{
 		m_bShowWindow = true;
 		ShowWindow(SW_SHOWNORMAL);
@@ -1368,7 +1377,7 @@ bool CWizardDlg::funcAddFolder()
 }
 LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	if(!floatWnd.m_hWnd)
+	if(!floatWnd->m_hWnd)
 	  TRC(IDCANCEL, "Выход");
 	else 
 		TRC(IDCANCEL, "Скрыть");
@@ -1473,9 +1482,9 @@ bool CWizardDlg::funcMediaInfo()
 	TCHAR Buffer[512];
 	WinUtils::ExtractFilePath(fd.m_szFileName, Buffer);
 	Settings.VideoFolder = Buffer;
-	CMediaInfoDlg dlg;
+	CMediaInfoDlg dlg(fd.m_szFileName);
 	LastVideoFile = fd.m_szFileName;
-	dlg.ShowInfo(fd.m_szFileName);
+	dlg.DoModal();
 	return true;
 }
 
@@ -1543,9 +1552,8 @@ bool CWizardDlg::CanShowWindow()
 
 void CWizardDlg::UpdateAvailabilityChanged(bool Available)
 {
-	if(Available)
-	{
-		TRC(IDC_UPDATESLABEL, "Доступны обновления");
+	if(Available) {
+		m_UpdateLink.SetLabel(TR("Доступны обновления"));
 	}
 }
     
@@ -1606,7 +1614,7 @@ void Gdip_RemoveAlpha(Bitmap& source, Color color )
 bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 {
 	bool needToShow = IsWindowVisible()!=FALSE;
-	if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == CSettings::TRAY_SCREENSHOT_UPLOAD   && !floatWnd.m_hWnd)
+	if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == CSettings::TRAY_SCREENSHOT_UPLOAD   && !floatWnd->m_hWnd)
 	{
 		m_bScreenshotFromTray = false;
 		//return false;
@@ -1735,7 +1743,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 					 ReleaseDC(dc);
 					if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == CSettings::TRAY_SCREENSHOT_CLIPBOARD)
 					{
-						floatWnd.ShowBaloonTip(TR("Снимок сохранен в буфере обмена"),_T("Image Uploader"));
+						floatWnd->ShowBaloonTip(TR("Снимок сохранен в буфере обмена"),_T("Image Uploader"));
 						Result = false;
 					}
 				}
@@ -1752,7 +1760,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 			else if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == CSettings::TRAY_SCREENSHOT_UPLOAD)
 			{
 				Result = false;
-				floatWnd.UploadScreenshot(buf,buf);
+				floatWnd->UploadScreenshot(buf,buf);
 			}
 
 		}

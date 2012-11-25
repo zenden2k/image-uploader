@@ -17,18 +17,18 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+ 
 #include "langclass.h"
 #include "atlheaders.h"
 #include "myutils.h"
 #include <Func/WinUtils.h>
-
-CLang Lang;
-
+ 
+CLang Lang; 
+ 
 // TODO: rewrite this shit
 // check it's compatibility with 64 bit platforms
 BYTE hex_digit(TCHAR f)
-{
+{ 
 	BYTE p;
 	if (f >= _T('0') && f <= _T('9'))
 	{
@@ -70,24 +70,23 @@ int myhash(PBYTE key, int len)
 	return hash;
 }
 
-CLang::CLang()
-{
-	*m_Directory = 0;
+CLang::CLang(){
+
 }
 
 bool CLang::SetDirectory(LPCTSTR Directory)
 {
-	lstrcpyn(m_Directory, Directory, sizeof(m_Directory) / sizeof(TCHAR));
+	directory_ = Directory;
 	return true;
 }
 
-bool CLang::LoadLanguage(LPCTSTR Lang)
-{
-	StringList.RemoveAll();
+bool CLang::LoadLanguage(LPCTSTR Lang) {
+	stringList_.clear();
+
 	if (!Lang)
 		return false;
 
-	CString Filename = CString(m_Directory) + Lang + _T(".lng");
+	CString Filename = CString(directory_) + Lang + _T(".lng");
 
 	FILE* f = _tfopen(Filename, _T("rb"));
 	if (!f)
@@ -134,8 +133,7 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
 		tli.Name = pName;
 		tli.Text = pText;
 
-		tli.Hash = hexstr2int(pName);
-		StringList.Add(tli);
+		stringList_[hexstr2int(pName)] = tli;
 	}
 
 	fclose(f);
@@ -143,24 +141,20 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
 	return true;
 }
 
-LPTSTR CLang::GetString(LPCTSTR Name)
-{
-	int n = StringList.GetCount();
-
-	for (int i = 0; i < n; i++)
-	{
-		if (StringList[i].Hash == myhash((PBYTE) Name, lstrlen( Name) * sizeof(TCHAR)))
-			return StringList[i].Text;
+LPTSTR CLang::GetString(LPCTSTR Name) {
+	int hash =  myhash((PBYTE) Name, lstrlen( Name) * sizeof(TCHAR));
+	std::map<int, TranslateListItem>::iterator it = stringList_.find(hash);
+	if ( it != stringList_.end() ) {
+		return it->second.Text;
 	}
 
-	// return _T("$NO_SUCH_STRING");
 	return (LPTSTR)Name;
 }
 
 CString CLang::GetLanguageName()
 {
 	return m_sLang;
-}
+} 
 
 CLang::~CLang()
 {

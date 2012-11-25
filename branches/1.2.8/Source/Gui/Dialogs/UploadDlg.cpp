@@ -27,7 +27,6 @@
 #include "Gui/Dialogs/InputDialog.h"
 #include "Func/Settings.h"
 #include "Core/Upload/UploadEngine.h"
-#include "Gui/GuiTools.h"
 #include "mediainfodlg.h"
 #include <Gui/GuiTools.h>
 #include <Func/WinUtils.h>
@@ -764,11 +763,11 @@ LRESULT CUploadDlg::OnUploadResultsButtonClick(WORD wNotifyCode, WORD wID, HWND 
 }
 
 LRESULT CUploadDlg::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(!*WizardDlg->LastVideoFile) {
+	if ( WizardDlg->LastVideoFile.IsEmpty() ) {
 		return 0;
 	}
-	CMediaInfoDlg dlg ;
-	dlg.ShowInfo(WizardDlg->LastVideoFile);
+	CMediaInfoDlg dlg(WizardDlg->LastVideoFile);
+	dlg.DoModal();
 	return 0;
 }
 

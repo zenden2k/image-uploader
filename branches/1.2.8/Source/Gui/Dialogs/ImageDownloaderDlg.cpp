@@ -65,19 +65,24 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 }
 
 bool CImageDownloaderDlg::ExtractLinks(CString text, std::vector<CString> &result) {
-	pcrepp::Pcre reg("((http|https|ftp)://[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)", "imcu");
-	std::string str = WCstringToUtf8(text);
-	size_t pos = 0;
+	try {
+		pcrepp::Pcre reg("((http|https|ftp)://[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)", "imcu");
+		std::string str = WCstringToUtf8(text);
+		size_t pos = 0;
 
-	while (pos <= str.length()) {
-		if( reg.search(str, pos)) { 
-			pos = reg.get_match_end()+1;
-			CString temp = IuCoreUtils::Utf8ToWstring(reg[0]).c_str();
-			result.push_back(temp);
+		while (pos <= str.length()) {
+			if( reg.search(str, pos)) { 
+				pos = reg.get_match_end()+1;
+				CString temp = IuCoreUtils::Utf8ToWstring(reg[0]).c_str();
+				result.push_back(temp);
+			}
+			else {
+				break;
+			}
 		}
-		else {
-			break;
-		}
+	} catch( pcrepp::Pcre::exception ex ) {
+		MessageBoxA(0, ex.what(), 0, 0);
+		WriteLog(logError, _T("Image Downloader"), Utf8ToWCstring( ex.what() ), _T("PCRE") );
 	}
 	return true;
 }

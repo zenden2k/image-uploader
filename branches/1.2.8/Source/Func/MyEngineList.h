@@ -42,10 +42,12 @@ class CMyEngineList: public CUploadEngineList
 		CAbstractUploadEngine* getUploadEngine(int index);
 		bool LoadFromFile(const CString& filename);
 		bool DestroyCachedEngine(const std::string& name);
+		HICON getIconForServer(const std::string& name);
 
 		static char DefaultServer[];
 		static char RandomServer[];
 	private:
 		CDefaultUploadEngine * m_prevUpEngine;
+		std::map<std::string, HICON> serverIcons_;
 };
 #endif

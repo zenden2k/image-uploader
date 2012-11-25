@@ -45,17 +45,17 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-MP$(NUMBER_OF_PROCESSORS)"
+				AdditionalOptions="/MP$(NUMBER_OF_PROCESSORS)"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC;TIXML_USE_STL;PCRE_STATIC"
-				MinimalRebuild="true"
+				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
 				WarningLevel="0"
-				Detect64BitPortabilityProblems="true"
+				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
 				CallingConvention="0"
 				ForcedIncludeFiles="stdafx.h"
@@ -72,9 +72,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="-MP4"
-				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zdlld.lib minizipd.lib gdiplus.lib strmbasd.lib libcurld_imp.lib Ws2_32.lib avcodec.lib avdevice.lib avformat.lib avutil.lib swscale.lib dwmapi.lib sqplusD.lib squirrelD.lib sqstdlib.lib ssleay32.lib libeay32.lib pcre.lib zthread.lib winmm.lib"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;$(SolutionDir)\Libs\Debug&quot;"
+				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zlibd.lib minizipd.lib gdiplus.lib strmbasd.lib libcurld_imp.lib Ws2_32.lib avcodec.lib avdevice.lib avformat.lib avutil.lib swscale.lib dwmapi.lib sqplusD.lib squirrelD.lib sqstdlibD.lib ssleay32.lib libeay32.lib pcreD.lib zthread.lib winmm.lib"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;$(SolutionDir)\Libs\Debug&quot;;&quot;$(SolutionDir)\Libs\Debug_VS2008&quot;"
 				IgnoreDefaultLibraryNames="msvcrt.lib;"
 				DelayLoadDLLs="uxtheme.dll;dwmapi.dll"
 				GenerateDebugInformation="true"
@@ -987,10 +986,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Source\Gui\Controls\hyperlink.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Source\Gui\Controls\HyperLinkControl.h"
 						>
 					</File>
@@ -1119,7 +1114,31 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\res\icon-rename.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon-rename.ico"
+				>
+			</File>
+			<File
 				RelativePath="Source\res\icon-settings.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon-settings2.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon-settings2.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon-user.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon-user.ico"
 				>
 			</File>
 			<File
@@ -1821,6 +1840,10 @@
 				</File>
 				<File
 					RelativePath=".\Source\Gui\GuiTools.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Gui\IconBitmapUtils.cpp"
 					>
 				</File>
 				<File
@@ -3955,6 +3978,14 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath=".\Source\Gui\Dialogs\UploadParamsDlg.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\UploadParamsDlg.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Source\Gui\Dialogs\UploadSettings.cpp"
 						>
 						<FileConfiguration
@@ -4352,10 +4383,6 @@
 					</File>
 					<File
 						RelativePath=".\Source\Gui\Controls\HistoryTreeView.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Source\Gui\Controls\hyperlink.cpp"
 						>
 					</File>
 					<File

@@ -43,10 +43,9 @@ virtual ~CServerSelectorControl();
     BEGIN_MSG_MAP(CServerSelectorControl)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		COMMAND_ID_HANDLER(IDC_EDIT, OnClickedEdit)
-		NOTIFY_HANDLER(IDC_SERVERCOMBOBOX, CBEN_ENDEDIT, OnServerComboEndEdit)
 		COMMAND_HANDLER(IDC_SERVERCOMBOBOX, CBN_SELCHANGE, OnServerComboSelChange)
-	
-		
+		COMMAND_ID_HANDLER(IDC_IMAGEPROCESSINGPARAMS, OnImageProcessingParamsClicked)
+		COMMAND_ID_HANDLER(IDC_ACCOUNTINFO, OnAccountClick)
 	END_MSG_MAP()
 		
     // Handler prototypes:
@@ -56,24 +55,32 @@ virtual ~CServerSelectorControl();
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClickedEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnServerComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT OnServerComboEndEdit(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-
+	LRESULT OnAccountClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnImageProcessingParamsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	void TranslateUI();
 	void setTitle(CString title);
 	void setServerProfile(ServerProfile serverProfile);
 	void setShowDefaultServerItem(bool show);
 	void setServersMask(int mask);
+
 	enum ServerMaskEnum{ smAll = 0xffff, smImageServers = 0x1, smFileServers = 0x2};
 
 	ServerProfile serverProfile() const;
+	void setShowImageProcessingParamsLink(bool show);
 private:
 	CComboBoxEx serverComboBox_;
+	CHyperLink imageProcessingParamsLink_;
+	CHyperLink accountLink_;
 	CImageList comboBoxImageList_;
+	CToolBarCtrl settingsButtonToolbar_;
 	ServerProfile serverProfile_;
 	bool showDefaultServerItem_;
+	bool showImageProcessingParamsLink_;
+	CString currentUserName_;
 	int serversMask_;
 	void serverChanged();
 	void updateInfoLabel();
+	void createSettingsButton();
 };
 
 #endif // IU_GUI_DIALOGS_ServerSelectorControl_H

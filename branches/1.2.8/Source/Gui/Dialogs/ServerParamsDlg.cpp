@@ -31,9 +31,10 @@
 
 
 // CServerParamsDlg
-CServerParamsDlg::CServerParamsDlg(const ServerProfile& serverProfile){
+CServerParamsDlg::CServerParamsDlg(const ServerProfile& serverProfile, bool focusOnLoginControl ){
 	m_ue  = _EngineList->byName(( serverProfile.serverName() ) );
 	serverProfile_ = serverProfile;
+	focusOnLoginControl_ =  focusOnLoginControl;
 	catchChanges_ = false;
 }
 
@@ -59,7 +60,7 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	CString serverName = Utf8ToWCstring(m_ue->Name);
 	WindowTitle.Format(TR("Параметры сервера %s"),(LPCTSTR)serverName);
 	SetWindowText(WindowTitle);
-	doAuthChanged();
+	
 	m_wndParamList.SubclassWindow(GetDlgItem(IDC_PARAMLIST));
 	m_wndParamList.SetExtendedListStyle(PLS_EX_SHOWSELALWAYS | PLS_EX_SINGLECLICKEDIT);
 
@@ -99,8 +100,18 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 	m_wndParamList.EnableWindow( false );
 	serverProfile_.setProfileName(getSelectedProfileName());
+	doAuthChanged();
 	updateDialog(serverProfile_);
-	return 1;  // Let the system set the focus
+	int result = 1;
+	if ( focusOnLoginControl_ && m_ue->NeedAuthorization ) {
+		GuiTools::SetCheck(m_hWnd, IDC_DOAUTH, true);
+		doAuthChanged();
+		::SetFocus(GetDlgItem(IDC_LOGINEDIT) );
+		SendDlgItemMessage(IDC_LOGINEDIT, EM_SETSEL, 0, -1);
+		result = 0;
+	}
+	
+	return result;  // Let the system set the focus
 }
 
 LRESULT CServerParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -132,10 +143,11 @@ void CServerParamsDlg::createToolbar() {
 	CIcon ico = (HICON)LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONWHITEPAGE));
 	CIcon saveIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONSAVE));
 	CIcon deleteIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONDELETE));
+	CIcon renameIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONRENAME));
 	CImageList list;
 	list.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
 	list.AddIcon(ico);
-	list.AddIcon(saveIcon);
+	list.AddIcon(renameIcon);
 	list.AddIcon(saveIcon);
 	list.AddIcon(deleteIcon);
 	m_ProfileEditToolbar.SetImageList(list);

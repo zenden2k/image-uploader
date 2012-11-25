@@ -32,7 +32,7 @@
 #include <Func/WinUtils.h>
 #include <Func/Myutils.h>
 #include <Func/Common.h>
-
+#include <Gui/IconBitmapUtils.h>
 
 CUploadSettings::CUploadSettings(CMyEngineList * EngineList):ñonvert_profiles_(Settings.ConvertProfiles)
 {
@@ -40,6 +40,7 @@ CUploadSettings::CUploadSettings(CMyEngineList * EngineList):ñonvert_profiles_(S
 	m_EngineList = EngineList;
    m_ProfileChanged  = false;
    m_CatchChanges = false;
+	iconBitmapUtils_ = new IconBitmapUtils();
 }
 
 CUploadSettings::~CUploadSettings()
@@ -514,7 +515,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 	CMenu sub;	
 	MENUITEMINFO mi;
 	mi.cbSize = sizeof(mi);
-	mi.fMask = MIIM_TYPE|MIIM_ID;
+	mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
 	mi.fType = MFT_STRING;
 	sub.CreatePopupMenu();
 		
@@ -529,23 +530,43 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 			{
 				if(!m_EngineList->byIndex(i)->ImageHost) continue;
 				mi.wID = (ImageServer?IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
-				CString name =Utf8ToWCstring(m_EngineList->byIndex(i)->Name); 
+				CUploadEngineData* ued = m_EngineList->byIndex(i);
+				CString name =Utf8ToWCstring(ued->Name); 
 				mi.dwTypeData  = (LPWSTR)(LPCTSTR) name;
+
+				HICON hImageIcon = m_EngineList->getIconForServer(ued->Name);
+				mi.hbmpItem = 
+					WinUtils::IsVista() ? iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon): HBMMENU_CALLBACK;
+				if ( mi.hbmpItem ) {
+					mi.fMask |= MIIM_BITMAP;
+				//	mi.fType |= MIIM_FTYPE;
+				}
 				sub.InsertMenuItem(menuItemCount++, true, &mi);
-			}
 			
+			}
+			mi.fMask = MIIM_TYPE|MIIM_ID;
 			mi.wID = IDC_FILESERVER_LAST_ID + 1;
 			mi.fType = MFT_SEPARATOR;
 			sub.InsertMenuItem(menuItemCount++, true, &mi);
 		}
-
-		mi.fType = MFT_STRING;
+		
+	//	mi.fType = MFT_STRING;
 		for(int i=0; i<m_EngineList->count(); i++)
 		{
+			mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
+			mi.fType = MFT_STRING;
 			if(m_EngineList->byIndex(i)->ImageHost) continue;
+			CUploadEngineData* ued = m_EngineList->byIndex(i);
 			mi.wID = (ImageServer?IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
 			CString name =Utf8ToWCstring(m_EngineList->byIndex(i)->Name); 
 			mi.dwTypeData  =(LPWSTR)(LPCTSTR) name;
+			HICON hImageIcon = m_EngineList->getIconForServer(ued->Name);
+			mi.hbmpItem = 
+				WinUtils::IsVista() ? iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon): HBMMENU_CALLBACK;
+			if ( mi.hbmpItem ) {
+				mi.fMask |= MIIM_BITMAP;
+				//	mi.fType |= MIIM_FTYPE;
+			}
 			sub.InsertMenuItem(menuItemCount++, true, &mi);	
 		}
 

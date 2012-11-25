@@ -28,6 +28,7 @@
 
 
 #pragma once
+#include "atlheaders.h"
 #include "maindlg.h"
 #include "resource.h"       
 
@@ -38,9 +39,8 @@ class CMediaInfoDlg:		public CDialogImpl <CMediaInfoDlg>,
 								public CThreadImpl <CMediaInfoDlg>
 {
 	public:
-		CMediaInfoDlg();
+		CMediaInfoDlg(const CString& fileName);
 		~CMediaInfoDlg();
-		void ShowInfo(LPCTSTR FileName);
 
 		enum { IDD = IDD_MEDIAINFODLG };
 	protected:
@@ -62,15 +62,17 @@ class CMediaInfoDlg:		public CDialogImpl <CMediaInfoDlg>,
 		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		
+		DWORD Run(); // thread entry point
+
+	protected:	
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedUseIeCookies(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		DWORD Run();
+		
 
-		CString m_FileName;
+		CString fileName_;
 };
 
 

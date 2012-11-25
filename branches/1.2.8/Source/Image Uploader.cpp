@@ -171,6 +171,8 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 			return 0;
 		}
 	}
+	floatWnd = new CFloatingWindow();
+	LogWindow.Create(0);
 
 	pWizardDlg = &dlgMain;
 	if ( dlgMain.Create( 0, (LPARAM)&DlgCreationResult ) == NULL ) {
@@ -182,12 +184,11 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 			dlgMain.m_hWnd = 0;
 			return 0;
 	}
-	LogWindow.Create(0);
+	
 	if(bCreateFloatingWindow) {
-		floatWnd.CreateTrayIcon();
+		floatWnd->CreateTrayIcon();
 	}	
-	if ( ( CmdLine.GetCount() > 1 && CmdLine.IsOption( _T("quickshot") ) ) 
-		    || CmdLine.IsOption( _T("mediainfo") ) || !ShowMainWindow || !dlgMain.m_bShowWindow ) {
+	if ( CmdLine.IsOption( _T("mediainfo") ) || !ShowMainWindow || !dlgMain.m_bShowWindow ) {
 		dlgMain.ShowWindow(SW_HIDE);
 	} else {
 		dlgMain.ShowWindow(nCmdShow);

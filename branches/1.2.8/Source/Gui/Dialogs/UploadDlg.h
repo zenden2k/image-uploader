@@ -50,7 +50,10 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		CUploadDlg(CWizardDlg *dlg);
 		~CUploadDlg();
 		enum { IDD = IDD_UPLOADDLG };
-		enum {  IDC_UPLOADPROCESSTAB = WM_USER +100, IDC_UPLOADRESULTSTAB = IDC_UPLOADPROCESSTAB+1};
+		enum {  IDC_UPLOADPROCESSTAB = WM_USER +100, IDC_UPLOADRESULTSTAB = IDC_UPLOADPROCESSTAB+1,
+				 IDC_RESULTSTOOLBAR = 5001 
+		};
+
 		int TimerInc;
 		bool IsStopTimer;
 		bool Terminated;

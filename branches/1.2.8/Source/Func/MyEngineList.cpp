@@ -120,5 +120,20 @@ bool CMyEngineList::DestroyCachedEngine(const std::string& name)
 	return false;
 }
 
+HICON CMyEngineList::getIconForServer(const std::string& name) {
+	std::map<std::string, HICON>::iterator iconIt = serverIcons_.find(name);
+	if ( iconIt != serverIcons_.end() )
+		return iconIt->second;
+
+	HICON icon = (HICON)LoadImage(0,IU_GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(name)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
+	if ( !icon ) {
+		return 0;
+	}
+	serverIcons_[name] = icon;
+	return icon;
+}
+
+
+
 char CMyEngineList::DefaultServer[] = "default";
 char CMyEngineList::RandomServer[]  = "random";

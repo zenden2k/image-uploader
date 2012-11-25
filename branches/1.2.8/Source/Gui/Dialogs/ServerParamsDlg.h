@@ -36,7 +36,7 @@ class CServerParamsDlg :
 	public CDialogResize<CServerParamsDlg>	
 {
 	public:
-		CServerParamsDlg(const ServerProfile& serverProfile);
+		CServerParamsDlg(const ServerProfile& serverProfile, bool focusOnLoginControl = false);
 		~CServerParamsDlg();
 		enum { IDD = IDD_SERVERPARAMSDLG };
 		enum {  BUTTON_NEWPROFILE = 10001, BUTTON_RENAMEPROFILE, BUTTON_SAVEPROFILE, BUTTON_DELETEPROFILE };
@@ -88,6 +88,7 @@ class CServerParamsDlg :
 	protected:
 		CPropertyListCtrl m_wndParamList;
 		bool catchChanges_;
+		bool focusOnLoginControl_;
 		std::map<std::string,std::string> m_paramNameList;
 		CUploadEngineData *m_ue;
 		ServerProfile serverProfile_;

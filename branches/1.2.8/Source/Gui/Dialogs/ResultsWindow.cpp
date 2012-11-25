@@ -79,7 +79,7 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	::GetWindowPlacement(GetDlgItem(IDC_RESULTSTAB), &wp);
 	TabCtrl_AdjustRect(GetDlgItem(IDC_RESULTSTAB),FALSE, &wp.rcNormalPosition); 	
 	RECT rc =  { wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left+wp.rcNormalPosition.right,  -wp.rcNormalPosition.top+wp.rcNormalPosition.bottom };
-	ResultsPanel->rectNeeded = rc;
+	ResultsPanel->setRectNeeded(rc);
 	::MapWindowPoints(0, m_hWnd, (LPPOINT)&rc, 2);
  	ResultsPanel->setEngineList(_EngineList);
 	ResultsPanel->Create(m_hWnd,rc);

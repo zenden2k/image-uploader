@@ -26,12 +26,14 @@
 #include <Func/Common.h>
 #include <Func/MyUtils.h>
 #include <Gui/Dialogs/ServerParamsDlg.h>
+#include <Gui/Dialogs/UploadParamsDlg.h>
 
 // CServerSelectorControl
 CServerSelectorControl::CServerSelectorControl()
 {
 		showDefaultServerItem_ = false;
 		serversMask_ = smAll;
+		showImageProcessingParamsLink_ = true;
 }
 
 CServerSelectorControl::~CServerSelectorControl()
@@ -45,8 +47,21 @@ void CServerSelectorControl::TranslateUI() {
 LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	TranslateUI();
-	GuiTools::MakeLabelBold( GetDlgItem( IDC_SERVERGROUPBOX) );
 
+	imageProcessingParamsLink_.SubclassWindow(GetDlgItem(IDC_IMAGEPROCESSINGPARAMS));
+	imageProcessingParamsLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
+	imageProcessingParamsLink_.m_clrLink = CSettings::DefaultLinkColor;
+	imageProcessingParamsLink_.SetLabel(TR("Параметры обработки изображений..."));
+
+	accountLink_.SubclassWindow(GetDlgItem(IDC_ACCOUNTINFO));
+	accountLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON ; 
+	accountLink_.m_clrLink = CSettings::DefaultLinkColor;
+	accountLink_.SetToolTipText(TR("Имя пользователя"));
+
+	createSettingsButton();
+
+	GuiTools::MakeLabelBold( GetDlgItem( IDC_SERVERGROUPBOX) );
+	CIcon deleteIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONDELETE));
 	serverComboBox_.Attach( GetDlgItem( IDC_SERVERCOMBOBOX ) );
 
 	comboBoxImageList_.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
@@ -93,12 +108,10 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 				selectedIndex = itemIndex;
 			}
 		}
-		
-
 	}
 	serverComboBox_.SetImageList( comboBoxImageList_ );
 	serverComboBox_.SetCurSel( selectedIndex );
-	
+	GuiTools::ShowDialogItem(m_hWnd, IDC_IMAGEPROCESSINGPARAMS, showImageProcessingParamsLink_);
 
 	return 1;  // Let the system set the focus
 }
@@ -179,10 +192,11 @@ void CServerSelectorControl::serverChanged() {
 void CServerSelectorControl::updateInfoLabel() {
 	int serverComboElementIndex = serverComboBox_.GetCurSel();
 	std::string serverName = reinterpret_cast<char*>( serverComboBox_.GetItemData(serverComboElementIndex) );
+	currentUserName_.Empty();
 
 	bool showServerParams = (serverName != CMyEngineList::DefaultServer && serverName != CMyEngineList::RandomServer );
-	GuiTools::ShowDialogItem(m_hWnd, IDC_ACCOUNTINFO, showServerParams);
-	GuiTools::ShowDialogItem(m_hWnd, IDC_EDIT, showServerParams);
+	//GuiTools::ShowDialogItem(m_hWnd, IDC_ACCOUNTINFO, showServerParams);
+//	GuiTools::ShowDialogItem(m_hWnd, IDC_EDIT, showServerParams);
 
 	CUploadEngineData* uploadEngineData = _EngineList->byName(Utf8ToWCstring( serverName ));
 	if ( ! uploadEngineData ) {
@@ -193,23 +207,48 @@ void CServerSelectorControl::updateInfoLabel() {
 		showServerParams = uploadEngineData->UsingPlugin || uploadEngineData->NeedAuthorization;
 	}
 
-	CString accountInfoText = TR("Prof:") + serverProfile_.profileName() + _T(" ");
-	accountInfoText += TR("Учетная запись:") + CString(" ");
-	if ( !serverProfile_.serverSettings().authData.DoAuth ) {
-		accountInfoText += TR("не задана");
+	CString accountInfoText;// = TR("Prof:") + serverProfile_.profileName() + _T(" ");
+	LoginInfo loginInfo = serverProfile_.serverSettings().authData;
+	//accountInfoText += TR("Учетная запись:") + CString(" ");
+	
+	if ( loginInfo.Login.empty() || (!loginInfo.DoAuth  && uploadEngineData->NeedAuthorization != 2 ) ) {
+		accountInfoText += TR("без аккаунта");
+		accountLink_.SetToolTipText(TR("Ввести данные учетной записи"));
 	} else {
 		accountInfoText += Utf8ToWCstring( serverProfile_.serverSettings().authData.Login );
+		currentUserName_  =  Utf8ToWCstring( serverProfile_.serverSettings().authData.Login );
 	}
+	CString folderTitle;
 	if ( uploadEngineData->SupportsFolders ) {
-		CString folderTitle = Utf8ToWCstring( serverProfile_.serverSettings().params["FolderTitle"] );
-		accountInfoText += CString(_T("\r\n")) + TR("Папка/альбом:") + _T(" ");
-		if ( folderTitle.IsEmpty() ) {
-			accountInfoText += TR("не задана");
-		} else {
-			accountInfoText += folderTitle;
-		}
+		 folderTitle = Utf8ToWCstring( serverProfile_.serverSettings().params["FolderTitle"] );
+		//accountInfoText += CString(_T("\r\n")) + TR("Папка/альбом:") + _T(" ");
+		/*if ( folderTitle.IsEmpty() ) {
+			folderTitle = TR("не задана");
+		} */
+		
 	}
 	SetDlgItemText(IDC_ACCOUNTINFO, accountInfoText);
+	bool showAccount = uploadEngineData->NeedAuthorization != 0 && showServerParams;
+	GuiTools::ShowDialogItem(m_hWnd, IDC_ACCOUNTINFO, showAccount);
+	accountLink_.SetLabel(accountInfoText);
+	SetDlgItemText(IDC_FOLDERLABEL, folderTitle);
+	
+	GuiTools::ShowDialogItem(m_hWnd, IDC_USERICON, showAccount);
+	
+	bool showFolder = !folderTitle.IsEmpty() && showServerParams;
+
+	RECT rect;
+	int settingsBtnPlaceHolderId = ( showFolder || showAccount ) ? IDC_SETTINGSBUTTONPLACEHOLDER : IDC_SETTINGSBUTTONPLACEHOLDER2;
+	::GetWindowRect(GetDlgItem(settingsBtnPlaceHolderId), &rect);
+	::MapWindowPoints(0, m_hWnd, (LPPOINT)&rect, 2);
+	settingsButtonToolbar_.SetWindowPos(0, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, 0);
+
+	GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERLABEL, showFolder );
+	GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERICON, showFolder );
+	RECT accountLabelRect = GuiTools::AutoSizeStaticControl(GetDlgItem(IDC_ACCOUNTINFO));
+	int folderIconX = accountLabelRect.right + GuiTools::dlgX(10);
+	::SetWindowPos(GetDlgItem(IDC_FOLDERICON), 0, folderIconX, accountLabelRect.top, 0, 0, SWP_NOSIZE );
+	::SetWindowPos(GetDlgItem(IDC_FOLDERLABEL), 0, folderIconX + 16 + GuiTools::dlgX(3), accountLabelRect.top, 0, 0, SWP_NOSIZE );
 }
 
 void CServerSelectorControl::setShowDefaultServerItem(bool show) {
@@ -220,13 +259,41 @@ void CServerSelectorControl::setServersMask(int mask) {
 	serversMask_ = mask;
 }
 
-LRESULT CServerSelectorControl::OnServerComboEndEdit(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
-	MessageBox(0);
-	/*PNMCBEENDEDIT pnmEditInfo = (PNMCBEENDEDIT) pnmh;
-	int serverComboElementIndex = pnmEditInfo->iNewSelection;
-	char *lpstrServerName = reinterpret_cast<char*>( serverComboBox_.GetItemData(serverComboElementIndex) );
-	if ( ! lpstrServerName ) {
-		return TRUE;
-	}*/
-	return FALSE;
+LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	CServerParamsDlg serverParamsDlg(serverProfile_, true);
+	serverParamsDlg.DoModal(m_hWnd);
+	serverProfile_ = serverParamsDlg.serverProfile();
+	updateInfoLabel();
+	return 0;
+}
+
+void CServerSelectorControl::createSettingsButton() {
+	CIcon ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONSETTINGS2), IMAGE_ICON	, 16,16,0);
+	RECT profileRect;
+	::GetWindowRect(GetDlgItem(IDC_SETTINGSBUTTONPLACEHOLDER), &profileRect);
+	::MapWindowPoints(0, m_hWnd, (LPPOINT)&profileRect, 2);
+
+	settingsButtonToolbar_.Create(m_hWnd,profileRect,_T(""), WS_CHILD|WS_VISIBLE|WS_CHILD | TBSTYLE_LIST |TBSTYLE_FLAT| CCS_NORESIZE|CCS_RIGHT|/*CCS_BOTTOM |CCS_ADJUSTABLE|*/TBSTYLE_TOOLTIPS|CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
+	settingsButtonToolbar_.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
+	settingsButtonToolbar_.SetButtonStructSize();
+	settingsButtonToolbar_.SetButtonSize(17,17);
+
+	CImageList list;
+	list.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
+	list.AddIcon(ico);
+	settingsButtonToolbar_.SetImageList(list);
+	settingsButtonToolbar_.AddButton(IDC_EDIT, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Настройки сервера и параметры авторизации"), 0);
+}
+
+void CServerSelectorControl::setShowImageProcessingParamsLink(bool show) {
+	showImageProcessingParamsLink_ = show;
+}
+
+LRESULT CServerSelectorControl::OnImageProcessingParamsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	int serverComboElementIndex = serverComboBox_.GetCurSel();
+	std::string serverName = reinterpret_cast<char*>( serverComboBox_.GetItemData(serverComboElementIndex) );
+	CUploadEngineData* uploadEngineData = _EngineList->byName(Utf8ToWCstring( serverName ));
+	CUploadParamsDlg dlg(uploadEngineData);
+	dlg.DoModal(m_hWnd);
+	return 0;
 }
