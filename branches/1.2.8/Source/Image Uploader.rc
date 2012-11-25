@@ -908,7 +908,7 @@ IDI_ICONSAVE            ICON                    "res\\icon_save.ico"
 IDI_ICONHISTORY         ICON                    "res\\icon_history.ico"
 IDI_ICONDELETE          ICON                    "res\\icon_delete.ico"
 IDI_ICONRENAME          ICON                    "res\\icon-rename.ico"
-IDI_ICONUSER            ICON                    "D:\\transfer\\trunk\\Source\\res\\icon-user.ico"
+IDI_ICONUSER            ICON                    "res\\icon-user.ico"
 IDI_ICONSETTINGS2       ICON                    "res\\icon-settings2.ico"
 
 /////////////////////////////////////////////////////////////////////////////
