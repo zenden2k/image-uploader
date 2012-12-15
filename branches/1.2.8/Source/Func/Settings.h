@@ -32,9 +32,36 @@
 
 
 
+//New 
+struct ImageUploadParams {
+	ImageUploadParams() {
+		UseServerThumbs = false;
+		CreateThumbs = true;
+		ProcessImages = false;
+		UseDefaultThumbSettings = true;
+		UseDefaultSettings = true;
+		Size = 150;
+		ThumbResizeMode = ThumbCreatingParams::trByWidth;
+	}
+	void bind(SettingsNode& n);
+	
+	bool UseDefaultSettings;
+	bool UseServerThumbs;
+	bool CreateThumbs;
+	bool ProcessImages;
+	CString ImageProfileName;
+	bool UseDefaultThumbSettings;
+	unsigned int Size;
+	ThumbCreatingParams::ThumbResizeEnum ThumbResizeMode;
+
+};
+
 class ServerProfile {
+
 	public:
+		ImageUploadParams imageUploadParams;
 		ServerProfile();
+
 		ServerProfile(CString newServerName);
 		ServerSettingsStruct serverSettings();
 		CUploadEngineData* uploadEngineData() const;
@@ -44,10 +71,12 @@ class ServerProfile {
 
 		void setServerName(CString newProfileName);
 		CString serverName() const;
+		
 
 	protected:
 		CString serverName_;
 		CString profileName_;
+		
 		friend class CSettings;
 };
 
@@ -73,6 +102,8 @@ struct TrayIconSettingsStruct
 	int TrayScreenshotAction;
 	BOOL DontLaunchCopy;
 };
+
+
 struct ThumbSettingsStruct: public ThumbCreatingParams
 {
 	TCHAR FontName[256];

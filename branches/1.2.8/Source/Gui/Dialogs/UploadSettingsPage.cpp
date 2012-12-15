@@ -65,7 +65,7 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	
 	imageServerSelector_ = new CServerSelectorControl();
 	imageServerSelector_->Create(m_hWnd, serverSelectorRect);
-	imageServerSelector_->setTitle(TR("Сервер для хранения изображений"));
+	imageServerSelector_->setTitle(TR("Сервер по-умолчанию для хранения изображений"));
 	imageServerSelector_->ShowWindow( SW_SHOW );
 	imageServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
 	imageServerSelector_->setServerProfile(Settings.imageServer);
@@ -80,7 +80,7 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	fileServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
 	ServerProfile fileServerProfile;
 	fileServerSelector_->setServerProfile(Settings.fileServer);
-	fileServerSelector_->setTitle(TR("Сервер для хранения других типов файлов"));
+	fileServerSelector_->setTitle(TR("Сервер по-умолчанию для хранения других типов файлов"));
 
 	serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_TRAYSERVERSELECTOR);
 	trayServerSelector_ = new CServerSelectorControl();

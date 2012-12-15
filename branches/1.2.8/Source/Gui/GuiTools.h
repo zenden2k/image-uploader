@@ -40,6 +40,7 @@ namespace GuiTools
 	bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...);
 	RECT GetDialogItemRect(HWND dialog, int itemId);
 	void ShowDialogItem(HWND dlg, int itemId, bool show);
+	void EnableDialogItem(HWND dlg, int itemId, bool enable);
 	
 	// Converts pixels to Win32 dialog units
 	int dlgX(int WidthInPixels);
@@ -51,6 +52,7 @@ namespace GuiTools
 	HFONT MakeFontUnderLine(HFONT font);
 	HFONT MakeFontBold(HFONT font);
 	HFONT MakeFontSmaller(HFONT font);
+	void MakeLabelItalic(HWND Label);
 
 	int GetFontSize(int nFontHeight);
 	int GetFontHeight(int nFontSize);
@@ -58,7 +60,10 @@ namespace GuiTools
 	int ScreenBPP();
 	BOOL Is32BPP();
 
+	bool IsChecked(HWND dlg, int id);
+
 	CString SelectFolderDialog(HWND hWndParent, CString initialDir);
 	RECT AutoSizeStaticControl(HWND control);
+
 };
 #endif

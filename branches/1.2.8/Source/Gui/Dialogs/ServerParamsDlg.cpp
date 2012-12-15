@@ -67,6 +67,10 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	std::map<CString,ServerSettingsStruct>& serverProfiles = Settings.ServersSettings[serverProfile_.serverName()];
 	int selectedProfileIndex = 0;
 
+	GuiTools::ShowDialogItem(m_hWnd, IDC_BROWSESERVERFOLDERS, m_ue->SupportsFolders);
+	GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERLABEL, m_ue->SupportsFolders);
+	GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERNAMELABEL, m_ue->SupportsFolders);
+
 	int i = 0;
 	for ( std::map<CString,ServerSettingsStruct>::const_iterator it = serverProfiles.begin(); it != serverProfiles.end(); ++it ) {
 		CString profileName  =  it->first;

@@ -111,6 +111,7 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 	}
 	serverComboBox_.SetImageList( comboBoxImageList_ );
 	serverComboBox_.SetCurSel( selectedIndex );
+	serverChanged();
 	GuiTools::ShowDialogItem(m_hWnd, IDC_IMAGEPROCESSINGPARAMS, showImageProcessingParamsLink_);
 
 	return 1;  // Let the system set the focus
@@ -186,6 +187,7 @@ void CServerSelectorControl::serverChanged() {
 		serverProfile_.setProfileName(profileName);
 		
 	}
+
 	updateInfoLabel();
 }
 
@@ -195,6 +197,15 @@ void CServerSelectorControl::updateInfoLabel() {
 	currentUserName_.Empty();
 
 	bool showServerParams = (serverName != CMyEngineList::DefaultServer && serverName != CMyEngineList::RandomServer );
+
+	if (  !showServerParams ) {
+		GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERLABEL, showServerParams );
+		GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERICON, showServerParams );
+		GuiTools::ShowDialogItem(m_hWnd, IDC_ACCOUNTINFO, showServerParams );
+		GuiTools::ShowDialogItem(m_hWnd, IDC_USERICON, showServerParams );
+		settingsButtonToolbar_.ShowWindow(SW_HIDE);
+		return;
+	}
 	//GuiTools::ShowDialogItem(m_hWnd, IDC_ACCOUNTINFO, showServerParams);
 //	GuiTools::ShowDialogItem(m_hWnd, IDC_EDIT, showServerParams);
 
@@ -204,8 +215,9 @@ void CServerSelectorControl::updateInfoLabel() {
 	}
 
 	if ( uploadEngineData ) {
-		showServerParams = uploadEngineData->UsingPlugin || uploadEngineData->NeedAuthorization;
+		showServerParams = showServerParams && (uploadEngineData->UsingPlugin || uploadEngineData->NeedAuthorization);
 	}
+
 
 	CString accountInfoText;// = TR("Prof:") + serverProfile_.profileName() + _T(" ");
 	LoginInfo loginInfo = serverProfile_.serverSettings().authData;
@@ -242,6 +254,7 @@ void CServerSelectorControl::updateInfoLabel() {
 	::GetWindowRect(GetDlgItem(settingsBtnPlaceHolderId), &rect);
 	::MapWindowPoints(0, m_hWnd, (LPPOINT)&rect, 2);
 	settingsButtonToolbar_.SetWindowPos(0, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, 0);
+	settingsButtonToolbar_.ShowWindow(showServerParams ? SW_SHOW : SW_HIDE);
 
 	GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERLABEL, showFolder );
 	GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERICON, showFolder );
@@ -293,7 +306,8 @@ LRESULT CServerSelectorControl::OnImageProcessingParamsClicked(WORD wNotifyCode,
 	int serverComboElementIndex = serverComboBox_.GetCurSel();
 	std::string serverName = reinterpret_cast<char*>( serverComboBox_.GetItemData(serverComboElementIndex) );
 	CUploadEngineData* uploadEngineData = _EngineList->byName(Utf8ToWCstring( serverName ));
-	CUploadParamsDlg dlg(uploadEngineData);
+	CUploadParamsDlg dlg(serverProfile_.imageUploadParams);
 	dlg.DoModal(m_hWnd);
+	serverProfile_.imageUploadParams = dlg.imageUploadParams();
 	return 0;
 }

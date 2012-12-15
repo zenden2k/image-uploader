@@ -60,7 +60,7 @@ void CUploadSettings::TranslateUI()
 	TRC(IDC_IMAGEPARAMETERS,"Параметры изображений");
 	TRC(IDC_LOGOOPTIONS,"Дополнительно...");
 	TRC(IDC_KEEPASIS,"Обрабатывать изображения");
-	TRC(IDC_THUMBSETTINGS,"Миниаютюры");
+	TRC(IDC_THUMBSETTINGS,"Миниатюры");
 	TRC(IDC_CREATETHUMBNAILS,"Создавать миниатюры (превью)");
 	TRC(IDC_IMAGESERVERGROUPBOX,"Cервер для загрузки изображений");
 	TRC(IDC_USESERVERTHUMBNAILS,"Использовать серверные миниатюры");
@@ -163,7 +163,6 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	FileServerSelectBar.SetWindowLong(GWL_ID, IDC_FILETOOLBAR);
 
 	SendDlgItemMessage(IDC_THUMBWIDTHSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)1000, (short)40) );
-	
 
 	SendDlgItemMessage(IDC_QUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
 	SendDlgItemMessage(IDC_THUMBQUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
@@ -174,6 +173,8 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("PNG"));
 	SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("GIF"));
 	
+	GuiTools::MakeLabelItalic( GetDlgItem(IDC_IMAGEWIDTH ) ) ;
+		GuiTools::MakeLabelItalic( GetDlgItem(IDC_FORMATLIST ) ) ;
 	ShowParams();
 	ShowParams(Settings.CurrentConvertProfileName);
 	UpdateProfileList();
@@ -925,3 +926,9 @@ LRESULT CUploadSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWN
    return 0;
 }
 
+LRESULT CUploadSettings::OnCtlColorEdit(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	HDC dc = (HDC) wParam;
+	SetTextColor( dc, RGB(100,100,100) );
+	return (LRESULT)GetSysColorBrush(COLOR_WINDOW);
+
+}

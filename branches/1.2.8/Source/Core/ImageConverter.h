@@ -54,6 +54,7 @@ struct ImageConvertingParams
 struct ThumbCreatingParams
 {
 	enum ThumbFormatEnum { tfSameAsImageFormat = 0, tfJPEG, tfPNG, tfGIF };
+	enum ThumbResizeEnum { trByWidth = 0, trByHeight, trByBiggerSide };
 
 	LOGFONT ThumbFont;
 	int LogoPosition;

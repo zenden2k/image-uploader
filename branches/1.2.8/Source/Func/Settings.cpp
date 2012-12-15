@@ -128,6 +128,17 @@ inline void myFromString(const std::string& text, CHotkeyList& value) {
 }
 
 
+void ImageUploadParams::bind(SettingsNode& n){
+	SettingsNode & node = n["ImageUploadParams"];
+	node.n_bind(UseServerThumbs);
+	node.n_bind(CreateThumbs);
+	node.n_bind(ProcessImages);
+	node.n_bind(ImageProfileName);
+	node.n_bind(UseDefaultThumbSettings);
+	node.n_bind(Size);
+
+}
+
 CSettings Settings;
 
 void RunIuElevated(CString params) {
@@ -467,13 +478,19 @@ CSettings::CSettings()
 	history.nm_bind(HistorySettings, EnableDownloading);
 
 	SettingsNode& upload = mgr_["Uploading"];
-	upload["ServerName"].bind(imageServer.serverName_);
-	upload["ServerName"]["@Profile"].bind(imageServer.profileName_);	
-	upload["FileServerName"].bind(fileServer.serverName_);
-	upload["FileServerName"]["@Profile"].bind(fileServer.profileName_);	
+	upload["Server"]["@Name"].bind(imageServer.serverName_);
+	upload["Server"]["@Profile"].bind(imageServer.profileName_);	
+	imageServer.imageUploadParams.bind(upload["Server"]);
+
+	upload["FileServer"]["@Name"].bind(fileServer.serverName_);
+	upload["FileServer"]["@Profile"].bind(fileServer.profileName_);
+	fileServer.imageUploadParams.bind(upload["FileServer"]);
+
 	upload.n_bind(QuickUpload);
-	upload["QuickServerName"].bind(quickServer.serverName_);
-	upload["QuickServerName"]["@Profile"].bind(quickServer.profileName_);	
+	upload["QuickServer"]["@Name"].bind(quickServer.serverName_);
+	upload["QuickServer"]["@Profile"].bind(quickServer.profileName_);	
+	quickServer.imageUploadParams.bind(upload["QuickServer"]);
+
 	upload.n_bind(CodeLang);
 	upload.n_bind(ThumbsPerLine);
 	upload.n_bind(UploadBufferSize);
