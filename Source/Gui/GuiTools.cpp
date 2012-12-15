@@ -76,6 +76,22 @@ namespace GuiTools
 		alf.lfHeight = -MulDiv(13, GetDeviceCaps(::GetDC(0), LOGPIXELSY), 72);
 	}
 
+	void MakeLabelItalic(HWND Label)
+	{
+		HFONT Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT,0,0));  
+
+		if(!Font) return;
+
+		LOGFONT alf;
+
+		if(!(::GetObject(Font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT))) return;
+
+		alf.lfItalic = 1;
+
+		HFONT NewFont = CreateFontIndirect(&alf);
+		SendMessage(Label,WM_SETFONT,(WPARAM)NewFont,MAKELPARAM(false, 0));
+	}
+
 	void EnableNextN(HWND Control ,int n, bool Enable)
 	{
 		for(int i=0;i< n; i++)
@@ -377,6 +393,10 @@ RECT AutoSizeStaticControl(HWND control) {
 	ReleaseDC(control, dc);
 	::InvalidateRect(control, 0, FALSE);
 	return controlRect;
+}
+
+void EnableDialogItem(HWND dlg, int itemId, bool enable) {
+	::EnableWindow( ::GetDlgItem( dlg, itemId ), enable );
 }
 
 };

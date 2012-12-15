@@ -92,6 +92,9 @@ class CUploadSettings :
       COMMAND_HANDLER(IDC_QUALITYEDIT, EN_CHANGE, OnProfileEditedCommand)
       COMMAND_HANDLER(IDC_IMAGEWIDTH, EN_CHANGE, OnProfileEditedCommand)
 		COMMAND_HANDLER(IDC_IMAGEHEIGHT, EN_CHANGE, OnProfileEditedCommand)
+		MESSAGE_HANDLER( WM_CTLCOLOREDIT, OnCtlColorEdit )
+		MESSAGE_HANDLER( WM_CTLCOLORBTN, OnCtlColorEdit )
+		//MESSAGE_HANDLER( WM_CTLCOLORSTATIC, OnCtlColorEdit )
      
 		COMMAND_RANGE_HANDLER(IDC_IMAGESERVER_FIRST_ID, IDC_IMAGESERVER_LAST_ID, OnImageServerSelect);
 		COMMAND_RANGE_HANDLER(IDC_FILESERVER_FIRST_ID, IDC_FILESERVER_LAST_ID, OnFileServerSelect);
@@ -126,6 +129,7 @@ class CUploadSettings :
    LRESULT OnQualityEditKillFocus(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnResizePresetMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnProfileEditedCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnCtlColorEdit(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
    
 	int m_nImageServer, m_nFileServer;
 	ServerProfile imageServer, fileServer;

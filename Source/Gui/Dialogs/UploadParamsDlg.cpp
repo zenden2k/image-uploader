@@ -24,12 +24,14 @@
 #include "Func/Common.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
 #include <Func/Myutils.h>
 
 // CUploadParamsDlg
-CUploadParamsDlg::CUploadParamsDlg(CUploadEngineData *ue)
+CUploadParamsDlg::CUploadParamsDlg(ImageUploadParams params)
 {
-	m_UploadEngine = ue;
+
+	params_ = params;
 }
 
 CUploadParamsDlg::~CUploadParamsDlg()
@@ -41,35 +43,72 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 {
 	CenterWindow(GetParent());
 
-	LoginInfo li = Settings.ServerByUtf8Name(m_UploadEngine->Name).authData;
+	ThumbBackground_.SubclassWindow(GetDlgItem(IDC_THUMBBACKGROUND));
+	ThumbBackground_.SetColor(Settings.ThumbSettings.BackgroundColor);
 
-	SetWindowText(TR("Параметры авторизации"));
-	TRC(IDC_LOGINLABEL, "Логин:");
-	TRC(IDC_PASSWORDLABEL, "Пароль:");
-	TRC(IDC_DOAUTH, "Выполнять авторизацию");
+	SetWindowText(TR("Параметры загрузки"));
+	TRC(IDC_ADDFILESIZE, "Текст на эскизе");
+	TRC(IDC_USESERVERTHUMBNAILS, "Использовать серверные эскизы");
+	TRC(IDC_PROCESSIMAGESCHECKBOX, "Обрабатывать изображения");
 	TRC(IDCANCEL, "Отмена");
+
+	//Fill profile combobox
+	SendDlgItemMessage(IDC_PROFILECOMBO, CB_RESETCONTENT);
+	std::map<CString, ImageConvertingParams> ::const_iterator it;
+		bool found = false;
+	for(it = Settings.ConvertProfiles.begin(); it != Settings.ConvertProfiles.end(); ++it)
+	{
+		GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
+		//if(it->first == CurrentProfileName) found = true;
+	}
+	if(!found) {  
+		SendDlgItemMessage(IDC_PROFILECOMBO, CB_SETCURSEL, 0,0);
+
+		//GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, CurrentProfileName);
+	} else {
+//		SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, -1,(LPARAM)(LPCTSTR) CurrentProfileName); */
+	}
+
+	// Fill thumb profiles
+	std::vector<CString> files;
+	CString folder = IU_GetDataFolder()+_T("\\Thumbnails\\");
+	WinUtils::GetFolderFileList(files, folder , _T("*.xml"));
+	for(size_t i=0; i<files.size(); i++) {
+		GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBTEMPLATECOMBO, 1, Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt( WCstringToUtf8( files[i]))) );
+	}
+	SendDlgItemMessage(IDC_THUMBTEMPLATECOMBO, CB_SETCURSEL, 0,0);
+	GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 4, TR("Как у изображения"),
+		_T("JPEG"), _T("PNG"), _T("GIF"));
+
+	GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBRESIZECOMBO, 3, 
+		TR("По ширине"), TR("По высоте"), TR("По большей стороне") );
+
+	GuiTools::SetCheck(m_hWnd, IDC_PROCESSIMAGESCHECKBOX, params_.ProcessImages);
+	GuiTools::SetCheck(m_hWnd, IDC_CREATETHUMBNAILS, params_.CreateThumbs);
+	GuiTools::SetCheck(m_hWnd, IDC_USESERVERTHUMBNAILS, params_.UseServerThumbs);
+	GuiTools::SetCheck(m_hWnd, IDC_DEFAULTTHUMBSETTINGSCHECKBOX, params_.UseDefaultThumbSettings);
+	GuiTools::SetCheck(m_hWnd, IDC_DEFAULTSETTINGSCHECKBOX, params_.UseDefaultSettings);
+	//GuiTools::SetCheck(m_hWnd, IDC_DEFAULTTHUMBSETTINGSCHECKBOX, params_.);
+
 	
-	SetDlgItemText(IDC_LOGINEDIT, Utf8ToWCstring(li.Login));
-	SetDlgItemText(IDC_PASSWORDEDIT, Utf8ToWCstring(li.Password));
-	SetDlgItemText(IDC_LOGINFRAME, Utf8ToWCstring(m_UploadEngine->Name));
-	SendDlgItemMessage(IDC_DOAUTH, BM_SETCHECK, (li.DoAuth?BST_CHECKED:BST_UNCHECKED));
-	OnClickedUseIeCookies(0, 0, 0, bHandled);
+	
+	SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );	
+
+
+	createThumbnailsCheckboxChanged();
+	processImagesChanged();
+	defaultSettingsCheckboxChanged();
 	::SetFocus(GetDlgItem(IDC_LOGINEDIT));
-	return 0;  // Разрешаем системе самостоятельно установить фокус ввода
+	return 0;  
 }
 
 LRESULT CUploadParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {	
-	LoginInfo li;
-	TCHAR Buffer[256];
-
-	GetDlgItemText(IDC_LOGINEDIT, Buffer, 256);
-	li.Login = WCstringToUtf8(Buffer);
-	GetDlgItemText(IDC_PASSWORDEDIT, Buffer, 256);
-	li.Password = WCstringToUtf8(Buffer);
-	li.DoAuth = SendDlgItemMessage(IDC_DOAUTH, BM_GETCHECK) != FALSE;
-	
-	Settings.ServerByUtf8Name(m_UploadEngine->Name).authData = li;
+	GuiTools::GetCheck(m_hWnd, IDC_PROCESSIMAGESCHECKBOX, params_.ProcessImages);
+	GuiTools::GetCheck(m_hWnd, IDC_CREATETHUMBNAILS, params_.CreateThumbs);
+	GuiTools::GetCheck(m_hWnd, IDC_USESERVERTHUMBNAILS, params_.UseServerThumbs);
+	GuiTools::GetCheck(m_hWnd, IDC_DEFAULTTHUMBSETTINGSCHECKBOX, params_.UseDefaultThumbSettings);
+	GuiTools::GetCheck(m_hWnd, IDC_DEFAULTSETTINGSCHECKBOX, params_.UseDefaultSettings);
 	EndDialog(wID);
 	return 0;
 }
@@ -80,9 +119,103 @@ LRESULT CUploadParamsDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndC
 	return 0;
 }
 
-LRESULT CUploadParamsDlg::OnClickedUseIeCookies(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-	::EnableWindow(GetDlgItem(IDC_LOGINEDIT), IS_CHECKED(IDC_DOAUTH));
-	::EnableWindow(GetDlgItem(IDC_PASSWORDEDIT), IS_CHECKED(IDC_DOAUTH));
+LRESULT CUploadParamsDlg::OnClickedCreateThumbnailsCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	createThumbnailsCheckboxChanged();
 	return 0;
+}
+
+void CUploadParamsDlg::createThumbnailsCheckboxChanged() {
+	bool isChecked = GuiTools::IsChecked(m_hWnd, IDC_CREATETHUMBNAILS);
+	GuiTools::EnableNextN(GetDlgItem(IDC_CREATETHUMBNAILS), isChecked? 4 : 10, isChecked );
+	if ( isChecked ) {
+		defaultThumbSettingsCheckboxChanged();
+		thumbTextCheckboxChanged();
+	}
+}
+
+void CUploadParamsDlg::processImagesChanged() {
+	bool isChecked = GuiTools::IsChecked(m_hWnd, IDC_PROCESSIMAGESCHECKBOX);
+		GuiTools::EnableNextN(GetDlgItem(IDC_PROCESSIMAGESCHECKBOX), 2, isChecked );
+}
+
+LRESULT CUploadParamsDlg::OnClickedProcessImagesCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	processImagesChanged();
+	return 0;
+}
+
+
+void CUploadParamsDlg::defaultSettingsCheckboxChanged() {
+	bool isChecked = GuiTools::IsChecked(m_hWnd, IDC_DEFAULTSETTINGSCHECKBOX);
+	GuiTools::EnableNextN(GetDlgItem(IDC_DEFAULTSETTINGSCHECKBOX), 17, !isChecked );
+	
+	if ( !isChecked ) {
+
+		createThumbnailsCheckboxChanged();
+		processImagesChanged();
+	}
+}
+
+LRESULT CUploadParamsDlg::OnClickedDefaultSettingsCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)  {
+	defaultSettingsCheckboxChanged();
+	return 0;
+}
+
+LRESULT  CUploadParamsDlg::OnClickedDefaultThumbSettingsCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	defaultThumbSettingsCheckboxChanged();
+	return 0;
+}
+
+
+void  CUploadParamsDlg::defaultThumbSettingsCheckboxChanged() {
+	bool useDefaultThumbnailSettings = GuiTools::IsChecked(m_hWnd, IDC_DEFAULTTHUMBSETTINGSCHECKBOX);
+	//GuiTools::EnableNextN(GetDlgItem(IDC_DEFAULTTHUMBSETTINGSCHECKBOX), 8, !useDefaultThumbnailSettings );
+	
+	bool useServerThumbnails = GuiTools::IsChecked(m_hWnd, IDC_USESERVERTHUMBNAILS);
+
+	bool addThumbText = GuiTools::IsChecked(m_hWnd, IDC_THUMBTEXTCHECKBOX);
+
+	std::map<int, bool> enable;
+	enable[IDC_THUMBTEMPLATECOMBOLABEL] = !useServerThumbnails && !useDefaultThumbnailSettings;
+	enable[IDC_THUMBTEMPLATECOMBO] = !useServerThumbnails && !useDefaultThumbnailSettings;
+	enable[IDC_THUMBRESIZECOMBO] = !useServerThumbnails;
+	enable[IDC_THUMBTEXTCHECKBOX] = !useDefaultThumbnailSettings;
+	enable[IDC_THUMBTEXT] = !useDefaultThumbnailSettings && addThumbText;
+	enable[IDC_THUMBRESIZELABEL] = !useDefaultThumbnailSettings;
+	enable[IDC_WIDTHEDIT] = !useDefaultThumbnailSettings;
+	enable[IDC_WIDTHEDITUNITS] = !useDefaultThumbnailSettings;
+	enable[IDC_THUMBRESIZECOMBO] = !useServerThumbnails && !useDefaultThumbnailSettings;
+	
+	for ( std::map<int,bool>::const_iterator it = enable.begin(); it != enable.end(); ++it) {
+		GuiTools::EnableDialogItem(m_hWnd, it->first, it->second);
+	}
+}
+
+void  CUploadParamsDlg::thumbTextCheckboxChanged() {
+	bool isChecked = GuiTools::IsChecked(m_hWnd, IDC_THUMBTEXTCHECKBOX);
+	GuiTools::EnableDialogItem(m_hWnd, IDC_THUMBTEXT, isChecked);
+}
+
+LRESULT CUploadParamsDlg::OnClickedThumbTextCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	thumbTextCheckboxChanged();
+	return 0;
+}
+
+LRESULT CUploadParamsDlg::OnClickedUseServerThumbnailsCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	useServerThumbnailsChanged();
+	return 0;
+}
+
+void CUploadParamsDlg::useServerThumbnailsChanged() {
+	bool useServerThumbnails = GuiTools::IsChecked(m_hWnd, IDC_USESERVERTHUMBNAILS);
+
+	if ( useServerThumbnails ) {
+		// Select item 'resize by width'
+		SendDlgItemMessage(IDC_THUMBRESIZECOMBO, CB_SETCURSEL, 0,0);
+	}
+
+	defaultThumbSettingsCheckboxChanged();
+}
+
+ImageUploadParams CUploadParamsDlg::imageUploadParams() {
+	return params_;
 }

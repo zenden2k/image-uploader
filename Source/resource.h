@@ -5,6 +5,7 @@
 #define IDR_RT_MANIFEST1                1
 #define IDC_STOP                        2
 #define IDC_FILEINFOLABEL               2
+#define IDOK2                           2
 #define IDD_ABOUTBOX                    100
 #define IDD_VIDEOGRABBER                103
 #define IDD_UPLOADDLG                   104
@@ -140,6 +141,7 @@
 #define IDC_SERVERLIST                  1026
 #define IDC_LEFTBUTTONCLICKCOMBO        1026
 #define IDC_COMBO2                      1026
+#define IDC_THUMBTEMPLATECOMBO          1026
 #define IDC_CHECK4                      1027
 #define IDC_TEXTPOSITION                1027
 #define IDC_SAVEPROPORTIONS             1027
@@ -337,6 +339,7 @@
 #define IDC_MEDIAINFOONIMAGE            1142
 #define IDC_REMOVECORNERS               1142
 #define IDC_CAPTUREPRINTSCREENCHECKBOX  1142
+#define IDC_DEFAULTTHUMBSETTINGSCHECKBOX 1142
 #define IDC_PXLABEL                     1143
 #define IDC_TABCONTROL                  1144
 #define IDC_LANGUAGELABEL               1145
@@ -462,6 +465,7 @@
 #define IDC_AUTOSTARTUP                 1272
 #define IDC_AUTOSTARTUPCHECKBOX         1272
 #define IDC_ENLARGEIMAGECHECKBOX        1272
+#define IDC_DEFAULTSETTINGSCHECKBOX     1272
 #define IDC_VIDEOENGINECOMBO            1273
 #define IDC_UPLOADTABLE                 1274
 #define IDC_UPLOADGROUPBOX              1276
@@ -483,6 +487,11 @@
 #define IDC_IMAGEPROCESSINGPARAMS       1292
 #define IDC_SETTINGSBUTTONPLACEHOLDER   1293
 #define IDC_SETTINGSBUTTONPLACEHOLDER2  1294
+#define IDC_THUMBRESIZECOMBO            1294
+#define IDC_THUMBTEMPLATECOMBOLABEL     1295
+#define IDC_THUMBRESIZELABEL            1296
+#define IDC_WIDTHEDITUNITS              1297
+#define IDC_PROCESSIMAGESCHECKBOX       1298
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -526,7 +535,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        262
 #define _APS_NEXT_COMMAND_VALUE         32801
-#define _APS_NEXT_CONTROL_VALUE         1294
+#define _APS_NEXT_CONTROL_VALUE         1299
 #define _APS_NEXT_SYMED_VALUE           127
 #endif
 #endif
