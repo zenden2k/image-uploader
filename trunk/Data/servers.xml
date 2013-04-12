@@ -65,7 +65,7 @@
 			<Action Type="login" Url="http://itrash.ru/loader/cmd.php" PostParams="command=auth;client_code=iTL10;login=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="1" RegExp='&lt;passkey&gt;(.*?)&lt;/passkey&gt;' AssignVars="Passkey:0"/>
 			<Action Type="upload" Url="http://itrash.ru/loader/cmd.php" PostParams="command=send;file=%filename%;client_code=iTL10;passkey=$(Passkey)" RegExp='item_path&gt;db(\d+)(.*?)&lt;\/item_path&gt;([\s\S]*?)item_image&gt;(.*?)&lt;\/item_image' AssignVars="ServID:0;ItemPath:1;ItemImage:3"/>
 		
-			
+
 		<Result ImageUrlTemplate="http://s$(ServID).itrash.ru/idb$(ItemPath)$(ItemImage)" ThumbUrlTemplate="http://s$(ServID).itrash.ru/idb$(ItemPath)t$(ItemImage)"/>
 	</Server>-->
 	<Server Name="imgur.com" MaxFileSize="10485760"  Authorize="0" Debug="0">
@@ -106,7 +106,27 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	
+
+    <Server Name="savepic.ru" Authorize="0" MaxFileSize="4000000">
+        <Actions>
+            <Action Type="upload" Url="http://savepic.ru/index.php" PostParams="file=%filename%;note=;font1=decor;font2=20;orient=h;size1=1;size2=1024x768;rotate=00;flip=0;mini=200x150;opt3[]=zoom;email=" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0"/>
+        </Actions>
+        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+    </Server>
+
+    <Server Name="datapic.ru" Authorize="0">
+        <Actions>
+            <Action Type="upload" Url="http://datapic.ru/" PostParams="action=upload;area=;local_uploadfile[]=%filename%;web_uploadfile=;width=;height=;thumb=true;thumb_width=$(_THUMBWIDTH);thumb_height=;texttype=nothing;text=Увеличить" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:0;Thumb:2"/>
+        </Actions>
+        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+    </Server>
+    <Server Name="da.am" Authorize="0" Debug="0">
+        <Actions>
+            <Action Type="upload" Url="http://da.am/i/?uploading=" PostParams="file=%filename%;" RegExp='id:([^,\.]+)([\s\S]*?)ext:&#39;(.+?)&#39;' AssignVars="ImageId:0;Ext:2"/>
+        </Actions>
+        <Result ImageUrlTemplate="http://i.da.am/$(ImageId).$(Ext)" ThumbUrlTemplate="http://i.da.am/0$(ImageId).jpg" DownloadUrlTemplate="http://da.am/i/$(ImageId)/"/>
+    </Server>
+
 	<Server Name="directupload.net"  Authorize="1" MaxFileSize="4000000">
 		<Actions>
 			<Action Type="login" Url="http://www.directupload.net/index.php?mode=login" PostParams="username=$(_LOGIN);passwort=$(_PASSWORD);autologin=1;" OnlyOnce="1" Description="Authorization on directupload.net"/>
@@ -157,13 +177,6 @@
 				<Action Type="upload" Url="http://fastpic.ru/upload?api=1" PostParams="method=file;file1=%filename%;check_thumb=size;uploading=1;orig_rotate=0;thumb_size=$(_THUMBWIDTH)" RegExp='&lt;imagepath&gt;(.*?)&lt;\/imagepath&gt;([\s\S]*?)&lt;thumbpath&gt;(.*?)&lt;\/thumbpath&gt;' AssignVars="Image:0;Thumb:2"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
-	</Server>		
-	<Server Name="p2p.dm"  Authorize="2" Debug="0">
-		<Actions>
-			<Action Type="login" Url="http://www.p2pdm.com/takelogin.php" PostParams="username=$(_LOGIN);password=$(_PASSWORD);autologin=1;" OnlyOnce="1" Description="Authorization on p2p.dm"/>
-			<Action Type="upload" Url="http://www.p2pdm.com/bitbucket-upload.php" PostParams="userfile=%filename%" RegExp='\[img\](.*?)\[\/img\]' AssignVars="Image:0;"/>
-		</Actions>
-		<Result ImageUrlTemplate="$(Image)"/>
 	</Server>
 	<Server Name="multi-up.com" FileHost="1">
 		<Actions>
