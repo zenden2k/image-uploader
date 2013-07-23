@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Servers>
-		<Server Name="radikal.ru" MaxFileSize="10000000" Debug="0" Authorize="1">
+		<Server Name="radikal.cc" MaxFileSize="10000000" Debug="0" Authorize="1">
 		<Actions>
 			<Action Type="login" Url="http://radikal.cc/Auth/Login" PostParams="Login=$(_LOGIN);Password=$(_PASSWORD);IsRemember=true;ReturnUrl=/;" OnlyOnce="1"/>
 			<Action Type="upload" Url="http://radikal.cc/api3/rest/uplimg/prepared" PostParams="RESPTYPE=xml;FROMOBJECT=22;MAXSIZEIMG=1024;MAXSIZEIMGPREV=$(_THUMBWIDTH);ISINSCRIMGPREV=true;INSCRIMGPREV=Увеличить;IDALBUM=noall;COMMENTIMG=;URLFORIMG=;TAGS=;ISPUBLIC=false;Filename=$(_FILENAME);Filedata=%filename%;" RegExp='&lt;ImgPreviewUrl&gt;(.*?)&lt;([\s\S]*?)&lt;ImgUrl&gt;(.*?)&lt;' AssignVars="Image:2;Thumb:0"/>
@@ -87,6 +87,13 @@
         </Actions>
         <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
     </Server>
+<Server Name="firepic.org">
+	<Actions>
+		<Action Type="get" Url="http://firepic.org/" OnlyOnce="1" />
+		<Action Type="upload" Url="http://firepic.org/" PostParams="action=upload;width=$(_FILENAME);local_uploadfile[]=%filename%;web_uploadfile=;thumb=true;thumb_width=$(_THUMBWIDTH);thumb_height=;texttype=dimensions;" RegExp="\[img\](.*?)\[\/img\]([\s\S]*?)\[img\](.*?)\[\/img\]" AssignVars="Image:0;Thumb:2;"/>
+	</Actions>
+<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+</Server>
 
     <Server Name="datapic.ru" Authorize="0">
         <Actions>

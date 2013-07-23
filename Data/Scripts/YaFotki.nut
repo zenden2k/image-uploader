@@ -1,4 +1,11 @@
+if(ServerParams.getParam("enableOAuth") == "")
+{
+	ServerParams.setParam("enableOAuth", "true") ;
+}
 token <- "";
+tokenType <- "";
+login <- "";
+enableOAuth <- ( ServerParams.getParam("enableOAuth") == "true" );
 
 function regex_simple(data,regStr,start)
 {
@@ -21,8 +28,91 @@ function reg_replace(str, pattern, replace_with)
 	return str;
 }
 
+function readFile(fileName) {
+	local myfile = file(fileName,"r");
+	local i = 0;
+	local res = "";
+	while ( !myfile.eos()) {
+		res += format("%c", myfile.readn('b'));
+		
+	}
+	return res;
+}
+
+function inputBox(prompt, title) {
+	
+	local tempScript = "%temp%\\imguploader_inputbox.vbs";
+	prompt = reg_replace(prompt, "\n", "\" ^& vbCrLf ^& \"" );
+	local tempOutput = getenv("TEMP") + "\\imguploader_inputbox_output.txt";
+	local command = "echo result = InputBox(\""+ prompt + "\", \""+ title + "\") : Set objFSO=CreateObject(\"Scripting.FileSystemObject\") : Set objFile = objFSO.CreateTextFile(\"" + tempOutput + "\",True) : objFile.Write result : objFile.Close  > \"" + tempScript + "\"";
+	system(command);
+	command = "cscript /nologo \"" + tempScript + "\"";// > \"" + tempOutput + "\"";*/
+	system(command);
+	local res = readFile(tempOutput);
+	system("rm \""+ tempOutput + "\"");
+	return res;
+}
+
+function getAuthorizationString() {
+	if ( tokenType == "oauth") {
+		return "OAuth " + token;
+	}
+	return "FimpToken realm=\"fotki.yandex.ru\", token=\""+token+"\"";
+}
+
 function doLogin() 
 { 
+	if ( enableOAuth ) {
+		token = ServerParams.getParam("token");
+	    	tokenType = ServerParams.getParam("tokenType");
+		if ( token != "" && ServerParams.getParam("PrevLogin") == ServerParams.getParam("Login") ) {
+			if ( tokenType == "oauth" ) {
+				local OAuthLogin = ServerParams.getParam("OAuthLogin");
+				if ( OAuthLogin != "") {
+					login = OAuthLogin;
+				}
+			}
+			return true;
+		}
+		system("start https://oauth.yandex.ru/authorize?response_type=code^&client_id=7e20041e4444421a8d3df62bf312acfc");
+		
+	    	local confirmCode = inputBox("You need to need to sign in to your Yandex.Fotki account in web browser which just have opened and then copy confirmation code into the text field below. Please enter confirmation code:", "Image Uploader - Enter confirmation code");
+		if ( confirmCode != "" ) {	
+			nm.setUrl("https://oauth.yandex.ru/token");
+			nm.addQueryParam("grant_type", "authorization_code");
+			nm.addQueryParam("code", confirmCode);
+			nm.addQueryParam("client_id", "7e20041e4444421a8d3df62bf312acfc");
+			nm.addQueryParam("client_secret", "fed316382d3e4bcda82903382a8d00c0");
+			nm.doPost("");
+				
+			local accessToken = regex_simple(nm.responseBody(), "access_token\": \"(.+)\",", 0);
+			if ( accessToken != "" ) {
+				
+				token = 	accessToken;
+				tokenType = "oauth";
+				ServerParams.setParam("token", token);
+				ServerParams.setParam("tokenType", tokenType);
+				
+				if ( tokenType == "oauth" ) {
+					nm.addQueryHeader("Authorization", getAuthorizationString());
+					nm.addQueryHeader("Expect", "");
+					nm.addQueryHeader("Connection", "close");
+					nm.doGet("http://api-fotki.yandex.ru/api/me/");
+					
+					login = regex_simple(nm.responseBody(),"http:\\/\\/api-fotki.yandex.ru\\/api\\/users\\/(.+)\\/albums\\/",0);
+					ServerParams.setParam("PrevLogin", ServerParams.getParam("Login"));
+					ServerParams.setParam("OAuthLogin", login);
+				} 
+		
+			
+				return true;
+			} else {
+				print("Unable to get OAuth token!");
+				return false;
+			}
+		}
+	}
+	
  	
 	login <- ServerParams.getParam("Login");
 	local pass =  ServerParams.getParam("Password");
@@ -40,7 +130,7 @@ function doLogin()
 	local publicKey="";
 	
 	reqid = regex_simple(data,"<request_id>(.+)</request_id>",0);
-		
+	
 	publicKey = regex_simple(data,"<key>(.+)</key>",0);
 		
 	nm.setUrl("http://auth.mobile.yandex.ru/yamrsa/token/");
@@ -53,7 +143,7 @@ function doLogin()
 
 	nm.doPost("");
 	data = nm.responseBody();
-  
+  	
   
 	token = regex_simple(data,"<token>(.+)</token>",0);
   
@@ -62,6 +152,7 @@ function doLogin()
 		print("Authentication failed for username '"+login +"'");
 		return false;
 	}
+	ServerParams.setParam("tokenType", "");
 	return 1; //Success login
 } 
 
@@ -99,11 +190,14 @@ function internal_parseAlbumList(data,list,parentid)
 function internal_loadAlbumList(list)
 {
 	
-	nm.addQueryHeader("Authorization", "FimpToken realm=\"fotki.yandex.ru\", token=\""+token+"\"");
+	nm.addQueryHeader("Authorization", getAuthorizationString());
 	nm.addQueryHeader("Expect", "");
 	nm.addQueryHeader("Connection", "close");
+
 	nm.setUrl("http://api-fotki.yandex.ru/api/users/"+login+"/albums/");
+
 	nm.doGet("");
+	
 	internal_parseAlbumList(nm.responseBody(), list,"");
 }
 
@@ -130,7 +224,7 @@ function CreateFolder(parentAlbum,album)
 		doLogin();
 	}
 
-	nm.addQueryHeader("Authorization","FimpToken realm=\"fotki.yandex.ru\", token=\""+token+"\"");
+	nm.addQueryHeader("Authorization",getAuthorizationString());
   	nm.setUrl("http://api-fotki.yandex.ru/api/users/"+login+"/albums/");
 	nm.addQueryHeader("Content-Type", "application/atom+xml; charset=utf-8; type=entry");
 	nm.addQueryHeader("Connection", "close");
@@ -160,7 +254,7 @@ function  UploadFile(FileName, options)
 			return 0;
 	}
 
-	nm.addQueryHeader("Authorization","FimpToken realm=\"fotki.yandex.ru\", token=\""+token+"\"");
+	nm.addQueryHeader("Authorization",getAuthorizationString());
   
 	local url="";
 	local albumStr = options.getFolderID();
@@ -205,13 +299,21 @@ function  UploadFile(FileName, options)
 	return 1;
 }
 
-/*function ModifyFolder(album)
-{
-	
-}*/
-
 function GetFolderAccessTypeList()
 {
 	local a=["Приватный", "Для всех"];
+	return a;
+}
+
+function GetServerParamList()
+{
+	local a =
+	{
+		token = "token",
+		tokenType = "TokenType",
+		OAuthLogin = "OAuthLogin",
+		PrevLogin = "PrevLogin",
+		enableOAuth = "Enable OAuth",
+	}
 	return a;
 }
