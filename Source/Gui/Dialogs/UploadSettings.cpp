@@ -28,13 +28,16 @@
 #include "Func/Settings.h"
 #include "Gui/Dialogs/SettingsDlg.h"
 #include "Gui/GuiTools.h"
+#include <Gui/IconBitmapUtils.h>
+#include <Func/WinUtils.h>
 
 CUploadSettings::CUploadSettings(CMyEngineList * EngineList):ñonvert_profiles_(Settings.ConvertProfiles)
 {
 	nImageIndex = nFileIndex = -1;
 	m_EngineList = EngineList;
-   m_ProfileChanged  = false;
-   m_CatchChanges = false;
+	m_ProfileChanged  = false;
+	m_CatchChanges = false;
+   	iconBitmapUtils_ = new IconBitmapUtils();
 }
 
 CUploadSettings::~CUploadSettings()
@@ -117,18 +120,18 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	::GetWindowRect(GetDlgItem(IDC_IMAGESERVERGROUPBOX), &Toolbar1Rect);
   
 	::MapWindowPoints(0, m_hWnd, (LPPOINT)&Toolbar1Rect, 2);
-	Toolbar1Rect.top += ZGuiTools::dlgY(9);
-	Toolbar1Rect.bottom -= ZGuiTools::dlgY(3);
-	Toolbar1Rect.left += ZGuiTools::dlgX(6);
-	Toolbar1Rect.right -= ZGuiTools::dlgX(6);
+	Toolbar1Rect.top += GuiTools::dlgY(9);
+	Toolbar1Rect.bottom -= GuiTools::dlgY(3);
+	Toolbar1Rect.left += GuiTools::dlgX(6);
+	Toolbar1Rect.right -= GuiTools::dlgX(6);
 
 	RECT Toolbar2Rect;
 	::GetWindowRect(GetDlgItem(IDC_FILESERVERGROUPBOX), &Toolbar2Rect);
 	::MapWindowPoints(0, m_hWnd, (LPPOINT)&Toolbar2Rect, 2);
-	Toolbar2Rect.top += ZGuiTools::dlgY(9);
-	Toolbar2Rect.bottom -= ZGuiTools::dlgY(3);
-	Toolbar2Rect.left += ZGuiTools::dlgX(6);
-	Toolbar2Rect.right -= ZGuiTools::dlgX(6);
+	Toolbar2Rect.top += GuiTools::dlgY(9);
+	Toolbar2Rect.bottom -= GuiTools::dlgY(3);
+	Toolbar2Rect.left += GuiTools::dlgX(6);
+	Toolbar2Rect.right -= GuiTools::dlgX(6);
 
 	for(int i = 0; i<2; i++)
 	{
@@ -186,7 +189,7 @@ LRESULT CUploadSettings::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCt
 LRESULT CUploadSettings::OnBnClickedKeepasis(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	bool checked = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0, 0)!=FALSE;
-	ZGuiTools::EnableNextN(GetDlgItem(IDC_KEEPASIS), 13, checked);
+	GuiTools::EnableNextN(GetDlgItem(IDC_KEEPASIS), 13, checked);
 	m_ProfileEditToolbar.EnableWindow(checked);
 	return 0;
 }
@@ -523,25 +526,45 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 		{
 			for(int i=0; i<m_EngineList->count(); i++)
 			{
+				mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
+				mi.fType = MFT_STRING;
 				if(!m_EngineList->byIndex(i)->ImageHost) continue;
-				mi.wID = (ImageServer?IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
-				CString name =Utf8ToWCstring(m_EngineList->byIndex(i)->Name); 
+				mi.wID = (ImageServer ? IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
+				CUploadEngineData* ued = m_EngineList->byIndex(i);
+				CString name  = Utf8ToWCstring(ued->Name); 
 				mi.dwTypeData  = (LPWSTR)(LPCTSTR) name;
+				HICON hImageIcon = m_EngineList->getIconForServer(ued->Name);
+				mi.hbmpItem =  WinUtils::IsVista() ? iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon): HBMMENU_CALLBACK;
+				if ( mi.hbmpItem ) {
+					mi.fMask |= MIIM_BITMAP;
+				}
+
 				sub.InsertMenuItem(menuItemCount++, true, &mi);
 			}
+
 			
 			mi.wID = IDC_FILESERVER_LAST_ID + 1;
 			mi.fType = MFT_SEPARATOR;
+
 			sub.InsertMenuItem(menuItemCount++, true, &mi);
 		}
 
 		mi.fType = MFT_STRING;
 		for(int i=0; i<m_EngineList->count(); i++)
 		{
+			mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
+			mi.fType = MFT_STRING;
 			if(m_EngineList->byIndex(i)->ImageHost) continue;
 			mi.wID = (ImageServer?IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
-			CString name =Utf8ToWCstring(m_EngineList->byIndex(i)->Name); 
-			mi.dwTypeData  =(LPWSTR)(LPCTSTR) name;
+			CUploadEngineData* ued = m_EngineList->byIndex(i);
+			CString name  = Utf8ToWCstring(ued->Name); 
+			mi.dwTypeData  = (LPWSTR)(LPCTSTR) name;
+			HICON hImageIcon = m_EngineList->getIconForServer(ued->Name);
+			mi.hbmpItem =  WinUtils::IsVista() ? iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon): HBMMENU_CALLBACK;
+			if ( mi.hbmpItem ) {
+				mi.fMask |= MIIM_BITMAP;
+			}
+
 			sub.InsertMenuItem(menuItemCount++, true, &mi);	
 		}
 
@@ -796,10 +819,10 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
     bool found = false;
     for(it = ñonvert_profiles_.begin(); it!=ñonvert_profiles_.end(); ++it)
     {
-      ZGuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
+      GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
       if(it->first == CurrentProfileName) found = true;
     }
-    if(!found) ZGuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, CurrentProfileName);
+    if(!found) GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, CurrentProfileName);
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, -1,(LPARAM)(LPCTSTR) CurrentProfileName); 
  }
 
@@ -846,9 +869,9 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
    params.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	params.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);
 
-   params.strNewWidth = ZGuiTools::IU_GetWindowText( GetDlgItem(IDC_IMAGEWIDTH));
+   params.strNewWidth = GuiTools::GetWindowText( GetDlgItem(IDC_IMAGEWIDTH));
 
-  params.strNewHeight =  ZGuiTools::IU_GetWindowText( GetDlgItem(IDC_IMAGEHEIGHT));
+  params.strNewHeight =  GuiTools::GetWindowText( GetDlgItem(IDC_IMAGEHEIGHT));
    return true;
  }
 
@@ -891,7 +914,7 @@ bool  CUploadSettings::OnHide()
 }
 LRESULT CUploadSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    CString profile = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_PROFILECOMBO));
+    CString profile = GuiTools::GetWindowText(GetDlgItem(IDC_PROFILECOMBO));
 
     ShowParams(profile);
     UpdateProfileList();

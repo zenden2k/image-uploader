@@ -497,6 +497,7 @@ void NetworkManager::private_cleanup_after()
 	m_method = "";
 
 	m_uploadData = "";
+	m_uploadingFile = NULL;
 	if(chunk_)
 	{
 		curl_slist_free_all(chunk_);
@@ -555,7 +556,9 @@ bool NetworkManager::doUpload(const NString& fileName, const NString &data)
 	curl_easy_setopt(curl_handle,CURLOPT_POSTFIELDS, NULL);
 	curl_easy_setopt(curl_handle, CURLOPT_READDATA, this);
 	
-	addQueryHeader("Content-Length", IuCoreUtils::int64_tToString(m_CurrentFileSize));
+	if ( m_method != "PUT" ) {
+		addQueryHeader("Content-Length", IuCoreUtils::int64_tToString(m_CurrentFileSize));
+	}
 	private_initTransfer();
 	curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, (curl_off_t)m_CurrentFileSize); 
 	curl_result = curl_easy_perform(curl_handle);
@@ -567,6 +570,8 @@ bool NetworkManager::doUpload(const NString& fileName, const NString &data)
 
 bool NetworkManager::private_apply_method()
 {
+	curl_easy_setopt(curl_handle, CURLOPT_CUSTOMREQUEST,NULL);
+	curl_easy_setopt(curl_handle, CURLOPT_UPLOAD, 0L);
 	if(m_method == "POST")
 		curl_easy_setopt(curl_handle, CURLOPT_POST, 1L);
 	else 	if(m_method == "GET")

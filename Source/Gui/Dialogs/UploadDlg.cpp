@@ -147,8 +147,8 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	SetDlgItemInt(IDC_THUMBSPERLINE, 4);
 	SendDlgItemMessage(IDC_THUMBPERLINESPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
 	
-	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPROGRESS));
-	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPERCENTS));
+	GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPROGRESS));
+	GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPERCENTS));
 	PageWnd = m_hWnd;
 	ResultsWindow->SetPage(Settings.CodeLang);
 	ResultsWindow->SetCodeType(Settings.CodeType);

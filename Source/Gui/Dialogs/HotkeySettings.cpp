@@ -129,8 +129,8 @@ LRESULT CHotkeySettingsPage::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
 		::ScreenToClient(hwnd, &ClientPoint);
 	}
 	HMENU TrayMenu = ::CreatePopupMenu();
-	ZGuiTools::IUInsertMenu(TrayMenu, 0, IDM_CLEARHOTKEY, TR("Очистить")); 
-	ZGuiTools::IUInsertMenu(TrayMenu, 1, IDM_CLEARALLHOTKEYS, TR("Очистить всё")); 
+	GuiTools::InsertMenu(TrayMenu, 0, IDM_CLEARHOTKEY, TR("Очистить")); 
+	GuiTools::InsertMenu(TrayMenu, 1, IDM_CLEARALLHOTKEYS, TR("Очистить всё")); 
 	::TrackPopupMenu(TrayMenu, TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, 0,m_hWnd,0);
 	return 0;
 }

@@ -37,7 +37,7 @@ CMediaInfoDlg::~CMediaInfoDlg()
 LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	CenterWindow(GetParent());
-	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_FILEINFOLABEL));
+	GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEINFOLABEL));
 	DlgResize_Init(false, true, 0); // resizable dialog without "griper"
 
 	// Translating controls' text

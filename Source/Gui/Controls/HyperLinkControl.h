@@ -27,6 +27,8 @@ struct HyperLinkControlItem
 	TCHAR szTitle[256];
 	TCHAR szTip[256];
 	HICON hIcon;
+	int iconWidth;
+	int iconHeight;
 	int idCommand;
 	RECT ItemRect;
 	bool Hover;
@@ -73,6 +75,8 @@ public:
 	LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	BOOL OnSetCursor(CWindow wnd, UINT nHitTest, UINT message);
 	void Init(COLORREF BkColor=RGB(255,255,255));
+	int ScaleX(int x);
+	int ScaleY(int y);
 public:
 	bool m_bHyperLinks;
 	int NotifyParent(int nItem);
@@ -85,6 +89,8 @@ public:
 	HCURSOR HandCursor;
 	CFont NormalFont;
 	COLORREF m_BkColor;
+	int dpiX;
+	int dpiY;
 };
 
 

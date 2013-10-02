@@ -210,7 +210,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
 	RECT gradientLineRect = invRC;
 	gradientLineRect.bottom--;
 	gradientLineRect.top = gradientLineRect.bottom;
-	if(draw) ZGuiTools::FillRectGradient(hdc, gradientLineRect,0xc8c8c8, 0xFFFFFF, true);
+	if(draw) GuiTools::FillRectGradient(hdc, gradientLineRect,0xc8c8c8, 0xFFFFFF, true);
 	
 	calcRect = rc;
 	DrawText(dc.m_hDC, Utf8ToWCstring(lowText), lowText.length(), &calcRect, DT_CALCRECT);

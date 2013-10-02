@@ -86,6 +86,7 @@ public:
 	void LockImagelist(bool bLock = true);
 	bool StopAndWait();
 	void SelectLastItem();
+	bool CopySelectedItemsToClipboard();
 	LRESULT OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 };
 

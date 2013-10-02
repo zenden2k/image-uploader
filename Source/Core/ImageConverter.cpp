@@ -49,6 +49,7 @@ ImageConvertingParams::ImageConvertingParams()
 	TextPosition = 5;
 	TextColor = 0x00ffffff;
 	StringToFont(_T("Tahoma,8,,204"), &Font);
+	PreserveExifInformation = true;
 }
 
 CImageConverter::CImageConverter()
@@ -89,6 +90,17 @@ bool CImageConverter::Convert(const CString& sourceFile)
 	double NewHeight = _wtof(m_imageConvertingParams.strNewHeight);
 	if (m_imageConvertingParams.strNewWidth.Right(1) == _T("%"))
 		NewWidth = NewWidth * imgwidth / 100;
+	
+	UINT propertyItemsSize = 0;
+	UINT propertyItemsCount = 0;
+	PropertyItem* pPropBuffer = NULL;
+	if ( m_imageConvertingParams.PreserveExifInformation ) {
+		bm.GetPropertySize(&propertyItemsSize, &propertyItemsCount);
+		if ( propertyItemsSize ) {
+			pPropBuffer = (PropertyItem*)malloc(propertyItemsSize);
+			bm.GetAllPropertyItems(propertyItemsSize, propertyItemsCount, pPropBuffer);
+		}
+	}
 
 	if (m_imageConvertingParams.strNewHeight.Right(1) == _T("%"))
 	{
@@ -264,6 +276,12 @@ bool CImageConverter::Convert(const CString& sourceFile)
 			}
 		}
 		thumbSource = BackBuffer.get();
+		if ( m_imageConvertingParams.PreserveExifInformation ) {
+			for ( int k = 0; k < propertyItemsCount; k++ ) {
+				BackBuffer->SetPropertyItem(pPropBuffer + k );
+			}
+		}
+		free(pPropBuffer);
 		MySaveImage(BackBuffer.get(), GenerateFileName(L"img%md5.jpg", 1,
 		                                               CPoint()), m_resultFileName, fileformat,
 		            m_imageConvertingParams.Quality);

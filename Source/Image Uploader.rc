@@ -149,6 +149,7 @@ BEGIN
     RTEXT           "Цвет обводки:",IDC_TEXTSTROKECOLOR,124,241,75,8
     PUSHBUTTON      "Button2",IDC_STROKECOLOR,208,238,23,14
     CONTROL         " Сохранять пропорции",IDC_SAVEPROPORTIONS2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,74,345,134,10
+    CONTROL         "Сохранять EXIF информацию",IDC_PRESERVE_EXIF,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,11,260,115,10
 END
 
 IDD_WIZARDDLG DIALOGEX 0, 0, 385, 291
@@ -172,7 +173,7 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     LTEXT           "00",IDC_WELCOMEMSG,122,29,259,26
     LTEXT           "Выберите действие:",IDC_SELECTOPTION,149,334,144,8
-    LISTBOX         IDC_LISTBOX,147,54,222,187,LBS_OWNERDRAWVARIABLE | LBS_NOINTEGRALHEIGHT | NOT WS_BORDER | WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_LISTBOX,147,54,243,187,LBS_OWNERDRAWVARIABLE | LBS_NOINTEGRALHEIGHT | NOT WS_BORDER | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Просто перетащите изображения или видео-файл в окно программы и программа обработает их.",IDC_SOVET2,172,244,209,24
     LTEXT           "Совет:",IDC_SOVET,130,244,24,8
     LTEXT           "Image Uploader",IDC_TITLE,206,6,184,22
@@ -250,32 +251,33 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,148,76,53,15
 END
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 255, 216
+IDD_ABOUTBOX DIALOGEX 0, 0, 255, 249
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About Image Uploader"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
-    DEFPUSHBUTTON   "&OK",IDOK,196,198,52,15
-    CTEXT           "build 1234\nUsing curl",IDC_IMAGEUPLOADERLABEL,24,56,190,18
-    GROUPBOX        "",IDC_STATIC,5,3,243,132
-    CTEXT           "Copyright ZendeN 2007-2012.  All rights reserved.",IDC_STATIC,20,82,174,11
-    LTEXT           "zenden2k@gmail.com",IDC_EMAIL,112,94,70,8
-    CTEXT           "E-mail for contacts:",IDC_CONTACTEMAIL,19,95,83,8
-    CTEXT           "Beta-Testers:",IDC_BETATESTERS,8,151,80,8
-    LTEXT           "Graf, CKA3O4H1K",IDC_STATIC,93,151,137,20
-    GROUPBOX        "Thanks to:",IDC_THANKSTOGROUP,5,140,243,52
-    CONTROL         214,IDC_STATICLOGO,"Static",SS_BITMAP,34,12,36,25
+    DEFPUSHBUTTON   "&OK",IDOK,197,228,52,15
+    CTEXT           "build 1234\nUsing curl",IDC_IMAGEUPLOADERLABEL,24,65,190,17
+    GROUPBOX        "",IDC_STATIC,6,0,242,135
+    CTEXT           "© 2007-2012.  All rights reserved.",IDC_STATIC,90,48,131,11
+    CTEXT           "Beta-Testers:",IDC_BETATESTERS,12,169,80,8
+    LTEXT           "Graf, CKA3O4H1K",IDC_STATIC,102,171,137,20
+    GROUPBOX        "",IDC_THANKSTOGROUP,5,138,243,84
+    CONTROL         "",IDC_STATICLOGO,"Static",SS_BITMAP,37,17,15,13
     CTEXT           "Image Uploader",IDC_IMAGEUPLOADERLABEL2,80,14,148,12
-    CTEXT           "Переводчикам:",IDC_TRANSLATERS,15,168,73,8
-    LTEXT           "Mishunika, Adrianis, \r\nHessam Mohamadi",IDC_STATIC,93,168,104,19
+    CTEXT           "Переводчикам:",IDC_TRANSLATERS,19,190,73,8
+    LTEXT           "Mishunika, Adrianis, \r\nHessam Mohamadi, ozzii.translate@gmail.com",IDC_STATIC,102,190,126,27
     CTEXT           "VERSION",IDC_CURLINFOLABEL,78,26,150,9
-    LTEXT           "Website:",IDC_STATIC,32,108,30,8
-    LTEXT           "http://zenden.ws/imageuploader",IDC_SITELINK,95,107,106,8
+    LTEXT           "Website:",IDC_STATIC,31,95,30,8
+    LTEXT           "http://zenden.ws/imageuploader",IDC_SITELINK,95,94,106,8
     CTEXT           "image processing and uploading tool",IDC_STATIC,80,38,149,8
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,15,75,221,1
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,15,52,221,1
-    LTEXT           "http://code.google.com/p/image-uploader",IDC_GOOGLECODELINK,95,120,146,8
-    LTEXT           "SVN:",IDC_STATIC,32,120,16,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,15,84,221,1
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,15,60,221,1
+    LTEXT           "http://code.google.com/p/image-uploader",IDC_GOOGLECODELINK,95,107,146,8
+    LTEXT           "SVN:",IDC_STATIC,31,107,16,8
+    LTEXT           "Author:",IDC_STATIC,30,153,26,8
+    LTEXT           "zenden (zenden2k@gmail.com)",IDC_STATIC,101,152,100,8
+    CTEXT           "Found a bug?",IDC_FOUNDABUG,12,120,227,8
 END
 
 IDD_MAINDLG DIALOGEX 0, 0, 433, 266
@@ -1011,6 +1013,8 @@ BEGIN
     BEGIN
         MENUITEM "Просмотр",                    IDM_VIEW
         MENUITEM "Open in folder",              IDM_OPENINFOLDER
+        MENUITEM "Save as...",                  IDM_SAVEAS
+        MENUITEM "Копировать",                  IDM_COPYFILETOCLIPBOARD
         MENUITEM "Edit",                        IDM_EDIT
         MENUITEM "Удалить\tDel",                IDM_DELETE
         MENUITEM "Свойства",                    IDC_PROPERTIES

@@ -110,6 +110,6 @@ LRESULT CTraySettingsPage::OnShowTrayIconBnClicked(WORD wNotifyCode, WORD wID, H
 {
 	bool bShowTrayIcon = SendDlgItemMessage(IDC_SHOWTRAYICON, BM_GETCHECK) == BST_CHECKED;
 	SendDlgItemMessage(IDC_AUTOSTARTUP, BM_SETCHECK, FALSE);
-	ZGuiTools::EnableNextN(GetDlgItem(wID),11,bShowTrayIcon);
+	GuiTools::EnableNextN(GetDlgItem(wID),11,bShowTrayIcon);
 	return 0;
 }

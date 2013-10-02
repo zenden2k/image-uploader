@@ -200,7 +200,7 @@ bool CImageDownloaderDlg::BeginDownloading()
 {
 	int index=0;
 
-	std::string links = WCstringToUtf8(ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_FILEINFOEDIT)));
+	std::string links = WCstringToUtf8(GuiTools::GetWindowText(GetDlgItem(IDC_FILEINFOEDIT)));
 	std::vector<std::string> tokens;
 	nm_splitString(links,"\n",tokens,-1);
 	m_nFilesCount =0;
@@ -239,7 +239,7 @@ void CImageDownloaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)
 {
 	std::vector<CString> links;
 	ExtractLinks(buffer,links);
-	CString text = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_FILEINFOEDIT));
+	CString text = GuiTools::GetWindowText(GetDlgItem(IDC_FILEINFOEDIT));
 	for(size_t i=0; i<links.size(); i++)
 	{
 		CString fileName = myExtractFileName(links[i]);

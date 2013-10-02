@@ -134,8 +134,13 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename)
 			m_list.push_back(UE);
 		}
 
-	std::sort(m_list.begin(), m_list.end(), compareEngines);
+	std::sort(m_list.begin(), m_list.end(), compareEngines );
 	return true;
+}
+
+bool CUploadEngineList::compareEngines(const CUploadEngineData& elem1, const CUploadEngineData& elem2)
+{
+	return IuStringUtils::stricmp(elem1.Name.c_str(), elem2.Name.c_str()) < 0;
 }
 
 void CUploadEngineList::setNumOfRetries(int Engine, int Action)

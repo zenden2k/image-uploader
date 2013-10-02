@@ -29,16 +29,32 @@
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
+	GuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
+
+	HFONT Font = reinterpret_cast<HFONT>(SendDlgItemMessage(IDC_IMAGEUPLOADERLABEL, WM_GETFONT,0,0));  
+	SendDlgItemMessage(IDC_IMAGEUPLOADERLABEL, WM_SETFONT, (LPARAM)GuiTools::MakeFontSmaller(Font), 0);
+
+
 	LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
+	LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE );
 	LogoImage.LoadImage(0, 0, IDR_PNG1, false, GetSysColor(COLOR_BTNFACE));
-
+	
 	m_WebSiteLink.SubclassWindow(GetDlgItem(IDC_SITELINK));
-	m_GoogleCodeLink.SubclassWindow(GetDlgItem(IDC_GOOGLECODELINK));
-	CString buildInfo = CString("Build ") + _T(BUILD) + _T(" (") + _T(TIME) + _T(")") +
-	   (_T("\r\n") + Utf8ToWstring( curl_version())).c_str();
+	m_WebSiteLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER; 
 
-	CString text = CString(TR("v")) + _APP_VER/*CString(_T("1.2.7")*/;
+	m_GoogleCodeLink.SubclassWindow(GetDlgItem(IDC_GOOGLECODELINK));
+	m_GoogleCodeLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER; 
+
+	m_ReportBugLink.SubclassWindow(GetDlgItem(IDC_FOUNDABUG));
+	m_ReportBugLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER; 
+	m_ReportBugLink.SetLabel(TR("Нашли ошибку? Сообщите автору"));
+	m_ReportBugLink.SetHyperLink(_T("http://code.google.com/p/image-uploader/issues/entry"));
+
+
+	CString buildInfo = CString("Build ") + _T(BUILD) + _T(" (") + _T(TIME) + _T(")") +
+	   (_T("\r\n") + IuCoreUtils::Utf8ToWstring( curl_version())).c_str();
+
+	CString text = CString(TR("v")) + _APP_VER;
 	SetDlgItemText(IDC_CURLINFOLABEL, text);
 	SetDlgItemText(IDC_IMAGEUPLOADERLABEL, buildInfo);
 	CenterWindow(GetParent());
@@ -48,8 +64,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	TRC(IDC_BETATESTERS, "Бета-тестерам:");
 	TRC(IDC_TRANSLATERS, "Переводчикам:");
 	TRC(IDC_CONTACTEMAIL, "Контактный e-mail:");
+	
 	SetWindowText(TR("О программе"));
-
 	return TRUE;
 }
 
@@ -57,4 +73,21 @@ LRESULT CAboutDlg::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 {
 	EndDialog(wID);
 	return 0;
+}
+
+LRESULT CAboutDlg::OnCtlColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	HDC hdcStatic = (HDC) wParam;
+	HWND hwndStatic = WindowFromDC(hdcStatic);
+
+	if ( hwndStatic != GetDlgItem(IDC_IMAGEUPLOADERLABEL) ) {
+		return 0;
+	}
+	COLORREF textColor = GetSysColor(COLOR_WINDOWTEXT);
+	if ( textColor == 0 ) {
+		SetTextColor(hdcStatic, RGB(100,100,100));
+		SetBkColor(hdcStatic, GetSysColor(COLOR_BTNFACE));
+	}
+	
+
+	return reinterpret_cast<LRESULT>(GetSysColorBrush(COLOR_BTNFACE));
 }

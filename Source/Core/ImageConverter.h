@@ -46,6 +46,7 @@ struct ImageConvertingParams
 	CString LogoFileName;
 	COLORREF TextColor, StrokeColor;
 	EnumWrapper<ImageResizeMode> ResizeMode;
+	bool PreserveExifInformation;
 };
 
 struct ThumbCreatingParams

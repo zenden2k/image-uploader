@@ -1124,10 +1124,10 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 {
 	TCHAR Buf[MAX_PATH * 4];
 	if(AnyFiles)
-		ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 1, TR("Любые файлы"),
+		GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 1, TR("Любые файлы"),
 		                              _T("*.*"));
 	else
-	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 2, 
+	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 2, 
 		                           CString(TR("Изображения")) + _T(" (jpeg, bmp, png, gif ...)"),
 		                           _T("*.jpg;*.gif;*.png;*.bmp;*.tiff"), TR("Любые файлы"),
 		                           _T("*.*"));
@@ -1245,7 +1245,7 @@ bool CWizardDlg::executeFunc(CString funcBody)
 bool CWizardDlg::funcImportVideo()
 {
 	TCHAR Buf[MAX_PATH*4];
-	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
+	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
 			CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv ...)"),
 			Settings.prepareVideoDialogFilters(),
 		TR("Все файлы"),
@@ -1442,7 +1442,7 @@ bool CWizardDlg::funcDownloadImages()
 bool CWizardDlg::funcMediaInfo()
 {
 	TCHAR Buf[MAX_PATH*4]; //String buffer which will contain filter for CFileDialog
-	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),3, 
+	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),3, 
 			CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv ...)"),
 		/*_T("*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;*.rm;")*/
 		Settings.prepareVideoDialogFilters(),
@@ -1468,7 +1468,7 @@ bool CWizardDlg::funcMediaInfo()
 bool CWizardDlg::funcAddFiles()
 {
 	TCHAR Buf[MAX_PATH*4];
-	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),1, TR("Любые файлы"), _T("*.*"));
+	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),1, TR("Любые файлы"), _T("*.*"));
 
 	int nCount=0;
 	CMultiFileDialog fd(0, 0, OFN_HIDEREADONLY, Buf, m_hWnd);

@@ -117,6 +117,9 @@
 	<Server Name="Yandex.Fotki" Debug="0"  Authorize="2" Plugin="yafotki" SupportsFolders="1" RegistrationUrl="http://fotki.yandex.ru">
 	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
+<Server Name="Yandex.Disk" Debug="0"  Authorize="2" Plugin="yandexdisk" FileHost="1" SupportsFolders="1" RegistrationUrl="http://disk.yandex.ru">
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
 	<Server Name="Picasa WebAlbums" Debug="0"  Authorize="2" Plugin="picasa" SupportsFolders="1">
 	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
@@ -176,7 +179,7 @@
 		</Actions>
 		<Result DownloadUrlTemplate="http://zalil.ru/$(File)"/>
 	</Server>
-	<Server Name="rghost.ru" FileHost="1" Debug="0" Plugin="rghost">
+	<Server Name="rghost.ru" Authorize="1" FileHost="1" Debug="0" Plugin="rghost">
 		<Actions>
 			<Action Type="get" Url="http://rghost.ru/multiple/upload_host" RegExp='upload_host\":\"(.*?)\"([\s\S]*?)authenticity_token\":\"(.*?)\"' AssignVars="ServerId:0;Token:2"/>
 			 <Action Type="upload" Url="http://$(ServerId)/files" PostParams="authenticity_token=$(Token);file=%filename%;" RegExp='http://rghost\.(\w+)/(\d+)' AssignVars="File:1;"/>
