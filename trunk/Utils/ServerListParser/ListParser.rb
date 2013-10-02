@@ -39,13 +39,17 @@ lines = File.readlines(dataFolder  + filename)
 line_count = lines.size
 text = lines.join
 serverNames = text.scan(/Name=\"(.+?)\"/)
+serverNames.sort! { |a,b| a[0].downcase <=> b[0].downcase }
 
-resultText = '';
+resultText = "<table>\n";
 serverNames.each do |nam|
 	servName = nam[0]
+	resultText<< "<tr><td>";
 	if( File::exists?( dataFolder + "Favicons/" + servName + ".ico" ) )
 		resultText<< "<img src='images/servericons/"+ servName.downcase + ".ico' align='middle' width='16' height='16'>&nbsp;&nbsp;&nbsp;&nbsp;";
 		end;
-		resultText << servName << "<br/>\n";
+	resultText<< "</td><td>";
+		resultText << servName << "</td></tr>\n";
 end
+resultText << "</table>"
 file_put_contents("servers_html.txt", resultText)

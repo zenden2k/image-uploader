@@ -75,14 +75,14 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
 	SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );	
 	SetDlgItemText(IDC_THUMBTEXT, Settings.ThumbSettings.Text);
 
-	ZGuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 4, TR("Как у изображения"),
+	GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 4, TR("Как у изображения"),
 		_T("JPEG"), _T("PNG"), _T("GIF"));
 
 	std::vector<CString> files;
 	CString folder = IU_GetDataFolder()+_T("\\Thumbnails\\");
 	GetFolderFileList(files, folder , _T("*.xml"));
 	for(size_t i=0; i<files.size(); i++)
-		ZGuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt( WCstringToUtf8( files[i]))) );
+		GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt( WCstringToUtf8( files[i]))) );
 	
 	
 	SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_SETCHECK, Settings.ThumbSettings.ThumbAddImageSize);
@@ -112,7 +112,7 @@ bool CThumbSettingsPage::Apply()
 	Settings.ThumbSettings.Format = static_cast<ThumbCreatingParams::ThumbFormatEnum>(SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_GETCURSEL ));
 	Settings.ThumbSettings.Quality = GetDlgItemInt(IDC_THUMBQUALITYEDIT);
    Settings.ThumbSettings.ScaleByHeight = SendDlgItemMessage(IDC_WIDTHRADIO, BM_GETCHECK) == FALSE;
-	Settings.ThumbSettings.Text = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_THUMBTEXT));
+	Settings.ThumbSettings.Text = GuiTools::GetWindowText(GetDlgItem(IDC_THUMBTEXT));
 	Settings.ThumbSettings.ThumbWidth = GetDlgItemInt(IDC_WIDTHEDIT);
    Settings.ThumbSettings.ThumbHeight = GetDlgItemInt(IDC_HEIGHTEDIT);
 	Settings.ThumbSettings.BackgroundColor = ThumbBackground.GetColor();
@@ -143,7 +143,7 @@ LRESULT  CThumbSettingsPage::OnBnClickedNewThumbnail(WORD wNotifyCode, WORD wID,
 	}
 	if(IuCoreUtils::copyFile(fileName, destination))
 	{
-		ZGuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(newName) );
+		GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(newName) );
 		Thumbnail * thumb = 0;
 		if(thumb_cache_.count(fileName))
 		{
@@ -264,7 +264,7 @@ void CThumbSettingsPage::ThumbTextCheckboxChange()
 LRESULT CThumbSettingsPage::OnThumbTextChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
    if(!m_CatchFormChanges) return 0;
-	params_.Text = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_THUMBTEXT));
+	params_.Text = GuiTools::GetWindowText(GetDlgItem(IDC_THUMBTEXT));
 	showSelectedThumbnailPreview();
 	return 0;
 }

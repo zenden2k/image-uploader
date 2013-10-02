@@ -77,7 +77,7 @@ LRESULT CInputDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT CInputDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	value_ = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_VALUEEDIT));
+	value_ = GuiTools::GetWindowText(GetDlgItem(IDC_VALUEEDIT));
 	EndDialog(wID);
 	return 0;
 }

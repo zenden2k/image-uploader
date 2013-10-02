@@ -92,6 +92,6 @@ LRESULT CVideoGrabberParams::OnMediaInfoFontClicked(WORD wNotifyCode, WORD wID, 
 LRESULT CVideoGrabberParams::OnShowMediaInfoTextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	bool bChecked = SendDlgItemMessage(wID, BM_GETCHECK) == BST_CHECKED;
-	ZGuiTools::EnableNextN(GetDlgItem(wID), 3, bChecked);
+	GuiTools::EnableNextN(GetDlgItem(wID), 3, bChecked);
 	return 0;
 }

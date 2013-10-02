@@ -34,7 +34,13 @@ CHyperLinkControl::CHyperLinkControl()
 	CursorHand = false;
 	m_bHyperLinks = true;
 	HandCursor = LoadCursor(NULL, IDC_HAND); // Loading "Hand" cursor into memory
-	 SetThemeClassList ( L"globals" );
+	SetThemeClassList ( L"globals" );
+	HDC hdc = ::GetDC(NULL);
+	if (hdc) {
+		dpiX = GetDeviceCaps(hdc, LOGPIXELSX);
+		dpiY = GetDeviceCaps(hdc, LOGPIXELSY);
+		::ReleaseDC(NULL, hdc);
+	}
 }
 
 CHyperLinkControl::~CHyperLinkControl()
@@ -76,7 +82,12 @@ int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON
 	else 
 		*(item->szTip)=0;
 	lstrcpy(item->szTitle, szTitle);
-	item->hIcon=hIcon;
+	item->hIcon = hIcon;
+	if ( hIcon ) {
+		GuiTools::IconInfo iconInfo = GuiTools::GetIconInfo(hIcon);
+		item->iconWidth = iconInfo.nWidth;
+		item->iconHeight = iconInfo.nHeight;
+	}
 	item->idCommand=idCommand;
 	item->Hover=false;
 	item->Visible=Visible;
@@ -90,9 +101,9 @@ int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON
 			BottomY+= 23;
 		item->ItemRect.left = 5;
 		item->ItemRect.top = BottomY +(m_bHyperLinks?15:10);
-		item->ItemRect.right=item->ItemRect.left+40+ TitleWidth+1/*ClientRect.right*/;
+		item->ItemRect.right=ScaleX(10)+item->ItemRect.left+ item->iconWidth + TitleWidth+1/*ClientRect.right*/;
 		item->ItemRect.bottom = item->ItemRect.top+33;
-		BottomY+= +10+38;
+		BottomY+= ScaleY(10+38);
 		SubItemRightY= -1;
 	}
 	else
@@ -115,7 +126,7 @@ int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON
 		{
 			//item->ItemRect.left = 35;
 			SubItemRightY =35;
-			BottomY+=20;
+			BottomY+=ScaleY(20);
 			//item->ItemRect.top = BottomY;
 			
 		}
@@ -272,6 +283,7 @@ int CHyperLinkControl::NotifyParent(int nItem)
 
 LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+
 	CPaintDC dc(m_hWnd);
 	RECT rc;
 	GetClientRect(&rc);
@@ -299,10 +311,10 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 				CRect rec = item.ItemRect;
 				rec.right = rc.right-6;
 				rec.InflateRect(3,6);
-				ZGuiTools::FillRectGradient(dc.m_hDC, rec, 0xEAE2D9, 0xD3C1AF, false);
+				GuiTools::FillRectGradient(dc.m_hDC, rec, 0xEAE2D9, 0xD3C1AF, false);
 			}
 
-			TextRect.left += 40;
+			TextRect.left += item.iconWidth + ScaleX(5);
 			if(!m_bHyperLinks){
 				TextRect.left +=20;
 				TextRect.right +=20;
@@ -442,4 +454,12 @@ BOOL CHyperLinkControl::OnSetCursor(CWindow/* wnd*/, UINT/* nHitTest*/, UINT/* m
 	}
 
 	return TRUE;
+}
+
+int CHyperLinkControl::ScaleX(int x) 
+{  
+	return MulDiv(x, dpiX, 96); 
+}
+int CHyperLinkControl::ScaleY(int y) { 
+	return MulDiv(y, dpiY, 96);
 }

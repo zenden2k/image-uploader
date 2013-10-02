@@ -251,7 +251,7 @@ LRESULT CVideoGrabber::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	TRC(IDC_GRABBERPARAMS, "Параметры...");
 	TRC(IDC_FILEINFOBUTTON, "Информация о файле");
 
-	ZGuiTools::AddComboBoxItems(m_hWnd, IDC_VIDEOENGINECOMBO, 3, CSettings::VideoEngineAuto, CSettings::VideoEngineDirectshow,CSettings::VideoEngineFFmpeg);
+	GuiTools::AddComboBoxItems(m_hWnd, IDC_VIDEOENGINECOMBO, 3, CSettings::VideoEngineAuto, CSettings::VideoEngineDirectshow,CSettings::VideoEngineFFmpeg);
 	int itemIndex = SendDlgItemMessage( IDC_VIDEOENGINECOMBO, CB_FINDSTRING, 0, (LPARAM)(LPCTSTR) Settings.VideoSettings.Engine );
 	if ( itemIndex == CB_ERR){
 		itemIndex = 0;
@@ -301,7 +301,7 @@ LRESULT CVideoGrabber::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 
 LRESULT CVideoGrabber::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	WizardDlg->LastVideoFile = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_FILEEDIT));
+	WizardDlg->LastVideoFile = GuiTools::GetWindowText(GetDlgItem(IDC_FILEEDIT));
 	
 	Terminated = false;
 	IsStopTimer = false;
@@ -578,7 +578,7 @@ int CVideoGrabber::GenPicture(CString& outFileName)
 LRESULT CVideoGrabber::OnBnClickedButton1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	TCHAR Buf[MAX_PATH*4];
-	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
+	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
 		CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv, mkv ...)"),
 		Settings.prepareVideoDialogFilters(),
 		TR("Все файлы"),

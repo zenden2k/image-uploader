@@ -69,7 +69,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
 		if(dis->itemState & ODS_SELECTED )
 		{
 			CRect rd(dis->rcItem);
-			ZGuiTools::FillRectGradient(dis->hDC,rd,0xEAE2D9, 0xD3C1AF, false);
+			GuiTools::FillRectGradient(dis->hDC,rd,0xEAE2D9, 0xD3C1AF, false);
 		}
 		else if(dis->itemID != GetCount()-1) // If it isn't last item
 		{

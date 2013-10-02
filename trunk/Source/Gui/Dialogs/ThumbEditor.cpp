@@ -110,7 +110,7 @@ void CThumbEditor::LoadParams()
 	}
 	else
 	{
-		ZGuiTools::EnableNextN(GetDlgItem(IDC_DRAWFRAME), 3, false);
+		GuiTools::EnableNextN(GetDlgItem(IDC_DRAWFRAME), 3, false);
 		::EnableWindow(GetDlgItem(IDC_DRAWFRAME), false);
 	}
 
@@ -189,7 +189,7 @@ void CThumbEditor::SaveParams()
 	if(thumb_->existsParam("FrameWidth"))
 		thumb_->setParam("FrameWidth", GetDlgItemInt(IDC_FRAMEWIDTH));
 	
-	CString text  = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_THUMBTEXT));
+	CString text  = GuiTools::GetWindowText(GetDlgItem(IDC_THUMBTEXT));
 	bool AddText  = SendDlgItemMessage(IDC_ADDFILESIZE, BM_GETCHECK)!=0;
 	
 	thumb_->setParamString("Text", WCstringToUtf8(text));
@@ -214,7 +214,7 @@ LRESULT  CThumbEditor::OnShowTextCheckboxClicked(WORD wNotifyCode, WORD wID, HWN
 void CThumbEditor::ShowTextCheckboxChanged()
 {
 	bool bChecked = SendDlgItemMessage(IDC_ADDFILESIZE, BM_GETCHECK)!=0;
-	ZGuiTools::EnableNextN(GetDlgItem(IDC_ADDFILESIZE), 7, bChecked);
+	GuiTools::EnableNextN(GetDlgItem(IDC_ADDFILESIZE), 7, bChecked);
 }
 
 LRESULT CThumbEditor::OnDrawFrameCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -226,7 +226,7 @@ LRESULT CThumbEditor::OnDrawFrameCheckboxClicked(WORD wNotifyCode, WORD wID, HWN
 void CThumbEditor::DrawFrameCheckboxChanged()
 {
 	bool bChecked = SendDlgItemMessage(IDC_DRAWFRAME, BM_GETCHECK)!=0;
-	ZGuiTools::EnableNextN(GetDlgItem(IDC_DRAWFRAME), 3, bChecked);
+	GuiTools::EnableNextN(GetDlgItem(IDC_DRAWFRAME), 3, bChecked);
 }
 
 

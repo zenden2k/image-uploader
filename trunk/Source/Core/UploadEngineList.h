@@ -34,7 +34,9 @@ class CUploadEngineList: public CUploadEngineList_Base
 		void setNumOfRetries(int Engine, int Action);
 	protected:
 		int m_EngineNumOfRetries;
-		int m_ActionNumOfRetries;
+		int m_ActionNumOfRetries;	
+	private:
+		bool static compareEngines(const CUploadEngineData& elem1, const CUploadEngineData& elem2);
 };
 
 #endif // IU_CORE_UPLOADENGINELIST_H

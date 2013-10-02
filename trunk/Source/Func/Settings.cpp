@@ -891,6 +891,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		image.nm_bind(params, AddText);
 		image.nm_bind(params, ResizeMode);
 		image.nm_bind(params, SmartConverting);
+		image.nm_bind(params, PreserveExifInformation);
 		image["Logo"].bind(params.LogoFileName);
 		image["Logo"]["@LogoPosition"].bind(params.LogoPosition);
 		image["Logo"]["@LogoBlend"].bind(params.LogoBlend);

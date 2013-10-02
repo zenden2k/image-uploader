@@ -62,6 +62,7 @@ void CLogoSettings::TranslateUI()
 	TRC(IDC_THUMBTEXTCOLORLABEL, "Цвет текста:");
 	TRC(IDC_GRADIENTCOLOR1LABEL, "Цвет градиента 1:");
 	TRC(IDC_GRADIENTCOLOR2LABEL, "Цвет градиента 2:");
+	TRC(IDC_PRESERVE_EXIF, "Сохранять EXIF информацию");
 	SetWindowText(TR("Дополнительные параметры"));	
 }
 
@@ -81,8 +82,8 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
    img.ShowWindow(SW_HIDE);
 	img.LoadImage(0);
 
-   ZGuiTools::AddComboBoxItems(m_hWnd, IDC_RESIZEMODECOMBO, 3, TR("Подогнать"), TR("По центру"), TR("Растянуть"));
-   ZGuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 4, TR("Авто"), _T("JPEG"), _T("PNG"),_T("GIF"));
+   GuiTools::AddComboBoxItems(m_hWnd, IDC_RESIZEMODECOMBO, 3, TR("Подогнать"), TR("По центру"), TR("Растянуть"));
+   GuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 4, TR("Авто"), _T("JPEG"), _T("PNG"),_T("GIF"));
   
 	SendDlgItemMessage(IDC_TRANSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)0) );
 	SendDlgItemMessage(IDC_QUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
@@ -149,7 +150,7 @@ LRESULT CLogoSettings::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 LRESULT CLogoSettings::OnBnClickedLogobrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	TCHAR Buf[MAX_PATH*4];
-	ZGuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
+	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
 		CString(TR("Изображения"))+ _T(" (jpeg, bmp, png, gif ...)"),
 		_T("*.jpg;*.gif;*.png;*.bmp;*.tiff"),
 		TR("Все файлы"),
@@ -204,7 +205,7 @@ bool CLogoSettings::Apply()
 LRESULT CLogoSettings::OnYourLogoCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
    bool bChecked = SendDlgItemMessage(IDC_YOURLOGO, BM_GETCHECK) == BST_CHECKED;
-	ZGuiTools::EnableNextN(hWndCtl, 5, bChecked);
+	GuiTools::EnableNextN(hWndCtl, 5, bChecked);
     ProfileChanged();
    return 0;
 }
@@ -212,7 +213,7 @@ LRESULT CLogoSettings::OnYourLogoCheckboxClicked(WORD wNotifyCode, WORD wID, HWN
 LRESULT CLogoSettings::OnAddTextChecboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	bool bChecked = SendDlgItemMessage(IDC_YOURTEXT, BM_GETCHECK) == BST_CHECKED;
-	ZGuiTools::EnableNextN(hWndCtl, 9, bChecked);
+	GuiTools::EnableNextN(hWndCtl, 9, bChecked);
 	ProfileChanged();
    return 0;
 }
@@ -243,13 +244,14 @@ void CLogoSettings::ShowParams(const ImageConvertingParams& params)
    SendDlgItemMessage(IDC_YOURLOGO,BM_SETCHECK,  params.AddLogo);
    SendDlgItemMessage(IDC_YOURTEXT,BM_SETCHECK,  params.AddText);
 
-   ZGuiTools::SetCheck(m_hWnd, IDC_SMARTCONVERTING, params.SmartConverting);
+   GuiTools::SetCheck(m_hWnd, IDC_SMARTCONVERTING, params.SmartConverting);
    SetDlgItemText(IDC_IMAGEWIDTH,params.strNewWidth);
 
 	SetDlgItemText(IDC_IMAGEHEIGHT,params.strNewHeight);
 
    OnYourLogoCheckboxClicked(0,0,GetDlgItem(IDC_YOURLOGO));
 	OnAddTextChecboxClicked(0,0,GetDlgItem(IDC_YOURTEXT));
+	GuiTools::SetCheck(m_hWnd, IDC_PRESERVE_EXIF, params.PreserveExifInformation);
    m_CatchChanges = true;
 }
 
@@ -268,21 +270,22 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
 
 	params.LogoPosition = LogoPos;
 	params.TextPosition = TextPos;
-   params.LogoFileName = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_LOGOEDIT));
-	params.Text = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_EDITYOURTEXT));;
+   params.LogoFileName = GuiTools::GetWindowText(GetDlgItem(IDC_LOGOEDIT));
+	params.Text = GuiTools::GetWindowText(GetDlgItem(IDC_EDITYOURTEXT));;
 	params.Font = lf;
 	params.AddLogo = addLogo;
    params.AddText = addText;
 
-	ZGuiTools::GetCheck(m_hWnd, IDC_SMARTCONVERTING, params.SmartConverting);
+	GuiTools::GetCheck(m_hWnd, IDC_SMARTCONVERTING, params.SmartConverting);
 	params.TextColor=TextColor.GetColor();
 	params.StrokeColor=StrokeColor.GetColor();
    params.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	params.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);
 	params.ResizeMode = static_cast<ImageConvertingParams::ImageResizeMode>(SendDlgItemMessage(IDC_RESIZEMODECOMBO,CB_GETCURSEL));
-   params.strNewWidth = ZGuiTools::IU_GetWindowText( GetDlgItem(IDC_IMAGEWIDTH));
-   params.strNewHeight =  ZGuiTools::IU_GetWindowText( GetDlgItem(IDC_IMAGEHEIGHT));
-	return true;
+   params.strNewWidth = GuiTools::GetWindowText( GetDlgItem(IDC_IMAGEWIDTH));
+   params.strNewHeight =  GuiTools::GetWindowText( GetDlgItem(IDC_IMAGEHEIGHT));
+   GuiTools::GetCheck(m_hWnd, IDC_PRESERVE_EXIF, params.PreserveExifInformation );
+   return true;
 }
 
  void CLogoSettings::UpdateProfileList()
@@ -292,10 +295,10 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
     bool found = false;
     for(it = сonvert_profiles_.begin(); it != сonvert_profiles_.end(); ++it)
     {
-      ZGuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
+      GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
       if(it->first == CurrentProfileName) found = true;
     }
-    if(!found) ZGuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, CurrentProfileName);
+    if(!found) GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, CurrentProfileName);
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, -1,(LPARAM)(LPCTSTR) CurrentProfileName); 
  }
  LRESULT CLogoSettings::OnSaveProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
@@ -324,7 +327,7 @@ LRESULT CLogoSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND 
 			return 0;
 		}
 	}
-	CString profile = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_PROFILECOMBO));
+	CString profile = GuiTools::GetWindowText(GetDlgItem(IDC_PROFILECOMBO));
 	ShowParams(profile);
 	UpdateProfileList();
 	return 0;

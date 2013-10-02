@@ -87,6 +87,8 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
 
 	BackBufferWidth = rc.right;
 	BackBufferHeight = rc.bottom;
+	/*ShowVar(BackBufferWidth);
+	ShowVar(BackBufferHeight);*/
 	float width, height, imgwidth, imgheight, newwidth, newheight;
 	width = static_cast<float>(rc.right);
 	height = static_cast<float>(rc.bottom);
@@ -163,8 +165,8 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
 
 	if (ResourceID)
 	{
-		newwidth = static_cast<float>(bm->GetWidth());
-		newheight = static_cast<float>(bm->GetHeight());
+		newwidth = /*static_cast<float>(bm->GetWidth())*/BackBufferWidth;
+		newheight = /*static_cast<float>(bm->GetHeight())*/ BackBufferHeight;
 	}
 
 	if (WhiteBg)

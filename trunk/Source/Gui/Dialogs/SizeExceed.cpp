@@ -82,7 +82,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	
 	SendDlgItemMessage(IDC_SERVERLIST,CB_SETCURSEL,Settings.ServerID);
 
-	ZGuiTools::MakeLabelBold(GetDlgItem(IDC_FILEEXCEEDNAME));
+	GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEEXCEEDNAME));
 	
 	int f = MyGetFileSize(m_szFileName);
 	WCHAR buf2[25];
@@ -143,8 +143,8 @@ void CSizeExceed::DisplayParams(void)
 void CSizeExceed::GetParams()
 {
    m_UploadProfile.upload_profile.KeepAsIs = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
-	m_ImageSettings.strNewWidth= ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_IMAGEWIDTH));
-   m_ImageSettings.strNewHeight = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_IMAGEHEIGHT));
+	m_ImageSettings.strNewWidth= GuiTools::GetWindowText(GetDlgItem(IDC_IMAGEWIDTH));
+   m_ImageSettings.strNewHeight = GuiTools::GetWindowText(GetDlgItem(IDC_IMAGEHEIGHT));
 	m_ImageSettings.SaveProportions = IS_CHECKED(IDC_SAVEPROPORTIONS);
 	m_ImageSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
 	m_ImageSettings.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);

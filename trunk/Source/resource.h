@@ -441,7 +441,9 @@
 #define IDC_IMAGE                       1271
 #define IDC_CHECK1                      1272
 #define IDC_AUTOSTARTUP                 1272
+#define IDC_PRESERVE_EXIF               1272
 #define IDC_VIDEOENGINECOMBO            1273
+#define IDC_FOUNDABUG                   1287
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -476,13 +478,18 @@
 #define IDM_OPENINFOLDER                32796
 #define ID_Menu                         32797
 #define IDM_ADDFILES                    32798
+#define ID_Menu32799                    32799
+#define ID_0_32800                      32800
+#define IDM_COPYFILETOCLIPBOARD         32801
+#define IDM_SAVEAS                      32802
+#define ID_0_SAVEAS                     32802
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        256
-#define _APS_NEXT_COMMAND_VALUE         32799
+#define _APS_NEXT_COMMAND_VALUE         32803
 #define _APS_NEXT_CONTROL_VALUE         1274
 #define _APS_NEXT_SYMED_VALUE           127
 #endif

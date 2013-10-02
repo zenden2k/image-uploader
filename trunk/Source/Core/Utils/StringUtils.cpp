@@ -82,9 +82,13 @@ Utf8String Replace(const Utf8String& text, const Utf8String& s, const Utf8String
 // As far as C++ standart doesn't have a case insensitive string comparison function, I wrote my own
 int stricmp(const char* s1, const char* s2)
 {
+#ifdef _WIN32
+	return lstrcmpiA(s1, s2);
+#else 
 	for (; *s1 && *s2 && (toupper((unsigned char)*s1) == toupper((unsigned char)*s2)); ++s1, ++s2)
 		;
 	return *s1 - *s2;
+#endif
 }
 
 std::string toLower(const std::string& str)

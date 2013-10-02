@@ -36,7 +36,7 @@ CPercentEdit::~CPercentEdit()
 
 LRESULT CPercentEdit::OnKillFocus(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	SetWindowText(ZGuiTools::IU_GetWindowText(m_hWnd));
+	SetWindowText(GuiTools::GetWindowText(m_hWnd));
 	return 0;
 }
 
@@ -47,7 +47,7 @@ void CPercentEdit::setUnit(const CString& text)
 
 LRESULT CPercentEdit::OnSetFocus(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	 int quality = _wtoi(ZGuiTools::IU_GetWindowText(m_hWnd));
+	 int quality = _wtoi(GuiTools::GetWindowText(m_hWnd));
 	 SetWindowText( IntToStr(quality));
 	 return 0;
 }

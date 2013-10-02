@@ -55,6 +55,7 @@
 #define IDC_RESIZEPRESETMENU_LAST_ID 18100
 
 class CMyEngineList;
+class IconBitmapUtils;
 
 class CUploadSettings : 
 	public CDialogImpl<CUploadSettings>	, public CWizardPage
@@ -148,6 +149,7 @@ COMMAND_HANDLER(IDC_IMAGEHEIGHT, EN_CHANGE, OnProfileEditedCommand)
 	void OnServerButtonContextMenu(POINT pt, bool isImageServerToolbar);
 protected:
 	CMyEngineList * m_EngineList;
+	IconBitmapUtils* iconBitmapUtils_;
 	void TranslateUI();
    CIconButton m_ResizePresetIconButton;
    CIconButton m_ProfileEditButton;

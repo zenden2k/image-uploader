@@ -24,6 +24,12 @@
 #include "aboutdlg.h"
 #include "Func/Settings.h"
 #include "Common/CmdLine.h"
+#include "Func/SystemUtils.h"
+#include <Func/WinUtils.h>
+#include <Func/Myutils.h>
+#include <Func/Common.h>
+#include <Gui/GuiTools.h>
+
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -100,6 +106,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	hti.pt = ClientPoint;
 	ThumbsView.HitTest(&hti);
 
+
 	if(hti.iItem<0) // 
 	{
 		CMenu FolderMenu;
@@ -128,6 +135,14 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	}
 	else
 	{
+		CString singleSelectedItem;
+		bool isImage = false;
+		if ( ThumbsView.GetSelectedCount() == 1 ) {
+			singleSelectedItem = getSelectedFileName();
+			isImage = IsImage(singleSelectedItem);
+		}
+		
+		TCHAR buf[MAX_PATH];
 		RECT r;
 		GetClientRect(&r);
 		menu.LoadMenu(IDR_CONTEXTMENU);
@@ -141,14 +156,23 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
 		bool bIsImageFile = IsImage( FileList[hti.iItem].FileName);
 		if(!bIsImageFile){
-		sub.DeleteMenu(IDM_VIEW,MF_BYCOMMAND	);
-		sub.DeleteMenu(IDM_EDIT,MF_BYCOMMAND	);}
+			sub.DeleteMenu(IDM_VIEW, MF_BYCOMMAND );
+			sub.DeleteMenu(IDM_EDIT, MF_BYCOMMAND );
+		}
 
  		mi.dwTypeData  = TR("Просмотр");
 		sub.SetMenuItemInfo(IDM_VIEW, false, &mi);
 
 		mi.dwTypeData  = TR("Открыть папку с файлом");
 		sub.SetMenuItemInfo(IDM_OPENINFOLDER, false, &mi);
+
+		mi.dwTypeData  = TR("Сохранить как...");
+		sub.SetMenuItemInfo(IDM_SAVEAS, false, &mi); 
+
+		CString menuItemTitle = (LPWSTR)( isImage ?  TR("Копировать изображение") : TR("Копировать") ) + CString(_T("\tCtrl+C"));
+		lstrcpy(buf, menuItemTitle);
+		mi.dwTypeData  = buf;
+		sub.SetMenuItemInfo(IDM_COPYFILETOCLIPBOARD, false, &mi);
 		mi.dwTypeData  = TR("Удалить");
 		sub.SetMenuItemInfo(IDM_DELETE, false, &mi);
 		mi.dwTypeData  = TR("Свойства");
@@ -383,5 +407,83 @@ LRESULT CMainDlg::OnOpenInFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 LRESULT CMainDlg::OnAddFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	WizardDlg->executeFunc(_T("addfiles"));
+	return 0;
+}
+
+CString CMainDlg::getSelectedFileName() {
+	int nCurItem;
+
+	if ((nCurItem = ThumbsView.GetNextItem(-1, LVNI_ALL|LVNI_SELECTED))<0)
+		return CString();
+
+	LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
+	if ( !FileName ) {
+		return CString();
+	}
+
+	return FileName;
+}
+
+LRESULT CMainDlg::OnCopyFileToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int nCurItem = -1;
+
+	std::vector<LPCTSTR> selectedFiles;
+	while ((nCurItem = ThumbsView.GetNextItem(nCurItem, LVNI_ALL|LVNI_SELECTED)) >= 0 ) {
+		LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
+		if ( ! FileName ) {
+			continue;
+		}
+		selectedFiles.push_back( FileName );
+
+	}
+	if ( selectedFiles.empty() ) {
+		return FALSE;
+	}
+
+	if ( selectedFiles.size() == 1) {
+		SystemUtils::CopyFileAndImageToClipboard(selectedFiles[0]);
+	} else {
+		SystemUtils::CopyFilesToClipboard(selectedFiles);
+	}
+
+	return 0;
+}
+
+LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int nCurItem = -1;
+
+	std::deque<CString> selectedFiles;
+	while ((nCurItem = ThumbsView.GetNextItem(nCurItem, LVNI_ALL|LVNI_SELECTED)) >= 0 ) {
+		LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
+		if ( ! FileName ) {
+			continue;
+		}
+		selectedFiles.push_back( FileName );
+	}
+	if ( selectedFiles.empty() ) {
+		return FALSE;
+	}
+
+	if ( selectedFiles.size() == 1 ) {
+		TCHAR Buf[MAX_PATH*4];
+		CString FileName = selectedFiles[0];
+		CString fileExt = WinUtils::GetFileExt(FileName);
+		GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2,
+			TR("Файлы")+CString(" *.")+fileExt, CString(_T("*."))+fileExt,
+			TR("Все файлы"),_T("*.*"));
+		CFileDialog fd(false, fileExt, FileName,OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,Buf,m_hWnd);
+		if(fd.DoModal()!=IDOK || !fd.m_szFileName) return 0;
+
+		CopyFile( FileName, fd.m_szFileName, false );
+	} else {
+		CString newPath = GuiTools::SelectFolderDialog(m_hWnd, CString());
+		if ( !newPath.IsEmpty() ) {
+			int fileCount = selectedFiles.size();
+			for ( int i = 0; i < fileCount; i++ ) {
+				CopyFile( selectedFiles[i], newPath + _T("\\") + WinUtils::myExtractFileName(selectedFiles[i] ) , false );
+			}
+		}
+	}
+
 	return 0;
 }

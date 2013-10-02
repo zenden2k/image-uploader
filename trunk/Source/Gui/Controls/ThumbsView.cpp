@@ -229,6 +229,8 @@ LRESULT CThumbsView::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
 			}
 			SetRedraw(TRUE);
 		}
+	} else if ( vk == _T('C') && GetKeyState(VK_CONTROL) ) {
+		CopySelectedItemsToClipboard();
 	}
 	return 0;
 }
@@ -595,4 +597,8 @@ LRESULT CThumbsView::OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 	ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem*>(pNotificationInfo->lParam);
 	delete TVI;
 	return 0;
+}
+
+bool CThumbsView::CopySelectedItemsToClipboard() {
+	return ::SendMessage(GetParent(), WM_COMMAND, MAKELPARAM(IDM_COPYFILETOCLIPBOARD, 0), 0) != FALSE;
 }
