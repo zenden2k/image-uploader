@@ -59,6 +59,7 @@ class CLogListBox :
 		 LRESULT OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
 		LRESULT OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
 		int AddString(LogMsgType Type, LPCTSTR szTitle,LPCTSTR szText, LPCTSTR szInfo=NULL);
+		LogListBoxItem* getItemFromIndex(int index);
 		LRESULT OnKillFocus(HWND hwndNewFocus);
 	public:
 		int NotifyParent(int nItem);

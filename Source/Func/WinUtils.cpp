@@ -1,5 +1,8 @@
 #include "WinUtils.h"
 #include <Core/Utils/CoreUtils.h>
+#include <sstream>
+#include <Core/Utils/StringUtils.h>
+#include <Func/MyUtils.h>
 
 namespace WinUtils {
 
@@ -234,8 +237,7 @@ bool IsDirectory(LPCTSTR szFileName)
 	return (res&FILE_ATTRIBUTE_DIRECTORY) && (res != -1);	
 }
 
-bool IsVista()
-{
+bool IsVista() {
 	OSVERSIONINFO osver;
 	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
 
@@ -718,6 +720,50 @@ bool ShowFilePropertiesDialog(HWND hWnd, const CString& fileName) {
 	ShInfo.lpVerb = TEXT("properties");
 	ShInfo.lpFile = fileName;
 	return ShellExecuteEx(&ShInfo) != FALSE;
+}
+
+bool GetClipboardHtml(CString& text, CString& outSourceUrl) {
+	UINT clipboardFormat = RegisterClipboardFormat(_T("HTML Format"));
+	if ( OpenClipboard(NULL) ) {
+		HGLOBAL hglb = GetClipboardData(clipboardFormat);
+		LPCSTR lpstr = (LPCSTR)GlobalLock(hglb);
+		std::string ansiString = (LPCSTR)lpstr;
+
+		std::istringstream f(ansiString);
+		std::string line;    
+		int startFragment = -1;
+		int endFragment = -1;
+		std::string sourceUrl;
+		bool result = false;
+
+		while (std::getline(f, line)) {
+			std::vector<std::string> tokens;
+			IuStringUtils::Split(line, ":", tokens, 2);
+			if ( tokens.size() == 2) {
+				if ( tokens[0] == "StartFragment") {
+					startFragment = atoi(tokens[1].c_str());
+				} else if ( tokens[0] == "EndFragment" ) {
+					endFragment = atoi(tokens[1].c_str());
+				} else if ( tokens[0] == "SourceURL" ) {
+					sourceUrl = tokens[1];
+				}
+			} else {
+				break;
+			}
+		}
+		if ( startFragment != -1 && endFragment != -1 ) {
+			text = Utf8ToWCstring( ansiString.substr(startFragment, endFragment - startFragment) );
+			outSourceUrl = Utf8ToWCstring(sourceUrl);
+			return true;
+		}
+		
+		GlobalUnlock(hglb);
+		CloseClipboard();
+
+		return result;
+	}
+
+	return false;
 }
 
 

@@ -438,4 +438,17 @@ Utf8String toString(double value, int precision)
 	return buffer;
 }
 
+Utf8String GetDefaultExtensionForMimeType(const Utf8String mimeType) {
+	std::map<std::string, std::string> mimeToExt;
+	mimeToExt["image/gif"] = "gif";
+	mimeToExt["image/png"] = "png";
+	mimeToExt["image/jpeg"] = "jpg";
+
+	std::map<std::string, std::string>::iterator found = mimeToExt.find(mimeType);
+	if ( found != mimeToExt.end() ) {
+		return found->second;
+	}
+	return "";
+}
+
 } // end of namespace IuCoreUtils

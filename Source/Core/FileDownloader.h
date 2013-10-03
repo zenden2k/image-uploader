@@ -35,12 +35,13 @@ class CFileDownloader
 			std::string fileName;
 			std::string displayName;
 			std::string url;
+			std::string referer;
 			void* id;
 		};
 
 		CFileDownloader();
 		virtual ~CFileDownloader();
-		void AddFile(const std::string& url, void* id);
+		void AddFile(const std::string& url, void* id, const std::string& referer = std::string());
 		bool start();
 		bool waitForFinished(unsigned int msec = -1);
 		void setThreadCount(int n);
@@ -49,7 +50,7 @@ class CFileDownloader
 
 		fastdelegate::FastDelegate0<> onQueueFinished;
 		fastdelegate::FastDelegate1<NetworkManager*> onConfigureNetworkManager;
-		fastdelegate::FastDelegate2<bool, DownloadFileListItem, bool> onFileFinished;
+		fastdelegate::FastDelegate3<bool, int, DownloadFileListItem, bool> onFileFinished;
 	protected:
 		CString m_ErrorStr;
 		CAutoCriticalSection m_CS;

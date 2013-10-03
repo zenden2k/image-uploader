@@ -44,6 +44,7 @@ namespace IuCoreUtils
 	Utf8String int64_tToString(int64_t value);
 	int64_t stringToint64_t(const Utf8String fileName);
 	Utf8String GetFileMimeType(const Utf8String);
+	Utf8String GetDefaultExtensionForMimeType(const Utf8String);
 	Utf8String StrReplace(Utf8String text, Utf8String s, Utf8String d);
 	Utf8String ConvertToUtf8(const Utf8String &text, const Utf8String codePage);
 	bool ReadUtf8TextFile(Utf8String utf8Filename, Utf8String& data);

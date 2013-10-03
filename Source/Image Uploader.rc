@@ -696,6 +696,29 @@ BEGIN
     LTEXT           "",IDC_IMAGE,6,16,183,8
 END
 
+IDD_IMAGEREUPLOADER DIALOGEX 0, 0, 367, 333
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION " "
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "Static",IDC_IMAGEDOWNLOADERTIP,5,7,355,10
+    CONTROL         "Следить за буфером обмена",IDC_WATCHCLIPBOARD,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,5,18,234,10
+    EDITTEXT        IDC_INPUTTEXT,5,31,355,116,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
+    LTEXT           "URL источника (опционально):",IDC_SOURCEURLLABEL,7,153,120,8
+    EDITTEXT        IDC_SOURCEURLEDIT,131,150,229,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "Перезалить изображения",IDOK,5,168,97,15
+    PUSHBUTTON      "Paste HTML from clipboard",IDC_PASTEHTML,117,168,111,14
+    LTEXT           "Static",IDC_SERVENAMELABEL,237,171,121,8
+    LTEXT           "Static",IDC_ANIMATIONSTATIC,331,164,27,21,NOT WS_VISIBLE
+    EDITTEXT        IDC_OUTPUTTEXT,5,186,355,112,ES_MULTILINE | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
+    CONTROL         "Исходный код",IDC_SOURCECODERADIO,"Button",BS_AUTORADIOBUTTON,9,301,151,10
+    CONTROL         "Список ссылок",IDC_LINKSLISTRADIO,"Button",BS_AUTORADIOBUTTON,177,301,180,10
+    PUSHBUTTON      "Копировать в буфер",IDC_COPYTOCLIPBOARD,5,314,82,14
+    LTEXT           "Static",IDC_RESULTSLABEL,95,315,202,8
+    PUSHBUTTON      "Close",IDCANCEL,310,314,50,14
+    CONTROL         "",IDC_DOWNLOADFILESPROGRESS,"msctls_progress32",NOT WS_VISIBLE,162,358,355,11
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -998,6 +1021,12 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 56
     END
+
+    IDD_IMAGEREUPLOADER, DIALOG
+    BEGIN
+        RIGHTMARGIN, 364
+        BOTTOMMARGIN, 328
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -1067,6 +1096,7 @@ IDI_ICONWHITEPAGE       ICON                    "res\\icon_whitepage.ico"
 IDI_ICONSAVE            ICON                    "res\\icon_save.ico"
 IDI_ICONHISTORY         ICON                    "res\\icon_history.ico"
 IDI_ICONDELETE          ICON                    "res\\icon_delete.ico"
+IDI_ICONRELOAD          ICON                    "res\\icon-reload.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -21,6 +21,7 @@
 #include "atlheaders.h"
 #include "Func/Settings.h"
 #include "TextViewDlg.h"
+#include <Func/WinUtils.h>
 
 // CLogWindow
 CLogWindow::CLogWindow()
@@ -73,6 +74,9 @@ void CLogWindow::Show()
 	if (!IsWindowVisible())
 		ShowWindow(SW_SHOW);
 	SetForegroundWindow(m_hWnd);
+	::SetActiveWindow(m_hWnd);
+	BringWindowToTop();
+	SetWindowPos(HWND_TOPMOST, 0,0,0,0, SWP_NOSIZE | SWP_NOMOVE);
 }
 
 LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -97,10 +101,30 @@ LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 		::ScreenToClient(hwnd, &ClientPoint);
 	}
 
+	BOOL bOutside;
+	UINT index = MsgList.ItemFromPoint(ClientPoint, bOutside);
+
+	if ( !bOutside ) {
+		MsgList.SetCurSel( index );
+	}
+
 	CMenu FolderMenu;
 	FolderMenu.CreatePopupMenu();
+	if ( index != 0xffff && !bOutside ) {
+		FolderMenu.AppendMenu(MF_STRING, IDC_COPYTEXTTOCLIPBOARD, TR("Копировать"));
+	}
 	FolderMenu.AppendMenu(MF_STRING, IDC_CLEARLIST, TR("Очистить список"));
+
 	FolderMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
+	return 0;
+}
+
+LRESULT CLogWindow::OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/) {
+	int messageIndex = MsgList.GetCurSel();
+	LogListBoxItem* item = MsgList.getItemFromIndex( messageIndex );
+	CString text;
+	text.Format(_T("[%s] %s\r\n%s\r\n\r\n%s"), (LPCTSTR)item->Time, (LPCTSTR)item->Info, (LPCTSTR)item->strTitle, (LPCTSTR)item->strText);
+	WinUtils::CopyTextToClipboard(text);
 	return 0;
 }
 

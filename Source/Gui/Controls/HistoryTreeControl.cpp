@@ -722,7 +722,7 @@ void CHistoryTreeControl::StartLoadingThumbnails()
 	}
 }
 
-bool CHistoryTreeControl::OnFileFinished(bool ok, CFileDownloader::DownloadFileListItem it)
+bool CHistoryTreeControl::OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it)
 {
 	if(ok && !it.fileName.empty())
 	{

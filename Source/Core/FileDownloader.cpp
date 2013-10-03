@@ -39,8 +39,7 @@ CFileDownloader::~CFileDownloader()
 {
 }
 
-void CFileDownloader::AddFile(const std::string& url, void* id)
-{
+void CFileDownloader::AddFile(const std::string& url, void* id, const std::string& referer) {
 	if (m_NeedStop)
 		return;  // Cannot add file to queue while stopping process
 	m_CS.Lock();
@@ -48,9 +47,12 @@ void CFileDownloader::AddFile(const std::string& url, void* id)
 	DownloadFileListItem newItem;
 	newItem.url = url;
 	newItem.id = reinterpret_cast <void*>(id);
+	newItem.referer = referer;
 	m_fileList.push_back(newItem);
 	m_CS.Unlock();
 }
+
+
 
 void CFileDownloader::setThreadCount(int n)
 {
@@ -104,6 +106,9 @@ void CFileDownloader::memberThreadFunc()
 			break;
 
 		nm.setOutputFile(curItem.fileName);
+		if ( !curItem.referer.empty() ) {
+			nm.setReferer(curItem.referer);
+		}
 		nm.doGet(url);
 		if (m_NeedStop)
 			break;
@@ -113,12 +118,12 @@ void CFileDownloader::memberThreadFunc()
 		{
 			std::string name = IuCoreUtils::ExtractFileName(url);
 			if (!onFileFinished.empty())
-				onFileFinished(true, curItem);                                                                                                                                                                                                                                                  // delegate call
+				onFileFinished(true, nm.responseCode(), curItem);                                                                                                                                                                                                                                                  // delegate call
 		}
 		else
 		{
 			if (!onFileFinished.empty())
-				onFileFinished(false, curItem);                                                                                                                                                                                                                                                 // delegate call
+				onFileFinished(false, nm.responseCode(), curItem);                                                                                                                                                                                                                                                 // delegate call
 		}
 
 		if (m_NeedStop)

@@ -74,15 +74,24 @@ int CUploader::pluginProgressFunc (void* userData, double dltotal, double dlnow,
 	}
 
 	if (!uploader->onProgress.empty())
-		uploader->onProgress(uploader->m_PrInfo);
+		uploader->onProgress(uploader, uploader->m_PrInfo);
 	return 0;
 }
 
 bool CUploader::UploadFile(const std::string& FileName, const std::string displayFileName)
 {
-	if (!m_CurrentEngine)
-	{
+	if (!m_CurrentEngine) {
 		Error(true, "Cannnot proceed: m_CurrentEngine is NULL!");
+		return false;
+	}
+
+	if ( FileName.empty() ) {
+		Error(true, "Empty filename!");
+		return false;
+	}
+
+	if ( ! IuCoreUtils::FileExists (FileName) ) {
+		Error(true, "File \""+FileName+"\" doesn't exist!");
 		return false;
 	}
 	m_PrInfo.IsUploading = false;

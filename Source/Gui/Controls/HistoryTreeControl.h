@@ -88,7 +88,7 @@ class CHistoryTreeControl :
 		HBITMAP GetItemThumbnail(HistoryTreeItem* item);
 		std::deque<HistoryTreeItem*> m_thumbLoadingQueue;
 		CFileDownloader* m_FileDownloader;
-		bool OnFileFinished(bool ok, CFileDownloader::DownloadFileListItem it);
+		bool OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it);
 		void DownloadThumb(HistoryTreeItem* it);
 		int m_SessionItemHeight;
 		int m_SubItemHeight;

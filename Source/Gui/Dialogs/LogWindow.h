@@ -29,8 +29,8 @@
 #include <atlframe.h>
 #include "Core/Upload/CommonTypes.h"
 
-#define IDC_CLEARLIST 12000
 #define MYWM_WRITELOG WM_USER + 100
+
 // CLogWindow
 
 class CLogWindow : public CDialogImpl <CLogWindow>,
@@ -51,11 +51,13 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
 		CLogWindow();
 		~CLogWindow();
 		enum { IDD = IDD_LOGWINDOW };
+		enum { IDC_CLEARLIST = 12000, IDC_COPYTEXTTOCLIPBOARD};
 		virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 		BEGIN_MSG_MAP(CLogWindow)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+			COMMAND_ID_HANDLER(IDC_COPYTEXTTOCLIPBOARD, OnCopyToClipboard)
 			MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
 			MESSAGE_HANDLER(MYWM_WRITELOG, OnWmWriteLog)
 			COMMAND_ID_HANDLER(IDC_CLEARLIST, OnClearList)
@@ -80,6 +82,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
 		void Show();
 		LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL & /*bHandled*/);
 		LRESULT OnClearList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
+		LRESULT OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 };
 
 extern CLogWindow LogWindow;
