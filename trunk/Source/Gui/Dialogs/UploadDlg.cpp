@@ -811,7 +811,7 @@ bool CUploadDlg::OnUploaderNeedStop()
 	return m_bStopped;
 }
 
-void CUploadDlg::OnUploaderProgress(InfoProgress pi)
+void CUploadDlg::OnUploaderProgress(CUploader* uploader, InfoProgress pi)
 {
 	PrInfo.CS.Lock();
 	PrInfo.ip = pi;

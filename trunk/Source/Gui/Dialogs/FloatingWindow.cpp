@@ -592,12 +592,12 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
 	source_file_name_ = WCstringToUtf8(realName);
 	server_name_ = engineData->Name;
 
-	m_FileQueueUploader->AddFile(WCstringToUtf8(imageConverter.getImageFileName()), WCstringToUtf8(displayName), 0);
+	m_FileQueueUploader->AddFile(WCstringToUtf8(imageConverter.getImageFileName()), WCstringToUtf8(displayName), 0, engine);
 
 	CString thumbFileName = imageConverter.getThumbFileName();
 	if (!thumbFileName.IsEmpty())
 		m_FileQueueUploader->AddFile(WCstringToUtf8(thumbFileName), WCstringToUtf8(thumbFileName),
-		                             reinterpret_cast<void*>(1));
+		                             reinterpret_cast<void*>(1), engine);
 
 	m_bIsUploading = true;
 	m_FileQueueUploader->start();
@@ -643,9 +643,9 @@ bool CFloatingWindow::OnFileFinished(bool ok, CFileQueueUploader::FileListItem& 
 {
 	if (ok)
 	{
-		if (result.user_data == 0)
+		if (result.uploadTask->userData == 0)
 			m_LastUploadedItem = result;
-		else if (int(result.user_data) == 1)
+		else if (int(result.uploadTask->userData) == 1)
 			m_LastUploadedItem.thumbUrl = result.imageUrl;
 	}
 	return true;

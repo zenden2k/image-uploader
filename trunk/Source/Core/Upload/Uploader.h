@@ -45,7 +45,7 @@ class CUploader
 		bool needStop();
 		// events
 		fastdelegate::FastDelegate0<bool> onNeedStop;
-		fastdelegate::FastDelegate1<InfoProgress> onProgress;
+		fastdelegate::FastDelegate2<CUploader*,InfoProgress> onProgress;
 		fastdelegate::FastDelegate3<StatusType, int, std::string> onStatusChanged;
 		fastdelegate::FastDelegate2<const std::string&, bool> onDebugMessage;
 		fastdelegate::FastDelegate1<ErrorInfo> onErrorMessage;

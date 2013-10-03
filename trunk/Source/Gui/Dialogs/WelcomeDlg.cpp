@@ -64,21 +64,25 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
 	ListBox.AddString(TR("Из интернета"), 0, IDC_DOWNLOADIMAGES, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONWEB), IMAGE_ICON	, 16,16,0),true);
 
+	
 	ListBox.AddString(TR("Добавить папку..."), 0, IDC_ADDFOLDER, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONADDFOLDER), IMAGE_ICON	, 16,16,0),true,0,true);
 
 	ListBox.AddString(TR("Из буфера обмена"), 0, IDC_CLIPBOARD, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_CLIPBOARD), IMAGE_ICON	, 16,16,0),true);
+	
+	ListBox.AddString(TR("Перезаливка изображений"), 0, IDC_REUPLOADIMAGES, LOADICO(IDI_ICONRELOAD), true,0, true);
+
+
+	ListBox.AddString(TR("Снимок экрана"), TR("всего экрана или выбранной части"), IDC_SCREENSHOT, LOADICO(IDI_SCREENSHOT));
+	ListBox.AddString(TR("Снимок выбранной области..."), 0, IDC_REGIONPRINT,LOADICO(IDI_ICONREGION));
 	
 	ListBox.AddString(TR("Импортировать видео файл"), TR("извлечение кадров из видеоролика"), IDC_ADDVIDEO, LOADICO(IDI_GRAB));
 
 	if(lstrlen(MediaInfoDllPath))
 		ListBox.AddString(TR("Информация о медиа файле..."), 0, IDC_MEDIAFILEINFO, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONINFO), IMAGE_ICON	, 16,16,0));
-	
-	ListBox.AddString(TR("Снимок экрана"), TR("всего экрана или выбранной части"), IDC_SCREENSHOT, LOADICO(IDI_SCREENSHOT));
-	ListBox.AddString(TR("Снимок выбранной области..."), 0, IDC_REGIONPRINT,LOADICO(IDI_ICONREGION));
-	
+
 	ListBox.AddString(TR("Настройки программы"), TR("Для опытных пользователей"), IDC_SETTINGS, LOADICO(IDI_ICONSETTINGS));
 	ListBox.AddString(TR("История"), 0, ID_VIEWHISTORY,LOADICO(IDI_ICONHISTORY));
-
+	
 	HFONT font = GetFont();
 	LOGFONT alf;
 	PageWnd = m_hWnd;
@@ -235,3 +239,7 @@ LRESULT CWelcomeDlg::OnViewHistoryClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	return 0;
 }
 	
+LRESULT CWelcomeDlg::OnBnClickedReuploadImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	WizardDlg->executeFunc(_T("reuploadimages"));
+	return 0;
+}

@@ -20,6 +20,7 @@ namespace WinUtils {
 	CString GetCommonApplicationDataPath();
 	bool    CopyTextToClipboard(CString text);
 	bool    GetClipboardText(CString &text);
+	bool GetClipboardHtml(CString& text, CString& outSourceUrl);
 	DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
 
 	bool CreateShortCut( 

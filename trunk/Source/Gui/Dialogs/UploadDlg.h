@@ -81,7 +81,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		CMyEngineList *m_EngineList;
 		CString m_StatusText;
 		bool OnUploaderNeedStop();
-		void OnUploaderProgress(InfoProgress pi);
+		void OnUploaderProgress(CUploader* uploader, InfoProgress pi);
 		void OnUploaderStatusChanged(StatusType status, int actionIndex, std::string text);
 		void OnUploaderConfigureNetworkClient(NetworkManager *nm);	
 	protected:

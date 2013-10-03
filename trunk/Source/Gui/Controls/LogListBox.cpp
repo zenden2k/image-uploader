@@ -235,3 +235,6 @@ void CLogListBox::Clear()
 	SetRedraw(true);
 }
 
+LogListBoxItem* CLogListBox::getItemFromIndex(int index) {
+	return reinterpret_cast<LogListBoxItem *>( GetItemDataPtr(index) );
+}

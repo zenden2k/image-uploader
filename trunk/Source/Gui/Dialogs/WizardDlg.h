@@ -192,6 +192,7 @@ public:
 	bool funcMediaInfo();
 	bool funcAddFiles();
 	bool funcDownloadImages();
+	bool funcReuploadImages();
 	// end of functions
 	bool executeFunc(CString funcName);
 

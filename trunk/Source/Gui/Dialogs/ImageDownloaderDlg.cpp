@@ -141,7 +141,7 @@ CString GetExtensionByMime(CString mime)
 	return _T(".dat");
 }
 
-bool CImageDownloaderDlg::OnFileFinished(bool ok, CFileDownloader::DownloadFileListItem it)
+bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it)
 {
 	if(ok)
 	{

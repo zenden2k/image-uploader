@@ -40,6 +40,7 @@
 #include "Func/Settings.h"
 #include "Gui/Dialogs/MediaInfoDlg.h"
 #include "Gui/GuiTools.h"
+#include "Gui/Dialogs/ImageReuploaderDlg.h"
 
 using namespace Gdiplus;
 // CWizardDlg
@@ -1237,8 +1238,11 @@ bool CWizardDlg::executeFunc(CString funcBody)
 		return funcPaste();
 	else if(funcName == _T("settings"))
 		return funcSettings();
+	else if(funcName == _T("reuploadimages"))
+		return funcReuploadImages();
 	else if(funcName == _T("mediainfo"))
 		return funcMediaInfo();
+
 	return false;
 }
 
@@ -1790,6 +1794,12 @@ bool CWizardDlg::IsClipboardDataAvailable()
 		}
 	}
 	return IsClipboard;
+}
+
+bool CWizardDlg::funcReuploadImages() {
+	CImageReuploaderDlg dlg(this, _EngineList,  CString());
+	dlg.DoModal(m_hWnd);
+	return false;
 }
 
 CWizardDlg * pWizardDlg;

@@ -44,6 +44,7 @@
 #define IDD_HISTORYWINDOW               145
 #define IDD_THUMBEDITOR                 146
 #define IDD_INPUTDIALOG                 147
+#define IDD_IMAGEREUPLOADER             148
 #define IDR_CONTEXTMENU                 202
 #define IDI_GRAB                        207
 #define IDI_IMAGES                      209
@@ -81,6 +82,7 @@
 #define IDI_ICONHISTORY                 254
 #define IDI_ICON3                       255
 #define IDI_ICONDELETE                  255
+#define IDI_ICONRELOAD                  258
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -181,6 +183,7 @@
 #define IDC_SCREENSHOTFILENAMEEDIT      1040
 #define IDC_FRAMEWIDTH                  1040
 #define IDC_WIDTHEDIT                   1040
+#define IDC_SOURCEURLEDIT               1040
 #define IDC_SELECTVIDEO                 1041
 #define IDC_STROKECOLOR                 1041
 #define IDC_LOGINBUTTON                 1041
@@ -197,9 +200,11 @@
 #define IDC_LOGINBUTTON2                1042
 #define IDC_RADIO1                      1043
 #define IDC_MULTIPLEFILES               1043
+#define IDC_SOURCECODERADIO             1043
 #define IDC_RADIO2                      1044
 #define IDC_SAVEASONE                   1044
 #define IDC_HEIGHTRADIO                 1044
+#define IDC_LINKSLISTRADIO              1044
 #define IDC_EDIT2                       1045
 #define IDC_TRANSPARENCY                1045
 #define IDC_QUALITY                     1045
@@ -443,7 +448,14 @@
 #define IDC_AUTOSTARTUP                 1272
 #define IDC_PRESERVE_EXIF               1272
 #define IDC_VIDEOENGINECOMBO            1273
-#define IDC_FOUNDABUG                   1287
+#define IDC_FOUNDABUG                   1274
+#define IDC_RESULTSLABEL                1274
+#define IDC_OUTPUTTEXT                  1275
+#define IDC_COPYTOCLIPBOARD             1276
+#define IDC_PASTEHTML                   1277
+#define IDC_INPUTTEXT                   1278
+#define IDC_SERVENAMELABEL              1279
+#define IDC_SOURCEURLLABEL              1281
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -488,9 +500,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        256
+#define _APS_NEXT_RESOURCE_VALUE        259
 #define _APS_NEXT_COMMAND_VALUE         32803
-#define _APS_NEXT_CONTROL_VALUE         1274
+#define _APS_NEXT_CONTROL_VALUE         1282
 #define _APS_NEXT_SYMED_VALUE           127
 #endif
 #endif

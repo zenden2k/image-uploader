@@ -166,7 +166,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avdevice.lib avformat.lib avutil.lib swscale.lib avcodec.lib"
+				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avdevice.lib avformat.lib avutil.lib swscale.lib avcodec.lib wininet.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;d:\Projects\Image Uploader\Image Uploader\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
 				GenerateManifest="false"
@@ -1111,6 +1111,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\res\icon-reload.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon-reload.ico"
+				>
+			</File>
+			<File
 				RelativePath="Source\res\icon-settings.ico"
 				>
 			</File>
@@ -1124,6 +1132,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\res\icon-windows.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon4.ico"
 				>
 			</File>
 			<File
@@ -2297,6 +2309,14 @@
 								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 							/>
 						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\ImageReuploaderDlg.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\ImageReuploaderDlg.h"
+						>
 					</File>
 					<File
 						RelativePath=".\Source\Gui\Dialogs\InputDialog.cpp"
@@ -4310,6 +4330,14 @@
 				<Filter
 					Name="Controls"
 					>
+					<File
+						RelativePath=".\Source\Gui\Controls\CustomEditControl.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Controls\CustomEditControl.h"
+						>
+					</File>
 					<File
 						RelativePath=".\Source\Gui\Controls\HistoryTreeControl.cpp"
 						>
