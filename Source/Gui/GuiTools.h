@@ -49,6 +49,8 @@ namespace GuiTools
 	CString GetWindowText(HWND wnd);
 	CString GetDlgItemText(HWND dialog, int controlId);
 
+	int GetWindowLeft(HWND Wnd);
+
 	HFONT MakeFontUnderLine(HFONT font);
 	HFONT MakeFontBold(HFONT font);
 	HFONT MakeFontSmaller(HFONT font);

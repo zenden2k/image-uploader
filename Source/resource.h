@@ -465,6 +465,7 @@
 #define IDC_VIDEOSNAPSHOTSFOLDERBUTTON  1283
 #define IDC_VIDEOSNAPSHOTSFOLDERLABEL   1284
 #define IDC_SNAPSHOTFILENAMELABEL       1285
+#define IDC_OPENFOLDER                  1286
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -511,7 +512,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        259
 #define _APS_NEXT_COMMAND_VALUE         32803
-#define _APS_NEXT_CONTROL_VALUE         1286
+#define _APS_NEXT_CONTROL_VALUE         1287
 #define _APS_NEXT_SYMED_VALUE           127
 #endif
 #endif

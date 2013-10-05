@@ -201,7 +201,7 @@ class CSettings
 		bool UseProxyServer;
 		int LastUpdateTime;
     UploadProfileStruct UploadProfile;
-		
+		static COLORREF DefaultLinkColor;
 		bool SendToContextMenu;
 		bool SendToContextMenu_changed;
 		bool QuickUpload;

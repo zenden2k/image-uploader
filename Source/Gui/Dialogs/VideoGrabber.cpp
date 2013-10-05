@@ -210,6 +210,7 @@ CVideoGrabber::CVideoGrabber()
 {
 	Terminated = true;
 	grabbedFramesCount = 0;
+	originalGrabInfoLabelWidth_ = 0;
 }
 
 CVideoGrabber::~CVideoGrabber()
@@ -252,6 +253,12 @@ LRESULT CVideoGrabber::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	TRC(IDC_QUALITYLABEL, "Качество:");
 	TRC(IDC_GRABBERPARAMS, "Параметры...");
 	TRC(IDC_FILEINFOBUTTON, "Информация о файле");
+	openInFolderLink_.SetLabel(TR("Открыть папку с изображениями"));
+	openInFolderLink_.SubclassWindow(GetDlgItem(IDC_OPENFOLDER));
+	openInFolderLink_.m_dwExtendedStyle |= HLINK_COMMANDBUTTON | HLINK_UNDERLINEHOVER; 
+	openInFolderLink_.m_clrLink = CSettings::DefaultLinkColor;
+
+	
 
 	GuiTools::AddComboBoxItems(m_hWnd, IDC_VIDEOENGINECOMBO, 3, CSettings::VideoEngineAuto, CSettings::VideoEngineDirectshow,CSettings::VideoEngineFFmpeg);
 	int itemIndex = SendDlgItemMessage( IDC_VIDEOENGINECOMBO, CB_FINDSTRING, 0, (LPARAM)(LPCTSTR) Settings.VideoSettings.Engine );
@@ -349,6 +356,15 @@ LRESULT CVideoGrabber::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	CanceledByUser = false;
 
 	m_hThread = NULL;
+
+	
+	openInFolderLink_.ShowWindow(SW_HIDE);
+
+	if ( originalGrabInfoLabelWidth_ ) {
+		RECT grabInfoLabelRect;
+		::GetClientRect(GetDlgItem(IDC_GRABINFOLABEL), &grabInfoLabelRect);
+		::SetWindowPos(GetDlgItem(IDC_GRABINFOLABEL), NULL, 0,0,originalGrabInfoLabelWidth_,grabInfoLabelRect.bottom, SWP_NOMOVE);
+	}
 	this->Start();
 
 	return 0;
@@ -367,6 +383,17 @@ DWORD CVideoGrabber::Run()
 		WriteLog(logError, TR("Модуль извлечения кадров"), ErrorStr, CString(TR("File:")) + _T("  ") + buffer + _T(
 		            "\n") + TR("Ошибка при извлечении кадров.") /*+_T("\n")*/);
 	::CoUninitialize();
+
+	int left = GuiTools::GetWindowLeft(openInFolderLink_.m_hWnd);
+	RECT grabInfoLabelRect;
+	HWND grabInfoLabelHwnd = GetDlgItem(IDC_GRABINFOLABEL);
+	::GetClientRect(grabInfoLabelHwnd, &grabInfoLabelRect);
+	::SetWindowPos(grabInfoLabelHwnd, NULL, 0,0,left,grabInfoLabelRect.bottom, SWP_NOMOVE);
+	if ( !originalGrabInfoLabelWidth_ ) {
+		originalGrabInfoLabelWidth_ = grabInfoLabelRect.right;
+	}
+	::InvalidateRect(grabInfoLabelHwnd, 0, true);
+	openInFolderLink_.ShowWindow(SW_SHOW);
 	return ThreadTerminated();
 }
 
@@ -1157,4 +1184,11 @@ CString CVideoGrabber::GenerateFileNameFromTemplate(const CString& templateStr, 
 	result.Replace(_T("%fe%"),fileName);
 	result.Replace(_T("%f%"), fileNameNoExt);
 	return result;
+}
+
+
+
+LRESULT CVideoGrabber::OnOpenFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	ShellExecute(NULL, L"open", snapshotsFolder, 0, 0, SW_SHOWDEFAULT);
+	return 0;
 }

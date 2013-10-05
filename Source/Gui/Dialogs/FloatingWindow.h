@@ -56,6 +56,7 @@
 #define IDM_SCREENTSHOTACTION_ADDTOWIZARD (IDM_UPLOADFILES+20)
 #define IDM_PASTEFROMWEB (IDM_UPLOADFILES+21)
 #define IDM_STOPUPLOAD (IDM_UPLOADFILES+22)
+#define IDM_REUPLOADIMAGES (IDM_UPLOADFILES+23)
 
 #define WM_CLOSETRAYWND (WM_USER+2)
 #define WM_RELOADSETTINGS (WM_USER+3)
@@ -91,6 +92,7 @@ public:
 		COMMAND_ID_HANDLER_EX(IDM_IMPORTVIDEO, OnImportvideo)
 		COMMAND_ID_HANDLER_EX(IDM_UPLOADFILES, OnUploadFiles)
 		COMMAND_ID_HANDLER_EX(IDM_UPLOADIMAGES, OnUploadImages)
+		COMMAND_ID_HANDLER_EX(IDM_REUPLOADIMAGES, OnReUploadImages)
 		COMMAND_ID_HANDLER_EX(IDM_SCREENSHOTDLG, OnScreenshotDlg)
 		COMMAND_ID_HANDLER_EX(IDM_REGIONSCREENSHOT, OnRegionScreenshot)
 		COMMAND_ID_HANDLER_EX(IDM_FULLSCREENSHOT, OnFullScreenshot)
@@ -132,6 +134,7 @@ public:
 	 LRESULT OnImportvideo(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnUploadFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnUploadImages(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+	 LRESULT OnReUploadImages(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnScreenshotDlg(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnRegionScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnFullScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
@@ -159,7 +162,7 @@ public:
 	 bool OnQueueFinished(CFileQueueUploader*);
 	 bool m_bFromHotkey;
 	 bool OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result);
-	 bool OnConfigureNetworkManager(NetworkManager* nm);
+	 bool OnConfigureNetworkManager(CFileQueueUploader*, NetworkManager* nm);
 	 std::string source_file_name_;
 	 std::string server_name_;
 };

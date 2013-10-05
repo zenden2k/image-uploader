@@ -36,6 +36,8 @@
 #include <Func/LocalFileCache.h>
 #include <Func/Base.h>
 
+const TCHAR CImageReuploaderDlg::LogTitle[] = _T("Image Reuploader");
+
 // CImageReuploaderDlg
 CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, const CString &initialBuffer)
 {
@@ -89,6 +91,10 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 			m_wndAnimation.Draw();
 		m_wndAnimation.ShowWindow(SW_HIDE);
 	}
+
+	if ( IsClipboardFormatAvailable(htmlClipboardFormatId) || IsClipboardFormatAvailable(CF_TEXT ) ) {
+		sourceTextEditControl.SendMessage(WM_PASTE);
+	} 
 
 	m_serverId = Settings.ServerID;
 
@@ -186,12 +192,12 @@ bool CImageReuploaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloade
 			logMessageType = logWarning;
 		}
 		
-		WriteLog(logMessageType, _T("Image re-uploader"), _T("Cannot download the image '") + Utf8ToWCstring(it.url) + _T("'.")
-			+ _T("\r\nStatus code:") + IntToStr(statusCode));
+		WriteLog(logMessageType, LogTitle, _T("Cannot download the image '") + Utf8ToWCstring(it.url) + _T("'.")
+			+ _T("\r\nStatus code:") + IntToStr(statusCode) + (cacheLogMessage.IsEmpty() ? _T("") : (_T("\r\n\r\n") + cacheLogMessage)));
 
-		if ( !cacheLogMessage.IsEmpty() ) {
-			WriteLog(logWarning,_T("Image re-uploader"), cacheLogMessage);
-		}
+		/*if ( !cacheLogMessage.IsEmpty() ) {
+			WriteLog(logWarning, LogTitle, cacheLogMessage);
+		}*/
 	} 
 
 	return true;
@@ -211,6 +217,36 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
 			success = true;
 		}
 	} else {
+		localFile = localFileCache.getThumb(dit->originalUrl);
+		if ( !localFile.empty() ) {
+			CImageConverter imageConverter;
+			Thumbnail thumb;
+
+			if (!thumb.LoadFromFile(WCstringToUtf8(IU_GetDataFolder() + _T("\\Thumbnails\\") + Settings.ThumbSettings.FileName +
+				_T(".xml")))) {
+				WriteLog(logError, LogTitle, TR("Не могу загрузить файл миниатюры!"));
+			} else {
+				message.Format(_T("Generating the thumbnail from local file ('%s')"),  (LPCTSTR)Utf8ToWCstring(localFile) );
+
+				CUploadEngineData *ue = m_EngineList->byIndex(m_serverId);
+				imageConverter.setEnableProcessing(false);
+				imageConverter.setImageConvertingParams(Settings.ConvertProfiles[Settings.CurrentConvertProfileName]);
+				imageConverter.setThumbCreatingParams(Settings.ThumbSettings);
+				bool GenThumbs = Settings.ThumbSettings.CreateThumbs &&
+					((!Settings.ThumbSettings.UseServerThumbs) || (!ue->SupportThumbnails));
+				imageConverter.setThumbnail(&thumb);
+				imageConverter.setGenerateThumb(true);
+				imageConverter.Convert(Utf8ToWCstring(localFile));
+
+				CString thumbFileName = imageConverter.getThumbFileName();
+				if (!thumbFileName.IsEmpty()) {
+					if ( addUploadTask(it, WCstringToUtf8(thumbFileName)) ) {
+						updateStats();
+						success = true;
+					}
+				}
+			}
+		}
 		//message.Format(_T("File '%s' not found in local cache"), (LPCTSTR)Utf8ToWCstring(it.url) );
 	}
 	logMessage = message;
@@ -220,7 +256,7 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
 bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it, std::string localFileName ) {
 	std::string mimeType = IuCoreUtils::GetFileMimeType(localFileName);
 	if (mimeType.find("image/") == std::string::npos) {
-		WriteLog(logError, _T("Image re-uploader"), _T("File '") + Utf8ToWCstring(it.url) +
+		WriteLog(logError, LogTitle, _T("File '") + Utf8ToWCstring(it.url) +
 			_T("'\r\n doesn't seems to be an image.\r\nIt has mime type '") + Utf8ToWCstring(mimeType) + "'.");
 		return false;
 	} 
@@ -406,7 +442,7 @@ bool CImageReuploaderDlg::BeginDownloading()
 			InternetCrackUrl(urlWide, urlWide.GetLength(), 0, &urlComponents);
 			if ( !lstrlen( urlComponents.lpszScheme ) )  {
 				if ( sourceUrl.IsEmpty() ) {
-					WriteLog(logError, _T("Image re-uploader"), _T("Cannot download file by relative url: \"") + urlWide + _T("\".\r\n You must provide base URL."));
+					WriteLog(logError, LogTitle, _T("Cannot download file by relative url: \"") + urlWide + _T("\".\r\n You must provide base URL."));
 					continue;
 				}
 				TCHAR absoluteUrlBuffer[MAX_PATH+1];
@@ -488,10 +524,12 @@ bool CImageReuploaderDlg::OnQueueFinished(CFileQueueUploader*) {
 }
 
 bool  CImageReuploaderDlg::OnConfigureNetworkManager(CFileQueueUploader* ,NetworkManager* nm) {
+	IU_ConfigureProxy(*nm);
 	return true;
 }
 
 void CImageReuploaderDlg::FileDownloader_OnConfigureNetworkManager(NetworkManager* nm) {
+	IU_ConfigureProxy(*nm);
 }
 
 void CImageReuploaderDlg::generateOutputText() {
@@ -608,6 +646,7 @@ bool CImageReuploaderDlg::pasteHtml() {
 		CString sourceUrl;
 		if (  WinUtils::GetClipboardHtml(clipboardText, sourceUrl) ) {
 			SendDlgItemMessage(IDC_INPUTTEXT, EM_REPLACESEL, TRUE, (LPARAM)(LPCTSTR)clipboardText);
+			//SendDlgItemMessage(IDC_INPUTTEXT, EM_SETSEL, -1, 0);
 			SetDlgItemText(IDC_SOURCEURLEDIT, sourceUrl);
 			return true;
 		} 

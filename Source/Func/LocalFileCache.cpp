@@ -45,7 +45,13 @@ bool LocalFileCache::parseHistoryFile(const CString& fileName) {
 		for ( int j = 0; j < nCount; j++ ){
 			nFilesCount++;
 			HistoryItem historyItem = ses->entry(j);
-			addFile(historyItem.directUrl, historyItem.localFilePath);
+			if ( !historyItem.directUrl.empty() ) {
+				addFile(historyItem.directUrl, historyItem.localFilePath);
+			}
+
+			if ( !historyItem.thumbUrl.empty() ) {
+				addThumb(historyItem.thumbUrl, historyItem.localFilePath);
+			}
 		}
 	}
 	return true;
@@ -68,6 +74,28 @@ std::string LocalFileCache::get(const std::string& url){
 		} else {
 			// if file not found on disk, delete it from cache
 			cache_.erase(foundItem);
+		}
+	}
+	return std::string();
+}
+
+bool LocalFileCache::addThumb(const std::string& url, const std::string& localFileName) {
+	cacheMutex_.acquire();
+	thumbCache_[url] = localFileName; 
+	cacheMutex_.release();
+	return true;
+}
+
+std::string LocalFileCache::getThumb(const std::string& url) {
+	ZThread::Guard<ZThread::Mutex> guard(cacheMutex_);
+	std::map<std::string, std::string>::const_iterator foundItem = thumbCache_.find(url);
+
+	if ( foundItem != thumbCache_.end() ) {
+		if ( IuCoreUtils::FileExists(foundItem->second) ) {
+			return foundItem->second;
+		} else {
+			// if file not found on disk, delete it from cache
+			thumbCache_.erase(foundItem);
 		}
 	}
 	return std::string();
