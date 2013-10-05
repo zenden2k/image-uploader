@@ -754,7 +754,7 @@ bool GetClipboardHtml(CString& text, CString& outSourceUrl) {
 		if ( startFragment != -1 && endFragment != -1 ) {
 			text = Utf8ToWCstring( ansiString.substr(startFragment, endFragment - startFragment) );
 			outSourceUrl = Utf8ToWCstring(sourceUrl);
-			return true;
+			result = true;
 		}
 		
 		GlobalUnlock(hglb);

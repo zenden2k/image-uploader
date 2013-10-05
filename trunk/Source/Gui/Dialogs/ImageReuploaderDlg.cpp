@@ -33,6 +33,8 @@
 #include <algorithm>
 #include <set>
 #include <Gui/Controls/CustomEditControl.h>
+#include <Func/LocalFileCache.h>
+#include <Func/Base.h>
 
 // CImageReuploaderDlg
 CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, const CString &initialBuffer)
@@ -42,12 +44,14 @@ CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * 
 	m_EngineList = engineList;
 	queueUploader_ = new CFileQueueUploader();
 	queueUploader_->setCallback( this );
+	historySession_ = NULL;
 	htmlClipboardFormatId = RegisterClipboardFormat(_T("HTML Format"));
 }
 
 CImageReuploaderDlg::~CImageReuploaderDlg()
 {
-	
+	delete historySession_;
+	historySession_ = 0;
 }
 
 LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -69,10 +73,15 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	TRC(IDC_IMAGEDOWNLOADERTIP, "Введите текст (код HTML, BB-code, или просто список URL):");
 	TRC(IDC_PASTEHTML, "Вставить HTML из буфера");
 	TRC(IDC_SOURCEURLLABEL, "URL источника (опционально):");
+	TRC(IDC_PASTEHTMLONCTRLVCHECKBOX, "Вставлять HTML при нажатии Ctrl+V");
+	TRC(IDC_DESCRIPTION, "Перезаливка изображений в тексте с сохранением исходной разметки");
+	TRC(IDC_SHOWLOG, "Показать лог");
+
 	::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS), SW_HIDE);
 	SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_SETCHECK, Settings.WatchClipboard?BST_CHECKED:BST_UNCHECKED);
 	GuiTools::SetCheck(m_hWnd, IDC_SOURCECODERADIO, true );
-
+	GuiTools::SetCheck(m_hWnd, IDC_PASTEHTMLONCTRLVCHECKBOX, Settings.ImageReuploaderSettings.PasteHtmlOnCtrlV);
+	GuiTools::MakeLabelBold(GetDlgItem(IDC_DESCRIPTION));
 	HWND hWnd = GetDlgItem(IDC_ANIMATIONSTATIC);
 	if (hWnd) {
 		m_wndAnimation.SubclassWindow(hWnd);
@@ -91,11 +100,6 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	}
 	SetDlgItemText(IDC_SERVENAMELABEL, CString(TR("Сервер")) + _T(": ") + Utf8ToWCstring(m_EngineList->byIndex(m_serverId)->Name));
 
-	if(!m_InitialBuffer.IsEmpty())
-	{
-		ParseBuffer(m_InitialBuffer, false);
-		BeginDownloading(); 
-	}
 	SetDlgItemText(IDC_RESULTSLABEL, _T(""));
 	::SetFocus(GetDlgItem(IDC_FILEINFOEDIT));
 	SendDlgItemMessage(IDC_INPUTTEXT, EM_SETLIMITTEXT, 20 * 1024 * 1024, 0); 
@@ -123,6 +127,7 @@ LRESULT CImageReuploaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 
 	if ( closeWindow ) {
 		Settings.WatchClipboard = SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_GETCHECK) != 0;
+		OnClose();
 		EndDialog(wID);
 	}
 	return 0;
@@ -133,22 +138,19 @@ LRESULT CImageReuploaderDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lP
 	HWND hwndRemove = (HWND) wParam;  // handle of window being removed 
 	HWND hwndNext = (HWND) lParam;
 
-	if(hwndRemove == PrevClipboardViewer) PrevClipboardViewer = hwndNext;
-	else ::SendMessage(PrevClipboardViewer, WM_CHANGECBCHAIN, wParam, lParam);
+	if ( hwndRemove == PrevClipboardViewer ) {
+		PrevClipboardViewer = hwndNext;
+	} else {
+		::SendMessage(PrevClipboardViewer, WM_CHANGECBCHAIN, wParam, lParam);
+	}
 	return 0;
 }
 
 void CImageReuploaderDlg::OnDrawClipboard()
 {
-	bool IsClipboard = IsClipboardFormatAvailable(CF_TEXT)!=0;
+	bool isHtmlAvailable = IsClipboardFormatAvailable(htmlClipboardFormatId)!=0;
 
-	if(IsClipboard && SendDlgItemMessage(IDC_WATCHCLIPBOARD,BM_GETCHECK)==BST_CHECKED && !m_FileDownloader.IsRunning()	)
-	{
-		CString str;  
-		WinUtils::GetClipboardText(str);
-		ParseBuffer(str, true);
-		
-	}
+	GuiTools::EnableDialogItem(m_hWnd, IDC_PASTEHTML, isHtmlAvailable);
 	//Sending WM_DRAWCLIPBOARD msg to the next window in the chain
 	if(PrevClipboardViewer) ::SendMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0); 
 }
@@ -162,41 +164,89 @@ LRESULT CImageReuploaderDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 bool CImageReuploaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it)
 {
-	if ( ok ) {
-		CUploadEngineData *ue = m_EngineList->byIndex(m_serverId);
-		CUploadEngineData* newData = new CUploadEngineData();
-		*newData = *ue;
-		CAbstractUploadEngine * e = m_EngineList->getUploadEngine(ue);
-		e->setUploadData(newData);
-		ServerSettingsStruct& settings = Settings.ServerByUtf8Name(newData->Name);
-		e->setServerSettings(settings);
-		UploadItemData* uploadItemData = new UploadItemData;
-		uploadItemData->sourceUrl = it.url;
-		DownloadItemData* dit = reinterpret_cast<DownloadItemData*>(it.id);
-		uploadItemData->sourceIndex = dit->sourceIndex;
-		uploadItemData->originalUrl = dit->originalUrl;
+	bool success = false;
 
-		std::string mimeType = IuCoreUtils::GetFileMimeType(it.fileName);
+	DownloadItemData* dit = reinterpret_cast<DownloadItemData*>(it.id);
+
+	if ( ok ) {		
 		m_nFilesDownloaded++;
-
-		if (mimeType.find("image/") == std::string::npos) {
-			WriteLog(logError, _T("Image re-uploader"), _T("File '") + Utf8ToWCstring(it.url) +
-				_T("'\r\n doesn't seems to be an image.\r\nIt has mime type '") + Utf8ToWCstring(mimeType) + "'.");
-		} else {
-			std::string defaultExtension = IuCoreUtils::GetDefaultExtensionForMimeType(mimeType);
-			std::string displayName = it.displayName;
-			if ( !defaultExtension.empty() ) {
-				std::string fileNameWithoutExt = IuCoreUtils::ExtractFileNameNoExt(it.fileName);
-				displayName = fileNameWithoutExt + "." + defaultExtension;
-			}
-			queueUploader_->AddFile( it.fileName, displayName, uploadItemData, e);
-			queueUploader_->start();
+		if ( addUploadTask(it, it.fileName) ) {
+			updateStats();
+			success = true;
 		}
-		updateStats();
 	} else {
-		WriteLog(logError, _T("Image re-uploader"), _T("Cannot download the image '") + Utf8ToWCstring(it.url) + _T("'.")
-			+ _T("\r\nStatus code:") + IntToStr(statusCode));
+
+		
 	}
+
+	if ( !success ) {
+		LogMsgType logMessageType = logError;
+		CString cacheLogMessage;
+		if ( tryGetFileFromCache(it, cacheLogMessage ) ) {
+			logMessageType = logWarning;
+		}
+		
+		WriteLog(logMessageType, _T("Image re-uploader"), _T("Cannot download the image '") + Utf8ToWCstring(it.url) + _T("'.")
+			+ _T("\r\nStatus code:") + IntToStr(statusCode));
+
+		if ( !cacheLogMessage.IsEmpty() ) {
+			WriteLog(logWarning,_T("Image re-uploader"), cacheLogMessage);
+		}
+	} 
+
+	return true;
+}
+
+bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListItem it, CString& logMessage) {
+	DownloadItemData* dit = reinterpret_cast<DownloadItemData*>(it.id);
+	LocalFileCache& localFileCache = LocalFileCache::instance();
+	bool success = false;
+	localFileCache.ensureHistoryParsed();
+	std::string localFile = localFileCache.get(dit->originalUrl);
+	CString message;
+	if ( !localFile.empty() ) {
+		message.Format(_T("File '%s' has been found on local computer ('%s')"), (LPCTSTR)Utf8ToWCstring(it.url), (LPCTSTR)Utf8ToWCstring(localFile) );
+		if ( addUploadTask(it, localFile) ) {
+			updateStats();
+			success = true;
+		}
+	} else {
+		//message.Format(_T("File '%s' not found in local cache"), (LPCTSTR)Utf8ToWCstring(it.url) );
+	}
+	logMessage = message;
+	return success;
+}
+
+bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it, std::string localFileName ) {
+	std::string mimeType = IuCoreUtils::GetFileMimeType(localFileName);
+	if (mimeType.find("image/") == std::string::npos) {
+		WriteLog(logError, _T("Image re-uploader"), _T("File '") + Utf8ToWCstring(it.url) +
+			_T("'\r\n doesn't seems to be an image.\r\nIt has mime type '") + Utf8ToWCstring(mimeType) + "'.");
+		return false;
+	} 
+
+	DownloadItemData* dit = reinterpret_cast<DownloadItemData*>(it.id);
+	CUploadEngineData *ue = m_EngineList->byIndex(m_serverId);
+	CUploadEngineData* newData = new CUploadEngineData();
+	*newData = *ue;
+	CAbstractUploadEngine * e = m_EngineList->getUploadEngine(ue);
+	e->setUploadData(newData);
+	ServerSettingsStruct& settings = Settings.ServerByUtf8Name(newData->Name);
+	e->setServerSettings(settings);
+	UploadItemData* uploadItemData = new UploadItemData;
+	uploadItemData->sourceUrl = it.url;
+
+	uploadItemData->sourceIndex = dit->sourceIndex;
+	uploadItemData->originalUrl = dit->originalUrl;
+
+	std::string defaultExtension = IuCoreUtils::GetDefaultExtensionForMimeType(mimeType);
+	std::string displayName = it.displayName;
+	if ( !defaultExtension.empty() ) {
+		std::string fileNameWithoutExt = IuCoreUtils::ExtractFileNameNoExt(it.fileName);
+		displayName = fileNameWithoutExt + "." + defaultExtension;
+	}
+	queueUploader_->AddFile( localFileName, displayName, uploadItemData, e);
+	queueUploader_->start();
 	return true;
 }
 
@@ -204,6 +254,7 @@ void CImageReuploaderDlg::OnQueueFinished()
 {
 	if(!m_InitialBuffer.IsEmpty())
 	{
+		OnClose();
 		EndDialog(0);
 		return;
 	}
@@ -377,12 +428,16 @@ bool CImageReuploaderDlg::BeginDownloading()
 			GuiTools::EnableDialogItem(m_hWnd, IDOK, false);
 
 			SetDlgItemText(IDCANCEL, TR("Остановить"));
+			CHistoryManager * mgr = ZBase::get()->historyManager();
+
+			delete historySession_;			
+			historySession_ = mgr->newSession();
 
 			m_FileDownloader.onFileFinished.bind(this, &CImageReuploaderDlg::OnFileFinished);
 			m_FileDownloader.onQueueFinished.bind(this, &CImageReuploaderDlg::OnQueueFinished);
 			m_FileDownloader.onConfigureNetworkManager.bind(this, &CImageReuploaderDlg::FileDownloader_OnConfigureNetworkManager);
 			m_FileDownloader.start();
-
+			
 			updateStats();
 			//SetDlgItemText( IDC_OUTPUTTEXT,  Utf8ToWCstring(result) );
 		}
@@ -395,9 +450,6 @@ bool CImageReuploaderDlg::LinksAvailableInText(const CString &text)
 	return false;
 }
 
-void CImageReuploaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)
-{
-}
 
 bool CImageReuploaderDlg::OnFileFinished(bool ok,   CFileQueueUploader::FileListItem & result) {
 	if ( ok ) {
@@ -408,6 +460,16 @@ bool CImageReuploaderDlg::OnFileFinished(bool ok,   CFileQueueUploader::FileList
 		item.newUrl = result.imageUrl;
 		mutex_.acquire();
 		uploadedItems_[uploadItemData->sourceIndex] =  item ;
+		
+		HistoryItem hi;
+		hi.localFilePath = result.fileName;
+		hi.serverName = result.serverName;
+		hi.directUrl =  (result.imageUrl);
+		hi.thumbUrl = (result.thumbUrl);
+		hi.viewUrl = (result.downloadUrl);
+		hi.uploadFileSize = result.fileSize; // IuCoreUtils::getFileSize(WCstringToUtf8(ImageFileName));
+		historySession_->AddItem(hi);
+
 		generateOutputText();
 		m_nFilesUploaded++;
 		mutex_.release();
@@ -527,11 +589,20 @@ bool GetClipboardHtml(CString& text, CString& outSourceUrl)
 
  #define CF_HTML 2
 LRESULT CImageReuploaderDlg::OnClickedPasteHtml(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-	sourceTextEditControl.SendMessage(WM_PASTE, 0, 0);
+	//OnEditControlPaste(&sourceTextEditControl);
+	pasteHtml();
+	//sourceTextEditControl.SendMessage(WM_PASTE, 0, 0);
 	return 0;
 }
 
 bool CImageReuploaderDlg::OnEditControlPaste(CCustomEditControl*) {
+	if ( GuiTools::GetCheck(m_hWnd, IDC_PASTEHTMLONCTRLVCHECKBOX ) ) {
+		return pasteHtml();
+	}
+	return false;
+}
+
+bool CImageReuploaderDlg::pasteHtml() {
 	if ( IsClipboardFormatAvailable(htmlClipboardFormatId) ) {
 		CString clipboardText;
 		CString sourceUrl;
@@ -543,4 +614,14 @@ bool CImageReuploaderDlg::OnEditControlPaste(CCustomEditControl*) {
 		return false;
 	}
 	return false;
+}
+
+bool CImageReuploaderDlg::OnClose() {
+	Settings.ImageReuploaderSettings.PasteHtmlOnCtrlV = GuiTools::GetCheck(m_hWnd, IDC_PASTEHTMLONCTRLVCHECKBOX);
+	return true;
+}
+
+LRESULT CImageReuploaderDlg::OnShowLogClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	LogWindow.Show();
+	return 0;
 }

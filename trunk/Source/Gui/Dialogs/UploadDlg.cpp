@@ -28,6 +28,7 @@
 #include "Func/Settings.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/GuiTools.h"
+#include <Func/LocalFileCache.h>
 
 class CTempFilesDeleter
 {
@@ -249,7 +250,7 @@ DWORD CUploadDlg::Run()
 	iss = InitialParams;
 
 	CHistoryManager * mgr = ZBase::get()->historyManager();
-	CHistorySession session = mgr->newSession();
+	CHistorySession* session = mgr->newSession();
 
 	for(i=0; i<n; i++)
 	{
@@ -466,7 +467,10 @@ DWORD CUploadDlg::Run()
 			hi.thumbUrl = WCstringToUtf8(item.ThumbUrl);
 			hi.viewUrl = WCstringToUtf8(item.DownloadUrl);
 			hi.uploadFileSize = IuCoreUtils::getFileSize(WCstringToUtf8(ImageFileName));
-			session.AddItem(hi);
+			if ( !hi.directUrl.empty() ) {
+				LocalFileCache::instance().addFile(hi.directUrl, hi.localFilePath);
+			}
+			session->AddItem(hi);
 			
 			
 			ResultsWindow->Unlock();
@@ -484,6 +488,8 @@ DWORD CUploadDlg::Run()
 		TempFilesDeleter.Cleanup();
 		iss = InitialParams;
 	}
+
+	delete session;
 
 	UploadProgress(n, n);
 	wsprintf(szBuffer,_T("%d %%"),100);

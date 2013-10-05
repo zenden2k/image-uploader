@@ -55,6 +55,7 @@ class CFileQueueUploader
 			std::string imageUrl;
 			std::string thumbUrl;
 			std::string downloadUrl;
+			std::string serverName;
 			int64_t fileSize;
 			UploadTask * uploadTask;
 			//void * user_data;

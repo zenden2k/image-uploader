@@ -37,6 +37,7 @@
 #include "mediainfodlg.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
+#include <Core/Utils/CryptoUtils.h>
 
 
 
@@ -208,6 +209,7 @@ IPin* GetOutPin( IBaseFilter* pFilter, int nPin )
 CVideoGrabber::CVideoGrabber()
 {
 	Terminated = true;
+	grabbedFramesCount = 0;
 }
 
 CVideoGrabber::~CVideoGrabber()
@@ -302,7 +304,7 @@ LRESULT CVideoGrabber::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 LRESULT CVideoGrabber::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	WizardDlg->LastVideoFile = GuiTools::GetWindowText(GetDlgItem(IDC_FILEEDIT));
-	
+	grabbedFramesCount = 0;
 	Terminated = false;
 	IsStopTimer = false;
 
@@ -359,7 +361,7 @@ DWORD CVideoGrabber::Run()
 	GetDlgItemText(IDC_FILEEDIT, buffer, 256);
 	if (lstrlen(buffer) < 1)
 		return 0;
-
+	snapshotsFolder.Empty();
 	int res = GrabBitmaps(buffer);
 	if (res < 0)
 		WriteLog(logError, TR("Модуль извлечения кадров"), ErrorStr, CString(TR("File:")) + _T("  ") + buffer + _T(
@@ -407,8 +409,41 @@ bool CVideoGrabber::OnAddImage(SENDPARAMS* sp)
 		gr2.DrawImage(&BackBuffer, 0, 0, iwidth, iheight);
 	}
 
-	MySaveImage(&bm, _T("grab"), fileNameBuffer, 1, 100);
+	CString videoFile = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
+
+	if ( snapshotsFolder.IsEmpty() ) {
+		CString snapshotsFolderTemplate;
+		if ( !Settings.VideoSettings.SnapshotsFolder.IsEmpty() ) {
+			CString path = Settings.VideoSettings.SnapshotsFolder + "\\" + Settings.VideoSettings.SnapshotFileTemplate;
+			snapshotsFolderTemplate = Utf8ToWCstring( IuCoreUtils::ExtractFilePath(WCstringToUtf8(path)) );
+			snapshotsFolder = GenerateFileNameFromTemplate(snapshotsFolderTemplate, 1, CPoint(bm.GetWidth(),bm.GetHeight()), videoFile);
+			std::string snapshotsFolderUtf8 = WCstringToUtf8(snapshotsFolder);
+
+			if ( !IuCoreUtils::DirectoryExists(snapshotsFolderUtf8) ) {
+				if ( !IuCoreUtils::createDirectory(snapshotsFolderUtf8) ) {
+					CString logMessage;
+					logMessage.Format(_T("Could not create folder '%s'."), (LPCTSTR)snapshotsFolder);
+					WriteLog(logError, _T("Video Grabber"), logMessage);
+					snapshotsFolder.Empty();
+				}
+			}
+		}
+	}
+	CString wOutDir;
+	if ( IuCoreUtils::DirectoryExists(WCstringToUtf8(snapshotsFolder)) ) {
+		wOutDir = snapshotsFolder;
+	}
+	CString snapshotFileTemplate =  Utf8ToWCstring( IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(Settings.VideoSettings.SnapshotFileTemplate)) );
+
+	
+	CString outFilename = GenerateFileNameFromTemplate(snapshotFileTemplate, grabbedFramesCount + 1,CPoint(bm.GetWidth(),bm.GetHeight()), videoFile);
+	/*CString fullOutFileName = Settings.VideoSettings.SnapshotsFolder + "\\" + outFilename;
+	std::string outDir = IuCoreUtils::ExtractFilePath(WCstringToUtf8(fullOutFileName));
+	CString fileNameNoExt = Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(fullOutFileName)));*/
+	
+	MySaveImage(&bm, outFilename, fileNameBuffer, 1, 100, !wOutDir.IsEmpty() ? (LPCTSTR)wOutDir : NULL);
 	ThumbsView.AddImage(fileNameBuffer, sp->szTitle, &bm);
+	grabbedFramesCount++;
 	return true;
 }
 
@@ -688,6 +723,7 @@ CImgSavingThread::~CImgSavingThread()
 
 int CVideoGrabber::GrabBitmaps(TCHAR* szFile )
 {
+
 	CSampleGrabberCB CB;
 
 	CString videoEngine = Settings.VideoSettings.Engine;
@@ -1083,4 +1119,42 @@ LRESULT CVideoGrabber::OnBnClickedFileinfobutton(WORD /*wNotifyCode*/, WORD /*wI
 
 	dlg.ShowInfo(buffer);
 	return 0;
+}
+
+
+CString CVideoGrabber::GenerateFileNameFromTemplate(const CString& templateStr, int index, const CPoint size, const CString& originalName)
+{
+	CString result = templateStr;
+	time_t t = time(0);
+	tm* timeinfo = localtime ( &t );
+	CString indexStr;
+	CString day, month, year;
+	CString hours, seconds, minutes;
+	std::string originalNameUtf8  = WCstringToUtf8(originalName);
+	CString fileName = Utf8ToWCstring(IuCoreUtils::ExtractFileName(originalNameUtf8));
+	CString fileNameNoExt = Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt(originalNameUtf8));
+	indexStr.Format(_T("%03d"), index);
+	CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(WCstringToUtf8(IntToStr(GetTickCount() + random(100))))).c_str();
+	CString uid = md5.Mid(5,6);
+	result.Replace(_T("%md5%"), (LPCTSTR)md5);
+	result.Replace(_T("%uid%"), (LPCTSTR)uid);
+	result.Replace(_T("%cx%"), IntToStr(size.x));
+	result.Replace(_T("%cy%"), IntToStr(size.y));
+	year.Format(_T("%04d"), (int)1900 + timeinfo->tm_year);
+	month.Format(_T("%02d"), (int) timeinfo->tm_mon + 1);
+	day.Format(_T("%02d"), (int) timeinfo->tm_mday);
+	hours.Format(_T("%02d"), (int)timeinfo->tm_hour);
+	seconds.Format(_T("%02d"), (int)timeinfo->tm_sec);
+	minutes.Format(_T("%02d"), (int)timeinfo->tm_min);
+
+	result.Replace(_T("%y%"), year);
+	result.Replace(_T("%m%"), month);
+	result.Replace(_T("%d%"), day);
+	result.Replace(_T("%h%"), hours);
+	result.Replace(_T("%n%"), minutes);
+	result.Replace(_T("%s%"), seconds);
+	result.Replace(_T("%i%"), indexStr);
+	result.Replace(_T("%fe%"),fileName);
+	result.Replace(_T("%f%"), fileNameNoExt);
+	return result;
 }

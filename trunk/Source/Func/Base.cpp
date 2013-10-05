@@ -21,6 +21,7 @@
 #include "Base.h"
 #include "Func/Settings.h"
 #include "Core/Utils/CoreUtils.h"
+#include <Func/LocalFileCache.h>
 
 ZBase* ZBase::m_base;
 
@@ -44,10 +45,12 @@ CHistoryManager* ZBase::historyManager()
 
 void ZBase::addToGlobalCache(const std::string fileName, const std::string url)
 {
-	m_UrlCache[url] = fileName;
+	LocalFileCache::instance().addFile(url, fileName);
+	//m_UrlCache[url] = fileName;
 }
 
 std::string ZBase::getFromCache(const std::string url)
 {
-	return m_UrlCache[url];
+	return LocalFileCache::instance().get(url);
+
 }

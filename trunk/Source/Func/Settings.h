@@ -78,6 +78,8 @@ struct VideoSettingsStruct
 	LOGFONT Font;
 	COLORREF TextColor;
 	CString Engine;
+	CString SnapshotsFolder;
+	CString SnapshotFileTemplate;
 };
 
 class CEncodedPassword
@@ -151,6 +153,10 @@ struct HistorySettingsStruct
 	bool EnableDownloading;
 };
 
+struct ImageReuploaderSettingsStruct {
+	bool PasteHtmlOnCtrlV;
+};
+
 class CSettings
 {
 	public:
@@ -180,6 +186,7 @@ class CSettings
 		ConnectionSettingsStruct ConnectionSettings;
 		ScreenshotSettingsStruct ScreenshotSettings;
 		HistorySettingsStruct HistorySettings;
+		ImageReuploaderSettingsStruct ImageReuploaderSettings;
 		bool ConfirmOnExit;
 		bool ShowUploadErrorDialog;
 		int FileRetryLimit;

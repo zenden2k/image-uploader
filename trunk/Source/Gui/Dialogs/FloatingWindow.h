@@ -156,7 +156,7 @@ public:
 	 void UploadScreenshot(const CString& realName, const CString &displayName);
 	 CString fileName, realFileName;
 	 CFileQueueUploader * m_FileQueueUploader;
-	 bool OnQueueFinished();
+	 bool OnQueueFinished(CFileQueueUploader*);
 	 bool m_bFromHotkey;
 	 bool OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result);
 	 bool OnConfigureNetworkManager(NetworkManager* nm);

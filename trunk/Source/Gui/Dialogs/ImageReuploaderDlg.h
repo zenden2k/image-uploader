@@ -35,6 +35,7 @@
 #include <Core/Upload/FileQueueUploader.h>
 #include "Gui/Controls/PictureExWnd.h"
 #include <Gui/Controls/CustomEditControl.h>
+#include <Func/HistoryManager.h>
 
 class CFileQueueUploader;
 class CMyEngineList;
@@ -56,7 +57,8 @@ class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
 			COMMAND_HANDLER(IDC_PASTEHTML, BN_CLICKED, OnClickedPasteHtml)
 			COMMAND_HANDLER(IDC_SOURCECODERADIO, BN_CLICKED, OnClickedOutputRadioButton)
 			COMMAND_HANDLER(IDC_LINKSLISTRADIO, BN_CLICKED, OnClickedOutputRadioButton)		
-			COMMAND_HANDLER(IDC_COPYTOCLIPBOARD, BN_CLICKED, OnClickedCopyToClipboardButton)	
+			COMMAND_HANDLER(IDC_COPYTOCLIPBOARD, BN_CLICKED, OnClickedCopyToClipboardButton)
+			COMMAND_HANDLER(IDC_SHOWLOG, BN_CLICKED, OnShowLogClicked)
 			MSG_WM_DRAWCLIPBOARD(OnDrawClipboard)
 			MESSAGE_HANDLER(WM_CHANGECBCHAIN, OnChangeCbChain)
 			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
@@ -70,10 +72,12 @@ class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
 			DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X|DLSZ_MOVE_Y)
 			DLGRESIZE_CONTROL(IDC_COPYTOCLIPBOARD, DLSZ_MOVE_Y)
 			DLGRESIZE_CONTROL(IDC_SOURCECODERADIO, DLSZ_MOVE_Y)
+			DLGRESIZE_CONTROL(IDC_SHOWLOG, DLSZ_MOVE_Y)
 			DLGRESIZE_CONTROL(IDC_LINKSLISTRADIO, DLSZ_MOVE_Y)
 			DLGRESIZE_CONTROL(IDC_RESULTSLABEL, DLSZ_MOVE_Y)
 			DLGRESIZE_CONTROL(IDC_DOWNLOADFILESPROGRESS, DLSZ_SIZE_X|DLSZ_MOVE_Y)
 			DLGRESIZE_CONTROL(IDC_IMAGEDOWNLOADERTIP, DLSZ_SIZE_X)
+			DLGRESIZE_CONTROL(IDC_SOURCEURLEDIT, DLSZ_SIZE_X)
 		END_DLGRESIZE_MAP()
 		
 		HWND PrevClipboardViewer;
@@ -107,11 +111,11 @@ class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
 		LRESULT OnClickedPasteHtml(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedOutputRadioButton(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedCopyToClipboardButton(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-
+		LRESULT OnShowLogClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		
 		bool ExtractLinks(std::string text, std::vector<std::string> &result);
 		bool BeginDownloading();
 		static bool LinksAvailableInText(const CString &text);
-		void ParseBuffer(const CString& text, bool OnlyImages);
 		void OnQueueFinished();
 		bool OnFileFinished(bool ok,  int statusCode, CFileDownloader::DownloadFileListItem it);
 		bool OnConfigureNetworkManager(CFileQueueUploader*, NetworkManager* nm);
@@ -122,6 +126,10 @@ class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
 		void generateOutputText();
 		void updateStats();
 		void processFinished();
+		bool pasteHtml();
+		bool OnClose();
+		bool tryGetFileFromCache(CFileDownloader::DownloadFileListItem it, CString& logMessage);
+		bool addUploadTask(CFileDownloader::DownloadFileListItem it, std::string localFileName );
 		//bool OnConfigureNetworkManager(NetworkManager* nm);
 		// bool OnUploadProgress(UploadProgress progress, UploadTask* task, NetworkManager* nm){return true;}
 
@@ -139,6 +147,7 @@ class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
 		unsigned int htmlClipboardFormatId;
 		CString m_InitialBuffer;
 		ZThread::Mutex mutex_;
+		CHistorySession* historySession_;
 		std::map<unsigned int, UploadedItem> uploadedItems_;
 
 		struct Match {
