@@ -318,6 +318,8 @@ CSettings::CSettings()
 	VideoSettings.UseAviInfo = TRUE;
 	VideoSettings.ShowMediaInfo = TRUE;
 	VideoSettings.TextColor = RGB(0, 0, 0);
+	VideoSettings.SnapshotsFolder = Settings.SettingsFolder + _T("Snapshots");
+	VideoSettings.SnapshotFileTemplate = _T("%f%_%cx%_%cy%_%uid%\\grab_%i%.png");
 	
 	VideoSettings.Engine = IsFFmpegAvailable() ? VideoEngineAuto : VideoEngineDirectshow;
 	ConnectionSettings.UseProxy =  FALSE;
@@ -351,6 +353,8 @@ CSettings::CSettings()
 	TrayIconSettings.MiddleClickCommand = 7; // region screenshot
 	TrayIconSettings.DontLaunchCopy = FALSE;
 	TrayIconSettings.TrayScreenshotAction = 0;
+
+	ImageReuploaderSettings.PasteHtmlOnCtrlV = true;
 	Hotkeys_changed = false;
 
 	/* binding settings */
@@ -423,6 +427,8 @@ CSettings::CSettings()
 	video.nm_bind(VideoSettings, TextColor);
 	video.nm_bind(VideoSettings, Font);
 	video.nm_bind(VideoSettings, Engine);
+	video.nm_bind(VideoSettings, SnapshotsFolder);
+	video.nm_bind(VideoSettings, SnapshotFileTemplate);
 
 	SettingsNode& tray = mgr_["TrayIcon"];
 	tray.nm_bind(TrayIconSettings, LeftDoubleClickCommand);
@@ -434,6 +440,9 @@ CSettings::CSettings()
 
 	SettingsNode& history = mgr_["History"];
 	history.nm_bind(HistorySettings, EnableDownloading);
+
+	SettingsNode& imageReuploader = mgr_["ImageReuploader"];
+	imageReuploader.nm_bind(ImageReuploaderSettings, PasteHtmlOnCtrlV);
 
 	SettingsNode& upload = mgr_["Uploading"];
 	upload.n_bind(ServerName);

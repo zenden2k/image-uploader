@@ -198,6 +198,7 @@
 #define IDC_HEIGHTEDIT                  1041
 #define IDC_DONE                        1042
 #define IDC_LOGINBUTTON2                1042
+#define IDC_VIDEOSNAPSHOTSFOLDEREDIT    1042
 #define IDC_RADIO1                      1043
 #define IDC_MULTIPLEFILES               1043
 #define IDC_SOURCECODERADIO             1043
@@ -205,6 +206,8 @@
 #define IDC_SAVEASONE                   1044
 #define IDC_HEIGHTRADIO                 1044
 #define IDC_LINKSLISTRADIO              1044
+#define IDC_SCREENSHOTFILENAMEEDIT2     1044
+#define IDC_SNAPSHOTFILENAMEEDIT        1044
 #define IDC_EDIT2                       1045
 #define IDC_TRANSPARENCY                1045
 #define IDC_QUALITY                     1045
@@ -252,6 +255,7 @@
 #define IDC_FRAMECOLOR                  1080
 #define IDC_FILEINFOBUTTON              1080
 #define IDC_VIEWLOG                     1080
+#define IDC_SHOWLOG                     1080
 #define IDC_ABOUT                       1081
 #define IDC_SPIN1                       1083
 #define IDC_THUMBPERLINESPIN            1083
@@ -447,6 +451,7 @@
 #define IDC_CHECK1                      1272
 #define IDC_AUTOSTARTUP                 1272
 #define IDC_PRESERVE_EXIF               1272
+#define IDC_PASTEHTMLONCTRLVCHECKBOX    1272
 #define IDC_VIDEOENGINECOMBO            1273
 #define IDC_FOUNDABUG                   1274
 #define IDC_RESULTSLABEL                1274
@@ -456,6 +461,10 @@
 #define IDC_INPUTTEXT                   1278
 #define IDC_SERVENAMELABEL              1279
 #define IDC_SOURCEURLLABEL              1281
+#define IDC_DESCRIPTION                 1282
+#define IDC_VIDEOSNAPSHOTSFOLDERBUTTON  1283
+#define IDC_VIDEOSNAPSHOTSFOLDERLABEL   1284
+#define IDC_SNAPSHOTFILENAMELABEL       1285
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -502,7 +511,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        259
 #define _APS_NEXT_COMMAND_VALUE         32803
-#define _APS_NEXT_CONTROL_VALUE         1282
+#define _APS_NEXT_CONTROL_VALUE         1286
 #define _APS_NEXT_SYMED_VALUE           127
 #endif
 #endif

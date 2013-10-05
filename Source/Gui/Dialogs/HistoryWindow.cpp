@@ -27,6 +27,7 @@
 #include "ResultsPanel.h"
 #include "ResultsWindow.h"
 #include "Gui/WizardCommon.h"
+#include "Core/3rdpart/pcreplusplus.h"
 
 // CHistoryWindow
 CHistoryWindow::CHistoryWindow()
@@ -67,21 +68,40 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 		if (m_wndAnimation.Load(MAKEINTRESOURCE(IDR_PROGRESSGIF),_T("GIF")))
 			m_wndAnimation.Draw();
 		m_wndAnimation.ShowWindow(SW_HIDE);
-	};
+	}
 
 	std::string fName = ZBase::get()->historyManager()->makeFileName();
 	
 	std::vector<CString> files;
 	historyFolder = Settings.SettingsFolder+_T("\\History\\");
 	GetFolderFileList(files, historyFolder , _T("history*.xml"));
+	pcrepp::Pcre regExp("history_(\\d+)_(\\d+)", "imcu");
+
 	for(size_t i=0; i<files.size(); i++)
 	{
 		m_HistoryFiles.push_back(files[i]);
 
 		CString monthLabel = Utf8ToWCstring( IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8 (files[i])));
-		monthLabel.Replace(_T("history_"), _T(""));
-		monthLabel.Replace(_T("_"), _T("/"));
-		SendDlgItemMessage(IDC_MONTHCOMBO, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)monthLabel);
+
+		
+		size_t pos = 0;
+
+		if ( regExp.search(WCstringToUtf8(monthLabel), pos) ) { 
+			std::string yearStr = regExp[0];
+			std::string monthStr = regExp[1];
+			int year = atoi(yearStr.c_str());
+			int month = atoi(monthStr.c_str());
+			monthLabel.Format(_T("%d/%02d"), year, month);
+		}  else {
+			monthLabel.Replace(_T("history_"), _T(""));
+			monthLabel.Replace(_T("_"), _T("/"));
+		}
+
+
+		int newItemIndex = SendDlgItemMessage(IDC_MONTHCOMBO, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)monthLabel);
+		if ( newItemIndex >=0 ) {
+			SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETITEMDATA, newItemIndex, (LPARAM)i);
+		}
 	}
 	int selectedIndex = files.size()-1;
 	SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETCURSEL, selectedIndex, 0);
@@ -295,7 +315,8 @@ LRESULT CHistoryWindow::OnMonthChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 {
 	int nIndex = SendDlgItemMessage(IDC_MONTHCOMBO, CB_GETCURSEL);
 	if(nIndex == -1) return 0;
-	LoadHistoryFile(m_HistoryFiles[nIndex]);
+	int historyFileIndex = (int)SendDlgItemMessage(IDC_MONTHCOMBO, CB_GETITEMDATA, nIndex);
+	LoadHistoryFile(m_HistoryFiles[historyFileIndex]);
 	m_treeView.SetFocus();
 	return 0;
 }

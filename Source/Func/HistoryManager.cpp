@@ -51,14 +51,14 @@ void CHistoryManager::setHistoryFileName(const std::string& filepath, const std:
 	m_historyFileNamePrefix = nameprefix;
 }
 
-CHistorySession CHistoryManager::newSession()
+CHistorySession* CHistoryManager::newSession()
 {
 	time_t t = time(0);
 	tm * timeinfo = localtime ( &t );
 	std::string fileName = m_historyFilePath + m_historyFileNamePrefix +"_" + IuCoreUtils::toString(1900+timeinfo->tm_year)+"_" + IuCoreUtils::toString(timeinfo->tm_mon+1) + ".xml";
 	std::string str = IuCoreUtils::toString(rand()%(256 * 256)) + IuCoreUtils::toString(int(t));
 	std::string id = IuCoreUtils::CryptoUtils::CalcMD5HashFromString(str + IuCoreUtils::toString(rand()%(256))).substr(0, 16);
-	return CHistorySession(fileName, id);
+	return new CHistorySession(fileName, id);
 }
 
 CHistorySession::CHistorySession(const std::string& filename, const std::string&  sessionId)

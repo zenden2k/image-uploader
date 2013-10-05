@@ -42,6 +42,7 @@ public:
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		COMMAND_ID_HANDLER_EX(IDC_MEDIAINFOFONT, OnMediaInfoFontClicked)
 		COMMAND_HANDLER(IDC_MEDIAINFOONIMAGE,BN_CLICKED, OnShowMediaInfoTextBnClicked)
+		COMMAND_HANDLER(IDC_VIDEOSNAPSHOTSFOLDERBUTTON, BN_CLICKED, OnVideoSnapshotsFolderButtonClicked);
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
     // Handler prototypes:
@@ -55,6 +56,7 @@ public:
 	CColorButton Color1;
 	LRESULT OnMediaInfoFontClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	LRESULT OnShowMediaInfoTextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnVideoSnapshotsFolderButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 };
 
 

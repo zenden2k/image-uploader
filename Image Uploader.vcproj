@@ -1111,11 +1111,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-reload.ico"
+				RelativePath=".\res\icon-reload.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-reload.ico"
+				RelativePath=".\Source\res\icon-reload.ico"
 				>
 			</File>
 			<File
@@ -4646,6 +4646,14 @@
 							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Source\Func\LocalFileCache.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Func\LocalFileCache.h"
+					>
 				</File>
 				<File
 					RelativePath=".\Source\Func\MyDataObject.cpp"

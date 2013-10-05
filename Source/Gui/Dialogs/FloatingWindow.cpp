@@ -607,8 +607,7 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
 	ShowBaloonTip(msg, TR("Загрузка снимка"));
 }
 
-bool CFloatingWindow::OnQueueFinished()
-{
+bool CFloatingWindow::OnQueueFinished(CFileQueueUploader*) {
 	m_bIsUploading = false;
 	CString url;
 	if ((Settings.UseDirectLinks || m_LastUploadedItem.downloadUrl.empty()) && !m_LastUploadedItem.imageUrl.empty() )
@@ -623,7 +622,7 @@ bool CFloatingWindow::OnQueueFinished()
 	}
 
 	CHistoryManager* mgr = ZBase::get()->historyManager();
-	CHistorySession session = mgr->newSession();
+	CHistorySession *session = mgr->newSession();
 	HistoryItem hi;
 	hi.localFilePath = source_file_name_;
 	hi.serverName = server_name_;
@@ -631,7 +630,8 @@ bool CFloatingWindow::OnQueueFinished()
 	hi.thumbUrl = (m_LastUploadedItem.thumbUrl);
 	hi.viewUrl = (m_LastUploadedItem.downloadUrl);
 	hi.uploadFileSize = m_LastUploadedItem.fileSize; // IuCoreUtils::getFileSize(WCstringToUtf8(ImageFileName));
-	session.AddItem(hi);
+	session->AddItem(hi);
+	delete session;
 
 	IU_CopyTextToClipboard(url);
 	ShowBaloonTip(TrimString(url, 70) + CString("\r\n") + TR("Нажмите на это сообщение для открытия окна с кодом...") + CString("\r\n")

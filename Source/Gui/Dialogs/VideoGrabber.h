@@ -128,7 +128,7 @@ class CVideoGrabber :
 		LRESULT OnBnClickedMultiplefiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnBnClickedFileinfobutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnBnClickedButton1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
-
+		
 		int GrabBitmaps(TCHAR* szFile );
 		DWORD Run();
 		bool GrabInfo(LPCTSTR String);
@@ -136,6 +136,7 @@ class CVideoGrabber :
 		bool OnAddImage(SENDPARAMS* sp);
 		void SavingMethodChanged(void);
 		int GenPicture(CString& outFileName);
+		CString GenerateFileNameFromTemplate(const CString& templateStr, int index, const CPoint size, const CString& originalName);
 		CThumbsView ThumbsView;
 		void CheckEnableNext();
 		bool OnNext(); // Reimplemented function of CWizardPage
@@ -144,7 +145,9 @@ class CVideoGrabber :
 		TCHAR szBufferFileName[256];
 		CImgSavingThread SavingThread;
 		CString ErrorStr;
+		CString snapshotsFolder;
 		bool Terminated, IsStopTimer;
+		int grabbedFramesCount;
 		int NumOfFrames;
 		int TimerInc;
 		bool SetFileName(LPCTSTR FileName);

@@ -193,12 +193,16 @@ void CFileQueueUploader::Impl::run()
 		callMutex_.acquire();
 		FileListItem result;
 		result.uploadTask = &it;
+		result.serverName = serverName;
+		result.fileName = it.fileName;
 		if (res) {
 			
 			result.imageUrl = (uploader.getDirectUrl());
 			result.downloadUrl = (uploader.getDownloadUrl());
 			result.thumbUrl = (uploader.getThumbUrl());
+			result.fileSize = it.fileSize;
 			if (callback_) {
+				
 				callback_->OnFileFinished(true, result);
 			}
 		}
@@ -210,7 +214,9 @@ void CFileQueueUploader::Impl::run()
 		}
 		callMutex_.release();
 	}
+	
 	mutex_.acquire();
+	
 	m_nRunningThreads--;
 	mutex_.release();
 	if (!m_nRunningThreads)

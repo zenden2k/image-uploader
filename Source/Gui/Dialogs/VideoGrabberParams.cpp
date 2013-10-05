@@ -56,9 +56,15 @@ LRESULT CVideoGrabberParams::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	TRC(IDC_MEDIAINFOONIMAGE, "Отобразить информацию о видеофайле на картинке");
 	TRC(IDC_MEDIAINFOFONT, "Шрифт...");
 	TRC(IDC_TEXTCOLORLABEL, "Цвет текста:");
+	TRC(IDC_PARAMETERSHINTLABEL, "%f% - имя видео файла без расширения, \r\n%fe% - имя видео файла с расширением\r\n%ext% - расширение видео файла,\r\n%y% - год, %m% - месяц, %d% - день\n%h% - час, %n% - минута, %s% - секунда\n %i% - порядковый номер,\n%cx% - ширина,  %cy% - высота изображения");
 
+
+	TRC(IDC_VIDEOSNAPSHOTSFOLDERLABEL, "Папка для сохранения кадров:");
+	TRC(IDC_VIDEOSNAPSHOTSFOLDERBUTTON, "Выбрать...");
 	Color1.SubclassWindow(GetDlgItem(IDC_TEXTCOLOR));
 	Color1.SetColor(Settings.VideoSettings.TextColor);
+	SetDlgItemText(IDC_VIDEOSNAPSHOTSFOLDEREDIT, Settings.VideoSettings.SnapshotsFolder);
+	SetDlgItemText(IDC_SNAPSHOTFILENAMEEDIT, Settings.VideoSettings.SnapshotFileTemplate);
 
 	BOOL b;
 	OnShowMediaInfoTextBnClicked(IDC_MEDIAINFOONIMAGE, 0, 0, b);
@@ -74,10 +80,14 @@ bool CVideoGrabberParams::Apply()
 	Settings.VideoSettings.UseAviInfo = SendDlgItemMessage(IDC_USEAVIINFO, BM_GETCHECK);
 	Settings.VideoSettings.ShowMediaInfo = SendDlgItemMessage(IDC_MEDIAINFOONIMAGE, BM_GETCHECK);
 	Settings.VideoSettings.Font = m_Font;
+	Settings.VideoSettings.SnapshotsFolder = GuiTools::GetDlgItemText(m_hWnd, IDC_VIDEOSNAPSHOTSFOLDEREDIT);
+	Settings.VideoSettings.SnapshotFileTemplate = GuiTools::GetDlgItemText(m_hWnd, IDC_SNAPSHOTFILENAMEEDIT);
+
 	CheckBounds(Settings.VideoSettings.TileWidth, 10, 1024, 200);
 	CheckBounds(Settings.VideoSettings.GapWidth, 0, 200, 2);
 	CheckBounds(Settings.VideoSettings.GapHeight, 0, 200, 2);
 	Settings.VideoSettings.TextColor = Color1.GetColor();
+
 	return true;
 }
 
@@ -93,5 +103,16 @@ LRESULT CVideoGrabberParams::OnShowMediaInfoTextBnClicked(WORD wNotifyCode, WORD
 {
 	bool bChecked = SendDlgItemMessage(wID, BM_GETCHECK) == BST_CHECKED;
 	GuiTools::EnableNextN(GetDlgItem(wID), 3, bChecked);
+	return 0;
+}
+
+LRESULT CVideoGrabberParams::OnVideoSnapshotsFolderButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	CFolderDialog fd(m_hWnd,TR("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE );
+	CString path = GuiTools::GetWindowText(GetDlgItem(IDC_VIDEOSNAPSHOTSFOLDEREDIT));
+	fd.SetInitialFolder(path,true);
+	if ( fd.DoModal(m_hWnd) == IDOK ) {
+		SetDlgItemText(IDC_VIDEOSNAPSHOTSFOLDEREDIT,fd.GetFolderPath());
+		return true;
+	}
 	return 0;
 }
