@@ -109,6 +109,7 @@ class CVideoGrabber :
 			COMMAND_HANDLER(IDC_MULTIPLEFILES, BN_CLICKED, OnBnClickedMultiplefiles)
 			COMMAND_HANDLER(IDC_SAVEASONE, BN_CLICKED, OnBnClickedMultiplefiles)
 			COMMAND_HANDLER(IDC_SELECTVIDEO, BN_CLICKED, OnBnClickedButton1)
+			COMMAND_ID_HANDLER(IDC_OPENFOLDER, OnOpenFolder)
 			NOTIFY_HANDLER(IDC_THUMBLIST, LVN_DELETEITEM, OnLvnItemDelete)
 			COMMAND_HANDLER(IDC_FILEINFOBUTTON, BN_CLICKED, OnBnClickedFileinfobutton)
 			REFLECT_NOTIFICATIONS()
@@ -128,6 +129,7 @@ class CVideoGrabber :
 		LRESULT OnBnClickedMultiplefiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnBnClickedFileinfobutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnBnClickedButton1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
+		LRESULT OnOpenFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		
 		int GrabBitmaps(TCHAR* szFile );
 		DWORD Run();
@@ -142,11 +144,14 @@ class CVideoGrabber :
 		bool OnNext(); // Reimplemented function of CWizardPage
 		bool OnShow(); // Reimplemented function of CWizardPage
 
+		CHyperLink openInFolderLink_;
+
 		TCHAR szBufferFileName[256];
 		CImgSavingThread SavingThread;
 		CString ErrorStr;
 		CString snapshotsFolder;
 		bool Terminated, IsStopTimer;
+		int originalGrabInfoLabelWidth_;
 		int grabbedFramesCount;
 		int NumOfFrames;
 		int TimerInc;

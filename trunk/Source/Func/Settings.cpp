@@ -41,6 +41,9 @@
  const TCHAR CSettings::VideoEngineDirectshow[] = _T("Directshow");
  const TCHAR CSettings::VideoEngineFFmpeg[]     = _T("FFmpeg");
  const TCHAR CSettings::VideoEngineAuto[]       = _T("Auto");
+
+ COLORREF CSettings::DefaultLinkColor = RGB(0x0C,0x32, 0x50);
+
 /* CString support for  SettingsManager */
 
 inline std::string myToString(const CString& value)

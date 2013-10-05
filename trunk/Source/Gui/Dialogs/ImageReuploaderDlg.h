@@ -74,7 +74,7 @@ class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
 			DLGRESIZE_CONTROL(IDC_SOURCECODERADIO, DLSZ_MOVE_Y)
 			DLGRESIZE_CONTROL(IDC_SHOWLOG, DLSZ_MOVE_Y)
 			DLGRESIZE_CONTROL(IDC_LINKSLISTRADIO, DLSZ_MOVE_Y)
-			DLGRESIZE_CONTROL(IDC_RESULTSLABEL, DLSZ_MOVE_Y)
+			DLGRESIZE_CONTROL(IDC_RESULTSLABEL, DLSZ_SIZE_X)
 			DLGRESIZE_CONTROL(IDC_DOWNLOADFILESPROGRESS, DLSZ_SIZE_X|DLSZ_MOVE_Y)
 			DLGRESIZE_CONTROL(IDC_IMAGEDOWNLOADERTIP, DLSZ_SIZE_X)
 			DLGRESIZE_CONTROL(IDC_SOURCEURLEDIT, DLSZ_SIZE_X)
@@ -149,6 +149,7 @@ class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
 		ZThread::Mutex mutex_;
 		CHistorySession* historySession_;
 		std::map<unsigned int, UploadedItem> uploadedItems_;
+		static const TCHAR LogTitle[];
 
 		struct Match {
 			int start;

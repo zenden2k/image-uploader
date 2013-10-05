@@ -226,6 +226,15 @@ LRESULT CFloatingWindow::OnUploadFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 	return 0;
 }
 
+LRESULT CFloatingWindow::OnReUploadImages(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+{
+	if (pWizardDlg->executeFunc(_T("reuploadimages,1"))) {
+		pWizardDlg->ShowWindow(SW_SHOW);
+	}
+	return 0;
+}
+
+
 LRESULT CFloatingWindow::OnUploadImages(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	if (pWizardDlg->executeFunc(_T("addimages,1")))
@@ -651,7 +660,7 @@ bool CFloatingWindow::OnFileFinished(bool ok, CFileQueueUploader::FileListItem& 
 	return true;
 }
 
-bool CFloatingWindow::OnConfigureNetworkManager(NetworkManager* nm)
+bool CFloatingWindow::OnConfigureNetworkManager(CFileQueueUploader *uploader, NetworkManager* nm)
 {
 	IU_ConfigureProxy(*nm);
 	return true;

@@ -446,4 +446,14 @@ IconInfo GetIconInfo(HICON hIcon)
 	return myinfo;
 }
 
+int GetWindowLeft(HWND Wnd)
+{
+	RECT WindowRect = {0,0,0,0};
+
+	GetWindowRect(Wnd,&WindowRect);
+	HWND Parent = GetParent(Wnd);
+	ScreenToClient(Parent, (LPPOINT)&WindowRect);
+	return WindowRect.left;
+}
+
 };
