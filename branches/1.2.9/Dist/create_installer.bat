@@ -1,0 +1,1 @@
+"c:\Program Files (x86)\Inno Setup 5\iscc.exe" /cc /dWIN64FILES "iu_setup_script.iss"

@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Servers>
+		<Server Name="radikal.cc" MaxFileSize="10000000" Debug="0" Authorize="1">
+		<Actions>
+			<Action Type="login" Url="http://radikal.cc/Auth/Login" PostParams="Login=$(_LOGIN);Password=$(_PASSWORD);IsRemember=true;ReturnUrl=/;" OnlyOnce="1"/>
+			<Action Type="upload" Url="http://radikal.cc/api3/rest/uplimg/prepared" PostParams="RESPTYPE=xml;FROMOBJECT=22;MAXSIZEIMG=1024;MAXSIZEIMGPREV=$(_THUMBWIDTH);ISINSCRIMGPREV=true;INSCRIMGPREV=Увеличить;IDALBUM=noall;COMMENTIMG=;URLFORIMG=;TAGS=;ISPUBLIC=false;Filename=$(_FILENAME);Filedata=%filename%;" RegExp='&lt;ImgPreviewUrl&gt;(.*?)&lt;([\s\S]*?)&lt;ImgUrl&gt;(.*?)&lt;' AssignVars="Image:2;Thumb:0"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
+	<Server Name="ImageBan.ru"  Authorize="1" Debug="0" Plugin="imageban">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
+	<Server Name="habrastorage.org"  Debug="0" Plugin="habrastorage" Authorize="2">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>		
+	<Server Name="iPicture.ru"  Authorize="1" Debug="0">
+		<Actions>
+			<Action Type="login" Url="http://ipicture.ru/User/Login" PostParams="username=$(_LOGIN);pwd=$(_PASSWORD);autologin=1;" OnlyOnce="0" Description="Authorization on iPicture.ru"/>
+			<Action Type="upload" Url="http://ipicture.ru/Upload/" PostParams="rotate=0;method=file;thumb_resize_on=on;galleries=12;status=on;thumb_resize=$(_THUMBWIDTH);userfile=%filename%" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:0;Thumb:2"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
+	<Server Name="keep4u.ru"  Authorize="1" MaxFileSize="10000000" Debug="0">
+		<Actions>
+			<Action Type="login" Url="http://keep4u.ru/login.php" PostParams="login=$(_LOGIN);mem=on;password=$(_PASSWORD);ok=Войти" OnlyOnce="1" RegExp='(.*?)'/>
+			<Action Type="upload" Url="http://keep4u.ru/upld?X-Progress-ID=0a06fcb20fdbfad30d733e69bd886321" PostParams="pfile[]=%filename%;disable_effects=On;preview=yes;preview_size=$(_THUMBWIDTH);sbmt=;code=3;preview_title=yes;preview_title_set=size;" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:0;Thumb:2"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
+	<Server Name="bayimg.com" MaxFileSize="5000000">
+		<Actions>
+			<Action Type="upload" Url="http://bayimg.com/upload" PostParams="file=%filename%;code=sm$(_RAND16BITS)th;tags=sss;" RegExp='value=\"//bayimg.com/([A-z]*?)\"' AssignVars="TempUrl:0;"/>
+			<Action Type="get" Url="http://bayimg.com/$(TempUrl)" RegExp='\"\/\/image.bayimg.com\/(.*?)\"' AssignVars="Image:0;"/>
+		</Actions>
+		<Result ImageUrlTemplate="http://image.bayimg.com/$(Image)" DownloadUrlTemplate="http://bayimg.com/$(TempUrl)"/>
+	</Server>
+	<Server Name="pikucha.ru" MaxFileSize="10485760" Authorize="1" Debug="0" Plugin="pikucha">
+		<Actions>
+			<Action Type="login" Url="http://pikucha.ru/entry" PostParams="Action=entry;email=$(_LOGIN);password=$(_PASSWORD);entry=Войти;" OnlyOnce="1"/>
+			<Action Type="post" Url="http://pikucha.ru/api?object=user&amp;action=data"/>
+			<Action Type="upload" Url="http://pikucha.ru/api?object=image&amp;action=upload" PostParams="files[]=%filename%;thumbnail_dimension=$(_THUMBWIDTH);thumbnail_size=0;" RegExp="url=(.*?)\]\[img\](.*?)\[\/img\][" AssignVars="ViewUrl:0;Thumb:1"/>
+		</Actions>
+		<Result DownloadUrlTemplate="$(ViewUrl)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
+	<!--<Server Name="itrash.ru"  MaxFileSize="0"  Authorize="1" Debug="0">
+		<Actions>
+			<Action Type="login" Url="http://itrash.ru/loader/cmd.php" PostParams="command=auth;client_code=iTL10;login=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="1" RegExp='&lt;passkey&gt;(.*?)&lt;/passkey&gt;' AssignVars="Passkey:0"/>
+			<Action Type="upload" Url="http://itrash.ru/loader/cmd.php" PostParams="command=send;file=%filename%;client_code=iTL10;passkey=$(Passkey)" RegExp='item_path&gt;db(\d+)(.*?)&lt;\/item_path&gt;([\s\S]*?)item_image&gt;(.*?)&lt;\/item_image' AssignVars="ServID:0;ItemPath:1;ItemImage:3"/>
+		
+
+		<Result ImageUrlTemplate="http://s$(ServID).itrash.ru/idb$(ItemPath)$(ItemImage)" ThumbUrlTemplate="http://s$(ServID).itrash.ru/idb$(ItemPath)t$(ItemImage)"/>
+	</Server>-->
+	<Server Name="imgur.com" MaxFileSize="10485760"  Authorize="0" Debug="0">
+		<Actions>
+			<Action Type="login" Url="http://imgur.com/signin" PostParams="username=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="0" Description="Authorization on imgur.com"/>
+			<Action Type="upload" Url="http://imgur.com/api/upload.xml" PostParams="image=%filename%;key=2dd16e2e19119996855ae9312b7a1305;" RegExp='&lt;original_image&gt;(.*?)&lt;\/original_image&gt;([\s\S]*?)&lt;small_thumbnail>(.*?)&lt;\/small_thumbnail&gt;' AssignVars="Image:0;Thumb:2"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
+	<Server Name="Imageshack.us" Authorize="1" MaxFileSize="5000000" Debug="0">
+		<Actions>
+			<Action Type="upload" Url="http://www.imageshack.us/upload_api.php" PostParams="fileupload=%filename%;uploadtype=on;key=BXT1Z35V8f6ee0522939d8d7852dbe67b1eb9595;rembar=0;a_username=$(_LOGIN);a_password=$(_PASSWORD);" RegExp='&lt;image_link&gt;(.*?)&lt;([\s\S]*?)&lt;thumb_bb&gt;.*?\[IMG\](.+?)\[([\s\S]*?)&lt;is_link&gt;(.*?)&lt;' AssignVars="Image:0;Thumb:2;View:4"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)"/>
+	</Server>
+	
+	<Server Name="funkyimg.com" Authorize="0">
+		<Actions>
+			<Action Type="upload" Url="http://funkyimg.com/up.php" PostParams="uptype=file;file_0=%filename%;maxNumber=1;maxId=0;addInfo=on;addInfoType=res;wmPos=TOPRIGHT;wmLayout=2;wmFontSize=14;wmTransparency=50" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
+	<Server Name="vfl.ru" Authorize="0" Debug="0">
+		<Actions>
+			<Action Type="upload" Referer="http://vfl.ru/" Url="http://vfl.ru/index.sema" PostParams="a=fotos;sa=upload;img_id=1;upload_file3=%filename%;upload_nazv2=;subbut=Загрузить;del2=1;tags=;resize2=2;rotate2=90;preview_x=640;preview_y=480;del2=1;" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)Прямая ссылка([\s\S]*?)&lt;textarea[^&gt;]*&gt;([\S&gt;]+)' AssignVars="Image:3;Thumb:0"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
+
+    <Server Name="savepic.ru" Authorize="0" MaxFileSize="4000000">
+        <Actions>
+            <Action Type="upload" Url="http://savepic.ru/index.php" PostParams="file=%filename%;note=;font1=decor;font2=20;orient=h;size1=1;size2=1024x768;rotate=00;flip=0;mini=200x150;opt3[]=zoom;email=" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0"/>
+        </Actions>
+        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+    </Server>
+<Server Name="firepic.org">
+	<Actions>
+		<Action Type="get" Url="http://firepic.org/" OnlyOnce="1" />
+		<Action Type="upload" Url="http://firepic.org/" PostParams="action=upload;width=$(_FILENAME);local_uploadfile[]=%filename%;web_uploadfile=;thumb=true;thumb_width=$(_THUMBWIDTH);thumb_height=;texttype=dimensions;" RegExp="\[img\](.*?)\[\/img\]([\s\S]*?)\[img\](.*?)\[\/img\]" AssignVars="Image:0;Thumb:2;"/>
+	</Actions>
+<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+</Server>
+
+    <Server Name="datapic.ru" Authorize="0">
+        <Actions>
+            <Action Type="upload" Url="http://datapic.ru/" PostParams="action=upload;area=;local_uploadfile[]=%filename%;web_uploadfile=;width=;height=;thumb=true;thumb_width=$(_THUMBWIDTH);thumb_height=;texttype=nothing;text=Увеличить" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:0;Thumb:2"/>
+        </Actions>
+        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+    </Server>
+	<Server Name="directupload.net"  Authorize="1" MaxFileSize="4000000">
+		<Actions>
+			<Action Type="login" Url="http://www.directupload.net/index.php?mode=login" PostParams="username=$(_LOGIN);passwort=$(_PASSWORD);autologin=1;" OnlyOnce="1" Description="Authorization on directupload.net"/>
+			<Action Type="upload" Url="http://www.directupload.net/index.php?mode=upload" PostParams="input=file;submit=Invia File;bilddatei=%filename%" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
+	<!--<Server Name="zikuka.ru">
+		<Actions>
+			<Action Type="upload" Url="http://zikuka.ru/upload.php" PostParams="userimg=%filename%;method=file;" RegExp='function changeBbCode3\(\)([\s\S]*?)useLink = \"(.*?)\";([\s\S]*?)\[IMG\]([\s\S]*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:1;Thumb:5"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>-->
+	<Server Name="Yandex.Fotki" Debug="0"  Authorize="2" Plugin="yafotki" SupportsFolders="1" RegistrationUrl="http://fotki.yandex.ru">
+	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
+<Server Name="Yandex.Disk" Debug="0"  Authorize="2" Plugin="yandexdisk" FileHost="1" SupportsFolders="1" RegistrationUrl="http://disk.yandex.ru">
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
+	<Server Name="Picasa WebAlbums" Debug="0"  Authorize="2" Plugin="picasa" SupportsFolders="1">
+	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
+<Server Name="Mediafire.com" FileHost="1" Debug="0"  Authorize="1" Plugin="mediafire" SupportsFolders="0">
+	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
+<Server Name="Dropbox" FileHost="1" Debug="0"  Authorize="0" Plugin="dropbox" SupportsFolders="1">
+	<Result ImageUrlTemplate="stub" />
+	</Server>
+	<Server Name="image2you.ru" Authorize="2" Debug="0">
+		<Actions>
+			<Action Type="login" Url="http://image2you.ru/index_ajax.php?task=users&amp;sub_task=login&amp;email=$(_LOGIN)&amp;pass=$(_PASSWORD)" RegExp="iSuccess&quot;:1" />
+			<Action Type="get" Url="http://image2you.ru/cabinet/gallery/folder-0/upload/" RegExp="session&#039;: &#039;(\w+)&#039;" AssignVars="SessionId:0"/>
+			<Action Type="upload" Url="http://image2you.ru/ajax/cabinet/gallery/folder-0/" PostParams="Filename=$(_FILENAME);folder=/uploads;session=$(SessionId);Filedata=%filename%;Upload=Submit Query;" RegExp="\d+"/>
+			<Action Type="get" Url="http://image2you.ru/cabinet/gallery/folder-0/" RegExp='__code_link_(\d+)&quot; value=&quot;(\S+?)&quot;([\s\S]*?)__code_preview_(\d+)&quot; value=&quot;(\S+?)&quot;' AssignVars="Image:1;Thumb:4;"/>			
+		</Actions>
+		<Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" />
+	</Server>
+	<Server Name="iceimg.com" Plugin="iceimg" >
+	<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
+	<Server Name="fastpic.ru" MaxFileSize="5000000" Debug="0">
+		<Actions>
+				<Action Type="upload" Url="http://fastpic.ru/upload?api=1" PostParams="method=file;file1=%filename%;check_thumb=size;uploading=1;orig_rotate=0;thumb_size=$(_THUMBWIDTH)" RegExp='&lt;imagepath&gt;(.*?)&lt;\/imagepath&gt;([\s\S]*?)&lt;thumbpath&gt;(.*?)&lt;\/thumbpath&gt;' AssignVars="Image:0;Thumb:2"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
+	<Server Name="multi-up.com" FileHost="1">
+		<Actions>
+			 <Action Type="upload" Url="http://multi-up.com/up.php" PostParams="upload=%filename%;" RegExp='a href=http://multi-up.com/(\d*)' AssignVars="File:0"/>
+		</Actions>
+		<Result DownloadUrlTemplate="http://multi-up.com/$(File)"/>
+	</Server>
+<Server Name="rapidshare.com" FileHost="1" Authorize="2" Debug="0">
+	<Actions>
+		<Action Type="get" Url="https://api.rapidshare.com/cgi-bin/rsapi.cgi?sub=nextuploadserver" RegExp='^(\d+)+$' AssignVars="ServID:0"/>
+		<Action Type="upload" Url="http://rs$(ServID).rapidshare.com/cgi-bin/rsapi.cgi?sub=upload" PostParams="sub=upload;login=$(_LOGIN);password=$(_PASSWORD);filecontent=%filename%" RegExp='COMPLETE\n(\d+),(.+?),' AssignVars="FileId:0;FileName:1"/>
+	</Actions>
+	<Result DownloadUrlTemplate="https://rapidshare.com/files/$(FileId)/$(FileName)"/>
+</Server>
+<Server Name="Yandex.Narod" FileHost="1" Authorize="2" Debug="0">
+	<Actions>
+		<Action Type="login" Url="http://passport.yandex.ru/passport?mode=auth" PostParams="login=$(_LOGIN);passwd=$(_PASSWORD);idkey=$(_RAND16BITS)$(_RAND16BITS)" OnlyOnce="1"/>
+		<Action Type="get" Url="http://narod.yandex.ru/disk/getstorage/?rnd=" RegExp='url\":\"(.*?)\", \"hash\":\"(.*?)\"' AssignVars="Url:0;Hash:1"/>
+		<Action Type="upload" Url="$(Url)?tid=$(Hash)" PostParams="file=%filename%"/>
+	<Action Type="get" Url="http://narod.yandex.ru/disk/last/"  RegExp='b-fname\&#39;&gt;&lt;a href=\"(.*?)\"' AssignVars="DownloadUrl:0"/>
+		
+	</Actions>
+	<Result DownloadUrlTemplate="$(DownloadUrl)"/>
+</Server>
+<Server Name="sendspace.com" FileHost="1" Debug="0"  Authorize="1" Plugin="sendspace" SupportsFolders="1" MaxFileSize="300000000">
+	<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+</Server>
+<Server Name="zalil.ru" FileHost="1" Debug="0">
+		<Actions>
+			 <Action Type="upload" Url="http://zalil.ru/upload/" PostParams="file=%filename%;submit=Send" RegExp='http://zalil.ru/(\d*)' AssignVars="File:0"/>
+		</Actions>
+		<Result DownloadUrlTemplate="http://zalil.ru/$(File)"/>
+	</Server>
+	<Server Name="rghost.ru" Authorize="1" FileHost="1" Debug="0" Plugin="rghost">
+		<Actions>
+			<Action Type="get" Url="http://rghost.ru/multiple/upload_host" RegExp='upload_host\":\"(.*?)\"([\s\S]*?)authenticity_token\":\"(.*?)\"' AssignVars="ServerId:0;Token:2"/>
+			 <Action Type="upload" Url="http://$(ServerId)/files" PostParams="authenticity_token=$(Token);file=%filename%;" RegExp='http://rghost\.(\w+)/(\d+)' AssignVars="File:1;"/>
+		</Actions>
+		<Result DownloadUrlTemplate="http://rghost.ru/$(File)" ImageUrlTemplate="$(Stub)" ThumbUrlTemplate="$(Stub)"/>
+	</Server>
+	<Server Name="FTP Server" Debug="0" Plugin="ftp" FileHost="1" Authorize="1">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub"/>
+	</Server>
+	<Server Name="youpic.su" Authorize="1">
+		<Actions>
+			<Action Type="login" Url="http://youpic.su/login.php" PostParams="login=$(_LOGIN);pass=$(_PASSWORD);submit=%D0%92%D0%BE%D0%B9%D1%82%D0%B8;"/>
+			<Action Type="upload" Url="http://youpic.su/upload.php" PostParams="imgfile[]=%filename%;tb_label_val[]=;tb_prev_label_val[]=Увеличить;tsm_prev_val[]=$(_THUMBWIDTH);tsm_quality_val[]=0;tsm_resize_val[]=640;rotate_val[]=0;" RegExp="\[img\](.*?)\[" AssignVars="Image:0;"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)"/>
+	</Server>
+	<Server Name="photoload.ru">
+		<Actions>
+			<Action Type="upload" Url="http://photoload.ru/upload.php" PostParams="fileData2[]=%filename%;previewEnabled=yes;previewSize=$(_THUMBWIDTH);previewSizeLabelEnabled=yes;resizeTo=640x480;jpegQuality=85;rotate=0;" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Thumb:0;Image:2;"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
+	<Server Name="twitpic.com" Authorize="2">
+		<Actions>
+			<Action Type="upload" Url="http://twitpic.com/api/upload" PostParams="media=%filename%;username=$(_LOGIN);password=$(_PASSWORD)" RegExp="&lt;mediaid&gt;(.*?)&lt;\/mediaid&gt;([\s\S]*?)&lt;mediaurl&gt;(.*?)&lt;\/mediaurl&gt;" AssignVars="ImageID:0;Image:2;"/>
+		</Actions>
+		<Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="http://twitpic.com/show/thumb/$(ImageID)"/>
+	</Server>
+	<!--<Server Name="ifile.it" Debug="0" FileHost="1">
+	<Actions>
+		<Action Type="get" Url="http://ifile.it/upload:classic" RegExp="&lt;form action\=&quot;http:\/\/(.+?).ifile.it/upload?(.*?)&quot; id\=" AssignVars="ServerUrl:0" />
+		<Action Type="upload" Url="http://$(ServerUrl).ifile.it/upload?apikey=&amp;" PostParams="Filedata=%filename%;" RegExp="file_key&quot;:&quot;(.*?)&quot;" AssignVars="File:0;"/>
+	</Actions>
+	<Result DownloadUrlTemplate="http://ifile.it/$(File)"/>
+	</Server>-->
+	<Server Name="imagevenue.com" Authorize="0">
+		<Actions>
+			<!--<Action Type="login" Url="http://users.imagevenue.com/process_logon.php" PostParams="user=$(_LOGIN);password=$(_PASSWORD);action=1"/>-->
+			<Action Type="upload" Url="http://imagevenue.com/upload.php" PostParams="userfile[]=%filename%;imgcontent=notsafe;MAX_FILE_SIZE=;action=1;img_resize=;" RegExp="&quot;http:\/\/(.*?)\.imagevenue\.com\/img\.php\?image=(.*?)&quot;([\s\S]*?)\[IMG\](.*?)\[\/IMG\]" AssignVars="ServID:0;Image:1;Thumb:3;"/>
+        </Actions>
+        <Result DownloadUrlTemplate="http://$(ServID).imagevenue.com/img.php?image=$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+     </Server>
+	<Server Name="pix.am"  Authorize="1" Debug="0">
+		<Actions>
+			<Action Type="login" Url="http://pix.am/api/auth/" PostParams="email=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="1" RegExp='user_id&quot;: (\d*), &quot;user_hash&quot;: &quot;(.*?)&quot;' AssignVars="_UserId:0;_UserHash:1"/>
+			<Action Type="upload" Url="http://pix.am/post/" PostParams="user_id=$(_UserId);user_hash=$(_UserHash);image=%filename%" RegExp="http:\/\/pix\.am\/(\S*)\/" AssignVars="ID:0;"/>
+			<Action Type="get" Url="http://pix.am/full/$(ID)/" RegExp="Direct link([\s\S]*?)http:\/\/pix\.am\/([^&quot;]*)" AssignVars="Link:1;"/>
+		</Actions>
+		<Result ImageUrlTemplate="http://pix.am/$(Link)"/>
+	</Server>
+	<Server Name="hostingkartinok.com"  Authorize="1" Debug="0">
+		<Actions>
+			<Action Type="upload" Url="http://hostingkartinok.com/login.php" PostParams="autologin=1;email=$(_LOGIN);password=$(_PASSWORD);login=Войти" OnlyOnce="1" />
+			<Action Type="upload" Url="http://hostingkartinok.com/process.php" PostParams="image_1=%filename%;image_2=;jpeg_quality=70%;resize_to=50px;upload_type=standard;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:0;Image:2;"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" />
+	</Server>
+	<Server Name="zippyshare.com"  Authorize="1" Debug="0" FileHost="1"> 
+		<Actions>
+			<Action Type="get" Url="http://www.zippyshare.com/" RegExp="uploadId\s*=\s*[&apos;&quot;]([^&apos;&quot;]+)([\s\S]+)server\s*=\s*[&apos;&quot;]([^&apos;&quot;]+)" AssignVars="UploadId:0;ServerId:2"/>
+			<Action Type="upload" Url="http://$(ServerId).zippyshare.com/upload?uploadId=$(UploadId)" PostParams="uploadId=$(UploadId);username=$(_LOGIN);password=$(_PASSWORD);$(_FILENAME)=%filename%;private=ON;" RegExp="\[url=(.+?)\]" AssignVars="DownloadUrl:0;"/>
+		</Actions>
+		<Result DownloadUrlTemplate="$(DownloadUrl)" />
+	</Server>
+	<Server Name="ompldr.org" FileHost="1"> 
+        <Actions> 
+            <Action Type="upload" Url="http://ompldr.org/upload" PostParams="file1=%filename%;" 
+                RegExp="&lt;div class=&quot;left&quot;&gt;&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;right&quot;&gt;&lt;a href=&quot;/v(.*?)&quot;&gt;" AssignVars="Thumb:0;Image:0;"/> 
+        	</Actions> 
+        <Result ImageUrlTemplate="http://ompldr.org/v$(Image)" ThumbUrlTemplate="http://ompldr.org/t$(Thumb)"/> 
+	</Server> 
+	<Server Name="sderni.ru" FileHost="1"> 
+		<Actions> 
+			<Action Type="get" Url="http://sderni.ru" RegExp="http://([a-zA-Z0-9]+).sderni.ru/upload.php" AssignVars="_ServerId:0;" OnlyOnce="1" />	
+		        <Action Type="upload" Url="http://$(_ServerId).sderni.ru/upload.php" PostParams="file=%filename%;" RegExp="&lt;br&gt;(.*?)&lt;" AssignVars="ViewUrl:0;"/> 
+		</Actions> 
+		<Result DownloadUrlTemplate="$(ViewUrl)"/> 
+	</Server>
+	<Server Name="sendfile.su" FileHost="1">
+		<Actions>
+			<Action Type="get" Url="http://sendfile.su/" RegExp="http://s(\d+).sendfile.su/upload.php" AssignVars="_ServerId:0;" OnlyOnce="1"/>
+			<Action Type="upload" Url="http://s$(_ServerId).sendfile.su/upload.php" PostParams="user_id=0;f0=%filename%;category_id=0;private=1;" RegExp="http://sendfile.su/(\d+)" AssignVars="FileId:0;"/>
+		</Actions>
+		<Result DownloadUrlTemplate="http://sendfile.su/$(FileId)"/>
+	</Server>
+	<Server Name="jpegshare.net"> 
+		<Actions> 
+			<Action Type="upload" Url="http://jpegshare.net/upload.php" PostParams="imgfile=%filename%" RegExp="\[img\]http:\/\/jpegshare.net\/thumbs\/(.*?)\[/img\]" AssignVars="Thumb:0;"/> 
+		</Actions> 
+		<Result ImageUrlTemplate="http://jpegshare.net/images/$(Thumb)" ThumbUrlTemplate="http://jpegshare.net/thumbs/$(Thumb)"/> 
+	</Server> 
+	<Server Name="load.to" FileHost="1" Debug="0">
+		<Actions>
+			<Action Type="get" Url="http://load.to" RegExp="&lt;form name=&quot;form_upload&quot;([^&gt;]+)action=&quot;(.+?)&quot;" AssignVars="_UploadUrl:1" OnlyOnce="1" />
+			<Action Type="upload" Url="$(_UploadUrl)" PostParams="upload_range=1;upfile_0=%filename%;email=;filecomment=;" RegExp="Download:([\s\S]+?)href=&quot;(http://www.load.to/.+?/[^&quot;]+)&quot;" AssignVars="DownloadUrl:1" />
+		</Actions>
+		<Result DownloadUrlTemplate="$(DownloadUrl)"/>
+	</Server>
+	<Server Name="depositfiles.com" Debug="0" FileHost="1" Authorize="1">
+		<Actions>
+			<Action Type="login" Url="http://depositfiles.com/en/login.php" PostParams="go=1;login=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="1"/>
+			<Action Type="get" Url="http://depositfiles.com/api/get_upload_info.php" RegExp="&lt;http_upload_path&gt;(.+?)&lt;/http_upload_path&gt;"	
+					AssignVars="UploadUrl:0" />
+			<Action Type="upload" Url="$(UploadUrl)" PostParams="go=1;files=%filename%"	 RegExp="parent.ud_download_url = '([^&quot;']+)'"	
+					AssignVars="DownloadUrl:0" />
+		</Actions>
+		<Result DownloadUrlTemplate="$(DownloadUrl)"/>		
+	</Server>
+	<Server Name="tinypic.com" Plugin="tinypic">
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" />
+	</Server>
+	<Server Name="minus.com" Plugin="minus.com" Authorize="2" SupportsFolders="1" FileHost="1">
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" />
+	</Server>
+</Servers>

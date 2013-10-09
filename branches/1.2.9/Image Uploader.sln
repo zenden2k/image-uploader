@@ -1,0 +1,63 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExplorerIntegration", "Source\ShellExt\ExplorerIntegration.vcproj", "{0F66AC48-52A3-4F8A-90A5-809A2B331FF9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Image Uploader", "Image Uploader.vcproj", "{B62E6078-78E7-4945-9510-3BB1343CB7B2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerListTool", "Source\ServerListTool\ServerListTool.vcproj", "{20D09042-662C-4CAE-A020-EDE268940AB5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release optimized|Win32 = Release optimized|Win32
+		Release optimized|x64 = Release optimized|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0F66AC48-52A3-4F8A-90A5-809A2B331FF9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0F66AC48-52A3-4F8A-90A5-809A2B331FF9}.Debug|Win32.Build.0 = Debug|Win32
+		{0F66AC48-52A3-4F8A-90A5-809A2B331FF9}.Debug|x64.ActiveCfg = Debug|x64
+		{0F66AC48-52A3-4F8A-90A5-809A2B331FF9}.Debug|x64.Build.0 = Debug|x64
+		{0F66AC48-52A3-4F8A-90A5-809A2B331FF9}.Release optimized|Win32.ActiveCfg = Release optimized|Win32
+		{0F66AC48-52A3-4F8A-90A5-809A2B331FF9}.Release optimized|Win32.Build.0 = Release optimized|Win32
+		{0F66AC48-52A3-4F8A-90A5-809A2B331FF9}.Release optimized|x64.ActiveCfg = Release optimized|x64
+		{0F66AC48-52A3-4F8A-90A5-809A2B331FF9}.Release optimized|x64.Build.0 = Release optimized|x64
+		{0F66AC48-52A3-4F8A-90A5-809A2B331FF9}.Release|Win32.ActiveCfg = Release|Win32
+		{0F66AC48-52A3-4F8A-90A5-809A2B331FF9}.Release|Win32.Build.0 = Release|Win32
+		{0F66AC48-52A3-4F8A-90A5-809A2B331FF9}.Release|x64.ActiveCfg = Release|x64
+		{0F66AC48-52A3-4F8A-90A5-809A2B331FF9}.Release|x64.Build.0 = Release|x64
+		{B62E6078-78E7-4945-9510-3BB1343CB7B2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B62E6078-78E7-4945-9510-3BB1343CB7B2}.Debug|Win32.Build.0 = Debug|Win32
+		{B62E6078-78E7-4945-9510-3BB1343CB7B2}.Debug|x64.ActiveCfg = Debug|x64
+		{B62E6078-78E7-4945-9510-3BB1343CB7B2}.Debug|x64.Build.0 = Debug|x64
+		{B62E6078-78E7-4945-9510-3BB1343CB7B2}.Release optimized|Win32.ActiveCfg = Release optimized|Win32
+		{B62E6078-78E7-4945-9510-3BB1343CB7B2}.Release optimized|Win32.Build.0 = Release optimized|Win32
+		{B62E6078-78E7-4945-9510-3BB1343CB7B2}.Release optimized|x64.ActiveCfg = Release optimized|x64
+		{B62E6078-78E7-4945-9510-3BB1343CB7B2}.Release optimized|x64.Build.0 = Release optimized|x64
+		{B62E6078-78E7-4945-9510-3BB1343CB7B2}.Release|Win32.ActiveCfg = Release|Win32
+		{B62E6078-78E7-4945-9510-3BB1343CB7B2}.Release|Win32.Build.0 = Release|Win32
+		{B62E6078-78E7-4945-9510-3BB1343CB7B2}.Release|x64.ActiveCfg = Release|x64
+		{B62E6078-78E7-4945-9510-3BB1343CB7B2}.Release|x64.Build.0 = Release|x64
+		{20D09042-662C-4CAE-A020-EDE268940AB5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{20D09042-662C-4CAE-A020-EDE268940AB5}.Debug|Win32.Build.0 = Debug|Win32
+		{20D09042-662C-4CAE-A020-EDE268940AB5}.Debug|x64.ActiveCfg = Debug|x64
+		{20D09042-662C-4CAE-A020-EDE268940AB5}.Debug|x64.Build.0 = Debug|x64
+		{20D09042-662C-4CAE-A020-EDE268940AB5}.Release optimized|Win32.ActiveCfg = Release optimized|Win32
+		{20D09042-662C-4CAE-A020-EDE268940AB5}.Release optimized|Win32.Build.0 = Release optimized|Win32
+		{20D09042-662C-4CAE-A020-EDE268940AB5}.Release optimized|x64.ActiveCfg = Release optimized|x64
+		{20D09042-662C-4CAE-A020-EDE268940AB5}.Release optimized|x64.Build.0 = Release optimized|x64
+		{20D09042-662C-4CAE-A020-EDE268940AB5}.Release|Win32.ActiveCfg = Release|Win32
+		{20D09042-662C-4CAE-A020-EDE268940AB5}.Release|Win32.Build.0 = Release|Win32
+		{20D09042-662C-4CAE-A020-EDE268940AB5}.Release|x64.ActiveCfg = Release|x64
+		{20D09042-662C-4CAE-A020-EDE268940AB5}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		AMDCaProjectFile = D:\Projects\Image Uploader\image-uploader\trunk\CodeAnalyst\Image Uploader.caw
+	EndGlobalSection
+EndGlobal
