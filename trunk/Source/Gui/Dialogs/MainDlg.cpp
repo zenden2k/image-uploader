@@ -401,7 +401,7 @@ LRESULT CMainDlg::OnOpenInFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	if(!FileName) return FALSE;
 	
 	// Executing Windows Explorer; file will be highlighted
-	ShellExecuteW(NULL, NULL, L"explorer.exe", CString(_T("/select, ")) + FileName, NULL, SW_SHOWNORMAL);
+	ShellExecuteW(NULL, NULL, L"explorer.exe", CString(_T("/select, \"")) + FileName+_T("\""), NULL, SW_SHOWNORMAL);
 	return 0;
 }
 LRESULT CMainDlg::OnAddFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl)

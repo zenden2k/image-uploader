@@ -57,7 +57,7 @@ LRESULT CVideoGrabberParams::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	TRC(IDC_MEDIAINFOFONT, "Шрифт...");
 	TRC(IDC_TEXTCOLORLABEL, "Цвет текста:");
 	TRC(IDC_PARAMETERSHINTLABEL, "%f% - имя видео файла без расширения, \r\n%fe% - имя видео файла с расширением\r\n%ext% - расширение видео файла,\r\n%y% - год, %m% - месяц, %d% - день\n%h% - час, %n% - минута, %s% - секунда\n %i% - порядковый номер,\n%cx% - ширина,  %cy% - высота изображения");
-
+	TRC(IDC_SNAPSHOTFILENAMELABEL, "Формат имени файла");
 
 	TRC(IDC_VIDEOSNAPSHOTSFOLDERLABEL, "Папка для сохранения кадров:");
 	TRC(IDC_VIDEOSNAPSHOTSFOLDERBUTTON, "Выбрать...");

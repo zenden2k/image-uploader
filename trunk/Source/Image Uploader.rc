@@ -266,7 +266,7 @@ BEGIN
     DEFPUSHBUTTON   "&OK",IDOK,197,228,52,15
     CTEXT           "build 1234\nUsing curl",IDC_IMAGEUPLOADERLABEL,24,65,190,17
     GROUPBOX        "",IDC_STATIC,6,0,242,135
-    CTEXT           "© 2007-2012.  All rights reserved.",IDC_STATIC,90,48,131,11
+    CTEXT           "© 2007-2013.  All rights reserved.",IDC_STATIC,90,48,131,11
     CTEXT           "Beta-Testers:",IDC_BETATESTERS,12,169,80,8
     LTEXT           "Graf, CKA3O4H1K",IDC_STATIC,102,171,137,20
     GROUPBOX        "",IDC_THANKSTOGROUP,5,138,243,84

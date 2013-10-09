@@ -1,6 +1,6 @@
-#define BUILD "4180"
-#define TIME "12.09.2013"
-#define _APP_VER "1.2.7"
+#define BUILD "4182"
+#define TIME "08.10.2013"
+#define _APP_VER "1.2.8"
 
 
 
