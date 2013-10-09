@@ -300,9 +300,19 @@ BOOL Is32BPP(){
 	return (WinUtils::IsWinXP() & (ScreenBPP() >= 32));
 }
 
+typedef HRESULT  (STDAPICALLTYPE  *SHCreateItemFromParsingNameFuncType)(__in PCWSTR pszPath, __in_opt IBindCtx *pbc, __in REFIID riid, __deref_out void **ppv);
+
+
 CString SelectFolderDialog(HWND hWndParent, CString initialDir){
 	CString result;
+	
 	if ( WinUtils::IsVista() ) {
+		static SHCreateItemFromParsingNameFuncType SHCreateItemFromParsingNameFunc = 0;
+		if ( !SHCreateItemFromParsingNameFunc ) {
+			HMODULE module = LoadLibrary(_T("shell32.dll"));
+			SHCreateItemFromParsingNameFunc = (SHCreateItemFromParsingNameFuncType)GetProcAddress(module,"SHCreateItemFromParsingName");
+
+		}
 		// CoCreate the File Open Dialog object.
 		IFileDialog *pfd = NULL;
 		IShellItem *pInitDir = NULL;
@@ -317,7 +327,7 @@ CString SelectFolderDialog(HWND hWndParent, CString initialDir){
 			hr = pfd->GetOptions(&dwFlags);
 			if (SUCCEEDED(hr)) {
 				if (!initialDir.IsEmpty()){
-					SHCreateItemFromParsingName(initialDir, NULL, __uuidof(IShellItem), (LPVOID *)&pInitDir);
+					SHCreateItemFromParsingNameFunc(initialDir, NULL, __uuidof(IShellItem), (LPVOID *)&pInitDir);
 					pfd->SetFolder(pInitDir);
 				}
 				// In this case, get shell items only for file system items.
