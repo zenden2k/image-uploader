@@ -26,11 +26,14 @@
 #include "CommonTypes.h"
 #include "UploadEngine.h"
 
+class FileUploadTask;
+class UrlShorteningTask;
+
 class CDefaultUploadEngine: public CAbstractUploadEngine
 {
 	public:
 		CDefaultUploadEngine();
-		virtual bool doUpload(Utf8String FileName, Utf8String DisplayName, CIUUploadParams& params);
+		virtual bool doUpload(UploadTask* task, CIUUploadParams &params);
 	
 	protected:
 		bool DoAction(UploadAction &Action);
@@ -44,6 +47,10 @@ class CDefaultUploadEngine: public CAbstractUploadEngine
 		void SetStatus(StatusType status, std::string param = "");
 		bool needStop();
 		void UploadError(bool error, const std::string errorStr, UploadAction* m_CurrentAction, bool writeToBuffer = true);
+		bool doUploadFile(FileUploadTask* task, CIUUploadParams &params);
+		bool doUploadUrl(UrlShorteningTask* task, CIUUploadParams &params);
+		void prepareUpload();
+		bool executeActions();
 
 		Utf8String m_ErrorReason;
 		Utf8String m_FileName;

@@ -29,7 +29,9 @@
 
 #define IDC_OPTIONSMENU 10002
 #define IDC_USEDIRECTLINKS 10003
-#define IDC_COPYFOLDERURL 10004
+#define IDC_SHORTENURLITEM 10004
+#define IDC_COPYFOLDERURL 10040
+
 #define IDC_RESULTSTOOLBAR 5000
 class CResultsPanel;
 
@@ -55,6 +57,7 @@ class CResultsPanel :
 			COMMAND_HANDLER(IDC_COPYALL, BN_CLICKED, OnBnClickedCopyall)
 			COMMAND_HANDLER(IDC_USEDIRECTLINKS, BN_CLICKED, OnUseDirectLinksClicked)
 			COMMAND_HANDLER(IDC_USETEMPLATE, BN_CLICKED, OnUseTemplateClicked)
+			COMMAND_HANDLER(IDC_SHORTENURLITEM, BN_CLICKED, OnShortenUrlClicked)
 			//COMMAND_HANDLER(, BN_CLICKED, OnCopyFolderUrlClicked)
 			COMMAND_RANGE_HANDLER(IDC_COPYFOLDERURL, IDC_COPYFOLDERURL + 1000, OnCopyFolderUrlClicked);
 			COMMAND_HANDLER(IDC_MEDIAFILEINFO, BN_CLICKED, OnBnClickedMediaInfo)
@@ -62,6 +65,8 @@ class CResultsPanel :
 			NOTIFY_HANDLER(IDC_RESULTSTOOLBAR, TBN_DROPDOWN, OnOptionsDropDown);
 		NOTIFY_HANDLER_EX(IDC_RESULTSTOOLBAR, NM_CUSTOMDRAW, OnResulttoolbarNMCustomDraw)
 		END_MSG_MAP()
+
+	fastdelegate::FastDelegate1<bool> OnShortenUrlChanged;
 
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -88,6 +93,8 @@ class CResultsPanel :
 	LRESULT OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnEditChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnShortenUrlClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	
 	int GetCodeType();
 	void UpdateOutput();
 	void SetCodeType(int Index);
@@ -104,9 +111,12 @@ class CResultsPanel :
 	int m_nImgServer, m_nFileServer;
 	void AddServer(CString server);
 	RECT rectNeeded;
+	bool shortenUrl_;
 	void InitUpload();
 	void setUrlList(CAtlArray<CUrlListItem>  * urlList);
 	LRESULT OnResulttoolbarNMCustomDraw(LPNMHDR pnmh);
+	void BBCode_Link(CString &Buffer, CUrlListItem &item);
+	void HTML_Link(CString &Buffer, CUrlListItem &item);
 };
 
 

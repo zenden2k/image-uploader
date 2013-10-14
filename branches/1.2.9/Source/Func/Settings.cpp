@@ -342,19 +342,14 @@ CSettings::CSettings()
 	ScreenshotSettings.AddShadow = true;
 	ScreenshotSettings.RemoveBackground = false;
 
-	if (!IsVista())
-	{
-		TrayIconSettings.LeftClickCommand = 0; // without action
-		TrayIconSettings.LeftDoubleClickCommand = 12; // add images
-	}
-	else
-	{
-		TrayIconSettings.LeftClickCommand = 12; // without action
-		TrayIconSettings.LeftDoubleClickCommand = 0; // add images
-	}
+
+	TrayIconSettings.LeftClickCommand = 0; // without action
+	TrayIconSettings.LeftDoubleClickCommand = 12; 
+
 	TrayIconSettings.RightClickCommand = 1; // context menu
 	TrayIconSettings.MiddleClickCommand = 7; // region screenshot
 	TrayIconSettings.DontLaunchCopy = FALSE;
+	TrayIconSettings.ShortenLinks = FALSE;
 	TrayIconSettings.TrayScreenshotAction = 0;
 
 	ImageReuploaderSettings.PasteHtmlOnCtrlV = true;
@@ -439,6 +434,7 @@ CSettings::CSettings()
 	tray.nm_bind(TrayIconSettings, RightClickCommand);
 	tray.nm_bind(TrayIconSettings, MiddleClickCommand);
 	tray.nm_bind(TrayIconSettings, DontLaunchCopy);
+	tray.nm_bind(TrayIconSettings, ShortenLinks);
 	tray.nm_bind(TrayIconSettings, TrayScreenshotAction);
 
 	SettingsNode& history = mgr_["History"];
@@ -450,6 +446,7 @@ CSettings::CSettings()
 	SettingsNode& upload = mgr_["Uploading"];
 	upload.n_bind(ServerName);
 	upload.n_bind(FileServerName);
+	upload.n_bind(UrlShorteningServer);
 	upload.n_bind(QuickUpload);
 	upload.n_bind(QuickServerName);
 	upload.n_bind(CodeLang);

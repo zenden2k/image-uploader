@@ -40,6 +40,11 @@ function readFile(fileName) {
 }
 
 function inputBox(prompt, title) {
+	try {
+		return InputDialog(prompt, "");
+	} catch(ex) {	
+	}
+
 	
 	local tempScript = "%temp%\\imguploader_inputbox.vbs";
 	prompt = reg_replace(prompt, "\n", "\" ^& vbCrLf ^& \"" );

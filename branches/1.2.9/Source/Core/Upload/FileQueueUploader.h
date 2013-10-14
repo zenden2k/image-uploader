@@ -27,17 +27,6 @@
 
 class NetworkManager;
 
-class UploadTask {
-public:
-	std::string fileName;
-	std::string displayFileName; // without path
-	void *userData;
-	int64_t fileSize;
-	CAbstractUploadEngine *uploadEngine;
-	std::string serverName;
-	//FullUploadProfile fullUploadProfile;
-};
-
 class UploadProgress {
 public:
 	std::string statusText;
@@ -45,9 +34,21 @@ public:
 	int64_t uploaded;
 	int64_t totalUpload;
 };
+
 class CFileQueueUploader
 {
 	public:
+		class Task {
+		public:
+			/*std::string fileName;
+			std::string displayFileName; // without path*/
+			void *userData;
+			//int64_t fileSize;
+			CAbstractUploadEngine *uploadEngine;
+			std::string serverName;
+			std_tr::shared_ptr<UploadTask> uploadTask;
+		};
+
 		struct FileListItem
 		{
 			std::string fileName;
@@ -57,9 +58,11 @@ class CFileQueueUploader
 			std::string downloadUrl;
 			std::string serverName;
 			int64_t fileSize;
-			UploadTask * uploadTask;
+			Task * uploadTask;
 			//void * user_data;
 		};
+
+		
 
 		class Callback
 		{
@@ -67,12 +70,13 @@ class CFileQueueUploader
 			virtual bool OnFileFinished(bool ok, FileListItem& result){return true;}
 			virtual bool OnQueueFinished(CFileQueueUploader* queueUploader) { return true;}
 			virtual bool OnConfigureNetworkManager(CFileQueueUploader*, NetworkManager* nm){return true;}
-			virtual bool OnUploadProgress(UploadProgress progress, UploadTask* task, NetworkManager* nm){return true;}
+			virtual bool OnUploadProgress(UploadProgress progress, Task* task, NetworkManager* nm){return true;}
 		};
 
 		CFileQueueUploader();
 		void AddFile(const std::string& fileName, const std::string& displayName, void* user_data, CAbstractUploadEngine *uploadEngine);
-		void AddFile(UploadTask task);
+		void AddUploadTask(std_tr::shared_ptr<UploadTask> task, void* user_data, CAbstractUploadEngine *uploadEngine);
+		void AddFile(Task task);
 		void setUploadSettings(CAbstractUploadEngine * engine);
 		void setCallback(Callback* callback);
 		~CFileQueueUploader();
