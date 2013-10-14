@@ -3,9 +3,10 @@
 
 #include <string>
 #include "Core/3rdpart/pstdint.h"
+#include <memory>
 
 typedef std::string Utf8String;
-
+namespace std_tr = std::tr1;
 
 /*#ifdef _MSC_VER
    typedef __int64 int64_t;

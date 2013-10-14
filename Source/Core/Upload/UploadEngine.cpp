@@ -53,6 +53,16 @@ CUploadEngineData* CUploadEngineList_Base::byName(const std::string& name)
 	return 0;
 }
 
+CUploadEngineData*  CUploadEngineList_Base::firstEngineOfType(CUploadEngineData::ServerType type) {
+	for (size_t i = 0; i < m_list.size(); i++)
+	{
+		if ( m_list[i].Type == type) {
+			return &m_list[i];
+		}
+	}
+	return 0;
+}
+
 int CUploadEngineList_Base::getRandomImageServer()
 {
 	std::vector<int> m_suitableServers;

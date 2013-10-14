@@ -5,8 +5,8 @@ CCustomEditControl::CCustomEditControl() {
 
 bool CCustomEditControl::AttachToDlgItem(HWND parent, UINT dlgID) {
 
-    m_hWnd = ::GetDlgItem(parent,dlgID);
-    return SubclassWindow(m_hWnd);
+    HWND hWnd = ::GetDlgItem(parent,dlgID);
+    return SubclassWindow(hWnd);
 }
 
 LRESULT CCustomEditControl::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {

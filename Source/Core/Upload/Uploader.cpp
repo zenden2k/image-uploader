@@ -21,6 +21,7 @@
 #include "Uploader.h"
 #include <cstdlib>
 #include <ctime>
+#include <Core/Upload/FileUploadTask.h>
 
 CUploader::CUploader(void)
 {
@@ -78,21 +79,30 @@ int CUploader::pluginProgressFunc (void* userData, double dltotal, double dlnow,
 	return 0;
 }
 
-bool CUploader::UploadFile(const std::string& FileName, const std::string displayFileName)
-{
+bool CUploader::UploadFile(const std::string& FileName, const std::string displayFileName) {
+	return Upload(new FileUploadTask(FileName, displayFileName));
+}
+
+bool CUploader::Upload(UploadTask* task) {
+
 	if (!m_CurrentEngine) {
-		Error(true, "Cannnot proceed: m_CurrentEngine is NULL!");
+		Error(true, "Cannot proceed: m_CurrentEngine is NULL!");
 		return false;
 	}
+	std::string FileName;
 
-	if ( FileName.empty() ) {
-		Error(true, "Empty filename!");
-		return false;
-	}
 
-	if ( ! IuCoreUtils::FileExists (FileName) ) {
-		Error(true, "File \""+FileName+"\" doesn't exist!");
-		return false;
+	if ( task->getType() == "file" ) {
+		FileName = ((FileUploadTask*)task)->getFileName();
+		if ( FileName.empty() ) {
+			Error(true, "Empty filename!");
+			return false;
+		}
+
+		if ( ! IuCoreUtils::FileExists (FileName) ) {
+			Error(true, "File \""+FileName+"\" doesn't exist!");
+			return false;
+		}
 	}
 	m_PrInfo.IsUploading = false;
 	m_PrInfo.Total = 0;
@@ -108,9 +118,7 @@ bool CUploader::UploadFile(const std::string& FileName, const std::string displa
 	m_CurrentEngine->onErrorMessage.bind(this, &CUploader::ErrorMessage);
 
 	m_CurrentEngine->setThumbnailWidth(m_nThumbWidth);
-	std::string displayName = displayFileName;
-	if (displayName.empty())
-		displayName = IuCoreUtils::ExtractFileName(FileName);
+
 	CIUUploadParams uparams;
 	uparams.thumbWidth = m_nThumbWidth;
 	m_NetworkManager.setProgressCallback(pluginProgressFunc, (void*)this);
@@ -123,7 +131,7 @@ bool CUploader::UploadFile(const std::string& FileName, const std::string displa
 			Cleanup();
 			return false;
 		}
-		EngineRes = m_CurrentEngine->doUpload(FileName, displayName, uparams);
+		EngineRes = m_CurrentEngine->doUpload(task, uparams);
 		i++;
 		if (needStop())
 		{
@@ -149,7 +157,6 @@ bool CUploader::UploadFile(const std::string& FileName, const std::string displa
 	m_ThumbUrl = (uparams.ThumbUrl);
 
 	m_DownloadUrl =  (uparams.ViewUrl);
-
 	return true;
 }
 

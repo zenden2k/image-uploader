@@ -57,6 +57,7 @@ struct TrayIconSettingsStruct
 	int MiddleClickCommand;
 	int TrayScreenshotAction;
 	BOOL DontLaunchCopy;
+	BOOL ShortenLinks;
 };
 struct ThumbSettingsStruct: public ThumbCreatingParams
 {
@@ -237,7 +238,7 @@ class CSettings
 	ServerSettingsStruct& ServerByUtf8Name(std::string name);
 #endif
 	int FileServerID;
-	CString ServerName, QuickServerName,FileServerName;
+	CString ServerName, QuickServerName,FileServerName, UrlShorteningServer;
 	SettingsManager mgr_;
 	CString SettingsFolder;
 	static const TCHAR VideoEngineDirectshow[];

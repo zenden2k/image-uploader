@@ -117,6 +117,7 @@ struct ServerSettingsStruct
 class CUploadEngineData
 {
 	public:
+		enum ServerType { TypeImageServer, TypeFileServer, TypeUrlShorteningServer, TypeTextServer};
 		std::string Name;
 		std::string PluginName;
 		bool SupportsFolders;
@@ -133,6 +134,7 @@ class CUploadEngineData
 		std::vector<UploadAction> Actions;
 		int RetryLimit;
 		int NumOfTries;
+		ServerType Type;
 		CUploadEngineData();
 };
 
@@ -175,11 +177,14 @@ class  CUploadEngineList_Base
 		CUploadEngineList_Base();
 		CUploadEngineData* byIndex(size_t index);
 		CUploadEngineData* byName(const std::string &name);
+		CUploadEngineData*  firstEngineOfType(CUploadEngineData::ServerType type);
 		int count();
 		int getRandomImageServer();
 		int getRandomFileServer();
 		int GetUploadEngineIndex(const std::string Name);
 };
+
+class UploadTask;
 
 class CAbstractUploadEngine
 {
@@ -187,7 +192,7 @@ class CAbstractUploadEngine
 		CAbstractUploadEngine();
 		virtual ~CAbstractUploadEngine();
 		void setThumbnailWidth(int width);
-		virtual bool doUpload(Utf8String FileName,Utf8String DisplayName, CIUUploadParams &params) = 0;
+		virtual bool doUpload(UploadTask* task, CIUUploadParams &params) = 0;
 		void setServerSettings(ServerSettingsStruct settings);
 		virtual int RetryLimit()=0;
 		virtual void setNetworkManager(NetworkManager* nm);

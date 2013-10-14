@@ -56,6 +56,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
 	TRC(IDC_ADDSHADOW, "Добавлять тень окна");
 	TRC(IDC_REMOVECORNERS, "Удалять уголки у окна");
 	TRC(IDC_REMOVEBACKGROUND, "Удалять фон окна");
+	TRC(IDC_SHORTENURLFROMTRAYCHECKBOX, "Сокращать ссылки при быстрой загрузке (по горячей клавише)");
 	
 	SetDlgItemText(IDC_SCREENSHOTFILENAMEEDIT, Settings.ScreenshotSettings.FilenameTemplate);
 
@@ -71,6 +72,8 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
 	SendDlgItemMessage(IDC_REMOVECORNERS, BM_SETCHECK, Settings.ScreenshotSettings.RemoveCorners);
 	SendDlgItemMessage(IDC_ADDSHADOW, BM_SETCHECK, Settings.ScreenshotSettings.AddShadow);
 	SendDlgItemMessage(IDC_REMOVEBACKGROUND, BM_SETCHECK, Settings.ScreenshotSettings.RemoveBackground);
+
+	GuiTools::SetCheck(m_hWnd, IDC_SHORTENURLFROMTRAYCHECKBOX, Settings.TrayIconSettings.ShortenLinks);
 
 	int Quality, Delay, Format;
 	Quality = Settings.ScreenshotSettings.Quality;
@@ -122,6 +125,8 @@ bool CScreenshotSettingsPagePage::Apply()
 	Settings.ScreenshotSettings.RemoveCorners = SendDlgItemMessage(IDC_REMOVECORNERS, BM_GETCHECK)!=0;
 	Settings.ScreenshotSettings.AddShadow = SendDlgItemMessage(IDC_ADDSHADOW, BM_GETCHECK)!=0;
 	Settings.ScreenshotSettings.RemoveBackground = SendDlgItemMessage(IDC_REMOVEBACKGROUND, BM_GETCHECK)!=0;
+
+	 Settings.TrayIconSettings.ShortenLinks = GuiTools::GetCheck(m_hWnd, IDC_SHORTENURLFROMTRAYCHECKBOX);
 
 	return true;
 }

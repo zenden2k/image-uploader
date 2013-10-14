@@ -170,7 +170,6 @@ CHotkeyList::CHotkeyList()
 	AddItem(TR("Загрузить изображения"),_T("addimages"), IDM_UPLOADIMAGES);
 	AddItem(TR("Загрузить файлы"),_T("addimages"), IDM_UPLOADFILES);
 	AddItem(TR("Загрузить папку"),_T("addfolder"), IDM_ADDFOLDERS);
-	AddItem(TR("Перезаливка изображений"),_T("reuploadimages"), IDM_REUPLOADIMAGES);
 	AddItem(TR("Импорт видео"),_T("importvideo"), IDM_IMPORTVIDEO);
 	AddItem(TR("Скриншот"),_T("screenshotdlg"), IDM_SCREENSHOTDLG);
 	AddItem(TR("Снимок прямоугольной области"),_T("regionscreenshot"), IDM_REGIONSCREENSHOT);
@@ -184,6 +183,9 @@ CHotkeyList::CHotkeyList()
 	AddItem(TR("Изображения из Web"),_T("downloadimages"), IDM_PASTEFROMWEB); // Ctrl+V keyboard shortcut
 	AddItem(TR("Информация о медиафайле"),_T("mediainfo"), IDM_MEDIAINFO);
 	AddItem(TR("Выход"),_T("mediainfo"), IDM_EXIT);
+	AddItem(TR("Сократить ссылку"),_T("shortenurl"), IDM_SHORTENURL);
+	AddItem(TR("Сократить ссылку из буфера"),_T("shortenurlclipboard"), IDM_SHORTENURLCLIPBOARD);
+	AddItem(TR("Перезаливка изображений"),_T("reuploadimages"), IDM_REUPLOADIMAGES);
 }
 
 CHotkeyItem& CHotkeyList::getByFunc(const CString &func)

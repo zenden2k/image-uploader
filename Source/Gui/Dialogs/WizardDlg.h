@@ -193,6 +193,7 @@ public:
 	bool funcAddFiles();
 	bool funcDownloadImages();
 	bool funcReuploadImages();
+	bool funcShortenUrl();
 	// end of functions
 	bool executeFunc(CString funcName);
 

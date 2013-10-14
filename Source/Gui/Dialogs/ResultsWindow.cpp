@@ -27,13 +27,18 @@
 CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,CAtlArray<CUrlListItem>  & urlList,bool ChildWindow)
 {
 	m_WizardDlg = wizardDlg;
-	ResultsPanel = new CResultsPanel(wizardDlg,urlList);
+	ResultsPanel = new CResultsPanel(wizardDlg, urlList);
 	m_childWindow = ChildWindow;
 }
+
 
 CResultsWindow::~CResultsWindow()
 {
 	delete ResultsPanel;
+}
+
+void CResultsWindow::setOnShortenUrlChanged(fastdelegate::FastDelegate1<bool> fd) {
+	ResultsPanel->OnShortenUrlChanged = fd;
 }
 
 LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -206,4 +211,8 @@ void CResultsWindow::FinishUpload()
 {
 	BOOL b;
 	ResultsPanel->OnCbnSelchangeCodetype(0,0,0, b);
+}
+
+void CResultsWindow::setShortenUrls(bool shorten) {
+	ResultsPanel->shortenUrl_ = shorten;
 }
