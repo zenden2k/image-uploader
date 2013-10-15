@@ -33,6 +33,7 @@
 #define IDC_ADDFILES (IU_IDC_CONST + 6)
 #define IDC_DOWNLOADIMAGES (IU_IDC_CONST + 7)
 #define IDC_REUPLOADIMAGES (IU_IDC_CONST + 8)
+#define IDC_SHORTENURL (IU_IDC_CONST + 9)
 
 class CWizardDlg;
 class CWizardPage

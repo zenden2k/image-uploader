@@ -68,11 +68,10 @@
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)"/>
 	</Server>
 	
-	<Server Name="funkyimg.com" Authorize="0">
+	<Server Name="funkyimg.com" Authorize="0" Plugin="funkyimg">
 		<Actions>
-			<Action Type="upload" Url="http://funkyimg.com/up.php" PostParams="uptype=file;file_0=%filename%;maxNumber=1;maxId=0;addInfo=on;addInfoType=res;wmPos=TOPRIGHT;wmLayout=2;wmFontSize=14;wmTransparency=50" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0"/>
 		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
 	<Server Name="vfl.ru" Authorize="0" Debug="0">
 		<Actions>
@@ -282,8 +281,8 @@
 	</Server>
 	<Server Name="depositfiles.com" Debug="0" FileHost="1" Authorize="1">
 		<Actions>
-			<Action Type="login" Url="http://depositfiles.com/en/login.php" PostParams="go=1;login=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="1"/>
-			<Action Type="get" Url="http://depositfiles.com/api/get_upload_info.php" RegExp="&lt;http_upload_path&gt;(.+?)&lt;/http_upload_path&gt;"	
+			<Action Type="login" Url="http://dfiles.ru/en/login.php" PostParams="go=1;login=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="1"/>
+			<Action Type="get" Url="http://dfiles.ru/api/get_upload_info.php" RegExp="&lt;http_upload_path&gt;(.+?)&lt;/http_upload_path&gt;"	
 					AssignVars="UploadUrl:0" />
 			<Action Type="upload" Url="$(UploadUrl)" PostParams="go=1;files=%filename%"	 RegExp="parent.ud_download_url = '([^&quot;']+)'"	
 					AssignVars="DownloadUrl:0" />
@@ -296,4 +295,21 @@
 	<Server Name="minus.com" Plugin="minus.com" Authorize="2" SupportsFolders="1" FileHost="1">
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" />
 	</Server>
+	<Server2 Name="clck.ru" Debug="0" Type="urlshortening">
+		<Actions>
+			<Action Type="post" Url="http://clck.ru/--" PostParams="url=$(_ORIGINALURL)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
+		</Actions>
+		<Result DirectUrlTemplate="$(ShortUrl)" />
+	</Server2>
+	<Server2 Name="is.gd" Debug="0" Type="urlshortening">
+		<Actions>
+			<Action Type="post" Url="http://is.gd/create.php?format=simple&amp;url=$(_ORIGINALURL|urlencode)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
+		</Actions>
+		<Result DirectUrlTemplate="$(ShortUrl)" />
+	</Server2>
+	<Server2 Name="goo.gl" Debug="1" Type="urlshortening" Plugin="googl">
+		<Actions>
+		</Actions>
+		<Result DirectUrlTemplate="stub" />
+	</Server2>
 </Servers>

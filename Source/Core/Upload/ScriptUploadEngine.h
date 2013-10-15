@@ -53,7 +53,7 @@ class CFolderList
 class CScriptUploadEngine: public CAbstractUploadEngine
 {
 	public:
-		bool doUpload(Utf8String FileName, Utf8String DisplayName, CIUUploadParams &params);
+		bool doUpload(UploadTask* task, CIUUploadParams &params);
 	protected:
 		bool needStop();
 		Utf8String m_ErrorReason;
@@ -95,5 +95,6 @@ class CScriptUploadEngine: public CAbstractUploadEngine
 
 // You must implement this function
 const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url);
+const std::string Impl_InputDialog(const std::string& text, const std::string& defaultValue);
 
 #endif

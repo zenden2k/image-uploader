@@ -105,7 +105,7 @@ public:
 	CString m_srcFileHash;
 	MyFileInfo m_sourceFileInfo;
 	void OnConfigureNetworkManager(NetworkManager *nm);
-	virtual bool OnFileFinished(bool ok,  CFileDownloader::DownloadFileListItem it);
+	virtual bool OnFileFinished(bool ok, int statusCode,  CFileDownloader::DownloadFileListItem it);
 	void MarkServer(int id);
 	CFileDownloader m_FileDownloader;
 	LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);

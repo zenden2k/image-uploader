@@ -36,8 +36,24 @@ struct CUrlListItem
 	bool IsImage, IsThumb;
 	CString FileName;
 	CString ImageUrl;
+	CString ImageUrlShortened;
 	CString ThumbUrl;
+	CString ThumbUrlShortened;
 	CString DownloadUrl;
+	CString DownloadUrlShortened;
+
+	CString getDownloadUrl(bool shortened = false) {
+		return (shortened && !DownloadUrlShortened.IsEmpty()) ? DownloadUrlShortened : DownloadUrl; 
+	}
+
+	CString getImageUrl(bool shortened = false) {
+		return (shortened && !ImageUrlShortened.IsEmpty()) ? ImageUrlShortened : ImageUrl; 
+	}
+
+	CString getThumbUrl(bool shortened = false) {
+		return (shortened && !ThumbUrlShortened.IsEmpty()) ? ThumbUrlShortened : ThumbUrl; 
+	}
+
 };
 
 bool IULaunchCopy();

@@ -528,7 +528,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 			{
 				mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
 				mi.fType = MFT_STRING;
-				if(!m_EngineList->byIndex(i)->ImageHost) continue;
+				if(m_EngineList->byIndex(i)->Type != CUploadEngineData::TypeImageServer) continue;
 				mi.wID = (ImageServer ? IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
 				CUploadEngineData* ued = m_EngineList->byIndex(i);
 				CString name  = Utf8ToWCstring(ued->Name); 
@@ -554,7 +554,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 		{
 			mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
 			mi.fType = MFT_STRING;
-			if(m_EngineList->byIndex(i)->ImageHost) continue;
+			if(m_EngineList->byIndex(i)->Type != CUploadEngineData::TypeFileServer) continue;
 			mi.wID = (ImageServer?IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
 			CUploadEngineData* ued = m_EngineList->byIndex(i);
 			CString name  = Utf8ToWCstring(ued->Name); 

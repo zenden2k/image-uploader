@@ -53,6 +53,7 @@ CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * 
 CImageReuploaderDlg::~CImageReuploaderDlg()
 {
 	delete historySession_;
+	delete queueUploader_;
 	historySession_ = 0;
 }
 

@@ -57,6 +57,8 @@
 #define IDM_PASTEFROMWEB (IDM_UPLOADFILES+21)
 #define IDM_STOPUPLOAD (IDM_UPLOADFILES+22)
 #define IDM_REUPLOADIMAGES (IDM_UPLOADFILES+23)
+#define IDM_SHORTENURL (IDM_REUPLOADIMAGES+24)
+#define IDM_SHORTENURLCLIPBOARD (IDM_REUPLOADIMAGES+25)
 
 #define WM_CLOSETRAYWND (WM_USER+2)
 #define WM_RELOADSETTINGS (WM_USER+3)
@@ -69,6 +71,11 @@ class CFloatingWindow :
 	public CFileQueueUploader::Callback
 {
 public:
+	struct UploadedItem {
+		CFileQueueUploader::FileListItem fileListItem;
+		CString imageUrlShortened;
+		CString downloadUrlShortened;
+	};
 	HANDLE hMutex;
 	HWND m_ActiveWindow;
 		HMENU m_hTrayIconMenu;
@@ -79,7 +86,10 @@ public:
 		HICON m_hIconSmall;
 		bool m_bStopCapturingWindows;
 		bool m_bIsUploading;
-		CFileQueueUploader::FileListItem m_LastUploadedItem;
+		UploadedItem lastUploadedItem_;
+		CString imageUrlShortened_;
+		CString downloadUrlShortened_;
+
 	CFloatingWindow();
 	~CFloatingWindow();
 	DECLARE_WND_CLASS(_T("CFloatingWindow"))
@@ -93,6 +103,8 @@ public:
 		COMMAND_ID_HANDLER_EX(IDM_UPLOADFILES, OnUploadFiles)
 		COMMAND_ID_HANDLER_EX(IDM_UPLOADIMAGES, OnUploadImages)
 		COMMAND_ID_HANDLER_EX(IDM_REUPLOADIMAGES, OnReUploadImages)
+		COMMAND_ID_HANDLER_EX(IDM_SHORTENURL, OnShortenUrl)
+		COMMAND_ID_HANDLER_EX(IDM_SHORTENURLCLIPBOARD, OnShortenUrlClipboard)
 		COMMAND_ID_HANDLER_EX(IDM_SCREENSHOTDLG, OnScreenshotDlg)
 		COMMAND_ID_HANDLER_EX(IDM_REGIONSCREENSHOT, OnRegionScreenshot)
 		COMMAND_ID_HANDLER_EX(IDM_FULLSCREENSHOT, OnFullScreenshot)
@@ -147,6 +159,9 @@ public:
 	 LRESULT OnMediaInfo(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnScreenshotActionChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	 LRESULT OnStopUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+	 LRESULT OnShortenUrl(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+	 LRESULT OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+	 
 	 LRESULT OnTimer(UINT id);
 	 void CreateTrayIcon();
 	 void RegisterHotkeys();
@@ -163,8 +178,19 @@ public:
 	 bool m_bFromHotkey;
 	 bool OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result);
 	 bool OnConfigureNetworkManager(CFileQueueUploader*, NetworkManager* nm);
+	 void ShowImageUploadedMessage(const CString& url);
 	 std::string source_file_name_;
 	 std::string server_name_;
+
+	 struct UploadTaskUserData {
+		CString linkTypeToShorten; 
+	 };
+
+	
+	 enum UploadType {
+		 utImage, utUrl, utShorteningImageUrl
+	 };
+	 UploadType uploadType_;
 };
 extern CFloatingWindow floatWnd;
 void CreateFloatWindow();

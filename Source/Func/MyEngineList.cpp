@@ -61,6 +61,11 @@ CAbstractUploadEngine* CMyEngineList::getUploadEngine(CUploadEngineData* data)
 	if (data->UsingPlugin)
 	{
 		result = iuPluginManager.getPlugin(data->PluginName, Settings.ServerByUtf8Name(data->Name));
+		if ( !result ) {
+			CString errorMessage;
+			errorMessage.Format(_T("Cannot load plugin '%s'"), static_cast<LPCTSTR>(Utf8ToWCstring(data->PluginName)));
+			WriteLog(logError, _T("CMyEngineList"), errorMessage);
+		}
 	}
 	else
 	{

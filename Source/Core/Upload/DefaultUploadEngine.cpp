@@ -21,15 +21,30 @@
 #include "DefaultUploadEngine.h"
 #include "Core/3rdpart/codepages.h"
 #include "Core/3rdpart/pcreplusplus.h"
+#include "FileUploadTask.h"
+#include <Core/Upload/UrlShorteningTask.h>
+#include <Core/Utils/StringUtils.h>
 
 CDefaultUploadEngine::CDefaultUploadEngine() : CAbstractUploadEngine() 
 {
 	m_CurrentActionIndex = -1;
 }
 
-bool CDefaultUploadEngine::doUpload(Utf8String FileName, Utf8String DisplayName, CIUUploadParams& params)
-{
-	if ( FileName.empty() ) {
+bool CDefaultUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params) {
+	if ( task->getType() == "file" ) {
+		return doUploadFile(static_cast<FileUploadTask*>(task), params);
+	} else if ( task->getType() == "url" ) {
+		return doUploadUrl(static_cast<UrlShorteningTask*>(task), params);
+	} else {
+		UploadError( ErrorInfo::mtError, "Upload task of type '" + task->getType() + "' is not supported", 0, false );
+	}
+	return false;
+}
+
+bool CDefaultUploadEngine::doUploadFile(FileUploadTask* task, CIUUploadParams &params) {
+	std::string fileName = task->getFileName();
+	std::string displayName = task->getDisplayName();
+	if ( fileName.empty() ) {
 		UploadError( true, "Filename should not be empty!", 0 );
 		return false;
 	}
@@ -38,9 +53,54 @@ bool CDefaultUploadEngine::doUpload(Utf8String FileName, Utf8String DisplayName,
 		UploadError( true, "m_UploadData should not be NULL!", 0 );
 		return false;
 	}
-	m_FileName = FileName;
-	m_displayFileName = DisplayName;
+	m_FileName = fileName;
+	m_displayFileName = displayName;
 
+	prepareUpload();
+	std::string FileExt = IuCoreUtils::ExtractFileExt(displayName);
+	m_Consts["_FILENAME"]           = IuCoreUtils::ExtractFileName(fileName);
+	std::string OnlyFname;
+	OnlyFname = IuCoreUtils::ExtractFileNameNoExt(fileName);
+	m_Consts["_FILENAMEWITHOUTEXT"] = OnlyFname;
+	m_Consts["_FILEEXT"]            = FileExt;
+
+	bool actionsExecuteResult = executeActions();
+	if ( !actionsExecuteResult ) {
+		return false;
+	}
+
+	Utf8String m_ThumbUrl    = ReplaceVars( m_UploadData->ThumbUrlTemplate ); 
+	Utf8String m_ImageUrl    = ReplaceVars( m_UploadData->ImageUrlTemplate ); 
+	Utf8String m_DownloadUrl = ReplaceVars( m_UploadData->DownloadUrlTemplate ); 
+
+	params.ThumbUrl  = m_ThumbUrl;
+	params.DirectUrl = m_ImageUrl;
+	params.ViewUrl   = m_DownloadUrl;
+	return true;
+}
+
+bool  CDefaultUploadEngine::doUploadUrl(UrlShorteningTask* task, CIUUploadParams &params) {
+	prepareUpload();
+	m_Consts["_ORIGINALURL"] = task->getUrl();
+	bool actionsExecuteResult = executeActions();
+	if ( !actionsExecuteResult ) {
+		return false;
+	}
+	Utf8String m_ThumbUrl    = ReplaceVars( m_UploadData->ThumbUrlTemplate ); 
+	Utf8String m_ImageUrl    = ReplaceVars( m_UploadData->ImageUrlTemplate ); 
+	Utf8String m_DownloadUrl = ReplaceVars( m_UploadData->DownloadUrlTemplate ); 
+
+	params.ThumbUrl  = m_ThumbUrl;
+	params.DirectUrl = m_ImageUrl;
+	params.ViewUrl   = m_DownloadUrl;
+	if ( m_ImageUrl.empty() ) {
+		UploadError( ErrorInfo::mtError, "Empty result", 0, false );
+		return false;
+	}
+	return true;
+}
+
+void CDefaultUploadEngine::prepareUpload() {
 	m_Vars.clear();
 	if ( m_UploadData->NeedAuthorization ) {
 		li = m_ServersSettings.authData;
@@ -49,17 +109,13 @@ bool CDefaultUploadEngine::doUpload(Utf8String FileName, Utf8String DisplayName,
 			m_Consts["_PASSWORD"] = li.Password;
 		}
 	}
-	std::string FileExt = IuCoreUtils::ExtractFileExt(DisplayName);
-	m_Consts["_FILENAME"]           = IuCoreUtils::ExtractFileName(FileName);
-	std::string OnlyFname;
-	OnlyFname = IuCoreUtils::ExtractFileNameNoExt(FileName);
-	m_Consts["_FILENAMEWITHOUTEXT"] = OnlyFname;
-	m_Consts["_FILEEXT"]            = FileExt;
-	m_Consts["_THUMBWIDTH"]         = IuCoreUtils::toString( m_ThumbnailWidth );
 
 	int n = rand() % (256 * 256);
 	m_Consts["_RAND16BITS"]         = IuCoreUtils::toString(n);
+	m_Consts["_THUMBWIDTH"]         = IuCoreUtils::toString( m_ThumbnailWidth );
+}
 
+bool CDefaultUploadEngine::executeActions() {
 	for (size_t i = 0; i < m_UploadData->Actions.size(); i++) {
 		m_UploadData->Actions[i].NumOfTries = 0;
 		bool ActionRes = false;
@@ -88,7 +144,7 @@ bool CDefaultUploadEngine::doUpload(Utf8String FileName, Utf8String DisplayName,
 					errorType = etActionRepeating;
 					ErrorStr += "retrying... ";
 					ErrorStr += "(" + IuCoreUtils::toString(m_UploadData->Actions[i].NumOfTries + 1)
-					   + " of " + IuCoreUtils::toString(m_UploadData->Actions[i].RetryLimit) + ")";
+						+ " of " + IuCoreUtils::toString(m_UploadData->Actions[i].RetryLimit) + ")";
 				}
 				UploadError( mt == ErrorInfo::mtError, ErrorStr, 0, false );
 			}
@@ -98,15 +154,10 @@ bool CDefaultUploadEngine::doUpload(Utf8String FileName, Utf8String DisplayName,
 			return false;
 		}
 	}
-	Utf8String m_ThumbUrl    = ReplaceVars( m_UploadData->ThumbUrlTemplate ); 
-	Utf8String m_ImageUrl    = ReplaceVars( m_UploadData->ImageUrlTemplate ); 
-	Utf8String m_DownloadUrl = ReplaceVars( m_UploadData->DownloadUrlTemplate ); 
-
-	params.ThumbUrl  = m_ThumbUrl;
-	params.DirectUrl = m_ImageUrl;
-	params.ViewUrl   = m_DownloadUrl;
 	return true;
 }
+
+
 
 bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
 {
@@ -390,7 +441,7 @@ std::string CDefaultUploadEngine::ReplaceVars(const std::string& Text)
 {
 	std::string Result =  Text;
 
-	pcrepp::Pcre reg("\\$\\(([A-z0-9_]*?)\\)", "imc");
+	pcrepp::Pcre reg("\\$\\(([A-z0-9_|]*?)\\)", "imc");
 	std::string str = (Text);
 	size_t pos = 0;
 	while (pos <= str.length())
@@ -399,10 +450,27 @@ std::string CDefaultUploadEngine::ReplaceVars(const std::string& Text)
 		{
 			pos = reg.get_match_end() + 1;
 			std::string vv = reg[0];
-			if (!vv.empty() && vv[0] == '_')
-				Result = IuCoreUtils::StrReplace(Result, std::string("$(") + vv + std::string(")"), m_Consts[vv]);
-			else
-				Result = IuCoreUtils::StrReplace(Result, std::string("$(") + vv + std::string(")"), m_Vars[vv]);
+			std::string varName = vv;
+			std::vector<std::string> tokens;
+			IuStringUtils::Split(vv, "|", tokens, -1);
+			if ( tokens.size() ) {
+				varName = tokens[0];
+			}
+			std::string value;
+
+			if (!vv.empty() && vv[0] == '_') {
+				value = m_Consts[varName];
+			} else {
+				value = m_Vars[varName];
+			}
+			for ( int i = 1; i < tokens.size(); i++ ) {
+				std::string modifier = tokens[i];
+				if ( modifier == "urlencode" ) {
+					value = m_NetworkManager->urlEncode(value);
+				}
+			}
+			
+			Result = IuCoreUtils::StrReplace(Result, std::string("$(") + vv + std::string(")"), value);
 		}
 		else
 			break;

@@ -35,11 +35,12 @@
 #include "Gui/Dialogs/LogoSettings.h"
 #include "Gui/Dialogs/SizeExceed.h"
 #include "Gui/Dialogs/ResultsWindow.h"
-
+#include <Core/Upload/FileQueueUploader.h>
 
 class CUploadDlg : public CDialogImpl<CUploadDlg>,
                    public CThreadImpl<CUploadDlg>, 
-						 public CWizardPage	
+						 public CWizardPage,
+						 public CFileQueueUploader::Callback
 {
 	public:
 		CUploadDlg(CWizardDlg *dlg);
@@ -80,10 +81,16 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		int progressCurrent, progressTotal;
 		CMyEngineList *m_EngineList;
 		CString m_StatusText;
+		CFileQueueUploader* queueUploader_;
 		bool OnUploaderNeedStop();
 		void OnUploaderProgress(CUploader* uploader, InfoProgress pi);
 		void OnUploaderStatusChanged(StatusType status, int actionIndex, std::string text);
 		void OnUploaderConfigureNetworkClient(NetworkManager *nm);	
+		void onShortenUrlChanged(bool shortenUrl);
+		void AddShortenUrlTask(CUrlListItem* item);
+		void AddShortenUrlTask(CUrlListItem* item, CString linkType);
+		virtual bool OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result);
+		virtual bool OnConfigureNetworkManager(CFileQueueUploader*, NetworkManager* nm);
 	protected:
 		struct CUploadDlgProgressInfo
 		{
@@ -91,7 +98,13 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 			CAutoCriticalSection CS;
 			std::deque<DWORD> Bytes;
 		};
+		struct ShortenUrlUserData {
+			CUrlListItem* item;
+			CString linkType;
+		};
 		CUploadDlgProgressInfo PrInfo;
+		bool alreadyShortened_;
+		
 		#if  WINVER	>= 0x0601
 				ITaskbarList3* ptl;
 		#endif

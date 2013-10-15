@@ -98,7 +98,7 @@ int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON
 	if(szTip)
 	{
 		if(SubItemRightY!= -1)
-			BottomY+= 23;
+			BottomY+= 16;
 		item->ItemRect.left = 5;
 		item->ItemRect.top = BottomY +(m_bHyperLinks?15:10);
 		item->ItemRect.right=ScaleX(10)+item->ItemRect.left+ item->iconWidth + TitleWidth+1/*ClientRect.right*/;
