@@ -2,6 +2,7 @@
 #define FUNC_SYSTEM_UTILS_H
 
 #include <gdiplus.h>
+#include <vector>
 
 namespace SystemUtils {
 	bool CopyFilesToClipboard(const std::vector<LPCTSTR>& fileNames, bool clearClipboard = true);

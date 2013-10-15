@@ -136,7 +136,7 @@ LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /
 		m_ListView.SetItemText(i, 1, Utf8ToWstring( m_ServerList.byIndex(i)->Name).c_str());
 		//m_ListView.AddItem(i+1,0,_T(""));
 	}
-	CString fileName = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
+	CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
 	m_srcFileHash = IU_md5_file(fileName);
 	CString report = _T("Source file: ")+IU_GetFileInfo(fileName, &m_sourceFileInfo);
 	SetDlgItemText(IDC_TOOLSOURCEFILE,report);
@@ -156,7 +156,7 @@ LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 	else 
 	{
 		ZSimpleXml savexml;
-		CString fileName = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
+		CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
 		ZSimpleXmlNode root = savexml.getRoot("ServerListTool");
 		root.SetAttribute("FileName", WstrToUtf8((LPCTSTR)fileName));
 		root.SetAttribute("Time", int(GetTickCount()));
@@ -174,7 +174,7 @@ DWORD CMainDlg::Run()
 
 	bool CheckImageServers = SendDlgItemMessage(IDC_CHECKIMAGESERVERS,BM_GETCHECK) == BST_CHECKED;
 	bool CheckFileServers = SendDlgItemMessage(IDC_CHECKFILESERVERS,BM_GETCHECK) == BST_CHECKED;
-	CString fileName = ZGuiTools::IU_GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
+	CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
 	if(!FileExists(fileName))
 	{
 			return -1;
@@ -301,7 +301,7 @@ DWORD CMainDlg::Run()
 	return 0;
 }
 
-bool CMainDlg::OnFileFinished(bool ok, CFileDownloader::DownloadFileListItem it)
+bool CMainDlg::OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it)
 {
 	int serverId = reinterpret_cast<int>(it.id) /10;
 	int fileId = reinterpret_cast<int>(it.id) % 10;
@@ -464,6 +464,15 @@ const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url
 	return "";
 }
 
+const std::string Impl_InputDialog(const std::string& text, const std::string& defaultValue)
+{
+	CInputDialog dlg(_T("Image Uploader"), Utf8ToWCstring(text), Utf8ToWCstring(defaultValue));
+
+	if(dlg.DoModal()==IDOK) {
+		return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
+	}
+	return "";
+}
 void CMainDlg::OnConfigureNetworkManager(NetworkManager *nm)
 {
 	IU_ConfigureProxy(*nm);
