@@ -251,6 +251,10 @@ const std::string scriptMD5(const std::string& data)
 	return IuCoreUtils::CryptoUtils::CalcMD5HashFromString(data);
 }
 
+void scriptSleep(int msec) {
+	Sleep(msec);
+}
+
 /*bool ShowText(const std::string& data) {
 	return DebugMessage( data, true );
 }*/
@@ -336,6 +340,7 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		func(&CFolderItem::getItemCount, "getItemCount");
 
 		RegisterGlobal(pluginRandom, "random");
+		RegisterGlobal(scriptSleep, "sleep");
 		RegisterGlobal(scriptMD5, "md5");
 		RegisterGlobal(scriptAnsiToUtf8, "AnsiToUtf8");
 		RegisterGlobal(YandexRsaEncrypter, "YandexRsaEncrypter");

@@ -829,10 +829,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Core\Utils\CodePages.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\Func\Common.cpp"
 					>
 				</File>
@@ -941,6 +937,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Func\SystemUtils.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Func\SystemUtils.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Gui\Dialogs\TextViewDlg.cpp"
 					>
 				</File>
@@ -972,6 +976,106 @@
 					RelativePath="..\Core\Upload\Uploader.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\Func\WebUtils.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Func\WebUtils.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Func\WinUtils.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Func\WinUtils.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Core"
+				>
+				<Filter
+					Name="Upload"
+					>
+					<File
+						RelativePath="..\Core\Upload\FileUploadTask.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\Upload\FileUploadTask.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\Upload\UploadTask.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\Upload\UploadTask.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\Upload\UrlShorteningTask.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\Upload\UrlShorteningTask.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Video"
+					>
+					<File
+						RelativePath="..\Core\Video\VideoUtils.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\Video\VideoUtils.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Utils"
+					>
+					<File
+						RelativePath="..\Core\Utils\CoreTypes.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\Utils\CryptoUtils.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\Utils\CryptoUtils.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\Utils\GlobalMutex.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\Utils\StringUtils.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\Utils\utils_unix.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="3rdpart"
+					>
+					<File
+						RelativePath="..\Core\3rdpart\CodePages.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\3rdpart\codepages.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

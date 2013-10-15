@@ -68,11 +68,10 @@
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)"/>
 	</Server>
 	
-	<Server Name="funkyimg.com" Authorize="0">
+	<Server Name="funkyimg.com" Authorize="0" Plugin="funkyimg">
 		<Actions>
-			<Action Type="upload" Url="http://funkyimg.com/up.php" PostParams="uptype=file;file_0=%filename%;maxNumber=1;maxId=0;addInfo=on;addInfoType=res;wmPos=TOPRIGHT;wmLayout=2;wmFontSize=14;wmTransparency=50" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0"/>
 		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
 	<Server Name="vfl.ru" Authorize="0" Debug="0">
 		<Actions>
