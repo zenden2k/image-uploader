@@ -2,6 +2,7 @@
 
 #include "atlheaders.h"
 #include "MyUtils.h"
+#include <vector>
 
 namespace SystemUtils {
 

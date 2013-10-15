@@ -38,6 +38,7 @@ class CUploader
 		
 		void setThumbnailWidth(int width);
 		bool UploadFile(const std::string & FileName, const std::string displayFileName);
+		bool Upload(UploadTask* task);
 		const std::string  getDownloadUrl();
 		const std::string  getDirectUrl();
 		const std::string  getThumbUrl();

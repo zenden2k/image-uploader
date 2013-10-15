@@ -41,6 +41,7 @@
 #include "Gui/Dialogs/MediaInfoDlg.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ImageReuploaderDlg.h"
+#include <Gui/Dialogs/ShortenUrlDlg.h>
 
 using namespace Gdiplus;
 // CWizardDlg
@@ -166,6 +167,18 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	for(size_t i=0; i<list.size(); i++)
 	{
 		LoadUploadEngines(serversFolder+list[i], ErrorStr);
+	}
+	if ( Settings.UrlShorteningServer.IsEmpty() ) {
+		CString defaultServerName = _T("is.gd");
+		CUploadEngineData * uploadEngineData = m_EngineList.byName(defaultServerName);
+		if ( uploadEngineData ) {
+			Settings.UrlShorteningServer = defaultServerName;
+		} else {
+			uploadEngineData = m_EngineList.firstEngineOfType(CUploadEngineData::TypeUrlShorteningServer);
+			if ( uploadEngineData ) {
+				Settings.UrlShorteningServer = Utf8ToWCstring(uploadEngineData->Name);
+			}
+		}
 	}
 
 	LoadUploadEngines(_T("userservers.xml"), ErrorStr);	
@@ -1240,6 +1253,8 @@ bool CWizardDlg::executeFunc(CString funcBody)
 		return funcSettings();
 	else if(funcName == _T("reuploadimages"))
 		return funcReuploadImages();
+	else if(funcName == _T("shortenurl"))
+		return funcShortenUrl();
 	else if(funcName == _T("mediainfo"))
 		return funcMediaInfo();
 
@@ -1799,6 +1814,12 @@ bool CWizardDlg::IsClipboardDataAvailable()
 bool CWizardDlg::funcReuploadImages() {
 	CImageReuploaderDlg dlg(this, _EngineList,  CString());
 	dlg.DoModal(m_hWnd);
+	return false;
+}
+
+bool CWizardDlg::funcShortenUrl() {
+	CShortenUrlDlg dlg(this,_EngineList, CString());
+	dlg.DoModal();
 	return false;
 }
 

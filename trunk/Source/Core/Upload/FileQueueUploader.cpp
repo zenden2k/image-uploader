@@ -22,6 +22,9 @@
 #include <algorithm>
 #include <zthread/Thread.h>
 #include <zthread/Mutex.h>
+#include <Core/Upload/UploadTask.h>
+#include <Core/Upload/FileUploadTask.h>
+
 
 #ifndef IU_CLI
 	#include "Gui/Dialogs/LogWindow.h"
@@ -38,10 +41,11 @@ class CFileQueueUploader::Impl {
 		Impl(CFileQueueUploader* queueUploader);
 		virtual ~Impl();
 		void AddFile(const std::string& fileName, const std::string& displayName, void* user_data,CAbstractUploadEngine *uploadEngine);
-		void AddFile(UploadTask task);
+		void AddFile(Task task);
 		void start();
 		virtual void run();
-		bool getNextJob(UploadTask* item);
+		bool getNextJob(Task* item);
+		void AddUploadTask(std_tr::shared_ptr<UploadTask> task, void* user_data, CAbstractUploadEngine *uploadEngine);
 
 		ZThread::Mutex mutex_;
 		ZThread::Mutex callMutex_;
@@ -51,7 +55,7 @@ class CFileQueueUploader::Impl {
 		bool m_IsRunning;
 		CAbstractUploadEngine* m_engine;
 		ServerSettingsStruct m_serverSettings;
-		std::vector<UploadTask> m_fileList;
+		std::vector<Task> m_fileList;
 		int m_nThreadCount;
 		int m_nRunningThreads;
 		friend class CFileQueueUploader;
@@ -60,7 +64,7 @@ class CFileQueueUploader::Impl {
 		bool onNeedStopHandler();
 		void OnConfigureNetworkManager(NetworkManager* nm);
 		void onProgress(CUploader*, InfoProgress progress );
-		std::map<CUploader*, UploadTask*> tasks_;
+		std::map<CUploader*, Task*> tasks_;
 		std::map<std::string, ServerThreadsInfo> serverThreads_;
 		
 };
@@ -114,7 +118,7 @@ void CFileQueueUploader::Impl::OnConfigureNetworkManager(NetworkManager* nm)
 	}
 }
 
-bool CFileQueueUploader::Impl::getNextJob(UploadTask* item) {
+bool CFileQueueUploader::Impl::getNextJob(Task* item) {
 	if (m_NeedStop)
 		return false;
 	std::string url;
@@ -131,15 +135,32 @@ bool CFileQueueUploader::Impl::getNextJob(UploadTask* item) {
 }
 
 void CFileQueueUploader::Impl::AddFile(const std::string& fileName, const std::string& displayName, void* user_data, CAbstractUploadEngine *uploadEngine) {
-	UploadTask newTask;
+	Task newTask;
 	newTask.userData = user_data;
-	newTask.displayFileName = displayName;
-	newTask.fileName = fileName;
+	//newTask.displayFileName = displayName;
+	//newTask.fileName = fileName;
 	newTask.uploadEngine = uploadEngine;
-	newTask.fileSize = IuCoreUtils::getFileSize(fileName);
+	newTask.uploadTask = std_tr::shared_ptr<UploadTask>(new FileUploadTask(fileName, displayName));
+	
+	//newTask.fileSize = IuCoreUtils::getFileSize(fileName);
 	newTask.serverName = uploadEngine->getUploadData()->Name;
 	AddFile( newTask );
 }
+
+void CFileQueueUploader::Impl::AddUploadTask(std_tr::shared_ptr<UploadTask>  task, void* user_data, CAbstractUploadEngine *uploadEngine) {
+	Task newTask;
+	newTask.userData = user_data;
+	newTask.uploadEngine = uploadEngine;
+	newTask.serverName = uploadEngine->getUploadData()->Name;
+	newTask.uploadTask = task;
+	AddFile( newTask );
+}
+
+void CFileQueueUploader::Impl::AddFile(Task task){
+	m_fileList.push_back(task);
+	serverThreads_[task.serverName].waitingFileCount++;
+}
+
 
 void CFileQueueUploader::Impl::start() {
 	mutex_.acquire();
@@ -155,10 +176,6 @@ void CFileQueueUploader::Impl::start() {
 	mutex_.release();
 }
 
-void CFileQueueUploader::Impl::AddFile(UploadTask task){
-	m_fileList.push_back(task);
-	serverThreads_[task.serverName].waitingFileCount++;
-}
 
 void CFileQueueUploader::Impl::run()
 {
@@ -170,7 +187,7 @@ void CFileQueueUploader::Impl::run()
 #endif
 	for (;; )
 	{
-		UploadTask it;
+		Task it;
 		if (!getNextJob(&it))
 			break;
 		serverThreads_[it.serverName].waitingFileCount--;
@@ -183,7 +200,7 @@ void CFileQueueUploader::Impl::run()
 		mutex_.acquire();
 		tasks_[&uploader] = &it;
 		mutex_.release();
-		bool res = uploader.UploadFile(it.fileName, it.displayFileName.c_str());
+		bool res = uploader.Upload(it.uploadTask.get());
 
 		mutex_.acquire();
 		serverThreads_[serverName].runningThreads --;
@@ -194,13 +211,20 @@ void CFileQueueUploader::Impl::run()
 		FileListItem result;
 		result.uploadTask = &it;
 		result.serverName = serverName;
-		result.fileName = it.fileName;
+		FileUploadTask* fileUploadTask = 0;
+		if ( it.uploadTask->getType() == "file") {
+			fileUploadTask = (FileUploadTask*)(it.uploadTask.get());
+			result.fileName = fileUploadTask->getFileName();
+		}
 		if (res) {
 			
 			result.imageUrl = (uploader.getDirectUrl());
 			result.downloadUrl = (uploader.getDownloadUrl());
 			result.thumbUrl = (uploader.getThumbUrl());
-			result.fileSize = it.fileSize;
+			if ( fileUploadTask ) {
+				result.fileName = fileUploadTask->getDataLength();
+				//result.fileSize = it.fileSize;
+			}
 			if (callback_) {
 				
 				callback_->OnFileFinished(true, result);
@@ -278,4 +302,8 @@ void CFileQueueUploader::setMaxThreadCount(int threadCount) {
 bool CFileQueueUploader::isSlotAvailableForServer(std::string serverName, int maxThreads) {
 	int threads = _impl->serverThreads_[serverName].runningThreads + _impl->serverThreads_[serverName].waitingFileCount;
 	return threads < maxThreads && threads < _impl->m_nThreadCount;
+}
+
+void CFileQueueUploader::AddUploadTask(std_tr::shared_ptr<UploadTask> task, void* user_data, CAbstractUploadEngine *uploadEngine) {
+	_impl->AddUploadTask(task, user_data, uploadEngine);
 }

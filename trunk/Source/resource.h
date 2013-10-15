@@ -45,6 +45,7 @@
 #define IDD_THUMBEDITOR                 146
 #define IDD_INPUTDIALOG                 147
 #define IDD_IMAGEREUPLOADER             148
+#define IDD_SHORTENURL                  149
 #define IDR_CONTEXTMENU                 202
 #define IDI_GRAB                        207
 #define IDI_IMAGES                      209
@@ -83,6 +84,9 @@
 #define IDI_ICON3                       255
 #define IDI_ICONDELETE                  255
 #define IDI_ICONRELOAD                  258
+#define IDB_PNG1                        259
+#define IDI_ICON4                       260
+#define IDI_ICONLINK                    260
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -196,6 +200,8 @@
 #define IDC_NEWFOLDERBUTTON             1041
 #define IDC_SCREENSHOTFOLDEREDIT        1041
 #define IDC_HEIGHTEDIT                  1041
+#define IDC_FILEINFOEDIT2               1041
+#define IDC_INPUTEDIT                   1041
 #define IDC_DONE                        1042
 #define IDC_LOGINBUTTON2                1042
 #define IDC_VIDEOSNAPSHOTSFOLDEREDIT    1042
@@ -452,6 +458,7 @@
 #define IDC_AUTOSTARTUP                 1272
 #define IDC_PRESERVE_EXIF               1272
 #define IDC_PASTEHTMLONCTRLVCHECKBOX    1272
+#define IDC_SHORTENURLFROMTRAYCHECKBOX  1272
 #define IDC_VIDEOENGINECOMBO            1273
 #define IDC_FOUNDABUG                   1274
 #define IDC_RESULTSLABEL                1274
@@ -466,6 +473,9 @@
 #define IDC_VIDEOSNAPSHOTSFOLDERLABEL   1284
 #define IDC_SNAPSHOTFILENAMELABEL       1285
 #define IDC_OPENFOLDER                  1286
+#define IDC_RESULTSEDIT                 1287
+#define IDC_SHORTENURLTIP               1288
+#define IDC_SERVERCOMBOBOX              1289
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -510,9 +520,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        259
+#define _APS_NEXT_RESOURCE_VALUE        261
 #define _APS_NEXT_COMMAND_VALUE         32803
-#define _APS_NEXT_CONTROL_VALUE         1287
+#define _APS_NEXT_CONTROL_VALUE         1290
 #define _APS_NEXT_SYMED_VALUE           127
 #endif
 #endif

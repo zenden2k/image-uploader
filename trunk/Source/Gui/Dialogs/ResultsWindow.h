@@ -53,6 +53,8 @@ class CResultsWindow:	 public CDialogIndirectImpl<CResultsWindow>
 		void Unlock();
 		void EnableMediaInfo(bool Enable);
 		DLGTEMPLATE* GetTemplate();
+		void setOnShortenUrlChanged(fastdelegate::FastDelegate1<bool> fd); 
+		void setShortenUrls(bool shorten);
 		void setUrlList(CAtlArray<CUrlListItem>  * urlList);
 		enum { IDD = IDD_RESULTSWINDOW };
 

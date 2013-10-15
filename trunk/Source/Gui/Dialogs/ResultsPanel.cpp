@@ -34,6 +34,7 @@ CResultsPanel::CResultsPanel(CWizardDlg *dlg,CAtlArray<CUrlListItem>  & urlList)
 	TemplateHead = TemplateFoot = NULL;	
 	rectNeeded.left = -1;
 	CString TemplateLoadError;
+	shortenUrl_ = false;
 	if(!LoadTemplates(TemplateLoadError))
 	{
 		WriteLog(logWarning, _T("Results Module"), TemplateLoadError);
@@ -173,26 +174,26 @@ void CResultsPanel::SetPage(int Index)
 		OnBnClickedCopyall(0,0,0,temp);
 }
 
-void BBCode_Link(CString &Buffer, CUrlListItem &item)
+void CResultsPanel::BBCode_Link(CString &Buffer, CUrlListItem &item)
 {
 	Buffer += _T("[url=");
-	if(*item.ImageUrl && (Settings.UseDirectLinks || item.DownloadUrl.IsEmpty()))
-		Buffer += item.ImageUrl;
+	if(*item.getImageUrl(shortenUrl_) && (Settings.UseDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
+		Buffer += item.getImageUrl(shortenUrl_);
 	else 
-		Buffer += item.DownloadUrl;
+		Buffer += item.getDownloadUrl(shortenUrl_);
 	Buffer += _T("]");
 	Buffer += myExtractFileName(item.FileName);
 	Buffer += _T("[/url]");
 
 }
 
-void HTML_Link(CString &Buffer, CUrlListItem &item)
+void CResultsPanel::HTML_Link(CString &Buffer, CUrlListItem &item)
 {
 	Buffer += _T("<a href=\"");
-	if(*item.ImageUrl && (Settings.UseDirectLinks || item.DownloadUrl.IsEmpty()))
-		Buffer += item.ImageUrl;
+	if(*item.getImageUrl(shortenUrl_) && (Settings.UseDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
+		Buffer += item.getImageUrl(shortenUrl_);
 	else 
-		Buffer += item.DownloadUrl;
+		Buffer += item.getDownloadUrl(shortenUrl_);
 	Buffer += _T("\">");
 	Buffer += myExtractFileName(item.FileName);
 	Buffer += _T("</a>");
@@ -238,9 +239,9 @@ const CString CResultsPanel::GenerateOutput()
 		{
 			LPCTSTR fname=myExtractFileName(UrlList[i].FileName);
 
-			m_Vars[_T("DownloadUrl")]=UrlList[i].DownloadUrl;
-			m_Vars[_T("ImageUrl")]=UrlList[i].ImageUrl;
-			m_Vars[_T("ThumbUrl")]=UrlList[i].ThumbUrl;
+			m_Vars[_T("DownloadUrl")]=UrlList[i].getDownloadUrl(shortenUrl_);
+			m_Vars[_T("ImageUrl")]=UrlList[i].getImageUrl(shortenUrl_);
+			m_Vars[_T("ThumbUrl")]=UrlList[i].getThumbUrl(shortenUrl_);
 			m_Vars[_T("FileName")]=fname;
 			m_Vars[_T("FullFileName")]=UrlList[i].FileName;
 			m_Vars[_T("Index")]=IntToStr(i);
@@ -278,17 +279,17 @@ const CString CResultsPanel::GenerateOutput()
 		{
 
 			Buffer+=_T("[url=");
-			if(*UrlList[i].ImageUrl&& (Settings.UseDirectLinks || UrlList[i].DownloadUrl.IsEmpty()))
+			if(*UrlList[i].getImageUrl(shortenUrl_)&& (Settings.UseDirectLinks || UrlList[i].getDownloadUrl(shortenUrl_).IsEmpty()))
 
-				Buffer+=UrlList[i].ImageUrl;
+				Buffer+=UrlList[i].getImageUrl(shortenUrl_);
 			else 
-				Buffer+=UrlList[i].DownloadUrl;
+				Buffer+=UrlList[i].getDownloadUrl(shortenUrl_);
 			Buffer+=_T("]");
 
-			if(lstrlen(UrlList[i].ThumbUrl)>0)
+			if(lstrlen(UrlList[i].getThumbUrl(shortenUrl_))>0)
 			{
 				Buffer+=_T("[img]");
-				Buffer+=UrlList[i].ThumbUrl;
+				Buffer+=UrlList[i].getThumbUrl(shortenUrl_);
 				Buffer+=_T("[/img]");
 			}
 			else
@@ -310,10 +311,10 @@ const CString CResultsPanel::GenerateOutput()
 	{
 		for(int i=0;i<n;i++)
 		{
-			if(*UrlList[i].ImageUrl&& (Settings.UseDirectLinks || UrlList[i].DownloadUrl.IsEmpty()))
+			if(*UrlList[i].getImageUrl(shortenUrl_)&& (Settings.UseDirectLinks || UrlList[i].getDownloadUrl(shortenUrl_).IsEmpty()))
 			{
 				Buffer+=_T("[img]");
-				Buffer+=UrlList[i].ImageUrl;
+				Buffer+=UrlList[i].getImageUrl(shortenUrl_);
 				Buffer+=_T("[/img]");
 			}
 			else BBCode_Link(Buffer,UrlList[i]);
@@ -334,10 +335,10 @@ const CString CResultsPanel::GenerateOutput()
 	{
 		for(int i=0;i<n;i++)
 		{
-			if(*UrlList[i].ImageUrl&& (Settings.UseDirectLinks || UrlList[i].DownloadUrl.IsEmpty())) 
-				Buffer+=UrlList[i].ImageUrl;
+			if(*UrlList[i].getImageUrl(shortenUrl_)&& (Settings.UseDirectLinks || UrlList[i].getDownloadUrl(shortenUrl_).IsEmpty())) 
+				Buffer+=UrlList[i].getImageUrl(shortenUrl_);
 			else 
-				Buffer+=UrlList[i].DownloadUrl;
+				Buffer+=UrlList[i].getDownloadUrl(shortenUrl_);
 			if(i != n-1)
 			Buffer+=_T("\r\n");
 		}
@@ -349,15 +350,15 @@ const CString CResultsPanel::GenerateOutput()
 		for(int i=0;i<n;i++)
 		{
 			Buffer+=_T("<a href=\"");
-			if(*UrlList[i].ImageUrl&& (Settings.UseDirectLinks || UrlList[i].DownloadUrl.IsEmpty())) 
-				Buffer+=UrlList[i].ImageUrl;
+			if(*UrlList[i].getImageUrl(shortenUrl_)&& (Settings.UseDirectLinks || UrlList[i].getDownloadUrl(shortenUrl_).IsEmpty())) 
+				Buffer+=UrlList[i].getImageUrl(shortenUrl_);
 			else 
-				Buffer+=UrlList[i].DownloadUrl;
+				Buffer+=UrlList[i].getDownloadUrl(shortenUrl_);
 			Buffer+=_T("\">");
-			if(lstrlen(UrlList[i].ThumbUrl)>0)
+			if(lstrlen(UrlList[i].getThumbUrl(shortenUrl_))>0)
 			{
 				Buffer+=_T("<img src=\"");
-				Buffer+=UrlList[i].ThumbUrl;
+				Buffer+=UrlList[i].getThumbUrl(shortenUrl_);
 				Buffer+=_T("\" border=0>");
 			}
 			else
@@ -375,10 +376,10 @@ const CString CResultsPanel::GenerateOutput()
 	{
 		for(int i=0; i<n; i++)
 		{
-			if(lstrlen(UrlList[i].ImageUrl)>0 && (Settings.UseDirectLinks || UrlList[i].DownloadUrl.IsEmpty()))
+			if(lstrlen(UrlList[i].getImageUrl(shortenUrl_))>0 && (Settings.UseDirectLinks || UrlList[i].getDownloadUrl(shortenUrl_).IsEmpty()))
 			{
 				Buffer += _T("<img src=\"");
-				Buffer += UrlList[i].ImageUrl;
+				Buffer += UrlList[i].getImageUrl(shortenUrl_);
 				Buffer += _T("\" border=0>");
 			}
 			else HTML_Link(Buffer, UrlList[i]);
@@ -565,6 +566,29 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 		
 	
 	int count = 0;
+		mi.fType = MFT_STRING;
+		mi.wID = IDC_SHORTENURLITEM;
+		CString menuItemTitle;
+		if ( OnShortenUrlChanged ) {
+			menuItemTitle.Format(TR("Сократить ссылки с помощью %s"), (LPCTSTR)Settings.UrlShorteningServer);
+		} else {
+			menuItemTitle.Format(TR("Сократить ссылки"));
+		}
+		mi.dwTypeData  = (LPWSTR)(LPCTSTR)menuItemTitle;
+		sub.InsertMenuItem(count++, true, &mi);
+	
+
+	mi.fType = MFT_STRING;
+	mi.wID = IDC_USEDIRECTLINKS;
+	mi.dwTypeData  = TR("Использовать прямые ссылки");//TR("Параметры авторизации");
+	sub.InsertMenuItem(count++, true, &mi);
+
+	mi.wID = IDC_USETEMPLATE;
+ 	mi.dwTypeData  = TR("Использовать шаблон");
+	sub.InsertMenuItem(count++, true, &mi);
+
+	int insertedServersCount = 0;
+	int curPosition = count;
 
 	for(size_t i=0; i<m_Servers.size(); i++)
 	{
@@ -578,29 +602,24 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 		mi.wID = IDC_COPYFOLDERURL + i;
 		mi.dwTypeData  = (LPWSTR)(LPCTSTR) title;//TR("Параметры авторизации");
 		sub.InsertMenuItem(count++, true, &mi);
+		insertedServersCount++;
 	}
-	if(count)
+
+	if(insertedServersCount)
 	{
 		mi.wID = IDC_FILESERVER_LAST_ID + 1;
 		mi.fType = MFT_SEPARATOR;
-		sub.InsertMenuItem(count, true, &mi);
+		sub.InsertMenuItem(curPosition, true, &mi);
 		count++;
 	}
 	
-	mi.fType = MFT_STRING;
-	mi.wID = IDC_USEDIRECTLINKS;
-	mi.dwTypeData  = TR("Использовать прямые ссылки");//TR("Параметры авторизации");
-	sub.InsertMenuItem(count++, true, &mi);
-
-	mi.wID = IDC_USETEMPLATE;
- 	mi.dwTypeData  = TR("Использовать шаблон");
-	sub.InsertMenuItem(count++, true, &mi);
 
 
 	
-			
 	sub.CheckMenuItem(IDC_USEDIRECTLINKS, MF_BYCOMMAND	| (Settings.UseDirectLinks? MF_CHECKED	: MF_UNCHECKED)	);
 	sub.CheckMenuItem(IDC_USETEMPLATE, MF_BYCOMMAND	| (Settings.UseTxtTemplate? MF_CHECKED	: MF_UNCHECKED)	);		
+	sub.CheckMenuItem(IDC_SHORTENURLITEM, MF_BYCOMMAND	| (shortenUrl_? MF_CHECKED	: MF_UNCHECKED)	);	
+	
    ::SendMessage(Toolbar.m_hWnd,TB_GETRECT, pnmtb->iItem, (LPARAM)&rc);
    Toolbar.ClientToScreen(&rc);
 	TPMPARAMS excludeArea;
@@ -713,9 +732,18 @@ void CResultsPanel::setEngineList(CMyEngineList* EngineList)
 void CResultsPanel::InitUpload()
 {
 	m_Servers.clear();
+	shortenUrl_ = false;
 }
 
 void CResultsPanel::setUrlList(CAtlArray<CUrlListItem>  * urlList)
 {
 	//UrlList = urlList;
+}
+
+LRESULT CResultsPanel::OnShortenUrlClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	shortenUrl_ = !shortenUrl_;
+	if ( OnShortenUrlChanged ) {
+		OnShortenUrlChanged(shortenUrl_);
+	}
+	return 0;
 }

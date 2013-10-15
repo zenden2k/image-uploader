@@ -69,7 +69,8 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
 	ListBox.AddString(TR("Из буфера обмена"), 0, IDC_CLIPBOARD, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_CLIPBOARD), IMAGE_ICON	, 16,16,0),true);
 	
-	ListBox.AddString(TR("Перезаливка изображений"), 0, IDC_REUPLOADIMAGES, LOADICO(IDI_ICONRELOAD), true,0, true);
+	ListBox.AddString(TR("Перезаливка"), 0, IDC_REUPLOADIMAGES, LOADICO(IDI_ICONRELOAD), true,0, true);
+	ListBox.AddString(TR("Сократить ссылку"), 0, IDC_SHORTENURL, LOADICO(IDI_ICONLINK), true,0, false);
 
 
 	ListBox.AddString(TR("Снимок экрана"), TR("всего экрана или выбранной части"), IDC_SCREENSHOT, LOADICO(IDI_SCREENSHOT));
@@ -241,5 +242,10 @@ LRESULT CWelcomeDlg::OnViewHistoryClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	
 LRESULT CWelcomeDlg::OnBnClickedReuploadImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	WizardDlg->executeFunc(_T("reuploadimages"));
+	return 0;
+}
+
+LRESULT CWelcomeDlg::OnBnClickedShortenUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	WizardDlg->executeFunc(_T("shortenurl"));
 	return 0;
 }

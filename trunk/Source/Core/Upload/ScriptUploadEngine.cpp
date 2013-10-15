@@ -28,6 +28,7 @@
 #include <openssl/md5.h>
 #include <sqplus.h>
 #include <sqstdsystem.h>
+#include <sstream>
 
 #include "Core/3rdpart/CP_RSA.h"
 #include "Core/3rdpart/base64.h"
@@ -35,6 +36,9 @@
 
 #include "Core/Utils/CryptoUtils.h"
 #include "gui/Dialogs/LogWindow.h"
+#include <Core/Upload/FileUploadTask.h>
+#include <Core/Upload/UrlShorteningTask.h>
+
 
 using namespace SqPlus;
 // Squirrel types should be defined in the same module where they are used
@@ -55,6 +59,18 @@ const std::string AskUserCaptcha(NetworkManager* nm, const std::string& url)
 #endif
 	return "";
 }
+
+
+const std::string InputDialog(const std::string& text, const std::string& defaultValue)
+{
+#ifndef IU_CLI
+	return Impl_InputDialog(text, defaultValue);
+#else
+	return "<not implemented>";
+#endif
+	return "";
+}
+
 
 void CFolderList::AddFolder(const std::string& title, const std::string& summary, const std::string& id,
                             const std::string& parentid,
@@ -115,8 +131,13 @@ void CScriptUploadEngine::FlushSquirrelOutput()
 	}
 }
 
-bool CScriptUploadEngine::doUpload(Utf8String FileName, Utf8String DisplayName, CIUUploadParams& params)
+bool CScriptUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params)
 {
+	std::string FileName;
+
+	if ( task->getType() == "file" ) {
+		FileName = ((FileUploadTask*)task)->getFileName();
+	}
 	CFolderItem parent, newFolder = m_ServersSettings.newFolder;
 	std::string folderID = m_ServersSettings.params["FolderID"];
 
@@ -138,9 +159,16 @@ bool CScriptUploadEngine::doUpload(Utf8String FileName, Utf8String DisplayName, 
 	int ival = 0;
 	try
 	{
-		SquirrelFunction<int> func(m_Object, _SC("UploadFile"));
-		std::string fname = FileName;
-		ival = func(fname.c_str(), &params); // Argument coun*/
+		if ( task->getType() == "file" ) {
+			SquirrelFunction<int> func(m_Object, _SC("UploadFile"));
+			std::string fname = FileName;
+			ival = func(fname.c_str(), &params); // Argument coun*/
+		} else if ( task->getType() == "url" ) {
+			UrlShorteningTask *urlShorteningTask = static_cast<UrlShorteningTask*>(task);
+			SquirrelFunction<int> func(m_Object, _SC("ShortenUrl"));
+			std::string url = urlShorteningTask->getUrl();
+			ival = func(url.c_str(), &params) && !params.DirectUrl.empty(); // Argument coun*/
+		}
 	}
 	catch (SquirrelError& e)
 	{
@@ -223,9 +251,34 @@ const std::string scriptMD5(const std::string& data)
 	return IuCoreUtils::CryptoUtils::CalcMD5HashFromString(data);
 }
 
+void scriptSleep(int msec) {
+	Sleep(msec);
+}
+
 /*bool ShowText(const std::string& data) {
 	return DebugMessage( data, true );
 }*/
+
+const std::string escapeJsonString( const std::string& src) {
+	std::string input = src;
+	std::ostringstream ss;
+	for (std::string::iterator iter = input.begin(); iter != input.end(); ++iter) {
+		//C++98/03:
+		//for (std::string::const_iterator iter = input.begin(); iter != input.end(); iter++) {
+		switch (*iter) {
+			case '\\': ss << "\\\\"; break;
+			case '"': ss << "\\\""; break;
+			case '/': ss << "\\/"; break;
+			case '\b': ss << "\\b"; break;
+			case '\f': ss << "\\f"; break;
+			case '\n': ss << "\\n"; break;
+			case '\r': ss << "\\r"; break;
+			case '\t': ss << "\\t"; break;
+			default: ss << *iter; break;
+		}
+	}
+	return ss.str();
+}
 
 bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params)
 {
@@ -287,6 +340,7 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		func(&CFolderItem::getItemCount, "getItemCount");
 
 		RegisterGlobal(pluginRandom, "random");
+		RegisterGlobal(scriptSleep, "sleep");
 		RegisterGlobal(scriptMD5, "md5");
 		RegisterGlobal(scriptAnsiToUtf8, "AnsiToUtf8");
 		RegisterGlobal(YandexRsaEncrypter, "YandexRsaEncrypter");
@@ -294,7 +348,9 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		RegisterGlobal(plugExtractFileName, "ExtractFileName");
 		RegisterGlobal(plugGetFileExtension, "GetFileExtension");
 		RegisterGlobal(AskUserCaptcha, "AskUserCaptcha");
+		RegisterGlobal(InputDialog, "InputDialog");
 		RegisterGlobal(scriptGetFileMimeType, "GetFileMimeType");
+		RegisterGlobal(escapeJsonString, "JsonEscapeString");
 
 		using namespace IuCoreUtils;
 		RegisterGlobal(&CryptoUtils::CalcMD5HashFromFile, "md5_file");
@@ -483,3 +539,4 @@ void CScriptUploadEngine::Log(ErrorInfo::MessageType mt, const std::string& erro
 	ei.sender = "CScriptUploadEngine";
 	ErrorMessage(ei);
 }
+

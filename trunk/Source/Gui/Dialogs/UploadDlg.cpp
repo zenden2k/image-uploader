@@ -29,6 +29,9 @@
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/GuiTools.h"
 #include <Func/LocalFileCache.h>
+#include <Core/3rdpart/FastDelegate.h>
+#include <Core/Upload/UrlShorteningTask.h>
+#include <Core/Upload/FileQueueUploader.h>
 
 class CTempFilesDeleter
 {
@@ -110,6 +113,11 @@ CUploadDlg::CUploadDlg(CWizardDlg *dlg):ResultsWindow(new CResultsWindow(dlg,Url
 	Terminated = false;
 	m_EngineList = _EngineList;
 	LastUpdate = 0;
+	//fastdelegate::FastDelegate1<bool> fd;
+	//fd.bind(this, &CUploadDlg::onShortenUrlChanged);
+	queueUploader_ = new CFileQueueUploader();
+	queueUploader_->setCallback(this);
+	ResultsWindow->setOnShortenUrlChanged(fastdelegate::MakeDelegate(this, &CUploadDlg::onShortenUrlChanged));
 	#if  WINVER	>= 0x0601
 		ptl = NULL;
 	#endif
@@ -144,7 +152,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		IsLastVideo=true;
 
 	ResultsWindow->EnableMediaInfo(IsLastVideo);
-	
+
 	SetDlgItemInt(IDC_THUMBSPERLINE, 4);
 	SendDlgItemMessage(IDC_THUMBPERLINESPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
 	
@@ -691,6 +699,7 @@ bool CUploadDlg::OnShow()
 	ResultsWindow->SetPage(Settings.CodeLang);
 
 	::SetFocus(GetDlgItem(IDC_CODEEDIT));
+	alreadyShortened_ = false;
 	Start();	
 	return true;
 }
@@ -847,4 +856,95 @@ const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url
 	if(dlg.DoModal()==IDOK)
 		return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
 	return "";
+}
+
+const std::string Impl_InputDialog(const std::string& text, const std::string& defaultValue)
+{
+	CInputDialog dlg(_T("Image Uploader"), Utf8ToWCstring(text), Utf8ToWCstring(defaultValue));
+
+	if(dlg.DoModal()==IDOK) {
+		return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
+	}
+	return "";
+}
+
+void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
+	if ( !alreadyShortened_ && shortenUrl ) {
+		int len = UrlList.GetCount();
+		for ( int i = 0; i < len; i++ ) {
+			AddShortenUrlTask(&UrlList[i]);
+		}
+		alreadyShortened_ = true;
+	} else {
+		GenerateOutput();
+	}
+}
+
+void CUploadDlg::AddShortenUrlTask(CUrlListItem* item) {
+	if ( !item->ImageUrl.IsEmpty() && item->ImageUrlShortened.IsEmpty() ) {
+		AddShortenUrlTask(item, _T("ImageUrl") );
+	}
+	if ( !item->DownloadUrl.IsEmpty() && item->DownloadUrlShortened.IsEmpty() ) {
+		AddShortenUrlTask(item, _T("DownloadUrl") );
+	}
+	/*if ( !item->ThumbUrl.IsEmpty() && item->ThumbUrlShortened.IsEmpty() ) {
+		AddShortenUrlTask(item, _T("ThumbUrl") );
+	}*/
+}
+
+void CUploadDlg::AddShortenUrlTask(CUrlListItem* item, CString linkType) {
+	CUploadEngineData *ue = m_EngineList->byName(Settings.UrlShorteningServer);
+	if ( !ue ) {
+		WriteLog(logError, _T("Uploader"), _T("Cannot create url shortening engine '" + Settings.UrlShorteningServer + "'"));
+		return;
+	}
+	CUploadEngineData* newData = new CUploadEngineData();
+	*newData = *ue;
+	CAbstractUploadEngine * e = m_EngineList->getUploadEngine(ue);
+	e->setUploadData(newData);
+	ServerSettingsStruct& settings = Settings.ServerByUtf8Name(newData->Name);
+	e->setServerSettings(settings);
+	ShortenUrlUserData* userData = new ShortenUrlUserData;
+	userData->item = item;
+	userData->linkType = linkType;
+	CString url;
+	if ( linkType == _T("ImageUrl") ) {
+		url = item->ImageUrl;
+	} else if ( linkType == _T("DownloadUrl") ) {
+		url = item->DownloadUrl;
+	} else if ( linkType == _T("ThumbUrl") ) {
+		url = item->ThumbUrl;
+	}
+	
+	if ( url.IsEmpty() ) {
+		return;
+	}
+	std_tr::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
+	queueUploader_->AddUploadTask(task, reinterpret_cast<void*>(userData), e);
+	queueUploader_->start();
+}
+
+bool CUploadDlg::OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result) {
+	ShortenUrlUserData* shortenUrlUserData  = reinterpret_cast<ShortenUrlUserData*>(result.uploadTask->userData);
+		
+	if ( shortenUrlUserData->linkType == "ImageUrl" ){
+		shortenUrlUserData->item->ImageUrlShortened = Utf8ToWCstring(result.imageUrl);
+	}
+
+	if ( shortenUrlUserData->linkType == "DownloadUrl" ) {
+		shortenUrlUserData->item->DownloadUrlShortened = Utf8ToWCstring(result.imageUrl);
+	}
+
+	if ( shortenUrlUserData->linkType == "ThumbUrl" ) {
+		shortenUrlUserData->item->ThumbUrlShortened = Utf8ToWCstring(result.imageUrl);
+	}
+
+	GenerateOutput();
+
+	return false;
+}
+
+bool CUploadDlg::OnConfigureNetworkManager(CFileQueueUploader*, NetworkManager* nm) {
+	IU_ConfigureProxy(*nm);
+	return true;
 }

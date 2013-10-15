@@ -48,6 +48,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename)
 
 	std::vector<ZSimpleXmlNode> childs;
 	root.GetChilds("Server", childs);
+	root.GetChilds("Server2", childs);
 
 	for(size_t i=0; i<childs.size(); i++)
 	{
@@ -72,6 +73,22 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename)
 			UE.Debug =   cur.AttributeBool("Debug");
 			UE.ImageHost =  !cur.AttributeBool("FileHost");
 			UE.MaxFileSize =   cur.AttributeInt("MaxFileSize");
+
+			std::string typeString =  cur.Attribute("Type");
+			UE.Type = UE.ImageHost ? CUploadEngineData::TypeImageServer : CUploadEngineData::TypeFileServer; 
+			
+			if ( !typeString.empty() ) {	
+				if ( typeString == "image" ) {
+					UE.Type = CUploadEngineData::TypeImageServer;
+				} else if ( typeString == "file" ) {
+					UE.Type =  CUploadEngineData::TypeFileServer;
+				} else if ( typeString == "text" ) {
+					UE.Type = CUploadEngineData::TypeTextServer;
+				} else if ( typeString == "urlshortening") {
+					UE.Type = CUploadEngineData::TypeUrlShorteningServer;
+				} 
+				UE.ImageHost = (UE.Type == CUploadEngineData::TypeImageServer);
+			}
 
 			std::vector<ZSimpleXmlNode> actions;
 			cur["Actions"].GetChilds("Action", actions);
@@ -127,7 +144,10 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename)
 				UE.DownloadUrlTemplate = resultNode.Attribute("DownloadUrlTemplate");
 				UE.ImageUrlTemplate = resultNode.Attribute("ImageUrlTemplate");
 				UE.ThumbUrlTemplate = resultNode.Attribute("ThumbUrlTemplate");
-
+				std::string directUrlTemplate = resultNode.Attribute("DirectUrlTemplate"); 
+				if ( !directUrlTemplate.empty() ) {
+					UE.ImageUrlTemplate = directUrlTemplate;
+				}
 
 			}
 			UE.SupportThumbnails = !UE.ThumbUrlTemplate.empty();
