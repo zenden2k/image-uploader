@@ -26,10 +26,12 @@
 #include "LogWindow.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
-
+#include <Gui/Dialogs/WebViewWindow.h>
+#include <Core/TextUtils.h>
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg,CAtlArray<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)
 {
+	webViewWindow_ = NULL;
 	m_nImgServer = m_nFileServer = -1;
 	TemplateHead = TemplateFoot = NULL;	
 	rectNeeded.left = -1;
@@ -129,6 +131,8 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	Toolbar.AddButton(IDC_MEDIAFILEINFO, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Инфо о последнем видео"), 0);
 	Toolbar.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Лог ошибок"), 0);
 	Toolbar.AddButton(IDC_OPTIONSMENU, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Опции"), 0);
+	Toolbar.AddButton(IDC_PREVIEWBUTTON, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 4, TR("Предпросмотр"), 0);
+	
 	
 	if(!IsLastVideo) 
 		Toolbar.HideButton(IDC_MEDIAFILEINFO);
@@ -745,5 +749,30 @@ LRESULT CResultsPanel::OnShortenUrlClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	if ( OnShortenUrlChanged ) {
 		OnShortenUrlChanged(shortenUrl_);
 	}
+	return 0;
+}
+
+
+LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	/*CString bbcode = "[url=http://s019.radikal.ru/i639/1407/b7/b7ec65b6c336.png][img]http://s019.radikal.ru/i639/1407/b7/b7ec65b6c336t.jpg[/img][/url]";
+	std::string html = IuTextUtils::BbCodeToHtml(WCstringToUtf8(bbcode));
+	MessageBox(Utf8ToWCstring(html));*/
+	CRect r(0,0,500,300);
+	if ( !webViewWindow_ ) {
+		webViewWindow_ = new CWebViewWindow();
+		webViewWindow_->Create(0,r,_T("Preview Window"),WS_POPUP|WS_OVERLAPPEDWINDOW,WS_EX_TOPMOST	);
+		webViewWindow_->ShowWindow(SW_SHOW);
+	}
+	CString outputTempFileName = IUTempFolder  + "tempFile.html";
+	CString code = GenerateOutput();
+	//ShowVar(m_Page);
+	if ( m_Page == 0) {
+		code = Utf8ToWCstring(IuTextUtils::BbCodeToHtml(WCstringToUtf8(code)));
+	}
+	IuTextUtils::FileSaveContents(WCstringToUtf8(outputTempFileName), WCstringToUtf8(code));
+	//MessageBox("file:///" + outputTempFileName);
+	webViewWindow_->NavigateTo("file:///" + outputTempFileName);
+	webViewWindow_->ShowWindow(SW_SHOW);
+//	webViewWindow_->ActivateWindow();
 	return 0;
 }

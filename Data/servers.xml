@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Servers>
-		<Server Name="radikal.cc" MaxFileSize="10000000" Debug="0" Authorize="1">
+		<Server Name="radikal.ru" MaxFileSize="10000000" Debug="0" Authorize="1" Plugin="radikal">
 		<Actions>
-			<Action Type="login" Url="http://radikal.cc/Auth/Login" PostParams="Login=$(_LOGIN);Password=$(_PASSWORD);IsRemember=true;ReturnUrl=/;" OnlyOnce="1"/>
-			<Action Type="upload" Url="http://radikal.cc/api3/rest/uplimg/prepared" PostParams="RESPTYPE=xml;FROMOBJECT=22;MAXSIZEIMG=1024;MAXSIZEIMGPREV=$(_THUMBWIDTH);ISINSCRIMGPREV=true;INSCRIMGPREV=Увеличить;IDALBUM=noall;COMMENTIMG=;URLFORIMG=;TAGS=;ISPUBLIC=false;Filename=$(_FILENAME);Filedata=%filename%;" RegExp='&lt;ImgPreviewUrl&gt;(.*?)&lt;([\s\S]*?)&lt;ImgUrl&gt;(.*?)&lt;' AssignVars="Image:2;Thumb:0"/>
+			<Action Type="login" Url="http://radikal.ru/Auth/Login" PostParams="Login=$(_LOGIN);Password=$(_PASSWORD);IsRemember=true;ReturnUrl=/;" OnlyOnce="1"/>
+			<Action Type="upload" Url="http://radikal.ru/api3/rest/uplimg/prepared" PostParams="RESPTYPE=xml;FROMOBJECT=22;MAXSIZEIMG=1024;MAXSIZEIMGPREV=$(_THUMBWIDTH);ISINSCRIMGPREV=true;INSCRIMGPREV=Увеличить;IDALBUM=noall;COMMENTIMG=;URLFORIMG=;TAGS=;ISPUBLIC=false;Filename=$(_FILENAME);Filedata=%filename%;Upload=Submit Query" RegExp='&lt;ImgPreviewUrl&gt;(.*?)&lt;([\s\S]*?)&lt;ImgUrl&gt;(.*?)&lt;' AssignVars="Image:2;Thumb:0" Referer="http://radikal.ru/Content/Clients/FotoFlashApplet3.swf?v=13"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
@@ -61,9 +61,11 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<Server Name="Imageshack.us" Authorize="1" MaxFileSize="5000000" Debug="0">
+	<Server Name="Imageshack.us" Authorize="2" MaxFileSize="5000000" Debug="1" Plugin="imageshack">
 		<Actions>
-			<Action Type="upload" Url="http://www.imageshack.us/upload_api.php" PostParams="fileupload=%filename%;uploadtype=on;key=BXT1Z35V8f6ee0522939d8d7852dbe67b1eb9595;rembar=0;a_username=$(_LOGIN);a_password=$(_PASSWORD);" RegExp='&lt;image_link&gt;(.*?)&lt;([\s\S]*?)&lt;thumb_bb&gt;.*?\[IMG\](.+?)\[([\s\S]*?)&lt;is_link&gt;(.*?)&lt;' AssignVars="Image:0;Thumb:2;View:4"/>
+			<Action Type="login" Url="https://api.imageshack.com/v2/user/login" PostParams="user=$(_LOGIN);password=$(_PASSWORD);api_key=BXT1Z35V8f6ee0522939d8d7852dbe67b1eb9595" RegExp="auth_token&quot;:&quot;([\s\S]*?)&quot;" OnlyOnce="1" AssignVars="token:0"/>
+			
+			<Action Type="upload" Url="https://api.imageshack.com/v2/images" PostParams="file=%filename%;api_key=BXT1Z35V8f6ee0522939d8d7852dbe67b1eb9595;auth_token=$(token)" RegExp='&lt;image_link&gt;(.*?)&lt;([\s\S]*?)&lt;thumb_bb&gt;.*?\[IMG\](.+?)\[([\s\S]*?)&lt;is_link&gt;(.*?)&lt;' AssignVars="Image:0;Thumb:2;View:4"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)"/>
 	</Server>

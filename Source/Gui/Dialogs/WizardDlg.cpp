@@ -43,6 +43,8 @@
 #include "Gui/Dialogs/ImageReuploaderDlg.h"
 #include <Gui/Dialogs/ShortenUrlDlg.h>
 
+#include <Gui/Dialogs/WebViewWindow.h>
+
 using namespace Gdiplus;
 // CWizardDlg
 CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
@@ -525,7 +527,7 @@ HBITMAP CWizardDlg::GenHeadBitmap(int PageID)
 		 StringFormat format;
     format.SetAlignment(StringAlignmentCenter);
     format.SetLineAlignment(StringAlignmentCenter);
-    Font font(L"Arial", 12, FontStyleBold);
+	Gdiplus::Font font(L"Arial", 12, FontStyleBold);
 
     
 	LPTSTR Buffer = NULL;

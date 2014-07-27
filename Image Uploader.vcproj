@@ -1115,11 +1115,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-link.png"
+				RelativePath=".\res\icon-link.png"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-link.png"
+				RelativePath=".\Source\res\icon-link.png"
 				>
 			</File>
 			<File
@@ -1127,11 +1127,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-reload.ico"
+				RelativePath=".\Source\res\icon-reload.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-reload.ico"
+				RelativePath=".\res\icon-reload.ico"
 				>
 			</File>
 			<File
@@ -1373,6 +1373,14 @@
 				</File>
 				<File
 					RelativePath=".\Source\Core\SettingsManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Core\TextUtils.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Core\TextUtils.h"
 					>
 				</File>
 				<File
@@ -1807,6 +1815,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Source\Gui\Dialogs\WebViewWindow.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\WebViewWindow.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Source\Gui\Dialogs\WelcomeDlg.cpp"
 						>
 					</File>
@@ -1888,6 +1904,14 @@
 					</File>
 					<File
 						RelativePath=".\Source\Gui\Controls\ThumbsView.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Controls\WTLBrowserView.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Controls\WTLBrowserView.h"
 						>
 					</File>
 				</Filter>

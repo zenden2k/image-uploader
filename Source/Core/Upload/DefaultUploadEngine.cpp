@@ -433,6 +433,10 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
 			break;
 	}
 
+	//m_NetworkManager->addQueryHeader("Origin", "http://radikal.ru/");
+	//m_NetworkManager->addQueryHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36");
+	//m_NetworkManager->addQueryHeader("User-Agent", "RADIKALCLIENT");
+
 	if (m_UploadData->Debug)
 		DebugMessage(_Post);
 }
