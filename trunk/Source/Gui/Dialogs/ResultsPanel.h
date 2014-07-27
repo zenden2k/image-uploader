@@ -30,7 +30,10 @@
 #define IDC_OPTIONSMENU 10002
 #define IDC_USEDIRECTLINKS 10003
 #define IDC_SHORTENURLITEM 10004
+#define IDC_PREVIEWBUTTON 1006
+
 #define IDC_COPYFOLDERURL 10040
+
 
 #define IDC_RESULTSTOOLBAR 5000
 class CResultsPanel;
@@ -41,6 +44,7 @@ struct IU_Result_Template
 {
 	CString Name,Items,LineSep,LineStart,ItemSep,LineEnd,TemplateText;
 };
+class CWebViewWindow;
 
 class CResultsPanel : 
 	public CDialogImpl<CResultsPanel>	
@@ -58,6 +62,8 @@ class CResultsPanel :
 			COMMAND_HANDLER(IDC_USEDIRECTLINKS, BN_CLICKED, OnUseDirectLinksClicked)
 			COMMAND_HANDLER(IDC_USETEMPLATE, BN_CLICKED, OnUseTemplateClicked)
 			COMMAND_HANDLER(IDC_SHORTENURLITEM, BN_CLICKED, OnShortenUrlClicked)
+			COMMAND_HANDLER(IDC_PREVIEWBUTTON, BN_CLICKED, OnPreviewButtonClicked)
+			
 			//COMMAND_HANDLER(, BN_CLICKED, OnCopyFolderUrlClicked)
 			COMMAND_RANGE_HANDLER(IDC_COPYFOLDERURL, IDC_COPYFOLDERURL + 1000, OnCopyFolderUrlClicked);
 			COMMAND_HANDLER(IDC_MEDIAFILEINFO, BN_CLICKED, OnBnClickedMediaInfo)
@@ -75,7 +81,9 @@ class CResultsPanel :
 	LRESULT OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnUseTemplateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnUseDirectLinksClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	 LRESULT OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	 
 	
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
@@ -84,6 +92,7 @@ class CResultsPanel :
 	void setEngineList(CMyEngineList* EngineList);
 	CAtlArray<CUrlListItem>  &UrlList;
 	const CString GenerateOutput();
+	CWebViewWindow* webViewWindow_;
 	
 	bool LoadTemplate();
 	LPTSTR TemplateHead,TemplateFoot; //TemplateFoot is only pointer to part of TemplateHead 
