@@ -1,6 +1,8 @@
 # Image Uploader changelog 
 #
 # http://zenden.ws/imageuploader
+-v1.2.7 build 4185
+[~] Fixed drag-n-drop in Windows 8+
 
 -v1.2.7 RC build 41xx
 [F] Изменен стиль диалоговых окон открытия файла на Windows Vista и выше.
