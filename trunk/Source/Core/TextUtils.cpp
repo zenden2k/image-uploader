@@ -7,17 +7,25 @@ namespace IuTextUtils
 {
 	Utf8String BbCodeToHtml(const Utf8String& bbcode) {
 		std::string work = bbcode;
-
 		
-		pcrepp::Pcre reg2("\\[img\\](.+?)\\[/img\\]", "imc");
-		work = reg2.replace(work, "<img src=\"$1\" border=\"0\">");
+		pcrepp::Pcre reg2("\\[img\\](.+?)\\[\\/img\\]", "imc");
+		std::string work2 = reg2.replace(work, "<img src=\"$1\" border=\"0\">");
+		
 		pcrepp::Pcre reg("\\[url=(.+?)\\](.+?)\\[/url\\]", "imc");
-		work = reg.replace(work, "<a href=\"$1\" target=\"_blank\">$2</a>");
-		pcrepp::Pcre reg3("\\[url\\](.+?)\\[/url\\]", "imc");
-		work = reg3.replace(work, "<a href=\"$1\" target=\"_blank\">$1</a>");
-		work = IuStringUtils::Replace(work, "\r\n", "<br/>");
-		work = IuStringUtils::Replace(work, "\n", "<br/>");
-		return work;
+		std::string work3 = reg.replace(work2, "<a href=\"$1\" target=\"_blank\">$2</a>");
+		
+
+		/*std::string work4;
+		{
+			pcrepp::Pcre reg3("\\[url\\](.+?)\\[\\/url\\]", "imc");
+			 work4 = reg3.replace(work3, "<a href=\"$1\" target=\"_blank\">$1</a>");
+			 
+		}
+		*/
+
+		work3 = IuStringUtils::Replace(work3, "\r\n", "<br/>");
+		work3 = IuStringUtils::Replace(work3, "\n", "<br/>");
+		return work3;
 	}
 
 	bool FileSaveContents(const Utf8String& fileName, const Utf8String& contents) {

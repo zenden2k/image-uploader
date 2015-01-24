@@ -29,6 +29,8 @@
 #include <sqplus.h>
 #include <sqstdsystem.h>
 #include <sstream>
+#include <string>
+#include <iomanip>
 
 #include "Core/3rdpart/CP_RSA.h"
 #include "Core/3rdpart/base64.h"
@@ -38,6 +40,7 @@
 #include "gui/Dialogs/LogWindow.h"
 #include <Core/Upload/FileUploadTask.h>
 #include <Core/Upload/UrlShorteningTask.h>
+#include <sstream>
 
 
 using namespace SqPlus;
@@ -280,6 +283,28 @@ const std::string escapeJsonString( const std::string& src) {
 	return ss.str();
 }
 
+const std::string url_encode(const std::string &value) {
+	using namespace std;
+	ostringstream escaped;
+	escaped.fill('0');
+	escaped << hex << std::uppercase;
+
+	for (string::const_iterator i = value.begin(), n = value.end(); i != n; ++i) {
+		string::value_type c = (*i);
+
+		// Keep alphanumeric and other accepted characters intact
+		if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+			escaped << c;
+			continue;
+		}
+
+		// Any other characters are percent-encoded
+		escaped << '%' << setw(2) << int((unsigned char) c);
+	}
+
+	return escaped.str();
+}
+
 bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params)
 {
 	if (!IuCoreUtils::FileExists(fileName))
@@ -356,6 +381,9 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		RegisterGlobal(&CryptoUtils::CalcMD5HashFromFile, "md5_file");
 		RegisterGlobal(&CryptoUtils::CalcSHA1HashFromString, "sha1");
 		RegisterGlobal(&CryptoUtils::CalcSHA1HashFromFile, "sha1_file");
+		RegisterGlobal(&CryptoUtils::CalcHMACSHA1HashFromString, "hmac_sha1");
+		RegisterGlobal(url_encode, "url_encode");
+		
 		srand(static_cast<unsigned int>(time(0)));
 
 		RegisterGlobal(DefaultErrorHandling::DebugMessage, "DebugMessage" );

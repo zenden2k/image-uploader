@@ -37,6 +37,9 @@ class CryptoUtils {
 		static const std::string CalcSHA1Hash(const void* data, size_t size);
 		static const std::string CalcSHA1HashFromString(const std::string& data);
 		static const std::string CalcSHA1HashFromFile(const std::string& filename);
+
+		static const std::string CalcHMACSHA1Hash(const std::string& key, const void* data, size_t size, bool base64);
+		static const std::string CalcHMACSHA1HashFromString(const std::string& key, const std::string& data, bool base64);
 };
 
 };

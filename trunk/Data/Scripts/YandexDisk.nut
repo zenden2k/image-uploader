@@ -48,6 +48,22 @@ function base64Encode(input) {
     return output;
 }
 
+function inputBox(prompt, title) {
+	try {
+		return InputDialog(prompt, "");
+	}catch (e){}
+	local tempScript = "%temp%\\imguploader_inputbox.vbs";
+	prompt = reg_replace(prompt, "\n", "\" ^& vbCrLf ^& \"" );
+	local tempOutput = getenv("TEMP") + "\\imguploader_inputbox_output.txt";
+	local command = "echo result = InputBox(\""+ prompt + "\", \""+ title + "\") : Set objFSO=CreateObject(\"Scripting.FileSystemObject\") : Set objFile = objFSO.CreateTextFile(\"" + tempOutput + "\",True) : objFile.Write result : objFile.Close  > \"" + tempScript + "\"";
+	system(command);
+	command = "cscript /nologo \"" + tempScript + "\"";// > \"" + tempOutput + "\"";*/
+	system(command);
+	local res = readFile(tempOutput);
+	system("rm \""+ tempOutput + "\"");
+	return res;
+}
+
 function regex_simple(data,regStr,start)
 {
 	local ex = regexp(regStr);
@@ -75,13 +91,7 @@ function isSuccessCode(code) {
 
 
 function getAuthorizationString() {
-	if ( tokenType == "oauth") {
-		return "OAuth " + token;
-	}
-	local login = ServerParams.getParam("Login");
-	local pass  = ServerParams.getParam("Password");
-	local basicToken = base64Encode( login + ":" + pass );
-	return "Basic " + basicToken;
+	return "OAuth " + token;
 }
 
 function msgBox(text) {
@@ -180,8 +190,14 @@ function GetFolderList(list)
 	return internal_loadAlbumList(list);
 }
 
+
 function CreateFolder(parentAlbum,album)
 {
+	if(token == "")
+	{
+		if(!doLogin())
+			return 0;
+	}
 	local folderName = album.getTitle();
 	if ( folderName == "" ) {
 		return 0;
@@ -243,8 +259,79 @@ function checkResponseCode() {
 	} 
 }
 
+function doLogin() 
+{ 
+	if ( enableOAuth ) {
+		token = ServerParams.getParam("token");
+	    	tokenType = ServerParams.getParam("tokenType");
+		if ( token != "" && ServerParams.getParam("PrevLogin") == ServerParams.getParam("Login") ) {
+			if ( tokenType == "oauth" ) {
+				local OAuthLogin = ServerParams.getParam("OAuthLogin");
+				if ( OAuthLogin != "") {
+					login = OAuthLogin;
+				}
+			}
+			return true;
+		}
+		system("start https://oauth.yandex.ru/authorize?response_type=code^&client_id=28d8d9c854554812ad8b60c150375462");
+		
+	    	local confirmCode = inputBox("You need to need to sign in to your Yandex.Disk account in web browser which just have opened and then copy confirmation code into the text field below. Please enter confirmation code:", "Image Uploader - Enter confirmation code");
+		if ( confirmCode != "" ) {	
+			nm.setUrl("https://oauth.yandex.ru/token");
+			nm.addQueryParam("grant_type", "authorization_code");
+			nm.addQueryParam("code", confirmCode);
+			nm.addQueryParam("client_id", "28d8d9c854554812ad8b60c150375462");
+			nm.addQueryParam("client_secret", "7d6fee42d583498ea7740bcf8b753197");
+			nm.doPost("");
+				
+			local accessToken = regex_simple(nm.responseBody(), "access_token\": \"(.+)\",", 0);
+			if ( accessToken != "" ) {
+				
+				token = 	accessToken;
+				tokenType = "oauth";
+				ServerParams.setParam("token", token);
+				ServerParams.setParam("tokenType", tokenType);
+				
+				/*if ( tokenType == "oauth" ) {
+					nm.addQueryHeader("Authorization", getAuthorizationString());
+					nm.addQueryHeader("Expect", "");
+					nm.addQueryHeader("Connection", "close");
+					nm.doGet("http://api-fotki.yandex.ru/api/me/");
+					
+					login = regex_simple(nm.responseBody(),"http:\\/\\/api-fotki.yandex.ru\\/api\\/users\\/(.+)\\/albums\\/",0);
+					ServerParams.setParam("PrevLogin", ServerParams.getParam("Login"));
+					ServerParams.setParam("OAuthLogin", login);
+				} */
+		
+			
+				return true;
+			} else {
+				print("Unable to get OAuth token!");
+				return false;
+			}
+		}
+	}
+	
+ 	
+	login <- ServerParams.getParam("Login");
+	local pass =  ServerParams.getParam("Password");
+
+	if(login == "" || pass=="")
+	{
+		print("E-mail and password should not be empty!");
+		return 0;
+	}
+	
+	return 1; //Success login
+} 
+
 function  UploadFile(FileName, options)
 {
+	if(token == "")
+		{
+			if(!doLogin())
+				return 0;
+		}
 	local ansiFileName = ExtractFileName(FileName);
 	//ansiFileName = reg_replace(ansiFileName, " ","_");
 	

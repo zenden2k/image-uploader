@@ -28,6 +28,7 @@
 #include "Gui/GuiTools.h"
 #include <Gui/Dialogs/WebViewWindow.h>
 #include <Core/TextUtils.h>
+#include <Core/Utils/StringUtils.h>
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg,CAtlArray<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)
 {
@@ -754,23 +755,21 @@ LRESULT CResultsPanel::OnShortenUrlClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 
 LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-	/*CString bbcode = "[url=http://s019.radikal.ru/i639/1407/b7/b7ec65b6c336.png][img]http://s019.radikal.ru/i639/1407/b7/b7ec65b6c336t.jpg[/img][/url]";
-	std::string html = IuTextUtils::BbCodeToHtml(WCstringToUtf8(bbcode));
-	MessageBox(Utf8ToWCstring(html));*/
 	CRect r(0,0,500,300);
 	if ( !webViewWindow_ ) {
 		webViewWindow_ = new CWebViewWindow();
 		webViewWindow_->Create(0,r,_T("Preview Window"),WS_POPUP|WS_OVERLAPPEDWINDOW,WS_EX_TOPMOST	);
 		webViewWindow_->ShowWindow(SW_SHOW);
 	}
-	CString outputTempFileName = IUTempFolder  + "tempFile.html";
+	CString outputTempFileName = IUTempFolder  + "preview.html";
 	CString code = GenerateOutput();
 	//ShowVar(m_Page);
 	if ( m_Page == 0) {
 		code = Utf8ToWCstring(IuTextUtils::BbCodeToHtml(WCstringToUtf8(code)));
+	} else if ( m_Page == 2 ) {
+		code =  Utf8ToWCstring(IuStringUtils::Replace(WCstringToUtf8(code), "\r\n", "<br/>"));
 	}
 	IuTextUtils::FileSaveContents(WCstringToUtf8(outputTempFileName), WCstringToUtf8(code));
-	//MessageBox("file:///" + outputTempFileName);
 	webViewWindow_->NavigateTo("file:///" + outputTempFileName);
 	webViewWindow_->ShowWindow(SW_SHOW);
 //	webViewWindow_->ActivateWindow();
