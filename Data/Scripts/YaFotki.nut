@@ -40,11 +40,6 @@ function readFile(fileName) {
 }
 
 function inputBox(prompt, title) {
-	try {
-		return InputDialog(prompt, "");
-	} catch(ex) {	
-	}
-
 	
 	local tempScript = "%temp%\\imguploader_inputbox.vbs";
 	prompt = reg_replace(prompt, "\n", "\" ^& vbCrLf ^& \"" );
@@ -63,6 +58,22 @@ function getAuthorizationString() {
 		return "OAuth " + token;
 	}
 	return "FimpToken realm=\"fotki.yandex.ru\", token=\""+token+"\"";
+}
+
+function inputBox(prompt, title) {
+	try {
+		return InputDialog(prompt, "");
+	}catch (e){}
+	local tempScript = "%temp%\\imguploader_inputbox.vbs";
+	prompt = reg_replace(prompt, "\n", "\" ^& vbCrLf ^& \"" );
+	local tempOutput = getenv("TEMP") + "\\imguploader_inputbox_output.txt";
+	local command = "echo result = InputBox(\""+ prompt + "\", \""+ title + "\") : Set objFSO=CreateObject(\"Scripting.FileSystemObject\") : Set objFile = objFSO.CreateTextFile(\"" + tempOutput + "\",True) : objFile.Write result : objFile.Close  > \"" + tempScript + "\"";
+	system(command);
+	command = "cscript /nologo \"" + tempScript + "\"";// > \"" + tempOutput + "\"";*/
+	system(command);
+	local res = readFile(tempOutput);
+	system("rm \""+ tempOutput + "\"");
+	return res;
 }
 
 function doLogin() 

@@ -1,5 +1,5 @@
 @echo off
-set zipcmd="C:/Program Files (x86)/7-Zip/7z.exe"
+set zipcmd="C:/Program Files/7-Zip/7z.exe"
 
 For /F "tokens=2,3 delims= " %%i In (..\Source\VersionInfo.h) Do (set %%i=%%~j)
 echo Creating distribution archive for Image Uploader version %_APP_VER% %BUILD%

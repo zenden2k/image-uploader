@@ -25,6 +25,8 @@
 #include <string>
 #include <openssl/md5.h>
 #include <openssl/sha.h>
+#include <openssl/hmac.h>
+#include "Core/3rdpart/base64.h"
 
 namespace IuCoreUtils {
 
@@ -121,6 +123,28 @@ const std::string CryptoUtils::CalcSHA1Hash(const void* data, size_t size) {
 		result += temp;
 	}
 	return result;
+}
+
+const std::string CryptoUtils::CalcHMACSHA1Hash(const std::string& key, const void* data, size_t size, bool base64) {
+	unsigned char* digest;
+
+	// Using sha1 hash engine here.
+	// You may use other hash engines. e.g EVP_md5(), EVP_sha224, EVP_sha512, etc
+	digest = HMAC(EVP_sha1(), key.c_str(), key.length(), (unsigned char*)data, size, NULL, NULL);    
+
+	char mdString[50]="";
+	for(int i = 0; i < 20; i++) {
+		sprintf(&mdString[i*2], "%02x", (unsigned int)digest[i]);
+	}
+	if ( base64 ) {
+		return 	base64_encode(digest,20);
+	}
+
+	return mdString;
+}
+
+const std::string CryptoUtils::CalcHMACSHA1HashFromString(const std::string& key, const std::string& data, bool base64) {
+	return CalcHMACSHA1Hash( key, data.c_str(), data.size(), base64 );
 }
 
 const std::string CryptoUtils::CalcSHA1HashFromString(const std::string& data) {

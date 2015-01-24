@@ -9,44 +9,8 @@ function regex_simple(data,regStr,start)
 	return resultStr;
 }
 
-function doLogin() 
-{ 
-	nm.doGet("http://rghost.net/profile/sign_in");
-	local serverData = nm.responseBody();
-		
-	local token = regex_simple(serverData,"\"(.+)\" name=\"csrf-token\"",0);	
-
-	local email = ServerParams.getParam("Login");
-	local pass =  ServerParams.getParam("Password");
-	if (email == "" ) {
-		return 1;
-	}
-	
-	nm.addQueryHeader("Expect","");
-	nm.setUrl("http://rghost.net/profile/sign_in");
-  
-	nm.addQueryParam("utf8", "On"); 
-
-	nm.addQueryParam("user[email]", email); 
-	nm.addQueryParam("user[password]", pass); 
-	nm.addQueryHeader("user[remember_me]", "1");
-	nm.addQueryParam("authenticity_token",token);
-   	nm.doPost("");
-   	local data =  nm.responseBody();
-	if ( regex_simple(data,"(Invalid email or password)",0) != "" ) {
-		print("Authentication on Rghost.net failed with username '" + email + "'");
-		return 0;
-	}
-  
-	return 1; //Success login
-} 
-
-
 function  UploadFile(FileName, options)
 {	
-	 if ( !doLogin() )  {
-		return 0;	
-	}
 	nm.doGet("http://rghost.net/multiple/upload_host");
 	local serverData = nm.responseBody();
 	

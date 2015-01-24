@@ -44,6 +44,8 @@
 #include <Gui/Dialogs/ShortenUrlDlg.h>
 
 #include <Gui/Dialogs/WebViewWindow.h>
+#include <Core/Utils/CryptoUtils.h>
+#include <Core/TextUtils.h>
 
 using namespace Gdiplus;
 // CWizardDlg
@@ -575,6 +577,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 
 	CMainDlg* MainDlg = NULL;
 	CStringList Paths;
+	
 	for (int i=0; i<n; i++)
 	{
 		
@@ -809,9 +812,9 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 					CreatePage(2);
 					//QuickUploadMarker = (Settings.QuickUpload && !CmdLine.IsOption(_T("noquick"))) || (CmdLine.IsOption(_T("quick")));
 					FolderAdd.Do(Paths, /*CmdLine.IsOption(_T("imagesonly"))*/false, true);
-					ShowPage(2);				
+					ShowPage(2);
+					return true;
 				}
-				return true;
 			}
 		}
 	}
@@ -864,6 +867,7 @@ STDMETHODIMP CWizardDlg::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL p
 		*pdwEffect = DROPEFFECT_NONE; 
 		return S_FALSE;
 	}
+	
 
 	// This should be called first 
 	// otherwise dragndrop from Firefox will not work
