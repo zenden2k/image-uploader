@@ -19,16 +19,22 @@
 */
 
 #include "Func/Settings.h"
+#ifdef _WIN32
 #include <Shlobj.h>
+#endif
 #include "Core/SettingsManager.h"
+#ifndef IU_CLI
 #include "Func/myutils.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Common/CmdLine.h"
 #include "3rdpart/Registry.h"
-#include <Core/Utils/StringUtils.h>
 #include <Core/Video/VideoUtils.h>
+#include "WinUtils.h"
+#endif
 
-#ifndef IU_SERVERLISTTOOL
+#include <Core/Utils/StringUtils.h>
+
+#if !defined(IU_SERVERLISTTOOL) && !defined(IU_CLI)
 	#include "Gui/Dialogs/FloatingWindow.h"
 #endif
 
@@ -38,23 +44,25 @@
 
 #define SETTINGS_FILE_NAME _T("settings.xml")
 
+#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
  const TCHAR CSettings::VideoEngineDirectshow[] = _T("Directshow");
  const TCHAR CSettings::VideoEngineFFmpeg[]     = _T("FFmpeg");
  const TCHAR CSettings::VideoEngineAuto[]       = _T("Auto");
 
  COLORREF CSettings::DefaultLinkColor = RGB(0x0C,0x32, 0x50);
-
+#endif
 /* CString support for  SettingsManager */
-
+#ifdef _WIN32
 inline std::string myToString(const CString& value)
 {
-	return WCstringToUtf8(value);
+	return IuCoreUtils::WstringToUtf8((LPCTSTR)value);
 }
 
 inline void myFromString(const std::string& text, CString& value)
 {
-	value = Utf8ToWCstring(text);
+	value = IuCoreUtils::Utf8ToWstring(text).c_str();
 }
+#endif
 
 template<class T> std::string myToString(const EnumWrapper<T>& value)
 {
@@ -66,6 +74,7 @@ template<class T> void myFromString(const std::string& text,  EnumWrapper<T>& va
 	value = static_cast<T>(atoi(text.c_str()));
 }
 
+#if !defined(IU_CLI) && !defined(IU_SHELLEXT)
 /* LOGFONT serialization support */
 inline std::string myToString(const LOGFONT& value) {
 	CString res;
@@ -96,15 +105,17 @@ inline void myFromString(const std::string& text, CHotkeyList& value) {
 	value.DeSerialize(Utf8ToWCstring(text));
 }
 
+#endif
 
 CSettings Settings;
 
+#if !defined  (IU_CLI)
 void RunIuElevated(CString params) {
 	SHELLEXECUTEINFO TempInfo = {0};
 
 	TCHAR buf[MAX_PATH];
 	GetModuleFileName( 0, buf, MAX_PATH - 1 );
-	CString s = GetAppFolder();
+	CString s = WinUtils::GetAppFolder();
 
 	CString Command = CString(buf);
 	TempInfo.cbSize       = sizeof(SHELLEXECUTEINFOA);
@@ -118,6 +129,8 @@ void RunIuElevated(CString params) {
 
 	::ShellExecuteEx(&TempInfo);
 }
+#endif
+#if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
 
 /*
 	This function starts a new process of Image Uploader with admin rights (Windows Vista and later)
@@ -128,7 +141,7 @@ void ApplyRegistrySettings() {
 
 	TCHAR buf[MAX_PATH];
 	GetModuleFileName( 0, buf, MAX_PATH - 1 );
-	CString s = GetAppFolder();
+	CString s = WinUtils::GetAppFolder();
 
 	CString Command = CString(buf);
 	TempInfo.cbSize       = sizeof(SHELLEXECUTEINFOA);
@@ -142,9 +155,11 @@ void ApplyRegistrySettings() {
 
 	::ShellExecuteEx( &TempInfo );
 }
+#endif
 
+#if !defined(IU_CLI) &&!defined(IU_SERVERLISTTOOL)
 CString CSettings::getShellExtensionFileName() const {
-	CString file = GetAppFolder() + (IsWindows64Bit() ? _T("ExplorerIntegration64.dll") : _T("ExplorerIntegration.dll"));
+	CString file = WinUtils::GetAppFolder() + (WinUtils::IsWindows64Bit() ? _T("ExplorerIntegration64.dll") : _T("ExplorerIntegration.dll"));
 	return file;
 }
 
@@ -164,7 +179,7 @@ void RegisterShellExtension(bool Register) {
 	}
 
 	SHELLEXECUTEINFO TempInfo = {0};
-	CString s = GetAppFolder();
+	CString s = WinUtils::GetAppFolder();
 	TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
 	TempInfo.fMask  = SEE_MASK_NOCLOSEPROCESS;
 	TempInfo.hwnd   = NULL;
@@ -184,19 +199,21 @@ void RegisterShellExtension(bool Register) {
 	CloseHandle( TempInfo.hProcess );
 }
 
+
 /*
 	Determine where data folder is situated
 	and store it's path into DataFolder member
 */
 void CSettings::FindDataFolder()
 {
-	if (IsDirectory(GetAppFolder() + _T("Data"))) {
-		DataFolder     = GetAppFolder() + _T("Data\\");
-		SettingsFolder = DataFolder;
+	if (IsDirectory(WinUtils::GetAppFolder() + _T("Data"))) {
+		DataFolder     = WinUtils::GetAppFolder() + _T("Data\\");
+		SettingsFolder = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(DataFolder));
 		return;
 	}
 
-	SettingsFolder =  GetApplicationDataPath() + _T("\\Image Uploader\\");
+	SettingsFolder =  IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(GetApplicationDataPath() + _T("\\Image Uploader\\")));
+	#if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
 	{
 		CRegistry Reg;
 		CString lang;
@@ -231,26 +248,33 @@ void CSettings::FindDataFolder()
 	if (FileExists(GetCommonApplicationDataPath() + SETTINGS_FILE_NAME)) {
 		DataFolder = GetCommonApplicationDataPath() + _T("Image Uploader\\");
 	}
-	else {
+	else 
+		#endif
+	
+	{
 		DataFolder = GetApplicationDataPath() + _T("Image Uploader\\");
 	}
 }
+#endif
 
 CSettings::CSettings()
-#ifndef IU_SHELLEXT
+#if !defined(IU_SHELLEXT) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 	: ServerID(UploadProfile.ServerID), QuickServerID(UploadProfile.QuickServerID)
 #endif
 {
+#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 	FindDataFolder();
 	if (!IsDirectory(DataFolder))
 	{
 		CreateDirectory(DataFolder, 0);
 	}
-	if (!IsDirectory(SettingsFolder))
+	if (!IsDirectory(IuCoreUtils::Utf8ToWstring(SettingsFolder).c_str()))
 	{
-		CreateDirectory(SettingsFolder, 0);
+		CreateDirectory(IuCoreUtils::Utf8ToWstring(SettingsFolder).c_str(), 0);
 	}
-	CString copyFrom = GetAppFolder() + SETTINGS_FILE_NAME;
+#endif
+#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
+	CString copyFrom = WinUtils::GetAppFolder() + SETTINGS_FILE_NAME;
 	CString copyTo = DataFolder + SETTINGS_FILE_NAME;
 	if (FileExists(copyFrom) && !FileExists(copyTo))
 	{
@@ -258,13 +282,23 @@ CSettings::CSettings()
 	}
 
 	
-		if ( !IsFFmpegAvailable() ){
-		VideoSettings.Engine = VideoEngineDirectshow;
-	}
+		
 	// Default values of settings
 	ExplorerCascadedMenu = true;
-#ifndef IU_SHELLEXT
+	ConnectionSettings.UseProxy =  FALSE;
+	ConnectionSettings.ProxyPort = 0;
+	ConnectionSettings.NeedsAuth = false;
+	ConnectionSettings.ProxyType = 0;
+	#endif
 	LastUpdateTime = 0;
+	UploadBufferSize = 65536;
+	FileRetryLimit = 3;
+	ActionRetryLimit = 2;
+#if !defined(IU_SHELLEXT) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
+	if ( !IsFFmpegAvailable() ){
+		VideoSettings.Engine = VideoEngineDirectshow;
+	}
+	
 	WatchClipboard = true;
 	ShowTrayIcon = false;
 	ShowTrayIcon_changed = false;
@@ -283,13 +317,13 @@ CSettings::CSettings()
 	QuickServerID = 0;
 	QuickUpload = 0;
 	ParseSubDirs = 1;
-	FileRetryLimit = 3;
+	
 	ShowUploadErrorDialog = true;
-	ActionRetryLimit = 2;
+
 	ImageEditorPath = _T("mspaint.exe \"%1\"");
 	AutoCopyToClipboard = false;
 	AutoShowLog = true;
-	UploadBufferSize = 65536;
+	
 
 	StringToFont(_T("Tahoma,7,b,204"), &ThumbSettings.ThumbFont);
 	StringToFont(_T("Tahoma,8,,204"), &VideoSettings.Font);
@@ -321,14 +355,11 @@ CSettings::CSettings()
 	VideoSettings.UseAviInfo = TRUE;
 	VideoSettings.ShowMediaInfo = TRUE;
 	VideoSettings.TextColor = RGB(0, 0, 0);
-	VideoSettings.SnapshotsFolder = Settings.SettingsFolder + _T("Snapshots");
+	VideoSettings.SnapshotsFolder = IuCoreUtils::Utf8ToWstring(Settings.SettingsFolder).c_str() + CString(_T("Snapshots"));
 	VideoSettings.SnapshotFileTemplate = _T("%f%_%cx%_%cy%_%uid%\\grab_%i%.png");
 	
 	VideoSettings.Engine = IsFFmpegAvailable() ? VideoEngineAuto : VideoEngineDirectshow;
-	ConnectionSettings.UseProxy =  FALSE;
-	ConnectionSettings.ProxyPort = 0;
-	ConnectionSettings.NeedsAuth = false;
-	ConnectionSettings.ProxyType = 0;
+	
 
 	ScreenshotSettings.Format =  1;
 	ScreenshotSettings.Quality = 85;
@@ -354,14 +385,21 @@ CSettings::CSettings()
 
 	ImageReuploaderSettings.PasteHtmlOnCtrlV = true;
 	Hotkeys_changed = false;
-
+#endif
+	
 	/* binding settings */
 	SettingsNode& general = mgr_["General"];
-	general.n_bind(Language);
-	general.n_bind(ExplorerContextMenu);
-	general.n_bind(ExplorerVideoContextMenu);
-	general.n_bind(ExplorerCascadedMenu);
-	general.n_bind(LastUpdateTime);
+		general.n_bind(LastUpdateTime);
+#if !defined(IU_SHELLEXT) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
+		general.n_bind(Language);
+		general.n_bind(ExplorerContextMenu);
+		general.n_bind(ExplorerVideoContextMenu);
+		general.n_bind(ExplorerCascadedMenu);
+#endif
+		#if !defined(IU_SHELLEXT) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
+	
+
+
 	general.n_bind(ConfirmOnExit);
 	general.n_bind(SendToContextMenu);
 	general.n_bind(ParseSubDirs);
@@ -442,8 +480,10 @@ CSettings::CSettings()
 
 	SettingsNode& imageReuploader = mgr_["ImageReuploader"];
 	imageReuploader.nm_bind(ImageReuploaderSettings, PasteHtmlOnCtrlV);
+	#endif
 
 	SettingsNode& upload = mgr_["Uploading"];
+#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 	upload.n_bind(ServerName);
 	upload.n_bind(FileServerName);
 	upload.n_bind(UrlShorteningServer);
@@ -451,13 +491,19 @@ CSettings::CSettings()
 	upload.n_bind(QuickServerName);
 	upload.n_bind(CodeLang);
 	upload.n_bind(ThumbsPerLine);
-	upload.n_bind(UploadBufferSize);
 	upload.n_bind(UseDirectLinks);
 	upload.n_bind(UseTxtTemplate);
 	upload.n_bind(CodeType);
-	upload.n_bind(FileRetryLimit);
 	upload.n_bind(ShowUploadErrorDialog);
+
+	ConvertProfiles["Default"] = ImageConvertingParams();
+	CurrentConvertProfileName = "Default";
+#endif
+	upload.n_bind(UploadBufferSize);
+	upload.n_bind(FileRetryLimit);
+
 	upload.n_bind(ActionRetryLimit);
+#if  !defined  (IU_CLI) && !defined(IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
 	SettingsNode& proxy = upload["Proxy"];
 	proxy["@UseProxy"].bind(ConnectionSettings.UseProxy);
 	proxy["@NeedsAuth"].bind(ConnectionSettings.NeedsAuth);
@@ -465,32 +511,38 @@ CSettings::CSettings()
 	proxy.nm_bind(ConnectionSettings, ProxyPort);
 	proxy.nm_bind(ConnectionSettings, ProxyType);
 	proxy.nm_bind(ConnectionSettings, ProxyUser);
-	proxy.nm_bind(ConnectionSettings, ProxyPassword);
-	ConvertProfiles["Default"] = ImageConvertingParams();
-	CurrentConvertProfileName = "Default";
+	proxy.nm_bind(ConnectionSettings, ProxyPassword);;
+#endif
 }
 
-#endif
 
-bool CSettings::LoadSettings(LPCTSTR szDir, bool LoadFromRegistry) {
-	CString FileName = szDir ? CString(szDir) : SettingsFolder + _T("Settings.xml");
-	if ( !FileExists( FileName ) )
+
+bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadFromRegistry ) {
+	fileName_ = !szDir.empty() ? szDir + ( (!fileName .empty())? fileName : "Settings.xml") 
+		: SettingsFolder + ( !fileName.empty() ? fileName : "Settings.xml");
+	//std::cout<< fileName_;
+	if ( !IuCoreUtils::FileExists( fileName_)  ) {
 		return true;
+	}
 	ZSimpleXml xml;
-	xml.LoadFromFile( WCstringToUtf8( FileName ) );
+	xml.LoadFromFile( fileName_ );
 	mgr_.loadFromXmlNode( xml.getRoot("ImageUploader").GetChild("Settings") );
 
 	ZSimpleXmlNode settingsNode = xml.getRoot( "ImageUploader" ).GetChild( "Settings" );
 
+#if !defined(IU_CLI) && !defined( IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
 	std::string temp;
 	if ( !settingsNode["Image"]["Format"].IsNull() ) {
 		// for compatibility with old version configuration file
 		LoadConvertProfile( "Old profile", settingsNode );
 	}
 
+
 	LoadConvertProfiles( settingsNode.GetChild("Image").GetChild("Profiles") );
+#endif
 	LoadAccounts( xml.getRoot( "ImageUploader" ).GetChild( "Settings" ).GetChild( "ServersParams" ) );
 
+#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 	// Loading some settings from registry
 	if ( LoadFromRegistry ) {
 		CRegistry Reg;
@@ -512,8 +564,11 @@ bool CSettings::LoadSettings(LPCTSTR szDir, bool LoadFromRegistry) {
 	if ( !IsFFmpegAvailable() ){
 		VideoSettings.Engine = VideoEngineDirectshow;
 	}
+#endif
 	return true;
 }
+
+#if !defined(IU_CLI) && !defined(IU_SHELLEXT)
 
 #define MY_CLSID _T("{535E39BD-5883-454C-AFFC-C54B66B18206}")
 
@@ -633,17 +688,20 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		RegCloseKey(DropTargetKey);
 		return 1; // That's means ALL OK! :)
 	}
+#endif
 
 	bool CSettings::SaveSettings()
 	{
 		ZSimpleXml xml;
 		mgr_.saveToXmlNode(xml.getRoot("ImageUploader").GetChild("Settings"));
+#if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
 		SaveConvertProfiles(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("Image").GetChild("Profiles"));
-
+#endif
 		SaveAccounts(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("ServersParams"));
-		xml.SaveToFile(WCstringToUtf8(SettingsFolder + SETTINGS_FILE_NAME));
+		//std::cerr << "Saving setting to "<< IuCoreUtils::WstringToUtf8((LPCTSTR)fileName_);
+		xml.SaveToFile(fileName_);
 
-#ifndef IU_SERVERLISTTOOL
+#if !defined(IU_SERVERLISTTOOL) && !defined(IU_CLI)
 		CRegistry Reg;
 		Reg.SetRootKey(HKEY_CURRENT_USER);
 		// if(ExplorerContextMenu)
@@ -708,6 +766,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		return true;
 	}
 
+#if !defined(IU_SERVERLISTTOOL) && !defined(IU_CLI)
 // The following code should  be deleted in next releases
 	void CSettings::ApplyRegSettingsRightNow()
 	{
@@ -724,7 +783,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 				if (FileExists(ShortcutName))
 					DeleteFile(ShortcutName);
 
-				CreateShortCut(ShortcutName, CmdLine.ModuleName(), GetAppFolder(), _T(
+				CreateShortCut(ShortcutName, CmdLine.ModuleName(), WinUtils::GetAppFolder(), _T(
 				                  " /upload"), 0, SW_SHOW, CmdLine.ModuleName(), 0);
 			}
 			else
@@ -771,15 +830,17 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 			}
 		}
 	}
-
+#endif
+#if !defined(IU_SERVERLISTTOOL) && !defined(IU_CLI)
 	ServerSettingsStruct& CSettings::ServerByName(CString name)
 	{
-		return ServersSettings[name];
+		return ServersSettings[IuCoreUtils::WstringToUtf8((LPCTSTR)name)];
 	}
 
+#endif
 	ServerSettingsStruct& CSettings::ServerByUtf8Name(std::string name)
 	{
-		return ServerByName(Utf8ToWCstring(name));
+		return ServersSettings[name];
 	}
 
 	bool CSettings::LoadAccounts(ZSimpleXmlNode root)
@@ -792,7 +853,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 			std::string server_name = servers[i].Attribute("Name");
 			std::vector<std::string> attribs;
 			servers[i].GetAttributes(attribs);
-			CString wideName = Utf8ToWCstring(server_name);
+
 
 			for (size_t j = 0; j < attribs.size(); j++)
 			{
@@ -805,38 +866,40 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 					std::string value = servers[i].Attribute(attribName);
 					attribName = attribName.substr(1, attribName.size() - 1);
 					if (!value.empty())
-						ServersSettings[wideName].params[attribName] = value;
+						ServersSettings[server_name].params[attribName] = value;
 				}
 			}
-			ServersSettings[wideName].authData.DoAuth = servers[i].AttributeBool("Auth");
+#if !defined  (IU_CLI) && !defined(IU_SHELLEXT)
+			ServersSettings[server_name].authData.DoAuth = servers[i].AttributeBool("Auth");
 
 			std::string encodedLogin = servers[i].Attribute("Login");
 			CEncodedPassword login;
 			login.fromEncodedData(encodedLogin.c_str());
-			ServersSettings[wideName].authData.Login = WCstringToUtf8(login);
+			ServersSettings[server_name].authData.Login = WCstringToUtf8(login);
 
 			std::string encodedPass = servers[i].Attribute("Password");
 			CEncodedPassword pass;
 			pass.fromEncodedData(encodedPass.c_str());
-			ServersSettings[wideName].authData.Password = WCstringToUtf8(pass);
+			ServersSettings[server_name].authData.Password = WCstringToUtf8(pass);
+#endif
 		}
 		return true;
 	}
 
 	bool CSettings::SaveAccounts(ZSimpleXmlNode root)
 	{
-		std::map <CString, ServerSettingsStruct>::iterator it;
+		std::map <std::string, ServerSettingsStruct>::iterator it;
 		for (it = ServersSettings.begin(); it != ServersSettings.end(); ++it)
 		{
 			ZSimpleXmlNode serverNode = root.CreateChild("Server");
-			serverNode.SetAttribute("Name", WCstringToUtf8(it->first));
+			serverNode.SetAttribute("Name", it->first);
 
 			std::map <std::string, std::string>::iterator param;
 			for (param = it->second.params.begin(); param != it->second.params.end(); ++param)
 			{
 				serverNode.SetAttribute("_" + param->first, param->second);
 			}
-
+#if !defined  (IU_CLI) && !defined(IU_SHELLEXT)
 			serverNode.SetAttributeBool("Auth", it->second.authData.DoAuth);
 
 			CEncodedPassword login(Utf8ToWCstring(it->second.authData.Login));
@@ -844,10 +907,12 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 
 			CEncodedPassword pass(Utf8ToWCstring(it->second.authData.Password));
 			serverNode.SetAttribute("Password", WCstringToUtf8(pass.toEncodedData()));
+#endif
 		}
 		return true;
 	}
 
+#if !defined  (IU_CLI) && !defined(IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
 	bool CSettings::LoadConvertProfiles(ZSimpleXmlNode root)
 	{
 		std::vector<ZSimpleXmlNode> profiles;
@@ -910,10 +975,12 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		image["Text"]["@StrokeColor"].bind(params.StrokeColor);
 		image["Text"]["@Font"].bind(params.Font);
 	}
+#endif
 
 CSettings::~CSettings() {
 }
 
+#if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
 void CSettings::Uninstall() {
 	BOOL b;
 	if (IsVista() && IsElevated(&b) != S_OK) {
@@ -965,7 +1032,7 @@ void CSettings::EnableAutostartup(bool enable) {
 }
 
 bool CSettings::IsFFmpegAvailable() {
-	CString appFolder = GetAppFolder();
+	CString appFolder = WinUtils::GetAppFolder();
 	return FileExists( appFolder + "avcodec-53.dll") 
 		 && FileExists( appFolder + "avformat-53.dll")
 		 && FileExists( appFolder + "avutil-51.dll")
@@ -980,3 +1047,4 @@ CString CSettings::prepareVideoDialogFilters() {
 	}
 	return result;
 }
+#endif

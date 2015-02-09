@@ -26,6 +26,7 @@
 #include "Core/Upload/DefaultUploadEngine.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Gui/Dialogs/LogWindow.h"
+#include <Func/IuCommonFunctions.h>
 
 CMyEngineList::CMyEngineList()
 {
@@ -133,7 +134,7 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
 	if ( iconIt != serverIcons_.end() )
 		return iconIt->second;
 
-	HICON icon = (HICON)LoadImage(0,IU_GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(name)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
+	HICON icon = (HICON)LoadImage(0,IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(name)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
 	if ( !icon ) {
 		return 0;
 	}

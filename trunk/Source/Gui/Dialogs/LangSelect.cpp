@@ -21,6 +21,7 @@
 #include "LangSelect.h"
 #include "Func/Common.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
 
 // CLangSelect
 CLangSelect::CLangSelect()
@@ -39,7 +40,7 @@ int CLangSelect::GetNextLngFile(LPTSTR szBuffer, int nLength)
 
 	if (!findfile)
 	{
-		findfile = FindFirstFile(GetAppFolder() + "Lang\\*.lng", &wfd);
+		findfile = FindFirstFile(WinUtils::GetAppFolder() + "Lang\\*.lng", &wfd);
 		if (!findfile)
 			goto error;
 	}

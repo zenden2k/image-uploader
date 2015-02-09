@@ -57,11 +57,8 @@ struct CUrlListItem
 };
 
 bool IULaunchCopy();
-BOOL CreateTempFolder();
-void ClearTempFolder(LPCTSTR folder);
-extern CString IUTempFolder;
 
-extern CString IUCommonTempFolder;
+
 extern CCmdLine CmdLine;
 
 bool __fastcall CreateShortCut( 
@@ -86,7 +83,7 @@ const CString IU_GetVersion();
 void DeleteDir2(LPCTSTR Dir);
 bool BytesToString(__int64 nBytes, LPTSTR szBuffer,int nBufSize);
 bool IULaunchCopy(CString additionalParams=_T(""));
-int GetFolderFileList(std::vector<CString> &list, CString folder, CString mask);
+
 inline COLORREF RGB2COLORREF(unsigned int color)
 {
 	return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
@@ -114,7 +111,6 @@ HICON GetAssociatedIcon (LPCTSTR filename, bool Small);
 BOOL IsWinXP();
 int ScreenBPP();
 BOOL Is32BPP();
-const CString IU_GetDataFolder();
 CString GetSystemSpecialPath(int csidl);
 const CString GetApplicationDataPath();
 const CString GetCommonApplicationDataPath();

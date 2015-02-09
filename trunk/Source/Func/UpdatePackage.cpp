@@ -19,6 +19,7 @@
 */
 
 #include "UpdatePackage.h"
+
 #include <time.h>
 #include "atlheaders.h"
 #include "3rdpart/unzipper.h"
@@ -27,6 +28,23 @@
 #include "Core/Utils/StringUtils.h"
 #include "Func/Common.h"
 #include "Func/PluginLoader.h"
+#include <Core/Utils/CryptoUtils.h>
+#include "WinUtils.h"
+#include <iostream>
+#include "IuCommonFunctions.h"
+
+#ifdef IU_CLI
+#undef TR
+#define TR(str) _T(str)
+
+
+void WriteLog(LogMsgType MsgType, LPCWSTR Sender, LPCWSTR Msg, LPCWSTR Info)
+{
+	std::cerr<<IuCoreUtils::WstringToUtf8((LPCTSTR)Msg)<<std::endl;
+	std::cerr<<IuCoreUtils::WstringToUtf8((LPCTSTR)Info)<<std::endl;
+}
+
+#endif
 
 BOOL CreateFolder(LPCTSTR szFolder)
 {
@@ -71,7 +89,7 @@ CUpdateInfo::CUpdateInfo()
 bool CUpdateInfo::LoadUpdateFromFile(const CString& filename)
 {
 	ZSimpleXml xml;
-	if(!xml.LoadFromFile(WCstringToUtf8(filename)))	
+	if(!xml.LoadFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)filename)))	
 	{
 		WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file "))+filename+_T("\r\n"));
 	}
@@ -85,7 +103,7 @@ bool CUpdateInfo::SaveToFile(const CString& filename)
 	FILE *f = _wfopen(filename, _T("wb"));
 	if(!f) return false;
 	
-	std::string outbuf = WCstringToUtf8(m_Buffer);
+	std::string outbuf = IuCoreUtils::WstringToUtf8((LPCTSTR)m_Buffer);
 	fwrite(outbuf.c_str(), 1, outbuf.size(), f);
 	fclose(f);
 	return false;
@@ -94,7 +112,7 @@ bool CUpdateInfo::SaveToFile(const CString& filename)
 bool CUpdateInfo::LoadUpdateFromBuffer(const CString& buffer)
 {
 	ZSimpleXml m_xml;
-	if(!m_xml.LoadFromString(WCstringToUtf8(buffer)))
+	if(!m_xml.LoadFromString(IuCoreUtils::WstringToUtf8((LPCTSTR)buffer)))
 	{
 		WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file \r\n"))+_T("\r\nServer answer:\r\n")+buffer);
 		return false;
@@ -118,12 +136,12 @@ bool CUpdateInfo::Parse( ZSimpleXml &xml)
 	if(root.IsNull()) return false;
 	
 	CString packageName, UpdateUrl;
-	m_PackageName = Utf8ToWCstring(root.Attribute("Name"));
-	m_UpdateUrl = Utf8ToWCstring(root.Attribute("UpdateUrl"));
-	m_DownloadUrl = Utf8ToWCstring(root.Attribute("DownloadUrl"));
-	m_Hash = Utf8ToWCstring(root.Attribute("Hash"));
+	m_PackageName = IuCoreUtils::Utf8ToWstring(root.Attribute("Name")).c_str();
+	m_UpdateUrl = IuCoreUtils::Utf8ToWstring(root.Attribute("UpdateUrl")).c_str();
+	m_DownloadUrl = IuCoreUtils::Utf8ToWstring(root.Attribute("DownloadUrl")).c_str();
+	m_Hash = IuCoreUtils::Utf8ToWstring(root.Attribute("Hash")).c_str();
 	m_TimeStamp = root.AttributeInt("TimeStamp");
-	m_DisplayName = Utf8ToWCstring(root.Attribute("DisplayName"));
+	m_DisplayName = IuCoreUtils::Utf8ToWstring(root.Attribute("DisplayName")).c_str();
 		
 	if(m_PackageName.IsEmpty() || m_UpdateUrl.IsEmpty() || m_DownloadUrl.IsEmpty() || m_Hash.IsEmpty()  || !m_TimeStamp)
 		return false;
@@ -133,7 +151,7 @@ bool CUpdateInfo::Parse( ZSimpleXml &xml)
 		
 		//if(m_xml.FindElem(_T("Info")))
 	//	{
-			m_ReadableText = Utf8ToWCstring(root["Info"].Text());
+	m_ReadableText = IuCoreUtils::Utf8ToWstring(root["Info"].Text()).c_str();
 			//m_xml.GetData(m_ReadableText);
 			m_ReadableText.Replace(_T("\n"),_T("\r\n"));
 		//}
@@ -213,19 +231,19 @@ bool CUpdateManager::CheckUpdates()
 	m_ErrorStr.Empty();
 	Clear();
 	std::vector<CString> fileList;
-	GetFolderFileList(fileList, IU_GetDataFolder() +_T("Update"),_T("*.xml"));
+	WinUtils::GetFolderFileList(fileList, IuCommonFunctions::GetDataFolder() +_T("Update"),_T("*.xml"));
 
 	bool Result = true;
 
 	if(fileList.size() == 0)
 	{
-		m_ErrorStr = "No update files found in folder '" +IU_GetDataFolder() + _T("Update\\'");
+		m_ErrorStr = "No update files found in folder '" +IuCommonFunctions::GetDataFolder() + _T("Update\\'");
 		return false;
 	}
 
 	for(size_t i=0; i<fileList.size(); i++)
 	{
-		CString fileName = IU_GetDataFolder()+_T("Update\\") + fileList[i];
+		CString fileName = IuCommonFunctions::GetDataFolder()+_T("Update\\") + fileList[i];
 		if(!internal_load_update(fileName))
 			Result= false;
 	}
@@ -255,7 +273,7 @@ bool CUpdateManager::internal_load_update(CString name)
 
 	if(!localPackage.LoadUpdateFromFile(name))
 	{
-		WriteLog(logError,_T("Update Engine"),CString(TR("Невозможно загрузить файл обновления \'"))+name);
+		WriteLog(logError,_T("Update Engine"),CString(TR("Could not download the update file \'"))+name);
 		return false;
 	}
 
@@ -264,18 +282,18 @@ bool CUpdateManager::internal_load_update(CString name)
 	IU_ConfigureProxy(nm);	
 
 	CString url = localPackage.updateUrl();
-	url.Replace(_T("%appver%"), IU_GetVersion());
+	url.Replace(_T("%appver%"), IuCommonFunctions::GetVersion());
 	url.Replace(_T("%name%"), localPackage.packageName());
 
-	nm.doGet(WCstringToUtf8( url));
+	nm.doGet(IuCoreUtils::WstringToUtf8((LPCTSTR)url));
 
 	if(nm.responseCode() != 200)
 	{
-		WriteLog(logWarning,_T("Update Engine"), _T("Невозможно загрузить информацию о пакете обновления ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: "))+IntToStr(nm.responseCode())+_T("\r\n")+ Utf8ToWstring(nm.errorString()).c_str(),CString("URL=")+url);		
+		WriteLog(logWarning,_T("Update Engine"), _T("Невозможно загрузить информацию о пакете обновления ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: "))+IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm.responseCode())).c_str()+_T("\r\n")+ IuCoreUtils::Utf8ToWstring(nm.errorString()).c_str(),CString("URL=")+url);		
 		return false;
 	}
 
-	std::wstring res = Utf8ToWstring( nm.responseBody());
+	std::wstring res = IuCoreUtils::Utf8ToWstring( nm.responseBody());
 	if(!remotePackage.LoadUpdateFromBuffer(res.c_str()))
 	{
 		return false;
@@ -296,30 +314,32 @@ bool CUpdateManager::AreCoreUpdates()
 
 bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 {
-	CString filename = IUTempFolder + ui.packageName() +_T(".zip");
-	std::string filenamea= WCstringToUtf8(filename);
+	CString filename = IuCommonFunctions::IUTempFolder + ui.packageName() +_T(".zip");
+	std::string filenamea= IuCoreUtils::WstringToUtf8((LPCTSTR)filename);
 	IU_ConfigureProxy(nm); 
 	nm.setOutputFile( filenamea);
-	m_statusCallback->updateStatus(nCurrentIndex, TR("Скачивание файла ")+ ui.downloadUrl());
+	m_statusCallback->updateStatus(nCurrentIndex, TR("Downloading file ")+ ui.downloadUrl());
 	
-	nm.doGet(WCstringToUtf8( ui.downloadUrl()));
+	nm.doGet(IuCoreUtils::WstringToUtf8((LPCTSTR) ui.downloadUrl()));
 	if(nm.responseCode() != 200)
 	{
-		WriteLog(logError,_T("Update Engine"),TR("Ошибка обновления компонента ") + ui.packageName() + CString(_T("\r\nHTTP response code: "))+IntToStr(nm.responseCode())+_T("\r\n")+ Utf8ToWstring(nm.errorString()).c_str(),CString("URL=")+ui.downloadUrl());		
+		WriteLog(logError,_T("Update Engine"),TR("Error while updating component ") + ui.packageName() + CString(_T("\r\nHTTP response code: "))+IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm.responseCode())).c_str()+_T("\r\n")+ IuCoreUtils::Utf8ToWstring(nm.errorString()).c_str(),CString("URL=")+ui.downloadUrl());		
 		return 0;
 	}
 
-	if( ui.getHash() != IU_md5_file(filename) || ui.getHash().IsEmpty())
+	CString hash = ui.getHash();
+	hash.MakeLower();
+	if( hash != IuCoreUtils::Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))).c_str() || ui.getHash().IsEmpty())
 	{
-		updateStatus(0, CString(TR("Не совпал MD5 хэш пакета обновления "))+myExtractFileName( filename));
+		updateStatus(0, CString(TR("MD5 check of the update package failed "))+IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)filename)).c_str());
 		return 0;
 	}
 
 	CUnzipper unzipper(filename);
-	CString unzipFolder = IUTempFolder + ui.packageName();
+	CString unzipFolder = IuCommonFunctions::IUTempFolder + ui.packageName();
 	if(!unzipper.UnzipTo(unzipFolder))
 	{
-		updateStatus(0, TR("Невозможно распаковать архив ")+ filename);
+		updateStatus(0, TR("Unable to unpack archive ")+ filename);
 		return 0;
 	}
 
@@ -327,14 +347,14 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 	updatePackage.setUpdateStatusCallback(this);
 	if(!updatePackage.LoadUpdateFromFile(unzipFolder + _T("\\")+_T("package.xml")))
 	{
-		MessageBox(0,TR("Не могу прочитать ") + ui.packageName(),0,0);
+		MessageBox(0,TR("Could not read ") + ui.packageName(),0,0);
 		return false;
 	}
 
 	if(!updatePackage.doUpdate())
 		return false;
 	CString finishText;
-	finishText.Format(TR("Обновление завершено. Обновлено %d из %d файлов "), updatePackage.updatedFileCount(), updatePackage.totalFileCount());
+	finishText.Format(TR("Update finished. Updated %d of %d files "), updatePackage.updatedFileCount(), updatePackage.totalFileCount());
 	m_statusCallback->updateStatus(nCurrentIndex, finishText );
 
 	ui.SaveToFile(ui.fileName());
@@ -354,21 +374,20 @@ CUpdatePackage::CUpdatePackage()
 
 bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
 {
-	if(!FileExists(filename)) return false;
-	if(!m_xml.LoadFromFile(WCstringToUtf8(filename))) {
-		WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file \'"))+myExtractFileName(filename));
+	if(!IuCoreUtils::FileExists(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))) return false;
+	if(!m_xml.LoadFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))) {
+		WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file \'"))+IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))).c_str());
 		return false;
 	}
 
-	TCHAR buffer[256];
-	ExtractFilePath(filename, buffer);
-	m_PackageFolder = buffer;
-
+	
+	m_PackageFolder = IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFilePath(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))).c_str();
+	m_PackageFolder += "\\";
 	ZSimpleXmlNode root = m_xml.getRoot("UpdatePackage", false);
 	if(root.IsNull()) return false;
 
 	CString packageName, UpdateUrl;
-	packageName = Utf8ToWCstring(root.Attribute("Name"));
+	packageName = IuCoreUtils::Utf8ToWstring(root.Attribute("Name")).c_str();
 	m_TimeStamp =  root.AttributeInt("TimeStamp");
 		
 	int core=root.AttributeInt("CoreUpdate");
@@ -381,10 +400,10 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
 
 	for(size_t i=0; i< entries.size(); i++){
 		CUpdateItem ui;
-		ui.name = Utf8ToWCstring(entries[i].Attribute("Name"));
-		ui.hash = Utf8ToWCstring(entries[i].Attribute("Hash"));
-		ui.saveTo = Utf8ToWCstring(entries[i].Attribute("SaveTo"));
-		ui.action = Utf8ToWCstring(entries[i].Attribute("Action"));
+		ui.name = IuCoreUtils::Utf8ToWstring(entries[i].Attribute("Name")).c_str();
+		ui.hash = IuCoreUtils::Utf8ToWstring(entries[i].Attribute("Hash")).c_str();
+		ui.saveTo = IuCoreUtils::Utf8ToWstring(entries[i].Attribute("SaveTo")).c_str();
+		ui.action = IuCoreUtils::Utf8ToWstring(entries[i].Attribute("Action")).c_str();
 		ui.flags = entries[i].Attribute("Flags");
 		if(ui.name.IsEmpty()  || (ui.hash.IsEmpty() &&  ui.action!=_T("delete") )|| ui.saveTo.IsEmpty())
 			continue;
@@ -411,9 +430,12 @@ bool CUpdatePackage::doUpdate()
 		CString copyFrom, copyTo;
 		copyFrom = m_PackageFolder + ue.name;
 		copyTo = ue.saveTo;
-		if( (ue.hash != IU_md5_file(copyFrom) || ue.hash.IsEmpty()) && ue.action != _T("delete"))
+		if( (ue.hash != IuCoreUtils::Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)copyFrom))).c_str() || ue.hash.IsEmpty()) && ue.action != _T("delete"))
 		{
-			setStatusText( CString(TR("Не совпал MD5 хэш файла "))+myExtractFileName( copyTo));
+			/*std::cout << std::endl << IuCoreUtils::WstringToUtf8((LPCTSTR)copyFrom)<<std::endl;
+			std::cout <<  IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)copyFrom))<<std::endl;
+			std::cout << IuCoreUtils::WstringToUtf8((LPCTSTR)ue.hash) << std::endl;*/
+			setStatusText( CString(TR("MD5 check failed for file "))+IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)copyTo))).c_str());
 			return false;
 		}
 	}
@@ -425,19 +447,19 @@ bool CUpdatePackage::doUpdate()
 		CString copyFrom, copyTo;
 		copyFrom = m_PackageFolder + ue.name;
 		copyTo = ue.saveTo;
-		CString appFolder = GetAppFolder();
+		CString appFolder = WinUtils::GetAppFolder();
 		if(appFolder.Right(1) == _T("\\"))
 			appFolder.Delete(appFolder.GetLength()-1);
 
-		copyTo.Replace(_T("%datapath%"), IU_GetDataFolder());
+		copyTo.Replace(_T("%datapath%"), IuCommonFunctions::GetDataFolder());
 		copyTo.Replace(_T("%apppath%"), appFolder);
-		CString renameTo = copyTo + _T(".")+IntToStr(random(10000))+ _T(".old");
-		TCHAR buffer[MAX_PATH];
-		ExtractFilePath(copyTo, buffer);
+		CString renameTo = copyTo + _T(".")+IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(random(10000))).c_str()+ _T(".old");
+
+		CString buffer = IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFilePath(IuCoreUtils::WstringToUtf8((LPCTSTR)copyTo))).c_str();
 		std::vector<std::string> tokens;
 		IuStringUtils::Split(ue.flags, ",", tokens, -1);
 		bool skipFile = false;
-		bool isWin64Os = IsWindows64Bit();
+		bool isWin64Os = WinUtils::IsWindows64Bit();
 		for(size_t i=0; i<tokens.size(); i++)
 		{
 			if(tokens[i] == "os_win64bit")
@@ -474,7 +496,7 @@ bool CUpdatePackage::doUpdate()
 			
 			if(!CopyFile(copyFrom,copyTo,FALSE))
 			{
-				WriteLog(logWarning,_T("Update Engine"),CString(_T("Не могу записать файл "))+myExtractFileName(copyTo));
+				WriteLog(logWarning,_T("Update Engine"),CString(_T("Could not write file "))+IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)copyTo))).c_str());
 				
 			}
 			else 
@@ -484,7 +506,7 @@ bool CUpdatePackage::doUpdate()
 			}
 		}
 	}
-	DeleteDir2(m_PackageFolder);
+	WinUtils::DeleteDir2(m_PackageFolder);
 	return true;
 }
 
@@ -545,13 +567,13 @@ int CUpdateManager::progressCallback(void *clientp, double dltotal, double dlnow
 	CUpdateManager * um = reinterpret_cast<CUpdateManager*>( clientp);
 	CString text;
 	CString buf1, buf2;
-	buf1 = Utf8ToWCstring(IuCoreUtils::fileSizeToString(int64_t(dlnow)));
-	buf2 = Utf8ToWCstring(IuCoreUtils::fileSizeToString(int64_t(dltotal)));
+	buf1 = IuCoreUtils::Utf8ToWstring(IuCoreUtils::fileSizeToString(int64_t(dlnow))).c_str();
+	buf2 = IuCoreUtils::Utf8ToWstring(IuCoreUtils::fileSizeToString(int64_t(dltotal))).c_str();
 	int percent = 0;
 	if(dltotal != 0 )
 	percent = int((dlnow/ dltotal) * 100);
 	if(percent > 100) percent = 0;
-	text.Format(TR("Скачано %s из %s (%d %%)"),(LPCTSTR)buf1, (LPCTSTR)buf2,percent);
+	text.Format(TR("Downloaded %s of %s (%d %%)"),(LPCTSTR)buf1, (LPCTSTR)buf2,percent);
 	um->updateStatus(0, text);
 	if(um->m_stop) return 1;
 	return 0;

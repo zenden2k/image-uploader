@@ -33,6 +33,7 @@
 #include <Func/WebUtils.h>
 #include <Func/WinUtils.h>
 #include <Core/Upload/UrlShorteningTask.h>
+#include <Func/IuCommonFunctions.h>
 // FloatingWindow
 CFloatingWindow::CFloatingWindow()
 {
@@ -631,7 +632,7 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
 	CImageConverter imageConverter;
 	Thumbnail thumb;
 
-	if (!thumb.LoadFromFile(WCstringToUtf8(IU_GetDataFolder() + _T("\\Thumbnails\\") + Settings.ThumbSettings.FileName +
+	if (!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + Settings.ThumbSettings.FileName +
 	                                       _T(".xml"))))
 	{
 		WriteLog(logError, _T("CThumbSettingsPage"), TR("Не могу загрузить файл миниатюры!"));

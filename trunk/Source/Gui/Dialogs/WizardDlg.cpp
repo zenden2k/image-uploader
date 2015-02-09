@@ -46,6 +46,8 @@
 #include <Gui/Dialogs/WebViewWindow.h>
 #include <Core/Utils/CryptoUtils.h>
 #include <Core/TextUtils.h>
+#include <Func/WinUtils.h>
+#include <Func/IuCommonFunctions.h>
 
 using namespace Gdiplus;
 // CWizardDlg
@@ -116,7 +118,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	m_UpdateLink.ConvertStaticToHyperlink(GetDlgItem(IDC_UPDATESLABEL), _T("http://zenden.ws"));
 	m_UpdateLink.setCommandID(IDC_UPDATESLABEL);
 	
-	CString MediaDll = GetAppFolder() + _T("\\Modules\\MediaInfo.dll");
+	CString MediaDll = WinUtils::GetAppFolder() + _T("\\Modules\\MediaInfo.dll");
 	if(FileExists( MediaDll)) lstrcpy(MediaInfoDllPath, MediaDll);
 	else
 	{
@@ -125,7 +127,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	}
 	SetWindowText(APPNAME);
 
-   Lang.SetDirectory(GetAppFolder() + "Lang\\");
+   Lang.SetDirectory(WinUtils::GetAppFolder() + "Lang\\");
 
 	if(Settings.Language.IsEmpty())
 	{
@@ -152,7 +154,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	}
 
 	CString ErrorStr;
-	if(!LoadUploadEngines(IU_GetDataFolder()+_T("servers.xml"), ErrorStr))  // Завершаем работу программы, если файл servers.lst отсутствует
+	if(!LoadUploadEngines(IuCommonFunctions::GetDataFolder()+_T("servers.xml"), ErrorStr))  // Завершаем работу программы, если файл servers.lst отсутствует
 	{
 		CString ErrBuf;
 		ErrBuf.Format(TR("Невозможно открыть файл со спиком серверов \"servers.xml\"!\n\nПричина:  %s\n\nПродолжить работу программы?"),(LPCTSTR)ErrorStr);
@@ -163,10 +165,10 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 			return 0;
 		}
 	}
-	iuPluginManager.setScriptsDirectory(WCstringToUtf8(IU_GetDataFolder() + _T("\\Scripts\\")));
+	iuPluginManager.setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
 	std::vector<CString> list;
-	CString serversFolder = IU_GetDataFolder() + _T("\\Servers\\");
-	GetFolderFileList(list, serversFolder, _T("*.xml"));
+	CString serversFolder = IuCommonFunctions::GetDataFolder() + _T("\\Servers\\");
+	WinUtils::GetFolderFileList(list, serversFolder, _T("*.xml"));
 
 	for(size_t i=0; i<list.size(); i++)
 	{
@@ -687,14 +689,14 @@ STDMETHODIMP CWizardDlg::DragLeave( void)
 CString MakeTempFileName(const CString& FileName)
 {
 	CString FileNameBuf;
-	FileNameBuf = IUTempFolder + FileName;
+	FileNameBuf = IuCommonFunctions::IUTempFolder + FileName;
 
    if(FileExists(FileNameBuf))
 	{
 		CString OnlyName;
 		OnlyName = GetOnlyFileName(FileName);
 		CString Ext = GetFileExt(FileName);
-		FileNameBuf = IUTempFolder + OnlyName + _T("_")+IntToStr(GetTickCount()^33333) + (Ext? _T("."):_T("")) + Ext;
+		FileNameBuf = IuCommonFunctions::IUTempFolder + OnlyName + _T("_")+IntToStr(GetTickCount()^33333) + (Ext? _T("."):_T("")) + Ext;
 	}
 	return FileNameBuf;
 }

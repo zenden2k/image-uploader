@@ -27,6 +27,8 @@
 #include "Gui/Dialogs/floatingwindow.h"
 #include "Common/CmdLine.h"
 #include "Func/Settings.h"
+#include "Func/WinUtils.h"
+#include <Func/IuCommonFunctions.h>
 
 CAppModule _Module;
 
@@ -42,12 +44,12 @@ bool IsProcessRunning(DWORD pid) {
 
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
-	CreateTempFolder();
+	IuCommonFunctions::CreateTempFolder();
 	
 	std::vector<CString> fileList;
-	GetFolderFileList( fileList, GetAppFolder() + _T("\\"), _T("*.old") );
+	WinUtils::GetFolderFileList( fileList, WinUtils::GetAppFolder() + _T("\\"), _T("*.old") );
 	for ( size_t i=0; i<fileList.size(); i++ ) {
-		DeleteFile( GetAppFolder() + fileList[i] );
+		DeleteFile( WinUtils::GetAppFolder() + fileList[i] );
 	}
 
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
@@ -115,20 +117,20 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	Gdiplus::GdiplusShutdown( gdiplusToken );
 
 	// Удаляем временные файлы
-	ClearTempFolder( IUTempFolder ); 
+	IuCommonFunctions::ClearTempFolder( IuCommonFunctions::IUTempFolder ); 
 	std::vector<CString> folders;
-	GetFolderFileList( folders, IUCommonTempFolder, "iu_temp_*" );
+	WinUtils::GetFolderFileList( folders, IuCommonFunctions::IUCommonTempFolder, "iu_temp_*" );
 	for ( size_t i=0; i < folders.size(); i++ ) {
 		// Extract Proccess ID from temp folder name
 		CString pidStr = folders[i]; 
 		pidStr.Replace( _T("iu_temp_"), _T("") );
 		unsigned int pid =  wcstoul( pidStr, 0, 16 ) ^  0xa1234568;
 		if ( pid && !IsProcessRunning( pid ) )
-			ClearTempFolder( IUCommonTempFolder + _T("\\") + folders[i] );
+			IuCommonFunctions::ClearTempFolder( IuCommonFunctions::IUCommonTempFolder + _T("\\") + folders[i] );
 	}
 	
 	// deletes empty temp directory
-	RemoveDirectory( IUCommonTempFolder );
+	RemoveDirectory( IuCommonFunctions::IUCommonTempFolder );
 	return 0;
 }
 

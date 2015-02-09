@@ -24,6 +24,7 @@
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Common/CmdLine.h"
 #include "Func/Settings.h"
+#include <Func/WinUtils.h>
 
 // CUpdateDlg
 
@@ -95,7 +96,7 @@ LRESULT CUpdateDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& 
 		bool isVista = IsVista();
 		if (isVista)
 			IsElevated(&elev);
-		bool CanWrite = IsDirectory(GetAppFolder() + _T("Data"));
+		bool CanWrite = IsDirectory(WinUtils::GetAppFolder() + _T("Data"));
 
 		bool NeedElevation = m_UpdateManager.AreCoreUpdates() && isVista && !elev && !CmdLine.IsOption(_T("update"));
 		NeedElevation |= isVista && !elev && !CanWrite;

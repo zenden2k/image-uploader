@@ -29,6 +29,7 @@
 #include <Gui/Dialogs/WebViewWindow.h>
 #include <Core/TextUtils.h>
 #include <Core/Utils/StringUtils.h>
+#include <Func/IuCommonFunctions.h>
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg,CAtlArray<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)
 {
@@ -54,7 +55,7 @@ bool CResultsPanel::LoadTemplate()
 	if(TemplateHead && TemplateFoot) return true;
 
 	DWORD dwBytesRead, dwFileSize;
-	CString FileName = IU_GetDataFolder() + _T("template.txt");
+	CString FileName = IuCommonFunctions::GetDataFolder() + _T("template.txt");
 
 	if(TemplateHead) delete[] TemplateHead;
 	TemplateHead = NULL;
@@ -481,7 +482,7 @@ bool CResultsPanel::LoadTemplates(CString &Error)
 	int i =0;
 
 	ZSimpleXml XML;
-	CString XmlFileName = IU_GetDataFolder() + _T("templates.xml");
+	CString XmlFileName = IuCommonFunctions::GetDataFolder() + _T("templates.xml");
 
 	if(!FileExists(XmlFileName))
 	{
@@ -761,7 +762,7 @@ LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND h
 		webViewWindow_->Create(0,r,_T("Preview Window"),WS_POPUP|WS_OVERLAPPEDWINDOW,WS_EX_TOPMOST	);
 		webViewWindow_->ShowWindow(SW_SHOW);
 	}
-	CString outputTempFileName = IUTempFolder  + "preview.html";
+	CString outputTempFileName = IuCommonFunctions::IUTempFolder  + "preview.html";
 	CString code = GenerateOutput();
 	//ShowVar(m_Page);
 	if ( m_Page == 0) {

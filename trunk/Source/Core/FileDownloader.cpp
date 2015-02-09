@@ -22,6 +22,7 @@
 #include <algorithm>
 #include "Func/myutils.h"
 #include "Func/Common.h"
+#include <Func/IuCommonFunctions.h>
 
 // TODO: 1. use ZThread classes instead  CThread with ,
 // 2. remove dependency from non-core headers ( "myutils.h", "Common.h")
@@ -176,7 +177,7 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
 		std::string ext = IuCoreUtils::ExtractFileExt(url);
 		std::string fileName = IuCoreUtils::ExtractFileName(url);
 		CString wFileName =
-		   GetUniqFileName(IUTempFolder + Utf8ToWstring(fileName.c_str()).c_str());
+			GetUniqFileName(IuCommonFunctions::IUTempFolder + Utf8ToWstring(fileName.c_str()).c_str());
 		std::string filePath = WCstringToUtf8(wFileName);
 
 		// Creating file

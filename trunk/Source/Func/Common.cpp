@@ -29,8 +29,10 @@
 #include "Func/MyUtils.h"
 #include "Func/Settings.h"
 #include "Core/Utils/CryptoUtils.h"
+#include "versioninfo.h"
+#include <Func/WinUtils.h>
 
-CString IUCommonTempFolder, IUTempFolder;
+CString IUCommonTempFolder;
 
 CString IU_md5_file(const CString& filename)
 {
@@ -65,113 +67,9 @@ CString IU_md5_file(const CString& filename)
 	return result;
 }
 
-WIN32_FIND_DATA wfd;
-HANDLE findfile = 0;
 
-int GetNextImgFile(LPCTSTR folder, LPTSTR szBuffer, int nLength)
-{
-	TCHAR szBuffer2[MAX_PATH], TempPath[256];
 
-	GetTempPath(256, TempPath);
-	wsprintf(szBuffer2, _T("%s*.*"), (LPCTSTR)folder);
 
-	if (!findfile)
-	{
-		findfile = FindFirstFile(szBuffer2, &wfd);
-		if (!findfile)
-			goto error;
-	}
-	else
-	{
-		if (!FindNextFile(findfile, &wfd))
-			goto error;
-	}
-	if (lstrlen(wfd.cFileName) < 1)
-		goto error;
-	lstrcpyn(szBuffer, wfd.cFileName, nLength);
-
-	return TRUE;
-
-error:
-	if (findfile)
-		FindClose(findfile);
-	return FALSE;
-}
-
-void DeleteDir2(LPCTSTR Dir)
-{
-	if (!Dir)
-		return;
-	TCHAR szBuffer[MAX_PATH];
-	lstrcpyn(szBuffer, Dir, MAX_PATH);
-	int nLen = lstrlen(szBuffer) - 1;
-	if (szBuffer[nLen] == _T('\\'))
-		szBuffer[nLen] = 0;
-
-	SHFILEOPSTRUCT FileOp;
-	ZeroMemory(&FileOp, sizeof(FileOp));
-	FileOp.hwnd = NULL;
-	FileOp.wFunc = FO_DELETE;
-	FileOp.pFrom = szBuffer;
-	FileOp.fFlags = FOF_NOCONFIRMATION | FOF_SILENT | FOF_NOERRORUI;
-	SHFileOperation(&FileOp);
-}
-
-void ClearTempFolder(LPCTSTR folder)
-{
-	TCHAR szBuffer[256] = _T("\0");
-	TCHAR szBuffer2[MAX_PATH], TempPath[256];
-	GetTempPath(256, TempPath);
-	findfile = 0;
-	while (GetNextImgFile(folder, szBuffer, 256))
-	{
-#ifdef DEBUG
-		if (!lstrcmpi(szBuffer, _T("log.txt")))
-			continue;
-#endif
-		wsprintf(szBuffer2, _T("%s%s"), (LPCTSTR) folder, (LPCTSTR)szBuffer);
-		DeleteFile(szBuffer2);
-	}
-	if (!RemoveDirectory(folder))
-	{
-		DeleteDir2(folder);
-	}
-}
-
-int GetFolderFileList(std::vector<CString>& list, CString folder, CString mask)
-{
-	WIN32_FIND_DATA wfd;
-	ZeroMemory(&wfd, sizeof(wfd));
-	HANDLE findfile = 0;
-	TCHAR szNameBuffer[MAX_PATH];
-
-	for (;; )
-	{
-		if (!findfile)
-		{
-			findfile = FindFirstFile(folder + _T("\\") + mask, &wfd);
-			if (!findfile)
-				break;
-			;
-		}
-		else
-		{
-			if (!FindNextFile(findfile, &wfd))
-				break;
-		}
-		if (lstrlen(wfd.cFileName) < 1)
-			break;
-		lstrcpyn(szNameBuffer, wfd.cFileName, 254);
-		list.push_back(szNameBuffer);
-	}
-	// return TRUE;
-
-// error:
-	if (findfile)
-		FindClose(findfile);
-	return list.size();
-	// return FALSE;
-}
 
 bool IULaunchCopy(CString additionalParams)
 {
@@ -213,22 +111,6 @@ bool IULaunchCopy(CString additionalParams)
 	CloseHandle( pi.hProcess );
 	CloseHandle( pi.hThread );
 	return true;
-}
-
-BOOL CreateTempFolder()
-{
-	TCHAR TempPath[256];
-	GetTempPath(256, TempPath);
-	DWORD pid = GetCurrentProcessId() ^ 0xa1234568;
-	IUCommonTempFolder.Format(_T("%stmd_iu_temp"), (LPCTSTR)TempPath);
-
-	CreateDirectory(IUCommonTempFolder, 0);
-	IUTempFolder.Format(_T("%s\\iu_temp_%x"), (LPCTSTR) IUCommonTempFolder, pid);
-
-	CreateDirectory(IUTempFolder, 0);
-
-	IUTempFolder += _T("\\");
-	return TRUE;
 }
 
 #define HOTKEY(modifier, key) ((((modifier) & 0xff) << 8) | ((key) & 0xff))
@@ -364,17 +246,15 @@ void IU_ConfigureProxy(NetworkManager& nm)
 	nm.setUploadBufferSize(Settings.UploadBufferSize);
 }
 
+
+
 CPluginManager iuPluginManager;
 
-const CString IU_GetVersion()
-{
-	return CString("1.2.6.") + _T(BUILD);
-}
 
 void IU_RunElevated(CString params)
 {
 	SHELLEXECUTEINFO TempInfo = {0};
-	CString appDir = GetAppFolder();
+	CString appDir = WinUtils::GetAppFolder();
 	CString Command = CmdLine[0];
 	CString parameters = _T(" ") + params;
 	TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
@@ -651,10 +531,7 @@ BOOL Is32BPP()
 	return (IsWinXP() & (ScreenBPP() >= 32));
 }
 
-const CString IU_GetDataFolder()
-{
-	return Settings.DataFolder;
-}
+
 
 CString GetSystemSpecialPath(int csidl)
 {

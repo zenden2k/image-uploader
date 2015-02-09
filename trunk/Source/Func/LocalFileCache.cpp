@@ -3,6 +3,7 @@
 #include "Settings.h"
 #include "HistoryManager.h"
 #include <Gui/Dialogs/LogWindow.h>
+#include <Func/WinUtils.h>
 
 #include <zthread/Guard.h>
 LocalFileCache::LocalFileCache() {
@@ -21,8 +22,8 @@ bool LocalFileCache::ensureHistoryParsed() {
 bool LocalFileCache::parseHistory() {
 	mutex_.acquire();
 	std::vector<CString> files;
-	CString historyFolder = Settings.SettingsFolder+_T("\\History\\");
-	GetFolderFileList(files, historyFolder , _T("history*.xml"));
+	CString historyFolder = IuCoreUtils::Utf8ToWstring(Settings.SettingsFolder).c_str()+CString(_T("\\History\\"));
+	WinUtils::GetFolderFileList(files, historyFolder , _T("history*.xml"));
 
 	for(size_t i=0; i<files.size(); i++) {
 		parseHistoryFile(historyFolder + files[i]);

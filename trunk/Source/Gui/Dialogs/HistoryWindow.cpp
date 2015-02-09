@@ -28,6 +28,7 @@
 #include "ResultsWindow.h"
 #include "Gui/WizardCommon.h"
 #include "Core/3rdpart/pcreplusplus.h"
+#include <Func/WinUtils.h>
 
 // CHistoryWindow
 CHistoryWindow::CHistoryWindow()
@@ -73,8 +74,8 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	std::string fName = ZBase::get()->historyManager()->makeFileName();
 	
 	std::vector<CString> files;
-	historyFolder = Settings.SettingsFolder+_T("\\History\\");
-	GetFolderFileList(files, historyFolder , _T("history*.xml"));
+	historyFolder = IuCoreUtils::Utf8ToWstring(Settings.SettingsFolder).c_str()+CString(_T("\\History\\"));
+	WinUtils::GetFolderFileList(files, historyFolder , _T("history*.xml"));
 	pcrepp::Pcre regExp("history_(\\d+)_(\\d+)", "imcu");
 
 	for(size_t i=0; i<files.size(); i++)

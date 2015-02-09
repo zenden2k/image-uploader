@@ -23,6 +23,7 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Func/Common.h"
 #include "Gui/GuiTools.h"
+#include <Func/IuCommonFunctions.h>
 
 const int LLB_VertDivider = 10;
 const int LLB_VertMargin = 5;
@@ -530,7 +531,7 @@ HICON CHistoryTreeView::getIconForServer(const CString& serverName)
 		return m_serverIconCache[serverName];
 	else
 
-		ico = (HICON)LoadImage(0, IU_GetDataFolder() + _T("Favicons\\") + serverName + _T(
+		ico = (HICON)LoadImage(0, IuCommonFunctions::GetDataFolder() + _T("Favicons\\") + serverName + _T(
 		                          ".ico"), IMAGE_ICON, 16, 16, LR_LOADFROMFILE);
 	m_serverIconCache[serverName] = ico;
 	return ico;

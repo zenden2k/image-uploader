@@ -78,7 +78,6 @@ const std::string CryptoUtils::CalcMD5HashFromFile(const std::string& filename) 
 
 	MD5_Init(&context);
 	FILE* f = IuCoreUtils::fopen_utf8( filename.c_str(), "rb" );
-	MessageBoxA( 0, filename.c_str(), 0, 0 );
 	if (f) {
 		unsigned char buf[4096];
 		while ( !feof(f) ) {
@@ -101,7 +100,6 @@ const std::string CryptoUtils::CalcMD5HashFromFile(const std::string& filename) 
 		}
 	}
 
-	MessageBoxA( 0, result.c_str(), 0, 0 );
 	return result;
 }
 

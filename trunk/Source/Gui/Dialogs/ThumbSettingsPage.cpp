@@ -31,6 +31,8 @@
 #include "Func/MyUtils.h"
 #include "ThumbEditor.h"
 #include "InputDialog.h"
+#include <Func/IuCommonFunctions.h>
+#include <Func/WinUtils.h>
 
 #pragma comment( lib, "uxtheme.lib" )
 // CThumbSettingsPage
@@ -79,8 +81,8 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
 		_T("JPEG"), _T("PNG"), _T("GIF"));
 
 	std::vector<CString> files;
-	CString folder = IU_GetDataFolder()+_T("\\Thumbnails\\");
-	GetFolderFileList(files, folder , _T("*.xml"));
+	CString folder = IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\");
+	WinUtils::GetFolderFileList(files, folder , _T("*.xml"));
 	for(size_t i=0; i<files.size(); i++)
 		GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt( WCstringToUtf8( files[i]))) );
 	
@@ -198,7 +200,7 @@ std::string CThumbSettingsPage::getSelectedThumbnailFileName()
 	SendDlgItemMessage(IDC_THUMBSCOMBO, CB_GETLBTEXT, index, (WPARAM)buf);
 	CString thumbFileName = buf;
 	Thumbnail thumb;
-	CString folder = IU_GetDataFolder()+_T("\\Thumbnails\\");
+	CString folder = IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\");
 	return WCstringToUtf8(folder + thumbFileName+".xml");
 }
 
@@ -208,7 +210,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
 	std::string fileName = getSelectedThumbnailFileName();
 	if(fileName.empty())
 		return ;
-	CString folder = IU_GetDataFolder()+_T("\\Thumbnails\\");
+	CString folder = IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\");
 	
 	std::auto_ptr<Thumbnail> autoPtrThumb;
 	Thumbnail * thumb = 0;

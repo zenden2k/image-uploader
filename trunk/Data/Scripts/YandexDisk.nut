@@ -5,7 +5,7 @@ if(ServerParams.getParam("enableOAuth") == "")
 token <- "";
 tokenType <- "";
 login <- "";
-enableOAuth <- ( ServerParams.getParam("enableOAuth") == "true" );
+enableOAuth <- true;
 
 function base64Encode(input) {
 	local keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -158,6 +158,11 @@ function internal_parseAlbumList(data,list,parentid)
 
 function internal_loadAlbumList(list)
 {
+if(token == "")
+	{
+		if(!doLogin())
+			return 0;
+	}
 	
 	local url = "https://webdav.yandex.ru/";
 	
@@ -259,6 +264,16 @@ function checkResponseCode() {
 	} 
 }
 
+
+function openUrl(url) {
+	try{
+		return ShellOpenUrl(url);
+	}catch(ex){}
+
+	system("start "+ reg_replace(url,"&","^&") );
+}
+
+
 function doLogin() 
 { 
 	if ( enableOAuth ) {
@@ -273,7 +288,7 @@ function doLogin()
 			}
 			return true;
 		}
-		system("start https://oauth.yandex.ru/authorize?response_type=code^&client_id=28d8d9c854554812ad8b60c150375462");
+		openUrl("https://oauth.yandex.ru/authorize?response_type=code&client_id=28d8d9c854554812ad8b60c150375462");
 		
 	    	local confirmCode = inputBox("You need to need to sign in to your Yandex.Disk account in web browser which just have opened and then copy confirmation code into the text field below. Please enter confirmation code:", "Image Uploader - Enter confirmation code");
 		if ( confirmCode != "" ) {	
@@ -291,7 +306,8 @@ function doLogin()
 				tokenType = "oauth";
 				ServerParams.setParam("token", token);
 				ServerParams.setParam("tokenType", tokenType);
-				
+				ServerParams.setParam("PrevLogin", ServerParams.getParam("Login"));
+
 				/*if ( tokenType == "oauth" ) {
 					nm.addQueryHeader("Authorization", getAuthorizationString());
 					nm.addQueryHeader("Expect", "");
@@ -322,7 +338,7 @@ function doLogin()
 		return 0;
 	}
 	
-	return 1; //Success login
+	return 0; //Success login
 } 
 
 function  UploadFile(FileName, options)

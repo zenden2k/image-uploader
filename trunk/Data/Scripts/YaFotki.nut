@@ -39,8 +39,18 @@ function readFile(fileName) {
 	return res;
 }
 
+function openUrl(url) {
+	try{
+		return ShellOpenUrl(url);
+	}catch(ex){}
+
+	system("start "+ reg_replace(url,"&","^&") );
+}
+
 function inputBox(prompt, title) {
-	
+	try {
+		return InputDialog(prompt, "");
+	}catch (e){}
 	local tempScript = "%temp%\\imguploader_inputbox.vbs";
 	prompt = reg_replace(prompt, "\n", "\" ^& vbCrLf ^& \"" );
 	local tempOutput = getenv("TEMP") + "\\imguploader_inputbox_output.txt";
@@ -60,21 +70,6 @@ function getAuthorizationString() {
 	return "FimpToken realm=\"fotki.yandex.ru\", token=\""+token+"\"";
 }
 
-function inputBox(prompt, title) {
-	try {
-		return InputDialog(prompt, "");
-	}catch (e){}
-	local tempScript = "%temp%\\imguploader_inputbox.vbs";
-	prompt = reg_replace(prompt, "\n", "\" ^& vbCrLf ^& \"" );
-	local tempOutput = getenv("TEMP") + "\\imguploader_inputbox_output.txt";
-	local command = "echo result = InputBox(\""+ prompt + "\", \""+ title + "\") : Set objFSO=CreateObject(\"Scripting.FileSystemObject\") : Set objFile = objFSO.CreateTextFile(\"" + tempOutput + "\",True) : objFile.Write result : objFile.Close  > \"" + tempScript + "\"";
-	system(command);
-	command = "cscript /nologo \"" + tempScript + "\"";// > \"" + tempOutput + "\"";*/
-	system(command);
-	local res = readFile(tempOutput);
-	system("rm \""+ tempOutput + "\"");
-	return res;
-}
 
 function doLogin() 
 { 
@@ -90,7 +85,7 @@ function doLogin()
 			}
 			return true;
 		}
-		system("start https://oauth.yandex.ru/authorize?response_type=code^&client_id=7e20041e4444421a8d3df62bf312acfc");
+		openUrl("https://oauth.yandex.ru/authorize?response_type=code&client_id=7e20041e4444421a8d3df62bf312acfc");
 		
 	    	local confirmCode = inputBox("You need to need to sign in to your Yandex.Fotki account in web browser which just have opened and then copy confirmation code into the text field below. Please enter confirmation code:", "Image Uploader - Enter confirmation code");
 		if ( confirmCode != "" ) {	

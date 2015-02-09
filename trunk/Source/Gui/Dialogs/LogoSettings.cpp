@@ -26,6 +26,7 @@
 #include "Gui/GuiTools.h"
 #include "InputDialog.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
 
 // CLogoSettings
 CLogoSettings::CLogoSettings()
@@ -159,7 +160,7 @@ LRESULT CLogoSettings::OnBnClickedLogobrowse(WORD /*wNotifyCode*/, WORD /*wID*/,
 	CFileDialog fd(true, 0, 0, 4|2, Buf, m_hWnd);
 	
 	CString s;
-	s = GetAppFolder();
+	s = WinUtils::GetAppFolder();
 	fd.m_ofn.lpstrInitialDir = s;
 	if ( fd.DoModal() != IDOK || !fd.m_szFileName ) return 0;
 

@@ -37,11 +37,16 @@
 #include "Core/3rdpart/codepages.h"
 
 #include "Core/Utils/CryptoUtils.h"
-#include "gui/Dialogs/LogWindow.h"
+#ifndef IU_CLI
+#include "Gui/Dialogs/LogWindow.h"
+#endif
 #include <Core/Upload/FileUploadTask.h>
 #include <Core/Upload/UrlShorteningTask.h>
 #include <sstream>
 
+#ifndef _WIN32
+#include <unistd.h>
+#endif
 
 using namespace SqPlus;
 // Squirrel types should be defined in the same module where they are used
@@ -53,15 +58,50 @@ DECLARE_INSTANCE_TYPE(CFolderList);
 DECLARE_INSTANCE_TYPE(CFolderItem);
 DECLARE_INSTANCE_TYPE(CIUUploadParams);
 
+#ifdef _WIN32
+#ifndef IU_CLI
+#include <Gui/Dialogs/InputDialog.h>
+#include <Func/Common.h>
+#include <Func/IuCommonFunctions.h>
+const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url)
+{
+	CString wFileName = GetUniqFileName(IuCommonFunctions::IUTempFolder+Utf8ToWstring("captcha").c_str());
+
+	nm->setOutputFile(IuCoreUtils::WstringToUtf8((const TCHAR*)wFileName));
+	if(!nm->doGet(url))
+		return "";
+	CInputDialog dlg(_T("Image Uploader"), TR("¬ведите текст с картинки:"), CString(IuCoreUtils::Utf8ToWstring("").c_str()),wFileName);
+	nm->setOutputFile("");
+	if(dlg.DoModal()==IDOK)
+		return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
+	return "";
+}
+#endif
+#endif
+
+bool ShellOpenUrl(const std::string& url) {
+#ifdef _WIN32
+    return ShellExecute(0, _T("open"), IuCoreUtils::Utf8ToWstring(url).c_str(), NULL, NULL, SW_SHOWNORMAL);
+#else
+    return system(("xdg-open \""+url+"\" >/dev/null 2>&1 & ").c_str());
+#endif
+}
+
 const std::string AskUserCaptcha(NetworkManager* nm, const std::string& url)
 {
 #ifndef IU_CLI
 	return Impl_AskUserCaptcha(nm, url);
 #else
-	return "<not implemented>";
+	ShellOpenUrl(url);
+		std::cerr << "Enter text from the image:"<<std::endl;
+		std::string result;
+		std::cin>>result;
+		return result;
+	
 #endif
 	return "";
 }
+
 
 
 const std::string InputDialog(const std::string& text, const std::string& defaultValue)
@@ -69,7 +109,10 @@ const std::string InputDialog(const std::string& text, const std::string& defaul
 #ifndef IU_CLI
 	return Impl_InputDialog(text, defaultValue);
 #else
-	return "<not implemented>";
+	std::string result;
+	std::cerr<<std::endl<<text<<std::endl;
+	std::cin>>result;
+	return result;
 #endif
 	return "";
 }
@@ -118,6 +161,7 @@ void CScriptUploadEngine::InitScriptEngine()
 {
 	SquirrelVM::Init();
 	SquirrelVM::PushRootTable();
+	sqstd_register_systemlib( SquirrelVM::GetVMPtr() );
 }
 
 void CScriptUploadEngine::DestroyScriptEngine()
@@ -255,7 +299,11 @@ const std::string scriptMD5(const std::string& data)
 }
 
 void scriptSleep(int msec) {
+#ifdef _WIN32
 	Sleep(msec);
+#else
+    sleep(msec/1000);
+#endif
 }
 
 /*bool ShowText(const std::string& data) {
@@ -303,6 +351,17 @@ const std::string url_encode(const std::string &value) {
 	}
 
 	return escaped.str();
+}
+
+
+void DebugMessage(const std::string& msg, bool isResponseBody)
+{
+#ifndef IU_CLI
+	DefaultErrorHandling::DebugMessage(msg,isResponseBody);
+#else
+	fprintf(stderr,"%s\r",msg.c_str());
+    getc(stdin);
+#endif
 }
 
 bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params)
@@ -376,6 +435,8 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		RegisterGlobal(InputDialog, "InputDialog");
 		RegisterGlobal(scriptGetFileMimeType, "GetFileMimeType");
 		RegisterGlobal(escapeJsonString, "JsonEscapeString");
+		RegisterGlobal(ShellOpenUrl, "ShellOpenUrl");
+		
 
 		using namespace IuCoreUtils;
 		RegisterGlobal(&CryptoUtils::CalcMD5HashFromFile, "md5_file");
@@ -386,7 +447,7 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		
 		srand(static_cast<unsigned int>(time(0)));
 
-		RegisterGlobal(DefaultErrorHandling::DebugMessage, "DebugMessage" );
+		RegisterGlobal(::DebugMessage, "DebugMessage" );
 
 		BindVariable(m_Object, &params, "ServerParams");
 

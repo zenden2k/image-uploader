@@ -400,13 +400,7 @@ LPTSTR fgetline(LPTSTR buf,int num,FILE *f)
 	return Result;
 }
 
-CString GetAppFolder()
-{
-	TCHAR szFileName[256],szPath[256];
-	GetModuleFileName(0, szFileName, 1023);
-	ExtractFilePath(szFileName, szPath);
-	return szPath;
-}
+
 
 BOOL FileExists(LPCTSTR FileName)
 {
@@ -611,19 +605,6 @@ bool IsVista()
 	return FALSE;
 }
 
-bool IsWindows64Bit()
-{
-	SYSTEM_INFO si;
-	PGNSI pGNSI;
-	ZeroMemory(&si, sizeof(SYSTEM_INFO));
-	// Call GetNativeSystemInfo if supported or GetSystemInfo otherwise.
-	pGNSI = (PGNSI) GetProcAddress(GetModuleHandle(_T("kernel32.dll")), 
-		"GetNativeSystemInfo");
-	if(NULL != pGNSI)
-		pGNSI(&si);
-	else GetSystemInfo(&si);
-	return si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;	
-}
 
 bool CheckFileName(const CString& fileName)
 {
