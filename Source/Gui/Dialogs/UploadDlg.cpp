@@ -32,6 +32,7 @@
 #include <Core/3rdpart/FastDelegate.h>
 #include <Core/Upload/UrlShorteningTask.h>
 #include <Core/Upload/FileQueueUploader.h>
+#include <Func/IuCommonFunctions.h>
 
 class CTempFilesDeleter
 {
@@ -236,7 +237,7 @@ DWORD CUploadDlg::Run()
 
 	Thumbnail thumb;
 	
-	if(!thumb.LoadFromFile(WCstringToUtf8(IU_GetDataFolder()+_T("\\Thumbnails\\")+Settings.ThumbSettings.FileName+_T(".xml"))))
+	if(!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\")+Settings.ThumbSettings.FileName+_T(".xml"))))
 	{
 		WriteLog(logError, _T("CThumbSettingsPage"), TR("Не могу загрузить файл миниатюры!"));
 		return ThreadTerminated();
@@ -843,20 +844,6 @@ void CUploadDlg::OnUploaderConfigureNetworkClient(NetworkManager *nm)
 	IU_ConfigureProxy(*nm);
 }
 
-
-const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url)
-{
-	CString wFileName = GetUniqFileName(IUTempFolder+Utf8ToWstring("captcha").c_str());
-
-	nm->setOutputFile(IuCoreUtils::WstringToUtf8((const TCHAR*)wFileName));
-	if(!nm->doGet(url))
-		return "";
-	CInputDialog dlg(_T("Image Uploader"), TR("Введите текст с картинки:"), CString(IuCoreUtils::Utf8ToWstring("").c_str()),wFileName);
-	nm->setOutputFile("");
-	if(dlg.DoModal()==IDOK)
-		return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
-	return "";
-}
 
 const std::string Impl_InputDialog(const std::string& text, const std::string& defaultValue)
 {

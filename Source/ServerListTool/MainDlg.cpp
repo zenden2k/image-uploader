@@ -13,6 +13,8 @@
 #include "Gui/Dialogs/InputDialog.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Gui/GuiTools.h"
+#include <Func/IuCommonFunctions.h>
+#include <Func/WinUtils.h>
 
 const CString MyBytesToString(__int64 nBytes )
 {
@@ -52,7 +54,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	CenterWindow(); // center the dialog on the screen
 	DlgResize_Init(false, true, 0); // resizable dialog without "griper"
 
-	CreateTempFolder();
+	IuCommonFunctions::CreateTempFolder();
 	// set icons
 	HICON hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
 		IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
@@ -83,9 +85,9 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	m_ListView.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 
 	
-	CString serversFileName = GetAppFolder() + "Data/" + _T("servers.xml");
-	CString testFileName = GetAppFolder() + "testfile.jpg";
-	if(xml.LoadFromFile( WCstringToUtf8((GetAppFolder() + "servertool.xml"))))
+	CString serversFileName = WinUtils::GetAppFolder() + "Data/" + _T("servers.xml");
+	CString testFileName = WinUtils::GetAppFolder() + "testfile.jpg";
+	if(xml.LoadFromFile( WCstringToUtf8((WinUtils::GetAppFolder() + "servertool.xml"))))
 	{
 		ZSimpleXmlNode root = xml.getRoot("ServerListTool");
 		std::string name = root.Attribute("FileName");
@@ -95,7 +97,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	
 	SetDlgItemText(IDC_TOOLFILEEDIT, testFileName);
 	Settings.LoadSettings();
-	iuPluginManager.setScriptsDirectory(WstrToUtf8((LPCTSTR)(GetAppFolder() + "Data/Scripts/")));
+	iuPluginManager.setScriptsDirectory(WstrToUtf8((LPCTSTR)(WinUtils::GetAppFolder() + "Data/Scripts/")));
 	if(!m_ServerList.LoadFromFile(serversFileName))
 	{
 		MessageBox(_T("Cannot load server list!"));
@@ -160,7 +162,7 @@ LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 		ZSimpleXmlNode root = savexml.getRoot("ServerListTool");
 		root.SetAttribute("FileName", WstrToUtf8((LPCTSTR)fileName));
 		root.SetAttribute("Time", int(GetTickCount()));
-		savexml.SaveToFile(WstrToUtf8((LPCTSTR)(GetAppFolder()+"servertool.xml")));
+		savexml.SaveToFile(WstrToUtf8((LPCTSTR)(WinUtils::GetAppFolder()+"servertool.xml")));
 		EndDialog(wID);
 	}
 	return 0;
@@ -196,7 +198,7 @@ DWORD CMainDlg::Run()
 		if(!ue->ImageHost && !CheckFileServers)
 			continue;
 
-		ServerSettingsStruct  ss = Settings.ServersSettings[Utf8ToWstring(ue->Name).c_str()];
+		ServerSettingsStruct  ss = Settings.ServersSettings[ue->Name];
 		if(!useAccounts)
 		{
 			ss.authData.DoAuth  = false;
@@ -449,10 +451,10 @@ bool CMainDlg::OnNeedStop()
 {
 	return m_NeedStop;
 }
-
+/*
 const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url)
 {
-	CString wFileName = GetUniqFileName(IUTempFolder+Utf8ToWstring("captcha").c_str());
+	CString wFileName = GetUniqFileName(IuCommonFunctions::IUTempFolder+Utf8ToWstring("captcha").c_str());
 
 	nm->setOutputFile(IuCoreUtils::WstringToUtf8((const TCHAR*)wFileName));
 	if(!nm->doGet(url))
@@ -462,7 +464,7 @@ const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url
 	if(dlg.DoModal()==IDOK)
 		return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
 	return "";
-}
+}*/
 
 const std::string Impl_InputDialog(const std::string& text, const std::string& defaultValue)
 {

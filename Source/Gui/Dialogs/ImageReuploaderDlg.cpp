@@ -35,6 +35,7 @@
 #include <Gui/Controls/CustomEditControl.h>
 #include <Func/LocalFileCache.h>
 #include <Func/Base.h>
+#include <Func/IuCommonFunctions.h>
 
 const TCHAR CImageReuploaderDlg::LogTitle[] = _T("Image Reuploader");
 
@@ -223,7 +224,7 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
 			CImageConverter imageConverter;
 			Thumbnail thumb;
 
-			if (!thumb.LoadFromFile(WCstringToUtf8(IU_GetDataFolder() + _T("\\Thumbnails\\") + Settings.ThumbSettings.FileName +
+			if (!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + Settings.ThumbSettings.FileName +
 				_T(".xml")))) {
 				WriteLog(logError, LogTitle, TR("Не могу загрузить файл миниатюры!"));
 			} else {

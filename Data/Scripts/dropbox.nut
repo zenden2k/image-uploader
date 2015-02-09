@@ -24,7 +24,7 @@ function getTimeStamp() {
 	local months = ["Jan","Feb","Mar","Apr","May","Jun","Jul", "Aug","Sep","Oct", "Nov","Dec"];
 	local dt = date(time(),'u');
 	local res = format("%s, %d %s %d %02d:%02d:%02d +0000",days[dt.wday],dt.day,months[dt.month],dt.year,dt.hour,dt.min,dt.sec );
-	print(res);
+	//print(res);
 	return res;
 }
 
@@ -61,7 +61,7 @@ function signRequest(url, token,tokenSecret) {
 		normalizedRequest += "&" + params[i].a + "=" + params[i].b;
 		
 	}
-	print("\r\n"+normalizedRequest);
+	//print("\r\n"+normalizedRequest);
 	local oauth_signature = /*sha1(normalizedRequest)*/appSecret + "&" + tokenSecret;
 	params.append({a="oauth_signature",b=oauth_signature});
 	params.sort(custom_compare);
@@ -77,8 +77,8 @@ function signRequest(url, token,tokenSecret) {
 		getStr += params[i].a + "="+params[i].b;
 	}
 	
-	print("\r\n"+oauth_signature);
-	print("\r\n"+authorizationString);
+	//print("\r\n"+oauth_signature);
+	//print("\r\n"+authorizationString);
 	
 	local sign = "POST";
 	sign += "&" + authStep1Url;
@@ -93,6 +93,14 @@ function sendOauthRequest(url, token,tokenSecret) {
 	nm.doPost("" );
 	return 0;
 }
+function openUrl(url) {
+	try{
+		return ShellOpenUrl(url);
+	}catch(ex){}
+
+	system("start "+ reg_replace(url,"&","^&") );
+}
+
 function Login() {
 	oauth_token_secret = ServerParams.getParam("oauth_token_secret");
 	oauth_token = ServerParams.getParam("oauth_token");
@@ -109,7 +117,7 @@ function Login() {
 	local temp_oauth_token_secret = regex_simple(data, "oauth_token_secret=([^&]+)", 0);
 	local temp_oauth_token = regex_simple(data, "oauth_token=([^&]+)", 0);
 	
-	system("start https://www.dropbox.com/1/oauth/authorize?oauth_token=" + temp_oauth_token);
+	openUrl("https://www.dropbox.com/1/oauth/authorize?oauth_token=" + temp_oauth_token);
 	
 	msgBox("Please allow Image Uploader to connect with your Dropbox (in web browser) and then press OK.\r\n\r\n"+
 		"Пожалуйста, разрешите Image Uploader подключиться к вашему аккаунту Dropbox (нажмите кнопку Allow в запущенном браузере), и после этого нажмите OK."

@@ -25,7 +25,7 @@
 #include "Func/Settings.h"
 #include "LogWindow.h"
 #include "Gui/GuiTools.h"
-
+#include <Func/WinUtils.h>
 // CGeneralSettings
 CGeneralSettings::CGeneralSettings()
 {
@@ -43,7 +43,7 @@ int CGeneralSettings::GetNextLngFile(LPTSTR szBuffer, int nLength)
 	
 	if(!findfile)
 	{
-		findfile = FindFirstFile(GetAppFolder() + "Lang\\*.lng", &wfd);
+		findfile = FindFirstFile(WinUtils::GetAppFolder() + "Lang\\*.lng", &wfd);
 		if(!findfile) goto error;
 	}
 	else if(!FindNextFile(findfile,&wfd)) goto error;
@@ -141,7 +141,7 @@ LRESULT CGeneralSettings::OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, 
 
 	CFileDialog fd(true, 0, 0, 4|2, Buf, m_hWnd);
 	CString s;
-	s = GetAppFolder();
+	s = WinUtils::GetAppFolder();
 	fd.m_ofn.lpstrInitialDir = s;
 	if ( fd.DoModal() != IDOK || !fd.m_szFileName ) return 0;
 

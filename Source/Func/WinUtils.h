@@ -77,6 +77,11 @@ namespace WinUtils {
 		LPCTSTR szDefString = NULL,
 		TCHAR cSeparator = _T(',') /* Character to be separator in list */);
 	const CString StringSection(const CString& str,TCHAR sep, int index);
+	bool IsWindows64Bit();
+
+	void DeleteDir2(LPCTSTR Dir);
+	CString GetAppFolder();
+
 };
 
 #endif

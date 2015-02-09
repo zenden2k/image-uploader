@@ -752,8 +752,8 @@ bool GetClipboardHtml(CString& text, CString& outSourceUrl) {
 			}
 		}
 		if ( startFragment != -1 && endFragment != -1 ) {
-			text = Utf8ToWCstring( ansiString.substr(startFragment, endFragment - startFragment) );
-			outSourceUrl = Utf8ToWCstring(sourceUrl);
+			text = IuCoreUtils::Utf8ToWstring( ansiString.substr(startFragment, endFragment - startFragment) ).c_str();
+			outSourceUrl = IuCoreUtils::Utf8ToWstring(sourceUrl).c_str();
 			result = true;
 		}
 		
@@ -765,7 +765,6 @@ bool GetClipboardHtml(CString& text, CString& outSourceUrl) {
 
 	return false;
 }
-
 
 
 };

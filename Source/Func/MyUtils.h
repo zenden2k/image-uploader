@@ -78,7 +78,6 @@ bool IsStrInList(LPCTSTR szExt,LPCTSTR szList);
 int MyGetFileSize(LPCTSTR FileName);
 
 LPTSTR fgetline(LPTSTR buf,int num,FILE *f);
-CString GetAppFolder();
 BOOL FileExists(LPCTSTR FileName);
 const CString TrimString(const CString& source, int nMaxLen);
 
@@ -101,7 +100,6 @@ LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern);
 	void ShowX(LPCTSTR str,int line,LPCTSTR n);
 	#define ShowVar(n) ShowX(_T(#n),__LINE__,n)
 //#endif
-const CString IU_GetDataFolder();
 #ifndef IU_SHELLEXT
 
 
@@ -132,6 +130,6 @@ static CGlobalAtom ga;
 
 bool IsDirectory(LPCTSTR szFileName);
 bool IsVista();
-bool IsWindows64Bit();
+
 FILE * fopen_utf8(const char * filename, const char * mode);
 bool CheckFileName(const CString& fileName);

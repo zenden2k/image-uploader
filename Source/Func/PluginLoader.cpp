@@ -33,7 +33,6 @@
 CPluginManager::CPluginManager() {
 	SquirrelVM::Init();
 	SquirrelVM::PushRootTable();	
-	sqstd_register_systemlib( SquirrelVM::GetVMPtr() );
 }
 
 CScriptUploadEngine* CPluginManager::getPlugin(Utf8String name, ServerSettingsStruct& params, bool UseExisting) {

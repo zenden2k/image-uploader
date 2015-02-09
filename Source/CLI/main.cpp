@@ -21,6 +21,7 @@
 #include <math.h>
 #include <curl/curl.h>
 #include <iostream>
+#include <fstream>
 #include "Core/Upload/Uploader.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Network/NetworkManager.h"
@@ -29,23 +30,48 @@
 #include "Core/OutputCodeGenerator.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Core/Utils/StringUtils.h"
+#include "Func/Settings.h"
+#ifdef _WIN32
+#include "Func/UpdatePackage.h"
+#include <fcntl.h>
+#include <io.h>
+#include <stdio.h>
+#include <Func/IuCommonFunctions.h>
+#else
+#include <sys/stat.h>
+#endif
+#include "versioninfo.h"
 
-#define IU_CLI_VER "0.1"
+#define IU_CLI_VER "0.2"
 #ifdef _WIN32
 std::string dataFolder = "Data/";
 #else
-std::string dataFolder = "/opt/imageuploader/";
+std::string dataFolder = "/usr/share/imageuploader/";
 #endif
 
 std::vector<std::string> filesToUpload;
 std::string serverName;
 std::string login;
 std::string password;
+std::string folderId;
+std::string proxy;
+int  proxyPort;
+int proxyType; /* CURLPROXY_HTTP, CURLPROXY_SOCKS4, CURLPROXY_SOCKS4A, 
+			   CURLPROXY_SOCKS5, CURLPROXY_SOCKS5_HOSTNAME */
+std::string proxyUser;
+std::string proxyPassword;
+
 CUploadEngineList list;
+
 
 ZOutputCodeGenerator::CodeType codeType = ZOutputCodeGenerator::ctClickableThumbnails;
 ZOutputCodeGenerator::CodeLang codeLang = ZOutputCodeGenerator::clPlain;
+bool autoUpdate = true;
 
+
+#ifdef _WIN32
+void DoUpdates(bool force = false);
+#endif
 bool UploadFile(CUploader &uploader, std::string fileName, /*[out]*/ ZUploadObject &uo)
 {
    std::cerr<<" Uploading file '";
@@ -73,7 +99,26 @@ void destr()
 
 }
 
-void OnProgress(InfoProgress info)
+
+void IU_ConfigureProxy(NetworkManager& nm)
+{
+	if ( !proxy.empty())
+	{
+		
+		nm.setProxy(proxy,proxyPort, proxyType);
+
+		if( !proxyUser.empty()) {
+			nm.setProxyUserPassword(proxyUser,proxyPassword);
+		}
+	}
+	nm.setUploadBufferSize(Settings.UploadBufferSize);
+}
+
+void OnConfigureNM(NetworkManager* nm) {
+	IU_ConfigureProxy(*nm);
+}
+
+void OnProgress(CUploader* uploader, InfoProgress info)
 {
     int totaldotz=40;
     if(info.Total == 0)
@@ -159,30 +204,52 @@ void OnError(ErrorInfo errorInfo)
 		
 }
 
-void PrintUsage()
+void PrintUsage(bool help = false)
 {
    std::cerr<<"USAGE:  "<<"imgupload [OPTIONS] filename1 filename2 ..."<<std::endl;
-   std::cerr<<"Use '--help' option for more detailed information."<<std::endl;
+   if ( !help ) {
+	std::cerr<<"Use '--help' option for more detailed information."<<std::endl;
+   }
 }
 
 void PrintHelp()
 {
-   std::cerr<<"Available options:"<<std::endl;
-   std::cerr<<" --list   (print servers list)"<<std::endl;
-   std::cerr<<" --server <server_name>"<<std::endl;
-   std::cerr<<" --login <login>"<<std::endl;
-   std::cerr<<" --password <pass>"<<std::endl;
-   std::cerr<<" --codelang <bbcode|html|plain> (Default: plain)"<<std::endl;
-   std::cerr<<" --codetype <TableOfThumbnails|ClickableThumbnails|Images|Links>"<<std::endl;
+   std::cerr<<"\r\nAvailable options:"<<std::endl;
+   std::cerr<<" -l   Prints server list"<<std::endl;
+   std::cerr<<" -s <server_name>"<<std::endl;
+   std::cerr<<" -u <username>"<<std::endl;
+   std::cerr<<" -p <password>"<<std::endl;
+   std::cerr<<" -cl <bbcode|html|plain> (Default: plain)"<<std::endl;
+   std::cerr<<" -ct <TableOfThumbnails|ClickableThumbnails|Images|Links>"<<std::endl;
+   std::cerr<<" -fl <folder_id> ID of remote folder (supported by some servers)\r\n"
+	   << "     Note that this is not the folder\'s name! \r\n"
+	   << "     How to obtain it: open file 'servers.xml' in text editor, \r\n"
+	   << "     find your server under 'ServersParams' node,\r\n"
+	   << "     and copy value of the '_FolderID' attribute"<<
+	   std::endl;
+   std::cerr<<" -pr <x.x.x.x:xxxx> Proxy address "<<std::endl;
+   std::cerr<<" -pt <http|socks4|socks4a|socks5|socks5dns> Proxy type  (default http)"<<std::endl;
+   std::cerr<<" -pu <username> Proxy username"<<std::endl;
+   std::cerr<<" -pp <password> Proxy password"<<std::endl;
+#ifdef _WIN32
+    std::cerr<<" --disable-update Disable auto-updating servers.xml"<<std::endl;
+	std::cerr<<std::endl<<" -up   Update servers.xml\r\n"
+		<<"     the 'Data' directory must be writable, otherwise update will fail"
+		<<std::endl;
+#endif
 }
 
 void PrintServerList()
 {
-   for(int i=0; i<list.count(); i++)
-   {
+	for(int i=0; i<list.count(); i++) {
+   
+	   if ( list.byIndex(i)->Type == CUploadEngineData::TypeUrlShorteningServer ) {
+		   continue;
+	   }
       std::cout<<list.byIndex(i)->Name<<std::endl;
    }
 }
+
 
 bool parseCommandLine(int argc, char *argv[])
 {
@@ -197,12 +264,12 @@ bool parseCommandLine(int argc, char *argv[])
       char *opt = argv[i];
       if(!IuStringUtils::stricmp(opt, "--help"))
       {
-         PrintUsage();
+         PrintUsage(true);
          PrintHelp();
          i++;
          continue;
       }
-      else if(!IuStringUtils::stricmp(opt, "--server"))
+      else if(!IuStringUtils::stricmp(opt, "-s"))
       {
          if(i+1 == argc)
             return false;
@@ -210,13 +277,13 @@ bool parseCommandLine(int argc, char *argv[])
          i++;
          continue;
       }
-      else if(!IuStringUtils::stricmp(opt, "--list"))
+      else if(!IuStringUtils::stricmp(opt, "-l"))
       {
         PrintServerList();
          i++;
          continue;
       }
-      else if(!IuStringUtils::stricmp(opt, "--codelang"))
+      else if(!IuStringUtils::stricmp(opt, "-cl"))
       {
          if(i+1 == argc)
             return false;
@@ -230,7 +297,7 @@ bool parseCommandLine(int argc, char *argv[])
          i++;
          continue;
       }
-      else if(!IuStringUtils::stricmp(opt, "--codetype"))
+      else if(!IuStringUtils::stricmp(opt, "-ct"))
       {
          if(i+1 == argc)
             return false;
@@ -246,7 +313,7 @@ bool parseCommandLine(int argc, char *argv[])
          i++;
          continue;
       }
-      else if(!IuStringUtils::stricmp(opt, "--login"))
+      else if(!IuStringUtils::stricmp(opt, "-u"))
       {
          if(i+1 == argc)
             return false;
@@ -254,14 +321,90 @@ bool parseCommandLine(int argc, char *argv[])
          i++;
          continue;
       }
-      else if(!IuStringUtils::stricmp(opt, "--password"))
+      else if(!IuStringUtils::stricmp(opt, "-p"))
       {
          if(i+1 == argc)
             return false;
          password = argv[++i];
          i++;
          continue;
-      }
+	  }
+	  else if(!IuStringUtils::stricmp(opt, "-fl"))
+	  {
+		  if(i+1 == argc)
+			  return false;
+		  folderId = argv[++i];
+		  i++;
+		  continue;
+	  }
+	  else if(!IuStringUtils::stricmp(opt, "-pr"))
+	  {
+		  if(i+1 == argc)
+			  return false;
+		  proxy = argv[++i];
+		  std::vector<std::string> tokens;
+		  IuStringUtils::Split(proxy,":",tokens,2);
+		  if ( tokens.size() > 1) {
+			proxy = tokens[0];
+			proxyPort = IuCoreUtils::stringToint64_t(tokens[1]);
+		  }
+		  i++;
+		  continue;
+	  }
+	  else if(!IuStringUtils::stricmp(opt, "-pu"))
+	  {
+		  if(i+1 == argc)
+			  return false;
+		  proxyUser = argv[++i];
+		  
+		  i++;
+		  continue;
+	  }
+	  else if(!IuStringUtils::stricmp(opt, "-pp"))
+	  {
+		  if(i+1 == argc)
+			  return false;
+		  proxyPassword = argv[++i];
+
+		  i++;
+		  continue;
+	  }
+	  else if(!IuStringUtils::stricmp(opt, "-pt"))
+	  {
+		  if(i+1 == argc)
+			  return false;
+		  std::map<std::string, int> types;
+		  std::string type = argv[++i];
+		  types["http"] = CURLPROXY_HTTP;
+		  types["socks4"] = CURLPROXY_SOCKS4;
+		  types["socks4a"] = CURLPROXY_SOCKS4A;
+		  types["socks5"] = CURLPROXY_SOCKS5;
+		  types["socks5dns"] = CURLPROXY_SOCKS5_HOSTNAME;
+		  std::map<std::string, int>::const_iterator it = types.find(type);
+		  if ( it != types.end() ) {
+			proxyType = it->second; 
+		  } else {
+			  std::cerr<<"Invalid proxy type"<<std::endl;
+		  }
+
+		  i++;
+		  continue;
+	  }
+	  #ifdef _WIN32
+	  else if(!IuStringUtils::stricmp(opt, "-up"))
+	  {
+		 DoUpdates(true);
+		  i++;
+		  return 0;
+	  }
+	  else if(!IuStringUtils::stricmp(opt, "--disable-update"))
+	  {
+		  autoUpdate = false;
+			  i++;
+		           continue;
+	  }
+
+#endif
 		
 		 filesToUpload.push_back(IuCoreUtils::SystemLocaleToUtf8(argv[i]));
       //else if()
@@ -286,13 +429,18 @@ CUploadEngineData* getServerByName(std::string name)
 }
 
 CAbstractUploadEngine *lastEngine = 0;
-ServerSettingsStruct s;
+//ServerSettingsStruct s;
 CAbstractUploadEngine* getUploadEngineByData(CUploadEngineData * data)
 {
+	ServerSettingsStruct& s = Settings.ServerByUtf8Name(data->Name);
+	
+
 	s.authData.Password = password;
 	s.authData.Login = login;
 	if(!login.empty())
 	s.authData.DoAuth = true;
+
+	s.setParam("FolderID", folderId);
 
       if(lastEngine && lastEngine->getUploadData() == data)
       {
@@ -325,6 +473,7 @@ int func()
    CUploader uploader;
 
    uploader.onProgress.bind(OnProgress);
+   uploader.onConfigureNetworkManager.bind(OnConfigureNM);
    uploader.onErrorMessage.bind(OnError);
   CUploadEngineData* uploadEngineData = 0;
   if(!serverName.empty())
@@ -344,7 +493,7 @@ int func()
 
 	if(uploadEngineData->NeedAuthorization == 2 && login.empty())
 	{
-		std::cerr<<"Server '"<<uploadEngineData->Name<<"' requires authentication! Use --login and --password options."<<std::endl;
+		std::cerr<<"Server '"<<uploadEngineData->Name<<"' requires authentication! Use -u and -p options."<<std::endl;
 		return -1;
 	}
 
@@ -370,37 +519,148 @@ int func()
   ZOutputCodeGenerator generator;
   generator.setLang(codeLang);
   generator.setType(codeType);
-  std::cerr<<std::endl<<"Result:"<<std::endl;
-  std::cout<<generator.generate(uploadedList);
-  std::cerr<<std::endl;
+  if ( !uploadedList.empty() ) {
+	  std::cerr<<std::endl<<"Result:"<<std::endl;
+	  std::cout<<generator.generate(uploadedList);
+	  std::cerr<<std::endl;
+  }
 	return res;	
 }
 
-int main(int argc, char *argv[])
-{
-    setlocale(LC_ALL, "");
-  
-   if(IuCoreUtils::FileExists("Data/servers.xml"))
-	{
-		dataFolder = "Data/";
+#ifdef _WIN32
+
+
+class Updater: public CUpdateStatusCallback {
+	public:
+
+		Updater() {
+			m_UpdateManager.setUpdateStatusCallback(this);
+		}
+	void updateServers() {
+		
+		
+		std::cout<<"Checking for updates..."<<std::endl;
+		if (!m_UpdateManager.CheckUpdates()) {
+			std::cout<<"Error while updating"<<std::endl;
+			return;
+		}
+
+		Settings.LastUpdateTime = static_cast<int>(time(0));
+		if (m_UpdateManager.AreUpdatesAvailable())
+		{
+			for (size_t i = 0; i < m_UpdateManager.m_updateList.size(); i++)
+			{
+				std::cerr<<"Beginning to update: "<< IuCoreUtils::WstringToUtf8((LPCTSTR)m_UpdateManager.m_updateList[i].displayName())<<std::endl;
+			}
+
+			m_UpdateManager.DoUpdates();
+			if (m_UpdateManager.successPackageUpdatesCount())
+			{
+				std::cerr<<"Succesfully updated!";
+			}
+		} 
+		else
+		{
+			
+			std::cerr<<"All is up-to-date"<<std::endl;
+		}
+
 	}
-   std::cerr<<"Zenden Image Uploader console utility v"<< IU_CLI_VER <<" (based on IU v1.2.7)"<<std::endl;
+	virtual void updateStatus(int packageIndex, const CString& status) {	
+		//std::wcout << (LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName() <<" : "<< (LPCTSTR)status<<std::endl;
+		fprintf(stderr, "%s : %s", IuCoreUtils::WstringToUtf8((LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName()).c_str(), IuCoreUtils::WstringToUtf8((LPCTSTR)status).c_str());
+		fprintf(stderr, "\r");
+		fflush(stderr);
+		//std::cout<< "\r"<<IuCoreUtils::WstringToUtf8((LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName()) <<" : "<< IuCoreUtils::WstringToUtf8((LPCTSTR)status);
+	}
+protected:
+	CUpdateManager m_UpdateManager;
+};
+
+#ifdef _WIN32
+void DoUpdates(bool force) {
+	if(force || time(0) - Settings.LastUpdateTime > 3600*24*7 /* 7 days */) {
+		IuCommonFunctions::CreateTempFolder();
+		Updater upd;
+		upd.updateServers();
+		IuCommonFunctions::ClearTempFolder(IuCommonFunctions::IUTempFolder);
+		Settings.LastUpdateTime = time(0);
+	}
+
+}
+#endif
+
+char ** convertArgv(int argc, _TCHAR* argvW[]) {
+	char ** result = new char *[argc];
+	for ( int i = 0; i < argc; i++) {
+		std::string unicodeString = IuCoreUtils::WstringToUtf8(argvW[i]).c_str();
+		char *buffer = new char[unicodeString.length()+1];
+		strcpy(buffer, unicodeString.c_str());
+		result[i] = buffer;
+	}
+	return result;
+}
+
+int _tmain(int argc, _TCHAR* argvW[]) {	
+	char **argv = convertArgv(argc, argvW);
+	/*UINT oldcp = GetConsoleOutputCP();
+	SetConsoleOutputCP(CP_UTF8);*/
+	//_setmode(_fileno(stdout), _O_U16TEXT);
+#else
+int main(int argc, char *argv[]){
+#endif
+
+	int res  = 0;
+	std::string appDirectory = IuCoreUtils::ExtractFilePath(argv[0]);
+    std::string settingsFolder;
+    setlocale(LC_ALL, "");
+
+   if(IuCoreUtils::FileExists(appDirectory + "/Data/servers.xml"))
+	{
+		dataFolder = appDirectory+"/Data/";
+        settingsFolder = dataFolder;
+    }
+#ifndef _WIN32
+   else {
+dataFolder = "/usr/share/imgupload/";
+   }
+settingsFolder = getenv("HOME")+std::string("/.config/imgupload/");
+mkdir(settingsFolder.c_str(), 0700);
+
+#endif
+
+   std::cerr<<"Zenden Image Uploader console utility v"<< IU_CLI_VER <<" (based on IU v"<<_APP_VER<<" build "<<BUILD<<")"<<std::endl;
    if(! list.LoadFromFile(dataFolder + "servers.xml"))
    {
-      std::cerr<<"Cannot load server list!";
+	   std::cerr<<"Cannot load server list!"<<std::endl;
    }
+    Settings.LoadSettings(settingsFolder,"settings_cli.xml");
 
+   
    if(!parseCommandLine(argc, argv))
    {
       return 0;
    }
    if(!filesToUpload.size())
          return 0;
+
+#ifdef _WIN32
+   if (autoUpdate) {
+	   DoUpdates();
+   }
+#endif
    CScriptUploadEngine::InitScriptEngine();
 
-  int res = func();
+  res = func();
+
+  if ( !Settings.SaveSettings() ) {
+	std::cerr<<"Cannot save settings!"<<std::endl;
+  }
+  
    delete lastEngine;
 	CScriptUploadEngine::DestroyScriptEngine();
-
+#ifdef _WIN32
+//SetConsoleOutputCP(oldcp);
+#endif
   return res;
 }

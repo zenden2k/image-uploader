@@ -23,6 +23,9 @@
 #include <ctype.h>
 #include <cstdio>
 #include <algorithm>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 namespace IuStringUtils {
 

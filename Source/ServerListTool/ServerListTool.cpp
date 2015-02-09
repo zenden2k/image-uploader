@@ -6,6 +6,7 @@
 #include <Gdiplus.h>
 #include "Func/Common.h"
 #include <GdiPlus.h>
+#include <Func/IuCommonFunctions.h>
 
 CAppModule _Module;
 
@@ -40,6 +41,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
 	_Module.Term();
 	SquirrelVM::Shutdown();
 	::CoUninitialize();
-	ClearTempFolder(IUTempFolder);
+	IuCommonFunctions::ClearTempFolder(IuCommonFunctions::IUTempFolder);
 	return nRet;
 }

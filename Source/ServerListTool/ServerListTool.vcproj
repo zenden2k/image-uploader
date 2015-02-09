@@ -869,6 +869,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Func\IuCommonFunctions.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Func\LangClass.cpp"
 					>
 				</File>

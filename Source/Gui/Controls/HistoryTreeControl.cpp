@@ -24,7 +24,7 @@
 #include "Func/Common.h"
 #include "Func/Base.h"
 #include "Gui/GuiTools.h"
-
+#include <Func/IuCommonFunctions.h>
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl()
 {
@@ -426,7 +426,7 @@ HICON CHistoryTreeControl::getIconForServer(const CString& serverName)
 		return m_serverIconCache[serverName];
 	else
 
-	ico = (HICON)LoadImage(0,IU_GetDataFolder()+_T("Favicons\\")+serverName+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
+		ico = (HICON)LoadImage(0,IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+serverName+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
 	m_serverIconCache[serverName] = ico;
 	return ico;		
 }

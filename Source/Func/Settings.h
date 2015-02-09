@@ -23,25 +23,31 @@
 
 #include <map>
 #include <string>
-#include "Core/ImageConverter.h"
 #include "Core/SettingsManager.h"
-#include "atlheaders.h"
-#include "Func/langclass.h"
-#include "Func/pluginloader.h"
-#include "Func/Common.h"
-#include "Gui/Dialogs/HotkeySettings.h"
+#include <Core/Upload/UploadEngine.h>
+#ifndef IU_CLI
+    #include "Func/Settings.h"
+	#include "atlheaders.h"
+	#include "Func/langclass.h"
+	#include "Func/pluginloader.h"
+	#include "Func/Common.h"
+	#include "Gui/Dialogs/HotkeySettings.h"
+    #include "Core/ImageConverter.h"
 
-#define TRAY_SCREENSHOT_UPLOAD 0
-#define TRAY_SCREENSHOT_CLIPBOARD 1
-#define TRAY_SCREENSHOT_SHOWWIZARD 2
-#define TRAY_SCREENSHOT_ADDTOWIZARD 3
-
+	#define TRAY_SCREENSHOT_UPLOAD 0
+	#define TRAY_SCREENSHOT_CLIPBOARD 1
+	#define TRAY_SCREENSHOT_SHOWWIZARD 2
+	#define TRAY_SCREENSHOT_ADDTOWIZARD 3
+#endif
 struct UploadProfileStruct
 {
-	BOOL GenThumb;
+	bool GenThumb;
    bool KeepAsIs;
 	int ServerID, QuickServerID;
 };
+
+#ifndef IU_CLI
+
 
 struct FullUploadProfile
 {
@@ -157,23 +163,40 @@ struct HistorySettingsStruct
 struct ImageReuploaderSettingsStruct {
 	bool PasteHtmlOnCtrlV;
 };
+#endif
 
 class CSettings
 {
 	public:
+
+		int FileRetryLimit;
+		int ActionRetryLimit;
+				UploadProfileStruct UploadProfile;
+		
+#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
+
+		// Поля данных
 		bool ExplorerContextMenu;
 		bool ExplorerContextMenu_changed;
 		bool ExplorerVideoContextMenu;
 		bool UseDirectLinks;
-		// Поля данных
 		CString DataFolder;
 		CString m_SettingsDir;
 		CString Language;
 		bool ExplorerCascadedMenu;
-		#ifndef IU_SHELLEXT
-#ifndef IU_SERVERLISTTOOL
-		CHotkeyList Hotkeys;
+		
+void FindDataFolder();
 #endif
+
+#ifndef IU_CLI
+ConnectionSettingsStruct ConnectionSettings;
+#endif
+
+std::map <std::string, ServerSettingsStruct> ServersSettings;
+bool AutoShowLog;
+#ifndef IU_SERVERLISTTOOL
+#if !defined(IU_CLI)
+		CHotkeyList Hotkeys;
 		bool Hotkeys_changed;
 		bool ShowTrayIcon;
 		bool ShowTrayIcon_changed;
@@ -184,69 +207,84 @@ class CSettings
 		TrayIconSettingsStruct TrayIconSettings;
 		ThumbSettingsStruct ThumbSettings;
 		VideoSettingsStruct VideoSettings;
-		ConnectionSettingsStruct ConnectionSettings;
+
 		ScreenshotSettingsStruct ScreenshotSettings;
 		HistorySettingsStruct HistorySettings;
 		ImageReuploaderSettingsStruct ImageReuploaderSettings;
 		bool ConfirmOnExit;
 		bool ShowUploadErrorDialog;
-		int FileRetryLimit;
-		int ActionRetryLimit;
+
 		bool UseTxtTemplate;
-		bool AutoShowLog;
+		
 		bool AutoCopyToClipboard;
 		bool WatchClipboard;
 		int CodeLang;
 		int CodeType;
 		bool ParseSubDirs;
 		bool UseProxyServer;
-		int LastUpdateTime;
-    UploadProfileStruct UploadProfile;
+		
+
 		static COLORREF DefaultLinkColor;
 		bool SendToContextMenu;
 		bool SendToContextMenu_changed;
 		bool QuickUpload;
-		std::map <CString, ServerSettingsStruct> ServersSettings;
+
 		CString ImageEditorPath;
 		CString VideoFolder,ImagesFolder;
-		bool SaveSettings();
-      std::map<CString, ImageConvertingParams> ConvertProfiles;
-      CString CurrentConvertProfileName;
+
+		std::map<CString, ImageConvertingParams> ConvertProfiles;
+		CString CurrentConvertProfileName;
 		CString getShellExtensionFileName() const;
-#endif IU_SHELLEXT
+#endif
+		
+#endif 
+
+#if !defined(IU_CLI)
 	private:
 		TCHAR m_Directory[MAX_PATH];
+#endif
 		
 	public:
 		CSettings();
 		~CSettings();
-		void Uninstall();
-		void FindDataFolder();
-		bool LoadSettings(LPCTSTR szDir=NULL, bool LoadFromRegistry  = true);
+
+		
+		bool LoadSettings(std::string szDir="", std::string fileName = "", bool LoadFromRegistry  = true);
+		bool SaveSettings();
+		bool LoadAccounts(ZSimpleXmlNode root);
+		bool SaveAccounts(ZSimpleXmlNode root);
 	int UploadBufferSize;
+#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
+		void Uninstall();
 	void EnableAutostartup(bool enable);
 	int ServerID, QuickServerID;
 	void ApplyRegSettingsRightNow();
-	bool LoadAccounts(ZSimpleXmlNode root);
-	bool SaveAccounts(ZSimpleXmlNode root);
+	
    bool LoadConvertProfiles(ZSimpleXmlNode root);
    bool LoadConvertProfile(const CString& name, ZSimpleXmlNode profileNode);
 	bool SaveConvertProfiles(ZSimpleXmlNode root);
    void BindConvertProfile(SettingsNode& mgr,  ImageConvertingParams &params);
 #ifndef IU_SHELLEXT
-	ServerSettingsStruct& ServerByName(CString name);
-	ServerSettingsStruct& ServerByUtf8Name(std::string name);
+   ServerSettingsStruct& ServerByName(CString name);
+   
 #endif
+   
 	int FileServerID;
 	CString ServerName, QuickServerName,FileServerName, UrlShorteningServer;
-	SettingsManager mgr_;
-	CString SettingsFolder;
+	
+	
 	static const TCHAR VideoEngineDirectshow[];
 	static const TCHAR VideoEngineFFmpeg[];
 	static const TCHAR VideoEngineAuto[];
 	static bool IsFFmpegAvailable();
-
+	
 	CString prepareVideoDialogFilters();
+#endif
+	ServerSettingsStruct& ServerByUtf8Name(std::string name);
+	SettingsManager mgr_;
+	std::string fileName_; 
+	std::string SettingsFolder;
+	unsigned int LastUpdateTime;
 };
 
 extern CSettings Settings;

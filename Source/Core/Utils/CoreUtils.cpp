@@ -157,11 +157,11 @@ Utf8String ExtractFileExt(const Utf8String fileName)
 Utf8String ExtractFilePath(const Utf8String fileName)
 {
 	int i, len = fileName.length();
-	for(i = len; i >= 0; i--)
+	for(i = len-1; i >= 0; i--)
 	{
 		if(fileName[i] == '\\' || fileName[i]=='/')
 		{
-			return fileName.substr(0, i);
+			return fileName.substr(0, i+1);
 		}
 			
 	}

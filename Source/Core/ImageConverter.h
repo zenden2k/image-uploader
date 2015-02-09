@@ -6,25 +6,7 @@
 #include "Images/Thumbnail.h"
 #include "Core/Utils/CoreTypes.h"
 
-template <class T> struct EnumWrapper
-{
-	T value_;
-	operator T&()
-	{
-		return value_;
-	}
 
-	T& operator =(const T& value)
-	{
-		value_ = value;
-		return *this;
-	}
-
-	bool operator==(const T value)
-	{
-		return value_ == value;
-	}
-};
 
 struct ImageConvertingParams
 {

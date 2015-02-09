@@ -25,7 +25,7 @@
 #include <vector>
 
 #include <curl/curl.h>
-#include <curl/types.h>
+//#include <curl/types.h>
 #include <zthread/Mutex.h>
 
 #include "Core/Utils/CoreUtils.h"

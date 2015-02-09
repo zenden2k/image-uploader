@@ -6,7 +6,11 @@
 #include <memory>
 
 typedef std::string Utf8String;
+#ifdef _MSC_VER
 namespace std_tr = std::tr1;
+#else
+namespace std_tr = std;
+#endif
 
 /*#ifdef _MSC_VER
    typedef __int64 int64_t;
@@ -21,8 +25,6 @@ namespace std_tr = std::tr1;
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \
 	TypeName(const TypeName&);               \
 	void operator=(const TypeName&)
-
-#endif
 
 
 // The ARRAY_SIZE(arr) macro returns the # of elements in an array arr.
@@ -51,3 +53,25 @@ char (&ArraySizeHelper(const T (&array)[N]))[N];
 #endif
 
 #define ARRAY_SIZE(array) (sizeof(ArraySizeHelper(array)))
+
+template <class T> struct EnumWrapper
+{
+	T value_;
+	operator T&()
+	{
+		return value_;
+	}
+
+	T& operator =(const T& value)
+	{
+		value_ = value;
+		return *this;
+	}
+
+	bool operator==(const T value)
+	{
+		return value_ == value;
+	}
+};
+
+#endif

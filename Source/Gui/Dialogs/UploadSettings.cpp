@@ -30,6 +30,7 @@
 #include "Gui/GuiTools.h"
 #include <Gui/IconBitmapUtils.h>
 #include <Func/WinUtils.h>
+#include <Func/IuCommonFunctions.h>
 
 CUploadSettings::CUploadSettings(CMyEngineList * EngineList):сonvert_profiles_(Settings.ConvertProfiles)
 {
@@ -236,7 +237,7 @@ bool CUploadSettings::OnNext()
 	if(m_nImageServer != -1)
 	{
 		CUploadEngineData *ue = m_EngineList->byIndex(m_nImageServer);
-		if(ue->NeedAuthorization ==2 && !Settings.ServersSettings[Utf8ToWstring(ue->Name).c_str()].authData.DoAuth)
+		if(ue->NeedAuthorization ==2 && !Settings.ServersSettings[ue->Name].authData.DoAuth)
 		{ 
 			CString errorMsg;
 			errorMsg.Format(TR("Загрузка файлов на сервер '%s' невозможна без наличия учетной записи.\nПожалуйста, зарегистрируйтесь на данном сервере и укажите ваши регистрационные данные в программе."), (LPCTSTR)Utf8ToWCstring(ue->Name));
@@ -247,7 +248,7 @@ bool CUploadSettings::OnNext()
 	if(m_nFileServer != -1)
 	{
 		CUploadEngineData *ue2 = m_EngineList->byIndex(m_nFileServer);
-		if(ue2->NeedAuthorization == 2 && !Settings.ServersSettings[Utf8ToWstring(ue2->Name).c_str()].authData.DoAuth)
+		if(ue2->NeedAuthorization == 2 && !Settings.ServersSettings[ue2->Name].authData.DoAuth)
 		{
 			CString errorMsg;
 			errorMsg.Format(TR("Вы не задали параметры авторизации на сервере '%s'!"), (LPCTSTR)Utf8ToWstring(ue2->Name).c_str());
@@ -300,7 +301,7 @@ LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND h
 	int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
 	CLoginDlg dlg(m_EngineList->byIndex(nServerIndex));
 
-	ServerSettingsStruct & ss = Settings.ServersSettings[Utf8ToWstring(m_EngineList->byIndex(nServerIndex)->Name).c_str()];
+	ServerSettingsStruct & ss = Settings.ServersSettings[m_EngineList->byIndex(nServerIndex)->Name];
 	std::string UserName = ss.authData.Login; 
 	bool prevAuthEnabled = ss.authData.DoAuth;
 	if( dlg.DoModal(m_hWnd) == IDOK)
@@ -323,7 +324,7 @@ LRESULT CUploadSettings::OnBnClickedUseThumbTemplate(WORD /*wNotifyCode*/, WORD 
 {
 	BOOL checked = SendDlgItemMessage(IDC_USETHUMBTEMPLATE, BM_GETCHECK, 0, 0);
 
-	if(checked && !FileExists(IU_GetDataFolder() + _T("thumb.png")) && wID == IDC_USETHUMBTEMPLATE)
+	if(checked && !FileExists(IuCommonFunctions::GetDataFolder() + _T("thumb.png")) && wID == IDC_USETHUMBTEMPLATE)
 	{
 		MessageBox(TR("Невозможно использовать шаблон для миниатюры. Файл шаблона \"Data\\Thumb.png\" не найден."), APPNAME, MB_ICONWARNING);
 		SendDlgItemMessage(IDC_USETHUMBTEMPLATE, BM_SETCHECK, false);
@@ -359,18 +360,18 @@ bool ImageServer = (hWndCtl == Toolbar.m_hWnd);
 
 	if(ue->SupportsFolders){
 		CServerFolderSelect as(ue);
-		as.m_SelectedFolder.id= Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderID"];
+		as.m_SelectedFolder.id= Settings.ServersSettings[ue->Name].params["FolderID"];
 		
 		if(as.DoModal() == IDOK){
 			if(!as.m_SelectedFolder.id.empty()){
-				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderID"] = as.m_SelectedFolder.id;
-				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderTitle"] = as.m_SelectedFolder.title;
-				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderUrl"]= as.m_SelectedFolder.viewUrl;
+				Settings.ServersSettings[ue->Name].params["FolderID"] = as.m_SelectedFolder.id;
+				Settings.ServersSettings[ue->Name].params["FolderTitle"] = as.m_SelectedFolder.title;
+				Settings.ServersSettings[ue->Name].params["FolderUrl"]= as.m_SelectedFolder.viewUrl;
 			}
 			else {
-				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderID"]="";
-				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderTitle"]="";
-				Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderUrl"]="";
+				Settings.ServersSettings[ue->Name].params["FolderID"]="";
+				Settings.ServersSettings[ue->Name].params["FolderTitle"]="";
+				Settings.ServersSettings[ue->Name].params["FolderUrl"]="";
 
 			}
 		UpdateAllPlaceSelectors();
@@ -384,10 +385,10 @@ void CUploadSettings::UpdateToolbarIcons()
 	CIcon hImageIcon = NULL, hFileIcon = NULL;
 
 	if(m_nImageServer != -1)
-		hImageIcon = (HICON)LoadImage(0,IU_GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(m_EngineList->byIndex(m_nImageServer)->Name)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
+		hImageIcon = (HICON)LoadImage(0,IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(m_EngineList->byIndex(m_nImageServer)->Name)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
 		
 	if(m_nFileServer != -1)
-		hFileIcon = (HICON)LoadImage(0,IU_GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(m_EngineList->byIndex(m_nFileServer)->Name)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
+		hFileIcon = (HICON)LoadImage(0,IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(m_EngineList->byIndex(m_nFileServer)->Name)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
 	
 	if(hImageIcon)
 	{
@@ -440,7 +441,7 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 	bi.pszText = (LPWSTR)(LPCTSTR) serverTitle ;
 	CurrentToolbar.SetButtonInfo(IDC_SERVERBUTTON, &bi);
 
-	LoginInfo& li = Settings.ServersSettings[ Utf8ToWCstring(uploadEngine->Name)].authData;
+	LoginInfo& li = Settings.ServersSettings[ uploadEngine->Name].authData;
 	CString login = TrimString(Utf8ToWCstring(li.Login),23);
 	
 	CurrentToolbar.SetImageList(m_PlaceSelectorImageList);
@@ -465,7 +466,7 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 	CurrentToolbar.HideButton(IDC_SELECTFOLDER,!ShowFolderButton);
 	CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR2,!ShowFolderButton);
 		
-	CString title = TrimString(Utf8ToWCstring(Settings.ServersSettings[Utf8ToWCstring(uploadEngine->Name)].params["FolderTitle"]), 27);
+	CString title = TrimString(Utf8ToWCstring(Settings.ServersSettings[uploadEngine->Name].params["FolderTitle"]), 27);
 	if(title.IsEmpty()) title = TR("Папка не выбрана");
 	bi.pszText = (LPWSTR)(LPCTSTR)title;
 	CurrentToolbar.SetButtonInfo(IDC_SELECTFOLDER, &bi);
@@ -574,7 +575,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 	{
 		if(uploadEngine->UsingPlugin )
 		{
-			CScriptUploadEngine *plug = iuPluginManager.getPlugin(uploadEngine->PluginName, Settings.ServersSettings[Utf8ToWCstring(uploadEngine->Name)]);
+			CScriptUploadEngine *plug = iuPluginManager.getPlugin(uploadEngine->PluginName, Settings.ServersSettings[uploadEngine->Name]);
 			if(!plug) return TBDDRET_TREATPRESSED;
 
 			if(!plug->supportsSettings()) return TBDDRET_TREATPRESSED;
@@ -670,7 +671,7 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 	
 	CUploadEngineData *ue = m_EngineList->byIndex(nServerIndex);
 
-	CScriptUploadEngine *m_pluginLoader = iuPluginManager.getPlugin(ue->PluginName, Settings.ServersSettings[Utf8ToWCstring(ue->Name)], true);
+	CScriptUploadEngine *m_pluginLoader = iuPluginManager.getPlugin(ue->PluginName, Settings.ServersSettings[ue->Name], true);
 	if(!m_pluginLoader) return 0;
 
 	CString title;
@@ -678,17 +679,17 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 
 	m_pluginLoader->getAccessTypeList(accessTypeList);
 	CFolderItem newFolder;
-	if(Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderID"]	== IU_NEWFOLDERMARK)
-		newFolder = Settings.ServersSettings[Utf8ToWCstring(ue->Name)].newFolder;
+	if(Settings.ServersSettings[ue->Name].params["FolderID"]	== IU_NEWFOLDERMARK)
+		newFolder = Settings.ServersSettings[ue->Name].newFolder;
 
 	 CNewFolderDlg dlg(newFolder, true, accessTypeList);
 	 if(dlg.DoModal(m_hWnd) == IDOK)
 	 {
-		 Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderTitle"] = newFolder.title.c_str();
-		Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderID"]	= IU_NEWFOLDERMARK;
-		Settings.ServersSettings[Utf8ToWCstring(ue->Name)].params["FolderUrl"]	= "";
+		 Settings.ServersSettings[ue->Name].params["FolderTitle"] = newFolder.title.c_str();
+		Settings.ServersSettings[ue->Name].params["FolderID"]	= IU_NEWFOLDERMARK;
+		Settings.ServersSettings[ue->Name].params["FolderUrl"]	= "";
 		
-		Settings.ServersSettings[Utf8ToWCstring(ue->Name)].newFolder = newFolder;
+		Settings.ServersSettings[ue->Name].newFolder = newFolder;
 		UpdateAllPlaceSelectors();
 	 }
 	 return 0;

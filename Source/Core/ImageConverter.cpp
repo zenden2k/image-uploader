@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Core/3rdpart/parser.h"
 #include "Core/3rdpart/pcreplusplus.h"
 #include "3rdpart/QColorQuantizer.h"
+#include <Func/IuCommonFunctions.h>
 
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 
@@ -619,7 +620,7 @@ bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int F
 	if (userFolder.Right(1) != _T('\\'))
 		userFolder += _T('\\');
 	wsprintf(szBuffer2, _T(
-	            "%s%s.%s"), (LPCTSTR)(Folder ? userFolder : IUTempFolder), (LPCTSTR)szNameBuffer,
+		"%s%s.%s"), (LPCTSTR)(Folder ? userFolder : IuCommonFunctions::IUTempFolder), (LPCTSTR)szNameBuffer,
 	         /*(int)GetTickCount(),*/ szImgTypes[Format]);
 	CString resultFilename = GetUniqFileName(szBuffer2);
 	IU_CreateFilePath(resultFilename);

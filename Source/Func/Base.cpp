@@ -27,7 +27,7 @@ ZBase* ZBase::m_base;
 
 ZBase::ZBase()
 {
-	m_hm.setHistoryFileName(WCstringToUtf8(Settings.SettingsFolder)+"/History/","history");
+	m_hm.setHistoryFileName(Settings.SettingsFolder+"/History/","history");
 }
 
 ZBase* ZBase::get()
