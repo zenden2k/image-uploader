@@ -23,7 +23,46 @@ function  UploadFile(FileName, options)
 	nm.doUploadMultipartData();
 
  	local data = nm.responseBody();
-	local fileID = regex_simple(data,"http:\\/\\/rghost\\.\\w+\\/(\\d+)",0);
+
+	local ex = regexp("id=\"editfile\"");
+	local res = ex.capture(data, 0);
+	local resultStr = "";
+	if(res == null){	
+		return 0;
+		
+	}
+	
+	local action=regex_simple(data,"action=\"([^\"]+)\"",res[0].end);
+	if ( action == "" ) {
+		print("Cannot find action");
+		return 0;
+	}
+
+	nm.setUrl("http://rghost.net/" + action);
+	/*nm.addQueryHeader("Referer","http://rghost.net/"+fileID);
+	nm.addQueryHeader("Origin","http://rghost.net/");*/
+
+	nm.addQueryParam("utf8","✓");
+	nm.addQueryParam("_method","put");
+	nm.addQueryParam("authenticity_token", token);
+
+	nm.addQueryParam("download_url","http://rghost.net"+action);
+	nm.addQueryParam("fileset[tags]","");
+	nm.addQueryParam("fileset[description]","");
+	nm.addQueryParam("fileset[removal_code]","");
+	nm.addQueryParam("fileset[password]","");
+	nm.addQueryParam("fileset[lifespan]","30");
+	nm.addQueryParam("fileset[public]","0");
+	nm.addQueryParam("commit","Обновить");
+
+
+	nm.doPost("");
+
+	data = nm.responseBody();
+	local fileID = regex_simple(data,"http:\\/\\/rghost\\.\\w+\\/download\\/(private\\/\\w+\\/\\w+)",0);
+	if ( fileID == "" ) {
+		fileID = regex_simple(data,"http:\\/\\/rghost\\.\\w+\\/download\\/([A-Za-z0-9_]+)",0);
+		}
 	local ex = regexp("\\[img\\](.+)\\[/img\\]");
 	local res = ex.capture(data, 0);
 	local directUrl = "";
@@ -34,8 +73,13 @@ function  UploadFile(FileName, options)
 		directUrl = data.slice(res2[1].begin, res2[1].end);
 	}	
 
+	//DebugMessage(data, true);
 	options.setDirectUrl(directUrl);
 	options.setViewUrl("http://rghost.ru/" + fileID);
-	options.setThumbUrl(thumbUrl);	
+	options.setThumbUrl(thumbUrl);
+	if ( fileID != "" || directUrl != "" ) {	
 	return 1;
+} else {
+	return 0;
+}
 }

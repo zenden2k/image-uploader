@@ -126,6 +126,7 @@ class CUploadEngineData
 		bool ImageHost;
 		bool SupportThumbnails;
 		int NeedAuthorization;
+		bool NeedPassword;
 		int64_t MaxFileSize;
 		std::string RegistrationUrl;
 		std::string CodedLogin;

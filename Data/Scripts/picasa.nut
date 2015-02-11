@@ -1,4 +1,6 @@
-﻿token <- ""; 
+﻿token <- "";
+login <- ""; 
+tokenType <- "";
 
 function regex_simple(data,regStr,start)
 {
@@ -10,40 +12,128 @@ function regex_simple(data,regStr,start)
 	}
 		return resultStr;
 }
+
+function reg_replace(str, pattern, replace_with)
+{
+	local resultStr = str;	
+	local res;
+	local start = 0;
+	while(res = resultStr.find(pattern,start)){	
+		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
+		start = res + replace_with.len();
+	}
+	return resultStr;
+}
+
+
+function inputBox(prompt, title) {
+	try {
+		return InputDialog(prompt, "");
+	}catch (e){}
+	local tempScript = "%temp%\\imguploader_inputbox.vbs";
+	prompt = reg_replace(prompt, "\n", "\" ^& vbCrLf ^& \"" );
+	local tempOutput = getenv("TEMP") + "\\imguploader_inputbox_output.txt";
+	local command = "echo result = InputBox(\""+ prompt + "\", \""+ title + "\") : Set objFSO=CreateObject(\"Scripting.FileSystemObject\") : Set objFile = objFSO.CreateTextFile(\"" + tempOutput + "\",True) : objFile.Write result : objFile.Close  > \"" + tempScript + "\"";
+	system(command);
+	command = "cscript /nologo \"" + tempScript + "\"";// > \"" + tempOutput + "\"";*/
+	system(command);
+	local res = readFile(tempOutput);
+	system("rm \""+ tempOutput + "\"");
+	return res;
+}
+
+function openUrl(url) {
+	try{
+		return ShellOpenUrl(url);
+	}catch(ex){}
+
+	system("start "+ reg_replace(url,"&","^&") );
+}
+
+function getAuthorizationString() {
+	return tokenType + " " + token ;
+}
+
 function doLogin() 
 { 
-	local email = ServerParams.getParam("Login");
-	local pass =  ServerParams.getParam("Password");
+	local login = ServerParams.getParam("Login");
+	local scope = "https://picasaweb.google.com/data/";
+	local redirectUrl = "urn:ietf:wg:oauth:2.0:oob";
+	local clientSecret = "65ie-G5nWqGMv_THtY3z2snZ";
+	local clientId = "162038470312-dn0kut9j7l0cd9lt32r09j0c841goei9.apps.googleusercontent.com";
 
-	if(email == "" || pass=="")
-	{
-		print("E-mail and password should not be empty!");
+	if(login == "" ) {
+		print("E-mail should not be empty!");
 		return 0;
 	}
-	nm.addQueryHeader("Expect","");
-	nm.setUrl("https://www.google.com/accounts/ClientLogin");
-  
-	nm.addQueryParam("accountType", "HOSTED_OR_GOOGLE"); 
-
-	nm.addQueryParam("Email", email); 
-	nm.addQueryParam("Passwd", pass); 
-	nm.addQueryHeader("Expect", "");
-   nm.addQueryParam("service", "lh2"); 
-  	nm.addQueryParam("source", "zendendotws-imageuploader-1.2"); 
-   nm.doPost("");
-   local data =  nm.responseBody();
-  
-  
-   local ex = regexp("Auth=(\\S+)");
-	local res = ex.capture(data);
-	if(res != null){	
-		token = data.slice(res[1].begin,res[1].end);
+	
+	if ( token == "" ){
+		token = ServerParams.getParam("token");
+		tokenType = ServerParams.getParam("tokenType");
 	}
-	else {
-	print("Eror while authencation using username "+email);
+	if ( token != "" && ServerParams.getParam("prevLogin") == login ) {
+		local tokenTime = ServerParams.getParam("tokenTime").tointeger();
+		local expiresIn = ServerParams.getParam("expiresIn").tointeger();
+		local refreshToken = ServerParams.getParam("refreshToken");
+		if ( time() > tokenTime + expiresIn && refreshToken != "") {
+			// Refresh access token
+			nm.setUrl("https://www.googleapis.com/oauth2/v3/token");
+			nm.addQueryParam("refresh_token", refreshToken); 
+			nm.addQueryParam("client_id", clientId); 
+			nm.addQueryParam("client_secret", clientSecret); 
+			nm.addQueryParam("grant_type", "refresh_token"); 
+			nm.doPost("");
+			local data =  nm.responseBody();
+			token = regex_simple(data, "access_token\": \"(.+)\"", 0);
+			ServerParams.setParam("expiresIn", regex_simple(data, "expires_in\": (\\d+)", 0));
+			tokenType = regex_simple(data, "token_type\": \"(.+)\"", 0);
+			ServerParams.setParam("tokenType", tokenType);
+			ServerParams.setParam("tokenTime", time().tostring());
+			if ( token != "" ) {
+				return true;
+			} else {
+				token = "";
+				tokenType = "";
+			}
+		} else {
+			return true;
+		}
+	}
+
+	
+	local url = "https://accounts.google.com/o/oauth2/auth?scope="+ nm.urlEncode(scope) +"&redirect_uri="+redirectUrl+"&response_type=code&"+ "client_id="+clientId;
+	openUrl(url);
+	
+	local confirmCode = inputBox("You need to need to sign in to your Google Picasa Web Albums account in web browser which just have opened and then copy confirmation code into the text field below. Please enter confirmation code:", "Image Uploader - Enter confirmation code");
+	
+	if ( confirmCode == "" ) {
+		print("Cannot authenticate without confirm code");
 		return 0;
 	}
-	return 1; //Success login
+	
+	nm.setUrl("https://www.googleapis.com/oauth2/v3/token");
+	nm.addQueryParam("code", confirmCode); 
+	nm.addQueryParam("client_id", clientId); 
+	nm.addQueryParam("client_secret", clientSecret); 
+	nm.addQueryParam("redirect_uri", redirectUrl); 
+	nm.addQueryParam("grant_type", "authorization_code"); 
+	nm.doPost("");
+	local data =  nm.responseBody();
+
+	local accessToken = regex_simple(data, "access_token\": \"(.+)\"", 0);
+	local timestamp = time();
+	if ( accessToken != "" ) {
+		token = 	accessToken;
+		ServerParams.setParam("token", token);
+		ServerParams.setParam("expiresIn", regex_simple(data, "expires_in\": (\\d+)", 0));
+		ServerParams.setParam("refreshToken", regex_simple(data, "refresh_token\": \"(.+)\"", 0));
+		tokenType = regex_simple(data, "token_type\": \"(.+)\"", 0);
+		ServerParams.setParam("tokenType", tokenType);
+		ServerParams.setParam("prevLogin", login);
+		ServerParams.setParam("tokenTime", ""+timestamp);
+		return true;
+	}	
+	return 0;		
 } 
 
 function internal_parseAlbumList(data,list)
@@ -87,10 +177,10 @@ function internal_parseAlbumList(data,list)
 
 function internal_loadAlbumList(list)
 {
-	nm.setUrl("http://picasaweb.google.com/data/feed/api/user/default");
+	nm.setUrl("https://picasaweb.google.com/data/feed/api/user/default");
   	nm.addQueryHeader("Expect","");
 	nm.addQueryParam("GData-Version", "2");
-	nm.addQueryHeader("Authorization","GoogleLogin auth=" + token);
+	nm.addQueryHeader("Authorization", getAuthorizationString());
 	nm.doGet("");
 	internal_parseAlbumList(nm.responseBody(),list);
 }
@@ -125,8 +215,8 @@ function CreateFolder(parentAlbum,album)
 	
 	nm.addQueryHeader("Expect","");
 	nm.addQueryHeader("GData-Version", "2");
-	nm.setUrl("http://picasaweb.google.com/data/feed/api/user/default");
-	nm.addQueryHeader("Authorization","GoogleLogin auth="+token);
+	nm.setUrl("https://picasaweb.google.com/data/feed/api/user/default");
+	nm.addQueryHeader("Authorization", getAuthorizationString());
 	
 	local data = "<entry xmlns='http://www.w3.org/2005/Atom'"+
 		" xmlns:media='http://search.yahoo.com/mrss/'"+
@@ -163,8 +253,8 @@ function  UploadFile(FileName, options)
 	if(albumStr!="")
 		albumID = albumStr;
 	
-	nm.setUrl("http://picasaweb.google.com/data/feed/api/user/default/albumid/"+albumID);
-	nm.addQueryHeader("Authorization","GoogleLogin auth="+token);
+	nm.setUrl("https://picasaweb.google.com/data/feed/api/user/default/albumid/"+albumID);
+	nm.addQueryHeader("Authorization", getAuthorizationString());
 
 	local ServerFileName = options.getServerFileName();
 	if(ServerFileName=="") ServerFileName = ExtractFileName(FileName);
@@ -226,8 +316,8 @@ function ModifyFolder(album)
 	nm.setMethod("PATCH");
 	nm.addQueryHeader("GData-Version", "2");
 		nm.addQueryHeader("If-Match","*");
-	nm.setUrl("http://picasaweb.google.com/data/entry/api/user/default/albumid/"+id);
-	 nm.addQueryHeader("Authorization","GoogleLogin auth="+token);
+	nm.setUrl("https://picasaweb.google.com/data/entry/api/user/default/albumid/"+id);
+	nm.addQueryHeader("Authorization", getAuthorizationString());
 	
 	 local data = "<entry xmlns='http://www.w3.org/2005/Atom'"+
 	   " xmlns:media='http://search.yahoo.com/mrss/'"+
@@ -247,5 +337,19 @@ function ModifyFolder(album)
 function GetFolderAccessTypeList()
 {
 	local a=["Private", "Public"];
+	return a;
+}
+
+function GetServerParamList()
+{
+	local a =
+	{
+		token = "token",
+		tokenType = "tokenType",
+		expiresIn = "expiresIn",
+		refreshToken = "refreshToken",
+		prevLogin = "prevLogin",
+		tokenTime = "tokenTime"
+	}
 	return a;
 }

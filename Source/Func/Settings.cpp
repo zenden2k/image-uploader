@@ -905,8 +905,11 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 			CEncodedPassword login(Utf8ToWCstring(it->second.authData.Login));
 			serverNode.SetAttribute("Login", WCstringToUtf8(login.toEncodedData()));
 
-			CEncodedPassword pass(Utf8ToWCstring(it->second.authData.Password));
-			serverNode.SetAttribute("Password", WCstringToUtf8(pass.toEncodedData()));
+			CUploadEngineData* ued = _EngineList->byName(Utf8ToWCstring(it->first));
+			if ( !ued || ued->NeedPassword ) { 
+				CEncodedPassword pass(Utf8ToWCstring(it->second.authData.Password));
+				serverNode.SetAttribute("Password", WCstringToUtf8(pass.toEncodedData()));
+			}
 #endif
 		}
 		return true;

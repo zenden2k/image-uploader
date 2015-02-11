@@ -343,15 +343,20 @@ function GetFolderList(list)
 	return 1; //success
 }
 
+
 function reg_replace(str, pattern, replace_with)
 {
-	local res = str.find(pattern);
-		
-	if(res != null){	
-		return str.slice(0,res) +replace_with+ str.slice(res + pattern.len());
+	local resultStr = str;	
+	local res;
+	local start = 0;
+	while(res = resultStr.find(pattern,start)){	
+		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
+		start = res + replace_with.len();
 	}
-	return str;
+	return resultStr;
 }
+
+
 
 function hex2int(str){
 	local res = 0;
