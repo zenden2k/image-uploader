@@ -10,15 +10,19 @@ function regex_simple(data,regStr,start)
 }
 
 
+
 function reg_replace(str, pattern, replace_with)
 {
 	local resultStr = str;	
 	local res;
-	while(res = resultStr.find(pattern)){	
+	local start = 0;
+	while(res = resultStr.find(pattern,start)){	
 		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
+		start = res + replace_with.len();
 	}
 	return resultStr;
 }
+
 
 function auth()
 {

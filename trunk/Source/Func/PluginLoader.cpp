@@ -29,10 +29,12 @@
 #include "Core/Network/NetworkManager.h"
 #include "Func/Settings.h"
 #include "Gui/Dialogs/LogWindow.h"
+#include "Core/Upload/ScriptUploadEngine.h"
 
 CPluginManager::CPluginManager() {
-	SquirrelVM::Init();
-	SquirrelVM::PushRootTable();	
+	/*SquirrelVM::Init();
+	SquirrelVM::PushRootTable();	*/
+	CScriptUploadEngine::InitScriptEngine();
 }
 
 CScriptUploadEngine* CPluginManager::getPlugin(Utf8String name, ServerSettingsStruct& params, bool UseExisting) {

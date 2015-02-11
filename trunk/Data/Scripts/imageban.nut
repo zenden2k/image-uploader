@@ -9,15 +9,19 @@ function regex_simple(data,regStr,start)
 	return resultStr;
 }
 
+
 function reg_replace(str, pattern, replace_with)
 {
 	local resultStr = str;	
 	local res;
-	while(res = resultStr.find(pattern)){	
+	local start = 0;
+	while(res = resultStr.find(pattern,start)){	
 		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
+		start = res + replace_with.len();
 	}
 	return resultStr;
 }
+
 
 function getThumbnailWidth() {
 	local result = "180";
@@ -40,7 +44,7 @@ function anonymousUpload(FileName, options) {
 	nm.addQueryParam("rsize", "0");
 	nm.addQueryParam("inf", "1");
 	nm.addQueryParam("prew", getThumbnailWidth());
-	nm.addQueryParam("ptext", "Увеличить");
+	nm.addQueryParam("ptext", "Фўж¬ЁоЃ§ніј");
 	nm.addQueryParam("rand", format("%d",random(22222)));
 	nm.addQueryParam("ttl", "0");
 	nm.addQueryParamFile("Filedata",FileName, ExtractFileName(FileName),"");

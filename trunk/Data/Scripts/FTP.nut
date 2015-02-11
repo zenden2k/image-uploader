@@ -15,21 +15,25 @@ if(ServerParams.getParam("downloadPath") == "")
 	ServerParams.setParam("downloadPath", "http://dl.example.com/somefolder");
 }
 
+
 function reg_replace(str, pattern, replace_with)
 {
-	local res = str.find(pattern);
-		
-	if(res != null){	
-		return str.slice(0,res) +replace_with+ str.slice(res + pattern.len());
+	local resultStr = str;	
+	local res;
+	local start = 0;
+	while(res = resultStr.find(pattern,start)){	
+		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
+		start = res + replace_with.len();
 	}
-	return str;
+	return resultStr;
 }
+
 
 function  UploadFile(FileName, options)
 {
 	local newFilename = ExtractFileName(FileName);
 	newFilename = random() +"_"+newFilename;
-	local ansiFileName = Utf8ToAnsi(newFilename,0);
+	local ansiFileName = newFilename;
 	local host = ServerParams.getParam("hostname");
 	local folder = ServerParams.getParam("folder");
 	
@@ -47,8 +51,9 @@ function  UploadFile(FileName, options)
 		
 	if(folder.slice(folder.len()-1) != "/")
 		folder += "/";
+	local url = "ftp://" + authStr+ host + folder+ansiFileName;
 
-	nm.setUrl("ftp://" + authStr+ host + folder+ansiFileName);
+	nm.setUrl(url);
 	nm.setMethod("PUT");
 	nm.doUpload(FileName, "");
 	if(nm.responseCode() != 226 && nm.responseCode() != 201)
@@ -67,7 +72,7 @@ function  UploadFile(FileName, options)
 	}
 	if(downloadPath.slice(downloadPath.len()-1) != "/")
 		downloadPath += "/";
-	options.setDirectUrl(downloadPath+nm.urlEncode(newFilename));
+	options.setDirectUrl(downloadPath+reg_replace(nm.urlEncode(newFilename),"%2E","."));
 
 	return 1;
 }
