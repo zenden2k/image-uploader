@@ -32,10 +32,10 @@ namespace IuCoreUtils
 
 	bool FileExists(const Utf8String fileName);
 	bool DirectoryExists(const Utf8String path);
-	Utf8String ExtractFilePath(const Utf8String fileName);
+	const Utf8String ExtractFilePath(const Utf8String& fileName);
 	Utf8String ExtractFileName(const Utf8String fileName);
 	Utf8String ExtractFileExt(const Utf8String fileName);
-	Utf8String ExtractFileNameNoExt(const Utf8String fileName);
+	const Utf8String ExtractFileNameNoExt(const Utf8String& fileName);
 	Utf8String toString(int value);
 	Utf8String toString(unsigned int value);
 	Utf8String toString(double value, int precision);
@@ -59,5 +59,6 @@ namespace IuCoreUtils
 	Utf8String fileSizeToString(int64_t nBytes);
 	bool createDirectory(const Utf8String path);
 	bool copyFile(const std::string& src, const std::string & dest, bool overwrite = true);
+	const std::string Utf8ToAnsi(const std::string &str, int codepage);
 };
 #endif

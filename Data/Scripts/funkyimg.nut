@@ -18,8 +18,32 @@ function TrySleep() {
 	}
 }
 
+function readFile(fileName) {
+	local myfile = file(fileName,"r");
+	local i = 0;
+	local res = "";
+	while ( !myfile.eos()) {
+		res += format("%c", myfile.readn('b'));
+		
+	}
+	return res;
+}
+
+function reg_replace(str, pattern, replace_with)
+{
+	local resultStr = str;	
+	local res;
+	local start = 0;
+	while(res = resultStr.find(pattern,start)){	
+		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
+		start = res + replace_with.len();
+	}
+	return resultStr;
+}
+
+
 function  UploadFile(FileName, options)
-{	
+{			
 	nm.setUrl("http://funkyimg.com/upload/?fileapi" + random());
 	nm.addQueryParam("_images", ExtractFileName(FileName));
 	nm.addQueryParamFile("images",FileName, ExtractFileName(FileName),"");

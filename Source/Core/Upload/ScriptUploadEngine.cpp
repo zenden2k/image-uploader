@@ -31,7 +31,7 @@
 #include <sstream>
 #include <string>
 #include <iomanip>
-
+#include <json/json.h>
 #include "Core/3rdpart/CP_RSA.h"
 #include "Core/3rdpart/base64.h"
 #include "Core/3rdpart/codepages.h"
@@ -83,7 +83,11 @@ bool ShellOpenUrl(const std::string& url) {
 #ifdef _WIN32
     return ShellExecute(0, _T("open"), IuCoreUtils::Utf8ToWstring(url).c_str(), NULL, NULL, SW_SHOWNORMAL);
 #else
+#ifdef __APPLE__
+    return system(("open \""+url+"\"").c_str());
+#else
     return system(("xdg-open \""+url+"\" >/dev/null 2>&1 & ").c_str());
+#endif
 #endif
 }
 
@@ -287,7 +291,7 @@ const std::string scriptAnsiToUtf8(const std::string& str, int codepage)
 const std::string scriptUtf8ToAnsi(const std::string& str, int codepage )
 {
 #ifdef _WIN32
-	return IuCoreUtils::ConvertToUtf8(str, NameByCodepage(codepage));
+	return IuCoreUtils::Utf8ToAnsi(str, codepage);
 #else
 	return str; // FIXME
 #endif
@@ -311,24 +315,7 @@ void scriptSleep(int msec) {
 }*/
 
 const std::string escapeJsonString( const std::string& src) {
-	std::string input = src;
-	std::ostringstream ss;
-	for (std::string::iterator iter = input.begin(); iter != input.end(); ++iter) {
-		//C++98/03:
-		//for (std::string::const_iterator iter = input.begin(); iter != input.end(); iter++) {
-		switch (*iter) {
-			case '\\': ss << "\\\\"; break;
-			case '"': ss << "\\\""; break;
-			case '/': ss << "\\/"; break;
-			case '\b': ss << "\\b"; break;
-			case '\f': ss << "\\f"; break;
-			case '\n': ss << "\\n"; break;
-			case '\r': ss << "\\r"; break;
-			case '\t': ss << "\\t"; break;
-			default: ss << *iter; break;
-		}
-	}
-	return ss.str();
+	return Json::valueToQuotedString(src.data());
 }
 
 const std::string url_encode(const std::string &value) {
@@ -364,6 +351,71 @@ void DebugMessage(const std::string& msg, bool isResponseBody)
 #endif
 }
 
+template<class T> void setObjValues(T key, Json::ValueIterator it, SquirrelObject &obj) {
+	using namespace Json;
+
+	switch(it->type()) {
+		case nullValue:
+			obj.SetValue(key,SquirrelObject());
+			break;
+		case intValue:      ///< signed integer value
+			obj.SetValue(key, it->asInt());
+			break;
+		case uintValue:     ///< unsigned integer value
+			obj.SetValue(key, it->asInt());
+			break;
+		case realValue:
+			obj.SetValue(key, it->asFloat());
+			break;    ///< double value
+		case stringValue:   ///< UTF-8 string value
+			obj.SetValue(key, it->asString().data());
+			break;   
+		case booleanValue:  ///< bool value
+			obj.SetValue(key, it->asBool());
+			break;   
+		case arrayValue:    ///< array value (ordered list)
+		case objectValue:
+			SquirrelObject newObj;
+			obj.SetValue(key, parseJSONObj(*it,newObj));
+	}
+}
+
+SquirrelObject parseJSONObj(Json::Value root, SquirrelObject &obj) {
+	Json::ValueIterator it;
+	//SquirrelObject obj;
+	bool isArray = root.isArray();
+	if ( isArray ) {
+		obj = SquirrelVM::CreateArray(root.size());
+	} else if ( root.isObject() ) {
+		obj = SquirrelVM::CreateTable();
+	} 
+	
+
+	if ( isArray ) {
+		for(it = root.begin(); it != root.end(); ++it) {
+			int key = it.key().asInt();
+			
+			setObjValues(key, it, obj);
+		}
+	} else {
+		for(it = root.begin(); it != root.end(); ++it) {
+			std::string key = it.key().asString();
+			setObjValues(key.data(), it, obj);
+		}
+	}
+	
+	return obj;
+}
+
+SquirrelObject jsonToSquirrelObject(const std::string& json) {
+	Json::Value root;
+	Json::Reader reader;
+	SquirrelObject sq;
+	if ( reader.parse(json, root, false) ) {
+		parseJSONObj(root,sq);
+	}
+	return sq;
+}
 bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params)
 {
 	if (!IuCoreUtils::FileExists(fileName))
@@ -390,7 +442,11 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		func(&NetworkManager::errorString, "errorString").
 		func(&NetworkManager::doUpload, "doUpload").
 		func(&NetworkManager::setMethod, "setMethod").
-		func(&NetworkManager::doUploadMultipartData, "doUploadMultipartData");
+		func(&NetworkManager::setCurlOption, "setCurlOption").
+		func(&NetworkManager::setCurlOptionInt, "setCurlOptionInt").
+		func(&NetworkManager::doUploadMultipartData, "doUploadMultipartData").
+		func(&NetworkManager::setReferer, "setReferer");
+
 
 		SQClassDef<CFolderList>("CFolderList").
 		func(&CFolderList::AddFolder, "AddFolder").
@@ -422,7 +478,7 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		func(&CFolderItem::setItemCount, "setItemCount").
 		func(&CFolderItem::setViewUrl, "setViewUrl").
 		func(&CFolderItem::getItemCount, "getItemCount");
-
+		//using namespace IuCoreUtils;
 		RegisterGlobal(pluginRandom, "random");
 		RegisterGlobal(scriptSleep, "sleep");
 		RegisterGlobal(scriptMD5, "md5");
@@ -436,6 +492,11 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		RegisterGlobal(scriptGetFileMimeType, "GetFileMimeType");
 		RegisterGlobal(escapeJsonString, "JsonEscapeString");
 		RegisterGlobal(ShellOpenUrl, "ShellOpenUrl");
+		RegisterGlobal(IuCoreUtils::ExtractFileNameNoExt, "ExtractFileNameNoExt");
+		RegisterGlobal(IuCoreUtils::ExtractFilePath, "ExtractFilePath");
+		RegisterGlobal(jsonToSquirrelObject, "parseJSON");
+
+		
 		
 
 		using namespace IuCoreUtils;

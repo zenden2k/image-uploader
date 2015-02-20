@@ -31,6 +31,7 @@
 #include <Core/Video/VideoUtils.h>
 #include "WinUtils.h"
 #endif
+#include <stdlib.h>
 
 #include <Core/Utils/StringUtils.h>
 

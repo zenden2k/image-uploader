@@ -189,7 +189,12 @@
 Полученную ссылку пользователь видит в окне программы.</p>
 <a name="scripts"></a>
 <h2>Создание плагинов</h2> 
-<p>Для расширенной поддержки серверов в программе используются скрипты на <a href="http://www.squirrel-lang.org/doc/squirrel2.html"> языке Squirrel</a>.</p>
+<p>Для расширенной поддержки серверов в программе используются скрипты на <a href="http://www.squirrel-lang.org/" target="_blank">
+ языке Squirrel 2</a>.</p>
+<p>
+<a href="http://www.squirrel-lang.org/doc/squirrel2.html" target="_blank">Документация языка Squirrel</a><br>
+<a href="http://www.squirrel-lang.org/doc/sqstdlib2.html" target="_blank">Документация стандартной библиотеки языка Squirrel</a>
+</p>
 <p>Они должны быть сохранены в кодировке utf-8 в файлах с расширением <code>.nut</code>.
 <p><b>Пример плагина (example.nut):</b> </p>
 <pre class="prettyprint">
@@ -284,6 +289,10 @@ Cтандартная функция squirrel, выводящая текст н�
 Показывает диалоговое окно с диагностическим сообщением.
 <code class="f"><u>string</u> ExtractFileName(<u>string</u> <i>filePath</i>)</code>
 Извлекает имя файла с расширением из пути
+<code class="f"><u>string</u> ExtractFileNameNoExt(<u>string</u> <i>filePath</i>)<span>version >= 1.2.9 <b>build 4186</b></span></code>
+Извлекает имя файла без расширения из пути
+<code class="f"><u>string</u> ExtractFilePath(<u>string</u> <i>filePath</i>)<span>version >= 1.2.9 <b>build 4186</b></span></code>
+Извлекает имя директории из пути
 <code class="f"><u>string</u> GetFileExtension(<u>string</u> <i>filename</i>)</code>
 Извлекает расширение файла из пути.
 <code class="f"><u>string</u> GetFileMimeType(<u>string</u> <i>fileName</i>)</code>
@@ -294,8 +303,34 @@ Cтандартная функция squirrel, выводящая текст н�
 Возвращает md5-хэш строки в виде строки.
 <code class="f"><u>string</u> md5_file(<u>string</u> <i>filename</i>)<span>version >= 1.2.7 <b>build 4176</b></span></code>
 Возвращает md5-хэш файла.
+<code class="f"><u>table</u> parseJSON(<u>string</u> <i>jsonText</i>)<span>version >= 1.2.9 <b>build 4186</b></span></code>
+Преобразует текст, содержащий JSON документ, в <i>table</i> (ассоциативный контейнер, выполненный в виде пар ключ/значение) или массив.<br>
+Например, исходный JSON документ:
+<pre class="prettyprint">
+{
+    "result": {
+        "success": true,
+        "links": [
+            {
+                "href": "http://example.com/thumb.jpg"
+            },
+            {
+                "href": "http://example.com/image.jpg"
+            }
+        ]
+    }
+}
+</pre>
+Код на squirrel:
+<pre class="prettyprint">
+local t = parseJSON(text);
+print(t.result.links[1].href); // выведет "http://example.com/image.jpg" 
+</pre>
+В случае ошибки функция вернет null.
 <code class="f"><u>int</u> random(<u>int</u> <i>max</i>)</code>
 Возвращает случайное число не больше заданного.
+<code class="f"><u>int</u> sleep(<u>int</u> <i>ms</i>)</code>
+Скрипт засыпает на указанное количество миллисекунд.
 <code class="f"><u>string</u> sha1(<u>string</u> <i>str</i>)<span>version >= 1.2.7 <b>build 4176</b></span></code>
 Возвращает sha1-хэш строки в виде строки)
 <code class="f"><u>string</u> sha1_file(<u>string</u> <i>filename</i>)<span>version >= 1.2.7 <b>build 4176</b></span></code>
@@ -335,13 +370,22 @@ displayname - отображаемое имя(то имя, которое пер
 <code class="f"><u>string</u> errorString()</code>
 Возвращает текст ошибки для последнего выполненного запроса.(например, <code>HTTP 404 not found</code>).
 <code class="f"><u>string</u> responseBody()</code>
-Возвращает тело ответа сервера ( как правило это текст HTML страницы, JSON, XML или другой формат).
+Возвращает тело ответа сервера (как правило, это текст HTML страницы, JSON, XML или другой формат).
 <code class="f"><u>int</u> responseHeaderCount()</code>
 Возвращает количество параметров в  HTTP -заголовке ответa.
 <code class="f"><u>int</u> responseCode()</code>
 Возвращает код ответа (например, код 200 означает HTTP OK).
+<code class="f">setCurlOption(<u>int</u> <i>option</i>, <u>string</u> <i>value</i>)<span>version >= 1.2.9 <b>build 4186</b></span></code>
+Устанавливает строковое значения для опции объекта CURL. Эквивалентно вызову функции <a href="http://curl.haxx.se/libcurl/c/curl_easy_setopt.html" target="_blank">curl_easy_setopt</a>. 
+Заметьте, что <i class="var">option</i> - это число. Список численных значений <i class="var">option</i> можно посмотреть <a href="curl_constants.txt" target="_blank">здесь</a>. 
+<code class="f">setCurlOptionInt(<u>int</u> <i>option</i>, <u>int</u> <i>value</i>)<span>version >= 1.2.9 <b>build 4186</b></span></code>
+Устанавливает численное значение для опции объекта CURL. Эквивалентно вызову функции <a href="http://curl.haxx.se/libcurl/c/curl_easy_setopt.html" target="_blank">curl_easy_setopt</a>. 
+Заметьте, что <i class="var">option</i> - это число. Список численных значений <i class="var">option</i> можно посмотреть <a href="curl_constants.txt" target="_blank">здесь</a>. 
+
 <code class="f">setMethod(<u>string</u> <i>method</i>)</code>
 Позволяет вручную задать тип запроса - POST, GET, PUT ...
+<code class="f">setReferer(<u>string</u> <i>referer</i>)<span>version >= 1.2.9 <b>build 4186</b></span></code>
+Устанавливает HTTP заголовок referer.
 <code class="f">setUrl(<u>string</u> <i>url</i>)</code> 
 Устанавливает адрес URL для следующего запроса.
 <code class="f"><u>string</u> urlEncode(<u>string</u> <i>text</i>)</code>

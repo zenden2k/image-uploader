@@ -20,8 +20,10 @@
 
 #include "FileQueueUploader.h"
 #include <algorithm>
+#ifndef IU_CLI
 #include <zthread/Thread.h>
 #include <zthread/Mutex.h>
+#endif
 #include <Core/Upload/UploadTask.h>
 #include <Core/Upload/FileUploadTask.h>
 
@@ -46,9 +48,10 @@ class CFileQueueUploader::Impl {
 		virtual void run();
 		bool getNextJob(Task* item);
 		void AddUploadTask(std_tr::shared_ptr<UploadTask> task, void* user_data, CAbstractUploadEngine *uploadEngine);
-
+#ifndef IU_CLI
 		ZThread::Mutex mutex_;
 		ZThread::Mutex callMutex_;
+#endif
 		Callback* callback_;
 		CFileQueueUploader *queueUploader_;
 		volatile bool m_NeedStop;
@@ -69,7 +72,7 @@ class CFileQueueUploader::Impl {
 		
 };
 
-class CFileQueueUploader::Impl::Runnable : public ZThread::Runnable {
+class CFileQueueUploader::Impl::Runnable /*: public ZThread::Runnable*/ {
 	public:
 		CFileQueueUploader::Impl* uploader_;
 		Runnable(CFileQueueUploader::Impl* uploader)
@@ -122,7 +125,9 @@ bool CFileQueueUploader::Impl::getNextJob(Task* item) {
 	if (m_NeedStop)
 		return false;
 	std::string url;
+    #ifndef IU_CLI
 	mutex_.acquire();
+#endif
 	bool result = false;
 	if (!m_fileList.empty() && !m_NeedStop)
 	{
@@ -130,7 +135,9 @@ bool CFileQueueUploader::Impl::getNextJob(Task* item) {
 		m_fileList.erase(m_fileList.begin());
 		result = true;
 	}
+    #ifndef IU_CLI
 	mutex_.release();
+#endif
 	return result;
 }
 
@@ -163,7 +170,9 @@ void CFileQueueUploader::Impl::AddFile(Task task){
 
 
 void CFileQueueUploader::Impl::start() {
+    #ifndef IU_CLI
 	mutex_.acquire();
+#endif
 	m_NeedStop = false;
 	m_IsRunning = true;
 	int numThreads = std::min<int>(size_t(m_nThreadCount-m_nRunningThreads), m_fileList.size());
@@ -171,9 +180,11 @@ void CFileQueueUploader::Impl::start() {
 	for (int i = 0; i < numThreads; i++)
 	{
 		m_nRunningThreads++;
-		ZThread::Thread t1(new Runnable(this)); // starting new thread
+        /*ZThread::Thread t1*/(new Runnable(this))->run(); // starting new thread
 	}
+    #ifndef IU_CLI
 	mutex_.release();
+#endif
 }
 
 
@@ -197,17 +208,26 @@ void CFileQueueUploader::Impl::run()
 		uploader.setUploadEngine(it.uploadEngine);
 		uploader.onNeedStop.bind(this, &Impl::onNeedStopHandler);
 		uploader.onProgress.bind(this, &Impl::onProgress);
+        #ifndef IU_CLI
 		mutex_.acquire();
+#endif
 		tasks_[&uploader] = &it;
+        #ifndef IU_CLI
 		mutex_.release();
+#endif
 		bool res = uploader.Upload(it.uploadTask.get());
-
+#ifndef IU_CLI
 		mutex_.acquire();
+#endif
 		serverThreads_[serverName].runningThreads --;
+        #ifndef IU_CLI
 		mutex_.release();
+#endif
 		
 		// m_CS.Lock();
+        #ifndef IU_CLI
 		callMutex_.acquire();
+#endif
 		FileListItem result;
 		result.uploadTask = &it;
 		result.serverName = serverName;
@@ -236,13 +256,17 @@ void CFileQueueUploader::Impl::run()
 				callback_->OnFileFinished(false, result);
 			}
 		}
+        #ifndef IU_CLI
 		callMutex_.release();
+#endif
 	}
-	
+    #ifndef IU_CLI
 	mutex_.acquire();
-	
+#endif
 	m_nRunningThreads--;
+    #ifndef IU_CLI
 	mutex_.release();
+#endif
 	if (!m_nRunningThreads)
 	{
 		m_IsRunning = false;

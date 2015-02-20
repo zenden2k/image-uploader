@@ -26,7 +26,9 @@
 
 #include <curl/curl.h>
 //#include <curl/types.h>
+#ifndef IU_CLI
 #include <zthread/Mutex.h>
+#endif
 
 #include "Core/Utils/CoreUtils.h"
 
@@ -59,6 +61,8 @@ class NetworkManager
 		void setProgressCallback(curl_progress_callback func, void *data);
 		const NString urlEncode(const NString& str);
 		const NString getCurlResultString();
+		void setCurlOption(int option, const NString &value);
+		void setCurlOptionInt(int option, long value);
 		void setMethod(const NString &str);
 		void setProxy(const NString &host, int port, int type);
 		void setProxyUserPassword(const NString &username, const NString password);
@@ -129,7 +133,9 @@ class NetworkManager
 		char m_errorBuffer[CURL_ERROR_SIZE];;
 		std::string m_method;
 		struct curl_slist * chunk_;
+               #ifndef IU_CLI
 		static ZThread::Mutex _mutex;
+#endif
 		static bool _curl_init;
 };
 

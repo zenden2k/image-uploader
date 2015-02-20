@@ -28,6 +28,7 @@
 #include <memory.h>
 #include <cstdio>
 #include <algorithm>
+#include <iostream>
 #include "Core/Utils/CoreUtils.h"
 
 size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
@@ -65,8 +66,8 @@ int NetworkManager::private_static_writer(char *data, size_t size, size_t nmemb,
 void NetworkManager::setProxy(const NString &host, int port, int type)
 {
 	curl_easy_setopt(curl_handle, CURLOPT_PROXY, host.c_str());
-	curl_easy_setopt(curl_handle, CURLOPT_PROXYPORT, port);	
-	curl_easy_setopt(curl_handle, CURLOPT_PROXYTYPE, type);
+	curl_easy_setopt(curl_handle, CURLOPT_PROXYPORT, (long)port);	
+	curl_easy_setopt(curl_handle, CURLOPT_PROXYTYPE, (long)type);
 	curl_easy_setopt(curl_handle, CURLOPT_NOPROXY, "localhost,127.0.0.1"); // test
 } 
 
@@ -119,17 +120,22 @@ void NetworkManager::setMethod(const NString &str)
 }
 
 bool  NetworkManager::_curl_init = false;
+#ifndef IU_CLI
 ZThread::Mutex NetworkManager::_mutex;
-
+#endif
 NetworkManager::NetworkManager(void)
 {
+    #ifndef IU_CLI
 	_mutex.acquire();
+#endif
 	if(!_curl_init)
 	{
 		curl_global_init(CURL_GLOBAL_ALL);	
 		_curl_init = true;
 	}
+    #ifndef IU_CLI
 	_mutex.release();
+#endif
 	m_hOutFile = 0;
 	chunk_ = 0;
 	m_CurrentFileSize = -1;
@@ -150,15 +156,15 @@ NetworkManager::NetworkManager(void)
 	curl_easy_setopt(curl_handle, CURLOPT_ERRORBUFFER, m_errorBuffer);
 	
 	curl_easy_setopt(curl_handle, CURLOPT_PROGRESSFUNCTION, &ProgressFunc);
-	curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 0);
+	curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 0L);
 	curl_easy_setopt(curl_handle, CURLOPT_PROGRESSDATA, this);
-        curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1);
+        curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1L);
 	curl_easy_setopt(curl_handle, CURLOPT_ENCODING, "");
 	curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
 	curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTDATA, this);
 	
    curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L); //FIXME
-   curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 1L); 
+   curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0L);
 	//We want the referrer field set automatically when following locations
 	curl_easy_setopt(curl_handle, CURLOPT_AUTOREFERER, 1L); 
 	curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 32768L);
@@ -167,7 +173,7 @@ NetworkManager::NetworkManager(void)
 
 NetworkManager::~NetworkManager(void)
 {
-	curl_easy_setopt(curl_handle, CURLOPT_PROGRESSFUNCTION, NULL);
+	curl_easy_setopt(curl_handle, CURLOPT_PROGRESSFUNCTION, (long)NULL);
 	curl_easy_cleanup(curl_handle);
 }
 
@@ -231,7 +237,7 @@ bool NetworkManager::doUploadMultipartData()
 					}
 					openedFiles.push_back(curFile);
 					// FIXME: 64bit file size support!
-					int  curFileSize = IuCoreUtils::getFileSize(fileName);
+                    long  curFileSize = IuCoreUtils::getFileSize(fileName);
 
 				if(it->contentType.empty())
 					curl_formadd(&formpost,
@@ -288,7 +294,7 @@ const std::string NetworkManager::responseBody()
 
 int NetworkManager::responseCode()
 {
-	int result=-1;
+    long result=-1;
 	curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &result);
 	return result;
 }
@@ -630,4 +636,13 @@ void NetworkManager::Uninitialize()
 	{
 		curl_global_cleanup();	
 	}
+}
+
+
+void NetworkManager::setCurlOption(int option, const NString &value) {
+	curl_easy_setopt(curl_handle, (CURLoption)option, value.c_str());
+}
+
+void NetworkManager::setCurlOptionInt(int option, long value) {
+	curl_easy_setopt(curl_handle, (CURLoption)option, value);
 }

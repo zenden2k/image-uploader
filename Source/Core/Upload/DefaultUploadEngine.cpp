@@ -116,6 +116,7 @@ void CDefaultUploadEngine::prepareUpload() {
 }
 
 bool CDefaultUploadEngine::executeActions() {
+
 	for (size_t i = 0; i < m_UploadData->Actions.size(); i++) {
 		m_UploadData->Actions[i].NumOfTries = 0;
 		bool ActionRes = false;
@@ -161,8 +162,10 @@ bool CDefaultUploadEngine::executeActions() {
 
 bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
 {
-	try {
-		AddQueryPostParams(Action);
+    try {
+
+        AddQueryPostParams(Action);
+
 		m_NetworkManager->setUrl(Action.Url);
 
 		if ( bUpload ) {
@@ -178,8 +181,9 @@ bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
 
 		return ReadServerResponse(Action);
 	}
-	catch (...) {
-		return false;
+    catch (std::exception ex) {
+        std::cerr<<ex.what()<<std::endl;
+        return false;
 	}
 	return true;
 }
@@ -294,7 +298,6 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
 	UploadAction Current = Action;
 	std::string temp = Current.Url;
 	Current.Url = ReplaceVars(temp);
-
 	if (m_UploadData->Debug)
 		DebugMessage("\r\nType:" + Action.Type + "\r\nURL: " + Current.Url);
 
@@ -330,10 +333,13 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
 
 bool CDefaultUploadEngine::ReadServerResponse(UploadAction& Action)
 {
+
 	bool Result = false;
 	bool Exit = false;
 
+
 	int StatusCode = m_NetworkManager->responseCode();
+
 	if (!(StatusCode >= 200 && StatusCode <= 299) && !(StatusCode >= 300 && StatusCode <= 304))
 	{
 		std::string error;
@@ -394,14 +400,18 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
 	}
 
 	std::string _Post = "Post Request to URL: " + Action.Url + "\r\n";
+
 	pcrepp::Pcre reg("(.*?)=(.*?[^\\x5c]{0,1});", "imc");
+
 	std::string str = Txt;
 
 	size_t pos = 0;
-	while (pos <= str.length())
+    while (pos < str.length())
 	{
+
 		if ( reg.search(str, pos))
 		{
+
 			std::string VarName = reg[0];
 			std::string VarValue = reg[1];
 			pos = reg.get_match_end() + 1;
@@ -413,8 +423,10 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
 			NewValue = IuCoreUtils::StrReplace(NewValue, "\\;", ";");
 
 			std::string NewName = VarName;
+
 			NewName = ReplaceVars(NewName);
 			std::string vv = NewName;
+
 			if (NewValue == "%filename%")
 			{
 				_Post += NewName + " = ** FILE CONTENTS ** \r\n";
@@ -428,6 +440,7 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
 				_Post += NewName + " = " + NewValue + "\r\n";
 				m_NetworkManager->addQueryParam(NewName, NewValue);
 			}
+
 		}
 		else
 			break;
