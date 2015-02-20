@@ -227,6 +227,7 @@ color: #5656C2;
     display:block;
     margin-top:15px;
     margin-bottom: 5px;
+   white-space:normal;
     /*width: 300px;*/
 }
 .script-functions code.f span {
