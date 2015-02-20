@@ -5,10 +5,22 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <title>Image Uploader - Дополнительная информация по использованию</title>
 <link href="default.css" rel="stylesheet" type="text/css" />
+<!--<link href="styles/default.css" rel="stylesheet" type="text/css" />-->
+<link href="prettify/prettify.css" rel="stylesheet" type="text/css" />
 </head>
-<body>
+<body nload="prettyPrint()">
+<script type="text/javascript" src="prettify/run.js"></script>
+
+<!--<script type="text/javascript" src="highlight.pack.js"></script>
+<script>
+/*$(document).ready(function() {
+  $('pre').removeClass('code').each(function(i, block) {
+    hljs.highlightBlock(block);
+  });
+});*/-->
+</script>
 <div id="header">
-<h1>Image Uploader</h1> <div id="version">версия 1.2.6</div>
+<h1>Image Uploader</h1> <div id="version"></div>
 </div>
  <div id="menu">
     <ul>
@@ -23,86 +35,95 @@
     <div id="left">
 <h1>Дополнительная информация</h1>
 <h2>Параметры командной строки</h2> 
-<p>Формат запуска программы из командной строки выглядит следующим образом:<br />
-<i>"Image Uploader.exe" [параметры] файл1 файл2 ... папка1 папка2 .. </i></p>
+<p>Формат запуска программы из командной строки выглядит следующим образом:</p>
+<p><code>"Image Uploader.exe" [параметры] файл1 файл2 ... папка1 папка2 .. </code></p>
 <p>Поддерживаются следующие параметры:</p>
 <ul>				 
-				<li><b>/quick</b> и <b>/noquick</b> — включение и выключение режима быстрого начала загрузки (пропуск страниц мастера)</li>
-				<li><b>/mediainfo</b> — показ технической информации для первого видео файла в командной строке</li>
-			 	 <li><b>/quickshot</b> — снимок прямоугольной области</li>
-				<li><b>/func=fullscreenshot</b> — снимок всего экрана.</li>
-			  	<li><b>/func=windowscreenshot</b> — скриншот активного окна.</li>
-			  	<li><b>/func=windowhandlescreenshot</b> — снимок выбранного оконного элемента</li>
-  			  	<li><b>/func=freeformscreenshot</b> — снимок произвольной формы</li>
-				<li><b>/func=screenshotdlg</b> — окно выбора режима скриншота</li>
-				<li><b>/func=downloadimages</b> — окно скачивания изображений из Интернета</li>
-<li><b>/func=paste</b> — вставка изображения или ссылки из буфера обмена</li>
-Начиная с версии 1.2.7:<br>
-<li><b>/uninstall</b> — удаление всех записей программы в системном реестре</li>
+				<li><code>/quick</code> и <code>/noquick</code> — включение и выключение режима быстрого начала загрузки (пропуск страниц мастера)</li>
+				<li><code>/mediainfo</code> — показ технической информации для первого видео файла в командной строке</li>
+			 	 <li><code>/quickshot</code> — снимок прямоугольной области</li>
+				<li><code>/func=fullscreenshot</code> — снимок всего экрана.</li>
+			  	<li><code>/func=windowscreenshot</code> — скриншот активного окна.</li>
+			  	<li><code>/func=windowhandlescreenshot</code> — снимок выбранного оконного элемента</li>
+  			  	<li><code>/func=freeformscreenshot</code> — снимок произвольной формы</li>
+				<li><code>/func=screenshotdlg</code> — окно выбора режима скриншота</li>
+				<li><code>/func=downloadimages</code> — окно скачивания изображений из Интернета</li>
+<li><code>/func=paste</code> — вставка изображения или ссылки из буфера обмена</li>
+<p>
+Начиная с версии 1.2.7:
+<p>
+<li><code>/uninstall</code> — удаление всех записей программы в системном реестре</li>
 </ul>
  
-<h2>Добавление и редактирование серверов</h2> 
+<h2 id="servers">Добавление и редактирование серверов</h2> 
 <p>На текущий момент в программе отсутствуют встроенные возможности по модифицированию списка серверов. 
 
-Вся информация о серверах, доступных в программе, содержится в файлe <i>servers.xml</i>, 
-находящемся в подкаталоге <i>"Data"</i> каталога, в который установлена программа, либо в 
-системной папке <i><span style="white-space: nowrap">"%appdata%\Image Uploader"</span></i>, относящейся к текущему пользователю. 
+Вся информация о серверах, доступных в программе, содержится в файлe <code>servers.xml</code>, 
+находящемся в подкаталоге <code>Data</code> каталога, в который установлена программа, либо в 
+системной папке <code style="">%appdata%\Image Uploader</code>, относящейся к текущему пользователю. 
 Программа использует этот файл в режиме "только для чтения".</p>
 <p>Файл составлен в соответствии со стандартом <a href="http://ru.wikipedia.org/wiki/XML">XML</a> и 
-должен быть сохранен в кодировке utf-16 или utf-8.</p>
+должен быть сохранен в кодировке utf-8.</p>
 <p>XML файл должен иметь следующую структуру:</p>
 
-<div class="xml"><ol><li class="li1"><div class="de1"><span class="sc3"><span class="re1">&lt;?xml</span> <span class="re0">version</span>=<span class="st0">&quot;1.0&quot;</span> <span class="re0">encoding</span>=<span class="st0">&quot;utf-16&quot;</span> <span class="re0">standalone</span>=<span class="st0">&quot;yes&quot;</span><span class="re2">?&gt;</span></span></div></li>
-<li class="li1"><div class="de1"><span class="sc3"><span class="re1">&lt;Servers<span class="re2">&gt;</span></span></span></div></li>
-<li class="li1"><div class="de1">&nbsp; <span class="sc3"><span class="re1">&lt;Server<span class="re2">&gt;</span></span></span></div></li>
-<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; ...</div></li>
-<li class="li2"><div class="de2">&nbsp; <span class="sc3"><span class="re1">&lt;/Server<span class="re2">&gt;</span></span></span></div></li>
-<li class="li1"><div class="de1">&nbsp; <span class="sc3"><span class="re1">&lt;Server<span class="re2">&gt;</span></span></span></div></li>
-<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; ...</div></li>
-<li class="li1"><div class="de1">&nbsp; <span class="sc3"><span class="re1">&lt;/Server<span class="re2">&gt;</span></span></span></div></li>
-<li class="li1"><div class="de1">&nbsp; ...</div></li>
-<li class="li2"><div class="de2"><span class="sc3"><span class="re1">&lt;/Servers<span class="re2">&gt;</span></span></span></div></li>
-</ol></div>
+<pre class="prettyprint">
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+&lt;Servers&gt;
+  &lt;Server&gt;
+      ...
+  &lt;/Server&gt;
+  &lt;Server&gt;
+      ...
+  &lt;/Server&gt;
+  ...
+&lt;/Servers&gt;
+</pre>
 <p>Последовательность, в которой указаны сервера в этом файле, не имеет значения. Программа сортирует их в алфавитном порядке.</p>
-<p>Каждый вложенный узел "Server" имеет следующий вид:</p> 
+<p>Каждый вложенный узел <code>&lt;Server&gt;</code> имеет следующий вид:</p> 
 
-<div class="xml"><ol><li class="li1"><div class="de1"><span class="sc3"><span class="re1">&lt;Server</span> <span class="re0">Name</span>=<span class="st0">&quot;название_сервера&quot;</span><span class="re2"> [атрибуты] &gt;</span></span></div></li>
-<li class="li1"><div class="de1">&nbsp; <span class="sc3"><span class="re1">&lt;Actions<span class="re2">&gt;</span></span></span></div></li>
-<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="sc3"><span class="re1">&lt;Action</span><span class="re2"> [атрибуты] /&gt;</span></span></div></li>
-<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="sc3"><span class="re1">&lt;Action</span><span class="re2"> [атрибуты] /&gt;</span></span></div></li>
-<li class="li2"><div class="de2">&nbsp; &nbsp; ...</div></li>
-<li class="li1"><div class="de1">&nbsp; <span class="sc3"><span class="re1">&lt;/Actions<span class="re2">&gt;</span></span></span></div></li>
-<li class="li1"><div class="de1">&nbsp; <span class="sc3"><span class="re1">&lt;Result</span> <span class="re0">ImageUrlTemplate</span>=<span class="st0">&quot;...&quot;</span> <span class="re0">ThumbUrlTemplate</span>=<span class="st0">&quot;...&quot;</span> <span class="re0">DownloadUrlTemplate</span>=<span class="st0">&quot;...&quot;</span><span class="re2">/&gt;</span></span></div></li>
-<li class="li1"><div class="de1"><span class="sc3"><span class="re1">&lt;/Server<span class="re2">&gt;</span></span></span></div></li>
-</ol></div>
+<pre class="prettyprint">
+&lt;Server Name=&quot;название_сервера&quot; [атрибуты] &gt;
+  &lt;Actions&gt;
+    &lt;Action [атрибуты] /&gt;
+    &lt;Action [атрибуты] /&gt;
+    ...
+  &lt;/Actions&gt;
+  &lt;Result ImageUrlTemplate=&quot;...&quot; ThumbUrlTemplate=&quot;...&quot; DownloadUrlTemplate=&quot;...&quot;/&gt;
+&lt;/Server&gt;
+</pre>
 			
-<p>Узел <b>Server</b> может иметь следующие <b><i>необязательные атрибуты</i></b>:</p> 
+<p>Узел <code>Server</code> может иметь следующие <i>необязательные атрибуты</i>:</p> 
 
 <ul>
-	<li><b>Authorize</b> — указывает, поддерживает ли сервер учетные записи. <br />Значения:  <i>0</i> (по умолчанию) — без авторизации,
+	<li><code>Authorize</code> — указывает, поддерживает ли сервер учетные записи. <br />Значения:  <i>0</i> (по умолчанию) — без авторизации,
 		<i>1</i> — сервер поддерживает авторизацию, <i>2</i> — авторизация обязательна.</li>
-	<li><b>Debug</b>  — параметр, предназначенный для тестирования и отладки загрузки на данный сервер. 
+	<li><code>NeedPassword</code> — (ver >= 1.2.9 build 4186) нужен ли пароль для авторизации. Необходимо для серверов с авторизацией через OAuth 2.0. <br />Значения:  <i>1</i> (по умолчанию) — нужен,
+		<i>0</i> - не нужен (поле ввода пароля будет не активно)</li>
+	<li><code>Debug</code>  — параметр, предназначенный для тестирования и отладки загрузки на данный сервер. 
 		При значении <i>1</i> любая загрузка на данный сервер в программе будет сопровождаться отображением информации 
 		об отправляемых запросах и принимаемых данных.</li>
-	<li><b>FileHost</b> — указывает на то, что сервер является хостингов для любых типов файлов (не только изображений). 
+	<li><code>FileHost</code> — указывает на то, что сервер является хостингов для любых типов файлов (не только изображений). 
 		<br />Значения:  <i>0</i> (по умолчанию) — хостинг картинок, <i>1</i> — файловый хостинг.</li>
-	<li><b>MaxFileSize</b> — максимальный размер загружаемого файла, поддерживаемого сервером. Значение 
+	<li><code>MaxFileSize</code> — максимальный размер загружаемого файла, поддерживаемого сервером. Значение 
 		указывается в байтах. Значение по умолчанию — 0, что означает, что файл может быть какого угодно размера.</li>
-	<li><b>Plugin</b> — содержит название файла скрипта (без расширения), отвечающего за загрузку на этот сервер. 
-		Скрипт должен быть расположен в каталоге Data\Scripts, и иметь расширение ".nut" . Если данный атрибут 
+	<li><code>Plugin</code> — содержит название файла плагина (без расширения .nut), отвечающего за загрузку на этот сервер. 
+		Скрипт должен быть расположен в каталоге Data\Scripts, и иметь расширение <code>.nut</code>. Если данный атрибут 
 		не пустой, весь узел &lt;Actions&gt; игнорируется, и всё взаимодействие с серверами перекладывается на 
 		скрипт. Однако, узел Actions всё равно может быть задан, для обратной совместимости с версиями программы 
-		&lt; 1.2.5.<br />  <a href="#scripts">Подробнее о скриптах...</a></li>
-	<li><b>SupportsFolders</b> — поддержка альбомов скриптом загрузки. Используется вместе с атрибутом <i>Plugin</i>.</li>
+		&lt; 1.2.5.<br />  <a href="#scripts">Подробнее о создании плагинов...</a></li>
+	<li><code>SupportsFolders</code> — поддержка альбомов скриптом загрузки. Используется вместе с атрибутом <i>Plugin</i>.</li>
 </ul>
 
-<p>Узел <b>&lt;Actions&gt;</b> (без атрибутов) содержит вложенные узлы Action, каждый из которых обозначает один HTTP или FTP запрос к серверу. Запросы выполняются в том порядке, в котором они указаны в файле, т.е. сверху вниз.</p> 
-<div class="xml"><ol><li class="li1"><div class="de1"><span class="sc3"><span class="re1">&lt;Action</span> <span class="re0">Type</span>=<span class="st0">&quot;get&quot;</span> <span class="re0">Url</span>=<span class="st0">&quot;http://example.com/&quot;</span> <span class="re0">RegExp</span>=<span class="st0">'id(\d+)'</span> <span class="re0">AssignVars</span>=<span class="st0">&quot;ИмяПеременной:0&quot;</span> <span class="br0">&#91;</span>дополнительные атрибуты<span class="br0">&#93;</span><span class="re2">/&gt;</span></span></div></li>
-</ol></div>
-<p>Каждый узел <b>Action</b>  может иметь следующие атрибуты:</p>
+<p>Узел <code>&lt;Actions&gt;</code> (без атрибутов) содержит вложенные узлы Action, каждый из которых обозначает один HTTP или FTP запрос к серверу. Запросы выполняются в том порядке, в котором они указаны в файле, т.е. сверху вниз.</p> 
+<pre class="prettyprint">
+&lt;Action Type=&quot;get&quot; Url=&quot;http://example.com/&quot; RegExp=&#39;id(\d+)&#39; AssignVars=&quot;ИмяПеременной:0&quot; 
+    [дополнительные атрибуты]/&gt;
+</pre>
+
+<p>Каждый узел <code>&lt;Action&gt;</code>  может иметь следующие атрибуты:</p>
 <ul>
-<li><b>Url</b> — обязательный атрибут. Должен содержать HTTP, HTTPS или FTP адрес. Может содержать <a href="#vars">переменные</a>.</li>
-<li><b>Type</b>  — тип запроса к серверу. <br />Может принимать следующие значения: 
+<li><code>Url</code> — обязательный атрибут. Должен содержать HTTP, HTTPS или FTP адрес. Может содержать <a href="#vars">переменные</a>.</li>
+<li><code>Type</code>  — тип запроса к серверу. <br />Может принимать следующие значения: 
 	<ul>
 		<li><i>get</i> — метод  GET  протокола HTTP </li>
 		<li><i>post</i> — метод  POST протокола HTTP </li>
@@ -112,33 +133,34 @@
 		<li><i>put</i> — загрузка файла с помощью HTTP PUT запроса или загрузка на FTP. Поддерживается лишь некоторыми серверами.</li>
 	</ul>
 	</li>
-<li><b>PostParams</b> — список параметров, передаваемых серверу по протоколу POST (Type=post или Type=upload), разделенных точкой с запятой.<br />
-Список имеет следующий вид: "<i>НазваниеПараметра1=Значение1;НазваниеПараметра2=Значение2;...</i>"<br />
+<li><code>PostParams</code> — список параметров, передаваемых серверу по протоколу POST (Type=post или Type=upload), разделенных точкой с запятой.<br />
+Список имеет следующий вид: <code>НазваниеПараметра1=Значение1;НазваниеПараметра2=Значение2;...</code><br />
 Значения могут содержать названия переменных, которые будут автоматически подставлены (раскрыты) перед выполнением запроса.
 Также есть особое значение — <i>%filename%</i>, вместо которого в запрос подставляется содержимое загружаемого файла.</li>
-<li><b>RegExp</b> — регулярное выражение в формате <a href="http://www.php.ru/manual/reference.pcre.pattern.syntax.html">PCRE</a>. Служит для извлечения необходимой информации (ссылок, идентификаторов) из текста ответа, полученного от сервера (чаще всего HTML страницы). 
+<li><code>RegExp</code> — регулярное выражение в формате <a href="http://www.php.ru/manual/reference.pcre.pattern.syntax.html">PCRE</a>. Служит для извлечения необходимой информации (ссылок, идентификаторов) из текста ответа, полученного от сервера (чаще всего HTML страницы). 
 Если сопоставление регулярному выражению не удалось, программа генерирует предупреждение в лог ошибок и повторяет запрос.</li>
-<li><b>AssignVars</b> — в данном атрибуте перечисляются имена новых переменных, и сопоставленные им номера подмасок 
-регулярного выражения. Параметр AssignVars имеет формат "<i>НазваниеПеременной:НомерПодмаски;...</i>". 
+<li><code>AssignVars</code> — в данном атрибуте перечисляются имена новых переменных, и сопоставленные им номера подмасок 
+регулярного выражения. Параметр AssignVars имеет формат <code>НазваниеПеременной:НомерПодмаски;...</code>. 
 Подмаска в регулярном выражении это то, что заключено в круглые скобки. Нумерация подмасок начинается с нуля. 
 Имя переменной может содержать символы A-z, 0-9 и символ подчеркивания. 
 <a href="#vars">Подробнее о переменных в servers.xml</a></li>
-<li><b>OnlyOnce</b> — значение <i>1</i> означает, что данный запрос будет выполняться лишь 1 раз за всю сессию загрузки. 
+<li><code>OnlyOnce</code> — значение <i>1</i> означает, что данный запрос будет выполняться лишь 1 раз за всю сессию загрузки. 
 Чаще всего этим запросом является авторизация на сервере. Значение <i>0</i> - данный запрос выполняется при КАЖДОГО каждого файла.</li>
-<li><b>Referer</b> — (опциональный параметр) адрес страницы источника запроса. Используется, если сервер ограничивает запросы с чужих сайтов.
+<li><code>Referer</code> — (опциональный параметр) адрес страницы источника запроса. Используется, если сервер ограничивает запросы с чужих сайтов.
  По умолчанию программа устанавливает Referer такой же, как и адрес запрашиваемой страницы.</li>
-<li><b>Description</b> — опциональный параметр, содержащий описание текущего действия. Отображается в окне программы.</li>
+<li><code>Description</code> — опциональный параметр, содержащий описание текущего действия. Отображается в окне программы.</li>
 </ul>
 <p>Типичный вид xml-узла Result:</p>
-<div class="xml"><ol><li class="li1"><div class="de1"><span class="sc3"><span class="re1">&lt;Result</span> <span class="re0">ImageUrlTemplate</span>=<span class="st0">&quot;$(Image)&quot;</span> <span class="re0">ThumbUrlTemplate</span>=<span class="st0">&quot;$(Thumb)&quot;</span> <span class="re0">DownloadUrlTemplate</span>=<span class="st0">&quot;$(View)&quot;</span><span class="re2">/&gt;</span></span></div></li>
-</ol></div>
+<pre class="prettyprint">
+&lt;Result ImageUrlTemplate=&quot;$(Image)&quot; ThumbUrlTemplate=&quot;$(Thumb)&quot; DownloadUrlTemplate=&quot;$(View)&quot;/&gt;
+</pre>
 <p>Атрибуты узла Result:</p>
 <ul>
-<li><b>ImageUrlTemplate</b> — строка-шаблон для генерации прямой ссылки на картинку или файл. </li>
-<li><b>ThumbUrlTemplate</b>  — строка-шаблон для генерации прямой ссылки на файл миниатюры. 
+<li><code>ImageUrlTemplate</code> — строка-шаблон для генерации прямой ссылки на картинку или файл. </li>
+<li><code>ThumbUrlTemplate</code>  — строка-шаблон для генерации прямой ссылки на файл миниатюры. 
 Если не задан, программа будет сама генерировать миниатюры, даже если включена опция "Использовать серверные миниатюры". 
 Генерирование миниатюры будет невозможно, если параметр ImageUrlTemplate не задан или принимает пустое значение. </li>
-<li><b>DownloadUrlTemplate</b> — строка-шаблон для генерации ссылки на страницу предпросмотра, скачивания и т.п.</li>
+<li><code>DownloadUrlTemplate</code> — строка-шаблон для генерации ссылки на страницу предпросмотра, скачивания и т.п.</li>
 </ul>
 <p>Каждый из этих атрибутов может содержать <a href="#vars">переменные</a>. </p>
 <p>Один из атрибутов — ImageUrlTemplate или DownloadUrlTemplate  — должен быть обязательно задан. Программа использует тот или иной атрибут в зависимости от настроек, и в зависимости от того, какой из атрибутов задан, а какой нет. По-умолчанию предпочтение отдается прямой ссылке.
@@ -150,113 +172,195 @@
 Если название переменной начинается с символа подчеркивания, это означает, что данная переменная не будет удалена после загрузки файла, и она останется в памяти на всю сессию загрузки. Однако это не означает, что её значение не может быть перезаписано.</p>
 <p>Список встроенных переменных:</p>
 <ul>
-<li><b>_FILENAME</b> — имя загружаемого файла (без пути к файлу).</li>
-<li><b>_FILENAMEWITHOUTEXT</b>  — имя загружаемого файла без расширения.</li>
-<li><b>_FILEEXT</b> — расширение файла.</li>
-<li><b>_THUMBWIDTH</b> — ширина миниатюры.</li>
-<li><b>_RAND16BITS</b> — случайное число от 0 до 65535. Генерируется только один раз при загрузке каждого файла.</li>
-<li><b>_LOGIN</b> — имя пользователя (задана, если пользователь включил авторизацию в настройках)</li>
-<li><b>_PASSWORD</b> — пароль пользователя.</li>
+<li><code>_FILENAME</code> — имя загружаемого файла (без пути к файлу).</li>
+<li><code>_FILENAMEWITHOUTEXT</code>  — имя загружаемого файла без расширения.</li>
+<li><code>_FILEEXT</code> — расширение файла.</li>
+<li><code>_THUMBWIDTH</code> — ширина миниатюры.</li>
+<li><code>_RAND16BITS</code> — случайное число от 0 до 65535. Генерируется только один раз при загрузке каждого файла.</li>
+<li><code>_LOGIN</code> — имя пользователя (задана, если пользователь включил авторизацию в настройках)</li>
+<li><code>_PASSWORD</code> — пароль пользователя.</li>
 </ul>
-<p>Для подстановки значений переменных в строковые параметры используются конструкции вида <b>$(ИмяПеременной)</b>. Количество подставляемых переменных не ограничивается.
+<p>Для подстановки значений переменных в строковые параметры используются конструкции вида <code>$(ИмяПеременной)</code>. Количество подставляемых переменных не ограничивается.
 Если переменная не существует, вместо неё будет подставлена пустая строка.</p>
 <p>Пример:</p>
-<div class="xml"><ol><li class="li1"><div class="de1"><span class="sc3"><span class="re1">&lt;Server</span> <span class="re0">Name</span>=<span class="st0">&quot;slil.ru&quot;</span> <span class="re0">FileHost</span>=<span class="st0">&quot;1&quot;</span><span class="re2">&gt;</span></span></div></li>
-<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="sc3"><span class="re1">&lt;Actions<span class="re2">&gt;</span></span></span></div></li>
-<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="sc3"><span class="re1">&lt;Action</span> <span class="re0">Type</span>=<span class="st0">&quot;upload&quot;</span> <span class="re0">Url</span>=<span class="st0">&quot;http://zalil.ru/upload/&quot;</span> <span class="re0">PostParams</span>=<span class="st0">&quot;file=%filename%;submit=Send&quot;</span> <span class="re0">RegExp</span>=<span class="st0">'http://slil.ru/(\d*)'</span> <span class="re0">AssignVars</span>=<span class="st0">&quot;File:0&quot;</span><span class="re2">/&gt;</span></span></div></li>
-<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; <span class="sc3"><span class="re1">&lt;/Actions<span class="re2">&gt;</span></span></span></div></li>
-<li class="li2"><div class="de2">&nbsp; &nbsp; &nbsp; &nbsp; <span class="sc3"><span class="re1">&lt;Result</span> <span class="re0">DownloadUrlTemplate</span>=<span class="st0">&quot;http://slil.ru/$(File)&quot;</span><span class="re2">/&gt;</span></span></div></li>
-<li class="li1"><div class="de1"><span class="sc3"><span class="re1">&lt;/Server<span class="re2">&gt;</span></span></span></div></li>
-</ol></div>
-<p>В строке <i>AssignVars="File:0"</i> задается переменная с именем File и ей присваивается некоторое числовое значение, полученное из первой подмаски регулярного выражения (например File=12345). 
-Затем созданная переменная используется в параметре <i>DownloadUrlTemplate="<b>http://slil.ru/$(File)</b>"</i>, который в результате подстановки принимает значение "<b><i>http://slil.ru/12345</i></b>". 
+<pre class="prettyprint">
+&lt;Server Name=&quot;slil.ru&quot; FileHost=&quot;1&quot;&gt;
+        &lt;Actions&gt;
+             &lt;Action Type=&quot;upload&quot; Url=&quot;http://zalil.ru/upload/&quot; PostParams=&quot;file=%filename%;submit=Send&quot; 
+		RegExp=&apos;http://slil.ru/(\d*)&apos; AssignVars=&quot;File:0&quot;/&gt;
+        &lt;/Actions&gt;
+        &lt;Result DownloadUrlTemplate=&quot;http://slil.ru/$(File)&quot;/&gt;
+&lt;/Server&gt;
+</pre>
+<p>В строке <code>AssignVars="File:0"</code> задается переменная с именем File и ей присваивается некоторое числовое значение, 
+полученное из первой подмаски регулярного выражения (например, <code>File=12345</code>). 
+Затем созданная переменная используется в параметре <code>DownloadUrlTemplate="http://slil.ru/$(File)"</code>, который в результате подстановки принимает значение <code>http://slil.ru/12345</code>. 
 Полученную ссылку пользователь видит в окне программы.</p>
 <a name="scripts"></a>
-<h2>Скрипты загрузки</h2> 
+<h2>Создание плагинов</h2> 
 <p>Для расширенной поддержки серверов в программе используются скрипты на <a href="http://www.squirrel-lang.org/doc/squirrel2.html"> языке Squirrel</a>.</p>
-<br />Они должны быть сохранены в кодировке utf-8 в файлах с расширением ".nut".
-<div class="javascript"><ol><li class="li1"><div class="de1">&nbsp;</div></li>
-<li class="li1"><div class="de1"><span class="co1">// Получение списка альбомов(папок, галерей) на сервере</span></div></li>
-<li class="li1"><div class="de1"><span class="kw2">function</span> GetFolderList<span class="br0">&#40;</span>list<span class="br0">&#41;</span> </div></li>
-<li class="li1"><div class="de1"><span class="br0">&#123;</span></div></li>
-<li class="li2"><div class="de2">&nbsp; &nbsp; <span class="co1">// Код</span></div></li>
-<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="kw1">return</span> <span class="nu0">1</span><span class="sy0">;</span> <span class="co1">//успех</span></div></li>
-<li class="li1"><div class="de1"><span class="br0">&#125;</span></div></li>
-<li class="li1"><div class="de1">&nbsp;</div></li>
-<li class="li1"><div class="de1"><span class="co1">// Функция, создающая альбомы</span></div></li>
-<li class="li2"><div class="de2"><span class="kw2">function</span> CreateFolder<span class="br0">&#40;</span>parentAlbum<span class="sy0">,</span>album<span class="br0">&#41;</span></div></li>
-<li class="li1"><div class="de1"><span class="br0">&#123;</span></div></li>
-<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp;<span class="co1">// Код</span></div></li>
-<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="kw1">return</span> <span class="nu0">1</span><span class="sy0">;</span> <span class="co1">//успех</span></div></li>
-<li class="li1"><div class="de1"><span class="br0">&#125;</span></div></li>
-<li class="li2"><div class="de2">&nbsp;</div></li>
-<li class="li1"><div class="de1"><span class="kw2">function</span> ModifyFolder<span class="br0">&#40;</span>album<span class="br0">&#41;</span></div></li>
-<li class="li1"><div class="de1"><span class="br0">&#123;</span></div></li>
-<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp;<span class="co1">// Код</span></div></li>
-<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="kw1">return</span> <span class="nu0">1</span><span class="sy0">;</span> <span class="co1">//успех</span></div></li>
-<li class="li2"><div class="de2"><span class="br0">&#125;</span></div></li>
-<li class="li1"><div class="de1">&nbsp;</div></li>
-<li class="li1"><div class="de1"><span class="co1">// Функция, загружающая файл</span></div></li>
-<li class="li1"><div class="de1"><span class="kw2">function</span> &nbsp;UploadFile<span class="br0">&#40;</span>FileName<span class="sy0">,</span> options<span class="br0">&#41;</span></div></li>
-<li class="li1"><div class="de1"><span class="br0">&#123;</span></div></li>
-<li class="li2"><div class="de2">&nbsp; &nbsp; &nbsp;<span class="co1">// Код</span></div></li>
-<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp;<span class="kw1">return</span> <span class="nu0">1</span><span class="sy0">;</span> <span class="co1">//успех</span></div></li>
-<li class="li1"><div class="de1"><span class="br0">&#125;</span></div></li>
-<li class="li1"><div class="de1">&nbsp;</div></li>
-<li class="li1"><div class="de1"><span class="co1">// Функция, возвращающая список видов ограничений доступа к альбому:</span></div></li>
-<li class="li2"><div class="de2"><span class="co1">// приватный, общедоступный, только для друзей и т.п.</span></div></li>
-<li class="li1"><div class="de1"><span class="kw2">function</span> GetFolderAccessTypeList<span class="br0">&#40;</span><span class="br0">&#41;</span></div></li>
-<li class="li1"><div class="de1"><span class="br0">&#123;</span></div></li>
-<li class="li1"><div class="de1">&nbsp; &nbsp; local a<span class="sy0">=</span><span class="br0">&#91;</span><span class="st0">&quot;ТипДоступа1&quot;</span><span class="sy0">,</span> <span class="st0">&quot;ТипДоступа2&quot;</span><span class="br0">&#93;</span><span class="sy0">;</span></div></li>
-<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="kw1">return</span> a<span class="sy0">;</span></div></li>
-<li class="li2"><div class="de2"><span class="br0">&#125;</span></div></li>
-</ol></div>
-<p>
-В общем случае необходимо реализовать 1 функцию — <i>UploadFile</i>. Если нужна поддержка серверных альбомов, то необходимо реализовать еще 4 функции — <i>GetFolderList, CreateFolder, ModifyFolder, GetFolderAccessTypeList</i>.</p>
-<p>
-<h3>API доступный скриптам:</h3>
-<p>
-<b>print()</b> - стандартная функция squirrel, выводящая текст на стандартный вывод. Его можно увидеть в окне лога ошибок.<br/>
-<br>все остальные стандартные функции можно посмотреть в документации языка Squirrel.<p>
+<p>Они должны быть сохранены в кодировке utf-8 в файлах с расширением <code>.nut</code>.
+<p><b>Пример плагина (example.nut):</b> </p>
+<pre class="prettyprint">
+// Функция, загружающая файл
+function  UploadFile(FileName, options)
+{
+    nm.setUrl("http://example.com/upload.php");
+    nm.addQueryParamFile("file", FileName, ExtractFileName(FileName),"");
+    nm.addQueryParam("submit", "Upload file!");
+    nm.doUploadMultipartData();
 
-<b>random(int)</b> - возвращает случайное число не меньше заданного<br/>
-<b>md5</b> - возвращает md5-хэш строки в виде строки<br/>
-<b>md5_file</b> - возвращает md5-хэш файла (доступно начиная с IU 1.2.7 <b>build 4176</b>)<br/>
-<b>sha1</b> - возвращает sha1-хэш строки в виде строки (доступно начиная с IU 1.2.7 <b>build 4176</b>)<br/>
-<b>sha1_file</b> - возвращает sha1-хэш файла (доступно начиная с IU 1.2.7 <b>build 4176</b>)<br/>
-<b>AnsiToUtf8</b>(<i>text</i>, <i>codepage</i>) - конвертирует строку из ANSI в UTF8. codepage - номер кодировки.<br/>
-<b>ExtractFileName</b>(<i>filePath</i>) - извлекает имя файла с расширением из пути<br/>
-<b>GetFileExtension</b>- извлекает расширение файла из пути<br/>
-<b>AskUserCaptcha</b>(<i>nm</i>,<i>url</i>) - запрос ввода каптчи. nm - network manager, url - адрес картинки с каптчей. Возвращаемое значение - введенный пользователем текст.(доступно начиная с IU 1.2.7)<br/>
-<b>GetFileMimeType</b>(<i>fileName</i>) - возвращает MIME тип файла <br/>
-<b>DebugMessage</b>(<i>text</i>, <i>isResponseBody</i>) - вывод диагностического текстового сообщения<br/>
-<br>
-<b>nm</b> - глобальный объект, являющийся экземпляром класса <b>NetworkManager</b>.<br>
-NetworkManager - класс HTTP/FTP клиента. Обращение к методам класса: <i>nm.имяМетода(параметры)</i><br>
-Методы класса:
-<i>doGet(url)</i> - выполнение GET запроса(протокол HTTP)<br/><BR>
-<i>responseBody()</i>  - возвращает тело ответа сервера ( как правило это текст HTML страницы, JSON, XML или другой формат)<BR><BR>
-<i>responseCode()</i>  - возвращает код ответа (например 200 означает HTTP OK)<BR><BR>
-<i>setUrl(url)</i>  - устанавливает адрес URL для следующего запроса<br><BR><BR>
-<i>doPost(data)</i>  - выполняет POST запрос. data - тело запроса (например, "param1=value&amp;param2=value2" ). Если data - пустая строка, используются параметры,
- предварительно заданные с помощью функции addQueryParam()<br><BR>
-<i>addQueryHeader(name, value)</i>  - устанавливает значение заголовка HTTP запроса<br><BR>
-<i>addQueryParam(name, value)</i>  - добавляет к POST запросу параметр с именем и значением<br><BR>
-<i>addQueryParamFile(name, fileName, displayName, contentType)</i>  - добавляет к MULTIPART/DATA POST запросу параметр - файл. name - имя параметра запроса, filename - физический путь к файлу,
-displayname - отображаемое имя(то имя, которое передается серверу, не содержит пути), contentType - mime тип файла, может быть пустой строкой или получен с помощью функции GetFileMimeType)
-Метод аналогичен элементу HTML формы -  &lt;input type="file"&gt;.
-<br><BR>
-<i>responseHeaderCount()<i> - количество параметров в  HTTP -заголовке ответa<br> <BR>
-<i>urlEncode(text)</i> - процентное кодирование строки, необходимо при подготовке правильного GET-запроса<br><BR>
-<i>errorString</i> - содержит текст ошибки (например, HTTP 404 not found )<br><BR>
-<i>doUpload(filename, data)</i> - отправка файла или данных непосредственно в теле POST запроса ( не используется MULTIPART кодирование )<br><BR>
-<i>setMethod</i> - позволяет вручную задать тип запроса - POST, GET, PUT ...<BR><BR>
-<i>doUploadMultipartData</i> - посылает запрос по адресу, установленному функцией setUrl в виде параметров и файлов, закодированных в формате MULTIPART/FORM-DATA. Аналогичен отправке формы с файлом с веб-страницы.<BR><BR>
+    local response = nm.responseBody();
+    local directUrl = regex_simple(response, "\\[IMG\\](.+)\\[/IMG\\]",0);
+    
+    options.setDirectUrl(directUrl);
 
+    return 1; //успех
+}
+
+// Вспомогательная функция, упрощающая работу с регулярными выражениями
+function regex_simple(data,regStr,start)
+{
+    local ex = regexp(regStr);
+    local res = ex.capture(data, start);
+    local resultStr = "";
+    if(res != null){    
+        resultStr = data.slice(res[1].begin, res[1].end);
+    }
+    return resultStr;
+}
+
+// Необязательные функции:
+// Получение списка альбомов(папок, галерей) на сервере
+function GetFolderList(list)
+{
+    // Ваш код
+    return 1; //успех
+}
+ 
+// Функция, создающая альбомы
+function CreateFolder(parentAlbum,album)
+{
+    // Ваш код
+    return 1; //успех
+}
+ 
+function ModifyFolder(album)
+{
+    // Ваш код
+    return 1; //успех
+}
+ 
+// Функция, возвращающая список видов ограничений доступа к альбому:
+// приватный, общедоступный, только для друзей и т.п.
+function GetFolderAccessTypeList()
+{
+    local a=["ТипДоступа1", "ТипДоступа2"];
+    return a;
+}
+
+
+
+</pre>
+<div class="script-functions">
+<p>
+В общем случае необходимо реализовать 1 функцию — <code>UploadFile</code>.<br>
+Если нужна поддержка серверных альбомов, то необходимо реализовать еще 4 функции — <code>GetFolderList</code>, <code>CreateFolder</code>, 
+<code>ModifyFolder</code>, <code>GetFolderAccessTypeList</code></i>.</p>
+<p>
+<h3>Scripting API</h3>
+<p>
+<h4>Глобальные функции</h4>
+Некоторые из стандартных функций:
+<p>
+<code class="f">print(<i>arg</i>)</code>
+Cтандартная функция squirrel, выводящая текст на стандартный вывод. Его можно увидеть в окне лога ошибок.<br/>
+<code class="f">rename(<u>string</u> <i>src</i>, <u>string</u> <i>dst</i>)</code>
+Переименовывает/перемещает файл или переименовывает папку.
+<code class="f">system(<u>string</u> <i>cmd</i>)</code>
+Выполнение любой системной команды.<br>
+<p>
+Остальные стандартные функции можно посмотреть в <a href="http://www.squirrel-lang.org/doc/sqstdlib2.html" target="_blank">документации стандартной библиотеки</a>
+и <a href="http://www.squirrel-lang.org/doc/squirrel2.html" target="_blank">документации языка Squirrel</a>.
+<p>
+<code class="f"><u>string</u> AnsiToUtf8(<u>string</u> <i>text</i>, <u>int</u> <i>codepage_number</i>)</code>
+Конвертирует строку из кодировки ANSI в UTF-8. <i>codepage_number</i> - номер кодировки. 
+Нужный номер можно найти <a href="https://image-uploader.googlecode.com/svn/trunk/Source/Core/3rdpart/CodePages.cpp" target="_blank">здесь</a>.
+<code class="f"><u>string</u> AskUserCaptcha(<u>NetworkManager</u> <i>nm</i>, <u>string</u> <i>url</i>)<span>version >= 1.2.7</b></span></code>
+Показывает диалоговое окно ввода капчи. <i class="var">nm</i> - network manager, <i class="var">url</i> - адрес картинки с каптчей. 
+Возвращаемое значение - введенный пользователем текст.
+<code class="f">DebugMessage(<u>string</u> <i>text</i>, <u>bool</u> <i>isResponseBody</i>)</code> 
+Показывает диалоговое окно с диагностическим сообщением.
+<code class="f"><u>string</u> ExtractFileName(<u>string</u> <i>filePath</i>)</code>
+Извлекает имя файла с расширением из пути
+<code class="f"><u>string</u> GetFileExtension(<u>string</u> <i>filename</i>)</code>
+Извлекает расширение файла из пути.
+<code class="f"><u>string</u> GetFileMimeType(<u>string</u> <i>fileName</i>)</code>
+Возвращает MIME тип файла (например "text/html").
+<code class="f"><u>string</u> JsonEscapeString(<u>string</u> <i>text</i>)</code>
+Экранирует строку для использования в JSON.
+<code class="f"><u>string</u> md5(<u>string</u> <i>str</i>)</code>
+Возвращает md5-хэш строки в виде строки.
+<code class="f"><u>string</u> md5_file(<u>string</u> <i>filename</i>)<span>version >= 1.2.7 <b>build 4176</b></span></code>
+Возвращает md5-хэш файла.
+<code class="f"><u>int</u> random(<u>int</u> <i>max</i>)</code>
+Возвращает случайное число не больше заданного.
+<code class="f"><u>string</u> sha1(<u>string</u> <i>str</i>)<span>version >= 1.2.7 <b>build 4176</b></span></code>
+Возвращает sha1-хэш строки в виде строки)
+<code class="f"><u>string</u> sha1_file(<u>string</u> <i>filename</i>)<span>version >= 1.2.7 <b>build 4176</b></span></code>
+Возвращает sha1-хэш файла<br/>
+<code class="f">ShellOpenUrl(<u>string</u> <i>url</i>)<span>version >= 1.2.9 <b>build 4185</b></span></code> 
+Открывает URL/файл в стандартном браузере/ассоциированном приложении. 
+<code class="f"><u>string</u> Utf8ToAnsi(<u>string</u> <i>text</i>, <u>int</u> <i>codepage_number</i>)<span>version >= 1.2.9 <b>build 4185</b></span></code>
+Конвертирует строку из кодировки UTF-8 в ANSI. <i>codepage_number</i> - номер кодировки. 
+Нужный номер можно найти <a href="https://image-uploader.googlecode.com/svn/trunk/Source/Core/3rdpart/CodePages.cpp" target="_blank">здесь</a>.
+<p>
+<h4>NetworkManager</h4>
+Класс HTTP/FTP клиента.<p>
+<code>nm</code> - глобальный объект, являющийся экземпляром класса <code><a href="https://code.google.com/p/image-uploader/source/browse/trunk/Source/Core/Network/NetworkManager.h" target="_blank">NetworkManager</a></code>
+<p>Обращение к методам объекта: <code>nm.имяМетода(<i>параметры</i>);</code>
+<p>
+<b><i>Методы класса NetworkManager:</i></b><p>
+<code class="f">addQueryHeader(<u>string</u> <i>name</i>, <u>string</u> <i>value</i>)</code>
+Устанавливает значение заголовка HTTP запроса
+<code class="f">addQueryParam(<u>string</u> <i>name</i>, <u>string</u> <i>value</i>)</code>
+Добавляет к POST запросу параметр с именем и значением
+<code class="f">addQueryParamFile(<u>string</u> <i>name</i>, <u>string</u> <i>fileName</i>, <u>string</u> <i>displayName</i>, <u>string</u> contentType)</code> 
+Добавляет к MULTIPART/DATA POST запросу параметр - файл. name - имя параметра запроса, filename - физический путь к файлу,
+displayname - отображаемое имя(то имя, которое передается серверу, не содержит пути), contentType - mime тип файла, может 
+быть пустой строкой или получен с помощью функции <code>GetFileMimeType</code>).
+Метод аналогичен элементу HTML формы -  <code>&lt;input type="file"&gt;</code>.
+<code class="f">doGet(<u>string</u> <i>url</i>)</code>
+Выполнение GET запроса(протокол HTTP).
+<code class="f">doPost(<u>string</u> <i>data</i>)</code>
+Выполняет POST запрос. data - тело запроса (например, "param1=value&amp;param2=value2" ). 
+Если data - пустая строка, используются параметры, предварительно заданные с помощью функции addQueryParam().
+<code class="f">doUpload(<u>string</u> <i>filename</i>, <u>string</u> <i>data</i>)</code> 
+Отправка файла или данных непосредственно в теле POST запроса 
+(не используется MULTIPART кодирование).
+<code class="f">doUploadMultipartData()</code>
+Посылает запрос по адресу, установленному функцией <code>setUrl</code>
+ в виде параметров и файлов, закодированных в формате MULTIPART/FORM-DATA. Аналогичен отправке формы с файлом с веб-страницы.
+<code class="f"><u>string</u> errorString()</code>
+Возвращает текст ошибки для последнего выполненного запроса.(например, <code>HTTP 404 not found</code>).
+<code class="f"><u>string</u> responseBody()</code>
+Возвращает тело ответа сервера ( как правило это текст HTML страницы, JSON, XML или другой формат).
+<code class="f"><u>int</u> responseHeaderCount()</code>
+Возвращает количество параметров в  HTTP -заголовке ответa.
+<code class="f"><u>int</u> responseCode()</code>
+Возвращает код ответа (например, код 200 означает HTTP OK).
+<code class="f">setMethod(<u>string</u> <i>method</i>)</code>
+Позволяет вручную задать тип запроса - POST, GET, PUT ...
+<code class="f">setUrl(<u>string</u> <i>url</i>)</code> 
+Устанавливает адрес URL для следующего запроса.
+<code class="f"><u>string</u> urlEncode(<u>string</u> <i>text</i>)</code>
+Процентное кодирование строки, необходимо при подготовке правильного GET-запроса.
+</div>
 </div>
 </div>
 <div id="footer">
-<p> Последнее обновление данного документа — 27 марта 2012 года. Copyright &copy; 2007 - 2012, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
+<p> Последнее обновление данного документа — 20.02.2015 года. Copyright &copy; 2007 - 2015, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
 </div>
+
 </body>
 </html>
