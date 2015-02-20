@@ -69,9 +69,15 @@ ZOutputCodeGenerator::CodeLang codeLang = ZOutputCodeGenerator::clPlain;
 bool autoUpdate = true;
 
 
+
 #ifdef _WIN32
 void DoUpdates(bool force = false);
 #endif
+void DebugMessage2(const std::string& message, bool isServerResponseBody)
+{
+    std::cerr<<message<<std::endl;
+}
+
 bool UploadFile(CUploader &uploader, std::string fileName, /*[out]*/ ZUploadObject &uo)
 {
    std::cerr<<" Uploading file '";
@@ -81,6 +87,7 @@ bool UploadFile(CUploader &uploader, std::string fileName, /*[out]*/ ZUploadObje
 	std::cerr<<IuCoreUtils::Utf8ToSystemLocale(fileName);
 #endif
    std::cerr<<"' to server "<< uploader.getUploadEngine()->getUploadData()->Name<<std::endl;
+   uploader.onDebugMessage.bind(&DebugMessage2);
    //return false;
    if(!uploader.UploadFile(fileName, IuCoreUtils::ExtractFileName(fileName)))
    {
@@ -624,8 +631,10 @@ int main(int argc, char *argv[]){
    else {
 dataFolder = "/usr/share/imgupload/";
    }
+#ifndef __APPLE__
 settingsFolder = getenv("HOME")+std::string("/.config/imgupload/");
 mkdir(settingsFolder.c_str(), 0700);
+#endif
 
 #endif
 
@@ -656,7 +665,7 @@ mkdir(settingsFolder.c_str(), 0700);
   if ( !Settings.SaveSettings() ) {
 	std::cerr<<"Cannot save settings!"<<std::endl;
   }
-  
+
    delete lastEngine;
 	CScriptUploadEngine::DestroyScriptEngine();
 #ifdef _WIN32

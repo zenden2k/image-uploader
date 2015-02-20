@@ -17,8 +17,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "atlheaders.h"
 #include "UploadSettings.h"
+
+#include "atlheaders.h"
 #include "ServerFolderSelect.h"
 #include "NewFolderDlg.h"
 #include "ServerParamsDlg.h"
@@ -31,6 +32,7 @@
 #include <Gui/IconBitmapUtils.h>
 #include <Func/WinUtils.h>
 #include <Func/IuCommonFunctions.h>
+#include "AddFtpServerDialog.h"
 
 CUploadSettings::CUploadSettings(CMyEngineList * EngineList):сonvert_profiles_(Settings.ConvertProfiles)
 {
@@ -569,6 +571,24 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 			sub.InsertMenuItem(menuItemCount++, true, &mi);	
 		}
 
+		mi.wID = IDC_FILESERVER_LAST_ID + 1;
+		mi.fType = MFT_SEPARATOR;
+
+		sub.InsertMenuItem(menuItemCount++, true, &mi);
+		mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
+		mi.fType = MFT_STRING;
+		mi.wID = IDC_ADD_FTP_SERVER;
+
+		mi.dwTypeData  = TR("Добавить FTP сервер...");
+		mi.hbmpItem = 0;
+		/*HICON hImageIcon = m_EngineList->getIconForServer(ued->Name);
+		mi.hbmpItem =  WinUtils::IsVista() ? iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon): HBMMENU_CALLBACK;
+		if ( mi.hbmpItem ) {
+			mi.fMask |= MIIM_BITMAP;
+		}*/
+
+		sub.InsertMenuItem(menuItemCount++, true, &mi);	
+
 		sub.SetMenuDefaultItem(ImageServer?(IDC_IMAGESERVER_FIRST_ID+m_nImageServer): (IDC_FILESERVER_FIRST_ID+m_nFileServer),FALSE);
 	}
 	else
@@ -922,3 +942,10 @@ LRESULT CUploadSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWN
    return 0;
 }
 
+
+LRESULT CUploadSettings::OnAddFtpServer(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+{
+	CAddFtpServerDialog dlg;
+	dlg.DoModal(m_hWnd);
+	return 0;
+}

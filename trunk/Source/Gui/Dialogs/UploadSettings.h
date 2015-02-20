@@ -54,6 +54,9 @@
 #define IDC_RESIZEPRESETMENU_FIRST_ID 18000
 #define IDC_RESIZEPRESETMENU_LAST_ID 18100
 
+#define IDC_ADD_FTP_SERVER 19001
+
+
 class CMyEngineList;
 class IconBitmapUtils;
 
@@ -104,6 +107,7 @@ COMMAND_HANDLER(IDC_IMAGEHEIGHT, EN_CHANGE, OnProfileEditedCommand)
       COMMAND_HANDLER_EX(IDC_RESIZEPRESETSBUTTON, BN_CLICKED, OnResizePresetButtonClicked)
       COMMAND_ID_HANDLER_EX(IDC_EDITPROFILE, OnEditProfileClicked)
       COMMAND_HANDLER_EX(IDC_PROFILECOMBO, CBN_SELCHANGE, OnProfileComboSelChange)
+		COMMAND_ID_HANDLER_EX(IDC_ADD_FTP_SERVER, OnAddFtpServer)
 	   REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
     // Handler prototypes:
@@ -170,6 +174,7 @@ public:
    void SaveCurrentProfile();
    CString CurrentProfileOriginalName;
    LRESULT OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+   LRESULT OnAddFtpServer(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 };
 
 

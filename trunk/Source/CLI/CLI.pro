@@ -6,7 +6,7 @@ CONFIG -= qt
 SOURCES += main.cpp \
     ../Core/Network/NetworkManager.cpp \
     ../Core/Upload/DefaultUploadEngine.cpp \
-    ../Core/Upload/FileQueueUploader.cpp \
+#    ../Core/Upload/FileQueueUploader.cpp \
     ../Core/Upload/FileUploadTask.cpp \
     ../Core/Upload/ScriptUploadEngine.cpp \
     ../Core/Upload/UploadEngine.cpp \
@@ -56,19 +56,21 @@ HEADERS += \
     ../Core/3rdpart/utf8.h
 
 INCLUDEPATH += ../
+
+INCLUDEPATH += ../../Include/pcre/
 INCLUDEPATH += SQUIRREL2/include
 INCLUDEPATH += SQUIRREL2/sqplus/
 
-DEFINES += TIXML_USE_STL IU_CLI
+DEFINES += TIXML_USE_STL IU_CLI _SQ64
 
 #DEPENDPATH += SQUIRREL2/lib
-LIBS+= -lcurl -lpcre  -lssl -lcrypto -lZThread -L$$PWD/SQUIRREL2/lib/ -lsqplus -lsqstdlib -lsquirrel
-
+LIBS+= -lcurl -lpcre  -lssl -lcrypto -L ../../Libs/mac/  -L$$PWD/SQUIRREL2/lib/ -lsqplus  -lsquirrel -lsqstdlib  -v
+#-lZThread
 CONFIG += c++11
 
 
 win32:OUTDIR = ../../Build/
-unix:OUTDIR = ../../Build//linux
+unix:OUTDIR = ../../Build/linux
 macx:OUTDIR = ../../Build/mac
 
 debug:DESTDIR = $$OUTDIR/debug/executable

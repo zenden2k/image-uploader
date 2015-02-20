@@ -25,6 +25,7 @@
 #define IDD_SERVERPARAMSDLG             124
 #define IDD_TEXTVIEWDLG                 125
 #define IDD_UPDATEDLG                   126
+#define IDD_ADDFTPSERVERDIALOG          127
 #define IDR_MAINFRAME                   128
 #define IDD_MAINDLG                     129
 #define IDD_LOGINDLG                    130
@@ -188,6 +189,7 @@
 #define IDC_FRAMEWIDTH                  1040
 #define IDC_WIDTHEDIT                   1040
 #define IDC_SOURCEURLEDIT               1040
+#define IDC_CONNECTIONNAMEEDIT          1040
 #define IDC_SELECTVIDEO                 1041
 #define IDC_STROKECOLOR                 1041
 #define IDC_LOGINBUTTON                 1041
@@ -202,18 +204,22 @@
 #define IDC_HEIGHTEDIT                  1041
 #define IDC_FILEINFOEDIT2               1041
 #define IDC_INPUTEDIT                   1041
+#define IDC_SERVEREDIT                  1041
 #define IDC_DONE                        1042
 #define IDC_LOGINBUTTON2                1042
 #define IDC_VIDEOSNAPSHOTSFOLDEREDIT    1042
+#define IDC_LOGINEDITBOX                1042
 #define IDC_RADIO1                      1043
 #define IDC_MULTIPLEFILES               1043
 #define IDC_SOURCECODERADIO             1043
+#define IDC_PASSWORDEDITBOX             1043
 #define IDC_RADIO2                      1044
 #define IDC_SAVEASONE                   1044
 #define IDC_HEIGHTRADIO                 1044
 #define IDC_LINKSLISTRADIO              1044
 #define IDC_SCREENSHOTFILENAMEEDIT2     1044
 #define IDC_SNAPSHOTFILENAMEEDIT        1044
+#define IDC_REMOTEDIRECTORYEDIT         1044
 #define IDC_EDIT2                       1045
 #define IDC_TRANSPARENCY                1045
 #define IDC_QUALITY                     1045
@@ -221,6 +227,8 @@
 #define IDC_ADDRESSEDIT                 1045
 #define IDC_THUMBTEXT                   1045
 #define IDC_FOLDERDESCREDIT             1045
+#define IDC_CONNECTIONNAMEEDIT6         1045
+#define IDC_DOWNLOADURLEDIT             1045
 #define IDC_GRABINFOLABEL               1046
 #define IDC_BUTTON3                     1047
 #define IDC_GRABBERPARAMS               1047
@@ -476,6 +484,13 @@
 #define IDC_RESULTSEDIT                 1287
 #define IDC_SHORTENURLTIP               1288
 #define IDC_SERVERCOMBOBOX              1289
+#define IDC_CONNECTIONNAMELABEL         1290
+#define IDC_SERVERSTATIC                1291
+#define IDC_AUTHENTICATIONLABEL         1292
+#define IDC_REMOTEDIRECTORYLABEL        1293
+#define IDC_DOWNLOADURLLABEL            1294
+#define IDC_THEURLOFUPLOADEDLABEL       1295
+#define IDC_URLLABEL                    1296
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -522,7 +537,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        261
 #define _APS_NEXT_COMMAND_VALUE         32803
-#define _APS_NEXT_CONTROL_VALUE         1290
-#define _APS_NEXT_SYMED_VALUE           127
+#define _APS_NEXT_CONTROL_VALUE         1297
+#define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

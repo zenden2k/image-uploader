@@ -29,8 +29,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef _WIN32
     #include <io.h>
     #include "Core/Utils/utils_Win.h"
-#elif defined(__unix__)
-	#include <sys/io.h>
+#else
+#ifdef __APPLE__
+#include <sys/uio.h>
+#else
+#include <sys/io.h>
+#endif
 	#include <sys/stat.h>
 	#include "Core/Utils/utils_unix.h"
 #endif
@@ -154,7 +158,7 @@ Utf8String ExtractFileExt(const Utf8String fileName)
 	return result;
 }
 
-Utf8String ExtractFilePath(const Utf8String fileName)
+const Utf8String ExtractFilePath(const Utf8String& fileName)
 {
 	int i, len = fileName.length();
 	for(i = len-1; i >= 0; i--)
@@ -168,7 +172,7 @@ Utf8String ExtractFilePath(const Utf8String fileName)
 	return "";
 }
 
-Utf8String ExtractFileNameNoExt(const Utf8String fileName)
+const Utf8String ExtractFileNameNoExt(const Utf8String& fileName)
 {
 	Utf8String result = ExtractFileName(fileName);
 	int Qpos = result.find_last_of('.');
@@ -192,7 +196,7 @@ Utf8String toString(unsigned int value)
 
 Utf8String StrReplace(Utf8String text, Utf8String s, Utf8String d)
 {
-	for(unsigned index=0; index=text.find(s, index), index!=std::string::npos;)
+    for(int index=0; index=text.find(s, index), index!=std::string::npos;)
 	{
 		text.replace(index, s.length(), d);
 		index += d.length();
