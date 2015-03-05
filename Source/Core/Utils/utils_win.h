@@ -135,7 +135,7 @@ bool DirectoryExists(const Utf8String path)
 	return false;
 }
 
-bool createDirectory(const Utf8String path)
+bool createDirectory(const Utf8String& path,unsigned int mode)
 {
 	if(path.empty()) return false;
 	std::wstring wstrFolder = Utf8ToWstring(path);

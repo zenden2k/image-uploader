@@ -73,7 +73,7 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 	m_FolderOperationType = foGetFolders;
 	m_pluginLoader =
-	   iuPluginManager.getPlugin(m_UploadEngine->PluginName, Settings.ServerByUtf8Name(m_UploadEngine->Name));
+	   iuPluginManager.getPlugin(m_UploadEngine->Name, m_UploadEngine->PluginName, Settings.ServerByUtf8Name(m_UploadEngine->Name));
 	if (!m_pluginLoader)
 	{
 		SetDlgItemText(IDC_FOLDERLISTLABEL, TR("Ошибка при загрузке squirrel скрипта."));

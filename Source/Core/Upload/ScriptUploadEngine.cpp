@@ -416,6 +416,12 @@ SquirrelObject jsonToSquirrelObject(const std::string& json) {
 	}
 	return sq;
 }
+
+consts std::string FileGetContents(const std::string filename) {
+	std::string data;
+	IuCoreUtils::ReadUtf8TextFile(filename, data);
+	return data;
+}
 bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params)
 {
 	if (!IuCoreUtils::FileExists(fileName))
@@ -495,6 +501,12 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		RegisterGlobal(IuCoreUtils::ExtractFileNameNoExt, "ExtractFileNameNoExt");
 		RegisterGlobal(IuCoreUtils::ExtractFilePath, "ExtractFilePath");
 		RegisterGlobal(jsonToSquirrelObject, "parseJSON");
+		RegisterGlobal(IuCoreUtils::copyFile, "CopyFile");
+		RegisterGlobal(IuCoreUtils::createDirectory, "CreateDirectory");
+		RegisterGlobal(IuCoreUtils::FileExists, "FileExists");
+		RegisterGlobal(FileGetContents, "FileGetContents");
+		
+
 
 		
 		

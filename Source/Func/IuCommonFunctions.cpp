@@ -31,8 +31,12 @@ const CString GetVersion()
 
 BOOL CreateTempFolder()
 {
-	TCHAR TempPath[256];
-	GetTempPath(256, TempPath);
+	TCHAR ShortPath[1024];
+	GetTempPath(ARRAY_SIZE(ShortPath), ShortPath);
+	TCHAR TempPath[1024];
+	if (!GetLongPathName(ShortPath,TempPath, ARRAY_SIZE(TempPath)) ) {
+		lstrcpy(TempPath, ShortPath);
+	}
 	DWORD pid = GetCurrentProcessId() ^ 0xa1234568;
 	IUCommonTempFolder.Format(_T("%stmd_iu_temp"), (LPCTSTR)TempPath);
 

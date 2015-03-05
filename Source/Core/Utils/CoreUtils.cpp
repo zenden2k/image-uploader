@@ -50,7 +50,7 @@ FILE * fopen_utf8(const char * filename, const char * mode)
 #endif
 }
 
-bool FileExists(Utf8String fileName)
+bool FileExists(const Utf8String& fileName)
 {
 	#ifdef WIN32
 		if(GetFileAttributes(Utf8ToWstring(fileName).c_str())== (unsigned long)-1) return false;
@@ -456,5 +456,6 @@ Utf8String GetDefaultExtensionForMimeType(const Utf8String mimeType) {
 	}
 	return "";
 }
+
 
 } // end of namespace IuCoreUtils

@@ -47,6 +47,7 @@
 #define IDD_INPUTDIALOG                 147
 #define IDD_IMAGEREUPLOADER             148
 #define IDD_SHORTENURL                  149
+#define IDD_ADDDIRECTORYSERVERDLG       150
 #define IDR_CONTEXTMENU                 202
 #define IDI_GRAB                        207
 #define IDI_IMAGES                      209
@@ -88,6 +89,7 @@
 #define IDB_PNG1                        259
 #define IDI_ICON4                       260
 #define IDI_ICONLINK                    260
+#define IDI_ICONFOLDER2                 262
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -493,6 +495,9 @@
 #define IDC_THEURLOFUPLOADEDLABEL       1295
 #define IDC_URLLABEL                    1296
 #define IDC_EXAMPLEURLLABEL             1296
+#define IDC_DIRECTORYEDIT               1297
+#define IDC_DIRECTORYLABEL              1298
+#define IDC_PRESETSBUTTON               1299
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -537,9 +542,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        261
+#define _APS_NEXT_RESOURCE_VALUE        263
 #define _APS_NEXT_COMMAND_VALUE         32803
-#define _APS_NEXT_CONTROL_VALUE         1297
+#define _APS_NEXT_CONTROL_VALUE         1300
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

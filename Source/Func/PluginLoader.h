@@ -28,6 +28,7 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Func/MyUtils.h"
 #include "Func/Common.h"
+#include <map>
 
 class CPluginManager
 {
@@ -36,9 +37,9 @@ class CPluginManager
 		~CPluginManager();
 		void UnloadPlugins();
 		void setScriptsDirectory(const Utf8String & directory);
-		CScriptUploadEngine* getPlugin(Utf8String name, ServerSettingsStruct& params, bool UseExisting = false);
+		CScriptUploadEngine* getPlugin(const Utf8String& serverName, const Utf8String& name, ServerSettingsStruct& params, bool UseExisting = false);
 	protected:
-		CScriptUploadEngine* m_plugin;
+		std::map<Utf8String,CScriptUploadEngine*> m_plugins;
 		Utf8String m_ScriptsDirectory;
 	private:
 		DISALLOW_COPY_AND_ASSIGN(CPluginManager);

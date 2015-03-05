@@ -33,6 +33,7 @@
 #include <Func/WinUtils.h>
 #include <Func/IuCommonFunctions.h>
 #include "AddFtpServerDialog.h"
+#include "AddDirectoryServerDIalog.h"
 
 CUploadSettings::CUploadSettings(CMyEngineList * EngineList):сonvert_profiles_(Settings.ConvertProfiles)
 {
@@ -515,6 +516,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 	
 	CMenu sub;	
 	MENUITEMINFO mi;
+	ZeroMemory(&mi,sizeof(mi));
 	mi.cbSize = sizeof(mi);
 	mi.fMask = MIIM_TYPE|MIIM_ID;
 	mi.fType = MFT_STRING;
@@ -545,7 +547,9 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 				sub.InsertMenuItem(menuItemCount++, true, &mi);
 			}
 
-			
+			ZeroMemory(&mi,sizeof(mi));
+			mi.cbSize = sizeof(mi);
+			mi.fMask = MIIM_TYPE|MIIM_ID;
 			mi.wID = IDC_FILESERVER_LAST_ID + 1;
 			mi.fType = MFT_SEPARATOR;
 
@@ -581,12 +585,14 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 
 		mi.dwTypeData  = TR("Добавить FTP сервер...");
 		mi.hbmpItem = 0;
-		/*HICON hImageIcon = m_EngineList->getIconForServer(ued->Name);
-		mi.hbmpItem =  WinUtils::IsVista() ? iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon): HBMMENU_CALLBACK;
-		if ( mi.hbmpItem ) {
-			mi.fMask |= MIIM_BITMAP;
-		}*/
+		sub.InsertMenuItem(menuItemCount++, true, &mi);	
 
+		mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
+		mi.fType = MFT_STRING;
+		mi.wID = ImageServer ? IDC_ADD_DIRECTORY_AS_SERVER : IDC_ADD_DIRECTORY_AS_SERVER_FROM_FILESERVER_LIST;
+
+		mi.dwTypeData  = TR("Добавить локальную папку как сервер...");
+		mi.hbmpItem = 0;
 		sub.InsertMenuItem(menuItemCount++, true, &mi);	
 
 		sub.SetMenuDefaultItem(ImageServer?(IDC_IMAGESERVER_FIRST_ID+m_nImageServer): (IDC_FILESERVER_FIRST_ID+m_nFileServer),FALSE);
@@ -595,7 +601,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 	{
 		if(uploadEngine->UsingPlugin )
 		{
-			CScriptUploadEngine *plug = iuPluginManager.getPlugin(uploadEngine->PluginName, Settings.ServersSettings[uploadEngine->Name]);
+			CScriptUploadEngine *plug = iuPluginManager.getPlugin(uploadEngine->Name, uploadEngine->PluginName, Settings.ServersSettings[uploadEngine->Name]);
 			if(!plug) return TBDDRET_TREATPRESSED;
 
 			if(!plug->supportsSettings()) return TBDDRET_TREATPRESSED;
@@ -691,7 +697,7 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 	
 	CUploadEngineData *ue = m_EngineList->byIndex(nServerIndex);
 
-	CScriptUploadEngine *m_pluginLoader = iuPluginManager.getPlugin(ue->PluginName, Settings.ServersSettings[ue->Name], true);
+	CScriptUploadEngine *m_pluginLoader = iuPluginManager.getPlugin(ue->Name, ue->PluginName, Settings.ServersSettings[ue->Name], true);
 	if(!m_pluginLoader) return 0;
 
 	CString title;
@@ -955,6 +961,24 @@ LRESULT CUploadSettings::OnAddFtpServer(WORD wNotifyCode, WORD wID, HWND hWndCtl
 				m_nFileServer = serverIndex;
 			}
 		
+			UpdateAllPlaceSelectors();
+		}
+	}
+	return 0;
+}
+
+LRESULT CUploadSettings::OnAddDirectoryAsServer(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+{
+	CAddDirectoryServerDialog dlg(m_EngineList);
+	if ( dlg.DoModal(m_hWnd) == IDOK ) {
+		int serverIndex = m_EngineList->GetUploadEngineIndex(dlg.createdServerName());
+		if ( serverIndex != -1 ) {
+			if ( wID == IDC_ADD_DIRECTORY_AS_SERVER ) {
+				m_nImageServer = serverIndex;
+			} else {
+				m_nFileServer = serverIndex;
+			}
+
 			UpdateAllPlaceSelectors();
 		}
 	}
