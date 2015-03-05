@@ -2,7 +2,9 @@
 #define IU_CORE_UTILS_CORETYPES_H
 
 #include <string>
-#include "Core/3rdpart/pstdint.h"
+#define __STDC_CONSTANT_MACROS
+#include <stdint.h>
+//#include "Core/3rdpart/pstdint.h"
 #include <memory>
 
 typedef std::string Utf8String;

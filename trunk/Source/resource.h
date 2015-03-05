@@ -190,6 +190,7 @@
 #define IDC_WIDTHEDIT                   1040
 #define IDC_SOURCEURLEDIT               1040
 #define IDC_CONNECTIONNAMEEDIT          1040
+#define IDC_MEMO                        1040
 #define IDC_SELECTVIDEO                 1041
 #define IDC_STROKECOLOR                 1041
 #define IDC_LOGINBUTTON                 1041

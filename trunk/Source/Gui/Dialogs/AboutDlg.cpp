@@ -32,7 +32,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	GuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
 
 	HFONT Font = reinterpret_cast<HFONT>(SendDlgItemMessage(IDC_IMAGEUPLOADERLABEL, WM_GETFONT,0,0));  
-	SendDlgItemMessage(IDC_IMAGEUPLOADERLABEL, WM_SETFONT, (LPARAM)GuiTools::MakeFontSmaller(Font), 0);
+	//SendDlgItemMessage(IDC_IMAGEUPLOADERLABEL, WM_SETFONT, (LPARAM)GuiTools::MakeFontSmaller(Font), 0);
 
 
 	LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
@@ -50,9 +50,42 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	m_ReportBugLink.SetLabel(TR("Нашли ошибку? Сообщите автору"));
 	m_ReportBugLink.SetHyperLink(_T("http://code.google.com/p/image-uploader/issues/entry"));
 
+	CString memoText;
+	memoText += TR("Благодарности:") + CString("\r\n\r\n");
+	memoText += TR("Бета-тестерам:")+ CString("\r\n");
+	memoText += L"Graf, CKA3O4H1K\r\n\r\n";
+	memoText += TR("Переводчикам:")+ CString("\r\n");
+	memoText += L"Mishunika, Adrianis, \r\nHessam Mohamadi, ozzii.translate@***.com\r\n\r\n";
+
+	memoText += L"Thanks to the authors of the following open-source libraries:\r\n\r\n";
+ 
+	
+	memoText += CString(L"WTL")+ "\t\thttp://sourceforge.net/projects/wtl/\r\n";
+	memoText += CString(L"libcurl")+ "\t\thttp://curl.haxx.se/libcurl/\r\n";
+	
+	memoText += CString(L"openssl") +"\t\thttps://www.openssl.org\r\n";
+	memoText += CString(L"zlib") +"\t\thttp://www.zlib.net\r\n";
+	memoText += CString(L"pcre") +"\t\thttp://www.pcre.org\r\n";
+	memoText += CString(L"pcre++") +"\t\thttp://www.daemon.de/PCRE\r\n";
+	memoText += CString(L"squirrel") +"\t\thttp://squirrel-lang.org\r\n";
+	memoText += CString(L"sqplus") +"\t\thttp://sourceforge.net/projects/sqplus/\r\n";
+	memoText += CString(L"ffmpeg") +"\t\thttps://www.ffmpeg.org\r\n";	
+	memoText += CString(L"tinyxml") +"\t\thttp://sourceforge.net/projects/tinyxml/\r\n";
+	memoText += CString(L"zthreads") +"\t\thttp://zthread.sourceforge.net\r\n";
+
+	memoText += CString(L"minizip") +"\t\thttp://www.winimage.com/zLibDll/minizip.html\r\n";
+	memoText += CString(L"jsoncpp") +"\t\thttps://github.com/open-source-parsers/jsoncpp\r\n";
+	memoText += CString(L"FastDelegate") +"\thttp://www.codeproject.com/Articles/7150/Member-Function-Pointers-and-the-Fastest-Possible\r\n";
+	memoText += CString(L"QColorQuantizer") +"\thttp://www.codeguru.com/cpp/g-m/gdi/gdi/article.php/c3677/Better-GIFs-with-Octrees.htm\r\n\r\n";
+
+	
+	memoText += TR("Libcurl version:")+ CString("\r\n");
+	memoText +=  IuCoreUtils::Utf8ToWstring( curl_version()).c_str() + CString("\r\n");
+
+	SetDlgItemText(IDC_MEMO, memoText);
 
 	CString buildInfo = CString("Build ") + _T(BUILD) + _T(" (") + _T(TIME) + _T(")") +
-	   (_T("\r\n") + IuCoreUtils::Utf8ToWstring( curl_version())).c_str();
+	   _T("\r\n");
 
 	CString text = CString(TR("v")) + _APP_VER;
 	SetDlgItemText(IDC_CURLINFOLABEL, text);

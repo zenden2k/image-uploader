@@ -163,8 +163,9 @@ NetworkManager::NetworkManager(void)
 	curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
 	curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTDATA, this);
 	
-   curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L); //FIXME
-   curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0L);
+
+   curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 1L); //FIXME
+   curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 1L);
 	//We want the referrer field set automatically when following locations
 	curl_easy_setopt(curl_handle, CURLOPT_AUTOREFERER, 1L); 
 	curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 32768L);

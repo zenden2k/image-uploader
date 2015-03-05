@@ -677,7 +677,7 @@ void CImgSavingThread::Save(SENDPARAMS sp)
 	if (IsRunning())
 	{
 #ifdef DEBUG
-		vg->SetDlgItemText(IDC_FILEEDIT, _T("CImgSavingThread::Save DataCriticalSection.Lock()"));
+		//vg->SetDlgItemText(IDC_FILEEDIT, _T("CImgSavingThread::Save DataCriticalSection.Lock()"));
 #endif
 		DataCriticalSection.Lock();
 		m_sp = sp;
