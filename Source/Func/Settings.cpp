@@ -1037,9 +1037,9 @@ void CSettings::EnableAutostartup(bool enable) {
 
 bool CSettings::IsFFmpegAvailable() {
 	CString appFolder = WinUtils::GetAppFolder();
-	return FileExists( appFolder + "avcodec-53.dll") 
-		 && FileExists( appFolder + "avformat-53.dll")
-		 && FileExists( appFolder + "avutil-51.dll")
+	return FileExists( appFolder + "avcodec-54.dll") 
+		 && FileExists( appFolder + "avformat-54.dll")
+		 && FileExists( appFolder + "avutil-52.dll")
 		 && FileExists( appFolder + "swscale-2.dll");
 }
 

@@ -258,33 +258,27 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,148,76,53,15
 END
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 255, 249
+IDD_ABOUTBOX DIALOGEX 0, 0, 274, 266
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About Image Uploader"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
-    DEFPUSHBUTTON   "&OK",IDOK,197,228,52,15
-    CTEXT           "build 1234\nUsing curl",IDC_IMAGEUPLOADERLABEL,24,65,190,17
-    GROUPBOX        "",IDC_STATIC,6,0,242,135
+    DEFPUSHBUTTON   "&OK",IDOK,215,248,52,15
+    LTEXT           "build 1234\nUsing curl",IDC_IMAGEUPLOADERLABEL,158,25,68,9
     CTEXT           "© 2007-2013.  All rights reserved.",IDC_STATIC,90,48,131,11
-    CTEXT           "Beta-Testers:",IDC_BETATESTERS,12,169,80,8
-    LTEXT           "Graf, CKA3O4H1K",IDC_STATIC,102,171,137,20
-    GROUPBOX        "",IDC_THANKSTOGROUP,5,138,243,84
     CONTROL         "",IDC_STATICLOGO,"Static",SS_BITMAP,37,17,15,13
     CTEXT           "Image Uploader",IDC_IMAGEUPLOADERLABEL2,80,14,148,12
-    CTEXT           "Переводчикам:",IDC_TRANSLATERS,19,190,73,8
-    LTEXT           "Mishunika, Adrianis, \r\nHessam Mohamadi, ozzii.translate@***.com",IDC_STATIC,102,190,126,27
-    CTEXT           "VERSION",IDC_CURLINFOLABEL,78,26,150,9
-    LTEXT           "Website:",IDC_STATIC,31,95,30,8
-    LTEXT           "http://zenden.ws/imageuploader",IDC_SITELINK,95,94,106,8
+    CTEXT           "VERSION",IDC_CURLINFOLABEL,114,25,39,9
+    LTEXT           "Website:",IDC_STATIC,31,84,30,8
+    LTEXT           "http://zenden.ws/imageuploader",IDC_SITELINK,95,84,106,8
     CTEXT           "image processing and uploading tool",IDC_STATIC,80,38,149,8
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,15,84,221,1
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,15,60,221,1
-    LTEXT           "http://code.google.com/p/image-uploader",IDC_GOOGLECODELINK,95,107,146,8
-    LTEXT           "SVN:",IDC_STATIC,31,107,16,8
-    LTEXT           "Author:",IDC_STATIC,30,153,26,8
-    LTEXT           "zenden (zenden2k@gmail.com)",IDC_STATIC,101,152,100,8
-    CTEXT           "Found a bug?",IDC_FOUNDABUG,12,120,227,8
+    LTEXT           "http://code.google.com/p/image-uploader",IDC_GOOGLECODELINK,95,98,146,8
+    LTEXT           "SVN:",IDC_STATIC,31,98,16,8
+    LTEXT           "Author:",IDC_STATIC,31,67,26,8
+    LTEXT           "zenden (zenden2k@gmail.com)",IDC_STATIC,99,67,134,8
+    CTEXT           "Found a bug?",IDC_FOUNDABUG,12,111,227,8
+    EDITTEXT        IDC_MEMO,5,129,262,115,ES_MULTILINE | ES_AUTOHSCROLL | WS_VSCROLL
 END
 
 IDD_MAINDLG DIALOGEX 0, 0, 433, 266
@@ -868,9 +862,9 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 5
-        RIGHTMARGIN, 248
+        RIGHTMARGIN, 267
         TOPMARGIN, 7
-        BOTTOMMARGIN, 213
+        BOTTOMMARGIN, 265
     END
 
     IDD_MAINDLG, DIALOG

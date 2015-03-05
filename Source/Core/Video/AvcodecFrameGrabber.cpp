@@ -81,7 +81,9 @@ int av_grab_frames(int numOfFrames, CString fname, CSampleGrabberCB * cb,HWND pr
 
 	// Open video file
 	USES_CONVERSION;
-	if(av_open_input_file(&pFormatCtx, W2A((LPCTSTR)fname), NULL, 0, NULL)!=0) {
+	char *fname1 = W2A((LPCTSTR)fname);
+	pFormatCtx = avformat_alloc_context();
+	if(avformat_open_input(&pFormatCtx,  fname1, NULL, 0/*, NULL*/)!=0) {
 		//m_error.sprintf("Couldn't open file \"%s\"\r\n",(const char*)fname.toLocal8Bit());
 		return -1; // Couldn't open file
 	}
@@ -93,7 +95,7 @@ int av_grab_frames(int numOfFrames, CString fname, CSampleGrabberCB * cb,HWND pr
 		return -1; // Couldn't find stream information
 	}
 	// Dump information about file onto standard error
-	dump_format(pFormatCtx, 0, W2A((LPCTSTR)fname), false);
+	av_dump_format(pFormatCtx, 0, W2A((LPCTSTR)fname), false);
 	if ( pFormatCtx->iformat ) {
 		seekByBytes= !!(pFormatCtx->iformat->flags & AVFMT_TS_DISCONT);
 	}
@@ -189,8 +191,8 @@ int av_grab_frames(int numOfFrames, CString fname, CSampleGrabberCB * cb,HWND pr
 	 step = full_sec / numOfFrames;
 	
 
-	 AVMetadataTag *tag = NULL;
-	while ((tag=av_metadata_get(pFormatCtx->streams[videoStream]->metadata,"",tag,AV_METADATA_IGNORE_SUFFIX))) {
+	 AVDictionaryEntry  *tag = NULL;
+	while ((tag=av_dict_get (pFormatCtx->streams[videoStream]->metadata,"",tag,AV_DICT_IGNORE_SUFFIX ))) {
 	}
 
 	int start_time = 3000;	
