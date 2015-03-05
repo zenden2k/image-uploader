@@ -46,7 +46,7 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	m_wndParamList.SubclassWindow(GetDlgItem(IDC_PARAMLIST));
 	m_wndParamList.SetExtendedListStyle(PLS_EX_SHOWSELALWAYS | PLS_EX_SINGLECLICKEDIT);
 
-	CScriptUploadEngine *m_pluginLoader = iuPluginManager.getPlugin(m_ue->PluginName, Settings.ServerByUtf8Name(m_ue->Name));
+	CScriptUploadEngine *m_pluginLoader = iuPluginManager.getPlugin(m_ue->Name, m_ue->PluginName, Settings.ServerByUtf8Name(m_ue->Name));
 	if(!m_pluginLoader)
 	{
 		return 0;

@@ -23,7 +23,7 @@ CAddFtpServerDialog::~CAddFtpServerDialog()
 LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	SetWindowText(TR("Добавление FTP сервера"));
-	TRC(IDC_CONNECTIONNAMELABEL,"Имя соединения");
+	TRC(IDC_CONNECTIONNAMELABEL,"Имя соединения:");
 	TRC(IDC_SERVERSTATIC,"Сервер [:порт]:");
 	TRC(IDC_AUTHENTICATIONLABEL,"Авторизация:");
 	TRC(IDC_LOGINLABEL,"Логин:");
@@ -31,7 +31,7 @@ LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	TRC(IDC_REMOTEDIRECTORYLABEL,"Удаленная директория:");
 	TRC(IDC_DOWNLOADURLLABEL,"URL для скачивания:");
 	TRC(IDCANCEL,"Отмена");
-	TRC(IDC_THEURLOFUPLOADEDLABEL,"Ссылка для скачивания будет выглядеть как:");
+	TRC(IDC_THEURLOFUPLOADEDLABEL,"Ссылка для скачивания будет выглядеть так:");
 
 	//TRC(IDC_CONNECTIONNAMEEDIT, "Новое FTP соединение");
 	::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));

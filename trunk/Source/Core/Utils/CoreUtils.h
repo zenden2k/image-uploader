@@ -30,7 +30,7 @@ namespace IuCoreUtils
 	// A version of fopen() function which supports utf8 file names
 	FILE * fopen_utf8(const char * filename, const char * mode);
 
-	bool FileExists(const Utf8String fileName);
+	bool FileExists(const Utf8String& fileName);
 	bool DirectoryExists(const Utf8String path);
 	const Utf8String ExtractFilePath(const Utf8String& fileName);
 	Utf8String ExtractFileName(const Utf8String fileName);
@@ -57,7 +57,7 @@ namespace IuCoreUtils
 
 	const std::string timeStampToString(time_t t);
 	Utf8String fileSizeToString(int64_t nBytes);
-	bool createDirectory(const Utf8String path);
+	bool createDirectory(const Utf8String& path, unsigned int mode=0);
 	bool copyFile(const std::string& src, const std::string & dest, bool overwrite = true);
 	const std::string Utf8ToAnsi(const std::string &str, int codepage);
 };

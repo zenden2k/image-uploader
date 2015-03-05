@@ -61,7 +61,7 @@ CAbstractUploadEngine* CMyEngineList::getUploadEngine(CUploadEngineData* data)
 	CAbstractUploadEngine* result = NULL;
 	if (data->UsingPlugin)
 	{
-		result = iuPluginManager.getPlugin(data->PluginName, Settings.ServerByUtf8Name(data->Name));
+		result = iuPluginManager.getPlugin(data->Name, data->PluginName, Settings.ServerByUtf8Name(data->Name));
 		if ( !result ) {
 			CString errorMessage;
 			errorMessage.Format(_T("Cannot load plugin '%s'"), static_cast<LPCTSTR>(Utf8ToWCstring(data->PluginName)));
@@ -135,10 +135,29 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
 		return iconIt->second;
 	
 	CUploadEngineData *ued = CUploadEngineList::byName(name);
-	std::string newName =  ( ued && ued->PluginName == "ftp" ) ? "ftp server" : name;
-	
+	std::string newName =  name;
+	HICON icon = 0;
 
-	HICON icon = (HICON)LoadImage(0,IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(newName)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
+	if  ( ued && ued->PluginName == "ftp" )  {
+		newName = "ftp server";
+	} else if ( ued && ued->PluginName == "directory"  ) {
+		icon = LoadIcon(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDI_ICONFOLDER2));
+		//HBITMAP hBitmap;
+
+		// Get color depth (minimum requirement is 32-bits for alpha blended images).
+		/*int iBitsPixel = GetDeviceCaps(::GetDC(HWND_DESKTOP), BITSPIXEL);
+
+		CBitmap hBitmap = LoadBitmap(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDB_SERVERTOOLBARBMP2));
+		CImageList imageList;
+		imageList.Create(16, 16, ILC_COLOR24 | ILC_MASK, 0, 6);
+		imageList.Add(hBitmap, RGB(255, 0, 255));
+		icon = imageList.GetIcon(1,ILD_TRANSPARENT);*/
+	}
+
+	if (!icon ) {
+		icon = (HICON)LoadImage(0,IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(newName)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
+	}
+	
 	if ( !icon ) {
 		return 0;
 	}

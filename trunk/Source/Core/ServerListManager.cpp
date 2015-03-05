@@ -2,6 +2,7 @@
 #include "ServerListManager.h"
 #include <Core/Utils/SimpleXml.h>
 #include "UploadEngineList.h"
+#include <Core/Utils/StringUtils.h>
 
 ServerListManager::ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, std::map <std::string, ServerSettingsStruct>& serversSettings): 
 	serversSettings_(serversSettings)
@@ -52,6 +53,49 @@ bool ServerListManager::addFtpServer(const std::string &name, const std::string 
 	ss.authData.Login = login;
 	ss.authData.Password = password;
 	ss.authData.DoAuth = !login.empty();
+	createdServerName_ = newName;
+	return uploadEngineList_->LoadFromFile(outFile,serversSettings_);
+}
+
+bool ServerListManager::addDirectoryAsServer(const std::string &name, const std::string &directory, const std::string &downloadUrl)
+{
+	ZSimpleXml xml;
+	ZSimpleXmlNode root = xml.getRoot("Servers");
+	std::string newName = name;
+
+	if ( uploadEngineList_->byName(newName) ) {
+		errorMessage_ = "Server with such name already exists.";
+		return false;
+	}
+
+	ZSimpleXmlNode serverNode = root.GetChild("Server");
+	serverNode.SetAttribute("Name", newName);
+	serverNode.SetAttribute("Plugin", "directory");
+	serverNode.SetAttribute("FileHost", 1);
+	serverNode.SetAttribute("Authorize", 0);
+
+	ZSimpleXmlNode resultNode = serverNode.GetChild("Result");
+	resultNode.SetAttribute("ImageUrlTemplate", "stub");
+	resultNode.SetAttribute("ThumbUrlTemplate", "stub");
+	resultNode.SetAttribute("DownloadUrlTemplate", "stub");
+
+	std::string filename = name;
+	filename = IuStringUtils::Replace(filename,":","_");
+	filename = IuStringUtils::Replace(filename,"\\","_");
+	filename = IuStringUtils::Replace(filename," ","_");
+	filename = IuStringUtils::Replace(filename,"/","_");
+	std::string outFile = serversDirectory_ + filename + ".xml";
+
+	bool res = xml.SaveToFile(outFile);
+	if ( !res ) {
+		errorMessage_ = "Unable to save file " + outFile;
+		return false;
+	}
+
+	ServerSettingsStruct &ss = serversSettings_[newName];
+	ss.setParam("directory",directory);
+	ss.setParam("downloadUrl",downloadUrl);
+	ss.authData.DoAuth = false;
 	createdServerName_ = newName;
 	return uploadEngineList_->LoadFromFile(outFile,serversSettings_);
 }

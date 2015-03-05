@@ -4,6 +4,7 @@
 #pragma once
 
 #include "resource.h"       // main symbols
+
 class CUploadEngineList;
 // CAddFtpServerDialog
 

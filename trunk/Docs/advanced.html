@@ -304,14 +304,24 @@ Cтандартная функция squirrel, выводящая текст н�
 <code class="f"><u>string</u> AskUserCaptcha(<u>NetworkManager</u> <i>nm</i>, <u>string</u> <i>url</i>)<span>version >= 1.2.7</b></span></code>
 Показывает диалоговое окно ввода капчи. <i class="var">nm</i> - network manager, <i class="var">url</i> - адрес картинки с каптчей. 
 Возвращаемое значение - введенный пользователем текст.
+<code class="f"><u>bool</u> CopyFile(<u>string</u> <i>source</i>, <u>string</u> <i>destination</i>, <u>bool</u> <i>overwrite</i>)<span>version >= 1.3.0 <b>build 4186</b></span></code> 
+Копирует файл.
+<code class="f"><u>bool</u> CreateDirectory(<u>string</u> <i>dir</i>, <u>int</u> <i>mode</i>)<span>version >= 1.3.0 <b>build 4186</b></span></code> 
+Создает директорию (рекурсивно).
+Параметр <i>mode</i> игнорируется в Windows.
+
 <code class="f">DebugMessage(<u>string</u> <i>text</i>, <u>bool</u> <i>isResponseBody</i>)</code> 
 Показывает диалоговое окно с диагностическим сообщением.
 <code class="f"><u>string</u> ExtractFileName(<u>string</u> <i>filePath</i>)</code>
-Извлекает имя файла с расширением из пути
-<code class="f"><u>string</u> ExtractFileNameNoExt(<u>string</u> <i>filePath</i>)<span>version >= 1.2.9 <b>build 4186</b></span></code>
-Извлекает имя файла без расширения из пути
-<code class="f"><u>string</u> ExtractFilePath(<u>string</u> <i>filePath</i>)<span>version >= 1.2.9 <b>build 4186</b></span></code>
-Извлекает имя директории из пути
+Извлекает имя файла с расширением из пути.
+<code class="f"><u>string</u> ExtractFileNameNoExt(<u>string</u> <i>filePath</i>)<span>version >= 1.3.0 <b>build 4186</b></span></code>
+Извлекает имя файла без расширения из пути.
+<code class="f"><u>string</u> ExtractFilePath(<u>string</u> <i>filePath</i>)<span>version >= 1.3.0 <b>build 4186</b></span></code>
+Извлекает имя директории из пути.
+<code class="f"><u>bool</u> FileExists(<u>string</u> <i>filename</i>)<span>version >= 1.3.0 <b>build 4186</b></span></code> 
+Проверяет, существует ли файл.
+<code class="f"><u>string</u> FileGetContents(<u>string</u> <i>filename</i>)<span>version >= 1.3.0 <b>build 4186</b></span></code> 
+Возвращает содержимое файла.
 <code class="f"><u>string</u> GetFileExtension(<u>string</u> <i>filename</i>)</code>
 Извлекает расширение файла из пути.
 <code class="f"><u>string</u> GetFileMimeType(<u>string</u> <i>fileName</i>)</code>
@@ -322,7 +332,7 @@ Cтандартная функция squirrel, выводящая текст н�
 Возвращает md5-хэш строки в виде строки.
 <code class="f"><u>string</u> md5_file(<u>string</u> <i>filename</i>)<span>version >= 1.2.7 <b>build 4176</b></span></code>
 Возвращает md5-хэш файла.
-<code class="f"><u>table</u> ParseJSON(<u>string</u> <i>jsonText</i>)<span>version >= 1.2.9 <b>build 4186</b></span></code>
+<code class="f"><u>table</u> ParseJSON(<u>string</u> <i>jsonText</i>)<span>version >= 1.3.0 <b>build 4186</b></span></code>
 Преобразует текст, содержащий JSON документ, в <i>table</i> (ассоциативный контейнер, выполненный в виде пар ключ/значение) или массив.<br>
 Например, исходный JSON документ:
 <pre class="prettyprint">
@@ -394,16 +404,16 @@ displayname - отображаемое имя(то имя, которое пер
 Возвращает количество параметров в  HTTP -заголовке ответa.
 <code class="f"><u>int</u> responseCode()</code>
 Возвращает код ответа (например, код 200 означает HTTP OK).
-<code class="f">setCurlOption(<u>int</u> <i>option</i>, <u>string</u> <i>value</i>)<span>version >= 1.2.9 <b>build 4186</b></span></code>
+<code class="f">setCurlOption(<u>int</u> <i>option</i>, <u>string</u> <i>value</i>)<span>version >= 1.3.0 <b>build 4186</b></span></code>
 Устанавливает строковое значения для опции объекта CURL. Эквивалентно вызову функции <a href="http://curl.haxx.se/libcurl/c/curl_easy_setopt.html" target="_blank">curl_easy_setopt</a>. 
 Заметьте, что <i class="var">option</i> - это число. Список численных значений <i class="var">option</i> можно посмотреть <a href="curl_constants.txt" target="_blank">здесь</a>. 
-<code class="f">setCurlOptionInt(<u>int</u> <i>option</i>, <u>int</u> <i>value</i>)<span>version >= 1.2.9 <b>build 4186</b></span></code>
+<code class="f">setCurlOptionInt(<u>int</u> <i>option</i>, <u>int</u> <i>value</i>)<span>version >= 1.3.0 <b>build 4186</b></span></code>
 Устанавливает численное значение для опции объекта CURL. Эквивалентно вызову функции <a href="http://curl.haxx.se/libcurl/c/curl_easy_setopt.html" target="_blank">curl_easy_setopt</a>. 
 Заметьте, что <i class="var">option</i> - это число. Список численных значений <i class="var">option</i> можно посмотреть <a href="curl_constants.txt" target="_blank">здесь</a>. 
 
 <code class="f">setMethod(<u>string</u> <i>method</i>)</code>
 Позволяет вручную задать тип запроса - POST, GET, PUT ...
-<code class="f">setReferer(<u>string</u> <i>referer</i>)<span>version >= 1.2.9 <b>build 4186</b></span></code>
+<code class="f">setReferer(<u>string</u> <i>referer</i>)<span>version >= 1.3.0 <b>build 4186</b></span></code>
 Устанавливает HTTP заголовок referer.
 <code class="f">setUrl(<u>string</u> <i>url</i>)</code> 
 Устанавливает адрес URL для следующего запроса.
