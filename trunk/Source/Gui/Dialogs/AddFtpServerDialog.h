@@ -4,13 +4,14 @@
 #pragma once
 
 #include "resource.h"       // main symbols
+class CUploadEngineList;
 // CAddFtpServerDialog
 
 class CAddFtpServerDialog : 
 	public CDialogImpl<CAddFtpServerDialog>	
 {
 public:
-	CAddFtpServerDialog();
+	CAddFtpServerDialog(CUploadEngineList* uploadEngineList);
 	~CAddFtpServerDialog();
 	enum { IDD = IDD_ADDFTPSERVERDIALOG };
 
@@ -18,10 +19,10 @@ public:
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-		NOTIFY_HANDLER(IDC_CONNECTIONNAMEEDIT, EN_CHANGE, OnConnectionNameEditChange);
-		NOTIFY_HANDLER(IDC_SERVEREDIT, EN_CHANGE, OnServerEditChange);
-		NOTIFY_HANDLER(IDC_REMOTEDIRECTORYEDIT, EN_CHANGE, OnRemoteDireetoryEditChange);
-		NOTIFY_HANDLER(IDC_DOWNLOADURLEDIT, EN_CHANGE, OnDownloadUrlEditChange);
+		COMMAND_HANDLER(IDC_CONNECTIONNAMEEDIT, EN_CHANGE, OnConnectionNameEditChange);
+		COMMAND_HANDLER(IDC_SERVEREDIT, EN_CHANGE, OnServerEditChange);
+		COMMAND_HANDLER(IDC_REMOTEDIRECTORYEDIT, EN_CHANGE, OnRemoteDirectoryEditChange);
+		COMMAND_HANDLER(IDC_DOWNLOADURLEDIT, EN_CHANGE, OnDownloadUrlEditChange);
 
 	
 	END_MSG_MAP()
@@ -32,10 +33,20 @@ public:
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT OnConnectionNameEditChange(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT OnServerEditChange(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT OnRemoteDireetoryEditChange(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT OnDownloadUrlEditChange(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT OnConnectionNameEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnServerEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnRemoteDirectoryEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnDownloadUrlEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
+	CString createdServerName();
+protected:
+	void GenerateDownloadLink();
+	void GenerateExampleUrl();
+	bool connectionNameEdited;
+	bool downloadUrlEdited;
+	bool serverNameEdited;
+	CUploadEngineList* uploadEngineList_;
+	CString createdServerName_;
 };
 
 

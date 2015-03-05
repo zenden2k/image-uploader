@@ -38,7 +38,7 @@ CUploadEngineList::CUploadEngineList()
 	m_ActionNumOfRetries = 2;
 }
 
-bool CUploadEngineList::LoadFromFile(const std::string& filename)
+bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::string, ServerSettingsStruct>& serversSettings)
 {
 	ZSimpleXml xml;
 	if(!xml.LoadFromFile(filename))
@@ -72,6 +72,12 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename)
 			UE.SupportsFolders = cur.AttributeBool("SupportsFolders");
 			UE.RegistrationUrl = cur.Attribute("RegistrationUrl");
 			UE.PluginName = cur.Attribute("Plugin");
+			if ( UE.PluginName == "ftp" ) {
+				std::string hostname = serversSettings[UE.Name].getParam("hostname");
+				if ( hostname.empty() || hostname == "ftp.example.com" ) {
+					continue;
+				}
+			}
 			UE.UsingPlugin = !UE.PluginName.empty();
 			UE.Debug =   cur.AttributeBool("Debug");
 			UE.ImageHost =  !cur.AttributeBool("FileHost");
@@ -170,4 +176,11 @@ void CUploadEngineList::setNumOfRetries(int Engine, int Action)
 {
 	m_EngineNumOfRetries = Engine;
 	m_ActionNumOfRetries = Action;
+}
+
+bool CUploadEngineList::addServer(const CUploadEngineData& data)
+{
+	m_list.push_back(data);
+	std::sort(m_list.begin(), m_list.end(), compareEngines );
+	return true;
 }

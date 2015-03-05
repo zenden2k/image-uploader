@@ -762,7 +762,7 @@ BEGIN
     LTEXT           "Download URL:",IDC_DOWNLOADURLLABEL,7,127,81,8
     EDITTEXT        IDC_DOWNLOADURLEDIT,90,124,124,14,ES_AUTOHSCROLL
     LTEXT           "The URL of uploaded file will look like:",IDC_THEURLOFUPLOADEDLABEL,7,146,204,10
-    LTEXT           "http://example.com/screenshot.png",IDC_URLLABEL,17,158,197,8
+    LTEXT           "http://example.com/screenshot.png",IDC_EXAMPLEURLLABEL,17,158,197,8
 END
 
 

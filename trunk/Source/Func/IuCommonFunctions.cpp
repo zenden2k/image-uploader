@@ -10,11 +10,16 @@ namespace IuCommonFunctions {
 
 const CString GetDataFolder()
 {
+	CString result;
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
-	return Settings.DataFolder;
+	result= Settings.DataFolder;
 #else 
-	return WinUtils::GetAppFolder()+"\\Data\\";
+	result= WinUtils::GetAppFolder()+"\\Data\\";
 #endif
+	if ( result.Right(1) != "\\") {
+		result += "\\";
+	}
+	return result;
 }
 
 
