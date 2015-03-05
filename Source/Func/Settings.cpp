@@ -525,11 +525,11 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 	if ( !IuCoreUtils::FileExists( fileName_)  ) {
 		return true;
 	}
-	ZSimpleXml xml;
+	SimpleXml xml;
 	xml.LoadFromFile( fileName_ );
 	mgr_.loadFromXmlNode( xml.getRoot("ImageUploader").GetChild("Settings") );
 
-	ZSimpleXmlNode settingsNode = xml.getRoot( "ImageUploader" ).GetChild( "Settings" );
+	SimpleXmlNode settingsNode = xml.getRoot( "ImageUploader" ).GetChild( "Settings" );
 
 #if !defined(IU_CLI) && !defined( IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
 	std::string temp;
@@ -693,7 +693,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 
 	bool CSettings::SaveSettings()
 	{
-		ZSimpleXml xml;
+		SimpleXml xml;
 		mgr_.saveToXmlNode(xml.getRoot("ImageUploader").GetChild("Settings"));
 #if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
 		SaveConvertProfiles(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("Image").GetChild("Profiles"));
@@ -844,9 +844,9 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		return ServersSettings[name];
 	}
 
-	bool CSettings::LoadAccounts(ZSimpleXmlNode root)
+	bool CSettings::LoadAccounts(SimpleXmlNode root)
 	{
-		std::vector<ZSimpleXmlNode> servers;
+		std::vector<SimpleXmlNode> servers;
 		root.GetChilds("Server", servers);
 
 		for (size_t i = 0; i < servers.size(); i++)
@@ -887,12 +887,12 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		return true;
 	}
 
-	bool CSettings::SaveAccounts(ZSimpleXmlNode root)
+	bool CSettings::SaveAccounts(SimpleXmlNode root)
 	{
 		std::map <std::string, ServerSettingsStruct>::iterator it;
 		for (it = ServersSettings.begin(); it != ServersSettings.end(); ++it)
 		{
-			ZSimpleXmlNode serverNode = root.CreateChild("Server");
+			SimpleXmlNode serverNode = root.CreateChild("Server");
 			serverNode.SetAttribute("Name", it->first);
 
 			std::map <std::string, std::string>::iterator param;
@@ -917,9 +917,9 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 	}
 
 #if !defined  (IU_CLI) && !defined(IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
-	bool CSettings::LoadConvertProfiles(ZSimpleXmlNode root)
+	bool CSettings::LoadConvertProfiles(SimpleXmlNode root)
 	{
-		std::vector<ZSimpleXmlNode> profiles;
+		std::vector<SimpleXmlNode> profiles;
 		root.GetChilds("Profile", profiles);
 
 		for (size_t i = 0; i < profiles.size(); i++)
@@ -929,7 +929,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		return true;
 	}
 
-	bool CSettings::LoadConvertProfile(const CString& name, ZSimpleXmlNode profileNode)
+	bool CSettings::LoadConvertProfile(const CString& name, SimpleXmlNode profileNode)
 	{
 		SettingsManager mgr;
 		ImageConvertingParams params;
@@ -943,12 +943,12 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		return true;
 	}
 
-	bool CSettings::SaveConvertProfiles(ZSimpleXmlNode root)
+	bool CSettings::SaveConvertProfiles(SimpleXmlNode root)
 	{
 		std::map<CString, ImageConvertingParams>::iterator it;
 		for (it = ConvertProfiles.begin(); it != ConvertProfiles.end(); ++it)
 		{
-			ZSimpleXmlNode profile = root.CreateChild("Profile");
+			SimpleXmlNode profile = root.CreateChild("Profile");
 			ImageConvertingParams& params = it->second;
 			profile.SetAttribute("Name", WCstringToUtf8(it->first));
 			SettingsManager mgr;

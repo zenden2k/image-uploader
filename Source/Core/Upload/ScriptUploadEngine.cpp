@@ -43,6 +43,7 @@
 #include <Core/Upload/FileUploadTask.h>
 #include <Core/Upload/UrlShorteningTask.h>
 #include <sstream>
+#include <Core/Utils/SimpleXml.h>
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -57,6 +58,8 @@ DECLARE_INSTANCE_TYPE(NetworkManager);
 DECLARE_INSTANCE_TYPE(CFolderList);
 DECLARE_INSTANCE_TYPE(CFolderItem);
 DECLARE_INSTANCE_TYPE(CIUUploadParams);
+DECLARE_INSTANCE_TYPE(SimpleXml);
+DECLARE_INSTANCE_TYPE(SimpleXmlNode);
 
 #ifdef _WIN32
 #ifndef IU_CLI
@@ -417,10 +420,14 @@ SquirrelObject jsonToSquirrelObject(const std::string& json) {
 	return sq;
 }
 
-consts std::string FileGetContents(const std::string filename) {
+const std::string GetFileContents(const std::string& filename) {
 	std::string data;
 	IuCoreUtils::ReadUtf8TextFile(filename, data);
 	return data;
+}
+
+unsigned int ScriptGetFileSize(const std::string& filename) {
+	return IuCoreUtils::getFileSize(filename);
 }
 bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params)
 {
@@ -484,6 +491,37 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		func(&CFolderItem::setItemCount, "setItemCount").
 		func(&CFolderItem::setViewUrl, "setViewUrl").
 		func(&CFolderItem::getItemCount, "getItemCount");
+
+
+		SQClassDef<SimpleXml>("SimpleXml").
+			func(&SimpleXml::LoadFromFile, "LoadFromFile").
+			func(&SimpleXml::LoadFromString, "LoadFromString").
+			func(&SimpleXml::SaveToFile, "SaveToFile").
+			func(&SimpleXml::ToString, "ToString").
+			func(&SimpleXml::getRoot, "GetRoot");
+
+		SQClassDef<SimpleXmlNode>("SimpleXmlNode").
+			func(&SimpleXmlNode::Attribute, "Attribute").
+			func(&SimpleXmlNode::AttributeInt, "AttributeInt").
+		    func(&SimpleXmlNode::AttributeBool, "AttributeBool").
+			func(&SimpleXmlNode::Name, "Name").
+			func(&SimpleXmlNode::Text, "Text").
+			func(&SimpleXmlNode::CreateChild, "CreateChild").
+			func(&SimpleXmlNode::GetChild, "GetChild").
+			func(&SimpleXmlNode::SetAttributeString, "SetAttribute").
+			func(&SimpleXmlNode::SetAttributeInt, "SetAttributeInt").
+			func(&SimpleXmlNode::SetAttributeBool, "SetAttributeBool").
+			func(&SimpleXmlNode::SetText, "SetText").
+			func(&SimpleXmlNode::IsNull, "IsNull").
+			func(&SimpleXmlNode::DeleteChilds, "DeleteChilds").
+			func(&SimpleXmlNode::GetChildCount, "GetChildCount").
+			func(&SimpleXmlNode::GetChildByIndex, "GetChildByIndex").
+			func(&SimpleXmlNode::GetAttributeCount, "GetAttributeCount");
+			
+			
+			
+			/*func(&SimpleXmlNode::GetChild, "GetChild")*/;
+
 		//using namespace IuCoreUtils;
 		RegisterGlobal(pluginRandom, "random");
 		RegisterGlobal(scriptSleep, "sleep");
@@ -504,12 +542,8 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		RegisterGlobal(IuCoreUtils::copyFile, "CopyFile");
 		RegisterGlobal(IuCoreUtils::createDirectory, "CreateDirectory");
 		RegisterGlobal(IuCoreUtils::FileExists, "FileExists");
-		RegisterGlobal(FileGetContents, "FileGetContents");
-		
-
-
-		
-		
+		RegisterGlobal(GetFileContents, "GetFileContents");
+		RegisterGlobal(ScriptGetFileSize, "GetFileSize");		
 
 		using namespace IuCoreUtils;
 		RegisterGlobal(&CryptoUtils::CalcMD5HashFromFile, "md5_file");

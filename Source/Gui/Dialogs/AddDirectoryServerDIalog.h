@@ -28,6 +28,7 @@ public:
 		COMMAND_HANDLER(IDC_PRESETSBUTTON, BN_CLICKED, OnPresetButtonClicked)
 		COMMAND_RANGE_HANDLER(IDC_PRESETMENU_FIRST_ID, IDC_PRESETMENU_LAST_ID, OnPresetMenuItemClick);
 		COMMAND_RANGE_HANDLER(IDC_PRESETMENU_SHARED_FOLDER_FIRST_ID, IDC_PRESETMENU_SHARED_FOLDER_LAST_ID, OnPresetSharedFolderMenuItemClick);
+		COMMAND_HANDLER(IDC_ADDFILEPROTOCOL, BN_CLICKED, OnBnClickedAddfileprotocol)
 	END_MSG_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -58,6 +59,7 @@ protected:
 public:
 	LRESULT OnBnClickedBrowsebutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnPresetButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnBnClickedAddfileprotocol(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 };
 
 

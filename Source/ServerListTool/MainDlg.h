@@ -111,5 +111,5 @@ public:
 	LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	bool OnNeedStop();
 	
-	ZSimpleXml xml;
+	SimpleXml xml;
 };

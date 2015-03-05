@@ -88,7 +88,7 @@ CUpdateInfo::CUpdateInfo()
 
 bool CUpdateInfo::LoadUpdateFromFile(const CString& filename)
 {
-	ZSimpleXml xml;
+	SimpleXml xml;
 	if(!xml.LoadFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)filename)))	
 	{
 		WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file "))+filename+_T("\r\n"));
@@ -111,7 +111,7 @@ bool CUpdateInfo::SaveToFile(const CString& filename)
 
 bool CUpdateInfo::LoadUpdateFromBuffer(const CString& buffer)
 {
-	ZSimpleXml m_xml;
+	SimpleXml m_xml;
 	if(!m_xml.LoadFromString(IuCoreUtils::WstringToUtf8((LPCTSTR)buffer)))
 	{
 		WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file \r\n"))+_T("\r\nServer answer:\r\n")+buffer);
@@ -130,9 +130,9 @@ bool CUpdateInfo::DoUpdate(const CUpdateInfo &newPackage)
 	return true;
 }
 
-bool CUpdateInfo::Parse( ZSimpleXml &xml)
+bool CUpdateInfo::Parse( SimpleXml &xml)
 {
-	ZSimpleXmlNode root = xml.getRoot("UpdateInfo", false);
+	SimpleXmlNode root = xml.getRoot("UpdateInfo", false);
 	if(root.IsNull()) return false;
 	
 	CString packageName, UpdateUrl;
@@ -383,7 +383,7 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
 	
 	m_PackageFolder = IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFilePath(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))).c_str();
 	m_PackageFolder += "\\";
-	ZSimpleXmlNode root = m_xml.getRoot("UpdatePackage", false);
+	SimpleXmlNode root = m_xml.getRoot("UpdatePackage", false);
 	if(root.IsNull()) return false;
 
 	CString packageName, UpdateUrl;
@@ -394,8 +394,8 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
 		
 	m_CoreUpdate = (core != 0);
 		
-	ZSimpleXmlNode entry = root["Entries"];
-	std::vector<ZSimpleXmlNode> entries;
+	SimpleXmlNode entry = root["Entries"];
+	std::vector<SimpleXmlNode> entries;
 	entry.GetChilds("Entry", entries);
 
 	for(size_t i=0; i< entries.size(); i++){

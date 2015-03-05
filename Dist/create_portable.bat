@@ -24,6 +24,7 @@ mkdir %temp_dir%\Data\Update
 Copy "..\Build\release optimized\Image Uploader.exe" %temp_dir%\
 Copy "..\Lang\*.lng" %temp_dir%\Lang\
 Copy "..\Build\release optimized\Modules\*" %temp_dir%\Modules\
+Copy "..\Docs\*" %temp_dir%\Docs\
 Copy "..\Data\servers.xml" %temp_dir%\Data\
 Copy "..\Data\templates.xml" %temp_dir%\Data\
 Copy "..\Data\template.txt" %temp_dir%\Data\

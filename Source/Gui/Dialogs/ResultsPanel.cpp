@@ -481,7 +481,7 @@ bool CResultsPanel::LoadTemplates(CString &Error)
 {
 	int i =0;
 
-	ZSimpleXml XML;
+	SimpleXml XML;
 	CString XmlFileName = IuCommonFunctions::GetDataFolder() + _T("templates.xml");
 
 	if(!FileExists(XmlFileName))
@@ -496,14 +496,14 @@ bool CResultsPanel::LoadTemplates(CString &Error)
 		return false;
 	}
 
-	ZSimpleXmlNode templatesNode = XML.getRoot("Templates");
+	SimpleXmlNode templatesNode = XML.getRoot("Templates");
 	if(templatesNode.IsNull())
 	{
 		Error = _T("Unable to find Templates node");
 		return false;
 	}
 
-	std::vector<ZSimpleXmlNode> templates;
+	std::vector<SimpleXmlNode> templates;
 	templatesNode.GetChilds("Template",templates);
 
 	for(size_t i=0; i<templates.size(); i++)
@@ -513,7 +513,7 @@ bool CResultsPanel::LoadTemplates(CString &Error)
 		
 		Template.TemplateText = Utf8ToWCstring(templates[i]["Text"].Text());
 		
-		ZSimpleXmlNode itemsNode = templates[i]["Items"];
+		SimpleXmlNode itemsNode = templates[i]["Items"];
 		if(!itemsNode.IsNull())
 		{
 			Template.LineStart = Utf8ToWCstring(itemsNode.Attribute("LineStart"));
@@ -589,10 +589,10 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 	mi.dwTypeData  = TR("Использовать прямые ссылки");//TR("Параметры авторизации");
 	sub.InsertMenuItem(count++, true, &mi);
 
-	mi.fType = MFT_STRING;
+/*	mi.fType = MFT_STRING;
 	mi.wID = IDC_USEDIRECTLINKS;
 	mi.dwTypeData  = TR("Открывать ссылки в новой вкладке (для HTML)");//TR("Параметры авторизации");
-	sub.InsertMenuItem(count++, true, &mi);
+	sub.InsertMenuItem(count++, true, &mi);*/
 
 
 	mi.wID = IDC_USETEMPLATE;

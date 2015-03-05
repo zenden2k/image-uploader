@@ -37,10 +37,10 @@ Thumbnail::~Thumbnail()
 
 bool Thumbnail::LoadFromFile(const std::string& filename)
 {
-	ZSimpleXml xml;
+	SimpleXml xml;
 	if (!xml.LoadFromFile(filename))
 		return false;
-	ZSimpleXmlNode root = xml.getRoot("Thumbnail", false);
+	SimpleXmlNode root = xml.getRoot("Thumbnail", false);
 	if (root.IsNull())
 		return false;
 	data_.sprite_source_file = root["Definitions"]["Sprite"].Attribute("Source");
@@ -49,8 +49,8 @@ bool Thumbnail::LoadFromFile(const std::string& filename)
 	{
 		data_.sprite_source_file = IuCoreUtils::ExtractFilePath(filename) + "/" + data_.sprite_source_file;
 	}
-	ZSimpleXmlNode colorsNode = root["Definitions"]["Params"];
-	std::vector<ZSimpleXmlNode> colorNodes;
+	SimpleXmlNode colorsNode = root["Definitions"]["Params"];
+	std::vector<SimpleXmlNode> colorNodes;
 	colorsNode.GetChilds("Param", colorNodes);
 	for (size_t i = 0; i < colorNodes.size(); i++)
 	{
@@ -58,12 +58,12 @@ bool Thumbnail::LoadFromFile(const std::string& filename)
 		colorName = colorNodes[i].Attribute("Name");
 		data_.colors_[colorName] =  colorNodes[i].Attribute("Value");
 	}
-	ZSimpleXmlNode drawingNode = root["Drawing"];
+	SimpleXmlNode drawingNode = root["Drawing"];
 	if (!drawingNode.IsNull())
 	{
 		data_.width_addition = drawingNode.Attribute("AddWidth");
 		data_.height_addition = drawingNode.Attribute("AddHeight");
-		std::vector<ZSimpleXmlNode> drawOperations;
+		std::vector<SimpleXmlNode> drawOperations;
 		drawingNode.GetChilds("Operation", drawOperations);
 		for (size_t i = 0; i < drawOperations.size(); i++)
 		{
@@ -95,21 +95,21 @@ void Thumbnail::CreateNew()
 
 bool Thumbnail::SaveToFile(const std::string& filename)
 {
-	ZSimpleXml xml;
+	SimpleXml xml;
 	std::string fileToSave = filename;
 	if (filename.empty())
 	{
 		fileToSave = file_name_;
 	}
 	xml.LoadFromFile(fileToSave);
-	ZSimpleXmlNode root = xml.getRoot("Thumbnail", false);
+	SimpleXmlNode root = xml.getRoot("Thumbnail", false);
 	if (root.IsNull())
 		return false;
-	ZSimpleXmlNode colorsNode = root.GetChild("Definitions").GetChild("Params");
+	SimpleXmlNode colorsNode = root.GetChild("Definitions").GetChild("Params");
 	colorsNode.DeleteChilds();
 	for (std::map<std::string, std::string>::iterator it = data_.colors_.begin(); it != data_.colors_.end(); ++it)
 	{
-		ZSimpleXmlNode colorNode = colorsNode.CreateChild("Param");
+		SimpleXmlNode colorNode = colorsNode.CreateChild("Param");
 		colorNode.SetAttribute("Name", it->first);
 		colorNode.SetAttribute("Value", it->second);
 	}

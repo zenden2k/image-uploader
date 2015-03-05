@@ -89,7 +89,6 @@
 #define IDB_PNG1                        259
 #define IDI_ICON4                       260
 #define IDI_ICONLINK                    260
-#define IDI_ICONFOLDER2                 262
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -418,6 +417,7 @@
 #define IDC_SETTINGSPAGESLIST           1215
 #define IDC_SITELINK                    1216
 #define IDC_FOREGROUNDWHENSHOOTING      1217
+#define IDC_DOCUMENTATION               1217
 #define IDC_PARAMETERSHINTLABEL         1218
 #define IDC_SCREENSHOTFILENAMELABEL     1220
 #define IDC_SCREENSHOTFOLDERLABEL       1221
@@ -470,6 +470,7 @@
 #define IDC_PRESERVE_EXIF               1272
 #define IDC_PASTEHTMLONCTRLVCHECKBOX    1272
 #define IDC_SHORTENURLFROMTRAYCHECKBOX  1272
+#define IDC_ADDFILEPROTOCOL             1272
 #define IDC_VIDEOENGINECOMBO            1273
 #define IDC_FOUNDABUG                   1274
 #define IDC_RESULTSLABEL                1274

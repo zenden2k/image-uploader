@@ -137,25 +137,14 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
 	CUploadEngineData *ued = CUploadEngineList::byName(name);
 	std::string newName =  name;
 	HICON icon = 0;
+	CString iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(newName)+_T(".ico");
 
-	if  ( ued && ued->PluginName == "ftp" )  {
-		newName = "ftp server";
-	} else if ( ued && ued->PluginName == "directory"  ) {
-		icon = LoadIcon(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDI_ICONFOLDER2));
-		//HBITMAP hBitmap;
-
-		// Get color depth (minimum requirement is 32-bits for alpha blended images).
-		/*int iBitsPixel = GetDeviceCaps(::GetDC(HWND_DESKTOP), BITSPIXEL);
-
-		CBitmap hBitmap = LoadBitmap(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDB_SERVERTOOLBARBMP2));
-		CImageList imageList;
-		imageList.Create(16, 16, ILC_COLOR24 | ILC_MASK, 0, 6);
-		imageList.Add(hBitmap, RGB(255, 0, 255));
-		icon = imageList.GetIcon(1,ILD_TRANSPARENT);*/
+	if ( !FileExists(iconFileName) && ued && !ued->PluginName.empty() ) {
+		iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\") + Utf8ToWCstring(ued->PluginName) +_T(".ico");
 	}
 
 	if (!icon ) {
-		icon = (HICON)LoadImage(0,IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(newName)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
+		icon = (HICON)LoadImage(0,iconFileName,IMAGE_ICON	,16,16,LR_LOADFROMFILE);
 	}
 	
 	if ( !icon ) {

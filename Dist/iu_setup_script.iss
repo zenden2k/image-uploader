@@ -57,6 +57,7 @@ Name: "{code:GetDataFolder}\Image Uploader\Servers"; Permissions: users-modify
 Source: "..\Build\release optimized\Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lang\*.lng"; Excludes: "default.*"; DestDir: "{app}\Lang"; Flags: ignoreversion
 Source: "..\Build\release optimized\Modules\*"; DestDir: "{app}\Modules"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\Docs\*"; DestDir: "{app}\Docs"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Data\servers.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
 Source: "..\Data\template.txt"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
 Source: "..\Data\templates.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion

@@ -36,10 +36,14 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
 	TRC(IDC_DOWNLOADURLLABEL,"URL для скачивания:");
 	TRC(IDCANCEL,"Отмена");
 	TRC(IDC_THEURLOFUPLOADEDLABEL,"Ссылка для скачивания будет выглядеть так:");
+	TRC(IDC_ADDFILEPROTOCOL,"Конвертировать UNC путь \"\\\\\" в \"file://\"");
+
+	
 	CIcon ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON	, 16,16,0);
 	SendDlgItemMessage(IDC_PRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
 	::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));
 	LoadComputerAddresses();
+	GuiTools::ShowDialogItem(m_hWnd, IDC_ADDFILEPROTOCOL, false);
 	/*PADDRINFOA ai;
 	
 	if (!getaddrinfo(0,0,0, &ai) ) {
@@ -75,10 +79,10 @@ LRESULT CAddDirectoryServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND 
 	}
 	CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDITBOX);
 	CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDITBOX);
-
+	bool addFileProtocol = GuiTools::GetCheck(m_hWnd, IDC_ADDFILEPROTOCOL);
 	
 	ServerListManager slm(IuCoreUtils::WstringToUtf8((LPCTSTR)(IuCommonFunctions::GetDataFolder()+"Servers\\")), uploadEngineList_, Settings.ServersSettings);
-	if ( slm.addDirectoryAsServer(IuCoreUtils::WstringToUtf8((LPCTSTR)connectionName), IuCoreUtils::WstringToUtf8((LPCTSTR)directory), IuCoreUtils::WstringToUtf8((LPCTSTR)downloadUrl)) ) {
+	if ( slm.addDirectoryAsServer(IuCoreUtils::WstringToUtf8((LPCTSTR)connectionName), IuCoreUtils::WstringToUtf8((LPCTSTR)directory), IuCoreUtils::WstringToUtf8((LPCTSTR)downloadUrl), addFileProtocol) ) {
 			createdServerName_ = IuCoreUtils::Utf8ToWstring(slm.createdServerName()).c_str();
 			EndDialog(wID);
 	} else {
@@ -116,6 +120,7 @@ LRESULT CAddDirectoryServerDialog::OnPresetMenuItemClick(WORD wNotifyCode, WORD 
 	}
 	SetDlgItemText(IDC_DOWNLOADURLEDIT, addresses_[presetIndex]);
 	GenerateExampleUrl();
+	return 0;
 }
 
 LRESULT CAddDirectoryServerDialog::OnPresetSharedFolderMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -126,6 +131,7 @@ LRESULT CAddDirectoryServerDialog::OnPresetSharedFolderMenuItemClick(WORD wNotif
 	}
 	SetDlgItemText(IDC_DOWNLOADURLEDIT, sharedFolders_[presetIndex]);
 	GenerateExampleUrl();
+	return 0;
 }
 
 LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
@@ -192,6 +198,8 @@ LRESULT CAddDirectoryServerDialog::OnDownloadUrlEditChange(WORD wNotifyCode, WOR
 		downloadUrlEdited = !GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT).IsEmpty();
 		GenerateExampleUrl();
 	}
+	CString downloadUrl = GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT);
+	GuiTools::ShowDialogItem(m_hWnd, IDC_ADDFILEPROTOCOL, downloadUrl.Left(2) == _T("\\\\") ); 
 	return 0;
 }
 
@@ -217,6 +225,13 @@ void CAddDirectoryServerDialog::GenerateDownloadLink()
 void CAddDirectoryServerDialog::GenerateExampleUrl()
 {
 	CString downloadUrl = GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT);
+
+	bool addFileProtocol = GuiTools::GetCheck(m_hWnd, IDC_ADDFILEPROTOCOL);
+
+	if ( addFileProtocol && downloadUrl.Left(2) == _T("\\\\") ) {
+		downloadUrl.Replace(L"\\", L"/");
+		downloadUrl = L"file:" + downloadUrl;
+	}
 
 	SetDlgItemText(IDC_EXAMPLEURLLABEL, downloadUrl + "example.png");
 }
@@ -367,6 +382,13 @@ LRESULT CAddDirectoryServerDialog::OnPresetButtonClicked(WORD wNotifyCode, WORD 
 	
 	
 	popupMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd);
+
+	return 0;
+}
+LRESULT CAddDirectoryServerDialog::OnBnClickedAddfileprotocol(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	GenerateExampleUrl();
+	// TODO: Add your control notification handler code here
 
 	return 0;
 }

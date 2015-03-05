@@ -46,7 +46,7 @@ class CUpdateInfo
 		bool LoadUpdateFromBuffer(const CString& buffer);
 		bool DoUpdate(const CUpdateInfo& newPackage);
 		bool SaveToFile(const CString& filename);
-		bool Parse(ZSimpleXml& xml);	
+		bool Parse(SimpleXml& xml);	
 		bool CheckUpdates();
 		const CString getHash();
 		bool CanUpdate(const CUpdateInfo& newInfo);
@@ -90,7 +90,7 @@ class CUpdatePackage
 	protected:
 		void setStatusText(const CString& text);
 
-		ZSimpleXml m_xml;
+		SimpleXml m_xml;
 		CString m_PackageName;
 		CString m_PackageFolder;
 		bool m_CoreUpdate;
