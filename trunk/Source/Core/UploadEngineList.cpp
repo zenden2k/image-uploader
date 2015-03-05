@@ -40,19 +40,19 @@ CUploadEngineList::CUploadEngineList()
 
 bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::string, ServerSettingsStruct>& serversSettings)
 {
-	ZSimpleXml xml;
+	SimpleXml xml;
 	if(!xml.LoadFromFile(filename))
 		return false;
 		
-	ZSimpleXmlNode root = xml.getRoot("ServerListTool");
+	SimpleXmlNode root = xml.getRoot("ServerListTool");
 
-	std::vector<ZSimpleXmlNode> childs;
+	std::vector<SimpleXmlNode> childs;
 	root.GetChilds("Server", childs);
 	root.GetChilds("Server2", childs);
 
 	for(size_t i=0; i<childs.size(); i++)
 	{
-		ZSimpleXmlNode &cur = childs[i];
+		SimpleXmlNode &cur = childs[i];
 		CUploadEngineData UE;
 		UE.NumOfTries = 0;
 		UE.NeedAuthorization = cur.AttributeInt("Authorize");
@@ -99,12 +99,12 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 				UE.ImageHost = (UE.Type == CUploadEngineData::TypeImageServer);
 			}
 
-			std::vector<ZSimpleXmlNode> actions;
+			std::vector<SimpleXmlNode> actions;
 			cur["Actions"].GetChilds("Action", actions);
 
 			for(size_t j=0; j<actions.size(); j++)
 			{
-				ZSimpleXmlNode &actionNode = actions[j];
+				SimpleXmlNode &actionNode = actions[j];
 				UploadAction UA;
 				UA.NumOfTries = 0;
 				UA.Index = j;
@@ -147,7 +147,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 				UE.Actions.push_back(UA);
 			}
 
-			ZSimpleXmlNode resultNode = cur["Result"];
+			SimpleXmlNode resultNode = cur["Result"];
 			{
 
 				UE.DownloadUrlTemplate = resultNode.Attribute("DownloadUrlTemplate");

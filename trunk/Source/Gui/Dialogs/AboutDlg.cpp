@@ -26,7 +26,8 @@
 #include <curl/curl.h>
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
-
+#include <Func/WinUtils.h>
+#include "Func/IuCommonFunctions.h"
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	GuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
@@ -49,6 +50,10 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	m_ReportBugLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER; 
 	m_ReportBugLink.SetLabel(TR("Нашли ошибку? Сообщите автору"));
 	m_ReportBugLink.SetHyperLink(_T("http://code.google.com/p/image-uploader/issues/entry"));
+
+	m_Documentation.SubclassWindow(GetDlgItem(IDC_DOCUMENTATION));
+	m_Documentation.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
+	m_Documentation.SetLabel(TR("Документация"));
 
 	CString memoText;
 	memoText += TR("Благодарности:") + CString("\r\n\r\n");
@@ -105,6 +110,12 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 LRESULT CAboutDlg::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	EndDialog(wID);
+	return 0;
+}
+
+LRESULT CAboutDlg::OnDocumentationClicked(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	ShellExecute(0,L"open",WinUtils::GetAppFolder()+"Docs\\index.html",0,WinUtils::GetAppFolder()+"Docs\\",SW_SHOWNORMAL);
 	return 0;
 }
 

@@ -43,7 +43,7 @@ SettingsNode& SettingsNode::operator[](const std::string& name)
 	return *childs_[name];
 }
 
-void SettingsNode::saveToXmlNode(ZSimpleXmlNode parentNode, const std::string& name, bool isRoot) const
+void SettingsNode::saveToXmlNode(SimpleXmlNode parentNode, const std::string& name, bool isRoot) const
 {
 	int namelen = name.length();
 	if(namelen>0 && name[0] == '@')
@@ -52,7 +52,7 @@ void SettingsNode::saveToXmlNode(ZSimpleXmlNode parentNode, const std::string& n
 	}
 	else
 	{
-		ZSimpleXmlNode child = parentNode;
+		SimpleXmlNode child = parentNode;
          
       if(!isRoot)
       {
@@ -68,7 +68,7 @@ void SettingsNode::saveToXmlNode(ZSimpleXmlNode parentNode, const std::string& n
 	}
 }
 
-void SettingsNode::loadFromXmlNode(ZSimpleXmlNode parentNode, const std::string& name, bool isRoot)
+void SettingsNode::loadFromXmlNode(SimpleXmlNode parentNode, const std::string& name, bool isRoot)
 {
 	int namelen = name.length();
 	if(namelen>0 && name[0] == '@')
@@ -79,7 +79,7 @@ void SettingsNode::loadFromXmlNode(ZSimpleXmlNode parentNode, const std::string&
 	}
 	else
 	{
-		ZSimpleXmlNode child = parentNode;
+		SimpleXmlNode child = parentNode;
       if(!isRoot)
       {
          child = parentNode.GetChild(name, false);
@@ -105,12 +105,12 @@ SettingsNode::~SettingsNode()
 	}
 }
 
-void SettingsManager::saveToXmlNode(ZSimpleXmlNode parentNode) const
+void SettingsManager::saveToXmlNode(SimpleXmlNode parentNode) const
 {
 	root_.saveToXmlNode(parentNode, "Settings", true);
 }
 
-void SettingsManager::loadFromXmlNode(ZSimpleXmlNode parentNode)
+void SettingsManager::loadFromXmlNode(SimpleXmlNode parentNode)
 {
 	root_.loadFromXmlNode(parentNode, "Settings", true);
 }

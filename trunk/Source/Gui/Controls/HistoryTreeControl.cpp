@@ -168,11 +168,10 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
 	{
 		serverName  = ses->entry(0).serverName;
 	}
-		if(serverName.empty()) serverName = "uknown server";
-	std::string lowText = 
-	serverName+ " (" + IuCoreUtils::toString(ses->entriesCount())+" files)"; 
-	
+		if(serverName.empty()) serverName = "unknown server";
+	std::string lowText = serverName+ " (" + IuCoreUtils::toString(ses->entriesCount())+" files)"; 
 	CString text = Utf8ToWCstring(label);
+
 	
 	CRect rc = invRC;
 	CRect calcRect;
@@ -271,8 +270,9 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
 		dc.DrawIconEx(drawRect.left, drawRect.top, ico, 16, 16);
 	}
 	drawRect.OffsetRect(16 +3 , 0);;
+	CString lowTextW = Utf8ToWCstring(lowText);
 	if(draw)
-		DrawText(dc.m_hDC,  Utf8ToWCstring(lowText), lowText.length(), &drawRect, DT_LEFT|DT_VCENTER);
+		DrawText(dc.m_hDC,  lowTextW, lowTextW.GetLength(), &drawRect, DT_LEFT|DT_VCENTER);
 
 	curY += max(calcRect.Height(), /* server icon height */16);
 	dc.Detach();

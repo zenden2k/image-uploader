@@ -26,16 +26,16 @@
 #include "Core/3rdpart/tinyxml.h"
 #include "CoreUtils.h"
 
-class ZSimpleXml_impl
+class SimpleXml_impl
 {
 	public:
-		ZSimpleXml_impl()
+		SimpleXml_impl()
 		{
 			// doc = 0;
 			docHandle = 0;
 		}
 
-		virtual ~ZSimpleXml_impl()
+		virtual ~SimpleXml_impl()
 		{
 			delete docHandle;
 		}
@@ -44,10 +44,10 @@ class ZSimpleXml_impl
 		TiXmlHandle* docHandle;
 };
 
-class ZSimpleXmlNode_impl
+class SimpleXmlNode_impl
 {
 	public:
-		ZSimpleXmlNode_impl()
+		SimpleXmlNode_impl()
 		{
 			m_el = 0;
 		}
@@ -59,30 +59,30 @@ class ZSimpleXmlNode_impl
 	private:
 };
 
-ZSimpleXmlNode::ZSimpleXmlNode()
+SimpleXmlNode::SimpleXmlNode()
 {
-	impl_ = new ZSimpleXmlNode_impl();
+	impl_ = new SimpleXmlNode_impl();
 	impl_->m_el = 0;
 }
 
-ZSimpleXmlNode::ZSimpleXmlNode(const ZSimpleXmlNode& node)
+SimpleXmlNode::SimpleXmlNode(const SimpleXmlNode& node)
 {
-	impl_ = new ZSimpleXmlNode_impl();
+	impl_ = new SimpleXmlNode_impl();
 	*this = node;
 }
 
-ZSimpleXmlNode::~ZSimpleXmlNode()
+SimpleXmlNode::~SimpleXmlNode()
 {
 	delete impl_;
 }
 
-ZSimpleXmlNode::ZSimpleXmlNode(void* el)
+SimpleXmlNode::SimpleXmlNode(void* el)
 {
-	impl_ = new ZSimpleXmlNode_impl();
+	impl_ = new SimpleXmlNode_impl();
 	impl_->m_el = reinterpret_cast<TiXmlElement*>(el);
 }
 
-ZSimpleXmlNode ZSimpleXmlNode::operator[](const std::string& name)
+SimpleXmlNode SimpleXmlNode::operator[](const std::string& name)
 {
 	TiXmlElement* rootElem = 0;
 	if (impl_->m_el)
@@ -94,7 +94,7 @@ ZSimpleXmlNode ZSimpleXmlNode::operator[](const std::string& name)
 	return rootElem;
 }
 
-ZSimpleXmlNode ZSimpleXmlNode::GetChild(const std::string& name, bool create )
+SimpleXmlNode SimpleXmlNode::GetChild(const std::string& name, bool create )
 {
 	TiXmlElement* rootElem = 0;
 	if (impl_->m_el)
@@ -110,12 +110,35 @@ ZSimpleXmlNode ZSimpleXmlNode::GetChild(const std::string& name, bool create )
 	return rootElem;
 }
 
-bool ZSimpleXmlNode::IsNull() const
+SimpleXmlNode SimpleXmlNode::GetChildByIndex(int index)
+{
+	TiXmlElement* rootElem = 0;
+	if (impl_->m_el)
+	{
+		TiXmlNode* rootNode = TiXmlHandle(impl_->m_el).Child(index).Element();
+		if (rootNode)
+			rootElem = rootNode->ToElement();
+	}
+	return rootElem;
+}
+
+int SimpleXmlNode::GetChildCount()
+{
+	int count = 0;
+	TiXmlNode * child = 0;
+	while ( child = impl_->m_el->IterateChildren(child ) )
+	{
+		count++;
+	}
+	return count;
+}
+
+bool SimpleXmlNode::IsNull() const
 {
 	return (impl_->m_el == 0);
 }
 
-bool ZSimpleXmlNode::GetChilds(const std::string& name, std::vector<ZSimpleXmlNode>& out) const
+bool SimpleXmlNode::GetChilds(const std::string& name, std::vector<SimpleXmlNode>& out) const
 {
 	TiXmlNode* child = 0;
 	if (!impl_->m_el)
@@ -131,14 +154,14 @@ bool ZSimpleXmlNode::GetChilds(const std::string& name, std::vector<ZSimpleXmlNo
 	return (count != 0);
 }
 
-void ZSimpleXmlNode::DeleteChilds()
+void SimpleXmlNode::DeleteChilds()
 {
 	if (!impl_->m_el)
 		return;
 	impl_->m_el->Clear();
 }
 
-std::string ZSimpleXmlNode::Attribute(const std::string& name) const
+const std::string SimpleXmlNode::Attribute(const std::string& name) const
 {
 	std::string result;
 	if (impl_->m_el)
@@ -146,36 +169,36 @@ std::string ZSimpleXmlNode::Attribute(const std::string& name) const
 	return result;
 }
 
-int ZSimpleXmlNode::AttributeInt(const std::string& name) const
+int SimpleXmlNode::AttributeInt(const std::string& name) const
 {
 	return atoi(Attribute(name).c_str());
 }
 
-bool ZSimpleXmlNode::AttributeBool(const std::string& name) const
+bool SimpleXmlNode::AttributeBool(const std::string& name) const
 {
 	return atoi(Attribute(name).c_str()) != 0;
 }
 
-int64_t ZSimpleXmlNode::AttributeInt64(const std::string& name) const
+int64_t SimpleXmlNode::AttributeInt64(const std::string& name) const
 {
 	return IuCoreUtils::stringToint64_t(Attribute(name).c_str());
 }
 
-void ZSimpleXmlNode::SetAttribute(const std::string& name, const std::string& value)
+void SimpleXmlNode::SetAttribute(const std::string& name, const std::string& value)
 {
 	if (!impl_->m_el)
 		return;
 	impl_->m_el->SetAttribute(name, value);
 }
 
-void ZSimpleXmlNode::SetAttribute(const std::string& name, int value)
+void SimpleXmlNode::SetAttribute(const std::string& name, int value)
 {
 	if (!impl_->m_el)
 		return;
 	impl_->m_el->SetAttribute(name, value);
 }
 
-void ZSimpleXmlNode::SetAttribute(const std::string& name, int64_t value)
+void SimpleXmlNode::SetAttribute(const std::string& name, int64_t value)
 {
 	std::string str = IuCoreUtils::int64_tToString(value);
 	if (!impl_->m_el)
@@ -183,14 +206,26 @@ void ZSimpleXmlNode::SetAttribute(const std::string& name, int64_t value)
 	impl_->m_el->SetAttribute(name, str);
 }
 
-void ZSimpleXmlNode::SetAttributeBool(const std::string& name, bool value)
+void SimpleXmlNode::SetAttributeInt(const std::string& name, int value)
+{
+	if (!impl_->m_el)
+		return;
+	impl_->m_el->SetAttribute(name, value);
+}
+
+void SimpleXmlNode::SetAttributeString(const std::string& name, const std::string& value)
+{
+	SetAttribute(name,value);
+}
+
+void SimpleXmlNode::SetAttributeBool(const std::string& name, bool value)
 {
 	if (!impl_->m_el)
 		return;
 	impl_->m_el->SetAttribute(name, value ? 1 : 0);
 }
 
-std::string ZSimpleXmlNode::Name() const
+const std::string SimpleXmlNode::Name() const
 {
 	std::string result;
 	if (impl_->m_el)
@@ -200,7 +235,7 @@ std::string ZSimpleXmlNode::Name() const
 	return result;
 }
 
-std::string ZSimpleXmlNode::Text() const
+const std::string SimpleXmlNode::Text() const
 {
 	std::string result;
 	if (impl_->m_el)
@@ -212,32 +247,32 @@ std::string ZSimpleXmlNode::Text() const
 	return result;
 }
 
-ZSimpleXmlNode ZSimpleXmlNode::CreateChild(const std::string& name)
+SimpleXmlNode SimpleXmlNode::CreateChild(const std::string& name)
 {
 	if (!impl_->m_el)
 		return 0;
 	return impl_->m_el->InsertEndChild(TiXmlElement(name))->ToElement();
 }
 
-ZSimpleXml::ZSimpleXml()
+SimpleXml::SimpleXml()
 {
-	impl_ = new ZSimpleXml_impl();
+	impl_ = new SimpleXml_impl();
 	impl_->docHandle = 0;
 	TiXmlBase::SetCondenseWhiteSpace(false);
 }
 
-ZSimpleXmlNode& ZSimpleXmlNode::operator = (const ZSimpleXmlNode& node)
+SimpleXmlNode& SimpleXmlNode::operator = (const SimpleXmlNode& node)
 {
 	impl_->m_el = node.impl_->m_el;
 	return *this;
 }
 
-ZSimpleXml::~ZSimpleXml()
+SimpleXml::~SimpleXml()
 {
 	delete impl_;
 }
 
-bool ZSimpleXml::LoadFromFile(const std::string& fileName)
+bool SimpleXml::LoadFromFile(const std::string& fileName)
 {
 	Utf8String text;
 	if (!IuCoreUtils::ReadUtf8TextFile(fileName, text))
@@ -246,14 +281,14 @@ bool ZSimpleXml::LoadFromFile(const std::string& fileName)
 	return LoadFromString(text);
 }
 
-bool ZSimpleXml::LoadFromString(const std::string& string)
+bool SimpleXml::LoadFromString(const std::string& string)
 {
 	impl_->doc.Parse(string.c_str());
 	impl_->docHandle = new TiXmlHandle(&impl_->doc);
 	return true;
 }
 
-ZSimpleXmlNode ZSimpleXml::getRoot(const std::string& name,  bool create)
+SimpleXmlNode SimpleXml::getRoot(const std::string& name,  bool create)
 {
 	if (impl_->docHandle)
 	{
@@ -275,18 +310,25 @@ ZSimpleXmlNode ZSimpleXml::getRoot(const std::string& name,  bool create)
 	return el;
 }
 
-bool ZSimpleXml::SaveToFile(const std::string& fileName) const
+const std::string SimpleXml::ToString()
+{
+	TiXmlPrinter printer;
+	printer.SetIndent( "    " );
+	impl_->doc.Accept( &printer );
+	return printer.CStr();
+}
+
+bool SimpleXml::SaveToFile(const std::string& fileName) const
 {
 	FILE* f = IuCoreUtils::fopen_utf8(fileName.c_str(), "wb");
 	if (!f)
 		return false;
-
 	bool res =  impl_->doc.SaveFile(f);
 	fclose(f);
 	return res;
 }
 
-void ZSimpleXmlNode::SetText(const std::string& value)
+void SimpleXmlNode::SetText(const std::string& value)
 {
 	if (!impl_->m_el)
 		return;
@@ -295,7 +337,7 @@ void ZSimpleXmlNode::SetText(const std::string& value)
 	impl_->m_el->LinkEndChild(el);
 }
 
-bool ZSimpleXmlNode::GetAttribute(const std::string& name, std::string& value) const
+bool SimpleXmlNode::GetAttribute(const std::string& name, std::string& value) const
 {
 	if (impl_->m_el)
 		if (impl_->m_el->QueryStringAttribute(name.c_str(), &value) == TIXML_NO_ATTRIBUTE)
@@ -303,7 +345,7 @@ bool ZSimpleXmlNode::GetAttribute(const std::string& name, std::string& value) c
 	return true;
 }
 
-bool ZSimpleXmlNode::GetAttributes(std::vector<std::string>& out) const
+bool SimpleXmlNode::GetAttributes(std::vector<std::string>& out) const
 {
 	if (!impl_->m_el)
 		return false;
@@ -316,7 +358,21 @@ bool ZSimpleXmlNode::GetAttributes(std::vector<std::string>& out) const
 	return true;
 }
 
-bool ZSimpleXmlNode::GetAttributeBool(const std::string& name, bool& value) const
+int SimpleXmlNode::GetAttributeCount()
+{
+	if (!impl_->m_el)
+		return 0;
+	int count = 0;
+	TiXmlAttribute* attr = impl_->m_el->FirstAttribute();
+	while (attr != 0)
+	{
+		count++;
+		attr = attr->Next();
+	}
+	return count;
+}
+
+bool SimpleXmlNode::GetAttributeBool(const std::string& name, bool& value) const
 {
 	std::string v;
 	if (impl_->m_el)
@@ -326,7 +382,7 @@ bool ZSimpleXmlNode::GetAttributeBool(const std::string& name, bool& value) cons
 	return true;
 }
 
-bool ZSimpleXmlNode::GetAttributeInt(const std::string& name, int& value) const
+bool SimpleXmlNode::GetAttributeInt(const std::string& name, int& value) const
 {
 	std::string v;
 	if (impl_->m_el)

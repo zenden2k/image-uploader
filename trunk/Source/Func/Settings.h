@@ -251,8 +251,8 @@ bool AutoShowLog;
 		
 		bool LoadSettings(std::string szDir="", std::string fileName = "", bool LoadFromRegistry  = true);
 		bool SaveSettings();
-		bool LoadAccounts(ZSimpleXmlNode root);
-		bool SaveAccounts(ZSimpleXmlNode root);
+		bool LoadAccounts(SimpleXmlNode root);
+		bool SaveAccounts(SimpleXmlNode root);
 	int UploadBufferSize;
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 		void Uninstall();
@@ -260,9 +260,9 @@ bool AutoShowLog;
 	int ServerID, QuickServerID;
 	void ApplyRegSettingsRightNow();
 	
-   bool LoadConvertProfiles(ZSimpleXmlNode root);
-   bool LoadConvertProfile(const CString& name, ZSimpleXmlNode profileNode);
-	bool SaveConvertProfiles(ZSimpleXmlNode root);
+   bool LoadConvertProfiles(SimpleXmlNode root);
+   bool LoadConvertProfile(const CString& name, SimpleXmlNode profileNode);
+	bool SaveConvertProfiles(SimpleXmlNode root);
    void BindConvertProfile(SettingsNode& mgr,  ImageConvertingParams &params);
 #ifndef IU_SHELLEXT
    ServerSettingsStruct& ServerByName(CString name);

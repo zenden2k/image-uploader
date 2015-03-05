@@ -740,6 +740,9 @@ LRESULT CUploadSettings::OnOpenInBrowser(WORD /*wNotifyCode*/, WORD wID, HWND /*
 void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerToolbar)
 {
 	int nServerIndex = isImageServerToolbar? m_nImageServer: m_nFileServer;
+	if ( nServerIndex < 0 ) {
+		return ;
+	}
 	CMenu sub;	
 	MENUITEMINFO mi;
 	mi.cbSize = sizeof(mi);	

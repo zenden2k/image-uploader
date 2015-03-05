@@ -94,8 +94,8 @@ class SettingsNode
 			binded_value_ = new SettingsNodeVariant<T>(&var);
 		}
 		SettingsNode& operator[](const std::string&);
-		void saveToXmlNode(ZSimpleXmlNode parentNode, const std::string& name, bool isRoot = false) const;
-		void loadFromXmlNode(ZSimpleXmlNode parentNode, const std::string& name, bool isRoot = false);
+		void saveToXmlNode(SimpleXmlNode parentNode, const std::string& name, bool isRoot = false) const;
+		void loadFromXmlNode(SimpleXmlNode parentNode, const std::string& name, bool isRoot = false);
 	protected:
 		SettingsNodeBase * binded_value_;
 		std::map<std::string, SettingsNode*> childs_; 
@@ -107,8 +107,8 @@ class SettingsManager
 	public:
 		SettingsManager();
 		SettingsNode& operator[](const std::string&);
-		void saveToXmlNode(ZSimpleXmlNode parentNode) const;
-		void loadFromXmlNode(ZSimpleXmlNode parentNode);
+		void saveToXmlNode(SimpleXmlNode parentNode) const;
+		void loadFromXmlNode(SimpleXmlNode parentNode);
 	protected:
 		SettingsNode root_;
 		DISALLOW_COPY_AND_ASSIGN(SettingsManager);

@@ -89,7 +89,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	CString testFileName = WinUtils::GetAppFolder() + "testfile.jpg";
 	if(xml.LoadFromFile( WCstringToUtf8((WinUtils::GetAppFolder() + "servertool.xml"))))
 	{
-		ZSimpleXmlNode root = xml.getRoot("ServerListTool");
+		SimpleXmlNode root = xml.getRoot("ServerListTool");
 		std::string name = root.Attribute("FileName");
 		if(!name.empty())
 			testFileName = Utf8ToWstring(name.c_str()).c_str();
@@ -157,9 +157,9 @@ LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 	}
 	else 
 	{
-		ZSimpleXml savexml;
+		SimpleXml savexml;
 		CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
-		ZSimpleXmlNode root = savexml.getRoot("ServerListTool");
+		SimpleXmlNode root = savexml.getRoot("ServerListTool");
 		root.SetAttribute("FileName", WstrToUtf8((LPCTSTR)fileName));
 		root.SetAttribute("Time", int(GetTickCount()));
 		savexml.SaveToFile(WstrToUtf8((LPCTSTR)(WinUtils::GetAppFolder()+"servertool.xml")));

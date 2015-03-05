@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Image Uploader - Дополнительная информация по использованию</title>
+<link href="default.css" rel="stylesheet" type="text/css" />
+<!--<link href="styles/default.css" rel="stylesheet" type="text/css" />-->
+<link href="prettify/prettify.css" rel="stylesheet" type="text/css" />
+</head>
+<body onload="prettyPrint()">
+<script type="text/javascript" src="prettify/prettify.js"></script>
+<div id="header">
+<h1>Image Uploader scripting API</h1> <div id="version"></div>
+</div>
+ <div id="menu">
+    <ul>
+	<li><a href="api_example.html">Example script</a></li>
+	<li><a href="api_implement.html">Functions to implement</a></li>			
+        <li><a href="api_globals.html">Global functions</a></li>        
+        <li><a href="api_classes.html">Classes</a></li>
+    </ul>
+</div>
+<div id="content">
+    <div id="left">
+<h2>Functions to implement</h2> 
+<div class="script-functions">
+<code class="f"><u>int</u> UploadFile(<u>string</u> <i>filename</i>, <u><a href="api_smallclasses.html#CIUUploadParams">CIUUploadParams</a></u> <i>params</i>)</code>
+Obligatory<br/>
+<code class="f"><u>int</u> GetFolderList(<u><a href="api_smallclasses.html#CFolderList">CFolderList</a></u> <i>folderList</i>)</code>
+<br/>
+<code class="f"><u>int</u> CreateFolder(<u><a href="api_smallclasses.html#CFolderItem">CFolderItem</a></u> <i>parent</i>, <u><a href="api_smallclasses.html#CFolderItem">CFolderItem</a></u> <i>folder</i>)</code>
+<br/>
+<code class="f"><u>int</u> ModifyFolder(<u><a href="api_smallclasses.html#CFolderItem">CFolderItem</a></u> <i>folder</i>)</code>
+<br/>
+<code class="f"><u>array</u> GetFolderAccessTypeList()</code>
+Function that returns a list of the types of access restrictions to the album:
+  private, public, friends only, etc.
+<pre class="prettyprint">
+function GetFolderAccessTypeList()
+{
+    return ["Public", "Private"];
+}
+</pre>
+<br/>
+<code>nm</code> - глобальный объект, являющийся экземпляром класса <a href=api_networkmanager.html>NetworkManager</a>
+<p>
+</div>
+</div>
+</div>
+<div id="footer">
+<p> Последнее обновление данного документа — 05.03.2015 года. Copyright &copy; 2007 - 2015, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
+</div>
+
+</body>
+</html>

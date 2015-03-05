@@ -30,7 +30,7 @@
 class CHistoryReader_impl
 {
 	public:
-		ZSimpleXml m_xml;
+		SimpleXml m_xml;
 		std::vector<CHistorySession> m_sessions;
 };
 
@@ -67,11 +67,11 @@ CHistorySession::CHistorySession(const std::string& filename, const std::string&
 	m_sessId = sessionId;
 }
 
-void CHistorySession::loadFromXml(ZSimpleXmlNode& sessionNode)
+void CHistorySession::loadFromXml(SimpleXmlNode& sessionNode)
 {
 	m_timeStamp = sessionNode.AttributeInt("TimeStamp" );
 	m_serverName = sessionNode.Attribute("ServerName" );
-	std::vector<ZSimpleXmlNode> allEntries;
+	std::vector<SimpleXmlNode> allEntries;
 	sessionNode.GetChilds("Entry", allEntries);
 
 	for(size_t i=0; i<allEntries.size(); i++)
@@ -101,7 +101,7 @@ HistoryItem CHistorySession::entry(const int index) const
 bool CHistorySession::AddItem(const HistoryItem &ht)
 {
 	IuCoreUtils::ZGlobalMutex mutex("IuHistoryFileSessionMutex");
-	ZSimpleXml xml;
+	SimpleXml xml;
 	
 	std::string fileName = m_historyXmlFileName;
 	
@@ -118,10 +118,10 @@ bool CHistorySession::AddItem(const HistoryItem &ht)
 	ctime_s(dateStr, sizeof(dateStr), &t);
 	dateStr[strlen(dateStr)-1] = 0;
 
-	ZSimpleXmlNode root = xml.getRoot("History");
-	std::vector<ZSimpleXmlNode> allSessions;
+	SimpleXmlNode root = xml.getRoot("History");
+	std::vector<SimpleXmlNode> allSessions;
 	root.GetChilds("Session", allSessions);
-	ZSimpleXmlNode session;
+	SimpleXmlNode session;
 	int xmlSessionNodeIndex = -1;
 
 	for(size_t i=0; i<allSessions.size(); i++)
@@ -143,7 +143,7 @@ bool CHistorySession::AddItem(const HistoryItem &ht)
 		session.SetAttribute("ServerName", ht.serverName);
 	}
 
-	ZSimpleXmlNode entry = session.CreateChild("Entry");
+	SimpleXmlNode entry = session.CreateChild("Entry");
 	entry.SetAttribute("TimeStamp", int(t));
 	entry.SetAttribute("LocalFilePath", ht.localFilePath);
 	entry.SetAttribute("ServerName", ht.serverName);
@@ -211,8 +211,8 @@ bool CHistoryReader::loadFromFile(const std::string& filename)
 	}
 	else 
 		return false;
-	ZSimpleXmlNode root = _impl->m_xml.getRoot("History");
-	std::vector<ZSimpleXmlNode> allSessions;
+	SimpleXmlNode root = _impl->m_xml.getRoot("History");
+	std::vector<SimpleXmlNode> allSessions;
 	root.GetChilds("Session", allSessions);
 
 	for(size_t i = 0; i<allSessions.size(); i++)

@@ -38,7 +38,7 @@ struct HistoryItem
 	int64_t uploadFileSize;
 };
 
-class ZSimpleXmlNode;
+class SimpleXmlNode;
 class CHistoryReader_impl;
 
 class CHistorySession
@@ -51,7 +51,7 @@ class CHistorySession
 		HistoryItem entry(const int index) const;
 		std::string serverName() const;
 		time_t timeStamp() const;
-		void loadFromXml(ZSimpleXmlNode& sessionNode);
+		void loadFromXml(SimpleXmlNode& sessionNode);
 	private:
 		std::string m_historyXmlFileName;
 		std::string m_sessId;

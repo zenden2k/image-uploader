@@ -319,6 +319,7 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
 	msg.Format(TR("Cокращаю ссылку \"%s\" с помощью %s"), (LPCTSTR)url,
 		(LPCTSTR)Utf8ToWstring(ue->Name).c_str());
 	ShowBaloonTip(msg, _T("Image Uploader"));
+	return 0;
 }
 
 LRESULT CFloatingWindow::OnWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)

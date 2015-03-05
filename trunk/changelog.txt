@@ -2,7 +2,9 @@
 #
 # http://zenden.ws/imageuploader
 -v1.3.0 build xxxx
-[~] Теперь программа использует WinSSL вместо OpenSSL при работе по защищенному соединению
+[~] Use WinSSL instead of  OpenSSL for https
+[~] Documentation update
+[~] DOcumentation now is shipped with program
 
 -v1.2.7 build 4185
 [~] Fixed drag-n-drop in Windows 8+

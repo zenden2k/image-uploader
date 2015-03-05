@@ -18,8 +18,8 @@ ServerListManager::~ServerListManager(void)
 
 bool ServerListManager::addFtpServer(const std::string &name, const std::string &serverName, const std::string &login, const std::string &password, const std::string &remoteDirectory, const std::string &downloadUrl)
 {
-	ZSimpleXml xml;
-	ZSimpleXmlNode root = xml.getRoot("Servers");
+	SimpleXml xml;
+	SimpleXmlNode root = xml.getRoot("Servers");
 	std::string newName = name + " (ftp)";
 
 	if ( uploadEngineList_->byName(newName) ) {
@@ -27,13 +27,13 @@ bool ServerListManager::addFtpServer(const std::string &name, const std::string 
 		return false;
 	}
 
-	ZSimpleXmlNode serverNode = root.GetChild("Server");
+	SimpleXmlNode serverNode = root.GetChild("Server");
 	serverNode.SetAttribute("Name", newName);
 	serverNode.SetAttribute("Plugin", "ftp");
 	serverNode.SetAttribute("FileHost", 1);
 	serverNode.SetAttribute("Authorize", 1);
 
-	ZSimpleXmlNode resultNode = serverNode.GetChild("Result");
+	SimpleXmlNode resultNode = serverNode.GetChild("Result");
 	resultNode.SetAttribute("ImageUrlTemplate", "stub");
 	resultNode.SetAttribute("ThumbUrlTemplate", "stub");
 	resultNode.SetAttribute("DownloadUrlTemplate", "stub");
@@ -57,10 +57,10 @@ bool ServerListManager::addFtpServer(const std::string &name, const std::string 
 	return uploadEngineList_->LoadFromFile(outFile,serversSettings_);
 }
 
-bool ServerListManager::addDirectoryAsServer(const std::string &name, const std::string &directory, const std::string &downloadUrl)
+bool ServerListManager::addDirectoryAsServer(const std::string &name, const std::string &directory, const std::string &downloadUrl, bool convertUncPath)
 {
-	ZSimpleXml xml;
-	ZSimpleXmlNode root = xml.getRoot("Servers");
+	SimpleXml xml;
+	SimpleXmlNode root = xml.getRoot("Servers");
 	std::string newName = name;
 
 	if ( uploadEngineList_->byName(newName) ) {
@@ -68,13 +68,13 @@ bool ServerListManager::addDirectoryAsServer(const std::string &name, const std:
 		return false;
 	}
 
-	ZSimpleXmlNode serverNode = root.GetChild("Server");
+	SimpleXmlNode serverNode = root.GetChild("Server");
 	serverNode.SetAttribute("Name", newName);
 	serverNode.SetAttribute("Plugin", "directory");
 	serverNode.SetAttribute("FileHost", 1);
 	serverNode.SetAttribute("Authorize", 0);
 
-	ZSimpleXmlNode resultNode = serverNode.GetChild("Result");
+	SimpleXmlNode resultNode = serverNode.GetChild("Result");
 	resultNode.SetAttribute("ImageUrlTemplate", "stub");
 	resultNode.SetAttribute("ThumbUrlTemplate", "stub");
 	resultNode.SetAttribute("DownloadUrlTemplate", "stub");
@@ -95,6 +95,7 @@ bool ServerListManager::addDirectoryAsServer(const std::string &name, const std:
 	ServerSettingsStruct &ss = serversSettings_[newName];
 	ss.setParam("directory",directory);
 	ss.setParam("downloadUrl",downloadUrl);
+	ss.setParam("convertUncPath",IuCoreUtils::int64_tToString((int)convertUncPath));
 	ss.authData.DoAuth = false;
 	createdServerName_ = newName;
 	return uploadEngineList_->LoadFromFile(outFile,serversSettings_);
