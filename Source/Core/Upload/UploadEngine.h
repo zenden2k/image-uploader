@@ -133,6 +133,7 @@ class CUploadEngineData
 		std::string CodedPassword;
 		std::string ThumbUrlTemplate, ImageUrlTemplate, DownloadUrlTemplate;
 		std::vector<UploadAction> Actions;
+		std::string LoginLabel;
 		int RetryLimit;
 		int NumOfTries;
 		ServerType Type;

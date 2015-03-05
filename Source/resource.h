@@ -89,6 +89,7 @@
 #define IDB_PNG1                        259
 #define IDI_ICON4                       260
 #define IDI_ICONLINK                    260
+#define IDD_QUICKSETUPDLG               261
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -499,6 +500,12 @@
 #define IDC_DIRECTORYEDIT               1297
 #define IDC_DIRECTORYLABEL              1298
 #define IDC_PRESETSBUTTON               1299
+#define IDC_SERVERLABEL                 1300
+#define IDC_FTPSETTINGSBUTTON           1301
+#define IDC_DOAUTHCHECKBOX              1302
+#define IDC_AUTOSTARTUPCHECKBOX		1303	
+#define IDC_CAPTUREPRINTSCREENCHECKBOX  1304
+#define IDC_EXPLORERINTEGRATION         1305
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003

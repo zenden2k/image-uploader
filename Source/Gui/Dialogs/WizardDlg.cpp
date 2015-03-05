@@ -48,6 +48,7 @@
 #include <Core/TextUtils.h>
 #include <Func/WinUtils.h>
 #include <Func/IuCommonFunctions.h>
+#include <Gui/Dialogs/QuickSetupDlg.h>
 
 using namespace Gdiplus;
 // CWizardDlg
@@ -128,7 +129,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	SetWindowText(APPNAME);
 
    Lang.SetDirectory(WinUtils::GetAppFolder() + "Lang\\");
-
+	bool isFirstRun =  Settings.Language.IsEmpty() || FALSE;
 	if(Settings.Language.IsEmpty())
 	{
 		CLangSelect LS;
@@ -188,9 +189,20 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	}
 
 	LoadUploadEngines(_T("userservers.xml"), ErrorStr);	
+
+
+
+
+	
+	if ( isFirstRun ) {
+		CQuickSetupDlg quickSetupDialog;
+		quickSetupDialog.DoModal(m_hWnd);
+	}
+
 	Settings.ServerID		  = m_EngineList.GetUploadEngineIndex(Settings.ServerName);
 	Settings.FileServerID  = m_EngineList.GetUploadEngineIndex(Settings.FileServerName);
 	Settings.QuickServerID = m_EngineList.GetUploadEngineIndex(Settings.QuickServerName);
+
 	if(!*MediaInfoDllPath)
 		WriteLog(logWarning, APPNAME, TR("Библиотека MediaInfo.dll не найдена. \nПолучение технических данных о файлах мультимедиа будет недоступно.")); 
 	TRC(IDC_ABOUT,"О программе...");
