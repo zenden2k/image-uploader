@@ -1770,6 +1770,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Source\Gui\Dialogs\QuickSetupDlg.cpp"
+						>
+					</File>
+					<File
 						RelativePath=".\Source\Gui\Dialogs\RegionSelect.cpp"
 						>
 					</File>

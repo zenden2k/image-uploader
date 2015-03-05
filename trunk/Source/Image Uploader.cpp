@@ -151,7 +151,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 	// for Windows Vista and later versions
 	if ( CmdLine.IsOption( _T("integration") ) )  {
-		Settings.LoadSettings( 0, false );		
+		Settings.LoadSettings("","",false);		
 		Settings.ApplyRegSettingsRightNow();
 		CScriptUploadEngine::DestroyScriptEngine();
 		return 0;

@@ -123,10 +123,11 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 	BOOL b;
 	OnClickedQuickUpload(0, IDC_STARTUPLOADINGFROMSHELL,0, b);
-	ShellIntegrationChanged();
 	::EnableWindow(GetDlgItem(IDC_SHELLVIDEOCONTEXTMENUITEM), shellIntegrationAvailable);
 	::EnableWindow(GetDlgItem(IDC_CASCADEDCONTEXTMENU), shellIntegrationAvailable);
 	::EnableWindow(GetDlgItem(IDC_SHELLIMGCONTEXTMENUITEM), shellIntegrationAvailable);
+	ShellIntegrationChanged();
+	
 	return 1;  // Let the system set the focus
 }
 
@@ -165,7 +166,7 @@ bool CGeneralSettings::Apply()
 	GetDlgItemText(IDC_IMAGEEDITORPATH, szBuf, 256);
 	Settings.ImageEditorPath = szBuf;
 	Settings.ExplorerContextMenu_changed = Settings.ExplorerContextMenu; 
-	Settings.ExplorerContextMenu = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED;
+	Settings.ExplorerContextMenu = SendDlgItemMessage(IDC_SHELLINTEGRATION, BM_GETCHECK)==BST_CHECKED;
 	Settings.ExplorerContextMenu_changed ^= (Settings.ExplorerContextMenu);
 	
 	bool Temp = Settings.ExplorerVideoContextMenu;
@@ -209,6 +210,7 @@ LRESULT CGeneralSettings::OnShellIntegrationCheckboxChanged(WORD wNotifyCode, WO
 	
 void CGeneralSettings::ShellIntegrationChanged()
 {
-	bool checked = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED;
+		bool shellIntegrationAvailable = FileExists(Settings.getShellExtensionFileName())!=0;
+	bool checked = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED && shellIntegrationAvailable;
 	GuiTools::EnableNextN(GetDlgItem(IDC_SHELLINTEGRATION), 2, checked);
 }

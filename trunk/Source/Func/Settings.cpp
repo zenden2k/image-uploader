@@ -195,6 +195,7 @@ void RegisterShellExtension(bool Register) {
 	TempInfo.lpParameters = CString((Register ? _T("") : _T("/u "))) + _T("/s \"") + moduleName + _T("\"");
 	TempInfo.lpDirectory  = s;
 	TempInfo.nShow        = SW_NORMAL;
+	//MessageBox(0,TempInfo.lpParameters,0,0);
 	::ShellExecuteEx(&TempInfo);
 	WaitForSingleObject( TempInfo.hProcess, INFINITE );
 	CloseHandle( TempInfo.hProcess );
@@ -391,7 +392,7 @@ CSettings::CSettings()
 	/* binding settings */
 	SettingsNode& general = mgr_["General"];
 		general.n_bind(LastUpdateTime);
-#if !defined(IU_SHELLEXT) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
+#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 		general.n_bind(Language);
 		general.n_bind(ExplorerContextMenu);
 		general.n_bind(ExplorerVideoContextMenu);
@@ -522,6 +523,7 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 	fileName_ = !szDir.empty() ? szDir + ( (!fileName .empty())? fileName : "Settings.xml") 
 		: SettingsFolder + ( !fileName.empty() ? fileName : "Settings.xml");
 	//std::cout<< fileName_;
+	//MessageBoxA(0,fileName_.c_str(),0,0);
 	if ( !IuCoreUtils::FileExists( fileName_)  ) {
 		return true;
 	}
@@ -710,7 +712,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 			bool canCreateRegistryKey = ( ExplorerContextMenu );
 			if ( Reg.SetKey("Software\\Zenden.ws\\Image Uploader", canCreateRegistryKey ) ) {
 				Reg.WriteBool( "ExplorerCascadedMenu", ExplorerCascadedMenu );
-				// Reg.WriteBool("ExplorerContextMenu", ExplorerContextMenu);
+				 Reg.WriteBool("ExplorerContextMenu", ExplorerContextMenu);
 				Reg.WriteBool( "ExplorerVideoContextMenu", ExplorerVideoContextMenu );
 				Reg.WriteString( "Language", Language );
 			}

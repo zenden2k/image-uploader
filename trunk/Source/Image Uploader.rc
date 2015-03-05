@@ -786,6 +786,32 @@ BEGIN
     CONTROL         "Add file protocol",IDC_ADDFILEPROTOCOL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,64,230,10
 END
 
+IDD_QUICKSETUPDLG DIALOGEX 0, 0, 285, 188
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Быстрая настройка при первом запуске"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    CONTROL         "",IDC_STATICLOGO,"Static",SS_BLACKFRAME,20,4,33,27
+    LTEXT           "Image Uploader",IDC_TITLE,59,12,221,22
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,38,288,1
+    LTEXT           "На какой сервер будем заливать картинки?",IDC_SERVERLABEL,27,49,236,8
+    CONTROL         "",IDC_SERVERCOMBOBOX,"ComboBoxEx32",CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP,29,61,146,197
+    PUSHBUTTON      "Настройки FTP",IDC_FTPSETTINGSBUTTON,189,61,76,14
+    CONTROL         "Авторизация на сервере",IDC_DOAUTHCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,29,83,200,10
+    RTEXT           "Логин:",IDC_LOGINLABEL,3,102,57,8
+    EDITTEXT        IDC_LOGINEDIT,64,99,66,14,ES_AUTOHSCROLL
+    RTEXT           "Пароль:",IDC_PASSWORDLABEL,139,102,47,8
+    EDITTEXT        IDC_PASSWORDEDIT,191,99,68,14,ES_PASSWORD | ES_AUTOHSCROLL
+    CONTROL         "Запуск программы при старте Windows",IDC_AUTOSTARTUPCHECKBOX,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,30,122,232,10
+    CONTROL         "Перехватывать нажатия PrintScreen и Alt+PrintScreen",IDC_CAPTUREPRINTSCREENCHECKBOX,
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,30,134,242,18
+    DEFPUSHBUTTON   "Продолжить",IDOK,209,169,67,15
+    CONTROL         "Добавить пункт в контекстное меню проводника Windows",IDC_EXPLORERINTEGRATION,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,29,154,216,10
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

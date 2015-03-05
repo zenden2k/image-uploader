@@ -96,7 +96,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	}
 	
 	SetDlgItemText(IDC_TOOLFILEEDIT, testFileName);
-	Settings.LoadSettings();
+	Settings.LoadSettings("", "");
 	iuPluginManager.setScriptsDirectory(WstrToUtf8((LPCTSTR)(WinUtils::GetAppFolder() + "Data/Scripts/")));
 	if(!m_ServerList.LoadFromFile(serversFileName))
 	{
