@@ -109,7 +109,7 @@ bool CMyEngineList::LoadFromFile(const CString& filename)
 		m_ErrorStr = "File not found.";
 		return 0;
 	}
-	return CUploadEngineList::LoadFromFile(WCstringToUtf8(filename));
+	return CUploadEngineList::LoadFromFile(WCstringToUtf8(filename),Settings.ServersSettings);
 }
 
 bool CMyEngineList::DestroyCachedEngine(const std::string& name)
@@ -133,8 +133,12 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
 	std::map<std::string, HICON>::iterator iconIt = serverIcons_.find(name);
 	if ( iconIt != serverIcons_.end() )
 		return iconIt->second;
+	
+	CUploadEngineData *ued = CUploadEngineList::byName(name);
+	std::string newName =  ( ued && ued->PluginName == "ftp" ) ? "ftp server" : name;
+	
 
-	HICON icon = (HICON)LoadImage(0,IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(name)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
+	HICON icon = (HICON)LoadImage(0,IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(newName)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
 	if ( !icon ) {
 		return 0;
 	}

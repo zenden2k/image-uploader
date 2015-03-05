@@ -492,6 +492,7 @@
 #define IDC_DOWNLOADURLLABEL            1294
 #define IDC_THEURLOFUPLOADEDLABEL       1295
 #define IDC_URLLABEL                    1296
+#define IDC_EXAMPLEURLLABEL             1296
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003

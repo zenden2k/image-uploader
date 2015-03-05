@@ -384,13 +384,13 @@ bool ImageServer = (hWndCtl == Toolbar.m_hWnd);
 	
 void CUploadSettings::UpdateToolbarIcons()
 {
-	CIcon hImageIcon = NULL, hFileIcon = NULL;
+	HICON hImageIcon = NULL, hFileIcon = NULL;
 
 	if(m_nImageServer != -1)
-		hImageIcon = (HICON)LoadImage(0,IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(m_EngineList->byIndex(m_nImageServer)->Name)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
+		hImageIcon = m_EngineList->getIconForServer(m_EngineList->byIndex(m_nImageServer)->Name);
 		
 	if(m_nFileServer != -1)
-		hFileIcon = (HICON)LoadImage(0,IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(m_EngineList->byIndex(m_nFileServer)->Name)+_T(".ico"),IMAGE_ICON	,16,16,LR_LOADFROMFILE);
+		hFileIcon =m_EngineList->getIconForServer(m_EngineList->byIndex(m_nFileServer)->Name);
 	
 	if(hImageIcon)
 	{
@@ -577,7 +577,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 		sub.InsertMenuItem(menuItemCount++, true, &mi);
 		mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
 		mi.fType = MFT_STRING;
-		mi.wID = IDC_ADD_FTP_SERVER;
+		mi.wID = ImageServer ? IDC_ADD_FTP_SERVER : IDC_ADD_FTP_SERVER_FROM_FILESERVER_LIST;
 
 		mi.dwTypeData  = TR("Добавить FTP сервер...");
 		mi.hbmpItem = 0;
@@ -945,7 +945,18 @@ LRESULT CUploadSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWN
 
 LRESULT CUploadSettings::OnAddFtpServer(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-	CAddFtpServerDialog dlg;
-	dlg.DoModal(m_hWnd);
+	CAddFtpServerDialog dlg(m_EngineList);
+	if ( dlg.DoModal(m_hWnd) == IDOK ) {
+		int serverIndex = m_EngineList->GetUploadEngineIndex(dlg.createdServerName());
+		if ( serverIndex != -1 ) {
+			if ( wID == IDC_ADD_FTP_SERVER ) {
+				m_nImageServer = serverIndex;
+			} else {
+				m_nFileServer = serverIndex;
+			}
+		
+			UpdateAllPlaceSelectors();
+		}
+	}
 	return 0;
 }
