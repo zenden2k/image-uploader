@@ -26,6 +26,7 @@
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/WizardCommon.h"
 #include "3rdpart/thread.h"
+#include "Func/Settings.h"
 
 #define IDC_OPTIONSMENU 10002
 #define IDC_USEDIRECTLINKS 10003
@@ -115,11 +116,11 @@ class CResultsPanel :
 	CAtlArray<IU_Result_Template> Templates;
 	bool LoadTemplates(CString &Error);
 	std::map<CString, CString> m_Vars;
-	std::vector<CString> m_Servers;
+	std::vector<ServerProfile> m_Servers;
 	CString ReplaceVars(const CString& Text);
 	CAutoCriticalSection UrlListCS;
 	int m_nImgServer, m_nFileServer;
-	void AddServer(CString server);
+	void AddServer(ServerProfile server);
 	RECT rectNeeded;
 	bool shortenUrl_;
 	void InitUpload();

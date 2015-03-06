@@ -41,6 +41,7 @@ LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	m_HotkeyList.m_hWnd = GetDlgItem(IDC_HOTKEYLIST);
 	TRC(IDC_EDITHOTKEY, "Редактировать...");
 	TRC(IDC_ATTENTION, "Внимание! Глобальные сочетания действуют, только если включена опция \"Показывать иконку в трее\".");
+	GuiTools::MakeLabelBold(GetDlgItem(IDC_ATTENTION));
 	m_HotkeyList.AddColumn(TR("Действие"),0);
 	m_HotkeyList.AddColumn(TR("Локальные"),1);
 	m_HotkeyList.AddColumn(TR("Глобальные"),2);

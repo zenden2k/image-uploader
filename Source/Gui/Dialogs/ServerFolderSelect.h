@@ -35,11 +35,13 @@
 #define ID_EDITFOLDER 10001
 #define ID_OPENINBROWSER 10002
 #define ID_CREATENESTEDFOLDER 10003
+
+class ServerProfile;
 class CServerFolderSelect : 
 	public CDialogImpl<CServerFolderSelect>	, public CThreadImpl<CServerFolderSelect>, public CDialogResize<CServerFolderSelect>	
 {
 	public:
-		CServerFolderSelect(CUploadEngineData* uploadEngine);
+		CServerFolderSelect(ServerProfile& serverProfile);
 		~CServerFolderSelect();
 		enum { IDD = IDD_SERVERFOLDERSELECT};
 	protected:
@@ -91,6 +93,7 @@ protected:
 	std::vector<std::string> m_accessTypeList;
 	std::map<std::wstring,HTREEITEM> m_FolderMap;
 	CTreeViewCtrl m_FolderTree;
+	ServerProfile& serverProfile_;
 	//IU_PLUGIN_FolderItem * m_folderItems;
 	FolderOperationType m_FolderOperationType;
 	NetworkManager m_NetworkManager;

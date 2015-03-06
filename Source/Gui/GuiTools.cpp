@@ -377,7 +377,7 @@ CString SelectFolderDialog(HWND hWndParent, CString initialDir){
 
 RECT GetDialogItemRect(HWND dialog, int itemId) {
 	HWND control = ::GetDlgItem( dialog, itemId );
-	RECT controlRect;
+	RECT controlRect={0,0,0,0};
 	GetWindowRect(control, &controlRect );
 	MapWindowPoints(0 /*means desktop*/, dialog, reinterpret_cast<LPPOINT>(&controlRect), 2);
 	return controlRect;

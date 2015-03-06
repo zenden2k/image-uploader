@@ -28,6 +28,8 @@
 #include "generalsettings.h"
 #include "uploadSettingsPage.h"
 #include "VideoGrabberParams.h"
+#include "IntegrationSettings.h"
+#include "DefaultServersSettings.h"
 
 // CSettingsDlg
 CSettingsDlg::CSettingsDlg(int Page)
@@ -55,11 +57,13 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	}
 	m_SettingsPagesListBox.SubclassWindow(GetDlgItem(IDC_SETTINGSPAGESLIST));
 	m_SettingsPagesListBox.AddString(TR("Основные"));
+	m_SettingsPagesListBox.AddString(TR("Серверы"));
 	m_SettingsPagesListBox.AddString(TR("Изображения"));
 	m_SettingsPagesListBox.AddString(TR("Миниатюры"));
 	m_SettingsPagesListBox.AddString(TR("Снимок экрана"));
 	m_SettingsPagesListBox.AddString(TR("Видео"));
 	m_SettingsPagesListBox.AddString(TR("Загрузка"));
+	m_SettingsPagesListBox.AddString(TR("Интеграция"));
 	m_SettingsPagesListBox.AddString(TR("Трей"));
 	m_SettingsPagesListBox.AddString(TR("Горячие клавиши"));
 	// set icons
@@ -162,8 +166,14 @@ bool CSettingsDlg::CreatePage(int PageID)
 		dlg->Create(m_hWnd,rc);
 		Pages[PageID]->PageWnd=dlg->m_hWnd;
 	}
-	
-	if(PageID == 1)
+	else if(PageID == 1)
+	{
+		CDefaultServersSettings *dlg = new CDefaultServersSettings();
+		Pages[PageID]= dlg;
+		dlg->Create(m_hWnd,rc);
+		Pages[PageID]->PageWnd = dlg->m_hWnd;
+	}
+	else if(PageID == 2)
 	{
 		CLogoSettings *dlg = new CLogoSettings();
 		Pages[PageID]= dlg;
@@ -171,14 +181,14 @@ bool CSettingsDlg::CreatePage(int PageID)
 		Pages[PageID]->PageWnd = dlg->m_hWnd;
 	}
 
-	else if(PageID == 2)
+	else if(PageID == 3)
 	{
 		CThumbSettingsPage *dlg = new CThumbSettingsPage();
 		Pages[PageID]= dlg;
 		dlg->Create(m_hWnd,rc);
 		Pages[PageID]->PageWnd = dlg->m_hWnd;
 	}
-	else if(PageID==3)
+	else if(PageID==4)
 	{
 		CScreenshotSettingsPagePage *dlg = new CScreenshotSettingsPagePage();
 		Pages[PageID]= dlg;
@@ -187,7 +197,7 @@ bool CSettingsDlg::CreatePage(int PageID)
 		
 	}
 
-	else if(PageID == 4)
+	else if(PageID == 5)
 	{
 		CVideoGrabberParams *dlg = new CVideoGrabberParams();
 		Pages[PageID]= dlg;
@@ -195,23 +205,29 @@ bool CSettingsDlg::CreatePage(int PageID)
 		Pages[PageID]->PageWnd=dlg->m_hWnd;
 	}
 
-	 else if(PageID==5)
+	 else if(PageID==6)
 	{
 		CUploadSettingsPage *dlg = new CUploadSettingsPage();
 		Pages[PageID]= dlg;
 		dlg->Create(m_hWnd,rc);
 		Pages[PageID]->PageWnd=dlg->m_hWnd;
 	}
+	 else if(PageID==7)
+	 {
+		 CIntegrationSettings *dlg = new CIntegrationSettings();
+		 Pages[PageID]= dlg;
+		 dlg->Create(m_hWnd,rc);
+		 Pages[PageID]->PageWnd=dlg->m_hWnd;
+	 }
 
-
-	if(PageID==6)
+	 else if(PageID==8)
 	{
 		CTraySettingsPage *dlg = new CTraySettingsPage();
 		Pages[PageID]= dlg;
 		dlg->Create(m_hWnd,rc);
 		Pages[PageID]->PageWnd=dlg->m_hWnd;
 	}
-	else if(PageID==7)
+	else if(PageID==9)
 	{
 		CHotkeySettingsPage *dlg = new CHotkeySettingsPage();
 		Pages[PageID]= dlg;

@@ -118,6 +118,8 @@ class CUploadEngineData
 {
 	public:
 		enum ServerType { TypeImageServer, TypeFileServer, TypeUrlShorteningServer, TypeTextServer};
+		enum NeedAuthorizationEnum { naNotAvailable = 0, naAvailable, naObligatory };
+
 		std::string Name;
 		std::string PluginName;
 		bool SupportsFolders;
@@ -196,6 +198,7 @@ class CAbstractUploadEngine
 		void setThumbnailWidth(int width);
 		virtual bool doUpload(UploadTask* task, CIUUploadParams &params) = 0;
 		void setServerSettings(ServerSettingsStruct settings);
+		ServerSettingsStruct serverSettings();
 		virtual int RetryLimit()=0;
 		virtual void setNetworkManager(NetworkManager* nm);
 		void setUploadData(CUploadEngineData* data);

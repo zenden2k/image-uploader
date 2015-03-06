@@ -76,6 +76,106 @@ template<class T> void myFromString(const std::string& text,  EnumWrapper<T>& va
 }
 
 #if !defined(IU_CLI) && !defined(IU_SHELLEXT)
+
+
+ServerProfile::ServerProfile() {
+			UseDefaultSettings = true;
+}
+
+ServerProfile::ServerProfile(CString newServerName){
+	serverName_ = newServerName;
+			UseDefaultSettings = true;
+}
+
+void ServerProfile::setProfileName(CString newProfileName) {
+	profileName_ = newProfileName;
+			UseDefaultSettings = true;
+}
+
+CString ServerProfile::profileName() const {
+	return profileName_;
+}
+
+void ServerProfile::setServerName(CString newServerName){
+	serverName_ = newServerName;
+}
+
+CString ServerProfile::serverName() const {
+	return serverName_;
+}
+
+std::string ServerProfile::folderTitle() const
+{
+	return folderTitle_;
+}
+
+void ServerProfile::setFolderTitle(std::string newTitle)
+{
+	folderTitle_ = newTitle;
+}
+
+std::string ServerProfile::folderId() const
+{
+	return folderId_;
+}
+
+void ServerProfile::setFolderId(std::string newId)
+{
+	folderId_ = newId;
+}
+
+std::string ServerProfile::folderUrl() const
+{
+	return folderUrl_;
+}
+
+void ServerProfile::setFolderUrl(std::string newUrl)
+{
+	folderUrl_ = newUrl;
+}
+
+void ServerProfile::bind(SettingsNode& serverNode)
+{
+	serverNode["@Name"].bind(serverName_);
+	serverNode["@FolderId"].bind(folderId_);
+	serverNode["@FolderTitle"].bind(folderTitle_);
+	serverNode["@FolderUrl"].bind(folderUrl_);
+	serverNode["@ProfileName"].bind(profileName_);
+	serverNode["@UseDefaultSettings"].bind(UseDefaultSettings);
+	imageUploadParams.bind(serverNode);
+}
+
+ImageUploadParams ServerProfile::getImageUploadParams()
+{
+	if ( UseDefaultSettings && &Settings.imageServer  != this) {
+		return Settings.imageServer.imageUploadParams;
+	}
+	return imageUploadParams;
+}
+
+ImageUploadParams& ServerProfile::getImageUploadParamsRef()
+{
+	return imageUploadParams;
+}
+
+void ServerProfile::setImageUploadParams(ImageUploadParams iup)
+{
+	imageUploadParams = iup;
+}
+
+ServerSettingsStruct& ServerProfile::serverSettings() {
+	ServerSettingsStruct& res = Settings.ServersSettings[WCstringToUtf8((LPCTSTR)serverName_)][WCstringToUtf8((LPCTSTR)profileName_)];
+	res.setParam("FolderID", folderId_);
+	res.setParam("FolderUrl", folderUrl_);
+	res.setParam("FolderTitle", folderTitle_);
+	return res;
+}
+
+CUploadEngineData* ServerProfile::uploadEngineData() const {
+	return _EngineList->byName(serverName_);
+}
+
+
 /* LOGFONT serialization support */
 inline std::string myToString(const LOGFONT& value) {
 	CString res;
@@ -260,9 +360,6 @@ void CSettings::FindDataFolder()
 #endif
 
 CSettings::CSettings()
-#if !defined(IU_SHELLEXT) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
-	: ServerID(UploadProfile.ServerID), QuickServerID(UploadProfile.QuickServerID)
-#endif
 {
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 	FindDataFolder();
@@ -307,7 +404,6 @@ CSettings::CSettings()
 	*m_Directory = 0;
 	UseTxtTemplate = false;
 	UseDirectLinks = true;
-	ServerID = 0;
 	CodeLang = 0;
 	ConfirmOnExit = 1;
 	ExplorerContextMenu = false;
@@ -316,9 +412,10 @@ CSettings::CSettings()
 	ThumbsPerLine = 4;
 	SendToContextMenu_changed = false;
 	SendToContextMenu = 0;
-	QuickServerID = 0;
 	QuickUpload = 0;
 	ParseSubDirs = 1;
+	RememberImageServer = true;
+    RememberFileServer = true;
 	
 	ShowUploadErrorDialog = true;
 
@@ -327,10 +424,10 @@ CSettings::CSettings()
 	AutoShowLog = true;
 	
 
-	StringToFont(_T("Tahoma,7,b,204"), &ThumbSettings.ThumbFont);
+//	StringToFont(_T("Tahoma,7,b,204"), &ThumbSettings.ThumbFont);
 	StringToFont(_T("Tahoma,8,,204"), &VideoSettings.Font);
 
-	ThumbSettings.CreateThumbs = true;
+	/*ThumbSettings.CreateThumbs = true;
 	ThumbSettings.ThumbWidth = 180;
 	ThumbSettings.ThumbHeight = 140;
 	ThumbSettings.DrawFrame = true;
@@ -346,7 +443,7 @@ CSettings::CSettings()
 	ThumbSettings.Text = _T("%width%x%height% (%size%)");
 	ThumbSettings.Format = ThumbCreatingParams::tfJPEG;
 	ThumbSettings.FileName = "default";
-	ThumbSettings.Quality = 85;
+	ThumbSettings.Quality = 85;*/
 
 	VideoSettings.Columns = 3;
 	VideoSettings.TileWidth =  200;
@@ -413,6 +510,8 @@ CSettings::CSettings()
 	general.n_bind(ImagesFolder);
 	general.n_bind(VideoFolder);
 	general.n_bind(WatchClipboard);
+	general.n_bind(RememberFileServer);
+	general.n_bind(RememberImageServer);
 	#ifndef IU_SERVERLISTTOOL
 	general.n_bind(Hotkeys);
 	#endif
@@ -434,7 +533,7 @@ CSettings::CSettings()
 	image["CurrentProfile"].bind(CurrentConvertProfileName);
 	image.nm_bind(UploadProfile, KeepAsIs);
 
-	SettingsNode& thumbnails = mgr_["Thumbnails"];
+	/*SettingsNode& thumbnails = mgr_["Thumbnails"];
 	thumbnails.nm_bind(ThumbSettings, FileName);
 	thumbnails.nm_bind(ThumbSettings, CreateThumbs);
 	thumbnails.nm_bind(ThumbSettings, ThumbWidth);
@@ -452,7 +551,7 @@ CSettings::CSettings()
 	thumbnails["Text"]["@Color"].bind(ThumbSettings.ThumbTextColor);
 	thumbnails["Text"]["@Font"].bind(ThumbSettings.ThumbFont);
 	thumbnails["Text"]["@TextOverThumb"].bind(ThumbSettings.TextOverThumb);
-	thumbnails["Text"]["@ThumbAlpha"].bind(ThumbSettings.ThumbAlpha);
+	thumbnails["Text"]["@ThumbAlpha"].bind(ThumbSettings.ThumbAlpha);*/
 
 	SettingsNode& video = mgr_["VideoGrabber"];
 	video.nm_bind(VideoSettings, Columns);
@@ -480,6 +579,8 @@ CSettings::CSettings()
 	SettingsNode& history = mgr_["History"];
 	history.nm_bind(HistorySettings, EnableDownloading);
 
+
+
 	SettingsNode& imageReuploader = mgr_["ImageReuploader"];
 	imageReuploader.nm_bind(ImageReuploaderSettings, PasteHtmlOnCtrlV);
 	#endif
@@ -488,7 +589,7 @@ CSettings::CSettings()
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 	upload.n_bind(ServerName);
 	upload.n_bind(FileServerName);
-	upload.n_bind(UrlShorteningServer);
+//	upload.n_bind(UrlShorteningServer);
 	upload.n_bind(QuickUpload);
 	upload.n_bind(QuickServerName);
 	upload.n_bind(CodeLang);
@@ -497,6 +598,13 @@ CSettings::CSettings()
 	upload.n_bind(UseTxtTemplate);
 	upload.n_bind(CodeType);
 	upload.n_bind(ShowUploadErrorDialog);
+	
+	imageServer.bind(upload["Server"]);
+	fileServer.bind(upload["FileServer"]);
+	quickScreenshotServer.bind(upload["QuickScreenshotServer"]);
+	contextMenuServer.bind(upload["ContextMenuServer"]);
+	urlShorteningServer.bind(upload["UrlShorteningServer"]);
+
 
 	ConvertProfiles["Default"] = ImageConvertingParams();
 	CurrentConvertProfileName = "Default";
@@ -837,13 +945,13 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 #if !defined(IU_SERVERLISTTOOL) && !defined(IU_CLI)
 	ServerSettingsStruct& CSettings::ServerByName(CString name)
 	{
-		return ServersSettings[IuCoreUtils::WstringToUtf8((LPCTSTR)name)];
+		return ServersSettings[IuCoreUtils::WstringToUtf8((LPCTSTR)name)].begin()->second;
 	}
 
 #endif
 	ServerSettingsStruct& CSettings::ServerByUtf8Name(std::string name)
 	{
-		return ServersSettings[name];
+		return ServersSettings[name].begin()->second;
 	}
 
 	bool CSettings::LoadAccounts(SimpleXmlNode root)
@@ -856,7 +964,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 			std::string server_name = servers[i].Attribute("Name");
 			std::vector<std::string> attribs;
 			servers[i].GetAttributes(attribs);
-
+			ServerSettingsStruct tempSettings;
 
 			for (size_t j = 0; j < attribs.size(); j++)
 			{
@@ -869,51 +977,60 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 					std::string value = servers[i].Attribute(attribName);
 					attribName = attribName.substr(1, attribName.size() - 1);
 					if (!value.empty())
-						ServersSettings[server_name].params[attribName] = value;
+						tempSettings.params[attribName] = value;
 				}
 			}
 #if !defined  (IU_CLI) && !defined(IU_SHELLEXT)
-			ServersSettings[server_name].authData.DoAuth = servers[i].AttributeBool("Auth");
+			tempSettings.authData.DoAuth = servers[i].AttributeBool("Auth");
 
 			std::string encodedLogin = servers[i].Attribute("Login");
 			CEncodedPassword login;
 			login.fromEncodedData(encodedLogin.c_str());
-			ServersSettings[server_name].authData.Login = WCstringToUtf8(login);
+			tempSettings.authData.Login = WCstringToUtf8(login);
 
 			std::string encodedPass = servers[i].Attribute("Password");
 			CEncodedPassword pass;
 			pass.fromEncodedData(encodedPass.c_str());
-			ServersSettings[server_name].authData.Password = WCstringToUtf8(pass);
+			tempSettings.authData.Password = WCstringToUtf8(pass);
 #endif
+				ServersSettings[server_name][tempSettings.authData.Login] = tempSettings ;
 		}
 		return true;
 	}
 
 	bool CSettings::SaveAccounts(SimpleXmlNode root)
 	{
-		std::map <std::string, ServerSettingsStruct>::iterator it;
-		for (it = ServersSettings.begin(); it != ServersSettings.end(); ++it)
+		ServerSettingsMap::iterator it1;
+		for (it1 = ServersSettings.begin(); it1 != ServersSettings.end(); ++it1)
 		{
-			SimpleXmlNode serverNode = root.CreateChild("Server");
-			serverNode.SetAttribute("Name", it->first);
-
-			std::map <std::string, std::string>::iterator param;
-			for (param = it->second.params.begin(); param != it->second.params.end(); ++param)
+			std::map <std::string, ServerSettingsStruct>::iterator it;
+			for (it = it1->second.begin(); it !=it1->second.end(); ++it)
 			{
-				serverNode.SetAttribute("_" + param->first, param->second);
-			}
-#if !defined  (IU_CLI) && !defined(IU_SHELLEXT)
-			serverNode.SetAttributeBool("Auth", it->second.authData.DoAuth);
 
-			CEncodedPassword login(Utf8ToWCstring(it->second.authData.Login));
-			serverNode.SetAttribute("Login", WCstringToUtf8(login.toEncodedData()));
+				SimpleXmlNode serverNode = root.CreateChild("Server");
+				serverNode.SetAttribute("Name", it1->first);
 
-			CUploadEngineData* ued = _EngineList->byName(Utf8ToWCstring(it->first));
-			if ( !ued || ued->NeedPassword ) { 
-				CEncodedPassword pass(Utf8ToWCstring(it->second.authData.Password));
-				serverNode.SetAttribute("Password", WCstringToUtf8(pass.toEncodedData()));
+				std::map <std::string, std::string>::iterator param;
+				for (param = it->second.params.begin(); param != it->second.params.end(); ++param)
+				{
+					if (  param->first == "FolderID" || param->first == "FolderUrl" || param->first == "FolderTitle") {
+						continue;
+					}
+					serverNode.SetAttribute("_" + param->first, param->second);
+				}
+	#if !defined  (IU_CLI) && !defined(IU_SHELLEXT)
+				serverNode.SetAttributeBool("Auth", it->second.authData.DoAuth);
+
+				CEncodedPassword login(Utf8ToWCstring(it->second.authData.Login));
+				serverNode.SetAttribute("Login", WCstringToUtf8(login.toEncodedData()));
+
+				CUploadEngineData* ued = _EngineList->byName(Utf8ToWCstring(it->first));
+				if ( !ued || ued->NeedPassword ) { 
+					CEncodedPassword pass(Utf8ToWCstring(it->second.authData.Password));
+					serverNode.SetAttribute("Password", WCstringToUtf8(pass.toEncodedData()));
+				}
+	#endif
 			}
-#endif
 		}
 		return true;
 	}
@@ -1037,6 +1154,39 @@ void CSettings::EnableAutostartup(bool enable) {
 	}
 }
 
+int CSettings::getServerID()
+{
+	return _EngineList->GetUploadEngineIndex(getServerName());
+}
+
+int CSettings::getQuickServerID()
+{
+	return _EngineList->GetUploadEngineIndex(contextMenuServer.serverName());
+}
+
+int CSettings::getFileServerID()
+{
+		return _EngineList->GetUploadEngineIndex(getFileServerName());
+}
+
+void CSettings::setServerID(int id)
+{
+	CUploadEngineData *ued = _EngineList->byIndex(id);
+	imageServer.setServerName(ued? Utf8ToWCstring(ued->Name.c_str()) : CString());
+}
+
+void CSettings::setQuickServerID(int id)
+{
+	CUploadEngineData *ued = _EngineList->byIndex(id);
+	contextMenuServer.setServerName(ued ? Utf8ToWCstring(ued->Name.c_str()): CString());
+}
+
+void CSettings::setFileServerID(int id)
+{
+	CUploadEngineData *ued = _EngineList->byIndex(id);
+	fileServer.setServerName (ued ? Utf8ToWCstring(ued->Name.c_str()) :  CString() );
+}
+
 bool CSettings::IsFFmpegAvailable() {
 	CString appFolder = WinUtils::GetAppFolder();
 	return FileExists( appFolder + "avcodec-54.dll") 
@@ -1053,4 +1203,51 @@ CString CSettings::prepareVideoDialogFilters() {
 	}
 	return result;
 }
+CString CSettings::getServerName() {
+	return imageServer.serverName();
+}
+CString CSettings::getQuickServerName() {
+	return contextMenuServer.serverName();
+}
+CString CSettings::getFileServerName() {
+	return fileServer.serverName();
+}
+
+void ImageUploadParams::bind(SettingsNode& n){
+	SettingsNode & node = n["ImageUploadParams"];
+	node.n_bind(UseServerThumbs);
+	node.n_bind(CreateThumbs);
+
+	node.n_bind(ProcessImages);
+	node.n_bind(ImageProfileName);
+	node.n_bind(UseDefaultThumbSettings);
+	SettingsNode & thumb = node["Thumb"];
+	thumb.nm_bind(Thumb, TemplateName);
+	thumb.nm_bind(Thumb, Size);
+	thumb["ResizeMode"].bind((int&)Thumb.ResizeMode);
+	thumb.nm_bind(Thumb, AddImageSize);
+	thumb.nm_bind(Thumb, DrawFrame);
+	thumb.nm_bind(Thumb, Quality);
+	thumb.nm_bind(Thumb, Format);
+	thumb.nm_bind(Thumb, Text);
+}
+
+ThumbCreatingParams ImageUploadParams::getThumb()
+{
+	if ( UseDefaultThumbSettings && &Settings.imageServer.imageUploadParams  != this) {
+		return Settings.imageServer.imageUploadParams.Thumb;
+	}
+	return Thumb;
+}
+
+ThumbCreatingParams& ImageUploadParams::getThumbRef()
+{	
+	return Thumb;
+}
+
+void ImageUploadParams::setThumb(ThumbCreatingParams tcp)
+{
+	Thumb = tcp;
+}
+
 #endif

@@ -120,6 +120,11 @@ void CAbstractUploadEngine::setServerSettings(ServerSettingsStruct settings)
 	m_ServersSettings = settings;
 }
 
+ServerSettingsStruct CAbstractUploadEngine::serverSettings()
+{
+	return m_ServersSettings;
+}
+
 bool CAbstractUploadEngine::needStop()
 {
 	if (m_bShouldStop)

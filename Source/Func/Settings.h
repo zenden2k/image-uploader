@@ -46,15 +46,90 @@ struct UploadProfileStruct
 	int ServerID, QuickServerID;
 };
 
+typedef std::map <std::string, std::map <std::string, ServerSettingsStruct>> ServerSettingsMap;
 #ifndef IU_CLI
 
 
+
+
+
+struct ImageUploadParams {
+	ImageUploadParams() {
+		UseServerThumbs = false;
+		CreateThumbs = true;
+		ProcessImages = false;
+		UseDefaultThumbSettings = true;
+		Thumb.Size = 150;
+		Thumb.ResizeMode = ThumbCreatingParams::trByWidth;
+		Thumb.AddImageSize = true;
+		Thumb.Format = ThumbCreatingParams::tfPNG;
+		Thumb.TemplateName = "default";
+		Thumb.BackgroundColor = RGB( 255, 255, 255);
+		Thumb.Quality = 85;
+	}
+	void bind(SettingsNode& n);
+
+
+	bool UseServerThumbs;
+	bool CreateThumbs;
+	bool ProcessImages;
+	bool ThumbAddImageSize;
+
+	CString ImageProfileName;
+
+	bool UseDefaultThumbSettings;
+	ThumbCreatingParams getThumb(); 
+	ThumbCreatingParams& getThumbRef(); 
+	void setThumb(ThumbCreatingParams tcp); 
+protected:
+	ThumbCreatingParams Thumb;
+};
+class ServerProfile {
+
+public:
+	
+	ServerProfile();
+
+	ServerProfile(CString newServerName);
+	ServerSettingsStruct& serverSettings();
+	CUploadEngineData* uploadEngineData() const;
+
+	void setProfileName(CString newProfileName);
+	CString profileName() const;
+
+	void setServerName(CString newProfileName);
+	CString serverName() const;
+
+	std::string folderTitle() const;
+	void setFolderTitle(std::string newTitle);
+	std::string folderId() const;
+	void setFolderId(std::string newId);
+	std::string folderUrl() const;
+	void setFolderUrl(std::string newUrl);
+	bool UseDefaultSettings;
+
+	void bind(SettingsNode& n);
+
+	ImageUploadParams getImageUploadParams();
+	ImageUploadParams& getImageUploadParamsRef();
+    void setImageUploadParams(ImageUploadParams iup);
+	friend struct ImageUploadParams;
+
+protected:
+	CString serverName_;
+	CString profileName_;
+	ImageUploadParams imageUploadParams;
+	std::string folderTitle_;
+	std::string folderId_;
+	std::string folderUrl_;
+
+	friend class CSettings;
+};
 struct FullUploadProfile
 {
-   UploadProfileStruct upload_profile;
-   ImageConvertingParams convert_profile;
+	ServerProfile upload_profile;
+	ImageConvertingParams convert_profile;
 };
-
 struct TrayIconSettingsStruct
 {
 	int LeftDoubleClickCommand;
@@ -171,7 +246,9 @@ class CSettings
 
 		int FileRetryLimit;
 		int ActionRetryLimit;
-				UploadProfileStruct UploadProfile;
+protected:
+		UploadProfileStruct UploadProfile;
+public:
 		
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 
@@ -192,7 +269,7 @@ void FindDataFolder();
 ConnectionSettingsStruct ConnectionSettings;
 #endif
 
-std::map <std::string, ServerSettingsStruct> ServersSettings;
+ServerSettingsMap ServersSettings;
 bool AutoShowLog;
 #ifndef IU_SERVERLISTTOOL
 #if !defined(IU_CLI)
@@ -205,8 +282,13 @@ bool AutoShowLog;
 		int ThumbsPerLine;
 		TCHAR m_szLang[64];
 		TrayIconSettingsStruct TrayIconSettings;
+		bool RememberImageServer;
+		bool RememberFileServer;
+protected:
 		ThumbSettingsStruct ThumbSettings;
+public:
 		VideoSettingsStruct VideoSettings;
+		ServerProfile imageServer, fileServer, quickScreenshotServer,contextMenuServer,urlShorteningServer;
 
 		ScreenshotSettingsStruct ScreenshotSettings;
 		HistorySettingsStruct HistorySettings;
@@ -257,7 +339,14 @@ bool AutoShowLog;
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 		void Uninstall();
 	void EnableAutostartup(bool enable);
-	int ServerID, QuickServerID;
+	// Deprecated
+	int getServerID();
+	int getQuickServerID();
+	int getFileServerID();
+	void setServerID(int id);
+	void setQuickServerID(int id);
+	void setFileServerID(int id);
+
 	void ApplyRegSettingsRightNow();
 	
    bool LoadConvertProfiles(SimpleXmlNode root);
@@ -265,14 +354,26 @@ bool AutoShowLog;
 	bool SaveConvertProfiles(SimpleXmlNode root);
    void BindConvertProfile(SettingsNode& mgr,  ImageConvertingParams &params);
 #ifndef IU_SHELLEXT
+   protected:
    ServerSettingsStruct& ServerByName(CString name);
+   public:
    
 #endif
    
-	int FileServerID;
-	CString ServerName, QuickServerName,FileServerName, UrlShorteningServer;
-	
-	
+
+	CString getServerName();
+	CString getQuickServerName();
+	CString getFileServerName();
+		
+		
+	//CString	UrlShorteningServer;
+
+	protected:
+
+		CString ServerName;
+		CString QuickServerName;
+		CString FileServerName;
+	public:
 	static const TCHAR VideoEngineDirectshow[];
 	static const TCHAR VideoEngineFFmpeg[];
 	static const TCHAR VideoEngineAuto[];
@@ -280,7 +381,9 @@ bool AutoShowLog;
 	
 	CString prepareVideoDialogFilters();
 #endif
+	protected:
 	ServerSettingsStruct& ServerByUtf8Name(std::string name);
+	public:
 	SettingsManager mgr_;
 	std::string fileName_; 
 	std::string SettingsFolder;

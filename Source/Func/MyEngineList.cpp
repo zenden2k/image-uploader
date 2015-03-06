@@ -28,6 +28,11 @@
 #include "Gui/Dialogs/LogWindow.h"
 #include <Func/IuCommonFunctions.h>
 
+
+char CMyEngineList::DefaultServer[] = "default";
+
+char CMyEngineList::RandomServer[]  = "random";
+
 CMyEngineList::CMyEngineList()
 {
 	m_prevUpEngine = 0;
@@ -56,12 +61,12 @@ const CString CMyEngineList::ErrorStr()
 	return m_ErrorStr;
 }
 
-CAbstractUploadEngine* CMyEngineList::getUploadEngine(CUploadEngineData* data)
+CAbstractUploadEngine* CMyEngineList::getUploadEngine(CUploadEngineData* data, ServerSettingsStruct& serverSettings)
 {
 	CAbstractUploadEngine* result = NULL;
 	if (data->UsingPlugin)
 	{
-		result = iuPluginManager.getPlugin(data->Name, data->PluginName, Settings.ServerByUtf8Name(data->Name));
+		result = iuPluginManager.getPlugin(data->Name, data->PluginName, serverSettings);
 		if ( !result ) {
 			CString errorMessage;
 			errorMessage.Format(_T("Cannot load plugin '%s'"), static_cast<LPCTSTR>(Utf8ToWCstring(data->PluginName)));
@@ -72,7 +77,10 @@ CAbstractUploadEngine* CMyEngineList::getUploadEngine(CUploadEngineData* data)
 	{
 		if (m_prevUpEngine)
 		{
-			if (m_prevUpEngine->getUploadData()->Name == data->Name)
+			if (m_prevUpEngine->getUploadData()->Name == data->Name &&
+				m_prevUpEngine->serverSettings().authData.Login == serverSettings.authData.Login
+				
+				)
 				result = m_prevUpEngine;
 			else
 			{
@@ -87,19 +95,19 @@ CAbstractUploadEngine* CMyEngineList::getUploadEngine(CUploadEngineData* data)
 	if (!result)
 		return 0;
 	result->setUploadData(data);
-	result->setServerSettings(Settings.ServerByUtf8Name(data->Name));
+	result->setServerSettings(serverSettings);
 	result->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
 	return result;
 }
 
-CAbstractUploadEngine* CMyEngineList::getUploadEngine(std::string name)
+CAbstractUploadEngine* CMyEngineList::getUploadEngine(std::string name, ServerSettingsStruct& serverSettings)
 {
-	return getUploadEngine(CUploadEngineList_Base::byName(name));
+	return getUploadEngine(CUploadEngineList_Base::byName(name), serverSettings);
 }
 
-CAbstractUploadEngine* CMyEngineList::getUploadEngine(int index)
+CAbstractUploadEngine* CMyEngineList::getUploadEngine(int index, ServerSettingsStruct& serverSettings)
 {
-	return getUploadEngine(CUploadEngineList_Base::byIndex(index));
+	return getUploadEngine(CUploadEngineList_Base::byIndex(index),serverSettings);
 }
 
 bool CMyEngineList::LoadFromFile(const CString& filename)

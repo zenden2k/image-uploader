@@ -38,7 +38,7 @@
 // CThumbSettingsPage
 CThumbSettingsPage::CThumbSettingsPage()
 {
-	params_ = Settings.ThumbSettings;
+	params_ = Settings.imageServer.getImageUploadParams().getThumb();
    m_CatchFormChanges = false;
 }
 
@@ -75,7 +75,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
 	img.LoadImage(0);
 
 	SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );	
-	SetDlgItemText(IDC_THUMBTEXT, Settings.ThumbSettings.Text);
+	SetDlgItemText(IDC_THUMBTEXT, params_.Text);
 
 	GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 4, TR("Как у изображения"),
 		_T("JPEG"), _T("PNG"), _T("GIF"));
@@ -87,37 +87,41 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
 		GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt( WCstringToUtf8( files[i]))) );
 	
 	
-	SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_SETCHECK, Settings.ThumbSettings.ThumbAddImageSize);
-	SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, -1, (LPARAM) (LPCTSTR) Settings.ThumbSettings.FileName);
+	SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_SETCHECK, params_.AddImageSize);
+	SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, -1, (LPARAM) (LPCTSTR) params_.TemplateName);
 	SetDlgItemText(IDC_THUMBTEXT, params_.Text);
-	SetDlgItemInt(IDC_THUMBQUALITYEDIT, Settings.ThumbSettings.Quality);
-	SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, Settings.ThumbSettings.Format);
-    SendDlgItemMessage(IDC_WIDTHRADIO, BM_SETCHECK,  !Settings.ThumbSettings.ScaleByHeight);
-	 SendDlgItemMessage(IDC_HEIGHTRADIO, BM_SETCHECK,  Settings.ThumbSettings.ScaleByHeight);
-	SetDlgItemInt(IDC_WIDTHEDIT,Settings.ThumbSettings.ThumbWidth);
-   SetDlgItemInt(IDC_HEIGHTEDIT,Settings.ThumbSettings.ThumbHeight);
+	SetDlgItemInt(IDC_THUMBQUALITYEDIT,  params_.Quality);
+	SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, params_.Format);
+    SendDlgItemMessage(IDC_WIDTHRADIO, BM_SETCHECK,  params_.ResizeMode == ThumbCreatingParams::trByWidth);
+	 SendDlgItemMessage(IDC_HEIGHTRADIO, BM_SETCHECK,  params_.ResizeMode == ThumbCreatingParams::trByHeight);
+	SetDlgItemInt(IDC_WIDTHEDIT,params_.Size);
+   SetDlgItemInt(IDC_HEIGHTEDIT,params_.Size);
     BOOL b;
-	ThumbBackground.SetColor(Settings.ThumbSettings.BackgroundColor);
+	ThumbBackground.SetColor(params_.BackgroundColor);
 	OnThumbComboChanged(0,0,0,b);
-    ::EnableWindow(GetDlgItem(IDC_WIDTHEDIT), !params_.ScaleByHeight);
-   ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT), params_.ScaleByHeight);
+    ::EnableWindow(GetDlgItem(IDC_WIDTHEDIT), params_.ResizeMode == ThumbCreatingParams::trByWidth);
+   ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT), ThumbCreatingParams::trByHeight);
  m_CatchFormChanges = true;
 	return 1;  // Let the system set the focus
 }
 
 bool CThumbSettingsPage::Apply()
 {
-	Settings.ThumbSettings.ThumbAddImageSize =  SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
+	params_.AddImageSize =  SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
 	TCHAR buf[256] =_T("\0");
 	GetDlgItemText(IDC_THUMBSCOMBO, buf, 255);
- 	Settings.ThumbSettings.FileName =buf;
-	Settings.ThumbSettings.Format = static_cast<ThumbCreatingParams::ThumbFormatEnum>(SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_GETCURSEL ));
-	Settings.ThumbSettings.Quality = GetDlgItemInt(IDC_THUMBQUALITYEDIT);
-   Settings.ThumbSettings.ScaleByHeight = SendDlgItemMessage(IDC_WIDTHRADIO, BM_GETCHECK) == FALSE;
-	Settings.ThumbSettings.Text = GuiTools::GetWindowText(GetDlgItem(IDC_THUMBTEXT));
-	Settings.ThumbSettings.ThumbWidth = GetDlgItemInt(IDC_WIDTHEDIT);
-   Settings.ThumbSettings.ThumbHeight = GetDlgItemInt(IDC_HEIGHTEDIT);
-	Settings.ThumbSettings.BackgroundColor = ThumbBackground.GetColor();
+ 	params_.TemplateName =buf;
+	 params_.Format = static_cast<ThumbCreatingParams::ThumbFormatEnum>(SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_GETCURSEL ));
+	params_.Quality = GetDlgItemInt(IDC_THUMBQUALITYEDIT);
+	params_.ResizeMode = SendDlgItemMessage(IDC_WIDTHRADIO, BM_GETCHECK) == FALSE ? ThumbCreatingParams::trByHeight : ThumbCreatingParams::trByWidth;
+	params_.Text = GuiTools::GetWindowText(GetDlgItem(IDC_THUMBTEXT));
+	params_.Size = GetDlgItemInt(IDC_WIDTHEDIT);
+   params_.Size = GetDlgItemInt(IDC_HEIGHTEDIT);
+	params_.BackgroundColor = ThumbBackground.GetColor();
+	ImageUploadParams iup = Settings.imageServer.getImageUploadParams();
+	iup.setThumb(params_);
+	Settings.imageServer.setImageUploadParams(iup);
+
    for(std::map<std::string, Thumbnail*>::const_iterator it = thumb_cache_.begin(); it!= thumb_cache_.end(); ++it)
 	{
 		it->second->SaveToFile();
@@ -259,7 +263,7 @@ void CThumbSettingsPage::ThumbTextCheckboxChange()
 {
 	bool bChecked = SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK)==BST_CHECKED;
 	::EnableWindow(GetDlgItem(IDC_THUMBTEXT), bChecked);
-	params_.ThumbAddImageSize = bChecked;
+	params_.AddImageSize = bChecked;
 	
 }
 
@@ -274,11 +278,11 @@ LRESULT CThumbSettingsPage::OnThumbTextChange(WORD wNotifyCode, WORD wID, HWND h
 LRESULT CThumbSettingsPage::OnWidthEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
    if(!m_CatchFormChanges) return 0;
-   params_.ScaleByHeight = SendDlgItemMessage(IDC_WIDTHRADIO, BM_GETCHECK) == FALSE;
-   ::EnableWindow(GetDlgItem(IDC_WIDTHEDIT), !params_.ScaleByHeight);
-   ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT), params_.ScaleByHeight);
-	params_.ThumbWidth = GetDlgItemInt(IDC_WIDTHEDIT);
-	params_.ThumbHeight = GetDlgItemInt(IDC_HEIGHTEDIT);
+   params_.ResizeMode = (SendDlgItemMessage(IDC_WIDTHRADIO, BM_GETCHECK) == FALSE)?ThumbCreatingParams::trByHeight : ThumbCreatingParams::trByWidth ;
+   ::EnableWindow(GetDlgItem(IDC_WIDTHEDIT), params_.ResizeMode == ThumbCreatingParams::trByWidth);
+   ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT),  params_.ResizeMode == ThumbCreatingParams::trByHeight);
+	params_.Size = GetDlgItemInt(IDC_WIDTHEDIT);
+	params_.Size = GetDlgItemInt(IDC_HEIGHTEDIT);
    showSelectedThumbnailPreview();
    return 0;
 }

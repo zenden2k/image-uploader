@@ -105,6 +105,88 @@
 			/>
 		</Configuration>
 		<Configuration
+			Name="Debug|x64"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfATL="0"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+				OutputDirectory="$(SolutionDir)Build\Temp\Midl\$(ConfigurationName)"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="2"
+				WarningLevel="0"
+				Detect64BitPortabilityProblems="true"
+				DebugInformationFormat="3"
+				CallingConvention="0"
+				ForcedIncludeFiles="stdafx.h"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="gdiplus.lib strmbasd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zdlld.lib minizipd.lib tinyxmld_STL.lib"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;$(SolutionDir)\Libs\Debug&quot;"
+				IgnoreDefaultLibraryNames="msvcrt.lib"
+				DelayLoadDLLs="uxtheme.dll"
+				GenerateDebugInformation="true"
+				SubSystem="2"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)Build\$(ConfigurationName)"
 			IntermediateDirectory="$(SolutionDir)Build\Temp\$(ConfigurationName)"
@@ -208,6 +290,103 @@
 			/>
 		</Configuration>
 		<Configuration
+			Name="Release|x64"
+			OutputDirectory="$(SolutionDir)Build\$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)Build\Temp\$(ConfigurationName)\ShellExt\"
+			ConfigurationType="1"
+			CharacterSet="1"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="&quot;$(SolutionDir)\Utils\Version\version.exe&quot; &quot;$(SolutionDir)\Source\versioninfo.h&quot; ImageUploader"
+				ExcludedFromBuild="true"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+				GenerateTypeLibrary="false"
+				OutputDirectory="$(SolutionDir)Build\Temp\Midl\$(ConfigurationName)"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				FavorSizeOrSpeed="2"
+				WholeProgramOptimization="false"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC"
+				StringPooling="true"
+				MinimalRebuild="false"
+				ExceptionHandling="1"
+				RuntimeLibrary="0"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="2"
+				WarningLevel="0"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="0"
+				ForcedIncludeFiles="stdafx.h"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+				CommandLine=""
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkLibraryDependencies="true"
+				AdditionalOptions="/CRINKLER"
+				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wininet.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib tinyxml_STL.lib"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;d:\Projects\Image Uploader\Image Uploader\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
+				GenerateManifest="false"
+				AdditionalManifestDependencies=""
+				IgnoreAllDefaultLibraries="false"
+				IgnoreDefaultLibraryNames="msvcprt.lib MSVCRT"
+				DelayLoadDLLs="uxtheme.dll"
+				GenerateDebugInformation="false"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine=""
+			/>
+		</Configuration>
+		<Configuration
 			Name="Release 64|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
@@ -282,6 +461,103 @@
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release 64|x64"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			CharacterSet="1"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="&quot;$(SolutionDir)\Utils\Version\version.exe&quot; &quot;$(SolutionDir)\Source\versioninfo.h&quot; ImageUploader"
+				ExcludedFromBuild="true"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+				GenerateTypeLibrary="false"
+				OutputDirectory="$(SolutionDir)Build\Temp\Midl\$(ConfigurationName)"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				FavorSizeOrSpeed="2"
+				WholeProgramOptimization="false"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC"
+				StringPooling="true"
+				MinimalRebuild="false"
+				ExceptionHandling="1"
+				RuntimeLibrary="0"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="2"
+				WarningLevel="0"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="0"
+				ForcedIncludeFiles="stdafx.h"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+				CommandLine=""
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkLibraryDependencies="true"
+				AdditionalOptions="/CRINKLER"
+				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wininet.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib tinyxml_STL.lib"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;d:\Projects\Image Uploader\Image Uploader\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
+				GenerateManifest="false"
+				AdditionalManifestDependencies=""
+				IgnoreAllDefaultLibraries="false"
+				IgnoreDefaultLibraryNames="msvcprt.lib MSVCRT"
+				DelayLoadDLLs="uxtheme.dll"
+				GenerateDebugInformation="false"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="17"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -410,291 +686,6 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="0"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				TargetEnvironment="3"
-				OutputDirectory="$(SolutionDir)Build\Temp\Midl\$(ConfigurationName)"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				UsePrecompiledHeader="2"
-				WarningLevel="0"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
-				CallingConvention="0"
-				ForcedIncludeFiles="stdafx.h"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="gdiplus.lib strmbasd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zdlld.lib minizipd.lib tinyxmld_STL.lib"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;$(SolutionDir)\Libs\Debug&quot;"
-				IgnoreDefaultLibraryNames="msvcrt.lib"
-				DelayLoadDLLs="uxtheme.dll"
-				GenerateDebugInformation="true"
-				SubSystem="2"
-				TargetMachine="17"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release|x64"
-			OutputDirectory="$(SolutionDir)Build\$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(SolutionDir)Build\Temp\$(ConfigurationName)\ShellExt\"
-			ConfigurationType="1"
-			CharacterSet="1"
-			WholeProgramOptimization="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="&quot;$(SolutionDir)\Utils\Version\version.exe&quot; &quot;$(SolutionDir)\Source\versioninfo.h&quot; ImageUploader"
-				ExcludedFromBuild="true"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				TargetEnvironment="3"
-				GenerateTypeLibrary="false"
-				OutputDirectory="$(SolutionDir)Build\Temp\Midl\$(ConfigurationName)"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				FavorSizeOrSpeed="2"
-				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC"
-				StringPooling="true"
-				MinimalRebuild="false"
-				ExceptionHandling="1"
-				RuntimeLibrary="0"
-				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="2"
-				WarningLevel="0"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="0"
-				ForcedIncludeFiles="stdafx.h"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-				CommandLine=""
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkLibraryDependencies="true"
-				AdditionalOptions="/CRINKLER"
-				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wininet.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib tinyxml_STL.lib"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;d:\Projects\Image Uploader\Image Uploader\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
-				GenerateManifest="false"
-				AdditionalManifestDependencies=""
-				IgnoreAllDefaultLibraries="false"
-				IgnoreDefaultLibraryNames="msvcprt.lib MSVCRT"
-				DelayLoadDLLs="uxtheme.dll"
-				GenerateDebugInformation="false"
-				SubSystem="2"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="17"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine=""
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release 64|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			CharacterSet="1"
-			WholeProgramOptimization="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="&quot;$(SolutionDir)\Utils\Version\version.exe&quot; &quot;$(SolutionDir)\Source\versioninfo.h&quot; ImageUploader"
-				ExcludedFromBuild="true"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				TargetEnvironment="3"
-				GenerateTypeLibrary="false"
-				OutputDirectory="$(SolutionDir)Build\Temp\Midl\$(ConfigurationName)"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				FavorSizeOrSpeed="2"
-				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC"
-				StringPooling="true"
-				MinimalRebuild="false"
-				ExceptionHandling="1"
-				RuntimeLibrary="0"
-				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="2"
-				WarningLevel="0"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="0"
-				ForcedIncludeFiles="stdafx.h"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-				CommandLine=""
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkLibraryDependencies="true"
-				AdditionalOptions="/CRINKLER"
-				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wininet.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib tinyxml_STL.lib"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;d:\Projects\Image Uploader\Image Uploader\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
-				GenerateManifest="false"
-				AdditionalManifestDependencies=""
-				IgnoreAllDefaultLibraries="false"
-				IgnoreDefaultLibraryNames="msvcprt.lib MSVCRT"
-				DelayLoadDLLs="uxtheme.dll"
-				GenerateDebugInformation="false"
-				SubSystem="2"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="17"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine=""
-			/>
-		</Configuration>
-		<Configuration
 			Name="Release optimized|x64"
 			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
@@ -785,9 +776,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1110,15 +1098,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-link.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\res\icon-link.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-link.png"
+				RelativePath=".\res\icon-link.ico"
 				>
 			</File>
 			<File
@@ -1126,11 +1110,11 @@
 				>
 			</File>
 			<File
-				RelativePath="Source\res\icon-region.ico"
+				RelativePath=".\Source\res\icon-link.png"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-reload.ico"
+				RelativePath="Source\res\icon-region.ico"
 				>
 			</File>
 			<File
@@ -1138,7 +1122,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\icon-reload.ico"
+				>
+			</File>
+			<File
 				RelativePath="Source\res\icon-settings.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon-settings2.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon-user.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon-user.ico"
 				>
 			</File>
 			<File
@@ -1158,11 +1158,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\res\icon_additem.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon_additem.ico"
+				>
+			</File>
+			<File
 				RelativePath="Source\res\icon_additional.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\res\icon_delete.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon_deleteitem.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon_deleteitem.ico"
 				>
 			</File>
 			<File
@@ -1174,11 +1190,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_folder2.ico"
+				RelativePath=".\res\icon_folder2.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_folder2.ico"
+				RelativePath=".\Source\res\icon_folder2.ico"
 				>
 			</File>
 			<File
@@ -1698,6 +1714,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Source\Gui\Dialogs\DefaultServersSettings.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\DefaultServersSettings.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Source\Gui\Dialogs\FloatingWindow.cpp"
 						>
 					</File>
@@ -1739,6 +1763,14 @@
 					</File>
 					<File
 						RelativePath=".\Source\Gui\Dialogs\InputDialog.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\IntegrationSettings.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\IntegrationSettings.h"
 						>
 					</File>
 					<File
@@ -1858,6 +1890,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Source\Gui\Dialogs\UploadParamsDlg.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Dialogs\UploadParamsDlg.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Source\Gui\Dialogs\UploadSettings.cpp"
 						>
 					</File>
@@ -1955,6 +1995,14 @@
 					</File>
 					<File
 						RelativePath=".\Source\Gui\Controls\PictureExWnd.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Controls\ServerSelectorControl.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Gui\Controls\ServerSelectorControl.h"
 						>
 					</File>
 					<File
