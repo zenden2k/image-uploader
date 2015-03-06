@@ -90,6 +90,18 @@
 #define IDI_ICON4                       260
 #define IDI_ICONLINK                    260
 #define IDD_QUICKSETUPDLG               261
+#define IDD_INTEGRATIONSETTINGS         262
+#define IDI_ICONADDITEM                 263
+#define IDI_ICON6                       264
+#define IDI_ICONDELETEITEM              264
+#define IDD_SERVERSELECTORCONTROL       265
+#define IDI_ICONUSER                    266
+#define IDD_GENERALSETTINGS1            266
+#define IDD_DEFAULTSERVERSSETTINGS      267
+#define IDI_ICON5                       267
+#define IDI_ICONFOLDER2                 267
+#define IDD_UPLOADPARAMSDLG             268
+#define IDI_ICONSETTINGS2               269
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -101,6 +113,7 @@
 #define IDC_HOTKEYLIST                  1002
 #define IDC_PARAMLIST                   1002
 #define IDC_UPDATELISTVIEW              1002
+#define IDC_CONTEXTMENUITEMS            1002
 #define IDC_KEEPASIS                    1003
 #define IDC_KEEPPROPORTIONS             1004
 #define IDC_IMAGEWIDTH                  1005
@@ -274,6 +287,7 @@
 #define IDC_VIEWLOG                     1080
 #define IDC_SHOWLOG                     1080
 #define IDC_ABOUT                       1081
+#define IDC_HELPBUTTON                  1082
 #define IDC_SPIN1                       1083
 #define IDC_THUMBPERLINESPIN            1083
 #define IDC_THUMBWIDTHSPIN              1083
@@ -458,9 +472,13 @@
 #define IDC_WIDTHRADIO                  1262
 #define IDC_BUTTON1                     1263
 #define IDC_THUMBBACKGROUND             1263
+#define IDC_ADDITEM                     1263
 #define IDC_THUMBBACKGROUNDLABEL        1264
+#define IDC_DELETEITEM                  1264
 #define IDC_GOOGLECODELINK              1265
+#define IDC_UPBUTTON                    1265
 #define IDC_CURRENTPROFILELABEL         1266
+#define IDC_DOWNBUTTON                  1266
 #define IDC_RESIZEMODELABEL             1267
 #define IDC_PROFILELABEL                1268
 #define IDC_REMOVEBACKGROUND            1269
@@ -472,7 +490,10 @@
 #define IDC_PASTEHTMLONCTRLVCHECKBOX    1272
 #define IDC_SHORTENURLFROMTRAYCHECKBOX  1272
 #define IDC_ADDFILEPROTOCOL             1272
+#define IDC_REMEMBERIMAGESERVERSETTINGS 1272
 #define IDC_VIDEOENGINECOMBO            1273
+#define IDC_CHECK5                      1273
+#define IDC_REMEMBERFILESERVERSETTINGS  1273
 #define IDC_FOUNDABUG                   1274
 #define IDC_RESULTSLABEL                1274
 #define IDC_OUTPUTTEXT                  1275
@@ -501,11 +522,36 @@
 #define IDC_DIRECTORYLABEL              1298
 #define IDC_PRESETSBUTTON               1299
 #define IDC_SERVERLABEL                 1300
+#define IDC_CONTEXTMENUITEMSLABEL       1300
 #define IDC_FTPSETTINGSBUTTON           1301
+#define IDC_IMAGESERVERPLACEHOLDER      1301
 #define IDC_DOAUTHCHECKBOX              1302
-#define IDC_AUTOSTARTUPCHECKBOX		1303	
+#define IDC_FILESERVERPLACEHOLDER       1302
+#define IDC_AUTOSTARTUPCHECKBOX         1303
+#define IDC_FILESERVERPLACEHOLDER2      1303
+#define IDC_TRAYSERVERPLACEHOLDER       1303
 #define IDC_CAPTUREPRINTSCREENCHECKBOX  1304
+#define IDC_CONTEXTMENUSERVERPLACEHOLDER 1304
 #define IDC_EXPLORERINTEGRATION         1305
+#define IDC_ACCOUNTINFO                 1306
+#define IDC_EDIT                        1307
+#define IDC_SERVERGROUPBOX              1308
+#define IDC_USERICON                    1309
+#define IDC_FOLDERICON                  1310
+#define IDC_FOLDERLABEL                 1311
+#define IDC_IMAGEPROCESSINGPARAMS       1312
+#define IDC_SETTINGSBUTTONPLACEHOLDER   1313
+#define IDC_SETTINGSBUTTONPLACEHOLDER2  1314
+#define IDC_DEFAULTSETTINGSCHECKBOX     1315
+#define IDC_PROCESSIMAGESCHECKBOX       1316
+#define IDC_DEFAULTTHUMBSETTINGSCHECKBOX 1317
+#define IDC_THUMBTEMPLATECOMBOLABEL     1318
+#define IDC_THUMBTEMPLATECOMBO          1319
+#define IDC_THUMBRESIZELABEL            1320
+#define IDC_WIDTHEDITUNITS              1321
+#define IDC_THUMBRESIZECOMBO            1322
+#define IDOK2                           1323
+#define IDC_BROWSESERVERFOLDERS         1324
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -550,9 +596,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        263
+#define _APS_NEXT_RESOURCE_VALUE        268
 #define _APS_NEXT_COMMAND_VALUE         32803
-#define _APS_NEXT_CONTROL_VALUE         1300
+#define _APS_NEXT_CONTROL_VALUE         1302
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

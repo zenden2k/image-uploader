@@ -18,8 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef GENERALSETTINGS_H
-#define GENERALSETTINGS_H
+#ifndef DefaultServersSettings_H
+#define DefaultServersSettings_H
 
 #pragma once
 
@@ -27,36 +27,33 @@
 #include "resource.h"       // main symbols
 #include "Gui/Controls/MyImage.h"
 #include "Gui/Dialogs/settingspage.h"
-
-class CGeneralSettings : public CDialogImpl<CGeneralSettings>, 
+class CServerSelectorControl;
+class CDefaultServersSettings : public CDialogImpl<CDefaultServersSettings>, 
 	                      public CSettingsPage	
 {
 	public:
-		enum { IDD = IDD_GENERALSETTINGS };
+		enum { IDD = IDD_DEFAULTSERVERSSETTINGS };
 
-		CGeneralSettings();
-		virtual ~CGeneralSettings();
+		CDefaultServersSettings();
+		virtual ~CDefaultServersSettings();
 		virtual bool Apply();
 
 	protected:
-		BEGIN_MSG_MAP(CGeneralSettings)
+		BEGIN_MSG_MAP(CDefaultServersSettings)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
-			COMMAND_HANDLER(IDC_BROWSEBUTTON, BN_CLICKED, OnBnClickedBrowse)
 		END_MSG_MAP()
 		// Handler prototypes:
 		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		LRESULT OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		int GetNextLngFile(LPTSTR szBuffer, int nLength);
-		
-		HANDLE findfile;
-		CMyImage img;
-		WIN32_FIND_DATA wfd;
+protected:
+	CServerSelectorControl *imageServerSelector_;
+	CServerSelectorControl *fileServerSelector_; 
+	CServerSelectorControl *trayServerSelector_;
+	CServerSelectorControl *contextMenuServerSelector_;
+
 };
 
-#endif // GENERALSETTINGS_H
+#endif // DefaultServersSettings_H
 

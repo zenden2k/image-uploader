@@ -36,6 +36,7 @@
 #include "Gui/Dialogs/SizeExceed.h"
 #include "Gui/Dialogs/ResultsWindow.h"
 #include <Core/Upload/FileQueueUploader.h>
+#include "Func/Settings.h"
 
 class CUploadDlg : public CDialogImpl<CUploadDlg>,
                    public CThreadImpl<CUploadDlg>, 
@@ -104,6 +105,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		};
 		CUploadDlgProgressInfo PrInfo;
 		bool alreadyShortened_;
+		ServerProfile sessionImageServer_, sessionFileServer_;
 		
 		#if  WINVER	>= 0x0601
 				ITaskbarList3* ptl;

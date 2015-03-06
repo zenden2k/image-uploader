@@ -4,13 +4,14 @@
 #include <string>
 #include <map>
 #include <Core/Upload/UploadEngine.h>
+#include <Func/Settings.h>
 class CUploadEngineList;
 
 
 class ServerListManager
 {
 public:
-	ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, std::map <std::string, ServerSettingsStruct>& serversSettings);
+	ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings);
 	~ServerListManager(void);
 	bool addFtpServer(const std::string &name, const std::string &serverName, const std::string &login, const std::string &password,
 		const std::string &remoteDirectory, const std::string &downloadUrl);
@@ -20,7 +21,7 @@ public:
 protected:
 	CUploadEngineList * uploadEngineList_;
 	std::string serversDirectory_;
-	std::map <std::string, ServerSettingsStruct>& serversSettings_;
+	ServerSettingsMap& serversSettings_;
 	std::string errorMessage_;
 	std::string createdServerName_;
 

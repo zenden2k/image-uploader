@@ -92,7 +92,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	HICON hImageIcon = NULL, hFileIcon = NULL;
 	int selectedIndex = 0;
 
-	CUploadEngineData *uploadEngine = _EngineList->byIndex( Settings.ServerID );
+	CUploadEngineData *uploadEngine = _EngineList->byIndex( Settings.getServerID() );
 	std::string selectedServerName = "imgur.com" ;
 	for( int i = 0; i < _EngineList->count(); i++) {	
 		CUploadEngineData * ue = _EngineList->byIndex( i ); 
@@ -128,7 +128,7 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 	if ( serverComboElementIndex > 0 ) {
 		std::string serverNameA = reinterpret_cast<char*>(serverComboBox_.GetItemData(serverComboElementIndex));
 		CUploadEngineData * uploadEngineData =( (CUploadEngineList *)_EngineList)->byName( serverNameA );
-		Settings.ServerName = Utf8ToWCstring( uploadEngineData->Name ) ;
+		Settings.getServerName() = Utf8ToWCstring( uploadEngineData->Name ) ;
 		bool needAuth = GuiTools::GetCheck( m_hWnd, IDC_DOAUTHCHECKBOX );
 		if ( needAuth ) {
 			CString login = GuiTools::GetDlgItemText( m_hWnd, IDC_LOGINEDIT );
@@ -137,13 +137,13 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 				MessageBox(TR("¬ведите данные учетной записи"), APPNAME, MB_ICONEXCLAMATION);
 				return 0;
 			}
-			LoginInfo& loginInfo = Settings.ServersSettings[WCstringToUtf8((LPCTSTR)Settings.ServerName)].authData;
+			LoginInfo& loginInfo = Settings.ServersSettings[WCstringToUtf8((LPCTSTR)Settings.getServerName())][WCstringToUtf8((LPCTSTR)(login))].authData;
 			loginInfo.DoAuth = true;
 			loginInfo.Login = WCstringToUtf8( login );
 			loginInfo.Password = WCstringToUtf8( password );
 		}
 	} else {
-		Settings.ServerName = CString();
+		Settings.getServerName() = CString();
 	}
 
 	GuiTools::GetCheck(m_hWnd, IDC_AUTOSTARTUPCHECKBOX, Settings.AutoStartup);

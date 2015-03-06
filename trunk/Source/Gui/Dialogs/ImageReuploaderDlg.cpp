@@ -98,7 +98,7 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 		sourceTextEditControl.SendMessage(WM_PASTE);
 	} 
 
-	m_serverId = Settings.ServerID;
+	m_serverId = Settings.getServerID();
 
 	if(m_serverId == -1) {
 		m_serverId = m_EngineList->getRandomImageServer();
@@ -224,7 +224,7 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
 			CImageConverter imageConverter;
 			Thumbnail thumb;
 
-			if (!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + Settings.ThumbSettings.FileName +
+			if (!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + Settings.imageServer.getImageUploadParams().getThumb().TemplateName +
 				_T(".xml")))) {
 				WriteLog(logError, LogTitle, TR("Не могу загрузить файл миниатюры!"));
 			} else {
@@ -233,9 +233,9 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
 				CUploadEngineData *ue = m_EngineList->byIndex(m_serverId);
 				imageConverter.setEnableProcessing(false);
 				imageConverter.setImageConvertingParams(Settings.ConvertProfiles[Settings.CurrentConvertProfileName]);
-				imageConverter.setThumbCreatingParams(Settings.ThumbSettings);
-				bool GenThumbs = Settings.ThumbSettings.CreateThumbs &&
-					((!Settings.ThumbSettings.UseServerThumbs) || (!ue->SupportThumbnails));
+				imageConverter.setThumbCreatingParams(Settings.imageServer.getImageUploadParams().getThumb());
+				bool GenThumbs = Settings.imageServer.getImageUploadParams().CreateThumbs &&
+					((!Settings.imageServer.getImageUploadParams().UseServerThumbs) || (!ue->SupportThumbnails));
 				imageConverter.setThumbnail(&thumb);
 				imageConverter.setGenerateThumb(true);
 				imageConverter.Convert(Utf8ToWCstring(localFile));
@@ -267,9 +267,9 @@ bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it
 	CUploadEngineData *ue = m_EngineList->byIndex(m_serverId);
 	CUploadEngineData* newData = new CUploadEngineData();
 	*newData = *ue;
-	CAbstractUploadEngine * e = m_EngineList->getUploadEngine(ue);
+	CAbstractUploadEngine * e = m_EngineList->getUploadEngine(ue, Settings.urlShorteningServer.serverSettings());
 	e->setUploadData(newData);
-	ServerSettingsStruct& settings = Settings.ServerByUtf8Name(newData->Name);
+	ServerSettingsStruct& settings = serverProfile_.serverSettings();
 	e->setServerSettings(settings);
 	UploadItemData* uploadItemData = new UploadItemData;
 	uploadItemData->sourceUrl = it.url;

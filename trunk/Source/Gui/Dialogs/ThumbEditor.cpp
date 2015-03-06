@@ -76,7 +76,7 @@ LRESULT CThumbEditor::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL
 	Settings.ImageSettings.StrokeColor=StrokeColor.GetColor();*/
 
 	SaveParams();
-	Settings.ThumbSettings.TextOverThumb = SendDlgItemMessage(IDC_TEXTOVERTHUMB2, BM_GETCHECK);
+	//Settings.ThumbSettings.TextOverThumb = SendDlgItemMessage(IDC_TEXTOVERTHUMB2, BM_GETCHECK);
 	EndDialog(wID);
 	return 0;
 }

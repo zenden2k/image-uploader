@@ -26,9 +26,9 @@
 #include "LogWindow.h"
 #include "Func/Settings.h"
 
-CServerFolderSelect::CServerFolderSelect(CUploadEngineData* uploadEngine)
+CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile):serverProfile_(serverProfile)
 {
-	m_UploadEngine = uploadEngine;
+	m_UploadEngine = serverProfile_.uploadEngineData();
 }
 
 CServerFolderSelect::~CServerFolderSelect()
@@ -73,7 +73,7 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 	m_FolderOperationType = foGetFolders;
 	m_pluginLoader =
-	   iuPluginManager.getPlugin(m_UploadEngine->Name, m_UploadEngine->PluginName, Settings.ServerByUtf8Name(m_UploadEngine->Name));
+	   iuPluginManager.getPlugin(m_UploadEngine->Name, m_UploadEngine->PluginName, serverProfile_.serverSettings());
 	if (!m_pluginLoader)
 	{
 		SetDlgItemText(IDC_FOLDERLISTLABEL, TR("Ошибка при загрузке squirrel скрипта."));
@@ -81,7 +81,7 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	}
 	CString title;
 	title.Format(TR("Список папок на сервере %s для учетной записи '%s':"), (LPCTSTR)Utf8ToWCstring(m_UploadEngine->Name),
-	             (LPCTSTR)Utf8ToWCstring(Settings.ServerByUtf8Name(m_UploadEngine->Name).authData.Login));
+	             (LPCTSTR)Utf8ToWCstring(serverProfile_.serverSettings().authData.Login));
 	SetDlgItemText(IDC_FOLDERLISTLABEL, title);
 	m_pluginLoader->setNetworkManager(&m_NetworkManager);
 	m_pluginLoader->getAccessTypeList(m_accessTypeList);

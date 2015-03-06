@@ -187,13 +187,17 @@ DWORD CUploadDlg::Run()
 	Uploader.onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
 	Uploader.onStatusChanged.bind(this, &CUploadDlg::OnUploaderStatusChanged);
 	Uploader.onConfigureNetworkManager.bind(this, &CUploadDlg::OnUploaderConfigureNetworkClient);
-	int Server;
-	int FileServer = Settings.FileServerID;
+
+	/*if(Settings.QuickUpload && !WizardDlg->Pages[3]) {
+		Server = Settings.getQuickServerID();
+	}
+	else Server = Settings.getServerID();*/
+	int Server = _EngineList->GetUploadEngineIndex(sessionImageServer_.serverName());
+
+	int FileServer = _EngineList->GetUploadEngineIndex(sessionFileServer_.serverName());
 	int n = MainDlg->FileList.GetCount();
 
-	if(Settings.QuickUpload && !WizardDlg->Pages[3])
-		Server = Settings.QuickServerID;
-	else Server = Settings.ServerID;
+
 
 	if(Server == -1)
 	{
@@ -210,6 +214,10 @@ DWORD CUploadDlg::Run()
 	}
 
 	CUploadEngineData *ue = m_EngineList->byIndex(Server);
+	if (!ue  || sessionImageServer_.serverName().IsEmpty()) {
+		WriteLog(logError, L"CUploadDlg", L"Server not selected");
+		return ThreadTerminated();
+	}
 	if(ue->SupportsFolders)
 	{
 		ResultsWindow->AddServer(Server);
@@ -233,17 +241,17 @@ DWORD CUploadDlg::Run()
 	TCHAR szBuffer[MAX_PATH];
 	
 	int NumUploaded=0;
-	bool CreateThumbs = Settings.ThumbSettings.CreateThumbs;
+	bool CreateThumbs = sessionImageServer_.getImageUploadParams().CreateThumbs;
 
 	Thumbnail thumb;
 	
-	if(!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\")+Settings.ThumbSettings.FileName+_T(".xml"))))
+	if(!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\")+sessionImageServer_.getImageUploadParams().getThumb().TemplateName+_T(".xml"))))
 	{
 		WriteLog(logError, _T("CThumbSettingsPage"), TR("Не могу загрузить файл миниатюры!"));
 		return ThreadTerminated();
 	}
 
-	int thumbwidth=Settings.ThumbSettings.ThumbWidth;
+	int thumbwidth=sessionImageServer_.getImageUploadParams().getThumb().Size;
 	if(thumbwidth<1|| thumbwidth>1024) thumbwidth=150;
 	
 
@@ -251,10 +259,10 @@ DWORD CUploadDlg::Run()
 
 
 	FullUploadProfile InitialParams;
-   InitialParams.convert_profile = Settings.ConvertProfiles[Settings.CurrentConvertProfileName];
-	InitialParams.upload_profile = Settings.UploadProfile;
+   InitialParams.convert_profile = Settings.ConvertProfiles[sessionImageServer_.getImageUploadParams().ImageProfileName];
+	InitialParams.upload_profile = sessionImageServer_;
 	//= Settings.ImageSettings;
-   InitialParams.upload_profile.ServerID = Server;
+   //InitialParams.upload_profile.ServerID = Server;
 
 	iss = InitialParams;
 
@@ -268,11 +276,10 @@ DWORD CUploadDlg::Run()
 		CString ThumbUrl;
 		CString DirectUrl;
 		CString DownloadUrl;
-      Server = iss.upload_profile.ServerID;
-		ue = m_EngineList->byIndex(Server);
+		ue = m_EngineList->byName(iss.upload_profile.serverName());
 		if(/*Server!=Uploader.CurrentServer && */IsImage(MainDlg->FileList[i].FileName))
 		{
-			CAbstractUploadEngine * e = m_EngineList->getUploadEngine(Server);
+			CAbstractUploadEngine * e = m_EngineList->getUploadEngine(Server, iss.upload_profile.serverSettings());
 			if(!e) 
 			{
 				WriteLog(logError, _T("Custom Uploader"), _T("Cannot create image upload engine!"));
@@ -296,11 +303,11 @@ DWORD CUploadDlg::Run()
 
 			CImageConverter imageConverter;
          imageConverter.setImageConvertingParams(iss.convert_profile);
-         imageConverter.setEnableProcessing(!iss.upload_profile.KeepAsIs);
+         imageConverter.setEnableProcessing(iss.upload_profile.getImageUploadParams().ProcessImages);
 			imageConverter.setThumbnail(&thumb);
-			imageConverter.setThumbCreatingParams(Settings.ThumbSettings);
+			imageConverter.setThumbCreatingParams(iss.upload_profile.getImageUploadParams().getThumb());
 			bool GenThumb = false;
-			if(CreateThumbs && ((!Settings.ThumbSettings.UseServerThumbs)||(!ue->SupportThumbnails)))
+			if(CreateThumbs && ((!sessionImageServer_.getImageUploadParams().UseServerThumbs)||(!ue->SupportThumbnails)))
 				GenThumb = true;
 				//GenerateImages(MainDlg->FileList[i].FileName,ImageFileName,ThumbFileName,thumbwidth, iss);
 			else 
@@ -315,7 +322,7 @@ DWORD CUploadDlg::Run()
 			imageConverter.Convert(MainDlg->FileList[i].FileName);
 			ImageFileName = imageConverter.getImageFileName();
 			ThumbFileName = imageConverter.getThumbFileName();
-         if(!iss.upload_profile.KeepAsIs && ImageFileName != MainDlg->FileList[i].FileName)
+         if(iss.upload_profile.getImageUploadParams().ProcessImages && ImageFileName != MainDlg->FileList[i].FileName)
 			{
 				//MessageBox(ImageFileName);
 				TempFilesDeleter.AddFile(ImageFileName);
@@ -326,7 +333,7 @@ DWORD CUploadDlg::Run()
 		else // if we upload any type of file
 		{
 			ImageFileName = MainDlg->FileList[i].FileName;
-			CAbstractUploadEngine * fileUploadEngine = m_EngineList->getUploadEngine(FileServer);
+			CAbstractUploadEngine * fileUploadEngine = m_EngineList->getUploadEngine(FileServer, sessionFileServer_.serverSettings());
 			if(!fileUploadEngine)
 			{
 				WriteLog(logError, _T("Custom Uploader"), _T("Cannot create file upload engine!"));
@@ -421,7 +428,7 @@ DWORD CUploadDlg::Run()
 			LastUpdate=0;
 
 			// Если мы не используем серверные превьюшки
-			if(IsImage(MainDlg->FileList[i].FileName) &&  !ue->ImageUrlTemplate.empty() && Settings.ThumbSettings.CreateThumbs && (((!Settings.ThumbSettings.UseServerThumbs)||(!ue->SupportThumbnails)) || (lstrlen(ThumbUrl)<1)))
+			if(IsImage(MainDlg->FileList[i].FileName) &&  !ue->ImageUrlTemplate.empty() && sessionImageServer_.getImageUploadParams().CreateThumbs && (((!sessionImageServer_.getImageUploadParams().UseServerThumbs)||(!ue->SupportThumbnails)) || (lstrlen(ThumbUrl)<1)))
 			{
 	thumb_retry:
 				FileProgress(TR("Загрузка миниатюры.."));
@@ -657,6 +664,8 @@ int CUploadDlg::ThreadTerminated(void)
 
 bool CUploadDlg::OnShow()
 {
+	sessionFileServer_ = WizardDlg->getSessionFileServer();
+	sessionImageServer_ = WizardDlg->getSessionImageServer();
 	bool IsLastVideo=false;
 
 	if(lstrlen(MediaInfoDllPath))
@@ -683,7 +692,7 @@ bool CUploadDlg::OnShow()
 
 	int code = ResultsWindow->GetCodeType();
 	int newcode = code;
-	bool Thumbs = Settings.ThumbSettings.CreateThumbs!=0;
+	bool Thumbs = sessionImageServer_.getImageUploadParams().CreateThumbs!=0;
 
 	// Корректировка типа кода в зависимости от включения превьюшек
 	if(Thumbs)
@@ -880,16 +889,16 @@ void CUploadDlg::AddShortenUrlTask(CUrlListItem* item) {
 }
 
 void CUploadDlg::AddShortenUrlTask(CUrlListItem* item, CString linkType) {
-	CUploadEngineData *ue = m_EngineList->byName(Settings.UrlShorteningServer);
+	CUploadEngineData *ue = Settings.urlShorteningServer.uploadEngineData();
 	if ( !ue ) {
-		WriteLog(logError, _T("Uploader"), _T("Cannot create url shortening engine '" + Settings.UrlShorteningServer + "'"));
+		WriteLog(logError, _T("Uploader"), _T("Cannot create url shortening engine '" + Settings.urlShorteningServer.serverName() + "'"));
 		return;
 	}
 	CUploadEngineData* newData = new CUploadEngineData();
 	*newData = *ue;
-	CAbstractUploadEngine * e = m_EngineList->getUploadEngine(ue);
+	CAbstractUploadEngine * e = m_EngineList->getUploadEngine(ue,Settings.urlShorteningServer.serverSettings());
 	e->setUploadData(newData);
-	ServerSettingsStruct& settings = Settings.ServerByUtf8Name(newData->Name);
+	ServerSettingsStruct& settings = Settings.urlShorteningServer.serverSettings();
 	e->setServerSettings(settings);
 	ShortenUrlUserData* userData = new ShortenUrlUserData;
 	userData->item = item;

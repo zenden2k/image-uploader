@@ -18,8 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef GENERALSETTINGS_H
-#define GENERALSETTINGS_H
+#ifndef IntegrationSettings_H
+#define IntegrationSettings_H
 
 #pragma once
 
@@ -28,35 +28,31 @@
 #include "Gui/Controls/MyImage.h"
 #include "Gui/Dialogs/settingspage.h"
 
-class CGeneralSettings : public CDialogImpl<CGeneralSettings>, 
+class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>, 
 	                      public CSettingsPage	
 {
 	public:
-		enum { IDD = IDD_GENERALSETTINGS };
+		enum { IDD = IDD_INTEGRATIONSETTINGS };
 
-		CGeneralSettings();
-		virtual ~CGeneralSettings();
+		CIntegrationSettings();
+		virtual ~CIntegrationSettings();
 		virtual bool Apply();
 
 	protected:
-		BEGIN_MSG_MAP(CGeneralSettings)
+		BEGIN_MSG_MAP(CIntegrationSettings)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
-			COMMAND_HANDLER(IDC_BROWSEBUTTON, BN_CLICKED, OnBnClickedBrowse)
+			COMMAND_HANDLER(IDC_SHELLINTEGRATION, BN_CLICKED, OnShellIntegrationCheckboxChanged)
+			COMMAND_HANDLER(IDC_STARTUPLOADINGFROMSHELL, BN_CLICKED, OnClickedQuickUpload)	
 		END_MSG_MAP()
 		// Handler prototypes:
 		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		LRESULT OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		int GetNextLngFile(LPTSTR szBuffer, int nLength);
-		
-		HANDLE findfile;
-		CMyImage img;
-		WIN32_FIND_DATA wfd;
+		LRESULT OnShellIntegrationCheckboxChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		void ShellIntegrationChanged();
+		LRESULT OnClickedQuickUpload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 };
 
-#endif // GENERALSETTINGS_H
+#endif // IntegrationSettings_H
 

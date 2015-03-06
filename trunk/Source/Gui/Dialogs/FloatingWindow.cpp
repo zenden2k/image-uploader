@@ -300,13 +300,13 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
 
 	std_tr::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
 
-	CUploadEngineData *ue = _EngineList->byName(Settings.UrlShorteningServer);
-	CAbstractUploadEngine * e = _EngineList->getUploadEngine(ue);
+	CUploadEngineData *ue = Settings.urlShorteningServer.uploadEngineData();
+	CAbstractUploadEngine * e = _EngineList->getUploadEngine(ue, Settings.urlShorteningServer.serverSettings());
 	if ( !e ) {
 		return false;
 	}
 	e->setUploadData(ue);
-	ServerSettingsStruct& settings = Settings.ServerByUtf8Name(ue->Name);
+	ServerSettingsStruct& settings = Settings.urlShorteningServer.serverSettings();
 	e->setServerSettings(settings);
 
 	
@@ -624,7 +624,8 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
 
 	m_FileQueueUploader = new CFileQueueUploader();
 	m_FileQueueUploader->setCallback(this);
-	CUploadEngineData* engineData = _EngineList->byIndex(Settings.ServerID);
+	ServerProfile &serverProfile = Settings.quickScreenshotServer;
+	CUploadEngineData* engineData = serverProfile.uploadEngineData();
 	if (!engineData)
 		engineData = _EngineList->byIndex(_EngineList->getRandomImageServer());
 	if (!engineData)
@@ -633,22 +634,22 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
 	CImageConverter imageConverter;
 	Thumbnail thumb;
 
-	if (!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + Settings.ThumbSettings.FileName +
+	if (!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + Settings.quickScreenshotServer.getImageUploadParams().getThumb().TemplateName +
 	                                       _T(".xml"))))
 	{
 		WriteLog(logError, _T("CThumbSettingsPage"), TR("Не могу загрузить файл миниатюры!"));
 		return;
 	}
-	imageConverter.setEnableProcessing(!Settings.UploadProfile.KeepAsIs);
-	imageConverter.setImageConvertingParams(Settings.ConvertProfiles[Settings.CurrentConvertProfileName]);
-	imageConverter.setThumbCreatingParams(Settings.ThumbSettings);
-	bool GenThumbs = Settings.ThumbSettings.CreateThumbs &&
-	   ((!Settings.ThumbSettings.UseServerThumbs) || (!engineData->SupportThumbnails));
+	imageConverter.setEnableProcessing(Settings.quickScreenshotServer.getImageUploadParams().ProcessImages);
+	imageConverter.setImageConvertingParams(Settings.ConvertProfiles[Settings.quickScreenshotServer.getImageUploadParams().ImageProfileName]);
+	imageConverter.setThumbCreatingParams(Settings.quickScreenshotServer.getImageUploadParams().getThumb());
+	bool GenThumbs = Settings.quickScreenshotServer.getImageUploadParams().CreateThumbs &&
+	   ((!Settings.quickScreenshotServer.getImageUploadParams().UseServerThumbs) || (!engineData->SupportThumbnails));
 	imageConverter.setThumbnail(&thumb);
 	imageConverter.setGenerateThumb(GenThumbs);
 	imageConverter.Convert(realName);
 
-	CAbstractUploadEngine* engine = _EngineList->getUploadEngine(engineData);
+	CAbstractUploadEngine* engine = _EngineList->getUploadEngine(engineData, serverProfile.serverSettings());
 	if (!engine)
 		return;
 
@@ -708,19 +709,19 @@ bool CFloatingWindow::OnQueueFinished(CFileQueueUploader*) {
 		if ( Settings.TrayIconSettings.ShortenLinks ) {
 			std_tr::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
 
-			CUploadEngineData *ue = _EngineList->byName(Settings.UrlShorteningServer);
+			CUploadEngineData *ue = Settings.urlShorteningServer.uploadEngineData();
 			if ( !ue ) {
 				ShowImageUploadedMessage(url);
 				return false;
 
 			}
-			CAbstractUploadEngine * e = _EngineList->getUploadEngine(ue);
+			CAbstractUploadEngine * e = _EngineList->getUploadEngine(ue,Settings.urlShorteningServer.serverSettings());
 			if ( !e ) {
 				ShowImageUploadedMessage(url);
 				return false;
 			}
 			e->setUploadData(ue);
-			ServerSettingsStruct& settings = Settings.ServerByUtf8Name(ue->Name);
+			ServerSettingsStruct& settings = Settings.urlShorteningServer.serverSettings();
 			e->setServerSettings(settings);
 			e->setUploadData(ue);
 			uploadType_ = utShorteningImageUrl;

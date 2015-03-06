@@ -33,6 +33,7 @@
 #include "resource.h"       // main symbols
 #include "screenshotdlg.h"
 #include "Gui/Dialogs/UpdateDlg.h"
+#include "Func/Settings.h"
 
 #define ID_PASTE 9888
 #define ID_HOTKEY_BASE 10000
@@ -128,8 +129,11 @@ public:
 		COMMAND_HANDLER_EX(IDC_PREV, BN_CLICKED, OnPrevBnClicked)
 		COMMAND_HANDLER_EX(IDC_NEXT, BN_CLICKED, OnNextBnClicked)
 		COMMAND_HANDLER(IDC_ABOUT, BN_CLICKED, OnBnClickedAbout)
-
+		COMMAND_HANDLER(IDC_HELPBUTTON, BN_CLICKED, OnBnClickedHelpbutton)
+		COMMAND_ID_HANDLER(IDC_DOCUMENTATION, OnDocumentation)
+	    COMMAND_ID_HANDLER(IDC_SHOWLOG, OnShowLog)
 		REFLECT_NOTIFICATIONS()
+
 	END_MSG_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -146,6 +150,8 @@ public:
 	LRESULT OnLocalHotkey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnWmMyExit(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnDocumentation(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnShowLog(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	void CloseDialog(int nVal);
 	bool DragndropEnabled;
 	int CurPage;
@@ -153,6 +159,15 @@ public:
 	bool CreatePage(int PageID);
 	CWizardPage* Pages[5];
 	int screenshotIndex; 
+	void setSessionImageServer(ServerProfile server);
+	void setSessionFileServer(ServerProfile server);
+	ServerProfile getSessionImageServer() const;
+	ServerProfile getSessionFileServer() const;
+	void setServersChanged(bool changed);
+	bool serversChanged() const;
+protected:
+	ServerProfile sessionImageServer_, sessionFileServer_;
+	bool serversChanged_;
 public:
 	bool ShowPage(int idPage,int prev=-1,int next=-1);
 	bool AddImage(const CString &FileName, const CString &VirtualFileName, bool Show=true);
@@ -245,6 +260,7 @@ public:
 	INT m_bScreenshotFromTray;
 	bool IsClipboardDataAvailable();
 
+	LRESULT OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 };
 
 

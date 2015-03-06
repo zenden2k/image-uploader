@@ -24,6 +24,7 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Core/Upload/UploadEngine.h"
+class ServerProfile;
 // CLoginDlg
 
 LoginInfo LoadLogin(int ServerId);
@@ -32,7 +33,7 @@ class CLoginDlg : public CDialogImpl<CLoginDlg>
 {
 	public:
 		int ServerId;
-		CLoginDlg(CUploadEngineData *ue);
+		CLoginDlg(ServerProfile& serverProfile);
 		~CLoginDlg();
 		enum { IDD = IDD_LOGINDLG };
 	protected:
@@ -51,6 +52,10 @@ class CLoginDlg : public CDialogImpl<CLoginDlg>
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedUseIeCookies(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		CUploadEngineData *m_UploadEngine;
+		CString accountName();
+protected:
+	ServerProfile& serverProfile_;
+	CString accountName_;
 };
 
 #endif // LOGINDLG_H

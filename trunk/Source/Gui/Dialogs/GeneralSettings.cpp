@@ -67,19 +67,12 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	// Translating controls
 	TRC(IDOK, "OK");
 	TRC(IDCANCEL, "Отмена");
-	TRC(IDC_INTEGRATIONGROUP, "Интеграция с проводником Windows");
-	TRC(IDC_SHELLINTEGRATION, "Интеграция в контекстное меню оболочки");
-	//TRC(IDC_SHELLIMGCONTEXTMENUITEM, "Пункт в контекстное меню файлов изображений");
-	TRC(IDC_STARTUPLOADINGFROMSHELL, "Сразу начинать загрузку на сервер:");
-	TRC(IDC_SHELLVIDEOCONTEXTMENUITEM, "Пункт в контекстном меню видеофайлов");
-	TRC(IDC_CASCADEDCONTEXTMENU, "Вложенное контекстное меню");
 	TRC(IDC_CHANGESWILLBE, "Внимание: чтобы изменения в языке вступили в силу, программу необходимо перезапустить.");
 	TRC(IDC_LANGUAGELABEL, "Язык интерфейса:");
 	TRC(IDC_VIEWLOG, "Показать лог");
 	TRC(IDC_LOGGROUP, "Контроль ошибок");
 	TRC(IDC_IMAGEEDITLABEL, "Графический редактор:");
 	TRC(IDC_AUTOSHOWLOG, "Автоматически показывать окно лога в случае ошибок");
-	TRC(IDC_SHELLSENDTOITEM, "Добавить Image Uploader в меню \"Отправить\"");
 	TRC(IDC_CONFIRMONEXIT, "Спрашивать подтверждение при выходе");
 	
 	SetDlgItemText(IDC_IMAGEEDITORPATH, Settings.ImageEditorPath);
@@ -91,7 +84,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 		buf+= Utf8ToWCstring(_EngineList->byIndex(i)->Name);
 		SendDlgItemMessage(IDC_SERVERLIST, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)buf);
 	}
-	SendDlgItemMessage(IDC_SERVERLIST,CB_SETCURSEL, Settings.QuickServerID);
+	SendDlgItemMessage(IDC_SERVERLIST,CB_SETCURSEL, Settings.getQuickServerID());
 
 	TCHAR buf[MAX_PATH];
 	CString buf2;
@@ -109,24 +102,9 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	if(Index==-1) Index=0;
 	SendDlgItemMessage(IDC_LANGLIST,CB_SETCURSEL,Index);
 
-	SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_SETCHECK, Settings.ExplorerContextMenu);
 	
-	bool shellIntegrationAvailable = FileExists(Settings.getShellExtensionFileName())!=0;
-
-	SendDlgItemMessage(IDC_SHELLVIDEOCONTEXTMENUITEM, BM_SETCHECK, Settings.ExplorerVideoContextMenu);
-	SendDlgItemMessage(IDC_SHELLSENDTOITEM, BM_SETCHECK, Settings.SendToContextMenu);
 	SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_SETCHECK, Settings.ConfirmOnExit);
-	SendDlgItemMessage(IDC_CASCADEDCONTEXTMENU, BM_SETCHECK, Settings.ExplorerCascadedMenu);
-	
-	SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_SETCHECK, Settings.QuickUpload);
 	SendDlgItemMessage(IDC_AUTOSHOWLOG, BM_SETCHECK, Settings.AutoShowLog);
-
-	BOOL b;
-	OnClickedQuickUpload(0, IDC_STARTUPLOADINGFROMSHELL,0, b);
-	::EnableWindow(GetDlgItem(IDC_SHELLVIDEOCONTEXTMENUITEM), shellIntegrationAvailable);
-	::EnableWindow(GetDlgItem(IDC_CASCADEDCONTEXTMENU), shellIntegrationAvailable);
-	::EnableWindow(GetDlgItem(IDC_SHELLIMGCONTEXTMENUITEM), shellIntegrationAvailable);
-	ShellIntegrationChanged();
 	
 	return 1;  // Let the system set the focus
 }
@@ -165,52 +143,16 @@ bool CGeneralSettings::Apply()
 
 	GetDlgItemText(IDC_IMAGEEDITORPATH, szBuf, 256);
 	Settings.ImageEditorPath = szBuf;
-	Settings.ExplorerContextMenu_changed = Settings.ExplorerContextMenu; 
-	Settings.ExplorerContextMenu = SendDlgItemMessage(IDC_SHELLINTEGRATION, BM_GETCHECK)==BST_CHECKED;
-	Settings.ExplorerContextMenu_changed ^= (Settings.ExplorerContextMenu);
 	
-	bool Temp = Settings.ExplorerVideoContextMenu;
-	Settings.ExplorerVideoContextMenu = SendDlgItemMessage(IDC_SHELLVIDEOCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED;
-	Temp ^= Settings.ExplorerVideoContextMenu;
-
-	Temp = Settings.ExplorerCascadedMenu;
-	Settings.ExplorerCascadedMenu = SendDlgItemMessage(IDC_CASCADEDCONTEXTMENU, BM_GETCHECK)==BST_CHECKED;
-	Temp ^= Settings.ExplorerCascadedMenu;
-
-	Settings.SendToContextMenu_changed = Settings.SendToContextMenu;
-	Settings.SendToContextMenu = SendDlgItemMessage(IDC_SHELLSENDTOITEM, BM_GETCHECK)==BST_CHECKED;
-	Settings.SendToContextMenu_changed ^= Settings.SendToContextMenu;
-
-	Settings.QuickUpload = SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_GETCHECK)==BST_CHECKED;
-	Settings.QuickServerID = SendDlgItemMessage(IDC_SERVERLIST, CB_GETCURSEL, 0, 0);
 	Settings.AutoShowLog = SendDlgItemMessage(IDC_AUTOSHOWLOG,  BM_GETCHECK )==BST_CHECKED;
 	Settings.ConfirmOnExit = SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_GETCHECK)==BST_CHECKED;
 	
 	return true;
 }
 
-LRESULT CGeneralSettings::OnClickedQuickUpload(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	bool Checked = SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_GETCHECK)==BST_CHECKED;
-	GuiTools::EnableNextN(GetDlgItem(wID), 1, Checked);
-	return 0;
-}
 
 LRESULT CGeneralSettings::OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	LogWindow.Show();
 	return 0;
-}
-
-LRESULT CGeneralSettings::OnShellIntegrationCheckboxChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-	ShellIntegrationChanged();
-	return 0;
-}
-	
-void CGeneralSettings::ShellIntegrationChanged()
-{
-		bool shellIntegrationAvailable = FileExists(Settings.getShellExtensionFileName())!=0;
-	bool checked = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED && shellIntegrationAvailable;
-	GuiTools::EnableNextN(GetDlgItem(IDC_SHELLINTEGRATION), 2, checked);
 }

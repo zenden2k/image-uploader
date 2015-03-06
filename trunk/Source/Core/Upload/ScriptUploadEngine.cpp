@@ -300,6 +300,18 @@ const std::string scriptUtf8ToAnsi(const std::string& str, int codepage )
 #endif
 }
 
+void scriptWriteLog(const std::string& type, const std::string& message) {
+#ifndef IU_CLI
+	LogMsgType msgType = logWarning;
+	if ( type == "error" ) {
+		msgType = logError;
+	}
+	WriteLog(msgType,_T("Script Engine"),Utf8ToWCstring(message));
+#else
+	std::cerr << type <<" : "<< message;
+#endif
+}
+
 const std::string scriptMD5(const std::string& data)
 {
 	return IuCoreUtils::CryptoUtils::CalcMD5HashFromString(data);
@@ -543,7 +555,9 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		RegisterGlobal(IuCoreUtils::createDirectory, "CreateDirectory");
 		RegisterGlobal(IuCoreUtils::FileExists, "FileExists");
 		RegisterGlobal(GetFileContents, "GetFileContents");
-		RegisterGlobal(ScriptGetFileSize, "GetFileSize");		
+		RegisterGlobal(ScriptGetFileSize, "GetFileSize");	
+		RegisterGlobal(scriptWriteLog, "WriteLog");		
+
 
 		using namespace IuCoreUtils;
 		RegisterGlobal(&CryptoUtils::CalcMD5HashFromFile, "md5_file");

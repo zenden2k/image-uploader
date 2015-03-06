@@ -26,9 +26,9 @@
 #include "Gui/GuiTools.h"
 
 // CLoginDlg
-CLoginDlg::CLoginDlg(CUploadEngineData *ue)
+CLoginDlg::CLoginDlg(ServerProfile& serverProfile): serverProfile_(serverProfile)
 {
-	m_UploadEngine = ue;
+	m_UploadEngine = serverProfile.uploadEngineData();
 }
 
 CLoginDlg::~CLoginDlg()
@@ -40,7 +40,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 {
 	CenterWindow(GetParent());
 
-	LoginInfo li = Settings.ServerByUtf8Name(m_UploadEngine->Name).authData;
+	LoginInfo li = serverProfile_.serverSettings().authData;
 
 	SetWindowText(TR("Параметры авторизации"));
 	TRC(IDC_LOGINLABEL, "Логин:");
@@ -68,11 +68,13 @@ LRESULT CLoginDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& b
 
 	GetDlgItemText(IDC_LOGINEDIT, Buffer, 256);
 	li.Login = WCstringToUtf8(Buffer);
+	accountName_ = Buffer;
+	serverProfile_.setProfileName(Buffer);
 	GetDlgItemText(IDC_PASSWORDEDIT, Buffer, 256);
 	li.Password = WCstringToUtf8(Buffer);
 	li.DoAuth = SendDlgItemMessage(IDC_DOAUTH, BM_GETCHECK) != FALSE;
 	
-	Settings.ServerByUtf8Name(m_UploadEngine->Name).authData = li;
+	serverProfile_.serverSettings().authData = li;
 	EndDialog(wID);
 	return 0;
 }
@@ -88,4 +90,9 @@ LRESULT CLoginDlg::OnClickedUseIeCookies(WORD wNotifyCode, WORD wID, HWND hWndCt
 	::EnableWindow(GetDlgItem(IDC_LOGINEDIT), IS_CHECKED(IDC_DOAUTH));
 	::EnableWindow(GetDlgItem(IDC_PASSWORDEDIT), IS_CHECKED(IDC_DOAUTH)&&m_UploadEngine->NeedPassword);
 	return 0;
+}
+
+CString CLoginDlg::accountName()
+{
+	return accountName_;
 }

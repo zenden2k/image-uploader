@@ -4,7 +4,7 @@
 #include "UploadEngineList.h"
 #include <Core/Utils/StringUtils.h>
 
-ServerListManager::ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, std::map <std::string, ServerSettingsStruct>& serversSettings): 
+ServerListManager::ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings): 
 	serversSettings_(serversSettings)
 {
 	uploadEngineList_ = uel;
@@ -46,7 +46,7 @@ bool ServerListManager::addFtpServer(const std::string &name, const std::string 
 		return false;
 	}
 
-	ServerSettingsStruct &ss = serversSettings_[newName];
+	ServerSettingsStruct &ss = serversSettings_[newName][login];
 	ss.setParam("hostname",serverName);
 	ss.setParam("folder",remoteDirectory);
 	ss.setParam("downloadPath",downloadUrl);
@@ -92,7 +92,7 @@ bool ServerListManager::addDirectoryAsServer(const std::string &name, const std:
 		return false;
 	}
 
-	ServerSettingsStruct &ss = serversSettings_[newName];
+	ServerSettingsStruct &ss = serversSettings_[newName][""];
 	ss.setParam("directory",directory);
 	ss.setParam("downloadUrl",downloadUrl);
 	ss.setParam("convertUncPath",IuCoreUtils::int64_tToString((int)convertUncPath));

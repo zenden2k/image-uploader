@@ -43,7 +43,7 @@ CScriptUploadEngine* CPluginManager::getPlugin(const Utf8String& serverName, con
 	if (plugin && (GetTickCount() - plugin->getCreationTime() < 1000 * 60 * 5))
 		UseExisting = true;
 
-	if(plugin && UseExisting && plugin->name() == name) {
+	if(plugin && UseExisting && plugin->name() == name && plugin->serverSettings().authData.Login ==  params.authData.Login ) {
 		plugin->onErrorMessage.bind( DefaultErrorHandling::ErrorMessage );
 		return plugin;
 	}

@@ -1,6 +1,5 @@
-﻿token <- "";
-login <- ""; 
-tokenType <- "";
+﻿login <- ""; 
+
 
 function regex_simple(data,regStr,start)
 {
@@ -27,7 +26,13 @@ function reg_replace(str, pattern, replace_with)
 	return resultStr;
 }
 
-
+function _WriteLog(type,message) {
+	try {
+		WriteLog(type, message);
+	} catch (ex ) {
+		print(type + " : " + message);
+	}
+}
 
 function inputBox(prompt, title) {
 	try {
@@ -54,6 +59,8 @@ function openUrl(url) {
 }
 
 function getAuthorizationString() {
+	local token = ServerParams.getParam("token");
+	local tokenType = ServerParams.getParam("tokenType");
 	return tokenType + " " + token ;
 }
 
@@ -70,14 +77,26 @@ function doLogin()
 		return 0;
 	}
 	
-	if ( token == "" ){
-		token = ServerParams.getParam("token");
-		tokenType = ServerParams.getParam("tokenType");
-	}
+	local token = ServerParams.getParam("token");
+	local tokenType = ServerParams.getParam("tokenType");
+	
 	if ( token != "" && ServerParams.getParam("prevLogin") == login ) {
-		local tokenTime = ServerParams.getParam("tokenTime").tointeger();
-		local expiresIn = ServerParams.getParam("expiresIn").tointeger();
-		local refreshToken = ServerParams.getParam("refreshToken");
+		local tokenTime  = 0;
+		local expiresIn = 0;
+		local refreshToken = "";
+		try { 
+			tokenTime = ServerParams.getParam("tokenTime").tointeger();
+			
+			
+		} catch ( ex ) {
+			
+		}
+		try { 
+		expiresIn = ServerParams.getParam("expiresIn").tointeger();
+		} catch ( ex ) {
+			
+		}
+		refreshToken = ServerParams.getParam("refreshToken");
 		if ( time() > tokenTime + expiresIn && refreshToken != "") {
 			// Refresh access token
 			nm.setUrl("https://www.googleapis.com/oauth2/v3/token");
@@ -93,17 +112,17 @@ function doLogin()
 			ServerParams.setParam("tokenType", tokenType);
 			ServerParams.setParam("tokenTime", time().tostring());
 			if ( token != "" ) {
-				return true;
+				return 1;
 			} else {
 				token = "";
 				tokenType = "";
+				return 0;
 			}
 		} else {
-			return true;
+			return 1;
 		}
 	}
 
-	
 	local url = "https://accounts.google.com/o/oauth2/auth?scope="+ nm.urlEncode(scope) +"&redirect_uri="+redirectUrl+"&response_type=code&"+ "client_id="+clientId;
 	openUrl(url);
 	
@@ -122,20 +141,23 @@ function doLogin()
 	nm.addQueryParam("grant_type", "authorization_code"); 
 	nm.doPost("");
 	local data =  nm.responseBody();
-
 	local accessToken = regex_simple(data, "access_token\": \"(.+)\"", 0);
 	local timestamp = time();
 	if ( accessToken != "" ) {
-		token = 	accessToken;
+		token = accessToken;
+		
 		ServerParams.setParam("token", token);
 		ServerParams.setParam("expiresIn", regex_simple(data, "expires_in\": (\\d+)", 0));
 		ServerParams.setParam("refreshToken", regex_simple(data, "refresh_token\": \"(.+)\"", 0));
 		tokenType = regex_simple(data, "token_type\": \"(.+)\"", 0);
+		//p;
 		ServerParams.setParam("tokenType", tokenType);
 		ServerParams.setParam("prevLogin", login);
 		ServerParams.setParam("tokenTime", ""+timestamp);
-		return true;
-	}	
+		return 1;
+	}	else {
+		_WriteLog("error", "Autentication failed");
+	}
 	return 0;		
 } 
 
@@ -176,28 +198,61 @@ function internal_parseAlbumList(data,list)
 		list.AddFolderItem(album);
 		
 	}
+	return 1;
+}
+
+function checkResponse() {
+	if ( nm.responseCode() == 403 ) {
+		if ( nm.responseBody().find("Invalid token",0)!= null) {
+			_WriteLog("warning", nm.responseBody());
+			ServerParams.setParam("token", "");
+			ServerParams.setParam("expiresIn", "");
+			ServerParams.setParam("refreshToken", "");
+			ServerParams.setParam("tokenType", "");
+			ServerParams.setParam("prevLogin", "");
+			ServerParams.setParam("tokenTime", "");
+			return 1 + doLogin();
+		} else {
+			_WriteLog("error", "403 Access denied" );
+			return 0;
+		}
+	} else if ( nm.responseCode() == 0 || (nm.responseCode() >= 400 && nm.responseCode() <= 499)) {
+		_WriteLog("error", "Response code " + nm.responseCode() + "\r\n" + nm.errorString() );
+		return 0;
+	}
+	return 1;
 }
 
 function internal_loadAlbumList(list)
 {
-	nm.setUrl("https://picasaweb.google.com/data/feed/api/user/default");
-  	nm.addQueryHeader("Expect","");
-	nm.addQueryParam("GData-Version", "2");
-	nm.addQueryHeader("Authorization", getAuthorizationString());
-	nm.doGet("");
-	internal_parseAlbumList(nm.responseBody(),list);
+	local i = 0;
+	while ( 1 ) {
+		i++;
+		nm.setUrl("https://picasaweb.google.com/data/feed/api/user/default");
+		nm.addQueryHeader("Expect","");
+		nm.addQueryParam("GData-Version", "2");
+		nm.addQueryHeader("Authorization", getAuthorizationString());
+		nm.doGet("");
+		local response = checkResponse ();
+		if ( response == 0 ) {
+			return 0;
+		} else if ( response == 1 ) {
+			break;
+		} else if (  i > 3 ) {
+			return 0;
+		}
+	}
+	
+	return internal_parseAlbumList(nm.responseBody(),list);
+	
 }
 
 function GetFolderList(list)
 {
-	if(token == "")
-	{
-		if(!doLogin())
-			return 0;
-	}
-
-	internal_loadAlbumList(list);
-	return 1; //success
+	if(!doLogin())
+		return 0;
+	
+	return internal_loadAlbumList(list);
 }
 
 function CreateFolder(parentAlbum,album)
@@ -207,11 +262,9 @@ function CreateFolder(parentAlbum,album)
 	local accessType = album.getAccessType();
 	local parentId = album.getParentId; 
 	local strAcessType = "private";
-	if(token == "")
-	{
-		if(!doLogin())
+
+	if(!doLogin())
 			return 0;
-	}
 	
 	if (accessType == 1)
 		strAcessType = "public";
@@ -245,65 +298,73 @@ function CreateFolder(parentAlbum,album)
 
 function  UploadFile(FileName, options)
 {
-   if(token == "")
-	{
-		if(!doLogin())
+	if(!doLogin())
+		return -1;
+		
+	local i = 0;
+	while ( i < 3 ) {
+		i++;
+		nm.addQueryParam("GData-Version", "2");
+		local albumID = "default";
+		local albumStr = options.getFolderID();
+		if(albumStr!="")
+			albumID = albumStr;
+		
+		nm.setUrl("https://picasaweb.google.com/data/feed/api/user/default/albumid/"+albumID);
+		nm.addQueryHeader("Authorization", getAuthorizationString());
+
+		local ServerFileName = options.getServerFileName();
+		if(ServerFileName=="") ServerFileName = ExtractFileName(FileName);
+		local 	encodedFname = nm.urlEncode(ServerFileName);
+		nm.addQueryHeader("Slug",encodedFname);
+		nm.addQueryHeader("Expect","");
+		nm.addQueryHeader("Content-Type",GetFileMimeType(FileName));
+		nm.doUpload(FileName,"");
+		
+		local responseInfo = checkResponse ();
+		if ( responseInfo == 0 ) {
 			return 0;
-	}
-	nm.addQueryParam("GData-Version", "2");
-	local albumID = "default";
-	local albumStr = options.getFolderID();
-	if(albumStr!="")
-		albumID = albumStr;
-	
-	nm.setUrl("https://picasaweb.google.com/data/feed/api/user/default/albumid/"+albumID);
-	nm.addQueryHeader("Authorization", getAuthorizationString());
-
-	local ServerFileName = options.getServerFileName();
-	if(ServerFileName=="") ServerFileName = ExtractFileName(FileName);
-	local 	encodedFname = nm.urlEncode(ServerFileName);
-	nm.addQueryHeader("Slug",encodedFname);
-	nm.addQueryHeader("Expect","");
-	nm.addQueryHeader("Content-Type",GetFileMimeType(FileName));
-	nm.doUpload(FileName,"");
-
- 	local data = nm.responseBody();
-	
-	local directUrl = regex_simple(data, "content type='image/.+src='(.+)'", 0);
-	
-	local slashRegexp = regexp( "/"  ); 
-	local slashPos = slashRegexp.search( directUrl);
-	local newPos = slashPos;
-	while ( true ) {
-		newPos = slashRegexp.search( directUrl, newPos.begin + 1 ); 
-		if ( newPos == null) {
-			break;
+		} else if ( responseInfo == 2 ) {
+			continue;
 		}
-		slashPos = newPos;
-	}	
-	
-	if ( slashPos != null ) {
-		directUrl =  directUrl.slice( 0, slashPos.begin)+ "/s0/" + directUrl.slice(  slashPos.begin+1);
-	}
-	local thumbUrl = regex_simple(data, "<media:thumbnail.+<media:thumbnail.+<media:thumbnail url='(.+)'", 0);
-	
-	local viewUrl = 
-		regex_simple(data, "<link rel=[\",']http://schemas.google.com/photos/2007#canonical[\",'] type=[\",']text/html[\",'] href='(.+)'", 0);
 
-	options.setDirectUrl(directUrl);
-	options.setThumbUrl(thumbUrl);
-	options.setViewUrl(viewUrl);
+		local data = nm.responseBody();
+
+		
+		local directUrl = regex_simple(data, "content type='image/.+src='(.+)'", 0);
+		
+		local slashRegexp = regexp( "/"  ); 
+		local slashPos = slashRegexp.search( directUrl);
+		local newPos = slashPos;
+		while ( true ) {
+			newPos = slashRegexp.search( directUrl, newPos.begin + 1 ); 
+			if ( newPos == null) {
+				break;
+			}
+			slashPos = newPos;
+		}	
+		
+		if ( slashPos != null ) {
+			directUrl =  directUrl.slice( 0, slashPos.begin)+ "/s0/" + directUrl.slice(  slashPos.begin+1);
+		}
+		local thumbUrl = regex_simple(data, "<media:thumbnail.+<media:thumbnail.+<media:thumbnail url='(.+)'", 0);
+		
+		local viewUrl = 
+			regex_simple(data, "<link rel=[\",']http://schemas.google.com/photos/2007#canonical[\",'] type=[\",']text/html[\",'] href='(.+)'", 0);
+
+		options.setDirectUrl(directUrl);
+		options.setThumbUrl(thumbUrl);
+		options.setViewUrl(viewUrl);
+		return 1;
+	}
 	
-	return 1;
+	return 0;
 }
 
 function ModifyFolder(album)
 {
-	if(token == "")
-	{
-		if(!doLogin())
-			return 0;
-	}
+	if(!doLogin())
+		return 0;
 	
 	local title =album.getTitle();
 	local id = album.getId();

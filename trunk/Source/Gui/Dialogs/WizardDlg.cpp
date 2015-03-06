@@ -66,6 +66,7 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 	updateDlg = 0;
 	_EngineList = &m_EngineList;
 	m_bScreenshotFromTray = false;
+	serversChanged_ = false;
 }
 
 CWizardDlg::~CWizardDlg()
@@ -175,15 +176,15 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	{
 		LoadUploadEngines(serversFolder+list[i], ErrorStr);
 	}
-	if ( Settings.UrlShorteningServer.IsEmpty() ) {
+	if ( Settings.urlShorteningServer.serverName().IsEmpty() ) {
 		CString defaultServerName = _T("is.gd");
 		CUploadEngineData * uploadEngineData = m_EngineList.byName(defaultServerName);
 		if ( uploadEngineData ) {
-			Settings.UrlShorteningServer = defaultServerName;
+			Settings.urlShorteningServer.setServerName(defaultServerName);
 		} else {
 			uploadEngineData = m_EngineList.firstEngineOfType(CUploadEngineData::TypeUrlShorteningServer);
 			if ( uploadEngineData ) {
-				Settings.UrlShorteningServer = Utf8ToWCstring(uploadEngineData->Name);
+				Settings.urlShorteningServer.setServerName(Utf8ToWCstring(uploadEngineData->Name));
 			}
 		}
 	}
@@ -199,13 +200,13 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		quickSetupDialog.DoModal(m_hWnd);
 	}
 
-	Settings.ServerID		  = m_EngineList.GetUploadEngineIndex(Settings.ServerName);
-	Settings.FileServerID  = m_EngineList.GetUploadEngineIndex(Settings.FileServerName);
-	Settings.QuickServerID = m_EngineList.GetUploadEngineIndex(Settings.QuickServerName);
-
+	Settings.setServerID(m_EngineList.GetUploadEngineIndex(Settings.getServerName()));
+	Settings.setFileServerID(m_EngineList.GetUploadEngineIndex(Settings.getFileServerName()));
+	Settings.setQuickServerID(m_EngineList.GetUploadEngineIndex(Settings.getQuickServerName()));
+	sessionImageServer_ = Settings.imageServer;
+	sessionFileServer_ = Settings.fileServer;
 	if(!*MediaInfoDllPath)
 		WriteLog(logWarning, APPNAME, TR("Библиотека MediaInfo.dll не найдена. \nПолучение технических данных о файлах мультимедиа будет недоступно.")); 
-	TRC(IDC_ABOUT,"О программе...");
 	if(!CmdLine.IsOption(_T("tray")))
 		TRC(IDCANCEL,"Выход");
 	else 
@@ -414,7 +415,7 @@ bool CWizardDlg::ShowPage(int idPage,int prev,int next)
 	Pages[idPage]->OnShow();
 	
 		::ShowWindow(GetDlgItem(IDC_UPDATESLABEL), idPage == 0);
-	::ShowWindow(GetDlgItem(IDC_ABOUT), idPage == 0);
+	::ShowWindow(GetDlgItem(IDC_HELPBUTTON), idPage == 0);
 	if(CurPage >= 0)
 	{
 		
@@ -514,6 +515,36 @@ bool CWizardDlg::CreatePage(int PageID)
 	return true;
 }
 
+void CWizardDlg::setSessionImageServer(ServerProfile server)
+{
+	sessionImageServer_ = server;
+}
+
+void CWizardDlg::setSessionFileServer(ServerProfile server)
+{
+	sessionFileServer_ = server;
+}
+
+ServerProfile CWizardDlg::getSessionImageServer() const
+{
+	return sessionImageServer_;
+}
+
+ServerProfile CWizardDlg::getSessionFileServer() const
+{
+	return sessionFileServer_;
+}
+
+void CWizardDlg::setServersChanged(bool changed)
+{
+	serversChanged_ = changed;
+}
+
+bool CWizardDlg::serversChanged() const
+{
+	return serversChanged_;
+}
+
 // Функция генерации заголовка страницы (если он нужен)
 HBITMAP CWizardDlg::GenHeadBitmap(int PageID)
 {
@@ -569,13 +600,13 @@ LRESULT CWizardDlg::OnBnClickedAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 void CWizardDlg::Exit()
 {
 	// Converting server id to server name
-	if(Settings.ServerID >= 0 && m_EngineList.count())
-		Settings.ServerName = Utf8ToWstring(m_EngineList.byIndex(Settings.ServerID)->Name).c_str();
+	if(Settings.getServerID() >= 0 && m_EngineList.count())
+		Settings.getServerName() = Utf8ToWstring(m_EngineList.byIndex(Settings.getServerID())->Name).c_str();
 
-	if(Settings.QuickServerID>=0 && m_EngineList.count())
-		Settings.QuickServerName = Utf8ToWstring(m_EngineList.byIndex(Settings.QuickServerID)->Name).c_str();
-	if(Settings.FileServerID>=0 && m_EngineList.count())
-		Settings.FileServerName = Utf8ToWstring(m_EngineList.byIndex(Settings.FileServerID)->Name).c_str();
+	if(Settings.getQuickServerID()>=0 && m_EngineList.count())
+		Settings.getQuickServerName() = Utf8ToWstring(m_EngineList.byIndex(Settings.getQuickServerID())->Name).c_str();
+	if(Settings.getFileServerID()>=0 && m_EngineList.count())
+		Settings.getFileServerName() = Utf8ToWstring(m_EngineList.byIndex(Settings.getFileServerID())->Name).c_str();
 
 	Settings.SaveSettings();
 }
@@ -921,6 +952,18 @@ LRESULT CWizardDlg::OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHan
 		}
 	}	
 	return 0;
+}
+
+LRESULT CWizardDlg::OnDocumentation(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	ShellExecute(0,L"open",WinUtils::GetAppFolder()+"Docs\\index.html",0,WinUtils::GetAppFolder()+"Docs\\",SW_SHOWNORMAL);
+	return 0;
+}
+
+LRESULT CWizardDlg::OnShowLog(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+		LogWindow.Show();
+		return 0;
 }
 
 void CWizardDlg::PasteBitmap(HBITMAP Bmp)
@@ -1468,6 +1511,8 @@ bool CWizardDlg::funcSettings()
 		dlg.DoModal(0);
 	else
 		dlg.DoModal(m_hWnd);
+	sessionImageServer_ = Settings.imageServer;
+	sessionImageServer_ = Settings.fileServer;
 	return true;
 }
 
@@ -1844,3 +1889,24 @@ bool CWizardDlg::funcShortenUrl() {
 }
 
 CWizardDlg * pWizardDlg;
+LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+	// TODO: Add your control notification handler code here
+	RECT rc;
+	::GetWindowRect(hWndCtl, &rc );
+	POINT menuOrigin = {rc.left,rc.bottom};
+
+	CMenu popupMenu;
+	popupMenu.CreatePopupMenu();
+	popupMenu.AppendMenu(MF_STRING, IDC_ABOUT, TR("О программе..."));
+	popupMenu.AppendMenu(MF_STRING, IDC_DOCUMENTATION, TR("Документация"));
+	popupMenu.AppendMenu(MF_STRING, IDC_UPDATESLABEL, TR("Проверить обновления"));
+	popupMenu.AppendMenu(MF_SEPARATOR, 99999,_T(""));
+	popupMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, TR("Показать лог"));
+
+
+	popupMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd);
+
+	return 0;
+	return 0;
+}

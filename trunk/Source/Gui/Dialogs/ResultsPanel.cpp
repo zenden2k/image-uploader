@@ -576,7 +576,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 		mi.wID = IDC_SHORTENURLITEM;
 		CString menuItemTitle;
 		if ( OnShortenUrlChanged ) {
-			menuItemTitle.Format(TR("Сократить ссылки с помощью %s"), (LPCTSTR)Settings.UrlShorteningServer);
+			menuItemTitle.Format(TR("Сократить ссылки с помощью %s"), (LPCTSTR)Settings.urlShorteningServer.serverName());
 		} else {
 			menuItemTitle.Format(TR("Сократить ссылки"));
 		}
@@ -604,10 +604,10 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 
 	for(size_t i=0; i<m_Servers.size(); i++)
 	{
-		CUploadEngineData *ue = m_EngineList->byName(m_Servers[i]);
+		CUploadEngineData *ue = m_Servers[i].uploadEngineData();
 		if(!ue) continue;
-		CString folderTitle = Utf8ToWCstring(Settings.ServerByUtf8Name(ue->Name).params["FolderTitle"]);
-		CString folderUrl = Utf8ToWCstring(Settings.ServerByUtf8Name(ue->Name).params["FolderUrl"]);
+		CString folderTitle = Utf8ToWCstring(m_Servers[i].folderTitle());
+		CString folderUrl = Utf8ToWCstring(m_Servers[i].folderUrl());
 
 		if(folderTitle.IsEmpty() || folderUrl.IsEmpty()) continue;
 		CString title = TR("Копировать URL адрес ") + Utf8ToWCstring(ue->Name)+ _T("->")+folderTitle;
@@ -662,17 +662,17 @@ LRESULT CResultsPanel::OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND h
 {
 	int index = wID - IDC_COPYFOLDERURL;
 
-	CUploadEngineData *ue = m_EngineList->byName(m_Servers[index]);
+	CUploadEngineData *ue = m_Servers[index].uploadEngineData();
 	if(!ue) return 0;
-	CString folderUrl = Utf8ToWCstring(Settings.ServerByUtf8Name(ue->Name).params[("FolderUrl")]);
+	CString folderUrl = Utf8ToWCstring( m_Servers[index].folderUrl());
 	IU_CopyTextToClipboard(folderUrl);
 	return 0;
 }
 
-void CResultsPanel::AddServer(CString server)
+void CResultsPanel::AddServer(ServerProfile server)
 {
 	for(size_t i=0; i<m_Servers.size(); i++)
-		if (m_Servers[i] == server)
+		if (m_Servers[i].serverName() == server.serverName() && m_Servers[i].profileName() == server.profileName())
 			return;
 	m_Servers.push_back(server);
 	//return 0;

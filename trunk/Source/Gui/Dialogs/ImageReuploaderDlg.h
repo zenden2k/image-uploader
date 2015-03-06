@@ -149,6 +149,7 @@ class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
 		ZThread::Mutex mutex_;
 		CHistorySession* historySession_;
 		std::map<unsigned int, UploadedItem> uploadedItems_;
+		ServerProfile serverProfile_;
 		static const TCHAR LogTitle[];
 
 		struct Match {

@@ -392,8 +392,8 @@ bool CImageConverter::createThumbnail(Gdiplus::Image* image, Gdiplus::Image** ou
 	ThumbnailText.Replace(_T("%height%"), IntToStr(newheight));
 	ThumbnailText.Replace(_T("%size%"), sizeString);
 
-	int thumbwidth = m_thumbCreatingParams.ThumbWidth;
-	int thumbheight = m_thumbCreatingParams.ThumbHeight;
+	int thumbwidth = m_thumbCreatingParams.Size;
+	int thumbheight = m_thumbCreatingParams.Size;
 	Graphics g1(dc);
 	CString filePath = Utf8ToWCstring(thumbnail_template_->getSpriteFileName());
 	Image templ(filePath);
@@ -434,9 +434,9 @@ bool CImageConverter::createThumbnail(Gdiplus::Image* image, Gdiplus::Image** ou
 		m_Vars[it->first] = it->second;
 	}
 
-	m_Vars["DrawText"] = IuCoreUtils::toString(m_Vars["DrawText"] == "1" && m_thumbCreatingParams.ThumbAddImageSize);
+	m_Vars["DrawText"] = IuCoreUtils::toString(m_Vars["DrawText"] == "1" && m_thumbCreatingParams.AddImageSize);
 
-	if (!m_thumbCreatingParams.ScaleByHeight)
+	if (!m_thumbCreatingParams.ResizeMode == ThumbCreatingParams::trByHeight)
 	{
 		thumbwidth -= EvaluateExpression(thumbnail_template_->getWidthAddition());
 		if (thumbwidth < 10)

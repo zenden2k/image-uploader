@@ -34,25 +34,17 @@ struct ImageConvertingParams
 struct ThumbCreatingParams
 {
 	enum ThumbFormatEnum { tfSameAsImageFormat = 0, tfJPEG, tfPNG, tfGIF };
+	enum ThumbResizeEnum { trByWidth = 0, trByHeight, trByBiggerSide };
 
-	LOGFONT ThumbFont;
-	int LogoPosition;
-	int LogoBlend;
-	int TextPosition;
 	unsigned int Quality;
 	CString Text;
-	CString FileName;
-	COLORREF FrameColor, ThumbColor1, ThumbColor2, ThumbTextColor;
-	int ThumbAlpha;
-	BOOL TextOverThumb;
-	int ThumbWidth;
-	int ThumbHeight;
-	bool ScaleByHeight;
-	BOOL DrawFrame;
-	BOOL ThumbAddImageSize;
-	BOOL ThumbAddBorder;
-	EnumWrapper<ThumbFormatEnum> Format;
+	CString TemplateName;
+	int Size;
+	bool DrawFrame;
+	bool AddImageSize;
 	COLORREF BackgroundColor;
+	EnumWrapper<ThumbFormatEnum> Format;
+	ThumbResizeEnum ResizeMode;
 };
 
 class CImageConverter

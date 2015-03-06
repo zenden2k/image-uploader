@@ -37,12 +37,15 @@ class CMyEngineList: public CUploadEngineList
 		const CString ErrorStr();
 		CUploadEngineData* byName(const CString &name);
 		int GetUploadEngineIndex(const CString Name);
-		CAbstractUploadEngine* getUploadEngine(CUploadEngineData* data);
-		CAbstractUploadEngine* getUploadEngine(std::string name);
-		CAbstractUploadEngine* getUploadEngine(int index);
+		CAbstractUploadEngine* getUploadEngine(CUploadEngineData* data, ServerSettingsStruct& serverSettings);
+		CAbstractUploadEngine* getUploadEngine(std::string name, ServerSettingsStruct& serverSettings);
+		CAbstractUploadEngine* getUploadEngine(int index, ServerSettingsStruct& serverSettings);
+public:
 		bool LoadFromFile(const CString& filename);
 		bool DestroyCachedEngine(const std::string& name);
 		HICON CMyEngineList::getIconForServer(const std::string& name);
+		static char DefaultServer[];
+		static char RandomServer[];
 	private:
 		CDefaultUploadEngine * m_prevUpEngine;
 		std::map<std::string, HICON> serverIcons_;

@@ -29,6 +29,7 @@
 #include "Gui/Controls/IconButton.h"
 #include <atlcrack.h>
 #include "Gui/Controls/PercentEdit.h"
+#include "Func/Settings.h"
 #define IDC_SELECTFOLDER 4050
 #define IDC_SERVERBUTTON 4000
 #define IDC_IMAGETOOLBAR 4010
@@ -165,6 +166,9 @@ protected:
    CToolBarCtrl m_ProfileEditToolbar;
 	CPercentEdit m_ThumbSizeEdit;
     void UpdateProfileList();
+	ServerProfile sessionImageServer_, sessionFileServer_;
+	std::string imageServerLogin_;
+	std::string  fileServerLogin_;
 public:
    LRESULT OnResizePresetButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
    LRESULT OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);

@@ -38,7 +38,7 @@ CUploadEngineList::CUploadEngineList()
 	m_ActionNumOfRetries = 2;
 }
 
-bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::string, ServerSettingsStruct>& serversSettings)
+bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::string, std::map <std::string, ServerSettingsStruct>>& serversSettings)
 {
 	SimpleXml xml;
 	if(!xml.LoadFromFile(filename))
@@ -73,8 +73,12 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 			UE.RegistrationUrl = cur.Attribute("RegistrationUrl");
 			UE.PluginName = cur.Attribute("Plugin");
 			if ( UE.PluginName == "ftp" ) {
-				std::string hostname = serversSettings[UE.Name].getParam("hostname");
-				if ( hostname.empty() || hostname == "ftp.example.com" ) {
+				if ( serversSettings[UE.Name].size() ) {
+					std::string hostname = serversSettings[UE.Name].begin()->second.getParam("hostname");
+					if ( hostname.empty() || hostname == "ftp.example.com" ) {
+						continue;
+					}
+				} else {
 					continue;
 				}
 			}

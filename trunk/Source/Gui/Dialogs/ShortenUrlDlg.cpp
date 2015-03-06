@@ -73,7 +73,7 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	outputEditControl_.AttachToDlgItem(m_hWnd, IDC_RESULTSEDIT);
 
 	CUploadEngineData *uploadEngine = _EngineList->byIndex( serverId_ );
-	std::string selectedServerName = WCstringToUtf8(Settings.UrlShorteningServer);
+	std::string selectedServerName = Settings.urlShorteningServer.uploadEngineData()->Name;
 	int selectedIndex = 0;
 
 	for( int i = 0; i < engineList_->count(); i++) {	
@@ -184,14 +184,14 @@ bool CShortenUrlDlg::StartProcess() {
 	//CUploadEngineData* newData = new CUploadEngineData();
 	//uploadEngineDataVector.push_back(std_tr::shared_ptr<CUploadEngineData>(newData));
 	//*newData = *ue;
-	CAbstractUploadEngine * e = engineList_->getUploadEngine(ue);
+	CAbstractUploadEngine * e = engineList_->getUploadEngine(ue,Settings.urlShorteningServer.serverSettings());
 	if ( !e ) {
 		ProcessFinished();
 		return false;
 	}
 	e->setUploadData(ue);
 	
-	ServerSettingsStruct& settings = Settings.ServerByUtf8Name(ue->Name);
+	ServerSettingsStruct& settings = Settings.urlShorteningServer.serverSettings();
 	e->setServerSettings(settings);
 	queueUploader_->AddUploadTask(task, 0, e);
 	queueUploader_->start();
@@ -225,7 +225,7 @@ void CShortenUrlDlg::OnClose() {
 	int selectedIndex = SendDlgItemMessage(IDC_SERVERCOMBOBOX, CB_GETCURSEL, 0, 0);
 	if ( selectedIndex >= 0 ) {
 		CUploadEngineData *ue = servers_[selectedIndex];
-		Settings.UrlShorteningServer = Utf8ToWCstring(ue->Name);
+		Settings.urlShorteningServer.setServerName( Utf8ToWCstring(ue->Name));
 	}
 }
 
