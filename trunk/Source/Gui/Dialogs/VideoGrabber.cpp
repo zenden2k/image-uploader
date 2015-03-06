@@ -529,7 +529,7 @@ LRESULT CVideoGrabber::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
 LRESULT CVideoGrabber::OnBnClickedGrabberparams(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CSettingsDlg dlg(4);
+	CSettingsDlg dlg(CSettingsDlg::spVideo);
 	dlg.DoModal(m_hWnd);
 	return 0;
 }

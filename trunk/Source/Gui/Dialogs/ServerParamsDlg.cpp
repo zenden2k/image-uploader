@@ -26,7 +26,7 @@
 #include <Gui/Dialogs/ServerFolderSelect.h>
 #include <Gui/Dialogs/InputDialog.h>
 // CServerParamsDlg
-CServerParamsDlg::CServerParamsDlg(ServerProfile & serverProfile,bool focusOnLoginEdit): m_ue(serverProfile.uploadEngineData()),
+CServerParamsDlg::CServerParamsDlg(ServerProfile  serverProfile,bool focusOnLoginEdit): m_ue(serverProfile.uploadEngineData()),
 			serverProfile_(serverProfile)
 {
 	focusOnLoginControl_ = focusOnLoginEdit;
@@ -115,6 +115,7 @@ LRESULT CServerParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
 	serverSettings.authData.DoAuth = GuiTools::GetCheck(m_hWnd, IDC_DOAUTH);
 	serverSettings.authData.Login    = WCstringToUtf8( login );
 	serverSettings.authData.Password = WCstringToUtf8( GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT) );
+
 	for(it = m_paramNameList.begin(); it!= m_paramNameList.end(); ++it)
 	{
 
@@ -154,9 +155,19 @@ void CServerParamsDlg::doAuthChanged() {
 
 
 LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+
+	
+	CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT);
+	serverProfile_.setProfileName(login);
+	ServerSettingsStruct& serverSettings = serverProfile_.serverSettings();
+	
+	CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT);
+	serverSettings.authData.Login = WCstringToUtf8(login);
+	serverSettings.authData.Password = WCstringToUtf8(password);
+	serverSettings.authData.DoAuth = GuiTools::GetCheck(m_hWnd, IDC_DOAUTH);
 	CServerFolderSelect folderSelectDlg(serverProfile_);
 	folderSelectDlg.m_SelectedFolder.id = serverProfile_.folderId();
-	ServerSettingsStruct& serverSettings = serverProfile_.serverSettings();
+
 	if ( folderSelectDlg.DoModal() == IDOK ) {
 		CFolderItem folder = folderSelectDlg.m_SelectedFolder;
 	
@@ -194,5 +205,17 @@ LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND
 }
 
 LRESULT CServerParamsDlg::OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	if ( ::GetFocus() == hWndCtl ) {
+		serverProfile_.setFolderId("");
+		serverProfile_.setFolderTitle("");
+		serverProfile_.setFolderUrl("");
+		SetDlgItemText(IDC_FOLDERNAMELABEL,  (CString("<") + TR("не выбран") + CString(">")) );
+
+	}
 	return 0;
+}
+
+ServerProfile CServerParamsDlg::serverProfile()
+{
+	return serverProfile_;
 }

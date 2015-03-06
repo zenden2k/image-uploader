@@ -32,6 +32,8 @@
 #include "Func/Settings.h"
 // CServerSelectorControl
 
+#define WM_SERVERSELECTCONTROL_CHANGE (WM_USER+156)
+
 class CServerSelectorControl : 
 	public CDialogImpl<CServerSelectorControl>, public CSettingsPage
 {
@@ -63,7 +65,7 @@ virtual ~CServerSelectorControl();
 	void setShowDefaultServerItem(bool show);
 	void setServersMask(int mask);
 
-	enum ServerMaskEnum{ smAll = 0xffff, smImageServers = 0x1, smFileServers = 0x2};
+	enum ServerMaskEnum{ smAll = 0xffff, smImageServers = 0x1, smFileServers = 0x2, smUrlShorteners = 0x4};
 
 	ServerProfile serverProfile() const;
 	void setShowImageProcessingParamsLink(bool show);

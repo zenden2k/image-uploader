@@ -1505,7 +1505,7 @@ bool CWizardDlg::funcPaste()
 
 bool CWizardDlg::funcSettings()
 {
-	CSettingsDlg dlg(0);
+	CSettingsDlg dlg(CSettingsDlg::spGeneral);
 	//dlg.DoModal(m_hWnd);
 	if(!IsWindowVisible())
 		dlg.DoModal(0);

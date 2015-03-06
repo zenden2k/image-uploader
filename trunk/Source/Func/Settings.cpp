@@ -138,6 +138,7 @@ void ServerProfile::bind(SettingsNode& serverNode)
 {
 	serverNode["@Name"].bind(serverName_);
 	serverNode["@FolderId"].bind(folderId_);
+	//MessageBoxA(0,folderTitle_.c_str(),0,0);
 	serverNode["@FolderTitle"].bind(folderTitle_);
 	serverNode["@FolderUrl"].bind(folderUrl_);
 	serverNode["@ProfileName"].bind(profileName_);
@@ -650,6 +651,7 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 
 
 	LoadConvertProfiles( settingsNode.GetChild("Image").GetChild("Profiles") );
+	LoadServerProfiles( settingsNode.GetChild("Uploading").GetChild("ServerProfiles") );
 #endif
 	LoadAccounts( xml.getRoot( "ImageUploader" ).GetChild( "Settings" ).GetChild( "ServersParams" ) );
 
@@ -807,6 +809,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		mgr_.saveToXmlNode(xml.getRoot("ImageUploader").GetChild("Settings"));
 #if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
 		SaveConvertProfiles(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("Image").GetChild("Profiles"));
+		SaveServerProfiles( xml.getRoot("ImageUploader").GetChild("Settings").GetChild("Uploading").GetChild("ServerProfiles") );
 #endif
 		SaveAccounts(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("ServersParams"));
 		//std::cerr << "Saving setting to "<< IuCoreUtils::WstringToUtf8((LPCTSTR)fileName_);
@@ -993,6 +996,11 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 			pass.fromEncodedData(encodedPass.c_str());
 			tempSettings.authData.Password = WCstringToUtf8(pass);
 #endif
+
+			tempSettings.defaultFolder.setId( servers[i].Attribute("DefaultFolderId"));
+			tempSettings.defaultFolder.viewUrl = servers[i].Attribute("DefaultFolderUrl");
+			tempSettings.defaultFolder.setTitle(servers[i].Attribute("DefaultFolderTitle"));
+
 				ServersSettings[server_name][tempSettings.authData.Login] = tempSettings ;
 		}
 		return true;
@@ -1030,7 +1038,49 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 					serverNode.SetAttribute("Password", WCstringToUtf8(pass.toEncodedData()));
 				}
 	#endif
+				if ( !it->second.defaultFolder.getId().empty() ) {
+					serverNode.SetAttributeString("DefaultFolderId", it->second.defaultFolder.getId());
+					serverNode.SetAttributeString("DefaultFolderUrl", it->second.defaultFolder.viewUrl);
+					serverNode.SetAttributeString("DefaultFolderTitle", it->second.defaultFolder.getTitle());
+				}
+
 			}
+		}
+		return true;
+	}
+
+	bool CSettings::LoadServerProfiles(SimpleXmlNode root)
+	{
+		std::vector<SimpleXmlNode> servers;
+		root.GetChilds("ServerProfile", servers);
+
+		for (size_t i = 0; i < servers.size(); i++)
+		{
+			SimpleXmlNode serverProfileNode = servers[i];
+			std::string profileName = serverProfileNode.Attribute("ServerProfileId");
+			ServerProfile sp;
+			SettingsManager mgr;
+			sp.bind(mgr.root());
+			
+			mgr.loadFromXmlNode(serverProfileNode);
+			ServerProfiles[Utf8ToWCstring(profileName)] = sp;
+		}
+		return true;
+	}
+
+	bool CSettings::SaveServerProfiles(SimpleXmlNode root)
+	{
+		for ( ServerProfilesMap::iterator it = ServerProfiles.begin(); it != ServerProfiles.end(); ++it) {
+			SimpleXmlNode serverProfileNode = root.CreateChild("ServerProfile");
+		
+			std::string profileName = WCstringToUtf8(it->first);
+			
+			//ServerProfile sp = ;
+			SettingsManager mgr;
+			it->second.bind(mgr.root());
+			mgr["@ServerProfileId"].bind(profileName);
+
+			mgr.saveToXmlNode(serverProfileNode);
 		}
 		return true;
 	}

@@ -27,7 +27,7 @@
 #include "resource.h"       // main symbols
 #include "Gui/Controls/MyImage.h"
 #include "Gui/Dialogs/settingspage.h"
-
+#include <Func/Settings.h>
 class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>, 
 	                      public CSettingsPage	
 {
@@ -38,11 +38,18 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
 		virtual ~CIntegrationSettings();
 		virtual bool Apply();
 
+		struct ListItemData {
+			ServerProfile serverProfile;
+			CString name;
+		};
+
 	protected:
 		BEGIN_MSG_MAP(CIntegrationSettings)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_HANDLER(IDC_SHELLINTEGRATION, BN_CLICKED, OnShellIntegrationCheckboxChanged)
 			COMMAND_HANDLER(IDC_STARTUPLOADINGFROMSHELL, BN_CLICKED, OnClickedQuickUpload)	
+			COMMAND_HANDLER(IDC_ADDITEM, BN_CLICKED, OnBnClickedAdditem)
+			COMMAND_HANDLER(IDC_DELETEITEM, BN_CLICKED, OnBnClickedDeleteitem)
 		END_MSG_MAP()
 		// Handler prototypes:
 		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -52,6 +59,11 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
 		LRESULT OnShellIntegrationCheckboxChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		void ShellIntegrationChanged();
 		LRESULT OnClickedQuickUpload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		ServerProfilesMap serverProfiles_;
+		CListBox menuItemsListBox_;
+public:
+	LRESULT OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 };
 
 #endif // IntegrationSettings_H

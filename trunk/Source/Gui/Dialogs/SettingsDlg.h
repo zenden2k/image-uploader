@@ -42,6 +42,8 @@ class CSettingsDlg : public CDialogImpl<CSettingsDlg>
 		CSettingsDlg(int Page);
 		~CSettingsDlg();
 		enum { IDD = IDD_SETTINGSDLG };
+		enum SettingsPage { spGeneral, spServers, spImages, spThumbnails, spScreenshot,
+		spVideo, spUploading, spIntegration, spTrayIcon, spHotkeys};
 	protected:
 		BEGIN_MSG_MAP(CSettingsDlg)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)

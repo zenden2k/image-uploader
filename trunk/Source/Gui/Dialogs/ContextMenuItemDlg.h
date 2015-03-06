@@ -17,68 +17,53 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-// ResultsWindow.h : Declaration of the CResultsWindow
-// 
-// This dialog window shows technical information 
-// about  video/audio file that user had selected
-#ifndef IU_GUI_RESULTSWINDOW_H
-#define IU_GUI_RESULTSWINDOW_H
-
+#ifndef ContextMenuItemDlg_H
+#define ContextMenuItemDlg_H
 
 #pragma once
-
 #include "atlheaders.h"
-#include "resource.h"       
-#include "ResultsPanel.h"
-#include "Gui/Controls/DialogIndirect.h"
+#include "resource.h"       // main symbols
+#include "Core/Upload/UploadEngine.h"
+#include <Gui/Controls/ServerSelectorControl.h>
+class ServerProfile;
+class CServerSelectorControl;
+// CContextMenuItemDlg
 
-class CResultsWindow:	 public CDialogIndirectImpl<CResultsWindow>								
+
+class CContextMenuItemDlg : public CDialogImpl<CContextMenuItemDlg>	
 {
-	private:
-		CWizardDlg *m_WizardDlg;
 	public:
-		CResultsWindow(CWizardDlg *wizardDlg, CAtlArray<CUrlListItem>  & urlList, bool ChildWindow);
-		~CResultsWindow();
-		int GetCodeType();
-		void UpdateOutput();
-		void SetCodeType(int Index);
-		void Clear();
-		void SetPage(int Index);
-		int GetPage();
-		void AddServer(ServerProfile  server);
-		void InitUpload();
-		void FinishUpload();
-		void Lock();
-		void Unlock();
-		void EnableMediaInfo(bool Enable);
-		DLGTEMPLATE* GetTemplate();
-		void setOnShortenUrlChanged(fastdelegate::FastDelegate1<bool> fd); 
-		void setShortenUrls(bool shorten);
-		void setUrlList(CAtlArray<CUrlListItem>  * urlList);
-		enum { IDD = IDD_RESULTSWINDOW };
-
-	private:
-		BEGIN_MSG_MAP(CResultsWindow)
+		int ServerId;
+		CContextMenuItemDlg();
+		~CContextMenuItemDlg();
+		enum { IDD = IDD_CONTEXTMENUITEMDLG };
+	protected:
+		BEGIN_MSG_MAP(CContextMenuItemDlg)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-			NOTIFY_HANDLER(IDC_RESULTSTAB, TCN_SELCHANGE, OnTabChanged)
+			MESSAGE_HANDLER(WM_SERVERSELECTCONTROL_CHANGE, OnServerSelectControlChanged)
+			COMMAND_HANDLER(IDC_MENUITEMTITLEEDIT, EN_CHANGE, OnMenuItemTitleEditChange);
+			
 		END_MSG_MAP()
-	
-	private:
 		// Handler prototypes:
 		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		CResultsPanel *ResultsPanel;
-		bool m_childWindow;
+		LRESULT OnServerSelectControlChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+		LRESULT OnMenuItemTitleEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		ServerProfile serverProfile();
+		CString menuItemTitle();
+protected:
+	CServerSelectorControl *imageServerSelector_;
+	ServerProfile serverProfile_;
+	bool titleEdited_;
+	CString title_;
 };
 
-#endif // IU_GUI_RESULTSWINDOW_H
+#endif // ContextMenuItemDlg_H
+
+

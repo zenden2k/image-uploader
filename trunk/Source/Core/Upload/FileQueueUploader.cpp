@@ -72,7 +72,12 @@ class CFileQueueUploader::Impl {
 		
 };
 
-class CFileQueueUploader::Impl::Runnable /*: public ZThread::Runnable*/ {
+class CFileQueueUploader::Impl::Runnable
+#ifndef IU_CLI
+	: public ZThread::Runnable
+#endif
+
+{
 	public:
 		CFileQueueUploader::Impl* uploader_;
 		Runnable(CFileQueueUploader::Impl* uploader)
@@ -180,7 +185,11 @@ void CFileQueueUploader::Impl::start() {
 	for (int i = 0; i < numThreads; i++)
 	{
 		m_nRunningThreads++;
-        /*ZThread::Thread t1*/(new Runnable(this))->run(); // starting new thread
+#ifdef IU_CLI
+(new Runnable(this))->run();
+#else
+        ZThread::Thread t1(new Runnable(this));// starting new thread
+#endif
 	}
     #ifndef IU_CLI
 	mutex_.release();

@@ -80,7 +80,7 @@
 	<!--<Server Name="Mediafire.com" FileHost="1" Debug="0"  Authorize="1" Plugin="mediafire" SupportsFolders="0">
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>-->
-<Server Name="Dropbox" FileHost="1" Debug="0"  Authorize="0" Plugin="dropbox" SupportsFolders="1">
+<Server Name="Dropbox" FileHost="1" Debug="0" NeedPassword="0" Authorize="2" Plugin="dropbox" SupportsFolders="0">
 	<Result ImageUrlTemplate="stub" />
 	</Server>
 	<Server Name="image2you.ru" Authorize="2" Debug="0">

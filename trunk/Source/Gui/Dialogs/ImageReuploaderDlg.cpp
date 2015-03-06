@@ -36,6 +36,7 @@
 #include <Func/LocalFileCache.h>
 #include <Func/Base.h>
 #include <Func/IuCommonFunctions.h>
+#include <Gui/Controls/ServerSelectorControl.h>
 
 const TCHAR CImageReuploaderDlg::LogTitle[] = _T("Image Reuploader");
 
@@ -81,6 +82,14 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	TRC(IDC_DESCRIPTION, "Перезаливка изображений в тексте с сохранением исходной разметки");
 	TRC(IDC_SHOWLOG, "Показать лог");
 
+	RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
+	imageServerSelector_ = new CServerSelectorControl(true);
+	imageServerSelector_->Create(m_hWnd, serverSelectorRect);
+	imageServerSelector_->setTitle(TR("Сервер для хранения изображений"));
+	imageServerSelector_->ShowWindow( SW_SHOW );
+	imageServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
+	imageServerSelector_->setServerProfile(Settings.imageServer);
+
 	::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS), SW_HIDE);
 	SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_SETCHECK, Settings.WatchClipboard?BST_CHECKED:BST_UNCHECKED);
 	GuiTools::SetCheck(m_hWnd, IDC_SOURCECODERADIO, true );
@@ -98,7 +107,7 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 		sourceTextEditControl.SendMessage(WM_PASTE);
 	} 
 
-	m_serverId = Settings.getServerID();
+	m_serverId = _EngineList->GetUploadEngineIndex(serverProfile_.serverName());
 
 	if(m_serverId == -1) {
 		m_serverId = m_EngineList->getRandomImageServer();
@@ -106,7 +115,7 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 			return false;
 		}
 	}
-	SetDlgItemText(IDC_SERVENAMELABEL, CString(TR("Сервер")) + _T(": ") + Utf8ToWCstring(m_EngineList->byIndex(m_serverId)->Name));
+	SetDlgItemText(IDC_SERVENAMELABEL, CString(TR("Сервер")) + _T(": ") + serverProfile_.serverName());
 
 	SetDlgItemText(IDC_RESULTSLABEL, _T(""));
 	::SetFocus(GetDlgItem(IDC_FILEINFOEDIT));
@@ -117,6 +126,7 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 LRESULT CImageReuploaderDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {	
+	serverProfile_ = imageServerSelector_->serverProfile();
 	BeginDownloading();
 	return 0;
 }
@@ -195,7 +205,7 @@ bool CImageReuploaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloade
 		}
 		
 		WriteLog(logMessageType, LogTitle, _T("Cannot download the image '") + Utf8ToWCstring(it.url) + _T("'.")
-			+ _T("\r\nStatus code:") + IntToStr(statusCode) + (cacheLogMessage.IsEmpty() ? _T("") : (_T("\r\n\r\n") + cacheLogMessage)));
+			+ _T("\r\nStatus code:") + IntToStr(statusCode) + (cacheLogMessage.IsEmpty() ? _T("") : (_T("\r\n\r\n") + cacheLogMessage)) + _T("\r\n") );
 
 		/*if ( !cacheLogMessage.IsEmpty() ) {
 			WriteLog(logWarning, LogTitle, cacheLogMessage);
@@ -224,7 +234,7 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
 			CImageConverter imageConverter;
 			Thumbnail thumb;
 
-			if (!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + Settings.imageServer.getImageUploadParams().getThumb().TemplateName +
+			if (!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + serverProfile_.getImageUploadParams().getThumb().TemplateName +
 				_T(".xml")))) {
 				WriteLog(logError, LogTitle, TR("Не могу загрузить файл миниатюры!"));
 			} else {
@@ -232,10 +242,10 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
 
 				CUploadEngineData *ue = m_EngineList->byIndex(m_serverId);
 				imageConverter.setEnableProcessing(false);
-				imageConverter.setImageConvertingParams(Settings.ConvertProfiles[Settings.CurrentConvertProfileName]);
-				imageConverter.setThumbCreatingParams(Settings.imageServer.getImageUploadParams().getThumb());
-				bool GenThumbs = Settings.imageServer.getImageUploadParams().CreateThumbs &&
-					((!Settings.imageServer.getImageUploadParams().UseServerThumbs) || (!ue->SupportThumbnails));
+				imageConverter.setImageConvertingParams(Settings.ConvertProfiles[serverProfile_.getImageUploadParams().ImageProfileName]);
+				imageConverter.setThumbCreatingParams(serverProfile_.getImageUploadParams().getThumb());
+				bool GenThumbs = serverProfile_.getImageUploadParams().CreateThumbs &&
+					((!serverProfile_.getImageUploadParams().UseServerThumbs) || (!ue->SupportThumbnails));
 				imageConverter.setThumbnail(&thumb);
 				imageConverter.setGenerateThumb(true);
 				imageConverter.Convert(Utf8ToWCstring(localFile));
@@ -264,10 +274,10 @@ bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it
 	} 
 
 	DownloadItemData* dit = reinterpret_cast<DownloadItemData*>(it.id);
-	CUploadEngineData *ue = m_EngineList->byIndex(m_serverId);
+	CUploadEngineData *ue = serverProfile_.uploadEngineData();
 	CUploadEngineData* newData = new CUploadEngineData();
 	*newData = *ue;
-	CAbstractUploadEngine * e = m_EngineList->getUploadEngine(ue, Settings.urlShorteningServer.serverSettings());
+	CAbstractUploadEngine * e = m_EngineList->getUploadEngine(ue, serverProfile_.serverSettings());
 	e->setUploadData(newData);
 	ServerSettingsStruct& settings = serverProfile_.serverSettings();
 	e->setServerSettings(settings);

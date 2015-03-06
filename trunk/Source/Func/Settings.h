@@ -47,6 +47,7 @@ struct UploadProfileStruct
 };
 
 typedef std::map <std::string, std::map <std::string, ServerSettingsStruct>> ServerSettingsMap;
+
 #ifndef IU_CLI
 
 
@@ -59,6 +60,7 @@ struct ImageUploadParams {
 		CreateThumbs = true;
 		ProcessImages = false;
 		UseDefaultThumbSettings = true;
+		ImageProfileName = "Default";
 		Thumb.Size = 150;
 		Thumb.ResizeMode = ThumbCreatingParams::trByWidth;
 		Thumb.AddImageSize = true;
@@ -125,6 +127,8 @@ protected:
 
 	friend class CSettings;
 };
+
+typedef std::map<CString, ServerProfile> ServerProfilesMap;
 struct FullUploadProfile
 {
 	ServerProfile upload_profile;
@@ -315,7 +319,10 @@ public:
 		CString VideoFolder,ImagesFolder;
 
 		std::map<CString, ImageConvertingParams> ConvertProfiles;
+		ServerProfilesMap ServerProfiles;
+//protected:
 		CString CurrentConvertProfileName;
+public:
 		CString getShellExtensionFileName() const;
 #endif
 		
@@ -335,6 +342,9 @@ public:
 		bool SaveSettings();
 		bool LoadAccounts(SimpleXmlNode root);
 		bool SaveAccounts(SimpleXmlNode root);
+
+		bool LoadServerProfiles(SimpleXmlNode root);
+		bool SaveServerProfiles(SimpleXmlNode root);
 	int UploadBufferSize;
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 		void Uninstall();

@@ -185,7 +185,7 @@ LRESULT CFloatingWindow::OnMenuSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl
 		return 0;
 	}
 	HWND hParent  = pWizardDlg->m_hWnd; // pWizardDlg->IsWindowEnabled()?  : 0;
-	CSettingsDlg dlg(6);
+	CSettingsDlg dlg(CSettingsDlg::spTrayIcon);
 	dlg.DoModal(hParent);
 	return 0;
 }

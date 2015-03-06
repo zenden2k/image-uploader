@@ -107,6 +107,7 @@ class SettingsManager
 	public:
 		SettingsManager();
 		SettingsNode& operator[](const std::string&);
+		SettingsNode& root();
 		void saveToXmlNode(SimpleXmlNode parentNode) const;
 		void loadFromXmlNode(SimpleXmlNode parentNode);
 	protected:
