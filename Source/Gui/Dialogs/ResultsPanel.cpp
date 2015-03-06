@@ -672,7 +672,11 @@ LRESULT CResultsPanel::OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND h
 void CResultsPanel::AddServer(ServerProfile server)
 {
 	for(size_t i=0; i<m_Servers.size(); i++)
-		if (m_Servers[i].serverName() == server.serverName() && m_Servers[i].profileName() == server.profileName())
+		if (m_Servers[i].serverName() == server.serverName() 
+			&& 
+			m_Servers[i].profileName() == server.profileName()
+			&& m_Servers[i].folderId() == server.folderId()
+			)
 			return;
 	m_Servers.push_back(server);
 	//return 0;

@@ -66,6 +66,7 @@ function getAuthorizationString() {
 
 function doLogin() 
 { 
+
 	local login = ServerParams.getParam("Login");
 	local scope = "https://picasaweb.google.com/data/";
 	local redirectUrl = "urn:ietf:wg:oauth:2.0:oob";
@@ -73,14 +74,13 @@ function doLogin()
 	local clientId = "162038470312-dn0kut9j7l0cd9lt32r09j0c841goei9.apps.googleusercontent.com";
 
 	if(login == "" ) {
-		print("E-mail should not be empty!");
+		_WriteLog("error", "E-mail should not be empty!");
 		return 0;
 	}
 	
 	local token = ServerParams.getParam("token");
 	local tokenType = ServerParams.getParam("tokenType");
-	
-	if ( token != "" && ServerParams.getParam("prevLogin") == login ) {
+	if ( token != "" && tokenType != "" &&  ServerParams.getParam("prevLogin") == login ) {
 		local tokenTime  = 0;
 		local expiresIn = 0;
 		local refreshToken = "";
@@ -105,18 +105,20 @@ function doLogin()
 			nm.addQueryParam("client_secret", clientSecret); 
 			nm.addQueryParam("grant_type", "refresh_token"); 
 			nm.doPost("");
-			local data =  nm.responseBody();
-			token = regex_simple(data, "access_token\": \"(.+)\"", 0);
-			ServerParams.setParam("expiresIn", regex_simple(data, "expires_in\": (\\d+)", 0));
-			tokenType = regex_simple(data, "token_type\": \"(.+)\"", 0);
-			ServerParams.setParam("tokenType", tokenType);
-			ServerParams.setParam("tokenTime", time().tostring());
-			if ( token != "" ) {
-				return 1;
-			} else {
-				token = "";
-				tokenType = "";
-				return 0;
+			if ( checkResponse() ) {
+				local data =  nm.responseBody();
+				token = regex_simple(data, "access_token\": \"(.+)\"", 0);
+				ServerParams.setParam("expiresIn", regex_simple(data, "expires_in\": (\\d+)", 0));
+				tokenType = regex_simple(data, "token_type\": \"(.+)\"", 0);
+				ServerParams.setParam("tokenType", tokenType);
+				ServerParams.setParam("tokenTime", time().tostring());
+				if ( token != "" ) {
+					return 1;
+				} else {
+					token = "";
+					tokenType = "";
+					return 0;
+				}
 			}
 		} else {
 			return 1;
@@ -140,6 +142,9 @@ function doLogin()
 	nm.addQueryParam("redirect_uri", redirectUrl); 
 	nm.addQueryParam("grant_type", "authorization_code"); 
 	nm.doPost("");
+	if ( !checkResponse() ) {
+		return 0;
+	}
 	local data =  nm.responseBody();
 	local accessToken = regex_simple(data, "access_token\": \"(.+)\"", 0);
 	local timestamp = time();

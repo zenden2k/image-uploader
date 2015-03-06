@@ -101,7 +101,11 @@
 #define IDI_ICON5                       267
 #define IDI_ICONFOLDER2                 267
 #define IDD_UPLOADPARAMSDLG             268
+#define IDI_ICONUP                      268
 #define IDI_ICONSETTINGS2               269
+#define IDD_CONTEXTMENUITEMDLG          269
+#define IDI_ICON7                       271
+#define IDI_ICONDOWN                    271
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -114,6 +118,7 @@
 #define IDC_PARAMLIST                   1002
 #define IDC_UPDATELISTVIEW              1002
 #define IDC_CONTEXTMENUITEMS            1002
+#define IDC_CONTEXTMENUITEMSLIST        1002
 #define IDC_KEEPASIS                    1003
 #define IDC_KEEPPROPORTIONS             1004
 #define IDC_IMAGEWIDTH                  1005
@@ -206,6 +211,7 @@
 #define IDC_SOURCEURLEDIT               1040
 #define IDC_CONNECTIONNAMEEDIT          1040
 #define IDC_MEMO                        1040
+#define IDC_MENUITEMTITLEEDIT           1040
 #define IDC_SELECTVIDEO                 1041
 #define IDC_STROKECOLOR                 1041
 #define IDC_LOGINBUTTON                 1041
@@ -527,12 +533,14 @@
 #define IDC_IMAGESERVERPLACEHOLDER      1301
 #define IDC_DOAUTHCHECKBOX              1302
 #define IDC_FILESERVERPLACEHOLDER       1302
+#define IDC_MENUITEMLABEL               1302
 #define IDC_AUTOSTARTUPCHECKBOX         1303
 #define IDC_FILESERVERPLACEHOLDER2      1303
 #define IDC_TRAYSERVERPLACEHOLDER       1303
 #define IDC_CAPTUREPRINTSCREENCHECKBOX  1304
 #define IDC_CONTEXTMENUSERVERPLACEHOLDER 1304
 #define IDC_EXPLORERINTEGRATION         1305
+#define IDC_URLSHORTENERPLACEHOLDER     1305
 #define IDC_ACCOUNTINFO                 1306
 #define IDC_EDIT                        1307
 #define IDC_SERVERGROUPBOX              1308
@@ -596,9 +604,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        268
+#define _APS_NEXT_RESOURCE_VALUE        272
 #define _APS_NEXT_COMMAND_VALUE         32803
-#define _APS_NEXT_CONTROL_VALUE         1302
+#define _APS_NEXT_CONTROL_VALUE         1303
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

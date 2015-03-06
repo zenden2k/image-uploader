@@ -3,6 +3,7 @@
 #include <winreg.h>
 #include "Registry.h"
 #include <string.h>
+#include "Func/MyUtils.h"
 #define CLASS_NAME_LENGTH 255
 
 /* IMPORTANT NOTES ABOUT CREGISTRY:
@@ -100,6 +101,85 @@ BOOL CRegistry::DeleteKey(CString strKey)
 
 
 
+BOOL CRegistry::DeleteWithSubkeys(CString strKey)
+{
+	if (!KeyExists(strKey)) return TRUE;
+
+	HKEY hKey;
+
+	if( RegOpenKeyEx( m_hRootKey,
+		strKey,
+		0,
+		KEY_ALL_ACCESS,
+		&hKey) == ERROR_SUCCESS
+		)
+	{
+		
+		const int MAX_KEY_LENGTH = 256;
+		const int MAX_VALUE_NAME = 1024;
+
+		TCHAR    achKey[MAX_KEY_LENGTH];   // buffer for subkey name
+		DWORD    cbName;                   // size of name string 
+		TCHAR    achClass[MAX_PATH] = TEXT("");  // buffer for class name 
+		DWORD    cchClassName = MAX_PATH;  // size of class string 
+		DWORD    cSubKeys=0;               // number of subkeys 
+		DWORD    cbMaxSubKey;              // longest subkey size 
+		DWORD    cchMaxClass;              // longest class string 
+		DWORD    cValues;              // number of values for key 
+		DWORD    cchMaxValue;          // longest value name 
+		DWORD    cbMaxValueData;       // longest value data 
+		DWORD    cbSecurityDescriptor; // size of security descriptor 
+		FILETIME ftLastWriteTime;      // last write time 
+
+		DWORD i, retCode; 
+
+		TCHAR  achValue[MAX_VALUE_NAME]; 
+		DWORD cchValue = MAX_VALUE_NAME; 
+
+		// Get the class name and the value count. 
+		retCode = RegQueryInfoKey(
+			hKey,                    // key handle 
+			achClass,                // buffer for class name 
+			&cchClassName,           // size of class string 
+			NULL,                    // reserved 
+			&cSubKeys,               // number of subkeys 
+			&cbMaxSubKey,            // longest subkey size 
+			&cchMaxClass,            // longest class string 
+			&cValues,                // number of values for this key 
+			&cchMaxValue,            // longest value name 
+			&cbMaxValueData,         // longest value data 
+			&cbSecurityDescriptor,   // security descriptor 
+			&ftLastWriteTime);       // last write time 
+
+	
+		// Enumerate the subkeys, until RegEnumKeyEx fails.
+
+		if (cSubKeys)
+		{
+
+			for (i=0; i<cSubKeys; i++) 
+			{ 
+				cbName = MAX_KEY_LENGTH;
+				retCode = RegEnumKeyEx(hKey, 0,
+					achKey, 
+					&cbName, 
+					NULL, 
+					NULL, 
+					NULL, 
+					&ftLastWriteTime); 
+				
+				if (retCode == ERROR_SUCCESS) 
+				{
+					::RegDeleteKey(hKey, achKey) ;
+
+				}
+			}
+		} 
+	}
+	RegCloseKey(hKey);
+	return true;
+}
+
 BOOL CRegistry::DeleteValue(CString strName)
 {
 	/* Call DeleteValue to remove a specific data value 
@@ -122,6 +202,85 @@ BOOL CRegistry::DeleteValue(CString strName)
 	return FALSE;
 }
 
+
+BOOL CRegistry::GetChildKeysNames(CString strKey, std::vector<CString>& outNames)
+{
+	if (!KeyExists(strKey)) return false;
+
+	HKEY hKey;
+
+	if( RegOpenKeyEx( m_hRootKey,
+		strKey,
+		0,
+		KEY_ALL_ACCESS,
+		&hKey) == ERROR_SUCCESS
+		)
+	{
+
+		const int MAX_KEY_LENGTH = 256;
+		const int MAX_VALUE_NAME = 1024;
+
+		TCHAR    achKey[MAX_KEY_LENGTH];   // buffer for subkey name
+		DWORD    cbName;                   // size of name string 
+		TCHAR    achClass[MAX_PATH] = TEXT("");  // buffer for class name 
+		DWORD    cchClassName = MAX_PATH;  // size of class string 
+		DWORD    cSubKeys=0;               // number of subkeys 
+		DWORD    cbMaxSubKey;              // longest subkey size 
+		DWORD    cchMaxClass;              // longest class string 
+		DWORD    cValues;              // number of values for key 
+		DWORD    cchMaxValue;          // longest value name 
+		DWORD    cbMaxValueData;       // longest value data 
+		DWORD    cbSecurityDescriptor; // size of security descriptor 
+		FILETIME ftLastWriteTime;      // last write time 
+
+		DWORD i, retCode; 
+
+		TCHAR  achValue[MAX_VALUE_NAME]; 
+		DWORD cchValue = MAX_VALUE_NAME; 
+
+		// Get the class name and the value count. 
+		retCode = RegQueryInfoKey(
+			hKey,                    // key handle 
+			achClass,                // buffer for class name 
+			&cchClassName,           // size of class string 
+			NULL,                    // reserved 
+			&cSubKeys,               // number of subkeys 
+			&cbMaxSubKey,            // longest subkey size 
+			&cchMaxClass,            // longest class string 
+			&cValues,                // number of values for this key 
+			&cchMaxValue,            // longest value name 
+			&cbMaxValueData,         // longest value data 
+			&cbSecurityDescriptor,   // security descriptor 
+			&ftLastWriteTime);       // last write time 
+
+
+		// Enumerate the subkeys, until RegEnumKeyEx fails.
+
+		if (cSubKeys)
+		{
+
+			for (i=0; i<cSubKeys; i++) 
+			{ 
+				cbName = MAX_KEY_LENGTH;
+				retCode = RegEnumKeyEx(hKey, i,
+					achKey, 
+					&cbName, 
+					NULL, 
+					NULL, 
+					NULL, 
+					&ftLastWriteTime); 
+
+				if (retCode == ERROR_SUCCESS) 
+				{
+					outNames.push_back(achKey);
+
+				}
+			}
+		} 
+	}
+	RegCloseKey(hKey);
+	return true;
+}
 
 int CRegistry::GetDataSize(CString strValueName)
 {

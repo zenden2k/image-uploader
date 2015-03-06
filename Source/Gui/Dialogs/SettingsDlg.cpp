@@ -159,21 +159,21 @@ bool CSettingsDlg::CreatePage(int PageID)
 {
 	RECT rc = {150,3,636,400};
 
-	if(PageID == 0)
+	if(PageID == spGeneral)
 	{
 		CGeneralSettings *dlg = new CGeneralSettings();
 		Pages[PageID]= dlg;
 		dlg->Create(m_hWnd,rc);
 		Pages[PageID]->PageWnd=dlg->m_hWnd;
 	}
-	else if(PageID == 1)
+	else if(PageID == spServers)
 	{
 		CDefaultServersSettings *dlg = new CDefaultServersSettings();
 		Pages[PageID]= dlg;
 		dlg->Create(m_hWnd,rc);
 		Pages[PageID]->PageWnd = dlg->m_hWnd;
 	}
-	else if(PageID == 2)
+	else if(PageID == spImages)
 	{
 		CLogoSettings *dlg = new CLogoSettings();
 		Pages[PageID]= dlg;
@@ -181,14 +181,14 @@ bool CSettingsDlg::CreatePage(int PageID)
 		Pages[PageID]->PageWnd = dlg->m_hWnd;
 	}
 
-	else if(PageID == 3)
+	else if(PageID == spThumbnails)
 	{
 		CThumbSettingsPage *dlg = new CThumbSettingsPage();
 		Pages[PageID]= dlg;
 		dlg->Create(m_hWnd,rc);
 		Pages[PageID]->PageWnd = dlg->m_hWnd;
 	}
-	else if(PageID==4)
+	else if(PageID==spScreenshot)
 	{
 		CScreenshotSettingsPagePage *dlg = new CScreenshotSettingsPagePage();
 		Pages[PageID]= dlg;
@@ -197,7 +197,7 @@ bool CSettingsDlg::CreatePage(int PageID)
 		
 	}
 
-	else if(PageID == 5)
+	else if(PageID == spVideo)
 	{
 		CVideoGrabberParams *dlg = new CVideoGrabberParams();
 		Pages[PageID]= dlg;
@@ -205,14 +205,14 @@ bool CSettingsDlg::CreatePage(int PageID)
 		Pages[PageID]->PageWnd=dlg->m_hWnd;
 	}
 
-	 else if(PageID==6)
+	 else if(PageID==spUploading)
 	{
 		CUploadSettingsPage *dlg = new CUploadSettingsPage();
 		Pages[PageID]= dlg;
 		dlg->Create(m_hWnd,rc);
 		Pages[PageID]->PageWnd=dlg->m_hWnd;
 	}
-	 else if(PageID==7)
+	 else if(PageID==spIntegration)
 	 {
 		 CIntegrationSettings *dlg = new CIntegrationSettings();
 		 Pages[PageID]= dlg;
@@ -220,14 +220,14 @@ bool CSettingsDlg::CreatePage(int PageID)
 		 Pages[PageID]->PageWnd=dlg->m_hWnd;
 	 }
 
-	 else if(PageID==8)
+	 else if(PageID==spTrayIcon)
 	{
 		CTraySettingsPage *dlg = new CTraySettingsPage();
 		Pages[PageID]= dlg;
 		dlg->Create(m_hWnd,rc);
 		Pages[PageID]->PageWnd=dlg->m_hWnd;
 	}
-	else if(PageID==9)
+	else if(PageID==spHotkeys)
 	{
 		CHotkeySettingsPage *dlg = new CHotkeySettingsPage();
 		Pages[PageID]= dlg;

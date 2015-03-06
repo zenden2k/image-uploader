@@ -36,7 +36,9 @@ public:
 	BOOL SetRootKey(HKEY hRootKey);
 	BOOL CreateKey(CString strKey);
 	BOOL DeleteKey(CString strKey);
+	BOOL DeleteWithSubkeys(CString strKey);
 	BOOL DeleteValue(CString strName);
+	BOOL GetChildKeysNames(CString strKey, std::vector<CString>& outNames);
 	int GetDataSize(CString strValueName);
 	DWORD GetDataType(CString strValueName);
 	int GetSubKeyCount();

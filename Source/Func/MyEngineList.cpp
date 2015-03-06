@@ -161,3 +161,17 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
 	serverIcons_[name] = icon;
 	return icon;
 }
+
+CString CMyEngineList::getIconNameForServer(const std::string& name) {
+	CUploadEngineData *ued = CUploadEngineList::byName(name);
+	std::string newName =  name;
+	CString iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(newName)+_T(".ico");
+
+	if ( !FileExists(iconFileName) && ued && !ued->PluginName.empty() ) {
+		iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\") + Utf8ToWCstring(ued->PluginName) +_T(".ico");
+		if(!FileExists(iconFileName)) {
+			return CString();
+		}
+	}
+	return Utf8ToWCstring( IuCoreUtils::ExtractFileName(WCstringToUtf8(iconFileName)) );
+}

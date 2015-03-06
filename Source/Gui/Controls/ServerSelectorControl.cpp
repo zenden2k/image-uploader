@@ -77,7 +77,7 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 
 	CUploadEngineData *uploadEngine = _EngineList->byName( Settings.getServerName() );
 	std::string selectedServerName = uploadEngine ? uploadEngine->Name : "" ;
-	for ( int mask = 1; mask <= 2; mask*=2 ) {
+	for ( int mask = 1; mask <= 4; mask*=2 ) {
 		if ( mask == smAll) {
 			TCHAR line[40];
 			for ( int i=0; i < ARRAY_SIZE(line)-1; i++ ) {
@@ -90,13 +90,17 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 		for( int i = 0; i < _EngineList->count(); i++) {	
 			CUploadEngineData * ue = _EngineList->byIndex( i ); 
 			int currentLoopMask = mask & serversMask_;
-			if ( ue->Type != CUploadEngineData::TypeFileServer && ue->Type != CUploadEngineData::TypeImageServer) {
+			if ( serversMask_ != smUrlShorteners && ue->Type != CUploadEngineData::TypeFileServer && ue->Type != CUploadEngineData::TypeImageServer) {
 				continue;
 			}
-			if ( ue->ImageHost && !(currentLoopMask & smImageServers) ) {
+			if ( ue->Type == CUploadEngineData::TypeImageServer && !(currentLoopMask & smImageServers) ) {
 				continue;
 			}
-			if ( !ue->ImageHost && !(currentLoopMask & smFileServers) ) {
+			if ( ue->Type == CUploadEngineData::TypeFileServer && !(currentLoopMask & smFileServers) ) {
+				continue;
+			}
+
+			if ( ue->Type == CUploadEngineData::TypeUrlShorteningServer && !(currentLoopMask & smUrlShorteners) ) {
 				continue;
 			}
 			HICON hImageIcon = _EngineList->getIconForServer(ue->Name);
@@ -143,7 +147,9 @@ ServerProfile CServerSelectorControl::serverProfile() const {
 
 LRESULT CServerSelectorControl::OnClickedEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
 	CServerParamsDlg serverParamsDlg(serverProfile_);
-	serverParamsDlg.DoModal(m_hWnd);
+	if ( serverParamsDlg.DoModal(m_hWnd) == IDOK ) {
+		::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_CHANGE, (WPARAM)m_hWnd, 0);
+	}
 	//serverProfile_ = serverParamsDlg.serverProfile();
 	updateInfoLabel();
 	return 0;
@@ -169,7 +175,8 @@ void CServerSelectorControl::serverChanged() {
 	if ( serverComboElementIndex > 0 && lpstrServerName ) {
 		std::string serverName = lpstrServerName;
 		CString serverNameW = Utf8ToWCstring( serverName );
-
+		serverProfile_.setServerName(serverNameW);
+		
 		if ( serverName != CMyEngineList::DefaultServer && serverName != CMyEngineList::RandomServer ) {
 			
 
@@ -179,18 +186,26 @@ void CServerSelectorControl::serverChanged() {
 			}
 
 		
-			/*std::map<CString,ServerSettingsStruct> serverProfiles;
-			serverProfiles[serverNameW]= Settings.ServersSettings[serverName];
+			//std::map<CString,ServerSettingsStruct> serverProfiles;
+			//serverProfiles[serverNameW]= Settings.ServersSettings[serverName];
+		
+		//	ShowVar((int)Settings.ServersSettings[serverName].size());
 			
-			if ( serverProfiles.size() ) {
-				profileName = serverProfiles.begin()->first;
-			}*/
+			if ( Settings.ServersSettings[serverName].size() ) {
+				ServerSettingsStruct & s = Settings.ServersSettings[serverName].begin()->second;
+				profileName = Utf8ToWCstring(s.authData.Login);
+				serverProfile_.setProfileName(profileName);
+				serverProfile_.setFolderId(s.defaultFolder.getId());
+				serverProfile_.setFolderTitle(s.defaultFolder.getTitle());
+				serverProfile_.setFolderUrl(s.defaultFolder.viewUrl);
+			}
 		}
 
-		serverProfile_.setServerName(serverNameW);
-		serverProfile_.setProfileName(profileName);
+	
 		
 	}
+
+	::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_CHANGE, (WPARAM)m_hWnd, 0);
 
 	updateInfoLabel();
 }
@@ -236,7 +251,7 @@ void CServerSelectorControl::updateInfoLabel() {
 	}
 	CString folderTitle;
 	if ( uploadEngineData->SupportsFolders ) {
-		 folderTitle = Utf8ToWCstring( serverProfile_.serverSettings().params["FolderTitle"] );
+		 folderTitle = Utf8ToWCstring( serverProfile_.folderTitle() );
 		//accountInfoText += CString(_T("\r\n")) + TR("Папка/альбом:") + _T(" ");
 		/*if ( folderTitle.IsEmpty() ) {
 			folderTitle = TR("не задана");
@@ -278,7 +293,10 @@ void CServerSelectorControl::setServersMask(int mask) {
 
 LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
 	CServerParamsDlg serverParamsDlg(serverProfile_, true);
-	serverParamsDlg.DoModal(m_hWnd);
+	if ( serverParamsDlg.DoModal(m_hWnd) == IDOK ) {
+		serverProfile_ = serverParamsDlg.serverProfile();
+		::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_CHANGE, (WPARAM)m_hWnd, 0);
+	}
 	//serverProfile_.serverSettings() = serverParamsDlg.serverProfile();
 	updateInfoLabel();
 	return 0;

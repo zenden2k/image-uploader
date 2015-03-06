@@ -192,17 +192,18 @@ DWORD CUploadDlg::Run()
 		Server = Settings.getQuickServerID();
 	}
 	else Server = Settings.getServerID();*/
-	int Server = _EngineList->GetUploadEngineIndex(sessionImageServer_.serverName());
+	ServerProfile& serverProfile = sessionImageServer_;
+	int ServerId = _EngineList->GetUploadEngineIndex(sessionImageServer_.serverName());
 
 	int FileServer = _EngineList->GetUploadEngineIndex(sessionFileServer_.serverName());
 	int n = MainDlg->FileList.GetCount();
 
 
 
-	if(Server == -1)
+	if(ServerId == -1)
 	{
-		Server = m_EngineList->getRandomImageServer();
-		if(Server == -1)
+		ServerId = m_EngineList->getRandomImageServer();
+		if(ServerId == -1)
 			return ThreadTerminated();
 	}
 
@@ -213,14 +214,14 @@ DWORD CUploadDlg::Run()
 			return ThreadTerminated();
 	}
 
-	CUploadEngineData *ue = m_EngineList->byIndex(Server);
+	CUploadEngineData *ue = m_EngineList->byIndex(ServerId);
 	if (!ue  || sessionImageServer_.serverName().IsEmpty()) {
 		WriteLog(logError, L"CUploadDlg", L"Server not selected");
 		return ThreadTerminated();
 	}
 	if(ue->SupportsFolders)
 	{
-		ResultsWindow->AddServer(Server);
+		ResultsWindow->AddServer(serverProfile);
 	}
 
 	if(m_EngineList->byIndex(FileServer)->SupportsFolders)
@@ -279,7 +280,7 @@ DWORD CUploadDlg::Run()
 		ue = m_EngineList->byName(iss.upload_profile.serverName());
 		if(/*Server!=Uploader.CurrentServer && */IsImage(MainDlg->FileList[i].FileName))
 		{
-			CAbstractUploadEngine * e = m_EngineList->getUploadEngine(Server, iss.upload_profile.serverSettings());
+			CAbstractUploadEngine * e = m_EngineList->getUploadEngine(ServerId, iss.upload_profile.serverSettings());
 			if(!e) 
 			{
 				WriteLog(logError, _T("Custom Uploader"), _T("Cannot create image upload engine!"));

@@ -96,6 +96,7 @@ struct ServerSettingsStruct
 	std::map<std::string, std::string> params;
 	LoginInfo authData;
 	CFolderItem newFolder;
+	CFolderItem defaultFolder;
 	const std::string getParam(const std::string& name)
 	{
 		std::string result;

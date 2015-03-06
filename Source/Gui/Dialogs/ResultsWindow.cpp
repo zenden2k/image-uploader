@@ -149,7 +149,7 @@ int CResultsWindow::GetPage()
 {
 	return TabCtrl_GetCurSel(GetDlgItem(IDC_RESULTSTAB));
 }
-void CResultsWindow::AddServer(CString server)
+void CResultsWindow::AddServer(ServerProfile server)
 {
 	ResultsPanel->AddServer( server);
 }

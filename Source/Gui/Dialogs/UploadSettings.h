@@ -60,6 +60,9 @@
 #define IDC_ADD_DIRECTORY_AS_SERVER 19003
 #define IDC_ADD_DIRECTORY_AS_SERVER_FROM_FILESERVER_LIST 19004
 
+#define IDC_USERNAME_FIRST_ID 20000
+#define IDC_USERNAME_LAST_ID 21000
+
 class CMyEngineList;
 class IconBitmapUtils;
 
@@ -106,6 +109,7 @@ COMMAND_HANDLER(IDC_IMAGEHEIGHT, EN_CHANGE, OnProfileEditedCommand)
 		COMMAND_RANGE_HANDLER(IDC_IMAGESERVER_FIRST_ID, IDC_IMAGESERVER_LAST_ID, OnImageServerSelect);
 		COMMAND_RANGE_HANDLER(IDC_FILESERVER_FIRST_ID, IDC_FILESERVER_LAST_ID, OnFileServerSelect);
       COMMAND_RANGE_HANDLER(IDC_RESIZEPRESETMENU_FIRST_ID, IDC_RESIZEPRESETMENU_LAST_ID, OnResizePresetMenuItemClick);
+	   COMMAND_RANGE_HANDLER(IDC_USERNAME_FIRST_ID, IDC_USERNAME_LAST_ID, OnUserNameMenuItemClick);
       
       COMMAND_HANDLER_EX(IDC_RESIZEPRESETSBUTTON, BN_CLICKED, OnResizePresetButtonClicked)
       COMMAND_ID_HANDLER_EX(IDC_EDITPROFILE, OnEditProfileClicked)
@@ -141,6 +145,7 @@ COMMAND_HANDLER(IDC_IMAGEHEIGHT, EN_CHANGE, OnProfileEditedCommand)
    LRESULT OnQualityEditKillFocus(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnResizePresetMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnProfileEditedCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+   LRESULT OnUserNameMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    
 	int m_nImageServer, m_nFileServer;
 	void ShowParams();
@@ -169,6 +174,8 @@ protected:
 	ServerProfile sessionImageServer_, sessionFileServer_;
 	std::string imageServerLogin_;
 	std::string  fileServerLogin_;
+	bool menuOpenedIsImageServer_;
+	std::vector<CString> menuOpenedUserNames_;
 public:
    LRESULT OnResizePresetButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
    LRESULT OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);

@@ -36,7 +36,11 @@ CDefaultServersSettings::CDefaultServersSettings()
 
 CDefaultServersSettings::~CDefaultServersSettings()
 {
-
+	delete fileServerSelector_;
+	delete imageServerSelector_;
+	delete trayServerSelector_;
+	delete contextMenuServerSelector_;
+	delete urlShortenerServerSelector_;
 }
 
 LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -57,13 +61,12 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 	fileServerSelector_->Create(m_hWnd, serverSelectorRect);
 	fileServerSelector_->ShowWindow( SW_SHOW );
 	fileServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
-	ServerProfile fileServerProfile;
 	fileServerSelector_->setServerProfile(Settings.fileServer);
 	fileServerSelector_->setTitle(TR("Сервер по-умолчанию для хранения других типов файлов"));
 
 	serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_TRAYSERVERPLACEHOLDER);
 	trayServerSelector_ = new CServerSelectorControl();
-	trayServerSelector_->setShowDefaultServerItem(true);
+	//trayServerSelector_->setShowDefaultServerItem(true);
 	trayServerSelector_->Create(m_hWnd, serverSelectorRect);
 	trayServerSelector_->ShowWindow( SW_SHOW );
 	trayServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
@@ -72,8 +75,10 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 	trayServerSelector_->setTitle(TR("Сервер для быстрой загрузки скриншотов"));
 
 	serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_CONTEXTMENUSERVERPLACEHOLDER);
+
+
 	contextMenuServerSelector_ = new CServerSelectorControl();
-	contextMenuServerSelector_->setShowDefaultServerItem(true);
+	//contextMenuServerSelector_->setShowDefaultServerItem(true);
 	contextMenuServerSelector_->Create(m_hWnd, serverSelectorRect);
 	contextMenuServerSelector_->ShowWindow( SW_SHOW );
 	contextMenuServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
@@ -81,6 +86,18 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 	contextMenuServerSelector_->setServerProfile(Settings.contextMenuServer);
 	contextMenuServerSelector_->setTitle(TR("Сервер для загрузки из контекстного меню проводника"));
 
+
+	serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_URLSHORTENERPLACEHOLDER);
+
+	urlShortenerServerSelector_ = new CServerSelectorControl();
+	urlShortenerServerSelector_->setServersMask(CServerSelectorControl::smUrlShorteners);
+	urlShortenerServerSelector_->setShowImageProcessingParamsLink(false);
+	urlShortenerServerSelector_->Create(m_hWnd, serverSelectorRect);
+	urlShortenerServerSelector_->ShowWindow( SW_SHOW );
+	urlShortenerServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
+	urlShortenerServerSelector_->setServerProfile(Settings.urlShorteningServer);
+	urlShortenerServerSelector_->setTitle(TR("Сервер для сокращения ссылок"));
+	
 	GuiTools::SetCheck(m_hWnd, IDC_REMEMBERIMAGESERVERSETTINGS, Settings.RememberImageServer);
 	GuiTools::SetCheck(m_hWnd, IDC_REMEMBERFILESERVERSETTINGS, Settings.RememberFileServer);
 
@@ -98,6 +115,7 @@ bool CDefaultServersSettings::Apply()
 	Settings.imageServer = imageServerSelector_->serverProfile();
 	Settings.quickScreenshotServer = trayServerSelector_->serverProfile();
 	Settings.contextMenuServer = contextMenuServerSelector_->serverProfile();
+	Settings.urlShorteningServer = urlShortenerServerSelector_->serverProfile();
 	Settings.RememberImageServer = GuiTools::GetCheck(m_hWnd, IDC_REMEMBERIMAGESERVERSETTINGS);
 	Settings.RememberFileServer = GuiTools::GetCheck(m_hWnd, IDC_REMEMBERFILESERVERSETTINGS);
 	pWizardDlg->setServersChanged(true);

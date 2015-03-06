@@ -26,6 +26,10 @@
 #include "LogWindow.h"
 #include "Gui/GuiTools.h"
 #include <Func/WinUtils.h>
+#include "ContextMenuItemDlg.h"
+#include "3rdpart/Registry.h"
+#include <Core/Utils/CryptoUtils.h>
+
 // CIntegrationSettings
 CIntegrationSettings::CIntegrationSettings()
 {
@@ -39,7 +43,7 @@ CIntegrationSettings::~CIntegrationSettings()
 
 LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	
+	serverProfiles_ = Settings.ServerProfiles;
 	// Translating controls
 	TRC(IDOK, "OK");
 	TRC(IDCANCEL, "Отмена");
@@ -50,7 +54,7 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
 	TRC(IDC_SHELLVIDEOCONTEXTMENUITEM, "Пункт в контекстном меню видеофайлов");
 	TRC(IDC_CASCADEDCONTEXTMENU, "Вложенное контекстное меню");
 	TRC(IDC_SHELLSENDTOITEM, "Добавить Image Uploader в меню \"Отправить\"");
-	
+	menuItemsListBox_.m_hWnd = GetDlgItem(IDC_CONTEXTMENUITEMSLIST);
 
 	TCHAR buf[MAX_PATH];
 	CString buf2;
@@ -69,7 +73,34 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
 	SendDlgItemMessage(IDC_ADDITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
 
 	CIcon icon2 = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONDELETEITEM), IMAGE_ICON	, 16,16,0);
-	SendDlgItemMessage(IDC_DELETEITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico2);
+	SendDlgItemMessage(IDC_DELETEITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon2);
+
+	CIcon icon3 = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONUP), IMAGE_ICON	, 16,16,0);
+	SendDlgItemMessage(IDC_UPBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon3);
+	
+	CIcon icon4 = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONDOWN), IMAGE_ICON	, 16,16,0);
+	SendDlgItemMessage(IDC_DOWNBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon4);
+
+
+	CRegistry Reg;
+	Reg.SetRootKey( HKEY_CURRENT_USER );
+
+	serverProfiles_.clear();
+	std::vector<CString> keyNames;
+	CString keyPath = "Software\\Zenden.ws\\Image Uploader\\ContextMenuItems";
+	Reg.GetChildKeysNames(keyPath,keyNames);
+	for(int i =0; i < keyNames.size() ; i++ ) {
+		if ( Reg.SetKey(keyPath + _T("\\") + keyNames[i], false) ) {
+			ListItemData* lid = new	ListItemData();
+			CString title = Reg.ReadString("Name");
+			lid->name  = title;
+			lid->serverProfile = Settings.ServerProfiles[keyNames[i]];
+			lid->serverProfile.setServerName(Reg.ReadString("ServerName"));
+			int newIndex = menuItemsListBox_.AddString(title);
+			menuItemsListBox_.SetItemData(newIndex, (DWORD_PTR) lid);
+		}
+	}
+
 
 	BOOL b;
 	OnClickedQuickUpload(0, IDC_STARTUPLOADINGFROMSHELL,0, b);
@@ -104,6 +135,38 @@ bool CIntegrationSettings::Apply()
 	//FIXME
 	Settings.setQuickServerID(SendDlgItemMessage(IDC_SERVERLIST, CB_GETCURSEL, 0, 0));
 	
+
+	int menuItemCount = menuItemsListBox_.GetCount();
+	CRegistry Reg;
+	Reg.SetRootKey( HKEY_CURRENT_USER );
+
+	serverProfiles_.clear();
+	Reg.DeleteWithSubkeys("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems");
+	CString itemId;
+	if ( Reg.SetKey( "Software\\Zenden.ws\\Image Uploader\\ContextMenuItems", true ) ) {
+
+			for( int i =0; i< menuItemCount; i++ ){
+				ListItemData* lid = (	ListItemData*)menuItemsListBox_.GetItemData(i);
+				CRegistry Reg2 = Reg;
+				itemId = lid->serverProfile.serverName() + L"_" + IuCoreUtils::CryptoUtils::CalcMD5HashFromString(IuCoreUtils::int64_tToString(rand() % 999999)).c_str();
+				itemId.Replace(L" ",L"_");
+				//MessageBox(itemId);
+				if ( Reg2.SetKey("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems\\" + itemId, true) ) {
+					Reg2.WriteString( "Name", lid->name );
+					Reg2.WriteString( "ServerName", lid->serverProfile.serverName() );
+					Reg2.WriteString( "ProfileName", lid->serverProfile.profileName() );
+					Reg2.WriteString( "FolderId", Utf8ToWCstring(lid->serverProfile.folderId() ) );
+					Reg2.WriteString( "FolderTitle", Utf8ToWCstring(lid->serverProfile.folderTitle()) );
+					Reg2.WriteString( "FolderUrl", Utf8ToWCstring(lid->serverProfile.folderUrl()) );
+					CString icon = _EngineList->getIconNameForServer(WCstringToUtf8(lid->serverProfile.serverName()));
+					Reg2.WriteString( "Icon", icon);
+					
+					serverProfiles_[itemId] = lid->serverProfile;
+				}
+			}
+		}
+	Settings.ServerProfiles = serverProfiles_;
+	//MessageBoxA(0,Settings.ServerProfiles[itemId].folderTitle().c_str(),0,0);
 	return true;
 }
 
@@ -125,4 +188,30 @@ void CIntegrationSettings::ShellIntegrationChanged()
 		bool shellIntegrationAvailable = FileExists(Settings.getShellExtensionFileName())!=0;
 	bool checked = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED && shellIntegrationAvailable;
 	GuiTools::EnableNextN(GetDlgItem(IDC_SHELLINTEGRATION), 2, checked);
+}
+LRESULT CIntegrationSettings::OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CContextMenuItemDlg dlg;
+	if ( dlg.DoModal(m_hWnd) == IDOK ) {
+		int newIndex = menuItemsListBox_.AddString(dlg.menuItemTitle());
+		ListItemData* lid = new ListItemData();
+		lid->name = dlg.menuItemTitle();
+		lid->serverProfile = dlg.serverProfile();
+		menuItemsListBox_.SetItemData(newIndex, (DWORD_PTR) lid);
+	}
+	// TODO: Add your control notification handler code here
+
+	return 0;
+}
+
+LRESULT CIntegrationSettings::OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int currentIndex = menuItemsListBox_.GetCurSel();
+	if ( currentIndex != -1 ) {
+		ListItemData* lid = (ListItemData*) menuItemsListBox_.GetItemData(currentIndex);
+		menuItemsListBox_.DeleteString(currentIndex);
+	}
+	// TODO: Add your control notification handler code here
+
+	return 0;
 }

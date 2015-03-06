@@ -105,6 +105,11 @@ SettingsNode::~SettingsNode()
 	}
 }
 
+SettingsNode& SettingsManager::root()
+{
+	return root_;
+}
+
 void SettingsManager::saveToXmlNode(SimpleXmlNode parentNode) const
 {
 	root_.saveToXmlNode(parentNode, "Settings", true);

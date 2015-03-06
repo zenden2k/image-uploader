@@ -39,6 +39,7 @@
 
 class CFileQueueUploader;
 class CMyEngineList;
+class CServerSelectorControl;
 // CImageReuploaderDlg
 class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
                            public CDialogResize <CImageReuploaderDlg>,
@@ -151,6 +152,7 @@ class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
 		std::map<unsigned int, UploadedItem> uploadedItems_;
 		ServerProfile serverProfile_;
 		static const TCHAR LogTitle[];
+		CServerSelectorControl *imageServerSelector_;
 
 		struct Match {
 			int start;

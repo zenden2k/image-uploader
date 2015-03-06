@@ -52,6 +52,7 @@ protected:
 	CServerSelectorControl *fileServerSelector_; 
 	CServerSelectorControl *trayServerSelector_;
 	CServerSelectorControl *contextMenuServerSelector_;
+	CServerSelectorControl *urlShortenerServerSelector_;
 
 };
 

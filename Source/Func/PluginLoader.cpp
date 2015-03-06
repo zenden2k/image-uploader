@@ -53,7 +53,7 @@ CScriptUploadEngine* CPluginManager::getPlugin(const Utf8String& serverName, con
 		plugin = 0;
 		m_plugins[serverName]  = 0;
 	}
-	
+
 	CScriptUploadEngine* newPlugin = new CScriptUploadEngine( name );
 	newPlugin->onErrorMessage.bind( DefaultErrorHandling::ErrorMessage );
 	if (newPlugin->load( m_ScriptsDirectory + name + ".nut", params ) ) {

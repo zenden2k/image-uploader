@@ -33,7 +33,7 @@ class CServerParamsDlg :
 	public CDialogResize<CServerParamsDlg>	
 {
 	public:
-		CServerParamsDlg(ServerProfile & serverProfile, bool focusOnLoginEdit = false);
+		CServerParamsDlg(ServerProfile  serverProfile, bool focusOnLoginEdit = false);
 		~CServerParamsDlg();
 		enum { IDD = IDD_SERVERPARAMSDLG };
 
@@ -63,7 +63,7 @@ class CServerParamsDlg :
 		LRESULT OnClickedDoAuth(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-
+		ServerProfile serverProfile();
 	protected:
 		CPropertyListCtrl m_wndParamList;
 		std::map<std::string,std::string> m_paramNameList;
@@ -71,7 +71,7 @@ class CServerParamsDlg :
 		bool focusOnLoginControl_;
 		CScriptUploadEngine *m_pluginLoader;
 		CString oldLogin_;
-		ServerProfile & serverProfile_;
+		ServerProfile  serverProfile_;
 		void doAuthChanged();
 
 

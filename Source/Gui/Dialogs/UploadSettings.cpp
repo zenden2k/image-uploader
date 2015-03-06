@@ -398,12 +398,15 @@ bool ImageServer = (hWndCtl == Toolbar.m_hWnd);
 		as.m_SelectedFolder.id= serverProfile.folderId();
 		
 		if(as.DoModal() == IDOK){
+			ServerSettingsStruct& sss = serverProfile.serverSettings();
 			if(!as.m_SelectedFolder.id.empty()){
+				sss.defaultFolder = as.m_SelectedFolder;
 				serverProfile.setFolderId(as.m_SelectedFolder.id);
 				serverProfile.setFolderTitle(as.m_SelectedFolder.title);
 				serverProfile.setFolderUrl(as.m_SelectedFolder.viewUrl);
 			}
 			else {
+				sss.defaultFolder = CFolderItem();
 				serverProfile.setFolderId("");
 				serverProfile.setFolderTitle("");
 				serverProfile.setFolderUrl("");
@@ -519,6 +522,7 @@ LRESULT CUploadSettings::OnImageServerSelect(WORD /*wNotifyCode*/, WORD wID, HWN
 {
 	int nServerIndex = wID - IDC_IMAGESERVER_FIRST_ID;
 	m_nImageServer = nServerIndex;
+	sessionImageServer_.setServerName(Utf8ToWCstring(_EngineList->byIndex(m_nImageServer)->Name));
 	UpdateAllPlaceSelectors();
 	return 0;
 }
@@ -528,6 +532,7 @@ LRESULT CUploadSettings::OnFileServerSelect(WORD /*wNotifyCode*/, WORD wID, HWND
 	int nServerIndex = wID - IDC_FILESERVER_FIRST_ID;
 	
 	m_nFileServer = nServerIndex;
+	sessionFileServer_.setServerName(Utf8ToWCstring(_EngineList->byIndex(m_nFileServer)->Name));
 	UpdateAllPlaceSelectors();
 	return 0;
 }
@@ -639,13 +644,54 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 			if(!plug) return TBDDRET_TREATPRESSED;
 
 			if(!plug->supportsSettings()) return TBDDRET_TREATPRESSED;
+			int i =0;
 			mi.wID = IDC_LOGINTOOLBUTTON + (int)ImageServer;
  			mi.dwTypeData  = TR("Параметры авторизации");
-			sub.InsertMenuItem(0, true, &mi);
+			sub.InsertMenuItem(i++, true, &mi);
+
+			menuOpenedUserNames_.clear();
+			menuOpenedIsImageServer_ = ImageServer;
    
 			mi.wID = IDC_SERVERPARAMS + (int)ImageServer;
  			mi.dwTypeData  = TR("Настройки сервера");
-			sub.InsertMenuItem(1, true, &mi);
+			sub.InsertMenuItem(i++, true, &mi);
+			int command = IDC_USERNAME_FIRST_ID;
+			HICON userIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONUSER));
+			std::map <std::string, ServerSettingsStruct>& serverUsers = Settings.ServersSettings[WCstringToUtf8(serverProfile.serverName())];
+			bool addedSeparator = false;
+			for( std::map <std::string, ServerSettingsStruct>::iterator it = serverUsers.begin(); it!= serverUsers.end(); ++it ) {
+					CString login = Utf8ToWCstring(it->second.authData.Login);
+				if (!login.IsEmpty() && it->second.authData.DoAuth) {
+					if ( !addedSeparator ) {
+						ZeroMemory(&mi,sizeof(mi));
+						mi.cbSize = sizeof(mi);
+						mi.fMask = MIIM_TYPE|MIIM_ID;
+						mi.wID = IDC_FILESERVER_LAST_ID + 1;
+						mi.fType = MFT_SEPARATOR;
+		
+						sub.InsertMenuItem(i++, true, &mi);
+						addedSeparator =  true;
+					}
+
+				
+					mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
+					mi.fType = MFT_STRING;
+					mi.wID = command;
+
+					mi.dwTypeData  = (LPWSTR)(LPCTSTR)login;
+					
+					mi.hbmpItem =  WinUtils::IsVista() ? iconBitmapUtils_->HIconToBitmapPARGB32(userIcon): HBMMENU_CALLBACK;
+					if ( mi.hbmpItem ) {
+						mi.fMask |= MIIM_BITMAP;
+					}
+					menuOpenedUserNames_.push_back(login);
+					sub.InsertMenuItem(i++, true, &mi);
+					command++;
+				}
+				
+			}
+
+
 
 			sub.SetMenuDefaultItem(0,TRUE);
 		}
@@ -808,7 +854,9 @@ LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, H
 	if(!ue->UsingPlugin) return false;
 
 	CServerParamsDlg dlg(serverProfile);
-	dlg.DoModal();
+	if ( dlg.DoModal() == IDOK) {
+		serverProfile = dlg.serverProfile();
+	}
 	return 0;
 }
 
@@ -871,7 +919,7 @@ LRESULT CUploadSettings::OnResizePresetMenuItemClick(WORD wNotifyCode, WORD wID,
 LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
    SaveCurrentProfile();
-   CSettingsDlg dlg(1);
+   CSettingsDlg dlg(CSettingsDlg::spImages);
 	dlg.DoModal(m_hWnd);
    CurrentProfileName = "";
    ShowParams(Settings.CurrentConvertProfileName);
@@ -961,6 +1009,39 @@ LRESULT CUploadSettings::OnProfileEditedCommand(WORD /*wNotifyCode*/, WORD /*wID
 {
    ProfileChanged();
    return 0;
+}
+
+LRESULT CUploadSettings::OnUserNameMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	int userNameIndex = wID - IDC_USERNAME_FIRST_ID;
+	CString userName = menuOpenedUserNames_[userNameIndex];
+	bool ImageServer = menuOpenedIsImageServer_;
+	ServerProfile & serverProfile = ImageServer? sessionImageServer_ : sessionFileServer_;
+	serverProfile.setProfileName(userName);
+	ServerSettingsStruct& sss = serverProfile.serverSettings();
+
+	if ( ImageServer ) {
+		imageServerLogin_ = WCstringToUtf8(userName);
+	} else {
+		fileServerLogin_ =  WCstringToUtf8(userName);
+	}
+	serverProfile.setFolderId(sss.defaultFolder.getId());
+	serverProfile.setFolderTitle(sss.defaultFolder.getTitle());
+	serverProfile.setFolderUrl(sss.defaultFolder.viewUrl);
+
+	/*if(UserName != ss.authData.Login || ss.authData.DoAuth!=prevAuthEnabled)
+	{
+		serverProfile.setFolderId("");
+		serverProfile.setFolderTitle("");
+		serverProfile.setFolderUrl("");
+		iuPluginManager.UnloadPlugins();
+		m_EngineList->DestroyCachedEngine(m_EngineList->byIndex(nServerIndex)->Name);
+	}*/
+
+	UpdateAllPlaceSelectors();
+
+//	MessageBox();
+	return 0;
 }
 
 void CUploadSettings::SaveCurrentProfile()
