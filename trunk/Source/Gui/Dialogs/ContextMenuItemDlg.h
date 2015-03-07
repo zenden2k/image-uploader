@@ -62,6 +62,7 @@ protected:
 	ServerProfile serverProfile_;
 	bool titleEdited_;
 	CString title_;
+	void generateTitle();
 };
 
 #endif // ContextMenuItemDlg_H

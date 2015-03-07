@@ -28,6 +28,8 @@
 #include "Gui/Controls/MyImage.h"
 #include "Gui/Dialogs/settingspage.h"
 #include <Func/Settings.h>
+#include "Gui/Controls/IconButton.h"
+
 class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>, 
 	                      public CSettingsPage	
 {
@@ -41,6 +43,11 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
 		struct ListItemData {
 			ServerProfile serverProfile;
 			CString name;
+			bool invalid;
+			CString itemId;
+			ListItemData() {
+				invalid = false;
+			}
 		};
 
 	protected:
@@ -53,6 +60,7 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
 			COMMAND_HANDLER(IDC_DELETEITEM, BN_CLICKED, OnBnClickedDeleteitem)
 			COMMAND_HANDLER(IDC_DOWNBUTTON, BN_CLICKED, OnBnClickedDownbutton)
 			COMMAND_HANDLER(IDC_UPBUTTON, BN_CLICKED, OnBnClickedUpbutton)
+			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 		// Handler prototypes:
 		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -65,6 +73,10 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
 		ServerProfilesMap serverProfiles_;
 		CListBox menuItemsListBox_;
 		bool menuItemsChanged_;
+		CIconButton upButton_;
+		CIconButton downButton_;
+		CIconButton addItemButton_;
+		CIconButton deleteItemButton_;
 public:
 	LRESULT OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

@@ -39,8 +39,9 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
 	TRC(IDC_ADDFILEPROTOCOL,"Конвертировать UNC путь \"\\\\\" в \"file://\"");
 
 	
-	CIcon ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON	, 16,16,0);
+	HICON ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON	, 16,16,0);
 	SendDlgItemMessage(IDC_PRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
+	presetButton_.SubclassWindow(GetDlgItem(IDC_PRESETSBUTTON));
 	::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));
 	LoadComputerAddresses();
 	GuiTools::ShowDialogItem(m_hWnd, IDC_ADDFILEPROTOCOL, false);

@@ -187,6 +187,43 @@ LRESULT CUploadSettings::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 	return 0;
 }
 
+LRESULT CUploadSettings::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	MEASUREITEMSTRUCT* lpmis = reinterpret_cast<MEASUREITEMSTRUCT*>(lParam);
+	if (lpmis==NULL)
+		return 0;
+	lpmis->itemWidth += /*GetSystemMetrics(SM_CXSMICON) + 1*/5;
+	if (lpmis->itemHeight < 16)
+		lpmis->itemHeight = 16;
+	return TRUE;
+}
+
+LRESULT CUploadSettings::OnDrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	LPCTSTR resource;
+	DRAWITEMSTRUCT* lpdis = reinterpret_cast<DRAWITEMSTRUCT*>(lParam);
+	if ((lpdis==NULL)||(lpdis->CtlType != ODT_MENU))
+		return S_OK;		//not for a menu
+	int i =0;
+	int iconID=0;
+
+	HICON hIcon = serverMenuIcons_[lpdis->itemID];
+
+	if (hIcon == NULL)
+		return 0;
+
+int	 w = GetSystemMetrics(SM_CXSMICON);
+	int h = GetSystemMetrics(SM_CYSMICON);
+
+	DrawIconEx(lpdis->hDC,
+		lpdis->rcItem.left - w,
+		lpdis->rcItem.top + (lpdis->rcItem.bottom - lpdis->rcItem.top - h) / 2,
+		hIcon, w, h,
+		0, NULL, DI_NORMAL);
+	DeleteObject(hIcon);
+	return TRUE;
+}
+
 LRESULT CUploadSettings::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	EndDialog(wID);
@@ -580,6 +617,9 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 				mi.dwTypeData  = (LPWSTR)(LPCTSTR) name;
 				HICON hImageIcon = m_EngineList->getIconForServer(ued->Name);
 				mi.hbmpItem =  WinUtils::IsVista() ? iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon): HBMMENU_CALLBACK;
+				if (! WinUtils::IsVista() ) {
+					serverMenuIcons_[mi.wID] = hImageIcon;
+				}
 				if ( mi.hbmpItem ) {
 					mi.fMask |= MIIM_BITMAP;
 				}
@@ -607,6 +647,9 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 			CString name  = Utf8ToWCstring(ued->Name); 
 			mi.dwTypeData  = (LPWSTR)(LPCTSTR) name;
 			HICON hImageIcon = m_EngineList->getIconForServer(ued->Name);
+			if (! WinUtils::IsVista() ) {
+				serverMenuIcons_[mi.wID] = hImageIcon;
+			}
 			mi.hbmpItem =  WinUtils::IsVista() ? iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon): HBMMENU_CALLBACK;
 			if ( mi.hbmpItem ) {
 				mi.fMask |= MIIM_BITMAP;
