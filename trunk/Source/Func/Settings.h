@@ -108,6 +108,7 @@ public:
 	void setFolderId(std::string newId);
 	std::string folderUrl() const;
 	void setFolderUrl(std::string newUrl);
+	bool isNull();
 	bool UseDefaultSettings;
 
 	void bind(SettingsNode& n);
@@ -350,9 +351,11 @@ public:
 		void Uninstall();
 	void EnableAutostartup(bool enable);
 	// Deprecated
+	protected:
 	int getServerID();
 	int getQuickServerID();
 	int getFileServerID();
+public:
 	void setServerID(int id);
 	void setQuickServerID(int id);
 	void setFileServerID(int id);

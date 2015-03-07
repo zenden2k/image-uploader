@@ -1,11 +1,7 @@
-if(ServerParams.getParam("enableOAuth") == "")
-{
-	ServerParams.setParam("enableOAuth", "true") ;
-}
 token <- "";
 tokenType <- "";
 login <- "";
-enableOAuth <- ( ServerParams.getParam("enableOAuth") == "true" );
+enableOAuth <- true;
 
 function regex_simple(data,regStr,start)
 {
@@ -330,8 +326,7 @@ function GetServerParamList()
 		token = "token",
 		tokenType = "TokenType",
 		OAuthLogin = "OAuthLogin",
-		PrevLogin = "PrevLogin",
-		enableOAuth = "Enable OAuth"
+		PrevLogin = "PrevLogin"
 	}
 	return a;
 }

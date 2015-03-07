@@ -134,6 +134,11 @@ void ServerProfile::setFolderUrl(std::string newUrl)
 	folderUrl_ = newUrl;
 }
 
+bool ServerProfile::isNull()
+{
+	return serverName_.IsEmpty();
+}
+
 void ServerProfile::bind(SettingsNode& serverNode)
 {
 	serverNode["@Name"].bind(serverName_);
@@ -1014,12 +1019,16 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 			std::map <std::string, ServerSettingsStruct>::iterator it;
 			for (it = it1->second.begin(); it !=it1->second.end(); ++it)
 			{
-
+				ServerSettingsStruct & sss = it->second;
+				if ( sss.isEmpty() ) {
+					continue;
+				}
 				SimpleXmlNode serverNode = root.CreateChild("Server");
+				
 				serverNode.SetAttribute("Name", it1->first);
 
 				std::map <std::string, std::string>::iterator param;
-				for (param = it->second.params.begin(); param != it->second.params.end(); ++param)
+				for (param = it->second.params.begin(); param != sss.params.end(); ++param)
 				{
 					if (  param->first == "FolderID" || param->first == "FolderUrl" || param->first == "FolderTitle") {
 						continue;
@@ -1027,9 +1036,9 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 					serverNode.SetAttribute("_" + param->first, param->second);
 				}
 	#if !defined  (IU_CLI) && !defined(IU_SHELLEXT)
-				serverNode.SetAttributeBool("Auth", it->second.authData.DoAuth);
+				serverNode.SetAttributeBool("Auth", sss.authData.DoAuth);
 
-				CEncodedPassword login(Utf8ToWCstring(it->second.authData.Login));
+				CEncodedPassword login(Utf8ToWCstring(sss.authData.Login));
 				serverNode.SetAttribute("Login", WCstringToUtf8(login.toEncodedData()));
 
 				CUploadEngineData* ued = _EngineList->byName(Utf8ToWCstring(it->first));
@@ -1039,9 +1048,9 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 				}
 	#endif
 				if ( !it->second.defaultFolder.getId().empty() ) {
-					serverNode.SetAttributeString("DefaultFolderId", it->second.defaultFolder.getId());
-					serverNode.SetAttributeString("DefaultFolderUrl", it->second.defaultFolder.viewUrl);
-					serverNode.SetAttributeString("DefaultFolderTitle", it->second.defaultFolder.getTitle());
+					serverNode.SetAttributeString("DefaultFolderId", sss.defaultFolder.getId());
+					serverNode.SetAttributeString("DefaultFolderUrl", sss.defaultFolder.viewUrl);
+					serverNode.SetAttributeString("DefaultFolderTitle", sss.defaultFolder.getTitle());
 				}
 
 			}

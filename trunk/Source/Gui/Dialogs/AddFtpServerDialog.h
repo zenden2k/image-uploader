@@ -40,6 +40,7 @@ public:
 	LRESULT OnDownloadUrlEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
 	CString createdServerName();
+	CString createdServerLogin();
 protected:
 	void GenerateDownloadLink();
 	void GenerateExampleUrl();
@@ -48,6 +49,7 @@ protected:
 	bool serverNameEdited;
 	CUploadEngineList* uploadEngineList_;
 	CString createdServerName_;
+	CString createdServerLogin_;
 };
 
 

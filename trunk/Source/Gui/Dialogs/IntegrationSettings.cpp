@@ -44,6 +44,7 @@ CIntegrationSettings::~CIntegrationSettings()
 LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	serverProfiles_ = Settings.ServerProfiles;
+	menuItemsChanged_ = false;
 	// Translating controls
 	TRC(IDOK, "OK");
 	TRC(IDCANCEL, "Отмена");
@@ -91,13 +92,19 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
 	Reg.GetChildKeysNames(keyPath,keyNames);
 	for(int i =0; i < keyNames.size() ; i++ ) {
 		if ( Reg.SetKey(keyPath + _T("\\") + keyNames[i], false) ) {
-			ListItemData* lid = new	ListItemData();
 			CString title = Reg.ReadString("Name");
-			lid->name  = title;
-			lid->serverProfile = Settings.ServerProfiles[keyNames[i]];
-			lid->serverProfile.setServerName(Reg.ReadString("ServerName"));
-			int newIndex = menuItemsListBox_.AddString(title);
-			menuItemsListBox_.SetItemData(newIndex, (DWORD_PTR) lid);
+			CString displayTitle = title;
+			if ( Settings.ServerProfiles.find(keyNames[i])==  Settings.ServerProfiles.end()) {
+				displayTitle = _T("[invalid] ") + displayTitle;
+			}
+				ListItemData* lid = new	ListItemData();
+				
+				lid->name  = title;
+				lid->serverProfile = Settings.ServerProfiles[keyNames[i]];
+				//lid->serverProfile.setServerName(Reg.ReadString("ServerName"));
+				int newIndex = menuItemsListBox_.AddString(displayTitle);
+				menuItemsListBox_.SetItemData(newIndex, (DWORD_PTR) lid);
+			
 		}
 	}
 
@@ -135,37 +142,45 @@ bool CIntegrationSettings::Apply()
 	//FIXME
 	Settings.setQuickServerID(SendDlgItemMessage(IDC_SERVERLIST, CB_GETCURSEL, 0, 0));
 	
+	if ( menuItemsChanged_ ) {
+		int menuItemCount = menuItemsListBox_.GetCount();
+		CRegistry Reg;
+		Reg.SetRootKey( HKEY_CURRENT_USER );
 
-	int menuItemCount = menuItemsListBox_.GetCount();
-	CRegistry Reg;
-	Reg.SetRootKey( HKEY_CURRENT_USER );
+		serverProfiles_.clear();
+		Reg.DeleteWithSubkeys("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems");
+		CString itemId;
+		if ( Reg.SetKey( "Software\\Zenden.ws\\Image Uploader\\ContextMenuItems", true ) ) {
 
-	serverProfiles_.clear();
-	Reg.DeleteWithSubkeys("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems");
-	CString itemId;
-	if ( Reg.SetKey( "Software\\Zenden.ws\\Image Uploader\\ContextMenuItems", true ) ) {
-
-			for( int i =0; i< menuItemCount; i++ ){
-				ListItemData* lid = (	ListItemData*)menuItemsListBox_.GetItemData(i);
-				CRegistry Reg2 = Reg;
-				itemId = lid->serverProfile.serverName() + L"_" + IuCoreUtils::CryptoUtils::CalcMD5HashFromString(IuCoreUtils::int64_tToString(rand() % 999999)).c_str();
-				itemId.Replace(L" ",L"_");
-				//MessageBox(itemId);
-				if ( Reg2.SetKey("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems\\" + itemId, true) ) {
-					Reg2.WriteString( "Name", lid->name );
-					Reg2.WriteString( "ServerName", lid->serverProfile.serverName() );
-					Reg2.WriteString( "ProfileName", lid->serverProfile.profileName() );
-					Reg2.WriteString( "FolderId", Utf8ToWCstring(lid->serverProfile.folderId() ) );
-					Reg2.WriteString( "FolderTitle", Utf8ToWCstring(lid->serverProfile.folderTitle()) );
-					Reg2.WriteString( "FolderUrl", Utf8ToWCstring(lid->serverProfile.folderUrl()) );
-					CString icon = _EngineList->getIconNameForServer(WCstringToUtf8(lid->serverProfile.serverName()));
-					Reg2.WriteString( "Icon", icon);
-					
-					serverProfiles_[itemId] = lid->serverProfile;
+				for( int i =0; i< menuItemCount; i++ ){
+					ListItemData* lid = (	ListItemData*)menuItemsListBox_.GetItemData(i);
+					CRegistry Reg2 = Reg;
+					CString itemNumber;
+					itemNumber.Format(_T("%04d"), i);
+					itemId = itemNumber+_T("_")+lid->serverProfile.serverName() + L"_" + IuCoreUtils::CryptoUtils::CalcMD5HashFromString(IuCoreUtils::int64_tToString(rand() % 999999)).c_str();
+					itemId.Replace(L" ",L"_");
+					//MessageBox(itemId);
+					if ( Reg2.SetKey("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems\\" + itemId, true) ) {
+						Reg2.WriteString( "Name", lid->name );
+						Reg2.WriteString( "ServerName", lid->serverProfile.serverName() );
+						Reg2.WriteString( "ProfileName", lid->serverProfile.profileName() );
+						Reg2.WriteString( "FolderId", Utf8ToWCstring(lid->serverProfile.folderId() ) );
+						Reg2.WriteString( "FolderTitle", Utf8ToWCstring(lid->serverProfile.folderTitle()) );
+						Reg2.WriteString( "FolderUrl", Utf8ToWCstring(lid->serverProfile.folderUrl()) );
+						CString icon = _EngineList->getIconNameForServer(WCstringToUtf8(lid->serverProfile.serverName()));
+						CUploadEngineData * ued = lid->serverProfile.uploadEngineData();
+						if ( ued ) {
+							Reg2.WriteDword( "ServerType", (unsigned int) ued->Type );
+						}
+						Reg2.WriteString( "Icon", icon);
+						
+						serverProfiles_[itemId] = lid->serverProfile;
+					}
 				}
 			}
-		}
-	Settings.ServerProfiles = serverProfiles_;
+		Settings.ServerProfiles = serverProfiles_;
+	}
+	
 	//MessageBoxA(0,Settings.ServerProfiles[itemId].folderTitle().c_str(),0,0);
 	return true;
 }
@@ -188,6 +203,9 @@ void CIntegrationSettings::ShellIntegrationChanged()
 		bool shellIntegrationAvailable = FileExists(Settings.getShellExtensionFileName())!=0;
 	bool checked = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED && shellIntegrationAvailable;
 	GuiTools::EnableNextN(GetDlgItem(IDC_SHELLINTEGRATION), 2, checked);
+	HWND contextMenuItemsLabel = GetDlgItem(IDC_CONTEXTMENUITEMSLABEL);
+	::EnableWindow(contextMenuItemsLabel, checked);
+	GuiTools::EnableNextN(contextMenuItemsLabel, 5, checked);
 }
 LRESULT CIntegrationSettings::OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
@@ -198,6 +216,7 @@ LRESULT CIntegrationSettings::OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wI
 		lid->name = dlg.menuItemTitle();
 		lid->serverProfile = dlg.serverProfile();
 		menuItemsListBox_.SetItemData(newIndex, (DWORD_PTR) lid);
+		menuItemsChanged_ = true; 
 	}
 	// TODO: Add your control notification handler code here
 
@@ -210,8 +229,66 @@ LRESULT CIntegrationSettings::OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /
 	if ( currentIndex != -1 ) {
 		ListItemData* lid = (ListItemData*) menuItemsListBox_.GetItemData(currentIndex);
 		menuItemsListBox_.DeleteString(currentIndex);
+		delete lid;
+		menuItemsChanged_ = true;
 	}
 	// TODO: Add your control notification handler code here
 
+	return 0;
+}
+
+LRESULT CIntegrationSettings::OnBnClickedDownbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int itemIndex = menuItemsListBox_.GetCurSel();
+	if(itemIndex == -1) 
+		return 0;
+
+	if(itemIndex < menuItemsListBox_.GetCount() - 1)
+	{
+		TCHAR* name = new TCHAR[menuItemsListBox_.GetTextLen(itemIndex)+1];
+	
+		menuItemsListBox_.GetText(itemIndex,name);
+		DWORD_PTR data = menuItemsListBox_.GetItemData(itemIndex);
+		menuItemsListBox_.DeleteString(itemIndex);
+		menuItemsListBox_.InsertString(itemIndex + 1,name);
+		menuItemsListBox_.SetItemData(itemIndex + 1,data);
+		menuItemsListBox_.SetCurSel(itemIndex+1);
+		delete[] name;
+		menuItemsChanged_ = true; 
+	}
+	return 0;
+}
+
+LRESULT CIntegrationSettings::OnBnClickedUpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int itemIndex = menuItemsListBox_.GetCurSel();
+	if(itemIndex == -1) 
+		return 0;
+
+	if(itemIndex > 0)
+	{
+		TCHAR* name = new TCHAR[menuItemsListBox_.GetTextLen(itemIndex)+1];
+
+		menuItemsListBox_.GetText(itemIndex,name);
+		DWORD_PTR data = menuItemsListBox_.GetItemData(itemIndex);
+		menuItemsListBox_.DeleteString(itemIndex);
+		menuItemsListBox_.InsertString(itemIndex - 1,name);
+		menuItemsListBox_.SetItemData(itemIndex - 1,data);
+		menuItemsListBox_.SetCurSel(itemIndex-1);
+		delete[] name;
+		menuItemsChanged_ = true; 
+	}
+
+	return 0;
+}
+
+LRESULT CIntegrationSettings::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	int itemCount = menuItemsListBox_.GetCount();
+	for( int i =0; i < itemCount; i++ ){
+		ListItemData* lid = reinterpret_cast<ListItemData*>(menuItemsListBox_.GetItemData(i));
+		delete lid;
+	}
+	menuItemsListBox_.ResetContent();
 	return 0;
 }

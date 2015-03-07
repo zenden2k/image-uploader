@@ -274,6 +274,31 @@ bool CWizardDlg::ParseCmdLine()
 			if(!executeFunc(cmd))
 				PostQuitMessage(0);
 			return true;
+		} else if(CurrentParam .Left(15)==_T("/serverprofile=")) {
+			CString serverProfileName = CurrentParam.Right(CurrentParam.GetLength()-15);
+			
+			if ( Settings.ServerProfiles.find(serverProfileName) == Settings.ServerProfiles.end()) {
+				CString msg;
+				msg.Format(TR("Профиль \"%s\" не найден."),TR("Ошибка"),MB_ICONWARNING);
+			} else {
+				ServerProfile & sp = Settings.ServerProfiles[serverProfileName];
+				CUploadEngineData *ued = sp.uploadEngineData();
+				if ( ued ) {
+					if ( ued ->Type == CUploadEngineData::TypeFileServer ) {
+						sessionImageServer_ = sp;
+						sessionFileServer_ = sp;
+						serversChanged_ = true;
+						
+					} else if ( ued ->Type == CUploadEngineData::TypeImageServer ) {
+						sessionImageServer_ = sp;
+						serversChanged_ = true; 
+					}
+				} else {
+					//MessageBox(_T("Server not found"));
+				}
+				
+			}
+			
 		}
 	}
 
@@ -599,15 +624,6 @@ LRESULT CWizardDlg::OnBnClickedAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 
 void CWizardDlg::Exit()
 {
-	// Converting server id to server name
-	if(Settings.getServerID() >= 0 && m_EngineList.count())
-		Settings.getServerName() = Utf8ToWstring(m_EngineList.byIndex(Settings.getServerID())->Name).c_str();
-
-	if(Settings.getQuickServerID()>=0 && m_EngineList.count())
-		Settings.getQuickServerName() = Utf8ToWstring(m_EngineList.byIndex(Settings.getQuickServerID())->Name).c_str();
-	if(Settings.getFileServerID()>=0 && m_EngineList.count())
-		Settings.getFileServerName() = Utf8ToWstring(m_EngineList.byIndex(Settings.getFileServerID())->Name).c_str();
-
 	Settings.SaveSettings();
 }
 
@@ -1512,7 +1528,7 @@ bool CWizardDlg::funcSettings()
 	else
 		dlg.DoModal(m_hWnd);
 	sessionImageServer_ = Settings.imageServer;
-	sessionImageServer_ = Settings.fileServer;
+	sessionFileServer_ = Settings.fileServer;
 	return true;
 }
 

@@ -320,7 +320,13 @@ const CString TrimString(const CString& source, int nMaxLen)
 CString GetAppFolder()
 {
 	TCHAR szFileName[1024], szPath[1024];
-	GetModuleFileName(0, szFileName, 1023);
+	HINSTANCE inst;
+#ifndef IU_SHELLEXT
+	inst =  _Module.GetModuleInstance();
+#else
+	inst = hDllInstance;
+#endif
+	GetModuleFileName(inst, szFileName, 1023);
 	ExtractFilePath(szFileName, szPath);
 	return szPath;
 }

@@ -17,8 +17,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef LOGINDLG_H
-#define LOGINDLG_H
+#ifndef GUI_DIALOGS_LOGINDLG_H
+#define GUI_DIALOGS_LOGINDLG_H
 
 #pragma once
 #include "atlheaders.h"
@@ -33,7 +33,7 @@ class CLoginDlg : public CDialogImpl<CLoginDlg>
 {
 	public:
 		int ServerId;
-		CLoginDlg(ServerProfile& serverProfile);
+		CLoginDlg(ServerProfile& serverProfile,bool CreateNew = false );
 		~CLoginDlg();
 		enum { IDD = IDD_LOGINDLG };
 	protected:
@@ -42,6 +42,7 @@ class CLoginDlg : public CDialogImpl<CLoginDlg>
 			COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 			COMMAND_HANDLER(IDC_USEIECOOKIES, BN_CLICKED, OnClickedUseIeCookies)
+			COMMAND_ID_HANDLER(IDC_DELETEACCOUNTLABEL, OnDeleteAccountClicked)
 		END_MSG_MAP()
 		// Handler prototypes:
 		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -51,11 +52,14 @@ class CLoginDlg : public CDialogImpl<CLoginDlg>
 		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedUseIeCookies(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnDeleteAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		CUploadEngineData *m_UploadEngine;
 		CString accountName();
 protected:
 	ServerProfile& serverProfile_;
+	CHyperLink deleteAccountLabel_;
 	CString accountName_;
+	bool createNew_;
 };
 
 #endif // LOGINDLG_H

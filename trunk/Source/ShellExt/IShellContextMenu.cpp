@@ -27,6 +27,8 @@
 #include "../Func/LangClass.h"
 #include <shlobj.h>
 #include <Core/Video/VideoUtils.h>
+#include <Func/IuCommonFunctions.h>
+
 HINSTANCE hDllInstance;
 
 CString GetStartMenuPath() 
@@ -94,27 +96,49 @@ bool AreOnlyImages(CAtlArray<CString> & files)
 	return true;
 }
 
-bool CIShellContextMenu::MyInsertMenu(HMENU hMenu, int pos, UINT id, int nInternalCommand, const LPTSTR szTitle, int firstCmd, bool UseBitmaps, HBITMAP bm,WORD resid)
+bool CIShellContextMenu::MyInsertMenu(HMENU hMenu, int pos, UINT id, int nInternalCommand, const LPCTSTR szTitle, int firstCmd, CString commandArgument, bool UseBitmaps, HBITMAP bm,WORD resid,HICON ico)
 {
 	MENUITEMINFO MenuItem;
 	
 	MenuItem.cbSize = sizeof(MenuItem);
 	MenuItem.fType = MFT_STRING;
-	MenuItem.hbmpItem = IsVista() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, resid): HBMMENU_CALLBACK;;
+	if ( ico ) {
+		MenuItem.hbmpItem = IsVista() ? m_IconBitmapUtils.HIconToBitmapPARGB32(ico): HBMMENU_CALLBACK;
+	} else {
+		MenuItem.hbmpItem = IsVista() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, resid): HBMMENU_CALLBACK;
+	}
+	
 	MenuItem.fMask = MIIM_FTYPE | MIIM_ID | (UseBitmaps?MIIM_BITMAP:0)  | MIIM_STRING;
 	
 	MenuItem.wID = id;
-	MenuItem.dwTypeData = szTitle;
+	MenuItem.dwTypeData = (LPWSTR)szTitle;
 	if(!InsertMenuItem(hMenu, pos, TRUE, &MenuItem))
 		return false;
 
 	Shell_ContextMenuItem InternalMenuItem;
 	InternalMenuItem.cmd =  nInternalCommand;
 	InternalMenuItem.text = szTitle;
+	InternalMenuItem.commandArgument = commandArgument;
 	//if(resid)
 	InternalMenuItem.icon = resid;
 	InternalMenuItem.id = id;
 	m_nCommands[id-firstCmd]= InternalMenuItem;
+	return true;
+}
+
+bool CIShellContextMenu::MyInsertMenuSeparator(HMENU hMenu, int pos, UINT id)
+{
+	MENUITEMINFO MenuItem;
+	ZeroMemory(&MenuItem, sizeof(MenuItem));
+	MenuItem.cbSize = sizeof(MenuItem);
+	MenuItem.fType = MFT_SEPARATOR;
+
+	MenuItem.fMask = MIIM_FTYPE | MIIM_ID;
+
+	MenuItem.wID = id;
+	if(!InsertMenuItem(hMenu, pos, TRUE, &MenuItem))
+		return false;
+
 	return true;
 }
 
@@ -163,9 +187,15 @@ STDMETHODIMP CIShellContextMenu::HandleMenuMsg2(UINT uMsg, WPARAM wParam, LPARAM
 				}
 			}
 
-
-			if(iconID)
-				hIcon = (HICON)LoadImage(hDllInstance, MAKEINTRESOURCE(iconID), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);//m_nCommands[ LOWORD( lpdis->itemID )].icon;//(HICON)LoadImage(g_hResInst, resource, IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
+			int w = GetSystemMetrics(SM_CXSMICON);
+			int h = GetSystemMetrics(SM_CYSMICON);
+			if ( w > 16 ) {
+				w = 32;
+				h = 32;
+			}
+			if(iconID) {
+				hIcon = (HICON)LoadImage(hDllInstance, MAKEINTRESOURCE(iconID), IMAGE_ICON, w, h, LR_DEFAULTCOLOR);//m_nCommands[ LOWORD( lpdis->itemID )].icon;//(HICON)LoadImage(g_hResInst, resource, IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
+			}
 			else hIcon = NULL;
 			if (hIcon == NULL)
 				return S_OK;
@@ -247,17 +277,45 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 
 
 	if(AreOnlyImages(m_FileList))
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES, TR("Загрузить изображения"),idCmdFirst,UseBitmaps,0,IDI_ICONUPLOAD);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES, TR("Загрузить изображения"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
 	else
 	{
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADFILES, TR("Загрузить файлы"),idCmdFirst,UseBitmaps,0,IDI_ICONUPLOAD);
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES,TR("Загрузить только изображения"),idCmdFirst,UseBitmaps,0,IDI_ICONUPLOAD);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADFILES, TR("Загрузить файлы"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES,TR("Загрузить только изображения"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
 	}
+	bool separatorInserted = false;
+
+	CRegistry Reg2;
+	Reg2.SetRootKey( HKEY_CURRENT_USER );
+	std::vector<CString> keyNames;
+	CString keyPath = "Software\\Zenden.ws\\Image Uploader\\ContextMenuItems";
+	Reg2.GetChildKeysNames(keyPath,keyNames);
+	int w = GetSystemMetrics(SM_CXSMICON);
+	int h = GetSystemMetrics(SM_CYSMICON);
+	CString dataFolder = IuCommonFunctions::FindDataFolder();
+	for(int i =0; i < keyNames.size() ; i++ ) {
+		if ( Reg2.SetKey(keyPath + _T("\\") + keyNames[i], false) ) {
+			
+				if ( ! separatorInserted ) {
+					MyInsertMenuSeparator(PopupMenu, subIndex++, 0);
+					separatorInserted = true;
+			}
+				CString title = Reg2.ReadString("Name");
+				CString iconFileName = Reg2.ReadString("Icon");
+				CIcon ico;
+				if ( !iconFileName.IsEmpty() ) {
+					ico = (HICON)LoadImage(0,dataFolder +L"\\Favicons\\"+iconFileName,IMAGE_ICON	,w,h,LR_LOADFROMFILE);
+				}
+				MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_SERVER_PROFILE,title,idCmdFirst,keyNames[i],UseBitmaps,0,ico.IsNull() ? IDI_ICONUPLOAD : 0, ico.IsNull() ? 0 : ico);
+		}
+	}
+
+
 	if(ExplorerVideoContextMenu&&  m_FileList.GetCount()==1 &&IsVideoFile( m_FileList[0]))
 	{
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO,  TR("Импорт видео"),idCmdFirst,UseBitmaps,0,ExplorerCascadedMenu?0:IDI_ICONMOVIE);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO,  TR("Импорт видео"),idCmdFirst,CString(),UseBitmaps,0,ExplorerCascadedMenu?0:IDI_ICONMOVIE);
 		if(m_bMediaInfoInstalled)
-			MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_MEDIAINFO, TR("Информация о файле"),idCmdFirst,UseBitmaps,0 ,ExplorerCascadedMenu?0:IDI_ICONINFO);
+			MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_MEDIAINFO, TR("Информация о файле"),idCmdFirst,CString(),UseBitmaps,0 ,ExplorerCascadedMenu?0:IDI_ICONINFO);
 	}
 	if(ExplorerCascadedMenu)
 	{
@@ -346,8 +404,8 @@ HRESULT CIShellContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpici)
 
 	if(m_nCommands.empty())
 		return E_INVALIDARG;	
-
-	switch ( m_nCommands[ LOWORD( lpici->lpVerb )].cmd)
+	Shell_ContextMenuItem item = m_nCommands[ LOWORD( lpici->lpVerb )];
+	switch ( item.cmd)
 	{
 	case MENUITEM_UPLOADFILES:
 		{
@@ -377,10 +435,15 @@ HRESULT CIShellContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpici)
 			return S_OK;
 		}
 		break;
+	case MENUITEM_SERVER_PROFILE:
+		IULaunchCopy(m_FileList,_T("/serverprofile=") +item.commandArgument );
+		return S_OK;
+		break;
 
 	default:
 		return E_INVALIDARG;
 		break;
+	
 	}
 	return S_OK;
 }

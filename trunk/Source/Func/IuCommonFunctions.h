@@ -13,6 +13,8 @@ namespace IuCommonFunctions {
 
 	int GetNextImgFile(LPCTSTR folder, LPTSTR szBuffer, int nLength);
 
+	CString FindDataFolder();
+
 
 	extern CString IUTempFolder;
 

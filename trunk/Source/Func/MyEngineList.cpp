@@ -120,7 +120,7 @@ bool CMyEngineList::LoadFromFile(const CString& filename)
 	return CUploadEngineList::LoadFromFile(WCstringToUtf8(filename),Settings.ServersSettings);
 }
 
-bool CMyEngineList::DestroyCachedEngine(const std::string& name)
+bool CMyEngineList::DestroyCachedEngine(const std::string& name, const std::string& profileName)
 {
 	if (m_prevUpEngine == 0)
 		return false;
@@ -128,7 +128,7 @@ bool CMyEngineList::DestroyCachedEngine(const std::string& name)
 	CUploadEngineData* ued = m_prevUpEngine->getUploadData();
 	if (!ued)
 		return false;
-	if (ued->Name == name)
+	if (ued->Name == name && m_prevUpEngine->serverSettings().authData.Login == profileName)
 	{
 		delete m_prevUpEngine;
 		m_prevUpEngine = 0;

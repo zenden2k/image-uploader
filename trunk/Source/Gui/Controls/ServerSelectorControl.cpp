@@ -27,18 +27,23 @@
 #include <Func/MyUtils.h>
 #include <Gui/Dialogs/ServerParamsDlg.h>
 #include <Gui/Dialogs/UploadParamsDlg.h>
+#include <Func/WinUtils.h>
+#include <Gui/IconBitmapUtils.h>
+#include <Gui/Dialogs/LoginDlg.h>
 
 // CServerSelectorControl
 CServerSelectorControl::CServerSelectorControl(bool defaultServer)
 {
 		showDefaultServerItem_ = false;
-		serversMask_ = smAll;
+		serversMask_ = smImageServers | smFileServers;
 		showImageProcessingParamsLink_ = true;
 		defaultServer_ = defaultServer;
+		iconBitmapUtils_ = new IconBitmapUtils();
 }
 
 CServerSelectorControl::~CServerSelectorControl()
 {
+	delete iconBitmapUtils_;
 }
 
 void CServerSelectorControl::TranslateUI() {
@@ -76,9 +81,11 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 	int selectedIndex = 0;
 
 	CUploadEngineData *uploadEngine = _EngineList->byName( Settings.getServerName() );
+	int addedItems = 0;
 	std::string selectedServerName = uploadEngine ? uploadEngine->Name : "" ;
 	for ( int mask = 1; mask <= 4; mask*=2 ) {
-		if ( mask == smAll) {
+		int currentLoopMask = mask & serversMask_;
+		if ( addedItems && currentLoopMask ) {
 			TCHAR line[40];
 			for ( int i=0; i < ARRAY_SIZE(line)-1; i++ ) {
 				line[i] = '-';
@@ -89,7 +96,7 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 		}
 		for( int i = 0; i < _EngineList->count(); i++) {	
 			CUploadEngineData * ue = _EngineList->byIndex( i ); 
-			int currentLoopMask = mask & serversMask_;
+			
 			if ( serversMask_ != smUrlShorteners && ue->Type != CUploadEngineData::TypeFileServer && ue->Type != CUploadEngineData::TypeImageServer) {
 				continue;
 			}
@@ -114,6 +121,7 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 			if ( ue->Name == selectedServerName ){
 				selectedIndex = itemIndex;
 			}
+			addedItems++;
 		}
 	}
 	serverComboBox_.SetImageList( comboBoxImageList_ );
@@ -148,9 +156,11 @@ ServerProfile CServerSelectorControl::serverProfile() const {
 LRESULT CServerSelectorControl::OnClickedEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
 	CServerParamsDlg serverParamsDlg(serverProfile_);
 	if ( serverParamsDlg.DoModal(m_hWnd) == IDOK ) {
-		::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_CHANGE, (WPARAM)m_hWnd, 0);
+		serverProfile_ = serverParamsDlg.serverProfile();
+		notifyChange();
+		
 	}
-	//serverProfile_ = serverParamsDlg.serverProfile();
+
 	updateInfoLabel();
 	return 0;
 }
@@ -158,6 +168,25 @@ LRESULT CServerSelectorControl::OnClickedEdit(WORD wNotifyCode, WORD wID, HWND h
 LRESULT CServerSelectorControl::OnServerComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
 	serverChanged();
 	return 0;
+}
+
+void CServerSelectorControl::addAccount()
+{
+	ServerProfile serverProfileCopy = serverProfile_;
+	serverProfileCopy.setProfileName("");
+	CLoginDlg dlg(serverProfileCopy, true);
+
+	if( dlg.DoModal(m_hWnd) == IDOK)
+	{
+		serverProfileCopy.setProfileName(dlg.accountName());
+		serverProfileCopy.setFolderId("");
+		serverProfileCopy.setFolderTitle("");
+		serverProfileCopy.setFolderUrl("");
+
+		serverProfile_ = serverProfileCopy;
+		updateInfoLabel();
+		notifyChange();
+	}
 }
 
 void CServerSelectorControl::serverChanged() {
@@ -192,12 +221,27 @@ void CServerSelectorControl::serverChanged() {
 		//	ShowVar((int)Settings.ServersSettings[serverName].size());
 			
 			if ( Settings.ServersSettings[serverName].size() ) {
-				ServerSettingsStruct & s = Settings.ServersSettings[serverName].begin()->second;
-				profileName = Utf8ToWCstring(s.authData.Login);
-				serverProfile_.setProfileName(profileName);
-				serverProfile_.setFolderId(s.defaultFolder.getId());
-				serverProfile_.setFolderTitle(s.defaultFolder.getTitle());
-				serverProfile_.setFolderUrl(s.defaultFolder.viewUrl);
+
+
+				std::map <std::string, ServerSettingsStruct>& ss = Settings.ServersSettings[serverName];
+				std::map <std::string, ServerSettingsStruct>::iterator it = ss.begin();
+				if ( it->first == "" ) {
+					++it;
+				}
+				if ( it!= ss.end() ) {
+					ServerSettingsStruct & s = it->second;
+					profileName = Utf8ToWCstring(s.authData.Login);
+					serverProfile_.setProfileName(profileName);
+					serverProfile_.setFolderId(s.defaultFolder.getId());
+					serverProfile_.setFolderTitle(s.defaultFolder.getTitle());
+					serverProfile_.setFolderUrl(s.defaultFolder.viewUrl);
+				} else {
+					serverProfile_.setProfileName("");
+					serverProfile_.setFolderId("");
+					serverProfile_.setFolderTitle("");
+					serverProfile_.setFolderUrl("");
+				}
+				
 			}
 		}
 
@@ -205,7 +249,7 @@ void CServerSelectorControl::serverChanged() {
 		
 	}
 
-	::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_CHANGE, (WPARAM)m_hWnd, 0);
+	notifyChange();
 
 	updateInfoLabel();
 }
@@ -291,14 +335,168 @@ void CServerSelectorControl::setServersMask(int mask) {
 	serversMask_ = mask;
 }
 
+void CServerSelectorControl::notifyChange()
+{
+	::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_CHANGE, (WPARAM)m_hWnd, 0);
+}
+
 LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-	CServerParamsDlg serverParamsDlg(serverProfile_, true);
-	if ( serverParamsDlg.DoModal(m_hWnd) == IDOK ) {
-		serverProfile_ = serverParamsDlg.serverProfile();
-		::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_CHANGE, (WPARAM)m_hWnd, 0);
-	}
-	//serverProfile_.serverSettings() = serverParamsDlg.serverProfile();
+	
+	CMenu sub;	
+	MENUITEMINFO mi;
+	ZeroMemory(&mi,sizeof(mi));
+	mi.cbSize = sizeof(mi);
+	mi.fMask = MIIM_TYPE|MIIM_ID;
+	mi.fType = MFT_STRING;
+	sub.CreatePopupMenu();
+	CUploadEngineData* uploadEngine = serverProfile_.uploadEngineData();
+
+
+
+		std::map <std::string, ServerSettingsStruct>& serverUsers = Settings.ServersSettings[WCstringToUtf8(serverProfile_.serverName())];
+
+		if(/*uploadEngine->UsingPlugin &&*/ (serverUsers.size()>1 || serverUsers.find("") == serverUsers.end()) )
+		{
+			bool addedSeparator = false;
+			
+			int i =0;
+			//ShowVar((int)serverUsers.size() );
+			if ( serverUsers.size() && !serverProfile_.profileName().IsEmpty()) {
+				mi.wID = IDC_LOGINMENUITEM;
+				mi.dwTypeData  = TR("»зменить данные учетной записи");
+				sub.InsertMenuItem(i++, true, &mi);
+			} else {
+				addedSeparator = true;
+			}
+
+			menuOpenedUserNames_.clear();
+
+			int command = IDC_USERNAME_FIRST_ID;
+			HICON userIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONUSER));
+			
+			for( std::map <std::string, ServerSettingsStruct>::iterator it = serverUsers.begin(); it!= serverUsers.end(); ++it ) {
+				//	CString login = Utf8ToWCstring(it->second.authData.Login);
+				CString login = Utf8ToWCstring(it->first);
+				if (!login.IsEmpty() )/*&& it->second.authData.DoAuth**/ {
+					if ( !addedSeparator ) {
+						ZeroMemory(&mi,sizeof(mi));
+						mi.cbSize = sizeof(mi);
+						mi.fMask = MIIM_TYPE|MIIM_ID;
+						mi.wID =  1;
+						mi.fType = MFT_SEPARATOR;
+
+						sub.InsertMenuItem(i++, true, &mi);
+						addedSeparator =  true;
+					}
+					ZeroMemory(&mi,sizeof(mi));
+					mi.cbSize = sizeof(mi);
+
+					mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
+					mi.fType = MFT_STRING;
+					mi.wID = command;
+
+					mi.dwTypeData  = (LPWSTR)(LPCTSTR)login;
+
+					mi.hbmpItem =  WinUtils::IsVista() ? iconBitmapUtils_->HIconToBitmapPARGB32(userIcon): HBMMENU_CALLBACK;
+					if ( mi.hbmpItem ) {
+						mi.fMask |= MIIM_BITMAP;
+					}
+					menuOpenedUserNames_.push_back(login);
+					sub.InsertMenuItem(i++, true, &mi);
+					command++;
+				}
+
+			}
+			if ( uploadEngine->NeedAuthorization != CUploadEngineData::naObligatory ) {
+				ZeroMemory(&mi,sizeof(mi));
+				mi.cbSize = sizeof(mi);
+				mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
+				mi.fType = MFT_STRING;
+				mi.wID = IDC_NO_ACCOUNT;
+
+				mi.dwTypeData  = (LPWSTR)(LPCTSTR)TR("<без авторизации>");
+				sub.InsertMenuItem(i++, true, &mi);
+			}
+
+
+
+			ZeroMemory(&mi,sizeof(mi));
+			mi.cbSize = sizeof(mi);
+			mi.fMask = MIIM_TYPE|MIIM_ID;
+			mi.wID = 1;
+			mi.fType = MFT_SEPARATOR;
+
+
+			sub.InsertMenuItem(i++, true, &mi);
+
+
+			ZeroMemory(&mi,sizeof(mi));
+			mi.cbSize = sizeof(mi);
+			mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
+			mi.fType = MFT_STRING;
+			mi.wID = IDC_ADD_ACCOUNT ;
+
+			mi.dwTypeData  = (LPWSTR)(LPCTSTR)TR("ƒобавить учетную запись...");
+
+
+			sub.InsertMenuItem(i++, true, &mi);
+			sub.SetMenuDefaultItem(0,TRUE);
+		} else {
+			addAccount();
+			return 0;
+		}
+		
+		RECT rc={0,0,0,0};
+		::GetClientRect(GetDlgItem(IDC_ACCOUNTINFO), &rc);
+		::ClientToScreen(GetDlgItem(IDC_ACCOUNTINFO), (LPPOINT)&rc);
+		::ClientToScreen(GetDlgItem(IDC_ACCOUNTINFO), 1+(LPPOINT)&rc);
+
+	TPMPARAMS excludeArea;
+	ZeroMemory(&excludeArea, sizeof(excludeArea));
+	excludeArea.cbSize = sizeof(excludeArea);
+	excludeArea.rcExclude = rc;
+	sub.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
 	updateInfoLabel();
+	return 0;
+}
+
+LRESULT CServerSelectorControl::OnAddAccountClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	addAccount();
+	return 0;
+}
+
+LRESULT CServerSelectorControl::OnLoginMenuItemClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+
+	CLoginDlg dlg(serverProfile_);
+	ServerSettingsStruct & ss = serverProfile_.serverSettings();
+	std::string UserName = ss.authData.Login; 
+	bool prevAuthEnabled = ss.authData.DoAuth;
+	if( dlg.DoModal(m_hWnd) == IDOK)
+	{
+		if(UserName != ss.authData.Login || ss.authData.DoAuth!=prevAuthEnabled)
+		{
+			serverProfile_.setFolderId("");
+			serverProfile_.setFolderTitle("");
+			serverProfile_.setFolderUrl("");
+			iuPluginManager.UnloadPlugins();
+			_EngineList->DestroyCachedEngine(WCstringToUtf8(serverProfile_.serverName()), WCstringToUtf8(serverProfile_.profileName()));
+		}
+		notifyChange();
+		updateInfoLabel();
+	}
+	return 0;
+}
+
+LRESULT CServerSelectorControl::OnNoAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	serverProfile_.setProfileName("");
+	serverProfile_.setFolderId("");
+	serverProfile_.setFolderTitle("");
+	serverProfile_.setFolderUrl("");
+	updateInfoLabel();
+	notifyChange();
 	return 0;
 }
 
@@ -332,5 +530,21 @@ LRESULT CServerSelectorControl::OnImageProcessingParamsClicked(WORD wNotifyCode,
 	if ( dlg.DoModal(m_hWnd) == IDOK) {
 		serverProfile_.setImageUploadParams(dlg.imageUploadParams());
 	}
+	return 0;
+}
+
+LRESULT CServerSelectorControl::OnUserNameMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	int userNameIndex = wID - IDC_USERNAME_FIRST_ID;
+	CString userName = menuOpenedUserNames_[userNameIndex];
+	serverProfile_.setProfileName(userName);
+	ServerSettingsStruct& sss = serverProfile_.serverSettings();
+
+	serverProfile_.setFolderId(sss.defaultFolder.getId());
+	serverProfile_.setFolderTitle(sss.defaultFolder.getTitle());
+	serverProfile_.setFolderUrl(sss.defaultFolder.viewUrl);
+
+	notifyChange();
+	updateInfoLabel();
 	return 0;
 }
