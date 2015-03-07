@@ -110,6 +110,7 @@ public:
 	void setFolderUrl(std::string newUrl);
 	bool isNull();
 	bool UseDefaultSettings;
+	void clearFolderInfo();
 
 	void bind(SettingsNode& n);
 

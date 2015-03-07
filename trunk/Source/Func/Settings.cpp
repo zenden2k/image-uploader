@@ -139,6 +139,13 @@ bool ServerProfile::isNull()
 	return serverName_.IsEmpty();
 }
 
+void ServerProfile::clearFolderInfo()
+{
+	folderUrl_.clear();
+	folderTitle_.clear();
+	folderId_.clear();
+}
+
 void ServerProfile::bind(SettingsNode& serverNode)
 {
 	serverNode["@Name"].bind(serverName_);
@@ -659,6 +666,26 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 	LoadServerProfiles( settingsNode.GetChild("Uploading").GetChild("ServerProfiles") );
 #endif
 	LoadAccounts( xml.getRoot( "ImageUploader" ).GetChild( "Settings" ).GetChild( "ServersParams" ) );
+
+	// Fixing profies
+	if ( !imageServer.profileName().IsEmpty() &&  ServersSettings[WCstringToUtf8(imageServer.serverName())].find(WCstringToUtf8(imageServer.profileName())) == ServersSettings[WCstringToUtf8(imageServer.serverName())].end() ) {
+		imageServer.setProfileName("");
+	}
+
+	if ( !fileServer.profileName().IsEmpty() &&  ServersSettings[WCstringToUtf8(fileServer.serverName())].find(WCstringToUtf8(fileServer.profileName())) == ServersSettings[WCstringToUtf8(fileServer.serverName())].end() ) {
+		fileServer.setProfileName("");
+	}
+	if ( !contextMenuServer.profileName().IsEmpty() &&  ServersSettings[WCstringToUtf8(contextMenuServer.serverName())].find(WCstringToUtf8(contextMenuServer.profileName())) == ServersSettings[WCstringToUtf8(contextMenuServer.serverName())].end() ) {
+		contextMenuServer.setProfileName("");
+	}
+
+	if ( !quickScreenshotServer.profileName().IsEmpty() &&  ServersSettings[WCstringToUtf8(quickScreenshotServer.serverName())].find(WCstringToUtf8(quickScreenshotServer.profileName())) == ServersSettings[WCstringToUtf8(quickScreenshotServer.serverName())].end() ) {
+		quickScreenshotServer.setProfileName("");
+	}
+
+	if ( !urlShorteningServer.profileName().IsEmpty() &&  ServersSettings[WCstringToUtf8(urlShorteningServer.serverName())].find(WCstringToUtf8(urlShorteningServer.profileName())) == ServersSettings[WCstringToUtf8(urlShorteningServer.serverName())].end() ) {
+		urlShorteningServer.setProfileName("");
+	}
 
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 	// Loading some settings from registry

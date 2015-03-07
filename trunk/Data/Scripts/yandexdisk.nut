@@ -90,7 +90,21 @@ function reg_replace(str, pattern, replace_with)
 	return resultStr;
 }
 
+function _WriteLog(type,message) {
+	try {
+		WriteLog(type, message);
+	} catch (ex ) {
+		print(type + " : " + message);
+	}
+}
 
+function checkResponse() {
+	if ( nm.responseCode() == 0 || (nm.responseCode() >= 400 && nm.responseCode() <= 499)) {
+		_WriteLog("error", "Response code " + nm.responseCode() + "\r\n" + nm.errorString() );
+		return 0;
+	}
+	return 1;
+}
 
 
 function isSuccessCode(code) {
@@ -117,10 +131,6 @@ function msgBox(text) {
 	return true;
 }
 
-function doLogin() 
-{ 
-	return 1; //Success login
-} 
 
 function internal_parseAlbumList(data,list,parentid)
 {
@@ -168,7 +178,7 @@ function internal_loadAlbumList(list)
 {
 if(token == "")
 	{
-		if(!doLogin())
+		if(!DoLogin())
 			return 0;
 	}
 	
@@ -196,7 +206,7 @@ function GetFolderList(list)
 {
 	/*if(token == "")
 	{
-		if(!doLogin())
+		if(!DoLogin())
 			return 0;
 	}*/
 
@@ -208,7 +218,7 @@ function CreateFolder(parentAlbum,album)
 {
 	if(token == "")
 	{
-		if(!doLogin())
+		if(!DoLogin())
 			return 0;
 	}
 	local folderName = album.getTitle();
@@ -282,7 +292,7 @@ function openUrl(url) {
 }
 
 
-function doLogin() 
+function DoLogin() 
 { 
 	if ( enableOAuth ) {
 		token = ServerParams.getParam("token");
@@ -294,7 +304,7 @@ function doLogin()
 					login = OAuthLogin;
 				}
 			}
-			return true;
+			return 1;
 		}
 		openUrl("https://oauth.yandex.ru/authorize?response_type=code&client_id=28d8d9c854554812ad8b60c150375462");
 		
@@ -306,6 +316,10 @@ function doLogin()
 			nm.addQueryParam("client_id", "28d8d9c854554812ad8b60c150375462");
 			nm.addQueryParam("client_secret", "7d6fee42d583498ea7740bcf8b753197");
 			nm.doPost("");
+
+			if ( !checkResponse() ) {
+				return 0;
+			}
 				
 			local accessToken = regex_simple(nm.responseBody(), "access_token\": \"(.+)\",", 0);
 			if ( accessToken != "" ) {
@@ -328,10 +342,10 @@ function doLogin()
 				} */
 		
 			
-				return true;
+				return 1;
 			} else {
-				print("Unable to get OAuth token!");
-				return false;
+				_WriteLog("error", "Unable to get OAuth token!");
+				return 0;
 			}
 		}
 	}
@@ -342,7 +356,7 @@ function doLogin()
 
 	if(login == "" || pass=="")
 	{
-		print("E-mail and password should not be empty!");
+		_WriteLog("error","E-mail and password should not be empty!");
 		return 0;
 	}
 	
@@ -353,7 +367,7 @@ function  UploadFile(FileName, options)
 {
 	if(token == "")
 		{
-			if(!doLogin())
+			if(!DoLogin())
 				return 0;
 		}
 	local ansiFileName = ExtractFileName(FileName);
@@ -421,7 +435,7 @@ function  UploadFile(FileName, options)
 	options.setViewUrl(viewUrl);
 	} catch ( ex ) {
 		//msgBox(ex.tostring());
-		print(ex.tostring());
+		_WriteLog("error", ex.tostring());
 		return 0;
 	}
 	

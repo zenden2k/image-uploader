@@ -641,6 +641,25 @@ int CScriptUploadEngine::getServerParamList(std::map<Utf8String, Utf8String>& li
 	return 1;
 }
 
+int CScriptUploadEngine::doLogin()
+{
+	SquirrelObject arr;
+
+	try
+	{
+		SquirrelFunction<int> func(m_Object, _SC("DoLogin"));
+		if (func.func.IsNull())
+			return false;
+		return func();
+	}
+	catch (SquirrelError& e)
+	{
+		Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + std::string(e.desc));
+		return false;
+	}
+	FlushSquirrelOutput();
+}
+
 int CScriptUploadEngine::modifyFolder(CFolderItem& folder)
 {
 	try
@@ -732,6 +751,24 @@ bool CScriptUploadEngine::supportsSettings()
 	}
 	FlushSquirrelOutput();
 	return true;
+}
+
+bool CScriptUploadEngine::supportsBeforehandAuthorization()
+{
+	SquirrelObject arr;
+
+	try
+	{
+		SquirrelFunction<SquirrelObject> func(m_Object, _SC("DoLogin"));
+		if (func.func.IsNull())
+			return false;
+	}
+	catch (SquirrelError& e)
+	{
+		Log(ErrorInfo::mtError, "CScriptUploadEngine::supportsBeforehandAuthorization\r\n" + std::string(e.desc));
+		return false;
+	}
+	FlushSquirrelOutput();
 }
 
 int CScriptUploadEngine::RetryLimit()

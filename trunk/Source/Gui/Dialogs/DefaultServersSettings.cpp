@@ -43,6 +43,15 @@ CDefaultServersSettings::~CDefaultServersSettings()
 	delete urlShortenerServerSelector_;
 }
 
+LRESULT CDefaultServersSettings::OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	imageServerSelector_->updateServerList();
+	fileServerSelector_->updateServerList();
+	trayServerSelector_->updateServerList();
+	contextMenuServerSelector_->updateServerList();
+	return 0;
+}
+
 LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);

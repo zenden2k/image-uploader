@@ -27,6 +27,7 @@
 #include "resource.h"       // main symbols
 #include "Gui/Controls/MyImage.h"
 #include "Gui/Dialogs/settingspage.h"
+#include <Gui/COntrols/ServerSelectorControl.h>
 class CServerSelectorControl;
 class CDefaultServersSettings : public CDialogImpl<CDefaultServersSettings>, 
 	                      public CSettingsPage	
@@ -41,11 +42,14 @@ class CDefaultServersSettings : public CDialogImpl<CDefaultServersSettings>,
 	protected:
 		BEGIN_MSG_MAP(CDefaultServersSettings)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			MESSAGE_HANDLER(WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED, OnServerListChanged)
+			
 		END_MSG_MAP()
 		// Handler prototypes:
 		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+		LRESULT OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 protected:
 	CServerSelectorControl *imageServerSelector_;

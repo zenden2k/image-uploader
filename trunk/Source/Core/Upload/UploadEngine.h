@@ -132,6 +132,7 @@ class CUploadEngineData
 		bool Debug;
 		bool ImageHost;
 		bool SupportThumbnails;
+		bool BeforehandAuthorization;
 		int NeedAuthorization;
 		bool NeedPassword;
 		int64_t MaxFileSize;

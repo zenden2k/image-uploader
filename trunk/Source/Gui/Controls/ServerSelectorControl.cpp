@@ -30,7 +30,11 @@
 #include <Func/WinUtils.h>
 #include <Gui/IconBitmapUtils.h>
 #include <Gui/Dialogs/LoginDlg.h>
+#include <Gui/Dialogs/AddFtpServerDialog.h>
+#include <Gui/Dialogs/AddDirectoryServerDialog.h>
 
+const char CServerSelectorControl::kAddFtpServer[]=("<add_ftp_server>");
+const char CServerSelectorControl::kAddDirectoryAsServer[]=("<add_directory_as_server>");
 // CServerSelectorControl
 CServerSelectorControl::CServerSelectorControl(bool defaultServer)
 {
@@ -70,63 +74,7 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 	CIcon deleteIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONDELETE));
 	serverComboBox_.Attach( GetDlgItem( IDC_SERVERCOMBOBOX ) );
 
-	comboBoxImageList_.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
-
-	if ( showDefaultServerItem_ ) {
-		serverComboBox_.AddItem(TR("По умолчанию"), -1, -1, 0, reinterpret_cast<LPARAM>( strdup("default") ));
-	}
-	serverComboBox_.AddItem( /*_T("<") +*/ CString(TR("")) /*+ _T(">")*/, -1, -1, 0, reinterpret_cast<LPARAM>( strdup("random") ) );
-	
-	CIcon hImageIcon = NULL, hFileIcon = NULL;
-	int selectedIndex = 0;
-
-	CUploadEngineData *uploadEngine = _EngineList->byName( Settings.getServerName() );
-	int addedItems = 0;
-	std::string selectedServerName = uploadEngine ? uploadEngine->Name : "" ;
-	for ( int mask = 1; mask <= 4; mask*=2 ) {
-		int currentLoopMask = mask & serversMask_;
-		if ( addedItems && currentLoopMask ) {
-			TCHAR line[40];
-			for ( int i=0; i < ARRAY_SIZE(line)-1; i++ ) {
-				line[i] = '-';
-			}
-			line[ARRAY_SIZE(line)-1] = 0;
-
-			serverComboBox_.AddItem(line, -1, -1, 0,  0 );
-		}
-		for( int i = 0; i < _EngineList->count(); i++) {	
-			CUploadEngineData * ue = _EngineList->byIndex( i ); 
-			
-			if ( serversMask_ != smUrlShorteners && ue->Type != CUploadEngineData::TypeFileServer && ue->Type != CUploadEngineData::TypeImageServer) {
-				continue;
-			}
-			if ( ue->Type == CUploadEngineData::TypeImageServer && !(currentLoopMask & smImageServers) ) {
-				continue;
-			}
-			if ( ue->Type == CUploadEngineData::TypeFileServer && !(currentLoopMask & smFileServers) ) {
-				continue;
-			}
-
-			if ( ue->Type == CUploadEngineData::TypeUrlShorteningServer && !(currentLoopMask & smUrlShorteners) ) {
-				continue;
-			}
-			HICON hImageIcon = _EngineList->getIconForServer(ue->Name);
-			int nImageIndex = -1;
-			if ( hImageIcon ) {
-				nImageIndex = comboBoxImageList_.AddIcon( hImageIcon);
-			}
-			char *serverName = new char[ue->Name.length() + 1];
-			lstrcpyA( serverName, ue->Name.c_str() );
-			int itemIndex = serverComboBox_.AddItem( Utf8ToWCstring( ue->Name ), nImageIndex, nImageIndex, 1, reinterpret_cast<LPARAM>( serverName ) );
-			if ( ue->Name == selectedServerName ){
-				selectedIndex = itemIndex;
-			}
-			addedItems++;
-		}
-	}
-	serverComboBox_.SetImageList( comboBoxImageList_ );
-	serverComboBox_.SetCurSel( selectedIndex );
-	serverChanged();
+	updateServerList();
 	GuiTools::ShowDialogItem(m_hWnd, IDC_IMAGEPROCESSINGPARAMS, showImageProcessingParamsLink_);
 
 	return 1;  // Let the system set the focus
@@ -205,10 +153,26 @@ void CServerSelectorControl::serverChanged() {
 		std::string serverName = lpstrServerName;
 		CString serverNameW = Utf8ToWCstring( serverName );
 		serverProfile_.setServerName(serverNameW);
-		
-		if ( serverName != CMyEngineList::DefaultServer && serverName != CMyEngineList::RandomServer ) {
-			
+		if ( serverName == kAddFtpServer ) {
+			CAddFtpServerDialog dlg(_EngineList);
+			if ( dlg.DoModal(m_hWnd) == IDOK ) {
+				serverProfile_ = ServerProfile();
+				serverProfile_.setServerName(dlg.createdServerName());
+				serverProfile_.setProfileName(dlg.createdServerLogin());
+				serverProfile_.clearFolderInfo();
+				notifyServerListChanged();
 
+			}
+		} else if (serverName == kAddDirectoryAsServer  ) {
+			CAddDirectoryServerDialog dlg(_EngineList);
+			if ( dlg.DoModal(m_hWnd) == IDOK ) {
+				serverProfile_ = ServerProfile();
+				serverProfile_.setServerName(dlg.createdServerName());
+				serverProfile_.setProfileName("");
+				serverProfile_.clearFolderInfo();
+				notifyServerListChanged();
+			}
+		} else if ( serverName != CMyEngineList::DefaultServer && serverName != CMyEngineList::RandomServer ) {
 			uploadEngineData = _EngineList->byName( serverNameW );
 			if ( !uploadEngineData ) {
 				return ;
@@ -340,6 +304,77 @@ void CServerSelectorControl::notifyChange()
 	::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_CHANGE, (WPARAM)m_hWnd, 0);
 }
 
+void CServerSelectorControl::notifyServerListChanged()
+{
+	::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED, (WPARAM)m_hWnd, 0);
+}
+
+void CServerSelectorControl::updateServerList()
+{
+	serverComboBox_.ResetContent();
+	comboBoxImageList_.Destroy();
+	comboBoxImageList_.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
+	
+
+	if ( showDefaultServerItem_ ) {
+		serverComboBox_.AddItem(TR("По умолчанию"), -1, -1, 0, reinterpret_cast<LPARAM>( strdup("default") ));
+	}
+	serverComboBox_.AddItem( /*_T("<") +*/ CString(TR("")) /*+ _T(">")*/, -1, -1, 0, reinterpret_cast<LPARAM>( strdup("random") ) );
+
+	CIcon hImageIcon = NULL, hFileIcon = NULL;
+	int selectedIndex = 0;
+	int addedItems = 0;
+	std::string selectedServerName = WCstringToUtf8(serverProfile_.serverName());
+	TCHAR line[40];
+	for ( int i=0; i < ARRAY_SIZE(line)-1; i++ ) {
+		line[i] = '-';
+	}
+	line[ARRAY_SIZE(line)-1] = 0;
+	for ( int mask = 1; mask <= 4; mask*=2 ) {
+		int currentLoopMask = mask & serversMask_;
+		if ( addedItems && currentLoopMask ) {
+			serverComboBox_.AddItem(line, -1, -1, 0,  0 );
+		}
+		for( int i = 0; i < _EngineList->count(); i++) {	
+			CUploadEngineData * ue = _EngineList->byIndex( i ); 
+
+			if ( serversMask_ != smUrlShorteners && ue->Type != CUploadEngineData::TypeFileServer && ue->Type != CUploadEngineData::TypeImageServer) {
+				continue;
+			}
+			if ( ue->Type == CUploadEngineData::TypeImageServer && !(currentLoopMask & smImageServers) ) {
+				continue;
+			}
+			if ( ue->Type == CUploadEngineData::TypeFileServer && !(currentLoopMask & smFileServers) ) {
+				continue;
+			}
+
+			if ( ue->Type == CUploadEngineData::TypeUrlShorteningServer && !(currentLoopMask & smUrlShorteners) ) {
+				continue;
+			}
+			HICON hImageIcon = _EngineList->getIconForServer(ue->Name);
+			int nImageIndex = -1;
+			if ( hImageIcon ) {
+				nImageIndex = comboBoxImageList_.AddIcon( hImageIcon);
+			}
+			char *serverName = new char[ue->Name.length() + 1];
+			lstrcpyA( serverName, ue->Name.c_str() );
+			int itemIndex = serverComboBox_.AddItem( Utf8ToWCstring( ue->Name ), nImageIndex, nImageIndex, 1, reinterpret_cast<LPARAM>( serverName ) );
+			if ( ue->Name == selectedServerName ){
+				selectedIndex = itemIndex;
+			}
+			addedItems++;
+		}
+	}
+	serverComboBox_.AddItem(line, -1, -1, 0,  0 );
+	serverComboBox_.AddItem(  TR("Добавить FTP сервер..."), -1, -1, 1, reinterpret_cast<LPARAM>( kAddFtpServer ) );
+	serverComboBox_.AddItem(  TR("Добавить локальную папку как сервер..."), -1, -1, 1, reinterpret_cast<LPARAM>( kAddDirectoryAsServer ) );
+
+
+	serverComboBox_.SetImageList( comboBoxImageList_ );
+	serverComboBox_.SetCurSel( selectedIndex );
+	serverChanged();
+}
+
 LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
 	
 	CMenu sub;	
@@ -468,20 +503,24 @@ LRESULT CServerSelectorControl::OnAddAccountClick(WORD wNotifyCode, WORD wID, HW
 
 LRESULT CServerSelectorControl::OnLoginMenuItemClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-
-	CLoginDlg dlg(serverProfile_);
-	ServerSettingsStruct & ss = serverProfile_.serverSettings();
+	ServerSettingsStruct  ss = serverProfile_.serverSettings();
 	std::string UserName = ss.authData.Login; 
-	bool prevAuthEnabled = ss.authData.DoAuth;
+	//bool prevAuthEnabled = ss.authData.DoAuth;
+	ServerProfile copy = serverProfile_;
+	CLoginDlg dlg(copy);
+	
 	if( dlg.DoModal(m_hWnd) == IDOK)
 	{
-		if(UserName != ss.authData.Login || ss.authData.DoAuth!=prevAuthEnabled)
+		copy.setProfileName(dlg.accountName());
+		if(Utf8ToWCstring(UserName) != dlg.accountName())
 		{
-			serverProfile_.setFolderId("");
-			serverProfile_.setFolderTitle("");
-			serverProfile_.setFolderUrl("");
-			iuPluginManager.UnloadPlugins();
-			_EngineList->DestroyCachedEngine(WCstringToUtf8(serverProfile_.serverName()), WCstringToUtf8(serverProfile_.profileName()));
+			
+			copy.setFolderId("");
+			copy.setFolderTitle("");
+			copy.setFolderUrl("");
+			serverProfile_ = copy;
+			//iuPluginManager.UnloadPlugins();
+			//_EngineList->DestroyCachedEngine(WCstringToUtf8(serverProfile_.serverName()), WCstringToUtf8(serverProfile_.profileName()));
 		}
 		notifyChange();
 		updateInfoLabel();
