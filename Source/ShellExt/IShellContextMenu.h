@@ -41,6 +41,7 @@ struct Shell_ContextMenuItem
 {
 	int cmd;
 	CString text;
+	CString commandArgument;
 	WORD icon;
 	int id;
 };
@@ -48,6 +49,7 @@ struct Shell_ContextMenuItem
 #define MENUITEM_UPLOADONLYIMAGES 1
 #define MENUITEM_IMPORTVIDEO 2
 #define MENUITEM_MEDIAINFO 3
+#define MENUITEM_SERVER_PROFILE 4
 
 CString GetDllFolder();
 
@@ -84,7 +86,9 @@ class ATL_NO_VTABLE CIShellContextMenu :
 		void FinalRelease()
 		{
 		}
-		bool MyInsertMenu(HMENU hMenu, int pos, UINT id, int nInternalCommand, const LPTSTR szTitle, int firstCmd, bool UseBitmaps = true, HBITMAP bm=0,WORD resid=0);
+		bool MyInsertMenu(HMENU hMenu, int pos, UINT id, int nInternalCommand, const LPCTSTR szTitle, int firstCmd, CString commandArgument = CString(), bool UseBitmaps = true, HBITMAP bm=0,WORD resid=0,HICON ico = 0);
+		bool MyInsertMenuSeparator(HMENU hMenu, int pos, UINT id);
+
 		bool m_bMediaInfoInstalled;
 		IconBitmapUtils m_IconBitmapUtils;
 	HBITMAP IconToBitmap(HINSTANCE hInst, UINT uIcon);

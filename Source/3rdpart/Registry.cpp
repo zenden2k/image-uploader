@@ -801,7 +801,7 @@ BOOL CRegistry::WriteDword(CString strName, DWORD dwValue)
 		KEY_WRITE, &hKey) != ERROR_SUCCESS) return FALSE;
 	
 	if (::RegSetValueEx(hKey, LPCTSTR(strName), 0,
-		REG_DWORD, (LPBYTE)dwValue, sizeof(dwValue))
+		REG_DWORD, (LPBYTE)&dwValue, sizeof(dwValue))
 		 != ERROR_SUCCESS) bSuccess = FALSE;
 		
 	if (!m_bLazyWrite) ::RegFlushKey(hKey);

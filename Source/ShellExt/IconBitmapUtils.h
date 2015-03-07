@@ -50,6 +50,7 @@ public:
 	HRESULT ConvertBufferToPARGB32(HPAINTBUFFER hPaintBuffer, HDC hdc, HICON hicon, SIZE& sizIcon);
 	bool HasAlpha(__in Gdiplus::ARGB *pargb, SIZE& sizImage, int cxRow);
 	HRESULT ConvertToPARGB32(HDC hdc, __inout Gdiplus::ARGB *pargb, HBITMAP hbmp, SIZE& sizImage, int cxRow);
+	HBITMAP IconBitmapUtils::HIconToBitmapPARGB32(HICON hIcon) ;
 
 
 private:

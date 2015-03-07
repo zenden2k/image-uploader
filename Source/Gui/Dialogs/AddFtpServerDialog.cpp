@@ -82,6 +82,7 @@ LRESULT CAddFtpServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
 	if ( slm.addFtpServer(IuCoreUtils::WstringToUtf8((LPCTSTR)connectionName), IuCoreUtils::WstringToUtf8((LPCTSTR)serverName), IuCoreUtils::WstringToUtf8((LPCTSTR)login), 
 		IuCoreUtils::WstringToUtf8((LPCTSTR)password), IuCoreUtils::WstringToUtf8((LPCTSTR)remoteDirectory), IuCoreUtils::WstringToUtf8((LPCTSTR)downloadUrl)) ) {
 			createdServerName_ = IuCoreUtils::Utf8ToWstring(slm.createdServerName()).c_str();
+			createdServerLogin_ = login;
 			EndDialog(wID);
 	} else {
 		CString errorMessage = TR("Не удалось добавить сервер.");
@@ -147,6 +148,11 @@ LRESULT CAddFtpServerDialog::OnDownloadUrlEditChange(WORD wNotifyCode, WORD wID,
 CString CAddFtpServerDialog::createdServerName()
 {
 	return createdServerName_;
+}
+
+CString CAddFtpServerDialog::createdServerLogin()
+{
+	return createdServerLogin_;
 }
 
 void CAddFtpServerDialog::GenerateDownloadLink()

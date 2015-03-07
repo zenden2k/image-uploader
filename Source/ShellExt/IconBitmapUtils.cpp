@@ -128,8 +128,13 @@ HBITMAP IconBitmapUtils::IconToBitmapPARGB32(HINSTANCE hInst, UINT uIcon)
 	std::map<UINT, HBITMAP>::iterator bitmap_it = bitmaps.lower_bound(uIcon);
 	if (bitmap_it != bitmaps.end() && bitmap_it->first == uIcon)
 		return bitmap_it->second;
-
-	HICON hIcon = (HICON)LoadImage(hInst, MAKEINTRESOURCE(uIcon), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
+	int w = GetSystemMetrics(SM_CXSMICON);
+	int h = GetSystemMetrics(SM_CYSMICON);
+	if ( w > 16 ) {
+		w = 32;
+		h = 32;
+	}
+	HICON hIcon = (HICON)LoadImage(hInst, MAKEINTRESOURCE(uIcon), IMAGE_ICON, w, h, LR_DEFAULTCOLOR);
 	if (!hIcon)
 		return NULL;
 
@@ -308,3 +313,56 @@ HRESULT IconBitmapUtils::ConvertToPARGB32(HDC hdc, __inout Gdiplus::ARGB *pargb,
 
 	return hr;
 }
+
+
+HBITMAP IconBitmapUtils::HIconToBitmapPARGB32(HICON hIcon) {
+	if (pfnBeginBufferedPaint == NULL || pfnEndBufferedPaint == NULL || pfnGetBufferedPaintBits == NULL)
+		return NULL;
+
+	SIZE sizIcon;
+	sizIcon.cx = GetSystemMetrics(SM_CXSMICON);
+	sizIcon.cy = GetSystemMetrics(SM_CYSMICON);
+
+	RECT rcIcon;
+	SetRect(&rcIcon, 0, 0, sizIcon.cx, sizIcon.cy);
+	HBITMAP hBmp = NULL;
+
+	HDC hdcDest = CreateCompatibleDC(NULL);
+	if (hdcDest)
+	{
+		if (SUCCEEDED(Create32BitHBITMAP(hdcDest, &sizIcon, NULL, &hBmp)))
+		{
+			HBITMAP hbmpOld = (HBITMAP)SelectObject(hdcDest, hBmp);
+			if (hbmpOld)
+			{
+				BLENDFUNCTION bfAlpha = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
+				BP_PAINTPARAMS paintParams = {0};
+				paintParams.cbSize = sizeof(paintParams);
+				paintParams.dwFlags = BPPF_ERASE;
+				paintParams.pBlendFunction = &bfAlpha;
+
+				HDC hdcBuffer;
+				HPAINTBUFFER hPaintBuffer = pfnBeginBufferedPaint(hdcDest, &rcIcon, BPBF_DIB, &paintParams, &hdcBuffer);
+				if (hPaintBuffer)
+				{
+					if (DrawIconEx(hdcBuffer, 0, 0, hIcon, sizIcon.cx, sizIcon.cy, 0, NULL, DI_NORMAL))
+					{
+						// If icon did not have an alpha channel we need to convert buffer to PARGB
+						ConvertBufferToPARGB32(hPaintBuffer, hdcDest, hIcon, sizIcon);
+					}
+
+					// This will write the buffer contents to the destination bitmap
+					pfnEndBufferedPaint(hPaintBuffer, TRUE);
+				}
+
+				SelectObject(hdcDest, hbmpOld);
+			}
+		}
+
+		DeleteDC(hdcDest);
+	}
+
+
+	return hBmp;
+}
+

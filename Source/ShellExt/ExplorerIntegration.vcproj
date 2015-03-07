@@ -242,7 +242,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				FavorSizeOrSpeed="2"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Source\&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Source\&quot;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;IU_SHELLEXT"
 				RuntimeLibrary="0"
 				RuntimeTypeInfo="false"
@@ -832,6 +832,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\Func\IuCommonFunctions.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\Func\LangClass.cpp"
 				>
 			</File>
@@ -929,6 +933,10 @@
 			</File>
 			<File
 				RelativePath="..\Core\Video\VideoUtils.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Func\WinUtils.cpp"
 				>
 			</File>
 		</Filter>

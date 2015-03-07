@@ -77,14 +77,6 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	
 	SetDlgItemText(IDC_IMAGEEDITORPATH, Settings.ImageEditorPath);
 	
-	for(int i=0; i<_EngineList->count(); i++)
-	{	
-		CString buf = _T(" ");
-		//TCHAR buf[300] = _T(" ");
-		buf+= Utf8ToWCstring(_EngineList->byIndex(i)->Name);
-		SendDlgItemMessage(IDC_SERVERLIST, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)buf);
-	}
-	SendDlgItemMessage(IDC_SERVERLIST,CB_SETCURSEL, Settings.getQuickServerID());
 
 	TCHAR buf[MAX_PATH];
 	CString buf2;

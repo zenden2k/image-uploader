@@ -63,6 +63,12 @@
 #define IDC_USERNAME_FIRST_ID 20000
 #define IDC_USERNAME_LAST_ID 21000
 
+
+#define IDC_ADD_ACCOUNT 21001
+#define IDC_ADD_ACCOUNT_FROM_FILE_SERVER 21002
+#define IDC_NO_ACCOUNT 21003
+#define IDC_NO_ACCOUNT_FROM_FILE_SERVER 21004
+
 class CMyEngineList;
 class IconBitmapUtils;
 
@@ -94,6 +100,12 @@ class CUploadSettings :
 		COMMAND_HANDLER(IDC_OPENREGISTERURL+1, BN_CLICKED, OnOpenSignupPage)
 		COMMAND_HANDLER(IDC_SERVERPARAMS, BN_CLICKED, OnServerParamsClicked)	
 		COMMAND_HANDLER(IDC_SERVERPARAMS+1, BN_CLICKED, OnServerParamsClicked)
+		COMMAND_HANDLER(IDC_ADD_ACCOUNT, BN_CLICKED, OnAddAccountClicked)	
+		COMMAND_HANDLER(IDC_ADD_ACCOUNT_FROM_FILE_SERVER, BN_CLICKED, OnAddAccountClicked)
+		COMMAND_HANDLER(IDC_NO_ACCOUNT, BN_CLICKED, OnNoAccountClicked)	
+		COMMAND_HANDLER(IDC_NO_ACCOUNT_FROM_FILE_SERVER, BN_CLICKED, OnNoAccountClicked)
+
+		
      /* COMMAND_HANDLER(IDC_QUALITYEDIT, EN_KILLFOCUS, OnQualityEditKillFocus)
       COMMAND_HANDLER(IDC_QUALITYEDIT, EN_SETFOCUS, OnQualityEditKillFocus)*/
 		NOTIFY_HANDLER(IDC_IMAGETOOLBAR, TBN_DROPDOWN, OnServerDropDown);
@@ -146,8 +158,10 @@ COMMAND_HANDLER(IDC_IMAGEHEIGHT, EN_CHANGE, OnProfileEditedCommand)
    LRESULT OnResizePresetMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnProfileEditedCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
    LRESULT OnUserNameMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-   
-	int m_nImageServer, m_nFileServer;
+   LRESULT OnAddAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnNoAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
+	//int m_nImageServer, m_nFileServer;
 	void ShowParams();
 	CToolBarCtrl Toolbar;
 	CToolBarCtrl FileServerSelectBar;
@@ -176,6 +190,7 @@ protected:
 	std::string  fileServerLogin_;
 	bool menuOpenedIsImageServer_;
 	std::vector<CString> menuOpenedUserNames_;
+	void selectServer(ServerProfile& sp, int serverIndex);
 public:
    LRESULT OnResizePresetButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
    LRESULT OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);

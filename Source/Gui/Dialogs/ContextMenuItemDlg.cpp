@@ -65,6 +65,10 @@ LRESULT CContextMenuItemDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
 		return 0;
 	}
 	serverProfile_ = imageServerSelector_->serverProfile();
+	if ( serverProfile_.isNull() ) {
+		MessageBox(TR("Вы не выбрали сервер"),TR("Ошибка"), MB_ICONERROR);
+		return 0;
+	}
 
 	EndDialog(wID);
 	return 0;

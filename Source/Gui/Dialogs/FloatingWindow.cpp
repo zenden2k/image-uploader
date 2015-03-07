@@ -81,9 +81,16 @@ bool MyInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP
 
 LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
+	int w = ::GetSystemMetrics(SM_CXSMICON);
+	int h = ::GetSystemMetrics(SM_CYSMICON);
+	if ( w > 32 ) {
+		w = 48;
+	} else if ( w > 16 ) {
+		w = 32;
+	}
+	h = w;
 	m_hIconSmall = (HICON) ::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
-	                                   IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(
-	                                      SM_CYSMICON), LR_DEFAULTCOLOR);
+	                                   IMAGE_ICON, w, h, LR_DEFAULTCOLOR);
 	SetIcon(m_hIconSmall, FALSE);
 
 	RegisterHotkeys();

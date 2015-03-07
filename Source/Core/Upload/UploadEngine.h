@@ -113,6 +113,10 @@ struct ServerSettingsStruct
 	{
 		params[name] = value;
 	}
+
+	bool isEmpty() {
+		return authData.Login.empty() && authData.Password.empty() && !authData.DoAuth && !params.size() && defaultFolder.getId().empty();
+	}
 };
 
 class CUploadEngineData

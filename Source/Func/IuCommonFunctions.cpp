@@ -1,13 +1,18 @@
 #include "IuCommonFunctions.h"
+#ifndef IU_SHELLEXT
 #include "Settings.h"
+#endif
 #include "versioninfo.h"
 #include "WinUtils.h"
+#include <Core/Utils/CoreUtils.h>
+#include "3rdpart/Registry.h"
 
 namespace IuCommonFunctions {
 	 CString IUTempFolder;
 
 	 CString IUCommonTempFolder;
 
+#ifndef IU_SHELLEXT
 const CString GetDataFolder()
 {
 	CString result;
@@ -22,7 +27,7 @@ const CString GetDataFolder()
 	return result;
 }
 
-
+#endif
 const CString GetVersion()
 {
 	return CString(_APP_VER)+_T(".") + _T(BUILD);
@@ -102,6 +107,58 @@ void ClearTempFolder(LPCTSTR folder)
 	{
 		WinUtils::DeleteDir2(folder);
 	}
+}
+
+CString FindDataFolder()
+{
+	CString DataFolder;
+	if (WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"))) {
+		DataFolder     = WinUtils::GetAppFolder() + _T("Data\\");
+		return DataFolder;
+	}
+
+#if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI)
+	{
+		CRegistry Reg;
+		CString lang;
+
+		Reg.SetRootKey(HKEY_CURRENT_USER);
+		if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
+		{
+			CString dir = Reg.ReadString("DataPath");
+
+			if (!dir.IsEmpty() && WinUtils::IsDirectory(dir))
+			{
+				DataFolder = dir;
+				return DataFolder;
+			}
+		}
+	}
+	{
+		CRegistry Reg;
+		Reg.SetRootKey(HKEY_LOCAL_MACHINE);
+		if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
+		{
+			CString dir = Reg.ReadString("DataPath");
+
+			if (!dir.IsEmpty() && WinUtils::IsDirectory(dir))
+			{
+				DataFolder = dir;
+				return DataFolder;
+			}
+		}
+	}
+
+	if (WinUtils::FileExists(WinUtils::GetCommonApplicationDataPath() + L"Settings.xml")) {
+		DataFolder = WinUtils::GetCommonApplicationDataPath() + _T("Image Uploader\\");
+	}
+	else 
+#endif
+
+	{
+		DataFolder = WinUtils::GetApplicationDataPath() + _T("Image Uploader\\");
+	}
+	return DataFolder;
 }
 
 

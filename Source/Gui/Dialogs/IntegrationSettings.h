@@ -46,10 +46,13 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
 	protected:
 		BEGIN_MSG_MAP(CIntegrationSettings)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 			COMMAND_HANDLER(IDC_SHELLINTEGRATION, BN_CLICKED, OnShellIntegrationCheckboxChanged)
 			COMMAND_HANDLER(IDC_STARTUPLOADINGFROMSHELL, BN_CLICKED, OnClickedQuickUpload)	
 			COMMAND_HANDLER(IDC_ADDITEM, BN_CLICKED, OnBnClickedAdditem)
 			COMMAND_HANDLER(IDC_DELETEITEM, BN_CLICKED, OnBnClickedDeleteitem)
+			COMMAND_HANDLER(IDC_DOWNBUTTON, BN_CLICKED, OnBnClickedDownbutton)
+			COMMAND_HANDLER(IDC_UPBUTTON, BN_CLICKED, OnBnClickedUpbutton)
 		END_MSG_MAP()
 		// Handler prototypes:
 		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -61,9 +64,13 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
 		LRESULT OnClickedQuickUpload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		ServerProfilesMap serverProfiles_;
 		CListBox menuItemsListBox_;
+		bool menuItemsChanged_;
 public:
 	LRESULT OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnBnClickedDownbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnBnClickedUpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 };
 
 #endif // IntegrationSettings_H

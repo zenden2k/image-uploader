@@ -149,8 +149,11 @@ LRESULT CServerParamsDlg::OnClickedDoAuth(WORD wNotifyCode, WORD wID, HWND hWndC
 }
 
 void CServerParamsDlg::doAuthChanged() {
-	::EnableWindow(GetDlgItem(IDC_LOGINEDIT), IS_CHECKED(IDC_DOAUTH) || m_ue->NeedAuthorization == CUploadEngineData::naObligatory);
-	::EnableWindow(GetDlgItem(IDC_PASSWORDEDIT), (IS_CHECKED(IDC_DOAUTH) || m_ue->NeedAuthorization == CUploadEngineData::naObligatory) && m_ue->NeedPassword);
+	::EnableWindow(GetDlgItem(IDC_DOAUTH), false);
+	::EnableWindow(GetDlgItem(IDC_LOGINEDIT), false);
+	::EnableWindow(GetDlgItem(IDC_PASSWORDEDIT), false);
+	//::EnableWindow(GetDlgItem(IDC_LOGINEDIT), IS_CHECKED(IDC_DOAUTH) || m_ue->NeedAuthorization == CUploadEngineData::naObligatory);
+	//::EnableWindow(GetDlgItem(IDC_PASSWORDEDIT), (IS_CHECKED(IDC_DOAUTH) || m_ue->NeedAuthorization == CUploadEngineData::naObligatory) && m_ue->NeedPassword);
 }
 
 
