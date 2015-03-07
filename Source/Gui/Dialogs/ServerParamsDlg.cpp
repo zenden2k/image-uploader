@@ -79,6 +79,8 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 		result = 0;
 	}
 
+	GuiTools::EnableDialogItem(m_hWnd, IDC_BROWSESERVERFOLDERS, !oldLogin_.IsEmpty());
+
 	
 
 

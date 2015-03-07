@@ -76,8 +76,10 @@ class CScriptUploadEngine: public CAbstractUploadEngine
 		int  modifyFolder(CFolderItem &folder);
 		int getAccessTypeList(std::vector<Utf8String> &list);
 		int getServerParamList(std::map<Utf8String, Utf8String> &list);
+		int doLogin();
 		bool isLoaded();
 		bool supportsSettings();
+		bool supportsBeforehandAuthorization();
 		Utf8String name();
 		time_t getCreationTime();
 		int RetryLimit();

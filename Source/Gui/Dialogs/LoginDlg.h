@@ -24,12 +24,15 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Core/Upload/UploadEngine.h"
+#include "3rdpart/thread.h"
+#include "Gui/Controls/PictureExWnd.h"
+
 class ServerProfile;
 // CLoginDlg
 
 LoginInfo LoadLogin(int ServerId);
 
-class CLoginDlg : public CDialogImpl<CLoginDlg>	
+class CLoginDlg : public CDialogImpl<CLoginDlg>	, public CThreadImpl<CLoginDlg>
 {
 	public:
 		int ServerId;
@@ -43,6 +46,8 @@ class CLoginDlg : public CDialogImpl<CLoginDlg>
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 			COMMAND_HANDLER(IDC_USEIECOOKIES, BN_CLICKED, OnClickedUseIeCookies)
 			COMMAND_ID_HANDLER(IDC_DELETEACCOUNTLABEL, OnDeleteAccountClicked)
+			COMMAND_ID_HANDLER(IDC_DOLOGINLABEL, OnDoLoginClicked)	
+			COMMAND_HANDLER(IDC_LOGINEDIT, EN_CHANGE, OnLoginEditChange);
 		END_MSG_MAP()
 		// Handler prototypes:
 		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -53,13 +58,25 @@ class CLoginDlg : public CDialogImpl<CLoginDlg>
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedUseIeCookies(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnDeleteAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnDoLoginClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		CUploadEngineData *m_UploadEngine;
 		CString accountName();
+		DWORD Run();
+		void OnProcessFinished();
+		void Accept();
 protected:
 	ServerProfile& serverProfile_;
 	CHyperLink deleteAccountLabel_;
+	CHyperLink doLoginLabel_;
 	CString accountName_;
 	bool createNew_;
+	bool ignoreExistingAccount_;
+	bool serverSupportsBeforehandAuthorization_;
+	void enableControls(bool enable);
+	NetworkManager networkManager_;
+	CPictureExWnd wndAnimation_;
+	
 };
 
 #endif // LOGINDLG_H

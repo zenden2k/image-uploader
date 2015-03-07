@@ -339,13 +339,14 @@ LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND h
 		} else {
 			fileServerLogin_ =  WCstringToUtf8(dlg.accountName());
 		}
+		serverProfile.setProfileName(dlg.accountName());
 		if(UserName != ss.authData.Login || ss.authData.DoAuth!=prevAuthEnabled)
 		{
 			serverProfile.setFolderId("");
 			serverProfile.setFolderTitle("");
 			serverProfile.setFolderUrl("");
-			iuPluginManager.UnloadPlugins();
-			m_EngineList->DestroyCachedEngine(WCstringToUtf8(serverProfile.serverName()), WCstringToUtf8(serverProfile.profileName()));
+			//iuPluginManager.UnloadPlugins();
+			//m_EngineList->DestroyCachedEngine(WCstringToUtf8(serverProfile.serverName()), WCstringToUtf8(serverProfile.profileName()));
 		}
 			
 		UpdateAllPlaceSelectors();
@@ -1203,8 +1204,12 @@ LRESULT CUploadSettings::OnAddDirectoryAsServer(WORD wNotifyCode, WORD wID, HWND
 	if ( dlg.DoModal(m_hWnd) == IDOK ) {
 			if ( wID == IDC_ADD_DIRECTORY_AS_SERVER ) {
 				sessionImageServer_.setServerName(dlg.createdServerName());
+				sessionImageServer_.setProfileName("");
+				sessionImageServer_.clearFolderInfo();
 			} else {
 				sessionFileServer_.setServerName(dlg.createdServerName());
+				sessionFileServer_.setProfileName("");
+				sessionFileServer_.clearFolderInfo();
 			}
 
 			UpdateAllPlaceSelectors();

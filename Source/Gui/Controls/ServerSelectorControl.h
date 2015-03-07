@@ -34,7 +34,7 @@
 class IconBitmapUtils;
 
 #define WM_SERVERSELECTCONTROL_CHANGE (WM_USER+156)
-
+#define WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED (WM_USER+157)
 class CServerSelectorControl : 
 	public CDialogImpl<CServerSelectorControl>, public CSettingsPage
 {
@@ -78,6 +78,8 @@ virtual ~CServerSelectorControl();
 	void setShowDefaultServerItem(bool show);
 	void setServersMask(int mask);
 	void notifyChange();
+	void notifyServerListChanged();
+	void updateServerList();
 
 	enum ServerMaskEnum{ smAll = 0xffff, smImageServers = 0x1, smFileServers = 0x2, smUrlShorteners = 0x4};
 
@@ -101,6 +103,9 @@ private:
 	bool defaultServer_;
 	std::vector<CString> menuOpenedUserNames_;
 	IconBitmapUtils* iconBitmapUtils_;
+	static const char kAddFtpServer[];
+	static const char kAddDirectoryAsServer[];
+
 };
 
 #endif // IU_GUI_DIALOGS_ServerSelectorControl_H

@@ -30,6 +30,22 @@ function reg_replace(str, pattern, replace_with)
 
 
 
+function _WriteLog(type,message) {
+	try {
+		WriteLog(type, message);
+	} catch (ex ) {
+		print(type + " : " + message);
+	}
+}
+
+function checkResponse() {
+	if ( nm.responseCode() == 0 || (nm.responseCode() >= 400 && nm.responseCode() <= 499)) {
+		_WriteLog("error", "Response code " + nm.responseCode() + "\r\n" + nm.errorString() );
+		return 0;
+	}
+	return 1;
+}
+
 
 function readFile(fileName) {
 	local myfile = file(fileName,"r");
@@ -74,7 +90,9 @@ function getAuthorizationString() {
 }
 
 
-function doLogin() 
+
+
+function DoLogin() 
 { 
 	if ( enableOAuth ) {
 		token = ServerParams.getParam("token");
@@ -86,7 +104,7 @@ function doLogin()
 					login = OAuthLogin;
 				}
 			}
-			return true;
+			return 1;
 		}
 		openUrl("https://oauth.yandex.ru/authorize?response_type=code&client_id=7e20041e4444421a8d3df62bf312acfc");
 		
@@ -98,6 +116,9 @@ function doLogin()
 			nm.addQueryParam("client_id", "7e20041e4444421a8d3df62bf312acfc");
 			nm.addQueryParam("client_secret", "fed316382d3e4bcda82903382a8d00c0");
 			nm.doPost("");
+			if ( !checkResponse() ) {
+				return 0;
+			}
 				
 			local accessToken = regex_simple(nm.responseBody(), "access_token\": \"(.+)\",", 0);
 			if ( accessToken != "" ) {
@@ -112,6 +133,10 @@ function doLogin()
 					nm.addQueryHeader("Expect", "");
 					nm.addQueryHeader("Connection", "close");
 					nm.doGet("http://api-fotki.yandex.ru/api/me/");
+						
+					if ( !checkResponse() ) {
+						return 0;
+					}
 					
 					login = regex_simple(nm.responseBody(),"http:\\/\\/api-fotki.yandex.ru\\/api\\/users\\/(.+)\\/albums\\/",0);
 					ServerParams.setParam("PrevLogin", ServerParams.getParam("Login"));
@@ -119,10 +144,10 @@ function doLogin()
 				} 
 		
 			
-				return true;
+				return 1;
 			} else {
 				print("Unable to get OAuth token!");
-				return false;
+				return 0;
 			}
 		}
 	}
@@ -164,7 +189,7 @@ function doLogin()
 	if(token == "")
 	{
 		print("Authentication failed for username '"+login +"'");
-		return false;
+		return 0;
 	}
 	ServerParams.setParam("tokenType", "");
 	return 1; //Success login
@@ -219,7 +244,7 @@ function GetFolderList(list)
 {
 	if(token == "")
 	{
-		if(!doLogin())
+		if(!DoLogin())
 			return 0;
 	}
 
@@ -235,7 +260,7 @@ function CreateFolder(parentAlbum,album)
 	local parentId = album.getParentId; 
 	if(token == "")
 	{
-		doLogin();
+		DoLogin();
 	}
 
 	nm.addQueryHeader("Authorization",getAuthorizationString());
@@ -264,7 +289,7 @@ function  UploadFile(FileName, options)
 {
    if(token == "")
 	{
-		if(!doLogin())
+		if(!DoLogin())
 			return 0;
 	}
 
