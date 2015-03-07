@@ -52,6 +52,7 @@ LRESULT CContextMenuItemDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	SetWindowText(TR("Добавить пункт меню"));
 
 	TRC(IDCANCEL, "Отмена");
+	generateTitle();
 	
 	::SetFocus(GetDlgItem(IDC_MENUITEMTITLEEDIT));
 	return 0;  
@@ -82,6 +83,30 @@ LRESULT CContextMenuItemDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 
 LRESULT CContextMenuItemDlg::OnServerSelectControlChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	generateTitle();
+	return 0;
+}
+
+LRESULT CContextMenuItemDlg::OnMenuItemTitleEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	if ( GetFocus() == hWndCtl ) {
+		titleEdited_ = !GuiTools::GetWindowText(hWndCtl).IsEmpty();
+	}
+	return 0;
+}
+
+ServerProfile CContextMenuItemDlg::serverProfile()
+{
+	return serverProfile_;
+}
+
+CString CContextMenuItemDlg::menuItemTitle()
+{
+	return title_;
+}
+
+void CContextMenuItemDlg::generateTitle()
+{
 	if ( !titleEdited_ ) {	
 		ServerProfile sp = imageServerSelector_->serverProfile();
 		CString title;
@@ -104,23 +129,4 @@ LRESULT CContextMenuItemDlg::OnServerSelectControlChanged(UINT uMsg, WPARAM wPar
 
 		SetDlgItemText(IDC_MENUITEMTITLEEDIT, title);
 	}
-	return 0;
-}
-
-LRESULT CContextMenuItemDlg::OnMenuItemTitleEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-	if ( GetFocus() == hWndCtl ) {
-		titleEdited_ = !GuiTools::GetWindowText(hWndCtl).IsEmpty();
-	}
-	return 0;
-}
-
-ServerProfile CContextMenuItemDlg::serverProfile()
-{
-	return serverProfile_;
-}
-
-CString CContextMenuItemDlg::menuItemTitle()
-{
-	return title_;
 }

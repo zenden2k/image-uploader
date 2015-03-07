@@ -1,10 +1,20 @@
 ﻿# Image Uploader changelog 
 #
 # http://zenden.ws/imageuploader
+
 -v1.3.0 build xxxx
-[~] Use WinSSL instead of  OpenSSL for https
-[~] Documentation update
-[~] DOcumentation now is shipped with program
+[+] Now it is possible to choose servers (for images, other file types, for "tray/hotkey" screenshots, url shortening server)
+ in settings dialog
+[+] Multiple accounts support
+[+] Multiple folders (albums) support
+[+] Now it is possible to perform beforehand authentication directly from the login dialog (for servers with OAuth authentication, for ex. Picasa, Yandex, Flickr)
+[+] Explorer's context menu custom user entries
+[+] Scripting API changes: added SimpleXML class, ParseJSON function, multiple file functions 
+[~] Disable editing and storing password for servers which do not need password (servers with OAuth authentication, for ex. Picasa, Yandex, Flickr)
+[~] Use WinSSL instead of  OpenSSL for https (security fix)
+[~] Documentation update (added Scripting API docs)
+[~] Documentation now is shipped with program
+[~] Show server favicons in the popup menu in Windows XP
 
 -v1.2.7 build 4185
 [~] Fixed drag-n-drop in Windows 8+

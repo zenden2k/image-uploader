@@ -70,17 +70,21 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
 	
 	SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_SETCHECK, Settings.QuickUpload);
 
-	CIcon ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONADDITEM), IMAGE_ICON	, 16,16,0);
+	HICON ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONADDITEM), IMAGE_ICON	, 16,16,0);
 	SendDlgItemMessage(IDC_ADDITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
+	addItemButton_.SubclassWindow(GetDlgItem(IDC_ADDITEM));
 
-	CIcon icon2 = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONDELETEITEM), IMAGE_ICON	, 16,16,0);
+	HICON icon2 = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONDELETEITEM), IMAGE_ICON	, 16,16,0);
 	SendDlgItemMessage(IDC_DELETEITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon2);
+	deleteItemButton_.SubclassWindow(GetDlgItem(IDC_DELETEITEM));
 
-	CIcon icon3 = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONUP), IMAGE_ICON	, 16,16,0);
+	HICON icon3 = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONUP), IMAGE_ICON	, 16,16,0);
 	SendDlgItemMessage(IDC_UPBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon3);
-	
-	CIcon icon4 = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONDOWN), IMAGE_ICON	, 16,16,0);
+	upButton_.SubclassWindow(GetDlgItem(IDC_UPBUTTON));
+
+	HICON icon4 = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONDOWN), IMAGE_ICON	, 16,16,0);
 	SendDlgItemMessage(IDC_DOWNBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon4);
+	downButton_.SubclassWindow(GetDlgItem(IDC_DOWNBUTTON));
 
 
 	CRegistry Reg;
@@ -94,10 +98,12 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
 		if ( Reg.SetKey(keyPath + _T("\\") + keyNames[i], false) ) {
 			CString title = Reg.ReadString("Name");
 			CString displayTitle = title;
+			ListItemData* lid = new	ListItemData();
 			if ( Settings.ServerProfiles.find(keyNames[i])==  Settings.ServerProfiles.end()) {
 				displayTitle = _T("[invalid] ") + displayTitle;
+				lid->invalid = true;
 			}
-				ListItemData* lid = new	ListItemData();
+				
 				
 				lid->name  = title;
 				lid->serverProfile = Settings.ServerProfiles[keyNames[i]];
@@ -154,11 +160,17 @@ bool CIntegrationSettings::Apply()
 
 				for( int i =0; i< menuItemCount; i++ ){
 					ListItemData* lid = (	ListItemData*)menuItemsListBox_.GetItemData(i);
+					if ( lid->invalid ) {
+						continue;
+					}
 					CRegistry Reg2 = Reg;
 					CString itemNumber;
 					itemNumber.Format(_T("%04d"), i);
 					itemId = itemNumber+_T("_")+lid->serverProfile.serverName() + L"_" + IuCoreUtils::CryptoUtils::CalcMD5HashFromString(IuCoreUtils::int64_tToString(rand() % 999999)).c_str();
 					itemId.Replace(L" ",L"_");
+					itemId.Replace(L":",L"_");
+					itemId.Replace(L"\\",L"_");
+					itemId.Replace(L"//",L"_");
 					//MessageBox(itemId);
 					if ( Reg2.SetKey("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems\\" + itemId, true) ) {
 						Reg2.WriteString( "Name", lid->name );

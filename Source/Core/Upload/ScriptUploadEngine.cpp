@@ -769,6 +769,7 @@ bool CScriptUploadEngine::supportsBeforehandAuthorization()
 		return false;
 	}
 	FlushSquirrelOutput();
+	return true;
 }
 
 int CScriptUploadEngine::RetryLimit()
