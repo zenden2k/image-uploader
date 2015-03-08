@@ -66,13 +66,24 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	m_SettingsPagesListBox.AddString(TR("Интеграция"));
 	m_SettingsPagesListBox.AddString(TR("Трей"));
 	m_SettingsPagesListBox.AddString(TR("Горячие клавиши"));
-	// set icons
+	// set icons 
 
+	int iconWidth =  ::GetSystemMetrics(SM_CXICON);
+	if ( iconWidth > 32 ) {
+		iconWidth = 48;
+
+	}
 	hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
-		IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
+		IMAGE_ICON, iconWidth, iconWidth, LR_DEFAULTCOLOR);
 	SetIcon(hIcon, TRUE);
+
+	int iconSmWidth =  ::GetSystemMetrics(SM_CXSMICON);
+	if ( iconSmWidth > 16 ) {
+		iconSmWidth = 32;
+	}
+
 	hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
-		IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
+		IMAGE_ICON, iconSmWidth, iconSmWidth, LR_DEFAULTCOLOR);
 	SetIcon(hIconSmall, FALSE);
 
 	TRC(IDOK, "OK");

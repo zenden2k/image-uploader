@@ -135,12 +135,17 @@ bool DirectoryExists(const Utf8String path)
 	return false;
 }
 
-bool createDirectory(const Utf8String& path,unsigned int mode)
+bool createDirectory(const Utf8String& path_,unsigned int mode)
 {
+	 Utf8String path = path_;
 	if(path.empty()) return false;
+	if ( path[path.length()-1] == '\\' ||  path[path.length()-1] == '/') {
+		path.resize(path.length()-1);
+	}
 	std::wstring wstrFolder = Utf8ToWstring(path);
-	
-	DWORD dwAttrib = GetFileAttributes(wstrFolder.c_str());
+	//MessageBox(0,wstrFolder.c_str(),0,0);
+
+	DWORD dwAttrib = GetFileAttributes(wstrFolder.c_str()); 
 
 	// already exists ?
 	if (dwAttrib != 0xffffffff)
@@ -170,8 +175,10 @@ bool createDirectory(const Utf8String& path,unsigned int mode)
 		}
 		free(szPath);
 
-		if (!::CreateDirectory(wstrFolder.c_str(), NULL)) 
+		if (!::CreateDirectory(wstrFolder.c_str(), NULL)) {
+			MessageBox(0,wstrFolder.c_str(),0,0);
 			return false;
+		}
 	}
 
 	return TRUE;
@@ -181,6 +188,14 @@ bool createDirectory(const Utf8String& path,unsigned int mode)
 bool copyFile(const std::string& src, const std::string & dest, bool overwrite)
 {
 	return ::CopyFile(Utf8ToWstring(src).c_str(), Utf8ToWstring(dest).c_str(), !overwrite)!=FALSE;
+}
+
+bool RemoveFile(const Utf8String& utf8Filename) {
+	return DeleteFile(IuCoreUtils::Utf8ToWstring(utf8Filename).c_str())!=FALSE;
+}
+
+bool MoveFileOrFolder(const Utf8String& from ,const Utf8String& to) {
+	return MoveFile(IuCoreUtils::Utf8ToWstring(from).c_str() ,IuCoreUtils::Utf8ToWstring(to).c_str());
 }
 
 }

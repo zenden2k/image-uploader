@@ -131,7 +131,7 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
    m_ProfileEditToolbar.AddButton(IDC_SAVEPROFILE, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Сохранить профиль"), 0);
 	m_ProfileEditToolbar.AddButton(IDC_DELETEPROFILE, TBSTYLE_BUTTON |BTNS_AUTOSIZE,  TBSTATE_ENABLED, 2, TR("Удалить профиль"), 0);
 
-   ShowParams(Settings.CurrentConvertProfileName);
+   ShowParams(Settings.imageServer.getImageUploadParams().ImageProfileName);
    UpdateProfileList();
    return 1; 
 }
@@ -199,7 +199,7 @@ bool CLogoSettings::Apply()
    if(!SaveParams(сonvert_profiles_[saveToProfile]))
       return false;
    Settings.ConvertProfiles = сonvert_profiles_;
-	Settings.CurrentConvertProfileName  = saveToProfile;
+	//Settings.CurrentConvertProfileName  = saveToProfile;
 	return TRUE;
 }
 

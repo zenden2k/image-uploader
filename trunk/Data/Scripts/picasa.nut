@@ -66,7 +66,6 @@ function getAuthorizationString() {
 
 function DoLogin() 
 { 
-
 	local login = ServerParams.getParam("Login");
 	local scope = "https://picasaweb.google.com/data/";
 	local redirectUrl = "urn:ietf:wg:oauth:2.0:oob";

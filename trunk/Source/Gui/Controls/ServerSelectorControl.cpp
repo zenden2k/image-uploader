@@ -369,14 +369,21 @@ void CServerSelectorControl::updateServerList()
 			addedItems++;
 		}
 	}
-	serverComboBox_.AddItem(line, -1, -1, 0,  0 );
-	serverComboBox_.AddItem(  TR("Добавить FTP сервер..."), -1, -1, 1, reinterpret_cast<LPARAM>( kAddFtpServer ) );
-	serverComboBox_.AddItem(  TR("Добавить локальную папку как сервер..."), -1, -1, 1, reinterpret_cast<LPARAM>( kAddDirectoryAsServer ) );
-
+	if (serversMask_ != smUrlShorteners ) {
+		serverComboBox_.AddItem(line, -1, -1, 0,  0 );
+		serverComboBox_.AddItem(  TR("Добавить FTP сервер..."), -1, -1, 1, reinterpret_cast<LPARAM>( kAddFtpServer ) );
+		serverComboBox_.AddItem(  TR("Добавить локальную папку..."), -1, -1, 1, reinterpret_cast<LPARAM>( kAddDirectoryAsServer ) );
+	}
 
 	serverComboBox_.SetImageList( comboBoxImageList_ );
 	serverComboBox_.SetCurSel( selectedIndex );
 	serverChanged();
+}
+
+bool CServerSelectorControl::isAccountChosen()
+{
+	CUploadEngineData* ued = serverProfile_.uploadEngineData();
+	return !serverProfile_.profileName().IsEmpty() || (ued && ued->NeedAuthorization != CUploadEngineData::naObligatory);
 }
 
 LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {

@@ -72,6 +72,13 @@ LRESULT CContextMenuItemDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
 		return 0;
 	}
 
+	if ( !imageServerSelector_->isAccountChosen() ) {
+		CString message;
+		message.Format(TR("Вы не выбрали аккаунт для сервера \"%s\""), (LPCTSTR)imageServerSelector_->serverProfile().serverName());
+		MessageBox(message, TR("Ошибка"));
+		return 0;
+	}
+
 	EndDialog(wID);
 	return 0;
 }

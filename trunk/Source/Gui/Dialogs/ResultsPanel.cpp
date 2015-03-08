@@ -766,22 +766,38 @@ LRESULT CResultsPanel::OnShortenUrlClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 
 LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-	CRect r(0,0,500,300);
+	
+	CString url ;
+	if ( m_Page == 2 && this->UrlList.GetCount() ) {
+		//use
+		url = this->UrlList[0].getImageUrl();
+		if ((!Settings.UseDirectLinks || url.IsEmpty()) &&  !this->UrlList[0].getDownloadUrl().IsEmpty()) {
+			url = this->UrlList[0].getDownloadUrl();
+		}
+	} else {
+		CString outputTempFileName = IuCommonFunctions::IUTempFolder  + "preview.html";
+		CString code = GenerateOutput();
+		//ShowVar(m_Page);
+		if ( m_Page == 0) {
+			code = Utf8ToWCstring(IuTextUtils::BbCodeToHtml(WCstringToUtf8(code)));
+		} 
+		IuTextUtils::FileSaveContents(WCstringToUtf8(outputTempFileName), WCstringToUtf8(code));
+		url = "file:///" + outputTempFileName;
+		
+	}
+
+	if (url.IsEmpty() ) {
+		return 0;
+	}
+
+	CRect r(0,0,600,400);
 	if ( !webViewWindow_ ) {
 		webViewWindow_ = new CWebViewWindow();
 		webViewWindow_->Create(0,r,_T("Preview Window"),WS_POPUP|WS_OVERLAPPEDWINDOW,WS_EX_TOPMOST	);
 		webViewWindow_->ShowWindow(SW_SHOW);
 	}
-	CString outputTempFileName = IuCommonFunctions::IUTempFolder  + "preview.html";
-	CString code = GenerateOutput();
-	//ShowVar(m_Page);
-	if ( m_Page == 0) {
-		code = Utf8ToWCstring(IuTextUtils::BbCodeToHtml(WCstringToUtf8(code)));
-	} else if ( m_Page == 2 ) {
-		code =  Utf8ToWCstring(IuStringUtils::Replace(WCstringToUtf8(code), "\r\n", "<br/>"));
-	}
-	IuTextUtils::FileSaveContents(WCstringToUtf8(outputTempFileName), WCstringToUtf8(code));
-	webViewWindow_->NavigateTo("file:///" + outputTempFileName);
+	
+	webViewWindow_->NavigateTo(url);
 	webViewWindow_->ShowWindow(SW_SHOW);
 //	webViewWindow_->ActivateWindow();
 	return 0;

@@ -105,6 +105,7 @@ CRegionSelect::CRegionSelect()
 	Start.y = -1;
 	DrawingPen = 0;
 	DrawingBrush = 0;
+	lineType = 0;
 	
 	cxOld = -1;
 	cyOld = -1;
@@ -361,6 +362,19 @@ LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 			if(cxOld != -1)
 			{
+				SHORT shiftState = GetAsyncKeyState(VK_SHIFT);
+				if(shiftState& 0x8000) {
+					if (!lineType ) {
+						lineType = abs(cx-cxOld) >= abs(cy-cyOld) ? 1 : 2;
+					}
+					if ( lineType == 1 ) {
+						cy = cyOld;
+					} else {
+						cx = cxOld;
+					}
+				}
+
+
 				SelectClipRgn(memDC2, 0);
 				MoveToEx(memDC2, cxOld, cyOld,0);
 				LineTo(memDC2, cx,cy);
@@ -641,6 +655,7 @@ BOOL CRegionSelect::OnSetCursor(CWindow wnd, UINT nHitTest, UINT message)
 
 LRESULT  CRegionSelect::OnRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	lineType = 0;
 	/*RButtonDown=false;
 	
 	int cx = LOWORD(lParam); 

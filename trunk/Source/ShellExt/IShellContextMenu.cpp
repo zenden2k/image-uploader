@@ -393,9 +393,12 @@ bool IULaunchCopy(CAtlArray<CString> & CmdLine,const CString params=_T(""))
         NULL,                   // Use parent's starting directory. 
         &si,                    // Pointer to STARTUPINFO structure.
         &pi )                   // Pointer to PROCESS_INFORMATION structure.
-    ) 
-    
+		) {
+			CString errorMessage;
+			errorMessage.Format(TR("Не удалось запустить процесс '%s'"),(LPCTSTR)TempCmdLine);
+		MessageBox(0, errorMessage, TR("Ошибка"),0);
         return false;
+	}
 
     // Close process and thread handles. 
     CloseHandle( pi.hProcess );

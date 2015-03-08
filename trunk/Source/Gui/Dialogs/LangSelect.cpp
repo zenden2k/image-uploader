@@ -66,8 +66,9 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	TCHAR buf[256];
 	CString buf2;
 	LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
+	LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE );
 	LogoImage.LoadImage(0, 0, IDR_PNG1, false, GetSysColor(COLOR_BTNFACE));
-
+	
 	GuiTools::MakeLabelBold(GetDlgItem(IDC_PLEASECHOOSE));
 
 	// Russian language is always in language list

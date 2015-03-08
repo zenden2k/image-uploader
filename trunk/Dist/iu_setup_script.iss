@@ -48,6 +48,7 @@ Root: HKLM; Subkey: "Software\Zenden.ws\Image Uploader"; ValueType: string; Valu
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
+Name: "installffmpeg"; Description: "Install FFmpeg libraries (better video formats support)"; Flags: unchecked
 ;Name: common; Description: All users; GroupDescription: Install for:; Flags: exclusive
 ;Name: installuser; Description: The current user only; GroupDescription: Install for:; Flags: exclusive unchecked
 [Dirs]
@@ -67,6 +68,8 @@ Source: "..\Data\Favicons\*.ico"; DestDir: "{code:GetDataFolder}\Image Uploader\
 Source: "..\Data\Scripts\*.nut"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts"; Flags: ignoreversion
 Source: "..\Data\Update\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
 Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Flags: ignoreversion
+Source: "unzip.exe"; DestDir: "{tmp}"; Flags: ignoreversion
+;Flags: deleteafterinstall
 ;Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
 #ifdef WIN64FILES
 Source: "..\Build\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}";Check: isWin64;
@@ -94,6 +97,10 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 [UninstallRun]
 Filename: "{app}\image uploader.exe"; Parameters: "/uninstall"; Flags: runascurrentuser
 
+[UninstallDelete]
+Type: files; Name: "{app}\av*.dll"
+Type: files; Name: "{app}\sw*.dll"
+
 [Code]
 function GetDataFolder(Param: String): String;
 begin
@@ -104,26 +111,54 @@ begin
 end;
 
 procedure  InitializeWizard;
+
+begin
+      ITD_Init;
+     ITD_SetOption('UI_AllowContinue','1');
+       ITD_DownloadAfter(wpReady);
+  
+  
+end;
+
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+begin
+
+ 
+end;
+
+procedure CurPageChanged(CurPageID: Integer);
   var Version: TWindowsVersion;
 begin
-  GetWindowsVersionEx(Version);
+      if CurPageID = wpReady then begin
+      ITD_ClearFiles;
+
+       if IsTaskSelected('installffmpeg') then begin
+ 
+
+    ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/ffmpeg-1.2.12.zip', expandconstant('{tmp}\ffmpeg.zip'));
+
+    end;
+    GetWindowsVersionEx(Version);
    if Version.NTPlatform and
      (Version.Major = 5) 
      and (Version.Minor <1 )  
      then
   begin
-      ITD_Init;
-     ITD_SetOption('UI_AllowContinue','1');
-  ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/gdiplus.dll', expandconstant('{tmp}\gdiplus.dll'));
-  ITD_DownloadAfter(wpReady);
-  end;
+
+    ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/gdiplus.dll', expandconstant('{tmp}\gdiplus.dll'));
+    //http://dl.bintray.com/zenden/zenden-image-uploader/ffmpeg-1.2.12.zip
   
+  end;
+end;
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
    var Version: TWindowsVersion;
+  ResultCode: integer;
+  Cmd: String;
 begin
- if CurStep=ssInstall then begin
+
+ if CurStep=ssPostInstall then begin
  GetWindowsVersionEx(Version);
    if Version.NTPlatform and
      (Version.Major = 5) 
@@ -132,5 +167,11 @@ begin
   begin
   filecopy(expandconstant('{tmp}\gdiplus.dll'),expandconstant('{app}\gdiplus.dll'),false);
   end;
+
+    if IsTaskSelected('installffmpeg') then
+    begin
+    Cmd :=  '"'+expandconstant('{tmp}\ffmpeg.zip')+'" -d "'+expandconstant('{app}') + '"';
+          Exec(expandconstant('{tmp}\unzip.exe'),cmd ,expandconstant('{app}'), SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    end;
  end;
 end;

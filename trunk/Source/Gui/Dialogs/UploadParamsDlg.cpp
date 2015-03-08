@@ -56,7 +56,7 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	TRC(IDC_PROFILELABEL, "Профиль:");
 	TRC(IDC_THUMBSETTINGS, "Настройки миниатюры");
 	TRC(IDC_CREATETHUMBNAILS, "Создавать миниатюры (превью)");
-	TRC(IDC_USESERVERTHUMBNAILS, "Использовать миниатюры");
+	TRC(IDC_USESERVERTHUMBNAILS, "Использовать серверные миниатюры");
 	TRC(IDC_THUMBTEMPLATECOMBOLABEL, "Шаблон миниатюры:");
 	TRC(IDC_THUMBRESIZELABEL, "Масштабирование");
 	TRC(IDC_DEFAULTTHUMBSETTINGSCHECKBOX, "Настройки эскизов по-умолчанию");
@@ -235,25 +235,27 @@ void  CUploadParamsDlg::defaultThumbSettingsCheckboxChanged() {
 	bool useServerThumbnails = GuiTools::IsChecked(m_hWnd, IDC_USESERVERTHUMBNAILS);
 
 	bool addThumbText = GuiTools::IsChecked(m_hWnd, IDC_THUMBTEXTCHECKBOX);
+	bool addText = GuiTools::IsChecked(m_hWnd, IDC_THUMBTEXTCHECKBOX);
 
 	std::map<int, bool> enable;
 	enable[IDC_THUMBTEMPLATECOMBOLABEL] = !useServerThumbnails && !useDefaultThumbnailSettings;
 	enable[IDC_THUMBTEMPLATECOMBO] = !useServerThumbnails && !useDefaultThumbnailSettings;
 	enable[IDC_THUMBRESIZECOMBO] = !useServerThumbnails;
 	enable[IDC_THUMBTEXTCHECKBOX] = !useDefaultThumbnailSettings;
-	enable[IDC_THUMBTEXT] = !useDefaultThumbnailSettings && addThumbText;
+	enable[IDC_THUMBTEXT] = !useDefaultThumbnailSettings && addThumbText && addText ;
 	enable[IDC_THUMBRESIZELABEL] = !useDefaultThumbnailSettings;
 	enable[IDC_WIDTHEDIT] = !useDefaultThumbnailSettings;
 	enable[IDC_WIDTHEDITUNITS] = !useDefaultThumbnailSettings;
 	enable[IDC_THUMBRESIZECOMBO] = !useServerThumbnails && !useDefaultThumbnailSettings;
-	enable[IDC_THUMBFORMATLABEL] = !useServerThumbnails;
-	enable[IDC_THUMBFORMATLIST] = !useServerThumbnails;
-	enable[IDC_THUMBBACKGROUNDLABEL] = !useServerThumbnails;
-	enable[IDC_THUMBBACKGROUND] = !useServerThumbnails;
-	enable[IDC_THUMBQUALITYLABEL] = !useServerThumbnails;
-	enable[IDC_THUMBQUALITYEDIT] = !useServerThumbnails;
-	enable[IDC_THUMBQUALITYSPIN] = !useServerThumbnails;
-	enable[IDC_PERCENTLABEL2] = !useServerThumbnails;
+	enable[IDC_THUMBFORMATLABEL] = !useServerThumbnails && !useDefaultThumbnailSettings;
+	enable[IDC_THUMBFORMATLIST] = !useServerThumbnails && !useDefaultThumbnailSettings;
+	enable[IDC_THUMBBACKGROUNDLABEL] = !useServerThumbnails && !useDefaultThumbnailSettings;
+	enable[IDC_THUMBBACKGROUND] = !useServerThumbnails && !useDefaultThumbnailSettings;
+	enable[IDC_THUMBQUALITYLABEL] = !useServerThumbnails && !useDefaultThumbnailSettings;
+	enable[IDC_THUMBQUALITYEDIT] = !useServerThumbnails && !useDefaultThumbnailSettings;
+	enable[IDC_THUMBQUALITYSPIN] = !useServerThumbnails && !useDefaultThumbnailSettings;
+	enable[IDC_PERCENTLABEL2] = !useServerThumbnails && !useDefaultThumbnailSettings;
+
 	for ( std::map<int,bool>::const_iterator it = enable.begin(); it != enable.end(); ++it) {
 		GuiTools::EnableDialogItem(m_hWnd, it->first, it->second);
 	}
@@ -261,7 +263,8 @@ void  CUploadParamsDlg::defaultThumbSettingsCheckboxChanged() {
 
 void  CUploadParamsDlg::thumbTextCheckboxChanged() {
 	bool isChecked = GuiTools::IsChecked(m_hWnd, IDC_THUMBTEXTCHECKBOX);
-	GuiTools::EnableDialogItem(m_hWnd, IDC_THUMBTEXT, isChecked);
+	bool useDefaultThumbnailSettings = GuiTools::IsChecked(m_hWnd, IDC_DEFAULTTHUMBSETTINGSCHECKBOX);
+	GuiTools::EnableDialogItem(m_hWnd, IDC_THUMBTEXT, isChecked && !useDefaultThumbnailSettings);
 }
 
 LRESULT CUploadParamsDlg::OnClickedThumbTextCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {

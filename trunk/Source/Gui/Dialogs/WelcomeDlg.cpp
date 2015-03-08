@@ -43,12 +43,13 @@ LRESULT CWelcomeDlg::OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 CWelcomeDlg::~CWelcomeDlg()
 {
 	DeleteObject(br);
-}
+} 
 
 LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	DoDataExchange(FALSE);
 	LeftImage.LoadImage(0, 0, IDR_PNG2, false, RGB(255,255,255));
+	LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE );
 	LogoImage.LoadImage(0, 0, IDR_PNG1, false, RGB(255,255,255));
 
 	TRC(IDC_SELECTOPTION, "Выберите действие:");

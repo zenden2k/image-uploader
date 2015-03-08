@@ -129,6 +129,15 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 	
 bool CDefaultServersSettings::Apply()
 {
+	CServerSelectorControl* controls[] = { fileServerSelector_, imageServerSelector_, trayServerSelector_, contextMenuServerSelector_, urlShortenerServerSelector_ };
+	for(int i = 0; i< ARRAY_SIZE(controls); i++ ) {
+		if ( !controls[i]->serverProfile().serverName().IsEmpty() && !controls[i]->isAccountChosen() ) {
+			CString message;
+			message.Format(TR("Вы не выбрали аккаунт для сервера \"%s\""), (LPCTSTR)controls[i]->serverProfile().serverName());
+			MessageBox(message, TR("Ошибка"));
+			return 0;
+		}
+	}
 	Settings.fileServer = fileServerSelector_->serverProfile();
 	Settings.imageServer = imageServerSelector_->serverProfile();
 	Settings.quickScreenshotServer = trayServerSelector_->serverProfile();

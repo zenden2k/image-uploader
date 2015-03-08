@@ -45,6 +45,7 @@ struct ThumbCreatingParams
 	COLORREF BackgroundColor;
 	EnumWrapper<ThumbFormatEnum> Format;
 	ThumbResizeEnum ResizeMode;
+
 };
 
 class CImageConverter

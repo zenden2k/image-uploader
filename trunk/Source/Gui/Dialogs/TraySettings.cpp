@@ -109,7 +109,9 @@ bool CTraySettingsPage::Apply()
 LRESULT CTraySettingsPage::OnShowTrayIconBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	bool bShowTrayIcon = SendDlgItemMessage(IDC_SHOWTRAYICON, BM_GETCHECK) == BST_CHECKED;
-	SendDlgItemMessage(IDC_AUTOSTARTUP, BM_SETCHECK, FALSE);
+	if (!  bShowTrayIcon ) {
+		SendDlgItemMessage(IDC_AUTOSTARTUP, BM_SETCHECK, FALSE);
+	}
 	GuiTools::EnableNextN(GetDlgItem(wID),11,bShowTrayIcon);
 	return 0;
 }

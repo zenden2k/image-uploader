@@ -58,12 +58,13 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
 		IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
 	SetIcon(hIconSmall, FALSE);
+	serverComboBox_.Attach( GetDlgItem( IDC_SERVERCOMBOBOX ) );
 
-	serverComboBox_.m_hWnd = GetDlgItem( IDC_SERVERCOMBOBOX );
 	SendDlgItemMessage( IDC_AUTOSTARTUPCHECKBOX, BM_SETCHECK, BST_CHECKED, 0);
 	SendDlgItemMessage( IDC_CAPTUREPRINTSCREENCHECKBOX, BM_SETCHECK, BST_CHECKED, 0);
 	SendDlgItemMessage( IDC_EXPLORERINTEGRATION, BM_SETCHECK, BST_CHECKED, 0);
 	LogoImage.SubclassWindow(GetDlgItem( IDC_STATICLOGO ) );
+	LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE );
 	LogoImage.LoadImage(0, 0, IDR_PNG1, false, GetSysColor(COLOR_BTNFACE));
 
 	HFONT font = GetFont();
@@ -83,8 +84,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 		NewFont = CreateFontIndirect(&alf);
 		SendDlgItemMessage(IDC_TITLE,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
 	}
-	serverComboBox_.Attach( GetDlgItem( IDC_SERVERCOMBOBOX ) );
-
+	
 	comboBoxImageList_.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
 
 	serverComboBox_.AddItem( _T("<") + CString(TR("Случайный сервер")) + _T(">"), -1, -1, 0, static_cast<LPARAM>( -1 ) );
@@ -153,6 +153,7 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 
 	GuiTools::GetCheck(m_hWnd, IDC_AUTOSTARTUPCHECKBOX, Settings.AutoStartup);
 	Settings.AutoStartup_changed = true;
+
 	
 	Settings.ExplorerContextMenu = GuiTools::GetCheck(m_hWnd, IDC_EXPLORERINTEGRATION);
 	Settings.ExplorerContextMenu_changed = Settings.ExplorerContextMenu;
@@ -169,6 +170,7 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 
 	if ( Settings.AutoStartup || capturePrintScreen ) {
 		Settings.ShowTrayIcon        = true;
+		Settings.ShowTrayIcon_changed = true;
 	}
 	Settings.SaveSettings();
 	

@@ -44,6 +44,7 @@
 #include <Core/Upload/UrlShorteningTask.h>
 #include <sstream>
 #include <Core/Utils/SimpleXml.h>
+#include <Core/Utils/StringUtils.h>
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -333,6 +334,24 @@ const std::string escapeJsonString( const std::string& src) {
 	return Json::valueToQuotedString(src.data());
 }
 
+const std::string scriptGetTempDirectory() {
+#ifdef _WIN32
+	#ifndef IU_CLI
+		return IuCoreUtils::WstringToUtf8((LPCTSTR)IuCommonFunctions::IUTempFolder);
+	#else
+	TCHAR ShortPath[1024];
+	GetTempPath(ARRAY_SIZE(ShortPath), ShortPath);
+	TCHAR TempPath[1024];
+	if (!GetLongPathName(ShortPath,TempPath, ARRAY_SIZE(TempPath)) ) {
+		lstrcpy(TempPath, ShortPath);
+	}
+	return IuCoreUtils::WstringToUtf8(TempPath);
+	#endif
+#else
+	return "/var/tmp/";
+#endif
+}
+
 const std::string url_encode(const std::string &value) {
 	using namespace std;
 	ostringstream escaped;
@@ -363,6 +382,86 @@ void DebugMessage(const std::string& msg, bool isResponseBody)
 #else
 	fprintf(stderr,"%s\r",msg.c_str());
     getc(stdin);
+#endif
+}
+
+const std::string scriptMessageBox( const std::string& message, const std::string &title,const std::string& buttons , const std::string& type) {
+#if defined(_WIN32) && !defined(IU_CLI)
+	UINT uButtons = MB_OK;
+	if ( buttons == "ABORT_RETRY_IGNORE") {
+		uButtons = MB_ABORTRETRYIGNORE;
+	} else if ( buttons == "CANCEL_TRY_CONTINUE") {
+		uButtons = MB_CANCELTRYCONTINUE;
+	} else if ( buttons == "OK_CANCEL") {
+		uButtons = MB_OKCANCEL;
+	} else if ( buttons == "RETRY_CANCEL") {
+		uButtons = MB_RETRYCANCEL;
+	} else if ( buttons == "YES_NO") {
+		uButtons = MB_YESNO;
+	}else if ( buttons == "YES_NO_CANCEL") {
+		uButtons = MB_YESNOCANCEL;
+	}
+	UINT icon = 0;
+	if ( type == "EXCLAMATION") {
+		icon = MB_ICONEXCLAMATION;
+	} else if ( type == "WARNING") {
+		icon = MB_ICONWARNING;
+	} else if ( type == "INFORMATION") {
+		icon = MB_ICONINFORMATION;
+	} else if ( type == "QUESTION") {
+		icon = MB_ICONQUESTION;
+	} else if ( type == "ERROR") {
+		icon = MB_ICONERROR;
+	} 
+	int res = MessageBox(GetActiveWindow(), IuCoreUtils::Utf8ToWstring(message).c_str(),  IuCoreUtils::Utf8ToWstring(title).c_str(), uButtons |icon );
+	if ( res == IDABORT ) {
+		return "ABORT";
+	} else if ( res == IDCANCEL ) {
+		return "CANCEL";
+	} else if ( res == IDCONTINUE ) {
+		return "CONTINUE";
+	} else if ( res == IDIGNORE ) {
+		return "IGNORE";
+	} else if ( res == IDNO ) {
+		return "NO";
+	} else if ( res == IDOK ) {
+		return "OK";
+	} else if ( res == IDYES ) {
+		return "YES";
+	}
+	else if ( res == IDRETRY ) {
+		return "TRY";
+	} else if ( res == IDTRYAGAIN ) {
+		return "TRY";
+	} 
+	return "";
+	
+#else
+	std::cerr<<"----------"<<title<<"----------"<<std::endl;
+	std::cerr<<message<<std::endl;
+	if ( buttons.empty() || buttons == "OK") {
+		    getc(stdin);
+			return "OK";
+	} else {
+		
+
+		std::vector<std::string> tokens;
+		std::map<char,std::string> buttonsMap;
+		IuStringUtils::Split(buttons,"_", tokens,10);
+		for(int i = 0; i< tokens.size(); i++ ) {
+			if ( i !=0 ) {
+				std::cerr<< "/";
+			}
+			buttonsMap[tokens[i][0]] = tokens[i];
+			std::cerr<< "("<<tokens[i][0]<<")"<<IuStringUtils::toLower(tokens[i]).c_str()+1;
+		}
+		std::cerr<<": ";
+		char res;
+		std::cin >> res;
+		res = toupper(res);
+		return buttonsMap[res];
+	}
+
 #endif
 }
 
@@ -432,6 +531,72 @@ SquirrelObject jsonToSquirrelObject(const std::string& json) {
 	return sq;
 }
 
+Json::Value sqValueToJson(SquirrelObject obj ) {
+	switch ( obj.GetType() ) {
+		case OT_NULL:
+			return Json::Value(Json::nullValue);
+		case OT_INTEGER:
+			return obj.ToInteger();
+			break;
+		case OT_FLOAT:
+			return obj.ToFloat();
+			break;
+
+		case OT_BOOL:
+			return obj.ToBool();
+			break;
+
+		case OT_STRING:
+			return obj.ToString();
+			break;
+	}
+	return Json::Value(Json::nullValue);
+}
+Json::Value sqObjToJson(	SquirrelObject obj ) {
+	Json::Value res;
+	SquirrelObject key;
+	SquirrelObject value;
+	switch ( obj.GetType() ) {
+			case OT_NULL:
+			case OT_INTEGER:
+			case OT_FLOAT:
+			case OT_BOOL:
+			case OT_STRING:
+				return sqValueToJson(obj);
+				break;
+			case OT_TABLE:
+				if ( obj.BeginIteration() ) {
+					while(obj.Next(key,value) ) {
+						res[key.ToString()]=sqObjToJson(value);
+					}
+					obj.EndIteration();
+				}
+				return res;
+				break;
+			case OT_ARRAY: 
+				if ( obj.BeginIteration() ) {
+					while(obj.Next(key,value) ) {
+						res[key.ToInteger()]=sqObjToJson(value);
+					}
+					obj.EndIteration();
+
+				}
+				return res;
+				break;				
+	}
+	return Json::Value(Json::nullValue);
+}
+
+const std::string squirrelObjectToJson(SquirrelObject  obj) {
+	Json::Value root = sqObjToJson(obj);
+	Json::StreamWriterBuilder builder;
+	builder["commentStyle"] = "None";
+	builder["indentation"] = "   ";  // or whatever you like
+
+	return Json::writeString(builder, root);
+}
+
+
 const std::string GetFileContents(const std::string& filename) {
 	std::string data;
 	IuCoreUtils::ReadUtf8TextFile(filename, data);
@@ -441,6 +606,11 @@ const std::string GetFileContents(const std::string& filename) {
 unsigned int ScriptGetFileSize(const std::string& filename) {
 	return IuCoreUtils::getFileSize(filename);
 }
+
+double ScriptGetFileSizeDouble(const std::string& filename) {
+	return IuCoreUtils::getFileSize(filename);
+}
+
 bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params)
 {
 	if (!IuCoreUtils::FileExists(fileName))
@@ -551,13 +721,20 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		RegisterGlobal(IuCoreUtils::ExtractFileNameNoExt, "ExtractFileNameNoExt");
 		RegisterGlobal(IuCoreUtils::ExtractFilePath, "ExtractFilePath");
 		RegisterGlobal(jsonToSquirrelObject, "parseJSON");
+		RegisterGlobal(squirrelObjectToJson, "ToJSON");
 		RegisterGlobal(IuCoreUtils::copyFile, "CopyFile");
 		RegisterGlobal(IuCoreUtils::createDirectory, "CreateDirectory");
 		RegisterGlobal(IuCoreUtils::FileExists, "FileExists");
 		RegisterGlobal(GetFileContents, "GetFileContents");
+		RegisterGlobal(scriptGetTempDirectory, "GetTempDirectory");
+		RegisterGlobal(IuCoreUtils::MoveFileOrFolder, "MoveFileOrFolder");
+		RegisterGlobal(IuCoreUtils::PutFileContents, "PutFileContents");
+		RegisterGlobal(IuCoreUtils::RemoveFile, "DeleteFile");
+		
 		RegisterGlobal(ScriptGetFileSize, "GetFileSize");	
-		RegisterGlobal(scriptWriteLog, "WriteLog");		
-
+		RegisterGlobal(ScriptGetFileSizeDouble, "GetFileSizeDouble");	
+		RegisterGlobal(scriptWriteLog, "WriteLog");	
+		RegisterGlobal(scriptMessageBox, "MessageBox");	
 
 		using namespace IuCoreUtils;
 		RegisterGlobal(&CryptoUtils::CalcMD5HashFromFile, "md5_file");
@@ -628,8 +805,11 @@ int CScriptUploadEngine::getServerParamList(std::map<Utf8String, Utf8String>& li
 		arr.BeginIteration();
 		while (arr.Next(key, value))
 		{
-			Utf8String title = value.ToString();
-			list[key.ToString()] =  title;
+			const SQChar* t = value.ToString();
+			if ( t ) {
+				Utf8String title = t;
+				list[key.ToString()] =  title;
+			}
 		}
 		arr.EndIteration();
 	}

@@ -80,6 +80,7 @@ virtual ~CServerSelectorControl();
 	void notifyChange();
 	void notifyServerListChanged();
 	void updateServerList();
+	bool isAccountChosen();
 
 	enum ServerMaskEnum{ smAll = 0xffff, smImageServers = 0x1, smFileServers = 0x2, smUrlShorteners = 0x4};
 

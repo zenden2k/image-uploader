@@ -47,7 +47,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-MP$(NUMBER_OF_PROCESSORS)"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)Contrib\Include\WTL&quot;;&quot;$(SolutionDir)Contrib\Include\&quot;;&quot;$(SolutionDir)Contrib\Include\pcre&quot;;&quot;$(SolutionDir)Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX;TIXML_USE_STL;PCRE_STATIC;CURL_STATICLIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -1098,15 +1098,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-link.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\res\icon-link.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-link.png"
+				RelativePath=".\Source\res\icon-link.ico"
 				>
 			</File>
 			<File
@@ -1114,15 +1110,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\icon-link.png"
+				>
+			</File>
+			<File
 				RelativePath="Source\res\icon-region.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-reload.ico"
+				RelativePath=".\res\icon-reload.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-reload.ico"
+				RelativePath=".\Source\res\icon-reload.ico"
 				>
 			</File>
 			<File
@@ -1134,11 +1134,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-user.ico"
+				RelativePath=".\Source\res\icon-user.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-user.ico"
+				RelativePath=".\res\icon-user.ico"
 				>
 			</File>
 			<File
@@ -1158,11 +1158,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_additem.ico"
+				RelativePath=".\res\icon_additem.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_additem.ico"
+				RelativePath=".\Source\res\icon_additem.ico"
 				>
 			</File>
 			<File
@@ -1174,11 +1174,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_deleteitem.ico"
+				RelativePath=".\res\icon_deleteitem.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_deleteitem.ico"
+				RelativePath=".\Source\res\icon_deleteitem.ico"
 				>
 			</File>
 			<File
@@ -1198,19 +1198,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_folder2.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\res\icon_folder2.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_folder2.png"
+				RelativePath=".\res\icon_folder2.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\res\icon_folder2.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon_folder2.png"
 				>
 			</File>
 			<File
@@ -1230,11 +1230,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_up.ico"
+				RelativePath=".\Source\res\icon_up.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_up.ico"
+				RelativePath=".\res\icon_up.ico"
 				>
 			</File>
 			<File
