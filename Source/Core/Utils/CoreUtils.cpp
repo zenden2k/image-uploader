@@ -241,6 +241,15 @@ bool ReadUtf8TextFile(Utf8String utf8Filename, Utf8String& data)
 	return true;
 }
 
+bool PutFileContents(const Utf8String& utf8Filename, const Utf8String& content)
+{
+	FILE *stream = fopen_utf8(utf8Filename.c_str(), "wb");
+	if(!stream) return false;
+	fwrite(content.c_str(), content.length(),1, stream);
+	fclose(stream);
+	return true;
+}
+
 const std::string timeStampToString(time_t t)
 {
 	// TODO: add system locale support

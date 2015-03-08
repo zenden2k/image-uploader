@@ -451,7 +451,7 @@ bool CVideoGrabber::OnAddImage(SENDPARAMS* sp)
 					CString logMessage;
 					logMessage.Format(_T("Could not create folder '%s'."), (LPCTSTR)snapshotsFolder);
 					WriteLog(logError, _T("Video Grabber"), logMessage);
-					snapshotsFolder.Empty();
+					//snapshotsFolder.Empty();
 				}
 			}
 		}

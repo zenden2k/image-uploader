@@ -48,6 +48,7 @@ namespace IuCoreUtils
 	Utf8String StrReplace(Utf8String text, Utf8String s, Utf8String d);
 	Utf8String ConvertToUtf8(const Utf8String &text, const Utf8String codePage);
 	bool ReadUtf8TextFile(Utf8String utf8Filename, Utf8String& data);
+	bool PutFileContents(const Utf8String& utf8Filename, const Utf8String& content);
 
 	// getFileSize retrieves the size of the specified file, in bytes.
 	// It supports large files; filename must be utf8 encoded
@@ -60,5 +61,7 @@ namespace IuCoreUtils
 	bool createDirectory(const Utf8String& path, unsigned int mode=0);
 	bool copyFile(const std::string& src, const std::string & dest, bool overwrite = true);
 	const std::string Utf8ToAnsi(const std::string &str, int codepage);
+	bool RemoveFile(const Utf8String& utf8Filename);
+	bool MoveFileOrFolder(const Utf8String& from ,const Utf8String& to);
 };
 #endif

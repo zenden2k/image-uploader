@@ -2,15 +2,16 @@
 #
 # http://zenden.ws/imageuploader
 
--v1.3.0 build xxxx
+-v1.3.0
 [+] Now it is possible to choose servers (for images, other file types, for "tray/hotkey" screenshots, url shortening server)
  in settings dialog
 [+] Multiple accounts support
 [+] Multiple folders (albums) support
 [+] Now it is possible to perform beforehand authentication directly from the login dialog (for servers with OAuth authentication, for ex. Picasa, Yandex, Flickr)
 [+] Explorer's context menu custom user entries
-[+] Scripting API changes: added SimpleXML class, ParseJSON function, multiple file functions 
+[+] Scripting API changes: added SimpleXML class, ParseJSON/ToJSON functions, multiple file functions 
 [+] Added quick setup dialog (shown at first run)
+[+] It's possible to draw horizontal and vertical lines with shift key holded
 [~] Disable editing and storing password for servers which do not need password (servers with OAuth authentication, for ex. Picasa, Yandex, Flickr)
 [~] Documentation update (added Scripting API docs)
 [~] Documentation now is shipped with program

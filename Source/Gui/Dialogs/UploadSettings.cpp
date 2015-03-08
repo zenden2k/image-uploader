@@ -175,7 +175,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("GIF"));
 	
 	ShowParams();
-	ShowParams(Settings.CurrentConvertProfileName);
+	ShowParams(sessionImageServer_.getImageUploadParams().ImageProfileName);
 	UpdateProfileList();
 	UpdateAllPlaceSelectors();
 	return 1;  // Let the system set the focus
@@ -279,7 +279,7 @@ bool CUploadSettings::OnNext()
 	if(!sessionImageServer_.serverName().IsEmpty())
 	{
 		CUploadEngineData *ue = sessionImageServer_.uploadEngineData();
-		if(ue->NeedAuthorization ==2 && !Settings.ServersSettings[ue->Name][imageServerLogin_].authData.DoAuth)
+		if(ue->NeedAuthorization ==2 && sessionImageServer_.profileName().IsEmpty())
 		{ 
 			CString errorMsg;
 			errorMsg.Format(TR("Загрузка файлов на сервер '%s' невозможна без наличия учетной записи.\nПожалуйста, зарегистрируйтесь на данном сервере и укажите ваши регистрационные данные в программе."), (LPCTSTR)Utf8ToWCstring(ue->Name));
@@ -290,7 +290,7 @@ bool CUploadSettings::OnNext()
 	if(!sessionFileServer_.serverName().IsEmpty())
 	{
 		CUploadEngineData *ue2 =sessionFileServer_.uploadEngineData();
-		if(ue2->NeedAuthorization == 2 && !Settings.ServersSettings[ue2->Name][fileServerLogin_].authData.DoAuth)
+		if(ue2->NeedAuthorization == 2 && sessionFileServer_.profileName().IsEmpty())
 		{
 			CString errorMsg;
 			errorMsg.Format(TR("Вы не задали параметры авторизации на сервере '%s'!"), (LPCTSTR)Utf8ToWstring(ue2->Name).c_str());
@@ -348,7 +348,7 @@ bool CUploadSettings::OnShow()
 		ShowParams();
 	}
 
-   ShowParams(Settings.CurrentConvertProfileName);
+   ShowParams(sessionImageServer_.getImageUploadParamsRef().ImageProfileName);
    UpdateProfileList();
    UpdateAllPlaceSelectors();
 	OnBnClickedCreatethumbnails(0, 0, 0, temp);
@@ -945,6 +945,7 @@ LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, H
 	CServerParamsDlg dlg(serverProfile);
 	if ( dlg.DoModal() == IDOK) {
 		serverProfile = dlg.serverProfile();
+		UpdateAllPlaceSelectors();
 	}
 	return 0;
 }
@@ -1012,9 +1013,9 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
    CSettingsDlg dlg(CSettingsDlg::spImages);
 	dlg.DoModal(m_hWnd);
    CurrentProfileName = "";
-   ShowParams(Settings.CurrentConvertProfileName);
+   ShowParams(sessionImageServer_.getImageUploadParamsRef().ImageProfileName);
    UpdateProfileList();
-   ShowParams(Settings.CurrentConvertProfileName);
+   ShowParams(sessionImageServer_.getImageUploadParamsRef().ImageProfileName);
    return 0;
 }
 
@@ -1206,7 +1207,7 @@ saveToProfile = CurrentProfileOriginalName;
    if(!SaveParams(сonvert_profiles_[saveToProfile]))
       return;
 
-  Settings.CurrentConvertProfileName  = saveToProfile;
+   sessionImageServer_.getImageUploadParamsRef().ImageProfileName = saveToProfile;
 }
 
 bool  CUploadSettings::OnHide()

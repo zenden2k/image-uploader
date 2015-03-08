@@ -132,6 +132,7 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
 		bool m_bPictureChanged;
 		CToolBarCtrl Toolbar;
 		CWindowHandlesRegion m_SelectedWindowsRegion;
+		int lineType;
 
 };
 

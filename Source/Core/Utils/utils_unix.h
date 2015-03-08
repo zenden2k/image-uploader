@@ -168,7 +168,15 @@ int mkpath(const char *path, mode_t mode)
 
 bool createDirectory(const Utf8String& path,unsigned int mode)
 {
-	mkpath(path.c_str(), (mode_t)mode);
+	return mkpath(path.c_str(), (mode_t)mode) == 0;
+}
+
+bool RemoveFile(const Utf8String& utf8Filename) {
+	return remove(utf8Filename.c_str())==0;
+}
+
+bool MoveFileOrFolder(const Utf8String& from ,const Utf8String& to) {
+	return rename(from.c_str() ,to.c_str())==0;
 }
 
 }

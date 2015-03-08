@@ -437,11 +437,11 @@ CUploadEngineData* getServerByName(std::string name)
 
 CAbstractUploadEngine *lastEngine = 0;
 //ServerSettingsStruct s;
-CAbstractUploadEngine* getUploadEngineByData(CUploadEngineData * data)
+CAbstractUploadEngine* getUploadEngineByData(CUploadEngineData * data,std::string login)
 {
-	ServerSettingsStruct& s = Settings.ServerByUtf8Name(data->Name);
+	ServerSettingsStruct& s = Settings.ServersSettings[data->Name][login];
 	
-
+	printf("Login: %s", login.c_str());
 	s.authData.Password = password;
 	s.authData.Login = login;
 	if(!login.empty())
@@ -513,7 +513,7 @@ int func()
 				res ++;
 				continue;				
 		}
-     CAbstractUploadEngine* engine = getUploadEngineByData(uploadEngineData);
+     CAbstractUploadEngine* engine = getUploadEngineByData(uploadEngineData,login);
      if(!engine) return false;
      engine->setUploadData(uploadEngineData);
      uploader.setUploadEngine(engine);
@@ -639,7 +639,7 @@ mkdir(settingsFolder.c_str(), 0700);
 #endif
 
    std::cerr<<"Zenden Image Uploader console utility v"<< IU_CLI_VER <<" (based on IU v"<<_APP_VER<<" build "<<BUILD<<")"<<std::endl;
-   if(! list.LoadFromFile(dataFolder + "servers.xml"))
+   if(! list.LoadFromFile(dataFolder + "servers.xml", Settings.ServersSettings))
    {
 	   std::cerr<<"Cannot load server list!"<<std::endl;
    }

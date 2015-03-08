@@ -321,10 +321,12 @@ CString GetAppFolder()
 {
 	TCHAR szFileName[1024], szPath[1024];
 	HINSTANCE inst;
-#ifndef IU_SHELLEXT
+#if !defined(IU_SHELLEXT) && !defined(IU_CLI)
 	inst =  _Module.GetModuleInstance();
-#else
+#elif defined(IU_SHELLEXT)
 	inst = hDllInstance;
+#else
+	inst = GetModuleHandle(0);
 #endif
 	GetModuleFileName(inst, szFileName, 1023);
 	ExtractFilePath(szFileName, szPath);

@@ -104,15 +104,12 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
 			if ( Settings.ServerProfiles.find(keyNames[i])==  Settings.ServerProfiles.end()) {
 				displayTitle = _T("[invalid] ") + displayTitle;
 				lid->invalid = true;
-			}
-				
-				
-				lid->name  = title;
+			} else {
 				lid->serverProfile = Settings.ServerProfiles[keyNames[i]];
-				//lid->serverProfile.setServerName(Reg.ReadString("ServerName"));
-				int newIndex = menuItemsListBox_.AddString(displayTitle);
-				menuItemsListBox_.SetItemData(newIndex, (DWORD_PTR) lid);
-			
+			}
+			lid->name  = title;
+			int newIndex = menuItemsListBox_.AddString(displayTitle);
+			menuItemsListBox_.SetItemData(newIndex, (DWORD_PTR) lid);
 		}
 	}
 

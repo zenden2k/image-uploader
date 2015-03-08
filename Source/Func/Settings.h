@@ -57,17 +57,18 @@ typedef std::map <std::string, std::map <std::string, ServerSettingsStruct>> Ser
 struct ImageUploadParams {
 	ImageUploadParams() {
 		UseServerThumbs = false;
-		CreateThumbs = true;
+		CreateThumbs = false;
 		ProcessImages = false;
 		UseDefaultThumbSettings = true;
 		ImageProfileName = "Default";
-		Thumb.Size = 150;
+		Thumb.Size = 180;
 		Thumb.ResizeMode = ThumbCreatingParams::trByWidth;
 		Thumb.AddImageSize = true;
 		Thumb.Format = ThumbCreatingParams::tfPNG;
 		Thumb.TemplateName = "default";
 		Thumb.BackgroundColor = RGB( 255, 255, 255);
 		Thumb.Quality = 85;
+		Thumb.Text = _T("%width%x%height% (%size%)");
 	}
 	void bind(SettingsNode& n);
 
@@ -322,7 +323,7 @@ public:
 
 		std::map<CString, ImageConvertingParams> ConvertProfiles;
 		ServerProfilesMap ServerProfiles;
-//protected:
+protected:
 		CString CurrentConvertProfileName;
 public:
 		CString getShellExtensionFileName() const;

@@ -346,7 +346,7 @@ function GetFolderAccessTypeList()
 
 function GetServerParamList()
 {
-	local a =
+	return 
 	{
 		token = "token",
 		tokenType = "TokenType",

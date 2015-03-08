@@ -425,7 +425,7 @@ CSettings::CSettings()
 	ThumbsPerLine = 4;
 	SendToContextMenu_changed = false;
 	SendToContextMenu = 0;
-	QuickUpload = 0;
+	QuickUpload = 1;
 	ParseSubDirs = 1;
 	RememberImageServer = true;
     RememberFileServer = true;
@@ -666,7 +666,7 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 	LoadServerProfiles( settingsNode.GetChild("Uploading").GetChild("ServerProfiles") );
 #endif
 	LoadAccounts( xml.getRoot( "ImageUploader" ).GetChild( "Settings" ).GetChild( "ServersParams" ) );
-
+#if !defined(IU_CLI) && !defined( IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
 	// Fixing profies
 	if ( !imageServer.profileName().IsEmpty() &&  ServersSettings[WCstringToUtf8(imageServer.serverName())].find(WCstringToUtf8(imageServer.profileName())) == ServersSettings[WCstringToUtf8(imageServer.serverName())].end() ) {
 		imageServer.setProfileName("");
@@ -686,7 +686,7 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 	if ( !urlShorteningServer.profileName().IsEmpty() &&  ServersSettings[WCstringToUtf8(urlShorteningServer.serverName())].find(WCstringToUtf8(urlShorteningServer.profileName())) == ServersSettings[WCstringToUtf8(urlShorteningServer.serverName())].end() ) {
 		urlShorteningServer.setProfileName("");
 	}
-
+#endif
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 	// Loading some settings from registry
 	if ( LoadFromRegistry ) {
@@ -1015,8 +1015,9 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 						tempSettings.params[attribName] = value;
 				}
 			}
-#if !defined  (IU_CLI) && !defined(IU_SHELLEXT)
 			tempSettings.authData.DoAuth = servers[i].AttributeBool("Auth");
+#if !defined  (IU_CLI) && !defined(IU_SHELLEXT)
+			
 
 			std::string encodedLogin = servers[i].Attribute("Login");
 			CEncodedPassword login;
@@ -1027,6 +1028,8 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 			CEncodedPassword pass;
 			pass.fromEncodedData(encodedPass.c_str());
 			tempSettings.authData.Password = WCstringToUtf8(pass);
+#else
+	tempSettings.authData.Login =servers[i].Attribute("Login");
 #endif
 
 			tempSettings.defaultFolder.setId( servers[i].Attribute("DefaultFolderId"));
@@ -1062,8 +1065,10 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 					}
 					serverNode.SetAttribute("_" + param->first, param->second);
 				}
-	#if !defined  (IU_CLI) && !defined(IU_SHELLEXT)
 				serverNode.SetAttributeBool("Auth", sss.authData.DoAuth);
+
+	#if !defined  (IU_CLI) && !defined(IU_SHELLEXT)
+				
 
 				CEncodedPassword login(Utf8ToWCstring(sss.authData.Login));
 				serverNode.SetAttribute("Login", WCstringToUtf8(login.toEncodedData()));
@@ -1073,6 +1078,8 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 					CEncodedPassword pass(Utf8ToWCstring(it->second.authData.Password));
 					serverNode.SetAttribute("Password", WCstringToUtf8(pass.toEncodedData()));
 				}
+	#else
+		serverNode.SetAttribute("Login", sss.authData.Login);
 	#endif
 				if ( !it->second.defaultFolder.getId().empty() ) {
 					serverNode.SetAttributeString("DefaultFolderId", sss.defaultFolder.getId());
@@ -1084,7 +1091,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		}
 		return true;
 	}
-
+#if !defined(IU_CLI) && !defined( IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
 	bool CSettings::LoadServerProfiles(SimpleXmlNode root)
 	{
 		std::vector<SimpleXmlNode> servers;
@@ -1120,6 +1127,8 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		}
 		return true;
 	}
+
+#endif
 
 #if !defined  (IU_CLI) && !defined(IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
 	bool CSettings::LoadConvertProfiles(SimpleXmlNode root)
