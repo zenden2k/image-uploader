@@ -6,7 +6,8 @@
 #define MyAppPublisher "ZendeN"
 #define MyAppURL "http://zenden.ws/imageuploader"
 #define MyAppExeName "Image Uploader.exe"
-
+;#include ReadReg(HKEY_LOCAL_MACHINE,'Software\Sherlock Software\InnoTools\Downloader','ScriptPath','')
+#include "it_download.iss"
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
@@ -55,6 +56,7 @@ Name: "{code:GetDataFolder}\Image Uploader\Servers"; Permissions: users-modify
 
 [Files]
 Source: "..\Build\release optimized\Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Build\release optimized\curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lang\*.lng"; Excludes: "default.*"; DestDir: "{app}\Lang"; Flags: ignoreversion
 Source: "..\Build\release optimized\Modules\*"; DestDir: "{app}\Modules"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Docs\*"; DestDir: "{app}\Docs"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -99,4 +101,36 @@ begin
     Result := ExpandConstant('{commonappdata}')
  // else
   //  Result := ExpandConstant('{userappdata}')
+end;
+
+procedure  InitializeWizard;
+  var Version: TWindowsVersion;
+begin
+  GetWindowsVersionEx(Version);
+   if Version.NTPlatform and
+     (Version.Major = 5) 
+     and (Version.Minor <1 )  
+     then
+  begin
+      ITD_Init;
+     ITD_SetOption('UI_AllowContinue','1');
+  ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/gdiplus.dll', expandconstant('{tmp}\gdiplus.dll'));
+  ITD_DownloadAfter(wpReady);
+  end;
+  
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+   var Version: TWindowsVersion;
+begin
+ if CurStep=ssInstall then begin
+ GetWindowsVersionEx(Version);
+   if Version.NTPlatform and
+     (Version.Major = 5) 
+     and (Version.Minor <1 )  
+     then
+  begin
+  filecopy(expandconstant('{tmp}\gdiplus.dll'),expandconstant('{app}\gdiplus.dll'),false);
+  end;
+ end;
 end;

@@ -31,6 +31,8 @@
 #include <iostream>
 #include "Core/Utils/CoreUtils.h"
 
+char NetworkManager::CertFileName[1024]= "";
+
 size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
 	return  fread(ptr, size, nmemb, (FILE*)stream);
@@ -120,6 +122,7 @@ void NetworkManager::setMethod(const NString &str)
 }
 
 bool  NetworkManager::_curl_init = false;
+bool  NetworkManager::_is_openssl = false;
 #ifndef IU_CLI
 ZThread::Mutex NetworkManager::_mutex;
 #endif
@@ -130,7 +133,21 @@ NetworkManager::NetworkManager(void)
 #endif
 	if(!_curl_init)
 	{
-		curl_global_init(CURL_GLOBAL_ALL);	
+		curl_global_init(CURL_GLOBAL_ALL);
+		curl_version_info_data * infoData = curl_version_info(CURLVERSION_NOW);
+		_is_openssl =  strstr(infoData->ssl_version, "WinSSL")!=infoData->ssl_version;
+#ifdef WIN32
+		GetModuleFileNameA(0, CertFileName, 1023);
+		int i, len = lstrlenA(CertFileName);
+		for(i=len; i>=0; i--)
+		{
+			if(CertFileName[i] == _T('\\')) {
+				CertFileName[i+1] = 0;
+				break;
+			}
+		}
+		StrCatA(CertFileName, "curl-ca-bundle.crt");
+#endif
 		_curl_init = true;
 	}
     #ifndef IU_CLI
@@ -150,6 +167,8 @@ NetworkManager::NetworkManager(void)
 	m_headerFuncData.nmanager = this;
 	curl_easy_setopt(curl_handle, CURLOPT_COOKIELIST, "");
 	setUserAgent("Mozilla/5.0");
+
+
 	curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, private_static_writer);
 	curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &m_bodyFuncData);	
 	curl_easy_setopt(curl_handle, CURLOPT_WRITEHEADER, &m_headerFuncData);
@@ -162,10 +181,14 @@ NetworkManager::NetworkManager(void)
 	curl_easy_setopt(curl_handle, CURLOPT_ENCODING, "");
 	curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
 	curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTDATA, this);
-	
+	 
+#ifdef _WIN32
+	curl_easy_setopt(curl_handle, CURLOPT_CAINFO, CertFileName);
+#endif
+	curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 1L); 
+	curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 2L);
 
-   curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 1L); 
-   curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 2L);
+
 	//We want the referrer field set automatically when following locations
 	curl_easy_setopt(curl_handle, CURLOPT_AUTOREFERER, 1L); 
 	curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 32768L);

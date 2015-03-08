@@ -275,7 +275,9 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		PopupMenu = CreatePopupMenu();
 	else PopupMenu = hmenu;
 
-
+	if ( !ExplorerCascadedMenu ) {
+		MyInsertMenuSeparator(PopupMenu, subIndex++, 0);
+	}
 	if(AreOnlyImages(m_FileList))
 		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES, TR("Загрузить изображения"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
 	else
@@ -296,7 +298,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 	for(int i =0; i < keyNames.size() ; i++ ) {
 		if ( Reg2.SetKey(keyPath + _T("\\") + keyNames[i], false) ) {
 			
-				if ( ! separatorInserted ) {
+				if ( ! separatorInserted && ExplorerCascadedMenu ) {
 					MyInsertMenuSeparator(PopupMenu, subIndex++, 0);
 					separatorInserted = true;
 			}
@@ -316,6 +318,10 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO,  TR("Импорт видео"),idCmdFirst,CString(),UseBitmaps,0,ExplorerCascadedMenu?0:IDI_ICONMOVIE);
 		if(m_bMediaInfoInstalled)
 			MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_MEDIAINFO, TR("Информация о файле"),idCmdFirst,CString(),UseBitmaps,0 ,ExplorerCascadedMenu?0:IDI_ICONINFO);
+	}
+	if ( !ExplorerCascadedMenu ) {
+		MyInsertMenuSeparator(PopupMenu, subIndex++, 0);
+		separatorInserted = true;
 	}
 	if(ExplorerCascadedMenu)
 	{
@@ -409,14 +415,14 @@ HRESULT CIShellContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpici)
 	{
 	case MENUITEM_UPLOADFILES:
 		{
-			IULaunchCopy(m_FileList,_T("/upload"));
+			IULaunchCopy(m_FileList,_T("/fromcontextmenu"));
 
 			return S_OK;
 		}
 		break;
 	case MENUITEM_UPLOADONLYIMAGES:
 		{
-			IULaunchCopy(m_FileList,_T("/upload /imagesonly"));
+			IULaunchCopy(m_FileList,_T("/fromcontextmenu /imagesonly"));
 
 			return S_OK;
 		}
@@ -436,7 +442,7 @@ HRESULT CIShellContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpici)
 		}
 		break;
 	case MENUITEM_SERVER_PROFILE:
-		IULaunchCopy(m_FileList,_T("/serverprofile=") +item.commandArgument );
+		IULaunchCopy(m_FileList,_T("/quick /serverprofile=") +item.commandArgument );
 		return S_OK;
 		break;
 

@@ -543,6 +543,7 @@
 #define IDC_DOLOGINLABEL                1304
 #define IDC_EXPLORERINTEGRATION         1305
 #define IDC_URLSHORTENERPLACEHOLDER     1305
+#define IDC_PARAMETERSLABEL             1305
 #define IDC_ACCOUNTINFO                 1306
 #define IDC_EDIT                        1307
 #define IDC_SERVERGROUPBOX              1308
@@ -608,7 +609,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        272
 #define _APS_NEXT_COMMAND_VALUE         32803
-#define _APS_NEXT_CONTROL_VALUE         1305
+#define _APS_NEXT_CONTROL_VALUE         1306
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

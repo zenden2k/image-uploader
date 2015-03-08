@@ -299,6 +299,8 @@ bool CWizardDlg::ParseCmdLine()
 				
 			}
 			
+		} else if (CurrentParam ==_T("/fromcontextmenu")) {
+			sessionImageServer_ = Settings.contextMenuServer;
 		}
 	}
 

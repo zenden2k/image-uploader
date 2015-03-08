@@ -50,6 +50,7 @@ LRESULT CContextMenuItemDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	imageServerSelector_->setServerProfile(Settings.imageServer);
 
 	SetWindowText(TR("Добавить пункт меню"));
+	TRC(IDC_MENUITEMLABEL, "Название:");
 
 	TRC(IDCANCEL, "Отмена");
 	generateTitle();

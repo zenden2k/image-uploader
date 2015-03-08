@@ -44,6 +44,9 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	TRC(IDC_LOGINLABEL, "Логин:");
 	TRC(IDC_PASSWORDLABEL, "Пароль:");
 	TRC(IDC_DOAUTH, "Выполнять авторизацию");
+	TRC(IDC_FOLDERLABEL, "Папка/альбом:");
+	TRC(IDC_BROWSESERVERFOLDERS, "Выбрать...");
+	TRC(IDC_PARAMETERSLABEL, "Параметры:");
 	DlgResize_Init();
 	CString WindowTitle;
 	CString serverName = Utf8ToWCstring(m_ue->Name);

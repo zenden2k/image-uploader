@@ -55,6 +55,8 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
 	TRC(IDC_SHELLVIDEOCONTEXTMENUITEM, "Пункт в контекстном меню видеофайлов");
 	TRC(IDC_CASCADEDCONTEXTMENU, "Вложенное контекстное меню");
 	TRC(IDC_SHELLSENDTOITEM, "Добавить Image Uploader в меню \"Отправить\"");
+	TRC(IDC_CONTEXTMENUITEMSLABEL, "Пользовательские элементы меню:");
+
 	menuItemsListBox_.m_hWnd = GetDlgItem(IDC_CONTEXTMENUITEMSLIST);
 
 	TCHAR buf[MAX_PATH];
