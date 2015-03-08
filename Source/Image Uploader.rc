@@ -516,7 +516,7 @@ BEGIN
     EDITTEXT        IDC_LOGINEDIT,69,26,83,14,ES_AUTOHSCROLL
     RTEXT           "Пароль:",IDC_PASSWORDLABEL,155,28,48,8
     EDITTEXT        IDC_PASSWORDEDIT,209,26,73,14,ES_PASSWORD | ES_AUTOHSCROLL
-    LTEXT           "Параметры:",IDC_STATIC,7,75,42,8
+    LTEXT           "Параметры:",IDC_PARAMETERSLABEL,7,75,42,8
     LTEXT           "Папка/альбом:",IDC_FOLDERLABEL,18,52,51,8
     PUSHBUTTON      "Выбрать...",IDC_BROWSESERVERFOLDERS,232,48,50,14
     LTEXT           "Static",IDC_FOLDERNAMELABEL,92,51,109,8
@@ -739,7 +739,7 @@ CAPTION "Image Downloader"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     LTEXT           "Static",IDC_SHORTENURLTIP,4,7,149,10
-    COMBOBOX        IDC_SERVERCOMBOBOX,160,3,113,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_SERVERCOMBOBOX,160,3,113,70,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     EDITTEXT        IDC_INPUTEDIT,4,21,270,14,ES_AUTOHSCROLL
     DEFPUSHBUTTON   "Сократить!",IDOK,81,40,97,15
     LTEXT           "Static",IDC_ANIMATIONSTATIC,247,37,27,21,NOT WS_VISIBLE
@@ -843,7 +843,6 @@ EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     LTEXT           " zenden2k@gmail.com",IDC_ACCOUNTINFO,155,14,101,9,SS_ENDELLIPSIS
-    CONTROL         "",IDC_SERVERCOMBOBOX,"ComboBoxEx32",CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP,5,13,121,172
     GROUPBOX        "Сервер для хранения изображений:",IDC_SERVERGROUPBOX,0,1,259,41
     ICON            IDI_ICONUSER,IDC_USERICON,142,15,20,20,SS_REALSIZEIMAGE
     ICON            IDI_ICONFOLDER2,IDC_FOLDERICON,142,28,20,20,SS_REALSIZEIMAGE
@@ -851,6 +850,7 @@ BEGIN
     LTEXT           "Настройки загрузки",IDC_IMAGEPROCESSINGPARAMS,7,30,131,8
     LTEXT           "1",IDC_SETTINGSBUTTONPLACEHOLDER,241,27,18,15,NOT WS_VISIBLE,WS_EX_STATICEDGE
     LTEXT           "1",IDC_SETTINGSBUTTONPLACEHOLDER2,131,13,18,15,NOT WS_VISIBLE,WS_EX_STATICEDGE
+    CONTROL         "",IDC_SERVERCOMBOBOX,"ComboBoxEx32",CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP,5,13,121,172
 END
 
 IDD_DEFAULTSERVERSSETTINGS DIALOGEX 0, 0, 273, 270
@@ -876,8 +876,7 @@ BEGIN
     CONTROL         "Настройки по умолчанию",IDC_DEFAULTSETTINGSCHECKBOX,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,9,6,102,10
     GROUPBOX        "Параметры изображения",IDC_IMAGEPARAMETERS,7,20,203,47
-    CONTROL         " Оставить без изменений",IDC_PROCESSIMAGESCHECKBOX,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,34,158,10
+    CONTROL         " Обрабатывать",IDC_PROCESSIMAGESCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,34,158,10
     CTEXT           "Профиль:",IDC_PROFILELABEL,20,50,52,8
     COMBOBOX        IDC_PROFILECOMBO,71,47,86,81,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "",IDC_EDITPROFILE,163,47,20,15,BS_ICON | NOT WS_VISIBLE
@@ -1472,8 +1471,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,2,9,0
- PRODUCTVERSION 1,2,9,0
+ FILEVERSION 1,3,0,0
+ PRODUCTVERSION 1,3,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1490,12 +1489,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "http://zenden.ws"
             VALUE "FileDescription", "Image Uploader"
-            VALUE "FileVersion", "1, 2, 9, 0"
+            VALUE "FileVersion", "1, 3, 0, 0"
             VALUE "InternalName", "Image Uploader"
-            VALUE "LegalCopyright", "Copyright 2007-2012 by ZendeN (http://zenden.ws)"
+            VALUE "LegalCopyright", "Copyright 2007-2015 by ZendeN (http://zenden.ws)"
             VALUE "OriginalFilename", "Image Uploader.exe"
             VALUE "ProductName", "Image Uploader"
-            VALUE "ProductVersion", "1, 2, 9, 0"
+            VALUE "ProductVersion", "1, 3, 0, 0"
         END
     END
     BLOCK "VarFileInfo"

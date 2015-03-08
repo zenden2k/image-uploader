@@ -146,15 +146,14 @@ function sendOauthRequest(method, url, params, token,tokenSecret) {
 	}
 	return 0;
 }
-function Login() {
+function DoLogin() {
 	oauth_token_secret = ServerParams.getParam("oauth_token_secret");
 	oauth_token = ServerParams.getParam("oauth_token");
 	
 	if ( oauth_token_secret != ""  &&  oauth_token != ""){
-		return true;
+		return 1;
 	}
 	local email = ServerParams.getParam("Login");
-	local pass =  ServerParams.getParam("Password");
 	
 	local params=[	{a="oauth_consumer_key", b=appKey},
 					{a="oauth_signature_method", b="HMAC-SHA1"},
@@ -170,7 +169,7 @@ function Login() {
 	local temp_oauth_token_secret = regex_simple(data, "oauth_token_secret=([^&]+)", 0);
 	local temp_oauth_token = regex_simple(data, "oauth_token=([^&]+)", 0);
 	if ( temp_oauth_token == "" ) {
-		return false;
+		return 0;
 	}
 	openUrl("https://www.flickr.com/services/oauth/authorize?oauth_token=" + temp_oauth_token);
 	
@@ -196,9 +195,9 @@ function Login() {
 		
 		ServerParams.setParam("oauth_token_secret", oauth_token_secret);
 		ServerParams.setParam("oauth_token", oauth_token);
-		return true;
+		return 1;
 	}
-	return false;
+	return 0;
 }
 
 function isAuthorized() {
@@ -224,7 +223,7 @@ function msgBox(text) {
 }
 function  UploadFile(FileName, options) {		
 
-	if (!Login() ) {
+	if (!DoLogin() ) {
 		return 0;
 	}
 	local userPath = ServerParams.getParam("UploadPath");
@@ -296,7 +295,7 @@ function  UploadFile(FileName, options) {
 
 function GetFolderList(list)
 {
-	if (!Login() ) {
+	if (!DoLogin() ) {
 		return 0;
 	}
 	

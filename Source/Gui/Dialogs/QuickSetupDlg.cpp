@@ -128,10 +128,11 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 	if ( serverComboElementIndex > 0 ) {
 		std::string serverNameA = reinterpret_cast<char*>(serverComboBox_.GetItemData(serverComboElementIndex));
 		CUploadEngineData * uploadEngineData =( (CUploadEngineList *)_EngineList)->byName( serverNameA );
-		Settings.getServerName() = Utf8ToWCstring( uploadEngineData->Name ) ;
+		Settings.imageServer.setServerName(Utf8ToWCstring( uploadEngineData->Name )) ;
 		bool needAuth = GuiTools::GetCheck( m_hWnd, IDC_DOAUTHCHECKBOX );
 		if ( needAuth ) {
 			CString login = GuiTools::GetDlgItemText( m_hWnd, IDC_LOGINEDIT );
+			Settings.imageServer.setProfileName(login);
 			CString password = GuiTools::GetDlgItemText( m_hWnd, IDC_PASSWORDEDIT );
 			if ( login.IsEmpty() ) {
 				MessageBox(TR("¬ведите данные учетной записи"), APPNAME, MB_ICONEXCLAMATION);
@@ -142,13 +143,17 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 			loginInfo.Login = WCstringToUtf8( login );
 			loginInfo.Password = WCstringToUtf8( password );
 		}
+		Settings.quickScreenshotServer = Settings.imageServer;
+		Settings.contextMenuServer = Settings.imageServer;
+		Settings.fileServer.setServerName("zippyshare.com");
+
 	} else {
-		Settings.getServerName() = CString();
+
 	}
 
 	GuiTools::GetCheck(m_hWnd, IDC_AUTOSTARTUPCHECKBOX, Settings.AutoStartup);
-	Settings.AutoStartup_changed = Settings.AutoStartup;
-	Settings.ShowTrayIcon        = true;
+	Settings.AutoStartup_changed = true;
+	
 	Settings.ExplorerContextMenu = GuiTools::GetCheck(m_hWnd, IDC_EXPLORERINTEGRATION);
 	Settings.ExplorerContextMenu_changed = Settings.ExplorerContextMenu;
 
@@ -160,6 +165,10 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 		Settings.Hotkeys.getByFunc( _T("fullscreenshot") ).Clear();
 		Settings.Hotkeys.getByFunc( _T("windowscreenshot") ).Clear();
 
+	}
+
+	if ( Settings.AutoStartup || capturePrintScreen ) {
+		Settings.ShowTrayIcon        = true;
 	}
 	Settings.SaveSettings();
 	

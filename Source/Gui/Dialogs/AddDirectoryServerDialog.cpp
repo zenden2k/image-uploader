@@ -7,7 +7,7 @@
 #include <Func/Settings.h>
 #include <Func//IuCommonFunctions.h>
 #include <Ws2tcpip.h>
-#include <winsock2.h>
+#include <winsock2.h> 
 #include <iphlpapi.h>
 #define SECURITY_WIN32 
 #include <security.h>
@@ -32,7 +32,7 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
 {
 	SetWindowText(TR("Добавление папки как сервера"));
 	TRC(IDC_CONNECTIONNAMELABEL,"Имя сервера:");
-	TRC(IDC_REMOTEDIRECTORYLABEL,"Папка:");
+	TRC(IDC_DIRECTORYLABEL,"Папка:");
 	TRC(IDC_DOWNLOADURLLABEL,"URL для скачивания:");
 	TRC(IDCANCEL,"Отмена");
 	TRC(IDC_THEURLOFUPLOADEDLABEL,"Ссылка для скачивания будет выглядеть так:");
@@ -45,11 +45,6 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
 	::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));
 	LoadComputerAddresses();
 	GuiTools::ShowDialogItem(m_hWnd, IDC_ADDFILEPROTOCOL, false);
-	/*PADDRINFOA ai;
-	
-	if (!getaddrinfo(0,0,0, &ai) ) {
-		MessageBoxA(0,0,ai->ai_canonname,0);
-	}*/
 	
 	CenterWindow(GetParent());
 	return 0;  // Let the system set the focus
@@ -109,7 +104,7 @@ LRESULT CAddDirectoryServerDialog::OnConnectionNameEditChange(WORD wNotifyCode, 
 		connectionNameEdited = !GuiTools::GetDlgItemText(m_hWnd, IDC_CONNECTIONNAMEEDIT).IsEmpty();
 	}
 
-	return 0;
+	return 0; 
 
 }
 
@@ -245,96 +240,144 @@ void CAddDirectoryServerDialog::GenerateExampleUrl()
 #define FREE(x) HeapFree(GetProcessHeap(), 0, (x))
 bool CAddDirectoryServerDialog::LoadComputerAddresses()
 {
-	/* Declare and initialize variables */
+	bool isWindowsXpOrLater;
+	OSVERSIONINFO ovi = { 0 };
+	ovi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	BOOL bRet = ::GetVersionEx(&ovi);
+	isWindowsXpOrLater =  ovi.dwMajorVersion > 5 || (ovi.dwMajorVersion == 5 && ovi.dwMinorVersion >= 1);
 
-	DWORD dwSize = 0;
-	DWORD dwRetVal = 0;
 
-	unsigned int i = 0;
+	if (isWindowsXpOrLater) {
+		/* Declare and initialize variables */
 
-	// Set the flags to pass to GetAdaptersAddresses
-	ULONG flags = GAA_FLAG_INCLUDE_PREFIX;
+		DWORD dwSize = 0;
+		DWORD dwRetVal = 0;
 
-	// default to unspecified address family (both)
-	ULONG family = AF_UNSPEC;
+		unsigned int i = 0;
 
-	LPVOID lpMsgBuf = NULL;
+		// Set the flags to pass to GetAdaptersAddresses
+		ULONG flags = GAA_FLAG_INCLUDE_PREFIX;
 
-	PIP_ADAPTER_ADDRESSES pAddresses = NULL;
-	ULONG outBufLen = 0;
-	ULONG Iterations = 0;
+		// default to unspecified address family (both)
+		ULONG family = AF_UNSPEC;
 
-	PIP_ADAPTER_ADDRESSES pCurrAddresses = NULL;
-	PIP_ADAPTER_UNICAST_ADDRESS pUnicast = NULL;
-	PIP_ADAPTER_ANYCAST_ADDRESS pAnycast = NULL;
-	PIP_ADAPTER_MULTICAST_ADDRESS pMulticast = NULL;
-	IP_ADAPTER_DNS_SERVER_ADDRESS *pDnServer = NULL;
-	IP_ADAPTER_PREFIX *pPrefix = NULL;
+		LPVOID lpMsgBuf = NULL;
 
-	family = AF_INET;
+		PIP_ADAPTER_ADDRESSES pAddresses = NULL;
+		ULONG outBufLen = 0;
+		ULONG Iterations = 0;
 
-	outBufLen = WORKING_BUFFER_SIZE;
+		PIP_ADAPTER_ADDRESSES pCurrAddresses = NULL;
+		PIP_ADAPTER_UNICAST_ADDRESS pUnicast = NULL;
+		PIP_ADAPTER_ANYCAST_ADDRESS pAnycast = NULL;
+		PIP_ADAPTER_MULTICAST_ADDRESS pMulticast = NULL;
+		IP_ADAPTER_DNS_SERVER_ADDRESS *pDnServer = NULL;
+		IP_ADAPTER_PREFIX *pPrefix = NULL;
 
-	do {
+		family = AF_INET;
 
-		pAddresses = (IP_ADAPTER_ADDRESSES *) MALLOC(outBufLen);
-		if (pAddresses == NULL) {
-			printf
-				("Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
-		}
+		outBufLen = WORKING_BUFFER_SIZE;
 
-		dwRetVal =
-			GetAdaptersAddresses(family, flags, NULL, pAddresses, &outBufLen);
+		do {
 
-		if (dwRetVal == ERROR_BUFFER_OVERFLOW) {
-			FREE(pAddresses);
-			pAddresses = NULL;
+			pAddresses = (IP_ADAPTER_ADDRESSES *) MALLOC(outBufLen);
+			if (pAddresses == NULL) {
+				printf
+					("Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
+			}
+
+			dwRetVal =
+				GetAdaptersAddresses(family, flags, NULL, pAddresses, &outBufLen);
+
+			if (dwRetVal == ERROR_BUFFER_OVERFLOW) {
+				FREE(pAddresses);
+				pAddresses = NULL;
+			} else {
+				break;
+			}
+
+			Iterations++;
+
+		} while ((dwRetVal == ERROR_BUFFER_OVERFLOW) && (Iterations < MAX_TRIES));
+
+		if (dwRetVal == NO_ERROR) {
+			// If successful, output some information from the data we received
+			pCurrAddresses = pAddresses;
+			while (pCurrAddresses) {
+
+				pUnicast = pCurrAddresses->FirstUnicastAddress;
+				if (pUnicast != NULL && pCurrAddresses->OperStatus == IfOperStatusUp && pCurrAddresses->IfType != IF_TYPE_SOFTWARE_LOOPBACK ) {
+					for (i = 0; pUnicast != NULL; i++) {
+						sockaddr_in  *addr = (sockaddr_in*)pUnicast->Address.lpSockaddr;
+						char *ip = inet_ntoa(addr->sin_addr);
+						addresses_.push_back(CString(L"http://")+ip+L"/");
+						pUnicast = pUnicast->Next;
+					}
+				} 
+
+				pCurrAddresses = pCurrAddresses->Next;
+			}
 		} else {
-			break;
-		}
+			printf("Call to GetAdaptersAddresses failed with error: %d\n", dwRetVal);
+			if (dwRetVal == ERROR_NO_DATA) {}
+				//printf("\tNo addresses were found for the requested parameters\n");
+			else {
 
-		Iterations++;
-
-	} while ((dwRetVal == ERROR_BUFFER_OVERFLOW) && (Iterations < MAX_TRIES));
-
-	if (dwRetVal == NO_ERROR) {
-		// If successful, output some information from the data we received
-		pCurrAddresses = pAddresses;
-		while (pCurrAddresses) {
-
-			pUnicast = pCurrAddresses->FirstUnicastAddress;
-			if (pUnicast != NULL && pCurrAddresses->OperStatus == IfOperStatusUp && pCurrAddresses->IfType != IF_TYPE_SOFTWARE_LOOPBACK ) {
-				for (i = 0; pUnicast != NULL; i++) {
-					sockaddr_in  *addr = (sockaddr_in*)pUnicast->Address.lpSockaddr;
-					char *ip = inet_ntoa(addr->sin_addr);
-					addresses_.push_back(CString(L"http://")+ip+L"/");
-					pUnicast = pUnicast->Next;
+				if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+					FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
+					NULL, dwRetVal, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),   
+					// Default language
+					(LPTSTR) & lpMsgBuf, 0, NULL)) {
+						printf("\tError: %s", lpMsgBuf);
+						LocalFree(lpMsgBuf);
+						if (pAddresses)
+							FREE(pAddresses);
 				}
-			} 
-
-			pCurrAddresses = pCurrAddresses->Next;
-		}
-	} else {
-		printf("Call to GetAdaptersAddresses failed with error: %d\n", dwRetVal);
-		if (dwRetVal == ERROR_NO_DATA) {}
-			//printf("\tNo addresses were found for the requested parameters\n");
-		else {
-
-			if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-				FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
-				NULL, dwRetVal, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),   
-				// Default language
-				(LPTSTR) & lpMsgBuf, 0, NULL)) {
-					printf("\tError: %s", lpMsgBuf);
-					LocalFree(lpMsgBuf);
-					if (pAddresses)
-						FREE(pAddresses);
 			}
 		}
-	}
 
-	if (pAddresses) {
-		FREE(pAddresses);
+		if (pAddresses) {
+			FREE(pAddresses);
+		}
+	} else {
+		PIP_ADAPTER_INFO pAdapterInfo;
+		PIP_ADAPTER_INFO pAdapter = NULL;
+		DWORD dwRetVal = 0;
+		UINT i;
+
+		/* variables used to print DHCP time info */
+		struct tm newtime;
+		char buffer[32];
+		errno_t error;
+
+		ULONG ulOutBufLen = sizeof (IP_ADAPTER_INFO);
+		pAdapterInfo = (IP_ADAPTER_INFO *) MALLOC(sizeof (IP_ADAPTER_INFO));
+		if (pAdapterInfo == NULL) {
+			printf("Error allocating memory needed to call GetAdaptersinfo\n");
+			return 1;
+		}
+		// Make an initial call to GetAdaptersInfo to get
+		// the necessary size into the ulOutBufLen variable
+		if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
+			FREE(pAdapterInfo);
+			pAdapterInfo = (IP_ADAPTER_INFO *) MALLOC(ulOutBufLen);
+			if (pAdapterInfo == NULL) {
+				printf("Error allocating memory needed to call GetAdaptersinfo\n");
+				return 1;
+			}
+		}
+
+		if ((dwRetVal = GetAdaptersInfo(pAdapterInfo, &ulOutBufLen)) == NO_ERROR) {
+			pAdapter = pAdapterInfo;
+			while (pAdapter) {
+				addresses_.push_back(CString(L"http://")+pAdapter->IpAddressList.IpAddress.String+L"/");
+				pAdapter = pAdapter->Next;
+				}
+			}else {
+
+		}
+		if (pAdapterInfo)
+			FREE(pAdapterInfo);
 	}
 
 	TCHAR computerName[1024]=L"";
@@ -343,9 +386,6 @@ bool CAddDirectoryServerDialog::LoadComputerAddresses()
 		computerName_ = computerName;
 		addresses_.push_back(CString(L"\\\\") + computerName + L"\\");
 	}
-
-	
-
 	return true;
 }
 

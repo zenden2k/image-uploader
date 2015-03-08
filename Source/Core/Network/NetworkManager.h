@@ -137,6 +137,8 @@ class NetworkManager
 		static ZThread::Mutex _mutex;
 #endif
 		static bool _curl_init;
+		static bool _is_openssl;
+		static char CertFileName[1024];
 };
 
 #endif

@@ -22,6 +22,7 @@ mkdir %temp_dir%\Data\Servers
 mkdir %temp_dir%\Data\Update
 
 Copy "..\Build\release optimized\Image Uploader.exe" %temp_dir%\
+Copy "..\Build\release optimized\curl-ca-bundle.crt" %temp_dir%\
 Copy "..\Lang\*.lng" %temp_dir%\Lang\
 Copy "..\Build\release optimized\Modules\*" %temp_dir%\Modules\
 Copy "..\Docs\*" %temp_dir%\Docs\

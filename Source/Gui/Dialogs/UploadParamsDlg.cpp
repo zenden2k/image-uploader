@@ -49,9 +49,18 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	ThumbBackground_.SetColor(Settings.imageServer.getImageUploadParams().getThumb().BackgroundColor);
 
 	SetWindowText(TR("Обработка изображений"));
+	TRC(IDC_DEFAULTSETTINGSCHECKBOX, "Настройки по-умолчанию");
+	TRC(IDC_IMAGEPARAMETERS, "Параметры изображения");
 	TRC(IDC_ADDFILESIZE, "Текст на эскизе");
-	TRC(IDC_USESERVERTHUMBNAILS, "Использовать серверные эскизы");
 	TRC(IDC_PROCESSIMAGESCHECKBOX, "Обрабатывать изображения");
+	TRC(IDC_PROFILELABEL, "Профиль:");
+	TRC(IDC_THUMBSETTINGS, "Настройки миниатюры");
+	TRC(IDC_CREATETHUMBNAILS, "Создавать миниатюры (превью)");
+	TRC(IDC_USESERVERTHUMBNAILS, "Использовать миниатюры");
+	TRC(IDC_THUMBTEMPLATECOMBOLABEL, "Шаблон миниатюры:");
+	TRC(IDC_THUMBRESIZELABEL, "Масштабирование");
+	TRC(IDC_DEFAULTTHUMBSETTINGSCHECKBOX, "Настройки эскизов по-умолчанию");
+
 	TRC(IDCANCEL, "Отмена");
 	TRC(IDC_THUMBFORMATLABEL,"Формат:");
 	TRC(IDC_THUMBQUALITYLABEL,"Качество:");

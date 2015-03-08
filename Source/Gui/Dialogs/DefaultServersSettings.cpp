@@ -32,6 +32,11 @@
 // CDefaultServersSettings
 CDefaultServersSettings::CDefaultServersSettings()
 {
+	fileServerSelector_ = 0 ;
+	imageServerSelector_ = 0;
+	trayServerSelector_ = 0;
+	contextMenuServerSelector_ = 0;
+	urlShortenerServerSelector_ = 0;
 }
 
 CDefaultServersSettings::~CDefaultServersSettings()
@@ -54,9 +59,13 @@ LRESULT CDefaultServersSettings::OnServerListChanged(UINT uMsg, WPARAM wParam, L
 
 LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	TRC(IDC_REMEMBERIMAGESERVERSETTINGS, "Запоминать в мастере настройки сервера для картинок");
+	TRC(IDC_REMEMBERFILESERVERSETTINGS, "Запоминать в мастере настройки сервера для других типов файлов");
 	RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
 	imageServerSelector_ = new CServerSelectorControl(true);
-	imageServerSelector_->Create(m_hWnd, serverSelectorRect);
+	if ( !imageServerSelector_->Create(m_hWnd, serverSelectorRect) ) {
+		return 0;
+	}
 	imageServerSelector_->setTitle(TR("Сервер по-умолчанию для хранения изображений"));
 	imageServerSelector_->ShowWindow( SW_SHOW );
 	imageServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);

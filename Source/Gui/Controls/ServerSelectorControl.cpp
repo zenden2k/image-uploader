@@ -87,6 +87,10 @@ void CServerSelectorControl::setTitle(CString title) {
 void CServerSelectorControl::setServerProfile(ServerProfile serverProfile) {
 	serverProfile_ = serverProfile;
 
+	if ( !m_hWnd ) {
+		return;
+	}
+
 	int comboboxItemIndex = serverComboBox_.FindStringExact(-1, serverProfile.serverName());
 
 	if ( comboboxItemIndex == CB_ERR) {

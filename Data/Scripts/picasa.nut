@@ -64,7 +64,7 @@ function getAuthorizationString() {
 	return tokenType + " " + token ;
 }
 
-function doLogin() 
+function DoLogin() 
 { 
 
 	local login = ServerParams.getParam("Login");
@@ -216,7 +216,7 @@ function checkResponse() {
 			ServerParams.setParam("tokenType", "");
 			ServerParams.setParam("prevLogin", "");
 			ServerParams.setParam("tokenTime", "");
-			return 1 + doLogin();
+			return 1 + DoLogin();
 		} else {
 			_WriteLog("error", "403 Access denied" );
 			return 0;
@@ -254,7 +254,7 @@ function internal_loadAlbumList(list)
 
 function GetFolderList(list)
 {
-	if(!doLogin())
+	if(!DoLogin())
 		return 0;
 	
 	return internal_loadAlbumList(list);
@@ -268,7 +268,7 @@ function CreateFolder(parentAlbum,album)
 	local parentId = album.getParentId; 
 	local strAcessType = "private";
 
-	if(!doLogin())
+	if(!DoLogin())
 			return 0;
 	
 	if (accessType == 1)
@@ -303,7 +303,7 @@ function CreateFolder(parentAlbum,album)
 
 function  UploadFile(FileName, options)
 {
-	if(!doLogin())
+	if(!DoLogin())
 		return -1;
 		
 	local i = 0;
@@ -368,7 +368,7 @@ function  UploadFile(FileName, options)
 
 function ModifyFolder(album)
 {
-	if(!doLogin())
+	if(!DoLogin())
 		return 0;
 	
 	local title =album.getTitle();
