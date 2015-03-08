@@ -170,7 +170,7 @@ begin
 
     if IsTaskSelected('installffmpeg') then
     begin
-    Cmd :=  '"'+expandconstant('{tmp}\ffmpeg.zip')+'" -d "'+expandconstant('{app}') + '"';
+    Cmd :=  '"'+expandconstant('{tmp}\ffmpeg.zip')+'" -o -d "'+expandconstant('{app}') + '"';
           Exec(expandconstant('{tmp}\unzip.exe'),cmd ,expandconstant('{app}'), SW_HIDE, ewWaitUntilTerminated, ResultCode);
     end;
  end;

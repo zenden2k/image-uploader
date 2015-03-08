@@ -28,7 +28,7 @@ LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	TRC(IDC_AUTHENTICATIONLABEL,"Авторизация:");
 	TRC(IDC_LOGINLABEL,"Логин:");
 	TRC(IDC_PASSWORDLABEL,"Пароль:");
-	TRC(IDC_REMOTEDIRECTORYLABEL,"Удаленная директория:");
+	TRC(IDC_REMOTEDIRECTORYLABEL,"Удал. директория:");
 	TRC(IDC_DOWNLOADURLLABEL,"URL для скачивания:");
 	TRC(IDCANCEL,"Отмена");
 	TRC(IDC_THEURLOFUPLOADEDLABEL,"Ссылка для скачивания будет выглядеть так:");
