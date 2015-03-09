@@ -472,7 +472,7 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 			TR("Файлы")+CString(" *.")+fileExt, CString(_T("*."))+fileExt,
 			TR("Все файлы"),_T("*.*"));
 		CFileDialog fd(false, fileExt, FileName,OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,Buf,m_hWnd);
-		if(fd.DoModal()!=IDOK || !fd.m_szFileName) return 0;
+		if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return 0;
 
 		CopyFile( FileName, fd.m_szFileName, false );
 	} else {

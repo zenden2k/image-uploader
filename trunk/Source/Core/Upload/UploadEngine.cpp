@@ -31,7 +31,7 @@ CUploadEngineList_Base::CUploadEngineList_Base()
 }
 
 CUploadEngineData* CUploadEngineList_Base::byIndex(size_t index) {
-	if (index >=0 && index < m_list.size() ) {
+	if ( index < m_list.size() ) {
 		return &m_list[index];
 	} else {
 		return NULL;

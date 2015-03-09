@@ -322,7 +322,6 @@ bool QColorQuantizer::QuantizeOctree(Bitmap * pSource, Bitmap * pDest, UINT nMax
 		{
 			// We now have the important colors in the pic. Put them in a palette
 			BYTE * pPaletteBytes = new BYTE[sizeof(ColorPalette) + (nLeafs - 1) * sizeof(ARGB)];
-			if (pPaletteBytes)
 			{
 				ColorPalette * pPalette = (ColorPalette *) pPaletteBytes;
 				pPalette->Flags = PaletteFlagsHasAlpha;
@@ -384,7 +383,7 @@ bool QColorQuantizer::QuantizeOctree(Bitmap * pSource, Bitmap * pDest, UINT nMax
 
 				delete[] pPaletteBytes;
 			}
-			else r = false;
+			//else r = false;
 		}
 		pSource->UnlockBits(& dataSource);
 	}

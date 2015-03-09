@@ -1,6 +1,6 @@
 
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -19,26 +19,31 @@
 
 ---  COMPILING IMAGE UPLOADER ----
 
-You need Microsoft Visual C++ at least 8.0 version (I compiled using Microsoft Visual Studio .NET  2005 & 2008, NOT tested on 2003 and Express Editions).
+You need Microsoft Visual C++ at least 9.0 version (Microsoft Visual Studio 2008 SP1).
+Also you have to install Microsoft Windows 7 Platform SDK for enabling Windows 7 related features. 
 
 In order to compile Image Uploader you will need the following libraries:
 
- 1.  WTL: http://wtl.sourceforge.net
- 2.  DirectShow BaseClasses
- 3.  DirectX 8 SDK
- 4.  libcurl (with openssl support enabled) 
- 5.  openssl
- 6.  zlib
- 7.  squirrel
- 8.  sqplus
- 9.  tinyxml (with STL support enabled)
- 10.  pcre
- 11. zthread
- 12. minizip
-	
-You can download necessary Include files and Libs by following link: http://code.google.com/p/image-uploader/downloads/list
+WTL		http://sourceforge.net/projects/wtl/
+libcurl		http://curl.haxx.se/libcurl/
+openssl		https://www.openssl.org
+zlib		http://www.zlib.net
+pcre		http://www.pcre.org
+pcre++		http://www.daemon.de/PCRE
+squirrel	http://squirrel-lang.org
+sqplus		http://sourceforge.net/projects/sqplus/
+ffmpeg		https://www.ffmpeg.org
+tinyxml		http://sourceforge.net/projects/tinyxml/
+zthreads	http://zthread.sourceforge.net
+minizip		http://www.winimage.com/zLibDll/minizip.html
+jsoncpp		https://github.com/open-source-parsers/jsoncpp
 
-Also you have to install Microsoft Windows 7 Platform SDK for enabling Windows 7 related features. 
+You can download necessary libraries by following link: https://bintray.com/artifact/download/zenden/zenden-image-uploader/Contrib_MSVC_2008_SP1_and_sources.7z
+They are precompiled for MSVC 2008 SP1.
+
+If you want to compile strmbase.lib by yourself yow will need:
+DirectX 8 SDK
+DirectShow BaseClasses
 
 If you receive errors related to "TOKEN_ELEVATION" or "ITaskBar3", it means you haven't installed latest Platform SDK. 
 Also you can change WINVER value into "stdafx.h" file to 0x0600 or 0x0501 and compile Image Uploader 

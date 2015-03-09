@@ -95,7 +95,7 @@ int av_grab_frames(int numOfFrames, CString fname, CSampleGrabberCB * cb,HWND pr
 		return -1; // Couldn't find stream information
 	}
 	// Dump information about file onto standard error
-	av_dump_format(pFormatCtx, 0, W2A((LPCTSTR)fname), false);
+	av_dump_format(pFormatCtx, 0, W2A((LPCTSTR)fname), 0);
 	if ( pFormatCtx->iformat ) {
 		seekByBytes= !!(pFormatCtx->iformat->flags & AVFMT_TS_DISCONT);
 	}
@@ -135,11 +135,11 @@ int av_grab_frames(int numOfFrames, CString fname, CSampleGrabberCB * cb,HWND pr
 
    // Allocate an AVFrame structure
    pFrameRGB = avcodec_alloc_frame();
-	memset( pFrameRGB->linesize, 0,sizeof(pFrameRGB->linesize));
+	
 	if ( pFrameRGB == NULL ){
 		return -1;
 	}
-
+	memset( pFrameRGB->linesize, 0,sizeof(pFrameRGB->linesize));
    // Determine required buffer size and allocate buffer
 	numBytes = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height) + 64;
 	buffer=/*(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));*/(uint8_t*)malloc(numBytes);
@@ -200,7 +200,7 @@ int av_grab_frames(int numOfFrames, CString fname, CSampleGrabberCB * cb,HWND pr
 	timestamp = start_time;
 	struct SwsContext *img_convert_ctx=NULL;
 	int64_t my_start_time;
-	int64_t seek_target;
+	int64_t seek_target = 0;
 
 	 my_start_time = (double)ic->duration / numOfFrames*1.6;
 	
@@ -219,7 +219,7 @@ int av_grab_frames(int numOfFrames, CString fname, CSampleGrabberCB * cb,HWND pr
 	 while(av_read_frame(pFormatCtx, &packet)>=0) {
 		 if(packet.stream_index==videoStream) {
 
-			 frameFinished = false;
+			 frameFinished = 0;
 
 			 if ( avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet) < 0 ) {
 
@@ -272,7 +272,7 @@ int av_grab_frames(int numOfFrames, CString fname, CSampleGrabberCB * cb,HWND pr
 		 while (av_read_frame(pFormatCtx, &packet)>=0) {
 			 // Is this a packet from the video stream?
 			 if(packet.stream_index==videoStream) {
-				 frameFinished = false;
+				 frameFinished = 0;
 			
 				 if ( avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet) < 0 ) {
 					 
@@ -329,7 +329,7 @@ finish:
 
 	 // Close the video file
 	 av_close_input_file(pFormatCtx);
-	 return true;
+	 return 1;
 }
 
 

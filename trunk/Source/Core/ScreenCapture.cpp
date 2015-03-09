@@ -799,7 +799,7 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
 	MyGetWindowRect(target, &actualWindowRect, false);
 //	bool IsSimpleRectWindow = newRegion.GetRgnBox(&windowRect)==SIMPLEREGION;
 	bgColor = RGB(255, 255, 255);
-	HWND wnd;
+	HWND wnd = 0;
 	CScreenCaptureEngine eng;
 	CRectRegion reg(m_ScreenRegion);
 	Bitmap* bm1 = 0;

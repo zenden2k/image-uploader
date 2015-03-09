@@ -83,10 +83,10 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	title.Format(TR("Список папок на сервере %s для учетной записи '%s':"), (LPCTSTR)Utf8ToWCstring(m_UploadEngine->Name),
 	             (LPCTSTR)Utf8ToWCstring(serverProfile_.serverSettings().authData.Login));
 	SetDlgItemText(IDC_FOLDERLISTLABEL, title);
-	m_pluginLoader->setNetworkManager(&m_NetworkManager);
-	m_pluginLoader->getAccessTypeList(m_accessTypeList);
 	if (m_pluginLoader)
 	{
+		m_pluginLoader->setNetworkManager(&m_NetworkManager);
+		m_pluginLoader->getAccessTypeList(m_accessTypeList);
 		CreateLoadingThread();
 	}
 	return 1;  // Let the system set the focus

@@ -4,7 +4,7 @@ set zipcmd="C:/Program Files/7-Zip/7z.exe"
 For /F "tokens=2,3 delims= " %%i In (..\Source\VersionInfo.h) Do (set %%i=%%~j)
 echo Creating distribution archive for Image Uploader version %_APP_VER% %BUILD%
 
-set temp_dir=portable\temp_%BUILD%
+set temp_dir=portable\temp
 set filename=image-uploader-%_APP_VER%-build-%BUILD%-portable.7z
 echo %temp_dir%
 
@@ -44,5 +44,5 @@ cd %temp_dir%
 %zipcmd% a -mx9 ..\..\output\image-uploader-%_APP_VER%-build-%BUILD%-portable.7z "*"
 cd ..\..\
 
-rmdir /q /s  %temp_dir%
+rem rmdir /q /s  %temp_dir%
 

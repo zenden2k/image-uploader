@@ -829,13 +829,13 @@ int CScriptUploadEngine::doLogin()
 	{
 		SquirrelFunction<int> func(m_Object, _SC("DoLogin"));
 		if (func.func.IsNull())
-			return false;
+			return 0;
 		return func();
 	}
 	catch (SquirrelError& e)
 	{
 		Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + std::string(e.desc));
-		return false;
+		return 0;
 	}
 	FlushSquirrelOutput();
 }

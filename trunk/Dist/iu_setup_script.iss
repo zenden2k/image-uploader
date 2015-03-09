@@ -66,19 +66,20 @@ Source: "..\Data\template.txt"; DestDir: "{code:GetDataFolder}\Image Uploader\";
 Source: "..\Data\templates.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
 Source: "..\Data\Favicons\*.ico"; DestDir: "{code:GetDataFolder}\Image Uploader\Favicons"; Flags: ignoreversion
 Source: "..\Data\Scripts\*.nut"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts"; Flags: ignoreversion
-Source: "..\Data\Update\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
+Source: "..\Data\Update\iu_core.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
+Source: "..\Data\Update\iu_serversinfo.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
 Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Flags: ignoreversion
 Source: "unzip.exe"; DestDir: "{tmp}"; Flags: ignoreversion
 ;Flags: deleteafterinstall
 ;Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
 #ifdef WIN64FILES
-Source: "..\Build\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}";Check: isWin64;
+Source: "..\Build\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}";
 #endif
 #ifdef FFMPEG
 Source: "..\Build\release\av*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Build\release\swscale*.dll"; DestDir: "{app}"; Flags: ignoreversion
 #endif
-Source: "..\Build\release optimized\ExplorerIntegration.dll";DestDir: "{app}";Check: not isWin64
+Source: "..\Build\release optimized\ExplorerIntegration.dll";DestDir: "{app}";
 #ifdef GDIPLUS
 Source: "..\Dll\Gdiplus.dll"; DestDir: "{app}"; Flags: ignoreversion
 #endif
@@ -100,6 +101,9 @@ Filename: "{app}\image uploader.exe"; Parameters: "/uninstall"; Flags: runascurr
 [UninstallDelete]
 Type: files; Name: "{app}\av*.dll"
 Type: files; Name: "{app}\sw*.dll"
+Type: files; Name: "{code:GetDataFolder}\Image Uploader\Update\*.xml"
+Type: files; Name: "{code:GetDataFolder}\Image Uploader\Favicons\*"
+Type: files; Name: "{code:GetDataFolder}\Image Uploader\Scripts\*"
 
 [Code]
 function GetDataFolder(Param: String): String;
@@ -136,6 +140,7 @@ begin
  
 
     ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/ffmpeg-1.2.12.zip', expandconstant('{tmp}\ffmpeg.zip'));
+     ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/iu_ffmpeg.xml', expandconstant('{tmp}\iu_ffmpeg.xml'));
 
     end;
     GetWindowsVersionEx(Version);
@@ -172,6 +177,10 @@ begin
     begin
     Cmd :=  '"'+expandconstant('{tmp}\ffmpeg.zip')+'" -o -d "'+expandconstant('{app}') + '"';
           Exec(expandconstant('{tmp}\unzip.exe'),cmd ,expandconstant('{app}'), SW_HIDE, ewWaitUntilTerminated, ResultCode);
+
+         //  MsgBox(GetDataFolder('p') + expandconstant('\Image Uploader\Update\iu_ffmpeg.xml'), mbInformation, MB_OK);
+
+            filecopy(expandconstant('{tmp}\iu_ffmpeg.xml'),GetDataFolder('p') + expandconstant('\Image Uploader\Update\iu_ffmpeg.xml'),false);
     end;
  end;
 end;

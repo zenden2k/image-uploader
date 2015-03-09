@@ -927,7 +927,7 @@ BOOL CColorButton::Picker ()
 
 		if (fOked)
 		{
-			if (fOked && m_nCurrentSel == CUSTOM_BOX_VALUE)
+			if (m_nCurrentSel == CUSTOM_BOX_VALUE)
 			{
 				CColorDialog dlg (m_clrCurrent, 
 					CC_FULLOPEN | CC_ANYCOLOR, m_hWnd);

@@ -67,7 +67,6 @@ bool CResultsPanel::LoadTemplate()
 	if(!dwFileSize) return false;
 	DWORD dwMemoryNeeded = min(35536, dwFileSize);
 	LPTSTR TemplateText = (LPTSTR) new CHAR[dwMemoryNeeded+2]; 
-	if(!TemplateText) return false;
 	ZeroMemory(TemplateText,dwMemoryNeeded);
 	::ReadFile(hFile, (LPVOID)TemplateText , 2, &dwBytesRead, NULL); //Reading BOM
 	if (::ReadFile(hFile, (LPVOID)TemplateText , dwFileSize, &dwBytesRead, NULL) == FALSE)

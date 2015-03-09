@@ -346,7 +346,7 @@ LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 		ShowWindow(SW_HIDE);
 		if(Pages[2] && CurPage == 4)
 			((CMainDlg*)Pages[2])->ThumbsView.MyDeleteAllItems();
-			ShowPage(0); 
+		ShowPage(0); 
 	}
 	else
 		CloseWizard();
@@ -592,7 +592,6 @@ HBITMAP CWizardDlg::GenHeadBitmap(int PageID)
 	Graphics g(m_hWnd,true);
 	
 	BackBuffer = new Bitmap(width, 50, &g);
-	if(!BackBuffer) return 0;
 	Graphics gr(BackBuffer);
 	COLORREF color=GetSysColor(COLOR_BTNFACE);
 	
@@ -1565,7 +1564,7 @@ bool CWizardDlg::funcMediaInfo()
 	CFileDialog fd(true,0,0,4|2,Buf,m_hWnd);
 	fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
 
-	if(fd.DoModal()!=IDOK || !fd.m_szFileName) return 0;
+	if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return 0;
 	TCHAR Buffer[512];
 	ExtractFilePath(fd.m_szFileName, Buffer);
 	Settings.VideoFolder = Buffer;
