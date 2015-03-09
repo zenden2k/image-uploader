@@ -57,7 +57,7 @@ void CThumbsView::Init(bool Extended)
 
 int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, Gdiplus::Image* Img)
 {
-	if( !FileName ) return false;
+	if( !FileName ) return 0;
 
 	int n = GetItemCount();
 
@@ -435,7 +435,6 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
 	}
 	DeleteObject(bmp);
 	if(Img!=bm && bm) delete bm;
-	if(ImgBuffer) delete ImgBuffer;
 	return true;
 }
 

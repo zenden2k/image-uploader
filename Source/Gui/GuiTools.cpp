@@ -287,7 +287,7 @@ int GetFontHeight(int nFontSize) {
 }
 
 int ScreenBPP(){
-	int iRet;
+	int iRet = 0;
 	HDC hdc = GetDC(NULL);
 	if (hdc != NULL) {
 		iRet = GetDeviceCaps(hdc, BITSPIXEL);

@@ -137,7 +137,7 @@ const CString StringSection(const CString& str,TCHAR sep, int index)
 bool FontToString(const LOGFONT * lFont, CString &Result)
 {
 	TCHAR  szBuffer[1024];
-	if( !lFont || !szBuffer ) return false;
+	if( !lFont ) return false;
 
 	int nPixelsPerInch;
 	int nFontSize;

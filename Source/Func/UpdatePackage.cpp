@@ -407,7 +407,7 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
 		ui.flags = entries[i].Attribute("Flags");
 		if(ui.name.IsEmpty()  || (ui.hash.IsEmpty() &&  ui.action!=_T("delete") )|| ui.saveTo.IsEmpty())
 			continue;
-			m_entries.push_back(ui);
+		m_entries.push_back(ui);
 		}	
 	return true;
 }
@@ -453,6 +453,15 @@ bool CUpdatePackage::doUpdate()
 
 		copyTo.Replace(_T("%datapath%"), IuCommonFunctions::GetDataFolder());
 		copyTo.Replace(_T("%apppath%"), appFolder);
+		std::string dir = IuCoreUtils::ExtractFilePath(WCstringToUtf8(copyTo));
+		if ( !IuCoreUtils::DirectoryExists(dir)) {
+			if ( !IuCoreUtils::createDirectory(dir) ) {
+				CString logMessage;
+				logMessage.Format(_T("Could not create folder '%s'."), (LPCTSTR)Utf8ToWstring(dir).c_str());
+				WriteLog(logError,_T("Update Engine"),logMessage);
+
+			}
+		}
 		CString renameTo = copyTo + _T(".")+IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(random(10000))).c_str()+ _T(".old");
 
 		CString buffer = IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFilePath(IuCoreUtils::WstringToUtf8((LPCTSTR)copyTo))).c_str();

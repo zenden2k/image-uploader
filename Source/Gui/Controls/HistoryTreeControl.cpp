@@ -630,7 +630,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * ItemID)
 	ImgBuffer->GetHBITMAP(Color(255,255,255), &bmp);
 	ItemID->thumbnail = error?0:bmp;
 	delete bm;
-	if(ImgBuffer) delete ImgBuffer;
+	delete ImgBuffer;
 	return !error;
 }
 

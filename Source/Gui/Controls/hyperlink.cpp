@@ -140,10 +140,7 @@ BOOL CSpecialHyperLink::setURL(LPCTSTR strURL)
 	{
 		delete [] m_strURL;
 	}
-	if( !(m_strURL = new TCHAR[lstrlen(strURL)+1]) )
-	{
-		return FALSE;
-	}
+	m_strURL = new TCHAR[lstrlen(strURL)+1];
 
     lstrcpy(m_strURL, strURL);
 

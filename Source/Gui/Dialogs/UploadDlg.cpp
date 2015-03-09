@@ -754,10 +754,8 @@ void CUploadDlg::ShowProgress(bool Show)
 		SetDlgItemText(IDC_SPEEDLABEL, _T(""));
 		SetDlgItemText(IDC_PERCENTLABEL, _T("0%"));
 		SetDlgItemText(IDC_FILEPROGRESS, _T(""));
-	}
-
-	if(Show) 
 		SetTimer(2, 250); 
+	}	
 	
 	if(!Show)
 	{

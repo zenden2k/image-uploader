@@ -266,7 +266,7 @@ std::string ulonglongToStr(int64_t l, int base)
     char *p = buff + 66;
     const char _zero = '0';
 
-    if (base != 10 || _zero == '0') {
+    if (base != 10) {
         while (l != 0) {
             int c = l % base;
 

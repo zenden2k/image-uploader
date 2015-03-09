@@ -179,7 +179,7 @@ LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD 
 			NetApiBufferFree(BufPtr);
 		}
 		else 
-			printf("Error: %ld\n",res);
+			printf("Error: %ld\n",(int)res);
 	}
 	// Continue to call NetShareEnum while 
 	// there are more entries. 
@@ -318,7 +318,7 @@ bool CAddDirectoryServerDialog::LoadComputerAddresses()
 				pCurrAddresses = pCurrAddresses->Next;
 			}
 		} else {
-			printf("Call to GetAdaptersAddresses failed with error: %d\n", dwRetVal);
+			printf("Call to GetAdaptersAddresses failed with error: %d\n", (int)dwRetVal);
 			if (dwRetVal == ERROR_NO_DATA) {}
 				//printf("\tNo addresses were found for the requested parameters\n");
 			else {

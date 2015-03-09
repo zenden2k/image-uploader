@@ -428,7 +428,7 @@ bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize)
 
 bool IsElevated() 
 {
-	BOOL pbElevated;
+	BOOL pbElevated = false;
 	ATLASSERT( IsVista() );
 
 	HRESULT hResult = E_FAIL; // assume an error occured
@@ -478,7 +478,7 @@ void DeleteDir2(LPCTSTR Dir)
 	TCHAR szBuffer[MAX_PATH];
 	lstrcpyn(szBuffer, Dir, MAX_PATH);
 	int nLen = lstrlen(szBuffer) - 1;
-	if (szBuffer[nLen] == _T('\\'))
+	if (nLen >= 0 && szBuffer[nLen] == _T('\\'))
 		szBuffer[nLen] = 0;
 
 	SHFILEOPSTRUCT FileOp;
@@ -548,7 +548,7 @@ int GetFolderFileList(std::vector<CString>& list, CString folder, CString mask)
 bool FontToString(const LOGFONT * lFont, CString &Result)
 {
 	TCHAR  szBuffer[1024];
-	if( !lFont || !szBuffer ) return false;
+	if( !lFont  ) return false;
 
 	int nPixelsPerInch;
 	int nFontSize;

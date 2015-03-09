@@ -114,7 +114,7 @@ LRESULT CGeneralSettings::OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	CString s;
 	s = WinUtils::GetAppFolder();
 	fd.m_ofn.lpstrInitialDir = s;
-	if ( fd.DoModal() != IDOK || !fd.m_szFileName ) return 0;
+	if ( fd.DoModal() != IDOK || !fd.m_szFileName[0] ) return 0;
 
 	CString FileName = CString(_T("\""))+ fd.m_szFileName + CString(_T("\""));
 	FileName += _T(" \"%1\"");

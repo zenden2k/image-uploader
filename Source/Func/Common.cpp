@@ -516,7 +516,7 @@ BOOL IsWinXP()
 int ScreenBPP()
 {
 // Возвращает количество битов на точку в данном режиме
-	int iRet;
+	int iRet = 0;
 	HDC hdc = GetDC(NULL);
 	if (hdc != NULL)
 	{

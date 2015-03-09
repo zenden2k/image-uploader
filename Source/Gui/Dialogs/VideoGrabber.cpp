@@ -614,8 +614,7 @@ int CVideoGrabber::GenPicture(CString& outFileName)
 		DrawStrokedText(gr, buf, RectF(float(x), float(y), float(tilewidth),
 		                               float(tileheight)), font, ColorText, ColorStroke, 3, 3);
 		gr.DrawRectangle(&Framepen, Rect(x /*(tilewidth-newwidth)/2*/, (int)y, (int)tilewidth, (int)tileheight));
-		if (bm)
-			delete bm;
+		delete bm;
 	}
 
 	if (infoHeight)
@@ -632,8 +631,7 @@ int CVideoGrabber::GenPicture(CString& outFileName)
 	}
 
 	MySaveImage(BackBuffer, _T("grab_custom"), outFileName, 1, 100);
-	if (BackBuffer)
-		delete BackBuffer;
+	delete BackBuffer;
 	return 0;
 }
 
@@ -648,7 +646,7 @@ LRESULT CVideoGrabber::OnBnClickedButton1(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 	CFileDialog fd(true,0,0,4|2,Buf,m_hWnd);
 
-	if (fd.DoModal() != IDOK || !fd.m_szFileName)
+	if (fd.DoModal() != IDOK || !fd.m_szFileName[0])
 		return 0;
 
 	SetDlgItemText(IDC_FILEEDIT, fd.m_szFileName);

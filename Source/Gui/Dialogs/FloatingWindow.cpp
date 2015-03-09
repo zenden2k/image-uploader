@@ -82,13 +82,12 @@ bool MyInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP
 LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	int w = ::GetSystemMetrics(SM_CXSMICON);
-	int h = ::GetSystemMetrics(SM_CYSMICON);
 	if ( w > 32 ) {
 		w = 48;
 	} else if ( w > 16 ) {
 		w = 32;
 	}
-	h = w;
+	int h = w;
 	m_hIconSmall = (HICON) ::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
 	                                   IMAGE_ICON, w, h, LR_DEFAULTCOLOR);
 	SetIcon(m_hIconSmall, FALSE);
@@ -451,7 +450,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 		if (Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId)
 		{
 			SetMenuDefaultItem(TrayMenu, Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId,
-			                   false);
+			                   FALSE);
 		}
 	}
 	else

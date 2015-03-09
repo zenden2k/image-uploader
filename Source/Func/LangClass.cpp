@@ -120,11 +120,7 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
 			continue;
 
 		TCHAR* pName = new TCHAR[NameLen + 1];
-		if (!pName)
-			return false;
 		TCHAR* pText = new TCHAR[TextLen + 1];
-		if (!pText)
-			return false;
 
 		lstrcpy(pName, Name);
 		lstrcpy(pText, (LPCTSTR)RepText + ((*Text == _T(' ')) ? 1 : 0));
