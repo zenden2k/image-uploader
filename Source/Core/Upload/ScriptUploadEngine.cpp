@@ -214,6 +214,7 @@ bool CScriptUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params)
 	int ival = 0;
 	try
 	{
+		SetStatus(stUploading);
 		if ( task->getType() == "file" ) {
 			SquirrelFunction<int> func(m_Object, _SC("UploadFile"));
 			std::string fname = FileName;

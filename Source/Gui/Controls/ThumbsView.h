@@ -47,6 +47,7 @@ public:
 	
     BEGIN_MSG_MAP(CThumbsView)
 		MESSAGE_HANDLER(WM_MBUTTONUP, OnMButtonUp)
+		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MSG_WM_KEYDOWN(OnKeyDown)
 		MSG_WM_LBUTTONDBLCLK(OnLButtonDblClk)
 		REFLECTED_NOTIFY_CODE_HANDLER(LVN_BEGINDRAG, OnLvnBeginDrag)
@@ -59,6 +60,7 @@ public:
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnLvnBeginDrag(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	bool m_NeedUpdate;
 	CAutoCriticalSection ImageListCS;
 	LRESULT OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

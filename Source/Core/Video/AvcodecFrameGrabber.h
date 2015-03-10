@@ -1,11 +1,21 @@
 #ifndef FRAMEGRABBER_H
 #define FRAMEGRABBER_H
 
-#include <atlheaders.h>
-#include "Gui/Dialogs/videograbber.h"
+#include "AbstractFrameGrabber.h"
 
-class CSampleGrabberCB;
-int av_grab_frames(int numOfFrames, CString fname, CSampleGrabberCB * cb, HWND progressBar, bool Jump=true, bool SeekToKeyFrame = true);
+class AvcodecFrameGrabberPrivate;
 
+class AvcodecFrameGrabber: public AbstractFrameGrabber {
+    public:
+        AvcodecFrameGrabber();
+		~AvcodecFrameGrabber();
+        bool open(const Utf8String& fileName);
+        bool seek(int64_t time);
+        AbstractVideoFrame* grabCurrentFrame();
+        int64_t duration();
+protected:
+    AvcodecFrameGrabberPrivate * const d_ptr;
+
+};
 
 #endif // FRAMEGRABBER_H

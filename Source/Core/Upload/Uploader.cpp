@@ -22,6 +22,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <Core/Upload/FileUploadTask.h>
+#include <math.h>
 
 CUploader::CUploader(void)
 {
@@ -60,18 +61,34 @@ int CUploader::pluginProgressFunc (void* userData, double dltotal, double dlnow,
 	if (ultotal < 0 || ulnow < 0)
 		return 0;
 
-	if (ultotal == ulnow)
+	/*CString format;
+	format.Format(L"Total =  %d Current = %d\r\n", (int)ultotal,(int)ulnow );
+	OutputDebugStringW(format);*/
+
+
+	if ( ultotal != 0 && ulnow == 0 && uploader->m_CurrentStatus == stWaitingAnswer ) {
+			uploader->SetStatus(stUploading);
+	}
+	if (fabs(ultotal - ulnow) < 1)
 	{
 		uploader->m_PrInfo.IsUploading = false;
+		uploader->m_PrInfo.Total = ultotal;
+		uploader->m_PrInfo.Uploaded = ulnow;
 
-		if (ultotal != 0 && uploader->m_CurrentStatus == stUploading)
+		if (ultotal != 0 && uploader->m_CurrentStatus == stUploading) {
+			//OutputDebugStringW(L"Set status waiting\r\n");
 			uploader->SetStatus(stWaitingAnswer);
+		} else {
+			/*format.Format(L"CurrentStatus = %d\r\n", uploader->m_CurrentStatus );
+			OutputDebugStringW(format);*/
+		}
 	}
 	else
 	{
+		
 		uploader->m_PrInfo.IsUploading = true;
-		uploader->m_PrInfo.Total = (unsigned long) ultotal;
-		uploader->m_PrInfo.Uploaded = (unsigned long) ulnow;
+		uploader->m_PrInfo.Total = ultotal;
+		uploader->m_PrInfo.Uploaded = ulnow;
 	}
 
 	if (!uploader->onProgress.empty())
@@ -173,6 +190,11 @@ void CUploader::SetStatus(StatusType status, int param1, std::string param)
 	m_CurrentStatus = status;
 	if (onStatusChanged)
 		onStatusChanged(status, param1,  param);
+}
+
+StatusType CUploader::GetStatus() const
+{
+	return m_CurrentStatus;
 }
 
 const std::string CUploader::getDownloadUrl()

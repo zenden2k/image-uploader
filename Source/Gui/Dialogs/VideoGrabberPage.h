@@ -17,8 +17,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef VIDEOGRABBER_H
-#define VIDEOGRABBER_H
+#ifndef IU_GUI_DIALOGS_VIDEOGRABBERPAGE_H
+#define IU_GUI_DIALOGS_VIDEOGRABBERPAGE_H
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
@@ -28,79 +28,29 @@
 #include "Gui/Dialogs/videograbberparams.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Gui/Controls/ThumbsView.h"
-
-#define __AFX_H__ // little hack for avoiding __POSITION type redefinition
-#include <objbase.h>
-#include <streams.h>
-#undef __AFX_H__
-#include <qedit.h>
-
+class AbstractImage;
 #define WM_MYADDIMAGE (WM_USER + 22)
 
-class CVideoGrabber;
+class VideoGrabber;
 
-// Структура, предназначенная для передачи данных из дочернего потока главному
+class CVideoGrabberPage;
 struct SENDPARAMS
 {
 	BYTE* pBuffer;
 	CString szTitle;
 	BITMAPINFO bi;
 	long BufSize;
-	CVideoGrabber* vg;
+	CVideoGrabberPage* vg;
 };
-
-class CImgSavingThread : public CThreadImpl<CImgSavingThread>
+class CVideoGrabberPage : public CWizardPage,  public CDialogImpl<CVideoGrabberPage>
 {
 	public:
-		SENDPARAMS m_sp;
-		CVideoGrabber* vg;
-		CAutoCriticalSection DataCriticalSection;
-		CEvent StopEvent, SavingEvent, ImageProcessEvent;
-		CImgSavingThread();
-		DWORD Run();
-		void Save(SENDPARAMS sp);
-		void Stop();
-		~CImgSavingThread();
-		void Reset();
-};
-
-class CSampleGrabberCB : public ISampleGrabberCB
-{
-public:
-	SENDPARAMS sp;
-	CImgSavingThread* SavingThread;
-	CVideoGrabber* vg;
-	// Эти параметры устанавливаются главным потоком
-	long Width;
-	long Height;
-	bool Grab; // для избавления от дубликатов
-	CEvent ImageProcessEvent;
-	HANDLE BufferEvent;
-	LONGLONG prev, step; // не используется
-
-	// Fake out any COM ref counting
-	STDMETHODIMP_(ULONG) AddRef();
-	STDMETHODIMP_(ULONG) Release();
-
-	// Fake out any COM QI'ing
-	STDMETHODIMP QueryInterface(REFIID riid, void** ppv);
-	STDMETHODIMP SampleCB( double SampleTime, IMediaSample* pSample );
-
-
-	STDMETHODIMP BufferCB( double SampleTime, BYTE* pBuffer, long BufferSize );
-	
-};
-
-class CVideoGrabber :
-	public CWizardPage,  public CDialogImpl<CVideoGrabber>, public CThreadImpl<CVideoGrabber>
-{
-	public:
-		CVideoGrabber();
-		~CVideoGrabber();
+		CVideoGrabberPage();
+		~CVideoGrabberPage();
 		enum { IDD = IDD_VIDEOGRABBER };
 
 	protected:
-		BEGIN_MSG_MAP(CVideoGrabber)
+		BEGIN_MSG_MAP(CVideoGrabberPage)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			MESSAGE_HANDLER(WM_TIMER, OnTimer)
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
@@ -131,11 +81,11 @@ class CVideoGrabber :
 		LRESULT OnBnClickedButton1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnOpenFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		
-		int GrabBitmaps(TCHAR* szFile );
+		int GrabBitmaps(const CString& szFile );
 		DWORD Run();
 		bool GrabInfo(LPCTSTR String);
 		int ThreadTerminated();
-		bool OnAddImage(SENDPARAMS* sp);
+		bool OnAddImage(Gdiplus::Bitmap *bm, CString title);
 		void SavingMethodChanged(void);
 		int GenPicture(CString& outFileName);
 		CString GenerateFileNameFromTemplate(const CString& templateStr, int index, const CPoint size, const CString& originalName);
@@ -143,11 +93,14 @@ class CVideoGrabber :
 		void CheckEnableNext();
 		bool OnNext(); // Reimplemented function of CWizardPage
 		bool OnShow(); // Reimplemented function of CWizardPage
+		void OnFrameGrabbed(const Utf8String&, int64_t, AbstractImage*);
+		void OnFrameGrabbingFinished();
 
 		CHyperLink openInFolderLink_;
+		VideoGrabber* videoGrabber_ ;
 
 		TCHAR szBufferFileName[256];
-		CImgSavingThread SavingThread;
+//		CImgSavingThread SavingThread;
 		CString ErrorStr;
 		CString snapshotsFolder;
 		bool Terminated, IsStopTimer;

@@ -26,7 +26,7 @@
 
 #include "welcomedlg.h"
 #include "maindlg.h"
-#include "videograbber.h"
+#include "VideoGrabberPage.h"
 #include "uploadsettings.h"
 #include "uploaddlg.h"
 #include "aboutdlg.h"
@@ -319,7 +319,7 @@ bool CWizardDlg::ParseCmdLine()
 		if(IsVideoFile(FileName) && !CmdLine.IsOption(_T("upload")))
 		{
 			ShowPage(1, CurPage, (Pages[2])?2:3);
-			CVideoGrabber* dlg = (CVideoGrabber*) Pages[1];
+			CVideoGrabberPage* dlg = (CVideoGrabberPage*) Pages[1];
 			dlg->SetFileName(FileName);			
 			return true;
 		}	
@@ -512,8 +512,8 @@ bool CWizardDlg::CreatePage(int PageID)
 			break;
 
 		case 1:
-			CVideoGrabber *tmp1;
-			tmp1=new CVideoGrabber();
+			CVideoGrabberPage *tmp1;
+			tmp1=new CVideoGrabberPage();
 			Pages[PageID]=tmp1;
 			Pages[PageID]->WizardDlg=this;
 			tmp1->Create(m_hWnd,rc);
@@ -660,7 +660,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 					goto filehost;
 			}
 			ShowPage(1, CurPage, (Pages[2])?2:3);
-			CVideoGrabber* dlg = (CVideoGrabber*) Pages[1];
+			CVideoGrabberPage* dlg = (CVideoGrabberPage*) Pages[1];
 			dlg->SetFileName(szBuffer);
 			
 			break;
@@ -861,7 +861,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 							if(IsVideoFile(OutFileName))
 							{
 								ShowPage(1, CurPage, (Pages[2])? 2 : 3);
-								CVideoGrabber* dlg = (CVideoGrabber*) Pages[1];
+								CVideoGrabberPage* dlg = (CVideoGrabberPage*) Pages[1];
 								dlg->SetFileName(OutFileName);
 								break;
 							}
@@ -1367,7 +1367,7 @@ bool CWizardDlg::funcImportVideo()
 	Settings.VideoFolder = Buffer;
 	CreatePage(1);
 	LastVideoFile = fd.m_szFileName;
-	((CVideoGrabber*)Pages[1])->SetFileName(fd.m_szFileName); // C-style conversion .. 
+	((CVideoGrabberPage*)Pages[1])->SetFileName(fd.m_szFileName); // C-style conversion .. 
 	ShowPage(1,0,(Pages[2])?2:3);
 	ShowWindow(SW_SHOW);
 		m_bShowWindow = true;

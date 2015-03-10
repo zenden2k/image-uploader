@@ -34,6 +34,7 @@
 #include <Func/IuCommonFunctions.h>
 #include <Func/WinUtils.h>
 
+
 #pragma comment( lib, "uxtheme.lib" )
 // CThumbSettingsPage
 CThumbSettingsPage::CThumbSettingsPage()
@@ -141,29 +142,41 @@ LRESULT  CThumbSettingsPage::OnBnClickedNewThumbnail(WORD wNotifyCode, WORD wID,
 		newName = WCstringToUtf8(dlg.getValue());
 	}
 	else return 0;
-	std::string destination = IuCoreUtils::ExtractFilePath(fileName) +"/" + newName + ".xml";
+	std::string srcFolder = IuCoreUtils::ExtractFilePath(fileName) +"/";
+	std::string destination = srcFolder + newName + ".xml";
 	if(IuCoreUtils::FileExists(destination))
 	{
 		MessageBox(TR("Шаблон с таким именем уже существует!"), APPNAME, MB_ICONERROR);
 		return 0;
 	}
-	if(IuCoreUtils::copyFile(fileName, destination))
+	Thumbnail * thumb = 0;
+	if(thumb_cache_.count(fileName)) {
+	
+		thumb =  thumb_cache_[fileName];
+	} else {
+		thumb = new Thumbnail();
+		thumb->LoadFromFile(fileName);
+	}
+	std::string sprite = thumb->getSpriteFileName();
+	thumb->setSpriteFileName(newName + '.' + IuCoreUtils::ExtractFileExt(sprite));
+	if ( ( sprite.empty() || IuCoreUtils::copyFile(sprite,srcFolder + newName + '.' + IuCoreUtils::ExtractFileExt(sprite))) && IuCoreUtils::copyFile(fileName, destination) && thumb->SaveToFile(destination) ) 
 	{
 		GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(newName) );
-		Thumbnail * thumb = 0;
-		if(thumb_cache_.count(fileName))
-		{
-			thumb  = thumb_cache_[fileName];
-			thumb->SaveToFile(destination);
-		}
+		
 	}
 	SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, -1, (LPARAM) (LPCTSTR)Utf8ToWCstring( newName));
+	GuiTools::EnableDialogItem(m_hWnd, IDC_EDITTHUMBNAILPRESET, true);
 	showSelectedThumbnailPreview();
 	return 0;
 }
 
 LRESULT CThumbSettingsPage::OnThumbComboChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
+	std::string fileName = getSelectedThumbnailName();
+	bool isStandartThumbnail = ( fileName == "default" || fileName == "classic" || fileName == "classic2" || fileName == "flat"
+		|| fileName == "transp.xml");
+	GuiTools::EnableDialogItem(m_hWnd, IDC_EDITTHUMBNAILPRESET, !isStandartThumbnail);
+
 	showSelectedThumbnailPreview();
 	return 0;
 }
@@ -206,6 +219,15 @@ std::string CThumbSettingsPage::getSelectedThumbnailFileName()
 	Thumbnail thumb;
 	CString folder = IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\");
 	return WCstringToUtf8(folder + thumbFileName+".xml");
+}
+
+std::string CThumbSettingsPage::getSelectedThumbnailName()
+{
+	TCHAR buf[256];
+	int index = SendDlgItemMessage(IDC_THUMBSCOMBO, CB_GETCURSEL);
+	if(index < 0) return "";
+	SendDlgItemMessage(IDC_THUMBSCOMBO, CB_GETLBTEXT, index, (WPARAM)buf);
+	return WCstringToUtf8(buf);
 }
 
 void CThumbSettingsPage::showSelectedThumbnailPreview()

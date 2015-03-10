@@ -77,6 +77,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	memoText += CString(L"ffmpeg") +"\t\thttps://www.ffmpeg.org\r\n";	
 	memoText += CString(L"tinyxml") +"\t\thttp://sourceforge.net/projects/tinyxml/\r\n";
 	memoText += CString(L"zthreads") +"\t\thttp://zthread.sourceforge.net\r\n";
+	memoText += CString(L"glog") +"\t\thttps://github.com/google/glog\r\n";
+
 
 	memoText += CString(L"minizip") +"\t\thttp://www.winimage.com/zLibDll/minizip.html\r\n";
 	memoText += CString(L"jsoncpp") +"\t\thttps://github.com/open-source-parsers/jsoncpp\r\n";

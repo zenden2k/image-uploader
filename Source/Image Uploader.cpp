@@ -18,6 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <vld.h> 
+
 #include "atlheaders.h"
 #include <gdiplus.h>
 #include <shellapi.h> 
@@ -29,6 +31,8 @@
 #include "Func/Settings.h"
 #include "Func/WinUtils.h"
 #include <Func/IuCommonFunctions.h>
+#include <Core/Logging.h>
+#include <Func/MyLogSink.h>
 
 CAppModule _Module;
 
@@ -134,11 +138,32 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	return 0;
 }
 
+
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {	
+#if defined(_WIN32) && !defined(NDEBUG)
+	// These global strings in GLOG are initially reserved with a small
+	// amount of storage space (16 bytes). Resizing the string larger than its
+	// initial size, after the _CrtMemCheckpoint call, can be reported as
+	// a memory leak.
+	// So for 'debug builds', where memory leak checking is performed,
+	// reserve a large enough space so the string will not be resized later.
+	// For these variables, _MAX_PATH should be fine.
+	FLAGS_log_dir.reserve(_MAX_PATH);  // comment out this line to trigger false memory leak
+	FLAGS_log_link.reserve(_MAX_PATH);
+
+	// Enable memory dump from within VS.
+
+#endif
+	FLAGS_logtostderr = true;
+	//google::SetLogDestination(google::GLOG_INFO,"d:/" );
+	
+
+	//LOG(WARNING) << "This is WARNING";
+	//LOG(ERROR) << "This is Error";
+	//LOG(ERROR) << "This is Error " <<lpstrCmdLine<<1<<(int64_t)10;
 	OleInitialize(NULL);
 	HRESULT hRes ;
-
 	for( size_t i = 0; i < CmdLine.GetCount(); i++ ) {
 		CString CurrentParam = CmdLine[i];
 		if ( CurrentParam.Left(12) == _T("/waitforpid=") )	{
@@ -146,8 +171,15 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 			DWORD pid = _ttoi( pidStr );
 			HANDLE hProcess = OpenProcess( SYNCHRONIZE, false, pid ); 
 			WaitForSingleObject( hProcess, 20000 );
+		} else if ( CurrentParam == "/debuglog") {
+			FLAGS_logtostderr = false;
+			FLAGS_alsologtostderr = true;
 		}
 	}
+	google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
+	MyLogSink logSink;
+	google::AddLogSink(&logSink);
+		//LOG(INFO) << "This is INFO";
 
 	// for Windows Vista and later versions
 	if ( CmdLine.IsOption( _T("integration") ) )  {
@@ -169,5 +201,11 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	_Module.Term();
 	CScriptUploadEngine::DestroyScriptEngine();
 	OleUninitialize();
+
+	 google::ShutdownGoogleLogging();
+	//for (int i = 0; i < 1000000; i++)
+		/*int *ptr = new int[100000000];
+		ptr[165654] =36;*/
+
 	return 0;
 }

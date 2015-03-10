@@ -54,7 +54,7 @@ class CUploader
 
 		void DebugMessage(const std::string& message, bool isServerResponseBody = false);
 		void SetStatus(StatusType status, int param1=0, std::string param="");
-		
+		StatusType GetStatus() const;
 	protected:
 		InfoProgress m_PrInfo;
 		static int pluginProgressFunc (void* userData, double dltotal,double dlnow,double ultotal, double ulnow);

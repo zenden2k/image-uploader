@@ -40,6 +40,9 @@ void nm_splitString(const std::string& str, const std::string& delimiters, std::
 class NetworkManager
 {
 	public:
+		enum ActionType {
+			atNone = 0, atPost, atUpload, atGet
+		};
 		NetworkManager(void);
 		~NetworkManager(void);
 		void addQueryParam(const NString& name, const NString& value);
@@ -109,6 +112,7 @@ class NetworkManager
 		void private_cleanup_after();
 		bool private_on_finish_request();
 		void private_initTransfer();
+		void private_checkResponse();
 
 		int m_UploadBufferSize;
 		CURL *curl_handle;
@@ -116,6 +120,7 @@ class NetworkManager
 		std::string m_OutFileName;
 		FILE *m_uploadingFile;
 		std::string m_uploadData;
+		ActionType m_currentActionType;
 		int m_nUploadDataOffset;
 		CallBackData m_bodyFuncData;
 		curl_progress_callback m_progressCallbackFunc;

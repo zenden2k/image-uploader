@@ -65,6 +65,7 @@ public:
 		LRESULT OnThumbTextChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		CMyImage img;
 		std::string getSelectedThumbnailFileName();
+		std::string getSelectedThumbnailName();
 		LRESULT OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnThumbTextCheckboxClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		void ThumbTextCheckboxChange();
