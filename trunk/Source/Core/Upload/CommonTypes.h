@@ -25,7 +25,7 @@
 
 struct InfoProgress
 {
-	unsigned long Uploaded, Total;
+	int64_t Uploaded, Total;
 	bool IsUploading;
 	void clear()
 	{

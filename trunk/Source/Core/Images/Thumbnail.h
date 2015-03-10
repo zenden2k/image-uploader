@@ -63,6 +63,8 @@ class Thumbnail
 		std::string getWidthAddition() const;
 		std::string getHeightAddition() const;
 
+		void setSpriteFileName(const std::string& name);
+
 		bool existsParam(const std::string& name) const;
 		unsigned int getColor(const std::string& name);
 		unsigned int getParam(const std::string& name);

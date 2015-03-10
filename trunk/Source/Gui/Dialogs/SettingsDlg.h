@@ -24,7 +24,7 @@
 #include "atlheaders.h"
 #include "welcomedlg.h"
 #include "maindlg.h"
-#include "videograbber.h"
+#include "VideoGrabberPage.h"
 #include "uploadsettings.h"
 #include "aboutdlg.h"
 #include "resource.h"       // main symbols

@@ -420,7 +420,7 @@ CSettings::CSettings()
 	CodeLang = 0;
 	ConfirmOnExit = 1;
 	ExplorerContextMenu = false;
-	ExplorerVideoContextMenu = false;
+	ExplorerVideoContextMenu = true;
 	ExplorerContextMenu_changed = false;
 	ThumbsPerLine = 4;
 	SendToContextMenu_changed = false;

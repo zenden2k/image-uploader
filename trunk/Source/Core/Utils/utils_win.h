@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 #include "Core/3rdpart/codepages.h"
+#include <Core/Logging.h>
 
 namespace IuCoreUtils
 {
@@ -176,7 +177,8 @@ bool createDirectory(const Utf8String& path_,unsigned int mode)
 		free(szPath);
 
 		if (!::CreateDirectory(wstrFolder.c_str(), NULL)) {
-			MessageBox(0,wstrFolder.c_str(),0,0);
+			LOG(WARNING) << wstrFolder;
+			//MessageBox(0,wstrFolder.c_str(),0,0);
 			return false;
 		}
 	}

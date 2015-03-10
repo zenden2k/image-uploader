@@ -16,6 +16,7 @@
 [~] Documentation update (added Scripting API docs)
 [~] Documentation now is shipped with program
 [~] Show server favicons in the popup menu in Windows XP
+[~] Unicode filename support for FFmpeg
 
 -v1.2.7 build 4185
 [~] Fixed drag-n-drop in Windows 8+

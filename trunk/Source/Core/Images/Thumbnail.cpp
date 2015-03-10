@@ -105,6 +105,9 @@ bool Thumbnail::SaveToFile(const std::string& filename)
 	SimpleXmlNode root = xml.getRoot("Thumbnail", false);
 	if (root.IsNull())
 		return false;
+	if ( !data_.sprite_source_file.empty() ) {
+		root.GetChild("Definitions").GetChild("Sprite").SetAttribute("Source", IuCoreUtils::ExtractFileName(data_.sprite_source_file));
+	}
 	SimpleXmlNode colorsNode = root.GetChild("Definitions").GetChild("Params");
 	colorsNode.DeleteChilds();
 	for (std::map<std::string, std::string>::iterator it = data_.colors_.begin(); it != data_.colors_.end(); ++it)
@@ -130,6 +133,11 @@ std::string Thumbnail::getWidthAddition() const
 std::string Thumbnail::getHeightAddition() const
 {
 	return data_.height_addition;
+}
+
+void Thumbnail::setSpriteFileName(const std::string& name)
+{
+	data_.sprite_source_file = name;
 }
 
 const Thumbnail::ThumbnailData* Thumbnail::getData() const

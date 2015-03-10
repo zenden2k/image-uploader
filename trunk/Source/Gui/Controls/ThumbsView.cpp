@@ -542,6 +542,16 @@ LRESULT CThumbsView::OnLvnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandl
 	return 0;
 }
 
+LRESULT CThumbsView::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	int count = GetItemCount();
+	for ( int i =0; i < count; i++ ) {
+		ThumbsViewItem *tvi = reinterpret_cast<ThumbsViewItem *>(GetItemData(i));
+		delete tvi;
+	}
+	return 0;
+}
+
 void CThumbsView::OutDateThumb(int nIndex)
 {
 	ThumbsViewItem *TVI = (ThumbsViewItem *)GetItemData(nIndex);

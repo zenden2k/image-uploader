@@ -30,6 +30,7 @@
 #include <algorithm>
 #include <iostream>
 #include "Core/Utils/CoreUtils.h"
+#include <Core/Logging.h>
 
 char NetworkManager::CertFileName[1024]= "";
 
@@ -109,7 +110,7 @@ int NetworkManager::ProgressFunc(void *clientp, double dltotal, double dlnow, do
 	NetworkManager *nm = reinterpret_cast<NetworkManager*>(clientp);
 	if(nm && nm->m_progressCallbackFunc)
 	{
-		if(ultotal<0 && nm->m_CurrentFileSize>0)
+		if(ultotal<=0 && nm->m_CurrentFileSize>0 && nm->m_currentActionType == atUpload)
 			ultotal = double(nm->m_CurrentFileSize);
 		return nm->m_progressCallbackFunc(nm->m_progressData, dltotal, dlnow, ultotal, ulnow);
 	}
@@ -293,6 +294,7 @@ bool NetworkManager::doUploadMultipartData()
 	}
 
 	curl_easy_setopt(curl_handle, CURLOPT_HTTPPOST, formpost);
+	m_currentActionType = atUpload;
 	curl_result = curl_easy_perform(curl_handle);
 	CloseFileList(openedFiles);
 	curl_formfree(formpost);
@@ -301,6 +303,7 @@ bool NetworkManager::doUploadMultipartData()
 
 bool NetworkManager::private_on_finish_request()
 {
+	private_checkResponse();
 	private_cleanup_after();
 	private_parse_headers();
 	if (curl_result != CURLE_OK)
@@ -339,6 +342,7 @@ bool NetworkManager::doGet(const std::string & url)
 	private_initTransfer();
 	if(!private_apply_method())
 		curl_easy_setopt(curl_handle, CURLOPT_HTTPGET, 1);
+	m_currentActionType = atGet;
 	curl_result = curl_easy_perform(curl_handle);
 	return private_on_finish_request();
 
@@ -363,7 +367,7 @@ bool NetworkManager::doPost(const NString& data)
 		curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, postData.c_str());
 	else
 		curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, data.c_str());
-		
+	m_currentActionType = atPost;	
 	curl_result = curl_easy_perform(curl_handle);
 	return private_on_finish_request();
 }
@@ -400,6 +404,14 @@ void NetworkManager::private_initTransfer()
 	}
 
 	curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, chunk_);
+}
+
+void NetworkManager::private_checkResponse()
+{
+	int code = responseCode();
+	if ( !code || (code>= 400 && code<=499) ) {
+		LOG(ERROR) << "Request to the URL '"<<m_url<<"' failed. \r\nResponse code: "<<code<<"\r\n"<<errorString()<<"\r\n"<<internalBuffer;
+	}
 }
 
 NString NetworkManager::responseHeaderText()
@@ -516,6 +528,7 @@ void NetworkManager::private_cleanup_before()
 
 void NetworkManager::private_cleanup_after()
 {
+	m_currentActionType = atNone;
 	m_QueryHeaders.clear();
 	m_QueryParams.clear();
 	if(m_hOutFile)
@@ -525,6 +538,7 @@ void NetworkManager::private_cleanup_after()
 	}
 	m_OutFileName.clear();
 	m_method = "";
+	curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, (curl_off_t )-1);
 
 	m_uploadData = "";
 	m_uploadingFile = NULL;
@@ -573,12 +587,14 @@ bool NetworkManager::doUpload(const NString& fileName, const NString &data)
 		m_CurrentFileSize = IuCoreUtils::getFileSize(fileName);
 		if(m_CurrentFileSize < 0) 
 			return false;
+		m_currentActionType = atUpload;
 	}
 	else
 	{
 		m_nUploadDataOffset =0;
 		m_uploadData = data;
-		m_CurrentFileSize = data.size();
+		m_CurrentFileSize = data.length();
+		m_currentActionType = atPost;
 	}
 	curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, read_callback);
 		if(!private_apply_method())
@@ -590,7 +606,8 @@ bool NetworkManager::doUpload(const NString& fileName, const NString &data)
 		addQueryHeader("Content-Length", IuCoreUtils::int64_tToString(m_CurrentFileSize));
 	}
 	private_initTransfer();
-	curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, (curl_off_t)m_CurrentFileSize); 
+	curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, (curl_off_t)m_CurrentFileSize);
+	
 	curl_result = curl_easy_perform(curl_handle);
 	if(m_uploadingFile)
 		 fclose(m_uploadingFile);

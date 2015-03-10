@@ -147,7 +147,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	TRC(IDC_COMMONPROGRESS, "Общий прогресс:");
 	bool IsLastVideo = lstrlen(MediaInfoDllPath)!=0;
 
-	CVideoGrabber *vg = static_cast<CVideoGrabber*>(WizardDlg->Pages[1]);
+	CVideoGrabberPage *vg = static_cast<CVideoGrabberPage*>(WizardDlg->Pages[1]);
 
 	if(vg && lstrlen(vg->m_szFileName))
 		IsLastVideo=true;
@@ -427,6 +427,7 @@ DWORD CUploadDlg::Run()
 			PrInfo.ip.Total=0;
 			PrInfo.ip.Uploaded=0;
 			LastUpdate=0;
+			//ShowVar((int)sessionImageServer_.getImageUploadParams().CreateThumbs);
 
 			// Если мы не используем серверные превьюшки
 			if(IsImage(MainDlg->FileList[i].FileName) &&  !ue->ImageUrlTemplate.empty() && sessionImageServer_.getImageUploadParams().CreateThumbs && (((!sessionImageServer_.getImageUploadParams().UseServerThumbs)||(!ue->SupportThumbnails)) || (lstrlen(ThumbUrl)<1)))
@@ -554,8 +555,18 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 		if(!PrInfo.ip.IsUploading) 
 		{
 			ShowProgress(false);
+			PrInfo.ip.clear();
+			PrInfo.Bytes.clear();
+				
 			if(m_CurrentUploader)
 			{
+				/*CString format;
+				format.Format(L"m_CurrentUploader->GetStatus() =  %d\r\n", m_CurrentUploader->GetStatus());
+				OutputDebugStringW(format);*/
+				//ShowVar(m_CurrentUploader->GetStatus());
+				if ( m_CurrentUploader->GetStatus() == stUploading ) {
+					m_CurrentUploader->SetStatus(stWaitingAnswer);
+				}
 				CString StatusText = m_StatusText;
 				if(!StatusText.IsEmpty())
 					FileProgress(StatusText);
@@ -578,6 +589,7 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 				PrInfo.ip.Uploaded=0;
 				PrInfo.ip.Total = 0;
 				PrInfo.ip.IsUploading  = false;
+				
 				PrInfo.CS.Unlock();
 				return 0;
 			}
@@ -671,7 +683,7 @@ bool CUploadDlg::OnShow()
 
 	if(lstrlen(MediaInfoDllPath))
 	{
-		CVideoGrabber *vg =(	CVideoGrabber *) WizardDlg->Pages[1];
+		CVideoGrabberPage *vg =(	CVideoGrabberPage *) WizardDlg->Pages[1];
 
 		if(vg && lstrlen(vg->m_szFileName))
 			IsLastVideo=true;
@@ -844,7 +856,11 @@ void CUploadDlg::OnUploaderProgress(CUploader* uploader, InfoProgress pi)
 
 void CUploadDlg::OnUploaderStatusChanged(StatusType status, int actionIndex, std::string text)
 {
+	PrInfo.CS.Lock();
 	m_StatusText = UploaderStatusToString(status, actionIndex,text);
+	PrInfo.Bytes.clear(); 
+	PrInfo.ip.clear();
+	PrInfo.CS.Unlock();
 }
 
 void CUploadDlg::OnUploaderConfigureNetworkClient(NetworkManager *nm)

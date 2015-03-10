@@ -83,6 +83,24 @@ function base64Encode(input) {
     return output;
 }
 
+
+function _WriteLog(type,message) {
+	try {
+		WriteLog(type, message);
+	} catch (ex ) {
+		print(type + " : " + message);
+	}
+}
+
+function checkResponse() {
+	if ( nm.responseCode() == 0 || (nm.responseCode() >= 400 && nm.responseCode() <= 499)) {
+		_WriteLog("error", "Response code " + nm.responseCode() + "\r\n" + nm.errorString() );
+		return 0;
+	}
+	return 1;
+}
+
+
 function signRequest(method, url,params, token,tokenSecret) {
 	
 	if ( token != "" ) {
@@ -163,7 +181,9 @@ function DoLogin() {
 					{a="oauth_callback", b="oob"}
 			  ];
 	sendOauthRequest("GET", authStep1Url, params, "", "");
-	
+	if ( !checkResponse() ) {
+		return 0;
+	}
 	local data =  nm.responseBody();
 
 	local temp_oauth_token_secret = regex_simple(data, "oauth_token_secret=([^&]+)", 0);

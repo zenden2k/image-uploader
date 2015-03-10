@@ -72,9 +72,9 @@ Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Image Uploader\
 Source: "unzip.exe"; DestDir: "{tmp}"; Flags: ignoreversion
 ;Flags: deleteafterinstall
 ;Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
-#ifdef WIN64FILES
+
 Source: "..\Build\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}";
-#endif
+
 #ifdef FFMPEG
 Source: "..\Build\release\av*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Build\release\swscale*.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -175,7 +175,8 @@ begin
 
     if IsTaskSelected('installffmpeg') then
     begin
-    Cmd :=  '"'+expandconstant('{tmp}\ffmpeg.zip')+'" -o -d "'+expandconstant('{app}') + '"';
+    Cmd :=  ' -o "'+expandconstant('{tmp}\ffmpeg.zip')+'" -d "'+expandconstant('{app}') + '"';
+    
           Exec(expandconstant('{tmp}\unzip.exe'),cmd ,expandconstant('{app}'), SW_HIDE, ewWaitUntilTerminated, ResultCode);
 
          //  MsgBox(GetDataFolder('p') + expandconstant('\Image Uploader\Update\iu_ffmpeg.xml'), mbInformation, MB_OK);

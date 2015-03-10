@@ -453,11 +453,11 @@ bool CUpdatePackage::doUpdate()
 
 		copyTo.Replace(_T("%datapath%"), IuCommonFunctions::GetDataFolder());
 		copyTo.Replace(_T("%apppath%"), appFolder);
-		std::string dir = IuCoreUtils::ExtractFilePath(WCstringToUtf8(copyTo));
+		std::string dir = IuCoreUtils::ExtractFilePath(IuCoreUtils::WstringToUtf8((LPCTSTR)copyTo));
 		if ( !IuCoreUtils::DirectoryExists(dir)) {
 			if ( !IuCoreUtils::createDirectory(dir) ) {
 				CString logMessage;
-				logMessage.Format(_T("Could not create folder '%s'."), (LPCTSTR)Utf8ToWstring(dir).c_str());
+				logMessage.Format(_T("Could not create folder '%s'."), (LPCTSTR)IuCoreUtils::Utf8ToWstring(dir).c_str());
 				WriteLog(logError,_T("Update Engine"),logMessage);
 
 			}
