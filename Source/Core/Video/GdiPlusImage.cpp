@@ -74,12 +74,12 @@ bool GdiPlusImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t
 	if ( dt == AbstractImage::dfRGB888 )  {
 		int lineSizeInBytes = reinterpret_cast<int>(parameter);
 //		int dataSize = dataSize;
-		size_t newDataSize = dataSize+100000;
+		size_t newDataSize = dataSize*2/*+100000*/;
 		data_ = new uint8_t[dataSize];
 		for ( int y=height-1; y>=0; y--) {
 			memcpy(data_+(height-y-1)*lineSizeInBytes, data+y*lineSizeInBytes, lineSizeInBytes );
 		}
-		bool res =  loadFromRgb(width, height,data_,  newDataSize);
+		bool res =  loadFromRgb(width, height,data_,  dataSize);
 		return res;
 
 	} else if ( dt == AbstractImage::dfBitmapRgb ) {

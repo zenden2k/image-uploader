@@ -9,6 +9,7 @@
 #include <Core/Utils/CoreUtils.h>
 #include <zthread/Thread.h>
 #include <zthread/Mutex.h>
+#include <Core/Logging.h>
 
 #if defined(_WIN32) && !defined(QT_VERSION)
 #include <gdiplus.h>
@@ -53,13 +54,20 @@ public:
 		int64_t step = duration / ( videoGrabber_->frameCount_ + 1 );
 		for( int i = 0; i < videoGrabber_->frameCount_; i++ ) {
 			if ( thread_ && thread_->canceled() ) {
-				MessageBox(0,0,0,0);
 				break;
 			}
-			grabber->seek(/*duration / 2*/( i + 0.5 ) * step);
+			int64_t curTime = ( i + 0.5 ) * step;
+
+			
+			grabber->seek(curTime);
 			AbstractVideoFrame *frame =  grabber->grabCurrentFrame();
+			if (!frame ) {
+				grabber->seek(curTime);
+				frame =  grabber->grabCurrentFrame();
+			}
 			if ( ! frame ) {
-				break;
+				LOG(WARNING) <<"grabber->grabCurrentFrame returned NULL";
+				continue;
 			}
 			int64_t SampleTime = frame->getTime();
 			Utf8String s;
@@ -68,8 +76,11 @@ public:
 				(int)long(long(SampleTime) % 60) );
 			s = buffer;
 
+			
+
 
 			if ( frame && !videoGrabber_->onFrameGrabbed.empty() ) {
+				frame->toImage();
 				videoGrabber_->onFrameGrabbed(s, SampleTime, frame->toImage());
 			}
 			delete frame;

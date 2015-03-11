@@ -198,6 +198,7 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
 		RECT grabInfoLabelRect;
 		::GetClientRect(GetDlgItem(IDC_GRABINFOLABEL), &grabInfoLabelRect);
 		::SetWindowPos(GetDlgItem(IDC_GRABINFOLABEL), NULL, 0,0,originalGrabInfoLabelWidth_,grabInfoLabelRect.bottom, SWP_NOMOVE);
+		::InvalidateRect(GetDlgItem(IDC_GRABINFOLABEL), 0, true);
 	}
 	Run();
 

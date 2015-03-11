@@ -256,9 +256,9 @@ public:
              if(packet.stream_index==videoStream) {
 
                  frameFinished = false;
-
-                 if ( avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet) < 0 ) {
-
+				int res =0;
+                 if ( (res = avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet)) < 0 ) {
+					LOG(ERROR) << "avcodec_decode_video2() result="<<res;
                  }
 
                  if(frameFinished) {
@@ -343,7 +343,7 @@ public:
                     frameFinished = false;
 
                     if ( avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet) < 0 ) {
-
+						LOG(ERROR) << "avcodec_decode_video2() failed";
                     }
 
                     // Did we get a video frame?
@@ -358,15 +358,15 @@ public:
                             img_convert_ctx = sws_getContext(w, h, pCodecCtx->pix_fmt, w, h,pixelFormat , SWS_BICUBIC,
                                 NULL, NULL, NULL);
                             if(img_convert_ctx == NULL) {
-                                fprintf(stderr, "Cannot initialize the conversion context!\n");
-                                exit(1);
+								LOG(ERROR) << "Cannot initialize the conversion context!";
+								return false;
                             }
                         }
                         int ret = sws_scale(img_convert_ctx, pFrame->data, pFrame->linesize, 0, pCodecCtx->height, pFrameRGB->data, pFrameRGB->linesize);
                         int64_t pts = pFrame->pts;
                         // Save the frame to disk
                         currentFrame_ = new AvcodecVideoFrame(pFrameRGB, pFrameRGB->data[0],
-                                                              pFrameRGB->linesize[0]*pCodecCtx->height, display_time,pCodecCtx->width, pCodecCtx->height);
+                                                              /*pFrameRGB->linesize[0]*pCodecCtx->height*/pCodecCtx->width * pCodecCtx->height *3, display_time,pCodecCtx->width, pCodecCtx->height);
                         /*if ( i < numOfFrames ) {
                             //SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height, i, headerlen,timestamp_to_str(target_frame,ss.den),cb, display_time);
                         }*/
