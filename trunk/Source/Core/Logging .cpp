@@ -7,5 +7,7 @@ std::ostream& operator<<(std::ostream& out, const wchar_t* str) {
 }
 
 std::ostream& operator<<(std::ostream& out, const std::wstring& str) {
-	return operator<<(out, str.c_str());
+	std::string msg = IuCoreUtils::WstringToUtf8(str).c_str();
+	
+	return operator<<(out, msg);
 }

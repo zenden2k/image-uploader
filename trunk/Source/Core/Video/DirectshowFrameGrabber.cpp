@@ -12,10 +12,10 @@
 #include "AbstractVideoFrame.h"
 #include <Core/Logging.h>
 #include <windows.h>
-// You'll need this include file and library linked.
 #include <Core/3rdpart/dxerr.h>
-//#include "dxerr9.h"
-
+#include <zthread/Mutex.h>
+#include <zthread/Guard.h>
+#include <zthread/Condition.h>
 #define tr(arg) (arg)
 class DirectshowVideoFrame: public AbstractVideoFrame {
 public :
@@ -187,8 +187,12 @@ struct SENDPARAMS
 class CSampleGrabberCB : public ISampleGrabberCB
 {
 public:
+	CSampleGrabberCB() :condition(mutex) {
+	}
     SENDPARAMS sp;
-    DirectshowFrameGrabberPrivate *data;
+	ZThread::Mutex mutex;
+	ZThread::Condition condition;
+    DirectshowFrameGrabberPrivate *directShowPrivate;
     //CImgSavingThread* SavingThread;
   //  CVideoGrabberPage* vg;
     // Эти параметры устанавливаются главным потоком
@@ -212,7 +216,23 @@ public:
 
 };
 
-struct DirectshowFrameGrabberPrivate {
+class DirectshowFrameGrabberPrivate {
+public:
+	DirectshowFrameGrabberPrivate() {
+		currentFrame_ = NULL;
+	}
+
+	DirectshowVideoFrame* currentFrame() {
+	//	ZThread::Guard<ZThread::Mutex> z(currentFrameMutex);
+		//ZThread::LockedScope lock(&currentFrameMutex);
+		//currentFrameMutex.acquire();
+		return currentFrame_;
+		//currentFrameMutex.release();
+	}
+
+	void setCurrentFrame(DirectshowVideoFrame* frame) {
+		currentFrame_ = frame;
+	}
     CComPtr<ISampleGrabber> pGrabber;
      CComPtr<IBaseFilter>    pSource;
      CComPtr<IBaseFilter>    pASF;
@@ -221,16 +241,17 @@ struct DirectshowFrameGrabberPrivate {
      CComQIPtr<IMediaControl, & IID_IMediaControl> pControl;
      CComQIPtr<IMediaEvent, & IID_IMediaEvent> pEvent;
      CComQIPtr<IMediaSeeking, & IID_IMediaSeeking> pSeeking;
-     DirectshowVideoFrame * currentFrame;
+    
      CComQIPtr<IVideoWindow, & IID_IVideoWindow> pWindow;
      CComQIPtr<IBaseFilter, & IID_IBaseFilter> pGrabberBase;
      CComQIPtr<IFileSourceFilter, & IID_IFileSourceFilter> pLoad;
      CComPtr<IPin> pSourcePin;
      CComPtr<IPin> pGrabPin;
      CSampleGrabberCB CB;
-     DirectshowFrameGrabberPrivate() {
-         currentFrame = NULL;
-     }
+protected:
+	 DirectshowVideoFrame * currentFrame_;
+	// ZThread::Mutex currentFrameMutex;
+    
 };
 
 
@@ -275,9 +296,7 @@ STDMETHODIMP CSampleGrabberCB::SampleCB( double SampleTime, IMediaSample* pSampl
 //
 STDMETHODIMP CSampleGrabberCB::BufferCB( double SampleTime, BYTE* pBuffer, long BufferSize )
 {
-   // MessageBoxA(0, "Lol", "", 0 );
-    /*if (!Grab)
-        return 0;  */      // Контроль ложноых вызовов
+	//ZThread::Guard<ZThread::Mutex> z(mutex);
 
     LONGLONG time = LONGLONG(SampleTime * 10000000);
     prev = time;
@@ -287,10 +306,9 @@ STDMETHODIMP CSampleGrabberCB::BufferCB( double SampleTime, BYTE* pBuffer, long 
 
 
     DirectshowVideoFrame *frame = new DirectshowVideoFrame(pBuffer, BufferSize, SampleTime, Width, Height);
-    data->currentFrame = frame;
-    //sp.vg = vg;
-   // SavingThread->Save(sp);
+    directShowPrivate->setCurrentFrame( frame);
     Grab = false;
+	condition.signal();
     return 0;
 }
 
@@ -581,24 +599,27 @@ bool DirectshowFrameGrabber::open(const Utf8String& fileName) {
     LONGLONG step = duration / NumOfFrames;
 
     d_ptr->CB.step = step;
-    d_ptr->CB.data = d_ptr;
+    d_ptr->CB.directShowPrivate = d_ptr;
     d_ptr->pControl = d_ptr->pGraph;
     d_ptr->pEvent = d_ptr->pGraph;
 
     long EvCode = 0;
 
     long EventCode = 0, Param1 = 0, Param2 = 0;
-
+	d_ptr->CB.mutex.acquire();
 
 
     return true;
 }
 
 bool DirectshowFrameGrabber::seek(int64_t time) {
+	//Sleep(300);
     HRESULT  hr;
     int step = 0;
     long EvCode = 0;
     int i = 0;
+	d_ptr->setCurrentFrame(0);
+	
     //for ( int i = 0; i < NumOfFrames; i++ )
     {
         if (ShouldStop())
@@ -611,10 +632,27 @@ bool DirectshowFrameGrabber::seek(int64_t time) {
         REFERENCE_TIME Start = /*(i + 1) * step - step*/ time / 5 * 3; // **/(duration/NUM_FRAMES_TO_GRAB);//** UNITS*40*/;
         hr = d_ptr->pGrabber->SetOneShot( TRUE );
         hr = d_ptr->pSeeking->SetPositions( &Start, AM_SEEKING_AbsolutePositioning | AM_SEEKING_SeekToKeyFrame, 0, AM_SEEKING_NoPositioning);
+		if(FAILED(hr)) {
+			LOG(WARNING) << "pSeeking->SetPositions failed." << GetMessageForHresult(hr);
+		}
         d_ptr->CB.Grab = true;
         hr = d_ptr->pControl->Run( );
+		if(FAILED(hr)) {
+			LOG(WARNING) << "pControl->Run() failed." << GetMessageForHresult(hr);
+		}
         hr = d_ptr->pEvent->WaitForCompletion( INFINITE, &EvCode );
-          d_ptr->pControl->Stop();
+		if(FAILED(hr)) {
+			LOG(WARNING) << "pEvent->WaitForCompletion() failed." << GetMessageForHresult(hr);
+		}
+        d_ptr->pControl->Stop();
+		if(FAILED(hr)) {
+			LOG(WARNING) << "pControl->Stop() failed." << GetMessageForHresult(hr);
+		}
+		if ( !d_ptr->currentFrame() ) {
+			//bool res = d_ptr->CB.condition.wait(1000);
+			//LOG(INFO) << "wait returned "<<res;
+		}
+
         //SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETPOS, (i + 1)*10);
     }
 
@@ -622,7 +660,8 @@ bool DirectshowFrameGrabber::seek(int64_t time) {
 }
 
 AbstractVideoFrame* DirectshowFrameGrabber::grabCurrentFrame() {
-    return d_ptr->currentFrame;
+    return d_ptr->currentFrame();
+	//MessageBox(0,0,0,0);
 }
 
 int64_t DirectshowFrameGrabber::duration() {
@@ -638,6 +677,7 @@ void DirectshowFrameGrabber::abort() {
 	 if ( d_ptr->pControl ) {
 		d_ptr->pControl->Stop();
 	 }
+	 d_ptr->CB.mutex.release();
 	 delete d_ptr;
 	 ::CoUninitialize();
  }
