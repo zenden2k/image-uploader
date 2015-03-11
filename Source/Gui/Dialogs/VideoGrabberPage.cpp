@@ -197,6 +197,7 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	if ( originalGrabInfoLabelWidth_ ) {
 		RECT grabInfoLabelRect;
 		::GetClientRect(GetDlgItem(IDC_GRABINFOLABEL), &grabInfoLabelRect);
+		SetDlgItemText(IDC_GRABINFOLABEL, L"");
 		::SetWindowPos(GetDlgItem(IDC_GRABINFOLABEL), NULL, 0,0,originalGrabInfoLabelWidth_,grabInfoLabelRect.bottom, SWP_NOMOVE);
 		::InvalidateRect(GetDlgItem(IDC_GRABINFOLABEL), 0, true);
 	}
@@ -536,9 +537,11 @@ void CVideoGrabberPage::OnFrameGrabbed(const Utf8String& timeStr, int64_t, Abstr
 		return;
 	}
 	Gdiplus::Bitmap *bm = image->getBitmap();
-	SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETPOS, (grabbedFramesCount + 1) * 10 );
-	OnAddImage(bm, Utf8ToWCstring(timeStr));
-	delete image;
+	if ( bm ) {
+		SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETPOS, (grabbedFramesCount + 1) * 10 );
+		OnAddImage(bm, Utf8ToWCstring(timeStr));
+		delete image;
+	}
 
 }
 

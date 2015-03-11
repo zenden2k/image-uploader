@@ -80,7 +80,7 @@ public:
 
 
 			if ( frame && !videoGrabber_->onFrameGrabbed.empty() ) {
-				frame->toImage();
+				//frame->toImage();
 				videoGrabber_->onFrameGrabbed(s, SampleTime, frame->toImage());
 			}
 			delete frame;

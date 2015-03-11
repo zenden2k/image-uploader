@@ -1,6 +1,7 @@
 ﻿#include "AvcodecFrameGrabber.h"
 #include "AbstractImage.h"
 #include <Core/Logging.h>
+#include <Core/Utils/CoreUtils.h>
 
 namespace AvCodec
 {
@@ -80,6 +81,7 @@ protected:
         int headerlen;
         struct SwsContext *img_convert_ctx;
         int             numBytes;
+		uint64_t fileSize_;
         bool NeedStop;
         bool SeekToKeyFrame;
         bool seekByBytes;
@@ -92,9 +94,10 @@ public:
         AvcodecFrameGrabberPrivate() {
             NeedStop = false;
             SeekToKeyFrame = true;
-            seekByBytes = /*false*/true;
+            seekByBytes = false;
             img_convert_ctx = NULL;
             currentFrame_ = NULL;
+			fileSize_ = 0;
         }
 
 		  ~AvcodecFrameGrabberPrivate() {
@@ -129,6 +132,7 @@ public:
         if(av_find_stream_info(pFormatCtx)<0) {
             return false; // Couldn't find stream information
         }
+		fileSize_ = IuCoreUtils::getFileSize(fileName);
         // Dump information about file onto standard error
         av_dump_format(pFormatCtx, 0, fileName.c_str(), false);
         if ( pFormatCtx->iformat ) {
@@ -241,13 +245,15 @@ public:
          my_start_time = (double)ic->duration / numOfFrames*1.6;
 
          AVRational rat = {1, AV_TIME_BASE};
-         my_start_time = /*av_rescale_q(my_start_time, rat, pFormatCtx->streams[videoStream]->time_base);*/0;
-		seek_target = 0;
+         my_start_time = av_rescale_q(my_start_time, rat, pFormatCtx->streams[videoStream]->time_base);
+		seek_target = av_rescale_q((double)my_start_time, rat, pFormatCtx->streams[videoStream]->time_base);;
          if ( seekByBytes ){
              uint64_t size=  avio_size(pFormatCtx->pb);
              seek_target = (double)my_start_time / ic->duration * size;
          }
-         avformat_seek_file(pFormatCtx, videoStream, 0, my_start_time, seek_target, seekByBytes?AVSEEK_FLAG_BYTE:0) ;
+		 if ( avformat_seek_file(pFormatCtx, videoStream, seek_target*0.9, seek_target, seek_target*1.1, seekByBytes?AVSEEK_FLAG_BYTE:0)  < 0 ) {
+			 LOG(ERROR) << "avformat_seek_file failed to seek to position "<<seek_target<< " seekByBytes="<<seekByBytes;;
+		 }
          avcodec_flush_buffers(pCodecCtx) ;
 
          avcodec_flush_buffers(pCodecCtx) ;
@@ -317,17 +323,19 @@ public:
 
             int64_t seek_target = target_frame;
             AVRational rat = {1, AV_TIME_BASE};
-            seek_target = av_rescale_q(seek_target, rat, pFormatCtx->streams[videoStream]->time_base);
-
+			//seekByBytes = true;
             if ( seekByBytes ) {
-                uint64_t size=  avio_size(pFormatCtx->pb);
+				uint64_t size=  avio_size(pFormatCtx->pb);
                 seek_target = (double)target_frame / ic->duration * size;
-            }
-            int64_t seek_min= 0;
-            int64_t seek_max= /*INT64_MAX*/seek_target;
+			} else {
+				seek_target = av_rescale_q(seek_target, rat, pFormatCtx->streams[videoStream]->time_base);
+			}
 
-            if ( avformat_seek_file(pFormatCtx, videoStream, seek_min, seek_max, seek_target, seekByBytes?AVSEEK_FLAG_BYTE:0) < 0  )  {
+            int64_t seek_min= seek_target*0.9;
+            int64_t seek_max= /*INT64_MAX*/seek_target*1.1;
 
+            if ( avformat_seek_file(pFormatCtx, videoStream, seek_min, seek_target, seek_max, seekByBytes?AVSEEK_FLAG_BYTE:0) < 0  )  {
+				LOG(ERROR) << "avformat_seek_file failed to seek to position "<<seek_target << " seekByBytes="<<seekByBytes;
             }
 
             avcodec_flush_buffers(pCodecCtx) ;
