@@ -50,8 +50,6 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
 	
 	LogWindow.Create(0);
-	//LOG(WARNING) << WinUtils::GetAppFolder();
-	LOG(WARNING) << "Test string\0";
 	IuCommonFunctions::CreateTempFolder();
 	
 	std::vector<CString> fileList;
@@ -165,10 +163,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
 	MyLogSink logSink;
 	google::AddLogSink(&logSink);
-	LOG(WARNING) << "Test string11\0";
-	//LOG(WARNING) << "This is WARNING";
-	//LOG(ERROR) << "This is Error";
-	//LOG(ERROR) << "This is Error " <<lpstrCmdLine<<1<<(int64_t)10;
+
 	OleInitialize(NULL);
 	HRESULT hRes ;
 	for( size_t i = 0; i < CmdLine.GetCount(); i++ ) {

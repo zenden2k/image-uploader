@@ -60,6 +60,10 @@ Cтандартная функция squirrel, выводящая текст н�
 Проверяет, существует ли файл.
 <code class="f"><u>string</u> FileGetContents(<u>string</u> <i>filename</i>)<span>version >= 1.3.0</span></code> 
 Возвращает содержимое файла.
+<code class="f"><u>string</u> GetAppLanguage()<span>version >= 1.3.0</span></code>
+Returns application's current language. For example : "en", "ru".
+<code class="f"><u>string</u> GetAppLocale()<span>version >= 1.3.0</span></code>
+Returns application's current locale. For example : "en_US", "ru_RU".
 <code class="f"><u>string</u> GetFileExtension(<u>string</u> <i>filename</i>)</code>
 Извлекает расширение файла из пути.
 <code class="f"><u>string</u> GetFileMimeType(<u>string</u> <i>fileName</i>)</code>

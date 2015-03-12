@@ -56,7 +56,11 @@ class UpdateGenerator {
             mkdir($packageName);
         }
         $timestamp = time();
+        $zip2 = null;
         $zip = new ZipArchive();
+        if ( $packageName == 'iu_ffmpeg') {
+            $zip2 = new ZipArchive();
+        }
         $downloadPath = $root['DownloadPath'];
 
         $package_name_with_timestamp = "{$packageName}_$timestamp.".(strpos($downloadPath, 'zenden.ws')!== false ? "dat" : 'zip');
@@ -64,6 +68,13 @@ class UpdateGenerator {
 
         if ($zip->open($zipFileName, ZipArchive::CREATE)!==TRUE) {
             throw new Exception("Unable to create zip file <$zipFileName>\n");
+        }
+        if ( $zip2 ) {
+            $zip2FileName = "$packageName/inst_$package_name_with_timestamp";
+
+            if ($zip2->open($zip2FileName, ZipArchive::CREATE)!==TRUE) {
+                throw new Exception("Unable to create zip file <$zipFileName>\n");
+            }
         }
 
         $outPackageXml = new SimpleXMLElement('<UpdatePackage></UpdatePackage>');
@@ -83,22 +94,33 @@ class UpdateGenerator {
             if (!$action ) {
                 $action = 'add';
             }
-            $foundFiles = glob($this->srcDir.$name);
-           // echo 'Glob '.$this->srcDir.$name.'<br>';
-            foreach ( $foundFiles as $srcFile ) {
-                if ( !is_file($srcFile)) {
-                    continue;
+            if ( $action == 'add' ) {
+                $foundFiles = glob($this->srcDir . $name);
+                // echo 'Glob '.$this->srcDir.$name.'<br>';
+                foreach ($foundFiles as $srcFile) {
+                    if (!is_file($srcFile)) {
+                        continue;
+                    }
+                    // echo $srcFile.'<br>';
+                    $md5 = md5_file($srcFile);
+                    $file = str_replace($this->srcDir, '', $srcFile);
+                    $newEntry = $outEntries->addChild('Entry');
+                    ///var_dump($file);
+                    $newEntry->addAttribute('Name', $file);
+                    $newEntry->addAttribute('SaveTo', $saveToFolder . pathinfo($file, PATHINFO_BASENAME));
+                    $newEntry->addAttribute('Action', $action);
+                    $newEntry->addAttribute('Hash', $md5);
+                    //  echo $file.'<br>';
+                    $zip->addFile($srcFile, $file);
+                    if ( $zip2 ) {
+                        $zip2->addFile($srcFile, $file);
+                    }
                 }
-               // echo $srcFile.'<br>';
-                $md5 = md5_file($srcFile);
-                $file = str_replace($this->srcDir,'',$srcFile);
+            } else if ( $action == 'delete' ) {
                 $newEntry = $outEntries->addChild('Entry');
-                $newEntry->addAttribute('Name', $file);
-                $newEntry->addAttribute('SaveTo', $saveToFolder. pathinfo($file, PATHINFO_BASENAME));
+                $newEntry->addAttribute('Name', $name);
+                $newEntry->addAttribute('SaveTo', $saveToFolder . $name);
                 $newEntry->addAttribute('Action', $action);
-                $newEntry->addAttribute('Hash', $md5);
-              //  echo $file.'<br>';
-                $zip->addFile($srcFile,$file);
             }
             //var_dump($foundFiles);
            // echo $name.'<br>';
@@ -120,6 +142,9 @@ class UpdateGenerator {
         echo "Zip file '$zipFileName': numfiles: " . $zip->numFiles . ";\n";
         echo "status:" . $zip->status . "\n;";
         $zip->close();
+        if ( $zip2 ) {
+            $zip2->close();
+        }
         $outUpdateInfoXml = new SimpleXMLElement('<UpdateInfo></UpdateInfo>');
         $outUpdateInfoXml->addAttribute('Name', $packageName);
         $outUpdateInfoXml->addAttribute('DownloadUrl',$downloadUrl);

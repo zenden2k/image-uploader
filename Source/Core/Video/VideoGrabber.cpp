@@ -10,11 +10,6 @@
 #include <zthread/Thread.h>
 #include <zthread/Mutex.h>
 #include <Core/Logging.h>
-
-#if defined(_WIN32) && !defined(QT_VERSION)
-#include <gdiplus.h>
-#endif
-
 class VideoGrabberRunnable: public ZThread::Runnable{
 public:
 	VideoGrabberRunnable(VideoGrabber* videoGrabber)
@@ -24,9 +19,6 @@ public:
 		currentGrabber_ = 0;
 	}
 	~VideoGrabberRunnable() {
-		#if defined(_WIN32) && !defined(QT_VERSION)
-		//Gdiplus::GdiplusShutdown(gdiplusToken_);
-#endif
 		thread_ = 0;
 	}
 
@@ -45,13 +37,7 @@ public:
 			return;
 		}
 		currentGrabber_ = grabber;
-		#if defined(_WIN32) && !defined(QT_VERSION)
-			/*Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-			Gdiplus::GdiplusStartup( &gdiplusToken_, &gdiplusStartupInput, NULL );*/
-		#endif
-
 		int64_t duration = grabber->duration();
-		LOG(INFO) << "Duration="<<duration;
 		int64_t step = duration / ( videoGrabber_->frameCount_ + 1 );
 		for( int i = 0; i < videoGrabber_->frameCount_; i++ ) {
 			if ( thread_ && thread_->canceled() ) {
@@ -77,11 +63,7 @@ public:
 				(int)long(long(SampleTime) % 60) );
 			s = buffer;
 
-			
-
-
 			if ( frame && !videoGrabber_->onFrameGrabbed.empty() ) {
-				//frame->toImage();
 				videoGrabber_->onFrameGrabbed(s, SampleTime, frame->toImage());
 			}
 			delete frame;

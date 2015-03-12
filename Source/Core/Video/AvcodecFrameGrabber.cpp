@@ -371,23 +371,19 @@ public:
             if(NeedStop) {
                 //break;
             }
-            int64_t target_frame;
-
-            target_frame = /*(double)ic->duration / numOfFrames* (i+0.5)*/time;
-            //(double)ic->duration / (double)AV_TIME_BASE / (double)numOfFrames /*step*/ * /*AV_TIME_BASE*/(double)ss.den/(double)ss.num * (i+0.5);
-
-
-           int64_t display_time= (double)target_frame/ (double)AV_TIME_BASE;
-            if(target_frame==0) target_frame = 1;
+          
+            
 
             SeekToKeyFrame = true;
 
-            int64_t seek_target = target_frame;
+            int64_t seek_target = time;
+			if(seek_target==0) seek_target = 1;
+
             AVRational rat = {1, AV_TIME_BASE};
 			//seekByBytes = true;
             if ( seekByBytes ) {
 				uint64_t size=  avio_size(pFormatCtx->pb);
-                seek_target = (double)target_frame / ic->duration * size;
+                seek_target = (double)seek_target / ic->duration * size;
 			} else {
 				seek_target = av_rescale_q(seek_target, rat, pFormatCtx->streams[videoStream]->time_base);
 			}
@@ -395,7 +391,7 @@ public:
             int64_t seek_min= seek_target*0.9;
             int64_t seek_max= /*INT64_MAX*/seek_target*1.1;
 
-            if ( avformat_seek_file(pFormatCtx, videoStream, 0, seek_target, seek_max, seekByBytes?AVSEEK_FLAG_BYTE:0) < 0  )  {
+            if ( avformat_seek_file(pFormatCtx, videoStream,0, seek_target, seek_target, seekByBytes?AVSEEK_FLAG_BYTE:0) < 0  )  {
 				LOG(ERROR) << "avformat_seek_file failed to seek to position "<<seek_target << " seekByBytes="<<seekByBytes;
             }
 
@@ -437,24 +433,19 @@ public:
 								return false;
                             }
                         }
-						//pFrame->linesize[0]=986;
-					//	pFrame->linesize[1]=0;
-						//pFrame->linesize[1]/=2;
-					//	pFrame->linesize[2]/=2;
+
                         int ret = sws_scale(img_convert_ctx, pFrame->data, pFrame->linesize, 0, pCodecCtx->height, pFrameRGB->data, pFrameRGB->linesize);
-                        int64_t pts = pFrame->pts;
-						//saveFramePPM(pFrameRGB, pCodecCtx->width, pCodecCtx->height,rand()%100);
-                        // Save the frame to disk
-                        currentFrame_ = new AvcodecVideoFrame(pFrameRGB, pFrameRGB->data[0],
-                                                              /*pFrameRGB->linesize[0]*pCodecCtx->height*//*pCodecCtx->width * pCodecCtx->height *3*/numBytes, display_time,pCodecCtx->width, pCodecCtx->height);
-                        /*if ( i < numOfFrames ) {
-                            //SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height, i, headerlen,timestamp_to_str(target_frame,ss.den),cb, display_time);
-                        }*/
+						 int64_t display_time =    (double)av_rescale_q(pFrame->pkt_pts, pFormatCtx->streams[videoStream]->time_base, rat)/ (double)AV_TIME_BASE; 
+						 //pFrame->pkt_pts/ (double)AV_TIME_BASE;
+						 if ( display_time <= 0 ) {
+							 display_time = (double)time/ (double)AV_TIME_BASE;
+						 }
+							 
+
+						
+                        currentFrame_ = new AvcodecVideoFrame(pFrameRGB, pFrameRGB->data[0],numBytes, display_time,pCodecCtx->width, pCodecCtx->height);
 						av_free_packet(&packet);
                         break;
-                    }
-                    if(NeedStop) {
-                      //  i = numOfFrames;
                     }
                 }
 
@@ -462,7 +453,6 @@ public:
                 av_free_packet(&packet);
                 memset( &packet, 0, sizeof( packet ) );
             }
-            //SendMessage(progressBar, PBM_SETPOS, (i + 1)*10, 0);
         }
         return true;
     }

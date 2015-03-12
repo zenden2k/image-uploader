@@ -201,7 +201,7 @@ public:
     bool Grab; // для избавления от дубликатов
     //CEvent ImageProcessEvent;
     HANDLE BufferEvent;
-    LONGLONG prev, step; // не используется
+    LONGLONG prev; // не используется
 
     // Fake out any COM ref counting
     STDMETHODIMP_(ULONG) AddRef();
@@ -579,9 +579,6 @@ bool DirectshowFrameGrabber::open(const Utf8String& fileName) {
     duration_ = duration;
 
     int NumOfFrames = 1;
-    LONGLONG step = duration / NumOfFrames;
-
-    d_ptr->CB.step = step;
     d_ptr->CB.directShowPrivate = d_ptr;
     d_ptr->pControl = d_ptr->pGraph;
     d_ptr->pEvent = d_ptr->pGraph;
@@ -612,7 +609,7 @@ bool DirectshowFrameGrabber::seek(int64_t time) {
         }
         // set position
 
-        REFERENCE_TIME Start = /*(i + 1) * step - step*/ time / 5 * 3; // **/(duration/NUM_FRAMES_TO_GRAB);//** UNITS*40*/;
+        REFERENCE_TIME Start = /*(i + 1) * step - step*/ time /*/ 5 * 3*/; // **/(duration/NUM_FRAMES_TO_GRAB);//** UNITS*40*/;
         hr = d_ptr->pGrabber->SetOneShot( TRUE );
         hr = d_ptr->pSeeking->SetPositions( &Start, AM_SEEKING_AbsolutePositioning | AM_SEEKING_SeekToKeyFrame, 0, AM_SEEKING_NoPositioning);
 		if(FAILED(hr)) {

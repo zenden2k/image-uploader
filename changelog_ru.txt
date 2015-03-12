@@ -4,35 +4,35 @@
 
 -v1.3.0
 build 4220
-[~] Complete refactoring of video grabber module, it has been moved to the core
-[+] Unicode file names support (non-current locale) for FFmpeg
-[~] FFmpeg library has been updated to the last version 2.6 (fixed broken H264 support)
-[~] Fixed producing distorted images while grabbing images from video with dimensions not divisible by 4 (FFmpeg)
-[~] Fixed producing incomplete frame count (DirectShow)
-[~] Modified program's icon, added full sized icon (256x256) for modern Windows versions
-[+] Added HTTP error logging in the network client module (workaround for Squirrel scripts which do not check HTTP response code after completed request)
-[+] Logging line number and column for compilation error of Squirrel scripts
-[+] Save user's servers in user application data directory instead of Common App Data
-[~] Updated turkish translation
-[~] Disabled editing of default thumbnail templates
+[~] Полный рефакторинг модуля извлечения кадров из видеофайлов
+[+] Полная поддержка уникодных имен при использовании бибилотеки FFmpeg
+[~] Библиотека FFmpeg была обновлена до последней версии 2.6 (исправлена поддержка H264)
+[~] Исправлено создание искаженных изображений при извлечении кадроз из видео с размерами не кратными четырем (FFmpeg)
+[~] Исправлено извлечение недостаточного количества кадров при использовании DirectShow
+[~] Модифицирована иконка программы, добавлена полноразмерная версия (256x256) для современных версий Windows 
+[+] Добавлен вывод HTTP ошибок в лог непосредственно в модуле сетевого ядра (актуально для скриптов Squirrel, которые не всегда проверяют код ответа HTTP)
+[+] Логгирование номера строки и колонки при ошибки компиляции Squirrel скрипта
+[~] Сохранять пользовательские сервера в директории пользователя а не в  Common App Data
+[~] Обновлен турецкий перевод
+[~] Отключено редактирование стандартных шаблонов миниатюр (теперь нужно делать копию)
 
 build 4217:
 [~] Fixed SSL certificate for Flickr
 
 build 4215:
-[+] Now it is possible to choose servers in the settings dialog (for images, other file types, for "tray/hotkey" screenshots, url shortening server)
-[+] Multiple accounts support
-[+] Multiple folders (albums) support
-[+] Now it is possible to perform beforehand authentication directly in the login dialog (for servers with OAuth authentication, for ex. Picasa, Yandex, Flickr)
-[+] Explorer's context menu custom user entries
-[+] Scripting API changes: added SimpleXML class, ParseJSON/ToJSON functions, multiple file functions 
-[+] Added quick setup dialog (shown at first run)
-[+] It's possible to draw horizontal and vertical lines with shift key holded
-[~] Disable editing and storing password for servers which do not need password (servers with OAuth authentication, for ex. Picasa, Yandex, Flickr)
-[~] Documentation update (added Scripting API docs)
-[~] Documentation now is shipped with program
-[~] Show server favicons in the popup menu in Windows XP
-[~] Unicode filename support for FFmpeg
+[+] Теперь можно выбирать сервера в окне настроек (отдельно для картинок, других типов файлов, для скриншотов из трея (или по горячей клавише), сервер для сокращения ссылок) 
+[+] Поддержка множества аккаунтов на одном сервере 
+[+] Теперь можно авторизоваться прямо в диалоговом окне ввода пароля (актуально для серверов с OAuth2 аутентификацией, напр. Picasa, Yandex) 
+[+] Добавление пользовательских пунктов в контекстное меню проводника Windows 
+[+] Диалог добавления FTP сервера 
+[+] Добавление локальной папки как сервера 
+[+] Добавлено диалоговое окно быстрой настройки (отображается при первом запуске при чистой установке) 
+[+] Теперь можно рисовать горизонтальные и вертикальные линии при зажатом Shift на скриншоте 
+[+] Изменения в API скриптов: добавлен класс SimpleXML, функции ParseJSON/ToJSON functions, некоторые файловые функции 
+[~] Отключено редактирование и хранение пароля для серверов, которым он не требуется (серверы с OAuth2 аутентификацией, напр. Picasa, Yandex) 
+[~] Обновлена документация (добавлена документация по API squirrel скриптов) 
+[~] Теперь документация поставляется вместе с программой 
+[~] Показывать значки серверов в выпадающем меню в Windows XP 
 
 -v1.2.7 build 4185
 [~] Fixed drag-n-drop in Windows 8+
@@ -67,22 +67,7 @@ build 4215:
 [C] Optimizing disk usage
 
 -v.1.2.5 build 3239
-[+] Auto-updates from server
-[+] Now Image Uploader uses libcurl as network core  instead of WinInet library
-[+] SOCKS5 proxy support
-[+] Squirrel scripting support
-[+] FTP support (via Squirrel script)
-[+] Remote folder (or album) selection, creating and modifying
-[+] Information about media files can be displayed on image
-[+] Farsi language translation (by Hessam Mohamadi)
-[-] Internet Explorer's cookies support is not available
-[C] Settings.xml  is stored in Data folder
-[C] "Data" directory contents now can be stored in Application Data subfolder
-[F] Browse for Folders dialog is now resizable
-[F] Template.txt now is turn off on "Simple links" tab
-[F] Incredible bug concerning JPEG image quality
 
-[RU]
 [+] Автообновления с сервера
 [+] Теперь Image Uploader использует libcurl вместо ядра internet explorer
 [+] Поддержка авторизации SOCKS5 прокси

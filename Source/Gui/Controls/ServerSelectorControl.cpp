@@ -100,6 +100,7 @@ void CServerSelectorControl::setServerProfile(ServerProfile serverProfile) {
 	} else {
 		serverComboBox_.SetCurSel(comboboxItemIndex);
 	}
+	previousSelectedServerIndex = comboboxItemIndex;
 	updateInfoLabel();
 }
 

@@ -58,10 +58,20 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 	CString memoText;
 	memoText += TR("Благодарности:") + CString("\r\n\r\n");
+
+	memoText += TR("Переводчикам:")+ CString("\r\n");
+
+	CString translatorName = TR("translator_name");
+	if ( translatorName == "translator_name") {
+		translatorName.Empty();
+	}
+	if ( !translatorName.IsEmpty() ) {
+		memoText += translatorName + " – " + Lang.GetLanguageName() + "\r\n";
+	}
+	memoText += L"Mishunika, Adrianis, \r\nHessam Mohamadi, ozzii.translate@***.com\r\n\r\n";
+
 	memoText += TR("Бета-тестерам:")+ CString("\r\n");
 	memoText += L"Graf, CKA3O4H1K\r\n\r\n";
-	memoText += TR("Переводчикам:")+ CString("\r\n");
-	memoText += L"Mishunika, Adrianis, \r\nHessam Mohamadi, ozzii.translate@***.com\r\n\r\n";
 
 	memoText += L"Thanks to the authors of the following open-source libraries:\r\n\r\n";
  
