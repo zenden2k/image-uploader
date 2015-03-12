@@ -110,7 +110,10 @@ int NetworkManager::ProgressFunc(void *clientp, double dltotal, double dlnow, do
 	NetworkManager *nm = reinterpret_cast<NetworkManager*>(clientp);
 	if(nm && nm->m_progressCallbackFunc)
 	{
-		if(ultotal<=0 && nm->m_CurrentFileSize>0 && nm->m_currentActionType == atUpload)
+		if  (nm->chunkOffset_>=0 && nm->chunkSize_>0 && nm->m_currentActionType == atUpload) {
+			ultotal = nm->m_CurrentFileSize;
+			ulnow = nm->chunkOffset_ + ulnow;
+		} else if( ((ultotal<=0 && nm->m_CurrentFileSize>0)) && nm->m_currentActionType == atUpload)
 			ultotal = double(nm->m_CurrentFileSize);
 		return nm->m_progressCallbackFunc(nm->m_progressData, dltotal, dlnow, ultotal, ulnow);
 	}
@@ -156,6 +159,8 @@ NetworkManager::NetworkManager(void)
 	_mutex.release();
 #endif
 	m_hOutFile = 0;
+	chunkOffset_ = -1;
+	chunkSize_ = -1;
 	chunk_ = 0;
 	m_CurrentFileSize = -1;
 	m_uploadingFile = NULL;
@@ -413,7 +418,7 @@ void NetworkManager::private_checkResponse()
 		return;
 	}
 	int code = responseCode();
-	if ( !code || (code>= 400 && code<=499) ) {
+	if ( ( !code || (code>= 400 && code<=499)) && errorString() != "Callback aborted" ) {
 		LOG(ERROR) << "Request to the URL '"<<m_url<<"' failed. \r\nResponse code: "<<code<<"\r\n"<<errorString()<<"\r\n"<<internalBuffer;
 	}
 }
@@ -546,6 +551,8 @@ void NetworkManager::private_cleanup_after()
 
 	m_uploadData = "";
 	m_uploadingFile = NULL;
+	chunkOffset_ = -1;
+	chunkSize_ = -1;
 	enableResponseCodeChecking_ = true;
 	if(chunk_)
 	{
@@ -588,10 +595,17 @@ bool NetworkManager::doUpload(const NString& fileName, const NString &data)
 		{
 			return false; /* can't continue */
 		}
-		/* to get the file size */
 		m_CurrentFileSize = IuCoreUtils::getFileSize(fileName);
+		m_currentUploadDataSize = m_CurrentFileSize;
 		if(m_CurrentFileSize < 0) 
 			return false;
+		LOG(ERROR)<<"chunkSize_="<<chunkSize_<<" chunkOffset_="<<chunkOffset_;
+		if ( chunkSize_  >0 && chunkOffset_ >= 0 ) {
+			m_currentUploadDataSize = chunkSize_;
+			if ( fseek(m_uploadingFile, chunkOffset_, SEEK_SET)) {
+				LOG(ERROR) << "Cannot seek to offset " << chunkOffset_ << " in source file.";
+			}
+		} 
 		m_currentActionType = atUpload;
 	}
 	else
@@ -599,6 +613,7 @@ bool NetworkManager::doUpload(const NString& fileName, const NString &data)
 		m_nUploadDataOffset =0;
 		m_uploadData = data;
 		m_CurrentFileSize = data.length();
+		m_currentUploadDataSize = m_CurrentFileSize;
 		m_currentActionType = atPost;
 	}
 	curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, read_callback);
@@ -608,10 +623,10 @@ bool NetworkManager::doUpload(const NString& fileName, const NString &data)
 	curl_easy_setopt(curl_handle, CURLOPT_READDATA, this);
 	
 	if ( m_method != "PUT" ) {
-		addQueryHeader("Content-Length", IuCoreUtils::int64_tToString(m_CurrentFileSize));
+		addQueryHeader("Content-Length", IuCoreUtils::int64_tToString(m_currentUploadDataSize));
 	}
 	private_initTransfer();
-	curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, (curl_off_t)m_CurrentFileSize);
+	curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, (curl_off_t)m_currentUploadDataSize);
 	
 	curl_result = curl_easy_perform(curl_handle);
 	if(m_uploadingFile)
@@ -665,6 +680,16 @@ void NetworkManager::setOutputFile(const NString &str)
 void NetworkManager::setUploadBufferSize(const int size)
 {
 	m_UploadBufferSize = size;
+}
+
+void NetworkManager::setChunkOffset(double offset)
+{
+	chunkOffset_ = offset;
+}
+
+void NetworkManager::setChunkSize(double size)
+{
+	chunkSize_ = size;
 }
 
 const NString  NetworkManager::getCurlResultString()

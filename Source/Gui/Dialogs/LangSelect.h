@@ -55,7 +55,7 @@ class CLangSelect : public CDialogImpl<CLangSelect>
 		HANDLE findfile;
 		CMyImage LogoImage;
 
-		void SelectLang(LPTSTR Lang);
+		void SelectLang(LPCTSTR Lang);
 };
 
 

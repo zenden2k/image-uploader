@@ -38,6 +38,7 @@ class CLang
 		CString GetLanguageName();
 		CString getLanguage() const;
 		CString getLocale() const;
+		CString getLanguageFileNameForLocale(const CString& locale);
 	private:
 		struct TranslateListItem
 		{

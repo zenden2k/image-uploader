@@ -116,7 +116,7 @@ void CImageDownloaderDlg::OnDrawClipboard()
 	{
 		CString str;  
 		IU_GetClipboardText(str);
-		ParseBuffer(str, true);
+		ParseBuffer(str, false);
 		
 	}
 	//Sending WM_DRAWCLIPBOARD msg to the next window in the chain
@@ -186,6 +186,7 @@ void CImageDownloaderDlg::OnQueueFinished()
 	if(!m_InitialBuffer.IsEmpty())
 	{
 		EndDialog(0);
+		IU_CopyTextToClipboard("");
 		return;
 	}
 	::EnableWindow(GetDlgItem(IDOK),true);
@@ -243,8 +244,9 @@ void CImageDownloaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)
 	for(size_t i=0; i<links.size(); i++)
 	{
 		CString fileName = myExtractFileName(links[i]);
-		if((!OnlyImages && CString(GetFileExt(fileName)).IsEmpty()) || IsImage(fileName))
+		if( ((!OnlyImages && CString(GetFileExt(fileName)).IsEmpty()) || IsImage(fileName)) &&  text.Find(links[i]) == -1 ) {
 			text+=links[i]+_T("\r\n");
+		}
 	}
 	SetDlgItemText(IDC_FILEINFOEDIT, text);
 }

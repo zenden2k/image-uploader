@@ -2,6 +2,11 @@
 #
 # http://zenden.ws/imageuploader
 
+build xxxx
+[~] Fixed big file (>150 Mb) uploading to Dropbox (added chuncked uploading functions to scripting API)
+[+] Added swedish translation (thanks to Åke Engelbrektson)
+[+] Added more languages to installer. The language choosen in installer now is selected by default at program's startup.
+ 
 -v1.3.0
 build 4220
 [~] Complete refactoring of video grabber module, it has been moved to the core

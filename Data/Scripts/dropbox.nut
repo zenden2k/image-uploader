@@ -165,24 +165,90 @@ function msgBox(text) {
 	
 	return true;
 }
+
+function min(a,b) {
+	return a < b ? a : b;
+}
 function  UploadFile(FileName, options) {		
 
 	if (!Login() ) {
 		return 0;
 	}
-	
+	local url = null;
 	local userPath = ServerParams.getParam("UploadPath");
 	if ( userPath!="" && userPath[userPath.len()-1] != "/") {
 		userPath+= "/";
 	}
+	local chunkSize = (4*1024*1024).tofloat();
+	local fileSize = GetFileSize(FileName);
+	if ( fileSize < 0 ) {
+		_WriteLog("error","fileSize < 0 ");
+		return 0;
+	}
 	local path = "sandbox/" + userPath + ExtractFileName(FileName);
-	local url = "https://api-content.dropbox.com/1/files/" + path ;
-	local getParams = signRequest(url, oauth_token,oauth_token_secret);
+	if ( fileSize > 150000000 ) {
+		local chunkCount = ceil(fileSize / chunkSize);
+		local upload_id = null;
+		local offset = 0;
+		for(local i = 0; i < chunkCount; i++ ) {
+			for ( local j =0; j < 2; j++ ) {
+				try {
+					nm.setChunkOffset(offset.tofloat());
+				} catch ( ex ) {
+					_WriteLog("error", "Your Image Uploader version does not support chunked uploads for big files. \r\nPlease update to the latest version");
+					return 0;
+				}
+				
+				local chunkSize = min(chunkSize,fileSize.tofloat()-offset);
+				nm.setChunkSize(chunkSize);
+				url = "https://api-content.dropbox.com/1/chunked_upload?overwrite=false&offset="+offset ;
+				if ( upload_id ) {
+					url += "&upload_id="+nm.urlEncode(upload_id);
+				}
+				signRequest(url, oauth_token,oauth_token_secret);
+				nm.setUrl(url);
+				
+				nm.setMethod("PUT");
+				nm.doUpload(FileName,"");
+				if ( nm.responseCode() != 200 ) {
+					_WriteLog("warning","Chunk upload failed, offset="+offset+", size="+chunkSize+(j< 1? "Trying again..." : ""));
+					if ( nm.responseCode() == 403 ) {
+						_WriteLog("error","Upload failed. Access denied");
+						return 0;
+					}
+				} else {
+					local t = ParseJSON(nm.responseBody());
+					offset = t.offset;
+					upload_id = t.upload_id;
+					break;
+				}
+			}
+			//return 0;
+		}
+		if ( !upload_id ) {
+			_WriteLog("error","Upload failed");
+			return 0;
+		}
+		url = "https://api-content.dropbox.com/1/commit_chunked_upload/auto/" + path;
+		
+		nm.setUrl(url);
+		signRequest(url, oauth_token,oauth_token_secret);
+		nm.setMethod("POST");
+		nm.doPost("upload_id="+upload_id);
+		WriteLog("error",nm.responseBody());
+		if ( nm.responseCode() != 200 ) {
+			_WriteLog("error",nm.responseCode().tostring());
+		}
 
-	nm.setUrl(url);
-	nm.addQueryParamFile("file",FileName, ExtractFileName(FileName),"");
-	nm.addQueryParam("overwrite", "false");
-	nm.doUploadMultipartData();
+	} else {
+		url = "https://api-content.dropbox.com/1/files/" + path ;
+		local getParams = signRequest(url, oauth_token,oauth_token_secret);
+
+		nm.setUrl(url);
+		nm.addQueryParamFile("file",FileName, ExtractFileName(FileName),"");
+		nm.addQueryParam("overwrite", "false");
+		nm.doUploadMultipartData();
+	}
 
 	local data = nm.responseBody();
 
@@ -273,7 +339,7 @@ function unescape_json_string(data) {
 		else if(ch>=0x00000080 && ch<=0x000007FF)
 			tmp = format("%c%c",(((ch>>6)&0x1f)|0xc0),((ch&0x3f)|0x80));
 		else if(ch>=0x00000800 && ch<=0x0000FFFF)
-		   tmp= sprintf("%c%c%c",(((ch>>12)&0x0f)|0xe0),(((ch>>6)&0x3f)|0x80),((ch&0x3f)|0x80));
+		   tmp= format("%c%c%c",(((ch>>12)&0x0f)|0xe0),(((ch>>6)&0x3f)|0x80),((ch&0x3f)|0x80));
 			result = reg_replace( result, "\\u"+resultStr, tmp);
    
 	}

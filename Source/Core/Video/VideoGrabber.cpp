@@ -81,9 +81,6 @@ protected:
 	VideoGrabber* videoGrabber_;
 	AbstractFrameGrabber* currentGrabber_;
 	ZThread::Thread* thread_;
-	#if defined(_WIN32) && !defined(QT_VERSION)
-	ULONG_PTR gdiplusToken_;
-	#endif
 };
 
 VideoGrabber::VideoGrabber()

@@ -22,6 +22,7 @@
 #include "Func/Common.h"
 #include "Gui/GuiTools.h"
 #include <Func/WinUtils.h>
+#include <Func/Settings.h>
 
 // CLangSelect
 CLangSelect::CLangSelect()
@@ -91,15 +92,16 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 		return 0;
 	}
 
-	SendDlgItemMessage(IDC_LANGLIST, CB_SETCURSEL);
-
-	SelectLang(_T("English"));
-
-	if (GetUserDefaultLangID() == 0x419)
+	// FIXME: detect system language and select corresponding language file
+	if ( !Settings.Language.IsEmpty() ) {
+			SelectLang(Settings.Language);
+	} else  if (GetUserDefaultLangID() == 0x419) {
 		SelectLang(_T("Русский"));
-
-	else if (GetUserDefaultLangID() == 0x0418)
+	} else if (GetUserDefaultLangID() == 0x0418) {
 		SelectLang(_T("Romanian"));
+	} else {
+		SelectLang(_T("English"));
+	}
 
 	return 1;  // Разрешаем системе самостоятельно установить фокус ввода
 }
@@ -119,7 +121,7 @@ LRESULT CLangSelect::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 	return 0;
 }
 
-void CLangSelect::SelectLang(LPTSTR Lang)
+void CLangSelect::SelectLang(LPCTSTR Lang)
 {
 	int Index = SendDlgItemMessage(IDC_LANGLIST, CB_FINDSTRING, 0, (WPARAM)Lang);
 	if (Index < 0)

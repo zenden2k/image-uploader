@@ -21,6 +21,7 @@
 #include "langclass.h"
 #include "atlheaders.h"
 #include "myutils.h"
+#include <Func/WinUtils.h>
 
 CLang Lang;
 
@@ -113,7 +114,7 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
 			Name[lstrlen(Name) - 1] = 0;
 
 		CString RepText = Text;
-		RepText.Replace(_T("\\n"), _T("\n"));
+		RepText.Replace(_T("\\n"), _T("\r\n"));
 
 		int NameLen = lstrlen(Name);
 		int TextLen = lstrlen(RepText);
@@ -131,7 +132,7 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
 
 		if ( Name == CString("language") ) {
 			locale = pText;
-			language = locale.Left(locale.ReverseFind('_'));
+			language = locale.Left(locale.Find('_'));
 			continue;
 		};
 
@@ -175,6 +176,53 @@ CString CLang::getLanguage() const
 CString CLang::getLocale() const
 {
 	return locale;
+}
+
+CString CLang::getLanguageFileNameForLocale(const CString& locale)
+{
+	std::vector<CString> list;
+	WinUtils::GetFolderFileList(list, m_Directory, _T("*.lng"));
+	CString foundName;
+
+	for(size_t i=0; i<list.size(); i++)
+	{
+		FILE* f = _tfopen(m_Directory + list[i], _T("rb"));
+		if (!f) {
+			continue;
+		}
+		fseek(f, 2, 0); // skipping BOM
+		TCHAR buffer[1024];
+
+		while (!feof(f))
+		{
+			memset(buffer, 0, sizeof(buffer));
+			fgetline(buffer, 1024, f);
+			CString buf = buffer;
+			if (buf.GetLength() && buf[0] == _T('#')) {
+				continue;
+			}
+			
+			int equalSignPos = buf.Find(L'=');
+			CString key = buf.Left(equalSignPos);
+			key.TrimRight(L" ");
+			CString value = buf.Right(buf.GetLength() - equalSignPos-1);
+			value.TrimLeft(L" ");
+			if ( key == "language" ) {
+				if ( value == locale ) {
+					foundName =  list[i].Left(list[i].ReverseFind('.'));
+					fclose(f);
+					return foundName;
+				}
+				CString lang = value.Left(value.Find('_'));
+				if (  lang == locale ) {
+					foundName =  list[i].Left(list[i].ReverseFind('.'));
+					break;
+				}
+			}
+		}
+		fclose(f);
+	}
+	return foundName;
 }
 
 CLang::~CLang()

@@ -37,8 +37,14 @@ Compression=lzma/max
 SolidCompression=yes
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
-Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
+Name: "en"; MessagesFile: "compiler:Default.isl"
+Name: "ru"; MessagesFile: "compiler:Languages\Russian.isl"
+Name: "hr"; MessagesFile: "Languages\Croatian.isl"
+Name: "ro"; MessagesFile: "Languages\Romanian.isl"
+Name: "fa"; MessagesFile: "Languages\Farsi.isl"
+Name: "sr"; MessagesFile: "Languages\SerbianCyrillic.isl"
+Name: "sv"; MessagesFile: "Languages\Swedish.isl"
+Name: "tr"; MessagesFile: "Languages\Turkish.isl"
 
 [Registry]
 Root: HKLM; Subkey: "Software\Zenden.ws\Image Uploader"; ValueType: string; ValueName: "DataPath"; ValueData: "{code:GetDataFolder}\Image Uploader\"; 
@@ -94,7 +100,7 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: 
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Parameters: "/language={language}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallRun]
 Filename: "{app}\image uploader.exe"; Parameters: "/uninstall"; Flags: runascurrentuser
