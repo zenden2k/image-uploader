@@ -128,7 +128,7 @@
 
 
             $k = array_search( $hash, $hashes );
-            if ( !( $k === false ) ) {
+            if ( $hash === 'language' || !( $k === false ) ) {
                 fwrite( $file, $item . "\r\0\n\0" );
                 unset( $hashes[$k] );
                 unset( $stringAr[$k] );

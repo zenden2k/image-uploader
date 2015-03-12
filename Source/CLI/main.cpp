@@ -31,6 +31,7 @@
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Core/Utils/StringUtils.h"
 #include "Func/Settings.h"
+#include <Core/Logging.h>
 #ifdef _WIN32
 #include "Func/UpdatePackage.h"
 #include <fcntl.h>
@@ -42,7 +43,7 @@
 #endif
 #include "versioninfo.h"
 
-#define IU_CLI_VER "0.2.1"
+#define IU_CLI_VER "0.2.2"
 #ifdef _WIN32
 std::string dataFolder = "Data/";
 #else
@@ -230,7 +231,8 @@ void PrintHelp()
    std::cerr<<" -ct <TableOfThumbnails|ClickableThumbnails|Images|Links>"<<std::endl;
    std::cerr<<" -fl <folder_id> ID of remote folder (supported by some servers)\r\n"
 	   << "     Note that this is not the folder\'s name! \r\n"
-	   << "     How to obtain it: open file 'servers.xml' in text editor, \r\n"
+	   << "     How to obtain it: open Image Uploader GUI version's\r\n"
+	   << "     configuration file 'settings.xml' in text editor, \r\n"
 	   << "     find your server under 'ServersParams' node,\r\n"
 	   << "     and copy value of the '_FolderID' attribute"<<
 	   std::endl;
@@ -441,7 +443,7 @@ CAbstractUploadEngine* getUploadEngineByData(CUploadEngineData * data,std::strin
 {
 	ServerSettingsStruct& s = Settings.ServersSettings[data->Name][login];
 	
-	printf("Login: %s", login.c_str());
+	//printf("Login: %s", login.c_str());
 	s.authData.Password = password;
 	s.authData.Login = login;
 	if(!login.empty())
@@ -610,6 +612,11 @@ char ** convertArgv(int argc, _TCHAR* argvW[]) {
 
 int _tmain(int argc, _TCHAR* argvW[]) {	
 	char **argv = convertArgv(argc, argvW);
+	FLAGS_logtostderr = true;
+	//google::SetLogDestination(google::GLOG_INFO,"d:/" );
+
+	google::InitGoogleLogging(argv[0]);
+
 	/*UINT oldcp = GetConsoleOutputCP();
 	SetConsoleOutputCP(CP_UTF8);*/
 	//_setmode(_fileno(stdout), _O_U16TEXT);

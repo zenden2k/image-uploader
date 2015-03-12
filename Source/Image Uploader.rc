@@ -275,8 +275,8 @@ BEGIN
     LTEXT           "http://zenden.ws/imageuploader",IDC_SITELINK,95,84,114,8
     CTEXT           "image processing and uploading tool",IDC_STATIC,80,38,149,8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,15,60,221,1
-    LTEXT           "http://code.google.com/p/image-uploader",IDC_GOOGLECODELINK,95,98,146,8
-    LTEXT           "SVN:",IDC_STATIC,31,98,16,8
+    LTEXT           "https://github.com/zenden2k/image-uploader",IDC_GOOGLECODELINK,95,98,163,8
+    LTEXT           "Git:",IDC_STATIC,31,98,16,8
     LTEXT           "Author:",IDC_STATIC,31,67,26,8
     LTEXT           "zenden (zenden2k@gmail.com)",IDC_STATIC,99,67,134,8
     CTEXT           "Found a bug?",IDC_FOUNDABUG,12,111,227,8

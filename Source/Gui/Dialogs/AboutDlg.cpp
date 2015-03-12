@@ -50,7 +50,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	m_ReportBugLink.SubclassWindow(GetDlgItem(IDC_FOUNDABUG));
 	m_ReportBugLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER; 
 	m_ReportBugLink.SetLabel(TR("Нашли ошибку? Сообщите автору"));
-	m_ReportBugLink.SetHyperLink(_T("http://code.google.com/p/image-uploader/issues/entry"));
+	m_ReportBugLink.SetHyperLink(_T("https://github.com/zenden2k/image-uploader/issues"));
 
 	m_Documentation.SubclassWindow(GetDlgItem(IDC_DOCUMENTATION));
 	m_Documentation.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
