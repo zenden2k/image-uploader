@@ -78,7 +78,7 @@ LRESULT CAddFtpServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
 	CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDITBOX);
 
 	
-	ServerListManager slm(IuCoreUtils::WstringToUtf8((LPCTSTR)(IuCommonFunctions::GetDataFolder()+"Servers\\")), uploadEngineList_, Settings.ServersSettings);
+	ServerListManager slm(Settings.SettingsFolder + "\\Servers\\", uploadEngineList_, Settings.ServersSettings);
 	if ( slm.addFtpServer(IuCoreUtils::WstringToUtf8((LPCTSTR)connectionName), IuCoreUtils::WstringToUtf8((LPCTSTR)serverName), IuCoreUtils::WstringToUtf8((LPCTSTR)login), 
 		IuCoreUtils::WstringToUtf8((LPCTSTR)password), IuCoreUtils::WstringToUtf8((LPCTSTR)remoteDirectory), IuCoreUtils::WstringToUtf8((LPCTSTR)downloadUrl)) ) {
 			createdServerName_ = IuCoreUtils::Utf8ToWstring(slm.createdServerName()).c_str();

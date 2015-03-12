@@ -119,7 +119,9 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
 	LPMEASUREITEMSTRUCT lpmis = (LPMEASUREITEMSTRUCT) lParam;
 	
 	LogListBoxItem * item=(LogListBoxItem *)lpmis->itemData;
-	if(!item) return 0;
+	if(!item) {
+		return 0;
+	}
 	HDC dc = GetDC();
 	SelectObject(dc, NormalFont);
 
@@ -150,7 +152,7 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
 	CString str;
 	lpmis->itemWidth = ItemWidth;
 	lpmis->itemHeight = LLB_VertMargin + item->TitleHeight + LLB_VertDivider + item->TextHeight + (item->InfoHeight?(LLB_VertDivider + item->InfoHeight):0) + LLB_VertMargin+2;
-	lpmis->itemHeight = max(lpmis->itemHeight, 35);
+	lpmis->itemHeight = max(lpmis->itemHeight, 70);
 	ReleaseDC(dc);
 	return 0;
 }

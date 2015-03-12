@@ -1,6 +1,5 @@
 ﻿login <- ""; 
 
-
 function regex_simple(data,regStr,start)
 {
 	local ex = regexp(regStr);

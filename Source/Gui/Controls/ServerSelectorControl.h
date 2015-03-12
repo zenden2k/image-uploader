@@ -106,6 +106,7 @@ private:
 	IconBitmapUtils* iconBitmapUtils_;
 	static const char kAddFtpServer[];
 	static const char kAddDirectoryAsServer[];
+	int previousSelectedServerIndex;
 
 };
 

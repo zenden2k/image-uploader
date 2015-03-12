@@ -141,6 +141,8 @@ class UpdateGenerator {
 
         echo '<pre>'.htmlspecialchars( $dom->saveXML()).'</pre>';
         $dom->save("$packageName/$packageName.xml");
+        $dom->save(SRCDIR."Data/Update/$packageName.xml");
+        $dom->save("../../Data/Update/$packageName.xml");
 
     }
 }

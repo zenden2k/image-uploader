@@ -51,6 +51,8 @@ displayname - отображаемое имя(то имя, которое пер
 <code class="f">doUploadMultipartData()</code>
 Посылает запрос по адресу, установленному функцией <code>setUrl</code>
  в виде параметров и файлов, закодированных в формате MULTIPART/FORM-DATA. Аналогичен отправке формы с файлом с веб-страницы.
+<code class="f">enableResponseCodeChecking(<u>bool</u> <i>enable</i>)<span>version >= 1.3.0</span></code>
+Включает логгирование HTTP ошибок.
 <code class="f"><u>string</u> errorString()</code>
 Возвращает текст ошибки для последнего выполненного запроса.(например, <code>HTTP 404 not found</code>).
 <code class="f"><u>string</u> responseBody()</code>

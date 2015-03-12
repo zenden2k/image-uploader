@@ -48,6 +48,10 @@ bool IsProcessRunning(DWORD pid) {
 
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
+	
+	LogWindow.Create(0);
+	//LOG(WARNING) << WinUtils::GetAppFolder();
+	LOG(WARNING) << "Test string\0";
 	IuCommonFunctions::CreateTempFolder();
 	
 	std::vector<CString> fileList;
@@ -104,7 +108,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 			dlgMain.m_hWnd = 0;
 			return 0;
 	}
-	LogWindow.Create(0);
+	
 	if(bCreateFloatingWindow) {
 		floatWnd.CreateTrayIcon();
 	}	
@@ -158,7 +162,10 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	FLAGS_logtostderr = true;
 	//google::SetLogDestination(google::GLOG_INFO,"d:/" );
 	
-
+	google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
+	MyLogSink logSink;
+	google::AddLogSink(&logSink);
+	LOG(WARNING) << "Test string11\0";
 	//LOG(WARNING) << "This is WARNING";
 	//LOG(ERROR) << "This is Error";
 	//LOG(ERROR) << "This is Error " <<lpstrCmdLine<<1<<(int64_t)10;
@@ -176,9 +183,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 			FLAGS_alsologtostderr = true;
 		}
 	}
-	google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
-	MyLogSink logSink;
-	google::AddLogSink(&logSink);
+
 		//LOG(INFO) << "This is INFO";
 
 	// for Windows Vista and later versions
@@ -206,6 +211,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	//for (int i = 0; i < 1000000; i++)
 		/*int *ptr = new int[100000000];
 		ptr[165654] =36;*/
-
 	return 0;
 }

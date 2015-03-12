@@ -10,6 +10,8 @@ using namespace Gdiplus;
 GdiPlusImage::GdiPlusImage() {
 	bm_ = NULL;
 	data_ = 0;
+	width_ = 0;
+	height_ = 0;
 }
 
 
@@ -74,12 +76,14 @@ bool GdiPlusImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t
 	if ( dt == AbstractImage::dfRGB888 )  {
 		int lineSizeInBytes = reinterpret_cast<int>(parameter);
 //		int dataSize = dataSize;
-		size_t newDataSize = dataSize+77/**2*//*+100000*/;
+		size_t newLineSize = width * 3;
+		newLineSize = ((newLineSize + 3) & ~3);
+		size_t newDataSize = /*dataSize*2/**2*//*+100000**/newLineSize * height;
 		data_ = new uint8_t[newDataSize];
 		for ( int y=height-1; y>=0; y--) {
-			memcpy(data_+(height-y-1)*lineSizeInBytes, data+y*lineSizeInBytes, lineSizeInBytes );
+			memcpy(data_+(height-y-1)*newLineSize, data+y*lineSizeInBytes, width * 3 );
 		}
-		bool res =  loadFromRgb(width, height,data_,  dataSize);
+		bool res =  loadFromRgb(/*width*/width, height,data_,  newDataSize);
 		return res;
 
 	} else if ( dt == AbstractImage::dfBitmapRgb ) {
@@ -97,29 +101,20 @@ Gdiplus::Bitmap* GdiPlusImage::getBitmap() const
 
 bool GdiPlusImage::loadFromRgb(int width, int height, uint8_t* data, size_t dataSize)
 {
-	/*FILE* f = fopen("D:\\test.bmp", "wb");
-	fwrite(data,dataSize,1, f);
-	fclose(f);*/
-	
-	//DWORD Written = 0;
-
-	// Write the bitmap format
-
 	BITMAPINFOHEADER bih;
-	
 	memset( &bih, 0, sizeof(bih) );
 	bih.biSize = sizeof(bih);
 	bih.biWidth = width;
 	bih.biHeight = height;
 	bih.biPlanes = 1;
 	bih.biBitCount = 24;
-	bih.biSizeImage = dataSize;
 
 	BITMAPINFO bi;
 	memset( &bi, 0, sizeof(bi) );
 	bi.bmiHeader = bih;
-	LOG(INFO) << "sizeof(bi) "<<sizeof(bi);
+
 	bm_ = new Gdiplus::Bitmap(&bi, data);
+
 	if ( bm_->GetLastStatus() == Ok ) {
 		width_ = width;
 		height_ = height;

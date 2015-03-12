@@ -32,6 +32,7 @@
 #include <Gui/Dialogs/LoginDlg.h>
 #include <Gui/Dialogs/AddFtpServerDialog.h>
 #include <Gui/Dialogs/AddDirectoryServerDialog.h>
+#include <Core/Logging.h>
 
 const char CServerSelectorControl::kAddFtpServer[]=("<add_ftp_server>");
 const char CServerSelectorControl::kAddDirectoryAsServer[]=("<add_directory_as_server>");
@@ -43,6 +44,7 @@ CServerSelectorControl::CServerSelectorControl(bool defaultServer)
 		showImageProcessingParamsLink_ = true;
 		defaultServer_ = defaultServer;
 		iconBitmapUtils_ = new IconBitmapUtils();
+		previousSelectedServerIndex = -1;
 }
 
 CServerSelectorControl::~CServerSelectorControl()
@@ -166,6 +168,10 @@ void CServerSelectorControl::serverChanged() {
 				serverProfile_.clearFolderInfo();
 				notifyServerListChanged();
 
+			} else {
+				serverComboBox_.SetCurSel(previousSelectedServerIndex);
+				serverChanged();
+				return;
 			}
 		} else if (serverName == kAddDirectoryAsServer  ) {
 			CAddDirectoryServerDialog dlg(_EngineList);
@@ -175,6 +181,10 @@ void CServerSelectorControl::serverChanged() {
 				serverProfile_.setProfileName("");
 				serverProfile_.clearFolderInfo();
 				notifyServerListChanged();
+			} else {
+				serverComboBox_.SetCurSel(previousSelectedServerIndex);
+				serverChanged();
+				return;
 			}
 		} else if ( serverName != CMyEngineList::DefaultServer && serverName != CMyEngineList::RandomServer ) {
 			uploadEngineData = _EngineList->byName( serverNameW );
@@ -216,7 +226,7 @@ void CServerSelectorControl::serverChanged() {
 	
 		
 	}
-
+	previousSelectedServerIndex = serverComboElementIndex;
 	notifyChange();
 
 	updateInfoLabel();

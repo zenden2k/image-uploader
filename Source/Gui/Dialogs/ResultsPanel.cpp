@@ -115,7 +115,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
 	RECT rc = {0,0,100,24};
 	GetClientRect(&rc);
-	rc.top = rc.bottom - 26;
+	rc.top = rc.bottom - GuiTools::dlgY(13);
 	rc.bottom-= GuiTools::dlgY(1);
 	rc.left = GuiTools::dlgX(3);
 	rc.right -= GuiTools::dlgX(3);

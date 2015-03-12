@@ -75,6 +75,7 @@ class NetworkManager
 		int getCurlResult();
 		CURL* getCurlHandle();
 		static void Uninitialize();
+		void enableResponseCodeChecking(bool enable);
 	private:
 		enum CallBackFuncType{funcTypeBody,funcTypeHeader};
 
@@ -138,6 +139,7 @@ class NetworkManager
 		char m_errorBuffer[CURL_ERROR_SIZE];;
 		std::string m_method;
 		struct curl_slist * chunk_;
+		bool enableResponseCodeChecking_;
                #ifndef IU_CLI
 		static ZThread::Mutex _mutex;
 #endif

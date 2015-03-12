@@ -134,6 +134,7 @@ NetworkManager::NetworkManager(void)
 #endif
 	if(!_curl_init)
 	{
+		enableResponseCodeChecking_ = true;
 		curl_global_init(CURL_GLOBAL_ALL);
 		curl_version_info_data * infoData = curl_version_info(CURLVERSION_NOW);
 		_is_openssl =  strstr(infoData->ssl_version, "WinSSL")!=infoData->ssl_version;
@@ -408,6 +409,9 @@ void NetworkManager::private_initTransfer()
 
 void NetworkManager::private_checkResponse()
 {
+	if ( !enableResponseCodeChecking_ )  {
+		return;
+	}
 	int code = responseCode();
 	if ( !code || (code>= 400 && code<=499) ) {
 		LOG(ERROR) << "Request to the URL '"<<m_url<<"' failed. \r\nResponse code: "<<code<<"\r\n"<<errorString()<<"\r\n"<<internalBuffer;
@@ -542,6 +546,7 @@ void NetworkManager::private_cleanup_after()
 
 	m_uploadData = "";
 	m_uploadingFile = NULL;
+	enableResponseCodeChecking_ = true;
 	if(chunk_)
 	{
 		curl_slist_free_all(chunk_);
@@ -679,6 +684,11 @@ void NetworkManager::Uninitialize()
 	}
 }
 
+
+void NetworkManager::enableResponseCodeChecking(bool enable)
+{
+	enableResponseCodeChecking_ = enable;
+}
 
 void NetworkManager::setCurlOption(int option, const NString &value) {
 	curl_easy_setopt(curl_handle, (CURLoption)option, value.c_str());

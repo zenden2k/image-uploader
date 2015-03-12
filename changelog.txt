@@ -3,11 +3,23 @@
 # http://zenden.ws/imageuploader
 
 -v1.3.0
-[+] Now it is possible to choose servers (for images, other file types, for "tray/hotkey" screenshots, url shortening server)
- in settings dialog
+[~] Complete refactoring of video grabber module, it has been moved to the core
+[+] Unicode file names support (non-current locale) for FFmpeg
+[~] FFmpeg library has been updated to the last version 2.6 (fixed broken H264 support)
+[~] Fixed producing distorted images while grabbing images from video with dimensions not divisible by 4 (FFmpeg)
+[~] Fixed producing incomplete frame count (DirectShow)
+[~] Modified program's icon, added full sized icon (256x256) for modern Windows versions
+[+] Added HTTP error logging in the network client module (workaround for Squirrel scripts which do not check HTTP response code after completed request)
+[+] Logging line number and column for compilation error of Squirrel scripts
+
+build 4217:
+[~] Fixed SSL certificate for Flickr
+
+build 4215:
+[+] Now it is possible to choose servers in the settings dialog (for images, other file types, for "tray/hotkey" screenshots, url shortening server)
 [+] Multiple accounts support
 [+] Multiple folders (albums) support
-[+] Now it is possible to perform beforehand authentication directly from the login dialog (for servers with OAuth authentication, for ex. Picasa, Yandex, Flickr)
+[+] Now it is possible to perform beforehand authentication directly in the login dialog (for servers with OAuth authentication, for ex. Picasa, Yandex, Flickr)
 [+] Explorer's context menu custom user entries
 [+] Scripting API changes: added SimpleXML class, ParseJSON/ToJSON functions, multiple file functions 
 [+] Added quick setup dialog (shown at first run)

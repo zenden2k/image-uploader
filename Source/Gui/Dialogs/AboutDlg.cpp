@@ -28,6 +28,7 @@
 #include "Gui/GuiTools.h"
 #include <Func/WinUtils.h>
 #include "Func/IuCommonFunctions.h"
+#include <libavutil/ffversion.h>
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	GuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
@@ -87,7 +88,11 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 	
 	memoText += TR("Libcurl version:")+ CString("\r\n");
-	memoText +=  IuCoreUtils::Utf8ToWstring( curl_version()).c_str() + CString("\r\n");
+	memoText +=  IuCoreUtils::Utf8ToWstring( curl_version()).c_str() + CString("\r\n\r\n");
+	if ( Settings.IsFFmpegAvailable() ) {
+		memoText += TR("FFmpeg version:")+ CString("\r\n");
+		memoText += FFMPEG_VERSION + CString("\r\n");
+	}
 
 	SetDlgItemText(IDC_MEMO, memoText);
 
