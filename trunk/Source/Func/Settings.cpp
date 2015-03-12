@@ -327,7 +327,7 @@ void CSettings::FindDataFolder()
 		return;
 	}
 
-	SettingsFolder =  IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(GetApplicationDataPath() + _T("\\Image Uploader\\")));
+	SettingsFolder =  IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(GetApplicationDataPath() + _T("Image Uploader\\")));
 	#if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
 	{
 		CRegistry Reg;
@@ -1284,10 +1284,7 @@ void CSettings::setFileServerID(int id)
 
 bool CSettings::IsFFmpegAvailable() {
 	CString appFolder = WinUtils::GetAppFolder();
-	return FileExists( appFolder + "avcodec-54.dll") 
-		 && FileExists( appFolder + "avformat-54.dll")
-		 && FileExists( appFolder + "avutil-52.dll")
-		 && FileExists( appFolder + "swscale-2.dll");
+	return FileExists( appFolder + "avcodec-56.dll");
 }
 
 CString CSettings::prepareVideoDialogFilters() {

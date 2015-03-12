@@ -68,6 +68,7 @@ Source: "..\Data\Favicons\*.ico"; DestDir: "{code:GetDataFolder}\Image Uploader\
 Source: "..\Data\Scripts\*.nut"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts"; Flags: ignoreversion
 Source: "..\Data\Update\iu_core.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
 Source: "..\Data\Update\iu_serversinfo.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
+Source: "..\Data\Update\iu_ffmpeg.xml"; DestDir: "{tmp}\iu_ffmpeg.xml"; Flags: ignoreversion
 Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Flags: ignoreversion
 Source: "unzip.exe"; DestDir: "{tmp}"; Flags: ignoreversion
 ;Flags: deleteafterinstall
@@ -140,7 +141,7 @@ begin
  
 
     ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/ffmpeg-1.2.12.zip', expandconstant('{tmp}\ffmpeg.zip'));
-     ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/iu_ffmpeg.xml', expandconstant('{tmp}\iu_ffmpeg.xml'));
+    // ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/iu_ffmpeg.xml', expandconstant('{tmp}\iu_ffmpeg.xml'));
 
     end;
     GetWindowsVersionEx(Version);

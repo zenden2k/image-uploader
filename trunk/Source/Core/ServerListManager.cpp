@@ -3,6 +3,7 @@
 #include <Core/Utils/SimpleXml.h>
 #include "UploadEngineList.h"
 #include <Core/Utils/StringUtils.h>
+#include <Core/Logging.h>
 
 ServerListManager::ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings): 
 	serversSettings_(serversSettings)
@@ -39,6 +40,12 @@ bool ServerListManager::addFtpServer(const std::string &name, const std::string 
 	resultNode.SetAttribute("DownloadUrlTemplate", "stub");
 
 	std::string outFile = serversDirectory_ + name + ".xml";
+	if ( !IuCoreUtils::DirectoryExists(serversDirectory_)) {
+		if (!IuCoreUtils::createDirectory(serversDirectory_)) {
+			LOG(ERROR) << "Cannot create directory " << serversDirectory_;
+			return false;
+		}
+	}
 	
 	bool res = xml.SaveToFile(outFile);
 	if ( !res ) {
@@ -85,6 +92,12 @@ bool ServerListManager::addDirectoryAsServer(const std::string &name, const std:
 	filename = IuStringUtils::Replace(filename," ","_");
 	filename = IuStringUtils::Replace(filename,"/","_");
 	std::string outFile = serversDirectory_ + filename + ".xml";
+	if ( !IuCoreUtils::DirectoryExists(serversDirectory_)) {
+		if (!IuCoreUtils::createDirectory(serversDirectory_)) {
+			LOG(ERROR) << "Cannot create directory " << serversDirectory_;
+			return false;
+		}
+	}
 
 	bool res = xml.SaveToFile(outFile);
 	if ( !res ) {

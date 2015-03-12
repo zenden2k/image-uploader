@@ -26,6 +26,7 @@
 #include "Core/Upload/DefaultUploadEngine.h"
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/StringUtils.h"
+#include <Core/Logging.h>
 
 bool compareEngines(const CUploadEngineData& elem1, const CUploadEngineData& elem2)
 {
@@ -40,6 +41,7 @@ CUploadEngineList::CUploadEngineList()
 
 bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::string, std::map <std::string, ServerSettingsStruct>>& serversSettings)
 {
+	//LOG(INFO) << "Loading servers file "<< filename;
 	SimpleXml xml;
 	if(!xml.LoadFromFile(filename))
 		return false;
@@ -76,6 +78,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 				if ( serversSettings[UE.Name].size() ) {
 					std::string hostname = serversSettings[UE.Name].begin()->second.getParam("hostname");
 					if ( hostname.empty() || hostname == "ftp.example.com" ) {
+						//LOG(WARNING) << "Skipping server  "<< UE.Name;
 						continue;
 					}
 				} else {
@@ -165,6 +168,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 			}
 			UE.SupportThumbnails = !UE.ThumbUrlTemplate.empty();
 			m_list.push_back(UE);
+			//LOG(INFO) << "Loading server  "<< UE.Name;
 		}
 
 	std::sort(m_list.begin(), m_list.end(), compareEngines );

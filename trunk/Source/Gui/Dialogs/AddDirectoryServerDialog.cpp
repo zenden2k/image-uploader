@@ -77,7 +77,7 @@ LRESULT CAddDirectoryServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND 
 	CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDITBOX);
 	bool addFileProtocol = GuiTools::GetCheck(m_hWnd, IDC_ADDFILEPROTOCOL);
 	
-	ServerListManager slm(IuCoreUtils::WstringToUtf8((LPCTSTR)(IuCommonFunctions::GetDataFolder()+"Servers\\")), uploadEngineList_, Settings.ServersSettings);
+	ServerListManager slm(Settings.SettingsFolder + "Servers\\", uploadEngineList_, Settings.ServersSettings);
 	if ( slm.addDirectoryAsServer(IuCoreUtils::WstringToUtf8((LPCTSTR)connectionName), IuCoreUtils::WstringToUtf8((LPCTSTR)directory), IuCoreUtils::WstringToUtf8((LPCTSTR)downloadUrl), addFileProtocol) ) {
 			createdServerName_ = IuCoreUtils::Utf8ToWstring(slm.createdServerName()).c_str();
 			EndDialog(wID);

@@ -3,7 +3,7 @@
 
 #include "AbstractFrameGrabber.h"
 
-struct DirectshowFrameGrabberPrivate;
+class DirectshowFrameGrabberPrivate;
 
 class DirectshowFrameGrabber : public AbstractFrameGrabber
 {

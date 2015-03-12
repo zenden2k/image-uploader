@@ -177,13 +177,32 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	}
 	iuPluginManager.setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
 	std::vector<CString> list;
-	CString serversFolder = IuCommonFunctions::GetDataFolder() + _T("\\Servers\\");
+	CString serversFolder = IuCommonFunctions::GetDataFolder() + _T("Servers\\");
 	WinUtils::GetFolderFileList(list, serversFolder, _T("*.xml"));
 
 	for(size_t i=0; i<list.size(); i++)
 	{
 		LoadUploadEngines(serversFolder+list[i], ErrorStr);
+		//MessageBox(list[i]);
 	}
+	list.clear();
+
+	CString userServersFolder = Utf8ToWCstring(Settings.SettingsFolder + "Servers\\");
+	//MessageBox(userServersFolder);
+	if ( userServersFolder != serversFolder) {
+		
+		WinUtils::GetFolderFileList(list, userServersFolder, _T("*.xml"));
+
+		for(size_t i=0; i<list.size(); i++)
+		{
+			//MessageBox(list[i]);
+			
+			LoadUploadEngines(userServersFolder+list[i], ErrorStr);
+		}
+	}
+
+
+
 	if ( Settings.urlShorteningServer.serverName().IsEmpty() ) {
 		CString defaultServerName = _T("is.gd");
 		CUploadEngineData * uploadEngineData = m_EngineList.byName(defaultServerName);

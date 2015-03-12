@@ -45,7 +45,7 @@
 #include <sstream>
 #include <Core/Utils/SimpleXml.h>
 #include <Core/Utils/StringUtils.h>
-
+#include <Core/Logging.h>
 #ifndef _WIN32
 #include <unistd.h>
 #endif
@@ -162,12 +162,18 @@ static void printFunc(HSQUIRRELVM v, const SQChar* s, ...)
 	va_end(vl);
 	// std::wstring text =  Utf8ToWstring(buffer);
 	squirrelOutput += buffer;
-	delete[] buffer;
+	delete[] buffer; 
 }
+
+void CompilerErrorHandler(HSQUIRRELVM,const SQChar * desc,const SQChar * source,SQInteger line,SQInteger column) {
+	LOG(ERROR) << "Script compilation failed\r\n"<<"File:  "<<source<<"\r\nLine:"<<line<<"   Column:"<<column<<"\r\n\r\n"<<desc;
+}
+
 
 void CScriptUploadEngine::InitScriptEngine()
 {
 	SquirrelVM::Init();
+	sq_setcompilererrorhandler(SquirrelVM::GetVMPtr(), CompilerErrorHandler);
 	SquirrelVM::PushRootTable();
 	sqstd_register_systemlib( SquirrelVM::GetVMPtr() );
 }
@@ -641,6 +647,7 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		func(&NetworkManager::setCurlOption, "setCurlOption").
 		func(&NetworkManager::setCurlOptionInt, "setCurlOptionInt").
 		func(&NetworkManager::doUploadMultipartData, "doUploadMultipartData").
+		func(&NetworkManager::enableResponseCodeChecking, "enableResponseCodeChecking").
 		func(&NetworkManager::setReferer, "setReferer");
 
 
@@ -757,7 +764,7 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 	}
 	catch (SquirrelError& e)
 	{
-		Log(ErrorInfo::mtError, "CScriptUploadEngine::Load\r\n" + std::string("Unable to load plugin: ") + e.desc);
+		Log(ErrorInfo::mtError, "CScriptUploadEngine::Load failed\r\n" + std::string("Error: ") + e.desc);
 		return false;
 	}
 	FlushSquirrelOutput();

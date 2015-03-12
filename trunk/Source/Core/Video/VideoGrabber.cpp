@@ -51,6 +51,7 @@ public:
 		#endif
 
 		int64_t duration = grabber->duration();
+		LOG(INFO) << "Duration="<<duration;
 		int64_t step = duration / ( videoGrabber_->frameCount_ + 1 );
 		for( int i = 0; i < videoGrabber_->frameCount_; i++ ) {
 			if ( thread_ && thread_->canceled() ) {

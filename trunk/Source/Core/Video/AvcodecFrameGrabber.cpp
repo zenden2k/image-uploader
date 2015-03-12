@@ -129,7 +129,7 @@ public:
         AVInputFormat *inputFormat = av_find_input_format( fileName.c_str() );
 
         // Retrieve stream information
-        if(av_find_stream_info(pFormatCtx)<0) {
+        if(avformat_find_stream_info(pFormatCtx,0)<0) {
             return false; // Couldn't find stream information
         }
 		fileSize_ = IuCoreUtils::getFileSize(fileName);
@@ -162,7 +162,7 @@ public:
         }
 
        // Open codec
-       if ( avcodec_open(pCodecCtx, pCodec) < 0 ) {
+       if ( avcodec_open2(pCodecCtx, pCodec,0) < 0 ) {
             return false; // Could not open codec
         }
 
@@ -172,6 +172,7 @@ public:
 
        // Allocate video frame
         pFrame = avcodec_alloc_frame();
+		//avpicture_fill((AVPicture *)pFrame, decoded_yuv_frame, PIX_FMT_YUV420P, srcX , srcY);
 
        // Allocate an AVFrame structure
        pFrameRGB = avcodec_alloc_frame();
@@ -182,7 +183,7 @@ public:
 
        // Determine required buffer size and allocate buffer
         numBytes = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height) + 64;
-        buffer=/*(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));*/(uint8_t*)malloc(numBytes);
+        buffer=/*(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));**/(uint8_t*)malloc(numBytes);
         memset(buffer, 0, numBytes);
         headerlen = sprintf((char *) buffer, "P6\n%d %d\n255\n", pCodecCtx->width,pCodecCtx->height);
 
@@ -245,13 +246,13 @@ public:
          my_start_time = (double)ic->duration / numOfFrames*1.6;
 
          AVRational rat = {1, AV_TIME_BASE};
-         my_start_time = av_rescale_q(my_start_time, rat, pFormatCtx->streams[videoStream]->time_base);
+         //my_start_time = av_rescale_q(my_start_time, rat, pFormatCtx->streams[videoStream]->time_base);
 		seek_target = av_rescale_q((double)my_start_time, rat, pFormatCtx->streams[videoStream]->time_base);;
          if ( seekByBytes ){
              uint64_t size=  avio_size(pFormatCtx->pb);
              seek_target = (double)my_start_time / ic->duration * size;
          }
-		 if ( avformat_seek_file(pFormatCtx, videoStream, seek_target*0.9, seek_target, seek_target*1.1, seekByBytes?AVSEEK_FLAG_BYTE:0)  < 0 ) {
+		 if ( avformat_seek_file(pFormatCtx, videoStream, 0, seek_target, seek_target, seekByBytes?AVSEEK_FLAG_BYTE:0)  < 0 ) {
 			 LOG(ERROR) << "avformat_seek_file failed to seek to position "<<seek_target<< " seekByBytes="<<seekByBytes;;
 		 }
          avcodec_flush_buffers(pCodecCtx) ;
@@ -299,11 +300,71 @@ public:
         avcodec_close(pCodecCtx);
 
         // Close the video file
-        av_close_input_file(pFormatCtx);
+        avformat_close_input (&pFormatCtx);
 		//avformat_free_context(pFormatCtx);
     }
+	void write_frame_to_file(AVFrame* frame, int width, int height, int iframe)
+	{
+		int i = AV_PIX_FMT_YUV420P;
+		FILE* outfile;
+		char filename[32];
+		int y;
 
-    bool seek(int64_t time) {
+		// Open file
+		sprintf(filename, "d:\\frame%d.yuv", iframe);
+		outfile = fopen(filename, "wb");
+		if (outfile == NULL) {
+			return;
+		}
+
+		// Write pixel data
+		fwrite(frame->data[0], 1, frame->linesize[0]*height,outfile);
+		fwrite(frame->data[1], 1, frame->linesize[1]*height/2,outfile);
+		fwrite(frame->data[2],1, frame->linesize[2]*height/2,outfile);
+		/*for (y = 0; y < height; ++y) {
+			fwrite(frame->data[0]+y*frame->linesize[0], 1, frame->linesize[0],outfile);
+			
+		}
+		for (y = 0; y < height; ++y) {
+			fwrite(frame->data[1]+y*frame->linesize[1], 1, frame->linesize[1],outfile);
+
+		}
+		for (y = 0; y < height; ++y) {
+			fwrite(frame->data[0]+y*frame->linesize[2], 1, frame->linesize[2],outfile);
+
+		}*/
+
+		// Close file
+		fclose(outfile);
+		printf("file is closed\n");
+	}
+
+	void saveFramePPM(AVFrame *pFrame, int width, int height, int iFrame)
+	{
+		FILE *pFile;
+		char szFilename[32];
+		int  y;
+
+		// Open file
+		sprintf(szFilename, "d:\\aframe%d.ppm", iFrame);
+		pFile=fopen(szFilename, "wb");
+		if(pFile==NULL)
+			return;
+
+		// Write header
+		fprintf(pFile, "P6\n%d %d\n255\n", width, height);
+
+		// Write pixel data
+		for(y=0; y<height; y++)
+			fwrite(pFrame->data[0]+y*pFrame->linesize[0], 1, width*3, pFile);
+
+		// Close file
+		fclose(pFile);
+	}
+
+
+
+    bool seek(int64_t time) {  
         /*for ( int i = 0; i < numOfFrames; i++ ) */{
 
             avpicture_fill((AVPicture *)pFrameRGB, buffer+headerlen, PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height);
@@ -334,7 +395,7 @@ public:
             int64_t seek_min= seek_target*0.9;
             int64_t seek_max= /*INT64_MAX*/seek_target*1.1;
 
-            if ( avformat_seek_file(pFormatCtx, videoStream, seek_min, seek_target, seek_max, seekByBytes?AVSEEK_FLAG_BYTE:0) < 0  )  {
+            if ( avformat_seek_file(pFormatCtx, videoStream, 0, seek_target, seek_max, seekByBytes?AVSEEK_FLAG_BYTE:0) < 0  )  {
 				LOG(ERROR) << "avformat_seek_file failed to seek to position "<<seek_target << " seekByBytes="<<seekByBytes;
             }
 
@@ -343,7 +404,9 @@ public:
 #ifdef QT_VERSION
 				PIX_FMT_RGB24;
 #else
+				
 				PIX_FMT_BGR24;
+				//PIX_FMT_RGB24 ;
 #endif
             while (av_read_frame(pFormatCtx, &packet)>=0) {
                 // Is this a packet from the video stream?
@@ -357,24 +420,33 @@ public:
                     // Did we get a video frame?
                     if(frameFinished) {
 
+						//write_frame_to_file(pFrame, pCodecCtx->width,pCodecCtx->height,rand()%100);
                         // Convert the image into YUV format that SDL uses
                         if(img_convert_ctx == NULL)
                         {
                             int w = pCodecCtx->width;
                             int h = pCodecCtx->height;
+							//pCodecCtx->
+							int dstWidth = w;
+							int dstHeight = h;
 							
-                            img_convert_ctx = sws_getContext(w, h, pCodecCtx->pix_fmt, w, h,pixelFormat , SWS_BICUBIC,
+                            img_convert_ctx = sws_getCachedContext(img_convert_ctx, w, h, pCodecCtx->pix_fmt, dstWidth, dstHeight,pixelFormat , /*SWS_BICUBIC*/SWS_LANCZOS,
                                 NULL, NULL, NULL);
                             if(img_convert_ctx == NULL) {
 								LOG(ERROR) << "Cannot initialize the conversion context!";
 								return false;
                             }
                         }
+						//pFrame->linesize[0]=986;
+					//	pFrame->linesize[1]=0;
+						//pFrame->linesize[1]/=2;
+					//	pFrame->linesize[2]/=2;
                         int ret = sws_scale(img_convert_ctx, pFrame->data, pFrame->linesize, 0, pCodecCtx->height, pFrameRGB->data, pFrameRGB->linesize);
                         int64_t pts = pFrame->pts;
+						//saveFramePPM(pFrameRGB, pCodecCtx->width, pCodecCtx->height,rand()%100);
                         // Save the frame to disk
                         currentFrame_ = new AvcodecVideoFrame(pFrameRGB, pFrameRGB->data[0],
-                                                              /*pFrameRGB->linesize[0]*pCodecCtx->height*/pCodecCtx->width * pCodecCtx->height *3, display_time,pCodecCtx->width, pCodecCtx->height);
+                                                              /*pFrameRGB->linesize[0]*pCodecCtx->height*//*pCodecCtx->width * pCodecCtx->height *3*/numBytes, display_time,pCodecCtx->width, pCodecCtx->height);
                         /*if ( i < numOfFrames ) {
                             //SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height, i, headerlen,timestamp_to_str(target_frame,ss.den),cb, display_time);
                         }*/

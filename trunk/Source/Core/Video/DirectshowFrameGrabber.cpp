@@ -333,36 +333,19 @@ bool DirectshowFrameGrabber::open(const Utf8String& fileName) {
     CoInitializeEx(NULL, COINIT_MULTITHREADED);
     TCHAR szFile[256];
 
-
     //USES_CONVERSION;
     bool IsWMV = false;
     bool IsOther = false;
 
-    HRESULT hr;
-
-    TCHAR szBuffer[256];
-    /*LPCTSTR szFileName = WinUtils::myExtractFileName(szFile);
-    if (szFileName)
-    {
-        wsprintf(szBuffer, CString(tr("Извлечение кадров из видео файла")) + _T(" \"%s\" ..."), (LPCTSTR)szFileName);
-        GrabInfo(szBuffer);
-    }*/
+    HRESULT hr = 1;
 
     IsOther = false;
     bool IsAvi = true;
- //   bool IsWMV = false;
-   /* bool IsAVI = WinUtils::IsStrInList(WinUtils::GetFileExt(szFileName), _T("avi\0\0"));
-    IsWMV = WinUtils::IsStrInList(WinUtils::GetFileExt(szFileName), _T("wmv\0asf\0\0"));
 
-    if (!IsWMV)
-        IsOther = WinUtils::IsStrInList(WinUtils::GetFileExt(szFileName), _T("mkv\0wmv\0mpg\0"));*/
-
-    // Create the sample grabber
-    //
     d_ptr->pGrabber.CoCreateInstance( CLSID_SampleGrabber );
     if ( !d_ptr->pGrabber )
     {
-        GrabInfo(("Could not create object CLSID_SampleGrabber."));
+		LOG(ERROR) << "Could not create CLSID_SampleGrabber instance.";
         return false;
     }
     d_ptr->pGrabberBase = ( d_ptr->pGrabber );
