@@ -1,5 +1,5 @@
 #Image Uploader
-Free application for Windows that allows you to upload files to image/file hosting servers without necessity to visit their websites. Program was released under GPL v3.
+Free application for Windows that allows you to upload files to image/file hosting servers without necessity to visit their websites.
 
 ![Image Uploader main windows](https://lh5.googleusercontent.com/-GvexbrV8HUE/VQHXrxhom5I/AAAAAAAAD0c/JiH5OQ0XrfY/s0/26719_screenshot%2525202015-03-09%252520003_en.png)
 
@@ -63,7 +63,7 @@ You can download ALL necessary libraries and headers (precompiled for MSVC 2008 
 https://bintray.com/artifact/download/zenden/zenden-image-uploader/Contrib_MSVC_2008_SP1_and_sources_v1.3.0.7z
 
 
-If you want to compile strmbase.lib by yourself yow will need:
+If you want to compile strmbase.lib by yourself you will need:
 
 DirectX 8 SDK
 
