@@ -42,6 +42,15 @@ function custom_compare(item1,item2){
 	return 0;
 }
 
+
+function _WriteLog(type,message) {
+	try {
+		WriteLog(type, message);
+	} catch (ex ) {
+		print(type + " : " + message);
+	}
+}
+
 function signRequest(url, token,tokenSecret) {
 	local params=[	{a="oauth_consumer_key", b=appKey},
 					{a="oauth_signature_method", b="PLAINTEXT"},
@@ -101,12 +110,12 @@ function openUrl(url) {
 	system("start "+ reg_replace(url,"&","^&") );
 }
 
-function Login() {
+function DoLogin() {
 	oauth_token_secret = ServerParams.getParam("oauth_token_secret");
 	oauth_token = ServerParams.getParam("oauth_token");
 	
 	if ( oauth_token_secret != ""  &&  oauth_token != ""){
-		return true;
+		return 1;
 	}
 	local email = ServerParams.getParam("Login");
 	local pass =  ServerParams.getParam("Password");
@@ -139,9 +148,9 @@ function Login() {
 		local displayName = regex_simple(data, "display_name\": \"(.+)\",", 0);
 		ServerParams.setParam("Login", displayName);
 		*/
-		return true;
+		return 1;
 	}
-	return false;
+	return 0;
 }
 
 function isAuthorized() {
@@ -171,7 +180,7 @@ function min(a,b) {
 }
 function  UploadFile(FileName, options) {		
 
-	if (!Login() ) {
+	if (!DoLogin() ) {
 		return 0;
 	}
 	local url = null;
@@ -179,7 +188,7 @@ function  UploadFile(FileName, options) {
 	if ( userPath!="" && userPath[userPath.len()-1] != "/") {
 		userPath+= "/";
 	}
-	local chunkSize = (4*1024*1024).tofloat();
+	local chunkSize = (50*1024*1024).tofloat();
 	local fileSize = GetFileSize(FileName);
 	if ( fileSize < 0 ) {
 		_WriteLog("error","fileSize < 0 ");
@@ -235,7 +244,7 @@ function  UploadFile(FileName, options) {
 		signRequest(url, oauth_token,oauth_token_secret);
 		nm.setMethod("POST");
 		nm.doPost("upload_id="+upload_id);
-		WriteLog("error",nm.responseBody());
+		//WriteLog("error",nm.responseBody());
 		if ( nm.responseCode() != 200 ) {
 			_WriteLog("error",nm.responseCode().tostring());
 		}

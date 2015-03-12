@@ -403,7 +403,7 @@ CSettings::CSettings()
 	ConnectionSettings.ProxyType = 0;
 	#endif
 	LastUpdateTime = 0;
-	UploadBufferSize = 65536;
+	UploadBufferSize = /*65536*/1024*1024;
 	FileRetryLimit = 3;
 	ActionRetryLimit = 2;
 #if !defined(IU_SHELLEXT) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
@@ -446,7 +446,7 @@ CSettings::CSettings()
 	ThumbSettings.DrawFrame = true;
 	ThumbSettings.ThumbAddImageSize  = true;
 	ThumbSettings.FrameColor = RGB( 0, 74, 111);
-	ThumbSettings.BackgroundColor = RGB( 255, 255, 255);
+	ThumbSettings.BackgroundColor = RGB( 255, 255, 255);f
 	ThumbSettings.ThumbColor1 =  RGB( 13, 86, 125);
 	ThumbSettings.ThumbColor2 = RGB( 6, 174, 255);
 	ThumbSettings.UseServerThumbs = false;
@@ -685,6 +685,9 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 
 	if ( !urlShorteningServer.profileName().IsEmpty() &&  ServersSettings[WCstringToUtf8(urlShorteningServer.serverName())].find(WCstringToUtf8(urlShorteningServer.profileName())) == ServersSettings[WCstringToUtf8(urlShorteningServer.serverName())].end() ) {
 		urlShorteningServer.setProfileName("");
+	}
+	if ( UploadBufferSize == 65536) {
+		UploadBufferSize = 1024 * 1024;
 	}
 #endif
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
