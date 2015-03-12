@@ -1,22 +1,16 @@
+Image Uploader - free application for Windows that allows you to upload files to image/file hosting servers without necessity to visit their websites. Program was released under GPL v3.
 
-    Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
-	 
-    HomePage:    http://zenden.ws/imageuploader
+Supported operating systems: Windows 2000/XP/Vista/7/8/10 (also server versions)
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+Main Features
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+Uploading files to image hostings and file hostings
+It can upload to more than 20 image hostings sytes. After uploading, Image Uploader generates HTML code or BBCode for forums. It is also possible to specify your own output format template.
+Grabbing Frames from a Video Clip
+Image Uploader can grab frames from various types of video formats, e.g. AVI, MPG, VOB, WMV, MKV (it depends on DirectShow?codecs you have installed on your system). It is recommended to install K-lite Codec Pack.
+Screen capturing
+Image Uploader can do screenshots of entire screen or selected screen region.
+Image Uploader is available in the following languages: English, Russian, Swedish, Romanian, Turkish, Serbian, Hrvatski, Farsi
 ---  COMPILING IMAGE UPLOADER ----
 
 You need Microsoft Visual C++ at least 9.0 version (Microsoft Visual Studio 2008 SP1).
