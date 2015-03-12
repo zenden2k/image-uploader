@@ -72,6 +72,8 @@ class NetworkManager
 		void setReferer(const NString &str);
 		void setOutputFile(const NString &str);
 		void setUploadBufferSize(const int size);
+		void setChunkOffset(double offset);
+		void setChunkSize(double size);
 		int getCurlResult();
 		CURL* getCurlHandle();
 		static void Uninitialize();
@@ -130,6 +132,7 @@ class NetworkManager
 		void* m_progressData;
 		CURLcode curl_result;
 		int64_t m_CurrentFileSize;
+		int64_t m_currentUploadDataSize;
 		std::vector<QueryParam> m_QueryParams;
 		std::vector<CustomHeaderItem> m_QueryHeaders;
 		std::vector<CustomHeaderItem> m_ResponseHeaders;
@@ -140,6 +143,8 @@ class NetworkManager
 		std::string m_method;
 		struct curl_slist * chunk_;
 		bool enableResponseCodeChecking_;
+		int64_t chunkOffset_;
+		int64_t chunkSize_;
                #ifndef IU_CLI
 		static ZThread::Mutex _mutex;
 #endif

@@ -664,6 +664,8 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		func(&NetworkManager::setCurlOptionInt, "setCurlOptionInt").
 		func(&NetworkManager::doUploadMultipartData, "doUploadMultipartData").
 		func(&NetworkManager::enableResponseCodeChecking, "enableResponseCodeChecking").
+		func(&NetworkManager::setChunkSize, "setChunkSize").
+		func(&NetworkManager::setChunkOffset, "setChunkOffset").
 		func(&NetworkManager::setReferer, "setReferer");
 
 
@@ -744,7 +746,7 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		RegisterGlobal(ShellOpenUrl, "ShellOpenUrl");
 		RegisterGlobal(IuCoreUtils::ExtractFileNameNoExt, "ExtractFileNameNoExt");
 		RegisterGlobal(IuCoreUtils::ExtractFilePath, "ExtractFilePath");
-		RegisterGlobal(jsonToSquirrelObject, "parseJSON");
+		RegisterGlobal(jsonToSquirrelObject, "ParseJSON");
 		RegisterGlobal(squirrelObjectToJson, "ToJSON");
 		RegisterGlobal(IuCoreUtils::copyFile, "CopyFile");
 		RegisterGlobal(IuCoreUtils::createDirectory, "CreateDirectory");

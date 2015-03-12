@@ -61,6 +61,10 @@ displayname - отображаемое имя(то имя, которое пер
 Возвращает количество параметров в  HTTP -заголовке ответa.
 <code class="f"><u>int</u> responseCode()</code>
 Возвращает код ответа (например, код 200 означает HTTP OK).
+<code class="f">setChunkOffset(<u>float</u> <i>offset</i>)<span>version >= 1.3.0</span></code>
+Set the byte offset of current chunk, relative to the beginning of the full file.
+<code class="f">setChunkSize(<u>float</u> <i>size</i>)<span>version >= 1.3.0</span></code>
+Sets size of current chunk.
 <code class="f">setCurlOption(<u>int</u> <i>option</i>, <u>string</u> <i>value</i>)<span>version >= 1.3.0</span></code>
 Устанавливает строковое значения для опции объекта CURL. Эквивалентно вызову функции <a href="http://curl.haxx.se/libcurl/c/curl_easy_setopt.html" target="_blank">curl_easy_setopt</a>. 
 Заметьте, что <i class="var">option</i> - это число. Список численных значений <i class="var">option</i> можно посмотреть <a href="curl_constants.txt" target="_blank">здесь</a>. 

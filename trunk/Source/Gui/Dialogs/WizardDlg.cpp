@@ -139,7 +139,19 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
    Lang.SetDirectory(WinUtils::GetAppFolder() + "Lang\\");
 	bool isFirstRun =  Settings.Language.IsEmpty() || FALSE;
-	if(Settings.Language.IsEmpty())
+	for(size_t i=0; i<CmdLine.GetCount(); i++)
+	{
+		CString CurrentParam = CmdLine[i];
+		if(CurrentParam .Left(10)==_T("/language="))
+		{
+			CString shortLanguageName = CurrentParam.Right(CurrentParam.GetLength()-10);
+			CString foundName = Lang.getLanguageFileNameForLocale(shortLanguageName);
+			if ( !foundName.IsEmpty() ) {
+				Settings.Language = foundName;
+			}
+		}
+	}
+	if(isFirstRun)
 	{
 		CLangSelect LS;
 		if(LS.DoModal(m_hWnd) == IDCANCEL)
@@ -200,8 +212,6 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 			LoadUploadEngines(userServersFolder+list[i], ErrorStr);
 		}
 	}
-
-
 
 	if ( Settings.urlShorteningServer.serverName().IsEmpty() ) {
 		CString defaultServerName = _T("is.gd");
