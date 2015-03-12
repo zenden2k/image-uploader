@@ -7,16 +7,16 @@ Supported operating systems: Windows 2000/XP/Vista/7/8/10 (also server versions)
 
 ##Main Features
 
-Uploading files to image hostings and file hostings
+###Uploading files to image hostings and file hostings
 It can upload to more than 20 image hostings sytes. After uploading, Image Uploader generates HTML code or BBCode for forums. It is also possible to specify your own output format template.
-##Grabbing Frames from a Video Clip
+###Grabbing Frames from a Video Clip
 Image Uploader can grab frames from various types of video formats, e.g. AVI, MPG, VOB, WMV, MKV (it depends on DirectShow codecs you have installed on your system). It is recommended to install K-lite Codec Pack.
-##Screen capturing
+###Screen capturing
 Image Uploader can do screenshots of entire screen or selected screen region.
 
 Image Uploader is available in the following languages: English, Russian, Swedish, Romanian, Turkish, Serbian, Hrvatski, Farsi
 
-##
+##Compiling
 
 You need Microsoft Visual C++ at least 9.0 version (Microsoft Visual Studio 2008 SP1).
 Also you have to install Microsoft Windows 7 Platform SDK for enabling Windows 7 related features. 
