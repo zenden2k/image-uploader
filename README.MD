@@ -10,7 +10,7 @@ Supported operating systems: Windows 2000/XP/Vista/7/8/10 (also server versions)
 ##Main Features
 
 ###Uploading files to image hostings and file hostings
-It can upload to more than 20 image hostings sytes. After uploading, Image Uploader generates HTML code or BBCode for forums.
+It can upload to more than [20 image hostings sites](http://zenden.ws/imageuploader_servers). After uploading, Image Uploader generates HTML code or BBCode for forums.
 
 It is also possible to specify your own output format template.
 
