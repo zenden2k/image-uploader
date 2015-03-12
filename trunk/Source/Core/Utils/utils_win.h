@@ -177,8 +177,7 @@ bool createDirectory(const Utf8String& path_,unsigned int mode)
 		free(szPath);
 
 		if (!::CreateDirectory(wstrFolder.c_str(), NULL)) {
-			LOG(WARNING) << wstrFolder;
-			//MessageBox(0,wstrFolder.c_str(),0,0);
+			//LOG(WARNING) << wstrFolder;
 			return false;
 		}
 	}

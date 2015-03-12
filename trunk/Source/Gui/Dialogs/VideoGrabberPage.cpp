@@ -34,7 +34,7 @@
 #include <Core/Utils/CryptoUtils.h>
 #include <Core/Logging.h>
 #include <Core/Utils/StringUtils.h>
-
+#include <Func/IuCommonFunctions.h>
 #include "atlheaders.h"
 
 CVideoGrabberPage::CVideoGrabberPage()
@@ -259,7 +259,8 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
 					CString logMessage;
 					logMessage.Format(_T("Could not create folder '%s'."), (LPCTSTR)snapshotsFolder);
 					WriteLog(logError, _T("Video Grabber"), logMessage);
-					//snapshotsFolder.Empty();
+					snapshotsFolder = IuCommonFunctions::IUTempFolder;
+
 				}
 			}
 		}

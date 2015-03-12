@@ -38,6 +38,7 @@
 
 #include "Core/Utils/CryptoUtils.h"
 #ifndef IU_CLI
+#include <Func/LangClass.h>
 #include "Gui/Dialogs/LogWindow.h"
 #endif
 #include <Core/Upload/FileUploadTask.h>
@@ -618,6 +619,21 @@ double ScriptGetFileSizeDouble(const std::string& filename) {
 	return IuCoreUtils::getFileSize(filename);
 }
 
+const std::string scriptGetAppLanguage() {
+#ifndef IU_CLI
+	return IuCoreUtils::WstringToUtf8((LPCTSTR)Lang.getLanguage());
+#else 
+	return "en";
+#endif 
+}
+
+const std::string scriptGetAppLocale() {
+#ifndef IU_CLI
+	return IuCoreUtils::WstringToUtf8((LPCTSTR)Lang.getLocale());
+#else 
+	return "en_US";
+#endif 
+}
 bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params)
 {
 	if (!IuCoreUtils::FileExists(fileName))
@@ -738,6 +754,8 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		RegisterGlobal(IuCoreUtils::MoveFileOrFolder, "MoveFileOrFolder");
 		RegisterGlobal(IuCoreUtils::PutFileContents, "PutFileContents");
 		RegisterGlobal(IuCoreUtils::RemoveFile, "DeleteFile");
+		RegisterGlobal(scriptGetAppLanguage, "GetAppLanguage");
+		RegisterGlobal(scriptGetAppLocale, "GetAppLocale");
 		
 		RegisterGlobal(ScriptGetFileSize, "GetFileSize");	
 		RegisterGlobal(ScriptGetFileSizeDouble, "GetFileSizeDouble");	

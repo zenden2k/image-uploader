@@ -645,7 +645,7 @@
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="true"
 				AdditionalOptions="/CRINKLER"
-				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avdevice.lib avformat.lib avutil.lib swscale.lib avcodec.lib wininet.lib jsoncpp.lib Normaliz.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
+				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avformat.lib avutil.lib swscale.lib avcodec.lib wininet.lib jsoncpp.lib Normaliz.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib&quot;;&quot;$(SolutionDir)\Contrib\Lib\Release&quot;"
 				GenerateManifest="false"
@@ -1102,15 +1102,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-link.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\res\icon-link.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-link.png"
+				RelativePath=".\res\icon-link.ico"
 				>
 			</File>
 			<File
@@ -1118,15 +1114,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\res\icon-link.png"
+				>
+			</File>
+			<File
 				RelativePath="Source\res\icon-region.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-reload.ico"
+				RelativePath=".\Source\res\icon-reload.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-reload.ico"
+				RelativePath=".\res\icon-reload.ico"
 				>
 			</File>
 			<File
@@ -1138,11 +1138,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-user.ico"
+				RelativePath=".\res\icon-user.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-user.ico"
+				RelativePath=".\Source\res\icon-user.ico"
 				>
 			</File>
 			<File
@@ -1162,11 +1162,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_additem.ico"
+				RelativePath=".\Source\res\icon_additem.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_additem.ico"
+				RelativePath=".\res\icon_additem.ico"
 				>
 			</File>
 			<File
@@ -1178,11 +1178,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_deleteitem.ico"
+				RelativePath=".\Source\res\icon_deleteitem.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_deleteitem.ico"
+				RelativePath=".\res\icon_deleteitem.ico"
 				>
 			</File>
 			<File
@@ -1202,19 +1202,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_folder2.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\res\icon_folder2.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_folder2.png"
+				RelativePath=".\Source\res\icon_folder2.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\res\icon_folder2.png"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon_folder2.png"
 				>
 			</File>
 			<File
@@ -1234,11 +1234,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_up.ico"
+				RelativePath=".\res\icon_up.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_up.ico"
+				RelativePath=".\Source\res\icon_up.ico"
 				>
 			</File>
 			<File

@@ -7,7 +7,6 @@ void MyLogSink::send(google::LogSeverity severity, const char* full_filename, co
 	std::string sender = base_filename;
 	sender += ":"+IuCoreUtils::int64_tToString(line);
 	CString msg = IuCoreUtils::Utf8ToWstring(message).c_str();
-	MessageBox(0,msg,0,0);
 	WriteLog(severity ==google::GLOG_ERROR ? logError : logWarning,  IuCoreUtils::Utf8ToWstring(sender).c_str(),msg );
 }
 

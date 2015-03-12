@@ -36,6 +36,8 @@ class CLang
 		bool SetDirectory(LPCTSTR Directory);
 		bool LoadLanguage(LPCTSTR Lang);
 		CString GetLanguageName();
+		CString getLanguage() const;
+		CString getLocale() const;
 	private:
 		struct TranslateListItem
 		{
@@ -47,6 +49,8 @@ class CLang
 		CString m_sLang;
 		CAtlArray<TranslateListItem> StringList;
 		CAtlArray<CString> LanguagesList;
+		CString locale;
+		CString language;
 };
 extern CLang Lang;
 

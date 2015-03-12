@@ -140,7 +140,7 @@ begin
        if IsTaskSelected('installffmpeg') then begin
  
 
-    ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/ffmpeg-1.2.12.zip', expandconstant('{tmp}\ffmpeg.zip'));
+    ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/inst_iu_ffmpeg_1426149762.zip', expandconstant('{tmp}\ffmpeg.zip'));
     // ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/iu_ffmpeg.xml', expandconstant('{tmp}\iu_ffmpeg.xml'));
 
     end;
