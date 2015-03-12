@@ -24,9 +24,9 @@ Image Uploader is available in the following languages: English, Russian, Swedis
 
 ##Compiling
 
-You need Microsoft Visual C++ at least 9.0 version (Microsoft Visual Studio 2008 SP1).
+You need Microsoft Visual C++ at least 9.0 version (Microsoft Visual Studio 2008 SP1). You may experience some compilation errors in modern versions of MSVS, which can be solved easily.
 
-Also you have to install Microsoft Windows 7 Platform SDK for enabling Windows 7 related features. 
+Also you have to install Microsoft Windows 7 Platform SDK (or later) for enabling Windows 7 related features. 
 
 In order to compile Image Uploader you will need the following libraries:
 
@@ -58,11 +58,10 @@ jsoncpp		https://github.com/open-source-parsers/jsoncpp
 
 glog      https://github.com/google/glog
 
-You can download ALL necessary libraries and headers by following link:
+You can download ALL necessary libraries and headers (precompiled for MSVC 2008 SP1) by following link:
 
 https://bintray.com/artifact/download/zenden/zenden-image-uploader/Contrib_MSVC_2008_SP1_and_sources_v1.3.0.7z
 
-They are precompiled for MSVC 2008 SP1.
 
 If you want to compile strmbase.lib by yourself yow will need:
 
