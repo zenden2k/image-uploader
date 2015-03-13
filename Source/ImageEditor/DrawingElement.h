@@ -6,25 +6,45 @@
 #include <deque>
 namespace ImageEditor {
 
+class Canvas;
+
 class AffectedSegments;
+
+#ifndef _WIN32
+struct POINT {
+	int x;
+	int y;
+};
+
+struct RECT
+{
+	int    left;
+	int    top;
+	int    right;
+	int    bottom;
+}
+#endif
 
 class DrawingElement {
 	public:
 		DrawingElement();
 		virtual ~DrawingElement() {};
 		virtual void render(Gdiplus::Graphics* gr) = 0;
-		virtual void resize(Gdiplus::Rect newSize);
+		virtual void resize(int width, int height);
 		virtual void setStartPoint(POINT startPoint);
 		virtual void setEndPoint(POINT endPoint);
 		void setColor( Gdiplus::Color color );
+		void setCanvas( Canvas* canvas );
 		virtual void getAffectedSegments( AffectedSegments* segments );
 		void setPenSize( int penSize );
+		int getWidth();
+		int getHeight();
 	protected:
-		Gdiplus::Rect dimensions_;
 		POINT startPoint_;
 		POINT endPoint_;
 		Gdiplus::Color color_;
 		int penSize_;
+		Canvas* canvas_;
 };
 
 class AffectedSegments {

@@ -210,6 +210,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Source\ImageEditor\BasicTypes.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\ImageEditor\BasicTypes.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\ImageEditor\Canvas.cpp"
 				>
 			</File>
@@ -254,19 +262,27 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Source\ImageEditor\Logger.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\ImageEditor\Logger.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Source\ImageEditor\MovableElement.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\Source\ImageEditor\MovableElement.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\ImageEditor\MovableElements.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\ImageEditor\MovableElements.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\ImageEditor\Region.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\ImageEditor\Region.h"
 				>
 			</File>
 			<File
@@ -301,6 +317,10 @@
 				Name="Gui"
 				>
 				<File
+					RelativePath="..\Source\Gui\GuiTools.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\ImageEditor\Gui\ImageEditorView.cpp"
 					>
 				</File>
@@ -324,6 +344,54 @@
 					RelativePath="..\Source\ImageEditor\Gui\MainFrm.h"
 					>
 				</File>
+			</Filter>
+			<Filter
+				Name="Func"
+				>
+				<File
+					RelativePath="..\Source\Func\LangClass.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\Func\MyUtils.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\Func\WinUtils.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Core"
+				>
+				<Filter
+					Name="Video"
+					>
+					<File
+						RelativePath="..\Source\Core\Video\VideoUtils.cpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Utils"
+					>
+					<File
+						RelativePath="..\Source\Core\Utils\CoreUtils.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Source\Core\Utils\StringUtils.cpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="3rdpart"
+					>
+					<File
+						RelativePath="..\Source\Core\3rdpart\CodePages.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

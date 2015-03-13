@@ -19,7 +19,6 @@
 */
 
 #include "InputBoxControl.h"
-#include "../Logger.h"
 namespace ImageEditor {
 // CLogListBox
 InputBoxControl::InputBoxControl() {
@@ -61,7 +60,7 @@ LRESULT InputBoxControl::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
 	CRect formatRect;
 	GetRect( &formatRect );
-	Logger::Write(_T("%d %d %d %d\r\n"), r );
+	//Logger::Write(_T("%d %d %d %d\r\n"), r );
 	CRect clientRect;
 	GetClientRect( &clientRect );
 	DWORD margins = GetMargins();

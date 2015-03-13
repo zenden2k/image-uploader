@@ -8,6 +8,8 @@
 #include "ImageEditor/resource.h"
 #include "ImageEditor/BasicElements.h"
 #include <GdiPlus.h>
+#include <Gui/GuiTools.h>
+#include <Core/Logging.h>
 
 #ifndef TR
 #define TR(a) L##a
@@ -39,10 +41,17 @@ LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	if ( canvas_ ) {
 		canvas_->render( &gr, dc.m_ps.rcPaint );
 	}
+	horizontalToolbar_.Invalidate(TRUE);
 
 	return 0;
 }
 
+
+LRESULT CImageEditorView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	createToolbars();
+	return 0;
+}
 
 void CImageEditorView::setCanvas(ImageEditor::Canvas *canvas) {
 	canvas_ = canvas;
@@ -149,7 +158,7 @@ LRESULT CImageEditorView::OnSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 }
 
 
-HCURSOR CImageEditorView::getCachedCursor(Canvas::CursorType cursorType)
+HCURSOR CImageEditorView::getCachedCursor(CursorType cursorType)
 {
 	HCURSOR cur = cursorCache_[cursorType];
 	if ( cur ) {
@@ -157,23 +166,26 @@ HCURSOR CImageEditorView::getCachedCursor(Canvas::CursorType cursorType)
 	}
 	LPCTSTR lpCursorName = 0;
 	switch( cursorType ) {
-		case Canvas::ctEdit:
+		case ctEdit:
 			lpCursorName = IDC_IBEAM;
 			break;
-		case Canvas::ctResizeVertical:
+		case ctResizeVertical:
 			lpCursorName = IDC_SIZENS;
 			break;
-		case Canvas::ctResizeHorizontal:
+		case ctResizeHorizontal:
 			lpCursorName = IDC_SIZEWE;
 			break;
-		case Canvas::ctResizeDiagonalMain:
+		case ctResizeDiagonalMain:
 			lpCursorName = IDC_SIZENWSE;
 			break;
-		case Canvas::ctResizeDiagonalAnti:
+		case ctResizeDiagonalAnti:
 			lpCursorName = IDC_SIZENESW;
 			break;
-		case Canvas::ctCross:
+		case ctCross:
 			lpCursorName = IDC_CROSS;
+			break;
+		case ctMove:
+			lpCursorName = IDC_SIZEALL;
 			break;
 		default:
 			lpCursorName = IDC_ARROW;
@@ -181,6 +193,41 @@ HCURSOR CImageEditorView::getCachedCursor(Canvas::CursorType cursorType)
 	cur = LoadCursor(0, lpCursorName);
 	cursorCache_[cursorType] = cur;
 	return cur;
+}
+
+void CImageEditorView::createToolbars()
+{
+	toolbarImageList_.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
+	RECT rc = {0,0,500,50};
+	GetClientRect(&rc);
+	const int IDC_DUMMY = 100;
+	/*rc.top = rc.bottom - GuiTools::dlgY(13);
+	rc.bottom-= GuiTools::dlgY(1);
+	rc.left = GuiTools::dlgX(3);
+	rc.right -= GuiTools::dlgX(3);*/
+	HWND wnd = horizontalToolbar_.Create(m_hWnd,rc,_T(""), WS_CHILD | TBSTYLE_LIST |TBSTYLE_CUSTOMERASE|TBSTYLE_FLAT| /*CCS_NORESIZE/*|*/CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER/*|TBSTYLE_AUTOSIZE */ );
+	if (! wnd ) {
+		LOG(ERROR) << "Failed to create horizontal toolbar";
+	
+	}
+	horizontalToolbar_.SetWindowLong( GWL_STYLE, 0); 
+	//TabBackgroundFix(Toolbar.m_hWnd);
+
+	horizontalToolbar_.SetButtonStructSize();
+	horizontalToolbar_.SetButtonSize(30,18);
+	horizontalToolbar_.SetImageList(toolbarImageList_);
+	horizontalToolbar_.AddButton(IDC_DUMMY, TBSTYLE_BUTTON|BTNS_AUTOSIZE ,TBSTATE_ENABLED, 0, TR("Копировать в буфер"), 0);
+
+
+	horizontalToolbar_.AddButton(IDC_DUMMY, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Инфо о последнем видео"), 0);
+	horizontalToolbar_.ClientToScreen(&rc);
+	horizontalToolbar_.SetWindowPos(0, &rc, 0);
+	//horizontalToolbar_.AutoSize();
+	//horizontalToolbar_.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);
+	horizontalToolbar_.ShowWindow(SW_SHOW);
+
+	horizontalToolbar_.GetClientRect(&rc);
+	LOG(INFO) << "Toolbar width: " << rc.right << " height: " << rc.bottom;
 }
 
 }

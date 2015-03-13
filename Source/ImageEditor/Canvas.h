@@ -25,9 +25,7 @@ class Canvas {
 			dtPen, dtBrush, dtLine, dtRectangle, dtText, dtCrop
 		};
 
-		enum CursorType {
-			ctDefault, ctEdit, ctResizeVertical, ctResizeHorizontal, ctResizeDiagonalMain, ctResizeDiagonalAnti, ctCross
-		};
+		
 
 		Canvas( HWND parent );
 		~Canvas();
@@ -43,8 +41,15 @@ class Canvas {
 		void setDrawingToolType(DrawingToolType tool);
 		void addMovableElement(MovableElement* element);
 		void deleteMovableElement(MovableElement* element);
-		void deleteMovableElements(MovableElement::ElementType elementType);
-		void getElementsByType(MovableElement::ElementType elementType, std::vector<MovableElement*>& out);
+		void deleteMovableElements(ElementType elementType);
+		void getElementsByType(ElementType elementType, std::vector<MovableElement*>& out);
+		void setOverlay(MovableElement* overlay);
+		void setZoomFactor(float zoomFactor);
+		float getZoomFactor() const;
+		MovableElement* getElementAtPosition(int x, int y);
+		int deleteElementsByType(ElementType elementType);
+		int getWidth() const;
+		int getHeigth() const;
 		CursorType getCursor() const;
 		bool undo();
 		InputBox* getInputBox( const RECT& rect ); 
@@ -65,6 +70,8 @@ class Canvas {
 		AbstractDrawingTool* currentDrawingTool_;
 		std::vector<MovableElement*> elementsOnCanvas_;
 		CursorType currentCursor_;
+		MovableElement* overlay_;
+		float zoomFactor_;
 		
 		HWND parentWindow_;
 		

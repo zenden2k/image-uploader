@@ -5,11 +5,13 @@
 
 #pragma once
 
-// Change these values to use different versions
-#define WINVER		0x0500
-#define _WIN32_WINNT	0x0501
+#ifdef WINVER
+#undef WINVER
+#endif
+#define WINVER		0x0601 // 0x0601 = Windows 7 
+#define _WIN32_WINNT	0x0601
 #define _WIN32_IE	0x0501
-#define _RICHEDIT_VER	0x0200
+#define _RICHEDIT_VER	0x0200 
 
 #include <atlbase.h>
 #include <atlapp.h>

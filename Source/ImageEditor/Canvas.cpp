@@ -26,6 +26,8 @@ Canvas::Canvas( HWND parent ) {
 	buffer_               = NULL;
 	inputBox_             = NULL;
 	currentCursor_    = ctDefault;
+	overlay_ = 0;
+	zoomFactor_ = 1;
 	createDoubleBuffer();
 }
 
@@ -56,14 +58,14 @@ void Canvas::setDocument( Document *doc ) {
 void Canvas::mouseMove( int x, int y, DWORD flags) {
 	bool isLButtonDown = flags & MK_LBUTTON;
 	POINT point        = { x, y };
-	if ( x > canvasWidth_ || y > canvasHeight_ || x <0 || y <0) {
+	/*if ( x > canvasWidth_ || y > canvasHeight_ || x <0 || y <0) {
 		return;
-	}
+	}*/
 	if ( isLButtonDown  ) {
 		assert( currentDrawingTool_ );
 		currentDrawingTool_->continueDraw( x,  y, flags );
 	}
-	CursorType ct = currentDrawingTool_->getCursor();
+	CursorType ct = currentDrawingTool_->getCursor(x ,y);
 	setCursor(ct);
 	/*if (isLButtonDown && currentElement_ != NULL ) {
 		AffectedSegments prevSegments;
@@ -137,7 +139,12 @@ void Canvas::render(Gdiplus::Graphics* gr, const RECT& rect) {
 	for ( int i=0; i< elementsOnCanvas_.size(); i++) {
 		elementsOnCanvas_[i]->render(&bufferedGr);
 	}
-
+	if ( overlay_ ) {
+		overlay_->render(&bufferedGr);
+	}
+	for ( int i=0; i< elementsOnCanvas_.size(); i++) {
+		elementsOnCanvas_[i]->renderGrips(&bufferedGr);
+	}
 	gr->DrawImage( buffer_, 0, 0 );
 }
 
@@ -158,7 +165,7 @@ void Canvas::setPenSize(int size) {
 void Canvas::setDrawingToolType(DrawingToolType toolType) {
 	drawingToolType_ = toolType;
 
-	VectorElementTool::ElementType type;
+	ElementType type;
 
 	if ( toolType == dtPen) {
 		currentDrawingTool_ = new PenTool( this );
@@ -169,14 +176,14 @@ void Canvas::setDrawingToolType(DrawingToolType toolType) {
 	} else {
 		
 		if ( toolType == dtLine )
-			type = VectorElementTool::etLine;
+			type = etLine;
 		else if ( toolType == dtRectangle ) {
-			type = VectorElementTool::etRectangle;
+			type = etRectangle;
 		} else {
-			 MovableElement::ElementType type;
+			 ElementType type;
 		   if ( toolType == dtCrop ) {
 			  
-				type = MovableElement::etCrop;
+				type = etCrop;
 			}
 
 		   currentDrawingTool_ = new MovableElementTool( this, type );
@@ -225,7 +232,7 @@ void Canvas::setCursor(CursorType cursorType)
 }
 
 
-void Canvas::getElementsByType(MovableElement::ElementType elementType, std::vector<MovableElement*>& out)
+void Canvas::getElementsByType(ElementType elementType, std::vector<MovableElement*>& out)
 {
 	int count = elementsOnCanvas_.size();
 	for ( int i = 0; i < count; i++ ) {
@@ -235,7 +242,75 @@ void Canvas::getElementsByType(MovableElement::ElementType elementType, std::vec
 	}
 }
 
-Canvas::CursorType Canvas::getCursor() const
+void Canvas::setOverlay(MovableElement* overlay)
+{
+	overlay_ = overlay;
+}
+
+void Canvas::setZoomFactor(float zoomFactor)
+{
+	zoomFactor_ = zoomFactor;
+}
+
+float Canvas::getZoomFactor() const
+{
+	return zoomFactor_;
+}
+
+MovableElement* Canvas::getElementAtPosition(int x, int y)
+{
+	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->getType() != etCrop ) {
+			int elementX = elementsOnCanvas_[i]->getX();
+			int elementY = elementsOnCanvas_[i]->getY();
+			int elementWidth = elementsOnCanvas_[i]->getWidth();
+			int elementHeight = elementsOnCanvas_[i]->getHeight();
+			if ( x >= elementX && x <= elementX + elementWidth && y>= elementY && y <= elementY + elementHeight ) {
+				return  elementsOnCanvas_[i];
+			}
+		}
+	}
+
+	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->getType() == etCrop ) {
+			int elementX = elementsOnCanvas_[i]->getX();
+			int elementY = elementsOnCanvas_[i]->getY();
+			int elementWidth = elementsOnCanvas_[i]->getWidth();
+			int elementHeight = elementsOnCanvas_[i]->getHeight();
+			if ( x >= elementX && x <= elementX + elementWidth && y>= elementY && y <= elementY + elementHeight ) {
+				return  elementsOnCanvas_[i];
+			}
+		}
+	}
+
+
+	return 0;
+}
+
+int Canvas::deleteElementsByType(ElementType elementType)
+{
+	int count = 0;
+	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->getType() == elementType ) {
+			elementsOnCanvas_.erase(elementsOnCanvas_.begin() + i);
+			i--;
+			count++;
+		}
+	}
+	return count;
+}
+
+int Canvas::getWidth() const
+{
+	return canvasWidth_;
+}
+
+int Canvas::getHeigth() const
+{
+	return canvasHeight_;
+}
+
+CursorType Canvas::getCursor() const
 {
 	return currentCursor_;
 }

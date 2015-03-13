@@ -7,6 +7,7 @@
 #include <map>
 #include "ImageEditor/Canvas.h"
 #include <map>
+
 #pragma once
 
 namespace ImageEditor {
@@ -24,6 +25,7 @@ class CImageEditorView : public CWindowImpl<CImageEditorView>, public ImageEdito
 		BOOL PreTranslateMessage(MSG* pMsg);
 
 		BEGIN_MSG_MAP(CImageEditorView)
+			MESSAGE_HANDLER( WM_CREATE, OnCreate )
 			MESSAGE_HANDLER( WM_PAINT, OnPaint )
 			MESSAGE_HANDLER( WM_MOUSEMOVE, OnMouseMove )
 			MESSAGE_HANDLER( WM_LBUTTONDOWN, OnLButtonDown )
@@ -46,6 +48,7 @@ class CImageEditorView : public CWindowImpl<CImageEditorView>, public ImageEdito
 	protected:
 		
 		LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -60,8 +63,12 @@ class CImageEditorView : public CWindowImpl<CImageEditorView>, public ImageEdito
 	private:
 		ImageEditor::Canvas *canvas_;
 		std::map<int, MenuItem> menuItems_;
-		std::map<Canvas::CursorType, HCURSOR> cursorCache_;
-		HCURSOR getCachedCursor(Canvas::CursorType cursorType);
+		std::map<CursorType, HCURSOR> cursorCache_;
+		CToolBarCtrl horizontalToolbar_;
+		CToolBarCtrl verticalToolbar_;
+		CImageList toolbarImageList_;
+		HCURSOR getCachedCursor(CursorType cursorType);
+		void createToolbars();
 };
 
 }

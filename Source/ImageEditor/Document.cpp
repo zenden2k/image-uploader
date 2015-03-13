@@ -32,11 +32,13 @@ void Document::init() {
 	currentCanvas_ = new Gdiplus::Graphics( currentImage_ );
 	//currentCanvas_->Clear( Gdiplus::Color( 150, 0, 0 ) );
 
+	/*
+	рисуем сетку
 	for ( int i = 0; i < currentImage_->GetWidth() / 20; i++ ) {
 		Pen pen(Color::DarkGray);
 		currentCanvas_->DrawLine(&pen, i * AffectedSegments::kSegmentSize, 0, i * AffectedSegments::kSegmentSize, currentImage_->GetHeight() );
 		currentCanvas_->DrawLine(&pen, 0, i * AffectedSegments::kSegmentSize, currentImage_->GetWidth(),  i * AffectedSegments::kSegmentSize  );
-	}
+	}*/
 }
 
 void Document::beginDrawing(bool cloneImage) {

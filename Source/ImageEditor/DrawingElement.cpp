@@ -1,7 +1,7 @@
 #include "DrawingElement.h"
 
 #include <GdiPlus.h>
-
+#include <Core/Logging.h>
 namespace ImageEditor {
 
 DrawingElement::DrawingElement(){
@@ -13,8 +13,9 @@ DrawingElement::DrawingElement(){
 	penSize_ = 1;
 }
 
-void DrawingElement::resize(Gdiplus::Rect newSize) {
-	dimensions_ = newSize;
+void DrawingElement::resize(int width, int height) {
+	LOG(ERROR) << "Not implemented";
+	//dimensions_ = newSize;
 }
 
 void DrawingElement::setStartPoint(POINT startPoint) {
@@ -29,8 +30,23 @@ void DrawingElement::setColor( Gdiplus::Color color ) {
 	color_ = color;
 }
 
+void DrawingElement::setCanvas(Canvas* canvas)
+{
+	canvas_ = canvas;
+}
+
 void DrawingElement::setPenSize( int penSize ) {
 	penSize_ = penSize;
+}
+
+int DrawingElement::getWidth()
+{
+	return abs(endPoint_.x -startPoint_.x);
+}
+
+int DrawingElement::getHeight()
+{
+	return abs(endPoint_.y -startPoint_.y);
 }
 
 void DrawingElement::getAffectedSegments( AffectedSegments* segments ) {

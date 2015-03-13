@@ -18,7 +18,7 @@ class AbstractDrawingTool {
 		virtual void continueDraw( int x, int y, DWORD flags ) = NULL;
 		virtual void endDraw( int x, int y );
 		virtual void render( Gdiplus::Graphics* gr ) = NULL;
-		virtual Canvas::CursorType getCursor();
+		virtual CursorType getCursor(int x, int y);
 	protected:
 		Canvas* canvas_;
 		POINT startPoint_;
@@ -27,7 +27,6 @@ class AbstractDrawingTool {
 
 class VectorElementTool: public AbstractDrawingTool {
 	public:
-		enum ElementType { etLine, etRectangle };
 		VectorElementTool( Canvas* canvas, ElementType type );
 		void beginDraw( int x, int y );
 		void continueDraw( int x, int y, DWORD flags );
@@ -40,10 +39,11 @@ class VectorElementTool: public AbstractDrawingTool {
 		void createElement();
 };
 
+class CropOverlay;
 class MovableElementTool: public AbstractDrawingTool {
 	public:
-		enum BoundaryType { btNone,btTopLeft, btTop, brTopRight, btLeft, btRight, btBottomLeft, btBottom, btBotttomRight};
-		MovableElementTool( Canvas* canvas, MovableElement::ElementType type );
+		
+		MovableElementTool( Canvas* canvas, ElementType type );
 		void beginDraw( int x, int y );
 		void continueDraw( int x, int y, DWORD flags );
 		void endDraw( int x, int y );
@@ -51,12 +51,15 @@ class MovableElementTool: public AbstractDrawingTool {
 		
 	private:
 		MovableElement* currentElement_;
-		MovableElement::ElementType elementType_;
+		ElementType elementType_;
+		BoundaryType draggedBoundary_;
 		void createElement();
-		BoundaryType checkElementsBoundaries();
-		BoundaryType checkElementBoundaries(MovableElement*);
-
-		virtual Canvas::CursorType getCursor();
+		BoundaryType checkElementsBoundaries(int x, int y, MovableElement** elem = 0);
+		BoundaryType checkElementBoundaries(MovableElement*, int x, int y);
+		static void cleanUp();
+		virtual CursorType getCursor(int x, int y);
+		static CropOverlay* cropOverlay_;
+		bool isMoving_;
 
 };
 
