@@ -2,7 +2,7 @@
 #
 # http://zenden.ws/imageuploader
 
-version 1.3.0.4222
+version 1.3.0.4222 (12.03.2015)
 [~] Fixed big file (>150 Mb) uploading to Dropbox (added chunked uploading functions to scripting API)
 [+] Added swedish translation (thanks to Åke Engelbrektson)
 [+] Added more languages to installer. The language choosen in installer now is selected by default at program's startup.
@@ -143,5 +143,31 @@ version 1.3.0b.4215:
 [F] Some tweaks in video grabber module
 [F] Several bugs fixed
  
+v.1.1.5 from 25.05.2008
 
+New species of previews.
+Added support of English and Romanian languages.
+Displaying the upload speed of the files.
+Optional hosting server.
+Screenshot of selected area.
+
+v.1.1
+
+Improved function of generation previews
+Fixed a problem with the frame
+Added support for templates (see "template.txt")
+
+v.1.1 beta
+
+Redesigned program interface
+Added support for formats, WMV, ASF, and some others.
+Added experimental support for deinterlacing (remove the comb)
+Improved function "saving videoframes in 1 file"
+The function of adding information about the size of the image on preview
+New hosting server imageand "smages.com"
+Fix minor bugs
+
+v.1.0 beta on 08.11.07
+
+First public version
  

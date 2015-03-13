@@ -2,7 +2,9 @@
 #define IMAGEEDITOR_DRAWINGTOOL_H
 
 #include <Gdiplus.h>
+#include "Canvas.h"
 #include "DrawingElement.h"
+#include "MovableElement.h"
 
 namespace ImageEditor {
 
@@ -16,15 +18,16 @@ class AbstractDrawingTool {
 		virtual void continueDraw( int x, int y, DWORD flags ) = NULL;
 		virtual void endDraw( int x, int y );
 		virtual void render( Gdiplus::Graphics* gr ) = NULL;
+		virtual Canvas::CursorType getCursor();
 	protected:
-		Canvas* _canvas;
-		POINT _startPoint;
-		POINT _endPoint;
+		Canvas* canvas_;
+		POINT startPoint_;
+		POINT endPoint_;
 };
 
 class VectorElementTool: public AbstractDrawingTool {
 	public:
-		enum ElementType { etLine, etRectangle, etArrow };
+		enum ElementType { etLine, etRectangle };
 		VectorElementTool( Canvas* canvas, ElementType type );
 		void beginDraw( int x, int y );
 		void continueDraw( int x, int y, DWORD flags );
@@ -35,6 +38,26 @@ class VectorElementTool: public AbstractDrawingTool {
 		DrawingElement* currentElement_;
 		ElementType elementType_;
 		void createElement();
+};
+
+class MovableElementTool: public AbstractDrawingTool {
+	public:
+		enum BoundaryType { btNone,btTopLeft, btTop, brTopRight, btLeft, btRight, btBottomLeft, btBottom, btBotttomRight};
+		MovableElementTool( Canvas* canvas, MovableElement::ElementType type );
+		void beginDraw( int x, int y );
+		void continueDraw( int x, int y, DWORD flags );
+		void endDraw( int x, int y );
+		void render( Gdiplus::Graphics* gr );
+		
+	private:
+		MovableElement* currentElement_;
+		MovableElement::ElementType elementType_;
+		void createElement();
+		BoundaryType checkElementsBoundaries();
+		BoundaryType checkElementBoundaries(MovableElement*);
+
+		virtual Canvas::CursorType getCursor();
+
 };
 
 class PenTool: public AbstractDrawingTool  {

@@ -4,6 +4,8 @@
 #include <GdiPlus.h>
 #include "InputBox.h"
 #include "Gui/InputBoxControl.h"
+#include "MovableElement.h"
+#include <vector>
 
 namespace ImageEditor {
 
@@ -20,7 +22,11 @@ class Canvas {
 		};
 		
 		enum DrawingToolType {
-			dtPen, dtBrush, dtLine, dtRectangle, dtText
+			dtPen, dtBrush, dtLine, dtRectangle, dtText, dtCrop
+		};
+
+		enum CursorType {
+			ctDefault, ctEdit, ctResizeVertical, ctResizeHorizontal, ctResizeDiagonalMain, ctResizeDiagonalAnti, ctCross
 		};
 
 		Canvas( HWND parent );
@@ -35,12 +41,18 @@ class Canvas {
 		void setCallback(Callback * callback);
 		void setPenSize(int size);
 		void setDrawingToolType(DrawingToolType tool);
+		void addMovableElement(MovableElement* element);
+		void deleteMovableElement(MovableElement* element);
+		void deleteMovableElements(MovableElement::ElementType elementType);
+		void getElementsByType(MovableElement::ElementType elementType, std::vector<MovableElement*>& out);
+		CursorType getCursor() const;
 		bool undo();
 		InputBox* getInputBox( const RECT& rect ); 
 		friend class AbstractDrawingTool;
 		friend class VectorElementTool;
 		friend class PenTool;
 		friend class BrushTool;
+		friend class MovableElementTool;
 	private:
 		Gdiplus::Bitmap* buffer_;
 		Document* doc_;
@@ -51,14 +63,19 @@ class Canvas {
 		Callback* callback_;
 		DrawingToolType drawingToolType_;
 		AbstractDrawingTool* currentDrawingTool_;
+		std::vector<MovableElement*> elementsOnCanvas_;
+		CursorType currentCursor_;
 		
 		HWND parentWindow_;
+		
 		int penSize_;
 		void init();
 		void updateView( RECT boundingRect );
 		void updateView( const CRgn& region );
 		void updateView();
 		void createDoubleBuffer();
+		void setCursor(CursorType cursor);
+		
 		InputBoxControl* inputBox_;
 };
 

@@ -129,5 +129,31 @@
 [F] Some tweaks in video grabber module
 [F] Several bugs fixed
  
+v.1.1.5 from 25.05.2008
 
+New species of previews.
+Added support of English and Romanian languages.
+Displaying the upload speed of the files.
+Optional hosting server.
+Screenshot of selected area.
+
+v.1.1
+
+Improved function of generation previews
+Fixed a problem with the frame
+Added support for templates (see "template.txt")
+
+v.1.1 beta
+
+Redesigned program interface
+Added support for formats, WMV, ASF, and some others.
+Added experimental support for deinterlacing (remove the comb)
+Improved function "saving videoframes in 1 file"
+The function of adding information about the size of the image on preview
+New hosting server imageand "smages.com"
+Fix minor bugs
+
+v.1.0 beta on 08.11.07
+
+First public version
  

@@ -22,22 +22,27 @@ namespace ImageEditor {
 using namespace Gdiplus;
 
 AbstractDrawingTool::AbstractDrawingTool( Canvas *canvas ) {
-	_startPoint.x = 0;
-	_startPoint.y = 0;
-	_endPoint.x   = 0;
-	_endPoint.y   = 0;
+	startPoint_.x = 0;
+	startPoint_.y = 0;
+	endPoint_.x   = 0;
+	endPoint_.y   = 0;
 	assert( canvas );
-	_canvas = canvas;
+	canvas_ = canvas;
 }
 
 void AbstractDrawingTool::beginDraw( int x, int y ) {
-	_startPoint.x = x;
-	_startPoint.y = y;
+	startPoint_.x = x;
+	startPoint_.y = y;
 }
 
 void AbstractDrawingTool::endDraw( int x, int y ) {
-	_endPoint.x = x;
-	_endPoint.y = y;
+	endPoint_.x = x;
+	endPoint_.y = y;
+}
+
+Canvas::CursorType AbstractDrawingTool::getCursor()
+{
+	return Canvas::ctDefault;
 }
 
 VectorElementTool::VectorElementTool( Canvas* canvas, ElementType type ) : AbstractDrawingTool( canvas ) {
@@ -50,21 +55,25 @@ void VectorElementTool::beginDraw( int x, int y ) {
 	createElement();
 	currentElement_->setStartPoint( pt );
 	currentElement_->setEndPoint( pt );
-	_canvas->updateView();
+	canvas_->updateView();
 }
 
 void VectorElementTool::continueDraw( int x, int y, DWORD flags ) {
 	POINT pt = { x, y };
-	
-	currentElement_->setEndPoint( pt );
-	_canvas->updateView();
+	if ( currentElement_ ) {
+		currentElement_->setEndPoint( pt );
+	}
+	canvas_->updateView();
 }
 
 void VectorElementTool::endDraw( int x, int y ) {
 	POINT pt = { x, y };
-	currentElement_->setEndPoint( pt );
-	_canvas->currentDocument()->addDrawingElement( currentElement_ );
-	_canvas->updateView();
+	if ( currentElement_ ) {
+		currentElement_->setEndPoint( pt );
+	
+		canvas_->currentDocument()->addDrawingElement( currentElement_ );
+	}
+	canvas_->updateView();
 	currentElement_ = 0;
 }
 
@@ -95,7 +104,7 @@ PenTool::PenTool( Canvas* canvas ): AbstractDrawingTool( canvas )  {
 }
 
 void PenTool::beginDraw( int x, int y ) {
-	_canvas->currentDocument()->beginDrawing();
+	canvas_->currentDocument()->beginDrawing();
 	oldPoint_.x = x;
 	oldPoint_.y = y;
 }
@@ -107,16 +116,16 @@ void PenTool::continueDraw( int x, int y, DWORD flags ) {
 	Line * line =  new Line( oldPoint_.x, oldPoint_.y, x, y) ;
 
 	line->setPenSize(1 );
-	_canvas->currentDocument()->addDrawingElement( line );
+	canvas_->currentDocument()->addDrawingElement( line );
 
 	oldPoint_.x = x;
 	oldPoint_.y = y;
-	_canvas->updateView();
+	canvas_->updateView();
 
 }
 
 void PenTool::endDraw( int x, int y ) {
-	_canvas->currentDocument()->endDrawing();
+	canvas_->currentDocument()->endDrawing();
 }
 
 void PenTool::render( Gdiplus::Graphics* gr ) {
@@ -129,7 +138,7 @@ BrushTool::BrushTool( Canvas* canvas ) : AbstractDrawingTool( canvas ) {
 }
 
 void BrushTool::beginDraw( int x, int y ) {
-	_canvas->currentDocument()->beginDrawing();
+	canvas_->currentDocument()->beginDrawing();
 	oldPoint_.x = x;
 	oldPoint_.y = y;
 }
@@ -145,12 +154,12 @@ void BrushTool::continueDraw( int x, int y, DWORD flags ) {
 
 	oldPoint_.x = x;
 	oldPoint_.y = y;
-	_canvas->updateView();
+	canvas_->updateView();
 
 }
 
 void BrushTool::endDraw( int x, int y ) {
-	_canvas->currentDocument()->endDrawing();
+	canvas_->currentDocument()->endDrawing();
 }
 
 void BrushTool::render( Gdiplus::Graphics* gr ) {
@@ -176,7 +185,7 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
 /*	segments->markPoint( x0, y0 );
 	segments->markPoint( x1, y1 );*/
 
-	Graphics *gr = _canvas->currentDocument()->getGraphicsObject();
+	Graphics *gr = canvas_->currentDocument()->getGraphicsObject();
 	//SolidBrush br( Color( 0, 0, 0 ) );
 
 
@@ -238,11 +247,11 @@ void TextTool::continueDraw( int x, int y, DWORD flags ) {
 }
 
 void TextTool::endDraw( int x, int y ) {
-	int xStart = min( _startPoint.x, x );
-	int xEnd   = max( _startPoint.x, x );
+	int xStart = min( startPoint_.x, x );
+	int xEnd   = max( startPoint_.x, x );
 
-	int yStart = min( _startPoint.y, y );
-	int yEnd   = max( _startPoint.y, y );
+	int yStart = min( startPoint_.y, y );
+	int yEnd   = max( startPoint_.y, y );
 
 	if ( xEnd - xStart < 50 ) {
 		xEnd += 100;
@@ -252,12 +261,95 @@ void TextTool::endDraw( int x, int y ) {
 		yEnd += 25;
 	}
 	RECT inputRect = { xStart, yStart, xEnd, yEnd };
-	_canvas->getInputBox( inputRect );
+	canvas_->getInputBox( inputRect );
 }
 
 void TextTool::render( Gdiplus::Graphics* gr ) {
 
 }
 
+MovableElementTool::MovableElementTool( Canvas* canvas, MovableElement::ElementType type ) : AbstractDrawingTool( canvas ) {
+	currentElement_       = NULL;
+	elementType_          = type;
+}
+
+void MovableElementTool::beginDraw( int x, int y ) {
+	POINT pt = { x, y };
+	createElement();
+	currentElement_->setStartPoint( pt );
+	currentElement_->setEndPoint( pt );
+	canvas_->updateView();
+}
+
+void MovableElementTool::continueDraw( int x, int y, DWORD flags ) {
+	POINT pt = { x, y };
+	if ( currentElement_ ) {
+		currentElement_->setEndPoint( pt );
+	}
+	canvas_->updateView();
+}
+
+void MovableElementTool::endDraw( int x, int y ) {
+	POINT pt = { x, y };
+	if ( currentElement_ ) {
+		currentElement_->setEndPoint( pt );
+
+		canvas_->addMovableElement( currentElement_ );
+	}
+	canvas_->updateView();
+	currentElement_ = 0;
+}
+
+void MovableElementTool::render( Gdiplus::Graphics* gr ) {
+	if ( currentElement_ ) {
+		currentElement_->render( gr );
+	}
+}
+
+void MovableElementTool::createElement() {
+	delete currentElement_;
+	switch( elementType_ ) {
+		case MovableElement::etArrow:
+			//currentElement_ = new Line( 0, 0, 0, 0 );
+			break;
+		case MovableElement::etCrop:
+			currentElement_ = new Crop( 0, 0, 0, 0 );
+			break;
+	}
+
+}
+
+MovableElementTool::BoundaryType MovableElementTool::checkElementsBoundaries()
+{
+	std::vector<MovableElement*> cropElements;
+	canvas_->getElementsByType(MovableElement::etCrop, cropElements);
+	int count = cropElements.size();
+	for( int i  = 0; i< count; i++ ) {
+		MovableElementTool::BoundaryType bt = checkElementBoundaries(cropElements[i]);
+		if ( bt != btNone ) {
+			return bt;
+		}
+	}
+
+	return MovableElementTool::btNone;
+}	
+
+MovableElementTool::BoundaryType MovableElementTool::checkElementBoundaries(MovableElement* element)
+{
+	return btNone;
+}
+
+Canvas::CursorType MovableElementTool::getCursor()
+{
+	switch( elementType_ ) {
+		case MovableElement::etArrow:
+			//currentElement_ = new Line( 0, 0, 0, 0 );
+			break;
+		case MovableElement::etCrop:
+			return Canvas::ctCross;
+			break;
+	}
+	return Canvas::ctDefault;
+}
 
 }

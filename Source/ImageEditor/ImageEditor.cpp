@@ -4,11 +4,15 @@
 #include "ImageEditor/Gui/MainFrm.h"
 #include "ImageEditor/resource.h"
 #include "ImageEditor/Gui/ImageEditorView.h"
-
+#include <Core/Logging.h>
 
 CAppModule _Module;
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT) {
+	FLAGS_logtostderr = false;
+	FLAGS_alsologtostderr = true;
+
+	google::InitGoogleLogging("ImageEditor.exe");
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop( &theLoop );
 

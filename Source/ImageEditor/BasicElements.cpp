@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <GdiPlus.h>
-
+#include <Core/Logging.h>
 namespace ImageEditor {
 
 Line::Line(int startX, int startY, int endX, int endY) {
@@ -142,6 +142,63 @@ void TextElement::getAffectedSegments( AffectedSegments* segments ) {
 	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
 	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
 	segments->markRect( x, y, width, height ); // top
+}
+
+
+// Rectangle
+//
+Crop::Crop(int startX, int startY, int endX, int endY) {
+	startPoint_.x = startX;
+	startPoint_.y = startY;
+	endPoint_.x   = endX;
+	endPoint_.y   = endY;
+}
+
+void Crop::render(Gdiplus::Graphics* gr) {
+	using namespace Gdiplus;
+	if ( !gr ) {
+		return;
+	}
+	
+	MovableElement::render(gr);
+	if ( isSelected_ ) {
+		int rectSize = 6;
+		int halfSize = rectSize /2 ;
+		Gdiplus::Pen pen( Color( 255,255, 255) );
+		//pen.SetDashStyle(DashStyleDash);
+		int x = std::min<>( startPoint_.x, endPoint_.x );
+		int y = std::min<>( startPoint_.y, endPoint_.y );
+		int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
+		int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
+		Gdiplus::SolidBrush brush(Color( 10, 10, 10) );
+
+		POINT pts[4] = {{x,y}, {x+width,y}, {x,y+height},{x+width,y+height}};
+		for( int i = 0; i < 4; i++ ) {
+			int x = pts[i].x;
+			int y = pts[i].y;
+			gr->FillRectangle( &brush, x-halfSize, y-halfSize, rectSize, rectSize );
+			gr->DrawRectangle( &pen, x-halfSize-1, y-halfSize-1, rectSize+1, rectSize+1 );
+		}
+
+	}
+//	LOG(INFO)<<x<<" "<<y;
+}
+
+void Crop::resize(Gdiplus::Rect newSize) {
+	DrawingElement::resize(newSize);
+}
+
+void Crop::getAffectedSegments( AffectedSegments* segments ) {
+	int x = std::min<>( startPoint_.x, endPoint_.x );
+	int y = std::min<>( startPoint_.y, endPoint_.y );
+	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
+	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
+
+	//segments->markRect( x, y, width, height );
+	segments->markRect( x, y, width, penSize_ ); // top
+	segments->markRect( x, y, penSize_, height ); // left
+	segments->markRect( x, y + height - penSize_, width, penSize_ ); // bottom
+	segments->markRect( x + width - penSize_, y, penSize_, height ); // right*/
 }
 
 }

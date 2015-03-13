@@ -69,8 +69,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 		CString trans;
 		trans.Format(TR("%s translation:"),Lang.GetLanguageName());
 		memoText += L"\r\n"+ trans + L"\r\n"+ translatorName +L"\r\n\r\n";
-	}
-	memoText += L"Other languages: \r\nMishunika, Adrianis, \r\nHessam Mohamadi, ozzii.translate@***.com\r\n\r\n";
+		memoText += L"Other languages: \r\n";
+	} 
+	memoText += L"Mishunika, Adrianis, \r\nHessam Mohamadi, ozzii.translate@***.com\r\n\r\n";
 
 	memoText += TR("Бета-тестерам:")+ CString("\r\n");
 	memoText += L"Graf, CKA3O4H1K\r\n\r\n";

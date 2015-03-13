@@ -21,6 +21,7 @@ CImageEditorView::CImageEditorView() {
 	menuItems_[ID_LINE].toolId      = Canvas::dtLine;
 	menuItems_[ID_BRUSH].toolId     = Canvas::dtBrush;
 	menuItems_[ID_RECTANGLE].toolId = Canvas::dtRectangle;
+	menuItems_[ID_CROP].toolId = Canvas::dtRectangle;
 }
 
 BOOL CImageEditorView::PreTranslateMessage(MSG* /*pMsg*/) {
@@ -46,7 +47,7 @@ LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 void CImageEditorView::setCanvas(ImageEditor::Canvas *canvas) {
 	canvas_ = canvas;
 	if ( canvas ) {
-		canvas_->setSize( 500, 500 );
+		canvas_->setSize( 1280, 720 );
 		canvas_->setCallback( this );
 		canvas_->setDrawingToolType(Canvas::dtRectangle);
 	}
@@ -115,6 +116,7 @@ LRESULT CImageEditorView::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
 	menu.AppendMenu(MF_STRING, ID_LINE, TR("Линия"));
 	menu.AppendMenu(MF_STRING, ID_RECTANGLE, TR("Прямоугольник"));
 	menu.AppendMenu(MF_STRING, ID_TEXT, TR("Добавить текст"));
+	menu.AppendMenu(MF_STRING, ID_CROP, TR("Обрезка"));
 
 	//menu.SetMenuDefaultItem(0, true);
 	menu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
@@ -138,6 +140,47 @@ LRESULT CImageEditorView::OnTextClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	
 	canvas_->setDrawingToolType( Canvas::dtText );
 	return 0;
+}
+
+LRESULT CImageEditorView::OnSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	SetCursor(getCachedCursor(canvas_->getCursor()));
+	return 0;
+}
+
+
+HCURSOR CImageEditorView::getCachedCursor(Canvas::CursorType cursorType)
+{
+	HCURSOR cur = cursorCache_[cursorType];
+	if ( cur ) {
+		return cur;
+	}
+	LPCTSTR lpCursorName = 0;
+	switch( cursorType ) {
+		case Canvas::ctEdit:
+			lpCursorName = IDC_IBEAM;
+			break;
+		case Canvas::ctResizeVertical:
+			lpCursorName = IDC_SIZENS;
+			break;
+		case Canvas::ctResizeHorizontal:
+			lpCursorName = IDC_SIZEWE;
+			break;
+		case Canvas::ctResizeDiagonalMain:
+			lpCursorName = IDC_SIZENWSE;
+			break;
+		case Canvas::ctResizeDiagonalAnti:
+			lpCursorName = IDC_SIZENESW;
+			break;
+		case Canvas::ctCross:
+			lpCursorName = IDC_CROSS;
+			break;
+		default:
+			lpCursorName = IDC_ARROW;
+	}
+	cur = LoadCursor(0, lpCursorName);
+	cursorCache_[cursorType] = cur;
+	return cur;
 }
 
 }

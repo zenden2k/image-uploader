@@ -36,7 +36,7 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
 	TRC(IDC_DOWNLOADURLLABEL,"URL для скачивания:");
 	TRC(IDCANCEL,"Отмена");
 	TRC(IDC_THEURLOFUPLOADEDLABEL,"Ссылка для скачивания будет выглядеть так:");
-	TRC(IDC_ADDFILEPROTOCOL,"Конвертировать UNC путь \"\\\\\" в \"file://\"");
+	TRC(IDC_ADDFILEPROTOCOL,"Конвертировать UNC путь \"\\\\\" в \"file://///\"");
 
 	
 	HICON ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON	, 16,16,0);
@@ -226,7 +226,7 @@ void CAddDirectoryServerDialog::GenerateExampleUrl()
 
 	if ( addFileProtocol && downloadUrl.Left(2) == _T("\\\\") ) {
 		downloadUrl.Replace(L"\\", L"/");
-		downloadUrl = L"file:" + downloadUrl;
+		downloadUrl = L"file:///" + downloadUrl;
 	}
 
 	SetDlgItemText(IDC_EXAMPLEURLLABEL, downloadUrl + "example.png");

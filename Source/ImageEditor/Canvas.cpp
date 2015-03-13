@@ -9,6 +9,7 @@
 #include "DrawingTool.h"
 #include "InputBox.h"
 #include "Gui/InputBoxControl.h"
+#include <Core/Logging.h>
 
 
 namespace ImageEditor {
@@ -24,6 +25,7 @@ Canvas::Canvas( HWND parent ) {
 	leftMouseDownPoint_.y = -1;
 	buffer_               = NULL;
 	inputBox_             = NULL;
+	currentCursor_    = ctDefault;
 	createDoubleBuffer();
 }
 
@@ -54,10 +56,15 @@ void Canvas::setDocument( Document *doc ) {
 void Canvas::mouseMove( int x, int y, DWORD flags) {
 	bool isLButtonDown = flags & MK_LBUTTON;
 	POINT point        = { x, y };
+	if ( x > canvasWidth_ || y > canvasHeight_ || x <0 || y <0) {
+		return;
+	}
 	if ( isLButtonDown  ) {
 		assert( currentDrawingTool_ );
 		currentDrawingTool_->continueDraw( x,  y, flags );
 	}
+	CursorType ct = currentDrawingTool_->getCursor();
+	setCursor(ct);
 	/*if (isLButtonDown && currentElement_ != NULL ) {
 		AffectedSegments prevSegments;
 		currentElement_->getAffectedSegments( &prevSegments );
@@ -127,6 +134,10 @@ void Canvas::render(Gdiplus::Graphics* gr, const RECT& rect) {
 		currentDrawingTool_->render( &bufferedGr );
 	}
 
+	for ( int i=0; i< elementsOnCanvas_.size(); i++) {
+		elementsOnCanvas_[i]->render(&bufferedGr);
+	}
+
 	gr->DrawImage( buffer_, 0, 0 );
 }
 
@@ -161,6 +172,16 @@ void Canvas::setDrawingToolType(DrawingToolType toolType) {
 			type = VectorElementTool::etLine;
 		else if ( toolType == dtRectangle ) {
 			type = VectorElementTool::etRectangle;
+		} else {
+			 MovableElement::ElementType type;
+		   if ( toolType == dtCrop ) {
+			  
+				type = MovableElement::etCrop;
+			}
+
+		   currentDrawingTool_ = new MovableElementTool( this, type );
+
+			return;
 		}
 		
 		currentDrawingTool_ = new VectorElementTool( this, type );
@@ -168,8 +189,18 @@ void Canvas::setDrawingToolType(DrawingToolType toolType) {
 	
 }
 
+void Canvas::addMovableElement(MovableElement* element)
+{
+	elementsOnCanvas_.push_back(element);
+}
+
+void Canvas::deleteMovableElement(MovableElement* element)
+{
+
+}
+
 void Canvas::updateView() {
-	RECT rc = { 0, 0, 500, 500 };
+	RECT rc = { 0, 0, 1280, 720 };
 	updateView( rc );
 }
 
@@ -182,6 +213,31 @@ void Canvas::updateView( const CRgn& region ) {
 void Canvas::createDoubleBuffer() {
 	delete buffer_;
 	buffer_ = new Gdiplus::Bitmap( canvasWidth_, canvasHeight_ );
+}
+
+void Canvas::setCursor(CursorType cursorType)
+{
+	if ( currentCursor_ == cursorType ) {
+		return;
+	}
+
+	currentCursor_ = cursorType ;
+}
+
+
+void Canvas::getElementsByType(MovableElement::ElementType elementType, std::vector<MovableElement*>& out)
+{
+	int count = elementsOnCanvas_.size();
+	for ( int i = 0; i < count; i++ ) {
+		if ( elementsOnCanvas_[i]->getType() == elementType ) {
+			out.push_back(elementsOnCanvas_[i]);
+		}
+	}
+}
+
+Canvas::CursorType Canvas::getCursor() const
+{
+	return currentCursor_;
 }
 
 bool Canvas::undo() {

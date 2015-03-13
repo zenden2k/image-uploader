@@ -50,8 +50,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Source&quot;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;_DEBUG"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Source\&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;"
+				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;_DEBUG;GOOGLE_GLOG_DLL_DECL="
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -74,8 +74,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdiplus.lib"
+				AdditionalDependencies="gdiplus.lib libglog_static.lib"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib\Debug&quot;;&quot;$(SolutionDir)\Contrib\Lib\&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
@@ -139,8 +140,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP4"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Source\&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;NDEBUG"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Source\&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;"
+				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;NDEBUG;GOOGLE_GLOG_DLL_DECL="
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -162,8 +163,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdiplus.lib"
+				AdditionalDependencies="gdiplus.lib libglog_static.lib"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib\Release&quot;;&quot;$(SolutionDir)\Contrib\Lib\&quot;"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -260,12 +262,28 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Source\ImageEditor\MovableElement.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\ImageEditor\MovableElement.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\ImageEditor\resource.h"
 				>
 			</File>
 			<File
 				RelativePath="..\Source\ImageEditor\stdafx.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -356,6 +374,14 @@
 			<File
 				RelativePath="..\Source\ImageEditor\ImageEditor.rc"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+						AdditionalIncludeDirectories="&quot;$(IntDir)&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>

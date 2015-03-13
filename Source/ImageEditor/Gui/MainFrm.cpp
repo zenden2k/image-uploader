@@ -19,27 +19,25 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 
 BOOL CMainFrame::OnIdle()
 {
-	UIUpdateToolBar();
 	return FALSE;
 }
 
 LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	CreateSimpleToolBar();
 
 	m_hWndClient = m_view.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
 
-	currentDoc_ = new ImageEditor::Document( 500, 500 );
+	currentDoc_ = new ImageEditor::Document(L"screenshot.png");
+	void setSize( int x, int y );
 	
 	//ImageEditor::Line line( 0, 0, 50, 50 );
 	//line.resize( Gdiplus::Rect( 0, 0, 50, 50 ) );
 	//currentDoc_->addDrawingElement( &line );
 	ImageEditor::Canvas *canvas = new ImageEditor::Canvas( m_hWnd );
 	canvas->setDocument( currentDoc_ );
+	
 	m_view.setCanvas( canvas );
-	UIAddToolBar(m_hWndToolBar);
-	UISetCheck(ID_VIEW_TOOLBAR, 1);
-
+	canvas->setDrawingToolType(ImageEditor::Canvas::dtCrop);
 	// register object for message filtering and idle updates
 	CMessageLoop* pLoop = _Module.GetMessageLoop();
 	ATLASSERT(pLoop != NULL);

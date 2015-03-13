@@ -4,6 +4,7 @@
 
 #include <GdiPlus.h>
 #include "DrawingElement.h"
+#include <Core/Logging.h>
 
 namespace ImageEditor {
 	using namespace Gdiplus;
@@ -15,6 +16,7 @@ Document::Document(int width, int height) {
 
 Document::Document(const wchar_t* fileName) {
 	currentImage_ = new Gdiplus::Bitmap( fileName );
+	//LOG(INFO) << "Last status " << (int)currentImage_->GetLastStatus();
 	init();
 }
 
@@ -28,9 +30,9 @@ void Document::init() {
 	drawStarted_ = false;
 	originalImage_ = NULL;
 	currentCanvas_ = new Gdiplus::Graphics( currentImage_ );
-	currentCanvas_->Clear( Gdiplus::Color( 150, 0, 0 ) );
+	//currentCanvas_->Clear( Gdiplus::Color( 150, 0, 0 ) );
 
-	for ( int i = 0; i < 20; i++ ) {
+	for ( int i = 0; i < currentImage_->GetWidth() / 20; i++ ) {
 		Pen pen(Color::DarkGray);
 		currentCanvas_->DrawLine(&pen, i * AffectedSegments::kSegmentSize, 0, i * AffectedSegments::kSegmentSize, currentImage_->GetHeight() );
 		currentCanvas_->DrawLine(&pen, 0, i * AffectedSegments::kSegmentSize, currentImage_->GetWidth(),  i * AffectedSegments::kSegmentSize  );

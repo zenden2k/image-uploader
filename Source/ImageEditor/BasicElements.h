@@ -3,6 +3,7 @@
 
 #include <GdiPlus.h>
 #include "DrawingElement.h"
+#include "MovableElement.h"
 
 namespace ImageEditor {
 
@@ -31,6 +32,14 @@ class TextElement: public DrawingElement {
 		void resize(Gdiplus::Rect newSize);
 		void getAffectedSegments( AffectedSegments* segments );
 
+};
+
+class Crop: public MovableElement {
+public:
+	Crop(int startX, int startY, int endX,int endY);
+	void render(Gdiplus::Graphics* gr);
+	void resize(Gdiplus::Rect newSize);
+	void getAffectedSegments( AffectedSegments* segments );
 };
 
 }

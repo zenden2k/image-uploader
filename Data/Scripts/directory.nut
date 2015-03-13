@@ -52,7 +52,7 @@ function  UploadFile(FileName, options)
 	options.setDirectUrl(downloadUrl + encodedFileName);
 		
 	if ( downloadUrl.find("\\\\") == 0 ) {
-		local convertedUrl = "file:" + reg_replace(downloadUrl,"\\","/") + reg_replace(nm.urlEncode(newFilename),"%2E",".");
+		local convertedUrl = "file:///" + reg_replace(downloadUrl,"\\","/") + reg_replace(nm.urlEncode(newFilename),"%2E",".");
 		if ( convertUncPath == 1) {
 			options.setDirectUrl(convertedUrl);
 		} else {
@@ -70,7 +70,7 @@ function GetServerParamList()
 	{
 		directory   = "Directory"
 		downloadUrl = "Download path (ftp or http)",
-		convertUncPath = "Convert UNC path \"\\\\\" to file://"
+		convertUncPath = "Convert UNC path \"\\\\\" to file://///"
 	}
 	return a;
 }
