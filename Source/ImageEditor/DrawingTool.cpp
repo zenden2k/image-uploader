@@ -86,7 +86,7 @@ void VectorElementTool::endDraw( int x, int y ) {
 	currentElement_ = 0;
 }
 
-void VectorElementTool::render( Gdiplus::Graphics* gr ) {
+void VectorElementTool::render( Painter* gr ) {
 	if ( currentElement_ ) {
 		currentElement_->render( gr );
 	}
@@ -142,7 +142,7 @@ void PenTool::endDraw( int x, int y ) {
 	canvas_->currentDocument()->endDrawing();
 }
 
-void PenTool::render( Gdiplus::Graphics* gr ) {
+void PenTool::render( Painter* gr ) {
 
 }
 
@@ -176,7 +176,7 @@ void BrushTool::endDraw( int x, int y ) {
 	canvas_->currentDocument()->endDrawing();
 }
 
-void BrushTool::render( Gdiplus::Graphics* gr ) {
+void BrushTool::render( Painter* gr ) {
 
 }
 
@@ -278,7 +278,7 @@ void TextTool::endDraw( int x, int y ) {
 	canvas_->getInputBox( inputRect );
 }
 
-void TextTool::render( Gdiplus::Graphics* gr ) {
+void TextTool::render( Painter* gr ) {
 
 }
 
@@ -308,6 +308,8 @@ void MovableElementTool::beginDraw( int x, int y ) {
 	canvas_->deleteElementsByType(elementType_);
 	POINT pt = { x, y };
 	createElement();
+	startPoint_.x = x;
+	startPoint_.y = y;
 	currentElement_->setStartPoint( pt );
 	currentElement_->setEndPoint( pt );
 	canvas_->addMovableElement( currentElement_ );
@@ -380,15 +382,22 @@ void MovableElementTool::continueDraw( int x, int y, DWORD flags ) {
 		canvas_->updateView();
 		return;
 	}
+	
 	POINT pt = { x, y };
 	if ( currentElement_ ) {
 		currentElement_->setEndPoint( pt );
 	}
+	
 	canvas_->updateView();
 }
 
 void MovableElementTool::endDraw( int x, int y ) {
+	if ( currentElement_ && currentElement_->getType() == etCrop && canvas_->onCropChanged ) {
+		LOG(INFO) << "onCropChanged";
+		canvas_->onCropChanged(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
+	}
 	if ( draggedBoundary_!= btNone ) {
+		
 		draggedBoundary_ = btNone;
 		return;
 	}
@@ -397,12 +406,16 @@ void MovableElementTool::endDraw( int x, int y ) {
 		return;
 	}
 	POINT pt = { x, y };
-	
+	if ( x == startPoint_.x && y == startPoint_.y ) {
+		canvas_->deleteMovableElement(currentElement_);
+		currentElement_ = 0;
+		canvas_->setOverlay(0);
+	}
 	canvas_->updateView();
 	currentElement_ = 0;
 }
 
-void MovableElementTool::render( Gdiplus::Graphics* gr ) {
+void MovableElementTool::render( Painter* gr ) {
 	if ( currentElement_ ) {
 		currentElement_->render( gr );
 	}

@@ -23,7 +23,7 @@ void Line::setEndPoint(POINT endPoint) {
 	DrawingElement::setEndPoint( endPoint );
 }
 
-void Line::render(Gdiplus::Graphics* gr) {
+void Line::render(Painter* gr) {
 	using namespace Gdiplus;
 	if ( !gr ) {
 		return;
@@ -79,7 +79,7 @@ Rectangle::Rectangle(int startX, int startY, int endX, int endY) {
 	endPoint_.y   = endY;
 }
 
-void Rectangle::render(Gdiplus::Graphics* gr) {
+void Rectangle::render(Painter* gr) {
 	using namespace Gdiplus;
 	if ( !gr ) {
 		return;

@@ -16,8 +16,8 @@ class MovableElement: public DrawingElement {
 		
 		enum { kGripSize = 6 };
 		MovableElement();
-		void render(Gdiplus::Graphics* gr);
-		void renderGrips(Gdiplus::Graphics* gr);
+		void render(Painter* gr);
+		void renderGrips(Painter* gr);
 		void setSelected(bool selected);
 		bool isSelected() const;
 		virtual ElementType getType() const;

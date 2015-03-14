@@ -33,6 +33,9 @@ Canvas::Canvas( HWND parent ) {
 
 Canvas::~Canvas() {
 	delete buffer_;
+	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
+		delete elementsOnCanvas_[i];
+	}
 }
 
 void Canvas::setSize( int x, int y ) {
@@ -126,7 +129,7 @@ void Canvas::mouseUp( int button, int x, int y ) {
 	currentElement_ = 0;*/
 }
 
-void Canvas::render(Gdiplus::Graphics* gr, const RECT& rect) {
+void Canvas::render(Painter* gr, const RECT& rect) {
 	Gdiplus::Graphics bufferedGr( buffer_ );
 	//gr->SetClip( Gdiplus::Rect( rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top ) );
 	//bufferedGr.SetClip( region );
@@ -203,7 +206,13 @@ void Canvas::addMovableElement(MovableElement* element)
 
 void Canvas::deleteMovableElement(MovableElement* element)
 {
-
+	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i] = element ) {
+			elementsOnCanvas_.erase(elementsOnCanvas_.begin() + i);
+			delete element;
+			break;
+		}
+	}
 }
 
 void Canvas::updateView() {

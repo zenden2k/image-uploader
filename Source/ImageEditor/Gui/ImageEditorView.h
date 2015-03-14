@@ -7,7 +7,7 @@
 #include <map>
 #include "ImageEditor/Canvas.h"
 #include <map>
-
+#include "Toolbar.h"
 #pragma once
 
 namespace ImageEditor {
@@ -64,11 +64,12 @@ class CImageEditorView : public CWindowImpl<CImageEditorView>, public ImageEdito
 		ImageEditor::Canvas *canvas_;
 		std::map<int, MenuItem> menuItems_;
 		std::map<CursorType, HCURSOR> cursorCache_;
-		CToolBarCtrl horizontalToolbar_;
-		CToolBarCtrl verticalToolbar_;
+		Toolbar horizontalToolbar_;
+		Toolbar verticalToolbar_;
 		CImageList toolbarImageList_;
 		HCURSOR getCachedCursor(CursorType cursorType);
 		void createToolbars();
+		void OnCropChanged(int x, int y, int w, int h);
 };
 
 }

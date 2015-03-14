@@ -6,6 +6,7 @@
 #include "Gui/InputBoxControl.h"
 #include "MovableElement.h"
 #include <vector>
+#include <Core/3rdpart/FastDelegate.h>
 
 namespace ImageEditor {
 
@@ -35,7 +36,7 @@ class Canvas {
 		void mouseDown( int button, int x, int y );
 		void mouseUp( int button, int x, int y );
 		Document* currentDocument() const;
-		void render(Gdiplus::Graphics* gr, const RECT& rect);
+		void render(Painter* gr, const RECT& rect);
 		void setCallback(Callback * callback);
 		void setPenSize(int size);
 		void setDrawingToolType(DrawingToolType tool);
@@ -53,6 +54,8 @@ class Canvas {
 		CursorType getCursor() const;
 		bool undo();
 		InputBox* getInputBox( const RECT& rect ); 
+
+		fastdelegate::FastDelegate4<int,int,int,int> onCropChanged;
 		friend class AbstractDrawingTool;
 		friend class VectorElementTool;
 		friend class PenTool;

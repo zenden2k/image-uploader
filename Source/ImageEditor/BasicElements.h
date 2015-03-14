@@ -10,7 +10,7 @@ namespace ImageEditor {
 class Line: public DrawingElement {
 	public:
 		Line(int startX, int startY, int endX,int endY);
-		void render(Gdiplus::Graphics* gr);
+		void render(Painter* gr);
 		void setEndPoint(POINT endPoint);
 		void getAffectedSegments( AffectedSegments* segments );
 		
@@ -19,7 +19,7 @@ class Line: public DrawingElement {
 class Rectangle: public DrawingElement {
 	public:
 		Rectangle(int startX, int startY, int endX,int endY);
-		void render(Gdiplus::Graphics* gr);
+		void render(Painter* gr);
 		void getAffectedSegments( AffectedSegments* segments );
 };
 

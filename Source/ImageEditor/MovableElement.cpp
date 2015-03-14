@@ -18,13 +18,13 @@ MovableElement::MovableElement(){
 }
 
 
-void MovableElement::render(Gdiplus::Graphics* gr)
+void MovableElement::render(Painter* gr)
 {
 	
 
 }
 
-void MovableElement::renderGrips(Gdiplus::Graphics* gr)
+void MovableElement::renderGrips(Painter* gr)
 {
 	Gdiplus::Pen pen( Color( 0, 0, 0) );
 	//Gdiplus::SolidBrush brush(Color( 255, 255, 255) );

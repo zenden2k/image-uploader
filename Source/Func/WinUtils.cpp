@@ -249,6 +249,19 @@ bool IsVista() {
 	return FALSE;
 }
 
+bool IsWindows8orLater() {
+	OSVERSIONINFO osver;
+	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
+
+	if ( ::GetVersionEx( &osver ) && 
+		osver.dwPlatformId == VER_PLATFORM_WIN32_NT && 
+		( (osver.dwMajorVersion > 6 ) || (osver.dwMajorVersion == 6 && osver.dwMinorVersion >=2)) ) {
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
 bool IsWindows64Bit()
 {
 	SYSTEM_INFO si;

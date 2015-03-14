@@ -329,6 +329,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Source\ImageEditor\Gui\ImageEditorWindow.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\ImageEditor\Gui\ImageEditorWindow.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\ImageEditor\Gui\InputBoxControl.cpp"
 					>
 				</File>
@@ -337,11 +345,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Source\ImageEditor\Gui\MainFrm.cpp"
+					RelativePath="..\Source\ImageEditor\Gui\Toolbar.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\Source\ImageEditor\Gui\MainFrm.h"
+					RelativePath="..\Source\ImageEditor\Gui\Toolbar.h"
 					>
 				</File>
 			</Filter>

@@ -98,6 +98,10 @@ public:
             img_convert_ctx = NULL;
             currentFrame_ = NULL;
 			fileSize_ = 0;
+			buffer = 0;
+			pFrameRGB = 0;
+			pFrame = 0;
+			pCodecCtx = 0;
         }
 
 		  ~AvcodecFrameGrabberPrivate() {
@@ -121,7 +125,7 @@ public:
 			//pFormatCtx = avformat_alloc_context();
         // Open video file
         if(avformat_open_input(&pFormatCtx, fileName.c_str(), NULL, 0)!=0) {
-		
+			LOG(ERROR) << "Cannot open input file (avformat_open_input failed)";
             //m_error.sprintf("Couldn't open file \"%s\"\r\n",(const char*)fname.toLocal8Bit());
             return false; // Couldn't open file
         }
@@ -130,6 +134,7 @@ public:
 
         // Retrieve stream information
         if(avformat_find_stream_info(pFormatCtx,0)<0) {
+			LOG(ERROR) << "Couldn't find stream information.";
             return false; // Couldn't find stream information
         }
 		fileSize_ = IuCoreUtils::getFileSize(fileName);
@@ -158,6 +163,7 @@ public:
         // Find the decoder for the video stream
         pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
         if( pCodec == NULL ){
+			LOG(ERROR) << "Couldn't find codec.";
             return false; // Codec not found
         }
 
@@ -287,21 +293,30 @@ public:
 
     void close() {
         // Free the RGB image
-        free(buffer);
-        av_free(pFrameRGB);
+		if ( buffer ) {
+			free(buffer);
+		}
+		if ( pFrameRGB ) {
+			 av_free(pFrameRGB);
+		}
         if ( img_convert_ctx ) {
             sws_freeContext(img_convert_ctx);
         }
 
-        // Free the YUV frame
-        av_free(pFrame);
+		if ( pFrame ) {
+			// Free the YUV frame
+			av_free(pFrame);
+		}
 
-        // Close the codec
-        avcodec_close(pCodecCtx);
+		if ( pCodecCtx ) {
+			// Close the codec
+			avcodec_close(pCodecCtx);
+		}
 
-        // Close the video file
-        avformat_close_input (&pFormatCtx);
-		//avformat_free_context(pFormatCtx);
+		if ( pFormatCtx ) {
+			// Close the video file
+			avformat_close_input (&pFormatCtx);
+		}
     }
 	void write_frame_to_file(AVFrame* frame, int width, int height, int iframe)
 	{
@@ -392,7 +407,7 @@ public:
             int64_t seek_max= /*INT64_MAX*/seek_target*1.1;
 
             if ( avformat_seek_file(pFormatCtx, videoStream,0, seek_target, seek_target, seekByBytes?AVSEEK_FLAG_BYTE:0) < 0  )  {
-				LOG(ERROR) << "avformat_seek_file failed to seek to position "<<seek_target << " seekByBytes="<<seekByBytes;
+				LOG(WARNING) << "avformat_seek_file failed to seek to position "<<seek_target << " seekByBytes="<<seekByBytes;
             }
 
             avcodec_flush_buffers(pCodecCtx) ;
@@ -441,6 +456,9 @@ public:
 							 display_time = (double)time/ (double)AV_TIME_BASE;
 						 }
 							 
+						 if ( display_time < 0 ) {
+							 display_time = 0;
+						 }
 
 						
                         currentFrame_ = new AvcodecVideoFrame(pFrameRGB, pFrameRGB->data[0],numBytes, display_time,pCodecCtx->width, pCodecCtx->height);

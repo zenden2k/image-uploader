@@ -13,6 +13,7 @@ namespace WinUtils {
 	bool IsDirectory(LPCTSTR szFileName);
 	bool IsVista();
 	bool IsWindows64Bit();
+	bool IsWindows8orLater();
 	// Function that gets path to SendTo folder
 	CString GetSendToPath();
 	CString GetSystemSpecialPath(int csidl);

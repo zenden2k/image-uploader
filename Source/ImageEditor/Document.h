@@ -5,6 +5,7 @@
 #include <GdiPlus.h>
 #include <queue>
 #include <vector>
+#include "BasicTypes.h"
 #include "DrawingElement.h"
 
 namespace ImageEditor {
@@ -23,17 +24,19 @@ class Document {
 		Document(const wchar_t* fileName);
 		Document(Gdiplus::Bitmap *sourceImage);
 		
-		Gdiplus::Graphics* getGraphicsObject();
+		Painter* getGraphicsObject();
 		void beginDrawing( bool cloneImage = true );
 		void addDrawingElement(DrawingElement *element);
 		void endDrawing();
 
-		void render(Gdiplus::Graphics* gr);
+		void render(Painter* gr);
 		bool undo();
+		int getWidth();
+		int getHeight();
 	private:
 		Gdiplus::Bitmap* currentImage_;
 		Gdiplus::Bitmap* originalImage_;
-		Gdiplus::Graphics* currentCanvas_;
+		Painter* currentCanvas_;
 		std::vector<HistoryItem> history_;
 		bool drawStarted_;
 		AffectedSegments changedSegments_;

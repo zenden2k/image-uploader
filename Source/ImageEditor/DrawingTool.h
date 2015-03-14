@@ -17,7 +17,7 @@ class AbstractDrawingTool {
 		virtual void beginDraw( int x, int y );
 		virtual void continueDraw( int x, int y, DWORD flags ) = NULL;
 		virtual void endDraw( int x, int y );
-		virtual void render( Gdiplus::Graphics* gr ) = NULL;
+		virtual void render( Painter* gr ) = NULL;
 		virtual CursorType getCursor(int x, int y);
 	protected:
 		Canvas* canvas_;
@@ -31,7 +31,7 @@ class VectorElementTool: public AbstractDrawingTool {
 		void beginDraw( int x, int y );
 		void continueDraw( int x, int y, DWORD flags );
 		void endDraw( int x, int y );
-		void render( Gdiplus::Graphics* gr );
+		void render( Painter* gr );
 		
 	private:
 		DrawingElement* currentElement_;
@@ -47,7 +47,7 @@ class MovableElementTool: public AbstractDrawingTool {
 		void beginDraw( int x, int y );
 		void continueDraw( int x, int y, DWORD flags );
 		void endDraw( int x, int y );
-		void render( Gdiplus::Graphics* gr );
+		void render( Painter* gr );
 		
 	private:
 		MovableElement* currentElement_;
@@ -69,7 +69,7 @@ class PenTool: public AbstractDrawingTool  {
 		void beginDraw( int x, int y );
 		void continueDraw( int x, int y, DWORD flags = 0);
 		void endDraw( int x, int y );
-		void render( Gdiplus::Graphics* gr );
+		void render( Painter* gr );
 	private:
 		POINT oldPoint_;
 };
@@ -80,7 +80,7 @@ public:
 	void beginDraw( int x, int y );
 	void continueDraw( int x, int y, DWORD flags = 0);
 	void endDraw( int x, int y );
-	void render( Gdiplus::Graphics* gr );
+	void render( Painter* gr );
 private:
 	POINT oldPoint_;
 	void drawLine(int x0, int y0, int x1, int y1);
@@ -92,7 +92,7 @@ public:
 	void beginDraw( int x, int y );
 	void continueDraw( int x, int y, DWORD flags = 0);
 	void endDraw( int x, int y );
-	void render( Gdiplus::Graphics* gr );
+	void render( Painter* gr );
 private:
 	
 };

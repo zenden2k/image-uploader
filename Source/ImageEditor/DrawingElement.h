@@ -1,35 +1,23 @@
 #ifndef IMAGEEDITOR_DRAWINGELEMENT_H
 #define IMAGEEDITOR_DRAWINGELEMENT_H
 
+#include "BasicTypes.h"
+
 #include <GdiPlus.h>
 #include <map>
 #include <deque>
+
 namespace ImageEditor {
 
 class Canvas;
 
 class AffectedSegments;
 
-#ifndef _WIN32
-struct POINT {
-	int x;
-	int y;
-};
-
-struct RECT
-{
-	int    left;
-	int    top;
-	int    right;
-	int    bottom;
-}
-#endif
-
 class DrawingElement {
 	public:
 		DrawingElement();
 		virtual ~DrawingElement() {};
-		virtual void render(Gdiplus::Graphics* gr) = 0;
+		virtual void render(Painter* gr) = 0;
 		virtual void resize(int width, int height);
 		virtual void setStartPoint(POINT startPoint);
 		virtual void setEndPoint(POINT endPoint);

@@ -481,8 +481,8 @@ CSettings::CSettings()
 	ScreenshotSettings.ShowForeground = false;
 	ScreenshotSettings.FilenameTemplate = _T("screenshot %y-%m-%d %i");
 	ScreenshotSettings.CopyToClipboard = false;
-	ScreenshotSettings.RemoveCorners = true;
-	ScreenshotSettings.AddShadow = true;
+	ScreenshotSettings.RemoveCorners = !WinUtils::IsWindows8orLater();
+	ScreenshotSettings.AddShadow = false;
 	ScreenshotSettings.RemoveBackground = false;
 
 

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<UpdatePackageSource Name="iu_ffmpeg" DisplayName="FFmpeg libraries" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" CoreUpdate="1" >
+	<Entries>
+		<Entry Name="avcodec-54.dll" SaveToFolder="%apppath%/" Action="delete"/>
+		<Entry Name="avdevice-54.dll" SaveToFolder="%apppath%/" Action="delete"/>
+		<Entry Name="avfilter-3.dll" SaveToFolder="%apppath%/" Action="delete"/>
+		<Entry Name="avformat-54.dll" SaveToFolder="%apppath%/" Action="delete"/>
+		<Entry Name="avutil-52.dll" SaveToFolder="%apppath%/" Action="delete"/>
+		<Entry Name="swresample-0.dll" SaveToFolder="%apppath%/" Action="delete"/>
+		<Entry Name="swscale-2.dll" SaveToFolder="%apppath%/" Action="delete"/>
+	
+		<Entry Name="av*.dll" SaveToFolder="%apppath%/" Action="add"/>
+		<Entry Name="sw*.dll" SaveToFolder="%apppath%/" Action="add"/>
+	</Entries>
+<Info>
+New FFmpeg version 2.6
+</Info>
+</UpdatePackageSource>

@@ -16,7 +16,7 @@
 #endif
 namespace ImageEditor {
 
-CImageEditorView::CImageEditorView() {
+	CImageEditorView::CImageEditorView() :horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical)  {
 	oldPoint.x = -1;
 	oldPoint.y = -1;
 	menuItems_[ID_PEN].toolId       = Canvas::dtPen; 
@@ -31,6 +31,7 @@ BOOL CImageEditorView::PreTranslateMessage(MSG* /*pMsg*/) {
 }
 
 LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	//return 0;
 	CPaintDC dc(m_hWnd);
 	CRgn rgn;
 	rgn.CreateRectRgn( 0, 0, 0, 0 );
@@ -41,7 +42,7 @@ LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	if ( canvas_ ) {
 		canvas_->render( &gr, dc.m_ps.rcPaint );
 	}
-	horizontalToolbar_.Invalidate(TRUE);
+	//horizontalToolbar_.Invalidate(TRUE);
 
 	return 0;
 }
@@ -59,14 +60,25 @@ void CImageEditorView::setCanvas(ImageEditor::Canvas *canvas) {
 		canvas_->setSize( 1280, 720 );
 		canvas_->setCallback( this );
 		canvas_->setDrawingToolType(Canvas::dtRectangle);
+		canvas_->onCropChanged.bind(this, &CImageEditorView::OnCropChanged);
 	}
 }
 
 LRESULT CImageEditorView::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	int cx = LOWORD(lParam); 
 	int cy = HIWORD(lParam);
-
-	canvas_->mouseMove( cx, cy, wParam );
+	POINT pt = {cx, cy};
+	RECT toolBarRect;
+	horizontalToolbar_.GetClientRect(&toolBarRect);
+	horizontalToolbar_.ClientToScreen(&toolBarRect);
+	ClientToScreen(&pt);
+	/*if ( pt.x >= toolBarRect.left && pt.x <= toolBarRect.right && pt.y >= toolBarRect.top && pt.y <= toolBarRect.bottom ) {
+		return 0;
+	}*/
+//	HWND wnd =  WindowFromPoint(pt);
+	/*if ( wnd == m_hWnd )*/ {
+		canvas_->mouseMove( cx, cy, wParam );
+	}
 	return 0;
 }
 
@@ -74,6 +86,7 @@ LRESULT CImageEditorView::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
 	int cx = LOWORD(lParam); 
 	int cy = HIWORD(lParam);
 	SetCapture();
+	horizontalToolbar_.ShowWindow(SW_HIDE);
 	canvas_->mouseDown( 0, cx, cy );
 	return 0;
 }
@@ -83,6 +96,7 @@ LRESULT CImageEditorView::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 	int cy = HIWORD(lParam);
 	canvas_->mouseUp( 0, cx, cy );
 	ReleaseCapture();
+	horizontalToolbar_.ShowWindow(SW_SHOW);
 	return 0;
 }
 
@@ -198,36 +212,43 @@ HCURSOR CImageEditorView::getCachedCursor(CursorType cursorType)
 void CImageEditorView::createToolbars()
 {
 	toolbarImageList_.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
-	RECT rc = {0,0,500,50};
-	GetClientRect(&rc);
+	RECT rc = {0,0,500,30};
+	//GetClientRect(&rc);
 	const int IDC_DUMMY = 100;
 	/*rc.top = rc.bottom - GuiTools::dlgY(13);
 	rc.bottom-= GuiTools::dlgY(1);
 	rc.left = GuiTools::dlgX(3);
 	rc.right -= GuiTools::dlgX(3);*/
-	HWND wnd = horizontalToolbar_.Create(m_hWnd,rc,_T(""), WS_CHILD | TBSTYLE_LIST |TBSTYLE_CUSTOMERASE|TBSTYLE_FLAT| /*CCS_NORESIZE/*|*/CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER/*|TBSTYLE_AUTOSIZE */ );
-	if (! wnd ) {
+	if ( !horizontalToolbar_.Create(/*m_hWnd*/GetParent()) ) {
 		LOG(ERROR) << "Failed to create horizontal toolbar";
 	
 	}
-	horizontalToolbar_.SetWindowLong( GWL_STYLE, 0); 
-	//TabBackgroundFix(Toolbar.m_hWnd);
-
-	horizontalToolbar_.SetButtonStructSize();
-	horizontalToolbar_.SetButtonSize(30,18);
-	horizontalToolbar_.SetImageList(toolbarImageList_);
-	horizontalToolbar_.AddButton(IDC_DUMMY, TBSTYLE_BUTTON|BTNS_AUTOSIZE ,TBSTATE_ENABLED, 0, TR("Копировать в буфер"), 0);
-
-
-	horizontalToolbar_.AddButton(IDC_DUMMY, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Инфо о последнем видео"), 0);
-	horizontalToolbar_.ClientToScreen(&rc);
-	horizontalToolbar_.SetWindowPos(0, &rc, 0);
-	//horizontalToolbar_.AutoSize();
-	//horizontalToolbar_.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);
 	horizontalToolbar_.ShowWindow(SW_SHOW);
+}
 
+void CImageEditorView::OnCropChanged(int x, int y, int w, int h)
+{
+	enum ToolbarPosition { pBottomRight, pTopLeft, pBottomInner };
+	ToolbarPosition pos = pBottomRight ;
+	RECT rc;
 	horizontalToolbar_.GetClientRect(&rc);
-	LOG(INFO) << "Toolbar width: " << rc.right << " height: " << rc.bottom;
+
+	if ( y + h + rc.bottom > canvas_->getHeigth()   ) {
+		pos = pTopLeft;
+	}
+	POINT horToolbarPos = {0,0};
+
+	if ( pos == pBottomRight ) {
+		horToolbarPos.x = x + w - rc.right;
+		horToolbarPos.y =  y + h + 6;
+	} else if ( pos == pTopLeft ) {
+		horToolbarPos.x = x;
+		horToolbarPos.y =  y - rc.bottom-6;
+	}
+	ClientToScreen(&horToolbarPos);
+
+	horizontalToolbar_.SetWindowPos(0, horToolbarPos.x, horToolbarPos.y, 0, 0, SWP_NOSIZE);
+
 }
 
 }

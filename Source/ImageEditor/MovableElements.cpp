@@ -17,7 +17,7 @@ TextElement::TextElement( int startX, int startY, int endX,int endY ) {
 	endPoint_.y   = endY;
 }
 
-void TextElement::render(Gdiplus::Graphics* gr) {
+void TextElement::render(Painter* gr) {
 	using namespace Gdiplus;
 	if ( !gr ) {
 		return;
@@ -49,7 +49,7 @@ Crop::Crop(int startX, int startY, int endX, int endY) {
 	endPoint_.y   = endY;
 }
 
-void Crop::render(Gdiplus::Graphics* gr) {
+void Crop::render(Painter* gr) {
 	using namespace Gdiplus;
 	if ( !gr ) {
 		return;
@@ -87,7 +87,7 @@ CropOverlay::CropOverlay(int startX, int startY, int endX,int endY)
 	endPoint_.y = endY;
 }
 
-void CropOverlay::render(Gdiplus::Graphics* gr)
+void CropOverlay::render(Painter* gr)
 {
 	Gdiplus::SolidBrush brush(Gdiplus::Color( 120, 0, 0, 0) );
 	

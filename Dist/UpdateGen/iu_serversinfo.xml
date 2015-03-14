@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<UpdatePackageSource Name="iu_serversinfo" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" DownloadPath="http://zenden.ws/updates/" CoreUpdate="0" DisplayName="Servers update">
+	<Entries>
+		<Entry Name="Data/servers.xml" SaveToFolder="%datapath%/" Action="add"/>
+		<Entry Name="Data/Scripts/*.nut" SaveToFolder="%datapath%/Scripts/" Action="add"/>
+		<!-- favicons -->
+		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
+	</Entries>
+<Info>
+Fixed big file (>150 Mb) uploading to Dropbox ( Image Uploader 1.3.0.4222 and later)
+</Info>
+</UpdatePackageSource>

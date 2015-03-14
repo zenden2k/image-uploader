@@ -169,7 +169,17 @@ bool  Document::undo() {
 }
 
 
-Gdiplus::Graphics* Document::getGraphicsObject() {
+int Document::getWidth()
+{
+	return currentImage_->GetWidth();
+}
+
+int Document::getHeight()
+{
+	return currentImage_->GetHeight();
+}
+
+Painter* Document::getGraphicsObject() {
 	return currentCanvas_;
 }
 }
