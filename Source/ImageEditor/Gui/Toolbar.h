@@ -12,7 +12,7 @@ class Toolbar : public CWindowImpl<Toolbar> {
 public:
 	typedef CWindowImpl<Toolbar> TParent;
 	enum Orientation { orHorizontal, orVertical };
-	enum ItemState { isNormal, isHover, isDown, isDropDown, isChecked };
+	enum ItemState { isNormal, isHover, isDown, isDropDown };
 	enum ItemType { itButton, itComboButton };
 	
 	struct Item {
@@ -24,7 +24,9 @@ public:
 		bool checkable;
 		RECT rect;
 		ItemType type;
-		Item(CString title, Gdiplus::Bitmap* icon, int command, CString hint = CString(), ItemType type = itButton, bool checkable = false) {
+		int group;
+		bool isChecked;
+		Item(CString title, Gdiplus::Bitmap* icon, int command, CString hint = CString(), ItemType type = itButton, bool checkable = false, int group = -1) {
 			this->title = title;
 			this->icon = icon;
 			this->command = command;
@@ -33,6 +35,8 @@ public:
 			this->type = type;
 			this->hint = hint;
 			this->checkable = checkable;
+			isChecked = false;
+			group = -1;
 		}
 	};
 
@@ -87,6 +91,7 @@ protected:
 	int iconSizeX_;
 	int iconSizeY_;
 	Gdiplus::Font* font_;
+	Gdiplus::Color transparentColor_;
 };
 
 }

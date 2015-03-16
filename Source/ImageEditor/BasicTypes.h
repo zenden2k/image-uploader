@@ -27,7 +27,7 @@ namespace ImageEditor {
 	#ifdef IMAGEEDITOR_GDIPLUS
 		typedef Gdiplus::Graphics Painter;
 	#endif
-	enum ElementType { etUnknown, etCrop , etArrow, etLine, etRectangle };
+	enum ElementType { etUnknown, etNone, etCrop , etArrow, etLine, etRectangle };
 	enum BoundaryType { btTopLeft, btTop, btTopRight, btRight, btBottomRight, btBottom,  btBottomLeft,  btLeft,   btNone};
 	enum CursorType {
 		ctDefault, ctEdit, ctResizeVertical, ctResizeHorizontal, ctResizeDiagonalMain, ctResizeDiagonalAnti, ctCross, ctMove

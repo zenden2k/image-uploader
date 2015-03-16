@@ -16,7 +16,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT) {
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop( &theLoop );
 
-	ImageEditorWindow wndMain;
+	ImageEditor::ImageEditorWindow wndMain;
 	RECT rc = {100,100,1280,800};
 
 	if ( wndMain.Create(0, rc, _T("ImageEditor"), WS_OVERLAPPED | WS_POPUP | WS_CAPTION | WS_VISIBLE | WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | 

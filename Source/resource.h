@@ -114,8 +114,12 @@
 #define IDB_TOOLCROPPING                275
 #define IDB_ICONTOOLPENCIL              276
 #define IDB_ICONTOOLBRUSHPNG            277
-#define IDB_PNG4                        278
 #define IDB_ICONTOOLTEXTPNG             278
+#define IDB_ICONTOOLFILLEDRECTANGLE     279
+#define IDB_ICONCOLORPICKERPNG          281
+#define IDB_ICONTOOLLINE                282
+#define IDB_PNG4                        283
+#define IDB_ICONTOOLRECTANGLEPNG        283
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -617,7 +621,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        279
+#define _APS_NEXT_RESOURCE_VALUE        284
 #define _APS_NEXT_COMMAND_VALUE         32803
 #define _APS_NEXT_CONTROL_VALUE         1306
 #define _APS_NEXT_SYMED_VALUE           128

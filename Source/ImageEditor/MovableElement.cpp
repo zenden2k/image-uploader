@@ -4,8 +4,10 @@
 #include "Canvas.h"
 
 namespace ImageEditor {
+
 using namespace Gdiplus;
-MovableElement::MovableElement(){
+
+MovableElement::MovableElement(Canvas* canvas){
 	startPoint_.x = 0;
 	startPoint_.y = 0;
 	endPoint_.x   = 0;
@@ -13,8 +15,10 @@ MovableElement::MovableElement(){
 
 	color_ = Gdiplus::Color( 0, 0, 0 );
 	penSize_ = 1;
-	isSelected_ = true;
-	memset(grips_, 0, sizeof(grips_));
+	isSelected_ = false;
+	drawDashedRectangle_ = true;
+	grips_.resize(8);
+	canvas_ = canvas;
 }
 
 
@@ -36,14 +40,16 @@ void MovableElement::renderGrips(Painter* gr)
 	int y = std::min<>( startPoint_.y, endPoint_.y );
 	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
 	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
-	gr->DrawRectangle( &pen, x, y, width, height );
-	pen.SetColor(Color( 255, 255, 255) );
-	pen.SetDashOffset(3);
-	REAL dashValues2[2] = {4, 4};
-	pen.SetDashPattern(dashValues2, 2);	
-	gr->DrawRectangle( &pen, x, y, width, height );
+	if ( drawDashedRectangle_ ) {
+		gr->DrawRectangle( &pen, x, y, width, height );
+		pen.SetColor(Color( 255, 255, 255) );
+		pen.SetDashOffset(3);
+		REAL dashValues2[2] = {4, 4};
+		pen.SetDashPattern(dashValues2, 2);	
+		gr->DrawRectangle( &pen, x, y, width, height );
+	}
 
-	if ( isSelected_ ) {
+	if ( isSelected_ || getType() == etCrop ) {
 		int rectSize = kGripSize;
 		int halfSize = rectSize /2 ;
 		Gdiplus::Pen pen( Color( 255,255, 255) );
@@ -54,13 +60,12 @@ void MovableElement::renderGrips(Painter* gr)
 		int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
 		Gdiplus::SolidBrush brush(Color( 10, 10, 10) );
 
-		POINT pts[8] = {{x,y}, {x + width / 2, y}, {x+width,y}, {x+width,y+height/2}, 
-		{x+width,y+height},  {x+width/2, y+height}, {x,y+height},{x,y+height/2}	
-		};
-		memcpy(grips_,pts,sizeof(grips_));
-		for( int i = 0; i < 8; i++ ) {
-			int x = pts[i].x;
-			int y = pts[i].y;
+		createGrips();
+
+		
+		for( int i = 0; i < grips_.size(); i++ ) {
+			int x = grips_[i].pt.x;
+			int y = grips_[i].pt.y;
 			gr->FillRectangle( &brush, x-halfSize, y-halfSize, rectSize, rectSize );
 			gr->DrawRectangle( &pen, x-halfSize-1, y-halfSize-1, rectSize+1, rectSize+1 );
 		}
@@ -142,6 +147,15 @@ void MovableElement::setY(int y)
 	resize(getWidth(), height );
 }
 
+bool MovableElement::isItemAtPos(int x, int y)
+{
+	int elementX = getX();
+	int elementY = getY();
+	int elementWidth = getWidth();
+	int elementHeight = getHeight();
+	return  ( x+kSelectRadius >= elementX && x  <= elementX + elementWidth + kSelectRadius && y+kSelectRadius>= elementY && y <= elementY + elementHeight+kSelectRadius );
+}
+
 void MovableElement::resize(int width, int height)
 {
 	if ( width  < 1 ) {
@@ -152,6 +166,31 @@ void MovableElement::resize(int width, int height)
 	}
 	getMaxPoint(axisX)->x = width + getX();	
 	getMaxPoint(axisY)->y = height + getY();
+}
+
+void MovableElement::createGrips()
+{
+	int rectSize = kGripSize;
+	int halfSize = rectSize /2 ;
+	
+	int x = std::min<>( startPoint_.x, endPoint_.x );
+	int y = std::min<>( startPoint_.y, endPoint_.y );
+	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
+	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
+
+	POINT pts[8] = {{x,y}, {x + width / 2, y}, {x+width,y}, {x+width,y+height/2}, 
+	{x+width,y+height},  {x+width/2, y+height}, {x,y+height},{x,y+height/2}	
+	};
+
+	for( int i = 0; i < 8; i++ ) {
+		int x = pts[i].x;
+		int y = pts[i].y;
+		Grip grip;
+		grip.pt.x = x;
+		grip.pt.y = y;
+		grip.bt = static_cast<BoundaryType>(i);
+		grips_[i] = grip;
+	}
 }
 
 POINT* MovableElement::getMaxPoint(Axis axis)

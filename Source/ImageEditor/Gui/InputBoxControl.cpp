@@ -63,11 +63,11 @@ LRESULT InputBoxControl::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	//Logger::Write(_T("%d %d %d %d\r\n"), r );
 	CRect clientRect;
 	GetClientRect( &clientRect );
-	DWORD margins = GetMargins();
+	/*DWORD margins = GetMargins();
 	if (r.Width()  > clientRect.Width() || r.Height() > clientRect.Height() ) {
 		SetWindowPos( 0, 0, 0, r.Width() + clientRect.Width() - formatRect.Width() +5 , 
 			r.Height() + clientRect.Height() - formatRect.Height()+5, SWP_NOMOVE );
-	}
+	}*/
 	return 1;
 }
 

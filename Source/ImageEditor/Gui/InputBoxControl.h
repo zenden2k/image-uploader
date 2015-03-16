@@ -17,13 +17,13 @@
 namespace ImageEditor {
 
 class InputBoxControl :
-	public CWindowImpl<InputBoxControl, CEdit,CControlWinTraits>, public InputBox
+	public CWindowImpl<InputBoxControl, CRichEditCtrl,CControlWinTraits>, public InputBox
 {
 	public:
-		typedef CWindowImpl<InputBoxControl, CEdit,CControlWinTraits> Base;
+		typedef CWindowImpl<InputBoxControl, CRichEditCtrl,CControlWinTraits> Base;
 		InputBoxControl();
 		~InputBoxControl();
-		DECLARE_WND_SUPERCLASS(_T("CInputBoxControl"), CEdit::GetWndClassName())
+		DECLARE_WND_SUPERCLASS(_T("CInputBoxControl"), CRichEditCtrl::GetWndClassName())
 		
 		 BEGIN_MSG_MAP(CLogListBox)
 			MSG_WM_KILLFOCUS(OnKillFocus)

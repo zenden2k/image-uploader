@@ -23,7 +23,7 @@ class Canvas {
 		};
 		
 		enum DrawingToolType {
-			dtPen, dtBrush, dtLine, dtRectangle, dtText, dtCrop
+			dtPen, dtBrush, dtLine, dtRectangle, dtText, dtCrop, dtMove
 		};
 
 		
@@ -46,6 +46,7 @@ class Canvas {
 		void getElementsByType(ElementType elementType, std::vector<MovableElement*>& out);
 		void setOverlay(MovableElement* overlay);
 		void setZoomFactor(float zoomFactor);
+	
 		float getZoomFactor() const;
 		MovableElement* getElementAtPosition(int x, int y);
 		int deleteElementsByType(ElementType elementType);
@@ -54,13 +55,16 @@ class Canvas {
 		CursorType getCursor() const;
 		bool undo();
 		InputBox* getInputBox( const RECT& rect ); 
-
+		void unselectAllElements();
+		HWND getRichEditControl();
+		void updateView();
 		fastdelegate::FastDelegate4<int,int,int,int> onCropChanged;
 		friend class AbstractDrawingTool;
 		friend class VectorElementTool;
 		friend class PenTool;
 		friend class BrushTool;
-		friend class MovableElementTool;
+		friend class MoveAndResizeTool;
+		friend class CropTool;
 	private:
 		Gdiplus::Bitmap* buffer_;
 		Document* doc_;
@@ -82,7 +86,7 @@ class Canvas {
 		void init();
 		void updateView( RECT boundingRect );
 		void updateView( const CRgn& region );
-		void updateView();
+		
 		void createDoubleBuffer();
 		void setCursor(CursorType cursor);
 		

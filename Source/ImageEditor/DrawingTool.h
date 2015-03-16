@@ -25,31 +25,19 @@ class AbstractDrawingTool {
 		POINT endPoint_;
 };
 
-class VectorElementTool: public AbstractDrawingTool {
-	public:
-		VectorElementTool( Canvas* canvas, ElementType type );
-		void beginDraw( int x, int y );
-		void continueDraw( int x, int y, DWORD flags );
-		void endDraw( int x, int y );
-		void render( Painter* gr );
-		
-	private:
-		DrawingElement* currentElement_;
-		ElementType elementType_;
-		void createElement();
-};
 
 class CropOverlay;
-class MovableElementTool: public AbstractDrawingTool {
+
+class MoveAndResizeTool: public AbstractDrawingTool {
 	public:
-		
-		MovableElementTool( Canvas* canvas, ElementType type );
+
+		MoveAndResizeTool( Canvas* canvas, ElementType type = etNone );
 		void beginDraw( int x, int y );
 		void continueDraw( int x, int y, DWORD flags );
 		void endDraw( int x, int y );
 		void render( Painter* gr );
 		
-	private:
+	protected:
 		MovableElement* currentElement_;
 		ElementType elementType_;
 		BoundaryType draggedBoundary_;
@@ -63,6 +51,21 @@ class MovableElementTool: public AbstractDrawingTool {
 
 };
 
+class VectorElementTool: public MoveAndResizeTool {
+public:
+	VectorElementTool( Canvas* canvas, ElementType type );
+
+	virtual CursorType getCursor(int x, int y);
+};
+
+class CropTool : public MoveAndResizeTool {
+public:
+	CropTool(Canvas* canvas);
+	void beginDraw( int x, int y );
+	void continueDraw( int x, int y, DWORD flags );
+	void endDraw( int x, int y );
+};
+
 class PenTool: public AbstractDrawingTool  {
 	public:
 		PenTool( Canvas* canvas );
@@ -70,6 +73,7 @@ class PenTool: public AbstractDrawingTool  {
 		void continueDraw( int x, int y, DWORD flags = 0);
 		void endDraw( int x, int y );
 		void render( Painter* gr );
+		virtual CursorType getCursor(int x, int y);
 	private:
 		POINT oldPoint_;
 };
@@ -81,18 +85,20 @@ public:
 	void continueDraw( int x, int y, DWORD flags = 0);
 	void endDraw( int x, int y );
 	void render( Painter* gr );
+	virtual CursorType getCursor(int x, int y);
 private:
 	POINT oldPoint_;
 	void drawLine(int x0, int y0, int x1, int y1);
 };
 
-class TextTool: public AbstractDrawingTool  {
+class TextTool: public MoveAndResizeTool  {
 public:
 	TextTool( Canvas* canvas );
 	void beginDraw( int x, int y );
 	void continueDraw( int x, int y, DWORD flags = 0);
 	void endDraw( int x, int y );
 	void render( Painter* gr );
+	virtual CursorType getCursor(int x, int y);
 private:
 	
 };

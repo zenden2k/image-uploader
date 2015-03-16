@@ -7,9 +7,22 @@
 
 namespace ImageEditor {
 
-class TextElement: public DrawingElement {
+class Line: public MovableElement {
 	public:
-		TextElement( int startX, int startY, int endX,int endY );
+		Line(Canvas* canvas,int startX, int startY, int endX,int endY);
+		void render(Painter* gr);
+		void setEndPoint(POINT endPoint);
+		void getAffectedSegments( AffectedSegments* segments );
+
+		virtual void createGrips();
+
+		virtual bool isItemAtPos(int x, int y);
+
+};
+
+class TextElement: public MovableElement{
+	public:
+		TextElement( Canvas* canvas, int startX, int startY, int endX,int endY );
 		void render(Painter* gr);
 		void getAffectedSegments( AffectedSegments* segments );
 
@@ -18,7 +31,7 @@ class TextElement: public DrawingElement {
 class Crop: public MovableElement {
 public:
 
-	Crop(int startX, int startY, int endX,int endY);
+	Crop(Canvas* canvas, int startX, int startY, int endX,int endY);
 	void render(Painter* gr);
 	void getAffectedSegments( AffectedSegments* segments );
 
@@ -28,10 +41,19 @@ public:
 
 class CropOverlay: public MovableElement {
 public:
-	CropOverlay(int startX, int startY, int endX,int endY);
+	CropOverlay(Canvas* canvas, int startX, int startY, int endX,int endY);
 	void render(Painter* gr);
 };
 
+class Rectangle: public MovableElement {
+public:
+	Rectangle(Canvas* canvas, int startX, int startY, int endX,int endY);
+	void render(Painter* gr);
+	void getAffectedSegments( AffectedSegments* segments );
+
+	virtual bool isItemAtPos(int x, int y);
+
+};
 }
 
 #endif

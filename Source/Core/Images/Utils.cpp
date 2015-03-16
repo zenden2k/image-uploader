@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Utils.h"
 
 #include <gdiplus.h>
+#include <Core/Logging.h>
 using namespace Gdiplus;
 
 
@@ -83,4 +84,39 @@ Gdiplus::Bitmap* BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCT
 	pStream->Release();
 	// GlobalFree(hg2);
 	return image;
+}
+
+void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Rect layoutArea) {
+	//Calculate the area to render.
+	HDC hdc1 = ::GetDC(hwnd);
+
+	double anInchX = 1440 / GetDeviceCaps(hdc1, LOGPIXELSX);
+	double anInchY = 1440 / GetDeviceCaps(hdc1, LOGPIXELSY);
+			ReleaseDC(hwnd,hdc1);
+
+	//double anInch = 1440.0  /  GetDeviceCaps(hdc1, LOGPIXELSX);
+
+	RECT rectLayoutArea;
+	rectLayoutArea.top = (int)(layoutArea.GetTop() * anInchY);
+	rectLayoutArea.bottom = (int)(layoutArea.GetBottom() * anInchY);
+	rectLayoutArea.left = (int)(layoutArea.GetLeft() *anInchX  );
+	rectLayoutArea.right = (int)(layoutArea.GetRight() * anInchX);
+
+	HDC hdc = graphics->GetHDC();
+
+	FORMATRANGE fmtRange;
+	fmtRange.chrg.cpMax = -1;                    //Indicate character from to character to 
+	fmtRange.chrg.cpMin = 0;
+	fmtRange.hdc = hdc;                                //Use the same DC for measuring and rendering
+	fmtRange.hdcTarget = hdc;                    //Point at printer hDC
+	fmtRange.rc = rectLayoutArea;            //Indicate the area on page to print
+	fmtRange.rcPage = rectLayoutArea;    //Indicate size of page
+
+
+	int characterCount = ::SendMessage(hwnd, EM_FORMATRANGE, 1, (LPARAM)&fmtRange);
+	LOG(INFO) << "rectLayoutArea"<< rectLayoutArea.left << " "<< rectLayoutArea.top << " "<< rectLayoutArea.right << " "<< rectLayoutArea.bottom << " ";
+	LOG(INFO) << "characterCount" << characterCount;
+
+	//Release the device context handle obtained by a previous call
+	graphics->ReleaseHDC(hdc);
 }

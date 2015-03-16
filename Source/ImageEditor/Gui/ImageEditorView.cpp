@@ -17,14 +17,9 @@
 #endif
 namespace ImageEditor {
 
-	CImageEditorView::CImageEditorView() :horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical)  {
+	CImageEditorView::CImageEditorView()  {
 	oldPoint.x = -1;
 	oldPoint.y = -1;
-	menuItems_[ID_PEN].toolId       = Canvas::dtPen; 
-	menuItems_[ID_LINE].toolId      = Canvas::dtLine;
-	menuItems_[ID_BRUSH].toolId     = Canvas::dtBrush;
-	menuItems_[ID_RECTANGLE].toolId = Canvas::dtRectangle;
-	menuItems_[ID_CROP].toolId = Canvas::dtRectangle;
 }
 
 BOOL CImageEditorView::PreTranslateMessage(MSG* /*pMsg*/) {
@@ -51,7 +46,6 @@ LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 LRESULT CImageEditorView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	createToolbars();
 	return 0;
 }
 
@@ -61,7 +55,6 @@ void CImageEditorView::setCanvas(ImageEditor::Canvas *canvas) {
 		canvas_->setSize( 1280, 720 );
 		canvas_->setCallback( this );
 		canvas_->setDrawingToolType(Canvas::dtRectangle);
-		canvas_->onCropChanged.bind(this, &CImageEditorView::OnCropChanged);
 	}
 }
 
@@ -69,10 +62,10 @@ LRESULT CImageEditorView::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 	int cx = LOWORD(lParam); 
 	int cy = HIWORD(lParam);
 	POINT pt = {cx, cy};
-	RECT toolBarRect;
+	/*RECT toolBarRect;
 	horizontalToolbar_.GetClientRect(&toolBarRect);
 	horizontalToolbar_.ClientToScreen(&toolBarRect);
-	ClientToScreen(&pt);
+	ClientToScreen(&pt);*/
 	/*if ( pt.x >= toolBarRect.left && pt.x <= toolBarRect.right && pt.y >= toolBarRect.top && pt.y <= toolBarRect.bottom ) {
 		return 0;
 	}*/
@@ -97,7 +90,7 @@ LRESULT CImageEditorView::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 	int cy = HIWORD(lParam);
 	canvas_->mouseUp( 0, cx, cy );
 	ReleaseCapture();
-	horizontalToolbar_.ShowWindow(SW_SHOW);
+//	horizontalToolbar_.ShowWindow(SW_SHOW);
 	return 0;
 }
 
@@ -132,7 +125,7 @@ LRESULT CImageEditorView::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
 		::ScreenToClient(hwnd, &ClientPoint);
 	}
 	
-	CMenu menu;
+	/*CMenu menu;
 	menu.CreatePopupMenu();
 	menu.AppendMenu(MF_STRING, ID_UNDO, TR("Отменить"));
 	menu.AppendMenu(MF_STRING, ID_PEN, TR("Карандаш"));
@@ -143,28 +136,11 @@ LRESULT CImageEditorView::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
 	menu.AppendMenu(MF_STRING, ID_CROP, TR("Обрезка"));
 
 	//menu.SetMenuDefaultItem(0, true);
-	menu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
+	menu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);*/
 
 	return 0;
 }
 
-LRESULT CImageEditorView::OnMenuItemClick(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int toolId = menuItems_[wID].toolId;
-	canvas_->setDrawingToolType( static_cast<Canvas::DrawingToolType>( toolId ) );
-	return 0;
-}
-
-LRESULT CImageEditorView::OnUndoClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	canvas_->undo();
-	return 0;
-}
-
-
-LRESULT CImageEditorView::OnTextClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	
-	canvas_->setDrawingToolType( Canvas::dtText );
-	return 0;
-}
 
 LRESULT CImageEditorView::OnSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -208,87 +184,6 @@ HCURSOR CImageEditorView::getCachedCursor(CursorType cursorType)
 	cur = LoadCursor(0, lpCursorName);
 	cursorCache_[cursorType] = cur;
 	return cur;
-}
-
-void CImageEditorView::createToolbars()
-{
-	toolbarImageList_.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
-	RECT rc = {0,0,500,30};
-	//GetClientRect(&rc);
-	const int IDC_DUMMY = 100;
-	/*rc.top = rc.bottom - GuiTools::dlgY(13);
-	rc.bottom-= GuiTools::dlgY(1);
-	rc.left = GuiTools::dlgX(3);
-	rc.right -= GuiTools::dlgX(3);*/
-	if ( !horizontalToolbar_.Create(m_hWnd) ) {
-		LOG(ERROR) << "Failed to create horizontal toolbar";
-	
-	}
-	horizontalToolbar_.addButton(Toolbar::Item(TR("Добавить в список"),0,100));
-	horizontalToolbar_.addButton(Toolbar::Item(TR("Загрузить на сервер"),0,100, CString(), Toolbar::itComboButton));
-	horizontalToolbar_.addButton(Toolbar::Item(TR("Поделиться"),0,100, CString(),Toolbar::itComboButton));
-	horizontalToolbar_.addButton(Toolbar::Item(TR("Закрыть"),0,100));
-	horizontalToolbar_.AutoSize();
-	horizontalToolbar_.ShowWindow(SW_SHOW);
-
-	if ( !verticalToolbar_.Create(m_hWnd) ) {
-		LOG(ERROR) << "Failed to create horizontal toolbar";
-
-	}
-
-	/*menu.CreatePopupMenu();
-	menu.AppendMenu(MF_STRING, ID_UNDO, TR("Отменить"));
-	menu.AppendMenu(MF_STRING, ID_PEN, TR("Карандаш"));
-	menu.AppendMenu(MF_STRING, ID_BRUSH, TR("Кисть"));
-	menu.AppendMenu(MF_STRING, ID_LINE, TR("Линия"));
-	menu.AppendMenu(MF_STRING, ID_RECTANGLE, TR("Прямоугольник"));
-	menu.AppendMenu(MF_STRING, ID_TEXT, TR("Добавить текст"));
-	menu.AppendMenu(MF_STRING, ID_CROP, TR("Обрезка"));*/
-
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(ID_CROP),_T("PNG")) ,100,TR("Перемещение")));
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_TOOLCROPPING),_T("PNG")) ,ID_CROP,TR("Обрезка")));
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_ICONTOOLPENCIL),_T("PNG")) ,ID_PEN,TR("Карандаш")));
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_ICONTOOLBRUSHPNG),_T("PNG")) ,ID_BRUSH,TR("Кисть")));
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_ICONTOOLTEXTPNG),_T("PNG")) ,ID_BRUSH,TR("Текст")));
-
-	
-	verticalToolbar_.AutoSize();
-	verticalToolbar_.ShowWindow(SW_SHOW);
-}
-
-void CImageEditorView::OnCropChanged(int x, int y, int w, int h)
-{
-	enum ToolbarPosition { pBottomRight, pTopLeft, pBottomInner };
-	ToolbarPosition pos = pBottomRight ;
-	RECT rc, vertRc;
-	horizontalToolbar_.GetClientRect(&rc);
-	verticalToolbar_.GetClientRect(&vertRc);
-
-	if ( y + h + rc.bottom > canvas_->getHeigth()   ) {
-		pos = pTopLeft;
-	}
-	POINT horToolbarPos = {0,0};
-	POINT vertToolbarPos = {0,0};
-	if ( pos == pBottomRight ) {
-		horToolbarPos.x = x + w - rc.right;
-		horToolbarPos.y =  y + h + 6;
-
-		vertToolbarPos.x = x + w + 6 ;
-		vertToolbarPos.y = y + h - vertRc.bottom;
-	} else if ( pos == pTopLeft ) {
-		horToolbarPos.x = x;
-		horToolbarPos.y =  y - rc.bottom-6;
-
-		vertToolbarPos.x = x - vertRc.right - 6;
-		vertToolbarPos.y = y ;
-	}
-	ClientToScreen(&horToolbarPos);
-	ClientToScreen(&vertToolbarPos);
-
-	horizontalToolbar_.SetWindowPos(0, horToolbarPos.x, horToolbarPos.y, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);
-	//horizontalToolbar_.SetWindowPos(0, horToolbarPos.x, horToolbarPos.y, 0, 0, SWP_NOSIZE);
-	verticalToolbar_.SetWindowPos(0, vertToolbarPos.x, vertToolbarPos.y, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);
-
 }
 
 }

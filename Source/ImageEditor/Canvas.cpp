@@ -176,25 +176,32 @@ void Canvas::setDrawingToolType(DrawingToolType toolType) {
 		currentDrawingTool_ = new BrushTool( this );
 	} else if ( toolType == dtText) {
 		currentDrawingTool_ = new TextTool( this );
-	} else {
-		
-		if ( toolType == dtLine )
+	} else if ( toolType == dtCrop ) {
+		currentDrawingTool_ = new CropTool( this );
+	} 
+	else {
+		ElementType type;
+		if ( toolType == dtLine ) {
 			type = etLine;
-		else if ( toolType == dtRectangle ) {
+		} else if ( toolType == dtCrop ) {
+			type = etCrop;
+		} else if ( toolType == dtRectangle ) {
 			type = etRectangle;
-		} else {
-			 ElementType type;
-		   if ( toolType == dtCrop ) {
-			  
-				type = etCrop;
-			}
-
-		   currentDrawingTool_ = new MovableElementTool( this, type );
-
+		} else if ( toolType == dtMove ) {
+			currentDrawingTool_ = new MoveAndResizeTool( this, etNone );
+			return;
+		} else if ( toolType == dtLine ) {
+			type = etLine;
+		}
+		else {
+			LOG(ERROR) << "createElement for toolType="<<toolType<<" not implemented.";
 			return;
 		}
-		
+
 		currentDrawingTool_ = new VectorElementTool( this, type );
+		return;
+
+		//currentDrawingTool_ = new VectorElementTool( this, type );
 	}
 	
 }
@@ -207,7 +214,7 @@ void Canvas::addMovableElement(MovableElement* element)
 void Canvas::deleteMovableElement(MovableElement* element)
 {
 	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
-		if ( elementsOnCanvas_[i] = element ) {
+		if ( elementsOnCanvas_[i] == element ) {
 			elementsOnCanvas_.erase(elementsOnCanvas_.begin() + i);
 			delete element;
 			break;
@@ -245,7 +252,7 @@ void Canvas::getElementsByType(ElementType elementType, std::vector<MovableEleme
 {
 	int count = elementsOnCanvas_.size();
 	for ( int i = 0; i < count; i++ ) {
-		if ( elementsOnCanvas_[i]->getType() == elementType ) {
+		if ( elementType == etNone || elementsOnCanvas_[i]->getType() == elementType ) {
 			out.push_back(elementsOnCanvas_[i]);
 		}
 	}
@@ -269,12 +276,8 @@ float Canvas::getZoomFactor() const
 MovableElement* Canvas::getElementAtPosition(int x, int y)
 {
 	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
-		if ( elementsOnCanvas_[i]->getType() != etCrop ) {
-			int elementX = elementsOnCanvas_[i]->getX();
-			int elementY = elementsOnCanvas_[i]->getY();
-			int elementWidth = elementsOnCanvas_[i]->getWidth();
-			int elementHeight = elementsOnCanvas_[i]->getHeight();
-			if ( x >= elementX && x <= elementX + elementWidth && y>= elementY && y <= elementY + elementHeight ) {
+		if ( elementsOnCanvas_[i]->getType() != etCrop ) {	
+			if ( elementsOnCanvas_[i]->isItemAtPos(x,y) ) {
 				return  elementsOnCanvas_[i];
 			}
 		}
@@ -335,21 +338,59 @@ bool Canvas::undo() {
 
 InputBox* Canvas::getInputBox( const RECT& rect ) {
 	if ( inputBox_ == NULL ) {
+		RECT rt = {0,0,300,50};
 		inputBox_ = new InputBoxControl();
 		RECT rc = rect;
-		HWND wnd = inputBox_->Create( parentWindow_, rc, _T("ololo"), WS_VISIBLE | WS_CHILD | WS_BORDER|ES_MULTILINE|ES_AUTOHSCROLL|ES_AUTOVSCROLL|  ES_WANTRETURN
-			|  ES_NOHIDESEL | ES_LEFT  );
+		LoadLibrary(CRichEditCtrl::GetLibraryName());
+		HWND wnd = inputBox_->Create( parentWindow_, rt, _T("ololo"), WS_VISIBLE | WS_CHILD | WS_BORDER/*|ES_MULTILINE|ES_AUTOHSCROLL|ES_AUTOVSCROLL|  ES_WANTRETURN*/
+			/*|  ES_NOHIDESEL | ES_LEFT */,WS_EX_TRANSPARENT );
+
+		//Get the error message, if any.
+		DWORD errorMessageID = ::GetLastError();
+		/*if(errorMessageID == 0)
+			return "No error message has been recorded";*/
+
+		LPTSTR messageBuffer = 0;
+		size_t size = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&messageBuffer, 0, NULL);
+
+		//LOG(INFO) << "last error:"<< errorMessageID<<": " <<messageBuffer;
+	//	MessageBox(0,messageBuffer,0,0);
+		//Free the buffer.
+		LocalFree(messageBuffer);
+
 		inputBox_->SetWindowPos(HWND_TOP,0,0,0,0, SWP_NOSIZE|SWP_NOMOVE);
 		
 	} else {
-		inputBox_->SetWindowPos(HWND_TOP, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top , 0);
+		//inputBox_->SetWindowPos(HWND_TOP, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top , 0);
 		inputBox_->ShowWindow( SW_SHOW );
 	}
-	inputBox_->SetWindowText( _T("") );
+	//inputBox_->settex
+	CHARRANGE cr;
+	cr.cpMin = -1;
+	cr.cpMax = -1;
+
+	// hwnd = rich edit hwnd
+	/*inputBox_->SendMessage(EM_EXSETSEL, 0, (LPARAM)&cr);
+	inputBox_->SendMessage(EM_REPLACESEL, 0, (LPARAM)L"test2");*/
+
+	//inputBox_->SetWindowText( _T("test") );
 	inputBox_->SetFocus();
 	//DebugWrite2( _T( "%d ,parent=%d, bounds = ( %d %d %d %d )" ), wnd, parentWindow_, rect);
 	//MessageBox ( 0, 0, 0, 0);
 	return inputBox_;
+}
+
+void Canvas::unselectAllElements()
+{
+	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
+		elementsOnCanvas_[i]->setSelected(false);
+	}
+}
+
+HWND Canvas::getRichEditControl()
+{
+	return inputBox_?inputBox_->m_hWnd : 0;
 }
 
 }
