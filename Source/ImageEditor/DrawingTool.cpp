@@ -318,6 +318,7 @@ void MovableElementTool::beginDraw( int x, int y ) {
 }
 
 void MovableElementTool::continueDraw( int x, int y, DWORD flags ) {
+
 	if ( currentElement_ && draggedBoundary_!= btNone ) {
 		int elWidth = currentElement_->getWidth();
 		int elHeight = currentElement_->getHeight();
@@ -369,8 +370,13 @@ void MovableElementTool::continueDraw( int x, int y, DWORD flags ) {
 		currentElement_->setX(elX);
 		currentElement_->setY(elY);
 		canvas_->updateView();
+		if ( currentElement_ && currentElement_->getType() == etCrop && canvas_->onCropChanged ) {
+			LOG(INFO) << "onCropChanged";
+			canvas_->onCropChanged(elX, elY, elWidth, elHeight);
+		}
 		return;
 	}
+	
 	if ( isMoving_ && currentElement_ ) {
 		int newX = currentElement_->getX() + x - startPoint_.x;
 		int newY  = currentElement_->getY() + y - startPoint_.y;
@@ -380,6 +386,8 @@ void MovableElementTool::continueDraw( int x, int y, DWORD flags ) {
 		startPoint_.x = x;
 		startPoint_.y = y;
 		canvas_->updateView();
+		canvas_->onCropChanged(newX, newY, currentElement_->getWidth(), currentElement_->getHeight());
+
 		return;
 	}
 	

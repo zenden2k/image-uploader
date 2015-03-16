@@ -634,31 +634,3 @@ CString GetSendToPath()
 	}
 	return result;
 }
-
-Gdiplus::Bitmap* BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szResType)
-{
-	using namespace Gdiplus;
-	HRSRC hrsrc = FindResource(hInstance, szResName, szResType);
-	if (!hrsrc)
-		return 0;
-	// "Fake" HGLOBAL - look at MSDN
-	HGLOBAL hg1 = LoadResource(hInstance, hrsrc);
-	DWORD sz = SizeofResource(hInstance, hrsrc);
-	void* ptr1 = LockResource(hg1);
-	HGLOBAL hg2 = GlobalAlloc(GMEM_FIXED, sz);
-
-	// Copy raster data
-	CopyMemory(LPVOID(hg2), ptr1, sz);
-	IStream* pStream;
-
-	// TRUE means free memory at Release
-	HRESULT hr = CreateStreamOnHGlobal(hg2, TRUE, &pStream);
-	if (FAILED(hr))
-		return 0;
-
-	// use load from IStream
-	Gdiplus::Bitmap* image = Bitmap::FromStream(pStream);
-	pStream->Release();
-	// GlobalFree(hg2);
-	return image;
-}

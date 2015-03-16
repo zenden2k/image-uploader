@@ -5,6 +5,9 @@
 #include "atlheaders.h"
 #include <vector>
 
+namespace Gdiplus {
+	class Bitmap;
+}
 #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 
 namespace WinUtils {
@@ -82,7 +85,8 @@ namespace WinUtils {
 
 	void DeleteDir2(LPCTSTR Dir);
 	CString GetAppFolder();
-
+	Gdiplus::Bitmap* IconToBitmap(HICON ico);
+	float GetMonitorScaleFactor();
 };
 
 #endif

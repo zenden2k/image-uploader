@@ -189,7 +189,13 @@ function  UploadFile(FileName, options) {
 		userPath+= "/";
 	}
 	local chunkSize = (50*1024*1024).tofloat();
-	local fileSize = GetFileSize(FileName);
+	local fileSize = 0;
+	try { 
+		GetFileSize(FileName);
+	} catch ( ex ) {
+		
+	}
+	
 	if ( fileSize < 0 ) {
 		_WriteLog("error","fileSize < 0 ");
 		return 0;

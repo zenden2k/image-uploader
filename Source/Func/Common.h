@@ -117,7 +117,6 @@ const CString GetCommonApplicationDataPath();
 HRESULT IsElevated( __out_opt BOOL * pbElevated );
 // Function that gets path to SendTo folder
 CString GetSendToPath() ;
-Gdiplus::Bitmap* BitmapFromResource(HINSTANCE hInstance,LPCTSTR szResName, LPCTSTR szResType);
 void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ");
 void EncodeString(LPCTSTR szSource, CString &Result,LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ");
 CString IU_md5_file(const CString& filename);

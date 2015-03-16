@@ -1380,6 +1380,12 @@ IDR_topRightShadow      PNG                     "res\\shadows\\topRightShadow.pn
 IDR_topShadow           PNG                     "res\\shadows\\topShadow.png"
 IDR_topLeftShadowSquare PNG                     "res\\shadows\\topLeftShadowSquare.png"
 IDR_topRightShadowSquare PNG                     "res\\shadows\\topRightShadowSquare.png"
+IDB_DROPDOWNICONPNG     PNG                     "res\\icon_dropdown_png.png"
+IDB_TOOLMOVEICONPNG     PNG                     "res\\ImageEditor\\icon_tool_move.png"
+IDB_TOOLCROPPING        PNG                     "res\\ImageEditor\\icon_tool_crop.png"
+IDB_ICONTOOLPENCIL      PNG                     "res\\ImageEditor\\icon_tool_pencil.png"
+IDB_ICONTOOLBRUSHPNG    PNG                     "res\\ImageEditor\\icon_tool_brush.png"
+IDB_ICONTOOLTEXTPNG     PNG                     "res\\ImageEditor\\icon_tool_text.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //

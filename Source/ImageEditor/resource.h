@@ -3,6 +3,7 @@
 // Used by ImageEditor.rc
 //
 #define IDR_MAINFRAME                   128
+#define IDI_DROPDOWN                    1059
 
 // Next default values for new objects
 // 

@@ -5,11 +5,12 @@
 #include "ImageEditorView.h"
 
 #include <algorithm>
-#include "ImageEditor/resource.h"
 #include "ImageEditor/BasicElements.h"
 #include <GdiPlus.h>
 #include <Gui/GuiTools.h>
 #include <Core/Logging.h>
+#include <Core/Images/Utils.h>
+#include "resource.h"
 
 #ifndef TR
 #define TR(a) L##a
@@ -86,7 +87,7 @@ LRESULT CImageEditorView::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
 	int cx = LOWORD(lParam); 
 	int cy = HIWORD(lParam);
 	SetCapture();
-	horizontalToolbar_.ShowWindow(SW_HIDE);
+	//horizontalToolbar_.ShowWindow(SW_HIDE);
 	canvas_->mouseDown( 0, cx, cy );
 	return 0;
 }
@@ -219,35 +220,74 @@ void CImageEditorView::createToolbars()
 	rc.bottom-= GuiTools::dlgY(1);
 	rc.left = GuiTools::dlgX(3);
 	rc.right -= GuiTools::dlgX(3);*/
-	if ( !horizontalToolbar_.Create(/*m_hWnd*/GetParent()) ) {
+	if ( !horizontalToolbar_.Create(m_hWnd) ) {
 		LOG(ERROR) << "Failed to create horizontal toolbar";
 	
 	}
+	horizontalToolbar_.addButton(Toolbar::Item(TR("Добавить в список"),0,100));
+	horizontalToolbar_.addButton(Toolbar::Item(TR("Загрузить на сервер"),0,100, CString(), Toolbar::itComboButton));
+	horizontalToolbar_.addButton(Toolbar::Item(TR("Поделиться"),0,100, CString(),Toolbar::itComboButton));
+	horizontalToolbar_.addButton(Toolbar::Item(TR("Закрыть"),0,100));
+	horizontalToolbar_.AutoSize();
 	horizontalToolbar_.ShowWindow(SW_SHOW);
+
+	if ( !verticalToolbar_.Create(m_hWnd) ) {
+		LOG(ERROR) << "Failed to create horizontal toolbar";
+
+	}
+
+	/*menu.CreatePopupMenu();
+	menu.AppendMenu(MF_STRING, ID_UNDO, TR("Отменить"));
+	menu.AppendMenu(MF_STRING, ID_PEN, TR("Карандаш"));
+	menu.AppendMenu(MF_STRING, ID_BRUSH, TR("Кисть"));
+	menu.AppendMenu(MF_STRING, ID_LINE, TR("Линия"));
+	menu.AppendMenu(MF_STRING, ID_RECTANGLE, TR("Прямоугольник"));
+	menu.AppendMenu(MF_STRING, ID_TEXT, TR("Добавить текст"));
+	menu.AppendMenu(MF_STRING, ID_CROP, TR("Обрезка"));*/
+
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(ID_CROP),_T("PNG")) ,100,TR("Перемещение")));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_TOOLCROPPING),_T("PNG")) ,ID_CROP,TR("Обрезка")));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_ICONTOOLPENCIL),_T("PNG")) ,ID_PEN,TR("Карандаш")));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_ICONTOOLBRUSHPNG),_T("PNG")) ,ID_BRUSH,TR("Кисть")));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_ICONTOOLTEXTPNG),_T("PNG")) ,ID_BRUSH,TR("Текст")));
+
+	
+	verticalToolbar_.AutoSize();
+	verticalToolbar_.ShowWindow(SW_SHOW);
 }
 
 void CImageEditorView::OnCropChanged(int x, int y, int w, int h)
 {
 	enum ToolbarPosition { pBottomRight, pTopLeft, pBottomInner };
 	ToolbarPosition pos = pBottomRight ;
-	RECT rc;
+	RECT rc, vertRc;
 	horizontalToolbar_.GetClientRect(&rc);
+	verticalToolbar_.GetClientRect(&vertRc);
 
 	if ( y + h + rc.bottom > canvas_->getHeigth()   ) {
 		pos = pTopLeft;
 	}
 	POINT horToolbarPos = {0,0};
-
+	POINT vertToolbarPos = {0,0};
 	if ( pos == pBottomRight ) {
 		horToolbarPos.x = x + w - rc.right;
 		horToolbarPos.y =  y + h + 6;
+
+		vertToolbarPos.x = x + w + 6 ;
+		vertToolbarPos.y = y + h - vertRc.bottom;
 	} else if ( pos == pTopLeft ) {
 		horToolbarPos.x = x;
 		horToolbarPos.y =  y - rc.bottom-6;
+
+		vertToolbarPos.x = x - vertRc.right - 6;
+		vertToolbarPos.y = y ;
 	}
 	ClientToScreen(&horToolbarPos);
+	ClientToScreen(&vertToolbarPos);
 
-	horizontalToolbar_.SetWindowPos(0, horToolbarPos.x, horToolbarPos.y, 0, 0, SWP_NOSIZE);
+	horizontalToolbar_.SetWindowPos(0, horToolbarPos.x, horToolbarPos.y, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);
+	//horizontalToolbar_.SetWindowPos(0, horToolbarPos.x, horToolbarPos.y, 0, 0, SWP_NOSIZE);
+	verticalToolbar_.SetWindowPos(0, vertToolbarPos.x, vertToolbarPos.y, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);
 
 }
 

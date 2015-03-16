@@ -174,7 +174,7 @@ LRESULT CThumbSettingsPage::OnThumbComboChanged(WORD wNotifyCode, WORD wID, HWND
 {
 	std::string fileName = getSelectedThumbnailName();
 	bool isStandartThumbnail = ( fileName == "default" || fileName == "classic" || fileName == "classic2" || fileName == "flat"
-		|| fileName == "transp.xml");
+		|| fileName == "transp");
 	GuiTools::EnableDialogItem(m_hWnd, IDC_EDITTHUMBNAILPRESET, !isStandartThumbnail);
 
 	showSelectedThumbnailPreview();

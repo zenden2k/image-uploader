@@ -3,6 +3,7 @@
 #include <sstream>
 #include <Core/Utils/StringUtils.h>
 #include <Func/MyUtils.h>
+#include <GdiPlus.h>
 
 namespace WinUtils {
 
@@ -787,5 +788,68 @@ bool GetClipboardHtml(CString& text, CString& outSourceUrl) {
 	return false;
 }
 
+
+Gdiplus::Bitmap* IconToBitmap(HICON ico)
+{
+	ICONINFO ii; 
+	GetIconInfo(ico, &ii);
+	BITMAP bmp; 
+	GetObject(ii.hbmColor, sizeof(bmp), &bmp);
+
+	Gdiplus::Bitmap temp(ii.hbmColor, NULL);
+	Gdiplus::BitmapData lockedBitmapData;
+	memset(&lockedBitmapData, 0, sizeof(lockedBitmapData));
+	Gdiplus::Rect rc(0, 0, temp.GetWidth(), temp.GetHeight());
+
+	Gdiplus::Status st = temp.LockBits(&rc, Gdiplus::ImageLockModeRead, temp.GetPixelFormat(), &lockedBitmapData);
+
+
+	Gdiplus::Bitmap* image = new Gdiplus::Bitmap(
+		lockedBitmapData.Width, lockedBitmapData.Height, lockedBitmapData.Stride,
+		PixelFormat32bppARGB, reinterpret_cast<BYTE *>(lockedBitmapData.Scan0));
+
+	temp.UnlockBits(&lockedBitmapData);
+	return image;
+}
+
+
+float GetMonitorScaleFactor()
+{
+	float res = 1.0;
+	/*MONITORINFOEX LogicalMonitorInfo;
+	LogicalMonitorInfo.cbSize = sizeof(MONITORINFOEX);       
+	GetMonitorInfo(hMonitor, &LogicalMonitorInfo);
+	int LogicalMonitorWidth = LogicalMonitorInfo.rcMonitor.right – LogicalMonitorInfo.rcMonitor.left;
+	int LogicalDesktopWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+	typedef LONG (WINAPI * QueryDisplayConfig_FuncType)(UINT32,UINT32 *,DISPLAYCONFIG_PATH_INFO *,UINT32 *);
+	typedef LONG (WINAPI * GetDisplayConfigBufferSizes_FuncType) (UINT32, UINT32*,UINT32 *);
+
+	HMODULE lib = LoadLibrary(_T("user32.dll"));
+	QueryDisplayConfig_FuncType QueryDisplayConfigFunc = GetProcAddress(lib, _T("QueryDisplayConfig"));
+	GetDisplayConfigBufferSizes_FuncType GetDisplayConfigBufferSizeFunc =  GetProcAddress(lib, _T("GetDisplayConfigBufferSize"));
+	if ( QueryDisplayConfigFunc && GetDisplayConfigBufferSizeFunc ) {
+		UINT32 NumPathArrayElements = 0;
+		UINT32 NumModeInfoArrayElements = 0;
+		if ( GetDisplayConfigBufferSizeFunc(QDC_DATABASE_CURRENT, &NumPathArrayElements, &NumModeInfoArrayElements) != ERROR_SUCCESS ) {
+			return res;
+		}
+		if ( !NumModeInfoArrayElements ) {
+			return res;
+		}
+		DISPLAYCONFIG_TOPOLOGY_ID CurrentTopologyId = DISPLAYCONFIG_TOPOLOGY_INTERNAL;
+		DISPLAYCONFIG_PATH_INFO* PathInfoArray = new DISPLAYCONFIG_PATH_INFO[NumPathArrayElements];
+		memset(PathInfoArray, 0, sizeof(DISPLAYCONFIG_PATH_INFO) * NumPathArrayElements);
+		DISPLAYCONFIG_MODE_INFO* ModeInfoArray = new DISPLAYCONFIG_PATH_INFO[NumModeInfoArrayElements];
+		memset(ModeInfoArray, 0, sizeof(DISPLAYCONFIG_PATH_INFO) * NumModeInfoArrayElements);
+
+		if ( QueryDisplayConfigFunc(QDC_DATABASE_CURRENT, &NumPathArrayElements, PathInfoArray, NumModeInfoArrayElements, ModeInfoArray, &CurrentTopologyId) != ERROR_SUCCESS ) {
+			return res;
+		}
+
+		res = (LogicalMonitorWidth / LogicalDesktopWidth) / ModeInfoArray[0].sourceMode.width
+
+	}*/
+	return res;
+}
 
 };
