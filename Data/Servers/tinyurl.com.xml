@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Servers>
+	<Server Name="tinyurl.com" Authorize="0" Type="urlshortening" >
+		<Actions>
+			<Action 
+				Type="get"
+				Url="http://tinyurl.com/create.php?source=indexpage&url=$(_ORIGINALURL|urlencode)&submit=Make+TinyURL&alias="
+				RegExp='window.clipboardData.setData\(.Text.,.(.+).\);'
+				AssignVars="surl:0"
+			/>
+		</Actions>
+		<Result DirectUrlTemplate="$(surl)" />
+	</Server>
+</Servers>
+
