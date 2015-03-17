@@ -54,12 +54,19 @@ public:
 
 class Rectangle: public MovableElement {
 public:
-	Rectangle(Canvas* canvas, int startX, int startY, int endX,int endY);
+	Rectangle(Canvas* canvas, int startX, int startY, int endX,int endY,bool filled = false );
 	void render(Painter* gr);
 	void getAffectedSegments( AffectedSegments* segments );
 
 	virtual bool isItemAtPos(int x, int y);
+protected:
+	bool filled_;
 
+};
+
+class FilledRectangle: public Rectangle {
+public:
+	FilledRectangle(Canvas* canvas, int startX, int startY, int endX,int endY );
 };
 
 class Arrow: public Line {

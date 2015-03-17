@@ -178,8 +178,9 @@ void MovableElement::createGrips()
 	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
 	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
 
-	POINT pts[8] = {{x,y}, {x + width / 2, y}, {x+width,y}, {x+width,y+height/2}, 
-	{x+width,y+height},  {x+width/2, y+height}, {x,y+height},{x,y+height/2}	
+	// item order is important!!!! FIXME: use std::map
+	POINT pts[8] = {
+	{x+width,y+height},  {x+width/2, y+height}, {x,y+height},{x+width,y+height/2}, {x,y+height/2}, {x,y}, {x + width / 2, y}, {x+width,y}, 
 	};
 
 	for( int i = 0; i < 8; i++ ) {

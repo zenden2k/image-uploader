@@ -59,7 +59,23 @@ void DrawingElement::getAffectedSegments( AffectedSegments* segments ) {
 	segments->markPoint( endPoint_.x, endPoint_.y );
 }
 
+AffectedSegments::AffectedSegments()
+{
+	maxWidth_ = -1;
+	maxHeight_ = -1;
+}
+
+AffectedSegments::AffectedSegments(int maxWidth, int maxHeight)
+{
+	maxWidth_ = maxWidth;
+	maxHeight_ = maxHeight;
+}
+
 void AffectedSegments::markPoint(int x, int y) {
+	if ( x >= maxWidth_ || y >= maxHeight_ || x < 0 || y < 0) {
+		return;
+	}
+
 	int horSegmentIndex = x / kSegmentSize;
 	int vertSegmentIndex = y / kSegmentSize;
 	unsigned int mapIndex = MAKELONG( horSegmentIndex, vertSegmentIndex );
@@ -67,7 +83,27 @@ void AffectedSegments::markPoint(int x, int y) {
 }
 
 void AffectedSegments::markRect(int x, int y, int width, int height) {
-	if ( x < 0 || y < 0 || width < 1 || height <1 ) {
+	if ( width < 1 || height <1  ) {
+		return;
+	}
+	if ( x < 0 ) {
+		width += x;
+		x = 0;
+	}
+
+	if ( y < 0) {
+		height+= y;
+		y = 0;
+	}
+
+	if ( maxWidth_ != -1 ) {
+		width  = min( width, maxWidth_ - x);
+	}
+	if ( maxHeight_ != -1 ) {
+		height = min ( height , maxHeight_ - y);
+	}
+
+	if (  width < 1 || height <1  ) {
 		return;
 	}
 
@@ -110,7 +146,7 @@ void AffectedSegments::getRects( std::deque<RECT>& rects, int maxWidth, int maxH
 		int yIndex = HIWORD( index );
 		RECT rc = { xIndex * kSegmentSize, yIndex * kSegmentSize, (xIndex + 1) * kSegmentSize, (yIndex + 1) * kSegmentSize };
 		if ( checkBounds ) {
-			IntersectRect( &bounds, &bounds, &rc );
+			IntersectRect( &rc, &bounds, &rc );
 		}
 		rects.push_back( rc );
 	}

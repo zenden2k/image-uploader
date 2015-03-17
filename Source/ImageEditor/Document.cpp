@@ -30,15 +30,16 @@ void Document::init() {
 	drawStarted_ = false;
 	originalImage_ = NULL;
 	currentCanvas_ = new Gdiplus::Graphics( currentImage_ );
+	changedSegments_ = AffectedSegments(getWidth(), getHeight());
 	//currentCanvas_->Clear( Gdiplus::Color( 150, 0, 0 ) );
 
 	/*
-	рисуем сетку
-	for ( int i = 0; i < currentImage_->GetWidth() / 20; i++ ) {
+	рисуем сетку*/ 
+	for ( int i = 0; i < currentImage_->GetWidth() /  AffectedSegments::kSegmentSize; i++ ) {
 		Pen pen(Color::DarkGray);
 		currentCanvas_->DrawLine(&pen, i * AffectedSegments::kSegmentSize, 0, i * AffectedSegments::kSegmentSize, currentImage_->GetHeight() );
 		currentCanvas_->DrawLine(&pen, 0, i * AffectedSegments::kSegmentSize, currentImage_->GetWidth(),  i * AffectedSegments::kSegmentSize  );
-	}*/
+	}
 }
 
 void Document::beginDrawing(bool cloneImage) {
@@ -51,7 +52,7 @@ void Document::beginDrawing(bool cloneImage) {
 }
 
 void Document::addDrawingElement(DrawingElement *element) {
-	currentCanvas_->SetSmoothingMode( Gdiplus::SmoothingModeHighQuality );
+	currentCanvas_->SetSmoothingMode( Gdiplus::SmoothingModeAntiAlias );
 	currentCanvas_->SetInterpolationMode( Gdiplus::InterpolationModeHighQualityBicubic );
 	AffectedSegments segments;
 	element->getAffectedSegments( &segments );
@@ -71,6 +72,11 @@ void Document::endDrawing() {
 
 }
 
+void Document::addAffectedSegments(const AffectedSegments& segments)
+{
+	changedSegments_ += segments;
+}
+
 void Document::saveDocumentState( /*DrawingElement* element*/ ) {
 	int pixelSize = 4;
 	typedef std::deque<RECT>::iterator iter;
@@ -79,7 +85,7 @@ void Document::saveDocumentState( /*DrawingElement* element*/ ) {
 	int srcImageWidth = srcImage->GetWidth();
 	int srcImageHeight = srcImage->GetHeight();
 
-	changedSegments_.getRects( rects, srcImageWidth, srcImageHeight );
+	changedSegments_.getRects( rects, srcImageWidth, srcImageHeight ); // may contain invalid segments!
 	unsigned int pixels = 0;
 	
 	pixels = rects.size() * AffectedSegments::kSegmentSize * AffectedSegments::kSegmentSize * pixelSize;
@@ -98,13 +104,22 @@ void Document::saveDocumentState( /*DrawingElement* element*/ ) {
 	unsigned int segmentSize = AffectedSegments::kSegmentSize * AffectedSegments::kSegmentSize * pixelSize;
 
 	unsigned char* pImageData = imageData;
+	AffectedSegments outSegments(srcImageWidth, srcImageHeight);
 	
 	for ( iter it = rects.begin(); it != rects.end(); ++it ) {
 		int x = it->left;
 		int y = it->top;
-		int rectWidth  = it->right - it->left;
-		int rectHeight = it->bottom - it->top;
-
+		if ( x < 0 || y < 0 ) {
+			continue;;
+		}
+		int rectWidth  = min(it->right - it->left, srcImageWidth - x);
+		int rectHeight = min(it->bottom - it->top, srcImageHeight - y);
+		if ( rectWidth <= 0 || rectHeight <= 0) {
+			// invalid rectangle. Out of bounds;
+			continue;
+		}
+		outSegments.markRect(x,y, rectWidth,rectHeight);
+		LOG(INFO) << "Saving segment ("<<x<<","<<y<<"," << rectWidth << ","<< rectHeight << ")";
 		for( int j = 0; j < rectHeight; j++ ) {
 			unsigned int dataOffset = (r.Width * (y + j) + x) * pixelSize;
 			unsigned int rowSize = rectWidth * pixelSize;
@@ -122,6 +137,7 @@ void Document::saveDocumentState( /*DrawingElement* element*/ ) {
 	history_.push_back( item );
 	delete originalImage_;
 	originalImage_ = 0;
+	changedSegments_.clear();
 }
 
 void Document::render(Gdiplus::Graphics *gr) {
@@ -138,7 +154,7 @@ bool  Document::undo() {
 	HistoryItem undoItem = history_.back();
 	history_.pop_back();
 	std::deque<RECT> rects;
-	undoItem.segments.getRects( rects );
+	undoItem.segments.getRects( rects, currentImage_->GetWidth(),currentImage_->GetHeight() );
 	
 	Gdiplus::BitmapData bdSrc;
 	Gdiplus::Rect r ( 0,0, currentImage_->GetWidth(), currentImage_->GetHeight() );
@@ -154,6 +170,8 @@ bool  Document::undo() {
 		int y = it->top;
 		int rectWidth  = it->right - it->left;
 		int rectHeight = it->bottom - it->top;
+
+		LOG(INFO) << "Restoring segment ("<<x<<","<<y<<"," << rectWidth << ","<< rectHeight << ")";
 		for( int j = 0; j < rectHeight; j++ ) {
 			unsigned int dstDataOffset = (r.Width * (y + j) + x) * pixelSize;
 			unsigned int rowSize    = rectWidth * pixelSize;
@@ -161,9 +179,10 @@ bool  Document::undo() {
 			//memset( bpSrc + dstDataOffset, 255, rowSize );
 			pdata += rowSize;
 		}
+		
 
 	}
-
+	delete[] undoItem.data;
 	currentImage_->UnlockBits( &bdSrc );
 	return true;
 }

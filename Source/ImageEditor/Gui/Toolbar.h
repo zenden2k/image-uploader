@@ -8,13 +8,14 @@
 
 namespace ImageEditor {
 
+
 class Toolbar : public CWindowImpl<Toolbar> {
 public:
 	typedef CWindowImpl<Toolbar> TParent;
 	enum Orientation { orHorizontal, orVertical };
 	enum ItemState { isNormal, isHover, isDown, isDropDown };
-	enum ItemType { itButton, itComboButton };
-	
+	enum ItemType { itButton, itComboButton, itTinyCombo };
+	class ToolbarItemDelegate;
 	struct Item {
 		CString title;
 		int command;
@@ -26,6 +27,8 @@ public:
 		ItemType type;
 		int group;
 		bool isChecked;
+		HWND tooltipWnd;
+		ToolbarItemDelegate* itemDelegate;
 		Item(CString title, Gdiplus::Bitmap* icon, int command, CString hint = CString(), ItemType type = itButton, bool checkable = false, int group = -1) {
 			this->title = title;
 			this->icon = icon;
@@ -37,7 +40,16 @@ public:
 			this->checkable = checkable;
 			isChecked = false;
 			this->group = group;
+			tooltipWnd = 0;
+			itemDelegate = 0;
 		}
+	};
+
+	class ToolbarItemDelegate {
+	public:
+		virtual ~ToolbarItemDelegate() {}
+		virtual SIZE CalcItemSize(Item& item, float dpiScaleX, float dpiScaleY) = 0;
+		virtual void DrawItem(Item& item, Gdiplus::Graphics* gr, int, int y, float dpiScaleX, float dpiScaleY) = 0;
 	};
 
 	Toolbar(Orientation orientation); 
@@ -81,6 +93,7 @@ protected:
 	std::vector<Item> buttons_;
 	int selectedItemIndex_;
 	void drawItem(int itemIndex, Gdiplus::Graphics* gr, int, int y);
+	void CreateToolTipForItem(int index);
 	bool trackMouse_;
 	float dpiScaleX;
 	float dpiScaleY;

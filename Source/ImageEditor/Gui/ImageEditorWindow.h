@@ -16,7 +16,8 @@ class ImageEditorWindow : public CWindowImpl<ImageEditorWindow>
 {
 public:
 	DECLARE_WND_CLASS(_T("CMainFrame"))
-	enum { ID_UNDO = 1000, ID_TEXT = 1001,  ID_COLORPICKER,  ID_PEN = 1600, ID_BRUSH, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_CROP , ID_SELECTION,ID_MOVE};
+	enum { ID_UNDO = 1000, ID_TEXT = 1001,  ID_COLORPICKER,  ID_PEN = 1600, ID_BRUSH, ID_LINE, ID_ARROW, ID_RECTANGLE, 
+		ID_FILLEDRECTANGLE, ID_CROP , ID_SELECTION,ID_MOVE};
 	struct MenuItem {
 		int menuItemId;
 		int toolId;
@@ -36,6 +37,7 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
+		MESSAGE_HANDLER( WM_KEYDOWN, OnKeyDown )
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
@@ -57,6 +59,7 @@ public:
 		LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 		LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+		LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

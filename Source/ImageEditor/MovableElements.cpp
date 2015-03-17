@@ -37,6 +37,10 @@ namespace ImageEditor {
 			return;
 		}
 		Gdiplus::Pen pen( color_, penSize_ );
+		pen.SetStartCap(LineCapRound);
+		pen.SetEndCap(LineCapRound);
+		//CustomLineCap cap()
+		//pen.SetCustomStartCap()
 		gr->DrawLine( &pen, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y );
 	}
 
@@ -91,8 +95,10 @@ namespace ImageEditor {
 		Grip grip2;
 		grip1.pt.x = startPoint_.x;
 		grip1.pt.y = startPoint_.y;
+		grip1.gpt = MovableElement::gptStartPoint;
 		grip2.pt.x = endPoint_.x;
 		grip2.pt.y =  endPoint_.y;
+		grip2.gpt = MovableElement::gptEndPoint;
 
 		if ( grip1.pt.x <= grip2.pt.x ) {
 			if (  grip1.pt.y <= grip2.pt.y  ) {
@@ -121,12 +127,13 @@ namespace ImageEditor {
 		int itemY = getY();
 		int itemWidth = getWidth();
 		int itemHeight = getHeight();
+		int selectRadius = max(kSelectRadius, penSize_);
 		// Line equation
 		if ( endPoint_.x - startPoint_.x != 0 ) {
 			float k = float(endPoint_.y - startPoint_.y)/float(endPoint_.x - startPoint_.x);
 			float b = float(endPoint_.x* startPoint_.y - startPoint_.x*endPoint_.y)/float(endPoint_.x - startPoint_.x);
 			//LOG(INFO) << "k="<<k <<" b="<<b;
-			if(abs(y - (k*x + b)) <= kSelectRadius && x >= itemX-kSelectRadius && x <= itemX + itemWidth +  kSelectRadius ) {
+			if(abs(y - (k*x + b)) <= selectRadius && x >= itemX-selectRadius && x <= itemX + itemWidth +  selectRadius ) {
 				return true;
 			}
 		}
@@ -135,7 +142,7 @@ namespace ImageEditor {
 			float k = float(endPoint_.x - startPoint_.x)/float(endPoint_.y - startPoint_.y);
 			float b = float(endPoint_.y* startPoint_.x - startPoint_.y*endPoint_.x)/float(endPoint_.y - startPoint_.y);
 			//LOG(INFO) << "k="<<k <<" b="<<b;
-			if(abs(x - (k*y + b)) <= kSelectRadius && y >= itemY-kSelectRadius && y <= itemY + itemHeight +  kSelectRadius) {
+			if(abs(x - (k*y + b)) <= selectRadius && y >= itemY-selectRadius && y <= itemY + itemHeight +  selectRadius) {
 				return true;
 			}
 		}
@@ -287,12 +294,13 @@ void CropOverlay::render(Painter* gr)
 
 // Rectangle
 //
-Rectangle::Rectangle(Canvas* canvas, int startX, int startY, int endX, int endY):MovableElement(canvas) {
+Rectangle::Rectangle(Canvas* canvas, int startX, int startY, int endX, int endY, bool filled):MovableElement(canvas) {
 	startPoint_.x = startX;
 	startPoint_.y = startY;
 	endPoint_.x   = endX;
 	endPoint_.y   = endY;
 	drawDashedRectangle_   = false;
+	filled_ = filled;
 }
 
 void Rectangle::render(Painter* gr) {
@@ -305,7 +313,12 @@ void Rectangle::render(Painter* gr) {
 	int y = std::min<>( startPoint_.y, endPoint_.y );
 	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
 	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
+	if ( filled_ ) {
+		SolidBrush br(backgroundColor_);
+		gr->FillRectangle(&br, x, y, width, height);
+	}
 	gr->DrawRectangle( &pen, x, y, width, height );
+	
 }
 
 
@@ -324,18 +337,22 @@ void Rectangle::getAffectedSegments( AffectedSegments* segments ) {
 
 bool Rectangle::isItemAtPos(int x, int y)
 {
+	if ( filled_ ) {
+		return MovableElement::isItemAtPos(x,y);
+	}
 	int elementX = getX();
 	int elementY = getY();
 	int elementWidth = getWidth();
 	int elementHeight = getHeight();
+	int selectRadius = max(kSelectRadius, penSize_);
 	return 
-		((( x >= elementX - kSelectRadius && x  <= elementX  + kSelectRadius )  || ( x >= elementX +elementWidth - kSelectRadius && x  <= elementX  +elementWidth+ kSelectRadius ) ) 
-		&& y>= elementY - kSelectRadius && y <= elementY + elementHeight + kSelectRadius )
+		((( x >= elementX - selectRadius && x  <= elementX  + selectRadius )  || ( x >= elementX +elementWidth - selectRadius && x  <= elementX  +elementWidth+ selectRadius ) ) 
+		&& y>= elementY - selectRadius && y <= elementY + elementHeight + selectRadius )
 
 		|| 
-		((( y >= elementY - kSelectRadius && y  <= elementY  + kSelectRadius )  || ( y >= elementY +elementHeight - kSelectRadius && y  <= elementY  +elementHeight+ kSelectRadius ) ) 
+		((( y >= elementY - selectRadius && y  <= elementY  + selectRadius )  || ( y >= elementY +elementHeight - selectRadius && y  <= elementY  +elementHeight+ selectRadius ) ) 
 		
-		&& x>= elementX - kSelectRadius && x <= elementX + elementWidth + kSelectRadius );
+		&& x>= elementX - selectRadius && x <= elementX + elementWidth + selectRadius );
 }
 
 Arrow::Arrow(Canvas* canvas,int startX, int startY, int endX,int endY) : Line(canvas, startX, startY, endX, endY)
@@ -380,6 +397,10 @@ void Selection::render(Painter* gr)
 ImageEditor::ElementType Selection::getType() const
 {
 	return etSelection;
+}
+
+FilledRectangle::FilledRectangle(Canvas* canvas, int startX, int startY, int endX,int endY):Rectangle(canvas, startX, startY, endX, endY, true)
+{
 }
 
 }

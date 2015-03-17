@@ -27,7 +27,7 @@ Toolbar::~Toolbar()
 
 bool Toolbar::Create(HWND parent)
 {
-	RECT rc = {0, 0, 300,40};
+	RECT rc = {0, 0, 1,1};
 	TParent::Create(parent, rc, _T("test"),WS_VISIBLE | /*WS_POPUPWINDOW*/WS_POPUP /*|WS_SYSMENU*/ , WS_EX_LAYERED|  WS_EX_NOACTIVATE /*|WS_EX_TOOLWINDOW*/);
 	if ( !m_hWnd ) {
 		return false;
@@ -226,7 +226,9 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 		Item& item = buttons_[selectedItemIndex_];
 		if ( item.type == Toolbar::itComboButton && xPos >  item.rect.right - dropDownIcon_->GetWidth() - itemMargin_  ) {
 			item.state = isDropDown;
-		} else {
+		} else if ( item.type == Toolbar::itTinyCombo && xPos >  item.rect.right - 6*dpiScaleX - itemMargin_ && yPos >   item.rect.bottom - 6*dpiScaleY - itemMargin_  ) {
+			item.state = isDropDown;
+		}else {
 			item.state = isDown;
 		}
 		
@@ -267,7 +269,6 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		InvalidateRect(&item.rect, FALSE);
 		HWND parent = GetParent();
 		int command = item.command;
-		LOG(INFO) << "parent="<<parent;
 		::PostMessage(parent, WM_COMMAND, MAKEWPARAM(command,BN_CLICKED),(LPARAM)m_hWnd);
 		selectedItemIndex_ = -1;
 		OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);
@@ -284,8 +285,12 @@ SIZE Toolbar::CalcItemSize(int index)
 {
 	using namespace Gdiplus;
 	SIZE res={0,0};
-	Item item = buttons_[index];
+	Item &item = buttons_[index];
 	
+	if ( item.itemDelegate ) {
+		return item.itemDelegate->CalcItemSize(item,dpiScaleX, dpiScaleY);
+	}
+
 	if (  item.title.GetLength()) {
 		CWindowDC dc(m_hWnd);
 		Gdiplus::Graphics gr(dc);
@@ -303,12 +308,20 @@ SIZE Toolbar::CalcItemSize(int index)
 	}
 
 	if ( item.type == itComboButton ) {
-		res.cx+=dropDownIcon_ ->GetWidth()*dpiScaleX + itemHorPadding_;
-	}
+		res.cx += dropDownIcon_ ->GetWidth()*dpiScaleX + itemHorPadding_;
+	}/*else if ( item.type == itTinyCombo ) {
+		res.cx += 5*dpiScaleX;
+	}*/
 
 	res.cx += itemHorPadding_ * 2;
 	res.cy  += itemVertPadding_ * 2;
-	
+	RECT rc;
+	GetClientRect(&rc);
+	if ( orientation_ == orVertical ) {
+		res.cx =  max( res.cx, rc.right - itemMargin_*2);
+	} else {
+		res.cy =  max( res.cy, rc.bottom - itemMargin_*2);
+	}
 	return res;
 }
 
@@ -317,20 +330,40 @@ int Toolbar::AutoSize()
 {
 	int x = itemMargin_;
 	int y = itemMargin_;
-	for ( int i =0; i < buttons_.size(); i++ ) {
-		SIZE s = CalcItemSize(i);
-		
-		if ( orientation_ == orHorizontal ) {
-			x+= s.cx + itemMargin_;
-			y = max(s.cy + itemMargin_*2, y);
-		} else {
-			y+= s.cy + itemMargin_;
-			x = max(s.cx+itemMargin_*2, x);
+	int width = 0;
+	int height = 0;
+	for ( int j = 0; j < 2; j ++ ) {
+		x = itemMargin_;
+		y = itemMargin_;
+		for ( int i =0; i < buttons_.size(); i++ ) {
+			SIZE s = CalcItemSize(i);
+			Item& item = buttons_[i];
+			RectF bounds(x, y, float(s.cx), float(s.cy));
+			item.rect.left = x;
+			item.rect.top = y;
+			item.rect.right = s.cx + x;
+			item.rect.bottom = s.cy + y;
+
+			if ( orientation_ == orHorizontal ) {
+				x+= s.cx + itemMargin_;
+				width = x;
+				height = max(s.cy + itemMargin_*2, height);
+			} else {
+				y+= s.cy + itemMargin_;
+				height = y;
+				width = max(s.cx+itemMargin_*2, width);
+			}
 		}
-		//y+= s.cy;
+		if ( j == 0 ) {
+			SetWindowPos(0, 0,0,width,height,SWP_NOMOVE);
+		}
+	}
+
+	for ( int i = 0; i < buttons_.size(); i++ ) {
+		CreateToolTipForItem(i);
 	}
 	//x += itemMargin_ * 2;
-	SetWindowPos(0, 0,0,x,y,SWP_NOMOVE);
+	
 	return 1;
 }
 
@@ -340,6 +373,12 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 	SIZE size = CalcItemSize(itemIndex);
 	
 	Item& item = buttons_[itemIndex];
+
+	if ( item.itemDelegate ) {
+		item.itemDelegate->DrawItem(item, gr, x, y, dpiScaleX, dpiScaleY);
+		return;
+	}
+
 	RectF bounds(x, y, float(size.cx), float(size.cy));
 	item.rect.left = x;
 	item.rect.top = y;
@@ -389,6 +428,8 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 	if ( item.type == itComboButton ) {
 		//LOG(INFO) <<  "GetWidth "<< dropDownIcon_->GetWidth() << " " << dropDownIcon_->GetHeight();
 		gr->DrawImage(dropDownIcon_, bounds.X + bounds.Width - 16*dpiScaleX+ (item.state == isDropDown ? 1 : 0), bounds.Y + (bounds.Height -16*dpiScaleY )/2 + (item.state == isDropDown ? 1 : 0), (int)16*dpiScaleX, (int)16*dpiScaleY);
+	} else if ( item.type == itTinyCombo ) {
+		gr->DrawImage(dropDownIcon_, bounds.X + bounds.Width - 8*dpiScaleX+ (item.state == isDropDown ? 1 : 0), bounds.Y + bounds.Height - 8*dpiScaleY + (item.state == isDropDown ? 1 : 0), (int)10*dpiScaleX, (int)10*dpiScaleY);
 	}
 
 	if (  item.icon ) {
@@ -409,5 +450,42 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 	}
 	gr->DrawString(item.title, -1, font_, textBounds, &format, &brush);
 }
+
+
+void Toolbar::CreateToolTipForItem(int index)
+{
+	Item& item = buttons_[index];
+	if ( item.tooltipWnd ) {
+		::DestroyWindow(item.tooltipWnd);
+		item.tooltipWnd = 0;
+	}
+	if ( item.hint.IsEmpty() ) {
+		return;
+	}
+	// Create a tooltip.
+	HWND hwndTT = ::CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL, 
+		WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, 
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 
+		m_hWnd, NULL, _Module.GetModuleInstance(),NULL);
+
+	::SetWindowPos(hwndTT, HWND_TOPMOST, 0, 0, 0, 0, 
+		SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+
+	// Set up "tool" information. In this case, the "tool" is the entire parent window.
+
+	TOOLINFO ti = { 0 };
+	ti.cbSize   = sizeof(TOOLINFO);
+	ti.uFlags   = TTF_SUBCLASS;
+	ti.hwnd     = m_hWnd;
+	ti.hinst    = _Module.GetModuleInstance();
+	TCHAR* textBuffer = new TCHAR[item.hint.GetLength()+1];
+	lstrcpy(textBuffer, item.hint);
+	ti.lpszText = textBuffer;
+	ti.rect  = item.rect;
+
+	// Associate the tooltip with the "tool" window.
+	SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);	
+	delete[] textBuffer;
+} 
 
 }

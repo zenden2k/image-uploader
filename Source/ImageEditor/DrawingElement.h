@@ -39,7 +39,9 @@ class DrawingElement {
 
 class AffectedSegments {
 	public:
-		enum { kSegmentSize = 25 };
+		AffectedSegments();
+		AffectedSegments(int maxWidth, int maxHeight);
+		enum { kSegmentSize = 50 };
 		void markPoint(int x, int y);
 		void markRect(int x, int y, int width, int height);
 		HRGN createRegionFromSegments();
@@ -48,6 +50,8 @@ class AffectedSegments {
 		AffectedSegments& operator+= ( const AffectedSegments& segments_);
 	private:
 		std::map<unsigned int, bool> segments_;
+		int maxWidth_;
+		int maxHeight_;
 };
 
 }

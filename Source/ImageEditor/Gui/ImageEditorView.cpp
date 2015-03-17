@@ -5,7 +5,7 @@
 #include "ImageEditorView.h"
 
 #include <algorithm>
-#include "ImageEditor/BasicElements.h"
+
 #include <GdiPlus.h>
 #include <Gui/GuiTools.h>
 #include <Core/Logging.h>
@@ -60,10 +60,10 @@ void CImageEditorView::setCanvas(ImageEditor::Canvas *canvas) {
 }
 
 LRESULT CImageEditorView::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	int cx = LOWORD(lParam); 
-	int cy = HIWORD(lParam);
+	int cx = GET_X_LPARAM(lParam); 
+	int cy =  GET_Y_LPARAM(lParam);
 	POINT pt = {cx, cy};
-	LOG(INFO) <<"x=" << cx <<"y=" << cy;
+	//LOG(INFO) <<"x=" << cx <<"y=" << cy;
 	/*TextElement *textElement = < canvas_->getCurrentlyEditedTextElement();
 	if ( textElement ) {
 		int elX = textElement->getX();
@@ -90,8 +90,8 @@ LRESULT CImageEditorView::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 }
 
 LRESULT CImageEditorView::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	int cx = LOWORD(lParam); 
-	int cy = HIWORD(lParam);
+	int cx =   GET_X_LPARAM(lParam); 
+	int cy =   GET_Y_LPARAM(lParam); 
 	POINT pt = {cx, cy};
 	/*TextElement *textElement = canvas_->getCurrentlyEditedTextElement();
 	if ( textElement ) {
@@ -112,8 +112,8 @@ LRESULT CImageEditorView::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam,
 }
 
 LRESULT CImageEditorView::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	int cx = LOWORD(lParam); 
-	int cy = HIWORD(lParam);
+	int cx =   GET_X_LPARAM(lParam); 
+	int cy =   GET_Y_LPARAM(lParam); 
 	POINT pt = {cx, cy};
 	/*TextElement *textElement = canvas_->getCurrentlyEditedTextElement();
 	if ( textElement ) {
@@ -194,6 +194,19 @@ LRESULT CImageEditorView::OnSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 	return 0;
 }
 
+
+LRESULT CImageEditorView::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	if ( wParam == 'Z' && ( !!( ::GetKeyState(VK_LCONTROL) & 0x8000 ) ||  ::GetKeyState(VK_RCONTROL) & 0x8000 ) ) {
+		canvas_->undo();
+	} if ( wParam == 'D' && ( !!( ::GetKeyState(VK_LCONTROL) & 0x8000 ) ||  ::GetKeyState(VK_RCONTROL) & 0x8000 ) ) {
+		canvas_->unselectAllElements();
+		canvas_->updateView();
+	}else if ( wParam == VK_DELETE ) {
+		canvas_->deleteSelectedElements();
+	}
+	return 0;
+}
 
 HCURSOR CImageEditorView::getCachedCursor(CursorType cursorType)
 {

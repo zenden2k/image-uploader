@@ -24,13 +24,18 @@ class Canvas {
 		};
 		
 		enum DrawingToolType {
-			dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtText, dtCrop, dtMove, dtSelection
+			dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtFilledRectangle, dtText, dtCrop, dtMove, dtSelection
 		};
 
 		enum UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, uitElementPositionChanged};
+
+		struct UndoHistoryItemElement {
+			MovableElement * movableElement;
+			int pos;
+		};
 		struct UndoHistoryItem {
 			UndoHistoryItemType type;
-			MovableElement * element;
+			std::vector<UndoHistoryItemElement> elements;
 		};
 		
 
@@ -49,6 +54,8 @@ class Canvas {
 		void setPenSize(int size);
 		void setForegroundColor(Gdiplus::Color color);
 		void setBackgroundColor(Gdiplus::Color color);
+		Gdiplus::Color getForegroundColor() const;
+		Gdiplus::Color getBackgroundColor() const;
 		void setDrawingToolType(DrawingToolType tool);
 		AbstractDrawingTool* getCurrentDrawingTool();
 		void addMovableElement(MovableElement* element);
@@ -73,6 +80,8 @@ class Canvas {
 		HWND getRichEditControl();
 		void updateView();
 		bool addDrawingElementToDoc(DrawingElement* element);
+		void endDocDrawing();
+		int deleteSelectedElements();
 		fastdelegate::FastDelegate4<int,int,int,int> onCropChanged;
 		friend class AbstractDrawingTool;
 		friend class VectorElementTool;

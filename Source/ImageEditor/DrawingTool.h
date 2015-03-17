@@ -46,10 +46,10 @@ class MoveAndResizeTool: public AbstractDrawingTool {
 	protected:
 		MovableElement* currentElement_;
 		ElementType elementType_;
-		BoundaryType draggedBoundary_;
+		MovableElement::Grip draggedBoundary_;
 		void createElement();
-		BoundaryType checkElementsBoundaries(int x, int y, MovableElement** elem = 0);
-		BoundaryType checkElementBoundaries(MovableElement*, int x, int y);
+		MovableElement::Grip checkElementsBoundaries(int x, int y, MovableElement** elem = 0);
+		MovableElement::Grip checkElementBoundaries(MovableElement*, int x, int y);
 		static void cleanUp();
 		virtual CursorType getCursor(int x, int y);
 		virtual void mouseDoubleClick(int x, int y);
@@ -97,6 +97,7 @@ public:
 	virtual CursorType getCursor(int x, int y);
 private:
 	POINT oldPoint_;
+	AffectedSegments segments_;
 	void drawLine(int x0, int y0, int x1, int y1);
 };
 

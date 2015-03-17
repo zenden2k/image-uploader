@@ -5,7 +5,6 @@
 #include <GdiPlus.h>
 #include "DrawingElement.h"
 #include "Document.h"
-#include "BasicElements.h"
 #include "DrawingTool.h"
 #include "InputBox.h"
 #include "Gui/InputBoxControl.h"
@@ -207,6 +206,16 @@ void Canvas::setBackgroundColor(Gdiplus::Color color)
 	}
 }
 
+Gdiplus::Color Canvas::getForegroundColor() const
+{
+	return foregroundColor_;
+}
+
+Gdiplus::Color Canvas::getBackgroundColor() const
+{
+	return backgroundColor_;
+}
+
 void Canvas::setDrawingToolType(DrawingToolType toolType) {
 	drawingToolType_ = toolType;
 	unselectAllElements();
@@ -232,7 +241,10 @@ void Canvas::setDrawingToolType(DrawingToolType toolType) {
 			type = etCrop;
 		} else if ( toolType == dtRectangle ) {
 			type = etRectangle;
-		} else if ( toolType == dtMove ) {
+		} else if ( toolType == dtFilledRectangle ) {
+			type = etFilledRectangle;
+		}
+		else if ( toolType == dtMove ) {
 			currentDrawingTool_ = new MoveAndResizeTool( this, etNone );
 			return;
 		} else if ( toolType == dtSelection ) {
@@ -267,6 +279,7 @@ void Canvas::addMovableElement(MovableElement* element)
 	if ( element->getType() == etSelection ) {
 		delete selection_;
 		selection_ = element;
+		return;
 	}
 
 	std::vector<MovableElement*>::iterator it;
@@ -275,7 +288,10 @@ void Canvas::addMovableElement(MovableElement* element)
 		UndoHistoryItem historyItem;
 		elementsOnCanvas_.push_back(element);
 		historyItem.type = uitElementAdded;
-		historyItem.element = element;
+		UndoHistoryItemElement uhie;
+		uhie.pos = elementsOnCanvas_.size();
+		uhie.movableElement = element;
+		historyItem.elements.push_back(uhie);
 		undoHistory_.push(historyItem);
 		elementsToDelete_.push_back(element);
 	}
@@ -283,21 +299,53 @@ void Canvas::addMovableElement(MovableElement* element)
 
 bool Canvas::addDrawingElementToDoc(DrawingElement* element)
 {
-	UndoHistoryItem historyItem;
-	historyItem.type = uitDocumentChanged;
-	historyItem.element = 0;
-	undoHistory_.push(historyItem);
 	currentDocument()->addDrawingElement(element);
 	return true;
 }
 
 
+void Canvas::endDocDrawing()
+{
+	currentDocument()->endDrawing();
+	UndoHistoryItem historyItem;
+	historyItem.type = uitDocumentChanged;
+	undoHistory_.push(historyItem);
+}
+
+int Canvas::deleteSelectedElements()
+{
+	int deletedCount = 0;
+	UndoHistoryItem uhi;
+	uhi.type = uitElementRemoved;
+
+	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->getType() != etCrop ) {
+			UndoHistoryItemElement uhie;
+			uhie.movableElement = elementsOnCanvas_[i];
+			uhie.pos = i;
+			uhi.elements.push_back(uhie );
+			elementsOnCanvas_.erase(elementsOnCanvas_.begin() + i);
+			i--;
+			deletedCount++;
+		}
+	}
+	if ( deletedCount ) {
+		undoHistory_.push(uhi);
+		updateView();
+	}
+	return deletedCount;
+}
+
 void Canvas::deleteMovableElement(MovableElement* element)
 {
 	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
 		if ( elementsOnCanvas_[i] == element ) {
+
 			elementsOnCanvas_.erase(elementsOnCanvas_.begin() + i);
-			delete element;
+			if ( element->getType() == etCrop ) {
+				setOverlay(0);
+			}
+			//delete element;
 			break;
 		}
 	}
@@ -361,7 +409,8 @@ float Canvas::getZoomFactor() const
 
 MovableElement* Canvas::getElementAtPosition(int x, int y)
 {
-	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
+	int count = elementsOnCanvas_.size();
+	for ( int i = count-1; i >=0 ; i-- ) {
 		if ( elementsOnCanvas_[i]->getType() != etCrop ) {	
 			if ( elementsOnCanvas_[i]->isItemAtPos(x,y) ) {
 				return  elementsOnCanvas_[i];
@@ -369,7 +418,7 @@ MovableElement* Canvas::getElementAtPosition(int x, int y)
 		}
 	}
 
-	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
+	for ( int i = count-1; i >=0; i-- ) {
 		if ( elementsOnCanvas_[i]->getType() == etCrop ) {
 			int elementX = elementsOnCanvas_[i]->getX();
 			int elementY = elementsOnCanvas_[i]->getY();
@@ -422,10 +471,18 @@ bool Canvas::undo() {
 	if ( item.type == uitDocumentChanged ){
 		result =  doc_->undo();
 	} else if ( item.type == uitElementAdded ) {
-		deleteMovableElement(item.element);
+		for ( int i = 0; i< item.elements.size(); i++ ) {
+			deleteMovableElement(item.elements[i].movableElement);
+		}
+		result = true;
+	} else if  ( item.type == uitElementRemoved ) {
+		int itemCount = item.elements.size();
+		// Insert elements in their initial positions
+		for ( int i = itemCount-1; i>=0; i-- ) {
+			elementsOnCanvas_.insert(elementsOnCanvas_.begin()+ item.elements[i].pos, item.elements[i].movableElement);
+		}
 		result = true;
 	}
-
 	if ( result ) {
 		undoHistory_.pop();
 	}

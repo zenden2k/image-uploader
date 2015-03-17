@@ -16,9 +16,17 @@ class MovableElement: public DrawingElement {
 	public:
 		
 		enum { kGripSize = 6 ,kSelectRadius = 5};
+		enum GripPointType {gptNone, gptStartPoint, gptEndPoint};
 		struct Grip {
 			POINT pt;
 			BoundaryType bt;
+			GripPointType gpt; 
+			Grip() {
+				pt.x = -1;
+				pt.y = -1;
+				bt = btNone;
+				gpt = gptNone;
+			}
 		};
 		MovableElement(Canvas* canvas_);
 		void render(Painter* gr);

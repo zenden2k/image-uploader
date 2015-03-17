@@ -30,6 +30,7 @@ class CImageEditorView : public CWindowImpl<CImageEditorView>, public ImageEdito
 			MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
 			MESSAGE_HANDLER( WM_CONTEXTMENU, OnContextMenu )
 			MESSAGE_HANDLER( WM_SETCURSOR, OnSetCursor )
+			MESSAGE_HANDLER( WM_KEYDOWN, OnKeyDown )
 			REFLECT_NOTIFICATIONS()
 
 		END_MSG_MAP()
@@ -51,6 +52,7 @@ class CImageEditorView : public CWindowImpl<CImageEditorView>, public ImageEdito
 		LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 		POINT oldPoint;
 	private:

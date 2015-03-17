@@ -2,7 +2,6 @@
 
 #include "Canvas.h"
 #include "Document.h"
-#include "BasicElements.h"
 #include "MovableElements.h"
 
 #include <Core/Utils/CoreUtils.h>
@@ -112,7 +111,7 @@ void PenTool::continueDraw( int x, int y, DWORD flags ) {
 	line->setBackgroundColor(backgroundColor_);
 
 	line->setCanvas(canvas_);
-	canvas_->addDrawingElementToDoc( line );
+	canvas_->currentDocument()->addDrawingElement( line );
 
 	oldPoint_.x = x;
 	oldPoint_.y = y;
@@ -120,7 +119,7 @@ void PenTool::continueDraw( int x, int y, DWORD flags ) {
 }
 
 void PenTool::endDraw( int x, int y ) {
-	canvas_->currentDocument()->endDrawing();
+	canvas_->endDocDrawing();
 }
 
 void PenTool::render( Painter* gr ) {
@@ -159,7 +158,9 @@ void BrushTool::continueDraw( int x, int y, DWORD flags ) {
 }
 
 void BrushTool::endDraw( int x, int y ) {
-	canvas_->currentDocument()->endDrawing();
+	canvas_->currentDocument()->addAffectedSegments(segments_);
+	canvas_->endDocDrawing();
+	segments_.clear();
 }
 
 void BrushTool::render( Painter* gr ) {
@@ -213,15 +214,16 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
 		for( int y = yStart; y <= yEnd; y++ ) {
 			x = x0;
 			gr->FillEllipse( &br, (int)x, y, penSize_, penSize_ );
-			//segments->markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
+			segments_.markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
 		} 
 	} else if ( y1 == y0 ) {
 		for( int x = xStart; x <= xEnd; x++ ) {
 			int y = y0;
 			gr->FillEllipse( &br, x, y, penSize_, penSize_ );
-		//	segments->markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
+			segments_.markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
 		} 
 	} else {
+		// Why not simple draw line ? O_o
 		for( int a = 0; a <= len; a++ ) {
 			x = x0 + a * sinA;
 			y = y0 + a * cosA;
@@ -229,8 +231,10 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
 			//DebugWrite( _T("a=%d x=%3.2f  y=%3.2f  \r\n"), a, x, y );
 			//int y = -1;
 			//y = y0 + (x-x0)*(y1-y0)/(x1-x0);
+
+			
 			gr->FillEllipse( &br, (int)x, (int)y, penSize_, penSize_ );
-			//			segments->markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
+			segments_.markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
 		 } 
 	}  
 }
@@ -243,14 +247,14 @@ CropOverlay* MoveAndResizeTool::cropOverlay_ = 0;
 MoveAndResizeTool::MoveAndResizeTool( Canvas* canvas, ElementType type ) : AbstractDrawingTool( canvas ) {
 	currentElement_       = NULL;
 	elementType_          = type;
-	draggedBoundary_ = btNone;
+//	draggedBoundary_. = btNone;
 	isMoving_ = false;
 	allowCreatingElements_ = true;
 }
 
 void MoveAndResizeTool::beginDraw( int x, int y ) {
 	draggedBoundary_ = checkElementsBoundaries(x,y, &currentElement_);
-	if ( draggedBoundary_!= btNone ) {
+	if ( draggedBoundary_.bt!= btNone ) {
 		canvas_->unselectAllElements();
 		currentElement_->setSelected(true);
 		return;
@@ -296,56 +300,68 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 
 void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 
-	if ( currentElement_ && draggedBoundary_!= btNone ) {
-		int elWidth = currentElement_->getWidth();
-		int elHeight = currentElement_->getHeight();
-		int elX = currentElement_->getX();
-		int elY  = currentElement_->getY();
-		switch ( draggedBoundary_ ) {
-			case btBottomRight:
-				elWidth = x - elX;
-				elHeight = y - elY;
-				break;
-			case btBottom:
-				elHeight = y - elY;
-				break;
-			case btRight:
-				elWidth = x - elX;
-				break;
-			case btTopLeft:
-				
-				elWidth =  elX - x + elWidth;
-				elHeight = elY - y + elHeight;
-				elX = x;
-				elY = y;
-			case btLeft:
-				
-				elWidth = elX - x + elWidth;
-				elX = x;
-				break;
-			case btTop:
-				elHeight =  elY - y + elHeight;
-				elY = y;
-				break;
-			case btBottomLeft:
-				
-				elWidth = elX - x + elWidth;
-				elHeight = y - elY;
-				elX = x;
-				break;
-			case btTopRight:
-				
-				elWidth =  x - elX;
-				elHeight = elY - y + elHeight;
-				elY = y;
-
-				//currentElement_->setEndPoint()
+	if ( currentElement_ && draggedBoundary_.bt!= btNone ) {
+		POINT* elementBasePoint = 0;
+		if ( draggedBoundary_.gpt == MovableElement::gptStartPoint ) {
+			elementBasePoint = &currentElement_->startPoint_;
+		} else if ( draggedBoundary_.gpt == MovableElement::gptEndPoint ) {
+			elementBasePoint = &currentElement_->endPoint_;
 		}
-		//LOG(INFO) << "x=" << x << " y="<<y<<" object.x = "<<currentElement_->getX()<<" object.y = "<< currentElement_->getY();
-		LOG(INFO) << "Resizing object to " << elX  << " "<< elY << " " << elWidth << " "<<elHeight;
-		currentElement_->resize( elWidth,elHeight);
-		currentElement_->setX(elX);
-		currentElement_->setY(elY);
+
+		if ( elementBasePoint ) {
+			elementBasePoint->x = x;
+			elementBasePoint->y = y;
+		} else {
+			int elWidth = currentElement_->getWidth();
+			int elHeight = currentElement_->getHeight();
+			int elX = currentElement_->getX();
+			int elY  = currentElement_->getY();
+			switch ( draggedBoundary_.bt ) {
+				case btBottomRight:
+					elWidth = x - elX;
+					elHeight = y - elY;
+					break;
+				case btBottom:
+					elHeight = y - elY;
+					break;
+				case btRight:
+					elWidth = x - elX;
+					break;
+				case btTopLeft:
+					
+					elWidth =  elX - x + elWidth;
+					elHeight = elY - y + elHeight;
+					elX = x;
+					elY = y;
+				case btLeft:
+					
+					elWidth = elX - x + elWidth;
+					elX = x;
+					break;
+				case btTop:
+					elHeight =  elY - y + elHeight;
+					elY = y;
+					break;
+				case btBottomLeft:
+					
+					elWidth = elX - x + elWidth;
+					elHeight = y - elY;
+					elX = x;
+					break;
+				case btTopRight:
+					
+					elWidth =  x - elX;
+					elHeight = elY - y + elHeight;
+					elY = y;
+
+					//currentElement_->setEndPoint()
+			}
+			//LOG(INFO) << "x=" << x << " y="<<y<<" object.x = "<<currentElement_->getX()<<" object.y = "<< currentElement_->getY();
+			LOG(INFO) << "Resizing object to " << elX  << " "<< elY << " " << elWidth << " "<<elHeight;
+			currentElement_->resize( elWidth,elHeight);
+			currentElement_->setX(elX);
+			currentElement_->setY(elY);
+		}
 		if ( currentElement_ && currentElement_->getType() == etCrop && canvas_->onCropChanged ) {
 			LOG(INFO) << "onCropChanged";
 			canvas_->onCropChanged(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
@@ -391,9 +407,9 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
 		currentElement_= 0;
 		//currentElement_->setSelected(true);
 	}
-	if ( draggedBoundary_!= btNone ) {
+	if ( draggedBoundary_.bt!= btNone ) {
 		
-		draggedBoundary_ = btNone;
+		draggedBoundary_.bt = btNone;
 		return;
 	}
 	if ( isMoving_ ) {
@@ -436,6 +452,9 @@ void MoveAndResizeTool::createElement() {
 		case etRectangle:
 			currentElement_ = new Rectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
 			break;
+		case etFilledRectangle:
+			currentElement_ = new FilledRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
+			break;
 	}
 	if ( currentElement_ ) {
 		currentElement_->setPenSize(penSize_);
@@ -445,35 +464,35 @@ void MoveAndResizeTool::createElement() {
 
 }
 
-BoundaryType MoveAndResizeTool::checkElementsBoundaries( int x, int y, MovableElement** elem)
+MovableElement::Grip MoveAndResizeTool::checkElementsBoundaries( int x, int y, MovableElement** elem)
 {
 	std::vector<MovableElement*> cropElements;
 	canvas_->getElementsByType(elementType_, cropElements);
 	int count = cropElements.size();
-	for( int i  = 0; i< count; i++ ) {
+	for( int i  = count-1; i>= 0; i-- ) {
 		if ( !cropElements[i]->isSelected() && cropElements[i]->getType() != etCrop ) {
 			continue;
 		}
-		BoundaryType bt = checkElementBoundaries(cropElements[i], x , y);
-		if ( bt != btNone ) {
+		MovableElement::Grip grip = checkElementBoundaries(cropElements[i], x , y);
+		if ( grip.bt != btNone ) {
 			if ( elem ) {
 				*elem = cropElements[i];
 			}
-			return bt;
+			return grip;
 		}
 	}
 
-	return btNone;
+	return MovableElement::Grip();
 }	
 
-BoundaryType MoveAndResizeTool::checkElementBoundaries(MovableElement* element, int x, int y)
+MovableElement::Grip  MoveAndResizeTool::checkElementBoundaries(MovableElement* element, int x, int y)
 {
 	for ( int i = 0 ; i < element->grips_.size(); i++ ) {
 		if ( abs (x - element->grips_[i].pt.x) <= MovableElement::kGripSize+2 &&  abs (y - element->grips_[i].pt.y) <= MovableElement::kGripSize+2 ) {
-			return element->grips_[i].bt;
+			return element->grips_[i];
 		}
 	}
-	return btNone;
+	return MovableElement::Grip();
 }
 
 void MoveAndResizeTool::cleanUp()
@@ -493,9 +512,9 @@ CursorType MoveAndResizeTool::getCursor(int x, int y)
 			ct = ctCross;
 			break;
 	}
-	BoundaryType bt = checkElementsBoundaries( x, y); 
-	if ( bt != btNone ) {
-		return MovableElement::GetCursorForBoundary(bt);
+	MovableElement::Grip grip = checkElementsBoundaries( x, y); 
+	if ( grip.bt != btNone ) {
+		return MovableElement::GetCursorForBoundary(grip.bt);
 	}
 	MovableElement* el = canvas_->getElementAtPosition(x,y);
 	if ( el &&  (el->getType() != etCrop || elementType_ == etCrop)  ) {

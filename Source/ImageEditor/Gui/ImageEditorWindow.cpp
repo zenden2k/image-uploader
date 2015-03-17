@@ -7,12 +7,56 @@
 
 #include "ImageEditor/resource.h"
 #include "ImageEditorView.h"
-#include "ImageEditor/BasicElements.h"
 #include <ImageEditor/Gui/Toolbar.h>
 #include <Core/Logging.h>
 #include <resource.h>
 #include <Core/Images/Utils.h>
 namespace ImageEditor {
+
+	class ColorsDelegate: public Toolbar::ToolbarItemDelegate {
+	public:
+		enum {kOffset = 7, kSquareSize = 16};
+		virtual SIZE CalcItemSize(Toolbar::Item& item, float dpiScaleX, float dpiScaleY) {
+			SIZE res = { (kSquareSize + kOffset)* dpiScaleX,(kSquareSize + kOffset)* dpiScaleY};
+			return res;
+		}
+
+		virtual void DrawItem(Toolbar::Item& item, Gdiplus::Graphics* gr, int x, int y, float dpiScaleX, float dpiScaleY) {
+			using namespace Gdiplus;
+			Pen borderPen(Color(0,0,0));
+			SolidBrush backgroundBrush(backgroundColor_);
+			SolidBrush foregroundBrush(foregroundColor_);
+
+			Rect backgroundRect(x+kOffset*dpiScaleX, y+kOffset*dpiScaleY, kSquareSize * dpiScaleX, kSquareSize*  dpiScaleY);
+			gr->FillRectangle(&backgroundBrush, backgroundRect);
+			gr->DrawRectangle(&borderPen, backgroundRect);
+
+			Rect foregroundRect(x, y, kSquareSize * dpiScaleX, kSquareSize *  dpiScaleY);
+			gr->FillRectangle(&foregroundBrush, foregroundRect);
+			gr->DrawRectangle(&borderPen, foregroundRect);
+		}
+
+		void setForegroundColor(Gdiplus::Color color ) {
+			foregroundColor_ = color;
+		}
+
+		void setBackgroundColor(Gdiplus::Color color) {
+			backgroundColor_ = color;
+		}
+	
+		Gdiplus::Color getForegroundColor() const {
+			return foregroundColor_;
+		}
+
+		Gdiplus::Color getBackgroundColor() const {
+			return backgroundColor_;
+		}
+
+		protected:
+			Gdiplus::Color foregroundColor_;
+			Gdiplus::Color backgroundColor_;
+
+	};
 
 ImageEditorWindow::ImageEditorWindow():horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
 {
@@ -21,10 +65,13 @@ ImageEditorWindow::ImageEditorWindow():horizontalToolbar_(Toolbar::orHorizontal)
 	menuItems_[ID_LINE].toolId      = Canvas::dtLine;
 	menuItems_[ID_BRUSH].toolId     = Canvas::dtBrush;
 	menuItems_[ID_RECTANGLE].toolId = Canvas::dtRectangle;
+	menuItems_[ID_FILLEDRECTANGLE].toolId = Canvas::dtFilledRectangle;
 	menuItems_[ID_CROP].toolId      = Canvas::dtCrop;
 	menuItems_[ID_MOVE].toolId      = Canvas::dtMove;
 	menuItems_[ID_ARROW].toolId      = Canvas::dtArrow;
 	menuItems_[ID_SELECTION].toolId  = Canvas::dtSelection;
+
+	
 }
 
 ImageEditorWindow::~ImageEditorWindow()
@@ -35,7 +82,7 @@ ImageEditorWindow::~ImageEditorWindow()
 LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 
-	RECT rc = {0,0,1024,720};
+	RECT rc = {0,0,1210,733};
 	GetClientRect(&rc);
 	HWND m_hWndClient = m_view.Create(m_hWnd, rc, _T("ImageEditor_Canvas"), WS_CHILD | WS_VISIBLE /*| WS_CLIPSIBLINGS | WS_CLIPCHILDREN*/, 0 );
 		
@@ -43,13 +90,14 @@ LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	currentDoc_ = new ImageEditor::Document(L"screenshot.png");
 
-	createToolbars();
+	
 	//ImageEditor::Line line( 0, 0, 50, 50 );
 	//line.resize( Gdiplus::Rect( 0, 0, 50, 50 ) );
 	//currentDoc_->addDrawingElement( &line );
 	canvas_ = new ImageEditor::Canvas( m_hWnd );
 	canvas_->setSize( currentDoc_->getWidth(), currentDoc_->getHeight());
 	canvas_->setDocument( currentDoc_ );
+	createToolbars();
 	canvas_->onCropChanged.bind(this, &ImageEditorWindow::OnCropChanged);
 
 	m_view.setCanvas( canvas_ );
@@ -75,6 +123,12 @@ LRESULT ImageEditorWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 LRESULT ImageEditorWindow::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	PostQuitMessage(0);
+	return 0;
+}
+
+LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	m_view.SendMessage(uMsg, wParam, lParam);
 	return 0;
 }
 
@@ -141,12 +195,19 @@ void ImageEditorWindow::createToolbars()
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLLINE), ID_LINE,TR("Линия"), Toolbar::itButton, true,1));
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLARROWPNG), ID_ARROW,TR("Стрелка"), Toolbar::itButton, true,1));
 
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLRECTANGLEPNG), ID_RECTANGLE,TR("Прямоугольник"), Toolbar::itButton, true,1));
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE), ID_RECTANGLE,TR("Заполненный прямоугольник"), Toolbar::itButton, true,1));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLRECTANGLEPNG), ID_RECTANGLE,TR("Прямоугольник"), Toolbar::itTinyCombo, true,1));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE), ID_FILLEDRECTANGLE,TR("Заполненный прямоугольник"), Toolbar::itTinyCombo, true,1));
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLTEXTPNG), ID_TEXT,TR("Текст"), Toolbar::itButton, true,1));
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONCOLORPICKERPNG), ID_COLORPICKER,TR("Выбрать цвет"), Toolbar::itButton, true,1));
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,TR("Отменить"), Toolbar::itButton, false));
-	
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,TR("Отменить") + CString(L" (Ctrl+Z)"), Toolbar::itButton, false));
+
+	Toolbar::Item colorsButton(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,TR("Отменить") + CString(L" (Ctrl+Z)"), Toolbar::itButton, false);
+	ColorsDelegate* delegate_ = new ColorsDelegate();
+	colorsButton.itemDelegate = delegate_;
+	delegate_->setBackgroundColor(canvas_->getBackgroundColor());
+	delegate_->setForegroundColor(canvas_->getForegroundColor());
+	verticalToolbar_.addButton(colorsButton);
+
 	verticalToolbar_.AutoSize();
 	verticalToolbar_.ShowWindow(SW_SHOW);
 }

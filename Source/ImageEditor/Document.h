@@ -29,6 +29,8 @@ class Document {
 		void addDrawingElement(DrawingElement *element);
 		void endDrawing();
 
+		void addAffectedSegments(const AffectedSegments& segments);
+
 		void render(Painter* gr);
 		bool undo();
 		int getWidth();
