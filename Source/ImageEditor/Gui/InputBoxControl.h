@@ -25,22 +25,37 @@ class InputBoxControl :
 		~InputBoxControl();
 		DECLARE_WND_SUPERCLASS(_T("CInputBoxControl"), CRichEditCtrl::GetWndClassName())
 		
-		 BEGIN_MSG_MAP(CLogListBox)
+		 BEGIN_MSG_MAP(InputBoxControl)
 			MSG_WM_KILLFOCUS(OnKillFocus)
+			MESSAGE_HANDLER(WM_CREATE, OnCreate)
 			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 			MESSAGE_HANDLER(WM_KEYUP, OnKeyUp )
+			MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
+			REFLECTED_COMMAND_CODE_HANDLER_EX(EN_CHANGE, OnChange)
+			 
 		 END_MSG_MAP()
 
 		 // Handler prototypes:
 		 //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		 //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		 //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+		LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
+		LRESULT OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
 		LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
 		LRESULT OnKillFocus(HWND hwndNewFocus);
 		LRESULT OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+		LRESULT OnChange(UINT wNotifyCode,int, HWND);
 	public:
 		int NotifyParent(int nItem);
 		BOOL SubclassWindow(HWND hWnd);
+		virtual void show(bool s);
+		virtual void resize(int x, int y, int w,int h, std::vector<MovableElement::Grip> grips);
+		virtual void render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea);
+
+		virtual bool isVisible();
+
+		virtual void invalidate();
+
 };
 
 }

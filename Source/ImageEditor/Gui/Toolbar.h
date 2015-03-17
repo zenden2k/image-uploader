@@ -36,7 +36,7 @@ public:
 			this->hint = hint;
 			this->checkable = checkable;
 			isChecked = false;
-			group = -1;
+			this->group = group;
 		}
 	};
 

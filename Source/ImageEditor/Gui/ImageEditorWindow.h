@@ -16,7 +16,7 @@ class ImageEditorWindow : public CWindowImpl<ImageEditorWindow>
 {
 public:
 	DECLARE_WND_CLASS(_T("CMainFrame"))
-	enum { ID_UNDO = 1000, ID_TEXT = 1001,  ID_COLORPICKER,  ID_PEN = 1600, ID_BRUSH, ID_LINE, ID_RECTANGLE,  ID_CROP , ID_SELECTION,ID_MOVE};
+	enum { ID_UNDO = 1000, ID_TEXT = 1001,  ID_COLORPICKER,  ID_PEN = 1600, ID_BRUSH, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_CROP , ID_SELECTION,ID_MOVE};
 	struct MenuItem {
 		int menuItemId;
 		int toolId;
@@ -28,6 +28,11 @@ public:
 	~ImageEditorWindow();
 
 	BEGIN_MSG_MAP(ImageEditorWindow)
+		if (uMsg == WM_COMMAND && EN_CHANGE == HIWORD(wParam)) \
+		{ 
+			//SetMsgHandled(TRUE); 
+
+		}
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
@@ -38,6 +43,7 @@ public:
 		COMMAND_RANGE_HANDLER( ID_PEN, ID_MOVE, OnMenuItemClick)
 		COMMAND_ID_HANDLER( ID_UNDO, OnUndoClick )
 		COMMAND_ID_HANDLER( ID_TEXT, OnTextClick )
+		REFLECT_NOTIFICATIONS()
 		/*CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
 		CHAIN_MSG_MAP(CFrameWindowImpl<CMainFrame>)*/
 	END_MSG_MAP()

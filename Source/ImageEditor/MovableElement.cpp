@@ -40,7 +40,7 @@ void MovableElement::renderGrips(Painter* gr)
 	int y = std::min<>( startPoint_.y, endPoint_.y );
 	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
 	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
-	if ( drawDashedRectangle_ ) {
+	if (  drawDashedRectangle_ ) {
 		gr->DrawRectangle( &pen, x, y, width, height );
 		pen.SetColor(Color( 255, 255, 255) );
 		pen.SetDashOffset(3);

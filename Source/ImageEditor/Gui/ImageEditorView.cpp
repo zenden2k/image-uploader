@@ -10,6 +10,7 @@
 #include <Gui/GuiTools.h>
 #include <Core/Logging.h>
 #include <Core/Images/Utils.h>
+#include "../MovableElements.h"
 #include "resource.h"
 
 #ifndef TR
@@ -58,10 +59,22 @@ void CImageEditorView::setCanvas(ImageEditor::Canvas *canvas) {
 	}
 }
 
-LRESULT CImageEditorView::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+LRESULT CImageEditorView::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	int cx = LOWORD(lParam); 
 	int cy = HIWORD(lParam);
 	POINT pt = {cx, cy};
+	LOG(INFO) <<"x=" << cx <<"y=" << cy;
+	/*TextElement *textElement = < canvas_->getCurrentlyEditedTextElement();
+	if ( textElement ) {
+		int elX = textElement->getX();
+		int elY = textElement->getY();
+		RECT rc  = {elX, elY, elX + textElement->getWidth(), elY + textElement->getHeight()};
+		if ( textElement && PtInRect(&rc, pt) ) {
+			InputBoxControl* inputBoxControl = dynamic_cast<InputBoxControl*>(textElement->getInputBox());
+			inputBoxControl->SendMessage(uMsg, MAKEWPARAM(cx - elX, cy - elY), lParam);
+		}
+		return 0;
+	}*/
 	/*RECT toolBarRect;
 	horizontalToolbar_.GetClientRect(&toolBarRect);
 	horizontalToolbar_.ClientToScreen(&toolBarRect);
@@ -76,21 +89,54 @@ LRESULT CImageEditorView::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 	return 0;
 }
 
-LRESULT CImageEditorView::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+LRESULT CImageEditorView::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	int cx = LOWORD(lParam); 
 	int cy = HIWORD(lParam);
+	POINT pt = {cx, cy};
+	/*TextElement *textElement = canvas_->getCurrentlyEditedTextElement();
+	if ( textElement ) {
+		int elX = textElement->getX();
+		int elY = textElement->getY();
+		RECT rc  = {elX, elY, elX + textElement->getWidth(), elY + textElement->getHeight()};
+		if ( textElement && PtInRect(&rc, pt) ) {
+			InputBoxControl* inputBoxControl = dynamic_cast<InputBoxControl*>(textElement->getInputBox());
+			inputBoxControl->SendMessage(uMsg, MAKEWPARAM(cx - elX, cy - elY), lParam);
+		}
+		return 0;
+	}*/
+
 	SetCapture();
 	//horizontalToolbar_.ShowWindow(SW_HIDE);
 	canvas_->mouseDown( 0, cx, cy );
 	return 0;
 }
 
-LRESULT CImageEditorView::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+LRESULT CImageEditorView::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	int cx = LOWORD(lParam); 
 	int cy = HIWORD(lParam);
+	POINT pt = {cx, cy};
+	/*TextElement *textElement = canvas_->getCurrentlyEditedTextElement();
+	if ( textElement ) {
+		int elX = textElement->getX();
+		int elY = textElement->getY();
+		RECT rc  = {elX, elY, elX + textElement->getWidth(), elY + textElement->getHeight()};
+		if ( textElement && PtInRect(&rc, pt) ) {
+			InputBoxControl* inputBoxControl = dynamic_cast<InputBoxControl*>(textElement->getInputBox());
+			inputBoxControl->SendMessage(uMsg, MAKEWPARAM(cx - elX, cy - elY), lParam);
+		}
+		return 0;
+	}*/
 	canvas_->mouseUp( 0, cx, cy );
 	ReleaseCapture();
 //	horizontalToolbar_.ShowWindow(SW_SHOW);
+	return 0;
+}
+
+LRESULT CImageEditorView::OnLButtonDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	int cx = LOWORD(lParam); 
+	int cy = HIWORD(lParam);
+	canvas_->mouseDoubleClick( 0, cx, cy );
 	return 0;
 }
 

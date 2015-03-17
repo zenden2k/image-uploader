@@ -86,7 +86,8 @@ Gdiplus::Bitmap* BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCT
 	return image;
 }
 
-void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Rect layoutArea) {
+void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea) {
+	using namespace Gdiplus;
 	//Calculate the area to render.
 	HDC hdc1 = ::GetDC(hwnd);
 
@@ -103,6 +104,11 @@ void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Rect layoutA
 	rectLayoutArea.right = (int)(layoutArea.GetRight() * anInchX);
 
 	HDC hdc = graphics->GetHDC();
+	Gdiplus::Graphics gr2(hdc);
+	SolidBrush br(Color(255,255,255));
+
+	// We need to draw background on new HDC, otherwise the text will look ugly
+	Status st = gr2.DrawImage(background,layoutArea.GetLeft(),layoutArea.GetTop(),layoutArea.GetLeft(), layoutArea.GetTop(), layoutArea.Width, layoutArea.Height,Gdiplus::UnitPixel/*gr2.GetPageUnit()*/);
 
 	FORMATRANGE fmtRange;
 	fmtRange.chrg.cpMax = -1;                    //Indicate character from to character to 

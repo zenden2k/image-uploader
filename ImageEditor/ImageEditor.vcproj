@@ -202,14 +202,6 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
-				RelativePath="..\Source\ImageEditor\BasicElements.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\ImageEditor\BasicElements.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Source\ImageEditor\BasicTypes.cpp"
 				>
 			</File>
@@ -451,11 +443,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Source\resource.h"
+				RelativePath=".\Source\ImageEditor\resource.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\ImageEditor\resource.h"
+				RelativePath="..\Source\resource.h"
 				>
 			</File>
 			<File
@@ -560,11 +552,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Source\res\icon_dropdown.ico"
+				RelativePath="..\Source\ImageEditor\res\icon_dropdown.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\Source\ImageEditor\res\icon_dropdown.ico"
+				RelativePath="..\Source\res\icon_dropdown.ico"
 				>
 			</File>
 			<File
@@ -657,11 +649,11 @@
 			>
 		</File>
 		<File
-			RelativePath="..\Source\res\icon_dropdown_png.png"
+			RelativePath=".\res\icon_dropdown_png.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\icon_dropdown_png.png"
+			RelativePath="..\Source\res\icon_dropdown_png.png"
 			>
 		</File>
 		<File
@@ -669,7 +661,11 @@
 			>
 		</File>
 		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_brush.png"
+			RelativePath=".\res\ImageEditor\icon_tool_arrow.png"
+			>
+		</File>
+		<File
+			RelativePath="..\Source\res\ImageEditor\icon_tool_arrow.png"
 			>
 		</File>
 		<File
@@ -677,11 +673,15 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_tool_color_picker.png"
+			RelativePath="..\Source\res\ImageEditor\icon_tool_brush.png"
 			>
 		</File>
 		<File
 			RelativePath="..\Source\res\ImageEditor\icon_tool_color_picker.png"
+			>
+		</File>
+		<File
+			RelativePath=".\res\ImageEditor\icon_tool_color_picker.png"
 			>
 		</File>
 		<File
@@ -693,11 +693,11 @@
 			>
 		</File>
 		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_filled_rectangle.png"
+			RelativePath=".\res\ImageEditor\icon_tool_filled_rectangle.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_tool_filled_rectangle.png"
+			RelativePath="..\Source\res\ImageEditor\icon_tool_filled_rectangle.png"
 			>
 		</File>
 		<File
@@ -717,11 +717,15 @@
 			>
 		</File>
 		<File
+			RelativePath=".\res\ImageEditor\icon_tool_pencil.png"
+			>
+		</File>
+		<File
 			RelativePath="..\Source\res\ImageEditor\icon_tool_pencil.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_tool_pencil.png"
+			RelativePath="..\Source\res\ImageEditor\icon_tool_rectangle.png"
 			>
 		</File>
 		<File
@@ -729,7 +733,11 @@
 			>
 		</File>
 		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_rectangle.png"
+			RelativePath=".\res\ImageEditor\icon_tool_selection.png"
+			>
+		</File>
+		<File
+			RelativePath="..\Source\res\ImageEditor\icon_tool_selection.png"
 			>
 		</File>
 		<File
@@ -738,6 +746,14 @@
 		</File>
 		<File
 			RelativePath="..\Source\res\ImageEditor\icon_tool_text.png"
+			>
+		</File>
+		<File
+			RelativePath=".\res\ImageEditor\icon_undo.png"
+			>
+		</File>
+		<File
+			RelativePath="..\Source\res\ImageEditor\icon_undo.png"
 			>
 		</File>
 		<File

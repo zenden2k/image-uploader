@@ -26,10 +26,11 @@ class CImageEditorView : public CWindowImpl<CImageEditorView>, public ImageEdito
 			MESSAGE_HANDLER( WM_MOUSEMOVE, OnMouseMove )
 			MESSAGE_HANDLER( WM_LBUTTONDOWN, OnLButtonDown )
 			MESSAGE_HANDLER( WM_LBUTTONUP, OnLButtonUp )
+			MESSAGE_HANDLER( WM_LBUTTONDBLCLK , OnLButtonDblClick )
 			MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
 			MESSAGE_HANDLER( WM_CONTEXTMENU, OnContextMenu )
 			MESSAGE_HANDLER( WM_SETCURSOR, OnSetCursor )
-
+			REFLECT_NOTIFICATIONS()
 
 		END_MSG_MAP()
 
@@ -46,6 +47,7 @@ class CImageEditorView : public CWindowImpl<CImageEditorView>, public ImageEdito
 		LRESULT OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		LRESULT OnLButtonDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

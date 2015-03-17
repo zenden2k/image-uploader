@@ -1,5 +1,5 @@
-#ifndef WCHAR_LOGGING_H_
-#define WCHAR_LOGGING_H_
+#ifndef CORE_LOGGING_H
+#define CORE_LOGGING_H
 
 #define GLOG_NO_ABBREVIATED_SEVERITIES
 #include <glog/logging.h>
@@ -12,4 +12,4 @@ std::ostream& operator<<(std::ostream& out, const wchar_t* str);
 
 std::ostream& operator<<(std::ostream& out, const std::wstring& str);
 
-#endif  // WCHAR_LOGGING_H_
+#endif

@@ -49,9 +49,29 @@ void AbstractDrawingTool::endDraw( int x, int y ) {
 	endPoint_.y = y;
 }
 
+void AbstractDrawingTool::mouseDoubleClick(int x, int y)
+{
+
+}
+
 CursorType AbstractDrawingTool::getCursor(int x, int y)
 {
 	return ctDefault;
+}
+
+void AbstractDrawingTool::setPenSize(int size)
+{
+	penSize_ = size;
+}
+
+void AbstractDrawingTool::setForegroundColor(Gdiplus::Color color)
+{
+	foregroundColor_ = color;
+}
+
+void AbstractDrawingTool::setBackgroundColor(Gdiplus::Color color)
+{
+	backgroundColor_ = color;
 }
 
 VectorElementTool::VectorElementTool( Canvas* canvas, ElementType type ) : MoveAndResizeTool( canvas, type ) {
@@ -84,16 +104,19 @@ void PenTool::continueDraw( int x, int y, DWORD flags ) {
 	if ( flags & MK_CONTROL ) {
 		y = oldPoint_.y;
 	}
+	//LOG(INFO) <<"x=" << x <<"y=" << y;
 	Line * line =  new Line( canvas_, oldPoint_.x, oldPoint_.y, x, y) ;
 
 	line->setPenSize(1 );
+	line->setColor(foregroundColor_);
+	line->setBackgroundColor(backgroundColor_);
+
 	line->setCanvas(canvas_);
-	canvas_->currentDocument()->addDrawingElement( line );
+	canvas_->addDrawingElementToDoc( line );
 
 	oldPoint_.x = x;
 	oldPoint_.y = y;
 	canvas_->updateView();
-
 }
 
 void PenTool::endDraw( int x, int y ) {
@@ -180,22 +203,22 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
 
 	//посчитать угол .. и ставить точки по линии
 	//int 
-	 DebugWrite( _T("len=%d sinA=%3.2f   sinB=%3.2f\r\n"), (int)len, sinA, cosA );
-	 DebugWrite( _T("x0=%d  y0=%d  x1=%d y1=%d\r\n"), x0, y0, x1, y1 );
+	// DebugWrite( _T("len=%d sinA=%3.2f   sinB=%3.2f\r\n"), (int)len, sinA, cosA );
+	 //DebugWrite( _T("x0=%d  y0=%d  x1=%d y1=%d\r\n"), x0, y0, x1, y1 );
 	float x = x0;
 	float y = y0;
-		SolidBrush br( Color( 255, 0, 0 ) );
+		SolidBrush br( foregroundColor_ );
 	if ( x1 == x0 ) {
 		//	MessageBox(0,0,0,0);
 		for( int y = yStart; y <= yEnd; y++ ) {
 			x = x0;
-			gr->FillEllipse( &br, (int)x, y, 10, 10 );
+			gr->FillEllipse( &br, (int)x, y, penSize_, penSize_ );
 			//segments->markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
 		} 
 	} else if ( y1 == y0 ) {
 		for( int x = xStart; x <= xEnd; x++ ) {
 			int y = y0;
-			gr->FillEllipse( &br, x, y, 10, 10 );
+			gr->FillEllipse( &br, x, y, penSize_, penSize_ );
 		//	segments->markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
 		} 
 	} else {
@@ -203,10 +226,10 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
 			x = x0 + a * sinA;
 			y = y0 + a * cosA;
 				
-			DebugWrite( _T("a=%d x=%3.2f  y=%3.2f  \r\n"), a, x, y );
+			//DebugWrite( _T("a=%d x=%3.2f  y=%3.2f  \r\n"), a, x, y );
 			//int y = -1;
 			//y = y0 + (x-x0)*(y1-y0)/(x1-x0);
-			gr->FillEllipse( &br, (int)x, (int)y, 10, 10 );
+			gr->FillEllipse( &br, (int)x, (int)y, penSize_, penSize_ );
 			//			segments->markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
 		 } 
 	}  
@@ -215,51 +238,6 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
 
 
 
-TextTool::TextTool( Canvas* canvas ) : MoveAndResizeTool( canvas ) {
-
-}
-
-void TextTool::beginDraw( int x, int y ) {
-	AbstractDrawingTool::beginDraw( x, y );
-	
-}
-
-void TextTool::continueDraw( int x, int y, DWORD flags ) {
-
-}
-
-void TextTool::endDraw( int x, int y ) {
-	int xStart = min( startPoint_.x, x );
-	int xEnd   = max( startPoint_.x, x );
-
-	int yStart = min( startPoint_.y, y );
-	int yEnd   = max( startPoint_.y, y );
-
-	if ( xEnd - xStart < 50 ) {
-		xEnd += 100;
-	}
-
-	if ( yEnd - yStart < 25 ) {
-		yEnd += 25;
-	}
-	RECT inputRect = { xStart, yStart, xEnd, yEnd };
-
-	currentElement_ = new TextElement(canvas_, xStart,yStart, xEnd, yEnd);
-	canvas_->addMovableElement(currentElement_);
-		canvas_->getInputBox( inputRect );
-	canvas_->updateView();
-
-}
-
-void TextTool::render( Painter* gr ) {
-
-}
-
-ImageEditor::CursorType TextTool::getCursor(int x, int y)
-{
-	return ctEdit;
-}
-
 CropOverlay* MoveAndResizeTool::cropOverlay_ = 0;
 
 MoveAndResizeTool::MoveAndResizeTool( Canvas* canvas, ElementType type ) : AbstractDrawingTool( canvas ) {
@@ -267,11 +245,14 @@ MoveAndResizeTool::MoveAndResizeTool( Canvas* canvas, ElementType type ) : Abstr
 	elementType_          = type;
 	draggedBoundary_ = btNone;
 	isMoving_ = false;
+	allowCreatingElements_ = true;
 }
 
 void MoveAndResizeTool::beginDraw( int x, int y ) {
 	draggedBoundary_ = checkElementsBoundaries(x,y, &currentElement_);
 	if ( draggedBoundary_!= btNone ) {
+		canvas_->unselectAllElements();
+		currentElement_->setSelected(true);
 		return;
 	}
 	MovableElement* el = canvas_->getElementAtPosition(x,y);
@@ -291,19 +272,26 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 		canvas_->deleteElementsByType(elementType_);
 	}
 	canvas_->unselectAllElements();
-	POINT pt = { x, y };
-	createElement();
-	
-	if ( currentElement_ ) {
-		startPoint_.x = x;
-		startPoint_.y = y;
-		currentElement_->setStartPoint( pt );
-		currentElement_->setEndPoint( pt );
-		canvas_->addMovableElement( currentElement_ );
+
+	if ( allowCreatingElements_ ) {
+		POINT pt = { x, y };
+		LOG(INFO) << "beginDraw createElement"  ;
+		createElement();
 		
+		if ( currentElement_ ) {
+			startPoint_.x = x;
+			startPoint_.y = y;
+			currentElement_->setStartPoint( pt );
+			currentElement_->setEndPoint( pt );
+			canvas_->addMovableElement( currentElement_ );
+			
+		}
+		canvas_->updateView();
+	} else {
+		currentElement_ = 0;
+		canvas_->unselectAllElements();
+		canvas_->updateView();
 	}
-	canvas_->updateView();
-	
 }
 
 void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
@@ -354,7 +342,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 				//currentElement_->setEndPoint()
 		}
 		//LOG(INFO) << "x=" << x << " y="<<y<<" object.x = "<<currentElement_->getX()<<" object.y = "<< currentElement_->getY();
-		LOG(INFO) << "Resizing object to " << elWidth << " "<<elHeight;
+		LOG(INFO) << "Resizing object to " << elX  << " "<< elY << " " << elWidth << " "<<elHeight;
 		currentElement_->resize( elWidth,elHeight);
 		currentElement_->setX(elX);
 		currentElement_->setY(elY);
@@ -421,14 +409,20 @@ void MoveAndResizeTool::render( Painter* gr ) {
 }
 
 void MoveAndResizeTool::createElement() {
-	delete currentElement_;
+	//delete currentElement_;
 	currentElement_ = 0;
 	switch( elementType_ ) {
 		case etArrow:
-			//currentElement_ = new Line( 0, 0, 0, 0 );
+			currentElement_ = new Arrow(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
 			break;
 		case etLine:
 			currentElement_ = new Line(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
+			break;
+		case etText:
+			currentElement_ = new TextElement(canvas_, 0, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
+			break;
+		case etSelection:
+			currentElement_ = new Selection(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
 			break;
 		case etCrop:
 			if ( !cropOverlay_ ) {
@@ -443,6 +437,11 @@ void MoveAndResizeTool::createElement() {
 			currentElement_ = new Rectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
 			break;
 	}
+	if ( currentElement_ ) {
+		currentElement_->setPenSize(penSize_);
+		currentElement_->setColor(foregroundColor_);
+		currentElement_->setBackgroundColor(backgroundColor_);
+	}
 
 }
 
@@ -452,6 +451,9 @@ BoundaryType MoveAndResizeTool::checkElementsBoundaries( int x, int y, MovableEl
 	canvas_->getElementsByType(elementType_, cropElements);
 	int count = cropElements.size();
 	for( int i  = 0; i< count; i++ ) {
+		if ( !cropElements[i]->isSelected() && cropElements[i]->getType() != etCrop ) {
+			continue;
+		}
 		BoundaryType bt = checkElementBoundaries(cropElements[i], x , y);
 		if ( bt != btNone ) {
 			if ( elem ) {
@@ -503,6 +505,19 @@ CursorType MoveAndResizeTool::getCursor(int x, int y)
 	return ct;
 }
 
+void MoveAndResizeTool::mouseDoubleClick(int x, int y)
+{
+	MovableElement* el = canvas_->getElementAtPosition(x,y);
+	if ( el &&  el->getType() == etText ) {
+		canvas_->setDrawingToolType(Canvas::dtText);	
+		AbstractDrawingTool* dtool = canvas_->getCurrentDrawingTool();
+		if ( dtool ) {
+			dtool->beginDraw(x,y);
+		}
+	
+	}
+}
+
 CropTool::CropTool(Canvas* canvas) : MoveAndResizeTool(canvas, etCrop) {
 
 }
@@ -531,6 +546,93 @@ void CropTool::endDraw(int x, int y)
 		canvas_->updateView();
 		currentElement_ = 0;
 	}
+}
+
+
+
+
+TextTool::TextTool( Canvas* canvas ) : MoveAndResizeTool( canvas, etText ) {
+
+}
+
+void TextTool::beginDraw( int x, int y ) {
+	if ( currentElement_ && dynamic_cast<TextElement*>(currentElement_)->getInputBox()->isVisible() ) {
+		allowCreatingElements_ = false;
+	}
+	MoveAndResizeTool::beginDraw( x, y );
+	allowCreatingElements_ = true;
+	if ( currentElement_ ) {
+		InputBox* input = dynamic_cast<TextElement*>(currentElement_)->getInputBox();
+		if ( input ) {
+			input->show(true);
+		}
+	}
+
+}
+
+void TextTool::continueDraw( int x, int y, DWORD flags ) {
+	MoveAndResizeTool::continueDraw( x, y ,flags);
+}
+
+void TextTool::endDraw( int x, int y ) {
+	if (!currentElement_) {
+		return;
+	}
+	int xStart = min( startPoint_.x, x );
+	int xEnd   = max( startPoint_.x, x );
+
+	int yStart = min( startPoint_.y, y );
+	int yEnd   = max( startPoint_.y, y );
+
+	int width = currentElement_->getWidth();
+	int height = currentElement_->getHeight();
+	if (  width < 100 ) {
+		width = 100;
+	}
+
+	if ( height < 25 ) {
+		height = 25;
+	}
+	currentElement_->resize(width, height);
+	int elX = currentElement_->getX();
+	int elY = currentElement_->getY();
+	RECT inputRect = {elX, elY, elX + currentElement_->getWidth(), elY + currentElement_->getHeight() };
+	
+	TextElement * textElement = dynamic_cast<TextElement*>(currentElement_);
+	InputBox * inputBox = textElement->getInputBox();
+	if ( !inputBox ) {
+		inputBox = canvas_->getInputBox( inputRect );
+	}
+	//	currentElement_ = new TextElement(canvas_,inputBox, xStart,yStart, xEnd, yEnd);
+	textElement->setInputBox(inputBox);
+	canvas_->setCurrentlyEditedTextElement(textElement);
+	textElement->setSelected(true);
+	inputBox->invalidate();
+	//currentElement_ = new TextElement(canvas_,inputBox, xStart,yStart, xEnd, yEnd);
+	//canvas_->addMovableElement(currentElement_);
+	//MoveAndResizeTool::endDraw( x, y);
+	canvas_->updateView();
+
+}
+
+void TextTool::render( Painter* gr ) {
+
+}
+
+ImageEditor::CursorType TextTool::getCursor(int x, int y)
+{
+	CursorType ct = MoveAndResizeTool::getCursor(x,y);
+	InputBox* inputBox = currentElement_ ? dynamic_cast<TextElement*>(currentElement_)->getInputBox(): NULL;
+	if ( (ct == ctDefault || ( ct == ctMove && canvas_->getElementAtPosition(x,y)!= currentElement_)) && 
+		( !inputBox || !inputBox->isVisible() )) {
+		ct = ctEdit;
+	}
+	return ct;
+}
+
+SelectionTool::SelectionTool(Canvas* canvas) : MoveAndResizeTool(canvas, etSelection)
+{
+
 }
 
 }

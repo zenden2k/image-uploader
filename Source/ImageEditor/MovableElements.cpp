@@ -7,7 +7,7 @@
 
 #include "Region.h"
 #include "Canvas.h"
-#include <Core/Images/Utils.h>
+#include <Core/Images/Utils.h> 
 
 namespace ImageEditor {
 	Line::Line(Canvas* canvas, int startX, int startY, int endX, int endY) :MovableElement(canvas) {
@@ -36,7 +36,7 @@ namespace ImageEditor {
 		if ( !gr ) {
 			return;
 		}
-		Gdiplus::Pen pen( Color( 10, 10, 10), penSize_ );
+		Gdiplus::Pen pen( color_, penSize_ );
 		gr->DrawLine( &pen, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y );
 	}
 
@@ -142,11 +142,12 @@ namespace ImageEditor {
 		return false;
 	}
 
-	TextElement::TextElement( Canvas* canvas, int startX, int startY, int endX,int endY ) :MovableElement(canvas) {
+TextElement::TextElement( Canvas* canvas, InputBox* inputBox, int startX, int startY, int endX,int endY ) :MovableElement(canvas) {
 	startPoint_.x = startX;
 	startPoint_.y = startY;
 	endPoint_.x   = endX;
 	endPoint_.y   = endY;
+	inputBox_ = inputBox;
 }
 
 void TextElement::render(Painter* gr) {
@@ -154,14 +155,16 @@ void TextElement::render(Painter* gr) {
 	if ( !gr ) {
 		return;
 	}
-	Gdiplus::Pen pen( Color( 10, 10, 10) );
+	/*Gdiplus::Pen pen( Color( 10, 10, 10) );
 	int x = std::min<>( startPoint_.x, endPoint_.x );
 	int y = std::min<>( startPoint_.y, endPoint_.y );
 	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
-	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
-	gr->DrawRectangle( &pen, x, y, width, height );
-
-	PrintRichEdit(canvas_->getRichEditControl(), gr, Rect(x,y,width,height));
+	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;*/
+	drawDashedRectangle_ = isSelected() || !inputBox_;
+	//gr->DrawRectangle( &pen, x, y, width, height );
+	if ( inputBox_  && !inputBox_->isVisible()) {
+		inputBox_->render(gr, canvas_->getBufferBitmap(), Rect(getX(),getY(),getWidth(),getHeight()));
+	}
 }
 
 
@@ -173,6 +176,45 @@ void TextElement::getAffectedSegments( AffectedSegments* segments ) {
 	segments->markRect( x, y, width, height ); // top
 }
 
+
+void TextElement::resize(int width, int height)
+{
+	MovableElement::resize(width,height);
+	if ( inputBox_ ) {
+		inputBox_->resize(getX()+1, getY()+1, getWidth(),getHeight(), grips_);
+		inputBox_->invalidate();
+		canvas_->updateView();
+	}
+}
+
+void TextElement::setInputBox(InputBox* inputBox)
+{
+	inputBox_ = inputBox;
+	inputBox_->onTextChanged.bind(this, &TextElement::onTextChanged);
+}
+
+InputBox* TextElement::getInputBox() const
+{
+	return inputBox_;
+}
+
+void TextElement::onTextChanged(TCHAR *text)
+{
+	canvas_->updateView();
+}
+
+ImageEditor::ElementType TextElement::getType() const
+{
+	return etText;
+}
+
+void TextElement::setSelected(bool selected)
+{
+	MovableElement::setSelected(selected);
+	if ( inputBox_ && !selected ) {
+		inputBox_->show(false);
+	}
+}
 
 Crop::Crop(Canvas* canvas, int startX, int startY, int endX, int endY):MovableElement(canvas)  {
 	startPoint_.x = startX;
@@ -188,8 +230,6 @@ void Crop::render(Painter* gr) {
 	}
 	
 	MovableElement::render(gr);
-	
-//	LOG(INFO)<<x<<" "<<y;
 }
 
 
@@ -226,12 +266,7 @@ void CropOverlay::render(Painter* gr)
 	std::vector<MovableElement*> crops;
 	canvas_->getElementsByType(etCrop, crops);
 	Region rgn(0,0, canvas_->getWidth(), canvas_->getHeigth());
-	/*if ( crops.size() ) {
-		rgn =  Region(crops[0]->getX(),crops[0]->getY(),crops[0]->getWidth(),crops[0]->getHeight());
-	}*/
-	//Region rgn(300,30, 500, 400);
 	for ( int i = 0; i < crops.size(); i++ ) {
-	//	LOG(INFO) << "Substracting region "<<crops[i]->getX()<< " "<< crops[i]->getY() << " "<<crops[i]->getWidth() << " "<<crops[i]->getHeight();
 		rgn = rgn.subtracted(Region(crops[i]->getX(),crops[i]->getY(),crops[i]->getWidth()+1,crops[i]->getHeight()+1));
 	}
 
@@ -265,7 +300,7 @@ void Rectangle::render(Painter* gr) {
 	if ( !gr ) {
 		return;
 	}
-	Gdiplus::Pen pen( Color( 10, 10, 10) );
+	Gdiplus::Pen pen( color_, penSize_ );
 	int x = std::min<>( startPoint_.x, endPoint_.x );
 	int y = std::min<>( startPoint_.y, endPoint_.y );
 	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
@@ -301,6 +336,50 @@ bool Rectangle::isItemAtPos(int x, int y)
 		((( y >= elementY - kSelectRadius && y  <= elementY  + kSelectRadius )  || ( y >= elementY +elementHeight - kSelectRadius && y  <= elementY  +elementHeight+ kSelectRadius ) ) 
 		
 		&& x>= elementX - kSelectRadius && x <= elementX + elementWidth + kSelectRadius );
+}
+
+Arrow::Arrow(Canvas* canvas,int startX, int startY, int endX,int endY) : Line(canvas, startX, startY, endX, endY)
+{
+
+}
+
+void Arrow::render(Painter* gr)
+{
+	using namespace Gdiplus;
+	Gdiplus::Pen pen(/* color_*/Color(255,0,0), penSize_ );
+	// Create two AdjustableArrowCap objects
+	AdjustableArrowCap cap1(penSize_/2, penSize_/2, true);
+	//AdjustableArrowCap cap2 = new AdjustableArrowCap(2, 1);
+
+	// Set cap properties
+	cap1.SetBaseCap(/*LineCapRound*/LineCapTriangle);
+	//cap1.SetBaseInset(5);
+	cap1.SetStrokeJoin(/*LineJoinBevel*/LineJoinRound);
+	/*cap2.WidthScale = 3;
+	cap2.BaseCap = LineCap.Square;
+	cap2.Height = 1;*/
+
+
+	// Set CustomStartCap and CustomEndCap properties
+	//blackPen.CustomStartCap = cap1;
+	pen.SetCustomEndCap(&cap1);
+
+	gr->DrawLine( &pen, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y );
+}
+
+Selection::Selection(Canvas* canvas, int startX, int startY, int endX,int endY) : MovableElement(canvas)
+{
+
+}
+
+void Selection::render(Painter* gr)
+{
+
+}
+
+ImageEditor::ElementType Selection::getType() const
+{
+	return etSelection;
 }
 
 }

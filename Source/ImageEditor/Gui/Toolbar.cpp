@@ -28,7 +28,7 @@ Toolbar::~Toolbar()
 bool Toolbar::Create(HWND parent)
 {
 	RECT rc = {0, 0, 300,40};
-	TParent::Create(parent, rc, _T("test"),WS_VISIBLE | /*WS_POPUPWINDOW*/WS_POPUP /*|WS_SYSMENU*/ , WS_EX_LAYERED/*|WS_EX_TOOLWINDOW*/);
+	TParent::Create(parent, rc, _T("test"),WS_VISIBLE | /*WS_POPUPWINDOW*/WS_POPUP /*|WS_SYSMENU*/ , WS_EX_LAYERED|  WS_EX_NOACTIVATE /*|WS_EX_TOOLWINDOW*/);
 	if ( !m_hWnd ) {
 		return false;
 	}
@@ -205,6 +205,8 @@ LRESULT Toolbar::OnMouseLeave(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 {
 	int xPos = GET_X_LPARAM(lParam); 
 	int yPos = GET_Y_LPARAM(lParam); 
+	LOG(INFO) << "OnMouseLeave";
+	trackMouse_ = false;
 	if ( selectedItemIndex_ != -1 ) {
 		buttons_[selectedItemIndex_].state = isNormal;
 		
@@ -250,8 +252,10 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 			//item.state = isNormal;
 		}
 		if ( item.group != -1 ) {
+
 			// Uncheck all other buttons with same group id
 			for( int i = 0; i < buttons_.size(); i++ ) {
+					LOG(INFO) << "buttons_[i].group=" << buttons_[i].group;
 				if ( i != selectedItemIndex_ & buttons_[i].group == item.group && buttons_[i].checkable && buttons_[i].isChecked ) {
 					buttons_[i].isChecked  = false;
 					buttons_[i].state = isNormal;

@@ -2,7 +2,6 @@
 #define IMAGEEDITOR_DRAWINGTOOL_H
 
 #include <Gdiplus.h>
-#include "Canvas.h"
 #include "DrawingElement.h"
 #include "MovableElement.h"
 
@@ -18,11 +17,18 @@ class AbstractDrawingTool {
 		virtual void continueDraw( int x, int y, DWORD flags ) = NULL;
 		virtual void endDraw( int x, int y );
 		virtual void render( Painter* gr ) = NULL;
+		virtual void mouseDoubleClick( int x, int y );
 		virtual CursorType getCursor(int x, int y);
+		void setPenSize(int size);
+		void setForegroundColor(Gdiplus::Color color);
+		void setBackgroundColor(Gdiplus::Color color);
 	protected:
 		Canvas* canvas_;
 		POINT startPoint_;
 		POINT endPoint_;
+		int penSize_;
+		Gdiplus::Color foregroundColor_;
+		Gdiplus::Color backgroundColor_;
 };
 
 
@@ -46,8 +52,11 @@ class MoveAndResizeTool: public AbstractDrawingTool {
 		BoundaryType checkElementBoundaries(MovableElement*, int x, int y);
 		static void cleanUp();
 		virtual CursorType getCursor(int x, int y);
+		virtual void mouseDoubleClick(int x, int y);
+
 		static CropOverlay* cropOverlay_;
 		bool isMoving_;
+		bool allowCreatingElements_;
 
 };
 
@@ -103,8 +112,10 @@ private:
 	
 };
 
-
-
+class SelectionTool : public MoveAndResizeTool {
+	public:
+		SelectionTool( Canvas* canvas );
 };
+}
 
 #endif

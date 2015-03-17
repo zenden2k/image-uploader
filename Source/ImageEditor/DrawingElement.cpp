@@ -30,6 +30,11 @@ void DrawingElement::setColor( Gdiplus::Color color ) {
 	color_ = color;
 }
 
+void DrawingElement::setBackgroundColor(Gdiplus::Color color)
+{
+	backgroundColor_ = color;
+}
+
 void DrawingElement::setCanvas(Canvas* canvas)
 {
 	canvas_ = canvas;

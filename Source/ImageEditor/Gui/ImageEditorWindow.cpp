@@ -23,6 +23,8 @@ ImageEditorWindow::ImageEditorWindow():horizontalToolbar_(Toolbar::orHorizontal)
 	menuItems_[ID_RECTANGLE].toolId = Canvas::dtRectangle;
 	menuItems_[ID_CROP].toolId      = Canvas::dtCrop;
 	menuItems_[ID_MOVE].toolId      = Canvas::dtMove;
+	menuItems_[ID_ARROW].toolId      = Canvas::dtArrow;
+	menuItems_[ID_SELECTION].toolId  = Canvas::dtSelection;
 }
 
 ImageEditorWindow::~ImageEditorWindow()
@@ -130,29 +132,20 @@ void ImageEditorWindow::createToolbars()
 
 	}
 
-	/*menu.CreatePopupMenu();
-	menu.AppendMenu(MF_STRING, ID_UNDO, TR("Отменить"));
-	menu.AppendMenu(MF_STRING, ID_PEN, TR("Карандаш"));
-	menu.AppendMenu(MF_STRING, ID_BRUSH, TR("Кисть"));
-	menu.AppendMenu(MF_STRING, ID_LINE, TR("Линия"));
-	menu.AppendMenu(MF_STRING, ID_RECTANGLE, TR("Прямоугольник"));
-	menu.AppendMenu(MF_STRING, ID_TEXT, TR("Добавить текст"));
-	menu.AppendMenu(MF_STRING, ID_CROP, TR("Обрезка"));*/
-
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_TOOLMOVEICONPNG),ID_MOVE,TR("Перемещение"), Toolbar::itButton, true, 1));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLSELECTION),ID_SELECTION,TR("Выделение"), Toolbar::itButton, true, 1));
+
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_TOOLCROPPING), ID_CROP,TR("Обрезка"), Toolbar::itButton, true,1));
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLPENCIL), ID_PEN,TR("Карандаш"), Toolbar::itButton, true,1));
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BRUSH,TR("Кисть"), Toolbar::itButton, true,1));
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLLINE), ID_LINE,TR("Линия"), Toolbar::itButton, true,1));
-	//IDB_ICONTOOLRECTANGLEPNG
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLARROWPNG), ID_ARROW,TR("Стрелка"), Toolbar::itButton, true,1));
+
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLRECTANGLEPNG), ID_RECTANGLE,TR("Прямоугольник"), Toolbar::itButton, true,1));
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE), ID_RECTANGLE,TR("Заполненный прямоугольник"), Toolbar::itButton, true,1));
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLTEXTPNG), ID_TEXT,TR("Текст"), Toolbar::itButton, true,1));
-
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONCOLORPICKERPNG), ID_COLORPICKER,TR("Выбрать цвет"), Toolbar::itButton, true,1));
-
-	
-	LOG(INFO) << "m_hWnd="<<m_hWnd;
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,TR("Отменить"), Toolbar::itButton, false));
 	
 	verticalToolbar_.AutoSize();
 	verticalToolbar_.ShowWindow(SW_SHOW);

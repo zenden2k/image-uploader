@@ -28,13 +28,18 @@ Canvas::Canvas( HWND parent ) {
 	currentCursor_    = ctDefault;
 	overlay_ = 0;
 	zoomFactor_ = 1;
+	currentlyEditedTextElement_ = 0;
+	foregroundColor_ = Gdiplus::Color(255,0,0);
+	backgroundColor_ = Gdiplus::Color(255,255,255);
+	penSize_ = 7;
+	selection_ = 0;
 	createDoubleBuffer();
 }
 
 Canvas::~Canvas() {
 	delete buffer_;
-	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
-		delete elementsOnCanvas_[i];
+	for ( int i = 0; i < elementsToDelete_.size(); i++ ) {
+		delete elementsToDelete_[i];
 	}
 }
 
@@ -129,26 +134,43 @@ void Canvas::mouseUp( int button, int x, int y ) {
 	currentElement_ = 0;*/
 }
 
+void Canvas::mouseDoubleClick(int button, int x, int y)
+{
+	assert( currentDrawingTool_ );
+	currentDrawingTool_->mouseDoubleClick( x, y );
+}
+
 void Canvas::render(Painter* gr, const RECT& rect) {
-	Gdiplus::Graphics bufferedGr( buffer_ );
+	using namespace Gdiplus;
+	Gdiplus::Graphics* bufferedGr = new Gdiplus::Graphics( buffer_ );
+	bufferedGr->SetPageUnit(Gdiplus::UnitPixel);
+	bufferedGr->SetSmoothingMode(SmoothingModeAntiAlias);
 	//gr->SetClip( Gdiplus::Rect( rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top ) );
 	//bufferedGr.SetClip( region );
-	doc_->render( &bufferedGr );
+	doc_->render( bufferedGr );
 
 	if ( currentDrawingTool_ != NULL ) {
-		currentDrawingTool_->render( &bufferedGr );
+		currentDrawingTool_->render( bufferedGr );
 	}
 
 	for ( int i=0; i< elementsOnCanvas_.size(); i++) {
-		elementsOnCanvas_[i]->render(&bufferedGr);
+		//bufferedGr.re
+		if ( elementsOnCanvas_[i]->getType() == etText ) {
+			//delete bufferedGr;
+		}
+		elementsOnCanvas_[i]->render(bufferedGr);
+		if ( elementsOnCanvas_[i]->getType() == etText ) {
+			//delete bufferedGr;
+		}
 	}
 	if ( overlay_ ) {
-		overlay_->render(&bufferedGr);
+		overlay_->render(bufferedGr);
 	}
 	for ( int i=0; i< elementsOnCanvas_.size(); i++) {
-		elementsOnCanvas_[i]->renderGrips(&bufferedGr);
+		elementsOnCanvas_[i]->renderGrips(bufferedGr);
 	}
-	gr->DrawImage( buffer_, 0, 0 );
+	gr->DrawImage( buffer_, 0, 0);
+	delete bufferedGr;
 }
 
 void Canvas::updateView( RECT boundingRect ) {
@@ -157,17 +179,38 @@ void Canvas::updateView( RECT boundingRect ) {
 	updateView( region );
 }
 
+
 void  Canvas::setCallback(Callback * callback) {
 	callback_ = callback;
 }
 
 void Canvas::setPenSize(int size) {
 	penSize_ = size;
+	if ( currentDrawingTool_ ) {
+		currentDrawingTool_->setPenSize(size);
+	}
+}
+
+void Canvas::setForegroundColor(Gdiplus::Color color)
+{
+	foregroundColor_ = color;
+	if ( currentDrawingTool_ ) {
+		currentDrawingTool_->setForegroundColor(color);
+	}
+}
+
+void Canvas::setBackgroundColor(Gdiplus::Color color)
+{
+	backgroundColor_ = color;
+	if ( currentDrawingTool_ ) {
+		currentDrawingTool_->setBackgroundColor(color);
+	}
 }
 
 void Canvas::setDrawingToolType(DrawingToolType toolType) {
 	drawingToolType_ = toolType;
-
+	unselectAllElements();
+	updateView();
 	ElementType type;
 
 	if ( toolType == dtPen) {
@@ -183,12 +226,17 @@ void Canvas::setDrawingToolType(DrawingToolType toolType) {
 		ElementType type;
 		if ( toolType == dtLine ) {
 			type = etLine;
-		} else if ( toolType == dtCrop ) {
+		} if ( toolType == dtArrow ) {
+			type = etArrow;
+		}else if ( toolType == dtCrop ) {
 			type = etCrop;
 		} else if ( toolType == dtRectangle ) {
 			type = etRectangle;
 		} else if ( toolType == dtMove ) {
 			currentDrawingTool_ = new MoveAndResizeTool( this, etNone );
+			return;
+		} else if ( toolType == dtSelection ) {
+			currentDrawingTool_ = new SelectionTool( this );
 			return;
 		} else if ( toolType == dtLine ) {
 			type = etLine;
@@ -199,17 +247,50 @@ void Canvas::setDrawingToolType(DrawingToolType toolType) {
 		}
 
 		currentDrawingTool_ = new VectorElementTool( this, type );
-		return;
+
 
 		//currentDrawingTool_ = new VectorElementTool( this, type );
 	}
-	
+
+	currentDrawingTool_->setPenSize(penSize_);
+	currentDrawingTool_->setForegroundColor(foregroundColor_);
+	currentDrawingTool_->setBackgroundColor(backgroundColor_);
+}
+
+AbstractDrawingTool* Canvas::getCurrentDrawingTool()
+{
+	return currentDrawingTool_;
 }
 
 void Canvas::addMovableElement(MovableElement* element)
 {
-	elementsOnCanvas_.push_back(element);
+	if ( element->getType() == etSelection ) {
+		delete selection_;
+		selection_ = element;
+	}
+
+	std::vector<MovableElement*>::iterator it;
+	it = find (elementsOnCanvas_.begin(), elementsOnCanvas_.end(), element);
+	if (it == elementsOnCanvas_.end()) {
+		UndoHistoryItem historyItem;
+		elementsOnCanvas_.push_back(element);
+		historyItem.type = uitElementAdded;
+		historyItem.element = element;
+		undoHistory_.push(historyItem);
+		elementsToDelete_.push_back(element);
+	}
 }
+
+bool Canvas::addDrawingElementToDoc(DrawingElement* element)
+{
+	UndoHistoryItem historyItem;
+	historyItem.type = uitDocumentChanged;
+	historyItem.element = 0;
+	undoHistory_.push(historyItem);
+	currentDocument()->addDrawingElement(element);
+	return true;
+}
+
 
 void Canvas::deleteMovableElement(MovableElement* element)
 {
@@ -266,6 +347,11 @@ void Canvas::setOverlay(MovableElement* overlay)
 void Canvas::setZoomFactor(float zoomFactor)
 {
 	zoomFactor_ = zoomFactor;
+}
+
+Gdiplus::Bitmap* Canvas::getBufferBitmap()
+{
+	return buffer_;
 }
 
 float Canvas::getZoomFactor() const
@@ -328,43 +414,43 @@ CursorType Canvas::getCursor() const
 }
 
 bool Canvas::undo() {
-	if ( !doc_ ) {
+	if ( !undoHistory_.size() ) {
 		return false;
 	}
-	bool result = doc_->undo();
+	bool result = false;
+	UndoHistoryItem item = undoHistory_.top();
+	if ( item.type == uitDocumentChanged ){
+		result =  doc_->undo();
+	} else if ( item.type == uitElementAdded ) {
+		deleteMovableElement(item.element);
+		result = true;
+	}
+
+	if ( result ) {
+		undoHistory_.pop();
+	}
 	updateView();
 	return result;
 }
 
 InputBox* Canvas::getInputBox( const RECT& rect ) {
-	if ( inputBox_ == NULL ) {
-		RECT rt = {0,0,300,50};
+	/*if ( inputBox_ == NULL )*/ {
+		//RECT rt = {0,0,300,50};
+		LOG(INFO) << "Creating new inputbox";
 		inputBox_ = new InputBoxControl();
 		RECT rc = rect;
+		rc.left++;
+		rc.top++;
 		LoadLibrary(CRichEditCtrl::GetLibraryName());
-		HWND wnd = inputBox_->Create( parentWindow_, rt, _T("ololo"), WS_VISIBLE | WS_CHILD | WS_BORDER/*|ES_MULTILINE|ES_AUTOHSCROLL|ES_AUTOVSCROLL|  ES_WANTRETURN*/
+		HWND wnd = inputBox_->Create( parentWindow_, rc, _T("ololo"), WS_VISIBLE | WS_CHILD /*|ES_MULTILINE|ES_AUTOHSCROLL|ES_AUTOVSCROLL|  ES_WANTRETURN*/
 			/*|  ES_NOHIDESEL | ES_LEFT */,WS_EX_TRANSPARENT );
-
-		//Get the error message, if any.
-		DWORD errorMessageID = ::GetLastError();
-		/*if(errorMessageID == 0)
-			return "No error message has been recorded";*/
-
-		LPTSTR messageBuffer = 0;
-		size_t size = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-			NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&messageBuffer, 0, NULL);
-
-		//LOG(INFO) << "last error:"<< errorMessageID<<": " <<messageBuffer;
-	//	MessageBox(0,messageBuffer,0,0);
-		//Free the buffer.
-		LocalFree(messageBuffer);
-
+	inputBox_->SetEventMask(ENM_CHANGE);
 		inputBox_->SetWindowPos(HWND_TOP,0,0,0,0, SWP_NOSIZE|SWP_NOMOVE);
 		
-	} else {
+	} /*else {
 		//inputBox_->SetWindowPos(HWND_TOP, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top , 0);
 		inputBox_->ShowWindow( SW_SHOW );
-	}
+	}*/
 	//inputBox_->settex
 	CHARRANGE cr;
 	cr.cpMin = -1;
@@ -379,6 +465,16 @@ InputBox* Canvas::getInputBox( const RECT& rect ) {
 	//DebugWrite2( _T( "%d ,parent=%d, bounds = ( %d %d %d %d )" ), wnd, parentWindow_, rect);
 	//MessageBox ( 0, 0, 0, 0);
 	return inputBox_;
+}
+
+TextElement* Canvas::getCurrentlyEditedTextElement()
+{
+	return currentlyEditedTextElement_;
+}
+
+void Canvas::setCurrentlyEditedTextElement(TextElement* textElement)
+{
+	currentlyEditedTextElement_ = textElement;
 }
 
 void Canvas::unselectAllElements()

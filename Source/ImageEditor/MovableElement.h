@@ -23,7 +23,7 @@ class MovableElement: public DrawingElement {
 		MovableElement(Canvas* canvas_);
 		void render(Painter* gr);
 		void renderGrips(Painter* gr);
-		void setSelected(bool selected);
+		virtual void setSelected(bool selected);
 		bool isSelected() const;
 		virtual ElementType getType() const;
 		static CursorType GetCursorForBoundary(BoundaryType bt);

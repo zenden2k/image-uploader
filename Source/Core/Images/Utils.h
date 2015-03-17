@@ -10,5 +10,5 @@ namespace Gdiplus {
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 
 Gdiplus::Bitmap* BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szResType);
-void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Rect layoutArea);
+void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics,  Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea);
 #endif

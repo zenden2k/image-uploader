@@ -73,6 +73,7 @@
 #define IDR_PROGRESSGIF                 241
 #define IDB_BITMAP6                     242
 #define IDB_SERVERTOOLBARBMP2           242
+#define IDB_ICONUNDOPNG                 242
 #define IDI_ICONWINDOWS                 245
 #define IDI_FREEFORM                    246
 #define IDI_ICONADD                     248
@@ -120,6 +121,9 @@
 #define IDB_ICONTOOLLINE                282
 #define IDB_PNG4                        283
 #define IDB_ICONTOOLRECTANGLEPNG        283
+#define IDB_ICONTOOLSELECTION           284
+#define IDB_PNG5                        286
+#define IDB_ICONTOOLARROWPNG            286
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -621,7 +625,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        284
+#define _APS_NEXT_RESOURCE_VALUE        287
 #define _APS_NEXT_COMMAND_VALUE         32803
 #define _APS_NEXT_CONTROL_VALUE         1306
 #define _APS_NEXT_SYMED_VALUE           128

@@ -1390,6 +1390,9 @@ IDB_ICONTOOLFILLEDRECTANGLE PNG                     "D:\\Develop\\imageuploader\
 IDB_ICONCOLORPICKERPNG  PNG                     "res\\ImageEditor\\icon_tool_color_picker.png"
 IDB_ICONTOOLLINE        PNG                     "res\\ImageEditor\\icon_tool_line.png"
 IDB_ICONTOOLRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_tool_rectangle.png"
+IDB_ICONTOOLSELECTION   PNG                     "res\\ImageEditor\\icon_tool_selection.png"
+IDB_ICONUNDOPNG         PNG                     "res\\ImageEditor\\icon_undo.png"
+IDB_ICONTOOLARROWPNG    PNG                     "res\\ImageEditor\\icon_tool_arrow.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //

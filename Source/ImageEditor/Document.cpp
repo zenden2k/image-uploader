@@ -127,7 +127,7 @@ void Document::saveDocumentState( /*DrawingElement* element*/ ) {
 void Document::render(Gdiplus::Graphics *gr) {
 	if (!gr || !currentImage_ ) return;
 	
-	gr->DrawImage( currentImage_, 0, 0 );
+	gr->DrawImage( currentImage_, 0, 0, currentImage_->GetWidth(), currentImage_->GetHeight());
 }
 
 bool  Document::undo() {

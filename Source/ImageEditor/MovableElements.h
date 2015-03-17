@@ -6,7 +6,7 @@
 #include "MovableElement.h"
 
 namespace ImageEditor {
-
+class InputBox;
 class Line: public MovableElement {
 	public:
 		Line(Canvas* canvas,int startX, int startY, int endX,int endY);
@@ -22,10 +22,17 @@ class Line: public MovableElement {
 
 class TextElement: public MovableElement{
 	public:
-		TextElement( Canvas* canvas, int startX, int startY, int endX,int endY );
+		TextElement( Canvas* canvas, InputBox* inputBox, int startX, int startY, int endX,int endY );
 		void render(Painter* gr);
 		void getAffectedSegments( AffectedSegments* segments );
-
+		virtual void resize(int width, int height);
+		void setInputBox(InputBox* inputBox);
+		InputBox* getInputBox() const;
+		virtual ElementType getType() const;
+		virtual void setSelected(bool selected);
+protected:
+	InputBox *inputBox_;
+	void onTextChanged(TCHAR *text);
 };
 
 class Crop: public MovableElement {
@@ -54,6 +61,28 @@ public:
 	virtual bool isItemAtPos(int x, int y);
 
 };
+
+class Arrow: public Line {
+public:
+	Arrow(Canvas* canvas,int startX, int startY, int endX,int endY);
+	void render(Painter* gr);
+
+
+	//virtual void createGrips();
+
+	//virtual bool isItemAtPos(int x, int y);
+
+};
+
+class Selection: public MovableElement {
+public:
+	Selection(Canvas* canvas, int startX, int startY, int endX,int endY);
+	void render(Painter* gr);
+
+	virtual ElementType getType() const;
+
+};
+
 }
 
 #endif
