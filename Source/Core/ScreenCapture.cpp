@@ -27,6 +27,7 @@
 #include "Func/common.h"
 #include "Func/MyUtils.h"
 #include "resource.h"
+#include <Core/Images/Utils.h>
 
 typedef HRESULT (WINAPI * DwmGetWindowAttribute_Func)(HWND, DWORD, PVOID, DWORD);
 typedef HRESULT (WINAPI * DwmIsCompositionEnabled_Func)(BOOL*);

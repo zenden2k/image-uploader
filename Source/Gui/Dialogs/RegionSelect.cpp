@@ -25,6 +25,7 @@
 #include "LogWindow.h"
 #include "Func/LangClass.h"
 #include "Func/Settings.h"
+#include <Gui/GuiTools.h>
 //#include <Gdipluseffects.h>
 
 
@@ -561,7 +562,7 @@ bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height)
 	}
 
 	//RECT screenBounds;
-	GetScreenBounds(m_screenBounds);
+	GuiTools::GetScreenBounds(m_screenBounds);
 	MoveWindow(m_screenBounds.left, m_screenBounds.top,m_screenBounds.Width(), m_screenBounds.Height());
 	topLeft.x = 0;
 	topLeft.y = 0;

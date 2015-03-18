@@ -23,7 +23,6 @@ function UploadFile(FileName, options) {
 			local sdirect_url = "";
 			surl += tJSON.dir + "/" + tJSON.file;
 
-			nm.setMethod("HEAD");
 			nm.doGet(surl);
 			if (nm.responseCode() == 200) {
 				sdirect_url = regex_simple(nm.responseBody(), "<img id=\"show_image\" src=\"(.+)\" onClick=\"", 0);
