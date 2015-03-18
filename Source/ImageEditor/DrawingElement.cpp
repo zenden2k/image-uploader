@@ -35,6 +35,16 @@ void DrawingElement::setBackgroundColor(Gdiplus::Color color)
 	backgroundColor_ = color;
 }
 
+Gdiplus::Color DrawingElement::getColor() const
+{
+	return color_;
+}
+
+Gdiplus::Color DrawingElement::getBackgroundColor() const
+{
+	return backgroundColor_;
+}
+
 void DrawingElement::setCanvas(Canvas* canvas)
 {
 	canvas_ = canvas;

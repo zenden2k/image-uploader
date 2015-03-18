@@ -95,12 +95,23 @@ public:
 	void endDraw( int x, int y );
 	void render( Painter* gr );
 	virtual CursorType getCursor(int x, int y);
-private:
+protected:
 	POINT oldPoint_;
 	AffectedSegments segments_;
-	void drawLine(int x0, int y0, int x1, int y1);
+	Gdiplus::Region affectedRegion_;
+	virtual void drawLine(int x0, int y0, int x1, int y1);
 };
+#if GDIPVER >= 0x0110 
+class BlurTool: public BrushTool  {
+public:
+	BlurTool( Canvas* canvas );
+protected:
+	virtual void drawLine(int x0, int y0, int x1, int y1);
 
+	virtual void endDraw(int x, int y);
+
+};
+#endif
 class TextTool: public MoveAndResizeTool  {
 public:
 	TextTool( Canvas* canvas );

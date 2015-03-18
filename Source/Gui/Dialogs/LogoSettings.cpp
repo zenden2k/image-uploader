@@ -38,7 +38,7 @@ CLogoSettings::CLogoSettings()
 
 void CLogoSettings::TranslateUI()
 {
-	TRC(IDC_CURRENTPROFILELABEL, "Текущий профиль:");
+	TRC(IDC_CURRENTPROFILELABEL, "Редактируемый профиль:");
 	TRC(IDC_FORMATLABEL,"Формат:");
 	TRC(IDC_QUALITYLABEL,"Качество:");
 	TRC(IDC_RESIZEBYWIDTH,"Изменение ширины:");

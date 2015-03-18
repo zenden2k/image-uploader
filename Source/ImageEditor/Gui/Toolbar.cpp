@@ -117,6 +117,8 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
 	GetClientRect(&clientRect);
 	Gdiplus::Graphics gr(dc);
 	gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
+	gr.SetPageUnit(Gdiplus::UnitPixel);
+	gr.SetSmoothingMode(SmoothingModeAntiAlias);
 
 	//*gr.SetPixelOffsetMode(PixelOffsetModeHalf);
 	//dc.FillSolidRect(&clientRect, RGB(255,0,0));
@@ -267,11 +269,16 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		}
 		
 		InvalidateRect(&item.rect, FALSE);
-		HWND parent = GetParent();
-		int command = item.command;
-		::PostMessage(parent, WM_COMMAND, MAKEWPARAM(command,BN_CLICKED),(LPARAM)m_hWnd);
-		selectedItemIndex_ = -1;
-		OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);
+
+		if ( item.itemDelegate ) {
+			item.itemDelegate->OnClick(xPos, yPos, dpiScaleX, dpiScaleY);
+		} else {
+			HWND parent = GetParent();
+			int command = item.command;
+			::PostMessage(parent, WM_COMMAND, MAKEWPARAM(command,BN_CLICKED),(LPARAM)m_hWnd);
+			selectedItemIndex_ = -1;
+			OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);
+		}
 	}
 	return 0;
 }

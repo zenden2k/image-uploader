@@ -5,7 +5,8 @@
 #include "ImageEditor/resource.h"
 #include "ImageEditor/Gui/ImageEditorView.h"
 #include <Core/Logging.h>
-
+#include <Func/WinUtils.h>
+ 
 CAppModule _Module;
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT) {
@@ -13,6 +14,8 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT) {
 	FLAGS_alsologtostderr = true;
 
 	google::InitGoogleLogging("ImageEditor.exe");
+
+	//LoadLibrary(WinUtils::GetAppFolder() + L"gdiplus.dll");
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop( &theLoop );
 

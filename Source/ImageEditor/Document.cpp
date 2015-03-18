@@ -77,6 +77,11 @@ void Document::addAffectedSegments(const AffectedSegments& segments)
 	changedSegments_ += segments;
 }
 
+Gdiplus::Bitmap* Document::getBitmap()
+{
+	return currentImage_;
+}
+
 void Document::saveDocumentState( /*DrawingElement* element*/ ) {
 	int pixelSize = 4;
 	typedef std::deque<RECT>::iterator iter;

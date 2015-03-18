@@ -24,17 +24,19 @@ class Canvas {
 		};
 		
 		enum DrawingToolType {
-			dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtFilledRectangle, dtText, dtCrop, dtMove, dtSelection
+			dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtFilledRectangle, dtText, dtCrop, dtMove, dtSelection, dtBlur, dtBlurrringRectangle
 		};
 
-		enum UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, uitElementPositionChanged};
+		enum UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, uitElementPositionChanged, uitElementForegroundColorChanged, uitElementBackgroundColorChanged};
 
 		struct UndoHistoryItemElement {
 			MovableElement * movableElement;
 			int pos;
+			Gdiplus::Color color;
 		};
 		struct UndoHistoryItem {
 			UndoHistoryItemType type;
+			
 			std::vector<UndoHistoryItemElement> elements;
 		};
 		

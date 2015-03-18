@@ -1,3 +1,4 @@
+
 #include "MovableElements.h"
 
 #include <algorithm>
@@ -363,7 +364,7 @@ Arrow::Arrow(Canvas* canvas,int startX, int startY, int endX,int endY) : Line(ca
 void Arrow::render(Painter* gr)
 {
 	using namespace Gdiplus;
-	Gdiplus::Pen pen(/* color_*/Color(255,0,0), penSize_ );
+	Gdiplus::Pen pen(/* color_*/color_, penSize_ );
 	// Create two AdjustableArrowCap objects
 	AdjustableArrowCap cap1(penSize_/2, penSize_/2, true);
 	//AdjustableArrowCap cap2 = new AdjustableArrowCap(2, 1);
@@ -402,5 +403,26 @@ ImageEditor::ElementType Selection::getType() const
 FilledRectangle::FilledRectangle(Canvas* canvas, int startX, int startY, int endX,int endY):Rectangle(canvas, startX, startY, endX, endY, true)
 {
 }
+
+#if GDIPVER >= 0x0110 
+BlurringRectangle::BlurringRectangle(Canvas* canvas, int startX, int startY, int endX,int endY) : MovableElement(canvas)
+{
+
+}
+
+void BlurringRectangle::render(Painter* gr)
+{
+	using namespace Gdiplus;
+	Gdiplus::Bitmap* background = canvas_->getBufferBitmap();
+	Blur blur;
+	BlurParams blurParams;
+	blurParams.radius = 5;
+	blur.SetParameters(&blurParams);
+	Matrix matrix;
+	Status st ;
+	RectF sourceRect(getX(), getY(), getWidth(), getHeight());
+	st = gr->DrawImage(background,  &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
+}
+#endif
 
 }

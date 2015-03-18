@@ -50,6 +50,7 @@ public:
 		virtual ~ToolbarItemDelegate() {}
 		virtual SIZE CalcItemSize(Item& item, float dpiScaleX, float dpiScaleY) = 0;
 		virtual void DrawItem(Item& item, Gdiplus::Graphics* gr, int, int y, float dpiScaleX, float dpiScaleY) = 0;
+		virtual void OnClick(int x, int y, float dpiScaleX, float dpiScaleY){};
 	};
 
 	Toolbar(Orientation orientation); 
@@ -70,6 +71,7 @@ public:
 		MESSAGE_HANDLER( WM_LBUTTONDOWN, OnLButtonDown )
 		MESSAGE_HANDLER( WM_LBUTTONUP, OnLButtonUp )
 		MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
+		REFLECT_NOTIFICATIONS ()
 	END_MSG_MAP()
 
 

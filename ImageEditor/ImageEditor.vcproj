@@ -49,9 +49,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP4"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Source\&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;_DEBUG;GOOGLE_GLOG_DLL_DECL="
+				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;_DEBUG;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0110"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -74,9 +75,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalOptions="/mp4"
 				AdditionalDependencies="gdiplus.lib libglog_static.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib\Debug&quot;;&quot;$(SolutionDir)\Contrib\Lib\&quot;"
+				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
@@ -141,7 +144,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP4"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Source\&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;NDEBUG;GOOGLE_GLOG_DLL_DECL="
+				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;NDEBUG;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0110"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -409,6 +412,18 @@
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="3rdpart"
+				>
+				<File
+					RelativePath="..\Source\3rdpart\ColorButton.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\3rdpart\ColorButton.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -443,11 +458,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\ImageEditor\resource.h"
+				RelativePath="..\Source\resource.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Source\resource.h"
+				RelativePath=".\Source\ImageEditor\resource.h"
 				>
 			</File>
 			<File
@@ -552,11 +567,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Source\ImageEditor\res\icon_dropdown.ico"
+				RelativePath="..\Source\res\icon_dropdown.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\Source\res\icon_dropdown.ico"
+				RelativePath="..\Source\ImageEditor\res\icon_dropdown.ico"
 				>
 			</File>
 			<File
@@ -649,11 +664,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\icon_dropdown_png.png"
+			RelativePath="..\Source\res\icon_dropdown_png.png"
 			>
 		</File>
 		<File
-			RelativePath="..\Source\res\icon_dropdown_png.png"
+			RelativePath=".\res\icon_dropdown_png.png"
 			>
 		</File>
 		<File
@@ -661,19 +676,19 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_tool_arrow.png"
-			>
-		</File>
-		<File
 			RelativePath="..\Source\res\ImageEditor\icon_tool_arrow.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_tool_brush.png"
+			RelativePath=".\res\ImageEditor\icon_tool_arrow.png"
 			>
 		</File>
 		<File
 			RelativePath="..\Source\res\ImageEditor\icon_tool_brush.png"
+			>
+		</File>
+		<File
+			RelativePath=".\res\ImageEditor\icon_tool_brush.png"
 			>
 		</File>
 		<File
@@ -685,15 +700,11 @@
 			>
 		</File>
 		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_crop.png"
-			>
-		</File>
-		<File
 			RelativePath=".\res\ImageEditor\icon_tool_crop.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_tool_filled_rectangle.png"
+			RelativePath="..\Source\res\ImageEditor\icon_tool_crop.png"
 			>
 		</File>
 		<File
@@ -701,7 +712,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_line.png"
+			RelativePath=".\res\ImageEditor\icon_tool_filled_rectangle.png"
 			>
 		</File>
 		<File
@@ -709,11 +720,15 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_tool_move.png"
+			RelativePath="..\Source\res\ImageEditor\icon_tool_line.png"
 			>
 		</File>
 		<File
 			RelativePath="..\Source\res\ImageEditor\icon_tool_move.png"
+			>
+		</File>
+		<File
+			RelativePath=".\res\ImageEditor\icon_tool_move.png"
 			>
 		</File>
 		<File
@@ -725,19 +740,19 @@
 			>
 		</File>
 		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_rectangle.png"
-			>
-		</File>
-		<File
 			RelativePath=".\res\ImageEditor\icon_tool_rectangle.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_tool_selection.png"
+			RelativePath="..\Source\res\ImageEditor\icon_tool_rectangle.png"
 			>
 		</File>
 		<File
 			RelativePath="..\Source\res\ImageEditor\icon_tool_selection.png"
+			>
+		</File>
+		<File
+			RelativePath=".\res\ImageEditor\icon_tool_selection.png"
 			>
 		</File>
 		<File
@@ -749,11 +764,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_undo.png"
+			RelativePath="..\Source\res\ImageEditor\icon_undo.png"
 			>
 		</File>
 		<File
-			RelativePath="..\Source\res\ImageEditor\icon_undo.png"
+			RelativePath=".\res\ImageEditor\icon_undo.png"
 			>
 		</File>
 		<File

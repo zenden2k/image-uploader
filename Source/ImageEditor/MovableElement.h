@@ -36,6 +36,7 @@ class MovableElement: public DrawingElement {
 		virtual ElementType getType() const;
 		static CursorType GetCursorForBoundary(BoundaryType bt);
 		friend class MoveAndResizeTool;
+		void setDrawDashedRectangle(bool draw);
 		int getX();
 		int getY();
 		void setX(int  x);

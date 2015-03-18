@@ -30,7 +30,7 @@ class Document {
 		void endDrawing();
 
 		void addAffectedSegments(const AffectedSegments& segments);
-
+		Gdiplus::Bitmap* getBitmap();
 		void render(Painter* gr);
 		bool undo();
 		int getWidth();

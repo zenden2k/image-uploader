@@ -196,6 +196,24 @@ void Canvas::setForegroundColor(Gdiplus::Color color)
 	if ( currentDrawingTool_ ) {
 		currentDrawingTool_->setForegroundColor(color);
 	}
+	int updatedElementsCount = 0;
+	UndoHistoryItem uhi;
+	uhi.type = uitElementForegroundColorChanged;
+	for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->isSelected()) {
+			UndoHistoryItemElement uhie;
+			uhie.color = elementsOnCanvas_[i]->getColor();
+			uhie.pos = i;
+			uhie.movableElement = elementsOnCanvas_[i];
+			elementsOnCanvas_[i]->setColor(color);
+			uhi.elements.push_back(uhie);
+			updatedElementsCount++;
+		}
+	}
+	if ( updatedElementsCount ) {
+		undoHistory_.push(uhi);
+		updateView();
+	}
 }
 
 void Canvas::setBackgroundColor(Gdiplus::Color color)
@@ -203,6 +221,24 @@ void Canvas::setBackgroundColor(Gdiplus::Color color)
 	backgroundColor_ = color;
 	if ( currentDrawingTool_ ) {
 		currentDrawingTool_->setBackgroundColor(color);
+	}
+	int updatedElementsCount = 0;
+	UndoHistoryItem uhi;
+	uhi.type = uitElementBackgroundColorChanged;
+	for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->isSelected()) {
+			UndoHistoryItemElement uhie;
+			uhie.color = elementsOnCanvas_[i]->getBackgroundColor();
+			uhie.pos = i;
+			uhie.movableElement = elementsOnCanvas_[i];
+			elementsOnCanvas_[i]->setBackgroundColor(color);
+			uhi.elements.push_back(uhie);
+			updatedElementsCount++;
+		}
+	}
+	if ( updatedElementsCount ) {
+		undoHistory_.push(uhi);
+		updateView();
 	}
 }
 
@@ -226,7 +262,13 @@ void Canvas::setDrawingToolType(DrawingToolType toolType) {
 		currentDrawingTool_ = new PenTool( this );
 	} else if ( toolType == dtBrush) {
 		currentDrawingTool_ = new BrushTool( this );
-	} else if ( toolType == dtText) {
+	} else if ( toolType == dtBlur) {
+		#if GDIPVER >= 0x0110 
+		currentDrawingTool_ = new BlurTool( this );
+		#else
+		LOG(ERROR) << "Blur effect is not supported by current version of GdiPlus.";
+		#endif
+	}else if ( toolType == dtText) {
 		currentDrawingTool_ = new TextTool( this );
 	} else if ( toolType == dtCrop ) {
 		currentDrawingTool_ = new CropTool( this );
@@ -241,7 +283,9 @@ void Canvas::setDrawingToolType(DrawingToolType toolType) {
 			type = etCrop;
 		} else if ( toolType == dtRectangle ) {
 			type = etRectangle;
-		} else if ( toolType == dtFilledRectangle ) {
+		} else if ( toolType == dtBlurrringRectangle ) {
+			type = etBlurringRectangle;
+		}else if ( toolType == dtFilledRectangle ) {
 			type = etFilledRectangle;
 		}
 		else if ( toolType == dtMove ) {
@@ -480,6 +524,20 @@ bool Canvas::undo() {
 		// Insert elements in their initial positions
 		for ( int i = itemCount-1; i>=0; i-- ) {
 			elementsOnCanvas_.insert(elementsOnCanvas_.begin()+ item.elements[i].pos, item.elements[i].movableElement);
+		}
+		result = true;
+	} else if ( item.type == uitElementForegroundColorChanged ) {
+		int itemCount = item.elements.size();
+		// Insert elements in their initial positions
+		for ( int i = itemCount-1; i>=0; i-- ) {
+			item.elements[i].movableElement->setColor(item.elements[i].color);
+		}
+		result = true;
+	} else if ( item.type == uitElementBackgroundColorChanged ) {
+		int itemCount = item.elements.size();
+		// Insert elements in their initial positions
+		for ( int i = itemCount-1; i>=0; i-- ) {
+			item.elements[i].movableElement->setBackgroundColor(item.elements[i].color);
 		}
 		result = true;
 	}

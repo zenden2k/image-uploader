@@ -23,6 +23,9 @@ class DrawingElement {
 		virtual void setEndPoint(POINT endPoint);
 		void setColor( Gdiplus::Color color );
 		void setBackgroundColor( Gdiplus::Color color );
+		Gdiplus::Color getColor() const;
+		Gdiplus::Color getBackgroundColor() const;
+
 		void setCanvas( Canvas* canvas );
 		virtual void getAffectedSegments( AffectedSegments* segments );
 		void setPenSize( int penSize );
