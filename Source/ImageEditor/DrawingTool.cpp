@@ -176,6 +176,11 @@ ImageEditor::CursorType BrushTool::getCursor(int x, int y)
 
 void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
 
+	Graphics *gr = canvas_->currentDocument()->getGraphicsObject();
+	Pen pen(foregroundColor_,penSize_);
+	pen.SetStartCap(LineCapRound);
+	pen.SetEndCap(LineCapRound);
+	gr->DrawLine(&pen, x0,y0, x1, y1);
 
 	if ( y1 < y0 ) {
 		std::swap( y0, y1 );
@@ -188,8 +193,7 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
 	int yEnd   = max( y0, y1 );
 	
 
-	Graphics *gr = canvas_->currentDocument()->getGraphicsObject();
-
+	
 
 
 	float len = sqrt(  pow((float)x1-x0, 2) + pow ((float) y1- y0, 2 ) );
@@ -206,13 +210,13 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
 		//	MessageBox(0,0,0,0);
 		for( int y = yStart; y <= yEnd; y++ ) {
 			x = x0;
-			gr->FillEllipse( &br, (int)x, y, penSize_, penSize_ );
+			//gr->FillEllipse( &br, (int)x, y, penSize_, penSize_ );
 			segments_.markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
 		} 
 	} else if ( y1 == y0 ) {
 		for( int x = xStart; x <= xEnd; x++ ) {
 			int y = y0;
-			gr->FillEllipse( &br, x, y, penSize_, penSize_ );
+			//gr->FillEllipse( &br, x, y, penSize_, penSize_ );
 			segments_.markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
 		} 
 	} else {
@@ -223,7 +227,7 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
 				
 
 			
-			gr->FillEllipse( &br, (int)x, (int)y, penSize_, penSize_ );
+			//gr->FillEllipse( &br, (int)x, (int)y, penSize_, penSize_ );
 			segments_.markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
 		 } 
 	}  
@@ -390,11 +394,13 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 
 void MoveAndResizeTool::endDraw( int x, int y ) {
 	if ( currentElement_ ) {
-		if ( currentElement_->getType() == etCrop && canvas_->onCropChanged ) {
+		if ( currentElement_->getType() == etCrop && canvas_->onCropFinished ) {
 			LOG(INFO) << "onCropChanged";
-			canvas_->onCropChanged(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
+			canvas_->onCropFinished(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
 		}
-		currentElement_->setDrawDashedRectangle(false);
+		if ( currentElement_->getType() != etCrop) {
+			currentElement_->setDrawDashedRectangle(false);
+		}
 		currentElement_= 0;
 		
 		canvas_->updateView();
@@ -777,4 +783,41 @@ void BlurTool::endDraw(int x, int y)
 }
 
 #endif
+
+ColorPickerTool::ColorPickerTool(Canvas* canvas) :AbstractDrawingTool(canvas)
+{
+
+}
+
+void ColorPickerTool::beginDraw(int x, int y)
+{
+
+}
+
+void ColorPickerTool::continueDraw(int x, int y, DWORD flags)
+{
+
+}
+
+void ColorPickerTool::endDraw(int x, int y)
+{
+	Gdiplus::Color color;
+	canvas_->getBufferBitmap()->GetPixel(x,y, &color);
+	canvas_->setForegroundColor(color);
+	if ( canvas_->onForegroundColorChanged ) {
+		canvas_->onForegroundColorChanged(color);
+	}
+	canvas_->setPreviousDrawingTool();
+}
+
+void ColorPickerTool::render(Painter* gr)
+{
+
+}
+
+ImageEditor::CursorType ColorPickerTool::getCursor(int x, int y)
+{
+	 return ctColorPicker;
+}
+
 }

@@ -18,6 +18,7 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
 	dpiScaleX = 1.0f;
 	dpiScaleY = 1.0f;
 	transparentColor_ = Color(255,50,56);
+	font_ = 0;
 }
 
 Toolbar::~Toolbar()
@@ -25,10 +26,10 @@ Toolbar::~Toolbar()
 	delete font_;
 }
 
-bool Toolbar::Create(HWND parent)
+bool Toolbar::Create(HWND parent, bool child )
 {
 	RECT rc = {0, 0, 1,1};
-	TParent::Create(parent, rc, _T("test"),WS_VISIBLE | /*WS_POPUPWINDOW*/WS_POPUP /*|WS_SYSMENU*/ , WS_EX_LAYERED|  WS_EX_NOACTIVATE /*|WS_EX_TOOLWINDOW*/);
+	TParent::Create(parent, rc, _T("test"), ( child ? WS_CHILD :WS_POPUP) , WS_EX_LAYERED|  WS_EX_NOACTIVATE /*|WS_EX_TOOLWINDOW*/);
 	if ( !m_hWnd ) {
 		return false;
 	}
@@ -85,6 +86,37 @@ void Toolbar::repaintItem(int index)
 	InvalidateRect(&item.rect, false);
 }
 
+void Toolbar::clickButton(int index)
+{
+	if ( index < 0 || index >= buttons_.size() ) {
+		LOG(ERROR) << "Out of range";
+	}
+	Item& item = buttons_[index];
+	selectedItemIndex_ = index;
+	if ( item.checkable ) {
+
+		item.isChecked = item.group!=-1|| !item.isChecked;
+		//item.state = item.isChecked ? isChecked : isNormal;
+	} else {
+		//item.state = isNormal;
+	}
+	if ( item.group != -1 ) {
+
+		// Uncheck all other buttons with same group id
+		for( int i = 0; i < buttons_.size(); i++ ) {
+			LOG(INFO) << "buttons_[i].group=" << buttons_[i].group;
+			if ( i != index & buttons_[i].group == item.group && buttons_[i].checkable && buttons_[i].isChecked ) {
+				buttons_[i].isChecked  = false;
+				buttons_[i].state = isNormal;
+				InvalidateRect(&buttons_[i].rect, FALSE);
+			}
+		}
+	}
+
+	InvalidateRect(&item.rect, FALSE);
+	
+}
+
 LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	RECT rc2;
@@ -118,8 +150,7 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
 	Gdiplus::Graphics gr(dc);
 	gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
 	gr.SetPageUnit(Gdiplus::UnitPixel);
-	gr.SetSmoothingMode(SmoothingModeAntiAlias);
-
+	
 	//*gr.SetPixelOffsetMode(PixelOffsetModeHalf);
 	//dc.FillSolidRect(&clientRect, RGB(255,0,0));
 	Rect rect( 0, 0, clientRect.right-1, clientRect.bottom-1);
@@ -135,8 +166,12 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
 	/*CRoundRect roundRect;
 	roundRect.FillRoundRect(&gr,&br,rect,Color(198,196,197),5);*/
 	//roundRect.DrawRoundRect(&gr,rect,Color(198,196,197),8, 1);
+	gr.SetSmoothingMode(SmoothingModeHighSpeed);
 
 	DrawRoundedRectangle(&gr,rect,8,&p, &br);
+	gr.SetSmoothingMode(SmoothingModeAntiAlias);
+
+
 	//gr.FillRectangle(&br,rect);
 	int x = itemMargin_;
 	int y = itemMargin_;
@@ -248,27 +283,9 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		
 		selectedItemIndex_ = getItemAtPos(xPos, yPos);
 		Item& item = buttons_[selectedItemIndex_];
-		if ( item.checkable ) {
-			
-			item.isChecked = item.group!=-1|| !item.isChecked;
-			//item.state = item.isChecked ? isChecked : isNormal;
-		} else {
-			//item.state = isNormal;
-		}
-		if ( item.group != -1 ) {
 
-			// Uncheck all other buttons with same group id
-			for( int i = 0; i < buttons_.size(); i++ ) {
-					LOG(INFO) << "buttons_[i].group=" << buttons_[i].group;
-				if ( i != selectedItemIndex_ & buttons_[i].group == item.group && buttons_[i].checkable && buttons_[i].isChecked ) {
-					buttons_[i].isChecked  = false;
-					buttons_[i].state = isNormal;
-					InvalidateRect(&buttons_[i].rect, FALSE);
-				}
-			}
-		}
-		
-		InvalidateRect(&item.rect, FALSE);
+		clickButton(selectedItemIndex_);
+
 
 		if ( item.itemDelegate ) {
 			item.itemDelegate->OnClick(xPos, yPos, dpiScaleX, dpiScaleY);
@@ -339,7 +356,7 @@ int Toolbar::AutoSize()
 	int y = itemMargin_;
 	int width = 0;
 	int height = 0;
-	for ( int j = 0; j < 2; j ++ ) {
+	for ( int j = 0; j < 1; j ++ ) {
 		x = itemMargin_;
 		y = itemMargin_;
 		for ( int i =0; i < buttons_.size(); i++ ) {

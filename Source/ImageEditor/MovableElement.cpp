@@ -8,6 +8,7 @@ namespace ImageEditor {
 using namespace Gdiplus;
 
 MovableElement::MovableElement(Canvas* canvas){
+	drawDashedRectangle_ = true;
 	startPoint_.x = 0;
 	startPoint_.y = 0;
 	endPoint_.x   = 0;
@@ -16,7 +17,7 @@ MovableElement::MovableElement(Canvas* canvas){
 	color_ = Gdiplus::Color( 0, 0, 0 );
 	penSize_ = 1;
 	isSelected_ = false;
-	drawDashedRectangle_ = true;
+	
 	grips_.resize(8);
 	canvas_ = canvas;
 }
@@ -40,7 +41,7 @@ void MovableElement::renderGrips(Painter* gr)
 	int y = std::min<>( startPoint_.y, endPoint_.y );
 	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
 	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
-	if (  isSelected_ || drawDashedRectangle_ ) {
+	if (  /*isSelected_ || */drawDashedRectangle_ ) {
 		gr->DrawRectangle( &pen, x, y, width, height );
 		pen.SetColor(Color( 255, 255, 255) );
 		pen.SetDashOffset(3);

@@ -260,7 +260,7 @@
     </Server> 
 	
 	<!--
-		Sience 1.3.x release server declration node must be "Server2",
+		Since 1.3.x release server declration node must be "Server2",
 		which contains "type" attribute
 	-->
 	<Server2 Name="6url.ru" Authorize="0" Debug="0" Type="urlshortening" >
@@ -291,10 +291,10 @@
 		</Actions>
 		<Result DirectUrlTemplate="http://udi.by/$(surl)" />
 	</Server2>
-	<Server2 Name="u.to" Authorize="0" Type="urlshortening" >
+	<Server2 Name="u.to" Authorize="0" Type="urlshortening">
 		<Actions>
 			<Action 
-				Type="get"
+				Type="post"
 				Url="http://u.to"
 				PostParams="url=$(_ORIGINALURL);a=add"
 				RegExp="\('#shurlout'\)\.val\('(.+)'\)\.show"
@@ -307,7 +307,7 @@
 		<Actions>
 			<Action 
 				Type="get"
-				Url="http://tinyurl.com/create.php?source=indexpage&url=$(_ORIGINALURL|urlencode)&submit=Make+TinyURL&alias="
+				Url="http://tinyurl.com/create.php?source=indexpage&amp;url=$(_ORIGINALURL|urlencode)&amp;submit=Make+TinyURL&amp;alias="
 				RegExp='window.clipboardData.setData\(.Text.,.(.+).\);'
 				AssignVars="surl:0"
 			/>
@@ -339,11 +339,11 @@
 		</Actions>
 		<Result DirectUrlTemplate="http://8b.kz/$(surl)" />
 	</Server2>
-	<Server2 Name="pixhost.org" Authorize="0" Debug="0" Type="image" MaxFileSize="10485760" Plugin="pixhostorg" >
+	<Server Name="pixhost.org" Authorize="0" Debug="0" Type="image" MaxFileSize="10485760" Plugin="pixhostorg" >
 		<Actions>
 		</Actions>
 		<Result DirectUrlTemplate="stub" />
-	</Server2>
+	</Server>
 	
 
 </Servers>

@@ -58,6 +58,7 @@ namespace GuiTools
 
 	int GetFontSize(int nFontHeight);
 	int GetFontHeight(int nFontSize);
+	HFONT GetSystemDialogFont();
 
 	int ScreenBPP();
 	BOOL Is32BPP();
@@ -75,5 +76,7 @@ namespace GuiTools
 	};
 
 	IconInfo GetIconInfo(HICON hIcon);
+
+	bool GetScreenBounds(RECT& rect);
 };
 #endif

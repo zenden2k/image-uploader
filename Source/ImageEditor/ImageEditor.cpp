@@ -8,33 +8,30 @@
 #include <Func/WinUtils.h>
  
 CAppModule _Module;
-
+using namespace ImageEditor;
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT) {
 	FLAGS_logtostderr = false;
 	FLAGS_alsologtostderr = true;
 
 	google::InitGoogleLogging("ImageEditor.exe");
 
-	//LoadLibrary(WinUtils::GetAppFolder() + L"gdiplus.dll");
+	LoadLibrary(WinUtils::GetAppFolder() + L"gdiplus.dll");
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop( &theLoop );
 
-	ImageEditor::ImageEditorWindow wndMain;
-	RECT rc = {100,100,1280,800};
+	ImageEditor::ImageEditorWindow wndMain("screenshot.png");
 
-	if ( wndMain.Create(0, rc, _T("ImageEditor"), WS_OVERLAPPED | WS_POPUP | WS_CAPTION | WS_VISIBLE | WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | 
-		WS_MINIMIZEBOX) == NULL ) {
-		ATLTRACE( _T("Main window creation failed!\n") );
-		return 0;
-	}
 
-	wndMain.ShowWindow( nCmdShow );
+	
 
-	int nRet = theLoop.Run();
+	//wndMain.ShowWindow( nCmdShow );
+	ImageEditorWindow::DialogResult dr = wndMain.DoModal(0);
+	LOG(INFO) << "DoModal returned "<<dr;
+	//int nRet = theLoop.Run();
 
 	_Module.RemoveMessageLoop();
-	wndMain.DestroyWindow();
-	return nRet;
+	//wndMain.DestroyWindow();
+	return 0;
 }
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)

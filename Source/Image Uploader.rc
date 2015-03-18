@@ -1393,6 +1393,7 @@ IDB_ICONTOOLRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_tool_re
 IDB_ICONTOOLSELECTION   PNG                     "res\\ImageEditor\\icon_tool_selection.png"
 IDB_ICONUNDOPNG         PNG                     "res\\ImageEditor\\icon_undo.png"
 IDB_ICONTOOLARROWPNG    PNG                     "res\\ImageEditor\\icon_tool_arrow.png"
+IDB_ICONTOOLBLURINGRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_tool_bluring_rectangle.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1416,6 +1417,13 @@ IDR_PROGRESSGIF         GIF                     "res\\progress.gif_"
 //
 
 IDR_RT_MANIFEST1        RT_MANIFEST             "res\\image uploader.exe.manifest"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_COLORPICKERCURSOR   CURSOR                  "res\\ImageEditor\\colorpicker.cur"
 #endif    // Russian resources
 /////////////////////////////////////////////////////////////////////////////
 

@@ -24,7 +24,7 @@ class Canvas {
 		};
 		
 		enum DrawingToolType {
-			dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtFilledRectangle, dtText, dtCrop, dtMove, dtSelection, dtBlur, dtBlurrringRectangle
+			dtNone, dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtFilledRectangle, dtText, dtCrop, dtMove, dtSelection, dtBlur, dtBlurrringRectangle, dtColorPicker
 		};
 
 		enum UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, uitElementPositionChanged, uitElementForegroundColorChanged, uitElementBackgroundColorChanged};
@@ -51,14 +51,15 @@ class Canvas {
 		void mouseDoubleClick( int button, int x, int y );
 
 		Document* currentDocument() const;
-		void render(Painter* gr, const RECT& rect);
+		void render(Painter* gr, const RECT& rect, POINT scrollOffset, SIZE size);
 		void setCallback(Callback * callback);
 		void setPenSize(int size);
 		void setForegroundColor(Gdiplus::Color color);
 		void setBackgroundColor(Gdiplus::Color color);
 		Gdiplus::Color getForegroundColor() const;
 		Gdiplus::Color getBackgroundColor() const;
-		void setDrawingToolType(DrawingToolType tool);
+		void setDrawingToolType(DrawingToolType tool, bool notify = false);
+		void setPreviousDrawingTool();
 		AbstractDrawingTool* getCurrentDrawingTool();
 		void addMovableElement(MovableElement* element);
 		void deleteMovableElement(MovableElement* element);
@@ -85,6 +86,11 @@ class Canvas {
 		void endDocDrawing();
 		int deleteSelectedElements();
 		fastdelegate::FastDelegate4<int,int,int,int> onCropChanged;
+		fastdelegate::FastDelegate4<int,int,int,int> onCropFinished;
+		fastdelegate::FastDelegate1<DrawingToolType> onDrawingToolChanged;
+		fastdelegate::FastDelegate1<Gdiplus::Color> onForegroundColorChanged;
+		fastdelegate::FastDelegate1<Gdiplus::Color> onBackgroundColorChanged;
+
 		friend class AbstractDrawingTool;
 		friend class VectorElementTool;
 		friend class PenTool;
@@ -107,6 +113,7 @@ class Canvas {
 		POINT leftMouseUpPoint_;
 		Callback* callback_;
 		DrawingToolType drawingToolType_;
+		DrawingToolType previousDrawingTool_;
 		AbstractDrawingTool* currentDrawingTool_;
 		std::vector<MovableElement*> elementsOnCanvas_;
 		CursorType currentCursor_;

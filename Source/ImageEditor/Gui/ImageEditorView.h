@@ -7,15 +7,15 @@
 #include <map>
 #include "ImageEditor/Canvas.h"
 #include <map>
-
+#include <atlscrl.h>
 #pragma once
 
 namespace ImageEditor {
 
-class CImageEditorView : public CWindowImpl<CImageEditorView>, public ImageEditor::Canvas::Callback
+class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public ImageEditor::Canvas::Callback
 {
 	public:
-
+		typedef CScrollWindowImpl<CImageEditorView> TBase;
 		DECLARE_WND_CLASS(L"CImageEditorView")
 		CImageEditorView();
 		BOOL PreTranslateMessage(MSG* pMsg);
@@ -32,7 +32,7 @@ class CImageEditorView : public CWindowImpl<CImageEditorView>, public ImageEdito
 			MESSAGE_HANDLER( WM_SETCURSOR, OnSetCursor )
 			MESSAGE_HANDLER( WM_KEYDOWN, OnKeyDown )
 			REFLECT_NOTIFICATIONS()
-
+			CHAIN_MSG_MAP(TBase);
 		END_MSG_MAP()
 
 		// Handler prototypes (uncomment arguments if needed):

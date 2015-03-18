@@ -407,16 +407,18 @@ FilledRectangle::FilledRectangle(Canvas* canvas, int startX, int startY, int end
 #if GDIPVER >= 0x0110 
 BlurringRectangle::BlurringRectangle(Canvas* canvas, int startX, int startY, int endX,int endY) : MovableElement(canvas)
 {
-
-}
+	
+} 
 
 void BlurringRectangle::render(Painter* gr)
 {
+	//drawDashedRectangle_ = isSelected();
+	
 	using namespace Gdiplus;
 	Gdiplus::Bitmap* background = canvas_->getBufferBitmap();
 	Blur blur;
 	BlurParams blurParams;
-	blurParams.radius = 5;
+	blurParams.radius = 6;
 	blur.SetParameters(&blurParams);
 	Matrix matrix;
 	Status st ;

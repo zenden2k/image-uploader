@@ -25,7 +25,7 @@
 #include "atlheaders.h"
 #include <gdiplus.h>
 
-bool GetScreenBounds(RECT& rect);
+
 HRGN GetWindowVisibleRegion(HWND wnd);
 
 void TimerWait(int Delay);

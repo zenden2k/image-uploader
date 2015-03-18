@@ -19,7 +19,8 @@ Canvas::Canvas( HWND parent ) {
 	oldPoint_.y           = -1;
 	callback_             = 0;
 	penSize_              = 1;
-	drawingToolType_	    = dtPen;
+	drawingToolType_	  = dtNone;
+	previousDrawingTool_ = dtNone; 
 	leftMouseDownPoint_.x = -1;
 	leftMouseDownPoint_.y = -1;
 	buffer_               = NULL;
@@ -139,7 +140,7 @@ void Canvas::mouseDoubleClick(int button, int x, int y)
 	currentDrawingTool_->mouseDoubleClick( x, y );
 }
 
-void Canvas::render(Painter* gr, const RECT& rect) {
+void Canvas::render(Painter* gr, const RECT& rect, POINT scrollOffset, SIZE size) {
 	using namespace Gdiplus;
 	Gdiplus::Graphics* bufferedGr = new Gdiplus::Graphics( buffer_ );
 	bufferedGr->SetPageUnit(Gdiplus::UnitPixel);
@@ -168,7 +169,16 @@ void Canvas::render(Painter* gr, const RECT& rect) {
 	for ( int i=0; i< elementsOnCanvas_.size(); i++) {
 		elementsOnCanvas_[i]->renderGrips(bufferedGr);
 	}
-	gr->DrawImage( buffer_, 0, 0);
+	/*Status DrawImage(IN Image* image,
+		IN INT x,
+		IN INT y,
+		IN INT srcx,
+		IN INT srcy,
+		IN INT srcwidth,
+		IN INT srcheight,
+		IN Unit srcUnit)*/
+
+	gr->DrawImage( buffer_, 0,0, scrollOffset.x, scrollOffset.y, size.cx, size.cy, UnitPixel );
 	delete bufferedGr;
 }
 
@@ -252,7 +262,8 @@ Gdiplus::Color Canvas::getBackgroundColor() const
 	return backgroundColor_;
 }
 
-void Canvas::setDrawingToolType(DrawingToolType toolType) {
+void Canvas::setDrawingToolType(DrawingToolType toolType, bool notify ) {
+	previousDrawingTool_ = drawingToolType_;
 	drawingToolType_ = toolType;
 	unselectAllElements();
 	updateView();
@@ -268,6 +279,8 @@ void Canvas::setDrawingToolType(DrawingToolType toolType) {
 		#else
 		LOG(ERROR) << "Blur effect is not supported by current version of GdiPlus.";
 		#endif
+	}else if ( toolType == dtColorPicker) {
+		currentDrawingTool_ = new ColorPickerTool( this );
 	}else if ( toolType == dtText) {
 		currentDrawingTool_ = new TextTool( this );
 	} else if ( toolType == dtCrop ) {
@@ -307,11 +320,21 @@ void Canvas::setDrawingToolType(DrawingToolType toolType) {
 
 		//currentDrawingTool_ = new VectorElementTool( this, type );
 	}
-
+	
 	currentDrawingTool_->setPenSize(penSize_);
 	currentDrawingTool_->setForegroundColor(foregroundColor_);
 	currentDrawingTool_->setBackgroundColor(backgroundColor_);
+	if ( notify && onDrawingToolChanged ) {
+		onDrawingToolChanged(toolType);
+	}
 }
+
+void Canvas::setPreviousDrawingTool()
+{
+	if ( previousDrawingTool_ != dtNone ) {
+		setDrawingToolType(previousDrawingTool_, true);
+	}
+}	
 
 AbstractDrawingTool* Canvas::getCurrentDrawingTool()
 {

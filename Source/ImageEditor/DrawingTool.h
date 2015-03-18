@@ -128,6 +128,17 @@ class SelectionTool : public MoveAndResizeTool {
 	public:
 		SelectionTool( Canvas* canvas );
 };
+
+class  ColorPickerTool : public AbstractDrawingTool {
+public:
+	ColorPickerTool( Canvas* canvas );
+	void beginDraw( int x, int y );
+	void continueDraw( int x, int y, DWORD flags );
+	void endDraw( int x, int y );
+	void render( Painter* gr );
+	virtual CursorType getCursor(int x, int y);
+
+};
 }
 
 #endif

@@ -287,6 +287,22 @@ int GetFontHeight(int nFontSize) {
 	return - MulDiv(nFontSize, GetDeviceCaps(::GetDC(0), LOGPIXELSY), 72);
 }
 
+HFONT GetSystemDialogFont()
+{
+	NONCLIENTMETRICS ncm;
+	ncm.cbSize = sizeof(NONCLIENTMETRICS);
+#if (WINVER >= 0x0600)
+	if ( !WinUtils::IsVista() ) {
+		ncm.cbSize = sizeof(NONCLIENTMETRICS) - sizeof(int);
+	}
+#endif
+
+	if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, 0)) {
+		return CreateFontIndirect(&ncm.lfMessageFont);
+	}
+	return 0;
+}
+
 int ScreenBPP(){
 	int iRet = 0;
 	HDC hdc = GetDC(NULL);
@@ -466,5 +482,31 @@ int GetWindowLeft(HWND Wnd)
 	ScreenToClient(Parent, (LPPOINT)&WindowRect);
 	return WindowRect.left;
 }
+
+std::vector<RECT> monitorsRects;
+BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+{
+	if (lprcMonitor)
+	{
+		monitorsRects.push_back(*lprcMonitor);
+	}
+	return TRUE;
+}
+
+bool GetScreenBounds(RECT& rect)
+{
+	monitorsRects.clear();
+	EnumDisplayMonitors(0, 0, MonitorEnumProc, 0);
+	CRect result;
+	for (size_t i = 0; i < monitorsRects.size(); i++)
+	{
+		CRect Bounds = monitorsRects[i];
+		result.UnionRect(result, Bounds);
+	}
+	rect = result;
+	return true;
+
+}
+
 
 };

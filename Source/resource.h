@@ -124,6 +124,9 @@
 #define IDB_ICONTOOLSELECTION           284
 #define IDB_PNG5                        286
 #define IDB_ICONTOOLARROWPNG            286
+#define IDB_ICONTOOLBLURINGRECTANGLEPNG 287
+#define IDC_CURSOR1                     288
+#define IDC_COLORPICKERCURSOR           288
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -625,7 +628,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        287
+#define _APS_NEXT_RESOURCE_VALUE        289
 #define _APS_NEXT_COMMAND_VALUE         32803
 #define _APS_NEXT_CONTROL_VALUE         1306
 #define _APS_NEXT_SYMED_VALUE           128

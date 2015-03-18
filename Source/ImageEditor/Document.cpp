@@ -35,11 +35,11 @@ void Document::init() {
 
 	/*
 	рисуем сетку*/ 
-	for ( int i = 0; i < currentImage_->GetWidth() /  AffectedSegments::kSegmentSize; i++ ) {
+	/*for ( int i = 0; i < currentImage_->GetWidth() /  AffectedSegments::kSegmentSize; i++ ) {
 		Pen pen(Color::DarkGray);
 		currentCanvas_->DrawLine(&pen, i * AffectedSegments::kSegmentSize, 0, i * AffectedSegments::kSegmentSize, currentImage_->GetHeight() );
 		currentCanvas_->DrawLine(&pen, 0, i * AffectedSegments::kSegmentSize, currentImage_->GetWidth(),  i * AffectedSegments::kSegmentSize  );
-	}
+	}*/
 }
 
 void Document::beginDrawing(bool cloneImage) {

@@ -123,7 +123,20 @@ BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMoni
 	}
 	return TRUE;
 }
+bool GetScreenBounds(RECT& rect)
+{
+	monitorsRects.clear();
+	EnumDisplayMonitors(0, 0, MonitorEnumProc, 0);
+	CRect result;
+	for (size_t i = 0; i < monitorsRects.size(); i++)
+	{
+		CRect Bounds = monitorsRects[i];
+		result.UnionRect(result, Bounds);
+	}
+	rect = result;
+	return true;
 
+}
 RECT ScreenFromRectangle(RECT rc)
 {
 	monitorsRects.clear();
@@ -167,19 +180,6 @@ RECT MaximizedWindowFix(HWND handle, RECT windowRect)
 	return res;
 }
 
-bool GetScreenBounds(RECT& rect)
-{
-	monitorsRects.clear();
-	EnumDisplayMonitors(0, 0, MonitorEnumProc, 0);
-	CRect result;
-	for (size_t i = 0; i < monitorsRects.size(); i++)
-	{
-		CRect Bounds = monitorsRects[i];
-		result.UnionRect(result, Bounds);
-	}
-	rect = result;
-	return true;
-}
 
 void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsigned n);
 
