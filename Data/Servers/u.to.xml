@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Servers>
+	<Server Name="u.to" Authorize="0" Type="urlshortening" >
+		<Actions>
+			<Action 
+				Type="get"
+				Url="http://u.to"
+				PostParams="url=$(_ORIGINALURL);a=add"
+				RegExp="\('#shurlout'\)\.val\('(.+)'\)\.show"
+				AssignVars="surl:0"
+			/>
+		</Actions>
+		<Result DirectUrlTemplate="$(surl)" />
+	</Server>
+</Servers>

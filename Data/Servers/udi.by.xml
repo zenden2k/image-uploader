@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Servers>
+	<Server Name="udi.by" Authorize="0" Type="urlshortening" >
+		<Actions>
+			<Action 
+				Type="post"
+				Url="http://udi.by/newlink.php"
+				PostParams="url=$(_ORIGINALURL);email=;mode=0"
+				RegExp='(.+)'
+				AssignVars="surl:0"
+			/>
+		</Actions>
+		<Result DirectUrlTemplate="http://udi.by/$(surl)" />
+	</Server>
+</Servers>
