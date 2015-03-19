@@ -1,15 +1,17 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExplorerIntegration", "Source\ShellExt\ExplorerIntegration.vcproj", "{0F66AC48-52A3-4F8A-90A5-809A2B331FF9}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExplorerIntegration", "Source\ShellExt\ExplorerIntegration.vcxproj", "{0F66AC48-52A3-4F8A-90A5-809A2B331FF9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Image Uploader", "Image Uploader.vcproj", "{B62E6078-78E7-4945-9510-3BB1343CB7B2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Image Uploader", "Image Uploader.vcxproj", "{B62E6078-78E7-4945-9510-3BB1343CB7B2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerListTool", "Source\ServerListTool\ServerListTool.vcproj", "{20D09042-662C-4CAE-A020-EDE268940AB5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerListTool", "Source\ServerListTool\ServerListTool.vcxproj", "{20D09042-662C-4CAE-A020-EDE268940AB5}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CLI", "Source\CLI\CLI.vcproj", "{C0D4D927-426B-4016-8C6A-B5FAB872AE85}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CLI", "Source\CLI\CLI.vcxproj", "{C0D4D927-426B-4016-8C6A-B5FAB872AE85}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImageEditor", "ImageEditor\ImageEditor.vcproj", "{5C7FF516-3B11-4836-9CC3-B9291971BA3B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImageEditor", "ImageEditor\ImageEditor.vcxproj", "{5C7FF516-3B11-4836-9CC3-B9291971BA3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

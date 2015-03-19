@@ -33,6 +33,8 @@
 #include "InputDialog.h"
 #include <Func/IuCommonFunctions.h>
 #include <Func/WinUtils.h>
+#include <Core/Images/Utils.h>
+
 
 
 #pragma comment( lib, "uxtheme.lib" )

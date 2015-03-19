@@ -1386,7 +1386,7 @@ IDB_TOOLCROPPING        PNG                     "res\\ImageEditor\\icon_tool_cro
 IDB_ICONTOOLPENCIL      PNG                     "res\\ImageEditor\\icon_tool_pencil.png"
 IDB_ICONTOOLBRUSHPNG    PNG                     "res\\ImageEditor\\icon_tool_brush.png"
 IDB_ICONTOOLTEXTPNG     PNG                     "res\\ImageEditor\\icon_tool_text.png"
-IDB_ICONTOOLFILLEDRECTANGLE PNG                     "D:\\Develop\\imageuploader\\Source\\res\\ImageEditor\\icon_tool_filled_rectangle.png"
+IDB_ICONTOOLFILLEDRECTANGLE PNG                 "res\\ImageEditor\\icon_tool_filled_rectangle.png"
 IDB_ICONCOLORPICKERPNG  PNG                     "res\\ImageEditor\\icon_tool_color_picker.png"
 IDB_ICONTOOLLINE        PNG                     "res\\ImageEditor\\icon_tool_line.png"
 IDB_ICONTOOLRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_tool_rectangle.png"
