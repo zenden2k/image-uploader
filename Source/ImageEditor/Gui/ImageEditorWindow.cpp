@@ -137,15 +137,18 @@ ImageEditorWindow::ImageEditorWindow(Gdiplus::Bitmap * bitmap):horizontalToolbar
 ImageEditorWindow::ImageEditorWindow(CString imageFileName):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
 {
 	currentDoc_ = new ImageEditor::Document(imageFileName);
+	sourceFileName_ = imageFileName;
 	init();
 }
 
 void ImageEditorWindow::init()
 {
+//	resultingBitmap_ = 0;
 	canvas_ = 0;
 	cropToolTip_ = 0;
 	showUploadButton_ = true;
 	prevPenSize_ = 0;
+	imageQuality_ = 85;
 	initialDrawingTool_ = Canvas::dtMove;
 	menuItems_[ID_PEN]             = Canvas::dtPen; 
 	menuItems_[ID_LINE]            = Canvas::dtLine;
@@ -222,6 +225,14 @@ void ImageEditorWindow::init()
 
 bool ImageEditorWindow::saveDocument()
 {
+	resultingBitmap_ = canvas_->getBitmapForExport();
+	if ( !resultingBitmap_ ) {
+		LOG(ERROR) << "canvas_->getBitmapForExport() returned NULL";
+		return false;
+	}
+	if ( !outFileName_.IsEmpty() ) {
+		SaveImage(&*resultingBitmap_, outFileName_, sifDetectByExtension, imageQuality_);
+	}
 	return true;
 }
 
@@ -292,6 +303,11 @@ void ImageEditorWindow::showUploadButton(bool show)
 	showUploadButton_ = show;
 }
 
+ZThread::CountedPtr<Gdiplus::Bitmap> ImageEditorWindow::getResultingBitmap()
+{
+	return resultingBitmap_;
+}
+
 ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDisplayMode mode)
 {
 
@@ -322,6 +338,10 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 	CMessageLoop *loop = _Module.GetMessageLoop();
 	loop->Run();
 	DestroyWindow();
+	if ( dialogResult_ == drCancel  ) {
+//		delete resultingBitmap_;
+		//resultingBitmap_ = 0;
+	}
 	if ( parent ) {
 		::EnableWindow(parent, true);
 	}
@@ -752,6 +772,16 @@ LRESULT ImageEditorWindow::OnClickedShare(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT ImageEditorWindow::OnClickedSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	TCHAR Buf[MAX_PATH*4];
+	CString fileExt = WinUtils::GetFileExt(sourceFileName_);
+	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2,
+		TR("Файлы")+CString(" *.")+fileExt, CString(_T("*."))+fileExt,
+		TR("Все файлы"),_T("*.*"));
+	CFileDialog fd(false, fileExt, sourceFileName_,OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,Buf,m_hWnd);
+	if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return 0;
+
+	outFileName_ = fd.m_szFileName;
+	saveDocument();
 	return 0;
 }
 

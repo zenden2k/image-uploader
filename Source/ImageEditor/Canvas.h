@@ -8,6 +8,7 @@
 #include <vector>
 #include <Core/3rdpart/FastDelegate.h>
 #include <stack>
+#include <zthread/CountedPtr.h>
 
 namespace ImageEditor {
 
@@ -15,6 +16,7 @@ class Document;
 class AbstractDrawingTool;
 class DrawingTool;
 class TextElement;
+class InputBoxControl;
 
 class Canvas {
 	public:
@@ -87,6 +89,7 @@ class Canvas {
 		void setZoomFactor(float zoomFactor);
 		Gdiplus::Bitmap* getBufferBitmap();
 		void addUndoHistoryItem(const UndoHistoryItem& item);
+		ZThread::CountedPtr<Gdiplus::Bitmap> getBitmapForExport();
 	
 		float getZoomFactor() const;
 		MovableElement* getElementAtPosition(int x, int y);
@@ -126,8 +129,9 @@ class Canvas {
 
 		void createDoubleBuffer();
 		void setCursor(CursorType cursor);
+		void renderInBuffer(RECT rect, bool forExport =false);
 
-		Gdiplus::Bitmap* buffer_;
+		ZThread::CountedPtr<Gdiplus::Bitmap> buffer_;
 		Document* doc_;
 		float blurRadius_;
 		int canvasWidth_, canvasHeight_;

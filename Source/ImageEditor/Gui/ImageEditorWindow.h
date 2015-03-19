@@ -51,6 +51,7 @@ public:
 	~ImageEditorWindow();
 	void setInitialDrawingTool(Canvas::DrawingToolType dt);
 	void showUploadButton(bool show);
+	ZThread::CountedPtr<Gdiplus::Bitmap> getResultingBitmap();
 
 	DialogResult DoModal(HWND parent, WindowDisplayMode mode = wdmAuto);
 
@@ -131,7 +132,11 @@ public:
 		CIcon icon_;
 		CIcon iconSmall_;
 		ColorsDelegate* colorsDelegate_;
+		CString sourceFileName_;
+		CString outFileName_;
 		HWND cropToolTip_;
+		int imageQuality_;
+		ZThread::CountedPtr<Gdiplus::Bitmap> resultingBitmap_;
 		void createToolbars();
 		void OnCropChanged(int x, int y, int w, int h);
 		void OnCropFinished(int x, int y, int w, int h);

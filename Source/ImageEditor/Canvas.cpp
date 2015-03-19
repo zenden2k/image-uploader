@@ -9,7 +9,7 @@
 #include "InputBox.h"
 #include "Gui/InputBoxControl.h"
 #include <Core/Logging.h>
-
+#include "MovableElements.h"
 
 namespace ImageEditor {
 	
@@ -22,7 +22,7 @@ Canvas::Canvas( HWND parent ) {
 	previousDrawingTool_ = dtNone; 
 	leftMouseDownPoint_.x = -1;
 	leftMouseDownPoint_.y = -1;
-	buffer_               = NULL;
+//	buffer_               = NULL;
 	inputBox_             = NULL;
 	currentCursor_    = ctDefault;
 	overlay_ = 0;
@@ -40,7 +40,7 @@ Canvas::Canvas( HWND parent ) {
 }
 
 Canvas::~Canvas() {
-	delete buffer_;
+//	delete buffer_;
 	for ( int i = 0; i < elementsToDelete_.size(); i++ ) {
 		delete elementsToDelete_[i];
 	}
@@ -149,7 +149,7 @@ void Canvas::mouseDoubleClick(int button, int x, int y)
 
 void Canvas::render(Painter* gr, const RECT& rectInWindowCoordinates, POINT scrollOffset, SIZE size) {
 	using namespace Gdiplus;
-	Gdiplus::Graphics* bufferedGr = 0;
+
 
 	// Updating rect in canvas coordinates
 	RECT rect = {rectInWindowCoordinates.left+scrollOffset.x, rectInWindowCoordinates.top+scrollOffset.y,
@@ -165,66 +165,15 @@ void Canvas::render(Painter* gr, const RECT& rectInWindowCoordinates, POINT scro
 	}
 	if ( canvasChanged_ || fullRender_ ) {
 		LOG(INFO) << "Canvas::re-render rect"<< rect.left << " " << rect.top<< " "<< rect.right - rect.left<< " "<< rect.bottom - rect.top;
-		Gdiplus::Graphics* bufferedGr = new Gdiplus::Graphics( buffer_ );
+		
+		renderInBuffer(rect);
+		
 
-		/*if ( !fullRender_ ) {
-			for ( int i=0; i< elementsOnCanvas_.size(); i++) {
-				if ( elementsOnCanvas_[i]->getType() != etBlurringRectangle ) {
-					continue;
-				}
-				RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
-				RECT intersection;
-				IntersectRect(&intersection, &paintRect, &rect);
-				if ( !(intersection.left == 0 && intersection.right ==0 && intersection.top == 0 && intersection.bottom == 0) ) {
-					UnionRect(&rect, &rect, &paintRect);
-				}
-			}
-		}*/
-
-
-		if (!fullRender_) {
-			Gdiplus::Region reg(Rect(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top));
-			bufferedGr->SetClip(&reg);
-		}
-		bufferedGr->SetPageUnit(Gdiplus::UnitPixel);
-		bufferedGr->SetSmoothingMode(SmoothingModeAntiAlias);
 
 		
-		doc_->render( bufferedGr );
-
-		if ( currentDrawingTool_ != NULL ) {
-			currentDrawingTool_->render( bufferedGr );
-		}
-
-		for ( int i=0; i< elementsOnCanvas_.size(); i++) {
-			RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
-			RECT intersection;
-			IntersectRect(&intersection, &paintRect, &rect);
-			if ( !fullRender_ && intersection.left == 0 && intersection.right ==0 && intersection.top == 0 && intersection.bottom == 0 ) {
-				//LOG(INFO) << "Skipping element " << i << " out of bounds";
-				continue;
-			}
-			elementsOnCanvas_[i]->render(bufferedGr);
-		}
-		if ( overlay_ ) {
-			overlay_->render(bufferedGr);
-		}
-		for ( int i=0; i< elementsOnCanvas_.size(); i++) {
-			elementsOnCanvas_[i]->renderGrips(bufferedGr);
-		}
-		/*Status DrawImage(IN Image* image,
-			IN INT x,
-			IN INT y,
-			IN INT srcx,
-			IN INT srcy,
-			IN INT srcwidth,
-			IN INT srcheight,
-			IN Unit srcUnit)*/
-		canvasChanged_ = false;
-		fullRender_ = false;
 	}
-	gr->DrawImage( buffer_, rectInWindowCoordinates.left, rectInWindowCoordinates.top, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, UnitPixel );
-	delete bufferedGr;
+	gr->DrawImage( &*buffer_, rectInWindowCoordinates.left, rectInWindowCoordinates.top, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, UnitPixel );
+
 }
 
 void Canvas::updateView( RECT boundingRect ) {
@@ -557,8 +506,8 @@ void Canvas::updateView( const CRgn& region ) {
 }
 
 void Canvas::createDoubleBuffer() {
-	delete buffer_;
-	buffer_ = new Gdiplus::Bitmap( canvasWidth_, canvasHeight_ );
+//	delete buffer_;
+	buffer_ = ZThread::CountedPtr<Gdiplus::Bitmap>(new Gdiplus::Bitmap( canvasWidth_, canvasHeight_ ));
 }
 
 void Canvas::setCursor(CursorType cursorType)
@@ -570,6 +519,62 @@ void Canvas::setCursor(CursorType cursorType)
 	currentCursor_ = cursorType ;
 }
 
+
+void Canvas::renderInBuffer(RECT rect,bool forExport)
+{
+	using namespace Gdiplus;
+	Gdiplus::Graphics* bufferedGr = new Gdiplus::Graphics( &*buffer_ );
+	if (!fullRender_) {
+		Gdiplus::Region reg(Rect(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top));
+		bufferedGr->SetClip(&reg);
+	}
+	bufferedGr->SetPageUnit(Gdiplus::UnitPixel);
+	bufferedGr->SetSmoothingMode(SmoothingModeAntiAlias);
+
+
+	doc_->render( bufferedGr );
+
+	if ( currentDrawingTool_ != NULL ) {
+		currentDrawingTool_->render( bufferedGr );
+	}
+
+	/*if ( !fullRender_ ) {
+			for ( int i=0; i< elementsOnCanvas_.size(); i++) {
+				if ( elementsOnCanvas_[i]->getType() != etBlurringRectangle ) {
+					continue;
+				}
+				RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+				RECT intersection;
+				IntersectRect(&intersection, &paintRect, &rect);
+				if ( !(intersection.left == 0 && intersection.right ==0 && intersection.top == 0 && intersection.bottom == 0) ) {
+					UnionRect(&rect, &rect, &paintRect);
+				}
+			}
+		}*/
+
+	for ( int i=0; i< elementsOnCanvas_.size(); i++) {
+		RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+		RECT intersection;
+		IntersectRect(&intersection, &paintRect, &rect);
+		if ( !fullRender_ && intersection.left == 0 && intersection.right ==0 && intersection.top == 0 && intersection.bottom == 0 ) {
+			//LOG(INFO) << "Skipping element " << i << " out of bounds";
+			continue;
+		}
+		elementsOnCanvas_[i]->render(bufferedGr);
+	}
+	if ( !forExport ) {
+		if ( overlay_ ) {
+			overlay_->render(bufferedGr);
+		}
+
+		for ( int i=0; i< elementsOnCanvas_.size(); i++) {
+			elementsOnCanvas_[i]->renderGrips(bufferedGr);
+		}
+	}
+	canvasChanged_ = false;
+	fullRender_ = false;
+	delete bufferedGr;
+}
 
 void Canvas::getElementsByType(ElementType elementType, std::vector<MovableElement*>& out)
 {
@@ -594,12 +599,40 @@ void Canvas::setZoomFactor(float zoomFactor)
 
 Gdiplus::Bitmap* Canvas::getBufferBitmap()
 {
-	return buffer_;
+	return &*buffer_;
 }
 
 void Canvas::addUndoHistoryItem(const UndoHistoryItem& item)
 {
 	undoHistory_.push(item);
+}
+
+ZThread::CountedPtr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
+{
+	using namespace Gdiplus;
+	RECT rc = {0,0, getWidth(), getHeigth()};
+	fullRender_ = true;
+	renderInBuffer(rc, true);
+	Crop * crop = 0;
+	for ( int i=0; i< elementsOnCanvas_.size(); i++) {
+		if ( elementsOnCanvas_[i]->getType() == etCrop ) {
+			crop = dynamic_cast<Crop*>(elementsOnCanvas_[i]);
+			break;
+		}
+	}
+
+	if ( !crop )  {
+		return buffer_;
+	}
+
+	int cropX = crop->getX();
+	int cropY = crop->getY();
+	int cropWidth = crop->getWidth();
+	int cropHeight = crop->getHeight();
+	Bitmap* bm = new Bitmap(cropWidth, cropHeight);
+	Graphics gr(bm);
+	gr.DrawImage( &*buffer_, 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel );
+	return ZThread::CountedPtr<Gdiplus::Bitmap>(bm);
 }
 
 float Canvas::getZoomFactor() const
