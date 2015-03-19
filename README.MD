@@ -24,9 +24,12 @@ Image Uploader is available in the following languages: English, Russian, Swedis
 
 ##Compiling
 
-You need Microsoft Visual C++ at least 9.0 version (Microsoft Visual Studio 2008 SP1). You may experience some compilation errors in modern versions of MSVS, which can be solved easily.
+You need Microsoft Visual C++ at least 9.0 version (Microsoft Visual Studio 2008 SP1). 
+If you are using a newer MSVC version, you may experience some compilation errors, which can be solved easily (if you fix these errors, please provide a patch or pull request). But also you need to recompile ALL 3rd-party 
+libraries against your compiler version (so I recommend to use Microsoft Visual Studio 2008 SP1 to avoid all these issues).
 
-Also you have to install Microsoft Windows 7 Platform SDK (or later) for enabling Windows 7 related features.
+
+If you are using Visual Studio prior to 2010 version, you have to install Microsoft Windows 7 Platform SDK (or later) for enabling Windows 7 related features.
 Also yoo need to install "msinttypes" headers. 
 
 In order to compile Image Uploader you will need the following libraries:
