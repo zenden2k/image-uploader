@@ -115,9 +115,9 @@ LRESULT CUpdateDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& 
 		// Closing and reexecuting image uploader
 		CString pid = IntToStr(GetCurrentProcessId());
 		if (!CmdLine.IsOption(_T("update")))
-			IULaunchCopy(_T("/waitforpid=") + pid);  // executing new IU copy with the same command line params
+			IULaunchCopy(_T("/afterupdate /waitforpid=") + pid);  // executing new IU copy with the same command line params
 		else
-			IULaunchCopy(_T("/waitforpid=") + pid, CAtlArray<CString>());
+			IULaunchCopy(_T("/afterupdate /waitforpid=") + pid, CAtlArray<CString>());
 
 		m_bClose = 2;
 		return 0;

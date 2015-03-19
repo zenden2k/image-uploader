@@ -175,7 +175,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 			WaitForSingleObject( hProcess, 20000 );
 
 			// Workaround for version prior to 1.1.7
-			if (!CmdLine.IsOption(_T("update"))) {
+			if (!CmdLine.IsOption(_T("update")) && !CmdLine.IsOption(L"afterupdate")) {
 				Settings.FindDataFolder();
 				if ( !WinUtils::IsDirectory( Settings.DataFolder + "Thumbnails\\") ) {
 					SimpleXml xml;

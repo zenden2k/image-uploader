@@ -332,7 +332,7 @@ void scriptSleep(int msec) {
 #ifdef _WIN32
 	Sleep(msec);
 #else
-    sleep(msec/1000);
+    sleep(ceil(msec/1000.0));
 #endif
 }
 

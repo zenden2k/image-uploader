@@ -33,6 +33,7 @@ Canvas::Canvas( HWND parent ) {
 	backgroundColor_ = Gdiplus::Color(255,255,255);
 	penSize_ = 7;
 	selection_ = 0;
+	canvasChanged_ = true;
 	createDoubleBuffer();
 }
 

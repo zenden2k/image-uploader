@@ -126,6 +126,7 @@ class Canvas {
 		std::stack<UndoHistoryItem> undoHistory_;
 		std::vector<MovableElement*> elementsToDelete_;
 		int penSize_;
+		bool canvasChanged_;
 		
 		HWND parentWindow_;
 		InputBoxControl* inputBox_;
