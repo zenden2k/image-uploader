@@ -21,6 +21,7 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
 	transparentColor_ = Color(255,50,56);
 	subpanelColor_ = Color(252,252,252);
 	subpanelBrush_.CreateSolidBrush(subpanelColor_.ToCOLORREF());
+	memset(&buttonsRect_, 0, sizeof(buttonsRect_));
 	font_ = 0;
 }
 

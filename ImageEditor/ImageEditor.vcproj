@@ -75,7 +75,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdipluz.lib libglog_static.lib"
+				AdditionalDependencies="gdipluz.lib libglog_static.lib ZThread.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib\Debug&quot;;&quot;$(SolutionDir)\Contrib\Lib\&quot;"
 				DelayLoadDLLs=""
@@ -398,6 +398,10 @@
 						RelativePath="..\Source\Core\3rdpart\CodePages.cpp"
 						>
 					</File>
+					<File
+						RelativePath="..\Source\3rdpart\QColorQuantizer.cpp"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Images"
@@ -458,11 +462,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Source\resource.h"
+				RelativePath=".\Source\ImageEditor\resource.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\ImageEditor\resource.h"
+				RelativePath="..\Source\resource.h"
 				>
 			</File>
 			<File
@@ -475,11 +479,11 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;jpg;jpeg;jpe;manifest"
 			>
 			<File
-				RelativePath=".\res\ImageEditor\colorpicker.cur"
+				RelativePath="..\Source\res\ImageEditor\colorpicker.cur"
 				>
 			</File>
 			<File
-				RelativePath="..\Source\res\ImageEditor\colorpicker.cur"
+				RelativePath=".\res\ImageEditor\colorpicker.cur"
 				>
 			</File>
 			<File
@@ -575,11 +579,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Source\res\icon_dropdown.ico"
+				RelativePath="..\Source\ImageEditor\res\icon_dropdown.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\Source\ImageEditor\res\icon_dropdown.ico"
+				RelativePath="..\Source\res\icon_dropdown.ico"
 				>
 			</File>
 			<File
@@ -659,146 +663,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="..\Source\res\shadows\bottomLeftShadow.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\shadows\bottomRightShadow.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\shadows\bottomShadow.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\icon_dropdown_png.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\icon_main.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_arrow.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_bluring_rectangle.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_brush.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_color_picker.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_crop.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_ellipse.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ImageEditor\icon_tool_ellipse.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ImageEditor\icon_tool_filled_ellipse.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_filled_ellipse.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_filled_rectangle.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ImageEditor\icon_tool_filled_rounded_rectangle.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_filled_rounded_rectangle.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_line.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_move.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_pencil.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_rectangle.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_rounded_rectangle.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ImageEditor\icon_tool_rounded_rectangle.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_selection.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_tool_text.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\ImageEditor\icon_undo.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\imageuploader_wizard.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\shadows\leftShadow.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\progress.gif_"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\shadows\rightShadow.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\shadows\topLeftShadow.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\shadows\topLeftShadowSquare.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\shadows\topRightShadow.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\shadows\topRightShadowSquare.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\shadows\topShadow.png"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

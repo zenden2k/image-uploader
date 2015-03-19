@@ -85,7 +85,7 @@ class Canvas {
 		void deleteMovableElement(MovableElement* element);
 		void deleteMovableElements(ElementType elementType);
 		void getElementsByType(ElementType elementType, std::vector<MovableElement*>& out);
-		void setOverlay(MovableElement* overlay);
+		//void setOverlay(MovableElement* overlay);
 		void setZoomFactor(float zoomFactor);
 		Gdiplus::Bitmap* getBufferBitmap();
 		void addUndoHistoryItem(const UndoHistoryItem& item);
@@ -110,6 +110,7 @@ class Canvas {
 		float getBlurRadius();
 		void setBlurRadius(float radius);
 		bool hasBlurRectangles();
+		void showOverlay(bool show);
 		fastdelegate::FastDelegate4<int,int,int,int> onCropChanged;
 		fastdelegate::FastDelegate4<int,int,int,int> onCropFinished;
 		fastdelegate::FastDelegate1<DrawingToolType> onDrawingToolChanged;
@@ -146,6 +147,7 @@ class Canvas {
 		CursorType currentCursor_;
 		MovableElement* overlay_;
 		MovableElement* selection_;
+		bool showOverlay_;
 		float zoomFactor_;
 		TextElement* currentlyEditedTextElement_;
 		Gdiplus::Color foregroundColor_;

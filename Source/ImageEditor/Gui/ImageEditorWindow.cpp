@@ -409,7 +409,11 @@ LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	if ( displayMode_ != wdmWindowed ) {	
 		canvas_->onCropFinished.bind(this, &ImageEditorWindow::OnCropFinished);
 	}
-
+	
+	if ( initialDrawingTool_ != Canvas::dtCrop ) {
+		verticalToolbar_.ShowWindow(SW_SHOW);
+		horizontalToolbar_.ShowWindow(SW_SHOW);
+	}
 	canvas_->updateView();
 	updatePixelLabel();
 	//m_view.Invalidate(false);

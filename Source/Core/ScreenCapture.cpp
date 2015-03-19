@@ -1031,14 +1031,14 @@ void TimerWait(int Delay)
 
 CScreenCaptureEngine::CScreenCaptureEngine()
 {
-	m_capturedBitmap = NULL;
+//	m_capturedBitmap = NULL;
 	m_captureDelay = 0;
 	m_source = 0;
 }
 
 CScreenCaptureEngine::~CScreenCaptureEngine()
 {
-	delete m_capturedBitmap;
+	//delete m_capturedBitmap;
 }
 
 bool CScreenCaptureEngine::captureScreen()
@@ -1058,7 +1058,7 @@ void CScreenCaptureEngine::setDelay(int msec)
 	m_captureDelay = msec;
 }
 
-Gdiplus::Bitmap* CScreenCaptureEngine::capturedBitmap()
+ZThread::CountedPtr<Gdiplus::Bitmap> CScreenCaptureEngine::capturedBitmap()
 {
 	return m_capturedBitmap;
 }
@@ -1070,8 +1070,8 @@ void CScreenCaptureEngine::setSource(HBITMAP src)
 
 bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
 {
-	delete m_capturedBitmap;
-	m_capturedBitmap = NULL;
+//	delete m_capturedBitmap;
+	//m_capturedBitmap = NULL;
 	HDC srcDC;
 	HDC screenDC = ::GetDC(0);
 	HGDIOBJ oldBm;
@@ -1090,7 +1090,9 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
 		}
 	}
 	region->PrepareShooting(!(bool)(m_source != 0));
-	bool result =  region->GetImage(srcDC, &m_capturedBitmap);
+	Gdiplus::Bitmap* capturedBitmap;
+	bool result =  region->GetImage(srcDC, &capturedBitmap);
+	m_capturedBitmap = ZThread::CountedPtr<Gdiplus::Bitmap>(capturedBitmap);
 	region->AfterShooting();
 	if (m_source)
 	{
@@ -1103,8 +1105,10 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
 
 Gdiplus::Bitmap* CScreenCaptureEngine::releaseCapturedBitmap()
 {
-	Bitmap* res = m_capturedBitmap;
-	m_capturedBitmap = 0;
+	//m_capturedBitmap.Counted
+	Bitmap* res = &*m_capturedBitmap;
+	ZThread::CountedPtr<Gdiplus::Bitmap>* cc = new ZThread::CountedPtr<Gdiplus::Bitmap>(m_capturedBitmap);
+	//m_capturedBitmap.reset();
 	return res;
 }
 

@@ -26,6 +26,7 @@ Canvas::Canvas( HWND parent ) {
 	inputBox_             = NULL;
 	currentCursor_    = ctDefault;
 	overlay_ = 0;
+	showOverlay_ = false;
 	zoomFactor_ = 1;
 	currentlyEditedTextElement_ = 0;
 	foregroundColor_ = Gdiplus::Color(255,0,0);
@@ -328,6 +329,7 @@ void Canvas::setDrawingToolType(DrawingToolType toolType, bool notify ) {
 		currentDrawingTool_ = new TextTool( this );
 	} else if ( toolType == dtCrop ) {
 		currentDrawingTool_ = new CropTool( this );
+		showOverlay(true);
 	} 
 	else {
 		ElementType type;
@@ -474,6 +476,15 @@ bool Canvas::hasBlurRectangles()
 	return blurRectanglesCount_!=0;
 }
 
+void Canvas::showOverlay(bool show)
+{
+	if ( !overlay_ ) {
+		overlay_ = new CropOverlay(this, 0,0, getWidth(),getHeigth());
+	}
+	showOverlay_ = show;
+	updateView();
+}
+
 void Canvas::deleteMovableElement(MovableElement* element)
 {
 	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
@@ -484,7 +495,7 @@ void Canvas::deleteMovableElement(MovableElement* element)
 				blurRectanglesCount_--;
 			}
 			if ( element->getType() == etCrop ) {
-				setOverlay(0);
+				showOverlay(false);
 			}
 			//delete element;
 			break;
@@ -563,7 +574,8 @@ void Canvas::renderInBuffer(RECT rect,bool forExport)
 		elementsOnCanvas_[i]->render(bufferedGr);
 	}
 	if ( !forExport ) {
-		if ( overlay_ ) {
+		if ( overlay_ && showOverlay_ ) {
+			LOG(INFO) << "rendering overlay";
 			overlay_->render(bufferedGr);
 		}
 
@@ -586,11 +598,11 @@ void Canvas::getElementsByType(ElementType elementType, std::vector<MovableEleme
 	}
 }
 
-void Canvas::setOverlay(MovableElement* overlay)
+/*void Canvas::setOverlay(MovableElement* overlay)
 {
 	overlay_ = overlay;
 	updateView();
-}
+}*/
 
 void Canvas::setZoomFactor(float zoomFactor)
 {

@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <gdiplus.h>
 #include <Core/Logging.h>
+#include <Func/WinUtils.h>
+#include <3rdpart/QColorQuantizer.h>
 using namespace Gdiplus;
 
 
@@ -142,4 +144,72 @@ void DrawRoundedRectangle(Gdiplus::Graphics* gr, Gdiplus::Rect r, int d, Gdiplus
 	}
 	gr->DrawPath(p, &gp);
 
+}
+
+
+bool SaveImage(Image* img, const CString& filename, SaveImageFormat format, int Quality)
+{
+	if (format == sifDetectByExtension ) {
+		CString ext = WinUtils::GetFileExt(filename);
+		ext.MakeLower();
+		if ( ext == L"jpg" || ext == L"jpeg") {
+			format = sifJPEG;
+		} else if ( ext == L"gif" ) {
+			format = sifGIF;
+		} else  {
+			format = sifPNG;
+		}
+	}
+
+
+	std::auto_ptr<Bitmap> quantizedImage;
+	TCHAR szImgTypes[3][4] = {_T("jpg"), _T("png"), _T("gif")};
+	TCHAR szMimeTypes[3][12] = {_T("image/jpeg"), _T("image/png"), _T("image/gif")};
+
+	
+//	IU_CreateFilePath(filename);
+
+	CLSID clsidEncoder;
+	EncoderParameters eps;
+	eps.Count = 1;
+
+	if (format == sifJPEG) // JPEG
+	{
+		eps.Parameter[0].Guid = EncoderQuality;
+		eps.Parameter[0].Type = EncoderParameterValueTypeLong;
+		eps.Parameter[0].NumberOfValues = 1;
+		eps.Parameter[0].Value = &Quality;
+	}
+	else if (format == sifPNG)      // PNG
+	{
+		eps.Parameter[0].Guid = EncoderCompression;
+		eps.Parameter[0].Type = EncoderParameterValueTypeLong;
+		eps.Parameter[0].NumberOfValues = 1;
+		eps.Parameter[0].Value = &Quality;
+	} else if (format == sifGIF) {
+		QColorQuantizer quantizer;
+		quantizedImage.reset ( quantizer.GetQuantized(img, QColorQuantizer::Octree, (Quality < 50) ? 16 : 256) );
+		if (quantizedImage.get() != 0) {
+			img = quantizedImage.get();
+		}
+	}
+
+	Gdiplus::Status result;
+
+	if (GetEncoderClsid(szMimeTypes[format], &clsidEncoder) != -1) {
+		if (format == sifJPEG) {
+			result = img->Save(filename, &clsidEncoder, &eps);
+		} else {
+			result = img->Save(filename, &clsidEncoder);
+		}
+	} else {
+		return false;
+	}
+	
+	if (result != Ok) {
+		LOG(ERROR) <<  _T("Could not save image at path \r\n") + filename;
+		return false;
+	}
+
+	return true;
 }

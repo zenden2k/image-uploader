@@ -521,12 +521,12 @@ void MoveAndResizeTool::createElement() {
 			currentElement_ = new Selection(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
 			break;
 		case etCrop:
-			if ( !cropOverlay_ ) {
+			/*if ( !cropOverlay_ ) {
 				cropOverlay_ = new CropOverlay(canvas_, 0,0, canvas_->getWidth(), canvas_->getHeigth());
 				
 				atexit(&cleanUp);
-			}
-			canvas_->setOverlay(cropOverlay_);
+			}*/
+			canvas_->showOverlay(true);
 			currentElement_ = new Crop(canvas_, 0, 0, 0, 0 );
 			break;
 		case etRectangle:
@@ -659,7 +659,7 @@ void CropTool::endDraw(int x, int y)
 		if ( x == startPoint_.x && y == startPoint_.y ) {
 			canvas_->deleteMovableElement(currentElement_);
 			currentElement_ = 0;
-			canvas_->setOverlay(0);
+			canvas_->showOverlay(false);
 		}
 		canvas_->updateView();
 		currentElement_ = 0;
