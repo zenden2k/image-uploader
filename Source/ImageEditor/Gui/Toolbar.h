@@ -6,6 +6,7 @@
 #include <vector>
 #include <GdiPlus.h>
 
+#define MTBM_DROPDOWNCLICKED  WM_USER + 400
 namespace ImageEditor {
 
 
@@ -60,6 +61,7 @@ public:
 	DECLARE_WND_CLASS(L"ImageEditor_Toolbar");
 	int getItemAtPos(int clientX, int clientY);
 	int getItemIndexByCommand(int command);
+	Item* getItem(int index);
 	void repaintItem(int index);
 	void clickButton(int index);
 
@@ -71,7 +73,12 @@ public:
 		MESSAGE_HANDLER( WM_LBUTTONDOWN, OnLButtonDown )
 		MESSAGE_HANDLER( WM_LBUTTONUP, OnLButtonUp )
 		MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
+		MESSAGE_HANDLER( WM_ACTIVATE, OnActivate )
+		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnColorStatic)
+		MESSAGE_HANDLER(WM_HSCROLL , OnHScroll)
+
 		REFLECT_NOTIFICATIONS ()
+
 	END_MSG_MAP()
 
 
@@ -80,6 +87,9 @@ public:
 	//	LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	//	LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnHScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnMouseLeave(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -89,13 +99,15 @@ public:
 
 	SIZE CalcItemSize(int index);
 	int AutoSize();
-
+	void CreateToolTipForItem(int index);
+	CTrackBarCtrl  penSizeSlider_;
+	CStatic pixelLabel_;
 protected:
 	Orientation orientation_;
 	std::vector<Item> buttons_;
 	int selectedItemIndex_;
 	void drawItem(int itemIndex, Gdiplus::Graphics* gr, int, int y);
-	void CreateToolTipForItem(int index);
+	
 	bool trackMouse_;
 	float dpiScaleX;
 	float dpiScaleY;
@@ -107,6 +119,13 @@ protected:
 	int iconSizeY_;
 	Gdiplus::Font* font_;
 	Gdiplus::Color transparentColor_;
+	RECT buttonsRect_;
+	int subpanelHeight_;
+	int subpanelLeftOffset_;
+	Gdiplus::Color  subpanelColor_;
+	CBrush subpanelBrush_;
+
+	void createHintForSliders(HWND slider, CString text);
 };
 
 }

@@ -126,7 +126,11 @@ void Canvas::mouseDown( int button, int x, int y ) {
 
 void Canvas::mouseUp( int button, int x, int y ) {
 	assert( currentDrawingTool_ );
-	currentDrawingTool_->endDraw( x, y );
+	if ( button == 0 ) {
+		currentDrawingTool_->endDraw( x, y );
+	} else {
+		currentDrawingTool_->rightButtonClick(x,y);
+	}
 	/*if (currentDrawingTool_ != dtPen ) {
 		if ( currentElement_ != NULL) {
 			doc_->addDrawingElement( currentElement_ );
@@ -240,6 +244,54 @@ void Canvas::setPenSize(int size) {
 	if ( currentDrawingTool_ ) {
 		currentDrawingTool_->setPenSize(size);
 	}
+	for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->isSelected()) {
+			RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+			elementsOnCanvas_[i]->setPenSize(size);
+			RECT newPaintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+			UnionRect(&paintRect, &paintRect, &newPaintRect);
+			updateView(paintRect);
+		}
+	}
+
+}
+
+int Canvas::getPenSize() const
+{
+	return penSize_;
+}
+
+void Canvas::beginPenSizeChanging()
+{
+	originalPenSize_ = penSize_;
+}
+
+void Canvas::endPenSizeChanging(int penSize) {
+	penSize_ = penSize_;
+	if ( originalPenSize_ == 0 ) {
+		return ;
+	}
+	int updatedElementsCount = 0;
+	UndoHistoryItem uhi;
+	uhi.type = uitPenSizeChanged;
+	for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->isSelected()) {
+			UndoHistoryItemElement uhie;
+			uhie.penSize = originalPenSize_;
+			RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+			uhie.movableElement = elementsOnCanvas_[i];
+			elementsOnCanvas_[i]->setPenSize(penSize);
+			RECT newPaintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+			uhi.elements.push_back(uhie);
+			UnionRect(&paintRect, &paintRect, &newPaintRect);
+			updatedElementsCount++;
+			updateView(paintRect);
+		}
+	}
+	if ( updatedElementsCount ) {
+		undoHistory_.push(uhi);
+	}
+
 }
 
 void Canvas::setForegroundColor(Gdiplus::Color color)
@@ -342,7 +394,16 @@ void Canvas::setDrawingToolType(DrawingToolType toolType, bool notify ) {
 			type = etBlurringRectangle;
 		}else if ( toolType == dtFilledRectangle ) {
 			type = etFilledRectangle;
+		} else if ( toolType == dtRoundedRectangle ) {
+			type = etRoundedRectangle;
+		} else if ( toolType == dtEllipse ) {
+			type = etEllipse;
+		} else if ( toolType == dtFilledRoundedRectangle ) {
+			type = etFilledRoundedRectangle;
+		} else if ( toolType == dtFilledEllipse ) {
+			type = etFilledEllipse;
 		}
+
 		else if ( toolType == dtMove ) {
 			currentDrawingTool_ = new MoveAndResizeTool( this, etNone );
 			return;
@@ -636,7 +697,13 @@ bool Canvas::undo() {
 			item.elements[i].movableElement->setBackgroundColor(item.elements[i].color);
 		}
 		result = true;
-	} else if ( item.type == uitElementPositionChanged ) {
+	} else if ( item.type == uitPenSizeChanged ) {
+		int itemCount = item.elements.size();
+		for ( int i = itemCount-1; i>=0; i-- ) {
+			item.elements[i].movableElement->setPenSize(item.elements[i].penSize);
+		}
+		result = true;
+	}else if ( item.type == uitElementPositionChanged ) {
 		int itemCount = item.elements.size();
 		// Insert elements in their initial positions
 		for ( int i = itemCount-1; i>=0; i-- ) {

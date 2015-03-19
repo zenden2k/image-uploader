@@ -126,3 +126,20 @@ void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* back
 	//Release the device context handle obtained by a previous call
 	graphics->ReleaseHDC(hdc);
 }
+
+void DrawRoundedRectangle(Gdiplus::Graphics* gr, Gdiplus::Rect r, int d, Gdiplus::Pen* p, Gdiplus::Brush*br){
+	using namespace Gdiplus;
+	GraphicsPath gp;
+
+	gp.AddArc(r.X, r.Y, d, d, 180, 90);
+	gp.AddArc(r.X + r.Width - d, r.Y, d, d, 270, 90);
+	gp.AddArc(r.X + r.Width - d, r.Y + r.Height - d, d, d, 0, 90);
+	gp.AddArc(r.X, r.Y + r.Height - d, d, d, 90, 90);
+	gp.AddLine(r.X, r.Y + r.Height - d, r.X, r.Y + d/2);
+	gp.CloseFigure();
+	if ( br ) {
+		gr->FillPath(br, &gp);
+	}
+	gr->DrawPath(p, &gp);
+
+}

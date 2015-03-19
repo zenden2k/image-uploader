@@ -13,7 +13,7 @@
 #include <Core/Images/Utils.h>
 #include <3rdpart/ColorButton.h>
 #include <Gui/GuiTools.h>
-
+#include <Func/WinUtils.h>
 namespace ImageEditor {
 	class ColorsDelegate: public Toolbar::ToolbarItemDelegate {
 	public:
@@ -144,6 +144,8 @@ void ImageEditorWindow::init()
 {
 	canvas_ = 0;
 	cropToolTip_ = 0;
+	showUploadButton_ = true;
+	prevPenSize_ = 0;
 	initialDrawingTool_ = Canvas::dtMove;
 	menuItems_[ID_PEN]             = Canvas::dtPen; 
 	menuItems_[ID_LINE]            = Canvas::dtLine;
@@ -157,6 +159,64 @@ void ImageEditorWindow::init()
 	menuItems_[ID_BLUR]            = Canvas::dtBlur;
 	menuItems_[ID_BLURRINGRECTANGLE]   = Canvas::dtBlurrringRectangle;
 	menuItems_[ID_COLORPICKER]     = Canvas::dtColorPicker;
+	menuItems_[ID_ROUNDEDRECTANGLE]     = Canvas::dtRoundedRectangle;
+	menuItems_[ID_ELLIPSE]     = Canvas::dtEllipse;
+	menuItems_[ID_FILLEDROUNDEDRECTANGLE]     = Canvas::dtFilledRoundedRectangle;
+	menuItems_[ID_FILLEDELLIPSE]     = Canvas::dtFilledEllipse;
+	/*		rectangleMenu.AppendMenu(MF_STRING, ID_RECTANGLE, TR("Прямоугольник"));
+	rectangleMenu.AppendMenu(MF_STRING, ID_ROUNDEDRECTANGLE, TR("Скругленный прямоугольник"));
+	rectangleMenu.AppendMenu(MF_STRING, ID_ELLIPSE, TR("Эллипс"));
+	TPMPARAMS excludeArea;
+	ZeroMemory(&excludeArea, sizeof(excludeArea));
+	excludeArea.cbSize = sizeof(excludeArea);
+	excludeArea.rcExclude = rc;
+	rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd,&excludeArea);
+	} else if ( item->command == ID_FILLEDRECTANGLE || ID_FILLEDROUNDEDRECTANGLE || ID_FILLEDELLIPSE) {
+	CMenu rectangleMenu;
+	RECT rc = item->rect;
+	verticalToolbar_.ClientToScreen(&rc);
+	rectangleMenu.CreatePopupMenu();
+	rectangleMenu.AppendMenu(MF_STRING, ID_FILLEDRECTANGLE, TR("Заполненный прямоугольник"));
+	rectangleMenu.AppendMenu(MF_STRING, ID_FILLEDROUNDEDRECTANGLE, TR("Скругленный прямоугольник"));
+	rectangleMenu.AppendMenu(MF_STRING, ID_FILLEDELLIPSE, TR("Эллипс"));
+	*/
+	SubMenuItem item;
+	item.parentCommand = ID_RECTANGLE;
+	item.icon = loadToolbarIcon(IDB_ICONTOOLRECTANGLEPNG);
+	item.command = ID_RECTANGLE;
+	item.hint = TR("Прямоугольник");
+	subMenuItems_[Canvas::dtRectangle] = item;
+
+	item.icon = loadToolbarIcon(IDB_ICONTOOLROUNDEDRECTANGLE);
+	item.command = ID_ROUNDEDRECTANGLE;
+	item.hint = TR("Скругленный прямоугольник");
+	subMenuItems_[Canvas::dtRoundedRectangle] = item;
+
+	item.icon = loadToolbarIcon(IDB_ICONTOOLELLIPSE);
+	item.command = ID_ELLIPSE;
+	item.hint = TR("Эллипс");
+	subMenuItems_[Canvas::dtEllipse] = item;
+
+	item.parentCommand = ID_FILLEDRECTANGLE;
+	item.command = ID_FILLEDRECTANGLE;
+	item.hint = TR("Заполненный прямоугольник");
+	item.icon = loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE);
+	subMenuItems_[Canvas::dtFilledRectangle] = item;
+
+
+	item.icon = loadToolbarIcon(IDB_ICONTOOLFILLEDROUNDEDRECTANGLE);
+	item.command = ID_FILLEDROUNDEDRECTANGLE;
+	item.hint = TR("Скругленный прямоугольник");
+	subMenuItems_[Canvas::dtFilledRoundedRectangle] = item;
+
+
+	item.icon = loadToolbarIcon(IDB_ICONTOOLFILLEDELLIPSE);
+	item.command = ID_FILLEDELLIPSE;
+	item.hint =  TR("Заполненный эллипс");
+	subMenuItems_[Canvas::dtFilledEllipse] = item;
+	selectedSubMenuItems_[ID_RECTANGLE] = ID_RECTANGLE;
+	selectedSubMenuItems_[ID_FILLEDRECTANGLE] = ID_FILLEDRECTANGLE;
+	
 	dialogResult_ = drCancel;
 }
 
@@ -167,6 +227,24 @@ bool ImageEditorWindow::saveDocument()
 
 void ImageEditorWindow::updateToolbarDrawingTool(Canvas::DrawingToolType dt)
 {
+	std::map<Canvas::DrawingToolType, SubMenuItem>::iterator submenuIter = subMenuItems_.find(dt);
+	if ( submenuIter != subMenuItems_.end() ) {
+		int buttonIndex = verticalToolbar_.getItemIndexByCommand(selectedSubMenuItems_[submenuIter->second.parentCommand]);
+		if ( buttonIndex != -1 ) {
+			Toolbar::Item* item = verticalToolbar_.getItem(buttonIndex);
+			if ( item ) {
+				item->icon = submenuIter->second.icon;
+				item->command = submenuIter->second.command;
+				item->hint = submenuIter->second.hint;
+				verticalToolbar_.CreateToolTipForItem(buttonIndex);
+				selectedSubMenuItems_[submenuIter->second.parentCommand] = item->command;
+			}
+			
+			verticalToolbar_.clickButton(buttonIndex);
+			return;
+		}
+	}
+
 	//std::map<int, Canvas::DrawingToolType>::iterator it = std::find(menuItems_.begin(), menuItems_.end(), dt);
 	std::map<int, Canvas::DrawingToolType>::iterator it;
 	for( it = menuItems_.begin(); it != menuItems_.end(); ++it ) {
@@ -192,6 +270,12 @@ void ImageEditorWindow::OnForegroundColorChanged(Gdiplus::Color color)
 	verticalToolbar_.repaintItem(colorsDelegate_->itemIndex());
 }
 
+void ImageEditorWindow::OnBackgroundColorChanged(Gdiplus::Color color)
+{
+	colorsDelegate_->setBackgroundColor(color);
+	verticalToolbar_.repaintItem(colorsDelegate_->itemIndex());
+}
+
 ImageEditorWindow::~ImageEditorWindow()
 {
 	delete canvas_;
@@ -203,10 +287,14 @@ void ImageEditorWindow::setInitialDrawingTool(Canvas::DrawingToolType dt)
 	initialDrawingTool_ = dt;
 }
 
+void ImageEditorWindow::showUploadButton(bool show)
+{
+	showUploadButton_ = show;
+}
+
 ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDisplayMode mode)
 {
-	mode = wdmWindowed;
-	//mode = wdmFullscreen;
+
 	displayMode_ = mode;
 	CRect rc(100,100,1280,800);
 
@@ -217,12 +305,14 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 	DWORD windowStyle =  displayMode_ == wdmFullscreen  ?WS_POPUP|WS_CLIPCHILDREN : WS_OVERLAPPED | WS_POPUP | WS_CAPTION |  WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | 
 		WS_MINIMIZEBOX|WS_CLIPCHILDREN;
 	
-	if ( Create(0, rc, _T("Image Editor"), windowStyle, displayMode_ == wdmFullscreen ? /*WS_EX_TOPMOST*/0 : 0) == NULL ) {
+	if ( Create(0, rc, _T("Image Editor"), windowStyle, displayMode_ == wdmFullscreen ? WS_EX_TOPMOST : 0) == NULL ) {
 		LOG(ERROR) << "Main window creation failed!\n";
 		return drCancel;
 	}
 	//displayMode_ = wdmWindowed;
-	ShowWindow(SW_SHOWNORMAL);
+	ShowWindow(SW_SHOW);
+	SetForegroundWindow(m_hWnd);
+	//BringWindowToTop();
 	//m_view.Invalidate(false);
 	
 	if ( parent ) {
@@ -294,12 +384,14 @@ LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	
 	canvas_->onDrawingToolChanged.bind(this, &ImageEditorWindow::OnDrawingToolChanged);
 	canvas_->onForegroundColorChanged.bind(this, &ImageEditorWindow::OnForegroundColorChanged);
+	canvas_->onBackgroundColorChanged.bind(this, &ImageEditorWindow::OnBackgroundColorChanged);
 	canvas_->onCropChanged.bind(this, &ImageEditorWindow::OnCropChanged);
 	if ( displayMode_ != wdmWindowed ) {	
 		canvas_->onCropFinished.bind(this, &ImageEditorWindow::OnCropFinished);
 	}
 
 	canvas_->updateView();
+	updatePixelLabel();
 	//m_view.Invalidate(false);
 	
 	canvas_->setDrawingToolType(initialDrawingTool_);
@@ -402,7 +494,44 @@ LRESULT ImageEditorWindow::OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, L
 
 LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	 if ( wParam == VK_ESCAPE ) {
+		EndDialog(drCancel);
+		return 0;
+	}
 	m_view.SendMessage(uMsg, wParam, lParam);
+	return 0;
+}
+
+LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{	
+	Toolbar::Item* item = (Toolbar::Item*)wParam;
+	if ( item->command == ID_RECTANGLE || item->command == ID_ROUNDEDRECTANGLE || item->command == ID_ELLIPSE) {
+		CMenu rectangleMenu;
+		RECT rc = item->rect;
+		verticalToolbar_.ClientToScreen(&rc);
+		rectangleMenu.CreatePopupMenu();
+		rectangleMenu.AppendMenu(MF_STRING, ID_RECTANGLE, TR("Прямоугольник"));
+		rectangleMenu.AppendMenu(MF_STRING, ID_ROUNDEDRECTANGLE, TR("Скругленный прямоугольник"));
+		rectangleMenu.AppendMenu(MF_STRING, ID_ELLIPSE, TR("Эллипс"));
+		TPMPARAMS excludeArea;
+		ZeroMemory(&excludeArea, sizeof(excludeArea));
+		excludeArea.cbSize = sizeof(excludeArea);
+		excludeArea.rcExclude = rc;
+		rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd,&excludeArea);
+	} else if ( item->command == ID_FILLEDRECTANGLE || ID_FILLEDROUNDEDRECTANGLE || ID_FILLEDELLIPSE) {
+		CMenu rectangleMenu;
+		RECT rc = item->rect;
+		verticalToolbar_.ClientToScreen(&rc);
+		rectangleMenu.CreatePopupMenu();
+		rectangleMenu.AppendMenu(MF_STRING, ID_FILLEDRECTANGLE, TR("Заполненный прямоугольник"));
+		rectangleMenu.AppendMenu(MF_STRING, ID_FILLEDROUNDEDRECTANGLE, TR("Скругленный прямоугольник"));
+		rectangleMenu.AppendMenu(MF_STRING, ID_FILLEDELLIPSE, TR("Эллипс"));
+		TPMPARAMS excludeArea;
+		ZeroMemory(&excludeArea, sizeof(excludeArea));
+		excludeArea.cbSize = sizeof(excludeArea);
+		excludeArea.rcExclude = rc;
+		rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd,&excludeArea);
+	}
 	return 0;
 }
 
@@ -446,8 +575,10 @@ void ImageEditorWindow::createToolbars()
 		return;
 	}
 	horizontalToolbar_.addButton(Toolbar::Item(TR("Добавить в список"),0,ID_ADDTOWIZARD));
-	horizontalToolbar_.addButton(Toolbar::Item(TR("Загрузить на сервер"),0,ID_UPLOAD, CString(), Toolbar::itComboButton));
-	horizontalToolbar_.addButton(Toolbar::Item(TR("Поделиться"),0,ID_SHARE, CString(),Toolbar::itComboButton));
+	if ( showUploadButton_ ) {
+		horizontalToolbar_.addButton(Toolbar::Item(TR("Загрузить на сервер"),0,ID_UPLOAD, CString(), Toolbar::itButton));
+	}
+	//horizontalToolbar_.addButton(Toolbar::Item(TR("Поделиться"),0,ID_SHARE, CString(),Toolbar::itComboButton));
 	horizontalToolbar_.addButton(Toolbar::Item(TR("Сохранить"),0,ID_SAVE, CString(),Toolbar::itButton));
 	horizontalToolbar_.addButton(Toolbar::Item(TR("Закрыть"),0,ID_CLOSE));
 	horizontalToolbar_.AutoSize();
@@ -460,7 +591,7 @@ void ImageEditorWindow::createToolbars()
 
 	}
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_TOOLMOVEICONPNG),ID_MOVE,TR("Перемещение"), Toolbar::itButton, true, 1));
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLSELECTION),ID_SELECTION,TR("Выделение"), Toolbar::itButton, true, 1));
+	//verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLSELECTION),ID_SELECTION,TR("Выделение"), Toolbar::itButton, true, 1));
 
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_TOOLCROPPING), ID_CROP,TR("Обрезка"), Toolbar::itButton, true,1));
 	//verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLPENCIL), ID_PEN,T_R("Карандаш"), Toolbar::itButton, true,1));
@@ -489,7 +620,8 @@ void ImageEditorWindow::createToolbars()
 	if ( displayMode_ != wdmFullscreen ) {
 		verticalToolbar_.ShowWindow(SW_SHOW);
 	}
-}
+	horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
+}  
 
 
 void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
@@ -623,6 +755,8 @@ LRESULT ImageEditorWindow::OnClickedSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	return 0;
 }
 
+
+
 bool ImageEditorWindow::createTooltip() {
 	// Create a tooltip.
 	cropToolTip_ = ::CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL, 
@@ -647,6 +781,38 @@ bool ImageEditorWindow::createTooltip() {
 	// Associate the tooltip with the "tool" window.
 	SendMessage(cropToolTip_, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);	
 	return true;
+}
+
+void ImageEditorWindow::updatePixelLabel()
+{
+	horizontalToolbar_.pixelLabel_.SetWindowText(WinUtils::IntToStr(canvas_->getPenSize()) + L" px");
+}
+
+LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	if ( (HWND)lParam != horizontalToolbar_.penSizeSlider_.m_hWnd  ) {
+		return 0;
+	}
+	int penSize = HIWORD(wParam);
+	switch( LOWORD(wParam ) ) {
+		case TB_THUMBPOSITION:
+			LOG(INFO) << "TB_THUMBPOSITION";
+			canvas_->endPenSizeChanging(penSize);
+			updatePixelLabel();
+			prevPenSize_ = 0;
+			break;
+		case TB_THUMBTRACK:
+			if ( !prevPenSize_ ) {
+				prevPenSize_ = canvas_->getPenSize();
+				canvas_->beginPenSizeChanging();
+			}
+			canvas_->setPenSize(penSize);
+			updatePixelLabel();
+			LOG(INFO) << "TB_THUMBTRACK";
+			break;
+
+	}
+	return 0;
 }
 
 }

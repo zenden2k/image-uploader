@@ -1394,6 +1394,10 @@ IDB_ICONTOOLSELECTION   PNG                     "res\\ImageEditor\\icon_tool_sel
 IDB_ICONUNDOPNG         PNG                     "res\\ImageEditor\\icon_undo.png"
 IDB_ICONTOOLARROWPNG    PNG                     "res\\ImageEditor\\icon_tool_arrow.png"
 IDB_ICONTOOLBLURINGRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_tool_bluring_rectangle.png"
+IDB_ICONTOOLROUNDEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_rounded_rectangle.png"
+IDB_ICONTOOLFILLEDROUNDEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_filled_rounded_rectangle.png"
+IDB_ICONTOOLELLIPSE     PNG                     "res\\ImageEditor\\icon_tool_ellipse.png"
+IDB_ICONTOOLFILLEDELLIPSE PNG                     "res\\ImageEditor\\icon_tool_filled_ellipse.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //

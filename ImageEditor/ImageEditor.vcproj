@@ -458,11 +458,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\ImageEditor\resource.h"
+				RelativePath="..\Source\resource.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Source\resource.h"
+				RelativePath=".\Source\ImageEditor\resource.h"
 				>
 			</File>
 			<File
@@ -475,11 +475,11 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;jpg;jpeg;jpe;manifest"
 			>
 			<File
-				RelativePath="..\Source\res\ImageEditor\colorpicker.cur"
+				RelativePath=".\res\ImageEditor\colorpicker.cur"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\colorpicker.cur"
+				RelativePath="..\Source\res\ImageEditor\colorpicker.cur"
 				>
 			</File>
 			<File
@@ -575,11 +575,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Source\ImageEditor\res\icon_dropdown.ico"
+				RelativePath="..\Source\res\icon_dropdown.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\Source\res\icon_dropdown.ico"
+				RelativePath="..\Source\ImageEditor\res\icon_dropdown.ico"
 				>
 			</File>
 			<File
@@ -672,19 +672,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\icon_dropdown_png.png"
-			>
-		</File>
-		<File
 			RelativePath="..\Source\res\icon_dropdown_png.png"
 			>
 		</File>
 		<File
 			RelativePath="..\Source\res\icon_main.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ImageEditor\icon_tool_arrow.png"
 			>
 		</File>
 		<File
@@ -696,15 +688,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_tool_bluring_rectangle.png"
-			>
-		</File>
-		<File
 			RelativePath="..\Source\res\ImageEditor\icon_tool_brush.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ImageEditor\icon_tool_brush.png"
 			>
 		</File>
 		<File
@@ -712,19 +696,23 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_tool_color_picker.png"
-			>
-		</File>
-		<File
 			RelativePath="..\Source\res\ImageEditor\icon_tool_crop.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_tool_crop.png"
+			RelativePath="..\Source\res\ImageEditor\icon_tool_ellipse.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_tool_filled_rectangle.png"
+			RelativePath=".\res\ImageEditor\icon_tool_ellipse.png"
+			>
+		</File>
+		<File
+			RelativePath=".\res\ImageEditor\icon_tool_filled_ellipse.png"
+			>
+		</File>
+		<File
+			RelativePath="..\Source\res\ImageEditor\icon_tool_filled_ellipse.png"
 			>
 		</File>
 		<File
@@ -732,7 +720,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_tool_line.png"
+			RelativePath=".\res\ImageEditor\icon_tool_filled_rounded_rectangle.png"
+			>
+		</File>
+		<File
+			RelativePath="..\Source\res\ImageEditor\icon_tool_filled_rounded_rectangle.png"
 			>
 		</File>
 		<File
@@ -744,15 +736,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_tool_move.png"
-			>
-		</File>
-		<File
 			RelativePath="..\Source\res\ImageEditor\icon_tool_pencil.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ImageEditor\icon_tool_pencil.png"
 			>
 		</File>
 		<File
@@ -760,7 +744,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_tool_rectangle.png"
+			RelativePath="..\Source\res\ImageEditor\icon_tool_rounded_rectangle.png"
+			>
+		</File>
+		<File
+			RelativePath=".\res\ImageEditor\icon_tool_rounded_rectangle.png"
 			>
 		</File>
 		<File
@@ -768,19 +756,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\ImageEditor\icon_tool_selection.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ImageEditor\icon_tool_text.png"
-			>
-		</File>
-		<File
 			RelativePath="..\Source\res\ImageEditor\icon_tool_text.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\ImageEditor\icon_undo.png"
 			>
 		</File>
 		<File
@@ -793,10 +769,6 @@
 		</File>
 		<File
 			RelativePath="..\Source\res\shadows\leftShadow.png"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\res\shadows\png2.png"
 			>
 		</File>
 		<File

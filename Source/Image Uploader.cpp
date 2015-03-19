@@ -224,9 +224,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	CScriptUploadEngine::DestroyScriptEngine();
 	OleUninitialize();
 
-	 google::ShutdownGoogleLogging();
-	//for (int i = 0; i < 1000000; i++)
-		/*int *ptr = new int[100000000];
-		ptr[165654] =36;*/
+	google::ShutdownGoogleLogging();
 	return 0;
 }

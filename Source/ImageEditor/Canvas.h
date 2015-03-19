@@ -24,23 +24,29 @@ class Canvas {
 		};
 		
 		enum DrawingToolType {
-			dtNone, dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtFilledRectangle, dtText, dtCrop, dtMove, dtSelection, dtBlur, dtBlurrringRectangle, dtColorPicker
+			dtNone, dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtFilledRectangle, dtText, dtCrop, dtMove, dtSelection, dtBlur, dtBlurrringRectangle, dtColorPicker,
+			dtRoundedRectangle, dtEllipse, dtFilledRoundedRectangle, dtFilledEllipse
 		};
 
-		enum UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, uitElementPositionChanged, uitElementForegroundColorChanged, uitElementBackgroundColorChanged};
-
+		enum UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, 
+			uitElementPositionChanged, uitElementForegroundColorChanged, uitElementBackgroundColorChanged,
+			uitPenSizeChanged
+		};
+		enum { kMaxPenSize = 50 };
 		struct UndoHistoryItemElement {
 			MovableElement * movableElement;
 			int pos;
 			POINT startPoint;
 			POINT endPoint;
 			Gdiplus::Color color;
+			int penSize;
 			UndoHistoryItemElement() {
 				pos = -1;
 				startPoint.x = -1;
 				startPoint.y = -1;
 				endPoint.x = -1;
 				endPoint.y = -1;
+				penSize = -1;
 			}
 		};
 		struct UndoHistoryItem {
@@ -63,6 +69,9 @@ class Canvas {
 		void render(Painter* gr, const RECT& rect, POINT scrollOffset, SIZE size);
 		void setCallback(Callback * callback);
 		void setPenSize(int size);
+		int getPenSize() const;
+		void beginPenSizeChanging();
+		void endPenSizeChanging(int penSize);
 		void setForegroundColor(Gdiplus::Color color);
 		void setBackgroundColor(Gdiplus::Color color);
 		Gdiplus::Color getForegroundColor() const;
@@ -143,6 +152,7 @@ class Canvas {
 		bool canvasChanged_;
 		bool fullRender_;
 		int blurRectanglesCount_;
+		int originalPenSize_;
 		
 		HWND parentWindow_;
 		InputBoxControl* inputBox_;

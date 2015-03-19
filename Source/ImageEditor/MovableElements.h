@@ -85,6 +85,18 @@ public:
 	FilledRectangle(Canvas* canvas, int startX, int startY, int endX,int endY );
 };
 
+class RoundedRectangle: public Rectangle {
+public:
+	RoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY,bool filled = false );
+	void render(Painter* gr);
+
+};
+
+class FilledRoundedRectangle: public RoundedRectangle {
+public:
+	FilledRoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY );
+};
+
 class Arrow: public Line {
 public:
 	Arrow(Canvas* canvas,int startX, int startY, int endX,int endY);
@@ -99,12 +111,33 @@ public:
 
 };
 
+class Ellipse: public MovableElement {
+public:
+	Ellipse(Canvas* canvas, bool filled = false );
+	void render(Painter* gr);
+	virtual bool isItemAtPos(int x, int y);
+protected:
+	bool filled_;
+
+	bool ContainsPoint(Gdiplus::Rect ellipse, Gdiplus::Point location);
+
+	virtual void createGrips();
+
+};
+
+class FilledEllipse: public Ellipse {
+public:
+	FilledEllipse(Canvas* canvas );
+};
+
 class Selection: public MovableElement {
 public:
 	Selection(Canvas* canvas, int startX, int startY, int endX,int endY);
 	void render(Painter* gr);
 
 	virtual ElementType getType() const;
+
+	virtual void createGrips();
 
 };
 

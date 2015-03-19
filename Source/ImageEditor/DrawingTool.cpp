@@ -58,6 +58,11 @@ CursorType AbstractDrawingTool::getCursor(int x, int y)
 	return ctDefault;
 }
 
+void AbstractDrawingTool::rightButtonClick(int x, int y)
+{
+
+}
+
 void AbstractDrawingTool::setPenSize(int size)
 {
 	penSize_ = size;
@@ -527,6 +532,18 @@ void MoveAndResizeTool::createElement() {
 		case etRectangle:
 			currentElement_ = new Rectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
 			break;
+		case etRoundedRectangle:
+			currentElement_ = new RoundedRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
+			break;
+		case etFilledRoundedRectangle:
+			currentElement_ = new FilledRoundedRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
+			break;
+		case etEllipse:
+			currentElement_ = new Ellipse(canvas_);
+			break;
+		case etFilledEllipse:
+			currentElement_ = new FilledEllipse(canvas_);
+			break;
 		case etBlurringRectangle:
 			#if GDIPVER >= 0x0110 
 			currentElement_ = new BlurringRectangle(canvas_, canvas_->getBlurRadius(), startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
@@ -894,6 +911,17 @@ void ColorPickerTool::render(Painter* gr)
 ImageEditor::CursorType ColorPickerTool::getCursor(int x, int y)
 {
 	 return ctColorPicker;
+}
+
+void ColorPickerTool::rightButtonClick(int x, int y)
+{
+	Gdiplus::Color color;
+	canvas_->getBufferBitmap()->GetPixel(x,y, &color);
+	canvas_->setBackgroundColor(color);
+	if ( canvas_->onBackgroundColorChanged ) {
+		canvas_->onBackgroundColorChanged(color);
+	}
+	canvas_->setPreviousDrawingTool();
 }
 
 }

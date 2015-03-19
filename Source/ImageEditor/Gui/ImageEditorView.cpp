@@ -18,7 +18,7 @@
 #endif
 namespace ImageEditor {
 
-	CImageEditorView::CImageEditorView()  {
+CImageEditorView::CImageEditorView()  {
 	oldPoint.x = -1;
 	oldPoint.y = -1;
 }
@@ -161,6 +161,20 @@ LRESULT CImageEditorView::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	canvas_->mouseUp( 0, cx, cy );
 	ReleaseCapture();
 //	horizontalToolbar_.ShowWindow(SW_SHOW);
+	return 0;
+}
+
+LRESULT CImageEditorView::OnRButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	int cx =   GET_X_LPARAM(lParam); 
+	int cy =   GET_Y_LPARAM(lParam);
+	POINT ptScroll;
+	GetScrollOffset(ptScroll);
+	cx += ptScroll.x;
+	cy += ptScroll.y;
+	POINT pt = {cx, cy};
+	canvas_->mouseUp( 1, cx, cy );
+	ReleaseCapture();
 	return 0;
 }
 

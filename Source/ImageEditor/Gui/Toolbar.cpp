@@ -6,6 +6,7 @@
 #include "resource.h"
 #include <Core/Images/Utils.h>
 #include <Func/WinUtils.h>
+#include "../Canvas.h"
 namespace ImageEditor {
 
 Toolbar::Toolbar(Toolbar::Orientation orientation)
@@ -18,6 +19,8 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
 	dpiScaleX = 1.0f;
 	dpiScaleY = 1.0f;
 	transparentColor_ = Color(255,50,56);
+	subpanelColor_ = Color(252,252,252);
+	subpanelBrush_.CreateSolidBrush(subpanelColor_.ToCOLORREF());
 	font_ = 0;
 }
 
@@ -29,7 +32,7 @@ Toolbar::~Toolbar()
 bool Toolbar::Create(HWND parent, bool child )
 {
 	RECT rc = {0, 0, 1,1};
-	HWND wnd = TParent::Create(parent, rc, _T("test"), ( child ? WS_CHILD :WS_POPUP) ,child?0:( WS_EX_LAYERED|  WS_EX_NOACTIVATE) /*|WS_EX_TOOLWINDOW*/);
+	HWND wnd = TParent::Create(parent, rc, _T("test"), ( child ? WS_CHILD :WS_POPUP|WS_CLIPCHILDREN) ,child?0:( WS_EX_LAYERED|  WS_EX_NOACTIVATE|WS_EX_TOOLWINDOW) /*|WS_EX_TOOLWINDOW*/);
 	if ( !wnd ) {
 		LOG(ERROR) << WinUtils::GetLastErrorAsString();
 		return false;
@@ -54,6 +57,16 @@ bool Toolbar::Create(HWND parent, bool child )
 	iconSizeX_ = kIconSize * dpiScaleX;
 	iconSizeY_ = kIconSize * dpiScaleY;
 	font_ = new Gdiplus::Font(L"Arial",9, FontStyleRegular);
+	subpanelHeight_ = 25 * dpiScaleY;
+	subpanelLeftOffset_ = 50*dpiScaleX;
+	RECT sliderRect = {0,0, 100 * dpiScaleX,subpanelHeight_ - 2 * dpiScaleY};
+	if ( orientation_ == orHorizontal ) {
+		penSizeSlider_.Create(m_hWnd, sliderRect, 0, WS_CHILD|WS_VISIBLE|TBS_NOTICKS);
+		createHintForSliders(penSizeSlider_.m_hWnd, TR("Толщина линии"));
+		RECT pixelLabelRect = {0,0, 50 * dpiScaleX,subpanelHeight_ - 5 * dpiScaleY };
+		pixelLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD|WS_VISIBLE);
+		pixelLabel_.SetFont(GuiTools::GetSystemDialogFont());
+	}
 	return true;
 }
 
@@ -82,6 +95,11 @@ int Toolbar::getItemIndexByCommand(int command)
 		}
 	}
 	return -1;
+}
+
+Toolbar::Item* Toolbar::getItem(int index)
+{
+	return &buttons_[index];
 }
 
 void Toolbar::repaintItem(int index)
@@ -129,21 +147,29 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 	return 0;
 }
 
-void DrawRoundedRectangle(Gdiplus::Graphics* gr, Gdiplus::Rect r, int d, Gdiplus::Pen* p, Gdiplus::Brush*br){
-	using namespace Gdiplus;
-	GraphicsPath gp;
-
-	gp.AddArc(r.X, r.Y, d, d, 180, 90);
-	gp.AddArc(r.X + r.Width - d, r.Y, d, d, 270, 90);
-	gp.AddArc(r.X + r.Width - d, r.Y + r.Height - d, d, d, 0, 90);
-	gp.AddArc(r.X, r.Y + r.Height - d, d, d, 90, 90);
-	gp.AddLine(r.X, r.Y + r.Height - d, r.X, r.Y + d/2);
-	if ( br ) {
-		gr->FillPath(br, &gp);
+LRESULT Toolbar::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	if ( (HWND)lParam == penSizeSlider_.m_hWnd  ) {
+		::SendMessage(GetParent(),uMsg, wParam, lParam);
 	}
-	gr->DrawPath(p, &gp);
-
+	return 0;
 }
+
+LRESULT Toolbar::OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	return (LRESULT)(HBRUSH)subpanelBrush_;
+}
+
+LRESULT Toolbar::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if ( wParam == WA_CLICKACTIVE  || wParam == WA_ACTIVE) {
+		::SetActiveWindow((HWND)lParam);
+		bHandled = true;
+	}
+	return 0;
+}
+
+
 LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	//LOG(INFO) << "Toolbar WM_PAINT";
@@ -158,22 +184,35 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
 	
 	//*gr.SetPixelOffsetMode(PixelOffsetModeHalf);
 	//dc.FillSolidRect(&clientRect, RGB(255,0,0));
-	Rect rect( 0, 0, clientRect.right-1, clientRect.bottom-1);
+	Rect rect( 0, 0, clientRect.right, clientRect.bottom);
 	SolidBrush br1(transparentColor_);
 	gr.FillRectangle(&br1, rect);
-	LinearGradientBrush br (RectF(float(0), float(-0.5 ), float(clientRect.right),
-		/*rect.top+*/ float(clientRect.bottom) ), Color(252,252,252), Color(
-		200,200,200), orientation_ == orHorizontal ? LinearGradientModeVertical : LinearGradientModeHorizontal);
-	//Gdiplus::SolidBrush br(Color(200,2,146,209));
-	Pen p(Color(1,87,124));
-	/*gr.FillRectangle(&br, rect);
-	gr.DrawRectangle(&p, rect);*/
-	/*CRoundRect roundRect;
-	roundRect.FillRoundRect(&gr,&br,rect,Color(198,196,197),5);*/
-	//roundRect.DrawRoundRect(&gr,rect,Color(198,196,197),8, 1);
-	gr.SetSmoothingMode(SmoothingModeHighSpeed);
+		Pen p(Color(1,87,124));
+	LinearGradientBrush br (RectF(float(0), float(-0.5 ), float(buttonsRect_.right),
+			/*rect.top+*/ float(buttonsRect_.bottom) ), Color(252,252,252), Color(
+			200,200,200), orientation_ == orHorizontal ? LinearGradientModeVertical : LinearGradientModeHorizontal);
 
-	DrawRoundedRectangle(&gr,rect,8,&p, &br);
+	rect = Rect( subpanelLeftOffset_, buttonsRect_.bottom-2*dpiScaleY, 200*dpiScaleX, clientRect.bottom);
+	rect.Height -= rect.Y;
+
+	SolidBrush br2 (subpanelColor_);
+	rect.Width--;
+	rect.Height --;
+	DrawRoundedRectangle(&gr,rect,7,&p, &br2);
+
+
+	rect = Rect( 0, 0, buttonsRect_.right, buttonsRect_.bottom);
+	rect.Width--;
+	rect.Height --;
+	
+	//Gdiplus::SolidBrush br(Color(200,2,146,209));
+
+
+	gr.SetSmoothingMode(GetStyle()&WS_CHILD ? SmoothingModeAntiAlias : SmoothingModeDefault);
+	DrawRoundedRectangle(&gr,rect,7,&p, &br);
+
+	
+
 	gr.SetSmoothingMode(SmoothingModeAntiAlias);
 
 
@@ -189,16 +228,16 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
 		} else {
 			y += s.cy + itemMargin_;
 		}
-		//y+= s.cy;
+		//y+= s.cy;cli
 	}
 
-		//SetLayeredWindowAttributes(m_hWnd, RGB(255,255,255),0,LWA_COLORKEY);
-	//RECT rct;
-	//rgn.GetRgnBox( &rct );
-	/*
-	
-	//
-	//gr.DrawRo*/
+	if ( !(GetStyle()&WS_CHILD)  ) { // fix artefacts
+		SolidBrush br(transparentColor_);
+		gr.SetPixelOffsetMode(PixelOffsetModeHighQuality);
+		gr.FillRectangle(&br, Rect(buttonsRect_.right-1, buttonsRect_.bottom-1, 1,1)); 
+	}
+
+	//gr.
 
 	return 0;
 }
@@ -289,15 +328,23 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		selectedItemIndex_ = getItemAtPos(xPos, yPos);
 		Item& item = buttons_[selectedItemIndex_];
 
-		clickButton(selectedItemIndex_);
-
+		
 
 		if ( item.itemDelegate ) {
+			clickButton(selectedItemIndex_);
 			item.itemDelegate->OnClick(xPos, yPos, dpiScaleX, dpiScaleY);
 		} else {
 			HWND parent = GetParent();
 			int command = item.command;
-			::PostMessage(parent, WM_COMMAND, MAKEWPARAM(command,BN_CLICKED),(LPARAM)m_hWnd);
+			if ( item.type == Toolbar::itComboButton && xPos >  item.rect.right - dropDownIcon_->GetWidth() - itemMargin_  ) {
+				::PostMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
+			} else if ( item.type == Toolbar::itTinyCombo && xPos >  item.rect.right - 6*dpiScaleX - itemMargin_ && yPos >   item.rect.bottom - 6*dpiScaleY - itemMargin_  ) {
+				::PostMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
+			}else {
+				::PostMessage(parent, WM_COMMAND, MAKEWPARAM(command,BN_CLICKED),(LPARAM)m_hWnd);
+			}
+
+			
 			selectedItemIndex_ = -1;
 			OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);
 		}
@@ -344,8 +391,7 @@ SIZE Toolbar::CalcItemSize(int index)
 
 	res.cx += itemHorPadding_ * 2;
 	res.cy  += itemVertPadding_ * 2;
-	RECT rc;
-	GetClientRect(&rc);
+	RECT rc = buttonsRect_;
 	if ( orientation_ == orVertical ) {
 		res.cx =  max( res.cx, rc.right - itemMargin_*2);
 	} else {
@@ -388,6 +434,19 @@ int Toolbar::AutoSize()
 		}
 	}
 
+	GetClientRect(&buttonsRect_);
+
+	if ( orientation_ == orHorizontal ) {
+		SetWindowPos(0, 0,0,width,height + subpanelHeight_,SWP_NOMOVE);
+		penSizeSlider_.SetWindowPos(0,subpanelLeftOffset_ + 3 * dpiScaleX, buttonsRect_.bottom + 1 * dpiScaleY, 0,0, SWP_NOSIZE);
+		penSizeSlider_.SetRange(1,Canvas::kMaxPenSize);
+		RECT penSizeSliderRect;
+		penSizeSlider_.GetClientRect(&penSizeSliderRect);
+		penSizeSlider_.ClientToScreen(&penSizeSliderRect);
+		ScreenToClient(&penSizeSliderRect);
+		pixelLabel_.SetWindowPos(0, penSizeSliderRect.right, buttonsRect_.bottom + 3 * dpiScaleY, 0,0, SWP_NOSIZE);
+	}
+
 	for ( int i = 0; i < buttons_.size(); i++ ) {
 		CreateToolTipForItem(i);
 	}
@@ -417,8 +476,8 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 	
 	if ( item.state == isHover ||  item.state == isDown ||  item.state == isDropDown || item.isChecked) {
 			Pen p(Color(198,196,197));
-			Color gradientColor1 = item.isChecked ?  Color(200,200,200) : Color(232,232,232);
-			Color gradientColor2 = item.isChecked ? Color(140,140,140) : Color(170,170,170);
+			Color gradientColor1 = item.isChecked ?  Color(170,170,170) : Color(232,232,232);
+			Color gradientColor2 = item.isChecked ? Color(130,130,130) : Color(170,170,170);
 			LinearGradientBrush br (RectF(float(x), float(y ), float( x+size.cx),
 				/*rect.top+*/ float(y+size.cy ) ), gradientColor1, gradientColor2, LinearGradientModeVertical);
 			//LOG(INFO) << "item.isChecked " << item.isChecked;
@@ -481,6 +540,35 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 }
 
 
+void Toolbar::createHintForSliders(HWND slider, CString hint)
+{
+	// Create a tooltip.
+	HWND hwndTT = ::CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL, 
+		WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, 
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 
+		slider, NULL, _Module.GetModuleInstance(),NULL);
+
+	::SetWindowPos(hwndTT, HWND_TOPMOST, 0, 0, 0, 0, 
+		SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+
+	// Set up "tool" information. In this case, the "tool" is the entire parent window.
+
+	TOOLINFO ti = { 0 };
+	ti.cbSize   = sizeof(TOOLINFO);
+	ti.uFlags   = TTF_SUBCLASS;
+	ti.hwnd     = slider;
+	ti.hinst    = _Module.GetModuleInstance();
+	TCHAR* textBuffer = new TCHAR[hint.GetLength()+1];
+	lstrcpy(textBuffer, hint);
+	ti.lpszText = textBuffer;
+	::GetClientRect(slider, &ti.rect);
+
+	// Associate the tooltip with the "tool" window.
+	SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);	
+
+	delete[] textBuffer;
+}
+
 void Toolbar::CreateToolTipForItem(int index)
 {
 	Item& item = buttons_[index];
@@ -514,6 +602,7 @@ void Toolbar::CreateToolTipForItem(int index)
 
 	// Associate the tooltip with the "tool" window.
 	SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);	
+	item.tooltipWnd = hwndTT;
 	delete[] textBuffer;
 } 
 

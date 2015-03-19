@@ -19,6 +19,7 @@ class AbstractDrawingTool {
 		virtual void render( Painter* gr ) = NULL;
 		virtual void mouseDoubleClick( int x, int y );
 		virtual CursorType getCursor(int x, int y);
+		virtual void rightButtonClick(int x, int y);
 		void setPenSize(int size);
 		void setForegroundColor(Gdiplus::Color color);
 		void setBackgroundColor(Gdiplus::Color color);
@@ -140,6 +141,8 @@ public:
 	void endDraw( int x, int y );
 	void render( Painter* gr );
 	virtual CursorType getCursor(int x, int y);
+
+	virtual void rightButtonClick(int x, int y);
 
 };
 }

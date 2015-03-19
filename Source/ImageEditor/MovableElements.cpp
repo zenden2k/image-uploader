@@ -373,7 +373,7 @@ void Arrow::render(Painter* gr)
 	using namespace Gdiplus;
 	Gdiplus::Pen pen(/* color_*/color_, penSize_ );
 	// Create two AdjustableArrowCap objects
-	AdjustableArrowCap cap1(penSize_/2, penSize_/2, true);
+	AdjustableArrowCap cap1(/*penSize_/2*/3, /*penSize_/2*/3, true);
 	//AdjustableArrowCap cap2 = new AdjustableArrowCap(2, 1);
 
 	// Set cap properties
@@ -415,6 +415,11 @@ void Selection::render(Painter* gr)
 ImageEditor::ElementType Selection::getType() const
 {
 	return etSelection;
+}
+
+void Selection::createGrips()
+{
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 FilledRectangle::FilledRectangle(Canvas* canvas, int startX, int startY, int endX,int endY):Rectangle(canvas, startX, startY, endX, endY, true)
@@ -461,5 +466,107 @@ ImageEditor::ElementType BlurringRectangle::getType() const
 }
 
 #endif
+
+RoundedRectangle::RoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY,bool filled /*= false */) 
+				: Rectangle(canvas, startX, startY, endX,endY, filled)
+{
+
+}
+
+void RoundedRectangle::render(Painter* gr)
+{
+	using namespace Gdiplus;
+	Gdiplus::Pen pen( color_, penSize_ );
+	int x = getX();
+	int y = getY();
+	int width = getWidth();
+	int height = getHeight();
+	SolidBrush br(backgroundColor_);
+	DrawRoundedRectangle(gr, Rect(x,y,width,height), penSize_*2, &pen, filled_ ? &br : 0);
+}
+
+FilledRoundedRectangle::FilledRoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY) : RoundedRectangle(canvas, startX, startY, endX,endY, true)
+{
+
+}
+
+Ellipse::Ellipse(Canvas* canvas, bool filled /*= false */) : MovableElement(canvas)
+{
+	filled_ = filled;
+}
+
+void Ellipse::render(Painter* gr)
+{
+	using namespace Gdiplus;
+	Gdiplus::Pen pen( color_, penSize_ );
+	int x = getX();
+	int y = getY();
+	int width = getWidth();
+	int height = getHeight();
+	SolidBrush br(backgroundColor_);
+	if ( filled_ ) {
+		gr->FillEllipse(&br, x,y,width,height);
+	}
+	gr->DrawEllipse(&pen, x,y,width,height);
+	
+}
+
+bool Ellipse::ContainsPoint(Gdiplus::Rect ellipse, Gdiplus::Point location) {
+	using namespace Gdiplus;
+	Point center(
+                ellipse.GetLeft() + (ellipse.Width / 2),
+				  ellipse.GetTop() + (ellipse.Height / 2));
+
+            double _xRadius = ellipse.Width / 2;
+            double _yRadius = ellipse.Height / 2;
+
+
+            if (_xRadius <= 0.0 || _yRadius <= 0.0)
+                return false;
+            /* This is a more general form of the circle equation
+             *
+             * X^2/a^2 + Y^2/b^2 <= 1
+             */
+
+            Point normalized(location.X - center.X,
+                                         location.Y - center.Y);
+
+            return ((double)(normalized.X * normalized.X)
+                     / (_xRadius * _xRadius)) + ((double)(normalized.Y * normalized.Y) / (_yRadius * _yRadius))
+                <= 1.0;
+        }
+
+
+void Ellipse::createGrips()
+{
+	grips_.resize(8);
+	MovableElement::createGrips();
+	//btBottomRight, btBottom,  btBottomLeft,  btRight,  btLeft,  btTopLeft, btTop, btTopRight, 
+		grips_.erase(grips_.begin() + btTopRight);
+		grips_.erase(grips_.begin() + btTopLeft);
+			grips_.erase(grips_.begin() + btBottomLeft);
+	grips_.erase(grips_.begin() + btBottomRight);
+}
+
+bool Ellipse::isItemAtPos(int x, int y)
+{
+	using namespace Gdiplus;
+	int elX = getX();
+	int elY = getY();
+	int width = getWidth();
+	int height = getHeight();
+	int selectRadius = max(penSize_, kSelectRadius);
+	if ( filled_ ) {
+		return ContainsPoint(Rect(elX,elY, width, height), Point(x,y));
+	} else {
+		return ContainsPoint(Rect(elX-selectRadius,elY-selectRadius, width+selectRadius*2, height+selectRadius*2), Point(x,y))
+			&& !ContainsPoint(Rect(elX+selectRadius,elY+selectRadius, width-selectRadius*2, height-selectRadius*2), Point(x,y) );
+	}
+}
+
+FilledEllipse::FilledEllipse(Canvas* canvas) : Ellipse(canvas, true)
+{
+
+}
 
 }
