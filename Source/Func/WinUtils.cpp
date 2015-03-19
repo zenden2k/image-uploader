@@ -852,4 +852,23 @@ float GetMonitorScaleFactor()
 	return res;
 }
 
+CString GetLastErrorAsString()
+{
+	//Get the error message, if any.
+	DWORD errorMessageID = ::GetLastError();
+	if(errorMessageID == 0)
+		return "No error message has been recorded";
+
+	LPTSTR messageBuffer = 0;
+	size_t size = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&messageBuffer, 0, NULL);
+
+	CString res = messageBuffer;
+
+	//Free the buffer.
+	LocalFree(messageBuffer);
+
+	return res;
+}
+
 };

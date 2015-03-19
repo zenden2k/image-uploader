@@ -173,6 +173,28 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 			DWORD pid = _ttoi( pidStr );
 			HANDLE hProcess = OpenProcess( SYNCHRONIZE, false, pid ); 
 			WaitForSingleObject( hProcess, 20000 );
+
+			// Workaround for version prior to 1.1.7
+			if (!CmdLine.IsOption(_T("update"))) {
+				Settings.FindDataFolder();
+				if ( !WinUtils::IsDirectory( Settings.DataFolder + "Thumbnails\\") ) {
+					SimpleXml xml;
+					std::string updateFile = WCstringToUtf8(Settings.DataFolder + "Update\\iu_core.xml");
+					if ( xml.LoadFromFile(updateFile) ) {
+						SimpleXmlNode root = xml.getRoot("UpdateInfo", false);
+						if ( !root.IsNull() ) {
+							int64_t timestamp = root.AttributeInt64("TimeStamp");
+							if ( timestamp >= 0  ) {
+								root.SetAttribute("TimeStamp", timestamp-1);
+								xml.SaveToFile(updateFile);
+								CmdLine.AddParam(L"update");
+							}
+						}
+					}
+					
+				}
+				
+			}
 		} else if ( CurrentParam == "/debuglog") {
 			FLAGS_logtostderr = false;
 			FLAGS_alsologtostderr = true;

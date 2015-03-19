@@ -264,6 +264,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	ShowPage(0);
 	::SetFocus(Pages[0]->PageWnd);
 
+
 	if(CmdLine.IsOption(_T("update")))
 	{
 		CreateUpdateDlg();

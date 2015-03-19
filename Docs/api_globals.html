@@ -30,7 +30,7 @@ Note that <code>string</code> type is UTF-8 encoded unless otherwise stated.
 <code class="f">print(<i>arg</i>)</code>
 Cтандартная функция squirrel, выводящая текст на стандартный вывод. Его можно увидеть в окне лога ошибок.<br/>
 <code class="f">system(<u>string</u> <i>cmd</i>)</code>
-Выполнение любой системной команды.<br>
+Выполнение любой системной команды. Parameter <i>cmd</i> is using default operating system locale (so it won't work with utf-8 strings on windows).<br>
 <p>
 Остальные стандартные функции можно посмотреть в <a href="http://www.squirrel-lang.org/doc/sqstdlib2.html" target="_blank">документации стандартной библиотеки</a>
 и <a href="http://www.squirrel-lang.org/doc/squirrel2.html" target="_blank">документации языка Squirrel</a>.
@@ -67,8 +67,8 @@ Returns application's current language. For example : "en", "ru".
 Returns application's current locale. For example : "en_US", "ru_RU".
 <code class="f"><u>string</u> GetFileExtension(<u>string</u> <i>filename</i>)</code>
 Извлекает расширение файла из пути.
-<code class="f"><u>string</u> GetFileMimeType(<u>string</u> <i>fileName</i>)</code>
-Возвращает MIME тип файла (например "text/html").
+<code class="f"><u>string</u> GetFileMimeType(<u>string</u> <i>pathToFile</i>)</code>
+Возвращает MIME тип файла (например "text/html"), анализируя содержимое файла ( в Windows используется функция <a href="https://msdn.microsoft.com/en-us/library/ie/ms775107(v=vs.85).aspx">FindMimeFromData</a>. а в unix команда <code>file -b --mime-type</code>). 
 <code class="f"><u>int</u> GetFileSize(<u>string</u> <i>fileName</i>) <span>version >= 1.3.0</span></code>
 Возвращает размер файла в байтах.
 <code class="f"><u>float</u> GetFileSizeDouble(<u>string</u> <i>fileName</i>) <span>version >= 1.3.0</span></code>

@@ -260,8 +260,7 @@
     </Server> 
 	
 	<!--
-		Since 1.3.x release server declration node must be "Server2",
-		which contains "type" attribute
+		Since 1.3.x release server declaration for "urlshortening" server node must be "Server2",
 	-->
 	<Server2 Name="6url.ru" Authorize="0" Debug="0" Type="urlshortening" >
 		<Actions>

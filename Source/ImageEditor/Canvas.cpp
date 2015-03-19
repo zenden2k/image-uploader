@@ -141,6 +141,7 @@ void Canvas::mouseDoubleClick(int button, int x, int y)
 }
 
 void Canvas::render(Painter* gr, const RECT& rect, POINT scrollOffset, SIZE size) {
+	LOG(INFO) << "Canvas::render rect"<< rect.left << " " << rect.top<< " "<< rect.right - rect.left<< " "<< rect.bottom - rect.top;
 	using namespace Gdiplus;
 	Gdiplus::Graphics* bufferedGr = new Gdiplus::Graphics( buffer_ );
 	bufferedGr->SetPageUnit(Gdiplus::UnitPixel);

@@ -6,7 +6,18 @@
 		<!-- favicons -->
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
-<Info>
-Fixed big file (>150 Mb) uploading to Dropbox ( Image Uploader 1.3.0.4222 and later)
+<Info>Thanks to arhangelsoft (http://arhangelsoft.ru/).
+
+New image hosting: 
+[+] pixhost.org
+
+Supported URL-shorting services:
+[+] 6url.ru
+[+] yahs.ru
+[+] udi.by
+[+] u.to
+[+] tinyurl.com
+[+] link.ac
+[+] 8b.kz
 </Info>
 </UpdatePackageSource>

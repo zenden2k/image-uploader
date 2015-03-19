@@ -87,6 +87,7 @@ namespace WinUtils {
 	CString GetAppFolder();
 	Gdiplus::Bitmap* IconToBitmap(HICON ico);
 	float GetMonitorScaleFactor();
+	CString GetLastErrorAsString();
 };
 
 #endif

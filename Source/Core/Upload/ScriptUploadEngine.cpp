@@ -296,6 +296,7 @@ const std::string scriptAnsiToUtf8(const std::string& str, int codepage)
 #ifdef _WIN32
 	return IuCoreUtils::ConvertToUtf8(str, NameByCodepage(codepage));
 #else
+	LOG(WARNING) << "AnsiToUtf8 not implemented";
 	return str; // FIXME
 #endif
 }
@@ -305,6 +306,7 @@ const std::string scriptUtf8ToAnsi(const std::string& str, int codepage )
 #ifdef _WIN32
 	return IuCoreUtils::Utf8ToAnsi(str, codepage);
 #else
+	LOG(WARNING) << "Utf8ToAnsi not implemented";
 	return str; // FIXME
 #endif
 }

@@ -202,7 +202,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 	}
 
 	DWORD windowStyle =  displayMode_ == wdmFullscreen ? /*WS_OVERLAPPED|*/ WS_POPUP : WS_OVERLAPPED | WS_POPUP | WS_CAPTION |  WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | 
-		WS_MINIMIZEBOX;
+		WS_MINIMIZEBOX|WS_CLIPCHILDREN;
 
 	if ( Create(0, rc, _T("Image Editor"), windowStyle, displayMode_ == wdmFullscreen ? WS_EX_TOPMOST : 0) == NULL ) {
 		LOG(ERROR) << "Main window creation failed!\n";
@@ -327,19 +327,43 @@ LRESULT ImageEditorWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 		CPaintDC dc(m_hWnd);
 		CRect clientRect;
 		GetClientRect(&clientRect);
+		CRgn rgn;
+		rgn.CreateRectRgn(clientRect.left,clientRect.top, clientRect.right, clientRect.bottom);
+
 		RECT horToolbarRect;
 		RECT vertToolbarRect;
+		RECT viewRect;
 		horizontalToolbar_.GetClientRect(&horToolbarRect);
+		horizontalToolbar_.ClientToScreen(&horToolbarRect);
+		ScreenToClient(&horToolbarRect);
 		verticalToolbar_.GetClientRect(&vertToolbarRect);
+		verticalToolbar_.ClientToScreen(&vertToolbarRect);
+		ScreenToClient(&vertToolbarRect);
+		m_view.GetClientRect(&viewRect);
+		m_view.ClientToScreen(&viewRect);
+		ScreenToClient(&viewRect);
+		
+		CRgn horToolRgn;
+		CRgn vertToolRgn;
+		CRgn viewRgn;
+		horToolRgn.CreateRectRgn(horToolbarRect.left, horToolbarRect.top, horToolbarRect.right, horToolbarRect.bottom);
+		vertToolRgn.CreateRectRgn(vertToolbarRect.left, vertToolbarRect.top, vertToolbarRect.right, vertToolbarRect.bottom);
+		viewRgn.CreateRectRgn(viewRect.left, viewRect.top, viewRect.right, viewRect.bottom);
+		rgn.CombineRgn(horToolRgn, RGN_DIFF);
+		rgn.CombineRgn(vertToolRgn, RGN_DIFF);
+		rgn.CombineRgn(viewRgn, RGN_DIFF);
+
+		CBrush br;
+		br.CreateSolidBrush(RGB(255,255,255));
+		dc.FillRgn(rgn, br);
 
 		/*CRect viewRect;
 		m_view.GetClientRect(&viewRect);*/
-		CBrush br;
-		br.CreateSolidBrush(RGB(255,255,255));
-		RECT topRect = {0, 0, clientRect.right,horToolbarRect.bottom + kCanvasMargin};
+		
+		/*RECT topRect = {0, 0, clientRect.right,horToolbarRect.bottom + kCanvasMargin};
 		dc.FillRect(&topRect, br);
 		RECT leftRect = {0, topRect.bottom, vertToolbarRect.right + kCanvasMargin, clientRect.bottom};
-		dc.FillRect(&leftRect, br);
+		dc.FillRect(&leftRect, br);*/
 	}
 
 	return 0;

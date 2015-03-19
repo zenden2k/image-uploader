@@ -29,9 +29,13 @@ Toolbar::~Toolbar()
 bool Toolbar::Create(HWND parent, bool child )
 {
 	RECT rc = {0, 0, 1,1};
-	TParent::Create(parent, rc, _T("test"), ( child ? WS_CHILD :WS_POPUP) , WS_EX_LAYERED|  WS_EX_NOACTIVATE /*|WS_EX_TOOLWINDOW*/);
-	if ( !m_hWnd ) {
+	HWND wnd = TParent::Create(parent, rc, _T("test"), ( child ? WS_CHILD :WS_POPUP) ,child?0:( WS_EX_LAYERED|  WS_EX_NOACTIVATE) /*|WS_EX_TOOLWINDOW*/);
+	if ( !wnd ) {
+		LOG(ERROR) << WinUtils::GetLastErrorAsString();
 		return false;
+	}
+	if ( child ) {
+		transparentColor_ = Color(255,255,255);
 	}
 	LONG lStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
 	//lStyle &= ~(WS_CAPTION /*| WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU*/);
@@ -104,7 +108,7 @@ void Toolbar::clickButton(int index)
 
 		// Uncheck all other buttons with same group id
 		for( int i = 0; i < buttons_.size(); i++ ) {
-			LOG(INFO) << "buttons_[i].group=" << buttons_[i].group;
+			//LOG(INFO) << "buttons_[i].group=" << buttons_[i].group;
 			if ( i != index & buttons_[i].group == item.group && buttons_[i].checkable && buttons_[i].isChecked ) {
 				buttons_[i].isChecked  = false;
 				buttons_[i].state = isNormal;
@@ -142,6 +146,7 @@ void DrawRoundedRectangle(Gdiplus::Graphics* gr, Gdiplus::Rect r, int d, Gdiplus
 }
 LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
+	//LOG(INFO) << "Toolbar WM_PAINT";
 	using namespace Gdiplus;
 	CPaintDC dc(m_hWnd);
 	RECT clientRect;
