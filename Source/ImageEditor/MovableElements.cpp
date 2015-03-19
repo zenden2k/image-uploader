@@ -278,16 +278,13 @@ void CropOverlay::render(Painter* gr)
 		rgn = rgn.subtracted(Region(crops[i]->getX(),crops[i]->getY(),crops[i]->getWidth()+1,crops[i]->getHeight()+1));
 	}
 
-	try {
-		gr->SetClip(rgn.toNativeRegion());
-	}
-	catch ( std::exception ex ) {
-		LOG(ERROR) << ex.what();
-	} catch ( ... ) {
-		LOG(ERROR) << "Other exception";
-	}
+	Gdiplus::Region oldRegion;
+	gr->GetClip(&oldRegion);
+	gr->SetClip(rgn.toNativeRegion(), Gdiplus::CombineModeIntersect);
+	
+	
 	gr->FillRectangle( &brush, getX(), getY(), getWidth(), getHeight() );
-	gr->SetClip(Region(0,0,canvas_->getWidth(), canvas_->getHeigth()).toNativeRegion());
+	gr->SetClip(&oldRegion);
 
 
 }
@@ -356,6 +353,16 @@ bool Rectangle::isItemAtPos(int x, int y)
 		&& x>= elementX - selectRadius && x <= elementX + elementWidth + selectRadius );
 }
 
+RECT Rectangle::getPaintBoundingRect()
+{
+	RECT rc = MovableElement::getPaintBoundingRect();
+	/*rc.left -= penSize_;
+	rc.top -= penSize_;
+	rc.right += penSize_;
+	rc.bottom+= penSize_;*/
+	return rc;
+}
+
 Arrow::Arrow(Canvas* canvas,int startX, int startY, int endX,int endY) : Line(canvas, startX, startY, endX, endY)
 {
 
@@ -385,6 +392,16 @@ void Arrow::render(Painter* gr)
 	gr->DrawLine( &pen, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y );
 }
 
+RECT Arrow::getPaintBoundingRect()
+{
+	RECT res = MovableElement::getPaintBoundingRect();
+	res.left -= penSize_ * 2;
+	res.top -= penSize_ * 2;
+	res.bottom += penSize_*2;
+	res.right += penSize_*2;
+	return res;
+}
+
 Selection::Selection(Canvas* canvas, int startX, int startY, int endX,int endY) : MovableElement(canvas)
 {
 
@@ -405,26 +422,44 @@ FilledRectangle::FilledRectangle(Canvas* canvas, int startX, int startY, int end
 }
 
 #if GDIPVER >= 0x0110 
-BlurringRectangle::BlurringRectangle(Canvas* canvas, int startX, int startY, int endX,int endY) : MovableElement(canvas)
+BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY) : MovableElement(canvas)
 {
-	
+	blurRadius_ = blurRadius;
 } 
+
+void BlurringRectangle::setBlurRadius(float radius)
+{
+	blurRadius_ = radius;
+}
+
+float BlurringRectangle::getBlurRadius()
+{
+	return blurRadius_;
+}
 
 void BlurringRectangle::render(Painter* gr)
 {
 	//drawDashedRectangle_ = isSelected();
-	
+	LOG(INFO) << "rendering";
 	using namespace Gdiplus;
 	Gdiplus::Bitmap* background = canvas_->getBufferBitmap();
 	Blur blur;
 	BlurParams blurParams;
-	blurParams.radius = 6;
+	blurParams.radius = blurRadius_;
 	blur.SetParameters(&blurParams);
 	Matrix matrix;
 	Status st ;
 	RectF sourceRect(getX(), getY(), getWidth(), getHeight());
+
 	st = gr->DrawImage(background,  &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
+
 }
+
+ImageEditor::ElementType BlurringRectangle::getType() const
+{
+	return etBlurringRectangle;
+}
+
 #endif
 
 }

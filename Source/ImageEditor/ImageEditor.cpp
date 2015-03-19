@@ -20,7 +20,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT) {
 	_Module.AddMessageLoop( &theLoop );
 
 	ImageEditor::ImageEditorWindow wndMain("screenshot.png");
-
+	wndMain.setInitialDrawingTool(ImageEditor::Canvas::dtCrop);
 
 	
 

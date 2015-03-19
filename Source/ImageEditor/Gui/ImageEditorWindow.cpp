@@ -143,6 +143,8 @@ ImageEditorWindow::ImageEditorWindow(CString imageFileName):horizontalToolbar_(T
 void ImageEditorWindow::init()
 {
 	canvas_ = 0;
+	cropToolTip_ = 0;
+	initialDrawingTool_ = Canvas::dtMove;
 	menuItems_[ID_PEN]             = Canvas::dtPen; 
 	menuItems_[ID_LINE]            = Canvas::dtLine;
 	menuItems_[ID_BRUSH]           = Canvas::dtBrush;
@@ -172,9 +174,15 @@ void ImageEditorWindow::updateToolbarDrawingTool(Canvas::DrawingToolType dt)
 			int buttonIndex = verticalToolbar_.getItemIndexByCommand(it->first);
 			if ( buttonIndex != -1 ) {
 				verticalToolbar_.clickButton(buttonIndex);
-				return;
+				break;
 			}
 		}
+	}
+	if ( dt == Canvas::dtCrop ) {
+		createTooltip();
+	} else if ( cropToolTip_ ) {
+		::DestroyWindow(cropToolTip_);
+		cropToolTip_ = 0;
 	}
 }
 
@@ -190,10 +198,15 @@ ImageEditorWindow::~ImageEditorWindow()
 	delete currentDoc_;
 }
 
+void ImageEditorWindow::setInitialDrawingTool(Canvas::DrawingToolType dt)
+{
+	initialDrawingTool_ = dt;
+}
+
 ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDisplayMode mode)
 {
 	mode = wdmWindowed;
-//	mode = wdmFullscreen;
+	//mode = wdmFullscreen;
 	displayMode_ = mode;
 	CRect rc(100,100,1280,800);
 
@@ -201,14 +214,17 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 		GuiTools::GetScreenBounds(rc);
 	}
 
-	DWORD windowStyle =  displayMode_ == wdmFullscreen ? /*WS_OVERLAPPED|*/ WS_POPUP : WS_OVERLAPPED | WS_POPUP | WS_CAPTION |  WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | 
+	DWORD windowStyle =  displayMode_ == wdmFullscreen  ?WS_POPUP|WS_CLIPCHILDREN : WS_OVERLAPPED | WS_POPUP | WS_CAPTION |  WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | 
 		WS_MINIMIZEBOX|WS_CLIPCHILDREN;
-
-	if ( Create(0, rc, _T("Image Editor"), windowStyle, displayMode_ == wdmFullscreen ? WS_EX_TOPMOST : 0) == NULL ) {
+	
+	if ( Create(0, rc, _T("Image Editor"), windowStyle, displayMode_ == wdmFullscreen ? /*WS_EX_TOPMOST*/0 : 0) == NULL ) {
 		LOG(ERROR) << "Main window creation failed!\n";
 		return drCancel;
 	}
+	//displayMode_ = wdmWindowed;
 	ShowWindow(SW_SHOWNORMAL);
+	//m_view.Invalidate(false);
+	
 	if ( parent ) {
 		::EnableWindow(parent, false);
 	}
@@ -224,9 +240,11 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 
 LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	
 	if ( displayMode_ == wdmWindowed ) {
 		CenterWindow();
 	}
+	
 	int iconWidth =  ::GetSystemMetrics(SM_CXICON);
 	if ( iconWidth > 32 ) {
 		iconWidth = 48;
@@ -241,7 +259,7 @@ LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	iconSmall_ = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
 		IMAGE_ICON, iconSmWidth, iconSmWidth, LR_DEFAULTCOLOR);
 	SetIcon(iconSmall_, FALSE);
-
+	
 	RECT rc;
 	GetClientRect(&rc);
 	HWND m_hWndClient = m_view.Create(m_hWnd, rc, _T("ImageEditor_Canvas"), WS_CHILD | WS_VISIBLE /*| WS_CLIPSIBLINGS | WS_CLIPCHILDREN*/, 0 );
@@ -249,7 +267,7 @@ LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	canvas_ = new ImageEditor::Canvas( m_view );
 	canvas_->setSize( currentDoc_->getWidth(), currentDoc_->getHeight());
 	canvas_->setDocument( currentDoc_ );
-
+	m_view.setCanvas( canvas_ );
 	createToolbars();
 	RECT horToolbarRect;
 	RECT vertToolbarRect;
@@ -257,10 +275,12 @@ LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	verticalToolbar_.GetClientRect(&vertToolbarRect);
 	rc.left =  displayMode_ == wdmWindowed ? vertToolbarRect.right + kCanvasMargin : 0;
 	rc.top =  displayMode_ == wdmWindowed ? horToolbarRect.bottom + kCanvasMargin  : 0;
+	
 	if ( displayMode_ == wdmWindowed ) {
 		horizontalToolbar_.SetWindowPos(0, rc.left, 0,0,0, SWP_NOSIZE);
 		verticalToolbar_.SetWindowPos(0, 0, rc.top, 0,0, SWP_NOSIZE);
 	}
+	
 	m_view.SetWindowPos(0, &rc, SWP_NOSIZE);
 	//,1210,733};
 	
@@ -274,13 +294,16 @@ LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	
 	canvas_->onDrawingToolChanged.bind(this, &ImageEditorWindow::OnDrawingToolChanged);
 	canvas_->onForegroundColorChanged.bind(this, &ImageEditorWindow::OnForegroundColorChanged);
-	if ( displayMode_ != wdmWindowed ) {
-		canvas_->onCropChanged.bind(this, &ImageEditorWindow::OnCropChanged);
+	canvas_->onCropChanged.bind(this, &ImageEditorWindow::OnCropChanged);
+	if ( displayMode_ != wdmWindowed ) {	
 		canvas_->onCropFinished.bind(this, &ImageEditorWindow::OnCropFinished);
 	}
 
-	m_view.setCanvas( canvas_ );
-	canvas_->setDrawingToolType(ImageEditor::Canvas::dtCrop);
+	canvas_->updateView();
+	//m_view.Invalidate(false);
+	
+	canvas_->setDrawingToolType(initialDrawingTool_);
+	updateToolbarDrawingTool(initialDrawingTool_);
 	// register object for message filtering and idle updates
 	CMessageLoop* pLoop = _Module.GetMessageLoop();
 	ATLASSERT(pLoop != NULL);
@@ -314,8 +337,9 @@ LRESULT ImageEditorWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	RECT vertToolbarRect;
 	horizontalToolbar_.GetClientRect(&horToolbarRect);
 	verticalToolbar_.GetClientRect(&vertToolbarRect);
-	rc.right -=  displayMode_ == wdmWindowed ? vertToolbarRect.right+kCanvasMargin : 0;
-	rc.bottom -=  displayMode_ == wdmWindowed ? horToolbarRect.bottom+kCanvasMargin : 0;
+	
+	rc.right -=  (displayMode_ == wdmWindowed ? vertToolbarRect.right+kCanvasMargin : 0);
+	rc.bottom -=  (displayMode_ == wdmWindowed ? horToolbarRect.bottom+kCanvasMargin : 0);
 
 	m_view.SetWindowPos(0, 0,0, rc.right, rc.bottom, SWP_NOMOVE);
 	return 0;
@@ -323,8 +347,9 @@ LRESULT ImageEditorWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 LRESULT ImageEditorWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
+	CPaintDC dc(m_hWnd);
 	if ( displayMode_ == wdmWindowed ) {
-		CPaintDC dc(m_hWnd);
+		
 		CRect clientRect;
 		GetClientRect(&clientRect);
 		CRgn rgn;
@@ -469,6 +494,13 @@ void ImageEditorWindow::createToolbars()
 
 void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
 {
+	if ( cropToolTip_ ) {
+		::DestroyWindow(cropToolTip_);
+		cropToolTip_ = 0;
+	}
+	if ( displayMode_ != wdmFullscreen ) {
+		return;
+	}
 	enum ToolbarPosition { pBottomRight, pTopLeft, pBottomInner };
 	ToolbarPosition pos = pBottomRight ;
 	POINT scrollOffset;
@@ -519,6 +551,7 @@ void ImageEditorWindow::OnCropFinished(int x, int y, int w, int h)
 
 void ImageEditorWindow::OnDrawingToolChanged(Canvas::DrawingToolType drawingTool)
 {
+
 	updateToolbarDrawingTool(drawingTool);
 	SendMessage(WM_SETCURSOR,0,0);
 }
@@ -588,6 +621,32 @@ LRESULT ImageEditorWindow::OnClickedShare(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 LRESULT ImageEditorWindow::OnClickedSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	return 0;
+}
+
+bool ImageEditorWindow::createTooltip() {
+	// Create a tooltip.
+	cropToolTip_ = ::CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL, 
+		WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, 
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 
+		m_view.m_hWnd, NULL, _Module.GetModuleInstance(),NULL);
+
+	::SetWindowPos(cropToolTip_, HWND_TOPMOST, 0, 0, 0, 0, 
+		SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+
+	// Set up "tool" information. In this case, the "tool" is the entire parent window.
+
+
+	TOOLINFO ti = { 0 };
+	ti.cbSize   = sizeof(TOOLINFO);
+	ti.uFlags   = TTF_SUBCLASS;
+	ti.hwnd     = m_view.m_hWnd;
+	ti.hinst    = _Module.GetModuleInstance();
+	ti.lpszText =  TR("Выберите область");;
+	m_view.GetClientRect(&ti.rect);
+
+	// Associate the tooltip with the "tool" window.
+	SendMessage(cropToolTip_, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);	
+	return true;
 }
 
 }

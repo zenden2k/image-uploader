@@ -42,6 +42,7 @@ public:
 	ImageEditorWindow(Gdiplus::Bitmap * bitmap);
 	ImageEditorWindow(CString imageFileName);
 	~ImageEditorWindow();
+	void setInitialDrawingTool(Canvas::DrawingToolType dt);
 
 	DialogResult DoModal(HWND parent, WindowDisplayMode mode = wdmAuto);
 
@@ -109,9 +110,11 @@ public:
 		std::map<int, Canvas::DrawingToolType> menuItems_;
 		DialogResult dialogResult_;
 		WindowDisplayMode displayMode_;
+		Canvas::DrawingToolType initialDrawingTool_;
 		CIcon icon_;
 		CIcon iconSmall_;
 		ColorsDelegate* colorsDelegate_;
+		HWND cropToolTip_;
 		void createToolbars();
 		void OnCropChanged(int x, int y, int w, int h);
 		void OnCropFinished(int x, int y, int w, int h);
@@ -122,6 +125,7 @@ public:
 		bool saveDocument();
 		void updateToolbarDrawingTool(Canvas::DrawingToolType dt);
 		void OnForegroundColorChanged(Gdiplus::Color color);
+		bool createTooltip();
 };
 
 }

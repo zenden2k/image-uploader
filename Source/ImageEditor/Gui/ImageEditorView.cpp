@@ -30,11 +30,11 @@ BOOL CImageEditorView::PreTranslateMessage(MSG* /*pMsg*/) {
 LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	//return 0;
 	CPaintDC dc(m_hWnd);
-	CRgn rgn;
+	/*CRgn rgn;
 	rgn.CreateRectRgn( 0, 0, 0, 0 );
-	GetClipRgn( dc, rgn);
+	/*GetClipRgn( dc, rgn);
 	RECT rct;
-	rgn.GetRgnBox( &rct );
+	rgn.GetRgnBox( &rct );*/
 	RECT clientRect;
 	GetClientRect(&clientRect);
 	SIZE size = {clientRect.right, clientRect.bottom};
@@ -42,7 +42,12 @@ LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	POINT pt;
 	GetScrollOffset(pt);
 	if ( canvas_ ) {
-		canvas_->render( &gr, dc.m_ps.rcPaint, pt,  size);
+		RECT updateRect = dc.m_ps.rcPaint;
+		/*updateRect.left += pt.x;
+		updateRect.top += pt.y;
+		updateRect.bottom += pt.y;
+		updateRect.right += pt.x;*/
+		canvas_->render( &gr, updateRect, pt,  size);
 	}
 	CBrush br;
 	br.CreateSolidBrush(RGB(255,255,255));
@@ -172,10 +177,14 @@ LRESULT CImageEditorView::OnLButtonDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 }
 
 void CImageEditorView::updateView( Canvas* canvas, const CRgn& region ) {
-	InvalidateRgn( region );
-	RECT rc;
-	region.GetRgnBox( &rc );
-	//InvalidateRect( &boundingRect );
+	POINT pt;
+	//CRgn rgn = 
+	CRgn rgn = region;
+
+	GetScrollOffset(pt);
+	LOG(INFO) << "ScrollOffset " << pt.x << " " << pt.y;
+	rgn.OffsetRgn(-pt.x, -pt.y);
+	InvalidateRgn( rgn );
 }
 
 LRESULT CImageEditorView::OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -225,6 +234,9 @@ LRESULT CImageEditorView::OnSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 	GetClientRect(&clientRect);
 	POINT cursorPos;
 	GetCursorPos(&cursorPos);
+	if ( WindowFromPoint(cursorPos ) != m_hWnd ) {
+		return 0;
+	}
 	ScreenToClient(&cursorPos);
 	if ( PtInRect(&clientRect, cursorPos ) ) {
 		SetCursor(getCachedCursor(canvas_->getCursor()));

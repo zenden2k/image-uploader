@@ -21,6 +21,8 @@ class DrawingElement {
 		virtual void resize(int width, int height);
 		virtual void setStartPoint(POINT startPoint);
 		virtual void setEndPoint(POINT endPoint);
+		POINT getStartPoint() const;
+		POINT getEndPoint() const;
 		void setColor( Gdiplus::Color color );
 		void setBackgroundColor( Gdiplus::Color color );
 		Gdiplus::Color getColor() const;
@@ -47,6 +49,7 @@ class AffectedSegments {
 		enum { kSegmentSize = 50 };
 		void markPoint(int x, int y);
 		void markRect(int x, int y, int width, int height);
+		void markRect(RECT rc);
 		HRGN createRegionFromSegments();
 		void clear();
 		void getRects( std::deque<RECT>& rects, int maxWidth = 0, int maxHeight = 0) const;

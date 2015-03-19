@@ -163,7 +163,7 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
 	gr.FillRectangle(&br1, rect);
 	LinearGradientBrush br (RectF(float(0), float(-0.5 ), float(clientRect.right),
 		/*rect.top+*/ float(clientRect.bottom) ), Color(252,252,252), Color(
-		180,179,180), orientation_ == orHorizontal ? LinearGradientModeVertical : LinearGradientModeHorizontal);
+		200,200,200), orientation_ == orHorizontal ? LinearGradientModeVertical : LinearGradientModeHorizontal);
 	//Gdiplus::SolidBrush br(Color(200,2,146,209));
 	Pen p(Color(1,87,124));
 	/*gr.FillRectangle(&br, rect);
@@ -247,7 +247,7 @@ LRESULT Toolbar::OnMouseLeave(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 {
 	int xPos = GET_X_LPARAM(lParam); 
 	int yPos = GET_Y_LPARAM(lParam); 
-	LOG(INFO) << "OnMouseLeave";
+	//LOG(INFO) << "OnMouseLeave";
 	trackMouse_ = false;
 	if ( selectedItemIndex_ != -1 ) {
 		buttons_[selectedItemIndex_].state = isNormal;
@@ -419,8 +419,8 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 			Pen p(Color(198,196,197));
 			Color gradientColor1 = item.isChecked ?  Color(200,200,200) : Color(232,232,232);
 			Color gradientColor2 = item.isChecked ? Color(140,140,140) : Color(170,170,170);
-			LinearGradientBrush br (RectF(float(0), float(0.5 ), float( size.cx),
-				/*rect.top+*/ float(size.cy ) ), gradientColor1, gradientColor2, LinearGradientModeVertical);
+			LinearGradientBrush br (RectF(float(x), float(y ), float( x+size.cx),
+				/*rect.top+*/ float(y+size.cy ) ), gradientColor1, gradientColor2, LinearGradientModeVertical);
 			//LOG(INFO) << "item.isChecked " << item.isChecked;
 		//	gr->FillRectangle( &brush, Rect(x, y, size.cx, size.cy));
 			 //br.TranslateTransform(x,y);

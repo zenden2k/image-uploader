@@ -508,5 +508,11 @@ bool GetScreenBounds(RECT& rect)
 
 }
 
+HRGN CloneRegion(HRGN source)
+{
+	HRGN resultRgn = CreateRectRgn(0, 0, 0, 0);
+	CombineRgn(resultRgn, source, resultRgn, RGN_OR);
+	return resultRgn;
+}
 
 };

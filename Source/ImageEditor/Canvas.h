@@ -32,7 +32,16 @@ class Canvas {
 		struct UndoHistoryItemElement {
 			MovableElement * movableElement;
 			int pos;
+			POINT startPoint;
+			POINT endPoint;
 			Gdiplus::Color color;
+			UndoHistoryItemElement() {
+				pos = -1;
+				startPoint.x = -1;
+				startPoint.y = -1;
+				endPoint.x = -1;
+				endPoint.y = -1;
+			}
 		};
 		struct UndoHistoryItem {
 			UndoHistoryItemType type;
@@ -68,6 +77,7 @@ class Canvas {
 		void setOverlay(MovableElement* overlay);
 		void setZoomFactor(float zoomFactor);
 		Gdiplus::Bitmap* getBufferBitmap();
+		void addUndoHistoryItem(const UndoHistoryItem& item);
 	
 		float getZoomFactor() const;
 		MovableElement* getElementAtPosition(int x, int y);
@@ -79,12 +89,15 @@ class Canvas {
 		InputBox* getInputBox( const RECT& rect ); 
 		TextElement* getCurrentlyEditedTextElement();
 		void setCurrentlyEditedTextElement(TextElement* textElement);
-		void unselectAllElements();
+		int unselectAllElements();
 		HWND getRichEditControl();
 		void updateView();
 		bool addDrawingElementToDoc(DrawingElement* element);
 		void endDocDrawing();
 		int deleteSelectedElements();
+		float getBlurRadius();
+		void setBlurRadius(float radius);
+		bool hasBlurRectangles();
 		fastdelegate::FastDelegate4<int,int,int,int> onCropChanged;
 		fastdelegate::FastDelegate4<int,int,int,int> onCropFinished;
 		fastdelegate::FastDelegate1<DrawingToolType> onDrawingToolChanged;
@@ -107,6 +120,7 @@ class Canvas {
 
 		Gdiplus::Bitmap* buffer_;
 		Document* doc_;
+		float blurRadius_;
 		int canvasWidth_, canvasHeight_;
 		POINT oldPoint_;
 		POINT leftMouseDownPoint_;
@@ -127,6 +141,8 @@ class Canvas {
 		std::vector<MovableElement*> elementsToDelete_;
 		int penSize_;
 		bool canvasChanged_;
+		bool fullRender_;
+		int blurRectanglesCount_;
 		
 		HWND parentWindow_;
 		InputBoxControl* inputBox_;

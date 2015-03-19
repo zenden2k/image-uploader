@@ -124,6 +124,18 @@ int MovableElement::getY()
 	return getMinPoint(axisY)->y;
 }
 
+RECT MovableElement::getPaintBoundingRect()
+{
+	int radius = penSize_;
+	if ( canvas_->hasBlurRectangles() ) {
+		radius += canvas_->getBlurRadius();
+	}
+	RECT res = { getX()-radius, getY()-radius, getWidth()+radius*2, getHeight()+radius*2};
+	res.right += res.left;
+	res.bottom += res.top;
+	return res;
+}
+
 void MovableElement::setX(int x)
 {
 	int width = getWidth();

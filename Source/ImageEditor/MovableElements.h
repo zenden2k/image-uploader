@@ -54,8 +54,15 @@ public:
 #if GDIPVER >= 0x0110 
 class BlurringRectangle: public MovableElement {
 public:
-	BlurringRectangle(Canvas* canvas, int startX, int startY, int endX,int endY);
+	BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY);
+	void setBlurRadius(float radius);
+	float getBlurRadius();
 	void render(Painter* gr);
+
+	virtual ElementType getType() const;
+protected:
+	float blurRadius_;
+
 };
 #endif
 class Rectangle: public MovableElement {
@@ -65,6 +72,9 @@ public:
 	void getAffectedSegments( AffectedSegments* segments );
 
 	virtual bool isItemAtPos(int x, int y);
+
+	virtual RECT getPaintBoundingRect();
+
 protected:
 	bool filled_;
 
@@ -79,6 +89,8 @@ class Arrow: public Line {
 public:
 	Arrow(Canvas* canvas,int startX, int startY, int endX,int endY);
 	void render(Painter* gr);
+
+	virtual RECT getPaintBoundingRect();
 
 
 	//virtual void createGrips();

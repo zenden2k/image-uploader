@@ -154,8 +154,8 @@ public:
         }
 
         if(videoStream==-1) {
-			LOG(ERROR) << "Didn't find a video stream";
-            return false; // Didn't find a video stream
+			LOG(ERROR) << "Could not find a video stream.";
+            return false; 
         }
         // Get a pointer to the codec context for the video stream
         pCodecCtx = pFormatCtx->streams[videoStream]->codec;

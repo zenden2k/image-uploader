@@ -57,6 +57,9 @@ class MoveAndResizeTool: public AbstractDrawingTool {
 		static CropOverlay* cropOverlay_;
 		bool isMoving_;
 		bool allowCreatingElements_;
+		POINT originalStartPoint_;
+		POINT originalEndPoint_;
+		RECT prevPaintBoundingRect_;
 
 };
 

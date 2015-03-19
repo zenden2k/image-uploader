@@ -39,6 +39,8 @@ class MovableElement: public DrawingElement {
 		void setDrawDashedRectangle(bool draw);
 		int getX();
 		int getY();
+		virtual RECT getPaintBoundingRect();
+
 		void setX(int  x);
 		void setY(int y);
 		virtual bool isItemAtPos(int x, int y);

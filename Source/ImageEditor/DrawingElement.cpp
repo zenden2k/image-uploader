@@ -26,6 +26,16 @@ void DrawingElement::setEndPoint(POINT endPoint) {
 	endPoint_ = endPoint; 
 }
 
+POINT DrawingElement::getStartPoint() const
+{	
+	return startPoint_;
+}
+
+POINT DrawingElement::getEndPoint() const
+{
+	return endPoint_;
+}
+
 void DrawingElement::setColor( Gdiplus::Color color ) {
 	color_ = color;
 }
@@ -127,6 +137,11 @@ void AffectedSegments::markRect(int x, int y, int width, int height) {
 			segments_ [ MAKELONG( i, j ) ] = true;
 		}
 	}
+}
+
+void AffectedSegments::markRect(RECT rc)
+{
+	markRect(rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top);
 }
 
 HRGN AffectedSegments::createRegionFromSegments() {

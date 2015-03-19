@@ -78,5 +78,6 @@ namespace GuiTools
 	IconInfo GetIconInfo(HICON hIcon);
 
 	bool GetScreenBounds(RECT& rect);
+	HRGN CloneRegion(HRGN source);
 };
 #endif
