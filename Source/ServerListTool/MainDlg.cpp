@@ -198,7 +198,21 @@ DWORD CMainDlg::Run()
 		if(!ue->ImageHost && !CheckFileServers)
 			continue;
 
-		ServerSettingsStruct  ss = Settings.ServersSettings[ue->Name];
+		ServerSettingsStruct  ss;
+		std::map <std::string, ServerSettingsStruct>::iterator it = Settings.ServersSettings[ue->Name].begin();
+
+
+		if ( it!= Settings.ServersSettings[ue->Name].end() ) {
+			if ( it->first.empty() ) {
+				it++;
+				if ( it != Settings.ServersSettings[ue->Name].end() ) {
+					ss = it->second;
+				}
+			} else {
+				ss = it->second;
+			}
+		}
+
 		if(!useAccounts)
 		{
 			ss.authData.DoAuth  = false;
@@ -214,7 +228,7 @@ DWORD CMainDlg::Run()
 			m_ListView.SetItemText(i,2,CString(_T("skipped")));
 			continue;
 		}
-		CAbstractUploadEngine * uploadEngine =  m_ServerList.getUploadEngine(ue);
+		CAbstractUploadEngine * uploadEngine =  m_ServerList.getUploadEngine(ue,ss);
 		if(!uploadEngine)  
 		{
 			m_ListView.SetItemText(i,2,CString(_T("FAILED to create upload engine..")));

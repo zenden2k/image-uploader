@@ -223,7 +223,7 @@
 	</Server>-->
 	<Server2 Name="clck.ru" Debug="0" Type="urlshortening">
 		<Actions>
-			<Action Type="post" Url="http://clck.ru/--" PostParams="url=$(_ORIGINALURL)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
+			<Action Type="post" Url="https://clck.ru/--" PostParams="url=$(_ORIGINALURL)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
 		</Actions>
 		<Result DirectUrlTemplate="$(ShortUrl)" />
 	</Server2>

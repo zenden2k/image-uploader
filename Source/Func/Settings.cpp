@@ -146,6 +146,7 @@ void ServerProfile::clearFolderInfo()
 	folderId_.clear();
 }
 
+#ifndef IU_SERVERLISTTOOL
 void ServerProfile::bind(SettingsNode& serverNode)
 {
 	serverNode["@Name"].bind(serverName_);
@@ -157,12 +158,15 @@ void ServerProfile::bind(SettingsNode& serverNode)
 	serverNode["@UseDefaultSettings"].bind(UseDefaultSettings);
 	imageUploadParams.bind(serverNode);
 }
+#endif
 
 ImageUploadParams ServerProfile::getImageUploadParams()
 {
+	#ifndef IU_SERVERLISTTOOL
 	if ( UseDefaultSettings && &Settings.imageServer  != this) {
 		return Settings.imageServer.imageUploadParams;
 	}
+#endif
 	return imageUploadParams;
 }
 
@@ -375,8 +379,8 @@ void CSettings::FindDataFolder()
 
 CSettings::CSettings()
 {
-	IsPortable = false;
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
+	IsPortable = false;
 	FindDataFolder();
 	if (!IsDirectory(DataFolder))
 	{

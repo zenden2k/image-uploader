@@ -236,8 +236,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP$(NUMBER_OF_PROCESSORS)"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;NDEBUG;IU_SERVERLISTTOOL;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
+				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;NDEBUG;IU_SERVERLISTTOOL;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL="
 				ExceptionHandling="1"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -259,9 +259,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib gdiplus.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib"
+				AdditionalDependencies="minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib gdiplus.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib libglog_static.lib jsoncpp.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;d:\Projects\Image Uploader\Image Uploader\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib\Release&quot;;&quot;$(SolutionDir)\Contrib\Lib\&quot;"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -990,6 +990,10 @@
 			<Filter
 				Name="Core"
 				>
+				<File
+					RelativePath="..\Core\Logging.cpp"
+					>
+				</File>
 				<Filter
 					Name="Upload"
 					>
@@ -1070,6 +1074,22 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Image"
+					>
+					<File
+						RelativePath="..\Core\Images\Utils.cpp"
+						>
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="Func"
+				>
+				<File
+					RelativePath="..\Func\MyLogSink.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

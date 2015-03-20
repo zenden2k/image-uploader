@@ -70,8 +70,10 @@ struct ImageUploadParams {
 		Thumb.Quality = 85;
 		Thumb.Text = _T("%width%x%height% (%size%)");
 	}
-	void bind(SettingsNode& n);
+#ifndef IU_SERVERLISTTOOL
 
+	void bind(SettingsNode& n);
+#endif
 
 	bool UseServerThumbs;
 	bool CreateThumbs;
@@ -112,9 +114,9 @@ public:
 	bool isNull();
 	bool UseDefaultSettings;
 	void clearFolderInfo();
-
+#ifndef IU_SERVERLISTTOOL
 	void bind(SettingsNode& n);
-
+#endif
 	ImageUploadParams getImageUploadParams();
 	ImageUploadParams& getImageUploadParamsRef();
     void setImageUploadParams(ImageUploadParams iup);
