@@ -43,7 +43,7 @@
 #endif
 #include "versioninfo.h"
 
-#define IU_CLI_VER "0.2.2"
+#define IU_CLI_VER "0.2.3"
 #ifdef _WIN32
 std::string dataFolder = "Data/";
 #else

@@ -85,7 +85,6 @@ namespace WinUtils {
 
 	void DeleteDir2(LPCTSTR Dir);
 	CString GetAppFolder();
-	Gdiplus::Bitmap* IconToBitmap(HICON ico);
 	float GetMonitorScaleFactor();
 	CString GetLastErrorAsString();
 };

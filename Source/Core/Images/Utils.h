@@ -14,4 +14,5 @@ Gdiplus::Bitmap* BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCT
 void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics,  Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea);
 void DrawRoundedRectangle(Gdiplus::Graphics* gr, Gdiplus::Rect r, int d, Gdiplus::Pen* p, Gdiplus::Brush*br);
 bool SaveImage(Gdiplus::Image* img, const CString& szFilename, SaveImageFormat Format, int Quality);
+Gdiplus::Bitmap* IconToBitmap(HICON ico);
 #endif

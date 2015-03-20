@@ -1,5 +1,5 @@
 @echo off
-SET CLI_VERSION=0.2.2
+SET CLI_VERSION=0.2.3
 set zipcmd="C:/Program Files/7-Zip/7z.exe"
 
 For /F "tokens=2,3 delims= " %%i In (..\Source\VersionInfo.h) Do (set %%i=%%~j)
@@ -17,7 +17,7 @@ mkdir %temp_dir%\Data
 mkdir %temp_dir%\Data\Scripts
 mkdir %temp_dir%\Data\Update
 
-Copy "..\Build\release\CLI.exe" %temp_dir%\imgupload.exe
+Copy "..\Build\release\imgupload.exe" %temp_dir%\imgupload.exe
 Copy "..\Build\release\curl-ca-bundle.crt" %temp_dir%\curl-ca-bundle.crt
 Copy "..\Data\servers.xml" %temp_dir%\Data\
 

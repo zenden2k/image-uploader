@@ -788,31 +788,6 @@ bool GetClipboardHtml(CString& text, CString& outSourceUrl) {
 	return false;
 }
 
-
-Gdiplus::Bitmap* IconToBitmap(HICON ico)
-{
-	ICONINFO ii; 
-	GetIconInfo(ico, &ii);
-	BITMAP bmp; 
-	GetObject(ii.hbmColor, sizeof(bmp), &bmp);
-
-	Gdiplus::Bitmap temp(ii.hbmColor, NULL);
-	Gdiplus::BitmapData lockedBitmapData;
-	memset(&lockedBitmapData, 0, sizeof(lockedBitmapData));
-	Gdiplus::Rect rc(0, 0, temp.GetWidth(), temp.GetHeight());
-
-	Gdiplus::Status st = temp.LockBits(&rc, Gdiplus::ImageLockModeRead, temp.GetPixelFormat(), &lockedBitmapData);
-
-
-	Gdiplus::Bitmap* image = new Gdiplus::Bitmap(
-		lockedBitmapData.Width, lockedBitmapData.Height, lockedBitmapData.Stride,
-		PixelFormat32bppARGB, reinterpret_cast<BYTE *>(lockedBitmapData.Scan0));
-
-	temp.UnlockBits(&lockedBitmapData);
-	return image;
-}
-
-
 float GetMonitorScaleFactor()
 {
 	float res = 1.0;
