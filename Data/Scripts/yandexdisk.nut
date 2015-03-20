@@ -2,10 +2,18 @@ if(ServerParams.getParam("enableOAuth") == "")
 {
 	ServerParams.setParam("enableOAuth", "true") ;
 }
+
+if(ServerParams.getParam("useWebdav") == "")
+{
+	ServerParams.setParam("useWebdav", "false");
+	ServerParams.setParam("token","");
+	ServerParams.setParam("tokenType","");
+}
 token <- "";
 tokenType <- "";
 login <- "";
 enableOAuth <- true;
+baseUrl <-"https://cloud-api.yandex.net/v1/disk/resources/";
 
 function base64Encode(input) {
 	local keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -176,10 +184,41 @@ function internal_parseAlbumList(data,list,parentid)
 
 function internal_loadAlbumList(list)
 {
-if(token == "")
+	if(token == "")
 	{
 		if(!DoLogin())
 			return 0;
+	}
+	
+	if ( useRestApi() ) {
+		local url = "https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F&limit=100";
+		nm.addQueryHeader("Authorization",getAuthorizationString());
+		nm.addQueryHeader("Accept", "application/json");
+		nm.doGet(url);
+		if ( nm.responseCode() == 200 ) {
+			local folder = CFolderItem();
+			folder.setId("/");
+			folder.setTitle("/ (root)");
+			folder.setSummary("");
+			list.AddFolderItem(folder);
+			local res = ParseJSON(nm.responseBody());
+			local itemsCount = res._embedded.items.len();
+			for ( local i = 0; i< itemsCount; i++ ) {
+				local item = res._embedded.items[i];
+				if ( item.type != "dir" ) {
+					continue;
+				}
+				local folder = CFolderItem();
+				local path = item.path;
+				path = reg_replace(path, "disk:", "") + "/";
+				folder.setId(path);
+				folder.setTitle(item.name);
+				folder.setSummary("");
+				list.AddFolderItem(folder);
+			}
+			return 1;
+		}
+		return 0;
 	}
 	
 	local url = "https://webdav.yandex.ru/";
@@ -282,7 +321,10 @@ function checkResponseCode() {
 	} 
 }
 
-
+function useRestApi() {
+	local l = ServerParams.getParam("useWebdav");
+	return (l == "") || ( l != "true" && l != "yes" && l != "1");
+}
 function openUrl(url) {
 	try{
 		return ShellOpenUrl(url);
@@ -306,15 +348,17 @@ function DoLogin()
 			}
 			return 1;
 		}
-		openUrl("https://oauth.yandex.ru/authorize?response_type=code&client_id=28d8d9c854554812ad8b60c150375462");
+		openUrl("https://oauth.yandex.ru/authorize?response_type=code&client_id=a49c34035aa8418d9a77ff24e0660719");
 		
 	    	local confirmCode = inputBox("You need to need to sign in to your Yandex.Disk account in web browser which just have opened and then copy confirmation code into the text field below. Please enter confirmation code:", "Image Uploader - Enter confirmation code");
 		if ( confirmCode != "" ) {	
 			nm.setUrl("https://oauth.yandex.ru/token");
 			nm.addQueryParam("grant_type", "authorization_code");
 			nm.addQueryParam("code", confirmCode);
-			nm.addQueryParam("client_id", "28d8d9c854554812ad8b60c150375462");
-			nm.addQueryParam("client_secret", "7d6fee42d583498ea7740bcf8b753197");
+			//nm.addQueryParam("client_id", "28d8d9c854554812ad8b60c150375462");
+			//nm.addQueryParam("client_secret", "7d6fee42d583498ea7740bcf8b753197");
+			nm.addQueryParam("client_id", "a49c34035aa8418d9a77ff24e0660719");
+			nm.addQueryParam("client_secret", "f9496665e3494022a00b7dbe9a5f0d9e");
 			nm.doPost("");
 
 			if ( !checkResponse() ) {
@@ -329,18 +373,6 @@ function DoLogin()
 				ServerParams.setParam("token", token);
 				ServerParams.setParam("tokenType", tokenType);
 				ServerParams.setParam("PrevLogin", ServerParams.getParam("Login"));
-
-				/*if ( tokenType == "oauth" ) {
-					nm.addQueryHeader("Authorization", getAuthorizationString());
-					nm.addQueryHeader("Expect", "");
-					nm.addQueryHeader("Connection", "close");
-					nm.doGet("http://api-fotki.yandex.ru/api/me/");
-					
-					login = regex_simple(nm.responseBody(),"http:\\/\\/api-fotki.yandex.ru\\/api\\/users\\/(.+)\\/albums\\/",0);
-					ServerParams.setParam("PrevLogin", ServerParams.getParam("Login"));
-					ServerParams.setParam("OAuthLogin", login);
-				} */
-		
 			
 				return 1;
 			} else {
@@ -379,18 +411,125 @@ function  UploadFile(FileName, options)
 		folder = "/";
 	}
 	
-	local initialRemotePath = folder + nm.urlEncode(ansiFileName); 
+	local initialRemotePath = folder + (ansiFileName); 
 	local remotePath = initialRemotePath; 
-	
+	remotePath = folder + (ansiFileName);
 	local i = 2;
-	try {
+
+	
+	if ( useRestApi() ) {
+		local url = baseUrl + "upload/?path="+nm.urlEncode(remotePath);
+
+		nm.addQueryHeader("Accept", "application/json");
+		nm.addQueryHeader("Authorization",getAuthorizationString());
+		try {
+			nm.enableResponseCodeChecking(false);
+		} catch ( ex ) {} 
+		nm.doGet(url);
+		while ( nm.responseCode() == 409 ) {
+			local ext = GetFileExtension(ansiFileName);
+			local suffix = i.tostring();
+			if ( i > 5 ) {
+				suffix = md5( random().tostring()).slice(0,4);
+			}		
+			local filename = ansiFileName.slice(0,ansiFileName.len()-ext.len()-1) + "_" + suffix;
+			
+			if ( ext.len() ) {
+				filename += "." + ext;
+			}
+			remotePath = folder + filename;
+			nm.setUrl(baseUrl + "upload/?path="+nm.urlEncode(remotePath));
+			nm.addQueryHeader("Accept", "application/json");
+			 
+			nm.addQueryHeader("Authorization",getAuthorizationString());
+			try {
+				nm.enableResponseCodeChecking(false);
+			} catch ( ex ) {} 
+			nm.doGet("");
+			i++;
+			if ( i > 10 ) {
+				return 0;
+			}
+		
+		}	
+		
+		try {
+			nm.enableResponseCodeChecking(true);
+		} catch ( ex ) {} 
+	
+		if ( nm.responseCode() == 200 ) {
+			local data = nm.responseBody();
+			local href = null;
+			local method = "PUT";
+		//	DebugMessage(data,true);
+			try {
+				local t = ParseJSON(data);
+				href = t.href;
+				method = t.method;
+			} catch ( ex ) {
+				href = regex_simple(data, "href\":\"(.+)\"", 0);
+			}
+			
+			if ( href == null || href == "" ) {
+				return 0;
+			}
+			nm.setUrl(href);
+			nm.setMethod(method);
+			nm.addQueryHeader("Authorization",getAuthorizationString());
+			nm.doUpload(FileName, "");
+			if ( nm.responseCode() != 201 ) {
+				_WriteLog("error", "Failed to upload file " + ExtractFileName(FileName)+".");
+				return 0;
+			}
+			nm.setUrl(baseUrl + "publish?path=" + nm.urlEncode(remotePath));
+			nm.addQueryHeader("Accept", "application/json");
+			//nm.addQueryHeader("Content-Length", "0");
+			nm.addQueryHeader("Transfer-Encoding", "");
+			nm.addQueryHeader("Authorization",getAuthorizationString());
+			nm.setMethod("PUT");
+			nm.doGet("","");
+			//nm.doPost("test1");
+			//_WriteLog("error", nm.responseCode().tostring());
+			//_WriteLog("error", nm.responseBody());
+			if ( nm.responseCode() == 200 ) {
+				local viewUrl = "";
+				
+				try {
+					local t = ParseJSON(nm.responseBody());
+					href = t.href;
+					method = t.method;
+				} catch ( ex ) {
+					href = regex_simple(data, "href\":\"(.+)\"", 0);
+					method = "GET";
+				}
+				nm.setMethod(method);
+				nm.addQueryHeader("Authorization",getAuthorizationString());
+				nm.doGet("https://cloud-api.yandex.net:443/v1/disk/resources?path=" + nm.urlEncode(remotePath));
+				//DebugMessage(nm.responseBody(),true);
+				if ( nm.responseCode() == 200 ) {
+					try {
+						local t = ParseJSON(nm.responseBody());
+						viewUrl = t.public_url;
+					} catch ( ex ) {
+						viewUrl = regex_simple(data, "public_url\":\"(.+)\"", 0);
+					}
+					options.setViewUrl(viewUrl);
+					return 1;
+				}
+				
+			}
+			
+		}
+		return 0;
+	}
+		try {
 	while ( checkIfExists( remotePath) ) {
 		local ext = GetFileExtension(ansiFileName);
 		local suffix = i.tostring();
 		if ( i > 2 ) {
-			i = md5( random().tostring()).slice(0,4);
+			suffix = md5( random().tostring()).slice(0,4);
 		}		
-		local filename = ansiFileName.slice(0,ansiFileName.len()-ext.len()-1) + "_" + i;
+		local filename = ansiFileName.slice(0,ansiFileName.len()-ext.len()-1) + "_" + suffix;
 		
 		if ( ext.len() ) {
 			filename += "." + ext;
@@ -398,8 +537,7 @@ function  UploadFile(FileName, options)
 		remotePath = folder + nm.urlEncode(filename);
 		i++;
 		
-	}
-	
+	}	
 	local url = "https://webdav.yandex.ru" + remotePath;
 	nm.setUrl(url);
 	nm.addQueryHeader("Authorization",getAuthorizationString());
@@ -435,7 +573,7 @@ function  UploadFile(FileName, options)
 	options.setViewUrl(viewUrl);
 	} catch ( ex ) {
 		//msgBox(ex.tostring());
-		_WriteLog("error", ex.tostring());
+		_WriteLog("error", "Exception:" + ex.tostring());
 		return 0;
 	}
 	
@@ -447,3 +585,17 @@ function GetFolderAccessTypeList()
 	local a=["Приватный", "Для всех"];
 	return a;
 }
+
+/*function GetServerParamList()
+{
+	return 
+	{
+		useWebdav = "Use WebDav",
+		token = "Token",
+		enableOAuth ="enableOAuth",
+		tokenType = "tokenType",
+		PrevLogin = "PrevLogin",
+		OAuthLogin = "OAuthLogin"
+		
+	};
+}*/

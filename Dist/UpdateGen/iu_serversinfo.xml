@@ -6,18 +6,6 @@
 		<!-- favicons -->
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
-<Info>Thanks to arhangelsoft (http://arhangelsoft.ru/).
-
-New image hosting: 
-[+] pixhost.org
-
-Supported URL-shorting services:
-[+] 6url.ru
-[+] yahs.ru
-[+] udi.by
-[+] u.to
-[+] tinyurl.com
-[+] link.ac
-[+] 8b.kz
+<Info>Yandex.Disk faster uploads
 </Info>
 </UpdatePackageSource>

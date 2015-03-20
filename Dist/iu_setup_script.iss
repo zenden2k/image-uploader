@@ -76,6 +76,8 @@ Source: "..\Data\Update\iu_core.xml"; DestDir: "{code:GetDataFolder}\Image Uploa
 Source: "..\Data\Update\iu_serversinfo.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
 Source: "..\Data\Update\iu_ffmpeg.xml"; DestDir: "{tmp}\iu_ffmpeg.xml"; Flags: ignoreversion
 Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Flags: ignoreversion
+Source: "..\Build\release\gdipluz.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Build\release\msvaaa.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "unzip.exe"; DestDir: "{tmp}"; Flags: ignoreversion
 ;Flags: deleteafterinstall
 ;Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
@@ -157,7 +159,7 @@ begin
      then
   begin
 
-    ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/gdiplus.dll', expandconstant('{tmp}\gdiplus.dll'));
+    //ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/gdiplus.dll', expandconstant('{tmp}\gdiplus.dll'));
     //http://dl.bintray.com/zenden/zenden-image-uploader/ffmpeg-1.2.12.zip
   
   end;
@@ -177,7 +179,7 @@ begin
      and (Version.Minor <1 )  
      then
   begin
-  filecopy(expandconstant('{tmp}\gdiplus.dll'),expandconstant('{app}\gdiplus.dll'),false);
+  //filecopy(expandconstant('{tmp}\gdiplus.dll'),expandconstant('{app}\gdiplus.dll'),false);
   end;
 
     if IsTaskSelected('installffmpeg') then

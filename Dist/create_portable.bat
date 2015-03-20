@@ -38,6 +38,8 @@ Copy "..\Build\release optimized\ExplorerIntegration.dll" %temp_dir%\
 Copy "..\Build\release optimized\ExplorerIntegration64.dll" %temp_dir%\
 Copy "..\Build\release\av*.dll" %temp_dir%\
 Copy "..\Build\release\sw*.dll" %temp_dir%\
+Copy "..\Build\release\gdipluz.dll" %temp_dir%\
+Copy "..\Build\release\msvaaa.dll" %temp_dir%\
 del "%temp_dir%\Lang\default.lng"
 
 cd %temp_dir%

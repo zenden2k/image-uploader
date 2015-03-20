@@ -33,6 +33,13 @@ Toolbar::~Toolbar()
 bool Toolbar::Create(HWND parent, bool child )
 {
 	RECT rc = {0, 0, 1,1};
+	if ( orientation_ == orHorizontal ) {
+		rc.left = 60;
+		rc.right = 70;
+	} else {
+		rc.top = 60;
+		rc.bottom = 70;
+	}
 	HWND wnd = TParent::Create(parent, rc, _T("test"), ( child ? WS_CHILD :WS_POPUP|WS_CLIPCHILDREN) ,child?0:( WS_EX_LAYERED|  WS_EX_NOACTIVATE|WS_EX_TOOLWINDOW) /*|WS_EX_TOOLWINDOW*/);
 	if ( !wnd ) {
 		LOG(ERROR) << WinUtils::GetLastErrorAsString();
@@ -163,10 +170,10 @@ LRESULT Toolbar::OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 LRESULT Toolbar::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	if ( wParam == WA_CLICKACTIVE  || wParam == WA_ACTIVE) {
+	/*if ( wParam == WA_CLICKACTIVE  || wParam == WA_ACTIVE) {
 		::SetActiveWindow((HWND)lParam);
 		bHandled = true;
-	}
+	}*/
 	return 0;
 }
 

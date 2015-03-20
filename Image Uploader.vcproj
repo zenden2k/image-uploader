@@ -617,7 +617,7 @@
 				FavorSizeOrSpeed="2"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL="
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0110"
 				StringPooling="true"
 				MinimalRebuild="false"
 				ExceptionHandling="1"
@@ -645,7 +645,7 @@
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="true"
 				AdditionalOptions="/CRINKLER"
-				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avformat.lib avutil.lib swscale.lib avcodec.lib wininet.lib jsoncpp.lib Normaliz.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
+				AdditionalDependencies="gdipluz.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avformat.lib avutil.lib swscale.lib avcodec.lib wininet.lib jsoncpp.lib Normaliz.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib&quot;;&quot;$(SolutionDir)\Contrib\Lib\Release&quot;"
 				GenerateManifest="false"
@@ -1066,6 +1066,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\res\ImageEditor\colorpicker.cur"
+				>
+			</File>
+			<File
 				RelativePath="Source\res\Error.ico"
 				>
 			</File>
@@ -1102,11 +1106,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-link.ico"
+				RelativePath=".\Source\res\icon-link.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-link.ico"
+				RelativePath=".\res\icon-link.ico"
 				>
 			</File>
 			<File
@@ -1122,11 +1126,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-reload.ico"
+				RelativePath=".\Source\res\icon-reload.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-reload.ico"
+				RelativePath=".\res\icon-reload.ico"
 				>
 			</File>
 			<File
@@ -1138,11 +1142,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-user.ico"
+				RelativePath=".\res\icon-user.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-user.ico"
+				RelativePath=".\Source\res\icon-user.ico"
 				>
 			</File>
 			<File
@@ -1178,19 +1182,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_deleteitem.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\res\icon_deleteitem.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_down.ico"
+				RelativePath=".\res\icon_deleteitem.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\res\icon_down.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon_down.ico"
 				>
 			</File>
 			<File
@@ -1206,19 +1210,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_folder2.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\res\icon_folder2.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_folder2.png"
+				RelativePath=".\Source\res\icon_folder2.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\res\icon_folder2.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon_folder2.png"
 				>
 			</File>
 			<File
@@ -1238,15 +1242,79 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_arrow.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_bluring_rectangle.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_brush.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_color_picker.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_crop.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_ellipse.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_filled_ellipse.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_filled_rectangle.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_filled_rounded_rectangle.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_line.png"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\res\ImageEditor\icon_tool_move.png"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_up.ico"
+				RelativePath=".\Source\res\ImageEditor\icon_tool_pencil.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_rectangle.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_rounded_rectangle.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_selection.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_text.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_undo.png"
 				>
 			</File>
 			<File
 				RelativePath=".\res\icon_up.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon_up.ico"
 				>
 			</File>
 			<File

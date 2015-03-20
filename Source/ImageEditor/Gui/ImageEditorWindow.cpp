@@ -590,7 +590,7 @@ LRESULT ImageEditorWindow::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 void ImageEditorWindow::createToolbars()
 {
 	toolbarImageList_.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
-	RECT rc = {0,0,500,30};
+	RECT rc = {0,0,30,30};
 	//GetClientRect(&rc);
 	const int IDC_DUMMY = 100;
 

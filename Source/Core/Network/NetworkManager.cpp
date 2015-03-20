@@ -172,6 +172,7 @@ NetworkManager::NetworkManager(void)
 	m_UploadBufferSize = 65536;
 	m_headerFuncData.funcType = funcTypeHeader;
 	m_headerFuncData.nmanager = this;
+	m_nUploadDataOffset = 0;
 	curl_easy_setopt(curl_handle, CURLOPT_COOKIELIST, "");
 	setUserAgent("Mozilla/5.0");
 
@@ -194,7 +195,8 @@ NetworkManager::NetworkManager(void)
 #endif
 	curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 1L); 
 	curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 2L);
-
+	curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L); 
+	curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0L);
 
 	//We want the referrer field set automatically when following locations
 	curl_easy_setopt(curl_handle, CURLOPT_AUTOREFERER, 1L); 
@@ -369,10 +371,14 @@ bool NetworkManager::doPost(const NString& data)
 				postData+= urlEncode(it->name)+"="+urlEncode(it->value)+"&";
 			}
 		}
-	if(data.empty())
+
+	if(data.empty()) {
 		curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, postData.c_str());
-	else
+	}
+	else {
 		curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, data.c_str());
+	}
+
 	m_currentActionType = atPost;	
 	curl_result = curl_easy_perform(curl_handle);
 	return private_on_finish_request();
@@ -549,11 +555,14 @@ void NetworkManager::private_cleanup_after()
 	m_method = "";
 	curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, (curl_off_t )-1);
 
-	m_uploadData = "";
+	m_uploadData.clear();
 	m_uploadingFile = NULL;
 	chunkOffset_ = -1;
 	chunkSize_ = -1;
 	enableResponseCodeChecking_ = true;
+	m_nUploadDataOffset = 0;
+	/*curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, 0L);
+	curl_easy_setopt(curl_handle, CURLOPT_READDATA, 0L);*/
 	if(chunk_)
 	{
 		curl_slist_free_all(chunk_);
@@ -588,11 +597,12 @@ size_t NetworkManager::private_read_callback(void *ptr, size_t size, size_t nmem
 
 bool NetworkManager::doUpload(const NString& fileName, const NString &data)
 {
-	if(data.empty())
+	if(!fileName.empty())
 	{
 		m_uploadingFile = IuCoreUtils::fopen_utf8(fileName.c_str(), "rb"); /* open file to upload */
 		if(!m_uploadingFile) 
 		{
+			LOG(ERROR)<< "Failed to open file '" << fileName << "'";
 			return false; /* can't continue */
 		}
 		m_CurrentFileSize = IuCoreUtils::getFileSize(fileName);
