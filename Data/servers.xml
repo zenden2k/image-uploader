@@ -235,6 +235,12 @@
 	</Actions>
 	<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
+	<Server Name="rupix.org">
+	<Actions>
+		<Action Type="upload" Url="http://rupix.org/upload.php" PostParams="userfile[]=%filename%;private_upload=0;upload_type=standard;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:0;Image:2;"/>
+	</Actions>
+	<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
 	<Server2 Name="clck.ru" Debug="0" Type="urlshortening">
 		<Actions>
 			<Action Type="post" Url="https://clck.ru/--" PostParams="url=$(_ORIGINALURL)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
@@ -277,8 +283,12 @@
 		</Actions>
 		<Result DirectUrlTemplate="stub" />
 	</Server>
-	
-	
+	<Server Name="datafilehost.com" FileHost="1">
+	<Actions>
+		<Action Type="upload" Url="http://www.datafilehost.com/upload.php" PostParams="MAX_FILE_SIZE=158334976;upfile=%filename%;" RegExp="name='download' size='\d+' value='(.+?)' " AssignVars="File:0;"/>
+	</Actions>
+	<Result DownloadUrlTemplate="$(File)" />
+	</Server>
 	<!--
 		Since 1.3.x release server declaration for "urlshortening" server node must be "Server2",
 	-->
