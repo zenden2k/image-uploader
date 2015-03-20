@@ -20,7 +20,7 @@ function  ShortenUrl(url, options)
 	nm.doPost(ToJSON(postData));
 
 
-	local id = regex_simple(nm.responseBody(), "id\" *: *\"(.+)\"", 0);
+	local id = ParseJSON(nm.responseBody()).id;
 
 	options.setDirectUrl(id);
 	options.setViewUrl(id);

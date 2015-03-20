@@ -668,6 +668,7 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		func(&NetworkManager::enableResponseCodeChecking, "enableResponseCodeChecking").
 		func(&NetworkManager::setChunkSize, "setChunkSize").
 		func(&NetworkManager::setChunkOffset, "setChunkOffset").
+		func(&NetworkManager::setUserAgent, "setUserAgent").
 		func(&NetworkManager::setReferer, "setReferer");
 
 

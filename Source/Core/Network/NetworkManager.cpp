@@ -176,7 +176,6 @@ NetworkManager::NetworkManager(void)
 	curl_easy_setopt(curl_handle, CURLOPT_COOKIELIST, "");
 	setUserAgent("Mozilla/5.0");
 
-
 	curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, private_static_writer);
 	curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &m_bodyFuncData);	
 	curl_easy_setopt(curl_handle, CURLOPT_WRITEHEADER, &m_headerFuncData);
@@ -195,8 +194,8 @@ NetworkManager::NetworkManager(void)
 #endif
 	curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 1L); 
 	curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 2L);
-	curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L); 
-	curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0L);
+	//curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L); 
+	//curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0L);
 
 	//We want the referrer field set automatically when following locations
 	curl_easy_setopt(curl_handle, CURLOPT_AUTOREFERER, 1L); 
@@ -338,7 +337,7 @@ void NetworkManager::addQueryHeader(const NString& name, const NString& value)
 {
 	CustomHeaderItem chi;
 	chi.name = name;
-	chi.value = nm_trimStr(value);
+	chi.value = /*nm_trimStr*/(value);
 	m_QueryHeaders.push_back(chi);
 }
 
@@ -412,7 +411,12 @@ void NetworkManager::private_initTransfer()
 
 	for(it = m_QueryHeaders.begin(); it!=end; it++)
 	{
-		chunk_ = curl_slist_append(chunk_, (it->name + ": " + it->value).c_str());
+		if ( it->value.empty() ) {
+			chunk_ = curl_slist_append(chunk_, (it->name + ";" + it->value).c_str());
+		} else {
+			chunk_ = curl_slist_append(chunk_, (it->name + ": " + it->value).c_str());
+		}
+		
 	}
 
 	curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, chunk_);

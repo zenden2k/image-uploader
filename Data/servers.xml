@@ -215,12 +215,26 @@
 	<Server Name="tinypic.com" Plugin="tinypic">
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" />
 	</Server>
-	<!--<Server Name="mepic.ru">
+	<Server Name="simplest-image-hosting.net" Debug="0">
+		<Actions>
+			<Action Type="upload" Url="http://simplest-image-hosting.net/" PostParams="Filename=$(_FILENAME);fileSource=file;fileName=%filename%;" RegExp="http:\/\/simplest-image-hosting\.net\/(png|jpg|gif|jpeg)-([0-9])-(.*)" AssignVars="Format:0;Number:1;Name:2"/>
+			<Action Type="get" Url="http://simplest-image-hosting.net/$(Format)-$(Number)-$(Name)" RegExp="value=&quot;http:\/\/6g6\.eu\/(.+?)'" AssignVars="ShortPrefix:0;"/>
+		</Actions>
+		<!-- Hotlinking not supported :( ImageUrlTemplate="http://i$(Number).simplest-image-hosting.net/picture/$(Name).$(Format)"  .*?&lt;img src=&quot;http:\/\/i\d+\.simplest-image-hosting\.net\/(.+?)&quot;  DirectPath:1 -->
+		<Result  ThumbUrlTemplate="http://i$(Number).simplest-image-hosting.net/thumbnail/$(Name).$(Format)" DownloadUrlTemplate="http://6g6.eu/$(ShortPrefix)$(Number)-$(Name).$(Format)"/>
+	</Server>
+	<Server Name="mepic.ru" Debug="0">
 		<Actions>
 			<Action Type="upload" Url="http://mepic.ru/upload/" PostParams="apic=%filename%;title=;" RegExp="\[url=(.+?)\]\[img\](.*?)\[\/img\]" AssignVars="Image:0;Thumb:1;"/>
 		</Actions>
-		<Result ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(ViewUrl)"/>
-	</Server>-->
+		<Result ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(Image)"/>
+	</Server>
+	<Server Name="ipic.su">
+	<Actions>
+		<Action Type="upload" Url="http://ipic.su/" PostParams="link=/;action=loadimg;client=ipic.su;image=%filename%;name=;desc=;cropselect=800;tnsize=150;quality=85;" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
+	</Actions>
+	<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
 	<Server2 Name="clck.ru" Debug="0" Type="urlshortening">
 		<Actions>
 			<Action Type="post" Url="https://clck.ru/--" PostParams="url=$(_ORIGINALURL)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>

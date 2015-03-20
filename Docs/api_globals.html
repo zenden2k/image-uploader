@@ -73,8 +73,8 @@ Returns application's current locale. For example : "en_US", "ru_RU".
 Возвращает размер файла в байтах.
 <code class="f"><u>float</u> GetFileSizeDouble(<u>string</u> <i>fileName</i>) <span>version >= 1.3.0</span></code>
 Возвращает размер файла в байтах (для файлов больше 2 ГБ).
-<code class="f"><u>string</u> JsonEscapeString(<u>string</u> <i>text</i>)</code>
-Экранирует строку для использования в JSON.
+<code class="f"><u>string</u> JsonEscapeString(<u>string</u> <i>text</i>)<span>deprecated</span></code>
+Экранирует строку для использования в JSON. Возвращает строку вместе с кавычками. Вместо нее следует использовать функцию ToJSON.
 <code class="f"><u>string</u> md5(<u>string</u> <i>str</i>)</code>
 Возвращает md5-хэш строки в виде строки.
 <code class="f"><u>string</u> md5_file(<u>string</u> <i>filename</i>)<span>version >= 1.2.7 <b>build 4176</b></span></code>
