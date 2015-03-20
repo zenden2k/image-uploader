@@ -318,6 +318,8 @@ public:
 		bool SendToContextMenu_changed;
 		bool QuickUpload;
 
+		bool IsPortable;
+
 		CString ImageEditorPath;
 		CString VideoFolder,ImagesFolder;
 

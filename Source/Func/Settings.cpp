@@ -324,6 +324,7 @@ void CSettings::FindDataFolder()
 	if (IsDirectory(WinUtils::GetAppFolder() + _T("Data"))) {
 		DataFolder     = WinUtils::GetAppFolder() + _T("Data\\");
 		SettingsFolder = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(DataFolder));
+		IsPortable = true;
 		return;
 	}
 
@@ -374,6 +375,7 @@ void CSettings::FindDataFolder()
 
 CSettings::CSettings()
 {
+	IsPortable = false;
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 	FindDataFolder();
 	if (!IsDirectory(DataFolder))

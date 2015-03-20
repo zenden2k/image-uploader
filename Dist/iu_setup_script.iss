@@ -24,8 +24,8 @@ DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=output\
-#ifdef GDIPLUS
-OutputBaseFilename=image-uploader-{#_APP_VER}-build-{#BUILD}-setup-gdiplus
+#ifdef WIN2K
+OutputBaseFilename=image-uploader-{#_APP_VER}-build-{#BUILD}-setup-win2k
 #else 
 #ifdef FFMPEG
 OutputBaseFilename=image-uploader-{#_APP_VER}-build-{#BUILD}-setup-ffmpeg
@@ -62,7 +62,11 @@ Name: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Permissions: users-modif
 Name: "{code:GetDataFolder}\Image Uploader\Servers"; Permissions: users-modify
 
 [Files]
+#ifdef WIN2K
+Source: "..\Build\release optimized\Image Uploader2k.exe"; DestName:"Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
+#else
 Source: "..\Build\release optimized\Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
+#endif
 Source: "..\Build\release optimized\curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lang\*.lng"; Excludes: "default.*"; DestDir: "{app}\Lang"; Flags: ignoreversion
 Source: "..\Build\release optimized\Modules\*"; DestDir: "{app}\Modules"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -76,8 +80,7 @@ Source: "..\Data\Update\iu_core.xml"; DestDir: "{code:GetDataFolder}\Image Uploa
 Source: "..\Data\Update\iu_serversinfo.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
 Source: "..\Data\Update\iu_ffmpeg.xml"; DestDir: "{tmp}\iu_ffmpeg.xml"; Flags: ignoreversion
 Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Flags: ignoreversion
-Source: "..\Build\release\gdipluz.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\Build\release\msvaaa.dll"; DestDir: "{app}"; Flags: ignoreversion
+
 Source: "unzip.exe"; DestDir: "{tmp}"; Flags: ignoreversion
 ;Flags: deleteafterinstall
 ;Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
@@ -86,11 +89,14 @@ Source: "..\Build\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}";
 
 #ifdef FFMPEG
 Source: "..\Build\release\av*.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\Build\release\swscale*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Build\release\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion
 #endif
 Source: "..\Build\release optimized\ExplorerIntegration.dll";DestDir: "{app}";
-#ifdef GDIPLUS
-Source: "..\Dll\Gdiplus.dll"; DestDir: "{app}"; Flags: ignoreversion
+#ifdef WIN2K
+Source: "Dll\Gdiplus.dll"; DestDir: "{app}"; Flags: ignoreversion
+#else 
+Source: "Dll\gdipluz.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "Dll\msvaaa.dll"; DestDir: "{app}"; Flags: ignoreversion
 #endif
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
