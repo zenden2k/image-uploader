@@ -45,7 +45,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-MP$(NUMBER_OF_PROCESSORS)"
+				AdditionalOptions="/MP$(NUMBER_OF_PROCESSORS)"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX;TIXML_USE_STL;PCRE_STATIC;CURL_STATICLIB;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100"
@@ -72,10 +72,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zlibd.lib minizipd.lib zthread.lib gdiplus.lib strmbasd.lib libcurld_imp.lib Ws2_32.lib avcodec.lib avformat.lib avutil.lib swscale.lib dwmapi.lib squirrelD.lib sqstdlibD.lib sqplusD.lib ssleay32.lib libeay32.lib pcred.lib pcre++.lib wininet.lib winmm.lib jsoncpp.lib Normaliz.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
+				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zlibd.lib minizipd.lib zthread.lib gdiplus.lib strmbasd.lib libcurld_imp.lib Ws2_32.lib avcodec.lib avformat.lib avutil.lib swscale.lib dwmapi.lib squirrelD.lib sqstdlibD.lib sqplusD.lib ssleay32.lib libeay32.lib pcred.lib pcre++.lib wininet.lib winmm.lib jsoncpp.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib\Debug&quot;;&quot;$(SolutionDir)Contrib\Lib\&quot;"
 				IgnoreDefaultLibraryNames="msvcrt.lib;LIBCMT.lib;"
-				DelayLoadDLLs="uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Normaliz.dll;Iphlpapi.dll;Netapi32.dll"
+				DelayLoadDLLs="uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Iphlpapi.dll;Netapi32.dll"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
@@ -247,21 +247,22 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avformat.lib avutil.lib swscale.lib avcodec.lib wininet.lib jsoncpp.lib Normaliz.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
+				AdditionalOptions=" /ignore:4099"
+				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avformat.lib avutil.lib swscale.lib avcodec.lib wininet.lib jsoncpp.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib\Release&quot;;&quot;$(SolutionDir)\Contrib\Lib\&quot;"
 				GenerateManifest="false"
 				AdditionalManifestDependencies=""
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="msvcprt.lib MSVCRT"
-				DelayLoadDLLs="uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Normaliz.dll;Iphlpapi.dll;Netapi32.dll"
-				GenerateDebugInformation="true"
-				AssemblyDebug="1"
-				GenerateMapFile="true"
+				DelayLoadDLLs="uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Iphlpapi.dll;Netapi32.dll"
+				GenerateDebugInformation="false"
+				AssemblyDebug="0"
+				GenerateMapFile="false"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				LinkTimeCodeGeneration="0"
+				LinkTimeCodeGeneration="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"
@@ -614,7 +615,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-MP$(NUMBER_OF_PROCESSORS)"
 				Optimization="3"
-				FavorSizeOrSpeed="2"
+				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100"
@@ -644,20 +645,19 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="true"
-				AdditionalOptions="/CRINKLER"
-				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avformat.lib avutil.lib swscale.lib avcodec.lib wininet.lib jsoncpp.lib Normaliz.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
+				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avformat.lib avutil.lib swscale.lib avcodec.lib wininet.lib jsoncpp.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib&quot;;&quot;$(SolutionDir)\Contrib\Lib\Release&quot;"
 				GenerateManifest="false"
 				AdditionalManifestDependencies=""
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="msvcprt.lib MSVCRT"
-				DelayLoadDLLs="uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Normaliz.dll;Iphlpapi.dll;Netapi32.dll"
+				DelayLoadDLLs="uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Iphlpapi.dll;Netapi32.dll"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				OptimizeForWindows98="1"
+				OptimizeForWindows98="0"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"
@@ -784,20 +784,14 @@
 		</Configuration>
 		<Configuration
 			Name="Release Win2k|Win32"
-			OutputDirectory="$(SolutionDir)\Build\Release optimized\"
-			IntermediateDirectory="$(SolutionDir)\Build\Temp\$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			CharacterSet="1"
-			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine=""
-				ExcludedFromBuild="false"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
-				CommandLine=""
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -807,29 +801,9 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				GenerateTypeLibrary="false"
-				OutputDirectory="$(SolutionDir)Build\Temp\Midl\$(ConfigurationName)"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-MP$(NUMBER_OF_PROCESSORS)"
-				Optimization="3"
-				FavorSizeOrSpeed="2"
-				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100"
-				StringPooling="true"
-				MinimalRebuild="false"
-				ExceptionHandling="1"
-				RuntimeLibrary="0"
-				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				WarnAsError="false"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="0"
-				ForcedIncludeFiles="stdafx.h"
-				ForcedUsingFiles="stdafx.h"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -839,28 +813,9 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-				CommandLine=""
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				LinkLibraryDependencies="true"
-				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avformat.lib avutil.lib swscale.lib avcodec.lib wininet.lib jsoncpp.lib Normaliz.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
-				OutputFile="$(OutDir)\$(ProjectName)2k.exe"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib&quot;;&quot;$(SolutionDir)\Contrib\Lib\Release&quot;"
-				GenerateManifest="false"
-				AdditionalManifestDependencies=""
-				IgnoreAllDefaultLibraries="false"
-				IgnoreDefaultLibraryNames="msvcprt.lib MSVCRT"
-				DelayLoadDLLs="uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Normaliz.dll;Iphlpapi.dll;Netapi32.dll"
-				GenerateDebugInformation="true"
-				SubSystem="2"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				OptimizeForWindows98="0"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
-				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -882,7 +837,6 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration
@@ -1644,14 +1598,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release optimized|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Win2k|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2588,14 +2534,6 @@
 				</File>
 				<File
 					RelativePath=".\Source\ImageEditor\InputBox.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Source\ImageEditor\Logger.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Source\ImageEditor\Logger.h"
 					>
 				</File>
 				<File
