@@ -266,11 +266,14 @@ protected:
 	int height_;
 };
 
+#if !defined(_MSC_VER) || _MSC_VER < 1800 
 
 float round(float number)
 {
 	return number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5);
 }
+
+#endif
 
 int* boxesForGauss(float sigma, int n)  // standard deviation, number of boxes
 {
