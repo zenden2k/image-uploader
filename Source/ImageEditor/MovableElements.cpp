@@ -426,7 +426,7 @@ FilledRectangle::FilledRectangle(Canvas* canvas, int startX, int startY, int end
 {
 }
 
-#if GDIPVER >= 0x0110 
+
 BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY) : MovableElement(canvas)
 {
 	blurRadius_ = blurRadius;
@@ -444,10 +444,11 @@ float BlurringRectangle::getBlurRadius()
 
 void BlurringRectangle::render(Painter* gr)
 {
-	//drawDashedRectangle_ = isSelected();
-	LOG(INFO) << "rendering";
+	drawDashedRectangle_ = isSelected();
 	using namespace Gdiplus;
-	Gdiplus::Bitmap* background = canvas_->getBufferBitmap();
+	Bitmap* background = canvas_->getBufferBitmap();
+	#if GDIPVER >= 0x0110 
+
 	Blur blur;
 	BlurParams blurParams;
 	blurParams.radius = blurRadius_;
@@ -457,7 +458,9 @@ void BlurringRectangle::render(Painter* gr)
 	RectF sourceRect(getX(), getY(), getWidth(), getHeight());
 
 	st = gr->DrawImage(background,  &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
-
+	#else
+	ApplyGaussianBlur(background, getX(), getY(), getWidth(), getHeight(), blurRadius_);
+	#endif
 }
 
 ImageEditor::ElementType BlurringRectangle::getType() const
@@ -465,7 +468,7 @@ ImageEditor::ElementType BlurringRectangle::getType() const
 	return etBlurringRectangle;
 }
 
-#endif
+
 
 RoundedRectangle::RoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY,bool filled /*= false */) 
 				: Rectangle(canvas, startX, startY, endX,endY, filled)

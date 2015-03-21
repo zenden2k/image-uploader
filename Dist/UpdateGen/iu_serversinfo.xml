@@ -6,6 +6,11 @@
 		<!-- favicons -->
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
-<Info>Yandex.Disk faster uploads
+<Info>
+[+]mepic.ru
+[+]ipic.su
+[+]rupix.org
+[+]simplest-image-hosting.net
+[+]datafilehost.com
 </Info>
 </UpdatePackageSource>

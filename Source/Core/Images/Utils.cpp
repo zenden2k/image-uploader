@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Core/Logging.h>
 #include <Func/WinUtils.h>
 #include <3rdpart/QColorQuantizer.h>
+#include <math.h>
+#include <stdint.h>
 using namespace Gdiplus;
 
 
@@ -235,4 +237,155 @@ Gdiplus::Bitmap* IconToBitmap(HICON ico)
 
 	temp.UnlockBits(&lockedBitmapData);
 	return image;
+}
+
+class DummyBitmap {
+public:
+	DummyBitmap(uint8_t* data,  int stride, int width, int height, int channel=0) {
+		data_ = data;
+		stride_ = stride;
+		width_ = width;
+		channel_ = channel;
+		dataSize_ = stride * height;
+		height_ = height;
+	}
+	inline uint8_t& operator[](int i) {
+		int pos = (i/width_)*stride_ + (i%width_)*4 + channel_;
+		if ( pos >= dataSize_) {
+			return data_[0];
+		} else {
+			return data_[pos];
+		}
+	}
+protected:
+	uint8_t* data_;
+	int stride_;
+	int channel_;
+	int width_;
+	int dataSize_;
+	int height_;
+};
+
+
+float round(float number)
+{
+	return number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5);
+}
+
+int* boxesForGauss(float sigma, int n)  // standard deviation, number of boxes
+{
+	float wIdeal = sqrt((12*sigma*sigma/n)+1);  // Ideal averaging filter width 
+	int wl = floor(wIdeal);  if(wl%2==0) wl--;
+	int wu = wl+2;
+
+	float mIdeal = (12*sigma*sigma - n*wl*wl - 4*n*wl - 3*n)/(-4*wl - 4);
+	float m = round(mIdeal);
+
+
+	int* sizes = new int[n];
+	for(int i=0; i<n; i++) sizes[i]=i<m?wl:wu;
+	return sizes;
+}
+
+void boxBlurH_4 (DummyBitmap& scl, DummyBitmap& tcl, int w, int h, int r) {
+	float iarr = 1.0 / (r+r+1);
+	for(int i=0; i<h; i++) {
+		int ti = i*w, li = ti, ri = ti+r;
+		int fv = scl[ti], lv = scl[ti+w-1], val = (r+1)*fv;
+		for(int j=0; j<r; j++) val += scl[ti+j];
+		for(int j=0  ; j<=r ; j++) { 
+			val += scl[ri++] - fv       ;   
+			tcl[ti++] = round(val*iarr); }
+		for(int j=r+1; j<w-r; j++) { val += scl[ri++] - scl[li++];   tcl[ti++] = round(val*iarr); }
+		for(int j=w-r; j<w  ; j++) { val += lv        - scl[li++];   tcl[ti++] = round(val*iarr); }
+	}
+}
+void boxBlurT_4 (DummyBitmap&  scl, DummyBitmap&  tcl, int w, int h, int r) {
+	float iarr = 1.0 / (r+r+1);
+	for(int i=0; i<w; i++) {
+		int ti = i, li = ti, ri = ti+r*w;
+		int fv = scl[ti], lv = scl[ti+w*(h-1)], val = (r+1)*fv;
+		for(int j=0; j<r; j++) val += scl[ti+j*w];
+		for(int j=0  ; j<=r ; j++) { 
+			val += scl[ri] - fv     ;  
+			tcl[ti] = round(val*iarr);  
+			ri+=w; 
+			ti+=w; }
+		for(int j=r+1; j<h-r; j++) { val += scl[ri] - scl[li];  tcl[ti] = round(val*iarr);  li+=w; ri+=w; ti+=w; }
+		for(int j=h-r; j<h  ; j++) { val += lv      - scl[li];  tcl[ti] = round(val*iarr);  li+=w; ti+=w; }
+	}
+}
+
+void boxBlur_4 (DummyBitmap& scl, DummyBitmap& tcl, int w, int h, int r) {
+	//for(int i=0; i<scl.length; i++) tcl[i] = scl[i];
+	boxBlurH_4(tcl, scl, w, h, r);
+	boxBlurT_4(scl, tcl, w, h, r);
+}
+
+
+void gaussBlur_4 (DummyBitmap& scl, DummyBitmap& tcl, int w, int h, int r) {
+	int* bxs = boxesForGauss(r, 3);
+	boxBlur_4 (scl, tcl, w, h, (bxs[0]-1)/2);
+	boxBlur_4 (tcl, scl, w, h, (bxs[1]-1)/2);
+	boxBlur_4 (scl, tcl, w, h, (bxs[2]-1)/2);
+	delete bxs;
+}
+uint8_t *prevBuf = 0;
+int prevSize=0;
+
+
+void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radius) {
+	using namespace Gdiplus;
+	Rect rc(x, y, w, h);
+
+	BitmapData dataSource;
+
+
+	if (bm->LockBits(& rc, ImageLockModeRead|ImageLockModeWrite, PixelFormat32bppARGB, & dataSource) == Ok)
+	{
+		uint8_t * source= (uint8_t *) dataSource.Scan0;
+		UINT stride;
+		if (dataSource.Stride > 0) { stride = dataSource.Stride;
+		} else {
+			stride = - dataSource.Stride;
+		}
+		uint8_t *buf;
+		if ( prevBuf && prevSize >= stride * h ) {
+			buf = prevBuf;
+		} else {
+			delete[] prevBuf;
+			buf = new uint8_t[stride * h];
+			prevSize = stride * h;
+			prevBuf = buf;
+		}
+		
+		memcpy(buf, source,stride * h);
+
+		//bm->UnlockBits(&dataSource);
+
+		DummyBitmap srcR(source,  stride, w, h, 0);
+		DummyBitmap dstR(buf,  stride, w,h, 0);
+		DummyBitmap srcG(source,  stride, w, h, 1);
+		DummyBitmap dstG(buf,  stride, w,h, 1);
+		DummyBitmap srcB(source,  stride,  w, h,2);
+		DummyBitmap dstB(buf,  stride, w, h, 2);
+		/*DummyBitmap srcB(source,  stride,  w, h,3);
+		DummyBitmap dstB(buf,  stride, w, h, 3);*/
+		gaussBlur_4(srcR, dstR, w, h, radius);
+		gaussBlur_4(srcG, dstG, w, h, radius);
+		gaussBlur_4(srcB, dstB, w, h, radius);
+		/*buf2[rand() % stride * h]=0;*/
+		//memset(buf2, 255, stride * h/2);
+		/*-if (bm->LockBits(& rc, ImageLockModeWrite, PixelFormat24bppRGB, & dataSource) == Ok)
+		{
+			memcpy(pRowSource ,  buf2,stride * h);
+			bm->UnlockBits(&dataSource);
+		}*/
+		//gaussBlur_4(srcR, dstR, w, h, 10);
+		//memcpy(pRowSource ,  buf,stride * h);
+		memcpy(source ,  buf,stride * h);
+		bm->UnlockBits(&dataSource);
+		//delete[] buf;
+	//	delete[] buf2;
+	}
 }

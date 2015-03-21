@@ -35,7 +35,7 @@ Canvas::Canvas( HWND parent ) {
 	selection_ = 0;
 	canvasChanged_ = true;
 	fullRender_ = true;
-	blurRadius_ = 6;
+	blurRadius_ = 5;
 	blurRectanglesCount_ = 0;
 	createDoubleBuffer();
 }
@@ -317,7 +317,9 @@ void Canvas::setDrawingToolType(DrawingToolType toolType, bool notify ) {
 		currentDrawingTool_ = new PenTool( this );
 	} else if ( toolType == dtBrush) {
 		currentDrawingTool_ = new BrushTool( this );
-	} else if ( toolType == dtBlur) {
+	} else if ( toolType == dtMarker) {
+		currentDrawingTool_ = new MarkerTool( this );
+	}else if ( toolType == dtBlur) {
 		#if GDIPVER >= 0x0110 
 		currentDrawingTool_ = new BlurTool( this );
 		#else
@@ -518,7 +520,7 @@ void Canvas::updateView( const CRgn& region ) {
 
 void Canvas::createDoubleBuffer() {
 //	delete buffer_;
-	buffer_ = ZThread::CountedPtr<Gdiplus::Bitmap>(new Gdiplus::Bitmap( canvasWidth_, canvasHeight_ ));
+	buffer_ = ZThread::CountedPtr<Gdiplus::Bitmap>(new Gdiplus::Bitmap( canvasWidth_, canvasHeight_, PixelFormat32bppARGB  ));
 }
 
 void Canvas::setCursor(CursorType cursorType)

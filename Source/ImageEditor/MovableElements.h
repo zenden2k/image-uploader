@@ -51,7 +51,7 @@ public:
 	CropOverlay(Canvas* canvas, int startX, int startY, int endX,int endY);
 	void render(Painter* gr);
 };
-#if GDIPVER >= 0x0110 
+
 class BlurringRectangle: public MovableElement {
 public:
 	BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY);
@@ -64,7 +64,7 @@ protected:
 	float blurRadius_;
 
 };
-#endif
+
 class Rectangle: public MovableElement {
 public:
 	Rectangle(Canvas* canvas, int startX, int startY, int endX,int endY,bool filled = false );

@@ -62,11 +62,7 @@ Name: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Permissions: users-modif
 Name: "{code:GetDataFolder}\Image Uploader\Servers"; Permissions: users-modify
 
 [Files]
-#ifdef WIN2K
-Source: "..\Build\release optimized\Image Uploader2k.exe"; DestName:"Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
-#else
 Source: "..\Build\release optimized\Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
-#endif
 Source: "..\Build\release optimized\curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lang\*.lng"; Excludes: "default.*"; DestDir: "{app}\Lang"; Flags: ignoreversion
 Source: "..\Build\release optimized\Modules\*"; DestDir: "{app}\Modules"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -92,12 +88,6 @@ Source: "..\Build\release\av*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Build\release\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion
 #endif
 Source: "..\Build\release optimized\ExplorerIntegration.dll";DestDir: "{app}";
-#ifdef WIN2K
-Source: "Dll\Gdiplus.dll"; DestDir: "{app}"; Flags: ignoreversion
-#else 
-Source: "Dll\gdipluz.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "Dll\msvaaa.dll"; DestDir: "{app}"; Flags: ignoreversion
-#endif
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -165,7 +155,7 @@ begin
      then
   begin
 
-    //ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/gdiplus.dll', expandconstant('{tmp}\gdiplus.dll'));
+    ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/gdiplus.dll', expandconstant('{tmp}\gdiplus.dll'));
     //http://dl.bintray.com/zenden/zenden-image-uploader/ffmpeg-1.2.12.zip
   
   end;
@@ -185,7 +175,7 @@ begin
      and (Version.Minor <1 )  
      then
   begin
-  //filecopy(expandconstant('{tmp}\gdiplus.dll'),expandconstant('{app}\gdiplus.dll'),false);
+  filecopy(expandconstant('{tmp}\gdiplus.dll'),expandconstant('{app}\gdiplus.dll'),false);
   end;
 
     if IsTaskSelected('installffmpeg') then

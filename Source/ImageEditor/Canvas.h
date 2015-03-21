@@ -27,7 +27,7 @@ class Canvas {
 		
 		enum DrawingToolType {
 			dtNone, dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtFilledRectangle, dtText, dtCrop, dtMove, dtSelection, dtBlur, dtBlurrringRectangle, dtColorPicker,
-			dtRoundedRectangle, dtEllipse, dtFilledRoundedRectangle, dtFilledEllipse
+			dtRoundedRectangle, dtEllipse, dtFilledRoundedRectangle, dtFilledEllipse, dtMarker
 		};
 
 		enum UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, 
@@ -111,6 +111,7 @@ class Canvas {
 		void setBlurRadius(float radius);
 		bool hasBlurRectangles();
 		void showOverlay(bool show);
+		void updateView( RECT boundingRect );
 		fastdelegate::FastDelegate4<int,int,int,int> onCropChanged;
 		fastdelegate::FastDelegate4<int,int,int,int> onCropFinished;
 		fastdelegate::FastDelegate1<DrawingToolType> onDrawingToolChanged;
@@ -125,7 +126,7 @@ class Canvas {
 		friend class CropTool;
 	private:
 		void init();
-		void updateView( RECT boundingRect );
+		
 		void updateView( const CRgn& region );
 
 		void createDoubleBuffer();
