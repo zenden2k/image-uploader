@@ -1307,11 +1307,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-link.ico"
+				RelativePath=".\Source\res\icon-link.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-link.ico"
+				RelativePath=".\res\icon-link.ico"
 				>
 			</File>
 			<File
@@ -1327,11 +1327,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-reload.ico"
+				RelativePath=".\Source\res\icon-reload.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-reload.ico"
+				RelativePath=".\res\icon-reload.ico"
 				>
 			</File>
 			<File
@@ -1343,11 +1343,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-user.ico"
+				RelativePath=".\res\icon-user.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-user.ico"
+				RelativePath=".\Source\res\icon-user.ico"
 				>
 			</File>
 			<File
@@ -1367,11 +1367,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_additem.ico"
+				RelativePath=".\res\icon_additem.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_additem.ico"
+				RelativePath=".\Source\res\icon_additem.ico"
 				>
 			</File>
 			<File
@@ -1391,11 +1391,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_down.ico"
+				RelativePath=".\res\icon_down.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_down.ico"
+				RelativePath=".\Source\res\icon_down.ico"
 				>
 			</File>
 			<File
@@ -1411,19 +1411,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_folder2.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\res\icon_folder2.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_folder2.png"
+				RelativePath=".\Source\res\icon_folder2.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\res\icon_folder2.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon_folder2.png"
 				>
 			</File>
 			<File
@@ -2044,6 +2044,18 @@
 					</File>
 					<File
 						RelativePath=".\Source\Core\Images\Utils.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="ScriptAPI"
+					>
+					<File
+						RelativePath=".\Source\Core\ScriptAPI\RegularExpression.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\ScriptAPI\RegularExpression.h"
 						>
 					</File>
 				</Filter>

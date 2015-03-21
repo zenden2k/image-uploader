@@ -50,11 +50,13 @@
 #ifndef _WIN32
 #include <unistd.h>
 #endif
+#include <Core/ScriptAPI/RegularExpression.h>
 
 using namespace SqPlus;
 // Squirrel types should be defined in the same module where they are used
 // otherwise we will catch SqPlus exception while executing Squirrel functions
 ///DECLARE_INSTANCE_TYPE(std::string);
+using namespace  ScriptAPI;
 DECLARE_INSTANCE_TYPE(ServerSettingsStruct);
 DECLARE_INSTANCE_TYPE(NetworkManager);
 DECLARE_INSTANCE_TYPE(CFolderList);
@@ -62,6 +64,7 @@ DECLARE_INSTANCE_TYPE(CFolderItem);
 DECLARE_INSTANCE_TYPE(CIUUploadParams);
 DECLARE_INSTANCE_TYPE(SimpleXml);
 DECLARE_INSTANCE_TYPE(SimpleXmlNode);
+DECLARE_INSTANCE_TYPE(RegularExpression);
 
 #ifdef _WIN32
 #ifndef IU_CLI
@@ -641,6 +644,7 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 	if (!IuCoreUtils::FileExists(fileName))
 		return false;
 
+	using namespace ScriptAPI;
 	setServerSettings(params);
 	try
 	{
@@ -728,8 +732,27 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 			func(&SimpleXmlNode::GetChildCount, "GetChildCount").
 			func(&SimpleXmlNode::GetChildByIndex, "GetChildByIndex").
 			func(&SimpleXmlNode::GetAttributeCount, "GetAttributeCount");
+
+		SQClassDef<RegularExpression>("RegularExpression")
+			.func(&RegularExpression::search, "search")
+			.func(&RegularExpression::search_with_offset, "search_with_offset")
+			.func(&RegularExpression::get_match, "get_match")
+			.func(&RegularExpression::replace, "replace")
+			.func(&RegularExpression::matched, "matched")
+			.func(&RegularExpression::matches, "matches")
+			.func(&RegularExpression::get_sub_strings, "get_sub_strings")
+			.func(&RegularExpression::split, "split")
+			.func(&RegularExpression::split_with_limit_offset, "split_with_limit_offset")
+			.func(&RegularExpression::split_with_limit_start_end_offset, "split_with_limit_start_end_offset")
+			.func(&RegularExpression::get_match_start, "get_match_start")
+			.func(&RegularExpression::get_match_end, "get_match_end")
+			.func(&RegularExpression::get_entire_match_start, "get_entire_match_start")
+			.func(&RegularExpression::get_entire_match_end, "get_entire_match_end")
+
+
+			;
 			
-			
+		RegisterGlobal(CreateRegExp, "RegExp");	
 			
 			/*func(&SimpleXmlNode::GetChild, "GetChild")*/;
 

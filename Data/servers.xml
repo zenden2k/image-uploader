@@ -263,21 +263,12 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server2>
-<Server Name="bild.me"> 
-        <Actions> 
-            <Action 
-                Type="upload" 
-                Url="http://www.bild.me/index.php" 
-                PostParams="F1=%filename%;C1=ON;upload=%20%20%20%20%20%20%20%20%20Upload%21%20%20%20%20%20%20%20%20%20" 
-                RegExp="\[IMG\]((http://s\d+.bild.me/bilder/\d+/)thumb_([^[]*))\[/IMG\]" 
-                AssignVars="Thumb:0;a:1;b:2;" 
-            /> 
-        </Actions> 
-        <Result 
-            ImageUrlTemplate="$(a)$(b)" 
-            ThumbUrlTemplate="$(Thumb)" 
-        /> 
-    </Server> 
+	<Server Name="bild.me" Debug="1">
+		<Actions>
+			<Action Type="upload" Url="http://www.bild.me/index.php" PostParams="F1=%filename%;C1=ON;upload=Upload!;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:0;Image:2;"/>
+		</Actions>
+	<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
 	<Server Name="pixhost.org" Authorize="0" Debug="0" Type="image" MaxFileSize="10485760" Plugin="pixhostorg" >
 		<Actions>
 		</Actions>
