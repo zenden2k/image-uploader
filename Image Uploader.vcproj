@@ -1306,11 +1306,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-link.ico"
+				RelativePath=".\res\icon-link.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-link.ico"
+				RelativePath=".\Source\res\icon-link.ico"
 				>
 			</File>
 			<File
@@ -1326,11 +1326,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-reload.ico"
+				RelativePath=".\res\icon-reload.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-reload.ico"
+				RelativePath=".\Source\res\icon-reload.ico"
 				>
 			</File>
 			<File
@@ -1342,11 +1342,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-user.ico"
+				RelativePath=".\Source\res\icon-user.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-user.ico"
+				RelativePath=".\res\icon-user.ico"
 				>
 			</File>
 			<File
@@ -1366,11 +1366,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_additem.ico"
+				RelativePath=".\Source\res\icon_additem.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_additem.ico"
+				RelativePath=".\res\icon_additem.ico"
 				>
 			</File>
 			<File
@@ -1390,11 +1390,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_down.ico"
+				RelativePath=".\Source\res\icon_down.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_down.ico"
+				RelativePath=".\res\icon_down.ico"
 				>
 			</File>
 			<File
@@ -1410,19 +1410,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_folder2.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\res\icon_folder2.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_folder2.png"
+				RelativePath=".\res\icon_folder2.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\res\icon_folder2.png"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon_folder2.png"
 				>
 			</File>
 			<File
@@ -2651,6 +2651,98 @@
 					</File>
 					<File
 						RelativePath=".\Source\ImageEditor\Gui\Toolbar.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="DrawingTools"
+					>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\AbstractDrawingTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\AbstractDrawingTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\BlurTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\BlurTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\BrushTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\BrushTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\ColorPickerTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\ColorPickerTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\CropTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\CropTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\MarkerTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\MarkerTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\MoveAndResizeTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\MoveAndResizeTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\PenTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\PenTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\SelectionTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\SelectionTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\TextTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\TextTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\VectorElementTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\VectorElementTool.h"
 						>
 					</File>
 				</Filter>
