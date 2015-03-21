@@ -1,5 +1,5 @@
 This folder contains classes which provide Image Uploader's basic functionality, 
-such as networking, file uploading, converting images. Unfortunately Video Grabber module still depends on GUI.
+such as networking, file uploading, converting images, extracting video frames. 
 
 Most of them contain cross-platform code (they don't have  Windows API or ATL dependencies).
 

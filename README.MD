@@ -66,6 +66,9 @@ You can download ALL necessary libraries and headers (precompiled for MSVC 2008 
 
 https://bintray.com/artifact/download/zenden/zenden-image-uploader/Image_Uploader_Contrib_MSVC_2008_SP1_and_sources_v1.3.1.7z
 
+(precompiled for MSVC 2013)
+https://bintray.com/artifact/download/zenden/zenden-image-uploader/Image_Uploader_Contrib_MSVC_2013_and_sources_v1.3.1.7z
+
 
 If you want to compile strmbase.lib by yourself you will need:
 
