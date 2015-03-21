@@ -196,7 +196,7 @@ void CImageEditorView::updateView( Canvas* canvas, const CRgn& region ) {
 	CRgn rgn = region;
 
 	GetScrollOffset(pt);
-	LOG(INFO) << "ScrollOffset " << pt.x << " " << pt.y;
+	//LOG(INFO) << "ScrollOffset " << pt.x << " " << pt.y;
 	rgn.OffsetRgn(-pt.x, -pt.y);
 	InvalidateRgn( rgn );
 }

@@ -59,7 +59,7 @@ bool Toolbar::Create(HWND parent, bool child )
 
 	enum {kItemMargin = 3, kItemHorPadding = 5, kItemVertPadding = 3, kIconSize = 20};
 	itemMargin_ = kItemMargin *dpiScaleX;
-	LOG(INFO) << itemMargin_ << " dpi="<< dpiScaleX;
+	//LOG(INFO) << itemMargin_ << " dpi="<< dpiScaleX;
 	itemHorPadding_ = kItemHorPadding * dpiScaleX;
 	itemVertPadding_ = kItemVertPadding * dpiScaleY;
 	iconSizeX_ = kIconSize * dpiScaleX;
@@ -151,7 +151,7 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 {
 	RECT rc2;
 	GetClientRect(&rc2);
-	LOG(INFO) << rc2.right<< " " << rc2.bottom;
+	//LOG(INFO) << rc2.right<< " " << rc2.bottom;
 	return 0;
 }
 

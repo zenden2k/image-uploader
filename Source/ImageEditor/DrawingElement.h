@@ -23,8 +23,8 @@ class DrawingElement {
 		virtual void setEndPoint(POINT endPoint);
 		POINT getStartPoint() const;
 		POINT getEndPoint() const;
-		void setColor( Gdiplus::Color color );
-		void setBackgroundColor( Gdiplus::Color color );
+		virtual void setColor( Gdiplus::Color color );
+		virtual void setBackgroundColor( Gdiplus::Color color );
 		Gdiplus::Color getColor() const;
 		Gdiplus::Color getBackgroundColor() const;
 

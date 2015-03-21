@@ -124,7 +124,7 @@ void Document::saveDocumentState( /*DrawingElement* element*/ ) {
 			continue;
 		}
 		outSegments.markRect(x,y, rectWidth,rectHeight);
-		LOG(INFO) << "Saving segment ("<<x<<","<<y<<"," << rectWidth << ","<< rectHeight << ")";
+		//LOG(INFO) << "Saving segment ("<<x<<","<<y<<"," << rectWidth << ","<< rectHeight << ")";
 		for( int j = 0; j < rectHeight; j++ ) {
 			unsigned int dataOffset = (r.Width * (y + j) + x) * pixelSize;
 			unsigned int rowSize = rectWidth * pixelSize;
@@ -176,7 +176,7 @@ bool  Document::undo() {
 		int rectWidth  = it->right - it->left;
 		int rectHeight = it->bottom - it->top;
 
-		LOG(INFO) << "Restoring segment ("<<x<<","<<y<<"," << rectWidth << ","<< rectHeight << ")";
+		//LOG(INFO) << "Restoring segment ("<<x<<","<<y<<"," << rectWidth << ","<< rectHeight << ")";
 		for( int j = 0; j < rectHeight; j++ ) {
 			unsigned int dstDataOffset = (r.Width * (y + j) + x) * pixelSize;
 			unsigned int rowSize    = rectWidth * pixelSize;

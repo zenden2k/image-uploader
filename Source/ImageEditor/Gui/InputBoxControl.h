@@ -56,6 +56,8 @@ class InputBoxControl :
 
 		virtual void invalidate();
 
+		virtual void setTextColor(Gdiplus::Color color);
+
 };
 
 }

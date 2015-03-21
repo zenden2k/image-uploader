@@ -15,6 +15,7 @@ AbstractDrawingTool::AbstractDrawingTool( Canvas *canvas ) {
 	endPoint_.y   = 0;
 	assert( canvas );
 	canvas_ = canvas;
+	penSize_ = 1;
 }
 
 void AbstractDrawingTool::beginDraw( int x, int y ) {

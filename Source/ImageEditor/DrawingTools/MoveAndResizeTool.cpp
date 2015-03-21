@@ -47,7 +47,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 		originalStartPoint_ = el->getStartPoint();
 		originalEndPoint_ = el->getEndPoint();
 		isMoving_ = true;
-		LOG(INFO) << "Starting moving!";
+		//LOG(INFO) << "Starting moving!";
 		currentElement_ = el;
 		prevPaintBoundingRect_ = currentElement_->getPaintBoundingRect();
 		startPoint_.x = x;
@@ -62,7 +62,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 
 	if ( allowCreatingElements_ ) {
 		POINT pt = { x, y };
-		LOG(INFO) << "beginDraw createElement"  ;
+		//LOG(INFO) << "beginDraw createElement"  ;
 		createElement();
 		
 		if ( currentElement_ ) {
@@ -153,13 +153,13 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 					//currentElement_->setEndPoint()
 			}
 			//LOG(INFO) << "x=" << x << " y="<<y<<" object.x = "<<currentElement_->getX()<<" object.y = "<< currentElement_->getY();
-			LOG(INFO) << "Resizing object to " << elX  << " "<< elY << " " << elWidth << " "<<elHeight;
+			//LOG(INFO) << "Resizing object to " << elX  << " "<< elY << " " << elWidth << " "<<elHeight;
 			currentElement_->resize( elWidth,elHeight);
 			currentElement_->setX(elX);
 			currentElement_->setY(elY);
 		}
 		if ( currentElement_ && currentElement_->getType() == etCrop && canvas_->onCropChanged ) {
-			LOG(INFO) << "onCropChanged";
+			//LOG(INFO) << "onCropChanged";
 			canvas_->onCropChanged(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
 		}
 		RECT paintBoundingRect = currentElement_->getPaintBoundingRect();
@@ -175,13 +175,13 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 	if ( isMoving_ && currentElement_ ) {
 		int newX = currentElement_->getX() + x - startPoint_.x;
 		int newY  = currentElement_->getY() + y - startPoint_.y;
-		LOG(INFO) << "Moving object to new position " << newX << " "<<newY;
+		//LOG(INFO) << "Moving object to new position " << newX << " "<<newY;
 		currentElement_->setX(newX);
 		currentElement_->setY(newY);
 		startPoint_.x = x;
 		startPoint_.y = y;
 		if ( currentElement_ && currentElement_->getType() == etCrop && canvas_->onCropChanged ) {
-			LOG(INFO) << "onCropChanged";
+			//LOG(INFO) << "onCropChanged";
 			canvas_->onCropChanged(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
 		}
 		RECT paintBoundingRect = currentElement_->getPaintBoundingRect();
@@ -213,7 +213,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 void MoveAndResizeTool::endDraw( int x, int y ) {
 	if ( currentElement_ ) {
 		if ( currentElement_->getType() == etCrop && canvas_->onCropFinished ) {
-			LOG(INFO) << "onCropChanged";
+			//LOG(INFO) << "onCropChanged";
 			canvas_->onCropFinished(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
 		}
 		if ( currentElement_->getType() != etCrop) {

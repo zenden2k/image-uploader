@@ -79,5 +79,6 @@ namespace GuiTools
 
 	bool GetScreenBounds(RECT& rect);
 	HRGN CloneRegion(HRGN source);
+	HFONT MakeFontBigger(HFONT font);
 };
 #endif

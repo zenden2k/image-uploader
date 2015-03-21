@@ -198,6 +198,7 @@ void TextElement::resize(int width, int height)
 void TextElement::setInputBox(InputBox* inputBox)
 {
 	inputBox_ = inputBox;
+	setTextColor();
 	inputBox_->onTextChanged.bind(this, &TextElement::onTextChanged);
 }
 
@@ -209,6 +210,20 @@ InputBox* TextElement::getInputBox() const
 void TextElement::onTextChanged(TCHAR *text)
 {
 	canvas_->updateView();
+}
+
+void TextElement::setTextColor()
+{
+	if ( inputBox_ ) {
+		inputBox_->setTextColor(color_);
+	}
+
+}
+
+void TextElement::setColor(Gdiplus::Color color)
+{
+	MovableElement::setColor(color);
+	setTextColor();
 }
 
 ImageEditor::ElementType TextElement::getType() const

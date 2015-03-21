@@ -235,6 +235,7 @@ void MarkerTool::highlightRegion(RECT rc)
 		
 void MarkerTool::setPenSize(int size)
 {
+	AbstractDrawingTool::setPenSize(size);
 	createCircle();
 }
 
@@ -265,7 +266,7 @@ void MarkerTool::createCircle()
 		memcpy(circleData_, circleData.Scan0, dataSize);
 		circle->UnlockBits(&circleData);
 	}
-	circle->UnlockBits(&circleData);
+	
 	delete circle;
 }
 

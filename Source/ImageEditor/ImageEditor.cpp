@@ -26,7 +26,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT) {
 
 	//wndMain.ShowWindow( nCmdShow );
 	ImageEditorWindow::DialogResult dr = wndMain.DoModal(0, ImageEditorWindow::wdmWindowed);
-	LOG(INFO) << "DoModal returned "<<dr;
+	//LOG(INFO) << "DoModal returned "<<dr;
 	//int nRet = theLoop.Run();
 
 	_Module.RemoveMessageLoop();

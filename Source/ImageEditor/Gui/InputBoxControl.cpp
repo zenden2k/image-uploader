@@ -20,7 +20,7 @@
 
 #include "InputBoxControl.h"
 #include <Core/Images/Utils.h>
-
+#include <Gui/GuiTools.h>
 namespace ImageEditor {
 // CLogListBox
 InputBoxControl::InputBoxControl() {
@@ -36,6 +36,8 @@ LRESULT InputBoxControl::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& 
 {
 	bHandled = false;
 	SetEventMask(ENM_CHANGE);
+	
+	SetFont(GuiTools::MakeFontBigger(GuiTools::GetSystemDialogFont()));
 	//SetWindowLong(GWL_ID, (LONG)m_hWnd);
 	return 0;
 }
@@ -91,6 +93,18 @@ bool InputBoxControl::isVisible()
 void InputBoxControl::invalidate()
 {
 	Invalidate(false);
+}
+
+void InputBoxControl::setTextColor(Gdiplus::Color color)
+{
+	CHARFORMAT cf;
+	memset(&cf, 0, sizeof(cf));
+	cf.cbSize = sizeof(cf);
+	cf.crTextColor = color.ToCOLORREF();
+	cf.dwMask = CFM_COLOR;
+	//SetSel(0, -1);
+	SendMessage(EM_SETCHARFORMAT, SCF_ALL, (LPARAM) &cf);
+	//SetSel(-1, 0);
 }
 
 LRESULT InputBoxControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled) {

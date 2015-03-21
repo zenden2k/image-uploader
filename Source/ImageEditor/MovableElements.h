@@ -33,6 +33,10 @@ class TextElement: public MovableElement{
 protected:
 	InputBox *inputBox_;
 	void onTextChanged(TCHAR *text);
+	void setTextColor();
+
+	virtual void setColor(Gdiplus::Color color);
+
 };
 
 class Crop: public MovableElement {

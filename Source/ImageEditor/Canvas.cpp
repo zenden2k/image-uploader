@@ -31,7 +31,7 @@ Canvas::Canvas( HWND parent ) {
 	currentlyEditedTextElement_ = 0;
 	foregroundColor_ = Gdiplus::Color(255,0,0);
 	backgroundColor_ = Gdiplus::Color(255,255,255);
-	penSize_ = 7;
+	penSize_ = 12;
 	selection_ = 0;
 	canvasChanged_ = true;
 	fullRender_ = true;
@@ -165,7 +165,7 @@ void Canvas::render(Painter* gr, const RECT& rectInWindowCoordinates, POINT scro
 		rect.right = getWidth();
 	}
 	if ( canvasChanged_ || fullRender_ ) {
-		LOG(INFO) << "Canvas::re-render rect"<< rect.left << " " << rect.top<< " "<< rect.right - rect.left<< " "<< rect.bottom - rect.top;
+		//LOG(INFO) << "Canvas::re-render rect"<< rect.left << " " << rect.top<< " "<< rect.right - rect.left<< " "<< rect.bottom - rect.top;
 		
 		renderInBuffer(rect);
 		
@@ -577,7 +577,7 @@ void Canvas::renderInBuffer(RECT rect,bool forExport)
 	}
 	if ( !forExport ) {
 		if ( overlay_ && showOverlay_ ) {
-			LOG(INFO) << "rendering overlay";
+			//LOG(INFO) << "rendering overlay";
 			overlay_->render(bufferedGr);
 		}
 
@@ -769,7 +769,7 @@ bool Canvas::undo() {
 InputBox* Canvas::getInputBox( const RECT& rect ) {
 	/*if ( inputBox_ == NULL )*/ {
 		//RECT rt = {0,0,300,50};
-		LOG(INFO) << "Creating new inputbox";
+		//LOG(INFO) << "Creating new inputbox";
 		inputBox_ = new InputBoxControl();
 		RECT rc = rect;
 		rc.left++;

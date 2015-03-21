@@ -313,6 +313,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 {
 
 	displayMode_ = mode;
+	//displayMode_ = wdmWindowed;
 	CRect rc(100,100,1280,800);
 
 	if ( displayMode_ == wdmFullscreen ) {
@@ -621,7 +622,7 @@ void ImageEditorWindow::createToolbars()
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_TOOLCROPPING), ID_CROP,TR("Обрезка"), Toolbar::itButton, true,1));
 	//verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLPENCIL), ID_PEN,T_R("Карандаш"), Toolbar::itButton, true,1));
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BRUSH,TR("Кисть"), Toolbar::itButton, true,1));
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_MARKER,TR("Подсвечивающий маркер"), Toolbar::itButton, true,1));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLMARKER), ID_MARKER,TR("Подсвечивающий маркер"), Toolbar::itButton, true,1));
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLLINE), ID_LINE,TR("Линия"), Toolbar::itButton, true,1));
 	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLARROWPNG), ID_ARROW,TR("Стрелка"), Toolbar::itButton, true,1));
 

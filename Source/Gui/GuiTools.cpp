@@ -279,6 +279,23 @@ HFONT MakeFontSmaller(HFONT font) {
 	HFONT NewFont = CreateFontIndirect(&alf);
 	return NewFont;
 }
+
+HFONT MakeFontBigger(HFONT font) {
+	if ( !font ) {
+		return 0;
+	}
+
+	LOGFONT alf;
+	bool ok = ::GetObject(font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT);
+	if ( !ok ) {
+		return 0;
+	}
+
+	alf.lfHeight += GetFontSize( 5 );
+	alf.lfWeight = FW_BOLD;
+	HFONT NewFont = CreateFontIndirect(&alf);
+	return NewFont;
+}
 int GetFontSize(int nFontHeight) {
 	return - MulDiv( nFontHeight, 72, GetDeviceCaps(::GetDC(0), LOGPIXELSY));
 }
