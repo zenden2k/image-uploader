@@ -30,6 +30,7 @@
 #include "3rdpart/Registry.h"
 #include <Core/Video/VideoUtils.h>
 #include "WinUtils.h"
+#include <Core/AppParams.h>
 #endif
 #include <stdlib.h>
 
@@ -325,14 +326,20 @@ void RegisterShellExtension(bool Register) {
 */
 void CSettings::FindDataFolder()
 {
+	AppParams* params = AppParams::instance();
 	if (IsDirectory(WinUtils::GetAppFolder() + _T("Data"))) {
 		DataFolder     = WinUtils::GetAppFolder() + _T("Data\\");
 		SettingsFolder = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(DataFolder));
+		
+		params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
+		params->setSettingsDirectory(IuStringUtils::Replace(SettingsFolder, "\\", "/"));
 		IsPortable = true;
 		return;
 	}
 
 	SettingsFolder =  IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(GetApplicationDataPath() + _T("Image Uploader\\")));
+	
+	params->setSettingsDirectory(IuStringUtils::Replace(SettingsFolder, "\\", "/"));
 	#if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
 	{
 		CRegistry Reg;
@@ -346,6 +353,7 @@ void CSettings::FindDataFolder()
 			if (!dir.IsEmpty() && IsDirectory(dir))
 			{
 				DataFolder = dir;
+				params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
 				return;
 			}
 		}
@@ -360,6 +368,7 @@ void CSettings::FindDataFolder()
 			if (!dir.IsEmpty() && IsDirectory(dir))
 			{
 				DataFolder = dir;
+				params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
 				return;
 			}
 		}
@@ -367,12 +376,14 @@ void CSettings::FindDataFolder()
 
 	if (FileExists(GetCommonApplicationDataPath() + SETTINGS_FILE_NAME)) {
 		DataFolder = GetCommonApplicationDataPath() + _T("Image Uploader\\");
+		params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
 	}
 	else 
 		#endif
 	
 	{
 		DataFolder = GetApplicationDataPath() + _T("Image Uploader\\");
+		params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
 	}
 }
 #endif

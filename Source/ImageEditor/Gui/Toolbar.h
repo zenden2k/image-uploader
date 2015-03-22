@@ -124,7 +124,7 @@ protected:
 	int subpanelLeftOffset_;
 	Gdiplus::Color  subpanelColor_;
 	CBrush subpanelBrush_;
-
+	Gdiplus::TextRenderingHint textRenderingHint_;
 	void createHintForSliders(HWND slider, CString text);
 };
 

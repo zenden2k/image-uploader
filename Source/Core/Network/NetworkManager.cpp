@@ -400,22 +400,23 @@ void NetworkManager::setUserAgent(const NString& userAgentStr)
 {
 	m_userAgent = userAgentStr;
 }
-
+ 
 void NetworkManager::private_initTransfer()
 {
 	private_cleanup_before();
 	curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, m_userAgent.c_str());
 
 	std::vector<CustomHeaderItem>::iterator it, end = m_QueryHeaders.end();
-	chunk_ = NULL;
+	chunk_ = NULL; 
 
 	for(it = m_QueryHeaders.begin(); it!=end; it++)
 	{
-		if ( it->value.empty() ) {
+		if ( it->value == "\n" ) {
 			chunk_ = curl_slist_append(chunk_, (it->name + ";" + it->value).c_str());
 		} else {
 			chunk_ = curl_slist_append(chunk_, (it->name + ": " + it->value).c_str());
-		}
+			//LOG(INFO) << "'"<< it->name + ": " + it->value<< "'";
+		} 
 		
 	}
 

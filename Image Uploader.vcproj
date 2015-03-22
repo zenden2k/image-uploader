@@ -1260,11 +1260,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-link.ico"
+				RelativePath=".\Source\res\icon-link.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-link.ico"
+				RelativePath=".\res\icon-link.ico"
 				>
 			</File>
 			<File
@@ -1280,11 +1280,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-reload.ico"
+				RelativePath=".\Source\res\icon-reload.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-reload.ico"
+				RelativePath=".\res\icon-reload.ico"
 				>
 			</File>
 			<File
@@ -1296,11 +1296,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-user.ico"
+				RelativePath=".\res\icon-user.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-user.ico"
+				RelativePath=".\Source\res\icon-user.ico"
 				>
 			</File>
 			<File
@@ -1320,11 +1320,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_additem.ico"
+				RelativePath=".\res\icon_additem.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_additem.ico"
+				RelativePath=".\Source\res\icon_additem.ico"
 				>
 			</File>
 			<File
@@ -1344,11 +1344,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_down.ico"
+				RelativePath=".\res\icon_down.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_down.ico"
+				RelativePath=".\Source\res\icon_down.ico"
 				>
 			</File>
 			<File
@@ -1372,11 +1372,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_folder2.png"
+				RelativePath=".\res\icon_folder2.png"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_folder2.png"
+				RelativePath=".\Source\res\icon_folder2.png"
 				>
 			</File>
 			<File
@@ -1436,11 +1436,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_tool_marker.png"
+				RelativePath=".\Source\res\ImageEditor\icon_tool_marker.png"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\ImageEditor\icon_tool_marker.png"
+				RelativePath=".\res\ImageEditor\icon_tool_marker.png"
 				>
 			</File>
 			<File
@@ -1657,6 +1657,14 @@
 				Name="Core"
 				>
 				<File
+					RelativePath=".\Source\Core\AppParams.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Core\AppParams.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Source\Core\FileDownloader.cpp"
 					>
 				</File>
@@ -1848,6 +1856,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Source\Core\Utils\Singleton.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\Utils\Singleton.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Source\Core\Utils\StringUtils.cpp"
 						>
 					</File>
@@ -2004,11 +2020,23 @@
 					Name="ScriptAPI"
 					>
 					<File
+						RelativePath=".\Source\Core\ScriptAPI\Functions.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\ScriptAPI\Functions.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Source\Core\ScriptAPI\RegularExpression.cpp"
 						>
 					</File>
 					<File
 						RelativePath=".\Source\Core\ScriptAPI\RegularExpression.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\ScriptAPI\ScriptAPI.h"
 						>
 					</File>
 				</Filter>

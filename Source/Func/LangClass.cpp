@@ -22,6 +22,8 @@
 #include "atlheaders.h"
 #include "myutils.h"
 #include <Func/WinUtils.h>
+#include <Core/AppParams.h>
+#include <Core/Utils/CoreUtils.h>
 
 CLang Lang;
 
@@ -86,14 +88,19 @@ bool CLang::SetDirectory(LPCTSTR Directory)
 bool CLang::LoadLanguage(LPCTSTR Lang)
 {
 	StringList.RemoveAll();
-	if (!Lang)
+	if (!Lang ) {
 		return false;
+	}
 
 	CString Filename = CString(m_Directory) + Lang + _T(".lng");
 
 	FILE* f = _tfopen(Filename, _T("rb"));
-	if (!f)
+	if (!f) {
+		if ( Lang == CString("Русский") ) {
+			AppParams::instance()->setLanguageFile(IuCoreUtils::WstringToUtf8((LPCTSTR)(CString(m_Directory) + "Russian" + _T(".lng"))));
+		}
 		return false;
+	}
 
 	fseek(f, 2, 0);
 	TCHAR Buffer[1024];
@@ -146,6 +153,7 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
 
 	fclose(f);
 	m_sLang = Lang;
+	AppParams::instance()->setLanguageFile(IuCoreUtils::WstringToUtf8((LPCTSTR)Filename));
 	return true;
 }
 

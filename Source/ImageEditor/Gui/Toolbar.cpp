@@ -23,6 +23,7 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
 	subpanelBrush_.CreateSolidBrush(subpanelColor_.ToCOLORREF());
 	memset(&buttonsRect_, 0, sizeof(buttonsRect_));
 	font_ = 0;
+	textRenderingHint_ = Gdiplus::TextRenderingHintAntiAlias;
 }
 
 Toolbar::~Toolbar()
@@ -48,33 +49,7 @@ bool Toolbar::Create(HWND parent, bool child )
 	if ( child ) {
 		transparentColor_ = Color(255,255,255);
 	}
-	LONG lStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
-	//lStyle &= ~(WS_CAPTION /*| WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU*/);
-	::SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
-	SetLayeredWindowAttributes(m_hWnd, RGB(transparentColor_.GetR(),transparentColor_.GetG(),transparentColor_.GetB()),0,LWA_COLORKEY);
-	HDC hdc = GetDC();
-	dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
-	dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
-	ReleaseDC(hdc);
-
-	enum {kItemMargin = 3, kItemHorPadding = 5, kItemVertPadding = 3, kIconSize = 20};
-	itemMargin_ = kItemMargin *dpiScaleX;
-	//LOG(INFO) << itemMargin_ << " dpi="<< dpiScaleX;
-	itemHorPadding_ = kItemHorPadding * dpiScaleX;
-	itemVertPadding_ = kItemVertPadding * dpiScaleY;
-	iconSizeX_ = kIconSize * dpiScaleX;
-	iconSizeY_ = kIconSize * dpiScaleY;
-	font_ = new Gdiplus::Font(L"Arial",9, FontStyleRegular);
-	subpanelHeight_ = 25 * dpiScaleY;
-	subpanelLeftOffset_ = 50*dpiScaleX;
-	RECT sliderRect = {0,0, 100 * dpiScaleX,subpanelHeight_ - 2 * dpiScaleY};
-	if ( orientation_ == orHorizontal ) {
-		penSizeSlider_.Create(m_hWnd, sliderRect, 0, WS_CHILD|WS_VISIBLE|TBS_NOTICKS);
-		createHintForSliders(penSizeSlider_.m_hWnd, TR("Толщина линии"));
-		RECT pixelLabelRect = {0,0, 50 * dpiScaleX,subpanelHeight_ - 5 * dpiScaleY };
-		pixelLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD|WS_VISIBLE);
-		pixelLabel_.SetFont(GuiTools::GetSystemDialogFont());
-	}
+	
 	return true;
 }
 
@@ -149,9 +124,42 @@ void Toolbar::clickButton(int index)
 
 LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	RECT rc2;
-	GetClientRect(&rc2);
-	//LOG(INFO) << rc2.right<< " " << rc2.bottom;
+	LONG lStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
+	//lStyle &= ~(WS_CAPTION /*| WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU*/);
+	::SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
+	SetLayeredWindowAttributes(m_hWnd, RGB(transparentColor_.GetR(),transparentColor_.GetG(),transparentColor_.GetB()),0,LWA_COLORKEY);
+	HDC hdc = GetDC();
+	dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
+	dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+
+
+	CFont defaultFont = GuiTools::GetSystemDialogFont();
+	LOGFONT logFont;
+	defaultFont.GetLogFont(&logFont);
+	if ( logFont.lfQuality & CLEARTYPE_QUALITY ) {
+		textRenderingHint_ = Gdiplus::TextRenderingHintClearTypeGridFit;
+	} else if ( logFont.lfQuality & ANTIALIASED_QUALITY ) {
+		textRenderingHint_ = Gdiplus::TextRenderingHintAntiAliasGridFit;
+	}
+
+	enum {kItemMargin = 3, kItemHorPadding = 5, kItemVertPadding = 3, kIconSize = 20};
+	itemMargin_ = kItemMargin *dpiScaleX;
+	itemHorPadding_ = kItemHorPadding * dpiScaleX;
+	itemVertPadding_ = kItemVertPadding * dpiScaleY;
+	iconSizeX_ = kIconSize * dpiScaleX;
+	iconSizeY_ = kIconSize * dpiScaleY;
+	font_ = new Gdiplus::Font(hdc, defaultFont);
+	subpanelHeight_ = 25 * dpiScaleY;
+	subpanelLeftOffset_ = 50*dpiScaleX;
+	RECT sliderRect = {0,0, 100 * dpiScaleX,subpanelHeight_ - 2 * dpiScaleY};
+	if ( orientation_ == orHorizontal ) {
+		penSizeSlider_.Create(m_hWnd, sliderRect, 0, WS_CHILD|WS_VISIBLE|TBS_NOTICKS);
+		createHintForSliders(penSizeSlider_.m_hWnd, TR("Толщина линии"));
+		RECT pixelLabelRect = {0,0, 50 * dpiScaleX,subpanelHeight_ - 5 * dpiScaleY };
+		pixelLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD|WS_VISIBLE);
+		pixelLabel_.SetFont(GuiTools::GetSystemDialogFont());
+	}
+	ReleaseDC(hdc);
 	return 0;
 }
 
@@ -536,7 +544,7 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 	StringFormat format;
 	format.SetAlignment(StringAlignmentCenter);
 	format.SetLineAlignment(StringAlignmentCenter);
-	gr->SetTextRenderingHint(TextRenderingHintClearTypeGridFit);
+	//gr->SetTextRenderingHint(textRenderingHint_);
 	
 	int iconWidth = (item.icon ? iconSizeX_/*+ itemHorPadding_*/:0 ) ;
 	int textOffsetX =  iconWidth+ itemHorPadding_;
@@ -544,6 +552,7 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 	if ( orientation_ == orVertical ) {
 		//LOG(INFO) << "textBounds x="<<textBounds.X << " y = " << textBounds.Y << "   "<<item.title;
 	}
+
 	gr->DrawString(item.title, -1, font_, textBounds, &format, &brush);
 }
 

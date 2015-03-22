@@ -50,7 +50,7 @@
 #ifndef _WIN32
 #include <unistd.h>
 #endif
-#include <Core/ScriptAPI/RegularExpression.h>
+#include <Core/ScriptAPI/ScriptAPI.h>
 
 using namespace SqPlus;
 // Squirrel types should be defined in the same module where they are used
@@ -779,6 +779,8 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		
 		srand(static_cast<unsigned int>(time(0)));
 
+		ScriptAPI::RegisterFunctions(&m_Object);
+
 		RegisterGlobal(::DebugMessage, "DebugMessage" );
 
 		BindVariable(m_Object, &params, "ServerParams");
@@ -787,6 +789,7 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		IuCoreUtils::ReadUtf8TextFile(fileName, scriptText);
 		m_SquirrelScript = SquirrelVM::CompileBuffer(scriptText.c_str(), IuCoreUtils::ExtractFileName(fileName).c_str());
 		SquirrelVM::RunScript(m_SquirrelScript, &m_Object);
+		ScriptAPI::RegisterShortTranslateFunctions(!m_Object.Exists("tr"), !m_Object.Exists("__"));
 	}
 	catch (SquirrelError& e)
 	{
