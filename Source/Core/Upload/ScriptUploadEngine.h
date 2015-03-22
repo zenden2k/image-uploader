@@ -24,15 +24,7 @@
 #include <vector>
 #include <string>
 
-#ifdef UNICODE
-	#undef UNICODE // We do not want to compile sqplus with unicode support
-	#undef _UNICODE
-	#include <sqplus.h>
-	#define UNICODE
-	#define _UNICODE
-#else
-	#include <sqplus.h>
-#endif
+#include "../Squirrelnc.h"
 
 #include "CommonTypes.h"
 #include "UploadEngine.h"

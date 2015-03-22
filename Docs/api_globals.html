@@ -59,7 +59,7 @@ Cтандартная функция squirrel, выводящая текст н�
 Извлекает имя директории из пути.
 <code class="f"><u>bool</u> FileExists(<u>string</u> <i>filename</i>)<span>version >= 1.3.0</span></code> 
 Проверяет, существует ли файл.
-<code class="f"><u>string</u> FileGetContents(<u>string</u> <i>filename</i>)<span>version >= 1.3.0</span></code> 
+<code class="f"><u>string</u> GetFileContents(<u>string</u> <i>filename</i>)<span>version >= 1.3.0</span></code> 
 Возвращает содержимое файла.
 <code class="f"><u>string</u> GetAppLanguage()<span>version >= 1.3.0</span></code>
 Returns application's current language. For example : "en", "ru".
@@ -108,7 +108,7 @@ local t = ParseJSON(text);
 print(t.result.links[1].href); // выведет "http://example.com/image.jpg" 
 </pre>
 В случае ошибки функция вернет null.
-<code class="f"><u>string</u> FilePutContents(<u>string</u> <i>filename</i>, <u>string</u> <i>content</i>)<span>version >= 1.3.0</span></code> 
+<code class="f"><u>string</u> PutFileContents(<u>string</u> <i>filename</i>, <u>string</u> <i>content</i>)<span>version >= 1.3.0</span></code> 
 Записывает текст в файл.
 <code class="f"><u>string</u> GetTempDirectory()<span>version >= 1.3.0</span></code> 
 Возвращает директорию для временных файлов.

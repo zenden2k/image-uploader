@@ -1,6 +1,11 @@
 #include "RegularExpression.h"
+
 #include <Core/Logging.h>
+#include "../Squirrelnc.h"
+
 using namespace pcrepp;
+using namespace ScriptAPI;
+DECLARE_INSTANCE_TYPE(RegularExpression);
 
 namespace ScriptAPI {
 
@@ -21,86 +26,135 @@ RegularExpression::RegularExpression(const RegularExpression& r)
 
 SquirrelObject RegularExpression::split(const std::string& piece)
 {
-	std::vector<std::string> res = Pcre::split(piece);
-	SquirrelObject obj = SquirrelVM::CreateArray(res.size());
-	for( int i = 0; i  < res.size(); i++ ) {
-		obj.SetValue(i, res[i].c_str());
+	try {
+		std::vector<std::string> res = Pcre::split(piece);
+		SquirrelObject obj = SquirrelVM::CreateArray(res.size());
+		for( int i = 0; i  < res.size(); i++ ) {
+			obj.SetValue(i, res[i].c_str());
+		}
+		return obj;
+	} catch( Pcre::exception ex ) {
+		LOG(ERROR) << ex.what();
+		return SquirrelObject();
 	}
-	return obj;
 }
 
-SquirrelObject RegularExpression::split_with_limit_offset(const std::string& piece, int limit, int start_offset)
+SquirrelObject RegularExpression::splitWithLimitOffset(const std::string& piece, int limit, int start_offset)
 {
-	std::vector<std::string> res = Pcre::split(piece,limit,start_offset);
-	SquirrelObject obj = SquirrelVM::CreateArray(res.size());
-	for( int i = 0; i  < res.size(); i++ ) {
-		obj.SetValue(i, res[i].c_str());
+	try {
+		std::vector<std::string> res = Pcre::split(piece,limit,start_offset);
+		SquirrelObject obj = SquirrelVM::CreateArray(res.size());
+		for( int i = 0; i  < res.size(); i++ ) {
+			obj.SetValue(i, res[i].c_str());
+		}
+		return obj;
 	}
-	return obj;
+	catch( Pcre::exception ex ) {
+		LOG(ERROR) << ex.what();
+		return SquirrelObject();
+	}
 }
 
-SquirrelObject RegularExpression::split_with_limit(const std::string& piece, int limit)
+SquirrelObject RegularExpression::splitWithLimit(const std::string& piece, int limit)
 {
-	std::vector<std::string> res = Pcre::split(piece,limit);
-	SquirrelObject obj = SquirrelVM::CreateArray(res.size());
-	for( int i = 0; i  < res.size(); i++ ) {
-		obj.SetValue(i, res[i].c_str());
+	try {
+		std::vector<std::string> res = Pcre::split(piece,limit);
+		SquirrelObject obj = SquirrelVM::CreateArray(res.size());
+		for( int i = 0; i  < res.size(); i++ ) {
+			obj.SetValue(i, res[i].c_str());
+		}
+		return obj;
 	}
-	return obj;
+	catch( Pcre::exception ex ) {
+		LOG(ERROR) << ex.what();
+		return SquirrelObject();
+	}
 }
-SquirrelObject RegularExpression::split_with_limit_start_end_offset(const std::string& piece, int limit, int start_offset, int end_offset)
+SquirrelObject RegularExpression::splitWithLimitStartEndOffset(const std::string& piece, int limit, int start_offset, int end_offset)
 {
-	std::vector<std::string> res = Pcre::split(piece,limit,start_offset,end_offset);
-	SquirrelObject obj = SquirrelVM::CreateArray(res.size());
-	for( int i = 0; i  < res.size(); i++ ) {
-		obj.SetValue(i, res[i].c_str());
+	try {
+		std::vector<std::string> res = Pcre::split(piece,limit,start_offset,end_offset);
+		SquirrelObject obj = SquirrelVM::CreateArray(res.size());
+		for( int i = 0; i  < res.size(); i++ ) {
+			obj.SetValue(i, res[i].c_str());
+		}
+		return obj;
 	}
-	return obj;
+	catch( Pcre::exception ex ) {
+		LOG(ERROR) << ex.what();
+		return SquirrelObject();
+	}
 }
 
-const std::string RegularExpression::get_match(int pos) const
+const std::string RegularExpression::getMatch(int pos) const
 {
 	try {
 		return Pcre::get_match(pos);
 	}
-	catch( std::exception ex ) {
+	catch( Pcre::exception ex ) {
 		LOG(ERROR) << ex.what();
+		return std::string();
 	}
 }
 
 bool RegularExpression::search(const std::string& stuff)
 {
-	return Pcre::search(stuff);
+	try {
+		return Pcre::search(stuff);
+	} catch( Pcre::exception ex ) {
+		LOG(ERROR) << ex.what();
+		return false;
+	}
 }
 
-bool RegularExpression::search_with_offset(const std::string& stuff, int OffSet)
+bool RegularExpression::searchWithOffset(const std::string& stuff, int OffSet)
 {
-	return Pcre::search(stuff, OffSet);
+	try {
+		return Pcre::search(stuff, OffSet);
+	} catch( Pcre::exception ex ) {
+		LOG(ERROR) << ex.what();
+		return false;
+	}
 }
 
 const std::string RegularExpression::replace(const std::string& piece, const std::string& with)
 {
-	return Pcre::replace(piece, with);
+	try {
+		return Pcre::replace(piece, with);
+	} catch( Pcre::exception ex ) {
+		LOG(ERROR) << ex.what();
+		return std::string();
+	}
 }
 
-int RegularExpression::get_entire_match_start() const
+int RegularExpression::getEntireMatchStart() const
 {
 	return Pcre::get_match_start();
 }
 
-int RegularExpression::get_match_start(int pos) const
+int RegularExpression::getMatchStart(int pos) const
 {
-	return Pcre::get_match_start(pos);
+	try {
+		return Pcre::get_match_start(pos);
+	} catch( Pcre::exception ex ) {
+		LOG(ERROR) << ex.what();
+		return 0;
+	}
 }
 
-int RegularExpression::get_entire_match_end() const
+int RegularExpression::getEntireMatchEnd() const
 {
 	return Pcre::get_match_end();
 }
 
-int RegularExpression::get_match_end(int pos) const
+int RegularExpression::getMatchEnd(int pos) const
 {
-	return Pcre::get_match_end(pos);
+	try {
+		return Pcre::get_match_end(pos);
+	} catch( Pcre::exception ex ) {
+		LOG(ERROR) << ex.what();
+		return 0;
+	}
 }
 
 bool RegularExpression::matched()
@@ -108,29 +162,84 @@ bool RegularExpression::matched()
 	return Pcre::matched();
 }
 
-int RegularExpression::matches()
+int RegularExpression::matchesCount()
 {
 	return Pcre::matches();
 }
 
-SquirrelObject RegularExpression::get_sub_strings()
+SquirrelObject RegularExpression::getSubStrings()
 {
-	std::vector<std::string>* substrings =  Pcre::get_sub_strings();
-	if ( !substrings ) {
+	try {
+		std::vector<std::string>* substrings =  Pcre::get_sub_strings();
+		if ( !substrings ) {
+			return SquirrelObject();
+		}
+		SquirrelObject res = SquirrelVM::CreateArray(substrings->size());
+		for ( int i = 0; i < substrings->size(); i++ ) {
+			res.SetValue(i, (*substrings)[i].c_str());
+		}
+		return res;
+	} catch( Pcre::exception ex ) {
+		LOG(ERROR) << ex.what();
 		return SquirrelObject();
 	}
-	SquirrelObject res = SquirrelVM::CreateArray(substrings->size());
-	for ( int i = 0; i < substrings->size(); i++ ) {
-		res.SetValue(i, (*substrings)[i].c_str());
+}
+
+bool RegularExpression::match(const std::string& stuff)
+{
+	return search(stuff);
+}
+
+SquirrelObject RegularExpression::findAll(const std::string& str)
+{
+	size_t pos = 0;
+	SquirrelObject res = SquirrelVM::CreateArray(0);
+	while (pos <= str.length()) 
+	{
+		if ( Pcre::search(str, pos)) 
+		{ 
+			pos = get_match_end()+1;
+			int count = matchesCount();
+			SquirrelObject mat = SquirrelVM::CreateArray(count);
+			for ( int i = 0; i < count; i++ ) {
+				mat.SetValue(i, get_match(i).c_str());
+			}
+			res.ArrayAppend(mat);
+		}
+		else {
+			break;
+		}
 	}
 	return res;
 }
 
-
-
 ScriptAPI::RegularExpression* CreateRegExp(const std::string& expression, const std::string& flags)
 {
 	return new RegularExpression(expression,flags);
+}
+
+void RegisterRegularExpressionClass() {
+
+	using namespace SqPlus;
+	SQClassDef<RegularExpression>("RegularExpression")
+		.func(&RegularExpression::search, "search")
+		.func(&RegularExpression::findAll, "findAll")
+		.func(&RegularExpression::match, "match")
+		.func(&RegularExpression::searchWithOffset, "searchWithOffset")
+		.func(&RegularExpression::getMatch, "getMatch")
+		.func(&RegularExpression::replace, "replace")
+		.func(&RegularExpression::matched, "matched")
+		.func(&RegularExpression::matchesCount, "matchesCount")
+		.func(&RegularExpression::getSubStrings, "getSubStrings")
+		.func(&RegularExpression::split, "split")
+		.func(&RegularExpression::splitWithLimitOffset, "splitWithLimitOffset")
+		.func(&RegularExpression::splitWithLimitStartEndOffset, "splitWithLimitStartEndOffset")
+		.func(&RegularExpression::getMatchStart, "getMatchStart")
+		.func(&RegularExpression::getMatchEnd, "getMatchEnd")
+		.func(&RegularExpression::getEntireMatchStart, "getEntireMatchStart")
+		.func(&RegularExpression::getEntireMatchEnd, "getEntireMatchEnd");
+
+	RegisterGlobal(CreateRegExp, "CRegExp");	
 }
 
 }

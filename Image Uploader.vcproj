@@ -1701,6 +1701,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Source\Core\Squirrelnc.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Source\Core\TextUtils.cpp"
 					>
 				</File>

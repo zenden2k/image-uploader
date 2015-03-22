@@ -7,8 +7,9 @@
 <link href="default.css" rel="stylesheet" type="text/css" />
 <!--<link href="styles/default.css" rel="stylesheet" type="text/css" />-->
 <link href="prettify/prettify.css" rel="stylesheet" type="text/css" />
+
 </head>
-<body onload="prettyprint()">
+<body onload="prettyPrint()">
 <script type="text/javascript" src="prettify/prettify.js"></script>
 <div id="header">
 <h1>Image Uploader scripting API</h1> <div id="version"></div>
@@ -23,19 +24,29 @@
 </div>
 <div id="content">
     <div id="left">
-<h1>RegExp</h1>
-<h2 id="SimpleXml">RegExp class</h2> 
+<h1>CRegExp</h1>
+<h2 id="SimpleXml">CRegExp class</h2> 
 Available since ver.1.3.1
 <div class="script-functions">
-<code class="f"><u></u> RegExp(<u>string</u> <i>pattern</i>, <u>string</u> <i>flags</i>)</code>
-<p>Creating instance: <code>local xml = RegExp(pattern, flags);</code><br>
+<code class="f"><u></u> CRegExp(<u>string</u> <i>pattern</i>, <u>string</u> <i>flags</i>)</code>
+<p>Creating instance: <code>local xml = CRegExp(pattern, flags);</code><br>
 pattern - regular expression, <br>flags:<br>
-i  - PCRE_CASELESS<br>
-m - PCRE_MULTILINE<br>
-s - PCRE_DOTALL<br>
-x - PCRE_EXTENDED<br>
-u -  PCRE_UTF8|PCRE_UCP<br>
-g - global<br>
+<b>i</b>  - PCRE_CASELESS<br>
+If this modifier is set, letters in the pattern match both upper and lower case letters.
+<p>
+<b>m</b> - PCRE_MULTILINE<br>
+By default, PCRE treats the subject string as consisting of a single "line" of characters (even if it actually contains several newlines). The "start of line" metacharacter (^) matches only at the start of the string, while the "end of line" metacharacter ($) matches only at the end of the string, or before a terminating newline (unless D modifier is set). This is the same as Perl. When this modifier is set, the "start of line" and "end of line" constructs match immediately following or immediately before any newline in the subject string, respectively, as well as at the very start and end. This is equivalent to Perl's /m modifier. If there are no "\n" characters in a subject string, or no occurrences of ^ or $ in a pattern, setting this modifier has no effect.
+<p>
+<b>s</b> - PCRE_DOTALL<br>
+If this modifier is set, a dot metacharacter in the pattern matches all characters, including newlines. Without it, newlines are excluded. This modifier is equivalent to Perl's /s modifier. A negative class such as [^a] always matches a newline character, independent of the setting of this modifier.
+<p>
+<b>x</b> - PCRE_EXTENDED<br>
+If this modifier is set, whitespace data characters in the pattern are totally ignored except when escaped or inside a character class, and characters between an unescaped # outside a character class and the next newline character, inclusive, are also ignored. This is equivalent to Perl's /x modifier, and makes it possible to include commentary inside complicated patterns. Note, however, that this applies only to data characters. Whitespace characters may never appear within special character sequences in a pattern, for example within the sequence (?( which introduces a conditional subpattern.
+<p>
+<b>u</b> -  PCRE_UTF8|PCRE_UCP<br>
+This modifier turns on additional functionality of PCRE that is incompatible with Perl. Pattern and subject strings are treated as UTF-8. This modifier is available from PHP 4.1.0 or greater on Unix and from PHP 4.2.3 on win32. UTF-8 validity of the pattern and the subject is checked since PHP 4.3.5. An invalid subject will cause the preg_* function to match nothing; an invalid pattern will trigger an error of level E_WARNING. Five and six octet UTF-8 sequences are regarded as invalid since PHP 5.3.4 (resp. PCRE 7.3 2007-08-28); formerly those have been regarded as valid UTF-8.
+<p>
+<b>g</b> - global<br>
 </p>
 
 <b><i>Class methods: </i></b><p>
@@ -45,14 +56,16 @@ This method does the actual search on the given string.<br>
 @param "stuff" the string in which you want to search for something.<br>
 @return boolean <b>true</b> if the regular expression matched. <b>false</b> if not.<br>
 <br>
-<code class="f"><u>bool</u> search_with_offset(<u>string</u> <i>stuff</i>, <u>int</u> <i>offset</i> )</code>
+<code class="f"><u>bool</u> match(<u>string</u> <i>stuff</i>)</code>
+Same as match<br>
+<code class="f"><u>bool</u> searchWithOffset(<u>string</u> <i>stuff</i>, <u>int</u> <i>offset</i> )</code>
 Do a search on the given string beginning at the given offset.<br>
 This method does the actual search on the given string.<br>
 @param "stuff" the string in which you want to search for something.<br>
 @param "OffSet" the offset where to start the search.<br>
 @return boolean <b>true</b> if the regular expression matched. <b>false</b> if not.<br>
 <br>
-<code class="f"><u>string</u> get_match(<u>int</u> <i>pos</i>)</code>
+<code class="f"><u>string</u> getMatch(<u>int</u> <i>pos</i>)</code>
 Get a substring at a known position. <br>
 This method throws an out-of-range exception if the given position<br>
 is invalid.<br>
@@ -61,7 +74,7 @@ is invalid.<br>
 
 Example:<br>
 <pre class="prettyprint">
-local mysub = regex.get_match(1); <br>
+local mysub = regex.getMatch(0); <br>
 </pre>
 Get the first substring that matched the expression in the "regex" object.<br>
 <br>
@@ -79,10 +92,10 @@ Test if a search was successfull.<br>
 This method must be invoked <b>after</b> calling search().<br>
 @return boolean <b>true</b> if the search was successfull at all, or <b>false</b> if not.<br>
 <br>
-<code class="f"><u>int</u> matches()</code>
+<code class="f"><u>int</u> matchesCount()</code>
 Get the number of substrings generated by RegExp.<br>
 @return the number of substrings generated by RegExp.<br>
-<code class="f"><u>array</u> get_sub_strings()</code>
+<code class="f"><u>array</u> getSubStrings()</code>
 Return an array of substrings, if any.
 <code class="f"><u>array</u> split(<u>string</u> <i>piece</i>)</code>
 split a string into pieces<br>
@@ -90,7 +103,7 @@ This method will split the given string into a array<br>
 of strings using the compiled expression (given to the constructor).<br>
 @param "piece" The string you want to split into it's parts.<br>
 @return an array of strings<br>
-<code class="f"><u>array</u> split_with_limit(<u>string</u> <i>piece</i>, <u>int</u> <i>limit</i>)</code>
+<code class="f"><u>array</u> splitWithLimit(<u>string</u> <i>piece</i>, <u>int</u> <i>limit</i>)</code>
 split a string into pieces<br>
 This method will split the given string into a array<br>
 of strings using the compiled expression (given to the constructor).<br>
@@ -98,7 +111,7 @@ of strings using the compiled expression (given to the constructor).<br>
 @param "piece" The string you want to split into it's parts.<br>
 @param "limit" the maximum number of elements you want to get back from split().<br>
 @return an array of strings<br>
-<code class="f"><u>array</u> split_with_limit_offset(<u>string</u> <i>piece</i>, <u>int</u> <i>limit</i>, <u>int</u> <i>start_offset</i>)</code>
+<code class="f"><u>array</u> splitWithLimitOffset(<u>string</u> <i>piece</i>, <u>int</u> <i>limit</i>, <u>int</u> <i>start_offset</i>)</code>
 split a string into pieces<br>
 This method will split the given string into a array<br>
 of strings using the compiled expression (given to the constructor).<br>
@@ -107,7 +120,7 @@ of strings using the compiled expression (given to the constructor).<br>
 @param "limit" the maximum number of elements you want to get back from split().<br>
 @param "start_offset" at which substring the returned array should start.<br>
 @return an array of strings<br>
-<code class="f"><u>array</u> split_with_limit_start_end_offset(<u>string</u> <i>piece</i>, <u>int</u> <i>limit</i>, <u>int</u> <i>start_offset</i>,  <u>int</u> <i>end_offset</i>)</code>
+<code class="f"><u>array</u> splitWithLimitStartEndOffset(<u>string</u> <i>piece</i>, <u>int</u> <i>limit</i>, <u>int</u> <i>start_offset</i>,  <u>int</u> <i>end_offset</i>)</code>
 split a string into pieces<br>
 This method will split the given string into a array<br>
 of strings using the compiled expression (given to the constructor).<br>
@@ -117,48 +130,43 @@ of strings using the compiled expression (given to the constructor).<br>
 @param "start_offset" at which substring the returned array should start.<br>
 @param "end_offset" at which substring the returned array should end.<br>
 @return an array of strings<br>
-<code class="f"><u>int</u> get_match_start(int pos)</code>
+<code class="f"><u>int</u> getMatchStart(int pos)</code>
 Get the start position of a substring within the searched string.<br>
 This method returns the character position of the first character of<br>
 a substring withing the searched string.<br>
-@param "pos" the position of the substring. Identical to perl's $1..$n.<br>
+@param "pos" the position of the substring. <br>
 @return the integer character position of the first character of a substring. <br>
 Positions are starting at 0.<br>
 <br>
 Example:<br>
 <pre class="prettyprint">
 
-local regex = RegExp("([0-9]+)");               // search for numerical characters
+local regex = CRegExp("([0-9]+)");               // search for numerical characters
 regex.search("The 11th september.");  // do the search on this string
-local day = regex.get_match(1);      // returns "11"
-local pos = regex.get_match_start(1);   // returns 4, because "11" begins at the
+local day = regex.getMatch(0);      // returns "11"
+local pos = regex.getMatchStart(0);   // returns 4, because "11" begins at the
                                       // 4th character inside the search string.
 
 </pre>
-@see int get_match_end(int pos)<br>
-@see int get_entire_match_end()<br>
-@see int get_entire_match_start()<br>
-<code class="f"><u>int</u> get_match_end(int pos)</code>
+
+<code class="f"><u>int</u> getMatchEnd(int pos)</code>
 Get the end position of a substring within the searched string.<br>
 This method returns the character position of the last character of<br>
 a substring withing the searched string.<br>
-@param "pos" the position of the substring. Identical to perl's $1..$n.<br>
+@param "pos" the position of the substring. <br>
 @return the integer character position of the last character of a substring. <br>
 Positions are starting at 0.<br>
 <br>
 Example:<br>
 <pre class="prettyprint">
 
-local regex = RegExp("([0-9]+)");               // search for numerical characters
+local regex = CRegExp("([0-9]+)");               // search for numerical characters
 regex.search("The 11th september.");  // do the search on this string
-local day = regex.get_match(1);      // returns "11"
-local pos = regex.get_match_end(1);     // returns 5, because "11" ends at the
+local day = regex.getMatch(0);      // returns "11"
+local pos = regex.getMatchEnd(0);     // returns 5, because "11" ends at the
                                        // 5th character inside the search string
 </pre>
-@see int get_match_start(int pos)<br>
-@see int get_entire_match_start()<br>
-@see int get_entire_match_end()<br>
-<code class="f"><u>int</u> get_entire_match_start()</code>
+<code class="f"><u>int</u> getEntireMatchStart()</code>
 Get the start position of the entire match within the searched string.<br>
 This method returns the character position of the first character of<br>
 the entire match within the searched string.<br>
@@ -166,16 +174,13 @@ the entire match within the searched string.<br>
 
 Example:<br>
 <pre class="prettyprint">
-local regex = RegExp("([0-9]+)\s([a-z]+)");     // search for the date(makes 2 substrings
+local regex = CRegExp("([0-9]+)\\s([a-z]+)");     // search for the date(makes 2 substrings
 regex.search("The 11th september.");  // do the search on this string
-local pos = regex.get_entire_match_start();    // returns 4, because "11th september" begins at the
+local pos = regex.getEntireMatchStart();    // returns 4, because "11th september" begins at the
                                      // 4th character inside the search string.
 
 </pre>
-@see int get_match_start(int pos)<br>
-@see int get_match_end(int pos)<br>
-@see int get_entire_match_end()<br>
-<code class="f"><u>int</u> get_entire_match_end()</code>
+<code class="f"><u>int</u> getEntireMatchEnd()</code>
 Get the end position of the entire match within the searched string.<br>
 This method returns the character position of the last character of<br>
 the entire match within the searched string.<br>
@@ -184,18 +189,90 @@ the entire match within the searched string.<br>
 Example:<br>
 <pre class="prettyprint">
 
-local regex = RegExp("([0-9]+)\s([a-z]+)");     // search for the date(makes 2 substrings
+local regex = CRegExp("([0-9]+)([a-z]+)\\s([a-z]+)");     // search for the date(makes 2 substrings
 regex.search("The 11th september.");  // do the search on this string
-local pos = regex.get_match_end();      // returns 17, because "11th september", which is
+local pos = regex.getMatchEnd();      // returns 17, because "11th september", which is
                                            // the entire match, ends at the
                                       // 17th character inside the search string.
+
 </pre>
 
+<code class="f"><u>bool</u> findAll(<u>string</u> <i>stuff</i>)</code>
+Perform a global regular expression match<br>
+It works like php function 'preg_match_all' with flags = PREG_SET_ORDER.<br>
+@param "stuff" the string in which you want to search for something.<br>
+@return array (2-dimensional) or an empty array if match failed.
+<br>
+Example:
+<pre class="prettyprint">
+local regex = CRegExp("(http|https|ftp)://([\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)","imcu");
+local matches = regex.findAll(GetFileContents("d:\\links.html"));
+for ( local i = 0; i< matches.len(); i++ ) {
+	for ( local j = 0; j< matches[i].len(); j++ ) {
+		print("match["+i +"]["+j+"]=" + matches[i][j]+"\r\n");
+	}
+}
+</pre>
+links.html content:
+<pre class="prettyprint">
+&lt;p&gt;&lt;a href=&quot;https://getsharex.com&quot; target=&quot;_blank&quot;&gt;ShareX&lt;br&gt;&lt;/a&gt; 
+&lt;a href=&quot;https://code.google.com/p/sharexmod/&quot; target=&quot;_blank&quot;&gt;ShareXmod&lt;/a&gt;
+&lt;a href=&quot;https://getsharex.com&quot; target=&quot;_blank&quot;&gt;&lt;br&gt;&lt;/a&gt;&lt;a href=&quot;https://app.prntscr.com/&quot; target=&quot;_blank&quot;&gt;Lightshot&lt;/a&gt;
+&lt;br&gt; &lt;a href=&quot;http://www.nteworks.com/picpick/en/&quot; target=&quot;_blank&quot;&gt;PickPick&lt;/a&gt;&lt;br&gt; 
+&lt;a href=&quot;http://monosnap.com/&quot; target=&quot;_blank&quot;&gt;monosnap&lt;/a&gt; 
+</pre>
+Output:
+<pre class="prettyprint">
+match[0][0]=https
+match[0][1]=getsharex.com
+match[1][0]=https
+match[1][1]=code.google.com/p/sharexmod/
+match[2][0]=https
+match[2][1]=getsharex.com
+match[3][0]=https
+match[3][1]=app.prntscr.com/
+match[4][0]=http
+match[4][1]=www.nteworks.com/picpick/en/
+match[5][0]=http
+match[5][1]=monosnap.com/
+</pre>
+<p>&nbsp;<p>&nbsp;<p>
+Tests: <br>
+<pre class="prettyprint">
+local regex = CRegExp("([0-9]+)", "");  // search for numerical characters
+regex.search("The 11th september.");  // do the search on this string
+print( "regex.matchesCount() returned " + regex.matchesCount().tostring()+"\r\n");
+print("regex.getMatch(0) returned " + regex.getMatch(0)+"\r\n");
+print( "regex.getMatchStart(0) returned " + regex.getMatchStart(0).tostring()+"\r\n");
+print("regex.getMatchEnd(0) returned "+ regex.getMatchEnd(0).tostring()+"\r\n");
+  
+regex = CRegExp("([0-9]+)([a-z]+)\\s([a-z]+)", "i");     // search for the date(makes 2 substrings
+regex.search("The 11th september."+"\r\n");  // do the search on this string
+print( "regex.getEntireMatchStart() returned "+ regex.getEntireMatchStart().tostring()+"\r\n");
+print( "regex.getEntireMatchEnd() returned "+ regex.getEntireMatchEnd().tostring()+"\r\n");
+local substrings = regex.getSubStrings();
+for ( local i = 0; i< substrings.len(); i++ ) {
+	print("match["+i +"]=" + substrings[i]+"\r\n");
+}
+</pre>
+
+Output:
+<pre class="prettyprint">
+regex.matchesCount() returned 1
+regex.getMatch(0) returned 
+regex.getMatchStart(0) returned 4
+regex.getMatchEnd(0) returned 5
+regex.getEntireMatchStart() returned 4
+regex.getEntireMatchEnd() returned 17
+match[0]=11
+match[1]=th
+match[2]=september
+</pre>
 </div>
 </div>
 </div>
 <div id="footer">
-<p> Последнее обновление данного документа — 05.03.2015 года. Copyright &copy; 2007 - 2015, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
+<p> Последнее обновление данного документа — 22.03.2015 года. Copyright &copy; 2007 - 2015, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
 </div>
 
 </body>

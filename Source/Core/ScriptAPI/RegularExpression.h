@@ -1,14 +1,7 @@
 #include <Core/3rdpart/pcreplusplus.h>
 #include <string>
-#ifdef UNICODE
-#undef UNICODE // We do not want to compile sqplus with unicode support
-#undef _UNICODE
-#include <sqplus.h>
-#define UNICODE
-#define _UNICODE
-#else
-#include <sqplus.h>
-#endif
+#include "../Squirrelnc.h"
+
 namespace ScriptAPI {
 
 
@@ -19,23 +12,26 @@ public:
 	RegularExpression(const RegularExpression& r);
 	RegularExpression(const std::string& expression, const std::string& flags);
 	  SquirrelObject split(const std::string& piece);
-	  SquirrelObject split_with_limit(const std::string& piece, int limit);
-	  SquirrelObject split_with_limit_offset(const std::string& piece, int limit, int start_offset);
-	  SquirrelObject split_with_limit_start_end_offset(const std::string& piece, int limit, int start_offset, int end_offset);
-	  const std::string get_match(int pos) const;
+	  SquirrelObject splitWithLimit(const std::string& piece, int limit);
+	  SquirrelObject splitWithLimitOffset(const std::string& piece, int limit, int start_offset);
+	  SquirrelObject splitWithLimitStartEndOffset(const std::string& piece, int limit, int start_offset, int end_offset);
+
+	  const std::string getMatch(int pos) const;
 	  bool search(const std::string& stuff);
-	  bool search_with_offset(const std::string& stuff, int OffSet);
+	  bool searchWithOffset(const std::string& stuff, int OffSet);
+	  SquirrelObject findAll(const std::string& stuff);
 	  const std::string replace(const std::string& piece, const std::string& with);
-	  int get_entire_match_start() const;
-	  int get_match_start(int pos) const;
-	  int get_entire_match_end() const;
-	  int get_match_end(int pos) const;
+	  int getEntireMatchStart() const;
+	  int getMatchStart(int pos) const;
+	  int getEntireMatchEnd() const;
+	  int getMatchEnd(int pos) const;
+	  bool match(const std::string& stuff);
 	  bool matched();
-	  int  matches();
-	  SquirrelObject get_sub_strings();
+	  int  matchesCount();
+	  SquirrelObject getSubStrings();
 
 };
 
-RegularExpression* CreateRegExp(const std::string& expression, const std::string& flags);
-
+RegularExpression* CreateRegExp(const std::string& expression, const std::string& flags = "");
+void RegisterRegularExpressionClass();
 }
