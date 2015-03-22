@@ -23,7 +23,7 @@
 
 #include "atlheaders.h"
 #include <windows.h>
-#include "Core/Network/NetworkManager.h"
+#include "Core/Network/NetworkClient.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Func/MyUtils.h"

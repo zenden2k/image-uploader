@@ -18,6 +18,7 @@ mkdir %temp_dir%\Modules
 mkdir %temp_dir%\Data\Thumbnails\
 mkdir %temp_dir%\Data\Favicons
 mkdir %temp_dir%\Data\Scripts
+mkdir %temp_dir%\Data\Scripts\Lang
 mkdir %temp_dir%\Data\Servers
 mkdir %temp_dir%\Data\Update
 
@@ -31,6 +32,7 @@ Copy "..\Data\templates.xml" %temp_dir%\Data\
 Copy "..\Data\template.txt" %temp_dir%\Data\
 Copy "..\Data\Favicons\*.ico" %temp_dir%\Data\Favicons\
 Copy "..\Data\Scripts\*.nut" %temp_dir%\Data\Scripts\
+Copy "..\Data\Scripts\Lang\*.json" %temp_dir%\Data\Scripts\Lang\
 Copy "..\Data\Update\*.xml" %temp_dir%\Data\Update\
 Copy "..\Data\Thumbnails\*.*" %temp_dir%\Data\Thumbnails\
 rem Copy "..\Data\Servers\*.xml" %temp_dir%\Data\Servers\

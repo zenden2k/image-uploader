@@ -483,7 +483,7 @@ bool CImageReuploaderDlg::BeginDownloading()
 
 			m_FileDownloader.onFileFinished.bind(this, &CImageReuploaderDlg::OnFileFinished);
 			m_FileDownloader.onQueueFinished.bind(this, &CImageReuploaderDlg::OnQueueFinished);
-			m_FileDownloader.onConfigureNetworkManager.bind(this, &CImageReuploaderDlg::FileDownloader_OnConfigureNetworkManager);
+			m_FileDownloader.onConfigureNetworkClient.bind(this, &CImageReuploaderDlg::FileDownloader_OnConfigureNetworkClient);
 			m_FileDownloader.start();
 			
 			updateStats();
@@ -535,12 +535,12 @@ bool CImageReuploaderDlg::OnQueueFinished(CFileQueueUploader*) {
 	return true;
 }
 
-bool  CImageReuploaderDlg::OnConfigureNetworkManager(CFileQueueUploader* ,NetworkManager* nm) {
+bool  CImageReuploaderDlg::OnConfigureNetworkClient(CFileQueueUploader* ,NetworkClient* nm) {
 	IU_ConfigureProxy(*nm);
 	return true;
 }
 
-void CImageReuploaderDlg::FileDownloader_OnConfigureNetworkManager(NetworkManager* nm) {
+void CImageReuploaderDlg::FileDownloader_OnConfigureNetworkClient(NetworkClient* nm) {
 	IU_ConfigureProxy(*nm);
 }
 

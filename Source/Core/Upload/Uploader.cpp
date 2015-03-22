@@ -126,9 +126,9 @@ bool CUploader::Upload(UploadTask* task) {
 	m_PrInfo.Uploaded = 0;
 	m_FileName = FileName;
 	m_bShouldStop = false;
-	if (onConfigureNetworkManager)
-		onConfigureNetworkManager(&m_NetworkManager);
-	m_CurrentEngine->setNetworkManager(&m_NetworkManager);
+	if (onConfigureNetworkClient)
+		onConfigureNetworkClient(&m_NetworkClient);
+	m_CurrentEngine->setNetworkClient(&m_NetworkClient);
 	m_CurrentEngine->onDebugMessage.bind(this, &CUploader::DebugMessage);
 	m_CurrentEngine->onNeedStop.bind(this, &CUploader::needStop);
 	m_CurrentEngine->onStatusChanged.bind(this, &CUploader::SetStatus);
@@ -138,7 +138,7 @@ bool CUploader::Upload(UploadTask* task) {
 
 	CIUUploadParams uparams;
 	uparams.thumbWidth = m_nThumbWidth;
-	m_NetworkManager.setProgressCallback(pluginProgressFunc, (void*)this);
+	m_NetworkClient.setProgressCallback(pluginProgressFunc, (void*)this);
 	bool EngineRes = false;
 	int i = 0;
 	do

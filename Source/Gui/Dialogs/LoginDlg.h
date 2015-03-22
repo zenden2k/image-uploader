@@ -74,7 +74,7 @@ protected:
 	bool ignoreExistingAccount_;
 	bool serverSupportsBeforehandAuthorization_;
 	void enableControls(bool enable);
-	NetworkManager networkManager_;
+	NetworkClient NetworkClient_;
 	CPictureExWnd wndAnimation_;
 	
 };

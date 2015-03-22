@@ -65,7 +65,7 @@ class CFileQueueUploader::Impl {
 	protected:
 		class Runnable;
 		bool onNeedStopHandler();
-		void OnConfigureNetworkManager(NetworkManager* nm);
+		void OnConfigureNetworkClient(NetworkClient* nm);
 		void onProgress(CUploader*, InfoProgress progress );
 		std::map<CUploader*, Task*> tasks_;
 		std::map<std::string, ServerThreadsInfo> serverThreads_;
@@ -119,10 +119,10 @@ void CFileQueueUploader::Impl::onProgress(CUploader* uploader, InfoProgress prog
 	}
 }
 
-void CFileQueueUploader::Impl::OnConfigureNetworkManager(NetworkManager* nm)
+void CFileQueueUploader::Impl::OnConfigureNetworkClient(NetworkClient* nm)
 {
 	if (callback_) {
-		callback_->OnConfigureNetworkManager(queueUploader_,nm);
+		callback_->OnConfigureNetworkClient(queueUploader_,nm);
 	}
 }
 
@@ -200,7 +200,7 @@ void CFileQueueUploader::Impl::start() {
 void CFileQueueUploader::Impl::run()
 {
 	CUploader uploader;
-	uploader.onConfigureNetworkManager.bind(this, &CFileQueueUploader::Impl::OnConfigureNetworkManager);
+	uploader.onConfigureNetworkClient.bind(this, &CFileQueueUploader::Impl::OnConfigureNetworkClient);
 #ifndef IU_CLI
 	// TODO
 	uploader.onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);

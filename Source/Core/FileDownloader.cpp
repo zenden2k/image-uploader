@@ -87,13 +87,13 @@ unsigned int __stdcall CFileDownloader::thread_func(void* param)
 
 void CFileDownloader::memberThreadFunc()
 {
-	NetworkManager nm;
+	NetworkClient nm;
 
 	// Providing callback function to stop downloading
 	nm.setProgressCallback(CFileDownloader::ProgressFunc, this);
 	m_CS.Lock();
-	if (onConfigureNetworkManager)
-		onConfigureNetworkManager(&nm);
+	if (onConfigureNetworkClient)
+		onConfigureNetworkClient(&nm);
 	m_CS.Unlock();
 
 	for (;; )

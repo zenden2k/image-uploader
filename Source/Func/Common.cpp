@@ -227,7 +227,7 @@ bool IULaunchCopy(CString params, CAtlArray<CString>& files)
 	return true;
 }
 
-void IU_ConfigureProxy(NetworkManager& nm)
+void IU_ConfigureProxy(NetworkClient& nm)
 {
 	if (Settings.ConnectionSettings.UseProxy)
 	{

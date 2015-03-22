@@ -52,7 +52,7 @@ void CHistoryTreeControl::CreateDownloader()
 	if(!m_FileDownloader)
 	{
 		m_FileDownloader = new CFileDownloader();
-		m_FileDownloader->onConfigureNetworkManager.bind(this, &CHistoryTreeControl::OnConfigureNetworkManager);
+		m_FileDownloader->onConfigureNetworkClient.bind(this, &CHistoryTreeControl::OnConfigureNetworkClient);
 		m_FileDownloader->onFileFinished.bind(this, &CHistoryTreeControl::OnFileFinished);
 		m_FileDownloader->onQueueFinished.bind(this, &CHistoryTreeControl::QueueFinishedEvent);
 	}
@@ -780,8 +780,8 @@ void CHistoryTreeControl::ResetContent()
 	CCustomTreeControlImpl<CHistoryTreeControl>::ResetContent();
 }
 
-void CHistoryTreeControl::OnConfigureNetworkManager(NetworkManager* nm)
+void CHistoryTreeControl::OnConfigureNetworkClient(NetworkClient* nm)
 {
-	//MessageBox(_T("OnConfigureNetworkManager"),0,0);
+	//MessageBox(_T("OnConfigureNetworkClient"),0,0);
 	IU_ConfigureProxy(*nm);
 }

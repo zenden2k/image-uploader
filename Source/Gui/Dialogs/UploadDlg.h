@@ -86,12 +86,12 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		bool OnUploaderNeedStop();
 		void OnUploaderProgress(CUploader* uploader, InfoProgress pi);
 		void OnUploaderStatusChanged(StatusType status, int actionIndex, std::string text);
-		void OnUploaderConfigureNetworkClient(NetworkManager *nm);	
+		void OnUploaderConfigureNetworkClient(NetworkClient *nm);	
 		void onShortenUrlChanged(bool shortenUrl);
 		void AddShortenUrlTask(CUrlListItem* item);
 		void AddShortenUrlTask(CUrlListItem* item, CString linkType);
 		virtual bool OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result);
-		virtual bool OnConfigureNetworkManager(CFileQueueUploader*, NetworkManager* nm);
+		virtual bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);
 	protected:
 		struct CUploadDlgProgressInfo
 		{

@@ -26,7 +26,7 @@
 #include <string>
 #include "atlheaders.h"
 #include "Core/Utils/CoreTypes.h"
-#include "Core/Network/NetworkManager.h"
+#include "Core/Network/NetworkClient.h"
 #include "Core/Utils/SimpleXml.h"
 
 struct CUpdateItem
@@ -129,7 +129,7 @@ class CUpdateManager: public CUpdateStatusCallback
 		int nCurrentIndex;
 		CUpdateStatusCallback *m_statusCallback;
 		
-		NetworkManager nm;
+		NetworkClient nm;
 		int m_nSuccessPackageUpdates;
 		bool m_stop;
 		int m_nCoreUpdates;

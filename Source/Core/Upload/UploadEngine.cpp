@@ -140,9 +140,9 @@ void CAbstractUploadEngine::SetStatus(StatusType status, std::string param)
 		onStatusChanged(status, 0,  param);
 }
 
-void CAbstractUploadEngine::setNetworkManager(NetworkManager* nm)
+void CAbstractUploadEngine::setNetworkClient(NetworkClient* nm)
 {
-	m_NetworkManager = nm;
+	m_NetworkClient = nm;
 }
 
 void CAbstractUploadEngine::setUploadData(CUploadEngineData* data)
@@ -153,7 +153,7 @@ void CAbstractUploadEngine::setUploadData(CUploadEngineData* data)
 CAbstractUploadEngine::CAbstractUploadEngine()
 {
 	m_bShouldStop = 0;
-	m_NetworkManager = 0;
+	m_NetworkClient = 0;
 	m_UploadData = 0;
 }
 

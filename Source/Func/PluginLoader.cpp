@@ -26,7 +26,7 @@
 #include <sqstdsystem.h>
 
 #include "atlheaders.h"
-#include "Core/Network/NetworkManager.h"
+#include "Core/Network/NetworkClient.h"
 #include "Func/Settings.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Core/Upload/ScriptUploadEngine.h"

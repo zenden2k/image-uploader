@@ -222,7 +222,7 @@ bool CImageDownloaderDlg::BeginDownloading()
 		SendDlgItemMessage(IDC_DOWNLOADFILESPROGRESS, PBM_SETPOS,  0);
 		m_FileDownloader.onFileFinished.bind(this, &CImageDownloaderDlg::OnFileFinished);
 		m_FileDownloader.onQueueFinished.bind(this, &CImageDownloaderDlg::OnQueueFinished);
-		m_FileDownloader.onConfigureNetworkManager.bind(this, &CImageDownloaderDlg::OnConfigureNetworkManager);
+		m_FileDownloader.onConfigureNetworkClient.bind(this, &CImageDownloaderDlg::OnConfigureNetworkClient);
 		m_FileDownloader.start();
 		return true;
 	}
@@ -251,7 +251,7 @@ void CImageDownloaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)
 	SetDlgItemText(IDC_FILEINFOEDIT, text);
 }
 
-void CImageDownloaderDlg::OnConfigureNetworkManager(NetworkManager* nm)
+void CImageDownloaderDlg::OnConfigureNetworkClient(NetworkClient* nm)
 {
 	IU_ConfigureProxy(*nm);
 }

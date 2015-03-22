@@ -177,7 +177,7 @@ public:
 	 bool OnQueueFinished(CFileQueueUploader*);
 	 bool m_bFromHotkey;
 	 bool OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result);
-	 bool OnConfigureNetworkManager(CFileQueueUploader*, NetworkManager* nm);
+	 bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);
 	 void ShowImageUploadedMessage(const CString& url);
 	 std::string source_file_name_;
 	 std::string server_name_;

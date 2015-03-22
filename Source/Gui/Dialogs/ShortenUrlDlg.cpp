@@ -246,7 +246,7 @@ LRESULT CShortenUrlDlg::OnCtlColorMsgDlg(HDC hdc, HWND hwnd) {
 	return 0;
 }
 
-bool  CShortenUrlDlg::OnConfigureNetworkManager(CFileQueueUploader* ,NetworkManager* nm) {
+bool  CShortenUrlDlg::OnConfigureNetworkClient(CFileQueueUploader* ,NetworkClient* nm) {
 	IU_ConfigureProxy(*nm);
 	return true;
 }

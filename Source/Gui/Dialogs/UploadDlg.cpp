@@ -186,7 +186,7 @@ DWORD CUploadDlg::Run()
 	Uploader.onDebugMessage.bind(DefaultErrorHandling::DebugMessage);
 	Uploader.onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
 	Uploader.onStatusChanged.bind(this, &CUploadDlg::OnUploaderStatusChanged);
-	Uploader.onConfigureNetworkManager.bind(this, &CUploadDlg::OnUploaderConfigureNetworkClient);
+	Uploader.onConfigureNetworkClient.bind(this, &CUploadDlg::OnUploaderConfigureNetworkClient);
 
 	/*if(Settings.QuickUpload && !WizardDlg->Pages[3]) {
 		Server = Settings.getQuickServerID();
@@ -863,7 +863,7 @@ void CUploadDlg::OnUploaderStatusChanged(StatusType status, int actionIndex, std
 	PrInfo.CS.Unlock();
 }
 
-void CUploadDlg::OnUploaderConfigureNetworkClient(NetworkManager *nm)
+void CUploadDlg::OnUploaderConfigureNetworkClient(NetworkClient *nm)
 {
 	IU_ConfigureProxy(*nm);
 }
@@ -955,7 +955,7 @@ bool CUploadDlg::OnFileFinished(bool ok, CFileQueueUploader::FileListItem& resul
 	return false;
 }
 
-bool CUploadDlg::OnConfigureNetworkManager(CFileQueueUploader*, NetworkManager* nm) {
+bool CUploadDlg::OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm) {
 	IU_ConfigureProxy(*nm);
 	return true;
 }

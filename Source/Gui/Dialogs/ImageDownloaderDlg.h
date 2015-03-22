@@ -77,7 +77,7 @@ class CImageDownloaderDlg:	public CDialogImpl <CImageDownloaderDlg>,
 		void ParseBuffer(const CString& text, bool OnlyImages);
 		void OnQueueFinished();
 		bool OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it);
-		void OnConfigureNetworkManager(NetworkManager* nm);
+		void OnConfigureNetworkClient(NetworkClient* nm);
 
 		CString m_FileName;
 		CFileDownloader m_FileDownloader;

@@ -781,7 +781,7 @@ bool CFloatingWindow::OnFileFinished(bool ok, CFileQueueUploader::FileListItem& 
 	return true;
 }
 
-bool CFloatingWindow::OnConfigureNetworkManager(CFileQueueUploader *uploader, NetworkManager* nm)
+bool CFloatingWindow::OnConfigureNetworkClient(CFileQueueUploader *uploader, NetworkClient* nm)
 {
 	IU_ConfigureProxy(*nm);
 	return true;

@@ -69,7 +69,7 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	m_FolderTree.SetImageList(m_PlaceSelectorImageList);
 	m_FolderMap[L""] = 0;
 
-	IU_ConfigureProxy(m_NetworkManager);
+	IU_ConfigureProxy(m_NetworkClient);
 
 	m_FolderOperationType = foGetFolders;
 	m_pluginLoader =
@@ -85,7 +85,7 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	SetDlgItemText(IDC_FOLDERLISTLABEL, title);
 	if (m_pluginLoader)
 	{
-		m_pluginLoader->setNetworkManager(&m_NetworkManager);
+		m_pluginLoader->setNetworkClient(&m_NetworkClient);
 		m_pluginLoader->getAccessTypeList(m_accessTypeList);
 		CreateLoadingThread();
 	}

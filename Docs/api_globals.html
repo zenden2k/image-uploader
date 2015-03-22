@@ -26,6 +26,9 @@
     <div id="left">
 <h2>Global functions</h2> 
 <div class="script-functions">
+Cтандартные функции можно посмотреть в <a href="http://www.squirrel-lang.org/doc/sqstdlib2.html" target="_blank">документации стандартной библиотеки</a>
+и <a href="http://www.squirrel-lang.org/doc/squirrel2.html" target="_blank">документации языка Squirrel</a>.
+<p>
 Note that <code>string</code> type is UTF-8 encoded unless otherwise stated.
 <p>
 <code class="f">print(<i>arg</i>)</code>
@@ -35,13 +38,10 @@ Cтандартная функция squirrel, выводящая текст н�
 <code class="f">include(<u>string</u> <i>filename</i>)</code>
 Includes and runs the script from file. <i class="var">filename</i> should be relative to the scripts root directory.
 <p>
-Остальные стандартные функции можно посмотреть в <a href="http://www.squirrel-lang.org/doc/sqstdlib2.html" target="_blank">документации стандартной библиотеки</a>
-и <a href="http://www.squirrel-lang.org/doc/squirrel2.html" target="_blank">документации языка Squirrel</a>.
-<p>
 <code class="f"><u>string</u> AnsiToUtf8(<u>string</u> <i>text</i>, <u>int</u> <i>codepage_number</i>)</code>
 Конвертирует строку из кодировки ANSI в UTF-8. <i>codepage_number</i> - номер кодировки. 
 Нужный номер можно найти <a href="https://raw.githubusercontent.com/zenden2k/image-uploader/master/Source/Core/3rdpart/CodePages.cpp" target="_blank">здесь</a>. Доступна только в Windows.
-<code class="f"><u>string</u> AskUserCaptcha(<u>NetworkManager</u> <i>nm</i>, <u>string</u> <i>url</i>)<span>version >= 1.2.7</b></span></code>
+<code class="f"><u>string</u> AskUserCaptcha(<u>NetworkClient</u> <i>nm</i>, <u>string</u> <i>url</i>)<span>version >= 1.2.7</b></span></code>
 Показывает диалоговое окно ввода капчи. <i class="var">nm</i> - network manager, <i class="var">url</i> - адрес картинки с каптчей. 
 Возвращаемое значение - введенный пользователем текст.
 <code class="f"><u>bool</u> CopyFile(<u>string</u> <i>source</i>, <u>string</u> <i>destination</i>, <u>bool</u> <i>overwrite</i>)<span>version >= 1.3.0</span></code> 

@@ -37,14 +37,14 @@
 std::string nm_trimStr(const std::string& str);
 void nm_splitString(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount = -1);
 
-class NetworkManager
+class NetworkClient
 {
 	public:
 		enum ActionType {
 			atNone = 0, atPost, atUpload, atGet
 		};
-		NetworkManager(void);
-		~NetworkManager(void);
+		NetworkClient(void);
+		~NetworkClient(void);
 		void addQueryParam(const NString& name, const NString& value);
 		void addQueryParamFile(const NString& name, const NString& fileName, const NString& displayName = "", const NString& contentType = "");
 		void addQueryHeader(const NString& name, const NString& value);
@@ -84,7 +84,7 @@ class NetworkManager
 		struct CallBackData
 		{
 			CallBackFuncType funcType;
-			NetworkManager* nmanager;
+			NetworkClient* nmanager;
 		};
 
 		struct CustomHeaderItem

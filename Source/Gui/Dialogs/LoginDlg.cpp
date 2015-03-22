@@ -182,8 +182,8 @@ DWORD CLoginDlg::Run()
 			return 0;
 		}
 
-		IU_ConfigureProxy(networkManager_);
-		plugin_->setNetworkManager(&networkManager_);
+		IU_ConfigureProxy(NetworkClient_);
+		plugin_->setNetworkClient(&NetworkClient_);
 		int res = plugin_->doLogin();
 		if ( res ) {
 			OnProcessFinished();

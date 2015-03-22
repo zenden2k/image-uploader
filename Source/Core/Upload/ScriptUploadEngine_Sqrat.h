@@ -65,9 +65,9 @@ protected:
 		//SquirrelObject m_Object;
 		CScriptUploadEngine(Utf8String pluginName);
 		~CScriptUploadEngine();
-		void setNetworkManager(NetworkManager* nm);
+		void setNetworkClient(NetworkClient* nm);
 		bool load(Utf8String fileName, ServerSettingsStruct& params);
-		//void bindNetworkManager(NetworkManager * nm);
+		//void bindNetworkClient(NetworkClient * nm);
 		int getFolderList(CFolderList &FolderList);
 		int  createFolder(CFolderItem &parent, CFolderItem &folder);
 		int  modifyFolder(CFolderItem &folder);

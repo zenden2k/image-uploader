@@ -112,7 +112,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 		m_ListView.SetItemText(i, 1, Utf8ToWstring(m_ServerList.byIndex(i)->Name).c_str());
 	}
 
-	m_FileDownloader.onConfigureNetworkManager.bind(this, &CMainDlg::OnConfigureNetworkManager);
+	m_FileDownloader.onConfigureNetworkClient.bind(this, &CMainDlg::OnConfigureNetworkClient);
 	m_FileDownloader.onFileFinished.bind(this, &CMainDlg::OnFileFinished);
 	return TRUE;
 }
@@ -188,7 +188,7 @@ DWORD CMainDlg::Run()
 		if(m_skipMap[i]) continue;
 		CUploader uploader;
 		
-		uploader.onConfigureNetworkManager.bind(this, &CMainDlg::OnConfigureNetworkManager);
+		uploader.onConfigureNetworkClient.bind(this, &CMainDlg::OnConfigureNetworkClient);
 		uploader.setThumbnailWidth(160);
 		uploader.onNeedStop.bind(this, &CMainDlg::OnNeedStop);
 		//uploader.ShouldStop = &m_NeedStop;
@@ -466,7 +466,7 @@ bool CMainDlg::OnNeedStop()
 	return m_NeedStop;
 }
 /*
-const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url)
+const std::string Impl_AskUserCaptcha(NetworkClient *nm, const std::string& url)
 {
 	CString wFileName = GetUniqFileName(IuCommonFunctions::IUTempFolder+Utf8ToWstring("captcha").c_str());
 
@@ -489,7 +489,7 @@ const std::string Impl_InputDialog(const std::string& text, const std::string& d
 	}
 	return "";
 }
-void CMainDlg::OnConfigureNetworkManager(NetworkManager *nm)
+void CMainDlg::OnConfigureNetworkClient(NetworkClient *nm)
 {
 	IU_ConfigureProxy(*nm);
 }

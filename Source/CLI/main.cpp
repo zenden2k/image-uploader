@@ -24,7 +24,7 @@
 #include <fstream>
 #include "Core/Upload/Uploader.h"
 #include "Core/Utils/CoreUtils.h"
-#include "Core/Network/NetworkManager.h"
+#include "Core/Network/NetworkClient.h"
 #include "Core/UploadEngineList.h"
 #include "Core/Upload/DefaultUploadEngine.h"
 #include "Core/OutputCodeGenerator.h"
@@ -108,7 +108,7 @@ void destr()
 }
 
 
-void IU_ConfigureProxy(NetworkManager& nm)
+void IU_ConfigureProxy(NetworkClient& nm)
 {
 	if ( !proxy.empty())
 	{
@@ -122,7 +122,7 @@ void IU_ConfigureProxy(NetworkManager& nm)
 	nm.setUploadBufferSize(Settings.UploadBufferSize);
 }
 
-void OnConfigureNM(NetworkManager* nm) {
+void OnConfigureNM(NetworkClient* nm) {
 	IU_ConfigureProxy(*nm);
 }
 
@@ -482,7 +482,7 @@ int func()
    CUploader uploader;
 
    uploader.onProgress.bind(OnProgress);
-   uploader.onConfigureNetworkManager.bind(OnConfigureNM);
+   uploader.onConfigureNetworkClient.bind(OnConfigureNM);
    uploader.onErrorMessage.bind(OnError);
   CUploadEngineData* uploadEngineData = 0;
   if(!serverName.empty())

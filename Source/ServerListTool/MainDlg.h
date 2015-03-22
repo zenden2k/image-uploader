@@ -30,7 +30,7 @@
 #include "Func/MyEngineList.h"
 #include "Core/Utils/SimpleXml.h"
 
-class NetworkManager;
+class NetworkClient;
 
 struct ServerData
 {
@@ -104,7 +104,7 @@ public:
 	CImageList m_ImageList;
 	CString m_srcFileHash;
 	MyFileInfo m_sourceFileInfo;
-	void OnConfigureNetworkManager(NetworkManager *nm);
+	void OnConfigureNetworkClient(NetworkClient *nm);
 	virtual bool OnFileFinished(bool ok, int statusCode,  CFileDownloader::DownloadFileListItem it);
 	void MarkServer(int id);
 	CFileDownloader m_FileDownloader;

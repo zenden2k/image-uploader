@@ -25,7 +25,7 @@
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Upload/UploadEngine.h"
 
-class NetworkManager;
+class NetworkClient;
 
 class UploadProgress {
 public:
@@ -69,8 +69,8 @@ class CFileQueueUploader
 		public:
 			virtual bool OnFileFinished(bool ok, FileListItem& result){return true;}
 			virtual bool OnQueueFinished(CFileQueueUploader* queueUploader) { return true;}
-			virtual bool OnConfigureNetworkManager(CFileQueueUploader*, NetworkManager* nm){return true;}
-			virtual bool OnUploadProgress(UploadProgress progress, Task* task, NetworkManager* nm){return true;}
+			virtual bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm){return true;}
+			virtual bool OnUploadProgress(UploadProgress progress, Task* task, NetworkClient* nm){return true;}
 		};
 
 		CFileQueueUploader();

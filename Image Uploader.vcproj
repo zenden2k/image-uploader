@@ -1808,11 +1808,11 @@
 					Name="Network"
 					>
 					<File
-						RelativePath=".\Source\Core\Network\NetworkManager.cpp"
+						RelativePath=".\Source\Core\Network\NetworkClient.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\Source\Core\Network\NetworkManager.h"
+						RelativePath=".\Source\Core\Network\NetworkClient.h"
 						>
 					</File>
 				</Filter>

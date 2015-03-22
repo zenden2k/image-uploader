@@ -22,7 +22,7 @@
 #define NOMINMAX
 #endif 
 
-#include "NetworkManager.h"
+#include "NetworkClient.h"
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <memory.h>
@@ -32,28 +32,28 @@
 #include "Core/Utils/CoreUtils.h"
 #include <Core/Logging.h>
 
-char NetworkManager::CertFileName[1024]= "";
+char NetworkClient::CertFileName[1024]= "";
 
 size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
 	return  fread(ptr, size, nmemb, (FILE*)stream);
 }
 
-int NetworkManager::set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose) 
+int NetworkClient::set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose) 
 {
 	#ifdef _WIN32
 		// See http://support.microsoft.com/kb/823764
-		NetworkManager* nm = reinterpret_cast<NetworkManager*>(clientp);
+		NetworkClient* nm = reinterpret_cast<NetworkClient*>(clientp);
 		int val = nm->m_UploadBufferSize + 32;
 		setsockopt(sockfd, SOL_SOCKET, SO_SNDBUF, (const char *)&val, sizeof(val));
 	#endif
 	return 0;
 }
 
-int NetworkManager::private_static_writer(char *data, size_t size, size_t nmemb, void *buffer_in)
+int NetworkClient::private_static_writer(char *data, size_t size, size_t nmemb, void *buffer_in)
 {
 	CallBackData* cbd = reinterpret_cast<CallBackData*>(buffer_in);
-	NetworkManager* nm = cbd->nmanager;
+	NetworkClient* nm = cbd->nmanager;
 	if(nm)
 	{
 		if(cbd->funcType == funcTypeBody)
@@ -66,7 +66,7 @@ int NetworkManager::private_static_writer(char *data, size_t size, size_t nmemb,
 	return 0;
 }
 
-void NetworkManager::setProxy(const NString &host, int port, int type)
+void NetworkClient::setProxy(const NString &host, int port, int type)
 {
 	curl_easy_setopt(curl_handle, CURLOPT_PROXY, host.c_str());
 	curl_easy_setopt(curl_handle, CURLOPT_PROXYPORT, (long)port);	
@@ -74,7 +74,7 @@ void NetworkManager::setProxy(const NString &host, int port, int type)
 	curl_easy_setopt(curl_handle, CURLOPT_NOPROXY, "localhost,127.0.0.1"); // test
 } 
 
-void NetworkManager::setProxyUserPassword(const NString &username, const NString password)
+void NetworkClient::setProxyUserPassword(const NString &username, const NString password)
 {
 	if(username.empty());
 		//curl_easy_setopt(curl_handle, CURLOPT_PROXYUSERPWD,"");
@@ -85,7 +85,7 @@ void NetworkManager::setProxyUserPassword(const NString &username, const NString
 	}
 }
 
-int NetworkManager::private_writer(char *data, size_t size, size_t nmemb)
+int NetworkClient::private_writer(char *data, size_t size, size_t nmemb)
 {
 	if(!m_OutFileName.empty())
 	{
@@ -99,15 +99,15 @@ int NetworkManager::private_writer(char *data, size_t size, size_t nmemb)
 	return size * nmemb;
 }
 
-int NetworkManager::private_header_writer(char *data, size_t size, size_t nmemb)
+int NetworkClient::private_header_writer(char *data, size_t size, size_t nmemb)
 {
 	m_headerBuffer.append(data, size * nmemb);
 	return size * nmemb;
 }
 
-int NetworkManager::ProgressFunc(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
+int NetworkClient::ProgressFunc(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
 {
-	NetworkManager *nm = reinterpret_cast<NetworkManager*>(clientp);
+	NetworkClient *nm = reinterpret_cast<NetworkClient*>(clientp);
 	if(nm && nm->m_progressCallbackFunc)
 	{
 		if  (nm->chunkOffset_>=0 && nm->chunkSize_>0 && nm->m_currentActionType == atUpload) {
@@ -120,17 +120,17 @@ int NetworkManager::ProgressFunc(void *clientp, double dltotal, double dlnow, do
 	return 0;
 }
 
-void NetworkManager::setMethod(const NString &str)
+void NetworkClient::setMethod(const NString &str)
 {
 	m_method = str;
 }
 
-bool  NetworkManager::_curl_init = false;
-bool  NetworkManager::_is_openssl = false;
+bool  NetworkClient::_curl_init = false;
+bool  NetworkClient::_is_openssl = false;
 #ifndef IU_CLI
-ZThread::Mutex NetworkManager::_mutex;
+ZThread::Mutex NetworkClient::_mutex;
 #endif
-NetworkManager::NetworkManager(void)
+NetworkClient::NetworkClient(void)
 {
     #ifndef IU_CLI
 	_mutex.acquire();
@@ -203,13 +203,13 @@ NetworkManager::NetworkManager(void)
 	   curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 0L);
 }
 
-NetworkManager::~NetworkManager(void)
+NetworkClient::~NetworkClient(void)
 {
 	curl_easy_setopt(curl_handle, CURLOPT_PROGRESSFUNCTION, (long)NULL);
 	curl_easy_cleanup(curl_handle);
 }
 
-void NetworkManager::addQueryParam(const NString& name, const NString& value)
+void NetworkClient::addQueryParam(const NString& name, const NString& value)
 {
 	QueryParam newParam;
 	newParam.name = name;
@@ -218,7 +218,7 @@ void NetworkManager::addQueryParam(const NString& name, const NString& value)
 	m_QueryParams.push_back(newParam);
 }
 
-void NetworkManager::addQueryParamFile(const NString& name, const NString& fileName, const NString& displayName, const NString& contentType)
+void NetworkClient::addQueryParamFile(const NString& name, const NString& fileName, const NString& displayName, const NString& contentType)
 {
 	QueryParam newParam;
 	newParam.name = name;
@@ -229,7 +229,7 @@ void NetworkManager::addQueryParamFile(const NString& name, const NString& fileN
 	m_QueryParams.push_back(newParam);
 }
 
-void NetworkManager::setUrl(const NString& url)
+void NetworkClient::setUrl(const NString& url)
 {
 	m_url = url;
 	curl_easy_setopt(curl_handle, CURLOPT_URL, url.c_str());
@@ -244,7 +244,7 @@ void CloseFileList(std::vector<FILE *>& files)
 	files.clear();
 }
 
-bool NetworkManager::doUploadMultipartData()
+bool NetworkClient::doUploadMultipartData()
 {
 	private_initTransfer();
 	std::vector<FILE *> openedFiles;
@@ -308,7 +308,7 @@ bool NetworkManager::doUploadMultipartData()
 	return private_on_finish_request();
 }
 
-bool NetworkManager::private_on_finish_request()
+bool NetworkClient::private_on_finish_request()
 {
 	private_checkResponse();
 	private_cleanup_after();
@@ -321,19 +321,19 @@ bool NetworkManager::private_on_finish_request()
 	return true;
 }
 
-const std::string NetworkManager::responseBody()
+const std::string NetworkClient::responseBody()
 {
 	return internalBuffer;
 }
 
-int NetworkManager::responseCode()
+int NetworkClient::responseCode()
 {
     long result=-1;
 	curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &result);
 	return result;
 }
 
-void NetworkManager::addQueryHeader(const NString& name, const NString& value)
+void NetworkClient::addQueryHeader(const NString& name, const NString& value)
 {
 	CustomHeaderItem chi;
 	chi.name = name;
@@ -341,7 +341,7 @@ void NetworkManager::addQueryHeader(const NString& name, const NString& value)
 	m_QueryHeaders.push_back(chi);
 }
 
-bool NetworkManager::doGet(const std::string & url)
+bool NetworkClient::doGet(const std::string & url)
 {
 	if(!url.empty())
 		setUrl(url);
@@ -355,7 +355,7 @@ bool NetworkManager::doGet(const std::string & url)
 
 }
 
-bool NetworkManager::doPost(const NString& data)
+bool NetworkClient::doPost(const NString& data)
 {
 	private_initTransfer();
 	if(!private_apply_method())
@@ -383,7 +383,7 @@ bool NetworkManager::doPost(const NString& data)
 	return private_on_finish_request();
 }
 
-const NString NetworkManager::urlEncode(const NString& str)
+const NString NetworkClient::urlEncode(const NString& str)
 {
 	char * encoded = curl_easy_escape(curl_handle, str.c_str() , str.length() );
 	std::string res = encoded;
@@ -391,17 +391,17 @@ const NString NetworkManager::urlEncode(const NString& str)
 	curl_free(encoded);
 	return res;
 }
-const NString NetworkManager::errorString()
+const NString NetworkClient::errorString()
 {
 	return m_errorBuffer;
 }
 
-void NetworkManager::setUserAgent(const NString& userAgentStr)
+void NetworkClient::setUserAgent(const NString& userAgentStr)
 {
 	m_userAgent = userAgentStr;
 }
  
-void NetworkManager::private_initTransfer()
+void NetworkClient::private_initTransfer()
 {
 	private_cleanup_before();
 	curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, m_userAgent.c_str());
@@ -423,7 +423,7 @@ void NetworkManager::private_initTransfer()
 	curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, chunk_);
 }
 
-void NetworkManager::private_checkResponse()
+void NetworkClient::private_checkResponse()
 {
 	if ( !enableResponseCodeChecking_ )  {
 		return;
@@ -434,7 +434,7 @@ void NetworkManager::private_checkResponse()
 	}
 }
 
-NString NetworkManager::responseHeaderText()
+NString NetworkClient::responseHeaderText()
 {
 	return m_headerBuffer;
 }
@@ -462,7 +462,7 @@ void nm_splitString(const std::string& str, const std::string& delimiters, std::
         pos = str.find_first_of(delimiters, lastPos);
     }
 }
-void NetworkManager::setProgressCallback(curl_progress_callback func, void *data)
+void NetworkClient::setProgressCallback(curl_progress_callback func, void *data)
 {
 	m_progressCallbackFunc = func;
 	m_progressData = data;
@@ -486,7 +486,7 @@ std::string nm_trimStr(const std::string& str)
 }
 
 #include <iostream>
-void NetworkManager::private_parse_headers()
+void NetworkClient::private_parse_headers()
 {
 	std::vector<std::string> headers;
 	nm_splitString(m_headerBuffer, "\n",headers);
@@ -507,7 +507,7 @@ void NetworkManager::private_parse_headers()
 	}
 }
 
-NString NetworkManager::responseHeaderByName(const NString& name)
+NString NetworkClient::responseHeaderByName(const NString& name)
 {
 	std::vector<CustomHeaderItem>::iterator it, end = m_ResponseHeaders.end();
 	
@@ -520,18 +520,18 @@ NString NetworkManager::responseHeaderByName(const NString& name)
 
 }
 
-int NetworkManager::responseHeaderCount()
+int NetworkClient::responseHeaderCount()
 {
 	return m_ResponseHeaders.size();
 }
 
-NString NetworkManager::responseHeaderByIndex(const int index, NString& name)
+NString NetworkClient::responseHeaderByIndex(const int index, NString& name)
 {
 	name = m_ResponseHeaders[index].name;
 	return m_ResponseHeaders[index].value;
 }
 
-void NetworkManager::private_cleanup_before()
+void NetworkClient::private_cleanup_before()
 {
 	std::vector<CustomHeaderItem>::iterator it, end = m_QueryHeaders.end();
 
@@ -546,7 +546,7 @@ void NetworkManager::private_cleanup_before()
 	m_headerBuffer.clear();
 }
 
-void NetworkManager::private_cleanup_after()
+void NetworkClient::private_cleanup_after()
 {
 	m_currentActionType = atNone;
 	m_QueryHeaders.clear();
@@ -575,14 +575,14 @@ void NetworkManager::private_cleanup_after()
 	}
 }
 
-size_t NetworkManager::read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
+size_t NetworkClient::read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
-	NetworkManager* nm = reinterpret_cast<NetworkManager*>(stream);;
+	NetworkClient* nm = reinterpret_cast<NetworkClient*>(stream);;
 	if(!nm) return 0;
 	return nm->private_read_callback(ptr, size, nmemb, stream);
 } 
 
-size_t NetworkManager::private_read_callback(void *ptr, size_t size, size_t nmemb, void *)
+size_t NetworkClient::private_read_callback(void *ptr, size_t size, size_t nmemb, void *)
 {
 	size_t retcode;
 	int wantsToRead = size * nmemb;
@@ -600,7 +600,7 @@ size_t NetworkManager::private_read_callback(void *ptr, size_t size, size_t nmem
 }
 
 
-bool NetworkManager::doUpload(const NString& fileName, const NString &data)
+bool NetworkClient::doUpload(const NString& fileName, const NString &data)
 {
 	if(!fileName.empty())
 	{
@@ -650,7 +650,7 @@ bool NetworkManager::doUpload(const NString& fileName, const NString &data)
 	return res;
 }
 
-bool NetworkManager::private_apply_method()
+bool NetworkClient::private_apply_method()
 {
 	curl_easy_setopt(curl_handle, CURLOPT_CUSTOMREQUEST,NULL);
 	curl_easy_setopt(curl_handle, CURLOPT_UPLOAD, 0L);
@@ -673,41 +673,41 @@ bool NetworkManager::private_apply_method()
 
 }
 
-void NetworkManager::setReferer(const NString &str)
+void NetworkClient::setReferer(const NString &str)
 {
 	curl_easy_setopt(curl_handle, CURLOPT_REFERER, str.c_str());
 }
 
-int NetworkManager::getCurlResult()
+int NetworkClient::getCurlResult()
 {
 	return curl_result;
 }
-CURL* NetworkManager::getCurlHandle()
+CURL* NetworkClient::getCurlHandle()
 {
 	return curl_handle;
 }
 
-void NetworkManager::setOutputFile(const NString &str)
+void NetworkClient::setOutputFile(const NString &str)
 {
 	m_OutFileName = str;
 }
 
-void NetworkManager::setUploadBufferSize(const int size)
+void NetworkClient::setUploadBufferSize(const int size)
 {
 	m_UploadBufferSize = size;
 }
 
-void NetworkManager::setChunkOffset(double offset)
+void NetworkClient::setChunkOffset(double offset)
 {
 	chunkOffset_ = offset;
 }
 
-void NetworkManager::setChunkSize(double size)
+void NetworkClient::setChunkSize(double size)
 {
 	chunkSize_ = size;
 }
 
-const NString  NetworkManager::getCurlResultString()
+const NString  NetworkClient::getCurlResultString()
 {
 	const char * str = curl_easy_strerror(curl_result);
 	std::string res = str;
@@ -716,7 +716,7 @@ const NString  NetworkManager::getCurlResultString()
 	return res;
 }
 
-void NetworkManager::Uninitialize()
+void NetworkClient::Uninitialize()
 {
 	if(_curl_init)
 	{
@@ -725,15 +725,15 @@ void NetworkManager::Uninitialize()
 }
 
 
-void NetworkManager::enableResponseCodeChecking(bool enable)
+void NetworkClient::enableResponseCodeChecking(bool enable)
 {
 	enableResponseCodeChecking_ = enable;
 }
 
-void NetworkManager::setCurlOption(int option, const NString &value) {
+void NetworkClient::setCurlOption(int option, const NString &value) {
 	curl_easy_setopt(curl_handle, (CURLoption)option, value.c_str());
 }
 
-void NetworkManager::setCurlOptionInt(int option, long value) {
+void NetworkClient::setCurlOptionInt(int option, long value) {
 	curl_easy_setopt(curl_handle, (CURLoption)option, value);
 }

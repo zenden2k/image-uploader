@@ -23,7 +23,7 @@
 
 #include <string>
 #include "Core/Utils/CoreTypes.h"
-#include "Core/Network/NetworkManager.h"
+#include "Core/Network/NetworkClient.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Core/3rdpart/FastDelegate.h"
 
@@ -50,7 +50,7 @@ class CUploader
 		fastdelegate::FastDelegate3<StatusType, int, std::string> onStatusChanged;
 		fastdelegate::FastDelegate2<const std::string&, bool> onDebugMessage;
 		fastdelegate::FastDelegate1<ErrorInfo> onErrorMessage;
-		fastdelegate::FastDelegate1<NetworkManager*> onConfigureNetworkManager;
+		fastdelegate::FastDelegate1<NetworkClient*> onConfigureNetworkClient;
 
 		void DebugMessage(const std::string& message, bool isServerResponseBody = false);
 		void SetStatus(StatusType status, int param1=0, std::string param="");
@@ -72,7 +72,7 @@ class CUploader
 		
 		void Error(bool error, std::string message, ErrorType type = etOther, int retryIndex = -1);
 		void ErrorMessage(ErrorInfo);
-		NetworkManager m_NetworkManager;
+		NetworkClient m_NetworkClient;
 		CAbstractUploadEngine *m_CurrentEngine;
 		void Cleanup();
 	private:

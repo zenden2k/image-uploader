@@ -58,7 +58,7 @@ using namespace SqPlus;
 ///DECLARE_INSTANCE_TYPE(std::string);
 using namespace  ScriptAPI;
 DECLARE_INSTANCE_TYPE(ServerSettingsStruct);
-DECLARE_INSTANCE_TYPE(NetworkManager);
+DECLARE_INSTANCE_TYPE(NetworkClient);
 DECLARE_INSTANCE_TYPE(CFolderList);
 DECLARE_INSTANCE_TYPE(CFolderItem);
 DECLARE_INSTANCE_TYPE(CIUUploadParams);
@@ -71,7 +71,7 @@ DECLARE_INSTANCE_TYPE(SimpleXmlNode);
 #include <Gui/Dialogs/InputDialog.h>
 #include <Func/Common.h>
 #include <Func/IuCommonFunctions.h>
-const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url)
+const std::string Impl_AskUserCaptcha(NetworkClient *nm, const std::string& url)
 {
 	CString wFileName = GetUniqFileName(IuCommonFunctions::IUTempFolder+Utf8ToWstring("captcha").c_str());
 
@@ -99,7 +99,7 @@ bool ShellOpenUrl(const std::string& url) {
 #endif
 }
 
-const std::string AskUserCaptcha(NetworkManager* nm, const std::string& url)
+const std::string AskUserCaptcha(NetworkClient* nm, const std::string& url)
 {
 #ifndef IU_CLI
 	return Impl_AskUserCaptcha(nm, url);
@@ -652,28 +652,28 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 
 		sq_setprintfunc(SquirrelVM::GetVMPtr(), printFunc /*,printFunc*/);
 
-		SQClassDef<NetworkManager>("NetworkManager").
-		func(&NetworkManager::doGet, "doGet").
-		func(&NetworkManager::responseBody, "responseBody").
-		func(&NetworkManager::responseCode, "responseCode").
-		func(&NetworkManager::setUrl, "setUrl").
-		func(&NetworkManager::doPost, "doPost").
-		func(&NetworkManager::addQueryHeader, "addQueryHeader").
-		func(&NetworkManager::addQueryParam, "addQueryParam").
-		func(&NetworkManager::addQueryParamFile, "addQueryParamFile").
-		func(&NetworkManager::responseHeaderCount, "responseHeaderCount").
-		func(&NetworkManager::urlEncode, "urlEncode").
-		func(&NetworkManager::errorString, "errorString").
-		func(&NetworkManager::doUpload, "doUpload").
-		func(&NetworkManager::setMethod, "setMethod").
-		func(&NetworkManager::setCurlOption, "setCurlOption").
-		func(&NetworkManager::setCurlOptionInt, "setCurlOptionInt").
-		func(&NetworkManager::doUploadMultipartData, "doUploadMultipartData").
-		func(&NetworkManager::enableResponseCodeChecking, "enableResponseCodeChecking").
-		func(&NetworkManager::setChunkSize, "setChunkSize").
-		func(&NetworkManager::setChunkOffset, "setChunkOffset").
-		func(&NetworkManager::setUserAgent, "setUserAgent").
-		func(&NetworkManager::setReferer, "setReferer");
+		SQClassDef<NetworkClient>("NetworkClient").
+		func(&NetworkClient::doGet, "doGet").
+		func(&NetworkClient::responseBody, "responseBody").
+		func(&NetworkClient::responseCode, "responseCode").
+		func(&NetworkClient::setUrl, "setUrl").
+		func(&NetworkClient::doPost, "doPost").
+		func(&NetworkClient::addQueryHeader, "addQueryHeader").
+		func(&NetworkClient::addQueryParam, "addQueryParam").
+		func(&NetworkClient::addQueryParamFile, "addQueryParamFile").
+		func(&NetworkClient::responseHeaderCount, "responseHeaderCount").
+		func(&NetworkClient::urlEncode, "urlEncode").
+		func(&NetworkClient::errorString, "errorString").
+		func(&NetworkClient::doUpload, "doUpload").
+		func(&NetworkClient::setMethod, "setMethod").
+		func(&NetworkClient::setCurlOption, "setCurlOption").
+		func(&NetworkClient::setCurlOptionInt, "setCurlOptionInt").
+		func(&NetworkClient::doUploadMultipartData, "doUploadMultipartData").
+		func(&NetworkClient::enableResponseCodeChecking, "enableResponseCodeChecking").
+		func(&NetworkClient::setChunkSize, "setChunkSize").
+		func(&NetworkClient::setChunkOffset, "setChunkOffset").
+		func(&NetworkClient::setUserAgent, "setUserAgent").
+		func(&NetworkClient::setReferer, "setReferer");
 
 
 		SQClassDef<CFolderList>("CFolderList").
@@ -945,9 +945,9 @@ time_t CScriptUploadEngine::getCreationTime()
 	return m_CreationTime;
 }
 
-void CScriptUploadEngine::setNetworkManager(NetworkManager* nm)
+void CScriptUploadEngine::setNetworkClient(NetworkClient* nm)
 {
-	CAbstractUploadEngine::setNetworkManager(nm);
+	CAbstractUploadEngine::setNetworkClient(nm);
 	BindVariable(m_Object, nm, "nm");
 }
 

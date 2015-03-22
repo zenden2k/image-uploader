@@ -61,7 +61,7 @@ class CScriptUploadEngine: public CAbstractUploadEngine
 		static void InitScriptEngine();
 		static void DestroyScriptEngine();
 		void FlushSquirrelOutput();
-		void setNetworkManager(NetworkManager* nm);
+		void setNetworkClient(NetworkClient* nm);
 		bool load(Utf8String fileName, ServerSettingsStruct& params);
 		int getFolderList(CFolderList &FolderList);
 		int  createFolder(CFolderItem &parent, CFolderItem &folder);
@@ -88,7 +88,7 @@ class CScriptUploadEngine: public CAbstractUploadEngine
 };
 
 // You must implement this function
-const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url);
+const std::string Impl_AskUserCaptcha(NetworkClient *nm, const std::string& url);
 const std::string Impl_InputDialog(const std::string& text, const std::string& defaultValue);
 
 #endif

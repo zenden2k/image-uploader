@@ -76,7 +76,7 @@ bool IULaunchCopy(CString params, CAtlArray<CString> &files);
 
 extern CPluginManager iuPluginManager;
 
-void IU_ConfigureProxy(NetworkManager& nm);
+void IU_ConfigureProxy(NetworkClient& nm);
 
 const CString IU_GetVersion();
 #define IU_NEWFOLDERMARK ("_iu_create_folder_")

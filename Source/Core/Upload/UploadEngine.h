@@ -27,7 +27,7 @@
 #include <map>
 #include "Core/3rdpart/FastDelegate.h"
 #include "Core/Utils/CoreUtils.h"
-#include "Core/Network/NetworkManager.h"
+#include "Core/Network/NetworkClient.h"
 #include "CommonTypes.h"
 
 struct LoginInfo
@@ -206,7 +206,7 @@ class CAbstractUploadEngine
 		void setServerSettings(ServerSettingsStruct settings);
 		ServerSettingsStruct serverSettings();
 		virtual int RetryLimit()=0;
-		virtual void setNetworkManager(NetworkManager* nm);
+		virtual void setNetworkClient(NetworkClient* nm);
 		void setUploadData(CUploadEngineData* data);
 		CUploadEngineData* getUploadData() const;
 		// Events
@@ -217,7 +217,7 @@ class CAbstractUploadEngine
 		fastdelegate::FastDelegate1<ErrorInfo> onErrorMessage;
 	protected:
 		bool m_bShouldStop;
-		NetworkManager * m_NetworkManager;
+		NetworkClient * m_NetworkClient;
 		CUploadEngineData * m_UploadData;
 		ServerSettingsStruct m_ServersSettings;
 		int m_ThumbnailWidth;

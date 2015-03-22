@@ -96,7 +96,7 @@ protected:
 	ServerProfile& serverProfile_;
 	//IU_PLUGIN_FolderItem * m_folderItems;
 	FolderOperationType m_FolderOperationType;
-	NetworkManager m_NetworkManager;
+	NetworkClient m_NetworkClient;
 	void BlockWindow(bool Block);
 	void NewFolder(const CString& parentFolderId);
 	//CString m_sNewFolderName, m_sNewFolderDescription;

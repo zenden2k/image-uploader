@@ -119,8 +119,8 @@ class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
 		static bool LinksAvailableInText(const CString &text);
 		void OnQueueFinished();
 		bool OnFileFinished(bool ok,  int statusCode, CFileDownloader::DownloadFileListItem it);
-		bool OnConfigureNetworkManager(CFileQueueUploader*, NetworkManager* nm);
-		void FileDownloader_OnConfigureNetworkManager(NetworkManager* nm);
+		bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);
+		void FileDownloader_OnConfigureNetworkClient(NetworkClient* nm);
 		bool OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result);
 		bool OnQueueFinished(CFileQueueUploader *queueUploader) ;
 		bool OnEditControlPaste(CCustomEditControl*);
@@ -131,8 +131,8 @@ class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
 		bool OnClose();
 		bool tryGetFileFromCache(CFileDownloader::DownloadFileListItem it, CString& logMessage);
 		bool addUploadTask(CFileDownloader::DownloadFileListItem it, std::string localFileName );
-		//bool OnConfigureNetworkManager(NetworkManager* nm);
-		// bool OnUploadProgress(UploadProgress progress, UploadTask* task, NetworkManager* nm){return true;}
+		//bool OnConfigureNetworkClient(NetworkClient* nm);
+		// bool OnUploadProgress(UploadProgress progress, UploadTask* task, NetworkClient* nm){return true;}
 
 		CString m_FileName;
 		CPictureExWnd m_wndAnimation;

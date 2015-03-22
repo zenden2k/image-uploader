@@ -94,5 +94,5 @@ class CHistoryTreeControl :
 		int m_SubItemHeight;
 		void QueueFinishedEvent();
 		void threadsFinished();
-		void OnConfigureNetworkManager(NetworkManager* nm);
+		void OnConfigureNetworkClient(NetworkClient* nm);
 };
