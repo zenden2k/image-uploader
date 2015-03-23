@@ -6,6 +6,7 @@
 #include <Core/Logging.h>
 #include <json/json.h>
 #include <Core/Utils/StringUtils.h>
+#include "versioninfo.h"
 
 #ifndef IU_CLI
 #include <Func/LangClass.h>
@@ -31,6 +32,19 @@ const std::string GetAppLanguageFile()
 		return "English";
 	}
 	return IuCoreUtils::ExtractFileNameNoExt(languageFile);
+}
+
+SquirrelObject GetAppVersion() {
+	SquirrelObject res = SquirrelVM::CreateTable();
+	std::string ver = _APP_VER;
+	std::vector<std::string> tokens;
+	IuStringUtils::Split(ver,".", tokens, 3);
+	if ( tokens.size() >=3 ) {
+		res.SetValue("Major", (int)IuCoreUtils::stringToint64_t(tokens[0]));
+		res.SetValue("Minor", (int)IuCoreUtils::stringToint64_t(tokens[1]+tokens[2]));
+		res.SetValue("Build", (int)IuCoreUtils::stringToint64_t(BUILD));
+	}
+	return res;
 }
 
 SquirrelObject IncludeScript(const std::string& filename)
@@ -118,6 +132,7 @@ void RegisterFunctions(SquirrelObject* rootTable)
 	RegisterGlobal(GetAppLanguageFile, "GetAppLanguageFile");
 	RegisterGlobal(IncludeScript, "include");
 	RegisterGlobal(Translate, "Translate");
+	RegisterGlobal(GetAppVersion, "GetAppVersion");
 	atexit(&CleanUpFunctions);
 }
 

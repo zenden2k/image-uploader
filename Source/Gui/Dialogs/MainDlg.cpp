@@ -29,7 +29,7 @@
 #include <Func/Myutils.h>
 #include <Func/Common.h>
 #include <Gui/GuiTools.h>
-
+#include <ImageEditor/Gui/ImageEditorWindow.h>
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -177,9 +177,15 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		sub.SetMenuItemInfo(IDM_DELETE, false, &mi);
 		mi.dwTypeData  = TR("Свойства");
 		sub.SetMenuItemInfo(IDC_PROPERTIES, false, &mi);
+		
 		mi.dwTypeData  = TR("Редактировать");
-
 		sub.SetMenuItemInfo(IDM_EDIT, false, &mi);
+
+		mi.dwTypeData  = TR("Редактировать");
+		sub.SetMenuItemInfo(IDM_EDIT, false, &mi);
+
+		mi.dwTypeData  = TR("Редактировать во внешнем редакторе");
+		sub.SetMenuItemInfo(IDM_EDITINEXTERNALEDITOR, false, &mi);
 		
 		sub.EnableMenuItem(IDM_EDIT, bIsImageFile?MF_ENABLED	:MF_GRAYED	);
 		sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
@@ -227,6 +233,28 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, G
 LRESULT CMainDlg::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	ThumbsView.DeleteSelected();
+	return 0;
+}
+
+LRESULT CMainDlg::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int nCurItem;
+
+	if ((nCurItem=ThumbsView.GetNextItem(-1, LVNI_ALL|LVNI_SELECTED))<0)
+		return FALSE;
+
+	LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
+	if(!FileName) return FALSE;
+	using namespace ImageEditor;
+	ImageEditor::ImageEditorWindow imageEditor(FileName);
+	imageEditor.showUploadButton(false);
+	imageEditor.showAddToWizardButton(false);
+
+	ImageEditorWindow::DialogResult dr = imageEditor.DoModal(m_hWnd, ImageEditorWindow::wdmAuto);
+	
+	ThumbsView.OutDateThumb(nCurItem);
+	ThumbsView.UpdateOutdated();
+	
 	return 0;
 }
 
@@ -308,7 +336,7 @@ LRESULT CMainDlg::OnBnClickedProperties(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	return 0;
 }
 
-LRESULT CMainDlg::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	int nCurItem;
 

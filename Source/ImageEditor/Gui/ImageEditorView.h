@@ -60,7 +60,7 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
 	private:
 		ImageEditor::Canvas *canvas_;
 		std::map<CursorType, HCURSOR> cursorCache_;
-		
+		CBrush backgroundBrush_;
 		HCURSOR getCachedCursor(CursorType cursorType);
 
 };

@@ -87,10 +87,10 @@ namespace ImageEditor {
 	{
 		int rectSize = kGripSize;
 
-		int x = std::min<>( startPoint_.x, endPoint_.x );
-		int y = std::min<>( startPoint_.y, endPoint_.y );
-		int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
-		int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
+		int x = getX();
+		int y = getY();
+		int width = getWidth();
+		int height = getHeight();
 
 		Grip grip1;
 		Grip grip2;
@@ -177,10 +177,10 @@ void TextElement::render(Painter* gr) {
 
 
 void TextElement::getAffectedSegments( AffectedSegments* segments ) {
-	int x = std::min<>( startPoint_.x, endPoint_.x );
-	int y = std::min<>( startPoint_.y, endPoint_.y );
-	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
-	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
+	int x = getX();
+	int y = getY();
+	int width = getWidth();
+	int height = getHeight();
 	segments->markRect( x, y, width, height ); // top
 }
 
@@ -247,20 +247,15 @@ Crop::Crop(Canvas* canvas, int startX, int startY, int endX, int endY):MovableEl
 }
 
 void Crop::render(Painter* gr) {
-	using namespace Gdiplus;
-	if ( !gr ) {
-		return;
-	}
-	
 	MovableElement::render(gr);
 }
 
 
 void Crop::getAffectedSegments( AffectedSegments* segments ) {
-	int x = std::min<>( startPoint_.x, endPoint_.x );
-	int y = std::min<>( startPoint_.y, endPoint_.y );
-	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
-	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
+	int x = getX();
+	int y = getY();
+	int width = getWidth();
+	int height = getHeight();
 
 	//segments->markRect( x, y, width, height );
 	segments->markRect( x, y, width, penSize_ ); // top
@@ -284,13 +279,16 @@ CropOverlay::CropOverlay(Canvas* canvas, int startX, int startY, int endX,int en
 
 void CropOverlay::render(Painter* gr)
 {
+	using namespace Gdiplus;
 	Gdiplus::SolidBrush brush(Gdiplus::Color( 120, 0, 0, 0) );
 	
 	std::vector<MovableElement*> crops;
 	canvas_->getElementsByType(etCrop, crops);
-	Region rgn(0,0, canvas_->getWidth(), canvas_->getHeigth());
+	Rect rc (0,0, canvas_->getWidth(), canvas_->getHeigth());
+	rc.Intersect(canvas_->currentRenderingRect());
+	Region rgn(rc.X,rc.Y, rc.Width, rc.Height);
 	for ( int i = 0; i < crops.size(); i++ ) {
-		rgn = rgn.subtracted(Region(crops[i]->getX(),crops[i]->getY(),crops[i]->getWidth()+1,crops[i]->getHeight()+1));
+		rgn = rgn.subtracted(Region(crops[i]->getX(),crops[i]->getY(),crops[i]->getWidth(),crops[i]->getHeight()));
 	}
 
 	Gdiplus::Region oldRegion;
@@ -321,25 +319,28 @@ void Rectangle::render(Painter* gr) {
 	if ( !gr ) {
 		return;
 	}
+	SmoothingMode prevSmoothingMode = gr->GetSmoothingMode();
+	gr->SetSmoothingMode(SmoothingModeNone);
 	Gdiplus::Pen pen( color_, penSize_ );
-	int x = std::min<>( startPoint_.x, endPoint_.x );
-	int y = std::min<>( startPoint_.y, endPoint_.y );
-	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
-	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
+	int x = getX()+penSize_/2/*-(1-penSize_%2)*/;
+	int y = getY()+penSize_/2/*-(1-penSize_%2)*/;
+	int width = getWidth()-penSize_;
+	int height = getHeight()-penSize_;
 	if ( filled_ ) {
 		SolidBrush br(backgroundColor_);
 		gr->FillRectangle(&br, x, y, width, height);
 	}
 	gr->DrawRectangle( &pen, x, y, width, height );
+	gr->SetSmoothingMode(prevSmoothingMode);
 	
 }
 
 
 void Rectangle::getAffectedSegments( AffectedSegments* segments ) {
-	int x = std::min<>( startPoint_.x, endPoint_.x );
-	int y = std::min<>( startPoint_.y, endPoint_.y );
-	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
-	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
+	int x = getX();
+	int y = getY();
+	int width = getWidth();
+	int height = getHeight();
 
 	//segments->markRect( x, y, width, height );
 	segments->markRect( x, y, width, penSize_ ); // top
@@ -462,27 +463,35 @@ void BlurringRectangle::render(Painter* gr)
 	drawDashedRectangle_ = isSelected();
 	using namespace Gdiplus;
 	Bitmap* background = canvas_->getBufferBitmap();
-	#if GDIPVER >= 0x0110 
+	drawDashedRectangle_ = isMoving_;
+	Rect currentRenderingRect = canvas_->currentRenderingRect();
+	Rect elRect(getX(), getY(), getWidth(), getHeight());
+	elRect.Intersect(currentRenderingRect);
+	if ( elRect.Width < 1 || elRect.Height < 1 ) {
+		return;
+	}
+	if ( !isMoving_ ) { // Optimization: do not apply blur while moving or resizing, can hang on slow CPUs
+		#if GDIPVER >= 0x0110 
 
-	Blur blur;
-	BlurParams blurParams;
-	blurParams.radius = blurRadius_;
-	blur.SetParameters(&blurParams);
-	Matrix matrix;
-	Status st ;
-	RectF sourceRect(getX(), getY(), getWidth(), getHeight());
+		Blur blur;
+		BlurParams blurParams;
+		blurParams.radius = blurRadius_;
+		blur.SetParameters(&blurParams);
+		Matrix matrix;
+		Status st ;
+		RectF sourceRect(elRect.X, elRect.Y, elRect.Width, elRect.Height);
 
-	st = gr->DrawImage(background,  &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
-	#else
-	ApplyGaussianBlur(background, getX(), getY(), getWidth(), getHeight(), blurRadius_);
-	#endif
+		st = gr->DrawImage(background,  &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
+		#else
+		ApplyGaussianBlur(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, blurRadius_);
+		#endif
+	}
 }
 
 ImageEditor::ElementType BlurringRectangle::getType() const
 {
 	return etBlurringRectangle;
 }
-
 
 
 RoundedRectangle::RoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY,bool filled /*= false */) 
@@ -495,12 +504,15 @@ void RoundedRectangle::render(Painter* gr)
 {
 	using namespace Gdiplus;
 	Gdiplus::Pen pen( color_, penSize_ );
-	int x = getX();
-	int y = getY();
-	int width = getWidth();
-	int height = getHeight();
+	int x = getX() + penSize_/2 /*- (1-penSize_%2)*/;
+	int y = getY() + penSize_/2 /*- (1-penSize_%2)*/;
+	int width = getWidth()-penSize_;
+	int height = getHeight()-penSize_;
 	SolidBrush br(backgroundColor_);
+	PixelOffsetMode oldPOM = gr->GetPixelOffsetMode();
+	gr->SetPixelOffsetMode(PixelOffsetModeHalf);
 	DrawRoundedRectangle(gr, Rect(x,y,width,height), penSize_*2, &pen, filled_ ? &br : 0);
+	gr->SetPixelOffsetMode(oldPOM);
 }
 
 FilledRoundedRectangle::FilledRoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY) : RoundedRectangle(canvas, startX, startY, endX,endY, true)
@@ -517,10 +529,10 @@ void Ellipse::render(Painter* gr)
 {
 	using namespace Gdiplus;
 	Gdiplus::Pen pen( color_, penSize_ );
-	int x = getX();
-	int y = getY();
-	int width = getWidth();
-	int height = getHeight();
+	int x = getX() + penSize_/2 /*- (1-penSize_%2)*/;
+	int y = getY() + penSize_/2 /*- (1-penSize_%2)*/;
+	int width = getWidth()-penSize_;
+	int height = getHeight()-penSize_;
 	SolidBrush br(backgroundColor_);
 	if ( filled_ ) {
 		gr->FillEllipse(&br, x,y,width,height);

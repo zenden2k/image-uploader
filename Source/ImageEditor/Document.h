@@ -22,7 +22,7 @@ class Document {
 		};
 		Document(int width, int height);
 		Document(const wchar_t* fileName);
-		Document(Gdiplus::Bitmap *sourceImage);
+		Document(Gdiplus::Bitmap *sourceImage, bool hasTransparentPixels = false);
 		
 		Painter* getGraphicsObject();
 		void beginDrawing( bool cloneImage = true );
@@ -31,10 +31,11 @@ class Document {
 
 		void addAffectedSegments(const AffectedSegments& segments);
 		Gdiplus::Bitmap* getBitmap();
-		void render(Painter* gr);
+		void render(Painter* gr, Gdiplus::Rect rc);
 		bool undo();
 		int getWidth();
 		int getHeight();
+		bool hasTransparentPixels() const;
 	private:
 		Gdiplus::Bitmap* currentImage_;
 		Gdiplus::Bitmap* originalImage_;
@@ -42,9 +43,10 @@ class Document {
 		std::vector<HistoryItem> history_;
 		bool drawStarted_;
 		AffectedSegments changedSegments_;
+		bool hasTransparentPixels_;
 		void init();
 		void saveDocumentState( );
-		
+		void checkTransparentPixels();
 };
 
 }

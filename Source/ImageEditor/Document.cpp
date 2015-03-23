@@ -5,23 +5,27 @@
 #include <GdiPlus.h>
 #include "DrawingElement.h"
 #include <Core/Logging.h>
+#include <stdint.h>
+#include <Core/Images/Utils.h>
 
 namespace ImageEditor {
 	using namespace Gdiplus;
 Document::Document(int width, int height) {
-	Gdiplus::Bitmap* bitmap = new Gdiplus::Bitmap( width, height, PixelFormat32bppARGB );
-	currentImage_ = bitmap;
+	hasTransparentPixels_ = false;
+	currentImage_ = new Gdiplus::Bitmap( width, height, PixelFormat32bppARGB );
 	init();
 }
 
 Document::Document(const wchar_t* fileName) {
-	currentImage_ = new Gdiplus::Bitmap( fileName );
+	currentImage_ = LoadImageFromFileWithoutLocking(fileName);
 	//LOG(INFO) << "Last status " << (int)currentImage_->GetLastStatus();
 	init();
+	checkTransparentPixels();
 }
 
-Document::Document(Gdiplus::Bitmap *sourceImage) {
+Document::Document(Gdiplus::Bitmap *sourceImage,  bool hasTransparentPixels ) {
 	currentImage_ = sourceImage;
+	hasTransparentPixels_ = hasTransparentPixels;
 	init();
 }
 
@@ -145,10 +149,36 @@ void Document::saveDocumentState( /*DrawingElement* element*/ ) {
 	changedSegments_.clear();
 }
 
-void Document::render(Gdiplus::Graphics *gr) {
+void Document::checkTransparentPixels()
+{
+	using namespace Gdiplus;
+	BitmapData bitmapData;
+	Rect lockRect(0,0, min(10, currentImage_->GetWidth()), min(10, currentImage_->GetHeight()));
+	if ( currentImage_->LockBits(&lockRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData) == Ok) {
+		uint8_t * source = (uint8_t *) bitmapData.Scan0;
+		unsigned int stride;
+		if ( bitmapData.Stride > 0) { 
+			stride = bitmapData.Stride;
+		} else {
+			stride = - bitmapData.Stride;
+		}
+		for( int i = 0; i < lockRect.Height; i++ ) {
+			for ( int j = 0; j < lockRect.Width; j++ ) {
+				if ( source[i * stride + j * 4 + 3 ] != 255 ) {
+					hasTransparentPixels_ = true;
+					currentImage_->UnlockBits(&bitmapData);
+					return;
+				}
+
+			}
+		}
+		currentImage_->UnlockBits(&bitmapData);
+	}
+}
+
+void Document::render(Gdiplus::Graphics *gr, Gdiplus::Rect rc) {
 	if (!gr || !currentImage_ ) return;
-	
-	gr->DrawImage( currentImage_, 0, 0, currentImage_->GetWidth(), currentImage_->GetHeight());
+	gr->DrawImage( currentImage_,rc.X, rc.Y, rc.X, rc.Y, rc.Width, rc.Height, Gdiplus::UnitPixel);
 }
 
 bool  Document::undo() {
@@ -201,6 +231,11 @@ int Document::getWidth()
 int Document::getHeight()
 {
 	return currentImage_->GetHeight();
+}
+
+bool Document::hasTransparentPixels() const
+{
+	return hasTransparentPixels_;
 }
 
 Painter* Document::getGraphicsObject() {

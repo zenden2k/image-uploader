@@ -46,9 +46,7 @@ bool Toolbar::Create(HWND parent, bool child )
 		LOG(ERROR) << WinUtils::GetLastErrorAsString();
 		return false;
 	}
-	if ( child ) {
-		transparentColor_ = Color(255,255,255);
-	}
+
 	
 	return true;
 }
@@ -125,9 +123,14 @@ void Toolbar::clickButton(int index)
 LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	LONG lStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
+	if ( lStyle & WS_CHILD ) {
+		transparentColor_.SetFromCOLORREF(GetSysColor(COLOR_APPWORKSPACE));
+	} else {
+		SetLayeredWindowAttributes(m_hWnd, RGB(transparentColor_.GetR(),transparentColor_.GetG(),transparentColor_.GetB()),0,LWA_COLORKEY);
+
+	}
 	//lStyle &= ~(WS_CAPTION /*| WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU*/);
-	::SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
-	SetLayeredWindowAttributes(m_hWnd, RGB(transparentColor_.GetR(),transparentColor_.GetG(),transparentColor_.GetB()),0,LWA_COLORKEY);
+	//::SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
 	HDC hdc = GetDC();
 	dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
 	dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
@@ -370,6 +373,16 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 
 LRESULT Toolbar::OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	return 0;
+}
+
+LRESULT Toolbar::OnNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = false;
+	if ( ::GetKeyState(VK_MENU) & 0x8000 ) {
+		bHandled = true;
+		return HTCAPTION;
+	}
 	return 0;
 }
 

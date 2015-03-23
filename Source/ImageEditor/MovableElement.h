@@ -47,6 +47,8 @@ class MovableElement: public DrawingElement {
 
 		virtual void resize(int width, int height);
 		virtual void createGrips();
+		virtual void beginMove();
+		virtual void endMove();
 
 
 	protected:
@@ -56,6 +58,7 @@ class MovableElement: public DrawingElement {
 		
 		POINT* getMaxPoint(Axis axis);
 		POINT* getMinPoint(Axis axis);
+		bool isMoving_;
 };
 
 }

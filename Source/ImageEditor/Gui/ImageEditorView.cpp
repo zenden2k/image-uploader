@@ -12,7 +12,6 @@
 #include <Core/Images/Utils.h>
 #include "../MovableElements.h"
 #include "resource.h"
-
 #ifndef TR
 #define TR(a) L##a
 #endif
@@ -38,7 +37,7 @@ LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	RECT clientRect;
 	GetClientRect(&clientRect);
 	SIZE size = {clientRect.right, clientRect.bottom};
-	Gdiplus::Graphics gr(dc);
+	//Gdiplus::Graphics gr(dc);
 	POINT pt;
 	GetScrollOffset(pt);
 	if ( canvas_ ) {
@@ -47,16 +46,18 @@ LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 		updateRect.top += pt.y;
 		updateRect.bottom += pt.y;
 		updateRect.right += pt.x;*/
-		canvas_->render( &gr, updateRect, pt,  size);
+//		canvas_->render( &gr, updateRect, pt,  size);
+		canvas_->render( dc, updateRect, pt,  size);
 	}
-	CBrush br;
-	br.CreateSolidBrush(RGB(255,255,255));
+	
+
+
 	int rightMargin = canvas_->getWidth() - pt.x;
 	int bottomMargin = canvas_->getHeigth()-pt.y;
 	RECT rightRect = {rightMargin, 0, clientRect.right,bottomMargin};
-	dc.FillRect(&rightRect, br);
+	dc.FillRect(&rightRect, backgroundBrush_);
 	RECT bottomRect = {0, bottomMargin, clientRect.right, clientRect.bottom};
-	dc.FillRect(&bottomRect, br);
+	dc.FillRect(&bottomRect, backgroundBrush_);
 	//horizontalToolbar_.Invalidate(TRUE);
 
 	return 0;
@@ -65,6 +66,7 @@ LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 LRESULT CImageEditorView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	backgroundBrush_.CreateSolidBrush(GetSysColor(COLOR_APPWORKSPACE));
 	return 0;
 }
 

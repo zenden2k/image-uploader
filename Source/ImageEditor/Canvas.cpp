@@ -1,15 +1,17 @@
 #include "Canvas.h"
 
-#include <cassert>
-#include <algorithm>
-#include <GdiPlus.h>
+
 #include "DrawingElement.h"
 #include "Document.h"
 #include "DrawingTool.h"
 #include "InputBox.h"
+#include "MovableElements.h"
 #include "Gui/InputBoxControl.h"
 #include <Core/Logging.h>
-#include "MovableElements.h"
+#include <math.h>
+#include <cassert>
+#include <algorithm>
+#include <GdiPlus.h>
 
 namespace ImageEditor {
 	
@@ -37,11 +39,14 @@ Canvas::Canvas( HWND parent ) {
 	fullRender_ = true;
 	blurRadius_ = 5;
 	blurRectanglesCount_ = 0;
+	currentDrawingTool_ = 0;
+	bufferedGr_ = 0;
 	createDoubleBuffer();
 }
 
 Canvas::~Canvas() {
 //	delete buffer_;
+	delete bufferedGr_;
 	for ( int i = 0; i < elementsToDelete_.size(); i++ ) {
 		delete elementsToDelete_[i];
 	}
@@ -65,6 +70,7 @@ Document* Canvas::currentDocument() const {
 
 void Canvas::setDocument( Document *doc ) {
 	doc_ = doc;
+	updateView();
 }
 
 void Canvas::mouseMove( int x, int y, DWORD flags) {
@@ -148,10 +154,8 @@ void Canvas::mouseDoubleClick(int button, int x, int y)
 	currentDrawingTool_->mouseDoubleClick( x, y );
 }
 
-void Canvas::render(Painter* gr, const RECT& rectInWindowCoordinates, POINT scrollOffset, SIZE size) {
+void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOffset, SIZE size) { 
 	using namespace Gdiplus;
-
-
 	// Updating rect in canvas coordinates
 	RECT rect = {rectInWindowCoordinates.left+scrollOffset.x, rectInWindowCoordinates.top+scrollOffset.y,
 		/*size.cx*/rectInWindowCoordinates.right - rectInWindowCoordinates.left, /*size.cy*/rectInWindowCoordinates.bottom - rectInWindowCoordinates.top};
@@ -166,24 +170,41 @@ void Canvas::render(Painter* gr, const RECT& rectInWindowCoordinates, POINT scro
 	}
 	if ( canvasChanged_ || fullRender_ ) {
 		//LOG(INFO) << "Canvas::re-render rect"<< rect.left << " " << rect.top<< " "<< rect.right - rect.left<< " "<< rect.bottom - rect.top;
-		
-		renderInBuffer(rect);
-		
-
-
-		
+		renderInBuffer(updatedRect_);	
 	}
-	gr->DrawImage( &*buffer_, rectInWindowCoordinates.left, rectInWindowCoordinates.top, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, UnitPixel );
+	BitmapData bitmapData;
+	Rect lockRect(0,0,  getWidth(),getHeigth());
+	// I hope Gdiplus does not copy data in LockBits
+	if ( buffer_->LockBits(&lockRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData) == Ok ) {
+		//LOG(INFO) << "bitmap locked";
+		uint8_t * source = (uint8_t *) bitmapData.Scan0;
+		unsigned int stride;
+		if ( bitmapData.Stride > 0) { 
+			stride = bitmapData.Stride;
+		} else {
+			stride = - bitmapData.Stride;
+		}
+		BITMAPINFO bi;
+		ZeroMemory(&bi, sizeof(bi));
+		bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+		bi.bmiHeader.biPlanes = 1;
+		bi.bmiHeader.biCompression = BI_RGB;
+
+		bi.bmiHeader.biWidth = buffer_->GetWidth();
+		bi.bmiHeader.biHeight = -buffer_->GetHeight();
+		bi.bmiHeader.biBitCount = 32;
+		// Faster than Graphics::DrawImage and there is no tearing!
+		int res = SetDIBitsToDevice (dc, rectInWindowCoordinates.left,rectInWindowCoordinates.top,rect.right - rect.left, rect.bottom - rect.top, rect.left, rect.top, rect.top, rect.bottom - rect.top, source + rect.top * stride, &bi, DIB_RGB_COLORS );
+		buffer_->UnlockBits(&bitmapData);
+	}
+	//gr->DrawImage( &*buffer_, rectInWindowCoordinates.left, rectInWindowCoordinates.top, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, UnitPixel );
 
 }
 
-void Canvas::updateView( RECT boundingRect ) {
-	CRgn region;
-	
-	region.CreateRectRgnIndirect( &boundingRect );
-	updateView( region );
+Gdiplus::Rect Canvas::currentRenderingRect()
+{
+	return currentRenderingRect_;
 }
-
 
 void  Canvas::setCallback(Callback * callback) {
 	callback_ = callback;
@@ -510,17 +531,32 @@ void Canvas::updateView() {
 	RECT rc = { 0, 0, getWidth(), getHeigth() };
 	updateView( rc );
 }
-
+/*
 void Canvas::updateView( const CRgn& region ) {
 	canvasChanged_ = true;
 	if ( callback_ ) {
 		callback_->updateView( this, region );
 	}
+}*/
+
+void Canvas::updateView( RECT boundingRect ) {
+	using namespace Gdiplus;
+	CRgn region;
+	canvasChanged_ = true;
+	Rect newRect(boundingRect.left, boundingRect.top, boundingRect.right - boundingRect.left, boundingRect.bottom - boundingRect.top );
+	Rect::Union(updatedRect_,newRect,updatedRect_);
+	region.CreateRectRgnIndirect( &boundingRect );
+	if ( callback_ ) {
+		callback_->updateView( this, region );
+	}
+
 }
+
 
 void Canvas::createDoubleBuffer() {
 //	delete buffer_;
 	buffer_ = ZThread::CountedPtr<Gdiplus::Bitmap>(new Gdiplus::Bitmap( canvasWidth_, canvasHeight_, PixelFormat32bppARGB  ));
+	bufferedGr_ = new Gdiplus::Graphics( &*buffer_ );
 }
 
 void Canvas::setCursor(CursorType cursorType)
@@ -533,22 +569,46 @@ void Canvas::setCursor(CursorType cursorType)
 }
 
 
-void Canvas::renderInBuffer(RECT rect,bool forExport)
+void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
 {
 	using namespace Gdiplus;
-	Gdiplus::Graphics* bufferedGr = new Gdiplus::Graphics( &*buffer_ );
-	if (!fullRender_) {
-		Gdiplus::Region reg(Rect(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top));
-		bufferedGr->SetClip(&reg);
+	if ( fullRender_ ) {
+		//LOG(INFO) << "canvas full render";
 	}
-	bufferedGr->SetPageUnit(Gdiplus::UnitPixel);
-	bufferedGr->SetSmoothingMode(SmoothingModeAntiAlias);
+	currentRenderingRect_ = rc;
+	if (!fullRender_) {
+		Gdiplus::Region reg(rc);
+		bufferedGr_->SetClip(&reg);
+	}
+	bufferedGr_->SetPageUnit(Gdiplus::UnitPixel);
+	bufferedGr_->SetSmoothingMode(SmoothingModeAntiAlias);
 
 
-	doc_->render( bufferedGr );
+	if ( false && !forExport && doc_->hasTransparentPixels() ) {
+		
+		int kSquareSize = 40;
+		SolidBrush dark(Color(50,50,50));
+		SolidBrush light(Color(100,100,100));
+		int startX = rc.X - rc.X % kSquareSize;
+		int startY = rc.Y - rc.Y % kSquareSize;
+		int xCount = ceil(float(rc.Width) / kSquareSize)+1;
+		int yCount = ceil(float(rc.Height) / kSquareSize)+1;
+		bool isDark =  !(rc.Y / kSquareSize)%2 ;
+		isDark =  (rc.X / kSquareSize)%2 == ( isDark ? 0 : 1);
+		for (int j = 0; j < yCount; j++) {
+			for (int i = 0; i < xCount; i++)
+			{
+				bufferedGr_->FillRectangle(isDark ? &dark : &light, startX + i * kSquareSize, startY + j * kSquareSize, kSquareSize, kSquareSize);
+				isDark = !isDark;
+			}
+			isDark = !isDark;
+		}
+	}
+
+	doc_->render( bufferedGr_, rc );
 
 	if ( currentDrawingTool_ != NULL ) {
-		currentDrawingTool_->render( bufferedGr );
+		currentDrawingTool_->render( bufferedGr_ );
 	}
 
 	/*if ( !fullRender_ ) {
@@ -568,26 +628,28 @@ void Canvas::renderInBuffer(RECT rect,bool forExport)
 	for ( int i=0; i< elementsOnCanvas_.size(); i++) {
 		RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
 		RECT intersection;
+		RECT rect = { rc.X, rc.Y, rc.GetRight(), rc.GetBottom()};
 		IntersectRect(&intersection, &paintRect, &rect);
 		if ( !fullRender_ && intersection.left == 0 && intersection.right ==0 && intersection.top == 0 && intersection.bottom == 0 ) {
 			//LOG(INFO) << "Skipping element " << i << " out of bounds";
 			continue;
 		}
-		elementsOnCanvas_[i]->render(bufferedGr);
+		elementsOnCanvas_[i]->render(bufferedGr_);
 	}
 	if ( !forExport ) {
 		if ( overlay_ && showOverlay_ ) {
 			//LOG(INFO) << "rendering overlay";
-			overlay_->render(bufferedGr);
+			overlay_->render(bufferedGr_);
 		}
 
 		for ( int i=0; i< elementsOnCanvas_.size(); i++) {
-			elementsOnCanvas_[i]->renderGrips(bufferedGr);
+			elementsOnCanvas_[i]->renderGrips(bufferedGr_);
 		}
 	}
 	canvasChanged_ = false;
 	fullRender_ = false;
-	delete bufferedGr;
+	updatedRect_ = Rect();
+	//delete bufferedGr_;
 }
 
 void Canvas::getElementsByType(ElementType elementType, std::vector<MovableElement*>& out)
@@ -624,7 +686,7 @@ void Canvas::addUndoHistoryItem(const UndoHistoryItem& item)
 ZThread::CountedPtr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
 {
 	using namespace Gdiplus;
-	RECT rc = {0,0, getWidth(), getHeigth()};
+	Rect rc(0,0, getWidth(), getHeigth());
 	fullRender_ = true;
 	renderInBuffer(rc, true);
 	Crop * crop = 0;

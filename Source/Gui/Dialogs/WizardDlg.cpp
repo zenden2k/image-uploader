@@ -1823,11 +1823,10 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 	ImageEditorWindow::DialogResult dr = ImageEditorWindow::drCancel;
 	if(result)
 	{
-		
-		ImageEditor::ImageEditorWindow imageEditor(&*result);
+		ImageEditor::ImageEditorWindow imageEditor(&*result, mode == cmFreeform ||   mode == cmActiveWindow );
 		imageEditor.setInitialDrawingTool(mode == cmRectangles ? ImageEditor::Canvas::dtCrop : ImageEditor::Canvas::dtBrush);
 		imageEditor.showUploadButton(m_bScreenshotFromTray);
-		dr = imageEditor.DoModal(0, ImageEditorWindow::wdmFullscreen);
+		dr = imageEditor.DoModal(m_hWnd, ImageEditorWindow::wdmFullscreen);
 		if ( dr == ImageEditorWindow::drAddToWizard || dr ==ImageEditorWindow::drUpload ) {
 			result = imageEditor.getResultingBitmap();
 		}else {

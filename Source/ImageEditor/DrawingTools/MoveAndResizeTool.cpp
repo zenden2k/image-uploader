@@ -34,6 +34,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 	if ( draggedBoundary_.bt!= btNone ) {
 		canvas_->unselectAllElements();
 		currentElement_->setSelected(true);
+		currentElement_->beginMove();
 		originalStartPoint_ = currentElement_->getStartPoint();
 		originalEndPoint_ = currentElement_->getEndPoint();
 		prevPaintBoundingRect_ = currentElement_->getPaintBoundingRect();
@@ -49,6 +50,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 		isMoving_ = true;
 		//LOG(INFO) << "Starting moving!";
 		currentElement_ = el;
+		currentElement_->beginMove();
 		prevPaintBoundingRect_ = currentElement_->getPaintBoundingRect();
 		startPoint_.x = x;
 		startPoint_.y = y;
@@ -72,6 +74,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 			currentElement_->setEndPoint( pt );
 			prevPaintBoundingRect_ = currentElement_->getPaintBoundingRect();
 			canvas_->addMovableElement( currentElement_ );
+			currentElement_->beginMove();
 			
 		}
 		if ( !currentElement_ || currentElement_->getType() == etCrop ) {
@@ -96,6 +99,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 		} else if ( draggedBoundary_.gpt == MovableElement::gptEndPoint ) {
 			elementBasePoint = &currentElement_->endPoint_;
 		}
+		LOG(INFO) << "draggedBoundary_.gpt="<<draggedBoundary_.gpt;
 		int elWidth  = 0;
 		int elHeight = 0;
 		int elX = 0;
@@ -107,6 +111,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 			elHeight = currentElement_->getHeight();
 			elX = currentElement_->getX();
 			elY  = currentElement_->getY();
+			LOG(INFO) << "Resizing object to " << elWidth << " "<<elHeight;
 		} else {
 			elWidth = currentElement_->getWidth();
 			elHeight = currentElement_->getHeight();
@@ -114,14 +119,14 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 			elY  = currentElement_->getY();
 			switch ( draggedBoundary_.bt ) {
 				case btBottomRight:
-					elWidth = x - elX;
-					elHeight = y - elY;
+					elWidth = x - elX+1;
+					elHeight = y - elY+1;
 					break;
 				case btBottom:
-					elHeight = y - elY;
+					elHeight = y - elY+1;
 					break;
 				case btRight:
-					elWidth = x - elX;
+					elWidth = x - elX+1;
 					break;
 				case btTopLeft:
 					
@@ -141,12 +146,12 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 				case btBottomLeft:
 					
 					elWidth = elX - x + elWidth;
-					elHeight = y - elY;
+					elHeight = y - elY+1;
 					elX = x;
 					break;
 				case btTopRight:
 					
-					elWidth =  x - elX;
+					elWidth =  x - elX+1;
 					elHeight = elY - y + elHeight;
 					elY = y;
 
@@ -158,6 +163,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 			currentElement_->setX(elX);
 			currentElement_->setY(elY);
 		}
+		
 		if ( currentElement_ && currentElement_->getType() == etCrop && canvas_->onCropChanged ) {
 			//LOG(INFO) << "onCropChanged";
 			canvas_->onCropChanged(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
@@ -180,15 +186,15 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 		currentElement_->setY(newY);
 		startPoint_.x = x;
 		startPoint_.y = y;
-		if ( currentElement_ && currentElement_->getType() == etCrop && canvas_->onCropChanged ) {
-			//LOG(INFO) << "onCropChanged";
-			canvas_->onCropChanged(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
-		}
+		
 		RECT paintBoundingRect = currentElement_->getPaintBoundingRect();
 		RECT updateRect;
 		UnionRect(&updateRect, &paintBoundingRect, &prevPaintBoundingRect_);
 		canvas_->updateView(updateRect);
-
+		if ( currentElement_ && currentElement_->getType() == etCrop && canvas_->onCropChanged ) {
+			//LOG(INFO) << "onCropChanged";
+			canvas_->onCropChanged(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
+		}
 		prevPaintBoundingRect_ = currentElement_->getPaintBoundingRect();
 
 		return;
@@ -212,6 +218,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 
 void MoveAndResizeTool::endDraw( int x, int y ) {
 	if ( currentElement_ ) {
+		currentElement_->endMove();
 		if ( currentElement_->getType() == etCrop && canvas_->onCropFinished ) {
 			//LOG(INFO) << "onCropChanged";
 			canvas_->onCropFinished(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());

@@ -68,7 +68,8 @@ class Canvas {
 		void mouseDoubleClick( int button, int x, int y );
 
 		Document* currentDocument() const;
-		void render(Painter* gr, const RECT& rect, POINT scrollOffset, SIZE size);
+		//void render(Painter* gr, const RECT& rect, POINT scrollOffset, SIZE size);
+		void render(HDC dc, const RECT& rect, POINT scrollOffset, SIZE size);
 		void setCallback(Callback * callback);
 		void setPenSize(int size);
 		int getPenSize() const;
@@ -104,6 +105,7 @@ class Canvas {
 		int unselectAllElements();
 		HWND getRichEditControl();
 		void updateView();
+		void updateView( RECT boundingRect );
 		bool addDrawingElementToDoc(DrawingElement* element);
 		void endDocDrawing();
 		int deleteSelectedElements();
@@ -111,7 +113,7 @@ class Canvas {
 		void setBlurRadius(float radius);
 		bool hasBlurRectangles();
 		void showOverlay(bool show);
-		void updateView( RECT boundingRect );
+		Gdiplus::Rect currentRenderingRect();
 		fastdelegate::FastDelegate4<int,int,int,int> onCropChanged;
 		fastdelegate::FastDelegate4<int,int,int,int> onCropFinished;
 		fastdelegate::FastDelegate1<DrawingToolType> onDrawingToolChanged;
@@ -127,14 +129,15 @@ class Canvas {
 	private:
 		void init();
 		
-		void updateView( const CRgn& region );
+		//void updateView( const CRgn& region );
 
 		void createDoubleBuffer();
 		void setCursor(CursorType cursor);
-		void renderInBuffer(RECT rect, bool forExport =false);
+		void renderInBuffer(Gdiplus::Rect  rect, bool forExport =false);
 
 		ZThread::CountedPtr<Gdiplus::Bitmap> buffer_;
 		Document* doc_;
+		Gdiplus::Graphics* bufferedGr_;
 		float blurRadius_;
 		int canvasWidth_, canvasHeight_;
 		POINT oldPoint_;
@@ -153,6 +156,7 @@ class Canvas {
 		TextElement* currentlyEditedTextElement_;
 		Gdiplus::Color foregroundColor_;
 		Gdiplus::Color backgroundColor_;
+		Gdiplus::Rect currentRenderingRect_;
 		std::stack<UndoHistoryItem> undoHistory_;
 		std::vector<MovableElement*> elementsToDelete_;
 		int penSize_;
@@ -160,6 +164,7 @@ class Canvas {
 		bool fullRender_;
 		int blurRectanglesCount_;
 		int originalPenSize_;
+		Gdiplus::Rect updatedRect_;
 		
 		HWND parentWindow_;
 		InputBoxControl* inputBox_;

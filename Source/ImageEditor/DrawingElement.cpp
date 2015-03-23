@@ -66,12 +66,12 @@ void DrawingElement::setPenSize( int penSize ) {
 
 int DrawingElement::getWidth()
 {
-	return abs(endPoint_.x -startPoint_.x);
+	return abs(endPoint_.x -startPoint_.x)+1;
 }
 
 int DrawingElement::getHeight()
 {
-	return abs(endPoint_.y -startPoint_.y);
+	return abs(endPoint_.y -startPoint_.y)+1;
 }
 
 void DrawingElement::getAffectedSegments( AffectedSegments* segments ) {

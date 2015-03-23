@@ -16,4 +16,5 @@ void DrawRoundedRectangle(Gdiplus::Graphics* gr, Gdiplus::Rect r, int d, Gdiplus
 bool SaveImage(Gdiplus::Image* img, const CString& szFilename, SaveImageFormat Format, int Quality);
 Gdiplus::Bitmap* IconToBitmap(HICON ico);
 void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radius);
+Gdiplus::Bitmap* LoadImageFromFileWithoutLocking(const WCHAR* fileName);
 #endif

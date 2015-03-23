@@ -630,13 +630,15 @@
 #define IDM_COPYFILETOCLIPBOARD         32801
 #define IDM_SAVEAS                      32802
 #define ID_0_SAVEAS                     32802
+#define ID_0_EDITINEXTERNALEDITOR       32803
+#define IDM_EDITINEXTERNALEDITOR        32804
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        294
-#define _APS_NEXT_COMMAND_VALUE         32803
+#define _APS_NEXT_COMMAND_VALUE         32805
 #define _APS_NEXT_CONTROL_VALUE         1306
 #define _APS_NEXT_SYMED_VALUE           128
 #endif

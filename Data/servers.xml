@@ -235,7 +235,7 @@
 	</Actions>
 	<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<Server Name="rupix.org"  MaxFileSize="1048576" >
+	<Server Name="rupix.org">
 	<Actions>
 		<Action Type="upload" Url="http://rupix.org/upload.php" PostParams="userfile[]=%filename%;private_upload=0;upload_type=standard;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:0;Image:2;"/>
 	</Actions>
@@ -263,7 +263,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server2>
-	<Server Name="bild.me" Debug="0">
+	<Server Name="bild.me" Debug="1">
 		<Actions>
 			<Action Type="upload" Url="http://www.bild.me/index.php" PostParams="F1=%filename%;C1=ON;upload=Upload!;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:0;Image:2;"/>
 		</Actions>

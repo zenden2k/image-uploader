@@ -64,6 +64,7 @@ public:
 	void render(Painter* gr);
 
 	virtual ElementType getType() const;
+
 protected:
 	float blurRadius_;
 

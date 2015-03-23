@@ -127,9 +127,9 @@ namespace ImageEditor {
 	};
 
 
-ImageEditorWindow::ImageEditorWindow(Gdiplus::Bitmap * bitmap):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
+ImageEditorWindow::ImageEditorWindow(Gdiplus::Bitmap * bitmap, bool hasTransparentPixels):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
 {
-	currentDoc_ =  new ImageEditor::Document(bitmap);
+	currentDoc_ =  new ImageEditor::Document(bitmap, hasTransparentPixels);
 	init();
 	
 }
@@ -147,9 +147,10 @@ void ImageEditorWindow::init()
 	canvas_ = 0;
 	cropToolTip_ = 0;
 	showUploadButton_ = true;
+	showAddToWizardButton_ = true;
 	prevPenSize_ = 0;
 	imageQuality_ = 85;
-	initialDrawingTool_ = Canvas::dtMove;
+	initialDrawingTool_ = Canvas::dtBrush;
 	menuItems_[ID_PEN]             = Canvas::dtPen; 
 	menuItems_[ID_LINE]            = Canvas::dtLine;
 	menuItems_[ID_BRUSH]           = Canvas::dtBrush;
@@ -304,6 +305,11 @@ void ImageEditorWindow::showUploadButton(bool show)
 	showUploadButton_ = show;
 }
 
+void ImageEditorWindow::showAddToWizardButton(bool show)
+{
+	showAddToWizardButton_ = show;
+}
+
 ZThread::CountedPtr<Gdiplus::Bitmap> ImageEditorWindow::getResultingBitmap()
 {
 	return resultingBitmap_;
@@ -312,21 +318,134 @@ ZThread::CountedPtr<Gdiplus::Bitmap> ImageEditorWindow::getResultingBitmap()
 ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDisplayMode mode)
 {
 
-	displayMode_ = mode;
-	//displayMode_ = wdmWindowed;
-	CRect rc(100,100,1280,800);
-
-	if ( displayMode_ == wdmFullscreen ) {
-		GuiTools::GetScreenBounds(rc);
-	}
-
-	DWORD windowStyle =  displayMode_ == wdmFullscreen  ?WS_POPUP|WS_CLIPCHILDREN : WS_OVERLAPPED | WS_POPUP | WS_CAPTION |  WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | 
-		WS_MINIMIZEBOX|WS_CLIPCHILDREN;
 	
-	if ( Create(0, rc, _T("Image Editor"), windowStyle, displayMode_ == wdmFullscreen ? WS_EX_TOPMOST : 0) == NULL ) {
+	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+	int screenHeight =  GetSystemMetrics(SM_CYSCREEN);
+//	displayMode_ = wdmWindowed;
+	
+	CRect displayBounds;
+	GuiTools::GetScreenBounds(displayBounds);
+
+	
+	CDC hdc = ::GetDC(0);
+	float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
+	float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+	int desiredClientWidth = currentDoc_->getWidth()  + 50 * dpiScaleX; // with toolbars
+	int desiredClientHeight = currentDoc_->getHeight()  + 50 * dpiScaleX;
+	CRect rc(0,0,screenWidth * 0.8,screenHeight*0.8);
+	DWORD initialWindowStyle =  WS_OVERLAPPED | WS_POPUP | WS_CAPTION |  WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | 
+		WS_MINIMIZEBOX|WS_CLIPCHILDREN;
+	if ( Create(0, rc, _T("Image Editor"), initialWindowStyle, 0) == NULL ) {
 		LOG(ERROR) << "Main window creation failed!\n";
 		return drCancel;
 	}
+
+	if ( mode == wdmAuto ) {
+		RECT clientRect;
+		RECT windowRect;
+		GetClientRect(&clientRect);
+		GetWindowRect(&windowRect);
+		int paddingX = windowRect.right -  windowRect.left - clientRect.right;
+		int paddingY = windowRect.bottom -  windowRect.top - clientRect.bottom;
+	
+		if (  desiredClientWidth + paddingX >= screenWidth &&   currentDoc_->getWidth()  <= displayBounds.Width()
+			&&  desiredClientHeight + paddingY >= screenHeight &&   currentDoc_->getHeight()  <= displayBounds.Height() ) {
+			mode = wdmFullscreen;
+		} else {
+			mode = wdmWindowed;
+		}
+	}
+	displayMode_ = mode;
+	
+	if ( displayMode_ == wdmFullscreen  ) {
+		//windowStyle = GetStyle();
+		DWORD windowStyle = WS_POPUP|WS_CLIPCHILDREN;
+		SetWindowLong(GWL_STYLE, windowStyle);
+		SetWindowPos(0, displayBounds.left, displayBounds.top, displayBounds.right-displayBounds.left, displayBounds.bottom-displayBounds.top,0);
+		SetWindowLong(GWL_EXSTYLE, WS_EX_TOPMOST);
+	
+	}
+
+	if ( displayMode_ == wdmWindowed ) {
+		CenterWindow();
+	}
+
+	int iconWidth =  ::GetSystemMetrics(SM_CXICON);
+	if ( iconWidth > 32 ) {
+		iconWidth = 48;
+	}
+	icon_ = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
+		IMAGE_ICON, iconWidth, iconWidth, LR_DEFAULTCOLOR);
+	SetIcon(icon_, TRUE);
+	int iconSmWidth =  ::GetSystemMetrics(SM_CXSMICON);
+	if ( iconSmWidth > 16 ) {
+		iconSmWidth = 32;
+	}
+	iconSmall_ = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
+		IMAGE_ICON, iconSmWidth, iconSmWidth, LR_DEFAULTCOLOR);
+	SetIcon(iconSmall_, FALSE);
+
+	//RECT rc;
+	GetClientRect(&rc);
+	HWND m_hWndClient = m_view.Create(m_hWnd, rc, _T("ImageEditor_Canvas"), WS_CHILD | WS_VISIBLE /*| WS_CLIPSIBLINGS | WS_CLIPCHILDREN*/, 0 );
+
+	canvas_ = new ImageEditor::Canvas( m_view );
+	canvas_->setSize( currentDoc_->getWidth(), currentDoc_->getHeight());
+	canvas_->setDocument( currentDoc_ );
+	m_view.setCanvas( canvas_ );
+	createToolbars();
+	RECT horToolbarRect;
+	RECT vertToolbarRect;
+	horizontalToolbar_.GetClientRect(&horToolbarRect);
+	verticalToolbar_.GetClientRect(&vertToolbarRect);
+	rc.left =  displayMode_ == wdmWindowed ? vertToolbarRect.right + kCanvasMargin : 0;
+	rc.top =  displayMode_ == wdmWindowed ? horToolbarRect.bottom + kCanvasMargin  : 0;
+
+	if ( displayMode_ == wdmWindowed ) {
+		horizontalToolbar_.SetWindowPos(0, rc.left, 0,0,0, SWP_NOSIZE);
+		verticalToolbar_.SetWindowPos(0, 0, rc.top, 0,0, SWP_NOSIZE);
+	}
+
+	m_view.SetWindowPos(0, &rc, SWP_NOSIZE);
+	//,1210,733};
+
+	//Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
+
+
+
+	//ImageEditor::Line line( 0, 0, 50, 50 );
+	//line.resize( Gdiplus::Rect( 0, 0, 50, 50 ) );
+	//currentDoc_->addDrawingElement( &line );
+
+	canvas_->onDrawingToolChanged.bind(this, &ImageEditorWindow::OnDrawingToolChanged);
+	canvas_->onForegroundColorChanged.bind(this, &ImageEditorWindow::OnForegroundColorChanged);
+	canvas_->onBackgroundColorChanged.bind(this, &ImageEditorWindow::OnBackgroundColorChanged);
+	canvas_->onCropChanged.bind(this, &ImageEditorWindow::OnCropChanged);
+	if ( displayMode_ != wdmWindowed ) {	
+		canvas_->onCropFinished.bind(this, &ImageEditorWindow::OnCropFinished);
+	}
+
+	if ( initialDrawingTool_ != Canvas::dtCrop ) {
+		verticalToolbar_.ShowWindow(SW_SHOW);
+		horizontalToolbar_.ShowWindow(SW_SHOW);
+	}
+	
+	updatePixelLabel();
+	//m_view.Invalidate(false);
+
+	canvas_->setDrawingToolType(initialDrawingTool_);
+	updateToolbarDrawingTool(initialDrawingTool_);
+	if ( displayMode_ == wdmWindowed ) {
+		CRect newClientRect(0,0,desiredClientWidth,desiredClientHeight);
+		AdjustWindowRect(newClientRect, GetStyle(), false);
+		int newWidth = max(500 *dpiScaleX,newClientRect.right - newClientRect.left);
+		int newHeight = max(500 *dpiScaleY,newClientRect.bottom - newClientRect.top);
+		ResizeClient(newWidth, newHeight);
+	}
+	if ( displayMode_ == wdmWindowed ) {
+		CenterWindow(parent);
+	}
+	canvas_->updateView();
 	//displayMode_ = wdmWindowed;
 	ShowWindow(SW_SHOW);
 	SetForegroundWindow(m_hWnd);
@@ -352,81 +471,6 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 
 LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	
-	if ( displayMode_ == wdmWindowed ) {
-		CenterWindow();
-	}
-	
-	int iconWidth =  ::GetSystemMetrics(SM_CXICON);
-	if ( iconWidth > 32 ) {
-		iconWidth = 48;
-	}
-	icon_ = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
-		IMAGE_ICON, iconWidth, iconWidth, LR_DEFAULTCOLOR);
-	SetIcon(icon_, TRUE);
-	int iconSmWidth =  ::GetSystemMetrics(SM_CXSMICON);
-	if ( iconSmWidth > 16 ) {
-		iconSmWidth = 32;
-	}
-	iconSmall_ = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
-		IMAGE_ICON, iconSmWidth, iconSmWidth, LR_DEFAULTCOLOR);
-	SetIcon(iconSmall_, FALSE);
-	
-	RECT rc;
-	GetClientRect(&rc);
-	HWND m_hWndClient = m_view.Create(m_hWnd, rc, _T("ImageEditor_Canvas"), WS_CHILD | WS_VISIBLE /*| WS_CLIPSIBLINGS | WS_CLIPCHILDREN*/, 0 );
-
-	canvas_ = new ImageEditor::Canvas( m_view );
-	canvas_->setSize( currentDoc_->getWidth(), currentDoc_->getHeight());
-	canvas_->setDocument( currentDoc_ );
-	m_view.setCanvas( canvas_ );
-	createToolbars();
-	RECT horToolbarRect;
-	RECT vertToolbarRect;
-	horizontalToolbar_.GetClientRect(&horToolbarRect);
-	verticalToolbar_.GetClientRect(&vertToolbarRect);
-	rc.left =  displayMode_ == wdmWindowed ? vertToolbarRect.right + kCanvasMargin : 0;
-	rc.top =  displayMode_ == wdmWindowed ? horToolbarRect.bottom + kCanvasMargin  : 0;
-	
-	if ( displayMode_ == wdmWindowed ) {
-		horizontalToolbar_.SetWindowPos(0, rc.left, 0,0,0, SWP_NOSIZE);
-		verticalToolbar_.SetWindowPos(0, 0, rc.top, 0,0, SWP_NOSIZE);
-	}
-	
-	m_view.SetWindowPos(0, &rc, SWP_NOSIZE);
-	//,1210,733};
-	
-	//Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
-
-
-
-	//ImageEditor::Line line( 0, 0, 50, 50 );
-	//line.resize( Gdiplus::Rect( 0, 0, 50, 50 ) );
-	//currentDoc_->addDrawingElement( &line );
-	
-	canvas_->onDrawingToolChanged.bind(this, &ImageEditorWindow::OnDrawingToolChanged);
-	canvas_->onForegroundColorChanged.bind(this, &ImageEditorWindow::OnForegroundColorChanged);
-	canvas_->onBackgroundColorChanged.bind(this, &ImageEditorWindow::OnBackgroundColorChanged);
-	canvas_->onCropChanged.bind(this, &ImageEditorWindow::OnCropChanged);
-	if ( displayMode_ != wdmWindowed ) {	
-		canvas_->onCropFinished.bind(this, &ImageEditorWindow::OnCropFinished);
-	}
-	
-	if ( initialDrawingTool_ != Canvas::dtCrop ) {
-		verticalToolbar_.ShowWindow(SW_SHOW);
-		horizontalToolbar_.ShowWindow(SW_SHOW);
-	}
-	canvas_->updateView();
-	updatePixelLabel();
-	//m_view.Invalidate(false);
-	
-	canvas_->setDrawingToolType(initialDrawingTool_);
-	updateToolbarDrawingTool(initialDrawingTool_);
-	// register object for message filtering and idle updates
-	CMessageLoop* pLoop = _Module.GetMessageLoop();
-	ATLASSERT(pLoop != NULL);
-	//pLoop->AddMessageFilter(this);
-	//pLoop->AddIdleHandler(this);
 
 	return 0;
 }
@@ -449,17 +493,19 @@ LRESULT ImageEditorWindow::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 LRESULT ImageEditorWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	RECT rc;
-	GetClientRect(&rc);
-	RECT horToolbarRect;
-	RECT vertToolbarRect;
-	horizontalToolbar_.GetClientRect(&horToolbarRect);
-	verticalToolbar_.GetClientRect(&vertToolbarRect);
-	
-	rc.right -=  (displayMode_ == wdmWindowed ? vertToolbarRect.right+kCanvasMargin : 0);
-	rc.bottom -=  (displayMode_ == wdmWindowed ? horToolbarRect.bottom+kCanvasMargin : 0);
+	if ( horizontalToolbar_.m_hWnd ) { // It is possible that toolbars are not created yet
+		RECT rc;
+		GetClientRect(&rc);
+		RECT horToolbarRect;
+		RECT vertToolbarRect;
+		horizontalToolbar_.GetClientRect(&horToolbarRect);
+		verticalToolbar_.GetClientRect(&vertToolbarRect);
+		
+		rc.right -=  (displayMode_ == wdmWindowed ? vertToolbarRect.right+kCanvasMargin : 0);
+		rc.bottom -=  (displayMode_ == wdmWindowed ? horToolbarRect.bottom+kCanvasMargin : 0);
 
-	m_view.SetWindowPos(0, 0,0, rc.right, rc.bottom, SWP_NOMOVE);
+		m_view.SetWindowPos(0, 0,0, rc.right, rc.bottom, SWP_NOMOVE);
+	}
 	return 0;
 }
 
@@ -497,7 +543,7 @@ LRESULT ImageEditorWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 		rgn.CombineRgn(viewRgn, RGN_DIFF);
 
 		CBrush br;
-		br.CreateSolidBrush(RGB(255,255,255));
+		br.CreateSolidBrush(GetSysColor(COLOR_APPWORKSPACE)); // MDI background
 		dc.FillRgn(rgn, br);
 
 		/*CRect viewRect;
@@ -523,7 +569,15 @@ LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	 if ( wParam == VK_ESCAPE ) {
 		EndDialog(drCancel);
 		return 0;
-	}
+	 } else if ( wParam == VK_RETURN ) {
+		 if ( saveDocument() ) {
+			 DialogResult dr = drSave;
+			 if ( showUploadButton_ || showAddToWizardButton_ ) {
+				dr = showUploadButton_ ? drUpload : drAddToWizard;
+			 }
+			 EndDialog(dr);
+		 }
+	 }
 	m_view.SendMessage(uMsg, wParam, lParam);
 	return 0;
 }
@@ -591,16 +645,16 @@ LRESULT ImageEditorWindow::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 void ImageEditorWindow::createToolbars()
 {
-	toolbarImageList_.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
 	RECT rc = {0,0,30,30};
-	//GetClientRect(&rc);
 	const int IDC_DUMMY = 100;
 
 	if ( !horizontalToolbar_.Create(m_hWnd, displayMode_ == wdmWindowed) ) {
 		LOG(ERROR) << "Failed to create horizontal toolbar";
 		return;
 	}
-	horizontalToolbar_.addButton(Toolbar::Item(TR("Добавить в список"),0,ID_ADDTOWIZARD));
+	if ( showAddToWizardButton_ ) {
+		horizontalToolbar_.addButton(Toolbar::Item(TR("Добавить в список"),0,ID_ADDTOWIZARD));
+	}
 	if ( showUploadButton_ ) {
 		horizontalToolbar_.addButton(Toolbar::Item(TR("Загрузить на сервер"),0,ID_UPLOAD, CString(), Toolbar::itButton));
 	}
@@ -666,28 +720,45 @@ void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
 	m_view.GetScrollOffset(scrollOffset);
 	x -= scrollOffset.x;
 	y -= scrollOffset.y;
-	RECT rc, vertRc;
-	horizontalToolbar_.GetClientRect(&rc);
+	RECT horRc, vertRc;
+	RECT clientRect;
+	GetClientRect(&clientRect);
+	horizontalToolbar_.GetClientRect(&horRc);
 	verticalToolbar_.GetClientRect(&vertRc);
 
-	if ( y + h + rc.bottom > canvas_->getHeigth()   ) {
+	if ( y + h + horRc.bottom > canvas_->getHeigth()   ) {
 		pos = pTopLeft;
 	}
 	POINT horToolbarPos = {0,0};
 	POINT vertToolbarPos = {0,0};
+	int kToolbarOffset = 6;
 	if ( pos == pBottomRight ) {
-		horToolbarPos.x = x + w - rc.right;
-		horToolbarPos.y =  y + h + 6;
+		horToolbarPos.x = x + w - horRc.right;
+		horToolbarPos.y =  y + h + kToolbarOffset;
 
-		vertToolbarPos.x = x + w + 6 ;
+		vertToolbarPos.x = x + w + kToolbarOffset ;
 		vertToolbarPos.y = y + h - vertRc.bottom;
+
+		horToolbarPos.x = max( horToolbarPos.x, 0);
+		horToolbarPos.y = max( horToolbarPos.y, vertRc.bottom + kToolbarOffset );
+		vertToolbarPos.x = max( vertToolbarPos.x, horRc.right + kToolbarOffset );
+		vertToolbarPos.y = max( vertToolbarPos.y, 0);
+
 	} else if ( pos == pTopLeft ) {
 		horToolbarPos.x = x;
-		horToolbarPos.y =  y - rc.bottom-6;
+		horToolbarPos.y =  y - horRc.bottom - kToolbarOffset;
 
-		vertToolbarPos.x = x - vertRc.right - 6;
+		vertToolbarPos.x = x - vertRc.right - kToolbarOffset;
 		vertToolbarPos.y = y ;
+
+		horToolbarPos.x = min(max( horToolbarPos.x,  vertRc.right), clientRect.right - horRc.right - kToolbarOffset);
+		horToolbarPos.y = min(max( horToolbarPos.y, 0), clientRect.bottom - vertRc.bottom- horRc.bottom - kToolbarOffset);
+		vertToolbarPos.x = min(max( vertToolbarPos.x, 0), clientRect.right - horRc.right- vertRc.right - kToolbarOffset);
+		vertToolbarPos.y = min(max( vertToolbarPos.y, horRc.bottom), clientRect.bottom - vertRc.bottom - kToolbarOffset);
 	}
+	//SIZE toolbarRect = {  horRc.right + vertRc.right, vertRc.bottom + horRc.bottom}
+
+
 	ClientToScreen(&horToolbarPos);
 	ClientToScreen(&vertToolbarPos);
 
@@ -779,15 +850,19 @@ LRESULT ImageEditorWindow::OnClickedShare(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT ImageEditorWindow::OnClickedSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	TCHAR Buf[MAX_PATH*4];
-	CString fileExt = WinUtils::GetFileExt(sourceFileName_);
-	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2,
-		TR("Файлы")+CString(" *.")+fileExt, CString(_T("*."))+fileExt,
-		TR("Все файлы"),_T("*.*"));
-	CFileDialog fd(false, fileExt, sourceFileName_,OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,Buf,m_hWnd);
-	if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return 0;
+	if ( sourceFileName_ ) {
+		outFileName_ = sourceFileName_;
+	} else {
+		TCHAR Buf[MAX_PATH*4];
+		CString fileExt = WinUtils::GetFileExt(sourceFileName_);
+		GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2,
+			TR("Файлы")+CString(" *.")+fileExt, CString(_T("*."))+fileExt,
+			TR("Все файлы"),_T("*.*"));
+		CFileDialog fd(false, fileExt, sourceFileName_,OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,Buf,m_hWnd);
+		if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return 0;
 
-	outFileName_ = fd.m_szFileName;
+		outFileName_ = fd.m_szFileName;
+	}
 	saveDocument();
 	return 0;
 }

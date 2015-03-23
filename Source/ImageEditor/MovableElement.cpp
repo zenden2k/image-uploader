@@ -20,6 +20,7 @@ MovableElement::MovableElement(Canvas* canvas){
 	
 	grips_.resize(8);
 	canvas_ = canvas;
+	isMoving_ = false;
 }
 
 
@@ -37,10 +38,10 @@ void MovableElement::renderGrips(Painter* gr)
 	REAL dashValues[2] = {4, 4};
 	pen.SetDashPattern(dashValues, 2);
 	//pen.SetBrush(&brush);
-	int x = std::min<>( startPoint_.x, endPoint_.x );
-	int y = std::min<>( startPoint_.y, endPoint_.y );
-	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
-	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
+	int x = getX();
+	int y = getY();
+	int width = getWidth()-1;
+	int height = getHeight()-1;
 	if (  /*isSelected_ || */drawDashedRectangle_ ) {
 		gr->DrawRectangle( &pen, x, y, width, height );
 		pen.SetColor(Color( 255, 255, 255) );
@@ -55,10 +56,10 @@ void MovableElement::renderGrips(Painter* gr)
 		int halfSize = rectSize /2 ;
 		Gdiplus::Pen pen( Color( 255,255, 255) );
 		//pen.SetDashStyle(DashStyleDash);
-		int x = std::min<>( startPoint_.x, endPoint_.x );
-		int y = std::min<>( startPoint_.y, endPoint_.y );
-		int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
-		int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
+		/*int x = getX();
+		int y = getY();
+		int width = getWidth();
+		int height = getHeight();*/
 		Gdiplus::SolidBrush brush(Color( 10, 10, 10) );
 
 		createGrips();
@@ -182,8 +183,8 @@ void MovableElement::resize(int width, int height)
 	if ( height < 1 ) {
 		height  = 1;
 	}
-	getMaxPoint(axisX)->x = width + getX();	
-	getMaxPoint(axisY)->y = height + getY();
+	getMaxPoint(axisX)->x = width-1 + getX();	
+	getMaxPoint(axisY)->y = height-1 + getY();
 }
 
 void MovableElement::createGrips()
@@ -191,10 +192,10 @@ void MovableElement::createGrips()
 	int rectSize = kGripSize;
 	int halfSize = rectSize /2 ;
 	
-	int x = std::min<>( startPoint_.x, endPoint_.x );
-	int y = std::min<>( startPoint_.y, endPoint_.y );
-	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
-	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
+	int x = getX();
+	int y = getY();
+	int width = getWidth()-1;
+	int height = getHeight()-1;
 
 	// item order is important!!!! FIXME: use std::map
 	POINT pts[8] = {
@@ -207,9 +208,24 @@ void MovableElement::createGrips()
 		Grip grip;
 		grip.pt.x = x;
 		grip.pt.y = y;
+		if ( x == startPoint_.x && y == startPoint_.y ) {
+			grip.gpt = gptStartPoint;
+		} else if ( x == endPoint_.x &&   y == endPoint_.y ) {
+			grip.gpt = gptEndPoint;
+		}
 		grip.bt = static_cast<BoundaryType>(i);
 		grips_[i] = grip;
 	}
+}
+
+void MovableElement::beginMove()
+{
+	isMoving_ = true;
+}
+
+void MovableElement::endMove()
+{
+	isMoving_ = false;
 }
 
 POINT* MovableElement::getMaxPoint(Axis axis)

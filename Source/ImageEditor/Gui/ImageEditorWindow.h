@@ -37,7 +37,7 @@ public:
 	enum { kCanvasMargin = 4 }; // margin between toolbars and canvas in windowed mode
 
 	enum DialogResult{
-		drCancel, drAddToWizard, drUpload, drShare
+		drCancel, drAddToWizard, drUpload, drShare, drSave
 	};
 
 	enum WindowDisplayMode {
@@ -46,11 +46,12 @@ public:
 
 	ImageEditor::CImageEditorView m_view;
 
-	ImageEditorWindow(Gdiplus::Bitmap * bitmap);
+	ImageEditorWindow(Gdiplus::Bitmap * bitmap, bool hasTransparentPixels);
 	ImageEditorWindow(CString imageFileName);
 	~ImageEditorWindow();
 	void setInitialDrawingTool(Canvas::DrawingToolType dt);
 	void showUploadButton(bool show);
+	void showAddToWizardButton(bool show);
 	ZThread::CountedPtr<Gdiplus::Bitmap> getResultingBitmap();
 
 	DialogResult DoModal(HWND parent, WindowDisplayMode mode = wdmAuto);
@@ -119,7 +120,6 @@ public:
 
 		Toolbar horizontalToolbar_;
 		Toolbar verticalToolbar_;
-		CImageList toolbarImageList_;
 		ImageEditor::Canvas* canvas_;
 		std::map<int, Canvas::DrawingToolType> menuItems_;
 		std::map<Canvas::DrawingToolType, SubMenuItem> subMenuItems_;
@@ -128,6 +128,7 @@ public:
 		WindowDisplayMode displayMode_;
 		Canvas::DrawingToolType initialDrawingTool_;
 		bool showUploadButton_;
+		bool showAddToWizardButton_;
 		int prevPenSize_;
 		CIcon icon_;
 		CIcon iconSmall_;
