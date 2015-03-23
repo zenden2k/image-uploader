@@ -18,6 +18,7 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
 		typedef CScrollWindowImpl<CImageEditorView> TBase;
 		DECLARE_WND_CLASS(L"CImageEditorView")
 		CImageEditorView();
+		~CImageEditorView();
 		BOOL PreTranslateMessage(MSG* pMsg);
 
 		BEGIN_MSG_MAP(CImageEditorView)
@@ -32,6 +33,7 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
 			MESSAGE_HANDLER( WM_CONTEXTMENU, OnContextMenu )
 			MESSAGE_HANDLER( WM_SETCURSOR, OnSetCursor )
 			MESSAGE_HANDLER( WM_KEYDOWN, OnKeyDown )
+		//	MESSAGE_HANDLER( WM_SIZE, OnSize )
 			REFLECT_NOTIFICATIONS()
 			CHAIN_MSG_MAP(TBase);
 		END_MSG_MAP()
@@ -55,14 +57,15 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
 		LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 		POINT oldPoint;
 	private:
 		ImageEditor::Canvas *canvas_;
-		std::map<CursorType, HCURSOR> cursorCache_;
+		std::map<CursorType, CCursor> cursorCache_;
 		CBrush backgroundBrush_;
 		HCURSOR getCachedCursor(CursorType cursorType);
-
+		bool mouseDown_;
 };
 
 }

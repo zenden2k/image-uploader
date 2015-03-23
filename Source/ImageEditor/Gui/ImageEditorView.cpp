@@ -20,6 +20,11 @@ namespace ImageEditor {
 CImageEditorView::CImageEditorView()  {
 	oldPoint.x = -1;
 	oldPoint.y = -1;
+	mouseDown_ = false;
+}
+
+CImageEditorView::~CImageEditorView()
+{
 }
 
 BOOL CImageEditorView::PreTranslateMessage(MSG* /*pMsg*/) {
@@ -134,7 +139,7 @@ LRESULT CImageEditorView::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam,
 		}
 		return 0;
 	}*/
-
+	mouseDown_ = true;
 	SetCapture();
 	//horizontalToolbar_.ShowWindow(SW_HIDE);
 	canvas_->mouseDown( 0, cx, cy );
@@ -142,6 +147,9 @@ LRESULT CImageEditorView::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam,
 }
 
 LRESULT CImageEditorView::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	if ( !mouseDown_ ) {
+		return 0;
+	}
 	int cx =   GET_X_LPARAM(lParam); 
 	int cy =   GET_Y_LPARAM(lParam);
 	POINT ptScroll;
@@ -149,6 +157,7 @@ LRESULT CImageEditorView::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	cx += ptScroll.x;
 	cy += ptScroll.y;
 	POINT pt = {cx, cy};
+	
 	/*TextElement *textElement = canvas_->getCurrentlyEditedTextElement();
 	if ( textElement ) {
 		int elX = textElement->getX();
@@ -162,6 +171,7 @@ LRESULT CImageEditorView::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	}*/
 	canvas_->mouseUp( 0, cx, cy );
 	ReleaseCapture();
+	mouseDown_ = false;
 //	horizontalToolbar_.ShowWindow(SW_SHOW);
 	return 0;
 }
@@ -276,6 +286,12 @@ LRESULT CImageEditorView::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 	return 0;
 }
 
+LRESULT CImageEditorView::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	//Invalidate(false);
+	return 0;
+}
+
 HCURSOR CImageEditorView::getCachedCursor(CursorType cursorType)
 {
 	HCURSOR cur = cursorCache_[cursorType];
@@ -316,5 +332,6 @@ HCURSOR CImageEditorView::getCachedCursor(CursorType cursorType)
 	cursorCache_[cursorType] = cur;
 	return cur;
 }
+
 
 }

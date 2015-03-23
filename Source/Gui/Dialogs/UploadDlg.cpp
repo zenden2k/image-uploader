@@ -127,6 +127,7 @@ CUploadDlg::CUploadDlg(CWizardDlg *dlg):ResultsWindow(new CResultsWindow(dlg,Url
 CUploadDlg::~CUploadDlg()
 {
 	delete ResultsWindow;
+	delete queueUploader_;
 }
 
 //Gdiplus::Bitmap* BitmapFromResource(HINSTANCE hInstance,LPCTSTR szResName, LPCTSTR szResType);

@@ -18,7 +18,7 @@ class ImageEditorWindow : public CWindowImpl<ImageEditorWindow>
 {
 public:
 	DECLARE_WND_CLASS(_T("CMainFrame"))
-	enum { ID_UNDO = 1000, ID_TEXT = 1001,  ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE , ID_SAVE,
+	enum { ID_UNDO = 1000, ID_TEXT = 1001,  ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE , ID_SAVE, ID_SAVEAS,
 		ID_PEN = 1600, 
 		ID_BRUSH, ID_MARKER,ID_BLUR, ID_BLURRINGRECTANGLE, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_ROUNDEDRECTANGLE, ID_ELLIPSE,
 		ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_MOVE};
@@ -52,6 +52,7 @@ public:
 	void setInitialDrawingTool(Canvas::DrawingToolType dt);
 	void showUploadButton(bool show);
 	void showAddToWizardButton(bool show);
+	void setSuggestedFileName(CString string);
 	ZThread::CountedPtr<Gdiplus::Bitmap> getResultingBitmap();
 
 	DialogResult DoModal(HWND parent, WindowDisplayMode mode = wdmAuto);
@@ -82,6 +83,7 @@ public:
 		COMMAND_ID_HANDLER( ID_UPLOAD, OnClickedUpload )	
 		COMMAND_ID_HANDLER( ID_SHARE, OnClickedShare )	
 		COMMAND_ID_HANDLER( ID_SAVE, OnClickedSave )	
+		COMMAND_ID_HANDLER( ID_SAVEAS, OnClickedSaveAs )	
 		MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
 		
 		REFLECT_NOTIFICATIONS()
@@ -115,6 +117,7 @@ public:
 		LRESULT OnClickedUpload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnClickedShare(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnClickedSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnClickedSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
 
@@ -129,6 +132,7 @@ public:
 		Canvas::DrawingToolType initialDrawingTool_;
 		bool showUploadButton_;
 		bool showAddToWizardButton_;
+		CString suggestedFileName_;
 		int prevPenSize_;
 		CIcon icon_;
 		CIcon iconSmall_;
@@ -151,6 +155,7 @@ public:
 		void OnBackgroundColorChanged(Gdiplus::Color color);
 		bool createTooltip();
 		void updatePixelLabel();
+		void OnSaveAs();
 };
 
 }

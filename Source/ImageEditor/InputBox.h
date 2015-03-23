@@ -17,6 +17,9 @@ class InputBox {
 		virtual void setTextColor(Gdiplus::Color color) =0;
 		fastdelegate::FastDelegate1<TCHAR*> onTextChanged;
 		fastdelegate::FastDelegate2<int, int> onSizeChanged;
+		fastdelegate::FastDelegate0<void> onEditCanceled;
+		fastdelegate::FastDelegate0<void> onEditFinished;
+
 };
 }
 

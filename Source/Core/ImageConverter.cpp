@@ -92,16 +92,7 @@ bool CImageConverter::Convert(const CString& sourceFile)
 	if (m_imageConvertingParams.strNewWidth.Right(1) == _T("%"))
 		NewWidth = NewWidth * imgwidth / 100;
 	
-	UINT propertyItemsSize = 0;
-	UINT propertyItemsCount = 0;
-	PropertyItem* pPropBuffer = NULL;
-	if ( m_imageConvertingParams.PreserveExifInformation ) {
-		bm.GetPropertySize(&propertyItemsSize, &propertyItemsCount);
-		if ( propertyItemsSize ) {
-			pPropBuffer = (PropertyItem*)malloc(propertyItemsSize);
-			bm.GetAllPropertyItems(propertyItemsSize, propertyItemsCount, pPropBuffer);
-		}
-	}
+	
 
 	if (m_imageConvertingParams.strNewHeight.Right(1) == _T("%"))
 	{
@@ -127,6 +118,16 @@ bool CImageConverter::Convert(const CString& sourceFile)
 		m_resultFileName = sourceFile;
 	else
 	{
+		UINT propertyItemsSize = 0;
+		UINT propertyItemsCount = 0;
+		PropertyItem* pPropBuffer = NULL;
+		if ( m_imageConvertingParams.PreserveExifInformation ) {
+			bm.GetPropertySize(&propertyItemsSize, &propertyItemsCount);
+			if ( propertyItemsSize ) {
+				pPropBuffer = (PropertyItem*)malloc(propertyItemsSize);
+				bm.GetAllPropertyItems(propertyItemsSize, propertyItemsCount, pPropBuffer);
+			}
+		}
 		if (m_imageConvertingParams.ResizeMode == ImageConvertingParams::irmFit)
 		{
 			if (width && height && ( imgwidth > width || imgheight > height) )

@@ -200,6 +200,8 @@ void TextElement::setInputBox(InputBox* inputBox)
 	inputBox_ = inputBox;
 	setTextColor();
 	inputBox_->onTextChanged.bind(this, &TextElement::onTextChanged);
+	inputBox_->onEditCanceled.bind(this, &TextElement::onEditCanceled);
+	inputBox_->onEditFinished.bind(this, &TextElement::onEditFinished);
 }
 
 InputBox* TextElement::getInputBox() const
@@ -209,7 +211,17 @@ InputBox* TextElement::getInputBox() const
 
 void TextElement::onTextChanged(TCHAR *text)
 {
-	canvas_->updateView();
+	canvas_->updateView(getPaintBoundingRect());
+}
+
+void TextElement::onEditCanceled()
+{
+	inputBox_->show(false);
+}
+
+void TextElement::onEditFinished()
+{
+	inputBox_->show(false);
 }
 
 void TextElement::setTextColor()
@@ -447,6 +459,11 @@ BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int start
 {
 	blurRadius_ = blurRadius;
 } 
+
+BlurringRectangle::~BlurringRectangle()
+{
+	BlurCleanup();
+}
 
 void BlurringRectangle::setBlurRadius(float radius)
 {

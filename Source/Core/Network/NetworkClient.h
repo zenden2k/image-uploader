@@ -116,6 +116,7 @@ class NetworkClient
 		bool private_on_finish_request();
 		void private_initTransfer();
 		void private_checkResponse();
+		static void curl_cleanup();
 
 		int m_UploadBufferSize;
 		CURL *curl_handle;

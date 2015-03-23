@@ -33,6 +33,8 @@ class TextElement: public MovableElement{
 protected:
 	InputBox *inputBox_;
 	void onTextChanged(TCHAR *text);
+	void onEditCanceled();
+	void onEditFinished();
 	void setTextColor();
 
 	virtual void setColor(Gdiplus::Color color);
@@ -59,6 +61,7 @@ public:
 class BlurringRectangle: public MovableElement {
 public:
 	BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY);
+	~BlurringRectangle();
 	void setBlurRadius(float radius);
 	float getBlurRadius();
 	void render(Painter* gr);

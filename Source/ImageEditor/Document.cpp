@@ -29,6 +29,13 @@ Document::Document(Gdiplus::Bitmap *sourceImage,  bool hasTransparentPixels ) {
 	init();
 }
 
+Document::~Document()
+{
+	for( int i = 0; i < history_.size(); i++ ) {
+		delete[] history_[i].data;
+	}
+}
+
 void Document::init() {
 	assert( currentImage_ );
 	drawStarted_ = false;

@@ -134,6 +134,10 @@
 #define IDB_ICONTOOLFILLEDELLIPSE       292
 #define IDB_PNG6                        293
 #define IDB_ICONTOOLMARKER              293
+#define IDB_ICONSAVEPNG                 294
+#define IDB_ICONADDPNG                  295
+#define IDB_PNG8                        296
+#define IDB_ICONUPLOADPNG               296
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -637,7 +641,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        294
+#define _APS_NEXT_RESOURCE_VALUE        297
 #define _APS_NEXT_COMMAND_VALUE         32805
 #define _APS_NEXT_CONTROL_VALUE         1306
 #define _APS_NEXT_SYMED_VALUE           128

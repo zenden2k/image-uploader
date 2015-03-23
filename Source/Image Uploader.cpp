@@ -137,6 +137,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	
 	// deletes empty temp directory
 	RemoveDirectory( IuCommonFunctions::IUCommonTempFolder );
+	LogWindow.DestroyWindow();
 	return 0;
 }
 

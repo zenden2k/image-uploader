@@ -38,5 +38,6 @@ class ZBase
 		static ZBase* m_base;
 		CHistoryManager m_hm;
 		std::map<std::string, std::string> m_UrlCache;
+		static void cleanUp();
 };
 #endif

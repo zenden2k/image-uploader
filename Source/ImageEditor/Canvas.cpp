@@ -47,6 +47,8 @@ Canvas::Canvas( HWND parent ) {
 Canvas::~Canvas() {
 //	delete buffer_;
 	delete bufferedGr_;
+	delete currentDrawingTool_;
+	delete overlay_;
 	for ( int i = 0; i < elementsToDelete_.size(); i++ ) {
 		delete elementsToDelete_[i];
 	}
@@ -333,7 +335,7 @@ void Canvas::setDrawingToolType(DrawingToolType toolType, bool notify ) {
 	unselectAllElements();
 	updateView();
 	ElementType type;
-
+	delete currentDrawingTool_;
 	if ( toolType == dtPen) {
 		currentDrawingTool_ = new PenTool( this );
 	} else if ( toolType == dtBrush) {
@@ -576,32 +578,39 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
 		//LOG(INFO) << "canvas full render";
 	}
 	currentRenderingRect_ = rc;
-	if (!fullRender_) {
+	if (!fullRender_ && !forExport) {
 		Gdiplus::Region reg(rc);
+		bufferedGr_->SetClip(&reg);
+	} else {
+		Gdiplus::Region reg;
 		bufferedGr_->SetClip(&reg);
 	}
 	bufferedGr_->SetPageUnit(Gdiplus::UnitPixel);
 	bufferedGr_->SetSmoothingMode(SmoothingModeAntiAlias);
-
-
-	if ( false && !forExport && doc_->hasTransparentPixels() ) {
-		
-		int kSquareSize = 40;
-		SolidBrush dark(Color(50,50,50));
-		SolidBrush light(Color(100,100,100));
-		int startX = rc.X - rc.X % kSquareSize;
-		int startY = rc.Y - rc.Y % kSquareSize;
-		int xCount = ceil(float(rc.Width) / kSquareSize)+1;
-		int yCount = ceil(float(rc.Height) / kSquareSize)+1;
-		bool isDark =  !(rc.Y / kSquareSize)%2 ;
-		isDark =  (rc.X / kSquareSize)%2 == ( isDark ? 0 : 1);
-		for (int j = 0; j < yCount; j++) {
-			for (int i = 0; i < xCount; i++)
-			{
-				bufferedGr_->FillRectangle(isDark ? &dark : &light, startX + i * kSquareSize, startY + j * kSquareSize, kSquareSize, kSquareSize);
+	
+	if ( doc_->hasTransparentPixels() ) {
+		if (  !forExport ) {
+			SolidBrush whiteBrush(Color(255,255,255));
+			bufferedGr_->FillRectangle(&whiteBrush, rc);
+			/*int kSquareSize = 40;
+			SolidBrush dark(Color(50,50,50));
+			SolidBrush light(Color(100,100,100));
+			int startX = rc.X - rc.X % kSquareSize;
+			int startY = rc.Y - rc.Y % kSquareSize;
+			int xCount = ceil(float(rc.Width) / kSquareSize)+1;
+			int yCount = ceil(float(rc.Height) / kSquareSize)+1;
+			bool isDark =  !(rc.Y / kSquareSize)%2 ;
+			isDark =  (rc.X / kSquareSize)%2 == ( isDark ? 0 : 1);
+			for (int j = 0; j < yCount; j++) {
+				for (int i = 0; i < xCount; i++)
+				{
+					bufferedGr_->FillRectangle(isDark ? &dark : &light, startX + i * kSquareSize, startY + j * kSquareSize, kSquareSize, kSquareSize);
+					isDark = !isDark;
+				}
 				isDark = !isDark;
-			}
-			isDark = !isDark;
+			}*/
+		} else {
+			bufferedGr_->Clear(Color(0,0,0,0));
 		}
 	}
 

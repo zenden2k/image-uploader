@@ -124,8 +124,8 @@ void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* back
 
 
 	int characterCount = ::SendMessage(hwnd, EM_FORMATRANGE, 1, (LPARAM)&fmtRange);
-	LOG(INFO) << "rectLayoutArea"<< rectLayoutArea.left << " "<< rectLayoutArea.top << " "<< rectLayoutArea.right << " "<< rectLayoutArea.bottom << " ";
-	LOG(INFO) << "characterCount" << characterCount;
+	//LOG(INFO) << "rectLayoutArea"<< rectLayoutArea.left << " "<< rectLayoutArea.top << " "<< rectLayoutArea.right << " "<< rectLayoutArea.bottom << " ";
+	//LOG(INFO) << "characterCount" << characterCount;
 
 	//Release the device context handle obtained by a previous call
 	graphics->ReleaseHDC(hdc);
@@ -336,6 +336,10 @@ void gaussBlur_4 (DummyBitmap& scl, DummyBitmap& tcl, int w, int h, int r) {
 uint8_t *prevBuf = 0;
 int prevSize=0;
 
+void BlurCleanup() {
+	delete[] prevBuf;
+	prevBuf = 0;
+}
 
 void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radius) {
 	using namespace Gdiplus;

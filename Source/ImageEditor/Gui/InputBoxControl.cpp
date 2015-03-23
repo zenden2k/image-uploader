@@ -115,8 +115,12 @@ LRESULT InputBoxControl::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	WPARAM vKey = wParam;
 
 	if ( vKey == VK_ESCAPE ) {
-		ShowWindow( SW_HIDE );
+		if ( onEditCanceled ) {
+			onEditCanceled();
+		}
 		bHandled = true;
+	} else if ( vKey == VK_RETURN && GetKeyState(VK_CONTROL) & 0x80 && onEditFinished ) {
+		onEditFinished();
 	}
 
 

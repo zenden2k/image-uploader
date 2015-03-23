@@ -99,7 +99,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 		} else if ( draggedBoundary_.gpt == MovableElement::gptEndPoint ) {
 			elementBasePoint = &currentElement_->endPoint_;
 		}
-		LOG(INFO) << "draggedBoundary_.gpt="<<draggedBoundary_.gpt;
+		//LOG(INFO) << "draggedBoundary_.gpt="<<draggedBoundary_.gpt;
 		int elWidth  = 0;
 		int elHeight = 0;
 		int elX = 0;
@@ -111,7 +111,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 			elHeight = currentElement_->getHeight();
 			elX = currentElement_->getX();
 			elY  = currentElement_->getY();
-			LOG(INFO) << "Resizing object to " << elWidth << " "<<elHeight;
+			//LOG(INFO) << "Resizing object to " << elWidth << " "<<elHeight;
 		} else {
 			elWidth = currentElement_->getWidth();
 			elHeight = currentElement_->getHeight();
@@ -204,7 +204,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 		POINT pt = { x, y };
 		currentElement_->setEndPoint( pt );
 		/*if ( currentElement_ && currentElement_->getType() == etCrop && canvas_->onCropChanged ) {
-			LOG(INFO) << "onCropChanged";
+			//LOG(INFO) << "onCropChanged";
 			canvas_->onCropChanged(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
 		}*/
 		RECT paintBoundingRect = currentElement_->getPaintBoundingRect();

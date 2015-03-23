@@ -1262,7 +1262,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 	else
 	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 2, 
 		                           CString(TR("Изображения")) + _T(" (jpeg, bmp, png, gif ...)"),
-		                           _T("*.jpg;*.gif;*.png;*.bmp;*.tiff"), TR("Любые файлы"),
+		                           _T("*.jpg;*.jpeg;*.gif;*.png;*.bmp;*.tiff"), TR("Любые файлы"),
 		                           _T("*.*"));
 
 	int nCount = 0;  
@@ -1821,12 +1821,15 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 	}
 	using namespace ImageEditor;
 	ImageEditorWindow::DialogResult dr = ImageEditorWindow::drCancel;
+	CString suggestingFileName = GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
+
 	if(result)
 	{
 		ImageEditor::ImageEditorWindow imageEditor(&*result, mode == cmFreeform ||   mode == cmActiveWindow );
 		imageEditor.setInitialDrawingTool(mode == cmRectangles ? ImageEditor::Canvas::dtCrop : ImageEditor::Canvas::dtBrush);
 		imageEditor.showUploadButton(m_bScreenshotFromTray);
-		dr = imageEditor.DoModal(m_hWnd, ImageEditorWindow::wdmFullscreen);
+		imageEditor.setSuggestedFileName(suggestingFileName);
+		dr = imageEditor.DoModal(m_hWnd, (mode == cmRectangles || mode == cmFullScreen ) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
 		if ( dr == ImageEditorWindow::drAddToWizard || dr ==ImageEditorWindow::drUpload ) {
 			result = imageEditor.getResultingBitmap();
 		}else {
@@ -1852,7 +1855,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 				Gdip_RemoveAlpha(*result,Color(255,255,255,255));
 
 			CString saveFolder = GenerateFileName(Settings.ScreenshotSettings.Folder, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
-			MySaveImage(&*result,GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight())),buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
+			MySaveImage(&*result,suggestingFileName,buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
 			screenshotIndex++;
 			if(CopyToClipboard)
 			{

@@ -23,7 +23,12 @@
 #include "Core/Utils/CoreUtils.h"
 #include <Func/LocalFileCache.h>
 
-ZBase* ZBase::m_base;
+ZBase* ZBase::m_base = 0;
+
+void ZBase::cleanUp()
+{
+	delete m_base;
+}
 
 ZBase::ZBase()
 {
@@ -32,8 +37,10 @@ ZBase::ZBase()
 
 ZBase* ZBase::get()
 {
-	if(m_base == 0)
+	if(m_base == 0) {
 		m_base = new ZBase();
+		atexit(&cleanUp);
+	}
 	return m_base;
 }
 

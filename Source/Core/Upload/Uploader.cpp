@@ -97,7 +97,8 @@ int CUploader::pluginProgressFunc (void* userData, double dltotal, double dlnow,
 }
 
 bool CUploader::UploadFile(const std::string& FileName, const std::string displayFileName) {
-	return Upload(new FileUploadTask(FileName, displayFileName));
+	FileUploadTask task(FileName, displayFileName);
+	return Upload(&task);
 }
 
 bool CUploader::Upload(UploadTask* task) {

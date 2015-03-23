@@ -29,6 +29,9 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
 Toolbar::~Toolbar()
 {
 	delete font_;
+	for ( int i =0 ; i < buttons_.size(); i++ ) {
+		delete buttons_[i].icon;
+	}
 }
 
 bool Toolbar::Create(HWND parent, bool child )
@@ -295,9 +298,6 @@ LRESULT Toolbar::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 			InvalidateRect(&buttons_[oldSelectedIndex].rect, false);
 		}
 	} 
-		
-	
-	
 	return 0;
 }
 
@@ -320,28 +320,58 @@ LRESULT Toolbar::OnMouseLeave(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 
 LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	LOG(INFO) << "OnLButtonDown";
 	int xPos = GET_X_LPARAM(lParam); 
 	int yPos = GET_Y_LPARAM(lParam); 
 	if ( selectedItemIndex_ != -1 ) {
 		Item& item = buttons_[selectedItemIndex_];
 		if ( item.type == Toolbar::itComboButton && xPos >  item.rect.right - dropDownIcon_->GetWidth() - itemMargin_  ) {
 			item.state = isDropDown;
-		} else if ( item.type == Toolbar::itTinyCombo && xPos >  item.rect.right - 6*dpiScaleX - itemMargin_ && yPos >   item.rect.bottom - 6*dpiScaleY - itemMargin_  ) {
-			item.state = isDropDown;
-		}else {
+		} else if ( item.type == Toolbar::itTinyCombo ) {
+			if ( xPos >  item.rect.right - 6*dpiScaleX - itemMargin_ && yPos >   item.rect.bottom - 6*dpiScaleY - itemMargin_ ) {
+				item.state = isDropDown;
+			} else {
+			//	LOG(INFO) << "SetTimer";
+				SetTimer(kTinyComboDropdownTimer, 600);
+				item.state = isDown;
+			}
+		}
+		else {
 			item.state = isDown;
 		}
 		
 		InvalidateRect(&item.rect, false);
 		
 	}
+	
 	return 0;
 }
+
+LRESULT Toolbar::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	LOG(INFO) << "OnTimer";
+	if ( wParam  == kTinyComboDropdownTimer && selectedItemIndex_ != -1 ) {
+		Item& item = buttons_[selectedItemIndex_];
+		if (  item.type == Toolbar::itTinyCombo ) {
+			::PostMessage(GetParent(), MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
+		}
+	}
+	KillTimer(kTinyComboDropdownTimer);
+	return 0;
+}
+
 
 LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	int xPos = GET_X_LPARAM(lParam); 
 	int yPos = GET_Y_LPARAM(lParam); 
+	RECT clientRect;
+	KillTimer(kTinyComboDropdownTimer);
+	GetClientRect(&clientRect);
+	POINT pt = { xPos, yPos };
+	if ( !::PtInRect(&clientRect, pt)  )  {
+		return 0;
+	}
 	if ( selectedItemIndex_ != -1 ) {
 		
 		selectedItemIndex_ = getItemAtPos(xPos, yPos);
@@ -356,14 +386,35 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 			HWND parent = GetParent();
 			int command = item.command;
 			if ( item.type == Toolbar::itComboButton && xPos >  item.rect.right - dropDownIcon_->GetWidth() - itemMargin_  ) {
-				::PostMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
+				::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
 			} else if ( item.type == Toolbar::itTinyCombo && xPos >  item.rect.right - 6*dpiScaleX - itemMargin_ && yPos >   item.rect.bottom - 6*dpiScaleY - itemMargin_  ) {
-				::PostMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
+				::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
 			}else {
-				::PostMessage(parent, WM_COMMAND, MAKEWPARAM(command,BN_CLICKED),(LPARAM)m_hWnd);
+				::SendMessage(parent, WM_COMMAND, MAKEWPARAM(command,BN_CLICKED),(LPARAM)m_hWnd);
 			}
 
 			
+			selectedItemIndex_ = -1;
+			OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);
+		}
+	}
+	
+	return 0;
+}
+
+LRESULT Toolbar::OnRButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	int xPos = GET_X_LPARAM(lParam); 
+	int yPos = GET_Y_LPARAM(lParam); 
+	if ( selectedItemIndex_ != -1 ) {
+
+		selectedItemIndex_ = getItemAtPos(xPos, yPos);
+		Item& item = buttons_[selectedItemIndex_];
+
+		if ( item.type == Toolbar::itTinyCombo ) {
+			HWND parent = GetParent();
+			int command = item.command;
+			::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
 			selectedItemIndex_ = -1;
 			OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);
 		}
@@ -450,7 +501,7 @@ int Toolbar::AutoSize()
 
 			if ( orientation_ == orHorizontal ) {
 				x+= s.cx + itemMargin_;
-				width = x;
+				width = max(x, subpanelLeftOffset_ +220*dpiScaleX) ;
 				height = max(s.cy + itemMargin_*2, height);
 			} else {
 				y+= s.cy + itemMargin_;

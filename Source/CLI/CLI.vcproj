@@ -236,7 +236,7 @@
 					Name="Network"
 					>
 					<File
-						RelativePath="..\Core\Network\NetworkManager.cpp"
+						RelativePath="..\Core\Network\NetworkClient.cpp"
 						>
 					</File>
 				</Filter>

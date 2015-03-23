@@ -157,9 +157,11 @@ void MarkerTool::highlightRegion(RECT rc)
 {
 	Bitmap* canvasBm = canvas_->currentDocument()->getBitmap();
 	BitmapData canvasData;
-	int w = rc.right - rc.left;
-	int h = rc.bottom - rc.top;
-	Rect rc2 ( rc.left,rc.top,w,h);
+	int w = min(canvasBm->GetWidth()-rc.left,rc.right - rc.left);
+	int h = min(canvasBm->GetHeight()-rc.top, rc.bottom - rc.top);
+	rc.left = max(0,rc.left);
+	rc.top = max(0,rc.top);
+	Rect rc2 (rc.left , rc.top, w, h);
 	segments_.markRect( rc );
 	if (canvasBm->LockBits(& rc2, ImageLockModeRead|ImageLockModeWrite, PixelFormat32bppARGB, & canvasData) == Ok) {
 		UINT stride;

@@ -16,6 +16,7 @@ public:
 	enum Orientation { orHorizontal, orVertical };
 	enum ItemState { isNormal, isHover, isDown, isDropDown };
 	enum ItemType { itButton, itComboButton, itTinyCombo };
+	enum { kTinyComboDropdownTimer = 42 };
 	class ToolbarItemDelegate;
 	struct Item {
 		CString title;
@@ -73,11 +74,13 @@ public:
 		MESSAGE_HANDLER( WM_NCHITTEST, OnNcHitTest )
 		MESSAGE_HANDLER( WM_LBUTTONDOWN, OnLButtonDown )
 		MESSAGE_HANDLER( WM_LBUTTONUP, OnLButtonUp )
+		MESSAGE_HANDLER( WM_RBUTTONUP, OnRButtonUp )
 		MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
 		MESSAGE_HANDLER( WM_ACTIVATE, OnActivate )
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnColorStatic)
 		MESSAGE_HANDLER(WM_HSCROLL , OnHScroll)
-
+		MESSAGE_HANDLER(WM_TIMER , OnTimer)
+		
 		REFLECT_NOTIFICATIONS ()
 
 	END_MSG_MAP()
@@ -96,8 +99,10 @@ public:
 	LRESULT OnMouseLeave(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnRButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	SIZE CalcItemSize(int index);
 	int AutoSize();

@@ -153,6 +153,7 @@ NetworkClient::NetworkClient(void)
 		}
 		StrCatA(CertFileName, "curl-ca-bundle.crt");
 #endif
+		atexit(&curl_cleanup);
 		_curl_init = true;
 	}
     #ifndef IU_CLI
@@ -432,6 +433,11 @@ void NetworkClient::private_checkResponse()
 	if ( ( !code || (code>= 400 && code<=499)) && errorString() != "Callback aborted" ) {
 		LOG(ERROR) << "Request to the URL '"<<m_url<<"' failed. \r\nResponse code: "<<code<<"\r\n"<<errorString()<<"\r\n"<<internalBuffer;
 	}
+}
+
+void NetworkClient::curl_cleanup()
+{
+	curl_global_cleanup();
 }
 
 NString NetworkClient::responseHeaderText()

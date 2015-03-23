@@ -23,6 +23,7 @@ class Document {
 		Document(int width, int height);
 		Document(const wchar_t* fileName);
 		Document(Gdiplus::Bitmap *sourceImage, bool hasTransparentPixels = false);
+		virtual ~Document();
 		
 		Painter* getGraphicsObject();
 		void beginDrawing( bool cloneImage = true );
