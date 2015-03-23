@@ -338,39 +338,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 				dc.SelectFont(UnderlineFont); else 
 				dc.SelectFont(GetFont());
 			dc.SetTextColor(RGB(100,100,100));
-		/*	LOGFONT lf = {0};
- 
-  
- CFont m_font;
-			if ( !IsThemeActive() )
-    GetThemeSysFont ( TMT_MSGBOXFONT, &lf );
-  else
-    {
-    NONCLIENTMETRICS ncm = { sizeof(NONCLIENTMETRICS) };
- 
-    SystemParametersInfo (
-        SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS),
-        &ncm, false );
- 
-    lf = ncm.lfMessageFont;
-    }
- 
-  //lf.lfHeight *= 3;
-  m_font.CreateFontIndirect ( &lf );
-	dc.SelectFont(m_font);
- DTTOPTS dto = { sizeof(DTTOPTS) };
-    const UINT uFormat = DT_SINGLELINE|DT_CENTER|DT_VCENTER|DT_NOPREFIX;
-    CRect rcText2 = TextRect;
-		rcText2.left=TextRect.left;
-		rcText2.top =textY;
-		
-		dto.dwFlags = DTT_COMPOSITED|DTT_GLOWSIZE;
-    dto.iGlowSize =1;
-  //  rcText2 -= rcText2.TopLeft(); // same rect but with (0,0) as the top-left
 
- 
-    DrawThemeTextEx (  dc.m_hDC, 0, 0, item.szTitle, -1,
-                      uFormat, &rcText2, &dto );*/
 			ExtTextOutW(dc.m_hDC, TextRect.left, item.ItemRect.top+18, ETO_CLIPPED, &TextRect, item.szTip, wcslen(item.szTip), 0);
 
 			dc.SetBkMode(TRANSPARENT);

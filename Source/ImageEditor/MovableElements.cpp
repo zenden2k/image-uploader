@@ -1,4 +1,3 @@
-
 #include "MovableElements.h"
 
 #include <algorithm>
@@ -11,144 +10,150 @@
 #include <Core/Images/Utils.h> 
 
 namespace ImageEditor {
-	Line::Line(Canvas* canvas, int startX, int startY, int endX, int endY) :MovableElement(canvas) {
-		startPoint_.x = startX;
-		startPoint_.y = startY;
-		endPoint_.x   = endX;
-		endPoint_.y   = endY;
-		drawDashedRectangle_ = false;
-		grips_.resize(2);
-		
+
+Line::Line(Canvas* canvas, int startX, int startY, int endX, int endY) :MovableElement(canvas) {
+	startPoint_.x = startX;
+	startPoint_.y = startY;
+	endPoint_.x   = endX;
+	endPoint_.y   = endY;
+	drawDashedRectangle_ = false;
+	grips_.resize(2);
+
+}
+
+
+void Line::setEndPoint(POINT endPoint) {
+	int kAccuracy = 7;
+	if (abs (endPoint.y-startPoint_.y) < kAccuracy ) {
+		endPoint.y = startPoint_.y;
+	} else if (abs (endPoint.x-startPoint_.x) < kAccuracy ) {
+		endPoint.x = startPoint_.x;
 	}
+	DrawingElement::setEndPoint( endPoint );
+}
 
-
-	void Line::setEndPoint(POINT endPoint) {
-		int kAccuracy = 7;
-		if (abs (endPoint.y-startPoint_.y) < kAccuracy ) {
-			endPoint.y = startPoint_.y;
-		} else if (abs (endPoint.x-startPoint_.x) < kAccuracy ) {
-			endPoint.x = startPoint_.x;
-		}
-		DrawingElement::setEndPoint( endPoint );
+void Line::render(Painter* gr) {
+	using namespace Gdiplus;
+	if ( !gr ) {
+		return;
 	}
+	Gdiplus::Pen pen( color_, penSize_ );
+	pen.SetStartCap(LineCapRound);
+	pen.SetEndCap(LineCapRound);
+	//CustomLineCap cap()
+	//pen.SetCustomStartCap()
+	gr->DrawLine( &pen, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y );
+}
 
-	void Line::render(Painter* gr) {
-		using namespace Gdiplus;
-		if ( !gr ) {
-			return;
-		}
-		Gdiplus::Pen pen( color_, penSize_ );
-		pen.SetStartCap(LineCapRound);
-		pen.SetEndCap(LineCapRound);
-		//CustomLineCap cap()
-		//pen.SetCustomStartCap()
-		gr->DrawLine( &pen, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y );
-	}
+void Line::getAffectedSegments( AffectedSegments* segments ) {
+	int x0 = startPoint_.x;
+	int y0 = startPoint_.y;
+	int x1 = endPoint_.x;
+	int y1 = endPoint_.y;
 
-	void Line::getAffectedSegments( AffectedSegments* segments ) {
-		int x0 = startPoint_.x;
-		int y0 = startPoint_.y;
-		int x1 = endPoint_.x;
-		int y1 = endPoint_.y;
+	int xStart = ( min(x0, x1) / AffectedSegments::kSegmentSize +1 ) * AffectedSegments::kSegmentSize;
+	int xEnd   = ( max(x0,x1) / AffectedSegments::kSegmentSize ) * AffectedSegments::kSegmentSize;
 
-		int xStart = ( min(x0, x1) / AffectedSegments::kSegmentSize +1 ) * AffectedSegments::kSegmentSize;
-		int xEnd   = ( max(x0,x1) / AffectedSegments::kSegmentSize ) * AffectedSegments::kSegmentSize;
+	x0 = startPoint_.x;
+	x1 = endPoint_.x;
+	y0 = startPoint_.y;
+	y1 = endPoint_.y;
+	segments->markPoint( x0, y0 );
+	segments->markPoint( x1, y1 );
 
-		x0 = startPoint_.x;
-		x1 = endPoint_.x;
-		y0 = startPoint_.y;
-		y1 = endPoint_.y;
-		segments->markPoint( x0, y0 );
-		segments->markPoint( x1, y1 );
-
-		for( int x = xStart; x <= xEnd; x += AffectedSegments::kSegmentSize ) {
-			int y = -1;
-			if ( x1-x0 != 0) {
-				y = y0 + (x-x0)*(y1-y0)/(x1-x0);
-			}
-
-			segments->markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
+	for( int x = xStart; x <= xEnd; x += AffectedSegments::kSegmentSize ) {
+		int y = -1;
+		if ( x1-x0 != 0) {
+			y = y0 + (x-x0)*(y1-y0)/(x1-x0);
 		}
 
-		int yStart = ( min( y0, y1 ) / AffectedSegments::kSegmentSize + 1) * AffectedSegments::kSegmentSize;
-		int yEnd   = ( max( y0, y1 ) / AffectedSegments::kSegmentSize ) * AffectedSegments::kSegmentSize;
-
-		for( int y = yStart; y <= yEnd; y += AffectedSegments::kSegmentSize ) {
-			int x = -1;
-			if ( y1-y0 != 0) {
-				x = x0 + ( y - y0 ) * ( x1 - x0 ) / ( y1-y0 );
-			}
-
-			segments->markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
-		}
+		segments->markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
 	}
 
-	void Line::createGrips()
-	{
-		int rectSize = kGripSize;
+	int yStart = ( min( y0, y1 ) / AffectedSegments::kSegmentSize + 1) * AffectedSegments::kSegmentSize;
+	int yEnd   = ( max( y0, y1 ) / AffectedSegments::kSegmentSize ) * AffectedSegments::kSegmentSize;
 
-		int x = getX();
-		int y = getY();
-		int width = getWidth();
-		int height = getHeight();
+	for( int y = yStart; y <= yEnd; y += AffectedSegments::kSegmentSize ) {
+		int x = -1;
+		if ( y1-y0 != 0) {
+			x = x0 + ( y - y0 ) * ( x1 - x0 ) / ( y1-y0 );
+		}
 
-		Grip grip1;
-		Grip grip2;
-		grip1.pt.x = startPoint_.x;
-		grip1.pt.y = startPoint_.y;
-		grip1.gpt = MovableElement::gptStartPoint;
-		grip2.pt.x = endPoint_.x;
-		grip2.pt.y =  endPoint_.y;
-		grip2.gpt = MovableElement::gptEndPoint;
+		segments->markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
+	}
+}
 
-		if ( grip1.pt.x <= grip2.pt.x ) {
-			if (  grip1.pt.y <= grip2.pt.y  ) {
-				grip1.bt = btTopLeft;
-				grip2.bt = btBottomRight;
-			} else {
-				grip1.bt = btBottomLeft;
-				grip2.bt = btTopRight;
-			}
+void Line::createGrips()
+{
+	int rectSize = kGripSize;
+
+	int x = getX();
+	int y = getY();
+	int width = getWidth();
+	int height = getHeight();
+
+	Grip grip1;
+	Grip grip2;
+	grip1.pt.x = startPoint_.x;
+	grip1.pt.y = startPoint_.y;
+	grip1.gpt = MovableElement::gptStartPoint;
+	grip2.pt.x = endPoint_.x;
+	grip2.pt.y =  endPoint_.y;
+	grip2.gpt = MovableElement::gptEndPoint;
+
+	if ( grip1.pt.x <= grip2.pt.x ) {
+		if (  grip1.pt.y <= grip2.pt.y  ) {
+			grip1.bt = btTopLeft;
+			grip2.bt = btBottomRight;
 		} else {
-			if (  grip2.pt.y > grip1.pt.y  ) {
-				grip1.bt = btTopRight;
-				grip2.bt = btBottomLeft;
-			} else {
-				grip1.bt = btBottomRight;
-				grip2.bt = btTopLeft;
-			}
+			grip1.bt = btBottomLeft;
+			grip2.bt = btTopRight;
 		}
-		grips_[0] = grip1;	
-		grips_[1] = grip2;	
+	} else {
+		if (  grip2.pt.y > grip1.pt.y  ) {
+			grip1.bt = btTopRight;
+			grip2.bt = btBottomLeft;
+		} else {
+			grip1.bt = btBottomRight;
+			grip2.bt = btTopLeft;
+		}
+	}
+	grips_[0] = grip1;	
+	grips_[1] = grip2;	
+}
+
+bool Line::isItemAtPos(int x, int y)
+{
+	int itemX = getX();
+	int itemY = getY();
+	int itemWidth = getWidth();
+	int itemHeight = getHeight();
+	int selectRadius = max(kSelectRadius, penSize_);
+	// Line equation
+	if ( endPoint_.x - startPoint_.x != 0 ) {
+		float k = float(endPoint_.y - startPoint_.y)/float(endPoint_.x - startPoint_.x);
+		float b = float(endPoint_.x* startPoint_.y - startPoint_.x*endPoint_.y)/float(endPoint_.x - startPoint_.x);
+		//LOG(INFO) << "k="<<k <<" b="<<b;
+		if(abs(y - (k*x + b)) <= selectRadius && x >= itemX-selectRadius && x <= itemX + itemWidth +  selectRadius ) {
+			return true;
+		}
 	}
 
-	bool Line::isItemAtPos(int x, int y)
-	{
-		int itemX = getX();
-		int itemY = getY();
-		int itemWidth = getWidth();
-		int itemHeight = getHeight();
-		int selectRadius = max(kSelectRadius, penSize_);
-		// Line equation
-		if ( endPoint_.x - startPoint_.x != 0 ) {
-			float k = float(endPoint_.y - startPoint_.y)/float(endPoint_.x - startPoint_.x);
-			float b = float(endPoint_.x* startPoint_.y - startPoint_.x*endPoint_.y)/float(endPoint_.x - startPoint_.x);
-			//LOG(INFO) << "k="<<k <<" b="<<b;
-			if(abs(y - (k*x + b)) <= selectRadius && x >= itemX-selectRadius && x <= itemX + itemWidth +  selectRadius ) {
-				return true;
-			}
+	if ( endPoint_.y - startPoint_.y != 0 ) {
+		float k = float(endPoint_.x - startPoint_.x)/float(endPoint_.y - startPoint_.y);
+		float b = float(endPoint_.y* startPoint_.x - startPoint_.y*endPoint_.x)/float(endPoint_.y - startPoint_.y);
+		//LOG(INFO) << "k="<<k <<" b="<<b;
+		if(abs(x - (k*y + b)) <= selectRadius && y >= itemY-selectRadius && y <= itemY + itemHeight +  selectRadius) {
+			return true;
 		}
-
-		if ( endPoint_.y - startPoint_.y != 0 ) {
-			float k = float(endPoint_.x - startPoint_.x)/float(endPoint_.y - startPoint_.y);
-			float b = float(endPoint_.y* startPoint_.x - startPoint_.y*endPoint_.x)/float(endPoint_.y - startPoint_.y);
-			//LOG(INFO) << "k="<<k <<" b="<<b;
-			if(abs(x - (k*y + b)) <= selectRadius && y >= itemY-selectRadius && y <= itemY + itemHeight +  selectRadius) {
-				return true;
-			}
-		}
-		return false;
 	}
+	return false;
+}
+
+ImageEditor::ElementType Line::getType() const
+{
+	return etLine;
+}
 
 TextElement::TextElement( Canvas* canvas, InputBox* inputBox, int startX, int startY, int endX,int endY ) :MovableElement(canvas) {
 	startPoint_.x = startX;
@@ -189,7 +194,7 @@ void TextElement::resize(int width, int height)
 {
 	MovableElement::resize(width,height);
 	if ( inputBox_ ) {
-		inputBox_->resize(getX()+1, getY()+1, getWidth(),getHeight(), grips_);
+		inputBox_->resize(getX()+1, getY()+1, width,height, grips_);
 		inputBox_->invalidate();
 		canvas_->updateView();
 	}
@@ -202,6 +207,7 @@ void TextElement::setInputBox(InputBox* inputBox)
 	inputBox_->onTextChanged.bind(this, &TextElement::onTextChanged);
 	inputBox_->onEditCanceled.bind(this, &TextElement::onEditCanceled);
 	inputBox_->onEditFinished.bind(this, &TextElement::onEditFinished);
+	inputBox_->onResized.bind(this, &TextElement::onControlResized);
 }
 
 InputBox* TextElement::getInputBox() const
@@ -222,6 +228,11 @@ void TextElement::onEditCanceled()
 void TextElement::onEditFinished()
 {
 	inputBox_->show(false);
+}
+
+void TextElement::onControlResized(int w, int h)
+{
+	resize(w, h);
 }
 
 void TextElement::setTextColor()
@@ -391,6 +402,11 @@ RECT Rectangle::getPaintBoundingRect()
 	return rc;
 }
 
+ImageEditor::ElementType Rectangle::getType() const
+{
+	return etRectangle;
+}
+
 Arrow::Arrow(Canvas* canvas,int startX, int startY, int endX,int endY) : Line(canvas, startX, startY, endX, endY)
 {
 
@@ -430,6 +446,11 @@ RECT Arrow::getPaintBoundingRect()
 	return res;
 }
 
+ImageEditor::ElementType Arrow::getType() const
+{
+	return etArrow;
+}
+
 Selection::Selection(Canvas* canvas, int startX, int startY, int endX,int endY) : MovableElement(canvas)
 {
 
@@ -454,6 +475,11 @@ FilledRectangle::FilledRectangle(Canvas* canvas, int startX, int startY, int end
 {
 }
 
+
+ImageEditor::ElementType FilledRectangle::getType() const
+{
+	return etBlurringRectangle;
+}
 
 BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY) : MovableElement(canvas)
 {
@@ -532,9 +558,19 @@ void RoundedRectangle::render(Painter* gr)
 	gr->SetPixelOffsetMode(oldPOM);
 }
 
+ImageEditor::ElementType RoundedRectangle::getType() const
+{
+	return etRoundedRectangle;
+}
+
 FilledRoundedRectangle::FilledRoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY) : RoundedRectangle(canvas, startX, startY, endX,endY, true)
 {
 
+}
+
+ImageEditor::ElementType FilledRoundedRectangle::getType() const
+{
+	return etFilledRoundedRectangle;
 }
 
 Ellipse::Ellipse(Canvas* canvas, bool filled /*= false */) : MovableElement(canvas)
@@ -595,6 +631,11 @@ void Ellipse::createGrips()
 	grips_.erase(grips_.begin() + btBottomRight);
 }
 
+ImageEditor::ElementType Ellipse::getType() const
+{
+	return etEllipse;
+}
+
 bool Ellipse::isItemAtPos(int x, int y)
 {
 	using namespace Gdiplus;
@@ -614,6 +655,11 @@ bool Ellipse::isItemAtPos(int x, int y)
 FilledEllipse::FilledEllipse(Canvas* canvas) : Ellipse(canvas, true)
 {
 
+}
+
+ImageEditor::ElementType FilledEllipse::getType() const
+{
+	return etFilledEllipse;
 }
 
 }

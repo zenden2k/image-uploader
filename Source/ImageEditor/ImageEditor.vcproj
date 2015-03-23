@@ -110,7 +110,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)Build\ImageEditor\$(ConfigurationName)"
-			IntermediateDirectory="$(SolutionDir)Build\Temp\$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)Build\Temp\ImageEditor\$(ConfigurationName)"
 			ConfigurationType="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
@@ -143,7 +143,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP$(NUMBER_OF_PROCESSORS)"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Source\&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;NDEBUG;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0110"
+				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;NDEBUG;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -312,6 +312,14 @@
 				Name="Gui"
 				>
 				<File
+					RelativePath=".\Gui\ColorsDelegate.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Gui\ColorsDelegate.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Gui\GuiTools.cpp"
 					>
 				</File>
@@ -367,6 +375,14 @@
 			<Filter
 				Name="Core"
 				>
+				<File
+					RelativePath="..\Core\AppParams.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Core\AppParams.h"
+					>
+				</File>
 				<File
 					RelativePath="..\Core\Logging.cpp"
 					>
@@ -428,6 +444,98 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="DrawingTools"
+				>
+				<File
+					RelativePath=".\DrawingTools\AbstractDrawingTool.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\AbstractDrawingTool.h"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\BlurTool.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\BlurTool.h"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\BrushTool.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\BrushTool.h"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\ColorPickerTool.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\ColorPickerTool.h"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\CropTool.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\CropTool.h"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\MarkerTool.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\MarkerTool.h"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\MoveAndResizeTool.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\MoveAndResizeTool.h"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\PenTool.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\PenTool.h"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\SelectionTool.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\SelectionTool.h"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\TextTool.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\TextTool.h"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\VectorElementTool.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawingTools\VectorElementTool.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -462,11 +570,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\ImageEditor\resource.h"
+				RelativePath="..\resource.h"
 				>
 			</File>
 			<File
-				RelativePath="..\resource.h"
+				RelativePath=".\Source\ImageEditor\resource.h"
 				>
 			</File>
 			<File
@@ -479,11 +587,11 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;jpg;jpeg;jpe;manifest"
 			>
 			<File
-				RelativePath="..\res\ImageEditor\colorpicker.cur"
+				RelativePath=".\res\ImageEditor\colorpicker.cur"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\colorpicker.cur"
+				RelativePath="..\res\ImageEditor\colorpicker.cur"
 				>
 			</File>
 			<File
@@ -579,11 +687,11 @@
 				>
 			</File>
 			<File
-				RelativePath="res\icon_dropdown.ico"
+				RelativePath="..\res\icon_dropdown.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\res\icon_dropdown.ico"
+				RelativePath="res\icon_dropdown.ico"
 				>
 			</File>
 			<File

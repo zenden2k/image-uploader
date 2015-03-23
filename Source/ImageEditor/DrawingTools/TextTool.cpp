@@ -49,12 +49,12 @@ void TextTool::endDraw( int x, int y ) {
 
 	int width = currentElement_->getWidth();
 	int height = currentElement_->getHeight();
-	if (  width < 100 ) {
-		width = 100;
+	if (  width < 300 ) {
+		width = 300;
 	}
 
-	if ( height < 25 ) {
-		height = 25;
+	if ( height < 30 ) {
+		height = 30;
 	}
 	currentElement_->resize(width, height);
 	int elX = currentElement_->getX();

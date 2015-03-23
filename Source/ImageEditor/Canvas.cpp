@@ -845,9 +845,9 @@ InputBox* Canvas::getInputBox( const RECT& rect ) {
 		RECT rc = rect;
 		rc.left++;
 		rc.top++;
-		LoadLibrary(CRichEditCtrl::GetLibraryName());
-		HWND wnd = inputBox_->Create( parentWindow_, rc, _T(""), WS_VISIBLE | WS_CHILD /*|ES_MULTILINE|ES_AUTOHSCROLL|ES_AUTOVSCROLL|  ES_WANTRETURN*/
-			/*|  ES_NOHIDESEL | ES_LEFT */,WS_EX_TRANSPARENT );
+		
+		HWND wnd = inputBox_->Create( parentWindow_, rc, _T(""), WS_VISIBLE | WS_CHILD |ES_MULTILINE|ES_AUTOHSCROLL|ES_AUTOVSCROLL|  ES_WANTRETURN
+			|  ES_NOHIDESEL /*| ES_LEFT */,WS_EX_TRANSPARENT );
 	inputBox_->SetEventMask(ENM_CHANGE);
 		inputBox_->SetWindowPos(HWND_TOP,0,0,0,0, SWP_NOSIZE|SWP_NOMOVE);
 		

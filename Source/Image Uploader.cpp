@@ -188,7 +188,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 							if ( timestamp >= 0  ) {
 								root.SetAttribute("TimeStamp", timestamp-1);
 								xml.SaveToFile(updateFile);
-								CmdLine.AddParam(L"update");
+								CmdLine.AddParam(L"/update");
 							}
 						}
 					}

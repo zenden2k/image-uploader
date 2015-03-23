@@ -6,6 +6,7 @@
 #include "../MovableElement.h"
 #include <stdint.h>
 #include "AbstractDrawingTool.h"
+#include "BrushTool.h"
 namespace ImageEditor {
 
 	class Canvas;

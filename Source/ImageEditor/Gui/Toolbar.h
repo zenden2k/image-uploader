@@ -76,6 +76,8 @@ public:
 		MESSAGE_HANDLER( WM_LBUTTONUP, OnLButtonUp )
 		MESSAGE_HANDLER( WM_RBUTTONUP, OnRButtonUp )
 		MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
+		MESSAGE_HANDLER( WM_KEYDOWN, OnKeyDown )
+		MESSAGE_HANDLER( WM_KEYUP, OnKeyUp )
 		MESSAGE_HANDLER( WM_ACTIVATE, OnActivate )
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnColorStatic)
 		MESSAGE_HANDLER(WM_HSCROLL , OnHScroll)
@@ -103,6 +105,8 @@ public:
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	SIZE CalcItemSize(int index);
 	int AutoSize();

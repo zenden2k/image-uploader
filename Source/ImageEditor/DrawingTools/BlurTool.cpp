@@ -23,6 +23,7 @@ BlurTool::BlurTool(Canvas* canvas) : BrushTool(canvas)
 
 void BlurTool::drawLine(int x0, int y0, int x1, int y1)
 {
+	using namespace Gdiplus;
 	Graphics *gr = canvas_->currentDocument()->getGraphicsObject();
 	gr->SetClip(&affectedRegion_, CombineModeExclude);
 	if ( y1 < y0 ) {
@@ -126,6 +127,7 @@ void BlurTool::drawLine(int x0, int y0, int x1, int y1)
 
 void BlurTool::endDraw(int x, int y)
 {
+	using namespace Gdiplus;
 	Graphics *gr = canvas_->currentDocument()->getGraphicsObject();
 
 	gr->SetClip(Rect(0,0,canvas_->getWidth(), canvas_->getHeigth()));

@@ -361,6 +361,18 @@ LRESULT Toolbar::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
 }
 
 
+LRESULT Toolbar::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = true;
+	return ::SendMessage(GetParent(), uMsg, wParam, lParam);
+}
+
+LRESULT Toolbar::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = true;
+	return ::SendMessage(GetParent(), uMsg, wParam, lParam);
+}
+
 LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	int xPos = GET_X_LPARAM(lParam); 

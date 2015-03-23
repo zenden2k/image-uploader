@@ -117,10 +117,9 @@ bool CThumbSettingsPage::Apply()
 	params_.Quality = GetDlgItemInt(IDC_THUMBQUALITYEDIT);
 	params_.ResizeMode = SendDlgItemMessage(IDC_WIDTHRADIO, BM_GETCHECK) == FALSE ? ThumbCreatingParams::trByHeight : ThumbCreatingParams::trByWidth;
 	params_.Text = GuiTools::GetWindowText(GetDlgItem(IDC_THUMBTEXT));
-	params_.Size = GetDlgItemInt(IDC_WIDTHEDIT);
-   params_.Size = GetDlgItemInt(IDC_HEIGHTEDIT);
+	params_.Size  = params_.ResizeMode == ThumbCreatingParams::trByWidth ?  GetDlgItemInt(IDC_WIDTHEDIT) : GetDlgItemInt(IDC_HEIGHTEDIT);
 	params_.BackgroundColor = ThumbBackground.GetColor();
-	ImageUploadParams iup = Settings.imageServer.getImageUploadParams();
+	ImageUploadParams iup = Settings.imageServer.getImageUploadParamsRef();
 	iup.setThumb(params_);
 	Settings.imageServer.setImageUploadParams(iup);
 

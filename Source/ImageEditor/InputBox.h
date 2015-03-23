@@ -19,6 +19,7 @@ class InputBox {
 		fastdelegate::FastDelegate2<int, int> onSizeChanged;
 		fastdelegate::FastDelegate0<void> onEditCanceled;
 		fastdelegate::FastDelegate0<void> onEditFinished;
+		fastdelegate::FastDelegate2<int,int> onResized;
 
 };
 }

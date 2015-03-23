@@ -17,7 +17,7 @@ class ColorsDelegate;
 class ImageEditorWindow : public CWindowImpl<ImageEditorWindow>
 {
 public:
-	DECLARE_WND_CLASS(_T("CMainFrame"))
+	DECLARE_WND_CLASS(_T("ImageEditorWindow"))
 	enum { ID_UNDO = 1000, ID_TEXT = 1001,  ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE , ID_SAVE, ID_SAVEAS,
 		ID_PEN = 1600, 
 		ID_BRUSH, ID_MARKER,ID_BLUR, ID_BLURRINGRECTANGLE, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_ROUNDEDRECTANGLE, ID_ELLIPSE,

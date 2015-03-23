@@ -357,6 +357,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	SetWindowText(TR("Редактор изображений"));
+	LoadLibrary(CRichEditCtrl::GetLibraryName());
 	return 0;
 }
 
@@ -491,7 +492,7 @@ LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARA
 		rectangleMenu.CreatePopupMenu();
 		rectangleMenu.AppendMenu(MF_STRING, ID_FILLEDRECTANGLE, TR("Заполненный прямоугольник"));
 		rectangleMenu.AppendMenu(MF_STRING, ID_FILLEDROUNDEDRECTANGLE, TR("Скругленный прямоугольник"));
-		rectangleMenu.AppendMenu(MF_STRING, ID_FILLEDELLIPSE, TR("Эллипс"));
+		rectangleMenu.AppendMenu(MF_STRING, ID_FILLEDELLIPSE, TR("Заполненный эллипс"));
 		TPMPARAMS excludeArea;
 		ZeroMemory(&excludeArea, sizeof(excludeArea));
 		excludeArea.cbSize = sizeof(excludeArea);
@@ -694,6 +695,7 @@ void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
 	horizontalToolbar_.SetWindowPos(0, horToolbarPos.x, horToolbarPos.y, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);
 	//horizontalToolbar_.SetWindowPos(0, horToolbarPos.x, horToolbarPos.y, 0, 0, SWP_NOSIZE);
 	verticalToolbar_.SetWindowPos(0, vertToolbarPos.x, vertToolbarPos.y, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);
+	SetActiveWindow();
 
 }
 
