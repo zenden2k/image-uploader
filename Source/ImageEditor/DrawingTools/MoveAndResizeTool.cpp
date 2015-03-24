@@ -42,7 +42,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 			prevPaintBoundingRect_ = currentElement_->getPaintBoundingRect();
 			return;
 		}
-		MovableElement* el = canvas_->getElementAtPosition(x, y);
+		MovableElement* el = canvas_->getElementAtPosition(x, y, elementType_== etCrop ? etCrop : etNone );
 		if ( el && ( elementType_ == el->getType() ||  ( elementType_== etNone  && el->getType()  != etCrop )) ) {
 			//currentElement_->setSelected(true);
 			canvas_->unselectAllElements();

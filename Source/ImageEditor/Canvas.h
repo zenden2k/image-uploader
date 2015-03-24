@@ -93,7 +93,7 @@ class Canvas {
 		std_tr::shared_ptr<Gdiplus::Bitmap> getBitmapForExport();
 	
 		float getZoomFactor() const;
-		MovableElement* getElementAtPosition(int x, int y);
+		MovableElement* getElementAtPosition(int x, int y, ElementType et = etNone);
 		int deleteElementsByType(ElementType elementType);
 		int getWidth() const;
 		int getHeigth() const;

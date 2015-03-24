@@ -170,18 +170,13 @@ TextElement::~TextElement()
 
 void TextElement::render(Painter* gr) {
 	using namespace Gdiplus;
-	if ( !gr ) {
+	if ( !gr ) { 
 		return;
 	}
-	/*Gdiplus::Pen pen( Color( 10, 10, 10) );
-	int x = std::min<>( startPoint_.x, endPoint_.x );
-	int y = std::min<>( startPoint_.y, endPoint_.y );
-	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
-	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;*/
+
 	drawDashedRectangle_ = isSelected() || !inputBox_;
-	//gr->DrawRectangle( &pen, x, y, width, height );
 	if ( inputBox_  && !inputBox_->isVisible()) {
-		inputBox_->render(gr, canvas_->getBufferBitmap(), Rect(getX(),getY(),getWidth(),getHeight()));
+		inputBox_->render(gr, canvas_->getBufferBitmap(), Rect(getX()+2,getY()+1,getWidth(),getHeight()));
 	}
 }
 
@@ -228,11 +223,15 @@ void TextElement::onTextChanged(TCHAR *text)
 void TextElement::onEditCanceled()
 {
 	inputBox_->show(false);
+	setSelected(false);
+	canvas_->updateView(getPaintBoundingRect());
 }
 
 void TextElement::onEditFinished()
 {
 	inputBox_->show(false);
+	setSelected(false);
+	canvas_->updateView(getPaintBoundingRect());
 }
 
 void TextElement::onControlResized(int w, int h)

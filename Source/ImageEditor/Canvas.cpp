@@ -730,11 +730,11 @@ float Canvas::getZoomFactor() const
 	return zoomFactor_;
 }
 
-MovableElement* Canvas::getElementAtPosition(int x, int y)
+MovableElement* Canvas::getElementAtPosition(int x, int y, ElementType et)
 {
 	int count = elementsOnCanvas_.size();
 	for ( int i = count-1; i >=0 ; i-- ) {
-		if ( elementsOnCanvas_[i]->getType() != etCrop ) {	
+		if ( elementsOnCanvas_[i]->getType() != etCrop && ( et == etNone || et == elementsOnCanvas_[i]->getType()) ) {	
 			if ( elementsOnCanvas_[i]->isItemAtPos(x,y) ) {
 				return  elementsOnCanvas_[i];
 			}
