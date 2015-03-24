@@ -38,6 +38,7 @@ protected:
 	POINT originalStartPoint_;
 	POINT originalEndPoint_;
 	RECT prevPaintBoundingRect_;
+	bool allowMovingElements_;
 
 };
 

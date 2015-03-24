@@ -279,6 +279,7 @@ bool CUpdateManager::internal_load_update(CString name)
 
 	CUpdateInfo remotePackage;
 	NetworkClient nm;
+	nm.setTreatErrorsAsWarnings(true);
 	IU_ConfigureProxy(nm);	
 
 	CString url = localPackage.updateUrl();

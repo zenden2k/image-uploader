@@ -54,9 +54,11 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
 	TRC(IDC_FOREGROUNDWHENSHOOTING, "Выводить окно на передний план при выборе мышью");
 	TRC(IDC_PARAMETERSHINTLABEL, "%y - год, %m - месяц, %d - день\n%h - час, %n - минута, %s - секунда\n %i - порядковый номер,\n%width% - ширина,  %height% - высота изображения");
 	TRC(IDC_ADDSHADOW, "Добавлять тень окна");
-	TRC(IDC_REMOVECORNERS, "Удалять уголки у окна");
+	CString removeCornersText = TR("Удалять уголки у окна")+CString(_T(" (Windows Vista/7)"));
+	SetDlgItemText(IDC_REMOVECORNERS, removeCornersText);
 	TRC(IDC_REMOVEBACKGROUND, "Удалять фон окна");
 	TRC(IDC_SHORTENURLFROMTRAYCHECKBOX, "Сокращать ссылки при быстрой загрузке (по горячей клавише)");
+	TRC(IDC_AEROONLY, "Только для Aero (Windows Vista и новее)");
 	
 	SetDlgItemText(IDC_SCREENSHOTFILENAMEEDIT, Settings.ScreenshotSettings.FilenameTemplate);
 

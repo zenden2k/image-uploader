@@ -5,6 +5,8 @@
 #include "ImageEditorView.h"
 #include "ImageEditor/Document.h"
 #include "Toolbar.h"
+#include <Core/Utils/CoreTypes.h>
+#include <GdiPlus.h>
 // MainFrm.h : interface of the CMainFrame class
 //
 /////////////////////////////////////////////////////////////////////////////
@@ -13,6 +15,8 @@
 namespace ImageEditor {
 
 class ColorsDelegate;
+
+class ConfigurationProvider;
 
 class ImageEditorWindow : public CWindowImpl<ImageEditorWindow>
 {
@@ -46,14 +50,14 @@ public:
 
 	ImageEditor::CImageEditorView m_view;
 
-	ImageEditorWindow(Gdiplus::Bitmap * bitmap, bool hasTransparentPixels);
-	ImageEditorWindow(CString imageFileName);
+	ImageEditorWindow(Gdiplus::Bitmap * bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider/* = 0*/);
+	ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider/* = 0*/);
 	~ImageEditorWindow();
 	void setInitialDrawingTool(Canvas::DrawingToolType dt);
 	void showUploadButton(bool show);
 	void showAddToWizardButton(bool show);
 	void setSuggestedFileName(CString string);
-	ZThread::CountedPtr<Gdiplus::Bitmap> getResultingBitmap();
+	std_tr::shared_ptr<Gdiplus::Bitmap> getResultingBitmap();
 
 	DialogResult DoModal(HWND parent, WindowDisplayMode mode = wdmAuto);
 
@@ -67,6 +71,7 @@ public:
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		MESSAGE_HANDLER( WM_KEYDOWN, OnKeyDown )
+		MESSAGE_HANDLER( WM_KEYUP, OnKeyUp )
 		MESSAGE_HANDLER( WM_SIZE, OnSize )
 		MESSAGE_HANDLER( WM_PAINT, OnPaint )
 		MESSAGE_HANDLER( WM_HSCROLL, OnHScroll )
@@ -104,6 +109,7 @@ public:
 		LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 		LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		LRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnDropDownClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -141,7 +147,8 @@ public:
 		CString outFileName_;
 		HWND cropToolTip_;
 		int imageQuality_;
-		ZThread::CountedPtr<Gdiplus::Bitmap> resultingBitmap_;
+		std_tr::shared_ptr<Gdiplus::Bitmap> resultingBitmap_;
+		ConfigurationProvider* configurationProvider_; 
 		void createToolbars();
 		void OnCropChanged(int x, int y, int w, int h);
 		void OnCropFinished(int x, int y, int w, int h);
@@ -156,6 +163,28 @@ public:
 		bool createTooltip();
 		void updatePixelLabel();
 		void OnSaveAs();
+		void saveSettings();
+};
+
+class ConfigurationProvider {
+public:
+	ConfigurationProvider() {
+		penSize_ = 12;
+	}
+	virtual ~ConfigurationProvider() {
+
+	}
+	virtual void saveConfiguration() {};
+	void setForegroundColor(Gdiplus::Color color) { foregroundColor_ = color; }
+	Gdiplus::Color foregroundColor() const { return foregroundColor_; }
+	void setBackgroundColor(Gdiplus::Color color) { backgroundColor_ = color; }
+	Gdiplus::Color backgroundColor() const { return backgroundColor_; }
+	void setPenSize(int size) { penSize_ = size; }
+	int penSize() const { return penSize_;}
+protected:
+	Gdiplus::Color foregroundColor_;
+	Gdiplus::Color backgroundColor_;
+	int penSize_;
 };
 
 }

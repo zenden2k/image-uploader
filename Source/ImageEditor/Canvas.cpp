@@ -213,6 +213,9 @@ void  Canvas::setCallback(Callback * callback) {
 }
 
 void Canvas::setPenSize(int size) {
+	if ( size < 1 || size > kMaxPenSize ) {
+		return;
+	}
 	penSize_ = size;
 	if ( currentDrawingTool_ ) {
 		currentDrawingTool_->setPenSize(size);
@@ -236,12 +239,14 @@ int Canvas::getPenSize() const
 
 void Canvas::beginPenSizeChanging()
 {
-	originalPenSize_ = penSize_;
+	if ( !originalPenSize_ ) {
+		originalPenSize_ = penSize_;
+	}
 }
 
 void Canvas::endPenSizeChanging(int penSize) {
 	penSize_ = penSize_;
-	if ( originalPenSize_ == 0 ) {
+	if ( originalPenSize_ == 0 || originalPenSize_ == penSize_ ) {
 		return ;
 	}
 	int updatedElementsCount = 0;
@@ -264,7 +269,7 @@ void Canvas::endPenSizeChanging(int penSize) {
 	if ( updatedElementsCount ) {
 		undoHistory_.push(uhi);
 	}
-
+	originalPenSize_= 0;
 }
 
 void Canvas::setForegroundColor(Gdiplus::Color color)
@@ -557,7 +562,7 @@ void Canvas::updateView( RECT boundingRect ) {
 
 void Canvas::createDoubleBuffer() {
 //	delete buffer_;
-	buffer_ = ZThread::CountedPtr<Gdiplus::Bitmap>(new Gdiplus::Bitmap( canvasWidth_, canvasHeight_, PixelFormat32bppARGB  ));
+	buffer_ = std_tr::shared_ptr<Gdiplus::Bitmap>(new Gdiplus::Bitmap( canvasWidth_, canvasHeight_, PixelFormat32bppARGB  ));
 	bufferedGr_ = new Gdiplus::Graphics( &*buffer_ );
 }
 
@@ -692,7 +697,7 @@ void Canvas::addUndoHistoryItem(const UndoHistoryItem& item)
 	undoHistory_.push(item);
 }
 
-ZThread::CountedPtr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
+std_tr::shared_ptr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
 {
 	using namespace Gdiplus;
 	Rect rc(0,0, getWidth(), getHeigth());
@@ -717,7 +722,7 @@ ZThread::CountedPtr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
 	Bitmap* bm = new Bitmap(cropWidth, cropHeight);
 	Graphics gr(bm);
 	gr.DrawImage( &*buffer_, 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel );
-	return ZThread::CountedPtr<Gdiplus::Bitmap>(bm);
+	return std_tr::shared_ptr<Gdiplus::Bitmap>(bm);
 }
 
 float Canvas::getZoomFactor() const
@@ -848,7 +853,7 @@ InputBox* Canvas::getInputBox( const RECT& rect ) {
 		
 		HWND wnd = inputBox_->Create( parentWindow_, rc, _T(""), WS_VISIBLE | WS_CHILD |ES_MULTILINE|ES_AUTOHSCROLL|ES_AUTOVSCROLL|  ES_WANTRETURN
 			|  ES_NOHIDESEL /*| ES_LEFT */,WS_EX_TRANSPARENT );
-	inputBox_->SetEventMask(ENM_CHANGE);
+	//inputBox_->SetEventMask(ENM_CHANGE);
 		inputBox_->SetWindowPos(HWND_TOP,0,0,0,0, SWP_NOSIZE|SWP_NOMOVE);
 		
 	} /*else {

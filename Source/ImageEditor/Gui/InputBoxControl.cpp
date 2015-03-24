@@ -30,7 +30,6 @@ InputBoxControl::InputBoxControl() {
 }
 
 InputBoxControl::~InputBoxControl() {
-	DestroyWindow();
 	//Detach();
 }
 
@@ -172,6 +171,8 @@ LRESULT InputBoxControl::OnRequestResize(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 		//LOG(INFO) << sz.cx << " " << sz.cy;
 		onResized(sz.cx, sz.cy);
 	}
+	SetEventMask(ENM_CHANGE|ENM_REQUESTRESIZE);
+
 	//*SetWindowPos(0, 0,0, pReqResize->rc.right - pReqResize->rc.left, pReqResize->rc.bottom - pReqResize->rc.top);
 	return 0;
 }

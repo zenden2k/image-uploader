@@ -16,6 +16,7 @@ namespace ImageEditor {
 
 VectorElementTool::VectorElementTool( Canvas* canvas, ElementType type ) : MoveAndResizeTool( canvas, type ) {
 	currentElement_       = NULL;
+	allowMovingElements_ = false;
 }
 
 

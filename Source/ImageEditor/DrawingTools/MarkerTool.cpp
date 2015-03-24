@@ -63,7 +63,7 @@ void MarkerTool::render( Painter* gr ) {
 
 ImageEditor::CursorType MarkerTool::getCursor(int x, int y)
 {
-	return ctCross;
+	return ctBrush;
 }
 
 void MarkerTool::drawLine(int x0, int y0, int x1, int y1) {
@@ -105,7 +105,7 @@ void MarkerTool::drawLine(int x0, int y0, int x1, int y1) {
 		//	MessageBox(0,0,0,0);
 		for( int y = yStart; y <= yEnd; y++ ) {
 			x = x0;
-			RECT rc = {x - penSize_, y - penSize_, penSize_*2, penSize_*2 };
+			RECT rc = {x - penSize_/2, y - penSize_/2, penSize_, penSize_ };
 			rc.right += rc.left;
 			rc.bottom += rc.top;
 			UnionRect(&updatedRect, &updatedRect, &rc);
@@ -126,7 +126,7 @@ void MarkerTool::drawLine(int x0, int y0, int x1, int y1) {
 	} else if ( y1 == y0 ) {
 		for( int x = xStart; x <= xEnd; x++ ) {
 			int y = y0;
-			RECT rc = {x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2 };
+			RECT rc = {x - penSize_/2, y - penSize_/2, penSize_, penSize_ };
 			rc.right += rc.left;
 			rc.bottom += rc.top;
 			UnionRect(&updatedRect, &updatedRect, &rc);
@@ -140,7 +140,7 @@ void MarkerTool::drawLine(int x0, int y0, int x1, int y1) {
 
 
 
-			RECT rc = {x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2 };
+			RECT rc = {x - penSize_/2, y - penSize_/2, penSize_ , penSize_ };
 			rc.right += rc.left;
 			rc.bottom += rc.top;
 			UnionRect(&updatedRect, &updatedRect, &rc);
@@ -248,7 +248,7 @@ void MarkerTool::createCircle()
 	delete[] circleData_;
 	circleData_ = 0;
 	circleStride_ = 0;
-	Bitmap * circle = new Bitmap(penSize_*2, penSize_*2, PixelFormat32bppARGB);
+	Bitmap * circle = new Bitmap(penSize_, penSize_, PixelFormat32bppARGB);
 	Graphics gr2(circle);
 	SolidBrush br(Color(255,255,0));
 	gr2.FillEllipse( &br, 0, 0, circle->GetWidth(), circle->GetHeight());

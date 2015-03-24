@@ -20,7 +20,7 @@
 #include "WizardDlg.h"
 
 #include <io.h>
-#include "Core/ImageConverter.h"
+#include "Core/Images/ImageConverter.h"
 #include "Func/Base.h"
 #include "Func/HistoryManager.h"
 
@@ -50,7 +50,8 @@
 #include <Func/IuCommonFunctions.h>
 #include <Gui/Dialogs/QuickSetupDlg.h>
 #include <ImageEditor/Gui/ImageEditorWindow.h>
-#include <zthread/CountedPtr.h>
+#include <Func/ImageEditorConfigurationProvider.h>
+
 using namespace Gdiplus;
 // CWizardDlg
 CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
@@ -1746,7 +1747,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 	
 	CString buf; // file name buffer
 	using namespace ZThread;
-	ZThread::CountedPtr<Gdiplus::Bitmap> result;
+	std_tr::shared_ptr<Gdiplus::Bitmap> result;
 	CWindowHandlesRegion::WindowCapturingFlags wcfFlags;
 	wcfFlags.AddShadow = Settings.ScreenshotSettings.AddShadow;
 	wcfFlags.RemoveBackground = 	Settings.ScreenshotSettings.RemoveBackground;
@@ -1758,7 +1759,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 	{
 		engine.setDelay(WindowHidingDelay + Settings.ScreenshotSettings.Delay*1000);
 		engine.captureScreen();
-		result = CountedPtr<Gdiplus::Bitmap>(engine.capturedBitmap());
+		result = std_tr::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
 	}
 	else if (mode == cmActiveWindow)
 	{
@@ -1769,12 +1770,12 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 		winRegion.setWindowCapturingFlags(wcfFlags);
 		winRegion.SetWindowHidingDelay(Settings.ScreenshotSettings.WindowHidingDelay);
 		engine.captureRegion(&winRegion);
-		result = CountedPtr<Gdiplus::Bitmap>(engine.capturedBitmap());
+		result = std_tr::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
 	}
 	else if(engine.captureScreen())
 	{
 		if ( mode == cmRectangles ) {
-			result = CountedPtr<Gdiplus::Bitmap>(engine.capturedBitmap());
+			result = std_tr::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
 		} else {
 			RegionSelect.Parent = m_hWnd;
 			SelectionMode selMode;
@@ -1786,7 +1787,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 				selMode = smWindowHandles;
 
 			RegionSelect.m_SelectionMode = selMode;
-			ZThread::CountedPtr<Gdiplus::Bitmap> res(engine.capturedBitmap());
+			std_tr::shared_ptr<Gdiplus::Bitmap> res(engine.capturedBitmap());
 			if(res)
 			{
 				HBITMAP gdiBitmap=0;
@@ -1811,7 +1812,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 							whr->setWindowCapturingFlags(wcfFlags);
 						}
 						engine.captureRegion(rgn);	
-						result = CountedPtr<Gdiplus::Bitmap>(engine.capturedBitmap());
+						result = std_tr::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
 						DeleteObject(gdiBitmap);
 					}
 				}
@@ -1823,9 +1824,10 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 	ImageEditorWindow::DialogResult dr = ImageEditorWindow::drCancel;
 	CString suggestingFileName = GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
 
-	if(result)
+	if(result && ( mode == cmRectangles || (!m_bScreenshotFromTray && Settings.ScreenshotSettings.OpenInEditor ) || (m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_OPENINEDITOR) ))
 	{
-		ImageEditor::ImageEditorWindow imageEditor(&*result, mode == cmFreeform ||   mode == cmActiveWindow );
+		ImageEditorConfigurationProvider configProvider;
+		ImageEditor::ImageEditorWindow imageEditor(&*result, mode == cmFreeform ||   mode == cmActiveWindow, &configProvider);
 		imageEditor.setInitialDrawingTool(mode == cmRectangles ? ImageEditor::Canvas::dtCrop : ImageEditor::Canvas::dtBrush);
 		imageEditor.showUploadButton(m_bScreenshotFromTray);
 		imageEditor.setSuggestedFileName(suggestingFileName);

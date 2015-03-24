@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Core/Logging.h>
 #include <Func/WinUtils.h>
 #include <3rdpart/QColorQuantizer.h>
+#include <Core/Utils/StringUtils.h>
+#include <Core/Utils/CoreUtils.h>
 #include <math.h>
 #include <stdint.h>
 using namespace Gdiplus;
@@ -266,14 +268,6 @@ protected:
 	int height_;
 };
 
-#if !defined(_MSC_VER) || _MSC_VER < 1800 
-
-float round(float number)
-{
-	return number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5);
-}
-
-#endif
 
 int* boxesForGauss(float sigma, int n)  // standard deviation, number of boxes
 {
@@ -428,4 +422,27 @@ Gdiplus::Bitmap* LoadImageFromFileWithoutLocking(const WCHAR* fileName) {
 		src.UnlockBits(&srcData);
 	}
 	return dst;
+}
+
+Gdiplus::Color StringToColor(const std::string& str) {
+	if ( str.empty() ) {
+		return Gdiplus::Color();
+	}
+	if ( str[0] == '#' ) {
+		std::string res = IuStringUtils::Replace(res, "#", "0x");
+		return strtoul(res.c_str(), 0, 0);
+	} else if ( str.substr(0,4) == "rgba" && str.length() >= 14 ) {
+		std::vector<std::string> tokens;
+		IuStringUtils::Split(str.substr(5, str.length()-5 ),",", tokens,4);
+		if ( tokens.size() == 4 ) {
+			return Gdiplus::Color(round(atof(tokens[3].c_str())*255), atoi(tokens[0].c_str()), atoi(tokens[1].c_str()), atoi(tokens[2].c_str()));
+		}
+	} else if ( str.substr(0,4) == "rgb" && str.length() >= 13 ) {
+		std::vector<std::string> tokens;
+		IuStringUtils::Split(str.substr(4, str.length()-4 ),",", tokens,3);
+		if ( tokens.size() == 3 ) {
+			return Gdiplus::Color( atoi(tokens[0].c_str()), atoi(tokens[1].c_str()), atoi(tokens[2].c_str()));
+		}
+	}
+	return Gdiplus::Color();
 }

@@ -120,8 +120,8 @@ protected:
 	void drawItem(int itemIndex, Gdiplus::Graphics* gr, int, int y);
 	
 	bool trackMouse_;
-	float dpiScaleX;
-	float dpiScaleY;
+	float dpiScaleX_;
+	float dpiScaleY_;
 	Gdiplus::Bitmap* dropDownIcon_;
 	int itemMargin_;
 	int itemHorPadding_;

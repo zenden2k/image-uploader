@@ -25,6 +25,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include "CoreTypes.h"
 
+#if !defined(_MSC_VER) || _MSC_VER < 1800 
+
+long round(float number);
+#endif
+
+
 namespace IuCoreUtils
 {
 	// A version of fopen() function which supports utf8 file names

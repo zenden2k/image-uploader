@@ -30,6 +30,7 @@
 #include "Core/OutputCodeGenerator.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Core/Utils/StringUtils.h"
+#include <Core/AppParams.h>
 #include "Func/Settings.h"
 #include <Core/Logging.h>
 #ifdef _WIN32
@@ -644,6 +645,9 @@ mkdir(settingsFolder.c_str(), 0700);
 #endif
 
 #endif
+	AppParams* params = AppParams::instance();
+	params->setDataDirectory(dataFolder);
+	params->setSettingsDirectory(settingsFolder);
 
    std::cerr<<"Zenden Image Uploader console utility v"<< IU_CLI_VER <<" (based on IU v"<<_APP_VER<<" build "<<BUILD<<")"<<std::endl;
    if(! list.LoadFromFile(dataFolder + "servers.xml", Settings.ServersSettings))

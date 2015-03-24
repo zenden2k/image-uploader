@@ -8,7 +8,7 @@
 #include <vector>
 #include <Core/3rdpart/FastDelegate.h>
 #include <stack>
-#include <zthread/CountedPtr.h>
+#include <Core/Utils/CoreTypes.h>
 
 namespace ImageEditor {
 
@@ -90,7 +90,7 @@ class Canvas {
 		void setZoomFactor(float zoomFactor);
 		Gdiplus::Bitmap* getBufferBitmap();
 		void addUndoHistoryItem(const UndoHistoryItem& item);
-		ZThread::CountedPtr<Gdiplus::Bitmap> getBitmapForExport();
+		std_tr::shared_ptr<Gdiplus::Bitmap> getBitmapForExport();
 	
 		float getZoomFactor() const;
 		MovableElement* getElementAtPosition(int x, int y);
@@ -135,7 +135,7 @@ class Canvas {
 		void setCursor(CursorType cursor);
 		void renderInBuffer(Gdiplus::Rect  rect, bool forExport =false);
 
-		ZThread::CountedPtr<Gdiplus::Bitmap> buffer_;
+		std_tr::shared_ptr<Gdiplus::Bitmap> buffer_;
 		Document* doc_;
 		Gdiplus::Graphics* bufferedGr_;
 		float blurRadius_;

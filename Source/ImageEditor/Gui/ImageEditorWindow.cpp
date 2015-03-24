@@ -20,17 +20,19 @@ namespace ImageEditor {
 	
 
 
-ImageEditorWindow::ImageEditorWindow(Gdiplus::Bitmap * bitmap, bool hasTransparentPixels):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
+	ImageEditorWindow::ImageEditorWindow(Gdiplus::Bitmap * bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider ):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
 {
 	currentDoc_ =  new ImageEditor::Document(bitmap, hasTransparentPixels);
+	configurationProvider_ = configurationProvider;
 	init();
 	
 }
 
-ImageEditorWindow::ImageEditorWindow(CString imageFileName):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
+ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider ):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
 {
 	currentDoc_ = new ImageEditor::Document(imageFileName);
 	sourceFileName_ = imageFileName;
+	configurationProvider_ = configurationProvider;
 	suggestedFileName_ = myExtractFileName(sourceFileName_);
 	init();
 }
@@ -113,6 +115,7 @@ bool ImageEditorWindow::saveDocument()
 	}
 	if ( !outFileName_.IsEmpty() ) {
 		SaveImage(&*resultingBitmap_, outFileName_, sifDetectByExtension, imageQuality_);
+		canvas_->updateView();
 	}
 	return true;
 }
@@ -195,7 +198,7 @@ void ImageEditorWindow::setSuggestedFileName(CString string)
 	suggestedFileName_ = string;
 }
 
-ZThread::CountedPtr<Gdiplus::Bitmap> ImageEditorWindow::getResultingBitmap()
+std_tr::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::getResultingBitmap()
 {
 	return resultingBitmap_;
 }
@@ -277,6 +280,11 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 	canvas_ = new ImageEditor::Canvas( m_view );
 	canvas_->setSize( currentDoc_->getWidth(), currentDoc_->getHeight());
 	canvas_->setDocument( currentDoc_ );
+	if ( configurationProvider_ ) {
+		canvas_->setPenSize(configurationProvider_->penSize());
+		canvas_->setForegroundColor(configurationProvider_->foregroundColor());
+		canvas_->setBackgroundColor(configurationProvider_->backgroundColor());
+	}
 	m_view.setCanvas( canvas_ );
 	createToolbars();
 	RECT horToolbarRect;
@@ -343,14 +351,20 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 
 	CMessageLoop *loop = _Module.GetMessageLoop();
 	loop->Run();
+	saveSettings();
+	if ( parent ) {
+		::EnableWindow(parent, true);
+	}
+	ShowWindow(SW_HIDE);
+	if ( parent ) {
+		::SetActiveWindow(parent);
+	}
 	DestroyWindow();
 	if ( dialogResult_ == drCancel  ) {
 //		delete resultingBitmap_;
 		//resultingBitmap_ = 0;
 	}
-	if ( parent ) {
-		::EnableWindow(parent, true);
-	}
+	
 	return dialogResult_;
 }
 
@@ -453,6 +467,7 @@ LRESULT ImageEditorWindow::OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, L
 
 LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	 HKL englishLayout = LoadKeyboardLayout(_T("00000409"),0);
 	 if ( wParam == VK_ESCAPE ) {
 		EndDialog(drCancel);
 		return 0;
@@ -464,8 +479,32 @@ LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 			 }
 			 EndDialog(dr);
 		 }
+	 } else if ( wParam == VkKeyScanEx(']',englishLayout) ) {
+		 canvas_->beginPenSizeChanging();
+		 canvas_->setPenSize(canvas_->getPenSize()+1);
+		 horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
+		 updatePixelLabel();
+		 m_view.SendMessage(WM_SETCURSOR, (LPARAM)m_view.m_hWnd, 0);
+	 } else if ( wParam == VkKeyScanEx('[', englishLayout) ) {
+		 canvas_->beginPenSizeChanging();
+		 canvas_->setPenSize(canvas_->getPenSize()-1);
+		 horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
+		 updatePixelLabel();
+		 m_view.SendMessage(WM_SETCURSOR, (LPARAM)m_view.m_hWnd, 0);
+	 } else {
+		m_view.SendMessage(uMsg, wParam, lParam);
 	 }
-	m_view.SendMessage(uMsg, wParam, lParam);
+	return 0;
+}
+
+LRESULT ImageEditorWindow::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	HKL englishLayout = LoadKeyboardLayout(_T("00000409"),0);
+	if ( wParam == VkKeyScanEx('[', englishLayout) ||  wParam == VkKeyScanEx(']', englishLayout) ) {
+		canvas_->endPenSizeChanging(canvas_->getPenSize());
+	} else {
+		m_view.SendMessage(uMsg, wParam, lParam);	
+	}
 	return 0;
 }
 
@@ -841,6 +880,16 @@ void ImageEditorWindow::OnSaveAs()
 
 	outFileName_ = fd.m_szFileName;
 	saveDocument();
+}
+
+void ImageEditorWindow::saveSettings()
+{
+	if ( configurationProvider_ ) {
+		configurationProvider_->setPenSize(canvas_->getPenSize());
+		configurationProvider_->setForegroundColor(canvas_->getForegroundColor());
+		configurationProvider_->setBackgroundColor(canvas_->getBackgroundColor());
+		configurationProvider_->saveConfiguration();
+	}
 }
 
 LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)

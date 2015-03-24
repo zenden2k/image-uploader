@@ -59,6 +59,10 @@ class CFileQueueUploader
 			std::string serverName;
 			int64_t fileSize;
 			Task * uploadTask;
+			FileListItem() {
+				uploadTask = 0;
+				fileSize = 0;
+			}
 			//void * user_data;
 		};
 

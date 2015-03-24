@@ -3,7 +3,7 @@
 
 #include "atlheaders.h"
 #include <GdiPlus.h>
-#include "Images/Thumbnail.h"
+#include "Thumbnail.h"
 #include "Core/Utils/CoreTypes.h"
 
 

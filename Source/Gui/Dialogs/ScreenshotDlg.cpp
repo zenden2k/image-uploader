@@ -23,7 +23,7 @@
 #include "ScreenshotDlg.h"
 #include "LogWindow.h"
 #include "Func/Settings.h"
-
+#include <Gui/GuiTools.h>
 
 // CScreenshotDlg
 CScreenshotDlg::CScreenshotDlg()
@@ -33,6 +33,7 @@ CScreenshotDlg::CScreenshotDlg()
 
 CScreenshotDlg::~CScreenshotDlg()
 {
+	
 }
 
 BOOL SetClientRect(HWND hWnd, int x, int y)
@@ -62,6 +63,13 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	//CommandBox.AddString(TR("Закрыть"), 0, IDCANCEL,LOADICO16(IDI_CLOSE),true, 2);
 	
 	SetWindowText(TR("Снимок экрана"));
+	TRC(IDC_DELAYLABEL, "Задержка:");
+	TRC(IDC_SECLABEL, "сек");
+	TRC(IDC_OPENSCREENSHOTINEDITORCHECKBOX, "Открыть скриншот в редакторе");
+	GuiTools::SetCheck(m_hWnd, IDC_OPENSCREENSHOTINEDITORCHECKBOX, Settings.ScreenshotSettings.OpenInEditor);
+	SetDlgItemInt(IDC_DELAYEDIT, Settings.ScreenshotSettings.Delay);
+	SendDlgItemMessage(IDC_DELAYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)30, (short)0) );
+
 	return 0; 
 }
 
@@ -138,4 +146,11 @@ LRESULT CScreenshotDlg::OnBnClickedWindowHandlesRegion(WORD /*wNotifyCode*/, WOR
 CaptureMode CScreenshotDlg::captureMode() const
 {
 	return m_CaptureMode;
+}
+
+LRESULT CScreenshotDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	Settings.ScreenshotSettings.OpenInEditor = GuiTools::GetCheck(m_hWnd, IDC_OPENSCREENSHOTINEDITORCHECKBOX);
+	Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
+	return 0;
 }

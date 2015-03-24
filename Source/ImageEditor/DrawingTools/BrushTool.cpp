@@ -55,7 +55,7 @@ void BrushTool::render( Painter* gr ) {
 
 ImageEditor::CursorType BrushTool::getCursor(int x, int y)
 {
-	return ctCross;
+	return ctBrush;
 }
 
 void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
@@ -97,7 +97,7 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
 		//	MessageBox(0,0,0,0);
 		for( int y = yStart; y <= yEnd; y++ ) {
 			x = x0;
-			RECT rc = {x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2 };
+			RECT rc = {x - penSize_-1, y - penSize_-1, penSize_ * 2+1, penSize_ * 2+2 };
 			rc.right += rc.left;
 			rc.bottom += rc.top;
 			UnionRect(&updatedRect, &updatedRect, &rc);
@@ -107,7 +107,7 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
 	} else if ( y1 == y0 ) {
 		for( int x = xStart; x <= xEnd; x++ ) {
 			int y = y0;
-			RECT rc = {x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2 };
+			RECT rc = {x - penSize_-1, y - penSize_-1, penSize_ * 2, penSize_ * 2 +2};
 			rc.right += rc.left;
 			rc.bottom += rc.top;
 			UnionRect(&updatedRect, &updatedRect, &rc);
@@ -122,7 +122,7 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
 
 
 
-			RECT rc = {x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2 };
+			RECT rc = {x - penSize_-1, y - penSize_-1, penSize_ * 2+2, penSize_ * 2+2 };
 			rc.right += rc.left;
 			rc.bottom += rc.top;
 			UnionRect(&updatedRect, &updatedRect, &rc);

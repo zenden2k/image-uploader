@@ -30,7 +30,7 @@
 #include <Func/Common.h>
 #include <Gui/GuiTools.h>
 #include <ImageEditor/Gui/ImageEditorWindow.h>
-
+#include <Func/ImageEditorConfigurationProvider.h>
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	PageWnd = m_hWnd;
@@ -246,10 +246,11 @@ LRESULT CMainDlg::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
 	LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
 	if(!FileName) return FALSE;
 	using namespace ImageEditor;
-	ImageEditor::ImageEditorWindow imageEditor(FileName);
+	ImageEditorConfigurationProvider configProvider;
+	ImageEditor::ImageEditorWindow imageEditor(FileName, &configProvider);
 	imageEditor.showUploadButton(false);
 	imageEditor.showAddToWizardButton(false);
-
+	
 	ImageEditorWindow::DialogResult dr = imageEditor.DoModal(m_hWnd, ImageEditorWindow::wdmAuto);
 	
 	ThumbsView.OutDateThumb(nCurItem);

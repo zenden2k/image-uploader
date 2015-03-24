@@ -21,7 +21,7 @@
 #include "UploadDlg.h"
 
 #include <shobjidl.h>
-#include "Core/ImageConverter.h"
+#include "Core/Images/ImageConverter.h"
 #include "Func/Base.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/InputDialog.h"

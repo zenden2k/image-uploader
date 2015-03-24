@@ -26,36 +26,39 @@ MoveAndResizeTool::MoveAndResizeTool( Canvas* canvas, ElementType type ) : Abstr
 	prevPaintBoundingRect_.right = -1;
 	prevPaintBoundingRect_.top = -1;
 	prevPaintBoundingRect_.bottom = -1;
+	allowMovingElements_ = true;
 
 }
 
 void MoveAndResizeTool::beginDraw( int x, int y ) {
-	draggedBoundary_ = checkElementsBoundaries(x,y, &currentElement_);
-	if ( draggedBoundary_.bt!= btNone ) {
-		canvas_->unselectAllElements();
-		currentElement_->setSelected(true);
-		currentElement_->beginMove();
-		originalStartPoint_ = currentElement_->getStartPoint();
-		originalEndPoint_ = currentElement_->getEndPoint();
-		prevPaintBoundingRect_ = currentElement_->getPaintBoundingRect();
-		return;
-	}
-	MovableElement* el = canvas_->getElementAtPosition(x, y);
-	if ( el && ( elementType_ == el->getType() ||  ( elementType_== etNone  && el->getType()  != etCrop )) ) {
-		//currentElement_->setSelected(true);
-		canvas_->unselectAllElements();
-		el->setSelected(true);
-		originalStartPoint_ = el->getStartPoint();
-		originalEndPoint_ = el->getEndPoint();
-		isMoving_ = true;
-		//LOG(INFO) << "Starting moving!";
-		currentElement_ = el;
-		currentElement_->beginMove();
-		prevPaintBoundingRect_ = currentElement_->getPaintBoundingRect();
-		startPoint_.x = x;
-		startPoint_.y = y;
-		//canvas_->updateView(el->getPaintBoundingRect());
-		return;
+	if ( allowMovingElements_ ) {
+		draggedBoundary_ = checkElementsBoundaries(x,y, &currentElement_);
+		if ( draggedBoundary_.bt!= btNone ) {
+			canvas_->unselectAllElements();
+			currentElement_->setSelected(true);
+			currentElement_->beginMove();
+			originalStartPoint_ = currentElement_->getStartPoint();
+			originalEndPoint_ = currentElement_->getEndPoint();
+			prevPaintBoundingRect_ = currentElement_->getPaintBoundingRect();
+			return;
+		}
+		MovableElement* el = canvas_->getElementAtPosition(x, y);
+		if ( el && ( elementType_ == el->getType() ||  ( elementType_== etNone  && el->getType()  != etCrop )) ) {
+			//currentElement_->setSelected(true);
+			canvas_->unselectAllElements();
+			el->setSelected(true);
+			originalStartPoint_ = el->getStartPoint();
+			originalEndPoint_ = el->getEndPoint();
+			isMoving_ = true;
+			//LOG(INFO) << "Starting moving!";
+			currentElement_ = el;
+			currentElement_->beginMove();
+			prevPaintBoundingRect_ = currentElement_->getPaintBoundingRect();
+			startPoint_.x = x;
+			startPoint_.y = y;
+			//canvas_->updateView(el->getPaintBoundingRect());
+			return;
+		}
 	}
 	if ( elementType_== etCrop  ) {
 		canvas_->deleteElementsByType(elementType_);

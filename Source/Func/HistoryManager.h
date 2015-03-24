@@ -36,6 +36,10 @@ struct HistoryItem
 	std::string serverName;
 	time_t timeStamp;
 	int64_t uploadFileSize;
+	HistoryItem() {
+		timeStamp = 0;
+		uploadFileSize = 0;
+	}
 };
 
 class SimpleXmlNode;

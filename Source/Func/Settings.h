@@ -32,12 +32,13 @@
 	#include "Func/pluginloader.h"
 	#include "Func/Common.h"
 	#include "Gui/Dialogs/HotkeySettings.h"
-    #include "Core/ImageConverter.h"
+    #include "Core/Images/ImageConverter.h"
 
 	#define TRAY_SCREENSHOT_UPLOAD 0
 	#define TRAY_SCREENSHOT_CLIPBOARD 1
 	#define TRAY_SCREENSHOT_SHOWWIZARD 2
 	#define TRAY_SCREENSHOT_ADDTOWIZARD 3
+	#define TRAY_SCREENSHOT_OPENINEDITOR 4
 #endif
 struct UploadProfileStruct
 {
@@ -237,6 +238,14 @@ struct ScreenshotSettingsStruct
 	bool RemoveCorners;
 	bool AddShadow;
 	bool RemoveBackground;
+	bool OpenInEditor; // only from screenshot dlg
+};
+
+struct ImageEditorSettingsStruct {
+	Gdiplus::Color ForegroundColor;
+	Gdiplus::Color BackgroundColor;
+	int PenSize;
+	LOGFONT Font;
 };
 
 struct HistorySettingsStruct
@@ -300,6 +309,7 @@ public:
 		ServerProfile imageServer, fileServer, quickScreenshotServer,contextMenuServer,urlShorteningServer;
 
 		ScreenshotSettingsStruct ScreenshotSettings;
+		ImageEditorSettingsStruct ImageEditorSettings;
 		HistorySettingsStruct HistorySettings;
 		ImageReuploaderSettingsStruct ImageReuploaderSettings;
 		bool ConfirmOnExit;

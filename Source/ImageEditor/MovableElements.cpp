@@ -163,6 +163,11 @@ TextElement::TextElement( Canvas* canvas, InputBox* inputBox, int startX, int st
 	inputBox_ = inputBox;
 }
 
+TextElement::~TextElement()
+{
+	delete inputBox_;
+}
+
 void TextElement::render(Painter* gr) {
 	using namespace Gdiplus;
 	if ( !gr ) {

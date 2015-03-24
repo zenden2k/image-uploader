@@ -21,6 +21,7 @@ class Line: public MovableElement {
 class TextElement: public MovableElement{
 	public:
 		TextElement( Canvas* canvas, InputBox* inputBox, int startX, int startY, int endX,int endY );
+		~TextElement();
 		void render(Painter* gr);
 		void getAffectedSegments( AffectedSegments* segments );
 		virtual void resize(int width, int height);

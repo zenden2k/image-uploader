@@ -192,25 +192,30 @@ bool RegularExpression::match(const std::string& stuff)
 
 SquirrelObject RegularExpression::findAll(const std::string& str)
 {
-	size_t pos = 0;
-	SquirrelObject res = SquirrelVM::CreateArray(0);
-	while (pos <= str.length()) 
-	{
-		if ( Pcre::search(str, pos)) 
-		{ 
-			pos = get_match_end()+1;
-			int count = matchesCount();
-			SquirrelObject mat = SquirrelVM::CreateArray(count);
-			for ( int i = 0; i < count; i++ ) {
-				mat.SetValue(i, get_match(i).c_str());
+	try {
+		size_t pos = 0;
+		SquirrelObject res = SquirrelVM::CreateArray(0);
+		while (pos <= str.length()) 
+		{
+			if ( Pcre::search(str, pos)) 
+			{ 
+				pos = get_match_end()+1;
+				int count = matchesCount();
+				SquirrelObject mat = SquirrelVM::CreateArray(count);
+				for ( int i = 0; i < count; i++ ) {
+					mat.SetValue(i, get_match(i).c_str());
+				}
+				res.ArrayAppend(mat);
 			}
-			res.ArrayAppend(mat);
+			else {
+				break;
+			}
 		}
-		else {
-			break;
-		}
+		return res;
+	} catch( Pcre::exception ex ) {
+		LOG(ERROR) << ex.what();
+		return SquirrelObject();
 	}
-	return res;
 }
 
 ScriptAPI::RegularExpression* CreateRegExp(const std::string& expression, const std::string& flags)

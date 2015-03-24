@@ -1697,14 +1697,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Source\Core\ImageConverter.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Source\Core\ImageConverter.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Source\Core\OutputCodeGenerator.h"
 					>
 				</File>
@@ -1907,6 +1899,14 @@
 				<Filter
 					Name="Images"
 					>
+					<File
+						RelativePath=".\Source\Core\Images\ImageConverter.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\Images\ImageConverter.h"
+						>
+					</File>
 					<File
 						RelativePath=".\Source\Core\Images\Thumbnail.cpp"
 						>
@@ -2450,6 +2450,14 @@
 				</File>
 				<File
 					RelativePath=".\Source\Func\HistoryManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Func\ImageEditorConfigurationProvider.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Func\ImageEditorConfigurationProvider.h"
 					>
 				</File>
 				<File

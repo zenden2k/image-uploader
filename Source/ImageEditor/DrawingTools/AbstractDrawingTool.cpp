@@ -13,7 +13,7 @@ AbstractDrawingTool::AbstractDrawingTool( Canvas *canvas ) {
 	startPoint_.y = 0;
 	endPoint_.x   = 0;
 	endPoint_.y   = 0;
-	assert( canvas );
+	//assert( canvas );
 	canvas_ = canvas;
 	penSize_ = 1;
 }

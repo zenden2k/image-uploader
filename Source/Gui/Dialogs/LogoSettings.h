@@ -28,7 +28,7 @@
 #include "Gui/Controls/myimage.h"
 #include "settingspage.h"
 #include "3rdpart/ColorButton.h"
-#include "Core/ImageConverter.h"
+#include "Core/Images/ImageConverter.h"
 #include <atlcrack.h>
 
 // CLogoSettings

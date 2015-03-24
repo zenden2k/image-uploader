@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <cstdio>
 #include <map>
 #include <string>
+#include <math.h>
 
 #ifdef _WIN32
     #include <io.h>
@@ -38,6 +39,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	#include <sys/stat.h>
 	#include "Core/Utils/utils_unix.h"
 #endif
+
+long round(float number){
+	return number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5);
+}
+
 
 namespace IuCoreUtils {
 

@@ -49,9 +49,10 @@ class CScreenshotDlg :
 	protected:
 		BEGIN_MSG_MAP(CScreenshotDlg)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			MSG_WM_CTLCOLORDLG(OnCtlColorMsgDlg)
+			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+			/*MSG_WM_CTLCOLORDLG(OnCtlColorMsgDlg)
 			MSG_WM_CTLCOLORBTN(OnCtlColorMsgDlg)
-			MSG_WM_CTLCOLORSTATIC(OnCtlColorMsgDlg)
+			MSG_WM_CTLCOLORSTATIC(OnCtlColorMsgDlg)*/
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 			COMMAND_ID_HANDLER(IDC_VIEWSETTINGS,  OnSettingsClick)
 			COMMAND_HANDLER(IDC_FULLSCREEN, BN_CLICKED, OnClickedFullscreenCapture)
@@ -68,6 +69,7 @@ class CScreenshotDlg :
 		
 		// Handlers:
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+		LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);

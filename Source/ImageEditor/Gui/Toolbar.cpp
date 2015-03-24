@@ -16,8 +16,8 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
 	trackMouse_ = false;
 	m_hWnd = 0;
 	dropDownIcon_ = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_DROPDOWNICONPNG),_T("PNG")); //(HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16,16,0);
-	dpiScaleX = 1.0f;
-	dpiScaleY = 1.0f;
+	dpiScaleX_ = 1.0f;
+	dpiScaleY_ = 1.0f;
 	transparentColor_ = Color(255,50,56);
 	subpanelColor_ = Color(252,252,252);
 	subpanelBrush_.CreateSolidBrush(subpanelColor_.ToCOLORREF());
@@ -134,9 +134,9 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 	}
 	//lStyle &= ~(WS_CAPTION /*| WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU*/);
 	//::SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
-	HDC hdc = GetDC();
-	dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
-	dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+	CDC hdc = GetDC();
+	dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
+	dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
 
 
 	CFont defaultFont = GuiTools::GetSystemDialogFont();
@@ -149,23 +149,22 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 	}
 
 	enum {kItemMargin = 3, kItemHorPadding = 5, kItemVertPadding = 3, kIconSize = 20};
-	itemMargin_ = kItemMargin *dpiScaleX;
-	itemHorPadding_ = kItemHorPadding * dpiScaleX;
-	itemVertPadding_ = kItemVertPadding * dpiScaleY;
-	iconSizeX_ = kIconSize * dpiScaleX;
-	iconSizeY_ = kIconSize * dpiScaleY;
+	itemMargin_ = kItemMargin *dpiScaleX_;
+	itemHorPadding_ = kItemHorPadding * dpiScaleX_;
+	itemVertPadding_ = kItemVertPadding * dpiScaleY_;
+	iconSizeX_ = kIconSize * dpiScaleX_;
+	iconSizeY_ = kIconSize * dpiScaleY_;
 	font_ = new Gdiplus::Font(hdc, defaultFont);
-	subpanelHeight_ = 25 * dpiScaleY;
-	subpanelLeftOffset_ = 50*dpiScaleX;
-	RECT sliderRect = {0,0, 100 * dpiScaleX,subpanelHeight_ - 2 * dpiScaleY};
+	subpanelHeight_ = 25 * dpiScaleY_;
+	subpanelLeftOffset_ = 50*dpiScaleX_;
+	RECT sliderRect = {0,0, 100 * dpiScaleX_,subpanelHeight_ - 2 * dpiScaleY_};
 	if ( orientation_ == orHorizontal ) {
 		penSizeSlider_.Create(m_hWnd, sliderRect, 0, WS_CHILD|WS_VISIBLE|TBS_NOTICKS);
 		createHintForSliders(penSizeSlider_.m_hWnd, TR("Толщина линии"));
-		RECT pixelLabelRect = {0,0, 50 * dpiScaleX,subpanelHeight_ - 5 * dpiScaleY };
+		RECT pixelLabelRect = {0,0, 50 * dpiScaleX_,subpanelHeight_ - 5 * dpiScaleY_ };
 		pixelLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD|WS_VISIBLE);
 		pixelLabel_.SetFont(GuiTools::GetSystemDialogFont());
 	}
-	ReleaseDC(hdc);
 	return 0;
 }
 
@@ -214,7 +213,7 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
 			/*rect.top+*/ float(buttonsRect_.bottom) ), Color(252,252,252), Color(
 			200,200,200), orientation_ == orHorizontal ? LinearGradientModeVertical : LinearGradientModeHorizontal);
 
-	rect = Rect( subpanelLeftOffset_, buttonsRect_.bottom-2*dpiScaleY, 200*dpiScaleX, clientRect.bottom);
+	rect = Rect( subpanelLeftOffset_, buttonsRect_.bottom-2*dpiScaleY_, 200*dpiScaleX_, clientRect.bottom);
 	rect.Height -= rect.Y;
 
 	SolidBrush br2 (subpanelColor_);
@@ -328,7 +327,7 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 		if ( item.type == Toolbar::itComboButton && xPos >  item.rect.right - dropDownIcon_->GetWidth() - itemMargin_  ) {
 			item.state = isDropDown;
 		} else if ( item.type == Toolbar::itTinyCombo ) {
-			if ( xPos >  item.rect.right - 6*dpiScaleX - itemMargin_ && yPos >   item.rect.bottom - 6*dpiScaleY - itemMargin_ ) {
+			if ( xPos >  item.rect.right - 6*dpiScaleX_ - itemMargin_ && yPos >   item.rect.bottom - 6*dpiScaleY_ - itemMargin_ ) {
 				item.state = isDropDown;
 			} else {
 			//	LOG(INFO) << "SetTimer";
@@ -393,13 +392,13 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 
 		if ( item.itemDelegate ) {
 			clickButton(selectedItemIndex_);
-			item.itemDelegate->OnClick(xPos, yPos, dpiScaleX, dpiScaleY);
+			item.itemDelegate->OnClick(xPos, yPos, dpiScaleX_, dpiScaleY_);
 		} else {
 			HWND parent = GetParent();
 			int command = item.command;
 			if ( item.type == Toolbar::itComboButton && xPos >  item.rect.right - dropDownIcon_->GetWidth() - itemMargin_  ) {
 				::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
-			} else if ( item.type == Toolbar::itTinyCombo && xPos >  item.rect.right - 6*dpiScaleX - itemMargin_ && yPos >   item.rect.bottom - 6*dpiScaleY - itemMargin_  ) {
+			} else if ( item.type == Toolbar::itTinyCombo && xPos >  item.rect.right - 6*dpiScaleX_ - itemMargin_ && yPos >   item.rect.bottom - 6*dpiScaleY_ - itemMargin_  ) {
 				::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
 			}else {
 				::SendMessage(parent, WM_COMMAND, MAKEWPARAM(command,BN_CLICKED),(LPARAM)m_hWnd);
@@ -456,7 +455,7 @@ SIZE Toolbar::CalcItemSize(int index)
 	Item &item = buttons_[index];
 	
 	if ( item.itemDelegate ) {
-		return item.itemDelegate->CalcItemSize(item,dpiScaleX, dpiScaleY);
+		return item.itemDelegate->CalcItemSize(item,dpiScaleX_, dpiScaleY_);
 	}
 
 	if (  item.title.GetLength()) {
@@ -476,7 +475,7 @@ SIZE Toolbar::CalcItemSize(int index)
 	}
 
 	if ( item.type == itComboButton ) {
-		res.cx += dropDownIcon_ ->GetWidth()*dpiScaleX + itemHorPadding_;
+		res.cx += dropDownIcon_ ->GetWidth()*dpiScaleX_ + itemHorPadding_;
 	}/*else if ( item.type == itTinyCombo ) {
 		res.cx += 5*dpiScaleX;
 	}*/
@@ -513,7 +512,7 @@ int Toolbar::AutoSize()
 
 			if ( orientation_ == orHorizontal ) {
 				x+= s.cx + itemMargin_;
-				width = max(x, subpanelLeftOffset_ +220*dpiScaleX) ;
+				width = max(x, subpanelLeftOffset_ +220*dpiScaleX_) ;
 				height = max(s.cy + itemMargin_*2, height);
 			} else {
 				y+= s.cy + itemMargin_;
@@ -530,13 +529,13 @@ int Toolbar::AutoSize()
 
 	if ( orientation_ == orHorizontal ) {
 		SetWindowPos(0, 0,0,width,height + subpanelHeight_,SWP_NOMOVE);
-		penSizeSlider_.SetWindowPos(0,subpanelLeftOffset_ + 3 * dpiScaleX, buttonsRect_.bottom + 1 * dpiScaleY, 0,0, SWP_NOSIZE);
+		penSizeSlider_.SetWindowPos(0,subpanelLeftOffset_ + 3 * dpiScaleX_, buttonsRect_.bottom + 1 * dpiScaleY_, 0,0, SWP_NOSIZE);
 		penSizeSlider_.SetRange(1,Canvas::kMaxPenSize);
 		RECT penSizeSliderRect;
 		penSizeSlider_.GetClientRect(&penSizeSliderRect);
 		penSizeSlider_.ClientToScreen(&penSizeSliderRect);
 		ScreenToClient(&penSizeSliderRect);
-		pixelLabel_.SetWindowPos(0, penSizeSliderRect.right, buttonsRect_.bottom + 3 * dpiScaleY, 0,0, SWP_NOSIZE);
+		pixelLabel_.SetWindowPos(0, penSizeSliderRect.right, buttonsRect_.bottom + 3 * dpiScaleY_, 0,0, SWP_NOSIZE);
 	}
 
 	for ( int i = 0; i < buttons_.size(); i++ ) {
@@ -555,7 +554,7 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 	Item& item = buttons_[itemIndex];
 
 	if ( item.itemDelegate ) {
-		item.itemDelegate->DrawItem(item, gr, x, y, dpiScaleX, dpiScaleY);
+		item.itemDelegate->DrawItem(item, gr, x, y, dpiScaleX_, dpiScaleY_);
 		return;
 	}
 
@@ -607,9 +606,9 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 
 	if ( item.type == itComboButton ) {
 		//LOG(INFO) <<  "GetWidth "<< dropDownIcon_->GetWidth() << " " << dropDownIcon_->GetHeight();
-		gr->DrawImage(dropDownIcon_, bounds.X + bounds.Width - 16*dpiScaleX+ (item.state == isDropDown ? 1 : 0), bounds.Y + (bounds.Height -16*dpiScaleY )/2 + (item.state == isDropDown ? 1 : 0), (int)16*dpiScaleX, (int)16*dpiScaleY);
+		gr->DrawImage(dropDownIcon_, bounds.X + bounds.Width - 16*dpiScaleX_+ (item.state == isDropDown ? 1 : 0), bounds.Y + (bounds.Height -16*dpiScaleY_ )/2 + (item.state == isDropDown ? 1 : 0), (int)16*dpiScaleX_, (int)16*dpiScaleY_);
 	} else if ( item.type == itTinyCombo ) {
-		gr->DrawImage(dropDownIcon_, bounds.X + bounds.Width - 8*dpiScaleX+ (item.state == isDropDown ? 1 : 0), bounds.Y + bounds.Height - 8*dpiScaleY + (item.state == isDropDown ? 1 : 0), (int)10*dpiScaleX, (int)10*dpiScaleY);
+		gr->DrawImage(dropDownIcon_, bounds.X + bounds.Width - 8*dpiScaleX_+ (item.state == isDropDown ? 1 : 0), bounds.Y + bounds.Height - 8*dpiScaleY_ + (item.state == isDropDown ? 1 : 0), (int)10*dpiScaleX_, (int)10*dpiScaleY_);
 	}
 
 	if (  item.icon ) {
@@ -624,7 +623,7 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 	
 	int iconWidth = (item.icon ? iconSizeX_/*+ itemHorPadding_*/:0 ) ;
 	int textOffsetX =  iconWidth+ itemHorPadding_;
-	RectF textBounds( textOffsetX + bounds.X + (item.state == isDown ? 1 : 0), bounds.Y+ (item.state == isDown ? 1 : 0), bounds.Width - textOffsetX - (item.type == itComboButton ? 16*dpiScaleX : 0), bounds.Height);
+	RectF textBounds( textOffsetX + bounds.X + (item.state == isDown ? 1 : 0), bounds.Y+ (item.state == isDown ? 1 : 0), bounds.Width - textOffsetX - (item.type == itComboButton ? 16*dpiScaleX_ : 0), bounds.Height);
 	if ( orientation_ == orVertical ) {
 		//LOG(INFO) << "textBounds x="<<textBounds.X << " y = " << textBounds.Y << "   "<<item.title;
 	}

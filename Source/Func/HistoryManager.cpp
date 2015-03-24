@@ -84,6 +84,9 @@ void CHistorySession::loadFromXml(SimpleXmlNode& sessionNode)
 		ht.thumbUrl = allEntries[i].Attribute("ThumbUrl");
 		ht.viewUrl = allEntries[i].Attribute("ViewUrl");
 		ht.uploadFileSize = allEntries[i].AttributeInt64("UploadFileSize");
+		if ( ht.uploadFileSize > 1000000000000 || ht.uploadFileSize < 0 ){
+			 ht.uploadFileSize  = 0;
+		}
 		m_entries.push_back(ht);
 	}
 }

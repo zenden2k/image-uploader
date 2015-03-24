@@ -413,6 +413,10 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 		CMenu SubMenu;
 		SubMenu.CreatePopupMenu();
 		SubMenu.InsertMenu(
+			0, MFT_STRING | MFT_RADIOCHECK |
+			(Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_OPENINEDITOR ? MFS_CHECKED : 0),
+			IDM_SCREENTSHOTACTION_OPENINEDITOR, TR("Открыть в редакторе"));
+		SubMenu.InsertMenu(
 		   0, MFT_STRING | MFT_RADIOCHECK |
 		   (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD ? MFS_CHECKED : 0),
 		   IDM_SCREENTSHOTACTION_UPLOAD, TR("Загрузить на сервер"));
@@ -663,9 +667,10 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
 
 	source_file_name_ = WCstringToUtf8(realName);
 	server_name_ = engineData->Name;
-
-	m_FileQueueUploader->AddFile(WCstringToUtf8(imageConverter.getImageFileName()), WCstringToUtf8(displayName), 0, engine);
-
+	std::string utf8FileName = WCstringToUtf8(imageConverter.getImageFileName());
+	lastUploadedItem_.fileListItem.fileSize = IuCoreUtils::getFileSize(utf8FileName);
+	m_FileQueueUploader->AddFile(utf8FileName, WCstringToUtf8(displayName), 0, engine);
+	
 	CString thumbFileName = imageConverter.getThumbFileName();
 	if (!thumbFileName.IsEmpty())
 		m_FileQueueUploader->AddFile(WCstringToUtf8(thumbFileName), WCstringToUtf8(thumbFileName),

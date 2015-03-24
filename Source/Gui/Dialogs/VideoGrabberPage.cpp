@@ -26,7 +26,7 @@
 #include "Gui/Controls/MyImage.h"
 #include "Gui/Dialogs/SettingsDlg.h"
 #include "Func/fileinfohelper.h"
-#include "Core/ImageConverter.h"
+#include "Core/Images/ImageConverter.h"
 #include "LogWindow.h"
 #include "mediainfodlg.h"
 #include "Func/Settings.h"

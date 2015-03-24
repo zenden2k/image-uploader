@@ -80,5 +80,6 @@ namespace GuiTools
 	bool GetScreenBounds(RECT& rect);
 	HRGN CloneRegion(HRGN source);
 	HFONT MakeFontBigger(HFONT font);
+	HWND CreateToolTipForWindow(HWND hwnd, const CString& text);
 };
 #endif

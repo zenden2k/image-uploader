@@ -24,7 +24,7 @@
 #include <vector>
 #include "atlheaders.h"
 #include <gdiplus.h>
-#include <zthread/CountedPtr.h>
+#include <Core/Utils/CoreTypes.h>
 
 
 HRGN GetWindowVisibleRegion(HWND wnd);
@@ -135,12 +135,13 @@ class CScreenCaptureEngine
 		void setSource(HBITMAP src);
 		bool captureRegion(CScreenshotRegion* region);
 		void setDelay(int msec);
-		ZThread::CountedPtr<Gdiplus::Bitmap> capturedBitmap();
+		std_tr::shared_ptr<Gdiplus::Bitmap> capturedBitmap();
 		Gdiplus::Bitmap* releaseCapturedBitmap();
 
 	private:
 		int m_captureDelay;
-		ZThread::CountedPtr<Gdiplus::Bitmap> m_capturedBitmap;
+		std_tr::shared_ptr<Gdiplus::Bitmap> m_capturedBitmap;
+		release_deleter<Gdiplus::Bitmap> capturedBitmapDeleter_;
 		HBITMAP m_source;
 };
 

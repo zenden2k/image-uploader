@@ -18,4 +18,5 @@ Gdiplus::Bitmap* IconToBitmap(HICON ico);
 void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radius);
 void BlurCleanup();
 Gdiplus::Bitmap* LoadImageFromFileWithoutLocking(const WCHAR* fileName);
+Gdiplus::Color StringToColor(const std::string& str);
 #endif

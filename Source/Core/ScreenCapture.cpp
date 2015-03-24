@@ -1058,7 +1058,7 @@ void CScreenCaptureEngine::setDelay(int msec)
 	m_captureDelay = msec;
 }
 
-ZThread::CountedPtr<Gdiplus::Bitmap> CScreenCaptureEngine::capturedBitmap()
+std_tr::shared_ptr<Gdiplus::Bitmap> CScreenCaptureEngine::capturedBitmap()
 {
 	return m_capturedBitmap;
 }
@@ -1092,7 +1092,8 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
 	region->PrepareShooting(!(bool)(m_source != 0));
 	Gdiplus::Bitmap* capturedBitmap;
 	bool result =  region->GetImage(srcDC, &capturedBitmap);
-	m_capturedBitmap = ZThread::CountedPtr<Gdiplus::Bitmap>(capturedBitmap);
+	capturedBitmapDeleter_.reset_released();
+	m_capturedBitmap = std_tr::shared_ptr<Gdiplus::Bitmap>(capturedBitmap, capturedBitmapDeleter_);
 	region->AfterShooting();
 	if (m_source)
 	{
@@ -1105,11 +1106,8 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
 
 Gdiplus::Bitmap* CScreenCaptureEngine::releaseCapturedBitmap()
 {
-	//m_capturedBitmap.Counted
-	Bitmap* res = &*m_capturedBitmap;
-	ZThread::CountedPtr<Gdiplus::Bitmap>* cc = new ZThread::CountedPtr<Gdiplus::Bitmap>(m_capturedBitmap);
-	//m_capturedBitmap.reset();
-	return res;
+	capturedBitmapDeleter_.release();
+	return m_capturedBitmap.get();
 }
 
 CFreeFormRegion::CFreeFormRegion()

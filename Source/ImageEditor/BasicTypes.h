@@ -34,7 +34,7 @@ namespace ImageEditor {
 	// item order is important!!!!
 	enum BoundaryType { btBottomRight, btBottom,  btBottomLeft,  btRight,  btLeft,  btTopLeft, btTop, btTopRight,  btNone};
 	enum CursorType {
-		ctDefault, ctEdit, ctResizeVertical, ctResizeHorizontal, ctResizeDiagonalMain, ctResizeDiagonalAnti, ctCross, ctMove, ctColorPicker
+		ctDefault, ctEdit, ctResizeVertical, ctResizeHorizontal, ctResizeDiagonalMain, ctResizeDiagonalAnti, ctCross, ctMove, ctColorPicker, ctBrush
 	};
 	enum Axis { axisX, axisY };
 }

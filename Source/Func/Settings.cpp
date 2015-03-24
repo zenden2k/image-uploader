@@ -31,6 +31,7 @@
 #include <Core/Video/VideoUtils.h>
 #include "WinUtils.h"
 #include <Core/AppParams.h>
+#include <Core/Images/Utils.h>
 #endif
 #include <stdlib.h>
 
@@ -64,6 +65,20 @@ inline void myFromString(const std::string& text, CString& value)
 {
 	value = IuCoreUtils::Utf8ToWstring(text).c_str();
 }
+#ifndef IU_CLI
+
+inline std::string myToString(const Gdiplus::Color& value)
+{
+	char buffer[30];
+	sprintf(buffer,"rgba(%d,%d,%d,%1.4f)", (int)value.GetR(), (int)value.GetG(), (int)value.GetB(), (float)(value.GetA()/255.0));
+	return buffer;
+}
+
+inline void myFromString(const std::string& text, Gdiplus::Color& value)
+{
+	value = StringToColor(text);
+}
+#endif
 #endif
 
 template<class T> std::string myToString(const EnumWrapper<T>& value)
@@ -501,7 +516,7 @@ CSettings::CSettings()
 	ScreenshotSettings.RemoveCorners = !WinUtils::IsWindows8orLater();
 	ScreenshotSettings.AddShadow = false;
 	ScreenshotSettings.RemoveBackground = false;
-
+	ScreenshotSettings.OpenInEditor = true;
 
 	TrayIconSettings.LeftClickCommand = 0; // without action
 	TrayIconSettings.LeftDoubleClickCommand = 12; 
@@ -511,6 +526,13 @@ CSettings::CSettings()
 	TrayIconSettings.DontLaunchCopy = FALSE;
 	TrayIconSettings.ShortenLinks = FALSE;
 	TrayIconSettings.TrayScreenshotAction = 0;
+
+	ImageEditorSettings.BackgroundColor = RGB(255,255,255);
+	ImageEditorSettings.ForegroundColor = RGB(255,0,0);
+	ImageEditorSettings.PenSize = 12;
+	StringToFont(_T("Arial,9,,204"), &ImageEditorSettings.Font);
+
+
 
 	ImageReuploaderSettings.PasteHtmlOnCtrlV = true;
 	Hotkeys_changed = false;
@@ -558,6 +580,13 @@ CSettings::CSettings()
 	screenshot.nm_bind(ScreenshotSettings, CopyToClipboard);
 	screenshot.nm_bind(ScreenshotSettings, brushColor);
 	screenshot.nm_bind(ScreenshotSettings, WindowHidingDelay);
+	screenshot.nm_bind(ScreenshotSettings, OpenInEditor);
+
+	SettingsNode& imageEditor = mgr_["ImageEditor"];
+	imageEditor.nm_bind(ImageEditorSettings, ForegroundColor);
+	imageEditor.nm_bind(ImageEditorSettings, BackgroundColor);
+	imageEditor.nm_bind(ImageEditorSettings, PenSize);
+	imageEditor.nm_bind(ImageEditorSettings, Font);
 
 	SettingsNode& image = mgr_["Image"];
 	image["CurrentProfile"].bind(CurrentConvertProfileName);
@@ -677,8 +706,11 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 		// for compatibility with old version configuration file
 		LoadConvertProfile( "Old profile", settingsNode );
 	}
-
-
+	
+	// Migrating from 1.3.0 to 1.3.1 (added ImageEditor has been addded)
+	if (settingsNode["ImageEditor"].IsNull() && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD ) {
+		TrayIconSettings.TrayScreenshotAction = TRAY_SCREENSHOT_OPENINEDITOR;
+	}
 	LoadConvertProfiles( settingsNode.GetChild("Image").GetChild("Profiles") );
 	LoadServerProfiles( settingsNode.GetChild("Uploading").GetChild("ServerProfiles") );
 #endif

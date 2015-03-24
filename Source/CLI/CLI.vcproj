@@ -197,6 +197,14 @@
 				Name="Core"
 				>
 				<File
+					RelativePath="..\Core\AppParams.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Core\AppParams.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Core\OutputCodeGenerator.cpp"
 					>
 				</File>
@@ -337,6 +345,30 @@
 					</File>
 					<File
 						RelativePath="..\Func\WinUtils.cpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="ScriptAPI"
+					>
+					<File
+						RelativePath="..\Core\ScriptAPI\Functions.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\Functions.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\RegularExpression.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\RegularExpression.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\ScriptAPI.h"
 						>
 					</File>
 				</Filter>

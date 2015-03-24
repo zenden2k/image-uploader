@@ -74,6 +74,7 @@ class NetworkClient
 		void setUploadBufferSize(const int size);
 		void setChunkOffset(double offset);
 		void setChunkSize(double size);
+		void setTreatErrorsAsWarnings(bool treat);
 		int getCurlResult();
 		CURL* getCurlHandle();
 		static void Uninitialize();
@@ -146,6 +147,7 @@ class NetworkClient
 		bool enableResponseCodeChecking_;
 		int64_t chunkOffset_;
 		int64_t chunkSize_;
+		bool treatErrorsAsWarnings_;
                #ifndef IU_CLI
 		static ZThread::Mutex _mutex;
 #endif

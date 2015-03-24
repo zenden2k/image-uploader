@@ -174,6 +174,7 @@ NetworkClient::NetworkClient(void)
 	m_headerFuncData.funcType = funcTypeHeader;
 	m_headerFuncData.nmanager = this;
 	m_nUploadDataOffset = 0;
+	treatErrorsAsWarnings_ = false;
 	curl_easy_setopt(curl_handle, CURLOPT_COOKIELIST, "");
 	setUserAgent("Mozilla/5.0");
 
@@ -431,7 +432,7 @@ void NetworkClient::private_checkResponse()
 	}
 	int code = responseCode();
 	if ( ( !code || (code>= 400 && code<=499)) && errorString() != "Callback aborted" ) {
-		LOG(ERROR) << "Request to the URL '"<<m_url<<"' failed. \r\nResponse code: "<<code<<"\r\n"<<errorString()<<"\r\n"<<internalBuffer;
+		(treatErrorsAsWarnings_ ? LOG(WARNING) : LOG(ERROR) ) << "Request to the URL '"<<m_url<<"' failed. \r\nResponse code: "<<code<<"\r\n"<<errorString()<<"\r\n"<<internalBuffer;
 	}
 }
 
@@ -711,6 +712,11 @@ void NetworkClient::setChunkOffset(double offset)
 void NetworkClient::setChunkSize(double size)
 {
 	chunkSize_ = size;
+}
+
+void NetworkClient::setTreatErrorsAsWarnings(bool treat)
+{
+	treatErrorsAsWarnings_ = treat;
 }
 
 const NString  NetworkClient::getCurlResultString()

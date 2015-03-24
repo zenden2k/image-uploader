@@ -73,10 +73,11 @@ int GetTextWidth(HDC dc, LPTSTR Text, HFONT Font)
 
 int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON hIcon,bool Visible,int Align,  bool LineBreak)
 {
+	// TODO: This shit should be rewritten from scratch
 	RECT ClientRect;
 	GetClientRect(&ClientRect);
 
-	HyperLinkControlItem * item=new  HyperLinkControlItem;
+	HyperLinkControlItem * item = new  HyperLinkControlItem;
 	if(szTip)
 		lstrcpy(item->szTip,szTip);
 	else 
@@ -100,9 +101,9 @@ int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON
 		if(SubItemRightY!= -1)
 			BottomY+= 16;
 		item->ItemRect.left = 5;
-		item->ItemRect.top = BottomY +(m_bHyperLinks?15:10);
+		item->ItemRect.top = BottomY +(m_bHyperLinks?ScaleY(15):ScaleY(10));
 		item->ItemRect.right=ScaleX(10)+item->ItemRect.left+ item->iconWidth + TitleWidth+1/*ClientRect.right*/;
-		item->ItemRect.bottom = item->ItemRect.top+33;
+		item->ItemRect.bottom = item->ItemRect.top+ScaleY(33);
 		BottomY+= ScaleY(10+38);
 		SubItemRightY= -1;
 	}
@@ -120,7 +121,7 @@ int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON
 			if(SubItemRightY== -1)
 				SubItemRightY=35;
 			else 
-				SubItemRightY+=20;
+				SubItemRightY+=ScaleY(20);
 		}
 		if(  LineBreak)
 		{
@@ -138,9 +139,9 @@ int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON
 		item->ItemRect.top = BottomY + ((BottomY>1)?6:0);
 		}
 		if(!m_bHyperLinks) 
-			item->ItemRect.top+=5;
-		item->ItemRect.right = 1+GetTextWidth(GetDC(), szTitle, NormalFont)+23+item->ItemRect.left;
-		item->ItemRect.bottom = item->ItemRect.top+20;
+			item->ItemRect.top+=ScaleY(5);
+		item->ItemRect.right = 1+GetTextWidth(GetDC(), szTitle, NormalFont)+ScaleX(23)+item->ItemRect.left;
+		item->ItemRect.bottom = item->ItemRect.top+ScaleY(20);
 		SubItemRightY+=item->ItemRect.right-item->ItemRect.left;
 	}
 	Items.Add(*item);
@@ -316,8 +317,8 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 			TextRect.left += item.iconWidth + ScaleX(5);
 			if(!m_bHyperLinks){
-				TextRect.left +=20;
-				TextRect.right +=20;
+				TextRect.left +=ScaleX(20);
+				TextRect.right +=ScaleX(20);
 			}
 			if(Selected == i && m_bHyperLinks)
 				dc.SelectFont(BoldUnderLineFont); else

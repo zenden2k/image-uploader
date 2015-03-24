@@ -42,6 +42,7 @@ CUploadSettings::CUploadSettings(CMyEngineList * EngineList):сonvert_profiles_(S
 	m_ProfileChanged  = false;
 	m_CatchChanges = false;
    	iconBitmapUtils_ = new IconBitmapUtils();
+	useServerThumbnailsTooltip_ = 0;
 }
 
 CUploadSettings::~CUploadSettings()
@@ -70,6 +71,7 @@ void CUploadSettings::TranslateUI()
 	TRC(IDC_ADDFILESIZE,"Надпись на миниатюре");
 	TRC(IDC_PRESSUPLOADBUTTON,"Нажмите кнопку \"Загрузить\" чтобы начать процесс загрузки");
 	TRC(IDC_FILESERVERGROUPBOX, "Сервер для остальных типов файлов");
+	useServerThumbnailsTooltip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_USESERVERTHUMBNAILS), TR("Это означает, что миниатюры будут создаваться сайтом, а не программой.")); //  \r\nПри этом то, как они будут выглядеть, напрямую зависит от выбранного сайта.
 }
 
 LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

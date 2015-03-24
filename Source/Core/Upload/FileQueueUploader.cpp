@@ -244,6 +244,7 @@ void CFileQueueUploader::Impl::run()
 		if ( it.uploadTask->getType() == "file") {
 			fileUploadTask = (FileUploadTask*)(it.uploadTask.get());
 			result.fileName = fileUploadTask->getFileName();
+			result.fileSize = IuCoreUtils::getFileSize(fileUploadTask->getFileName());
 		}
 		if (res) {
 			

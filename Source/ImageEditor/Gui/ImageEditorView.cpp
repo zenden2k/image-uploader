@@ -282,7 +282,13 @@ LRESULT CImageEditorView::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 		canvas_->updateView();
 	}else if ( wParam == VK_DELETE ) {
 		canvas_->deleteSelectedElements();
-	}
+	} 
+	return 0;
+}
+
+LRESULT CImageEditorView::OnKeyUp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	
 	return 0;
 }
 
@@ -295,6 +301,7 @@ LRESULT CImageEditorView::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 HCURSOR CImageEditorView::getCachedCursor(CursorType cursorType)
 {
 	HCURSOR cur = cursorCache_[cursorType];
+	int penSize = canvas_->getPenSize();
 	if ( cur ) {
 		return cur;
 	}
@@ -325,13 +332,37 @@ HCURSOR CImageEditorView::getCachedCursor(CursorType cursorType)
 			cur = LoadCursor(_Module.GetModuleInstance(), MAKEINTRESOURCE(IDC_COLORPICKERCURSOR));
 			cursorCache_[cursorType] = cur;
 			return cur;
+		case ctBrush:
+			if ( brushCursorCache_[penSize] ) {
+				return brushCursorCache_[penSize] ;
+			}
+			cur = createBrushCursor(penSize);
+			brushCursorCache_[penSize] = cur;
+			return cur;
 		default:
 			lpCursorName = IDC_ARROW;
 	}
 	cur = LoadCursor(0, lpCursorName);
 	cursorCache_[cursorType] = cur;
-	return cur;
+	return cur
+		;
 }
-
+HICON CImageEditorView::createBrushCursor(int size)
+{
+	if ( size == 1) {
+		return createBrushCursor(2);
+	}
+	using namespace Gdiplus;
+	size+=1;
+	Bitmap bm(size,size, PixelFormat32bppARGB);
+	Graphics gr(&bm);
+	gr.SetSmoothingMode(SmoothingModeAntiAlias);
+	//gr.SetPixelOffsetMode(PixelOffsetModeHalf);
+	Pen pen(Color(0,0,0));
+	gr.DrawEllipse(&pen,1,1,size-2,size-2);
+	HICON res;
+	bm.GetHICON(&res);
+	return res;
+}
 
 }
