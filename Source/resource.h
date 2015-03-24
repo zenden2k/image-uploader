@@ -577,7 +577,9 @@
 #define IDC_URLSHORTENERPLACEHOLDER     1305
 #define IDC_PARAMETERSLABEL             1305
 #define IDC_ACCOUNTINFO                 1306
+#define IDC_AUTHORLABEL                 1306
 #define IDC_EDIT                        1307
+#define IDC_WEBSITELABEL                1307
 #define IDC_SERVERGROUPBOX              1308
 #define IDC_USERICON                    1309
 #define IDC_FOLDERICON                  1310
@@ -643,7 +645,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        297
 #define _APS_NEXT_COMMAND_VALUE         32805
-#define _APS_NEXT_CONTROL_VALUE         1306
+#define _APS_NEXT_CONTROL_VALUE         1308
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

@@ -320,7 +320,7 @@ LRESULT Toolbar::OnMouseLeave(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 
 LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	LOG(INFO) << "OnLButtonDown";
+	//LOG(INFO) << "OnLButtonDown";
 	int xPos = GET_X_LPARAM(lParam); 
 	int yPos = GET_Y_LPARAM(lParam); 
 	if ( selectedItemIndex_ != -1 ) {

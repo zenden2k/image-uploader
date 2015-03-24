@@ -58,6 +58,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 	CString memoText;
 	memoText += TR("Благодарности:") + CString("\r\n\r\n");
+	memoText += TR("Контрибьюторам:") + CString("\r\n");
+	memoText += L"arhangelsoft (https://github.com/arhangelsoft)\r\n\r\n";
 
 	memoText += TR("Переводчикам:")+ CString("\r\n");
 
@@ -76,8 +78,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	memoText += TR("Бета-тестерам:")+ CString("\r\n");
 	memoText += L"Graf, CKA3O4H1K\r\n\r\n";
 
-	memoText += L"Thanks to the authors of the following open-source libraries:\r\n\r\n";
- 
+	//memoText += CString(T_R("Thanks to the authors of the following open-source libraries:"))+L"\r\n\r\n";
+	memoText += CString(TR("Спасибо авторам следующих библиотек с открытым исходным кодом:"))+L"\r\n\r\n";
 	
 	memoText += CString(L"WTL")+ "\t\thttp://sourceforge.net/projects/wtl/\r\n";
 	memoText += CString(L"libcurl")+ "\t\thttp://curl.haxx.se/libcurl/\r\n";
@@ -119,11 +121,10 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	SetDlgItemText(IDC_IMAGEUPLOADERLABEL, buildInfo);
 	CenterWindow(GetParent());
 
-	// Translating
-	TRC(IDC_THANKSTOGROUP, "Благодарности");
-	TRC(IDC_BETATESTERS, "Бета-тестерам:");
-	TRC(IDC_TRANSLATERS, "Переводчикам:");
+
 	TRC(IDC_CONTACTEMAIL, "Контактный e-mail:");
+	TRC(IDC_AUTHORLABEL, "Автор:");
+	TRC(IDC_WEBSITELABEL, "Веб-сайт:");
 	
 	SetWindowText(TR("О программе"));
 	return TRUE;
