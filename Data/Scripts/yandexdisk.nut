@@ -1,3 +1,9 @@
+include("Utils/RegExp.nut");
+include("Utils/String.nut");
+include("Utils/Shell.nut");
+include("Utils/EncDecd.nut");
+include("Utils/Debug.nut");
+
 if(ServerParams.getParam("enableOAuth") == "")
 {
 	ServerParams.setParam("enableOAuth", "true") ;
@@ -15,97 +21,6 @@ login <- "";
 enableOAuth <- true;
 baseUrl <-"https://cloud-api.yandex.net/v1/disk/resources/";
 
-function base64Encode(input) {
-	local keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-    local output = "";
-    local chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-    local i = 0;
-	local len = input.len() ;
-
-    while ( i < len ) {
-
-        chr1 = input[i++];
-		if ( i< len) {
-			chr2 = input[i++];
-		} else {
-			chr2 = 0;
-		}
-		if ( i < len ) {
-			chr3 = input[i++];
-		} else {
-			chr3 = 0;
-		}
-
-        enc1 = chr1 >> 2;
-        enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-        enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-        enc4 = chr3 & 63;
-
-        if (chr2 == 0) {
-            enc3 = enc4 = 64;
-        } else if (chr3 == 0) {
-            enc4 = 64;
-        }
-		//print("enc1=" + enc1 + " enc2=" + enc2 + " enc3=" + enc3);
-        output = output + format("%c", keyStr[enc1] ) + 
-			format ( "%c", keyStr[enc2]) 
-			+ format("%c", keyStr[enc3])
-			+ format("%c", keyStr[enc4]);
-    }
-
-    return output;
-}
-
-function inputBox(prompt, title) {
-	try {
-		return InputDialog(prompt, "");
-	}catch (e){}
-	local tempScript = "%temp%\\imguploader_inputbox.vbs";
-	prompt = reg_replace(prompt, "\n", "\" ^& vbCrLf ^& \"" );
-	local tempOutput = getenv("TEMP") + "\\imguploader_inputbox_output.txt";
-	local command = "echo result = InputBox(\""+ prompt + "\", \""+ title + "\") : Set objFSO=CreateObject(\"Scripting.FileSystemObject\") : Set objFile = objFSO.CreateTextFile(\"" + tempOutput + "\",True) : objFile.Write result : objFile.Close  > \"" + tempScript + "\"";
-	system(command);
-	command = "cscript /nologo \"" + tempScript + "\"";// > \"" + tempOutput + "\"";*/
-	system(command);
-	local res = readFile(tempOutput);
-	system("rm \""+ tempOutput + "\"");
-	return res;
-}
-
-function regex_simple(data,regStr,start)
-{
-	local ex = regexp(regStr);
-	local res = ex.capture(data, start);
-	local resultStr = "";
-	if(res != null){	
-		resultStr = data.slice(res[1].begin, res[1].end);
-	}
-		return resultStr;
-}
-
-
-function reg_replace(str, pattern, replace_with)
-{
-	local resultStr = str;	
-	local res;
-	local start = 0;
-
-	while( (res = resultStr.find(pattern,start)) != null ) {	
-
-		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-		start = res + replace_with.len();
-	}
-	return resultStr;
-}
-
-function _WriteLog(type,message) {
-	try {
-		WriteLog(type, message);
-	} catch (ex ) {
-		print(type + " : " + message);
-	}
-}
-
 function checkResponse() {
 	if ( nm.responseCode() == 0 || (nm.responseCode() >= 400 && nm.responseCode() <= 499)) {
 		_WriteLog("error", "Response code " + nm.responseCode() + "\r\n" + nm.errorString() );
@@ -122,21 +37,6 @@ function isSuccessCode(code) {
 
 function getAuthorizationString() {
 	return "OAuth " + token;
-}
-
-function msgBox(text) {
-	try {
-		DebugMessage(text, false);
-		return true;
-	}catch(ex) {
-	}
-	local tempScript = "%temp%\\imguploader_msgbox.vbs";
-	system("echo Set objArgs = WScript.Arguments : messageText = objArgs(0) : MsgBox messageText > \"" + tempScript + "\"");
-	system("cscript \"" + tempScript + "\" \"" + text + "\"");
-	system("del /f /q \"" + tempScript + "\"");
-	
-	
-	return true;
 }
 
 
@@ -210,7 +110,7 @@ function internal_loadAlbumList(list)
 				}
 				local folder = CFolderItem();
 				local path = item.path;
-				path = reg_replace(path, "disk:", "") + "/";
+				path = strReplace(path, "disk:", "") + "/";
 				folder.setId(path);
 				folder.setTitle(item.name);
 				folder.setSummary("");
@@ -325,14 +225,6 @@ function useRestApi() {
 	local l = ServerParams.getParam("useWebdav");
 	return (l == "") || ( l != "true" && l != "yes" && l != "1");
 }
-function openUrl(url) {
-	try{
-		return ShellOpenUrl(url);
-	}catch(ex){}
-
-	system("start "+ reg_replace(url,"&","^&") );
-}
-
 
 function DoLogin() 
 { 
@@ -403,7 +295,7 @@ function  UploadFile(FileName, options)
 				return 0;
 		}
 	local ansiFileName = ExtractFileName(FileName);
-	//ansiFileName = reg_replace(ansiFileName, " ","_");
+	//ansiFileName = strReplace(ansiFileName, " ","_");
 	
 
 	local folder = options.getFolderID();

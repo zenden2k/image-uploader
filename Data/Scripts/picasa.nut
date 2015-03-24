@@ -1,62 +1,9 @@
-﻿login <- ""; 
+﻿include("Utils/RegExp.nut");
+include("Utils/String.nut");
+include("Utils/Shell.nut");
+include("Utils/Debug.nut");
 
-
-function regex_simple(data,regStr,start)
-{
-	local ex = regexp(regStr);
-	local res = ex.capture(data, start);
-	local resultStr = "";
-	if(res != null){	
-		resultStr = data.slice(res[1].begin, res[1].end);
-	}
-		return resultStr;
-}
-
-function reg_replace(str, pattern, replace_with)
-{
-	local resultStr = str;	
-	local res;
-	local start = 0;
-
-	while( (res = resultStr.find(pattern,start)) != null ) {	
-
-		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-		start = res + replace_with.len();
-	}
-	return resultStr;
-}
-
-function _WriteLog(type,message) {
-	try {
-		WriteLog(type, message);
-	} catch (ex ) {
-		print(type + " : " + message);
-	}
-}
-
-function inputBox(prompt, title) {
-	try {
-		return InputDialog(prompt, "");
-	}catch (e){}
-	local tempScript = "%temp%\\imguploader_inputbox.vbs";
-	prompt = reg_replace(prompt, "\n", "\" ^& vbCrLf ^& \"" );
-	local tempOutput = getenv("TEMP") + "\\imguploader_inputbox_output.txt";
-	local command = "echo result = InputBox(\""+ prompt + "\", \""+ title + "\") : Set objFSO=CreateObject(\"Scripting.FileSystemObject\") : Set objFile = objFSO.CreateTextFile(\"" + tempOutput + "\",True) : objFile.Write result : objFile.Close  > \"" + tempScript + "\"";
-	system(command);
-	command = "cscript /nologo \"" + tempScript + "\"";// > \"" + tempOutput + "\"";*/
-	system(command);
-	local res = readFile(tempOutput);
-	system("rm \""+ tempOutput + "\"");
-	return res;
-}
-
-function openUrl(url) {
-	try{
-		return ShellOpenUrl(url);
-	}catch(ex){}
-
-	system("start "+ reg_replace(url,"&","^&") );
-}
+login <- ""; 
 
 function getAuthorizationString() {
 	local token = ServerParams.getParam("token");

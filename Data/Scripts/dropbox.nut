@@ -1,4 +1,12 @@
-﻿appKey <- "973quph3jxdgqoe";
+﻿include("Utils/RegExp.nut");
+include("Utils/String.nut");
+include("Utils/Shell.nut");
+include("Utils/EncDecd.nut");
+include("Utils/Debug.nut");
+include("Utils/Math.nut");
+
+
+appKey <- "973quph3jxdgqoe";
 appSecret <- "wloizpn331cc8zd";
 accessType <- "app_folder";
 
@@ -7,17 +15,6 @@ authStep2Url <- "https://api.dropbox.com/1/oauth/access_token";
 
 oauth_token_secret <- "";
 oauth_token <- "";
-
-function regex_simple(data,regStr,start)
-{
-	local ex = regexp(regStr);
-	local res = ex.capture(data, start);
-	local resultStr = "";
-	if(res != null){	
-		resultStr = data.slice(res[1].begin, res[1].end);
-	}
-		return resultStr;
-}
 
 function getTimeStamp() {
 	local days = ["Sun","Mon","Tue","Wed","Thu", "Fri", "Sat"];
@@ -28,27 +25,12 @@ function getTimeStamp() {
 	return res;
 }
 
-function generateNonce() {
-	local res = "";
-	res += format("%d%d%d", random(2000), random(2000), random(2000));
-	return res;
-}
-
 function custom_compare(item1,item2){
 	local a = item1.a+"="+item1.b;
 	local b = item2.a+"="+item2.b;
 	if(a>b) return 1;
 	else if(a<b) return -1;
 	return 0;
-}
-
-
-function _WriteLog(type,message) {
-	try {
-		WriteLog(type, message);
-	} catch (ex ) {
-		print(type + " : " + message);
-	}
 }
 
 function signRequest(url, token,tokenSecret) {
@@ -102,13 +84,6 @@ function sendOauthRequest(url, token,tokenSecret) {
 	nm.doPost("" );
 	return 0;
 }
-function openUrl(url) {
-	try{
-		return ShellOpenUrl(url);
-	}catch(ex){}
-
-	system("start "+ reg_replace(url,"&","^&") );
-}
 
 function DoLogin() {
 	oauth_token_secret = ServerParams.getParam("oauth_token_secret");
@@ -160,24 +135,6 @@ function isAuthorized() {
 	return false;
 }
 
-function msgBox(text) {
-	try {
-		DebugMessage(text, false);
-		return true;
-	}catch(ex) {
-	}
-	local tempScript = "%temp%\\imguploader_msgbox.vbs";
-	system("echo Set objArgs = WScript.Arguments : messageText = objArgs(0) : MsgBox messageText > \"" + tempScript + "\"");
-	system("cscript \"" + tempScript + "\" \"" + text + "\"");
-	system("del /f /q \"" + tempScript + "\"");
-	
-	
-	return true;
-}
-
-function min(a,b) {
-	return a < b ? a : b;
-}
 function  UploadFile(FileName, options) {		
 
 	if (!DoLogin() ) {
@@ -293,73 +250,6 @@ function  UploadFile(FileName, options) {
 	}
  	
 	return 0;
-}
-
-
-function reg_replace(str, pattern, replace_with)
-{
-	local resultStr = str;	
-	local res;
-	local start = 0;
-
-	while( (res = resultStr.find(pattern,start)) != null ) {	
-
-		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-		start = res + replace_with.len();
-	}
-	return resultStr;
-}
-
-
-
-
-function hex2int(str){
-	local res = 0;
-	local step = 1;
-	for( local i = str.len() -1; i >= 0; i-- ) {
-		local val = 0;
-		local ch = str[i];
-		if ( ch >= 'a' && ch <= 'f' ) {
-			val = 10 + ch - 'a';
-		}
-		else if ( ch >= '0' && ch <= '9' ) {
-			val = ch - '0';
-		}
-		res += step * val;
-		step = step * 16;
-	}
-	return res;
-}
-
-function unescape_json_string(data) {
-    local tmp;
-
-    local ch = 0x0424;
-	local result = data;
-	local ex = regexp("\\\\u([0-9a-fA-F]{1,4})");
-	local start = 0;
-	local res = null;
-	for(;;) {
-		res = ex.capture(data, start);
-		local resultStr = "";
-		if (res == null){
-			break;
-		}
-			
-		resultStr = data.slice(res[1].begin, res[1].end);
-		ch = hex2int(resultStr);
-		start = res[1].end;
-		 if(ch>=0x00000000 && ch<=0x0000007F)
-			tmp = format("%c",(ch&0x7f));
-		else if(ch>=0x00000080 && ch<=0x000007FF)
-			tmp = format("%c%c",(((ch>>6)&0x1f)|0xc0),((ch&0x3f)|0x80));
-		else if(ch>=0x00000800 && ch<=0x0000FFFF)
-		   tmp= format("%c%c%c",(((ch>>12)&0x0f)|0xe0),(((ch>>6)&0x3f)|0x80),((ch&0x3f)|0x80));
-			result = reg_replace( result, "\\u"+resultStr, tmp);
-   
-	}
-
-    return result;
 }
 
 function GetServerParamList()

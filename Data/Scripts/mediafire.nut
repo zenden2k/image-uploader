@@ -1,20 +1,10 @@
+include("Utils/RegExp.nut");
+
 trackKey <- "";
 ukey <- "";
 user <- "";
 uploadkey <- "";
 MFULConfig <- "";
-
-
-function regex_simple(data,regStr,start)
-{
-	local ex = regexp(regStr);
-	local res = ex.capture(data, start);
-	local resultStr = "";
-	if(res != null){	
-		resultStr = data.slice(res[1].begin, res[1].end);
-	}
-		return resultStr;
-}
 
 function Login() {
 	local email = ServerParams.getParam("Login");

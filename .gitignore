@@ -17,3 +17,4 @@ Image Uploader.sln
 UpgradeLog.htm
 *.idb
 Contrib
+/Contrib
