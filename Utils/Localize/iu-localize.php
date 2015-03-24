@@ -7,11 +7,11 @@
     $lang_dir = isset( $_POST["lang_dir"] ) ? $_POST["lang_dir"] : null;
     if ( !$dir ) {
         die ( '<form action=iu-localize.php method=post>
-	Image Uploader sources directory (e.g. <b><a href=# onclick="document.forms[0].dir.value=\'D:\\\\Projects\\\\Image Uploader\\\\Source\'"> D:\Projects\Image Uploader\Source\</a></b>):<br>
-	<input type=edit size=50 name=dir><p>
+	Image Uploader sources directory (e.g. <b><a href=# onclick="document.forms[0].dir.value=this.innerHTML">d:\Develop\imageuploader\Source\</a></b>):<br>
+	<input type=edit size=50 name=dir value="d:\Develop\imageuploader\Source\"><p>
 	
-	Image Uploader languages directory (e.g. <b><a href=# onclick="document.forms[0].lang_dir.value=\'D:\\\Projects\\\Image Uploader\\\Build\\\release\\\Lang\'"> D:\Projects\Image Uploader\Build\release\Lang\</a></b>):<br> 
-	<input type=edit size=50 name=lang_dir><p>
+	Image Uploader languages directory (e.g. <b><a href=# onclick="document.forms[0].lang_dir.value=this.innerHTML">d:\Develop\imageuploader\Lang\</a></b>):<br> 
+	<input type=edit size=50 name=lang_dir value="d:\Develop\imageuploader\Lang\"><p>
 	<input type=submit value=Localize name=btn_submit>
 	</form>' );
     }

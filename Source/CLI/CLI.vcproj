@@ -112,6 +112,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP$(NUMBER_OF_PROCESSORS)"
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
@@ -136,6 +137,7 @@
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
 				AdditionalDependencies="minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avcodec.lib wininet.lib zthread.lib jsoncpp.lib libglog_static.lib"
+				OutputFile="$(OutDir)\imgupload.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib&quot;;&quot;$(SolutionDir)\Contrib\Lib\Release&quot;"
 				GenerateDebugInformation="true"
@@ -234,7 +236,7 @@
 					Name="Network"
 					>
 					<File
-						RelativePath="..\Core\Network\NetworkManager.cpp"
+						RelativePath="..\Core\Network\NetworkClient.cpp"
 						>
 					</File>
 				</Filter>

@@ -1,20 +1,20 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "ImageReuploaderDlg.h"
@@ -483,7 +483,7 @@ bool CImageReuploaderDlg::BeginDownloading()
 
 			m_FileDownloader.onFileFinished.bind(this, &CImageReuploaderDlg::OnFileFinished);
 			m_FileDownloader.onQueueFinished.bind(this, &CImageReuploaderDlg::OnQueueFinished);
-			m_FileDownloader.onConfigureNetworkManager.bind(this, &CImageReuploaderDlg::FileDownloader_OnConfigureNetworkManager);
+			m_FileDownloader.onConfigureNetworkClient.bind(this, &CImageReuploaderDlg::FileDownloader_OnConfigureNetworkClient);
 			m_FileDownloader.start();
 			
 			updateStats();
@@ -535,12 +535,12 @@ bool CImageReuploaderDlg::OnQueueFinished(CFileQueueUploader*) {
 	return true;
 }
 
-bool  CImageReuploaderDlg::OnConfigureNetworkManager(CFileQueueUploader* ,NetworkManager* nm) {
+bool  CImageReuploaderDlg::OnConfigureNetworkClient(CFileQueueUploader* ,NetworkClient* nm) {
 	IU_ConfigureProxy(*nm);
 	return true;
 }
 
-void CImageReuploaderDlg::FileDownloader_OnConfigureNetworkManager(NetworkManager* nm) {
+void CImageReuploaderDlg::FileDownloader_OnConfigureNetworkClient(NetworkClient* nm) {
 	IU_ConfigureProxy(*nm);
 }
 

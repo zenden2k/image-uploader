@@ -5,16 +5,16 @@
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
@@ -65,9 +65,9 @@ protected:
 		//SquirrelObject m_Object;
 		CScriptUploadEngine(Utf8String pluginName);
 		~CScriptUploadEngine();
-		void setNetworkManager(NetworkManager* nm);
+		void setNetworkClient(NetworkClient* nm);
 		bool load(Utf8String fileName, ServerSettingsStruct& params);
-		//void bindNetworkManager(NetworkManager * nm);
+		//void bindNetworkClient(NetworkClient * nm);
 		int getFolderList(CFolderList &FolderList);
 		int  createFolder(CFolderItem &parent, CFolderItem &folder);
 		int  modifyFolder(CFolderItem &folder);

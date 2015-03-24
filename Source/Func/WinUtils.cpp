@@ -788,31 +788,6 @@ bool GetClipboardHtml(CString& text, CString& outSourceUrl) {
 	return false;
 }
 
-
-Gdiplus::Bitmap* IconToBitmap(HICON ico)
-{
-	ICONINFO ii; 
-	GetIconInfo(ico, &ii);
-	BITMAP bmp; 
-	GetObject(ii.hbmColor, sizeof(bmp), &bmp);
-
-	Gdiplus::Bitmap temp(ii.hbmColor, NULL);
-	Gdiplus::BitmapData lockedBitmapData;
-	memset(&lockedBitmapData, 0, sizeof(lockedBitmapData));
-	Gdiplus::Rect rc(0, 0, temp.GetWidth(), temp.GetHeight());
-
-	Gdiplus::Status st = temp.LockBits(&rc, Gdiplus::ImageLockModeRead, temp.GetPixelFormat(), &lockedBitmapData);
-
-
-	Gdiplus::Bitmap* image = new Gdiplus::Bitmap(
-		lockedBitmapData.Width, lockedBitmapData.Height, lockedBitmapData.Stride,
-		PixelFormat32bppARGB, reinterpret_cast<BYTE *>(lockedBitmapData.Scan0));
-
-	temp.UnlockBits(&lockedBitmapData);
-	return image;
-}
-
-
 float GetMonitorScaleFactor()
 {
 	float res = 1.0;
@@ -849,6 +824,25 @@ float GetMonitorScaleFactor()
 		res = (LogicalMonitorWidth / LogicalDesktopWidth) / ModeInfoArray[0].sourceMode.width
 
 	}*/
+	return res;
+}
+
+CString GetLastErrorAsString()
+{
+	//Get the error message, if any.
+	DWORD errorMessageID = ::GetLastError();
+	if(errorMessageID == 0)
+		return "No error message has been recorded";
+
+	LPTSTR messageBuffer = 0;
+	size_t size = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&messageBuffer, 0, NULL);
+
+	CString res = messageBuffer;
+
+	//Free the buffer.
+	LocalFree(messageBuffer);
+
 	return res;
 }
 

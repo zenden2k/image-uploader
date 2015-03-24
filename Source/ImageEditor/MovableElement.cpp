@@ -8,6 +8,7 @@ namespace ImageEditor {
 using namespace Gdiplus;
 
 MovableElement::MovableElement(Canvas* canvas){
+	drawDashedRectangle_ = true;
 	startPoint_.x = 0;
 	startPoint_.y = 0;
 	endPoint_.x   = 0;
@@ -16,9 +17,10 @@ MovableElement::MovableElement(Canvas* canvas){
 	color_ = Gdiplus::Color( 0, 0, 0 );
 	penSize_ = 1;
 	isSelected_ = false;
-	drawDashedRectangle_ = true;
+	
 	grips_.resize(8);
 	canvas_ = canvas;
+	isMoving_ = false;
 }
 
 
@@ -36,11 +38,11 @@ void MovableElement::renderGrips(Painter* gr)
 	REAL dashValues[2] = {4, 4};
 	pen.SetDashPattern(dashValues, 2);
 	//pen.SetBrush(&brush);
-	int x = std::min<>( startPoint_.x, endPoint_.x );
-	int y = std::min<>( startPoint_.y, endPoint_.y );
-	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
-	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
-	if (  drawDashedRectangle_ ) {
+	int x = getX();
+	int y = getY();
+	int width = getWidth()-1;
+	int height = getHeight()-1;
+	if (  /*isSelected_ || */drawDashedRectangle_ ) {
 		gr->DrawRectangle( &pen, x, y, width, height );
 		pen.SetColor(Color( 255, 255, 255) );
 		pen.SetDashOffset(3);
@@ -54,10 +56,10 @@ void MovableElement::renderGrips(Painter* gr)
 		int halfSize = rectSize /2 ;
 		Gdiplus::Pen pen( Color( 255,255, 255) );
 		//pen.SetDashStyle(DashStyleDash);
-		int x = std::min<>( startPoint_.x, endPoint_.x );
-		int y = std::min<>( startPoint_.y, endPoint_.y );
-		int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
-		int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
+		/*int x = getX();
+		int y = getY();
+		int width = getWidth();
+		int height = getHeight();*/
 		Gdiplus::SolidBrush brush(Color( 10, 10, 10) );
 
 		createGrips();
@@ -108,6 +110,11 @@ CursorType MovableElement::GetCursorForBoundary(BoundaryType bt)
 	}
 }
 
+void MovableElement::setDrawDashedRectangle(bool draw)
+{
+	drawDashedRectangle_ = draw;
+}
+
 int MovableElement::getX() 
 {
 	return getMinPoint(axisX)->x ;
@@ -116,6 +123,18 @@ int MovableElement::getX()
 int MovableElement::getY() 
 {
 	return getMinPoint(axisY)->y;
+}
+
+RECT MovableElement::getPaintBoundingRect()
+{
+	int radius = penSize_;
+	if ( canvas_->hasBlurRectangles() ) {
+		radius += canvas_->getBlurRadius();
+	}
+	RECT res = { getX()-radius, getY()-radius, getWidth()+radius*2, getHeight()+radius*2};
+	res.right += res.left;
+	res.bottom += res.top;
+	return res;
 }
 
 void MovableElement::setX(int x)
@@ -164,8 +183,8 @@ void MovableElement::resize(int width, int height)
 	if ( height < 1 ) {
 		height  = 1;
 	}
-	getMaxPoint(axisX)->x = width + getX();	
-	getMaxPoint(axisY)->y = height + getY();
+	getMaxPoint(axisX)->x = width-1 + getX();	
+	getMaxPoint(axisY)->y = height-1 + getY();
 }
 
 void MovableElement::createGrips()
@@ -173,13 +192,14 @@ void MovableElement::createGrips()
 	int rectSize = kGripSize;
 	int halfSize = rectSize /2 ;
 	
-	int x = std::min<>( startPoint_.x, endPoint_.x );
-	int y = std::min<>( startPoint_.y, endPoint_.y );
-	int width = std::max<>( startPoint_.x, endPoint_.x ) - x;
-	int height = std::max<>( startPoint_.y, endPoint_.y ) - y;
+	int x = getX();
+	int y = getY();
+	int width = getWidth()-1;
+	int height = getHeight()-1;
 
-	POINT pts[8] = {{x,y}, {x + width / 2, y}, {x+width,y}, {x+width,y+height/2}, 
-	{x+width,y+height},  {x+width/2, y+height}, {x,y+height},{x,y+height/2}	
+	// item order is important!!!! FIXME: use std::map
+	POINT pts[8] = {
+	{x+width,y+height},  {x+width/2, y+height}, {x,y+height},{x+width,y+height/2}, {x,y+height/2}, {x,y}, {x + width / 2, y}, {x+width,y}, 
 	};
 
 	for( int i = 0; i < 8; i++ ) {
@@ -188,9 +208,24 @@ void MovableElement::createGrips()
 		Grip grip;
 		grip.pt.x = x;
 		grip.pt.y = y;
+		if ( x == startPoint_.x && y == startPoint_.y ) {
+			grip.gpt = gptStartPoint;
+		} else if ( x == endPoint_.x &&   y == endPoint_.y ) {
+			grip.gpt = gptEndPoint;
+		}
 		grip.bt = static_cast<BoundaryType>(i);
 		grips_[i] = grip;
 	}
+}
+
+void MovableElement::beginMove()
+{
+	isMoving_ = true;
+}
+
+void MovableElement::endMove()
+{
+	isMoving_ = false;
 }
 
 POINT* MovableElement::getMaxPoint(Axis axis)

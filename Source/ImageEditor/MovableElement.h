@@ -16,9 +16,17 @@ class MovableElement: public DrawingElement {
 	public:
 		
 		enum { kGripSize = 6 ,kSelectRadius = 5};
+		enum GripPointType {gptNone, gptStartPoint, gptEndPoint};
 		struct Grip {
 			POINT pt;
 			BoundaryType bt;
+			GripPointType gpt; 
+			Grip() {
+				pt.x = -1;
+				pt.y = -1;
+				bt = btNone;
+				gpt = gptNone;
+			}
 		};
 		MovableElement(Canvas* canvas_);
 		void render(Painter* gr);
@@ -28,14 +36,19 @@ class MovableElement: public DrawingElement {
 		virtual ElementType getType() const;
 		static CursorType GetCursorForBoundary(BoundaryType bt);
 		friend class MoveAndResizeTool;
+		void setDrawDashedRectangle(bool draw);
 		int getX();
 		int getY();
+		virtual RECT getPaintBoundingRect();
+
 		void setX(int  x);
 		void setY(int y);
 		virtual bool isItemAtPos(int x, int y);
 
 		virtual void resize(int width, int height);
 		virtual void createGrips();
+		virtual void beginMove();
+		virtual void endMove();
 
 
 	protected:
@@ -45,6 +58,7 @@ class MovableElement: public DrawingElement {
 		
 		POINT* getMaxPoint(Axis axis);
 		POINT* getMinPoint(Axis axis);
+		bool isMoving_;
 };
 
 }

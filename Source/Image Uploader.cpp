@@ -1,20 +1,20 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
@@ -137,6 +137,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	
 	// deletes empty temp directory
 	RemoveDirectory( IuCommonFunctions::IUCommonTempFolder );
+	LogWindow.DestroyWindow();
 	return 0;
 }
 
@@ -173,9 +174,32 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 			DWORD pid = _ttoi( pidStr );
 			HANDLE hProcess = OpenProcess( SYNCHRONIZE, false, pid ); 
 			WaitForSingleObject( hProcess, 20000 );
+
+			// Workaround for version prior to 1.1.7
+			if (!CmdLine.IsOption(_T("update")) && !CmdLine.IsOption(L"afterupdate")) {
+				Settings.FindDataFolder();
+				if ( !WinUtils::IsDirectory( Settings.DataFolder + "Thumbnails\\") ) {
+					SimpleXml xml;
+					std::string updateFile = WCstringToUtf8(Settings.DataFolder + "Update\\iu_core.xml");
+					if ( xml.LoadFromFile(updateFile) ) {
+						SimpleXmlNode root = xml.getRoot("UpdateInfo", false);
+						if ( !root.IsNull() ) {
+							int64_t timestamp = root.AttributeInt64("TimeStamp");
+							if ( timestamp >= 0  ) {
+								root.SetAttribute("TimeStamp", timestamp-1);
+								xml.SaveToFile(updateFile);
+								CmdLine.AddParam(L"/update");
+							}
+						}
+					}
+					
+				}
+				
+			}
 		} else if ( CurrentParam == "/debuglog") {
 			FLAGS_logtostderr = false;
 			FLAGS_alsologtostderr = true;
+
 		}
 	}
 
@@ -202,9 +226,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	CScriptUploadEngine::DestroyScriptEngine();
 	OleUninitialize();
 
-	 google::ShutdownGoogleLogging();
-	//for (int i = 0; i < 1000000; i++)
-		/*int *ptr = new int[100000000];
-		ptr[165654] =36;*/
+	google::ShutdownGoogleLogging();
 	return 0;
 }

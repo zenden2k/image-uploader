@@ -1,20 +1,20 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
@@ -37,14 +37,14 @@
 std::string nm_trimStr(const std::string& str);
 void nm_splitString(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount = -1);
 
-class NetworkManager
+class NetworkClient
 {
 	public:
 		enum ActionType {
 			atNone = 0, atPost, atUpload, atGet
 		};
-		NetworkManager(void);
-		~NetworkManager(void);
+		NetworkClient(void);
+		~NetworkClient(void);
 		void addQueryParam(const NString& name, const NString& value);
 		void addQueryParamFile(const NString& name, const NString& fileName, const NString& displayName = "", const NString& contentType = "");
 		void addQueryHeader(const NString& name, const NString& value);
@@ -84,7 +84,7 @@ class NetworkManager
 		struct CallBackData
 		{
 			CallBackFuncType funcType;
-			NetworkManager* nmanager;
+			NetworkClient* nmanager;
 		};
 
 		struct CustomHeaderItem
@@ -116,6 +116,7 @@ class NetworkManager
 		bool private_on_finish_request();
 		void private_initTransfer();
 		void private_checkResponse();
+		static void curl_cleanup();
 
 		int m_UploadBufferSize;
 		CURL *curl_handle;

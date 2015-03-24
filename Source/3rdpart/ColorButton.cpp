@@ -1878,6 +1878,10 @@ void CColorButton::SendNotification (UINT nCode, COLORREF clr, BOOL fColorValid)
 
 	::SendMessage (GetParent (), WM_NOTIFY, 
 		(WPARAM) GetDlgCtrlID (), (LPARAM) &nmclr);
+
+	if ( nCode == CPN_SELENDOK && OnSelChange ) {
+		OnSelChange(clr, fColorValid);
+	}
 }
 
 //-----------------------------------------------------------------------------

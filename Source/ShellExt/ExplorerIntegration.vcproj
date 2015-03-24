@@ -240,6 +240,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP$(NUMBER_OF_PROCESSORS)"
 				Optimization="3"
 				FavorSizeOrSpeed="2"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Source\&quot;"
@@ -630,6 +631,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP$(NUMBER_OF_PROCESSORS)"
 				Optimization="3"
 				FavorSizeOrSpeed="2"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Source\&quot;"

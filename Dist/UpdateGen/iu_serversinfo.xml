@@ -3,10 +3,15 @@
 	<Entries>
 		<Entry Name="Data/servers.xml" SaveToFolder="%datapath%/" Action="add"/>
 		<Entry Name="Data/Scripts/*.nut" SaveToFolder="%datapath%/Scripts/" Action="add"/>
+		<Entry Name="Data/Scripts/Lang/*.json" SaveToFolder="%datapath%/Scripts/Lang/" Action="add"/>
 		<!-- favicons -->
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
 <Info>
-Fixed big file (>150 Mb) uploading to Dropbox ( Image Uploader 1.3.0.4222 and later)
+[+]mepic.ru
+[+]ipic.su
+[+]rupix.org
+[+]simplest-image-hosting.net
+[+]datafilehost.com
 </Info>
 </UpdatePackageSource>

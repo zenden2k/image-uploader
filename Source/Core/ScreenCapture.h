@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -24,8 +24,9 @@
 #include <vector>
 #include "atlheaders.h"
 #include <gdiplus.h>
+#include <zthread/CountedPtr.h>
 
-bool GetScreenBounds(RECT& rect);
+
 HRGN GetWindowVisibleRegion(HWND wnd);
 
 void TimerWait(int Delay);
@@ -134,12 +135,12 @@ class CScreenCaptureEngine
 		void setSource(HBITMAP src);
 		bool captureRegion(CScreenshotRegion* region);
 		void setDelay(int msec);
-		Gdiplus::Bitmap* capturedBitmap();
+		ZThread::CountedPtr<Gdiplus::Bitmap> capturedBitmap();
 		Gdiplus::Bitmap* releaseCapturedBitmap();
 
 	private:
 		int m_captureDelay;
-		Gdiplus::Bitmap* m_capturedBitmap;
+		ZThread::CountedPtr<Gdiplus::Bitmap> m_capturedBitmap;
 		HBITMAP m_source;
 };
 

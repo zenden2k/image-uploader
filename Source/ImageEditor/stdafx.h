@@ -11,7 +11,18 @@
 #define WINVER		0x0601 // 0x0601 = Windows 7 
 #define _WIN32_WINNT	0x0601
 #define _WIN32_IE	0x0501
-#define _RICHEDIT_VER	0x0200 
+#define _RICHEDIT_VER	0x0300 
+
+#define _WIN32_WINNT 0x0601
+
+//GDI+ Required objbase.h
+#include <objbase.h>
+
+#ifndef __field_ecount_opt
+#define __field_ecount_opt(s)
+#endif
+#include <GdiPlus.h>
+#include <gdipluseffects.h>
 
 #include <atlbase.h>
 #include <atlapp.h>

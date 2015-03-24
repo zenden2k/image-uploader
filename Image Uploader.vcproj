@@ -45,10 +45,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-MP$(NUMBER_OF_PROCESSORS)"
+				AdditionalOptions="/MP$(NUMBER_OF_PROCESSORS)"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX;TIXML_USE_STL;PCRE_STATIC;CURL_STATICLIB;GOOGLE_GLOG_DLL_DECL="
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX;TIXML_USE_STL;PCRE_STATIC;CURL_STATICLIB;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="0"
@@ -58,7 +58,7 @@
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 				CallingConvention="0"
-				ForcedIncludeFiles="stdafx.h;"
+				ForcedIncludeFiles="stdafx.h;vld.h"
 				ForcedUsingFiles="stdafx.h"
 			/>
 			<Tool
@@ -72,10 +72,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zlibd.lib minizipd.lib zthread.lib gdiplus.lib strmbasd.lib libcurld_imp.lib Ws2_32.lib avcodec.lib avformat.lib avutil.lib swscale.lib dwmapi.lib squirrelD.lib sqstdlibD.lib sqplusD.lib ssleay32.lib libeay32.lib pcred.lib pcre++.lib wininet.lib winmm.lib jsoncpp.lib Normaliz.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
+				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zlibd.lib minizipd.lib zthread.lib gdiplus.lib strmbasd.lib libcurld_imp.lib Ws2_32.lib avcodec.lib avformat.lib avutil.lib swscale.lib dwmapi.lib squirrelD.lib sqstdlibD.lib sqplusD.lib ssleay32.lib libeay32.lib pcred.lib pcre++.lib wininet.lib winmm.lib jsoncpp.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib\Debug&quot;;&quot;$(SolutionDir)Contrib\Lib\&quot;"
 				IgnoreDefaultLibraryNames="msvcrt.lib;LIBCMT.lib;"
-				DelayLoadDLLs="uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Normaliz.dll;Iphlpapi.dll;Netapi32.dll"
+				DelayLoadDLLs="uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Iphlpapi.dll;Netapi32.dll"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
@@ -215,12 +215,12 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-MP$(NUMBER_OF_PROCESSORS)"
+				AdditionalOptions="/MP$(NUMBER_OF_PROCESSORS)"
 				Optimization="0"
 				FavorSizeOrSpeed="0"
 				WholeProgramOptimization="false"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC;TIXML_USE_STL;PCRE_STATIC;GOOGLE_GLOG_DLL_DECL="
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC;TIXML_USE_STL;PCRE_STATIC;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100"
 				StringPooling="true"
 				MinimalRebuild="false"
 				ExceptionHandling="1"
@@ -247,21 +247,22 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avformat.lib avutil.lib swscale.lib avcodec.lib wininet.lib jsoncpp.lib Normaliz.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
+				AdditionalOptions=" /ignore:4099"
+				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avformat.lib avutil.lib swscale.lib avcodec.lib wininet.lib jsoncpp.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib\Release&quot;;&quot;$(SolutionDir)\Contrib\Lib\&quot;"
 				GenerateManifest="false"
 				AdditionalManifestDependencies=""
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="msvcprt.lib MSVCRT"
-				DelayLoadDLLs="uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Normaliz.dll;Iphlpapi.dll;Netapi32.dll"
-				GenerateDebugInformation="true"
-				AssemblyDebug="1"
-				GenerateMapFile="true"
+				DelayLoadDLLs="uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Iphlpapi.dll;Netapi32.dll"
+				GenerateDebugInformation="false"
+				AssemblyDebug="0"
+				GenerateMapFile="false"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				LinkTimeCodeGeneration="0"
+				LinkTimeCodeGeneration="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"
@@ -351,7 +352,7 @@
 				AdditionalOptions="/CRINKLER"
 				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wininet.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib tinyxml_STL.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;d:\Projects\Image Uploader\Image Uploader\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;$(SolutionDir)\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
 				GenerateManifest="false"
 				AdditionalManifestDependencies=""
 				IgnoreAllDefaultLibraries="false"
@@ -448,7 +449,7 @@
 				AdditionalOptions="/CRINKLER"
 				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wininet.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib tinyxml_STL.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;d:\Projects\Image Uploader\Image Uploader\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;$(SolutionDir)\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
 				GenerateManifest="false"
 				AdditionalManifestDependencies=""
 				IgnoreAllDefaultLibraries="false"
@@ -547,7 +548,7 @@
 				AdditionalOptions="/CRINKLER"
 				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wininet.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib tinyxml_STL.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;d:\Projects\Image Uploader\Image Uploader\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;$(SolutionDir)\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
 				GenerateManifest="false"
 				AdditionalManifestDependencies=""
 				IgnoreAllDefaultLibraries="false"
@@ -614,10 +615,10 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-MP$(NUMBER_OF_PROCESSORS)"
 				Optimization="3"
-				FavorSizeOrSpeed="2"
+				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL="
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100"
 				StringPooling="true"
 				MinimalRebuild="false"
 				ExceptionHandling="1"
@@ -644,20 +645,19 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="true"
-				AdditionalOptions="/CRINKLER"
-				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avformat.lib avutil.lib swscale.lib avcodec.lib wininet.lib jsoncpp.lib Normaliz.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
+				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbccp32.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avformat.lib avutil.lib swscale.lib avcodec.lib wininet.lib jsoncpp.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib&quot;;&quot;$(SolutionDir)\Contrib\Lib\Release&quot;"
 				GenerateManifest="false"
 				AdditionalManifestDependencies=""
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="msvcprt.lib MSVCRT"
-				DelayLoadDLLs="uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Normaliz.dll;Iphlpapi.dll;Netapi32.dll"
+				DelayLoadDLLs="uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Iphlpapi.dll;Netapi32.dll"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				OptimizeForWindows98="1"
+				OptimizeForWindows98="0"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"
@@ -747,7 +747,161 @@
 				AdditionalOptions="/CRINKLER"
 				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wininet.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib tinyxml_STL.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;d:\Projects\Image Uploader\Image Uploader\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;$(SolutionDir)\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
+				GenerateManifest="false"
+				AdditionalManifestDependencies=""
+				IgnoreAllDefaultLibraries="false"
+				IgnoreDefaultLibraryNames="msvcprt.lib MSVCRT"
+				DelayLoadDLLs="uxtheme.dll"
+				GenerateDebugInformation="false"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release Win2k|Win32"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release Win2k|x64"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			CharacterSet="1"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="&quot;$(SolutionDir)\Utils\Version\version.exe&quot; &quot;$(SolutionDir)\Source\versioninfo.h&quot; ImageUploader"
+				ExcludedFromBuild="true"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+				GenerateTypeLibrary="false"
+				OutputDirectory="$(SolutionDir)Build\Temp\Midl\$(ConfigurationName)"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				FavorSizeOrSpeed="2"
+				WholeProgramOptimization="false"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Include\DX&quot;;&quot;$(SolutionDir)\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Include\WTL&quot;;&quot;$(SolutionDir)\Include\&quot;;&quot;$(SolutionDir)\Include\pcre&quot;;&quot;$(SolutionDir)\Include\tinyxml&quot;;&quot;$(SolutionDir)\Include\sqplus&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC"
+				StringPooling="true"
+				MinimalRebuild="false"
+				ExceptionHandling="1"
+				RuntimeLibrary="0"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="2"
+				WarningLevel="0"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="0"
+				ForcedIncludeFiles="stdafx.h"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+				CommandLine=""
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkLibraryDependencies="true"
+				AdditionalOptions="/CRINKLER"
+				AdditionalDependencies="gdiplus.lib STRMBASE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wininet.lib minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib tinyxml_STL.lib"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;$(SolutionDir)\Libs\&quot;;&quot;$(SolutionDir)\Libs\Release&quot;"
 				GenerateManifest="false"
 				AdditionalManifestDependencies=""
 				IgnoreAllDefaultLibraries="false"
@@ -1066,6 +1220,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\res\ImageEditor\colorpicker.cur"
+				>
+			</File>
+			<File
 				RelativePath="Source\res\Error.ico"
 				>
 			</File>
@@ -1102,19 +1260,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-link.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\res\icon-link.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-link.png"
+				RelativePath=".\res\icon-link.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\res\icon-link.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon-link.png"
 				>
 			</File>
 			<File
@@ -1138,11 +1296,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-user.ico"
+				RelativePath=".\res\icon-user.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-user.ico"
+				RelativePath=".\Source\res\icon-user.ico"
 				>
 			</File>
 			<File
@@ -1159,6 +1317,14 @@
 			</File>
 			<File
 				RelativePath=".\Source\res\icon4.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\ImageEditor\icon_add.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_add.png"
 				>
 			</File>
 			<File
@@ -1214,11 +1380,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_folder2.png"
+				RelativePath=".\res\icon_folder2.png"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_folder2.png"
+				RelativePath=".\Source\res\icon_folder2.png"
 				>
 			</File>
 			<File
@@ -1238,7 +1404,91 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\ImageEditor\icon_save.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_save.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_arrow.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_bluring_rectangle.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_brush.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_color_picker.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_crop.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_ellipse.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_filled_ellipse.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_filled_rectangle.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_filled_rounded_rectangle.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_line.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_marker.png"
+				>
+			</File>
+			<File
+				RelativePath=".\res\ImageEditor\icon_tool_marker.png"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\res\ImageEditor\icon_tool_move.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_pencil.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_rectangle.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_rounded_rectangle.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_selection.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_tool_text.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_undo.png"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon_up.ico"
 				>
 			</File>
 			<File
@@ -1246,7 +1496,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_up.ico"
+				RelativePath=".\res\ImageEditor\icon_upload.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_upload.png"
 				>
 			</File>
 			<File
@@ -1344,6 +1598,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Core\Logging.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Source\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -1423,6 +1681,14 @@
 				Name="Core"
 				>
 				<File
+					RelativePath=".\Source\Core\AppParams.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Core\AppParams.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Source\Core\FileDownloader.cpp"
 					>
 				</File>
@@ -1436,10 +1702,6 @@
 				</File>
 				<File
 					RelativePath=".\Source\Core\ImageConverter.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Source\Core\Logging .cpp"
 					>
 				</File>
 				<File
@@ -1468,6 +1730,10 @@
 				</File>
 				<File
 					RelativePath=".\Source\Core\SettingsManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Core\Squirrelnc.h"
 					>
 				</File>
 				<File
@@ -1566,11 +1832,11 @@
 					Name="Network"
 					>
 					<File
-						RelativePath=".\Source\Core\Network\NetworkManager.cpp"
+						RelativePath=".\Source\Core\Network\NetworkClient.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\Source\Core\Network\NetworkManager.h"
+						RelativePath=".\Source\Core\Network\NetworkClient.h"
 						>
 					</File>
 				</Filter>
@@ -1614,6 +1880,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Source\Core\Utils\Singleton.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\Utils\Singleton.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Source\Core\Utils\StringUtils.cpp"
 						>
 					</File>
@@ -1639,6 +1913,14 @@
 					</File>
 					<File
 						RelativePath=".\Source\Core\Images\Thumbnail.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\Images\Utils.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\Images\Utils.h"
 						>
 					</File>
 				</Filter>
@@ -1759,14 +2041,26 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="Image"
+					Name="ScriptAPI"
 					>
 					<File
-						RelativePath=".\Source\Core\Images\Utils.cpp"
+						RelativePath=".\Source\Core\ScriptAPI\Functions.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\Source\Core\Images\Utils.h"
+						RelativePath=".\Source\Core\ScriptAPI\Functions.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\ScriptAPI\RegularExpression.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\ScriptAPI\RegularExpression.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\ScriptAPI\ScriptAPI.h"
 						>
 					</File>
 				</Filter>
@@ -2250,6 +2544,218 @@
 					RelativePath=".\Source\Func\WinUtils.h"
 					>
 				</File>
+			</Filter>
+			<Filter
+				Name="ImageEditor"
+				>
+				<File
+					RelativePath=".\Source\ImageEditor\BasicTypes.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\BasicTypes.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\Canvas.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\Canvas.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\Document.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\Document.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\DrawingElement.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\DrawingElement.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\DrawingTool.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\DrawingTool.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\InputBox.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\MovableElement.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\MovableElement.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\MovableElements.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\MovableElements.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\Region.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\Region.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ImageEditor\resource.h"
+					>
+				</File>
+				<Filter
+					Name="Gui"
+					>
+					<File
+						RelativePath=".\Source\ImageEditor\Gui\ColorsDelegate.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\Gui\ColorsDelegate.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\Gui\ImageEditorView.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\Gui\ImageEditorView.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\Gui\ImageEditorWindow.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\Gui\ImageEditorWindow.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\Gui\InputBoxControl.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\Gui\InputBoxControl.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\Gui\Toolbar.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\Gui\Toolbar.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="DrawingTools"
+					>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\AbstractDrawingTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\AbstractDrawingTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\BlurTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\BlurTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\BrushTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\BrushTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\ColorPickerTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\ColorPickerTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\CropTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\CropTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\MarkerTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\MarkerTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\MoveAndResizeTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\MoveAndResizeTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\PenTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\PenTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\SelectionTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\SelectionTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\TextTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\TextTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\VectorElementTool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\DrawingTools\VectorElementTool.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<File

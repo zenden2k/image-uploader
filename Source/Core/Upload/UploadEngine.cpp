@@ -1,20 +1,20 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
@@ -140,9 +140,9 @@ void CAbstractUploadEngine::SetStatus(StatusType status, std::string param)
 		onStatusChanged(status, 0,  param);
 }
 
-void CAbstractUploadEngine::setNetworkManager(NetworkManager* nm)
+void CAbstractUploadEngine::setNetworkClient(NetworkClient* nm)
 {
-	m_NetworkManager = nm;
+	m_NetworkClient = nm;
 }
 
 void CAbstractUploadEngine::setUploadData(CUploadEngineData* data)
@@ -153,7 +153,7 @@ void CAbstractUploadEngine::setUploadData(CUploadEngineData* data)
 CAbstractUploadEngine::CAbstractUploadEngine()
 {
 	m_bShouldStop = 0;
-	m_NetworkManager = 0;
+	m_NetworkClient = 0;
 	m_UploadData = 0;
 }
 

@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -20,6 +20,8 @@
 
 #include "InputBoxControl.h"
 #include <Core/Images/Utils.h>
+#include <Gui/GuiTools.h>
+#include <Core/Logging.h>
 
 namespace ImageEditor {
 // CLogListBox
@@ -35,7 +37,9 @@ InputBoxControl::~InputBoxControl() {
 LRESULT InputBoxControl::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)
 {
 	bHandled = false;
-	SetEventMask(ENM_CHANGE);
+	SetEventMask(ENM_CHANGE|ENM_REQUESTRESIZE);
+	
+	SetFont(GuiTools::MakeFontBigger(GuiTools::GetSystemDialogFont()));
 	//SetWindowLong(GWL_ID, (LONG)m_hWnd);
 	return 0;
 }
@@ -64,7 +68,7 @@ void InputBoxControl::show(bool s)
 
 void InputBoxControl::resize(int x, int y, int w,int h, std::vector<MovableElement::Grip> grips)
 {
-	SetWindowPos(HWND_TOP,x,y,w,h, 0);
+	SetWindowPos(/*HWND_TOP*/0,x,y,w,h, 0);
 	/*CRgn rgn;
 	rgn.CreateRectRgn(0,0,w,h);
 	for ( int i = 0; i < grips.size(); i++ ) {
@@ -93,6 +97,18 @@ void InputBoxControl::invalidate()
 	Invalidate(false);
 }
 
+void InputBoxControl::setTextColor(Gdiplus::Color color)
+{
+	CHARFORMAT cf;
+	memset(&cf, 0, sizeof(cf));
+	cf.cbSize = sizeof(cf);
+	cf.crTextColor = color.ToCOLORREF();
+	cf.dwMask = CFM_COLOR;
+	//SetSel(0, -1);
+	SendMessage(EM_SETCHARFORMAT, SCF_ALL, (LPARAM) &cf);
+	//SetSel(-1, 0);
+}
+
 LRESULT InputBoxControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled) {
 	return 0;
 }
@@ -101,35 +117,62 @@ LRESULT InputBoxControl::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	WPARAM vKey = wParam;
 
 	if ( vKey == VK_ESCAPE ) {
-		ShowWindow( SW_HIDE );
+		if ( onEditCanceled ) {
+			onEditCanceled();
+		}
 		bHandled = true;
+	} else if ( vKey == VK_RETURN && GetKeyState(VK_CONTROL) & 0x80 && onEditFinished ) {
+		onEditFinished();
 	}
 
-
-	CRect r;
-	TCHAR buf[512];
-	GetWindowText( buf, sizeof(buf) /sizeof (*buf) );
-	HDC hDC = GetDC();
-	DrawText(hDC, buf, lstrlen( buf ) , &r, DT_CALCRECT);
-
-	CRect formatRect;
-	GetRect( &formatRect );
-	//Logger::Write(_T("%d %d %d %d\r\n"), r );
-	CRect clientRect;
-	GetClientRect( &clientRect );
-	/*DWORD margins = GetMargins();
-	if (r.Width()  > clientRect.Width() || r.Height() > clientRect.Height() ) {
-		SetWindowPos( 0, 0, 0, r.Width() + clientRect.Width() - formatRect.Width() +5 , 
-			r.Height() + clientRect.Height() - formatRect.Height()+5, SWP_NOMOVE );
-	}*/
 	return 1;
 }
 
 LRESULT InputBoxControl::OnChange(UINT wNotifyCode,int, HWND)
 {
+	/*CRect formatRect;
+	GetRect( &formatRect );
+	//Logger::Write(_T("%d %d %d %d\r\n"), r );
+	CRect clientRect;
+	GetClientRect( &clientRect );
+	FORMATRANGE fr;
+	CDC dc = GetDC();
+	ZeroMemory(&fr, sizeof(fr));
+	fr.hdc = dc;
+	fr.hdcTarget = dc;
+	fr.rc.left =0;
+	fr.rc.top = 0;
+	fr.rc.right = 0;
+	fr.rc.bottom = 0;
+	fr.chrg.cpMax = -1;                    //Indicate character from to character to 
+	fr.chrg.cpMin = 0;
+	FormatRange(&fr, FALSE);
+	CRect r = fr.rc;
+	LOG(INFO) << "r="<< r.left<< " " <<  r.top << " " << r.right - r.left << " " << r.bottom - r.top;
+
+	if (r.Width()  > clientRect.Width() || r.Height() > clientRect.Height() ) {
+		SetWindowPos( 0, 0,0, r.Width() + clientRect.Width() - formatRect.Width() +5 , 
+			r.Height() + clientRect.Height() - formatRect.Height()+5, SWP_NOMOVE );
+	}*/
+
 	if ( onTextChanged ) {
 		onTextChanged(L"");
 	}
+	return 0;
+}
+
+LRESULT InputBoxControl::OnRequestResize(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+{
+	bHandled = true;
+	LOG(INFO) << "OnRequestResize";
+	REQRESIZE * pReqResize = (REQRESIZE *) pnmh; 
+	
+	if ( onResized ) {
+		SIZE sz = { pReqResize->rc.right - pReqResize->rc.left, pReqResize->rc.bottom - pReqResize->rc.top };
+		//LOG(INFO) << sz.cx << " " << sz.cy;
+		onResized(sz.cx, sz.cy);
+	}
+	//*SetWindowPos(0, 0,0, pReqResize->rc.right - pReqResize->rc.left, pReqResize->rc.bottom - pReqResize->rc.top);
 	return 0;
 }
 

@@ -1,20 +1,20 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
@@ -124,7 +124,20 @@ BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMoni
 	}
 	return TRUE;
 }
+bool GetScreenBounds(RECT& rect)
+{
+	monitorsRects.clear();
+	EnumDisplayMonitors(0, 0, MonitorEnumProc, 0);
+	CRect result;
+	for (size_t i = 0; i < monitorsRects.size(); i++)
+	{
+		CRect Bounds = monitorsRects[i];
+		result.UnionRect(result, Bounds);
+	}
+	rect = result;
+	return true;
 
+}
 RECT ScreenFromRectangle(RECT rc)
 {
 	monitorsRects.clear();
@@ -168,19 +181,6 @@ RECT MaximizedWindowFix(HWND handle, RECT windowRect)
 	return res;
 }
 
-bool GetScreenBounds(RECT& rect)
-{
-	monitorsRects.clear();
-	EnumDisplayMonitors(0, 0, MonitorEnumProc, 0);
-	CRect result;
-	for (size_t i = 0; i < monitorsRects.size(); i++)
-	{
-		CRect Bounds = monitorsRects[i];
-		result.UnionRect(result, Bounds);
-	}
-	rect = result;
-	return true;
-}
 
 void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsigned n);
 
@@ -1031,14 +1031,14 @@ void TimerWait(int Delay)
 
 CScreenCaptureEngine::CScreenCaptureEngine()
 {
-	m_capturedBitmap = NULL;
+//	m_capturedBitmap = NULL;
 	m_captureDelay = 0;
 	m_source = 0;
 }
 
 CScreenCaptureEngine::~CScreenCaptureEngine()
 {
-	delete m_capturedBitmap;
+	//delete m_capturedBitmap;
 }
 
 bool CScreenCaptureEngine::captureScreen()
@@ -1058,7 +1058,7 @@ void CScreenCaptureEngine::setDelay(int msec)
 	m_captureDelay = msec;
 }
 
-Gdiplus::Bitmap* CScreenCaptureEngine::capturedBitmap()
+ZThread::CountedPtr<Gdiplus::Bitmap> CScreenCaptureEngine::capturedBitmap()
 {
 	return m_capturedBitmap;
 }
@@ -1070,8 +1070,8 @@ void CScreenCaptureEngine::setSource(HBITMAP src)
 
 bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
 {
-	delete m_capturedBitmap;
-	m_capturedBitmap = NULL;
+//	delete m_capturedBitmap;
+	//m_capturedBitmap = NULL;
 	HDC srcDC;
 	HDC screenDC = ::GetDC(0);
 	HGDIOBJ oldBm;
@@ -1090,7 +1090,9 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
 		}
 	}
 	region->PrepareShooting(!(bool)(m_source != 0));
-	bool result =  region->GetImage(srcDC, &m_capturedBitmap);
+	Gdiplus::Bitmap* capturedBitmap;
+	bool result =  region->GetImage(srcDC, &capturedBitmap);
+	m_capturedBitmap = ZThread::CountedPtr<Gdiplus::Bitmap>(capturedBitmap);
 	region->AfterShooting();
 	if (m_source)
 	{
@@ -1103,8 +1105,10 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
 
 Gdiplus::Bitmap* CScreenCaptureEngine::releaseCapturedBitmap()
 {
-	Bitmap* res = m_capturedBitmap;
-	m_capturedBitmap = 0;
+	//m_capturedBitmap.Counted
+	Bitmap* res = &*m_capturedBitmap;
+	ZThread::CountedPtr<Gdiplus::Bitmap>* cc = new ZThread::CountedPtr<Gdiplus::Bitmap>(m_capturedBitmap);
+	//m_capturedBitmap.reset();
 	return res;
 }
 

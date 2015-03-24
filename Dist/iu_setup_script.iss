@@ -24,8 +24,8 @@ DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=output\
-#ifdef GDIPLUS
-OutputBaseFilename=image-uploader-{#_APP_VER}-build-{#BUILD}-setup-gdiplus
+#ifdef WIN2K
+OutputBaseFilename=image-uploader-{#_APP_VER}-build-{#BUILD}-setup-win2k
 #else 
 #ifdef FFMPEG
 OutputBaseFilename=image-uploader-{#_APP_VER}-build-{#BUILD}-setup-ffmpeg
@@ -72,10 +72,12 @@ Source: "..\Data\template.txt"; DestDir: "{code:GetDataFolder}\Image Uploader\";
 Source: "..\Data\templates.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
 Source: "..\Data\Favicons\*.ico"; DestDir: "{code:GetDataFolder}\Image Uploader\Favicons"; Flags: ignoreversion
 Source: "..\Data\Scripts\*.nut"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts"; Flags: ignoreversion
+Source: "..\Data\Scripts\Lang\*.json"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts\Lang"; Flags: ignoreversion
 Source: "..\Data\Update\iu_core.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
 Source: "..\Data\Update\iu_serversinfo.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
 Source: "..\Data\Update\iu_ffmpeg.xml"; DestDir: "{tmp}\iu_ffmpeg.xml"; Flags: ignoreversion
 Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Flags: ignoreversion
+
 Source: "unzip.exe"; DestDir: "{tmp}"; Flags: ignoreversion
 ;Flags: deleteafterinstall
 ;Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
@@ -84,12 +86,9 @@ Source: "..\Build\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}";
 
 #ifdef FFMPEG
 Source: "..\Build\release\av*.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\Build\release\swscale*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Build\release\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion
 #endif
 Source: "..\Build\release optimized\ExplorerIntegration.dll";DestDir: "{app}";
-#ifdef GDIPLUS
-Source: "..\Dll\Gdiplus.dll"; DestDir: "{app}"; Flags: ignoreversion
-#endif
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

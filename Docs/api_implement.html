@@ -19,14 +19,18 @@
 	<li><a href="api_implement.html">Functions to implement</a></li>			
         <li><a href="api_globals.html">Global functions</a></li>        
         <li><a href="api_classes.html">Classes</a></li>
+   	<li><a href="api_i18n.html">Internalization</a></li>
     </ul>
 </div>
 <div id="content">
     <div id="left">
 <h2>Functions to implement</h2> 
 <div class="script-functions">
-<code class="f"><u>int</u> UploadFile(<u>string</u> <i>filename</i>, <u><a href="api_smallclasses.html#CIUUploadParams">CIUUploadParams</a></u> <i>params</i>)</code>
-Obligatory<br/>
+<code class="f"><u>int</u> UploadFile(<u>string</u> <i>pathToFile</i>, <u><a href="api_smallclasses.html#CIUUploadParams">CIUUploadParams</a></u> <i>params</i>)</code>
+Obligatory for server Type="image" or Type="file".<br/>
+<code class="f"><u>int</u> ShortenUrl(<u>string</u> <i>url</i>, <u><a href="api_smallclasses.html#CIUUploadParams">CIUUploadParams</a></u> <i>params</i>)</code>
+Obligatory for server Type="urlshortening".<br/>
+
 <code class="f"><u>int</u> GetFolderList(<u><a href="api_smallclasses.html#CFolderList">CFolderList</a></u> <i>folderList</i>)</code>
 <br/>
 <code class="f"><u>int</u> CreateFolder(<u><a href="api_smallclasses.html#CFolderItem">CFolderItem</a></u> <i>parent</i>, <u><a href="api_smallclasses.html#CFolderItem">CFolderItem</a></u> <i>folder</i>)</code>
@@ -43,7 +47,7 @@ function GetFolderAccessTypeList()
 }
 </pre>
 <br/>
-<code>nm</code> - глобальный объект, являющийся экземпляром класса <a href=api_networkmanager.html>NetworkManager</a>
+<code>nm</code> - глобальный объект, являющийся экземпляром класса <a href=api_networkclient.html>NetworkClient</a>
 <p>
 </div>
 </div>

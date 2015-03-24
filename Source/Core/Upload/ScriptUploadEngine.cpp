@@ -1,20 +1,20 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
@@ -50,25 +50,28 @@
 #ifndef _WIN32
 #include <unistd.h>
 #endif
+#include <Core/ScriptAPI/ScriptAPI.h>
 
 using namespace SqPlus;
 // Squirrel types should be defined in the same module where they are used
 // otherwise we will catch SqPlus exception while executing Squirrel functions
 ///DECLARE_INSTANCE_TYPE(std::string);
+using namespace  ScriptAPI;
 DECLARE_INSTANCE_TYPE(ServerSettingsStruct);
-DECLARE_INSTANCE_TYPE(NetworkManager);
+DECLARE_INSTANCE_TYPE(NetworkClient);
 DECLARE_INSTANCE_TYPE(CFolderList);
 DECLARE_INSTANCE_TYPE(CFolderItem);
 DECLARE_INSTANCE_TYPE(CIUUploadParams);
 DECLARE_INSTANCE_TYPE(SimpleXml);
 DECLARE_INSTANCE_TYPE(SimpleXmlNode);
 
+
 #ifdef _WIN32
 #ifndef IU_CLI
 #include <Gui/Dialogs/InputDialog.h>
 #include <Func/Common.h>
 #include <Func/IuCommonFunctions.h>
-const std::string Impl_AskUserCaptcha(NetworkManager *nm, const std::string& url)
+const std::string Impl_AskUserCaptcha(NetworkClient *nm, const std::string& url)
 {
 	CString wFileName = GetUniqFileName(IuCommonFunctions::IUTempFolder+Utf8ToWstring("captcha").c_str());
 
@@ -96,7 +99,7 @@ bool ShellOpenUrl(const std::string& url) {
 #endif
 }
 
-const std::string AskUserCaptcha(NetworkManager* nm, const std::string& url)
+const std::string AskUserCaptcha(NetworkClient* nm, const std::string& url)
 {
 #ifndef IU_CLI
 	return Impl_AskUserCaptcha(nm, url);
@@ -296,6 +299,7 @@ const std::string scriptAnsiToUtf8(const std::string& str, int codepage)
 #ifdef _WIN32
 	return IuCoreUtils::ConvertToUtf8(str, NameByCodepage(codepage));
 #else
+	LOG(WARNING) << "AnsiToUtf8 not implemented";
 	return str; // FIXME
 #endif
 }
@@ -305,6 +309,7 @@ const std::string scriptUtf8ToAnsi(const std::string& str, int codepage )
 #ifdef _WIN32
 	return IuCoreUtils::Utf8ToAnsi(str, codepage);
 #else
+	LOG(WARNING) << "Utf8ToAnsi not implemented";
 	return str; // FIXME
 #endif
 }
@@ -330,7 +335,7 @@ void scriptSleep(int msec) {
 #ifdef _WIN32
 	Sleep(msec);
 #else
-    sleep(msec/1000);
+    sleep(ceil(msec/1000.0));
 #endif
 }
 
@@ -639,6 +644,7 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 	if (!IuCoreUtils::FileExists(fileName))
 		return false;
 
+	using namespace ScriptAPI;
 	setServerSettings(params);
 	try
 	{
@@ -646,27 +652,28 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 
 		sq_setprintfunc(SquirrelVM::GetVMPtr(), printFunc /*,printFunc*/);
 
-		SQClassDef<NetworkManager>("NetworkManager").
-		func(&NetworkManager::doGet, "doGet").
-		func(&NetworkManager::responseBody, "responseBody").
-		func(&NetworkManager::responseCode, "responseCode").
-		func(&NetworkManager::setUrl, "setUrl").
-		func(&NetworkManager::doPost, "doPost").
-		func(&NetworkManager::addQueryHeader, "addQueryHeader").
-		func(&NetworkManager::addQueryParam, "addQueryParam").
-		func(&NetworkManager::addQueryParamFile, "addQueryParamFile").
-		func(&NetworkManager::responseHeaderCount, "responseHeaderCount").
-		func(&NetworkManager::urlEncode, "urlEncode").
-		func(&NetworkManager::errorString, "errorString").
-		func(&NetworkManager::doUpload, "doUpload").
-		func(&NetworkManager::setMethod, "setMethod").
-		func(&NetworkManager::setCurlOption, "setCurlOption").
-		func(&NetworkManager::setCurlOptionInt, "setCurlOptionInt").
-		func(&NetworkManager::doUploadMultipartData, "doUploadMultipartData").
-		func(&NetworkManager::enableResponseCodeChecking, "enableResponseCodeChecking").
-		func(&NetworkManager::setChunkSize, "setChunkSize").
-		func(&NetworkManager::setChunkOffset, "setChunkOffset").
-		func(&NetworkManager::setReferer, "setReferer");
+		SQClassDef<NetworkClient>("NetworkClient").
+		func(&NetworkClient::doGet, "doGet").
+		func(&NetworkClient::responseBody, "responseBody").
+		func(&NetworkClient::responseCode, "responseCode").
+		func(&NetworkClient::setUrl, "setUrl").
+		func(&NetworkClient::doPost, "doPost").
+		func(&NetworkClient::addQueryHeader, "addQueryHeader").
+		func(&NetworkClient::addQueryParam, "addQueryParam").
+		func(&NetworkClient::addQueryParamFile, "addQueryParamFile").
+		func(&NetworkClient::responseHeaderCount, "responseHeaderCount").
+		func(&NetworkClient::urlEncode, "urlEncode").
+		func(&NetworkClient::errorString, "errorString").
+		func(&NetworkClient::doUpload, "doUpload").
+		func(&NetworkClient::setMethod, "setMethod").
+		func(&NetworkClient::setCurlOption, "setCurlOption").
+		func(&NetworkClient::setCurlOptionInt, "setCurlOptionInt").
+		func(&NetworkClient::doUploadMultipartData, "doUploadMultipartData").
+		func(&NetworkClient::enableResponseCodeChecking, "enableResponseCodeChecking").
+		func(&NetworkClient::setChunkSize, "setChunkSize").
+		func(&NetworkClient::setChunkOffset, "setChunkOffset").
+		func(&NetworkClient::setUserAgent, "setUserAgent").
+		func(&NetworkClient::setReferer, "setReferer");
 
 
 		SQClassDef<CFolderList>("CFolderList").
@@ -726,9 +733,8 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 			func(&SimpleXmlNode::GetChildByIndex, "GetChildByIndex").
 			func(&SimpleXmlNode::GetAttributeCount, "GetAttributeCount");
 			
-			
-			
 			/*func(&SimpleXmlNode::GetChild, "GetChild")*/;
+		ScriptAPI::RegisterRegularExpressionClass();
 
 		//using namespace IuCoreUtils;
 		RegisterGlobal(pluginRandom, "random");
@@ -773,6 +779,8 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		
 		srand(static_cast<unsigned int>(time(0)));
 
+		ScriptAPI::RegisterFunctions(&m_Object);
+
 		RegisterGlobal(::DebugMessage, "DebugMessage" );
 
 		BindVariable(m_Object, &params, "ServerParams");
@@ -781,6 +789,7 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		IuCoreUtils::ReadUtf8TextFile(fileName, scriptText);
 		m_SquirrelScript = SquirrelVM::CompileBuffer(scriptText.c_str(), IuCoreUtils::ExtractFileName(fileName).c_str());
 		SquirrelVM::RunScript(m_SquirrelScript, &m_Object);
+		ScriptAPI::RegisterShortTranslateFunctions(!m_Object.Exists("tr"), !m_Object.Exists("__"));
 	}
 	catch (SquirrelError& e)
 	{
@@ -936,9 +945,9 @@ time_t CScriptUploadEngine::getCreationTime()
 	return m_CreationTime;
 }
 
-void CScriptUploadEngine::setNetworkManager(NetworkManager* nm)
+void CScriptUploadEngine::setNetworkClient(NetworkClient* nm)
 {
-	CAbstractUploadEngine::setNetworkManager(nm);
+	CAbstractUploadEngine::setNetworkClient(nm);
 	BindVariable(m_Object, nm, "nm");
 }
 

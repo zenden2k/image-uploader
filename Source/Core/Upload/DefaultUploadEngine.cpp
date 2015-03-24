@@ -1,20 +1,20 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
@@ -166,17 +166,17 @@ bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
 
         AddQueryPostParams(Action);
 
-		m_NetworkManager->setUrl(Action.Url);
+		m_NetworkClient->setUrl(Action.Url);
 
 		if ( bUpload ) {
 			if (Action.Type == "put") {
-				m_NetworkManager->setMethod( "PUT" );
-				m_NetworkManager->doUpload( m_FileName, "" );
+				m_NetworkClient->setMethod( "PUT" );
+				m_NetworkClient->doUpload( m_FileName, "" );
 			} else {
-				m_NetworkManager->doUploadMultipartData();
+				m_NetworkClient->doUploadMultipartData();
 			}
 		} else {
-			m_NetworkManager->doPost();
+			m_NetworkClient->doPost();
 		}
 
 		return ReadServerResponse(Action);
@@ -193,7 +193,7 @@ bool CDefaultUploadEngine::DoGetAction(UploadAction& Action)
 	bool Result = false;
 
 	try {
-		m_NetworkManager->doGet( Action.Url );
+		m_NetworkClient->doGet( Action.Url );
 		if (needStop()) {
 			return false;
 		}
@@ -338,27 +338,27 @@ bool CDefaultUploadEngine::ReadServerResponse(UploadAction& Action)
 	bool Exit = false;
 
 
-	int StatusCode = m_NetworkManager->responseCode();
+	int StatusCode = m_NetworkClient->responseCode();
 
 	if (!(StatusCode >= 200 && StatusCode <= 299) && !(StatusCode >= 300 && StatusCode <= 304))
 	{
 		std::string error;
-		if (m_NetworkManager->getCurlResult() != CURLE_OK)
+		if (m_NetworkClient->getCurlResult() != CURLE_OK)
 		{
-			error = "Curl error: " + m_NetworkManager->getCurlResultString();
+			error = "Curl error: " + m_NetworkClient->getCurlResultString();
 		}
 		else
 		{
 			error += "Server response code: " + IuCoreUtils::toString(StatusCode) + "\r\n";
-			error += m_NetworkManager->errorString();
+			error += m_NetworkClient->errorString();
 		}
 		if (!StatusCode)
-			StatusCode = m_NetworkManager->getCurlResult();
+			StatusCode = m_NetworkClient->getCurlResult();
 		UploadError(false, error, &Action);
 		return false;
 	}
 
-	std::string Refresh = m_NetworkManager->responseHeaderByName("Refresh");
+	std::string Refresh = m_NetworkClient->responseHeaderByName("Refresh");
 
 	if (!Refresh.empty()) // Redirecting to URL
 	{
@@ -376,7 +376,7 @@ bool CDefaultUploadEngine::ReadServerResponse(UploadAction& Action)
 
 	if (!Exit)
 	{
-		std::string answer = m_NetworkManager->responseBody();
+		std::string answer = m_NetworkClient->responseBody();
 		Result =  ParseAnswer(Action, answer);
 
 		if (!Result)
@@ -387,7 +387,7 @@ bool CDefaultUploadEngine::ReadServerResponse(UploadAction& Action)
 
 void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
 {
-	m_NetworkManager->setReferer(Action.Referer.empty() ? Action.Url : ReplaceVars(Action.Referer));
+	m_NetworkClient->setReferer(Action.Referer.empty() ? Action.Url : ReplaceVars(Action.Referer));
 
 	std::string Txt = Action.PostParams;
 	int len = Txt.length();
@@ -430,7 +430,7 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
 			if (NewValue == "%filename%")
 			{
 				_Post += NewName + " = ** FILE CONTENTS ** \r\n";
-				m_NetworkManager->addQueryParamFile(NewName, m_FileName,
+				m_NetworkClient->addQueryParamFile(NewName, m_FileName,
 				                                    IuCoreUtils::ExtractFileName(
 				                                       m_displayFileName), IuCoreUtils::GetFileMimeType(m_FileName));
 			}
@@ -438,7 +438,7 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
 			{
 				NewValue = ReplaceVars(NewValue);
 				_Post += NewName + " = " + NewValue + "\r\n";
-				m_NetworkManager->addQueryParam(NewName, NewValue);
+				m_NetworkClient->addQueryParam(NewName, NewValue);
 			}
 
 		}
@@ -446,9 +446,9 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
 			break;
 	}
 
-	//m_NetworkManager->addQueryHeader("Origin", "http://radikal.ru/");
-	//m_NetworkManager->addQueryHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36");
-	//m_NetworkManager->addQueryHeader("User-Agent", "RADIKALCLIENT");
+	//m_NetworkClient->addQueryHeader("Origin", "http://radikal.ru/");
+	//m_NetworkClient->addQueryHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36");
+	//m_NetworkClient->addQueryHeader("User-Agent", "RADIKALCLIENT");
 
 	if (m_UploadData->Debug)
 		DebugMessage(_Post);
@@ -483,7 +483,7 @@ std::string CDefaultUploadEngine::ReplaceVars(const std::string& Text)
 			for ( int i = 1; i < tokens.size(); i++ ) {
 				std::string modifier = tokens[i];
 				if ( modifier == "urlencode" ) {
-					value = m_NetworkManager->urlEncode(value);
+					value = m_NetworkClient->urlEncode(value);
 				}
 			}
 			

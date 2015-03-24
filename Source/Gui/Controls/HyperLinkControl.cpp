@@ -1,20 +1,20 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
@@ -338,39 +338,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 				dc.SelectFont(UnderlineFont); else 
 				dc.SelectFont(GetFont());
 			dc.SetTextColor(RGB(100,100,100));
-		/*	LOGFONT lf = {0};
- 
-  
- CFont m_font;
-			if ( !IsThemeActive() )
-    GetThemeSysFont ( TMT_MSGBOXFONT, &lf );
-  else
-    {
-    NONCLIENTMETRICS ncm = { sizeof(NONCLIENTMETRICS) };
- 
-    SystemParametersInfo (
-        SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS),
-        &ncm, false );
- 
-    lf = ncm.lfMessageFont;
-    }
- 
-  //lf.lfHeight *= 3;
-  m_font.CreateFontIndirect ( &lf );
-	dc.SelectFont(m_font);
- DTTOPTS dto = { sizeof(DTTOPTS) };
-    const UINT uFormat = DT_SINGLELINE|DT_CENTER|DT_VCENTER|DT_NOPREFIX;
-    CRect rcText2 = TextRect;
-		rcText2.left=TextRect.left;
-		rcText2.top =textY;
-		
-		dto.dwFlags = DTT_COMPOSITED|DTT_GLOWSIZE;
-    dto.iGlowSize =1;
-  //  rcText2 -= rcText2.TopLeft(); // same rect but with (0,0) as the top-left
 
- 
-    DrawThemeTextEx (  dc.m_hDC, 0, 0, item.szTitle, -1,
-                      uFormat, &rcText2, &dto );*/
 			ExtTextOutW(dc.m_hDC, TextRect.left, item.ItemRect.top+18, ETO_CLIPPED, &TextRect, item.szTip, wcslen(item.szTip), 0);
 
 			dc.SetBkMode(TRANSPARENT);

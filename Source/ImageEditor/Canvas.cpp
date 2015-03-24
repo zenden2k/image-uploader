@@ -1,16 +1,17 @@
 #include "Canvas.h"
 
+
+#include "DrawingElement.h"
+#include "Document.h"
+#include "DrawingTool.h"
+#include "InputBox.h"
+#include "MovableElements.h"
+#include "Gui/InputBoxControl.h"
+#include <Core/Logging.h>
+#include <math.h>
 #include <cassert>
 #include <algorithm>
 #include <GdiPlus.h>
-#include "DrawingElement.h"
-#include "Document.h"
-#include "BasicElements.h"
-#include "DrawingTool.h"
-#include "InputBox.h"
-#include "Gui/InputBoxControl.h"
-#include <Core/Logging.h>
-
 
 namespace ImageEditor {
 	
@@ -19,25 +20,35 @@ Canvas::Canvas( HWND parent ) {
 	oldPoint_.x           = -1;
 	oldPoint_.y           = -1;
 	callback_             = 0;
-	penSize_              = 1;
-	drawingToolType_	    = dtPen;
+	drawingToolType_	  = dtNone;
+	previousDrawingTool_ = dtNone; 
 	leftMouseDownPoint_.x = -1;
 	leftMouseDownPoint_.y = -1;
-	buffer_               = NULL;
+//	buffer_               = NULL;
 	inputBox_             = NULL;
 	currentCursor_    = ctDefault;
 	overlay_ = 0;
+	showOverlay_ = false;
 	zoomFactor_ = 1;
 	currentlyEditedTextElement_ = 0;
 	foregroundColor_ = Gdiplus::Color(255,0,0);
 	backgroundColor_ = Gdiplus::Color(255,255,255);
-	penSize_ = 7;
+	penSize_ = 12;
 	selection_ = 0;
+	canvasChanged_ = true;
+	fullRender_ = true;
+	blurRadius_ = 5;
+	blurRectanglesCount_ = 0;
+	currentDrawingTool_ = 0;
+	bufferedGr_ = 0;
 	createDoubleBuffer();
 }
 
 Canvas::~Canvas() {
-	delete buffer_;
+//	delete buffer_;
+	delete bufferedGr_;
+	delete currentDrawingTool_;
+	delete overlay_;
 	for ( int i = 0; i < elementsToDelete_.size(); i++ ) {
 		delete elementsToDelete_[i];
 	}
@@ -61,6 +72,7 @@ Document* Canvas::currentDocument() const {
 
 void Canvas::setDocument( Document *doc ) {
 	doc_ = doc;
+	updateView();
 }
 
 void Canvas::mouseMove( int x, int y, DWORD flags) {
@@ -123,7 +135,11 @@ void Canvas::mouseDown( int button, int x, int y ) {
 
 void Canvas::mouseUp( int button, int x, int y ) {
 	assert( currentDrawingTool_ );
-	currentDrawingTool_->endDraw( x, y );
+	if ( button == 0 ) {
+		currentDrawingTool_->endDraw( x, y );
+	} else {
+		currentDrawingTool_->rightButtonClick(x,y);
+	}
 	/*if (currentDrawingTool_ != dtPen ) {
 		if ( currentElement_ != NULL) {
 			doc_->addDrawingElement( currentElement_ );
@@ -140,45 +156,57 @@ void Canvas::mouseDoubleClick(int button, int x, int y)
 	currentDrawingTool_->mouseDoubleClick( x, y );
 }
 
-void Canvas::render(Painter* gr, const RECT& rect) {
+void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOffset, SIZE size) { 
 	using namespace Gdiplus;
-	Gdiplus::Graphics* bufferedGr = new Gdiplus::Graphics( buffer_ );
-	bufferedGr->SetPageUnit(Gdiplus::UnitPixel);
-	bufferedGr->SetSmoothingMode(SmoothingModeAntiAlias);
-	//gr->SetClip( Gdiplus::Rect( rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top ) );
-	//bufferedGr.SetClip( region );
-	doc_->render( bufferedGr );
+	// Updating rect in canvas coordinates
+	RECT rect = {rectInWindowCoordinates.left+scrollOffset.x, rectInWindowCoordinates.top+scrollOffset.y,
+		/*size.cx*/rectInWindowCoordinates.right - rectInWindowCoordinates.left, /*size.cy*/rectInWindowCoordinates.bottom - rectInWindowCoordinates.top};
+	rect.right += rect.left;
+	rect.bottom += rect.top;
 
-	if ( currentDrawingTool_ != NULL ) {
-		currentDrawingTool_->render( bufferedGr );
+	if ( fullRender_ ) {
+		rect.left = 0;
+		rect.right = 0;
+		rect.bottom = getHeigth();
+		rect.right = getWidth();
 	}
+	if ( canvasChanged_ || fullRender_ ) {
+		//LOG(INFO) << "Canvas::re-render rect"<< rect.left << " " << rect.top<< " "<< rect.right - rect.left<< " "<< rect.bottom - rect.top;
+		renderInBuffer(updatedRect_);	
+	}
+	BitmapData bitmapData;
+	Rect lockRect(0,0,  getWidth(),getHeigth());
+	// I hope Gdiplus does not copy data in LockBits
+	if ( buffer_->LockBits(&lockRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData) == Ok ) {
+		//LOG(INFO) << "bitmap locked";
+		uint8_t * source = (uint8_t *) bitmapData.Scan0;
+		unsigned int stride;
+		if ( bitmapData.Stride > 0) { 
+			stride = bitmapData.Stride;
+		} else {
+			stride = - bitmapData.Stride;
+		}
+		BITMAPINFO bi;
+		ZeroMemory(&bi, sizeof(bi));
+		bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+		bi.bmiHeader.biPlanes = 1;
+		bi.bmiHeader.biCompression = BI_RGB;
 
-	for ( int i=0; i< elementsOnCanvas_.size(); i++) {
-		//bufferedGr.re
-		if ( elementsOnCanvas_[i]->getType() == etText ) {
-			//delete bufferedGr;
-		}
-		elementsOnCanvas_[i]->render(bufferedGr);
-		if ( elementsOnCanvas_[i]->getType() == etText ) {
-			//delete bufferedGr;
-		}
+		bi.bmiHeader.biWidth = buffer_->GetWidth();
+		bi.bmiHeader.biHeight = -buffer_->GetHeight();
+		bi.bmiHeader.biBitCount = 32;
+		// Faster than Graphics::DrawImage and there is no tearing!
+		int res = SetDIBitsToDevice (dc, rectInWindowCoordinates.left,rectInWindowCoordinates.top,rect.right - rect.left, rect.bottom - rect.top, rect.left, rect.top, rect.top, rect.bottom - rect.top, source + rect.top * stride, &bi, DIB_RGB_COLORS );
+		buffer_->UnlockBits(&bitmapData);
 	}
-	if ( overlay_ ) {
-		overlay_->render(bufferedGr);
-	}
-	for ( int i=0; i< elementsOnCanvas_.size(); i++) {
-		elementsOnCanvas_[i]->renderGrips(bufferedGr);
-	}
-	gr->DrawImage( buffer_, 0, 0);
-	delete bufferedGr;
+	//gr->DrawImage( &*buffer_, rectInWindowCoordinates.left, rectInWindowCoordinates.top, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, UnitPixel );
+
 }
 
-void Canvas::updateView( RECT boundingRect ) {
-	CRgn region;
-	region.CreateRectRgnIndirect( &boundingRect );
-	updateView( region );
+Gdiplus::Rect Canvas::currentRenderingRect()
+{
+	return currentRenderingRect_;
 }
-
 
 void  Canvas::setCallback(Callback * callback) {
 	callback_ = callback;
@@ -189,6 +217,54 @@ void Canvas::setPenSize(int size) {
 	if ( currentDrawingTool_ ) {
 		currentDrawingTool_->setPenSize(size);
 	}
+	for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->isSelected()) {
+			RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+			elementsOnCanvas_[i]->setPenSize(size);
+			RECT newPaintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+			UnionRect(&paintRect, &paintRect, &newPaintRect);
+			updateView(paintRect);
+		}
+	}
+
+}
+
+int Canvas::getPenSize() const
+{
+	return penSize_;
+}
+
+void Canvas::beginPenSizeChanging()
+{
+	originalPenSize_ = penSize_;
+}
+
+void Canvas::endPenSizeChanging(int penSize) {
+	penSize_ = penSize_;
+	if ( originalPenSize_ == 0 ) {
+		return ;
+	}
+	int updatedElementsCount = 0;
+	UndoHistoryItem uhi;
+	uhi.type = uitPenSizeChanged;
+	for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->isSelected()) {
+			UndoHistoryItemElement uhie;
+			uhie.penSize = originalPenSize_;
+			RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+			uhie.movableElement = elementsOnCanvas_[i];
+			elementsOnCanvas_[i]->setPenSize(penSize);
+			RECT newPaintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+			uhi.elements.push_back(uhie);
+			UnionRect(&paintRect, &paintRect, &newPaintRect);
+			updatedElementsCount++;
+			updateView(paintRect);
+		}
+	}
+	if ( updatedElementsCount ) {
+		undoHistory_.push(uhi);
+	}
+
 }
 
 void Canvas::setForegroundColor(Gdiplus::Color color)
@@ -196,6 +272,24 @@ void Canvas::setForegroundColor(Gdiplus::Color color)
 	foregroundColor_ = color;
 	if ( currentDrawingTool_ ) {
 		currentDrawingTool_->setForegroundColor(color);
+	}
+	int updatedElementsCount = 0;
+	UndoHistoryItem uhi;
+	uhi.type = uitElementForegroundColorChanged;
+	for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->isSelected()) {
+			UndoHistoryItemElement uhie;
+			uhie.color = elementsOnCanvas_[i]->getColor();
+			uhie.pos = i;
+			uhie.movableElement = elementsOnCanvas_[i];
+			elementsOnCanvas_[i]->setColor(color);
+			uhi.elements.push_back(uhie);
+			updatedElementsCount++;
+		}
+	}
+	if ( updatedElementsCount ) {
+		undoHistory_.push(uhi);
+		updateView();
 	}
 }
 
@@ -205,22 +299,62 @@ void Canvas::setBackgroundColor(Gdiplus::Color color)
 	if ( currentDrawingTool_ ) {
 		currentDrawingTool_->setBackgroundColor(color);
 	}
+	int updatedElementsCount = 0;
+	UndoHistoryItem uhi;
+	uhi.type = uitElementBackgroundColorChanged;
+	for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->isSelected()) {
+			UndoHistoryItemElement uhie;
+			uhie.color = elementsOnCanvas_[i]->getBackgroundColor();
+			uhie.pos = i;
+			uhie.movableElement = elementsOnCanvas_[i];
+			elementsOnCanvas_[i]->setBackgroundColor(color);
+			uhi.elements.push_back(uhie);
+			updatedElementsCount++;
+		}
+	}
+	if ( updatedElementsCount ) {
+		undoHistory_.push(uhi);
+		updateView();
+	}
 }
 
-void Canvas::setDrawingToolType(DrawingToolType toolType) {
+Gdiplus::Color Canvas::getForegroundColor() const
+{
+	return foregroundColor_;
+}
+
+Gdiplus::Color Canvas::getBackgroundColor() const
+{
+	return backgroundColor_;
+}
+
+void Canvas::setDrawingToolType(DrawingToolType toolType, bool notify ) {
+	previousDrawingTool_ = drawingToolType_;
 	drawingToolType_ = toolType;
 	unselectAllElements();
 	updateView();
 	ElementType type;
-
+	delete currentDrawingTool_;
 	if ( toolType == dtPen) {
 		currentDrawingTool_ = new PenTool( this );
 	} else if ( toolType == dtBrush) {
 		currentDrawingTool_ = new BrushTool( this );
-	} else if ( toolType == dtText) {
+	} else if ( toolType == dtMarker) {
+		currentDrawingTool_ = new MarkerTool( this );
+	}else if ( toolType == dtBlur) {
+		#if GDIPVER >= 0x0110 
+		currentDrawingTool_ = new BlurTool( this );
+		#else
+		LOG(ERROR) << "Blur effect is not supported by current version of GdiPlus.";
+		#endif
+	}else if ( toolType == dtColorPicker) {
+		currentDrawingTool_ = new ColorPickerTool( this );
+	}else if ( toolType == dtText) {
 		currentDrawingTool_ = new TextTool( this );
 	} else if ( toolType == dtCrop ) {
 		currentDrawingTool_ = new CropTool( this );
+		showOverlay(true);
 	} 
 	else {
 		ElementType type;
@@ -232,7 +366,21 @@ void Canvas::setDrawingToolType(DrawingToolType toolType) {
 			type = etCrop;
 		} else if ( toolType == dtRectangle ) {
 			type = etRectangle;
-		} else if ( toolType == dtMove ) {
+		} else if ( toolType == dtBlurrringRectangle ) {
+			type = etBlurringRectangle;
+		}else if ( toolType == dtFilledRectangle ) {
+			type = etFilledRectangle;
+		} else if ( toolType == dtRoundedRectangle ) {
+			type = etRoundedRectangle;
+		} else if ( toolType == dtEllipse ) {
+			type = etEllipse;
+		} else if ( toolType == dtFilledRoundedRectangle ) {
+			type = etFilledRoundedRectangle;
+		} else if ( toolType == dtFilledEllipse ) {
+			type = etFilledEllipse;
+		}
+
+		else if ( toolType == dtMove ) {
 			currentDrawingTool_ = new MoveAndResizeTool( this, etNone );
 			return;
 		} else if ( toolType == dtSelection ) {
@@ -251,11 +399,21 @@ void Canvas::setDrawingToolType(DrawingToolType toolType) {
 
 		//currentDrawingTool_ = new VectorElementTool( this, type );
 	}
-
+	
 	currentDrawingTool_->setPenSize(penSize_);
 	currentDrawingTool_->setForegroundColor(foregroundColor_);
 	currentDrawingTool_->setBackgroundColor(backgroundColor_);
+	if ( notify && onDrawingToolChanged ) {
+		onDrawingToolChanged(toolType);
+	}
 }
+
+void Canvas::setPreviousDrawingTool()
+{
+	if ( previousDrawingTool_ != dtNone ) {
+		setDrawingToolType(previousDrawingTool_, true);
+	}
+}	
 
 AbstractDrawingTool* Canvas::getCurrentDrawingTool()
 {
@@ -267,15 +425,23 @@ void Canvas::addMovableElement(MovableElement* element)
 	if ( element->getType() == etSelection ) {
 		delete selection_;
 		selection_ = element;
+		return;
 	}
 
 	std::vector<MovableElement*>::iterator it;
 	it = find (elementsOnCanvas_.begin(), elementsOnCanvas_.end(), element);
 	if (it == elementsOnCanvas_.end()) {
-		UndoHistoryItem historyItem;
+
 		elementsOnCanvas_.push_back(element);
+		if ( element->getType() == etBlurringRectangle ) {
+			blurRectanglesCount_ ++;
+		}
+		UndoHistoryItem historyItem;
 		historyItem.type = uitElementAdded;
-		historyItem.element = element;
+		UndoHistoryItemElement uhie;
+		uhie.pos = elementsOnCanvas_.size();
+		uhie.movableElement = element;
+		historyItem.elements.push_back(uhie);
 		undoHistory_.push(historyItem);
 		elementsToDelete_.push_back(element);
 	}
@@ -283,40 +449,116 @@ void Canvas::addMovableElement(MovableElement* element)
 
 bool Canvas::addDrawingElementToDoc(DrawingElement* element)
 {
-	UndoHistoryItem historyItem;
-	historyItem.type = uitDocumentChanged;
-	historyItem.element = 0;
-	undoHistory_.push(historyItem);
 	currentDocument()->addDrawingElement(element);
 	return true;
 }
 
 
+void Canvas::endDocDrawing()
+{
+	currentDocument()->endDrawing();
+	UndoHistoryItem historyItem;
+	historyItem.type = uitDocumentChanged;
+	undoHistory_.push(historyItem);
+}
+
+int Canvas::deleteSelectedElements()
+{
+	int deletedCount = 0;
+	UndoHistoryItem uhi;
+	uhi.type = uitElementRemoved;
+
+	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->getType() != etCrop ) {
+			UndoHistoryItemElement uhie;
+			uhie.movableElement = elementsOnCanvas_[i];
+			uhie.pos = i;
+			uhi.elements.push_back(uhie );
+			elementsOnCanvas_.erase(elementsOnCanvas_.begin() + i);
+			i--;
+			deletedCount++;
+		}
+	}
+	if ( deletedCount ) {
+		undoHistory_.push(uhi);
+		updateView();
+	}
+	return deletedCount;
+}
+
+float Canvas::getBlurRadius()
+{
+	return blurRadius_;
+}
+
+void Canvas::setBlurRadius(float radius)
+{
+	blurRadius_ = radius;
+}
+
+bool Canvas::hasBlurRectangles()
+{
+	return blurRectanglesCount_!=0;
+}
+
+void Canvas::showOverlay(bool show)
+{
+	if ( !overlay_ ) {
+		overlay_ = new CropOverlay(this, 0,0, getWidth(),getHeigth());
+	}
+	showOverlay_ = show;
+	updateView();
+}
+
 void Canvas::deleteMovableElement(MovableElement* element)
 {
 	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
 		if ( elementsOnCanvas_[i] == element ) {
+
 			elementsOnCanvas_.erase(elementsOnCanvas_.begin() + i);
-			delete element;
+			if ( element->getType() == etBlurringRectangle ) {
+				blurRectanglesCount_--;
+			}
+			if ( element->getType() == etCrop ) {
+				showOverlay(false);
+			}
+			//delete element;
 			break;
 		}
 	}
 }
 
 void Canvas::updateView() {
-	RECT rc = { 0, 0, 1280, 720 };
+	fullRender_ = true;
+	RECT rc = { 0, 0, getWidth(), getHeigth() };
 	updateView( rc );
 }
-
+/*
 void Canvas::updateView( const CRgn& region ) {
+	canvasChanged_ = true;
 	if ( callback_ ) {
 		callback_->updateView( this, region );
 	}
+}*/
+
+void Canvas::updateView( RECT boundingRect ) {
+	using namespace Gdiplus;
+	CRgn region;
+	canvasChanged_ = true;
+	Rect newRect(boundingRect.left, boundingRect.top, boundingRect.right - boundingRect.left, boundingRect.bottom - boundingRect.top );
+	Rect::Union(updatedRect_,newRect,updatedRect_);
+	region.CreateRectRgnIndirect( &boundingRect );
+	if ( callback_ ) {
+		callback_->updateView( this, region );
+	}
+
 }
 
+
 void Canvas::createDoubleBuffer() {
-	delete buffer_;
-	buffer_ = new Gdiplus::Bitmap( canvasWidth_, canvasHeight_ );
+//	delete buffer_;
+	buffer_ = ZThread::CountedPtr<Gdiplus::Bitmap>(new Gdiplus::Bitmap( canvasWidth_, canvasHeight_, PixelFormat32bppARGB  ));
+	bufferedGr_ = new Gdiplus::Graphics( &*buffer_ );
 }
 
 void Canvas::setCursor(CursorType cursorType)
@@ -329,6 +571,96 @@ void Canvas::setCursor(CursorType cursorType)
 }
 
 
+void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
+{
+	using namespace Gdiplus;
+	if ( fullRender_ ) {
+		//LOG(INFO) << "canvas full render";
+	}
+	currentRenderingRect_ = rc;
+	if (!fullRender_ && !forExport) {
+		Gdiplus::Region reg(rc);
+		bufferedGr_->SetClip(&reg);
+	} else {
+		Gdiplus::Region reg;
+		bufferedGr_->SetClip(&reg);
+	}
+	bufferedGr_->SetPageUnit(Gdiplus::UnitPixel);
+	bufferedGr_->SetSmoothingMode(SmoothingModeAntiAlias);
+	
+	if ( doc_->hasTransparentPixels() ) {
+		if (  !forExport ) {
+			SolidBrush whiteBrush(Color(255,255,255));
+			bufferedGr_->FillRectangle(&whiteBrush, rc);
+			/*int kSquareSize = 40;
+			SolidBrush dark(Color(50,50,50));
+			SolidBrush light(Color(100,100,100));
+			int startX = rc.X - rc.X % kSquareSize;
+			int startY = rc.Y - rc.Y % kSquareSize;
+			int xCount = ceil(float(rc.Width) / kSquareSize)+1;
+			int yCount = ceil(float(rc.Height) / kSquareSize)+1;
+			bool isDark =  !(rc.Y / kSquareSize)%2 ;
+			isDark =  (rc.X / kSquareSize)%2 == ( isDark ? 0 : 1);
+			for (int j = 0; j < yCount; j++) {
+				for (int i = 0; i < xCount; i++)
+				{
+					bufferedGr_->FillRectangle(isDark ? &dark : &light, startX + i * kSquareSize, startY + j * kSquareSize, kSquareSize, kSquareSize);
+					isDark = !isDark;
+				}
+				isDark = !isDark;
+			}*/
+		} else {
+			bufferedGr_->Clear(Color(0,0,0,0));
+		}
+	}
+
+	doc_->render( bufferedGr_, rc );
+
+	if ( currentDrawingTool_ != NULL ) {
+		currentDrawingTool_->render( bufferedGr_ );
+	}
+
+	/*if ( !fullRender_ ) {
+			for ( int i=0; i< elementsOnCanvas_.size(); i++) {
+				if ( elementsOnCanvas_[i]->getType() != etBlurringRectangle ) {
+					continue;
+				}
+				RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+				RECT intersection;
+				IntersectRect(&intersection, &paintRect, &rect);
+				if ( !(intersection.left == 0 && intersection.right ==0 && intersection.top == 0 && intersection.bottom == 0) ) {
+					UnionRect(&rect, &rect, &paintRect);
+				}
+			}
+		}*/
+
+	for ( int i=0; i< elementsOnCanvas_.size(); i++) {
+		RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+		RECT intersection;
+		RECT rect = { rc.X, rc.Y, rc.GetRight(), rc.GetBottom()};
+		IntersectRect(&intersection, &paintRect, &rect);
+		if ( !fullRender_ && intersection.left == 0 && intersection.right ==0 && intersection.top == 0 && intersection.bottom == 0 ) {
+			//LOG(INFO) << "Skipping element " << i << " out of bounds";
+			continue;
+		}
+		elementsOnCanvas_[i]->render(bufferedGr_);
+	}
+	if ( !forExport ) {
+		if ( overlay_ && showOverlay_ ) {
+			//LOG(INFO) << "rendering overlay";
+			overlay_->render(bufferedGr_);
+		}
+
+		for ( int i=0; i< elementsOnCanvas_.size(); i++) {
+			elementsOnCanvas_[i]->renderGrips(bufferedGr_);
+		}
+	}
+	canvasChanged_ = false;
+	fullRender_ = false;
+	updatedRect_ = Rect();
+	//delete bufferedGr_;
+}
+
 void Canvas::getElementsByType(ElementType elementType, std::vector<MovableElement*>& out)
 {
 	int count = elementsOnCanvas_.size();
@@ -339,10 +671,11 @@ void Canvas::getElementsByType(ElementType elementType, std::vector<MovableEleme
 	}
 }
 
-void Canvas::setOverlay(MovableElement* overlay)
+/*void Canvas::setOverlay(MovableElement* overlay)
 {
 	overlay_ = overlay;
-}
+	updateView();
+}*/
 
 void Canvas::setZoomFactor(float zoomFactor)
 {
@@ -351,7 +684,40 @@ void Canvas::setZoomFactor(float zoomFactor)
 
 Gdiplus::Bitmap* Canvas::getBufferBitmap()
 {
-	return buffer_;
+	return &*buffer_;
+}
+
+void Canvas::addUndoHistoryItem(const UndoHistoryItem& item)
+{
+	undoHistory_.push(item);
+}
+
+ZThread::CountedPtr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
+{
+	using namespace Gdiplus;
+	Rect rc(0,0, getWidth(), getHeigth());
+	fullRender_ = true;
+	renderInBuffer(rc, true);
+	Crop * crop = 0;
+	for ( int i=0; i< elementsOnCanvas_.size(); i++) {
+		if ( elementsOnCanvas_[i]->getType() == etCrop ) {
+			crop = dynamic_cast<Crop*>(elementsOnCanvas_[i]);
+			break;
+		}
+	}
+
+	if ( !crop )  {
+		return buffer_;
+	}
+
+	int cropX = crop->getX();
+	int cropY = crop->getY();
+	int cropWidth = crop->getWidth();
+	int cropHeight = crop->getHeight();
+	Bitmap* bm = new Bitmap(cropWidth, cropHeight);
+	Graphics gr(bm);
+	gr.DrawImage( &*buffer_, 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel );
+	return ZThread::CountedPtr<Gdiplus::Bitmap>(bm);
 }
 
 float Canvas::getZoomFactor() const
@@ -361,7 +727,8 @@ float Canvas::getZoomFactor() const
 
 MovableElement* Canvas::getElementAtPosition(int x, int y)
 {
-	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
+	int count = elementsOnCanvas_.size();
+	for ( int i = count-1; i >=0 ; i-- ) {
 		if ( elementsOnCanvas_[i]->getType() != etCrop ) {	
 			if ( elementsOnCanvas_[i]->isItemAtPos(x,y) ) {
 				return  elementsOnCanvas_[i];
@@ -369,7 +736,7 @@ MovableElement* Canvas::getElementAtPosition(int x, int y)
 		}
 	}
 
-	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
+	for ( int i = count-1; i >=0; i-- ) {
 		if ( elementsOnCanvas_[i]->getType() == etCrop ) {
 			int elementX = elementsOnCanvas_[i]->getX();
 			int elementY = elementsOnCanvas_[i]->getY();
@@ -422,10 +789,47 @@ bool Canvas::undo() {
 	if ( item.type == uitDocumentChanged ){
 		result =  doc_->undo();
 	} else if ( item.type == uitElementAdded ) {
-		deleteMovableElement(item.element);
+		for ( int i = 0; i< item.elements.size(); i++ ) {
+			deleteMovableElement(item.elements[i].movableElement);
+		}
+		result = true;
+	} else if  ( item.type == uitElementRemoved ) {
+		int itemCount = item.elements.size();
+		// Insert elements in their initial positions
+		for ( int i = itemCount-1; i>=0; i-- ) {
+			elementsOnCanvas_.insert(elementsOnCanvas_.begin()+ item.elements[i].pos, item.elements[i].movableElement);
+			if ( item.elements[i].movableElement->getType() == etBlurringRectangle ) {
+				blurRectanglesCount_++;
+			}
+		}
+		result = true;
+	} else if ( item.type == uitElementForegroundColorChanged ) {
+		int itemCount = item.elements.size();
+		for ( int i = itemCount-1; i>=0; i-- ) {
+			item.elements[i].movableElement->setColor(item.elements[i].color);
+		}
+		result = true;
+	} else if ( item.type == uitElementBackgroundColorChanged ) {
+		int itemCount = item.elements.size();
+		for ( int i = itemCount-1; i>=0; i-- ) {
+			item.elements[i].movableElement->setBackgroundColor(item.elements[i].color);
+		}
+		result = true;
+	} else if ( item.type == uitPenSizeChanged ) {
+		int itemCount = item.elements.size();
+		for ( int i = itemCount-1; i>=0; i-- ) {
+			item.elements[i].movableElement->setPenSize(item.elements[i].penSize);
+		}
+		result = true;
+	}else if ( item.type == uitElementPositionChanged ) {
+		int itemCount = item.elements.size();
+		// Insert elements in their initial positions
+		for ( int i = itemCount-1; i>=0; i-- ) {
+			item.elements[i].movableElement->setStartPoint(item.elements[i].startPoint);
+			item.elements[i].movableElement->setEndPoint(item.elements[i].endPoint);
+		}
 		result = true;
 	}
-
 	if ( result ) {
 		undoHistory_.pop();
 	}
@@ -436,14 +840,14 @@ bool Canvas::undo() {
 InputBox* Canvas::getInputBox( const RECT& rect ) {
 	/*if ( inputBox_ == NULL )*/ {
 		//RECT rt = {0,0,300,50};
-		LOG(INFO) << "Creating new inputbox";
+		//LOG(INFO) << "Creating new inputbox";
 		inputBox_ = new InputBoxControl();
 		RECT rc = rect;
 		rc.left++;
 		rc.top++;
-		LoadLibrary(CRichEditCtrl::GetLibraryName());
-		HWND wnd = inputBox_->Create( parentWindow_, rc, _T("ololo"), WS_VISIBLE | WS_CHILD /*|ES_MULTILINE|ES_AUTOHSCROLL|ES_AUTOVSCROLL|  ES_WANTRETURN*/
-			/*|  ES_NOHIDESEL | ES_LEFT */,WS_EX_TRANSPARENT );
+		
+		HWND wnd = inputBox_->Create( parentWindow_, rc, _T(""), WS_VISIBLE | WS_CHILD |ES_MULTILINE|ES_AUTOHSCROLL|ES_AUTOVSCROLL|  ES_WANTRETURN
+			|  ES_NOHIDESEL /*| ES_LEFT */,WS_EX_TRANSPARENT );
 	inputBox_->SetEventMask(ENM_CHANGE);
 		inputBox_->SetWindowPos(HWND_TOP,0,0,0,0, SWP_NOSIZE|SWP_NOMOVE);
 		
@@ -477,11 +881,17 @@ void Canvas::setCurrentlyEditedTextElement(TextElement* textElement)
 	currentlyEditedTextElement_ = textElement;
 }
 
-void Canvas::unselectAllElements()
+int Canvas::unselectAllElements()
 {
+	int count = 0;
 	for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
-		elementsOnCanvas_[i]->setSelected(false);
+		if ( elementsOnCanvas_[i]->isSelected() ) {
+			elementsOnCanvas_[i]->setSelected(false);
+			updateView(elementsOnCanvas_[i]->getPaintBoundingRect());
+			count++;
+		}
 	}
+	return count;
 }
 
 HWND Canvas::getRichEditControl()

@@ -1,20 +1,20 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
@@ -24,7 +24,7 @@
 #include <fstream>
 #include "Core/Upload/Uploader.h"
 #include "Core/Utils/CoreUtils.h"
-#include "Core/Network/NetworkManager.h"
+#include "Core/Network/NetworkClient.h"
 #include "Core/UploadEngineList.h"
 #include "Core/Upload/DefaultUploadEngine.h"
 #include "Core/OutputCodeGenerator.h"
@@ -43,7 +43,7 @@
 #endif
 #include "versioninfo.h"
 
-#define IU_CLI_VER "0.2.2"
+#define IU_CLI_VER "0.2.3"
 #ifdef _WIN32
 std::string dataFolder = "Data/";
 #else
@@ -108,7 +108,7 @@ void destr()
 }
 
 
-void IU_ConfigureProxy(NetworkManager& nm)
+void IU_ConfigureProxy(NetworkClient& nm)
 {
 	if ( !proxy.empty())
 	{
@@ -122,7 +122,7 @@ void IU_ConfigureProxy(NetworkManager& nm)
 	nm.setUploadBufferSize(Settings.UploadBufferSize);
 }
 
-void OnConfigureNM(NetworkManager* nm) {
+void OnConfigureNM(NetworkClient* nm) {
 	IU_ConfigureProxy(*nm);
 }
 
@@ -482,7 +482,7 @@ int func()
    CUploader uploader;
 
    uploader.onProgress.bind(OnProgress);
-   uploader.onConfigureNetworkManager.bind(OnConfigureNM);
+   uploader.onConfigureNetworkClient.bind(OnConfigureNM);
    uploader.onErrorMessage.bind(OnError);
   CUploadEngineData* uploadEngineData = 0;
   if(!serverName.empty())

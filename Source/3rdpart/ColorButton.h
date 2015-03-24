@@ -2,6 +2,7 @@
 #define DSSI_COLORBUTTON_H
 
 #include "atlheaders.h"
+#include <Core/3rdpart/FastDelegate.h>
 //-----------------------------------------------------------------------------
 // 
 // @doc
@@ -220,6 +221,8 @@ public:
 
 	~CColorButton ();
 
+	fastdelegate::FastDelegate2<COLORREF, BOOL> OnSelChange;
+
 // @access Public inline methods
 public:
 
@@ -347,6 +350,11 @@ public:
 	BOOL HasDefaultText () const
 	{
 		return m_pszDefaultText && m_pszDefaultText [0] != 0;
+	}
+
+	void Click() {
+		BOOL handled = FALSE;
+		OnClicked(BN_CLICKED, 0, m_hWnd, handled);
 	}
 
 // @access ATL window support

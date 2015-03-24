@@ -19,6 +19,7 @@
 	<li><a href="api_implement.html">Functions to implement</a></li>			
         <li><a href="api_globals.html">Global functions</a></li>        
         <li><a href="api_classes.html">Classes</a></li>
+   	<li><a href="api_i18n.html">Internalization</a></li>
     </ul>
 </div>
 <div id="content">
@@ -33,15 +34,22 @@
 <p>Они должны быть сохранены в кодировке utf-8 в файлах с расширением <code>.nut</code>.
 <p><b>Пример плагина (example.nut):</b> </p>
 <pre class="prettyprint">
-// Функция, загружающая файл
-function  UploadFile(FileName, options)
+test <- "example"; // global variable
+
+/**
+* Функция, загружающая файл
+* @var string pathToFile 
+* @var CIUUploadParams options
+* @return int - success(1), failure(0)
+**/
+function  UploadFile(pathToFile, options)
 {
     nm.setUrl("http://example.com/upload.php");
-    nm.addQueryParamFile("file", FileName, ExtractFileName(FileName),"");
+    nm.addQueryParamFile("file", pathToFile, ExtractFileName(pathToFile),"");
     nm.addQueryParam("submit", "Upload file!");
     nm.doUploadMultipartData();
 
-    local response = nm.responseBody();
+    local response = nm.responseBody(); // 'local' it's like javascript's 'var' but only for local variables
     local directUrl = regex_simple(response, "\\[IMG\\](.+)\\[/IMG\\]",0);
     
     options.setDirectUrl(directUrl);
@@ -49,7 +57,15 @@ function  UploadFile(FileName, options)
     return 1; //успех
 }
 
-// Вспомогательная функция, упрощающая работу с регулярными выражениями
+/** 
+* Вспомогательная функция, упрощающая работу с регулярными выражениями
+* @var string data - строка, в которой мы ищем
+* @var string regStr - регулярное выражение, в формате, поддерживаемом стандартной библиотекой языка squirrel.
+*      http://www.squirrel-lang.org/doc/sqstdlib2.html#d0e2580
+*      Этот формат не поддерживает некоторые возможности формата PCRE, используемого в servers.xml.
+* @var int start - с какой позиции в строке начинать поиск)
+* @return string - возвращает текст, захваченный первой подмаской (subpattern).
+**/
 function regex_simple(data,regStr,start)
 {
     local ex = regexp(regStr);
@@ -61,21 +77,34 @@ function regex_simple(data,regStr,start)
     return resultStr;
 }
 
-// Необязательные функции:
-// Получение списка альбомов(папок, галерей) на сервере
+/** 
+* Необязательные функции:
+* Получение списка альбомов(папок, галерей) на сервере
+* @var CFolderList list
+* @return int - success(1), failure(0) 
+**/
 function GetFolderList(list)
 {
     // Ваш код
     return 1; //успех
 }
  
-// Функция, создающая альбомы
+/** 
+* Create an folder or an album
+* @var CFolderItem parentAlbum
+* @var CFolderItem album
+* @return int - success(1), failure(0)
+**/
 function CreateFolder(parentAlbum,album)
 {
     // Ваш код
     return 1; //успех
 }
  
+/** Modify a folder or an album (update name, description)
+* @var CFolderItem album
+* @return int - success(1), failure(0) 
+**/
 function ModifyFolder(album)
 {
     // Ваш код
@@ -84,6 +113,7 @@ function ModifyFolder(album)
  
 // Функция, возвращающая список видов ограничений доступа к альбому:
 // приватный, общедоступный, только для друзей и т.п.
+// @return array 
 function GetFolderAccessTypeList()
 {
     return ["ТипДоступа1", "ТипДоступа2"];

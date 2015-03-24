@@ -5,22 +5,26 @@
 #include "ImageEditorView.h"
 
 #include <algorithm>
-#include "ImageEditor/BasicElements.h"
+
 #include <GdiPlus.h>
 #include <Gui/GuiTools.h>
 #include <Core/Logging.h>
 #include <Core/Images/Utils.h>
 #include "../MovableElements.h"
 #include "resource.h"
-
 #ifndef TR
 #define TR(a) L##a
 #endif
 namespace ImageEditor {
 
-	CImageEditorView::CImageEditorView()  {
+CImageEditorView::CImageEditorView()  {
 	oldPoint.x = -1;
 	oldPoint.y = -1;
+	mouseDown_ = false;
+}
+
+CImageEditorView::~CImageEditorView()
+{
 }
 
 BOOL CImageEditorView::PreTranslateMessage(MSG* /*pMsg*/) {
@@ -30,15 +34,35 @@ BOOL CImageEditorView::PreTranslateMessage(MSG* /*pMsg*/) {
 LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	//return 0;
 	CPaintDC dc(m_hWnd);
-	CRgn rgn;
+	/*CRgn rgn;
 	rgn.CreateRectRgn( 0, 0, 0, 0 );
-	GetClipRgn( dc, rgn);
+	/*GetClipRgn( dc, rgn);
 	RECT rct;
-	rgn.GetRgnBox( &rct );
-	Gdiplus::Graphics gr(dc);
+	rgn.GetRgnBox( &rct );*/
+	RECT clientRect;
+	GetClientRect(&clientRect);
+	SIZE size = {clientRect.right, clientRect.bottom};
+	//Gdiplus::Graphics gr(dc);
+	POINT pt;
+	GetScrollOffset(pt);
 	if ( canvas_ ) {
-		canvas_->render( &gr, dc.m_ps.rcPaint );
+		RECT updateRect = dc.m_ps.rcPaint;
+		/*updateRect.left += pt.x;
+		updateRect.top += pt.y;
+		updateRect.bottom += pt.y;
+		updateRect.right += pt.x;*/
+//		canvas_->render( &gr, updateRect, pt,  size);
+		canvas_->render( dc, updateRect, pt,  size);
 	}
+	
+
+
+	int rightMargin = canvas_->getWidth() - pt.x;
+	int bottomMargin = canvas_->getHeigth()-pt.y;
+	RECT rightRect = {rightMargin, 0, clientRect.right,bottomMargin};
+	dc.FillRect(&rightRect, backgroundBrush_);
+	RECT bottomRect = {0, bottomMargin, clientRect.right, clientRect.bottom};
+	dc.FillRect(&bottomRect, backgroundBrush_);
 	//horizontalToolbar_.Invalidate(TRUE);
 
 	return 0;
@@ -47,23 +71,30 @@ LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 LRESULT CImageEditorView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	backgroundBrush_.CreateSolidBrush(GetSysColor(COLOR_APPWORKSPACE));
 	return 0;
 }
 
 void CImageEditorView::setCanvas(ImageEditor::Canvas *canvas) {
 	canvas_ = canvas;
 	if ( canvas ) {
-		canvas_->setSize( 1280, 720 );
+		SIZE sz = {canvas_->getWidth(), canvas_->getHeigth()};
+		SetScrollOffset(0, 0);
+		SetScrollSize(sz);
 		canvas_->setCallback( this );
 		canvas_->setDrawingToolType(Canvas::dtRectangle);
 	}
 }
 
 LRESULT CImageEditorView::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	int cx = LOWORD(lParam); 
-	int cy = HIWORD(lParam);
+	int cx = GET_X_LPARAM(lParam); 
+	int cy =  GET_Y_LPARAM(lParam);
+	POINT ptScroll;
+	GetScrollOffset(ptScroll);
+	cx += ptScroll.x;
+	cy += ptScroll.y;
 	POINT pt = {cx, cy};
-	LOG(INFO) <<"x=" << cx <<"y=" << cy;
+	//LOG(INFO) <<"x=" << cx <<"y=" << cy;
 	/*TextElement *textElement = < canvas_->getCurrentlyEditedTextElement();
 	if ( textElement ) {
 		int elX = textElement->getX();
@@ -90,8 +121,12 @@ LRESULT CImageEditorView::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 }
 
 LRESULT CImageEditorView::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	int cx = LOWORD(lParam); 
-	int cy = HIWORD(lParam);
+	int cx =   GET_X_LPARAM(lParam); 
+	int cy =   GET_Y_LPARAM(lParam); 
+	POINT ptScroll;
+	GetScrollOffset(ptScroll);
+	cx += ptScroll.x;
+	cy += ptScroll.y;
 	POINT pt = {cx, cy};
 	/*TextElement *textElement = canvas_->getCurrentlyEditedTextElement();
 	if ( textElement ) {
@@ -104,7 +139,7 @@ LRESULT CImageEditorView::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam,
 		}
 		return 0;
 	}*/
-
+	mouseDown_ = true;
 	SetCapture();
 	//horizontalToolbar_.ShowWindow(SW_HIDE);
 	canvas_->mouseDown( 0, cx, cy );
@@ -112,9 +147,17 @@ LRESULT CImageEditorView::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam,
 }
 
 LRESULT CImageEditorView::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	int cx = LOWORD(lParam); 
-	int cy = HIWORD(lParam);
+	if ( !mouseDown_ ) {
+		return 0;
+	}
+	int cx =   GET_X_LPARAM(lParam); 
+	int cy =   GET_Y_LPARAM(lParam);
+	POINT ptScroll;
+	GetScrollOffset(ptScroll);
+	cx += ptScroll.x;
+	cy += ptScroll.y;
 	POINT pt = {cx, cy};
+	
 	/*TextElement *textElement = canvas_->getCurrentlyEditedTextElement();
 	if ( textElement ) {
 		int elX = textElement->getX();
@@ -128,7 +171,22 @@ LRESULT CImageEditorView::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	}*/
 	canvas_->mouseUp( 0, cx, cy );
 	ReleaseCapture();
+	mouseDown_ = false;
 //	horizontalToolbar_.ShowWindow(SW_SHOW);
+	return 0;
+}
+
+LRESULT CImageEditorView::OnRButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	int cx =   GET_X_LPARAM(lParam); 
+	int cy =   GET_Y_LPARAM(lParam);
+	POINT ptScroll;
+	GetScrollOffset(ptScroll);
+	cx += ptScroll.x;
+	cy += ptScroll.y;
+	POINT pt = {cx, cy};
+	canvas_->mouseUp( 1, cx, cy );
+	ReleaseCapture();
 	return 0;
 }
 
@@ -136,19 +194,27 @@ LRESULT CImageEditorView::OnLButtonDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 {
 	int cx = LOWORD(lParam); 
 	int cy = HIWORD(lParam);
+	POINT ptScroll;
+	GetScrollOffset(ptScroll);
+	cx += ptScroll.x;
+	cy += ptScroll.y;
 	canvas_->mouseDoubleClick( 0, cx, cy );
 	return 0;
 }
 
 void CImageEditorView::updateView( Canvas* canvas, const CRgn& region ) {
-	InvalidateRgn( region );
-	RECT rc;
-	region.GetRgnBox( &rc );
-	//InvalidateRect( &boundingRect );
+	POINT pt;
+	//CRgn rgn = 
+	CRgn rgn = region;
+
+	GetScrollOffset(pt);
+	//LOG(INFO) << "ScrollOffset " << pt.x << " " << pt.y;
+	rgn.OffsetRgn(-pt.x, -pt.y);
+	InvalidateRgn( rgn );
 }
 
-LRESULT CImageEditorView::OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-
+LRESULT CImageEditorView::OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	bHandled = true;
 	return 1;
 }
 
@@ -190,10 +256,41 @@ LRESULT CImageEditorView::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
 
 LRESULT CImageEditorView::OnSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	SetCursor(getCachedCursor(canvas_->getCursor()));
+	RECT clientRect;
+	GetClientRect(&clientRect);
+	POINT cursorPos;
+	GetCursorPos(&cursorPos);
+	if ( WindowFromPoint(cursorPos ) != m_hWnd ) {
+		return 0;
+	}
+	ScreenToClient(&cursorPos);
+	if ( PtInRect(&clientRect, cursorPos ) ) {
+		SetCursor(getCachedCursor(canvas_->getCursor()));
+	} else {
+		SetCursor(getCachedCursor(ctDefault));
+	}
 	return 0;
 }
 
+
+LRESULT CImageEditorView::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	if ( wParam == 'Z' && ( !!( ::GetKeyState(VK_LCONTROL) & 0x8000 ) ||  ::GetKeyState(VK_RCONTROL) & 0x8000 ) ) {
+		canvas_->undo();
+	} if ( wParam == 'D' && ( !!( ::GetKeyState(VK_LCONTROL) & 0x8000 ) ||  ::GetKeyState(VK_RCONTROL) & 0x8000 ) ) {
+		canvas_->unselectAllElements();
+		canvas_->updateView();
+	}else if ( wParam == VK_DELETE ) {
+		canvas_->deleteSelectedElements();
+	}
+	return 0;
+}
+
+LRESULT CImageEditorView::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	//Invalidate(false);
+	return 0;
+}
 
 HCURSOR CImageEditorView::getCachedCursor(CursorType cursorType)
 {
@@ -224,6 +321,10 @@ HCURSOR CImageEditorView::getCachedCursor(CursorType cursorType)
 		case ctMove:
 			lpCursorName = IDC_SIZEALL;
 			break;
+		case ctColorPicker:
+			cur = LoadCursor(_Module.GetModuleInstance(), MAKEINTRESOURCE(IDC_COLORPICKERCURSOR));
+			cursorCache_[cursorType] = cur;
+			return cur;
 		default:
 			lpCursorName = IDC_ARROW;
 	}
@@ -231,5 +332,6 @@ HCURSOR CImageEditorView::getCachedCursor(CursorType cursorType)
 	cursorCache_[cursorType] = cur;
 	return cur;
 }
+
 
 }

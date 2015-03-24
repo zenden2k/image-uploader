@@ -1,20 +1,20 @@
 /*
 Image Uploader - program for uploading images/files to Internet
-Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 
 HomePage:    http://zenden.ws/imageuploader
 
 This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
+it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License
+You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
@@ -92,16 +92,7 @@ bool CImageConverter::Convert(const CString& sourceFile)
 	if (m_imageConvertingParams.strNewWidth.Right(1) == _T("%"))
 		NewWidth = NewWidth * imgwidth / 100;
 	
-	UINT propertyItemsSize = 0;
-	UINT propertyItemsCount = 0;
-	PropertyItem* pPropBuffer = NULL;
-	if ( m_imageConvertingParams.PreserveExifInformation ) {
-		bm.GetPropertySize(&propertyItemsSize, &propertyItemsCount);
-		if ( propertyItemsSize ) {
-			pPropBuffer = (PropertyItem*)malloc(propertyItemsSize);
-			bm.GetAllPropertyItems(propertyItemsSize, propertyItemsCount, pPropBuffer);
-		}
-	}
+	
 
 	if (m_imageConvertingParams.strNewHeight.Right(1) == _T("%"))
 	{
@@ -127,6 +118,16 @@ bool CImageConverter::Convert(const CString& sourceFile)
 		m_resultFileName = sourceFile;
 	else
 	{
+		UINT propertyItemsSize = 0;
+		UINT propertyItemsCount = 0;
+		PropertyItem* pPropBuffer = NULL;
+		if ( m_imageConvertingParams.PreserveExifInformation ) {
+			bm.GetPropertySize(&propertyItemsSize, &propertyItemsCount);
+			if ( propertyItemsSize ) {
+				pPropBuffer = (PropertyItem*)malloc(propertyItemsSize);
+				bm.GetAllPropertyItems(propertyItemsSize, propertyItemsCount, pPropBuffer);
+			}
+		}
 		if (m_imageConvertingParams.ResizeMode == ImageConvertingParams::irmFit)
 		{
 			if (width && height && ( imgwidth > width || imgheight > height) )
@@ -665,7 +666,7 @@ bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int F
 		return false;
 	if (result != Ok)
 	{
-		WriteLog(logError, _T("Image Converter"), _T("Could not save image at path \r\n") + resultFilename);
+		WriteLog(logError, _T("Image Converter"), _T("Could not save image at path \r\n") + resultFilename + L"\r\nGdiplus status=" + IntToStr(result));
 		return false;
 	}
 	szBuffer = resultFilename;

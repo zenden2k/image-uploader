@@ -5,24 +5,35 @@
 #include <GdiPlus.h>
 #include "DrawingElement.h"
 #include <Core/Logging.h>
+#include <stdint.h>
+#include <Core/Images/Utils.h>
 
 namespace ImageEditor {
 	using namespace Gdiplus;
 Document::Document(int width, int height) {
-	Gdiplus::Bitmap* bitmap = new Gdiplus::Bitmap( width, height, PixelFormat32bppARGB );
-	currentImage_ = bitmap;
+	hasTransparentPixels_ = false;
+	currentImage_ = new Gdiplus::Bitmap( width, height, PixelFormat32bppARGB );
 	init();
 }
 
 Document::Document(const wchar_t* fileName) {
-	currentImage_ = new Gdiplus::Bitmap( fileName );
+	currentImage_ = LoadImageFromFileWithoutLocking(fileName);
 	//LOG(INFO) << "Last status " << (int)currentImage_->GetLastStatus();
+	init();
+	checkTransparentPixels();
+}
+
+Document::Document(Gdiplus::Bitmap *sourceImage,  bool hasTransparentPixels ) {
+	currentImage_ = sourceImage;
+	hasTransparentPixels_ = hasTransparentPixels;
 	init();
 }
 
-Document::Document(Gdiplus::Bitmap *sourceImage) {
-	currentImage_ = sourceImage;
-	init();
+Document::~Document()
+{
+	for( int i = 0; i < history_.size(); i++ ) {
+		delete[] history_[i].data;
+	}
 }
 
 void Document::init() {
@@ -30,11 +41,12 @@ void Document::init() {
 	drawStarted_ = false;
 	originalImage_ = NULL;
 	currentCanvas_ = new Gdiplus::Graphics( currentImage_ );
+	changedSegments_ = AffectedSegments(getWidth(), getHeight());
 	//currentCanvas_->Clear( Gdiplus::Color( 150, 0, 0 ) );
 
 	/*
-	рисуем сетку
-	for ( int i = 0; i < currentImage_->GetWidth() / 20; i++ ) {
+	рисуем сетку*/ 
+	/*for ( int i = 0; i < currentImage_->GetWidth() /  AffectedSegments::kSegmentSize; i++ ) {
 		Pen pen(Color::DarkGray);
 		currentCanvas_->DrawLine(&pen, i * AffectedSegments::kSegmentSize, 0, i * AffectedSegments::kSegmentSize, currentImage_->GetHeight() );
 		currentCanvas_->DrawLine(&pen, 0, i * AffectedSegments::kSegmentSize, currentImage_->GetWidth(),  i * AffectedSegments::kSegmentSize  );
@@ -51,7 +63,7 @@ void Document::beginDrawing(bool cloneImage) {
 }
 
 void Document::addDrawingElement(DrawingElement *element) {
-	currentCanvas_->SetSmoothingMode( Gdiplus::SmoothingModeHighQuality );
+	currentCanvas_->SetSmoothingMode( Gdiplus::SmoothingModeAntiAlias );
 	currentCanvas_->SetInterpolationMode( Gdiplus::InterpolationModeHighQualityBicubic );
 	AffectedSegments segments;
 	element->getAffectedSegments( &segments );
@@ -71,6 +83,16 @@ void Document::endDrawing() {
 
 }
 
+void Document::addAffectedSegments(const AffectedSegments& segments)
+{
+	changedSegments_ += segments;
+}
+
+Gdiplus::Bitmap* Document::getBitmap()
+{
+	return currentImage_;
+}
+
 void Document::saveDocumentState( /*DrawingElement* element*/ ) {
 	int pixelSize = 4;
 	typedef std::deque<RECT>::iterator iter;
@@ -79,7 +101,7 @@ void Document::saveDocumentState( /*DrawingElement* element*/ ) {
 	int srcImageWidth = srcImage->GetWidth();
 	int srcImageHeight = srcImage->GetHeight();
 
-	changedSegments_.getRects( rects, srcImageWidth, srcImageHeight );
+	changedSegments_.getRects( rects, srcImageWidth, srcImageHeight ); // may contain invalid segments!
 	unsigned int pixels = 0;
 	
 	pixels = rects.size() * AffectedSegments::kSegmentSize * AffectedSegments::kSegmentSize * pixelSize;
@@ -98,13 +120,22 @@ void Document::saveDocumentState( /*DrawingElement* element*/ ) {
 	unsigned int segmentSize = AffectedSegments::kSegmentSize * AffectedSegments::kSegmentSize * pixelSize;
 
 	unsigned char* pImageData = imageData;
+	AffectedSegments outSegments(srcImageWidth, srcImageHeight);
 	
 	for ( iter it = rects.begin(); it != rects.end(); ++it ) {
 		int x = it->left;
 		int y = it->top;
-		int rectWidth  = it->right - it->left;
-		int rectHeight = it->bottom - it->top;
-
+		if ( x < 0 || y < 0 ) {
+			continue;;
+		}
+		int rectWidth  = min(it->right - it->left, srcImageWidth - x);
+		int rectHeight = min(it->bottom - it->top, srcImageHeight - y);
+		if ( rectWidth <= 0 || rectHeight <= 0) {
+			// invalid rectangle. Out of bounds;
+			continue;
+		}
+		outSegments.markRect(x,y, rectWidth,rectHeight);
+		//LOG(INFO) << "Saving segment ("<<x<<","<<y<<"," << rectWidth << ","<< rectHeight << ")";
 		for( int j = 0; j < rectHeight; j++ ) {
 			unsigned int dataOffset = (r.Width * (y + j) + x) * pixelSize;
 			unsigned int rowSize = rectWidth * pixelSize;
@@ -122,12 +153,39 @@ void Document::saveDocumentState( /*DrawingElement* element*/ ) {
 	history_.push_back( item );
 	delete originalImage_;
 	originalImage_ = 0;
+	changedSegments_.clear();
 }
 
-void Document::render(Gdiplus::Graphics *gr) {
+void Document::checkTransparentPixels()
+{
+	using namespace Gdiplus;
+	BitmapData bitmapData;
+	Rect lockRect(0,0, min(10, currentImage_->GetWidth()), min(10, currentImage_->GetHeight()));
+	if ( currentImage_->LockBits(&lockRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData) == Ok) {
+		uint8_t * source = (uint8_t *) bitmapData.Scan0;
+		unsigned int stride;
+		if ( bitmapData.Stride > 0) { 
+			stride = bitmapData.Stride;
+		} else {
+			stride = - bitmapData.Stride;
+		}
+		for( int i = 0; i < lockRect.Height; i++ ) {
+			for ( int j = 0; j < lockRect.Width; j++ ) {
+				if ( source[i * stride + j * 4 + 3 ] != 255 ) {
+					hasTransparentPixels_ = true;
+					currentImage_->UnlockBits(&bitmapData);
+					return;
+				}
+
+			}
+		}
+		currentImage_->UnlockBits(&bitmapData);
+	}
+}
+
+void Document::render(Gdiplus::Graphics *gr, Gdiplus::Rect rc) {
 	if (!gr || !currentImage_ ) return;
-	
-	gr->DrawImage( currentImage_, 0, 0, currentImage_->GetWidth(), currentImage_->GetHeight());
+	gr->DrawImage( currentImage_,rc.X, rc.Y, rc.X, rc.Y, rc.Width, rc.Height, Gdiplus::UnitPixel);
 }
 
 bool  Document::undo() {
@@ -138,7 +196,7 @@ bool  Document::undo() {
 	HistoryItem undoItem = history_.back();
 	history_.pop_back();
 	std::deque<RECT> rects;
-	undoItem.segments.getRects( rects );
+	undoItem.segments.getRects( rects, currentImage_->GetWidth(),currentImage_->GetHeight() );
 	
 	Gdiplus::BitmapData bdSrc;
 	Gdiplus::Rect r ( 0,0, currentImage_->GetWidth(), currentImage_->GetHeight() );
@@ -154,6 +212,8 @@ bool  Document::undo() {
 		int y = it->top;
 		int rectWidth  = it->right - it->left;
 		int rectHeight = it->bottom - it->top;
+
+		//LOG(INFO) << "Restoring segment ("<<x<<","<<y<<"," << rectWidth << ","<< rectHeight << ")";
 		for( int j = 0; j < rectHeight; j++ ) {
 			unsigned int dstDataOffset = (r.Width * (y + j) + x) * pixelSize;
 			unsigned int rowSize    = rectWidth * pixelSize;
@@ -161,9 +221,10 @@ bool  Document::undo() {
 			//memset( bpSrc + dstDataOffset, 255, rowSize );
 			pdata += rowSize;
 		}
+		
 
 	}
-
+	delete[] undoItem.data;
 	currentImage_->UnlockBits( &bdSrc );
 	return true;
 }
@@ -177,6 +238,11 @@ int Document::getWidth()
 int Document::getHeight()
 {
 	return currentImage_->GetHeight();
+}
+
+bool Document::hasTransparentPixels() const
+{
+	return hasTransparentPixels_;
 }
 
 Painter* Document::getGraphicsObject() {

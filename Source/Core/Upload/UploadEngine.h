@@ -5,16 +5,16 @@
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef IU_CORE_UPLOADENGINE_H
@@ -27,7 +27,7 @@
 #include <map>
 #include "Core/3rdpart/FastDelegate.h"
 #include "Core/Utils/CoreUtils.h"
-#include "Core/Network/NetworkManager.h"
+#include "Core/Network/NetworkClient.h"
 #include "CommonTypes.h"
 
 struct LoginInfo
@@ -206,7 +206,7 @@ class CAbstractUploadEngine
 		void setServerSettings(ServerSettingsStruct settings);
 		ServerSettingsStruct serverSettings();
 		virtual int RetryLimit()=0;
-		virtual void setNetworkManager(NetworkManager* nm);
+		virtual void setNetworkClient(NetworkClient* nm);
 		void setUploadData(CUploadEngineData* data);
 		CUploadEngineData* getUploadData() const;
 		// Events
@@ -217,7 +217,7 @@ class CAbstractUploadEngine
 		fastdelegate::FastDelegate1<ErrorInfo> onErrorMessage;
 	protected:
 		bool m_bShouldStop;
-		NetworkManager * m_NetworkManager;
+		NetworkClient * m_NetworkClient;
 		CUploadEngineData * m_UploadData;
 		ServerSettingsStruct m_ServersSettings;
 		int m_ThumbnailWidth;

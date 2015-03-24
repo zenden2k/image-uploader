@@ -1,20 +1,20 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
@@ -58,6 +58,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 	CString memoText;
 	memoText += TR("Благодарности:") + CString("\r\n\r\n");
+	memoText += TR("Контрибьюторам:") + CString("\r\n");
+	memoText += L"arhangelsoft (https://github.com/arhangelsoft)\r\n\r\n";
 
 	memoText += TR("Переводчикам:")+ CString("\r\n");
 
@@ -76,19 +78,21 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	memoText += TR("Бета-тестерам:")+ CString("\r\n");
 	memoText += L"Graf, CKA3O4H1K\r\n\r\n";
 
-	memoText += L"Thanks to the authors of the following open-source libraries:\r\n\r\n";
- 
+	//memoText += CString(T_R("Thanks to the authors of the following open-source libraries:"))+L"\r\n\r\n";
+	memoText += CString(TR("Спасибо авторам следующих библиотек с открытым исходным кодом:"))+L"\r\n\r\n";
 	
 	memoText += CString(L"WTL")+ "\t\thttp://sourceforge.net/projects/wtl/\r\n";
 	memoText += CString(L"libcurl")+ "\t\thttp://curl.haxx.se/libcurl/\r\n";
 	
 	memoText += CString(L"openssl") +"\t\thttps://www.openssl.org\r\n";
 	memoText += CString(L"zlib") +"\t\thttp://www.zlib.net\r\n";
-	memoText += CString(L"pcre") +"\t\thttp://www.pcre.org\r\n";
-	memoText += CString(L"pcre++") +"\t\thttp://www.daemon.de/PCRE\r\n";
 	memoText += CString(L"squirrel") +"\t\thttp://squirrel-lang.org\r\n";
 	memoText += CString(L"sqplus") +"\t\thttp://sourceforge.net/projects/sqplus/\r\n";
 	memoText += CString(L"ffmpeg") +"\t\thttps://www.ffmpeg.org\r\n";	
+	memoText += CString(L"MediaInfo") +"\thttps://mediaarea.net/\r\n";
+	memoText += CString(L"pcre") +"\t\thttp://www.pcre.org\r\n";
+	memoText += CString(L"pcre++") +"\t\thttp://www.daemon.de/PCRE\r\n";
+	
 	memoText += CString(L"tinyxml") +"\t\thttp://sourceforge.net/projects/tinyxml/\r\n";
 	memoText += CString(L"zthreads") +"\t\thttp://zthread.sourceforge.net\r\n";
 	memoText += CString(L"glog") +"\t\thttps://github.com/google/glog\r\n";
@@ -117,11 +121,10 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	SetDlgItemText(IDC_IMAGEUPLOADERLABEL, buildInfo);
 	CenterWindow(GetParent());
 
-	// Translating
-	TRC(IDC_THANKSTOGROUP, "Благодарности");
-	TRC(IDC_BETATESTERS, "Бета-тестерам:");
-	TRC(IDC_TRANSLATERS, "Переводчикам:");
+
 	TRC(IDC_CONTACTEMAIL, "Контактный e-mail:");
+	TRC(IDC_AUTHORLABEL, "Автор:");
+	TRC(IDC_WEBSITELABEL, "Веб-сайт:");
 	
 	SetWindowText(TR("О программе"));
 	return TRUE;

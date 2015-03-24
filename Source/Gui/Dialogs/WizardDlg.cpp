@@ -1,20 +1,20 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "WizardDlg.h"
@@ -49,7 +49,8 @@
 #include <Func/WinUtils.h>
 #include <Func/IuCommonFunctions.h>
 #include <Gui/Dialogs/QuickSetupDlg.h>
-
+#include <ImageEditor/Gui/ImageEditorWindow.h>
+#include <zthread/CountedPtr.h>
 using namespace Gdiplus;
 // CWizardDlg
 CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
@@ -263,6 +264,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	CreatePage(0); 
 	ShowPage(0);
 	::SetFocus(Pages[0]->PageWnd);
+
 
 	if(CmdLine.IsOption(_T("update")))
 	{
@@ -1260,7 +1262,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 	else
 	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 2, 
 		                           CString(TR("Изображения")) + _T(" (jpeg, bmp, png, gif ...)"),
-		                           _T("*.jpg;*.gif;*.png;*.bmp;*.tiff"), TR("Любые файлы"),
+		                           _T("*.jpg;*.jpeg;*.gif;*.png;*.bmp;*.tiff"), TR("Любые файлы"),
 		                           _T("*.*"));
 
 	int nCount = 0;  
@@ -1743,8 +1745,8 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 	CScreenCaptureEngine engine;
 	
 	CString buf; // file name buffer
-
-	Bitmap *result=0;
+	using namespace ZThread;
+	ZThread::CountedPtr<Gdiplus::Bitmap> result;
 	CWindowHandlesRegion::WindowCapturingFlags wcfFlags;
 	wcfFlags.AddShadow = Settings.ScreenshotSettings.AddShadow;
 	wcfFlags.RemoveBackground = 	Settings.ScreenshotSettings.RemoveBackground;
@@ -1756,7 +1758,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 	{
 		engine.setDelay(WindowHidingDelay + Settings.ScreenshotSettings.Delay*1000);
 		engine.captureScreen();
-		result = engine.capturedBitmap();
+		result = CountedPtr<Gdiplus::Bitmap>(engine.capturedBitmap());
 	}
 	else if (mode == cmActiveWindow)
 	{
@@ -1767,57 +1769,80 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 		winRegion.setWindowCapturingFlags(wcfFlags);
 		winRegion.SetWindowHidingDelay(Settings.ScreenshotSettings.WindowHidingDelay);
 		engine.captureRegion(&winRegion);
-		result = engine.capturedBitmap();
+		result = CountedPtr<Gdiplus::Bitmap>(engine.capturedBitmap());
 	}
 	else if(engine.captureScreen())
 	{
-		RegionSelect.Parent = m_hWnd;
-		SelectionMode selMode;
-		if(mode == cmFreeform)
-			selMode = smFreeform;
-		if(mode == cmRectangles)
-			selMode = smRectangles;
-		if(mode == cmWindowHandles)
-			selMode = smWindowHandles;
+		if ( mode == cmRectangles ) {
+			result = CountedPtr<Gdiplus::Bitmap>(engine.capturedBitmap());
+		} else {
+			RegionSelect.Parent = m_hWnd;
+			SelectionMode selMode;
+			if(mode == cmFreeform)
+				selMode = smFreeform;
+			if(mode == cmRectangles)
+				selMode = smRectangles;
+			if(mode == cmWindowHandles)
+				selMode = smWindowHandles;
 
-		RegionSelect.m_SelectionMode = selMode;
-		Bitmap *res = engine.capturedBitmap();
-		if(res)
-		{
-			HBITMAP gdiBitmap=0;
-			res->GetHBITMAP(Color(255,255,255), &gdiBitmap);
-			if(RegionSelect.Execute(gdiBitmap, res->GetWidth(), res->GetHeight()))
+			RegionSelect.m_SelectionMode = selMode;
+			ZThread::CountedPtr<Gdiplus::Bitmap> res(engine.capturedBitmap());
+			if(res)
 			{
-				if(RegionSelect.wasImageEdited() || (mode!=cmWindowHandles /*|| !Settings.ScreenshotSettings.ShowForeground*/) )
-				engine.setSource(gdiBitmap);
-				
-				else{
-					engine.setSource(0);
-				}
-				
-				engine.setDelay(0);
-				CScreenshotRegion* rgn = RegionSelect.region();
-				if(rgn)
+				HBITMAP gdiBitmap=0;
+				res->GetHBITMAP(Color(255,255,255), &gdiBitmap);
+				if(RegionSelect.Execute(gdiBitmap, res->GetWidth(), res->GetHeight()))
 				{
-					CWindowHandlesRegion *whr =  dynamic_cast<CWindowHandlesRegion*>(rgn);
-					if(whr)
-					{
-						whr->SetWindowHidingDelay(int(Settings.ScreenshotSettings.WindowHidingDelay*1.2));
-						whr->setWindowCapturingFlags(wcfFlags);
+					if(RegionSelect.wasImageEdited() || (mode!=cmWindowHandles /*|| !Settings.ScreenshotSettings.ShowForeground*/) )
+					engine.setSource(gdiBitmap);
+					
+					else{
+						engine.setSource(0);
 					}
-					engine.captureRegion(rgn);	
-					result = engine.capturedBitmap();
-					DeleteObject(gdiBitmap);
+					
+					engine.setDelay(0);
+					CScreenshotRegion* rgn = RegionSelect.region();
+					if(rgn)
+					{
+						CWindowHandlesRegion *whr =  dynamic_cast<CWindowHandlesRegion*>(rgn);
+						if(whr)
+						{
+							whr->SetWindowHidingDelay(int(Settings.ScreenshotSettings.WindowHidingDelay*1.2));
+							whr->setWindowCapturingFlags(wcfFlags);
+						}
+						engine.captureRegion(rgn);	
+						result = CountedPtr<Gdiplus::Bitmap>(engine.capturedBitmap());
+						DeleteObject(gdiBitmap);
+					}
 				}
+				else CanceledByUser = true;
 			}
-			else CanceledByUser = true;
 		}
 	}
+	using namespace ImageEditor;
+	ImageEditorWindow::DialogResult dr = ImageEditorWindow::drCancel;
+	CString suggestingFileName = GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
+
+	if(result)
+	{
+		ImageEditor::ImageEditorWindow imageEditor(&*result, mode == cmFreeform ||   mode == cmActiveWindow );
+		imageEditor.setInitialDrawingTool(mode == cmRectangles ? ImageEditor::Canvas::dtCrop : ImageEditor::Canvas::dtBrush);
+		imageEditor.showUploadButton(m_bScreenshotFromTray);
+		imageEditor.setSuggestedFileName(suggestingFileName);
+		dr = imageEditor.DoModal(m_hWnd, (mode == cmRectangles || mode == cmFullScreen ) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
+		if ( dr == ImageEditorWindow::drAddToWizard || dr ==ImageEditorWindow::drUpload ) {
+			result = imageEditor.getResultingBitmap();
+		}else {
+			CanceledByUser = true;
+		}
+	} 
 
 	if(!CanceledByUser)
 	{
 		if(result)
 		{
+			
+			
 			Result = true;
 			bool CopyToClipboard = false;
 			if((m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD) || Settings.ScreenshotSettings.CopyToClipboard)
@@ -1830,7 +1855,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 				Gdip_RemoveAlpha(*result,Color(255,255,255,255));
 
 			CString saveFolder = GenerateFileName(Settings.ScreenshotSettings.Folder, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
-			MySaveImage(result,GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight())),buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
+			MySaveImage(&*result,suggestingFileName,buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
 			screenshotIndex++;
 			if(CopyToClipboard)
 			{
@@ -1864,7 +1889,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 					}
 				}
 			}
-			if(!m_bScreenshotFromTray || (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD || Settings.TrayIconSettings.TrayScreenshotAction== TRAY_SCREENSHOT_SHOWWIZARD))
+			if(!m_bScreenshotFromTray || dr == ImageEditorWindow::drAddToWizard || (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD || Settings.TrayIconSettings.TrayScreenshotAction== TRAY_SCREENSHOT_SHOWWIZARD))
 			{
 				CreatePage(2); 
 				((CMainDlg*)Pages[2])->AddToFileList(buf);
@@ -1873,7 +1898,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 				((CMainDlg*)Pages[2])->ThumbsView.SetFocus();
 				ShowPage(2,0,3);
 			}
-			else if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD)
+			else if(m_bScreenshotFromTray && (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD || dr == ImageEditorWindow::drUpload))
 			{
 				Result = false;
 				floatWnd.UploadScreenshot(buf,buf);

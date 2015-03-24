@@ -149,6 +149,7 @@ class UpdateGenerator {
         $outUpdateInfoXml->addAttribute('Name', $packageName);
         $outUpdateInfoXml->addAttribute('DownloadUrl',$downloadUrl);
         $outUpdateInfoXml->addAttribute('TimeStamp',$timestamp);
+		$outUpdateInfoXml->addAttribute('Date',date("d.m.Y H:i:s", $timestamp)) ;
         $outUpdateInfoXml->addAttribute("UpdateUrl", $root['UpdateUrl']);
         $outUpdateInfoXml->addAttribute("CoreUpdate", $root['CoreUpdate']);
         $outUpdateInfoXml->addAttribute("DisplayName", $root['DisplayName']);

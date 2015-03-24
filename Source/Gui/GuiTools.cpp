@@ -1,20 +1,20 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 	 
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
@@ -279,12 +279,45 @@ HFONT MakeFontSmaller(HFONT font) {
 	HFONT NewFont = CreateFontIndirect(&alf);
 	return NewFont;
 }
+
+HFONT MakeFontBigger(HFONT font) {
+	if ( !font ) {
+		return 0;
+	}
+
+	LOGFONT alf;
+	bool ok = ::GetObject(font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT);
+	if ( !ok ) {
+		return 0;
+	}
+
+	alf.lfHeight += GetFontSize( 5 );
+	alf.lfWeight = FW_BOLD;
+	HFONT NewFont = CreateFontIndirect(&alf);
+	return NewFont;
+}
 int GetFontSize(int nFontHeight) {
 	return - MulDiv( nFontHeight, 72, GetDeviceCaps(::GetDC(0), LOGPIXELSY));
 }
 
 int GetFontHeight(int nFontSize) {
 	return - MulDiv(nFontSize, GetDeviceCaps(::GetDC(0), LOGPIXELSY), 72);
+}
+
+HFONT GetSystemDialogFont()
+{
+	NONCLIENTMETRICS ncm;
+	ncm.cbSize = sizeof(NONCLIENTMETRICS);
+#if (WINVER >= 0x0600)
+	if ( !WinUtils::IsVista() ) {
+		ncm.cbSize = sizeof(NONCLIENTMETRICS) - sizeof(int);
+	}
+#endif
+
+	if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, 0)) {
+		return CreateFontIndirect(&ncm.lfMessageFont);
+	}
+	return 0;
 }
 
 int ScreenBPP(){
@@ -465,6 +498,38 @@ int GetWindowLeft(HWND Wnd)
 	HWND Parent = GetParent(Wnd);
 	ScreenToClient(Parent, (LPPOINT)&WindowRect);
 	return WindowRect.left;
+}
+
+std::vector<RECT> monitorsRects;
+BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+{
+	if (lprcMonitor)
+	{
+		monitorsRects.push_back(*lprcMonitor);
+	}
+	return TRUE;
+}
+
+bool GetScreenBounds(RECT& rect)
+{
+	monitorsRects.clear();
+	EnumDisplayMonitors(0, 0, MonitorEnumProc, 0);
+	CRect result;
+	for (size_t i = 0; i < monitorsRects.size(); i++)
+	{
+		CRect Bounds = monitorsRects[i];
+		result.UnionRect(result, Bounds);
+	}
+	rect = result;
+	return true;
+
+}
+
+HRGN CloneRegion(HRGN source)
+{
+	HRGN resultRgn = CreateRectRgn(0, 0, 0, 0);
+	CombineRgn(resultRgn, source, resultRgn, RGN_OR);
+	return resultRgn;
 }
 
 };

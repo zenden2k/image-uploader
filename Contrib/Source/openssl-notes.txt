@@ -1,0 +1,5 @@
+perl Configure VC-WIN32 no-shared --prefix=../../../Build/openssl
+ms\do_nasm
+#Run ms\do_ms
+nmake -f ms\nt.mak
+nmake -f ms\nt.mak install

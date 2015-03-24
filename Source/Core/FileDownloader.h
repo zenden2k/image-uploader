@@ -1,6 +1,6 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) GNU Lesser General Public License-2011 ZendeN <zenden2k@gmail.com>
 
     HomePage:    http://zenden.ws/imageuploader
 
@@ -24,7 +24,7 @@
 #include "atlheaders.h"
 #include "3rdpart/thread.h"
 #include "Core/3rdpart/FastDelegate.h"
-#include "Core/Network/NetworkManager.h"
+#include "Core/Network/NetworkClient.h"
 #include "Core/Utils/CoreTypes.h"
 
 class CFileDownloader
@@ -49,7 +49,7 @@ class CFileDownloader
 		bool IsRunning();
 
 		fastdelegate::FastDelegate0<> onQueueFinished;
-		fastdelegate::FastDelegate1<NetworkManager*> onConfigureNetworkManager;
+		fastdelegate::FastDelegate1<NetworkClient*> onConfigureNetworkClient;
 		fastdelegate::FastDelegate3<bool, int, DownloadFileListItem, bool> onFileFinished;
 	protected:
 		CString m_ErrorStr;

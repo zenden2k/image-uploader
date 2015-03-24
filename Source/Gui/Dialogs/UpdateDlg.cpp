@@ -1,20 +1,20 @@
 /*
     Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
+    Copyright (C) 2007-2015 ZendeN <zenden2k@gmail.com>
 
     HomePage:    http://zenden.ws/imageuploader
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
@@ -115,9 +115,9 @@ LRESULT CUpdateDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& 
 		// Closing and reexecuting image uploader
 		CString pid = IntToStr(GetCurrentProcessId());
 		if (!CmdLine.IsOption(_T("update")))
-			IULaunchCopy(_T("/waitforpid=") + pid);  // executing new IU copy with the same command line params
+			IULaunchCopy(_T("/afterupdate /waitforpid=") + pid);  // executing new IU copy with the same command line params
 		else
-			IULaunchCopy(_T("/waitforpid=") + pid, CAtlArray<CString>());
+			IULaunchCopy(_T("/afterupdate /waitforpid=") + pid, CAtlArray<CString>());
 
 		m_bClose = 2;
 		return 0;
@@ -160,6 +160,10 @@ void CUpdateDlg::CheckUpdates()
 	Settings.LastUpdateTime = static_cast<int>(time(0));
 	if (m_UpdateManager.AreUpdatesAvailable())
 	{
+		if ( !m_UpdateManager.AreCoreUpdates() ) {
+			DoUpdates();
+			return;
+		}
 		if (CmdLine.IsOption(_T("update")))
 		{
 			DoUpdates();

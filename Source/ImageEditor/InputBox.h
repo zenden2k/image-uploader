@@ -14,8 +14,13 @@ class InputBox {
 		virtual void render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea)=0;
 		virtual bool isVisible() = 0;
 		virtual void invalidate() = 0;
+		virtual void setTextColor(Gdiplus::Color color) =0;
 		fastdelegate::FastDelegate1<TCHAR*> onTextChanged;
 		fastdelegate::FastDelegate2<int, int> onSizeChanged;
+		fastdelegate::FastDelegate0<void> onEditCanceled;
+		fastdelegate::FastDelegate0<void> onEditFinished;
+		fastdelegate::FastDelegate2<int,int> onResized;
+
 };
 }
 

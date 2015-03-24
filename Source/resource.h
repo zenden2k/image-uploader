@@ -124,6 +124,20 @@
 #define IDB_ICONTOOLSELECTION           284
 #define IDB_PNG5                        286
 #define IDB_ICONTOOLARROWPNG            286
+#define IDB_ICONTOOLBLURINGRECTANGLEPNG 287
+#define IDC_CURSOR1                     288
+#define IDC_COLORPICKERCURSOR           288
+#define IDB_ICONTOOLROUNDEDRECTANGLE    289
+#define IDB_ICONTOOLFILLEDROUNDEDRECTANGLE 290
+#define IDB_ICONTOOLELLIPSE             291
+#define IDB_PNG7                        292
+#define IDB_ICONTOOLFILLEDELLIPSE       292
+#define IDB_PNG6                        293
+#define IDB_ICONTOOLMARKER              293
+#define IDB_ICONSAVEPNG                 294
+#define IDB_ICONADDPNG                  295
+#define IDB_PNG8                        296
+#define IDB_ICONUPLOADPNG               296
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -563,7 +577,9 @@
 #define IDC_URLSHORTENERPLACEHOLDER     1305
 #define IDC_PARAMETERSLABEL             1305
 #define IDC_ACCOUNTINFO                 1306
+#define IDC_AUTHORLABEL                 1306
 #define IDC_EDIT                        1307
+#define IDC_WEBSITELABEL                1307
 #define IDC_SERVERGROUPBOX              1308
 #define IDC_USERICON                    1309
 #define IDC_FOLDERICON                  1310
@@ -620,14 +636,16 @@
 #define IDM_COPYFILETOCLIPBOARD         32801
 #define IDM_SAVEAS                      32802
 #define ID_0_SAVEAS                     32802
+#define ID_0_EDITINEXTERNALEDITOR       32803
+#define IDM_EDITINEXTERNALEDITOR        32804
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        287
-#define _APS_NEXT_COMMAND_VALUE         32803
-#define _APS_NEXT_CONTROL_VALUE         1306
+#define _APS_NEXT_RESOURCE_VALUE        297
+#define _APS_NEXT_COMMAND_VALUE         32805
+#define _APS_NEXT_CONTROL_VALUE         1308
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif
