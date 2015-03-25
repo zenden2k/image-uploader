@@ -3,3 +3,18 @@ Build
 *.suo
 *.pdb
 *.ncb
+*.sln
+Image Uploader.sln
+*.vcxproj
+Image Uploader.vcxproj.filters
+*.filters
+*.ipch
+*.tlog
+*.sln
+Image Uploader.sln
+*.sdf
+*.c
+UpgradeLog.htm
+*.idb
+Contrib
+/Contrib

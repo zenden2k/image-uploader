@@ -1,32 +1,7 @@
+include("Utils/RegExp.nut");
+include("Utils/String.nut");
+
 token <- "";
-function regex_simple(data,regStr,start)
-{
-	local ex = regexp(regStr);
-	local res = ex.capture(data, start);
-	local resultStr = "";
-	if(res != null){	
-		resultStr = data.slice(res[1].begin, res[1].end);
-	}
-	return resultStr;
-}
-
-
-
-function reg_replace(str, pattern, replace_with)
-{
-	local resultStr = str;	
-	local res;
-	local start = 0;
-
-	while( (res = resultStr.find(pattern,start)) != null ) {	
-
-		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-		start = res + replace_with.len();
-	}
-	return resultStr;
-}
-
-
 
 function auth()
 {
@@ -89,9 +64,9 @@ function  UploadFile(FileName, options)
 	local directUrl = regex_simple(data, "url_direct\":\"(.+)\"", 0);
 	local thumbUrl = regex_simple(data, "url_thumbnail\":\"(.+)\"", 0);
 	local viewUrl = regex_simple(data, "url\":\"(.+)\"", 0);
-	directUrl = reg_replace(directUrl, "\\", "");
-	thumbUrl = reg_replace(thumbUrl, "\\", "");
-	viewUrl = reg_replace(viewUrl, "\\", "");
+	directUrl = strReplace(directUrl, "\\", "");
+	thumbUrl = strReplace(thumbUrl, "\\", "");
+	viewUrl = strReplace(viewUrl, "\\", "");
 	//options.setDirectUrl(directUrl);
 	options.setViewUrl(viewUrl);
 	options.setThumbUrl(thumbUrl);	

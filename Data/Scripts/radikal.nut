@@ -1,31 +1,4 @@
-function regex_simple(data,regStr,start)
-{
-	local ex = regexp(regStr);
-	local res = ex.capture(data, start);
-	local resultStr = "";
-	if(res != null){	
-		resultStr = data.slice(res[1].begin, res[1].end);
-	}
-	return resultStr;
-}
-
-
-
-function reg_replace(str, pattern, replace_with)
-{
-	local resultStr = str;	
-	local res;
-	local start = 0;
-
-	while( (res = resultStr.find(pattern,start)) != null ) {	
-
-		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-		start = res + replace_with.len();
-	}
-	return resultStr;
-}
-
-
+include("Utils/RegExp.nut");
 
 function auth()
 {

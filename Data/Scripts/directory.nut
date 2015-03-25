@@ -1,23 +1,8 @@
-function reg_replace(str, pattern, replace_with)
-{
-	local resultStr = str;	
-	local res;
-	local start = 0;
-
-	res = resultStr.find(pattern,start);
-	while( (res = resultStr.find(pattern,start)) != null ) {	
-
-		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-		start = res + replace_with.len();
-	}
-	return resultStr;
-}
-
+include("Utils/RegExp.nut");
+include("Utils/String.nut");
 
 function  UploadFile(FileName, options)
 {
-
-
 	local newFilename = ExtractFileName(FileName);
 	local directory = ServerParams.getParam("directory");
 	local convertUncPath = 0;
@@ -45,14 +30,14 @@ function  UploadFile(FileName, options)
 	}
 	local encodedFileName = newFilename;
 	if ( downloadUrl.find("://") != null ) {
-		encodedFileName = reg_replace(nm.urlEncode(newFilename),"%2E",".");
+		encodedFileName = strReplace(nm.urlEncode(newFilename),"%2E",".");
 	}  
 		
 		
 	options.setDirectUrl(downloadUrl + encodedFileName);
 		
 	if ( downloadUrl.find("\\\\") == 0 ) {
-		local convertedUrl = "file:///" + reg_replace(downloadUrl,"\\","/") + reg_replace(nm.urlEncode(newFilename),"%2E",".");
+		local convertedUrl = "file:///" + strReplace(downloadUrl,"\\","/") + strReplace(nm.urlEncode(newFilename),"%2E",".");
 		if ( convertUncPath == 1) {
 			options.setDirectUrl(convertedUrl);
 		} else {

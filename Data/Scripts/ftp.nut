@@ -1,3 +1,5 @@
+include("Utils/String.nut");
+
 token <- "";
 
 if(ServerParams.getParam("hostname") == "")
@@ -14,22 +16,6 @@ if(ServerParams.getParam("downloadPath") == "")
 {
 	ServerParams.setParam("downloadPath", "http://dl.example.com/somefolder");
 }
-
-
-function reg_replace(str, pattern, replace_with)
-{
-	local resultStr = str;	
-	local res;
-	local start = 0;
-
-	while( (res = resultStr.find(pattern,start)) != null ) {	
-
-		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-		start = res + replace_with.len();
-	}
-	return resultStr;
-}
-
 
 function  UploadFile(FileName, options)
 {
@@ -74,7 +60,7 @@ function  UploadFile(FileName, options)
 	}
 	if(downloadPath.slice(downloadPath.len()-1) != "/")
 		downloadPath += "/";
-	options.setDirectUrl(downloadPath+reg_replace(nm.urlEncode(newFilename),"%2E","."));
+	options.setDirectUrl(downloadPath+strReplace(nm.urlEncode(newFilename),"%2E","."));
 
 	return 1;
 }
