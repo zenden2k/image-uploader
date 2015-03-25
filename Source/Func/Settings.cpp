@@ -525,7 +525,7 @@ CSettings::CSettings()
 	TrayIconSettings.MiddleClickCommand = 7; // region screenshot
 	TrayIconSettings.DontLaunchCopy = FALSE;
 	TrayIconSettings.ShortenLinks = FALSE;
-	TrayIconSettings.TrayScreenshotAction = 0;
+	TrayIconSettings.TrayScreenshotAction = TRAY_SCREENSHOT_OPENINEDITOR;
 
 	ImageEditorSettings.BackgroundColor = Gdiplus::Color(255,255,255);
 	ImageEditorSettings.ForegroundColor = Gdiplus::Color(255,0,0);

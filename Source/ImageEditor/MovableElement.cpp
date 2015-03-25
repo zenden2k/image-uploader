@@ -127,7 +127,7 @@ int MovableElement::getY()
 
 RECT MovableElement::getPaintBoundingRect()
 {
-	int radius = penSize_;
+	int radius = max(penSize_, kGripSize);
 	if ( canvas_->hasBlurRectangles() ) {
 		radius += canvas_->getBlurRadius();
 	}

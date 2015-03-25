@@ -184,7 +184,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		mi.dwTypeData  = TR("Редактировать");
 		sub.SetMenuItemInfo(IDM_EDIT, false, &mi);
 
-		mi.dwTypeData  = TR("Редактировать во внешнем редакторе");
+		mi.dwTypeData  = TR("Открыть во внешнем редакторе");
 		sub.SetMenuItemInfo(IDM_EDITINEXTERNALEDITOR, false, &mi);
 		
 		sub.EnableMenuItem(IDM_EDIT, bIsImageFile?MF_ENABLED	:MF_GRAYED	);
