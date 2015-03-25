@@ -203,8 +203,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 		}
 	}
 
-		//LOG(INFO) << "This is INFO";
-
 	// for Windows Vista and later versions
 	if ( CmdLine.IsOption( _T("integration") ) )  {
 		Settings.LoadSettings("","",false);		

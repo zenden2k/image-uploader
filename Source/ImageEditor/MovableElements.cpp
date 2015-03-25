@@ -133,7 +133,6 @@ bool Line::isItemAtPos(int x, int y)
 	if ( endPoint_.x - startPoint_.x != 0 ) {
 		float k = float(endPoint_.y - startPoint_.y)/float(endPoint_.x - startPoint_.x);
 		float b = float(endPoint_.x* startPoint_.y - startPoint_.x*endPoint_.y)/float(endPoint_.x - startPoint_.x);
-		//LOG(INFO) << "k="<<k <<" b="<<b;
 		if(abs(y - (k*x + b)) <= selectRadius && x >= itemX-selectRadius && x <= itemX + itemWidth +  selectRadius ) {
 			return true;
 		}
@@ -142,7 +141,6 @@ bool Line::isItemAtPos(int x, int y)
 	if ( endPoint_.y - startPoint_.y != 0 ) {
 		float k = float(endPoint_.x - startPoint_.x)/float(endPoint_.y - startPoint_.y);
 		float b = float(endPoint_.y* startPoint_.x - startPoint_.y*endPoint_.x)/float(endPoint_.y - startPoint_.y);
-		//LOG(INFO) << "k="<<k <<" b="<<b;
 		if(abs(x - (k*y + b)) <= selectRadius && y >= itemY-selectRadius && y <= itemY + itemHeight +  selectRadius) {
 			return true;
 		}
@@ -317,7 +315,7 @@ void TextElement::beginEdit()
 void TextElement::endEdit(bool saveToHistory)
 {
 	if ( isEditing_ ) {
-		LOG(INFO) << "saveToHistory" << saveToHistory;
+
 		isEditing_ = false;
 		if ( saveToHistory ) {
 			Canvas::UndoHistoryItem uhi;
@@ -325,7 +323,6 @@ void TextElement::endEdit(bool saveToHistory)
 			uhi.type = Canvas::uitTextChanged;
 			uhie.movableElement = this;
 			uhie.rawText = originalRawText_;
-			LOG(INFO) << "Saving to history: "<<originalRawText_;
 			uhi.elements.push_back(uhie);
 		
 			canvas_->addUndoHistoryItem(uhi);

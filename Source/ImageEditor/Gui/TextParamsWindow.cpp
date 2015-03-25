@@ -74,7 +74,7 @@ class FontEnumerator : public ZThread::Runnable {
 
 };
 
-TextParamsWindow::TextParamsWindow()
+TextParamsWindow::TextParamsWindow() : fontSizeComboboxCustomEdit_(this)
 {
 	fontEnumerationThread_ = 0;
 }
@@ -137,6 +137,8 @@ LRESULT TextParamsWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	SetWindowText(TR("Параметры текста"));
 	fontComboBox_.Attach(GetDlgItem(IDC_FONTCOMBO));
 	fontSizeComboBox_.Attach(GetDlgItem(IDC_FONTSIZECOMBO));
+
+	fontSizeComboboxCustomEdit_.SubclassWindow(fontSizeComboBox_.GetWindow( GW_CHILD));
 	dc_ = GetDC();
 	fontEnumerationThread_ = new ZThread::Thread(new FontEnumerator(dc_, fonts_, FontEnumerator::OnEnumerationFinishedDelegate(this, &TextParamsWindow::OnFontEnumerationFinished)));
 	GuiTools::AddComboBoxItems(m_hWnd, IDC_FONTSIZECOMBO, 19, _T("7"), _T("8"), _T("9"), _T("10"),_T("11"),_T("12"), _T("13"),
@@ -223,4 +225,34 @@ void TextParamsWindow::OnFontEnumerationFinished()
 void TextParamsWindow::NotifyParent(DWORD changeMask)
 {
 	::SendMessage(GetParent(), TPWM_FONTCHANGED, (WPARAM)m_hWnd, (LPARAM)changeMask);
+}
+
+CustomEdit::CustomEdit(TextParamsWindow* textParamsWindow)
+{
+	textParamsWindow_ = textParamsWindow;
+}
+
+CustomEdit::~CustomEdit()
+{
+
+}
+
+LRESULT CustomEdit::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if ( wParam == VK_RETURN ) {
+		textParamsWindow_->NotifyParent(CFM_SIZE);
+		bHandled = true;
+		return 1;
+	}	
+	return 0;
+}
+
+LRESULT CustomEdit::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = false;
+	if ( wParam == VK_RETURN ) {
+		bHandled = true; // stop annoying "ding" sound
+		return 1;
+	}	
+	return 0;
 }

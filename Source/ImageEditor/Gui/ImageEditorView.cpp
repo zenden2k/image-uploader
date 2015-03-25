@@ -208,7 +208,6 @@ void CImageEditorView::updateView( Canvas* canvas, const CRgn& region ) {
 	CRgn rgn = region;
 
 	GetScrollOffset(pt);
-	//LOG(INFO) << "ScrollOffset " << pt.x << " " << pt.y;
 	rgn.OffsetRgn(-pt.x, -pt.y);
 	InvalidateRgn( rgn );
 }
@@ -261,6 +260,7 @@ LRESULT CImageEditorView::OnSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 	POINT cursorPos;
 	GetCursorPos(&cursorPos);
 	if ( WindowFromPoint(cursorPos ) != m_hWnd ) {
+		//SetCursor(getCachedCursor(ctDefault));
 		return 0;
 	}
 	ScreenToClient(&cursorPos);

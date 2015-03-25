@@ -630,7 +630,6 @@ bool DirectshowFrameGrabber::seek(int64_t time) {
 		}
 		if ( !d_ptr->currentFrame() ) {
 			//bool res = d_ptr->CB.condition.wait(1000);
-			//LOG(INFO) << "wait returned "<<res;
 		}
 
         //SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETPOS, (i + 1)*10);

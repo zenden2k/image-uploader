@@ -42,7 +42,6 @@ CUploadEngineList::CUploadEngineList()
 
 bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::string, std::map <std::string, ServerSettingsStruct>>& serversSettings)
 {
-	//LOG(INFO) << "Loading servers file "<< filename;
 	SimpleXml xml;
 	if(!xml.LoadFromFile(filename))
 		return false;
@@ -194,7 +193,6 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 			}
 			UE.SupportThumbnails = !UE.ThumbUrlTemplate.empty();
 			m_list.push_back(UE);
-			//LOG(INFO) << "Loading server  "<< UE.Name;
 		}
 
 	std::sort(m_list.begin(), m_list.end(), compareEngines );

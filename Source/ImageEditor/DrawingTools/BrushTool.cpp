@@ -24,6 +24,8 @@ void BrushTool::beginDraw( int x, int y ) {
 	canvas_->currentDocument()->beginDrawing();
 	oldPoint_.x = x;
 	oldPoint_.y = y;
+	startPoint_.x = x;
+	startPoint_.y = y;
 }
 
 void BrushTool::continueDraw( int x, int y, DWORD flags ) {
@@ -42,6 +44,9 @@ void BrushTool::continueDraw( int x, int y, DWORD flags ) {
 }
 
 void BrushTool::endDraw( int x, int y ) {
+	if ( x == startPoint_.x && y == startPoint_.y && x == oldPoint_.x && y == oldPoint_.y ) { // If user just clicked, but not moved pointer
+		drawLine( x, y, x, y) ;
+	}
 	canvas_->currentDocument()->addAffectedSegments(segments_);
 	canvas_->endDocDrawing();
 	segments_.clear();

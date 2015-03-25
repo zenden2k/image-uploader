@@ -182,14 +182,12 @@ void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOff
 		rect.right = getWidth();
 	}
 	if ( canvasChanged_ || fullRender_ ) {
-		//LOG(INFO) << "Canvas::re-render rect"<< rect.left << " " << rect.top<< " "<< rect.right - rect.left<< " "<< rect.bottom - rect.top;
 		renderInBuffer(updatedRect_);	
 	}
 	BitmapData bitmapData;
 	Rect lockRect(0,0,  getWidth(),getHeigth());
 	// I hope Gdiplus does not copy data in LockBits
 	if ( buffer_->LockBits(&lockRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData) == Ok ) {
-		//LOG(INFO) << "bitmap locked";
 		uint8_t * source = (uint8_t *) bitmapData.Scan0;
 		unsigned int stride;
 		if ( bitmapData.Stride > 0) { 
@@ -625,9 +623,6 @@ void Canvas::setCursor(CursorType cursorType)
 void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
 {
 	using namespace Gdiplus;
-	if ( fullRender_ ) {
-		//LOG(INFO) << "canvas full render";
-	}
 	currentRenderingRect_ = rc;
 	if (!fullRender_ && !forExport) {
 		Gdiplus::Region reg(rc);
@@ -691,14 +686,12 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
 		RECT rect = { rc.X, rc.Y, rc.GetRight(), rc.GetBottom()};
 		IntersectRect(&intersection, &paintRect, &rect);
 		if ( !fullRender_ && intersection.left == 0 && intersection.right ==0 && intersection.top == 0 && intersection.bottom == 0 ) {
-			//LOG(INFO) << "Skipping element " << i << " out of bounds";
 			continue;
 		}
 		elementsOnCanvas_[i]->render(bufferedGr_);
 	}
 	if ( !forExport ) {
 		if ( overlay_ && showOverlay_ ) {
-			//LOG(INFO) << "rendering overlay";
 			overlay_->render(bufferedGr_);
 		}
 

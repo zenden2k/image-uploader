@@ -126,8 +126,6 @@ void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* back
 
 
 	int characterCount = ::SendMessage(hwnd, EM_FORMATRANGE, 1, (LPARAM)&fmtRange);
-	//LOG(INFO) << "rectLayoutArea"<< rectLayoutArea.left << " "<< rectLayoutArea.top << " "<< rectLayoutArea.right << " "<< rectLayoutArea.bottom << " ";
-	//LOG(INFO) << "characterCount" << characterCount;
 
 	//Release the device context handle obtained by a previous call
 	graphics->ReleaseHDC(hdc);

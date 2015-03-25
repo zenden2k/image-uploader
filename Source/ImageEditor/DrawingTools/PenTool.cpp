@@ -31,7 +31,6 @@ void PenTool::continueDraw( int x, int y, DWORD flags ) {
 	if ( flags & MK_CONTROL ) {
 		y = oldPoint_.y;
 	}
-	//LOG(INFO) <<"x=" << x <<"y=" << y;
 	Line * line =  new Line( canvas_, oldPoint_.x, oldPoint_.y, x, y) ;
 
 	line->setPenSize(1 );

@@ -51,6 +51,7 @@
 #include <Gui/Dialogs/QuickSetupDlg.h>
 #include <ImageEditor/Gui/ImageEditorWindow.h>
 #include <Func/ImageEditorConfigurationProvider.h>
+#include <Core/Logging.h>
 
 using namespace Gdiplus;
 // CWizardDlg
@@ -387,11 +388,6 @@ LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 
 BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
 {	
-	if(hLocalHotkeys &&TranslateAccelerator(m_hWnd, hLocalHotkeys, pMsg)) 
-	{
-		return TRUE;
-	}
-
 	if( pMsg->message == WM_KEYDOWN)
 	{
 		TCHAR Buffer[MAX_PATH];
@@ -400,6 +396,9 @@ BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
 		{
 			::SendMessage(pMsg->hwnd, EM_SETSEL, 0, -1);	
 			return TRUE;
+		}
+		if( pMsg->wParam == 'V' && !lstrcmpi(Buffer,_T("Edit")) ) {
+			return FALSE;
 		}
 
 		if(VK_RETURN == pMsg->wParam  && GetForegroundWindow()==m_hWnd  )
@@ -423,6 +422,11 @@ BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
 					return TRUE;
 			}
 		}
+	}
+
+	if(hLocalHotkeys &&TranslateAccelerator(m_hWnd, hLocalHotkeys, pMsg)) 
+	{
+		return TRUE;
 	}
 	
 	return CWindow::IsDialogMessage(pMsg);

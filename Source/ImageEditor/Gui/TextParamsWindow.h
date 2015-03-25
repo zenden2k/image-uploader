@@ -27,7 +27,27 @@ namespace ZThread {
 	class Thread;
 }
 class FontEnumerator;
+class TextParamsWindow;
+class CustomEdit: public CWindowImpl<CustomEdit, CEdit,CControlWinTraits>{
+public:
+	CustomEdit(TextParamsWindow* textParamsWindow);
+	~CustomEdit();
+	DECLARE_WND_SUPERCLASS(_T("CustomComboBox"), CEdit::GetWndClassName())
 
+	BEGIN_MSG_MAP(CustomEdit)
+		MESSAGE_HANDLER(WM_KEYUP, OnKeyUp)
+		MESSAGE_HANDLER(WM_CHAR, OnChar)
+	END_MSG_MAP()
+
+	// Handler prototypes:
+	//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+protected:
+	TextParamsWindow* textParamsWindow_;
+};
 class TextParamsWindow : public CDialogImpl<TextParamsWindow>
 {
 	typedef CDialogImpl<TextParamsWindow> TBase;
@@ -68,10 +88,12 @@ class TextParamsWindow : public CDialogImpl<TextParamsWindow>
 		ZThread::Thread * fontEnumerationThread_;
 		CComboBox fontComboBox_;
 		CComboBox fontSizeComboBox_;
+		CustomEdit fontSizeComboboxCustomEdit_;
 		CDC dc_;
 		CString fontName_;
 		LOGFONT font_;
 		CImageList toolbarImageList_;
 		void NotifyParent(DWORD changeMask);
 		std::vector<LOGFONT> fonts_;
+		friend class CustomEdit;
 };

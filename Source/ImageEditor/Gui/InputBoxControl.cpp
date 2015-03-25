@@ -26,7 +26,7 @@
 namespace ImageEditor {
 // CLogListBox
 InputBoxControl::InputBoxControl() {
-
+	contextMenuOpened_ = false;
 }
 
 InputBoxControl::~InputBoxControl() {
@@ -137,7 +137,6 @@ std::string InputBoxControl::getRawText()
 	es.dwCookie = (DWORD_PTR) &rawRtfText;
 	es.pfnCallback = &EditStreamOutCallback; 
 	int bytes = SendMessage(EM_STREAMOUT, SF_RTF, (LPARAM)&es);
-	LOG(INFO) << "getRawText, bytes=" << bytes;
 	return rawRtfText.str();
 }
 
@@ -162,7 +161,7 @@ LRESULT InputBoxControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
 
 LRESULT InputBoxControl::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	WPARAM vKey = wParam;
-
+	bHandled = false;
 	if ( vKey == VK_ESCAPE ) {
 		if ( onEditCanceled ) {
 			onEditCanceled();
@@ -172,36 +171,17 @@ LRESULT InputBoxControl::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		onEditFinished();
 	}
 
-	return 1;
+	return 0;
+}
+
+LRESULT InputBoxControl::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	WPARAM vKey = wParam;
+	return 0;
 }
 
 LRESULT InputBoxControl::OnChange(UINT wNotifyCode,int, HWND)
 {
-	/*CRect formatRect;
-	GetRect( &formatRect );
-	//Logger::Write(_T("%d %d %d %d\r\n"), r );
-	CRect clientRect;
-	GetClientRect( &clientRect );
-	FORMATRANGE fr;
-	CDC dc = GetDC();
-	ZeroMemory(&fr, sizeof(fr));
-	fr.hdc = dc;
-	fr.hdcTarget = dc;
-	fr.rc.left =0;
-	fr.rc.top = 0;
-	fr.rc.right = 0;
-	fr.rc.bottom = 0;
-	fr.chrg.cpMax = -1;                    //Indicate character from to character to 
-	fr.chrg.cpMin = 0;
-	FormatRange(&fr, FALSE);
-	CRect r = fr.rc;
-	LOG(INFO) << "r="<< r.left<< " " <<  r.top << " " << r.right - r.left << " " << r.bottom - r.top;
-
-	if (r.Width()  > clientRect.Width() || r.Height() > clientRect.Height() ) {
-		SetWindowPos( 0, 0,0, r.Width() + clientRect.Width() - formatRect.Width() +5 , 
-			r.Height() + clientRect.Height() - formatRect.Height()+5, SWP_NOMOVE );
-	}*/
-
 	if ( onTextChanged ) {
 		onTextChanged(L"");
 	}
@@ -211,12 +191,10 @@ LRESULT InputBoxControl::OnChange(UINT wNotifyCode,int, HWND)
 LRESULT InputBoxControl::OnRequestResize(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
 	bHandled = true;
-	//LOG(INFO) << "OnRequestResize";
 	REQRESIZE * pReqResize = (REQRESIZE *) pnmh; 
 	
 	if ( onResized ) {
 		SIZE sz = { pReqResize->rc.right - pReqResize->rc.left, pReqResize->rc.bottom - pReqResize->rc.top };
-		//LOG(INFO) << sz.cx << " " << sz.cy;
 		RECT windowRect;
 		GetWindowRect(&windowRect);
 		onResized(/*sz.cx*/windowRect.right - windowRect.left, sz.cy);
@@ -236,6 +214,71 @@ LRESULT InputBoxControl::OnSelChange(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 		onSelectionChanged(selChange->chrg.cpMin, selChange->chrg.cpMax, GuiTools::CharFormatToLogFont(cf));
 	}
 
+	return 0;
+}
+
+LRESULT InputBoxControl::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)
+{
+	int x = GET_X_LPARAM(lParam);
+	int y = GET_Y_LPARAM(lParam);
+
+	CMenu contextMenu;
+	POINT pt = {x,y};
+//	ClientToScreen(&pt);
+	contextMenu.CreatePopupMenu();
+	contextMenu.AppendMenu(MF_STRING, IDMM_UNDO, TR("Отменить"));
+	contextMenu.AppendMenu(MF_STRING, IDMM_REDO, TR("Повторить"));
+	contextMenu.AppendMenu(MF_SEPARATOR, 1, _T(""));
+	contextMenu.AppendMenu(MF_STRING, IDMM_CUT, TR("Вырезать"));
+	contextMenu.AppendMenu(MF_STRING, IDMM_COPY, TR("Копировать"));
+	contextMenu.AppendMenu(MF_STRING, IDMM_PASTE, TR("Вставить"));
+	contextMenu.EnableMenuItem(IDMM_PASTE, CanPaste()?MF_ENABLED : MF_DISABLED );
+	contextMenu.EnableMenuItem(IDMM_UNDO, CanUndo()?MF_ENABLED : MF_DISABLED  );
+	contextMenu.EnableMenuItem(IDMM_REDO, CanRedo()?MF_ENABLED : MF_DISABLED  );
+	contextMenuOpened_ = true;
+	contextMenu.TrackPopupMenu(TPM_VERTICAL, pt.x, pt.y, m_hWnd);
+	contextMenuOpened_ = false;
+	return 0;
+}
+
+LRESULT InputBoxControl::OnUndo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	SendMessage(EM_UNDO, 0, 0);
+	return 0;
+}
+
+LRESULT InputBoxControl::OnRedo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	SendMessage(EM_REDO, 0, 0);
+	return 0;
+}
+
+LRESULT InputBoxControl::OnCut(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	SendMessage(WM_CUT, 0, 0);
+	return 0;
+}
+
+LRESULT InputBoxControl::OnCopy(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	SendMessage(WM_COPY, 0, 0);
+	return 0;
+}
+
+LRESULT InputBoxControl::OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	SendMessage(WM_PASTE, 0, 0);
+	return 0;
+}
+
+LRESULT InputBoxControl::OnSetCursor(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)
+{
+	bHandled = false;
+	if ( contextMenuOpened_ ) {
+		bHandled = true;
+		HCURSOR m_hArrow = LoadCursor(NULL,IDC_ARROW);
+		::SetCursor(m_hArrow);
+	}
 	return 0;
 }
 

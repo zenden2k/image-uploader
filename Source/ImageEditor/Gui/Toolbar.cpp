@@ -110,7 +110,6 @@ void Toolbar::clickButton(int index)
 
 		// Uncheck all other buttons with same group id
 		for( int i = 0; i < buttons_.size(); i++ ) {
-			//LOG(INFO) << "buttons_[i].group=" << buttons_[i].group;
 			if ( i != index & buttons_[i].group == item.group && buttons_[i].checkable && buttons_[i].isChecked ) {
 				buttons_[i].isChecked  = false;
 				buttons_[i].state = isNormal;
@@ -193,7 +192,6 @@ LRESULT Toolbar::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 
 LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	//LOG(INFO) << "Toolbar WM_PAINT";
 	using namespace Gdiplus;
 	CPaintDC dc(m_hWnd);
 	RECT clientRect;
@@ -285,7 +283,6 @@ LRESULT Toolbar::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 	if (  oldSelectedIndex != selectedItemIndex_  ) {
 		if ( selectedItemIndex_ != -1 ) {
 			buttons_[selectedItemIndex_].state = isHover;
-			//LOG(INFO) << "selectedItemIndex_=" << selectedItemIndex_;
 			if ( selectedItemIndex_ != -1 ) {
 				buttons_[selectedItemIndex_].state = isHover;
 				InvalidateRect(&buttons_[selectedItemIndex_].rect, false);
@@ -304,7 +301,6 @@ LRESULT Toolbar::OnMouseLeave(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 {
 	int xPos = GET_X_LPARAM(lParam); 
 	int yPos = GET_Y_LPARAM(lParam); 
-	//LOG(INFO) << "OnMouseLeave";
 	trackMouse_ = false;
 	if ( selectedItemIndex_ != -1 ) {
 		buttons_[selectedItemIndex_].state = isNormal;
@@ -319,7 +315,6 @@ LRESULT Toolbar::OnMouseLeave(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 
 LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	//LOG(INFO) << "OnLButtonDown";
 	int xPos = GET_X_LPARAM(lParam); 
 	int yPos = GET_Y_LPARAM(lParam); 
 	if ( selectedItemIndex_ != -1 ) {
@@ -330,7 +325,6 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 			if ( xPos >  item.rect.right - 6*dpiScaleX_ - itemMargin_ && yPos >   item.rect.bottom - 6*dpiScaleY_ - itemMargin_ ) {
 				item.state = isDropDown;
 			} else {
-			//	LOG(INFO) << "SetTimer";
 				SetTimer(kTinyComboDropdownTimer, 600);
 				item.state = isDown;
 			}
@@ -348,7 +342,6 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT Toolbar::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	LOG(INFO) << "OnTimer";
 	if ( wParam  == kTinyComboDropdownTimer && selectedItemIndex_ != -1 ) {
 		Item& item = buttons_[selectedItemIndex_];
 		if (  item.type == Toolbar::itTinyCombo ) {
@@ -571,16 +564,11 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 			Color gradientColor2 = item.isChecked ? Color(130,130,130) : Color(170,170,170);
 			LinearGradientBrush br (RectF(float(x), float(y ), float( x+size.cx),
 				/*rect.top+*/ float(y+size.cy ) ), gradientColor1, gradientColor2, LinearGradientModeVertical);
-			//LOG(INFO) << "item.isChecked " << item.isChecked;
-		//	gr->FillRectangle( &brush, Rect(x, y, size.cx, size.cy));
-			 //br.TranslateTransform(x,y);
-			//br.SetWrapMode(WrapModeTile);
+
 			CRoundRect roundRect;
 			roundRect.FillRoundRect(gr,&br,Rect(x, y, size.cx, size.cy),Color(198,196,197),4);
-			//roundRect.DrawRoundRect(gr,Rect(x, y, size.cx, size.cy),Color(198,196,197),7, 1);
-			//DrawRoundedRectangle(gr,Rect(x, y, size.cx, size.cy),8,&p, 0);
+
 			if ( item.type == itComboButton ) {
-				//LOG(INFO) <<  "GetWidth "<< dropDownIcon_->GetWidth() << " " << dropDownIcon_->GetHeight();
 				gr->DrawLine(&p, bounds.X + bounds.Width - dropDownIcon_->GetWidth()-3 ,  bounds.Y+1 , bounds.X + bounds.Width - dropDownIcon_->GetWidth()-3, bounds.Y + bounds.Height -1 );
 			}
 		

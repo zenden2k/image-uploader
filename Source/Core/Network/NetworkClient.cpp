@@ -417,7 +417,6 @@ void NetworkClient::private_initTransfer()
 			chunk_ = curl_slist_append(chunk_, (it->name + ";" + it->value).c_str());
 		} else {
 			chunk_ = curl_slist_append(chunk_, (it->name + ": " + it->value).c_str());
-			//LOG(INFO) << "'"<< it->name + ": " + it->value<< "'";
 		} 
 		
 	}

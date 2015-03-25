@@ -33,6 +33,8 @@ void MarkerTool::beginDraw( int x, int y ) {
 	canvas_->currentDocument()->beginDrawing();
 	oldPoint_.x = x;
 	oldPoint_.y = y;
+	startPoint_.x = x;
+	startPoint_.y = y;
 }
 
 void MarkerTool::continueDraw( int x, int y, DWORD flags ) {
@@ -51,6 +53,10 @@ void MarkerTool::continueDraw( int x, int y, DWORD flags ) {
 }
 
 void MarkerTool::endDraw( int x, int y ) {
+	if ( x== startPoint_.x && y == startPoint_.y && x == oldPoint_.x && y == oldPoint_.y ) {
+		drawLine( x, y, x, y) ;
+	}
+
 	canvas_->currentDocument()->addAffectedSegments(segments_);
 	canvas_->endDocDrawing();
 	segments_.clear();
@@ -208,10 +214,6 @@ void MarkerTool::highlightRegion(RECT rc)
 				uint8_t srcB=  brSource[circleOffset+2];
 				if ( Y != 255 ) {
 					srcA = srcA;
-				}
-
-				if ( i+j % 40 ) {
-					//LOG(INFO) << "srcA" << srcA;
 				}
 
 				float dstA =  source[offset+3]/255.0;

@@ -353,8 +353,8 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 		::EnableWindow(parent, false);
 	}
 
-	CMessageLoop *loop = _Module.GetMessageLoop();
-	loop->Run();
+	CMessageLoop loop;
+	loop.Run();
 	saveSettings();
 	if ( parent ) {
 		::EnableWindow(parent, true);
@@ -936,7 +936,6 @@ LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	int penSize = HIWORD(wParam);
 	switch( LOWORD(wParam ) ) {
 		case TB_THUMBPOSITION:
-			//LOG(INFO) << "TB_THUMBPOSITION";
 			canvas_->endPenSizeChanging(penSize);
 			updatePixelLabel();
 			prevPenSize_ = 0;
@@ -948,7 +947,6 @@ LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 			}
 			canvas_->setPenSize(penSize);
 			updatePixelLabel();
-			//LOG(INFO) << "TB_THUMBTRACK";
 			break;
 
 	}
