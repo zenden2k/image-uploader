@@ -15,6 +15,7 @@
 #include <Gui/GuiTools.h>
 #include <Func/WinUtils.h>
 #include <Func/MyUtils.h>
+#include <ImageEditor/MovableElements.h>
 
 namespace ImageEditor {
 	
@@ -65,6 +66,7 @@ void ImageEditorWindow::init()
 	menuItems_[ID_ELLIPSE]     = Canvas::dtEllipse;
 	menuItems_[ID_FILLEDROUNDEDRECTANGLE]     = Canvas::dtFilledRoundedRectangle;
 	menuItems_[ID_FILLEDELLIPSE]     = Canvas::dtFilledEllipse;
+	menuItems_[ID_TEXT]     = Canvas::dtText;
 
 	SubMenuItem item;
 	item.parentCommand = ID_RECTANGLE;
@@ -169,6 +171,11 @@ void ImageEditorWindow::OnBackgroundColorChanged(Gdiplus::Color color)
 {
 	colorsDelegate_->setBackgroundColor(color);
 	verticalToolbar_.repaintItem(colorsDelegate_->itemIndex());
+}
+
+void ImageEditorWindow::onFontChanged(LOGFONT font)
+{
+	textParamsWindow_.setFont(font);
 }
 
 ImageEditorWindow::~ImageEditorWindow()
@@ -280,10 +287,14 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 	canvas_ = new ImageEditor::Canvas( m_view );
 	canvas_->setSize( currentDoc_->getWidth(), currentDoc_->getHeight());
 	canvas_->setDocument( currentDoc_ );
+	textParamsWindow_.Create(m_hWnd);
+
 	if ( configurationProvider_ ) {
 		canvas_->setPenSize(configurationProvider_->penSize());
 		canvas_->setForegroundColor(configurationProvider_->foregroundColor());
 		canvas_->setBackgroundColor(configurationProvider_->backgroundColor());
+		canvas_->setFont(configurationProvider_->font());
+		textParamsWindow_.setFont(configurationProvider_->font());
 	}
 	m_view.setCanvas( canvas_ );
 	createToolbars();
@@ -300,20 +311,14 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 	}
 
 	m_view.SetWindowPos(0, &rc, SWP_NOSIZE);
-	//,1210,733};
-
-	//Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
-
-
-
-	//ImageEditor::Line line( 0, 0, 50, 50 );
-	//line.resize( Gdiplus::Rect( 0, 0, 50, 50 ) );
-	//currentDoc_->addDrawingElement( &line );
 
 	canvas_->onDrawingToolChanged.bind(this, &ImageEditorWindow::OnDrawingToolChanged);
 	canvas_->onForegroundColorChanged.bind(this, &ImageEditorWindow::OnForegroundColorChanged);
 	canvas_->onBackgroundColorChanged.bind(this, &ImageEditorWindow::OnBackgroundColorChanged);
 	canvas_->onCropChanged.bind(this, &ImageEditorWindow::OnCropChanged);
+	canvas_->onFontChanged.bind(this, &ImageEditorWindow::onFontChanged);
+	canvas_->onTextEditStarted.bind(this, &ImageEditorWindow::OnTextEditStarted);
+	canvas_->onTextEditFinished.bind(this, &ImageEditorWindow::OnTextEditFinished);
 	if ( displayMode_ != wdmWindowed ) {	
 		canvas_->onCropFinished.bind(this, &ImageEditorWindow::OnCropFinished);
 	}
@@ -324,7 +329,6 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 	}
 	
 	updatePixelLabel();
-	//m_view.Invalidate(false);
 
 	canvas_->setDrawingToolType(initialDrawingTool_);
 	updateToolbarDrawingTool(initialDrawingTool_);
@@ -372,6 +376,8 @@ LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 {
 	SetWindowText(TR("Редактор изображений"));
 	LoadLibrary(CRichEditCtrl::GetLibraryName());
+
+
 	return 0;
 }
 
@@ -756,6 +762,34 @@ void ImageEditorWindow::OnDrawingToolChanged(Canvas::DrawingToolType drawingTool
 	SendMessage(WM_SETCURSOR,0,0);
 }
 
+void ImageEditorWindow::OnTextEditStarted(ImageEditor::TextElement * textElement)
+{
+	InputBoxControl * control = static_cast<InputBoxControl*>(textElement->getInputBox());
+	RECT inputControlRect;
+	control->GetWindowRect(&inputControlRect);
+	int kOffset = 30;
+	RECT viewRect;
+	RECT textParamsWindowRect;
+	textParamsWindow_.GetWindowRect(&textParamsWindowRect);
+	m_view.GetWindowRect(&viewRect);
+	int x = inputControlRect.left;
+	int y = 0;
+	if ( inputControlRect.top > viewRect.top + (textParamsWindowRect.bottom - textParamsWindowRect.top) + kOffset ) {
+		y = inputControlRect.top - (textParamsWindowRect.bottom - textParamsWindowRect.top) - kOffset;
+	} else {
+		y = inputControlRect.bottom + kOffset;
+	}
+	textParamsWindow_.SetWindowPos(0,x,y, 0,0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOZORDER);
+
+	textParamsWindow_.ShowWindow(SW_SHOW);
+	control->SetFocus();
+}
+
+void ImageEditorWindow::OnTextEditFinished(ImageEditor::TextElement * textElement)
+{
+	textParamsWindow_.ShowWindow(SW_HIDE);
+}
+
 Gdiplus::Bitmap * ImageEditorWindow::loadToolbarIcon(int resource)
 {
 	return BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource),_T("PNG")) ;
@@ -785,6 +819,7 @@ LRESULT ImageEditorWindow::OnUndoClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 LRESULT ImageEditorWindow::OnTextClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 
 	canvas_->setDrawingToolType( Canvas::dtText );
+	updateToolbarDrawingTool(Canvas::dtText);
 	return 0;
 }
 
@@ -888,6 +923,7 @@ void ImageEditorWindow::saveSettings()
 		configurationProvider_->setPenSize(canvas_->getPenSize());
 		configurationProvider_->setForegroundColor(canvas_->getForegroundColor());
 		configurationProvider_->setBackgroundColor(canvas_->getBackgroundColor());
+		configurationProvider_->setFont(canvas_->getFont());
 		configurationProvider_->saveConfiguration();
 	}
 }
@@ -916,6 +952,13 @@ LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 			break;
 
 	}
+	return 0;
+}
+
+LRESULT ImageEditorWindow::OnTextParamWindowFontChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	DWORD changeMask = lParam;
+	canvas_->setFont(textParamsWindow_.getFont(), changeMask);
 	return 0;
 }
 

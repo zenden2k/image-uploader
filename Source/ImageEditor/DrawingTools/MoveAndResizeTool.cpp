@@ -389,9 +389,9 @@ CursorType MoveAndResizeTool::getCursor(int x, int y)
 void MoveAndResizeTool::mouseDoubleClick(int x, int y)
 {
 	MovableElement* el = canvas_->getElementAtPosition(x,y);
-	if ( el &&  el->getType() == etText ) {
-		canvas_->setDrawingToolType(Canvas::dtText);	
-		AbstractDrawingTool* dtool = canvas_->getCurrentDrawingTool();
+	if ( el &&  el->getType() == etText && elementType_ != etText ) {
+		// WARNING!!! After this line "this" is DELETED!!!!
+		AbstractDrawingTool* dtool = canvas_->setDrawingToolType(Canvas::dtText, true);	
 		if ( dtool ) {
 			dtool->beginDraw(x,y);
 		}

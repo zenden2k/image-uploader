@@ -81,5 +81,8 @@ namespace GuiTools
 	HRGN CloneRegion(HRGN source);
 	HFONT MakeFontBigger(HFONT font);
 	HWND CreateToolTipForWindow(HWND hwnd, const CString& text);
+	CHARFORMAT LogFontToCharFormat(const LOGFONT & lf);
+	LOGFONT CharFormatToLogFont(const CHARFORMAT & cf);
+	HICON LoadSmallIcon(int resourceId);
 };
 #endif

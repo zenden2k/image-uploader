@@ -26,17 +26,25 @@ class TextElement: public MovableElement{
 		void getAffectedSegments( AffectedSegments* segments );
 		virtual void resize(int width, int height);
 		void setInputBox(InputBox* inputBox);
+		void setFont(LOGFONT font,  DWORD changeMask);
+		LOGFONT getFont();
 		InputBox* getInputBox() const;
 		virtual ElementType getType() const;
 		virtual void setSelected(bool selected);
+		void beginEdit();
+		void endEdit(bool saveToHistory);
+		void setRawText(const std::string& rawText);
 protected:
 	InputBox *inputBox_;
+	LOGFONT font_;
+	bool isEditing_;
+	std::string originalRawText_;
 	void onTextChanged(TCHAR *text);
 	void onEditCanceled();
 	void onEditFinished();
 	void onControlResized(int w, int h);
 	void setTextColor();
-
+	void onSelectionChanged(int min, int max, LOGFONT font);
 	virtual void setColor(Gdiplus::Color color);
 
 };

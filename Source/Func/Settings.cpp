@@ -530,7 +530,7 @@ CSettings::CSettings()
 	ImageEditorSettings.BackgroundColor = Gdiplus::Color(255,255,255);
 	ImageEditorSettings.ForegroundColor = Gdiplus::Color(255,0,0);
 	ImageEditorSettings.PenSize = 12;
-	StringToFont(_T("Arial,9,,204"), &ImageEditorSettings.Font);
+	StringToFont(_T("Arial,12,b,204"), &ImageEditorSettings.Font);
 
 
 

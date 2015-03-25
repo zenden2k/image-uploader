@@ -1260,19 +1260,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-link.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\res\icon-link.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-link.png"
+				RelativePath=".\Source\res\icon-link.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\res\icon-link.png"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon-link.png"
 				>
 			</File>
 			<File
@@ -1296,11 +1296,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-user.ico"
+				RelativePath=".\Source\res\icon-user.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-user.ico"
+				RelativePath=".\res\icon-user.ico"
 				>
 			</File>
 			<File
@@ -1320,7 +1320,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_add.png"
+				RelativePath=".\Source\res\icon8.ico"
 				>
 			</File>
 			<File
@@ -1328,7 +1328,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_additem.ico"
+				RelativePath=".\res\ImageEditor\icon_add.png"
 				>
 			</File>
 			<File
@@ -1336,7 +1336,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\icon_additem.ico"
+				>
+			</File>
+			<File
 				RelativePath="Source\res\icon_additional.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\ImageEditor\icon_bold.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_bold.ico"
 				>
 			</File>
 			<File
@@ -1344,11 +1356,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_deleteitem.ico"
+				RelativePath=".\Source\res\icon_deleteitem.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_deleteitem.ico"
+				RelativePath=".\res\icon_deleteitem.ico"
 				>
 			</File>
 			<File
@@ -1392,6 +1404,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\ImageEditor\icon_italic.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_italic.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\res\icon_main.ico"
 				>
 			</File>
@@ -1404,11 +1424,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_save.png"
+				RelativePath=".\Source\res\ImageEditor\icon_save.png"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\ImageEditor\icon_save.png"
+				RelativePath=".\res\ImageEditor\icon_save.png"
 				>
 			</File>
 			<File
@@ -1484,11 +1504,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\ImageEditor\icon_undo.png"
+				RelativePath=".\res\ImageEditor\icon_underline.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_up.ico"
+				RelativePath=".\Source\res\ImageEditor\icon_underline.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_undo.png"
 				>
 			</File>
 			<File
@@ -1496,11 +1520,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_upload.png"
+				RelativePath=".\res\icon_up.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\res\ImageEditor\icon_upload.png"
+				>
+			</File>
+			<File
+				RelativePath=".\res\ImageEditor\icon_upload.png"
 				>
 			</File>
 			<File
@@ -2661,6 +2689,14 @@
 					</File>
 					<File
 						RelativePath=".\Source\ImageEditor\Gui\InputBoxControl.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\Gui\TextParamsWindow.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\ImageEditor\Gui\TextParamsWindow.h"
 						>
 					</File>
 					<File

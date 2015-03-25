@@ -32,7 +32,7 @@ class Canvas {
 
 		enum UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, 
 			uitElementPositionChanged, uitElementForegroundColorChanged, uitElementBackgroundColorChanged,
-			uitPenSizeChanged
+			uitPenSizeChanged, uitFontChanged, uitTextChanged
 		};
 		enum { kMaxPenSize = 50 };
 		struct UndoHistoryItemElement {
@@ -42,6 +42,7 @@ class Canvas {
 			POINT endPoint;
 			Gdiplus::Color color;
 			int penSize;
+			std::string rawText;
 			UndoHistoryItemElement() {
 				pos = -1;
 				startPoint.x = -1;
@@ -79,7 +80,10 @@ class Canvas {
 		void setBackgroundColor(Gdiplus::Color color);
 		Gdiplus::Color getForegroundColor() const;
 		Gdiplus::Color getBackgroundColor() const;
-		void setDrawingToolType(DrawingToolType tool, bool notify = false);
+		void setFont(LOGFONT font, DWORD changeMask = CFM_FACE | CFM_SIZE | CFM_CHARSET 
+			| CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_OFFSET);
+		LOGFONT getFont();
+		AbstractDrawingTool* setDrawingToolType(DrawingToolType tool, bool notify = false);
 		void setPreviousDrawingTool();
 		AbstractDrawingTool* getCurrentDrawingTool();
 		void addMovableElement(MovableElement* element);
@@ -119,6 +123,9 @@ class Canvas {
 		fastdelegate::FastDelegate1<DrawingToolType> onDrawingToolChanged;
 		fastdelegate::FastDelegate1<Gdiplus::Color> onForegroundColorChanged;
 		fastdelegate::FastDelegate1<Gdiplus::Color> onBackgroundColorChanged;
+		fastdelegate::FastDelegate1<LOGFONT> onFontChanged;
+		fastdelegate::FastDelegate1<TextElement*> onTextEditStarted;
+		fastdelegate::FastDelegate1<TextElement*> onTextEditFinished;
 
 		friend class AbstractDrawingTool;
 		friend class VectorElementTool;
@@ -165,6 +172,8 @@ class Canvas {
 		int blurRectanglesCount_;
 		int originalPenSize_;
 		Gdiplus::Rect updatedRect_;
+		LOGFONT font_;
+		POINT scrollOffset_;
 		
 		HWND parentWindow_;
 		InputBoxControl* inputBox_;

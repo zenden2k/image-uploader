@@ -5,6 +5,7 @@
 #include "ImageEditorView.h"
 #include "ImageEditor/Document.h"
 #include "Toolbar.h"
+#include "TextParamsWindow.h"
 #include <Core/Utils/CoreTypes.h>
 #include <GdiPlus.h>
 // MainFrm.h : interface of the CMainFrame class
@@ -22,10 +23,10 @@ class ImageEditorWindow : public CWindowImpl<ImageEditorWindow>
 {
 public:
 	DECLARE_WND_CLASS(_T("ImageEditorWindow"))
-	enum { ID_UNDO = 1000, ID_TEXT = 1001,  ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE , ID_SAVE, ID_SAVEAS,
+	enum { ID_UNDO = 1000,  ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE , ID_SAVE, ID_SAVEAS,
 		ID_PEN = 1600, 
 		ID_BRUSH, ID_MARKER,ID_BLUR, ID_BLURRINGRECTANGLE, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_ROUNDEDRECTANGLE, ID_ELLIPSE,
-		ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_MOVE};
+		ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_MOVE};
 	struct MenuItem {
 		int menuItemId;
 		int toolId;
@@ -62,11 +63,6 @@ public:
 	DialogResult DoModal(HWND parent, WindowDisplayMode mode = wdmAuto);
 
 	BEGIN_MSG_MAP(ImageEditorWindow)
-		if (uMsg == WM_COMMAND && EN_CHANGE == HIWORD(wParam)) \
-		{ 
-			//SetMsgHandled(TRUE); 
-
-		}
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
@@ -76,13 +72,13 @@ public:
 		MESSAGE_HANDLER( WM_PAINT, OnPaint )
 		MESSAGE_HANDLER( WM_HSCROLL, OnHScroll )
 		MESSAGE_HANDLER( MTBM_DROPDOWNCLICKED, OnDropDownClicked )
+		MESSAGE_HANDLER( TextParamsWindow::TPWM_FONTCHANGED, OnTextParamWindowFontChanged);
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
 		COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
 		COMMAND_RANGE_HANDLER( ID_PEN, ID_MOVE, OnMenuItemClick)
 		COMMAND_ID_HANDLER( ID_UNDO, OnUndoClick )
-		COMMAND_ID_HANDLER( ID_TEXT, OnTextClick )
 		COMMAND_ID_HANDLER( ID_CLOSE, OnClickedClose )	
 		COMMAND_ID_HANDLER( ID_ADDTOWIZARD, OnClickedAddToWizard )	
 		COMMAND_ID_HANDLER( ID_UPLOAD, OnClickedUpload )	
@@ -125,6 +121,7 @@ public:
 		LRESULT OnClickedSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnClickedSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+		LRESULT OnTextParamWindowFontChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 
 		Toolbar horizontalToolbar_;
@@ -149,10 +146,13 @@ public:
 		int imageQuality_;
 		std_tr::shared_ptr<Gdiplus::Bitmap> resultingBitmap_;
 		ConfigurationProvider* configurationProvider_; 
+		TextParamsWindow textParamsWindow_;
 		void createToolbars();
 		void OnCropChanged(int x, int y, int w, int h);
 		void OnCropFinished(int x, int y, int w, int h);
 		void OnDrawingToolChanged(Canvas::DrawingToolType drawingTool);
+		void OnTextEditStarted(ImageEditor::TextElement * textElement);
+		void OnTextEditFinished(ImageEditor::TextElement * textElement);
 		Gdiplus::Bitmap * loadToolbarIcon(int resource);
 		void EndDialog(DialogResult dr);
 		void init();
@@ -160,6 +160,7 @@ public:
 		void updateToolbarDrawingTool(Canvas::DrawingToolType dt);
 		void OnForegroundColorChanged(Gdiplus::Color color);
 		void OnBackgroundColorChanged(Gdiplus::Color color);
+		void onFontChanged(LOGFONT font);
 		bool createTooltip();
 		void updatePixelLabel();
 		void OnSaveAs();
@@ -181,10 +182,13 @@ public:
 	Gdiplus::Color backgroundColor() const { return backgroundColor_; }
 	void setPenSize(int size) { penSize_ = size; }
 	int penSize() const { return penSize_;}
+	void setFont(LOGFONT font) { font_ = font; }
+	LOGFONT font() const { return font_; }
 protected:
 	Gdiplus::Color foregroundColor_;
 	Gdiplus::Color backgroundColor_;
 	int penSize_;
+	LOGFONT font_;
 };
 
 }

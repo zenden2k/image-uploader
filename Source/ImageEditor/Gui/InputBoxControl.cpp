@@ -36,7 +36,7 @@ InputBoxControl::~InputBoxControl() {
 LRESULT InputBoxControl::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)
 {
 	bHandled = false;
-	SetEventMask(ENM_CHANGE|ENM_REQUESTRESIZE);
+	SetEventMask(ENM_CHANGE|ENM_REQUESTRESIZE|ENM_SELCHANGE );
 	
 	SetFont(GuiTools::MakeFontBigger(GuiTools::GetSystemDialogFont()));
 	//SetWindowLong(GWL_ID, (LONG)m_hWnd);
@@ -104,8 +104,56 @@ void InputBoxControl::setTextColor(Gdiplus::Color color)
 	cf.crTextColor = color.ToCOLORREF();
 	cf.dwMask = CFM_COLOR;
 	//SetSel(0, -1);
-	SendMessage(EM_SETCHARFORMAT, SCF_ALL, (LPARAM) &cf);
+	SendMessage(EM_SETCHARFORMAT, IsWindowVisible() ? SCF_SELECTION : SCF_ALL, (LPARAM) &cf);
 	//SetSel(-1, 0);
+}
+
+void InputBoxControl::setFont(LOGFONT font,  DWORD changeMask)
+{
+	if ( !IsWindowVisible() ) {
+		CFont f;
+		f.CreateFontIndirect(&font);
+		SetFont(f);
+	} else {
+		CHARFORMAT cf = GuiTools::LogFontToCharFormat(font);
+		cf.dwMask = changeMask;
+		SendMessage(EM_SETCHARFORMAT, IsWindowVisible() ? SCF_SELECTION : SCF_ALL, (LPARAM) &cf);
+	}
+}
+
+void InputBoxControl::setRawText(const std::string& text)
+{
+	std::stringstream rawRtfText(text);
+	EDITSTREAM es = {0};
+	es.dwCookie = (DWORD_PTR) &rawRtfText;
+	es.pfnCallback = &EditStreamInCallback; 
+	SendMessage(EM_STREAMIN, SF_RTF, (LPARAM)&es);
+}
+
+std::string InputBoxControl::getRawText()
+{
+	std::stringstream rawRtfText;
+	EDITSTREAM es = {0};
+	es.dwCookie = (DWORD_PTR) &rawRtfText;
+	es.pfnCallback = &EditStreamOutCallback; 
+	int bytes = SendMessage(EM_STREAMOUT, SF_RTF, (LPARAM)&es);
+	LOG(INFO) << "getRawText, bytes=" << bytes;
+	return rawRtfText.str();
+}
+
+DWORD CALLBACK InputBoxControl::EditStreamOutCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb)
+{
+	std::stringstream* rtf = reinterpret_cast<std::stringstream*>(dwCookie);
+	rtf->write((CHAR*)pbBuff, cb);
+	*pcb = cb;
+	return 0;
+}
+
+DWORD CALLBACK InputBoxControl::EditStreamInCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb)
+{
+	std::stringstream* rtf = reinterpret_cast<std::stringstream*>(dwCookie);
+	*pcb = rtf->readsome((CHAR*)pbBuff, cb);
+	return 0;
 }
 
 LRESULT InputBoxControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled) {
@@ -163,17 +211,31 @@ LRESULT InputBoxControl::OnChange(UINT wNotifyCode,int, HWND)
 LRESULT InputBoxControl::OnRequestResize(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
 	bHandled = true;
-	LOG(INFO) << "OnRequestResize";
+	//LOG(INFO) << "OnRequestResize";
 	REQRESIZE * pReqResize = (REQRESIZE *) pnmh; 
 	
 	if ( onResized ) {
 		SIZE sz = { pReqResize->rc.right - pReqResize->rc.left, pReqResize->rc.bottom - pReqResize->rc.top };
 		//LOG(INFO) << sz.cx << " " << sz.cy;
-		onResized(sz.cx, sz.cy);
+		RECT windowRect;
+		GetWindowRect(&windowRect);
+		onResized(/*sz.cx*/windowRect.right - windowRect.left, sz.cy);
 	}
-	SetEventMask(ENM_CHANGE|ENM_REQUESTRESIZE);
 
 	//*SetWindowPos(0, 0,0, pReqResize->rc.right - pReqResize->rc.left, pReqResize->rc.bottom - pReqResize->rc.top);
+	return 0;
+}
+
+LRESULT InputBoxControl::OnSelChange(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+{
+	SELCHANGE* selChange = reinterpret_cast<SELCHANGE*>(pnmh);
+	CHARFORMAT cf;
+
+	GetSelectionCharFormat(cf);
+	if ( onSelectionChanged ) {
+		onSelectionChanged(selChange->chrg.cpMin, selChange->chrg.cpMax, GuiTools::CharFormatToLogFont(cf));
+	}
+
 	return 0;
 }
 

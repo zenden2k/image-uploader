@@ -11,6 +11,7 @@
 #include <atlmisc.h>
 #include <atlcrack.h>
 #include "../InputBox.h"
+#include <sstream>
 
 // CLogListBox
 
@@ -32,7 +33,8 @@ class InputBoxControl :
 			MESSAGE_HANDLER(WM_KEYUP, OnKeyUp )
 			MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
 			REFLECTED_NOTIFY_CODE_HANDLER(EN_REQUESTRESIZE, OnRequestResize)
-			NOTIFY_CODE_HANDLER(EN_REQUESTRESIZE, OnRequestResize)
+			REFLECTED_NOTIFY_CODE_HANDLER(EN_SELCHANGE, OnSelChange)
+			//NOTIFY_CODE_HANDLER(EN_REQUESTRESIZE, OnRequestResize)
 			REFLECTED_COMMAND_CODE_HANDLER_EX(EN_CHANGE, OnChange)
 			 
 		 END_MSG_MAP()
@@ -48,18 +50,23 @@ class InputBoxControl :
 		LRESULT OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnChange(UINT wNotifyCode,int, HWND);
 		LRESULT OnRequestResize(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+		LRESULT OnSelChange(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	public:
 		int NotifyParent(int nItem);
 		BOOL SubclassWindow(HWND hWnd);
 		virtual void show(bool s);
 		virtual void resize(int x, int y, int w,int h, std::vector<MovableElement::Grip> grips);
 		virtual void render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea);
-
 		virtual bool isVisible();
-
 		virtual void invalidate();
-
 		virtual void setTextColor(Gdiplus::Color color);
+		virtual void setFont(LOGFONT font,  DWORD changeMask);
+		virtual void setRawText(const std::string& text);
+		virtual std::string getRawText();
+protected:
+	static DWORD CALLBACK EditStreamOutCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb);
+	static DWORD CALLBACK EditStreamInCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb);
+
 
 };
 

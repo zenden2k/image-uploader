@@ -161,6 +161,7 @@ TextElement::TextElement( Canvas* canvas, InputBox* inputBox, int startX, int st
 	endPoint_.x   = endX;
 	endPoint_.y   = endY;
 	inputBox_ = inputBox;
+	isEditing_ = false;
 }
 
 TextElement::~TextElement()
@@ -176,7 +177,7 @@ void TextElement::render(Painter* gr) {
 
 	drawDashedRectangle_ = isSelected() || !inputBox_;
 	if ( inputBox_  && !inputBox_->isVisible()) {
-		inputBox_->render(gr, canvas_->getBufferBitmap(), Rect(getX()+2,getY()+1,getWidth(),getHeight()));
+		inputBox_->render(gr, canvas_->getBufferBitmap(), Rect(getX()+4,getY()+3,getWidth()-5,getHeight()-6));
 	}
 }
 
@@ -194,7 +195,7 @@ void TextElement::resize(int width, int height)
 {
 	MovableElement::resize(width,height);
 	if ( inputBox_ ) {
-		inputBox_->resize(getX()+1, getY()+1, width,height, grips_);
+		inputBox_->resize(getX()+3, getY()+3, width-6,height-6, grips_);
 		inputBox_->invalidate();
 		canvas_->updateView();
 	}
@@ -208,6 +209,20 @@ void TextElement::setInputBox(InputBox* inputBox)
 	inputBox_->onEditCanceled.bind(this, &TextElement::onEditCanceled);
 	inputBox_->onEditFinished.bind(this, &TextElement::onEditFinished);
 	inputBox_->onResized.bind(this, &TextElement::onControlResized);
+	inputBox_->onSelectionChanged.bind(this, &TextElement::onSelectionChanged);
+}
+
+void TextElement::setFont(LOGFONT font,  DWORD changeMask)
+{
+	font_ = font;
+	if ( inputBox_ ) {
+		inputBox_->setFont(font, changeMask);
+	}
+}
+
+LOGFONT TextElement::getFont()
+{
+	return font_;
 }
 
 InputBox* TextElement::getInputBox() const
@@ -223,28 +238,46 @@ void TextElement::onTextChanged(TCHAR *text)
 void TextElement::onEditCanceled()
 {
 	inputBox_->show(false);
+	endEdit(false);
 	setSelected(false);
+
 	canvas_->updateView(getPaintBoundingRect());
 }
 
 void TextElement::onEditFinished()
 {
 	inputBox_->show(false);
+	endEdit(true);
 	setSelected(false);
+
 	canvas_->updateView(getPaintBoundingRect());
 }
 
 void TextElement::onControlResized(int w, int h)
 {
-	resize(w, h);
+	resize(w+6, h+6);
 }
 
 void TextElement::setTextColor()
 {
 	if ( inputBox_ ) {
+		if ( !inputBox_->isVisible() ) {
+			beginEdit();
+		}
 		inputBox_->setTextColor(color_);
+		if ( !inputBox_->isVisible() ) {
+			endEdit(true); // saving to undo history
+		}
 	}
 
+}
+
+void TextElement::onSelectionChanged(int min, int max, LOGFONT font)
+{
+	font_ = font;
+	if (canvas_->onFontChanged ) {
+		canvas_->onFontChanged(font_);
+	}
 }
 
 void TextElement::setColor(Gdiplus::Color color)
@@ -262,7 +295,49 @@ void TextElement::setSelected(bool selected)
 {
 	MovableElement::setSelected(selected);
 	if ( inputBox_ && !selected ) {
+		if ( canvas_->onTextEditFinished ) {
+			canvas_->onTextEditFinished(this);
+		}
+		endEdit(true);
+	
 		inputBox_->show(false);
+	}
+}
+
+void TextElement::beginEdit()
+{
+	if (! isEditing_) {
+		isEditing_ = true;
+		if ( inputBox_ ) {
+			originalRawText_ = inputBox_->getRawText();
+		}
+	}
+}
+
+void TextElement::endEdit(bool saveToHistory)
+{
+	if ( isEditing_ ) {
+		LOG(INFO) << "saveToHistory" << saveToHistory;
+		isEditing_ = false;
+		if ( saveToHistory ) {
+			Canvas::UndoHistoryItem uhi;
+			Canvas::UndoHistoryItemElement uhie;
+			uhi.type = Canvas::uitTextChanged;
+			uhie.movableElement = this;
+			uhie.rawText = originalRawText_;
+			LOG(INFO) << "Saving to history: "<<originalRawText_;
+			uhi.elements.push_back(uhie);
+		
+			canvas_->addUndoHistoryItem(uhi);
+			originalRawText_.clear();
+		}
+	}
+}
+
+void TextElement::setRawText(const std::string& rawText)
+{
+	if ( inputBox_ ) {
+		inputBox_->setRawText(rawText);
 	}
 }
 

@@ -27,6 +27,8 @@ Canvas::Canvas( HWND parent ) {
 //	buffer_               = NULL;
 	inputBox_             = NULL;
 	currentCursor_    = ctDefault;
+	scrollOffset_.x = 0;
+	scrollOffset_.y = 0;
 	overlay_ = 0;
 	showOverlay_ = false;
 	zoomFactor_ = 1;
@@ -41,6 +43,7 @@ Canvas::Canvas( HWND parent ) {
 	blurRectanglesCount_ = 0;
 	currentDrawingTool_ = 0;
 	bufferedGr_ = 0;
+	memset(&font_, 0, sizeof(font_));
 	createDoubleBuffer();
 }
 
@@ -122,7 +125,9 @@ void Canvas::mouseMove( int x, int y, DWORD flags) {
 void Canvas::mouseDown( int button, int x, int y ) {
 	leftMouseDownPoint_.x = x;
 	leftMouseDownPoint_.y = y;
-	assert( currentDrawingTool_ );
+	if ( !currentDrawingTool_ ) {
+		return;
+	}
 	currentDrawingTool_->beginDraw( x, y );
 	/*if ( currentElement_ == NULL) {
 		if ( currentDrawingTool_ == dtLine) {
@@ -134,7 +139,9 @@ void Canvas::mouseDown( int button, int x, int y ) {
 }
 
 void Canvas::mouseUp( int button, int x, int y ) {
-	assert( currentDrawingTool_ );
+	if ( !currentDrawingTool_ ) {
+		return;
+	}
 	if ( button == 0 ) {
 		currentDrawingTool_->endDraw( x, y );
 	} else {
@@ -152,12 +159,16 @@ void Canvas::mouseUp( int button, int x, int y ) {
 
 void Canvas::mouseDoubleClick(int button, int x, int y)
 {
-	assert( currentDrawingTool_ );
+	if ( !currentDrawingTool_ ) {
+		return;
+	}
+
 	currentDrawingTool_->mouseDoubleClick( x, y );
 }
 
 void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOffset, SIZE size) { 
 	using namespace Gdiplus;
+	scrollOffset_ = scrollOffset;
 	// Updating rect in canvas coordinates
 	RECT rect = {rectInWindowCoordinates.left+scrollOffset.x, rectInWindowCoordinates.top+scrollOffset.y,
 		/*size.cx*/rectInWindowCoordinates.right - rectInWindowCoordinates.left, /*size.cy*/rectInWindowCoordinates.bottom - rectInWindowCoordinates.top};
@@ -288,8 +299,10 @@ void Canvas::setForegroundColor(Gdiplus::Color color)
 			uhie.pos = i;
 			uhie.movableElement = elementsOnCanvas_[i];
 			elementsOnCanvas_[i]->setColor(color);
-			uhi.elements.push_back(uhie);
-			updatedElementsCount++;
+			if ( elementsOnCanvas_[i]->getType() != etText ) { // TextElements saves it's color by itself
+				uhi.elements.push_back(uhie);
+				updatedElementsCount++;
+			}
 		}
 	}
 	if ( updatedElementsCount ) {
@@ -334,13 +347,45 @@ Gdiplus::Color Canvas::getBackgroundColor() const
 	return backgroundColor_;
 }
 
-void Canvas::setDrawingToolType(DrawingToolType toolType, bool notify ) {
+void Canvas::setFont(LOGFONT font, DWORD changeMask)
+{
+	font_ = font;
+	/*if ( currentDrawingTool_ ) {
+		currentDrawingTool_->setForegroundColor(color);
+	}*/
+	int updatedElementsCount = 0;
+/*	UndoHistoryItem uhi;
+	uhi.type = uitFontChanged;*/
+	for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->getType() == etText ) {
+			/*UndoHistoryItemElement uhie;
+			uhie.color = elementsOnCanvas_[i]->getColor();
+			uhie.pos = i;
+			uhie.movableElement = elementsOnCanvas_[i];*/
+			static_cast<TextElement*>(elementsOnCanvas_[i])->setFont(font, changeMask);
+			/*uhi.elements.push_back(uhie);
+			updatedElementsCount++;*/
+		}
+	}
+	/*if ( updatedElementsCount ) {
+		undoHistory_.push(uhi);
+		updateView();
+	}*/
+}
+
+LOGFONT Canvas::getFont()
+{
+	return font_;
+}
+
+AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool notify ) {
 	previousDrawingTool_ = drawingToolType_;
 	drawingToolType_ = toolType;
 	unselectAllElements();
 	updateView();
 	ElementType type;
 	delete currentDrawingTool_;
+	currentDrawingTool_ = 0;
 	if ( toolType == dtPen) {
 		currentDrawingTool_ = new PenTool( this );
 	} else if ( toolType == dtBrush) {
@@ -387,16 +432,16 @@ void Canvas::setDrawingToolType(DrawingToolType toolType, bool notify ) {
 
 		else if ( toolType == dtMove ) {
 			currentDrawingTool_ = new MoveAndResizeTool( this, etNone );
-			return;
+			return currentDrawingTool_;
 		} else if ( toolType == dtSelection ) {
 			currentDrawingTool_ = new SelectionTool( this );
-			return;
+			return currentDrawingTool_;
 		} else if ( toolType == dtLine ) {
 			type = etLine;
 		}
 		else {
 			LOG(ERROR) << "createElement for toolType="<<toolType<<" not implemented.";
-			return;
+			return 0;
 		}
 
 		currentDrawingTool_ = new VectorElementTool( this, type );
@@ -411,6 +456,7 @@ void Canvas::setDrawingToolType(DrawingToolType toolType, bool notify ) {
 	if ( notify && onDrawingToolChanged ) {
 		onDrawingToolChanged(toolType);
 	}
+	return currentDrawingTool_;
 }
 
 void Canvas::setPreviousDrawingTool()
@@ -834,6 +880,13 @@ bool Canvas::undo() {
 			item.elements[i].movableElement->setEndPoint(item.elements[i].endPoint);
 		}
 		result = true;
+	} else if ( item.type == uitTextChanged ) {
+		int itemCount = item.elements.size();
+		// Insert elements in their initial positions
+		for ( int i = itemCount-1; i>=0; i-- ) {
+			static_cast<TextElement*>(item.elements[i].movableElement)->setRawText(item.elements[i].rawText);
+		}
+		result = true;
 	}
 	if ( result ) {
 		undoHistory_.pop();
@@ -843,36 +896,21 @@ bool Canvas::undo() {
 }
 
 InputBox* Canvas::getInputBox( const RECT& rect ) {
-	/*if ( inputBox_ == NULL )*/ {
-		//RECT rt = {0,0,300,50};
-		//LOG(INFO) << "Creating new inputbox";
-		inputBox_ = new InputBoxControl();
-		RECT rc = rect;
-		rc.left++;
-		rc.top++;
+	inputBox_ = new InputBoxControl();
+	RECT rc = rect;
+	rc.left++;
+	rc.top++;
+
+	rc.top -= scrollOffset_.x;
+	rc.left -= scrollOffset_.y;
 		
-		HWND wnd = inputBox_->Create( parentWindow_, rc, _T(""), WS_VISIBLE | WS_CHILD |ES_MULTILINE|ES_AUTOHSCROLL|ES_AUTOVSCROLL|  ES_WANTRETURN
+	HWND wnd = inputBox_->Create( parentWindow_, rc, _T(""), WS_CHILD |ES_MULTILINE|/*ES_AUTOHSCROLL|*/ES_AUTOVSCROLL|  ES_WANTRETURN
 			|  ES_NOHIDESEL /*| ES_LEFT */,WS_EX_TRANSPARENT );
-	//inputBox_->SetEventMask(ENM_CHANGE);
-		inputBox_->SetWindowPos(HWND_TOP,0,0,0,0, SWP_NOSIZE|SWP_NOMOVE);
-		
-	} /*else {
-		//inputBox_->SetWindowPos(HWND_TOP, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top , 0);
-		inputBox_->ShowWindow( SW_SHOW );
-	}*/
-	//inputBox_->settex
-	CHARRANGE cr;
-	cr.cpMin = -1;
-	cr.cpMax = -1;
 
-	// hwnd = rich edit hwnd
-	/*inputBox_->SendMessage(EM_EXSETSEL, 0, (LPARAM)&cr);
-	inputBox_->SendMessage(EM_REPLACESEL, 0, (LPARAM)L"test2");*/
-
-	//inputBox_->SetWindowText( _T("test") );
+	inputBox_->SetWindowPos(HWND_TOP,0,0,0,0, SWP_NOSIZE|SWP_NOMOVE);
+	inputBox_->setFont(font_,  CFM_FACE | CFM_SIZE | CFM_CHARSET 
+		| CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_OFFSET);
 	inputBox_->SetFocus();
-	//DebugWrite2( _T( "%d ,parent=%d, bounds = ( %d %d %d %d )" ), wnd, parentWindow_, rect);
-	//MessageBox ( 0, 0, 0, 0);
 	return inputBox_;
 }
 

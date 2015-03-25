@@ -258,6 +258,11 @@
 	</Actions>
 	<Result DownloadUrlTemplate="$(File)" />
 	</Server>
+	<Server Name="flickr.com" NeedPassword="0" Authorize="2" Debug="0" Type="image" Plugin="flickr" SupportsFolders="1">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
 	<!--
 		Since 1.3.x release server declaration for "urlshortening" server node must be "Server2",
 	-->
@@ -354,10 +359,4 @@
 		</Actions>
 		<Result DirectUrlTemplate="stub" />
 	</Server2>
-	<Server3 Name="flickr.com" NeedPassword="0" Authorize="2" Debug="0" Type="image" Plugin="flickr" SupportsFolders="1">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server3>
-
 </Servers>

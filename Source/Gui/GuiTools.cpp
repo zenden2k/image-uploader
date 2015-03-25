@@ -22,6 +22,7 @@
 #include "Gui/GuiTools.h"
 #include <Func/WinUtils.h>
 #include <Shobjidl.h>
+#include <math.h>
 
 namespace GuiTools
 {
@@ -563,6 +564,92 @@ HWND CreateToolTipForWindow(HWND hwnd, const CString& text)
 	return hwndTT;
 } 
 
+CHARFORMAT LogFontToCharFormat(const LOGFONT & lf)
+{
+	CHARFORMAT cf;
+	cf.cbSize = sizeof(CHARFORMAT);
+	cf.dwMask =  CFM_FACE | CFM_SIZE | CFM_CHARSET 
+		| CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_OFFSET;
+	cf.dwEffects = 0;
+
+	if (lf.lfWeight >= FW_BOLD)
+	{
+		cf.dwEffects |= CFE_BOLD;
+	}
+
+	if (lf.lfUnderline)
+	{
+		cf.dwEffects |= CFE_UNDERLINE;
+	}
+
+	if (lf.lfItalic)
+	{
+		cf.dwEffects |= CFE_ITALIC;
+	}
+
+	if (lf.lfStrikeOut)
+	{
+		cf.dwEffects |= CFE_STRIKEOUT;
+	}
+
+	//temporary create DC
+	CDC dc;
+	dc.CreateDC(_T("DISPLAY"),NULL,NULL,NULL);
+	cf.yHeight = 20*long( 0.5 + fabs(double(72*lf.lfHeight)/dc.GetDeviceCaps(LOGPIXELSY)));
+	dc.DeleteDC();
+
+	cf.yOffset = 0;
+	cf.bCharSet = lf.lfCharSet;
+	cf.bPitchAndFamily = lf.lfPitchAndFamily;
+	_tcscpy_s(cf.szFaceName, LF_FACESIZE, lf.lfFaceName);
+	return cf;
+}
+
+LOGFONT CharFormatToLogFont(const CHARFORMAT & cf)
+{
+	LOGFONT lf;
+	lf.lfCharSet = cf.bCharSet;
+	lf.lfClipPrecision = CLIP_DEFAULT_PRECIS;
+	lf.lfEscapement = 0;
+	lf.lfOrientation = 0;
+	lf.lfOutPrecision = OUT_DEFAULT_PRECIS;
+	lf.lfQuality = DEFAULT_QUALITY;
+	lf.lfPitchAndFamily = DEFAULT_PITCH;
 
 
+	if ( (cf.dwEffects & CFE_BOLD) == CFE_BOLD)
+	{
+		lf.lfWeight = FW_BOLD;
+	}
+
+	CDC dc;
+	dc.CreateDC(_T("DISPLAY"),NULL,NULL,NULL);
+	lf.lfHeight = -MulDiv(cf.yHeight/20, dc.GetDeviceCaps(LOGPIXELSY), 72);
+	dc.DeleteDC();
+
+	lf.lfUnderline = ( (cf.dwEffects & CFE_UNDERLINE) == CFE_UNDERLINE);
+	lf.lfStrikeOut = ( (cf.dwEffects & CFE_STRIKEOUT) == CFE_STRIKEOUT);
+	lf.lfItalic = ( (cf.dwEffects & CFE_ITALIC) == CFE_ITALIC);
+
+	lf.lfWidth = 0;
+	_tcscpy_s(lf.lfFaceName, LF_FACESIZE, cf.szFaceName);
+
+	return lf;
+
+}
+
+HICON LoadSmallIcon(int resourceId) {
+	int iconWidth =  ::GetSystemMetrics(SM_CXSMICON);
+	int iconHeight =  ::GetSystemMetrics(SM_CYSMICON);
+	if ( iconWidth > 16 ) {
+		iconWidth = 48;
+	} 
+	
+	if ( iconHeight > 16 ) {
+		iconHeight = 48;
+	} 
+
+	return  (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), 
+		IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR);
+}
 };

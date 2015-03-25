@@ -18,16 +18,22 @@ TextTool::TextTool( Canvas* canvas ) : MoveAndResizeTool( canvas, etText ) {
 }
 
 void TextTool::beginDraw( int x, int y ) {
+	allowCreatingElements_ = true;
 	if ( currentElement_ && dynamic_cast<TextElement*>(currentElement_)->getInputBox()->isVisible() ) {
 		allowCreatingElements_ = false;
 	}
 	MoveAndResizeTool::beginDraw( x, y );
 	allowCreatingElements_ = true;
 	if ( currentElement_ ) {
+		TextElement* textElement = dynamic_cast<TextElement*>(currentElement_);
 
-		InputBox* input = dynamic_cast<TextElement*>(currentElement_)->getInputBox();
+		InputBox* input = textElement->getInputBox();
 		if ( input ) {
+			textElement->beginEdit();
 			input->show(true);
+			if ( canvas_->onTextEditStarted ) {
+				canvas_->onTextEditStarted(textElement);
+			}
 		}
 	}
 
@@ -59,15 +65,19 @@ void TextTool::endDraw( int x, int y ) {
 	currentElement_->resize(width, height);
 	int elX = currentElement_->getX();
 	int elY = currentElement_->getY();
-	RECT inputRect = {elX, elY, elX + currentElement_->getWidth(), elY + currentElement_->getHeight() };
+	RECT inputRect = {elX+3, elY+3, elX + currentElement_->getWidth()-6, elY + currentElement_->getHeight()-6 };
 
 	TextElement * textElement = dynamic_cast<TextElement*>(currentElement_);
 	InputBox * inputBox = textElement->getInputBox();
 	if ( !inputBox ) {
 		inputBox = canvas_->getInputBox( inputRect );
+		textElement->setInputBox(inputBox);
+		if ( canvas_->onTextEditStarted ) {
+			canvas_->onTextEditStarted(textElement);
+		}
 	}
 	//	currentElement_ = new TextElement(canvas_,inputBox, xStart,yStart, xEnd, yEnd);
-	textElement->setInputBox(inputBox);
+	inputBox->show(true);
 	canvas_->setCurrentlyEditedTextElement(textElement);
 	textElement->setSelected(true);
 	inputBox->invalidate();

@@ -105,6 +105,7 @@
 #define IDI_ICONUP                      268
 #define IDI_ICONSETTINGS2               269
 #define IDD_CONTEXTMENUITEMDLG          269
+#define IDD_TEXTPARAMSWINDOW            270
 #define IDI_ICON7                       271
 #define IDI_ICONDOWN                    271
 #define IDB_PNG2                        272
@@ -138,6 +139,10 @@
 #define IDB_ICONADDPNG                  295
 #define IDB_PNG8                        296
 #define IDB_ICONUPLOADPNG               296
+#define IDI_ICONBOLD                    298
+#define IDI_ICON9                       299
+#define IDI_ICONITALIC                  299
+#define IDI_ICONUNDERLINE               300
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -189,6 +194,7 @@
 #define IDC_SERVERLIST                  1026
 #define IDC_LEFTBUTTONCLICKCOMBO        1026
 #define IDC_COMBO2                      1026
+#define IDC_FONTSIZECOMBO               1026
 #define IDC_CHECK4                      1027
 #define IDC_TEXTPOSITION                1027
 #define IDC_SAVEPROPORTIONS             1027
@@ -582,7 +588,9 @@
 #define IDC_EDIT                        1307
 #define IDC_WEBSITELABEL                1307
 #define IDC_SERVERGROUPBOX              1308
+#define IDC_TOOLBARPLACEHOLDER          1308
 #define IDC_USERICON                    1309
+#define IDC_FONTCOMBO                   1309
 #define IDC_FOLDERICON                  1310
 #define IDC_FOLDERLABEL                 1311
 #define IDC_IMAGEPROCESSINGPARAMS       1312
@@ -644,9 +652,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        297
+#define _APS_NEXT_RESOURCE_VALUE        301
 #define _APS_NEXT_COMMAND_VALUE         32805
-#define _APS_NEXT_CONTROL_VALUE         1308
+#define _APS_NEXT_CONTROL_VALUE         1310
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif
