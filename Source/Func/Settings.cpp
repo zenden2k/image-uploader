@@ -527,8 +527,8 @@ CSettings::CSettings()
 	TrayIconSettings.ShortenLinks = FALSE;
 	TrayIconSettings.TrayScreenshotAction = 0;
 
-	ImageEditorSettings.BackgroundColor = RGB(255,255,255);
-	ImageEditorSettings.ForegroundColor = RGB(255,0,0);
+	ImageEditorSettings.BackgroundColor = Gdiplus::Color(255,255,255);
+	ImageEditorSettings.ForegroundColor = Gdiplus::Color(255,0,0);
 	ImageEditorSettings.PenSize = 12;
 	StringToFont(_T("Arial,9,,204"), &ImageEditorSettings.Font);
 
@@ -708,8 +708,11 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 	}
 	
 	// Migrating from 1.3.0 to 1.3.1 (added ImageEditor has been addded)
-	if (settingsNode["ImageEditor"].IsNull() && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD ) {
-		TrayIconSettings.TrayScreenshotAction = TRAY_SCREENSHOT_OPENINEDITOR;
+	if (settingsNode["ImageEditor"].IsNull() ) {
+		if ( Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD ) {
+			TrayIconSettings.TrayScreenshotAction = TRAY_SCREENSHOT_OPENINEDITOR;
+		}
+		
 	}
 	LoadConvertProfiles( settingsNode.GetChild("Image").GetChild("Profiles") );
 	LoadServerProfiles( settingsNode.GetChild("Uploading").GetChild("ServerProfiles") );

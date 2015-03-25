@@ -27,6 +27,7 @@
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/StringUtils.h"
 #include <Core/Logging.h>
+#include "versioninfo.h"
 
 bool compareEngines(const CUploadEngineData& elem1, const CUploadEngineData& elem2)
 {
@@ -51,6 +52,14 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 	std::vector<SimpleXmlNode> childs;
 	root.GetChilds("Server", childs);
 	root.GetChilds("Server2", childs);
+	root.GetChilds("Server3", childs);
+
+	std::string ver = _APP_VER;
+	std::vector<std::string> tokens;
+	IuStringUtils::Split(ver,".", tokens, 3);
+	int majorVersion = (int)IuCoreUtils::stringToint64_t(tokens[0]);
+	int minorVersion = (int)IuCoreUtils::stringToint64_t(tokens[1]+tokens[2]);
+	int build = (int)IuCoreUtils::stringToint64_t(BUILD);
 
 	for(size_t i=0; i<childs.size(); i++)
 	{
@@ -71,6 +80,23 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 				UE.RetryLimit = atoi(RetryLimit.c_str());
 
 			UE.Name =  cur.Attribute("Name");
+
+			std::string serverMinVersion = cur.Attribute("MinVersion");
+			if ( !serverMinVersion.empty() ) {
+				std::vector<std::string> tokens;
+				IuStringUtils::Split(serverMinVersion,".", tokens, 4);
+				if ( tokens.size() >= 3 ) {
+					int serverMajorVersion = (int)IuCoreUtils::stringToint64_t(tokens[0]);
+					int serverMinorVersion = (int)IuCoreUtils::stringToint64_t(tokens[1]+tokens[2]);
+					int serverBuild = tokens.size() > 3 ? IuCoreUtils::stringToint64_t(tokens[3]) : 0;
+					if ( !( majorVersion > serverMajorVersion || ( majorVersion == serverMajorVersion && minorVersion > serverMinorVersion) 
+						|| ( majorVersion == serverMajorVersion && minorVersion ==  serverMinorVersion && ( !serverBuild || build >= serverBuild ))
+						) ) {
+							continue;
+					}
+				}
+			}
+
 			UE.SupportsFolders = cur.AttributeBool("SupportsFolders");
 			UE.RegistrationUrl = cur.Attribute("RegistrationUrl");
 			UE.PluginName = cur.Attribute("Plugin");

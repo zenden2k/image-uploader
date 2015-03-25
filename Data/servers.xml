@@ -241,28 +241,6 @@
 	</Actions>
 	<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<Server2 Name="clck.ru" Debug="0" Type="urlshortening">
-		<Actions>
-			<Action Type="post" Url="https://clck.ru/--" PostParams="url=$(_ORIGINALURL)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
-		</Actions>
-		<Result DirectUrlTemplate="$(ShortUrl)" />
-	</Server2>
-	<Server2 Name="is.gd" Debug="0" Type="urlshortening">
-		<Actions>
-			<Action Type="post" Url="http://is.gd/create.php?format=simple&amp;url=$(_ORIGINALURL|urlencode)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
-		</Actions>
-		<Result DirectUrlTemplate="$(ShortUrl)" />
-	</Server2>
-	<Server2 Name="goo.gl" Debug="0" Type="urlshortening" Plugin="googl">
-		<Actions>
-		</Actions>
-		<Result DirectUrlTemplate="stub" />
-	</Server2>
-	<Server2 Name="flickr.com"  NeedPassword="0" Authorize="2" Debug="0" Type="image" Plugin="flickr" SupportsFolders="1">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server2>
 	<Server Name="bild.me" Debug="1">
 		<Actions>
 			<Action Type="upload" Url="http://www.bild.me/index.php" PostParams="F1=%filename%;C1=ON;upload=Upload!;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:0;Image:2;"/>
@@ -359,5 +337,27 @@
 		</Actions>
 		<Result DirectUrlTemplate="http://8b.kz/$(surl)" />
 	</Server2>
+<Server2 Name="clck.ru" Debug="0" Type="urlshortening">
+		<Actions>
+			<Action Type="post" Url="https://clck.ru/--" PostParams="url=$(_ORIGINALURL)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
+		</Actions>
+		<Result DirectUrlTemplate="$(ShortUrl)" />
+	</Server2>
+	<Server2 Name="is.gd" Debug="0" Type="urlshortening">
+		<Actions>
+			<Action Type="post" Url="http://is.gd/create.php?format=simple&amp;url=$(_ORIGINALURL|urlencode)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
+		</Actions>
+		<Result DirectUrlTemplate="$(ShortUrl)" />
+	</Server2>
+	<Server2 Name="goo.gl" Debug="0" Type="urlshortening" Plugin="googl">
+		<Actions>
+		</Actions>
+		<Result DirectUrlTemplate="stub" />
+	</Server2>
+	<Server3 Name="flickr.com" NeedPassword="0" Authorize="2" Debug="0" Type="image" Plugin="flickr" SupportsFolders="1">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server3>
 
 </Servers>
