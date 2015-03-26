@@ -1,3 +1,4 @@
+authorized <- false;
 function regex_simple(data,regStr,start)
 {
 	local ex = regexp(regStr);
@@ -9,6 +10,22 @@ function regex_simple(data,regStr,start)
 	return resultStr;
 }
 
+function _WriteLog(type,message) {
+	try {
+		WriteLog(type, message);
+	} catch (ex ) {
+		print(type + " : " + message);
+	}
+}
+
+function tr(key, text) {
+	try {
+		return Translate(key, text);
+	}
+	catch(ex) {
+		return text;
+	}
+}
 
 
 function reg_replace(str, pattern, replace_with)
@@ -27,7 +44,7 @@ function reg_replace(str, pattern, replace_with)
 
 
 
-function auth()
+function DoLogin()
 {
 	local login = ServerParams.getParam("Login");
 	local pass =  ServerParams.getParam("Password");
@@ -38,13 +55,22 @@ function auth()
 		nm.addQueryParam("Password", pass);
 		nm.addQueryParam("IsRemember", "true");
 		nm.addQueryParam("ReturnUrl", "/");
+		nm.doPost("");
+		try {
+			local t = ParseJSON(nm.responseBody());
+			if ( t == null || t.IsError )  {
+				_WriteLog("error", tr("radikal.login_error", "Authentication error on radikal.ru"));
+				return 0;
+			} 
+			authorized = true;
+		} catch ( ex ) { }
 	}
-	return true;
+	return 1;
 }
 
 function  UploadFile(FileName, options)
 {
-	if(!auth()) return false;
+	if(!DoLogin()) return 0;
 	local thumbwidth = 180;
 	try //for compatibility with IU versions < 1.2.7
 	{

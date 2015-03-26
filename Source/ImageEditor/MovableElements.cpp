@@ -625,13 +625,20 @@ void RoundedRectangle::render(Painter* gr)
 	Gdiplus::Pen pen( color_, penSize_ );
 	int x = getX() + penSize_/2 /*- (1-penSize_%2)*/;
 	int y = getY() + penSize_/2 /*- (1-penSize_%2)*/;
-	int width = getWidth()-penSize_;
-	int height = getHeight()-penSize_;
+	int width = max(getWidth()-penSize_,1);
+	int height = max(getHeight()-penSize_,1);
 	SolidBrush br(backgroundColor_);
 	PixelOffsetMode oldPOM = gr->GetPixelOffsetMode();
 	gr->SetPixelOffsetMode(PixelOffsetModeHalf);
+	Region rgn(x,y, width, height);
+	
+
+	Gdiplus::Region oldRegion;
+	gr->GetClip(&oldRegion);
+	//gr->SetClip(rgn.toNativeRegion(), Gdiplus::CombineModeIntersect);
 	DrawRoundedRectangle(gr, Rect(x,y,width,height), penSize_*2, &pen, filled_ ? &br : 0);
 	gr->SetPixelOffsetMode(oldPOM);
+	//gr->SetClip(&oldRegion);
 }
 
 ImageEditor::ElementType RoundedRectangle::getType() const

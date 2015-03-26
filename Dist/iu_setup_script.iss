@@ -61,9 +61,12 @@ Name: "installffmpeg"; Description: "{cm:InstallFFmpeg}"; Flags: unchecked
 ;Name: common; Description: All users; GroupDescription: Install for:; Flags: exclusive
 ;Name: installuser; Description: The current user only; GroupDescription: Install for:; Flags: exclusive unchecked
 [Dirs]
+Name: "{code:GetDataFolder}\Image Uploader"; Permissions: users-modify
 Name: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Permissions: users-modify
 Name: "{code:GetDataFolder}\Image Uploader\Servers"; Permissions: users-modify
-
+Name: "{code:GetDataFolder}\Image Uploader\Scripts"; Permissions: users-modify
+Name: "{code:GetDataFolder}\Image Uploader\Favicons"; Permissions: users-modify
+Name: "{code:GetDataFolder}\Image Uploader\Update"; Permissions: users-modify
 [Files]
 Source: "..\Build\release optimized\Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Build\release optimized\curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion

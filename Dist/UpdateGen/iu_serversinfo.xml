@@ -8,10 +8,6 @@
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
 <Info>
-[+]mepic.ru
-[+]ipic.su
-[+]rupix.org
-[+]simplest-image-hosting.net
-[+]datafilehost.com
+[~] Fixed authentication on radikal.ru
 </Info>
 </UpdatePackageSource>

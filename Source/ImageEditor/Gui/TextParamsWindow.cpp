@@ -151,10 +151,12 @@ LRESULT TextParamsWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	ScreenToClient(&toolbarRect);
 	int iconWidth =  ::GetSystemMetrics(SM_CXSMICON);
 	int iconHeight =  ::GetSystemMetrics(SM_CYSMICON);
-	toolbarImageList_.Create(iconWidth, iconHeight, ILC_COLOR32,3,3);
-	toolbarImageList_.AddIcon(GuiTools::LoadSmallIcon(IDI_ICONBOLD));
-	toolbarImageList_.AddIcon(GuiTools::LoadSmallIcon(IDI_ICONITALIC));
-	toolbarImageList_.AddIcon(GuiTools::LoadSmallIcon(IDI_ICONUNDERLINE));
+	toolbarImageList_.Create(iconWidth, iconHeight, (WinUtils::IsWinXPOrLater()) ?  ILC_COLOR32 : ILC_COLOR8| ILC_MASK,3,3);
+	/*if ( WinUtils::IsWinXP() || WinUtils::IsVista() )*/ {
+		toolbarImageList_.AddIcon(GuiTools::LoadSmallIcon(IDI_ICONBOLD));
+		toolbarImageList_.AddIcon(GuiTools::LoadSmallIcon(IDI_ICONITALIC));
+		toolbarImageList_.AddIcon(GuiTools::LoadSmallIcon(IDI_ICONUNDERLINE));
+	}
 	textToolbar_.Create(m_hWnd, toolbarRect, _T(""), WS_CHILD | TBSTYLE_LIST| /*|TBSTYLE_CUSTOMERASE|*/TBSTYLE_FLAT| CCS_NORESIZE|CCS_BOTTOM | CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
 
 	textToolbar_.SetButtonStructSize();

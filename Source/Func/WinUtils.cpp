@@ -4,6 +4,7 @@
 #include <Core/Utils/StringUtils.h>
 #include <Func/MyUtils.h>
 #include <GdiPlus.h>
+#include <Aclapi.h>
 
 namespace WinUtils {
 
@@ -23,6 +24,24 @@ bool IsWinXP()
 	if ((dwVersion < 0x80000000) &&                 // The OS is a NT family
 		(dwWindowsMajorVersion >= 5) &&
 		(dwWindowsMinorVersion >= 1))         // Windows NT 5.1 is an Windows XP version
+		return TRUE;
+
+	return FALSE;
+}
+
+bool IsWinXPOrLater()
+{
+	// Проверка операционной системы
+	DWORD dwVersion = GetVersion();
+
+	// Get major and minor version numbers of Windows
+	DWORD dwWindowsMajorVersion = (DWORD)(LOBYTE(LOWORD(dwVersion)));
+	DWORD dwWindowsMinorVersion = (DWORD)(HIBYTE(LOWORD(dwVersion)));
+
+	// Check for Windows XP
+	if ((dwVersion < 0x80000000) &&                 // The OS is a NT family
+		(dwWindowsMajorVersion > 5) ||
+		(dwWindowsMajorVersion == 5 && dwWindowsMinorVersion >= 1))         // Windows NT 5.1 is an Windows XP version
 		return TRUE;
 
 	return FALSE;
@@ -844,6 +863,41 @@ CString GetLastErrorAsString()
 	LocalFree(messageBuffer);
 
 	return res;
+}
+
+
+BOOL MakeDirectoryWritable(LPCTSTR lpPath) {
+	HANDLE hDir = CreateFile(lpPath,READ_CONTROL|WRITE_DAC,0,NULL,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS,NULL);
+	if(hDir == INVALID_HANDLE_VALUE)
+		return FALSE; 
+
+	ACL* pOldDACL;
+	SECURITY_DESCRIPTOR* pSD = NULL;
+	GetSecurityInfo(hDir, SE_FILE_OBJECT , DACL_SECURITY_INFORMATION,NULL, NULL, &pOldDACL, NULL, (void**)&pSD);
+
+	PSID pSid = NULL;
+	SID_IDENTIFIER_AUTHORITY authNt = SECURITY_NT_AUTHORITY;
+	AllocateAndInitializeSid(&authNt,2,SECURITY_BUILTIN_DOMAIN_RID,DOMAIN_ALIAS_RID_USERS,0,0,0,0,0,0,&pSid);
+
+	EXPLICIT_ACCESS ea={0};
+	ea.grfAccessMode = GRANT_ACCESS;
+	ea.grfAccessPermissions = GENERIC_ALL;
+	ea.grfInheritance = CONTAINER_INHERIT_ACE|OBJECT_INHERIT_ACE;
+	ea.Trustee.TrusteeType = TRUSTEE_IS_GROUP;
+	ea.Trustee.TrusteeForm = TRUSTEE_IS_SID;
+	ea.Trustee.ptstrName = (LPTSTR)pSid;
+
+	ACL* pNewDACL = 0;
+	DWORD err = SetEntriesInAcl(1,&ea,pOldDACL,&pNewDACL);
+
+	if(pNewDACL)
+		SetSecurityInfo(hDir,SE_FILE_OBJECT,DACL_SECURITY_INFORMATION,NULL, NULL, pNewDACL, NULL);
+
+	FreeSid(pSid);
+	LocalFree(pNewDACL);
+	LocalFree(pSD);
+	LocalFree(pOldDACL);
+	CloseHandle(hDir);
 }
 
 };

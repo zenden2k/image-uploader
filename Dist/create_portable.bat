@@ -33,7 +33,9 @@ Copy "..\Data\template.txt" %temp_dir%\Data\
 Copy "..\Data\Favicons\*.ico" %temp_dir%\Data\Favicons\
 Copy "..\Data\Scripts\*.nut" %temp_dir%\Data\Scripts\
 Copy "..\Data\Scripts\Lang\*.json" %temp_dir%\Data\Scripts\Lang\
-Copy "..\Data\Update\*.xml" %temp_dir%\Data\Update\
+Copy "..\Data\Update\iu_core.xml" %temp_dir%\Data\Update\
+Copy "..\Data\Update\iu_serversinfo.xml" %temp_dir%\Data\Update\
+Copy "..\Data\Update\iu_ffmpeg.xml" %temp_dir%\Data\Update\
 Copy "..\Data\Thumbnails\*.*" %temp_dir%\Data\Thumbnails\
 rem Copy "..\Data\Servers\*.xml" %temp_dir%\Data\Servers\
 Copy "..\Build\release optimized\ExplorerIntegration.dll" %temp_dir%\

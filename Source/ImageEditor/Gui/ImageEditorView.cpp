@@ -294,7 +294,7 @@ LRESULT CImageEditorView::OnKeyUp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*
 
 LRESULT CImageEditorView::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	//Invalidate(false);
+	Invalidate(true);
 	return 0;
 }
 

@@ -13,6 +13,7 @@ namespace Gdiplus {
 namespace WinUtils {
 
 	bool IsWinXP();
+	bool IsWinXPOrLater();
 	bool IsDirectory(LPCTSTR szFileName);
 	bool IsVista();
 	bool IsWindows64Bit();
@@ -87,6 +88,7 @@ namespace WinUtils {
 	CString GetAppFolder();
 	float GetMonitorScaleFactor();
 	CString GetLastErrorAsString();
+	BOOL MakeDirectoryWritable(LPCTSTR lpPath);
 };
 
 #endif

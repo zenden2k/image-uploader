@@ -416,6 +416,11 @@ CSettings::CSettings()
 	{
 		CreateDirectory(IuCoreUtils::Utf8ToWstring(SettingsFolder).c_str(), 0);
 	}
+	BOOL isElevated = false;
+	IsElevated(&isElevated);
+	if ( isElevated  || CmdLine.IsOption(L"afterupdate")) {
+		WinUtils::MakeDirectoryWritable(DataFolder);
+	}
 #endif
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 	CString copyFrom = WinUtils::GetAppFolder() + SETTINGS_FILE_NAME;

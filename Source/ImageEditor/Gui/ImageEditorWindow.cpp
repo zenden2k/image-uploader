@@ -935,11 +935,20 @@ LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	}
 	int penSize = HIWORD(wParam);
 	switch( LOWORD(wParam ) ) {
+		case TB_ENDTRACK:
+			penSize = horizontalToolbar_.penSizeSlider_.GetPos();
 		case TB_THUMBPOSITION:
 			canvas_->endPenSizeChanging(penSize);
 			updatePixelLabel();
 			prevPenSize_ = 0;
 			break;
+		case TB_PAGEDOWN:
+		case TB_PAGEUP:
+		case TB_TOP:
+		case TB_LINEDOWN:
+		case TB_LINEUP:
+		case TB_BOTTOM:
+			penSize = horizontalToolbar_.penSizeSlider_.GetPos();
 		case TB_THUMBTRACK:
 			if ( !prevPenSize_ ) {
 				prevPenSize_ = canvas_->getPenSize();
@@ -948,7 +957,6 @@ LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 			canvas_->setPenSize(penSize);
 			updatePixelLabel();
 			break;
-
 	}
 	return 0;
 }

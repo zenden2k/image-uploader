@@ -34,6 +34,7 @@
 #include <Core/Logging.h>
 #include <Func/MyLogSink.h>
 
+
 CAppModule _Module;
 
 bool IsProcessRunning(DWORD pid) {
@@ -140,7 +141,6 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	LogWindow.DestroyWindow();
 	return 0;
 }
-
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {	
