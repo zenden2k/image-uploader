@@ -76,8 +76,12 @@ bool autoUpdate = true;
 void DoUpdates(bool force = false);
 #endif
 void DebugMessage2(const std::string& message, bool isServerResponseBody)
-{
-    std::cerr<<message<<std::endl;
+{   
+#ifdef _WIN32
+	std::wcerr<<IuCoreUtils::Utf8ToWstring(message);
+#else
+std::cerr<<IuCoreUtils::Utf8ToSystemLocale(message);
+#endif
 }
 
 bool UploadFile(CUploader &uploader, std::string fileName, /*[out]*/ ZUploadObject &uo)
@@ -415,8 +419,11 @@ bool parseCommandLine(int argc, char *argv[])
 	  }
 
 #endif
-		
-		 filesToUpload.push_back(IuCoreUtils::SystemLocaleToUtf8(argv[i]));
+#ifndef _WIN32	
+		filesToUpload.push_back(IuCoreUtils::SystemLocaleToUtf8(argv[i]));
+#else
+	filesToUpload.push_back(argv[i]);
+#endif
       //else if()
       i++;
    }
@@ -587,7 +594,7 @@ protected:
 	CUpdateManager m_UpdateManager;
 };
 
-#ifdef _WIN32
+
 void DoUpdates(bool force) {
 	if(force || time(0) - Settings.LastUpdateTime > 3600*24*7 /* 7 days */) {
 		IuCommonFunctions::CreateTempFolder();
@@ -598,7 +605,7 @@ void DoUpdates(bool force) {
 	}
 
 }
-#endif
+
 
 char ** convertArgv(int argc, _TCHAR* argvW[]) {
 	char ** result = new char *[argc];

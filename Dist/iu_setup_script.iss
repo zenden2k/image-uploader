@@ -45,6 +45,9 @@ Name: "fa"; MessagesFile: "Languages\Farsi.isl"
 Name: "sr"; MessagesFile: "Languages\SerbianCyrillic.isl"
 Name: "sv"; MessagesFile: "Languages\Swedish.isl"
 Name: "tr"; MessagesFile: "Languages\Turkish.isl"
+[CustomMessages]
+InstallFFmpeg=Install FFmpeg library (better video formats support)
+ru.InstallFFmpeg=Установить библиотеку FFmpeg для лучшей поддержки форматов видео
 
 [Registry]
 Root: HKLM; Subkey: "Software\Zenden.ws\Image Uploader"; ValueType: string; ValueName: "DataPath"; ValueData: "{code:GetDataFolder}\Image Uploader\"; 
@@ -54,7 +57,7 @@ Root: HKLM; Subkey: "Software\Zenden.ws\Image Uploader"; ValueType: string; Valu
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
-Name: "installffmpeg"; Description: "Install FFmpeg libraries (better video formats support)"; Flags: unchecked
+Name: "installffmpeg"; Description: "{cm:InstallFFmpeg}"; Flags: unchecked
 ;Name: common; Description: All users; GroupDescription: Install for:; Flags: exclusive
 ;Name: installuser; Description: The current user only; GroupDescription: Install for:; Flags: exclusive unchecked
 [Dirs]
@@ -75,7 +78,7 @@ Source: "..\Data\Scripts\*.nut"; DestDir: "{code:GetDataFolder}\Image Uploader\S
 Source: "..\Data\Scripts\Lang\*.json"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts\Lang"; Flags: ignoreversion
 Source: "..\Data\Update\iu_core.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
 Source: "..\Data\Update\iu_serversinfo.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
-Source: "..\Data\Update\iu_ffmpeg.xml"; DestDir: "{tmp}\iu_ffmpeg.xml"; Flags: ignoreversion
+Source: "..\Data\Update\iu_ffmpeg.xml"; DestDir: "{tmp}\"; Flags: ignoreversion
 Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Flags: ignoreversion
 
 Source: "unzip.exe"; DestDir: "{tmp}"; Flags: ignoreversion
@@ -185,7 +188,7 @@ begin
     
           Exec(expandconstant('{tmp}\unzip.exe'),cmd ,expandconstant('{app}'), SW_HIDE, ewWaitUntilTerminated, ResultCode);
 
-         //  MsgBox(GetDataFolder('p') + expandconstant('\Image Uploader\Update\iu_ffmpeg.xml'), mbInformation, MB_OK);
+          //MsgBox(GetDataFolder('p') + expandconstant('\Image Uploader\Update\iu_ffmpeg.xml'), mbInformation, MB_OK);
 
             filecopy(expandconstant('{tmp}\iu_ffmpeg.xml'),GetDataFolder('p') + expandconstant('\Image Uploader\Update\iu_ffmpeg.xml'),false);
     end;

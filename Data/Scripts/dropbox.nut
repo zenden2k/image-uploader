@@ -8,6 +8,15 @@ authStep2Url <- "https://api.dropbox.com/1/oauth/access_token";
 oauth_token_secret <- "";
 oauth_token <- "";
 
+function tr(key, text) {
+	try {
+		return Translate(key, text);
+	}
+	catch(ex) {
+		return text;
+	}
+}
+	
 function regex_simple(data,regStr,start)
 {
 	local ex = regexp(regStr);
@@ -128,9 +137,7 @@ function DoLogin() {
 	
 	openUrl("https://www.dropbox.com/1/oauth/authorize?oauth_token=" + temp_oauth_token);
 	
-	msgBox("Please allow Image Uploader to connect with your Dropbox (in web browser) and then press OK.\r\n\r\n"+
-		"Пожалуйста, разрешите Image Uploader подключиться к вашему аккаунту Dropbox (нажмите кнопку Allow в запущенном браузере), и после этого нажмите OK."
-	);
+	msgBox(tr("dropbox.please_allow","Please allow Image Uploader to connect with your Dropbox (in web browser) and then press OK."));
 	
 	sendOauthRequest(authStep2Url, temp_oauth_token, temp_oauth_token_secret);
 	data =  nm.responseBody();

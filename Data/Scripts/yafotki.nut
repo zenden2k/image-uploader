@@ -3,6 +3,14 @@ tokenType <- "";
 login <- "";
 enableOAuth <- true;
 
+function tr(key, text) {
+	try {
+		return Translate(key, text);
+	}
+	catch(ex) {
+		return text;
+	}
+}
 function regex_simple(data,regStr,start)
 {
 	local ex = regexp(regStr);
@@ -108,7 +116,7 @@ function DoLogin()
 		}
 		openUrl("https://oauth.yandex.ru/authorize?response_type=code&client_id=7e20041e4444421a8d3df62bf312acfc");
 		
-	    	local confirmCode = inputBox("You need to need to sign in to your Yandex.Fotki account in web browser which just have opened and then copy confirmation code into the text field below. Please enter confirmation code:", "Image Uploader - Enter confirmation code");
+	    local confirmCode = inputBox(tr("yafotki.confirmation.text", "You need to need to sign in to your Yandex.Fotki account in web browser which just have opened and then copy confirmation code into the text field below. Please enter confirmation code:"), "Image Uploader - Enter confirmation code");
 		if ( confirmCode != "" ) {	
 			nm.setUrl("https://oauth.yandex.ru/token");
 			nm.addQueryParam("grant_type", "authorization_code");

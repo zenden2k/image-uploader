@@ -106,9 +106,16 @@ const std::string AskUserCaptcha(NetworkClient* nm, const std::string& url)
 #else
 	ShellOpenUrl(url);
 		std::cerr << "Enter text from the image:"<<std::endl;
+#ifdef _WIN32
+		std::wstring result;
+		std::wcin>>result;
+		return IuCoreUtils::WstringToUtf8(result);
+#else
 		std::string result;
 		std::cin>>result;
 		return result;
+#endif
+		
 	
 #endif
 	return "";
@@ -322,7 +329,12 @@ void scriptWriteLog(const std::string& type, const std::string& message) {
 	}
 	WriteLog(msgType,_T("Script Engine"),Utf8ToWCstring(message));
 #else
-	std::cerr << type <<" : "<< message;
+	std::cerr << type <<" : ";
+	#ifdef _WIN32
+		std::wcerr<<IuCoreUtils::Utf8ToWstring(message)<<std::endl;;
+	#else
+		std::cerr<<IuCoreUtils::Utf8ToSystemLocale(message)<<std::endl;
+	#endif
 #endif
 }
 
@@ -393,7 +405,11 @@ void DebugMessage(const std::string& msg, bool isResponseBody)
 #ifndef IU_CLI
 	DefaultErrorHandling::DebugMessage(msg,isResponseBody);
 #else
-	fprintf(stderr,"%s\r",msg.c_str());
+#ifdef _WIN32
+	std::wcerr<<IuCoreUtils::Utf8ToWstring(msg)<<std::endl;;
+#else
+	std::cerr<<IuCoreUtils::Utf8ToSystemLocale(msg)<<std::endl;
+#endif
     getc(stdin);
 #endif
 }
@@ -450,8 +466,18 @@ const std::string scriptMessageBox( const std::string& message, const std::strin
 	return "";
 	
 #else
-	std::cerr<<"----------"<<title<<"----------"<<std::endl;
-	std::cerr<<message<<std::endl;
+	std::cerr<<"----------";
+#ifdef _WIN32
+	std::wcerr<<IuCoreUtils::Utf8ToWstring(title);
+#else
+	std::cerr<<IuCoreUtils::Utf8ToSystemLocale(title);
+#endif
+	std::cerr<<"----------"<<std::endl;
+#ifdef _WIN32
+	std::wcerr<<IuCoreUtils::Utf8ToWstring(message)<<std::endl;;
+#else
+	std::cerr<<IuCoreUtils::Utf8ToSystemLocale(message)<<std::endl;;
+#endif
 	if ( buttons.empty() || buttons == "OK") {
 		    getc(stdin);
 			return "OK";

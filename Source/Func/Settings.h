@@ -33,7 +33,7 @@
 	#include "Func/Common.h"
 	#include "Gui/Dialogs/HotkeySettings.h"
     #include "Core/Images/ImageConverter.h"
-
+ 
 	#define TRAY_SCREENSHOT_UPLOAD 0
 	#define TRAY_SCREENSHOT_CLIPBOARD 1
 	#define TRAY_SCREENSHOT_SHOWWIZARD 2
