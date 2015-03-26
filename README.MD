@@ -22,7 +22,7 @@ Image Uploader can do screenshots of entire screen or selected screen region.
 
 Image Uploader is available in the following languages: English, Russian, Swedish, Romanian, Turkish, Serbian, Hrvatski, Farsi
 
-##Compiling
+##Building from source
 
 You need Microsoft Visual C++ at least 9.0 version (Microsoft Visual Studio 2008 SP1). 
 If you are using a newer MSVC version, you may experience some compilation errors, which can be solved easily (if you fix these errors, please provide a patch or pull request). 

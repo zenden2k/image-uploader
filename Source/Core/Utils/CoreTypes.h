@@ -6,9 +6,9 @@
 #include <stdint.h>
 //#include "Core/3rdpart/pstdint.h"
 #include <memory>
-
+#include <Core/Logging.h>
 typedef std::string Utf8String;
-#ifdef _MSC_VER
+#if _MSC_VER  && (_MSC_VER < 1800)
 namespace std_tr = std::tr1;
 #else
 namespace std_tr = std;
@@ -82,11 +82,18 @@ template <class T> struct EnumWrapper
 template <typename T>
 class release_deleter{
 public:
-	release_deleter() : released_(false){}
-	void release() {released_ = true;}
-	void reset_released() { released_ = false;}
-	void operator()(T* ptr){if(!released_) delete ptr;}
+	release_deleter() : released_(new bool(false)){}
+	void release() {*released_ = true;}
+	void reset_released() { *released_ = false;}
+	void operator()(T* ptr){
+		if(!*released_)  {
+			delete ptr;
+		}
+			
+	}
+
 private:
-	bool released_;
+	//DISALLOW_COPY_AND_ASSIGN(release_deleter<T>);
+	std_tr::shared_ptr<bool> released_;
 };
 #endif

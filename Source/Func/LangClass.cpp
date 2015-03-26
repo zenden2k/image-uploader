@@ -140,6 +140,8 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
 		if ( Name == CString("language") ) {
 			locale = pText;
 			language = locale.Left(locale.Find('_'));
+			delete pName;
+			delete pText;
 			continue;
 		};
 
@@ -235,4 +237,8 @@ CString CLang::getLanguageFileNameForLocale(const CString& locale)
 
 CLang::~CLang()
 {
+	for( int i =0; i< StringList.GetCount(); i++ ) {
+		delete[] StringList[i].Name;
+	    delete[] StringList[i].Text;
+	}
 }

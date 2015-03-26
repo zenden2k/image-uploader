@@ -28,6 +28,7 @@
 #include "Func/MyUtils.h"
 #include "resource.h"
 #include <Core/Images/Utils.h>
+#include <Core/Logging.h>
 
 typedef HRESULT (WINAPI * DwmGetWindowAttribute_Func)(HWND, DWORD, PVOID, DWORD);
 typedef HRESULT (WINAPI * DwmIsCompositionEnabled_Func)(BOOL*);
@@ -1033,6 +1034,7 @@ CScreenCaptureEngine::CScreenCaptureEngine()
 {
 //	m_capturedBitmap = NULL;
 	m_captureDelay = 0;
+	capturedBitmapReleased_ = false;
 	m_source = 0;
 }
 
@@ -1092,8 +1094,16 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
 	region->PrepareShooting(!(bool)(m_source != 0));
 	Gdiplus::Bitmap* capturedBitmap;
 	bool result =  region->GetImage(srcDC, &capturedBitmap);
+	typedef release_deleter<Gdiplus::Bitmap>& releaseDeleterRef;
+	//LOG(INFO) << &capturedBitmapDeleter_;
+	using namespace std_tr::placeholders;
+	//m_capturedBitmap.reset<Gdiplus::Bitmap>(capturedBitmap, std_tr::bind(&CScreenCaptureEngine::capturedBitmapDeleteFunction, this, _1));
+	capturedBitmapReleased_ = false;
+	m_capturedBitmap.reset(capturedBitmap,capturedBitmapDeleter_);
+	/*m_capturedBitmap.reset<Gdiplus::Bitmap,  release_deleter<Gdiplus::Bitmap>&>(capturedBitmap, std_tr::ref(capturedBitmapDeleter_));
+	m_c*apturedBitmap.reset<Gdiplus::Bitmap,  std_tr::reference_wrapper<release_deleter<Gdiplus::Bitmap>>>(capturedBitmap, std_tr::ref(capturedBitmapDeleter_));*
+	*/
 	capturedBitmapDeleter_.reset_released();
-	m_capturedBitmap = std_tr::shared_ptr<Gdiplus::Bitmap>(capturedBitmap, capturedBitmapDeleter_);
 	region->AfterShooting();
 	if (m_source)
 	{
@@ -1107,9 +1117,22 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
 Gdiplus::Bitmap* CScreenCaptureEngine::releaseCapturedBitmap()
 {
 	capturedBitmapDeleter_.release();
-	return m_capturedBitmap.get();
+	capturedBitmapReleased_ = true;
+	Gdiplus::Bitmap*  res =  m_capturedBitmap.get();
+	m_capturedBitmap.reset();
+	//capturedBitmapDeleter_.reset_released();
+	capturedBitmapReleased_ = false;
+	return res;
 }
 
+void CScreenCaptureEngine::capturedBitmapDeleteFunction(Gdiplus::Bitmap* bm)
+{
+	if ( !capturedBitmapReleased_ ) {
+		delete bm;
+	}
+}
+
+//bool CScreenCaptureEngine::capturedBitmapReleased_ = false;
 CFreeFormRegion::CFreeFormRegion()
 {
 }

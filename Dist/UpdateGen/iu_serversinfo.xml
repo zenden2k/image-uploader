@@ -8,6 +8,6 @@
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
 <Info>
-[~] Fixed authentication on radikal.ru
+[~] Fixed bild.me
 </Info>
 </UpdatePackageSource>

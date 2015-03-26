@@ -95,7 +95,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	int selectedIndex = 0;
 
 	//CUploadEngineData *uploadEngine = _EngineList->byIndex( Settings.getServerID() );
-	std::string selectedServerName = "imgur.com" ;
+	std::string selectedServerName = "directupload.net" ;
 	for( int i = 0; i < _EngineList->count(); i++) {	
 		CUploadEngineData * ue = _EngineList->byIndex( i ); 
 		if ( ue->Type !=  CUploadEngineData::TypeImageServer && ue->Type !=  CUploadEngineData::TypeFileServer ) {

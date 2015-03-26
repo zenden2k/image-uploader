@@ -142,7 +142,9 @@ class CScreenCaptureEngine
 		int m_captureDelay;
 		std_tr::shared_ptr<Gdiplus::Bitmap> m_capturedBitmap;
 		release_deleter<Gdiplus::Bitmap> capturedBitmapDeleter_;
+		/*static */bool capturedBitmapReleased_;
 		HBITMAP m_source;
+		/*static*/ void capturedBitmapDeleteFunction(Gdiplus::Bitmap* bm);
 };
 
 #endif  // IU_CORE_SCREEN_CAPTURE_H

@@ -241,7 +241,7 @@
 	</Actions>
 	<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<Server Name="bild.me" Debug="1">
+	<Server Name="bild.me" Debug="0">
 		<Actions>
 			<Action Type="upload" Url="http://www.bild.me/index.php" PostParams="F1=%filename%;C1=ON;upload=Upload!;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:0;Image:2;"/>
 		</Actions>
