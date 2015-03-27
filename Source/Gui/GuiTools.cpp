@@ -659,14 +659,16 @@ HICON LoadSmallIcon(int resourceId) {
 	}
 }
 
-HICON LoadBigIcon(int resourceId) {
-	int iconWidth =  ::GetSystemMetrics(SM_CXSMICON);
-	int iconHeight =  ::GetSystemMetrics(SM_CYSMICON);
-	if ( iconWidth > 16 ) {
+HICON LoadBigIcon(int resourceId, int maxAvailableSize) {
+	int iconWidth =  ::GetSystemMetrics(SM_CXICON);
+	int iconHeight =  ::GetSystemMetrics(SM_CYICON);
+
+ 	if ( iconWidth > 32 ) {
 		iconWidth = 48;
 	} 
 
-	if ( iconHeight > 16 ) {
+
+	if ( iconHeight > 32 ) {
 		iconHeight = 48;
 	} 
 	if ( resourceId == IDR_MAINFRAME && Settings.UseNewIcon) {

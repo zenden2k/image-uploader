@@ -18,8 +18,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)Build\$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)Build\CLI\Temp\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			>
@@ -40,14 +40,17 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP$(NUMBER_OF_PROCESSORS)"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;CURL_STATICLIB;POCO_STATIC;TIXML_USE_STL;PCRE_STATIC;IU_CLI;GOOGLE_GLOG_DLL_DECL="
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="4"
+				ForcedIncludeFiles="stdafx.h"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -60,7 +63,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zlibd.lib minizipd.lib zthread.lib gdiplus.lib strmbasd.lib libcurld_imp.lib Ws2_32.lib squirrelD.lib sqstdlibD.lib sqplusD.lib ssleay32.lib libeay32.lib pcred.lib pcre++.lib winmm.lib jsoncpp.lib Secur32.lib Netapi32.lib libglog_static.lib"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib&quot;;&quot;$(SolutionDir)\Contrib\Lib\Debug&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -184,6 +189,14 @@
 			<File
 				RelativePath="..\stdafx.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>

@@ -26,6 +26,7 @@
 #include "mediainfodlg.h"
 #include "regionselect.h"
 #include "Screenshotdlg.h"
+#include <Gui/GuiTools.h>
 
 // CWelcomeDlg
 CWelcomeDlg::CWelcomeDlg()
@@ -82,7 +83,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	if(lstrlen(MediaInfoDllPath))
 		ListBox.AddString(TR("Информация о медиа файле..."), 0, IDC_MEDIAFILEINFO, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONINFO), IMAGE_ICON	, 16,16,0));
 
-	ListBox.AddString(TR("Настройки программы"), TR("Для опытных пользователей"), IDC_SETTINGS, LOADICO(IDI_ICONSETTINGS));
+	ListBox.AddString(TR("Настройки программы"), TR("Для опытных пользователей"), IDC_SETTINGS, GuiTools::LoadBigIcon(IDI_ICONSETTINGS, 128));
 	ListBox.AddString(TR("История"), 0, ID_VIEWHISTORY,LOADICO(IDI_ICONHISTORY));
 	
 	HFONT font = GetFont();
