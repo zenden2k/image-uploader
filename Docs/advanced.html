@@ -30,17 +30,25 @@
 <p>Формат запуска программы из командной строки выглядит следующим образом:</p>
 <p><code>"Image Uploader.exe" [параметры] файл1 файл2 ... папка1 папка2 .. </code></p>
 <p>Поддерживаются следующие параметры:</p>
-<ul>				 
+<ul>				 	
+				<li><code>/func=addimages</code> — Add Images dialog</li>
+				<li><code>/func=addfiles</code> — Add Files dialog</li>	
+
+				<li><code>/func=fullscreenshot</code> — capture the entire screen.</li>
+			  	<li><code>/func=windowscreenshot</code> — capture the active window.</li>
+			  	<li><code>/func=windowhandlescreenshot</code> — capture choosen window control (HWND)</li>
+  			  	<li><code>/func=freeformscreenshot</code> — freeform screen capture</li>
+				<li><code>/func=screenshotdlg</code> — screenshot dialog</li>
+				<li><code>/func=downloadimages</code> — Image Downloader dialog</li>
+				<li><code>/func=addfolder</code> — Add folder dialog</li>
+				<li><code>/func=paste</code>paste from clipboard</li>
+				<li><code>/func=settings</code>settings dialog</li>
+				<li><code>/func=reuploadimages</code>re-upload images dialog</li>
+				<li><code>/func=shortenurl</code>URL shortening dialog</li>
+				<li><code>/func=mediainfo</code>MediaInfo dialog</li>
+				<li><code>/quickshot</code> — снимок прямоугольной области</li>
 				<li><code>/quick</code> и <code>/noquick</code> — включение и выключение режима быстрого начала загрузки (пропуск страниц мастера)</li>
 				<li><code>/mediainfo</code> — показ технической информации для первого видео файла в командной строке</li>
-			 	 <li><code>/quickshot</code> — снимок прямоугольной области</li>
-				<li><code>/func=fullscreenshot</code> — снимок всего экрана.</li>
-			  	<li><code>/func=windowscreenshot</code> — скриншот активного окна.</li>
-			  	<li><code>/func=windowhandlescreenshot</code> — снимок выбранного оконного элемента</li>
-  			  	<li><code>/func=freeformscreenshot</code> — снимок произвольной формы</li>
-				<li><code>/func=screenshotdlg</code> — окно выбора режима скриншота</li>
-				<li><code>/func=downloadimages</code> — окно скачивания изображений из Интернета</li>
-<li><code>/func=paste</code> — вставка изображения или ссылки из буфера обмена</li>
 <p>
 Начиная с версии 1.2.7:
 <p>
