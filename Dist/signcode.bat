@@ -1,1 +1,1 @@
-signtool sign /t http://timestamp.digicert.com /f d:\Backups\ImageUploader\zenden2k.pem "..\Build\release optimized\Image Uploader.exe"  "..\Build\release optimized\ExplorerIntegration.dll" "..\Build\release optimized\ExplorerIntegration64.dll"  
+signtool sign /t http://time.certum.pl /f d:\Backups\ImageUploader\zenden2k.pem "..\Build\release optimized\Image Uploader.exe"  "..\Build\release optimized\ExplorerIntegration.dll" "..\Build\release optimized\ExplorerIntegration64.dll" 

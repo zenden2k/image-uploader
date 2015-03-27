@@ -50,7 +50,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	DoDataExchange(FALSE);
 	LeftImage.LoadImage(0, 0, IDR_PNG2, false, RGB(255,255,255));
 	LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE );
-	LogoImage.LoadImage(0, 0, IDR_PNG1, false, RGB(255,255,255));
+	LogoImage.LoadImage(0, 0, Settings.UseNewIcon ? IDR_ICONMAINNEW : IDR_PNG1, false, RGB(255,255,255));
 
 	TRC(IDC_SELECTOPTION, "Выберите действие:");
 	TRC(IDC_SOVET, "Совет:");
@@ -111,10 +111,6 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	ListBox.SetFocus();
 	ShowWindow(SW_HIDE);
 
-	if(CmdLine.IsOption(_T("quickshot")))
-	{
-		OnBnClickedRegionPrint(0,0,0,bHandled);
-	}
 	return 0;  // Let the system set the focus
 }
 

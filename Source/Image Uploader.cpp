@@ -111,8 +111,8 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	if(bCreateFloatingWindow) {
 		floatWnd.CreateTrayIcon();
 	}	
-	if ( ( CmdLine.GetCount() > 1 && CmdLine.IsOption( _T("quickshot") ) ) 
-		    || CmdLine.IsOption( _T("mediainfo") ) || !ShowMainWindow || !dlgMain.m_bShowWindow ) {
+	if (/* ( CmdLine.GetCount() > 1 && CmdLine.IsOption( _T("quickshot") )*/  
+		    CmdLine.IsOption( _T("mediainfo") ) || !ShowMainWindow || !dlgMain.m_bShowWindow ) {
 		dlgMain.ShowWindow(SW_HIDE);
 	} else {
 		dlgMain.ShowWindow(nCmdShow);

@@ -34,6 +34,7 @@
 #include <Func/WinUtils.h>
 #include <Core/Upload/UrlShorteningTask.h>
 #include <Func/IuCommonFunctions.h>
+#include <Gui/GuiTools.h>
 // FloatingWindow
 CFloatingWindow::CFloatingWindow()
 {
@@ -81,15 +82,14 @@ bool MyInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP
 
 LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-	int w = ::GetSystemMetrics(SM_CXSMICON);
+	/*int w = ::GetSystemMetrics(SM_CXSMICON);
 	if ( w > 32 ) {
 		w = 48;
 	} else if ( w > 16 ) {
 		w = 32;
 	}
-	int h = w;
-	m_hIconSmall = (HICON) ::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
-	                                   IMAGE_ICON, w, h, LR_DEFAULTCOLOR);
+	int h = w;*/
+	m_hIconSmall = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
 	SetIcon(m_hIconSmall, FALSE);
 
 	RegisterHotkeys();

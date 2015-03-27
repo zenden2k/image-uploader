@@ -53,10 +53,9 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	else
 	{
 		CenterWindow(GetParent());
-		HICON hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
-			IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
-		SetIcon(hIcon, TRUE);
+		HICON hIcon = GuiTools::LoadBigIcon(IDR_MAINFRAME);
 		HICON hIconSmall = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
+		SetIcon(hIcon, TRUE);
 		SetIcon(hIconSmall, FALSE);
 	}
 

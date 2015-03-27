@@ -17,6 +17,7 @@ mkdir %temp_dir%\Data
 mkdir %temp_dir%\Data\Scripts
 mkdir %temp_dir%\Data\Update
 
+signtool sign /t http://time.certum.pl /f d:\Backups\ImageUploader\zenden2k.pem  "..\Build\release\imgupload.exe"  
 Copy "..\Build\release\imgupload.exe" %temp_dir%\imgupload.exe
 Copy "..\Build\release\curl-ca-bundle.crt" %temp_dir%\curl-ca-bundle.crt
 Copy "..\Data\servers.xml" %temp_dir%\Data\

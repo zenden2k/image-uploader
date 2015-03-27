@@ -30,6 +30,7 @@
 #include "VideoGrabberParams.h"
 #include "IntegrationSettings.h"
 #include "DefaultServersSettings.h"
+#include <Gui/GuiTools.h>
 
 // CSettingsDlg
 CSettingsDlg::CSettingsDlg(int Page)
@@ -68,22 +69,10 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	m_SettingsPagesListBox.AddString(TR("Горячие клавиши"));
 	// set icons 
 
-	int iconWidth =  ::GetSystemMetrics(SM_CXICON);
-	if ( iconWidth > 32 ) {
-		iconWidth = 48;
-
-	}
-	hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
-		IMAGE_ICON, iconWidth, iconWidth, LR_DEFAULTCOLOR);
+	hIcon = GuiTools::LoadBigIcon(IDR_MAINFRAME);
+	hIconSmall = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
+	
 	SetIcon(hIcon, TRUE);
-
-	int iconSmWidth =  ::GetSystemMetrics(SM_CXSMICON);
-	if ( iconSmWidth > 16 ) {
-		iconSmWidth = 32;
-	}
-
-	hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
-		IMAGE_ICON, iconSmWidth, iconSmWidth, LR_DEFAULTCOLOR);
 	SetIcon(hIconSmall, FALSE);
 
 	TRC(IDOK, "OK");

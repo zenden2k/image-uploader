@@ -66,7 +66,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	}
 	LogoImage.SubclassWindow(GetDlgItem( IDC_STATICLOGO ) );
 	LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE );
-	LogoImage.LoadImage(0, 0, IDR_PNG1, false, GetSysColor(COLOR_BTNFACE));
+	LogoImage.LoadImage(0, 0, Settings.UseNewIcon ? IDR_ICONMAINNEW : IDR_PNG1, false, GetSysColor(COLOR_BTNFACE));
 
 	HFONT font = GetFont();
 	LOGFONT alf;

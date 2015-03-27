@@ -1260,19 +1260,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-link.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\res\icon-link.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-link.png"
+				RelativePath=".\res\icon-link.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\res\icon-link.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon-link.png"
 				>
 			</File>
 			<File
@@ -1296,11 +1296,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-user.ico"
+				RelativePath=".\res\icon-user.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-user.ico"
+				RelativePath=".\Source\res\icon-user.ico"
 				>
 			</File>
 			<File
@@ -1324,11 +1324,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\ImageEditor\icon_add.png"
+				RelativePath=".\res\ImageEditor\icon_add.png"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_add.png"
+				RelativePath=".\Source\res\ImageEditor\icon_add.png"
 				>
 			</File>
 			<File
@@ -1344,11 +1344,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_bold.ico"
+				RelativePath=".\Source\res\ImageEditor\icon_bold.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\ImageEditor\icon_bold.ico"
+				RelativePath=".\res\ImageEditor\icon_bold.ico"
 				>
 			</File>
 			<File
@@ -1356,11 +1356,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_deleteitem.ico"
+				RelativePath=".\res\icon_deleteitem.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_deleteitem.ico"
+				RelativePath=".\Source\res\icon_deleteitem.ico"
 				>
 			</File>
 			<File
@@ -1384,11 +1384,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_folder2.ico"
+				RelativePath=".\res\icon_folder2.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_folder2.ico"
+				RelativePath=".\Source\res\icon_folder2.ico"
 				>
 			</File>
 			<File
@@ -1404,11 +1404,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_italic.ico"
+				RelativePath=".\Source\res\ImageEditor\icon_italic.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\ImageEditor\icon_italic.ico"
+				RelativePath=".\res\ImageEditor\icon_italic.ico"
 				>
 			</File>
 			<File
@@ -1420,15 +1420,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\icon_main_new.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon_main_new.png"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\res\icon_save.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\ImageEditor\icon_save.png"
+				RelativePath=".\res\ImageEditor\icon_save.png"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_save.png"
+				RelativePath=".\Source\res\ImageEditor\icon_save.png"
 				>
 			</File>
 			<File
@@ -1472,11 +1480,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\ImageEditor\icon_tool_marker.png"
+				RelativePath=".\res\ImageEditor\icon_tool_marker.png"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_tool_marker.png"
+				RelativePath=".\Source\res\ImageEditor\icon_tool_marker.png"
 				>
 			</File>
 			<File
@@ -1553,6 +1561,14 @@
 			</File>
 			<File
 				RelativePath=".\Source\res\shadows\leftShadow.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\new_icon.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\new_icon.ico"
 				>
 			</File>
 			<File

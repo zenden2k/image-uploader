@@ -59,6 +59,7 @@ public:
 	void showAddToWizardButton(bool show);
 	void setSuggestedFileName(CString string);
 	std_tr::shared_ptr<Gdiplus::Bitmap> getResultingBitmap();
+	void setServerName(const CString & serverName);
 
 	DialogResult DoModal(HWND parent, WindowDisplayMode mode = wdmAuto);
 
@@ -136,6 +137,7 @@ public:
 		bool showUploadButton_;
 		bool showAddToWizardButton_;
 		CString suggestedFileName_;
+		CString serverName_;
 		int prevPenSize_;
 		CIcon icon_;
 		CIcon iconSmall_;

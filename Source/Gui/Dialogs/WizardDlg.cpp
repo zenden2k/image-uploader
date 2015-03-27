@@ -94,19 +94,10 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	ATLASSERT(DlgCreationResult != NULL);
 	// center the dialog on the screen
 	CenterWindow();
-	int iconWidth =  ::GetSystemMetrics(SM_CXICON);
-	if ( iconWidth > 32 ) {
-		iconWidth = 48;
-	}
-	hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
-		IMAGE_ICON, iconWidth, iconWidth, LR_DEFAULTCOLOR);
+	hIcon = GuiTools::LoadBigIcon(IDR_MAINFRAME);
 	SetIcon(hIcon, TRUE);
-	int iconSmWidth =  ::GetSystemMetrics(SM_CXSMICON);
-	if ( iconSmWidth > 16 ) {
-		iconSmWidth = 32;
-	}
-	hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
-		IMAGE_ICON, iconSmWidth, iconSmWidth, LR_DEFAULTCOLOR);
+
+	hIconSmall = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
 	SetIcon(hIconSmall, FALSE);
 
 	// register object for message filtering and idle updates
@@ -308,7 +299,14 @@ bool CWizardDlg::ParseCmdLine()
 	for(size_t i=0; i<CmdLine.GetCount(); i++)
 	{
 		CString CurrentParam = CmdLine[i];
-		if(CurrentParam .Left(6)==_T("/func="))
+		if ( CurrentParam == _T("/quickshot")  ) {
+			m_bShowWindow=false;
+			m_bHandleCmdLineFunc = true;
+			if(!executeFunc(_T("regionscreenshot")))
+				PostQuitMessage(0);
+			return true;
+		}
+		 else if(CurrentParam .Left(6)==_T("/func="))
 		{
 			m_bShowWindow=false;
 			CString cmd = CurrentParam.Right(CurrentParam.GetLength()-6);
@@ -1835,6 +1833,9 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 		ImageEditor::ImageEditorWindow imageEditor(&*result, mode == cmFreeform ||   mode == cmActiveWindow, &configProvider);
 		imageEditor.setInitialDrawingTool(mode == cmRectangles ? ImageEditor::Canvas::dtCrop : ImageEditor::Canvas::dtBrush);
 		imageEditor.showUploadButton(m_bScreenshotFromTray);
+		if ( m_bScreenshotFromTray ) {
+			imageEditor.setServerName(Settings.quickScreenshotServer.serverName());
+		}
 		imageEditor.setSuggestedFileName(suggestingFileName);
 		dr = imageEditor.DoModal(m_hWnd, (mode == cmRectangles || mode == cmFullScreen ) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
 		if ( dr == ImageEditorWindow::drAddToWizard || dr ==ImageEditorWindow::drUpload ) {

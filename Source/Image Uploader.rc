@@ -1429,6 +1429,7 @@ IDB_ICONTOOLMARKER      PNG                     "res\\ImageEditor\\icon_tool_mar
 IDB_ICONSAVEPNG         PNG                     "res\\ImageEditor\\icon_save.png"
 IDB_ICONADDPNG          PNG                     "res\\ImageEditor\\icon_add.png"
 IDB_ICONUPLOADPNG       PNG                     "res\\ImageEditor\\icon_upload.png"
+IDR_ICONMAINNEW         PNG                     "res\\icon_main_new.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //

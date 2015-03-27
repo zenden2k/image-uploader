@@ -323,7 +323,7 @@ public:
 		int CodeType;
 		bool ParseSubDirs;
 		bool UseProxyServer;
-		
+		bool UseNewIcon;
 
 		static COLORREF DefaultLinkColor;
 		bool SendToContextMenu;

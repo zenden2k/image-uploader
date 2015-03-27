@@ -210,6 +210,11 @@ std_tr::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::getResultingBitmap()
 	return resultingBitmap_;
 }
 
+void ImageEditorWindow::setServerName(const CString & serverName)
+{
+	serverName_ = serverName;
+}
+
 ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDisplayMode mode)
 {
 
@@ -265,19 +270,11 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 		CenterWindow();
 	}
 
-	int iconWidth =  ::GetSystemMetrics(SM_CXICON);
-	if ( iconWidth > 32 ) {
-		iconWidth = 48;
-	}
-	icon_ = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
-		IMAGE_ICON, iconWidth, iconWidth, LR_DEFAULTCOLOR);
+
+	icon_ = GuiTools::LoadBigIcon(IDR_MAINFRAME);
+	iconSmall_ = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
+
 	SetIcon(icon_, TRUE);
-	int iconSmWidth =  ::GetSystemMetrics(SM_CXSMICON);
-	if ( iconSmWidth > 16 ) {
-		iconSmWidth = 32;
-	}
-	iconSmall_ = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
-		IMAGE_ICON, iconSmWidth, iconSmWidth, LR_DEFAULTCOLOR);
 	SetIcon(iconSmall_, FALSE);
 
 	//RECT rc;
@@ -599,7 +596,13 @@ void ImageEditorWindow::createToolbars()
 		horizontalToolbar_.addButton(Toolbar::Item(TR("Добавить в список"),loadToolbarIcon(IDB_ICONADDPNG),ID_ADDTOWIZARD));
 	}
 	if ( showUploadButton_ ) {
-		horizontalToolbar_.addButton(Toolbar::Item(TR("Загрузить на сервер"), loadToolbarIcon(IDB_ICONUPLOADPNG),ID_UPLOAD, CString(), Toolbar::itButton));
+		CString uploadButtonText;
+		if ( serverName_.IsEmpty() ) {
+			uploadButtonText = TR("Загрузить на сервер");
+		} else {
+			uploadButtonText.Format(TR("Загрузить на %s"), serverName_);
+		}
+		horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG),ID_UPLOAD, CString(), Toolbar::itButton));
 	}
 	//horizontalToolbar_.addButton(Toolbar::Item(TR("Поделиться"),0,ID_SHARE, CString(),Toolbar::itComboButton));
 	horizontalToolbar_.addButton(Toolbar::Item(TR("Сохранить"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, CString(),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));

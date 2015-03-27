@@ -23,7 +23,8 @@
 #include <Func/WinUtils.h>
 #include <Shobjidl.h>
 #include <math.h>
-
+#include "resource.h"
+#include <Func/Settings.h>
 namespace GuiTools
 {
 	int AddComboBoxItem(HWND hDlg, int itemId, LPCTSTR item)
@@ -649,7 +650,31 @@ HICON LoadSmallIcon(int resourceId) {
 		iconHeight = 48;
 	} 
 
-	return  (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), 
-		IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR);
+	if ( resourceId == IDR_MAINFRAME && Settings.UseNewIcon) {
+		return  (HICON)::LoadImage(_Module.GetResourceInstance(), WinUtils::GetAppFolder()+_T("new-icon.ico"), 
+			IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR|LR_LOADFROMFILE);
+	} else {
+		return  (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), 
+			IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR);
+	}
+}
+
+HICON LoadBigIcon(int resourceId) {
+	int iconWidth =  ::GetSystemMetrics(SM_CXSMICON);
+	int iconHeight =  ::GetSystemMetrics(SM_CYSMICON);
+	if ( iconWidth > 16 ) {
+		iconWidth = 48;
+	} 
+
+	if ( iconHeight > 16 ) {
+		iconHeight = 48;
+	} 
+	if ( resourceId == IDR_MAINFRAME && Settings.UseNewIcon) {
+		return  (HICON)::LoadImage(_Module.GetResourceInstance(), WinUtils::GetAppFolder()+_T("new-icon.ico"), 
+			IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR|LR_LOADFROMFILE);
+	} else {
+		return  (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), 
+			IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR);
+	}
 }
 };

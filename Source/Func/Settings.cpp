@@ -464,6 +464,7 @@ CSettings::CSettings()
 	SendToContextMenu = 0;
 	QuickUpload = 1;
 	ParseSubDirs = 1;
+	UseNewIcon = false;
 	RememberImageServer = true;
     RememberFileServer = true;
 	
@@ -567,6 +568,7 @@ CSettings::CSettings()
 	general.n_bind(ImagesFolder);
 	general.n_bind(VideoFolder);
 	general.n_bind(WatchClipboard);
+	general.n_bind(UseNewIcon);
 	general.n_bind(RememberFileServer);
 	general.n_bind(RememberImageServer);
 	#ifndef IU_SERVERLISTTOOL
@@ -710,6 +712,15 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 	if ( !settingsNode["Image"]["Format"].IsNull() ) {
 		// for compatibility with old version configuration file
 		LoadConvertProfile( "Old profile", settingsNode );
+	}
+
+	if ( CmdLine.IsOption(_T("afterinstall") )) {
+		if ( CmdLine.IsOption(_T("usenewicon") )) {
+			UseNewIcon = true;
+		} else {
+			UseNewIcon = false;
+		}
+		SaveSettings();
 	}
 	
 	// Migrating from 1.3.0 to 1.3.1 (added ImageEditor has been addded)

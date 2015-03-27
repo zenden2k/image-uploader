@@ -169,7 +169,7 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloade
 				add = false;
 				CString errorStr;
 				errorStr.Format(TR("Файл '%s' не является файлом изображения (Mime-Type: %s)."),(LPCTSTR)(Utf8ToWstring(it.url).c_str()),(LPCTSTR)mimeType);
-				WriteLog(logWarning,_T("Image Downloader"),errorStr);
+				WriteLog(logError,_T("Image Downloader"),errorStr);
 			}
 		}
 		if(add)
