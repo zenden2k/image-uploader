@@ -21,6 +21,9 @@ MovableElement::MovableElement(Canvas* canvas){
 	grips_.resize(8);
 	canvas_ = canvas;
 	isMoving_ = false;
+	isPenSizeUsed_ = true;
+	isBackgroundColorUsed_ = true;
+	isColorUsed_ = true;
 }
 
 
@@ -226,6 +229,21 @@ void MovableElement::beginMove()
 void MovableElement::endMove()
 {
 	isMoving_ = false;
+}
+
+bool MovableElement::isPenSizeUsed() const
+{
+	return isPenSizeUsed_;
+}
+
+bool MovableElement::isColorUsed() const
+{
+	return isColorUsed_;
+}
+
+bool MovableElement::isBackgroundColorUsed() const
+{
+	return isBackgroundColorUsed_;
 }
 
 POINT* MovableElement::getMaxPoint(Axis axis)

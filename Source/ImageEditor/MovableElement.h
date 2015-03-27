@@ -49,7 +49,9 @@ class MovableElement: public DrawingElement {
 		virtual void createGrips();
 		virtual void beginMove();
 		virtual void endMove();
-
+		bool isPenSizeUsed() const;
+		bool isColorUsed() const;
+		bool isBackgroundColorUsed() const;
 
 	protected:
 		bool isSelected_;
@@ -59,6 +61,9 @@ class MovableElement: public DrawingElement {
 		POINT* getMaxPoint(Axis axis);
 		POINT* getMinPoint(Axis axis);
 		bool isMoving_;
+		bool isPenSizeUsed_;
+		bool isColorUsed_;
+		bool isBackgroundColorUsed_;
 };
 
 }

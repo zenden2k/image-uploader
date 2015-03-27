@@ -55,8 +55,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
 		IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
 	SetIcon(hIcon, TRUE);
-	hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
-		IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
+	hIconSmall = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
 	SetIcon(hIconSmall, FALSE);
 	serverComboBox_.Attach( GetDlgItem( IDC_SERVERCOMBOBOX ) );
 
@@ -89,7 +88,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	
 	comboBoxImageList_.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
 
-	serverComboBox_.AddItem( _T("<") + CString(TR("Случайный сервер")) + _T(">"), -1, -1, 0, static_cast<LPARAM>( -1 ) );
+	//serverComboBox_.AddItem( _T("<") + CString(TR("Случайный сервер")) + _T(">"), -1, -1, 0, static_cast<LPARAM>( -1 ) );
 
 	HICON hImageIcon = NULL, hFileIcon = NULL;
 	int selectedIndex = 0;
@@ -121,6 +120,17 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	serverChanged();
 
 	return 1;  
+}
+
+LRESULT CQuickSetupDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	int count = serverComboBox_.GetCount();
+	for ( int i = 0; i < count ; i++ ) {
+		char* serverName = reinterpret_cast<char*>(serverComboBox_.GetItemData(i));
+		delete[] serverName;
+	}
+	serverComboBox_.ResetContent();
+	return 0;
 }
 
 LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {

@@ -44,8 +44,7 @@ LRESULT CLogWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	DlgResize_Init();
 	MsgList.SubclassWindow(GetDlgItem(IDC_MSGLIST));
 	// TODO
-	TRC(IDCANCEL, "Скрыть");
-	SetWindowText(TR("Лог ошибок"));
+
 	return 1;  // Let the system set the focus
 }
 
@@ -126,6 +125,12 @@ LRESULT CLogWindow::OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	text.Format(_T("[%s] %s\r\n%s\r\n\r\n%s"), (LPCTSTR)item->Time, (LPCTSTR)item->Info, (LPCTSTR)item->strTitle, (LPCTSTR)item->strText);
 	WinUtils::CopyTextToClipboard(text);
 	return 0;
+}
+
+void CLogWindow::TranslateUI()
+{
+	TRC(IDCANCEL, "Скрыть");
+	SetWindowText(TR("Лог ошибок"));
 }
 
 LRESULT CLogWindow::OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

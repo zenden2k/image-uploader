@@ -83,6 +83,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
 		LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL & /*bHandled*/);
 		LRESULT OnClearList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
+		void TranslateUI();
 };
 
 extern CLogWindow LogWindow;
@@ -92,6 +93,7 @@ void WriteLog(LogMsgType MsgType, LPCWSTR Sender, LPCWSTR Msg, LPCWSTR Info = NU
 namespace DefaultErrorHandling {
 void ErrorMessage(ErrorInfo);
 void DebugMessage(const std::string&, bool);
+
 };
 
 #endif // LOGWINDOW_H

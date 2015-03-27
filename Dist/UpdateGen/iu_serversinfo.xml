@@ -3,6 +3,7 @@
 	<Entries>
 		<Entry Name="Data/servers.xml" SaveToFolder="%datapath%/" Action="add"/>
 		<Entry Name="Data/Scripts/*.nut" SaveToFolder="%datapath%/Scripts/" Action="add"/>
+		<Entry Name="Data/Scripts/Utils/*.nut" SaveToFolder="%datapath%/Scripts/Utils/" Action="add"/>
 		<Entry Name="Data/Scripts/Lang/*.json" SaveToFolder="%datapath%/Scripts/Lang/" Action="add"/>
 		<!-- favicons -->
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>

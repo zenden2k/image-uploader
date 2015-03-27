@@ -177,6 +177,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	{
 		Lang.LoadLanguage(Settings.Language);
 	}
+	LogWindow.TranslateUI();
 
 	CString ErrorStr;
 	if(!LoadUploadEngines(IuCommonFunctions::GetDataFolder()+_T("servers.xml"), ErrorStr))  // Завершаем работу программы, если файл servers.lst отсутствует
@@ -1345,8 +1346,8 @@ bool CWizardDlg::executeFunc(CString funcBody)
 	}
 	if(funcName == _T("addimages"))
 		return funcAddImages();
-	else if(funcName == _T("addfiles"))
-		return funcAddImages(true);
+	/*else if(funcName == _T("addfiles"))
+		return funcAddImages(true);*/
 	if(funcName == _T("addfiles"))
 		return funcAddFiles();
 	else if(funcName == _T("importvideo"))

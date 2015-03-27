@@ -17,6 +17,7 @@ Line::Line(Canvas* canvas, int startX, int startY, int endX, int endY) :MovableE
 	endPoint_.x   = endX;
 	endPoint_.y   = endY;
 	drawDashedRectangle_ = false;
+	isBackgroundColorUsed_ = false;
 	grips_.resize(2);
 
 }
@@ -343,6 +344,9 @@ Crop::Crop(Canvas* canvas, int startX, int startY, int endX, int endY):MovableEl
 	startPoint_.y = startY;
 	endPoint_.x   = endX;
 	endPoint_.y   = endY;
+	isColorUsed_ = false;
+	isPenSizeUsed_ = false;
+	isBackgroundColorUsed_ = false;
 }
 
 void Crop::render(Painter* gr) {
@@ -374,6 +378,9 @@ CropOverlay::CropOverlay(Canvas* canvas, int startX, int startY, int endX,int en
 	startPoint_.y = startY;
 	endPoint_.x = endX;
 	endPoint_.y = endY;
+	isColorUsed_ = false;
+	isPenSizeUsed_ = false;
+	isBackgroundColorUsed_ = false;
 }
 
 void CropOverlay::render(Painter* gr)
@@ -411,6 +418,7 @@ Rectangle::Rectangle(Canvas* canvas, int startX, int startY, int endX, int endY,
 	endPoint_.y   = endY;
 	drawDashedRectangle_   = false;
 	filled_ = filled;
+	isBackgroundColorUsed_ = filled;
 }
 
 void Rectangle::render(Painter* gr) {
@@ -485,7 +493,7 @@ ImageEditor::ElementType Rectangle::getType() const
 
 Arrow::Arrow(Canvas* canvas,int startX, int startY, int endX,int endY) : Line(canvas, startX, startY, endX, endY)
 {
-
+	isBackgroundColorUsed_ = false;
 }
 
 void Arrow::render(Painter* gr)
@@ -529,7 +537,9 @@ ImageEditor::ElementType Arrow::getType() const
 
 Selection::Selection(Canvas* canvas, int startX, int startY, int endX,int endY) : MovableElement(canvas)
 {
-
+	isColorUsed_ = false;
+	isPenSizeUsed_ = false;
+	isBackgroundColorUsed_ = false;
 }
 
 void Selection::render(Painter* gr)
@@ -560,6 +570,9 @@ ImageEditor::ElementType FilledRectangle::getType() const
 BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY) : MovableElement(canvas)
 {
 	blurRadius_ = blurRadius;
+	isPenSizeUsed_ = false;
+	isBackgroundColorUsed_ = false;
+	isColorUsed_ = false;
 } 
 
 BlurringRectangle::~BlurringRectangle()
@@ -616,7 +629,7 @@ ImageEditor::ElementType BlurringRectangle::getType() const
 RoundedRectangle::RoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY,bool filled /*= false */) 
 				: Rectangle(canvas, startX, startY, endX,endY, filled)
 {
-
+	isBackgroundColorUsed_ = filled;
 }
 
 void RoundedRectangle::render(Painter* gr)
@@ -659,6 +672,7 @@ ImageEditor::ElementType FilledRoundedRectangle::getType() const
 Ellipse::Ellipse(Canvas* canvas, bool filled /*= false */) : MovableElement(canvas)
 {
 	filled_ = filled;
+	isBackgroundColorUsed_ = filled;
 }
 
 void Ellipse::render(Painter* gr)

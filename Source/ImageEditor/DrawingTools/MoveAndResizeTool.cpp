@@ -27,10 +27,12 @@ MoveAndResizeTool::MoveAndResizeTool( Canvas* canvas, ElementType type ) : Abstr
 	prevPaintBoundingRect_.top = -1;
 	prevPaintBoundingRect_.bottom = -1;
 	allowMovingElements_ = true;
+	elementJustCreated_ = false;
 
 }
 
 void MoveAndResizeTool::beginDraw( int x, int y ) {
+	elementJustCreated_ = false;
 	if ( allowMovingElements_ ) {
 		draggedBoundary_ = checkElementsBoundaries(x,y, &currentElement_);
 		if ( draggedBoundary_.bt!= btNone ) {
@@ -69,6 +71,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 		POINT pt = { x, y };
 
 		createElement();
+		elementJustCreated_ = true;
 		
 		if ( currentElement_ ) {
 			startPoint_.x = x;
@@ -227,7 +230,7 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
 
 		POINT newStartPoint_ = currentElement_->getStartPoint();
 		POINT newEndPoint_ = currentElement_->getEndPoint();
-		if ( !memcmp(&newStartPoint_,&originalStartPoint_, sizeof(newStartPoint_)) || memcmp(&newEndPoint_,&originalEndPoint_, sizeof(newEndPoint_)) ) {
+		if ( memcmp(&newStartPoint_,&originalStartPoint_, sizeof(newStartPoint_)) || memcmp(&newEndPoint_,&originalEndPoint_, sizeof(newEndPoint_)) ) {
 			Canvas::UndoHistoryItem uhi;
 			uhi.type = Canvas::uitElementPositionChanged;
 			Canvas::UndoHistoryItemElement uhie;

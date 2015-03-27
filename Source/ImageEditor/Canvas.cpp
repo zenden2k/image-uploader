@@ -230,7 +230,7 @@ void Canvas::setPenSize(int size) {
 		currentDrawingTool_->setPenSize(size);
 	}
 	for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
-		if ( elementsOnCanvas_[i]->isSelected()) {
+		if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->isPenSizeUsed() ) {
 			RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
 			elementsOnCanvas_[i]->setPenSize(size);
 			RECT newPaintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
@@ -291,7 +291,7 @@ void Canvas::setForegroundColor(Gdiplus::Color color)
 	UndoHistoryItem uhi;
 	uhi.type = uitElementForegroundColorChanged;
 	for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
-		if ( elementsOnCanvas_[i]->isSelected()) {
+		if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->isColorUsed() ) {
 			UndoHistoryItemElement uhie;
 			uhie.color = elementsOnCanvas_[i]->getColor();
 			uhie.pos = i;
@@ -319,7 +319,7 @@ void Canvas::setBackgroundColor(Gdiplus::Color color)
 	UndoHistoryItem uhi;
 	uhi.type = uitElementBackgroundColorChanged;
 	for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
-		if ( elementsOnCanvas_[i]->isSelected()) {
+		if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->isBackgroundColorUsed()) {
 			UndoHistoryItemElement uhie;
 			uhie.color = elementsOnCanvas_[i]->getBackgroundColor();
 			uhie.pos = i;
@@ -595,6 +595,9 @@ void Canvas::updateView( RECT boundingRect ) {
 	CRgn region;
 	canvasChanged_ = true;
 	Rect newRect(boundingRect.left, boundingRect.top, boundingRect.right - boundingRect.left, boundingRect.bottom - boundingRect.top );
+	if ( newRect.Width <=0 || newRect.Height <=0 ) {
+		return;
+	}
 	Rect::Union(updatedRect_,newRect,updatedRect_);
 	region.CreateRectRgnIndirect( &boundingRect );
 	if ( callback_ ) {
