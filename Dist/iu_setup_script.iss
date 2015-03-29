@@ -54,7 +54,7 @@ Name: "tr"; MessagesFile: "Languages\Turkish.isl"
 InstallFFmpeg=Install FFmpeg library (better video formats support)
 NewIcon=Use new icon
 Additional=Additional
-ru.InstallFFmpeg=Установить библиотеку FFmpeg дл¤ лучшей поддержки форматов видео
+ru.InstallFFmpeg=Установить библиотеку FFmpeg для лучшей поддержки форматов видео
 ru.NewIcon=Использовать новый значок
 ru.Additional=Дополнительно
 [Registry]

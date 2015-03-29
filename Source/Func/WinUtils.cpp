@@ -898,6 +898,7 @@ BOOL MakeDirectoryWritable(LPCTSTR lpPath) {
 	LocalFree(pSD);
 	LocalFree(pOldDACL);
 	CloseHandle(hDir);
+	return TRUE;
 }
 
 };

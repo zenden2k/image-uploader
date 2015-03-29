@@ -555,14 +555,19 @@ LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	 } else if ( (it = drawingToolsHotkeys_.find((DrawingToolHotkey)wParam)) != drawingToolsHotkeys_.end() 
 		 && !(GetKeyState(VK_CONTROL) & 0x8000) 
 		 && !(GetKeyState(VK_SHIFT) & 0x8000)
-		&& !(GetKeyState(VK_MENU) & 0x8000) ) // ALT 
-	 
-	 {
+		&& !(GetKeyState(VK_MENU) & 0x8000) ) {
 		 canvas_->setDrawingToolType(it->second);
 		 updateToolbarDrawingTool(it->second);
-	 } else {
-		m_view.SendMessage(uMsg, wParam, lParam);
-	 }
+	 } else if ( wParam == 'Z' && ( !!( ::GetKeyState(VK_LCONTROL) & 0x8000 ) ||  ::GetKeyState(VK_RCONTROL) & 0x8000 ) ) {
+		 canvas_->undo();
+	 } else if ( wParam == 'D' && ( !!( ::GetKeyState(VK_LCONTROL) & 0x8000 ) ||  ::GetKeyState(VK_RCONTROL) & 0x8000 ) ) {
+		 canvas_->unselectAllElements();
+		 canvas_->updateView();
+	 } else if ( wParam == 'S' && ( !!( ::GetKeyState(VK_LCONTROL) & 0x8000 ) ||  ::GetKeyState(VK_RCONTROL) & 0x8000 ) ) {
+		 OnClickedSave(BN_CLICKED, ID_SAVE, m_hWnd, bHandled);
+	 }else if ( wParam == VK_DELETE ) {
+		 canvas_->deleteSelectedElements();
+	 } 
 	return 0;
 }
 
@@ -671,9 +676,9 @@ void ImageEditorWindow::createToolbars()
 		horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG),ID_UPLOAD, CString(), Toolbar::itButton));
 	}
 	//horizontalToolbar_.addButton(Toolbar::Item(TR("Поделиться"),0,ID_SHARE, CString(),Toolbar::itComboButton));
-	horizontalToolbar_.addButton(Toolbar::Item(TR("Сохранить"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, CString(),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
+	horizontalToolbar_.addButton(Toolbar::Item(TR("Сохранить"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, CString(_T("(Ctrl+S)")),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
 	horizontalToolbar_.addButton(Toolbar::Item(TR("Копировать в буфер"),loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, CString(), Toolbar::itButton ));
-	horizontalToolbar_.addButton(Toolbar::Item(TR("Закрыть"),0,ID_CLOSE));
+	horizontalToolbar_.addButton(Toolbar::Item(TR("Закрыть"),0,ID_CLOSE, CString(_T("(Esc)"))));
 	horizontalToolbar_.AutoSize();
 	if ( displayMode_ != wdmFullscreen ) {
 		horizontalToolbar_.ShowWindow(SW_SHOW);
@@ -872,7 +877,7 @@ void ImageEditorWindow::OnSelectionChanged()
 
 void ImageEditorWindow::updateRoundingRadiusSlider()
 {
-	bool showRoundingRadiusSlider = currentDrawingTool_ == Canvas::dtRoundedRectangle || currentDrawingTool_ == Canvas::dtRoundedRectangle || canvas_->isRoundingRectangleSelected();
+	bool showRoundingRadiusSlider = currentDrawingTool_ == Canvas::dtRoundedRectangle || currentDrawingTool_ == Canvas::dtFilledRoundedRectangle || canvas_->isRoundingRectangleSelected();
 	horizontalToolbar_.roundRadiusLabel_.ShowWindow( showRoundingRadiusSlider ? SW_SHOW: SW_HIDE );
 	horizontalToolbar_.roundRadiusSlider_.ShowWindow( showRoundingRadiusSlider ? SW_SHOW: SW_HIDE );
 }

@@ -231,7 +231,7 @@ Gdiplus::Rect Canvas::currentRenderingRect()
 bool Canvas::isRoundingRectangleSelected()
 {
 	for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
-		if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i] ->getType() == etRoundedRectangle || elementsOnCanvas_[i]->getType() == etFilledRoundedRectangle) {
+		if ( elementsOnCanvas_[i]->isSelected() && (elementsOnCanvas_[i] ->getType() == etRoundedRectangle || elementsOnCanvas_[i]->getType() == etFilledRoundedRectangle ) ) {
 			return true;
 		}
 	}
