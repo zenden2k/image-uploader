@@ -444,3 +444,68 @@ Gdiplus::Color StringToColor(const std::string& str) {
 	}
 	return Gdiplus::Color();
 }
+
+struct BGRA_COLOR
+{
+	BYTE b;
+	BYTE g;
+	BYTE r;
+	BYTE a;
+};
+
+// hack for stupid GDIplus
+void Gdip_RemoveAlpha(Gdiplus::Bitmap& source, Gdiplus::Color color )
+{
+	using namespace Gdiplus;
+	Rect r( 0, 0, source.GetWidth(),source.GetHeight() );
+	BitmapData  bdSrc;
+	source.LockBits( &r,  ImageLockModeRead , PixelFormat32bppARGB,&bdSrc);
+
+	BYTE* bpSrc = (BYTE*)bdSrc.Scan0;
+
+	//bpSrc += (int)sourceChannel;
+
+
+	for ( int i = r.Height * r.Width; i > 0; i-- )
+	{
+		BGRA_COLOR * c = (BGRA_COLOR *)bpSrc;
+
+		if(c->a!=255)
+		{
+			//c = 255;
+
+			DWORD * d= (DWORD*)bpSrc;
+			*d= color.ToCOLORREF();
+			c ->a= 255;
+		}
+		bpSrc += 4;
+
+	}
+	source.UnlockBits( &bdSrc );
+}
+
+bool CopyBitmapToClipboard(HWND hwnd, HDC dc, Gdiplus::Bitmap* bm, bool preserveAlpha)
+{
+	if ( OpenClipboard(hwnd) ){
+		EmptyClipboard();
+		if ( !preserveAlpha )
+			Gdip_RemoveAlpha(*bm,Color(255,255,255,255));
+		HBITMAP out=0;
+		bm->GetHBITMAP(Color(255,255,255,255),&out);
+		CDC origDC,  destDC;
+		origDC.CreateCompatibleDC(dc);
+		CBitmap destBmp;
+		destBmp.CreateCompatibleBitmap(dc, bm->GetWidth(), bm->GetHeight());
+		HBITMAP oldOrigBmp = origDC.SelectBitmap(out);
+		destDC.CreateCompatibleDC(dc);
+		HBITMAP oldDestBmp = destDC.SelectBitmap(destBmp);
+		destDC.BitBlt(0,0,bm->GetWidth(),bm->GetHeight(),origDC,0,0,SRCCOPY);
+		destDC.SelectBitmap(oldDestBmp);
+		origDC.SelectBitmap(oldOrigBmp);
+		SetClipboardData(CF_BITMAP, destBmp);
+		CloseClipboard(); 
+		DeleteObject(out);
+		return true;
+	}
+	return false;
+}

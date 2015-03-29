@@ -160,16 +160,23 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 	if ( orientation_ == orHorizontal ) {
 		penSizeSlider_.Create(m_hWnd, sliderRect, 0, WS_CHILD|WS_VISIBLE|TBS_NOTICKS);
 		createHintForSliders(penSizeSlider_.m_hWnd, TR("Толщина линии"));
-		RECT pixelLabelRect = {0,0, 50 * dpiScaleX_,subpanelHeight_ - 5 * dpiScaleY_ };
+		RECT pixelLabelRect = {0,0, 45 * dpiScaleX_,subpanelHeight_ - 5 * dpiScaleY_ };
 		pixelLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD|WS_VISIBLE);
 		pixelLabel_.SetFont(GuiTools::GetSystemDialogFont());
+
+		RECT radiusSliderRect = {0,0, 100 * dpiScaleX_,subpanelHeight_ - 2 * dpiScaleY_};
+		roundRadiusSlider_.Create(m_hWnd, radiusSliderRect, 0, WS_CHILD|TBS_NOTICKS);
+		createHintForSliders(roundRadiusSlider_.m_hWnd, TR("Радиус закругления"));
+		RECT radiusLabelRect = {0,0, 45 * dpiScaleX_,subpanelHeight_ - 5 * dpiScaleY_ };
+		roundRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD);
+		roundRadiusLabel_.SetFont(GuiTools::GetSystemDialogFont());
 	}
 	return 0;
 }
 
 LRESULT Toolbar::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	if ( (HWND)lParam == penSizeSlider_.m_hWnd  ) {
+	if ( (HWND)lParam == penSizeSlider_.m_hWnd ||   (HWND)lParam == roundRadiusSlider_.m_hWnd ) {
 		::SendMessage(GetParent(),uMsg, wParam, lParam);
 	}
 	return 0;
@@ -211,7 +218,7 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
 			/*rect.top+*/ float(buttonsRect_.bottom) ), Color(252,252,252), Color(
 			200,200,200), orientation_ == orHorizontal ? LinearGradientModeVertical : LinearGradientModeHorizontal);
 
-	rect = Rect( subpanelLeftOffset_, buttonsRect_.bottom-2*dpiScaleY_, 200*dpiScaleX_, clientRect.bottom);
+	rect = Rect( subpanelLeftOffset_, buttonsRect_.bottom-2*dpiScaleY_, kSubpanelWidth*dpiScaleX_, clientRect.bottom);
 	rect.Height -= rect.Y;
 
 	SolidBrush br2 (subpanelColor_);
@@ -505,7 +512,7 @@ int Toolbar::AutoSize()
 
 			if ( orientation_ == orHorizontal ) {
 				x+= s.cx + itemMargin_;
-				width = max(x, subpanelLeftOffset_ +220*dpiScaleX_) ;
+				width = max(x, subpanelLeftOffset_ +(kSubpanelWidth + 20 )*dpiScaleX_) ;
 				height = max(s.cy + itemMargin_*2, height);
 			} else {
 				y+= s.cy + itemMargin_;
@@ -529,6 +536,17 @@ int Toolbar::AutoSize()
 		penSizeSlider_.ClientToScreen(&penSizeSliderRect);
 		ScreenToClient(&penSizeSliderRect);
 		pixelLabel_.SetWindowPos(0, penSizeSliderRect.right, buttonsRect_.bottom + 3 * dpiScaleY_, 0,0, SWP_NOSIZE);
+
+
+		roundRadiusSlider_.SetWindowPos(0,subpanelLeftOffset_ + 150 * dpiScaleX_, buttonsRect_.bottom + 1 * dpiScaleY_, 0,0, SWP_NOSIZE);
+		roundRadiusSlider_.SetRange(1,Canvas::kMaxRoundingRadius);
+		RECT radiusSliderRect;
+		roundRadiusSlider_.GetClientRect(&radiusSliderRect);
+		roundRadiusSlider_.ClientToScreen(&radiusSliderRect);
+		ScreenToClient(&radiusSliderRect);
+		roundRadiusLabel_.SetWindowPos(0, radiusSliderRect.right, buttonsRect_.bottom + 3 * dpiScaleY_, 0,0, SWP_NOSIZE);
+
+
 	}
 
 	for ( int i = 0; i < buttons_.size(); i++ ) {
@@ -586,14 +604,12 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 		//roundRect.DrawRoundRect(gr,Rect(x, y, size.cx, size.cy),Color(198,196,197),7, 1);
 		//DrawRoundedRectangle(gr,Rect(x, y, size.cx, size.cy),8,&p, 0);
 		/*if ( item.type == itComboButton ) {
-			//LOG(INFO) <<  "GetWidth "<< dropDownIcon_->GetWidth() << " " << dropDownIcon_->GetHeight();
 			gr->DrawLine(&p, bounds.X + bounds.Width - dropDownIcon_->GetWidth()-3 ,  bounds.Y+1 , bounds.X + bounds.Width - dropDownIcon_->GetWidth()-3, bounds.Y + bounds.Height -1 );
 		}*/
 
 //	}
 
 	if ( item.type == itComboButton ) {
-		//LOG(INFO) <<  "GetWidth "<< dropDownIcon_->GetWidth() << " " << dropDownIcon_->GetHeight();
 		gr->DrawImage(dropDownIcon_, bounds.X + bounds.Width - 16*dpiScaleX_+ (item.state == isDropDown ? 1 : 0), bounds.Y + (bounds.Height -16*dpiScaleY_ )/2 + (item.state == isDropDown ? 1 : 0), (int)16*dpiScaleX_, (int)16*dpiScaleY_);
 	} else if ( item.type == itTinyCombo ) {
 		gr->DrawImage(dropDownIcon_, bounds.X + bounds.Width - 8*dpiScaleX_+ (item.state == isDropDown ? 1 : 0), bounds.Y + bounds.Height - 8*dpiScaleY_ + (item.state == isDropDown ? 1 : 0), (int)10*dpiScaleX_, (int)10*dpiScaleY_);

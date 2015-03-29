@@ -63,6 +63,9 @@ BOOL  InputBoxControl::SubclassWindow(HWND hWnd) {
 void InputBoxControl::show(bool s)
 {
 	ShowWindow(s? SW_SHOW: SW_HIDE);
+	if ( !s ) {
+		::SetFocus(GetParent());
+	}
 }
 
 void InputBoxControl::resize(int x, int y, int w,int h, std::vector<MovableElement::Grip> grips)

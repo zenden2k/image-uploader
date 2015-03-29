@@ -38,6 +38,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 		if ( draggedBoundary_.bt!= btNone ) {
 			canvas_->unselectAllElements();
 			currentElement_->setSelected(true);
+			canvas_->selectionChanged();
 			currentElement_->beginMove();
 			originalStartPoint_ = currentElement_->getStartPoint();
 			originalEndPoint_ = currentElement_->getEndPoint();
@@ -49,6 +50,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 			//currentElement_->setSelected(true);
 			canvas_->unselectAllElements();
 			el->setSelected(true);
+			canvas_->selectionChanged();
 			originalStartPoint_ = el->getStartPoint();
 			originalEndPoint_ = el->getEndPoint();
 			isMoving_ = true;
@@ -161,7 +163,6 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 
 					//currentElement_->setEndPoint()
 			}
-			//LOG(INFO) << "x=" << x << " y="<<y<<" object.x = "<<currentElement_->getX()<<" object.y = "<< currentElement_->getY();
 			//LOG(INFO) << "Resizing object to " << elX  << " "<< elY << " " << elWidth << " "<<elHeight;
 			currentElement_->resize( elWidth,elHeight);
 			currentElement_->setX(elX);
@@ -299,9 +300,11 @@ void MoveAndResizeTool::createElement() {
 			break;
 		case etRoundedRectangle:
 			currentElement_ = new RoundedRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
+			currentElement_->setRoundingRadius(roundingRadius_);
 			break;
 		case etFilledRoundedRectangle:
 			currentElement_ = new FilledRoundedRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
+			currentElement_->setRoundingRadius(roundingRadius_);
 			break;
 		case etEllipse:
 			currentElement_ = new Ellipse(canvas_);

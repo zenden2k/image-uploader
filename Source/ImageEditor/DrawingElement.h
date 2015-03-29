@@ -31,6 +31,7 @@ class DrawingElement {
 		void setCanvas( Canvas* canvas );
 		virtual void getAffectedSegments( AffectedSegments* segments );
 		void setPenSize( int penSize );
+		void setRoundingRadius(int radius);
 		int getWidth();
 		int getHeight();
 	protected:
@@ -40,6 +41,7 @@ class DrawingElement {
 		Gdiplus::Color backgroundColor_;
 		int penSize_;
 		Canvas* canvas_;
+		int roundingRadius_;
 };
 
 class AffectedSegments {

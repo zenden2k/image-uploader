@@ -50,7 +50,7 @@ struct MYHOTKEY
 		keyCode = LOWORD(key);
 		keyModifier = HIWORD(key);
 		return true;
-	}
+	} 
 
 	bool operator!=( const MYHOTKEY& c)
 	{

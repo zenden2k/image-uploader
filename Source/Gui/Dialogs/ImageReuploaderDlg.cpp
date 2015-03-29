@@ -389,7 +389,7 @@ bool CImageReuploaderDlg::ExtractLinks(std::string text, std::vector<std::string
 	}
 	std::sort(matches.begin(), matches.end());
 	std::vector<Match>::iterator it;
-	std::unique(matches.begin(), matches.end());
+	it = std::unique(matches.begin(), matches.end());
 	matches.resize( std::distance(matches.begin(), it));
 
 	std::set<std::string> uniqueLinks;

@@ -19,4 +19,6 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
 void BlurCleanup();
 Gdiplus::Bitmap* LoadImageFromFileWithoutLocking(const WCHAR* fileName);
 Gdiplus::Color StringToColor(const std::string& str);
+bool CopyBitmapToClipboard(HWND hwnd, HDC dc, Gdiplus::Bitmap* bm, bool preserveAlpha = true);
+void Gdip_RemoveAlpha(Gdiplus::Bitmap& source, Gdiplus::Color color );
 #endif

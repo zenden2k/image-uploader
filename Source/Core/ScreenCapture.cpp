@@ -1095,7 +1095,6 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
 	Gdiplus::Bitmap* capturedBitmap;
 	bool result =  region->GetImage(srcDC, &capturedBitmap);
 	typedef release_deleter<Gdiplus::Bitmap>& releaseDeleterRef;
-	//LOG(INFO) << &capturedBitmapDeleter_;
 	using namespace std_tr::placeholders;
 	//m_capturedBitmap.reset<Gdiplus::Bitmap>(capturedBitmap, std_tr::bind(&CScreenCaptureEngine::capturedBitmapDeleteFunction, this, _1));
 	capturedBitmapReleased_ = false;

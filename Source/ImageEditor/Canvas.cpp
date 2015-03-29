@@ -36,6 +36,9 @@ Canvas::Canvas( HWND parent ) {
 	foregroundColor_ = Gdiplus::Color(255,0,0);
 	backgroundColor_ = Gdiplus::Color(255,255,255);
 	penSize_ = 12;
+	originalPenSize_ = 0;
+	roundingRadius_ = 12;
+	originalRoundingRadius_ = 0;
 	selection_ = 0;
 	canvasChanged_ = true;
 	fullRender_ = true;
@@ -43,6 +46,7 @@ Canvas::Canvas( HWND parent ) {
 	blurRectanglesCount_ = 0;
 	currentDrawingTool_ = 0;
 	bufferedGr_ = 0;
+	isDocumentModified_ = false;
 	memset(&font_, 0, sizeof(font_));
 	createDoubleBuffer();
 }
@@ -174,13 +178,20 @@ void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOff
 		/*size.cx*/rectInWindowCoordinates.right - rectInWindowCoordinates.left, /*size.cy*/rectInWindowCoordinates.bottom - rectInWindowCoordinates.top};
 	rect.right += rect.left;
 	rect.bottom += rect.top;
-
-	if ( fullRender_ ) {
-		rect.left = 0;
+	/*if ( fullRender_ ) {
+	/*	rect.left = 0;
 		rect.right = 0;
 		rect.bottom = getHeigth();
-		rect.right = getWidth();
+		rect.right = getWidth();*
+	} */{
+		RECT canvasRect = {0,0, getWidth(), getHeigth()};
+		IntersectRect(&rect, &rect, &canvasRect); // need to check rect dimensions, otherwise renderInBuffer() may fail
+		if ( rect.right - rect.left == 0 || rect.bottom - rect.top == 0 ) {
+			return;
+		}
 	}
+
+	
 	if ( canvasChanged_ || fullRender_ ) {
 		renderInBuffer(updatedRect_);	
 	}
@@ -215,6 +226,26 @@ void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOff
 Gdiplus::Rect Canvas::currentRenderingRect()
 {
 	return currentRenderingRect_;
+}
+
+bool Canvas::isRoundingRectangleSelected()
+{
+	for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i] ->getType() == etRoundedRectangle || elementsOnCanvas_[i]->getType() == etFilledRoundedRectangle) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Canvas::isDocumentModified()
+{
+	return isDocumentModified_;
+}
+
+void Canvas::setDocumentModified(bool modified)
+{
+	isDocumentModified_ = modified;
 }
 
 void  Canvas::setCallback(Callback * callback) {
@@ -268,6 +299,67 @@ void Canvas::endPenSizeChanging(int penSize) {
 			RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
 			uhie.movableElement = elementsOnCanvas_[i];
 			elementsOnCanvas_[i]->setPenSize(penSize);
+			RECT newPaintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+			uhi.elements.push_back(uhie);
+			UnionRect(&paintRect, &paintRect, &newPaintRect);
+			updatedElementsCount++;
+			updateView(paintRect);
+		}
+	}
+	if ( updatedElementsCount ) {
+		undoHistory_.push(uhi);
+	}
+	originalPenSize_= 0;
+}
+
+
+void Canvas::setRoundingRadius(int radius) {
+	if ( radius < 1 || radius > kMaxRoundingRadius ) {
+		return;
+	}
+	roundingRadius_ = radius;
+	if ( currentDrawingTool_ ) {
+		currentDrawingTool_->setRoundingRadius(radius);
+	}
+	for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->isPenSizeUsed() ) {
+			RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+			elementsOnCanvas_[i]->setRoundingRadius(radius);
+			RECT newPaintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+			UnionRect(&paintRect, &paintRect, &newPaintRect);
+			updateView(paintRect);
+		}
+	}
+
+}
+
+int Canvas::getRoundingRadius() const
+{
+	return roundingRadius_;
+}
+
+void Canvas::beginRoundingRadiusChanging()
+{
+	if ( !originalRoundingRadius_ ) {
+		originalRoundingRadius_ = roundingRadius_;
+	}
+}
+
+void Canvas::endRoundingRadiusChanging(int radius) {
+	roundingRadius_ = radius;
+	if ( originalRoundingRadius_ == 0 || originalRoundingRadius_ == roundingRadius_ ) {
+		return ;
+	}
+	int updatedElementsCount = 0;
+	UndoHistoryItem uhi;
+	uhi.type = uitRoundingRadiusChanged;
+	for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+		if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i] ->getType() == etRoundedRectangle || elementsOnCanvas_[i]->getType() == etFilledRoundedRectangle) {
+			UndoHistoryItemElement uhie;
+			uhie.penSize = originalRoundingRadius_;
+			RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+			uhie.movableElement = elementsOnCanvas_[i];
+			elementsOnCanvas_[i]->setRoundingRadius(radius);
 			RECT newPaintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
 			uhi.elements.push_back(uhie);
 			UnionRect(&paintRect, &paintRect, &newPaintRect);
@@ -377,10 +469,13 @@ LOGFONT Canvas::getFont()
 }
 
 AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool notify ) {
+	if ( drawingToolType_ == toolType ) {
+		return currentDrawingTool_;
+	}
 	previousDrawingTool_ = drawingToolType_;
 	drawingToolType_ = toolType;
 	unselectAllElements();
-	updateView();
+	
 	ElementType type;
 	delete currentDrawingTool_;
 	currentDrawingTool_ = 0;
@@ -430,9 +525,11 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
 
 		else if ( toolType == dtMove ) {
 			currentDrawingTool_ = new MoveAndResizeTool( this, etNone );
+			updateView();
 			return currentDrawingTool_;
 		} else if ( toolType == dtSelection ) {
 			currentDrawingTool_ = new SelectionTool( this );
+			updateView();
 			return currentDrawingTool_;
 		} else if ( toolType == dtLine ) {
 			type = etLine;
@@ -449,11 +546,13 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
 	}
 	
 	currentDrawingTool_->setPenSize(penSize_);
+	currentDrawingTool_->setRoundingRadius(roundingRadius_);
 	currentDrawingTool_->setForegroundColor(foregroundColor_);
 	currentDrawingTool_->setBackgroundColor(backgroundColor_);
 	if ( notify && onDrawingToolChanged ) {
 		onDrawingToolChanged(toolType);
 	}
+	updateView();
 	return currentDrawingTool_;
 }
 
@@ -508,6 +607,7 @@ void Canvas::endDocDrawing()
 	currentDocument()->endDrawing();
 	UndoHistoryItem historyItem;
 	historyItem.type = uitDocumentChanged;
+	isDocumentModified_ = true;
 	undoHistory_.push(historyItem);
 }
 
@@ -531,6 +631,7 @@ int Canvas::deleteSelectedElements()
 	if ( deletedCount ) {
 		undoHistory_.push(uhi);
 		updateView();
+		selectionChanged();
 	}
 	return deletedCount;
 }
@@ -557,6 +658,13 @@ void Canvas::showOverlay(bool show)
 	}
 	showOverlay_ = show;
 	updateView();
+}
+
+void Canvas::selectionChanged()
+{
+	if ( onSelectionChanged ) {
+		onSelectionChanged();
+	}
 }
 
 void Canvas::deleteMovableElement(MovableElement* element)
@@ -592,16 +700,19 @@ void Canvas::updateView( const CRgn& region ) {
 
 void Canvas::updateView( RECT boundingRect ) {
 	using namespace Gdiplus;
-	CRgn region;
-	canvasChanged_ = true;
-	Rect newRect(boundingRect.left, boundingRect.top, boundingRect.right - boundingRect.left, boundingRect.bottom - boundingRect.top );
+	//CRgn region;
+	
+	Rect newRect(max(0,boundingRect.left), max(0,boundingRect.top), boundingRect.right - boundingRect.left, boundingRect.bottom - boundingRect.top );
+	newRect.Width = min(canvasWidth_ - newRect.X, newRect.Width);
+	newRect.Height = min(canvasHeight_ - newRect.Y, newRect.Height);
 	if ( newRect.Width <=0 || newRect.Height <=0 ) {
 		return;
 	}
+	canvasChanged_ = true;
 	Rect::Union(updatedRect_,newRect,updatedRect_);
-	region.CreateRectRgnIndirect( &boundingRect );
+	//region.CreateRectRgnIndirect( &boundingRect );
 	if ( callback_ ) {
-		callback_->updateView( this, region );
+		callback_->updateView( this, updatedRect_ );
 	}
 
 }
@@ -737,6 +848,7 @@ Gdiplus::Bitmap* Canvas::getBufferBitmap()
 void Canvas::addUndoHistoryItem(const UndoHistoryItem& item)
 {
 	undoHistory_.push(item);
+	isDocumentModified_ = true;
 }
 
 std_tr::shared_ptr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
@@ -809,6 +921,9 @@ int Canvas::deleteElementsByType(ElementType elementType)
 			count++;
 		}
 	}
+	if ( count ) {
+		selectionChanged();
+	}
 	return count;
 }
 
@@ -868,7 +983,15 @@ bool Canvas::undo() {
 			item.elements[i].movableElement->setPenSize(item.elements[i].penSize);
 		}
 		result = true;
-	}else if ( item.type == uitElementPositionChanged ) {
+	} else if ( item.type == uitRoundingRadiusChanged ) {
+		int itemCount = item.elements.size();
+		for ( int i = itemCount-1; i>=0; i-- ) {
+			if ( item.elements[i].movableElement->getType() == etFilledRoundedRectangle || item.elements[i].movableElement->getType() == etRoundedRectangle ) {
+				item.elements[i].movableElement->setRoundingRadius(item.elements[i].penSize);
+			}
+		}
+		result = true;
+	} else if ( item.type == uitElementPositionChanged ) {
 		int itemCount = item.elements.size();
 		// Insert elements in their initial positions
 		for ( int i = itemCount-1; i>=0; i-- ) {
@@ -886,6 +1009,7 @@ bool Canvas::undo() {
 	}
 	if ( result ) {
 		undoHistory_.pop();
+		isDocumentModified_ = true;
 	}
 	updateView();
 	return result;
@@ -930,6 +1054,7 @@ int Canvas::unselectAllElements()
 			count++;
 		}
 	}
+	selectionChanged();
 	return count;
 }
 

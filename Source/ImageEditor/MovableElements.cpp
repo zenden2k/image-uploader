@@ -318,7 +318,7 @@ void TextElement::endEdit(bool saveToHistory)
 	if ( isEditing_ ) {
 
 		isEditing_ = false;
-		if ( saveToHistory ) {
+		if ( saveToHistory && originalRawText_ != inputBox_->getRawText() ) {
 			Canvas::UndoHistoryItem uhi;
 			Canvas::UndoHistoryItemElement uhie;
 			uhi.type = Canvas::uitTextChanged;
@@ -643,15 +643,15 @@ void RoundedRectangle::render(Painter* gr)
 	SolidBrush br(backgroundColor_);
 	PixelOffsetMode oldPOM = gr->GetPixelOffsetMode();
 	gr->SetPixelOffsetMode(PixelOffsetModeHalf);
-	Region rgn(x,y, width, height);
+	Region rgn(getX(),getY(), getWidth(), getHeight());
 	
 
 	Gdiplus::Region oldRegion;
 	gr->GetClip(&oldRegion);
-	//gr->SetClip(rgn.toNativeRegion(), Gdiplus::CombineModeIntersect);
-	DrawRoundedRectangle(gr, Rect(x,y,width,height), penSize_*2, &pen, filled_ ? &br : 0);
+	gr->SetClip(rgn.toNativeRegion(), Gdiplus::CombineModeIntersect);
+	DrawRoundedRectangle(gr, Rect(x,y,width,height), roundingRadius_ *2 , &pen, filled_ ? &br : 0);
 	gr->SetPixelOffsetMode(oldPOM);
-	//gr->SetClip(&oldRegion);
+	gr->SetClip(&oldRegion);
 }
 
 ImageEditor::ElementType RoundedRectangle::getType() const

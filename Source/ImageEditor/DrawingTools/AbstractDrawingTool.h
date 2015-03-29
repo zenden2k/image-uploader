@@ -20,6 +20,7 @@ public:
 	virtual CursorType getCursor(int x, int y);
 	virtual void rightButtonClick(int x, int y);
 	virtual void setPenSize(int size);
+	virtual void setRoundingRadius(int radius);
 	void setForegroundColor(Gdiplus::Color color);
 	void setBackgroundColor(Gdiplus::Color color);
 protected:
@@ -27,6 +28,7 @@ protected:
 	POINT startPoint_;
 	POINT endPoint_;
 	int penSize_;
+	int roundingRadius_;
 	Gdiplus::Color foregroundColor_;
 	Gdiplus::Color backgroundColor_;
 };

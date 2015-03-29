@@ -44,7 +44,7 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
 		//	LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 		//	LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
 		void setCanvas(ImageEditor::Canvas *canvas);
-		void updateView( Canvas* canvas, const CRgn& region );
+		void updateView( Canvas* canvas,  Gdiplus::Rect rect  );
 	protected:
 		
 		LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

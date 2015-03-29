@@ -11,6 +11,7 @@ DrawingElement::DrawingElement(){
 	endPoint_.y   = 0;
 	color_ = Gdiplus::Color( 0, 0, 0 );
 	penSize_ = 1;
+	roundingRadius_ = penSize_;
 }
 
 void DrawingElement::resize(int width, int height) {
@@ -62,6 +63,11 @@ void DrawingElement::setCanvas(Canvas* canvas)
 
 void DrawingElement::setPenSize( int penSize ) {
 	penSize_ = penSize;
+}
+
+void DrawingElement::setRoundingRadius(int radius)
+{
+	roundingRadius_ = radius;
 }
 
 int DrawingElement::getWidth()

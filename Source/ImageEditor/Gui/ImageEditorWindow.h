@@ -8,11 +8,9 @@
 #include "TextParamsWindow.h"
 #include <Core/Utils/CoreTypes.h>
 #include <GdiPlus.h>
-// MainFrm.h : interface of the CMainFrame class
-//
-/////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+
 namespace ImageEditor {
 
 class ColorsDelegate;
@@ -23,10 +21,15 @@ class ImageEditorWindow : public CWindowImpl<ImageEditorWindow>
 {
 public:
 	DECLARE_WND_CLASS(_T("ImageEditorWindow"))
-	enum { ID_UNDO = 1000,  ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE , ID_SAVE, ID_SAVEAS,
+	enum { ID_UNDO = 1000,  ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE , ID_SAVE, ID_SAVEAS, ID_COPYBITMAPTOCLIBOARD,
 		ID_PEN = 1600, 
 		ID_BRUSH, ID_MARKER,ID_BLUR, ID_BLURRINGRECTANGLE, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_ROUNDEDRECTANGLE, ID_ELLIPSE,
 		ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_MOVE};
+
+	enum DrawingToolHotkey {kMoveKey = 'V', kBrushKey = 'B', kTextKey = 'T', kRectangleKey = 'U', kColorPickerKey = 'I', kCropKey = 'C', // photoshop keys
+		kMarkerKey = 'H', kBlurringRectangleKey = 'R', kArrowKey = 'A', kLineKey = 'L', kFilledRectangle = 'G'
+		// if you add an item here, do not forget to add it to drawingToolsHotkeys_ map
+	};
 	struct MenuItem {
 		int menuItemId;
 		int toolId;
@@ -39,7 +42,7 @@ public:
 		CString hint;
 	};
 
-	enum { kCanvasMargin = 4 }; // margin between toolbars and canvas in windowed mode
+	enum { kCanvasMargin = 4 , kToolbarOffset = 6}; // margin between toolbars and canvas in windowed mode
 
 	enum DialogResult{
 		drCancel, drAddToWizard, drUpload, drShare, drSave
@@ -60,6 +63,7 @@ public:
 	void setSuggestedFileName(CString string);
 	std_tr::shared_ptr<Gdiplus::Bitmap> getResultingBitmap();
 	void setServerName(const CString & serverName);
+	void setAskBeforeClose(bool ask);
 
 	DialogResult DoModal(HWND parent, WindowDisplayMode mode = wdmAuto);
 
@@ -72,6 +76,7 @@ public:
 		MESSAGE_HANDLER( WM_SIZE, OnSize )
 		MESSAGE_HANDLER( WM_PAINT, OnPaint )
 		MESSAGE_HANDLER( WM_HSCROLL, OnHScroll )
+		MESSAGE_HANDLER( WM_GETMINMAXINFO, OnGetMinMaxInfo )
 		MESSAGE_HANDLER( MTBM_DROPDOWNCLICKED, OnDropDownClicked )
 		MESSAGE_HANDLER( TextParamsWindow::TPWM_FONTCHANGED, OnTextParamWindowFontChanged);
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
@@ -85,7 +90,8 @@ public:
 		COMMAND_ID_HANDLER( ID_UPLOAD, OnClickedUpload )	
 		COMMAND_ID_HANDLER( ID_SHARE, OnClickedShare )	
 		COMMAND_ID_HANDLER( ID_SAVE, OnClickedSave )	
-		COMMAND_ID_HANDLER( ID_SAVEAS, OnClickedSaveAs )	
+		COMMAND_ID_HANDLER( ID_SAVEAS, OnClickedSaveAs )
+		COMMAND_ID_HANDLER( ID_COPYBITMAPTOCLIBOARD, OnClickedCopyToClipboard )
 		MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
 		
 		REFLECT_NOTIFICATIONS()
@@ -105,6 +111,7 @@ public:
 		LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 		LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 		LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		LRESULT OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnDropDownClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -121,6 +128,7 @@ public:
 		LRESULT OnClickedShare(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnClickedSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnClickedSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnClickedCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 		LRESULT OnTextParamWindowFontChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
@@ -131,14 +139,18 @@ public:
 		std::map<int, Canvas::DrawingToolType> menuItems_;
 		std::map<Canvas::DrawingToolType, SubMenuItem> subMenuItems_;
 		std::map<int,int> selectedSubMenuItems_;
+		std::map<DrawingToolHotkey, Canvas::DrawingToolType> drawingToolsHotkeys_;
 		DialogResult dialogResult_;
 		WindowDisplayMode displayMode_;
 		Canvas::DrawingToolType initialDrawingTool_;
+		Canvas::DrawingToolType currentDrawingTool_;
 		bool showUploadButton_;
 		bool showAddToWizardButton_;
+		bool askBeforeClose_;
 		CString suggestedFileName_;
 		CString serverName_;
 		int prevPenSize_;
+		int prevRoundingRadius_;
 		CIcon icon_;
 		CIcon iconSmall_;
 		ColorsDelegate* colorsDelegate_;
@@ -155,16 +167,18 @@ public:
 		void OnDrawingToolChanged(Canvas::DrawingToolType drawingTool);
 		void OnTextEditStarted(ImageEditor::TextElement * textElement);
 		void OnTextEditFinished(ImageEditor::TextElement * textElement);
+		void OnSelectionChanged();
+		void updateRoundingRadiusSlider();
 		Gdiplus::Bitmap * loadToolbarIcon(int resource);
 		void EndDialog(DialogResult dr);
 		void init();
-		bool saveDocument();
+		bool saveDocument(bool toClipboard =  false );
 		void updateToolbarDrawingTool(Canvas::DrawingToolType dt);
 		void OnForegroundColorChanged(Gdiplus::Color color);
 		void OnBackgroundColorChanged(Gdiplus::Color color);
 		void onFontChanged(LOGFONT font);
 		bool createTooltip();
-		void updatePixelLabel();
+		void updatePixelLabels();
 		void OnSaveAs();
 		void saveSettings();
 };
@@ -184,12 +198,16 @@ public:
 	Gdiplus::Color backgroundColor() const { return backgroundColor_; }
 	void setPenSize(int size) { penSize_ = size; }
 	int penSize() const { return penSize_;}
+	void setRoundingRadius(int radius) { roundingRadius_ = radius; }
+	int roundingRadius() const { return roundingRadius_;}
+
 	void setFont(LOGFONT font) { font_ = font; }
 	LOGFONT font() const { return font_; }
 protected:
 	Gdiplus::Color foregroundColor_;
 	Gdiplus::Color backgroundColor_;
 	int penSize_;
+	int roundingRadius_;
 	LOGFONT font_;
 };
 

@@ -64,6 +64,7 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 	imageProcessingParamsLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
 	imageProcessingParamsLink_.m_clrLink = CSettings::DefaultLinkColor;
 	imageProcessingParamsLink_.SetLabel(TR("Обработка изображений..."));
+	imageProcessingParamsLink_.SetToolTipText(TR("Обработка изображений..."));
 
 	accountLink_.SubclassWindow(GetDlgItem(IDC_ACCOUNTINFO));
 	accountLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON ; 

@@ -245,6 +245,7 @@ struct ImageEditorSettingsStruct {
 	Gdiplus::Color ForegroundColor;
 	Gdiplus::Color BackgroundColor;
 	int PenSize;
+	int RoundingRadius;
 	LOGFONT Font;
 };
 

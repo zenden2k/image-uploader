@@ -19,12 +19,11 @@
 
 namespace ImageEditor {
 	
-
-
-	ImageEditorWindow::ImageEditorWindow(Gdiplus::Bitmap * bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider ):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
+ImageEditorWindow::ImageEditorWindow(Gdiplus::Bitmap * bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider ):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
 {
 	currentDoc_ =  new ImageEditor::Document(bitmap, hasTransparentPixels);
 	configurationProvider_ = configurationProvider;
+	askBeforeClose_ = false;
 	init();
 	
 }
@@ -34,6 +33,7 @@ ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvide
 	currentDoc_ = new ImageEditor::Document(imageFileName);
 	sourceFileName_ = imageFileName;
 	configurationProvider_ = configurationProvider;
+	askBeforeClose_ = true;
 	suggestedFileName_ = myExtractFileName(sourceFileName_);
 	init();
 }
@@ -46,8 +46,10 @@ void ImageEditorWindow::init()
 	showUploadButton_ = true;
 	showAddToWizardButton_ = true;
 	prevPenSize_ = 0;
+	prevRoundingRadius_ = 0;
 	colorsDelegate_ = 0;
 	imageQuality_ = 85;
+	currentDrawingTool_ = Canvas::dtNone;
 	initialDrawingTool_ = Canvas::dtBrush;
 	menuItems_[ID_PEN]             = Canvas::dtPen; 
 	menuItems_[ID_LINE]            = Canvas::dtLine;
@@ -104,26 +106,53 @@ void ImageEditorWindow::init()
 	subMenuItems_[Canvas::dtFilledEllipse] = item;
 	selectedSubMenuItems_[ID_RECTANGLE] = ID_RECTANGLE;
 	selectedSubMenuItems_[ID_FILLEDRECTANGLE] = ID_FILLEDRECTANGLE;
+
+	drawingToolsHotkeys_[kMoveKey] = Canvas::dtMove;
+	drawingToolsHotkeys_[kBrushKey] = Canvas::dtBrush;
+	drawingToolsHotkeys_[kTextKey] = Canvas::dtText;
+	drawingToolsHotkeys_[kRectangleKey] = Canvas::dtRectangle;
+	drawingToolsHotkeys_[kColorPickerKey] = Canvas::dtColorPicker;
+	drawingToolsHotkeys_[kCropKey] = Canvas::dtCrop;
+	drawingToolsHotkeys_[kMarkerKey] = Canvas::dtMarker;
+	drawingToolsHotkeys_[kBlurringRectangleKey] = Canvas::dtBlurrringRectangle;
+	drawingToolsHotkeys_[kArrowKey] = Canvas::dtArrow;
+	drawingToolsHotkeys_[kLineKey] = Canvas::dtLine;
+	drawingToolsHotkeys_[kFilledRectangle] = Canvas::dtFilledRectangle;
 	
 	dialogResult_ = drCancel;
 }
 
-bool ImageEditorWindow::saveDocument()
+bool ImageEditorWindow::saveDocument(bool toClipboard)
 {
 	resultingBitmap_ = canvas_->getBitmapForExport();
+	canvas_->setDocumentModified(false);
 	if ( !resultingBitmap_ ) {
 		LOG(ERROR) << "canvas_->getBitmapForExport() returned NULL";
 		return false;
 	}
-	if ( !outFileName_.IsEmpty() ) {
-		SaveImage(&*resultingBitmap_, outFileName_, sifDetectByExtension, imageQuality_);
-		canvas_->updateView();
+	if ( !toClipboard ) {
+		if ( !outFileName_.IsEmpty() ) {
+			SaveImage(resultingBitmap_.get(), outFileName_, sifDetectByExtension, imageQuality_);
+			canvas_->updateView();
+		} else {
+			//LOG(ERROR) << "ImageEditorWindow::saveDocument:  outFileName is empty";
+		}
+	} else {
+		CDC dc = GetDC();
+		CopyBitmapToClipboard(m_hWnd, dc, resultingBitmap_.get(), true);
 	}
 	return true;
 }
 
 void ImageEditorWindow::updateToolbarDrawingTool(Canvas::DrawingToolType dt)
 {
+	if ( currentDrawingTool_ == dt ) {
+		return;
+	}
+
+	currentDrawingTool_ = dt;
+	updateRoundingRadiusSlider();
+
 	std::map<Canvas::DrawingToolType, SubMenuItem>::iterator submenuIter = subMenuItems_.find(dt);
 	if ( submenuIter != subMenuItems_.end() ) {
 		int buttonIndex = verticalToolbar_.getItemIndexByCommand(selectedSubMenuItems_[submenuIter->second.parentCommand]);
@@ -159,6 +188,7 @@ void ImageEditorWindow::updateToolbarDrawingTool(Canvas::DrawingToolType dt)
 		::DestroyWindow(cropToolTip_);
 		cropToolTip_ = 0;
 	}
+	
 }
 
 void ImageEditorWindow::OnForegroundColorChanged(Gdiplus::Color color)
@@ -215,6 +245,11 @@ void ImageEditorWindow::setServerName(const CString & serverName)
 	serverName_ = serverName;
 }
 
+void ImageEditorWindow::setAskBeforeClose(bool ask)
+{
+	askBeforeClose_ = ask;
+}
+
 ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDisplayMode mode)
 {
 
@@ -232,7 +267,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 	float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
 	int desiredClientWidth = currentDoc_->getWidth()  + 50 * dpiScaleX; // with toolbars
 	int desiredClientHeight = currentDoc_->getHeight()  + 50 * dpiScaleX;
-	CRect rc(0,0,screenWidth * 0.8,screenHeight*0.8);
+	CRect rc(rcDefault);
 	DWORD initialWindowStyle =  WS_OVERLAPPED | WS_POPUP | WS_CAPTION |  WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | 
 		WS_MINIMIZEBOX|WS_CLIPCHILDREN;
 	if ( Create(0, rc, _T("Image Editor"), initialWindowStyle, 0) == NULL ) {
@@ -291,6 +326,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 		canvas_->setForegroundColor(configurationProvider_->foregroundColor());
 		canvas_->setBackgroundColor(configurationProvider_->backgroundColor());
 		canvas_->setFont(configurationProvider_->font());
+		canvas_->setRoundingRadius(configurationProvider_->roundingRadius());
 		textParamsWindow_.setFont(configurationProvider_->font());
 	}
 	m_view.setCanvas( canvas_ );
@@ -316,6 +352,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 	canvas_->onFontChanged.bind(this, &ImageEditorWindow::onFontChanged);
 	canvas_->onTextEditStarted.bind(this, &ImageEditorWindow::OnTextEditStarted);
 	canvas_->onTextEditFinished.bind(this, &ImageEditorWindow::OnTextEditFinished);
+	canvas_->onSelectionChanged.bind(this, &ImageEditorWindow::OnSelectionChanged);
 	if ( displayMode_ != wdmWindowed ) {	
 		canvas_->onCropFinished.bind(this, &ImageEditorWindow::OnCropFinished);
 	}
@@ -325,7 +362,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 		horizontalToolbar_.ShowWindow(SW_SHOW);
 	}
 	
-	updatePixelLabel();
+	updatePixelLabels();
 
 	canvas_->setDrawingToolType(initialDrawingTool_);
 	updateToolbarDrawingTool(initialDrawingTool_);
@@ -387,10 +424,9 @@ LRESULT ImageEditorWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	return 1;
 }
 
-LRESULT ImageEditorWindow::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT ImageEditorWindow::OnClose(UINT uMsg, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	EndDialog(drCancel);
-	//PostQuitMessage(0);
+	OnClickedClose(ID_CLOSE,0,0, bHandled);
 	return 0;
 }
 
@@ -468,8 +504,30 @@ LRESULT ImageEditorWindow::OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, L
 	return TRUE;
 }
 
+LRESULT ImageEditorWindow::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+{
+	if ( !horizontalToolbar_.m_hWnd ) {
+		return 0;
+	}
+	MINMAXINFO* mmi = reinterpret_cast<MINMAXINFO*>(lParam);
+	RECT horRc, vertRc;
+	horizontalToolbar_.GetClientRect(&horRc);
+	verticalToolbar_.GetClientRect(&vertRc);
+	RECT clientRect;
+	RECT windowRect;
+	GetClientRect(&clientRect);
+	GetWindowRect(&windowRect);
+	int paddingX = windowRect.right -  windowRect.left - clientRect.right;
+	int paddingY = windowRect.bottom -  windowRect.top - clientRect.bottom;
+
+	mmi->ptMinTrackSize.y = paddingY + kToolbarOffset+ horRc.bottom + vertRc.bottom;
+	mmi->ptMinTrackSize.x = paddingX + kToolbarOffset + horRc.right + vertRc.right;
+	return 0;
+}
+
 LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	std::map<DrawingToolHotkey, Canvas::DrawingToolType>::iterator it;
 	 HKL englishLayout = LoadKeyboardLayout(_T("00000409"),0);
 	 if ( wParam == VK_ESCAPE ) {
 		EndDialog(drCancel);
@@ -486,14 +544,22 @@ LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 		 canvas_->beginPenSizeChanging();
 		 canvas_->setPenSize(canvas_->getPenSize()+1);
 		 horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
-		 updatePixelLabel();
+		 updatePixelLabels();
 		 m_view.SendMessage(WM_SETCURSOR, (LPARAM)m_view.m_hWnd, 0);
 	 } else if ( wParam == VkKeyScanEx('[', englishLayout) ) {
 		 canvas_->beginPenSizeChanging();
 		 canvas_->setPenSize(canvas_->getPenSize()-1);
 		 horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
-		 updatePixelLabel();
+		 updatePixelLabels();
 		 m_view.SendMessage(WM_SETCURSOR, (LPARAM)m_view.m_hWnd, 0);
+	 } else if ( (it = drawingToolsHotkeys_.find((DrawingToolHotkey)wParam)) != drawingToolsHotkeys_.end() 
+		 && !(GetKeyState(VK_CONTROL) & 0x8000) 
+		 && !(GetKeyState(VK_SHIFT) & 0x8000)
+		&& !(GetKeyState(VK_MENU) & 0x8000) ) // ALT 
+	 
+	 {
+		 canvas_->setDrawingToolType(it->second);
+		 updateToolbarDrawingTool(it->second);
 	 } else {
 		m_view.SendMessage(uMsg, wParam, lParam);
 	 }
@@ -606,6 +672,7 @@ void ImageEditorWindow::createToolbars()
 	}
 	//horizontalToolbar_.addButton(Toolbar::Item(TR("Поделиться"),0,ID_SHARE, CString(),Toolbar::itComboButton));
 	horizontalToolbar_.addButton(Toolbar::Item(TR("Сохранить"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, CString(),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
+	horizontalToolbar_.addButton(Toolbar::Item(TR("Копировать в буфер"),loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, CString(), Toolbar::itButton ));
 	horizontalToolbar_.addButton(Toolbar::Item(TR("Закрыть"),0,ID_CLOSE));
 	horizontalToolbar_.AutoSize();
 	if ( displayMode_ != wdmFullscreen ) {
@@ -616,24 +683,28 @@ void ImageEditorWindow::createToolbars()
 		LOG(ERROR) << "Failed to create horizontal toolbar";
 
 	}
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_TOOLMOVEICONPNG),ID_MOVE,TR("Перемещение"), Toolbar::itButton, true, 1));
+	/* enum DrawingToolHotkey {kMoveKey = 'V', kBrushKey = 'B', kTextKey = 'T', kRectangleKey = 'U', kColorPickerKey = 'I', kCropKey = 'C', // photoshop keys
+	kMarkerKey = 'H', kBlurringRectangleKey = 'R', kArrowKey = 'A', kLineKey = 'L'
+	};
+	*/ 
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_TOOLMOVEICONPNG),ID_MOVE,TR("Перемещение") + CString(_T(" (")) + (char)kMoveKey  + CString(_T(")")), Toolbar::itButton, true, 1));
 	//verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLSELECTION),ID_SELECTION,TR("Выделение"), Toolbar::itButton, true, 1));
 
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_TOOLCROPPING), ID_CROP,TR("Обрезка"), Toolbar::itButton, true,1));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_TOOLCROPPING), ID_CROP,TR("Обрезка")+ CString(_T(" (")) + (char)kCropKey  + CString(_T(")")), Toolbar::itButton, true,1));
 	//verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLPENCIL), ID_PEN,T_R("Карандаш"), Toolbar::itButton, true,1));
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BRUSH,TR("Кисть"), Toolbar::itButton, true,1));
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLMARKER), ID_MARKER,TR("Подсвечивающий маркер"), Toolbar::itButton, true,1));
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLLINE), ID_LINE,TR("Линия"), Toolbar::itButton, true,1));
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLARROWPNG), ID_ARROW,TR("Стрелка"), Toolbar::itButton, true,1));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BRUSH,TR("Кисть")+ CString(_T(" (")) + (char)kBrushKey  + CString(_T(")")), Toolbar::itButton, true,1));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLMARKER), ID_MARKER,TR("Подсвечивающий маркер")+ CString(_T(" (")) + (char)kMarkerKey  + CString(_T(")")), Toolbar::itButton, true,1));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLLINE), ID_LINE,TR("Линия")+ CString(_T(" (")) + (char)kLineKey  + CString(_T(")")), Toolbar::itButton, true,1));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLARROWPNG), ID_ARROW,TR("Стрелка")+ CString(_T(" (")) + (char)kArrowKey  + CString(_T(")")), Toolbar::itButton, true,1));
 
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLRECTANGLEPNG), ID_RECTANGLE,TR("Прямоугольник"), Toolbar::itTinyCombo, true,1));
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE), ID_FILLEDRECTANGLE,TR("Заполненный прямоугольник"), Toolbar::itTinyCombo, true,1));
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLTEXTPNG), ID_TEXT,TR("Текст"), Toolbar::itButton, true,1));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLRECTANGLEPNG), ID_RECTANGLE,TR("Прямоугольник")+ CString(_T(" (")) + (char)kRectangleKey  + CString(_T(")")), Toolbar::itTinyCombo, true,1));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE), ID_FILLEDRECTANGLE,TR("Заполненный прямоугольник")+ CString(_T(" (")) + (char)kFilledRectangle  + CString(_T(")")), Toolbar::itTinyCombo, true,1));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLTEXTPNG), ID_TEXT,TR("Текст")+ CString(_T(" (")) + (char)kTextKey  + CString(_T(")")), Toolbar::itButton, true,1));
 
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBLURINGRECTANGLEPNG), ID_BLURRINGRECTANGLE,TR("Размывающий прямоугольник"), Toolbar::itButton, true,1));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBLURINGRECTANGLEPNG), ID_BLURRINGRECTANGLE,TR("Размывающий прямоугольник")+ CString(_T(" (")) + (char)kBlurringRectangleKey  + CString(_T(")")), Toolbar::itButton, true,1));
 
 	//verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BLUR,TR("Размытие"), Toolbar::itButton, true,1));
-	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONCOLORPICKERPNG), ID_COLORPICKER,TR("Выбрать цвет"), Toolbar::itButton, true,1));
+	verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONCOLORPICKERPNG), ID_COLORPICKER,TR("Выбрать цвет")+ CString(_T(" (")) + (char)kColorPickerKey  + CString(_T(")")), Toolbar::itButton, true,1));
 	int index = verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,TR("Отменить") + CString(L" (Ctrl+Z)"), Toolbar::itButton, false));
 
 	Toolbar::Item colorsButton(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,CString(), Toolbar::itButton, false);
@@ -648,6 +719,7 @@ void ImageEditorWindow::createToolbars()
 		verticalToolbar_.ShowWindow(SW_SHOW);
 	}
 	horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
+	horizontalToolbar_.roundRadiusSlider_.SetPos(canvas_->getRoundingRadius());
 }  
 
 
@@ -684,7 +756,7 @@ void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
 	}
 	POINT horToolbarPos = {0, 0};
 	POINT vertToolbarPos = {0, 0};
-	int kToolbarOffset = 6;
+	
 	if ( pos == pBottomRight ) {
 		horToolbarPos.x = x + w - horRc.right;
 		horToolbarPos.y =  y + h + kToolbarOffset;
@@ -793,6 +865,18 @@ void ImageEditorWindow::OnTextEditFinished(ImageEditor::TextElement * textElemen
 	textParamsWindow_.ShowWindow(SW_HIDE);
 }
 
+void ImageEditorWindow::OnSelectionChanged()
+{
+	updateRoundingRadiusSlider();
+}
+
+void ImageEditorWindow::updateRoundingRadiusSlider()
+{
+	bool showRoundingRadiusSlider = currentDrawingTool_ == Canvas::dtRoundedRectangle || currentDrawingTool_ == Canvas::dtRoundedRectangle || canvas_->isRoundingRectangleSelected();
+	horizontalToolbar_.roundRadiusLabel_.ShowWindow( showRoundingRadiusSlider ? SW_SHOW: SW_HIDE );
+	horizontalToolbar_.roundRadiusSlider_.ShowWindow( showRoundingRadiusSlider ? SW_SHOW: SW_HIDE );
+}
+
 Gdiplus::Bitmap * ImageEditorWindow::loadToolbarIcon(int resource)
 {
 	return BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource),_T("PNG")) ;
@@ -826,9 +910,19 @@ LRESULT ImageEditorWindow::OnTextClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	return 0;
 }
 
-LRESULT ImageEditorWindow::OnClickedClose(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT ImageEditorWindow::OnClickedClose(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
 {
-	EndDialog(drCancel);
+	DialogResult dr = drCancel;
+	if ( askBeforeClose_ && canvas_->isDocumentModified() ) {
+		int msgBoxResult = MessageBox(TR("Сохранить изменения?"),APPNAME, MB_YESNOCANCEL|MB_ICONQUESTION);
+		if ( msgBoxResult == IDYES ) {
+			dr = outFileName_.IsEmpty() ? drCancel : drSave;
+			OnClickedSave(NM_CLICK, ID_SAVE, 0, bHandled);
+		} else if ( msgBoxResult == IDCANCEL ) {
+			return 0;
+		}
+	}
+	EndDialog(dr);
 	return 0;
 }
 
@@ -875,6 +969,12 @@ LRESULT ImageEditorWindow::OnClickedSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	return 0;
 }
 
+LRESULT ImageEditorWindow::OnClickedCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	saveDocument(true);
+	return 0;
+}
+
 bool ImageEditorWindow::createTooltip() {
 	// Create a tooltip.
 	cropToolTip_ = ::CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL, 
@@ -901,9 +1001,10 @@ bool ImageEditorWindow::createTooltip() {
 	return true;
 }
 
-void ImageEditorWindow::updatePixelLabel()
+void ImageEditorWindow::updatePixelLabels()
 {
 	horizontalToolbar_.pixelLabel_.SetWindowText(WinUtils::IntToStr(canvas_->getPenSize()) + L" px");
+	horizontalToolbar_.roundRadiusLabel_.SetWindowText(WinUtils::IntToStr(canvas_->getRoundingRadius()) + L" px");
 }
 
 void ImageEditorWindow::OnSaveAs()
@@ -927,22 +1028,21 @@ void ImageEditorWindow::saveSettings()
 		configurationProvider_->setForegroundColor(canvas_->getForegroundColor());
 		configurationProvider_->setBackgroundColor(canvas_->getBackgroundColor());
 		configurationProvider_->setFont(canvas_->getFont());
+		configurationProvider_->setRoundingRadius(canvas_->getRoundingRadius());
 		configurationProvider_->saveConfiguration();
 	}
 }
 
 LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	if ( (HWND)lParam != horizontalToolbar_.penSizeSlider_.m_hWnd  ) {
-		return 0;
-	}
-	int penSize = HIWORD(wParam);
-	switch( LOWORD(wParam ) ) {
+	if ( (HWND)lParam == horizontalToolbar_.penSizeSlider_.m_hWnd  ) {
+		int penSize = HIWORD(wParam);
+		switch( LOWORD(wParam ) ) {
 		case TB_ENDTRACK:
 			penSize = horizontalToolbar_.penSizeSlider_.GetPos();
 		case TB_THUMBPOSITION:
 			canvas_->endPenSizeChanging(penSize);
-			updatePixelLabel();
+			updatePixelLabels();
 			prevPenSize_ = 0;
 			break;
 		case TB_PAGEDOWN:
@@ -958,9 +1058,37 @@ LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 				canvas_->beginPenSizeChanging();
 			}
 			canvas_->setPenSize(penSize);
-			updatePixelLabel();
+			updatePixelLabels();
 			break;
+		}
+	} else if ( (HWND)lParam == horizontalToolbar_.roundRadiusSlider_.m_hWnd ) {
+		int roundingRadius = HIWORD(wParam);
+		switch( LOWORD(wParam ) ) {
+		case TB_ENDTRACK:
+			roundingRadius = horizontalToolbar_.roundRadiusSlider_.GetPos();
+		case TB_THUMBPOSITION:
+			canvas_->endRoundingRadiusChanging(roundingRadius);
+			updatePixelLabels();
+			prevRoundingRadius_ = 0;
+			break;
+		case TB_PAGEDOWN:
+		case TB_PAGEUP:
+		case TB_TOP:
+		case TB_LINEDOWN:
+		case TB_LINEUP:
+		case TB_BOTTOM:
+			roundingRadius = horizontalToolbar_.roundRadiusSlider_.GetPos();
+		case TB_THUMBTRACK:
+			if ( !prevRoundingRadius_ ) {
+				prevRoundingRadius_ = canvas_->getRoundingRadius();
+				canvas_->beginRoundingRadiusChanging();
+			}
+			canvas_->setRoundingRadius(roundingRadius);
+			updatePixelLabels();
+			break;
+		}
 	}
+	
 	return 0;
 }
 

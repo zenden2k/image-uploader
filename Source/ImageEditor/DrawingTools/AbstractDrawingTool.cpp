@@ -16,6 +16,7 @@ AbstractDrawingTool::AbstractDrawingTool( Canvas *canvas ) {
 	//assert( canvas );
 	canvas_ = canvas;
 	penSize_ = 1;
+	roundingRadius_ = penSize_;
 }
 
 void AbstractDrawingTool::beginDraw( int x, int y ) {
@@ -46,6 +47,11 @@ void AbstractDrawingTool::rightButtonClick(int x, int y)
 void AbstractDrawingTool::setPenSize(int size)
 {
 	penSize_ = size;
+}
+
+void AbstractDrawingTool::setRoundingRadius(int radius)
+{
+	roundingRadius_  = radius;
 }
 
 void AbstractDrawingTool::setForegroundColor(Gdiplus::Color color)

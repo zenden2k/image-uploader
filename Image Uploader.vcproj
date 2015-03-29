@@ -49,7 +49,7 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX;TIXML_USE_STL;PCRE_STATIC;CURL_STATICLIB;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100"
-				MinimalRebuild="true"
+				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -1260,15 +1260,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-link.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\res\icon-link.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-link.png"
+				RelativePath=".\Source\res\icon-link.ico"
 				>
 			</File>
 			<File
@@ -1276,15 +1272,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\icon-link.png"
+				>
+			</File>
+			<File
 				RelativePath="Source\res\icon-region.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-reload.ico"
+				RelativePath=".\Source\res\icon-reload.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-reload.ico"
+				RelativePath=".\res\icon-reload.ico"
 				>
 			</File>
 			<File
@@ -1324,15 +1324,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_add.png"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\res\ImageEditor\icon_add.png"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_additem.ico"
+				RelativePath=".\res\ImageEditor\icon_add.png"
 				>
 			</File>
 			<File
@@ -1340,7 +1336,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\res\icon_additem.ico"
+				>
+			</File>
+			<File
 				RelativePath="Source\res\icon_additional.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\ImageEditor\icon_bold.ico"
 				>
 			</File>
 			<File
@@ -1348,7 +1352,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_bold.ico"
+				RelativePath=".\res\ImageEditor\icon_clipboard.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\ImageEditor\icon_clipboard.png"
 				>
 			</File>
 			<File
@@ -1364,11 +1372,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_down.ico"
+				RelativePath=".\res\icon_down.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_down.ico"
+				RelativePath=".\Source\res\icon_down.ico"
 				>
 			</File>
 			<File
@@ -1384,19 +1392,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_folder2.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\res\icon_folder2.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_folder2.png"
+				RelativePath=".\res\icon_folder2.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\res\icon_folder2.png"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon_folder2.png"
 				>
 			</File>
 			<File
@@ -1420,11 +1428,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_main_new.png"
+				RelativePath=".\Source\res\icon_main_new.png"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_main_new.png"
+				RelativePath=".\res\icon_main_new.png"
 				>
 			</File>
 			<File
@@ -1512,11 +1520,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_underline.ico"
+				RelativePath=".\Source\res\ImageEditor\icon_underline.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\ImageEditor\icon_underline.ico"
+				RelativePath=".\res\ImageEditor\icon_underline.ico"
 				>
 			</File>
 			<File
@@ -1524,11 +1532,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_up.ico"
+				RelativePath=".\res\icon_up.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_up.ico"
+				RelativePath=".\Source\res\icon_up.ico"
 				>
 			</File>
 			<File

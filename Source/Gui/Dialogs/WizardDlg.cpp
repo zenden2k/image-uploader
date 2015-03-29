@@ -52,6 +52,7 @@
 #include <ImageEditor/Gui/ImageEditorWindow.h>
 #include <Func/ImageEditorConfigurationProvider.h>
 #include <Core/Logging.h>
+#include <Core/Images/Utils.h>
 
 using namespace Gdiplus;
 // CWizardDlg
@@ -1695,42 +1696,7 @@ void CWizardDlg::CreateUpdateDlg()
 	}
 }
   
-struct BGRA_COLOR
-{
-	BYTE b;
-	BYTE g;
-	BYTE r;
-	BYTE a;
-};
-// hack for stupid GDIplus
-void Gdip_RemoveAlpha(Bitmap& source, Color color )
-{
-	Rect r( 0, 0, source.GetWidth(),source.GetHeight() );
-	BitmapData  bdSrc;
-	source.LockBits( &r,  ImageLockModeRead , PixelFormat32bppARGB,&bdSrc);
 
-	BYTE* bpSrc = (BYTE*)bdSrc.Scan0;
-	
-	//bpSrc += (int)sourceChannel;
-	
-
-	for ( int i = r.Height * r.Width; i > 0; i-- )
-	{
-		BGRA_COLOR * c = (BGRA_COLOR *)bpSrc;
-	
-		if(c->a!=255)
-		{
-			//c = 255;
-		
-				DWORD * d= (DWORD*)bpSrc;
-			*d= color.ToCOLORREF();
-			c ->a= 255;
-		}
-		bpSrc += 4;
-		
-	}
-	source.UnlockBits( &bdSrc );
-}
 
 
 bool CWizardDlg::CommonScreenshot(CaptureMode mode)
@@ -1865,33 +1831,11 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 			CString saveFolder = GenerateFileName(Settings.ScreenshotSettings.Folder, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
 			MySaveImage(&*result,suggestingFileName,buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
 			screenshotIndex++;
-			if(CopyToClipboard)
+			if ( CopyToClipboard )
 			{
-
-				if ( OpenClipboard() )
-				{
-					EmptyClipboard();
-					if(savingFormat != 0)
-					Gdip_RemoveAlpha(*result,Color(255,255,255,255));
-					HBITMAP out=0;
-					result->GetHBITMAP(Color(255,255,255,255),&out);
-					HDC dc = GetDC();
-					CDC origDC,  destDC;
-					origDC.CreateCompatibleDC(dc);
-					CBitmap destBmp;
-					destBmp.CreateCompatibleBitmap(dc, result->GetWidth(), result->GetHeight());
-					HBITMAP oldOrigBmp = origDC.SelectBitmap(out);
-					destDC.CreateCompatibleDC(dc);
-					HBITMAP oldDestBmp = destDC.SelectBitmap(destBmp);
-					destDC.BitBlt(0,0,result->GetWidth(),result->GetHeight(),origDC,0,0,SRCCOPY);
-					destDC.SelectBitmap(oldDestBmp);
-					origDC.SelectBitmap(oldOrigBmp);
-					SetClipboardData(CF_BITMAP, destBmp);
-					CloseClipboard(); //закрываем буфер обмена
-					 DeleteObject(out);
-					 ReleaseDC(dc);
-					if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD)
-					{
+				CDC dc = GetDC();
+				if ( CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) { // remove alpha if saving format is JPEG
+					if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD) {
 						floatWnd.ShowBaloonTip(TR("Снимок сохранен в буфере обмена"),_T("Image Uploader"));
 						Result = false;
 					}

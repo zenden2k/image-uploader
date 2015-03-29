@@ -536,6 +536,7 @@ CSettings::CSettings()
 	ImageEditorSettings.BackgroundColor = Gdiplus::Color(255,255,255);
 	ImageEditorSettings.ForegroundColor = Gdiplus::Color(255,0,0);
 	ImageEditorSettings.PenSize = 12;
+	ImageEditorSettings.RoundingRadius = ImageEditorSettings.PenSize;
 	StringToFont(_T("Arial,12,b,204"), &ImageEditorSettings.Font);
 
 
@@ -593,6 +594,7 @@ CSettings::CSettings()
 	imageEditor.nm_bind(ImageEditorSettings, ForegroundColor);
 	imageEditor.nm_bind(ImageEditorSettings, BackgroundColor);
 	imageEditor.nm_bind(ImageEditorSettings, PenSize);
+	imageEditor.nm_bind(ImageEditorSettings, RoundingRadius);
 	imageEditor.nm_bind(ImageEditorSettings, Font);
 
 	SettingsNode& image = mgr_["Image"];

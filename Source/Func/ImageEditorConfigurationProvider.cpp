@@ -7,6 +7,7 @@ ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
 	foregroundColor_ = Settings.ImageEditorSettings.ForegroundColor;
 	backgroundColor_ = Settings.ImageEditorSettings.BackgroundColor;
 	font_ =  Settings.ImageEditorSettings.Font;
+	roundingRadius_ = Settings.ImageEditorSettings.RoundingRadius;
 }
 
 
@@ -16,5 +17,6 @@ void ImageEditorConfigurationProvider::saveConfiguration()
 	Settings.ImageEditorSettings.ForegroundColor = foregroundColor_;
 	Settings.ImageEditorSettings.BackgroundColor = backgroundColor_;
 	Settings.ImageEditorSettings.Font = font_;
+	Settings.ImageEditorSettings.RoundingRadius = roundingRadius_;
 }
 

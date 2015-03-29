@@ -16,7 +16,7 @@ public:
 	enum Orientation { orHorizontal, orVertical };
 	enum ItemState { isNormal, isHover, isDown, isDropDown };
 	enum ItemType { itButton, itComboButton, itTinyCombo };
-	enum { kTinyComboDropdownTimer = 42 };
+	enum { kTinyComboDropdownTimer = 42, kSubpanelWidth = 300 };
 	class ToolbarItemDelegate;
 	struct Item {
 		CString title;
@@ -112,7 +112,9 @@ public:
 	int AutoSize();
 	void CreateToolTipForItem(int index);
 	CTrackBarCtrl  penSizeSlider_;
+	CTrackBarCtrl  roundRadiusSlider_;
 	CStatic pixelLabel_;
+	CStatic roundRadiusLabel_;
 protected:
 	Orientation orientation_;
 	std::vector<Item> buttons_;

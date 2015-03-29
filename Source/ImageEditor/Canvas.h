@@ -22,7 +22,7 @@ class Canvas {
 	public:
 		class Callback {
 		public:
-			virtual void updateView( Canvas* canvas, const CRgn& region ) = NULL;
+			virtual void updateView( Canvas* canvas, Gdiplus::Rect rect ) = NULL;
 		};
 		
 		enum DrawingToolType {
@@ -32,16 +32,16 @@ class Canvas {
 
 		enum UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, 
 			uitElementPositionChanged, uitElementForegroundColorChanged, uitElementBackgroundColorChanged,
-			uitPenSizeChanged, uitFontChanged, uitTextChanged
+			uitPenSizeChanged, uitFontChanged, uitTextChanged, uitRoundingRadiusChanged
 		};
-		enum { kMaxPenSize = 50 };
+		enum { kMaxPenSize = 50, kMaxRoundingRadius = 50 };
 		struct UndoHistoryItemElement {
 			MovableElement * movableElement;
 			int pos;
 			POINT startPoint;
 			POINT endPoint;
 			Gdiplus::Color color;
-			int penSize;
+			int penSize; // pensize or rounding radius
 			std::string rawText;
 			UndoHistoryItemElement() {
 				pos = -1;
@@ -76,6 +76,13 @@ class Canvas {
 		int getPenSize() const;
 		void beginPenSizeChanging();
 		void endPenSizeChanging(int penSize);
+
+		void setRoundingRadius(int radius);
+		int getRoundingRadius() const;
+		void beginRoundingRadiusChanging();
+		void endRoundingRadiusChanging(int radius);
+
+
 		void setForegroundColor(Gdiplus::Color color);
 		void setBackgroundColor(Gdiplus::Color color);
 		Gdiplus::Color getForegroundColor() const;
@@ -117,7 +124,11 @@ class Canvas {
 		void setBlurRadius(float radius);
 		bool hasBlurRectangles();
 		void showOverlay(bool show);
+		void selectionChanged();
 		Gdiplus::Rect currentRenderingRect();
+		bool isRoundingRectangleSelected(); 
+		bool isDocumentModified();
+		void setDocumentModified(bool modified);
 		fastdelegate::FastDelegate4<int,int,int,int> onCropChanged;
 		fastdelegate::FastDelegate4<int,int,int,int> onCropFinished;
 		fastdelegate::FastDelegate1<DrawingToolType> onDrawingToolChanged;
@@ -126,6 +137,7 @@ class Canvas {
 		fastdelegate::FastDelegate1<LOGFONT> onFontChanged;
 		fastdelegate::FastDelegate1<TextElement*> onTextEditStarted;
 		fastdelegate::FastDelegate1<TextElement*> onTextEditFinished;
+		fastdelegate::FastDelegate0<void> onSelectionChanged;
 
 		friend class AbstractDrawingTool;
 		friend class VectorElementTool;
@@ -150,6 +162,7 @@ class Canvas {
 		POINT oldPoint_;
 		POINT leftMouseDownPoint_;
 		POINT leftMouseUpPoint_;
+		bool isDocumentModified_;
 		Callback* callback_;
 		DrawingToolType drawingToolType_;
 		DrawingToolType previousDrawingTool_;
@@ -167,10 +180,13 @@ class Canvas {
 		std::stack<UndoHistoryItem> undoHistory_;
 		std::vector<MovableElement*> elementsToDelete_;
 		int penSize_;
+		int originalPenSize_;
+		int roundingRadius_;
+		int originalRoundingRadius_;
 		bool canvasChanged_;
 		bool fullRender_;
 		int blurRectanglesCount_;
-		int originalPenSize_;
+		
 		Gdiplus::Rect updatedRect_;
 		LOGFONT font_;
 		POINT scrollOffset_;

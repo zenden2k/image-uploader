@@ -251,7 +251,7 @@ LRESULT CMainDlg::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
 	imageEditor.showUploadButton(false);
 	imageEditor.showAddToWizardButton(false);
 	
-	ImageEditorWindow::DialogResult dr = imageEditor.DoModal(m_hWnd, ImageEditorWindow::wdmAuto);
+	ImageEditorWindow::DialogResult dr = imageEditor.DoModal(WizardDlg->m_hWnd, ImageEditorWindow::wdmAuto);
 	
 	ThumbsView.OutDateThumb(nCurItem);
 	ThumbsView.UpdateOutdated();

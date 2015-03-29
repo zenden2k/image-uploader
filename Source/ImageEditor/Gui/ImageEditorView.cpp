@@ -47,6 +47,8 @@ LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	GetScrollOffset(pt);
 	if ( canvas_ ) {
 		RECT updateRect = dc.m_ps.rcPaint;
+		//IntersectRect(&updateRect, &updateRect, &canvasRect);
+		
 		/*updateRect.left += pt.x;
 		updateRect.top += pt.y;
 		updateRect.bottom += pt.y;
@@ -94,27 +96,8 @@ LRESULT CImageEditorView::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	cx += ptScroll.x;
 	cy += ptScroll.y;
 	POINT pt = {cx, cy};
-	//LOG(INFO) <<"x=" << cx <<"y=" << cy;
-	/*TextElement *textElement = < canvas_->getCurrentlyEditedTextElement();
-	if ( textElement ) {
-		int elX = textElement->getX();
-		int elY = textElement->getY();
-		RECT rc  = {elX, elY, elX + textElement->getWidth(), elY + textElement->getHeight()};
-		if ( textElement && PtInRect(&rc, pt) ) {
-			InputBoxControl* inputBoxControl = dynamic_cast<InputBoxControl*>(textElement->getInputBox());
-			inputBoxControl->SendMessage(uMsg, MAKEWPARAM(cx - elX, cy - elY), lParam);
-		}
-		return 0;
-	}*/
-	/*RECT toolBarRect;
-	horizontalToolbar_.GetClientRect(&toolBarRect);
-	horizontalToolbar_.ClientToScreen(&toolBarRect);
-	ClientToScreen(&pt);*/
-	/*if ( pt.x >= toolBarRect.left && pt.x <= toolBarRect.right && pt.y >= toolBarRect.top && pt.y <= toolBarRect.bottom ) {
-		return 0;
-	}*/
-//	HWND wnd =  WindowFromPoint(pt);
-	/*if ( wnd == m_hWnd )*/ {
+	RECT canvasRect = {0,0, canvas_->getWidth(), canvas_->getHeigth()};
+    if ( PtInRect(&canvasRect, pt) ){
 		canvas_->mouseMove( cx, cy, wParam );
 	}
 	return 0;
@@ -128,21 +111,12 @@ LRESULT CImageEditorView::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam,
 	cx += ptScroll.x;
 	cy += ptScroll.y;
 	POINT pt = {cx, cy};
-	/*TextElement *textElement = canvas_->getCurrentlyEditedTextElement();
-	if ( textElement ) {
-		int elX = textElement->getX();
-		int elY = textElement->getY();
-		RECT rc  = {elX, elY, elX + textElement->getWidth(), elY + textElement->getHeight()};
-		if ( textElement && PtInRect(&rc, pt) ) {
-			InputBoxControl* inputBoxControl = dynamic_cast<InputBoxControl*>(textElement->getInputBox());
-			inputBoxControl->SendMessage(uMsg, MAKEWPARAM(cx - elX, cy - elY), lParam);
-		}
-		return 0;
-	}*/
-	mouseDown_ = true;
-	SetCapture();
-	//horizontalToolbar_.ShowWindow(SW_HIDE);
-	canvas_->mouseDown( 0, cx, cy );
+	RECT canvasRect = {0,0, canvas_->getWidth(), canvas_->getHeigth()};
+	if ( PtInRect(&canvasRect, pt) ){
+		mouseDown_ = true;
+		SetCapture();
+		canvas_->mouseDown( 0, cx, cy );
+	}
 	return 0;
 }
 
@@ -157,22 +131,12 @@ LRESULT CImageEditorView::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	cx += ptScroll.x;
 	cy += ptScroll.y;
 	POINT pt = {cx, cy};
-	
-	/*TextElement *textElement = canvas_->getCurrentlyEditedTextElement();
-	if ( textElement ) {
-		int elX = textElement->getX();
-		int elY = textElement->getY();
-		RECT rc  = {elX, elY, elX + textElement->getWidth(), elY + textElement->getHeight()};
-		if ( textElement && PtInRect(&rc, pt) ) {
-			InputBoxControl* inputBoxControl = dynamic_cast<InputBoxControl*>(textElement->getInputBox());
-			inputBoxControl->SendMessage(uMsg, MAKEWPARAM(cx - elX, cy - elY), lParam);
-		}
-		return 0;
-	}*/
-	canvas_->mouseUp( 0, cx, cy );
-	ReleaseCapture();
-	mouseDown_ = false;
-//	horizontalToolbar_.ShowWindow(SW_SHOW);
+	RECT canvasRect = {0,0, canvas_->getWidth(), canvas_->getHeigth()};
+	if ( PtInRect(&canvasRect, pt) ){
+		canvas_->mouseUp( 0, cx, cy );
+		ReleaseCapture();
+		mouseDown_ = false;
+	}
 	return 0;
 }
 
@@ -185,8 +149,11 @@ LRESULT CImageEditorView::OnRButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM l
 	cx += ptScroll.x;
 	cy += ptScroll.y;
 	POINT pt = {cx, cy};
-	canvas_->mouseUp( 1, cx, cy );
-	ReleaseCapture();
+	RECT canvasRect = {0,0, canvas_->getWidth(), canvas_->getHeigth()};
+	if ( PtInRect(&canvasRect, pt) ){
+		canvas_->mouseUp( 1, cx, cy );
+		ReleaseCapture();
+	}
 	return 0;
 }
 
@@ -198,18 +165,23 @@ LRESULT CImageEditorView::OnLButtonDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 	GetScrollOffset(ptScroll);
 	cx += ptScroll.x;
 	cy += ptScroll.y;
-	canvas_->mouseDoubleClick( 0, cx, cy );
+	POINT pt = {cx, cy};
+	RECT canvasRect = {0,0, canvas_->getWidth(), canvas_->getHeigth()};
+	if ( PtInRect(&canvasRect, pt) ){
+		canvas_->mouseDoubleClick( 0, cx, cy );
+	}
 	return 0;
 }
 
-void CImageEditorView::updateView( Canvas* canvas, const CRgn& region ) {
+void CImageEditorView::updateView( Canvas* canvas,  Gdiplus::Rect rect  ) {
 	POINT pt;
-	//CRgn rgn = 
-	CRgn rgn = region;
-
 	GetScrollOffset(pt);
-	rgn.OffsetRgn(-pt.x, -pt.y);
-	InvalidateRgn( rgn );
+	rect.Offset(-pt.x, -pt.y);
+
+	RECT rc = {rect.X, rect.Y, rect.GetRight(), rect.GetBottom()};
+	RECT fullRect = { 0,0, canvas_->getWidth(), canvas_->getHeigth()};
+	//GetClientRect(&clientRect);
+	InvalidateRect(&rc);
 }
 
 LRESULT CImageEditorView::OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -218,7 +190,7 @@ LRESULT CImageEditorView::OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 }
 
 LRESULT CImageEditorView::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	HWND 	hwnd = (HWND) wParam;  
+	/*HWND 	hwnd = (HWND) wParam;  
 	POINT ClientPoint, ScreenPoint;
 
 	if(lParam == -1) 
@@ -234,21 +206,7 @@ LRESULT CImageEditorView::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
 		ScreenPoint.y = HIWORD(lParam); 
 		ClientPoint = ScreenPoint;
 		::ScreenToClient(hwnd, &ClientPoint);
-	}
-	
-	/*CMenu menu;
-	menu.CreatePopupMenu();
-	menu.AppendMenu(MF_STRING, ID_UNDO, TR("Отменить"));
-	menu.AppendMenu(MF_STRING, ID_PEN, TR("Карандаш"));
-	menu.AppendMenu(MF_STRING, ID_BRUSH, TR("Кисть"));
-	menu.AppendMenu(MF_STRING, ID_LINE, TR("Линия"));
-	menu.AppendMenu(MF_STRING, ID_RECTANGLE, TR("Прямоугольник"));
-	menu.AppendMenu(MF_STRING, ID_TEXT, TR("Добавить текст"));
-	menu.AppendMenu(MF_STRING, ID_CROP, TR("Обрезка"));
-
-	//menu.SetMenuDefaultItem(0, true);
-	menu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);*/
-
+	}*/
 	return 0;
 }
 
@@ -264,7 +222,15 @@ LRESULT CImageEditorView::OnSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 		return 0;
 	}
 	ScreenToClient(&cursorPos);
-	if ( PtInRect(&clientRect, cursorPos ) ) {
+
+	POINT ptScroll;
+	GetScrollOffset(ptScroll);
+
+	POINT pt = {cursorPos.x + ptScroll.x, cursorPos.y + ptScroll.y };
+
+	RECT canvasRect = {0,0, canvas_->getWidth(), canvas_->getHeigth()};
+
+	if ( PtInRect(&clientRect, cursorPos ) && PtInRect(&canvasRect, pt) ) {
 		SetCursor(getCachedCursor(canvas_->getCursor()));
 	} else {
 		SetCursor(getCachedCursor(ctDefault));
