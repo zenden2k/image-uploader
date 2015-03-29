@@ -1,4 +1,5 @@
 #include "Toolbar.h"
+
 #include <Core/Logging.h>
 #include <GdiPlus.h>
 #include <Gui/GuiTools.h>
@@ -7,6 +8,7 @@
 #include <Core/Images/Utils.h>
 #include <Func/WinUtils.h>
 #include "../Canvas.h"
+
 namespace ImageEditor {
 
 Toolbar::Toolbar(Toolbar::Orientation orientation)
@@ -19,8 +21,13 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
 	dpiScaleX_ = 1.0f;
 	dpiScaleY_ = 1.0f;
 	transparentColor_ = Color(255,50,56);
-	subpanelColor_ = Color(252,252,252);
-	subpanelBrush_.CreateSolidBrush(subpanelColor_.ToCOLORREF());
+	if ( !WinUtils::IsWine() ) {
+		subpanelColor_ = Color(252,252,252);
+	} else {
+		subpanelColor_.SetFromCOLORREF(GetSysColor(COLOR_BTNFACE));
+	}
+	
+		subpanelBrush_.CreateSolidBrush(subpanelColor_.ToCOLORREF());
 	memset(&buttonsRect_, 0, sizeof(buttonsRect_));
 	font_ = 0;
 	textRenderingHint_ = Gdiplus::TextRenderingHintAntiAlias;
@@ -182,8 +189,13 @@ LRESULT Toolbar::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHan
 	return 0;
 }
 
-LRESULT Toolbar::OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT Toolbar::OnColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	if ( WinUtils::IsWine() ) {
+		HDC dc = (HDC) wParam;
+		SetBkMode(dc, TRANSPARENT);
+		return (LRESULT)GetSysColorBrush(COLOR_BTNFACE);
+	}
 	return (LRESULT)(HBRUSH)subpanelBrush_;
 }
 

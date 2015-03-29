@@ -43,6 +43,13 @@ SquirrelObject GetAppVersion() {
 		res.SetValue("Major", (int)IuCoreUtils::stringToint64_t(tokens[0]));
 		res.SetValue("Minor", (int)IuCoreUtils::stringToint64_t(tokens[1]+tokens[2]));
 		res.SetValue("Build", (int)IuCoreUtils::stringToint64_t(BUILD));
+		bool isGui = 
+#ifndef IU_CLI
+			true;
+#else 
+			false;
+#endif
+		res.SetValue("Gui",isGui);
 	}
 	return res;
 }

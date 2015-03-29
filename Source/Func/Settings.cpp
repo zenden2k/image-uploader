@@ -1287,6 +1287,7 @@ void CSettings::Uninstall() {
 	Reg.DeleteKey( "Software\\Zenden.ws\\Image Uploader" );
 	Reg.SetRootKey( HKEY_LOCAL_MACHINE );
 	Reg.DeleteKey( "Software\\Zenden.ws\\Image Uploader" );
+	WinUtils::RemoveBrowserKey();
 
 	CString ShortcutName = GetSendToPath() + _T("\\Image Uploader.lnk");
 	DeleteFile(ShortcutName);

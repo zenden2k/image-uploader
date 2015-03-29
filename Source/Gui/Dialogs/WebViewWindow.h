@@ -6,6 +6,7 @@
 #include "resource.h"       // main symbols
 #include <Gui/Controls/WTLBrowserView.h>
 
+
 class CWebViewWindow: public CWindowImpl<CWebViewWindow>
 {
 public:
@@ -14,6 +15,11 @@ public:
 
 	DECLARE_WND_CLASS(_T("CWebViewWindow"))
 	bool NavigateTo(const CString& url);
+	int DoModal(HWND parent, bool show = true);
+	int exec();
+	void close();
+	CWTLBrowserView view_;
+
 protected:
 	BEGIN_MSG_MAP(CWebViewWindow)
 		
@@ -28,8 +34,11 @@ protected:
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnResize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	CWTLBrowserView view_;
+	
 	HWND hWndClient_;
+	bool isModal_;
+	
+	
 
 };
 

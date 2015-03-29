@@ -5,6 +5,7 @@
 #include <Func/MyUtils.h>
 #include <GdiPlus.h>
 #include <Aclapi.h>
+#include "3rdpart/Registry.h"
 
 namespace WinUtils {
 
@@ -280,6 +281,17 @@ bool IsWindows8orLater() {
 	}
 
 	return FALSE;
+}
+
+bool IsWine()
+{
+	HMODULE hDll = LoadLibrary(_T("ntdll.dll"));
+
+	if (hDll)
+	{
+		return GetProcAddress(hDll, "wine_get_version") != 0;
+	}
+	return false;
 }
 
 bool IsWindows64Bit()
@@ -899,6 +911,76 @@ BOOL MakeDirectoryWritable(LPCTSTR lpPath) {
 	LocalFree(pOldDACL);
 	CloseHandle(hDir);
 	return TRUE;
+}
+
+int GetInternetExplorerMajorVersion()
+{
+	CRegistry Reg;
+	Reg.SetRootKey( HKEY_LOCAL_MACHINE );
+	if ( Reg.SetKey( "Software\\Microsoft\\Internet Explorer" , FALSE ) ) {
+		CString version = Reg.ReadString("svcVersion");
+		int dotPos = version.Find(L'.');
+		if ( dotPos != -1 ) {
+			return StrToInt(version.Left(dotPos));
+		}
+	}
+	return 7;
+}
+
+
+
+TCHAR* GetBrowserKey() {
+	/*if ( sizeof(void*) == 4 && IsWindows64Bit() ) {
+		return _T("SOFTWARE\\Wow6432Node\\Microsoft\\Internet Explorer\\MAIN\\FeatureControl\\FEATURE_BROWSER_EMULATION");
+	}*/
+	return _T("SOFTWARE\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION");
+}
+
+void RemoveBrowserKey(){
+	CRegistry Reg;
+	Reg.SetRootKey( HKEY_LOCAL_MACHINE );
+	if ( Reg.SetKey( GetBrowserKey(), false ) ) {
+		Reg.DeleteKey(myExtractFileName(GetAppFileName()));
+	}
+
+}
+
+void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective) {
+	// Thank to https://www.daniweb.com/software-development/vbnet/code/442963/make-the-webbrowser-control-give-you-the-installed-ie-version-rendering
+
+	//32bit OS
+	//\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION
+	//32bit app on 64bit OS
+	//\SOFTWARE\Wow6432Node\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_BROWSER_EMULATION
+	int value = 0;
+	int majorVersion = GetInternetExplorerMajorVersion();
+	//Value reference: http://msdn.microsoft.com/en-us/library/ee330730%28v=VS.85%29.aspx
+	//IDOC Reference:  http://msdn.microsoft.com/en-us/library/ms535242%28v=vs.85%29.aspx
+
+	switch (majorVersion) {
+		case 8:
+			value = IgnoreIDocDirective ? 8888 : 8000;
+			break;
+		case 9:
+			value = IgnoreIDocDirective ? 9999 : 9000;
+			break;
+		case 10:
+			value = IgnoreIDocDirective ? 10001 : 10000;
+			break;
+		case 11:
+			value = IgnoreIDocDirective ? 11001 :  11000;
+			break;
+		default:
+			return;
+		
+	}
+
+	CRegistry Reg;
+	Reg.SetRootKey( HKEY_CURRENT_USER );
+	if ( Reg.SetKey( GetBrowserKey(), true ) ) {
+		Reg.WriteDword(myExtractFileName(GetAppFileName()), value);
+	}	
+
 }
 
 };

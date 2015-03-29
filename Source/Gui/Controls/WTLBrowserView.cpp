@@ -6,6 +6,7 @@
 #include "resource.h"
 
 #include "WTLBrowserView.h"
+#include <Core/Logging.h>
 
 BOOL CWTLBrowserView::PreTranslateMessage(MSG* pMsg)
 {
@@ -17,10 +18,6 @@ BOOL CWTLBrowserView::PreTranslateMessage(MSG* pMsg)
 	return (BOOL)SendMessage(WM_FORWARDMSG, 0, (LPARAM)pMsg);
 }
 
-void CWTLBrowserView::OnNavigateComplete2(IDispatch* pDisp, const String& szURL)
-{
-	//m_URL.SetWindowText(GetLocationURL());
-}
 
 void CWTLBrowserView::OnStatusTextChange(const String& szText)
 {
@@ -37,4 +34,24 @@ void CWTLBrowserView::OnProgressChange(long nProgress, long nProgressMax)
 void CWTLBrowserView::OnSetSecureLockIcon(long nSecureLockIcon)
 {
 	m_bSecured=nSecureLockIcon>0;
+}
+
+void CWTLBrowserView::OnNavigateComplete2(IDispatch* pDisp, const CString& szURL)
+{
+	if ( onNavigateComplete2 ) {
+		onNavigateComplete2(szURL);
+	}
+}
+
+BOOL CWTLBrowserView::OnNavigateError(IDispatch* pDisp, const String& szURL, const String& szTargetFrameName, LONG nStatusCode)
+{
+	if ( onNavigateError ) {
+		return onNavigateError(szURL, nStatusCode);
+	}
+	return FALSE;
+}
+
+void CWTLBrowserView::OnPropertyChange(const String& szProperty)
+{
+	LOG(ERROR) << szProperty;
 }

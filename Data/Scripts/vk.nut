@@ -54,21 +54,22 @@ function OnUrlChangedCallback(data) {
 
 function OnLoadFinished(data) {
 	local br = data.browser;
-	print(br.title());
+	//DebugMessage("Title=" + br.title());
 }
 
 
 function OnNavigateError(data) {
-	DebugMessage(data.statusCode.tostring());
+	//DebugMessage(data.statusCode.tostring());
 }
 function  UploadFile(FileName, options)
 {
-	local browser = WebBrowser();
+	local browser = CWebBrowser();
 	browser.setTitle(tr("vk.browser.title", "Vk.com authorization"))
 	browser.setOnUrlChangedCallback(OnUrlChangedCallback, null);
 	browser.setOnNavigateErrorCallback(OnNavigateError, null);
 	browser.setOnLoadFinishedCallback(OnLoadFinished, null);
-	browser.navigateToUrl("http://ya.ru/fewfefew");
+	browser.navigateToUrl("http://detectmybrowser.com");
+	browser.navigateToUrl("http://zenden.ws");
 	browser.openModal();
 	return 1;
 }

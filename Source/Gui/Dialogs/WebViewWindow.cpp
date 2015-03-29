@@ -1,13 +1,14 @@
 #include "WebViewWindow.h"
-
+#include <Func/WinUtils.h>
 CWebViewWindow::CWebViewWindow() {
-
+	isModal_ = false;
 }
 CWebViewWindow::~CWebViewWindow() {
 
 }
 
 LRESULT CWebViewWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	WinUtils::UseLatestInternetExplorerVersion(false);
 	RECT rc;
 	GetWindowRect(&rc);
 	hWndClient_ = view_.Create(m_hWnd, rc, _T("about:blank"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL, WS_EX_CLIENTEDGE);
@@ -28,8 +29,49 @@ bool CWebViewWindow::NavigateTo(const CString& url) {
 	return true;
 }
 
+int CWebViewWindow::DoModal(HWND parent, bool show )
+{
+	isModal_ = true;
+	if ( show ) {
+		ShowWindow(SW_SHOW);
+		SetActiveWindow();
+		SetForegroundWindow(m_hWnd);
+	}
+
+	if ( show && parent ) {
+		::EnableWindow(parent, false);
+	}
+
+	CMessageLoop loop;
+	int res = loop.Run();
+	if ( show ) {
+		if ( parent ) {
+			::EnableWindow(parent, true);
+		}
+		ShowWindow(SW_HIDE);
+		if ( parent ) {
+			::SetActiveWindow(parent);
+		}
+	}
+	return res;
+}
+
+int CWebViewWindow::exec()
+{
+	return DoModal(0, false);
+}
+
+void CWebViewWindow::close()
+{
+	PostQuitMessage(1);
+}
+
 LRESULT CWebViewWindow::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	ShowWindow(SW_HIDE);
+	if ( isModal_ ) {
+		PostQuitMessage(0);
+	} else {
+		ShowWindow(SW_HIDE);
+	}
 	bHandled = true;
 	return 1;
 }

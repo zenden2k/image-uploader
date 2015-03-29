@@ -3,10 +3,12 @@
 
 #include "Functions.h"
 #include "RegularExpression.h"
+#include "WebBrowser.h"
 
 namespace ScriptAPI {
 
 extern SquirrelObject* RootTable;
+void RegisterClasses(SquirrelObject* rootTable);
 
 }
 #endif

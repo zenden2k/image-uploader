@@ -9,96 +9,97 @@
 #endif
 
 
-DECLARE_INSTANCE_TYPE_NAME_CUSTOM(ScriptAPI::WebBrowser, "WebBrowser");
+using namespace ScriptAPI;
+DECLARE_INSTANCE_TYPE(CWebBrowser);
 
 namespace ScriptAPI {
 
 
-WebBrowser::WebBrowser()
+CWebBrowser::CWebBrowser()
 {
 	d_ = new WebBrowserPrivate(this);
 }
 
-WebBrowser::~WebBrowser()
+CWebBrowser::~CWebBrowser()
 {
 	delete d_;
 }
 
-bool WebBrowser::navigateToUrl(const std::string& url)
+bool CWebBrowser::navigateToUrl(const std::string& url)
 {
 	return d_->navigateToUrl(url);
 }
 
-void WebBrowser::setOnUrlChangedCallback(SquirrelObject callBack, SquirrelObject context)
+void CWebBrowser::setOnUrlChangedCallback(SquirrelObject callBack, SquirrelObject context)
 {
 	d_->setOnUrlChangedCallback(callBack, context);
 }
 
-void WebBrowser::setOnNavigateErrorCallback(SquirrelObject callBack, SquirrelObject context)
+void CWebBrowser::setOnNavigateErrorCallback(SquirrelObject callBack, SquirrelObject context)
 {
 	d_->setOnNavigateErrorCallback(callBack, context);
 }
 
-void WebBrowser::setOnLoadFinishedCallback(SquirrelObject callBack, SquirrelObject context)
+void CWebBrowser::setOnLoadFinishedCallback(SquirrelObject callBack, SquirrelObject context)
 {
 	d_->setOnLoadFinishedCallback(callBack, context);
 }
 
-bool WebBrowser::openModal()
+bool CWebBrowser::openModal()
 {
 	return d_->openModal();
 }
 
-bool WebBrowser::exec()
+bool CWebBrowser::exec()
 {
 	return d_->exec();
 }
 
-void WebBrowser::show()
+void CWebBrowser::show()
 {
 	d_->show();
 }
 
-void WebBrowser::hide()
+void CWebBrowser::hide()
 {
 	d_->hide();
 }
 
-void WebBrowser::close()
+void CWebBrowser::close()
 {
 	d_->close();
 }
 
-void WebBrowser::setTitle(const std::string& title)
+void CWebBrowser::setTitle(const std::string& title)
 {
 	d_->setTitle(title);
 }
 
-const std::string WebBrowser::url()
+const std::string CWebBrowser::url()
 {
 	return d_->url();
 }
 
-const std::string WebBrowser::title()
+const std::string CWebBrowser::title()
 {
 	return d_->title();
 }
 
 void RegisterWebBrowserClass() {
 	using namespace SqPlus;
-	SQClassDef<WebBrowser>("WebBrowser")
-		.func(&WebBrowser::navigateToUrl, "navigateToUrl")
-		.func(&WebBrowser::openModal, "openModal")
-		.func(&WebBrowser::setTitle, "setTitle")
-		.func(&WebBrowser::exec, "exec")
-		.func(&WebBrowser::show, "show")
-		.func(&WebBrowser::hide, "hide")
-		.func(&WebBrowser::close, "close")
-		.func(&WebBrowser::url, "url")
-		.func(&WebBrowser::url, "url")
-		.func(&WebBrowser::setOnUrlChangedCallback, "setOnUrlChangedCallback")
-		.func(&WebBrowser::setOnLoadFinishedCallback, "setOnLoadFinishedCallback")
-		.func(&WebBrowser::setOnNavigateErrorCallback, "setOnNavigateErrorCallback");
+	SQClassDef<CWebBrowser>("CWebBrowser")
+		.func(&CWebBrowser::navigateToUrl, "navigateToUrl")
+		.func(&CWebBrowser::openModal, "openModal")
+		.func(&CWebBrowser::setTitle, "setTitle")
+		.func(&CWebBrowser::exec, "exec")
+		.func(&CWebBrowser::show, "show")
+		.func(&CWebBrowser::hide, "hide")
+		.func(&CWebBrowser::close, "close")
+		.func(&CWebBrowser::url, "url")
+		.func(&CWebBrowser::title, "title")
+		.func(&CWebBrowser::setOnUrlChangedCallback, "setOnUrlChangedCallback")
+		.func(&CWebBrowser::setOnLoadFinishedCallback, "setOnLoadFinishedCallback")
+		.func(&CWebBrowser::setOnNavigateErrorCallback, "setOnNavigateErrorCallback");
 }
 
 }

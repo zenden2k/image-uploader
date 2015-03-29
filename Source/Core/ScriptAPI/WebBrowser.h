@@ -5,10 +5,10 @@
 
 namespace ScriptAPI {
 	class WebBrowserPrivate;
-	class WebBrowser {
+	class CWebBrowser {
 		public:
-			WebBrowser();
-			~WebBrowser();
+			CWebBrowser();
+			~CWebBrowser();
 			bool navigateToUrl(const std::string& url);
 			void setTitle(const std::string& title);
 			const std::string url();

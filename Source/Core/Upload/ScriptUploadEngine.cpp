@@ -806,6 +806,7 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 		srand(static_cast<unsigned int>(time(0)));
 
 		ScriptAPI::RegisterFunctions(&m_Object);
+		ScriptAPI::RegisterClasses(&m_Object);
 
 		RegisterGlobal(::DebugMessage, "DebugMessage" );
 

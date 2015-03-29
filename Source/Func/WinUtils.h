@@ -18,6 +18,7 @@ namespace WinUtils {
 	bool IsVista();
 	bool IsWindows64Bit();
 	bool IsWindows8orLater();
+	bool IsWine();
 	// Function that gets path to SendTo folder
 	CString GetSendToPath();
 	CString GetSystemSpecialPath(int csidl);
@@ -89,6 +90,9 @@ namespace WinUtils {
 	float GetMonitorScaleFactor();
 	CString GetLastErrorAsString();
 	BOOL MakeDirectoryWritable(LPCTSTR lpPath);
+	int GetInternetExplorerMajorVersion();
+	void RemoveBrowserKey();
+	void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective = false);
 };
 
 #endif

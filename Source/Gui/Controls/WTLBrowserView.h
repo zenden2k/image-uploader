@@ -10,6 +10,7 @@
 #endif // _MSC_VER >= 1000
 
 #include "Browser.h"
+#include <Core/3rdpart/FastDelegate.h>
 
 class CWTLBrowserView : public CWindowImpl<CWTLBrowserView, CAxWindow>, public CWebBrowser2<CWTLBrowserView>
 {
@@ -31,16 +32,20 @@ public:
 //	LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 //	LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
 
-	void OnNavigateComplete2(IDispatch* pDisp, const String& szURL);
 	void OnStatusTextChange(const String& szText);
 	void OnProgressChange(long nProgress, long nProgressMax);
 	void OnSetSecureLockIcon(long nSecureLockIcon);
+	void OnNavigateComplete2(IDispatch* pDisp, const CString& szURL);
+	BOOL OnNavigateError(IDispatch* pDisp, const String& szURL, const String& szTargetFrameName, LONG nStatusCode);
+	void OnPropertyChange(const String& szProperty);
 
 	BOOL IsSecured() const
 	{
 		return m_bSecured;
 	}
 
+	fastdelegate::FastDelegate1<const CString&> onNavigateComplete2;
+	fastdelegate::FastDelegate2<const CString&, LONG, bool> onNavigateError;
 protected:
 	BOOL m_bSecured;
 };

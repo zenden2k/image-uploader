@@ -2112,7 +2112,23 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Source\Core\ScriptAPI\ScriptAPI.cpp"
+						>
+					</File>
+					<File
 						RelativePath=".\Source\Core\ScriptAPI\ScriptAPI.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\ScriptAPI\WebBrowser.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\ScriptAPI\WebBrowser.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Source\Core\ScriptAPI\WebBrowserPrivate_win.h"
 						>
 					</File>
 				</Filter>
@@ -2391,6 +2407,10 @@
 				<Filter
 					Name="Controls"
 					>
+					<File
+						RelativePath=".\Source\Gui\Controls\Browser.h"
+						>
+					</File>
 					<File
 						RelativePath=".\Source\Gui\Controls\CustomEditControl.cpp"
 						>

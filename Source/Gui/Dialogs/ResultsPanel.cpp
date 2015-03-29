@@ -793,7 +793,9 @@ LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND h
 	if ( !webViewWindow_ ) {
 		webViewWindow_ = new CWebViewWindow();
 		webViewWindow_->Create(0,r,_T("Preview Window"),WS_POPUP|WS_OVERLAPPEDWINDOW,WS_EX_TOPMOST	);
+		webViewWindow_->CenterWindow(WizardDlg->m_hWnd);
 		webViewWindow_->ShowWindow(SW_SHOW);
+	
 	}
 	
 	webViewWindow_->NavigateTo(url);
