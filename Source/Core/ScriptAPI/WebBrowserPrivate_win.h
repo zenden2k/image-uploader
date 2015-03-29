@@ -16,6 +16,9 @@ public:
 		browser_ = browser;
 		webViewWindow_.view_.onNavigateComplete2.bind(this, &WebBrowserPrivate::OnPageLoaded);
 		webViewWindow_.view_.onNavigateError.bind(this, &WebBrowserPrivate::OnNavigateError);
+		webViewWindow_.view_.onDocumentComplete.bind(this, &WebBrowserPrivate::OnDocumentComplete);
+		initialWidth_ = 800;
+		initialHeight_ = 600;
 	}
 
 	~WebBrowserPrivate() {
@@ -48,7 +51,7 @@ public:
 		onLoadFinishedCallbackContext_ = context;
 	}
 
-	bool openModal() {
+	bool showModal() {
 		HWND parent = 
 #ifndef IU_CLI
 			pWizardDlg->m_hWnd;
@@ -60,6 +63,7 @@ public:
 		if ( !initialUrl_.IsEmpty() ) {
 			webViewWindow_.NavigateTo(initialUrl_);
 		}
+
 		return webViewWindow_.DoModal(parent);
 
 		//DestroyWindow();
@@ -88,6 +92,19 @@ public:
 
 	}
 
+	void resize(int w, int h) {
+		if ( webViewWindow_.m_hWnd) {
+			CDC hdc = ::GetDC(webViewWindow_.m_hWnd);
+			float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
+			float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+			webViewWindow_.ResizeClient(w * dpiScaleX_, h * dpiScaleY_);
+
+		} else {
+			initialWidth_ = w;
+			initialHeight_ = h;
+		}
+	}
+
 	void setTitle(const std::string& title) {
 		if ( webViewWindow_.m_hWnd) {
 			webViewWindow_.SetWindowText(IuCoreUtils::Utf8ToWstring(title).c_str());
@@ -110,6 +127,9 @@ public:
 		return IuCoreUtils::WstringToUtf8((LPCTSTR)initialTitle_);
 	}
 
+	const std::string getDocumentBody() {
+		return IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.view_.GetHTML());
+	}
 protected:
 	CWebViewWindow webViewWindow_;
 	SquirrelObject onUrlChangedCallback_;
@@ -121,13 +141,25 @@ protected:
 	CString initialUrl_;
 	CString initialTitle_;
 	CWebBrowser* browser_;
+	int initialWidth_;
+	int initialHeight_;
 
 	void create(HWND parent = 0 ) {
 		if ( webViewWindow_.m_hWnd) {
 			return;
 		}
-		CRect r(0,0,600,400);
-		webViewWindow_.Create(0,r,_T("Web Browser"),WS_POPUP|WS_OVERLAPPEDWINDOW	);
+	
+		
+
+		CRect r(0,0, initialWidth_, initialWidth_);
+		webViewWindow_.Create(0,CWindow::rcDefault,_T("Web Browser"), WS_POPUP | WS_OVERLAPPEDWINDOW	);
+		CDC hdc = ::GetDC(webViewWindow_.m_hWnd);
+		float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
+		float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+
+		if ( initialWidth_ && initialHeight_ ) {
+			webViewWindow_.ResizeClient(initialWidth_ * dpiScaleX_, initialHeight_ * dpiScaleY_);
+		}
 	}
 	void OnPageLoaded(const CString& url) {
 		if ( !onUrlChangedCallback_.IsNull() ) {
@@ -146,14 +178,16 @@ protected:
 				LOG(ERROR) << "onUrlChangedCallback: "<<Utf8String(e.desc);
 			}
 		}
+	}
 
+	void OnDocumentComplete(const CString& url) {
 		if ( !onLoadFinishedCallback_.IsNull() ) {
 			try
 			{
 				SquirrelObject data = SquirrelVM::CreateTable();
 				data.SetValue("url", IuCoreUtils::WstringToUtf8((LPCTSTR)url).c_str());
 				BindVariable(data, browser_, "browser");
-					//data.SetValue("browser", browser_);
+				//data.SetValue("browser", browser_);
 				SquirrelFunction<void> func(onLoadFinishedCallbackContext_.IsNull() ? *RootTable : onLoadFinishedCallbackContext_, onLoadFinishedCallback_);
 				if (!func.func.IsNull() ) {
 					func(data);
@@ -165,8 +199,6 @@ protected:
 			}
 		}
 	}
-
-
 
 
 	bool OnNavigateError(const CString& url, LONG statusCode) {

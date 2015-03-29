@@ -13,7 +13,7 @@ namespace ScriptAPI {
 			void setTitle(const std::string& title);
 			const std::string url();
 			const std::string title();
-			bool openModal();
+			bool showModal();
 			bool exec();
 			void show();
 			void hide();
@@ -21,6 +21,7 @@ namespace ScriptAPI {
 			void setOnUrlChangedCallback(SquirrelObject callBack, SquirrelObject context);
 			void setOnNavigateErrorCallback(SquirrelObject callBack, SquirrelObject context);
 			void setOnLoadFinishedCallback(SquirrelObject callBack, SquirrelObject context);
+			const std::string getDocumentBody();
 			
 			friend class WebBrowserPrivate;
 		protected:

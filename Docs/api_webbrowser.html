@@ -24,11 +24,11 @@
 </div>
 <div id="content">
     <div id="left">
-<h1>WebBrowser</h1>
-<h2 id="SimpleXml">WebBrowser class</h2> 
+<h1>CWebBrowser</h1>
+<h2 id="SimpleXml">CWebBrowser class</h2> 
 Represents a web browser window. It is using Internet Explorer components on Windows, but is not implemented on other systems.
 Available since version 1.3.1 build 4270.
-<p>Creating an instance: <code>local webBrowser = WebBrowser();</code></p>
+<p>Creating an instance: <code>local webBrowser = CWebBrowser();</code></p>
 <div class="script-functions">
 <b><i>Class methods: </i></b><p>
 <code class="f"><u>bool</u> navigateToUrl(<u>string</u> <i>url</i>)</code>
@@ -41,18 +41,18 @@ Returns current url.
 <code class="f"><u>string</u> title()</code>
 Returns current page title or url if title is empty.
 <br>
-<code class="f"><u>bool</u> openModal()</code>
+<code class="f"><u>bool</u> showModal()</code>
 Show the web browser window and wait until it is closed. Return values - true (if the window was closed programatically), false - if the window was closed by user.
 <br>
 <code class="f"><u>bool</u> exec()</code>
-Mostly the same as openModal but the window may be hidden and does not block parent window.
+Mostly the same as showModal but the window may be hidden and does not block parent window.
 <br>
 <code class="f"><u>bool</u> show()</code>
 <br>
 <code class="f"><u>bool</u> hide()</code>
 <br>
 <code class="f"><u>bool</u> close()</code>
-Close the window. After call to this function, openModal() or exec() stops execution and returns true.
+Close the window. After call to this function, showModal() or exec() stops execution and returns true.
 <br>
 <code class="f">setOnUrlChangedCallback(<u>function</u> <i>callback</i>, [optional] <i>context</i>)</code>
 Arguments passed to <i>callback</i>:<br>
@@ -89,7 +89,7 @@ Arguments passed to <i>callback</i>:<br>
 </div>
 </div>
 <div id="footer">
-<p> Последнее обновление данного документа — 05.03.2015 года. Copyright &copy; 2007 - 2015, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
+<p> Последнее обновление данного документа — 30.03.2015 года. Copyright &copy; 2007 - 2015, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
 </div>
 
 </body>

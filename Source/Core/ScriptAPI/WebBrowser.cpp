@@ -45,9 +45,14 @@ void CWebBrowser::setOnLoadFinishedCallback(SquirrelObject callBack, SquirrelObj
 	d_->setOnLoadFinishedCallback(callBack, context);
 }
 
-bool CWebBrowser::openModal()
+const std::string CWebBrowser::getDocumentBody()
 {
-	return d_->openModal();
+	return d_->getDocumentBody();
+}
+
+bool CWebBrowser::showModal()
+{
+	return d_->showModal();
 }
 
 bool CWebBrowser::exec()
@@ -89,7 +94,7 @@ void RegisterWebBrowserClass() {
 	using namespace SqPlus;
 	SQClassDef<CWebBrowser>("CWebBrowser")
 		.func(&CWebBrowser::navigateToUrl, "navigateToUrl")
-		.func(&CWebBrowser::openModal, "openModal")
+		.func(&CWebBrowser::showModal, "showModal")
 		.func(&CWebBrowser::setTitle, "setTitle")
 		.func(&CWebBrowser::exec, "exec")
 		.func(&CWebBrowser::show, "show")
@@ -97,6 +102,7 @@ void RegisterWebBrowserClass() {
 		.func(&CWebBrowser::close, "close")
 		.func(&CWebBrowser::url, "url")
 		.func(&CWebBrowser::title, "title")
+		.func(&CWebBrowser::getDocumentBody, "getDocumentBody")
 		.func(&CWebBrowser::setOnUrlChangedCallback, "setOnUrlChangedCallback")
 		.func(&CWebBrowser::setOnLoadFinishedCallback, "setOnLoadFinishedCallback")
 		.func(&CWebBrowser::setOnNavigateErrorCallback, "setOnNavigateErrorCallback");

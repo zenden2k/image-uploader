@@ -1,4 +1,11 @@
 
+clientId <- "4851603";
+redirectUri <- "https://oauth.vk.com/blank.html";
+redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.com\\/blank\\.html";
+apiVersion <- "5.29";
+token <- "";
+expiresIn <- 0;
+userId <- 0;
 
 function tr(key, text) {
 	try {
@@ -34,29 +41,42 @@ function str_replace(str, pattern, replace_with)
 	return resultStr;
 }
 
-class Test {
-	width = 10;
-	constructor(params) {
-		DebugMessage(width.tostring());
-	}
-	function callback(data) {
-		DebugMessage(data.url);
-		DebugMessage(width.tostring());
-	}
-	
-}
-/*function callback(data) {
-	DebugMessage(data.url);
-}*/
 function OnUrlChangedCallback(data) {
+	local reg = CRegExp("^" +redirectUrlEscaped, "");
+	if ( reg.match(data.url) ) {
+		local br = data.browser;
+		DebugMessage(br.getDocumentBody(), true);
+		local regError = CRegExp("error=([^&]+)", "");
+		if ( regError.find(data.url) ) {
+			DebugMessage("error="+ regError.getMatch(0));
+		}
+		local regToken = CRegExp("access_token=([^&]+)", "");
+		if ( regToken.find(data.url) ) {
+			token = regToken.getMatch(0);
+			DebugMessage("token="+ token);
+		}
+		
+		local regExpires = CRegExp("expires_in=([^&]+)", "");
+		if ( regExpires.find(data.url) ) {
+			expiresIn = regExpires.getMatch(0);
+			DebugMessage("expiresIn="+ expiresIn);
+		}
+		
+		local regUserId = CRegExp("user_id=([^&]+)", "");
+		if ( regUserId.find(data.url) ) {
+			userId = regUserId.getMatch(0);
+			DebugMessage("userId="+ userId);
+		}
+
+		
+	}
 	//DebugMessage(data.url);
 }
 
 function OnLoadFinished(data) {
-	local br = data.browser;
+
 	//DebugMessage("Title=" + br.title());
 }
-
 
 function OnNavigateError(data) {
 	//DebugMessage(data.statusCode.tostring());
@@ -68,8 +88,19 @@ function  UploadFile(FileName, options)
 	browser.setOnUrlChangedCallback(OnUrlChangedCallback, null);
 	browser.setOnNavigateErrorCallback(OnNavigateError, null);
 	browser.setOnLoadFinishedCallback(OnLoadFinished, null);
-	browser.navigateToUrl("http://detectmybrowser.com");
-	browser.navigateToUrl("http://zenden.ws");
-	browser.openModal();
+	browser.navigateToUrl("http://zenden");
+		//browser.navigateToUrl("http://detectmybrowser.com/");
+	
+	local url = "https://oauth.vk.com/authorize?" + 
+			"client_id=" + clientId  + 
+			"&scope=photos" +
+			"&redirect_uri=" + nm.urlEncode(redirectUri) +  
+			"&display=popup" + 
+			"&v=" + apiVersion  + 
+			"&response_type=token";
+	DebugMessage(url);
+	browser.navigateToUrl(url
+	);
+	browser.showModal();
 	return 1;
 }

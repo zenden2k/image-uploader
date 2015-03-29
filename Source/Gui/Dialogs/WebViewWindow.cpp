@@ -12,6 +12,7 @@ LRESULT CWebViewWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	RECT rc;
 	GetWindowRect(&rc);
 	hWndClient_ = view_.Create(m_hWnd, rc, _T("about:blank"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL, WS_EX_CLIENTEDGE);
+	view_.PutSilent(TRUE); // Supress javascript errors http://stackoverflow.com/questions/7646055/supressing-script-error-in-ie8-c
 	//view_.GoHome();
 	return 0;
 }
@@ -41,6 +42,8 @@ int CWebViewWindow::DoModal(HWND parent, bool show )
 	if ( show && parent ) {
 		::EnableWindow(parent, false);
 	}
+
+	CenterWindow(parent);
 
 	CMessageLoop loop;
 	int res = loop.Run();

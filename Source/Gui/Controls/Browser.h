@@ -587,6 +587,45 @@ public:
 		_stprintf(szURL,_T("res://%s/%s"),szFilename,szID);
 		return Navigate(szURL);
 	}
+
+	CString GetHTML() {
+		IDispatchPtr spDisp = GetDocument();
+		/*IPersistStream* pPersistStream = 0;
+		HRESULT hr = doc->QueryInterface(
+			IID_IPersistStream, (void**)&pPersistStream);*/
+		CComQIPtr<IHTMLDocument2, &IID_IHTMLDocument2> spHTML; 
+		spHTML = spDisp; 
+		if (spHTML) 
+		{ 
+			HRESULT hr; 
+			CComPtr<IHTMLElement> pBody; 
+			hr = spHTML->get_body(&pBody); 
+			if (SUCCEEDED(hr)) 
+			{ 
+				BSTR bstrHTMLText; 
+				hr = pBody->get_outerHTML(&bstrHTMLText); 
+				if (SUCCEEDED(hr)) 
+				{ 
+					CString res = bstrHTMLText;
+					return bstrHTMLText;
+					/*int iLen = SysStringLen(bstrHTMLText), iRes; 
+					LPTSTR psz = new TCHAR[iLen+1]; 
+					ZeroMemory(psz, iLen+1); 
+					iRes = WideCharToMultiByte(CP_ACP, 0, bstrHTMLText, iLen, psz, 
+						iLen, NULL, NULL); 
+					if (iRes == iLen) 
+					{ 
+						// Do the job right now ! 
+						delete [] psz; 
+					} */
+				} 
+			} 
+			else 
+			{ 
+				// not an HTML doc 
+			} 
+		}
+	}
 	
 protected:
 	enum

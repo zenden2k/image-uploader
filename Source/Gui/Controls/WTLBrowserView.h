@@ -38,6 +38,7 @@ public:
 	void OnNavigateComplete2(IDispatch* pDisp, const CString& szURL);
 	BOOL OnNavigateError(IDispatch* pDisp, const String& szURL, const String& szTargetFrameName, LONG nStatusCode);
 	void OnPropertyChange(const String& szProperty);
+	void OnDocumentComplete(IDispatch* pDisp, const String& szURL);
 
 	BOOL IsSecured() const
 	{
@@ -45,6 +46,7 @@ public:
 	}
 
 	fastdelegate::FastDelegate1<const CString&> onNavigateComplete2;
+	fastdelegate::FastDelegate1<const CString&> onDocumentComplete;
 	fastdelegate::FastDelegate2<const CString&, LONG, bool> onNavigateError;
 protected:
 	BOOL m_bSecured;

@@ -930,6 +930,11 @@ int GetInternetExplorerMajorVersion()
 
 
 TCHAR* GetBrowserKey() {
+	//32bit OS
+	//\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION
+	//32bit app on 64bit OS
+	//\SOFTWARE\Wow6432Node\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_BROWSER_EMULATION
+
 	/*if ( sizeof(void*) == 4 && IsWindows64Bit() ) {
 		return _T("SOFTWARE\\Wow6432Node\\Microsoft\\Internet Explorer\\MAIN\\FeatureControl\\FEATURE_BROWSER_EMULATION");
 	}*/
@@ -948,10 +953,6 @@ void RemoveBrowserKey(){
 void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective) {
 	// Thank to https://www.daniweb.com/software-development/vbnet/code/442963/make-the-webbrowser-control-give-you-the-installed-ie-version-rendering
 
-	//32bit OS
-	//\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION
-	//32bit app on 64bit OS
-	//\SOFTWARE\Wow6432Node\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_BROWSER_EMULATION
 	int value = 0;
 	int majorVersion = GetInternetExplorerMajorVersion();
 	//Value reference: http://msdn.microsoft.com/en-us/library/ee330730%28v=VS.85%29.aspx

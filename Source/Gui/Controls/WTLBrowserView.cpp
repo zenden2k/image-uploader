@@ -53,5 +53,12 @@ BOOL CWTLBrowserView::OnNavigateError(IDispatch* pDisp, const String& szURL, con
 
 void CWTLBrowserView::OnPropertyChange(const String& szProperty)
 {
-	LOG(ERROR) << szProperty;
+	//LOG(ERROR) << szProperty;
+}
+
+void CWTLBrowserView::OnDocumentComplete(IDispatch* pDisp, const String& szURL)
+{
+	if ( onDocumentComplete ) {
+		onDocumentComplete(szURL);
+	}
 }
