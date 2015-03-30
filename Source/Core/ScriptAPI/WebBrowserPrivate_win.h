@@ -8,6 +8,7 @@
 #include <Core/Logging.h>
 #include <Core/Squirrelnc.h>
 #include <Gui/Dialogs/WizardDlg.h>
+#include "HtmlDocumentPrivate_win.h"
 namespace ScriptAPI {
 using namespace SqPlus;
 class WebBrowserPrivate {
@@ -145,15 +146,28 @@ public:
 		return IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.view_.GetHTML());
 	}
 
+	HtmlDocument document() {
+		IDispatchPtr doc = webViewWindow_.view_.GetDocument();
+		//CComQIPtr<IHTMLDocument3,&IID_IHTMLDocument2> spHTML();
+		
+		return new HtmlDocumentPrivate(doc);
+	}
+
 	bool injectJavaScript(const std::string& code) {
 		if ( webViewWindow_.m_hWnd) {
-			return webViewWindow_.view_.injectJavaScript(IuCoreUtils::Utf8ToWstring(code).c_str());
+			CComVariant res;
+			/*CComBSTR strSource();
+			CComVariant bstrTarget;
+			
+			bstrTarget.vt = VT_BSTR;
+			bstrTarget.bstrVal = strSource.Copy();*/
+			return webViewWindow_.view_.CallJScript(_T("eval"), IuCoreUtils::Utf8ToWstring(code).c_str(), &res);
 		} else {
 			LOG(ERROR) << "injectJavaScript: WebBrowser control is not created yet.";
 		}
 	}
 
-	SquirrelObject callJavaScript(const std::string& funcName, SquirrelObject args) {
+	SquirrelObject callJavaScriptFunction(const std::string& funcName, SquirrelObject args) {
 		if ( webViewWindow_.m_hWnd) {
 			CComVariant res;
 			webViewWindow_.view_.CallJScript(IuCoreUtils::Utf8ToWstring(funcName).c_str(), &res);

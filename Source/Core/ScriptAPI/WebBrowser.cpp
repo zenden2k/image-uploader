@@ -11,6 +11,7 @@
 
 using namespace ScriptAPI;
 DECLARE_INSTANCE_TYPE(CWebBrowser);
+DECLARE_INSTANCE_TYPE(HtmlDocument);
 
 namespace ScriptAPI {
 
@@ -50,6 +51,11 @@ const std::string CWebBrowser::getDocumentBody()
 	return d_->getDocumentBody();
 }
 
+ScriptAPI::HtmlDocument CWebBrowser::document()
+{
+	return d_->document();
+}	
+
 bool CWebBrowser::setHtml(const std::string& html)
 {
 	return d_->setHtml(html);
@@ -60,9 +66,9 @@ bool CWebBrowser::injectJavaScript(const std::string& code)
 	return d_->injectJavaScript(code);
 }
 
-SquirrelObject CWebBrowser::callJavaScript(const std::string& funcName, SquirrelObject args)
+SquirrelObject CWebBrowser::callJavaScriptFunction(const std::string& funcName, SquirrelObject args)
 {
-	return d_->callJavaScript(funcName, args);
+	return d_->callJavaScriptFunction(funcName, args);
 }
 
 bool CWebBrowser::showModal()
@@ -118,9 +124,10 @@ void RegisterWebBrowserClass() {
 		.func(&CWebBrowser::url, "url")
 		.func(&CWebBrowser::title, "title")
 		.func(&CWebBrowser::getDocumentBody, "getDocumentBody")
+		.func(&CWebBrowser::document, "document")
 		.func(&CWebBrowser::setHtml, "setHtml")
 		.func(&CWebBrowser::injectJavaScript, "injectJavaScript")
-		.func(&CWebBrowser::callJavaScript, "callJavaScript")
+		.func(&CWebBrowser::callJavaScriptFunction, "callJavaScriptFunction")
 		.func(&CWebBrowser::setOnUrlChangedCallback, "setOnUrlChangedCallback")
 		.func(&CWebBrowser::setOnLoadFinishedCallback, "setOnLoadFinishedCallback")
 		.func(&CWebBrowser::setOnNavigateErrorCallback, "setOnNavigateErrorCallback");

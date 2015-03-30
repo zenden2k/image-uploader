@@ -658,6 +658,17 @@ public:
 		return false;
 	}
 
+	bool injectJavaScript2(const CString& javascript) {
+		CComPtr<IHTMLElement> bodyEle;
+		CComQIPtr<IHTMLDocument2,&IID_IHTMLDocument2> spHTML(GetDocument());
+		IHTMLWindow2 window;
+		spHTML->get_parentWindow(&window);
+		window->execScript()
+		spHTML->get_body(&bodyEle);
+		CComBSTR code = "<div style='display:none;'>&nbsp;<script type='text/javascript'>"+ javascript + 	"</script></div>";
+		return bodyEle->insertAdjacentHTML(L"afterBegin",code) == ERROR_SUCCESS;
+	}
+
 
 	const CString GetSystemErrorMessage(DWORD dwError)
 	{
@@ -712,14 +723,14 @@ public:
 
 	bool CallJScript(const CString strFunc,const CString strArg1,CComVariant* pVarResult)
 	{
-		CStringArray paramArray;
+		CAtlArray<CString> paramArray;
 		paramArray.Add(strArg1);
 		return CallJScript(strFunc,paramArray,pVarResult);
 	}
 
 	bool CallJScript(const CString strFunc,const CString strArg1,const CString strArg2,CComVariant* pVarResult)
 	{
-		CStringArray paramArray;
+		CAtlArray<CString> paramArray;
 		paramArray.Add(strArg1);
 		paramArray.Add(strArg2);
 		return CallJScript(strFunc,paramArray,pVarResult);
@@ -727,7 +738,7 @@ public:
 
 	bool CallJScript(const CString strFunc,const CString strArg1,const CString strArg2,const CString strArg3,CComVariant* pVarResult)
 	{
-		CStringArray paramArray;
+		CAtlArray<CString> paramArray;
 		paramArray.Add(strArg1);
 		paramArray.Add(strArg2);
 		paramArray.Add(strArg3);

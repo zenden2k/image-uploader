@@ -31,19 +31,16 @@ function OnUrlChangedCallback(data) {
 			local regToken = CRegExp("access_token=([^&]+)", "");
 			if ( regToken.match(data.url) ) {
 				token = regToken.getMatch(0);
-				//DebugMessage("token="+ token);
 			}
 			
 			local regExpires = CRegExp("expires_in=([^&]+)", "");
 			if ( regExpires.match(data.url) ) {
 				expiresIn = regExpires.getMatch(0);
-				//DebugMessage("expiresIn="+ expiresIn);
 			}
 			
 			local regUserId = CRegExp("user_id=([^&]+)", "");
 			if ( regUserId.match(data.url) ) {
 				userId = regUserId.getMatch(0);
-				//DebugMessage("userId="+ userId);
 			}
 			
 			ServerParams.setParam("prevLogin", ServerParams.getParam("Login"));
@@ -51,8 +48,8 @@ function OnUrlChangedCallback(data) {
 			ServerParams.setParam("userId", userId);
 			ServerParams.setParam("expiresIn", expiresIn.tostring());	
 			ServerParams.setParam("tokenTime", time().tostring());	
-			br.close();
 		}
+		br.close();
 	}
 }
 
