@@ -263,6 +263,9 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
+	<Server3 Name="vk.com" Authorize="2" Plugin="vk" MinVersion="1.3.1.4270" SupportsFolders="1" NeedPassword="0" >
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" ViewUrlTemplate="stub"/>
+	</Server3>
 	<!--
 		Since 1.3.x release server declaration for "urlshortening" server node must be "Server2",
 	-->
@@ -342,7 +345,7 @@
 		</Actions>
 		<Result DirectUrlTemplate="http://8b.kz/$(surl)" />
 	</Server2>
-<Server2 Name="clck.ru" Debug="0" Type="urlshortening">
+	<Server2 Name="clck.ru" Debug="0" Type="urlshortening">
 		<Actions>
 			<Action Type="post" Url="https://clck.ru/--" PostParams="url=$(_ORIGINALURL)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
 		</Actions>

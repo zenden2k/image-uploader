@@ -70,7 +70,7 @@ class CHistoryManager
 		CHistoryManager();
 		virtual ~CHistoryManager();
 		void setHistoryFileName(const std::string& filepath, const std::string& nameprefix);
-		CHistorySession* newSession();
+		std_tr::shared_ptr<CHistorySession> newSession();
 		std::string makeFileName() const;
 
 	private:

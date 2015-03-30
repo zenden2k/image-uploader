@@ -37,7 +37,8 @@ protected:
 	
 	HWND hWndClient_;
 	bool isModal_;
-	
+	CIcon icon_;
+	CIcon iconSmall_;
 	
 
 };

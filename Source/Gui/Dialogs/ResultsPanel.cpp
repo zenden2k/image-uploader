@@ -792,7 +792,7 @@ LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND h
 	CRect r(0,0,600,400);
 	if ( !webViewWindow_ ) {
 		webViewWindow_ = new CWebViewWindow();
-		webViewWindow_->Create(0,r,_T("Preview Window"),WS_POPUP|WS_OVERLAPPEDWINDOW,WS_EX_TOPMOST	);
+		webViewWindow_->Create(0,r,TR("Окно предпросмотра"),WS_POPUP|WS_OVERLAPPEDWINDOW,WS_EX_TOPMOST	);
 		webViewWindow_->CenterWindow(WizardDlg->m_hWnd);
 		webViewWindow_->ShowWindow(SW_SHOW);
 	

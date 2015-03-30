@@ -21,6 +21,15 @@ to maintain a single distribution point for the source code.
 #include <ExDispid.h>
 #include <ComDef.h>
 #include <mshtml.h>
+#include <Core/Logging.h>
+
+#define CHECK_POINTER(p)\
+	ATLASSERT(p != NULL);\
+	if(p == NULL)\
+	{\
+	ShowError(_T("NULL pointer"));\
+	return false;\
+	}
 
 class CWebBrowser2EventsBase
 {
@@ -570,7 +579,217 @@ public:
 		m_pBrowser->QueryStatusWB(nCmd,&nResult);
 		return nResult;
 	}
+
+	// https://msdn.microsoft.com/en-us/library/aa752047(v=vs.85).aspx
+	HRESULT LoadWebBrowserFromStream(IWebBrowser* pWebBrowser, IStream* pStream)
+	{
+		HRESULT hr;
+		IDispatch* pHtmlDoc = NULL;
+		IPersistStreamInit* pPersistStreamInit = NULL;
+
+		// Retrieve the document object.
+		hr = pWebBrowser->get_Document( &pHtmlDoc );
+		if ( SUCCEEDED(hr) )
+		{
+			// Query for IPersistStreamInit.
+			hr = pHtmlDoc->QueryInterface( IID_IPersistStreamInit,  (void**)&pPersistStreamInit );
+			if ( SUCCEEDED(hr) )
+			{
+				// Initialize the document.
+				hr = pPersistStreamInit->InitNew();
+				if ( SUCCEEDED(hr) )
+				{
+					// Load the contents of the stream.
+					hr = pPersistStreamInit->Load( pStream );
+					return hr;
+				}
+				pPersistStreamInit->Release();
+			}
+			pHtmlDoc->Release();
+		}
+		return S_FALSE;
+	}
+
 	
+	HRESULT displayHTML(const CString& szHTMLText) {
+		// Create a stream containing the HTML.
+		HRESULT hr;
+		 HGLOBAL hHTMLText;
+		  IStream* pStream = NULL;
+		size_t cchLength = szHTMLText.GetLength();
+		//  TODO: Safely determine the length of szHTMLText in TCHAR.
+		hHTMLText = GlobalAlloc( GPTR, (cchLength+1 ) * sizeof(TCHAR));
+
+		if ( hHTMLText )
+		{
+			//size_t cchMax = 256;
+			lstrcpy((TCHAR*)hHTMLText, /*cchMax + 1,*/ szHTMLText);
+			//  TODO: Add error handling code here.
+
+			hr = CreateStreamOnHGlobal( hHTMLText, TRUE, &pStream );
+			if ( SUCCEEDED(hr) )
+			{
+				// Call the helper function to load the browser from the stream.
+				LoadWebBrowserFromStream( m_pBrowser, pStream  );
+				pStream->Release();
+			}
+			GlobalFree( hHTMLText );
+		}
+
+		return hr;
+	}
+
+	bool injectJavaScript(const CString& javascript) {
+		CComQIPtr<IHTMLDocument2,&IID_IHTMLDocument2> pDocument2(GetDocument());
+		CComPtr<IHTMLElement> pScriptElement; 
+		if(pDocument2 && 
+			SUCCEEDED(pDocument2->createElement(CComBSTR("SCRIPT"), &pScriptElement)))
+		{
+			if(pScriptElement)
+			{
+				CComQIPtr<IHTMLScriptElement> pScript(pScriptElement);
+
+				if(pScript &&
+					SUCCEEDED(pScript->put_text(ATL::CComBSTR(javascript)))) {
+						return true;
+				}
+			}
+		}
+		return false;
+	}
+
+
+	const CString GetSystemErrorMessage(DWORD dwError)
+	{
+		CString strError;
+		LPTSTR lpBuffer;
+
+		if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+			NULL,  dwError,
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_SYS_DEFAULT),
+			(LPTSTR) &lpBuffer, 0, NULL))
+
+		{
+			strError = "FormatMessage Netive Error" ;
+		}
+		else
+		{
+			strError = lpBuffer;
+			LocalFree(lpBuffer);
+		}
+		return strError;
+	}
+
+	inline void ShowError(LPCTSTR lpszText)
+	{
+		LOG(ERROR) << "JSCall Error:\n" + CString(lpszText);
+	}
+
+
+
+	bool GetJScript(CComPtr<IDispatch>& spDisp)
+	{
+		CComQIPtr<IHTMLDocument2,&IID_IHTMLDocument2> m_spDoc(GetDocument());
+		CHECK_POINTER(m_spDoc);
+		HRESULT hr = m_spDoc->get_Script(&spDisp);
+		ATLASSERT(SUCCEEDED(hr));
+		return SUCCEEDED(hr);
+	}
+
+	bool GetJScripts(CComPtr<IHTMLElementCollection>& spColl)
+	{
+		CHECK_POINTER(m_spDoc);
+		HRESULT hr = m_spDoc->get_scripts(&spColl);
+		ATLASSERT(SUCCEEDED(hr));
+		return SUCCEEDED(hr);
+	}
+
+	bool CallJScript(const CString strFunc,CComVariant* pVarResult)
+	{
+		CAtlArray<CString> paramArray;
+		return CallJScript(strFunc,paramArray,pVarResult);
+	}
+
+	bool CallJScript(const CString strFunc,const CString strArg1,CComVariant* pVarResult)
+	{
+		CStringArray paramArray;
+		paramArray.Add(strArg1);
+		return CallJScript(strFunc,paramArray,pVarResult);
+	}
+
+	bool CallJScript(const CString strFunc,const CString strArg1,const CString strArg2,CComVariant* pVarResult)
+	{
+		CStringArray paramArray;
+		paramArray.Add(strArg1);
+		paramArray.Add(strArg2);
+		return CallJScript(strFunc,paramArray,pVarResult);
+	}
+
+	bool CallJScript(const CString strFunc,const CString strArg1,const CString strArg2,const CString strArg3,CComVariant* pVarResult)
+	{
+		CStringArray paramArray;
+		paramArray.Add(strArg1);
+		paramArray.Add(strArg2);
+		paramArray.Add(strArg3);
+		return CallJScript(strFunc,paramArray,pVarResult);
+	}
+
+	bool CallJScript(const CString strFunc, const CAtlArray<CString>& paramArray,CComVariant* pVarResult)
+	{
+		CComPtr<IDispatch> spScript;
+		if(!GetJScript(spScript))
+		{
+			ShowError(_T("Cannot GetScript"));
+			return false;
+		}
+		CComBSTR bstrMember(strFunc);
+		DISPID dispid = NULL;
+		HRESULT hr = spScript->GetIDsOfNames(IID_NULL,&bstrMember,1,
+			LOCALE_SYSTEM_DEFAULT,&dispid);
+		if(FAILED(hr))
+		{
+			ShowError(GetSystemErrorMessage(hr));
+			return false;
+		}
+
+		const int arraySize = paramArray.GetCount();
+
+		DISPPARAMS dispparams;
+		memset(&dispparams, 0, sizeof dispparams);
+		dispparams.cArgs = arraySize;
+		dispparams.rgvarg = new VARIANT[dispparams.cArgs];
+
+		for( int i = 0; i < arraySize; i++)
+		{
+			CComBSTR bstr = paramArray.GetAt(arraySize - 1 - i); // back reading
+			bstr.CopyTo(&dispparams.rgvarg[i].bstrVal);
+			dispparams.rgvarg[i].vt = VT_BSTR;
+		}
+		dispparams.cNamedArgs = 0;
+
+		EXCEPINFO excepInfo;
+		memset(&excepInfo, 0, sizeof excepInfo);
+		CComVariant vaResult;
+		UINT nArgErr = (UINT)-1;  // initialize to invalid arg
+
+		hr = spScript->Invoke(dispid,IID_NULL,0,
+			DISPATCH_METHOD,&dispparams,&vaResult,&excepInfo,&nArgErr);
+
+		delete [] dispparams.rgvarg;
+		if(FAILED(hr))
+		{
+			ShowError(GetSystemErrorMessage(hr));
+			return false;
+		}
+
+		if(pVarResult)
+		{
+			*pVarResult = vaResult;
+		}
+		return true;
+	}
+
+
 	HRESULT LoadFromResource(UINT nID) 
 	{
 		TCHAR szFilename[MAX_PATH];

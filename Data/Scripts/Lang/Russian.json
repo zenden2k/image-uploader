@@ -9,5 +9,20 @@
 	},
 	"radikal" : {
 		"login_error" : "Ошибка авторизации на radikal.ru"
+	},
+	"vk" : {
+		"privacy" : {
+			"all_users" : "Все пользователи",
+			"friends_only" : "Только друзья",
+			"friends_and_friends_of_friends" : "Друзья и друзья друзей",
+			"just_me" : "Только я"
+		},
+		"browser" : {
+			"title" : "Авторизация на vk.com"
+		},
+		"errors" : {
+			"no_albums" : "В вашем профиле нет ни одного альбома."
+		},
+		"default_album_desc" : "Изображения, загруженные с помощью программы Image Uploader"
 	}
 }

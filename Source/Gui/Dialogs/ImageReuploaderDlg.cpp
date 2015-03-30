@@ -48,15 +48,12 @@ CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * 
 	m_EngineList = engineList;
 	queueUploader_ = new CFileQueueUploader();
 	queueUploader_->setCallback( this );
-	historySession_ = NULL;
 	htmlClipboardFormatId = RegisterClipboardFormat(_T("HTML Format"));
 }
 
 CImageReuploaderDlg::~CImageReuploaderDlg()
 {
-	delete historySession_;
 	delete queueUploader_;
-	historySession_ = 0;
 }
 
 LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -479,8 +476,7 @@ bool CImageReuploaderDlg::BeginDownloading()
 
 			SetDlgItemText(IDCANCEL, TR("Остановить"));
 			CHistoryManager * mgr = ZBase::get()->historyManager();
-
-			delete historySession_;			
+		
 			historySession_ = mgr->newSession();
 
 			m_FileDownloader.onFileFinished.bind(this, &CImageReuploaderDlg::OnFileFinished);

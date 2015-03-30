@@ -19,6 +19,7 @@ public:
 		webViewWindow_.view_.onDocumentComplete.bind(this, &WebBrowserPrivate::OnDocumentComplete);
 		initialWidth_ = 800;
 		initialHeight_ = 600;
+		initialTitle_ = _T("Web Browser");
 	}
 
 	~WebBrowserPrivate() {
@@ -62,6 +63,8 @@ public:
 		
 		if ( !initialUrl_.IsEmpty() ) {
 			webViewWindow_.NavigateTo(initialUrl_);
+		} else if ( !initialHtml_.IsEmpty()) {
+			webViewWindow_.view_.displayHTML(initialHtml_);
 		}
 
 		return webViewWindow_.DoModal(parent);
@@ -74,6 +77,8 @@ public:
 		create();
 		if ( !initialUrl_.IsEmpty() ) {
 			webViewWindow_.NavigateTo(initialUrl_);
+		} else if ( !initialHtml_.IsEmpty()) {
+			webViewWindow_.view_.displayHTML(initialHtml_);
 		}
 
 		return webViewWindow_.exec();
@@ -89,7 +94,16 @@ public:
 	}
 
 	void close() {
+		webViewWindow_.close();
+	}
 
+	bool setHtml(const std::string& html) {
+		if ( webViewWindow_.m_hWnd) {
+			return webViewWindow_.view_.displayHTML(IuCoreUtils::Utf8ToWstring(html).c_str()) == ERROR_SUCCESS;
+		} else {
+			initialHtml_ = IuCoreUtils::Utf8ToWstring(html).c_str();
+			return true;
+		}
 	}
 
 	void resize(int w, int h) {
@@ -130,6 +144,25 @@ public:
 	const std::string getDocumentBody() {
 		return IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.view_.GetHTML());
 	}
+
+	bool injectJavaScript(const std::string& code) {
+		if ( webViewWindow_.m_hWnd) {
+			return webViewWindow_.view_.injectJavaScript(IuCoreUtils::Utf8ToWstring(code).c_str());
+		} else {
+			LOG(ERROR) << "injectJavaScript: WebBrowser control is not created yet.";
+		}
+	}
+
+	SquirrelObject callJavaScript(const std::string& funcName, SquirrelObject args) {
+		if ( webViewWindow_.m_hWnd) {
+			CComVariant res;
+			webViewWindow_.view_.CallJScript(IuCoreUtils::Utf8ToWstring(funcName).c_str(), &res);
+		} else {
+			LOG(ERROR) << "injectJavaScript: WebBrowser control is not created yet.";
+		}
+		return SquirrelObject();
+	}
+
 protected:
 	CWebViewWindow webViewWindow_;
 	SquirrelObject onUrlChangedCallback_;
@@ -140,6 +173,7 @@ protected:
 	SquirrelObject onLoadFinishedCallbackContext_;
 	CString initialUrl_;
 	CString initialTitle_;
+	CString initialHtml_;
 	CWebBrowser* browser_;
 	int initialWidth_;
 	int initialHeight_;
@@ -152,7 +186,7 @@ protected:
 		
 
 		CRect r(0,0, initialWidth_, initialWidth_);
-		webViewWindow_.Create(0,CWindow::rcDefault,_T("Web Browser"), WS_POPUP | WS_OVERLAPPEDWINDOW	);
+		webViewWindow_.Create(0,CWindow::rcDefault,initialTitle_, WS_POPUP | WS_OVERLAPPEDWINDOW	);
 		CDC hdc = ::GetDC(webViewWindow_.m_hWnd);
 		float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
 		float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
@@ -167,7 +201,7 @@ protected:
 			{
 				SquirrelObject data = SquirrelVM::CreateTable();
 				data.SetValue("url", IuCoreUtils::WstringToUtf8((LPCTSTR)url).c_str());
-				data.SetValue("browser", browser_);
+				BindVariable(data, browser_, "browser");
 				SquirrelFunction<void> func(onUrlChangedCallbackContext_.IsNull() ? *RootTable : onUrlChangedCallbackContext_, onUrlChangedCallback_);
 				if (!func.func.IsNull() ) {
 					func(data);
@@ -209,7 +243,7 @@ protected:
 				data.SetValue("url", IuCoreUtils::WstringToUtf8((LPCTSTR)url).c_str());
 				data.SetValue("statusCode", statusCode);
 				//BindVariable(data, new WebBrowser(), "browser");
-				data.SetValue("browser", browser_);
+				BindVariable(data, browser_, "browser");
 				SquirrelFunction<void> func(onNavigateErrorCallbackContext_.IsNull() ? *RootTable : onNavigateErrorCallbackContext_, onNavigateErrorCallback_);
 				if (func.func.IsNull())
 					return false;
@@ -218,7 +252,7 @@ protected:
 			}
 			catch (SquirrelError& e)
 			{
-				LOG(ERROR) << "OnNavigateError: " << Utf8String(e.desc);
+				LOG(ERROR) << "onNavigateErrorCallback: " << Utf8String(e.desc);
 			}
 		}
 		return false;

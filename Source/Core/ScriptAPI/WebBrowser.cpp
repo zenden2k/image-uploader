@@ -50,6 +50,21 @@ const std::string CWebBrowser::getDocumentBody()
 	return d_->getDocumentBody();
 }
 
+bool CWebBrowser::setHtml(const std::string& html)
+{
+	return d_->setHtml(html);
+}
+
+bool CWebBrowser::injectJavaScript(const std::string& code)
+{
+	return d_->injectJavaScript(code);
+}
+
+SquirrelObject CWebBrowser::callJavaScript(const std::string& funcName, SquirrelObject args)
+{
+	return d_->callJavaScript(funcName, args);
+}
+
 bool CWebBrowser::showModal()
 {
 	return d_->showModal();
@@ -103,6 +118,9 @@ void RegisterWebBrowserClass() {
 		.func(&CWebBrowser::url, "url")
 		.func(&CWebBrowser::title, "title")
 		.func(&CWebBrowser::getDocumentBody, "getDocumentBody")
+		.func(&CWebBrowser::setHtml, "setHtml")
+		.func(&CWebBrowser::injectJavaScript, "injectJavaScript")
+		.func(&CWebBrowser::callJavaScript, "callJavaScript")
 		.func(&CWebBrowser::setOnUrlChangedCallback, "setOnUrlChangedCallback")
 		.func(&CWebBrowser::setOnLoadFinishedCallback, "setOnLoadFinishedCallback")
 		.func(&CWebBrowser::setOnNavigateErrorCallback, "setOnNavigateErrorCallback");

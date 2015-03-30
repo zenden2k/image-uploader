@@ -269,7 +269,7 @@ DWORD CUploadDlg::Run()
 	iss = InitialParams;
 
 	CHistoryManager * mgr = ZBase::get()->historyManager();
-	CHistorySession* session = mgr->newSession();
+	std_tr::shared_ptr<CHistorySession> session = mgr->newSession();
 
 	for(i=0; i<n; i++)
 	{
@@ -396,8 +396,9 @@ DWORD CUploadDlg::Run()
 		
 		ShowProgress(false);
 
-		if(ShouldStop()) 
+		if(ShouldStop()) {
 			return ThreadTerminated();
+		}
 
 		if(!result)
 		{
@@ -470,8 +471,10 @@ DWORD CUploadDlg::Run()
 			item.ImageUrl = DirectUrl;
 			item.FileName = MainDlg->FileList[i].FileName;
 			item.DownloadUrl = DownloadUrl;
-			if(CreateThumbs)
+			//if(CreateThumbs)
+			if ( item.ThumbUrl.IsEmpty()) {
 				item.ThumbUrl = ThumbUrl;
+			}
 			ResultsWindow->Lock();
 			UrlList.Add(item);
 
@@ -508,7 +511,6 @@ DWORD CUploadDlg::Run()
 		iss = InitialParams;
 	}
 
-	delete session;
 
 	UploadProgress(n, n);
 	wsprintf(szBuffer,_T("%d %%"),100);

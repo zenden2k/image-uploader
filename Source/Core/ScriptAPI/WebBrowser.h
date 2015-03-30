@@ -22,6 +22,9 @@ namespace ScriptAPI {
 			void setOnNavigateErrorCallback(SquirrelObject callBack, SquirrelObject context);
 			void setOnLoadFinishedCallback(SquirrelObject callBack, SquirrelObject context);
 			const std::string getDocumentBody();
+			bool setHtml(const std::string& html);
+			bool injectJavaScript(const std::string& code);
+			SquirrelObject callJavaScript(const std::string& funcName, SquirrelObject args);
 			
 			friend class WebBrowserPrivate;
 		protected:

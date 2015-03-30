@@ -706,7 +706,7 @@ bool CFloatingWindow::OnQueueFinished(CFileQueueUploader*) {
 		}
 
 		CHistoryManager* mgr = ZBase::get()->historyManager();
-		CHistorySession *session = mgr->newSession();
+		std_tr::shared_ptr<CHistorySession> session = mgr->newSession();
 		HistoryItem hi;
 		hi.localFilePath = source_file_name_;
 		hi.serverName = server_name_;
@@ -715,7 +715,6 @@ bool CFloatingWindow::OnQueueFinished(CFileQueueUploader*) {
 		hi.viewUrl = (lastUploadedItem_.fileListItem.downloadUrl);
 		hi.uploadFileSize = lastUploadedItem_.fileListItem.fileSize; // IuCoreUtils::getFileSize(WCstringToUtf8(ImageFileName));
 		session->AddItem(hi);
-		delete session;
 
 		if ( Settings.TrayIconSettings.ShortenLinks ) {
 			std_tr::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
