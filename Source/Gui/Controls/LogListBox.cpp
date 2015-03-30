@@ -22,6 +22,7 @@
 #include "LogListBox.h"
 #include "Func/Myutils.h"
 #include "Gui/GuiTools.h"
+#include <Core/Logging.h>
 
 const int LLB_VertDivider = 10;
 const int LLB_VertMargin = 5;
@@ -54,6 +55,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
 
    if(dis->itemAction & (ODA_DRAWENTIRE|ODA_SELECT))
    {
+	   LOG(INFO) << dis->rcItem;
 		dc.SetBkColor(GetSysColor(COLOR_WINDOW));
 		dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
       CRect r(dis->rcItem);
@@ -116,6 +118,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
 
 LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)
 {
+
 	LPMEASUREITEMSTRUCT lpmis = (LPMEASUREITEMSTRUCT) lParam;
 	
 	LogListBoxItem * item=(LogListBoxItem *)lpmis->itemData;
@@ -123,6 +126,8 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
 		return 0;
 	}
 	HDC dc = GetDC();
+	float dpiScaleX_ = GetDeviceCaps(dc, LOGPIXELSX) / 96.0f;
+	float dpiScaleY_ = GetDeviceCaps(dc, LOGPIXELSY) / 96.0f;
 	SelectObject(dc, NormalFont);
 
 
@@ -146,13 +151,16 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
 	SelectObject(dc, BoldFont);
 	// —читаем размеры основного текста
 	Dimensions.bottom = 0;
-	DrawText(dc, item->strText, lstrlen(item->strText), &Dimensions,	DT_CALCRECT);
+	DrawText(dc, item->strText, item->strText.GetLength(), &Dimensions,	DT_CALCRECT);
 	item->TextHeight = Dimensions.bottom - Dimensions.top;
 	SelectObject(dc, NormalFont);
 	CString str;
 	lpmis->itemWidth = ItemWidth;
 	lpmis->itemHeight = LLB_VertMargin + item->TitleHeight + LLB_VertDivider + item->TextHeight + (item->InfoHeight?(LLB_VertDivider + item->InfoHeight):0) + LLB_VertMargin+2;
-	lpmis->itemHeight = max(lpmis->itemHeight, 70);
+	lpmis->itemHeight = max(lpmis->itemHeight, dpiScaleY_ * 70 );
+	lpmis->itemHeight = min(254 , lpmis->itemHeight);
+	LOG(INFO) << lpmis->itemHeight;
+
 	ReleaseDC(dc);
 	return 0;
 }
@@ -170,7 +178,7 @@ CString trim(const CString& Str)
 	return Result;
 }
 
-int CLogListBox::AddString(LogMsgType Type, LPCTSTR strTitle, LPCTSTR strText, LPCTSTR szInfo)
+int CLogListBox::AddString(LogMsgType Type, const CString& strTitle, const CString& strText, const CString& szInfo)
 {
 	LogListBoxItem * item = new  LogListBoxItem;
 	item->Type = Type;

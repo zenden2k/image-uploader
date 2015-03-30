@@ -42,6 +42,21 @@ SquirrelObject HtmlDocument::getElementsByName(const std::string& name)
 	return d_->getElementsByName(name);
 }
 
+HtmlElement HtmlDocument::querySelector(const std::string& query)
+{
+	return d_->querySelector(query);
+}
+
+SquirrelObject HtmlDocument::querySelectorAll(const std::string& query)
+{
+	return d_->querySelectorAll(query);
+}
+
+const std::string HtmlDocument::getHTML()
+{
+	return d_->getHTML();
+}
+
 void RegisterHtmlDocumentClass()
 {
 	using namespace SqPlus;
@@ -50,6 +65,9 @@ void RegisterHtmlDocumentClass()
 		.func(&HtmlDocument::getElementById, "getElementById")
 		.func(&HtmlDocument::getElementsByName, "getElementsByName")
 		.func(&HtmlDocument::getElementsByTagName, "getElementsByTagName")
+		.func(&HtmlDocument::querySelector, "querySelector")
+		.func(&HtmlDocument::querySelectorAll, "querySelectorAll")
+		.func(&HtmlDocument::getHTML, "getHTML")
 		;
 }
 
@@ -71,11 +89,13 @@ void RegisterHtmlElementClass()
 		.func(&HtmlElement::getOuterText, "getOuterText")
 		.func(&HtmlElement::setOuterText, "setOuterText")
 		.func(&HtmlElement::getTagName, "getTagName")
-		.func(&HtmlElement::parentElement, "parentElement")
+		.func(&HtmlElement::getParentElement, "getParentElement")
 		.func(&HtmlElement::scrollIntoView, "scrollIntoView")
 		.func(&HtmlElement::click, "click")
 		.func(&HtmlElement::insertHTML, "insertHTML")
 		.func(&HtmlElement::insertText, "insertText")
+		.func(&HtmlElement::isNull, "isNull")
+		.func(&HtmlElement::getChildren, "getChildren")
 		;
 }
 

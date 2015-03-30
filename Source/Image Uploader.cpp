@@ -163,7 +163,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	
 	google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
 	MyLogSink logSink;
-	google::AddLogSink(&logSink);
+	//google::AddLogSink(&logSink);
 
 	OleInitialize(NULL);
 	HRESULT hRes ;

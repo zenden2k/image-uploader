@@ -15,6 +15,9 @@ public:
 	HtmlElement getElementById(const std::string& id);
 	SquirrelObject getElementsByTagName(const std::string& tag);
 	SquirrelObject getElementsByName(const std::string& name);
+	HtmlElement querySelector(const std::string& query);
+	SquirrelObject querySelectorAll(const std::string& query);
+	const std::string getHTML();
 protected:
 	std_tr::shared_ptr<HtmlDocumentPrivate> d_;
 };

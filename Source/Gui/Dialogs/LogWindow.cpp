@@ -59,9 +59,9 @@ LRESULT CLogWindow::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 	return 0;
 }
 
-void CLogWindow::WriteLog(LogMsgType MsgType, CString Sender, CString Msg, LPCTSTR Info)
+void CLogWindow::WriteLog(LogMsgType MsgType, const CString& Sender, const CString& Msg, const CString& Info)
 {
-	MsgList.AddString(MsgType, Sender, _T("") + Msg, Info);
+	MsgList.AddString(MsgType, Sender, Msg, Info);
 	if (MsgType == logError && Settings.AutoShowLog)
 	{
 		Show();
@@ -146,7 +146,7 @@ LRESULT CLogWindow::OnClearList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	return 0;
 }
 
-void WriteLog(LogMsgType MsgType, LPCWSTR Sender, LPCWSTR Msg, LPCWSTR Info)
+void WriteLog(LogMsgType MsgType,  const CString&  Sender,  const CString&  Msg,  const CString&  Info)
 {
 	if (!LogWindow.m_hWnd)
 		return;

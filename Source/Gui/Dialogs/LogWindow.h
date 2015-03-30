@@ -42,9 +42,9 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
 		struct CLogWndMsg
 		{
 			LogMsgType MsgType;
-			LPCWSTR Sender;
-			LPCWSTR Msg;
-			LPCWSTR Info;
+			CString Sender;
+			CString Msg;
+			CString Info;
 		};
 
 	public:
@@ -77,7 +77,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		void WriteLog(LogMsgType MsgType, CString Sender, CString Msg, LPCTSTR Info = NULL);
+		void WriteLog(LogMsgType MsgType, const CString& Sender, const CString& Msg, const CString& Info = CString() );
 		CLogListBox MsgList;
 		void Show();
 		LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL & /*bHandled*/);
@@ -88,7 +88,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
 
 extern CLogWindow LogWindow;
 
-void WriteLog(LogMsgType MsgType, LPCWSTR Sender, LPCWSTR Msg, LPCWSTR Info = NULL);
+void WriteLog(LogMsgType MsgType, const CString& Sender,  const CString&  Msg,  const CString&  Info = CString());
 
 namespace DefaultErrorHandling {
 void ErrorMessage(ErrorInfo);

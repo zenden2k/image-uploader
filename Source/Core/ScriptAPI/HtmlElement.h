@@ -1,6 +1,7 @@
 #ifndef IU_CORE_HTMLELEMENT_H
 #define IU_CORE_HTMLELEMENT_H 
 #include <Core/Utils/CoreTypes.h>
+#include <Core/Squirrelnc.h>
 namespace ScriptAPI {
 
 class HtmlElementPrivate;
@@ -11,7 +12,7 @@ public:
 	HtmlElement(HtmlElementPrivate* pr);
 
 	const std::string getAttribute(const std::string& name);
-	void setAttribute(const std::string& name);
+	void setAttribute(const std::string& name, const std::string& value);
 	void removeAttribute(const std::string& name);
 	const std::string getId();
 	void setId(const std::string& id);
@@ -24,13 +25,16 @@ public:
 	const std::string getOuterText();
 	void setOuterText(const std::string& text);
 	const std::string getTagName();
-	HtmlElement parentElement();
+	HtmlElement getParentElement();
 	void scrollIntoView();
 	void click();
 	void insertHTML(const std::string& name, bool atEnd = false );
 	void insertText(const std::string& name, bool atEnd = false );
+	HtmlElement querySelector(const std::string& query);
+	SquirrelObject querySelectorAll(const std::string& query);
 	bool isNull();
-
+	SquirrelObject getChildren();
+	friend class HtmlDocumentPrivate;
 protected:
 	std_tr::shared_ptr<HtmlElementPrivate> d_;
 	bool checkNull(const char * func);

@@ -5,6 +5,9 @@ namespace ScriptAPI {
 
 std::string ComVariantToString(const CComVariant& src) {
 	if ( src.vt == VT_BSTR ) {
+		if ( !src.bstrVal ) {
+			return std::string();
+		}
 		return IuCoreUtils::WstringToUtf8(src.bstrVal);
 	}
 	CComVariant vtBSTR;

@@ -142,8 +142,8 @@ public:
 		return IuCoreUtils::WstringToUtf8((LPCTSTR)initialTitle_);
 	}
 
-	const std::string getDocumentBody() {
-		return IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.view_.GetHTML());
+	const std::string getDocumentContents() {
+		return /*IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.view_.GetHTML());*/document().getHTML();
 	}
 
 	HtmlDocument document() {

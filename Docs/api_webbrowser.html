@@ -54,8 +54,11 @@ Mostly the same as showModal but the window may be hidden and does not block par
 <code class="f"><u>bool</u> close()</code>
 Close the window. After call to this function, showModal() or exec() stops execution and returns true.
 <br>
-<code class="f"><u>string</u> getDocumentBody()</code>
+<code class="f"><u>string</u> getDocumentContents()</code>
 Returns current page contents.
+<code class="f"><a href="api_htmldocument.html"><u>HtmlDocument</u></a> document()</code>
+<br>
+<br>
 <code class="f">setOnUrlChangedCallback(<u>function</u> <i>callback</i>, [optional] <i>context</i>)</code>
 Arguments passed to <i>callback</i>:<br>
 <i>data</i> - a table containing:<br>

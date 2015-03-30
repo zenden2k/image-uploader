@@ -17,17 +17,20 @@ class HtmlDocumentPrivate {
 		}
 
 		HtmlElement rootElement() {
-			CComPtr<IHTMLElementCollection> collection;
-			CComBSTR tagBstr = _T("html");
-			doc3_->getElementsByTagName(tagBstr, &collection);
-			long count  = 0;
-			if ( SUCCEEDED(collection->get_length(&count))) {
-				return HtmlElement();
-			}
-			for ( int i = 0; i < count; i ++ ) {
-				IDispatchPtr  disp = 0;
-				collection->item(CComVariant(i), CComVariant(0), &disp);
-				return  new HtmlElementPrivate(disp);
+			if ( rootElement_.isNull() ) {
+				CComPtr<IHTMLElementCollection> collection;
+				CComBSTR tagBstr = _T("html");
+				doc3_->getElementsByTagName(tagBstr, &collection);
+				long count  = 0;
+				if ( !SUCCEEDED(collection->get_length(&count))) {
+					return HtmlElement();
+				}
+				for ( int i = 0; i < count; i ++ ) {
+					IDispatchPtr  disp = 0;
+					collection->item(CComVariant(i), CComVariant(0), &disp);
+					rootElement_ = new HtmlElementPrivate(disp); 
+					return rootElement_;
+				}
 			}
 		}
 
@@ -54,6 +57,7 @@ class HtmlDocumentPrivate {
 				collection->item(CComVariant(i), CComVariant(0), &disp);
 				res.SetValue(i, HtmlElement(new HtmlElementPrivate(disp)));
 			}
+			return res;
 		}
 
 		SquirrelObject getElementsByName(const std::string& name) {
@@ -70,11 +74,29 @@ class HtmlDocumentPrivate {
 				collection->item(CComVariant(i), CComVariant(0), &disp);
 				res.SetValue(i, HtmlElement(new HtmlElementPrivate(disp)));
 			}
+			return res;
+		}
+
+		HtmlElement querySelector(const std::string& query)
+		{
+			return rootElement().querySelector(query);
+		}	
+
+		SquirrelObject querySelectorAll(const std::string& query)
+		{
+			return rootElement().querySelectorAll(query);
+		}
+
+		const std::string getHTML() {
+			return rootElement().getOuterHTML();
 		}
 
 	protected:
 		CComPtr<IHTMLDocument2> doc_;
 		CComPtr<IHTMLDocument3> doc3_;
+		CComPtr<IElementSelector> selector_;
+		HtmlElement rootElement_;
+		
 		IDispatchPtr disp_;
 };
 

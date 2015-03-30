@@ -33,12 +33,12 @@ const std::string HtmlElement::getAttribute(const std::string& name)
 	return d_->getAttribute(name);
 }
 
-void HtmlElement::setAttribute(const std::string& name)
+void HtmlElement::setAttribute(const std::string& name, const std::string& value)
 {
 	if ( !checkNull("setAttribute") ) {
 		return;
 	}
-	d_->setAttribute(name);
+	d_->setAttribute(name, value);
 }
 
 void HtmlElement::removeAttribute(const std::string& name)
@@ -138,12 +138,12 @@ const std::string HtmlElement::getTagName()
 }
 
 
-ScriptAPI::HtmlElement HtmlElement::parentElement()
+ScriptAPI::HtmlElement HtmlElement::getParentElement()
 {
 	if ( !checkNull("parentElement") ) {
 		return HtmlElement();
 	}
-	return d_->parentElement();
+	return d_->getParentElement();
 }
 
 void HtmlElement::scrollIntoView()
@@ -178,15 +178,39 @@ void HtmlElement::insertText(const std::string& name, bool atEnd /*= false */)
 	d_->insertText(name, atEnd /*= false */);
 }
 
+ScriptAPI::HtmlElement HtmlElement::querySelector(const std::string& query)
+{
+	if ( !checkNull("querySelector") ) {
+		return HtmlElement();
+	}
+	return d_->querySelector(query);
+}
+
+SquirrelObject HtmlElement::querySelectorAll(const std::string& query)
+{
+	if ( !checkNull("querySelectorAll") ) {
+		return HtmlElement();
+	}
+	return d_->querySelectorAll(query);
+}
+
 bool HtmlElement::isNull()
 {
-	return !d_;
+	return !d_ || d_->isNull();
+}
+
+SquirrelObject HtmlElement::getChildren()
+{
+	if ( !checkNull("getChildren") ) {
+		return SquirrelObject();
+	}
+	return d_->getChildren();
 }
 
 bool HtmlElement::checkNull(const char * func)
 {
 	if ( isNull() ) {
-		LOG(ERROR) << func << " : " << "HtmlElement is null";
+		LOG(WARNING) << func << " : " << "HtmlElement is null";
 		return false;
 	}
 	return true;

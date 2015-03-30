@@ -46,9 +46,9 @@ void CWebBrowser::setOnLoadFinishedCallback(SquirrelObject callBack, SquirrelObj
 	d_->setOnLoadFinishedCallback(callBack, context);
 }
 
-const std::string CWebBrowser::getDocumentBody()
+const std::string CWebBrowser::getDocumentContents()
 {
-	return d_->getDocumentBody();
+	return d_->getDocumentContents();
 }
 
 ScriptAPI::HtmlDocument CWebBrowser::document()
@@ -123,7 +123,7 @@ void RegisterWebBrowserClass() {
 		.func(&CWebBrowser::close, "close")
 		.func(&CWebBrowser::url, "url")
 		.func(&CWebBrowser::title, "title")
-		.func(&CWebBrowser::getDocumentBody, "getDocumentBody")
+		.func(&CWebBrowser::getDocumentContents, "getDocumentContents")
 		.func(&CWebBrowser::document, "document")
 		.func(&CWebBrowser::setHtml, "setHtml")
 		.func(&CWebBrowser::injectJavaScript, "injectJavaScript")

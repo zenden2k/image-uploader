@@ -198,7 +198,7 @@ void CScriptUploadEngine::FlushSquirrelOutput()
 {
 	if (!squirrelOutput.empty())
 	{
-		Log(ErrorInfo::mtWarning, "Squirrel\r\n" + squirrelOutput);
+		Log(ErrorInfo::mtWarning, "Squirrel\r\n" + /*IuStringUtils::ConvertUnixLineEndingsToWindows*/(squirrelOutput));
 		squirrelOutput.clear();
 	}
 }

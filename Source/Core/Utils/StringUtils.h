@@ -40,6 +40,7 @@ namespace IuStringUtils
 	//	 equal to, or greater than zero if s1 is found, respectively, to be less than, 
 	//	 to match, or be greater than s2.
 	int stricmp(const char *s1, const char *s2);
+	std::string ConvertUnixLineEndingsToWindows(const std::string& text);
 };
 
 #endif

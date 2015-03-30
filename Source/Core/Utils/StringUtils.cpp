@@ -103,4 +103,37 @@ std::string toLower(const std::string& str)
 	// std::transform(str.begin(), str.end(), std::back_inserter(s1), std::tolower);
 	return s1;
 }
+
+std::string ConvertUnixLineEndingsToWindows(const std::string& text) {
+	if ( text.empty() ) {
+		return text;
+	}
+	const char* srcString = text.c_str();
+	int srcLen = text.length();
+	char * res = new char[(srcLen*2)+1];
+	char * cur = res;
+	const char * srcEnd = srcString + srcLen;
+	const char* src = srcString;
+	while ( src < srcEnd ) {
+		if ( *src == '\r' ) {
+			*cur = *src;
+			src++;
+			cur++;
+			*cur = *src;
+		} else if ( *src == '\n' ) {
+			*cur = '\r';
+			cur++;
+			*cur = '\n';
+			
+		} else {
+			*cur = *src;
+		}
+		src++;
+		cur++;
+	}
+	*cur = 0;
+	std::string result(res, cur-res-1);
+	delete res;
+	return result;
+}
 }

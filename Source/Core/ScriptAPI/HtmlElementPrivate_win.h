@@ -5,31 +5,53 @@
 #include <ComDef.h>
 #include "COMUtils.h"
 #include <Core/Utils/CoreUtils.h>
+#include <Core/Utils/StringUtils.h>
 
 namespace ScriptAPI {
 
 class HtmlElementPrivate {
 	public:
+		
 		HtmlElementPrivate(IHTMLElement* elem) {
 			elem_ = elem;
+			selector_ = CComQIPtr<IElementSelector>(elem);
 		}
 		HtmlElementPrivate(IDispatchPtr disp) {
 			disp_  = disp;
 			elem_ = CComQIPtr<IHTMLElement,&IID_IHTMLElement>(disp);
+			selector_ = CComQIPtr<IElementSelector>(disp);
 		}
-
 
 		const std::string getAttribute(const std::string& name)
 		{
+			if ( name == "class" || !IuStringUtils::stricmp(name.c_str(), "name")) {
+				return getClassName();
+			}
 			CComVariant res;
-			elem_->getAttribute(CComBSTR(IuCoreUtils::Utf8ToWstring(name).c_str()), 0, &res);
-			return ComVariantToString(res);
-
+			if ( SUCCEEDED( elem_->getAttribute(CComBSTR(IuCoreUtils::Utf8ToWstring(name).c_str()), 0, &res) ) ) {
+				return ComVariantToString(res);
+			}
+			return std::string();
 		}
 
-		void setAttribute(const std::string& name)
+		const std::string getClassName() {
+
+			CComBSTR res;
+			if ( SUCCEEDED( elem_->get_className(&res) ) ) {
+				return ComVariantToString(res);
+			}
+			return std::string();
+		}
+
+		void setClassName(const std::string& name) {
+			elem_->put_className(CComBSTR(IuCoreUtils::Utf8ToWstring(name).c_str()));
+		}
+		void setAttribute(const std::string& name, const std::string& value)
 		{	
-			elem_->setAttribute(CComBSTR(IuCoreUtils::Utf8ToWstring(name).c_str()), CComVariant(IuCoreUtils::Utf8ToWstring(name).c_str()));
+			if ( name == "class" || !IuStringUtils::stricmp(name.c_str(), "name")) {
+				return setClassName(value);
+			}
+			elem_->setAttribute(CComBSTR(IuCoreUtils::Utf8ToWstring(name).c_str()), CComVariant(IuCoreUtils::Utf8ToWstring(value).c_str()));
 		}
 
 		void removeAttribute(const std::string& name)
@@ -49,7 +71,7 @@ class HtmlElementPrivate {
 
 		void setId(const std::string& id)
 		{
-			
+			elem_->put_id((CComBSTR(IuCoreUtils::Utf8ToWstring(id).c_str())));
 		}
 
 		const std::string getInnerHTML()
@@ -116,9 +138,11 @@ class HtmlElementPrivate {
 			}
 			return std::string();
 		}
+		bool isNull() {
+			return !elem_;
+		}
 
-
-		HtmlElement parentElement()
+		HtmlElement getParentElement()
 		{
 			IHTMLElement* res;
 			if ( SUCCEEDED( elem_->get_parentElement(&res) ) ) {
@@ -146,9 +170,70 @@ class HtmlElementPrivate {
 		{
 			elem_->insertAdjacentText(atEnd ? L"afterBegin" : L"beforeEnd", CComBSTR(IuCoreUtils::Utf8ToWstring(text).c_str()));
 		}
+
+		SquirrelObject getChildren() {
+			IDispatchPtr disp;
+			elem_->get_children(&disp);
+			CComQIPtr<IHTMLElementCollection> collection(disp);
+			long count  = 0;
+			if ( !SUCCEEDED(collection->get_length(&count))) {
+				return SquirrelObject();
+			}
+			SquirrelObject res = SquirrelVM::CreateArray(count);
+			for ( int i = 0; i < count; i ++ ) {
+				IDispatchPtr  disp = 0;
+				collection->item(CComVariant(i), CComVariant(0), &disp);
+				res.SetValue(i, HtmlElement(new HtmlElementPrivate(disp)));
+			}
+			return res;
+		}
+
+		HtmlElement querySelector(const std::string& query)
+		{
+			if ( !selector_ ) {
+				LOG(WARNING) << "This Internet Explorer version does not support querySelector functions.";
+				return  HtmlElement();
+			}
+			CComPtr<IHTMLElement> elem;
+			CComBSTR queryBstr = IuCoreUtils::Utf8ToWstring(query).c_str();
+			if ( SUCCEEDED( selector_->querySelector(queryBstr, &elem))  ) {
+				if ( elem ) {
+					return new HtmlElementPrivate(elem);
+				}
+			}
+			return HtmlElement();
+		}	
+
+		SquirrelObject querySelectorAll(const std::string& query)
+		{
+			if ( !selector_ ) {
+				LOG(WARNING) << "This Internet Explorer version does not support querySelector functions.";
+				return  SquirrelObject();
+			}
+			CComPtr<IHTMLDOMChildrenCollection> collection;
+			CComBSTR queryBstr = IuCoreUtils::Utf8ToWstring(query).c_str();
+			if ( !SUCCEEDED(selector_->querySelectorAll(queryBstr, &collection)) ) {
+				return SquirrelObject();
+			}
+			long count  = 0;
+			if ( !SUCCEEDED(collection->get_length(&count))) {
+				return SquirrelObject();
+			}
+			SquirrelObject res = SquirrelVM::CreateArray(count);
+			for ( int i = 0; i < count; i ++ ) {
+				IDispatchPtr  disp = 0;
+				collection->item(i,/*, CComVariant(0),*/ &disp);
+				// Check if object does  provide IHTMLElement interface  
+				if ( CComQIPtr<IHTMLElement>(disp)) {
+					res.SetValue(i, HtmlElement(new HtmlElementPrivate(disp)));
+				}
+			}
+			return res;
+		}
 	protected:
 		CComPtr<IHTMLElement> elem_;
 		IDispatchPtr disp_;
+		CComPtr<IElementSelector> selector_;
 };
 
 }

@@ -22,7 +22,7 @@ namespace ScriptAPI {
 			void setOnUrlChangedCallback(SquirrelObject callBack, SquirrelObject context);
 			void setOnNavigateErrorCallback(SquirrelObject callBack, SquirrelObject context);
 			void setOnLoadFinishedCallback(SquirrelObject callBack, SquirrelObject context);
-			const std::string getDocumentBody();
+			const std::string getDocumentContents();
 			HtmlDocument document();
 			bool setHtml(const std::string& html);
 			bool injectJavaScript(const std::string& code);
