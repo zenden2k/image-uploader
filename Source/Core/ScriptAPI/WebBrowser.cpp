@@ -61,9 +61,9 @@ bool CWebBrowser::setHtml(const std::string& html)
 	return d_->setHtml(html);
 }
 
-bool CWebBrowser::injectJavaScript(const std::string& code)
+bool CWebBrowser::runJavaScript(const std::string& code)
 {
-	return d_->injectJavaScript(code);
+	return d_->runJavaScript(code);
 }
 
 SquirrelObject CWebBrowser::callJavaScriptFunction(const std::string& funcName, SquirrelObject args)
@@ -126,7 +126,7 @@ void RegisterWebBrowserClass() {
 		.func(&CWebBrowser::getDocumentContents, "getDocumentContents")
 		.func(&CWebBrowser::document, "document")
 		.func(&CWebBrowser::setHtml, "setHtml")
-		.func(&CWebBrowser::injectJavaScript, "injectJavaScript")
+		.func(&CWebBrowser::runJavaScript, "runJavaScript")
 		.func(&CWebBrowser::callJavaScriptFunction, "callJavaScriptFunction")
 		.func(&CWebBrowser::setOnUrlChangedCallback, "setOnUrlChangedCallback")
 		.func(&CWebBrowser::setOnLoadFinishedCallback, "setOnLoadFinishedCallback")

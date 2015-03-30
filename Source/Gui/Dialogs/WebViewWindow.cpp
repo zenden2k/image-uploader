@@ -1,9 +1,11 @@
 #include "WebViewWindow.h"
 #include <Func/WinUtils.h>
 #include <Gui/GuiTools.h>
+#include <Core/Logging.h>
 
 CWebViewWindow::CWebViewWindow() {
 	isModal_ = false;
+	captureActivate_ = false;
 }
 CWebViewWindow::~CWebViewWindow() {
 
@@ -85,4 +87,47 @@ LRESULT CWebViewWindow::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	}
 	bHandled = true;
 	return 1;
+}
+
+LRESULT CWebViewWindow::OnEnable(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if (!wParam) {
+		HWND wnd  = ::GetActiveWindow();
+		LOG(ERROR) << "CWebViewWindow window disabled ";
+		captureActivate_ = true;
+		
+	}
+	return 0;
+}
+
+LRESULT CALLBACK MyHookProc(int nCode, WPARAM wParam, LPARAM lParam) 
+{ 
+	if (nCode < 0) 
+		return CallNextHookEx(hook, nCode, wParam, lParam); 
+
+	if (nCode == HCBT_CREATEWND) 
+	{ 
+		char szBuf[30]; 
+		GetClassName((HWND)wParam, szBuf, sizeof(szBuf)); 
+
+		if (strcmp(szBuf, "Notepad") == 0) 
+		{ 
+			return 1; 
+		} 
+	} 
+	return CallNextHookEx(hook, nCode, wParam, lParam); 
+}
+
+LRESULT CWebViewWindow::OnActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if ( captureActivate_  && wParam == WA_INACTIVE ) {
+		HWND wnd  = (HWND)lParam;
+		LOG(ERROR) << "CWebViewWindowOnActivate="<<GuiTools::GetWindowText(wnd);
+		HWND input = ::GetDlgItem(wnd, 0x47c);
+		WinUtils::CopyTextToClipboard(_T("Test Test"));
+		::SendMessage(input, WM_PASTE,0,0);
+		::SetWindowText(input, _T("Test Test"));
+		::EndDialog(wnd, IDOK);
+	}
+	return 0;
 }

@@ -6,25 +6,32 @@
 #include "COMUtils.h"
 #include <Core/Utils/CoreUtils.h>
 #include <Core/Utils/StringUtils.h>
+#include "WebBrowserPrivate_win.h"
+#include "HtmlDocumentPrivate_win.h"
 
 namespace ScriptAPI {
 
 class HtmlElementPrivate {
 	public:
 		
-		HtmlElementPrivate(IHTMLElement* elem) {
+		HtmlElementPrivate(IHTMLElement* elem, HtmlDocumentPrivate *docPrivate) {
 			elem_ = elem;
 			selector_ = CComQIPtr<IElementSelector>(elem);
+			form_ = elem;
+			docPrivate_= docPrivate;
 		}
-		HtmlElementPrivate(IDispatchPtr disp) {
+
+		HtmlElementPrivate(IDispatchPtr disp, HtmlDocumentPrivate *docPrivate) {
 			disp_  = disp;
 			elem_ = CComQIPtr<IHTMLElement,&IID_IHTMLElement>(disp);
 			selector_ = CComQIPtr<IElementSelector>(disp);
+			form_ = disp;
+			docPrivate_= docPrivate;
 		}
 
 		const std::string getAttribute(const std::string& name)
 		{
-			if ( name == "class" || !IuStringUtils::stricmp(name.c_str(), "name")) {
+			if ( name == "class" || !IuStringUtils::stricmp(name.c_str(), "class")) {
 				return getClassName();
 			}
 			CComVariant res;
@@ -37,7 +44,7 @@ class HtmlElementPrivate {
 		const std::string getClassName() {
 
 			CComBSTR res;
-			if ( SUCCEEDED( elem_->get_className(&res) ) ) {
+			if ( SUCCEEDED( elem_->get_className(&res) ) && res  ) {
 				return ComVariantToString(res);
 			}
 			return std::string();
@@ -63,7 +70,7 @@ class HtmlElementPrivate {
 		const std::string getId()
 		{
 			CComBSTR res;
-			if ( SUCCEEDED ( elem_->get_id(&res) ) ) {
+			if ( SUCCEEDED ( elem_->get_id(&res) ) && res  ) {
 				return IuCoreUtils::WstringToUtf8((OLECHAR*)res);
 			}
 			return std::string();
@@ -77,7 +84,7 @@ class HtmlElementPrivate {
 		const std::string getInnerHTML()
 		{
 			CComBSTR res;
-			if ( SUCCEEDED( elem_->get_innerHTML(&res) )  ) {
+			if ( SUCCEEDED( elem_->get_innerHTML(&res) ) && res  ) {
 				return IuCoreUtils::WstringToUtf8((OLECHAR*)res);
 			}
 			return std::string();
@@ -91,7 +98,7 @@ class HtmlElementPrivate {
 		const std::string getInnerText()
 		{
 			CComBSTR res;
-			if ( SUCCEEDED( elem_->get_innerText(&res) )  ) {
+			if ( SUCCEEDED( elem_->get_innerText(&res) ) && res  ) {
 				return IuCoreUtils::WstringToUtf8((OLECHAR*)res);
 			}
 			return std::string();
@@ -105,7 +112,7 @@ class HtmlElementPrivate {
 		const std::string getOuterHTML()
 		{
 			CComBSTR res;
-			if ( SUCCEEDED( elem_->get_outerHTML(&res) )  ) {
+			if ( SUCCEEDED( elem_->get_outerHTML(&res) ) && res   ) {
 				return IuCoreUtils::WstringToUtf8((OLECHAR*)res);
 			}
 			return std::string();
@@ -119,7 +126,7 @@ class HtmlElementPrivate {
 		const std::string getOuterText()
 		{
 			CComBSTR res;
-			if ( SUCCEEDED( elem_->get_outerText(&res) )  ) {
+			if ( SUCCEEDED( elem_->get_outerText(&res) )  && res  ) {
 				return IuCoreUtils::WstringToUtf8((OLECHAR*)res);
 			}
 			return std::string();
@@ -133,7 +140,7 @@ class HtmlElementPrivate {
 		const std::string getTagName()
 		{
 			CComBSTR res;
-			if ( SUCCEEDED( elem_->get_outerText(&res) )  ) {
+			if ( SUCCEEDED( elem_->get_tagName(&res) ) && res  ) {
 				return IuCoreUtils::WstringToUtf8((OLECHAR*)res);
 			}
 			return std::string();
@@ -142,11 +149,13 @@ class HtmlElementPrivate {
 			return !elem_;
 		}
 
+		void setValue(const std::string& value);
+
 		HtmlElement getParentElement()
 		{
 			IHTMLElement* res;
 			if ( SUCCEEDED( elem_->get_parentElement(&res) ) ) {
-				return new HtmlElementPrivate(res);
+				return new HtmlElementPrivate(res, docPrivate_);
 			}
 			return HtmlElement();
 		}
@@ -183,7 +192,7 @@ class HtmlElementPrivate {
 			for ( int i = 0; i < count; i ++ ) {
 				IDispatchPtr  disp = 0;
 				collection->item(CComVariant(i), CComVariant(0), &disp);
-				res.SetValue(i, HtmlElement(new HtmlElementPrivate(disp)));
+				res.SetValue(i, HtmlElement(new HtmlElementPrivate(disp, docPrivate_)));
 			}
 			return res;
 		}
@@ -198,7 +207,7 @@ class HtmlElementPrivate {
 			CComBSTR queryBstr = IuCoreUtils::Utf8ToWstring(query).c_str();
 			if ( SUCCEEDED( selector_->querySelector(queryBstr, &elem))  ) {
 				if ( elem ) {
-					return new HtmlElementPrivate(elem);
+					return new HtmlElementPrivate(elem, docPrivate_);
 				}
 			}
 			return HtmlElement();
@@ -225,15 +234,40 @@ class HtmlElementPrivate {
 				collection->item(i,/*, CComVariant(0),*/ &disp);
 				// Check if object does  provide IHTMLElement interface  
 				if ( CComQIPtr<IHTMLElement>(disp)) {
-					res.SetValue(i, HtmlElement(new HtmlElementPrivate(disp)));
+					res.SetValue(i, HtmlElement(new HtmlElementPrivate(disp, docPrivate_)));
 				}
 			}
 			return res;
 		}
+
+		SquirrelObject getFormElements() {
+			if ( !form_ ) {
+				LOG(ERROR) << "getFormElements: element is not a form";
+				return SquirrelObject();
+			}
+			long count = 0;
+			if ( !SUCCEEDED( form_->get_length(&count) ) )  {
+				return SquirrelObject();
+			}
+			SquirrelObject res = SquirrelVM::CreateArray(count);
+			for ( int i = 0; i < count; i ++ ) {
+				IDispatchPtr  disp = 0;
+				form_->item(CComVariant(i), CComVariant(0), &disp);
+				//form_->item(i,/*, CComVariant(0),*/ &disp);
+				// Check if object does  provide IHTMLElement interface  
+
+				res.SetValue(i, HtmlElement(new HtmlElementPrivate(disp, docPrivate_)));
+				
+			}
+			return res;
+		}
+
 	protected:
 		CComPtr<IHTMLElement> elem_;
 		IDispatchPtr disp_;
 		CComPtr<IElementSelector> selector_;
+		CComQIPtr<IHTMLFormElement> form_;
+		HtmlDocumentPrivate *docPrivate_;
 };
 
 }

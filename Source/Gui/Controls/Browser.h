@@ -572,6 +572,9 @@ public:
 		ATLASSERT(m_pBrowser);
 		return m_pBrowser->Stop();
 	}
+	IWebBrowser2* GetBrowserInterface() {
+		return m_pBrowser;
+	}
 	OLECMDF QueryStatusWB(OLECMDID nCmd)
 	{
 		ATLASSERT(m_pBrowser);

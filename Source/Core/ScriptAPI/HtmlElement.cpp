@@ -129,6 +129,11 @@ void HtmlElement::setOuterText(const std::string& text)
 	d_->setOuterText(text);
 }
 
+void HtmlElement::setValue(const std::string& value)
+{
+	d_->setValue(value);
+}
+
 const std::string HtmlElement::getTagName()
 {
 	if ( !checkNull("getTagName") ) {
@@ -192,6 +197,14 @@ SquirrelObject HtmlElement::querySelectorAll(const std::string& query)
 		return HtmlElement();
 	}
 	return d_->querySelectorAll(query);
+}
+
+SquirrelObject HtmlElement::getFormElements()
+{
+	if ( !checkNull("getFormElements") ) {
+		return HtmlElement();
+	}
+	return d_->getFormElements(); 
 }
 
 bool HtmlElement::isNull()

@@ -25,7 +25,7 @@ namespace ScriptAPI {
 			const std::string getDocumentContents();
 			HtmlDocument document();
 			bool setHtml(const std::string& html);
-			bool injectJavaScript(const std::string& code);
+			bool runJavaScript(const std::string& code);
 			SquirrelObject callJavaScriptFunction(const std::string& funcName, SquirrelObject args);
 			
 			friend class WebBrowserPrivate;

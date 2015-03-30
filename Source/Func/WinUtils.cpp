@@ -957,7 +957,7 @@ void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective) {
 	int majorVersion = GetInternetExplorerMajorVersion();
 	//Value reference: http://msdn.microsoft.com/en-us/library/ee330730%28v=VS.85%29.aspx
 	//IDOC Reference:  http://msdn.microsoft.com/en-us/library/ms535242%28v=vs.85%29.aspx
-
+	//majorVersion = 7;
 	switch (majorVersion) {
 		case 8:
 			value = IgnoreIDocDirective ? 8888 : 8000;
