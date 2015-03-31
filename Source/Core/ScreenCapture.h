@@ -29,7 +29,6 @@
 
 HRGN GetWindowVisibleRegion(HWND wnd);
 
-void TimerWait(int Delay);
 enum CaptureMode {cmFullScreen, cmActiveWindow, cmRectangles, cmFreeform, cmWindowHandles };
 
 class CScreenshotRegion

@@ -202,7 +202,7 @@ class CAbstractUploadEngine
 		CAbstractUploadEngine();
 		virtual ~CAbstractUploadEngine();
 		void setThumbnailWidth(int width);
-		virtual bool doUpload(UploadTask* task, CIUUploadParams &params) = 0;
+		virtual int doUpload(UploadTask* task, CIUUploadParams &params) = 0;
 		void setServerSettings(ServerSettingsStruct settings);
 		ServerSettingsStruct serverSettings();
 		virtual int RetryLimit()=0;

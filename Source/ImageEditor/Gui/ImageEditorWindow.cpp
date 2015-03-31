@@ -252,8 +252,6 @@ void ImageEditorWindow::setAskBeforeClose(bool ask)
 
 ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDisplayMode mode)
 {
-
-	
 	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 	int screenHeight =  GetSystemMetrics(SM_CYSCREEN);
 //	displayMode_ = wdmWindowed;
@@ -296,9 +294,8 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 		//windowStyle = GetStyle();
 		DWORD windowStyle = WS_POPUP|WS_CLIPCHILDREN;
 		SetWindowLong(GWL_STYLE, windowStyle);
-		SetWindowPos(0, displayBounds.left, displayBounds.top, displayBounds.right-displayBounds.left, displayBounds.bottom-displayBounds.top,0);
 		SetWindowLong(GWL_EXSTYLE, WS_EX_TOPMOST);
-	
+		SetWindowPos(HWND_TOPMOST , displayBounds.left, displayBounds.top, displayBounds.right-displayBounds.left, displayBounds.bottom-displayBounds.top,0);
 	}
 
 	if ( displayMode_ == wdmWindowed ) {

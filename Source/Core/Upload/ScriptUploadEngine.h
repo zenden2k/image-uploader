@@ -45,7 +45,7 @@ class CFolderList
 class CScriptUploadEngine: public CAbstractUploadEngine
 {
 	public:
-		bool doUpload(UploadTask* task, CIUUploadParams &params);
+		int doUpload(UploadTask* task, CIUUploadParams &params);
 	protected:
 		bool needStop();
 		Utf8String m_ErrorReason;

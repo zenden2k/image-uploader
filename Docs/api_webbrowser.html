@@ -58,6 +58,8 @@ Close the window. After call to this function, showModal() or exec() stops execu
 Returns current page contents.
 <code class="f"><a href="api_htmldocument.html"><u>HtmlDocument</u></a> document()</code>
 <br>
+<code class="f"><u>string</u> runJavaScript(<u>string</u> <i>code</i>)</code>
+
 <br>
 <code class="f">setOnUrlChangedCallback(<u>function</u> <i>callback</i>, [optional] <i>context</i>)</code>
 Arguments passed to <i>callback</i>:<br>
@@ -90,6 +92,14 @@ Arguments passed to <i>callback</i>:<br>
 }
 </pre>
 <br>
+<code class="f">setOnTimerCallback(<u>int</u> <i>msecInterval</i>, <u>function</u> <i>callback</i>, [optional] <i>context</i>)</code>
+Arguments passed to <i>callback</i>:<br>
+<i>data</i> - a table containing:<br>
+<pre class="prettyprint">
+{
+  browser = WebBrowser,
+}
+</pre>
 </div>
 </div>
 </div>

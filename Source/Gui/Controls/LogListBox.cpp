@@ -55,7 +55,6 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
 
    if(dis->itemAction & (ODA_DRAWENTIRE|ODA_SELECT))
    {
-	   LOG(INFO) << dis->rcItem;
 		dc.SetBkColor(GetSysColor(COLOR_WINDOW));
 		dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
       CRect r(dis->rcItem);
@@ -159,7 +158,6 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
 	lpmis->itemHeight = LLB_VertMargin + item->TitleHeight + LLB_VertDivider + item->TextHeight + (item->InfoHeight?(LLB_VertDivider + item->InfoHeight):0) + LLB_VertMargin+2;
 	lpmis->itemHeight = max(lpmis->itemHeight, dpiScaleY_ * 70 );
 	lpmis->itemHeight = min(254 , lpmis->itemHeight);
-	LOG(INFO) << lpmis->itemHeight;
 
 	ReleaseDC(dc);
 	return 0;

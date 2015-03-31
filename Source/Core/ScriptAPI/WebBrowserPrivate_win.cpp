@@ -50,6 +50,18 @@ void WebBrowserPrivate::OnDocumentComplete(const CString& url) {
 	}
 }
 
+void WebBrowserPrivate::setFocus()
+{
+	/*CComQIPtr<IHTMLDocument4> doc4(webViewWindow_.view_.GetDocument());
+	if ( doc4 ) {
+		doc4->focus();
+	}*/
+	CComQIPtr<IHTMLDocument2> doc2(webViewWindow_.view_.GetDocument());
+	CComQIPtr<IHTMLWindow2>  pWindow;
+	doc2->get_parentWindow(&pWindow);
+	pWindow->focus();
+}
+
 bool WebBrowserPrivate::OnNavigateError(const CString& url, LONG statusCode) {
 	if ( !onNavigateErrorCallback_.IsNull() ) {
 		try
@@ -71,6 +83,49 @@ bool WebBrowserPrivate::OnNavigateError(const CString& url, LONG statusCode) {
 		}
 	}
 	return false;
+}
+
+void WebBrowserPrivate::OnTimer()
+{
+	if ( !onTimerCallback_.IsNull() ) {
+		try
+		{
+			SquirrelObject data = SquirrelVM::CreateTable();
+			//data.SetValue("url", url());
+			BindVariable(data, browser_, "browser");
+			SquirrelFunction<void> func(onTimerCallbackContext_.IsNull() ? *RootTable : onTimerCallbackContext_, onTimerCallback_);
+			if (func.func.IsNull())
+				return;
+
+			func(data);
+		}
+		catch (SquirrelError& e)
+		{
+			LOG(ERROR) << "onTimerCallback: " << Utf8String(e.desc);
+		}
+	}
+}
+
+void WebBrowserPrivate::OnFileFieldFilled(const CString& fileName)
+{
+	if ( !onFileFieldFilledCallback_.IsNull() ) {
+		try
+		{
+			SquirrelObject data = SquirrelVM::CreateTable();
+			std::string fileNameA = IuCoreUtils::WstringToUtf8((LPCTSTR)fileName);
+			data.SetValue("fileName", fileNameA.c_str());
+			BindVariable(data, browser_, "browser");
+			SquirrelFunction<void> func(onFileFieldFilledCallbackContext_.IsNull() ? *RootTable : onFileFieldFilledCallbackContext_, onFileFieldFilledCallback_);
+			if (func.func.IsNull())
+				return;
+
+			func(data);
+		}
+		catch (SquirrelError& e)
+		{
+			LOG(ERROR) << "onTimerCallback: " << Utf8String(e.desc);
+		}
+	}
 }
 
 }

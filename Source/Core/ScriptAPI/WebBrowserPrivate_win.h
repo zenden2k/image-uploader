@@ -18,13 +18,16 @@ public:
 		webViewWindow_.view_.onNavigateComplete2.bind(this, &WebBrowserPrivate::OnPageLoaded);
 		webViewWindow_.view_.onNavigateError.bind(this, &WebBrowserPrivate::OnNavigateError);
 		webViewWindow_.view_.onDocumentComplete.bind(this, &WebBrowserPrivate::OnDocumentComplete);
+		webViewWindow_.onTimer.bind(this, &WebBrowserPrivate::OnTimer);
+		webViewWindow_.onFileFieldFilled.bind(this, &WebBrowserPrivate::OnFileFieldFilled);
 		initialWidth_ = 800;
 		initialHeight_ = 600;
 		initialTitle_ = _T("Web Browser");
+		timerInterval_ = 0;
 	}
 
 	~WebBrowserPrivate() {
-		if ( webViewWindow_.m_hWnd ) {
+		if ( IsWindow(webViewWindow_.m_hWnd) ) {
 			webViewWindow_.DestroyWindow();
 		}
 	}
@@ -60,14 +63,14 @@ public:
 #else 
 			0;
 #endif
-			create();
+			create(parent);
 		
 		if ( !initialUrl_.IsEmpty() ) {
 			webViewWindow_.NavigateTo(initialUrl_);
 		} else if ( !initialHtml_.IsEmpty()) {
 			webViewWindow_.view_.displayHTML(initialHtml_);
 		}
-
+		
 		return webViewWindow_.DoModal(parent);
 
 		//DestroyWindow();
@@ -152,7 +155,7 @@ public:
 		return  webViewWindow_.view_.GetBrowserInterface();
 	}
 
-	bool runJavaScript(const std::string& code) {
+	const std::string runJavaScript(const std::string& code) {
 		if ( webViewWindow_.m_hWnd) {
 			CComVariant res;
 			/*CComBSTR strSource();
@@ -160,22 +163,39 @@ public:
 			
 			bstrTarget.vt = VT_BSTR;
 			bstrTarget.bstrVal = strSource.Copy();*/
-			return webViewWindow_.view_.CallJScript(_T("eval"), IuCoreUtils::Utf8ToWstring(code).c_str(), &res);
+			if ( webViewWindow_.view_.CallJScript(_T("eval"), IuCoreUtils::Utf8ToWstring(code).c_str(), &res) ) {
+				return ComVariantToString(res);
+			}
 		} else {
 			LOG(ERROR) << "injectJavaScript: WebBrowser control is not created yet.";
 		}
+		return std::string();
 	}
 
-	SquirrelObject callJavaScriptFunction(const std::string& funcName, SquirrelObject args) {
+	const std::string callJavaScriptFunction(const std::string& funcName, SquirrelObject args) {
 		if ( webViewWindow_.m_hWnd) {
 			CComVariant res;
 			webViewWindow_.view_.CallJScript(IuCoreUtils::Utf8ToWstring(funcName).c_str(), &res);
+			return ComVariantToString(res);
 		} else {
 			LOG(ERROR) << "injectJavaScript: WebBrowser control is not created yet.";
 		}
-		return SquirrelObject();
+		return std::string();
 	}
 
+	void setOnTimerCallback(int timerInterval, SquirrelObject callBack, SquirrelObject context) {
+		onTimerCallback_ = callBack;
+		onTimerCallbackContext_ = context;
+		timerInterval_ = timerInterval;
+	}
+
+	void setOnFileInputFilledCallback(SquirrelObject callBack, SquirrelObject context) {
+		onFileFieldFilledCallback_ = callBack;
+		onFileFieldFilledCallbackContext_ = context;
+	}
+
+	void setFocus();
+	friend class HtmlElementPrivate;
 protected:
 	CWebViewWindow webViewWindow_;
 	SquirrelObject onUrlChangedCallback_;
@@ -184,22 +204,25 @@ protected:
 	SquirrelObject onNavigateErrorCallbackContext_;
 	SquirrelObject onLoadFinishedCallback_;
 	SquirrelObject onLoadFinishedCallbackContext_;
+	SquirrelObject onTimerCallback_;
+	SquirrelObject onTimerCallbackContext_;
+	SquirrelObject onFileFieldFilledCallback_;
+	SquirrelObject onFileFieldFilledCallbackContext_;
 	CString initialUrl_;
 	CString initialTitle_;
 	CString initialHtml_;
 	CWebBrowser* browser_;
 	int initialWidth_;
 	int initialHeight_;
+	int timerInterval_;
 
 	void create(HWND parent = 0 ) {
 		if ( webViewWindow_.m_hWnd) {
 			return;
 		}
-	
-		
 
 		CRect r(0,0, initialWidth_, initialWidth_);
-		webViewWindow_.Create(0,CWindow::rcDefault,initialTitle_, WS_POPUP | WS_OVERLAPPEDWINDOW	);
+		webViewWindow_.Create(parent,CWindow::rcDefault,initialTitle_, WS_POPUP | WS_OVERLAPPEDWINDOW	);
 		CDC hdc = ::GetDC(webViewWindow_.m_hWnd);
 		float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
 		float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
@@ -207,13 +230,15 @@ protected:
 		if ( initialWidth_ && initialHeight_ ) {
 			webViewWindow_.ResizeClient(initialWidth_ * dpiScaleX_, initialHeight_ * dpiScaleY_);
 		}
+		if ( timerInterval_ ) {
+			webViewWindow_.setTimerInterval(timerInterval_);
+		}
 	}
 	void OnPageLoaded(const CString& url);
-
 	void OnDocumentComplete(const CString& url);
-
-
 	bool OnNavigateError(const CString& url, LONG statusCode);
+	void OnTimer();
+	void OnFileFieldFilled(const CString& fileName);
 };
 
 }

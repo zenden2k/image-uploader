@@ -19,14 +19,17 @@ namespace ScriptAPI {
 			void show();
 			void hide();
 			void close();
+			void setFocus();
 			void setOnUrlChangedCallback(SquirrelObject callBack, SquirrelObject context);
 			void setOnNavigateErrorCallback(SquirrelObject callBack, SquirrelObject context);
 			void setOnLoadFinishedCallback(SquirrelObject callBack, SquirrelObject context);
+			void setOnTimerCallback(int timerInterval, SquirrelObject callBack, SquirrelObject context);
+			void setOnFileInputFilledCallback(SquirrelObject callBack, SquirrelObject context);
 			const std::string getDocumentContents();
 			HtmlDocument document();
 			bool setHtml(const std::string& html);
-			bool runJavaScript(const std::string& code);
-			SquirrelObject callJavaScriptFunction(const std::string& funcName, SquirrelObject args);
+			const std::string runJavaScript(const std::string& code);
+			const std::string callJavaScriptFunction(const std::string& funcName, SquirrelObject args);
 			
 			friend class WebBrowserPrivate;
 		protected:

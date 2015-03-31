@@ -984,4 +984,15 @@ void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective) {
 
 }
 
+void TimerWait(int Delay)
+{
+	HANDLE hTimer = CreateWaitableTimer(0, TRUE, 0);
+	LARGE_INTEGER interval;
+	interval.QuadPart = -Delay * 10000;
+	SetWaitableTimer(hTimer, &interval, 0, 0, 0, 0);
+	MsgWaitForSingleObject(hTimer, INFINITE);
+	CloseHandle(hTimer);
+}
+
+
 };

@@ -231,7 +231,7 @@ function ModifyFolder(album)
 function  UploadFile(FileName, options)
 {
 	if ( !DoLogin() ) {
-		return 0;
+		return -1;
 	}
 	local albumId = options.getFolderID();
 	if ( albumId == "" ) {

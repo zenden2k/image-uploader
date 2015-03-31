@@ -25,6 +25,7 @@ public:
 	const std::string getOuterText();
 	void setOuterText(const std::string& text);
 	void setValue(const std::string& value);
+	const std::string getValue();
 	const std::string getTagName();
 	HtmlElement getParentElement();
 	void scrollIntoView();
@@ -34,6 +35,7 @@ public:
 	HtmlElement querySelector(const std::string& query);
 	SquirrelObject querySelectorAll(const std::string& query);
 	SquirrelObject getFormElements();
+	bool submitForm();
 	bool isNull();
 	SquirrelObject getChildren();
 	friend class HtmlDocumentPrivate;

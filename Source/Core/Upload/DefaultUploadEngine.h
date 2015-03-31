@@ -33,7 +33,7 @@ class CDefaultUploadEngine: public CAbstractUploadEngine
 {
 	public:
 		CDefaultUploadEngine();
-		virtual bool doUpload(UploadTask* task, CIUUploadParams &params);
+		virtual int doUpload(UploadTask* task, CIUUploadParams &params);
 	
 	protected:
 		bool DoAction(UploadAction &Action);

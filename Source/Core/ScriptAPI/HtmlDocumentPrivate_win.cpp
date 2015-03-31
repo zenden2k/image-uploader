@@ -22,6 +22,7 @@ HtmlElement HtmlDocumentPrivate::rootElement() {
 			return rootElement_;
 		}
 	}
+	return rootElement_;
 }
 
 HtmlElement HtmlDocumentPrivate::getElementById(const std::string& id) {
@@ -38,7 +39,7 @@ SquirrelObject HtmlDocumentPrivate::getElementsByTagName(const std::string& tag)
 	CComBSTR tagBstr = IuCoreUtils::Utf8ToWstring(tag).c_str();
 	doc3_->getElementsByTagName(tagBstr, &collection);
 	long count  = 0;
-	if ( SUCCEEDED(collection->get_length(&count))) {
+	if ( !SUCCEEDED(collection->get_length(&count))) {
 		return SquirrelObject();
 	}
 	SquirrelObject res = SquirrelVM::CreateArray(count);
@@ -55,7 +56,7 @@ SquirrelObject HtmlDocumentPrivate::getElementsByName(const std::string& name) {
 	CComBSTR tagBstr = IuCoreUtils::Utf8ToWstring(name).c_str();
 	doc3_->getElementsByName(tagBstr, &collection);
 	long count  = 0;
-	if ( SUCCEEDED(collection->get_length(&count))) {
+	if ( !SUCCEEDED(collection->get_length(&count))) {
 		return SquirrelObject();
 	}
 	SquirrelObject res = SquirrelVM::CreateArray(count);

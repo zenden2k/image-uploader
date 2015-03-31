@@ -26,6 +26,7 @@
 #include "atlheaders.h"
 #include "Func/common.h"
 #include "Func/MyUtils.h"
+#include <Func/WinUtils.h>
 #include "resource.h"
 #include <Core/Images/Utils.h>
 #include <Core/Logging.h>
@@ -817,7 +818,7 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
 		int i = 0;
 		while (!CheckRect(actualWindowRect, bgColor))
 		{
-			TimerWait(50);
+			WinUtils::TimerWait(50);
 			if (i++ > 10) break;
 		}
 		if (DwmRegisterThumbnail(wnd, m_hWnds[0].wnd, &thumb) != S_OK)
@@ -961,7 +962,7 @@ bool CWindowHandlesRegion::GetImage(HDC src, Bitmap** res)
 			{
 				move = true;
 				::SetWindowPos(topWindow, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-				TimerWait(m_WindowHidingDelay);
+				WinUtils::TimerWait(m_WindowHidingDelay);
 			}
 		}
 	}
@@ -1020,15 +1021,6 @@ void CWindowHandlesRegion::Clear()
 	m_hWnds.clear();
 }
 
-void TimerWait(int Delay)
-{
-	HANDLE hTimer = CreateWaitableTimer(0, TRUE, 0);
-	LARGE_INTEGER interval;
-	interval.QuadPart = -Delay * 10000;
-	SetWaitableTimer(hTimer, &interval, 0, 0, 0, 0);
-	MsgWaitForSingleObject(hTimer, INFINITE);
-	CloseHandle(hTimer);
-}
 
 CScreenCaptureEngine::CScreenCaptureEngine()
 {
@@ -1088,7 +1080,7 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
 		srcDC = screenDC;
 		if (m_captureDelay)
 		{
-			TimerWait(m_captureDelay);
+			WinUtils::TimerWait(m_captureDelay);
 		}
 	}
 	region->PrepareShooting(!(bool)(m_source != 0));

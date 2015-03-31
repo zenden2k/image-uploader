@@ -131,7 +131,18 @@ void HtmlElement::setOuterText(const std::string& text)
 
 void HtmlElement::setValue(const std::string& value)
 {
+	if ( !checkNull("setValue") ) {
+		return;
+	}
 	d_->setValue(value);
+}
+
+const std::string HtmlElement::getValue()
+{
+	if ( !checkNull("getValue") ) {
+		return std::string();
+	}
+	return d_->getValue();
 }
 
 const std::string HtmlElement::getTagName()
@@ -205,6 +216,14 @@ SquirrelObject HtmlElement::getFormElements()
 		return HtmlElement();
 	}
 	return d_->getFormElements(); 
+}
+
+bool HtmlElement::submitForm()
+{
+	if ( !checkNull("submitForm") ) {
+		return false;
+	}
+	return d_->submitForm();
 }
 
 bool HtmlElement::isNull()

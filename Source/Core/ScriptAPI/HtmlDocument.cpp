@@ -97,6 +97,7 @@ void RegisterHtmlElementClass()
 		.func(&HtmlElement::insertHTML, "insertHTML")
 		.func(&HtmlElement::insertText, "insertText")
 		.func(&HtmlElement::isNull, "isNull")
+		.func(&HtmlElement::submitForm, "submitForm")
 		.func(&HtmlElement::getChildren, "getChildren")
 		;
 }

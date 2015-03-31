@@ -58,7 +58,27 @@ void CWTLBrowserView::OnPropertyChange(const String& szProperty)
 
 void CWTLBrowserView::OnDocumentComplete(IDispatch* pDisp, const String& szURL)
 {
-	if ( onDocumentComplete ) {
-		onDocumentComplete(szURL);
+	IUnknown* pUnkBrowser = NULL; 
+	IUnknown* pUnkDisp = NULL;
+	HRESULT hr = m_pBrowser->QueryInterface( IID_IUnknown, (void**)&pUnkBrowser ); 
+	if ( SUCCEEDED(hr) ) { 
+		hr = pDisp->QueryInterface( IID_IUnknown, (void**)&pUnkDisp ); 
+		if ( SUCCEEDED(hr) ) { 
+			if ( pUnkBrowser == pUnkDisp ) {
+				CComQIPtr<IHTMLDocument2> doc2(GetDocument());
+				if ( doc2 ) {
+					CComQIPtr<IHTMLWindow2>  pWindow;
+					doc2->get_parentWindow(&pWindow);
+					if ( pWindow && ::IsWindowVisible(GetParent()) ) {
+						pWindow->focus();
+					}
+				}
+				if ( onDocumentComplete ) {
+					onDocumentComplete(szURL);
+				}
+			}
+		}
 	}
+	pUnkDisp->Release(); 
+	pUnkBrowser->Release();
 }

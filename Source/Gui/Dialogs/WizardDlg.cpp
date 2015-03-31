@@ -1509,6 +1509,72 @@ LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	return 0;
 }
 
+LRESULT CWizardDlg::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	CString webViewClass(_T("CWebViewWindow"));
+	CString fileDialogClass(_T("FileDialogSubclassWindow"));
+	CString dialogClass(_T("#32770"));
+	HWND browserWindow = CWebViewWindow::window;
+	if ( !browserWindow || ::IsWindowVisible(browserWindow) ) {
+		return 0;
+	}
+	if ( wParam == WA_INACTIVE ) {
+		HWND wnd = (HWND)lParam;
+		if ( wnd == 0 ) {
+			//LOG(INFO) << "wnd=0.  SetActiveWindow();";
+			SetActiveWindow();
+			bHandled = true;
+			return 0;
+		}
+		TCHAR Buffer[MAX_PATH] = _T("");
+		GetClassName(wnd, Buffer, sizeof(Buffer)/sizeof(TCHAR));
+		//LOG(INFO) << "CWizardDlg::OnActivate0 class="<< Buffer << " wnd="<<wnd << " title = "<< GuiTools::GetWindowText(wnd);
+		if ( Buffer[0] == 0 ) {
+			LOG(INFO) << "Buffer=0.  SetActiveWindow();";
+			SetActiveWindow();
+			bHandled = true;
+			return 0;
+		}
+		if ( (Buffer == dialogClass || Buffer == fileDialogClass) ) {
+			LOG(INFO) << "CWizardDlg::OnActivate1 "<< Buffer;
+			HWND parent = ::GetParent(wnd);
+			if ( parent ) {
+				GetClassName(parent, Buffer, sizeof(Buffer)/sizeof(TCHAR));
+				//LOG(INFO) << "CWizardDlg::OnActivate2 "<< Buffer;
+				if ( (Buffer == dialogClass || Buffer == fileDialogClass) ) {
+					 parent = ::GetParent(parent);
+					if ( parent ) {
+						//LOG(INFO) << "CWizardDlg::OnActivate3 "<< Buffer;
+						GetClassName(parent, Buffer, sizeof(Buffer)/sizeof(TCHAR));
+						if ( Buffer == webViewClass && !::IsWindowVisible(parent) ){
+							SetActiveWindow();
+							bHandled = true;
+							return 0;
+						}
+					} else {
+						//LOG(INFO) << "CWizardDlg::OnActivate3 parent is null";
+					
+
+							SetActiveWindow();
+							bHandled = true;
+							return 0;
+					
+						
+					}
+				} else if ( Buffer ==webViewClass && !::IsWindowVisible(parent) ){
+					SetActiveWindow();
+					bHandled = true;
+					return 0;
+				}
+				
+			}
+			
+		}
+		
+	}
+	return 0;
+}
+
 void CWizardDlg::CloseWizard()
 {
 	if(CurPage!=0 && CurPage!=4 && Settings.ConfirmOnExit)

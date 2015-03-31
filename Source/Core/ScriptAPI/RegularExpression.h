@@ -1,15 +1,15 @@
 #include <Core/3rdpart/pcreplusplus.h>
 #include <string>
 #include "../Squirrelnc.h"
-
+#include <Core/Utils/CoreTypes.h>
 namespace ScriptAPI {
 
 
-class RegularExpression : public pcrepp::Pcre {
+class RegularExpression  {
 public:
 	//  Pcre(const std::string& expression);
 	RegularExpression(); 
-	RegularExpression(const RegularExpression& r);
+	//RegularExpression(const RegularExpression& r);
 	RegularExpression(const std::string& expression, const std::string& flags);
 	  SquirrelObject split(const std::string& piece);
 	  SquirrelObject splitWithLimit(const std::string& piece, int limit);
@@ -29,9 +29,11 @@ public:
 	  bool matched();
 	  int  matchesCount();
 	  SquirrelObject getSubStrings();
+protected:
+	std_tr::shared_ptr<pcrepp::Pcre> pcre_;
 
 };
 
-RegularExpression* CreateRegExp(const std::string& expression, const std::string& flags = "");
+RegularExpression CreateRegExp(const std::string& expression, const std::string& flags = "");
 void RegisterRegularExpressionClass();
 }

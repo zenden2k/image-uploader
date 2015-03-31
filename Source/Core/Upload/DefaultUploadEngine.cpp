@@ -30,7 +30,7 @@ CDefaultUploadEngine::CDefaultUploadEngine() : CAbstractUploadEngine()
 	m_CurrentActionIndex = -1;
 }
 
-bool CDefaultUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params) {
+int CDefaultUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params) {
 	if ( task->getType() == "file" ) {
 		return doUploadFile(static_cast<FileUploadTask*>(task), params);
 	} else if ( task->getType() == "url" ) {
@@ -38,7 +38,7 @@ bool CDefaultUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params) {
 	} else {
 		UploadError( ErrorInfo::mtError, "Upload task of type '" + task->getType() + "' is not supported", 0, false );
 	}
-	return false;
+	return 0;
 }
 
 bool CDefaultUploadEngine::doUploadFile(FileUploadTask* task, CIUUploadParams &params) {

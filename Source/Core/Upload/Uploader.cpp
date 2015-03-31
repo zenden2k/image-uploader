@@ -150,6 +150,10 @@ bool CUploader::Upload(UploadTask* task) {
 			return false;
 		}
 		EngineRes = m_CurrentEngine->doUpload(task, uparams);
+		if ( EngineRes == -1 ) {
+			Cleanup();
+			return false;
+		}
 		i++;
 		if (needStop())
 		{

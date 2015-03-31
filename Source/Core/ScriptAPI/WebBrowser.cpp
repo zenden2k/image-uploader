@@ -46,6 +46,16 @@ void CWebBrowser::setOnLoadFinishedCallback(SquirrelObject callBack, SquirrelObj
 	d_->setOnLoadFinishedCallback(callBack, context);
 }
 
+void CWebBrowser::setOnTimerCallback(int timerInterval, SquirrelObject callBack, SquirrelObject context)
+{
+	d_->setOnTimerCallback(timerInterval,  callBack, context);
+}
+
+void CWebBrowser::setOnFileInputFilledCallback(SquirrelObject callBack, SquirrelObject context)
+{
+	d_->setOnFileInputFilledCallback(callBack, context);
+}
+
 const std::string CWebBrowser::getDocumentContents()
 {
 	return d_->getDocumentContents();
@@ -61,12 +71,12 @@ bool CWebBrowser::setHtml(const std::string& html)
 	return d_->setHtml(html);
 }
 
-bool CWebBrowser::runJavaScript(const std::string& code)
+const std::string CWebBrowser::runJavaScript(const std::string& code)
 {
 	return d_->runJavaScript(code);
 }
 
-SquirrelObject CWebBrowser::callJavaScriptFunction(const std::string& funcName, SquirrelObject args)
+const std::string CWebBrowser::callJavaScriptFunction(const std::string& funcName, SquirrelObject args)
 {
 	return d_->callJavaScriptFunction(funcName, args);
 }
@@ -94,6 +104,11 @@ void CWebBrowser::hide()
 void CWebBrowser::close()
 {
 	d_->close();
+}
+
+void CWebBrowser::setFocus()
+{
+	d_->setFocus();
 }
 
 void CWebBrowser::setTitle(const std::string& title)
@@ -130,6 +145,8 @@ void RegisterWebBrowserClass() {
 		.func(&CWebBrowser::callJavaScriptFunction, "callJavaScriptFunction")
 		.func(&CWebBrowser::setOnUrlChangedCallback, "setOnUrlChangedCallback")
 		.func(&CWebBrowser::setOnLoadFinishedCallback, "setOnLoadFinishedCallback")
+		.func(&CWebBrowser::setOnTimerCallback, "setOnTimerCallback")
+		.func(&CWebBrowser::setOnFileInputFilledCallback, "setOnFileInputFilledCallback")
 		.func(&CWebBrowser::setOnNavigateErrorCallback, "setOnNavigateErrorCallback");
 }
 

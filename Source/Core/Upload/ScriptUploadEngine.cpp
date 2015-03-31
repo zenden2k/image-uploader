@@ -203,7 +203,7 @@ void CScriptUploadEngine::FlushSquirrelOutput()
 	}
 }
 
-bool CScriptUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params)
+int CScriptUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params)
 {
 	std::string FileName;
 

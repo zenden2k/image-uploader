@@ -93,6 +93,7 @@ namespace WinUtils {
 	int GetInternetExplorerMajorVersion();
 	void RemoveBrowserKey();
 	void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective = false);
+	void TimerWait(int Delay);
 };
 
 #endif

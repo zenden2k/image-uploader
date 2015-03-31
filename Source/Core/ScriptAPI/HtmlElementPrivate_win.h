@@ -11,22 +11,29 @@
 
 namespace ScriptAPI {
 
+	// From IHTMLElement to IAccessible.
+	CComQIPtr<IAccessible> HTMLElementToAccessible(IHTMLElement* pHtmlElement);
+
 class HtmlElementPrivate {
 	public:
 		
 		HtmlElementPrivate(IHTMLElement* elem, HtmlDocumentPrivate *docPrivate) {
 			elem_ = elem;
 			selector_ = CComQIPtr<IElementSelector>(elem);
+			elem2_ = CComQIPtr<IHTMLElement2>(elem);
 			form_ = elem;
 			docPrivate_= docPrivate;
+			accessible_ = HTMLElementToAccessible(elem);
 		}
 
 		HtmlElementPrivate(IDispatchPtr disp, HtmlDocumentPrivate *docPrivate) {
 			disp_  = disp;
 			elem_ = CComQIPtr<IHTMLElement,&IID_IHTMLElement>(disp);
+			elem2_ = CComQIPtr<IHTMLElement2>(disp);
 			selector_ = CComQIPtr<IElementSelector>(disp);
 			form_ = disp;
 			docPrivate_= docPrivate;
+			accessible_ = HTMLElementToAccessible(elem_);
 		}
 
 		const std::string getAttribute(const std::string& name)
@@ -150,6 +157,7 @@ class HtmlElementPrivate {
 		}
 
 		void setValue(const std::string& value);
+		const std::string getValue();
 
 		HtmlElement getParentElement()
 		{
@@ -262,8 +270,18 @@ class HtmlElementPrivate {
 			return res;
 		}
 
+		bool submitForm() {
+			if ( !form_ ) {
+				LOG(ERROR) << "submitForm: element is not a form";
+				return false;
+			}
+			return SUCCEEDED( form_->submit());
+		}
+
 	protected:
 		CComPtr<IHTMLElement> elem_;
+		CComPtr<IHTMLElement2> elem2_;
+		CComPtr<IAccessible> accessible_;
 		IDispatchPtr disp_;
 		CComPtr<IElementSelector> selector_;
 		CComQIPtr<IHTMLFormElement> form_;
