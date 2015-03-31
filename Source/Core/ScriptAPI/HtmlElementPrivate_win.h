@@ -23,7 +23,7 @@ class HtmlElementPrivate {
 			elem2_ = CComQIPtr<IHTMLElement2>(elem);
 			form_ = elem;
 			docPrivate_= docPrivate;
-			accessible_ = HTMLElementToAccessible(elem);
+		
 		}
 
 		HtmlElementPrivate(IDispatchPtr disp, HtmlDocumentPrivate *docPrivate) {
@@ -33,7 +33,6 @@ class HtmlElementPrivate {
 			selector_ = CComQIPtr<IElementSelector>(disp);
 			form_ = disp;
 			docPrivate_= docPrivate;
-			accessible_ = HTMLElementToAccessible(elem_);
 		}
 
 		const std::string getAttribute(const std::string& name)

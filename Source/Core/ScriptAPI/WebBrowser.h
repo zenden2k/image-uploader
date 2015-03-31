@@ -30,6 +30,9 @@ namespace ScriptAPI {
 			bool setHtml(const std::string& html);
 			const std::string runJavaScript(const std::string& code);
 			const std::string callJavaScriptFunction(const std::string& funcName, SquirrelObject args);
+			void setSilent(bool silent);
+			void addTrustedSite(const std::string& domain);
+			int getMajorVersion();
 			
 			friend class WebBrowserPrivate;
 		protected:

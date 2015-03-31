@@ -8,7 +8,9 @@
 #include <Core/Logging.h>
 #include <Core/Squirrelnc.h>
 #include <Gui/Dialogs/WizardDlg.h>
+#include <3rdpart/Registry.h>
 #include "HtmlDocumentPrivate_win.h"
+#include <Func/WinUtils.h>
 namespace ScriptAPI {
 using namespace SqPlus;
 class WebBrowserPrivate {
@@ -24,6 +26,7 @@ public:
 		initialHeight_ = 600;
 		initialTitle_ = _T("Web Browser");
 		timerInterval_ = 0;
+		initialSilent_ = true;
 	}
 
 	~WebBrowserPrivate() {
@@ -32,6 +35,13 @@ public:
 		}
 	}
 
+	void setSilent(bool silent) {
+		if ( webViewWindow_.m_hWnd) {
+			webViewWindow_.view_.PutSilent(silent);
+		} else {
+			initialSilent_ = silent;
+		}
+	}
 	bool navigateToUrl(const std::string& url) {
 		if ( webViewWindow_.m_hWnd) {
 			return webViewWindow_.NavigateTo(IuCoreUtils::Utf8ToWstring(url).c_str());
@@ -149,10 +159,28 @@ public:
 		return /*IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.view_.GetHTML());*/document().getHTML();
 	}
 
+	void addTrustedSite(const std::string& site) {
+		pcrepp::Pcre reg("(.+?)://(.+)/?", "");
+		std::string domain = site;
+		std::string protocol = "http";
+		if ( reg.search(site)) {
+			protocol = reg.get_match(0);
+			domain = reg.get_match(1);
+		}
+		CRegistry Reg;
+		Reg.SetRootKey( HKEY_CURRENT_USER );
+		if ( Reg.SetKey( CString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\ZoneMap\\Domains\\"))+domain.c_str(), true ) ) {
+			Reg.WriteDword(CString(protocol.c_str()), 2);
+		}	
+	}
 	HtmlDocument document();
 
 	IWebBrowser2* getBrowserInterface() {
 		return  webViewWindow_.view_.GetBrowserInterface();
+	}
+
+	int getMajorVersion() {
+		return WinUtils::GetInternetExplorerMajorVersion();
 	}
 
 	const std::string runJavaScript(const std::string& code) {
@@ -212,6 +240,7 @@ protected:
 	CString initialTitle_;
 	CString initialHtml_;
 	CWebBrowser* browser_;
+	bool initialSilent_;
 	int initialWidth_;
 	int initialHeight_;
 	int timerInterval_;
@@ -223,6 +252,7 @@ protected:
 
 		CRect r(0,0, initialWidth_, initialWidth_);
 		webViewWindow_.Create(parent,CWindow::rcDefault,initialTitle_, WS_POPUP | WS_OVERLAPPEDWINDOW	);
+		webViewWindow_.view_.PutSilent(initialSilent_);
 		CDC hdc = ::GetDC(webViewWindow_.m_hWnd);
 		float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
 		float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;

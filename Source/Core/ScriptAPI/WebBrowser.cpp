@@ -81,6 +81,21 @@ const std::string CWebBrowser::callJavaScriptFunction(const std::string& funcNam
 	return d_->callJavaScriptFunction(funcName, args);
 }
 
+void CWebBrowser::setSilent(bool silent)
+{
+	d_->setSilent(silent);
+}
+
+void CWebBrowser::addTrustedSite(const std::string& domain)
+{
+	d_->addTrustedSite(domain);
+}
+
+int CWebBrowser::getMajorVersion()
+{
+	return d_->getMajorVersion();
+}
+
 bool CWebBrowser::showModal()
 {
 	return d_->showModal();
@@ -142,6 +157,9 @@ void RegisterWebBrowserClass() {
 		.func(&CWebBrowser::document, "document")
 		.func(&CWebBrowser::setHtml, "setHtml")
 		.func(&CWebBrowser::runJavaScript, "runJavaScript")
+		.func(&CWebBrowser::setSilent, "setSilent")
+		.func(&CWebBrowser::addTrustedSite, "addTrustedSite")
+		.func(&CWebBrowser::getMajorVersion, "getMajorVersion")
 		.func(&CWebBrowser::callJavaScriptFunction, "callJavaScriptFunction")
 		.func(&CWebBrowser::setOnUrlChangedCallback, "setOnUrlChangedCallback")
 		.func(&CWebBrowser::setOnLoadFinishedCallback, "setOnLoadFinishedCallback")

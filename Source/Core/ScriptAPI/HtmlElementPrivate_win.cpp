@@ -19,94 +19,96 @@ namespace ScriptAPI {
 
 		return CComQIPtr<IHTMLElement>();
 	}
-void HtmlElementPrivate::setValue(const std::string& value) {
-	// From IAccessible to IHTMLElement.
-	
 
-		CComQIPtr<IHTMLInputElement>  input = disp_ ? CComQIPtr<IHTMLInputElement> (disp_) : CComQIPtr<IHTMLInputElement> (elem_);
-		if ( !input ) {
-			LOG(WARNING) << "setValue: element is not an input.";
-			return;
-		}
+void HtmlElementPrivate::setValue(const std::string& value) {
+	CComQIPtr<IHTMLInputElement>  input = disp_ ? CComQIPtr<IHTMLInputElement> (disp_) : CComQIPtr<IHTMLInputElement> (elem_);
+	if ( !input ) {
+		LOG(WARNING) << "setValue: element is not an input.";
+		return;
+	}
 
 		CComQIPtr<IHTMLInputFileElement>  inputFile = disp_ ? CComQIPtr<IHTMLInputFileElement> (disp_) : CComQIPtr<IHTMLInputFileElement> (elem_);
-		if ( inputFile && accessible_ ) {
-			CString val = IuCoreUtils::Utf8ToWstring(value).c_str();
+
+		if ( inputFile ) {
+			accessible_ = HTMLElementToAccessible(elem_);
+			if ( accessible_ ) {
+				CString val = IuCoreUtils::Utf8ToWstring(value).c_str();
+				
+				//elem2_->focus();
+				docPrivate_->browserPrivate_->webViewWindow_.fillInputFileField(val, inputFile, accessible_);
 			
-			//elem2_->focus();
-			docPrivate_->browserPrivate_->webViewWindow_.setUploadFileName(val, inputFile);
-			accessible_->accDoDefaultAction(CComVariant(0));
-			//docPrivate_->browserPrivate_->webViewWindow_.fillInputFileField();
-			/*IDispatchPtr parent;
-			accessible_->get_accParent(&parent);
-			CComQIPtr<IAccessible> parentAccessible = parent;
-			long childCount = 0;
-			long returnCount = 0;
+				//docPrivate_->browserPrivate_->webViewWindow_.fillInputFileField();
+				/*IDispatchPtr parent;
+				accessible_->get_accParent(&parent);
+				CComQIPtr<IAccessible> parentAccessible = parent;
+				long childCount = 0;
+				long returnCount = 0;
 
-			HRESULT hr = parentAccessible->get_accChildCount(&childCount);
+				HRESULT hr = parentAccessible->get_accChildCount(&childCount);
 
-			if (childCount != 0) {
-				CComVariant* pArray = new CComVariant[childCount];
-				hr = ::AccessibleChildren(parentAccessible, 0L, childCount, pArray, &returnCount);
-				if (!FAILED(hr)) {
-					for (int x = 0; x < returnCount; x++)
-					{
-						CComVariant vtChild = pArray[x];
-						if (vtChild.vt != VT_DISPATCH)
-							continue;
+				if (childCount != 0) {
+					CComVariant* pArray = new CComVariant[childCount];
+					hr = ::AccessibleChildren(parentAccessible, 0L, childCount, pArray, &returnCount);
+					if (!FAILED(hr)) {
+						for (int x = 0; x < returnCount; x++)
+						{
+							CComVariant vtChild = pArray[x];
+							if (vtChild.vt != VT_DISPATCH)
+								continue;
 
-						CComPtr<IDispatch> pDisp = vtChild.pdispVal;
-						CComQIPtr<IAccessible> pAccChild = pDisp;
-						if (!pAccChild)
-							continue;
+							CComPtr<IDispatch> pDisp = vtChild.pdispVal;
+							CComQIPtr<IAccessible> pAccChild = pDisp;
+							if (!pAccChild)
+								continue;
 
-						CComQIPtr<IHTMLInputElement> el = AccessibleToHTMLElement(pAccChild);
-						hr = el->put_value(CComBSTR(val));
-						VARIANT v;
-						v.vt = VT_I4 ;
-						v.lVal  = CHILDID_SELF;
-						hr = pAccChild->put_accValue(v, CComBSTR(val));
+							CComQIPtr<IHTMLInputElement> el = AccessibleToHTMLElement(pAccChild);
+							hr = el->put_value(CComBSTR(val));
+							VARIANT v;
+							v.vt = VT_I4 ;
+							v.lVal  = CHILDID_SELF;
+							hr = pAccChild->put_accValue(v, CComBSTR(val));
 
-						//std::wstring name = GetName(pAccChild).data();
-						
+							//std::wstring name = GetName(pAccChild).data();
+							
+						}
 					}
+					delete[] pArray;
 				}
-				delete[] pArray;
+				
+
+				VARIANT v;
+				v.vt = VT_I4 ;
+				v.lVal  = CHILDID_SELF;
+				hr = accessible_->put_accValue(v, CComBSTR(val));
+				LOG(INFO) << hr;*/
+				/*
+				CString val = IuCoreUtils::Utf8ToWstring(value).c_str();
+				WinUtils::CopyTextToClipboard(val);
+				VARIANT res;
+				CComVariant comV(_T("userfile"));
+				// Copy Full FileName To Clipboard
+				//Clipboard()->SetTextBuf(sFile.c_str());
+				/*inputFile->select();
+				elem2_->focus();*
+				// Paste from ClipBoard to "userfile"
+				IWebBrowser2* br = docPrivate_->browserPrivate_->getBrowserInterface();
+				//docPrivate_->browserPrivate_->setFocus();
+				
+				/*CppWebBrowser->ControlInterface*
+				br->ExecWB(OLECMDID_PASTE, OLECMDEXECOPT_DODEFAULT, &comV, &res);
+
+				docPrivate_->browserPrivate_->webViewWindow_.uploadFileName_ = val;
+				elem2_->focus();
+				docPrivate_->browserPrivate_->webViewWindow_.view_.SendMessage(WM_KEYDOWN, VK_RETURN,0);
+				//click();
+
+				/*input->put_readOnly((FALSE));
+				if ( !SUCCEEDED( inputFile->put_value(CComBSTR(IuCoreUtils::Utf8ToWstring(value).c_str())) ) ) {
+					LOG(WARNING) << "setValue: IHTMLInputFileElement::setValue failed.";
+				}*
+				return;*/
+				return;
 			}
-			
-
-			VARIANT v;
-			v.vt = VT_I4 ;
-			v.lVal  = CHILDID_SELF;
-		    hr = accessible_->put_accValue(v, CComBSTR(val));
-			LOG(INFO) << hr;*/
-			/*
-			CString val = IuCoreUtils::Utf8ToWstring(value).c_str();
-			WinUtils::CopyTextToClipboard(val);
-			VARIANT res;
-			CComVariant comV(_T("userfile"));
-			// Copy Full FileName To Clipboard
-			//Clipboard()->SetTextBuf(sFile.c_str());
-			/*inputFile->select();
-			elem2_->focus();*
-			// Paste from ClipBoard to "userfile"
-			IWebBrowser2* br = docPrivate_->browserPrivate_->getBrowserInterface();
-			//docPrivate_->browserPrivate_->setFocus();
-			
-			/*CppWebBrowser->ControlInterface*
-			br->ExecWB(OLECMDID_PASTE, OLECMDEXECOPT_DODEFAULT, &comV, &res);
-
-			docPrivate_->browserPrivate_->webViewWindow_.uploadFileName_ = val;
-			elem2_->focus();
-			docPrivate_->browserPrivate_->webViewWindow_.view_.SendMessage(WM_KEYDOWN, VK_RETURN,0);
-			//click();
-
-			/*input->put_readOnly((FALSE));
-			if ( !SUCCEEDED( inputFile->put_value(CComBSTR(IuCoreUtils::Utf8ToWstring(value).c_str())) ) ) {
-				LOG(WARNING) << "setValue: IHTMLInputFileElement::setValue failed.";
-			}*
-			return;*/
-			return;
 		}
 
 		input->put_value(CComBSTR(IuCoreUtils::Utf8ToWstring(value).c_str()));

@@ -1530,13 +1530,13 @@ LRESULT CWizardDlg::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 		GetClassName(wnd, Buffer, sizeof(Buffer)/sizeof(TCHAR));
 		//LOG(INFO) << "CWizardDlg::OnActivate0 class="<< Buffer << " wnd="<<wnd << " title = "<< GuiTools::GetWindowText(wnd);
 		if ( Buffer[0] == 0 ) {
-			LOG(INFO) << "Buffer=0.  SetActiveWindow();";
+			//LOG(INFO) << "Buffer=0.  SetActiveWindow();";
 			SetActiveWindow();
 			bHandled = true;
 			return 0;
 		}
 		if ( (Buffer == dialogClass || Buffer == fileDialogClass) ) {
-			LOG(INFO) << "CWizardDlg::OnActivate1 "<< Buffer;
+			//LOG(INFO) << "CWizardDlg::OnActivate1 "<< Buffer;
 			HWND parent = ::GetParent(wnd);
 			if ( parent ) {
 				GetClassName(parent, Buffer, sizeof(Buffer)/sizeof(TCHAR));
