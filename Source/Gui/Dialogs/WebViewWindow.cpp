@@ -16,7 +16,7 @@ CWebViewWindow::CWebViewWindow() : subclassWindow_(this) {
 	fileFieldSuccess_ = false;
 	messageLoopIsRunning_ = false;
 	activeWindowBeforeFill_ = 0;
-	dialogHook_ = 0;
+	//dialogHook_ = 0;
 }
 CWebViewWindow::~CWebViewWindow() {
 	/*if ( dialogHook_) {
@@ -26,7 +26,7 @@ CWebViewWindow::~CWebViewWindow() {
 		UnhookWindowsHookEx(hook_);
 	}
 	instance = 0;
-	delete dialogHook_;
+	//delete dialogHook_;
 }
 
 LRESULT CWebViewWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
@@ -120,6 +120,7 @@ void CWebViewWindow::setTimerInterval(int interval)
 }
 
  TCHAR m_szClassName[MAX_PATH];
+ #define CLASSNAME_LEN 100
 // helper to get class name (lowercase)
 LPCTSTR GetWndClass(WPARAM wParam, LPARAM lParam)
 {
@@ -179,9 +180,9 @@ void CWebViewWindow::fillInputFileField(const CString& uploadFileName, CComPtr<I
 	uploadFileName_ = uploadFileName;
 	inputFileElement_ = inputFileElement;
 	accesible_ = accesible;
-	if ( !dialogHook_ ) {
+	/*if ( !dialogHook_ ) {
 		dialogHook_ = new CDialogHook(this);
-	}
+	}*/
 	
 	PostMessage(WM_FILLINPUTFIELD);
 	//LOG(INFO) << "threadId="<<GetCurrentThreadId();
@@ -694,7 +695,7 @@ BOOL CALLBACK FileDialogSubclassWindow::EnumChildProc(HWND wnd, LPARAM lParam)
 	// forward to original proc if you want 
 	return TBase::WindowProc(hWnd, uMsg, wParam, lParam); 
 }*/
-
+/*
 CDialogHook::CDialogHook(CWebViewWindow* webViewWindow)
 {
 	webViewWindow_ = webViewWindow;
@@ -723,3 +724,4 @@ LRESULT CDialogHook::HookProc(int nCode, WPARAM wParam, LPARAM lParam)
 		return CCBTHook::HookProc(nCode, wParam, lParam); // calls next hook
 	}
 }
+*/

@@ -27,7 +27,11 @@
 <h2>Functions to implement</h2> 
 <div class="script-functions">
 <code class="f"><u>int</u> UploadFile(<u>string</u> <i>pathToFile</i>, <u><a href="api_smallclasses.html#CIUUploadParams">CIUUploadParams</a></u> <i>params</i>)</code>
-Obligatory for server Type="image" or Type="file".<br/>
+Obligatory for server Type="image" or Type="file".
+Return values:<br/>
+1 - success,<br>
+0 - fail<br/>
+-1 - fail and abort upload  (for example, authorization failed, this value supported since v.1.3.1)
 <code class="f"><u>int</u> ShortenUrl(<u>string</u> <i>url</i>, <u><a href="api_smallclasses.html#CIUUploadParams">CIUUploadParams</a></u> <i>params</i>)</code>
 Obligatory for server Type="urlshortening".<br/>
 

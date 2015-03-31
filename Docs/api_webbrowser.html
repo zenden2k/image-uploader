@@ -59,8 +59,15 @@ Returns current page contents.
 <code class="f"><a href="api_htmldocument.html"><u>HtmlDocument</u></a> document()</code>
 <br>
 <code class="f"><u>string</u> runJavaScript(<u>string</u> <i>code</i>)</code>
-
 <br>
+<code class="f">setSilent(<u>bool</u> <i>silent</i>)</code>
+<br>
+<code class="f">addTrustedSite(<u>string</u> <i>address</i>)</code>
+<br>
+<code class="f"><u>int</u> getMajorVersion()</code>
+<br>
+<code class="f"><u>bool</u> close()</code>
+setSilent
 <code class="f">setOnUrlChangedCallback(<u>function</u> <i>callback</i>, [optional] <i>context</i>)</code>
 Arguments passed to <i>callback</i>:<br>
 <i>data</i> - a table containing:<br>
@@ -98,6 +105,16 @@ Arguments passed to <i>callback</i>:<br>
 <pre class="prettyprint">
 {
   browser = WebBrowser,
+}
+</pre>
+<br>
+<code class="f">setOnFileInputFilledCallback(<u>int</u> <i>msecInterval</i>, <u>function</u> <i>callback</i>, [optional] <i>context</i>)</code>
+Arguments passed to <i>callback</i>:<br>
+<i>data</i> - a table containing:<br>
+<pre class="prettyprint">
+{
+  browser = WebBrowser,
+  fileName = string
 }
 </pre>
 </div>

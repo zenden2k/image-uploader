@@ -6,6 +6,7 @@
 #include "resource.h"       // main symbols
 #include <Gui/Controls/WTLBrowserView.h>
 #include "3rdpart/thread.h"
+/*
 #include "3rdpart/hookThunk.h"
 #include "3rdpart/GenericCallBack.h"
 
@@ -22,13 +23,7 @@ class TimerAdapter : public CallBackAdapter<
 public:
 	typedef typename TimerAdapter<Base>::BaseMemCallBackType MemCallBackType;
 
-	/*UINT_PTR SetTimer(UINT uElapse, MemCallBackType lpTimerFunc){
-		return ::SetTimer(NULL, 0, uElapse, MakeCallBackProc(lpTimerFunc));
-	}
 
-	BOOL KillTimer(UINT_PTR uIDEvent){
-		return ::KillTimer(NULL, uIDEvent);
-	}*/
 
 	static LRESULT CALLBACK DefaultCallBackProc( int hwnd , WPARAM a, LPARAM b){
 		return (_ThisType(hwnd)->*_MemberType(hwnd))(0, a, b);
@@ -110,6 +105,7 @@ public:
 
 };
 class CWebViewWindow;
+/*
 class CDialogHook : public CCBTHook
 {
 public:
@@ -121,8 +117,8 @@ public:
 
 	CWebViewWindow* webViewWindow_;
 
-};
-class CWebViewWindow: public CWindowImpl<CWebViewWindow>, public TimerAdapter<CWebViewWindow>
+};*/
+class CWebViewWindow: public CWindowImpl<CWebViewWindow>//, public TimerAdapter<CWebViewWindow>
 {
 public:
 
@@ -193,7 +189,7 @@ protected:
 	static HHOOK hook_;
 	static BOOL CALLBACK EnumChildProc(HWND hwnd, LPARAM lParam);
 	static LRESULT CALLBACK CBTHook(int nCode, WPARAM wParam, LPARAM lParam);
-	CDialogHook * dialogHook_;
+//	CDialogHook * dialogHook_;
 	CComPtr<IAccessible> accesible_;
 	static CWebViewWindow* instance;
 };
