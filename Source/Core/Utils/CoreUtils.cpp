@@ -39,10 +39,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	#include <sys/stat.h>
 	#include "Core/Utils/utils_unix.h"
 #endif
-
+#if !defined(_MSC_VER) || _MSC_VER < 1800 
 long round(float number){
 	return number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5);
 }
+#endif
 
 
 namespace IuCoreUtils {
