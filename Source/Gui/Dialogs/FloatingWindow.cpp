@@ -643,11 +643,16 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
 
 	CImageConverter imageConverter;
 	Thumbnail thumb;
+	CString templateName = Settings.quickScreenshotServer.getImageUploadParams().getThumb().TemplateName;
+	if ( templateName.IsEmpty() ) {
+		templateName = _T("default");
+	}
+	CString thumbTemplateFileName = IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + templateName +
+		_T(".xml");
 
-	if (!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + Settings.quickScreenshotServer.getImageUploadParams().getThumb().TemplateName +
-	                                       _T(".xml"))))
+	if (!thumb.LoadFromFile(WCstringToUtf8(thumbTemplateFileName)))
 	{
-		WriteLog(logError, _T("CThumbSettingsPage"), TR("Не могу загрузить файл миниатюры!"));
+		WriteLog(logError, _T("CFloatingWindow"), TR("Не могу загрузить файл iминиатюры!")+CString(_T("\r\n")) + thumbTemplateFileName);
 		return;
 	}
 	imageConverter.setEnableProcessing(Settings.quickScreenshotServer.getImageUploadParams().ProcessImages);

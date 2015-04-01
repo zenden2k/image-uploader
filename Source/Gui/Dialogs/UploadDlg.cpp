@@ -246,10 +246,14 @@ DWORD CUploadDlg::Run()
 	bool CreateThumbs = sessionImageServer_.getImageUploadParams().CreateThumbs;
 
 	Thumbnail thumb;
-	
-	if(!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\")+sessionImageServer_.getImageUploadParams().getThumb().TemplateName+_T(".xml"))))
+	CString templateName = sessionImageServer_.getImageUploadParams().getThumb().TemplateName;
+	if ( templateName.IsEmpty() ) {
+		templateName = _T("default");
+	}
+	CString thumbTemplateFileName = IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\")+templateName+_T(".xml");
+	if(!thumb.LoadFromFile(WCstringToUtf8(thumbTemplateFileName)))
 	{
-		WriteLog(logError, _T("CThumbSettingsPage"), TR("Не могу загрузить файл миниатюры!"));
+		WriteLog(logError, _T("CUploadDlg"), TR("Не могу загрузить файл миниатюры!")+CString(_T("\r\n")) + thumbTemplateFileName);
 		return ThreadTerminated();
 	}
 
