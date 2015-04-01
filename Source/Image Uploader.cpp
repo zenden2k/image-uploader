@@ -119,7 +119,11 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	}
 	
 	int nRet = theLoop.Run();
+	if ( dlgMain.m_hWnd ) {
+		dlgMain.DestroyWindow();
+	}
 	_Module.RemoveMessageLoop();
+
 
 	Gdiplus::GdiplusShutdown( gdiplusToken );
 

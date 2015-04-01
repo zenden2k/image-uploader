@@ -61,7 +61,7 @@ LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 	TRC(IDC_ONEINSTANCE,"Не запускать новые копии программы из трея");
 	TRC(IDC_AUTOSTARTUP, "Запуск программы при старте Windows");
 	//CTrayActions trayActions;
-	for(size_t i=0; i< Settings.Hotkeys/*trayActions*/.GetCount(); i++)
+	for(size_t i=0; i< Settings.Hotkeys/*trayActions*/.size(); i++)
 	{
 		SendDlgItemMessage(IDC_LEFTBUTTONDOUBLECLICKCOMBO, CB_ADDSTRING,0, (LPARAM)(LPCTSTR)Settings.Hotkeys[i].GetDisplayName());
 		SendDlgItemMessage(IDC_LEFTBUTTONCLICKCOMBO, CB_ADDSTRING,0, (LPARAM)(LPCTSTR)Settings.Hotkeys[i].GetDisplayName());

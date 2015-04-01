@@ -126,6 +126,13 @@ void CWinHotkeyCtrl::SetWinHotkey(UINT vkCode, UINT fModifiers) {
 }
 
 
+void CWinHotkeyCtrl::Clear()
+{
+	m_vkCode = m_fModSet = m_fModRel = 0;
+	m_fIsPressed = FALSE;
+	UpdateText();
+}
+
 LRESULT CWinHotkeyCtrl::OnKey(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 
@@ -240,6 +247,7 @@ void CWinHotkeyCtrl::OnContextMenu(HWND /*pWnd*/, CPoint pt) {
 	hmenu2 = CreatePopupMenu();
 	for (id = VK_F1; id <= VK_F24; id++)
 		AppendMenu(hmenu2, MF_STRING, id, GetKeyName(id));
+	
 	AppendMenu(hmenu, MF_STRING | MF_POPUP, (UINT_PTR)hmenu2, _T("Functionality"));
 
 
@@ -252,7 +260,11 @@ void CWinHotkeyCtrl::OnContextMenu(HWND /*pWnd*/, CPoint pt) {
 		(MF_STRING | MF_CHECKED) : MF_STRING, VK_SHIFT, _T("Shift-key"));
 	AppendMenu(hmenu, (m_fModSet & MOD_ALT) ? 
 		(MF_STRING | MF_CHECKED) : MF_STRING, VK_MENU, _T("Alt-key"));
-
+	AppendMenu(hmenu, MF_SEPARATOR, 0, NULL);
+	AppendMenu(hmenu, MF_STRING, VK_SNAPSHOT, GetKeyName(VK_SNAPSHOT));
+	AppendMenu(hmenu, MF_SEPARATOR, 0, NULL);
+	AppendMenu(hmenu, MF_STRING, IDM_CLEARHOTKEYDATA, TR("Очистить"));
+	
 	UINT uMenuID = TrackPopupMenu(hmenu, 
 		TPM_RIGHTALIGN | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD,
 		pt.x, pt.y, 0, m_hWnd, NULL);
@@ -283,7 +295,9 @@ void CWinHotkeyCtrl::OnContextMenu(HWND /*pWnd*/, CPoint pt) {
 					m_fModRel |= m_fModSet & MOD_ALT;
 				}
 				break;
-
+			case IDM_CLEARHOTKEYDATA:
+				Clear();
+				break;
 			default:
 				m_vkCode = uMenuID;
 				m_fIsPressed = FALSE;

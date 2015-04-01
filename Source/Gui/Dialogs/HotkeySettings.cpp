@@ -51,7 +51,7 @@ LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	m_HotkeyList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 	hotkeyList = Settings.Hotkeys;
 
-	for(int i=0; i < int(hotkeyList.GetCount())-1; i++)
+	for(int i=0; i < int(hotkeyList.size())-1; i++)
 	{
 		m_HotkeyList.AddItem(i, 0, hotkeyList[i+1].GetDisplayName());		
 		m_HotkeyList.AddItem(i, 1, hotkeyList[i+1].localKey.toString());
@@ -151,7 +151,7 @@ LRESULT CHotkeySettingsPage::OnClearHotkey(WORD wNotifyCode, WORD wID, HWND hWnd
 
 LRESULT CHotkeySettingsPage::OnClearAllHotkeys(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	for(size_t i=0; i<hotkeyList.GetCount()-1; i++)
+	for(size_t i=0; i<int(hotkeyList.size())-1; i++)
 	{
 		hotkeyList[i+1].Clear();
 		m_HotkeyList.SetItem(i, 1, LVIF_TEXT,_T(""),0,0,0,0);
@@ -191,7 +191,7 @@ CHotkeyList::CHotkeyList()
 
 CHotkeyItem& CHotkeyList::getByFunc(const CString &func)
 {
-	for(size_t i=0; i<GetCount(); i++)
+	for(size_t i=0; i<size(); i++)
 	{
 		if ((*this)[i].func == func) return  (*this)[i];
 	}
@@ -200,7 +200,7 @@ CHotkeyItem& CHotkeyList::getByFunc(const CString &func)
 
 int CHotkeyList::getFuncIndex(const CString &func)
 {
-	for(size_t i=0; i<GetCount(); i++)
+	for(size_t i=0; i<size(); i++)
 	{
 		if ((*this)[i].func == func) return  i;
 	}
@@ -209,8 +209,8 @@ int CHotkeyList::getFuncIndex(const CString &func)
 
 bool CHotkeyList::operator==( const CHotkeyList& c)
 {
-	if(GetCount() != c.GetCount()) return false;
-	for(size_t i=0; i<c.GetCount(); i++)
+	if(size() != c.size()) return false;
+	for(size_t i=0; i<c.size(); i++)
 	{
 		if((*this)[i].localKey!=c[i].localKey || (*this)[i].globalKey!=c[i].globalKey)
 			return false;
@@ -227,7 +227,7 @@ void CHotkeyList::AddItem(CString name, CString func, DWORD commandId, WORD code
 	hi.func = func;
 	hi.name = name;
 	hi.commandId = commandId;
-	Add(hi);
+	push_back(hi);
 }
 
 bool CHotkeyList::Changed()
@@ -237,10 +237,10 @@ bool CHotkeyList::Changed()
 
 CHotkeyList& CHotkeyList::operator=( const CHotkeyList& c)
 {
-	RemoveAll();
-	for(size_t i=0; i<c.GetCount(); i++)
+	clear();
+	for(size_t i=0; i<c.size(); i++)
 	{
-		Add( c[i]);
+		push_back( c[i]);
 	}
 	m_bChanged = true;
 	return *this;
@@ -249,7 +249,7 @@ CHotkeyList& CHotkeyList::operator=( const CHotkeyList& c)
 CString CHotkeyList::toString() const
 {
 	CString result;
-	for(size_t i=1; i<GetCount(); i++)
+	for(size_t i=1; i<size(); i++)
 	{
 		if(!((*this)[i].IsNull()))
 		result+=		CString((*this)[i].func) +_T("=")+(*this)[i].localKey.Serialize()+_T(",")+(*this)[i].globalKey.Serialize()+_T(";");

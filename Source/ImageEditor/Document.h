@@ -36,6 +36,7 @@ class Document {
 		bool undo();
 		int getWidth();
 		int getHeight();
+		bool isNull();
 		bool hasTransparentPixels() const;
 	private:
 		Gdiplus::Bitmap* currentImage_;

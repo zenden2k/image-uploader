@@ -19,7 +19,9 @@ Document::Document(int width, int height) {
 Document::Document(const wchar_t* fileName) {
 	currentImage_ = LoadImageFromFileWithoutLocking(fileName);
 	init();
-	checkTransparentPixels();
+	if ( currentImage_ ) {
+		checkTransparentPixels();
+	}
 }
 
 Document::Document(Gdiplus::Bitmap *sourceImage,  bool hasTransparentPixels ) {
@@ -36,11 +38,12 @@ Document::~Document()
 }
 
 void Document::init() {
-	assert( currentImage_ );
 	drawStarted_ = false;
 	originalImage_ = NULL;
-	currentCanvas_ = new Gdiplus::Graphics( currentImage_ );
-	changedSegments_ = AffectedSegments(getWidth(), getHeight());
+	if ( currentImage_ ) {
+		currentCanvas_ = new Gdiplus::Graphics( currentImage_ );
+		changedSegments_ = AffectedSegments(getWidth(), getHeight());
+	}
 	//currentCanvas_->Clear( Gdiplus::Color( 150, 0, 0 ) );
 
 	/*
@@ -235,6 +238,11 @@ int Document::getWidth()
 int Document::getHeight()
 {
 	return currentImage_->GetHeight();
+}
+
+bool Document::isNull()
+{
+	return !currentImage_;
 }
 
 bool Document::hasTransparentPixels() const

@@ -35,7 +35,7 @@
 #include "hotkeyeditor.h"
 
 class CHotkeyItem;
-class CHotkeyList: public CAtlArray<CHotkeyItem>
+class CHotkeyList: public std::vector<CHotkeyItem>
 {
 	public:
 		CHotkeyList();

@@ -535,7 +535,7 @@ void CFloatingWindow::RegisterHotkeys()
 {
 	m_hotkeys = Settings.Hotkeys;
 
-	for (size_t i = 0; i < m_hotkeys.GetCount(); i++)
+	for (size_t i = 0; i < m_hotkeys.size(); i++)
 	{
 		if (m_hotkeys[i].globalKey.keyCode)
 		{
@@ -552,7 +552,7 @@ void CFloatingWindow::RegisterHotkeys()
 
 LRESULT CFloatingWindow::OnHotKey(int HotKeyID, UINT flags, UINT vk)
 {
-	if (HotKeyID < 0 || HotKeyID > int(m_hotkeys.GetCount()) - 1)
+	if (HotKeyID < 0 || HotKeyID > int(m_hotkeys.size()) - 1)
 		return 0;
 	if (m_bIsUploading)
 		return 0;
@@ -574,12 +574,12 @@ LRESULT CFloatingWindow::OnHotKey(int HotKeyID, UINT flags, UINT vk)
 
 void CFloatingWindow::UnRegisterHotkeys()
 {
-	for (size_t i = 0; i < m_hotkeys.GetCount(); i++)
+	for (size_t i = 0; i < m_hotkeys.size(); i++)
 	{
 		if (m_hotkeys[i].globalKey.keyCode)
 			UnregisterHotKey(m_hWnd, i);
 	}
-	m_hotkeys.RemoveAll();
+	m_hotkeys.clear();
 }
 
 LRESULT CFloatingWindow::OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl)

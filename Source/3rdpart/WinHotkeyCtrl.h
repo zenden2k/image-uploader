@@ -12,12 +12,13 @@ class CWinHotkeyCtrl : public CWindowImpl<CWinHotkeyCtrl, CEdit,CControlWinTrait
 public:
 	CWinHotkeyCtrl();
 	virtual ~CWinHotkeyCtrl();
-
+	enum { IDM_CLEARHOTKEYDATA = 0xFF};
 	void UpdateText();
 	DWORD GetWinHotkey();
 	BOOL GetWinHotkey(UINT* pvkCode, UINT* pfModifiers);
 	void SetWinHotkey(DWORD dwHk);
 	void SetWinHotkey(UINT vkCode, UINT fModifiers);
+	void Clear();
 DECLARE_WND_SUPERCLASS(_T("CWinHotkeyCtrl"), CEdit::GetWndClassName());
 
 	BEGIN_MSG_MAP(CWinHotkeyCtrl)
@@ -53,7 +54,6 @@ private:
 	LRESULT OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-
 	//  
 
 public:

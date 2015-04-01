@@ -252,6 +252,10 @@ void ImageEditorWindow::setAskBeforeClose(bool ask)
 
 ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDisplayMode mode)
 {
+	if ( currentDoc_->isNull() ) {
+		::MessageBox(0, _T("Invalid image file."), APPNAME, MB_ICONERROR);
+		return drCancel;
+	}
 	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 	int screenHeight =  GetSystemMetrics(SM_CYSCREEN);
 //	displayMode_ = wdmWindowed;

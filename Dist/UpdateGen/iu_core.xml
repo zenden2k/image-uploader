@@ -6,11 +6,14 @@
 		<Entry Name="curl-ca-bundle.crt" SaveToFolder="%apppath%/" Action="add"/>
 		<Entry Name="new-icon.ico" SaveToFolder="%apppath%/" Action="add"/>
         	<Entry Name="Lang/*.lng" SaveToFolder="%apppath%/Lang/" Action="add"/>
+		<Entry Name="Lang/Turkce.lng" SaveToFolder="%apppath%/Lang/" Action="delete"/>
+		<Entry Name="Lang/Turkish.lng" SaveToFolder="%apppath%/Lang/" Action="delete"/>
         	<Entry Name="Modules/*.dll" SaveToFolder="%apppath%/Modules/" Action="add"/>
         	<Entry Name="Docs/*" SaveToFolder="%apppath%/Docs/" Action="add"/>
         	<Entry Name="Docs/Pics/*" SaveToFolder="%apppath%/Docs/Pics/" Action="add"/>
         	<Entry Name="Docs/prettify/*" SaveToFolder="%apppath%/Docs/prettify/" Action="add"/>
         	<Entry Name="Data/Thumbnails/*" SaveToFolder="%datapath%/Thumbnails/" Action="add"/>
+
 	</Entries>
 <Info>
 Image Uploader 1.3.0 build 4222

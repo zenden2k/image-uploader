@@ -61,6 +61,8 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 	screenshotIndex = 1;
 	CurPage = -1;
 	PrevPage = -1;
+	NextPage = -1;
+	m_StartingThreadId = 0;
 	ZeroMemory(Pages, sizeof(Pages));
 	DragndropEnabled = true;
 	hLocalHotkeys = 0;
@@ -297,6 +299,32 @@ bool CWizardDlg::ParseCmdLine()
 		}
 	}
 
+	if(CmdLine.IsOption(_T("imageeditor")))
+	{
+		int nIndex = 0;
+		CString imageFileName;
+		if(CmdLine.GetNextFile(imageFileName, nIndex))
+		{
+			using namespace ImageEditor;
+			ImageEditorConfigurationProvider configProvider;
+			ImageEditor::ImageEditorWindow imageEditor(imageFileName, &configProvider);
+			imageEditor.showUploadButton(false);
+			m_bShowWindow=false;
+			ImageEditorWindow::DialogResult dr = imageEditor.DoModal(m_hWnd, ImageEditorWindow::wdmAuto);
+			if ( dr == ImageEditorWindow::drCancel ) {
+				PostQuitMessage(0);	
+			} else {
+				this->AddImage(imageFileName, myExtractFileName(imageFileName), true);
+				//ShowPage(1);
+				m_bShowAfter = true;
+				m_bShowWindow = true;
+				m_bHandleCmdLineFunc = true;
+			}
+			return 1;
+		}
+	}
+
+
 	for(size_t i=0; i<CmdLine.GetCount(); i++)
 	{
 		CString CurrentParam = CmdLine[i];
@@ -437,13 +465,14 @@ BOOL CWizardDlg::OnIdle()
 	return FALSE;
 }
 
-LRESULT CWizardDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CWizardDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	// unregister message filtering and idle updates
 	CMessageLoop* pLoop = _Module.GetMessageLoop();
 	ATLASSERT(pLoop != NULL);
 	pLoop->RemoveMessageFilter(this);
 	pLoop->RemoveIdleHandler(this);
+	bHandled = false;
 	return 0;
 }
 
@@ -1588,7 +1617,7 @@ bool CWizardDlg::RegisterLocalHotkeys()
 {
 	ACCEL *Accels;
 	m_hotkeys = Settings.Hotkeys;
-	int n=m_hotkeys.GetCount();
+	int n=m_hotkeys.size();
 	Accels = new ACCEL [n];
 	int j =0;
 	for(int i =0; i<n; i++)
@@ -1617,8 +1646,11 @@ LRESULT CWizardDlg::OnLocalHotkey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL
 
 bool CWizardDlg::UnRegisterLocalHotkeys()
 {
-	DestroyAcceleratorTable(hLocalHotkeys);
-	m_hotkeys.RemoveAll();
+	if ( hLocalHotkeys ) {
+		DestroyAcceleratorTable(hLocalHotkeys);
+	}
+	//LOG(INFO) << "m_hotkeys="<<m_hotkeys.GetCount();
+	m_hotkeys.clear();
 	hLocalHotkeys = 0;
 	return true;
 }
