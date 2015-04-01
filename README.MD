@@ -35,40 +35,42 @@ Also yoo need to install "msinttypes" headers.
 
 In order to compile Image Uploader you will need the following libraries:
 
-WTL		    http://sourceforge.net/projects/wtl/
+WTL             http://sourceforge.net/projects/wtl/
 
-libcurl		http://curl.haxx.se/libcurl/
+libcurl         http://curl.haxx.se/libcurl/
 
-openssl		https://www.openssl.org
+openssl         https://www.openssl.org
 
-zlib		  http://www.zlib.net
+zlib            http://www.zlib.net
 
-pcre		  http://www.pcre.org
+pcre            http://www.pcre.org
 
-pcre++		http://www.daemon.de/PCRE
+pcre++          http://www.daemon.de/PCRE
 
-squirrel	http://squirrel-lang.org
+squirrel        http://squirrel-lang.org
 
-sqplus		http://sourceforge.net/projects/sqplus/
+sqplus          http://sourceforge.net/projects/sqplus/
 
-ffmpeg		https://www.ffmpeg.org
+ffmpeg          https://www.ffmpeg.org
 
-tinyxml		http://sourceforge.net/projects/tinyxml/
+tinyxml         http://sourceforge.net/projects/tinyxml/
 
-zthreads	http://zthread.sourceforge.net
+zthreads        http://zthread.sourceforge.net
 
-minizip		http://www.winimage.com/zLibDll/minizip.html
+minizip         http://www.winimage.com/zLibDll/minizip.html
 
-jsoncpp		https://github.com/open-source-parsers/jsoncpp
+jsoncpp         https://github.com/open-source-parsers/jsoncpp
 
-glog      https://github.com/google/glog
+glog            https://github.com/google/glog
+
+boost           http://www.boost.org
 
 You can download ALL necessary libraries and headers (precompiled for MSVC 2008 SP1) by following link:
 
-https://bintray.com/artifact/download/zenden/zenden-image-uploader/Image_Uploader_Contrib_MSVC_2008_SP1_and_sources_v1.3.1.7z
+https://bintray.com/artifact/download/zenden/zenden-image-uploader/Contrib_MSVC_2008_SP1_and_sources_v1.3.1_01.04.2015.7z
 
 (precompiled for MSVC 2013)
-https://bintray.com/artifact/download/zenden/zenden-image-uploader/Image_Uploader_Contrib_MSVC_2013_and_sources_v1.3.1.7z
+https://bintray.com/artifact/download/zenden/zenden-image-uploader/Image_Uploader_Contrib_MSVC_2013_and_sources_v1.3.1_01.04.2015.7z
 
 
 If you want to compile strmbase.lib by yourself you will need:

@@ -24,7 +24,7 @@
 #include "Func/common.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Func/LangClass.h"
-
+#include <Gui/GuiTools.h>
 #define THUMBNAIL_WIDTH 170   // constants
 #define THUMBNAIL_HEIGHT 120
 
@@ -348,26 +348,34 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
 				&id);
 			if(ggg)
 			{
-				HDC dc=GetDC();
-				HDC memDC = CreateCompatibleDC(dc);
-				HBITMAP memBm = CreateCompatibleBitmap(dc,32,32);
-				SelectObject(memDC, memBm);
-				RECT r={0,0,32,32};
-				FillRect(memDC,	// handle to device context 
-					&r,	// pointer to structure with rectangle  
-					GetSysColorBrush(COLOR_WINDOW)	// handle to brush 
-					);
+				GuiTools::IconInfo ii = GuiTools::GetIconInfo(ggg);
+				int iconWidth = ii.nWidth;
+				int iconHeight = ii.nHeight;
+				if ( iconWidth ) {
+					HDC dc=GetDC();
+					
+					
+					HDC memDC = CreateCompatibleDC(dc);
+					HBITMAP memBm = CreateCompatibleBitmap(dc,iconWidth,iconHeight);
+					SelectObject(memDC, memBm);
+					RECT r={0,0,iconWidth,iconHeight};
+					FillRect(memDC,	// handle to device context 
+						&r,	// pointer to structure with rectangle  
+						GetSysColorBrush(COLOR_WINDOW)	// handle to brush 
+						);
 
 
-				DrawIcon(memDC, 0,0,ggg);
-				Bitmap *bitmap=Bitmap::FromHBITMAP(memBm,0);
-				;
-				gr.DrawImage(/*backBuffer*/bitmap, (int)((width-bitmap->GetWidth())/2)+1, (int)((height-bitmap->GetHeight())/2), (int)bitmap->GetWidth(),(int)bitmap->GetHeight());
-				delete bitmap;
+					DrawIcon(memDC, 0,0,ggg);
+					Bitmap *bitmap=Bitmap::FromHBITMAP(memBm,0);
+					;
+					gr.DrawImage(/*backBuffer*/bitmap, (int)((width-bitmap->GetWidth())/2)+1, (int)((height-bitmap->GetHeight())/2), (int)bitmap->GetWidth(),(int)bitmap->GetHeight());
+					delete bitmap;
+					
+					DeleteObject(memDC);
+					DeleteObject(memBm);
+					ReleaseDC(dc);
+				}
 				DeleteObject(ggg);
-				DeleteObject(memDC);
-				DeleteObject(memBm);
-				ReleaseDC(dc);
 			}
 		}
 

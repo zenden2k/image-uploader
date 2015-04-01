@@ -29,8 +29,10 @@
 #include <Func/WinUtils.h>
 #include "Func/IuCommonFunctions.h"
 #include <libavutil/ffversion.h>
+#include <boost/config.hpp>
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	
 	GuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
 
 	HFONT Font = reinterpret_cast<HFONT>(SendDlgItemMessage(IDC_IMAGEUPLOADERLABEL, WM_GETFONT,0,0));  
@@ -99,6 +101,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 	memoText += CString(L"minizip") +"\t\thttp://www.winimage.com/zLibDll/minizip.html\r\n";
 	memoText += CString(L"jsoncpp") +"\t\thttps://github.com/open-source-parsers/jsoncpp\r\n";
+	memoText += CString(L"Boost") +"\t\thttp://www.boost.org\r\n";
 	memoText += CString(L"FastDelegate") +"\thttp://www.codeproject.com/Articles/7150/Member-Function-Pointers-and-the-Fastest-Possible\r\n";
 	memoText += CString(L"QColorQuantizer") +"\thttp://www.codeguru.com/cpp/g-m/gdi/gdi/article.php/c3677/Better-GIFs-with-Octrees.htm\r\n";
 	memoText += CString(L"WTL Browser") +"\thttp://www.codeproject.com/Articles/7147/WTL-Browser\r\n";
@@ -110,7 +113,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	memoText += CString(L"CThread") +"\t\thttp://www.viksoe.dk/code/thread.htm\r\n\r\n";
 
 
-	
+	memoText +=  CString(L"Built with: \r\n") + CString(BOOST_COMPILER) +  _T("\r\n");;
+	memoText +=  CString(L"Target platform: ") + BOOST_PLATFORM + _T(" (") + IntToStr(sizeof(void*) * CHAR_BIT) + _T(" bit)\r\n\r\n");
 	memoText += TR("Libcurl version:")+ CString("\r\n");
 	memoText +=  IuCoreUtils::Utf8ToWstring( curl_version()).c_str() + CString("\r\n\r\n");
 	if ( Settings.IsFFmpegAvailable() ) {
