@@ -146,6 +146,10 @@ function OnTimer(data) {
 	WriteLog("error", "Timer");
 }
 
+function OnNavigateErrorCallback(data) {
+	data.browser.close();
+}
+
 function  UploadFile(FileName, options)
 {
 	uploadResult = 0;
@@ -162,6 +166,7 @@ function  UploadFile(FileName, options)
 	webBrowser.navigateToUrl("http://vfl.ru");
 	webBrowser.setOnLoadFinishedCallback(OnLoadFinished, null);
 	webBrowser.setOnFileInputFilledCallback(OnFileInputFilledCallback, null);
+	webBrowser.setOnNavigateErrorCallback(OnNavigateErrorCallback, null);
 
 	webBrowser.exec();
 	//webBrowser.showModal();
