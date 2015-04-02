@@ -97,9 +97,9 @@ LRESULT CImageEditorView::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	cy += ptScroll.y;
 	POINT pt = {cx, cy};
 	RECT canvasRect = {0,0, canvas_->getWidth(), canvas_->getHeigth()};
-    if ( PtInRect(&canvasRect, pt) ){
-		canvas_->mouseMove( cx, cy, wParam );
-	}
+
+	canvas_->mouseMove( cx, cy, wParam );
+	
 	return 0;
 }
 
@@ -132,11 +132,11 @@ LRESULT CImageEditorView::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	cy += ptScroll.y;
 	POINT pt = {cx, cy};
 	RECT canvasRect = {0,0, canvas_->getWidth(), canvas_->getHeigth()};
-	if ( PtInRect(&canvasRect, pt) ){
-		canvas_->mouseUp( 0, cx, cy );
-		ReleaseCapture();
-		mouseDown_ = false;
-	}
+
+	canvas_->mouseUp( 0, cx, cy );
+	ReleaseCapture();
+	mouseDown_ = false;
+	
 	return 0;
 }
 

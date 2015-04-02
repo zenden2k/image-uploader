@@ -370,7 +370,7 @@ LRESULT CWebViewWindow::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 			if ( editControlAccesible ) {
 				/*for ( int i = 0; i < 5; i++ )*/ {
 					if ( ::IsWindow(fileDialog_) && !::IsWindowEnabled(fileDialog_)) {
-						LOG(ERROR) << "fileDialog_ is disabled. Enabling it again.";
+						//LOG(ERROR) << "fileDialog_ is disabled. Enabling it again.";
 						HWND activeWindow  = ::GetActiveWindow();
 						if ( activeWindow !=fileDialog_  ) {
 							::EndDialog(activeWindow, IDOK);
@@ -585,7 +585,7 @@ LRESULT FileDialogSubclassWindow::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /
 			if ( editControlAccesible ) {
 				/*for ( int i = 0; i < 5; i++ )*/ {
 					if ( IsWindow() && !IsWindowEnabled()) {
-						LOG(ERROR) << "fileDialog_ is disabled. Enabling it again.";
+						//LOG(ERROR) << "fileDialog_ is disabled. Enabling it again.";
 						HWND activeWindow  = ::GetActiveWindow();
 						if ( activeWindow != m_hWnd  ) {
 							::EndDialog(activeWindow, IDOK);

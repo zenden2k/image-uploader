@@ -60,7 +60,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	CString memoText;
 	memoText += TR("Благодарности:") + CString("\r\n\r\n");
 	memoText += TR("Контрибьюторам:") + CString("\r\n");
-	memoText += L"arhangelsoft (https://github.com/arhangelsoft)\r\n\r\n";
+	memoText += L"arhangelsoft\thttps://github.com/arhangelsoft\r\nTahir Yilmaz\thttps://github.com/thrylmz\r\n\r\n";
 
 	memoText += TR("Переводчикам:")+ CString("\r\n");
 

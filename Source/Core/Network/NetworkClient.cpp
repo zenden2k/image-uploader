@@ -620,11 +620,9 @@ bool NetworkClient::doUpload(const NString& fileName, const NString &data)
 		m_currentUploadDataSize = m_CurrentFileSize;
 		if(m_CurrentFileSize < 0) 
 			return false;
-		//LOG(ERROR)<<"chunkSize_="<<chunkSize_<<" chunkOffset_="<<chunkOffset_;
 		if ( chunkSize_  >0 && chunkOffset_ >= 0 ) {
 			m_currentUploadDataSize = chunkSize_;
 			if ( fseek(m_uploadingFile, chunkOffset_, SEEK_SET)) {
-				LOG(ERROR) << "Cannot seek to offset " << chunkOffset_ << " in source file.";
 			}
 		} 
 		m_currentActionType = atUpload;

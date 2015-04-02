@@ -45,9 +45,12 @@ LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	m_HotkeyList.AddColumn(TR("Действие"),0);
 	m_HotkeyList.AddColumn(TR("Локальные"),1);
 	m_HotkeyList.AddColumn(TR("Глобальные"),2);
-	m_HotkeyList.SetColumnWidth(0,185);
-	m_HotkeyList.SetColumnWidth(1,87);
-	m_HotkeyList.SetColumnWidth(2,87);
+	CDC hdc = GetDC();
+	float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
+	float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+	m_HotkeyList.SetColumnWidth(0,175 * dpiScaleX);
+	m_HotkeyList.SetColumnWidth(1,82 * dpiScaleX);
+	m_HotkeyList.SetColumnWidth(2,82 * dpiScaleX );
 	m_HotkeyList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 	hotkeyList = Settings.Hotkeys;
 
