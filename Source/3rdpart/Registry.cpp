@@ -177,6 +177,7 @@ BOOL CRegistry::DeleteWithSubkeys(CString strKey)
 		} 
 	}
 	RegCloseKey(hKey);
+	::RegDeleteKey(m_hRootKey, strKey) ;
 	return true;
 }
 

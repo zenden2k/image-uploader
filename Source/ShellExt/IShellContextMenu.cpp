@@ -230,9 +230,9 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 	Reg.SetRootKey(HKEY_CURRENT_USER);
 	if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
 	{
-		ExplorerCascadedMenu = Reg.ReadBool("ExplorerCascadedMenu");
+		ExplorerCascadedMenu = Reg.ReadBool("ExplorerCascadedMenu", true);
 	//	ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
-		ExplorerVideoContextMenu = Reg.ReadBool("ExplorerVideoContextMenu");
+		ExplorerVideoContextMenu = Reg.ReadBool("ExplorerVideoContextMenu", true);
 		CString lang = Reg.ReadString("Language");
 		//MessageBox(0, lang,0,0);
 		if(lang != Lang.GetLanguageName())

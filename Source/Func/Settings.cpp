@@ -551,8 +551,8 @@ CSettings::CSettings()
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 		general.n_bind(Language);
 		general.n_bind(ExplorerContextMenu);
-		general.n_bind(ExplorerVideoContextMenu);
-		general.n_bind(ExplorerCascadedMenu);
+		/*general.n_bind(ExplorerVideoContextMenu);
+		general.n_bind(ExplorerCascadedMenu);*/
 #endif
 		#if !defined(IU_SHELLEXT) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 	
@@ -562,7 +562,7 @@ CSettings::CSettings()
 	general.n_bind(SendToContextMenu);
 	general.n_bind(ParseSubDirs);
 	general.n_bind(ImageEditorPath);
-	general.n_bind(AutoStartup);
+	//general.n_bind(AutoStartup);
 	general.n_bind(ShowTrayIcon);
 	general.n_bind(AutoCopyToClipboard);
 	general.n_bind(AutoShowLog);
@@ -766,10 +766,18 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 		CRegistry Reg;
 		Reg.SetRootKey( HKEY_LOCAL_MACHINE );
 		if ( Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false ) ) {
-			ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
+			ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu", false);
+
+		} else {
+			ExplorerContextMenu = false;
 		}
 	}
-
+	CRegistry Reg;
+	Reg.SetRootKey( HKEY_CURRENT_USER );
+	if ( Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false ) ) {
+		ExplorerCascadedMenu = Reg.ReadBool( "ExplorerCascadedMenu", true);
+		ExplorerVideoContextMenu = Reg.ReadBool( "ExplorerVideoContextMenu", true);
+	} 
 	CRegistry Reg2;
 	Reg2.SetRootKey(HKEY_CURRENT_USER);
 	if ( Reg2.SetKey("Software\\Zenden.ws\\Image Uploader", false ) ) {
@@ -927,10 +935,17 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		{
 			bool canCreateRegistryKey = ( ExplorerContextMenu );
 			if ( Reg.SetKey("Software\\Zenden.ws\\Image Uploader", canCreateRegistryKey ) ) {
-				Reg.WriteBool( "ExplorerCascadedMenu", ExplorerCascadedMenu );
-				 Reg.WriteBool("ExplorerContextMenu", ExplorerContextMenu);
-				Reg.WriteBool( "ExplorerVideoContextMenu", ExplorerVideoContextMenu );
-				Reg.WriteString( "Language", Language );
+				if ( ExplorerContextMenu ) {
+					Reg.WriteBool( "ExplorerCascadedMenu", ExplorerCascadedMenu );
+					Reg.WriteBool("ExplorerContextMenu", ExplorerContextMenu);
+					Reg.WriteBool( "ExplorerVideoContextMenu", ExplorerVideoContextMenu );
+					Reg.WriteString( "Language", Language );
+				} else {
+					Reg.DeleteValue("ExplorerCascadedMenu");
+					Reg.DeleteValue("ExplorerContextMenu");
+					Reg.DeleteValue("ExplorerVideoContextMenu");
+					Reg.DeleteValue("Language");
+				}
 			}
 		}
 		/*else
@@ -1284,9 +1299,12 @@ void CSettings::Uninstall() {
 	EnableAutostartup(false);
 	CRegistry Reg;
 	Reg.SetRootKey(HKEY_CURRENT_USER);
+	Reg.DeleteWithSubkeys("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems");
 	Reg.DeleteKey( "Software\\Zenden.ws\\Image Uploader" );
+	Reg.DeleteKey( "Software\\Zenden.ws" ); // Will not delete if contains subkeys
 	Reg.SetRootKey( HKEY_LOCAL_MACHINE );
 	Reg.DeleteKey( "Software\\Zenden.ws\\Image Uploader" );
+	Reg.DeleteKey( "Software\\Zenden.ws" ); // Will not delete if contains subkeys
 	WinUtils::RemoveBrowserKey();
 
 	CString ShortcutName = GetSendToPath() + _T("\\Image Uploader.lnk");
@@ -1299,7 +1317,11 @@ void CSettings::EnableAutostartup(bool enable) {
 	bool canCreateRegistryKey = enable;
 
 	if ( Reg.SetKey( "Software\\Zenden.ws\\Image Uploader", canCreateRegistryKey ) ) {
-		Reg.WriteBool( "AutoStartup", enable );
+		if ( enable ) {
+			Reg.WriteBool( "AutoStartup", enable );
+		} else {
+			Reg.DeleteValue("AutoStartup");
+		}
 	}
 
 	if ( enable ) {
