@@ -121,9 +121,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	DWORD Type = REG_SZ;
 	RegQueryValueEx(ExtKey, _T("installdir"), 0, &Type, (LPBYTE)&ClassName, &BufSize);
 	RegCloseKey(ExtKey);
-
-	m_UpdateLink.ConvertStaticToHyperlink(GetDlgItem(IDC_UPDATESLABEL), _T("http://zenden.ws"));
-	m_UpdateLink.setCommandID(IDC_UPDATESLABEL);
+ 
 	
 	CString MediaDll = WinUtils::GetAppFolder() + _T("\\Modules\\MediaInfo.dll");
 	if(FileExists( MediaDll)) lstrcpy(MediaInfoDllPath, MediaDll);

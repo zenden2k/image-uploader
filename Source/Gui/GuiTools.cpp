@@ -76,7 +76,8 @@ namespace GuiTools
 
 		HFONT NewFont = CreateFontIndirect(&alf);
 		SendMessage(Label,WM_SETFONT,(WPARAM)NewFont,MAKELPARAM(false, 0));
-		alf.lfHeight = -MulDiv(13, GetDeviceCaps(::GetDC(0), LOGPIXELSY), 72);
+		CWindowDC dc(0);
+		alf.lfHeight = -MulDiv(13, GetDeviceCaps(dc, LOGPIXELSY), 72);
 	}
 
 	void MakeLabelItalic(HWND Label)

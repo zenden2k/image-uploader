@@ -154,10 +154,10 @@ bool FontToString(const LOGFONT * lFont, CString &Result)
 	//hScreenDC = ::GetDC( NULL );
 
 	//if( !hScreenDC ) return false;
-	HDC dc = ::GetDC(0);
-	nPixelsPerInch = GetDeviceCaps(dc , LOGPIXELSY );
-	ReleaseDC(0, dc);
+	CWindowDC dc(0);
 
+	nPixelsPerInch = GetDeviceCaps(dc , LOGPIXELSY );
+	
 	if( nPixelsPerInch <= 0 ) return false;
 
 	nFontSize = - MulDiv( lFont->lfHeight, 72, nPixelsPerInch );

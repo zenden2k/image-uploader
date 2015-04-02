@@ -89,7 +89,6 @@ class TextParamsWindow : public CDialogImpl<TextParamsWindow>
 		CComboBox fontComboBox_;
 		CComboBox fontSizeComboBox_;
 		CustomEdit fontSizeComboboxCustomEdit_;
-		CDC dc_;
 		CString fontName_;
 		LOGFONT font_;
 		CImageList toolbarImageList_;

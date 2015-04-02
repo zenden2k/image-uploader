@@ -40,7 +40,7 @@ CMyImage::CMyImage()
 CMyImage::~CMyImage()
 {
 	if (BackBufferDc)
-		DeleteObject(BackBufferDc);
+		DeleteDC(BackBufferDc);
 	if (BackBufferBm)
 		DeleteObject(BackBufferBm);
 }
@@ -70,6 +70,12 @@ LRESULT CMyImage::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 	return 0;
 }
 
+LRESULT CMyImage::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	
+	return 0;
+}
+
 LRESULT CMyImage::OnEraseBkg(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	bHandled = true;
@@ -81,9 +87,11 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
 	RECT rc;
 	GetClientRect(&rc);
 	if (BackBufferDc)
-		DeleteObject(BackBufferDc);
+		DeleteDC(BackBufferDc);
+	BackBufferDc = 0;
 	if (BackBufferBm)
 		DeleteObject(BackBufferBm);
+	BackBufferBm = 0;
 	Graphics g(m_hWnd, true);
 
 	BackBufferWidth = rc.right;

@@ -28,7 +28,6 @@
 
 #include "Func/MyEngineList.h"
 #include "HotkeySettings.h"
-#include "Gui/Controls/hyperlink.h"
 #include "Core/ScreenCapture.h"
 #include "resource.h"       // main symbols
 #include "screenshotdlg.h"
@@ -223,7 +222,7 @@ public:
 	bool CanShowWindow();
 	void UpdateAvailabilityChanged(bool Available);
 	HACCEL hAccel;
-	CSpecialHyperLink m_UpdateLink;
+	//CSpecialHyperLink m_UpdateLink;
 	HACCEL hLocalHotkeys;
 	//    IUnknown methods
 		 STDMETHODIMP_(ULONG) AddRef();

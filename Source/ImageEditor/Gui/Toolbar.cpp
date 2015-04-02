@@ -36,9 +36,10 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
 Toolbar::~Toolbar()
 {
 	delete font_;
-	for ( int i =0 ; i < buttons_.size(); i++ ) {
+	delete dropDownIcon_;
+	/*for ( int i =0 ; i < buttons_.size(); i++ ) {
 		delete buttons_[i].icon;
-	}
+	}*/
 }
 
 bool Toolbar::Create(HWND parent, bool child )
@@ -145,9 +146,9 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 	dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
 
 
-	CFont defaultFont = GuiTools::GetSystemDialogFont();
+	systemFont_ = GuiTools::GetSystemDialogFont();
 	LOGFONT logFont;
-	defaultFont.GetLogFont(&logFont);
+	systemFont_.GetLogFont(&logFont);
 	if ( logFont.lfQuality & CLEARTYPE_QUALITY ) {
 		textRenderingHint_ = Gdiplus::TextRenderingHintClearTypeGridFit;
 	} else if ( logFont.lfQuality & ANTIALIASED_QUALITY ) {
@@ -160,7 +161,7 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 	itemVertPadding_ = kItemVertPadding * dpiScaleY_;
 	iconSizeX_ = kIconSize * dpiScaleX_;
 	iconSizeY_ = kIconSize * dpiScaleY_;
-	font_ = new Gdiplus::Font(hdc, defaultFont);
+	font_ = new Gdiplus::Font(hdc, systemFont_);
 	subpanelHeight_ = 25 * dpiScaleY_;
 	subpanelLeftOffset_ = 50*dpiScaleX_;
 	RECT sliderRect = {0,0, 100 * dpiScaleX_,subpanelHeight_ - 2 * dpiScaleY_};
@@ -169,14 +170,14 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		createHintForSliders(penSizeSlider_.m_hWnd, TR("Толщина линии"));
 		RECT pixelLabelRect = {0,0, 45 * dpiScaleX_,subpanelHeight_ - 5 * dpiScaleY_ };
 		pixelLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD|WS_VISIBLE);
-		pixelLabel_.SetFont(GuiTools::GetSystemDialogFont());
+		pixelLabel_.SetFont(systemFont_);
 
 		RECT radiusSliderRect = {0,0, 100 * dpiScaleX_,subpanelHeight_ - 2 * dpiScaleY_};
 		roundRadiusSlider_.Create(m_hWnd, radiusSliderRect, 0, WS_CHILD|TBS_NOTICKS);
 		createHintForSliders(roundRadiusSlider_.m_hWnd, TR("Радиус закругления"));
 		RECT radiusLabelRect = {0,0, 45 * dpiScaleX_,subpanelHeight_ - 5 * dpiScaleY_ };
 		roundRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD);
-		roundRadiusLabel_.SetFont(GuiTools::GetSystemDialogFont());
+		roundRadiusLabel_.SetFont(systemFont_);
 	}
 	return 0;
 }
@@ -628,7 +629,7 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 	}
 
 	if (  item.icon ) {
-		gr->DrawImage(item.icon,(int) (itemHorPadding_ + bounds.X+ (item.state == isDown ? 1 : 0)), (int)(bounds.Y+ (item.state == isDown ? 1 : 0)+(bounds.Height -iconSizeY_)/2),iconSizeX_, iconSizeY_);
+		gr->DrawImage(item.icon.get(),(int) (itemHorPadding_ + bounds.X+ (item.state == isDown ? 1 : 0)), (int)(bounds.Y+ (item.state == isDown ? 1 : 0)+(bounds.Height -iconSizeY_)/2),iconSizeX_, iconSizeY_);
 
 	}
 

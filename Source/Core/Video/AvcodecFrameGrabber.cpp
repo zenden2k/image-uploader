@@ -167,6 +167,7 @@ public:
             return false; // Codec not found
         }
 
+		pCodecCtx->refcounted_frames = 1;
        // Open codec
        if ( avcodec_open2(pCodecCtx, pCodec,0) < 0 ) {
             return false; // Could not open codec
@@ -270,6 +271,7 @@ public:
 
                  frameFinished = false;
 				int res =0;
+				av_frame_unref(pFrame);
                  if ( (res = avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet)) < 0 ) {
 					LOG(ERROR) << "avcodec_decode_video2() result="<<res;
                  }
@@ -292,12 +294,13 @@ public:
     }
 
     void close() {
+		
         // Free the RGB image
 		if ( buffer ) {
 			free(buffer);
 		}
 		if ( pFrameRGB ) {
-			 av_free(pFrameRGB);
+			 av_frame_free(&pFrameRGB);
 		}
         if ( img_convert_ctx ) {
             sws_freeContext(img_convert_ctx);
@@ -305,7 +308,7 @@ public:
 
 		if ( pFrame ) {
 			// Free the YUV frame
-			av_free(pFrame);
+				av_frame_free(&pFrame);
 		}
 
 		if ( pCodecCtx ) {
@@ -313,9 +316,11 @@ public:
 			avcodec_close(pCodecCtx);
 		}
 
+
+
 		if ( pFormatCtx ) {
 			// Close the video file
-			avformat_close_input (&pFormatCtx);
+			avformat_close_input (&pFormatCtx);	
 		}
     }
 	void write_frame_to_file(AVFrame* frame, int width, int height, int iframe)
@@ -423,7 +428,7 @@ public:
                 // Is this a packet from the video stream?
                 if(packet.stream_index==videoStream) {
                     frameFinished = false;
-
+					av_frame_unref(pFrame);
                     if ( avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet) < 0 ) {
 						LOG(ERROR) << "avcodec_decode_video2() failed";
                     }
@@ -445,6 +450,7 @@ public:
                                 NULL, NULL, NULL);
                             if(img_convert_ctx == NULL) {
 								LOG(ERROR) << "Cannot initialize the conversion context!";
+								av_free_packet(&packet);
 								return false;
                             }
                         }
@@ -471,6 +477,7 @@ public:
                 av_free_packet(&packet);
                 memset( &packet, 0, sizeof( packet ) );
             }
+			
         }
         return true;
     }

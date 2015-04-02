@@ -38,7 +38,7 @@ public:
 	struct SubMenuItem {
 		int command;
 		int parentCommand;
-		Gdiplus::Bitmap* icon;
+		std_tr::shared_ptr<Gdiplus::Bitmap> icon;
 		CString hint;
 	};
 
@@ -169,7 +169,7 @@ public:
 		void OnTextEditFinished(ImageEditor::TextElement * textElement);
 		void OnSelectionChanged();
 		void updateRoundingRadiusSlider();
-		Gdiplus::Bitmap * loadToolbarIcon(int resource);
+		std_tr::shared_ptr<Gdiplus::Bitmap>  loadToolbarIcon(int resource);
 		void EndDialog(DialogResult dr);
 		void init();
 		bool saveDocument(bool toClipboard =  false );

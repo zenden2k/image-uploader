@@ -5,7 +5,7 @@
 
 #include <vector>
 #include <GdiPlus.h>
-
+#include <Core/Utils/CoreTypes.h>
 #define MTBM_DROPDOWNCLICKED  WM_USER + 400
 namespace ImageEditor {
 
@@ -21,7 +21,7 @@ public:
 	struct Item {
 		CString title;
 		int command;
-		Gdiplus::Bitmap* icon;
+		std_tr::shared_ptr<Gdiplus::Bitmap> icon;
 		CString hint;
 		ItemState state;
 		bool checkable;
@@ -31,7 +31,7 @@ public:
 		bool isChecked;
 		HWND tooltipWnd;
 		ToolbarItemDelegate* itemDelegate;
-		Item(CString title, Gdiplus::Bitmap* icon, int command, CString hint = CString(), ItemType type = itButton, bool checkable = false, int group = -1) {
+		Item(CString title, std_tr::shared_ptr<Gdiplus::Bitmap> icon, int command, CString hint = CString(), ItemType type = itButton, bool checkable = false, int group = -1) {
 			this->title = title;
 			this->icon = icon;
 			this->command = command;
@@ -132,6 +132,7 @@ protected:
 	int iconSizeY_;
 	Gdiplus::Font* font_;
 	Gdiplus::Color transparentColor_;
+	CFont systemFont_;
 	RECT buttonsRect_;
 	int subpanelHeight_;
 	int subpanelLeftOffset_;

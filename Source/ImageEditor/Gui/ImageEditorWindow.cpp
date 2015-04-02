@@ -665,7 +665,7 @@ void ImageEditorWindow::createToolbars()
 		return;
 	}
 	if ( showAddToWizardButton_ ) {
-		horizontalToolbar_.addButton(Toolbar::Item(TR("Добавить в список"),loadToolbarIcon(IDB_ICONADDPNG),ID_ADDTOWIZARD));
+		horizontalToolbar_.addButton(Toolbar::Item(TR("Добавить в список"), loadToolbarIcon(IDB_ICONADDPNG),ID_ADDTOWIZARD));
 	}
 	if ( showUploadButton_ ) {
 		CString uploadButtonText;
@@ -679,7 +679,7 @@ void ImageEditorWindow::createToolbars()
 	//horizontalToolbar_.addButton(Toolbar::Item(TR("Поделиться"),0,ID_SHARE, CString(),Toolbar::itComboButton));
 	horizontalToolbar_.addButton(Toolbar::Item(TR("Сохранить"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, CString(_T("(Ctrl+S)")),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
 	horizontalToolbar_.addButton(Toolbar::Item(TR("Копировать в буфер"),loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, CString(), Toolbar::itButton ));
-	horizontalToolbar_.addButton(Toolbar::Item(TR("Закрыть"),0,ID_CLOSE, CString(_T("(Esc)"))));
+	horizontalToolbar_.addButton(Toolbar::Item(TR("Закрыть"),std_tr::shared_ptr<Gdiplus::Bitmap> () ,ID_CLOSE, CString(_T("(Esc)"))));
 	horizontalToolbar_.AutoSize();
 	if ( displayMode_ != wdmFullscreen ) {
 		horizontalToolbar_.ShowWindow(SW_SHOW);
@@ -883,9 +883,9 @@ void ImageEditorWindow::updateRoundingRadiusSlider()
 	horizontalToolbar_.roundRadiusSlider_.ShowWindow( showRoundingRadiusSlider ? SW_SHOW: SW_HIDE );
 }
 
-Gdiplus::Bitmap * ImageEditorWindow::loadToolbarIcon(int resource)
+std_tr::shared_ptr<Gdiplus::Bitmap>  ImageEditorWindow::loadToolbarIcon(int resource)
 {
-	return BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource),_T("PNG")) ;
+	return std_tr::shared_ptr<Gdiplus::Bitmap>(BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource),_T("PNG")) );
 }
 
 void ImageEditorWindow::EndDialog(DialogResult dr)

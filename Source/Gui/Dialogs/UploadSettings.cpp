@@ -584,7 +584,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 
 	bool ImageServer = (idCtrl == IDC_IMAGETOOLBAR);
 	ServerProfile & serverProfile = ImageServer ? sessionImageServer_ : sessionFileServer_;
-
+	std::vector<HBITMAP> bitmaps;
 	CUploadEngineData *uploadEngine = 0;
 	if(!serverProfile.isNull())
 	{
@@ -618,7 +618,13 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 				CString name  = Utf8ToWCstring(ued->Name); 
 				mi.dwTypeData  = (LPWSTR)(LPCTSTR) name;
 				HICON hImageIcon = m_EngineList->getIconForServer(ued->Name);
-				mi.hbmpItem =  WinUtils::IsVista() ? iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon): HBMMENU_CALLBACK;
+				HBITMAP bm = 0;
+				if ( IsVista() ) {
+					bm = iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon);
+					bitmaps.push_back(bm);
+				}
+
+				mi.hbmpItem =  WinUtils::IsVista() ? bm: HBMMENU_CALLBACK;
 				if (! WinUtils::IsVista() ) {
 					serverMenuIcons_[mi.wID] = hImageIcon;
 				}
@@ -652,7 +658,14 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 			if (! WinUtils::IsVista() ) {
 				serverMenuIcons_[mi.wID] = hImageIcon;
 			}
-			mi.hbmpItem =  WinUtils::IsVista() ? iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon): HBMMENU_CALLBACK;
+			HBITMAP bm = 0;
+			if ( IsVista() ) {
+				bm = iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon);
+				bitmaps.push_back(bm);
+			}
+		
+			
+			mi.hbmpItem =  WinUtils::IsVista() ? bm: HBMMENU_CALLBACK;
 			if ( mi.hbmpItem ) {
 				mi.fMask |= MIIM_BITMAP;
 			}
@@ -737,8 +750,13 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 					mi.wID = command;
 
 					mi.dwTypeData  = (LPWSTR)(LPCTSTR)login;
-					
-					mi.hbmpItem =  WinUtils::IsVista() ? iconBitmapUtils_->HIconToBitmapPARGB32(userIcon): HBMMENU_CALLBACK;
+					HBITMAP bm = 0;
+					if ( IsVista() ) {
+						bm = iconBitmapUtils_->HIconToBitmapPARGB32(userIcon);
+						bitmaps.push_back(bm);
+					}
+
+					mi.hbmpItem =  WinUtils::IsVista() ? bm: HBMMENU_CALLBACK;
 					if ( mi.hbmpItem ) {
 						mi.fMask |= MIIM_BITMAP;
 					}
@@ -802,6 +820,9 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 	excludeArea.rcExclude = rc;
 	sub.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
 	bHandled = true;
+	for ( int i = 0; i < bitmaps.size(); i++ ) {
+		DeleteObject(bitmaps[i]);
+	}
 	return TBDDRET_DEFAULT;
 }
 

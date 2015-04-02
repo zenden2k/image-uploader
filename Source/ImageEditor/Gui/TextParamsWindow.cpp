@@ -91,7 +91,8 @@ void TextParamsWindow::setFont(LOGFONT logFont)
 {
 	fontName_ = logFont.lfFaceName;
 	fontComboBox_.SelectString(-1, fontName_);
-	SetDlgItemInt(IDC_FONTSIZECOMBO, MulDiv(-logFont.lfHeight, 72, GetDeviceCaps(dc_, LOGPIXELSY)));
+	CWindowDC dc(m_hWnd);
+	SetDlgItemInt(IDC_FONTSIZECOMBO, MulDiv(-logFont.lfHeight, 72, GetDeviceCaps(dc, LOGPIXELSY)));
 	TBBUTTONINFO bi;
 	memset(&bi,0,sizeof(bi));
 	bi.cbSize = sizeof(bi);
@@ -109,12 +110,13 @@ LOGFONT TextParamsWindow::getFont()
 	LOGFONT logFont;
 	memset(&logFont, 0, sizeof(logFont));
 	logFont.lfCharSet = DEFAULT_CHARSET;
+	CWindowDC dc(m_hWnd);
 
 	int fontSelectedIndex = fontComboBox_.GetCurSel();
 	if ( fontSelectedIndex !=-1 ) {
 		logFont = fonts_[fontSelectedIndex];
 		int fontSize = GetDlgItemInt(IDC_FONTSIZECOMBO);
-		logFont.lfHeight =  -MulDiv(fontSize, GetDeviceCaps(dc_, LOGPIXELSY), 72);
+		logFont.lfHeight =  -MulDiv(fontSize, GetDeviceCaps(dc, LOGPIXELSY), 72);
 		TBBUTTONINFO bi;
 		memset(&bi,0,sizeof(bi));
 		bi.cbSize = sizeof(bi);
@@ -139,8 +141,8 @@ LRESULT TextParamsWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	fontSizeComboBox_.Attach(GetDlgItem(IDC_FONTSIZECOMBO));
 
 	fontSizeComboboxCustomEdit_.SubclassWindow(fontSizeComboBox_.GetWindow( GW_CHILD));
-	dc_ = GetDC();
-	fontEnumerationThread_ = new ZThread::Thread(new FontEnumerator(dc_, fonts_, FontEnumerator::OnEnumerationFinishedDelegate(this, &TextParamsWindow::OnFontEnumerationFinished)));
+	CWindowDC dc(m_hWnd);
+	fontEnumerationThread_ = new ZThread::Thread(new FontEnumerator(dc, fonts_, FontEnumerator::OnEnumerationFinishedDelegate(this, &TextParamsWindow::OnFontEnumerationFinished)));
 	GuiTools::AddComboBoxItems(m_hWnd, IDC_FONTSIZECOMBO, 19, _T("7"), _T("8"), _T("9"), _T("10"),_T("11"),_T("12"), _T("13"),
 		_T("14"), _T("15"),_T("16"),_T("18"),_T("20"),_T("22"), _T("24"),  _T("26"),  _T("28"),  _T("36"), _T("48"),_T("72")
 		);

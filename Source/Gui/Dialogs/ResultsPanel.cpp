@@ -733,7 +733,8 @@ LRESULT CResultsPanel::OnResulttoolbarNMCustomDraw(LPNMHDR pnmh)
 
 		 SelectObject(hDCMem, hBmpOld);
 		 DeleteObject(hBmp);
-		 DeleteObject(hDCMem);}
+		 DeleteDC(hDCMem);
+	 }
 
 	return CDRF_DODEFAULT; // Default handler
 }

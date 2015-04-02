@@ -36,6 +36,7 @@ public:
 	
     BEGIN_MSG_MAP(CMyImage)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
+		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBkg)
 		MSG_WM_LBUTTONDOWN(OnLButtonDown)
 		MSG_WM_RBUTTONDOWN(OnLButtonDown)
@@ -44,6 +45,7 @@ public:
     END_MSG_MAP()
 	
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	Gdiplus::Bitmap *bm;
 	bool IsImage;

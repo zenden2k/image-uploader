@@ -92,9 +92,10 @@ int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON
 	item->idCommand=idCommand;
 	item->Hover=false;
 	item->Visible=Visible;
+	CDC dc = GetDC();
 
-	int TitleWidth = max(GetTextWidth(GetDC(), szTitle, BoldFont),
-		GetTextWidth(GetDC(), szTip, NormalFont));
+	int TitleWidth = max(GetTextWidth(dc, szTitle, BoldFont),
+		GetTextWidth(dc, szTip, NormalFont));
 
 	if(szTip)
 	{
@@ -109,9 +110,8 @@ int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON
 	}
 	else
 	{	
-		HDC dc = GetDC();
+
 		int TextWidth = GetTextWidth(dc, szTitle, NormalFont);
-		ReleaseDC(dc);
 		if(Align==2) // right aligned text
 		{
 			SubItemRightY = ClientRect.right - TextWidth - 3 -35;
@@ -140,7 +140,7 @@ int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON
 		}
 		if(!m_bHyperLinks) 
 			item->ItemRect.top+=ScaleY(5);
-		item->ItemRect.right = 1+GetTextWidth(GetDC(), szTitle, NormalFont)+ScaleX(23)+item->ItemRect.left;
+		item->ItemRect.right = 1+GetTextWidth(dc, szTitle, NormalFont)+ScaleX(23)+item->ItemRect.left;
 		item->ItemRect.bottom = item->ItemRect.top+ScaleY(20);
 		SubItemRightY+=item->ItemRect.right-item->ItemRect.left;
 	}
