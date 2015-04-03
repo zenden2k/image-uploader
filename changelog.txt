@@ -2,6 +2,24 @@
 #
 # http://zenden.ws/imageuploader
 
+версия 1.3.1 build XXXX
+[+] Added Image Editor
+[+] Scripting API changes: added PCRE-compatible class CRegExp, CWebBrowser, function tr() for internalization, 
+[+] Added vk.com support
+[~] Fixed small bugs
+[~] Changed license
+
+build 4299
+
+[~] bugfixes: Image Editor: undo bugs, full repaint bug (performance issue)
+[~] Store explorer context menu settings only in registry, not in settings.xml
+[~] Remove all registry keys in uninstaller
+[~] Fixed memory and GDI leaks
+[+] Added "PrtScreen" and "Clear" items to hotkey editor's context menu
+[+] Display compiler version in About dialog 
+[~] Fixed incorrect icon sizes in file list when high DPI is set
+[~] Documentation update 
+
 version 1.3.0.4222 (12.03.2015)
 [~] Fixed big file (>150 Mb) uploading to Dropbox (added chunked uploading functions to scripting API)
 [+] Added swedish translation (thanks to Åke Engelbrektson)

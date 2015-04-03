@@ -706,7 +706,7 @@ void Canvas::updateView( const CRgn& region ) {
 void Canvas::updateView( RECT boundingRect ) {
 	using namespace Gdiplus;
 	//CRgn region;
-	
+	//LOG(INFO) << "updateView " << boundingRect;
 	Rect newRect(max(0,boundingRect.left), max(0,boundingRect.top), boundingRect.right - boundingRect.left, boundingRect.bottom - boundingRect.top );
 	newRect.Width = min(canvasWidth_ - newRect.X, newRect.Width);
 	newRect.Height = min(canvasHeight_ - newRect.Y, newRect.Height);
@@ -714,7 +714,15 @@ void Canvas::updateView( RECT boundingRect ) {
 		return;
 	}
 	canvasChanged_ = true;
-	Rect::Union(updatedRect_,newRect,updatedRect_);
+	//LOG(INFO) << "updatedRect_ before union" << updatedRect_.X << " " << updatedRect_.Y << " " << updatedRect_.Width << " " <<updatedRect_.Height;
+	if ( updatedRect_.IsEmptyArea() ) {
+		updatedRect_ = newRect;
+	} else {
+		Rect::Union(updatedRect_,newRect,updatedRect_);
+	}
+	
+	//LOG(INFO) << "updatedRect_ after union" << updatedRect_.X << " " << updatedRect_.Y << " " << updatedRect_.Width << " " <<updatedRect_.Height;
+
 	//region.CreateRectRgnIndirect( &boundingRect );
 	if ( callback_ ) {
 		callback_->updateView( this, updatedRect_ );
@@ -750,6 +758,7 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
 		Gdiplus::Region reg;
 		bufferedGr_->SetClip(&reg);
 	}
+	//LOG(INFO) << "renderInBuffer " << rc.X << " " << rc.Y << " " << rc.Width << " " <<rc.Height << " forExport=" << forExport;
 	bufferedGr_->SetPageUnit(Gdiplus::UnitPixel);
 	bufferedGr_->SetSmoothingMode(SmoothingModeAntiAlias);
 	
