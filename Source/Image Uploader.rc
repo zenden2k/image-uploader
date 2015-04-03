@@ -583,14 +583,14 @@ BEGIN
     LTEXT           "мсек",IDC_MSECLABEL,174,174,44,8
     CONTROL         "Foregound when shooting",IDC_FOREGROUNDWHENSHOOTING,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,27,188,215,10
+    GROUPBOX        "Aero only (Windows Vista or later)",IDC_AEROONLY,19,200,227,53
     CONTROL         "removebg",IDC_REMOVEBACKGROUND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,27,212,213,10
     CONTROL         "Remove corners",IDC_REMOVECORNERS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,27,226,211,10
     CONTROL         "shadow",IDC_ADDSHADOW,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,27,240,204,10
-    GROUPBOX        "Aero only (Windows Vista or later)",IDC_AEROONLY,19,200,227,53
-    CONTROL         "—окращать ссылки при быстрой загрузке (по гор€чей клавише)",IDC_SHORTENURLFROMTRAYCHECKBOX,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,274,233,10
     CONTROL         "#Use old region screnshot method",IDC_USEOLDREGIONSCREENSHOTMETHOD,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,260,226,10
+    CONTROL         "—окращать ссылки при быстрой загрузке (по гор€чей клавише)",IDC_SHORTENURLFROMTRAYCHECKBOX,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,274,233,10
 END
 
 IDD_IMAGEDOWNLOADER DIALOGEX 0, 0, 278, 169

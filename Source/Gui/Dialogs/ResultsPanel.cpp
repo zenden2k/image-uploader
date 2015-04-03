@@ -536,6 +536,7 @@ bool CResultsPanel::LoadTemplateFromFile(const CString fileName, CString &Error)
 
 		Templates.Add(Template);
 	}
+	return true;
 }
 
 CString CResultsPanel::ReplaceVars(const CString& Text)

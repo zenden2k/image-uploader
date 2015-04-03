@@ -189,27 +189,22 @@ LRESULT CUploadSettings::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 	return 0;
 }
 
+// It is called only on XP and older versions
 LRESULT CUploadSettings::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	/*if ( WinUtils::IsVista() ) {
-		bHandled = false;
-		return 0;
-	}*/
 	MEASUREITEMSTRUCT* lpmis = reinterpret_cast<MEASUREITEMSTRUCT*>(lParam);
-	if (lpmis==NULL)
+	if ( lpmis == NULL ) {
 		return 0;
-	lpmis->itemWidth += /*GetSystemMetrics(SM_CXSMICON) + 1*/5;
-	if (lpmis->itemHeight < 16)
-		lpmis->itemHeight = 16;
+	}
+
+	lpmis->itemWidth  = max(0, GetSystemMetrics(SM_CXSMICON) - GetSystemMetrics(SM_CXMENUCHECK) + 4);
+	lpmis->itemHeight = GetSystemMetrics(SM_CYSMICON)+2;
 	return TRUE;
 }
 
+// It is called only on XP and older versions
 LRESULT CUploadSettings::OnDrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	/*if ( WinUtils::IsVista() ) {
-		bHandled = false;
-		return 0;
-	}*/
 	LPCTSTR resource;
 	DRAWITEMSTRUCT* lpdis = reinterpret_cast<DRAWITEMSTRUCT*>(lParam);
 	if ((lpdis==NULL)||(lpdis->CtlType != ODT_MENU))
@@ -221,16 +216,13 @@ LRESULT CUploadSettings::OnDrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
 	if (hIcon == NULL)
 		return 0;
-
-int	 w = GetSystemMetrics(SM_CXSMICON);
+	// fix from http://miranda.svn.sourceforge.net/viewvc/miranda/trunk/miranda/src/modules/clist/genmenu.cpp
+	int	w = GetSystemMetrics(SM_CXSMICON);
 	int h = GetSystemMetrics(SM_CYSMICON);
-
-	//LOG(INFO) << lpdis->rcItem.left - w << "  " <<lpdis->rcItem.top + (lpdis->rcItem.bottom - lpdis->rcItem.top - h) / 2;
-	DrawIconEx(lpdis->hDC,
-		lpdis->rcItem.left - w,
-		lpdis->rcItem.top + (lpdis->rcItem.bottom - lpdis->rcItem.top - h) / 2,
-		hIcon, w, h,
-		0, NULL, DI_NORMAL);
+	int y = lpdis->rcItem.top + (lpdis->rcItem.bottom - lpdis->rcItem.top - h) / 2;
+	int x = 2;
+	
+	DrawIconEx(lpdis->hDC, x, y, hIcon, w, h, 0, NULL, DI_NORMAL);
 	DeleteObject(hIcon);
 	return TRUE;
 }
