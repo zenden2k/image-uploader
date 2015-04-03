@@ -110,6 +110,7 @@ function DoLogin()
 				ServerParams.setParam("expiresIn", regex_simple(data, "expires_in\": (\\d+)", 0));
 				tokenType = regex_simple(data, "token_type\": \"(.+)\"", 0);
 				ServerParams.setParam("tokenType", tokenType);
+				ServerParams.setParam("token", token);
 				ServerParams.setParam("tokenTime", time().tostring());
 				if ( token != "" ) {
 					return 1;

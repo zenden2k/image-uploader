@@ -77,7 +77,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	memoText += L"Mishunika, Adrianis, \r\nHessam Mohamadi, ozzii.translate@***.com\r\n\r\n";
 
 	memoText += TR("Ѕета-тестерам:")+ CString("\r\n");
-	memoText += L"Graf, CKA3O4H1K, Geslot\r\n\r\n";
+	memoText += L"Graf, CKA3O4H1K, Geslot, Alex_Qwerty\r\n\r\n";
 
 	//memoText += CString(T_R("Thanks to the authors of the following open-source libraries:"))+L"\r\n\r\n";
 	memoText += CString(TR("—пасибо авторам следующих библиотек с открытым исходным кодом:"))+L"\r\n\r\n";
@@ -110,7 +110,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	memoText += CString(L"CWinHotkeyCtrl") +"\thttps://rsdn.ru/article/controls/WinHotkeyCtrl.xml\r\n";
 	memoText += CString(L"UTF-8 CPP") +"\thttp://sourceforge.net/projects/utfcpp/\r\n";
 	memoText += CString(L"CUnzipper") +"\thttp://www.codeproject.com/Articles/4288/Win-Wrapper-classes-for-Gilles-Volant-s-Zip-Unzi\r\n";
-	memoText += CString(L"CThread") +"\t\thttp://www.viksoe.dk/code/thread.htm\r\n\r\n";
+	memoText += CString(L"CThread") +"\t\thttp://www.viksoe.dk/code/thread.htm\r\n";
+	memoText += CString(L"GDI+ helper") +"\thttp://www.codeproject.com/Articles/4969/GDI-and-MFC-memory-leak-detection\r\n\r\n";
 
 
 	memoText +=  CString(L"Built with: \r\n") + CString(BOOST_COMPILER) +  _T("\r\n");;
