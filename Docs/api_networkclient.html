@@ -61,6 +61,10 @@ displayname - отображаемое имя(то имя, которое пер
 Возвращает тело ответа сервера (как правило, это текст HTML страницы, JSON, XML или другой формат).
 <code class="f"><u>int</u> responseHeaderCount()</code>
 Возвращает количество параметров в  HTTP -заголовке ответa.
+<code class="f"><u>string</u> responseHeaderText()<span>version >= 1.3.1.4302</span></code>
+Возвращает содержимое всего заголовка.
+<code class="f"><u>string</u> responseHeaderByName(<u>string</u> <i>fieldName</i>)<span>version >= 1.3.1.4302</span></code>
+Возвращает содержимое поля заголовка.
 <code class="f"><u>int</u> responseCode()</code>
 Возвращает код ответа (например, код 200 означает HTTP OK).
 <code class="f">setChunkOffset(<u>float</u> <i>offset</i>)<span>version >= 1.3.0</span></code>

@@ -57,8 +57,8 @@ class NetworkClient
 		int responseCode();
 		const NString errorString();
 		void setUserAgent(const NString& userAgentStr);
-		NString responseHeaderText();
-		NString responseHeaderByName(const NString& name);
+		const NString responseHeaderText();
+		const NString responseHeaderByName(const NString& name);
 		NString responseHeaderByIndex(const int index, NString& name);
 		int responseHeaderCount();
 		void setProgressCallback(curl_progress_callback func, void *data);

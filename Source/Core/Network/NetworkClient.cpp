@@ -440,7 +440,7 @@ void NetworkClient::curl_cleanup()
 	curl_global_cleanup();
 }
 
-NString NetworkClient::responseHeaderText()
+const NString NetworkClient::responseHeaderText()
 {
 	return m_headerBuffer;
 }
@@ -513,7 +513,7 @@ void NetworkClient::private_parse_headers()
 	}
 }
 
-NString NetworkClient::responseHeaderByName(const NString& name)
+const NString NetworkClient::responseHeaderByName(const NString& name)
 {
 	std::vector<CustomHeaderItem>::iterator it, end = m_ResponseHeaders.end();
 	
