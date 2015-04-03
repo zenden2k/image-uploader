@@ -169,6 +169,9 @@ class UpdateGenerator {
         $dom->save("$packageName/$packageName.xml");
         $dom->save(SRCDIR."Data/Update/$packageName.xml");
         $dom->save("../../Data/Update/$packageName.xml");
+		if ( $root['CoreUpdate'] == 1) {
+			echo '<p style="color: red;font-weight: bold;">Regenerate binaries with create_portable and create_installer !!!</p>';
+		}
 
     }
 }

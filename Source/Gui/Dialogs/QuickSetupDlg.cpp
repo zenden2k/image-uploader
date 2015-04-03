@@ -172,10 +172,10 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 
 	bool capturePrintScreen = GuiTools::GetCheck( m_hWnd, IDC_CAPTUREPRINTSCREENCHECKBOX );
 	if ( capturePrintScreen ) {
-		Settings.Hotkeys.getByFunc( _T("fullscreenshot") ).globalKey.DeSerialize("44");
-		Settings.Hotkeys.getByFunc( _T("windowscreenshot") ).globalKey.DeSerialize("65580");
+		Settings.Hotkeys.getByFunc( _T("regionscreenshot") ).globalKey.DeSerialize("44"); // PrintScreen
+		Settings.Hotkeys.getByFunc( _T("windowscreenshot") ).globalKey.DeSerialize("65580"); // Alt + PrintScreen
 	} else {
-		Settings.Hotkeys.getByFunc( _T("fullscreenshot") ).Clear();
+		Settings.Hotkeys.getByFunc( _T("regionscreenshot") ).Clear();
 		Settings.Hotkeys.getByFunc( _T("windowscreenshot") ).Clear();
 
 	}

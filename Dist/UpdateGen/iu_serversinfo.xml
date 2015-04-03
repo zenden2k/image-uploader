@@ -9,6 +9,6 @@
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
 <Info>
-[~] Fixed bild.me
+[~] Fixed Picasa authorization
 </Info>
 </UpdatePackageSource>
