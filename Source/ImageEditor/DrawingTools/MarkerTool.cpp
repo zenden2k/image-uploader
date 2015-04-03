@@ -43,7 +43,9 @@ void MarkerTool::continueDraw( int x, int y, DWORD flags ) {
 	if ( flags & MK_CONTROL ) {
 		y = oldPoint_.y;
 	}
-	drawLine( oldPoint_.x, oldPoint_.y, x, y) ;
+	if ( startPoint_.x != -1 || startPoint_.y !=-1 ) {
+		drawLine( oldPoint_.x, oldPoint_.y, x, y) ;
+	}
 
 	//line->setPenSize(25 );
 	//_canvas->currentDocument()->addDrawingElement( line );
@@ -58,7 +60,9 @@ void MarkerTool::endDraw( int x, int y ) {
 	if ( x== startPoint_.x && y == startPoint_.y && x == oldPoint_.x && y == oldPoint_.y ) {
 		drawLine( x, y, x, y) ;
 	}
-
+	startPoint_.x = -1;
+	startPoint_.y = -1;
+	endPoint_ = oldPoint_ = startPoint_;
 	canvas_->currentDocument()->addAffectedSegments(segments_);
 	canvas_->endDocDrawing();
 	segments_.clear();

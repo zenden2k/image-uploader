@@ -15,7 +15,8 @@
 namespace ImageEditor {
 
 BrushTool::BrushTool( Canvas* canvas ) : AbstractDrawingTool( canvas ) {
-
+	oldPoint_.x = -1;
+	oldPoint_.y = -1;
 }
 
 void BrushTool::beginDraw( int x, int y ) {
@@ -32,7 +33,9 @@ void BrushTool::continueDraw( int x, int y, DWORD flags ) {
 	if ( flags & MK_CONTROL ) {
 		y = oldPoint_.y;
 	}
-	drawLine( oldPoint_.x, oldPoint_.y, x, y) ;
+	if ( startPoint_.x != -1 || startPoint_.y !=-1 ) {
+		drawLine( oldPoint_.x, oldPoint_.y, x, y) ;
+	}
 
 	//line->setPenSize(25 );
 	//_canvas->currentDocument()->addDrawingElement( line );
@@ -46,7 +49,11 @@ void BrushTool::continueDraw( int x, int y, DWORD flags ) {
 void BrushTool::endDraw( int x, int y ) {
 	if ( x == startPoint_.x && y == startPoint_.y && x == oldPoint_.x && y == oldPoint_.y ) { // If user just clicked, but not moved pointer
 		drawLine( x, y, x, y) ;
-	}
+	} 
+	startPoint_.x = -1;
+	startPoint_.y = -1;
+	endPoint_ = oldPoint_ = startPoint_;
+
 	canvas_->currentDocument()->addAffectedSegments(segments_);
 	canvas_->endDocDrawing();
 	segments_.clear();
@@ -70,8 +77,13 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
 	Pen pen(foregroundColor_,penSize_);
 	pen.SetStartCap(LineCapRound);
 	pen.SetEndCap(LineCapRound);
-	gr->DrawLine(&pen, x0,y0, x1, y1);
-
+	if ( x0 == x1 && y0 == y1 ) {
+		SolidBrush br(foregroundColor_);
+		gr->FillEllipse(&br, x0-penSize_/2, y0 -penSize_/2, penSize_, penSize_);
+	} else {
+		gr->DrawLine(&pen, x0,y0, x1, y1);
+	}
+	
 	RECT updatedRect = {0,0,0,0};
 
 	if ( y1 < y0 ) {
