@@ -484,7 +484,7 @@ bool CResultsPanel::LoadTemplates(CString &Error)
 	CString XmlFileName = IuCommonFunctions::GetDataFolder() + _T("templates.xml");
 	LoadTemplateFromFile(XmlFileName, Error);
 	CString userTemplateError;
-	CString userTemplateFile = IuCommonFunctions::GetDataFolder() + _T("user_templates.xml");
+	CString userTemplateFile = Utf8ToWCstring(Settings.SettingsFolder) +  _T("user_templates.xml");
 	LoadTemplateFromFile(userTemplateFile, userTemplateError);
 
 	return true;
