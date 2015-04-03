@@ -652,7 +652,7 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
 
 	if (!thumb.LoadFromFile(WCstringToUtf8(thumbTemplateFileName)))
 	{
-		WriteLog(logError, _T("CFloatingWindow"), TR("Не могу загрузить файл iминиатюры!")+CString(_T("\r\n")) + thumbTemplateFileName);
+		WriteLog(logError, _T("CFloatingWindow"), TR("Не могу загрузить файл миниатюры!")+CString(_T("\r\n")) + thumbTemplateFileName);
 		return;
 	}
 	imageConverter.setEnableProcessing(Settings.quickScreenshotServer.getImageUploadParams().ProcessImages);

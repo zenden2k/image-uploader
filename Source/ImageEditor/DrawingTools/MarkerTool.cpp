@@ -19,6 +19,8 @@ using namespace Gdiplus;
 MarkerTool::MarkerTool( Canvas* canvas ) : AbstractDrawingTool( canvas ) {
 	circleStride_ = 0;
 	circleData_ = 0;
+	oldPoint_.x = -1;
+	oldPoint_.y = -1;
 	createCircle();
 }
 

@@ -191,6 +191,10 @@ LRESULT CUploadSettings::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 
 LRESULT CUploadSettings::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	/*if ( WinUtils::IsVista() ) {
+		bHandled = false;
+		return 0;
+	}*/
 	MEASUREITEMSTRUCT* lpmis = reinterpret_cast<MEASUREITEMSTRUCT*>(lParam);
 	if (lpmis==NULL)
 		return 0;
@@ -202,6 +206,10 @@ LRESULT CUploadSettings::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 LRESULT CUploadSettings::OnDrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	/*if ( WinUtils::IsVista() ) {
+		bHandled = false;
+		return 0;
+	}*/
 	LPCTSTR resource;
 	DRAWITEMSTRUCT* lpdis = reinterpret_cast<DRAWITEMSTRUCT*>(lParam);
 	if ((lpdis==NULL)||(lpdis->CtlType != ODT_MENU))
@@ -600,11 +608,14 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 	mi.fMask = MIIM_TYPE|MIIM_ID;
 	mi.fType = MFT_STRING;
 	sub.CreatePopupMenu();
-		
+	//sub.SetMenuInfo()
+	bool isVistaOrLater = WinUtils::IsVista();
 	if(pnmtb->iItem == IDC_SERVERBUTTON)
 	{
 		int menuItemCount=0;
 		int FirstFileServerIndex = -1;
+		int lastMenuBreakIndex = 0;
+		bool nextItemBreaksLine = false;
 		
 		if(ImageServer)
 		{
@@ -631,6 +642,12 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 				if ( mi.hbmpItem ) {
 					mi.fMask |= MIIM_BITMAP;
 				}
+				if ( menuItemCount && (menuItemCount - lastMenuBreakIndex) % 34 == 0  ) {
+					
+					mi.fType |= MFT_MENUBARBREAK ;
+					lastMenuBreakIndex = menuItemCount;
+					
+				}
 
 				sub.InsertMenuItem(menuItemCount++, true, &mi);
 			}
@@ -640,8 +657,15 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 			mi.fMask = MIIM_TYPE|MIIM_ID;
 			mi.wID = IDC_FILESERVER_LAST_ID + 1;
 			mi.fType = MFT_SEPARATOR;
+			
+			if ( menuItemCount && (menuItemCount - lastMenuBreakIndex) >= 17   ) {
+				nextItemBreaksLine = true;
+			} else {
+				sub.InsertMenuItem(menuItemCount++, true, &mi);
+			}
+			
 
-			sub.InsertMenuItem(menuItemCount++, true, &mi);
+			
 		}
 
 		mi.fType = MFT_STRING;
@@ -669,6 +693,13 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 			if ( mi.hbmpItem ) {
 				mi.fMask |= MIIM_BITMAP;
 			}
+			if ( menuItemCount && ((menuItemCount - lastMenuBreakIndex) % 30 == 0 || nextItemBreaksLine )  ) {
+
+				mi.fType |= MFT_MENUBARBREAK ;
+				lastMenuBreakIndex = menuItemCount;
+
+			}
+			nextItemBreaksLine = false;
 
 			sub.InsertMenuItem(menuItemCount++, true, &mi);	
 		}

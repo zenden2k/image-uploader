@@ -239,6 +239,7 @@ struct ScreenshotSettingsStruct
 	bool AddShadow;
 	bool RemoveBackground;
 	bool OpenInEditor; // only from screenshot dlg
+	bool UseOldRegionScreenshotMethod;
 };
 
 struct ImageEditorSettingsStruct {

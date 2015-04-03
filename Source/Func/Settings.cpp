@@ -523,6 +523,7 @@ CSettings::CSettings()
 	ScreenshotSettings.AddShadow = false;
 	ScreenshotSettings.RemoveBackground = false;
 	ScreenshotSettings.OpenInEditor = true;
+	ScreenshotSettings.UseOldRegionScreenshotMethod = false;
 
 	TrayIconSettings.LeftClickCommand = 0; // without action
 	TrayIconSettings.LeftDoubleClickCommand = 12; 
@@ -589,6 +590,7 @@ CSettings::CSettings()
 	screenshot.nm_bind(ScreenshotSettings, brushColor);
 	screenshot.nm_bind(ScreenshotSettings, WindowHidingDelay);
 	screenshot.nm_bind(ScreenshotSettings, OpenInEditor);
+	screenshot.nm_bind(ScreenshotSettings, UseOldRegionScreenshotMethod);
 
 	SettingsNode& imageEditor = mgr_["ImageEditor"];
 	imageEditor.nm_bind(ImageEditorSettings, ForegroundColor);

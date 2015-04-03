@@ -7,7 +7,6 @@
 		<Entry Name="new-icon.ico" SaveToFolder="%apppath%/" Action="add"/>
         	<Entry Name="Lang/*.lng" SaveToFolder="%apppath%/Lang/" Action="add"/>
 		<Entry Name="Lang/Turkce.lng" SaveToFolder="%apppath%/Lang/" Action="delete"/>
-		<Entry Name="Lang/Turkish.lng" SaveToFolder="%apppath%/Lang/" Action="delete"/>
         	<Entry Name="Modules/*.dll" SaveToFolder="%apppath%/Modules/" Action="add"/>
         	<Entry Name="Docs/*" SaveToFolder="%apppath%/Docs/" Action="add"/>
         	<Entry Name="Docs/Pics/*" SaveToFolder="%apppath%/Docs/Pics/" Action="add"/>

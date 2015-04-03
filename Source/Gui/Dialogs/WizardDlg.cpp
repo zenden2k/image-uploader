@@ -1839,7 +1839,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 	}
 	else if(engine.captureScreen())
 	{
-		if ( mode == cmRectangles ) {
+		if ( mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod ) {
 			result = std_tr::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
 		} else {
 			RegionSelect.Parent = m_hWnd;
@@ -1889,17 +1889,17 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 	ImageEditorWindow::DialogResult dr = ImageEditorWindow::drCancel;
 	CString suggestingFileName = GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
 
-	if(result && ( mode == cmRectangles || (!m_bScreenshotFromTray && Settings.ScreenshotSettings.OpenInEditor ) || (m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_OPENINEDITOR) ))
+	if(result && ( (mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || (!m_bScreenshotFromTray && Settings.ScreenshotSettings.OpenInEditor ) || (m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_OPENINEDITOR) ))
 	{
 		ImageEditorConfigurationProvider configProvider;
 		ImageEditor::ImageEditorWindow imageEditor(&*result, mode == cmFreeform ||   mode == cmActiveWindow, &configProvider);
-		imageEditor.setInitialDrawingTool(mode == cmRectangles ? ImageEditor::Canvas::dtCrop : ImageEditor::Canvas::dtBrush);
+		imageEditor.setInitialDrawingTool((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) ? ImageEditor::Canvas::dtCrop : ImageEditor::Canvas::dtBrush);
 		imageEditor.showUploadButton(m_bScreenshotFromTray);
 		if ( m_bScreenshotFromTray ) {
 			imageEditor.setServerName(Settings.quickScreenshotServer.serverName());
 		}
 		imageEditor.setSuggestedFileName(suggestingFileName);
-		dr = imageEditor.DoModal(m_hWnd, (mode == cmRectangles || mode == cmFullScreen ) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
+		dr = imageEditor.DoModal(m_hWnd, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen ) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
 		if ( dr == ImageEditorWindow::drAddToWizard || dr ==ImageEditorWindow::drUpload ) {
 			result = imageEditor.getResultingBitmap();
 		}else {

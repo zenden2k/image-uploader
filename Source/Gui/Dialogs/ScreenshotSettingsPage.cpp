@@ -59,6 +59,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
 	TRC(IDC_REMOVEBACKGROUND, "Удалять фон окна");
 	TRC(IDC_SHORTENURLFROMTRAYCHECKBOX, "Сокращать ссылки при быстрой загрузке (по горячей клавише)");
 	TRC(IDC_AEROONLY, "Только для Aero (Windows Vista и новее)");
+	TRC(IDC_USEOLDREGIONSCREENSHOTMETHOD, "Использовать старый способ выбора области экрана");
 	
 	SetDlgItemText(IDC_SCREENSHOTFILENAMEEDIT, Settings.ScreenshotSettings.FilenameTemplate);
 
@@ -76,6 +77,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
 	SendDlgItemMessage(IDC_REMOVEBACKGROUND, BM_SETCHECK, Settings.ScreenshotSettings.RemoveBackground);
 
 	GuiTools::SetCheck(m_hWnd, IDC_SHORTENURLFROMTRAYCHECKBOX, Settings.TrayIconSettings.ShortenLinks);
+	GuiTools::SetCheck(m_hWnd, IDC_USEOLDREGIONSCREENSHOTMETHOD, Settings.ScreenshotSettings.UseOldRegionScreenshotMethod);
 
 	int Quality, Delay, Format;
 	Quality = Settings.ScreenshotSettings.Quality;
@@ -127,6 +129,8 @@ bool CScreenshotSettingsPagePage::Apply()
 	Settings.ScreenshotSettings.RemoveCorners = SendDlgItemMessage(IDC_REMOVECORNERS, BM_GETCHECK)!=0;
 	Settings.ScreenshotSettings.AddShadow = SendDlgItemMessage(IDC_ADDSHADOW, BM_GETCHECK)!=0;
 	Settings.ScreenshotSettings.RemoveBackground = SendDlgItemMessage(IDC_REMOVEBACKGROUND, BM_GETCHECK)!=0;
+	Settings.ScreenshotSettings.UseOldRegionScreenshotMethod = GuiTools::GetCheck(m_hWnd, IDC_USEOLDREGIONSCREENSHOTMETHOD );
+
 
 	 Settings.TrayIconSettings.ShortenLinks = GuiTools::GetCheck(m_hWnd, IDC_SHORTENURLFROMTRAYCHECKBOX);
 
