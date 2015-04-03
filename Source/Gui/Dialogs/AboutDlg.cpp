@@ -77,7 +77,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	memoText += L"Mishunika, Adrianis, \r\nHessam Mohamadi, ozzii.translate@***.com\r\n\r\n";
 
 	memoText += TR("Ѕета-тестерам:")+ CString("\r\n");
-	memoText += L"Graf, CKA3O4H1K\r\n\r\n";
+	memoText += L"Graf, CKA3O4H1K, Geslot\r\n\r\n";
 
 	//memoText += CString(T_R("Thanks to the authors of the following open-source libraries:"))+L"\r\n\r\n";
 	memoText += CString(TR("—пасибо авторам следующих библиотек с открытым исходным кодом:"))+L"\r\n\r\n";

@@ -9,10 +9,10 @@ namespace ImageEditor {
 using namespace Gdiplus;
 
 AbstractDrawingTool::AbstractDrawingTool( Canvas *canvas ) {
-	startPoint_.x = 0;
-	startPoint_.y = 0;
-	endPoint_.x   = 0;
-	endPoint_.y   = 0;
+	startPoint_.x = -1;
+	startPoint_.y = -1;
+	endPoint_.x   = -1;
+	endPoint_.y   = -1;
 	//assert( canvas );
 	canvas_ = canvas;
 	penSize_ = 1;

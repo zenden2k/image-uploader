@@ -474,7 +474,12 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
 	}
 	previousDrawingTool_ = drawingToolType_;
 	drawingToolType_ = toolType;
-	unselectAllElements();
+	if ( toolType != dtColorPicker ) {
+		unselectAllElements();
+	}
+	
+	//showOverlay(toolType == dtCrop );
+
 	
 	ElementType type;
 	delete currentDrawingTool_;
@@ -676,7 +681,7 @@ void Canvas::deleteMovableElement(MovableElement* element)
 			if ( element->getType() == etBlurringRectangle ) {
 				blurRectanglesCount_--;
 			}
-			if ( element->getType() == etCrop ) {
+			if ( element->getType() == etCrop && (drawingToolType_ != dtCrop ) ) {
 				showOverlay(false);
 			}
 			//delete element;
@@ -995,8 +1000,12 @@ bool Canvas::undo() {
 		int itemCount = item.elements.size();
 		// Insert elements in their initial positions
 		for ( int i = itemCount-1; i>=0; i-- ) {
-			item.elements[i].movableElement->setStartPoint(item.elements[i].startPoint);
-			item.elements[i].movableElement->setEndPoint(item.elements[i].endPoint);
+			MovableElement * el = item.elements[i].movableElement;
+			el->setStartPoint(item.elements[i].startPoint);
+			el->setEndPoint(item.elements[i].endPoint);
+			if ( el->getType() == etCrop &&  onCropChanged ) {
+				onCropChanged(el->getX(), el->getY(), el->getWidth(), el->getHeight());
+			}
 		}
 		result = true;
 	} else if ( item.type == uitTextChanged ) {

@@ -26,6 +26,10 @@ MoveAndResizeTool::MoveAndResizeTool( Canvas* canvas, ElementType type ) : Abstr
 	prevPaintBoundingRect_.right = -1;
 	prevPaintBoundingRect_.top = -1;
 	prevPaintBoundingRect_.bottom = -1;
+	originalStartPoint_.x = -1;
+	originalStartPoint_.y = -1;
+	originalEndPoint_.x = -1;
+	originalEndPoint_.y = -1;
 	allowMovingElements_ = true;
 	elementJustCreated_ = false;
 
@@ -231,7 +235,7 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
 
 		POINT newStartPoint_ = currentElement_->getStartPoint();
 		POINT newEndPoint_ = currentElement_->getEndPoint();
-		if ( memcmp(&newStartPoint_,&originalStartPoint_, sizeof(newStartPoint_)) || memcmp(&newEndPoint_,&originalEndPoint_, sizeof(newEndPoint_)) ) {
+		if ( !elementJustCreated_ && ( memcmp(&newStartPoint_,&originalStartPoint_, sizeof(newStartPoint_)) || memcmp(&newEndPoint_,&originalEndPoint_, sizeof(newEndPoint_)) ) ) {
 			Canvas::UndoHistoryItem uhi;
 			uhi.type = Canvas::uitElementPositionChanged;
 			Canvas::UndoHistoryItemElement uhie;
@@ -242,6 +246,7 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
 			canvas_->addUndoHistoryItem(uhi);
 		}
 
+		elementJustCreated_ = false;
 		RECT paintBoundingRect = currentElement_->getPaintBoundingRect();
 		RECT updateRect;
 		UnionRect(&updateRect, &paintBoundingRect, &prevPaintBoundingRect_);
@@ -253,6 +258,12 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
 		canvas_->updateView(updateRect);
 		//currentElement_->setSelected(true);
 	}
+
+	startPoint_.x = -1;
+	startPoint_.y = -1;
+	endPoint_.x   = -1;
+	endPoint_.y   = -1;
+
 	if ( draggedBoundary_.bt!= btNone ) {
 		
 		draggedBoundary_.bt = btNone;
