@@ -115,6 +115,7 @@ class CResultsPanel :
 	CMyEngineList *m_EngineList;
 	CAtlArray<IU_Result_Template> Templates;
 	bool LoadTemplates(CString &Error);
+	bool LoadTemplateFromFile(const CString fileName, CString &Error);
 	std::map<CString, CString> m_Vars;
 	std::vector<ServerProfile> m_Servers;
 	CString ReplaceVars(const CString& Text);

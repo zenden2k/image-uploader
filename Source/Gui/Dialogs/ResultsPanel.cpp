@@ -242,7 +242,7 @@ const CString CResultsPanel::GenerateOutput()
 
 		for(int i=0; i<n; i++)
 		{
-			LPCTSTR fname=myExtractFileName(UrlList[i].FileName);
+			CString fname=myExtractFileName(UrlList[i].FileName);
 
 			m_Vars[_T("DownloadUrl")]=UrlList[i].getDownloadUrl(shortenUrl_);
 			m_Vars[_T("ImageUrl")]=UrlList[i].getImageUrl(shortenUrl_);
@@ -480,16 +480,26 @@ bool CResultsPanel::LoadTemplates(CString &Error)
 {
 	int i =0;
 
-	SimpleXml XML;
-	CString XmlFileName = IuCommonFunctions::GetDataFolder() + _T("templates.xml");
 
-	if(!FileExists(XmlFileName))
+	CString XmlFileName = IuCommonFunctions::GetDataFolder() + _T("templates.xml");
+	LoadTemplateFromFile(XmlFileName, Error);
+	CString userTemplateError;
+	CString userTemplateFile = IuCommonFunctions::GetDataFolder() + _T("user_templates.xml");
+	LoadTemplateFromFile(userTemplateFile, userTemplateError);
+
+	return true;
+}
+
+bool CResultsPanel::LoadTemplateFromFile(const CString fileName, CString &Error)
+{
+	SimpleXml XML;
+	if(!FileExists(fileName))
 	{
 		Error = TR("Файл не найден.");
 		return false;
 	}
 
-	if(!XML.LoadFromFile(WCstringToUtf8(XmlFileName)))
+	if(!XML.LoadFromFile(WCstringToUtf8(fileName)))
 	{
 		Error = _T("xml loading error");
 		return false;
@@ -509,9 +519,9 @@ bool CResultsPanel::LoadTemplates(CString &Error)
 	{
 		IU_Result_Template Template;
 		Template.Name = Utf8ToWCstring(templates[i].Attribute("Name"));
-		
+
 		Template.TemplateText = Utf8ToWCstring(templates[i]["Text"].Text());
-		
+
 		SimpleXmlNode itemsNode = templates[i]["Items"];
 		if(!itemsNode.IsNull())
 		{
@@ -519,14 +529,13 @@ bool CResultsPanel::LoadTemplates(CString &Error)
 			Template.LineEnd = Utf8ToWCstring(itemsNode.Attribute("LineEnd"));
 			Template.LineSep = Utf8ToWCstring(itemsNode.Attribute("LineSep"));
 			Template.ItemSep = Utf8ToWCstring(itemsNode.Attribute("ItemSep"));
-			
+
 			Template.Items = Utf8ToWCstring(itemsNode.Text());
 		}
-	
+
 
 		Templates.Add(Template);
 	}
-	return true;
 }
 
 CString CResultsPanel::ReplaceVars(const CString& Text)

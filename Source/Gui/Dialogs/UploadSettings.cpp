@@ -225,6 +225,7 @@ LRESULT CUploadSettings::OnDrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 int	 w = GetSystemMetrics(SM_CXSMICON);
 	int h = GetSystemMetrics(SM_CYSMICON);
 
+	//LOG(INFO) << lpdis->rcItem.left - w << "  " <<lpdis->rcItem.top + (lpdis->rcItem.bottom - lpdis->rcItem.top - h) / 2;
 	DrawIconEx(lpdis->hDC,
 		lpdis->rcItem.left - w,
 		lpdis->rcItem.top + (lpdis->rcItem.bottom - lpdis->rcItem.top - h) / 2,
@@ -703,15 +704,18 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 
 			sub.InsertMenuItem(menuItemCount++, true, &mi);	
 		}
-
+		ZeroMemory(&mi, sizeof(mi));
+		mi.cbSize = sizeof(mi);
 		mi.wID = IDC_FILESERVER_LAST_ID + 1;
 		mi.fType = MFT_SEPARATOR;
-
+	
 		sub.InsertMenuItem(menuItemCount++, true, &mi);
+		ZeroMemory(&mi, sizeof(mi));
+		mi.cbSize = sizeof(mi);
 		mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
 		mi.fType = MFT_STRING;
 		mi.wID = ImageServer ? IDC_ADD_FTP_SERVER : IDC_ADD_FTP_SERVER_FROM_FILESERVER_LIST;
-
+		
 		mi.dwTypeData  = TR("Добавить FTP сервер...");
 		mi.hbmpItem = 0;
 		sub.InsertMenuItem(menuItemCount++, true, &mi);	

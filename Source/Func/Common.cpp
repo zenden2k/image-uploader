@@ -570,7 +570,7 @@ const CString GetCommonApplicationDataPath()
 
 HRESULT IsElevated( __out_opt BOOL* pbElevated )  // = NULL )
 {
-	ATLASSERT( IsVista() );
+	//ATLASSERT( IsVista() );
 
 	HRESULT hResult = E_FAIL; // assume an error occured
 	HANDLE hToken  = NULL;
@@ -594,7 +594,7 @@ HRESULT IsElevated( __out_opt BOOL* pbElevated )  // = NULL )
 	        sizeof(te),
 	        &dwReturnLength ) )
 	{
-		ATLASSERT( FALSE );
+		//ATLASSERT( FALSE );
 	}
 	else
 	{
