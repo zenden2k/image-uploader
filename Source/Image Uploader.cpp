@@ -21,7 +21,7 @@
 //#include <vld.h> 
 
 #include "atlheaders.h"
-#include <gdiplus.h>
+#include <3rdpart/GdiplusH.h>
 #include <shellapi.h> 
 #include "resource.h"
 #include "Gui/Dialogs/LogWindow.h"

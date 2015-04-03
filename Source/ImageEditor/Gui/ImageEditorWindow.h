@@ -7,7 +7,7 @@
 #include "Toolbar.h"
 #include "TextParamsWindow.h"
 #include <Core/Utils/CoreTypes.h>
-#include <GdiPlus.h>
+#include <3rdpart/GdiplusH.h>
 
 #pragma once
 
@@ -54,7 +54,7 @@ public:
 
 	ImageEditor::CImageEditorView m_view;
 
-	ImageEditorWindow(Gdiplus::Bitmap * bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider/* = 0*/);
+	ImageEditorWindow(std_tr::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider/* = 0*/);
 	ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider/* = 0*/);
 	~ImageEditorWindow();
 	void setInitialDrawingTool(Canvas::DrawingToolType dt);

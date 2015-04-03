@@ -19,7 +19,7 @@
 
 namespace ImageEditor {
 	
-ImageEditorWindow::ImageEditorWindow(Gdiplus::Bitmap * bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider ):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
+ImageEditorWindow::ImageEditorWindow(std_tr::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider ):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
 {
 	currentDoc_ =  new ImageEditor::Document(bitmap, hasTransparentPixels);
 	configurationProvider_ = configurationProvider;
@@ -210,8 +210,8 @@ void ImageEditorWindow::onFontChanged(LOGFONT font)
 
 ImageEditorWindow::~ImageEditorWindow()
 {
-	delete canvas_;
 	delete currentDoc_;
+	delete canvas_;
 	delete colorsDelegate_;
 }
 

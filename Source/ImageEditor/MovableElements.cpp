@@ -1,7 +1,7 @@
 #include "MovableElements.h"
 
 #include <algorithm>
-#include <GdiPlus.h>
+#include <3rdpart/GdiplusH.h>
 #include <Core/Logging.h>
 #include <exception>
 
@@ -399,7 +399,7 @@ void CropOverlay::render(Painter* gr)
 
 	Gdiplus::Region oldRegion;
 	gr->GetClip(&oldRegion);
-	gr->SetClip(rgn.toNativeRegion(), Gdiplus::CombineModeIntersect);
+	gr->SetClip(rgn.toNativeRegion().get(), Gdiplus::CombineModeIntersect);
 	
 	
 	gr->FillRectangle( &brush, getX(), getY(), getWidth(), getHeight() );
@@ -648,7 +648,7 @@ void RoundedRectangle::render(Painter* gr)
 
 	Gdiplus::Region oldRegion;
 	gr->GetClip(&oldRegion);
-	gr->SetClip(rgn.toNativeRegion(), Gdiplus::CombineModeIntersect);
+	gr->SetClip(rgn.toNativeRegion().get(), Gdiplus::CombineModeIntersect);
 	DrawRoundedRectangle(gr, Rect(x,y,width,height), roundingRadius_ *2 , &pen, filled_ ? &br : 0);
 	gr->SetPixelOffsetMode(oldPOM);
 	gr->SetClip(&oldRegion);

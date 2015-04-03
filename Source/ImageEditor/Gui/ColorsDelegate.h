@@ -2,7 +2,7 @@
 #include "atlheaders.h"
 #include "Toolbar.h"
 #include "../Canvas.h"
-#include <GdiPlus.h>
+#include <3rdpart/GdiplusH.h>
 #include <3rdpart/ColorButton.h>
 
 namespace ImageEditor {

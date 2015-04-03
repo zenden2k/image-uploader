@@ -1,6 +1,6 @@
 #include "DrawingElement.h"
 
-#include <GdiPlus.h>
+#include <3rdpart/GdiplusH.h>
 #include <Core/Logging.h>
 namespace ImageEditor {
 

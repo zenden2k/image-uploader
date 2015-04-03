@@ -23,7 +23,7 @@
 
 #include <vector>
 #include "atlheaders.h"
-#include <gdiplus.h>
+#include <3rdpart/GdiplusH.h>
 #include <Core/Utils/CoreTypes.h>
 
 

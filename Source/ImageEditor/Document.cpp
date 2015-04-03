@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-#include <GdiPlus.h>
+#include <3rdpart/GdiplusH.h>
 #include "DrawingElement.h"
 #include <Core/Logging.h>
 #include <stdint.h>
@@ -12,19 +12,19 @@ namespace ImageEditor {
 	using namespace Gdiplus;
 Document::Document(int width, int height) {
 	hasTransparentPixels_ = false;
-	currentImage_ = new Gdiplus::Bitmap( width, height, PixelFormat32bppARGB );
+	currentImage_.reset(new Gdiplus::Bitmap( width, height, PixelFormat32bppARGB ));
 	init();
 }
 
 Document::Document(const wchar_t* fileName) {
-	currentImage_ = LoadImageFromFileWithoutLocking(fileName);
+	currentImage_.reset(LoadImageFromFileWithoutLocking(fileName));
 	init();
 	if ( currentImage_ ) {
 		checkTransparentPixels();
 	}
 }
 
-Document::Document(Gdiplus::Bitmap *sourceImage,  bool hasTransparentPixels ) {
+Document::Document(std_tr::shared_ptr<Gdiplus::Bitmap> sourceImage,  bool hasTransparentPixels ) {
 	currentImage_ = sourceImage;
 	hasTransparentPixels_ = hasTransparentPixels;
 	init();
@@ -35,13 +35,14 @@ Document::~Document()
 	for( int i = 0; i < history_.size(); i++ ) {
 		delete[] history_[i].data;
 	}
+	delete currentCanvas_;
 }
 
 void Document::init() {
 	drawStarted_ = false;
 	originalImage_ = NULL;
 	if ( currentImage_ ) {
-		currentCanvas_ = new Gdiplus::Graphics( currentImage_ );
+		currentCanvas_ = new Gdiplus::Graphics( currentImage_.get() );
 		changedSegments_ = AffectedSegments(getWidth(), getHeight());
 	}
 	//currentCanvas_->Clear( Gdiplus::Color( 150, 0, 0 ) );
@@ -92,14 +93,14 @@ void Document::addAffectedSegments(const AffectedSegments& segments)
 
 Gdiplus::Bitmap* Document::getBitmap()
 {
-	return currentImage_;
+	return currentImage_.get();
 }
 
 void Document::saveDocumentState( /*DrawingElement* element*/ ) {
 	int pixelSize = 4;
 	typedef std::deque<RECT>::iterator iter;
 	std::deque<RECT> rects;
-	Bitmap *srcImage = ( originalImage_ ) ? originalImage_ : currentImage_;
+	Bitmap *srcImage = ( originalImage_ ) ? originalImage_: currentImage_.get();
 	int srcImageWidth = srcImage->GetWidth();
 	int srcImageHeight = srcImage->GetHeight();
 
@@ -186,7 +187,7 @@ void Document::checkTransparentPixels()
 
 void Document::render(Gdiplus::Graphics *gr, Gdiplus::Rect rc) {
 	if (!gr || !currentImage_ ) return;
-	gr->DrawImage( currentImage_,rc.X, rc.Y, rc.X, rc.Y, rc.Width, rc.Height, Gdiplus::UnitPixel);
+	gr->DrawImage( currentImage_.get(),rc.X, rc.Y, rc.X, rc.Y, rc.Width, rc.Height, Gdiplus::UnitPixel);
 }
 
 bool  Document::undo() {

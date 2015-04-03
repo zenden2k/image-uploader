@@ -18,7 +18,7 @@
 //
 #pragma once
 #include <Uxtheme.h>
-#include <GdiPlus.h>
+#include <3rdpart/GdiplusH.h>
 #include <uxtheme.h>
 #include <map>
 /*#define STRICT_TYPED_ITEMIDS    // In case you use IDList, you want this on for better type safety.

@@ -1,7 +1,7 @@
 #ifndef IMAGEEDITOR_CANVAS_H
 #define IMAGEEDITOR_CANVAS_H
 
-#include <GdiPlus.h>
+#include <3rdpart/GdiPlusH.h>
 #include "InputBox.h"
 #include "Gui/InputBoxControl.h"
 #include "MovableElement.h"

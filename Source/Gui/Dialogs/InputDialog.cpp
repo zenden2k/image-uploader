@@ -20,7 +20,7 @@
 
 #include "InputDialog.h"
 
-#include <GdiPlus.h>
+#include <3rdpart/GdiplusH.h>
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
 

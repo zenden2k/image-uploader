@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "atlheaders.h"
-#include <gdiplus.h>
+#include <3rdpart/GdiplusH.h>
 #include <GdiPlusPixelFormats.h>
 #include "ThumbSettingsPage.h"
 

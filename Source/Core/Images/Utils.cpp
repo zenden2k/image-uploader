@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Utils.h"
 
-#include <gdiplus.h>
+#include <3rdpart/GdiplusH.h>
 #include <Core/Logging.h>
 #include <Func/WinUtils.h>
 #include <3rdpart/QColorQuantizer.h>

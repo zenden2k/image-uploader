@@ -11,7 +11,7 @@
 #include <math.h>
 #include <cassert>
 #include <algorithm>
-#include <GdiPlus.h>
+#include <3rdpart/GdiplusH.h>
 
 namespace ImageEditor {
 	
@@ -733,8 +733,9 @@ void Canvas::updateView( RECT boundingRect ) {
 
 void Canvas::createDoubleBuffer() {
 //	delete buffer_;
+	delete bufferedGr_;
 	buffer_ = std_tr::shared_ptr<Gdiplus::Bitmap>(new Gdiplus::Bitmap( canvasWidth_, canvasHeight_, PixelFormat32bppARGB  ));
-	bufferedGr_ = new Gdiplus::Graphics( &*buffer_ );
+	bufferedGr_ = new Gdiplus::Graphics( buffer_.get() );
 }
 
 void Canvas::setCursor(CursorType cursorType)

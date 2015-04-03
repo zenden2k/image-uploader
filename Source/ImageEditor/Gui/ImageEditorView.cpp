@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include <GdiPlus.h>
+#include <3rdpart/GdiplusH.h>
 #include <Gui/GuiTools.h>
 #include <Core/Logging.h>
 #include <Core/Images/Utils.h>

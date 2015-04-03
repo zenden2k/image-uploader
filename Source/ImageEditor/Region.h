@@ -1,9 +1,10 @@
 #ifndef IMAGEEDITOR_REGION_H
 #define IMAGEEDITOR_REGION_H
 
-#include <GdiPlus.h>
+#include <3rdpart/GdiplusH.h>
 
 #include "atlheaders.h"
+#include <Core/Utils/CoreTypes.h>
 
 namespace ImageEditor 
 {
@@ -17,10 +18,10 @@ namespace ImageEditor
 		Region intersected(const Region & r) const;
 		Region subtracted(const Region & r) const;
 		Region united(const Region & r) const;
-		Gdiplus::Region* toNativeRegion() const;
+		std_tr::shared_ptr<Gdiplus::Region> toNativeRegion() const;
 	private:
 #ifndef QT_VERSION
-		Gdiplus::Region* rgn_;
+		std_tr::shared_ptr<Gdiplus::Region> rgn_;
 #endif
 	};
 }

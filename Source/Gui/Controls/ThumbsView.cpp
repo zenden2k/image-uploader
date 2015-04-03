@@ -443,6 +443,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
 	}
 	DeleteObject(bmp);
 	if(Img!=bm && bm) delete bm;
+	delete ImgBuffer;
 	return true;
 }
 

@@ -3,7 +3,7 @@
 
 #include "atlheaders.h"
 #include <windows.h>
-#include <gdiplus.h>
+#include <3rdpart/GdiplusH.h>
 
 enum SaveImageFormat {
 	sifJPEG,sifPNG,sifGIF, sifDetectByExtension

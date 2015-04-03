@@ -10,7 +10,7 @@
 
 #include <math.h>
 #include <cassert>
-#include <gdiplus.h>
+#include <3rdpart/GdiplusH.h>
 #include <math.h>
 
 namespace ImageEditor {

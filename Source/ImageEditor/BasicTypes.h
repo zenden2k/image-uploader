@@ -5,7 +5,7 @@
 	#define IMAGEEDITOR_QT
 #else
 	#define IMAGEEDITOR_GDIPLUS
-	#include <GdiPlus.h>
+	#include <3rdpart/GdiplusH.h>
 #endif
 
 #ifndef _WIN32

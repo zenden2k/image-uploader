@@ -4,7 +4,7 @@
 #include "atlheaders.h"
 
 #include <vector>
-#include <GdiPlus.h>
+#include <3rdpart/GdiplusH.h>
 #include <Core/Utils/CoreTypes.h>
 #define MTBM_DROPDOWNCLICKED  WM_USER + 400
 namespace ImageEditor {

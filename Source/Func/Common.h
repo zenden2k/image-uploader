@@ -26,7 +26,7 @@
 #include <ctime>
 #include "PluginLoader.h"
 #include "MyEngineList.h"
-#include <GdiPlus.h>
+#include <3rdpart/GdiplusH.h>
 
 class CPluginManager;
 class CCmdLine;

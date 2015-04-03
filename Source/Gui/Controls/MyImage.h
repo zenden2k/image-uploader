@@ -23,7 +23,7 @@
 
 #pragma once
 #include "atlheaders.h"
-#include <gdiplus.h>
+#include <3rdpart/GdiplusH.h>
 // CMyImage
 
 class CMyImage :

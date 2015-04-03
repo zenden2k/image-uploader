@@ -3,7 +3,7 @@
 #include <sstream>
 #include <Core/Utils/StringUtils.h>
 #include <Func/MyUtils.h>
-#include <GdiPlus.h>
+#include <3rdpart/GdiplusH.h>
 #include <Aclapi.h>
 #include "3rdpart/Registry.h"
 

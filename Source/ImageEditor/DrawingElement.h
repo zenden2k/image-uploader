@@ -3,7 +3,7 @@
 
 #include "BasicTypes.h"
 
-#include <GdiPlus.h>
+#include <3rdpart/GdiplusH.h>
 #include <map>
 #include <deque>
 

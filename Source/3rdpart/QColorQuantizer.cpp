@@ -24,7 +24,7 @@
 // mailto:sjaak@sjaakpriester.nl
 #include "atlheaders.h"
 #include <cassert>
-#include <gdiplus.h>
+#include <3rdpart/GdiplusH.h>
 #include "QColorQuantizer.h"
 using namespace Gdiplus;
 QColorQuantizer::QColorQuantizer(void)

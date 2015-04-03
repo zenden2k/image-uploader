@@ -1892,7 +1892,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 	if(result && ( (mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || (!m_bScreenshotFromTray && Settings.ScreenshotSettings.OpenInEditor ) || (m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_OPENINEDITOR) ))
 	{
 		ImageEditorConfigurationProvider configProvider;
-		ImageEditor::ImageEditorWindow imageEditor(&*result, mode == cmFreeform ||   mode == cmActiveWindow, &configProvider);
+		ImageEditor::ImageEditorWindow imageEditor(result, mode == cmFreeform ||   mode == cmActiveWindow, &configProvider);
 		imageEditor.setInitialDrawingTool((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) ? ImageEditor::Canvas::dtCrop : ImageEditor::Canvas::dtBrush);
 		imageEditor.showUploadButton(m_bScreenshotFromTray);
 		if ( m_bScreenshotFromTray ) {
@@ -1900,7 +1900,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 		}
 		imageEditor.setSuggestedFileName(suggestingFileName);
 		dr = imageEditor.DoModal(m_hWnd, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen ) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
-		if ( dr == ImageEditorWindow::drAddToWizard || dr ==ImageEditorWindow::drUpload ) {
+		if ( dr == ImageEditorWindow::drAddToWizard || dr == ImageEditorWindow::drUpload ) {
 			result = imageEditor.getResultingBitmap();
 		}else {
 			CanceledByUser = true;
@@ -1921,11 +1921,11 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 				CopyToClipboard = true;
 			}
 			int savingFormat = Settings.ScreenshotSettings.Format;
-			if(savingFormat == 0)
+			if(savingFormat == 0) // jpeg
 				Gdip_RemoveAlpha(*result,Color(255,255,255,255));
 
 			CString saveFolder = GenerateFileName(Settings.ScreenshotSettings.Folder, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
-			MySaveImage(&*result,suggestingFileName,buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
+			MySaveImage(result.get(),suggestingFileName,buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
 			screenshotIndex++;
 			if ( CopyToClipboard )
 			{

@@ -1,6 +1,6 @@
 #include "MovableElement.h"
 
-#include <GdiPlus.h>
+#include <3rdpart/GdiplusH.h>
 #include "Canvas.h"
 
 namespace ImageEditor {

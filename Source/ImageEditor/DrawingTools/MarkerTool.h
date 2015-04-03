@@ -2,7 +2,7 @@
 #define MarkerTool_h__
 
 
-#include <Gdiplus.h>
+#include <3rdpart/GdiplusH.h>
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
 #include <stdint.h>
