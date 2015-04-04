@@ -400,10 +400,15 @@ void CropOverlay::render(Painter* gr)
 	Gdiplus::Region oldRegion;
 	gr->GetClip(&oldRegion);
 	gr->SetClip(rgn.toNativeRegion().get(), Gdiplus::CombineModeIntersect);
+	SmoothingMode prevSmoothingMode = gr->GetSmoothingMode();
+	PixelOffsetMode oldPOM = gr->GetPixelOffsetMode();
+	gr->SetPixelOffsetMode(PixelOffsetModeHalf);
+	gr->SetSmoothingMode(SmoothingModeNone);
 	
-	
-	gr->FillRectangle( &brush, getX(), getY(), getWidth(), getHeight() );
+	gr->FillRectangle( &brush, rc.X, rc.Y, rc.Width, rc.Height );
 	gr->SetClip(&oldRegion);
+	gr->SetSmoothingMode(prevSmoothingMode);
+	gr->SetPixelOffsetMode(oldPOM);
 
 
 }
@@ -641,17 +646,12 @@ void RoundedRectangle::render(Painter* gr)
 	int width = max(getWidth()-penSize_,1);
 	int height = max(getHeight()-penSize_,1);
 	SolidBrush br(backgroundColor_);
-	PixelOffsetMode oldPOM = gr->GetPixelOffsetMode();
-	gr->SetPixelOffsetMode(PixelOffsetModeHalf);
-	Region rgn(getX(),getY(), getWidth(), getHeight());
-	
 
-	Gdiplus::Region oldRegion;
-	gr->GetClip(&oldRegion);
-	gr->SetClip(rgn.toNativeRegion().get(), Gdiplus::CombineModeIntersect);
+	Region rgn(max(getX(),0),max(0,getY()), getWidth(), getHeight());
+	
+	gr->SetClip(rgn.toNativeRegion().get(), Gdiplus::CombineModeIntersect); // the drawed ellipse can exceed in some cases the bounding rectangle, setting the clip
 	DrawRoundedRectangle(gr, Rect(x,y,width,height), roundingRadius_ *2 , &pen, filled_ ? &br : 0);
-	gr->SetPixelOffsetMode(oldPOM);
-	gr->SetClip(&oldRegion);
+	gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
 }
 
 ImageEditor::ElementType RoundedRectangle::getType() const
@@ -684,10 +684,14 @@ void Ellipse::render(Painter* gr)
 	int width = getWidth()-penSize_;
 	int height = getHeight()-penSize_;
 	SolidBrush br(backgroundColor_);
+	Region rgn(max(getX(),0),max(0,getY()), getWidth(), getHeight());
+	gr->SetClip(rgn.toNativeRegion().get(), Gdiplus::CombineModeIntersect);
+
 	if ( filled_ ) {
 		gr->FillEllipse(&br, x,y,width,height);
 	}
 	gr->DrawEllipse(&pen, x,y,width,height);
+	gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
 	
 }
 
@@ -726,6 +730,20 @@ void Ellipse::createGrips()
 		grips_.erase(grips_.begin() + btTopLeft);
 			grips_.erase(grips_.begin() + btBottomLeft);
 	grips_.erase(grips_.begin() + btBottomRight);
+}
+
+RECT Ellipse::getPaintBoundingRect()
+{
+	RECT rc = MovableElement::getPaintBoundingRect();
+	int width = getWidth();
+	int height = getHeight();
+	if ( width < penSize_ * 2 ||  height < penSize_ * 2  ) {
+		rc.left -= penSize_;
+		rc.right += penSize_;
+		rc.top -= penSize_;
+		rc.bottom += penSize_;
+	}
+	return rc;
 }
 
 ImageEditor::ElementType Ellipse::getType() const

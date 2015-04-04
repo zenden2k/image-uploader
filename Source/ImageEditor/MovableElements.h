@@ -125,11 +125,11 @@ public:
 	void render(Painter* gr);
 	virtual bool isItemAtPos(int x, int y);
 	virtual ElementType getType() const;
+	virtual RECT getPaintBoundingRect();
 protected:
 	bool filled_;
 	bool ContainsPoint(Gdiplus::Rect ellipse, Gdiplus::Point location);
 	virtual void createGrips();
-
 };
 
 class FilledEllipse: public Ellipse {
