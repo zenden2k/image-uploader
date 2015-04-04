@@ -40,6 +40,7 @@ OutputBaseFilename=image-uploader-{#_APP_VER}-build-{#BUILD}-setup
 Compression=lzma/max 
 SolidCompression=yes
 SignTool=zenden2k
+CloseApplications=no
 
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"

@@ -1403,6 +1403,11 @@ CString CSettings::getFileServerName() {
 	return fileServer.serverName();
 }
 
+CString CSettings::getSettingsFileName() const
+{
+	return IuCoreUtils::Utf8ToWstring(fileName_).c_str();
+}
+
 void ImageUploadParams::bind(SettingsNode& n){
 	SettingsNode & node = n["ImageUploadParams"];
 	node.n_bind(UseServerThumbs);

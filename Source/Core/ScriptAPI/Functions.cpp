@@ -42,7 +42,7 @@ SquirrelObject GetAppVersion() {
 	if ( tokens.size() >=3 ) {
 		res.SetValue("Major", (int)IuCoreUtils::stringToint64_t(tokens[0]));
 		res.SetValue("Minor", (int)IuCoreUtils::stringToint64_t(tokens[1]));
-		res.SetValue("Patch", (int)IuCoreUtils::stringToint64_t(tokens[2]));
+		res.SetValue("Release", (int)IuCoreUtils::stringToint64_t(tokens[2]));
 		res.SetValue("Build", (int)IuCoreUtils::stringToint64_t(BUILD));
 		bool isGui = 
 #ifndef IU_CLI

@@ -395,6 +395,8 @@ public:
 	CString getServerName();
 	CString getQuickServerName();
 	CString getFileServerName();
+
+	CString getSettingsFileName() const;
 		
 		
 	//CString	UrlShorteningServer;
