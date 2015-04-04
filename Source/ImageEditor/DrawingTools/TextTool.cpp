@@ -78,6 +78,7 @@ void TextTool::endDraw( int x, int y ) {
 	}
 	//	currentElement_ = new TextElement(canvas_,inputBox, xStart,yStart, xEnd, yEnd);
 	inputBox->show(true);
+	textElement->setColor(foregroundColor_);
 	canvas_->setCurrentlyEditedTextElement(textElement);
 	textElement->setSelected(true);
 	inputBox->invalidate();

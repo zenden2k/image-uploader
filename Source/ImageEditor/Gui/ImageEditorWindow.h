@@ -76,9 +76,12 @@ public:
 		MESSAGE_HANDLER( WM_SIZE, OnSize )
 		MESSAGE_HANDLER( WM_PAINT, OnPaint )
 		MESSAGE_HANDLER( WM_HSCROLL, OnHScroll )
+		//MESSAGE_HANDLER( WM_ACTIVATE, OnActivate )
+		MESSAGE_HANDLER( WM_ACTIVATEAPP, OnActivateApp )
 		MESSAGE_HANDLER( WM_GETMINMAXINFO, OnGetMinMaxInfo )
 		MESSAGE_HANDLER( MTBM_DROPDOWNCLICKED, OnDropDownClicked )
 		MESSAGE_HANDLER( TextParamsWindow::TPWM_FONTCHANGED, OnTextParamWindowFontChanged);
+
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
@@ -114,6 +117,7 @@ public:
 		LRESULT OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		LRESULT OnActivateApp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnDropDownClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

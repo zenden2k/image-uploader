@@ -583,6 +583,26 @@ LRESULT ImageEditorWindow::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	return 0;
 }
 
+LRESULT ImageEditorWindow::OnActivateApp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	if ( displayMode_ == wdmFullscreen ) {
+		if ( !wParam ) { // if the window is being deactivated
+			SetWindowLong(GWL_EXSTYLE, 0);
+			SetWindowPos(HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
+			HWND foregroundWindow = GetForegroundWindow();
+			if ( foregroundWindow != m_hWnd ) {
+				::SetWindowPos(foregroundWindow, m_hWnd, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
+			}
+			SetWindowPos(HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
+		
+		} else {
+			SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
+			SetWindowLong(GWL_EXSTYLE, WS_EX_TOPMOST);
+		}
+	}
+	return 0;
+}
+
 LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {	
 	Toolbar::Item* item = (Toolbar::Item*)wParam;

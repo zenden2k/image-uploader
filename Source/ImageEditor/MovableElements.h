@@ -34,6 +34,7 @@ class TextElement: public MovableElement{
 		void beginEdit();
 		void endEdit(bool saveToHistory);
 		void setRawText(const std::string& rawText);
+		virtual void setColor(Gdiplus::Color color);
 protected:
 	InputBox *inputBox_;
 	LOGFONT font_;
@@ -45,7 +46,7 @@ protected:
 	void onControlResized(int w, int h);
 	void setTextColor();
 	void onSelectionChanged(int min, int max, LOGFONT font);
-	virtual void setColor(Gdiplus::Color color);
+	
 
 };
 

@@ -162,7 +162,7 @@ LRESULT InputBoxControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
 	return 0;
 }
 
-LRESULT InputBoxControl::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+LRESULT InputBoxControl::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	WPARAM vKey = wParam;
 	bHandled = false;
 	if ( vKey == VK_ESCAPE ) {
@@ -172,17 +172,18 @@ LRESULT InputBoxControl::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		bHandled = true;
 	} else if ( vKey == VK_RETURN && GetKeyState(VK_CONTROL) & 0x80 && onEditFinished ) {
 		onEditFinished();
+		bHandled = true;
 	}
 
 	return 0;
 }
-
+/*
 LRESULT InputBoxControl::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	WPARAM vKey = wParam;
 	return 0;
 }
-
+*/
 LRESULT InputBoxControl::OnChange(UINT wNotifyCode,int, HWND)
 {
 	if ( onTextChanged ) {
