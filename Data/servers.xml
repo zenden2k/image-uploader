@@ -274,6 +274,75 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
+	<!-- Thanks to Alex_Qwerty -->
+	<Server Name="embedupload.com" FileHost="1" MaxFileSize="838870800"> 
+        <Actions> 
+            <Action Type="get" Url="http://embedupload.com/" 
+                RegExp="urlPlUplod_httpHostPathToUpload\s*=\s*'([^']+)" 
+                AssignVars="UploadPath:0" 
+                OnlyOnce="0" 
+            /> 
+            <Action 
+                Type="upload" 
+                Url="$(UploadPath)" 
+                PostParams="name=$(_FILENAME);Fichier=1;Filerio=1;Turbobit=1;Shareonline=1;Hugefiles=1;Zippyshare=1;Cloudyvideos=1;Sendmyway=1;Solidfiles=1;site=http://;do=upload;email=;file_1=%filename%;"
+                RegExp="^(\w+)$" 
+                AssignVars="DownloadID:0;" 
+            /> 
+        </Actions> 
+        <Result DownloadUrlTemplate="http://www.embedupload.com/?d=$(DownloadID)" /> 
+    </Server> 
+	 <Server Name="jheberg.net" FileHost="1"> 
+        <Actions> 
+            <Action Type="get" Url="http://jheberg.net/api/get/server/" 
+                RegExp="&quot;url&quot;\s*:\s*&quot;([^&quot;]+)" 
+                AssignVars="Server:0" 
+                OnlyOnce="0" 
+            /> 
+            <Action 
+                Type="upload" 
+                Url="$(Server)api/upload/" 
+                PostParams="file=%filename%;" 
+                RegExp="&quot;url&quot;\s*:\s*&quot;([^&quot;]+)" 
+                AssignVars="Url:0" 
+            /> 
+        </Actions> 
+        <Result DownloadUrlTemplate="$(Url)" /> 
+    </Server> 
+	<Server Name="mirrorupload.net" FileHost="1"> 
+        <Actions> 
+            <Action Type="get" Url="http://www.mirrorupload.net/api/server.html" 
+                RegExp="&quot;reply&quot;:&quot;http:\\/\\/([^\\/]+)" 
+                AssignVars="Server:0" 
+                OnlyOnce="0" 
+            /> 
+            <Action 
+                Type="upload" 
+                Url="http://$(Server)/api/file-upload.html" 
+                PostParams="file=%filename%;" 
+                RegExp="&quot;reply&quot;:&quot;[^&quot;]*?/file\\/(\w+)\\/([^&quot;]+)" 
+                AssignVars="ID:0;Name:1;" 
+            /> 
+        </Actions> 
+        <Result DownloadUrlTemplate="http://www.mirrorupload.net/file/$(ID)/$(Name)" /> 
+    </Server> 
+	 <Server Name="multiup.org" FileHost="1" MaxFileSize="2147483647"> 
+        <Actions> 
+            <Action Type="get" Url="http://www.multiup.org/api/get-fastest-server" 
+                RegExp="&quot;server&quot;:&quot;http:\\/\\/(\w+)" 
+                AssignVars="Server:0" 
+                OnlyOnce="0" 
+            /> 
+            <Action 
+                Type="upload" 
+                Url="http://$(Server).multiup.org/upload/index.php" 
+                PostParams="files[]=%filename%;" 
+                RegExp="&quot;name&quot;:&quot;([^&quot;]+)&quot;[\s\S]*?&quot;hash&quot;:&quot;([^&quot;]+)&quot;" 
+                AssignVars="Name:0;Hash:1;" 
+            /> 
+        </Actions> 
+        <Result DownloadUrlTemplate="http://www.multiup.org/download/$(Hash)/$(Name)" /> 
+    </Server> 
 	<!--
 		Since 1.3.x release server declaration for "urlshortening" server node must be "Server2",
 	-->

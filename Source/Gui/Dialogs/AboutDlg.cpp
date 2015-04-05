@@ -61,7 +61,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	memoText += TR("Путь к файлу с настройками:") + CString(_T("\r\n"))+ Settings.getSettingsFileName() + _T("\r\n\r\n");
 	memoText += TR("Благодарности:") + CString("\r\n\r\n");
 	memoText += TR("Контрибьюторам:") + CString("\r\n");
-	memoText += L"arhangelsoft\thttps://github.com/arhangelsoft\r\nTahir Yilmaz\thttps://github.com/thrylmz\r\n\r\n";
+	memoText += L"arhangelsoft\thttps://github.com/arhangelsoft\r\nTahir Yilmaz\thttps://github.com/thrylmz\r\nAlex_Qwerty\r\n\r\n";
 
 	memoText += TR("Переводчикам:")+ CString("\r\n");
 
