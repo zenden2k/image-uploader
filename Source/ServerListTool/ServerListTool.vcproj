@@ -79,7 +79,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib gdiplus.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib"
+				AdditionalDependencies="minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib gdiplus.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib Oleacc.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Libs&quot;;&quot;$(SolutionDir)\Libs\Debug&quot;"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
@@ -259,7 +259,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib gdiplus.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib libglog_static.lib jsoncpp.lib"
+				AdditionalDependencies="minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib gdiplus.lib zthread.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib libglog_static.lib jsoncpp.lib Oleacc.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib\Release&quot;;&quot;$(SolutionDir)\Contrib\Lib\&quot;"
 				SubSystem="2"
@@ -851,10 +851,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Core\ImageConverter.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\Gui\Dialogs\InputDialog.cpp"
 					>
 				</File>
@@ -913,6 +909,14 @@
 				<File
 					RelativePath="..\Core\Upload\ScriptUploadEngine.cpp"
 					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ShowIncludes="false"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\Func\Settings.cpp"
@@ -990,6 +994,10 @@
 			<Filter
 				Name="Core"
 				>
+				<File
+					RelativePath="..\Core\AppParams.cpp"
+					>
+				</File>
 				<File
 					RelativePath="..\Core\Logging.cpp"
 					>
@@ -1078,7 +1086,55 @@
 					Name="Image"
 					>
 					<File
+						RelativePath="..\Core\Images\ImageConverter.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\Core\Images\Utils.cpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="ScriptAPI"
+					>
+					<File
+						RelativePath="..\Core\ScriptAPI\COMUtils.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\Functions.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\HtmlDocument.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\HtmlDocumentPrivate_win.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\HtmlElement.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\HtmlElementPrivate_win.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\RegularExpression.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\ScriptAPI.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\WebBrowser.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\WebBrowserPrivate_win.cpp"
 						>
 					</File>
 				</Filter>
@@ -1088,6 +1144,34 @@
 				>
 				<File
 					RelativePath="..\Func\MyLogSink.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Gui"
+				>
+				<Filter
+					Name="Dialogs"
+					>
+					<File
+						RelativePath="..\Gui\Dialogs\WebViewWindow.cpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Controls"
+					>
+					<File
+						RelativePath="..\Gui\Controls\WTLBrowserView.cpp"
+						>
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="3rdpart"
+				>
+				<File
+					RelativePath="..\3rdpart\GdiplusH.cpp"
 					>
 				</File>
 			</Filter>

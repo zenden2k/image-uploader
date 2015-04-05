@@ -143,13 +143,14 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP$(NUMBER_OF_PROCESSORS)"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Source\&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;NDEBUG;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100"
+				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;NDEBUG;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100;IU_IMAGEEDITOR"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="0"
 				ForcedIncludeFiles="stdafx.h"
+				ShowIncludes="false"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -348,6 +349,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Gui\TextParamsWindow.cpp"
+					>
+				</File>
+				<File
 					RelativePath="Gui\Toolbar.cpp"
 					>
 				</File>
@@ -360,11 +365,31 @@
 				Name="Func"
 				>
 				<File
+					RelativePath="..\Func\ImageEditorConfigurationProvider.cpp"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ShowIncludes="false"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath="..\Func\LangClass.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\Func\MyUtils.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\3rdpart\Registry.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Func\Settings.cpp"
 					>
 				</File>
 				<File
@@ -570,11 +595,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\resource.h"
+				RelativePath=".\Source\ImageEditor\resource.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\ImageEditor\resource.h"
+				RelativePath="..\resource.h"
 				>
 			</File>
 			<File
@@ -587,11 +612,11 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;jpg;jpeg;jpe;manifest"
 			>
 			<File
-				RelativePath=".\res\ImageEditor\colorpicker.cur"
+				RelativePath="..\res\ImageEditor\colorpicker.cur"
 				>
 			</File>
 			<File
-				RelativePath="..\res\ImageEditor\colorpicker.cur"
+				RelativePath=".\res\ImageEditor\colorpicker.cur"
 				>
 			</File>
 			<File
@@ -687,11 +712,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\res\icon_dropdown.ico"
+				RelativePath="res\icon_dropdown.ico"
 				>
 			</File>
 			<File
-				RelativePath="res\icon_dropdown.ico"
+				RelativePath="..\res\icon_dropdown.ico"
 				>
 			</File>
 			<File

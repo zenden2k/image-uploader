@@ -9,7 +9,7 @@
 
 #include "Func/Settings.h"
 #include "Gui/Dialogs/LogWindow.h"
-#include <GdiPlus.h>
+#include <3rdpart/GdiPlusH.h>
 #include "Gui/Dialogs/InputDialog.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Gui/GuiTools.h"

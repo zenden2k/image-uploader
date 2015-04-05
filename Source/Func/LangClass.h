@@ -22,10 +22,7 @@
 #define LANGCLASS_H
 #pragma once
 
-#include <atlbase.h>
-#include <atlapp.h>
-#include <atlmisc.h>
-#include <atlcoll.h>
+#include "atlheaders.h"
 
 class CLang
 {

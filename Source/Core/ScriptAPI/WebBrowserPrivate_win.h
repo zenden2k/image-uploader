@@ -7,7 +7,9 @@
 #include <Core/Utils/CoreUtils.h>
 #include <Core/Logging.h>
 #include <Core/Squirrelnc.h>
+#if defined(_WIN32) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 #include <Gui/Dialogs/WizardDlg.h>
+#endif
 #include <3rdpart/Registry.h>
 #include "HtmlDocumentPrivate_win.h"
 #include <Func/WinUtils.h>
@@ -68,7 +70,7 @@ public:
 
 	bool showModal() {
 		HWND parent = 
-#ifndef IU_CLI
+#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 			pWizardDlg->m_hWnd;
 #else 
 			0;

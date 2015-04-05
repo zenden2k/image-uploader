@@ -23,7 +23,7 @@
 #include <Shlobj.h>
 #endif
 #include "Core/SettingsManager.h"
-#ifndef IU_CLI
+#if !defined(IU_CLI) && !defined(IU_IMAGEEDITOR)
 #include "Func/myutils.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Common/CmdLine.h"
@@ -37,7 +37,7 @@
 
 #include <Core/Utils/StringUtils.h>
 
-#if !defined(IU_SERVERLISTTOOL) && !defined(IU_CLI)
+#if !defined(IU_SERVERLISTTOOL) && !defined(IU_CLI) && !defined(IU_IMAGEEDITOR)
 	#include "Gui/Dialogs/FloatingWindow.h"
 #endif
 
@@ -47,7 +47,7 @@
 
 #define SETTINGS_FILE_NAME _T("settings.xml")
 
-#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
+#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL) && !defined(IU_IMAGEEDITOR)
  const TCHAR CSettings::VideoEngineDirectshow[] = _T("Directshow");
  const TCHAR CSettings::VideoEngineFFmpeg[]     = _T("FFmpeg");
  const TCHAR CSettings::VideoEngineAuto[]       = _T("Auto");
@@ -712,6 +712,9 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 	SimpleXmlNode settingsNode = xml.getRoot( "ImageUploader" ).GetChild( "Settings" );
 
 #if !defined(IU_CLI) && !defined( IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
+	if ( Language == _T("Turkish") ) { // Turkish.lng was renamed to Turkce.lng
+		Language = _T("T\u00FCrk\u00E7e"); 
+	}
 	std::string temp;
 	if ( !settingsNode["Image"]["Format"].IsNull() ) {
 		// for compatibility with old version configuration file

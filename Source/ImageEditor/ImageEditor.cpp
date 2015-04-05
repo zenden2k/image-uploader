@@ -2,10 +2,11 @@
 //
 
 #include "ImageEditor/Gui/ImageEditorWindow.h"
-#include "ImageEditor/resource.h"
+#include "resource.h"
 #include "ImageEditor/Gui/ImageEditorView.h"
 #include <Core/Logging.h>
 #include <Func/WinUtils.h>
+#include <Func/ImageEditorConfigurationProvider.h>
  
 CAppModule _Module;
 using namespace ImageEditor;
@@ -18,8 +19,9 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT) {
 	LoadLibrary(WinUtils::GetAppFolder() + L"gdiplus.dll");
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop( &theLoop );
+	ImageEditorConfigurationProvider provider;
 
-	ImageEditor::ImageEditorWindow wndMain("screenshot.png");
+	ImageEditor::ImageEditorWindow wndMain(_T("screenshot.png"), &provider);
 	wndMain.setInitialDrawingTool(ImageEditor::Canvas::dtCrop);
 
 	

@@ -25,7 +25,7 @@
 #include <string>
 #include "Core/SettingsManager.h"
 #include <Core/Upload/UploadEngine.h>
-#ifndef IU_CLI
+#if !defined(IU_IMAGEEDITOR) && !defined(IU_CLI)
     #include "Func/Settings.h"
 	#include "atlheaders.h"
 	#include "Func/langclass.h"
@@ -49,7 +49,7 @@ struct UploadProfileStruct
 
 typedef std::map <std::string, std::map <std::string, ServerSettingsStruct>> ServerSettingsMap;
 
-#ifndef IU_CLI
+#if !defined(IU_CLI) && !defined(IU_IMAGEEDITOR)
 
 
 
@@ -242,13 +242,6 @@ struct ScreenshotSettingsStruct
 	bool UseOldRegionScreenshotMethod;
 };
 
-struct ImageEditorSettingsStruct {
-	Gdiplus::Color ForegroundColor;
-	Gdiplus::Color BackgroundColor;
-	int PenSize;
-	int RoundingRadius;
-	LOGFONT Font;
-};
 
 struct HistorySettingsStruct
 {
@@ -258,6 +251,17 @@ struct HistorySettingsStruct
 struct ImageReuploaderSettingsStruct {
 	bool PasteHtmlOnCtrlV;
 };
+#endif
+
+#if !defined(IU_CLI)
+struct ImageEditorSettingsStruct {
+	Gdiplus::Color ForegroundColor;
+	Gdiplus::Color BackgroundColor;
+	int PenSize;
+	int RoundingRadius;
+	LOGFONT Font;
+};
+
 #endif
 
 class CSettings
@@ -270,7 +274,7 @@ protected:
 		UploadProfileStruct UploadProfile;
 public:
 		
-#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
+#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL) && !defined(IU_IMAGEEDITOR)
 
 		// Поля данных
 		bool ExplorerContextMenu;
@@ -285,14 +289,20 @@ public:
 void FindDataFolder();
 #endif
 
-#ifndef IU_CLI
+#if !defined(IU_CLI) && !defined(IU_IMAGEEDITOR)
 ConnectionSettingsStruct ConnectionSettings;
+#endif
+#if !defined(IU_CLI)
+ImageEditorSettingsStruct ImageEditorSettings;
 #endif
 
 ServerSettingsMap ServersSettings;
 bool AutoShowLog;
+bool UseNewIcon;
 #ifndef IU_SERVERLISTTOOL
-#if !defined(IU_CLI)
+
+
+#if !defined(IU_CLI) && !defined(IU_IMAGEEDITOR)
 		CHotkeyList Hotkeys;
 		bool Hotkeys_changed;
 		bool ShowTrayIcon;
@@ -311,7 +321,6 @@ public:
 		ServerProfile imageServer, fileServer, quickScreenshotServer,contextMenuServer,urlShorteningServer;
 
 		ScreenshotSettingsStruct ScreenshotSettings;
-		ImageEditorSettingsStruct ImageEditorSettings;
 		HistorySettingsStruct HistorySettings;
 		ImageReuploaderSettingsStruct ImageReuploaderSettings;
 		bool ConfirmOnExit;
@@ -325,7 +334,7 @@ public:
 		int CodeType;
 		bool ParseSubDirs;
 		bool UseProxyServer;
-		bool UseNewIcon;
+		
 
 		static COLORREF DefaultLinkColor;
 		bool SendToContextMenu;
@@ -365,7 +374,7 @@ public:
 		bool LoadServerProfiles(SimpleXmlNode root);
 		bool SaveServerProfiles(SimpleXmlNode root);
 	int UploadBufferSize;
-#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
+#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL) && !defined(IU_IMAGEEDITOR)
 		void Uninstall();
 	void EnableAutostartup(bool enable);
 	// Deprecated

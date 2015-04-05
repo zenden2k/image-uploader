@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _IU_CORE_UTILS_H
 #define _IU_CORE_UTILS_H
 
+#pragma once
 #include <cstdio>
 #include <string>
 #include "CoreTypes.h"

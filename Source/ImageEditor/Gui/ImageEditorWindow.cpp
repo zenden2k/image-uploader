@@ -5,7 +5,7 @@
 
 #include "ImageEditorWindow.h"
 
-#include "ImageEditor/resource.h"
+#include "resource.h"
 #include "ImageEditorView.h"
 #include <ImageEditor/Gui/Toolbar.h>
 #include "ColorsDelegate.h"

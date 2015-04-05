@@ -345,6 +345,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\3rdpart\Registry.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\Func\Settings.cpp"
 						>
 					</File>
@@ -365,11 +369,31 @@
 					Name="ScriptAPI"
 					>
 					<File
+						RelativePath="..\Core\ScriptAPI\COMUtils.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\Core\ScriptAPI\Functions.cpp"
 						>
 					</File>
 					<File
 						RelativePath="..\Core\ScriptAPI\Functions.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\HtmlDocument.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\HtmlDocumentPrivate_win.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\HtmlElement.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\HtmlElementPrivate_win.cpp"
 						>
 					</File>
 					<File
@@ -381,7 +405,19 @@
 						>
 					</File>
 					<File
+						RelativePath="..\Core\ScriptAPI\ScriptAPI.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\Core\ScriptAPI\ScriptAPI.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\WebBrowser.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Core\ScriptAPI\WebBrowserPrivate_win.cpp"
 						>
 					</File>
 				</Filter>

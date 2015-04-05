@@ -129,7 +129,7 @@ function OnLoadFinished(data) {
 
 function OnFileInputFilledCallback(data) {
 	//data.browser.close();
-	//WriteLog("warning", "FILLED!!!! " + data.fileName);
+	//WriteLog("error", "FILLED!!!! " + data.fileName);
 	local doc = data.browser.document();
 	local tip_zagr = doc.getElementById("tip_zagruzki_2");
 	if ( !tip_zagr.isNull() ) {

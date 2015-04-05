@@ -38,7 +38,7 @@
 #define TR(str) _T(str)
 
 
-void WriteLog(LogMsgType MsgType, LPCWSTR Sender, LPCWSTR Msg, LPCWSTR Info)
+void WriteLog(LogMsgType MsgType, const CString& Sender, const CString& Msg, const CString& Info)
 {
 	std::cerr<<IuCoreUtils::WstringToUtf8((LPCTSTR)Msg)<<std::endl;
 	std::cerr<<IuCoreUtils::WstringToUtf8((LPCTSTR)Info)<<std::endl;

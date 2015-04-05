@@ -3,9 +3,8 @@
 
 #include "resource.h"
 #include "MainDlg.h"
-#include <Gdiplus.h>
+#include <3rdpart/GdiPlusH.h>
 #include "Func/Common.h"
-#include <GdiPlus.h>
 #include <Func/IuCommonFunctions.h>
 #include <Core/Logging.h>
 #include <Func/MyLogSink.h>

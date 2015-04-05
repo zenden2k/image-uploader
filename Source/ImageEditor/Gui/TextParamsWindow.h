@@ -22,7 +22,7 @@
 #include "atlheaders.h"
 #include "Gui/Controls/MyImage.h"
 #include "resource.h"
-
+#include <vector>
 namespace ZThread {
 	class Thread;
 }

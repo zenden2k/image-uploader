@@ -640,6 +640,7 @@ LOGFONT CharFormatToLogFont(const CHARFORMAT & cf)
 
 }
 
+
 HICON LoadSmallIcon(int resourceId) {
 	int iconWidth =  ::GetSystemMetrics(SM_CXSMICON);
 	int iconHeight =  ::GetSystemMetrics(SM_CYSMICON);
@@ -680,4 +681,5 @@ HICON LoadBigIcon(int resourceId, int maxAvailableSize) {
 			IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR);
 	}
 }
+
 };

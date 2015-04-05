@@ -21,8 +21,8 @@
 #ifndef __field_ecount_opt
 #define __field_ecount_opt(s)
 #endif
-#include <GdiPlus.h>
-#include <gdipluseffects.h>
+#include <3rdpart/GdiPlusH.h>
+
 
 #include <atlbase.h>
 #include <atlapp.h>

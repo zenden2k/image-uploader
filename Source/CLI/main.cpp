@@ -46,6 +46,7 @@
 
 #define IU_CLI_VER "0.2.3"
 #ifdef _WIN32
+CAppModule _Module;
 std::string dataFolder = "Data/";
 #else
 std::string dataFolder = "/usr/share/imageuploader/";

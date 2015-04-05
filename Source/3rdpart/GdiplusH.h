@@ -1,6 +1,7 @@
 #ifndef _GDIPLUSH_H_INCLUDED_
 #define _GDIPLUSH_H_INCLUDED_
 
+#pragma once
 // 
 // GDI+ helper file v1.0
 // 
@@ -167,9 +168,7 @@ namespace Gdiplus
         static GdiPlusInitialize m_Initialize;
 #endif
     };
-#ifndef GDIPLUS_NO_AUTO_INIT
-    GdiPlusInitialize GdiPlusInitialize::m_Initialize;
-#endif
+
 }
 
 #ifndef GDIPLUS_NO_AUTO_NAMESPACE
