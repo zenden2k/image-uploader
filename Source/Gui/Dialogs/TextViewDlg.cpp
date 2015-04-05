@@ -50,12 +50,18 @@ LRESULT CTextViewDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT CTextViewDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	EndDialog(wID);
+	EndDialog(IDCANCEL);
 	return 0;
 }
 
 LRESULT CTextViewDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	EndDialog(wID);
+	EndDialog(IDCANCEL);
+	return 0;
+}
+
+LRESULT CTextViewDlg::OnClickedSave(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	EndDialog(IDOK);
 	return 0;
 }

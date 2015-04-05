@@ -685,7 +685,8 @@ void ImageEditorWindow::createToolbars()
 		return;
 	}
 	if ( showAddToWizardButton_ ) {
-		horizontalToolbar_.addButton(Toolbar::Item(TR("Добавить в список"), loadToolbarIcon(IDB_ICONADDPNG),ID_ADDTOWIZARD));
+		CString buttonHint=  (showUploadButton_ ? _T("") : _T(" (Enter)"));
+		horizontalToolbar_.addButton(Toolbar::Item(CString(TR("Добавить в список")), loadToolbarIcon(IDB_ICONADDPNG),ID_ADDTOWIZARD, buttonHint));
 	}
 	if ( showUploadButton_ ) {
 		CString uploadButtonText;
@@ -694,7 +695,7 @@ void ImageEditorWindow::createToolbars()
 		} else {
 			uploadButtonText.Format(TR("Загрузить на %s"), serverName_);
 		}
-		horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG),ID_UPLOAD, CString(), Toolbar::itButton));
+		horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG),ID_UPLOAD, _T(" (Enter)"), Toolbar::itButton));
 	}
 	//horizontalToolbar_.addButton(Toolbar::Item(TR("Поделиться"),0,ID_SHARE, CString(),Toolbar::itComboButton));
 	horizontalToolbar_.addButton(Toolbar::Item(TR("Сохранить"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, CString(_T("(Ctrl+S)")),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));

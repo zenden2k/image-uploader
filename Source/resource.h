@@ -596,6 +596,7 @@
 #define IDC_USERICON                    1309
 #define IDC_FONTCOMBO                   1309
 #define IDC_FOLDERICON                  1310
+#define IDC_SAVE                        1310
 #define IDC_FOLDERLABEL                 1311
 #define IDC_IMAGEPROCESSINGPARAMS       1312
 #define IDC_SETTINGSBUTTONPLACEHOLDER   1313
@@ -658,7 +659,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        304
 #define _APS_NEXT_COMMAND_VALUE         32805
-#define _APS_NEXT_CONTROL_VALUE         1310
+#define _APS_NEXT_CONTROL_VALUE         1311
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

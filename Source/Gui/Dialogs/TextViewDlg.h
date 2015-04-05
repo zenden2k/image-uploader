@@ -42,6 +42,7 @@ class CTextViewDlg :
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+			COMMAND_HANDLER(IDC_SAVE, BN_CLICKED, OnClickedSave)
 			CHAIN_MSG_MAP(CDialogResize<CTextViewDlg>)
 		END_MSG_MAP()
 
@@ -59,5 +60,6 @@ class CTextViewDlg :
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnClickedSave(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		CString m_okCaption, m_cancelCaption, m_text, m_title, m_info, m_question;
 };

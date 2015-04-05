@@ -207,6 +207,8 @@ void ErrorMessage(ErrorInfo errorInfo)
 		WriteLog(type, sender, errorMsg, infoText);
 }
 
+int responseFileIndex = 1;
+
 void DebugMessage(const std::string& msg, bool isResponseBody)
 {
 	if (!isResponseBody)
@@ -218,8 +220,10 @@ void DebugMessage(const std::string& msg, bool isResponseBody)
 
 		if (TextViewDlg.DoModal(GetActiveWindow()) == IDOK)
 		{
-			CFileDialog fd(false, 0, 0, 4 | 2, _T("*.*\0*.*\0\0"), GetActiveWindow());
-			lstrcpy(fd.m_szFileName, _T("file.html"));
+			CFileDialog fd(false, 0, 0, 4 | 2, _T("*.html\0*.html\0\0"), GetActiveWindow());
+			CString fileName;
+			fileName.Format(_T("response_%02d.html"), responseFileIndex++);
+			lstrcpy(fd.m_szFileName, fileName);
 			if (fd.DoModal() == IDOK)
 			{
 				FILE* f = _tfopen(fd.m_szFileName, _T("wb"));
