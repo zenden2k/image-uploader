@@ -454,6 +454,7 @@ CSettings::CSettings()
 	*m_Directory = 0;
 	UseTxtTemplate = false;
 	UseDirectLinks = true;
+	DropVideoFilesToTheList = false;
 	CodeLang = 0;
 	ConfirmOnExit = 1;
 	ExplorerContextMenu = false;
@@ -666,6 +667,7 @@ CSettings::CSettings()
 	upload.n_bind(ThumbsPerLine);
 	upload.n_bind(UseDirectLinks);
 	upload.n_bind(UseTxtTemplate);
+	upload.n_bind(DropVideoFilesToTheList);
 	upload.n_bind(CodeType);
 	upload.n_bind(ShowUploadErrorDialog);
 	
@@ -1023,7 +1025,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 					DeleteFile(ShortcutName);
 
 				CreateShortCut(ShortcutName, CmdLine.ModuleName(), WinUtils::GetAppFolder(), _T(
-				                  " /upload"), 0, SW_SHOW, CmdLine.ModuleName(), 0);
+				                  " /fromcontextmenu /upload"), 0, SW_SHOW, CmdLine.ModuleName(), 0);
 			}
 			else
 			{

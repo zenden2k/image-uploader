@@ -25,7 +25,7 @@
 <?php
 	function write_header( $f ) {
         fwrite( $f, "\xff\xfe" );
-        $head = "# This generated file is Image Uploader's language file. It must be saved in UTF-16LE encoding. 777011a3 = translator's name (and optional e-mail,website\r\n";
+        $head = "# This generated file is Image Uploader's language file. It must be saved in UTF-16LE encoding. 777011a3 = translator's name (and optional e-mail, website)\r\n";
         $head_utf16 = mb_convert_encoding( $head, "UTF-16LE", "Windows-1251" );
         fwrite( $f, $head_utf16 );
     }

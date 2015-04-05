@@ -280,6 +280,7 @@ public:
 		bool ExplorerContextMenu;
 		bool ExplorerContextMenu_changed;
 		bool ExplorerVideoContextMenu;
+		bool DropVideoFilesToTheList;
 		bool UseDirectLinks;
 		CString DataFolder;
 		CString m_SettingsDir;

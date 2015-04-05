@@ -4,6 +4,9 @@
 
 version 1.3.1b
 
+build 4308
+[f] Fixed crash when extracting frames from a video file with subtitles (access violation in VSFilter.dll aka DirectVobSub).
+
 build 4307
 [+] Added ukrainian translation
 [c] Updated turkish translation

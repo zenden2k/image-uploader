@@ -283,6 +283,7 @@ bool CWizardDlg::ParseCmdLine()
 	int count = 0;
 
 	int nIndex = 0;
+	bool fromContextMenu = false;
 
 	if(CmdLine.IsOption(_T("mediainfo")))
 	{
@@ -368,6 +369,7 @@ bool CWizardDlg::ParseCmdLine()
 			
 		} else if (CurrentParam ==_T("/fromcontextmenu")) {
 			sessionImageServer_ = Settings.contextMenuServer;
+			fromContextMenu = true;
 		}
 	}
 
@@ -392,7 +394,7 @@ bool CWizardDlg::ParseCmdLine()
 	}
 	if(!Paths.IsEmpty())
 	{
-		QuickUploadMarker = (Settings.QuickUpload && !CmdLine.IsOption(_T("noquick"))) || (CmdLine.IsOption(_T("quick")));	
+		QuickUploadMarker = (fromContextMenu && Settings.QuickUpload && !CmdLine.IsOption(_T("noquick"))) || (CmdLine.IsOption(_T("quick")));	
 		FolderAdd.Do(Paths, CmdLine.IsOption(_T("imagesonly")), true);
 	}
 	return count!=0;
@@ -719,7 +721,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 		{
 			if(CurPage == 2)
 			{
-				if(MessageBox(TR("Вы хотите извлечь кадры из этого видеофайла? \r\n(иначе файл будет просто добавлен в список)"),APPNAME,MB_YESNO)==IDNO)
+				if(Settings.DropVideoFilesToTheList || MessageBox(TR("Вы хотите извлечь кадры из этого видеофайла? \r\n(иначе файл будет просто добавлен в список)"),APPNAME,MB_YESNO)==IDNO)
 					goto filehost;
 			}
 			ShowPage(1, CurPage, (Pages[2])?2:3);
