@@ -5,7 +5,7 @@
 #expr Exec(SourcePath + "signcode.bat")
 #define MyAppName "Image Uploader"
 #define MyAppVersion _APP_VER
-#define MyAppPublisher "ZendeN"
+#define MyAppPublisher "zenden.ws"
 #define MyAppURL "http://zenden.ws/imageuploader"
 #define MyAppExeName "Image Uploader.exe"
 ;#include ReadReg(HKEY_LOCAL_MACHINE,'Software\Sherlock Software\InnoTools\Downloader','ScriptPath','')
@@ -51,6 +51,7 @@ Name: "fa"; MessagesFile: "Languages\Farsi.isl"
 Name: "sr"; MessagesFile: "Languages\SerbianCyrillic.isl"
 Name: "sv"; MessagesFile: "Languages\Swedish.isl"
 Name: "tr"; MessagesFile: "Languages\Turkish.isl"
+Name: "uk"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 [CustomMessages]
 InstallFFmpeg=Install FFmpeg library (better video formats support)
 NewIcon=Use new icon

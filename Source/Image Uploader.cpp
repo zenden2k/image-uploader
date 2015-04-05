@@ -19,7 +19,7 @@
 */
 
 //#include <vld.h> 
-
+ 
 #include "atlheaders.h"
 #include <3rdpart/GdiplusH.h>
 #include <shellapi.h> 
