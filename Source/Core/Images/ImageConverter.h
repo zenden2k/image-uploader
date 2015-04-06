@@ -42,7 +42,7 @@ struct ThumbCreatingParams
 	int Size;
 	bool DrawFrame;
 	bool AddImageSize;
-	COLORREF BackgroundColor;
+	uint32_t BackgroundColor;
 	EnumWrapper<ThumbFormatEnum> Format;
 	ThumbResizeEnum ResizeMode;
 

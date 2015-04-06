@@ -717,7 +717,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	{
 		
 		DragQueryFile(hDrop,	i, szBuffer, sizeof(szBuffer)/sizeof(TCHAR));
-		if(IsVideoFile(szBuffer) && n==1)
+		if((IsVideoFile(szBuffer) && n==1) && !Settings.DropVideoFilesToTheList)
 		{
 			if(CurPage == 2)
 			{
