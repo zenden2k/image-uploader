@@ -2,6 +2,8 @@
 #define _GDIPLUSH_H_INCLUDED_
 
 #pragma once
+
+#include <Windows.h>
 // 
 // GDI+ helper file v1.0
 // 

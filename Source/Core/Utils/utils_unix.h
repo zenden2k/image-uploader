@@ -88,7 +88,7 @@ Utf8String GetFileMimeType(const Utf8String name)
 
 bool copyFile(const std::string& from, const std::string & to, bool overwrite)
 {
-	const BUFSIZE = 64 * 1024;
+	const int BUFSIZE = 64 * 1024;
 	char buf[BUFSIZ];
 	size_t size;
 

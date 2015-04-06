@@ -1,4 +1,5 @@
 #include "DirectShowUtil.h"
+#include "atlheaders.h"
 #include <Core/Logging.h>
 
 namespace DirectShowUtil {;

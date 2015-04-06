@@ -20,6 +20,7 @@
 
 #include "Func/Settings.h"
 #ifdef _WIN32
+#include <atlheaders.h>
 #include <Shlobj.h>
 #endif
 #include "Core/SettingsManager.h"

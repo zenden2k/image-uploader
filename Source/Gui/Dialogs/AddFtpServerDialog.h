@@ -2,7 +2,7 @@
 // Declaration of the CAddFtpServerDialog
 
 #pragma once
-
+#include "atlheaders.h"
 #include "resource.h"       // main symbols
 
 class CUploadEngineList;

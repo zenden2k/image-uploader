@@ -23,7 +23,7 @@ class LocalFileCache {
 		ZThread::Mutex mutex_;
 		ZThread::Mutex cacheMutex_;
 		bool parseHistory();
-		bool parseHistoryFile(const CString& fileName);
+        bool parseHistoryFile(const std::string& fileName);
 		LocalFileCache();
 		LocalFileCache(const LocalFileCache& root);
 		LocalFileCache& operator=(const LocalFileCache&);

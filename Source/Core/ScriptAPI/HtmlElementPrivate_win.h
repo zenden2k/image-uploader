@@ -22,12 +22,16 @@
 #define IU_CORE_HTMLELEMENTPRIVATE_WIN_H
 
 #pragma once
-#include <ComDef.h>
-#include "COMUtils.h"
-#include <Core/Utils/CoreUtils.h>
-#include <Core/Utils/StringUtils.h>
 #include "WebBrowserPrivate_win.h"
 #include "HtmlDocumentPrivate_win.h"
+#include <Core/Utils/CoreUtils.h>
+#include <Core/Utils/StringUtils.h>
+#include "atlheaders.h"
+#include <ComDef.h>
+
+#include "COMUtils.h"
+
+
 
 namespace ScriptAPI {
 

@@ -1,11 +1,11 @@
 #ifndef ColorPickerTool_h__
 #define ColorPickerTool_h__
 
-#include <3rdpart/GdiplusH.h>
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
-#include <stdint.h>
 #include "AbstractDrawingTool.h"
+#include <stdint.h>
+#include <3rdpart/GdiplusH.h>
 namespace ImageEditor {
 
 class  ColorPickerTool : public AbstractDrawingTool {

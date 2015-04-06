@@ -19,7 +19,7 @@
 */
 
 #include "DirectshowFrameGrabber.h"
-
+#include "atlheaders.h"
 #include <Core/Utils/CoreUtils.h>
 #define __AFX_H__ // little hack for avoiding __POSITION type redefinition
 #include <objbase.h>

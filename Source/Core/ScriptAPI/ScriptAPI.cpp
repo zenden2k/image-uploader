@@ -19,16 +19,20 @@
 */
 
 #include "ScriptAPI.h"
+#ifdef _WIN32
 #include "WebBrowser.h"
 #include "HtmlDocument.h"
 #include "HtmlElement.h"
+#endif
 
 namespace ScriptAPI {
 
 void RegisterClasses(SquirrelObject* rootTable) {
+#ifdef _WIN32
 	RegisterWebBrowserClass();
 	RegisterHtmlDocumentClass();
 	RegisterHtmlElementClass();
+#endif
 }
 
 }

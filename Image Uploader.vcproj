@@ -47,7 +47,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP$(NUMBER_OF_PROCESSORS)"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;;&quot;$(SolutionDir)\Contrib\Include\libs&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX;TIXML_USE_STL;PCRE_STATIC;CURL_STATICLIB;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
@@ -219,7 +219,7 @@
 				Optimization="0"
 				FavorSizeOrSpeed="0"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Contrib\Include\libs&quot;;&quot;$(SolutionDir)\Source&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC;TIXML_USE_STL;PCRE_STATIC;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -617,7 +617,7 @@
 				Optimization="3"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;;&quot;$(SolutionDir)\Contrib\Include\libs&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -1646,6 +1646,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\Source\atlheaders.h"
+				>
+			</File>
+			<File
 				RelativePath="Source\Image Uploader.cpp"
 				>
 			</File>
@@ -1835,6 +1839,14 @@
 					<File
 						RelativePath=".\Source\Core\Upload\ScriptUploadEngine.cpp"
 						>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ShowIncludes="false"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath=".\Source\Core\Upload\ScriptUploadEngine.h"
@@ -2135,6 +2147,14 @@
 					<File
 						RelativePath=".\Source\Core\ScriptAPI\Functions.cpp"
 						>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ShowIncludes="false"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath=".\Source\Core\ScriptAPI\Functions.h"
@@ -2143,6 +2163,14 @@
 					<File
 						RelativePath=".\Source\Core\ScriptAPI\HtmlDocument.cpp"
 						>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ShowIncludes="false"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath=".\Source\Core\ScriptAPI\HtmlDocument.h"
@@ -2151,6 +2179,14 @@
 					<File
 						RelativePath=".\Source\Core\ScriptAPI\HtmlDocumentPrivate_win.cpp"
 						>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ShowIncludes="false"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath=".\Source\Core\ScriptAPI\HtmlDocumentPrivate_win.h"
@@ -2247,6 +2283,14 @@
 					<File
 						RelativePath=".\Source\Gui\Dialogs\AddFtpServerDialog.cpp"
 						>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ShowIncludes="false"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath=".\Source\Gui\Dialogs\ContextMenuItemDlg.cpp"
@@ -2851,6 +2895,14 @@
 					<File
 						RelativePath=".\Source\ImageEditor\DrawingTools\ColorPickerTool.cpp"
 						>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ShowIncludes="false"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath=".\Source\ImageEditor\DrawingTools\ColorPickerTool.h"

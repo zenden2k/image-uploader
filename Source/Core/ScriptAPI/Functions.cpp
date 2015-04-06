@@ -60,10 +60,10 @@ SquirrelObject GetAppVersion() {
 	std::vector<std::string> tokens;
 	IuStringUtils::Split(ver,".", tokens, 3);
 	if ( tokens.size() >=3 ) {
-		res.SetValue("Major", (int)IuCoreUtils::stringToint64_t(tokens[0]));
-		res.SetValue("Minor", (int)IuCoreUtils::stringToint64_t(tokens[1]));
-		res.SetValue("Release", (int)IuCoreUtils::stringToint64_t(tokens[2]));
-		res.SetValue("Build", (int)IuCoreUtils::stringToint64_t(BUILD));
+		res.SetValue("Major", (SQInteger)IuCoreUtils::stringToint64_t(tokens[0]));
+		res.SetValue("Minor", (SQInteger)IuCoreUtils::stringToint64_t(tokens[1]));
+		res.SetValue("Release", (SQInteger)IuCoreUtils::stringToint64_t(tokens[2]));
+		res.SetValue("Build", (SQInteger)IuCoreUtils::stringToint64_t(BUILD));
 		bool isGui = 
 #ifndef IU_CLI
 			true;

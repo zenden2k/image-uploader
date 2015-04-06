@@ -15,6 +15,7 @@
 
 #include "dxerr.h"
 
+#include "MMsystem.h"
 #include <stdio.h>
 #include <algorithm>
 

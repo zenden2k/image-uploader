@@ -1,11 +1,10 @@
 #ifndef IMAGEEDITOR_DRAWINGELEMENT_H
 #define IMAGEEDITOR_DRAWINGELEMENT_H
 
-#include "BasicTypes.h"
-
-#include <3rdpart/GdiplusH.h>
 #include <map>
 #include <deque>
+#include <3rdpart/GdiplusH.h>
+#include "BasicTypes.h"
 
 namespace ImageEditor {
 

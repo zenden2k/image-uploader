@@ -20,7 +20,7 @@ struct RECT
 	int    top;
 	int    right;
 	int    bottom;
-}
+};
 #endif
 
 namespace ImageEditor {

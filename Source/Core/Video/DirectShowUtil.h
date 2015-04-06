@@ -2,7 +2,7 @@
 #define IU_CORE_VIDEO_DIRECTSHOWUTIL_H
 
 #pragma once
-
+#include "atlheaders.h"
 #define __AFX_H__ // little hack for avoiding __POSITION type redefinition
 #include <objbase.h>
 #include <streams.h>

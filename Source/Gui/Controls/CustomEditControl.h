@@ -1,7 +1,9 @@
 #ifndef GUI_CONTROLS_CUSTOMEDITCONTROL_H
 #define GUI_CONTROLS_CUSTOMEDITCONTROL_H
 
+#include "atlheaders.h"
 #include "Core/3rdpart/FastDelegate.h"
+
 
 class CCustomEditControl : public CWindowImpl<CCustomEditControl, CEdit> {
     public:

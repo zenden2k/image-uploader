@@ -31,6 +31,7 @@
 #include <sstream>
 #include <string>
 #include <iomanip>
+#include <math.h>
 #include <json/json.h>
 #include "Core/3rdpart/CP_RSA.h"
 #include "Core/3rdpart/base64.h"
@@ -504,6 +505,7 @@ const std::string scriptMessageBox( const std::string& message, const std::strin
 #endif
 }
 
+SquirrelObject parseJSONObj(Json::Value root, SquirrelObject &obj);
 template<class T> void setObjValues(T key, Json::ValueIterator it, SquirrelObject &obj) {
 	using namespace Json;
 
@@ -512,10 +514,10 @@ template<class T> void setObjValues(T key, Json::ValueIterator it, SquirrelObjec
 			obj.SetValue(key,SquirrelObject());
 			break;
 		case intValue:      ///< signed integer value
-			obj.SetValue(key, it->asInt());
+			obj.SetValue(key, (INT)it->asInt());
 			break;
 		case uintValue:     ///< unsigned integer value
-			obj.SetValue(key, it->asInt());
+			obj.SetValue(key, (INT)it->asInt());
 			break;
 		case realValue:
 			obj.SetValue(key, it->asFloat());
@@ -575,7 +577,7 @@ Json::Value sqValueToJson(SquirrelObject obj ) {
 		case OT_NULL:
 			return Json::Value(Json::nullValue);
 		case OT_INTEGER:
-			return obj.ToInteger();
+            return SQINT_TO_JSON_VALUE(obj.ToInteger());
 			break;
 		case OT_FLOAT:
 			return obj.ToFloat();
@@ -615,7 +617,7 @@ Json::Value sqObjToJson(	SquirrelObject obj ) {
 			case OT_ARRAY: 
 				if ( obj.BeginIteration() ) {
 					while(obj.Next(key,value) ) {
-						res[key.ToInteger()]=sqObjToJson(value);
+						res[int(key.ToInteger())]=sqObjToJson(value);
 					}
 					obj.EndIteration();
 

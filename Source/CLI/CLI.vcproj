@@ -120,7 +120,7 @@
 				AdditionalOptions="/MP$(NUMBER_OF_PROCESSORS)"
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;;&quot;$(SolutionDir)\Contrib\Include\libs&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;CURL_STATICLIB;POCO_STATIC;TIXML_USE_STL;PCRE_STATIC;IU_CLI;GOOGLE_GLOG_DLL_DECL="
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -141,7 +141,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avcodec.lib wininet.lib zthread.lib jsoncpp.lib libglog_static.lib"
+				AdditionalDependencies="minizip.lib zlib.lib ws2_32.lib Wldap32.lib ssleay32.lib libeay32.lib dwmapi.lib pcre.lib libcurl.lib squirrel.lib sqstdlib.lib sqplus.lib urlmon.lib avcodec.lib wininet.lib zthread.lib jsoncpp.lib libglog_static.lib Oleacc.lib"
 				OutputFile="$(OutDir)\imgupload.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib&quot;;&quot;$(SolutionDir)\Contrib\Lib\Release&quot;"
@@ -215,6 +215,10 @@
 				</File>
 				<File
 					RelativePath="..\Core\AppParams.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Core\Logging.cpp"
 					>
 				</File>
 				<File
@@ -421,6 +425,42 @@
 						>
 					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="Gui"
+				>
+				<File
+					RelativePath="..\Gui\GuiTools.cpp"
+					>
+				</File>
+				<Filter
+					Name="Dialogs"
+					>
+					<File
+						RelativePath="..\Gui\Dialogs\WebViewWindow.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Gui\Dialogs\WebViewWindow.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Controls"
+					>
+					<File
+						RelativePath="..\Gui\Controls\WTLBrowserView.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Gui\Controls\WTLBrowserView.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="Func"
+				>
 			</Filter>
 		</Filter>
 		<Filter

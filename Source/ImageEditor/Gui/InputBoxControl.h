@@ -6,10 +6,7 @@
 
 #pragma once
 
-#include <atlbase.h>
-#include <atlctrls.h>
-#include <atlmisc.h>
-#include <atlcrack.h>
+#include "atlheaders.h"
 #include "../InputBox.h"
 #include <sstream>
 

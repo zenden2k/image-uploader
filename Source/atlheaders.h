@@ -2,7 +2,15 @@
 #define IU_ATLHEADERS_H
 
 #pragma once
-//#include "winheaders.h"
+#ifndef _UNICODE
+#define UNICODE
+#define _UNICODE
+#endif
+#define WIN32_LEAN_AND_MEAN 
+//#include <winsock2.h>
+#include <windows.h>
+#include <tchar.h>
+#include <ShellAPI.h>
 #include <atlbase.h>
 #include <atlapp.h>
 #include <atlwin.h>

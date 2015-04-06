@@ -146,12 +146,12 @@ NetworkClient::NetworkClient(void)
 		int i, len = lstrlenA(CertFileName);
 		for(i=len; i>=0; i--)
 		{
-			if(CertFileName[i] == _T('\\')) {
+            if(CertFileName[i] == '\\') {
 				CertFileName[i+1] = 0;
 				break;
 			}
 		}
-		StrCatA(CertFileName, "curl-ca-bundle.crt");
+        strcat(CertFileName, "curl-ca-bundle.crt");
 #endif
 		atexit(&curl_cleanup);
 		_curl_init = true;

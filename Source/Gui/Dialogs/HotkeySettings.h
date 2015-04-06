@@ -28,6 +28,7 @@
 #include <atlcrack.h>
 #include <atlctrls.h>
 #include "settingspage.h"
+#include <vector>
 
 #define IDM_CLEARHOTKEY 10000
 #define IDM_CLEARALLHOTKEYS (IDM_CLEARHOTKEY + 1)

@@ -1,4 +1,4 @@
-AppVersion="0.2"
+AppVersion="0.2.4"
 
 # Get the machine Architecture
 Architecture=$(uname -m)
@@ -17,13 +17,14 @@ esac
 echo "Detected Architecture : $Architecture"
 
 cp imgupload/DEBIAN/control_ imgupload/DEBIAN/control
+mkdir ./imgupload/usr/bin/
 sed -i "s/YOUR_ARCHITECTURE/$Architecture/g" imgupload/DEBIAN/control
 mkdir -p ./imgupload/usr/share/imgupload/
 mkdir -p ./imgupload/usr/share/imgupload/Scripts/
 #rm ./imgupload/usr/share/imgupload/Scripts/*
 #mkdir -p ./imgupload/usr/share/imgupload/Update/
 #set -e
-cp ../../Build/linux/release/executable/imgupload ./imgupload/usr/bin/
+cp ../../Build/CLI/linux/${Architecture}/release/executable/imgupload ./imgupload/usr/bin/
 cp ../../Data/servers.xml ./imgupload/usr/share/imgupload/servers.xml
 cp ../../Data/Scripts/*.nut ./imgupload/usr/share/imgupload/Scripts/
 #cp ../../Data/Update/iu_serversinfo.xml ./imgupload/usr/share/imgupload/Update/iu_serversinfo.xml

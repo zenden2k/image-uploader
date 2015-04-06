@@ -4,6 +4,7 @@
 #include <Core/Logging.h>
 #include <Core/Utils/StringUtils.h>
 #include <Core/Images/Utils.h>
+#include <map>
 
 using namespace Gdiplus;
 

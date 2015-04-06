@@ -33,6 +33,7 @@
 #include <3rdpart/Registry.h>
 #include "HtmlDocumentPrivate_win.h"
 #include <Func/WinUtils.h>
+#include "COMUtils.h"
 namespace ScriptAPI {
 using namespace SqPlus;
 class WebBrowserPrivate {

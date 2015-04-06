@@ -44,7 +44,7 @@
 #endif
 #include "versioninfo.h"
 
-#define IU_CLI_VER "0.2.3"
+#define IU_CLI_VER "0.2.4"
 #ifdef _WIN32
 CAppModule _Module;
 std::string dataFolder = "Data/";

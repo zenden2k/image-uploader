@@ -2,7 +2,7 @@
 // Declaration of the CAddDirectoryServerDialog
 
 #pragma once
-
+#include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include <vector>
 #include <Gui/Controls/IconButton.h>

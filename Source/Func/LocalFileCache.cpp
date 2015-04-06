@@ -26,15 +26,15 @@ bool LocalFileCache::parseHistory() {
 	WinUtils::GetFolderFileList(files, historyFolder , _T("history*.xml"));
 
 	for(size_t i=0; i<files.size(); i++) {
-		parseHistoryFile(historyFolder + files[i]);
+		parseHistoryFile(WCstringToUtf8(historyFolder + files[i]));
 	}
 	mutex_.release();
 	return true;
 }
 
-bool LocalFileCache::parseHistoryFile(const CString& fileName) {
+bool LocalFileCache::parseHistoryFile(const std::string&  fileName) {
 	CHistoryReader m_historyReader;
-	if ( !m_historyReader.loadFromFile(WCstringToUtf8(fileName)) ) {
+	if ( !m_historyReader.loadFromFile(fileName) ) {
 		return false;
 	}
 	int nSessionsCount = m_historyReader.getSessionCount();
