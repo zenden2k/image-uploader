@@ -1,5 +1,6 @@
 /*
      Image Uploader - program for uploading images/files to the Internet
+
 	 Copyright 2007-2015 Sergey Svistunov (zenden2k@gmail.com)
 
 	 Licensed under the Apache License, Version 2.0 (the "License");
