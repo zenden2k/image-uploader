@@ -919,6 +919,9 @@ int GetInternetExplorerMajorVersion()
 	Reg.SetRootKey( HKEY_LOCAL_MACHINE );
 	if ( Reg.SetKey( "Software\\Microsoft\\Internet Explorer" , FALSE ) ) {
 		CString version = Reg.ReadString("svcVersion");
+        if ( version.IsEmpty() ) {
+            version = Reg.ReadString("Version");
+        }
 		int dotPos = version.Find(L'.');
 		if ( dotPos != -1 ) {
 			return StrToInt(version.Left(dotPos));
@@ -943,7 +946,7 @@ TCHAR* GetBrowserKey() {
 
 void RemoveBrowserKey(){
 	CRegistry Reg;
-	Reg.SetRootKey( HKEY_LOCAL_MACHINE );
+	Reg.SetRootKey( HKEY_CURRENT_USER );
 	if ( Reg.SetKey( GetBrowserKey(), false ) ) {
 		Reg.DeleteKey(myExtractFileName(GetAppFileName()));
 	}

@@ -16,7 +16,6 @@
 	 limitations under the License.
 */
 
-//#include <vld.h> 
  
 #include "atlheaders.h"
 #include <3rdpart/GdiplusH.h>
@@ -225,7 +224,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	_Module.Term();
 	CScriptUploadEngine::DestroyScriptEngine();
 	OleUninitialize();
-
+    google::RemoveLogSink(&logSink);
 	google::ShutdownGoogleLogging();
 	return 0;
 }

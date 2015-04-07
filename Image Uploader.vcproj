@@ -1666,7 +1666,7 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"
-						ForcedIncludeFiles="vld.h"
+						ForcedIncludeFiles=""
 					/>
 				</FileConfiguration>
 				<FileConfiguration

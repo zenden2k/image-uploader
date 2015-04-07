@@ -117,7 +117,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
  
 
 	memoText +=  CString(L"Built with: \r\n") + CString(BOOST_COMPILER) +  _T("\r\n");;
-	memoText +=  CString(L"Target platform: ") + BOOST_PLATFORM + _T(" (") + IntToStr(sizeof(void*) * CHAR_BIT) + _T(" bit)\r\n\r\n");
+	memoText +=  CString(L"Target platform: ") + BOOST_PLATFORM + _T(" (") + IntToStr(sizeof(void*) * CHAR_BIT) + _T(" bit)\r\n");
+    memoText +=  CString(L"Date: ") + CString(TIME) +  _T("\r\n\r\n");
 	memoText += TR("Libcurl version:")+ CString("\r\n");
 	memoText +=  IuCoreUtils::Utf8ToWstring( curl_version()).c_str() + CString("\r\n\r\n");
 	if ( Settings.IsFFmpegAvailable() ) {
