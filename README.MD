@@ -3,7 +3,7 @@ Free application for Windows that allows you to upload files to image/file hosti
 
 ![Image Uploader main windows](https://lh5.googleusercontent.com/-GvexbrV8HUE/VQHXrxhom5I/AAAAAAAAD0c/JiH5OQ0XrfY/s0/26719_screenshot%2525202015-03-09%252520003_en.png)
 
-[![Image Uploader main windows](https://lh4.googleusercontent.com/-D6wvBfMHonw/VQHgBb9ZFzI/AAAAAAAAD1s/Hq1uUei_C-s/s0/download-button-en.png)](http://zenden.ws/downloads/image-uploader-latest)
+[![Image Uploader main windows](https://lh4.googleusercontent.com/-D6wvBfMHonw/VQHgBb9ZFzI/AAAAAAAAD1s/Hq1uUei_C-s/s0/download-button-en.png)](http://zenden.ws/imageuploader_downloads)
 
 Supported operating systems: Windows 2000/XP/Vista/7/8/10 (also server versions)
 
