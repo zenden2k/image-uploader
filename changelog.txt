@@ -17,9 +17,9 @@ New servers:
 
 Thanks to Alex_Qwerty:
 [+] embedupload.com  
-[+] jheberg.net.xml
-[+] mirrorupload.net.xml
-[+] multiup.org.xml
+[+] jheberg.net
+[+] mirrorupload.net
+[+] multiup.org
 
 [~] Fixed small bugs
 

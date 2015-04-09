@@ -20,9 +20,9 @@
 [+] Google Drive
 Спасибо Alex_Qwerty за следующие хостинги:
 [+] embedupload.com  
-[+] jheberg.net.xml
-[+] mirrorupload.net.xml
-[+] multiup.org.xml
+[+] jheberg.net
+[+] mirrorupload.net
+[+] multiup.org
 
 [f] Исправлен вылет программы при извлечении кадров их видео с субтитрами с включенным кривым фильтром VSFilter (DirectVobSub).
 [c] Исправлено неправильное отображение ассоциированных значков в списке файлов при нестандартном DPI. 
