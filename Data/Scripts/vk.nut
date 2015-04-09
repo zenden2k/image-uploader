@@ -235,7 +235,7 @@ function  UploadFile(FileName, options)
 	}
 	local albumId = options.getFolderID();
 	if ( albumId == "" ) {
-		albumId = GetFirstAlbumId();
+		albumId = GetFirstAlbumId().tostring();
 		if ( albumId == "" ) {
 			local newAlbum = CFolderItem();
 			newAlbum.setTitle("Image Uploader");
