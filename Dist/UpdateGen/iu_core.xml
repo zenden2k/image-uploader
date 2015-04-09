@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<UpdatePackageSource Name="iu_core" DisplayName="Image Uploader 1.3.0" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%"  CoreUpdate="1" >
+<UpdatePackageSource Name="iu_core" DisplayName="Image Uploader 1.3.1.4311" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%"  CoreUpdate="1" >
 	<Entries>
 		<Entry Name="Image Uploader.exe" SaveToFolder="%apppath%/" Action="add"/>
 		<Entry Name="ExplorerIntegration*.dll" SaveToFolder="%apppath%/" Action="add"/>
@@ -14,24 +14,23 @@
         	<Entry Name="Data/Thumbnails/*" SaveToFolder="%datapath%/Thumbnails/" Action="add"/>
 
 	</Entries>
-<Info>
-Image Uploader 1.3.0 build 4222
-[~] Fixed big file (>150 Mb) uploading to Dropbox (added chunked uploading functions to scripting API)
-[+] Added swedish translation (thanks to Åke Engelbrektson)
-[+] The language choosen in installer now is selected by default at program's startup.
+<Info>[+] Added Image Editor. Now you can easily edit screenshots you've made, annotate, highlight or obfuscate parts of the screenshot.
+[+] Scripting API changes: added PCRE-compatible class CRegExp, CWebBrowser, function tr() for internalization.
+[+] Added vk.com support
+[f] Fixed crash when extracting frames from a video file with subtitles (access violation in VSFilter.dll aka DirectVobSub).
+[~] Fixed incorrect icon sizes in file list when high DPI is set
+[+] Added ukrainian translation (thanks to Yurii Petrashko)
 
-build 4220
- 
-[~] Complete refactoring of video grabber module, it has been moved to the core
-[+] Unicode file names support (non-current locale) for FFmpeg
-[~] FFmpeg library has been updated to the last version 2.6 (fixed broken H264 support)
-[~] Fixed producing distorted images while grabbing images from video with dimensions not divisible by 4 (FFmpeg)
-[~] Fixed producing incomplete frame count (DirectShow)
-[~] Modified program's icon, added full sized icon (256x256) for modern Windows versions
-[+] Added HTTP error logging in the network client module (workaround for Squirrel scripts which do not check HTTP response code after completed request)
-[+] Logging line number and column for compilation error of Squirrel scripts
-[+] Save user's servers in user application data directory instead of Common App Data
-[~] Updated turkish translation
-[~] Disabled editing of default thumbnail templates
+New servers:
+[+] Google Drive
+[+] 5cm.ru
+
+Thanks to Alex_Qwerty:
+[+] embedupload.com  
+[+] jheberg.net.xml
+[+] mirrorupload.net.xml
+[+] multiup.org.xml
+
+[~] Fixed small bugs
 </Info>
 </UpdatePackageSource>

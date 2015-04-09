@@ -9,6 +9,6 @@ namespace ScriptAPI {
 
 extern SquirrelObject* RootTable;
 void RegisterClasses(SquirrelObject* rootTable);
-
+void CleanUp();
 }
 #endif

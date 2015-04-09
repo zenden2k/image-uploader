@@ -105,6 +105,7 @@ Json::Value* translationRoot = 0;
 
 void CleanUpFunctions() {
 	delete translationRoot;
+    translationRoot = 0;
 }
 
 bool LoadScriptTranslation() {
@@ -161,7 +162,7 @@ void RegisterFunctions(SquirrelObject* rootTable)
 	RegisterGlobal(IncludeScript, "include");
 	RegisterGlobal(Translate, "Translate");
 	RegisterGlobal(GetAppVersion, "GetAppVersion");
-	atexit(&CleanUpFunctions);
+//	atexit(&CleanUpFunctions);
 }
 
 void RegisterShortTranslateFunctions(bool tr, bool underscore)

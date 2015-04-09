@@ -11,6 +11,7 @@ namespace ScriptAPI {
 	void RegisterFunctions(SquirrelObject* rootTable);
 	
 	void RegisterShortTranslateFunctions(bool tr, bool underscore);
+    void CleanUpFunctions();
 }
 
 #endif

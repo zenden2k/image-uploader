@@ -179,7 +179,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 			// Workaround for version prior to 1.1.7
 			if (!CmdLine.IsOption(_T("update")) && !CmdLine.IsOption(L"afterupdate")) {
 				Settings.FindDataFolder();
-				if ( !WinUtils::IsDirectory( Settings.DataFolder + "Thumbnails\\") ) {
+                if ( !WinUtils::IsDirectory( Settings.DataFolder + "Thumbnails\\") || !WinUtils::IsDirectory( WinUtils::GetAppFolder() + "Docs\\") ) {
 					SimpleXml xml;
 					std::string updateFile = WCstringToUtf8(Settings.DataFolder + "Update\\iu_core.xml");
 					if ( xml.LoadFromFile(updateFile) ) {

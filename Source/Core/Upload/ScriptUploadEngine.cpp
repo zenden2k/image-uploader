@@ -193,6 +193,7 @@ void CScriptUploadEngine::InitScriptEngine()
 void CScriptUploadEngine::DestroyScriptEngine()
 {
 	SquirrelVM::Shutdown();
+    ScriptAPI::CleanUp();
 }
 
 void CScriptUploadEngine::FlushSquirrelOutput()

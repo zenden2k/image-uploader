@@ -715,9 +715,11 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 	SimpleXmlNode settingsNode = xml.getRoot( "ImageUploader" ).GetChild( "Settings" );
 
 #if !defined(IU_CLI) && !defined( IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
-	if ( Language == _T("Turkish") ) { // Turkish.lng was renamed to Turkce.lng
-		Language = _T("T\u00FCrk\u00E7e"); 
-	}
+	if ( Language == _T("T\u00FCrk\u00E7e") ) {  //fixes
+		Language = _T("Turkish"); 
+    } else if ( Language == _T("\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430.lng") ){
+        Language = _T("Ukrainian"); 
+    }
 	std::string temp;
 	if ( !settingsNode["Image"]["Format"].IsNull() ) {
 		// for compatibility with old version configuration file

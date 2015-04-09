@@ -2,7 +2,28 @@
 #
 # http://zenden.ws/imageuploader
 
-version 1.3.1b
+version 1.3.1.4311
+
+[+] Added Image Editor. Now you can easily edit screenshots you've made, annotate, highlight or obfuscate parts of the screenshot.
+[+] Scripting API changes: added PCRE-compatible class CRegExp, CWebBrowser, function tr() for internalization.
+[+] Added vk.com support
+[f] Fixed crash when extracting frames from a video file with subtitles (access violation in VSFilter.dll aka DirectVobSub).
+[~] Fixed incorrect icon sizes in file list when high DPI is set
+[+] Added ukrainian translation (thanks to Yurii Petrashko)
+
+New servers:
+[+] Google Drive
+[+] 5cm.ru
+
+Thanks to Alex_Qwerty:
+[+] embedupload.com  
+[+] jheberg.net.xml
+[+] mirrorupload.net.xml
+[+] multiup.org.xml
+
+[~] Fixed small bugs
+
+---------------------------------------------------------------------------------------------------------------------------------
 
 build 4311
 [+] Added Google Drive
@@ -31,13 +52,6 @@ build 4299
 [+] Display compiler version in About dialog 
 [~] Fixed incorrect icon sizes in file list when high DPI is set
 [~] Documentation update 
-
--------------------------
-[+] Added Image Editor
-[+] Scripting API changes: added PCRE-compatible class CRegExp, CWebBrowser, function tr() for internalization, 
-[+] Added vk.com support
-[~] Fixed small bugs
-[~] Changed license
 
 version 1.3.0.4222 (12.03.2015)
 [~] Fixed big file (>150 Mb) uploading to Dropbox (added chunked uploading functions to scripting API)

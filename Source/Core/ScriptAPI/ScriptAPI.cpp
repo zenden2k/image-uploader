@@ -35,4 +35,9 @@ void RegisterClasses(SquirrelObject* rootTable) {
 #endif
 }
 
+void CleanUp()
+{
+    CleanUpFunctions();
+}
+
 }
