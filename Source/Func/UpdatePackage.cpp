@@ -317,14 +317,14 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 {
 	CString filename = IuCommonFunctions::IUTempFolder + ui.packageName() +_T(".zip");
 	std::string filenamea= IuCoreUtils::WstringToUtf8((LPCTSTR)filename);
-	IU_ConfigureProxy(nm); 
-	nm.setOutputFile( filenamea);
+	IU_ConfigureProxy(nm_); 
+	nm_.setOutputFile( filenamea);
 	m_statusCallback->updateStatus(nCurrentIndex, TR("Downloading file ")+ ui.downloadUrl());
 	
-	nm.doGet(IuCoreUtils::WstringToUtf8((LPCTSTR) ui.downloadUrl()));
-	if(nm.responseCode() != 200)
+	nm_.doGet(IuCoreUtils::WstringToUtf8((LPCTSTR) ui.downloadUrl()));
+	if(nm_.responseCode() != 200)
 	{
-		WriteLog(logError,_T("Update Engine"),TR("Error while updating component ") + ui.packageName() + CString(_T("\r\nHTTP response code: "))+IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm.responseCode())).c_str()+_T("\r\n")+ IuCoreUtils::Utf8ToWstring(nm.errorString()).c_str(),CString("URL=")+ui.downloadUrl());		
+		WriteLog(logError,_T("Update Engine"),TR("Error while updating component ") + ui.packageName() + CString(_T("\r\nHTTP response code: "))+IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm_.responseCode())).c_str()+_T("\r\n")+ IuCoreUtils::Utf8ToWstring(nm_.errorString()).c_str(),CString("URL=")+ui.downloadUrl());		
 		return 0;
 	}
 
@@ -533,7 +533,7 @@ CUpdateManager::CUpdateManager()
 	
 	m_nSuccessPackageUpdates = 0;
 	m_stop = false;
-	nm.setProgressCallback(progressCallback, this);
+	nm_.setProgressCallback(progressCallback, this);
 }
 
 CString CUpdateManager::generateReport()

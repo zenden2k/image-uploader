@@ -133,7 +133,7 @@ std::string ConvertUnixLineEndingsToWindows(const std::string& text) {
 	}
 	*cur = 0;
 	std::string result(res, cur-res-1);
-	delete res;
+	delete[] res;
 	return result;
 }
 }

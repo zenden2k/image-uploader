@@ -267,10 +267,10 @@ const std::string plugGetFileExtension(const std::string& path)
 
 bool CScriptUploadEngine::needStop()
 {
-	bool m_bShouldStop = false;
+	bool shouldStop = false;
 	if (onNeedStop)
-		m_bShouldStop = onNeedStop();  // delegate call
-	return m_bShouldStop;
+		shouldStop = onNeedStop();  // delegate call
+	return shouldStop;
 }
 
 CScriptUploadEngine::CScriptUploadEngine(Utf8String pluginName) : CAbstractUploadEngine()
@@ -904,10 +904,9 @@ int CScriptUploadEngine::doLogin()
 	catch (SquirrelError& e)
 	{
 		Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + std::string(e.desc));
-        FlushSquirrelOutput();
-		return 0;
 	}
 	FlushSquirrelOutput();
+    return 0;
 }
 
 int CScriptUploadEngine::modifyFolder(CFolderItem& folder)

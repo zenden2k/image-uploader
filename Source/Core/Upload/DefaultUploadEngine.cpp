@@ -497,10 +497,10 @@ std::string CDefaultUploadEngine::ReplaceVars(const std::string& Text)
 
 bool CDefaultUploadEngine::needStop()
 {
-	bool m_bShouldStop = false;
+	bool shouldStop = false;
 	if (onNeedStop)
-		m_bShouldStop = onNeedStop();  // delegate call
-	return m_bShouldStop;
+		shouldStop = onNeedStop();  // delegate call
+	return shouldStop;
 }
 
 void CDefaultUploadEngine::SetStatus(StatusType status, std::string param)

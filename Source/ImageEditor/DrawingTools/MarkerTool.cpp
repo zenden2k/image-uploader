@@ -236,9 +236,9 @@ void MarkerTool::highlightRegion(RECT rc)
 				uint8_t srcR=  brSource[circleOffset];
 				uint8_t srcG=  brSource[circleOffset+1];
 				uint8_t srcB=  brSource[circleOffset+2];
-				if ( Y != 255 ) {
+				/*if ( Y != 255 ) {
 					srcA = srcA;
-				}
+				}*/
 
 				float dstA =  source[offset+3]/255.0;
 				uint8_t dstR=  source[offset];

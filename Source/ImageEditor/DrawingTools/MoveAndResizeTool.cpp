@@ -347,6 +347,7 @@ void MoveAndResizeTool::createElement() {
 		case etFilledRectangle:
 			currentElement_ = new FilledRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
 			break;
+
 	}
 	if ( currentElement_ ) {
 		currentElement_->setPenSize(penSize_);

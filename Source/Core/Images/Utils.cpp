@@ -97,8 +97,8 @@ void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* back
 	//Calculate the area to render.
 	HDC hdc1 = ::GetDC(hwnd);
 
-	double anInchX = 1440 / GetDeviceCaps(hdc1, LOGPIXELSX);
-	double anInchY = 1440 / GetDeviceCaps(hdc1, LOGPIXELSY);
+	double anInchX = 1440.0 / GetDeviceCaps(hdc1, LOGPIXELSX);
+	double anInchY = 1440.0 / GetDeviceCaps(hdc1, LOGPIXELSY);
 			ReleaseDC(hwnd,hdc1);
 
 	//double anInch = 1440.0  /  GetDeviceCaps(hdc1, LOGPIXELSX);
@@ -323,7 +323,7 @@ void gaussBlur_4 (DummyBitmap& scl, DummyBitmap& tcl, int w, int h, int r) {
 	boxBlur_4 (scl, tcl, w, h, (bxs[0]-1)/2);
 	boxBlur_4 (tcl, scl, w, h, (bxs[1]-1)/2);
 	boxBlur_4 (scl, tcl, w, h, (bxs[2]-1)/2);
-	delete bxs;
+	delete[] bxs;
 }
 uint8_t *prevBuf = 0;
 int prevSize=0;
@@ -427,7 +427,7 @@ Gdiplus::Color StringToColor(const std::string& str) {
 		return Gdiplus::Color();
 	}
 	if ( str[0] == '#' ) {
-		std::string res = IuStringUtils::Replace(res, "#", "0x");
+		std::string res = IuStringUtils::Replace(str, "#", "0x");
 		return strtoul(res.c_str(), 0, 0);
 	} else if ( str.substr(0,4) == "rgba" && str.length() >= 14 ) {
 		std::vector<std::string> tokens;

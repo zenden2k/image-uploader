@@ -37,7 +37,7 @@ bool CanWriteToFolder(CString folder)
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
 		return false;
-		printf("Could not open file for write (error %d)\n", GetLastError());
+		printf("Could not open file for write (error %d)\n", (int)GetLastError());
 	}
 	else
 	{

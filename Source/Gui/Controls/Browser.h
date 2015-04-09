@@ -409,7 +409,7 @@ public:
 	{
 		ATLASSERT(m_pBrowser);
 		LONG nResult;
-		m_pBrowser->get_Left(&bResult);
+		m_pBrowser->get_Left(&nResult);
 		return nResult;
 	}
 	void PutTop(LONG nNewValue)
@@ -421,7 +421,7 @@ public:
 	{
 		ATLASSERT(m_pBrowser);
 		LONG nResult;
-		m_pBrowser->get_Top(&bResult);
+		m_pBrowser->get_Top(&nResult);
 		return nResult;
 	}
 	void PutWidth(LONG nNewValue)
@@ -433,7 +433,7 @@ public:
 	{
 		ATLASSERT(m_pBrowser);
 		LONG nResult;
-		m_pBrowser->get_Width(&bResult);
+		m_pBrowser->get_Width(&nResult);
 		return nResult;
 	}
 	void PutHeight(LONG nNewValue)
@@ -445,7 +445,7 @@ public:
 	{
 		ATLASSERT(m_pBrowser);
 		LONG nResult;
-		m_pBrowser->get_Height(&bResult);
+		m_pBrowser->get_Height(&nResult);
 		return nResult;
 	}
 	IDispatchPtr GetDocument()
@@ -616,7 +616,7 @@ public:
 	
 	HRESULT displayHTML(const CString& szHTMLText) {
 		// Create a stream containing the HTML.
-		HRESULT hr;
+		HRESULT hr = E_FAIL;
 		 HGLOBAL hHTMLText;
 		  IStream* pStream = NULL;
 		size_t cchLength = szHTMLText.GetLength();
@@ -666,7 +666,7 @@ public:
 		CComQIPtr<IHTMLDocument2,&IID_IHTMLDocument2> spHTML(GetDocument());
 		IHTMLWindow2 window;
 		spHTML->get_parentWindow(&window);
-		window->execScript()
+		//window->execScript()
 		spHTML->get_body(&bodyEle);
 		CComBSTR code = "<div style='display:none;'>&nbsp;<script type='text/javascript'>"+ javascript + 	"</script></div>";
 		return bodyEle->insertAdjacentHTML(L"afterBegin",code) == ERROR_SUCCESS;
@@ -858,6 +858,7 @@ public:
 				// not an HTML doc 
 			} 
 		}
+        return CString();
 	}
 	
 protected:

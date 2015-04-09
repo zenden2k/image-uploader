@@ -47,7 +47,7 @@ public:
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	Gdiplus::Bitmap *bm;
+	Gdiplus::Bitmap *bm_;
 	bool IsImage;
 	bool HideParent; // —пециально дл€ всплывающего окна просмотра
 	LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);

@@ -600,10 +600,6 @@ void CImageConverter::setThumbCreatingParams(const ThumbCreatingParams& params)
 
 bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int Format, int Quality, LPCTSTR Folder)
 {
-	CString form;
-	form.Format(_T("Width=%d, height=%d"), img->GetWidth(), img->GetHeight());
-	//MessageBox( 0, form, 0, 0);
-	//return true;
 	if (Format == -1)
 		Format = 0;
 	std::auto_ptr<Bitmap> quantizedImage;

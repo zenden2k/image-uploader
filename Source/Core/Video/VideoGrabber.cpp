@@ -83,7 +83,7 @@ public:
 				(int)long(long(SampleTime) % 60) );
 			s = buffer;
 
-			if ( frame && !videoGrabber_->onFrameGrabbed.empty() ) {
+			if ( /*frame && */!videoGrabber_->onFrameGrabbed.empty() ) {
 				videoGrabber_->onFrameGrabbed(s, SampleTime, frame->toImage());
 			}
 			delete frame;

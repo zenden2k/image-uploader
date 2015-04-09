@@ -498,18 +498,18 @@ TreeItem * CHistoryTreeControl::selectedItem()
 
 #define THUMBNAIL_WIDTH 54
 #define THUMBNAIL_HEIGHT 54
-bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * ItemID)
+bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
 {
 	using namespace Gdiplus;
 	Bitmap *ImgBuffer=NULL;
 	Image *bm=NULL;
 
 	CString filename ;
-	if(!ItemID->thumbnailSource.empty())
-		filename = Utf8ToWCstring(ItemID->thumbnailSource); 
+	if(!item->thumbnailSource.empty())
+		filename = Utf8ToWCstring(item->thumbnailSource); 
 		
 	else  
-		filename = Utf8ToWCstring(ItemID->hi.localFilePath);
+		filename = Utf8ToWCstring(item->hi.localFilePath);
 	bool error = false;
 	if(IsImage(filename))
 	{
@@ -566,7 +566,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * ItemID)
 
 	RectF bounds(1, 1, float(width), float(height));
 
-	if(bm && !bm->GetWidth() && ItemID>=0) 
+	if(bm && !bm->GetWidth() && item) 
 	{
 		error = true;
 	}
@@ -597,7 +597,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * ItemID)
 
 		}
 
-		if(ItemID>=0)
+		if(item)
 		{
 			SolidBrush brush(Color(255,0,0,0));
 			StringFormat format;
@@ -628,7 +628,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * ItemID)
 
 	HBITMAP bmp=NULL;
 	ImgBuffer->GetHBITMAP(Color(255,255,255), &bmp);
-	ItemID->thumbnail = error?0:bmp;
+	item->thumbnail = error?0:bmp;
 	delete bm;
 	delete ImgBuffer;
 	return !error;

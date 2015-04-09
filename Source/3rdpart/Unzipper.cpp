@@ -513,7 +513,7 @@ BOOL CUnzipper::SetFileModTime(LPCTSTR szFilePath, DWORD dwDosDate)
 	
 	FILETIME ftm, ftLocal, ftCreate, ftLastAcc, ftLastWrite;
 
-	BOOL bRes = (GetFileTime(hFile, &ftCreate, &ftLastAcc, &ftLastWrite) == TRUE);
+	BOOL bRes = (GetFileTime(hFile, &ftCreate, &ftLastAcc, &ftLastWrite) != FALSE);
 
 	if (bRes)
 		bRes = DosDateTimeToFileTime((WORD)(dwDosDate >> 16), (WORD)dwDosDate, &ftLocal);

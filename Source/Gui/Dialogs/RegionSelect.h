@@ -117,7 +117,7 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
 		Gdiplus::Bitmap *gdipBm ;
 		HPEN DrawingPen;
 		HBRUSH DrawingBrush;
-		HDC dstDC;
+		//HDC dstDC_;
 		int cxOld, cyOld;
 		int m_brushSize;
 		int m_Width;

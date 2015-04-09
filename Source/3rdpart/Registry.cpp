@@ -603,7 +603,7 @@ bool CRegistry::ReadBool(CString strName, bool bDefault)
 	if (::RegQueryValueEx(hKey, LPCTSTR(strName), NULL,
 		&dwType, (LPBYTE)&b, &dwSize) != ERROR_SUCCESS) b = bDefault;
 	::RegCloseKey(hKey);	
-	return b == TRUE;
+	return b != FALSE;
 }
 
 

@@ -11,7 +11,7 @@ class VideoUtils {
 	private:  
 		VideoUtils();
 		VideoUtils(VideoUtils& root){}
-		VideoUtils& operator=(VideoUtils&){}
+		VideoUtils& operator=(VideoUtils&){return *this;}
 
 };
 #endif

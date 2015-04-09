@@ -214,9 +214,8 @@ void CHistoryWindow::FillList(CHistoryReader * mgr)
 		for(int j=0; j<nCount; j++)
 		{
 			nFilesCount++;
-			totalFileSize += ses->entry(j).uploadFileSize;
-			if ( totalFileSize > 1000000000 ) {
-				totalFileSize = totalFileSize;
+			if ( ses->entry(j).uploadFileSize < 1000000000 ) {
+				totalFileSize += ses->entry(j).uploadFileSize;
 			}
 			m_treeView.addSubEntry(res, ses->entry(j),nCount<4);
 		}

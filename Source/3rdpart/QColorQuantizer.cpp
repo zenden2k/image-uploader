@@ -100,7 +100,6 @@ Bitmap * QColorQuantizer::GetQuantized(Image * pSource, Mode mode, UINT nMaxColo
 	else
 	{
 		pSrcBitmap = new Bitmap(w, h, PixelFormat24bppRGB);
-		if (! pSrcBitmap) return NULL;
 
 		Graphics g(pSrcBitmap);
 		if (g.DrawImage(pSource, 0, 0, w, h) != Ok)
@@ -112,28 +111,27 @@ Bitmap * QColorQuantizer::GetQuantized(Image * pSource, Mode mode, UINT nMaxColo
 
 	// Create 8 bpp indexed bitmap of the same size
 	Bitmap * pResult = new Bitmap(w, h, PixelFormat8bppIndexed);
-	if (pResult)
-	{
-		bool bSucceeded = false;
 
-		switch (mode)
-		{
-		case HalfTone:
-			bSucceeded = QuantizeWebSafe(pSrcBitmap, pResult);
-			break;
-		case Octree:
-			bSucceeded = QuantizeOctree(pSrcBitmap, pResult, nMaxColors);
-			break;
-		default:
-			break;
-		}
+    bool bSucceeded = false;
 
-		if (m_bStop || ! bSucceeded)
-		{
-			delete pResult;
-			pResult = NULL;
-		}
-	}
+    switch (mode)
+    {
+    case HalfTone:
+        bSucceeded = QuantizeWebSafe(pSrcBitmap, pResult);
+        break;
+    case Octree:
+        bSucceeded = QuantizeOctree(pSrcBitmap, pResult, nMaxColors);
+        break;
+    default:
+        break;
+    }
+
+    if (m_bStop || ! bSucceeded)
+    {
+        delete pResult;
+        pResult = NULL;
+    }
+	
 	if (pSource != pSrcBitmap) delete pSrcBitmap;
 
 	return pResult;

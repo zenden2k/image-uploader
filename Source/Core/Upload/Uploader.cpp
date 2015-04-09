@@ -140,7 +140,7 @@ bool CUploader::Upload(UploadTask* task) {
 	CIUUploadParams uparams;
 	uparams.thumbWidth = m_nThumbWidth;
 	m_NetworkClient.setProgressCallback(pluginProgressFunc, (void*)this);
-	bool EngineRes = false;
+	int EngineRes = 0;
 	int i = 0;
 	do
 	{

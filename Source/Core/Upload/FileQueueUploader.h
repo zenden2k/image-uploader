@@ -90,7 +90,7 @@ class CFileQueueUploader
 		void setMaxThreadCount(int threadCount);
 		bool isSlotAvailableForServer(std::string serverName, int maxThreads);
 	private:
-		CFileQueueUploader(const CFileQueueUploader&);
+		DISALLOW_COPY_AND_ASSIGN(CFileQueueUploader);
 		class Impl;
 		Impl* _impl;
 };

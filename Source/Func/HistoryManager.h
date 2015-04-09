@@ -87,7 +87,7 @@ class CHistoryReader
 		int getSessionCount() const;
 		CHistorySession* getSession(const int index);
 	private:
-		CHistoryReader(const CHistoryReader&);
+        DISALLOW_COPY_AND_ASSIGN(CHistoryReader);
 		CHistoryReader_impl* _impl;
 };
 #endif

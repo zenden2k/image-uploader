@@ -235,14 +235,13 @@ void  CUploadParamsDlg::defaultThumbSettingsCheckboxChanged() {
 	bool useServerThumbnails = GuiTools::IsChecked(m_hWnd, IDC_USESERVERTHUMBNAILS);
 
 	bool addThumbText = GuiTools::IsChecked(m_hWnd, IDC_THUMBTEXTCHECKBOX);
-	bool addText = GuiTools::IsChecked(m_hWnd, IDC_THUMBTEXTCHECKBOX);
 
 	std::map<int, bool> enable;
 	enable[IDC_THUMBTEMPLATECOMBOLABEL] = !useServerThumbnails && !useDefaultThumbnailSettings;
 	enable[IDC_THUMBTEMPLATECOMBO] = !useServerThumbnails && !useDefaultThumbnailSettings;
 	enable[IDC_THUMBRESIZECOMBO] = !useServerThumbnails;
 	enable[IDC_THUMBTEXTCHECKBOX] = !useDefaultThumbnailSettings;
-	enable[IDC_THUMBTEXT] = !useDefaultThumbnailSettings && addThumbText && addText ;
+	enable[IDC_THUMBTEXT] = !useDefaultThumbnailSettings && addThumbText;
 	enable[IDC_THUMBRESIZELABEL] = !useDefaultThumbnailSettings;
 	enable[IDC_WIDTHEDIT] = !useDefaultThumbnailSettings;
 	enable[IDC_WIDTHEDITUNITS] = !useDefaultThumbnailSettings;

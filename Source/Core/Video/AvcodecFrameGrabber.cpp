@@ -87,7 +87,7 @@ public :
 
 class AvcodecFrameGrabberPrivate {
 protected:
-    int             i, videoStream;
+    int             videoStream;
         AVFormatContext *pFormatCtx;
 
         AVCodecContext  *pCodecCtx;
@@ -166,7 +166,7 @@ public:
 
         // Find the first video stream
         videoStream = -1;
-        for (i=0; i<pFormatCtx->nb_streams; i++) {
+        for (int i=0; i<pFormatCtx->nb_streams; i++) {
             if ( pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
                  videoStream=i;
                  break;
@@ -202,11 +202,12 @@ public:
 		//avpicture_fill((AVPicture *)pFrame, decoded_yuv_frame, PIX_FMT_YUV420P, srcX , srcY);
 
        // Allocate an AVFrame structure
-       pFrameRGB = avcodec_alloc_frame();
-        memset( pFrameRGB->linesize, 0,sizeof(pFrameRGB->linesize));
+        pFrameRGB = avcodec_alloc_frame();
+        
         if ( pFrameRGB == NULL ){
             return false;
         }
+        memset( pFrameRGB->linesize, 0,sizeof(pFrameRGB->linesize));
 
        // Determine required buffer size and allocate buffer
         numBytes = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height) + 64;
@@ -220,7 +221,7 @@ public:
         pCodecCtx->width, pCodecCtx->height);
 
        // Read frames and save first five frames to disk
-       i=0;
+       int i=0;
 
        int64_t dur = pFormatCtx->streams[videoStream]->duration;
        int64_t dur2 = pFormatCtx->duration;
@@ -379,7 +380,7 @@ public:
 		printf("file is closed\n");
 	}
 
-	void saveFramePPM(AVFrame *pFrame, int width, int height, int iFrame)
+	void saveFramePPM(AVFrame *frame, int width, int height, int iFrame)
 	{
 		FILE *pFile;
 		char szFilename[32];
@@ -396,7 +397,7 @@ public:
 
 		// Write pixel data
 		for(y=0; y<height; y++)
-			fwrite(pFrame->data[0]+y*pFrame->linesize[0], 1, width*3, pFile);
+			fwrite(frame->data[0]+y*frame->linesize[0], 1, width*3, pFile);
 
 		// Close file
 		fclose(pFile);
@@ -546,7 +547,7 @@ Utf8String timestamp_to_str(int64_t duration,int64_t units) {
 	hours = mins / 60;
 	mins %= 60;
 	char buffer[100];
-	sprintf(buffer, "%02d:%02d:%02d.%02d", hours, mins, secs, (100 * us) / units);
+	sprintf(buffer, "%02d:%02d:%02d.%02d", hours, mins, secs, (int)((100 * us) / units));
 	return buffer;
 }
 

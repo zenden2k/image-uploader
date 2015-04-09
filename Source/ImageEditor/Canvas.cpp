@@ -303,7 +303,7 @@ void Canvas::beginPenSizeChanging()
 }
 
 void Canvas::endPenSizeChanging(int penSize) {
-	penSize_ = penSize_;
+	penSize_ = penSize;
 	if ( originalPenSize_ == 0 || originalPenSize_ == penSize_ ) {
 		return ;
 	}
@@ -526,7 +526,7 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
 		ElementType type;
 		if ( toolType == dtLine ) {
 			type = etLine;
-		} if ( toolType == dtArrow ) {
+		} else if ( toolType == dtArrow ) {
 			type = etArrow;
 		}else if ( toolType == dtCrop ) {
 			type = etCrop;
@@ -545,7 +545,6 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
 		} else if ( toolType == dtFilledEllipse ) {
 			type = etFilledEllipse;
 		}
-
 		else if ( toolType == dtMove ) {
 			currentDrawingTool_ = new MoveAndResizeTool( this, etNone );
 			updateView();
@@ -554,8 +553,6 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
 			currentDrawingTool_ = new SelectionTool( this );
 			updateView();
 			return currentDrawingTool_;
-		} else if ( toolType == dtLine ) {
-			type = etLine;
 		}
 		else {
 			LOG(ERROR) << "createElement for toolType="<<toolType<<" not implemented.";

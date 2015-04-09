@@ -129,7 +129,7 @@ class CUpdateManager: public CUpdateStatusCallback
 		int nCurrentIndex;
 		CUpdateStatusCallback *m_statusCallback;
 		
-		NetworkClient nm;
+		NetworkClient nm_;
 		int m_nSuccessPackageUpdates;
 		bool m_stop;
 		int m_nCoreUpdates;

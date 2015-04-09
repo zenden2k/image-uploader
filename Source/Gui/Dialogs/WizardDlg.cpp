@@ -1427,7 +1427,7 @@ bool CWizardDlg::funcImportVideo()
 	
 	TCHAR Buffer[1000];
 	fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
-	if(fd.DoModal()!=IDOK || !fd.m_szFileName) return 0;
+	if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return 0;
 	ExtractFilePath(fd.m_szFileName, Buffer); 
 	Settings.VideoFolder = Buffer;
 	CreatePage(1);

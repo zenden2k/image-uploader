@@ -373,9 +373,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 		int newWidth = max(500 *dpiScaleX,newClientRect.right - newClientRect.left);
 		int newHeight = max(500 *dpiScaleY,newClientRect.bottom - newClientRect.top);
 		ResizeClient(newWidth, newHeight);
-	}
-	if ( displayMode_ == wdmWindowed ) {
-		CenterWindow(parent);
+        CenterWindow(parent);
 	}
 	canvas_->updateView();
 	//displayMode_ = wdmWindowed;

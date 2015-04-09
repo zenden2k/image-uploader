@@ -47,8 +47,8 @@ class CLang
 		CString m_sLang;
 		CAtlArray<TranslateListItem> StringList;
 		CAtlArray<CString> LanguagesList;
-		CString locale;
-		CString language;
+		CString locale_;
+		CString language_;
 };
 extern CLang Lang;
 

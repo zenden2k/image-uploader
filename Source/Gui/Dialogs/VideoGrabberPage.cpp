@@ -571,7 +571,7 @@ bool CVideoGrabberPage::OnNext()
 	LPCTSTR filename;
 
 	WizardDlg->CreatePage(2);
-	CMainDlg* MainDlg = (CMainDlg*)WizardDlg->Pages[2];
+	CMainDlg* mainDlg = (CMainDlg*)WizardDlg->Pages[2];
 
 	BOOL check = SendDlgItemMessage(IDC_MULTIPLEFILES, BM_GETCHECK);
 
@@ -582,7 +582,7 @@ bool CVideoGrabberPage::OnNext()
 			filename = ThumbsView.GetFileName(i);
 			if (!filename)
 				continue;
-			MainDlg->AddToFileList(filename);
+			mainDlg->AddToFileList(filename);
 		}
 	}
 	else
@@ -590,7 +590,7 @@ bool CVideoGrabberPage::OnNext()
 		CString outFileName;
 		GenPicture(outFileName);
 		if (!outFileName.IsEmpty())
-			MainDlg->AddToFileList(outFileName);
+			mainDlg->AddToFileList(outFileName);
 	}
 
 	ThumbsView.MyDeleteAllItems();

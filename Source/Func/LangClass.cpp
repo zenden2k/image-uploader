@@ -75,8 +75,8 @@ int myhash(PBYTE key, int len)
 CLang::CLang()
 {
 	*m_Directory = 0;
-	locale = "ru_RU";
-	language = "ru";
+	locale_ = "ru_RU";
+	language_ = "ru";
 }
 
 bool CLang::SetDirectory(LPCTSTR Directory)
@@ -138,10 +138,10 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
 		lstrcpy(pText, (LPCTSTR)RepText + ((*Text == _T(' ')) ? 1 : 0));
 
 		if ( Name == CString("language") ) {
-			locale = pText;
-			language = locale.Left(locale.Find('_'));
-			delete pName;
-			delete pText;
+			locale_ = pText;
+			language_ = locale_.Left(locale_.Find('_'));
+			delete[] pName;
+			delete[] pText;
 			continue;
 		};
 
@@ -180,12 +180,12 @@ CString CLang::GetLanguageName()
 
 CString CLang::getLanguage() const
 {
-	return language;
+	return language_;
 }
 
 CString CLang::getLocale() const
 {
-	return locale;
+	return locale_;
 }
 
 CString CLang::getLanguageFileNameForLocale(const CString& locale)

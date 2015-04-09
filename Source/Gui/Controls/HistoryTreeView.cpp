@@ -515,7 +515,6 @@ void CHistoryTreeView::DrawSubItem(HTREEITEM item, HDC hdc, DWORD itemState, REC
 	urlRect.top += filenameHeight + 3;
 
 	CString url =  Utf8ToWCstring(it2->directUrl.length() ? it2->directUrl : it2->viewUrl);
-	url + "url";
 	dc.SetTextColor(0xa6a6a6);
 
 	DrawText(dc.m_hDC, url, url.GetLength(), &urlRect, DT_LEFT);
