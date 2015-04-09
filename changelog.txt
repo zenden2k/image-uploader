@@ -4,6 +4,9 @@
 
 version 1.3.1b
 
+build 4311
+[+] Added Google Drive
+
 build 4309
 [f] Fixed crash when extracting frames from a video file with subtitles (access violation in VSFilter.dll aka DirectVobSub).
 

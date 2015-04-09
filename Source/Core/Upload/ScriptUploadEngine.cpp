@@ -903,6 +903,7 @@ int CScriptUploadEngine::doLogin()
 	catch (SquirrelError& e)
 	{
 		Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + std::string(e.desc));
+        FlushSquirrelOutput();
 		return 0;
 	}
 	FlushSquirrelOutput();
