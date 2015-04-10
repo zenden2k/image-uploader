@@ -541,7 +541,8 @@ CSettings::CSettings()
 	ImageEditorSettings.PenSize = 12;
 	ImageEditorSettings.RoundingRadius = ImageEditorSettings.PenSize;
 	StringToFont(_T("Arial,12,b,204"), &ImageEditorSettings.Font);
-
+    
+    
 
 
 	ImageReuploaderSettings.PasteHtmlOnCtrlV = true;
@@ -711,7 +712,7 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 	SimpleXml xml;
 	xml.LoadFromFile( fileName_ );
 	mgr_.loadFromXmlNode( xml.getRoot("ImageUploader").GetChild("Settings") );
-
+    imageServer.getImageUploadParamsRef().UseDefaultThumbSettings = false;
 	SimpleXmlNode settingsNode = xml.getRoot( "ImageUploader" ).GetChild( "Settings" );
 
 #if !defined(IU_CLI) && !defined( IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
