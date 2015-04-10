@@ -134,14 +134,17 @@ bool ImageEditorWindow::saveDocument(bool toClipboard)
 		if ( !outFileName_.IsEmpty() ) {
 			SaveImage(resultingBitmap_.get(), outFileName_, sifDetectByExtension, imageQuality_);
 			canvas_->updateView();
+            return true;
 		} else {
+            return true;
 			//LOG(ERROR) << "ImageEditorWindow::saveDocument:  outFileName is empty";
 		}
 	} else {
 		CDC dc = GetDC();
 		CopyBitmapToClipboard(m_hWnd, dc, resultingBitmap_.get(), true);
+        return true;
 	}
-	return true;
+	return false;
 }
 
 void ImageEditorWindow::updateToolbarDrawingTool(Canvas::DrawingToolType dt)
@@ -531,12 +534,12 @@ LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	 if ( wParam == VK_ESCAPE ) {
 		EndDialog(drCancel);
 		return 0;
-	 } else if ( wParam == VK_RETURN ) {
+	 } else if ( wParam == VK_RETURN && (showUploadButton_ || showAddToWizardButton_) ) {
+         if ( !sourceFileName_.IsEmpty() ) {
+             outFileName_ = sourceFileName_;
+         }
 		 if ( saveDocument() ) {
-			 DialogResult dr = drSave;
-			 if ( showUploadButton_ || showAddToWizardButton_ ) {
-				dr = showUploadButton_ ? drUpload : drAddToWizard;
-			 }
+			 DialogResult dr = showUploadButton_ ? drUpload : drAddToWizard;
 			 EndDialog(dr);
 		 }
 	 } else if ( wParam == VkKeyScanEx(']',englishLayout) ) {
@@ -587,11 +590,12 @@ LRESULT ImageEditorWindow::OnActivateApp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*
 		if ( !wParam ) { // if the window is being deactivated
 			SetWindowLong(GWL_EXSTYLE, 0);
 			SetWindowPos(HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
+            SetWindowPos(HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
 			HWND foregroundWindow = GetForegroundWindow();
 			if ( foregroundWindow != m_hWnd ) {
 				::SetWindowPos(foregroundWindow, m_hWnd, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
 			}
-			SetWindowPos(HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
+			
 		
 		} else {
 			SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );

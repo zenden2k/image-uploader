@@ -1,5 +1,5 @@
 #Image Uploader
-Free application for Windows that allows you to upload files to image/file hosting servers without necessity to visit their websites.
+Free program for Windows that allows you to upload images, screenshots, or any other files to over 30 different file hosting services. 
 
 ![Image Uploader main windows](https://lh5.googleusercontent.com/-GvexbrV8HUE/VQHXrxhom5I/AAAAAAAAD0c/JiH5OQ0XrfY/s0/26719_screenshot%2525202015-03-09%252520003_en.png)
 
