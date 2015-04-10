@@ -6,6 +6,7 @@
 #include "resource.h"       // main symbols
 #include <Gui/Controls/WTLBrowserView.h>
 #include "3rdpart/thread.h"
+#include "3rdpart/MemberFunctionCallback.h"
 /*
 #include "3rdpart/hookThunk.h"
 #include "3rdpart/GenericCallBack.h"
@@ -188,13 +189,14 @@ protected:
 	CComPtr<IHTMLInputFileElement> inputFileElement_;
 	static HHOOK hook_;
 	static BOOL CALLBACK EnumChildProc(HWND hwnd, LPARAM lParam);
-	static LRESULT CALLBACK CBTHook(int nCode, WPARAM wParam, LPARAM lParam);
+	/*static */LRESULT /*CALLBACK */CBTHook(int nCode, WPARAM wParam, LPARAM lParam);
     /*typedef fastdelegate::FastDelegate3<int, WPARAM,LPARAM, LRESULT> FunctionDelegate;
-    FunctionDelegate _CBTHookDelegate;*/
+    FunctionDelegate CBTHookDelegate_;*/
 
 //	CDialogHook * dialogHook_;
 	CComPtr<IAccessible> accesible_;
-	static CWebViewWindow* instance;
+	//static CWebViewWindow* instance;
+    CBTHookMemberFunctionCallback callback_;
 };
 
 

@@ -4,9 +4,9 @@
 #include <Core/Logging.h>
 #include <UrlMon.h>
 HWND CWebViewWindow::window = 0;
- CWebViewWindow* CWebViewWindow::instance = 0;
-CWebViewWindow::CWebViewWindow() : subclassWindow_(this) {
-	instance = this;
+ //CWebViewWindow* CWebViewWindow::instance = 0;
+ CWebViewWindow::CWebViewWindow() : subclassWindow_(this), callback_(this, &CWebViewWindow::CBTHook) {
+	//instance = this;
 	isModal_ = false;
 	captureActivate_ = false;
 	timerInterval_ = 0;
@@ -25,7 +25,7 @@ CWebViewWindow::~CWebViewWindow() {
 	if ( hook_ ) {
 		UnhookWindowsHookEx(hook_);
 	}
-	instance = 0;
+	//instance = 0;
 	//delete dialogHook_;
 }
 
@@ -141,25 +141,15 @@ LPCTSTR GetWndClass(WPARAM wParam, LPARAM lParam)
 }
 //FIXME: only one instance of CBThook may exist.
 
-LRESULT CALLBACK CWebViewWindow::CBTHook(int nCode, WPARAM wParam, LPARAM lParam)
+LRESULT /*CALLBACK*/ CWebViewWindow::CBTHook(int nCode, WPARAM wParam, LPARAM lParam)
 {
 	if(nCode == HCBT_CREATEWND)
 	{
 		HWND hwnd = (HWND)wParam;
 		CBT_CREATEWND *cw = (CBT_CREATEWND*)lParam;
-		/*if ( !lstrcmp(	cw->lpcs->lpszClass, _T("#32770"))) { 
-			
-		}*/
-		/*HWND hwnd = (HWND)wParam;
-		CBT_CREATEWND *cw = (CBT_CREATEWND*)lParam;*/
-		if ( 
-			
-			!lstrcmp(	GetWndClass(wParam, lParam), _T("#32770"))
-			/*&& !lstrcmp(cw->lpcs->lpszName, _T("Открытие"))*/
-			) { 
-			//	LOG(INFO) << "WS_VISIBLE="<< (cw->lpcs->style & WS_VISIBLE);
-				instance->handleDialogCreation(hwnd, true);
 
+		if ( !lstrcmp(GetWndClass(wParam, lParam), _T("#32770"))) { 
+				/*instance->*/handleDialogCreation(hwnd, true);
 		}
 
 	}
@@ -432,10 +422,10 @@ LRESULT CWebViewWindow::OnSetFillTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 LRESULT CWebViewWindow::OnFillInputField(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    //CBTHookDelegate.bind(this, &CWebViewWindow::CBTHook);
+    //CBTHookDelegate_.bind(this, &CWebViewWindow::CBTHook);
 
 //	hook_ = SetWindowsHookEx(WH_CBT, (HOOKPROC) MakeCallback(&CWebViewWindow::CBTHook), _Module.GetModuleInstance(), GetCurrentThreadId());
-	hook_ = SetWindowsHookEx(WH_CBT, (HOOKPROC) CBTHook, _Module.GetModuleInstance(), GetCurrentThreadId());
+	hook_ = SetWindowsHookEx(WH_CBT, (HOOKPROC) /*CBTHook*/callback_, _Module.GetModuleInstance(), GetCurrentThreadId());
 	accesible_->accDoDefaultAction(CComVariant(0));
 	return 0;
 }
@@ -480,7 +470,7 @@ LRESULT FileDialogSubclassWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
 	bHandled = false;
 	EnumChildWindows(m_hWnd, EnumChildProc, (LPARAM)this);
 
-	bool isWindowVisible = this->IsWindowVisible();
+	bool isWindowVisible = IsWindowVisible() != FALSE;
 	if (this->editControl_ ) {
 
 
