@@ -189,6 +189,9 @@ protected:
 	static HHOOK hook_;
 	static BOOL CALLBACK EnumChildProc(HWND hwnd, LPARAM lParam);
 	static LRESULT CALLBACK CBTHook(int nCode, WPARAM wParam, LPARAM lParam);
+    /*typedef fastdelegate::FastDelegate3<int, WPARAM,LPARAM, LRESULT> FunctionDelegate;
+    FunctionDelegate _CBTHookDelegate;*/
+
 //	CDialogHook * dialogHook_;
 	CComPtr<IAccessible> accesible_;
 	static CWebViewWindow* instance;

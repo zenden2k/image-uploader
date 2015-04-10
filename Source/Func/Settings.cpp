@@ -1371,23 +1371,6 @@ int CSettings::getFileServerID()
 		return _EngineList->GetUploadEngineIndex(getFileServerName());
 }
 
-void CSettings::setServerID(int id)
-{
-	CUploadEngineData *ued = _EngineList->byIndex(id);
-	imageServer.setServerName(ued? Utf8ToWCstring(ued->Name.c_str()) : CString());
-}
-
-void CSettings::setQuickServerID(int id)
-{
-	CUploadEngineData *ued = _EngineList->byIndex(id);
-	contextMenuServer.setServerName(ued ? Utf8ToWCstring(ued->Name.c_str()): CString());
-}
-
-void CSettings::setFileServerID(int id)
-{
-	CUploadEngineData *ued = _EngineList->byIndex(id);
-	fileServer.setServerName (ued ? Utf8ToWCstring(ued->Name.c_str()) :  CString() );
-}
 
 bool CSettings::IsFFmpegAvailable() {
 	CString appFolder = WinUtils::GetAppFolder();

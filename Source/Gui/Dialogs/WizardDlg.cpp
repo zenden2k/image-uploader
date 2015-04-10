@@ -224,20 +224,14 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
 	LoadUploadEngines(_T("userservers.xml"), ErrorStr);	
 
-
-
-
-	
 	if ( isFirstRun ) {
 		CQuickSetupDlg quickSetupDialog;
 		quickSetupDialog.DoModal(m_hWnd);
 	}
 
-	Settings.setServerID(m_EngineList.GetUploadEngineIndex(Settings.getServerName()));
-	Settings.setFileServerID(m_EngineList.GetUploadEngineIndex(Settings.getFileServerName()));
-	Settings.setQuickServerID(m_EngineList.GetUploadEngineIndex(Settings.getQuickServerName()));
 	sessionImageServer_ = Settings.imageServer;
 	sessionFileServer_ = Settings.fileServer;
+
 	if(!*MediaInfoDllPath)
 		WriteLog(logWarning, APPNAME, TR("Библиотека MediaInfo.dll не найдена. \nПолучение технических данных о файлах мультимедиа будет недоступно.")); 
 	if(!CmdLine.IsOption(_T("tray")))

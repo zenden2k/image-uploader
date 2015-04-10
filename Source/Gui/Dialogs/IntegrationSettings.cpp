@@ -144,8 +144,6 @@ bool CIntegrationSettings::Apply()
 	Settings.SendToContextMenu_changed ^= Settings.SendToContextMenu;
 
 	Settings.QuickUpload = SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_GETCHECK)==BST_CHECKED;
-	//FIXME
-	Settings.setQuickServerID(SendDlgItemMessage(IDC_SERVERLIST, CB_GETCURSEL, 0, 0));
 	
 	if ( menuItemsChanged_ ) {
 		int menuItemCount = menuItemsListBox_.GetCount();

@@ -383,11 +383,8 @@ public:
 	int getServerID();
 	int getQuickServerID();
 	int getFileServerID();
-public:
-	void setServerID(int id);
-	void setQuickServerID(int id);
-	void setFileServerID(int id);
-
+protected:
+    public:
 	void ApplyRegSettingsRightNow();
 	
    bool LoadConvertProfiles(SimpleXmlNode root);

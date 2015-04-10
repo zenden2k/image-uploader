@@ -224,7 +224,7 @@ void CWebViewWindow::handleDialogCreation(HWND wnd, bool fromHook)
 	//LOG(ERROR) << "CWebViewWindowOnActivate="<<GuiTools::GetWindowText(wnd);
 	EnumChildWindows(wnd, EnumChildProc, (LPARAM)this);
 
-	bool isWindowVisible = ::IsWindowVisible(fileDialog_);
+	bool isWindowVisible = ::IsWindowVisible(fileDialog_)!=FALSE;
 	if (editControl_ ) {
 
 		fileDialog_ = wnd;
@@ -432,9 +432,10 @@ LRESULT CWebViewWindow::OnSetFillTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 LRESULT CWebViewWindow::OnFillInputField(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	
+    //CBTHookDelegate.bind(this, &CWebViewWindow::CBTHook);
+
 //	hook_ = SetWindowsHookEx(WH_CBT, (HOOKPROC) MakeCallback(&CWebViewWindow::CBTHook), _Module.GetModuleInstance(), GetCurrentThreadId());
-	hook_ = SetWindowsHookEx(WH_CBT, (HOOKPROC) &CBTHook, _Module.GetModuleInstance(), GetCurrentThreadId());
+	hook_ = SetWindowsHookEx(WH_CBT, (HOOKPROC) CBTHook, _Module.GetModuleInstance(), GetCurrentThreadId());
 	accesible_->accDoDefaultAction(CComVariant(0));
 	return 0;
 }
