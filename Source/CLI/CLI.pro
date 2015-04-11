@@ -76,6 +76,7 @@ SOURCES += ../Core/ScriptAPI/HtmlDocument.cpp \
     ../Func/IuCommonFunctions.cpp \
     ../3rdpart/Registry.cpp \
     ../3rdpart/Unzipper.cpp \
+    ../3rdpart/MemberFunctionCallback.cpp \
     ../Gui/Dialogs/WebViewWindow.cpp \
     ../Gui/Controls/WTLBrowserView.cpp \
     ../Func/WinUtils.cpp \

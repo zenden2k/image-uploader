@@ -712,10 +712,10 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 	SimpleXml xml;
 	xml.LoadFromFile( fileName_ );
 	mgr_.loadFromXmlNode( xml.getRoot("ImageUploader").GetChild("Settings") );
-    imageServer.getImageUploadParamsRef().UseDefaultThumbSettings = false;
 	SimpleXmlNode settingsNode = xml.getRoot( "ImageUploader" ).GetChild( "Settings" );
 
 #if !defined(IU_CLI) && !defined( IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
+    imageServer.getImageUploadParamsRef().UseDefaultThumbSettings = false;
 	if ( Language == _T("T\u00FCrk\u00E7e") ) {  //fixes
 		Language = _T("Turkish"); 
     } else if ( Language == _T("\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430.lng") ){

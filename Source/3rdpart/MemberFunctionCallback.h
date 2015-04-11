@@ -2,7 +2,7 @@
 #define IU_MEMBER_FUNCTION_CALLBACK_H
 
 #pragma once
-
+#include <windows.h>
 class CWebViewWindow;
 typedef CWebViewWindow ClassWithCallback;
 typedef LRESULT (CALLBACK *LPFN_CBTHookCallback)(int nCode, WPARAM wParam, LPARAM lParam);
