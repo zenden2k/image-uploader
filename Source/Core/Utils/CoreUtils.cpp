@@ -311,6 +311,9 @@ std::string longlongtoStr(int64_t l, int base)
 
 Utf8String int64_tToString(int64_t value)
 {
+    if ( !value ) {
+        return "0";
+    }
 	return longlongtoStr(value, 10);
 }
 

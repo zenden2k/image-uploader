@@ -9,8 +9,7 @@
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
 <Info>
-[f] vk.com fix
-[+] Google Drive (Image Uploader v.1.3.0 and later)
-[+] 5cm.ru (Image Uploader v.1.3.0 and later)
+[+] takebin.com
+[+] imgbox.com
 </Info>
 </UpdatePackageSource>
