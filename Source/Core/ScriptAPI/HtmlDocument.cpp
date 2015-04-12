@@ -77,7 +77,7 @@ const std::string HtmlDocument::getHTML()
 	return d_->getHTML();
 }
 
-void RegisterHtmlDocumentClass()
+void RegisterHtmlDocumentClass(Sqrat::SqratVM& vm)
 {
 	using namespace SqPlus;
 	SQClassDef<HtmlDocument>("HtmlDocument")
@@ -91,7 +91,7 @@ void RegisterHtmlDocumentClass()
 		;
 }
 
-void RegisterHtmlElementClass()
+void RegisterHtmlElementClass(Sqrat::SqratVM& vm)
 {
 	using namespace SqPlus;
 	SQClassDef<HtmlElement>("HtmlElement")

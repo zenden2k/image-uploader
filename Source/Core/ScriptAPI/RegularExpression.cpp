@@ -243,7 +243,7 @@ ScriptAPI::RegularExpression CreateRegExp(const std::string& expression, const s
 	return RegularExpression(expression,flags);
 }
 
-void RegisterRegularExpressionClass() {
+void RegisterRegularExpressionClass(Sqrat::SqratVM& vm) {
 
 	using namespace SqPlus;
 	SQClassDef<RegularExpression>("RegularExpression")

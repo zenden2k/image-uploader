@@ -42,16 +42,16 @@ namespace ScriptAPI {
 			void hide();
 			void close();
 			void setFocus();
-			void setOnUrlChangedCallback(SquirrelObject callBack, SquirrelObject context);
-			void setOnNavigateErrorCallback(SquirrelObject callBack, SquirrelObject context);
-			void setOnLoadFinishedCallback(SquirrelObject callBack, SquirrelObject context);
-			void setOnTimerCallback(int timerInterval, SquirrelObject callBack, SquirrelObject context);
-			void setOnFileInputFilledCallback(SquirrelObject callBack, SquirrelObject context);
+            void setOnUrlChangedCallback(Sqrat::Function callBack, Sqrat::Object context);
+			void setOnNavigateErrorCallback(Sqrat::Function callBack, Sqrat::Object context);
+			void setOnLoadFinishedCallback(Sqrat::Function callBack, Sqrat::Object context);
+			void setOnTimerCallback(int timerInterval, Sqrat::Function callBack, Sqrat::Object context);
+			void setOnFileInputFilledCallback(Sqrat::Function callBack, Sqrat::Object context);
 			const std::string getDocumentContents();
 			HtmlDocument document();
 			bool setHtml(const std::string& html);
 			const std::string runJavaScript(const std::string& code);
-			const std::string callJavaScriptFunction(const std::string& funcName, SquirrelObject args);
+			const std::string callJavaScriptFunction(const std::string& funcName, Sqrat::Object args);
 			void setSilent(bool silent);
 			void addTrustedSite(const std::string& domain);
 			int getMajorVersion();
@@ -61,7 +61,7 @@ namespace ScriptAPI {
 			WebBrowserPrivate *d_;
 	};
 
-	void RegisterWebBrowserClass();
+	void RegisterWebBrowserClass(Sqrat::SqratVM& vm);
 }
 
 #endif

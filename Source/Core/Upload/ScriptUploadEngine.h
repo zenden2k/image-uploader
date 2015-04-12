@@ -24,23 +24,14 @@
 #include <vector>
 #include <string>
 
-#include "../Squirrelnc.h"
+#include <Core/Squirrelnc.h>
 
 #include "CommonTypes.h"
 #include "UploadEngine.h"
 #include "Core/Utils/CoreTypes.h"
+#include <Core/Upload/FolderList.h>
 
 extern const Utf8String IuNewFolderMark;
-class CFolderList
-{
-	public:
-		std::vector<CFolderItem> m_folderItems;
-		void Clear() {m_folderItems.clear();}
-		const int GetCount() { return m_folderItems.size();}
-		CFolderItem& operator [] (int index) {  return m_folderItems[index]; }
-		void AddFolder(const std::string& title, const std::string& summary, const std::string& id, const std::string& parentid, int accessType);
-		void AddFolderItem(const CFolderItem& item);
-};
 
 class CScriptUploadEngine: public CAbstractUploadEngine
 {
@@ -58,7 +49,7 @@ class CScriptUploadEngine: public CAbstractUploadEngine
 	public:
 		CScriptUploadEngine(Utf8String pluginName);
 		~CScriptUploadEngine();
-		static void InitScriptEngine();
+		void InitScriptEngine();
 		static void DestroyScriptEngine();
 		void FlushSquirrelOutput();
 		void setNetworkClient(NetworkClient* nm);
@@ -76,19 +67,19 @@ class CScriptUploadEngine: public CAbstractUploadEngine
 		time_t getCreationTime();
 		int RetryLimit();
 		
-		SquirrelObject m_Object; 		
+		//Sqrat::Table m_Object; 		
 	protected:
 		void Log(ErrorInfo::MessageType mt, const std::string& error);
 		CFolderList m_FolderList;
+       
 		Utf8String m_sName;
-		SquirrelObject m_SquirrelScript;
+        Sqrat::SqratVM vm_;
+		Sqrat::Script* m_SquirrelScript;
 		time_t m_CreationTime;
 		bool m_bIsPluginLoaded;
 		DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
 };
 
-// You must implement this function
-const std::string Impl_AskUserCaptcha(NetworkClient *nm, const std::string& url);
-const std::string Impl_InputDialog(const std::string& text, const std::string& defaultValue);
+
 
 #endif

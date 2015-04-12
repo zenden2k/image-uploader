@@ -46,7 +46,7 @@ namespace IuCoreUtils
 	Utf8String toString(int value);
 	Utf8String toString(unsigned int value);
 	Utf8String toString(double value, int precision);
-   std::string Utf8ToSystemLocale(const Utf8String& str);
+    std::string Utf8ToSystemLocale(const Utf8String& str);
 	std::string SystemLocaleToUtf8(const Utf8String& str);
 	Utf8String int64_tToString(int64_t value);
 	int64_t stringToint64_t(const Utf8String fileName);

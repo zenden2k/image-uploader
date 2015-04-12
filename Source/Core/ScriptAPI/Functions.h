@@ -7,10 +7,10 @@
 namespace ScriptAPI {
 	const std::string GetScriptsDirectory();
 	const std::string GetAppLanguageFile();
-	SquirrelObject IncludeScript(const std::string& filename);
-	void RegisterFunctions(SquirrelObject* rootTable);
+	/*SquirrelObject*/bool IncludeScript(const std::string& filename);
+	void RegisterFunctions(HSQUIRRELVM vm);
 	
-	void RegisterShortTranslateFunctions(bool tr, bool underscore);
+	void RegisterShortTranslateFunctions(bool tr);
     void CleanUpFunctions();
 }
 

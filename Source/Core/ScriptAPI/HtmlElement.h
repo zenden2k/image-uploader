@@ -53,18 +53,18 @@ public:
 	void insertHTML(const std::string& name, bool atEnd = false );
 	void insertText(const std::string& name, bool atEnd = false );
 	HtmlElement querySelector(const std::string& query);
-	SquirrelObject querySelectorAll(const std::string& query);
-	SquirrelObject getFormElements();
+	Sqrat::Array querySelectorAll(const std::string& query);
+	Sqrat::Array getFormElements();
 	bool submitForm();
 	bool isNull();
-	SquirrelObject getChildren();
+	Sqrat::Array getChildren();
 	friend class HtmlDocumentPrivate;
 protected:
 	std_tr::shared_ptr<HtmlElementPrivate> d_;
 	bool checkNull(const char * func);
 };
 
-void RegisterHtmlElementClass();
+void RegisterHtmlElementClass(Sqrat::SqratVM& vm);
 
 }
 #endif

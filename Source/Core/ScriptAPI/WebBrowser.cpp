@@ -51,12 +51,12 @@ bool CWebBrowser::navigateToUrl(const std::string& url)
 	return d_->navigateToUrl(url);
 }
 
-void CWebBrowser::setOnUrlChangedCallback(SquirrelObject callBack, SquirrelObject context)
+void CWebBrowser::setOnUrlChangedCallback(Sqrat::Function callBack, Sqrat::Object context)
 {
 	d_->setOnUrlChangedCallback(callBack, context);
 }
 
-void CWebBrowser::setOnNavigateErrorCallback(SquirrelObject callBack, SquirrelObject context)
+void CWebBrowser::setOnNavigateErrorCallback(Sqrat::Function callBack, Sqrat::Object context)
 {
 	d_->setOnNavigateErrorCallback(callBack, context);
 }
@@ -66,12 +66,12 @@ void CWebBrowser::setOnLoadFinishedCallback(SquirrelObject callBack, SquirrelObj
 	d_->setOnLoadFinishedCallback(callBack, context);
 }
 
-void CWebBrowser::setOnTimerCallback(int timerInterval, SquirrelObject callBack, SquirrelObject context)
+void CWebBrowser::setOnTimerCallback(int timerInterval, Sqrat::Function callBack, Sqrat::Object context)
 {
 	d_->setOnTimerCallback(timerInterval,  callBack, context);
 }
 
-void CWebBrowser::setOnFileInputFilledCallback(SquirrelObject callBack, SquirrelObject context)
+void CWebBrowser::setOnFileInputFilledCallback(Sqrat::Function callBack, Sqrat::Object context)
 {
 	d_->setOnFileInputFilledCallback(callBack, context);
 }
@@ -161,7 +161,7 @@ const std::string CWebBrowser::title()
 	return d_->title();
 }
 
-void RegisterWebBrowserClass() {
+void RegisterWebBrowserClass(Sqrat::SqratVM& vm) {
 	using namespace SqPlus;
 	SQClassDef<CWebBrowser>("CWebBrowser")
 		.func(&CWebBrowser::navigateToUrl, "navigateToUrl")

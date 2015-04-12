@@ -13,16 +13,16 @@ public:
 	HtmlDocument(HtmlDocumentPrivate* pr);
 	HtmlElement rootElement();
 	HtmlElement getElementById(const std::string& id);
-	SquirrelObject getElementsByTagName(const std::string& tag);
-	SquirrelObject getElementsByName(const std::string& name);
+	Sqrat::Array getElementsByTagName(const std::string& tag);
+	Sqrat::Array getElementsByName(const std::string& name);
 	HtmlElement querySelector(const std::string& query);
-	SquirrelObject querySelectorAll(const std::string& query);
+	Sqrat::Array querySelectorAll(const std::string& query);
 	const std::string getHTML();
 protected:
 	std_tr::shared_ptr<HtmlDocumentPrivate> d_;
 };
 
-void RegisterHtmlDocumentClass();
+void RegisterHtmlDocumentClass(Sqrat::SqratVM& vm);
 
 }
 #endif

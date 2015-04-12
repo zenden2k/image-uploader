@@ -24,14 +24,131 @@
 #include "HtmlDocument.h"
 #include "HtmlElement.h"
 #endif
+#include "RegularExpression.h"
+#include <Core/Network/NetworkClient.h>
+#include <Core/Utils/SimpleXml.h>
+#include <Core/Upload/UploadEngine.h>
+#include <Core/Upload/FolderList.h>
+#include <Core/Squirrelnc.h>
 
-namespace ScriptAPI {
+using namespace ScriptAPI;
+/*
+DECLARE_INSTANCE_TYPE(NetworkClient);
+DECLARE_INSTANCE_TYPE(SimpleXml);
+DECLARE_INSTANCE_TYPE(SimpleXmlNode);
+DECLARE_INSTANCE_TYPE(ServerSettingsStruct);
+DECLARE_INSTANCE_TYPE(CFolderList);
+DECLARE_INSTANCE_TYPE(CFolderItem);
+DECLARE_INSTANCE_TYPE(CIUUploadParams);*/
 
-void RegisterClasses(SquirrelObject* rootTable) {
+namespace ScriptAPI {;
+
+void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
+    using namespace Sqrat;
+    vm.GetRootTable().Bind("NetworkClient", Class<NetworkClient>().
+        Func("doGet", &NetworkClient::doGet).
+        Func("responseBody", &NetworkClient::responseBody).
+        Func("responseCode", &NetworkClient::responseCode).
+        Func("setUrl", &NetworkClient::setUrl).
+        Func("doPost", &NetworkClient::doPost).
+        Func("addQueryHeader", &NetworkClient::addQueryHeader).
+        Func("addQueryParam", &NetworkClient::addQueryParam).
+        Func("addQueryParamFile", &NetworkClient::addQueryParamFile).
+        Func("responseHeaderCount", &NetworkClient::responseHeaderCount).
+        Func("urlEncode", &NetworkClient::urlEncode).
+        Func("errorString", &NetworkClient::errorString).
+        Func("doUpload", &NetworkClient::doUpload).
+        Func("setMethod", &NetworkClient::setMethod).
+        Func("setCurlOption", &NetworkClient::setCurlOption).
+        Func("setCurlOptionInt", &NetworkClient::setCurlOptionInt).
+        Func("doUploadMultipartData", &NetworkClient::doUploadMultipartData).
+        Func("enableResponseCodeChecking", &NetworkClient::enableResponseCodeChecking).
+        Func("setChunkSize", &NetworkClient::setChunkSize).
+        Func("setChunkOffset", &NetworkClient::setChunkOffset).
+        Func("setUserAgent", &NetworkClient::setUserAgent).
+        Func("responseHeaderText", &NetworkClient::responseHeaderText).
+        Func("responseHeaderByName", &NetworkClient::responseHeaderByName).
+        Func("setReferer", &NetworkClient::setReferer));
+}
+
+void RegisterSimpleXmlClass(Sqrat::SqratVM& vm) {
+    using namespace Sqrat;
+     vm.GetRootTable().Bind("SimpleXml", Class<SimpleXml>().
+         Func("LoadFromFile", &SimpleXml::LoadFromFile).
+         Func("LoadFromString", &SimpleXml::LoadFromString).
+         Func("SaveToFile", &SimpleXml::SaveToFile).
+         Func("ToString", &SimpleXml::ToString).
+         Func("GetRoot", &SimpleXml::getRoot)
+     );
+
+    vm.GetRootTable().Bind("SimpleXmlNode", Class<SimpleXmlNode>().
+        Func("Attribute", &SimpleXmlNode::Attribute).
+        Func("AttributeInt", &SimpleXmlNode::AttributeInt).
+        Func("AttributeBool", &SimpleXmlNode::AttributeBool).
+        Func("Name", &SimpleXmlNode::Name).
+        Func("Text", &SimpleXmlNode::Text).
+        Func("CreateChild", &SimpleXmlNode::CreateChild).
+        Func("GetChild", &SimpleXmlNode::GetChild).
+        Func("SetAttribute", &SimpleXmlNode::SetAttributeString).
+        Func("SetAttributeInt", &SimpleXmlNode::SetAttributeInt).
+        Func("SetAttributeBool", &SimpleXmlNode::SetAttributeBool).
+        Func("SetText", &SimpleXmlNode::SetText).
+        Func("IsNull", &SimpleXmlNode::IsNull).
+        Func("DeleteChilds", &SimpleXmlNode::DeleteChilds).
+        Func("GetChildCount", &SimpleXmlNode::GetChildCount).
+        Func("GetChildByIndex", &SimpleXmlNode::GetChildByIndex).
+        Func("GetAttributeCount", &SimpleXmlNode::GetAttributeCount)
+    );
+}
+
+void RegisterUploadClasses(Sqrat::SqratVM& vm) {
+    using namespace Sqrat;
+    RootTable& root = vm.GetRootTable();
+    root.Bind("CFolderItem", Class<CFolderItem>().
+        Func("getId", &CFolderItem::getId).
+        Func("getParentId", &CFolderItem::getParentId).
+        Func("getSummary", &CFolderItem::getSummary).
+        Func("getTitle", &CFolderItem::getTitle).
+        Func("setId", &CFolderItem::setId).
+        Func("setParentId", &CFolderItem::setParentId).
+        Func("setSummary", &CFolderItem::setSummary).
+        Func("setTitle", &CFolderItem::setTitle).
+        Func("getAccessType", &CFolderItem::getAccessType).
+        Func("setAccessType", &CFolderItem::setAccessType).
+        Func("setItemCount", &CFolderItem::setItemCount).
+        Func("setViewUrl", &CFolderItem::setViewUrl).
+        Func("getItemCount", &CFolderItem::getItemCount)
+    );
+
+    root.Bind("CIUUploadParams", Class<CIUUploadParams>().
+        Func("getFolderID", &CIUUploadParams::getFolderID).
+        Func("setDirectUrl", &CIUUploadParams::setDirectUrl).
+        Func("setThumbUrl", &CIUUploadParams::setThumbUrl).
+        Func("getServerFileName", &CIUUploadParams::getServerFileName).
+        Func("setViewUrl", &CIUUploadParams::setViewUrl).
+        Func("getParam", &CIUUploadParams::getParam)
+    );
+
+
+    root.Bind("CFolderList", Class<CFolderList>().
+        Func("AddFolder", &CFolderList::AddFolder).
+        Func("AddFolderItem", &CFolderList::AddFolderItem)
+    );
+
+    root.Bind("ServerSettingsStruct", Class<ServerSettingsStruct>().
+        Func("setParam", &ServerSettingsStruct::setParam).
+        Func("getParam", &ServerSettingsStruct::getParam)
+    );
+}
+
+void RegisterClasses(Sqrat::SqratVM& vm) {
+    RegisterNetworkClientClass(vm);
+    RegisterRegularExpressionClass(vm);
+    RegisterUploadClasses(vm);
 #ifdef _WIN32
-	RegisterWebBrowserClass();
-	RegisterHtmlDocumentClass();
-	RegisterHtmlElementClass();
+	RegisterWebBrowserClass(vm);
+	RegisterHtmlDocumentClass(vm);
+	RegisterHtmlElementClass(vm);
 #endif
 }
 

@@ -876,15 +876,7 @@ void CUploadDlg::OnUploaderConfigureNetworkClient(NetworkClient *nm)
 }
 
 
-const std::string Impl_InputDialog(const std::string& text, const std::string& defaultValue)
-{
-	CInputDialog dlg(_T("Image Uploader"), Utf8ToWCstring(text), Utf8ToWCstring(defaultValue));
 
-	if(dlg.DoModal(GetActiveWindow())==IDOK) {
-		return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
-	}
-	return "";
-}
 
 void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
 	if ( !alreadyShortened_ && shortenUrl ) {

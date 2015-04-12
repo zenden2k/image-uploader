@@ -480,15 +480,6 @@ const std::string Impl_AskUserCaptcha(NetworkClient *nm, const std::string& url)
 	return "";
 }*/
 
-const std::string Impl_InputDialog(const std::string& text, const std::string& defaultValue)
-{
-	CInputDialog dlg(_T("Image Uploader"), Utf8ToWCstring(text), Utf8ToWCstring(defaultValue));
-
-	if(dlg.DoModal()==IDOK) {
-		return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
-	}
-	return "";
-}
 void CMainDlg::OnConfigureNetworkClient(NetworkClient *nm)
 {
 	IU_ConfigureProxy(*nm);
