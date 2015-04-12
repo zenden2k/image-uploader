@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerListTool", "Source\Se
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CLI", "Source\CLI\CLI.vcproj", "{C0D4D927-426B-4016-8C6A-B5FAB872AE85}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "Source\Tests\Tests.vcproj", "{E78AA953-18D1-4B93-B0FA-06B3974E4AEA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -78,6 +80,18 @@ Global
 		{C0D4D927-426B-4016-8C6A-B5FAB872AE85}.Release|Win32.ActiveCfg = Release|Win32
 		{C0D4D927-426B-4016-8C6A-B5FAB872AE85}.Release|Win32.Build.0 = Release|Win32
 		{C0D4D927-426B-4016-8C6A-B5FAB872AE85}.Release|x64.ActiveCfg = Release|Win32
+		{E78AA953-18D1-4B93-B0FA-06B3974E4AEA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E78AA953-18D1-4B93-B0FA-06B3974E4AEA}.Debug|Win32.Build.0 = Debug|Win32
+		{E78AA953-18D1-4B93-B0FA-06B3974E4AEA}.Debug|x64.ActiveCfg = Debug|Win32
+		{E78AA953-18D1-4B93-B0FA-06B3974E4AEA}.Release optimized|Win32.ActiveCfg = Release|Win32
+		{E78AA953-18D1-4B93-B0FA-06B3974E4AEA}.Release optimized|Win32.Build.0 = Release|Win32
+		{E78AA953-18D1-4B93-B0FA-06B3974E4AEA}.Release optimized|x64.ActiveCfg = Release|Win32
+		{E78AA953-18D1-4B93-B0FA-06B3974E4AEA}.Release Win2k|Win32.ActiveCfg = Release|Win32
+		{E78AA953-18D1-4B93-B0FA-06B3974E4AEA}.Release Win2k|Win32.Build.0 = Release|Win32
+		{E78AA953-18D1-4B93-B0FA-06B3974E4AEA}.Release Win2k|x64.ActiveCfg = Release|Win32
+		{E78AA953-18D1-4B93-B0FA-06B3974E4AEA}.Release|Win32.ActiveCfg = Release|Win32
+		{E78AA953-18D1-4B93-B0FA-06B3974E4AEA}.Release|Win32.Build.0 = Release|Win32
+		{E78AA953-18D1-4B93-B0FA-06B3974E4AEA}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
