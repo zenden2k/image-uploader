@@ -143,7 +143,7 @@ void WebBrowserPrivate::OnFileFieldFilled(const CString& fileName)
 		}
 		catch (SquirrelError& e)
 		{
-			LOG(ERROR) << "onTimerCallback: " << Utf8String(e.desc);
+			LOG(ERROR) << "onFileFieldFilledCallback: " << Utf8String(e.desc);
 		}
 	}
 }
