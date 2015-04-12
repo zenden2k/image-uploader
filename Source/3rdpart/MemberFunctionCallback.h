@@ -1,6 +1,9 @@
 #ifndef IU_MEMBER_FUNCTION_CALLBACK_H
 #define IU_MEMBER_FUNCTION_CALLBACK_H
 
+/*
+Source: http://p-nand-q.com/programming/cplusplus/using_member_functions_with_c_function_pointers.html
+*/
 #pragma once
 #include <windows.h>
 class CWebViewWindow;
