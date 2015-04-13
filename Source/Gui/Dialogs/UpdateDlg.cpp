@@ -160,7 +160,7 @@ void CUpdateDlg::CheckUpdates()
 	Settings.LastUpdateTime = static_cast<int>(time(0));
 	if (m_UpdateManager.AreUpdatesAvailable())
 	{
-		if ( !m_UpdateManager.AreCoreUpdates() ) {
+		if ( !m_UpdateManager.AreCoreUpdates() && !IsWindowVisible() ) {
 			DoUpdates();
 			return;
 		}

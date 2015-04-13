@@ -4,7 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 win32 {
-    DEFINES += UNICODE _UNICODE CURL_STATICLIB PCRE_STATIC
+    DEFINES += UNICODE _UNICODE CURL_STATICLIB PCRE_STATIC _WIN32_IE=0x0603 WINVER=0x0601 _WIN32_WINNT=0x0601
     QMAKE_CFLAGS_RELEASE += /MT
     QMAKE_CXXFLAGS_RELEASE += /MT
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
@@ -189,8 +189,8 @@ win32 {
     DEFINES += _ATL_XP_TARGETING
     QMAKE_CFLAGS += /D _USING_V110_SDK71_
     QMAKE_CXXFLAGS += /D _USING_V110_SDK71_
-    LIBS *= -L"%ProgramFiles(x86)%/Microsoft SDKs/Windows/7.1A/Lib"
-    INCLUDEPATH += "%ProgramFiles(x86)%/Microsoft SDKs/Windows/7.1A/Include"
+    LIBS *= -L"%ProgramFiles(x86)%/Microsoft SDKs/Windows/v7.1A/Lib"
+    INCLUDEPATH += "%ProgramFiles(x86)%/Microsoft SDKs/Windows/v7.1A/Include"
 }
 win32:OUTDIR = ../../Build/CLI/win32
 unix:OUTDIR = ../../Build/CLI/linux/$$ARCH

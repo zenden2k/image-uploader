@@ -22,6 +22,7 @@
 #define IU_CORE_HTMLELEMENTPRIVATE_WIN_H
 
 #pragma once
+
 #include "WebBrowserPrivate_win.h"
 #include "HtmlDocumentPrivate_win.h"
 #include <Core/Utils/CoreUtils.h>
@@ -30,7 +31,7 @@
 #include <ComDef.h>
 
 #include "COMUtils.h"
-
+#include "mshtml.h"
 
 
 namespace ScriptAPI {

@@ -1,9 +1,9 @@
 #Image Uploader
 Free program for Windows that allows you to upload images, screenshots, or any other files to over 30 different file hosting services. 
 
-![Image Uploader main windows](https://lh5.googleusercontent.com/-GvexbrV8HUE/VQHXrxhom5I/AAAAAAAAD0c/JiH5OQ0XrfY/s0/26719_screenshot%2525202015-03-09%252520003_en.png)
+![Image Uploader main window](https://lh5.googleusercontent.com/-GvexbrV8HUE/VQHXrxhom5I/AAAAAAAAD0c/JiH5OQ0XrfY/s0/26719_screenshot%2525202015-03-09%252520003_en.png)
 
-[![Image Uploader main windows](https://lh4.googleusercontent.com/-D6wvBfMHonw/VQHgBb9ZFzI/AAAAAAAAD1s/Hq1uUei_C-s/s0/download-button-en.png)](http://zenden.ws/imageuploader_downloads)
+[![Image Uploader main window](https://lh4.googleusercontent.com/-D6wvBfMHonw/VQHgBb9ZFzI/AAAAAAAAD1s/Hq1uUei_C-s/s0/download-button-en.png)](http://zenden.ws/imageuploader_downloads)
 
 Supported operating systems: Windows 2000/XP/Vista/7/8/10 (also server versions)
 
@@ -21,6 +21,14 @@ Image Uploader can grab frames from various types of video formats, e.g. AVI, MP
 Image Uploader can do screenshots of entire screen or selected screen region.
 
 Image Uploader is available in the following languages: English, Russian, Swedish, Romanian, Turkish, Serbian, Hrvatski, Farsi
+
+##Console Utility
+
+![Image Uploader Console Utility running on Ubuntu](https://lh4.googleusercontent.com/-cNDZG8GzVA4/VSwRWt6NyBI/AAAAAAAAEGU/y2TJbwUWhfQ/s0/Terminal_001.png)
+
+Available options:
+
+http://zenden.ws/imageuploader-cli
 
 ##Building from source
 

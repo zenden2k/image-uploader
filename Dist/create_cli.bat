@@ -6,7 +6,7 @@ For /F "tokens=2,3 delims= " %%i In (..\Source\VersionInfo.h) Do (set %%i=%%~j)
 echo Creating distribution archive for Image Uploader version %_APP_VER% %BUILD%
 
 set temp_dir=portable\temp_%BUILD%_cli_%CLI_VERSION%
-set filename=image-uploader-cli-%CLI_VERSION%-cli.7z
+set filename=imgupload_%CLI_VERSION%_win32.7z
 echo %temp_dir%
 
 rmdir /q /s  %temp_dir%
@@ -27,7 +27,7 @@ Copy "..\Data\Update\iu_servers*.xml" %temp_dir%\Data\Update\
 
 
 cd %temp_dir%
-%zipcmd% a -mx9 ..\..\output\image-uploader-cli-%CLI_VERSION%.7z "*"
+%zipcmd% a -mx9 ..\..\output\%filename% "*"
 cd ..\..\
 
 rmdir /q /s  %temp_dir%
