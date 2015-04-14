@@ -2,6 +2,10 @@
 #
 # http://zenden.ws/imageuploader
 
+1.3.1.4314
+
+[~] Fixed producing distorted images while grabbing images from video with DirectShow
+
 version 1.3.1.4311
 
 [+] Added Image Editor. Now you can easily edit screenshots you've made, annotate, highlight or obfuscate parts of the screenshot.
