@@ -44,6 +44,13 @@ public:
 
 	virtual void run()
 	{
+        if ( !IuCoreUtils::FileExists(videoGrabber_->fileName_) ) {
+            LOG(ERROR) << "File "<<videoGrabber_->fileName_<< "not found";
+            if ( videoGrabber_->onFinished ) {
+                videoGrabber_->onFinished();
+            }
+            return;
+        }
 		AbstractFrameGrabber* grabber = videoGrabber_->createGrabber();
 		if ( !grabber ) {
 			return;
