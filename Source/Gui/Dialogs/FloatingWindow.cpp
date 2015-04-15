@@ -774,7 +774,7 @@ bool CFloatingWindow::OnFileFinished(bool ok, CFileQueueUploader::FileListItem& 
 			}
 			ShowImageUploadedMessage(url);
 		} else {
-			UrlShorteningTask *urlShorteningTask = (UrlShorteningTask*) result.uploadTask;
+			UrlShorteningTask *urlShorteningTask = static_cast<UrlShorteningTask*>(result.uploadTask->uploadTask.get());
 			CString url = Utf8ToWCstring(urlShorteningTask->getUrl());
 			ShowImageUploadedMessage(url);
 		}
