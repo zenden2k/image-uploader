@@ -80,11 +80,11 @@ bool autoUpdate = true;
 void DoUpdates(bool force = false);
 #endif
 void DebugMessage2(const std::string& message, bool isServerResponseBody)
-{   
+{
 #ifdef _WIN32
-	std::wcerr<<IuCoreUtils::Utf8ToWstring(message);
+	std::wcerr << IuCoreUtils::Utf8ToWstring(message);
 #else
-std::cerr<<IuCoreUtils::Utf8ToSystemLocale(message);
+	std::cerr << IuCoreUtils::Utf8ToSystemLocale(message);
 #endif
 }
 
@@ -720,7 +720,6 @@ mkdir(settingsFolder.c_str(), 0700);
 	   DoUpdates();
    }
 #endif
-   CScriptUploadEngine::InitScriptEngine();
 
   res = func();
 
@@ -728,7 +727,7 @@ mkdir(settingsFolder.c_str(), 0700);
 	std::cerr<<"Cannot save settings!"<<std::endl;
   }
 
-   delete lastEngine;
+    delete lastEngine;
 	CScriptUploadEngine::DestroyScriptEngine();
 #ifdef _WIN32
 //SetConsoleOutputCP(oldcp);

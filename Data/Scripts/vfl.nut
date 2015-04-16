@@ -170,7 +170,7 @@ function  UploadFile(FileName, options)
 	webBrowser.setOnFileInputFilledCallback(OnFileInputFilledCallback, null);
 	webBrowser.setOnNavigateErrorCallback(OnNavigateErrorCallback, null);
 
-	//webBrowser.exec();
-	webBrowser.showModal();
+	webBrowser.exec();
+	//webBrowser.showModal();
 	return uploadResult;
 }

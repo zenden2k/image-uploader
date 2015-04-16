@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Code">
+      <UniqueIdentifier>{52814f44-df2d-4791-873e-3382cc224860}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Core">
+      <UniqueIdentifier>{2ae681c5-4d58-46a5-b5c1-21595b640c77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Core\Utils">
+      <UniqueIdentifier>{d08f58d8-2a88-412a-b828-9868508b66fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Core\3rdpart">
+      <UniqueIdentifier>{3ff40a91-717f-4100-b3d1-61e7a4bcee2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tests">
+      <UniqueIdentifier>{5dfbd723-1325-481f-abfc-b155c55d3b67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tests\Core">
+      <UniqueIdentifier>{f1a99499-2ea3-40c6-89eb-84f5ad98eb08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tests\Core\Utils">
+      <UniqueIdentifier>{698b8e1c-1b3b-4653-babc-6166fd08c890}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\CoreUtils.cpp">
+      <Filter>Code\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\StringUtils.cpp">
+      <Filter>Code\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\CodePages.cpp">
+      <Filter>Code\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Utils\CoreUtilsTest.cpp">
+      <Filter>Tests\Core\Utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

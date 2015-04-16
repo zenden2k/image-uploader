@@ -1,0 +1,346 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4ae7f1e7-3533-4dd8-8eea-af1527e9db03}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Additional">
+      <UniqueIdentifier>{19338b75-4fdc-43c2-b50e-23e69f7d3772}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{1978848a-b929-471f-8807-27476227685a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Upload">
+      <UniqueIdentifier>{db4caf5a-8e17-46b5-9b91-f3af4b8a1f99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Video">
+      <UniqueIdentifier>{6dc6095d-e383-463f-9551-c4eaf6f68773}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Utils">
+      <UniqueIdentifier>{9cbb543d-40c7-4738-afef-736a09c6b484}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\3rdpart">
+      <UniqueIdentifier>{25506bb0-0681-41b2-a811-2904d640c82c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Image">
+      <UniqueIdentifier>{0de73286-bebd-44db-a81d-53b08bef7571}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\ScriptAPI">
+      <UniqueIdentifier>{0c697c53-5b99-4a52-98f9-0433535091c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Func">
+      <UniqueIdentifier>{05f2768f-8879-4d6e-8da3-b41fbbbc6efa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gui">
+      <UniqueIdentifier>{7f6e96b6-88d5-41d9-86f6-80e9781d71ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gui\Dialogs">
+      <UniqueIdentifier>{018e76aa-dfc4-4cc6-bf0c-e03052308370}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gui\Controls">
+      <UniqueIdentifier>{11b88f35-72b2-4efc-a1cc-c67e054146c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\3rdpart">
+      <UniqueIdentifier>{4b04f87c-707e-43b2-80a1-98ac1a3fbe34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{89ce33ac-1c48-4ed6-ba58-6654d7a75edb}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{b6df2672-c80a-419e-a7f0-1dab5e0f85bc}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;jpg;jpeg;jpe;manifest</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MainDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerListTool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\UploadEngineList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\base64.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\CmdLine.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\Common.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\CoreUtils.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\CP_RSA.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\DefaultUploadEngine.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\FileDownloader.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\FileQueueUploader.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\GlobalMutex.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Gui\GuiTools.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Gui\Dialogs\InputDialog.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\IuCommonFunctions.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\LangClass.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Gui\Controls\LogListBox.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Gui\Dialogs\LogWindow.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\MyEngineList.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Gui\Controls\MyImage.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\MyUtils.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Network\NetworkClient.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\parser.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\pcreplusplus.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\PluginLoader.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdpart\QColorQuantizer.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdpart\Registry.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\ScriptUploadEngine.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\Settings.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\SettingsManager.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\SimpleXml.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\StringUtils.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\SystemUtils.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Gui\Dialogs\TextViewDlg.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Images\Thumbnail.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\tinystr.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\tinyxml.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\tinyxmlerror.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\tinyxmlparser.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\UploadEngine.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\Uploader.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\WebUtils.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\WinUtils.cpp">
+      <Filter>Source Files\Additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\AppParams.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Logging.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\FileUploadTask.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\UploadTask.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\UrlShorteningTask.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Video\VideoUtils.cpp">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\CryptoUtils.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\CodePages.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Images\ImageConverter.cpp">
+      <Filter>Source Files\Core\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Images\Utils.cpp">
+      <Filter>Source Files\Core\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\ScriptAPI\COMUtils.cpp">
+      <Filter>Source Files\Core\ScriptAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\ScriptAPI\Functions.cpp">
+      <Filter>Source Files\Core\ScriptAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\ScriptAPI\HtmlDocument.cpp">
+      <Filter>Source Files\Core\ScriptAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\ScriptAPI\HtmlDocumentPrivate_win.cpp">
+      <Filter>Source Files\Core\ScriptAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\ScriptAPI\HtmlElement.cpp">
+      <Filter>Source Files\Core\ScriptAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\ScriptAPI\HtmlElementPrivate_win.cpp">
+      <Filter>Source Files\Core\ScriptAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\ScriptAPI\RegularExpression.cpp">
+      <Filter>Source Files\Core\ScriptAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\ScriptAPI\ScriptAPI.cpp">
+      <Filter>Source Files\Core\ScriptAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\ScriptAPI\WebBrowser.cpp">
+      <Filter>Source Files\Core\ScriptAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\ScriptAPI\WebBrowserPrivate_win.cpp">
+      <Filter>Source Files\Core\ScriptAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\MyLogSink.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Gui\Dialogs\WebViewWindow.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Gui\Controls\WTLBrowserView.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdpart\GdiplusH.cpp">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Func\SystemUtils.h">
+      <Filter>Source Files\Additional</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Func\WebUtils.h">
+      <Filter>Source Files\Additional</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Func\WinUtils.h">
+      <Filter>Source Files\Additional</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Upload\FileUploadTask.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Upload\UploadTask.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Upload\UrlShorteningTask.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Video\VideoUtils.h">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Utils\CoreTypes.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Utils\CryptoUtils.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Utils\GlobalMutex.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Utils\StringUtils.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Utils\utils_unix.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\3rdpart\codepages.h">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Utils\codepages.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Utils\CoreUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\FileDownloader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\HotkeySettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\SettingsManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Utils\SimpleXml.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\UploadEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Utils\utils_win.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\ServerListTool.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ServerListTool.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

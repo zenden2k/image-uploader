@@ -38,19 +38,20 @@ class CUploader
 		
 		void setThumbnailWidth(int width);
 		bool UploadFile(const std::string & FileName, const std::string displayFileName);
-		bool Upload(UploadTask* task);
+		bool Upload(std::shared_ptr<UploadTask> task);
 		const std::string  getDownloadUrl();
 		const std::string  getDirectUrl();
 		const std::string  getThumbUrl();
 		void stop();
 		bool needStop();
+		std::shared_ptr<UploadTask> currentTask();
 		// events
 		fastdelegate::FastDelegate0<bool> onNeedStop;
 		fastdelegate::FastDelegate2<CUploader*,InfoProgress> onProgress;
-		fastdelegate::FastDelegate3<StatusType, int, std::string> onStatusChanged;
-		fastdelegate::FastDelegate2<const std::string&, bool> onDebugMessage;
-		fastdelegate::FastDelegate1<ErrorInfo> onErrorMessage;
-		fastdelegate::FastDelegate1<NetworkClient*> onConfigureNetworkClient;
+		fastdelegate::FastDelegate4<CUploader*, StatusType, int, std::string> onStatusChanged;
+		fastdelegate::FastDelegate3<CUploader*, const std::string&, bool> onDebugMessage;
+		fastdelegate::FastDelegate2<CUploader*, ErrorInfo> onErrorMessage;
+		fastdelegate::FastDelegate2<CUploader*, NetworkClient*> onConfigureNetworkClient;
 
 		void DebugMessage(const std::string& message, bool isServerResponseBody = false);
 		void SetStatus(StatusType status, int param1=0, std::string param="");
@@ -74,6 +75,7 @@ class CUploader
 		void ErrorMessage(ErrorInfo);
 		NetworkClient m_NetworkClient;
 		CAbstractUploadEngine *m_CurrentEngine;
+		std::shared_ptr<UploadTask> currentTask_;
 		void Cleanup();
 	private:
 		DISALLOW_COPY_AND_ASSIGN(CUploader);

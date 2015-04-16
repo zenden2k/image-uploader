@@ -1,0 +1,562 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release 64|Win32">
+      <Configuration>Release 64</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release 64|x64">
+      <Configuration>Release 64</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release optimized|Win32">
+      <Configuration>Release optimized</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release optimized|x64">
+      <Configuration>Release optimized</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{20D09042-662C-4CAE-A020-EDE268940AB5}</ProjectGuid>
+    <RootNamespace>ServerListTool</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release 64|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release 64|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release 64|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release 64|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.21005.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)Build\ServerTool\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Build\Temp\ServerTool\$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)Build\ServerTool\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Build\Temp\ServerTool\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release 64|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release 64|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)ServerListTool.tlb</TypeLibraryName>
+      <HeaderFileName>ServerListTool.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>ServerListTool_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>ServerListTool_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>-MP$(NUMBER_OF_PROCESSORS) %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;$(SolutionDir)\Include\tinyxml;$(SolutionDir)\Include\pcre;$(SolutionDir)\Include\sqplus;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;IU_SERVERLISTTOOL;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>StdAfx.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;zthread.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;Oleacc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs;$(SolutionDir)\Libs\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)ServerListTool.tlb</TypeLibraryName>
+      <HeaderFileName>ServerListTool.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>ServerListTool_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>ServerListTool_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;$(SolutionDir)\Include\tinyxml;$(SolutionDir)\Include\pcre;$(SolutionDir)\Include\sqplus;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>StdAfx.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>zdlld.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;tinyxmld_STL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs;$(SolutionDir)\Libs\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)ServerListTool.tlb</TypeLibraryName>
+      <HeaderFileName>ServerListTool.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>ServerListTool_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>ServerListTool_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/MP$(NUMBER_OF_PROCESSORS) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\sqplus;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;IU_SERVERLISTTOOL;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL=;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat />
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;zthread.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;libglog_static.lib;jsoncpp.lib;Oleacc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Release;$(SolutionDir)\Contrib\Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)ServerListTool.tlb</TypeLibraryName>
+      <HeaderFileName>ServerListTool.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>ServerListTool_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>ServerListTool_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;$(SolutionDir)\Include\tinyxml;$(SolutionDir)\Include\pcre;$(SolutionDir)\Include\sqplus;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;IU_SERVERLISTTOOL;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat />
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;tinyxml_STL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs;d:\Projects\Image Uploader\Image Uploader\Libs\;$(SolutionDir)\Libs\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release 64|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)ServerListTool.tlb</TypeLibraryName>
+      <HeaderFileName>ServerListTool.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>ServerListTool_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>ServerListTool_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;$(SolutionDir)\Include\tinyxml;$(SolutionDir)\Include\pcre;$(SolutionDir)\Include\sqplus;$(SolutionDir)\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;IU_SERVERLISTTOOL;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat />
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;zthread.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs;d:\Projects\Image Uploader\Image Uploader\Libs\;$(SolutionDir)\Libs\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release 64|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)ServerListTool.tlb</TypeLibraryName>
+      <HeaderFileName>ServerListTool.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>ServerListTool_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>ServerListTool_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;$(SolutionDir)\Include\tinyxml;$(SolutionDir)\Include\pcre;$(SolutionDir)\Include\sqplus;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;IU_SERVERLISTTOOL;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat />
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;tinyxml_STL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs;d:\Projects\Image Uploader\Image Uploader\Libs\;$(SolutionDir)\Libs\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)ServerListTool.tlb</TypeLibraryName>
+      <HeaderFileName>ServerListTool.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>ServerListTool_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>ServerListTool_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/MP$(NUMBER_OF_PROCESSORS) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;$(SolutionDir)\Include\tinyxml;$(SolutionDir)\Include\pcre;$(SolutionDir)\Include\sqplus;$(SolutionDir)\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;IU_SERVERLISTTOOL;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat />
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;zthread.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs;d:\Projects\Image Uploader\Image Uploader\Libs\;$(SolutionDir)\Libs\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)ServerListTool.tlb</TypeLibraryName>
+      <HeaderFileName>ServerListTool.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>ServerListTool_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>ServerListTool_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;$(SolutionDir)\Include\tinyxml;$(SolutionDir)\Include\pcre;$(SolutionDir)\Include\sqplus;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;IU_SERVERLISTTOOL;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat />
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;tinyxml_STL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs;d:\Projects\Image Uploader\Image Uploader\Libs\;$(SolutionDir)\Libs\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="MainDlg.cpp" />
+    <ClCompile Include="ServerListTool.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release 64|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release 64|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release optimized|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Core\UploadEngineList.cpp" />
+    <ClCompile Include="..\Core\3rdpart\base64.cpp" />
+    <ClCompile Include="..\Common\CmdLine.cpp" />
+    <ClCompile Include="..\Func\Common.cpp" />
+    <ClCompile Include="..\Core\Utils\CoreUtils.cpp" />
+    <ClCompile Include="..\Core\3rdpart\CP_RSA.cpp" />
+    <ClCompile Include="..\Core\Upload\DefaultUploadEngine.cpp" />
+    <ClCompile Include="..\Core\FileDownloader.cpp" />
+    <ClCompile Include="..\Core\Upload\FileQueueUploader.cpp" />
+    <ClCompile Include="..\Core\Utils\GlobalMutex.cpp" />
+    <ClCompile Include="..\Gui\GuiTools.cpp" />
+    <ClCompile Include="..\Gui\Dialogs\InputDialog.cpp" />
+    <ClCompile Include="..\Func\IuCommonFunctions.cpp" />
+    <ClCompile Include="..\Func\LangClass.cpp" />
+    <ClCompile Include="..\Gui\Controls\LogListBox.cpp" />
+    <ClCompile Include="..\Gui\Dialogs\LogWindow.cpp" />
+    <ClCompile Include="..\Func\MyEngineList.cpp" />
+    <ClCompile Include="..\Gui\Controls\MyImage.cpp" />
+    <ClCompile Include="..\Func\MyUtils.cpp" />
+    <ClCompile Include="..\Core\Network\NetworkClient.cpp" />
+    <ClCompile Include="..\Core\3rdpart\parser.cpp" />
+    <ClCompile Include="..\Core\3rdpart\pcreplusplus.cpp" />
+    <ClCompile Include="..\Func\PluginLoader.cpp" />
+    <ClCompile Include="..\3rdpart\QColorQuantizer.cpp" />
+    <ClCompile Include="..\3rdpart\Registry.cpp" />
+    <ClCompile Include="..\Core\Upload\ScriptUploadEngine.cpp">
+      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ShowIncludes>
+    </ClCompile>
+    <ClCompile Include="..\Func\Settings.cpp" />
+    <ClCompile Include="..\Core\SettingsManager.cpp" />
+    <ClCompile Include="..\Core\Utils\SimpleXml.cpp" />
+    <ClCompile Include="..\Core\Utils\StringUtils.cpp" />
+    <ClCompile Include="..\Func\SystemUtils.cpp" />
+    <ClCompile Include="..\Gui\Dialogs\TextViewDlg.cpp" />
+    <ClCompile Include="..\Core\Images\Thumbnail.cpp" />
+    <ClCompile Include="..\Core\3rdpart\tinystr.cpp" />
+    <ClCompile Include="..\Core\3rdpart\tinyxml.cpp" />
+    <ClCompile Include="..\Core\3rdpart\tinyxmlerror.cpp" />
+    <ClCompile Include="..\Core\3rdpart\tinyxmlparser.cpp" />
+    <ClCompile Include="..\Core\Upload\UploadEngine.cpp" />
+    <ClCompile Include="..\Core\Upload\Uploader.cpp" />
+    <ClCompile Include="..\Func\WebUtils.cpp" />
+    <ClCompile Include="..\Func\WinUtils.cpp" />
+    <ClCompile Include="..\Core\AppParams.cpp" />
+    <ClCompile Include="..\Core\Logging.cpp" />
+    <ClCompile Include="..\Core\Upload\FileUploadTask.cpp" />
+    <ClCompile Include="..\Core\Upload\UploadTask.cpp" />
+    <ClCompile Include="..\Core\Upload\UrlShorteningTask.cpp" />
+    <ClCompile Include="..\Core\Video\VideoUtils.cpp" />
+    <ClCompile Include="..\Core\Utils\CryptoUtils.cpp" />
+    <ClCompile Include="..\Core\3rdpart\CodePages.cpp" />
+    <ClCompile Include="..\Core\Images\ImageConverter.cpp" />
+    <ClCompile Include="..\Core\Images\Utils.cpp" />
+    <ClCompile Include="..\Core\ScriptAPI\COMUtils.cpp" />
+    <ClCompile Include="..\Core\ScriptAPI\Functions.cpp" />
+    <ClCompile Include="..\Core\ScriptAPI\HtmlDocument.cpp" />
+    <ClCompile Include="..\Core\ScriptAPI\HtmlDocumentPrivate_win.cpp" />
+    <ClCompile Include="..\Core\ScriptAPI\HtmlElement.cpp" />
+    <ClCompile Include="..\Core\ScriptAPI\HtmlElementPrivate_win.cpp" />
+    <ClCompile Include="..\Core\ScriptAPI\RegularExpression.cpp" />
+    <ClCompile Include="..\Core\ScriptAPI\ScriptAPI.cpp" />
+    <ClCompile Include="..\Core\ScriptAPI\WebBrowser.cpp" />
+    <ClCompile Include="..\Core\ScriptAPI\WebBrowserPrivate_win.cpp" />
+    <ClCompile Include="..\Func\MyLogSink.cpp" />
+    <ClCompile Include="..\Gui\Dialogs\WebViewWindow.cpp" />
+    <ClCompile Include="..\Gui\Controls\WTLBrowserView.cpp" />
+    <ClCompile Include="..\3rdpart\GdiplusH.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Func\SystemUtils.h" />
+    <ClInclude Include="..\Func\WebUtils.h" />
+    <ClInclude Include="..\Func\WinUtils.h" />
+    <ClInclude Include="..\Core\Upload\FileUploadTask.h" />
+    <ClInclude Include="..\Core\Upload\UploadTask.h" />
+    <ClInclude Include="..\Core\Upload\UrlShorteningTask.h" />
+    <ClInclude Include="..\Core\Video\VideoUtils.h" />
+    <ClInclude Include="..\Core\Utils\CoreTypes.h" />
+    <ClInclude Include="..\Core\Utils\CryptoUtils.h" />
+    <ClInclude Include="..\Core\Utils\GlobalMutex.h" />
+    <ClInclude Include="..\Core\Utils\StringUtils.h" />
+    <ClInclude Include="..\Core\Utils\utils_unix.h" />
+    <ClInclude Include="..\Core\3rdpart\codepages.h" />
+    <ClInclude Include="..\Core\Utils\codepages.h" />
+    <ClInclude Include="..\Core\Utils\CoreUtils.h" />
+    <ClInclude Include="..\Core\FileDownloader.h" />
+    <ClInclude Include="..\HotkeySettings.h" />
+    <ClInclude Include="MainDlg.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="..\Core\SettingsManager.h" />
+    <ClInclude Include="..\Core\Utils\SimpleXml.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="..\Core\UploadEngine.h" />
+    <ClInclude Include="..\Core\Utils\utils_win.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\ServerListTool.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ServerListTool.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

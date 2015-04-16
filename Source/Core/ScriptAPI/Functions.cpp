@@ -25,6 +25,7 @@
 #include <Core/Squirrelnc.h>
 #include <Core/Logging.h>
 #include <json/json.h>
+#include <Core/Network/NetworkClient.h>
 #ifdef _WIN32
     #include <windows.h>
     #ifndef IU_CLI
@@ -46,6 +47,7 @@
 #include "Core/3rdpart/base64.h"
 #include "Core/3rdpart/codepages.h"
 #include "versioninfo.h"
+#include "ScriptAPI.h"
 
 using namespace Sqrat;
 
@@ -57,7 +59,6 @@ const std::string GetScriptsDirectory()
 {
 	return AppParams::instance()->settingsDirectory() + "Scripts/";
 }
-
 
 const std::string GetAppLanguageFile()
 {
@@ -111,7 +112,7 @@ Sqrat::Object IncludeScript(const std::string& filename)
 		LOG(ERROR) << "include() failed: could not read file \"" + absolutePath + "\".";
 		return Sqrat::Object();
 	}
-    Sqrat::Script squirrelScript(Sqrat::DefaultVM::Get());
+    Sqrat::Script squirrelScript(GetCurrentThreadVM().GetVM());
     squirrelScript.CompileString(scriptText.c_str(),IuCoreUtils::ExtractFileName(absolutePath).c_str());
     squirrelScript.Run();
 	return Sqrat::Object();
@@ -377,7 +378,7 @@ void DebugMessage(const std::string& msg, bool isResponseBody)
 #else
 	std::cerr<<IuCoreUtils::Utf8ToSystemLocale(msg)<<std::endl;
 #endif
-    getc(stdin);
+    //getc(stdin);
 #endif
 }
 
@@ -511,7 +512,7 @@ template<class T,class V> void setObjValues(T key, Json::ValueIterator it, V &ob
 
 void parseJSONObj(Json::Value root, Sqrat::Array& obj) {
     Json::ValueIterator it;
-    obj = Sqrat::Array (Sqrat::DefaultVM::Get(), root.size());
+    obj = Sqrat::Array (GetCurrentThreadVM().GetVM(), root.size());
     for(it = root.begin(); it != root.end(); ++it) {
         int key = it.key().asInt();
         setObjValues(key, it, obj);
@@ -520,7 +521,7 @@ void parseJSONObj(Json::Value root, Sqrat::Array& obj) {
 
 void parseJSONObj(Json::Value root, Sqrat::Table& obj) {
     Json::ValueIterator it;
-    obj = Sqrat::Table (Sqrat::DefaultVM::Get());
+    obj = Sqrat::Table (GetCurrentThreadVM().GetVM());
     for(it = root.begin(); it != root.end(); ++it) {
         std::string key = it.key().asString();
         setObjValues(key.data(), it, obj);
@@ -533,14 +534,14 @@ Sqrat::Object parseJSONObj(Json::Value root) {
 	bool isArray = root.isArray();
 	
 	if ( isArray ) {
-        Sqrat::Array obj(Sqrat::DefaultVM::Get(), root.size());
+        Sqrat::Array obj(GetCurrentThreadVM().GetVM(), root.size());
 		for(it = root.begin(); it != root.end(); ++it) {
 			int key = it.key().asInt();
 			setObjValues(key, it, obj);
 		}
         return obj;
 	} else {
-        Sqrat::Table obj(Sqrat::DefaultVM::Get());
+        Sqrat::Table obj(GetCurrentThreadVM().GetVM());
 		for(it = root.begin(); it != root.end(); ++it) {
 			std::string key = it.key().asString();
 			setObjValues(key.data(), it, obj);
@@ -665,7 +666,20 @@ const std::string plugGetFileExtension(const std::string& path)
     std::string res = IuCoreUtils::ExtractFileExt(path);
     return res;
 }
-
+/*
+void DebugMessage(const std::string& message, bool isServerResponseBody)
+{
+#ifdef IU_CLI
+	#ifdef _WIN32
+		std::wcerr << IuCoreUtils::Utf8ToWstring(message);
+	#else
+		std::cerr << IuCoreUtils::Utf8ToSystemLocale(message);
+	#endif
+#else
+	DefaultErrorHandling::DebugMessage(message, isServerResponseBody);
+#endif
+}
+*/
 void RegisterFunctions(Sqrat::SqratVM& vm)
 {
     Sqrat::RootTable& root = vm.GetRootTable();
@@ -717,7 +731,7 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("sha1_file", &CryptoUtils::CalcSHA1HashFromFile)
         .Func("hmac_sha1", &CryptoUtils::CalcHMACSHA1HashFromString)
         .Func("url_encode", url_encode)
-        .Func("DebugMessage", DefaultErrorHandling::DebugMessage);
+        .Func("DebugMessage", DebugMessage);
     srand(static_cast<unsigned int>(time(0)));
 
     

@@ -24,75 +24,34 @@
 #include <string>
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Upload/UploadEngine.h"
+#include "UploadSession.h"
 
+class UploadFilter;
 class NetworkClient;
 
-class UploadProgress {
-public:
-	std::string statusText;
-	int stage;
-	int64_t uploaded;
-	int64_t totalUpload;
-};
+
+class FileQueueUploaderPrivate;
 
 class CFileQueueUploader
 {
 	public:
-		class Task {
-		public:
-			/*std::string fileName;
-			std::string displayFileName; // without path*/
-			void *userData;
-			//int64_t fileSize;
-			CAbstractUploadEngine *uploadEngine;
-			std::string serverName;
-			std_tr::shared_ptr<UploadTask> uploadTask;
-		};
-
-		struct FileListItem
-		{
-			std::string fileName;
-			std::string displayName;
-			std::string imageUrl;
-			std::string thumbUrl;
-			std::string downloadUrl;
-			std::string serverName;
-			int64_t fileSize;
-			Task * uploadTask;
-			FileListItem() {
-				uploadTask = 0;
-				fileSize = 0;
-			}
-			//void * user_data;
-		};
-
-		
-
-		class Callback
-		{
-		public:
-			virtual bool OnFileFinished(bool ok, FileListItem& result){return true;}
-			virtual bool OnQueueFinished(CFileQueueUploader* queueUploader) { return true;}
-			virtual bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm){return true;}
-			virtual bool OnUploadProgress(UploadProgress progress, Task* task, NetworkClient* nm){return true;}
-		};
-
 		CFileQueueUploader();
-		void AddFile(const std::string& fileName, const std::string& displayName, void* user_data, CAbstractUploadEngine *uploadEngine);
-		void AddUploadTask(std_tr::shared_ptr<UploadTask> task, void* user_data, CAbstractUploadEngine *uploadEngine);
-		void AddFile(Task task);
+		void addSession(std::shared_ptr<UploadSession> uploadSession);
+		void addTask(std_tr::shared_ptr<UploadTask> task);
 		void setUploadSettings(CAbstractUploadEngine * engine);
-		void setCallback(Callback* callback);
 		~CFileQueueUploader();
 		bool start();
 		void stop();
 		bool IsRunning() const;
 		void setMaxThreadCount(int threadCount);
 		bool isSlotAvailableForServer(std::string serverName, int maxThreads);
+		void addUploadFilter(UploadFilter* filter);
+		void removeUploadFilter(UploadFilter* filter);
+
+		fastdelegate::FastDelegate2<CFileQueueUploader, bool> OnQueueFinished;
 	private:
 		DISALLOW_COPY_AND_ASSIGN(CFileQueueUploader);
-		class Impl;
-		Impl* _impl;
+		FileQueueUploaderPrivate* _impl;
 };
 
 #endif

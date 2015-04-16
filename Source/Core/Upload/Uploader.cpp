@@ -97,21 +97,21 @@ int CUploader::pluginProgressFunc (void* userData, double dltotal, double dlnow,
 }
 
 bool CUploader::UploadFile(const std::string& FileName, const std::string displayFileName) {
-	FileUploadTask task(FileName, displayFileName);
-	return Upload(&task);
+	return Upload(std::shared_ptr<UploadTask>(new FileUploadTask(FileName, displayFileName)));
 }
 
-bool CUploader::Upload(UploadTask* task) {
+bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
 
 	if (!m_CurrentEngine) {
 		Error(true, "Cannot proceed: m_CurrentEngine is NULL!");
 		return false;
 	}
 	std::string FileName;
+	currentTask_ = task;
 
 
 	if ( task->getType() == "file" ) {
-		FileName = ((FileUploadTask*)task)->getFileName();
+		FileName = static_cast<FileUploadTask*>(task.get())->getFileName();
 		if ( FileName.empty() ) {
 			Error(true, "Empty filename!");
 			return false;
@@ -128,7 +128,7 @@ bool CUploader::Upload(UploadTask* task) {
 	m_FileName = FileName;
 	m_bShouldStop = false;
 	if (onConfigureNetworkClient)
-		onConfigureNetworkClient(&m_NetworkClient);
+		onConfigureNetworkClient(this, &m_NetworkClient);
 	m_CurrentEngine->setNetworkClient(&m_NetworkClient);
 	m_CurrentEngine->onDebugMessage.bind(this, &CUploader::DebugMessage);
 	m_CurrentEngine->onNeedStop.bind(this, &CUploader::needStop);
@@ -149,7 +149,7 @@ bool CUploader::Upload(UploadTask* task) {
 			Cleanup();
 			return false;
 		}
-		EngineRes = m_CurrentEngine->doUpload(task, uparams);
+		EngineRes = m_CurrentEngine->doUpload(task.get(), uparams);
 		if ( EngineRes == -1 ) {
 			Cleanup();
 			return false;
@@ -194,7 +194,7 @@ void CUploader::SetStatus(StatusType status, int param1, std::string param)
 {
 	m_CurrentStatus = status;
 	if (onStatusChanged)
-		onStatusChanged(status, param1,  param);
+		onStatusChanged(this, status, param1,  param);
 }
 
 StatusType CUploader::GetStatus() const
@@ -241,16 +241,21 @@ bool CUploader::needStop()
 	return m_bShouldStop;
 }
 
+std::shared_ptr<UploadTask> CUploader::currentTask()
+{
+	return currentTask_;
+}
+
 void CUploader::DebugMessage(const std::string& message, bool isServerResponseBody)
 {
 	if (onDebugMessage)
-		onDebugMessage(message, isServerResponseBody);
+		onDebugMessage(this, message, isServerResponseBody);
 }
 
 void CUploader::ErrorMessage(ErrorInfo error)
 {
 	if (onErrorMessage)
-		onErrorMessage(error);
+		onErrorMessage(this, error);
 }
 
 void CUploader::Error(bool error, std::string message, ErrorType type, int retryIndex)

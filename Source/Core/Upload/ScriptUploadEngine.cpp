@@ -25,36 +25,19 @@
 #include <stdarg.h>
 #include <iostream>
 #include <Core/Squirrelnc.h>
-#include <sqstdio.h>
-#include <sqstdmath.h>
-#include <sqstdstring.h>
 #include <sqstdaux.h>
-#include <sqstdblob.h>
-#include <sqstdsystem.h>
 
 
 #include "Core/Utils/CryptoUtils.h"
 
 #include <Core/Upload/FileUploadTask.h>
 #include <Core/Upload/UrlShorteningTask.h>
-#include <sstream>
 #include <Core/Utils/StringUtils.h>
 #include <Core/Logging.h>
 #ifndef _WIN32
 #include <unistd.h>
 #endif
 #include <Core/ScriptAPI/ScriptAPI.h>
-/*
-using namespace Sqrat;
-// Squirrel types should be defined in the same module where they are used
-// otherwise we will catch SqPlus exception while executing Squirrel functions
-///DECLARE_INSTANCE_TYPE(std::string);
-using namespace  ScriptAPI;
-DECLARE_INSTANCE_TYPE(NetworkClient);
-DECLARE_INSTANCE_TYPE(ServerSettingsStruct);
-DECLARE_INSTANCE_TYPE(CFolderList);
-DECLARE_INSTANCE_TYPE(CFolderItem);
-DECLARE_INSTANCE_TYPE(CIUUploadParams);*/
 
 std::string squirrelOutput;
 const Utf8String IuNewFolderMark = "_iu_create_folder_";

@@ -1,0 +1,1128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release 64|Win32">
+      <Configuration>Release 64</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release 64|x64">
+      <Configuration>Release 64</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release optimized|Win32">
+      <Configuration>Release optimized</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release optimized|x64">
+      <Configuration>Release optimized</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Win2k|Win32">
+      <Configuration>Release Win2k</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Win2k|x64">
+      <Configuration>Release Win2k</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B62E6078-78E7-4945-9510-3BB1343CB7B2}</ProjectGuid>
+    <RootNamespace>ImageUploader</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Win2k|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release 64|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Win2k|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release 64|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Win2k|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release 64|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Win2k|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release 64|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.21005.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)Build\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Build\Temp\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)Build\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Build\Temp\$(Configuration)\</IntDir>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+    <LinkIncremental>false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Build\Temp\$(Configuration)\ShellExt\</IntDir>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+    <LinkIncremental>false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release 64|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+    <LinkIncremental>false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release 64|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+    <LinkIncremental>false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'">
+    <OutDir>$(SolutionDir)Build\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Build\Temp\$(Configuration)\</IntDir>
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <LinkIncremental>false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+    <LinkIncremental>false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Win2k|Win32'">
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Win2k|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+    <LinkIncremental>false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <OutputDirectory>$(SolutionDir)Build\Temp\Midl\$(Configuration)</OutputDirectory>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/MP$(NUMBER_OF_PROCESSORS) %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX;TIXML_USE_STL;PCRE_STATIC;CURL_STATICLIB;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CallingConvention>Cdecl</CallingConvention>
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;zlibd.lib;minizipd.lib;zthread.lib;gdiplus.lib;strmbasd.lib;libcurld_imp.lib;Ws2_32.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;dwmapi.lib;squirrel.lib;sqstdlib.lib;ssleay32.lib;libeay32.lib;pcred.lib;pcre++.lib;wininet.lib;winmm.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Debug;$(SolutionDir)Contrib\Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;LIBCMT.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Iphlpapi.dll;Netapi32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <OutputDirectory>$(SolutionDir)Build\Temp\Midl\$(Configuration)</OutputDirectory>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;$(SolutionDir)\Include\tinyxml;$(SolutionDir)\Include\pcre;$(SolutionDir)\Include\sqplus;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CallingConvention>Cdecl</CallingConvention>
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>gdiplus.lib;strmbasd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;zdlld.lib;minizipd.lib;tinyxmld_STL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs;$(SolutionDir)\Libs\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Command>"$(SolutionDir)\Utils\Version\version.exe" "$(SolutionDir)\Source\versioninfo.h" ImageUploader</Command>
+    </PreBuildEvent>
+    <Midl>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
+      <OutputDirectory>$(SolutionDir)Build\Temp\Midl\$(Configuration)</OutputDirectory>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/MP$(NUMBER_OF_PROCESSORS) %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC;TIXML_USE_STL;PCRE_STATIC;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <DebugInformationFormat />
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <PreLinkEvent>
+      <Command />
+    </PreLinkEvent>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Link>
+      <AdditionalOptions> /ignore:4099 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>gdiplus.lib;STRMBASE.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbccp32.lib;minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;zthread.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;urlmon.lib;avformat.lib;avutil.lib;swscale.lib;avcodec.lib;wininet.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Release;$(SolutionDir)\Contrib\Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>msvcprt.lib MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Iphlpapi.dll;Netapi32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AssemblyDebug />
+      <GenerateMapFile>false</GenerateMapFile>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PreBuildEvent>
+      <Command>"$(SolutionDir)\Utils\Version\version.exe" "$(SolutionDir)\Source\versioninfo.h" ImageUploader</Command>
+    </PreBuildEvent>
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
+      <OutputDirectory>$(SolutionDir)Build\Temp\Midl\$(Configuration)</OutputDirectory>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;$(SolutionDir)\Include\pcre;$(SolutionDir)\Include\tinyxml;$(SolutionDir)\Include\sqplus;$(SolutionDir)\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat />
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <PreLinkEvent>
+      <Command />
+    </PreLinkEvent>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Link>
+      <AdditionalOptions>/CRINKLER %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>gdiplus.lib;STRMBASE.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;wininet.lib;minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;tinyxml_STL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs;$(SolutionDir)\Libs\;$(SolutionDir)\Libs\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>msvcprt.lib MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release 64|Win32'">
+    <PreBuildEvent>
+      <Command>"$(SolutionDir)\Utils\Version\version.exe" "$(SolutionDir)\Source\versioninfo.h" ImageUploader</Command>
+    </PreBuildEvent>
+    <Midl>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
+      <OutputDirectory>$(SolutionDir)Build\Temp\Midl\$(Configuration)</OutputDirectory>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;$(SolutionDir)\Include\pcre;$(SolutionDir)\Include\tinyxml;$(SolutionDir)\Include\sqplus;$(SolutionDir)\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat />
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedUsingFiles>stdafx.h;%(ForcedUsingFiles)</ForcedUsingFiles>
+    </ClCompile>
+    <PreLinkEvent>
+      <Command />
+    </PreLinkEvent>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Link>
+      <AdditionalOptions>/CRINKLER %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>gdiplus.lib;STRMBASE.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;wininet.lib;minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;tinyxml_STL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs;$(SolutionDir)\Libs\;$(SolutionDir)\Libs\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>msvcprt.lib MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release 64|x64'">
+    <PreBuildEvent>
+      <Command>"$(SolutionDir)\Utils\Version\version.exe" "$(SolutionDir)\Source\versioninfo.h" ImageUploader</Command>
+    </PreBuildEvent>
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
+      <OutputDirectory>$(SolutionDir)Build\Temp\Midl\$(Configuration)</OutputDirectory>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;$(SolutionDir)\Include\pcre;$(SolutionDir)\Include\tinyxml;$(SolutionDir)\Include\sqplus;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat />
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <PreLinkEvent>
+      <Command />
+    </PreLinkEvent>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Link>
+      <AdditionalOptions>/CRINKLER %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>gdiplus.lib;STRMBASE.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;wininet.lib;minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;tinyxml_STL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs;$(SolutionDir)\Libs\;$(SolutionDir)\Libs\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>msvcprt.lib MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'">
+    <PreBuildEvent>
+      <Command>"$(SolutionDir)\Utils\Version\versioninc.exe" "$(SolutionDir)\Source\versioninfo.h"</Command>
+    </PreBuildEvent>
+    <CustomBuildStep>
+      <Command />
+    </CustomBuildStep>
+    <Midl>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
+      <OutputDirectory>$(SolutionDir)Build\Temp\Midl\$(Configuration)</OutputDirectory>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>-MP$(NUMBER_OF_PROCESSORS) %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Full</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\sqplus;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <DebugInformationFormat />
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedUsingFiles>stdafx.h;%(ForcedUsingFiles)</ForcedUsingFiles>
+    </ClCompile>
+    <PreLinkEvent>
+      <Command />
+    </PreLinkEvent>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Link>
+      <AdditionalDependencies>gdiplus.lib;STRMBASE.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbccp32.lib;minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;zthread.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;urlmon.lib;avformat.lib;avutil.lib;swscale.lib;avcodec.lib;wininet.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib;$(SolutionDir)\Contrib\Lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>msvcprt.lib MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Iphlpapi.dll;Netapi32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|x64'">
+    <PreBuildEvent>
+      <Command>"$(SolutionDir)\Utils\Version\version.exe" "$(SolutionDir)\Source\versioninfo.h" ImageUploader</Command>
+    </PreBuildEvent>
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
+      <OutputDirectory>$(SolutionDir)Build\Temp\Midl\$(Configuration)</OutputDirectory>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;$(SolutionDir)\Include\pcre;$(SolutionDir)\Include\tinyxml;$(SolutionDir)\Include\sqplus;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat />
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <PreLinkEvent>
+      <Command />
+    </PreLinkEvent>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Link>
+      <AdditionalOptions>/CRINKLER %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>gdiplus.lib;STRMBASE.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;wininet.lib;minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;tinyxml_STL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs;$(SolutionDir)\Libs\;$(SolutionDir)\Libs\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>msvcprt.lib MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Win2k|x64'">
+    <PreBuildEvent>
+      <Command>"$(SolutionDir)\Utils\Version\version.exe" "$(SolutionDir)\Source\versioninfo.h" ImageUploader</Command>
+    </PreBuildEvent>
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
+      <OutputDirectory>$(SolutionDir)Build\Temp\Midl\$(Configuration)</OutputDirectory>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;$(SolutionDir)\Include\pcre;$(SolutionDir)\Include\tinyxml;$(SolutionDir)\Include\sqplus;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat />
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <PreLinkEvent>
+      <Command />
+    </PreLinkEvent>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Link>
+      <AdditionalOptions>/CRINKLER %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>gdiplus.lib;STRMBASE.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;wininet.lib;minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;tinyxml_STL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs;$(SolutionDir)\Libs\;$(SolutionDir)\Libs\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>msvcprt.lib MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Core\Upload\FileQueueUploaderPrivate.h" />
+    <ClInclude Include="Source\Core\Upload\ServerProfile.h" />
+    <ClInclude Include="Source\Core\Upload\UploadFilter.h" />
+    <ClInclude Include="Source\Core\Upload\UploadResult.h" />
+    <ClInclude Include="Source\Core\Upload\UploadSession.h" />
+    <ClInclude Include="Source\logging.h" />
+    <ClInclude Include="Source\resource.h" />
+    <ClInclude Include="Source\versioninfo.h" />
+    <ClInclude Include="Source\Gui\WizardCommon.h" />
+    <ClInclude Include="Source\Gui\Dialogs\AboutDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\AddFtpServerDialog.h" />
+    <ClInclude Include="Source\Gui\Dialogs\ConvertPresetDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\FloatingWindow.h" />
+    <ClInclude Include="Source\Gui\Dialogs\GeneralSettings.h" />
+    <ClInclude Include="Source\Gui\Dialogs\HotkeyEditor.h" />
+    <ClInclude Include="Source\Gui\Dialogs\HotkeySettings.h" />
+    <ClInclude Include="Source\Gui\Dialogs\ImageDownloaderDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\LangSelect.h" />
+    <ClInclude Include="Source\Gui\Dialogs\LoginDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\LogoSettings.h" />
+    <ClInclude Include="Source\Gui\Dialogs\LogWindow.h" />
+    <ClInclude Include="Source\Gui\Dialogs\MainDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\MediaInfoDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\NewFolderDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\RegionSelect.h" />
+    <ClInclude Include="Source\Gui\Dialogs\ResultsPanel.h" />
+    <ClInclude Include="Source\Gui\Dialogs\ResultsWindow.h" />
+    <ClInclude Include="Source\Gui\Dialogs\ScreenshotDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\ScreenshotSettingsPage.h" />
+    <ClInclude Include="Source\Gui\Dialogs\ServerFolderSelect.h" />
+    <ClInclude Include="Source\Gui\Dialogs\ServerParamsDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\ServerSelectDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\SettingsDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\SettingsPage.h" />
+    <ClInclude Include="Source\Gui\Dialogs\SizeExceed.h" />
+    <ClInclude Include="Source\Gui\Dialogs\statusdlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\TextViewDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\TraySettings.h" />
+    <ClInclude Include="Source\Gui\Dialogs\UpdateDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\UploadDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\UploadSettings.h" />
+    <ClInclude Include="Source\Gui\Dialogs\UploadSettingsPage.h" />
+    <ClInclude Include="Source\Gui\Dialogs\VideoGrabber.h" />
+    <ClInclude Include="Source\Gui\Dialogs\VideoGrabberParams.h" />
+    <ClInclude Include="Source\Gui\Dialogs\WelcomeDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\WizardDlg.h" />
+    <ClInclude Include="Source\Gui\Controls\CustomTreeControl.h" />
+    <ClInclude Include="Source\Gui\Controls\DialogIndirect.h" />
+    <ClInclude Include="Source\Gui\Controls\HistoryTreeView.h" />
+    <ClInclude Include="Source\Gui\Controls\hyperlink.h" />
+    <ClInclude Include="Source\Gui\Controls\HyperLinkControl.h" />
+    <ClInclude Include="Source\Gui\Controls\ImageView.h" />
+    <ClInclude Include="Source\Gui\Controls\LogListBox.h" />
+    <ClInclude Include="Source\Gui\Controls\MyImage.h" />
+    <ClInclude Include="Source\Gui\Controls\TabListBox.h" />
+    <ClInclude Include="Source\Gui\Controls\ThumbsView.h" />
+    <ClInclude Include="Source\Func\Common.h" />
+    <ClInclude Include="Source\Func\FileInfoHelper.h" />
+    <ClInclude Include="Source\Func\HistoryManager.h" />
+    <ClInclude Include="Source\Func\LangClass.h" />
+    <ClInclude Include="Source\Func\MyUtils.h" />
+    <ClInclude Include="Source\Func\PluginLoader.h" />
+    <ClInclude Include="Source\Func\Settings.h" />
+    <ClInclude Include="Source\Func\UpdatePackage.h" />
+    <ClInclude Include="Source\atlheaders.h" />
+    <ClInclude Include="Source\stdafx.h" />
+    <ClInclude Include="Source\Common\CmdLine.h" />
+    <ClInclude Include="Source\3rdpart\MemberFunctionCallback.h" />
+    <ClInclude Include="Source\3rdpart\QColorQuantizer.h" />
+    <ClInclude Include="Source\3rdpart\vkCodes.h" />
+    <ClInclude Include="Source\Core\AppParams.h" />
+    <ClInclude Include="Source\Core\FileDownloader.h" />
+    <ClInclude Include="Source\Core\OutputCodeGenerator.h" />
+    <ClInclude Include="Source\Core\ScreenCapture.h" />
+    <ClInclude Include="Source\Core\ServerListManager.h" />
+    <ClInclude Include="Source\Core\SettingsManager.h" />
+    <ClInclude Include="Source\Core\Squirrelnc.h" />
+    <ClInclude Include="Source\Core\TextUtils.h" />
+    <ClInclude Include="Source\Core\UploadEngineList.h" />
+    <ClInclude Include="Source\Core\Upload\CommonTypes.h" />
+    <ClInclude Include="Source\Core\Upload\DefaultUploadEngine.h" />
+    <ClInclude Include="Source\Core\Upload\FileQueueUploader.h" />
+    <ClInclude Include="Source\Core\Upload\FileUploadTask.h" />
+    <ClInclude Include="Source\Core\Upload\FolderList.h" />
+    <ClInclude Include="Source\Core\Upload\ScriptUploadEngine.h" />
+    <ClInclude Include="Source\Core\Upload\UploadEngine.h" />
+    <ClInclude Include="Source\Core\Upload\Uploader.h" />
+    <ClInclude Include="Source\Core\Upload\UploadTask.h" />
+    <ClInclude Include="Source\Core\Upload\UrlShorteningTask.h" />
+    <ClInclude Include="Source\Core\Network\NetworkClient.h" />
+    <ClInclude Include="Source\Core\Utils\CoreTypes.h" />
+    <ClInclude Include="Source\Core\Utils\CoreUtils.h" />
+    <ClInclude Include="Source\Core\Utils\CryptoUtils.h" />
+    <ClInclude Include="Source\Core\Utils\GlobalMutex.h" />
+    <ClInclude Include="Source\Core\Utils\SimpleXml.h" />
+    <ClInclude Include="Source\Core\Utils\Singleton.h" />
+    <ClInclude Include="Source\Core\Utils\StringUtils.h" />
+    <ClInclude Include="Source\Core\Utils\utils_unix.h" />
+    <ClInclude Include="Source\Core\Utils\utils_win.h" />
+    <ClInclude Include="Source\Core\Images\ImageConverter.h" />
+    <ClInclude Include="Source\Core\Images\Thumbnail.h" />
+    <ClInclude Include="Source\Core\Images\Utils.h" />
+    <ClInclude Include="Source\Core\3rdpart\dxerr.h" />
+    <ClInclude Include="Source\Core\3rdpart\utf8\checked.h" />
+    <ClInclude Include="Source\Core\3rdpart\utf8\core.h" />
+    <ClInclude Include="Source\Core\3rdpart\utf8\unchecked.h" />
+    <ClInclude Include="Source\Core\Video\AbstractFrameGrabber.h" />
+    <ClInclude Include="Source\Core\Video\AbstractImage.h" />
+    <ClInclude Include="Source\Core\Video\AbstractVideoFrame.h" />
+    <ClInclude Include="Source\Core\Video\AvcodecFrameGrabber.h" />
+    <ClInclude Include="Source\Core\Video\DirectshowFrameGrabber.h" />
+    <ClInclude Include="Source\Core\Video\DirectShowUtil.h" />
+    <ClInclude Include="Source\Core\Video\GdiPlusImage.h" />
+    <ClInclude Include="Source\Core\Video\VideoGrabber.h" />
+    <ClInclude Include="Source\Core\Video\VideoUtils.h" />
+    <ClInclude Include="Source\Core\ScriptAPI\COMUtils.h" />
+    <ClInclude Include="Source\Core\ScriptAPI\Functions.h" />
+    <ClInclude Include="Source\Core\ScriptAPI\HtmlDocument.h" />
+    <ClInclude Include="Source\Core\ScriptAPI\HtmlDocumentPrivate_win.h" />
+    <ClInclude Include="Source\Core\ScriptAPI\HtmlElement.h" />
+    <ClInclude Include="Source\Core\ScriptAPI\HtmlElementPrivate_win.h" />
+    <ClInclude Include="Source\Core\ScriptAPI\RegularExpression.h" />
+    <ClInclude Include="Source\Core\ScriptAPI\ScriptAPI.h" />
+    <ClInclude Include="Source\Core\ScriptAPI\WebBrowser.h" />
+    <ClInclude Include="Source\Core\ScriptAPI\WebBrowserPrivate_win.h" />
+    <ClInclude Include="Source\Gui\GuiTools.h" />
+    <ClInclude Include="Source\Gui\IconBitmapUtils.h" />
+    <ClInclude Include="Source\Gui\Dialogs\AddDirectoryServerDIalog.h" />
+    <ClInclude Include="Source\Gui\Dialogs\ContextMenuItemDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\DefaultServersSettings.h" />
+    <ClInclude Include="Source\Gui\Dialogs\HistoryWindow.h" />
+    <ClInclude Include="Source\Gui\Dialogs\ImageReuploaderDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\InputDialog.h" />
+    <ClInclude Include="Source\Gui\Dialogs\IntegrationSettings.h" />
+    <ClInclude Include="Source\Gui\Dialogs\ShortenUrlDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\ThumbEditor.h" />
+    <ClInclude Include="Source\Gui\Dialogs\ThumbSettingsPage.h" />
+    <ClInclude Include="Source\Gui\Dialogs\UploadParamsDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\WebViewWindow.h" />
+    <ClInclude Include="Source\Gui\Controls\Browser.h" />
+    <ClInclude Include="Source\Gui\Controls\CustomEditControl.h" />
+    <ClInclude Include="Source\Gui\Controls\HistoryTreeControl.h" />
+    <ClInclude Include="Source\Gui\Controls\IconButton.h" />
+    <ClInclude Include="Source\Gui\Controls\PercentEdit.h" />
+    <ClInclude Include="Source\Gui\Controls\PictureExWnd.h" />
+    <ClInclude Include="Source\Gui\Controls\ServerSelectorControl.h" />
+    <ClInclude Include="Source\Gui\Controls\WTLBrowserView.h" />
+    <ClInclude Include="Source\Func\Base.h" />
+    <ClInclude Include="Source\Func\ImageEditorConfigurationProvider.h" />
+    <ClInclude Include="Source\Func\IuCommonFunctions.h" />
+    <ClInclude Include="Source\Func\LocalFileCache.h" />
+    <ClInclude Include="Source\Func\MyDataObject.h" />
+    <ClInclude Include="Source\Func\MyDropSource.h" />
+    <ClInclude Include="Source\Func\MyEngineList.h" />
+    <ClInclude Include="Source\Func\MyLogSink.h" />
+    <ClInclude Include="Source\Func\SystemUtils.h" />
+    <ClInclude Include="Source\Func\WebUtils.h" />
+    <ClInclude Include="Source\Func\WinUtils.h" />
+    <ClInclude Include="Source\ImageEditor\BasicTypes.h" />
+    <ClInclude Include="Source\ImageEditor\Canvas.h" />
+    <ClInclude Include="Source\ImageEditor\Document.h" />
+    <ClInclude Include="Source\ImageEditor\DrawingElement.h" />
+    <ClInclude Include="Source\ImageEditor\DrawingTool.h" />
+    <ClInclude Include="Source\ImageEditor\InputBox.h" />
+    <ClInclude Include="Source\ImageEditor\MovableElement.h" />
+    <ClInclude Include="Source\ImageEditor\MovableElements.h" />
+    <ClInclude Include="Source\ImageEditor\Region.h" />
+    <ClInclude Include="Source\ImageEditor\resource.h" />
+    <ClInclude Include="Source\ImageEditor\Gui\ColorsDelegate.h" />
+    <ClInclude Include="Source\ImageEditor\Gui\ImageEditorView.h" />
+    <ClInclude Include="Source\ImageEditor\Gui\ImageEditorWindow.h" />
+    <ClInclude Include="Source\ImageEditor\Gui\InputBoxControl.h" />
+    <ClInclude Include="Source\ImageEditor\Gui\TextParamsWindow.h" />
+    <ClInclude Include="Source\ImageEditor\Gui\Toolbar.h" />
+    <ClInclude Include="Source\ImageEditor\DrawingTools\AbstractDrawingTool.h" />
+    <ClInclude Include="Source\ImageEditor\DrawingTools\BlurTool.h" />
+    <ClInclude Include="Source\ImageEditor\DrawingTools\BrushTool.h" />
+    <ClInclude Include="Source\ImageEditor\DrawingTools\ColorPickerTool.h" />
+    <ClInclude Include="Source\ImageEditor\DrawingTools\CropTool.h" />
+    <ClInclude Include="Source\ImageEditor\DrawingTools\MarkerTool.h" />
+    <ClInclude Include="Source\ImageEditor\DrawingTools\MoveAndResizeTool.h" />
+    <ClInclude Include="Source\ImageEditor\DrawingTools\PenTool.h" />
+    <ClInclude Include="Source\ImageEditor\DrawingTools\SelectionTool.h" />
+    <ClInclude Include="Source\ImageEditor\DrawingTools\TextTool.h" />
+    <ClInclude Include="Source\ImageEditor\DrawingTools\VectorElementTool.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Source\res\addition.ico" />
+    <Image Include="Source\res\shadows\bottomLeftShadow.png" />
+    <Image Include="Source\res\shadows\bottomRightShadow.png" />
+    <Image Include="Source\res\shadows\bottomShadow.png" />
+    <Image Include="Source\res\Error.ico" />
+    <Image Include="Source\res\grabmovie.ico" />
+    <Image Include="Source\res\icon-add.ico" />
+    <Image Include="Source\res\icon-addfolder.ico" />
+    <Image Include="Source\res\icon-clipboard.ico" />
+    <Image Include="Source\res\icon-close.ico" />
+    <Image Include="Source\res\icon-folder.ico" />
+    <Image Include="Source\res\icon-freeform.ico" />
+    <Image Include="Source\res\icon-info.ico" />
+    <Image Include="Source\res\icon-link.ico" />
+    <Image Include="res\icon-link.ico" />
+    <Image Include="res\icon-link.png" />
+    <Image Include="Source\res\icon-link.png" />
+    <Image Include="Source\res\icon-region.ico" />
+    <Image Include="Source\res\icon-reload.ico" />
+    <Image Include="res\icon-reload.ico" />
+    <Image Include="Source\res\icon-settings.ico" />
+    <Image Include="Source\res\icon-settings2.ico" />
+    <Image Include="Source\res\icon-user.ico" />
+    <Image Include="res\icon-user.ico" />
+    <Image Include="Source\res\icon-web.ico" />
+    <Image Include="Source\res\icon-window.ico" />
+    <Image Include="Source\res\icon-windows.ico" />
+    <Image Include="Source\res\icon4.ico" />
+    <Image Include="Source\res\icon8.ico" />
+    <Image Include="res\ImageEditor\icon_add.png" />
+    <Image Include="Source\res\ImageEditor\icon_add.png" />
+    <Image Include="Source\res\icon_additem.ico" />
+    <Image Include="res\icon_additem.ico" />
+    <Image Include="Source\res\icon_additional.ico" />
+    <Image Include="Source\res\ImageEditor\icon_bold.ico" />
+    <Image Include="res\ImageEditor\icon_bold.ico" />
+    <Image Include="Source\res\ImageEditor\icon_clipboard.png" />
+    <Image Include="res\ImageEditor\icon_clipboard.png" />
+    <Image Include="Source\res\icon_delete.ico" />
+    <Image Include="res\icon_deleteitem.ico" />
+    <Image Include="Source\res\icon_deleteitem.ico" />
+    <Image Include="Source\res\icon_down.ico" />
+    <Image Include="res\icon_down.ico" />
+    <Image Include="Source\res\icon_dropdown.ico" />
+    <Image Include="Source\res\icon_dropdown_png.png" />
+    <Image Include="Source\res\icon_edit.ico" />
+    <Image Include="Source\res\icon_folder2.ico" />
+    <Image Include="res\icon_folder2.ico" />
+    <Image Include="res\icon_folder2.png" />
+    <Image Include="Source\res\icon_folder2.png" />
+    <Image Include="Source\res\icon_history.ico" />
+    <Image Include="res\ImageEditor\icon_italic.ico" />
+    <Image Include="Source\res\ImageEditor\icon_italic.ico" />
+    <Image Include="Source\res\icon_main.ico" />
+    <Image Include="Source\res\icon_main.png" />
+    <Image Include="res\icon_main_new.png" />
+    <Image Include="Source\res\icon_main_new.png" />
+    <Image Include="Source\res\icon_save.ico" />
+    <Image Include="Source\res\ImageEditor\icon_save.png" />
+    <Image Include="res\ImageEditor\icon_save.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_arrow.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_bluring_rectangle.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_brush.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_color_picker.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_crop.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_ellipse.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_filled_ellipse.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_filled_rectangle.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_filled_rounded_rectangle.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_line.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_marker.png" />
+    <Image Include="res\ImageEditor\icon_tool_marker.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_move.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_pencil.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_rectangle.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_rounded_rectangle.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_selection.png" />
+    <Image Include="Source\res\ImageEditor\icon_tool_text.png" />
+    <Image Include="res\ImageEditor\icon_underline.ico" />
+    <Image Include="Source\res\ImageEditor\icon_underline.ico" />
+    <Image Include="Source\res\ImageEditor\icon_undo.png" />
+    <Image Include="res\icon_up.ico" />
+    <Image Include="Source\res\icon_up.ico" />
+    <Image Include="res\ImageEditor\icon_upload.png" />
+    <Image Include="Source\res\ImageEditor\icon_upload.png" />
+    <Image Include="Source\res\icon_whitepage.ico" />
+    <Image Include="Source\res\images.ico" />
+    <Image Include="Source\res\imageuploader_wizard.bmp" />
+    <Image Include="Source\res\imageuploader_wizard.png" />
+    <Image Include="Source\res\shadows\leftShadow.png" />
+    <Image Include="res\new_icon.ico" />
+    <Image Include="Source\res\new_icon.ico" />
+    <Image Include="Source\res\shadows\png2.png" />
+    <Image Include="Source\res\shadows\rightShadow.png" />
+    <Image Include="Source\res\screen.ico" />
+    <Image Include="Source\res\server.bmp" />
+    <Image Include="Source\res\server_8bit.bmp" />
+    <Image Include="Source\res\toolbar11.bmp" />
+    <Image Include="Source\res\toolbar22.bmp" />
+    <Image Include="Source\res\shadows\topLeftShadow.png" />
+    <Image Include="Source\res\shadows\topLeftShadowSquare.png" />
+    <Image Include="Source\res\shadows\topRightShadow.png" />
+    <Image Include="Source\res\shadows\topRightShadowSquare.png" />
+    <Image Include="Source\res\shadows\topShadow.png" />
+    <Image Include="Source\res\TrackToolBar.bmp" />
+    <Image Include="Source\res\Warning.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Source\res\ImageEditor\colorpicker.cur" />
+    <None Include="Source\res\SendToShlExt.rgs" />
+    <None Include="Source\res\progress.gif_" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Source\Image Uploader.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Core\Upload\FileQueueUploaderPrivate.cpp" />
+    <ClCompile Include="Source\Core\Upload\ServerProfile.cpp" />
+    <ClCompile Include="Source\Core\Upload\UploadFilter.cpp" />
+    <ClCompile Include="Source\Core\Upload\UploadSession.cpp" />
+    <ClCompile Include="Source\Image Uploader.cpp" />
+    <ClCompile Include="Source\Core\Logging.cpp" />
+    <ClCompile Include="Source\stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\Common\CmdLine.cpp" />
+    <ClCompile Include="Source\3rdpart\ColorButton.cpp" />
+    <ClCompile Include="Source\3rdpart\MemberFunctionCallback.cpp" />
+    <ClCompile Include="Source\3rdpart\QColorQuantizer.cpp" />
+    <ClCompile Include="Source\3rdpart\Registry.cpp" />
+    <ClCompile Include="Source\3rdpart\Unzipper.cpp" />
+    <ClCompile Include="Source\3rdpart\vkCodes.cpp" />
+    <ClCompile Include="Source\3rdpart\WinHotkeyCtrl.cpp" />
+    <ClCompile Include="Source\Core\AppParams.cpp" />
+    <ClCompile Include="Source\Core\FileDownloader.cpp" />
+    <ClCompile Include="Source\Core\ScreenCapture.cpp" />
+    <ClCompile Include="Source\Core\ServerListManager.cpp" />
+    <ClCompile Include="Source\Core\SettingsManager.cpp" />
+    <ClCompile Include="Source\Core\TextUtils.cpp" />
+    <ClCompile Include="Source\Core\UploadEngineList.cpp" />
+    <ClCompile Include="Source\Core\Upload\DefaultUploadEngine.cpp" />
+    <ClCompile Include="Source\Core\Upload\FileQueueUploader.cpp" />
+    <ClCompile Include="Source\Core\Upload\FileUploadTask.cpp" />
+    <ClCompile Include="Source\Core\Upload\FolderList.cpp" />
+    <ClCompile Include="Source\Core\Upload\ScriptUploadEngine.cpp">
+      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ShowIncludes>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\UploadEngine.cpp" />
+    <ClCompile Include="Source\Core\Upload\Uploader.cpp" />
+    <ClCompile Include="Source\Core\Upload\UploadTask.cpp" />
+    <ClCompile Include="Source\Core\Upload\UrlShorteningTask.cpp" />
+    <ClCompile Include="Source\Core\Network\NetworkClient.cpp" />
+    <ClCompile Include="Source\Core\Utils\CoreUtils.cpp" />
+    <ClCompile Include="Source\Core\Utils\CryptoUtils.cpp" />
+    <ClCompile Include="Source\Core\Utils\GlobalMutex.cpp" />
+    <ClCompile Include="Source\Core\Utils\SimpleXml.cpp" />
+    <ClCompile Include="Source\Core\Utils\Singleton.cpp" />
+    <ClCompile Include="Source\Core\Utils\StringUtils.cpp" />
+    <ClCompile Include="Source\Core\Images\ImageConverter.cpp" />
+    <ClCompile Include="Source\Core\Images\Thumbnail.cpp" />
+    <ClCompile Include="Source\Core\Images\Utils.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\base64.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\CodePages.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\CP_RSA.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\dxerr.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\parser.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\pcreplusplus.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\tinystr.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\tinyxml.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\tinyxmlerror.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\tinyxmlparser.cpp" />
+    <ClCompile Include="Source\Core\Video\AbstractFrameGrabber.cpp" />
+    <ClCompile Include="Source\Core\Video\AbstractImage.cpp" />
+    <ClCompile Include="Source\Core\Video\AbstractVideoFrame.cpp" />
+    <ClCompile Include="Source\Core\Video\AvcodecFrameGrabber.cpp" />
+    <ClCompile Include="Source\Core\Video\DirectshowFrameGrabber.cpp" />
+    <ClCompile Include="Source\Core\Video\DirectShowUtil.cpp" />
+    <ClCompile Include="Source\Core\Video\GdiPlusImage.cpp" />
+    <ClCompile Include="Source\Core\Video\VideoGrabber.cpp" />
+    <ClCompile Include="Source\Core\Video\VideoUtils.cpp" />
+    <ClCompile Include="Source\Core\ScriptAPI\COMUtils.cpp" />
+    <ClCompile Include="Source\Core\ScriptAPI\Functions.cpp">
+      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ShowIncludes>
+    </ClCompile>
+    <ClCompile Include="Source\Core\ScriptAPI\HtmlDocument.cpp">
+      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ShowIncludes>
+    </ClCompile>
+    <ClCompile Include="Source\Core\ScriptAPI\HtmlDocumentPrivate_win.cpp">
+      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ShowIncludes>
+    </ClCompile>
+    <ClCompile Include="Source\Core\ScriptAPI\HtmlElement.cpp" />
+    <ClCompile Include="Source\Core\ScriptAPI\HtmlElementPrivate_win.cpp" />
+    <ClCompile Include="Source\Core\ScriptAPI\RegularExpression.cpp" />
+    <ClCompile Include="Source\Core\ScriptAPI\ScriptAPI.cpp" />
+    <ClCompile Include="Source\Core\ScriptAPI\WebBrowser.cpp" />
+    <ClCompile Include="Source\Core\ScriptAPI\WebBrowserPrivate_win.cpp" />
+    <ClCompile Include="Source\Gui\GuiTools.cpp" />
+    <ClCompile Include="Source\Gui\IconBitmapUtils.cpp" />
+    <ClCompile Include="Source\Gui\WizardCommon.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\AboutDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\AddDirectoryServerDialog.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\AddFtpServerDialog.cpp">
+      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ShowIncludes>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\ContextMenuItemDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\ConvertPresetDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\DefaultServersSettings.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\FloatingWindow.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\GeneralSettings.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\HistoryWindow.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\HotkeyEditor.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\HotkeySettings.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\ImageDownloaderDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\ImageReuploaderDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\InputDialog.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\IntegrationSettings.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\LangSelect.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\LoginDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\LogoSettings.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\LogWindow.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\MainDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\MediaInfoDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\NewFolderDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\QuickSetupDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\RegionSelect.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\ResultsPanel.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\ResultsWindow.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\ScreenshotDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\ScreenshotSettingsPage.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\ServerFolderSelect.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\ServerParamsDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\SettingsDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\settingspage.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\ShortenUrlDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\SizeExceed.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\StatusDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\TextViewDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\ThumbEditor.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\ThumbSettingsPage.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\TraySettings.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\UpdateDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\UploadDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\UploadParamsDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\UploadSettings.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\UploadSettingsPage.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\VideoGrabberPage.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\VideoGrabberParams.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\WebViewWindow.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\WelcomeDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\WizardDlg.cpp" />
+    <ClCompile Include="Source\Gui\Controls\CustomEditControl.cpp" />
+    <ClCompile Include="Source\Gui\Controls\HistoryTreeControl.cpp" />
+    <ClCompile Include="Source\Gui\Controls\HistoryTreeView.cpp" />
+    <ClCompile Include="Source\Gui\Controls\HyperLinkControl.cpp" />
+    <ClCompile Include="Source\Gui\Controls\IconButton.cpp" />
+    <ClCompile Include="Source\Gui\Controls\ImageView.cpp" />
+    <ClCompile Include="Source\Gui\Controls\LogListBox.cpp" />
+    <ClCompile Include="Source\Gui\Controls\MyImage.cpp" />
+    <ClCompile Include="Source\Gui\Controls\PercentEdit.cpp" />
+    <ClCompile Include="Source\Gui\Controls\PictureExWnd.cpp" />
+    <ClCompile Include="Source\Gui\Controls\ServerSelectorControl.cpp" />
+    <ClCompile Include="Source\Gui\Controls\TabListBox.cpp" />
+    <ClCompile Include="Source\Gui\Controls\ThumbsView.cpp" />
+    <ClCompile Include="Source\Gui\Controls\WTLBrowserView.cpp" />
+    <ClCompile Include="Source\Func\Base.cpp" />
+    <ClCompile Include="Source\Func\Common.cpp" />
+    <ClCompile Include="Source\Func\FileInfoHelper.cpp" />
+    <ClCompile Include="Source\Func\HistoryManager.cpp" />
+    <ClCompile Include="Source\Func\ImageEditorConfigurationProvider.cpp" />
+    <ClCompile Include="Source\Func\IuCommonFunctions.cpp" />
+    <ClCompile Include="Source\Func\LangClass.cpp" />
+    <ClCompile Include="Source\Func\LocalFileCache.cpp" />
+    <ClCompile Include="Source\Func\MyDataObject.cpp" />
+    <ClCompile Include="Source\Func\MyDropSource.cpp" />
+    <ClCompile Include="Source\Func\MyEngineList.cpp" />
+    <ClCompile Include="Source\Func\MyLogSink.cpp" />
+    <ClCompile Include="Source\Func\MyUtils.cpp" />
+    <ClCompile Include="Source\Func\PluginLoader.cpp" />
+    <ClCompile Include="Source\Func\Settings.cpp" />
+    <ClCompile Include="Source\Func\SystemUtils.cpp" />
+    <ClCompile Include="Source\Func\UpdatePackage.cpp" />
+    <ClCompile Include="Source\Func\WebUtils.cpp" />
+    <ClCompile Include="Source\Func\WinUtils.cpp" />
+    <ClCompile Include="Source\ImageEditor\BasicTypes.cpp" />
+    <ClCompile Include="Source\ImageEditor\Canvas.cpp" />
+    <ClCompile Include="Source\ImageEditor\Document.cpp" />
+    <ClCompile Include="Source\ImageEditor\DrawingElement.cpp" />
+    <ClCompile Include="Source\ImageEditor\DrawingTool.cpp" />
+    <ClCompile Include="Source\ImageEditor\MovableElement.cpp" />
+    <ClCompile Include="Source\ImageEditor\MovableElements.cpp" />
+    <ClCompile Include="Source\ImageEditor\Region.cpp" />
+    <ClCompile Include="Source\ImageEditor\Gui\ColorsDelegate.cpp" />
+    <ClCompile Include="Source\ImageEditor\Gui\ImageEditorView.cpp" />
+    <ClCompile Include="Source\ImageEditor\Gui\ImageEditorWindow.cpp" />
+    <ClCompile Include="Source\ImageEditor\Gui\InputBoxControl.cpp" />
+    <ClCompile Include="Source\ImageEditor\Gui\TextParamsWindow.cpp" />
+    <ClCompile Include="Source\ImageEditor\Gui\Toolbar.cpp" />
+    <ClCompile Include="Source\ImageEditor\DrawingTools\AbstractDrawingTool.cpp" />
+    <ClCompile Include="Source\ImageEditor\DrawingTools\BlurTool.cpp" />
+    <ClCompile Include="Source\ImageEditor\DrawingTools\BrushTool.cpp" />
+    <ClCompile Include="Source\ImageEditor\DrawingTools\ColorPickerTool.cpp">
+      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ShowIncludes>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\DrawingTools\CropTool.cpp" />
+    <ClCompile Include="Source\ImageEditor\DrawingTools\MarkerTool.cpp" />
+    <ClCompile Include="Source\ImageEditor\DrawingTools\MoveAndResizeTool.cpp" />
+    <ClCompile Include="Source\ImageEditor\DrawingTools\PenTool.cpp" />
+    <ClCompile Include="Source\ImageEditor\DrawingTools\SelectionTool.cpp" />
+    <ClCompile Include="Source\ImageEditor\DrawingTools\TextTool.cpp" />
+    <ClCompile Include="Source\ImageEditor\DrawingTools\VectorElementTool.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="Source\res\image uploader.exe.manifest" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="Source\Image Uploader.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

@@ -58,7 +58,7 @@ Sqrat::Array HtmlDocumentPrivate::getElementsByTagName(const std::string& tag) {
 	if ( !SUCCEEDED(collection->get_length(&count))) {
 		return Sqrat::Array();
 	}
-    Sqrat::Array res(Sqrat::DefaultVM::Get(), count);
+    Sqrat::Array res(GetCurrentThreadVM().GetVM(), count);
 	for ( int i = 0; i < count; i ++ ) {
 		IDispatchPtr  disp = 0;
 		collection->item(CComVariant(i), CComVariant(0), &disp);
@@ -75,7 +75,7 @@ Sqrat::Array HtmlDocumentPrivate::getElementsByName(const std::string& name) {
 	if ( !SUCCEEDED(collection->get_length(&count))) {
         return Sqrat::Array();
 	}
-    Sqrat::Array res(Sqrat::DefaultVM::Get(), count);
+    Sqrat::Array res(GetCurrentThreadVM().GetVM(), count);
 	for ( int i = 0; i < count; i ++ ) {
 		IDispatchPtr  disp = 0;
 		collection->item(CComVariant(i), CComVariant(0), &disp);

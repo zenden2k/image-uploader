@@ -141,6 +141,11 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
     );
 }
 
+#ifdef _MSC_VER
+__declspec(thread) Sqrat::SqratVM* threadVm;
+#else
+thread_local  Sqrat::SqratVM* threadVm;
+#endif
 
 void RegisterClasses(Sqrat::SqratVM& vm) {
     Sqrat::DefaultVM::Set(vm.GetVM());
@@ -155,12 +160,18 @@ void RegisterClasses(Sqrat::SqratVM& vm) {
 }
 void RegisterAPI(Sqrat::SqratVM& vm)
 {
+	threadVm = &vm;
     RegisterFunctions(vm);
     RegisterClasses(vm);
 }
 void CleanUp()
 {
     CleanUpFunctions();
+}
+
+Sqrat::SqratVM& GetCurrentThreadVM()
+{
+	return *threadVm;
 }
 
 }

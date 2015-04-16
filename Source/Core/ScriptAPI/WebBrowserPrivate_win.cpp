@@ -34,7 +34,7 @@ void WebBrowserPrivate::OnPageLoaded(const CString& url) {
 	if ( !onUrlChangedCallback_.IsNull() ) {
 		try
 		{
-            Sqrat::Table data(Sqrat::DefaultVM::Get());
+            Sqrat::Table data(GetCurrentThreadVM().GetVM());
 			data.SetValue("url", IuCoreUtils::WstringToUtf8((LPCTSTR)url).c_str());
 			data.SetInstance("browser", browser_);
 			//SquirrelFunction<void> func(onUrlChangedCallbackContext_.IsNull() ? *RootTable : onUrlChangedCallbackContext_, onUrlChangedCallback_);
@@ -53,7 +53,7 @@ void WebBrowserPrivate::OnDocumentComplete(const CString& url) {
 	if ( !onLoadFinishedCallback_.IsNull() ) {
 		try
 		{
-			Sqrat::Table data(Sqrat::DefaultVM::Get());
+			Sqrat::Table data(GetCurrentThreadVM().GetVM());
 			data.SetValue("url", IuCoreUtils::WstringToUtf8((LPCTSTR)url).c_str());
 			data.SetInstance("browser", browser_);
 			//data.SetValue("browser", browser_);
@@ -86,7 +86,7 @@ bool WebBrowserPrivate::OnNavigateError(const CString& url, LONG statusCode) {
 	if ( !onNavigateErrorCallback_.IsNull() ) {
 		try
 		{
-			Sqrat::Table data(Sqrat::DefaultVM::Get());
+			Sqrat::Table data(GetCurrentThreadVM().GetVM());
 			data.SetValue("url", IuCoreUtils::WstringToUtf8((LPCTSTR)url).c_str());
 			data.SetValue("statusCode", statusCode);
 			//BindVariable(data, new WebBrowser(), "browser");
@@ -110,7 +110,7 @@ void WebBrowserPrivate::OnTimer()
 	if ( !onTimerCallback_.IsNull() ) {
 		try
 		{
-            Sqrat::Table data(Sqrat::DefaultVM::Get());
+            Sqrat::Table data(GetCurrentThreadVM().GetVM());
 			//data.SetValue("url", url());
 			data.SetInstance("browser", browser_);
 			//SquirrelFunction<void> func(onTimerCallbackContext_.IsNull() ? *RootTable : onTimerCallbackContext_, onTimerCallback_);
@@ -131,7 +131,7 @@ void WebBrowserPrivate::OnFileFieldFilled(const CString& fileName)
 	if ( !onFileFieldFilledCallback_.IsNull() ) {
 		try
 		{
-            Sqrat::Table data(Sqrat::DefaultVM::Get());
+            Sqrat::Table data(GetCurrentThreadVM().GetVM());
 			std::string fileNameA = IuCoreUtils::WstringToUtf8((LPCTSTR)fileName);
 			data.SetValue("fileName", fileNameA.c_str());
 			data.SetInstance("browser", browser_);

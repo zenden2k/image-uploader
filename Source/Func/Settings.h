@@ -25,6 +25,8 @@
 #include <string>
 #include "Core/SettingsManager.h"
 #include <Core/Upload/UploadEngine.h>
+#include <Core/Upload/ServerProfile.h>
+
 #if !defined(IU_IMAGEEDITOR) && !defined(IU_CLI)
     #include "Func/Settings.h"
 	#include "atlheaders.h"
@@ -51,88 +53,6 @@ typedef std::map <std::string, std::map <std::string, ServerSettingsStruct>> Ser
 
 #if !defined(IU_CLI) && !defined(IU_IMAGEEDITOR)
 
-
-
-
-
-struct ImageUploadParams {
-	ImageUploadParams() {
-		UseServerThumbs = false;
-		CreateThumbs = false;
-		ProcessImages = false;
-		UseDefaultThumbSettings = true;
-		ImageProfileName = "Default";
-		Thumb.Size = 180;
-		Thumb.ResizeMode = ThumbCreatingParams::trByWidth;
-		Thumb.AddImageSize = true;
-		Thumb.Format = ThumbCreatingParams::tfPNG;
-		Thumb.TemplateName = "default";
-		Thumb.BackgroundColor = RGB( 255, 255, 255);
-		Thumb.Quality = 85;
-		Thumb.Text = _T("%width%x%height% (%size%)");
-	}
-#ifndef IU_SERVERLISTTOOL
-
-	void bind(SettingsNode& n);
-#endif
-
-	bool UseServerThumbs;
-	bool CreateThumbs;
-	bool ProcessImages;
-	bool ThumbAddImageSize;
-
-	CString ImageProfileName;
-
-	bool UseDefaultThumbSettings;
-	ThumbCreatingParams getThumb(); 
-	ThumbCreatingParams& getThumbRef(); 
-	void setThumb(ThumbCreatingParams tcp); 
-protected:
-	ThumbCreatingParams Thumb;
-};
-class ServerProfile {
-
-public:
-	
-	ServerProfile();
-
-	ServerProfile(CString newServerName);
-	ServerSettingsStruct& serverSettings();
-	CUploadEngineData* uploadEngineData() const;
-
-	void setProfileName(CString newProfileName);
-	CString profileName() const;
-
-	void setServerName(CString newProfileName);
-	CString serverName() const;
-
-	std::string folderTitle() const;
-	void setFolderTitle(std::string newTitle);
-	std::string folderId() const;
-	void setFolderId(std::string newId);
-	std::string folderUrl() const;
-	void setFolderUrl(std::string newUrl);
-	bool isNull();
-	bool UseDefaultSettings;
-	void clearFolderInfo();
-#ifndef IU_SERVERLISTTOOL
-	void bind(SettingsNode& n);
-#endif
-	ImageUploadParams getImageUploadParams();
-	ImageUploadParams& getImageUploadParamsRef();
-    void setImageUploadParams(ImageUploadParams iup);
-	friend struct ImageUploadParams;
-
-protected:
-	CString serverName_;
-	CString profileName_;
-	ImageUploadParams imageUploadParams;
-	std::string folderTitle_;
-	std::string folderId_;
-	std::string folderUrl_;
-
-	friend class CSettings;
-};
 
 typedef std::map<CString, ServerProfile> ServerProfilesMap;
 struct FullUploadProfile
