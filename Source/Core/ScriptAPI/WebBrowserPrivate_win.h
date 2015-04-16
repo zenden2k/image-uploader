@@ -27,6 +27,7 @@
 #include <Core/Utils/CoreUtils.h>
 #include <Core/Logging.h>
 #include <Core/Squirrelnc.h>
+#include "HtmlDocument.h"
 #if defined(_WIN32) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 #include <Gui/Dialogs/WizardDlg.h>
 #endif
@@ -34,8 +35,14 @@
 #include "HtmlDocumentPrivate_win.h"
 #include <Func/WinUtils.h>
 #include "COMUtils.h"
+#include <Core/3rdpart/pcreplusplus.h>
+
 namespace ScriptAPI {
-using namespace SqPlus;
+class CWebBrowser;
+
+using namespace Sqrat;
+
+
 class WebBrowserPrivate {
 public:
 	WebBrowserPrivate(CWebBrowser * browser ) {
@@ -55,6 +62,7 @@ public:
 	~WebBrowserPrivate() {
 		if ( IsWindow(webViewWindow_.m_hWnd) ) {
 			webViewWindow_.DestroyWindow();
+            webViewWindow_.m_hWnd = 0;
 		}
 	}
 
@@ -74,20 +82,31 @@ public:
 		}
 	}
 
-	void setOnUrlChangedCallback(SquirrelObject callBack, SquirrelObject context) {
+	void setOnUrlChangedCallback(Sqrat::Function callBack, Sqrat::Object context) {
 		onUrlChangedCallback_ = callBack;
 		onUrlChangedCallbackContext_ = context;
 	}
 
-	void setOnNavigateErrorCallback(SquirrelObject callBack, SquirrelObject context) {
+	void setOnNavigateErrorCallback(Sqrat::Function callBack, Sqrat::Object context) {
 		onNavigateErrorCallback_ = callBack;
 		onNavigateErrorCallbackContext_ = context;
 	}
 
-	void setOnLoadFinishedCallback(SquirrelObject callBack, SquirrelObject context) {
+	void setOnLoadFinishedCallback(Sqrat::Function callBack, Sqrat::Object context) {
 		onLoadFinishedCallback_ = callBack;
 		onLoadFinishedCallbackContext_ = context;
 	}
+
+    void setOnTimerCallback(int timerInterval, Sqrat::Function callBack, Sqrat::Object context) {
+        onTimerCallback_ = callBack;
+        onTimerCallbackContext_ = context;
+        timerInterval_ = timerInterval;
+    }
+
+    void setOnFileInputFilledCallback(Sqrat::Function callBack, Sqrat::Object context) {
+        onFileFieldFilledCallback_ = callBack;
+        onFileFieldFilledCallbackContext_ = context;
+    }
 
 	bool showModal() {
 		HWND parent = 
@@ -183,6 +202,7 @@ public:
 	}
 
 	void addTrustedSite(const std::string& site) {
+
 		pcrepp::Pcre reg("(.+?)://(.+)/?", "");
 		std::string domain = site;
 		std::string protocol = "http";
@@ -223,7 +243,7 @@ public:
 		return std::string();
 	}
 
-	const std::string callJavaScriptFunction(const std::string& funcName, SquirrelObject args) {
+	const std::string callJavaScriptFunction(const std::string& funcName, Sqrat::Array args) {
 		if ( webViewWindow_.m_hWnd) {
 			CComVariant res;
 			webViewWindow_.view_.CallJScript(IuCoreUtils::Utf8ToWstring(funcName).c_str(), &res);
@@ -234,31 +254,20 @@ public:
 		return std::string();
 	}
 
-	void setOnTimerCallback(int timerInterval, SquirrelObject callBack, SquirrelObject context) {
-		onTimerCallback_ = callBack;
-		onTimerCallbackContext_ = context;
-		timerInterval_ = timerInterval;
-	}
-
-	void setOnFileInputFilledCallback(SquirrelObject callBack, SquirrelObject context) {
-		onFileFieldFilledCallback_ = callBack;
-		onFileFieldFilledCallbackContext_ = context;
-	}
-
 	void setFocus();
 	friend class HtmlElementPrivate;
 protected:
 	CWebViewWindow webViewWindow_;
-	SquirrelObject onUrlChangedCallback_;
-	SquirrelObject onUrlChangedCallbackContext_;
-	SquirrelObject onNavigateErrorCallback_;
-	SquirrelObject onNavigateErrorCallbackContext_;
-	SquirrelObject onLoadFinishedCallback_;
-	SquirrelObject onLoadFinishedCallbackContext_;
-	SquirrelObject onTimerCallback_;
-	SquirrelObject onTimerCallbackContext_;
-	SquirrelObject onFileFieldFilledCallback_;
-	SquirrelObject onFileFieldFilledCallbackContext_;
+	Sqrat::Function onUrlChangedCallback_;
+	Sqrat::Object onUrlChangedCallbackContext_;
+	Sqrat::Function onNavigateErrorCallback_;
+	Sqrat::Object onNavigateErrorCallbackContext_;
+	Sqrat::Function onLoadFinishedCallback_;
+	Sqrat::Object onLoadFinishedCallbackContext_;
+	Sqrat::Function onTimerCallback_;
+	Sqrat::Object onTimerCallbackContext_;
+	Sqrat::Function onFileFieldFilledCallback_;
+	Sqrat::Object onFileFieldFilledCallbackContext_;
 	CString initialUrl_;
 	CString initialTitle_;
 	CString initialHtml_;

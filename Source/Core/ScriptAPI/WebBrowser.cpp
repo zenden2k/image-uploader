@@ -30,8 +30,6 @@
 
 
 using namespace ScriptAPI;
-DECLARE_INSTANCE_TYPE(CWebBrowser);
-DECLARE_INSTANCE_TYPE(HtmlDocument);
 
 namespace ScriptAPI {
 
@@ -61,7 +59,7 @@ void CWebBrowser::setOnNavigateErrorCallback(Sqrat::Function callBack, Sqrat::Ob
 	d_->setOnNavigateErrorCallback(callBack, context);
 }
 
-void CWebBrowser::setOnLoadFinishedCallback(SquirrelObject callBack, SquirrelObject context)
+void CWebBrowser::setOnLoadFinishedCallback(Sqrat::Function callBack, Sqrat::Object context)
 {
 	d_->setOnLoadFinishedCallback(callBack, context);
 }
@@ -96,7 +94,7 @@ const std::string CWebBrowser::runJavaScript(const std::string& code)
 	return d_->runJavaScript(code);
 }
 
-const std::string CWebBrowser::callJavaScriptFunction(const std::string& funcName, SquirrelObject args)
+const std::string CWebBrowser::callJavaScriptFunction(const std::string& funcName, Sqrat::Object args)
 {
 	return d_->callJavaScriptFunction(funcName, args);
 }
@@ -162,30 +160,31 @@ const std::string CWebBrowser::title()
 }
 
 void RegisterWebBrowserClass(Sqrat::SqratVM& vm) {
-	using namespace SqPlus;
-	SQClassDef<CWebBrowser>("CWebBrowser")
-		.func(&CWebBrowser::navigateToUrl, "navigateToUrl")
-		.func(&CWebBrowser::showModal, "showModal")
-		.func(&CWebBrowser::setTitle, "setTitle")
-		.func(&CWebBrowser::exec, "exec")
-		.func(&CWebBrowser::show, "show")
-		.func(&CWebBrowser::hide, "hide")
-		.func(&CWebBrowser::close, "close")
-		.func(&CWebBrowser::url, "url")
-		.func(&CWebBrowser::title, "title")
-		.func(&CWebBrowser::getDocumentContents, "getDocumentContents")
-		.func(&CWebBrowser::document, "document")
-		.func(&CWebBrowser::setHtml, "setHtml")
-		.func(&CWebBrowser::runJavaScript, "runJavaScript")
-		.func(&CWebBrowser::setSilent, "setSilent")
-		.func(&CWebBrowser::addTrustedSite, "addTrustedSite")
-		.func(&CWebBrowser::getMajorVersion, "getMajorVersion")
-		.func(&CWebBrowser::callJavaScriptFunction, "callJavaScriptFunction")
-		.func(&CWebBrowser::setOnUrlChangedCallback, "setOnUrlChangedCallback")
-		.func(&CWebBrowser::setOnLoadFinishedCallback, "setOnLoadFinishedCallback")
-		.func(&CWebBrowser::setOnTimerCallback, "setOnTimerCallback")
-		.func(&CWebBrowser::setOnFileInputFilledCallback, "setOnFileInputFilledCallback")
-		.func(&CWebBrowser::setOnNavigateErrorCallback, "setOnNavigateErrorCallback");
+	using namespace Sqrat;
+    vm.GetRootTable().Bind("CWebBrowser", Class<CWebBrowser>(vm.GetVM())
+        .Func("navigateToUrl", &CWebBrowser::navigateToUrl)
+        .Func("showModal", &CWebBrowser::showModal)
+        .Func("setTitle", &CWebBrowser::setTitle)
+        .Func("exec", &CWebBrowser::exec)
+        .Func("show", &CWebBrowser::show)
+        .Func("hide", &CWebBrowser::hide)
+        .Func("close", &CWebBrowser::close)
+        .Func("url", &CWebBrowser::url)
+        .Func("title", &CWebBrowser::title)
+        .Func("getDocumentContents", &CWebBrowser::getDocumentContents)
+        .Func("document", &CWebBrowser::document)
+        .Func("setHtml", &CWebBrowser::setHtml)
+        .Func("runJavaScript", &CWebBrowser::runJavaScript)
+        .Func("setSilent", &CWebBrowser::setSilent)
+        .Func("addTrustedSite", &CWebBrowser::addTrustedSite)
+        .Func("getMajorVersion", &CWebBrowser::getMajorVersion)
+        .Func("callJavaScriptFunction", &CWebBrowser::callJavaScriptFunction)
+        .Func("setOnUrlChangedCallback", &CWebBrowser::setOnUrlChangedCallback)
+        .Func("setOnLoadFinishedCallback", &CWebBrowser::setOnLoadFinishedCallback)
+        .Func("setOnTimerCallback", &CWebBrowser::setOnTimerCallback)
+        .Func("setOnFileInputFilledCallback", &CWebBrowser::setOnFileInputFilledCallback)
+        .Func("setOnNavigateErrorCallback", &CWebBrowser::setOnNavigateErrorCallback)
+    );
 }
 
 }

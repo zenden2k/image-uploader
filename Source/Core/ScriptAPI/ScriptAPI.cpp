@@ -45,7 +45,7 @@ namespace ScriptAPI {;
 
 void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
     using namespace Sqrat;
-    vm.GetRootTable().Bind("NetworkClient", Class<NetworkClient>().
+    vm.GetRootTable().Bind("NetworkClient", Class<NetworkClient>(vm.GetVM()).
         Func("doGet", &NetworkClient::doGet).
         Func("responseBody", &NetworkClient::responseBody).
         Func("responseCode", &NetworkClient::responseCode).
@@ -73,7 +73,7 @@ void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
 
 void RegisterSimpleXmlClass(Sqrat::SqratVM& vm) {
     using namespace Sqrat;
-     vm.GetRootTable().Bind("SimpleXml", Class<SimpleXml>().
+     vm.GetRootTable().Bind("SimpleXml", Class<SimpleXml>(vm.GetVM()).
          Func("LoadFromFile", &SimpleXml::LoadFromFile).
          Func("LoadFromString", &SimpleXml::LoadFromString).
          Func("SaveToFile", &SimpleXml::SaveToFile).
@@ -81,7 +81,7 @@ void RegisterSimpleXmlClass(Sqrat::SqratVM& vm) {
          Func("GetRoot", &SimpleXml::getRoot)
      );
 
-    vm.GetRootTable().Bind("SimpleXmlNode", Class<SimpleXmlNode>().
+    vm.GetRootTable().Bind("SimpleXmlNode", Class<SimpleXmlNode>(vm.GetVM()).
         Func("Attribute", &SimpleXmlNode::Attribute).
         Func("AttributeInt", &SimpleXmlNode::AttributeInt).
         Func("AttributeBool", &SimpleXmlNode::AttributeBool).
@@ -104,7 +104,7 @@ void RegisterSimpleXmlClass(Sqrat::SqratVM& vm) {
 void RegisterUploadClasses(Sqrat::SqratVM& vm) {
     using namespace Sqrat;
     RootTable& root = vm.GetRootTable();
-    root.Bind("CFolderItem", Class<CFolderItem>().
+    root.Bind("CFolderItem", Class<CFolderItem>(vm.GetVM()).
         Func("getId", &CFolderItem::getId).
         Func("getParentId", &CFolderItem::getParentId).
         Func("getSummary", &CFolderItem::getSummary).
@@ -120,7 +120,7 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
         Func("getItemCount", &CFolderItem::getItemCount)
     );
 
-    root.Bind("CIUUploadParams", Class<CIUUploadParams>().
+    root.Bind("CIUUploadParams", Class<CIUUploadParams>(vm.GetVM()).
         Func("getFolderID", &CIUUploadParams::getFolderID).
         Func("setDirectUrl", &CIUUploadParams::setDirectUrl).
         Func("setThumbUrl", &CIUUploadParams::setThumbUrl).
@@ -130,18 +130,20 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
     );
 
 
-    root.Bind("CFolderList", Class<CFolderList>().
+    root.Bind("CFolderList", Class<CFolderList>(vm.GetVM()).
         Func("AddFolder", &CFolderList::AddFolder).
         Func("AddFolderItem", &CFolderList::AddFolderItem)
     );
 
-    root.Bind("ServerSettingsStruct", Class<ServerSettingsStruct>().
+    root.Bind("ServerSettingsStruct", Class<ServerSettingsStruct>(vm.GetVM()).
         Func("setParam", &ServerSettingsStruct::setParam).
         Func("getParam", &ServerSettingsStruct::getParam)
     );
 }
 
+
 void RegisterClasses(Sqrat::SqratVM& vm) {
+    Sqrat::DefaultVM::Set(vm.GetVM());
     RegisterNetworkClientClass(vm);
     RegisterRegularExpressionClass(vm);
     RegisterUploadClasses(vm);
@@ -151,7 +153,11 @@ void RegisterClasses(Sqrat::SqratVM& vm) {
 	RegisterHtmlElementClass(vm);
 #endif
 }
-
+void RegisterAPI(Sqrat::SqratVM& vm)
+{
+    RegisterFunctions(vm);
+    RegisterClasses(vm);
+}
 void CleanUp()
 {
     CleanUpFunctions();

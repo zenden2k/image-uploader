@@ -41,16 +41,16 @@ class HtmlDocumentPrivate {
 
 		HtmlElement getElementById(const std::string& id);
 
-		SquirrelObject getElementsByTagName(const std::string& tag);
+		Sqrat::Array getElementsByTagName(const std::string& tag);
 
-		SquirrelObject getElementsByName(const std::string& name);
+		Sqrat::Array getElementsByName(const std::string& name);
 
 		HtmlElement querySelector(const std::string& query)
 		{
 			return rootElement().querySelector(query);
 		}	
 
-		SquirrelObject querySelectorAll(const std::string& query)
+		Sqrat::Array querySelectorAll(const std::string& query)
 		{
 			return rootElement().querySelectorAll(query);
 		}

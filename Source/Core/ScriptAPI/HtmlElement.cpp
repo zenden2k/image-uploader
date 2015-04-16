@@ -222,18 +222,18 @@ ScriptAPI::HtmlElement HtmlElement::querySelector(const std::string& query)
 	return d_->querySelector(query);
 }
 
-SquirrelObject HtmlElement::querySelectorAll(const std::string& query)
+Sqrat::Array HtmlElement::querySelectorAll(const std::string& query)
 {
 	if ( !checkNull("querySelectorAll") ) {
-		return HtmlElement();
+		return Sqrat::Array();
 	}
 	return d_->querySelectorAll(query);
 }
 
-SquirrelObject HtmlElement::getFormElements()
+Sqrat::Array HtmlElement::getFormElements()
 {
 	if ( !checkNull("getFormElements") ) {
-		return HtmlElement();
+		return Sqrat::Array();
 	}
 	return d_->getFormElements(); 
 }
@@ -251,10 +251,10 @@ bool HtmlElement::isNull()
 	return !d_ || d_->isNull();
 }
 
-SquirrelObject HtmlElement::getChildren()
+Sqrat::Array HtmlElement::getChildren()
 {
 	if ( !checkNull("getChildren") ) {
-		return SquirrelObject();
+		return Sqrat::Array();
 	}
 	return d_->getChildren();
 }

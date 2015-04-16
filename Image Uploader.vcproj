@@ -47,7 +47,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP$(NUMBER_OF_PROCESSORS)"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\sqplus&quot;;&quot;$(SolutionDir)\Source&quot;;&quot;$(SolutionDir)\Contrib\Include\libs&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Contrib\Include\DX&quot;;&quot;$(SolutionDir)\Contrib\Include\BaseClasses&quot;;&quot;$(SolutionDir)\Contrib\Include\WTL&quot;;&quot;$(SolutionDir)\Contrib\Include\&quot;;&quot;$(SolutionDir)\Contrib\Include\pcre&quot;;&quot;$(SolutionDir)\Contrib\Include\tinyxml&quot;;&quot;$(SolutionDir)\Contrib\Include\squirrel&quot;;&quot;$(SolutionDir)\Source&quot;;&quot;$(SolutionDir)\Contrib\Include\libs&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX;TIXML_USE_STL;PCRE_STATIC;CURL_STATICLIB;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
@@ -72,7 +72,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zlibd.lib minizipd.lib zthread.lib gdiplus.lib strmbasd.lib libcurld_imp.lib Ws2_32.lib avcodec.lib avformat.lib avutil.lib swscale.lib dwmapi.lib squirrelD.lib sqstdlibD.lib sqplusD.lib ssleay32.lib libeay32.lib pcred.lib pcre++.lib wininet.lib winmm.lib jsoncpp.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib Oleacc.lib"
+				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zlibd.lib minizipd.lib zthread.lib gdiplus.lib strmbasd.lib libcurld_imp.lib Ws2_32.lib avcodec.lib avformat.lib avutil.lib swscale.lib dwmapi.lib squirrel.lib sqstdlib.lib ssleay32.lib libeay32.lib pcred.lib pcre++.lib wininet.lib winmm.lib jsoncpp.lib IPHLPAPI.lib Secur32.lib Netapi32.lib libglog_static.lib Oleacc.lib"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)\Contrib\Lib\Debug&quot;;&quot;$(SolutionDir)Contrib\Lib\&quot;"
 				IgnoreDefaultLibraryNames="msvcrt.lib;LIBCMT.lib;"
 				DelayLoadDLLs="uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Iphlpapi.dll;Netapi32.dll"
@@ -1260,19 +1260,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-link.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\res\icon-link.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-link.png"
+				RelativePath=".\res\icon-link.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\res\icon-link.png"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\res\icon-link.png"
 				>
 			</File>
 			<File
@@ -1296,11 +1296,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon-user.ico"
+				RelativePath=".\Source\res\icon-user.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon-user.ico"
+				RelativePath=".\res\icon-user.ico"
 				>
 			</File>
 			<File
@@ -1324,15 +1324,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\ImageEditor\icon_add.png"
-				>
-			</File>
-			<File
 				RelativePath=".\res\ImageEditor\icon_add.png"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_additem.ico"
+				RelativePath=".\Source\res\ImageEditor\icon_add.png"
 				>
 			</File>
 			<File
@@ -1340,11 +1336,11 @@
 				>
 			</File>
 			<File
-				RelativePath="Source\res\icon_additional.ico"
+				RelativePath=".\res\icon_additem.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_bold.ico"
+				RelativePath="Source\res\icon_additional.ico"
 				>
 			</File>
 			<File
@@ -1352,11 +1348,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_clipboard.png"
+				RelativePath=".\res\ImageEditor\icon_bold.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\res\ImageEditor\icon_clipboard.png"
+				>
+			</File>
+			<File
+				RelativePath=".\res\ImageEditor\icon_clipboard.png"
 				>
 			</File>
 			<File
@@ -1372,11 +1372,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_down.ico"
+				RelativePath=".\Source\res\icon_down.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_down.ico"
+				RelativePath=".\res\icon_down.ico"
 				>
 			</File>
 			<File
@@ -1400,11 +1400,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_folder2.png"
+				RelativePath=".\res\icon_folder2.png"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_folder2.png"
+				RelativePath=".\Source\res\icon_folder2.png"
 				>
 			</File>
 			<File
@@ -1412,11 +1412,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\ImageEditor\icon_italic.ico"
+				RelativePath=".\res\ImageEditor\icon_italic.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_italic.ico"
+				RelativePath=".\Source\res\ImageEditor\icon_italic.ico"
 				>
 			</File>
 			<File
@@ -1428,11 +1428,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\icon_main_new.png"
+				RelativePath=".\res\icon_main_new.png"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon_main_new.png"
+				RelativePath=".\Source\res\icon_main_new.png"
 				>
 			</File>
 			<File
@@ -1440,11 +1440,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_save.png"
+				RelativePath=".\Source\res\ImageEditor\icon_save.png"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\ImageEditor\icon_save.png"
+				RelativePath=".\res\ImageEditor\icon_save.png"
 				>
 			</File>
 			<File
@@ -1488,11 +1488,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_tool_marker.png"
+				RelativePath=".\Source\res\ImageEditor\icon_tool_marker.png"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\ImageEditor\icon_tool_marker.png"
+				RelativePath=".\res\ImageEditor\icon_tool_marker.png"
 				>
 			</File>
 			<File
@@ -1520,11 +1520,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\ImageEditor\icon_underline.ico"
+				RelativePath=".\res\ImageEditor\icon_underline.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_underline.ico"
+				RelativePath=".\Source\res\ImageEditor\icon_underline.ico"
 				>
 			</File>
 			<File
@@ -1540,11 +1540,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\ImageEditor\icon_upload.png"
+				RelativePath=".\res\ImageEditor\icon_upload.png"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ImageEditor\icon_upload.png"
+				RelativePath=".\Source\res\ImageEditor\icon_upload.png"
 				>
 			</File>
 			<File
@@ -1572,11 +1572,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\res\new_icon.ico"
+				RelativePath=".\res\new_icon.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\new_icon.ico"
+				RelativePath=".\Source\res\new_icon.ico"
 				>
 			</File>
 			<File
@@ -1866,10 +1866,6 @@
 					</File>
 					<File
 						RelativePath=".\Source\Core\Upload\ScriptUploadEngine.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Source\Core\Upload\ScriptUploadEngine_Sqrat.cpp"
 						>
 					</File>
 					<File

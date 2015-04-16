@@ -20,8 +20,7 @@
 
 #include "WebBrowserPrivate_win.h"
 #include <Core/Squirrelnc.h>
-using namespace ScriptAPI;
-DECLARE_INSTANCE_TYPE(CWebBrowser);
+
 namespace ScriptAPI {;
 
 HtmlDocument WebBrowserPrivate::document() {
@@ -35,17 +34,17 @@ void WebBrowserPrivate::OnPageLoaded(const CString& url) {
 	if ( !onUrlChangedCallback_.IsNull() ) {
 		try
 		{
-			SquirrelObject data = SquirrelVM::CreateTable();
+            Sqrat::Table data(Sqrat::DefaultVM::Get());
 			data.SetValue("url", IuCoreUtils::WstringToUtf8((LPCTSTR)url).c_str());
-			BindVariable(data, browser_, "browser");
-			SquirrelFunction<void> func(onUrlChangedCallbackContext_.IsNull() ? *RootTable : onUrlChangedCallbackContext_, onUrlChangedCallback_);
-			if (!func.func.IsNull() ) {
-				func(data);
+			data.SetInstance("browser", browser_);
+			//SquirrelFunction<void> func(onUrlChangedCallbackContext_.IsNull() ? *RootTable : onUrlChangedCallbackContext_, onUrlChangedCallback_);
+			if (!onUrlChangedCallback_.IsNull() ) {
+				onUrlChangedCallback_.Execute(data);
 			}
 		}
-		catch (SquirrelError& e)
+        catch (std::exception& e)
 		{
-			LOG(ERROR) << "onUrlChangedCallback: "<<Utf8String(e.desc);
+			LOG(ERROR) << "onUrlChangedCallback: "<<Utf8String(e.what());
 		}
 	}
 }
@@ -54,18 +53,18 @@ void WebBrowserPrivate::OnDocumentComplete(const CString& url) {
 	if ( !onLoadFinishedCallback_.IsNull() ) {
 		try
 		{
-			SquirrelObject data = SquirrelVM::CreateTable();
+			Sqrat::Table data(Sqrat::DefaultVM::Get());
 			data.SetValue("url", IuCoreUtils::WstringToUtf8((LPCTSTR)url).c_str());
-			BindVariable(data, browser_, "browser");
+			data.SetInstance("browser", browser_);
 			//data.SetValue("browser", browser_);
-			SquirrelFunction<void> func(onLoadFinishedCallbackContext_.IsNull() ? *RootTable : onLoadFinishedCallbackContext_, onLoadFinishedCallback_);
-			if (!func.func.IsNull() ) {
-				func(data);
+			//SquirrelFunction<void> func(onLoadFinishedCallbackContext_.IsNull() ? *RootTable : onLoadFinishedCallbackContext_, onLoadFinishedCallback_);
+			if ( !onLoadFinishedCallback_.IsNull() ) {
+				onLoadFinishedCallback_.Execute(data);
 			}
 		}
-		catch (SquirrelError& e)
+        catch (std::exception& e)
 		{
-			LOG(ERROR) << "onLoadFinishedCallback: " << Utf8String(e.desc);
+			LOG(ERROR) << "onLoadFinishedCallback: " << Utf8String(e.what());
 		}
 	}
 }
@@ -83,23 +82,24 @@ void WebBrowserPrivate::setFocus()
 }
 
 bool WebBrowserPrivate::OnNavigateError(const CString& url, LONG statusCode) {
+    return false;
 	if ( !onNavigateErrorCallback_.IsNull() ) {
 		try
 		{
-			SquirrelObject data = SquirrelVM::CreateTable();
+			Sqrat::Table data(Sqrat::DefaultVM::Get());
 			data.SetValue("url", IuCoreUtils::WstringToUtf8((LPCTSTR)url).c_str());
 			data.SetValue("statusCode", statusCode);
 			//BindVariable(data, new WebBrowser(), "browser");
-			BindVariable(data, browser_, "browser");
-			SquirrelFunction<void> func(onNavigateErrorCallbackContext_.IsNull() ? *RootTable : onNavigateErrorCallbackContext_, onNavigateErrorCallback_);
-			if (func.func.IsNull())
+			data.SetInstance("browser", browser_);
+			//SquirrelFunction<void> func(onNavigateErrorCallbackContext_.IsNull() ? *RootTable : onNavigateErrorCallbackContext_, onNavigateErrorCallback_);
+			if (onNavigateErrorCallback_.IsNull())
 				return false;
 
-			func(data);
+			onNavigateErrorCallback_.Execute(data);
 		}
-		catch (SquirrelError& e)
+        catch (std::exception& e)
 		{
-			LOG(ERROR) << "onNavigateErrorCallback: " << Utf8String(e.desc);
+			LOG(ERROR) << "onNavigateErrorCallback: " << Utf8String(e.what());
 		}
 	}
 	return false;
@@ -110,18 +110,18 @@ void WebBrowserPrivate::OnTimer()
 	if ( !onTimerCallback_.IsNull() ) {
 		try
 		{
-			SquirrelObject data = SquirrelVM::CreateTable();
+            Sqrat::Table data(Sqrat::DefaultVM::Get());
 			//data.SetValue("url", url());
-			BindVariable(data, browser_, "browser");
-			SquirrelFunction<void> func(onTimerCallbackContext_.IsNull() ? *RootTable : onTimerCallbackContext_, onTimerCallback_);
-			if (func.func.IsNull())
+			data.SetInstance("browser", browser_);
+			//SquirrelFunction<void> func(onTimerCallbackContext_.IsNull() ? *RootTable : onTimerCallbackContext_, onTimerCallback_);
+			if (onTimerCallback_.IsNull())
 				return;
 
-			func(data);
+			onTimerCallback_.Execute(data);
 		}
-		catch (SquirrelError& e)
+        catch (std::exception& e)
 		{
-			LOG(ERROR) << "onTimerCallback: " << Utf8String(e.desc);
+			LOG(ERROR) << "onTimerCallback: " << Utf8String(e.what());
 		}
 	}
 }
@@ -131,19 +131,19 @@ void WebBrowserPrivate::OnFileFieldFilled(const CString& fileName)
 	if ( !onFileFieldFilledCallback_.IsNull() ) {
 		try
 		{
-			SquirrelObject data = SquirrelVM::CreateTable();
+            Sqrat::Table data(Sqrat::DefaultVM::Get());
 			std::string fileNameA = IuCoreUtils::WstringToUtf8((LPCTSTR)fileName);
 			data.SetValue("fileName", fileNameA.c_str());
-			BindVariable(data, browser_, "browser");
-			SquirrelFunction<void> func(onFileFieldFilledCallbackContext_.IsNull() ? *RootTable : onFileFieldFilledCallbackContext_, onFileFieldFilledCallback_);
-			if (func.func.IsNull())
+			data.SetInstance("browser", browser_);
+			//SquirrelFunction<void> func(onFileFieldFilledCallbackContext_.IsNull() ? *RootTable : onFileFieldFilledCallbackContext_, onFileFieldFilledCallback_);
+			if (onFileFieldFilledCallback_.IsNull())
 				return;
 
-			func(data);
+			onFileFieldFilledCallback_.Execute(data);
 		}
-		catch (SquirrelError& e)
+        catch (std::exception& e)
 		{
-			LOG(ERROR) << "onFileFieldFilledCallback: " << Utf8String(e.desc);
+			LOG(ERROR) << "onFileFieldFilledCallback: " << Utf8String(e.what());
 		}
 	}
 }

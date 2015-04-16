@@ -70,6 +70,7 @@ class CScriptUploadEngine: public CAbstractUploadEngine
 		//Sqrat::Table m_Object; 		
 	protected:
 		void Log(ErrorInfo::MessageType mt, const std::string& error);
+        void clearSqratError();
 		CFolderList m_FolderList;
        
 		Utf8String m_sName;

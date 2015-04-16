@@ -170,7 +170,7 @@ NetworkClient::NetworkClient(void)
 	curl_handle = curl_easy_init(); // Initializing libcurl
 	m_bodyFuncData.funcType = funcTypeBody;
 	m_bodyFuncData.nmanager = this;
-	m_UploadBufferSize = 65536;
+	m_UploadBufferSize = 1048576;
 	m_headerFuncData.funcType = funcTypeHeader;
 	m_headerFuncData.nmanager = this;
 	m_nUploadDataOffset = 0;

@@ -34,7 +34,7 @@
 CPluginManager::CPluginManager() {
 	/*SquirrelVM::Init();
 	SquirrelVM::PushRootTable();	*/
-	CScriptUploadEngine::InitScriptEngine();
+	//CScriptUploadEngine::InitScriptEngine();
 }
 
 CScriptUploadEngine* CPluginManager::getPlugin(const Utf8String& serverName, const Utf8String& name,  ServerSettingsStruct& params, bool UseExisting) {

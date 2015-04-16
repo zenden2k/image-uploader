@@ -45,7 +45,7 @@
 #pragma comment(lib, "libeay32.lib")
 #endif 
 
-//using namespace SqPlus;
+//using namespace Sqrat;
 
 // Squirrel types should be defined in the same module where they are used
 // otherwise we will catch SqPlus exception while executing Squirrel functions

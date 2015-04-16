@@ -60,6 +60,10 @@ void CWTLBrowserView::OnDocumentComplete(IDispatch* pDisp, const String& szURL)
 {
 	IUnknown* pUnkBrowser = NULL; 
 	IUnknown* pUnkDisp = NULL;
+    CString url = szURL;
+    /*if ( url.IsEmpty() ) {
+        url = GetLocationURL();
+    }*/
 	HRESULT hr = m_pBrowser->QueryInterface( IID_IUnknown, (void**)&pUnkBrowser ); 
 	if ( SUCCEEDED(hr) ) { 
 		hr = pDisp->QueryInterface( IID_IUnknown, (void**)&pUnkDisp ); 
@@ -74,7 +78,7 @@ void CWTLBrowserView::OnDocumentComplete(IDispatch* pDisp, const String& szURL)
 					}
 				}
 				if ( onDocumentComplete ) {
-					onDocumentComplete(szURL);
+					onDocumentComplete(url);
 				}
 			}
 		}

@@ -222,6 +222,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 	int nRet = Run( lpstrCmdLine, nCmdShow );
 	_Module.Term();
+    iuPluginManager.UnloadPlugins();
 	CScriptUploadEngine::DestroyScriptEngine();
 	OleUninitialize();
     google::RemoveLogSink(&logSink);

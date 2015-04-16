@@ -212,15 +212,15 @@ class HtmlElementPrivate {
 			elem_->insertAdjacentText(atEnd ? L"afterBegin" : L"beforeEnd", CComBSTR(IuCoreUtils::Utf8ToWstring(text).c_str()));
 		}
 
-		SquirrelObject getChildren() {
+        Sqrat::Array getChildren() {
 			IDispatchPtr disp;
 			elem_->get_children(&disp);
 			CComQIPtr<IHTMLElementCollection> collection(disp);
 			long count  = 0;
 			if ( !SUCCEEDED(collection->get_length(&count))) {
-				return SquirrelObject();
+				return Sqrat::Array();
 			}
-			SquirrelObject res = SquirrelVM::CreateArray(count);
+            Sqrat::Array res(Sqrat::DefaultVM::Get(), count);
 			for ( int i = 0; i < count; i ++ ) {
 				IDispatchPtr  disp = 0;
 				collection->item(CComVariant(i), CComVariant(0), &disp);
@@ -245,22 +245,22 @@ class HtmlElementPrivate {
 			return HtmlElement();
 		}	
 
-		SquirrelObject querySelectorAll(const std::string& query)
+		Sqrat::Array querySelectorAll(const std::string& query)
 		{
 			if ( !selector_ ) {
 				LOG(WARNING) << "This Internet Explorer version does not support querySelector functions.";
-				return  SquirrelObject();
+				return  Sqrat::Array();
 			}
 			CComPtr<IHTMLDOMChildrenCollection> collection;
 			CComBSTR queryBstr = IuCoreUtils::Utf8ToWstring(query).c_str();
 			if ( !SUCCEEDED(selector_->querySelectorAll(queryBstr, &collection)) ) {
-				return SquirrelObject();
+				return Sqrat::Array();
 			}
 			long count  = 0;
 			if ( !SUCCEEDED(collection->get_length(&count))) {
-				return SquirrelObject();
+				return Sqrat::Array();
 			}
-			SquirrelObject res = SquirrelVM::CreateArray(count);
+            Sqrat::Array res(Sqrat::DefaultVM::Get(), count);
 			for ( int i = 0; i < count; i ++ ) {
 				IDispatchPtr  disp = 0;
 				collection->item(i,/*, CComVariant(0),*/ &disp);
@@ -272,16 +272,16 @@ class HtmlElementPrivate {
 			return res;
 		}
 
-		SquirrelObject getFormElements() {
+		Sqrat::Array getFormElements() {
 			if ( !form_ ) {
 				LOG(ERROR) << "getFormElements: element is not a form";
-				return SquirrelObject();
+				return Sqrat::Array();
 			}
 			long count = 0;
 			if ( !SUCCEEDED( form_->get_length(&count) ) )  {
-				return SquirrelObject();
+				return Sqrat::Array();
 			}
-			SquirrelObject res = SquirrelVM::CreateArray(count);
+			Sqrat::Array res(Sqrat::DefaultVM::Get(), count);
 			for ( int i = 0; i < count; i ++ ) {
 				IDispatchPtr  disp = 0;
 				form_->item(CComVariant(i), CComVariant(0), &disp);

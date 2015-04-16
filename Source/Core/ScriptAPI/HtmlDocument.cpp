@@ -26,10 +26,6 @@
 // Not implemented
 #endif
 
-using namespace ScriptAPI;
-DECLARE_INSTANCE_TYPE(HtmlDocument);
-DECLARE_INSTANCE_TYPE(HtmlElement);
-
 namespace ScriptAPI {
 
 HtmlDocument::HtmlDocument()
@@ -52,12 +48,12 @@ HtmlElement HtmlDocument::getElementById(const std::string& id)
 	return d_->getElementById(id);
 }
 
-SquirrelObject HtmlDocument::getElementsByTagName(const std::string& tag)
+Sqrat::Array HtmlDocument::getElementsByTagName(const std::string& tag)
 {
 	return d_->getElementsByTagName(tag);
 }
 
-SquirrelObject HtmlDocument::getElementsByName(const std::string& name)
+Sqrat::Array HtmlDocument::getElementsByName(const std::string& name)
 {
 	return d_->getElementsByName(name);
 }
@@ -67,7 +63,7 @@ HtmlElement HtmlDocument::querySelector(const std::string& query)
 	return d_->querySelector(query);
 }
 
-SquirrelObject HtmlDocument::querySelectorAll(const std::string& query)
+Sqrat::Array HtmlDocument::querySelectorAll(const std::string& query)
 {
 	return d_->querySelectorAll(query);
 }
@@ -79,47 +75,47 @@ const std::string HtmlDocument::getHTML()
 
 void RegisterHtmlDocumentClass(Sqrat::SqratVM& vm)
 {
-	using namespace SqPlus;
-	SQClassDef<HtmlDocument>("HtmlDocument")
-		.func(&HtmlDocument::rootElement, "rootElement")
-		.func(&HtmlDocument::getElementById, "getElementById")
-		.func(&HtmlDocument::getElementsByName, "getElementsByName")
-		.func(&HtmlDocument::getElementsByTagName, "getElementsByTagName")
-		.func(&HtmlDocument::querySelector, "querySelector")
-		.func(&HtmlDocument::querySelectorAll, "querySelectorAll")
-		.func(&HtmlDocument::getHTML, "getHTML")
-		;
+	using namespace Sqrat;
+    vm.GetRootTable().Bind("HtmlDocument", Class<HtmlDocument>(vm.GetVM())
+        .Func("rootElement", &HtmlDocument::rootElement)
+        .Func("getElementById", &HtmlDocument::getElementById)
+        .Func("getElementsByName", &HtmlDocument::getElementsByName)
+        .Func("getElementsByTagName", &HtmlDocument::getElementsByTagName)
+        .Func("querySelector", &HtmlDocument::querySelector)
+        .Func("querySelectorAll", &HtmlDocument::querySelectorAll)
+        .Func("getHTML", &HtmlDocument::getHTML)
+    );
 }
 
 void RegisterHtmlElementClass(Sqrat::SqratVM& vm)
 {
-	using namespace SqPlus;
-	SQClassDef<HtmlElement>("HtmlElement")
-		.func(&HtmlElement::getAttribute, "getAttribute")
-		.func(&HtmlElement::setAttribute, "setAttribute")
-		.func(&HtmlElement::removeAttribute, "removeAttribute")
-		.func(&HtmlElement::getId, "getId")
-		.func(&HtmlElement::setId, "setId")
-		.func(&HtmlElement::getInnerHTML, "getInnerHTML")
-		.func(&HtmlElement::setInnerHTML, "setInnerHTML")
-		.func(&HtmlElement::getInnerText, "getInnerText")
-		.func(&HtmlElement::setInnerText, "setInnerText")
-		.func(&HtmlElement::getOuterHTML, "getOuterHTML")
-		.func(&HtmlElement::setOuterHTML, "setOuterHTML")
-		.func(&HtmlElement::getOuterText, "getOuterText")
-		.func(&HtmlElement::setOuterText, "setOuterText")
-		.func(&HtmlElement::getTagName, "getTagName")
-		.func(&HtmlElement::setValue, "setValue")
-		.func(&HtmlElement::getFormElements, "getFormElements")
-		.func(&HtmlElement::getParentElement, "getParentElement")
-		.func(&HtmlElement::scrollIntoView, "scrollIntoView")
-		.func(&HtmlElement::click, "click")
-		.func(&HtmlElement::insertHTML, "insertHTML")
-		.func(&HtmlElement::insertText, "insertText")
-		.func(&HtmlElement::isNull, "isNull")
-		.func(&HtmlElement::submitForm, "submitForm")
-		.func(&HtmlElement::getChildren, "getChildren")
-		;
+	using namespace Sqrat;
+    vm.GetRootTable().Bind("HtmlElement", Class<HtmlElement>(vm.GetVM())
+        .Func("getAttribute", &HtmlElement::getAttribute)
+        .Func("setAttribute", &HtmlElement::setAttribute)
+        .Func("removeAttribute", &HtmlElement::removeAttribute)
+        .Func("getId", &HtmlElement::getId)
+        .Func("setId", &HtmlElement::setId)
+        .Func("getInnerHTML", &HtmlElement::getInnerHTML)
+        .Func("setInnerHTML", &HtmlElement::setInnerHTML)
+        .Func("getInnerText", &HtmlElement::getInnerText)
+        .Func("setInnerText", &HtmlElement::setInnerText)
+        .Func("getOuterHTML", &HtmlElement::getOuterHTML)
+        .Func("setOuterHTML", &HtmlElement::setOuterHTML)
+        .Func("getOuterText", &HtmlElement::getOuterText)
+        .Func("setOuterText", &HtmlElement::setOuterText)
+        .Func("getTagName", &HtmlElement::getTagName)
+        .Func("setValue", &HtmlElement::setValue)
+        .Func("getFormElements", &HtmlElement::getFormElements)
+        .Func("getParentElement", &HtmlElement::getParentElement)
+        .Func("scrollIntoView", &HtmlElement::scrollIntoView)
+        .Func("click", &HtmlElement::click)
+        .Func("insertHTML", &HtmlElement::insertHTML)
+        .Func("insertText", &HtmlElement::insertText)
+        .Func("isNull", &HtmlElement::isNull)
+        .Func("submitForm", &HtmlElement::submitForm)
+        .Func("getChildren", &HtmlElement::getChildren)
+	);
 }
 
 }

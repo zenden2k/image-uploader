@@ -112,6 +112,10 @@ public:
 	{
 		m_bState[back]=m_bState[forward]=FALSE;
 	}
+    ~CWebBrowser2()
+    {
+        return;
+    }
 	
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{

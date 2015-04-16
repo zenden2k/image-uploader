@@ -20,10 +20,6 @@
 
 #include "HtmlDocumentPrivate_win.h"
 
-using namespace ScriptAPI;
-//DECLARE_INSTANCE_TYPE(HtmlDocument);
-DECLARE_INSTANCE_TYPE(HtmlElement);
-
 namespace ScriptAPI {;
 
 HtmlElement HtmlDocumentPrivate::rootElement() {
@@ -54,15 +50,15 @@ HtmlElement HtmlDocumentPrivate::getElementById(const std::string& id) {
 	return HtmlElement();
 }
 
-SquirrelObject HtmlDocumentPrivate::getElementsByTagName(const std::string& tag) {
+Sqrat::Array HtmlDocumentPrivate::getElementsByTagName(const std::string& tag) {
 	CComPtr<IHTMLElementCollection> collection;
 	CComBSTR tagBstr = IuCoreUtils::Utf8ToWstring(tag).c_str();
 	doc3_->getElementsByTagName(tagBstr, &collection);
 	long count  = 0;
 	if ( !SUCCEEDED(collection->get_length(&count))) {
-		return SquirrelObject();
+		return Sqrat::Array();
 	}
-	SquirrelObject res = SquirrelVM::CreateArray(count);
+    Sqrat::Array res(Sqrat::DefaultVM::Get(), count);
 	for ( int i = 0; i < count; i ++ ) {
 		IDispatchPtr  disp = 0;
 		collection->item(CComVariant(i), CComVariant(0), &disp);
@@ -71,15 +67,15 @@ SquirrelObject HtmlDocumentPrivate::getElementsByTagName(const std::string& tag)
 	return res;
 }
 
-SquirrelObject HtmlDocumentPrivate::getElementsByName(const std::string& name) {
+Sqrat::Array HtmlDocumentPrivate::getElementsByName(const std::string& name) {
 	CComPtr<IHTMLElementCollection> collection;
 	CComBSTR tagBstr = IuCoreUtils::Utf8ToWstring(name).c_str();
 	doc3_->getElementsByName(tagBstr, &collection);
 	long count  = 0;
 	if ( !SUCCEEDED(collection->get_length(&count))) {
-		return SquirrelObject();
+        return Sqrat::Array();
 	}
-	SquirrelObject res = SquirrelVM::CreateArray(count);
+    Sqrat::Array res(Sqrat::DefaultVM::Get(), count);
 	for ( int i = 0; i < count; i ++ ) {
 		IDispatchPtr  disp = 0;
 		collection->item(CComVariant(i), CComVariant(0), &disp);

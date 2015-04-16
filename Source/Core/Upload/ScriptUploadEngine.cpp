@@ -45,7 +45,7 @@
 #endif
 #include <Core/ScriptAPI/ScriptAPI.h>
 /*
-using namespace SqPlus;
+using namespace Sqrat;
 // Squirrel types should be defined in the same module where they are used
 // otherwise we will catch SqPlus exception while executing Squirrel functions
 ///DECLARE_INSTANCE_TYPE(std::string);
@@ -71,29 +71,16 @@ static void printFunc(HSQUIRRELVM v, const SQChar* s, ...)
 	delete[] buffer; 
 }
 
+// Actually we do not need this since migrating to Sqrat
 void CompilerErrorHandler(HSQUIRRELVM,const SQChar * desc,const SQChar * source,SQInteger line,SQInteger column) {
 	LOG(ERROR) << "Script compilation failed\r\n"<<"File:  "<<source<<"\r\nLine:"<<line<<"   Column:"<<column<<"\r\n\r\n"<<desc;
 }
 
 void CScriptUploadEngine::InitScriptEngine()
 {
-    /*// Create a new VM - a root VM with new SharedState.
-    vm_ = sq_open(1024);
-    if( !vm_ ) return;
-    //sq_setprintfunc(v,SquirrelVM::PrintFunc);
-    sq_pushroottable(vm_);
-    sqstd_register_iolib(vm_);
-    sqstd_register_bloblib(vm_);
-    sqstd_register_mathlib(vm_);
-    sqstd_register_stringlib(vm_); 
-    sqstd_register_systemlib(vm_);      
-    sqstd_seterrorhandlers(vm_);
-    //TODO error handler, compiler error handler
-    sq_pop(vm_, 1); */
-
-    sq_setcompilererrorhandler(vm_.GetVM(), CompilerErrorHandler);
-    sq_setprintfunc(/*SquirrelVM::GetVMPtr()*/vm_.GetVM(),printFunc,printFunc);
-    //sq_pushroottable(vm_);
+    //sq_setcompilererrorhandler(vm_.GetVM(), CompilerErrorHandler);
+    sqstd_seterrorhandlers(vm_.GetVM());
+    sq_setprintfunc(vm_.GetVM(), printFunc, printFunc);
 }
 
 void CScriptUploadEngine::DestroyScriptEngine()
@@ -137,22 +124,35 @@ int CScriptUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params)
 
 	params.folderId = folderID;
     int ival = 0;
+    clearSqratError();
 	try
 	{
 		SetStatus(stUploading);
 		if ( task->getType() == "file" ) {
             Function func(vm_.GetRootTable(), "UploadFile");
+            if ( func.IsNull() ) {
+                 Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string("Function UploadFile not found in script")); 
+                 clearSqratError();
+                 return -1;
+            }
 			std::string fname = FileName;
-			/*SharedPtr<int> ivalPtr *=*/ ival =   func.Evaluate<int>(fname.c_str(), &params);
+			/*SharedPtr<int> ivalPtr *=*/ ival =  func.Evaluate<int>(fname.c_str(), &params);
             /*if ( ivalPtr ) {
                 ival = *ivalPtr.Get();
             }*/
 		} else if ( task->getType() == "url" ) {
 			UrlShorteningTask *urlShorteningTask = static_cast<UrlShorteningTask*>(task);
             Function func(vm_.GetRootTable(), "ShortenUrl");
+            if ( func.IsNull() ) {
+                 Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string("Function ShortenUrl not found in script")); 
+                 clearSqratError();
+                 return -1;
+            }
 			std::string url = urlShorteningTask->getUrl();
 			/*SharedPtr<int> ivalPtr*/ival  = func.Evaluate<int>(url.c_str(), &params); 
-            ival = ival && !params.DirectUrl.empty();;
+            if ( ival > 0 ) {
+                ival = ival && !params.DirectUrl.empty();
+            }
            /* if ( ivalPtr ) {
                 ival = *ivalPtr.Get() && !params.DirectUrl.empty();
             }*/
@@ -162,8 +162,12 @@ int CScriptUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params)
 	{
 		Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + Utf8String(e.what()));
 	}
+    if ( Error::Instance().Occurred(vm_.GetVM() ) ) {
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + Utf8String(Error::Instance().Message(vm_.GetVM()))); 
+        return false;
+    }
 	FlushSquirrelOutput();
-	return ival != 0;
+	return ival;
 }
 
 bool CScriptUploadEngine::needStop()
@@ -183,11 +187,13 @@ CScriptUploadEngine::CScriptUploadEngine(Utf8String pluginName) : CAbstractUploa
 
 CScriptUploadEngine::~CScriptUploadEngine()
 {
+    delete m_SquirrelScript;
 	// SquirrelVM::Shutdown();
 }
 
 bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params)
 {
+    using namespace Sqrat;
 	if (!IuCoreUtils::FileExists(fileName))
 		return false;
 
@@ -197,9 +203,9 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
 	{   
         InitScriptEngine();
 
-        ScriptAPI::RegisterFunctions(vm_.GetVM());
-        ScriptAPI::RegisterClasses(vm_.GetVM());
-
+        ScriptAPI::RegisterAPI(vm_);
+        ScriptAPI::RegisterShortTranslateFunctions(vm_);
+        vm_.GetRootTable().SetInstance("ServerParams", &params);
 		//BindVariable(m_Object, &params, "ServerParams");
 
 		std::string scriptText;
@@ -207,14 +213,24 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
             LOG(ERROR) << "Failed to read script from file " << fileName;
             return false;
         }
+        clearSqratError();
         m_SquirrelScript = new Sqrat::Script(vm_.GetVM());
         m_SquirrelScript->CompileString(scriptText.c_str(),IuCoreUtils::ExtractFileName(fileName).c_str());
+        if ( Error::Instance().Occurred(vm_.GetVM() ) ) {
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::load failed\r\n" + Utf8String(Error::Instance().Message(vm_.GetVM()))); 
+            return false;
+        }
+        clearSqratError();
         m_SquirrelScript->Run();
 
+        if ( Error::Instance().Occurred(vm_.GetVM() ) ) {
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::load failed\r\n" + Utf8String(Error::Instance().Message(vm_.GetVM()))); 
+            return false;
+        }
 		/*m_SquirrelScript = SquirrelVM::CompileBuffer(scriptText.c_str(), IuCoreUtils::ExtractFileName(fileName).c_str());
 		SquirrelVM::RunScript(m_SquirrelScript, &m_Object);*/
 
-		//ScriptAPI::RegisterShortTranslateFunctions(!m_Object.Exists("tr"), !m_Object.Exists("__"));
+		
 	}
     catch (std::exception& e)
 	{
@@ -230,10 +246,18 @@ int CScriptUploadEngine::getAccessTypeList(std::vector<Utf8String>& list)
      using namespace Sqrat;
 	try
 	{
+         clearSqratError();
         Function func(vm_.GetRootTable(), "GetFolderAccessTypeList");
-		if (func.IsNull())
+        if (func.IsNull()) {
+            clearSqratError();
 			return -1;
-        SharedPtr<Sqrat::Object> arr = func.Evaluate<Sqrat::Object>();
+        }
+        SharedPtr<Sqrat::Array> arr = func.Evaluate<Sqrat::Array>();
+
+        if ( Error::Instance().Occurred(vm_.GetVM() ) ) {
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::getAccessTypeList\r\n" + Utf8String(Error::Instance().Message(vm_.GetVM()))); 
+            return 0;
+        }
 
 		list.clear();
 		int count =  arr->GetSize();
@@ -255,14 +279,23 @@ int CScriptUploadEngine::getAccessTypeList(std::vector<Utf8String>& list)
 int CScriptUploadEngine::getServerParamList(std::map<Utf8String, Utf8String>& list)
 {
     using namespace Sqrat;
-    Sqrat::Array arr;
+    Sqrat::Table arr;
 
 	try
 	{
+        clearSqratError();
         Function func(vm_.GetRootTable(), "GetServerParamList");
-		if (func.IsNull())
+        if (func.IsNull()) {
+            clearSqratError();
 			return -1;
-        SharedPtr<Array> arr = func.Evaluate<Sqrat::Array>();
+        }
+        SharedPtr<Table> arr = func.Evaluate<Sqrat::Table>();
+
+        if ( Error::Instance().Occurred(vm_.GetVM() ) ) {
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::getServerParamList\r\n" + Utf8String(Error::Instance().Message(vm_.GetVM()))); 
+            return 0;
+        }
+
         Sqrat::Array::iterator it;
 		list.clear();
         
@@ -288,10 +321,18 @@ int CScriptUploadEngine::doLogin()
     using namespace Sqrat;
 	try
 	{
+        clearSqratError();
         Function func(vm_.GetRootTable(), "DoLogin");
-		if (func.IsNull())
+        if (func.IsNull()) {
+            clearSqratError();
 			return 0;
-		return func.Evaluate<int>();
+        }
+		int res =  func.Evaluate<int>();
+        if ( Error::Instance().Occurred(vm_.GetVM() ) ) {
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + Utf8String(Error::Instance().Message(vm_.GetVM()))); 
+            return 0;
+        }
+        return res;
 	}
     catch (std::exception& e)
 	{
@@ -307,10 +348,16 @@ int CScriptUploadEngine::modifyFolder(CFolderItem& folder)
     int res = 1;
 	try
 	{
+        clearSqratError();
         Function func(vm_.GetRootTable(), "ModifyFolder");
-		if (func.IsNull())
-			return -1;
+        if (func.IsNull()) {
+	        clearSqratError();
+        }
 		res = func.Evaluate<int>(&folder);
+        if ( Error::Instance().Occurred(vm_.GetVM() ) ) {
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + Utf8String(Error::Instance().Message(vm_.GetVM()))); 
+            return 0;
+        }
 	}
     catch (std::exception& e)
 	{
@@ -326,10 +373,16 @@ int CScriptUploadEngine::getFolderList(CFolderList& FolderList)
 	int ival = 0;
 	try
 	{
+        clearSqratError();
         Function func(vm_.GetRootTable(), "GetFolderList");
-		if (func.IsNull())
+        if (func.IsNull()) {
+            clearSqratError();
 			return -1;
+        }
 		ival = func.Evaluate<int>(&FolderList);
+        if ( Error::Instance().Occurred(vm_.GetVM() ) ) {
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::getFolderList\r\n" + Utf8String(Error::Instance().Message(vm_.GetVM()))); 
+        }
 	}
     catch (std::exception& e)
 	{
@@ -355,10 +408,18 @@ int CScriptUploadEngine::createFolder(CFolderItem& parent, CFolderItem& folder)
 	int ival = 0;
 	try
 	{
+        clearSqratError();
         Function func(vm_.GetRootTable(), "CreateFolder");
-		if (func.IsNull())
-			return -1;
+        if (func.IsNull()) {
+            clearSqratError();
+            return -1;
+        }
+			
 		ival = func.Evaluate<int>(&parent, &folder);
+        if ( Error::Instance().Occurred(vm_.GetVM() ) ) {
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::createFolder\r\n" + Utf8String(Error::Instance().Message(vm_.GetVM()))); 
+            return false;
+        }
 	}
     catch (std::exception& e)
 	{
@@ -376,7 +437,7 @@ time_t CScriptUploadEngine::getCreationTime()
 void CScriptUploadEngine::setNetworkClient(NetworkClient* nm)
 {
 	CAbstractUploadEngine::setNetworkClient(nm);
-    vm_.GetRootTable().SetValue("nm", nm);
+    vm_.GetRootTable().SetInstance("nm", nm);
 	//BindVariable(m_Object, nm, "nm");
 }
 
@@ -386,9 +447,13 @@ bool CScriptUploadEngine::supportsSettings()
 
 	try
 	{
+        clearSqratError();
         Function func(vm_.GetRootTable(), "GetServerParamList");
-		if (func.IsNull())
+        if (func.IsNull()) {
+            clearSqratError();
 			return false;
+        }
+
 	}
     catch (std::exception& e)
 	{
@@ -404,9 +469,12 @@ bool CScriptUploadEngine::supportsBeforehandAuthorization()
     using namespace Sqrat;
 	try
 	{
+         clearSqratError();
          Function func(vm_.GetRootTable(), "DoLogin");
-		 if (func.IsNull())
+         if (func.IsNull()) {
+            clearSqratError();
 			return false;
+         }
 	}
     catch (std::exception& e)
 	{
@@ -433,3 +501,7 @@ void CScriptUploadEngine::Log(ErrorInfo::MessageType mt, const std::string& erro
 	ErrorMessage(ei);
 }
 
+void CScriptUploadEngine::clearSqratError()
+{
+    Sqrat::Error::Instance().Clear(vm_.GetVM());
+}

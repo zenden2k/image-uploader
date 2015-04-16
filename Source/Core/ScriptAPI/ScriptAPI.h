@@ -4,9 +4,9 @@
 #include "Functions.h"
 
 namespace ScriptAPI {
-/*
-extern SquirrelObject* RootTable;*/
-void RegisterClasses(Sqrat::SqratVM& vm);
+
+void RegisterAPI(Sqrat::SqratVM& vm);
 void CleanUp();
+
 }
 #endif

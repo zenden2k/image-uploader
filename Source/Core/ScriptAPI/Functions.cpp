@@ -47,13 +47,11 @@
 #include "Core/3rdpart/codepages.h"
 #include "versioninfo.h"
 
-using namespace SqPlus;
-using namespace ScriptAPI;
-DECLARE_INSTANCE_TYPE(NetworkClient);
+using namespace Sqrat;
 
 namespace ScriptAPI {
-
-SquirrelObject* RootTable = 0;
+/*
+SquirrelObject* RootTable = 0;*/
 
 const std::string GetScriptsDirectory()
 {
@@ -70,8 +68,8 @@ const std::string GetAppLanguageFile()
 	return IuCoreUtils::ExtractFileNameNoExt(languageFile);
 }
 
-SquirrelObject GetAppVersion() {
-	SquirrelObject res = SquirrelVM::CreateTable();
+Sqrat::Table GetAppVersion() {
+	Sqrat::Table res;
 	std::string ver = _APP_VER;
 	std::vector<std::string> tokens;
 	IuStringUtils::Split(ver,".", tokens, 3);
@@ -91,11 +89,11 @@ SquirrelObject GetAppVersion() {
 	return res;
 }
 
-SquirrelObject IncludeScript(const std::string& filename)
+Sqrat::Object IncludeScript(const std::string& filename)
 {	
 	if ( filename.empty() ) {
 		LOG(ERROR) << "include() failed: empty file name";
-		return SquirrelObject();
+		return Sqrat::Object();
 	}
 	std::string absolutePath;
 	if ( filename[0] == '/' || (filename.length()>1 && filename[1]==':' ) ) {
@@ -106,15 +104,17 @@ SquirrelObject IncludeScript(const std::string& filename)
 
 	if ( !IuCoreUtils::FileExists(absolutePath) ) {
 		LOG(ERROR) << "include() failed: file \"" + absolutePath + "\" not found.";
-		return SquirrelObject();
+		return Sqrat::Object();
 	}
 	std::string scriptText;
 	if ( !IuCoreUtils::ReadUtf8TextFile(absolutePath, scriptText) ) {
 		LOG(ERROR) << "include() failed: could not read file \"" + absolutePath + "\".";
-		return SquirrelObject();
+		return Sqrat::Object();
 	}
-	SquirrelObject script = SquirrelVM::CompileBuffer(scriptText.c_str(), IuCoreUtils::ExtractFileName(absolutePath).c_str());
-	return SquirrelVM::RunScript(script, RootTable);
+    Sqrat::Script squirrelScript(Sqrat::DefaultVM::Get());
+    squirrelScript.CompileString(scriptText.c_str(),IuCoreUtils::ExtractFileName(absolutePath).c_str());
+    squirrelScript.Run();
+	return Sqrat::Object();
 }
 
 Json::Value* translationRoot = 0;
@@ -192,7 +192,7 @@ const std::string Impl_AskUserCaptcha(NetworkClient *nm, const std::string& url)
 
 bool ShellOpenUrl(const std::string& url) {
 #ifdef _WIN32
-    return ShellExecute(0, _T("open"), IuCoreUtils::Utf8ToWstring(url).c_str(), NULL, NULL, SW_SHOWNORMAL);
+    return ShellExecute(0, _T("open"), IuCoreUtils::Utf8ToWstring(url).c_str(), NULL, NULL, SW_SHOWNORMAL)!=0;
 #else
 #ifdef __APPLE__
     return system(("open \""+url+"\"").c_str());
@@ -346,13 +346,12 @@ const std::string scriptGetTempDirectory() {
 }
 
 const std::string url_encode(const std::string &value) {
-	using namespace std;
-	ostringstream escaped;
+	std::ostringstream escaped;
 	escaped.fill('0');
-	escaped << hex << std::uppercase;
+	escaped << std::hex << std::uppercase;
 
-	for (string::const_iterator i = value.begin(), n = value.end(); i != n; ++i) {
-		string::value_type c = (*i);
+    for (std::string::const_iterator i = value.begin(), n = value.end(); i != n; ++i) {
+		std::string::value_type c = (*i);
 
 		// Keep alphanumeric and other accepted characters intact
 		if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
@@ -361,7 +360,7 @@ const std::string url_encode(const std::string &value) {
 		}
 
 		// Any other characters are percent-encoded
-		escaped << '%' << setw(2) << int((unsigned char) c);
+		escaped << '%' << std::setw(2) << int((unsigned char) c);
 	}
 
 	return escaped.str();
@@ -472,13 +471,17 @@ const std::string scriptMessageBox( const std::string& message, const std::strin
 #endif
 }
 
-SquirrelObject parseJSONObj(Json::Value root, SquirrelObject &obj);
-template<class T> void setObjValues(T key, Json::ValueIterator it, SquirrelObject &obj) {
+void parseJSONObj(Json::Value root, Sqrat::Array& obj);
+void parseJSONObj(Json::Value root, Sqrat::Table& obj);
+
+template<class T,class V> void setObjValues(T key, Json::ValueIterator it, V &obj) {
 	using namespace Json;
+    Sqrat::Array newArr;
+    Sqrat::Table newObj;
 
 	switch(it->type()) {
 		case nullValue:
-			obj.SetValue(key,SquirrelObject());
+			obj.SetValue(key,Sqrat::Object());
 			break;
 		case intValue:      ///< signed integer value
 			obj.SetValue(key, (INT)it->asInt());
@@ -496,74 +499,91 @@ template<class T> void setObjValues(T key, Json::ValueIterator it, SquirrelObjec
 			obj.SetValue(key, it->asBool());
 			break;   
 		case arrayValue:    ///< array value (ordered list)
+            parseJSONObj(*it,newArr);
+            obj.SetValue(key, newArr);
+            break;   
 		case objectValue:
-			SquirrelObject newObj;
-			obj.SetValue(key, parseJSONObj(*it,newObj));
+            parseJSONObj(*it,newObj);
+			obj.SetValue(key, newObj);
+            break;   
 	}
 }
 
-SquirrelObject parseJSONObj(Json::Value root, SquirrelObject &obj) {
+void parseJSONObj(Json::Value root, Sqrat::Array& obj) {
+    Json::ValueIterator it;
+    obj = Sqrat::Array (Sqrat::DefaultVM::Get(), root.size());
+    for(it = root.begin(); it != root.end(); ++it) {
+        int key = it.key().asInt();
+        setObjValues(key, it, obj);
+    }
+}
+
+void parseJSONObj(Json::Value root, Sqrat::Table& obj) {
+    Json::ValueIterator it;
+    obj = Sqrat::Table (Sqrat::DefaultVM::Get());
+    for(it = root.begin(); it != root.end(); ++it) {
+        std::string key = it.key().asString();
+        setObjValues(key.data(), it, obj);
+    }
+}
+
+Sqrat::Object parseJSONObj(Json::Value root) {
 	Json::ValueIterator it;
 	//SquirrelObject obj;
 	bool isArray = root.isArray();
-	if ( isArray ) {
-		obj = SquirrelVM::CreateArray(root.size());
-	} else if ( root.isObject() ) {
-		obj = SquirrelVM::CreateTable();
-	} 
 	
-
 	if ( isArray ) {
+        Sqrat::Array obj(Sqrat::DefaultVM::Get(), root.size());
 		for(it = root.begin(); it != root.end(); ++it) {
 			int key = it.key().asInt();
-			
 			setObjValues(key, it, obj);
 		}
+        return obj;
 	} else {
+        Sqrat::Table obj(Sqrat::DefaultVM::Get());
 		for(it = root.begin(); it != root.end(); ++it) {
 			std::string key = it.key().asString();
 			setObjValues(key.data(), it, obj);
 		}
+        return obj;
 	}
-	
-	return obj;
+    return Sqrat::Object();
 }
 
-SquirrelObject jsonToSquirrelObject(const std::string& json) {
+Sqrat::Object jsonToSquirrelObject(const std::string& json) {
 	Json::Value root;
 	Json::Reader reader;
-	SquirrelObject sq;
+	Sqrat::Object sq;
 	if ( reader.parse(json, root, false) ) {
-		parseJSONObj(root,sq);
+		return parseJSONObj(root);
 	}
 	return sq;
 }
 
-Json::Value sqValueToJson(SquirrelObject obj ) {
+Json::Value sqValueToJson(Sqrat::Object obj ) {
 	switch ( obj.GetType() ) {
 		case OT_NULL:
 			return Json::Value(Json::nullValue);
 		case OT_INTEGER:
-            return SQINT_TO_JSON_VALUE(obj.ToInteger());
+            return SQINT_TO_JSON_VALUE(obj.Cast<int>());
 			break;
 		case OT_FLOAT:
-			return obj.ToFloat();
+			return obj.Cast<float>();
 			break;
 
 		case OT_BOOL:
-			return obj.ToBool();
+			return obj.Cast<bool>();
 			break;
 
 		case OT_STRING:
-			return obj.ToString();
+            return obj.Cast<std::string>();
 			break;
 	}
 	return Json::Value(Json::nullValue);
 }
-Json::Value sqObjToJson(	SquirrelObject obj ) {
+Json::Value sqObjToJson(Sqrat::Object obj ) {
 	Json::Value res;
-	SquirrelObject key;
-	SquirrelObject value;
+    Sqrat::Object::iterator it;
 	switch ( obj.GetType() ) {
 			case OT_NULL:
 			case OT_INTEGER:
@@ -573,29 +593,22 @@ Json::Value sqObjToJson(	SquirrelObject obj ) {
 				return sqValueToJson(obj);
 				break;
 			case OT_TABLE:
-				if ( obj.BeginIteration() ) {
-					while(obj.Next(key,value) ) {
-						res[key.ToString()]=sqObjToJson(value);
-					}
-					obj.EndIteration();
+				while(obj.Next(it) ) {
+					res[it.getName()] = sqObjToJson(it.getValue());
 				}
 				return res;
 				break;
 			case OT_ARRAY: 
-				if ( obj.BeginIteration() ) {
-					while(obj.Next(key,value) ) {
-						res[int(key.ToInteger())]=sqObjToJson(value);
-					}
-					obj.EndIteration();
-
-				}
+                while(obj.Next(it) ) {
+                    res[Sqrat::Object(it.getKey()).Cast<int>()] = sqObjToJson(it.getValue());
+                }
 				return res;
 				break;				
 	}
 	return Json::Value(Json::nullValue);
 }
 
-const std::string squirrelObjectToJson(SquirrelObject  obj) {
+const std::string squirrelObjectToJson(Sqrat::Object  obj) {
 	Json::Value root = sqObjToJson(obj);
 	Json::StreamWriterBuilder builder;
 	builder["commentStyle"] = "None";
@@ -612,11 +625,11 @@ const std::string GetFileContents(const std::string& filename) {
 }
 
 unsigned int ScriptGetFileSize(const std::string& filename) {
-	return IuCoreUtils::getFileSize(filename);
+	return static_cast<unsigned int>(IuCoreUtils::getFileSize(filename));
 }
 
 double ScriptGetFileSizeDouble(const std::string& filename) {
-	return IuCoreUtils::getFileSize(filename);
+	return static_cast<double>(IuCoreUtils::getFileSize(filename));
 }
 
 const std::string scriptGetAppLanguage() {
@@ -653,66 +666,71 @@ const std::string plugGetFileExtension(const std::string& path)
     return res;
 }
 
-void RegisterFunctions(HSQUIRRELVM vm)
+void RegisterFunctions(Sqrat::SqratVM& vm)
 {
+    Sqrat::RootTable& root = vm.GetRootTable();
 	/*RootTable = rootTable;*/
-	RegisterGlobal(GetScriptsDirectory, "GetScriptsDirectory");
-	RegisterGlobal(GetAppLanguageFile, "GetAppLanguageFile");
-	RegisterGlobal(IncludeScript, "include");
-	RegisterGlobal(Translate, "Translate");
-	RegisterGlobal(GetAppVersion, "GetAppVersion");
+    root
+        .Func("GetScriptsDirectory", GetScriptsDirectory)
+        .Func("GetAppLanguageFile", GetAppLanguageFile)
+        .Func("include", IncludeScript)
+        .Func("Translate", Translate)
+        .Func("GetAppVersion", GetAppVersion)
 
-    RegisterGlobal(pluginRandom, "random");
-    RegisterGlobal(scriptSleep, "sleep");
-    RegisterGlobal(scriptMD5, "md5");
-    RegisterGlobal(scriptAnsiToUtf8, "AnsiToUtf8");
-    RegisterGlobal(YandexRsaEncrypter, "YandexRsaEncrypter");
-    RegisterGlobal(scriptUtf8ToAnsi, "Utf8ToAnsi");
-    RegisterGlobal(plugExtractFileName, "ExtractFileName");
-    RegisterGlobal(plugGetFileExtension, "GetFileExtension");
-    RegisterGlobal(AskUserCaptcha, "AskUserCaptcha");
-    RegisterGlobal(InputDialog, "InputDialog");
-    RegisterGlobal(scriptGetFileMimeType, "GetFileMimeType");
-    RegisterGlobal(escapeJsonString, "JsonEscapeString");
-    RegisterGlobal(ShellOpenUrl, "ShellOpenUrl");
-    RegisterGlobal(IuCoreUtils::ExtractFileNameNoExt, "ExtractFileNameNoExt");
-    RegisterGlobal(IuCoreUtils::ExtractFilePath, "ExtractFilePath");
-    RegisterGlobal(jsonToSquirrelObject, "ParseJSON");
-    RegisterGlobal(squirrelObjectToJson, "ToJSON");
-    RegisterGlobal(IuCoreUtils::copyFile, "CopyFile");
-    RegisterGlobal(IuCoreUtils::createDirectory, "CreateDirectory");
-    RegisterGlobal(IuCoreUtils::FileExists, "FileExists");
-    RegisterGlobal(GetFileContents, "GetFileContents");
-    RegisterGlobal(scriptGetTempDirectory, "GetTempDirectory");
-    RegisterGlobal(IuCoreUtils::MoveFileOrFolder, "MoveFileOrFolder");
-    RegisterGlobal(IuCoreUtils::PutFileContents, "PutFileContents");
-    RegisterGlobal(IuCoreUtils::RemoveFile, "DeleteFile");
-    RegisterGlobal(scriptGetAppLanguage, "GetAppLanguage");
-    RegisterGlobal(scriptGetAppLocale, "GetAppLocale");
+        .Func("random", pluginRandom)
+        .Func("sleep", scriptSleep)
+        .Func("md5", scriptMD5)
+        .Func("AnsiToUtf8", scriptAnsiToUtf8)
+        .Func("YandexRsaEncrypter", YandexRsaEncrypter)
+        .Func("Utf8ToAnsi", scriptUtf8ToAnsi)
+        .Func("ExtractFileName", plugExtractFileName)
+        .Func("GetFileExtension", plugGetFileExtension)
+        .Func("AskUserCaptcha", AskUserCaptcha)
+        .Func("InputDialog", InputDialog)
+        .Func("GetFileMimeType", scriptGetFileMimeType)
+        .Func("JsonEscapeString", escapeJsonString)
+        .Func("ShellOpenUrl", ShellOpenUrl)
+        .Func("ExtractFileNameNoExt", IuCoreUtils::ExtractFileNameNoExt)
+        .Func("ExtractFilePath", IuCoreUtils::ExtractFilePath)
+        .Func("ParseJSON", jsonToSquirrelObject)
+        .Func("ToJSON", squirrelObjectToJson)
+        .Func("CopyFile", IuCoreUtils::copyFile)
+        .Func("CreateDirectory", IuCoreUtils::createDirectory)
+        .Func("FileExists", IuCoreUtils::FileExists)
+        .Func("GetFileContents", GetFileContents)
+        .Func("GetTempDirectory", scriptGetTempDirectory)
+        .Func("MoveFileOrFolder", IuCoreUtils::MoveFileOrFolder)
+        .Func("PutFileContents", IuCoreUtils::PutFileContents)
+        .Func("DeleteFile", IuCoreUtils::RemoveFile)
+        .Func("GetAppLanguage", scriptGetAppLanguage)
+        .Func("GetAppLocale", scriptGetAppLocale)
 
-    RegisterGlobal(ScriptGetFileSize, "GetFileSize");	
-    RegisterGlobal(ScriptGetFileSizeDouble, "GetFileSizeDouble");	
-    RegisterGlobal(scriptWriteLog, "WriteLog");	
-    RegisterGlobal(scriptMessageBox, "MessageBox");	
+        .Func("GetFileSize", ScriptGetFileSize)	
+        .Func("GetFileSizeDouble", ScriptGetFileSizeDouble)	
+        .Func("WriteLog", scriptWriteLog)	
+        .Func("MessageBox", scriptMessageBox);	
 
     using namespace IuCoreUtils;
-    RegisterGlobal(&CryptoUtils::CalcMD5HashFromFile, "md5_file");
-    RegisterGlobal(&CryptoUtils::CalcSHA1HashFromString, "sha1");
-    RegisterGlobal(&CryptoUtils::CalcSHA1HashFromFile, "sha1_file");
-    RegisterGlobal(&CryptoUtils::CalcHMACSHA1HashFromString, "hmac_sha1");
-    RegisterGlobal(url_encode, "url_encode");
-    RegisterGlobal(::DebugMessage, "DebugMessage" );
-
+    root
+        .Func("md5_file", &CryptoUtils::CalcMD5HashFromFile)
+        .Func("sha1", &CryptoUtils::CalcSHA1HashFromString)
+        .Func("sha1_file", &CryptoUtils::CalcSHA1HashFromFile)
+        .Func("hmac_sha1", &CryptoUtils::CalcHMACSHA1HashFromString)
+        .Func("url_encode", url_encode)
+        .Func("DebugMessage", DefaultErrorHandling::DebugMessage);
     srand(static_cast<unsigned int>(time(0)));
-//	atexit(&CleanUpFunctions);
-}
 
-void RegisterShortTranslateFunctions(bool tr)
-{
-	if ( tr ) {
-		RegisterGlobal(Translate, "tr");
-	}
-	
+    
+}
+//	atexit(&CleanUpFunctions);
+
+
+void RegisterShortTranslateFunctions(Sqrat::SqratVM& vm) {
+    Sqrat::RootTable& root = vm.GetRootTable();
+    Function func(root, "tr");
+    if ( func.IsNull() ) {
+        root.Func("tr", Translate);
+    }
 }
 
 }

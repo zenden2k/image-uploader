@@ -147,7 +147,9 @@ function OnTimer(data) {
 }
 
 function OnNavigateErrorCallback(data) {
-	data.browser.close();
+	if ( CRegExp("http://.*vfl.ru/$", "i").match(data.url) ) {
+		data.browser.close();
+	}
 }
 
 function  UploadFile(FileName, options)
@@ -168,7 +170,7 @@ function  UploadFile(FileName, options)
 	webBrowser.setOnFileInputFilledCallback(OnFileInputFilledCallback, null);
 	webBrowser.setOnNavigateErrorCallback(OnNavigateErrorCallback, null);
 
-	webBrowser.exec();
-	//webBrowser.showModal();
+	//webBrowser.exec();
+	webBrowser.showModal();
 	return uploadResult;
 }

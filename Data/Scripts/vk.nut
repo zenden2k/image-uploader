@@ -320,5 +320,5 @@ function GetFolderAccessTypeList()
 		tr("vk.privacy.friends_and_friends_of_friends", "Friends and friends of friends"),
 		tr("vk.privacy.just_me", "Just me" )
 	];
-	return a;
+
 }
