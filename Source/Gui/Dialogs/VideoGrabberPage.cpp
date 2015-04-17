@@ -27,6 +27,7 @@
 #include "Gui/Dialogs/SettingsDlg.h"
 #include "Func/fileinfohelper.h"
 #include "Core/Images/ImageConverter.h"
+#include <Func/WinUtils.h>
 #include "LogWindow.h"
 #include "mediainfodlg.h"
 #include "Func/Settings.h"
@@ -148,7 +149,17 @@ LRESULT CVideoGrabberPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWnd
 
 LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	WizardDlg->LastVideoFile = GuiTools::GetWindowText(GetDlgItem(IDC_FILEEDIT));
+    CString fileName = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
+    if ( fileName.IsEmpty() ) {
+        return 0;
+    }
+
+    if ( !WinUtils::FileExists(fileName ) ) {
+        LOG(ERROR) << "File not found.\r\n" << fileName;
+        return 0;
+    }
+
+	WizardDlg->LastVideoFile = fileName;
 	grabbedFramesCount = 0;
 	Terminated = false;
 	IsStopTimer = false;
@@ -212,10 +223,10 @@ DWORD CVideoGrabberPage::Run()
 {
 	snapshotsFolder.Empty();
 
-	CString fileName = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
-	if ( fileName.IsEmpty() ) {
-		return 0;
-	}
+    CString fileName = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
+    if ( fileName.IsEmpty() ) {
+        return 0;
+    }
 
 	GrabBitmaps((LPCTSTR)fileName);
 

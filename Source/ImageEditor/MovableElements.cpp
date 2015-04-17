@@ -528,8 +528,10 @@ void Arrow::render(Painter* gr)
 	//AdjustableArrowCap cap2 = new AdjustableArrowCap(2, 1);
 
 	// Set cap properties
-	cap1.SetBaseCap(/*LineCapRound*/LineCapTriangle);
-	//cap1.SetBaseInset(5);
+    //cap1.SetBaseCap(/*LineCapRound*/LineCapTriangle);
+    cap1.SetBaseCap(/*LineCapRound*/LineCapTriangle);
+    //cap1.SetMiddleInset(1);
+	//cap1.SetBaseInset(1);
 	cap1.SetStrokeJoin(/*LineJoinBevel*/LineJoinRound);
 	/*cap2.WidthScale = 3;
 	cap2.BaseCap = LineCap.Square;

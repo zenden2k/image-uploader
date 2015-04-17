@@ -44,10 +44,30 @@ public :
     DirectshowVideoFrame(unsigned char *data, unsigned int dataSize, int64_t time, int width, int height) {
         time_ = time;
 
-        data_ = new unsigned char[dataSize];
-        memcpy(data_ , data, dataSize);
-        dataSize_ = dataSize;
+        BITMAPFILEHEADER bfh;
+        memset( &bfh, 0, sizeof(bfh) );
+        bfh.bfType = 'MB';
+        bfh.bfSize = sizeof(bfh) + dataSize + sizeof(BITMAPINFOHEADER);
+        bfh.bfOffBits = sizeof(BITMAPINFOHEADER) + sizeof(BITMAPFILEHEADER);
 
+        BITMAPINFOHEADER bih;
+        memset( &bih, 0, sizeof(bih) );
+        bih.biSize = sizeof(bih);
+        bih.biWidth = width;
+        bih.biHeight = height;
+        bih.biPlanes = 1;
+        bih.biBitCount = 24;
+
+        BITMAPINFO bi;
+        bi.bmiHeader = bih;
+
+        int dataOffset = sizeof(bfh ) + sizeof(bih);
+        dataSize_ = dataSize +  dataOffset;
+        data_ = new unsigned char[dataSize + dataOffset ];
+        memcpy( data_, &bfh, sizeof(bfh));
+        memcpy( data_ + sizeof(bfh), &bih, sizeof(bih));
+        memcpy(data_ + dataOffset , data, dataSize);
+        
         width_ = width;
         height_ = height;
     }

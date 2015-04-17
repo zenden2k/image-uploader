@@ -88,7 +88,7 @@ bool GdiPlusImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t
 		return res;
 
 	} else if ( dt == AbstractImage::dfBitmapRgb ) {
-		return loadFromRgb(width, height, data,dataSize);
+		return loadFromRgb(width, height, data+sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER),dataSize);
 	} else {
 		LOG(ERROR) << "Format not supported "<< dt;
 	}
