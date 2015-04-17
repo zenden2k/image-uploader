@@ -6,3 +6,33 @@ Without it Sqrat::Function destructor will crash in WebBrowserPrivate class.
 
 
 Added mutex for static storages.
+
+If you pass to SetInstance the SAME POINTER but within different VMs, program will crash on sq_close in ClassType<T>::RemoveFromObjectTable().
+
+I have to replace s_objectTable() function with this:
+
+
+~~~~~~
+typedef std::pair<HSQUIRRELVM,C*> ObjectTableKey;
+
+static inline std::map<ObjectTableKey, HSQOBJECT>& s_objectTable() {
+    static std::map<ObjectTableKey, HSQOBJECT> s_objectTable;
+    return s_objectTable;
+}
+~~~~~~
+
+But I have no idea how to get current VM inside RemoveFromObjectTable() so I just get current thread's VM:
+
+~~~~~~
+    static inline SQInteger RemoveFromObjectTable(SQUserPointer ptr, SQInteger) {
+		std::lock_guard<std::mutex>(s_objectTableMutex());
+		std::thread::id threadId = std::this_thread::get_id();
+		HSQUIRRELVM currentVm = GetCurrentThreadVM();
+		typename std::map<ObjectTableKey, HSQOBJECT>::iterator it = s_objectTable().find(std::make_pair(currentVm, reinterpret_cast<C*>(ptr)));
+		assert(it != s_objectTable().end());
+        s_objectTable().erase(it);
+        return 0;
+    }
+~~~~~~
+
+Seems to be fixed in SVN https://sourceforge.net/p/scrat/code/ci/master/tree/include/sqrat/sqratClassType.h

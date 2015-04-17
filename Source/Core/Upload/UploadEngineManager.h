@@ -2,6 +2,8 @@
 
 #pragma once
 #include "UploadEngine.h"
+#include <thread>
+#include <mutex>
 
 class CScriptUploadEngine;
 class CUploadEngineList;
@@ -16,9 +18,11 @@ public:
 	CScriptUploadEngine* getScriptUploadEngine(ServerProfile &serverProfile);
 	void UnloadPlugins();
 	void setScriptsDirectory(const Utf8String & directory);
+	void clearThreadData();
 protected:
 	CScriptUploadEngine* getPlugin(const Utf8String& serverName, const Utf8String& name, ServerSettingsStruct& params, bool UseExisting = false);
-	std::map<Utf8String, CScriptUploadEngine*> m_plugins;
+	std::map<std::thread::id, std::map< Utf8String, CScriptUploadEngine*>> m_plugins;
+	std::mutex pluginsMutex_;
 	Utf8String m_ScriptsDirectory;
 	CUploadEngineList* uploadEngineList_;
 };

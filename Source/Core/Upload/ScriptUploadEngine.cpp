@@ -38,6 +38,7 @@
 #include <unistd.h>
 #endif
 #include <Core/ScriptAPI/ScriptAPI.h>
+#include <thread>
 
 std::string squirrelOutput;
 const Utf8String IuNewFolderMark = "_iu_create_folder_";
@@ -83,6 +84,8 @@ void CScriptUploadEngine::FlushSquirrelOutput()
 
 int CScriptUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params)
 {
+	std::thread::id threadId = std::this_thread::get_id();
+	LOG(INFO) << "CScriptUploadEngine::doUpload this=" << this << " thread=" << threadId;
     using namespace Sqrat;
 	std::string FileName;
 
@@ -171,6 +174,8 @@ CScriptUploadEngine::CScriptUploadEngine(Utf8String pluginName) : CAbstractUploa
 CScriptUploadEngine::~CScriptUploadEngine()
 {
     delete m_SquirrelScript;
+	std::thread::id threadId = std::this_thread::get_id();
+	LOG(INFO) << __FUNCTION__ << " this="/*"RemoveFromObjectTable " */ << this << " thread=" << threadId;
 	// SquirrelVM::Shutdown();
 }
 
@@ -187,8 +192,9 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
         InitScriptEngine();
 
         ScriptAPI::RegisterAPI(vm_);
-        ScriptAPI::RegisterShortTranslateFunctions(vm_);
-        vm_.GetRootTable().SetInstance("ServerParams", &params);
+       
+		ServerSettingsStruct* par = &params;
+        vm_.GetRootTable().SetInstance("ServerParams", par);
 		//BindVariable(m_Object, &params, "ServerParams");
 
 		std::string scriptText;
@@ -210,6 +216,7 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
             Log(ErrorInfo::mtError, "CScriptUploadEngine::load failed\r\n" + Utf8String(Error::Instance().Message(vm_.GetVM()))); 
             return false;
         }
+		ScriptAPI::RegisterShortTranslateFunctions(vm_);
 		/*m_SquirrelScript = SquirrelVM::CompileBuffer(scriptText.c_str(), IuCoreUtils::ExtractFileName(fileName).c_str());
 		SquirrelVM::RunScript(m_SquirrelScript, &m_Object);*/
 

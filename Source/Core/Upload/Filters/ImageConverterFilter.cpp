@@ -12,6 +12,10 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
 	if (!fileTask) {
 		return true;
 	}
+	if (!IsImage(IuCoreUtils::Utf8ToWstring(fileTask->getFileName()).c_str()))
+	{
+		return true;
+	}
 	CImageConverter imageConverter;
 	Thumbnail thumb;
 	ImageUploadParams imageUploadParams = task->serverProfile().getImageUploadParams();

@@ -55,7 +55,6 @@ CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * 
 
 CImageReuploaderDlg::~CImageReuploaderDlg()
 {
-	delete uploadManager_;
 }
 
 LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

@@ -8,6 +8,7 @@
 #include <zthread/Thread.h>
 #include <Gui/Dialogs/LogWindow.h>
 #include "UploadEngineManager.h"
+#include <Core/Upload/UploadFilter.h>
 #ifndef IU_CLI
 #include <zthread/Thread.h>
 #include <zthread/Mutex.h>
@@ -209,6 +210,9 @@ void FileQueueUploaderPrivate::run()
 #ifndef IU_CLI
 		mutex_.unlock();
 #endif
+		for (int i = 0; i < filters_.size(); i++) {
+			filters_[i]->PreUpload(it.get());
+		}
 		bool res = uploader.Upload(it);
 		
 #ifndef IU_CLI
@@ -230,7 +234,9 @@ void FileQueueUploaderPrivate::run()
 			result->directUrl = (uploader.getDirectUrl());
 			result->downloadUrl = (uploader.getDownloadUrl());
 			result->thumbUrl = (uploader.getThumbUrl());
-
+			for (int i = 0; i < filters_.size(); i++) {
+				filters_[i]->PostUpload(it.get());
+			}
 			it->setUploadSuccess(true);
 		}
 		else
@@ -250,6 +256,7 @@ void FileQueueUploaderPrivate::run()
 #ifndef IU_CLI
 	mutex_.unlock();
 #endif
+	uploadEngineManager_->clearThreadData();
 	if (!m_nRunningThreads)
 	{
 		m_IsRunning = false;

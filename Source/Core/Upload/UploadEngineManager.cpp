@@ -57,8 +57,10 @@ CScriptUploadEngine* UploadEngineManager::getScriptUploadEngine(ServerProfile& s
 }
 
 CScriptUploadEngine* UploadEngineManager::getPlugin(const Utf8String& serverName, const Utf8String& name, ServerSettingsStruct& params, bool UseExisting) {
+	std::lock_guard<std::mutex> lock(pluginsMutex_);
 	DWORD curTime = GetTickCount();
-	CScriptUploadEngine* plugin = m_plugins[serverName];
+	std::thread::id threadId = std::this_thread::get_id();
+	CScriptUploadEngine* plugin = m_plugins[threadId][serverName];
 	if (plugin && (GetTickCount() - plugin->getCreationTime() < 1000 * 60 * 5))
 		UseExisting = true;
 
@@ -70,13 +72,13 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(const Utf8String& serverName
 	if (plugin) {
 		delete plugin;
 		plugin = 0;
-		m_plugins[serverName] = 0;
+		m_plugins[threadId][serverName] = 0;
 	}
 
 	CScriptUploadEngine* newPlugin = new CScriptUploadEngine(name);
 	newPlugin->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
 	if (newPlugin->load(m_ScriptsDirectory + name + ".nut", params)) {
-		m_plugins[serverName] = newPlugin;
+		m_plugins[threadId][serverName] = newPlugin;
 		return newPlugin;
 	}
 	else {
@@ -87,13 +89,28 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(const Utf8String& serverName
 
 
 void UploadEngineManager::UnloadPlugins() {
-	std::map<Utf8String, CScriptUploadEngine*>::iterator it;
-	for (it = m_plugins.begin(); it != m_plugins.end(); ++it) {
-		delete it->second;
+	std::lock_guard<std::mutex> lock(pluginsMutex_);
+	for (auto it = m_plugins.begin(); it != m_plugins.end(); ++it) {
+		for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+			delete it2->second;
+		}
 	}
 	m_plugins.clear();
 }
 
 void UploadEngineManager::setScriptsDirectory(const Utf8String & directory) {
 	m_ScriptsDirectory = directory;
+}
+
+void UploadEngineManager::clearThreadData()
+{
+	std::lock_guard<std::mutex> lock(pluginsMutex_);
+	std::thread::id threadId = std::this_thread::get_id();
+	auto it = m_plugins.find(threadId);
+	if (it != m_plugins.end()) {
+		for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+			delete it2->second;
+		}
+		m_plugins.erase(it);
+	}
 }

@@ -3,7 +3,7 @@
 
 UploadManager::UploadManager(UploadEngineManager* uploadEngineManager) : CFileQueueUploader(uploadEngineManager)
 {
-	addUploadFilter(&imageConverterFilter);
+	//addUploadFilter(&imageConverterFilter);
 	addUploadFilter(&urlShorteningFilter);
 	OnConfigureNetworkClient.bind(this, &UploadManager::configureNetwork);
 }

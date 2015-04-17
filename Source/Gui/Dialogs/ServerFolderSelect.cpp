@@ -132,6 +132,10 @@ DWORD CServerFolderSelect::Run()
 
 		m_FolderList.Clear();
 		m_FolderMap.clear();
+		m_pluginLoader = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+		NetworkClient networkClient;
+		IU_ConfigureProxy(networkClient);
+		m_pluginLoader->setNetworkClient(&networkClient);
 		int retCode = m_pluginLoader->getFolderList(m_FolderList);
 		if (retCode < 1)
 		{

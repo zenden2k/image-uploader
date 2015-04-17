@@ -135,6 +135,8 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
         Func("AddFolderItem", &CFolderList::AddFolderItem)
     );
 
+
+
     root.Bind("ServerSettingsStruct", Class<ServerSettingsStruct>(vm.GetVM()).
         Func("setParam", &ServerSettingsStruct::setParam).
         Func("getParam", &ServerSettingsStruct::getParam)
@@ -148,7 +150,7 @@ thread_local  Sqrat::SqratVM* threadVm;
 #endif
 
 void RegisterClasses(Sqrat::SqratVM& vm) {
-    Sqrat::DefaultVM::Set(vm.GetVM());
+   // Sqrat::DefaultVM::Set(vm.GetVM());
     RegisterNetworkClientClass(vm);
     RegisterRegularExpressionClass(vm);
     RegisterUploadClasses(vm);
@@ -174,4 +176,10 @@ Sqrat::SqratVM& GetCurrentThreadVM()
 	return *threadVm;
 }
 
+
+}
+
+HSQUIRRELVM GetCurrentThreadHVM()
+{
+	return GetCurrentThreadVM().GetVM();
 }
