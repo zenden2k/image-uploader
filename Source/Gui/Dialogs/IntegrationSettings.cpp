@@ -31,8 +31,9 @@
 #include <Core/Utils/CryptoUtils.h>
 
 // CIntegrationSettings
-CIntegrationSettings::CIntegrationSettings()
+CIntegrationSettings::CIntegrationSettings(UploadEngineManager *uploadEngineManager)
 {
+	uploadEngineManager_ = uploadEngineManager;
 }
 
 CIntegrationSettings::~CIntegrationSettings()
@@ -64,7 +65,7 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
 
 	SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_SETCHECK, Settings.ExplorerContextMenu);
 	
-	bool shellIntegrationAvailable = FileExists(Settings.getShellExtensionFileName())!=0;
+	bool shellIntegrationAvailable = WinUtils::FileExists(Settings.getShellExtensionFileName())!=0;
 
 	SendDlgItemMessage(IDC_SHELLVIDEOCONTEXTMENUITEM, BM_SETCHECK, Settings.ExplorerVideoContextMenu);
 	SendDlgItemMessage(IDC_SHELLSENDTOITEM, BM_SETCHECK, Settings.SendToContextMenu);
@@ -163,7 +164,7 @@ bool CIntegrationSettings::Apply()
 					CRegistry Reg2 = Reg;
 					CString itemNumber;
 					itemNumber.Format(_T("%04d"), i);
-					itemId = itemNumber+_T("_")+lid->serverProfile.serverName() + L"_" + IuCoreUtils::CryptoUtils::CalcMD5HashFromString(IuCoreUtils::int64_tToString(rand() % 999999)).c_str();
+					itemId = itemNumber+_T("_")+Utf8ToWCstring(lid->serverProfile.serverName()) + L"_" + IuCoreUtils::CryptoUtils::CalcMD5HashFromString(IuCoreUtils::int64_tToString(rand() % 999999)).c_str();
 					itemId.Replace(L" ",L"_");
 					itemId.Replace(L":",L"_");
 					itemId.Replace(L"\\",L"_");
@@ -171,12 +172,12 @@ bool CIntegrationSettings::Apply()
 					//MessageBox(itemId);
 					if ( Reg2.SetKey("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems\\" + itemId, true) ) {
 						Reg2.WriteString( "Name", lid->name );
-						Reg2.WriteString( "ServerName", lid->serverProfile.serverName() );
-						Reg2.WriteString( "ProfileName", lid->serverProfile.profileName() );
+						Reg2.WriteString("ServerName", Utf8ToWCstring(lid->serverProfile.serverName()));
+						Reg2.WriteString("ProfileName", Utf8ToWCstring(lid->serverProfile.profileName()));
 						Reg2.WriteString( "FolderId", Utf8ToWCstring(lid->serverProfile.folderId() ) );
 						Reg2.WriteString( "FolderTitle", Utf8ToWCstring(lid->serverProfile.folderTitle()) );
 						Reg2.WriteString( "FolderUrl", Utf8ToWCstring(lid->serverProfile.folderUrl()) );
-						CString icon = _EngineList->getIconNameForServer(WCstringToUtf8(lid->serverProfile.serverName()));
+						CString icon = _EngineList->getIconNameForServer(lid->serverProfile.serverName());
 						CUploadEngineData * ued = lid->serverProfile.uploadEngineData();
 						if ( ued ) {
 							Reg2.WriteDword( "ServerType", (unsigned int) ued->Type );
@@ -209,7 +210,7 @@ LRESULT CIntegrationSettings::OnShellIntegrationCheckboxChanged(WORD wNotifyCode
 	
 void CIntegrationSettings::ShellIntegrationChanged()
 {
-		bool shellIntegrationAvailable = FileExists(Settings.getShellExtensionFileName())!=0;
+		bool shellIntegrationAvailable = WinUtils::FileExists(Settings.getShellExtensionFileName())!=0;
 	bool checked = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED && shellIntegrationAvailable;
 	GuiTools::EnableNextN(GetDlgItem(IDC_SHELLINTEGRATION), 2, checked);
 	HWND contextMenuItemsLabel = GetDlgItem(IDC_CONTEXTMENUITEMSLABEL);
@@ -218,7 +219,7 @@ void CIntegrationSettings::ShellIntegrationChanged()
 }
 LRESULT CIntegrationSettings::OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CContextMenuItemDlg dlg;
+	CContextMenuItemDlg dlg(uploadEngineManager_);
 	if ( dlg.DoModal(m_hWnd) == IDOK ) {
 		int newIndex = menuItemsListBox_.AddString(dlg.menuItemTitle());
 		ListItemData* lid = new ListItemData();

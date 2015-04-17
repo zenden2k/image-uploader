@@ -36,18 +36,20 @@
 #include "Gui/Controls/PictureExWnd.h"
 #include <Gui/Controls/CustomEditControl.h>
 #include <Func/HistoryManager.h>
+#include <Core/Upload/UploadManager.h>
+#include <zthread/Mutex.h>
 
 class CFileQueueUploader;
 class CMyEngineList;
 class CServerSelectorControl;
 // CImageReuploaderDlg
 class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
-                           public CDialogResize <CImageReuploaderDlg>,
-									public CFileQueueUploader::Callback
+                           public CDialogResize <CImageReuploaderDlg>
 {
 	public:
 		enum { IDD = IDD_IMAGEREUPLOADER };
-		CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, const CString &initialBuffer);
+		CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager *  uploadManager, 
+			UploadEngineManager *uploadEngineManager,const CString &initialBuffer);
 		~CImageReuploaderDlg();
 
 	protected:	
@@ -121,7 +123,7 @@ class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
 		bool OnFileFinished(bool ok,  int statusCode, CFileDownloader::DownloadFileListItem it);
 		bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);
 		void FileDownloader_OnConfigureNetworkClient(NetworkClient* nm);
-		bool OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result);
+		void OnFileFinished(std::shared_ptr<UploadTask> task, bool ok);
 		bool OnQueueFinished(CFileQueueUploader *queueUploader) ;
 		bool OnEditControlPaste(CCustomEditControl*);
 		void generateOutputText();
@@ -137,7 +139,7 @@ class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
 		CString m_FileName;
 		CPictureExWnd m_wndAnimation;
 		CFileDownloader m_FileDownloader;
-		CFileQueueUploader* queueUploader_;
+		UploadManager* uploadManager_;
 		CMyEngineList *m_EngineList;
 		CCustomEditControl sourceTextEditControl, outputEditControl;
 		CWizardDlg * m_WizardDlg;
@@ -153,6 +155,8 @@ class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
 		ServerProfile serverProfile_;
 		static const TCHAR LogTitle[];
 		CServerSelectorControl *imageServerSelector_;
+		std::shared_ptr<UploadSession> uploadSession_;
+		UploadEngineManager *uploadEngineManager_;
 
 		struct Match {
 			int start;

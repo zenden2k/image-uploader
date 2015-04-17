@@ -25,11 +25,12 @@
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
 #include <Gui/Controls/ServerSelectorControl.h>
-
+#include <Func/WinUtils.h>
 // CContextMenuItemDlg
-CContextMenuItemDlg::CContextMenuItemDlg()
+CContextMenuItemDlg::CContextMenuItemDlg(UploadEngineManager * uploadEngineManager)
 {
 	titleEdited_ = false;
+	uploadEngineManager_ = uploadEngineManager;
 }
 
 CContextMenuItemDlg::~CContextMenuItemDlg()
@@ -42,7 +43,7 @@ LRESULT CContextMenuItemDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	CenterWindow(GetParent());
 
 	RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
-	imageServerSelector_ = new CServerSelectorControl(true);
+	imageServerSelector_ = new CServerSelectorControl(uploadEngineManager_, false);
 	imageServerSelector_->Create(m_hWnd, serverSelectorRect);
 	imageServerSelector_->setTitle(TR("Выберите сервер"));
 	imageServerSelector_->ShowWindow( SW_SHOW );
@@ -74,7 +75,7 @@ LRESULT CContextMenuItemDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
 
 	if ( !imageServerSelector_->isAccountChosen() ) {
 		CString message;
-		message.Format(TR("Вы не выбрали аккаунт для сервера \"%s\""), (LPCTSTR)imageServerSelector_->serverProfile().serverName());
+		message.Format(TR("Вы не выбрали аккаунт для сервера \"%s\""), imageServerSelector_->serverProfile().serverName());
 		MessageBox(message, TR("Ошибка"));
 		return 0;
 	}
@@ -118,10 +119,10 @@ void CContextMenuItemDlg::generateTitle()
 	if ( !titleEdited_ ) {	
 		ServerProfile sp = imageServerSelector_->serverProfile();
 		CString title;
-		title.Format(TR("Загрузить на %s"), (LPCTSTR)sp.serverName());
+		title.Format(TR("Загрузить на %s"), IuCoreUtils::Utf8ToWstring(sp.serverName()).c_str());
 		CString additional;
-		if ( !sp.profileName().IsEmpty()) {
-			additional+= sp.profileName();
+		if ( !sp.profileName().empty()) {
+			additional += Utf8ToWCstring(sp.profileName());
 		}
 		if ( !sp.folderId().empty() && !sp.folderTitle().empty() ) {
 			if ( !additional.IsEmpty() ) {

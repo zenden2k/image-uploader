@@ -8,8 +8,11 @@ struct UploadResult
 {
 public:
 	std::string directUrl;
+	std::string directUrlShortened;
 	std::string thumbUrl;
 	std::string downloadUrl;
+	std::string downloadUrlShortened;
+
 	std::string serverName;
 
 	UploadResult()

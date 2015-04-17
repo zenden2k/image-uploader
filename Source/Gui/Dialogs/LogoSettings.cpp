@@ -375,7 +375,7 @@ LRESULT CLogoSettings::OnNewProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 	int i = 1;
 	while(ñonvert_profiles_.count(generatedName) > 0)
 	{
-		generatedName = name  + _T(" ") + IntToStr(i++);
+		generatedName = name  + _T(" ") + WinUtils::IntToStr(i++);
 	}
 
 	//CurrentProfileName = CurrentProfileOriginalName = generatedName;

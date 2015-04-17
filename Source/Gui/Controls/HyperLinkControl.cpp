@@ -55,9 +55,9 @@ Must be called before adding any items
 void CHyperLinkControl::Init(COLORREF BkColor)
 {
 	NormalFont = GetFont();
-	BoldFont = MakeFontBold(NormalFont);
-	UnderlineFont = MakeFontUnderLine(NormalFont);
-	BoldUnderLineFont = MakeFontUnderLine(BoldFont);
+	BoldFont = GuiTools::MakeFontBold(NormalFont);
+	UnderlineFont = GuiTools::MakeFontUnderLine(NormalFont);
+	BoldUnderLineFont = GuiTools::MakeFontUnderLine(BoldFont);
 	m_BkColor = BkColor;
 	OpenThemeData();
 }

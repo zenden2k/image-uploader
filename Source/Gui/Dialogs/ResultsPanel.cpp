@@ -30,6 +30,8 @@
 #include <Core/TextUtils.h>
 #include <Core/Utils/StringUtils.h>
 #include <Func/IuCommonFunctions.h>
+#include <Func/WinUtils.h>
+
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg,CAtlArray<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)
 {
@@ -187,7 +189,7 @@ void CResultsPanel::BBCode_Link(CString &Buffer, CUrlListItem &item)
 	else 
 		Buffer += item.getDownloadUrl(shortenUrl_);
 	Buffer += _T("]");
-	Buffer += myExtractFileName(item.FileName);
+	Buffer += WinUtils::myExtractFileName(item.FileName);
 	Buffer += _T("[/url]");
 
 }
@@ -200,7 +202,7 @@ void CResultsPanel::HTML_Link(CString &Buffer, CUrlListItem &item)
 	else 
 		Buffer += item.getDownloadUrl(shortenUrl_);
 	Buffer += _T("\">");
-	Buffer += myExtractFileName(item.FileName);
+	Buffer += WinUtils::myExtractFileName(item.FileName);
 	Buffer += _T("</a>");
 }
 
@@ -242,16 +244,16 @@ const CString CResultsPanel::GenerateOutput()
 
 		for(int i=0; i<n; i++)
 		{
-			CString fname=myExtractFileName(UrlList[i].FileName);
+			CString fname= WinUtils::myExtractFileName(UrlList[i].FileName);
 
 			m_Vars[_T("DownloadUrl")]=UrlList[i].getDownloadUrl(shortenUrl_);
 			m_Vars[_T("ImageUrl")]=UrlList[i].getImageUrl(shortenUrl_);
 			m_Vars[_T("ThumbUrl")]=UrlList[i].getThumbUrl(shortenUrl_);
 			m_Vars[_T("FileName")]=fname;
 			m_Vars[_T("FullFileName")]=UrlList[i].FileName;
-			m_Vars[_T("Index")]=IntToStr(i);
+			m_Vars[_T("Index")]= WinUtils::IntToStr(i);
 			CString buffer;
-			buffer = GetOnlyFileName(UrlList[i].FileName);
+			buffer = WinUtils::GetOnlyFileName(UrlList[i].FileName);
 			m_Vars[_T("FileNameWithoutExt")]=UrlList[i].FileName;
 			if(p!=0  && !((i)%p))
 
@@ -299,7 +301,7 @@ const CString CResultsPanel::GenerateOutput()
 			}
 			else
 			{
-				Buffer+=myExtractFileName(UrlList[i].FileName);
+				Buffer+= WinUtils::myExtractFileName(UrlList[i].FileName);
 			}
 
 			Buffer+=_T("[/url]");
@@ -367,7 +369,7 @@ const CString CResultsPanel::GenerateOutput()
 				Buffer+=_T("\" border=0>");
 			}
 			else
-				Buffer+=myExtractFileName(UrlList[i].FileName);
+				Buffer+= WinUtils::myExtractFileName(UrlList[i].FileName);
 			Buffer+=_T("</a>");
 			if(((i+1)%p)&&type==4)
 				Buffer+=_T("&nbsp;&nbsp;");
@@ -493,7 +495,7 @@ bool CResultsPanel::LoadTemplates(CString &Error)
 bool CResultsPanel::LoadTemplateFromFile(const CString fileName, CString &Error)
 {
 	SimpleXml XML;
-	if(!FileExists(fileName))
+	if(!WinUtils::FileExists(fileName))
 	{
 		Error = TR("Файл не найден.");
 		return false;
@@ -585,7 +587,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 		mi.wID = IDC_SHORTENURLITEM;
 		CString menuItemTitle;
 		if ( OnShortenUrlChanged ) {
-			menuItemTitle.Format(TR("Сократить ссылки с помощью %s"), (LPCTSTR)Settings.urlShorteningServer.serverName());
+			menuItemTitle.Format(TR("Сократить ссылки с помощью %s"), IuCoreUtils::Utf8ToWstring(Settings.urlShorteningServer.serverName()).c_str());
 		} else {
 			menuItemTitle.Format(TR("Сократить ссылки"));
 		}

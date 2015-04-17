@@ -27,7 +27,7 @@
 #include "Gui/Dialogs/LogWindow.h"
 #include "Core/Utils/StringUtils.h"
 #include "Func/Common.h"
-#include "Func/PluginLoader.h"
+#include <Core/Upload/UploadEngineManager.h>
 #include <Core/Utils/CryptoUtils.h>
 #include "WinUtils.h"
 #include <iostream>

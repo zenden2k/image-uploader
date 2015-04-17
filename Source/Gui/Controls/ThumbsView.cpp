@@ -27,6 +27,8 @@
 #include <Gui/GuiTools.h>
 #define THUMBNAIL_WIDTH 170   // constants
 #define THUMBNAIL_HEIGHT 120
+#include <Func/WinUtils.h>
+#include <Func/myutils.h>
 
 bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
 
@@ -412,7 +414,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
 			lstrcpy(buf2, Utf8ToWCstring(fileSizeStr));
 			//NewBytesToString(f, buf2, 25);
 			WCHAR FileExt[25];
-			lstrcpy(FileExt, GetFileExt(Filename));
+			lstrcpy(FileExt, WinUtils::GetFileExt(Filename));
 			if(!lstrcmpi(FileExt, _T("jpg"))) 
 				lstrcpy(FileExt,_T("JPEG"));
 			if(IsImage(filename) && bm)

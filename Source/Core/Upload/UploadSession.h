@@ -13,6 +13,8 @@ class UploadSession
 		std::shared_ptr<UploadTask> getNextTask();
 		bool isRunning();
 		bool isFinished();
+		int pendingTasksCount();
+		fastdelegate::FastDelegate1<std::shared_ptr<UploadSession>> OnSessionFinished;
 	protected:
 		std::vector<std::shared_ptr<UploadTask>> tasks_;
 		bool isFinished_;

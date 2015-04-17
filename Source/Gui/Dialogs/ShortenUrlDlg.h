@@ -14,12 +14,11 @@
 
 // CShortenUrlDlg
 class CShortenUrlDlg:	public CDialogImpl <CShortenUrlDlg>,
-                           public CDialogResize <CShortenUrlDlg>,
-						   public CFileQueueUploader::Callback
+                           public CDialogResize <CShortenUrlDlg>
 {
 	public:
 		enum { IDD = IDD_SHORTENURL };
-		CShortenUrlDlg(CWizardDlg *wizardDlg,CMyEngineList * engineList, const CString &initialBuffer);
+		CShortenUrlDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager* uploadManager, const CString &initialBuffer);
 		~CShortenUrlDlg();
 		
 	protected:	
@@ -59,7 +58,7 @@ class CShortenUrlDlg:	public CDialogImpl <CShortenUrlDlg>,
 		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);
-		virtual bool OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result);
+		void OnFileFinished(std::shared_ptr<UploadTask> task, bool ok);
 		virtual bool OnQueueFinished(CFileQueueUploader* queueUploader);
 		bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);
 		bool ParseBuffer(const CString& text);
@@ -71,7 +70,7 @@ class CShortenUrlDlg:	public CDialogImpl <CShortenUrlDlg>,
 		CFileDownloader m_FileDownloader;
 		CString m_InitialBuffer;
 		CWizardDlg *m_WizardDlg;
-		CFileQueueUploader* queueUploader_;
+		UploadManager* uploadManager_;
 		CMyEngineList *engineList_;
 		int serverId_;
 		CPictureExWnd wndAnimation_;

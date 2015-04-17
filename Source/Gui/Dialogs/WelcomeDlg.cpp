@@ -27,6 +27,7 @@
 #include "regionselect.h"
 #include "Screenshotdlg.h"
 #include <Gui/GuiTools.h>
+#include <Func/MyUtils.h>
 
 // CWelcomeDlg
 CWelcomeDlg::CWelcomeDlg()

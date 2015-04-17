@@ -8,7 +8,12 @@
 namespace Gdiplus {
 	class Bitmap;
 }
+const std::wstring Utf8ToWstring(const std::string &str);
 #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
+#define WstrToUtf8(str) IuCoreUtils::WstringToUtf8(str)
+//wstostr(str, CP_UTF8)
+#define WCstringToUtf8(str) WinUtils::wstostr(((LPCTSTR)(str)), CP_UTF8)
+#define Utf8ToWCstring(str) CString(Utf8ToWstring(str).c_str())
 
 namespace WinUtils {
 
@@ -94,6 +99,13 @@ namespace WinUtils {
 	void RemoveBrowserKey();
 	void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective = false);
 	void TimerWait(int Delay);
+#ifndef IU_SHELLEXT
+	std::wstring strtows(const std::string &str, UINT codePage);
+	std::string wstostr(const std::wstring &ws, UINT codePage);
+	const std::string AnsiToUtf8(const std::string &str, int codepage);
+	const std::string Utf8ToAnsi(const std::string &str, int codepage);
+#endif
+
 };
 
 #endif

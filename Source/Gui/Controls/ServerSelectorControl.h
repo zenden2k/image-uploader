@@ -39,7 +39,7 @@ class CServerSelectorControl :
 	public CDialogImpl<CServerSelectorControl>, public CSettingsPage
 {
 public:
-	CServerSelectorControl(bool defaultServer = false );
+	CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer = false);
 virtual ~CServerSelectorControl();
 	enum { IDD = IDD_SERVERSELECTORCONTROL, IDC_LOGINMENUITEM = 4020, IDC_USERNAME_FIRST_ID = 20000, IDC_USERNAME_LAST_ID = 21000,
 		IDC_ADD_ACCOUNT= 21001, IDC_NO_ACCOUNT = 21003
@@ -107,6 +107,7 @@ private:
 	static const char kAddFtpServer[];
 	static const char kAddDirectoryAsServer[];
 	int previousSelectedServerIndex;
+	UploadEngineManager* uploadEngineManager_;
 
 };
 

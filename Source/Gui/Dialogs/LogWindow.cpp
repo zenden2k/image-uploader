@@ -182,7 +182,7 @@ void ErrorMessage(ErrorInfo errorInfo)
 		infoText += _T("URL: ") + Utf8ToWCstring(errorInfo.Url) + _T("\n");
 
 	if (errorInfo.ActionIndex != -1)
-		infoText += _T("Действие:") + CString(_T(" #")) + IntToStr(errorInfo.ActionIndex);
+		infoText += _T("Действие:") + CString(_T(" #")) + WinUtils::IntToStr(errorInfo.ActionIndex);
 
 	if (infoText.Right(1) == _T("\n"))
 		infoText.Delete(infoText.GetLength() - 1);

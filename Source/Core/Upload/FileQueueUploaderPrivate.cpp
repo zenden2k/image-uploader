@@ -7,7 +7,11 @@
 #include <algorithm>
 #include <zthread/Thread.h>
 #include <Gui/Dialogs/LogWindow.h>
-
+#include "UploadEngineManager.h"
+#ifndef IU_CLI
+#include <zthread/Thread.h>
+#include <zthread/Mutex.h>
+#endif
 class FileQueueUploaderPrivate::Runnable
 #ifndef IU_CLI
 	: public ZThread::Runnable
@@ -29,13 +33,14 @@ public:
 
 /* private CFileQueueUploaderPrivate class */
 
-FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUploader) {
+FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager) {
 	m_nThreadCount = 1;
 	m_NeedStop = false;
 	m_IsRunning = false;
 	m_nRunningThreads = 0;
 	queueUploader_ = queueUploader;
 	startFromSession_ = 0;
+	uploadEngineManager_ = uploadEngineManager;
 }
 
 FileQueueUploaderPrivate::~FileQueueUploaderPrivate() {
@@ -62,6 +67,16 @@ void FileQueueUploaderPrivate::onErrorMessage(CUploader*, ErrorInfo ei)
 	DefaultErrorHandling::ErrorMessage(ei);
 }
 
+int FileQueueUploaderPrivate::pendingTasksCount()
+{
+	int res = 0;
+	for (size_t i = startFromSession_; i < sessions_.size(); i++)
+	{
+		res += sessions_[i]->pendingTasksCount();
+	}
+	return res;
+}
+
 void FileQueueUploaderPrivate::OnConfigureNetworkClient(CUploader*, NetworkClient* nm)
 {
 	/*if (callback_) {
@@ -77,12 +92,17 @@ std_tr::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
 #endif
 	if (!sessions_.empty() && !m_NeedStop)
 	{
-		for (int i = startFromSession_; i < sessions_.size(); i++)
+		for (size_t i = startFromSession_; i < sessions_.size(); i++)
 		{
 			std_tr::shared_ptr<UploadTask> task = sessions_[i]->getNextTask();
-			if (task)
-			{
-				return task;
+			if (task) {
+				task->setRunning(true);
+				task->setFinished(false);
+				if (task)
+				{
+					mutex_.release();
+					return task;
+				}
 			}
 			startFromSession_ = i + 1;
 		}
@@ -96,7 +116,8 @@ std_tr::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
 void FileQueueUploaderPrivate::AddTask(std_tr::shared_ptr<UploadTask>  task) {
 	std::shared_ptr<UploadSession> session(new UploadSession());
 	session->addTask(task);
-	serverThreads_[task.serverName].waitingFileCount++;
+	AddSession(session);
+	//serverThreads_[task->serv].waitingFileCount++;
 	//AddFile(newTask);
 }
 
@@ -125,7 +146,7 @@ void FileQueueUploaderPrivate::start() {
 #endif
 	m_NeedStop = false;
 	m_IsRunning = true;
-	int numThreads = std::min<int>(size_t(m_nThreadCount - m_nRunningThreads), m_fileList.size());
+	int numThreads = std::min<int>(size_t(m_nThreadCount - m_nRunningThreads), pendingTasksCount());
 
 	for (int i = 0; i < numThreads; i++)
 	{
@@ -153,23 +174,26 @@ void FileQueueUploaderPrivate::run()
 	for (;;)
 	{
 		auto it = getNextJob();
-		if (it)
+		if (!it)
 			break;
-		serverThreads_[it.serverName].waitingFileCount--;
+		serverThreads_[it->serverName()].waitingFileCount--;
 
-		std::string serverName = it.serverName;
+		std::string serverName = it->serverName();
 		serverThreads_[serverName].runningThreads++;
-		uploader.setUploadEngine(it.uploadEngine);
+		CAbstractUploadEngine *engine = uploadEngineManager_->getUploadEngine(it->serverProfile());
+		uploader.setUploadEngine(engine);
 		uploader.onNeedStop.bind(this, &FileQueueUploaderPrivate::onNeedStopHandler);
 		uploader.onProgress.bind(this, &FileQueueUploaderPrivate::onProgress);
 #ifndef IU_CLI
 		mutex_.acquire();
 #endif
-		tasks_[&uploader] = &it;
+		//tasks_[&uploader] = &it;
 #ifndef IU_CLI
 		mutex_.release();
 #endif
 		bool res = uploader.Upload(it);
+		it->setFinished(true);
+		it->setRunning(false);
 #ifndef IU_CLI
 		mutex_.acquire();
 #endif
@@ -184,27 +208,20 @@ void FileQueueUploaderPrivate::run()
 #endif
 		UploadResult* result = it->uploadResult();
 		result->serverName = serverName;
-		FileUploadTask* fileUploadTask = 0;
-		if (it.uploadTask->getType() == "file") {
-			fileUploadTask = (FileUploadTask*)(it.uploadTask.get());
-			result.fileName = fileUploadTask->getFileName();
-			result.fileSize = IuCoreUtils::getFileSize(fileUploadTask->getFileName());
-		}
-		if (res) {
 
+		if (res) {
 			result->directUrl = (uploader.getDirectUrl());
 			result->downloadUrl = (uploader.getDownloadUrl());
 			result->thumbUrl = (uploader.getThumbUrl());
 
-			if (callback_) {
-
-				callback_->OnFileFinished(true, result);
+			if (it->OnFileFinished) {
+				it->OnFileFinished(it, true);
 			}
 		}
 		else
 		{
-			if (callback_) {
-				callback_->OnFileFinished(false, result);
+			if (it->OnFileFinished) {
+				it->OnFileFinished(it, false);
 			}
 		}
 #ifndef IU_CLI
@@ -221,8 +238,8 @@ void FileQueueUploaderPrivate::run()
 	if (!m_nRunningThreads)
 	{
 		m_IsRunning = false;
-		if (callback_) {
-			callback_->OnQueueFinished(queueUploader_);
+		if (queueUploader_->OnQueueFinished) {
+			queueUploader_->OnQueueFinished(queueUploader_);
 		}
 	}
 

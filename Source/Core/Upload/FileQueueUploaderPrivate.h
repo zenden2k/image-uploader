@@ -18,7 +18,7 @@ struct ServerThreadsInfo {
 };
 class FileQueueUploaderPrivate {
 public:
-	FileQueueUploaderPrivate(CFileQueueUploader* queueUploader);
+	FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager);
 	virtual ~FileQueueUploaderPrivate();
 	void start();
 	virtual void run();
@@ -45,9 +45,11 @@ protected:
 	void OnConfigureNetworkClient(CUploader*, NetworkClient* nm);
 	void onProgress(CUploader*, InfoProgress progress);
 	void onErrorMessage(CUploader*, ErrorInfo);
-	std::map<CUploader*, CFileQueueUploader::Task*> tasks_;
+	int pendingTasksCount();
+	//std::map<CUploader*, CFileQueueUploader::Task*> tasks_;
 	std::map<std::string, ServerThreadsInfo> serverThreads_;
 	int startFromSession_;
+	UploadEngineManager* uploadEngineManager_;
 };
 
 #endif

@@ -33,6 +33,10 @@
 #include <Core/Upload/UrlShorteningTask.h>
 #include <Core/Upload/FileQueueUploader.h>
 #include <Func/IuCommonFunctions.h>
+#include <Func/MyUtils.h>
+#include <Core/Upload/FileUploadTask.h>
+#include <Core/Upload/UploadManager.h>
+#include <Func/WinUtils.h>
 
 class CTempFilesDeleter
 {
@@ -106,7 +110,7 @@ bool BytesToString(__int64 nBytes, LPTSTR szBuffer,int nBufSize)
 }
 
 // CUploadDlg
-CUploadDlg::CUploadDlg(CWizardDlg *dlg):ResultsWindow(new CResultsWindow(dlg,UrlList,true))
+CUploadDlg::CUploadDlg(CWizardDlg *dlg,UploadManager* uploadManager) :ResultsWindow(new CResultsWindow(dlg, UrlList, true))
 {
 	MainDlg = NULL;
 	TimerInc = 0;
@@ -116,8 +120,7 @@ CUploadDlg::CUploadDlg(CWizardDlg *dlg):ResultsWindow(new CResultsWindow(dlg,Url
 	LastUpdate = 0;
 	//fastdelegate::FastDelegate1<bool> fd;
 	//fd.bind(this, &CUploadDlg::onShortenUrlChanged);
-	queueUploader_ = new CFileQueueUploader();
-	queueUploader_->setCallback(this);
+	uploadManager_ = uploadManager;
 	ResultsWindow->setOnShortenUrlChanged(fastdelegate::MakeDelegate(this, &CUploadDlg::onShortenUrlChanged));
 	#if  WINVER	>= 0x0601
 		ptl = NULL;
@@ -127,7 +130,6 @@ CUploadDlg::CUploadDlg(CWizardDlg *dlg):ResultsWindow(new CResultsWindow(dlg,Url
 CUploadDlg::~CUploadDlg()
 {
 	delete ResultsWindow;
-	delete queueUploader_;
 }
 
 //Gdiplus::Bitmap* BitmapFromResource(HINSTANCE hInstance,LPCTSTR szResName, LPCTSTR szResType);
@@ -174,32 +176,27 @@ DWORD CUploadDlg::Run()
 	HRESULT hRes = ::CoInitialize(NULL);
 	CTempFilesDeleter  TempFilesDeleter;
 	if(!MainDlg) return 0;
-
-	CUploader  Uploader;
 	
 	#if  WINVER	>= 0x0601
 		if(ptl)
 			ptl->SetProgressState(GetParent(), TBPF_NORMAL); // initialise Windows 7 taskbar button progress 
 	#endif
-	m_CurrentUploader = &Uploader;
-	Uploader.onNeedStop.bind(this, &CUploadDlg::OnUploaderNeedStop);
+	/*Uploader.onNeedStop.bind(this, &CUploadDlg::OnUploaderNeedStop);
 	Uploader.onProgress.bind(this, &CUploadDlg::OnUploaderProgress);
 	Uploader.onDebugMessage.bind(DefaultErrorHandling::DebugMessage);
 	Uploader.onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
 	Uploader.onStatusChanged.bind(this, &CUploadDlg::OnUploaderStatusChanged);
-	Uploader.onConfigureNetworkClient.bind(this, &CUploadDlg::OnUploaderConfigureNetworkClient);
+	Uploader.onConfigureNetworkClient.bind(this, &CUploadDlg::OnUploaderConfigureNetworkClient);*/
 
 	/*if(Settings.QuickUpload && !WizardDlg->Pages[3]) {
 		Server = Settings.getQuickServerID();
 	}
 	else Server = Settings.getServerID();*/
-	ServerProfile& serverProfile = sessionImageServer_;
+	/*ServerProfile& serverProfile = sessionImageServer_;
 	int ServerId = _EngineList->GetUploadEngineIndex(sessionImageServer_.serverName());
 
 	int FileServer = _EngineList->GetUploadEngineIndex(sessionFileServer_.serverName());
-	int n = MainDlg->FileList.GetCount();
-
-
+	
 
 	if(ServerId == -1)
 	{
@@ -228,17 +225,17 @@ DWORD CUploadDlg::Run()
 	if(m_EngineList->byIndex(FileServer)->SupportsFolders)
 	{
 		ResultsWindow->AddServer(Utf8ToWCstring(m_EngineList->byIndex(FileServer)->Name));
-	}
+	}*/
 
-	ShowProgress(false);
+	/*ShowProgress(false);
 	SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETPOS, 0);
 	SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, n));
 	SendDlgItemMessage(IDC_FILEPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
 	SetDlgItemText(IDC_COMMONPERCENTS, _T("0%"));
 
-	UploadProgress(0, n);
+	UploadProgress(0, n);*/
 
-	int i;
+	/*int i;
 	CString FileName;
 	TCHAR szBuffer[MAX_PATH];
 	
@@ -259,31 +256,26 @@ DWORD CUploadDlg::Run()
 
 	int thumbwidth=sessionImageServer_.getImageUploadParams().getThumb().Size;
 	if(thumbwidth<1|| thumbwidth>1024) thumbwidth=150;
-	
+	*/
 
-	FullUploadProfile iss;
-
-
-	FullUploadProfile InitialParams;
-   InitialParams.convert_profile = Settings.ConvertProfiles[sessionImageServer_.getImageUploadParams().ImageProfileName];
-	InitialParams.upload_profile = sessionImageServer_;
 	//= Settings.ImageSettings;
    //InitialParams.upload_profile.ServerID = Server;
 
-	iss = InitialParams;
-
+	//iss = InitialParams;
+	int n = MainDlg->FileList.GetCount();
 	CHistoryManager * mgr = ZBase::get()->historyManager();
 	std_tr::shared_ptr<CHistorySession> session = mgr->newSession();
-
-	for(i=0; i<n; i++)
+	std::shared_ptr<UploadSession> uploadSession(new UploadSession());
+	for(int i=0; i<n; i++)
 	{
-		CString ImageFileName,ThumbFileName;
+		CString FileName = MainDlg->FileList[i].FileName;
+		std::string fileNameA = WCstringToUtf8(FileName);
+		std::string displayName = WCstringToUtf8(MainDlg->FileList[i].VirtualFileName);
 
-		CString ThumbUrl;
-		CString DirectUrl;
-		CString DownloadUrl;
-		ue = m_EngineList->byName(iss.upload_profile.serverName());
-		if(/*Server!=Uploader.CurrentServer && */IsImage(MainDlg->FileList[i].FileName))
+		bool isImage = IsImage(FileName);
+		std::shared_ptr<FileUploadTask> task(new FileUploadTask(fileNameA, displayName));
+		uploadSession->addTask(task);
+		/*if ( isImage )
 		{
 			CAbstractUploadEngine * e = m_EngineList->getUploadEngine(ServerId, iss.upload_profile.serverSettings());
 			if(!e) 
@@ -293,8 +285,9 @@ DWORD CUploadDlg::Run()
 			}
 			Uploader.setUploadEngine(e);
 		}
+		std::shared_ptr<UploadTask> task(new FileUploadTask(WCstringToUtf8(FileName), ))
 
-		wsprintf(szBuffer,TR("Обрабатывается файл %d из %d..."),i+1,n/*,ExtractFileName(FileName),UrlBuffer*/);
+		wsprintf(szBuffer,TR("Обрабатывается файл %d из %d..."),i+1,n/*,ExtractFileName(FileName),UrlBuffer*);
 
 		SetDlgItemText(IDC_COMMONPROGRESS2,szBuffer);
 
@@ -318,12 +311,7 @@ DWORD CUploadDlg::Run()
 				//GenerateImages(MainDlg->FileList[i].FileName,ImageFileName,ThumbFileName,thumbwidth, iss);
 			else 
 				GenThumb = false;
-				
-			/*if(CreateThumbs && Settings.ThumbSettings.UseServerThumbs)
-					GenerateImages(MainDlg->FileList[i].FileName,ImageFileName,0,0, iss);
 
-				else
-					GenerateImages(MainDlg->FileList[i].FileName,ImageFileName,0,0, iss);*/
 			imageConverter.setGenerateThumb(GenThumb);
 			imageConverter.Convert(MainDlg->FileList[i].FileName);
 			ImageFileName = imageConverter.getImageFileName();
@@ -388,7 +376,7 @@ DWORD CUploadDlg::Run()
 		DirectUrl= _T("");
 		ThumbUrl = _T("");
 		
-		CString virtualName = GetOnlyFileName(MainDlg->FileList[i].VirtualFileName)+_T(".")+GetFileExt(ImageFileName);
+		
 		Uploader.setThumbnailWidth(thumbwidth);
 		BOOL result = Uploader.UploadFile(WCstringToUtf8(ImageFileName),WCstringToUtf8(virtualName));
 		if(result)
@@ -512,9 +500,10 @@ DWORD CUploadDlg::Run()
 		DirectUrl = _T("");
 
 		TempFilesDeleter.Cleanup();
-		iss = InitialParams;
+		iss = InitialParams;*/
 	}
-
+	uploadManager_->addSession(uploadSession);
+	/*
 
 	UploadProgress(n, n);
 	wsprintf(szBuffer,_T("%d %%"),100);
@@ -529,8 +518,8 @@ DWORD CUploadDlg::Run()
 		wsprintf(szBuffer,CString(TR("Вcего %d файлов было загружено."))+_T(" ")+TR("Ошибок нет."), NumUploaded );
 
 	ResultsWindow->FinishUpload();
-	FileProgress(szBuffer, false);
-	return ThreadTerminated();
+	FileProgress(szBuffer, false);*/
+return 0;
 }
 
 LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -555,10 +544,10 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 		}
 	}
 
-	else if(wParam == 2) // Another timer which updates status information int the window
+	else if(wParam == 2) // Another timer which updates status information in the window
 	{
 
-		PrInfo.CS.Lock();
+		/*PrInfo.CS.Lock();
 		if(!PrInfo.ip.IsUploading) 
 		{
 			ShowProgress(false);
@@ -567,9 +556,7 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 				
 			if(m_CurrentUploader)
 			{
-				/*CString format;
-				format.Format(L"m_CurrentUploader->GetStatus() =  %d\r\n", m_CurrentUploader->GetStatus());
-				OutputDebugStringW(format);*/
+
 				//ShowVar(m_CurrentUploader->GetStatus());
 				if ( m_CurrentUploader->GetStatus() == stUploading ) {
 					m_CurrentUploader->SetStatus(stWaitingAnswer);
@@ -602,7 +589,7 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 			}
 			if(PrInfo.ip.IsUploading) 
 			{
-				if(!::IsWindowVisible(GetDlgItem(IDC_FILEPROGRESS)) /*&& PrInfo.Total==0*/)
+				if(!::IsWindowVisible(GetDlgItem(IDC_FILEPROGRESS)) )
 				{
 					::ShowWindow(GetDlgItem(IDC_FILEPROGRESS),SW_SHOW);
 					::ShowWindow(GetDlgItem(IDC_SPEEDLABEL),SW_SHOW);
@@ -625,7 +612,7 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 			int speed=0;
 			if(PrInfo.Bytes.size())
 			{
-				speed= int(((double)(Current-/*LastUpdate*/PrInfo.Bytes[0])/(double)PrInfo.Bytes.size())*4);
+				speed= int(((double)(Current-PrInfo.Bytes[0])/(double)PrInfo.Bytes.size())*4);
 			}
 			PrInfo.Bytes.push_back(Current);
 			if(PrInfo.Bytes.size()>11)
@@ -644,7 +631,7 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 			LastUpdate = Current;
 
 		}
-		PrInfo.CS.Unlock();
+		PrInfo.CS.Unlock();*/
 	}
 	return 0;
 }
@@ -730,7 +717,7 @@ bool CUploadDlg::OnShow()
 
 	::SetFocus(GetDlgItem(IDC_CODEEDIT));
 	alreadyShortened_ = false;
-	Start();	
+	Run();	
 	return true;
 }
 
@@ -891,19 +878,19 @@ void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
 }
 
 void CUploadDlg::AddShortenUrlTask(CUrlListItem* item) {
-	if ( !item->ImageUrl.IsEmpty() && item->ImageUrlShortened.IsEmpty() ) {
+	/*if ( !item->ImageUrl.IsEmpty() && item->ImageUrlShortened.IsEmpty() ) {
 		AddShortenUrlTask(item, _T("ImageUrl") );
 	}
 	if ( !item->DownloadUrl.IsEmpty() && item->DownloadUrlShortened.IsEmpty() ) {
 		AddShortenUrlTask(item, _T("DownloadUrl") );
-	}
+	}*/
 	/*if ( !item->ThumbUrl.IsEmpty() && item->ThumbUrlShortened.IsEmpty() ) {
 		AddShortenUrlTask(item, _T("ThumbUrl") );
 	}*/
 }
 
 void CUploadDlg::AddShortenUrlTask(CUrlListItem* item, CString linkType) {
-	CUploadEngineData *ue = Settings.urlShorteningServer.uploadEngineData();
+	/*CUploadEngineData *ue = Settings.urlShorteningServer.uploadEngineData();
 	if ( !ue ) {
 		WriteLog(logError, _T("Uploader"), _T("Cannot create url shortening engine '" + Settings.urlShorteningServer.serverName() + "'"));
 		return;
@@ -931,11 +918,11 @@ void CUploadDlg::AddShortenUrlTask(CUrlListItem* item, CString linkType) {
 	}
 	std_tr::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
 	queueUploader_->AddUploadTask(task, reinterpret_cast<void*>(userData), e);
-	queueUploader_->start();
+	queueUploader_->start();*/
 }
 
-bool CUploadDlg::OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result) {
-	ShortenUrlUserData* shortenUrlUserData  = reinterpret_cast<ShortenUrlUserData*>(result.uploadTask->userData);
+bool CUploadDlg::OnFileFinished(std::shared_ptr<UploadTask> task, bool ok) {
+	/*ShortenUrlUserData* shortenUrlUserData  = reinterpret_cast<ShortenUrlUserData*>(result.uploadTask->userData);
 		
 	if ( shortenUrlUserData->linkType == "ImageUrl" ){
 		shortenUrlUserData->item->ImageUrlShortened = Utf8ToWCstring(result.imageUrl);
@@ -947,7 +934,7 @@ bool CUploadDlg::OnFileFinished(bool ok, CFileQueueUploader::FileListItem& resul
 
 	if ( shortenUrlUserData->linkType == "ThumbUrl" ) {
 		shortenUrlUserData->item->ThumbUrlShortened = Utf8ToWCstring(result.imageUrl);
-	}
+	}*/
 
 	GenerateOutput();
 

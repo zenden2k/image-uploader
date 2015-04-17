@@ -27,13 +27,14 @@
 #include "3rdpart/PropertyList.h"
 #include "Core/Upload/UploadEngine.h"
 #include <Func/Settings.h>
+#include <Core/Upload/ScriptUploadEngine.h>
 class ServerProfile;
 class CServerParamsDlg : 
 	public CDialogImpl<CServerParamsDlg>,
 	public CDialogResize<CServerParamsDlg>	
 {
 	public:
-		CServerParamsDlg(ServerProfile  serverProfile, bool focusOnLoginEdit = false);
+		CServerParamsDlg(ServerProfile  serverProfile, UploadEngineManager * uploadEngineManager, bool focusOnLoginEdit = false);
 		~CServerParamsDlg();
 		enum { IDD = IDD_SERVERPARAMSDLG };
 
@@ -72,6 +73,7 @@ class CServerParamsDlg :
 		CScriptUploadEngine *m_pluginLoader;
 		CString oldLogin_;
 		ServerProfile  serverProfile_;
+		UploadEngineManager * uploadEngineManager_;
 		void doAuthChanged();
 
 

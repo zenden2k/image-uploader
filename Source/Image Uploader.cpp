@@ -30,6 +30,7 @@
 #include <Func/IuCommonFunctions.h>
 #include <Core/Logging.h>
 #include <Func/MyLogSink.h>
+#include "Core/Upload/ScriptUploadEngine.h"
 
 
 CAppModule _Module;
@@ -222,7 +223,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 	int nRet = Run( lpstrCmdLine, nCmdShow );
 	_Module.Term();
-    iuPluginManager.UnloadPlugins();
+    //iuPluginManager.UnloadPlugins();
 	CScriptUploadEngine::DestroyScriptEngine();
 	OleUninitialize();
     google::RemoveLogSink(&logSink);

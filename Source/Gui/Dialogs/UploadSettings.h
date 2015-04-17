@@ -64,7 +64,7 @@ class CUploadSettings :
 	public CDialogImpl<CUploadSettings>	, public CWizardPage
 {
 	public:
-		CUploadSettings(CMyEngineList * EngineList);
+		CUploadSettings(CMyEngineList * EngineList, UploadEngineManager * uploadEngineManager);
 		~CUploadSettings();
 		enum { IDD = IDD_UPLOADSETTINGS };
 
@@ -199,6 +199,7 @@ protected:
 	void selectServer(ServerProfile& sp, int serverIndex);
 	std::map<int, HICON> serverMenuIcons_;
 	HWND useServerThumbnailsTooltip_;
+	UploadEngineManager * uploadEngineManager_;
 public:
    LRESULT OnResizePresetButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
    LRESULT OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);

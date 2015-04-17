@@ -79,6 +79,9 @@
     <Filter Include="Source Files\ImageEditor\DrawingTools">
       <UniqueIdentifier>{c032cdc2-e181-4f34-851e-3bcc711e5018}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core\Upload\Filters">
+      <UniqueIdentifier>{0a071e63-e048-429b-94f8-3023eaf3f3a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\logging.h">
@@ -247,9 +250,6 @@
       <Filter>Header Files\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\MyUtils.h">
-      <Filter>Header Files\Func</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Func\PluginLoader.h">
       <Filter>Header Files\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\Settings.h">
@@ -635,6 +635,21 @@
     </ClInclude>
     <ClInclude Include="Source\Core\Upload\ServerProfile.h">
       <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\UploadEngineManager.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\Filters\ImageConverterFilter.h">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\Filters\UrlShorteningFilter.h">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\UploadManager.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\CommonDefs.h">
+      <Filter>Source Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1407,9 +1422,6 @@
     <ClCompile Include="Source\Func\MyUtils.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Func\PluginLoader.cpp">
-      <Filter>Source Files\Func</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Func\Settings.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
@@ -1510,6 +1522,18 @@
       <Filter>Source Files\Core\Upload</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Upload\ServerProfile.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\UploadEngineManager.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\Filters\ImageConverterFilter.cpp">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\Filters\UrlShorteningFilter.cpp">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\UploadManager.cpp">
       <Filter>Source Files\Core\Upload</Filter>
     </ClCompile>
   </ItemGroup>

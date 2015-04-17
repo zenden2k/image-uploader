@@ -25,11 +25,13 @@
 #include <Gui/GuiTools.h>
 #include <Gui/Dialogs/ServerFolderSelect.h>
 #include <Gui/Dialogs/InputDialog.h>
+#include <Func/WinUtils.h>
 // CServerParamsDlg
-CServerParamsDlg::CServerParamsDlg(ServerProfile  serverProfile,bool focusOnLoginEdit): m_ue(serverProfile.uploadEngineData()),
+CServerParamsDlg::CServerParamsDlg(ServerProfile  serverProfile, UploadEngineManager * uploadEngineManager, bool focusOnLoginEdit) : m_ue(serverProfile.uploadEngineData()),
 			serverProfile_(serverProfile)
 {
 	focusOnLoginControl_ = focusOnLoginEdit;
+	uploadEngineManager_ = uploadEngineManager;
 }
 
 CServerParamsDlg::~CServerParamsDlg()
@@ -84,13 +86,10 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 	GuiTools::EnableDialogItem(m_hWnd, IDC_BROWSESERVERFOLDERS, !oldLogin_.IsEmpty());
 
-	
-
-
 	m_wndParamList.SubclassWindow(GetDlgItem(IDC_PARAMLIST));
 	m_wndParamList.SetExtendedListStyle(PLS_EX_SHOWSELALWAYS | PLS_EX_SINGLECLICKEDIT);
 
-	m_pluginLoader = iuPluginManager.getPlugin(m_ue->Name, m_ue->PluginName,serverSettings);
+	m_pluginLoader = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
 	if(!m_pluginLoader)
 	{
 		return 0;
@@ -115,7 +114,7 @@ LRESULT CServerParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
 {
 	std::map<std::string,std::string>::iterator it;
 	CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT);
-	serverProfile_.setProfileName(login);
+	serverProfile_.setProfileName(WCstringToUtf8(login));
 	ServerSettingsStruct &serverSettings = serverProfile_.serverSettings();
 	serverSettings.authData.DoAuth = GuiTools::GetCheck(m_hWnd, IDC_DOAUTH);
 	serverSettings.authData.Login    = WCstringToUtf8( login );
@@ -166,14 +165,14 @@ LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND
 
 	
 	CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT);
-	serverProfile_.setProfileName(login);
+	serverProfile_.setProfileName(WCstringToUtf8(login));
 	ServerSettingsStruct& serverSettings = serverProfile_.serverSettings();
 	
 	CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT);
 	serverSettings.authData.Login = WCstringToUtf8(login);
 	serverSettings.authData.Password = WCstringToUtf8(password);
 	serverSettings.authData.DoAuth = GuiTools::GetCheck(m_hWnd, IDC_DOAUTH);
-	CServerFolderSelect folderSelectDlg(serverProfile_);
+	CServerFolderSelect folderSelectDlg(serverProfile_, uploadEngineManager_);
 	folderSelectDlg.m_SelectedFolder.id = serverProfile_.folderId();
 
 	if ( folderSelectDlg.DoModal() == IDOK ) {

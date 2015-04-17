@@ -20,10 +20,6 @@
 
 #include "FileQueueUploader.h"
 #include <algorithm>
-#ifndef IU_CLI
-#include <zthread/Thread.h>
-#include <zthread/Mutex.h>
-#endif
 #include <Core/Upload/UploadTask.h>
 #include <Core/Upload/FileUploadTask.h>
 
@@ -36,19 +32,16 @@
 #include "FileQueueUploaderPrivate.h"
 /* public CFileQueueUploader class */
 
-CFileQueueUploader::CFileQueueUploader()
+
+CFileQueueUploader::CFileQueueUploader(UploadEngineManager* uploadEngineManager)
 {
-	_impl = new FileQueueUploaderPrivate(this);
+	_impl = new FileQueueUploaderPrivate(this, uploadEngineManager);
 }
 
 void CFileQueueUploader::addSession(std::shared_ptr<UploadSession> uploadSession)
 {
 }
 
-void CFileQueueUploader::AddFile(const std::string& fileName, const std::string& displayName, void* user_data, CAbstractUploadEngine *uploadEngine)
-{
-	_impl->AddFile(fileName, displayName, user_data, uploadEngine);
-}
 
 bool CFileQueueUploader::start()
 {
@@ -56,10 +49,6 @@ bool CFileQueueUploader::start()
 	return true;
 }
 
-void CFileQueueUploader::setCallback(Callback* callback)
-{
-	_impl->callback_ = callback;
-}
 
 void CFileQueueUploader::stop()
 {
@@ -70,15 +59,9 @@ bool CFileQueueUploader::IsRunning() const {
 	return _impl->m_IsRunning;
 }
 
-void CFileQueueUploader::setUploadSettings(CAbstractUploadEngine* engine)
-{
-	_impl->m_engine = engine;
-}
-
 CFileQueueUploader::~CFileQueueUploader() {
 	delete _impl;
 }
-
 
 void CFileQueueUploader::setMaxThreadCount(int threadCount) {
 	_impl->m_nThreadCount = threadCount;
@@ -91,10 +74,12 @@ bool CFileQueueUploader::isSlotAvailableForServer(std::string serverName, int ma
 
 void CFileQueueUploader::addUploadFilter(UploadFilter* filter)
 {
+	_impl->addUploadFilter(filter);
 }
 
 void CFileQueueUploader::removeUploadFilter(UploadFilter* filter)
 {
+	_impl->removeUploadFilter(filter);
 }
 
 void CFileQueueUploader::addTask(std_tr::shared_ptr<UploadTask> task) {

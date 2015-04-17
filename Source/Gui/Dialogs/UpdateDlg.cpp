@@ -90,13 +90,13 @@ LRESULT CUpdateDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& 
 	if (!m_bUpdateFinished)
 	{
 		// Begin Update Process
-		CString pid = IntToStr(GetCurrentProcessId());
+		CString pid = WinUtils::IntToStr(GetCurrentProcessId());
 
 		BOOL elev = false;
-		bool isVista = IsVista();
+		bool isVista = WinUtils::IsVista();
 		if (isVista)
 			IsElevated(&elev);
-		bool CanWrite = IsDirectory(WinUtils::GetAppFolder() + _T("Data"));
+		bool CanWrite = WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"));
 
 		bool NeedElevation = m_UpdateManager.AreCoreUpdates() && isVista && !elev && !CmdLine.IsOption(_T("update"));
 		NeedElevation |= isVista && !elev && !CanWrite;
@@ -113,7 +113,7 @@ LRESULT CUpdateDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& 
 	else
 	{
 		// Closing and reexecuting image uploader
-		CString pid = IntToStr(GetCurrentProcessId());
+		CString pid = WinUtils::IntToStr(GetCurrentProcessId());
 		if (!CmdLine.IsOption(_T("update")))
 			IULaunchCopy(_T("/afterupdate /waitforpid=") + pid);  // executing new IU copy with the same command line params
 		else

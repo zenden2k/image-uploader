@@ -2,7 +2,7 @@
 
 #include <Core/Utils/CoreUtils.h>
 
-UrlShorteningTask::UrlShorteningTask(const std::string& url) {
+UrlShorteningTask::UrlShorteningTask(const std::string& url, UploadTask* parentTask) : UploadTask(parentTask) {
 	url_ = url;
 }
 

@@ -23,6 +23,7 @@
 #include "Common/MediaInfoDLL.h" //Dynamicly-loaded library (.dll)
 #include "LangClass.h"
 #include "Settings.h"
+#include "WinUtils.h"
 
 void AddStr(CString &Str, const CString& Str2)
 {
@@ -64,7 +65,7 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
 	int VideoCount =   MI.Count_Get(Stream_Video); //Count of video streams in file
 	int SubsCount =   MI.Count_Get(Stream_Text);
 
-	Result+=CString(TR("ָלÿ פאיכא: ")) + myExtractFileName(FileName);
+	Result+=CString(TR("ָלÿ פאיכא: ")) + WinUtils::myExtractFileName(FileName);
 	Result+=_T("\r\n");
 	Result+=CString(TR("׀אחלונ פאיכא: ")) + MI.Get(Stream_General, 0, _T("FileSize/String"), Info_Text, Info_Name);
 	Result+=_T("\r\n");

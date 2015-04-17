@@ -39,7 +39,7 @@ const int SettingsPageCount = 10;
 class CSettingsDlg : public CDialogImpl<CSettingsDlg>
 {
 	public:
-		CSettingsDlg(int Page);
+		CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager);
 		~CSettingsDlg();
 		enum { IDD = IDD_SETTINGSDLG };
 		enum SettingsPage { spGeneral, spServers, spImages, spThumbnails, spScreenshot,
@@ -76,6 +76,8 @@ class CSettingsDlg : public CDialogImpl<CSettingsDlg>
 	bool ShowPage(int idPage);
 	CTabListBox m_SettingsPagesListBox;
 	LRESULT OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+protected:
+	UploadEngineManager* uploadEngineManager_;
 };
 
 #endif // SETTINGSDLG_H

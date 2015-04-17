@@ -37,23 +37,25 @@
 #include <Func/Base.h>
 #include <Func/IuCommonFunctions.h>
 #include <Gui/Controls/ServerSelectorControl.h>
+#include <Core/Upload/FileUploadTask.h>
 
 const TCHAR CImageReuploaderDlg::LogTitle[] = _T("Image Reuploader");
 
 // CImageReuploaderDlg
-CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, const CString &initialBuffer)
+CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager *  uploadManager,
+	UploadEngineManager *uploadEngineManager, const CString &initialBuffer)
 {
 	m_WizardDlg = wizardDlg;
 	m_InitialBuffer = initialBuffer;
 	m_EngineList = engineList;
-	queueUploader_ = new CFileQueueUploader();
-	queueUploader_->setCallback( this );
+	uploadManager_ = uploadManager;
 	htmlClipboardFormatId = RegisterClipboardFormat(_T("HTML Format"));
+	uploadEngineManager_ = uploadEngineManager;
 }
 
 CImageReuploaderDlg::~CImageReuploaderDlg()
 {
-	delete queueUploader_;
+	delete uploadManager_;
 }
 
 LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -80,7 +82,7 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	TRC(IDC_SHOWLOG, "Показать лог");
 
 	RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
-	imageServerSelector_ = new CServerSelectorControl(true);
+	imageServerSelector_ = new CServerSelectorControl(uploadEngineManager_, true);
 	imageServerSelector_->Create(m_hWnd, serverSelectorRect);
 	imageServerSelector_->setTitle(TR("Сервер для хранения изображений"));
 	imageServerSelector_->ShowWindow( SW_SHOW );
@@ -104,7 +106,7 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 		sourceTextEditControl.SendMessage(WM_PASTE);
 	} 
 
-	m_serverId = _EngineList->GetUploadEngineIndex(serverProfile_.serverName());
+	m_serverId = _EngineList->GetUploadEngineIndex(Utf8ToWCstring(serverProfile_.serverName()));
 
 	if(m_serverId == -1) {
 		m_serverId = m_EngineList->getRandomImageServer();
@@ -112,7 +114,7 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 			return false;
 		}
 	}
-	SetDlgItemText(IDC_SERVENAMELABEL, CString(TR("Сервер")) + _T(": ") + serverProfile_.serverName());
+	SetDlgItemText(IDC_SERVENAMELABEL, CString(TR("Сервер")) + _T(": ") + Utf8ToWCstring(serverProfile_.serverName()));
 
 	SetDlgItemText(IDC_RESULTSLABEL, _T(""));
 	::SetFocus(GetDlgItem(IDC_FILEINFOEDIT));
@@ -135,8 +137,8 @@ LRESULT CImageReuploaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 		m_FileDownloader.stop();
 		closeWindow = false;
 	}
-	if ( queueUploader_->IsRunning() ) {
-		queueUploader_->stop();
+	if ( uploadManager_->IsRunning() ) {
+		uploadManager_->stop();
 		closeWindow = false;
 	}
 
@@ -271,13 +273,7 @@ bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it
 	} 
 
 	DownloadItemData* dit = reinterpret_cast<DownloadItemData*>(it.id);
-	CUploadEngineData *ue = serverProfile_.uploadEngineData();
-	CUploadEngineData* newData = new CUploadEngineData();
-	*newData = *ue;
-	CAbstractUploadEngine * e = m_EngineList->getUploadEngine(ue, serverProfile_.serverSettings());
-	e->setUploadData(newData);
-	ServerSettingsStruct& settings = serverProfile_.serverSettings();
-	e->setServerSettings(settings);
+
 	UploadItemData* uploadItemData = new UploadItemData;
 	uploadItemData->sourceUrl = it.url;
 
@@ -290,8 +286,12 @@ bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it
 		std::string fileNameWithoutExt = IuCoreUtils::ExtractFileNameNoExt(it.fileName);
 		displayName = fileNameWithoutExt + "." + defaultExtension;
 	}
-	queueUploader_->AddFile( localFileName, displayName, uploadItemData, e);
-	queueUploader_->start();
+	std::shared_ptr<FileUploadTask> fileUploadTask(new FileUploadTask(localFileName, displayName));
+	fileUploadTask->setServerProfile(serverProfile_);
+	fileUploadTask->setUserData(uploadItemData);
+	fileUploadTask->OnFileFinished.bind(this, &CImageReuploaderDlg::OnFileFinished);
+	uploadSession_->addTask(fileUploadTask);
+	uploadManager_->start();
 	return true;
 }
 
@@ -303,7 +303,7 @@ void CImageReuploaderDlg::OnQueueFinished()
 		EndDialog(0);
 		return;
 	}
-	if ( !queueUploader_->IsRunning() ) {
+	if ( !uploadManager_->IsRunning() ) {
 		processFinished();
 	}
 }
@@ -436,8 +436,8 @@ bool CImageReuploaderDlg::BeginDownloading()
 		MessageBox(TR("Не найдено ссылок на изображения!"), APPNAME, MB_OK | MB_ICONEXCLAMATION);
 		return false;
 	} else {
-		
-
+		uploadSession_.reset(new UploadSession());
+		uploadManager_->addSession(uploadSession_);
 		std::string result;
 		for ( int i = 0; i < links.size(); i++ ) {
 			std::string url = links[i];
@@ -497,31 +497,32 @@ bool CImageReuploaderDlg::LinksAvailableInText(const CString &text)
 }
 
 
-bool CImageReuploaderDlg::OnFileFinished(bool ok,   CFileQueueUploader::FileListItem & result) {
+void CImageReuploaderDlg::OnFileFinished(std::shared_ptr<UploadTask> task, bool ok) {
 	if ( ok ) {
-		UploadItemData* uploadItemData = reinterpret_cast<UploadItemData*>( result.uploadTask->userData );
+		std::shared_ptr<FileUploadTask> fileUploadTask = std::static_pointer_cast<FileUploadTask>(task);
+		UploadItemData* uploadItemData = reinterpret_cast<UploadItemData*>(fileUploadTask->userData());
 		UploadedItem item;
 		item.sourceUrl   = uploadItemData->sourceUrl;
 		item.originalUrl = uploadItemData->originalUrl;
-		item.newUrl = result.imageUrl;
+		UploadResult * result = task->uploadResult();
+		item.newUrl = result->directUrl;
 		mutex_.acquire();
 		uploadedItems_[uploadItemData->sourceIndex] =  item ;
 		
-		HistoryItem hi;
+		/*HistoryItem hi;
 		hi.localFilePath = result.fileName;
 		hi.serverName = result.serverName;
 		hi.directUrl =  (result.imageUrl);
 		hi.thumbUrl = (result.thumbUrl);
 		hi.viewUrl = (result.downloadUrl);
 		hi.uploadFileSize = result.fileSize; // IuCoreUtils::getFileSize(WCstringToUtf8(ImageFileName));
-		historySession_->AddItem(hi);
+		historySession_->AddItem(hi);*/
 
 		generateOutputText();
 		m_nFilesUploaded++;
 		mutex_.release();
 		updateStats();
 	}
-	return true;
 }
 
 bool CImageReuploaderDlg::OnQueueFinished(CFileQueueUploader*) {

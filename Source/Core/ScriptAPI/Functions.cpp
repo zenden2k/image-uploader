@@ -33,6 +33,7 @@
         #include <Func/Common.h>
         #include <Func/IuCommonFunctions.h>
         #include <Func/LangClass.h>
+		#include <Func/WinUtils.h>
         #include "Gui/Dialogs/LogWindow.h"
     #endif
 #endif

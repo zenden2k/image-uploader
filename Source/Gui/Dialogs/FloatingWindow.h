@@ -64,20 +64,14 @@
 
 #define WM_CLOSETRAYWND (WM_USER+2)
 #define WM_RELOADSETTINGS (WM_USER+3)
-
+#include <Core/Upload/UploadManager.h>
 
 
 class CFloatingWindow :
 	public CWindowImpl<CFloatingWindow>, 
-	public CTrayIconImpl<CFloatingWindow>, 
-	public CFileQueueUploader::Callback
+	public CTrayIconImpl<CFloatingWindow>
 {
 public:
-	struct UploadedItem {
-		CFileQueueUploader::FileListItem fileListItem;
-		CString imageUrlShortened;
-		CString downloadUrlShortened;
-	};
 	HANDLE hMutex;
 	HWND m_ActiveWindow;
 		HMENU m_hTrayIconMenu;
@@ -88,7 +82,8 @@ public:
 		HICON m_hIconSmall;
 		bool m_bStopCapturingWindows;
 		bool m_bIsUploading;
-		UploadedItem lastUploadedItem_;
+		std::shared_ptr<UploadTask> lastUploadedItem_;
+		std::shared_ptr<UrlShorteningTask> lastUrlShorteningTask_;
 		CString imageUrlShortened_;
 		CString downloadUrlShortened_;
 
@@ -175,12 +170,13 @@ public:
 	 LRESULT OnTaskbarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	 void ShowBaloonTip(const CString& text, const CString& title);
 	 void UploadScreenshot(const CString& realName, const CString &displayName);
+	 void setUploadManager(UploadManager * manager);
+	 void setUploadEngineManager(UploadEngineManager * manager);
 	 CString fileName, realFileName;
-	 CFileQueueUploader * m_FileQueueUploader;
-	 bool OnQueueFinished(CFileQueueUploader*);
+	 UploadManager * uploadManager_;
+	 UploadEngineManager* uploadEngineManager_;
 	 bool m_bFromHotkey;
-	 bool OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result);
-	 bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);
+	 void OnFileFinished(std::shared_ptr<UploadTask> task, bool ok);
 	 void ShowImageUploadedMessage(const CString& url);
 	 std::string source_file_name_;
 	 std::string server_name_;
@@ -188,7 +184,6 @@ public:
 	 struct UploadTaskUserData {
 		CString linkTypeToShorten; 
 	 };
-
 	
 	 enum UploadType {
 		 utImage, utUrl, utShorteningImageUrl

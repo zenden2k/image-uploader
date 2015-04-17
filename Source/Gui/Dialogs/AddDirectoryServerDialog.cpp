@@ -13,6 +13,7 @@
 #include <security.h>
 #include <secext.h>
 #include <Lm.h>
+#include <Core/ScriptAPI/HtmlDocumentPrivate_win.h>
 
 
 // CAddDirectoryServerDialog
@@ -134,7 +135,7 @@ LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD 
 	CString directory =  GuiTools::GetDlgItemText(m_hWnd, IDC_DIRECTORYEDIT);
 	if ( !connectionNameEdited ) {
 		
-		CString serverName = TR("Папка ") + TrimString(directory, 30);
+		CString serverName = TR("Папка ") + WinUtils::TrimString(directory, 30);
 		SetDlgItemText(IDC_CONNECTIONNAMEEDIT, serverName);
 	}
 	GenerateDownloadLink();

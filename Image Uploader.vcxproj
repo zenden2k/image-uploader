@@ -614,9 +614,14 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Core\CommonDefs.h" />
     <ClInclude Include="Source\Core\Upload\FileQueueUploaderPrivate.h" />
+    <ClInclude Include="Source\Core\Upload\Filters\ImageConverterFilter.h" />
+    <ClInclude Include="Source\Core\Upload\Filters\UrlShorteningFilter.h" />
     <ClInclude Include="Source\Core\Upload\ServerProfile.h" />
+    <ClInclude Include="Source\Core\Upload\UploadEngineManager.h" />
     <ClInclude Include="Source\Core\Upload\UploadFilter.h" />
+    <ClInclude Include="Source\Core\Upload\UploadManager.h" />
     <ClInclude Include="Source\Core\Upload\UploadResult.h" />
     <ClInclude Include="Source\Core\Upload\UploadSession.h" />
     <ClInclude Include="Source\logging.h" />
@@ -675,7 +680,6 @@
     <ClInclude Include="Source\Func\HistoryManager.h" />
     <ClInclude Include="Source\Func\LangClass.h" />
     <ClInclude Include="Source\Func\MyUtils.h" />
-    <ClInclude Include="Source\Func\PluginLoader.h" />
     <ClInclude Include="Source\Func\Settings.h" />
     <ClInclude Include="Source\Func\UpdatePackage.h" />
     <ClInclude Include="Source\atlheaders.h" />
@@ -918,8 +922,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Upload\FileQueueUploaderPrivate.cpp" />
+    <ClCompile Include="Source\Core\Upload\Filters\ImageConverterFilter.cpp" />
+    <ClCompile Include="Source\Core\Upload\Filters\UrlShorteningFilter.cpp" />
     <ClCompile Include="Source\Core\Upload\ServerProfile.cpp" />
+    <ClCompile Include="Source\Core\Upload\UploadEngineManager.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadFilter.cpp" />
+    <ClCompile Include="Source\Core\Upload\UploadManager.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadSession.cpp" />
     <ClCompile Include="Source\Image Uploader.cpp" />
     <ClCompile Include="Source\Core\Logging.cpp" />
@@ -1080,7 +1088,6 @@
     <ClCompile Include="Source\Func\MyEngineList.cpp" />
     <ClCompile Include="Source\Func\MyLogSink.cpp" />
     <ClCompile Include="Source\Func\MyUtils.cpp" />
-    <ClCompile Include="Source\Func\PluginLoader.cpp" />
     <ClCompile Include="Source\Func\Settings.cpp" />
     <ClCompile Include="Source\Func\SystemUtils.cpp" />
     <ClCompile Include="Source\Func\UpdatePackage.cpp" />

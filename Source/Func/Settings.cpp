@@ -634,22 +634,22 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 	LoadAccounts( xml.getRoot( "ImageUploader" ).GetChild( "Settings" ).GetChild( "ServersParams" ) );
 #if !defined(IU_CLI) && !defined( IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
 	// Fixing profies
-	if ( !imageServer.profileName().IsEmpty() &&  ServersSettings[WCstringToUtf8(imageServer.serverName())].find(WCstringToUtf8(imageServer.profileName())) == ServersSettings[WCstringToUtf8(imageServer.serverName())].end() ) {
+	if ( !imageServer.profileName().empty() &&  ServersSettings[imageServer.serverName()].find(imageServer.profileName()) == ServersSettings[imageServer.serverName()].end() ) {
 		imageServer.setProfileName("");
 	}
 
-	if ( !fileServer.profileName().IsEmpty() &&  ServersSettings[WCstringToUtf8(fileServer.serverName())].find(WCstringToUtf8(fileServer.profileName())) == ServersSettings[WCstringToUtf8(fileServer.serverName())].end() ) {
+	if ( !fileServer.profileName().empty() &&  ServersSettings[fileServer.serverName()].find(fileServer.profileName()) == ServersSettings[fileServer.serverName()].end() ) {
 		fileServer.setProfileName("");
 	}
-	if ( !contextMenuServer.profileName().IsEmpty() &&  ServersSettings[WCstringToUtf8(contextMenuServer.serverName())].find(WCstringToUtf8(contextMenuServer.profileName())) == ServersSettings[WCstringToUtf8(contextMenuServer.serverName())].end() ) {
+	if ( !contextMenuServer.profileName().empty() &&  ServersSettings[contextMenuServer.serverName()].find(contextMenuServer.profileName()) == ServersSettings[contextMenuServer.serverName()].end() ) {
 		contextMenuServer.setProfileName("");
 	}
 
-	if ( !quickScreenshotServer.profileName().IsEmpty() &&  ServersSettings[WCstringToUtf8(quickScreenshotServer.serverName())].find(WCstringToUtf8(quickScreenshotServer.profileName())) == ServersSettings[WCstringToUtf8(quickScreenshotServer.serverName())].end() ) {
+	if ( !quickScreenshotServer.profileName().empty() &&  ServersSettings[quickScreenshotServer.serverName()].find(quickScreenshotServer.profileName()) == ServersSettings[quickScreenshotServer.serverName()].end() ) {
 		quickScreenshotServer.setProfileName("");
 	}
 
-	if ( !urlShorteningServer.profileName().IsEmpty() &&  ServersSettings[WCstringToUtf8(urlShorteningServer.serverName())].find(WCstringToUtf8(urlShorteningServer.profileName())) == ServersSettings[WCstringToUtf8(urlShorteningServer.serverName())].end() ) {
+	if ( !urlShorteningServer.profileName().empty() &&  ServersSettings[urlShorteningServer.serverName()].find(urlShorteningServer.profileName()) == ServersSettings[urlShorteningServer.serverName()].end() ) {
 		urlShorteningServer.setProfileName("");
 	}
 	if ( UploadBufferSize == 65536) {
@@ -1248,7 +1248,7 @@ int CSettings::getServerID()
 
 int CSettings::getQuickServerID()
 {
-	return _EngineList->GetUploadEngineIndex(contextMenuServer.serverName());
+	return _EngineList->GetUploadEngineIndex(Utf8ToWCstring(contextMenuServer.serverName()));
 }
 
 int CSettings::getFileServerID()
@@ -1271,13 +1271,13 @@ CString CSettings::prepareVideoDialogFilters() {
 	return result;
 }
 CString CSettings::getServerName() {
-	return imageServer.serverName();
+	return Utf8ToWCstring(imageServer.serverName());
 }
 CString CSettings::getQuickServerName() {
-	return contextMenuServer.serverName();
+	return Utf8ToWCstring(contextMenuServer.serverName());
 }
 CString CSettings::getFileServerName() {
-	return fileServer.serverName();
+	return Utf8ToWCstring(fileServer.serverName());
 }
 
 CString CSettings::getSettingsFileName() const

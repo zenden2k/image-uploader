@@ -29,13 +29,14 @@
 #include "Gui/Dialogs/settingspage.h"
 #include <Gui/COntrols/ServerSelectorControl.h>
 class CServerSelectorControl;
+class UploadEngineManager;
 class CDefaultServersSettings : public CDialogImpl<CDefaultServersSettings>, 
 	                      public CSettingsPage	
 {
 	public:
 		enum { IDD = IDD_DEFAULTSERVERSSETTINGS };
 
-		CDefaultServersSettings();
+		CDefaultServersSettings(UploadEngineManager* uploadEngineManager);
 		virtual ~CDefaultServersSettings();
 		virtual bool Apply();
 
@@ -57,6 +58,7 @@ protected:
 	CServerSelectorControl *trayServerSelector_;
 	CServerSelectorControl *contextMenuServerSelector_;
 	CServerSelectorControl *urlShortenerServerSelector_;
+	UploadEngineManager* uploadEngineManager_;
 
 };
 

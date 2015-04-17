@@ -6,7 +6,7 @@
 
 class UrlShorteningTask: public UploadTask {
 	public:
-		UrlShorteningTask(const std::string& url);
+		UrlShorteningTask(const std::string& url, UploadTask* parentTask = 0);
 		virtual std::string getType() const;
 		virtual std::string getMimeType() const;
 		virtual int64_t getDataLength() const;

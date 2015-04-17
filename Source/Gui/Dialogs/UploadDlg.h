@@ -38,13 +38,14 @@
 #include <Core/Upload/FileQueueUploader.h>
 #include "Func/Settings.h"
 
+class UploadManager;
+
 class CUploadDlg : public CDialogImpl<CUploadDlg>,
                    public CThreadImpl<CUploadDlg>, 
-						 public CWizardPage,
-						 public CFileQueueUploader::Callback
+						 public CWizardPage
 {
 	public:
-		CUploadDlg(CWizardDlg *dlg);
+		CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager);
 		~CUploadDlg();
 		enum { IDD = IDD_UPLOADDLG };
 		int TimerInc;
@@ -68,7 +69,6 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		 CResultsWindow *ResultsWindow;
 		int ThreadTerminated(void);
 		CAtlArray<CUrlListItem> UrlList;
-		CUploader *m_CurrentUploader;
 		bool OnShow();
 		bool OnNext();
 		bool OnHide();
@@ -82,7 +82,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		int progressCurrent, progressTotal;
 		CMyEngineList *m_EngineList;
 		CString m_StatusText;
-		CFileQueueUploader* queueUploader_;
+		
 		bool OnUploaderNeedStop();
 		void OnUploaderProgress(CUploader* uploader, InfoProgress pi);
 		void OnUploaderStatusChanged(StatusType status, int actionIndex, std::string text);
@@ -90,7 +90,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		void onShortenUrlChanged(bool shortenUrl);
 		void AddShortenUrlTask(CUrlListItem* item);
 		void AddShortenUrlTask(CUrlListItem* item, CString linkType);
-		virtual bool OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result);
+		virtual bool OnFileFinished(std::shared_ptr<UploadTask> task, bool ok);
 		virtual bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);
 	protected:
 		struct CUploadDlgProgressInfo
@@ -110,6 +110,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		#if  WINVER	>= 0x0601
 				ITaskbarList3* ptl;
 		#endif
+		UploadManager* uploadManager_;
 };
 
 

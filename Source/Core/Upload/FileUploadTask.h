@@ -6,14 +6,18 @@
 
 class FileUploadTask: public UploadTask {
 	public:
-		FileUploadTask(const std::string& fileName, const std::string& displayName);
+		FileUploadTask(const std::string& fileName, const std::string& displayName, UploadTask* parentTask = 0);
 		virtual std::string getType() const;
 		virtual std::string getMimeType() const;
 		virtual int64_t getDataLength() const;
 		std::string getFileName() const;
+		void setFileName(const std::string& fileName);
 		std::string getDisplayName() const;
+		void setDisplayName(const std::string& name);
+		std::string originalFileName() const;
 	protected:
 		std::string fileName_;
+		std::string originalFileName_;
 		std::string displayName_;
 };	
 

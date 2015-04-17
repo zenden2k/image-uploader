@@ -24,6 +24,7 @@
 #include "PercentEdit.h"
 #include "Func/Common.h"
 #include "Gui/GuiTools.h"
+#include <Core/ScriptAPI/HtmlElementPrivate_win.h>
 
 CPercentEdit::CPercentEdit()
 {
@@ -48,7 +49,7 @@ void CPercentEdit::setUnit(const CString& text)
 LRESULT CPercentEdit::OnSetFocus(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	 int quality = _wtoi(GuiTools::GetWindowText(m_hWnd));
-	 SetWindowText( IntToStr(quality));
+	 SetWindowText(WinUtils::IntToStr(quality));
 	 return 0;
 }
 
@@ -66,7 +67,7 @@ LRESULT CPercentEdit::OnSetText(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 {
 	TCHAR* str =  reinterpret_cast<TCHAR*>(lParam);
 	int quality = _wtoi(str);
-	CString newStr = IntToStr(quality) + getCurrentPostfix();
+	CString newStr = WinUtils::IntToStr(quality) + getCurrentPostfix();
 	DefWindowProc(uMsg, wParam, (LPARAM)(const TCHAR*)newStr);
 	bHandled = true;
 	return TRUE;
@@ -91,7 +92,7 @@ LRESULT CPercentEdit::OnGetText(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	TCHAR buf[256];
 	LRESULT result = DefWindowProc(uMsg, 256, (LPARAM)buf);
 	int quality = _wtoi(buf);
-	CString res = IntToStr(quality);
+	CString res = WinUtils::IntToStr(quality);
 	int copied = min(res.GetLength()+1, nCount);
 	lstrcpyn(destination, res, copied);
 	bHandled = true;

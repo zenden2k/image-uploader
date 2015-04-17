@@ -36,13 +36,15 @@
 #include <Core/Utils/StringUtils.h>
 #include <Func/IuCommonFunctions.h>
 #include "atlheaders.h"
+#include <Func/WinUtils.h>
 
-CVideoGrabberPage::CVideoGrabberPage()
+CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
 {
 	Terminated = true;
 	grabbedFramesCount = 0;
 	originalGrabInfoLabelWidth_ = 0;
 	videoGrabber_ = 0;
+	uploadEngineManager_ = uploadEngineManager;
 }
 
 CVideoGrabberPage::~CVideoGrabberPage()
@@ -347,7 +349,7 @@ LRESULT CVideoGrabberPage::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT CVideoGrabberPage::OnBnClickedGrabberparams(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CSettingsDlg dlg(CSettingsDlg::spVideo);
+	CSettingsDlg dlg(CSettingsDlg::spVideo, uploadEngineManager_);
 	dlg.DoModal(m_hWnd);
 	return 0;
 }
@@ -631,12 +633,12 @@ CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateS
 	CString fileName = Utf8ToWCstring(IuCoreUtils::ExtractFileName(originalNameUtf8));
 	CString fileNameNoExt = Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt(originalNameUtf8));
 	indexStr.Format(_T("%03d"), index);
-	CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(WCstringToUtf8(IntToStr(GetTickCount() + random(100))))).c_str();
+	CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(WCstringToUtf8(WinUtils::IntToStr(GetTickCount() + random(100))))).c_str();
 	CString uid = md5.Mid(5,6);
 	result.Replace(_T("%md5%"), (LPCTSTR)md5);
 	result.Replace(_T("%uid%"), (LPCTSTR)uid);
-	result.Replace(_T("%cx%"), IntToStr(size.x));
-	result.Replace(_T("%cy%"), IntToStr(size.y));
+	result.Replace(_T("%cx%"), WinUtils::IntToStr(size.x));
+	result.Replace(_T("%cy%"), WinUtils::IntToStr(size.y));
 	year.Format(_T("%04d"), (int)1900 + timeinfo->tm_year);
 	month.Format(_T("%02d"), (int) timeinfo->tm_mon + 1);
 	day.Format(_T("%02d"), (int) timeinfo->tm_mday);

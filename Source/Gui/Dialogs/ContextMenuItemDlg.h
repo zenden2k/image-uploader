@@ -29,12 +29,12 @@ class ServerProfile;
 class CServerSelectorControl;
 // CContextMenuItemDlg
 
-
+class UploadEngineManager;
 class CContextMenuItemDlg : public CDialogImpl<CContextMenuItemDlg>	
 {
 	public:
 		int ServerId;
-		CContextMenuItemDlg();
+		CContextMenuItemDlg(UploadEngineManager * uploadEngineManager);
 		~CContextMenuItemDlg();
 		enum { IDD = IDD_CONTEXTMENUITEMDLG };
 	protected:
@@ -62,6 +62,7 @@ protected:
 	ServerProfile serverProfile_;
 	bool titleEdited_;
 	CString title_;
+	UploadEngineManager * uploadEngineManager_;
 	void generateTitle();
 };
 

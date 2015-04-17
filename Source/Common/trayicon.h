@@ -32,7 +32,7 @@ public:
 		WM_TRAYICON = ::RegisterWindowMessage(_T("WM_TRAYICON"));
 	}
 	
-	~CTrayIconImpl()
+	virtual ~CTrayIconImpl()
 	{
 		// Remove the icon
 		RemoveIcon();

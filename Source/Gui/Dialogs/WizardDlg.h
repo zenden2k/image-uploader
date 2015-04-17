@@ -85,7 +85,8 @@ public:
 };
 extern CWizardDlg * pWizardDlg;
 extern TCHAR MediaInfoDllPath[MAX_PATH];
-
+class UploadManager;
+class UploadEngineManager;
 
 class CWizardDlg : 
 	public CDialogImpl<CWizardDlg>	, public CUpdateUI<CWizardDlg>,
@@ -188,6 +189,8 @@ public:
 	CHotkeyList m_hotkeys;
 	CFolderAdd FolderAdd;
 	CMyEngineList m_EngineList;
+	UploadManager* uploadManager_;
+	UploadEngineManager* uploadEngineManager_;
 	long m_lRef;
 	bool QuickUploadMarker;
 	CString LastVideoFile;

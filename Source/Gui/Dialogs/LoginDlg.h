@@ -28,6 +28,7 @@
 #include "Gui/Controls/PictureExWnd.h"
 
 class ServerProfile;
+class UploadEngineManager;
 // CLoginDlg
 
 LoginInfo LoadLogin(int ServerId);
@@ -36,7 +37,7 @@ class CLoginDlg : public CDialogImpl<CLoginDlg>	, public CThreadImpl<CLoginDlg>
 {
 	public:
 		int ServerId;
-		CLoginDlg(ServerProfile& serverProfile,bool CreateNew = false );
+		CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool CreateNew = false );
 		~CLoginDlg();
 		enum { IDD = IDD_LOGINDLG };
 	protected:
@@ -76,6 +77,7 @@ protected:
 	void enableControls(bool enable);
 	NetworkClient NetworkClient_;
 	CPictureExWnd wndAnimation_;
+	UploadEngineManager* uploadEngineManager_;
 	
 };
 

@@ -24,6 +24,7 @@
 #include <atlapp.h>
 #include "IconButton.h"
 #include "Func/Common.h"
+#include <Core/ScriptAPI/HtmlDocumentPrivate_win.h>
 // local functions
 static int image_left (int cx, const CRect& Rect, DWORD style);
 static int image_top (int cy, const CRect& Rect, DWORD style);
@@ -242,7 +243,7 @@ LRESULT CIconButton::OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
    	LPNMCUSTOMDRAW pCustomDraw = (LPNMCUSTOMDRAW)pnmh;
     DWORD style = GetStyle ();
-    if ((style & (BS_BITMAP | BS_ICON)) == 0 || !IsAppThemed () || !IsThemeActive () || IsVista())
+    if ((style & (BS_BITMAP | BS_ICON)) == 0 || !IsAppThemed () || !IsThemeActive () || WinUtils::IsVista())
 	{
 		// not icon or bitmap button, or themes not active - draw normally
 		return  CDRF_DODEFAULT;

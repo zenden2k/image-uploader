@@ -35,18 +35,21 @@
 #include <Core/Upload/UrlShorteningTask.h>
 #include <Func/IuCommonFunctions.h>
 #include <Gui/GuiTools.h>
+#include <Core/Upload/FileUploadTask.h>
+#include <Func/myutils.h>
+
 // FloatingWindow
 CFloatingWindow::CFloatingWindow()
 {
 	m_bFromHotkey = false;
 	m_ActiveWindow = 0;
 	EnableClicks = true;
-	m_FileQueueUploader = 0;
 	hMutex = NULL;
 	m_PrevActiveWindow = 0;
 	m_bStopCapturingWindows = false;
 	WM_TASKBARCREATED = RegisterWindowMessage(_T("TaskbarCreated"));
 	m_bIsUploading = 0;
+	uploadEngineManager_ = 0;
 }
 
 CFloatingWindow::~CFloatingWindow()
@@ -167,11 +170,12 @@ LRESULT CFloatingWindow::OnTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 	{
 		CAtlArray<CUrlListItem> items;
 		CUrlListItem it;
-		it.ImageUrl = Utf8ToWstring(lastUploadedItem_.fileListItem.imageUrl).c_str();
-		it.ImageUrlShortened = lastUploadedItem_.imageUrlShortened;
-		it.ThumbUrl =  Utf8ToWstring(lastUploadedItem_.fileListItem.thumbUrl).c_str();
-		it.DownloadUrl = Utf8ToWstring(lastUploadedItem_.fileListItem.downloadUrl).c_str();
-		it.DownloadUrlShortened = lastUploadedItem_.downloadUrlShortened;
+		UploadResult* uploadResult = lastUploadedItem_->uploadResult();
+		it.ImageUrl = Utf8ToWstring(uploadResult->directUrl).c_str();
+		it.ImageUrlShortened = Utf8ToWstring(uploadResult->directUrlShortened).c_str();
+		it.ThumbUrl = Utf8ToWstring(uploadResult->thumbUrl).c_str();
+		it.DownloadUrl = Utf8ToWstring(uploadResult->downloadUrl).c_str();
+		it.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
 		items.Add(it);
 		if (it.ImageUrl.IsEmpty() && it.DownloadUrl.IsEmpty())
 			return 0;
@@ -191,7 +195,7 @@ LRESULT CFloatingWindow::OnMenuSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl
 		return 0;
 	}
 	HWND hParent  = pWizardDlg->m_hWnd; // pWizardDlg->IsWindowEnabled()?  : 0;
-	CSettingsDlg dlg(CSettingsDlg::spTrayIcon);
+	CSettingsDlg dlg(CSettingsDlg::spTrayIcon, uploadEngineManager_);
 	dlg.DoModal(hParent);
 	return 0;
 }
@@ -291,12 +295,9 @@ LRESULT CFloatingWindow::OnFreeformScreenshot(WORD wNotifyCode, WORD wID, HWND h
 }
 
 LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
-	if (  m_FileQueueUploader && m_FileQueueUploader->IsRunning() ) {
+	if (lastUrlShorteningTask_ && lastUrlShorteningTask_->isRunning()) {
 		return false;
 	}
-	delete m_FileQueueUploader;
-	m_FileQueueUploader =  new CFileQueueUploader;
-	m_FileQueueUploader->setCallback(this);
 
  	CString url;
 	WinUtils::GetClipboardText(url);
@@ -304,26 +305,14 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
 		return false;
 	}
 
-	std_tr::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
-
-	CUploadEngineData *ue = Settings.urlShorteningServer.uploadEngineData();
-	CAbstractUploadEngine * e = _EngineList->getUploadEngine(ue, Settings.urlShorteningServer.serverSettings());
-	if ( !e ) {
-		return false;
-	}
-	e->setUploadData(ue);
-	ServerSettingsStruct& settings = Settings.urlShorteningServer.serverSettings();
-	e->setServerSettings(settings);
-
-	
-	e->setUploadData(ue);
-	uploadType_ = utUrl;
-	m_FileQueueUploader->AddUploadTask(task, 0, e);
-	m_FileQueueUploader->start();
+	lastUrlShorteningTask_.reset(new UrlShorteningTask(WCstringToUtf8(url)));
+	lastUrlShorteningTask_->setServerProfile(Settings.urlShorteningServer);
+	uploadManager_->addTask(lastUrlShorteningTask_);
+	uploadManager_->start();
 
 	CString msg;
 	msg.Format(TR("Cокращаю ссылку \"%s\" с помощью %s"), (LPCTSTR)url,
-		(LPCTSTR)Utf8ToWstring(ue->Name).c_str());
+		(LPCTSTR)Utf8ToWstring(Settings.urlShorteningServer.serverName()).c_str());
 	ShowBaloonTip(msg, _T("Image Uploader"));
 	return 0;
 }
@@ -626,70 +615,32 @@ void CFloatingWindow::ShowBaloonTip(const CString& text, const CString& title)
 
 void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& displayName)
 {
-	delete m_FileQueueUploader;
-	m_FileQueueUploader =  0;
-	lastUploadedItem_.fileListItem = CFileQueueUploader::FileListItem();
-	lastUploadedItem_.imageUrlShortened.Empty();
-	lastUploadedItem_.downloadUrlShortened.Empty();
+	FileUploadTask *  task(new FileUploadTask(IuCoreUtils::WstringToUtf8((LPCTSTR)realName), IuCoreUtils::WstringToUtf8((LPCTSTR)displayName)));
+	//std::shared_ptr<UploadSession> uploadSession(new UploadSession());
+	task->setServerProfile(Settings.quickScreenshotServer);
+	task->OnFileFinished.bind(this, &CFloatingWindow::OnFileFinished);
+	//uploadSession->
+	//uploadSession-
+	uploadManager_->addTask(std_tr::shared_ptr<UploadTask>(task));
+	uploadManager_->start();
 
-	m_FileQueueUploader = new CFileQueueUploader();
-	m_FileQueueUploader->setCallback(this);
-	ServerProfile &serverProfile = Settings.quickScreenshotServer;
-	CUploadEngineData* engineData = serverProfile.uploadEngineData();
-	if (!engineData)
-		engineData = _EngineList->byIndex(_EngineList->getRandomImageServer());
-	if (!engineData)
-		return;
-
-	CImageConverter imageConverter;
-	Thumbnail thumb;
-	CString templateName = Settings.quickScreenshotServer.getImageUploadParams().getThumb().TemplateName;
-	if ( templateName.IsEmpty() ) {
-		templateName = _T("default");
-	}
-	CString thumbTemplateFileName = IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + templateName +
-		_T(".xml");
-
-	if (!thumb.LoadFromFile(WCstringToUtf8(thumbTemplateFileName)))
-	{
-		WriteLog(logError, _T("CFloatingWindow"), TR("Не могу загрузить файл миниатюры!")+CString(_T("\r\n")) + thumbTemplateFileName);
-		return;
-	}
-	imageConverter.setEnableProcessing(Settings.quickScreenshotServer.getImageUploadParams().ProcessImages);
-	imageConverter.setImageConvertingParams(Settings.ConvertProfiles[Settings.quickScreenshotServer.getImageUploadParams().ImageProfileName]);
-	imageConverter.setThumbCreatingParams(Settings.quickScreenshotServer.getImageUploadParams().getThumb());
-	bool GenThumbs = Settings.quickScreenshotServer.getImageUploadParams().CreateThumbs &&
-	   ((!Settings.quickScreenshotServer.getImageUploadParams().UseServerThumbs) || (!engineData->SupportThumbnails));
-	imageConverter.setThumbnail(&thumb);
-	imageConverter.setGenerateThumb(GenThumbs);
-	imageConverter.Convert(realName);
-
-	CAbstractUploadEngine* engine = _EngineList->getUploadEngine(engineData, serverProfile.serverSettings());
-	if (!engine)
-		return;
-
-	m_FileQueueUploader->setUploadSettings(engine);
-
-	source_file_name_ = WCstringToUtf8(realName);
-	server_name_ = engineData->Name;
-	std::string utf8FileName = WCstringToUtf8(imageConverter.getImageFileName());
-	lastUploadedItem_.fileListItem.fileSize = IuCoreUtils::getFileSize(utf8FileName);
-	m_FileQueueUploader->AddFile(utf8FileName, WCstringToUtf8(displayName), 0, engine);
-	
-	CString thumbFileName = imageConverter.getThumbFileName();
-	if (!thumbFileName.IsEmpty())
-		m_FileQueueUploader->AddFile(WCstringToUtf8(thumbFileName), WCstringToUtf8(thumbFileName),
-		                             reinterpret_cast<void*>(1), engine);
-
-	m_bIsUploading = true;
-	uploadType_ = utImage;
-	m_FileQueueUploader->start();
 	CString msg;
 	msg.Format(TR("Идет загрузка \"%s\" на сервер %s"), (LPCTSTR) GetOnlyFileName(displayName),
-	           (LPCTSTR)Utf8ToWstring(engineData->Name).c_str());
+		(LPCTSTR)Utf8ToWstring(Settings.quickScreenshotServer.serverName()).c_str());
 	ShowBaloonTip(msg, TR("Загрузка снимка"));
 }
 
+void CFloatingWindow::setUploadManager(UploadManager* manager)
+{
+	uploadManager_ = manager;
+}
+
+void CFloatingWindow::setUploadEngineManager(UploadEngineManager* manager)
+{
+	uploadEngineManager_ = manager;
+}
+
+/*
 bool CFloatingWindow::OnQueueFinished(CFileQueueUploader*) {
 	m_bIsUploading = false;
 	bool usedDirectLink = true;
@@ -750,56 +701,37 @@ bool CFloatingWindow::OnQueueFinished(CFileQueueUploader*) {
 	}
 	return true;
 }
-
-bool CFloatingWindow::OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result)
+*/
+void CFloatingWindow::OnFileFinished(std::shared_ptr<UploadTask> task, bool ok)
 {
-	if ( uploadType_ == utUrl ) {
+	if (task->getType() == "url") {
 		if ( ok ) {
-			CString url = Utf8ToWCstring(result.imageUrl);
+			CString url = Utf8ToWCstring(task->uploadResult()->directUrl);
 			IU_CopyTextToClipboard(url);
 			ShowBaloonTip( TrimString(url, 70) + CString("\r\n")
 				+ TR("(адрес был автоматически помещен в буфер обмена)"), TR("Короткая ссылка"));
 		} else {
 			ShowBaloonTip( TR("Для подробностей смотрите лог."), TR("Не удалось сократить ссылку...") );
 		}
-	} else if ( uploadType_ == utShorteningImageUrl) {
-		if ( ok ) { 
-			CString url = Utf8ToWCstring(result.imageUrl);
-			UploadTaskUserData *uploadTaskUserData = reinterpret_cast<UploadTaskUserData*>(result.uploadTask->userData);
-
-			if ( uploadTaskUserData->linkTypeToShorten == "ImageUrl" ) {
-				lastUploadedItem_.imageUrlShortened = url;
-			} else if ( uploadTaskUserData->linkTypeToShorten == "DownloadUrl" ) {
-				lastUploadedItem_.downloadUrlShortened = url;
-			}
-			ShowImageUploadedMessage(url);
-		} else {
-			UrlShorteningTask *urlShorteningTask = (UrlShorteningTask*) result.uploadTask;
-			CString url = Utf8ToWCstring(urlShorteningTask->getUrl());
-			ShowImageUploadedMessage(url);
-		}
 	} else {
-		if (ok)
-		{
-			if (result.uploadTask->userData == 0)
-				lastUploadedItem_.fileListItem = result;
-			else if (int(result.uploadTask->userData) == 1)
-				lastUploadedItem_.fileListItem.thumbUrl = result.imageUrl;	
+		CString url;
+		UploadResult* uploadResult = task->uploadResult();
+		bool usedDirectLink = true;
+		if ((Settings.UseDirectLinks || uploadResult->downloadUrl.empty()) && !uploadResult->directUrl.empty())
+			url = Utf8ToWstring(uploadResult->directUrl).c_str();
+		else if ((!Settings.UseDirectLinks || uploadResult->directUrl.empty()) && !uploadResult->downloadUrl.empty()) {
+			url = Utf8ToWstring(uploadResult->downloadUrl).c_str();
+			usedDirectLink = false;
 		}
+		ShowImageUploadedMessage(url);
 	}
-	return true;
-}
-
-bool CFloatingWindow::OnConfigureNetworkClient(CFileQueueUploader *uploader, NetworkClient* nm)
-{
-	IU_ConfigureProxy(*nm);
-	return true;
+	return;
 }
 
 LRESULT CFloatingWindow::OnStopUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-	if (m_FileQueueUploader)
-		m_FileQueueUploader->stop();
+	if (uploadManager_)
+		uploadManager_->stop();
 	return 0;
 }
 

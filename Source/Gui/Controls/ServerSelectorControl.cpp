@@ -37,7 +37,7 @@
 const char CServerSelectorControl::kAddFtpServer[]=("<add_ftp_server>");
 const char CServerSelectorControl::kAddDirectoryAsServer[]=("<add_directory_as_server>");
 // CServerSelectorControl
-CServerSelectorControl::CServerSelectorControl(bool defaultServer)
+CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer)
 {
 		showDefaultServerItem_ = false;
 		serversMask_ = smImageServers | smFileServers;
@@ -45,6 +45,7 @@ CServerSelectorControl::CServerSelectorControl(bool defaultServer)
 		defaultServer_ = defaultServer;
 		iconBitmapUtils_ = new IconBitmapUtils();
 		previousSelectedServerIndex = -1;
+		uploadEngineManager_ = uploadEngineManager;
 }
 
 CServerSelectorControl::~CServerSelectorControl()
@@ -94,7 +95,7 @@ void CServerSelectorControl::setServerProfile(ServerProfile serverProfile) {
 		return;
 	}
 
-	int comboboxItemIndex = serverComboBox_.FindStringExact(-1, serverProfile.serverName());
+	int comboboxItemIndex = serverComboBox_.FindStringExact(-1, Utf8ToWCstring(serverProfile.serverName()));
 
 	if ( comboboxItemIndex == CB_ERR) {
 		serverComboBox_.SetCurSel(0); //random server
@@ -110,7 +111,7 @@ ServerProfile CServerSelectorControl::serverProfile() const {
 }
 
 LRESULT CServerSelectorControl::OnClickedEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-	CServerParamsDlg serverParamsDlg(serverProfile_);
+	CServerParamsDlg serverParamsDlg(serverProfile_, uploadEngineManager_);
 	if ( serverParamsDlg.DoModal(m_hWnd) == IDOK ) {
 		serverProfile_ = serverParamsDlg.serverProfile();
 		notifyChange();
@@ -130,11 +131,11 @@ void CServerSelectorControl::addAccount()
 {
 	ServerProfile serverProfileCopy = serverProfile_;
 	serverProfileCopy.setProfileName("");
-	CLoginDlg dlg(serverProfileCopy, true);
+	CLoginDlg dlg(serverProfileCopy, uploadEngineManager_, true);
 
 	if( dlg.DoModal(m_hWnd) == IDOK)
 	{
-		serverProfileCopy.setProfileName(dlg.accountName());
+		serverProfileCopy.setProfileName(WCstringToUtf8(dlg.accountName()));
 		serverProfileCopy.setFolderId("");
 		serverProfileCopy.setFolderTitle("");
 		serverProfileCopy.setFolderUrl("");
@@ -160,13 +161,13 @@ void CServerSelectorControl::serverChanged() {
 	if ( serverComboElementIndex > 0 && lpstrServerName ) {
 		std::string serverName = lpstrServerName;
 		CString serverNameW = Utf8ToWCstring( serverName );
-		serverProfile_.setServerName(serverNameW);
+		serverProfile_.setServerName(serverName);
 		if ( serverName == kAddFtpServer ) {
 			CAddFtpServerDialog dlg(_EngineList);
 			if ( dlg.DoModal(m_hWnd) == IDOK ) {
 				serverProfile_ = ServerProfile();
-				serverProfile_.setServerName(dlg.createdServerName());
-				serverProfile_.setProfileName(dlg.createdServerLogin());
+				serverProfile_.setServerName(WCstringToUtf8(dlg.createdServerName()));
+				serverProfile_.setProfileName(WCstringToUtf8(dlg.createdServerLogin()));
 				serverProfile_.clearFolderInfo();
 				notifyServerListChanged();
 
@@ -179,7 +180,7 @@ void CServerSelectorControl::serverChanged() {
 			CAddDirectoryServerDialog dlg(_EngineList);
 			if ( dlg.DoModal(m_hWnd) == IDOK ) {
 				serverProfile_ = ServerProfile();
-				serverProfile_.setServerName(dlg.createdServerName());
+				serverProfile_.setServerName(WCstringToUtf8(dlg.createdServerName()));
 				serverProfile_.setProfileName("");
 				serverProfile_.clearFolderInfo();
 				notifyServerListChanged();
@@ -210,8 +211,7 @@ void CServerSelectorControl::serverChanged() {
 				}
 				if ( it!= ss.end() ) {
 					ServerSettingsStruct & s = it->second;
-					profileName = Utf8ToWCstring(s.authData.Login);
-					serverProfile_.setProfileName(profileName);
+					serverProfile_.setProfileName(s.authData.Login);
 					serverProfile_.setFolderId(s.defaultFolder.getId());
 					serverProfile_.setFolderTitle(s.defaultFolder.getTitle());
 					serverProfile_.setFolderUrl(s.defaultFolder.viewUrl);
@@ -340,7 +340,7 @@ void CServerSelectorControl::updateServerList()
 	CIcon hImageIcon = NULL, hFileIcon = NULL;
 	int selectedIndex = 0;
 	int addedItems = 0;
-	std::string selectedServerName = WCstringToUtf8(serverProfile_.serverName());
+	std::string selectedServerName = serverProfile_.serverName();
 	TCHAR line[40];
 	for ( int i=0; i < ARRAY_SIZE(line)-1; i++ ) {
 		line[i] = '-';
@@ -395,7 +395,7 @@ void CServerSelectorControl::updateServerList()
 bool CServerSelectorControl::isAccountChosen()
 {
 	CUploadEngineData* ued = serverProfile_.uploadEngineData();
-	return !serverProfile_.profileName().IsEmpty() || (ued && ued->NeedAuthorization != CUploadEngineData::naObligatory);
+	return !serverProfile_.profileName().empty() || (ued && ued->NeedAuthorization != CUploadEngineData::naObligatory);
 }
 
 LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
@@ -411,7 +411,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
 
 
 
-		std::map <std::string, ServerSettingsStruct>& serverUsers = Settings.ServersSettings[WCstringToUtf8(serverProfile_.serverName())];
+		std::map <std::string, ServerSettingsStruct>& serverUsers = Settings.ServersSettings[serverProfile_.serverName()];
 
 		if(/*uploadEngine->UsingPlugin &&*/ (serverUsers.size()>1 || serverUsers.find("") == serverUsers.end()) )
 		{
@@ -419,7 +419,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
 			
 			int i =0;
 			//ShowVar((int)serverUsers.size() );
-			if ( serverUsers.size() && !serverProfile_.profileName().IsEmpty()) {
+			if ( serverUsers.size() && !serverProfile_.profileName().empty()) {
 				mi.wID = IDC_LOGINMENUITEM;
 				mi.dwTypeData  = TR("Изменить данные учетной записи");
 				sub.InsertMenuItem(i++, true, &mi);
@@ -530,11 +530,11 @@ LRESULT CServerSelectorControl::OnLoginMenuItemClicked(WORD wNotifyCode, WORD wI
 	std::string UserName = ss.authData.Login; 
 	//bool prevAuthEnabled = ss.authData.DoAuth;
 	ServerProfile copy = serverProfile_;
-	CLoginDlg dlg(copy);
+	CLoginDlg dlg(copy, uploadEngineManager_);
 	
 	if( dlg.DoModal(m_hWnd) == IDOK)
 	{
-		copy.setProfileName(dlg.accountName());
+		copy.setProfileName(WCstringToUtf8(dlg.accountName()));
 		if(Utf8ToWCstring(UserName) != dlg.accountName())
 		{
 			
@@ -599,7 +599,7 @@ LRESULT CServerSelectorControl::OnUserNameMenuItemClick(WORD wNotifyCode, WORD w
 {
 	int userNameIndex = wID - IDC_USERNAME_FIRST_ID;
 	CString userName = menuOpenedUserNames_[userNameIndex];
-	serverProfile_.setProfileName(userName);
+	serverProfile_.setProfileName(WCstringToUtf8(userName));
 	ServerSettingsStruct& sss = serverProfile_.serverSettings();
 
 	serverProfile_.setFolderId(sss.defaultFolder.getId());

@@ -23,25 +23,27 @@
 
 #pragma once
 #include "atlheaders.h"
-#include "Func/pluginloader.h"
+#include <Core/Upload/UploadEngineManager.h>
 #include "resource.h"       // main symbols
 #include "3rdpart/thread.h"
 #include "Func/common.h"
 #include <atlcrack.h>
 #include "Gui/Controls/PictureExWnd.h"
 #include "Core/Upload/UploadEngine.h"
+#include <Core/Upload/FolderList.h>
 
 // CServerFolderSelect
 #define ID_EDITFOLDER 10001
 #define ID_OPENINBROWSER 10002
 #define ID_CREATENESTEDFOLDER 10003
 
+class UploadEngineManager;
 class ServerProfile;
 class CServerFolderSelect : 
 	public CDialogImpl<CServerFolderSelect>	, public CThreadImpl<CServerFolderSelect>, public CDialogResize<CServerFolderSelect>	
 {
 	public:
-		CServerFolderSelect(ServerProfile& serverProfile);
+		CServerFolderSelect(ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager);
 		~CServerFolderSelect();
 		enum { IDD = IDD_SERVERFOLDERSELECT};
 	protected:
@@ -87,6 +89,7 @@ protected:
 	};
 	CPictureExWnd m_wndAnimation;
 	CScriptUploadEngine *m_pluginLoader;
+	UploadEngineManager * uploadEngineManager_;
 	CUploadEngineData *m_UploadEngine;
 	CFolderList m_FolderList;
 	CFolderItem m_newFolder;

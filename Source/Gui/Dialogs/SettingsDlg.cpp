@@ -33,12 +33,13 @@
 #include <Gui/GuiTools.h>
 
 // CSettingsDlg
-CSettingsDlg::CSettingsDlg(int Page)
+CSettingsDlg::CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager)
 {
 	CurPage = -1;
 	PageToShow = Page;
 	PrevPage = -1;
 	ZeroMemory(Pages, sizeof(Pages));
+	uploadEngineManager_ = uploadEngineManager;
 }
 
 CSettingsDlg::~CSettingsDlg()
@@ -168,7 +169,7 @@ bool CSettingsDlg::CreatePage(int PageID)
 	}
 	else if(PageID == spServers)
 	{
-		CDefaultServersSettings *dlg = new CDefaultServersSettings();
+		CDefaultServersSettings *dlg = new CDefaultServersSettings(uploadEngineManager_);
 		Pages[PageID]= dlg;
 		dlg->Create(m_hWnd,rc);
 		Pages[PageID]->PageWnd = dlg->m_hWnd;
@@ -214,7 +215,7 @@ bool CSettingsDlg::CreatePage(int PageID)
 	}
 	 else if(PageID==spIntegration)
 	 {
-		 CIntegrationSettings *dlg = new CIntegrationSettings();
+		 CIntegrationSettings *dlg = new CIntegrationSettings(uploadEngineManager_);
 		 Pages[PageID]= dlg;
 		 dlg->Create(m_hWnd,rc);
 		 Pages[PageID]->PageWnd=dlg->m_hWnd;

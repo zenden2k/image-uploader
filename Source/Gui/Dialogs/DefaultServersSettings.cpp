@@ -30,13 +30,14 @@
 #include "WizardDlg.h"
 
 // CDefaultServersSettings
-CDefaultServersSettings::CDefaultServersSettings()
+CDefaultServersSettings::CDefaultServersSettings(UploadEngineManager* uploadEngineManager)
 {
 	fileServerSelector_ = 0 ;
 	imageServerSelector_ = 0;
 	trayServerSelector_ = 0;
 	contextMenuServerSelector_ = 0;
 	urlShortenerServerSelector_ = 0;
+	uploadEngineManager_ = uploadEngineManager;
 }
 
 CDefaultServersSettings::~CDefaultServersSettings()
@@ -62,7 +63,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 	TRC(IDC_REMEMBERIMAGESERVERSETTINGS, "Запоминать в мастере настройки сервера для картинок");
 	TRC(IDC_REMEMBERFILESERVERSETTINGS, "Запоминать в мастере настройки сервера для других типов файлов");
 	RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
-	imageServerSelector_ = new CServerSelectorControl(true);
+	imageServerSelector_ = new CServerSelectorControl(uploadEngineManager_, true);
 	if ( !imageServerSelector_->Create(m_hWnd, serverSelectorRect) ) {
 		return 0;
 	}
@@ -73,7 +74,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 
 	serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_FILESERVERPLACEHOLDER);
 
-	fileServerSelector_ = new CServerSelectorControl();
+	fileServerSelector_ = new CServerSelectorControl(uploadEngineManager_);
 	fileServerSelector_->setServersMask(CServerSelectorControl::smFileServers);
 	fileServerSelector_->setShowImageProcessingParamsLink(false);
 	fileServerSelector_->Create(m_hWnd, serverSelectorRect);
@@ -83,7 +84,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 	fileServerSelector_->setTitle(TR("Сервер по-умолчанию для хранения других типов файлов"));
 
 	serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_TRAYSERVERPLACEHOLDER);
-	trayServerSelector_ = new CServerSelectorControl();
+	trayServerSelector_ = new CServerSelectorControl(uploadEngineManager_);
 	//trayServerSelector_->setShowDefaultServerItem(true);
 	trayServerSelector_->Create(m_hWnd, serverSelectorRect);
 	trayServerSelector_->ShowWindow( SW_SHOW );
@@ -95,7 +96,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 	serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_CONTEXTMENUSERVERPLACEHOLDER);
 
 
-	contextMenuServerSelector_ = new CServerSelectorControl();
+	contextMenuServerSelector_ = new CServerSelectorControl(uploadEngineManager_);
 	//contextMenuServerSelector_->setShowDefaultServerItem(true);
 	contextMenuServerSelector_->Create(m_hWnd, serverSelectorRect);
 	contextMenuServerSelector_->ShowWindow( SW_SHOW );
@@ -107,7 +108,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 
 	serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_URLSHORTENERPLACEHOLDER);
 
-	urlShortenerServerSelector_ = new CServerSelectorControl();
+	urlShortenerServerSelector_ = new CServerSelectorControl(uploadEngineManager_);
 	urlShortenerServerSelector_->setServersMask(CServerSelectorControl::smUrlShorteners);
 	urlShortenerServerSelector_->setShowImageProcessingParamsLink(false);
 	urlShortenerServerSelector_->Create(m_hWnd, serverSelectorRect);
@@ -131,9 +132,9 @@ bool CDefaultServersSettings::Apply()
 {
 	CServerSelectorControl* controls[] = { fileServerSelector_, imageServerSelector_, trayServerSelector_, contextMenuServerSelector_, urlShortenerServerSelector_ };
 	for(int i = 0; i< ARRAY_SIZE(controls); i++ ) {
-		if ( !controls[i]->serverProfile().serverName().IsEmpty() && !controls[i]->isAccountChosen() ) {
+		if ( !controls[i]->serverProfile().serverName().empty() && !controls[i]->isAccountChosen() ) {
 			CString message;
-			message.Format(TR("Вы не выбрали аккаунт для сервера \"%s\""), (LPCTSTR)controls[i]->serverProfile().serverName());
+			message.Format(TR("Вы не выбрали аккаунт для сервера \"%s\""), IuCoreUtils::Utf8ToWstring(controls[i]->serverProfile().serverName()).c_str());
 			MessageBox(message, TR("Ошибка"));
 			return 0;
 		}

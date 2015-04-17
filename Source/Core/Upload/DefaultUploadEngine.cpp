@@ -116,7 +116,7 @@ void CDefaultUploadEngine::prepareUpload() {
 }
 
 bool CDefaultUploadEngine::executeActions() {
-
+	m_NetworkClient->setTreatErrorsAsWarnings(true);
 	for (size_t i = 0; i < m_UploadData->Actions.size(); i++) {
 		m_UploadData->Actions[i].NumOfTries = 0;
 		bool ActionRes = false;

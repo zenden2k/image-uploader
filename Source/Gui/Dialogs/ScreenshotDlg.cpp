@@ -24,6 +24,7 @@
 #include "LogWindow.h"
 #include "Func/Settings.h"
 #include <Gui/GuiTools.h>
+#include <Func/MyUtils.h>
 
 // CScreenshotDlg
 CScreenshotDlg::CScreenshotDlg()

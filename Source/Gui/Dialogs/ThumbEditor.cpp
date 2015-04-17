@@ -23,6 +23,7 @@
 #include "Func/Settings.h"
 #include "Core/Images/Thumbnail.h"
 #include "Gui/GuiTools.h"
+#include <Core/ScriptAPI/HtmlDocumentPrivate_win.h>
 
 // CThumbEditor
 CThumbEditor::CThumbEditor(Thumbnail *thumb)
@@ -90,12 +91,12 @@ LRESULT CThumbEditor::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
 
 void CThumbEditor::LoadParams()
 {
-	StringToFont(_T("Tahoma,7,b,204"), &ThumbFont);
+	WinUtils::StringToFont(_T("Tahoma,7,b,204"), &ThumbFont);
 	if(thumb_->existsParam("Font"))
 	{
 		std::string font = thumb_->getParamString("Font");
 		CString wide_text = Utf8ToWCstring(font);
-		StringToFont(wide_text, &ThumbFont);
+		WinUtils::StringToFont(wide_text, &ThumbFont);
 	}
 
 	if(thumb_->existsParam("FrameWidth"))
@@ -199,7 +200,7 @@ void CThumbEditor::SaveParams()
 	//if(thumb_->existsParam("Font"))
 	{
 		CString res;
-		FontToString(&ThumbFont, res);
+		WinUtils::FontToString(&ThumbFont, res);
 		thumb_->setParamString("Font", WCstringToUtf8(res));
 	}
 

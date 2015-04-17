@@ -30,6 +30,7 @@
 #include "resource.h"
 #include <Core/Images/Utils.h>
 #include <Core/Logging.h>
+#include <assert.h>
 
 typedef HRESULT (WINAPI * DwmGetWindowAttribute_Func)(HWND, DWORD, PVOID, DWORD);
 typedef HRESULT (WINAPI * DwmIsCompositionEnabled_Func)(BOOL*);

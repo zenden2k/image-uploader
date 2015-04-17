@@ -45,7 +45,7 @@ struct SENDPARAMS
 class CVideoGrabberPage : public CWizardPage,  public CDialogImpl<CVideoGrabberPage>
 {
 	public:
-		CVideoGrabberPage();
+		CVideoGrabberPage(UploadEngineManager * uploadEngineManager);
 		~CVideoGrabberPage();
 		enum { IDD = IDD_VIDEOGRABBER };
 
@@ -112,6 +112,7 @@ class CVideoGrabberPage : public CWizardPage,  public CDialogImpl<CVideoGrabberP
 		TCHAR m_szFileName[MAX_PATH];
 		bool CanceledByUser;
 		CMainDlg* MainDlg;
+		UploadEngineManager * uploadEngineManager_;
 };
 
 #endif // VIDEOGRABBER_H

@@ -30,13 +30,14 @@
 #include <Func/Settings.h>
 #include "Gui/Controls/IconButton.h"
 
+class UploadEngineManager;
 class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>, 
 	                      public CSettingsPage	
 {
 	public:
 		enum { IDD = IDD_INTEGRATIONSETTINGS };
 
-		CIntegrationSettings();
+		CIntegrationSettings(UploadEngineManager *uploadEngineManager);
 		virtual ~CIntegrationSettings();
 		virtual bool Apply();
 
@@ -77,6 +78,7 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
 		CIconButton downButton_;
 		CIconButton addItemButton_;
 		CIconButton deleteItemButton_;
+		UploadEngineManager *uploadEngineManager_;
 public:
 	LRESULT OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

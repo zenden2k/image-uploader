@@ -23,7 +23,7 @@
 #include "Func/myutils.h"
 #include "Func/Common.h"
 #include <Func/IuCommonFunctions.h>
-
+#include <Func/WinUtils.h>
 // TODO: 1. use ZThread classes instead  CThread with ,
 // 2. remove dependency from non-core headers ( "myutils.h", "Common.h")
 

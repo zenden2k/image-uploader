@@ -20,15 +20,18 @@
 
 #include "ServerFolderSelect.h"
 #include "atlheaders.h"
-#include "Func/pluginloader.h"
+#include <Core/Upload/UploadEngineManager.h>
 #include "Func/common.h"
 #include "NewFolderDlg.h"
 #include "LogWindow.h"
 #include "Func/Settings.h"
+#include <Core/Upload/ScriptUploadEngine.h>
+#include <Func/WinUtils.h>
 
-CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile):serverProfile_(serverProfile)
+CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager) :serverProfile_(serverProfile)
 {
 	m_UploadEngine = serverProfile_.uploadEngineData();
+	uploadEngineManager_ = uploadEngineManager;
 }
 
 CServerFolderSelect::~CServerFolderSelect()
@@ -72,8 +75,8 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	IU_ConfigureProxy(m_NetworkClient);
 
 	m_FolderOperationType = foGetFolders;
-	m_pluginLoader =
-	   iuPluginManager.getPlugin(m_UploadEngine->Name, m_UploadEngine->PluginName, serverProfile_.serverSettings());
+	m_pluginLoader = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+
 	if (!m_pluginLoader)
 	{
 		SetDlgItemText(IDC_FOLDERLISTLABEL, TR("Ошибка при загрузке squirrel скрипта."));
@@ -332,7 +335,7 @@ void CServerFolderSelect::BuildFolderTree(std::vector<CFolderItem>& list, const 
 		{
 			CString title = Utf8ToWCstring(cur.title);
 			if (cur.itemCount != -1)
-				title += _T(" (") + IntToStr(cur.itemCount) + _T(")");
+				title += _T(" (") + WinUtils::IntToStr(cur.itemCount) + _T(")");
 			HTREEITEM res = m_FolderTree.InsertItem(title, 1, 1, m_FolderMap[Utf8ToWstring(cur.parentid)], TVI_SORT  );
 			m_FolderTree.SetItemData(res, i);
 

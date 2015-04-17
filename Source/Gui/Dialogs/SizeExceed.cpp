@@ -25,6 +25,8 @@
 #include "Func/Settings.h"
 #include "Core/ScreenCapture.h"
 #include "Gui/GuiTools.h"
+#include <Func/myutils.h>
+#include <Func/WinUtils.h>
 
 // CSizeExceed
 CSizeExceed::CSizeExceed(LPCTSTR szFileName, FullUploadProfile &iss, CMyEngineList * EngineList)
@@ -70,7 +72,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 		TCHAR buf[300]=_T(" ");
 		TCHAR buf2[50];
 		NewBytesToString(ue->MaxFileSize, buf2, 25);
-		wsprintf(buf, ue->MaxFileSize?_T(" %s   (%s)"):_T(" %s"), (LPCTSTR)Utf8ToWstring(ue->Name).c_str(),(LPCTSTR)buf2);
+		wsprintf(buf, ue->MaxFileSize?_T(" %s   (%s)"):_T(" %s"), (LPCTSTR)IuCoreUtils::Utf8ToWstring(ue->Name).c_str(),(LPCTSTR)buf2);
 		SendDlgItemMessage(IDC_SERVERLIST, CB_ADDSTRING, 0, (LPARAM)buf);
 	}
 
@@ -81,7 +83,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("GIF"));
 	SendDlgItemMessage(IDC_QUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
 	
-	CString serverName= m_UploadProfile.upload_profile.serverName();
+	CString serverName= Utf8ToWCstring(m_UploadProfile.upload_profile.serverName());
 
 	int ServerID =  	_EngineList->GetUploadEngineIndex(serverName);
 	
@@ -97,10 +99,10 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	wsprintf(szBuf,CString(TR("Файл"))+ _T(" %s (%dx%d, %s)"),(LPCTSTR)myExtractFileName(m_szFileName),(int)img.ImageWidth,(int)img.ImageHeight, (LPCTSTR)buf2 );
 
 	SetDlgItemText(IDC_FILEEXCEEDNAME, szBuf);
-	NewBytesToString(m_EngineList->byName( m_UploadProfile.upload_profile.serverName())->MaxFileSize, buf2, 25);
+	NewBytesToString(m_EngineList->byName( Utf8ToWCstring(m_UploadProfile.upload_profile.serverName()))->MaxFileSize, buf2, 25);
 
 	wsprintf(szBuf, TR("Файл превышает максимальный размер, допустимый для загрузки на сервер %s (%s)."),
-		Utf8ToWstring(m_EngineList->byIndex(ServerID)->Name).c_str(), buf2);
+	         IuCoreUtils::Utf8ToWstring(m_EngineList->byIndex(ServerID)->Name).c_str(), buf2);
 	SetDlgItemText(IDC_FILEEXCEEDSIZE2, szBuf);
 	Translate();
 	DisplayParams();
@@ -140,7 +142,7 @@ void CSizeExceed::DisplayParams(void)
 	SendDlgItemMessage(IDC_SAVEPROPORTIONS,BM_SETCHECK,m_ImageSettings.SaveProportions);
 	SendDlgItemMessage(IDC_FORMATLIST,CB_SETCURSEL, m_ImageSettings.Format);
 
-	CString serverName= m_UploadProfile.upload_profile.serverName();
+	CString serverName = Utf8ToWCstring(m_UploadProfile.upload_profile.serverName());
 
 	int ServerID =  	_EngineList->GetUploadEngineIndex(serverName);
 		
@@ -160,7 +162,7 @@ void CSizeExceed::GetParams()
 	m_ImageSettings.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);
 	int serverId = SendDlgItemMessage(IDC_SERVERLIST, CB_GETCURSEL, 0, 0);;
 	CUploadEngineData* ued = _EngineList->byIndex(serverId);
-	m_UploadProfile.upload_profile.setServerName(ued ? Utf8ToWCstring(ued->Name) : _T(""));
+	m_UploadProfile.upload_profile.setServerName(ued ?ued->Name : "");
 }
 
 LRESULT CSizeExceed::OnBnClickedForall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

@@ -53,6 +53,10 @@
 #include <Func/ImageEditorConfigurationProvider.h>
 #include <Core/Logging.h>
 #include <Core/Images/Utils.h>
+#include <Core/Upload/UploadManager.h>
+#include <Core/Upload/UploadEngineManager.h>
+#include <Func/myutils.h>
+
 
 using namespace Gdiplus;
 // CWizardDlg
@@ -73,6 +77,8 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 	_EngineList = &m_EngineList;
 	m_bScreenshotFromTray = false;
 	serversChanged_ = false;
+	uploadEngineManager_ = new UploadEngineManager(&m_EngineList);
+	uploadManager_ = new UploadManager(uploadEngineManager_);
 }
 
 CWizardDlg::~CWizardDlg()
@@ -124,11 +130,11 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
  
 	
 	CString MediaDll = WinUtils::GetAppFolder() + _T("\\Modules\\MediaInfo.dll");
-	if(FileExists( MediaDll)) lstrcpy(MediaInfoDllPath, MediaDll);
+	if(WinUtils::FileExists( MediaDll)) lstrcpy(MediaInfoDllPath, MediaDll);
 	else
 	{
 		CString MediaDll2 = CString(ClassName) + _T("\\Tools\\MediaInfo.dll");
-		if(FileExists( MediaDll2)) lstrcpy(MediaInfoDllPath, MediaDll2);
+		if(WinUtils::FileExists( MediaDll2)) lstrcpy(MediaInfoDllPath, MediaDll2);
 	}
 	SetWindowText(APPNAME);
 
@@ -183,7 +189,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 			return 0;
 		}
 	}
-	iuPluginManager.setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
+	uploadEngineManager_->setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
 	std::vector<CString> list;
 	CString serversFolder = IuCommonFunctions::GetDataFolder() + _T("Servers\\");
 	WinUtils::GetFolderFileList(list, serversFolder, _T("*.xml"));
@@ -209,15 +215,15 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		}
 	}
 
-	if ( Settings.urlShorteningServer.serverName().IsEmpty() ) {
-		CString defaultServerName = _T("is.gd");
-		CUploadEngineData * uploadEngineData = m_EngineList.byName(defaultServerName);
+	if ( Settings.urlShorteningServer.serverName().empty() ) {
+		std::string defaultServerName = "is.gd";
+		CUploadEngineData * uploadEngineData = static_cast<CUploadEngineList*>(&m_EngineList)->byName(defaultServerName);
 		if ( uploadEngineData ) {
 			Settings.urlShorteningServer.setServerName(defaultServerName);
 		} else {
 			uploadEngineData = m_EngineList.firstEngineOfType(CUploadEngineData::TypeUrlShorteningServer);
 			if ( uploadEngineData ) {
-				Settings.urlShorteningServer.setServerName(Utf8ToWCstring(uploadEngineData->Name));
+				Settings.urlShorteningServer.setServerName(uploadEngineData->Name);
 			}
 		}
 	}
@@ -383,7 +389,7 @@ bool CWizardDlg::ParseCmdLine()
 	CStringList Paths;
 	while(CmdLine.GetNextFile(FileName, nIndex))
 	{
-		if(FileExists(FileName) || IsDirectory(FileName))
+		if(WinUtils::FileExists(FileName) || WinUtils::IsDirectory(FileName))
 		 Paths.Add(FileName);		
 	}
 	if(!Paths.IsEmpty())
@@ -572,7 +578,7 @@ bool CWizardDlg::CreatePage(int PageID)
 
 		case 1:
 			CVideoGrabberPage *tmp1;
-			tmp1=new CVideoGrabberPage();
+			tmp1 = new CVideoGrabberPage(uploadEngineManager_);
 			Pages[PageID]=tmp1;
 			Pages[PageID]->WizardDlg=this;
 			tmp1->Create(m_hWnd,rc);
@@ -588,7 +594,7 @@ bool CWizardDlg::CreatePage(int PageID)
 
 		case 3:
 			CUploadSettings *tmp3;
-			tmp3=new CUploadSettings(&m_EngineList);
+			tmp3 = new CUploadSettings(&m_EngineList, uploadEngineManager_);
 			Pages[PageID]=tmp3;
 			Pages[PageID]->WizardDlg=this;
 			tmp3->Create(m_hWnd,rc2);
@@ -596,7 +602,7 @@ bool CWizardDlg::CreatePage(int PageID)
 			break;
 		case 4:
 			CUploadDlg *tmp4;
-			tmp4=new CUploadDlg(this);
+			tmp4=new CUploadDlg(this, uploadManager_);
 			Pages[PageID]=tmp4;
 			Pages[PageID]->WizardDlg=this;
 			tmp4->Create(m_hWnd, rc);
@@ -727,7 +733,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 		else if(CurPage == 0 || CurPage == 2)
 		{
 			filehost:
-			if(FileExists(szBuffer) || IsDirectory(szBuffer))
+			if(WinUtils::FileExists(szBuffer) || WinUtils::IsDirectory(szBuffer))
 									 Paths.Add(szBuffer);			
 		}
  
@@ -818,12 +824,12 @@ CString MakeTempFileName(const CString& FileName)
 	CString FileNameBuf;
 	FileNameBuf = IuCommonFunctions::IUTempFolder + FileName;
 
-   if(FileExists(FileNameBuf))
+   if(WinUtils::FileExists(FileNameBuf))
 	{
 		CString OnlyName;
-		OnlyName = GetOnlyFileName(FileName);
-		CString Ext = GetFileExt(FileName);
-		FileNameBuf = IuCommonFunctions::IUTempFolder + OnlyName + _T("_")+IntToStr(GetTickCount()^33333) + (Ext? _T("."):_T("")) + Ext;
+		OnlyName = WinUtils::GetOnlyFileName(FileName);
+		CString Ext = WinUtils::GetFileExt(FileName);
+		FileNameBuf = IuCommonFunctions::IUTempFolder + OnlyName + _T("_")+ WinUtils::IntToStr(GetTickCount()^33333) + (Ext? _T("."):_T("")) + Ext;
 	}
 	return FileNameBuf;
 }
@@ -927,7 +933,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 							else if((CurPage==0||CurPage==2))
 							{
 								
-								if(FileExists(OutFileName) || IsDirectory(OutFileName))
+								if(WinUtils::FileExists(OutFileName) || WinUtils::IsDirectory(OutFileName))
 									 Paths.Add(OutFileName);		
 							}
 						}
@@ -1151,7 +1157,7 @@ DWORD CFolderAdd::Run()
 	for(size_t i=0; i<m_Paths.GetCount(); i++)
 	{
 		CString CurPath = m_Paths[i];
-		if(IsDirectory(CurPath))
+		if(WinUtils::IsDirectory(CurPath))
 			ProcessDir(CurPath, m_bSubDirs);
 		else 
 			if(!m_bImagesOnly || IsImage(CurPath))
@@ -1422,7 +1428,7 @@ bool CWizardDlg::funcImportVideo()
 	TCHAR Buffer[1000];
 	fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
 	if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return 0;
-	ExtractFilePath(fd.m_szFileName, Buffer); 
+	WinUtils::ExtractFilePath(fd.m_szFileName, Buffer); 
 	Settings.VideoFolder = Buffer;
 	CreatePage(1);
 	LastVideoFile = fd.m_szFileName;
@@ -1658,7 +1664,7 @@ bool CWizardDlg::funcPaste()
 
 bool CWizardDlg::funcSettings()
 {
-	CSettingsDlg dlg(CSettingsDlg::spGeneral);
+	CSettingsDlg dlg(CSettingsDlg::spGeneral, uploadEngineManager_);
 	//dlg.DoModal(m_hWnd);
 	if(!IsWindowVisible())
 		dlg.DoModal(0);
@@ -1694,7 +1700,7 @@ bool CWizardDlg::funcMediaInfo()
 
 	if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return 0;
 	TCHAR Buffer[512];
-	ExtractFilePath(fd.m_szFileName, Buffer);
+	WinUtils::ExtractFilePath(fd.m_szFileName, Buffer);
 	Settings.VideoFolder = Buffer;
 	CMediaInfoDlg dlg;
 	LastVideoFile = fd.m_szFileName;
@@ -1892,7 +1898,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 		imageEditor.setInitialDrawingTool((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) ? ImageEditor::Canvas::dtCrop : ImageEditor::Canvas::dtBrush);
 		imageEditor.showUploadButton(m_bScreenshotFromTray);
 		if ( m_bScreenshotFromTray ) {
-			imageEditor.setServerName(Settings.quickScreenshotServer.serverName());
+			imageEditor.setServerName(Utf8ToWCstring(Settings.quickScreenshotServer.serverName()));
 		}
 		imageEditor.setSuggestedFileName(suggestingFileName);
 		dr = imageEditor.DoModal(m_hWnd, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen ) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
@@ -2000,13 +2006,13 @@ bool CWizardDlg::IsClipboardDataAvailable()
 }
 
 bool CWizardDlg::funcReuploadImages() {
-	CImageReuploaderDlg dlg(this, _EngineList,  CString());
+	CImageReuploaderDlg dlg(this, _EngineList, uploadManager_, uploadEngineManager_, CString());
 	dlg.DoModal(m_hWnd);
 	return false;
 }
 
 bool CWizardDlg::funcShortenUrl() {
-	CShortenUrlDlg dlg(this,_EngineList, CString());
+	CShortenUrlDlg dlg(this,_EngineList, uploadManager_, CString());
 	dlg.DoModal();
 	return false;
 }

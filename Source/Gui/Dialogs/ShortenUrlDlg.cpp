@@ -29,24 +29,22 @@
 #include <Func/WinUtils.h>
 #include <Wininet.h>
 #include <Func/WebUtils.h>
+#include <Core/Upload/UploadManager.h>
 
 // CShortenUrlDlg
-CShortenUrlDlg::CShortenUrlDlg(CWizardDlg *wizardDlg,CMyEngineList * engineList, const CString &initialBuffer)
+CShortenUrlDlg::CShortenUrlDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager* uploadManager, const CString &initialBuffer)
 {
 	m_WizardDlg = wizardDlg;
 	m_InitialBuffer = initialBuffer;
-	queueUploader_ = new CFileQueueUploader();
-	queueUploader_->setCallback( this );
 	engineList_ = engineList;
 	serverId_ = engineList_->GetUploadEngineIndex(_T("Local Shorten server"));
 	backgroundBrush_.CreateSysColorBrush(COLOR_BTNFACE);
-	//serverId_ = engineList_->GetUploadEngineIndex(_T("clck.ru"));
+	uploadManager_ = uploadManager;
 }
 
 
 CShortenUrlDlg::~CShortenUrlDlg()
 {
-	delete queueUploader_;
 }
 
 LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -121,8 +119,8 @@ LRESULT CShortenUrlDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 
 LRESULT CShortenUrlDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	if ( queueUploader_->IsRunning() ) {
-		queueUploader_->stop();
+	if ( uploadManager_->IsRunning() ) {
+		uploadManager_->stop();
 		return 0;
 	}
 	/*if(m_FileDownloader.IsRunning()) 
@@ -179,36 +177,23 @@ bool CShortenUrlDlg::StartProcess() {
 	CString url = GuiTools::GetDlgItemText(m_hWnd, IDC_INPUTEDIT);
 
 	std_tr::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
-
-	CUploadEngineData *ue = servers_[selectedIndex];
-	//CUploadEngineData* newData = new CUploadEngineData();
-	//uploadEngineDataVector.push_back(std_tr::shared_ptr<CUploadEngineData>(newData));
-	//*newData = *ue;
-	CAbstractUploadEngine * e = engineList_->getUploadEngine(ue,Settings.urlShorteningServer.serverSettings());
-	if ( !e ) {
-		ProcessFinished();
-		return false;
-	}
-	e->setUploadData(ue);
-	
-	ServerSettingsStruct& settings = Settings.urlShorteningServer.serverSettings();
-	e->setServerSettings(settings);
-	queueUploader_->AddUploadTask(task, 0, e);
-	queueUploader_->start();
+	task->setServerProfile(Settings.urlShorteningServer);
+	task->OnFileFinished.bind(this, &CShortenUrlDlg::OnFileFinished);
+	uploadManager_->addTask(task);
+	uploadManager_->start();
 
 	return true;
 }
 
-bool CShortenUrlDlg::OnFileFinished(bool ok, CFileQueueUploader::FileListItem& result) {
+void CShortenUrlDlg::OnFileFinished(std::shared_ptr<UploadTask> task, bool ok) {
 	if ( ok ) {
-		CString shortUrl = Utf8ToWCstring(result.imageUrl);
+		CString shortUrl = Utf8ToWCstring(task->uploadResult()->directUrl);
 		SetDlgItemText(IDC_RESULTSEDIT, shortUrl);
 		WinUtils::CopyTextToClipboard(shortUrl);
 		SetDlgItemText(IDC_RESULTSLABEL, TR("Короткая ссылка скопирована в буфер обмена!"));
 		::ShowWindow(GetDlgItem(IDC_RESULTSLABEL), SW_SHOW);
 		::SetFocus(GetDlgItem(IDC_RESULTSEDIT));
 	}
-	return true;
 }
 
 bool CShortenUrlDlg::OnQueueFinished(CFileQueueUploader* queueUploader) {
@@ -225,7 +210,7 @@ void CShortenUrlDlg::OnClose() {
 	int selectedIndex = SendDlgItemMessage(IDC_SERVERCOMBOBOX, CB_GETCURSEL, 0, 0);
 	if ( selectedIndex >= 0 ) {
 		CUploadEngineData *ue = servers_[selectedIndex];
-		Settings.urlShorteningServer.setServerName( Utf8ToWCstring(ue->Name));
+		Settings.urlShorteningServer.setServerName(ue->Name);
 	}
 }
 

@@ -1,0 +1,8 @@
+Important patches for squirrel and sqrat:
+
+Added function sq_is_closed(HSQUIRRELVM vm) to sqapi.cpp; 
+and call to it in Sqrat::Function.
+Without it Sqrat::Function destructor will crash in WebBrowserPrivate class.
+
+
+Added mutex for static storages.

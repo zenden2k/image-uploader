@@ -31,7 +31,7 @@
     #include "Func/Settings.h"
 	#include "atlheaders.h"
 	#include "Func/langclass.h"
-	#include "Func/pluginloader.h"
+	//#include <Core/Upload/UploadEngineManager.h>
 	#include "Func/Common.h"
 	#include "Gui/Dialogs/HotkeySettings.h"
     #include "Core/Images/ImageConverter.h"

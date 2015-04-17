@@ -27,7 +27,7 @@
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include <Func/IuCommonFunctions.h>
-
+#include <Func/WinUtils.h>
 
 char CMyEngineList::DefaultServer[] = "default";
 
@@ -35,12 +35,10 @@ char CMyEngineList::RandomServer[]  = "random";
 
 CMyEngineList::CMyEngineList()
 {
-	m_prevUpEngine = 0;
 }
 
 CMyEngineList::~CMyEngineList()
 {
-	delete m_prevUpEngine;
 	for ( std::map<std::string, HICON>::iterator it = serverIcons_.begin(); it != serverIcons_.end(); ++it) {
 		DestroyIcon(it->second);
 	}
@@ -60,7 +58,7 @@ const CString CMyEngineList::ErrorStr()
 {
 	return m_ErrorStr;
 }
-
+/*
 CAbstractUploadEngine* CMyEngineList::getUploadEngine(CUploadEngineData* data, ServerSettingsStruct& serverSettings)
 {
 	CAbstractUploadEngine* result = NULL;
@@ -108,7 +106,7 @@ CAbstractUploadEngine* CMyEngineList::getUploadEngine(std::string name, ServerSe
 CAbstractUploadEngine* CMyEngineList::getUploadEngine(int index, ServerSettingsStruct& serverSettings)
 {
 	return getUploadEngine(CUploadEngineList_Base::byIndex(index),serverSettings);
-}
+}*/
 
 bool CMyEngineList::LoadFromFile(const CString& filename)
 {
@@ -119,7 +117,7 @@ bool CMyEngineList::LoadFromFile(const CString& filename)
 	}
 	return CUploadEngineList::LoadFromFile(WCstringToUtf8(filename),Settings.ServersSettings);
 }
-
+/*
 bool CMyEngineList::DestroyCachedEngine(const std::string& name, const std::string& profileName)
 {
 	if (m_prevUpEngine == 0)
@@ -136,7 +134,7 @@ bool CMyEngineList::DestroyCachedEngine(const std::string& name, const std::stri
 	}
 	return false;
 }
-
+*/
 HICON CMyEngineList::getIconForServer(const std::string& name) {
 	std::map<std::string, HICON>::iterator iconIt = serverIcons_.find(name);
 	if ( iconIt != serverIcons_.end() )

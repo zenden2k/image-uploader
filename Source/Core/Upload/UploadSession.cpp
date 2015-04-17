@@ -45,3 +45,16 @@ bool UploadSession::isFinished()
 {
 	return isFinished_;
 }
+
+int UploadSession::pendingTasksCount()
+{
+	int res = 0;
+	for (auto it = tasks_.begin(); it != tasks_.end(); it++)
+	{
+		if (!it->get()->isFinished() && !it->get()->isRunning())
+		{
+			res++;
+		}
+	}
+	return res;
+}

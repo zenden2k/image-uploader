@@ -24,11 +24,10 @@
 #include "atlheaders.h"
 #include <atlcoll.h>
 #include <ctime>
-#include "PluginLoader.h"
 #include "MyEngineList.h"
 #include <3rdpart/GdiplusH.h>
 
-class CPluginManager;
+class UploadEngineManager;
 class CCmdLine;
 
 struct CUrlListItem
@@ -73,8 +72,6 @@ bool __fastcall CreateShortCut(
 #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 
 bool IULaunchCopy(CString params, CAtlArray<CString> &files);
-
-extern CPluginManager iuPluginManager;
 
 void IU_ConfigureProxy(NetworkClient& nm);
 

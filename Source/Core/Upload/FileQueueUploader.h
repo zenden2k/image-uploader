@@ -26,6 +26,7 @@
 #include "Core/Upload/UploadEngine.h"
 #include "UploadSession.h"
 
+class UploadEngineManager;
 class UploadFilter;
 class NetworkClient;
 
@@ -35,10 +36,9 @@ class FileQueueUploaderPrivate;
 class CFileQueueUploader
 {
 	public:
-		CFileQueueUploader();
+		CFileQueueUploader(UploadEngineManager* uploadEngineManager);
 		void addSession(std::shared_ptr<UploadSession> uploadSession);
 		void addTask(std_tr::shared_ptr<UploadTask> task);
-		void setUploadSettings(CAbstractUploadEngine * engine);
 		~CFileQueueUploader();
 		bool start();
 		void stop();
@@ -48,7 +48,7 @@ class CFileQueueUploader
 		void addUploadFilter(UploadFilter* filter);
 		void removeUploadFilter(UploadFilter* filter);
 
-		fastdelegate::FastDelegate2<CFileQueueUploader, bool> OnQueueFinished;
+		fastdelegate::FastDelegate1<CFileQueueUploader*> OnQueueFinished;
 	private:
 		DISALLOW_COPY_AND_ASSIGN(CFileQueueUploader);
 		FileQueueUploaderPrivate* _impl;

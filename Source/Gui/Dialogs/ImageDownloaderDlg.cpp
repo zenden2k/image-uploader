@@ -24,6 +24,8 @@
 #include "LogWindow.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
+#include <Func/myutils.h>
 
 // CImageDownloaderDlg
 CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg,const CString &initialBuffer)
@@ -243,8 +245,8 @@ void CImageDownloaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)
 	CString text = GuiTools::GetWindowText(GetDlgItem(IDC_FILEINFOEDIT));
 	for(size_t i=0; i<links.size(); i++)
 	{
-		CString fileName = myExtractFileName(links[i]);
-		if( ((!OnlyImages && CString(GetFileExt(fileName)).IsEmpty()) || IsImage(fileName)) &&  text.Find(links[i]) == -1 ) {
+		CString fileName = WinUtils::myExtractFileName(links[i]);
+		if( ((!OnlyImages && CString(WinUtils::GetFileExt(fileName)).IsEmpty()) || IsImage(fileName)) &&  text.Find(links[i]) == -1 ) {
 			text+=links[i]+_T("\r\n");
 		}
 	}

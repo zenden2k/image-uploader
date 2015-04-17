@@ -18,22 +18,25 @@
 
 */
 
-
 #include "LoginDlg.h"
 #include "wizarddlg.h"
 #include "Func/Common.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
+#include <Core/Upload/ScriptUploadEngine.h>
+#include <Func/WinUtils.h>
+#include <Core/Upload/UploadEngineManager.h>
 
 // CLoginDlg
-CLoginDlg::CLoginDlg(ServerProfile& serverProfile, bool createNew): serverProfile_(serverProfile)
+CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool createNew) : serverProfile_(serverProfile)
 {
 	m_UploadEngine = serverProfile.uploadEngineData();
 	ignoreExistingAccount_ = false;
 	serverSupportsBeforehandAuthorization_ = false;
-	CScriptUploadEngine *plugin_ = 0;
+	uploadEngineManager_ = uem;
+	
 	if (!m_UploadEngine->PluginName.empty() ) {
-		plugin_ = iuPluginManager.getPlugin(m_UploadEngine->Name, m_UploadEngine->PluginName, serverProfile.serverSettings());
+		CScriptUploadEngine* plugin_ = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
 		if ( plugin_ ) {
 			serverSupportsBeforehandAuthorization_ = plugin_->supportsBeforehandAuthorization();
 		}
@@ -123,7 +126,7 @@ LRESULT CLoginDlg::OnClickedUseIeCookies(WORD wNotifyCode, WORD wID, HWND hWndCt
 
 LRESULT CLoginDlg::OnDeleteAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	std::map <std::string, ServerSettingsStruct>& ss = Settings.ServersSettings[WCstringToUtf8(serverProfile_.serverName())];
+	std::map <std::string, ServerSettingsStruct>& ss = Settings.ServersSettings[serverProfile_.serverName()];
 	ss.erase(WCstringToUtf8(accountName_));
 
 	accountName_ = "";
@@ -152,13 +155,12 @@ CString CLoginDlg::accountName()
 
 DWORD CLoginDlg::Run()
 {
-	CScriptUploadEngine *plugin_ = 0;
 	if (!m_UploadEngine->PluginName.empty() ) {
 
 		LoginInfo li;
 		CString login =GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT); 
 		li.Login = WCstringToUtf8(login);
-		std::string serverNameA = WCstringToUtf8(serverProfile_.serverName());
+		std::string serverNameA = serverProfile_.serverName();
 		if ( !ignoreExistingAccount_ && createNew_ && Settings.ServersSettings[serverNameA].find(li.Login ) != Settings.ServersSettings[serverNameA].end() ) {
 			MessageBox(TR("Учетная запись с таким именем уже существует."),TR("Ошибка"), MB_ICONERROR);
 			OnProcessFinished();
@@ -171,12 +173,13 @@ DWORD CLoginDlg::Run()
 		}
 
 		accountName_ = login;
-		serverProfile_.setProfileName(login);
+		serverProfile_.setProfileName(WCstringToUtf8(login));
 		li.Password = WCstringToUtf8(GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT));
 		li.DoAuth = SendDlgItemMessage(IDC_DOAUTH, BM_GETCHECK) != FALSE;
 		ServerSettingsStruct& ss = serverProfile_.serverSettings();
 		ss.authData = li;
-		plugin_ = iuPluginManager.getPlugin(m_UploadEngine->Name, m_UploadEngine->PluginName, ss);
+		CScriptUploadEngine* plugin_ = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+
 		if ( !plugin_->supportsBeforehandAuthorization() ) {
 			OnProcessFinished();
 			return 0;
@@ -217,7 +220,7 @@ void CLoginDlg::Accept()
 		MessageBox(TR("Логин не может быть пустым"),TR("Ошибка"), MB_ICONERROR);
 		return;
 	}
-	std::string serverNameA = WCstringToUtf8(serverProfile_.serverName());
+	std::string serverNameA = serverProfile_.serverName();
 	if ( !ignoreExistingAccount_ &&  createNew_ && Settings.ServersSettings[serverNameA].find(li.Login ) != Settings.ServersSettings[serverNameA].end() ) {
 		MessageBox(TR("Учетная запись с таким именем уже существует."),TR("Ошибка"), MB_ICONERROR);
 		return;
@@ -228,7 +231,7 @@ void CLoginDlg::Accept()
 	}
 
 	accountName_ = Buffer;
-	serverProfile_.setProfileName(Buffer);
+	serverProfile_.setProfileName(WCstringToUtf8(Buffer));
 	GetDlgItemText(IDC_PASSWORDEDIT, Buffer, 256);
 	li.Password = WCstringToUtf8(Buffer);
 	li.DoAuth = SendDlgItemMessage(IDC_DOAUTH, BM_GETCHECK) != FALSE;

@@ -246,11 +246,6 @@ void IU_ConfigureProxy(NetworkClient& nm)
 	nm.setUploadBufferSize(Settings.UploadBufferSize);
 }
 
-
-
-CPluginManager iuPluginManager;
-
-
 void IU_RunElevated(CString params)
 {
 	SHELLEXECUTEINFO TempInfo = {0};

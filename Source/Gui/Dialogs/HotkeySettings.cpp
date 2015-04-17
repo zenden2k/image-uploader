@@ -24,6 +24,7 @@
 #include "hotkeyeditor.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
+#include <Core/ScriptAPI/WebBrowserPrivate_win.h>
 
 // CHotkeySettingsPage
 CHotkeySettingsPage::CHotkeySettingsPage()
@@ -265,7 +266,7 @@ bool CHotkeyList::DeSerialize(const CString &data)
 	TCHAR hotkey[200];
 	int i =0;
 	
-	while(ExtractStrFromList(
+	while(WinUtils::ExtractStrFromList(
            data /* Source string */,
             i++, /* Zero based item index */
             hotkey /* Destination buffer */,
@@ -276,7 +277,7 @@ bool CHotkeyList::DeSerialize(const CString &data)
 		TCHAR funcName[30];
 		TCHAR localKeyStr[20],globalKeyStr[20];
 
-		ExtractStrFromList(hotkey , 0, funcName,sizeof(funcName)/sizeof(TCHAR), _T(""),_T('='));
+		WinUtils::ExtractStrFromList(hotkey , 0, funcName,sizeof(funcName)/sizeof(TCHAR), _T(""),_T('='));
 		//(*this)[i].localKey.DeSerialize(localKeyStr);
 
 		int cur = getFuncIndex(funcName);
@@ -284,13 +285,13 @@ bool CHotkeyList::DeSerialize(const CString &data)
 		
 		//(*this)[i].func = funcName;
 
-		ExtractStrFromList(hotkey , 1, funcName,sizeof(funcName)/sizeof(TCHAR), _T(""),_T('='));
+		WinUtils::ExtractStrFromList(hotkey , 1, funcName,sizeof(funcName)/sizeof(TCHAR), _T(""),_T('='));
 		(*this)[cur].localKey.DeSerialize(localKeyStr);
 
-		ExtractStrFromList(funcName , 0, localKeyStr,sizeof(localKeyStr)/sizeof(TCHAR), _T(""),_T(','));
+		WinUtils::ExtractStrFromList(funcName , 0, localKeyStr,sizeof(localKeyStr)/sizeof(TCHAR), _T(""),_T(','));
 		(*this)[cur].localKey.DeSerialize(localKeyStr);
-		
-		ExtractStrFromList(funcName ,1, globalKeyStr ,sizeof(globalKeyStr)/sizeof(TCHAR),_T(""),_T(','));
+
+		WinUtils::ExtractStrFromList(funcName ,1, globalKeyStr ,sizeof(globalKeyStr)/sizeof(TCHAR),_T(""),_T(','));
 		(*this)[cur].globalKey.DeSerialize(globalKeyStr);
 		
 	}

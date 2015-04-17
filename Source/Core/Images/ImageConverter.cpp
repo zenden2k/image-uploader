@@ -29,6 +29,8 @@
 #include "Core/3rdpart/pcreplusplus.h"
 #include "3rdpart/QColorQuantizer.h"
 #include <Func/IuCommonFunctions.h>
+#include <Func/myutils.h>
+#include <Func/WinUtils.h>
 
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 

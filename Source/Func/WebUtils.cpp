@@ -4,6 +4,7 @@
 #include <Wininet.h>
 #include <Core/3rdpart/pcreplusplus.h>
 #include <Func/MyUtils.h>
+#include <Func/WinUtils.h>
 
 namespace WebUtils {
 
