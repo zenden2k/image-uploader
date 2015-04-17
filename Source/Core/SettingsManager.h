@@ -58,6 +58,12 @@ template<class T, class T2> void myFromString(const std::string& text, T & value
    str >> value;
 }
 
+
+inline void myFromString(const std::string& text, std::string & value)
+{
+    value = text;
+}
+
 template<class T> class SettingsNodeVariant: public SettingsNodeBase
 {
 	private:
