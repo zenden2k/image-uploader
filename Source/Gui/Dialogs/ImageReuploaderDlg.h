@@ -123,8 +123,8 @@ class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
 		bool OnFileFinished(bool ok,  int statusCode, CFileDownloader::DownloadFileListItem it);
 		bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);
 		void FileDownloader_OnConfigureNetworkClient(NetworkClient* nm);
-		void OnFileFinished(std::shared_ptr<UploadTask> task, bool ok);
-		bool OnQueueFinished(CFileQueueUploader *queueUploader) ;
+		void OnFileFinished(UploadTask* task, bool ok);
+		void OnQueueFinished(UploadSession* uploadSession) ;
 		bool OnEditControlPaste(CCustomEditControl*);
 		void generateOutputText();
 		void updateStats();

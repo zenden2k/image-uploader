@@ -179,13 +179,16 @@ bool CShortenUrlDlg::StartProcess() {
 	std_tr::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
 	task->setServerProfile(Settings.urlShorteningServer);
 	task->OnFileFinished.bind(this, &CShortenUrlDlg::OnFileFinished);
-	uploadManager_->addTask(task);
+	std_tr::shared_ptr<UploadSession> session(new UploadSession());
+	session->addTask(task);
+	session->OnSessionFinished.bind(this, &CShortenUrlDlg::OnQueueFinished);
+	uploadManager_->addSession(session);
 	uploadManager_->start();
 
 	return true;
 }
 
-void CShortenUrlDlg::OnFileFinished(std::shared_ptr<UploadTask> task, bool ok) {
+void CShortenUrlDlg::OnFileFinished(UploadTask* task, bool ok) {
 	if ( ok ) {
 		CString shortUrl = Utf8ToWCstring(task->uploadResult()->directUrl);
 		SetDlgItemText(IDC_RESULTSEDIT, shortUrl);
@@ -196,9 +199,8 @@ void CShortenUrlDlg::OnFileFinished(std::shared_ptr<UploadTask> task, bool ok) {
 	}
 }
 
-bool CShortenUrlDlg::OnQueueFinished(CFileQueueUploader* queueUploader) {
+void CShortenUrlDlg::OnQueueFinished(UploadSession* session) {
 	ProcessFinished();
-	return true;
 }
 
 void CShortenUrlDlg::ProcessFinished() {

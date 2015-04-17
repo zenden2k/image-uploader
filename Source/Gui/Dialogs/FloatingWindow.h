@@ -176,7 +176,7 @@ public:
 	 UploadManager * uploadManager_;
 	 UploadEngineManager* uploadEngineManager_;
 	 bool m_bFromHotkey;
-	 void OnFileFinished(std::shared_ptr<UploadTask> task, bool ok);
+	 void OnFileFinished(UploadTask*  task, bool ok);
 	 void ShowImageUploadedMessage(const CString& url);
 	 std::string source_file_name_;
 	 std::string server_name_;

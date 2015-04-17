@@ -3,6 +3,7 @@
 
 #pragma once
 #include "UploadTask.h"
+#include <mutex>
 
 class UploadSession
 {
@@ -14,10 +15,14 @@ class UploadSession
 		bool isRunning();
 		bool isFinished();
 		int pendingTasksCount();
-		fastdelegate::FastDelegate1<std::shared_ptr<UploadSession>> OnSessionFinished;
+		fastdelegate::FastDelegate1<UploadSession*> OnSessionFinished;
+		fastdelegate::FastDelegate2<UploadSession*, UploadTask*> OnTaskAdded;
+		friend class UploadTask;
 	protected:
 		std::vector<std::shared_ptr<UploadTask>> tasks_;
 		bool isFinished_;
+		void taskFinished(UploadTask* task);
+		std::mutex tasksMutex_;
 };
 
 #endif

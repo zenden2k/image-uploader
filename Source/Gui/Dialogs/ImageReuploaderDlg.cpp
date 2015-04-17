@@ -437,6 +437,7 @@ bool CImageReuploaderDlg::BeginDownloading()
 		return false;
 	} else {
 		uploadSession_.reset(new UploadSession());
+		uploadSession_->OnSessionFinished.bind(this, &CImageReuploaderDlg::OnQueueFinished);
 		uploadManager_->addSession(uploadSession_);
 		std::string result;
 		for ( int i = 0; i < links.size(); i++ ) {
@@ -497,9 +498,9 @@ bool CImageReuploaderDlg::LinksAvailableInText(const CString &text)
 }
 
 
-void CImageReuploaderDlg::OnFileFinished(std::shared_ptr<UploadTask> task, bool ok) {
+void CImageReuploaderDlg::OnFileFinished(UploadTask* task, bool ok) {
 	if ( ok ) {
-		std::shared_ptr<FileUploadTask> fileUploadTask = std::static_pointer_cast<FileUploadTask>(task);
+		FileUploadTask* fileUploadTask = dynamic_cast<FileUploadTask*>(task);
 		UploadItemData* uploadItemData = reinterpret_cast<UploadItemData*>(fileUploadTask->userData());
 		UploadedItem item;
 		item.sourceUrl   = uploadItemData->sourceUrl;
@@ -525,13 +526,12 @@ void CImageReuploaderDlg::OnFileFinished(std::shared_ptr<UploadTask> task, bool 
 	}
 }
 
-bool CImageReuploaderDlg::OnQueueFinished(CFileQueueUploader*) {
+void CImageReuploaderDlg::OnQueueFinished(UploadSession* uploadSession) {
 	GuiTools::EnableDialogItem(m_hWnd, IDOK, true);
 	updateStats();
 	if ( !m_FileDownloader.IsRunning() ) {
 		processFinished();
 	}
-	return true;
 }
 
 bool  CImageReuploaderDlg::OnConfigureNetworkClient(CFileQueueUploader* ,NetworkClient* nm) {

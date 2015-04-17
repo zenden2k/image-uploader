@@ -10,6 +10,6 @@ public:
 	virtual bool PreUpload(UploadTask* task) override;
 	virtual bool PostUpload(UploadTask* task) override;
 protected:
-	void OnFileFinished(std::shared_ptr<UploadTask> task, bool ok);
+	void OnFileFinished(UploadTask* task, bool ok);
 };
 #endif

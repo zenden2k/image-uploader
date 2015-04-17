@@ -702,7 +702,7 @@ bool CFloatingWindow::OnQueueFinished(CFileQueueUploader*) {
 	return true;
 }
 */
-void CFloatingWindow::OnFileFinished(std::shared_ptr<UploadTask> task, bool ok)
+void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
 {
 	if (task->getType() == "url") {
 		if ( ok ) {

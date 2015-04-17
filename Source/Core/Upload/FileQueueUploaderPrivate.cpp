@@ -34,13 +34,14 @@ public:
 /* private CFileQueueUploaderPrivate class */
 
 FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager) {
-	m_nThreadCount = 1;
+	m_nThreadCount = 3;
 	m_NeedStop = false;
 	m_IsRunning = false;
 	m_nRunningThreads = 0;
 	queueUploader_ = queueUploader;
 	startFromSession_ = 0;
 	uploadEngineManager_ = uploadEngineManager;
+	autoStart_ = true;
 }
 
 FileQueueUploaderPrivate::~FileQueueUploaderPrivate() {
@@ -58,13 +59,19 @@ void FileQueueUploaderPrivate::onProgress(CUploader* uploader, InfoProgress prog
 	prog->isUploading = progress.IsUploading;
 	
 	if (task->OnUploadProgress) {
-		task->OnUploadProgress(task);
+		task->OnUploadProgress(task.get());
 	}
 }
 
 void FileQueueUploaderPrivate::onErrorMessage(CUploader*, ErrorInfo ei)
 {
 	DefaultErrorHandling::ErrorMessage(ei);
+}
+
+void FileQueueUploaderPrivate::onTaskAdded(UploadSession*, UploadTask*)
+{
+	startFromSession_ = 0;
+	start();
 }
 
 int FileQueueUploaderPrivate::pendingTasksCount()
@@ -77,8 +84,12 @@ int FileQueueUploaderPrivate::pendingTasksCount()
 	return res;
 }
 
-void FileQueueUploaderPrivate::OnConfigureNetworkClient(CUploader*, NetworkClient* nm)
+void FileQueueUploaderPrivate::OnConfigureNetworkClient(CUploader* uploader, NetworkClient* nm)
 {
+	if (  queueUploader_->OnConfigureNetworkClient )
+	{
+		queueUploader_->OnConfigureNetworkClient(queueUploader_, nm);
+	}
 	/*if (callback_) {
 		callback_->OnConfigureNetworkClient(queueUploader_, nm);
 	}*/
@@ -88,7 +99,7 @@ std_tr::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
 	if (m_NeedStop)
 		return std_tr::shared_ptr<UploadTask>();
 #ifndef IU_CLI
-	mutex_.acquire();
+	mutex_.lock();
 #endif
 	if (!sessions_.empty() && !m_NeedStop)
 	{
@@ -100,7 +111,7 @@ std_tr::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
 				task->setFinished(false);
 				if (task)
 				{
-					mutex_.release();
+					mutex_.unlock();
 					return task;
 				}
 			}
@@ -108,7 +119,7 @@ std_tr::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
 		}
 	}
 #ifndef IU_CLI
-	mutex_.release();
+	mutex_.unlock();
 #endif
 	return std_tr::shared_ptr<UploadTask>();
 }
@@ -123,7 +134,14 @@ void FileQueueUploaderPrivate::AddTask(std_tr::shared_ptr<UploadTask>  task) {
 
 void FileQueueUploaderPrivate::AddSession(std::shared_ptr<UploadSession> uploadSession)
 {
+	sessionsMutex_.lock();
+	uploadSession->OnTaskAdded.bind(this, &FileQueueUploaderPrivate::onTaskAdded);
 	sessions_.push_back(uploadSession);
+	sessionsMutex_.unlock();
+	if (autoStart_)
+	{
+		start();
+	}
 }
 
 void FileQueueUploaderPrivate::addUploadFilter(UploadFilter* filter)
@@ -142,7 +160,7 @@ void FileQueueUploaderPrivate::removeUploadFilter(UploadFilter* filter)
 
 void FileQueueUploaderPrivate::start() {
 #ifndef IU_CLI
-	mutex_.acquire();
+	mutex_.lock();
 #endif
 	m_NeedStop = false;
 	m_IsRunning = true;
@@ -158,7 +176,7 @@ void FileQueueUploaderPrivate::start() {
 #endif
 	}
 #ifndef IU_CLI
-	mutex_.release();
+	mutex_.unlock();
 #endif
 }
 
@@ -185,26 +203,25 @@ void FileQueueUploaderPrivate::run()
 		uploader.onNeedStop.bind(this, &FileQueueUploaderPrivate::onNeedStopHandler);
 		uploader.onProgress.bind(this, &FileQueueUploaderPrivate::onProgress);
 #ifndef IU_CLI
-		mutex_.acquire();
+		mutex_.lock();
 #endif
 		//tasks_[&uploader] = &it;
 #ifndef IU_CLI
-		mutex_.release();
+		mutex_.unlock();
 #endif
 		bool res = uploader.Upload(it);
-		it->setFinished(true);
-		it->setRunning(false);
+		
 #ifndef IU_CLI
-		mutex_.acquire();
+		mutex_.lock();
 #endif
 		serverThreads_[serverName].runningThreads--;
 #ifndef IU_CLI
-		mutex_.release();
+		mutex_.unlock();
 #endif
 
 		// m_CS.Lock();
 #ifndef IU_CLI
-		callMutex_.acquire();
+		callMutex_.lock();
 #endif
 		UploadResult* result = it->uploadResult();
 		result->serverName = serverName;
@@ -214,26 +231,24 @@ void FileQueueUploaderPrivate::run()
 			result->downloadUrl = (uploader.getDownloadUrl());
 			result->thumbUrl = (uploader.getThumbUrl());
 
-			if (it->OnFileFinished) {
-				it->OnFileFinished(it, true);
-			}
+			it->setUploadSuccess(true);
 		}
 		else
 		{
-			if (it->OnFileFinished) {
-				it->OnFileFinished(it, false);
-			}
+			it->setUploadSuccess(false);
 		}
+		it->setFinished(true);
+		it->setRunning(false);
 #ifndef IU_CLI
-		callMutex_.release();
+		callMutex_.unlock();
 #endif
 	}
 #ifndef IU_CLI
-	mutex_.acquire();
+	mutex_.lock();
 #endif
 	m_nRunningThreads--;
 #ifndef IU_CLI
-	mutex_.release();
+	mutex_.unlock();
 #endif
 	if (!m_nRunningThreads)
 	{

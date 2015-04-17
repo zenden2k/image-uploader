@@ -4,8 +4,7 @@
 #pragma once
 #include "UploadTask.h"
 #include "FileQueueUploader.h"
-#include <zthread/Mutex.h>
-
+#include <mutex>
 
 class CUploader;
 class CAbstractUploadEngine;
@@ -28,13 +27,14 @@ public:
 	void addUploadFilter(UploadFilter* filter);
 	void removeUploadFilter(UploadFilter* filter);
 #ifndef IU_CLI
-	ZThread::Mutex mutex_;
-	ZThread::Mutex callMutex_;
+	std::mutex mutex_;
+	std::mutex callMutex_;
 #endif
 	CFileQueueUploader *queueUploader_;
 	volatile bool m_NeedStop;
 	bool m_IsRunning;
 	std::vector<std::shared_ptr<UploadSession>> sessions_;
+	std::mutex sessionsMutex_;
 	std::vector<UploadFilter*> filters_;
 	int m_nThreadCount;
 	int m_nRunningThreads;
@@ -45,9 +45,11 @@ protected:
 	void OnConfigureNetworkClient(CUploader*, NetworkClient* nm);
 	void onProgress(CUploader*, InfoProgress progress);
 	void onErrorMessage(CUploader*, ErrorInfo);
+	void onTaskAdded(UploadSession*, UploadTask*);
 	int pendingTasksCount();
 	//std::map<CUploader*, CFileQueueUploader::Task*> tasks_;
 	std::map<std::string, ServerThreadsInfo> serverThreads_;
+	bool autoStart_;
 	int startFromSession_;
 	UploadEngineManager* uploadEngineManager_;
 };

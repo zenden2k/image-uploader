@@ -58,8 +58,8 @@ class CShortenUrlDlg:	public CDialogImpl <CShortenUrlDlg>,
 		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);
-		void OnFileFinished(std::shared_ptr<UploadTask> task, bool ok);
-		virtual bool OnQueueFinished(CFileQueueUploader* queueUploader);
+		void OnFileFinished(UploadTask*  task, bool ok);
+		void OnQueueFinished(UploadSession* session);
 		bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);
 		bool ParseBuffer(const CString& text);
 		void OnClose();

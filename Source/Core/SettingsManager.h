@@ -35,7 +35,7 @@ class SettingsNodeBase
 {
 	public:
 		virtual std::string getValue()=0;
-		virtual void setValue(const std::string)=0;
+		virtual void setValue(const std::string&)=0;
 		virtual ~SettingsNodeBase(){};
 };
 
@@ -45,6 +45,7 @@ template<class T> std::string myToString(const T& value)
         str << value;
         return str.str();
 }
+
 
 template<class T> void myFromString(const std::string& text, T & value)
 {
@@ -74,7 +75,7 @@ template<class T> class SettingsNodeVariant: public SettingsNodeBase
 			return 
 				myToString(*value_);
 		}
-		virtual void setValue(const std::string text)
+		virtual void setValue(const std::string& text)
 		{
 			myFromString(text, *value_ );
 		}

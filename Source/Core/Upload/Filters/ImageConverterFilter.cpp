@@ -51,9 +51,9 @@ bool ImageConverterFilter::PostUpload(UploadTask* task)
 	return true;
 }
 
-void ImageConverterFilter::OnFileFinished(std::shared_ptr<UploadTask> task, bool ok)
+void ImageConverterFilter::OnFileFinished(UploadTask* task, bool ok)
 {
-	std::shared_ptr<FileUploadTask> thumbTask = std::static_pointer_cast<FileUploadTask>(task);
+	FileUploadTask* thumbTask = dynamic_cast<FileUploadTask*>(task);
 	//TODO: keep server thumbnail url
 	thumbTask->parentTask()->uploadResult()->thumbUrl = task->uploadResult()->directUrl;
 }

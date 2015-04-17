@@ -49,6 +49,7 @@ class CFileQueueUploader
 		void removeUploadFilter(UploadFilter* filter);
 
 		fastdelegate::FastDelegate1<CFileQueueUploader*> OnQueueFinished;
+		fastdelegate::FastDelegate2<CFileQueueUploader*, NetworkClient*> OnConfigureNetworkClient;
 	private:
 		DISALLOW_COPY_AND_ASSIGN(CFileQueueUploader);
 		FileQueueUploaderPrivate* _impl;

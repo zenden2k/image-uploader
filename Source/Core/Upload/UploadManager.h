@@ -12,5 +12,6 @@ public:
 protected:
 	ImageConverterFilter imageConverterFilter;
 	UrlShorteningFilter urlShorteningFilter;
+	void configureNetwork(CFileQueueUploader* uploader, NetworkClient* networkClient);
 };
 #endif

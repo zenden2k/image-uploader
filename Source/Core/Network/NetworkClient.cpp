@@ -71,7 +71,8 @@ void NetworkClient::setProxy(const NString &host, int port, int type)
 	curl_easy_setopt(curl_handle, CURLOPT_PROXY, host.c_str());
 	curl_easy_setopt(curl_handle, CURLOPT_PROXYPORT, (long)port);	
 	curl_easy_setopt(curl_handle, CURLOPT_PROXYTYPE, (long)type);
-	curl_easy_setopt(curl_handle, CURLOPT_NOPROXY, "localhost,127.0.0.1"); // test
+	//FIXME
+	//curl_easy_setopt(curl_handle, CURLOPT_NOPROXY, "localhost,127.0.0.1"); // test
 } 
 
 void NetworkClient::setProxyUserPassword(const NString &username, const NString password)
