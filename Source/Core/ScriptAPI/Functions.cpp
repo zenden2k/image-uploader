@@ -596,13 +596,13 @@ Json::Value sqObjToJson(Sqrat::Object obj ) {
 				break;
 			case OT_TABLE:
 				while(obj.Next(it) ) {
-					res[it.getName()] = sqObjToJson(it.getValue());
+					res[it.getName()] = sqObjToJson(Sqrat::Object(it.getValue(),GetCurrentThreadVM().GetVM()));
 				}
 				return res;
 				break;
 			case OT_ARRAY: 
                 while(obj.Next(it) ) {
-                    res[Sqrat::Object(it.getKey()).Cast<int>()] = sqObjToJson(it.getValue());
+					res[Sqrat::Object(it.getKey()).Cast<int>()] = sqObjToJson(Sqrat::Object(it.getValue(), GetCurrentThreadVM().GetVM()));
                 }
 				return res;
 				break;				

@@ -144,6 +144,7 @@ class CUploadEngineData
 		std::string LoginLabel;
 		int RetryLimit;
 		int NumOfTries;
+		int MaxThreads;
 		ServerType Type;
 		CUploadEngineData();
 };

@@ -112,6 +112,7 @@ bool BytesToString(__int64 nBytes, LPTSTR szBuffer,int nBufSize)
 // CUploadDlg
 CUploadDlg::CUploadDlg(CWizardDlg *dlg,UploadManager* uploadManager) :ResultsWindow(new CResultsWindow(dlg, UrlList, true))
 {
+	filesFinished_ = 0;
 	MainDlg = NULL;
 	TimerInc = 0;
 	IsStopTimer = false;
@@ -140,6 +141,17 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	RECT rc;
 	::GetWindowRect(GetDlgItem(IDC_RESULTSPLACEHOLDER), &rc);
 	::MapWindowPoints(0,m_hWnd, (POINT*)&rc, 2);
+
+	uploadListView_.m_hWnd = GetDlgItem(IDC_UPLOADTABLE);
+	uploadListView_.AddColumn(TR("Файл"), 1);
+	uploadListView_.AddColumn(TR("Статус"), 1);
+	uploadListView_.AddColumn(TR("Миниатюра"), 2);
+	uploadListView_.SetColumnWidth(0, 170);
+	uploadListView_.SetColumnWidth(1, 170);
+	uploadListView_.SetColumnWidth(2, 170);
+
+	createToolbar();
+
 	ResultsWindow->Create(m_hWnd);
 	ResultsWindow->SetWindowPos(0,&rc,0);
 	#if  WINVER	>= 0x0601
@@ -165,6 +177,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	PageWnd = m_hWnd;
 	ResultsWindow->SetPage(Settings.CodeLang);
 	ResultsWindow->SetCodeType(Settings.CodeType);
+	showUploadProgressTab();
 	return 1;  
 }
 
@@ -262,19 +275,47 @@ DWORD CUploadDlg::Run()
    //InitialParams.upload_profile.ServerID = Server;
 
 	//iss = InitialParams;
+	filesFinished_ = 0;
+	showUploadProgressTab();
 	int n = MainDlg->FileList.GetCount();
+	SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETPOS, 0);
+	SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, n));
+	SendDlgItemMessage(IDC_FILEPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
+	SetDlgItemText(IDC_COMMONPERCENTS, _T("0%"));
+
+	TotalUploadProgress(0, n);
+
+	uploadListView_.DeleteAllItems();
+
+	UrlList.clear();
+	UrlList.resize(n);
 	CHistoryManager * mgr = ZBase::get()->historyManager();
 	std_tr::shared_ptr<CHistorySession> session = mgr->newSession();
-	std::shared_ptr<UploadSession> uploadSession(new UploadSession());
+	uploadSession_.reset(new UploadSession());
 	for(int i=0; i<n; i++)
 	{
 		CString FileName = MainDlg->FileList[i].FileName;
 		std::string fileNameA = WCstringToUtf8(FileName);
 		std::string displayName = WCstringToUtf8(MainDlg->FileList[i].VirtualFileName);
 
+		FileProcessingStruct* fps = new FileProcessingStruct();
+		fps->fileName = FileName;
+		fps->tableRow = i;
+		files_.push_back(fps);
+		uploadListView_.AddItem(i, 0, MainDlg->FileList[i].VirtualFileName);
+		uploadListView_.AddItem(i, 1, TR("В очереди"));
+		uploadListView_.SetItemData(i, reinterpret_cast<DWORD_PTR>(fps));
+
+
 		bool isImage = IsImage(FileName);
 		std::shared_ptr<FileUploadTask> task(new FileUploadTask(fileNameA, displayName));
-		uploadSession->addTask(task);
+		task->OnUploadProgress.bind(this, &CUploadDlg::onTaskUploadProgress);
+		task->setUserData(fps);
+		task->OnStatusChanged.bind(this, &CUploadDlg::OnUploaderStatusChanged);
+		task->OnFileFinished.bind(this, &CUploadDlg::onTaskFinished);
+		task->setServerProfile(isImage ? sessionImageServer_ : sessionFileServer_);
+		task->OnChildTaskAdded.bind(this, &CUploadDlg::onChildTaskAdded);
+		uploadSession_->addTask(task);
 		/*if ( isImage )
 		{
 			CAbstractUploadEngine * e = m_EngineList->getUploadEngine(ServerId, iss.upload_profile.serverSettings());
@@ -502,13 +543,14 @@ DWORD CUploadDlg::Run()
 		TempFilesDeleter.Cleanup();
 		iss = InitialParams;*/
 	}
-	uploadManager_->addSession(uploadSession);
+	uploadSession_->OnSessionFinished.bind(this, &CUploadDlg::onSessionFinished);
+	uploadManager_->addSession(uploadSession_);
 	/*
 
 	UploadProgress(n, n);
 	wsprintf(szBuffer,_T("%d %%"),100);
 	SetDlgItemText(IDC_COMMONPERCENTS,szBuffer);
-
+	
 	
 	int Errors = n-NumUploaded;
 	if(Errors>0)
@@ -641,7 +683,7 @@ int CUploadDlg::ThreadTerminated(void)
 	WizardDlg->QuickUploadMarker = false;
 	TCHAR szBuffer[MAX_PATH];
 	SetDlgItemText(IDC_COMMONPROGRESS2, TR("Загрузка завершена."));
-	UploadProgress(MainDlg->FileList.GetCount(), MainDlg->FileList.GetCount());
+	TotalUploadProgress(MainDlg->FileList.GetCount(), MainDlg->FileList.GetCount());
 	#if  WINVER	>= 0x0601
 		if(ptl)
 			ptl->SetProgressState(GetParent(), TBPF_NOPROGRESS);
@@ -677,7 +719,7 @@ bool CUploadDlg::OnShow()
 
 	if(lstrlen(MediaInfoDllPath))
 	{
-		CVideoGrabberPage *vg =(	CVideoGrabberPage *) WizardDlg->Pages[1];
+		CVideoGrabberPage *vg =(CVideoGrabberPage *) WizardDlg->Pages[1];
 
 		if(vg && lstrlen(vg->m_szFileName))
 			IsLastVideo=true;
@@ -690,7 +732,7 @@ bool CUploadDlg::OnShow()
 	MainDlg = (CMainDlg*) WizardDlg->Pages[2];
 	//Toolbar.CheckButton(IDC_USETEMPLATE,Settings.UseTxtTemplate);
 	FileProgress(_T(""), false);
-	UrlList.RemoveAll();
+	UrlList.clear();
 	ResultsWindow->Clear();
 	EnablePrev(false);
 	EnableNext();
@@ -773,7 +815,7 @@ void CUploadDlg::ShowProgress(bool Show)
 
 bool CUploadDlg::OnHide()
 {
-	UrlList.RemoveAll();
+	UrlList.clear();
 	ResultsWindow->Clear();
 	Settings.UseTxtTemplate = (SendDlgItemMessage(IDC_USETEMPLATE, BM_GETCHECK) == BST_CHECKED);
 	Settings.CodeType = ResultsWindow->GetCodeType();
@@ -821,7 +863,7 @@ void CUploadDlg::GenerateOutput()
 	ResultsWindow->UpdateOutput();
 }
 
-void CUploadDlg::UploadProgress(int CurPos, int Total, int FileProgress)
+void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
 {
 	SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETPOS, CurPos);
 #if  WINVER	>= 0x0601 // Windows 7 related stuff
@@ -834,6 +876,9 @@ void CUploadDlg::UploadProgress(int CurPos, int Total, int FileProgress)
 #endif
 	progressCurrent = CurPos;
 	progressTotal = Total;
+	CString res;
+	res.Format(TR("Ссылки на файлы (%d)"), filesFinished_);
+	toolbar_.SetButtonInfo(IDC_UPLOADRESULTSTAB, TBIF_TEXT, 0, 0, res,0, 0, 0, 0);
 }
 
 bool CUploadDlg::OnUploaderNeedStop()
@@ -848,10 +893,10 @@ void CUploadDlg::OnUploaderProgress(CUploader* uploader, InfoProgress pi)
 	PrInfo.CS.Unlock();
 }
 
-void CUploadDlg::OnUploaderStatusChanged(StatusType status, int actionIndex, std::string text)
+void CUploadDlg::OnUploaderStatusChanged(UploadTask* task)
 {
 	PrInfo.CS.Lock();
-	m_StatusText = UploaderStatusToString(status, actionIndex,text);
+	//m_StatusText = UploaderStatusToString(status, actionIndex,text);
 	PrInfo.Bytes.clear(); 
 	PrInfo.ip.clear();
 	PrInfo.CS.Unlock();
@@ -867,7 +912,7 @@ void CUploadDlg::OnUploaderConfigureNetworkClient(NetworkClient *nm)
 
 void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
 	if ( !alreadyShortened_ && shortenUrl ) {
-		int len = UrlList.GetCount();
+		int len = UrlList.size();
 		for ( int i = 0; i < len; i++ ) {
 			AddShortenUrlTask(&UrlList[i]);
 		}
@@ -944,4 +989,162 @@ bool CUploadDlg::OnFileFinished(std::shared_ptr<UploadTask> task, bool ok) {
 bool CUploadDlg::OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm) {
 	IU_ConfigureProxy(*nm);
 	return true;
+}
+
+void CUploadDlg::createToolbar()
+{
+	CBitmap hBitmap;
+	HIMAGELIST m_hToolBarImageList;
+	if (GuiTools::Is32BPP()) {
+		hBitmap = LoadBitmap(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDB_BITMAP3));
+		m_hToolBarImageList = ImageList_Create(16, 16, ILC_COLOR32, 0, 6);
+		ImageList_Add(m_hToolBarImageList, hBitmap, NULL);
+	}
+	else {
+		hBitmap = LoadBitmap(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDB_BITMAP4));
+		m_hToolBarImageList = ImageList_Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
+		ImageList_AddMasked(m_hToolBarImageList, hBitmap, RGB(255, 0, 255));
+	}
+
+	RECT rc = { 0, 0, 100, 24 };
+	GetClientRect(&rc);
+	rc.top = GuiTools::dlgY(24);
+	rc.bottom = rc.top + GuiTools::dlgY(16);
+	rc.left = GuiTools::dlgX(6);
+	rc.right -= GuiTools::dlgX(6);
+	toolbar_.Create(m_hWnd, rc, _T(""), WS_CHILD | WS_CHILD | TBSTYLE_LIST | TBSTYLE_CUSTOMERASE | TBSTYLE_FLAT | CCS_NORESIZE/*|*/ | CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
+
+	toolbar_.SetButtonStructSize();
+	toolbar_.SetButtonSize(30, 18);
+	toolbar_.SetImageList(m_hToolBarImageList);
+	toolbar_.AddButton(IDC_UPLOADPROCESSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED | TBSTATE_PRESSED, 0, TR("Процесс загрузки"), 0);
+	toolbar_.AddButton(IDC_UPLOADRESULTSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Ссылки на файлы"), 0);
+	bool IsLastVideo = false;
+	toolbar_.AddButton(IDC_MEDIAFILEINFO, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Инфо о последнем видео"), 0);
+	toolbar_.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Лог ошибок"), 0);
+
+
+	if (!IsLastVideo) {
+		toolbar_.HideButton(IDC_MEDIAFILEINFO);
+	}
+
+	toolbar_.AutoSize();
+	toolbar_.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);
+	toolbar_.ShowWindow(SW_SHOW);
+}
+
+
+LRESULT CUploadDlg::OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	LogWindow.Show();
+	return 0;
+}
+
+void CUploadDlg::showUploadResultsTab() {
+	if (currentTab_ == IDC_UPLOADRESULTSTAB) {
+		return;
+	}
+	toolbar_.SetButtonInfo(IDC_UPLOADPROCESSTAB, TBIF_STATE, 0, TBSTATE_ENABLED, 0, 0, 0, 0, 0);
+	toolbar_.SetButtonInfo(IDC_UPLOADRESULTSTAB, TBIF_STATE, 0, TBSTATE_ENABLED | TBSTATE_PRESSED, 0, 0, 0, 0, 0);
+
+	currentTab_ = IDC_UPLOADRESULTSTAB;
+	uploadListView_.ShowWindow(SW_HIDE);
+	ResultsWindow->ShowWindow(SW_SHOW);
+}
+
+void CUploadDlg::showUploadProgressTab() {
+	if (currentTab_ == IDC_UPLOADPROCESSTAB) {
+		return;
+	}
+	currentTab_ = IDC_UPLOADPROCESSTAB;
+	toolbar_.SetButtonInfo(IDC_UPLOADRESULTSTAB, TBIF_STATE, 0, TBSTATE_ENABLED, 0,
+		0, 0, 0, 0);
+	toolbar_.SetButtonInfo(IDC_UPLOADPROCESSTAB, TBIF_STATE, 0, TBSTATE_ENABLED | TBSTATE_PRESSED, 0, 0, 0, 0, 0);
+
+	uploadListView_.ShowWindow(SW_SHOW);
+	ResultsWindow->ShowWindow(SW_HIDE);
+}
+
+void CUploadDlg::onSessionFinished(UploadSession* session)
+{
+	ThreadTerminated();
+	showUploadResultsTab();
+}
+
+void CUploadDlg::onTaskUploadProgress(UploadTask* task)
+{
+	FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(task->role() == UploadTask::DefaultRole ? task->userData() : task->parentTask()->userData());
+	if (!fps)
+	{
+		return;
+	}
+	FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
+	if (fileTask) {
+		
+		TCHAR ProgressBuffer[256] = _T("");
+		bool isThumb = task->role() == UploadTask::ThumbRole;
+		int percent = 0;
+		UploadProgress* progress = task->progress();
+		if (progress->totalUpload) {
+			percent = 100 * ((float)progress->uploaded) / progress->totalUpload;
+		}
+		_stprintf(ProgressBuffer, TR("Загружено %s из %s (%d%% )"), (LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->uploaded)),
+			(LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->totalUpload)), percent);
+		int columnIndex = isThumb ? 2 : 1;
+		uploadListView_.SetItemText(fps->tableRow, columnIndex, ProgressBuffer);
+	}
+}
+
+void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
+{
+	
+	FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
+	if (!fileTask)
+	{
+		return;
+	}
+	if (fileTask->role() == UploadTask::DefaultRole) {
+		FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(task->userData());
+		if (!fps)
+		{
+			return;
+		}
+		bool isThumb = false;
+		CUrlListItem item;
+		UploadResult* uploadResult = task->uploadResult();
+		item.ImageUrl = Utf8ToWCstring(uploadResult->directUrl);
+		item.FileName = Utf8ToWCstring(fileTask->getDisplayName());
+		item.DownloadUrl = Utf8ToWCstring(uploadResult->downloadUrl);
+		item.ThumbUrl = Utf8ToWCstring(uploadResult->thumbUrl);
+		UrlList[fps->tableRow] = item;
+		uploadListView_.SetItemText(fps->tableRow, 1, _T("Готово"));
+		TotalUploadProgress(uploadSession_->finishedTaskCount(), uploadSession_->taskCount(), 0);
+		filesFinished_++;
+	}
+	 else if (fileTask->role() == UploadTask::ThumbRole) {
+		 FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(task->parentTask()->userData());
+		 if (!fps)
+		 {
+			 return;
+		 }
+		 uploadListView_.SetItemText(fps->tableRow, 2, _T("Готово"));
+	 }
+		
+	GenerateOutput();	
+}
+
+void CUploadDlg::onChildTaskAdded(UploadTask* child)
+{
+	child->OnFileFinished.bind(this, &CUploadDlg::onTaskFinished);
+	child->OnUploadProgress.bind(this, &CUploadDlg::onTaskUploadProgress);
+	child->OnStatusChanged.bind(this, &CUploadDlg::OnUploaderStatusChanged);
+}
+
+LRESULT CUploadDlg::OnUploadProcessButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	showUploadProgressTab();
+	return 0;
+}
+
+LRESULT CUploadDlg::OnUploadResultsButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	showUploadResultsTab();
+	return 0;
 }

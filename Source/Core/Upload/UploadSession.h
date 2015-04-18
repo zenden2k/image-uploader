@@ -9,20 +9,26 @@ class UploadSession
 {
 	public:
 		UploadSession();
+		typedef fastdelegate::FastDelegate2<UploadSession*, UploadTask*> TaskAddedCallback;
 		void addTask(std::shared_ptr<UploadTask> task);
 		void removeTask(std::shared_ptr<UploadTask> task);
-		std::shared_ptr<UploadTask> getNextTask();
+		int getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask);
 		bool isRunning();
 		bool isFinished();
-		int pendingTasksCount();
+		int pendingTasksCount(UploadTaskAcceptor* acceptor);
+		int taskCount();
+		int finishedTaskCount();
 		fastdelegate::FastDelegate1<UploadSession*> OnSessionFinished;
-		fastdelegate::FastDelegate2<UploadSession*, UploadTask*> OnTaskAdded;
+		void addTaskAddedCallback(const TaskAddedCallback& callback);
 		friend class UploadTask;
 	protected:
 		std::vector<std::shared_ptr<UploadTask>> tasks_;
 		bool isFinished_;
 		void taskFinished(UploadTask* task);
+		void childTaskAdded(UploadTask* task);
 		std::mutex tasksMutex_;
+		std::vector<TaskAddedCallback> taskAddedCallbacks_;
+		void notifyTaskAdded(UploadTask* task);
 };
 
 #endif

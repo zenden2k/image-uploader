@@ -52,7 +52,7 @@ class CResultsPanel :
 	public CDialogImpl<CResultsPanel>	
 {
 	public:
-		CResultsPanel(CWizardDlg *dlg, CAtlArray<CUrlListItem>  & urlList);
+		CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>  & urlList);
 		virtual ~CResultsPanel();
 		enum { IDD = IDD_RESULTSPANEL};
 
@@ -92,7 +92,7 @@ class CResultsPanel :
 	CToolBarCtrl Toolbar;
 	void SetPage(int Index);
 	void setEngineList(CMyEngineList* EngineList);
-	CAtlArray<CUrlListItem>  &UrlList;
+	std::vector<CUrlListItem>  &UrlList;
 	const CString GenerateOutput();
 	CWebViewWindow* webViewWindow_;
 	

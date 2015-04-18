@@ -18,6 +18,11 @@ UploadEngineManager::~UploadEngineManager()
 
 CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serverProfile)
 {
+	if (serverProfile.serverName().empty())
+	{
+		LOG(ERROR) << "UploadEngineManager::getUploadEngine" << " empty server name";
+		return 0;
+	}
 	CUploadEngineData *ue = uploadEngineList_->byName(serverProfile.serverName());
 	CAbstractUploadEngine* result = NULL;
 	if (ue->UsingPlugin) {

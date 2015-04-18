@@ -53,6 +53,11 @@ struct CUrlListItem
 		return (shortened && !ThumbUrlShortened.IsEmpty()) ? ThumbUrlShortened : ThumbUrl; 
 	}
 
+	bool isNull()
+	{
+		return ImageUrl.IsEmpty() && DownloadUrl.IsEmpty();
+	}
+
 };
 
 bool IULaunchCopy();

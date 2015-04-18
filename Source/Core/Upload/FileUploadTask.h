@@ -15,6 +15,7 @@ class FileUploadTask: public UploadTask {
 		std::string getDisplayName() const;
 		void setDisplayName(const std::string& name);
 		std::string originalFileName() const;
+		void setFinished(bool finished) override;
 	protected:
 		std::string fileName_;
 		std::string originalFileName_;

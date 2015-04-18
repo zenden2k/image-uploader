@@ -11,10 +11,7 @@ void UploadSession::addTask(std::shared_ptr<UploadTask> task)
 	task->setSession(this);
 	tasks_.push_back(task);
 	tasksMutex_.unlock();
-	if (OnTaskAdded)
-	{
-		OnTaskAdded(this, task.get());
-	}
+	notifyTaskAdded(task.get());
 }
 
 void UploadSession::removeTask(std::shared_ptr<UploadTask> task)
@@ -25,17 +22,35 @@ void UploadSession::removeTask(std::shared_ptr<UploadTask> task)
 		tasks_.erase(it);
 }
 
-std::shared_ptr<UploadTask> UploadSession::getNextTask()
+int  UploadSession::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask)
 {
+	int count = 0;
+	//LOG(ERROR) << "UploadSession::getNextTask()";
 	std::lock_guard<std::mutex> lock(tasksMutex_);
 	for (auto it = tasks_.begin(); it != tasks_.end(); it++)
 	{
-		if (!it->get()->isFinished() && !it->get()->isRunning())
+		UploadTask* uploadTask = it->get();
+		if (!uploadTask->isFinishedItself() && !uploadTask->isRunningItself() ) {
+			count++;
+			if (acceptor->canAcceptUploadTask(uploadTask))
+			{
+				outTask = *it;
+				it->get()->setRunning(true);
+				return count;
+			}
+			
+		}
+		std::shared_ptr<UploadTask> task;
+		int childCount = it->get()->getNextTask(acceptor, task);
+		count += childCount;
+		if (task)
 		{
-			return *it;
+			task->setRunning(true);
+			outTask = task;
+			return count;
 		}
 	}
-	return std::shared_ptr<UploadTask>(0);
+	return count;
 }
 
 bool UploadSession::isRunning()
@@ -69,13 +84,35 @@ bool UploadSession::isFinished()
 	//return isFinished_;
 }
 
-int UploadSession::pendingTasksCount()
+int UploadSession::pendingTasksCount(UploadTaskAcceptor* acceptor)
 {
 	std::lock_guard<std::mutex> lock(tasksMutex_);
 	int res = 0;
 	for (auto it = tasks_.begin(); it != tasks_.end(); it++)
 	{
-		if (!it->get()->isFinished() && !it->get()->isRunning())
+		UploadTask* uploadTask = it->get();
+		if (!uploadTask->isFinishedItself() && !uploadTask->isRunningItself() && acceptor->canAcceptUploadTask(uploadTask))
+		{
+			res++;
+		}
+		res += it->get()->pendingTasksCount(acceptor);
+	}
+	return res;
+}
+
+int UploadSession::taskCount()
+{
+	std::lock_guard<std::mutex> lock(tasksMutex_);
+	return tasks_.size();
+}
+
+int UploadSession::finishedTaskCount()
+{
+	std::lock_guard<std::mutex> lock(tasksMutex_);
+	int res = 0;
+	for (auto it = tasks_.begin(); it != tasks_.end(); it++)
+	{
+		if (it->get()->isFinished())
 		{
 			res++;
 		}
@@ -83,10 +120,28 @@ int UploadSession::pendingTasksCount()
 	return res;
 }
 
+void UploadSession::addTaskAddedCallback(const TaskAddedCallback& callback)
+{
+	taskAddedCallbacks_.push_back(callback);
+}
+
 void UploadSession::taskFinished(UploadTask* task)
 {
 	if (isFinished() && OnSessionFinished)
 	{
 		OnSessionFinished(this);
+	}
+}
+
+void UploadSession::childTaskAdded(UploadTask* task)
+{
+	notifyTaskAdded(task);
+}
+
+void UploadSession::notifyTaskAdded(UploadTask* task)
+{
+	for (int i = 0; i < taskAddedCallbacks_.size(); i++)
+	{
+		taskAddedCallbacks_[i](this, task);
 	}
 }

@@ -14,6 +14,7 @@ void UploadTask::init()
 	userData_ = NULL;
 	uploadSuccess_ = false;
 	session_ = 0;
+	role_ = DefaultRole;
 }
 
 void UploadTask::childTaskFinished(UploadTask* child)
@@ -55,6 +56,11 @@ bool UploadTask::isRunning()
 	return isRunning_;
 }
 
+bool UploadTask::isRunningItself()
+{
+	return isRunning_;
+}
+
 void UploadTask::setSession(UploadSession* session)
 {
 	session_ = session;
@@ -75,6 +81,11 @@ bool UploadTask::isFinished()
 			return false;
 		}
 	}
+	return isFinished_;
+}
+
+bool UploadTask::isFinishedItself()
+{
 	return isFinished_;
 }
 
@@ -102,6 +113,13 @@ void UploadTask::addChildTask(std::shared_ptr<UploadTask> child)
 	tasksMutex_.lock();
 	childTasks_.push_back(child);
 	tasksMutex_.unlock();
+	if (session_) {
+		session_->childTaskAdded(child.get());
+	}
+	if (OnChildTaskAdded)
+	{
+		OnChildTaskAdded(child.get());
+	}
 }
 
 UploadResult* UploadTask::uploadResult()
@@ -155,4 +173,59 @@ bool UploadTask::uploadSuccess()
 void UploadTask::setUploadSuccess(bool success)
 {
 	uploadSuccess_ = success;
+}
+
+UploadTask::Role UploadTask::role() const
+{
+	return role_;
+}
+
+void UploadTask::setRole(Role role)
+{
+	role_ = role;
+}
+
+void UploadTask::uploadProgress(InfoProgress progress)
+{
+	progress_.uploaded = progress.Uploaded;
+	progress_.totalUpload = progress.Total;
+	progress_.isUploading = progress.IsUploading;
+	if (OnUploadProgress)
+	{
+		OnUploadProgress(this); // invoke upload progress callback
+	}
+}
+
+int UploadTask::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask)
+{
+	std::lock_guard<std::mutex> lock(tasksMutex_);
+	int count = 0;
+	for (auto it = childTasks_.begin(); it != childTasks_.end(); it++)
+	{
+		if (!it->get()->isFinished() && !it->get()->isRunning() )
+		{
+			count++;
+			if (acceptor->canAcceptUploadTask(it->get()))
+			{
+				outTask = *it;
+				return count;
+			}
+		}
+	}
+	return count;
+}
+
+int UploadTask::pendingTasksCount(UploadTaskAcceptor* acceptor)
+{
+	std::lock_guard<std::mutex> lock(tasksMutex_);
+	int res = 0;
+	for (auto it = childTasks_.begin(); it != childTasks_.end(); it++)
+	{
+		UploadTask* task = it->get();
+		if (!task->isFinished() && !task->isRunning() && acceptor->canAcceptUploadTask(task))
+		{
+			res++;
+		}
+	}
+	return res;
 }

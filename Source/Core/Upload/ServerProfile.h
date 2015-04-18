@@ -68,6 +68,7 @@ public:
 	bool isNull();
 	bool UseDefaultSettings;
 	void clearFolderInfo();
+	ServerProfile deepCopy();
 #ifndef IU_SERVERLISTTOOL
 	void bind(SettingsNode& n);
 #endif

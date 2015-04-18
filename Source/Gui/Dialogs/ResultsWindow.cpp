@@ -24,7 +24,7 @@
 #include "Func/Settings.h"
 #include <Gui/GuiTools.h>
 // CResultsWindow
-CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,CAtlArray<CUrlListItem>  & urlList,bool ChildWindow)
+CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,std::vector<CUrlListItem>  & urlList,bool ChildWindow)
 {
 	m_WizardDlg = wizardDlg;
 	ResultsPanel = new CResultsPanel(wizardDlg, urlList);

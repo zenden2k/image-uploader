@@ -330,7 +330,8 @@ bool CImageConverter::createThumb(Gdiplus::Image* bm, const CString& imageFile, 
 	Image* res = 0;
 	if (createThumbnail(bm, &res, FileSize, fileformat))
 	{
-		result = MySaveImage(res, _T("thumb"), m_thumbFileName, fileformat, m_thumbCreatingParams.Quality);
+		result = MySaveImage(res, GenerateFileName(L"thumb_%md5.jpg", 1,
+			CPoint()), m_thumbFileName, fileformat, m_thumbCreatingParams.Quality);
 		delete res;
 	}
 	// }

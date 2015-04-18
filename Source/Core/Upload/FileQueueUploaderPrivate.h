@@ -14,8 +14,21 @@ struct ServerThreadsInfo {
 	//int maxThreads;
 	int runningThreads;
 	int waitingFileCount;
+	CUploadEngineData* ued;
 };
-class FileQueueUploaderPrivate {
+
+class TaskAcceptorBase : public UploadTaskAcceptor
+{
+public:
+	TaskAcceptorBase(bool useMutex = true);
+	bool canAcceptUploadTask(UploadTask* task) override;
+	std::map<std::string, ServerThreadsInfo> serverThreads_;
+	std::mutex serverThreadsMutex_;
+	int fileCount;
+	bool useMutex_;
+
+};
+class FileQueueUploaderPrivate : public  TaskAcceptorBase {
 public:
 	FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager);
 	virtual ~FileQueueUploaderPrivate();
@@ -46,9 +59,10 @@ protected:
 	void onProgress(CUploader*, InfoProgress progress);
 	void onErrorMessage(CUploader*, ErrorInfo);
 	void onTaskAdded(UploadSession*, UploadTask*);
+
 	int pendingTasksCount();
 	//std::map<CUploader*, CFileQueueUploader::Task*> tasks_;
-	std::map<std::string, ServerThreadsInfo> serverThreads_;
+
 	bool autoStart_;
 	int startFromSession_;
 	UploadEngineManager* uploadEngineManager_;

@@ -1,6 +1,7 @@
 #include "FileUploadTask.h"
 
 #include <Core/Utils/CoreUtils.h>
+#include <assert.h>
 
 FileUploadTask::FileUploadTask(const std::string& fileName, const std::string& displayName, UploadTask* parentTask) : UploadTask(parentTask) {
 	fileName_ = fileName;
@@ -45,4 +46,19 @@ void FileUploadTask::setDisplayName(const std::string& name)
 std::string FileUploadTask::originalFileName() const
 {
 	return originalFileName_;
+}
+
+void FileUploadTask::setFinished(bool finished)
+{
+	if (finished && role_ == ThumbRole)
+	{
+		assert(parentTask_);
+		if (!parentTask_)
+		{
+			return;
+		}
+		//TODO: keep server thumbnail url
+		parentTask_->uploadResult()->thumbUrl = uploadResult_.directUrl;
+	}
+	UploadTask::setFinished(finished);
 }

@@ -159,6 +159,7 @@
 #define IDC_UPDATELISTVIEW              1002
 #define IDC_CONTEXTMENUITEMS            1002
 #define IDC_CONTEXTMENUITEMSLIST        1002
+#define IDC_UPLOADTABLE                 1002
 #define IDC_KEEPASIS                    1003
 #define IDC_KEEPPROPORTIONS             1004
 #define IDC_IMAGEWIDTH                  1005

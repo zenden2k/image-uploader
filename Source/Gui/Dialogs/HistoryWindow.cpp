@@ -273,7 +273,7 @@ LRESULT CHistoryWindow::OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 {
 	TreeItem* item = m_treeView.selectedItem();
 	if(!item) return 0;
-	CAtlArray<CUrlListItem> items;
+	std::vector<CUrlListItem> items;
 
 	if(item->level()==0)
 	{
@@ -281,14 +281,14 @@ LRESULT CHistoryWindow::OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 		for(int i=0; i<ses->entriesCount(); i++)
 		{
 			CUrlListItem it  =fromHistoryItem(ses->entry(i));
-			items.Add(it);
+			items.push_back(it);
 		}
 	}
 	else
 	{
 		HistoryItem* hit = reinterpret_cast<HistoryItem*>(item->userData());
 		CUrlListItem it  = fromHistoryItem(*hit);
-		items.Add(it);
+		items.push_back(it);
 	}
 	CResultsWindow rp( pWizardDlg, items,false);
 	rp.DoModal(m_hWnd);

@@ -168,7 +168,7 @@ LRESULT CFloatingWindow::OnTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 	}
 	else if (LOWORD(lParam) == NIN_BALLOONUSERCLICK)
 	{
-		CAtlArray<CUrlListItem> items;
+		std::vector<CUrlListItem> items;
 		CUrlListItem it;
 		UploadResult* uploadResult = lastUploadedItem_->uploadResult();
 		it.ImageUrl = Utf8ToWstring(uploadResult->directUrl).c_str();
@@ -176,7 +176,7 @@ LRESULT CFloatingWindow::OnTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 		it.ThumbUrl = Utf8ToWstring(uploadResult->thumbUrl).c_str();
 		it.DownloadUrl = Utf8ToWstring(uploadResult->downloadUrl).c_str();
 		it.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
-		items.Add(it);
+		items.push_back(it);
 		if (it.ImageUrl.IsEmpty() && it.DownloadUrl.IsEmpty())
 			return 0;
 		CResultsWindow rp( pWizardDlg, items, false);

@@ -48,6 +48,9 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager);
 		~CUploadDlg();
 		enum { IDD = IDD_UPLOADDLG };
+		enum {
+			IDC_UPLOADPROCESSTAB = WM_USER + 100, IDC_UPLOADRESULTSTAB = IDC_UPLOADPROCESSTAB + 1
+		};
 		int TimerInc;
 		bool IsStopTimer;
 		bool Terminated;
@@ -55,7 +58,9 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		 BEGIN_MSG_MAP(CUploadDlg)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			MESSAGE_HANDLER(WM_TIMER, OnTimer)
-
+			COMMAND_HANDLER(IDC_UPLOADPROCESSTAB, BN_CLICKED, OnUploadProcessButtonClick)
+			COMMAND_HANDLER(IDC_UPLOADRESULTSTAB, BN_CLICKED, OnUploadResultsButtonClick)
+			COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
 		END_MSG_MAP()
 
 		 // Handler prototypes:
@@ -68,7 +73,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		 CMainDlg *MainDlg;
 		 CResultsWindow *ResultsWindow;
 		int ThreadTerminated(void);
-		CAtlArray<CUrlListItem> UrlList;
+		std::vector<CUrlListItem> UrlList;
 		bool OnShow();
 		bool OnNext();
 		bool OnHide();
@@ -78,14 +83,14 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		void GenThumb(LPCTSTR szImageFileName, Gdiplus::Image *bm, int ThumbWidth,int newwidth,int newheight,LPTSTR szBufferThumb, int fileformat);
 		bool CancelByUser;
 		void GenerateOutput();
-		void UploadProgress(int CurPos, int Total,int FileProgress=0);
+		void TotalUploadProgress(int CurPos, int Total,int FileProgress=0);
 		int progressCurrent, progressTotal;
 		CMyEngineList *m_EngineList;
 		CString m_StatusText;
 		
 		bool OnUploaderNeedStop();
 		void OnUploaderProgress(CUploader* uploader, InfoProgress pi);
-		void OnUploaderStatusChanged(StatusType status, int actionIndex, std::string text);
+		void OnUploaderStatusChanged(UploadTask* task);
 		void OnUploaderConfigureNetworkClient(NetworkClient *nm);	
 		void onShortenUrlChanged(bool shortenUrl);
 		void AddShortenUrlTask(CUrlListItem* item);
@@ -93,6 +98,24 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		virtual bool OnFileFinished(std::shared_ptr<UploadTask> task, bool ok);
 		virtual bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);
 	protected:
+		LRESULT OnUploadProcessButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnUploadResultsButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+		LRESULT OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		void showUploadResultsTab();
+		void showUploadProgressTab();
+		void onSessionFinished(UploadSession* session);
+		void onTaskUploadProgress(UploadTask* task);
+		void onTaskFinished(UploadTask* task, bool ok);
+		void onChildTaskAdded(UploadTask* child);
+		void createToolbar();
+		int currentTab_;
+		int filesFinished_;
+		CListViewCtrl uploadListView_;
+		std::shared_ptr<UploadSession> uploadSession_;
+		struct FileProcessingStruct {
+			CString fileName;
+			int tableRow;
+		};
 		struct CUploadDlgProgressInfo
 		{
 			InfoProgress ip;
@@ -103,6 +126,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 			CUrlListItem* item;
 			CString linkType;
 		};
+		std::vector<FileProcessingStruct*> files_;
 		CUploadDlgProgressInfo PrInfo;
 		bool alreadyShortened_;
 		ServerProfile sessionImageServer_, sessionFileServer_;
@@ -111,6 +135,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 				ITaskbarList3* ptl;
 		#endif
 		UploadManager* uploadManager_;
+		CToolBarCtrl toolbar_;
 };
 
 

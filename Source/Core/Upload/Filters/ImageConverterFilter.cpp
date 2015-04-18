@@ -12,6 +12,10 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
 	if (!fileTask) {
 		return true;
 	}
+	if (task->parentTask())
+	{
+		return true;
+	}
 	if (!IsImage(IuCoreUtils::Utf8ToWstring(fileTask->getFileName()).c_str()))
 	{
 		return true;
@@ -40,12 +44,22 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
 	imageConverter.setGenerateThumb(GenThumbs);
 	if (imageConverter.Convert(IuCoreUtils::Utf8ToWstring(fileTask->getFileName()).c_str())) {
 		std::string convertedImageFileName = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(imageConverter.getImageFileName()));
-		fileTask->setFileName(convertedImageFileName);
-		std::string virtualName = IuCoreUtils::ExtractFileNameNoExt(fileTask->getFileName()) + "." + IuCoreUtils::ExtractFileExt(convertedImageFileName);
-		fileTask->setDisplayName(virtualName);
-		std::shared_ptr<FileUploadTask> thumbTask(new FileUploadTask(IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(imageConverter.getThumbFileName())), "", task));
-		thumbTask->OnFileFinished.bind(this, &ImageConverterFilter::OnFileFinished);
-		fileTask->addChildTask(thumbTask);
+		if (!convertedImageFileName.empty()) {
+			
+			std::string virtualName = IuCoreUtils::ExtractFileNameNoExt(fileTask->getFileName()) + "." + IuCoreUtils::ExtractFileExt(convertedImageFileName);
+			fileTask->setDisplayName(virtualName);
+			fileTask->setFileName(convertedImageFileName);
+		} 
+		if (GenThumbs) {
+			std::shared_ptr<FileUploadTask> thumbTask(new FileUploadTask(IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(imageConverter.getThumbFileName())), "", task));
+			//thumbTask->OnFileFinished.bind(this, &ImageConverterFilter::OnFileFinished);
+			ServerProfile thumbServerProfile = fileTask->serverProfile().deepCopy();
+			thumbServerProfile.getImageUploadParamsRef().CreateThumbs = false;
+			thumbServerProfile.getImageUploadParamsRef().ProcessImages = false;
+			thumbTask->setServerProfile(thumbServerProfile);
+			thumbTask->setRole(UploadTask::ThumbRole);
+			fileTask->addChildTask(thumbTask);
+		}
 	}
 	return true;
 }
@@ -54,10 +68,10 @@ bool ImageConverterFilter::PostUpload(UploadTask* task)
 {
 	return true;
 }
-
+/*
 void ImageConverterFilter::OnFileFinished(UploadTask* task, bool ok)
 {
 	FileUploadTask* thumbTask = dynamic_cast<FileUploadTask*>(task);
 	//TODO: keep server thumbnail url
 	thumbTask->parentTask()->uploadResult()->thumbUrl = task->uploadResult()->directUrl;
-}
+}*/

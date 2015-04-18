@@ -70,6 +70,15 @@ void ServerProfile::clearFolderInfo()
 	folderId_.clear();
 }
 
+ServerProfile ServerProfile::deepCopy()
+{
+	ServerProfile res = *this;
+	res.imageUploadParams = getImageUploadParams();
+	res.UseDefaultSettings = false;
+	UseDefaultSettings = false;
+	return res;
+}
+
 #ifndef IU_SERVERLISTTOOL
 void ServerProfile::bind(SettingsNode& serverNode)
 {

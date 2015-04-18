@@ -85,7 +85,7 @@ void CScriptUploadEngine::FlushSquirrelOutput()
 int CScriptUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params)
 {
 	std::thread::id threadId = std::this_thread::get_id();
-	LOG(INFO) << "CScriptUploadEngine::doUpload this=" << this << " thread=" << threadId;
+	//LOG(INFO) << "CScriptUploadEngine::doUpload this=" << this << " thread=" << threadId;
     using namespace Sqrat;
 	std::string FileName;
 
@@ -174,8 +174,8 @@ CScriptUploadEngine::CScriptUploadEngine(Utf8String pluginName) : CAbstractUploa
 CScriptUploadEngine::~CScriptUploadEngine()
 {
     delete m_SquirrelScript;
-	std::thread::id threadId = std::this_thread::get_id();
-	LOG(INFO) << __FUNCTION__ << " this="/*"RemoveFromObjectTable " */ << this << " thread=" << threadId;
+	//std::thread::id threadId = std::this_thread::get_id();
+	//LOG(INFO) << __FUNCTION__ << " this="/*"RemoveFromObjectTable " */ << this << " thread=" << threadId;
 	// SquirrelVM::Shutdown();
 }
 

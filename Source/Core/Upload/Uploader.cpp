@@ -90,8 +90,9 @@ int CUploader::pluginProgressFunc (void* userData, double dltotal, double dlnow,
 		uploader->m_PrInfo.Total = ultotal;
 		uploader->m_PrInfo.Uploaded = ulnow;
 	}
+	uploader->currentTask_->uploadProgress(uploader->m_PrInfo);
 
-	if (!uploader->onProgress.empty())
+	if (uploader->onProgress)
 		uploader->onProgress(uploader, uploader->m_PrInfo);
 	return 0;
 }

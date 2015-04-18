@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Russian resources
+// Russian (Russia) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
-#ifdef _WIN32
 LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 #pragma code_page(1251)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -73,7 +71,8 @@ BEGIN
     LTEXT           "Отправка данных",IDC_INFOUPLOAD,16,31,312,8
     LTEXT           "100%",IDC_PERCENTLABEL,345,31,28,8
     CONTROL         "",IDC_FILEPROGRESS,"msctls_progress32",0x0,235,30,107,10
-    LTEXT           "Static",IDC_RESULTSPLACEHOLDER,3,52,385,187,NOT WS_VISIBLE
+    LTEXT           "Static",IDC_RESULTSPLACEHOLDER,7,51,385,187,NOT WS_VISIBLE
+    CONTROL         "",IDC_UPLOADTABLE,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,6,51,373,179
 END
 
 IDD_SCREENSHOTDLG DIALOGEX 0, 0, 194, 193
@@ -259,7 +258,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTI
 CAPTION "Select language"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
-    CONTROL         214,IDC_STATICLOGO,"Static",SS_BITMAP,11,16,35,30
+    CONTROL         IDB_BITMAP1,IDC_STATICLOGO,"Static",SS_BITMAP,11,16,35,30
     LTEXT           "Please choose the language which will be used by Image Uploader:",IDC_PLEASECHOOSE,55,13,138,22
     COMBOBOX        IDC_LANGLIST,54,41,133,85,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,2,70,215,1
@@ -952,7 +951,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_VIDEOGRABBER, DIALOG
     BEGIN
@@ -1320,7 +1319,7 @@ END
 // Menu
 //
 
-IDR_CONTEXTMENU MENU 
+IDR_CONTEXTMENU MENU
 BEGIN
     POPUP "0"
     BEGIN
@@ -1335,7 +1334,7 @@ BEGIN
     END
 END
 
-IDR_CONTEXTMENU2 MENU 
+IDR_CONTEXTMENU2 MENU
 BEGIN
     POPUP "0"
     BEGIN
@@ -1465,18 +1464,16 @@ IDR_RT_MANIFEST1        RT_MANIFEST             "res\\image uploader.exe.manifes
 //
 
 IDC_COLORPICKERCURSOR   CURSOR                  "res\\ImageEditor\\colorpicker.cur"
-#endif    // Russian resources
+#endif    // Russian (Russia) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -1508,7 +1505,7 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
@@ -1565,7 +1562,7 @@ BEGIN
     END
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

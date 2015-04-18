@@ -7,8 +7,10 @@
 #include <Core/3rdpart/FastDelegate.h>
 #include <Core/Network/NetworkClient.h>
 #include "ServerProfile.h"
+#include "CommonTypes.h"
 #include <mutex>
 
+class UploadTask;
 class UploadSession;
 
 class UploadProgress {
@@ -20,26 +22,39 @@ public:
 	bool isUploading;
 };
 
+class UploadTaskAcceptor
+{
+public:
+	virtual bool canAcceptUploadTask(UploadTask* task) = 0;
+};
+
 class UploadTask {
 	public:
 		UploadTask();
 		UploadTask(UploadTask* parentTask);
 		virtual ~UploadTask();
+		enum Role { DefaultRole, ThumbRole, UrlShorteningRole };
 		virtual std::string getType() const = 0;
 		virtual std::string getMimeType() const = 0;
 		virtual int64_t getDataLength() const = 0;
 		UploadTask* parentTask() const;
 		bool isRunning();
+		bool isRunningItself();
 		void setSession(UploadSession* session);
 		UploadSession* session();
 		bool isFinished();
-		void setFinished(bool finished);
+		bool isFinishedItself();
+		virtual void setFinished(bool finished);
 		void setRunning(bool running);
+		int getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask);
+		int pendingTasksCount(UploadTaskAcceptor* acceptor);
 		void addChildTask(std::shared_ptr<UploadTask> child);
 		UploadResult* uploadResult();
 		UploadProgress* progress();
 		fastdelegate::FastDelegate2<UploadTask*, bool> OnFileFinished;
 		fastdelegate::FastDelegate1<UploadTask*> OnUploadProgress;
+		fastdelegate::FastDelegate1<UploadTask*> OnStatusChanged;
+		fastdelegate::FastDelegate1<UploadTask*> OnChildTaskAdded;
 		std::string serverName() const;
 		ServerProfile& serverProfile();
 		void setServerProfile(ServerProfile profile);
@@ -47,10 +62,14 @@ class UploadTask {
 		void* userData() const;
 		bool uploadSuccess();
 		void setUploadSuccess(bool success);
+		Role role() const;
+		void setRole(Role role);
+		friend class CUploader;
 
 	protected:
 		UploadTask* parentTask_;
 		std::vector<std::shared_ptr<UploadTask>> childTasks_;
+		
 		bool isRunning_;
 		bool isFinished_;
 		UploadResult uploadResult_;
@@ -59,10 +78,12 @@ class UploadTask {
 		void* userData_;
 		void init();
 		void childTaskFinished(UploadTask* child);
+		void uploadProgress(InfoProgress progress);
 		void taskFinished();
 		bool uploadSuccess_;
 		UploadSession* session_;
 		std::mutex tasksMutex_;
+		Role role_;
 };	
 
 #endif

@@ -33,7 +33,7 @@
 #include <Func/WinUtils.h>
 
 // CResultsPanel
-CResultsPanel::CResultsPanel(CWizardDlg *dlg,CAtlArray<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)
+CResultsPanel::CResultsPanel(CWizardDlg *dlg,std::vector<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)
 {
 	webViewWindow_ = NULL;
 	m_nImgServer = m_nFileServer = -1;
@@ -177,7 +177,7 @@ void CResultsPanel::SetPage(int Index)
 	UpdateOutput();
 	BOOL temp;
 
-	if(!UrlList.IsEmpty() && Settings.AutoCopyToClipboard)
+	if(!UrlList.empty() && Settings.AutoCopyToClipboard)
 		OnBnClickedCopyall(0,0,0,temp);
 }
 
@@ -223,7 +223,7 @@ const CString CResultsPanel::GenerateOutput()
 
 	UrlListCS.Lock();
 
-	int n=UrlList.GetCount();
+	int n=UrlList.size();
 	int p=GetDlgItemInt(IDC_THUMBSPERLINE);
 	if(p>=0 && p<5555)
 		Settings.ThumbsPerLine = p;
@@ -244,6 +244,10 @@ const CString CResultsPanel::GenerateOutput()
 
 		for(int i=0; i<n; i++)
 		{
+			if (UrlList[i].isNull())
+			{
+				continue;
+			}
 			CString fname= WinUtils::myExtractFileName(UrlList[i].FileName);
 
 			m_Vars[_T("DownloadUrl")]=UrlList[i].getDownloadUrl(shortenUrl_);
@@ -374,7 +378,7 @@ const CString CResultsPanel::GenerateOutput()
 			if(((i+1)%p)&&type==4)
 				Buffer+=_T("&nbsp;&nbsp;");
 			if(!((i+1)%p) &&type==4||type==5 )
-				Buffer+=_T("<br/>&nbsp;<br/>");
+				Buffer+=_T("<br/>&nbsp;<br/>\r\n");
 		}
 		Buffer+=_T("</center>");
 	}
@@ -780,7 +784,7 @@ LRESULT CResultsPanel::OnShortenUrlClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
 	
 	CString url ;
-	if ( m_Page == 2 && this->UrlList.GetCount() ) {
+	if ( m_Page == 2 && this->UrlList.size() ) {
 		//use
 		url = this->UrlList[0].getImageUrl();
 		if ((!Settings.UseDirectLinks || url.IsEmpty()) &&  !this->UrlList[0].getDownloadUrl().IsEmpty()) {

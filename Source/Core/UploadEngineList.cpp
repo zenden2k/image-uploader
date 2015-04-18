@@ -99,6 +99,9 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 			UE.SupportsFolders = cur.AttributeBool("SupportsFolders");
 			UE.RegistrationUrl = cur.Attribute("RegistrationUrl");
 			UE.PluginName = cur.Attribute("Plugin");
+			std::string MaxThreadsStr = cur.Attribute("MaxThreads");
+			UE.MaxThreads = atoi(MaxThreadsStr.c_str());
+			
 			if ( UE.PluginName == "ftp" ) {
 				if ( serversSettings[UE.Name].size() ) {
 					std::string hostname = serversSettings[UE.Name].begin()->second.getParam("hostname");
@@ -109,7 +112,16 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 				} else {
 					continue;
 				}
+				if (MaxThreadsStr.empty())
+				{
+					UE.MaxThreads = 1;
+				}
 			}
+			if (UE.MaxThreads < 0)
+			{
+				UE.MaxThreads = 0;
+			}
+		
 			UE.UsingPlugin = !UE.PluginName.empty();
 			UE.Debug =   cur.AttributeBool("Debug");
 			UE.ImageHost =  !cur.AttributeBool("FileHost");
@@ -147,6 +159,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 					UA.RetryLimit = m_ActionNumOfRetries;//Settings.ActionRetryLimit;
 				}
 				else UA.RetryLimit = atoi(RetryLimit.c_str());
+				 
 				UA.IgnoreErrors = actionNode.AttributeBool("IgnoreErrors");
 				UA.Description= actionNode.Attribute("Description");
 

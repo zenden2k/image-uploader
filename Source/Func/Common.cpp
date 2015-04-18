@@ -31,6 +31,7 @@
 #include "Core/Utils/CryptoUtils.h"
 #include "versioninfo.h"
 #include <Func/WinUtils.h>
+#include <thread>
 
 CString IUCommonTempFolder;
 
@@ -384,7 +385,10 @@ CString GenerateFileName(const CString& templateStr, int index, const CPoint siz
 	CString day, month, year;
 	CString hours, seconds, minutes;
 	indexStr.Format(_T("%03d"), index);
-	CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(WCstringToUtf8(IntToStr(GetTickCount() + random(100))))).c_str();
+	std::thread::id threadId = std::this_thread::get_id();
+	std::stringstream threadIdSS;
+	threadIdSS << threadId;
+	CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(threadIdSS.str() + WCstringToUtf8(IntToStr(GetTickCount() + random(100))))).c_str();
 	result.Replace(_T("%md5"), (LPCTSTR)md5);
 	result.Replace(_T("%width%"), IntToStr(size.x));
 	result.Replace(_T("%height%"), IntToStr(size.y));
