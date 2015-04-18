@@ -3,6 +3,24 @@ tokenType <- "";
 login <- "";
 enableOAuth <- true;
 
+function BeginLogin() {
+	try {
+		return serverSync.beginLogin();
+	}
+	catch ( ex ) {
+	}
+	return false;
+}
+
+function EndLogin() {
+	try {
+		return serverSync.endLogin();
+	} catch ( ex ) {
+		
+	}
+	return false;
+}
+
 function tr(key, text) {
 	try {
 		return Translate(key, text);
@@ -97,10 +115,7 @@ function getAuthorizationString() {
 	return "FimpToken realm=\"fotki.yandex.ru\", token=\""+token+"\"";
 }
 
-
-
-
-function DoLogin() 
+function _DoLogin() 
 { 
 	if ( enableOAuth ) {
 		token = ServerParams.getParam("token");
@@ -202,6 +217,16 @@ function DoLogin()
 	ServerParams.setParam("tokenType", "");
 	return 1; //Success login
 } 
+
+function DoLogin() {
+	if (!BeginLogin() ) {
+		return false;
+	}
+	local res = _DoLogin();
+	
+	EndLogin();
+	return res;
+}
 
 function internal_parseAlbumList(data,list,parentid)
 {

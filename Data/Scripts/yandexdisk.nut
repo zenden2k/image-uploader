@@ -15,6 +15,24 @@ login <- "";
 enableOAuth <- true;
 baseUrl <-"https://cloud-api.yandex.net/v1/disk/resources/";
 
+function BeginLogin() {
+	try {
+		return serverSync.beginLogin();
+	}
+	catch ( ex ) {
+	}
+	return false;
+}
+
+function EndLogin() {
+	try {
+		return serverSync.endLogin();
+	} catch ( ex ) {
+		
+	}
+	return false;
+}
+
 function base64Encode(input) {
 	local keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
     local output = "";
@@ -334,7 +352,7 @@ function openUrl(url) {
 }
 
 
-function DoLogin() 
+function _DoLogin() 
 { 
 	if ( enableOAuth ) {
 		token = ServerParams.getParam("token");
@@ -394,6 +412,16 @@ function DoLogin()
 	
 	return 0; //Success login
 } 
+
+function DoLogin() {
+	if (!BeginLogin() ) {
+		return false;
+	}
+	local res = _DoLogin();
+	
+	EndLogin();
+	return res;
+}
 
 function  UploadFile(FileName, options)
 {
@@ -487,7 +515,7 @@ function  UploadFile(FileName, options)
 			nm.addQueryHeader("Transfer-Encoding", "");
 			nm.addQueryHeader("Authorization",getAuthorizationString());
 			nm.setMethod("PUT");
-			nm.doGet("","");
+			nm.doGet("");
 			//nm.doPost("test1");
 			//_WriteLog("error", nm.responseCode().tostring());
 			//_WriteLog("error", nm.responseBody());

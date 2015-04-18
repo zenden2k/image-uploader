@@ -79,6 +79,8 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 	serversChanged_ = false;
 	uploadEngineManager_ = new UploadEngineManager(&m_EngineList);
 	uploadManager_ = new UploadManager(uploadEngineManager_);
+	floatWnd.setUploadManager(uploadManager_);
+	floatWnd.setUploadEngineManager(uploadEngineManager_);
 }
 
 CWizardDlg::~CWizardDlg()

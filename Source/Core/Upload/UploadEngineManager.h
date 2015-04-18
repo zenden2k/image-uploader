@@ -20,11 +20,15 @@ public:
 	void setScriptsDirectory(const Utf8String & directory);
 	void clearThreadData();
 protected:
-	CScriptUploadEngine* getPlugin(const Utf8String& serverName, const Utf8String& name, ServerSettingsStruct& params, bool UseExisting = false);
+	CScriptUploadEngine* getPlugin(ServerProfile& serverProfile, const std::string& pluginName, bool UseExisting = false);
+	ServerSync* getServerSync(const ServerProfile& serverProfile);
 	std::map<std::thread::id, std::map< Utf8String, CScriptUploadEngine*>> m_plugins;
 	std::mutex pluginsMutex_;
 	Utf8String m_ScriptsDirectory;
 	CUploadEngineList* uploadEngineList_;
+	typedef std::pair<std::string, std::string> ServerSyncMapKey;
+	std::map<ServerSyncMapKey, ServerSync*> serverSyncs_;
+	std::mutex serverSyncsMutex_;
 };
 
 #endif

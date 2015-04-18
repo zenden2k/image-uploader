@@ -70,11 +70,12 @@ void CLogWindow::WriteLog(LogMsgType MsgType, const CString& Sender, const CStri
 
 void CLogWindow::Show()
 {
-	if (!IsWindowVisible())
+	if (!IsWindowVisible()) {
 		ShowWindow(SW_SHOW);
-	SetForegroundWindow(m_hWnd);
-	::SetActiveWindow(m_hWnd);
-	BringWindowToTop();
+		SetForegroundWindow(m_hWnd);
+		::SetActiveWindow(m_hWnd);
+		BringWindowToTop();
+	}
 	SetWindowPos(HWND_TOPMOST, 0,0,0,0, SWP_NOSIZE | SWP_NOMOVE);
 }
 
@@ -137,6 +138,7 @@ LRESULT CLogWindow::OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 {
 	CLogWndMsg* msg = (CLogWndMsg*) wParam;
 	WriteLog(msg->MsgType, msg->Sender, msg->Msg, msg->Info);
+	delete msg;
 	return 0;
 }
 
@@ -150,12 +152,12 @@ void WriteLog(LogMsgType MsgType,  const CString&  Sender,  const CString&  Msg,
 {
 	if (!LogWindow.m_hWnd)
 		return;
-	CLogWindow::CLogWndMsg msg;
-	msg.Msg = Msg;
-	msg.Info = Info;
-	msg.Sender = Sender;
-	msg.MsgType = MsgType;
-	LogWindow.SendMessage(MYWM_WRITELOG, (WPARAM)&msg);
+	CLogWindow::CLogWndMsg* msg = new CLogWindow::CLogWndMsg();
+	msg->Msg = Msg;
+	msg->Info = Info;
+	msg->Sender = Sender;
+	msg->MsgType = MsgType;
+	LogWindow.PostMessage(MYWM_WRITELOG, (WPARAM)msg);
 }
 
 CLogWindow LogWindow;

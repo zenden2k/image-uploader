@@ -32,7 +32,7 @@ class UrlShorteningTask;
 class CDefaultUploadEngine: public CAbstractUploadEngine
 {
 	public:
-		CDefaultUploadEngine();
+		CDefaultUploadEngine(ServerSync* serverSync);
 		virtual int doUpload(UploadTask* task, CIUUploadParams &params);
 	
 	protected:

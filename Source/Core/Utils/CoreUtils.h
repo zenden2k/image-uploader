@@ -31,7 +31,10 @@
 long round(float number);
 #endif
 
+#ifdef _WIN32
 
+int gettimeofday(struct timeval * tp, struct timezone * tzp);
+#endif
 namespace IuCoreUtils
 {
 	// A version of fopen() function which supports utf8 file names

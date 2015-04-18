@@ -59,7 +59,12 @@ bool TaskAcceptorBase::canAcceptUploadTask(UploadTask* task)
 		}
 		return true;
 	}
-	if (!it->second.ued->MaxThreads || it->second.runningThreads < it->second.ued->MaxThreads)
+	if (!it->second.ued )
+	{
+		it->second.ued = task->serverProfile().uploadEngineData(); // FIXME
+	}
+
+	if ((!it->second.ued->MaxThreads || it->second.runningThreads < it->second.ued->MaxThreads) && !it->second.fatalError)
 	{
 		it->second.runningThreads++;
 		fileCount++;
@@ -109,21 +114,25 @@ void FileQueueUploaderPrivate::onErrorMessage(CUploader*, ErrorInfo ei)
 	DefaultErrorHandling::ErrorMessage(ei);
 }
 
+void FileQueueUploaderPrivate::onDebugMessage(CUploader*, const std::string& msg, bool isResponseBody)
+{
+	DefaultErrorHandling::DebugMessage(msg, isResponseBody);
+}
+
 void FileQueueUploaderPrivate::onTaskAdded(UploadSession*, UploadTask* task)
 {
-	mutex_.lock();
-	FileUploadTask* fut = dynamic_cast<FileUploadTask*>(task);
+	sessionsMutex_.lock();
+	/*FileUploadTask* fut = dynamic_cast<FileUploadTask*>(task);
 	if ( fut )
 	{
 		FileUploadTask* parent = dynamic_cast<FileUploadTask*>(fut->parentTask());
 		LOG(ERROR) << "FileQueueUploaderPrivate::onTaskAdded " << fut->getFileName() << (parent ? "\r\nparent="+parent->getDisplayName() : "");
 		
-	}
+	}*/
 	startFromSession_ = 0;
-	mutex_.unlock();
+	sessionsMutex_.unlock();
 	start();
 }
-
 
 int FileQueueUploaderPrivate::pendingTasksCount()
 {
@@ -136,6 +145,11 @@ int FileQueueUploaderPrivate::pendingTasksCount()
 		sessions_[i]->pendingTasksCount(&acceptor);
 	}
 	return acceptor.fileCount;
+}
+
+void FileQueueUploaderPrivate::taskAdded(UploadTask* task)
+{
+	queueUploader_->taskAdded(task);
 }
 
 void FileQueueUploaderPrivate::OnConfigureNetworkClient(CUploader* uploader, NetworkClient* nm)
@@ -155,7 +169,7 @@ std_tr::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
 #ifndef IU_CLI
 	std::lock_guard<std::mutex> lock(mutex_);
 #endif
-	LOG(INFO) << "startFromSession_=" << startFromSession_;
+	//LOG(INFO) << "startFromSession_=" << startFromSession_;
 	if (!sessions_.empty() && !m_NeedStop)
 	{
 		for (size_t i = startFromSession_; i < sessions_.size(); i++)
@@ -192,12 +206,28 @@ void FileQueueUploaderPrivate::AddSession(std::shared_ptr<UploadSession> uploadS
 {
 	sessionsMutex_.lock();
 	uploadSession->addTaskAddedCallback(UploadSession::TaskAddedCallback(this, &FileQueueUploaderPrivate::onTaskAdded));
+	int count = uploadSession->taskCount();
+	for (int i = 0; i < count; i++ )
+	{
+		taskAdded(uploadSession->getTask(i).get());
+	}
 	sessions_.push_back(uploadSession);
 	sessionsMutex_.unlock();
 	if (autoStart_)
 	{
 		start();
 	}
+}
+
+void FileQueueUploaderPrivate::removeSession(std::shared_ptr<UploadSession> uploadSession)
+{
+	std::lock_guard<std::mutex> lock(sessionsMutex_);
+	auto it = std::find(sessions_.begin(), sessions_.end(), uploadSession);
+	if (it != sessions_.end() )
+	{
+		sessions_.erase(it);
+	}
+	startFromSession_ = 0;
 }
 
 void FileQueueUploaderPrivate::addUploadFilter(UploadFilter* filter)
@@ -216,7 +246,7 @@ void FileQueueUploaderPrivate::removeUploadFilter(UploadFilter* filter)
 
 void FileQueueUploaderPrivate::start() {
 #ifndef IU_CLI
-	mutex_.lock();
+	std::lock_guard<std::mutex> lock(mutex_);
 #endif
 	m_NeedStop = false;
 	m_IsRunning = true;
@@ -231,9 +261,7 @@ void FileQueueUploaderPrivate::start() {
 		ZThread::Thread t1(new Runnable(this));// starting new thread
 #endif
 	}
-#ifndef IU_CLI
-	mutex_.unlock();
-#endif
+
 }
 
 
@@ -244,12 +272,13 @@ void FileQueueUploaderPrivate::run()
 #ifndef IU_CLI
 	// TODO
 	uploader.onErrorMessage.bind(this, &FileQueueUploaderPrivate::onErrorMessage);
+	uploader.onDebugMessage.bind(this, &FileQueueUploaderPrivate::onDebugMessage);
 #endif
 	for (;;)
 	{
 		auto it = getNextJob();
 		FileUploadTask* fut = dynamic_cast<FileUploadTask*>(it.get());
-		LOG(ERROR) << "getNextJob() returned " << (fut ? fut->getFileName() : "NULL");
+		//LOG(ERROR) << "getNextJob() returned " << (fut ? fut->getFileName() : "NULL");
 		if (!it)
 			break;
 		
@@ -259,26 +288,32 @@ void FileQueueUploaderPrivate::run()
 		//serverThreads_[serverName].runningThreads++;
 		mutex_.unlock();
 
+		//uploader.onProgress.bind(this, &FileQueueUploaderPrivate::onProgress);
+
+		for (int i = 0; i < filters_.size(); i++) {
+			filters_[i]->PreUpload(it.get()); // ServerProfile can be changed in PreUpload filters
+		}
 		CAbstractUploadEngine *engine = uploadEngineManager_->getUploadEngine(it->serverProfile());
 		if (!engine)
 		{
 			it->setFinished(true);
 			continue;
 		}
+		
 		uploader.setUploadEngine(engine);
 		uploader.onNeedStop.bind(this, &FileQueueUploaderPrivate::onNeedStopHandler);
-		//uploader.onProgress.bind(this, &FileQueueUploaderPrivate::onProgress);
 
-		for (int i = 0; i < filters_.size(); i++) {
-			filters_[i]->PreUpload(it.get());
-		}
-		LOG(ERROR) << "uploader.Upload(it) " << (fut ? fut->getFileName() : "NULL");
+		//LOG(ERROR) << "uploader.Upload(it) " << (fut ? fut->getFileName() : "NULL");
 		bool res = uploader.Upload(it);
-		LOG(ERROR) << "uploader.Upload(it) finished " << (fut ? fut->getFileName() : "NULL");
+		//LOG(ERROR) << "uploader.Upload(it) finished " << (fut ? fut->getFileName() : "NULL");
 		
 #ifndef IU_CLI
 		serverThreadsMutex_.lock();
 #endif
+		if (!res && uploader.isFatalError())
+		{
+			serverThreads_[serverName].fatalError = true;
+		}
 		serverThreads_[serverName].runningThreads--;
 #ifndef IU_CLI
 		serverThreadsMutex_.unlock();
@@ -295,10 +330,10 @@ void FileQueueUploaderPrivate::run()
 			result->directUrl = (uploader.getDirectUrl());
 			result->downloadUrl = (uploader.getDownloadUrl());
 			result->thumbUrl = (uploader.getThumbUrl());
+			it->setUploadSuccess(true);
 			for (int i = 0; i < filters_.size(); i++) {
 				filters_[i]->PostUpload(it.get());
 			}
-			it->setUploadSuccess(true);
 		}
 		else
 		{
@@ -324,7 +359,7 @@ void FileQueueUploaderPrivate::run()
 		if (queueUploader_->OnQueueFinished) {
 			queueUploader_->OnQueueFinished(queueUploader_);
 		}
-		LOG(ERROR) << "All threads terminated";
+		//LOG(ERROR) << "All threads terminated";
 	}
 
 }

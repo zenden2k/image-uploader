@@ -178,10 +178,10 @@ bool CShortenUrlDlg::StartProcess() {
 
 	std_tr::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
 	task->setServerProfile(Settings.urlShorteningServer);
-	task->OnFileFinished.bind(this, &CShortenUrlDlg::OnFileFinished);
+	task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CShortenUrlDlg::OnFileFinished));
 	std_tr::shared_ptr<UploadSession> session(new UploadSession());
 	session->addTask(task);
-	session->OnSessionFinished.bind(this, &CShortenUrlDlg::OnQueueFinished);
+	session->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CShortenUrlDlg::OnQueueFinished));
 	uploadManager_->addSession(session);
 	uploadManager_->start();
 

@@ -37,6 +37,7 @@
 #include "Gui/Dialogs/ResultsWindow.h"
 #include <Core/Upload/FileQueueUploader.h>
 #include "Func/Settings.h"
+#include <Gui/Controls/ResultsListView.h>
 
 class UploadManager;
 
@@ -107,10 +108,11 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		void onTaskUploadProgress(UploadTask* task);
 		void onTaskFinished(UploadTask* task, bool ok);
 		void onChildTaskAdded(UploadTask* child);
+		void backgroundThreadStarted();
 		void createToolbar();
 		int currentTab_;
 		int filesFinished_;
-		CListViewCtrl uploadListView_;
+		CResultsListView uploadListView_;
 		std::shared_ptr<UploadSession> uploadSession_;
 		struct FileProcessingStruct {
 			CString fileName;
@@ -130,6 +132,8 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		CUploadDlgProgressInfo PrInfo;
 		bool alreadyShortened_;
 		ServerProfile sessionImageServer_, sessionFileServer_;
+		bool backgroundThreadStarted_;
+		std::mutex backgroundThreadStartedMutex_;
 		
 		#if  WINVER	>= 0x0601
 				ITaskbarList3* ptl;

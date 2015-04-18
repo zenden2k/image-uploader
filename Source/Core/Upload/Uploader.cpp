@@ -34,6 +34,7 @@ CUploader::CUploader(void)
 	m_PrInfo.IsUploading = false;
 	m_PrInfo.Total = 0;
 	m_PrInfo.Uploaded = 0;
+	isFatalError_ = false;
 }
 
 CUploader::~CUploader(void)
@@ -102,7 +103,7 @@ bool CUploader::UploadFile(const std::string& FileName, const std::string displa
 }
 
 bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
-
+	isFatalError_ = false;
 	if (!m_CurrentEngine) {
 		Error(true, "Cannot proceed: m_CurrentEngine is NULL!");
 		return false;
@@ -152,6 +153,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
 		}
 		EngineRes = m_CurrentEngine->doUpload(task.get(), uparams);
 		if ( EngineRes == -1 ) {
+			isFatalError_ = true;
 			Cleanup();
 			return false;
 		}
@@ -201,6 +203,11 @@ void CUploader::SetStatus(StatusType status, int param1, std::string param)
 StatusType CUploader::GetStatus() const
 {
 	return m_CurrentStatus;
+}
+
+bool CUploader::isFatalError() const
+{
+	return isFatalError_;
 }
 
 const std::string CUploader::getDownloadUrl()

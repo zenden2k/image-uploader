@@ -5,6 +5,8 @@
 #include <Gui/Dialogs/LogWindow.h>
 #include "DefaultUploadEngine.h"
 #include <Core/Logging.h>
+#include "ServerSync.h"
+#include <Core/ScriptAPI/ScriptAPI.h>
 
 UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList)
 {
@@ -25,8 +27,9 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
 	}
 	CUploadEngineData *ue = uploadEngineList_->byName(serverProfile.serverName());
 	CAbstractUploadEngine* result = NULL;
+	
 	if (ue->UsingPlugin) {
-		result = getPlugin(ue->Name, ue->PluginName, serverProfile.serverSettings());
+		result = getPlugin(serverProfile, ue->PluginName);
 		if (!result) {
 			CString errorMessage;
 			LOG(ERROR) << "Cannot load plugin '" << ue->PluginName << "'";
@@ -45,11 +48,13 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
 			}
 		}
 		if (!m_prevUpEngine)*/
-		result = new CDefaultUploadEngine();
+		ServerSync* serverSync = getServerSync(serverProfile);
+		result = new CDefaultUploadEngine(serverSync);
 		result->setServerSettings(serverProfile.serverSettings());
 		result->setUploadData(ue);
 		result->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
 	}
+	
 	result->setServerSettings(serverProfile.serverSettings());
 	result->setUploadData(ue);
 	result->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
@@ -61,16 +66,19 @@ CScriptUploadEngine* UploadEngineManager::getScriptUploadEngine(ServerProfile& s
 	return dynamic_cast<CScriptUploadEngine*>(getUploadEngine(serverProfile));
 }
 
-CScriptUploadEngine* UploadEngineManager::getPlugin(const Utf8String& serverName, const Utf8String& name, ServerSettingsStruct& params, bool UseExisting) {
+CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile, const std::string& pluginName, bool UseExisting) {
 	std::lock_guard<std::mutex> lock(pluginsMutex_);
 	DWORD curTime = GetTickCount();
+	std::string serverName = serverProfile.serverName();
+	ServerSettingsStruct& params = serverProfile.serverSettings();
 	std::thread::id threadId = std::this_thread::get_id();
 	CScriptUploadEngine* plugin = m_plugins[threadId][serverName];
 	if (plugin && (GetTickCount() - plugin->getCreationTime() < 1000 * 60 * 5))
 		UseExisting = true;
 
-	if (plugin && UseExisting && plugin->name() == name && plugin->serverSettings().authData.Login == params.authData.Login) {
+	if (plugin && UseExisting && plugin->name() == pluginName && plugin->serverSettings().authData.Login == params.authData.Login) {
 		plugin->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
+		ScriptAPI::SetCurrentThreadVM(plugin->getVM());
 		return plugin;
 	}
 
@@ -79,10 +87,10 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(const Utf8String& serverName
 		plugin = 0;
 		m_plugins[threadId][serverName] = 0;
 	}
-
-	CScriptUploadEngine* newPlugin = new CScriptUploadEngine(name);
+	ServerSync* serverSync = getServerSync(serverProfile);
+	CScriptUploadEngine* newPlugin = new CScriptUploadEngine(pluginName, serverSync);
 	newPlugin->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
-	if (newPlugin->load(m_ScriptsDirectory + name + ".nut", params)) {
+	if (newPlugin->load(m_ScriptsDirectory + pluginName + ".nut", params)) {
 		m_plugins[threadId][serverName] = newPlugin;
 		return newPlugin;
 	}
@@ -118,4 +126,18 @@ void UploadEngineManager::clearThreadData()
 		}
 		m_plugins.erase(it);
 	}
+}
+
+ServerSync* UploadEngineManager::getServerSync(const ServerProfile& serverProfile)
+{
+	std::lock_guard<std::mutex> lock(serverSyncsMutex_);
+	ServerSyncMapKey key = std::make_pair(serverProfile.serverName(), serverProfile.profileName());
+	auto it = serverSyncs_.find(key);
+	if (it == serverSyncs_.end())
+	{
+		ServerSync *sync = new ServerSync();
+		serverSyncs_[key] = sync;
+		return sync;
+	}
+	return it->second;
 }

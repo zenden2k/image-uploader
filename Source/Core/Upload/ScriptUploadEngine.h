@@ -47,7 +47,7 @@ class CScriptUploadEngine: public CAbstractUploadEngine
 		int m_nThumbWidth;
 	
 	public:
-		CScriptUploadEngine(Utf8String pluginName);
+		CScriptUploadEngine(Utf8String pluginName, ServerSync* serverSync);
 		~CScriptUploadEngine();
 		void InitScriptEngine();
 		static void DestroyScriptEngine();
@@ -66,6 +66,7 @@ class CScriptUploadEngine: public CAbstractUploadEngine
 		Utf8String name();
 		time_t getCreationTime();
 		int RetryLimit();
+		Sqrat::SqratVM& getVM();
 		
 		//Sqrat::Table m_Object; 		
 	protected:

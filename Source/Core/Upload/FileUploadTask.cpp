@@ -5,12 +5,18 @@
 
 FileUploadTask::FileUploadTask(const std::string& fileName, const std::string& displayName, UploadTask* parentTask) : UploadTask(parentTask) {
 	fileName_ = fileName;
+	tempFileDeleter_ = 0;
 	originalFileName_ = fileName;
 	if ( displayName.empty() ) {
 		displayName_ = IuCoreUtils::ExtractFileName(fileName);
 	} else {
 		displayName_ = displayName;
 	}	
+}
+
+FileUploadTask::~FileUploadTask()
+{
+	delete tempFileDeleter_;
 }
 
 std::string FileUploadTask::getType() const {
@@ -61,4 +67,13 @@ void FileUploadTask::setFinished(bool finished)
 		parentTask_->uploadResult()->thumbUrl = uploadResult_.directUrl;
 	}
 	UploadTask::setFinished(finished);
+}
+
+TempFileDeleter* FileUploadTask::tempFileDeleter(bool create)
+{
+	if (!tempFileDeleter_ && create )
+	{
+		tempFileDeleter_ = new TempFileDeleter();
+	}
+	return tempFileDeleter_;
 }

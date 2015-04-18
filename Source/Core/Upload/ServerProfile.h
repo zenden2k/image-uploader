@@ -65,6 +65,9 @@ public:
 	void setFolderId(std::string newId);
 	std::string folderUrl() const;
 	void setFolderUrl(std::string newUrl);
+
+	bool shortenLinks() const;
+	void setShortenLinks(bool shorten);
 	bool isNull();
 	bool UseDefaultSettings;
 	void clearFolderInfo();
@@ -84,6 +87,7 @@ protected:
 	std::string folderTitle_;
 	std::string folderId_;
 	std::string folderUrl_;
+	bool shortenLinks_;
 
 	friend class CSettings;
 };

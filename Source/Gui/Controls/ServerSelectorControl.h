@@ -94,7 +94,7 @@ private:
 	CToolBarCtrl settingsButtonToolbar_;
 	ServerProfile serverProfile_;
 	bool showDefaultServerItem_;
-	bool showImageProcessingParamsLink_;
+	bool showImageProcessingParams_;
 	void addAccount();
 	CString currentUserName_;
 	int serversMask_;

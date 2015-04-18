@@ -54,7 +54,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
@@ -479,7 +479,7 @@
       <Optimization>Full</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\sqplus;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -615,15 +615,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Source\Core\CommonDefs.h" />
+    <ClInclude Include="Source\Core\TempFileDeleter.h" />
     <ClInclude Include="Source\Core\Upload\FileQueueUploaderPrivate.h" />
     <ClInclude Include="Source\Core\Upload\Filters\ImageConverterFilter.h" />
     <ClInclude Include="Source\Core\Upload\Filters\UrlShorteningFilter.h" />
     <ClInclude Include="Source\Core\Upload\ServerProfile.h" />
+    <ClInclude Include="Source\Core\Upload\ServerSync.h" />
     <ClInclude Include="Source\Core\Upload\UploadEngineManager.h" />
     <ClInclude Include="Source\Core\Upload\UploadFilter.h" />
     <ClInclude Include="Source\Core\Upload\UploadManager.h" />
     <ClInclude Include="Source\Core\Upload\UploadResult.h" />
     <ClInclude Include="Source\Core\Upload\UploadSession.h" />
+    <ClInclude Include="Source\Gui\Controls\ResultsListView.h" />
     <ClInclude Include="Source\logging.h" />
     <ClInclude Include="Source\resource.h" />
     <ClInclude Include="Source\versioninfo.h" />
@@ -921,14 +924,17 @@
     <ResourceCompile Include="Source\Image Uploader.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Core\TempFileDeleter.cpp" />
     <ClCompile Include="Source\Core\Upload\FileQueueUploaderPrivate.cpp" />
     <ClCompile Include="Source\Core\Upload\Filters\ImageConverterFilter.cpp" />
     <ClCompile Include="Source\Core\Upload\Filters\UrlShorteningFilter.cpp" />
     <ClCompile Include="Source\Core\Upload\ServerProfile.cpp" />
+    <ClCompile Include="Source\Core\Upload\ServerSync.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadEngineManager.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadFilter.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadManager.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadSession.cpp" />
+    <ClCompile Include="Source\Gui\Controls\ResultsListView.cpp" />
     <ClCompile Include="Source\Image Uploader.cpp" />
     <ClCompile Include="Source\Core\Logging.cpp" />
     <ClCompile Include="Source\stdafx.cpp">

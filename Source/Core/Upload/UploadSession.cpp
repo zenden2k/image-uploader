@@ -120,16 +120,29 @@ int UploadSession::finishedTaskCount()
 	return res;
 }
 
+void UploadSession::addSessionFinishedCallback(const SessionFinishedCallback& callback)
+{
+	sessionFinishedCallbacks_.push_back(callback);
+}
+
 void UploadSession::addTaskAddedCallback(const TaskAddedCallback& callback)
 {
 	taskAddedCallbacks_.push_back(callback);
 }
 
+std::shared_ptr<UploadTask> UploadSession::getTask(int index)
+{
+	return tasks_[index];
+}
+
 void UploadSession::taskFinished(UploadTask* task)
 {
-	if (isFinished() && OnSessionFinished)
+	if (isFinished())
 	{
-		OnSessionFinished(this);
+		for (int i = 0; i < sessionFinishedCallbacks_.size(); i++)
+		{
+			sessionFinishedCallbacks_[i](this);
+		}
 	}
 }
 

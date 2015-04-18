@@ -41,7 +41,7 @@ CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngine
 {
 		showDefaultServerItem_ = false;
 		serversMask_ = smImageServers | smFileServers;
-		showImageProcessingParamsLink_ = true;
+		showImageProcessingParams_ = true;
 		defaultServer_ = defaultServer;
 		iconBitmapUtils_ = new IconBitmapUtils();
 		previousSelectedServerIndex = -1;
@@ -64,8 +64,9 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 	imageProcessingParamsLink_.SubclassWindow(GetDlgItem(IDC_IMAGEPROCESSINGPARAMS));
 	imageProcessingParamsLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
 	imageProcessingParamsLink_.m_clrLink = CSettings::DefaultLinkColor;
-	imageProcessingParamsLink_.SetLabel(TR("Обработка изображений..."));
-	imageProcessingParamsLink_.SetToolTipText(TR("Обработка изображений..."));
+	CString linkLabel = showImageProcessingParams_ ? TR("Обработка изображений...") : TR("Параметры...");
+	imageProcessingParamsLink_.SetLabel(linkLabel);
+	imageProcessingParamsLink_.SetToolTipText(linkLabel);
 
 	accountLink_.SubclassWindow(GetDlgItem(IDC_ACCOUNTINFO));
 	accountLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON ; 
@@ -79,7 +80,7 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 	serverComboBox_.Attach( GetDlgItem( IDC_SERVERCOMBOBOX ) );
 
 	updateServerList();
-	GuiTools::ShowDialogItem(m_hWnd, IDC_IMAGEPROCESSINGPARAMS, showImageProcessingParamsLink_);
+	//GuiTools::ShowDialogItem(m_hWnd, IDC_IMAGEPROCESSINGPARAMS, showImageProcessingParams_);
 
 	return 1;  // Let the system set the focus
 }
@@ -581,14 +582,14 @@ void CServerSelectorControl::createSettingsButton() {
 }
 
 void CServerSelectorControl::setShowImageProcessingParamsLink(bool show) {
-	showImageProcessingParamsLink_ = show;
+	showImageProcessingParams_ = show;
 }
 
 LRESULT CServerSelectorControl::OnImageProcessingParamsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
 	int serverComboElementIndex = serverComboBox_.GetCurSel();
 	std::string serverName = reinterpret_cast<char*>( serverComboBox_.GetItemData(serverComboElementIndex) );
 	CUploadEngineData* uploadEngineData = _EngineList->byName(Utf8ToWCstring( serverName ));
-	CUploadParamsDlg dlg(serverProfile_, defaultServer_);
+	CUploadParamsDlg dlg(serverProfile_, showImageProcessingParams_, defaultServer_);
 	if ( dlg.DoModal(m_hWnd) == IDOK) {
 		serverProfile_.setImageUploadParams(dlg.imageUploadParams());
 	}

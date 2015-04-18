@@ -4,6 +4,7 @@
 
 ServerProfile::ServerProfile() {
 	UseDefaultSettings = true;
+	shortenLinks_ = false;
 }
 
 ServerProfile::ServerProfile(const std::string&  newServerName){
@@ -58,6 +59,16 @@ void ServerProfile::setFolderUrl(std::string newUrl)
 	folderUrl_ = newUrl;
 }
 
+bool ServerProfile::shortenLinks() const
+{
+	return shortenLinks_;
+}
+
+void ServerProfile::setShortenLinks(bool shorten)
+{
+	shortenLinks_ = shorten;
+}
+
 bool ServerProfile::isNull()
 {
 	return serverName_.empty();
@@ -89,6 +100,7 @@ void ServerProfile::bind(SettingsNode& serverNode)
 	serverNode["@FolderUrl"].bind(folderUrl_);
 	serverNode["@ProfileName"].bind(profileName_);
 	serverNode["@UseDefaultSettings"].bind(UseDefaultSettings);
+	serverNode["@ShortenLinks"].bind(shortenLinks_);
 	imageUploadParams.bind(serverNode);
 }
 #endif

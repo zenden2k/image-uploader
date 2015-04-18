@@ -30,6 +30,8 @@
 #include "Core/Network/NetworkClient.h"
 #include "CommonTypes.h"
 
+class ServerSync;
+
 struct LoginInfo
 {
 	std::string Login, Password, Cookies;
@@ -200,7 +202,7 @@ class UploadTask;
 class CAbstractUploadEngine
 {
 	public:
-		CAbstractUploadEngine();
+		CAbstractUploadEngine(ServerSync* serverSync);
 		virtual ~CAbstractUploadEngine();
 		void setThumbnailWidth(int width);
 		virtual int doUpload(UploadTask* task, CIUUploadParams &params) = 0;
@@ -209,6 +211,8 @@ class CAbstractUploadEngine
 		virtual int RetryLimit()=0;
 		virtual void setNetworkClient(NetworkClient* nm);
 		void setUploadData(CUploadEngineData* data);
+		void setServerSync(ServerSync* sync);
+		ServerSync* serverSync() const;
 		CUploadEngineData* getUploadData() const;
 		// Events
 		fastdelegate::FastDelegate0<bool> onNeedStop;
@@ -221,6 +225,7 @@ class CAbstractUploadEngine
 		NetworkClient * m_NetworkClient;
 		CUploadEngineData * m_UploadData;
 		ServerSettingsStruct m_ServersSettings;
+		ServerSync* serverSync_;;
 		int m_ThumbnailWidth;
 		bool DebugMessage(const std::string& message, bool isServerResponseBody = false);
 		bool ErrorMessage(ErrorInfo);

@@ -33,7 +33,7 @@ class CUploadParamsDlg : public CDialogImpl<CUploadParamsDlg>
 {
 	public:
 		int ServerId;
-		CUploadParamsDlg(ServerProfile& serverProfile, bool defaultServer = false);
+		CUploadParamsDlg(ServerProfile& serverProfile, bool showImageProcessingParams = true, bool defaultServer = false);
 		~CUploadParamsDlg();
 		enum { IDD = IDD_UPLOADPARAMSDLG };
 		ImageUploadParams imageUploadParams();
@@ -77,6 +77,7 @@ class CUploadParamsDlg : public CDialogImpl<CUploadParamsDlg>
 		ImageUploadParams params_;
 		ServerProfile&  serverProfile_;
 		bool defaultServer_;
+		bool showImageProcessingParams_;
 };
 
 #endif // LOGINDLG_H

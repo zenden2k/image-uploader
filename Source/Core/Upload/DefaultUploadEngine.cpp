@@ -25,7 +25,7 @@
 #include <Core/Upload/UrlShorteningTask.h>
 #include <Core/Utils/StringUtils.h>
 
-CDefaultUploadEngine::CDefaultUploadEngine() : CAbstractUploadEngine() 
+CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync) : CAbstractUploadEngine(serverSync)
 {
 	m_CurrentActionIndex = -1;
 }

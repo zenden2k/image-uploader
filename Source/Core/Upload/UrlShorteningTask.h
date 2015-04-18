@@ -7,12 +7,21 @@
 class UrlShorteningTask: public UploadTask {
 	public:
 		UrlShorteningTask(const std::string& url, UploadTask* parentTask = 0);
+
+		enum ParentUrlType
+		{
+			None, DirectUrl, DownloadUrl
+		};
 		virtual std::string getType() const;
 		virtual std::string getMimeType() const;
 		virtual int64_t getDataLength() const;
 		std::string getUrl() const;
+		void setFinished(bool finished) override;
+		void setParentUrlType(ParentUrlType type);
+		ParentUrlType parentUrlType();
 	protected:
 		std::string url_;
+		ParentUrlType parentUrlType_;
 };	
 
 #endif

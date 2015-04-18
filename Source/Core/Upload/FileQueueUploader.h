@@ -39,7 +39,8 @@ class CFileQueueUploader
 		CFileQueueUploader(UploadEngineManager* uploadEngineManager);
 		void addSession(std::shared_ptr<UploadSession> uploadSession);
 		void addTask(std_tr::shared_ptr<UploadTask> task);
-		~CFileQueueUploader();
+		void removeSession(std::shared_ptr<UploadSession> uploadSession);
+		virtual ~CFileQueueUploader();
 		bool start();
 		void stop();
 		bool IsRunning() const;
@@ -50,9 +51,13 @@ class CFileQueueUploader
 
 		fastdelegate::FastDelegate1<CFileQueueUploader*> OnQueueFinished;
 		fastdelegate::FastDelegate2<CFileQueueUploader*, NetworkClient*> OnConfigureNetworkClient;
+		friend class FileQueueUploaderPrivate;
 	private:
 		DISALLOW_COPY_AND_ASSIGN(CFileQueueUploader);
 		FileQueueUploaderPrivate* _impl;
+	protected:
+		virtual void sessionAdded(UploadSession* session);
+		virtual void taskAdded(UploadTask* task);
 };
 
 #endif

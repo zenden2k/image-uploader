@@ -72,6 +72,7 @@ void CUploadSettings::TranslateUI()
 	TRC(IDC_ADDFILESIZE,"Надпись на миниатюре");
 	TRC(IDC_PRESSUPLOADBUTTON,"Нажмите кнопку \"Загрузить\" чтобы начать процесс загрузки");
 	TRC(IDC_FILESERVERGROUPBOX, "Сервер для остальных типов файлов");
+	TRC(IDC_SHORTENLINKSCHECKBOX, "Сократить ссылки");
 	useServerThumbnailsTooltip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_USESERVERTHUMBNAILS), TR("Это означает, что миниатюры будут создаваться сайтом, а не программой.")); //  \r\nПри этом то, как они будут выглядеть, напрямую зависит от выбранного сайта.
 }
 
@@ -249,6 +250,19 @@ void CUploadSettings::ShowParams(/*UPLOADPARAMS params*/)
 	SendDlgItemMessage(IDC_CREATETHUMBNAILS,BM_SETCHECK,sessionImageServer_.getImageUploadParams().CreateThumbs);
 	SendDlgItemMessage(IDC_ADDFILESIZE,BM_SETCHECK,sessionImageServer_.getImageUploadParams().getThumb().AddImageSize);
 	SendDlgItemMessage(IDC_USESERVERTHUMBNAILS,BM_SETCHECK,sessionImageServer_.getImageUploadParams().UseServerThumbs);
+
+	bool shortenImages = sessionImageServer_.shortenLinks();
+	bool shortenFiles = sessionFileServer_.shortenLinks();
+	int shortenLinks = BST_INDETERMINATE;
+	int checkboxStyle = BS_AUTO3STATE;
+	HWND checkbox = GetDlgItem(IDC_SHORTENLINKSCHECKBOX);
+	if (shortenImages == shortenFiles)
+	{
+		shortenLinks = shortenImages ? BST_CHECKED : BST_UNCHECKED;
+		checkboxStyle = BS_AUTOCHECKBOX;
+	} 
+	::SetWindowLong(checkbox, GWL_STYLE, (::GetWindowLong(checkbox, GWL_STYLE) & ~(BS_AUTO3STATE | BS_AUTOCHECKBOX)) | checkboxStyle);
+	SendDlgItemMessage(IDC_SHORTENLINKSCHECKBOX, BM_SETCHECK, shortenLinks);
 }
 
 LRESULT CUploadSettings::OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
@@ -315,17 +329,18 @@ bool CUploadSettings::OnNext()
 	sessionImageServer_.getImageUploadParamsRef().ProcessImages = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
 	sessionImageServer_.getImageUploadParamsRef().CreateThumbs = IS_CHECKED(IDC_CREATETHUMBNAILS);
 	sessionImageServer_.getImageUploadParamsRef().UseServerThumbs = IS_CHECKED(IDC_USESERVERTHUMBNAILS);
-	//Settings.ThumbSettings.UseThumbTemplate = IsChecked(IDC_USETHUMBTEMPLATE);
-	//Settings.ThumbSettings.DrawFrame = IsChecked(IDC_DRAWFRAME);
 	sessionImageServer_.getImageUploadParamsRef().getThumbRef().AddImageSize = IS_CHECKED(IDC_ADDFILESIZE);
-	/*Settings.ImageSettings.SaveProportions = IsChecked(IDC_SAVEPROPORTIONS);
-	Settings.ImageSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
-	Settings.ImageSettings.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);*/
-	
-	//sessionImageServer_.setServerName(Utf8ToWCstring(_EngineList->byIndex(m_nImageServer )->Name));
-	//sessionFileServer_.setServerName(Utf8ToWCstring(_EngineList->byIndex(m_nFileServer)->Name));
-
 	sessionImageServer_.getImageUploadParamsRef().getThumbRef().Size=  GetDlgItemInt(IDC_THUMBWIDTH);
+
+	
+	int shortenLinks = SendDlgItemMessage(IDC_SHORTENLINKSCHECKBOX, BM_GETCHECK);
+	if (shortenLinks != BST_INDETERMINATE)
+	{
+		bool shorten = shortenLinks == BST_CHECKED;
+		sessionImageServer_.setShortenLinks(shorten);
+		sessionFileServer_.setShortenLinks(shorten);
+	}
+
 	WizardDlg->setSessionImageServer(sessionImageServer_);
 	WizardDlg->setSessionFileServer(sessionFileServer_);
 	if ( Settings.RememberImageServer ) {

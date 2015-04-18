@@ -15,6 +15,7 @@ void UploadTask::init()
 	uploadSuccess_ = false;
 	session_ = 0;
 	role_ = DefaultRole;
+	shorteningStarted_ = false;
 }
 
 void UploadTask::childTaskFinished(UploadTask* child)
@@ -27,9 +28,9 @@ void UploadTask::childTaskFinished(UploadTask* child)
 
 void UploadTask::taskFinished()
 {
-	if (OnFileFinished) 
+	for (int i = 0; i < taskFinishedCallbacks_.size(); i++)
 	{
-		OnFileFinished(this, uploadSuccess()); // invoke callback
+		taskFinishedCallbacks_[i](this, uploadSuccess()); // invoke callback
 	}
 	if (session_)
 	{
@@ -132,6 +133,11 @@ UploadProgress* UploadTask::progress()
 	return &progress_;
 }
 
+void UploadTask::addTaskFinishedCallback(const TaskFinishedCallback& callback)
+{
+	taskFinishedCallbacks_.push_back(callback);
+}
+
 std::string UploadTask::serverName() const
 {
 	return serverProfile_.serverName();
@@ -147,6 +153,16 @@ void UploadTask::setServerProfile(ServerProfile profile)
 	serverProfile_ = profile;
 }
 
+ServerProfile& UploadTask::urlShorteningServer()
+{
+	return urlShorteningProfile_;
+}
+
+void UploadTask::setUrlShorteningServer(ServerProfile profile)
+{
+	urlShorteningProfile_ = profile;
+}
+
 void UploadTask::setUserData(void* data)
 {
 	userData_ = data;
@@ -157,10 +173,15 @@ void* UploadTask::userData() const
 	return userData_;
 }
 
-bool UploadTask::uploadSuccess()
+bool UploadTask::uploadSuccess(bool withChilds)
 {
+	int count = childTasks_.size();
+	if (!count || !withChilds )
+	{
+		return uploadSuccess_;
+	}
 	std::lock_guard<std::mutex> lock(tasksMutex_);
-	for (int i = 0; i < childTasks_.size(); i++)
+	for (int i = 0; i <count; i++)
 	{
 		if (!childTasks_[i]->isFinished() || !childTasks_[i]->uploadSuccess())
 		{
@@ -185,11 +206,54 @@ void UploadTask::setRole(Role role)
 	role_ = role;
 }
 
+bool UploadTask::shorteningStarted() const
+{
+	return shorteningStarted_;
+}
+
+
+void UploadTask::setShorteningStarted(bool started)
+{
+	shorteningStarted_ = started;
+}
+
 void UploadTask::uploadProgress(InfoProgress progress)
 {
 	progress_.uploaded = progress.Uploaded;
 	progress_.totalUpload = progress.Total;
 	progress_.isUploading = progress.IsUploading;
+
+	struct timeval tp;
+	gettimeofday(&tp, NULL);
+	int64_t curTime = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+	if (curTime - progress_.lastUpdateTime > 250 || progress.Uploaded == progress.Total) {
+		int64_t Current = progress.Uploaded;
+
+		int speed = 0;
+		UploadProgressTimeInfo ti;
+		ti.bytes = Current;
+		ti.ms = curTime;
+		if (progress_.timeBytes.size())
+		{
+			speed = int(((double)(ti.bytes - progress_.timeBytes[0].bytes) / (curTime - progress_.timeBytes[0].ms) * 1000));
+		}
+
+		progress_.timeBytes.push_back(ti);
+		if (progress_.timeBytes.size() > 11)
+		{
+			progress_.timeBytes.pop_front(); //Deleting element at the beginning of the deque
+		}
+		if (speed > 0)
+		{
+			progress_.speed = IuCoreUtils::fileSizeToString(speed) + "/s";
+		}
+		else
+		{
+			progress_.speed.clear();
+		}
+		progress_.lastUpdateTime = curTime;
+	}
+
 	if (OnUploadProgress)
 	{
 		OnUploadProgress(this); // invoke upload progress callback
@@ -198,8 +262,13 @@ void UploadTask::uploadProgress(InfoProgress progress)
 
 int UploadTask::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask)
 {
-	std::lock_guard<std::mutex> lock(tasksMutex_);
+	int taskCount = childTasks_.size();
+	if (!taskCount)
+	{
+		return 0;
+	}
 	int count = 0;
+	std::lock_guard<std::mutex> lock(tasksMutex_);
 	for (auto it = childTasks_.begin(); it != childTasks_.end(); it++)
 	{
 		if (!it->get()->isFinished() && !it->get()->isRunning() )
@@ -217,6 +286,11 @@ int UploadTask::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<Upload
 
 int UploadTask::pendingTasksCount(UploadTaskAcceptor* acceptor)
 {
+	int taskCount = childTasks_.size();
+	if (!taskCount)
+	{
+		return 0;
+	}
 	std::lock_guard<std::mutex> lock(tasksMutex_);
 	int res = 0;
 	for (auto it = childTasks_.begin(); it != childTasks_.end(); it++)

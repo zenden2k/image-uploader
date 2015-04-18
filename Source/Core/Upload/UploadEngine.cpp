@@ -150,11 +150,12 @@ void CAbstractUploadEngine::setUploadData(CUploadEngineData* data)
 	m_UploadData = data;
 }
 
-CAbstractUploadEngine::CAbstractUploadEngine()
+CAbstractUploadEngine::CAbstractUploadEngine(ServerSync* serverSync)
 {
 	m_bShouldStop = 0;
 	m_NetworkClient = 0;
 	m_UploadData = 0;
+	serverSync_ = serverSync;
 }
 
 void CAbstractUploadEngine::setThumbnailWidth(int width)
@@ -165,4 +166,14 @@ void CAbstractUploadEngine::setThumbnailWidth(int width)
 CUploadEngineData* CAbstractUploadEngine::getUploadData() const
 {
 	return m_UploadData;
+}
+
+void CAbstractUploadEngine::setServerSync(ServerSync* sync)
+{
+	serverSync_ = sync;
+}
+
+ServerSync* CAbstractUploadEngine::serverSync() const
+{
+	return serverSync_;
 }

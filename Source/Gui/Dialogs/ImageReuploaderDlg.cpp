@@ -288,7 +288,8 @@ bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it
 	std::shared_ptr<FileUploadTask> fileUploadTask(new FileUploadTask(localFileName, displayName));
 	fileUploadTask->setServerProfile(serverProfile_);
 	fileUploadTask->setUserData(uploadItemData);
-	fileUploadTask->OnFileFinished.bind(this, &CImageReuploaderDlg::OnFileFinished);
+	fileUploadTask->setUrlShorteningServer(Settings.urlShorteningServer);
+	fileUploadTask->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CImageReuploaderDlg::OnFileFinished));
 	uploadSession_->addTask(fileUploadTask);
 	uploadManager_->start();
 	return true;
@@ -436,7 +437,7 @@ bool CImageReuploaderDlg::BeginDownloading()
 		return false;
 	} else {
 		uploadSession_.reset(new UploadSession());
-		uploadSession_->OnSessionFinished.bind(this, &CImageReuploaderDlg::OnQueueFinished);
+		uploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CImageReuploaderDlg::OnQueueFinished));
 		uploadManager_->addSession(uploadSession_);
 		std::string result;
 		for ( int i = 0; i < links.size(); i++ ) {

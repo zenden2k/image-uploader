@@ -8,6 +8,24 @@ authStep2Url <- "https://api.dropbox.com/1/oauth/access_token";
 oauth_token_secret <- "";
 oauth_token <- "";
 
+function BeginLogin() {
+	try {
+		return serverSync.beginLogin();
+	}
+	catch ( ex ) {
+	}
+	return false;
+}
+
+function EndLogin() {
+	try {
+		return serverSync.endLogin();
+	} catch ( ex ) {
+		
+	}
+	return false;
+}
+
 function tr(key, text) {
 	try {
 		return Translate(key, text);
@@ -39,7 +57,7 @@ function getTimeStamp() {
 
 function generateNonce() {
 	local res = "";
-	res += format("%d%d%d", random(2000), random(2000), random(2000));
+	res += format("%d%d%d", random()%2000, random()%2000, random()%2000);
 	return res;
 }
 
@@ -119,7 +137,7 @@ function openUrl(url) {
 	system("start "+ reg_replace(url,"&","^&") );
 }
 
-function DoLogin() {
+function _DoLogin() {
 	oauth_token_secret = ServerParams.getParam("oauth_token_secret");
 	oauth_token = ServerParams.getParam("oauth_token");
 	
@@ -158,6 +176,16 @@ function DoLogin() {
 		return 1;
 	}
 	return 0;
+}
+
+function DoLogin() {
+	if (!BeginLogin() ) {
+		return false;
+	}
+	local res = _DoLogin();
+	
+	EndLogin();
+	return res;
 }
 
 function isAuthorized() {

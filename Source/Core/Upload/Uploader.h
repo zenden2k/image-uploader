@@ -56,6 +56,7 @@ class CUploader
 		void DebugMessage(const std::string& message, bool isServerResponseBody = false);
 		void SetStatus(StatusType status, int param1=0, std::string param="");
 		StatusType GetStatus() const;
+		bool isFatalError() const;
 	protected:
 		InfoProgress m_PrInfo;
 		static int pluginProgressFunc (void* userData, double dltotal,double dlnow,double ultotal, double ulnow);
@@ -70,6 +71,7 @@ class CUploader
 		std::string m_ImageUrl;
 		std::string m_DownloadUrl;
 		std::string m_ErrorReason;
+		bool isFatalError_;
 		
 		void Error(bool error, std::string message, ErrorType type = etOther, int retryIndex = -1);
 		void ErrorMessage(ErrorInfo);

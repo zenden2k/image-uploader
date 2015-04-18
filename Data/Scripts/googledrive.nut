@@ -1,4 +1,22 @@
 
+function BeginLogin() {
+	try {
+		return serverSync.beginLogin();
+	}
+	catch ( ex ) {
+	}
+	return false;
+}
+
+function EndLogin() {
+	try {
+		return serverSync.endLogin();
+	} catch ( ex ) {
+		
+	}
+	return false;
+}
+
 function regex_simple(data,regStr,start)
 {
 	local ex = regexp(regStr);
@@ -53,7 +71,7 @@ function checkResponse() {
 	return 1;
 }
 
-function DoLogin() 
+function _DoLogin() 
 { 
 	local login = ServerParams.getParam("Login");
 	local scope = "https://www.googleapis.com/auth/drive";
@@ -155,6 +173,15 @@ function DoLogin()
 	return 0;		
 } 
 
+function DoLogin() {
+	if (!BeginLogin() ) {
+		return false;
+	}
+	local res = _DoLogin();
+	
+	EndLogin();
+	return res;
+}
 function GetFolderList(list)
 {
 	if(!DoLogin())

@@ -31,8 +31,11 @@ struct HistoryItem
 {
 	std::string localFilePath;
 	std::string directUrl;
+	std::string directUrlShortened;
 	std::string viewUrl;
+	std::string viewUrlShortened;
 	std::string thumbUrl;
+
 	std::string serverName;
 	time_t timeStamp;
 	int64_t uploadFileSize;

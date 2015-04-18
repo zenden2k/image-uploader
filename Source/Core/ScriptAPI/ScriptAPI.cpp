@@ -30,8 +30,9 @@
 #include <Core/Upload/UploadEngine.h>
 #include <Core/Upload/FolderList.h>
 #include <Core/Squirrelnc.h>
+#include <Core/Upload/ServerSync.h>
 
-using namespace ScriptAPI;
+
 /*
 DECLARE_INSTANCE_TYPE(NetworkClient);
 DECLARE_INSTANCE_TYPE(SimpleXml);
@@ -136,11 +137,18 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
     );
 
 
-
     root.Bind("ServerSettingsStruct", Class<ServerSettingsStruct>(vm.GetVM()).
         Func("setParam", &ServerSettingsStruct::setParam).
         Func("getParam", &ServerSettingsStruct::getParam)
     );
+
+	root.Bind("ServerSync", Class<ServerSync>(vm.GetVM()).
+		Func("beginLogin", &ServerSync::beginLogin).
+		Func("endLogin", &ServerSync::endLogin).
+		Func("setValue", &ServerSync::setValue).
+		Func("getValue", &ServerSync::getValue)
+	);
+
 }
 
 #ifdef _MSC_VER
@@ -175,11 +183,13 @@ Sqrat::SqratVM& GetCurrentThreadVM()
 {
 	return *threadVm;
 }
-
-
+void SetCurrentThreadVM(Sqrat::SqratVM& vm) {
+	threadVm = &vm;
+}
 }
 
 HSQUIRRELVM GetCurrentThreadHVM()
 {
-	return GetCurrentThreadVM().GetVM();
+	return ScriptAPI::GetCurrentThreadVM().GetVM();
 }
+

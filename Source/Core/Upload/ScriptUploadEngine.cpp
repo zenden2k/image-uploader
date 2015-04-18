@@ -164,7 +164,7 @@ bool CScriptUploadEngine::needStop()
 	return shouldStop;
 }
 
-CScriptUploadEngine::CScriptUploadEngine(Utf8String pluginName) : CAbstractUploadEngine()
+CScriptUploadEngine::CScriptUploadEngine(Utf8String pluginName, ServerSync* serverSync) : CAbstractUploadEngine(serverSync)
 {
 	m_sName = pluginName;
 	m_CreationTime = time(0);
@@ -194,7 +194,10 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
         ScriptAPI::RegisterAPI(vm_);
        
 		ServerSettingsStruct* par = &params;
-        vm_.GetRootTable().SetInstance("ServerParams", par);
+		Sqrat::RootTable& rootTable = vm_.GetRootTable();
+		rootTable.SetInstance("ServerParams", par);
+		rootTable.SetInstance("serverSync", serverSync_);
+
 		//BindVariable(m_Object, &params, "ServerParams");
 
 		std::string scriptText;
@@ -478,6 +481,11 @@ bool CScriptUploadEngine::supportsBeforehandAuthorization()
 int CScriptUploadEngine::RetryLimit()
 {
 	return m_UploadData->RetryLimit;
+}
+
+Sqrat::SqratVM& CScriptUploadEngine::getVM()
+{
+	return vm_;
 }
 
 void CScriptUploadEngine::Log(ErrorInfo::MessageType mt, const std::string& error)

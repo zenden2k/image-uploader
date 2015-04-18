@@ -37,8 +37,8 @@
 #include <Core/Upload/FileUploadTask.h>
 #include <Core/Upload/UploadManager.h>
 #include <Func/WinUtils.h>
-
-class CTempFilesDeleter
+/*
+class TempFilesDeleter
 {
 	public:
 		CTempFilesDeleter();
@@ -67,7 +67,7 @@ bool CTempFilesDeleter::Cleanup()
 	}
 	m_files.clear();
 	return true;
-}
+}*/
 
 
 CString UploaderStatusToString(StatusType status, int actionIndex, std::string param)
@@ -119,6 +119,7 @@ CUploadDlg::CUploadDlg(CWizardDlg *dlg,UploadManager* uploadManager) :ResultsWin
 	Terminated = false;
 	m_EngineList = _EngineList;
 	LastUpdate = 0;
+	backgroundThreadStarted_ = false;
 	//fastdelegate::FastDelegate1<bool> fd;
 	//fd.bind(this, &CUploadDlg::onShortenUrlChanged);
 	uploadManager_ = uploadManager;
@@ -142,13 +143,16 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	::GetWindowRect(GetDlgItem(IDC_RESULTSPLACEHOLDER), &rc);
 	::MapWindowPoints(0,m_hWnd, (POINT*)&rc, 2);
 
-	uploadListView_.m_hWnd = GetDlgItem(IDC_UPLOADTABLE);
+	uploadListView_.AttachToDlgItem(m_hWnd, IDC_UPLOADTABLE);
 	uploadListView_.AddColumn(TR("Файл"), 1);
 	uploadListView_.AddColumn(TR("Статус"), 1);
 	uploadListView_.AddColumn(TR("Миниатюра"), 2);
-	uploadListView_.SetColumnWidth(0, 170);
-	uploadListView_.SetColumnWidth(1, 170);
-	uploadListView_.SetColumnWidth(2, 170);
+	CDC hdc = GetDC();
+	float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
+	float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+	uploadListView_.SetColumnWidth(0, 170 * dpiScaleX);
+	uploadListView_.SetColumnWidth(1, 170 * dpiScaleX);
+	uploadListView_.SetColumnWidth(2, 170 * dpiScaleX );
 
 	createToolbar();
 
@@ -187,7 +191,6 @@ DWORD CUploadDlg::Run()
 {
 	m_bStopped = false;
 	HRESULT hRes = ::CoInitialize(NULL);
-	CTempFilesDeleter  TempFilesDeleter;
 	if(!MainDlg) return 0;
 	
 	#if  WINVER	>= 0x0601
@@ -289,8 +292,7 @@ DWORD CUploadDlg::Run()
 
 	UrlList.clear();
 	UrlList.resize(n);
-	CHistoryManager * mgr = ZBase::get()->historyManager();
-	std_tr::shared_ptr<CHistorySession> session = mgr->newSession();
+	
 	uploadSession_.reset(new UploadSession());
 	for(int i=0; i<n; i++)
 	{
@@ -312,9 +314,10 @@ DWORD CUploadDlg::Run()
 		task->OnUploadProgress.bind(this, &CUploadDlg::onTaskUploadProgress);
 		task->setUserData(fps);
 		task->OnStatusChanged.bind(this, &CUploadDlg::OnUploaderStatusChanged);
-		task->OnFileFinished.bind(this, &CUploadDlg::onTaskFinished);
+		task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CUploadDlg::onTaskFinished));
 		task->setServerProfile(isImage ? sessionImageServer_ : sessionFileServer_);
 		task->OnChildTaskAdded.bind(this, &CUploadDlg::onChildTaskAdded);
+		task->setUrlShorteningServer(Settings.urlShorteningServer);
 		uploadSession_->addTask(task);
 		/*if ( isImage )
 		{
@@ -543,7 +546,7 @@ DWORD CUploadDlg::Run()
 		TempFilesDeleter.Cleanup();
 		iss = InitialParams;*/
 	}
-	uploadSession_->OnSessionFinished.bind(this, &CUploadDlg::onSessionFinished);
+	uploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CUploadDlg::onSessionFinished));
 	uploadManager_->addSession(uploadSession_);
 	/*
 
@@ -705,6 +708,7 @@ int CUploadDlg::ThreadTerminated(void)
 	SetNextCaption(TR("Завершить >"));
 	Terminated = true;
 	IsStopTimer = false;
+	backgroundThreadStarted_ = false;
 	EnablePrev();
 	EnableNext();
 	EnableExit();
@@ -734,10 +738,8 @@ bool CUploadDlg::OnShow()
 	FileProgress(_T(""), false);
 	UrlList.clear();
 	ResultsWindow->Clear();
-	EnablePrev(false);
-	EnableNext();
-	EnableExit(false);
-	SetNextCaption(TR("Остановить"));
+	ResultsWindow->setShortenUrls(sessionImageServer_.shortenLinks());
+
 
 	int code = ResultsWindow->GetCodeType();
 	int newcode = code;
@@ -759,6 +761,7 @@ bool CUploadDlg::OnShow()
 
 	::SetFocus(GetDlgItem(IDC_CODEEDIT));
 	alreadyShortened_ = false;
+	backgroundThreadStarted();
 	Run();	
 	return true;
 }
@@ -817,6 +820,9 @@ bool CUploadDlg::OnHide()
 {
 	UrlList.clear();
 	ResultsWindow->Clear();
+	uploadManager_->removeSession(uploadSession_);
+	uploadSession_.reset();
+	
 	Settings.UseTxtTemplate = (SendDlgItemMessage(IDC_USETEMPLATE, BM_GETCHECK) == BST_CHECKED);
 	Settings.CodeType = ResultsWindow->GetCodeType();
 	Settings.CodeLang = ResultsWindow->GetPage();
@@ -877,7 +883,7 @@ void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
 	progressCurrent = CurPos;
 	progressTotal = Total;
 	CString res;
-	res.Format(TR("Ссылки на файлы (%d)"), filesFinished_);
+	res.Format(TR("Ссылки на файлы (%d)"), CurPos);
 	toolbar_.SetButtonInfo(IDC_UPLOADRESULTSTAB, TBIF_TEXT, 0, 0, res,0, 0, 0, 0);
 }
 
@@ -912,11 +918,9 @@ void CUploadDlg::OnUploaderConfigureNetworkClient(NetworkClient *nm)
 
 void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
 	if ( !alreadyShortened_ && shortenUrl ) {
-		int len = UrlList.size();
-		for ( int i = 0; i < len; i++ ) {
-			AddShortenUrlTask(&UrlList[i]);
-		}
-		alreadyShortened_ = true;
+		GenerateOutput();
+		
+		uploadManager_->shortenLinksInSession(uploadSession_);
 	} else {
 		GenerateOutput();
 	}
@@ -1087,8 +1091,9 @@ void CUploadDlg::onTaskUploadProgress(UploadTask* task)
 		if (progress->totalUpload) {
 			percent = 100 * ((float)progress->uploaded) / progress->totalUpload;
 		}
-		_stprintf(ProgressBuffer, TR("Загружено %s из %s (%d%% )"), (LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->uploaded)),
-			(LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->totalUpload)), percent);
+		CString uploadSpeed = Utf8ToWCstring(progress->speed);
+		_stprintf(ProgressBuffer, TR("Загружено %s из %s (%d%%) %s"), (LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->uploaded)),
+			(LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->totalUpload)), percent, (LPCTSTR)uploadSpeed);
 		int columnIndex = isThumb ? 2 : 1;
 		uploadListView_.SetItemText(fps->tableRow, columnIndex, ProgressBuffer);
 	}
@@ -1112,8 +1117,10 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
 		CUrlListItem item;
 		UploadResult* uploadResult = task->uploadResult();
 		item.ImageUrl = Utf8ToWCstring(uploadResult->directUrl);
+		item.ImageUrlShortened = Utf8ToWCstring(uploadResult->directUrlShortened);
 		item.FileName = Utf8ToWCstring(fileTask->getDisplayName());
 		item.DownloadUrl = Utf8ToWCstring(uploadResult->downloadUrl);
+		item.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
 		item.ThumbUrl = Utf8ToWCstring(uploadResult->thumbUrl);
 		UrlList[fps->tableRow] = item;
 		uploadListView_.SetItemText(fps->tableRow, 1, _T("Готово"));
@@ -1134,9 +1141,36 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
 
 void CUploadDlg::onChildTaskAdded(UploadTask* child)
 {
-	child->OnFileFinished.bind(this, &CUploadDlg::onTaskFinished);
+
+	if (!backgroundThreadStarted_)
+	{
+		backgroundThreadStarted();
+	}
+	if (child->role() == UploadTask::UrlShorteningRole)
+	{
+		FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(child->parentTask()->userData());
+		if (fps)
+		{
+			uploadListView_.SetItemText(fps->tableRow, 1, _T("Сокращение ссылки..."));
+		}
+	}
+	child->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CUploadDlg::onTaskFinished));
 	child->OnUploadProgress.bind(this, &CUploadDlg::onTaskUploadProgress);
 	child->OnStatusChanged.bind(this, &CUploadDlg::OnUploaderStatusChanged);
+}
+
+void CUploadDlg::backgroundThreadStarted()
+{
+	std::lock_guard<std::mutex> lock(backgroundThreadStartedMutex_);
+	if (backgroundThreadStarted_)
+	{
+		return;
+	}
+	backgroundThreadStarted_ = true;
+	EnablePrev(false);
+	EnableNext();
+	EnableExit(false);
+	SetNextCaption(TR("Остановить"));
 }
 
 LRESULT CUploadDlg::OnUploadProcessButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {

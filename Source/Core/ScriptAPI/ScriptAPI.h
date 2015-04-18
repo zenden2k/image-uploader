@@ -8,6 +8,7 @@ namespace ScriptAPI {
 void RegisterAPI(Sqrat::SqratVM& vm);
 void CleanUp();
 Sqrat::SqratVM& GetCurrentThreadVM();
+void SetCurrentThreadVM(Sqrat::SqratVM& vm);
 
 }
 #endif

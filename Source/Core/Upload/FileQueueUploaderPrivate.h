@@ -4,6 +4,7 @@
 #pragma once
 #include "UploadTask.h"
 #include "FileQueueUploader.h"
+#include "ServerSync.h"
 #include <mutex>
 
 class CUploader;
@@ -15,6 +16,14 @@ struct ServerThreadsInfo {
 	int runningThreads;
 	int waitingFileCount;
 	CUploadEngineData* ued;
+	bool fatalError;
+	ServerThreadsInfo()
+	{
+		runningThreads = 0;
+		waitingFileCount = 0;
+		ued = 0;
+		fatalError = false;
+	}
 };
 
 class TaskAcceptorBase : public UploadTaskAcceptor
@@ -37,6 +46,7 @@ public:
 	std_tr::shared_ptr<UploadTask> getNextJob();
 	void AddTask(std_tr::shared_ptr<UploadTask> task);
 	void AddSession(std::shared_ptr<UploadSession> uploadSession);
+	void removeSession(std::shared_ptr<UploadSession> uploadSession);
 	void addUploadFilter(UploadFilter* filter);
 	void removeUploadFilter(UploadFilter* filter);
 #ifndef IU_CLI
@@ -58,9 +68,12 @@ protected:
 	void OnConfigureNetworkClient(CUploader*, NetworkClient* nm);
 	void onProgress(CUploader*, InfoProgress progress);
 	void onErrorMessage(CUploader*, ErrorInfo);
+	void onDebugMessage(CUploader*, const std::string& msg, bool isResponseBody);
 	void onTaskAdded(UploadSession*, UploadTask*);
+	
 
 	int pendingTasksCount();
+	void taskAdded(UploadTask* task);
 	//std::map<CUploader*, CFileQueueUploader::Task*> tasks_;
 
 	bool autoStart_;

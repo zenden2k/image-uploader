@@ -43,22 +43,37 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
 	imageConverter.setThumbnail(&thumb);
 	imageConverter.setGenerateThumb(GenThumbs);
 	if (imageConverter.Convert(IuCoreUtils::Utf8ToWstring(fileTask->getFileName()).c_str())) {
+		
 		std::string convertedImageFileName = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(imageConverter.getImageFileName()));
 		if (!convertedImageFileName.empty()) {
 			
+			if (convertedImageFileName != fileTask->getFileName())
+			{
+				TempFileDeleter* deleter = fileTask->tempFileDeleter();
+				deleter->addFile(convertedImageFileName);
+			}
 			std::string virtualName = IuCoreUtils::ExtractFileNameNoExt(fileTask->getFileName()) + "." + IuCoreUtils::ExtractFileExt(convertedImageFileName);
 			fileTask->setDisplayName(virtualName);
 			fileTask->setFileName(convertedImageFileName);
 		} 
 		if (GenThumbs) {
-			std::shared_ptr<FileUploadTask> thumbTask(new FileUploadTask(IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(imageConverter.getThumbFileName())), "", task));
-			//thumbTask->OnFileFinished.bind(this, &ImageConverterFilter::OnFileFinished);
-			ServerProfile thumbServerProfile = fileTask->serverProfile().deepCopy();
-			thumbServerProfile.getImageUploadParamsRef().CreateThumbs = false;
-			thumbServerProfile.getImageUploadParamsRef().ProcessImages = false;
-			thumbTask->setServerProfile(thumbServerProfile);
-			thumbTask->setRole(UploadTask::ThumbRole);
-			fileTask->addChildTask(thumbTask);
+			std::string thumbFileName = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(imageConverter.getThumbFileName()));
+			if (!thumbFileName.empty())
+			{
+				std::shared_ptr<FileUploadTask> thumbTask(new FileUploadTask(thumbFileName, "", task));
+
+				TempFileDeleter* deleter = fileTask->tempFileDeleter();
+				deleter->addFile(thumbFileName);
+				
+				//thumbTask->OnFileFinished.bind(this, &ImageConverterFilter::OnFileFinished);
+				ServerProfile thumbServerProfile = fileTask->serverProfile().deepCopy();
+				thumbServerProfile.getImageUploadParamsRef().CreateThumbs = false;
+				thumbServerProfile.getImageUploadParamsRef().ProcessImages = false;
+				thumbTask->setServerProfile(thumbServerProfile);
+				thumbTask->setRole(UploadTask::ThumbRole);
+				fileTask->addChildTask(thumbTask);
+			}
+			
 		}
 	}
 	return true;
