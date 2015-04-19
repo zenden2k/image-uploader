@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1428831972.dat" TimeStamp="1428831972" Date="12.04.2015 11:46:12" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="ce9e71c59eb0408f3e322f88e7b3bb45">
+  <Info>
+[+] takebin.com
+[+] imgbox.com
+</Info>
+</UpdateInfo>
