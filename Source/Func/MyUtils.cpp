@@ -22,13 +22,13 @@
 
 #include "atlheaders.h"
 #include <shobjidl.h>
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 #include <gdiplusheaders.h>
-#include <Core/Utils/CoreUtils.h>
-#include <Core/Utils/StringUtils.h>
+#include "Core/Utils/CoreUtils.h"
+#include "Core/Utils/StringUtils.h"
 #include <algorithm>
-//#include <Func/Settings.h>
-#include <Core/Video/VideoUtils.h>
+//#include "Func/Settings.h"
+#include "Core/Video/VideoUtils.h"
 
 typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
 typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);

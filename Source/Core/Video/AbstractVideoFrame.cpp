@@ -1,6 +1,6 @@
 #include "AbstractVideoFrame.h"
 #include "AbstractImage.h"
-#include <Core/logging.h>
+#include "Core/logging.h"
 
 AbstractVideoFrame::AbstractVideoFrame() {
 }

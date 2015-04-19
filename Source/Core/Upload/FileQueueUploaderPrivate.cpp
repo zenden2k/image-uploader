@@ -3,12 +3,12 @@
 #include "FileQueueUploader.h"
 #include <zthread/Runnable.h>
 #include "Uploader.h"
-#include <Core/Upload/FileUploadTask.h>
+#include "Core/Upload/FileUploadTask.h"
 #include <algorithm>
 #include <zthread/Thread.h>
-#include <Gui/Dialogs/LogWindow.h>
+#include "Gui/Dialogs/LogWindow.h"
 #include "UploadEngineManager.h"
-#include <Core/Upload/UploadFilter.h>
+#include "Core/Upload/UploadFilter.h"
 #ifndef IU_CLI
 #include <zthread/Thread.h>
 #include <zthread/Mutex.h>

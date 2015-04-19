@@ -23,8 +23,8 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Func/Common.h"
 #include "Gui/GuiTools.h"
-#include <Func/IuCommonFunctions.h>
-#include <Func/WinUtils.h>
+#include "Func/IuCommonFunctions.h"
+#include "Func/WinUtils.h"
 
 const int LLB_VertDivider = 10;
 const int LLB_VertMargin = 5;

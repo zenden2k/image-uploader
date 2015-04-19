@@ -24,20 +24,20 @@
 #include "LogWindow.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
-#include <Core/Utils/StringUtils.h>
-#include <Core/Upload/FileQueueUploader.h>
+#include "Core/Utils/StringUtils.h"
+#include "Core/Upload/FileQueueUploader.h"
 #include <Zthread/Mutex.h>
-#include <Func/WinUtils.h>
-#include <Func/Myutils.h>
+#include "Func/WinUtils.h"
+#include "Func/Myutils.h"
 #include <Wininet.h>
 #include <algorithm>
 #include <set>
-#include <Gui/Controls/CustomEditControl.h>
-#include <Func/LocalFileCache.h>
-#include <Func/Base.h>
-#include <Func/IuCommonFunctions.h>
-#include <Gui/Controls/ServerSelectorControl.h>
-#include <Core/Upload/FileUploadTask.h>
+#include "Gui/Controls/CustomEditControl.h"
+#include "Func/LocalFileCache.h"
+#include "Func/Base.h"
+#include "Func/IuCommonFunctions.h"
+#include "Gui/Controls/ServerSelectorControl.h"
+#include "Core/Upload/FileUploadTask.h"
 
 const TCHAR CImageReuploaderDlg::LogTitle[] = _T("Image Reuploader");
 

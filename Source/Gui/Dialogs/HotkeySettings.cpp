@@ -24,7 +24,7 @@
 #include "hotkeyeditor.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
-#include <Core/ScriptAPI/WebBrowserPrivate_win.h>
+#include "Core/ScriptAPI/WebBrowserPrivate_win.h"
 
 // CHotkeySettingsPage
 CHotkeySettingsPage::CHotkeySettingsPage()

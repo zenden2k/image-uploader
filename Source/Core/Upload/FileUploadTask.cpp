@@ -1,6 +1,6 @@
 #include "FileUploadTask.h"
 
-#include <Core/Utils/CoreUtils.h>
+#include "Core/Utils/CoreUtils.h"
 #include <assert.h>
 
 FileUploadTask::FileUploadTask(const std::string& fileName, const std::string& displayName, UploadTask* parentTask) : UploadTask(parentTask) {

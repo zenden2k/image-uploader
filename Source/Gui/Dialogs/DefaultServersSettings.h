@@ -27,7 +27,7 @@
 #include "resource.h"       // main symbols
 #include "Gui/Controls/MyImage.h"
 #include "Gui/Dialogs/settingspage.h"
-#include <Gui/COntrols/ServerSelectorControl.h>
+#include "Gui/COntrols/ServerSelectorControl.h"
 class CServerSelectorControl;
 class UploadEngineManager;
 class CDefaultServersSettings : public CDialogImpl<CDefaultServersSettings>, 

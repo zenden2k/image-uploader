@@ -6,7 +6,7 @@
 #include "resource.h"
 
 #include "WTLBrowserView.h"
-#include <Core/Logging.h>
+#include "Core/Logging.h"
 
 BOOL CWTLBrowserView::PreTranslateMessage(MSG* pMsg)
 {

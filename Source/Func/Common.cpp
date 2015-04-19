@@ -30,7 +30,7 @@
 #include "Func/Settings.h"
 #include "Core/Utils/CryptoUtils.h"
 #include "versioninfo.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 #include <thread>
 
 CString IUCommonTempFolder;

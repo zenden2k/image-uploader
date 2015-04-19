@@ -25,10 +25,10 @@
 #include "Func/Settings.h"
 #include "LogWindow.h"
 #include "Gui/GuiTools.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 #include "ContextMenuItemDlg.h"
 #include "3rdpart/Registry.h"
-#include <Core/Utils/CryptoUtils.h>
+#include "Core/Utils/CryptoUtils.h"
 
 // CIntegrationSettings
 CIntegrationSettings::CIntegrationSettings(UploadEngineManager *uploadEngineManager)

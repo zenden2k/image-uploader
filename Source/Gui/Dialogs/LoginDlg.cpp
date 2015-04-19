@@ -23,9 +23,9 @@
 #include "Func/Common.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
-#include <Core/Upload/ScriptUploadEngine.h>
-#include <Func/WinUtils.h>
-#include <Core/Upload/UploadEngineManager.h>
+#include "Core/Upload/ScriptUploadEngine.h"
+#include "Func/WinUtils.h"
+#include "Core/Upload/UploadEngineManager.h"
 
 // CLoginDlg
 CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool createNew) : serverProfile_(serverProfile)

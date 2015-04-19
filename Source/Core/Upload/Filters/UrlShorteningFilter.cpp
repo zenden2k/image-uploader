@@ -1,6 +1,6 @@
 #include "UrlShorteningFilter.h"
-#include <Core/Upload/UrlShorteningTask.h>
-#include <Core/Upload/FileUploadTask.h>
+#include "Core/Upload/UrlShorteningTask.h"
+#include "Core/Upload/FileUploadTask.h"
 
 bool UrlShorteningFilter::PreUpload(UploadTask* task)
 {

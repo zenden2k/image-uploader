@@ -2,8 +2,8 @@
 
 #include "Settings.h"
 #include "HistoryManager.h"
-#include <Gui/Dialogs/LogWindow.h>
-#include <Func/WinUtils.h>
+#include "Gui/Dialogs/LogWindow.h"
+#include "Func/WinUtils.h"
 
 #include <zthread/Guard.h>
 LocalFileCache::LocalFileCache() {

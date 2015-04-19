@@ -24,14 +24,14 @@
 #include <map>
 #include <string>
 #include "Core/SettingsManager.h"
-#include <Core/Upload/UploadEngine.h>
-#include <Core/Upload/ServerProfile.h>
+#include "Core/Upload/UploadEngine.h"
+#include "Core/Upload/ServerProfile.h"
 
 #if !defined(IU_IMAGEEDITOR) && !defined(IU_CLI)
     #include "Func/Settings.h"
 	#include "atlheaders.h"
 	#include "Func/langclass.h"
-	//#include <Core/Upload/UploadEngineManager.h>
+	//#include "Core/Upload/UploadEngineManager.h"
 	#include "Func/Common.h"
 	#include "Gui/Dialogs/HotkeySettings.h"
     #include "Core/Images/ImageConverter.h"

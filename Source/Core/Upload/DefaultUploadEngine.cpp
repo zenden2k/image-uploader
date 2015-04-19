@@ -22,8 +22,8 @@
 #include "Core/3rdpart/codepages.h"
 #include "Core/3rdpart/pcreplusplus.h"
 #include "FileUploadTask.h"
-#include <Core/Upload/UrlShorteningTask.h>
-#include <Core/Utils/StringUtils.h>
+#include "Core/Upload/UrlShorteningTask.h"
+#include "Core/Utils/StringUtils.h"
 
 CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync) : CAbstractUploadEngine(serverSync)
 {

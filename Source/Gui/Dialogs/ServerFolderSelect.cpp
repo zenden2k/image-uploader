@@ -20,13 +20,13 @@
 
 #include "ServerFolderSelect.h"
 #include "atlheaders.h"
-#include <Core/Upload/UploadEngineManager.h>
+#include "Core/Upload/UploadEngineManager.h"
 #include "Func/common.h"
 #include "NewFolderDlg.h"
 #include "LogWindow.h"
 #include "Func/Settings.h"
-#include <Core/Upload/ScriptUploadEngine.h>
-#include <Func/WinUtils.h>
+#include "Core/Upload/ScriptUploadEngine.h"
+#include "Func/WinUtils.h"
 
 CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager) :serverProfile_(serverProfile)
 {

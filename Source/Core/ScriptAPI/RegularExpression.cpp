@@ -20,7 +20,7 @@
 
 #include "RegularExpression.h"
 
-#include <Core/Logging.h>
+#include "Core/Logging.h"
 #include "../Squirrelnc.h"
 #include "ScriptAPI.h"
 

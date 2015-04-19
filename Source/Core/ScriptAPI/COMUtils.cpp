@@ -19,7 +19,7 @@
 */
 
 #include "COMUtils.h"
-#include <Core/Utils/CoreUtils.h>
+#include "Core/Utils/CoreUtils.h"
 
 namespace ScriptAPI {
 

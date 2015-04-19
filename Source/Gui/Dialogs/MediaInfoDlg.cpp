@@ -22,8 +22,8 @@
 #include "MediaInfoDlg.h"
 #include "Func/fileinfohelper.h"
 #include "Gui/GuiTools.h"
-#include <Func/WinUtils.h>
-#include <Func/myutils.h>
+#include "Func/WinUtils.h"
+#include "Func/myutils.h"
 
 // CMediaInfoDlg
 CMediaInfoDlg::CMediaInfoDlg()

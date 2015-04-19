@@ -9,12 +9,12 @@
 
 #include "Func/Settings.h"
 #include "Gui/Dialogs/LogWindow.h"
-#include <3rdpart/GdiPlusH.h>
+#include "3rdpart/GdiPlusH.h"
 #include "Gui/Dialogs/InputDialog.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Gui/GuiTools.h"
-#include <Func/IuCommonFunctions.h>
-#include <Func/WinUtils.h>
+#include "Func/IuCommonFunctions.h"
+#include "Func/WinUtils.h"
 
 const CString MyBytesToString(__int64 nBytes )
 {

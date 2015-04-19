@@ -29,11 +29,12 @@
 #include "Func/Settings.h"
 #include "Gui/Dialogs/SettingsDlg.h"
 #include "Gui/GuiTools.h"
-#include <Gui/IconBitmapUtils.h>
-#include <Func/WinUtils.h>
-#include <Func/IuCommonFunctions.h>
+#include "Gui/IconBitmapUtils.h"
+#include "Func/WinUtils.h"
+#include "Func/IuCommonFunctions.h"
 #include "AddFtpServerDialog.h"
 #include "AddDirectoryServerDIalog.h"
+#include <Gui/Controls/ServerSelectorControl.h>
 
 CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager * uploadEngineManager) :сonvert_profiles_(Settings.ConvertProfiles)
 {
@@ -72,7 +73,6 @@ void CUploadSettings::TranslateUI()
 	TRC(IDC_ADDFILESIZE,"Надпись на миниатюре");
 	TRC(IDC_PRESSUPLOADBUTTON,"Нажмите кнопку \"Загрузить\" чтобы начать процесс загрузки");
 	TRC(IDC_FILESERVERGROUPBOX, "Сервер для остальных типов файлов");
-	TRC(IDC_SHORTENLINKSCHECKBOX, "Сократить ссылки");
 	useServerThumbnailsTooltip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_USESERVERTHUMBNAILS), TR("Это означает, что миниатюры будут создаваться сайтом, а не программой.")); //  \r\nПри этом то, как они будут выглядеть, напрямую зависит от выбранного сайта.
 }
 
@@ -105,10 +105,11 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	}
 	::ReleaseDC(HWND_DESKTOP,dc) ;
    HICON ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON	, 16,16,0);
-	SendDlgItemMessage(
-      IDC_RESIZEPRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
+	SendDlgItemMessage( IDC_RESIZEPRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
    m_ResizePresetIconButton.SubclassWindow(GetDlgItem(IDC_RESIZEPRESETSBUTTON));
 	
+   SendDlgItemMessage(IDC_SHORTENINGURLSERVERBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
+   m_ShorteningServerButton.SubclassWindow(GetDlgItem(IDC_SHORTENINGURLSERVERBUTTON));
    
    
    ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONEDIT), IMAGE_ICON	, 16,16,0);
@@ -229,6 +230,7 @@ LRESULT CUploadSettings::OnDrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	return TRUE;
 }
 
+
 LRESULT CUploadSettings::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	EndDialog(wID);
@@ -263,6 +265,7 @@ void CUploadSettings::ShowParams(/*UPLOADPARAMS params*/)
 	} 
 	::SetWindowLong(checkbox, GWL_STYLE, (::GetWindowLong(checkbox, GWL_STYLE) & ~(BS_AUTO3STATE | BS_AUTOCHECKBOX)) | checkboxStyle);
 	SendDlgItemMessage(IDC_SHORTENLINKSCHECKBOX, BM_SETCHECK, shortenLinks);
+	updateUrlShorteningCheckboxLabel();
 }
 
 LRESULT CUploadSettings::OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
@@ -1051,6 +1054,24 @@ FolderMenu.AppendMenu(MF_STRING, id++, _T("75%"));
    return 0;
 }
 
+LRESULT CUploadSettings::OnShorteningUrlServerButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+{
+	CServerSelectorControl serverSelectorControl(uploadEngineManager_, false, false);
+	serverSelectorControl.setServersMask(CServerSelectorControl::smUrlShorteners);
+	serverSelectorControl.setShowImageProcessingParamsLink(false);
+	serverSelectorControl.setTitle(TR("Сервер для сокращения ссылок"));
+	serverSelectorControl.setServerProfile(Settings.urlShorteningServer);
+	RECT clientRect;
+	m_ShorteningServerButton.GetClientRect(&clientRect);
+	m_ShorteningServerButton.ClientToScreen(&clientRect);
+	POINT pt = { clientRect.left, clientRect.bottom };
+	serverSelectorControl.OnChange.bind(this, &CUploadSettings::shorteningUrlServerChanged);
+	serverSelectorControl.showPopup(m_hWnd, pt);
+	Settings.urlShorteningServer = serverSelectorControl.serverProfile();
+	updateUrlShorteningCheckboxLabel();
+	return 0;
+}
+
 LRESULT CUploadSettings::OnResizePresetMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
   struct resize_preset
@@ -1121,7 +1142,21 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
 	 sp.setFolderUrl(ss.defaultFolder.viewUrl);
  }
 
- void CUploadSettings::ShowParams(const ImageConvertingParams& params)
+void CUploadSettings::updateUrlShorteningCheckboxLabel()
+{
+	CString text;
+	CString serverName = Utf8ToWCstring(Settings.urlShorteningServer.serverName());
+	text.Format(TR("Сократить ссылки с помощью %s"), static_cast<LPCTSTR>(serverName));
+	SetDlgItemText(IDC_SHORTENLINKSCHECKBOX, text);
+}
+
+void CUploadSettings::shorteningUrlServerChanged(CServerSelectorControl* serverSelectorControl)
+{
+	Settings.urlShorteningServer = serverSelectorControl->serverProfile();
+	updateUrlShorteningCheckboxLabel();
+}
+
+void CUploadSettings::ShowParams(const ImageConvertingParams& params)
  {
    m_ProfileChanged = false;
    m_CatchChanges = false;

@@ -1,7 +1,7 @@
 #ifndef IMAGEEDITOR_MOVABLEELEMENTS_H
 #define IMAGEEDITOR_MOVABLEELEMENTS_H
 
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 #include "DrawingElement.h"
 #include "MovableElement.h"
 

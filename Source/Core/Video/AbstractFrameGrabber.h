@@ -2,7 +2,7 @@
 #define ABSTRACTFRAMEGRABBER_H
 
 #include "AbstractVideoFrame.h"
-#include <Core/Utils/CoreTypes.h>
+#include "Core/Utils/CoreTypes.h"
 
 class AbstractFrameGrabber
 {

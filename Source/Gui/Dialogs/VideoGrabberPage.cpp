@@ -21,23 +21,23 @@
 #include "VideoGrabberPage.h"
 
 
-#include <Core/Video/VideoGrabber.h>
-#include <Core/Video/GdiPlusImage.h>
+#include "Core/Video/VideoGrabber.h"
+#include "Core/Video/GdiPlusImage.h"
 #include "Gui/Controls/MyImage.h"
 #include "Gui/Dialogs/SettingsDlg.h"
 #include "Func/fileinfohelper.h"
 #include "Core/Images/ImageConverter.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 #include "LogWindow.h"
 #include "mediainfodlg.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
-#include <Core/Utils/CryptoUtils.h>
-#include <Core/Logging.h>
-#include <Core/Utils/StringUtils.h>
-#include <Func/IuCommonFunctions.h>
+#include "Core/Utils/CryptoUtils.h"
+#include "Core/Logging.h"
+#include "Core/Utils/StringUtils.h"
+#include "Func/IuCommonFunctions.h"
 #include "atlheaders.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 
 CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
 {

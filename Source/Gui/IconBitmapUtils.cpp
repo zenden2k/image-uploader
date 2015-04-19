@@ -19,7 +19,7 @@
 #include "stdafx.h"
 #include "IconBitmapUtils.h"
 #include "../Func/MyUtils.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 
 IconBitmapUtils::IconBitmapUtils()
 	: hUxTheme(NULL)

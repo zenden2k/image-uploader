@@ -30,13 +30,13 @@
 #include "Func/Base.h"
 #include "Func/HistoryManager.h"
 #include "Core/Utils/CoreTypes.h"
-#include <Func/WebUtils.h>
-#include <Func/WinUtils.h>
-#include <Core/Upload/UrlShorteningTask.h>
-#include <Func/IuCommonFunctions.h>
-#include <Gui/GuiTools.h>
-#include <Core/Upload/FileUploadTask.h>
-#include <Func/myutils.h>
+#include "Func/WebUtils.h"
+#include "Func/WinUtils.h"
+#include "Core/Upload/UrlShorteningTask.h"
+#include "Func/IuCommonFunctions.h"
+#include "Gui/GuiTools.h"
+#include "Core/Upload/FileUploadTask.h"
+#include "Func/myutils.h"
 
 // FloatingWindow
 CFloatingWindow::CFloatingWindow()

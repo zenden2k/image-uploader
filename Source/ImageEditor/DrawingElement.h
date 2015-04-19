@@ -3,7 +3,7 @@
 
 #include <map>
 #include <deque>
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 #include "BasicTypes.h"
 
 namespace ImageEditor {

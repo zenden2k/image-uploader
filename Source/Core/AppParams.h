@@ -1,7 +1,7 @@
 #ifndef IU_CORE_APPPARAMS_H
 #define IU_CORE_APPPARAMS_H
 
-#include <Core/Utils/Singleton.h>
+#include "Core/Utils/Singleton.h"
 #include <string>
 
 class AppParams: public Singleton<AppParams>

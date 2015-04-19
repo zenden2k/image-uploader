@@ -25,7 +25,7 @@
 #include <atlcoll.h>
 #include <ctime>
 #include "MyEngineList.h"
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 
 class UploadEngineManager;
 class CCmdLine;

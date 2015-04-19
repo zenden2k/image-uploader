@@ -24,12 +24,12 @@
 #include <vector>
 #include <string>
 
-#include <Core/Squirrelnc.h>
+#include "Core/Squirrelnc.h"
 
 #include "CommonTypes.h"
 #include "UploadEngine.h"
 #include "Core/Utils/CoreTypes.h"
-#include <Core/Upload/FolderList.h>
+#include "Core/Upload/FolderList.h"
 
 extern const Utf8String IuNewFolderMark;
 

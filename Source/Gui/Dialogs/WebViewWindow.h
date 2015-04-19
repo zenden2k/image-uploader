@@ -4,7 +4,7 @@
 #include "atlheaders.h"
 #include <atlcrack.h>
 #include "resource.h"       // main symbols
-#include <Gui/Controls/WTLBrowserView.h>
+#include "Gui/Controls/WTLBrowserView.h"
 #include "3rdpart/thread.h"
 #include "3rdpart/MemberFunctionCallback.h"
 /*

@@ -24,7 +24,7 @@
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Common/CmdLine.h"
 #include "Func/Settings.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 
 // CUpdateDlg
 

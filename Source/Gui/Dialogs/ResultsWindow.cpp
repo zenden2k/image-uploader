@@ -22,7 +22,7 @@
 #include "atlheaders.h"
 #include "Func/Common.h"
 #include "Func/Settings.h"
-#include <Gui/GuiTools.h>
+#include "Gui/GuiTools.h"
 // CResultsWindow
 CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,std::vector<CUrlListItem>  & urlList,bool ChildWindow)
 {

@@ -20,12 +20,12 @@
 
 #include "Utils.h"
 
-#include <3rdpart/GdiplusH.h>
-#include <Core/Logging.h>
-#include <Func/WinUtils.h>
-#include <3rdpart/QColorQuantizer.h>
-#include <Core/Utils/StringUtils.h>
-#include <Core/Utils/CoreUtils.h>
+#include "3rdpart/GdiplusH.h"
+#include "Core/Logging.h"
+#include "Func/WinUtils.h"
+#include "3rdpart/QColorQuantizer.h"
+#include "Core/Utils/StringUtils.h"
+#include "Core/Utils/CoreUtils.h"
 #include <math.h>
 #include <stdint.h>
 using namespace Gdiplus;

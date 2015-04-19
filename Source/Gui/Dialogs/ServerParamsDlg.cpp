@@ -22,10 +22,10 @@
 #include "ServerParamsDlg.h"
 #include "Func/LangClass.h"
 #include "Func/Settings.h"
-#include <Gui/GuiTools.h>
-#include <Gui/Dialogs/ServerFolderSelect.h>
-#include <Gui/Dialogs/InputDialog.h>
-#include <Func/WinUtils.h>
+#include "Gui/GuiTools.h"
+#include "Gui/Dialogs/ServerFolderSelect.h"
+#include "Gui/Dialogs/InputDialog.h"
+#include "Func/WinUtils.h"
 // CServerParamsDlg
 CServerParamsDlg::CServerParamsDlg(ServerProfile  serverProfile, UploadEngineManager * uploadEngineManager, bool focusOnLoginEdit) : m_ue(serverProfile.uploadEngineData()),
 			serverProfile_(serverProfile)

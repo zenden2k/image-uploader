@@ -5,7 +5,7 @@
 #elif defined(_WIN32)
 	#include "GdiPlusImage.h"
 #endif
-#include <Core/logging.h>
+#include "Core/logging.h"
 
 AbstractImage::AbstractImage() {
 }

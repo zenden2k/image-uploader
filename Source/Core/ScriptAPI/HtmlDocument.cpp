@@ -19,7 +19,7 @@
 */
 
 #include "HtmlDocument.h"
-#include <Core/Squirrelnc.h>
+#include "Core/Squirrelnc.h"
 #ifdef _WIN32
 #include "HtmlDocumentPrivate_win.h"
 #else

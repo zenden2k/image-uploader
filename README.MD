@@ -5,7 +5,7 @@ Free program for Windows that allows you to upload images, screenshots, or any o
 
 [![Image Uploader main window](https://lh4.googleusercontent.com/-D6wvBfMHonw/VQHgBb9ZFzI/AAAAAAAAD1s/Hq1uUei_C-s/s0/download-button-en.png)](http://zenden.ws/imageuploader_downloads)
 
-Supported operating systems: Windows 2000/XP/Vista/7/8/10 (also server versions)
+Supported operating systems: Windows 8/7/Vista/XP/ (also server versions)
 
 ##Main Features
 
@@ -32,7 +32,8 @@ http://zenden.ws/imageuploader-cli
 
 ##Building from source
 
-You need Microsoft Visual C++ at least 9.0 version (Microsoft Visual Studio 2008 SP1). 
+You need Microsoft Visual C++ 12.0 version (Microsoft Visual Studio 2013) to build Image Uploader. 
+Installing Visual Studio 2013 Update 4 is strongly recommended (older versions will corrupt .rc file on editing)
 If you are using a newer MSVC version, you may experience some compilation errors, which can be solved easily (if you fix these errors, please provide a patch or pull request). 
 But also you need to recompile 3rd-party 
 libraries (squirrel, glog, zthread, jsoncpp) against your compiler version (so I recommend to use Microsoft Visual Studio 2008 SP1 to avoid all these issues).
@@ -73,11 +74,8 @@ glog            https://github.com/google/glog
 
 boost           http://www.boost.org
 
-You can download ALL necessary libraries and headers (precompiled for MSVC 2008 SP1) by following link:
+You can download ALL necessary libraries and headers (precompiled for MSVC 2013) by following link:
 
-https://bintray.com/artifact/download/zenden/zenden-image-uploader/Image_Uploader_Contrib_MSVC_2008_SP1_and_sources_v1.3.1_06.04.2015.7z
-
-(precompiled for MSVC 2013)
 https://bintray.com/artifact/download/zenden/zenden-image-uploader/Image_Uploader_Contrib_MSVC_2013_and_sources_v1.3.1_06.04.2015.7z
 
 

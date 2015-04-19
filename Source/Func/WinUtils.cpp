@@ -1,10 +1,10 @@
 #include "WinUtils.h"
 
-#include <Core/Utils/CoreUtils.h>
+#include "Core/Utils/CoreUtils.h"
 #include <sstream>
-#include <Core/Utils/StringUtils.h>
-#include <Func/MyUtils.h>
-#include <3rdpart/GdiplusH.h>
+#include "Core/Utils/StringUtils.h"
+#include "Func/MyUtils.h"
+#include "3rdpart/GdiplusH.h"
 #include <Aclapi.h>
 #include "3rdpart/Registry.h"
 

@@ -20,12 +20,12 @@
 
 
 #include "Gui/GuiTools.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 #include <Shobjidl.h>
 #include <math.h>
 #include "resource.h"
 #ifndef IU_CLI
-#include <Func/Settings.h>
+#include "Func/Settings.h"
 #else
 #define TR(a) _T(a)
 #endif

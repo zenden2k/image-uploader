@@ -1,8 +1,8 @@
 #include "TextUtils.h"
 
-#include <Core/3rdpart/pcreplusplus.h>
-#include <Core/Utils/StringUtils.h>
-#include <Core/Utils/CoreUtils.h>
+#include "Core/3rdpart/pcreplusplus.h"
+#include "Core/Utils/StringUtils.h"
+#include "Core/Utils/CoreUtils.h"
 namespace IuTextUtils
 {
 	Utf8String BbCodeToHtml(const Utf8String& bbcode) {

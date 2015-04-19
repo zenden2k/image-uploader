@@ -2,10 +2,10 @@
 // AddFtpServerDialog.cpp : Implementation of CAddFtpServerDialog
 
 #include "AddFtpServerDialog.h"
-#include <Gui/GuiTools.h>
-#include <Core/ServerListManager.h>
-#include <Func/Settings.h>
-#include <Func//IuCommonFunctions.h>
+#include "Gui/GuiTools.h"
+#include "Core/ServerListManager.h"
+#include "Func/Settings.h"
+#include "Func//IuCommonFunctions.h"
 
 // CAddFtpServerDialog
 CAddFtpServerDialog::CAddFtpServerDialog(CUploadEngineList* uploadEngineList)

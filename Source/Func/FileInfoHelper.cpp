@@ -20,7 +20,7 @@
 
 #include "FileInfoHelper.h"
 #include "atlheaders.h"
-#include "Common/MediaInfoDLL.h" //Dynamicly-loaded library (.dll)
+#include "Core/3rdpart/MediaInfoDLL.h"
 #include "LangClass.h"
 #include "Settings.h"
 #include "WinUtils.h"

@@ -22,9 +22,9 @@
 
 #include "resource.h"
 #include "Gui/GuiTools.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 #include <zthread/Thread.h>
-#include <Core/3rdpart/FastDelegate.h>
+#include "Core/3rdpart/FastDelegate.h"
 #include <vector>
 class FontEnumerator : public ZThread::Runnable {
 	

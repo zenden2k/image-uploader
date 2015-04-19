@@ -30,15 +30,15 @@
 #include "Core/OutputCodeGenerator.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Core/Utils/StringUtils.h"
-#include <Core/AppParams.h>
+#include "Core/AppParams.h"
 #include "Func/Settings.h"
-#include <Core/Logging.h>
+#include "Core/Logging.h"
 #ifdef _WIN32
 #include "Func/UpdatePackage.h"
 #include <fcntl.h>
 #include <io.h>
 #include <stdio.h>
-#include <Func/IuCommonFunctions.h>
+#include "Func/IuCommonFunctions.h"
 #else
 #include <sys/stat.h>
 #endif

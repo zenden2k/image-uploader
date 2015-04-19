@@ -1,7 +1,7 @@
 #ifndef ABSTRACTIMAGE_H
 #define ABSTRACTIMAGE_H
 
-#include <Core/Utils/CoreTypes.h>
+#include "Core/Utils/CoreTypes.h"
 
 class AbstractImage
 {

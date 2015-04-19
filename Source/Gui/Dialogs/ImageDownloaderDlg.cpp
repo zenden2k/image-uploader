@@ -24,8 +24,8 @@
 #include "LogWindow.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
-#include <Func/WinUtils.h>
-#include <Func/myutils.h>
+#include "Func/WinUtils.h"
+#include "Func/myutils.h"
 
 // CImageDownloaderDlg
 CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg,const CString &initialBuffer)

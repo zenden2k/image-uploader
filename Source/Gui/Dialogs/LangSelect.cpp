@@ -21,8 +21,8 @@
 #include "LangSelect.h"
 #include "Func/Common.h"
 #include "Gui/GuiTools.h"
-#include <Func/WinUtils.h>
-#include <Func/Settings.h>
+#include "Func/WinUtils.h"
+#include "Func/Settings.h"
 
 // CLangSelect
 CLangSelect::CLangSelect()

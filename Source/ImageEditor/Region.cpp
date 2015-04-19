@@ -18,7 +18,7 @@
 
 #include "Region.h"
 
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 
 namespace ImageEditor {
 

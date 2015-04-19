@@ -24,8 +24,8 @@
 #include "Func/Common.h"
 #include "Func/Base.h"
 #include "Gui/GuiTools.h"
-#include <Func/IuCommonFunctions.h>
-#include <Func/WinUtils.h>
+#include "Func/IuCommonFunctions.h"
+#include "Func/WinUtils.h"
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl()

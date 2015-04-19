@@ -10,7 +10,7 @@
 #endif // _MSC_VER >= 1000
 
 #include "Browser.h"
-#include <Core/3rdpart/FastDelegate.h>
+#include "Core/3rdpart/FastDelegate.h"
 
 class CWTLBrowserView : public CWindowImpl<CWTLBrowserView, CAxWindow>, public CWebBrowser2<CWTLBrowserView>
 {

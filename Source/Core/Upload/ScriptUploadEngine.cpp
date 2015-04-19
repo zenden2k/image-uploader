@@ -24,20 +24,20 @@
 #include "ScriptUploadEngine.h"
 #include <stdarg.h>
 #include <iostream>
-#include <Core/Squirrelnc.h>
+#include "Core/Squirrelnc.h"
 #include <sqstdaux.h>
 
 
 #include "Core/Utils/CryptoUtils.h"
 
-#include <Core/Upload/FileUploadTask.h>
-#include <Core/Upload/UrlShorteningTask.h>
-#include <Core/Utils/StringUtils.h>
-#include <Core/Logging.h>
+#include "Core/Upload/FileUploadTask.h"
+#include "Core/Upload/UrlShorteningTask.h"
+#include "Core/Utils/StringUtils.h"
+#include "Core/Logging.h"
 #ifndef _WIN32
 #include <unistd.h>
 #endif
-#include <Core/ScriptAPI/ScriptAPI.h>
+#include "Core/ScriptAPI/ScriptAPI.h"
 #include <thread>
 
 std::string squirrelOutput;
@@ -288,6 +288,13 @@ int CScriptUploadEngine::getServerParamList(std::map<Utf8String, Utf8String>& li
             Log(ErrorInfo::mtError, "CScriptUploadEngine::getServerParamList\r\n" + Utf8String(Error::Instance().Message(vm_.GetVM()))); 
             return 0;
         }
+		if (!arr)
+		{
+			Log(ErrorInfo::mtError, "CScriptUploadEngine::getServerParamList\r\n" + Utf8String("GetServerParamList result is NULL"));
+
+			clearSqratError();
+			return -1;
+		}
 
         Sqrat::Array::iterator it;
 		list.clear();

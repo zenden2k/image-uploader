@@ -25,12 +25,12 @@
 #include "HtmlElement.h"
 #endif
 #include "RegularExpression.h"
-#include <Core/Network/NetworkClient.h>
-#include <Core/Utils/SimpleXml.h>
-#include <Core/Upload/UploadEngine.h>
-#include <Core/Upload/FolderList.h>
-#include <Core/Squirrelnc.h>
-#include <Core/Upload/ServerSync.h>
+#include "Core/Network/NetworkClient.h"
+#include "Core/Utils/SimpleXml.h"
+#include "Core/Upload/UploadEngine.h"
+#include "Core/Upload/FolderList.h"
+#include "Core/Squirrelnc.h"
+#include "Core/Upload/ServerSync.h"
 
 
 /*

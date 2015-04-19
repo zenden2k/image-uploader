@@ -22,9 +22,9 @@
 #include "Func/Common.h"
 #include "LogWindow.h"
 #include "Func/Settings.h"
-#include <Core/Upload/UploadEngineManager.h>
+#include "Core/Upload/UploadEngineManager.h"
 #include "Gui/GuiTools.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 
 // CNewFolderDlg
 CNewFolderDlg::CNewFolderDlg(CFolderItem &folder, bool CreateNewFolder,std::vector<std::string>& accessTypeList):

@@ -23,21 +23,22 @@
 
 #include "Gui/Dialogs/wizarddlg.h"
 #include "Gui/GuiTools.h"
-#include <Func/Common.h>
-#include <Func/MyUtils.h>
-#include <Gui/Dialogs/ServerParamsDlg.h>
-#include <Gui/Dialogs/UploadParamsDlg.h>
-#include <Func/WinUtils.h>
-#include <Gui/IconBitmapUtils.h>
-#include <Gui/Dialogs/LoginDlg.h>
-#include <Gui/Dialogs/AddFtpServerDialog.h>
-#include <Gui/Dialogs/AddDirectoryServerDialog.h>
-#include <Core/Logging.h>
+#include "Func/Common.h"
+#include "Func/MyUtils.h"
+#include "Gui/Dialogs/ServerParamsDlg.h"
+#include "Gui/Dialogs/UploadParamsDlg.h"
+#include "Func/WinUtils.h"
+#include "Gui/IconBitmapUtils.h"
+#include "Gui/Dialogs/LoginDlg.h"
+#include "Gui/Dialogs/AddFtpServerDialog.h"
+#include "Gui/Dialogs/AddDirectoryServerDialog.h"
+#include "Core/Logging.h"
 
 const char CServerSelectorControl::kAddFtpServer[]=("<add_ftp_server>");
 const char CServerSelectorControl::kAddDirectoryAsServer[]=("<add_directory_as_server>");
+const TCHAR MENU_EXIT_NOTIFY[] = _T("MENU_EXIT_NOTIFY"), MENU_EXIT_COMMAND_ID[] = _T("MENU_EXIT_COMMAND_ID");
 // CServerSelectorControl
-CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer)
+CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer, bool isChildWindow)
 {
 		showDefaultServerItem_ = false;
 		serversMask_ = smImageServers | smFileServers;
@@ -46,6 +47,7 @@ CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngine
 		iconBitmapUtils_ = new IconBitmapUtils();
 		previousSelectedServerIndex = -1;
 		uploadEngineManager_ = uploadEngineManager;
+		isChildWindow_ = isChildWindow;
 }
 
 CServerSelectorControl::~CServerSelectorControl()
@@ -74,7 +76,7 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 	accountLink_.SetToolTipText(TR("Имя пользователя"));
 
 	createSettingsButton();
-
+	setTitle(title_);
 	GuiTools::MakeLabelBold( GetDlgItem( IDC_SERVERGROUPBOX) );
 	CIcon deleteIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONDELETE));
 	serverComboBox_.Attach( GetDlgItem( IDC_SERVERCOMBOBOX ) );
@@ -82,11 +84,15 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 	updateServerList();
 	//GuiTools::ShowDialogItem(m_hWnd, IDC_IMAGEPROCESSINGPARAMS, showImageProcessingParams_);
 
-	return 1;  // Let the system set the focus
+	return FALSE;  
 }
 
 void CServerSelectorControl::setTitle(CString title) {
-	SetDlgItemText(IDC_SERVERGROUPBOX, title);
+	if (m_hWnd)
+	{
+		SetDlgItemText(IDC_SERVERGROUPBOX, title);
+	}
+	title_ = title;
 }
 
 void CServerSelectorControl::setServerProfile(ServerProfile serverProfile) {
@@ -113,7 +119,7 @@ ServerProfile CServerSelectorControl::serverProfile() const {
 
 LRESULT CServerSelectorControl::OnClickedEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
 	CServerParamsDlg serverParamsDlg(serverProfile_, uploadEngineManager_);
-	if ( serverParamsDlg.DoModal(m_hWnd) == IDOK ) {
+	if (serverParamsDlg.DoModal(isChildWindow_ ? m_hWnd : GetParent()) == IDOK) {
 		serverProfile_ = serverParamsDlg.serverProfile();
 		notifyChange();
 		
@@ -134,7 +140,7 @@ void CServerSelectorControl::addAccount()
 	serverProfileCopy.setProfileName("");
 	CLoginDlg dlg(serverProfileCopy, uploadEngineManager_, true);
 
-	if( dlg.DoModal(m_hWnd) == IDOK)
+	if (dlg.DoModal(isChildWindow_ ? m_hWnd : GetParent()) == IDOK)
 	{
 		serverProfileCopy.setProfileName(WCstringToUtf8(dlg.accountName()));
 		serverProfileCopy.setFolderId("");
@@ -319,6 +325,10 @@ void CServerSelectorControl::setServersMask(int mask) {
 void CServerSelectorControl::notifyChange()
 {
 	::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_CHANGE, (WPARAM)m_hWnd, 0);
+	if (OnChange)
+	{
+		OnChange(this);
+	}
 }
 
 void CServerSelectorControl::notifyServerListChanged()
@@ -563,6 +573,11 @@ LRESULT CServerSelectorControl::OnNoAccountClicked(WORD wNotifyCode, WORD wID, H
 	return 0;
 }
 
+LRESULT CServerSelectorControl::OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	return MA_NOACTIVATE;
+}
+
 void CServerSelectorControl::createSettingsButton() {
 	CIcon ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONSETTINGS2), IMAGE_ICON	, 16,16,0);
 	RECT profileRect;
@@ -590,7 +605,7 @@ LRESULT CServerSelectorControl::OnImageProcessingParamsClicked(WORD wNotifyCode,
 	std::string serverName = reinterpret_cast<char*>( serverComboBox_.GetItemData(serverComboElementIndex) );
 	CUploadEngineData* uploadEngineData = _EngineList->byName(Utf8ToWCstring( serverName ));
 	CUploadParamsDlg dlg(serverProfile_, showImageProcessingParams_, defaultServer_);
-	if ( dlg.DoModal(m_hWnd) == IDOK) {
+	if (dlg.DoModal(isChildWindow_ ? m_hWnd : GetParent()) == IDOK) {
 		serverProfile_.setImageUploadParams(dlg.imageUploadParams());
 	}
 	return 0;
@@ -610,4 +625,202 @@ LRESULT CServerSelectorControl::OnUserNameMenuItemClick(WORD wNotifyCode, WORD w
 	notifyChange();
 	updateInfoLabel();
 	return 0;
+}
+
+int CServerSelectorControl::showPopup(HWND parent, POINT pt)
+{
+	// C:\Program Files\Microsoft SDKs\Windows\v7.1\Samples\winui\shell\legacysamples\fakemenu\fakemenu.cpp
+	isChildWindow_ = false;
+	if (Create(parent) == NULL) {
+		ATLTRACE(_T("Main dialog creation failed!  :( sorry\n"));
+		return 0;
+	}
+	int nRet(-1);
+	SetWindowPos(0, pt.x, pt.y, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER|SWP_NOSIZE);
+	ShowWindow(SW_SHOWNOACTIVATE);
+
+	BOOL bMenuDestroyed(FALSE);
+	HWND hwndOwner = GetWindow(GW_OWNER);
+	HWND hwndPopup = m_hWnd;
+	// We want to receive all mouse messages, but since only the active
+	// window can capture the mouse, we have to set the capture to our
+	// owner window, and then steal the mouse messages out from under it.
+	//::SetCapture(hwndOwner);
+
+	// Go into a message loop that filters all the messages it receives
+	// and route the interesting ones to the color picker window.
+	MSG msg;
+	while (GetMessage(&msg, NULL, 0, 0))
+	{
+		// If our owner stopped being the active window (e.g. the user
+		// Alt+Tab'd to another window in the meantime), then stop.
+		HWND hwndActive = GetActiveWindow();
+		if (hwndActive != hwndPopup && hwndActive != hwndOwner && !::IsChild(hwndActive, hwndOwner) /*||
+			GetCapture() != hwndOwner*/)
+		{
+			break;
+		}
+
+		
+		bool isChildMessage = ::IsChild(hwndPopup, msg.hwnd);
+		if (!isChildMessage)
+		{
+			TCHAR className[MAX_PATH];
+			if (::GetClassName(msg.hwnd, className, MAX_PATH) != 0)
+			{
+				isChildMessage = lstrcmp(className, _T("ComboLBox"))==0; // Style of ComboboxEx popup list box
+			}
+		}
+		bool breakLoop = false;
+		// At this point, we get to snoop at all input messages before
+		// they get dispatched.  This allows us to route all input to our
+		// popup window even if really belongs to somebody else.
+
+		// All mouse messages are remunged and directed at our popup
+		// menu. If the mouse message arrives as client coordinates, then
+		// we have to convert it from the client coordinates of the original
+		// target to the client coordinates of the new target.
+		switch (msg.message)
+		{
+			// These mouse messages arrive in client coordinates, so in
+			// addition to stealing the message, we also need to convert the
+			// coordinates.
+		
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		case WM_LBUTTONDBLCLK:
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
+		case WM_RBUTTONDBLCLK:
+		case WM_MBUTTONDOWN:
+		case WM_MBUTTONUP:
+		case WM_MBUTTONDBLCLK:
+			if (msg.hwnd == hwndOwner || ::IsChild(hwndOwner, msg.hwnd))
+			{
+				breakLoop = true;
+				break;
+			}
+		case WM_MOUSEMOVE:
+			if (!isChildMessage) {
+				pt.x = (short)LOWORD(msg.lParam);
+				pt.y = (short)HIWORD(msg.lParam);
+				::MapWindowPoints(msg.hwnd, hwndPopup, &pt, 1);
+				msg.lParam = MAKELPARAM(pt.x, pt.y);
+				msg.hwnd = hwndPopup;
+			}
+			break;
+
+			// These mouse messages arrive in screen coordinates, so we just
+			// need to steal the message.
+		
+		case WM_NCLBUTTONDOWN:
+		case WM_NCLBUTTONUP:
+		case WM_NCLBUTTONDBLCLK:
+		case WM_NCRBUTTONDOWN:
+		case WM_NCRBUTTONUP:
+		case WM_NCRBUTTONDBLCLK:
+		case WM_NCMBUTTONDOWN:
+		case WM_NCMBUTTONUP:
+		case WM_NCMBUTTONDBLCLK:
+		case WM_SETCURSOR:
+			if (msg.hwnd == hwndOwner || ::IsChild(hwndOwner, msg.hwnd))
+			{
+				breakLoop = true;
+				break;
+			}
+		case WM_NCMOUSEMOVE:
+			if (!isChildMessage) {
+				msg.hwnd = hwndPopup;
+			}
+			break;
+
+			// We need to steal all keyboard messages, too.
+		case WM_KEYDOWN:
+		case WM_KEYUP:
+		case WM_CHAR:
+		case WM_DEADCHAR:
+		case WM_SYSKEYDOWN:
+		case WM_SYSKEYUP:
+		case WM_SYSCHAR:
+		case WM_SYSDEADCHAR:
+			if (!isChildMessage)
+			{
+				msg.hwnd = hwndPopup;
+			}
+			if (msg.wParam == VK_ESCAPE && (msg.hwnd == hwndPopup || ::IsChild(hwndPopup, msg.hwnd)))
+			{
+				breakLoop = true;
+				break;
+			}
+			break;
+		}
+		if (breakLoop)
+		{
+			break;
+		}
+		if (!::IsDialogMessage(hwndPopup, &msg))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	
+		
+		// If our owner stopped being the active window (e.g. the user
+		// Alt+Tab'd to another window in the meantime), then stop.
+		hwndActive = GetActiveWindow();
+		if (hwndActive != hwndPopup && hwndActive != hwndOwner && !::IsChild(hwndActive, hwndOwner)/* ||
+			GetCapture() != hwndOwner*/)
+		{
+			break;
+		}
+	}
+
+	// Clean up the capture we created.
+	//ReleaseCapture();
+
+	isPopingUp_ = false;
+
+
+
+	if (!bMenuDestroyed) DestroyWindow();
+
+	return nRet;
+}
+
+bool CServerSelectorControl::exitPopup(int nCommandId)
+{
+	BOOL bRet = SetProp(m_hWnd, MENU_EXIT_NOTIFY, (HANDLE)1);
+	SetProp(m_hWnd, MENU_EXIT_COMMAND_ID, (HANDLE)nCommandId);
+	return bRet;
+}
+
+DLGTEMPLATE* CServerSelectorControl::GetTemplate()
+{
+	HINSTANCE hInst = GetModuleHandle(0);
+	HRSRC res = FindResource(hInst, MAKEINTRESOURCE(IDD), RT_DIALOG);
+	DLGTEMPLATE* dit = (DLGTEMPLATE*)LockResource(LoadResource(hInst, res));
+
+	unsigned long sizeDlg = ::SizeofResource(hInst, res);
+	HGLOBAL hMyDlgTemplate = ::GlobalAlloc(GPTR, sizeDlg);
+	DLGTEMPLATEEX *pMyDlgTemplate = (DLGTEMPLATEEX *)::GlobalLock(hMyDlgTemplate);
+	::memcpy(pMyDlgTemplate, dit, sizeDlg);
+
+	if (isChildWindow_)
+	{
+		//pMyDlgTemplate->style = pMyDlgTemplate->style & ~ WS_POPUP;
+		pMyDlgTemplate->style = pMyDlgTemplate->style | WS_CHILD;
+	}
+	else
+	{
+		pMyDlgTemplate->style -= WS_CHILD;
+		pMyDlgTemplate->style -= DS_CONTROL;
+		pMyDlgTemplate->exStyle |= WS_EX_NOACTIVATE | 
+			WS_EX_TOOLWINDOW |      // So it doesn't show up in taskbar
+			WS_EX_DLGMODALFRAME |   // Get the edges right
+			WS_EX_WINDOWEDGE /*|
+			WS_EX_TOPMOST*/; // with this style window is overlapping modal dialogs (server params dialog, add ftp server, etc...)
+
+		pMyDlgTemplate->style = pMyDlgTemplate->style | WS_POPUP | WS_BORDER/* | WS_CAPTION*/ ;
+	}
+	return (DLGTEMPLATE*)pMyDlgTemplate;
 }

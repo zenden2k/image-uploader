@@ -26,7 +26,7 @@
 #include <curl/curl.h>
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include <libavutil/ffversion.h>
 #include <boost/config.hpp>

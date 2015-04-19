@@ -2,10 +2,10 @@
 // AddDirectoryServerDialog.cpp : Implementation of CAddDirectoryServerDialog
 
 #include "AddDirectoryServerDialog.h"
-#include <Gui/GuiTools.h>
-#include <Core/ServerListManager.h>
-#include <Func/Settings.h>
-#include <Func//IuCommonFunctions.h>
+#include "Gui/GuiTools.h"
+#include "Core/ServerListManager.h"
+#include "Func/Settings.h"
+#include "Func//IuCommonFunctions.h"
 #include <Ws2tcpip.h>
 #include <winsock2.h> 
 #include <iphlpapi.h>
@@ -13,7 +13,7 @@
 #include <security.h>
 #include <secext.h>
 #include <Lm.h>
-#include <Core/ScriptAPI/HtmlDocumentPrivate_win.h>
+#include "Core/ScriptAPI/HtmlDocumentPrivate_win.h"
 
 
 // CAddDirectoryServerDialog

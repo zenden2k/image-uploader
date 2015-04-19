@@ -20,8 +20,8 @@
 
 #include "FileQueueUploader.h"
 #include <algorithm>
-#include <Core/Upload/UploadTask.h>
-#include <Core/Upload/FileUploadTask.h>
+#include "Core/Upload/UploadTask.h"
+#include "Core/Upload/FileUploadTask.h"
 
 
 #ifndef IU_CLI

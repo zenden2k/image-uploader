@@ -3,7 +3,7 @@
 
 #include "UploadTask.h"
 #include <string>
-#include <Core/TempFileDeleter.h>
+#include "Core/TempFileDeleter.h"
 
 class FileUploadTask: public UploadTask {
 	public:

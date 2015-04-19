@@ -21,25 +21,25 @@
 #include "Functions.h"
 
 #include "Core/AppParams.h"
-#include <Core/Utils/CoreUtils.h>
-#include <Core/Squirrelnc.h>
-#include <Core/Logging.h>
+#include "Core/Utils/CoreUtils.h"
+#include "Core/Squirrelnc.h"
+#include "Core/Logging.h"
 #include <json/json.h>
-#include <Core/Network/NetworkClient.h>
+#include "Core/Network/NetworkClient.h"
 #ifdef _WIN32
     #include <windows.h>
     #ifndef IU_CLI
-        #include <Gui/Dialogs/InputDialog.h>
-        #include <Func/Common.h>
-        #include <Func/IuCommonFunctions.h>
-        #include <Func/LangClass.h>
-		#include <Func/WinUtils.h>
+        #include "Gui/Dialogs/InputDialog.h"
+        #include "Func/Common.h"
+        #include "Func/IuCommonFunctions.h"
+        #include "Func/LangClass.h"
+		#include "Func/WinUtils.h"
         #include "Gui/Dialogs/LogWindow.h"
     #endif
 #endif
 
-#include <Core/Utils/StringUtils.h>
-#include <Core/Utils/CryptoUtils.h>
+#include "Core/Utils/StringUtils.h"
+#include "Core/Utils/CryptoUtils.h"
 #include <json/json.h>
 #include <sstream>
 #include <iomanip>

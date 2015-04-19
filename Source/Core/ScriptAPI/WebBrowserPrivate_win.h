@@ -23,19 +23,19 @@
 
 #include "ScriptAPI.h"
 
-#include <Gui/Dialogs/WebViewWindow.h>
-#include <Core/Utils/CoreUtils.h>
-#include <Core/Logging.h>
-#include <Core/Squirrelnc.h>
+#include "Gui/Dialogs/WebViewWindow.h"
+#include "Core/Utils/CoreUtils.h"
+#include "Core/Logging.h"
+#include "Core/Squirrelnc.h"
 #include "HtmlDocument.h"
 #if defined(_WIN32) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
-#include <Gui/Dialogs/WizardDlg.h>
+#include "Gui/Dialogs/WizardDlg.h"
 #endif
-#include <3rdpart/Registry.h>
+#include "3rdpart/Registry.h"
 #include "HtmlDocumentPrivate_win.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 #include "COMUtils.h"
-#include <Core/3rdpart/pcreplusplus.h>
+#include "Core/3rdpart/pcreplusplus.h"
 
 namespace ScriptAPI {
 class CWebBrowser;

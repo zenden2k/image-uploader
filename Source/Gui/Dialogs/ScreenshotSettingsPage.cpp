@@ -26,7 +26,7 @@
 #include "Gui/GuiTools.h"
 
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
-#include <Func/myutils.h>
+#include "Func/myutils.h"
 
 // CScreenshotSettingsPagePage
 CScreenshotSettingsPagePage::CScreenshotSettingsPagePage()

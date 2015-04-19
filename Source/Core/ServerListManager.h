@@ -3,8 +3,8 @@
 
 #include <string>
 #include <map>
-#include <Core/Upload/UploadEngine.h>
-#include <Func/Settings.h>
+#include "Core/Upload/UploadEngine.h"
+#include "Func/Settings.h"
 class CUploadEngineList;
 
 

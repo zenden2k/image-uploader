@@ -24,7 +24,7 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Core/Upload/UploadEngine.h"
-#include <Gui/Controls/ServerSelectorControl.h>
+#include "Gui/Controls/ServerSelectorControl.h"
 class ServerProfile;
 class CServerSelectorControl;
 // CContextMenuItemDlg

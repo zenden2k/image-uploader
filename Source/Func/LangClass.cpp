@@ -21,9 +21,9 @@
 #include "langclass.h"
 #include "atlheaders.h"
 #include "myutils.h"
-#include <Func/WinUtils.h>
-#include <Core/AppParams.h>
-#include <Core/Utils/CoreUtils.h>
+#include "Func/WinUtils.h"
+#include "Core/AppParams.h"
+#include "Core/Utils/CoreUtils.h"
 
 CLang Lang;
 

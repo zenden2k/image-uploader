@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <string>
 #include <vector>
-#include <Core/Utils/CoreTypes.h>
+#include "Core/Utils/CoreTypes.h"
 
 namespace IuTextUtils
 {

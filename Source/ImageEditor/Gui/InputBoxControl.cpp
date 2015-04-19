@@ -19,9 +19,9 @@
 */
 
 #include "InputBoxControl.h"
-#include <Core/Images/Utils.h>
-#include <Gui/GuiTools.h>
-#include <Core/Logging.h>
+#include "Core/Images/Utils.h"
+#include "Gui/GuiTools.h"
+#include "Core/Logging.h"
 
 namespace ImageEditor {
 // CLogListBox

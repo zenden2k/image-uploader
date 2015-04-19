@@ -25,8 +25,8 @@
 #include "Func/Settings.h"
 #include "Core/ScreenCapture.h"
 #include "Gui/GuiTools.h"
-#include <Func/myutils.h>
-#include <Func/WinUtils.h>
+#include "Func/myutils.h"
+#include "Func/WinUtils.h"
 
 // CSizeExceed
 CSizeExceed::CSizeExceed(LPCTSTR szFileName, FullUploadProfile &iss, CMyEngineList * EngineList)

@@ -2,7 +2,7 @@
 #define GDIPLUSIMAGE_H
 
 #include "AbstractImage.h"
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 
 class GdiPlusImage: public AbstractImage
 {

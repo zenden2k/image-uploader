@@ -25,8 +25,8 @@
 #include "Func/Settings.h"
 #include "LogWindow.h"
 #include "Gui/GuiTools.h"
-#include <Func/WinUtils.h>
-#include <Gui/Controls/ServerSelectorControl.h>
+#include "Func/WinUtils.h"
+#include "Gui/Controls/ServerSelectorControl.h"
 #include "WizardDlg.h"
 
 // CDefaultServersSettings

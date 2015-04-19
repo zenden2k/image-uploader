@@ -41,21 +41,21 @@
 #include "Gui/Dialogs/MediaInfoDlg.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ImageReuploaderDlg.h"
-#include <Gui/Dialogs/ShortenUrlDlg.h>
+#include "Gui/Dialogs/ShortenUrlDlg.h"
 
-#include <Gui/Dialogs/WebViewWindow.h>
-#include <Core/Utils/CryptoUtils.h>
-#include <Core/TextUtils.h>
-#include <Func/WinUtils.h>
-#include <Func/IuCommonFunctions.h>
-#include <Gui/Dialogs/QuickSetupDlg.h>
+#include "Gui/Dialogs/WebViewWindow.h"
+#include "Core/Utils/CryptoUtils.h"
+#include "Core/TextUtils.h"
+#include "Func/WinUtils.h"
+#include "Func/IuCommonFunctions.h"
+#include "Gui/Dialogs/QuickSetupDlg.h"
 #include <ImageEditor/Gui/ImageEditorWindow.h>
-#include <Func/ImageEditorConfigurationProvider.h>
-#include <Core/Logging.h>
-#include <Core/Images/Utils.h>
-#include <Core/Upload/UploadManager.h>
-#include <Core/Upload/UploadEngineManager.h>
-#include <Func/myutils.h>
+#include "Func/ImageEditorConfigurationProvider.h"
+#include "Core/Logging.h"
+#include "Core/Images/Utils.h"
+#include "Core/Upload/UploadManager.h"
+#include "Core/Upload/UploadEngineManager.h"
+#include "Func/myutils.h"
 
 
 using namespace Gdiplus;

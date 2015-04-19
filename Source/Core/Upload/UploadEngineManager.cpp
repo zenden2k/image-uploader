@@ -2,11 +2,11 @@
 #include "../UploadEngineList.h"
 #include "ServerProfile.h"
 #include "ScriptUploadEngine.h"
-#include <Gui/Dialogs/LogWindow.h>
+#include "Gui/Dialogs/LogWindow.h"
 #include "DefaultUploadEngine.h"
-#include <Core/Logging.h>
+#include "Core/Logging.h"
 #include "ServerSync.h"
-#include <Core/ScriptAPI/ScriptAPI.h>
+#include "Core/ScriptAPI/ScriptAPI.h"
 
 UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList)
 {

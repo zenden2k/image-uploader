@@ -1,9 +1,9 @@
 
 #include "ServerListManager.h"
-#include <Core/Utils/SimpleXml.h>
+#include "Core/Utils/SimpleXml.h"
 #include "UploadEngineList.h"
-#include <Core/Utils/StringUtils.h>
-#include <Core/Logging.h>
+#include "Core/Utils/StringUtils.h"
+#include "Core/Logging.h"
 
 ServerListManager::ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings): 
 	serversSettings_(serversSettings)

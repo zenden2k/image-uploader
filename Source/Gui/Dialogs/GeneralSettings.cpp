@@ -25,7 +25,7 @@
 #include "Func/Settings.h"
 #include "LogWindow.h"
 #include "Gui/GuiTools.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 // CGeneralSettings
 CGeneralSettings::CGeneralSettings()
 {

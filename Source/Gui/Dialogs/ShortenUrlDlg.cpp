@@ -24,12 +24,12 @@
 #include "LogWindow.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
-#include <Core/Upload/FileQueueUploader.h>
-#include <Core/Upload/UrlShorteningTask.h>
-#include <Func/WinUtils.h>
+#include "Core/Upload/FileQueueUploader.h"
+#include "Core/Upload/UrlShorteningTask.h"
+#include "Func/WinUtils.h"
 #include <Wininet.h>
-#include <Func/WebUtils.h>
-#include <Core/Upload/UploadManager.h>
+#include "Func/WebUtils.h"
+#include "Core/Upload/UploadManager.h"
 
 // CShortenUrlDlg
 CShortenUrlDlg::CShortenUrlDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager* uploadManager, const CString &initialBuffer)

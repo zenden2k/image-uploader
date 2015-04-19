@@ -18,8 +18,8 @@
 
 #include "DrawingElement.h"
 #include "atlheaders.h"
-#include <3rdpart/GdiplusH.h>
-#include <Core/Logging.h>
+#include "3rdpart/GdiplusH.h"
+#include "Core/Logging.h"
 namespace ImageEditor {
 
 DrawingElement::DrawingElement(){

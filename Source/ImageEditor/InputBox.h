@@ -1,8 +1,8 @@
 #ifndef IMAGEEDITOR_INPUTBOX_H
 #define IMAGEEDITOR_INPUTBOX_H
 
-#include <Core/3rdpart/FastDelegate.h>
-#include <3rdpart/GdiplusH.h>
+#include "Core/3rdpart/FastDelegate.h"
+#include "3rdpart/GdiplusH.h"
 #include "MovableElement.h"
 
 namespace ImageEditor {

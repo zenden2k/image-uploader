@@ -6,7 +6,7 @@
 #include <stdint.h>
 //#include "Core/3rdpart/pstdint.h"
 #include <memory>
-#include <Core/Logging.h>
+#include "Core/Logging.h"
 typedef std::string Utf8String;
 #if _MSC_VER  && (_MSC_VER < 1800)
 namespace std_tr = std::tr1;

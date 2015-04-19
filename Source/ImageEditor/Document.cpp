@@ -20,11 +20,11 @@
 
 #include <cassert>
 
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 #include "DrawingElement.h"
-#include <Core/Logging.h>
+#include "Core/Logging.h"
 #include <stdint.h>
-#include <Core/Images/Utils.h>
+#include "Core/Images/Utils.h"
 
 namespace ImageEditor {
 	using namespace Gdiplus;

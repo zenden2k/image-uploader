@@ -1,4 +1,4 @@
-#include <Core/Logging.h>
+#include "Core/Logging.h"
 
 class GOOGLE_GLOG_DLL_DECL MyLogSink: public google::LogSink {
 public:

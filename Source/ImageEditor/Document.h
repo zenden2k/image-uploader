@@ -2,12 +2,12 @@
 #define IMAGEEDITOR_DOCUMENT_H
 
 #include <windows.h>
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 #include <queue>
 #include <vector>
 #include "BasicTypes.h"
 #include "DrawingElement.h"
-#include <Core/Utils/CoreTypes.h>
+#include "Core/Utils/CoreTypes.h"
 
 namespace ImageEditor {
 

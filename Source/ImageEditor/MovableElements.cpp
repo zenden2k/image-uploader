@@ -19,13 +19,13 @@
 #include "MovableElements.h"
 
 #include <algorithm>
-#include <3rdpart/GdiplusH.h>
-#include <Core/Logging.h>
+#include "3rdpart/GdiplusH.h"
+#include "Core/Logging.h"
 #include <exception>
 
 #include "Region.h"
 #include "Canvas.h"
-#include <Core/Images/Utils.h> 
+#include "Core/Images/Utils.h" 
 
 namespace ImageEditor {
 

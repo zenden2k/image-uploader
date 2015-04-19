@@ -5,7 +5,7 @@
 
 #include <inttypes.h>
 #include <gtest/gtest.h>
-#include <Core/Utils/CoreUtils.h>
+#include "Core/Utils/CoreUtils.h"
 
 class CoreUtilsTest : public ::testing::Test {
 };

@@ -18,18 +18,18 @@
 
  
 #include "atlheaders.h"
-#include <3rdpart/GdiplusH.h>
 #include <shellapi.h> 
 #include "resource.h"
+#include "3rdpart/GdiplusH.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/wizarddlg.h"
 #include "Gui/Dialogs/floatingwindow.h"
 #include "Common/CmdLine.h"
 #include "Func/Settings.h"
 #include "Func/WinUtils.h"
-#include <Func/IuCommonFunctions.h>
-#include <Core/Logging.h>
-#include <Func/MyLogSink.h>
+#include "Func/IuCommonFunctions.h"
+#include "Core/Logging.h"
+#include "Func/MyLogSink.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 
 

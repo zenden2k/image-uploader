@@ -3,12 +3,13 @@
 
 #include "resource.h"
 #include "MainDlg.h"
-#include <3rdpart/GdiPlusH.h>
+#include "atlheaders.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Func/Common.h"
-#include <Func/IuCommonFunctions.h>
-#include <Core/Logging.h>
-#include <Func/MyLogSink.h>
-#include <Func/WinUtils.h>
+#include "Func/IuCommonFunctions.h"
+#include "Core/Logging.h"
+#include "Func/MyLogSink.h"
+#include "Func/WinUtils.h"
 CAppModule _Module;
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*lpstrCmdLine*/, int /*nCmdShow*/)

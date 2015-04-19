@@ -25,12 +25,12 @@
 #include "Func/Settings.h"
 #include "Common/CmdLine.h"
 #include "Func/SystemUtils.h"
-#include <Func/WinUtils.h>
-#include <Func/Myutils.h>
-#include <Func/Common.h>
-#include <Gui/GuiTools.h>
+#include "Func/WinUtils.h"
+#include "Func/Myutils.h"
+#include "Func/Common.h"
+#include "Gui/GuiTools.h"
 #include <ImageEditor/Gui/ImageEditorWindow.h>
-#include <Func/ImageEditorConfigurationProvider.h>
+#include "Func/ImageEditorConfigurationProvider.h"
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	PageWnd = m_hWnd;

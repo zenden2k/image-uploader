@@ -64,7 +64,7 @@
 
 #define WM_CLOSETRAYWND (WM_USER+2)
 #define WM_RELOADSETTINGS (WM_USER+3)
-#include <Core/Upload/UploadManager.h>
+#include "Core/Upload/UploadManager.h"
 
 
 class CFloatingWindow :

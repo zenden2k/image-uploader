@@ -17,7 +17,7 @@
 */
 
 #include "logging.h"
-#include <Core/Utils/CoreUtils.h>
+#include "Core/Utils/CoreUtils.h"
 
 std::ostream& operator<<(std::ostream& out, const wchar_t* str) {
 	std::string msg = IuCoreUtils::WstringToUtf8(str);

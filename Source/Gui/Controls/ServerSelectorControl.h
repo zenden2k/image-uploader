@@ -30,16 +30,18 @@
 #include "Gui/Dialogs/settingspage.h"
 #include "Gui/WizardCommon.h"
 #include "Func/Settings.h"
+#include "Gui/Controls/DialogIndirect.h"
+#include "Core/3rdpart/FastDelegate.h"
 // CServerSelectorControl
 class IconBitmapUtils;
 
 #define WM_SERVERSELECTCONTROL_CHANGE (WM_USER+156)
 #define WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED (WM_USER+157)
 class CServerSelectorControl : 
-	public CDialogImpl<CServerSelectorControl>, public CSettingsPage
+	public CDialogIndirectImpl<CServerSelectorControl>, public CSettingsPage
 {
 public:
-	CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer = false);
+	CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer = false, bool isChildWindow = true);
 virtual ~CServerSelectorControl();
 	enum { IDD = IDD_SERVERSELECTORCONTROL, IDC_LOGINMENUITEM = 4020, IDC_USERNAME_FIRST_ID = 20000, IDC_USERNAME_LAST_ID = 21000,
 		IDC_ADD_ACCOUNT= 21001, IDC_NO_ACCOUNT = 21003
@@ -47,6 +49,7 @@ virtual ~CServerSelectorControl();
 
     BEGIN_MSG_MAP(CServerSelectorControl)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+		MESSAGE_HANDLER(WM_MOUSEACTIVATE, OnMouseActivate)
 		COMMAND_ID_HANDLER(IDC_EDIT, OnClickedEdit)
 		COMMAND_HANDLER(IDC_SERVERCOMBOBOX, CBN_SELCHANGE, OnServerComboSelChange)
 		COMMAND_ID_HANDLER(IDC_IMAGEPROCESSINGPARAMS, OnImageProcessingParamsClicked)
@@ -54,10 +57,12 @@ virtual ~CServerSelectorControl();
 		COMMAND_ID_HANDLER(IDC_ADD_ACCOUNT, OnAddAccountClick)
 		COMMAND_ID_HANDLER(IDC_LOGINMENUITEM, OnLoginMenuItemClicked)
 		COMMAND_ID_HANDLER(IDC_NO_ACCOUNT, OnNoAccountClicked)
+
 		
 	    COMMAND_RANGE_HANDLER(IDC_USERNAME_FIRST_ID, IDC_USERNAME_LAST_ID, OnUserNameMenuItemClick);
 	END_MSG_MAP()
 		
+	DLGTEMPLATE* GetTemplate();
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -69,6 +74,7 @@ virtual ~CServerSelectorControl();
 	LRESULT OnAddAccountClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnLoginMenuItemClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnNoAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	
 	LRESULT OnImageProcessingParamsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnUserNameMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -81,11 +87,13 @@ virtual ~CServerSelectorControl();
 	void notifyServerListChanged();
 	void updateServerList();
 	bool isAccountChosen();
-
+	int showPopup(HWND parent, POINT pt);
+	bool exitPopup(int nCommandId);
 	enum ServerMaskEnum{ smAll = 0xffff, smImageServers = 0x1, smFileServers = 0x2, smUrlShorteners = 0x4};
 
 	ServerProfile serverProfile() const;
 	void setShowImageProcessingParamsLink(bool show);
+	fastdelegate::FastDelegate1<CServerSelectorControl*> OnChange;
 private:
 	CComboBoxEx serverComboBox_;
 	CHyperLink imageProcessingParamsLink_;
@@ -108,6 +116,9 @@ private:
 	static const char kAddDirectoryAsServer[];
 	int previousSelectedServerIndex;
 	UploadEngineManager* uploadEngineManager_;
+	bool isPopingUp_;
+	bool isChildWindow_;
+	CString title_;
 
 };
 

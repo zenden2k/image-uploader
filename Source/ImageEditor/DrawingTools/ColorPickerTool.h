@@ -5,7 +5,7 @@
 #include "../MovableElement.h"
 #include "AbstractDrawingTool.h"
 #include <stdint.h>
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 namespace ImageEditor {
 
 class  ColorPickerTool : public AbstractDrawingTool {

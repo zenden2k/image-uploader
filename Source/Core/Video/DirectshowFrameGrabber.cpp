@@ -20,7 +20,7 @@
 
 #include "DirectshowFrameGrabber.h"
 #include "atlheaders.h"
-#include <Core/Utils/CoreUtils.h>
+#include "Core/Utils/CoreUtils.h"
 #define __AFX_H__ // little hack for avoiding __POSITION type redefinition
 #include <objbase.h>
 #include <streams.h>
@@ -31,9 +31,9 @@
 #include <Strmif.h>
 #include <atlbase.h>
 #include "AbstractVideoFrame.h"
-#include <Core/Logging.h>
+#include "Core/Logging.h"
 #include <windows.h>
-#include <Core/3rdpart/dxerr.h>
+#include "Core/3rdpart/dxerr.h"
 #include <zthread/Mutex.h>
 #include <zthread/Guard.h>
 #include <zthread/Condition.h>

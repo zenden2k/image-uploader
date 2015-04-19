@@ -1,5 +1,5 @@
 #include "VideoUtils.h"
-#include <Core/Utils/StringUtils.h>
+#include "Core/Utils/StringUtils.h"
 VideoUtils& VideoUtils::Instance()
 {
 	static VideoUtils theSingleInstance;

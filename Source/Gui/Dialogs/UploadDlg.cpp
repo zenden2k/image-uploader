@@ -28,15 +28,15 @@
 #include "Func/Settings.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/GuiTools.h"
-#include <Func/LocalFileCache.h>
-#include <Core/3rdpart/FastDelegate.h>
-#include <Core/Upload/UrlShorteningTask.h>
-#include <Core/Upload/FileQueueUploader.h>
-#include <Func/IuCommonFunctions.h>
-#include <Func/MyUtils.h>
-#include <Core/Upload/FileUploadTask.h>
-#include <Core/Upload/UploadManager.h>
-#include <Func/WinUtils.h>
+#include "Func/LocalFileCache.h"
+#include "Core/3rdpart/FastDelegate.h"
+#include "Core/Upload/UrlShorteningTask.h"
+#include "Core/Upload/FileQueueUploader.h"
+#include "Func/IuCommonFunctions.h"
+#include "Func/MyUtils.h"
+#include "Core/Upload/FileUploadTask.h"
+#include "Core/Upload/UploadManager.h"
+#include "Func/WinUtils.h"
 /*
 class TempFilesDeleter
 {
@@ -722,7 +722,7 @@ bool CUploadDlg::OnShow()
 	bool IsLastVideo=false;
 
 	if(lstrlen(MediaInfoDllPath))
-	{
+	{ 
 		CVideoGrabberPage *vg =(CVideoGrabberPage *) WizardDlg->Pages[1];
 
 		if(vg && lstrlen(vg->m_szFileName))

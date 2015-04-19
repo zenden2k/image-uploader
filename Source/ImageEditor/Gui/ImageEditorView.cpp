@@ -6,10 +6,10 @@
 
 #include <algorithm>
 
-#include <3rdpart/GdiplusH.h>
-#include <Gui/GuiTools.h>
-#include <Core/Logging.h>
-#include <Core/Images/Utils.h>
+#include "3rdpart/GdiplusH.h"
+#include "Gui/GuiTools.h"
+#include "Core/Logging.h"
+#include "Core/Images/Utils.h"
 #include "../MovableElements.h"
 #include "resource.h"
 #ifndef TR

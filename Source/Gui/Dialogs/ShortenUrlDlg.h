@@ -8,9 +8,9 @@
 #include "resource.h"       
 #include "Core/FileDownloader.h"
 #include "WizardDlg.h"
-#include <Core/Upload/FileQueueUploader.h>
-#include <Gui/Controls/PictureExWnd.h>
-#include <Gui/Controls/CustomEditControl.h>
+#include "Core/Upload/FileQueueUploader.h"
+#include "Gui/Controls/PictureExWnd.h"
+#include "Gui/Controls/CustomEditControl.h"
 
 // CShortenUrlDlg
 class CShortenUrlDlg:	public CDialogImpl <CShortenUrlDlg>,

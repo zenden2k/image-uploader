@@ -3,7 +3,7 @@
 
 #include "atlheaders.h"
 #include <windows.h>
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 #include <string>
 
 enum SaveImageFormat {

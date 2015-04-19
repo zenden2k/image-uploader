@@ -24,12 +24,12 @@
 #include "DrawingTool.h"
 #include "InputBox.h"
 #include "MovableElements.h"
-#include "Gui/InputBoxControl.h"
-#include <Core/Logging.h>
+#include <ImageEditor/Gui/InputBoxControl.h>
+#include "Core/Logging.h"
 #include <math.h>
 #include <cassert>
 #include <algorithm>
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 
 namespace ImageEditor {
 	

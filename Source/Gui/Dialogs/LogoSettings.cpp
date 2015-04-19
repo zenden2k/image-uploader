@@ -26,7 +26,7 @@
 #include "Gui/GuiTools.h"
 #include "InputDialog.h"
 #include "Gui/GuiTools.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 
 // CLogoSettings
 CLogoSettings::CLogoSettings()

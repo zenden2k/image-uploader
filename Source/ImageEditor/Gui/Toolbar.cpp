@@ -1,12 +1,12 @@
 #include "Toolbar.h"
 
-#include <Core/Logging.h>
-#include <3rdpart/GdiplusH.h>
-#include <Gui/GuiTools.h>
-#include <3rdpart/RoundRect.h>
+#include "Core/Logging.h"
+#include "3rdpart/GdiplusH.h"
+#include "Gui/GuiTools.h"
+#include "3rdpart/RoundRect.h"
 #include "resource.h"
-#include <Core/Images/Utils.h>
-#include <Func/WinUtils.h>
+#include "Core/Images/Utils.h"
+#include "Func/WinUtils.h"
 #include "../Canvas.h"
 
 namespace ImageEditor {

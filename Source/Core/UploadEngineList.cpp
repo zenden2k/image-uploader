@@ -26,7 +26,7 @@
 #include "Core/Upload/DefaultUploadEngine.h"
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/StringUtils.h"
-#include <Core/Logging.h>
+#include "Core/Logging.h"
 #include "versioninfo.h"
 
 bool compareEngines(const CUploadEngineData& elem1, const CUploadEngineData& elem2)

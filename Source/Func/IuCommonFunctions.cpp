@@ -4,7 +4,7 @@
 #endif
 #include "versioninfo.h"
 #include "WinUtils.h"
-#include <Core/Utils/CoreUtils.h>
+#include "Core/Utils/CoreUtils.h"
 #include "3rdpart/Registry.h"
 
 namespace IuCommonFunctions {

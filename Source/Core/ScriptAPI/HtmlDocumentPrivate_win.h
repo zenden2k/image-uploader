@@ -23,7 +23,7 @@
 #pragma once
 #include "HtmlElementPrivate_win.h"
 #include <ComDef.h>
-#include <Core/Utils/CoreUtils.h>
+#include "Core/Utils/CoreUtils.h"
 
 namespace ScriptAPI {
 class WebBrowserPrivate;

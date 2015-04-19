@@ -1,14 +1,14 @@
 #ifndef IMAGEEDITOR_CANVAS_H
 #define IMAGEEDITOR_CANVAS_H
 
-#include <3rdpart/GdiPlusH.h>
+#include "3rdpart/GdiPlusH.h"
 #include "InputBox.h"
-#include "Gui/InputBoxControl.h"
+#include <ImageEditor/Gui/InputBoxControl.h>
 #include "MovableElement.h"
 #include <vector>
-#include <Core/3rdpart/FastDelegate.h>
+#include "Core/3rdpart/FastDelegate.h"
 #include <stack>
-#include <Core/Utils/CoreTypes.h>
+#include "Core/Utils/CoreTypes.h"
 
 namespace ImageEditor {
 

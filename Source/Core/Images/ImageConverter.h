@@ -2,7 +2,7 @@
 #define IU_IMAGECONVERTER_H
 
 #include "atlheaders.h"
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 #include "Thumbnail.h"
 #include "Core/Utils/CoreTypes.h"
 

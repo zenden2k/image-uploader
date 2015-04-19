@@ -20,10 +20,10 @@
 #ifndef IU_CORE_SCRIPTAPI_H
 #define IU_CORE_SCRIPTAPI_H
 
-#include <Core/3rdpart/pcreplusplus.h>
+#include "Core/3rdpart/pcreplusplus.h"
 #include <string>
 #include "../Squirrelnc.h"
-#include <Core/Utils/CoreTypes.h>
+#include "Core/Utils/CoreTypes.h"
 namespace ScriptAPI {
 
 

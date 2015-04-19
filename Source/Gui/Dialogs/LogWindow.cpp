@@ -21,7 +21,7 @@
 #include "atlheaders.h"
 #include "Func/Settings.h"
 #include "TextViewDlg.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 
 // CLogWindow
 CLogWindow::CLogWindow()

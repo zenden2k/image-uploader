@@ -29,14 +29,14 @@
 #include "Gui/Dialogs/LogWindow.h"
 #include "Common/CmdLine.h"
 #include "3rdpart/Registry.h"
-#include <Core/Video/VideoUtils.h>
+#include "Core/Video/VideoUtils.h"
 #include "WinUtils.h"
-#include <Core/AppParams.h>
-#include <Core/Images/Utils.h>
+#include "Core/AppParams.h"
+#include "Core/Images/Utils.h"
 #endif
 #include <stdlib.h>
 
-#include <Core/Utils/StringUtils.h>
+#include "Core/Utils/StringUtils.h"
 
 #if !defined(IU_SERVERLISTTOOL) && !defined(IU_CLI) && !defined(IU_IMAGEEDITOR)
 	#include "Gui/Dialogs/FloatingWindow.h"

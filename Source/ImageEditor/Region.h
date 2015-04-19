@@ -1,10 +1,10 @@
 #ifndef IMAGEEDITOR_REGION_H
 #define IMAGEEDITOR_REGION_H
 
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 
 #include "atlheaders.h"
-#include <Core/Utils/CoreTypes.h>
+#include "Core/Utils/CoreTypes.h"
 
 namespace ImageEditor 
 {

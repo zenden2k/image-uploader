@@ -30,7 +30,7 @@
 #include <algorithm>
 #include <iostream>
 #include "Core/Utils/CoreUtils.h"
-#include <Core/Logging.h>
+#include "Core/Logging.h"
 
 char NetworkClient::CertFileName[1024]= "";
 

@@ -6,8 +6,8 @@
 #include "ImageEditor/Document.h"
 #include "Toolbar.h"
 #include "TextParamsWindow.h"
-#include <Core/Utils/CoreTypes.h>
-#include <3rdpart/GdiplusH.h>
+#include "Core/Utils/CoreTypes.h"
+#include "3rdpart/GdiplusH.h"
 
 #pragma once
 

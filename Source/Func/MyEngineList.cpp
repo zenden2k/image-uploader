@@ -26,8 +26,8 @@
 #include "Core/Upload/DefaultUploadEngine.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Gui/Dialogs/LogWindow.h"
-#include <Func/IuCommonFunctions.h>
-#include <Func/WinUtils.h>
+#include "Func/IuCommonFunctions.h"
+#include "Func/WinUtils.h"
 
 char CMyEngineList::DefaultServer[] = "default";
 

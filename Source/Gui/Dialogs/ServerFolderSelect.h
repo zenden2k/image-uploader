@@ -23,14 +23,14 @@
 
 #pragma once
 #include "atlheaders.h"
-#include <Core/Upload/UploadEngineManager.h>
+#include "Core/Upload/UploadEngineManager.h"
 #include "resource.h"       // main symbols
 #include "3rdpart/thread.h"
 #include "Func/common.h"
 #include <atlcrack.h>
 #include "Gui/Controls/PictureExWnd.h"
 #include "Core/Upload/UploadEngine.h"
-#include <Core/Upload/FolderList.h>
+#include "Core/Upload/FolderList.h"
 
 // CServerFolderSelect
 #define ID_EDITFOLDER 10001

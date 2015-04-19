@@ -1,7 +1,7 @@
 #ifndef FUNC_SYSTEM_UTILS_H
 #define FUNC_SYSTEM_UTILS_H
 
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 #include <vector>
 
 namespace SystemUtils {

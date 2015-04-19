@@ -28,7 +28,7 @@
 #include "ResultsWindow.h"
 #include "Gui/WizardCommon.h"
 #include "Core/3rdpart/pcreplusplus.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 
 // CHistoryWindow
 CHistoryWindow::CHistoryWindow()

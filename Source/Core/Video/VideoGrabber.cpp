@@ -26,10 +26,10 @@
 #endif
 #include "AbstractVideoFrame.h"
 #include "AvcodecFrameGrabber.h"
-#include <Core/Utils/CoreUtils.h>
+#include "Core/Utils/CoreUtils.h"
 #include <zthread/Thread.h>
 #include <zthread/Mutex.h>
-#include <Core/Logging.h>
+#include "Core/Logging.h"
 class VideoGrabberRunnable: public ZThread::Runnable{
 public:
 	VideoGrabberRunnable(VideoGrabber* videoGrabber)

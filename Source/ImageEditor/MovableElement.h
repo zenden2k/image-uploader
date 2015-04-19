@@ -1,7 +1,7 @@
 #ifndef IMAGEEDITOR_MOVABLEELEMENT_H
 #define IMAGEEDITOR_MOVABLEELEMENT_H
 
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 #include <map>
 #include <deque>
 #include <vector>

@@ -2,10 +2,10 @@
 #define CORE_UPLOAD_UPLOADTASK_H
 
 #include <string>
-#include <Core/Utils/CoreTypes.h>
+#include "Core/Utils/CoreTypes.h"
 #include "UploadResult.h"
-#include <Core/3rdpart/FastDelegate.h>
-#include <Core/Network/NetworkClient.h>
+#include "Core/3rdpart/FastDelegate.h"
+#include "Core/Network/NetworkClient.h"
 #include "ServerProfile.h"
 #include "CommonTypes.h"
 #include <mutex>

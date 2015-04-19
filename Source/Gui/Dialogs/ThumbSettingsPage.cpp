@@ -18,7 +18,7 @@
 
 */
 #include "atlheaders.h"
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 #include <GdiPlusPixelFormats.h>
 #include "ThumbSettingsPage.h"
 
@@ -31,9 +31,9 @@
 #include "Func/MyUtils.h"
 #include "ThumbEditor.h"
 #include "InputDialog.h"
-#include <Func/IuCommonFunctions.h>
-#include <Func/WinUtils.h>
-#include <Core/Images/Utils.h>
+#include "Func/IuCommonFunctions.h"
+#include "Func/WinUtils.h"
+#include "Core/Images/Utils.h"
 
 
 #pragma comment( lib, "uxtheme.lib" )

@@ -1,6 +1,6 @@
 #include "ColorsDelegate.h"
-#include <Gui/GuiTools.h>
-#include <Func/WinUtils.h>
+#include "Gui/GuiTools.h"
+#include "Func/WinUtils.h"
 
 namespace ImageEditor {
 

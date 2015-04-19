@@ -25,8 +25,8 @@
 
 #include "WebBrowserPrivate_win.h"
 #include "HtmlDocumentPrivate_win.h"
-#include <Core/Utils/CoreUtils.h>
-#include <Core/Utils/StringUtils.h>
+#include "Core/Utils/CoreUtils.h"
+#include "Core/Utils/StringUtils.h"
 #include "atlheaders.h"
 #include <ComDef.h>
 

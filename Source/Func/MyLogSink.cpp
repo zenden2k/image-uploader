@@ -1,6 +1,6 @@
 #include "MyLogSink.h"
-#include <Gui/Dialogs/LogWindow.h>
-#include <Core/Utils/CoreUtils.h>
+#include "Gui/Dialogs/LogWindow.h"
+#include "Core/Utils/CoreUtils.h"
 
 void MyLogSink::send(google::LogSeverity severity, const char* full_filename, const char* base_filename, int line, const struct ::tm* tm_time, const char* message, size_t message_len)
 {

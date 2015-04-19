@@ -1,6 +1,6 @@
 ﻿#include "ServerProfile.h"
-#include <Core/SettingsManager.h>
-#include <Func/Settings.h>
+#include "Core/SettingsManager.h"
+#include "Func/Settings.h"
 
 ServerProfile::ServerProfile() {
 	UseDefaultSettings = true;

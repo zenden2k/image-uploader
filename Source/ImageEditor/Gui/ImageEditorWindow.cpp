@@ -9,12 +9,12 @@
 #include "ImageEditorView.h"
 #include <ImageEditor/Gui/Toolbar.h>
 #include "ColorsDelegate.h"
-#include <Core/Logging.h>
+#include "Core/Logging.h"
 #include <resource.h>
-#include <Core/Images/Utils.h>
-#include <Gui/GuiTools.h>
-#include <Func/WinUtils.h>
-#include <Func/MyUtils.h>
+#include "Core/Images/Utils.h"
+#include "Gui/GuiTools.h"
+#include "Func/WinUtils.h"
+#include "Func/MyUtils.h"
 #include <ImageEditor/MovableElements.h>
 
 namespace ImageEditor {

@@ -24,8 +24,8 @@
 #include "Func/Common.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
-#include <Gui/Controls/ServerSelectorControl.h>
-#include <Func/WinUtils.h>
+#include "Gui/Controls/ServerSelectorControl.h"
+#include "Func/WinUtils.h"
 // CContextMenuItemDlg
 CContextMenuItemDlg::CContextMenuItemDlg(UploadEngineManager * uploadEngineManager)
 {

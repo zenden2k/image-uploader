@@ -25,7 +25,7 @@
 #include <atlcrack.h>
 #include "atlctrlx.h"
 #include "Func/LangClass.h"
-#include <Core/CommonDefs.h>
+#include "Core/CommonDefs.h"
 
 typedef CAtlArray<CString> CStringList;
 #ifndef IU_SHELLEXT

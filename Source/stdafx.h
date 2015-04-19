@@ -26,7 +26,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #pragma warning(disable:4996)
 #include "atlheaders.h"
-#include <3rdpart/GdiPlusH.h>
+#include "3rdpart/GdiPlusH.h"
 #include <string>
 #include <vector>
 #include <map>

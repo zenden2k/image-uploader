@@ -22,7 +22,7 @@
 #include "LogListBox.h"
 #include "Func/Myutils.h"
 #include "Gui/GuiTools.h"
-#include <Core/Logging.h>
+#include "Core/Logging.h"
 
 const int LLB_VertDivider = 10;
 const int LLB_VertMargin = 5;

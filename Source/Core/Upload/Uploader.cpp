@@ -21,7 +21,7 @@
 #include "Uploader.h"
 #include <cstdlib>
 #include <ctime>
-#include <Core/Upload/FileUploadTask.h>
+#include "Core/Upload/FileUploadTask.h"
 #include <math.h>
 
 CUploader::CUploader(void)

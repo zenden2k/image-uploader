@@ -26,10 +26,10 @@
 #include "atlheaders.h"
 #include "Func/common.h"
 #include "Func/MyUtils.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 #include "resource.h"
-#include <Core/Images/Utils.h>
-#include <Core/Logging.h>
+#include "Core/Images/Utils.h"
+#include "Core/Logging.h"
 #include <assert.h>
 
 typedef HRESULT (WINAPI * DwmGetWindowAttribute_Func)(HWND, DWORD, PVOID, DWORD);

@@ -1,9 +1,9 @@
 #include "UploadManager.h"
-#include <Func/Common.h>
-#include <Func/HistoryManager.h>
-#include <Func/Base.h>
-#include <Func/LocalFileCache.h>
-#include <Core/Upload/FileUploadTask.h>
+#include "Func/Common.h"
+#include "Func/HistoryManager.h"
+#include "Func/Base.h"
+#include "Func/LocalFileCache.h"
+#include "Core/Upload/FileUploadTask.h"
 
 UploadManager::UploadManager(UploadEngineManager* uploadEngineManager) : CFileQueueUploader(uploadEngineManager)
 {

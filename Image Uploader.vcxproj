@@ -492,6 +492,7 @@
       <DebugInformationFormat />
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <ForcedUsingFiles>stdafx.h;%(ForcedUsingFiles)</ForcedUsingFiles>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <PreLinkEvent>
       <Command />

@@ -30,7 +30,7 @@
 #include "VideoGrabberParams.h"
 #include "IntegrationSettings.h"
 #include "DefaultServersSettings.h"
-#include <Gui/GuiTools.h>
+#include "Gui/GuiTools.h"
 
 // CSettingsDlg
 CSettingsDlg::CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager)

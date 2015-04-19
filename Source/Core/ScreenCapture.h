@@ -23,8 +23,8 @@
 
 #include <vector>
 #include "atlheaders.h"
-#include <3rdpart/GdiplusH.h>
-#include <Core/Utils/CoreTypes.h>
+#include "3rdpart/GdiplusH.h"
+#include "Core/Utils/CoreTypes.h"
 
 
 HRGN GetWindowVisibleRegion(HWND wnd);

@@ -21,7 +21,7 @@ to maintain a single distribution point for the source code.
 #include <ExDispid.h>
 #include <ComDef.h>
 #include <mshtml.h>
-#include <Core/Logging.h>
+#include "Core/Logging.h"
 
 #define CHECK_POINTER(p)\
 	ATLASSERT(p != NULL);\

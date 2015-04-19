@@ -26,11 +26,11 @@
 #include "LogWindow.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
-#include <Gui/Dialogs/WebViewWindow.h>
-#include <Core/TextUtils.h>
-#include <Core/Utils/StringUtils.h>
-#include <Func/IuCommonFunctions.h>
-#include <Func/WinUtils.h>
+#include "Gui/Dialogs/WebViewWindow.h"
+#include "Core/TextUtils.h"
+#include "Core/Utils/StringUtils.h"
+#include "Func/IuCommonFunctions.h"
+#include "Func/WinUtils.h"
 
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg,std::vector<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)
