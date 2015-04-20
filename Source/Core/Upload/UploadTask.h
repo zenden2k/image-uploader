@@ -22,6 +22,7 @@ class UploadProgress {
 public:
 	std::string statusText;
 	int stage;
+	StatusType statusType;
 	int64_t uploaded;
 	int64_t totalUpload;
 	int64_t lastUpdateTime;
@@ -87,6 +88,8 @@ class UploadTask {
 		void setRole(Role role);
 		bool shorteningStarted() const;
 		void setShorteningStarted(bool started);
+		void stop();
+		void setStopped(bool stopped);
 		friend class CUploader;
 
 	protected:
@@ -95,6 +98,7 @@ class UploadTask {
 		
 		bool isRunning_;
 		bool isFinished_;
+		bool isStopped_;
 		UploadResult uploadResult_;
 		UploadProgress progress_;
 		ServerProfile serverProfile_;
@@ -104,12 +108,14 @@ class UploadTask {
 		void childTaskFinished(UploadTask* child);
 		void uploadProgress(InfoProgress progress);
 		void taskFinished();
+		bool stopSignal() const;
 		bool uploadSuccess_;
 		UploadSession* session_;
 		std::mutex tasksMutex_;
 		Role role_;
 		std::vector<TaskFinishedCallback> taskFinishedCallbacks_;
 		bool shorteningStarted_;
+		volatile bool stopSignal_;
 };	
 
 #endif

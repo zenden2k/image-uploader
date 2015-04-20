@@ -42,7 +42,6 @@
 class UploadManager;
 
 class CUploadDlg : public CDialogImpl<CUploadDlg>,
-                   public CThreadImpl<CUploadDlg>, 
 						 public CWizardPage
 {
 	public:
@@ -89,10 +88,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		CMyEngineList *m_EngineList;
 		CString m_StatusText;
 		
-		bool OnUploaderNeedStop();
-		void OnUploaderProgress(CUploader* uploader, InfoProgress pi);
 		void OnUploaderStatusChanged(UploadTask* task);
-		void OnUploaderConfigureNetworkClient(NetworkClient *nm);	
 		void onShortenUrlChanged(bool shortenUrl);
 		void AddShortenUrlTask(CUrlListItem* item);
 		void AddShortenUrlTask(CUrlListItem* item, CString linkType);
@@ -118,18 +114,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 			CString fileName;
 			int tableRow;
 		};
-		struct CUploadDlgProgressInfo
-		{
-			InfoProgress ip;
-			CAutoCriticalSection CS;
-			std::deque<DWORD> Bytes;
-		};
-		struct ShortenUrlUserData {
-			CUrlListItem* item;
-			CString linkType;
-		};
 		std::vector<FileProcessingStruct*> files_;
-		CUploadDlgProgressInfo PrInfo;
 		bool alreadyShortened_;
 		ServerProfile sessionImageServer_, sessionFileServer_;
 		bool backgroundThreadStarted_;

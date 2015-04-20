@@ -244,6 +244,11 @@ bool CUploader::needStop()
 {
 	if (m_bShouldStop)
 		return m_bShouldStop;
+	if (currentTask_->stopSignal())
+	{
+		m_bShouldStop = true;
+		return m_bShouldStop;
+	}
 	if (onNeedStop)
 		m_bShouldStop = onNeedStop();  // delegate call
 	return m_bShouldStop;

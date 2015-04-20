@@ -10,7 +10,6 @@ ServerListManager::ServerListManager(const std::string &serversDirectory, CUploa
 {
 	uploadEngineList_ = uel;
 	serversDirectory_ = serversDirectory;
-	
 }
 
 ServerListManager::~ServerListManager(void)

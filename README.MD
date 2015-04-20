@@ -32,8 +32,8 @@ http://zenden.ws/imageuploader-cli
 
 ##Building from source
 
-You need Microsoft Visual C++ 12.0 version (Microsoft Visual Studio 2013) to build Image Uploader. 
-Installing Visual Studio 2013 Update 4 is strongly recommended (older versions will corrupt .rc file on editing)
+You need Microsoft Visual Studio 2013 to build Image Uploader. 
+Installing Visual Studio 2013 Update 4 is strongly recommended (older versions corrupt .rc files after editing)
 If you are using a newer MSVC version, you may experience some compilation errors, which can be solved easily (if you fix these errors, please provide a patch or pull request). 
 But also you need to recompile 3rd-party 
 libraries (squirrel, glog, zthread, jsoncpp) against your compiler version (so I recommend to use Microsoft Visual Studio 2008 SP1 to avoid all these issues).

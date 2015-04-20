@@ -31,7 +31,7 @@ bool IsWinXP()
 	return FALSE;
 }
 
-bool IsWinXPOrLater()
+	bool IsWinXPOrLater()
 {
 	// Проверка операционной системы
 	DWORD dwVersion = GetVersion();
@@ -914,6 +914,17 @@ BOOL MakeDirectoryWritable(LPCTSTR lpPath) {
 	return TRUE;
 }
 
+
+bool IsProcessRunning(DWORD pid) {
+	HANDLE process = OpenProcess(SYNCHRONIZE, FALSE, pid);
+	if (!process) {
+		return false;
+	}
+
+	CloseHandle(process);
+	return true;
+}
+
 int GetInternetExplorerMajorVersion()
 {
 	CRegistry Reg;
@@ -930,8 +941,6 @@ int GetInternetExplorerMajorVersion()
 	}
 	return 7;
 }
-
-
 
 TCHAR* GetBrowserKey() {
 	//32bit OS
@@ -1050,3 +1059,4 @@ const std::wstring Utf8ToWstring(const std::string &str)
 
 	return WinUtils::strtows(str, CP_UTF8);
 }
+

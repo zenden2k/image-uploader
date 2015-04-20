@@ -18,6 +18,7 @@ protected:
 	void onSessionFinished(UploadSession* session);
 	void onTaskFinished(UploadTask* task, bool ok);
 	void taskAdded(UploadTask* task) override;
+	void settingsChanged(CSettings* settings);
 
 };
 #endif

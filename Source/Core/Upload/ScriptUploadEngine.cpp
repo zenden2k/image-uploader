@@ -40,10 +40,12 @@
 #include "Core/ScriptAPI/ScriptAPI.h"
 #include <thread>
 
-std::string squirrelOutput;
+std::map<HSQUIRRELVM, std::string> squirrelOutput;
+std::mutex squirrelOutputMutex;
 const Utf8String IuNewFolderMark = "_iu_create_folder_";
 static void printFunc(HSQUIRRELVM v, const SQChar* s, ...)
 {
+	std::lock_guard<std::mutex> lock(squirrelOutputMutex);
 	va_list vl;
 	va_start(vl, s);
 	int len = 1024; // _vcsprintf( s,vl ) + 1;
@@ -51,7 +53,7 @@ static void printFunc(HSQUIRRELVM v, const SQChar* s, ...)
 	vsnprintf( buffer, len, s, vl);
 	va_end(vl);
 	// std::wstring text =  Utf8ToWstring(buffer);
-	squirrelOutput += buffer;
+	squirrelOutput[v] += buffer;
 	delete[] buffer; 
 }
 
@@ -62,23 +64,23 @@ void CompilerErrorHandler(HSQUIRRELVM,const SQChar * desc,const SQChar * source,
 
 void CScriptUploadEngine::InitScriptEngine()
 {
-    //sq_setcompilererrorhandler(vm_.GetVM(), CompilerErrorHandler);
     sqstd_seterrorhandlers(vm_.GetVM());
+	//sq_setcompilererrorhandler(vm_.GetVM(), CompilerErrorHandler);
     sq_setprintfunc(vm_.GetVM(), printFunc, printFunc);
 }
 
 void CScriptUploadEngine::DestroyScriptEngine()
 {
-	/*SquirrelVM::Shutdown();*/
     ScriptAPI::CleanUp();
 }
 
 void CScriptUploadEngine::FlushSquirrelOutput()
 {
-	if (!squirrelOutput.empty())
+	std::string& output = squirrelOutput[vm_.GetVM()];
+	if (!output.empty())
 	{
-		Log(ErrorInfo::mtWarning, "Squirrel\r\n" + /*IuStringUtils::ConvertUnixLineEndingsToWindows*/(squirrelOutput));
-		squirrelOutput.clear();
+		Log(ErrorInfo::mtWarning, "Squirrel\r\n" + /*IuStringUtils::ConvertUnixLineEndingsToWindows*/(output));
+		output.clear();
 	}
 }
 
@@ -210,13 +212,15 @@ bool CScriptUploadEngine::load(Utf8String fileName, ServerSettingsStruct& params
         m_SquirrelScript->CompileString(scriptText.c_str(),IuCoreUtils::ExtractFileName(fileName).c_str());
         if ( Error::Instance().Occurred(vm_.GetVM() ) ) {
             Log(ErrorInfo::mtError, "CScriptUploadEngine::load failed\r\n" + Utf8String(Error::Instance().Message(vm_.GetVM()))); 
+			FlushSquirrelOutput();
             return false;
         }
         clearSqratError();
         m_SquirrelScript->Run();
 
         if ( Error::Instance().Occurred(vm_.GetVM() ) ) {
-            Log(ErrorInfo::mtError, "CScriptUploadEngine::load failed\r\n" + Utf8String(Error::Instance().Message(vm_.GetVM()))); 
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::load failed\r\n" + Utf8String(Error::Instance().Message(vm_.GetVM())));
+			FlushSquirrelOutput();
             return false;
         }
 		ScriptAPI::RegisterShortTranslateFunctions(vm_);

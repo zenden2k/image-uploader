@@ -16,6 +16,7 @@ void UploadTask::init()
 	session_ = 0;
 	role_ = DefaultRole;
 	shorteningStarted_ = false;
+	stopSignal_ = false;
 }
 
 void UploadTask::childTaskFinished(UploadTask* child)
@@ -36,6 +37,11 @@ void UploadTask::taskFinished()
 	{
 		session_->taskFinished(this);
 	}
+}
+
+bool UploadTask::stopSignal() const
+{
+	return stopSignal_;
 }
 
 UploadTask::UploadTask(UploadTask* parentTask)
@@ -215,6 +221,16 @@ bool UploadTask::shorteningStarted() const
 void UploadTask::setShorteningStarted(bool started)
 {
 	shorteningStarted_ = started;
+}
+
+void UploadTask::stop()
+{
+	stopSignal_ = true;
+}
+
+void UploadTask::setStopped(bool stopped)
+{
+	isStopped_ = stopped;
 }
 
 void UploadTask::uploadProgress(InfoProgress progress)

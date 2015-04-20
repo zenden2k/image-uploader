@@ -189,7 +189,6 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
 DWORD CUploadDlg::Run()
 {
-	m_bStopped = false;
 	HRESULT hRes = ::CoInitialize(NULL);
 	if(!MainDlg) return 0;
 	
@@ -278,6 +277,7 @@ DWORD CUploadDlg::Run()
    //InitialParams.upload_profile.ServerID = Server;
 
 	//iss = InitialParams;
+	SetDlgItemText(IDC_COMMONPROGRESS2, _T(""));
 	filesFinished_ = 0;
 	showUploadProgressTab();
 	int n = MainDlg->FileList.GetCount();
@@ -582,7 +582,7 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 		{
 			if(WizardDlg->IsWindowEnabled())
 			{
-				Terminate();
+				//Terminate();
 				ThreadTerminated();
 				FileProgress(TR("Загрузка файлов прервана пользователем."), false);
 			}
@@ -768,17 +768,17 @@ bool CUploadDlg::OnShow()
 
 bool CUploadDlg::OnNext()
 {
-	if(IsRunning())
+	if(uploadSession_->isRunning())
 	{
 		if(!IsStopTimer)
 		{
-			SignalStop();
+			uploadSession_->stop();
 			CancelByUser = true;
 			TimerInc = 5;
 			SetTimer(1, 1000, NULL);
 			IsStopTimer = true;
 		}
-		else 
+		/*else 
 		{
 			if(TimerInc<5)
 			{
@@ -786,7 +786,7 @@ bool CUploadDlg::OnNext()
 				ThreadTerminated();
 				FileProgress(TR("Загрузка файлов прервана пользователем."), false);
 			}
-		}
+		}*/
 
 	}
 	else 
@@ -887,31 +887,31 @@ void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
 	toolbar_.SetButtonInfo(IDC_UPLOADRESULTSTAB, TBIF_TEXT, 0, 0, res,0, 0, 0, 0);
 }
 
-bool CUploadDlg::OnUploaderNeedStop()
-{
-	return m_bStopped;
-}
-
-void CUploadDlg::OnUploaderProgress(CUploader* uploader, InfoProgress pi)
-{
-	PrInfo.CS.Lock();
-	PrInfo.ip = pi;
-	PrInfo.CS.Unlock();
-}
 
 void CUploadDlg::OnUploaderStatusChanged(UploadTask* task)
 {
-	PrInfo.CS.Lock();
-	//m_StatusText = UploaderStatusToString(status, actionIndex,text);
+	UploadProgress* progress = task->progress();
+	FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(task->role() == UploadTask::DefaultRole ? task->userData() : task->parentTask()->userData());
+	if (!fps)
+	{
+		return;
+	}
+	FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
+	if (fileTask) {
+		CString statusText = UploaderStatusToString(progress->statusType, progress->stage, progress->statusText);
+
+		bool isThumb = task->role() == UploadTask::ThumbRole;
+		int columnIndex = isThumb ? 2 : 1;
+		uploadListView_.SetItemText(fps->tableRow, columnIndex, statusText);
+	}
+	/*PrInfo.CS.Lock();
+	//m_StatusText = 
 	PrInfo.Bytes.clear(); 
 	PrInfo.ip.clear();
-	PrInfo.CS.Unlock();
+	PrInfo.CS.Unlock();*/
 }
 
-void CUploadDlg::OnUploaderConfigureNetworkClient(NetworkClient *nm)
-{
-	IU_ConfigureProxy(*nm);
-}
+
 
 
 
@@ -1092,7 +1092,7 @@ void CUploadDlg::onTaskUploadProgress(UploadTask* task)
 			percent = 100 * ((float)progress->uploaded) / progress->totalUpload;
 		}
 		CString uploadSpeed = Utf8ToWCstring(progress->speed);
-		_stprintf(ProgressBuffer, TR("Загружено %s из %s (%d%%) %s"), (LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->uploaded)),
+		_stprintf(ProgressBuffer, TR("%s из %s (%d%%) %s"), (LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->uploaded)),
 			(LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->totalUpload)), percent, (LPCTSTR)uploadSpeed);
 		int columnIndex = isThumb ? 2 : 1;
 		uploadListView_.SetItemText(fps->tableRow, columnIndex, ProgressBuffer);

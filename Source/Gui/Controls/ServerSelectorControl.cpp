@@ -629,10 +629,10 @@ LRESULT CServerSelectorControl::OnUserNameMenuItemClick(WORD wNotifyCode, WORD w
 
 int CServerSelectorControl::showPopup(HWND parent, POINT pt)
 {
-	// C:\Program Files\Microsoft SDKs\Windows\v7.1\Samples\winui\shell\legacysamples\fakemenu\fakemenu.cpp
+	// Code from \Program Files\Microsoft SDKs\Windows\v7.1\Samples\winui\shell\legacysamples\fakemenu\fakemenu.cpp
 	isChildWindow_ = false;
 	if (Create(parent) == NULL) {
-		ATLTRACE(_T("Main dialog creation failed!  :( sorry\n"));
+		ATLTRACE(_T("CServerSelectorControl dialog creation failed!  :( sorry\n"));
 		return 0;
 	}
 	int nRet(-1);
@@ -779,7 +779,12 @@ int CServerSelectorControl::showPopup(HWND parent, POINT pt)
 	//ReleaseCapture();
 
 	isPopingUp_ = false;
-
+	// If we got a WM_QUIT message, then re-post it so the caller's message
+	// loop will see it.
+	if (msg.message == WM_QUIT)
+	{
+		PostQuitMessage((int)msg.wParam);
+	}
 
 
 	if (!bMenuDestroyed) DestroyWindow();

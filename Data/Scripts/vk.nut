@@ -8,6 +8,24 @@ expiresIn <- 0;
 userId <- "";
 testMode <- "1"; // not used
 
+function BeginLogin() {
+	try {
+		return serverSync.beginLogin();
+	}
+	catch ( ex ) {
+	}
+	return false;
+}
+
+function EndLogin() {
+	try {
+		return serverSync.endLogin();
+	} catch ( ex ) {
+		
+	}
+	return false;
+}
+
 function StringPrivacyToAccessType(s) {
 	if ( s == "nobody" ) {
 		return 3;
@@ -68,7 +86,7 @@ function checkResponse(json) {
 	return 1;
 }
 
-function DoLogin() {
+function _DoLogin() {
 	token = ServerParams.getParam("token");
 	userId = ServerParams.getParam("userId");
 	local login = ServerParams.getParam("Login");
@@ -107,6 +125,16 @@ function DoLogin() {
 	browser.navigateToUrl(url);
 	browser.showModal();
 	return token != "" ? 1: 0;
+}
+
+function DoLogin() {
+	if (!BeginLogin() ) {
+		return false;
+	}
+	local res = _DoLogin();
+	
+	EndLogin();
+	return res;
 }
 
 function GetFolderList(list)

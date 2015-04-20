@@ -329,7 +329,9 @@ void FileQueueUploaderPrivate::run()
 		if (res) {
 			result->directUrl = (uploader.getDirectUrl());
 			result->downloadUrl = (uploader.getDownloadUrl());
-			result->thumbUrl = (uploader.getThumbUrl());
+			if (result->thumbUrl.empty()) {
+				result->thumbUrl = (uploader.getThumbUrl());
+			}
 			it->setUploadSuccess(true);
 			for (int i = 0; i < filters_.size(); i++) {
 				filters_[i]->PostUpload(it.get());

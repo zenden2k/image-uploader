@@ -3,6 +3,7 @@
 UploadSession::UploadSession()
 {
 	isFinished_ = false;
+	stopSignal_ = true;
 }
 
 void UploadSession::addTask(std::shared_ptr<UploadTask> task)
@@ -58,7 +59,7 @@ bool UploadSession::isRunning()
 	std::lock_guard<std::mutex> lock(tasksMutex_);
 	for (auto it = tasks_.begin(); it != tasks_.end(); it++)
 	{
-		if (!it->get()->isRunning())
+		if (it->get()->isRunning())
 		{
 			return true;
 		}
@@ -120,6 +121,11 @@ int UploadSession::finishedTaskCount()
 	return res;
 }
 
+bool UploadSession::isStopped()
+{
+	return isStopped_;
+}
+
 void UploadSession::addSessionFinishedCallback(const SessionFinishedCallback& callback)
 {
 	sessionFinishedCallbacks_.push_back(callback);
@@ -128,6 +134,18 @@ void UploadSession::addSessionFinishedCallback(const SessionFinishedCallback& ca
 void UploadSession::addTaskAddedCallback(const TaskAddedCallback& callback)
 {
 	taskAddedCallbacks_.push_back(callback);
+}
+
+void UploadSession::stop()
+{
+	stopSignal_ = true;
+	std::lock_guard<std::mutex> lock(tasksMutex_);
+	int res = 0;
+	for (auto it = tasks_.begin(); it != tasks_.end(); it++)
+	{
+		it->get()->stop();
+
+	}
 }
 
 std::shared_ptr<UploadTask> UploadSession::getTask(int index)
@@ -149,6 +167,11 @@ void UploadSession::taskFinished(UploadTask* task)
 void UploadSession::childTaskAdded(UploadTask* task)
 {
 	notifyTaskAdded(task);
+}
+
+bool UploadSession::stopSignal()
+{
+	return stopSignal_;
 }
 
 void UploadSession::notifyTaskAdded(UploadTask* task)

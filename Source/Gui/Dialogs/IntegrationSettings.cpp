@@ -207,16 +207,19 @@ LRESULT CIntegrationSettings::OnShellIntegrationCheckboxChanged(WORD wNotifyCode
 	ShellIntegrationChanged();
 	return 0;
 }
-	
+
+
+
 void CIntegrationSettings::ShellIntegrationChanged()
 {
-		bool shellIntegrationAvailable = WinUtils::FileExists(Settings.getShellExtensionFileName())!=0;
+	bool shellIntegrationAvailable = WinUtils::FileExists(Settings.getShellExtensionFileName())!=0;
 	bool checked = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED && shellIntegrationAvailable;
 	GuiTools::EnableNextN(GetDlgItem(IDC_SHELLINTEGRATION), 2, checked);
 	HWND contextMenuItemsLabel = GetDlgItem(IDC_CONTEXTMENUITEMSLABEL);
 	::EnableWindow(contextMenuItemsLabel, checked);
 	GuiTools::EnableNextN(contextMenuItemsLabel, 5, checked);
 }
+
 LRESULT CIntegrationSettings::OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CContextMenuItemDlg dlg(uploadEngineManager_);

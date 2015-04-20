@@ -20,23 +20,28 @@ class UploadSession
 		int pendingTasksCount(UploadTaskAcceptor* acceptor);
 		int taskCount();
 		int finishedTaskCount();
+		bool isStopped();
 		std::shared_ptr<UploadTask> getTask(int index);
 		void addSessionFinishedCallback(const SessionFinishedCallback& callback);
 		void addTaskAddedCallback(const TaskAddedCallback& callback);
+		void stop();
 		friend class UploadTask;
 		friend class UploadManager;
 		friend class HistoryUploadFilter;
 	protected:
 		std::vector<std::shared_ptr<UploadTask>> tasks_;
 		bool isFinished_;
+		bool isStopped_;
 		void taskFinished(UploadTask* task);
 		void childTaskAdded(UploadTask* task);
+		bool stopSignal();
 		std::mutex tasksMutex_;
 		std::vector<TaskAddedCallback> taskAddedCallbacks_;
 		std::vector<SessionFinishedCallback> sessionFinishedCallbacks_;
 		void notifyTaskAdded(UploadTask* task);
 		std_tr::shared_ptr<CHistorySession> historySession_;
 		std::mutex historySessionMutex_;
+		volatile bool stopSignal_;
 };
 
 #endif

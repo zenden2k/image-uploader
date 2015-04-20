@@ -32,23 +32,12 @@
 #include "Func/MyLogSink.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 
-
 CAppModule _Module;
-
-bool IsProcessRunning(DWORD pid) {
-	HANDLE process = OpenProcess(SYNCHRONIZE, FALSE, pid);
-	if(!process) {
-		return false;
-	}
-		
-	CloseHandle(process);
-	return true;
-}
 
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
-	
 	LogWindow.Create(0);
+
 	IuCommonFunctions::CreateTempFolder();
 	
 	std::vector<CString> fileList;
@@ -134,7 +123,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		CString pidStr = folders[i]; 
 		pidStr.Replace( _T("iu_temp_"), _T("") );
 		unsigned int pid =  wcstoul( pidStr, 0, 16 ) ^  0xa1234568;
-		if ( pid && !IsProcessRunning( pid ) )
+		if ( pid && !WinUtils::IsProcessRunning( pid ) )
 			IuCommonFunctions::ClearTempFolder( IuCommonFunctions::IUCommonTempFolder + _T("\\") + folders[i] );
 	}
 	

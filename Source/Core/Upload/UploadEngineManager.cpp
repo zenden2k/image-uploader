@@ -33,7 +33,9 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
 		if (!result) {
 			CString errorMessage;
 			LOG(ERROR) << "Cannot load plugin '" << ue->PluginName << "'";
+			return NULL;
 		}
+		
 	} else {
 		/*if (m_prevUpEngine) {
 			if (m_prevUpEngine->getUploadData()->Name == data->Name &&

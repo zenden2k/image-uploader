@@ -52,6 +52,7 @@ void CUploadSettingsPage::TranslateUI()
 	TRC(IDC_RETRIES1LABEL, "Кол-во попыток загрузки файла:");
 	TRC(IDC_RETRIES2LABEL, "Кол-во попыток для одной операции:");
 	TRC(IDC_UPLOADBUFFERLABEL, "Размер буфера отдачи:");
+	TRC(IDC_MAXTHREADSLABEL, "Число потоков");
 }
 	
 LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -85,7 +86,7 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 	SendDlgItemMessage(IDC_SERVERTYPECOMBO, CB_SETCURSEL, Settings.ConnectionSettings.ProxyType);
 	SendDlgItemMessage(IDC_NEEDSAUTH, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.NeedsAuth);
-	
+	SetDlgItemInt(IDC_MAXTHREADSEDIT, Settings.MaxThreads);
 	// Уведомление элементов
 	OnClickedUseProxy(BN_CLICKED, IDC_USEPROXYSERVER, 0, temp);
 
@@ -142,5 +143,10 @@ bool CUploadSettingsPage::Apply()
 	Settings.ConnectionSettings.ProxyType = SendDlgItemMessage(IDC_SERVERTYPECOMBO, CB_GETCURSEL);
 	Settings.UploadBufferSize = GetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT)*1024;
 	if(!Settings.UploadBufferSize) Settings.UploadBufferSize = 65536;
+	Settings.MaxThreads = GetDlgItemInt(IDC_MAXTHREADSEDIT);
+	if (Settings.MaxThreads < 0 || Settings.MaxThreads > 50 )
+	{
+		Settings.MaxThreads = 3;
+	}
 	return true;
 }

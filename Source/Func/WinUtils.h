@@ -15,7 +15,9 @@ const std::wstring Utf8ToWstring(const std::string &str);
 #define WCstringToUtf8(str) WinUtils::wstostr(((LPCTSTR)(str)), CP_UTF8)
 #define Utf8ToWCstring(str) CString(Utf8ToWstring(str).c_str())
 
+
 namespace WinUtils {
+
 
 	bool IsWinXP();
 	bool IsWinXPOrLater();
@@ -99,6 +101,8 @@ namespace WinUtils {
 	void RemoveBrowserKey();
 	void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective = false);
 	void TimerWait(int Delay);
+	WTL::CString ConvertRelativePathToAbsolute(const WTL::CString& fileName);
+	bool IsProcessRunning(DWORD pid);
 #ifndef IU_SHELLEXT
 	std::wstring strtows(const std::string &str, UINT codePage);
 	std::string wstostr(const std::wstring &ws, UINT codePage);
@@ -107,5 +111,11 @@ namespace WinUtils {
 #endif
 
 };
+
+
+namespace Test
+{
+	
+}
 
 #endif

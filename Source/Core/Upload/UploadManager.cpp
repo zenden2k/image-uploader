@@ -4,11 +4,14 @@
 #include "Func/Base.h"
 #include "Func/LocalFileCache.h"
 #include "Core/Upload/FileUploadTask.h"
+#include <Func/Settings.h>
 
 UploadManager::UploadManager(UploadEngineManager* uploadEngineManager) : CFileQueueUploader(uploadEngineManager)
 {
 	addUploadFilter(&imageConverterFilter);
 	addUploadFilter(&urlShorteningFilter);
+	setMaxThreadCount(Settings.MaxThreads);
+	Settings.addChangeCallback(CSettings::ChangeCallback(this, &UploadManager::settingsChanged));
 	OnConfigureNetworkClient.bind(this, &UploadManager::configureNetwork);
 }
 
@@ -101,4 +104,9 @@ void UploadManager::taskAdded(UploadTask* task)
 		return ;
 	}
 	task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &UploadManager::onTaskFinished));
+}
+
+void UploadManager::settingsChanged(CSettings* settings)
+{
+	setMaxThreadCount(Settings.MaxThreads);
 }

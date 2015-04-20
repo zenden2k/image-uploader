@@ -186,6 +186,7 @@ Sqrat::SqratVM& GetCurrentThreadVM()
 void SetCurrentThreadVM(Sqrat::SqratVM& vm) {
 	threadVm = &vm;
 }
+
 }
 
 HSQUIRRELVM GetCurrentThreadHVM()

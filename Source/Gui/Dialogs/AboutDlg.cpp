@@ -89,7 +89,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	memoText += CString(L"openssl") +"\t\thttps://www.openssl.org\r\n";
 	memoText += CString(L"zlib") +"\t\thttp://www.zlib.net\r\n";
 	memoText += CString(L"squirrel") +"\t\thttp://squirrel-lang.org\r\n";
-	memoText += CString(L"sqplus") +"\t\thttp://sourceforge.net/projects/sqplus/\r\n";
+	memoText += CString(L"sqrat") +"\t\thttp://scrat.sourceforge.net\r\n";
 	memoText += CString(L"ffmpeg") +"\t\thttps://www.ffmpeg.org\r\n";	
 	memoText += CString(L"MediaInfo") +"\thttps://mediaarea.net/\r\n";
 	memoText += CString(L"pcre") +"\t\thttp://www.pcre.org\r\n";

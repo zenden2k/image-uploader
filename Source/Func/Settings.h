@@ -206,6 +206,7 @@ public:
 		CString m_SettingsDir;
 		CString Language;
 		bool ExplorerCascadedMenu;
+		int MaxThreads;
 		
 void FindDataFolder();
 #endif
@@ -276,6 +277,9 @@ public:
 #endif
 		
 #endif 
+		typedef fastdelegate::FastDelegate1<CSettings*> ChangeCallback;
+		void addChangeCallback(const ChangeCallback& callback);
+		
 
 #if !defined(IU_CLI)
 	private:
@@ -344,9 +348,11 @@ protected:
 	protected:
 	ServerSettingsStruct& ServerByUtf8Name(std::string name);
 	public:
+	void notifyChange();
 	SettingsManager mgr_;
 	std::string fileName_; 
 	std::string SettingsFolder;
+	std::vector<ChangeCallback> changeCallbacks_;
 	unsigned int LastUpdateTime;
 };
 

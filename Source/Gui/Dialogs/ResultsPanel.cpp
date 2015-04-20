@@ -288,7 +288,10 @@ const CString CResultsPanel::GenerateOutput()
 	{
 		for(int i=0;i<n;i++)
 		{
-
+			if (UrlList[i].isNull())
+			{
+				continue;
+			}
 			Buffer+=_T("[url=");
 			if(*UrlList[i].getImageUrl(shortenUrl_)&& (Settings.UseDirectLinks || UrlList[i].getDownloadUrl(shortenUrl_).IsEmpty()))
 
@@ -322,6 +325,10 @@ const CString CResultsPanel::GenerateOutput()
 	{
 		for(int i=0;i<n;i++)
 		{
+			if (UrlList[i].isNull())
+			{
+				continue;
+			}
 			if(*UrlList[i].getImageUrl(shortenUrl_)&& (Settings.UseDirectLinks || UrlList[i].getDownloadUrl(shortenUrl_).IsEmpty()))
 			{
 				Buffer+=_T("[img]");
@@ -337,6 +344,10 @@ const CString CResultsPanel::GenerateOutput()
 	{
 		for(int i=0;i<n;i++)
 		{
+			if (UrlList[i].isNull())
+			{
+				continue;
+			}
 			BBCode_Link(Buffer, UrlList[i]);
 
 			Buffer+=_T("\r\n");
@@ -346,6 +357,10 @@ const CString CResultsPanel::GenerateOutput()
 	{
 		for(int i=0;i<n;i++)
 		{
+			if (UrlList[i].isNull())
+			{
+				continue;
+			}
 			if(*UrlList[i].getImageUrl(shortenUrl_)&& (Settings.UseDirectLinks || UrlList[i].getDownloadUrl(shortenUrl_).IsEmpty())) 
 				Buffer+=UrlList[i].getImageUrl(shortenUrl_);
 			else 
@@ -360,6 +375,10 @@ const CString CResultsPanel::GenerateOutput()
 		Buffer+=_T("<center>");
 		for(int i=0;i<n;i++)
 		{
+			if (UrlList[i].isNull())
+			{
+				continue;
+			}
 			Buffer+=_T("<a href=\"");
 			if(*UrlList[i].getImageUrl(shortenUrl_)&& (Settings.UseDirectLinks || UrlList[i].getDownloadUrl(shortenUrl_).IsEmpty())) 
 				Buffer+=UrlList[i].getImageUrl(shortenUrl_);
@@ -387,6 +406,10 @@ const CString CResultsPanel::GenerateOutput()
 	{
 		for(int i=0; i<n; i++)
 		{
+			if (UrlList[i].isNull())
+			{
+				continue;
+			}
 			if(lstrlen(UrlList[i].getImageUrl(shortenUrl_))>0 && (Settings.UseDirectLinks || UrlList[i].getDownloadUrl(shortenUrl_).IsEmpty()))
 			{
 				Buffer += _T("<img src=\"");
@@ -402,6 +425,10 @@ const CString CResultsPanel::GenerateOutput()
 	{
 		for(int i=0;i<n;i++)
 		{
+			if (UrlList[i].isNull())
+			{
+				continue;
+			}
 			HTML_Link(Buffer, UrlList[i]);
 		}
 	}

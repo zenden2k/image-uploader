@@ -183,6 +183,11 @@ CString CSettings::getShellExtensionFileName() const {
 	return file;
 }
 
+void CSettings::addChangeCallback(const ChangeCallback& callback)
+{
+	changeCallbacks_.push_back(callback);
+}
+
 void RegisterShellExtension(bool Register) {
 	CString moduleName = Settings.getShellExtensionFileName();
 	if ( !FileExists( moduleName ) ) {
@@ -343,6 +348,7 @@ CSettings::CSettings()
 	DropVideoFilesToTheList = false;
 	CodeLang = 0;
 	ConfirmOnExit = 1;
+	MaxThreads = 3;
 	ExplorerContextMenu = false;
 	ExplorerVideoContextMenu = true;
 	ExplorerContextMenu_changed = false;
@@ -557,13 +563,13 @@ CSettings::CSettings()
 	upload.n_bind(DropVideoFilesToTheList);
 	upload.n_bind(CodeType);
 	upload.n_bind(ShowUploadErrorDialog);
+	upload.n_bind(MaxThreads);
 	
 	imageServer.bind(upload["Server"]);
 	fileServer.bind(upload["FileServer"]);
 	quickScreenshotServer.bind(upload["QuickScreenshotServer"]);
 	contextMenuServer.bind(upload["ContextMenuServer"]);
 	urlShorteningServer.bind(upload["UrlShorteningServer"]);
-
 
 	ConvertProfiles["Default"] = ImageConvertingParams();
 	CurrentConvertProfileName = "Default";
@@ -687,6 +693,7 @@ bool CSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadF
 		VideoSettings.Engine = VideoEngineDirectshow;
 	}
 #endif
+	notifyChange();
 	return true;
 }
 
@@ -823,7 +830,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		SaveAccounts(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("ServersParams"));
 		//std::cerr << "Saving setting to "<< IuCoreUtils::WstringToUtf8((LPCTSTR)fileName_);
 		xml.SaveToFile(fileName_);
-
+		notifyChange();
 #if !defined(IU_SERVERLISTTOOL) && !defined(IU_CLI)
 		CRegistry Reg;
 		Reg.SetRootKey(HKEY_CURRENT_USER);
@@ -973,7 +980,15 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 		return ServersSettings[name].begin()->second;
 	}
 
-	bool CSettings::LoadAccounts(SimpleXmlNode root)
+void CSettings::notifyChange()
+{
+	for (int i = 0; i < changeCallbacks_.size(); i++ )
+	{
+		changeCallbacks_[i](this);
+	}
+}
+
+bool CSettings::LoadAccounts(SimpleXmlNode root)
 	{
 		std::vector<SimpleXmlNode> servers;
 		root.GetChilds("Server", servers);
