@@ -162,6 +162,7 @@ public:
 		CString outFileName_;
 		HWND cropToolTip_;
 		int imageQuality_;
+        bool allowAltTab_;
 		std_tr::shared_ptr<Gdiplus::Bitmap> resultingBitmap_;
 		ConfigurationProvider* configurationProvider_; 
 		TextParamsWindow textParamsWindow_;
@@ -204,7 +205,7 @@ public:
 	int penSize() const { return penSize_;}
 	void setRoundingRadius(int radius) { roundingRadius_ = radius; }
 	int roundingRadius() const { return roundingRadius_;}
-
+    bool allowAltTab() const  {  return allowAltTab_; } 
 	void setFont(LOGFONT font) { font_ = font; }
 	LOGFONT font() const { return font_; }
 protected:
@@ -213,6 +214,7 @@ protected:
 	int penSize_;
 	int roundingRadius_;
 	LOGFONT font_;
+    bool allowAltTab_;
 };
 
 }

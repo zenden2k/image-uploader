@@ -8,6 +8,7 @@ ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
 	backgroundColor_ = Settings.ImageEditorSettings.BackgroundColor;
 	font_ =  Settings.ImageEditorSettings.Font;
 	roundingRadius_ = Settings.ImageEditorSettings.RoundingRadius;
+    allowAltTab_ = Settings.ImageEditorSettings.AllowAltTab;
 }
 
 
@@ -18,5 +19,6 @@ void ImageEditorConfigurationProvider::saveConfiguration()
 	Settings.ImageEditorSettings.BackgroundColor = backgroundColor_;
 	Settings.ImageEditorSettings.Font = font_;
 	Settings.ImageEditorSettings.RoundingRadius = roundingRadius_;
+    Settings.ImageEditorSettings.AllowAltTab = allowAltTab_;
 }
 

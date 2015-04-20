@@ -260,6 +260,7 @@ struct ImageEditorSettingsStruct {
 	int PenSize;
 	int RoundingRadius;
 	LOGFONT Font;
+    bool AllowAltTab;
 };
 
 #endif
