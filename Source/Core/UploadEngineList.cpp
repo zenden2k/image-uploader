@@ -124,6 +124,10 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 		
 			UE.UsingPlugin = !UE.PluginName.empty();
 			UE.Debug =   cur.AttributeBool("Debug");
+			if (UE.Debug)
+			{
+				UE.MaxThreads = 1;
+			}
 			UE.ImageHost =  !cur.AttributeBool("FileHost");
 			UE.MaxFileSize =   cur.AttributeInt("MaxFileSize");
 

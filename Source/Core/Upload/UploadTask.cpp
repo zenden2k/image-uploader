@@ -12,6 +12,7 @@ void UploadTask::init()
 {
 	isRunning_ = false;
 	isFinished_ = false;
+	isStopped_ = false;
 	userData_ = NULL;
 	uploadSuccess_ = false;
 	session_ = 0;
@@ -67,6 +68,14 @@ UploadTask* UploadTask::parentTask() const
 
 bool UploadTask::isRunning()
 {
+	std::lock_guard<std::mutex> guard(tasksMutex_);
+	for ( auto& it : childTasks_ )
+	{
+		if (it->isRunning())
+		{
+			return true;
+		}
+	}
 	return isRunning_;
 }
 
@@ -237,6 +246,22 @@ void UploadTask::stop()
 	{
 		currentUploadEngine_->stop();
 	}
+	if (!isRunning_)
+	{
+		isStopped_ = true;
+		isRunning_ = false;
+		isFinished_ = true;
+	}
+	std::lock_guard<std::mutex> lock(tasksMutex_);
+	for (auto& it : childTasks_)
+	{
+		it->stop();
+	}
+}
+
+bool UploadTask::isStopped()
+{
+	return isStopped_;
 }
 
 void UploadTask::setStopped(bool stopped)
@@ -279,11 +304,10 @@ void UploadTask::uploadProgress(InfoProgress progress)
 			progress_.speed.clear();
 		}
 		progress_.lastUpdateTime = curTime;
-	}
-
-	if (OnUploadProgress)
-	{
-		OnUploadProgress(this); // invoke upload progress callback
+		if (OnUploadProgress)
+		{
+			OnUploadProgress(this); // invoke upload progress callback
+		}
 	}
 }
 
@@ -298,7 +322,7 @@ int UploadTask::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<Upload
 	std::lock_guard<std::mutex> lock(tasksMutex_);
 	for (auto it = childTasks_.begin(); it != childTasks_.end(); it++)
 	{
-		if (!it->get()->isFinished() && !it->get()->isRunning() )
+		if (!it->get()->isFinished() && !it->get()->isRunning() && !it->get()->isStopped() )
 		{
 			count++;
 			if (acceptor->canAcceptUploadTask(it->get()))

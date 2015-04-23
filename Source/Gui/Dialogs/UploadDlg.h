@@ -115,6 +115,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 			int tableRow;
 		};
 		std::vector<FileProcessingStruct*> files_;
+		//std::mutex uploadListViewMutex_;
 		bool alreadyShortened_;
 		ServerProfile sessionImageServer_, sessionFileServer_;
 		bool backgroundThreadStarted_;

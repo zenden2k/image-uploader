@@ -90,6 +90,7 @@ class UploadTask {
 		bool shorteningStarted() const;
 		void setShorteningStarted(bool started);
 		void stop();
+		bool isStopped();
 		void setStopped(bool stopped);
 		virtual std::string toString() = 0;
 		friend class CUploader;

@@ -31,7 +31,7 @@ int  UploadSession::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<Up
 	for (auto it = tasks_.begin(); it != tasks_.end(); it++)
 	{
 		UploadTask* uploadTask = it->get();
-		if (!uploadTask->isFinishedItself() && !uploadTask->isRunningItself() ) {
+		if (!uploadTask->isFinishedItself() && !uploadTask->isRunningItself() &&  !uploadTask->isStopped()) {
 			count++;
 			if (acceptor->canAcceptUploadTask(uploadTask))
 			{
@@ -57,7 +57,7 @@ int  UploadSession::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<Up
 bool UploadSession::isRunning()
 {
 	std::lock_guard<std::mutex> lock(tasksMutex_);
-	for (auto it = tasks_.begin(); it != tasks_.end(); it++)
+	for (auto it = tasks_.begin(); it != tasks_.end(); ++it)
 	{
 		if (it->get()->isRunning())
 		{

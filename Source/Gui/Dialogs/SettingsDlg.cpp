@@ -50,6 +50,7 @@ CSettingsDlg::~CSettingsDlg()
 
 LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	//SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYOUTRTL);  // test :))
 	// center the dialog on the screen
 	CenterWindow();
 	HWND parent = GetParent();

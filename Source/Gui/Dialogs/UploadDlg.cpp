@@ -774,9 +774,9 @@ bool CUploadDlg::OnNext()
 		{
 			uploadSession_->stop();
 			CancelByUser = true;
-			TimerInc = 5;
-			SetTimer(1, 1000, NULL);
-			IsStopTimer = true;
+			//TimerInc = 5;
+			//SetTimer(1, 1000, NULL);
+			//IsStopTimer = true;
 		}
 		/*else 
 		{

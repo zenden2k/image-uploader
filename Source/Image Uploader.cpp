@@ -135,6 +135,8 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {	
+	//BOOL res = SetProcessDefaultLayout(LAYOUT_RTL);
+
 #if defined(_WIN32) && !defined(NDEBUG)
 	// These global strings in GLOG are initially reserved with a small
 	// amount of storage space (16 bytes). Resizing the string larger than its

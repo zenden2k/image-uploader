@@ -584,6 +584,7 @@ Json::Value sqValueToJson(Sqrat::Object obj ) {
 	return Json::Value(Json::nullValue);
 }
 Json::Value sqObjToJson(Sqrat::Object obj ) {
+	HSQUIRRELVM vm = GetCurrentThreadVM().GetVM();
 	Json::Value res;
     Sqrat::Object::iterator it;
 	switch ( obj.GetType() ) {
@@ -596,13 +597,13 @@ Json::Value sqObjToJson(Sqrat::Object obj ) {
 				break;
 			case OT_TABLE:
 				while(obj.Next(it) ) {
-					res[it.getName()] = sqObjToJson(Sqrat::Object(it.getValue(),GetCurrentThreadVM().GetVM()));
+					res[it.getName()] = sqObjToJson(Sqrat::Object(it.getValue(), vm));
 				}
 				return res;
 				break;
 			case OT_ARRAY: 
                 while(obj.Next(it) ) {
-					res[Sqrat::Object(it.getKey()).Cast<int>()] = sqObjToJson(Sqrat::Object(it.getValue(), GetCurrentThreadVM().GetVM()));
+					res[Sqrat::Object(it.getKey(), vm).Cast<int>()] = sqObjToJson(Sqrat::Object(it.getValue(), vm));
                 }
 				return res;
 				break;				
