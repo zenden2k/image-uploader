@@ -32,6 +32,7 @@ long round(float number);
 #endif
 
 #ifdef _WIN32
+#include <thread>
 
 int gettimeofday(struct timeval * tp, struct timezone * tzp);
 #endif
@@ -73,5 +74,6 @@ namespace IuCoreUtils
 	const std::string Utf8ToAnsi(const std::string &str, int codepage);
 	bool RemoveFile(const Utf8String& utf8Filename);
 	bool MoveFileOrFolder(const Utf8String& from ,const Utf8String& to);
+	std::string ThreadIdToString(const std::thread::id& id);
 };
 #endif

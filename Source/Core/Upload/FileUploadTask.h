@@ -19,7 +19,8 @@ class FileUploadTask: public UploadTask {
 		std::string originalFileName() const;
 		void setFinished(bool finished) override;
 		TempFileDeleter* tempFileDeleter(bool create = true);
-	protected:
+		std::string toString() override;
+protected:
 		std::string fileName_;
 		std::string originalFileName_;
 		std::string displayName_;

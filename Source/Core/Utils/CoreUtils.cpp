@@ -507,5 +507,11 @@ Utf8String GetDefaultExtensionForMimeType(const Utf8String mimeType) {
 	return "";
 }
 
+std::string ThreadIdToString(const std::thread::id& id)
+{
+	std::stringstream threadIdSS;
+	threadIdSS << id;
+	return threadIdSS.str();
+}
 
 } // end of namespace IuCoreUtils

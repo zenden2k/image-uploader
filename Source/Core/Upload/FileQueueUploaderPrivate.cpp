@@ -1,18 +1,17 @@
 ﻿#include "FileQueueUploaderPrivate.h"
+
+#include <thread>
+#include <algorithm>
 #include "DefaultUploadEngine.h"
 #include "FileQueueUploader.h"
-#include <zthread/Runnable.h>
 #include "Uploader.h"
 #include "Core/Upload/FileUploadTask.h"
-#include <algorithm>
-#include <zthread/Thread.h>
 #include "Gui/Dialogs/LogWindow.h"
 #include "UploadEngineManager.h"
 #include "Core/Upload/UploadFilter.h"
-#ifndef IU_CLI
-#include <zthread/Thread.h>
-#include <zthread/Mutex.h>
-#endif
+#include <zthread/ZThread.h>
+
+/* private CFileQueueUploaderPrivate class */
 class FileQueueUploaderPrivate::Runnable
 #ifndef IU_CLI
 	: public ZThread::Runnable
@@ -31,8 +30,6 @@ public:
 		uploader_->run();
 	}
 };
-
-/* private CFileQueueUploaderPrivate class */
 
 TaskAcceptorBase::TaskAcceptorBase(bool useMutex )
 {
@@ -245,9 +242,7 @@ void FileQueueUploaderPrivate::removeUploadFilter(UploadFilter* filter)
 }
 
 void FileQueueUploaderPrivate::start() {
-#ifndef IU_CLI
 	std::lock_guard<std::mutex> lock(mutex_);
-#endif
 	m_NeedStop = false;
 	m_IsRunning = true;
 	int numThreads = std::min<int>(size_t(m_nThreadCount - m_nRunningThreads), pendingTasksCount());
@@ -255,13 +250,12 @@ void FileQueueUploaderPrivate::start() {
 	for (int i = 0; i < numThreads; i++)
 	{
 		m_nRunningThreads++;
-#ifdef IU_CLI
-		(new Runnable(this))->run();
-#else
 		ZThread::Thread t1(new Runnable(this));// starting new thread
-#endif
-	}
 
+		/*std::thread t1(&FileQueueUploaderPrivate::run, this);
+		t1.detach();*/
+
+	}
 }
 
 
@@ -269,11 +263,12 @@ void FileQueueUploaderPrivate::run()
 {
 	CUploader uploader;
 	uploader.onConfigureNetworkClient.bind(this, &FileQueueUploaderPrivate::OnConfigureNetworkClient);
-#ifndef IU_CLI
+	
+	
 	// TODO
 	uploader.onErrorMessage.bind(this, &FileQueueUploaderPrivate::onErrorMessage);
 	uploader.onDebugMessage.bind(this, &FileQueueUploaderPrivate::onDebugMessage);
-#endif
+	
 	for (;;)
 	{
 		auto it = getNextJob();

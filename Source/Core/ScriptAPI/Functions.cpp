@@ -742,6 +742,7 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
 
 void RegisterShortTranslateFunctions(Sqrat::SqratVM& vm) {
     Sqrat::RootTable& root = vm.GetRootTable();
+
     Function func(root, "tr");
     if ( func.IsNull() ) {
         root.Func("tr", Translate);

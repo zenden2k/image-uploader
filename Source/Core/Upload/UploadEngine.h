@@ -212,6 +212,7 @@ class CAbstractUploadEngine
 		virtual void setNetworkClient(NetworkClient* nm);
 		void setUploadData(CUploadEngineData* data);
 		void setServerSync(ServerSync* sync);
+		virtual void stop();
 		ServerSync* serverSync() const;
 		CUploadEngineData* getUploadData() const;
 		// Events
@@ -225,7 +226,8 @@ class CAbstractUploadEngine
 		NetworkClient * m_NetworkClient;
 		CUploadEngineData * m_UploadData;
 		ServerSettingsStruct m_ServersSettings;
-		ServerSync* serverSync_;;
+		ServerSync* serverSync_;
+		UploadTask* currentTask_;
 		int m_ThumbnailWidth;
 		bool DebugMessage(const std::string& message, bool isServerResponseBody = false);
 		bool ErrorMessage(ErrorInfo);

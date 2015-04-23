@@ -77,3 +77,8 @@ TempFileDeleter* FileUploadTask::tempFileDeleter(bool create)
 	}
 	return tempFileDeleter_;
 }
+
+std::string FileUploadTask::toString()
+{
+	return "FileUploadTask(" + fileName_ + ")";
+}

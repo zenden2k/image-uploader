@@ -76,7 +76,7 @@ const std::string HtmlDocument::getHTML()
 void RegisterHtmlDocumentClass(Sqrat::SqratVM& vm)
 {
 	using namespace Sqrat;
-    vm.GetRootTable().Bind("HtmlDocument", Class<HtmlDocument>(vm.GetVM())
+    vm.GetRootTable().Bind("HtmlDocument", Class<HtmlDocument>(vm.GetVM(), "HtmlDocument")
         .Func("rootElement", &HtmlDocument::rootElement)
         .Func("getElementById", &HtmlDocument::getElementById)
         .Func("getElementsByName", &HtmlDocument::getElementsByName)
@@ -90,7 +90,7 @@ void RegisterHtmlDocumentClass(Sqrat::SqratVM& vm)
 void RegisterHtmlElementClass(Sqrat::SqratVM& vm)
 {
 	using namespace Sqrat;
-    vm.GetRootTable().Bind("HtmlElement", Class<HtmlElement>(vm.GetVM())
+    vm.GetRootTable().Bind("HtmlElement", Class<HtmlElement>(vm.GetVM(), "HtmlElement")
         .Func("getAttribute", &HtmlElement::getAttribute)
         .Func("setAttribute", &HtmlElement::setAttribute)
         .Func("removeAttribute", &HtmlElement::removeAttribute)

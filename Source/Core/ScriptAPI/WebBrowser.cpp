@@ -161,7 +161,7 @@ const std::string CWebBrowser::title()
 
 void RegisterWebBrowserClass(Sqrat::SqratVM& vm) {
 	using namespace Sqrat;
-    vm.GetRootTable().Bind("CWebBrowser", Class<CWebBrowser>(vm.GetVM())
+    vm.GetRootTable().Bind("CWebBrowser", Class<CWebBrowser>(vm.GetVM(), "CWebBrowser")
         .Func("navigateToUrl", &CWebBrowser::navigateToUrl)
         .Func("showModal", &CWebBrowser::showModal)
         .Func("setTitle", &CWebBrowser::setTitle)

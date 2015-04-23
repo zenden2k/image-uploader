@@ -57,3 +57,8 @@ UrlShorteningTask::ParentUrlType UrlShorteningTask::parentUrlType()
 {
 	return parentUrlType_;
 }
+
+std::string UrlShorteningTask::toString()
+{
+	return "UrlShorteningTask(" + url_ + ")";
+}

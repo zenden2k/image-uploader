@@ -67,10 +67,11 @@ class CScriptUploadEngine: public CAbstractUploadEngine
 		time_t getCreationTime();
 		int RetryLimit();
 		Sqrat::SqratVM& getVM();
-		
-		//Sqrat::Table m_Object; 		
+		void stop() override;
+	//Sqrat::Table m_Object; 		
 	protected:
 		void Log(ErrorInfo::MessageType mt, const std::string& error);
+		void PrintCallback(const std::string& output);
         void clearSqratError();
 		CFolderList m_FolderList;
        

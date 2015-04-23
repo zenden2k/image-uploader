@@ -26,13 +26,10 @@
 
 #include <curl/curl.h>
 //#include <curl/types.h>
-#ifndef IU_CLI
-#include <zthread/Mutex.h>
-#endif
+#include <mutex>
 
 #include "Core/Utils/CoreUtils.h"
 
-#define NString std::string
 
 std::string nm_trimStr(const std::string& str);
 void nm_splitString(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount = -1);
@@ -45,32 +42,35 @@ class NetworkClient
 		};
 		NetworkClient(void);
 		~NetworkClient(void);
-		void addQueryParam(const NString& name, const NString& value);
-		void addQueryParamFile(const NString& name, const NString& fileName, const NString& displayName = "", const NString& contentType = "");
-		void addQueryHeader(const NString& name, const NString& value);
-		void setUrl(const NString& url);
-		bool doPost(const NString& data="");
+		void addQueryParam(const std::string& name, const std::string& value);
+		void addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName = "", const std::string& contentType = "");
+		void addQueryHeader(const std::string& name, const std::string& value);
+		void setUrl(const std::string& url);
+		bool doPost(const std::string& data="");
 		bool doUploadMultipartData();
-		bool doUpload(const NString& fileName,const NString &data);
+		bool doUpload(const std::string& fileName,const std::string &data);
 		bool doGet(const std::string &url="");
 		const std::string responseBody();
 		int responseCode();
-		const NString errorString();
-		void setUserAgent(const NString& userAgentStr);
-		const NString responseHeaderText();
-		const NString responseHeaderByName(const NString& name);
-		NString responseHeaderByIndex(const int index, NString& name);
+		const std::string errorString();
+		void setUserAgent(const std::string& userAgentStr);
+		const std::string responseHeaderText();
+		const std::string responseHeaderByName(const std::string& name);
+		std::string responseHeaderByIndex(const int index, std::string& name);
 		int responseHeaderCount();
 		void setProgressCallback(curl_progress_callback func, void *data);
-		const NString urlEncode(const NString& str);
-		const NString getCurlResultString();
-		void setCurlOption(int option, const NString &value);
+		const std::string urlEncode(const std::string& str);
+		const std::string getCurlResultString();
+		void setCurlOption(int option, const std::string &value);
 		void setCurlOptionInt(int option, long value);
-		void setMethod(const NString &str);
-		void setProxy(const NString &host, int port, int type);
-		void setProxyUserPassword(const NString &username, const NString password);
-		void setReferer(const NString &str);
-		void setOutputFile(const NString &str);
+		const std::string getCurlInfoString(int option);
+		int getCurlInfoInt(int option);
+		double getCurlInfoDouble(int option);
+		void setMethod(const std::string &str);
+		void setProxy(const std::string &host, int port, int type);
+		void setProxyUserPassword(const std::string &username, const std::string password);
+		void setReferer(const std::string &str);
+		void setOutputFile(const std::string &str);
 		void setUploadBufferSize(const int size);
 		void setChunkOffset(double offset);
 		void setChunkSize(double size);
@@ -90,17 +90,17 @@ class NetworkClient
 
 		struct CustomHeaderItem
 		{
-			NString name;
-			NString value;
+			std::string name;
+			std::string value;
 		};
 
 		struct QueryParam
 		{
 			bool isFile;
-			NString name;
-			NString value; // also filename
-			NString displayName; 
-			NString contentType;
+			std::string name;
+			std::string value; // also filename
+			std::string displayName; 
+			std::string contentType;
 		};
 
 		static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
@@ -130,7 +130,7 @@ class NetworkClient
 		CallBackData m_bodyFuncData;
 		curl_progress_callback m_progressCallbackFunc;
 		CallBackData m_headerFuncData;
-		NString m_url;
+		std::string m_url;
 		void* m_progressData;
 		CURLcode curl_result;
 		int64_t m_CurrentFileSize;
@@ -140,7 +140,7 @@ class NetworkClient
 		std::vector<CustomHeaderItem> m_ResponseHeaders;
 		std::string internalBuffer;
 		std::string m_headerBuffer;
-		NString m_userAgent;
+		std::string m_userAgent;
 		char m_errorBuffer[CURL_ERROR_SIZE];;
 		std::string m_method;
 		struct curl_slist * chunk_;
@@ -148,9 +148,7 @@ class NetworkClient
 		int64_t chunkOffset_;
 		int64_t chunkSize_;
 		bool treatErrorsAsWarnings_;
-               #ifndef IU_CLI
-		static ZThread::Mutex _mutex;
-#endif
+		static std::mutex _mutex;
 		static bool _curl_init;
 		static bool _is_openssl;
 		static char CertFileName[1024];

@@ -10,7 +10,8 @@
 #include "CommonTypes.h"
 #include <mutex>
 #include <deque>
-
+class CAbstractUploadEngine;
+//#include <Core/Upload/UploadEngine.h>
 class UploadTask;
 class UploadSession;
 struct UploadProgressTimeInfo
@@ -90,6 +91,7 @@ class UploadTask {
 		void setShorteningStarted(bool started);
 		void stop();
 		void setStopped(bool stopped);
+		virtual std::string toString() = 0;
 		friend class CUploader;
 
 	protected:
@@ -103,11 +105,13 @@ class UploadTask {
 		UploadProgress progress_;
 		ServerProfile serverProfile_;
 		ServerProfile urlShorteningProfile_;
+		CAbstractUploadEngine* currentUploadEngine_;
 		void* userData_;
 		void init();
 		void childTaskFinished(UploadTask* child);
 		void uploadProgress(InfoProgress progress);
 		void taskFinished();
+		void setCurrentUploadEngine(CAbstractUploadEngine* currentUploadEngine);
 		bool stopSignal() const;
 		bool uploadSuccess_;
 		UploadSession* session_;

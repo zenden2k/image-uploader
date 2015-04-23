@@ -19,10 +19,12 @@
 */
 
 #include "ScriptAPI.h"
+
 #ifdef _WIN32
 #include "WebBrowser.h"
 #include "HtmlDocument.h"
 #include "HtmlElement.h"
+#include "WebBrowserPrivateBase.h"
 #endif
 #include "RegularExpression.h"
 #include "Core/Network/NetworkClient.h"
@@ -31,6 +33,8 @@
 #include "Core/Upload/FolderList.h"
 #include "Core/Squirrelnc.h"
 #include "Core/Upload/ServerSync.h"
+#include <set>
+#include <unordered_map>
 
 
 /*
@@ -44,9 +48,33 @@ DECLARE_INSTANCE_TYPE(CIUUploadParams);*/
 
 namespace ScriptAPI {;
 
+std::unordered_map<HSQUIRRELVM, std::string> squirrelOutput;
+std::mutex squirrelOutputMutex;
+std::unordered_map<HSQUIRRELVM, PrintCallback> printCallbacks;
+std::mutex printCallbacksMutex;
+
+static void printFunc(HSQUIRRELVM v, const SQChar* s, ...)
+{
+	std::lock_guard<std::mutex> lock(squirrelOutputMutex);
+	va_list vl;
+	va_start(vl, s);
+	int len = 1024; // _vcsprintf( s,vl ) + 1;
+	char* buffer = new char[len + 1];
+	vsnprintf(buffer, len, s, vl);
+	va_end(vl);
+	// std::wstring text =  Utf8ToWstring(buffer);
+	squirrelOutput[v] += buffer;
+	delete[] buffer;
+}
+
+// Actually we do not need this since migrating to Sqrat
+void CompilerErrorHandler(HSQUIRRELVM, const SQChar * desc, const SQChar * source, SQInteger line, SQInteger column) {
+	LOG(ERROR) << "Script compilation failed\r\n" << "File:  " << source << "\r\nLine:" << line << "   Column:" << column << "\r\n\r\n" << desc;
+}
+
 void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
     using namespace Sqrat;
-    vm.GetRootTable().Bind("NetworkClient", Class<NetworkClient>(vm.GetVM()).
+    vm.GetRootTable().Bind("NetworkClient", Class<NetworkClient>(vm.GetVM(), "NetworkClient").
         Func("doGet", &NetworkClient::doGet).
         Func("responseBody", &NetworkClient::responseBody).
         Func("responseCode", &NetworkClient::responseCode).
@@ -69,12 +97,15 @@ void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
         Func("setUserAgent", &NetworkClient::setUserAgent).
         Func("responseHeaderText", &NetworkClient::responseHeaderText).
         Func("responseHeaderByName", &NetworkClient::responseHeaderByName).
-        Func("setReferer", &NetworkClient::setReferer));
+		Func("getCurlInfoString", &NetworkClient::getCurlInfoString).
+		Func("getCurlInfoInt", &NetworkClient::getCurlInfoInt).
+		Func("getCurlInfoDouble", &NetworkClient::getCurlInfoDouble).
+		Func("setReferer", &NetworkClient::setReferer));
 }
 
 void RegisterSimpleXmlClass(Sqrat::SqratVM& vm) {
     using namespace Sqrat;
-     vm.GetRootTable().Bind("SimpleXml", Class<SimpleXml>(vm.GetVM()).
+     vm.GetRootTable().Bind("SimpleXml", Class<SimpleXml>(vm.GetVM(), "SimpleXml").
          Func("LoadFromFile", &SimpleXml::LoadFromFile).
          Func("LoadFromString", &SimpleXml::LoadFromString).
          Func("SaveToFile", &SimpleXml::SaveToFile).
@@ -82,7 +113,7 @@ void RegisterSimpleXmlClass(Sqrat::SqratVM& vm) {
          Func("GetRoot", &SimpleXml::getRoot)
      );
 
-    vm.GetRootTable().Bind("SimpleXmlNode", Class<SimpleXmlNode>(vm.GetVM()).
+    vm.GetRootTable().Bind("SimpleXmlNode", Class<SimpleXmlNode>(vm.GetVM(), "SimpleXmlNode").
         Func("Attribute", &SimpleXmlNode::Attribute).
         Func("AttributeInt", &SimpleXmlNode::AttributeInt).
         Func("AttributeBool", &SimpleXmlNode::AttributeBool).
@@ -105,7 +136,7 @@ void RegisterSimpleXmlClass(Sqrat::SqratVM& vm) {
 void RegisterUploadClasses(Sqrat::SqratVM& vm) {
     using namespace Sqrat;
     RootTable& root = vm.GetRootTable();
-    root.Bind("CFolderItem", Class<CFolderItem>(vm.GetVM()).
+    root.Bind("CFolderItem", Class<CFolderItem>(vm.GetVM(), "CFolderItem").
         Func("getId", &CFolderItem::getId).
         Func("getParentId", &CFolderItem::getParentId).
         Func("getSummary", &CFolderItem::getSummary).
@@ -121,7 +152,7 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
         Func("getItemCount", &CFolderItem::getItemCount)
     );
 
-    root.Bind("CIUUploadParams", Class<CIUUploadParams>(vm.GetVM()).
+    root.Bind("CIUUploadParams", Class<CIUUploadParams>(vm.GetVM(), "CIUUploadParams").
         Func("getFolderID", &CIUUploadParams::getFolderID).
         Func("setDirectUrl", &CIUUploadParams::setDirectUrl).
         Func("setThumbUrl", &CIUUploadParams::setThumbUrl).
@@ -131,24 +162,23 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
     );
 
 
-    root.Bind("CFolderList", Class<CFolderList>(vm.GetVM()).
+    root.Bind("CFolderList", Class<CFolderList>(vm.GetVM(), "CFolderList").
         Func("AddFolder", &CFolderList::AddFolder).
         Func("AddFolderItem", &CFolderList::AddFolderItem)
     );
 
 
-    root.Bind("ServerSettingsStruct", Class<ServerSettingsStruct>(vm.GetVM()).
+    root.Bind("ServerSettingsStruct", Class<ServerSettingsStruct>(vm.GetVM(), "ServerSettingsStruct").
         Func("setParam", &ServerSettingsStruct::setParam).
         Func("getParam", &ServerSettingsStruct::getParam)
     );
 
-	root.Bind("ServerSync", Class<ServerSync>(vm.GetVM()).
+	root.Bind("ServerSync", Class<ServerSync>(vm.GetVM(), "ServerSync").
 		Func("beginLogin", &ServerSync::beginLogin).
 		Func("endLogin", &ServerSync::endLogin).
 		Func("setValue", &ServerSync::setValue).
 		Func("getValue", &ServerSync::getValue)
 	);
-
 }
 
 #ifdef _MSC_VER
@@ -156,6 +186,9 @@ __declspec(thread) Sqrat::SqratVM* threadVm;
 #else
 thread_local  Sqrat::SqratVM* threadVm;
 #endif
+
+std::unordered_map<HSQUIRRELVM, std::set<WebBrowserPrivateBase*>> vmBrowsers;
+std::mutex vmBrowsersMutex;
 
 void RegisterClasses(Sqrat::SqratVM& vm) {
    // Sqrat::DefaultVM::Set(vm.GetVM());
@@ -171,6 +204,8 @@ void RegisterClasses(Sqrat::SqratVM& vm) {
 void RegisterAPI(Sqrat::SqratVM& vm)
 {
 	threadVm = &vm;
+	//sq_setcompilererrorhandler(vm_.GetVM(), CompilerErrorHandler);
+	sq_setprintfunc(vm.GetVM(), printFunc, printFunc);
     RegisterFunctions(vm);
     RegisterClasses(vm);
 }
@@ -185,6 +220,62 @@ Sqrat::SqratVM& GetCurrentThreadVM()
 }
 void SetCurrentThreadVM(Sqrat::SqratVM& vm) {
 	threadVm = &vm;
+}
+
+void StopAssociatedBrowsers(Sqrat::SqratVM& vm)
+{
+	std::lock_guard<std::mutex> guard(vmBrowsersMutex);
+	for ( auto& it : vmBrowsers[vm.GetVM()])
+	{
+		it->abort();
+	}
+	
+}
+
+void AddBrowserToVM(Sqrat::SqratVM& vm, WebBrowserPrivateBase* browser)
+{
+	std::lock_guard<std::mutex> guard(vmBrowsersMutex);
+	vmBrowsers[vm.GetVM()].insert(browser);
+}
+
+void RemoveBrowserToVM(Sqrat::SqratVM& vm, WebBrowserPrivateBase* browser)
+{
+	try
+	{
+		std::lock_guard<std::mutex> guard(vmBrowsersMutex);
+		vmBrowsers[vm.GetVM()].erase(browser);
+	} catch (std::exception& ex)
+	{
+		LOG(ERROR) << ex.what();
+	}
+
+}
+
+void SetPrintCallback(Sqrat::SqratVM& vm, const PrintCallback& callback)
+{
+	std::lock_guard<std::mutex> guard(printCallbacksMutex);
+	printCallbacks[vm.GetVM()] = callback;
+}
+
+void FlushSquirrelOutput(Sqrat::SqratVM& vm) {
+	std::lock_guard<std::mutex> guard(squirrelOutputMutex);
+	std::string& output = squirrelOutput[vm.GetVM()];
+	std::lock_guard<std::mutex> guard2(printCallbacksMutex);
+	
+	if (!output.empty())
+	{
+		auto it = printCallbacks.find(vm.GetVM());
+		if (it != printCallbacks.end())
+		{
+			PrintCallback& callback = it->second;
+			if (callback)
+			{
+				callback(output);
+			}
+			
+		}
+		output.clear();
+	}
 }
 
 }

@@ -24,20 +24,20 @@
 </div>
 <div id="content">
     <div id="left">
-<h2>Создание плагинов</h2> 
-<p>Для расширенной поддержки серверов в программе используются скрипты на <a href="http://www.squirrel-lang.org/" target="_blank">
- языке Squirrel 2</a>.</p>
+<h2>Writing plugins</h2> 
+<p>Image Uploader is using scripts in <a href="http://www.squirrel-lang.org/" target="_blank">Squirrel 3</a> language.
+Squirrel is a high level imperative, object-oriented programming language, designed to be a light-weight scripting language that fits in the size, memory bandwidth, and real-time requirements of applications like video games.</p>
 <p>
-<a href="http://www.squirrel-lang.org/doc/squirrel2.html" target="_blank">Документация языка Squirrel</a><br>
-<a href="http://www.squirrel-lang.org/doc/sqstdlib2.html" target="_blank">Документация стандартной библиотеки языка Squirrel</a>
+<a href="http://www.squirrel-lang.org/doc/squirrel3.html" target="_blank">Squirrel 3.0 reference manual</a><br>
+<a href="http://www.squirrel-lang.org/doc/sqstdlib3.html" target="_blank">Squirrel 3.0 Standard Libraries manual</a>
 </p>
-<p>Они должны быть сохранены в кодировке utf-8 в файлах с расширением <code>.nut</code>.
-<p><b>Пример плагина (example.nut):</b> </p>
+<p>Scripts should be saved in utf-8 encoding in files with <code>.nut</code> extension.
+<p><b>Example of a script (example.nut):</b> </p>
 <pre class="prettyprint">
 test <- "example"; // global variable
 
 /**
-* Функция, загружающая файл
+* Function which acually doing upload of a file
 * @var string pathToFile 
 * @var CIUUploadParams options
 * @return int - success(1), failure(0)
@@ -78,8 +78,8 @@ function regex_simple(data,regStr,start)
 }
 
 /** 
-* Необязательные функции:
-* Получение списка альбомов(папок, галерей) на сервере
+* Optional function:
+* Retreving folder (album) list from server
 * @var CFolderList list
 * @return int - success(1), failure(0) 
 **/
@@ -124,14 +124,14 @@ function GetFolderAccessTypeList()
 </pre>
 <div class="script-functions">
 <p>
-В общем случае необходимо реализовать 1 функцию — <code>UploadFile</code>.<br>
-Если нужна поддержка серверных альбомов, то необходимо реализовать еще 4 функции — <code>GetFolderList</code>, <code>CreateFolder</code>, 
+You have to implement at least one function — <code>UploadFile</code>.<br>
+If you want to support album listing/creating/modifying, you have to implement also <code>GetFolderList</code>, <code>CreateFolder</code>, 
 <code>ModifyFolder</code>, <code>GetFolderAccessTypeList</code></i>.</p>
 </div>
 </div>
 </div>
 <div id="footer">
-<p> Последнее обновление данного документа — 05.03.2015 года. Copyright &copy; 2007 - 2015, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
+<p> Copyright &copy; 2007 - 2015, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
 </div>
 
 </body>

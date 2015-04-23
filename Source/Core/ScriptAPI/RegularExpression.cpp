@@ -245,7 +245,7 @@ ScriptAPI::RegularExpression CreateRegExp(const std::string& expression, const s
 void RegisterRegularExpressionClass(Sqrat::SqratVM& vm) {
 	using namespace Sqrat;
     Sqrat::RootTable& root = vm.GetRootTable();
-	root.Bind("RegularExpression", Class<RegularExpression>(vm.GetVM())
+	root.Bind("RegularExpression", Class<RegularExpression>(vm.GetVM(), "RegularExpression")
         .Func("search", &RegularExpression::search)
         .Func("findAll", &RegularExpression::findAll)
         .Func("match", &RegularExpression::match)

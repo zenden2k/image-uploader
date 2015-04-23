@@ -138,6 +138,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
 	m_CurrentEngine->onErrorMessage.bind(this, &CUploader::ErrorMessage);
 
 	m_CurrentEngine->setThumbnailWidth(m_nThumbWidth);
+	task->setCurrentUploadEngine(m_CurrentEngine);
 
 	CIUUploadParams uparams;
 	uparams.thumbWidth = m_nThumbWidth;
@@ -152,6 +153,8 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
 			return false;
 		}
 		EngineRes = m_CurrentEngine->doUpload(task.get(), uparams);
+		task->setCurrentUploadEngine(nullptr);
+
 		if ( EngineRes == -1 ) {
 			isFatalError_ = true;
 			Cleanup();

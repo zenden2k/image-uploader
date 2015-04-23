@@ -66,7 +66,7 @@ int NetworkClient::private_static_writer(char *data, size_t size, size_t nmemb, 
 	return 0;
 }
 
-void NetworkClient::setProxy(const NString &host, int port, int type)
+void NetworkClient::setProxy(const std::string &host, int port, int type)
 {
 	curl_easy_setopt(curl_handle, CURLOPT_PROXY, host.c_str());
 	curl_easy_setopt(curl_handle, CURLOPT_PROXYPORT, (long)port);	
@@ -75,7 +75,7 @@ void NetworkClient::setProxy(const NString &host, int port, int type)
 	//curl_easy_setopt(curl_handle, CURLOPT_NOPROXY, "localhost,127.0.0.1"); // test
 } 
 
-void NetworkClient::setProxyUserPassword(const NString &username, const NString password)
+void NetworkClient::setProxyUserPassword(const std::string &username, const std::string password)
 {
 	if(username.empty());
 		//curl_easy_setopt(curl_handle, CURLOPT_PROXYUSERPWD,"");
@@ -121,21 +121,19 @@ int NetworkClient::ProgressFunc(void *clientp, double dltotal, double dlnow, dou
 	return 0;
 }
 
-void NetworkClient::setMethod(const NString &str)
+void NetworkClient::setMethod(const std::string &str)
 {
 	m_method = str;
 }
 
 bool  NetworkClient::_curl_init = false;
 bool  NetworkClient::_is_openssl = false;
-#ifndef IU_CLI
-ZThread::Mutex NetworkClient::_mutex;
-#endif
+
+std::mutex NetworkClient::_mutex;
+
 NetworkClient::NetworkClient(void)
 {
-    #ifndef IU_CLI
-	_mutex.acquire();
-#endif
+	_mutex.lock();
 	if(!_curl_init)
 	{
 		enableResponseCodeChecking_ = true;
@@ -157,9 +155,9 @@ NetworkClient::NetworkClient(void)
 		atexit(&curl_cleanup);
 		_curl_init = true;
 	}
-    #ifndef IU_CLI
-	_mutex.release();
-#endif
+
+	_mutex.unlock();
+
 	m_hOutFile = 0;
 	chunkOffset_ = -1;
 	chunkSize_ = -1;
@@ -203,7 +201,16 @@ NetworkClient::NetworkClient(void)
 	//We want the referrer field set automatically when following locations
 	curl_easy_setopt(curl_handle, CURLOPT_AUTOREFERER, 1L); 
 	curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 32768L);
-	   curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 0L);
+	curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 0L);
+	
+	/*
+	// enable TCP keep-alive for this transfer
+	curl_easy_setopt(curl_handle, CURLOPT_TCP_KEEPALIVE, 1L);
+	// keep-alive idle time to 120 seconds
+	curl_easy_setopt(curl_handle, CURLOPT_TCP_KEEPIDLE, 120L);
+	// interval time between keep-alive probes: 60 seconds 
+	curl_easy_setopt(curl_handle, CURLOPT_TCP_KEEPIDLE, 60L);
+	*/
 }
 
 NetworkClient::~NetworkClient(void)
@@ -212,7 +219,7 @@ NetworkClient::~NetworkClient(void)
 	curl_easy_cleanup(curl_handle);
 }
 
-void NetworkClient::addQueryParam(const NString& name, const NString& value)
+void NetworkClient::addQueryParam(const std::string& name, const std::string& value)
 {
 	QueryParam newParam;
 	newParam.name = name;
@@ -221,7 +228,7 @@ void NetworkClient::addQueryParam(const NString& name, const NString& value)
 	m_QueryParams.push_back(newParam);
 }
 
-void NetworkClient::addQueryParamFile(const NString& name, const NString& fileName, const NString& displayName, const NString& contentType)
+void NetworkClient::addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName, const std::string& contentType)
 {
 	QueryParam newParam;
 	newParam.name = name;
@@ -232,7 +239,7 @@ void NetworkClient::addQueryParamFile(const NString& name, const NString& fileNa
 	m_QueryParams.push_back(newParam);
 }
 
-void NetworkClient::setUrl(const NString& url)
+void NetworkClient::setUrl(const std::string& url)
 {
 	m_url = url;
 	curl_easy_setopt(curl_handle, CURLOPT_URL, url.c_str());
@@ -336,7 +343,7 @@ int NetworkClient::responseCode()
 	return result;
 }
 
-void NetworkClient::addQueryHeader(const NString& name, const NString& value)
+void NetworkClient::addQueryHeader(const std::string& name, const std::string& value)
 {
 	CustomHeaderItem chi;
 	chi.name = name;
@@ -358,7 +365,7 @@ bool NetworkClient::doGet(const std::string & url)
 
 }
 
-bool NetworkClient::doPost(const NString& data)
+bool NetworkClient::doPost(const std::string& data)
 {
 	private_initTransfer();
 	if(!private_apply_method())
@@ -386,7 +393,7 @@ bool NetworkClient::doPost(const NString& data)
 	return private_on_finish_request();
 }
 
-const NString NetworkClient::urlEncode(const NString& str)
+const std::string NetworkClient::urlEncode(const std::string& str)
 {
 	char * encoded = curl_easy_escape(curl_handle, str.c_str() , str.length() );
 	std::string res = encoded;
@@ -394,12 +401,12 @@ const NString NetworkClient::urlEncode(const NString& str)
 	curl_free(encoded);
 	return res;
 }
-const NString NetworkClient::errorString()
+const std::string NetworkClient::errorString()
 {
 	return m_errorBuffer;
 }
 
-void NetworkClient::setUserAgent(const NString& userAgentStr)
+void NetworkClient::setUserAgent(const std::string& userAgentStr)
 {
 	m_userAgent = userAgentStr;
 }
@@ -441,7 +448,7 @@ void NetworkClient::curl_cleanup()
 	curl_global_cleanup();
 }
 
-const NString NetworkClient::responseHeaderText()
+const std::string NetworkClient::responseHeaderText()
 {
 	return m_headerBuffer;
 }
@@ -514,7 +521,7 @@ void NetworkClient::private_parse_headers()
 	}
 }
 
-const NString NetworkClient::responseHeaderByName(const NString& name)
+const std::string NetworkClient::responseHeaderByName(const std::string& name)
 {
 	std::vector<CustomHeaderItem>::iterator it, end = m_ResponseHeaders.end();
 	
@@ -532,7 +539,7 @@ int NetworkClient::responseHeaderCount()
 	return m_ResponseHeaders.size();
 }
 
-NString NetworkClient::responseHeaderByIndex(const int index, NString& name)
+std::string NetworkClient::responseHeaderByIndex(const int index, std::string& name)
 {
 	name = m_ResponseHeaders[index].name;
 	return m_ResponseHeaders[index].value;
@@ -607,7 +614,7 @@ size_t NetworkClient::private_read_callback(void *ptr, size_t size, size_t nmemb
 }
 
 
-bool NetworkClient::doUpload(const NString& fileName, const NString &data)
+bool NetworkClient::doUpload(const std::string& fileName, const std::string &data)
 {
 	if(!fileName.empty())
 	{
@@ -678,7 +685,7 @@ bool NetworkClient::private_apply_method()
 
 }
 
-void NetworkClient::setReferer(const NString &str)
+void NetworkClient::setReferer(const std::string &str)
 {
 	curl_easy_setopt(curl_handle, CURLOPT_REFERER, str.c_str());
 }
@@ -692,7 +699,7 @@ CURL* NetworkClient::getCurlHandle()
 	return curl_handle;
 }
 
-void NetworkClient::setOutputFile(const NString &str)
+void NetworkClient::setOutputFile(const std::string &str)
 {
 	m_OutFileName = str;
 }
@@ -717,7 +724,7 @@ void NetworkClient::setTreatErrorsAsWarnings(bool treat)
 	treatErrorsAsWarnings_ = treat;
 }
 
-const NString  NetworkClient::getCurlResultString()
+const std::string  NetworkClient::getCurlResultString()
 {
 	const char * str = curl_easy_strerror(curl_result);
 	std::string res = str;
@@ -740,10 +747,32 @@ void NetworkClient::enableResponseCodeChecking(bool enable)
 	enableResponseCodeChecking_ = enable;
 }
 
-void NetworkClient::setCurlOption(int option, const NString &value) {
+void NetworkClient::setCurlOption(int option, const std::string &value) {
 	curl_easy_setopt(curl_handle, (CURLoption)option, value.c_str());
 }
 
 void NetworkClient::setCurlOptionInt(int option, long value) {
 	curl_easy_setopt(curl_handle, (CURLoption)option, value);
+}
+
+const std::string NetworkClient::getCurlInfoString(int option)
+{
+	char* buf = 0;
+	curl_easy_getinfo(curl_handle, static_cast<CURLINFO>(option), &buf);
+	std::string res = buf ? buf : "";
+	return res;
+}
+
+int NetworkClient::getCurlInfoInt(int option)
+{
+	long res = 0;
+	curl_easy_getinfo(curl_handle, static_cast<CURLINFO>(option), &res);
+	return res;
+}
+
+double NetworkClient::getCurlInfoDouble(int option)
+{
+	double res = 0;
+	curl_easy_getinfo(curl_handle, static_cast<CURLINFO>(option), &res);
+	return res;
 }

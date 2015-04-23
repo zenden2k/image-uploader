@@ -45,6 +45,7 @@ void WebBrowserPrivate::OnPageLoaded(const CString& url) {
         catch (std::exception& e)
 		{
 			LOG(ERROR) << "onUrlChangedCallback: "<<Utf8String(e.what());
+			FlushSquirrelOutput(GetCurrentThreadVM());
 		}
 	}
 }
@@ -65,6 +66,7 @@ void WebBrowserPrivate::OnDocumentComplete(const CString& url) {
         catch (std::exception& e)
 		{
 			LOG(ERROR) << "onLoadFinishedCallback: " << Utf8String(e.what());
+			FlushSquirrelOutput(GetCurrentThreadVM());
 		}
 	}
 }
@@ -82,7 +84,7 @@ void WebBrowserPrivate::setFocus()
 }
 
 bool WebBrowserPrivate::OnNavigateError(const CString& url, LONG statusCode) {
-    return false;
+	return false;
 	if ( !onNavigateErrorCallback_.IsNull() ) {
 		try
 		{
@@ -100,6 +102,7 @@ bool WebBrowserPrivate::OnNavigateError(const CString& url, LONG statusCode) {
         catch (std::exception& e)
 		{
 			LOG(ERROR) << "onNavigateErrorCallback: " << Utf8String(e.what());
+			FlushSquirrelOutput(GetCurrentThreadVM());
 		}
 	}
 	return false;
@@ -122,6 +125,7 @@ void WebBrowserPrivate::OnTimer()
         catch (std::exception& e)
 		{
 			LOG(ERROR) << "onTimerCallback: " << Utf8String(e.what());
+			FlushSquirrelOutput(GetCurrentThreadVM());
 		}
 	}
 }
@@ -141,9 +145,11 @@ void WebBrowserPrivate::OnFileFieldFilled(const CString& fileName)
 
 			onFileFieldFilledCallback_.Execute(data);
 		}
+		
         catch (std::exception& e)
 		{
 			LOG(ERROR) << "onFileFieldFilledCallback: " << Utf8String(e.what());
+			FlushSquirrelOutput(GetCurrentThreadVM());
 		}
 	}
 }

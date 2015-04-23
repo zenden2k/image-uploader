@@ -450,7 +450,7 @@
 	</Server3>
 	<Server3 Name="vfl.ru" Authorize="0" Type="image"  Plugin="vfl"  MinVersion="1.3.1.4274" MaxThreads="1" >
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server3>
+	</Server3> <!-- MaxThreads="2"  -->
 	<Server3 Name="imgbox.com"  Type="image"  Authorize="0" Plugin="imgbox" >
 	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" ViewUrlTemplate="stub"/>
 	</Server3>

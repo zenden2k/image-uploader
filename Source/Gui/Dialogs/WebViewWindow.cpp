@@ -109,9 +109,19 @@ int CWebViewWindow::exec()
 	return DoModal(0, false);
 }
 
-void CWebViewWindow::close()
+void CWebViewWindow::close(int retCode)
 {
-	PostQuitMessage(1);
+	PostQuitMessage(retCode);
+}
+
+void CWebViewWindow::abortFromAnotherThread()
+{
+	PostMessage(WM_CLOSE);
+}
+
+void CWebViewWindow::destroyFromAnotherThread()
+{
+	SendMessage(WM_DESTROYWEBVIEWWINDOW);
 }
 
 void CWebViewWindow::setTimerInterval(int interval)
@@ -427,6 +437,13 @@ LRESULT CWebViewWindow::OnFillInputField(UINT uMsg, WPARAM wParam, LPARAM lParam
 //	hook_ = SetWindowsHookEx(WH_CBT, (HOOKPROC) MakeCallback(&CWebViewWindow::CBTHook), _Module.GetModuleInstance(), GetCurrentThreadId());
 	hook_ = SetWindowsHookEx(WH_CBT, (HOOKPROC) /*CBTHook*/callback_, _Module.GetModuleInstance(), GetCurrentThreadId());
 	accesible_->accDoDefaultAction(CComVariant(0));
+	return 0;
+}
+
+LRESULT CWebViewWindow::OnDestroyFromAnotherThread(UINT, WPARAM, LPARAM, BOOL&)
+{
+	DestroyWindow();
+	m_hWnd = 0;
 	return 0;
 }
 

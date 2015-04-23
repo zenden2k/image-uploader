@@ -1042,9 +1042,9 @@ LRESULT CUploadSettings::OnResizePresetButtonClicked(WORD wNotifyCode, WORD wID,
 	FolderMenu.CreatePopupMenu();
    FolderMenu.AppendMenu(MF_STRING, id++, TR("Без изменения"));
    FolderMenu.AppendMenu(MF_SEPARATOR, -1, _T(""));
-   FolderMenu.AppendMenu(MF_STRING, id++, _T("800x600"));
-	FolderMenu.AppendMenu(MF_STRING, id++, _T("1024x768"));
-   FolderMenu.AppendMenu(MF_STRING, id++, _T("1600x1200"));
+   FolderMenu.AppendMenu(MF_STRING, id++, _T("800\u00D7600"));
+	FolderMenu.AppendMenu(MF_STRING, id++, _T("1024\u00D7768"));
+   FolderMenu.AppendMenu(MF_STRING, id++, _T("1600\u00D71200"));
    FolderMenu.AppendMenu(MF_SEPARATOR, -1,  _T(""));
      FolderMenu.AppendMenu(MF_STRING, id++, _T("25%"));
       FolderMenu.AppendMenu(MF_STRING, id++, _T("50%"));

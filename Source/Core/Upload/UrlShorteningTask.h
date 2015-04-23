@@ -19,7 +19,8 @@ class UrlShorteningTask: public UploadTask {
 		void setFinished(bool finished) override;
 		void setParentUrlType(ParentUrlType type);
 		ParentUrlType parentUrlType();
-	protected:
+		std::string toString() override;
+protected:
 		std::string url_;
 		ParentUrlType parentUrlType_;
 };	

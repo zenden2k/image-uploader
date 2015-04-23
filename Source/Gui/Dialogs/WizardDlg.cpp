@@ -97,6 +97,7 @@ CWizardDlg::~CWizardDlg()
 TCHAR MediaInfoDllPath[MAX_PATH] = _T("");
 LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	// SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYOUTRTL);  // test :))
 	srand(unsigned int(time(0)));
 	m_bShowWindow = true;
 	   

@@ -173,6 +173,11 @@ void CAbstractUploadEngine::setServerSync(ServerSync* sync)
 	serverSync_ = sync;
 }
 
+void CAbstractUploadEngine::stop()
+{
+
+}
+
 ServerSync* CAbstractUploadEngine::serverSync() const
 {
 	return serverSync_;

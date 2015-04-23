@@ -386,9 +386,7 @@ CString GenerateFileName(const CString& templateStr, int index, const CPoint siz
 	CString hours, seconds, minutes;
 	indexStr.Format(_T("%03d"), index);
 	std::thread::id threadId = std::this_thread::get_id();
-	std::stringstream threadIdSS;
-	threadIdSS << threadId;
-	CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(threadIdSS.str() + WCstringToUtf8(IntToStr(GetTickCount() + random(100))))).c_str();
+	CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(IuCoreUtils::ThreadIdToString(threadId) + WCstringToUtf8(IntToStr(GetTickCount() + random(100))))).c_str();
 	result.Replace(_T("%md5"), (LPCTSTR)md5);
 	result.Replace(_T("%width%"), IntToStr(size.x));
 	result.Replace(_T("%height%"), IntToStr(size.y));

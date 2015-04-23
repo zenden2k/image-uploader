@@ -56,8 +56,8 @@ function OnLoadFinished(data) {
 function OnFileInputFilledCallback(data) {
 	local doc = data.browser.document();
 	data.browser.runJavaScript( 
-	    "$('#dropdown-content-type').val(1);" // family same content
-        "$('#thumbnail-option').val('200c');"  // 200x200 
+	    "$('#dropdown-content-type').val(1);"+ // family same content
+        "$('#thumbnail-option').val('200c');"+  // 200x200 
 	    "$('#gallery-option').val('3');"  // do not create new gallery
 	);
 	local submitBtn = doc.getElementById("fake-submit-button");

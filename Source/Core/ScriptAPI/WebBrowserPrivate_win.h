@@ -23,6 +23,7 @@
 
 #include "ScriptAPI.h"
 
+#include "WebBrowserPrivateBase.h"
 #include "Gui/Dialogs/WebViewWindow.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Logging.h"
@@ -43,7 +44,7 @@ class CWebBrowser;
 using namespace Sqrat;
 
 
-class WebBrowserPrivate {
+class WebBrowserPrivate : public WebBrowserPrivateBase {
 public:
 	WebBrowserPrivate(CWebBrowser * browser ) {
 		browser_ = browser;
@@ -61,9 +62,9 @@ public:
 
 	~WebBrowserPrivate() {
 		if ( IsWindow(webViewWindow_.m_hWnd) ) {
-			webViewWindow_.DestroyWindow();
-            webViewWindow_.m_hWnd = 0;
+			webViewWindow_.destroyFromAnotherThread();
 		}
+		webViewWindow_.m_hWnd = 0;
 	}
 
 	void setSilent(bool silent) {
@@ -82,31 +83,6 @@ public:
 		}
 	}
 
-	void setOnUrlChangedCallback(Sqrat::Function callBack, Sqrat::Object context) {
-		onUrlChangedCallback_ = callBack;
-		onUrlChangedCallbackContext_ = context;
-	}
-
-	void setOnNavigateErrorCallback(Sqrat::Function callBack, Sqrat::Object context) {
-		onNavigateErrorCallback_ = callBack;
-		onNavigateErrorCallbackContext_ = context;
-	}
-
-	void setOnLoadFinishedCallback(Sqrat::Function callBack, Sqrat::Object context) {
-		onLoadFinishedCallback_ = callBack;
-		onLoadFinishedCallbackContext_ = context;
-	}
-
-    void setOnTimerCallback(int timerInterval, Sqrat::Function callBack, Sqrat::Object context) {
-        onTimerCallback_ = callBack;
-        onTimerCallbackContext_ = context;
-        timerInterval_ = timerInterval;
-    }
-
-    void setOnFileInputFilledCallback(Sqrat::Function callBack, Sqrat::Object context) {
-        onFileFieldFilledCallback_ = callBack;
-        onFileFieldFilledCallbackContext_ = context;
-    }
 
 	bool showModal() {
 		HWND parent = 
@@ -149,8 +125,18 @@ public:
 		webViewWindow_.ShowWindow(SW_HIDE);
 	}
 
-	void close() {
-		webViewWindow_.close();
+	void close() override {
+		if (webViewWindow_.m_hWnd) {
+			webViewWindow_.close(); 
+		}
+	}
+
+	void abort() override
+	{
+		WebBrowserPrivateBase::abort();
+		if (webViewWindow_.m_hWnd) {
+			webViewWindow_.abortFromAnotherThread(); // close as user
+		}
 	}
 
 	bool setHtml(const std::string& html) {
@@ -258,16 +244,6 @@ public:
 	friend class HtmlElementPrivate;
 protected:
 	CWebViewWindow webViewWindow_;
-	Sqrat::Function onUrlChangedCallback_;
-	Sqrat::Object onUrlChangedCallbackContext_;
-	Sqrat::Function onNavigateErrorCallback_;
-	Sqrat::Object onNavigateErrorCallbackContext_;
-	Sqrat::Function onLoadFinishedCallback_;
-	Sqrat::Object onLoadFinishedCallbackContext_;
-	Sqrat::Function onTimerCallback_;
-	Sqrat::Object onTimerCallbackContext_;
-	Sqrat::Function onFileFieldFilledCallback_;
-	Sqrat::Object onFileFieldFilledCallbackContext_;
 	CString initialUrl_;
 	CString initialTitle_;
 	CString initialHtml_;
@@ -275,7 +251,6 @@ protected:
 	bool initialSilent_;
 	int initialWidth_;
 	int initialHeight_;
-	int timerInterval_;
 
 	void create(HWND parent = 0 ) {
 		if ( webViewWindow_.m_hWnd) {

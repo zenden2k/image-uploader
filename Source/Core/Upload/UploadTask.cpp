@@ -1,5 +1,6 @@
 #include "UploadTask.h"
 #include "UploadSession.h"
+#include "Core/Upload/ScriptUploadEngine.h"
 
 UploadTask::UploadTask()
 {
@@ -17,6 +18,7 @@ void UploadTask::init()
 	role_ = DefaultRole;
 	shorteningStarted_ = false;
 	stopSignal_ = false;
+	currentUploadEngine_ = 0;
 }
 
 void UploadTask::childTaskFinished(UploadTask* child)
@@ -37,6 +39,11 @@ void UploadTask::taskFinished()
 	{
 		session_->taskFinished(this);
 	}
+}
+
+void UploadTask::setCurrentUploadEngine(CAbstractUploadEngine* currentUploadEngine)
+{
+	currentUploadEngine_ = currentUploadEngine;
 }
 
 bool UploadTask::stopSignal() const
@@ -226,6 +233,10 @@ void UploadTask::setShorteningStarted(bool started)
 void UploadTask::stop()
 {
 	stopSignal_ = true;
+	if (currentUploadEngine_)
+	{
+		currentUploadEngine_->stop();
+	}
 }
 
 void UploadTask::setStopped(bool stopped)
@@ -319,3 +330,5 @@ int UploadTask::pendingTasksCount(UploadTaskAcceptor* acceptor)
 	}
 	return res;
 }
+
+/*void setCurrentUploadEngine(CAbstractUploadEngine* currentUploadEngine);*/

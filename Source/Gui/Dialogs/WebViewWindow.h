@@ -130,7 +130,9 @@ public:
 	bool NavigateTo(const CString& url);
 	int DoModal(HWND parent, bool show = true);
 	int exec();
-	void close();
+	void close(int retCode = 1);
+	void abortFromAnotherThread();
+	void destroyFromAnotherThread();
 	void setTimerInterval(int interval);
 	CWTLBrowserView view_;
 	
@@ -143,7 +145,7 @@ public:
 	void SetFillTimer();
 	static HWND window;
 protected:
-	enum { kUserTimer = 400, kMessageLoopTimeoutTimer = 401, WM_SETFILLTIMER = WM_USER +55, WM_FILLINPUTFIELD};
+	enum { kUserTimer = 400, kMessageLoopTimeoutTimer = 401, WM_SETFILLTIMER = WM_USER +55, WM_FILLINPUTFIELD, WM_DESTROYWEBVIEWWINDOW};
 	BEGIN_MSG_MAP(CWebViewWindow)
 		
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
@@ -154,7 +156,7 @@ protected:
 		MESSAGE_HANDLER(WM_TIMER, OnTimer) 
 		MESSAGE_HANDLER(WM_SETFILLTIMER, OnSetFillTimer) 
 		MESSAGE_HANDLER(WM_FILLINPUTFIELD, OnFillInputField) 
-		
+		MESSAGE_HANDLER(WM_DESTROYWEBVIEWWINDOW, OnDestroyFromAnotherThread)
 		 
 	END_MSG_MAP()
 	// Handler prototypes:
@@ -169,7 +171,8 @@ protected:
 	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnSetFillTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnFillInputField(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	
+	LRESULT OnDestroyFromAnotherThread(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
 	HWND hWndClient_;
 	bool isModal_;
 	CIcon icon_;
