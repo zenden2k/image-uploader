@@ -32,8 +32,6 @@
 <br>
 <code class="f"><u>string</u> getParam(<u>string</u> <i>paramName</i>)</code>
 Params:<br>
-<code>Login</code><br>
-<code>Password</code><br>
 <code>THUMBWIDTH</code><br>
 <code>THUMBHEIGHT</code><br>
 
@@ -47,6 +45,17 @@ Params:<br>
 <code class="f">setThumbUrl(<u>string</u> url)</code>
 <br>
 <code class="f">setViewUrl(<u>string</u> url)</code>
+<br>
+<h2 id="CServerParams">CServerParams</h2> 
+Global object <code>ServerParams</code> is an instance of CServerParams. <p>
+
+<code class="f"><u>string</u> getParam(<u>string</u> name)</code>
+Params:<br>
+<code>Login</code><br>
+<code>Password</code><p>
+Custom parameters which should be visible in server settings dialog should have the same name as in <a href="api_implement.html#GetServerParamList">GetServerParamList</a>.
+<br>
+<code class="f"><u>string</u> setParam(<u>string</u> name, <u>string</u> value)</code>
 <br>
 <h2 id="CFolderItem">CFolderItem</h2> 
 
@@ -86,13 +95,11 @@ Params:<br>
 <br>
 <code class="f"><u>string</u> AddFolderItem(<u>CFolderItem</u> item)</code>
 <br>
-
-
 </div>
 </div>
 </div>
 <div id="footer">
-<p> Последнее обновление данного документа — 05.03.2015 года. Copyright &copy; 2007 - 2015, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
+<p>Copyright &copy; 2007 - 2015, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
 </div>
 
 </body>
