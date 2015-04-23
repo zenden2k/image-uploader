@@ -36,7 +36,7 @@ You need Microsoft Visual Studio 2013 to build Image Uploader.
 Installing Visual Studio 2013 Update 4 is strongly recommended (older versions corrupt .rc files after editing)
 If you are using a newer MSVC version, you may experience some compilation errors, which can be solved easily (if you fix these errors, please provide a patch or pull request). 
 But also you need to recompile 3rd-party 
-libraries (squirrel, glog, zthread, jsoncpp) against your compiler version (so I recommend to use Microsoft Visual Studio 2008 SP1 to avoid all these issues).
+libraries (squirrel, glog, jsoncpp) against your compiler version (so I recommend to use Microsoft Visual Studio 2008 SP1 to avoid all these issues).
 
 
 If you are using Visual Studio prior to 2010 version, you have to install Microsoft Windows 7 Platform SDK (or later) for enabling Windows 7 related features.
@@ -63,8 +63,6 @@ sqplus          http://sourceforge.net/projects/sqplus/
 ffmpeg          https://www.ffmpeg.org
 
 tinyxml         http://sourceforge.net/projects/tinyxml/
-
-zthreads        http://zthread.sourceforge.net
 
 minizip         http://www.winimage.com/zLibDll/minizip.html
 

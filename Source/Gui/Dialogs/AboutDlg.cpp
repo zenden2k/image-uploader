@@ -96,7 +96,6 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	memoText += CString(L"pcre++") +"\t\thttp://www.daemon.de/PCRE\r\n";
 	
 	memoText += CString(L"tinyxml") +"\t\thttp://sourceforge.net/projects/tinyxml/\r\n";
-	memoText += CString(L"zthreads") +"\t\thttp://zthread.sourceforge.net\r\n";
 	memoText += CString(L"glog") +"\t\thttps://github.com/google/glog\r\n";
 
 
@@ -121,10 +120,10 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText +=  CString(L"Date: ") + CString(TIME) +  _T("\r\n\r\n");
 	memoText += TR("Libcurl version:")+ CString("\r\n");
 	memoText +=  IuCoreUtils::Utf8ToWstring( curl_version()).c_str() + CString("\r\n\r\n");
-	if ( Settings.IsFFmpegAvailable() ) {
+	/*if ( Settings.IsFFmpegAvailable() ) { // Can't determine actual ffmpeg version
 		memoText += TR("FFmpeg version:")+ CString("\r\n");
 		memoText += FFMPEG_VERSION + CString("\r\n");
-	}
+	}*/
 
 	SetDlgItemText(IDC_MEMO, memoText);
 

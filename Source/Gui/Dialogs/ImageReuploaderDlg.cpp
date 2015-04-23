@@ -26,7 +26,6 @@
 #include "Gui/GuiTools.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Upload/FileQueueUploader.h"
-#include <Zthread/Mutex.h>
 #include "Func/WinUtils.h"
 #include "Func/Myutils.h"
 #include <Wininet.h>
@@ -507,7 +506,7 @@ void CImageReuploaderDlg::OnFileFinished(UploadTask* task, bool ok) {
 		item.originalUrl = uploadItemData->originalUrl;
 		UploadResult * result = task->uploadResult();
 		item.newUrl = result->directUrl;
-		mutex_.acquire();
+		mutex_.lock();
 		uploadedItems_[uploadItemData->sourceIndex] =  item ;
 		
 		/*HistoryItem hi;
@@ -521,7 +520,7 @@ void CImageReuploaderDlg::OnFileFinished(UploadTask* task, bool ok) {
 
 		generateOutputText();
 		m_nFilesUploaded++;
-		mutex_.release();
+		mutex_.unlock();
 		updateStats();
 	}
 }

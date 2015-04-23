@@ -3,7 +3,7 @@
 
 #include <string>
 #include <map>
-#include <zthread/Mutex.h>
+#include <mutex>
 
 class LocalFileCache {
 	public:
@@ -20,8 +20,8 @@ class LocalFileCache {
 		bool historyParsed;
 		std::map<std::string, std::string> cache_;
 		std::map<std::string, std::string> thumbCache_;
-		ZThread::Mutex mutex_;
-		ZThread::Mutex cacheMutex_;
+		std::mutex mutex_;
+		std::mutex cacheMutex_;
 		bool parseHistory();
         bool parseHistoryFile(const std::string& fileName);
 		LocalFileCache();

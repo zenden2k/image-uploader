@@ -8,10 +8,6 @@ class AbstractFrameGrabber;
 class VideoGrabberRunnable;
 class AbstractImage;
 
-namespace ZThread {
-	class Thread;
-};
-
 class VideoGrabber
 {
 public:
@@ -33,11 +29,10 @@ private:
     Utf8String fileName_;
     //void _frameGrabbed(const Utf8String& fileName, AbstractImage image);
     AbstractFrameGrabber* createGrabber();
-    ZThread::Thread* currentThread_;
     VideoEngine videoEngine_;
     int frameCount_;
 	friend class VideoGrabberRunnable;
-	VideoGrabberRunnable* worker_;
+	std::unique_ptr<VideoGrabberRunnable> worker_;
 };
 
 #endif // VIDEOGRABBER_H

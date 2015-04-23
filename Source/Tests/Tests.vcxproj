@@ -95,6 +95,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Core\Utils\Tests\CoreUtilsTest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -103,7 +104,6 @@
     <ClCompile Include="..\Core\Utils\CoreUtils.cpp" />
     <ClCompile Include="..\Core\Utils\StringUtils.cpp" />
     <ClCompile Include="..\Core\3rdpart\CodePages.cpp" />
-    <ClCompile Include="Core\Utils\CoreUtilsTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

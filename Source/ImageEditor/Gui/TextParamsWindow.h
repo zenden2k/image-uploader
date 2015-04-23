@@ -23,9 +23,8 @@
 #include "Gui/Controls/MyImage.h"
 #include "resource.h"
 #include <vector>
-namespace ZThread {
-	class Thread;
-}
+#include <thread>
+
 class FontEnumerator;
 class TextParamsWindow;
 class CustomEdit: public CWindowImpl<CustomEdit, CEdit,CControlWinTraits>{
@@ -85,7 +84,7 @@ class TextParamsWindow : public CDialogImpl<TextParamsWindow>
 
 		CToolBarCtrl textToolbar_;
 		void OnFontEnumerationFinished();
-		ZThread::Thread * fontEnumerationThread_;
+		std::thread * fontEnumerationThread_;
 		CComboBox fontComboBox_;
 		CComboBox fontSizeComboBox_;
 		CustomEdit fontSizeComboboxCustomEdit_;

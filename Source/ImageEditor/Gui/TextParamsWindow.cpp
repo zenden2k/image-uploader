@@ -23,10 +23,13 @@
 #include "resource.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
-#include <zthread/Thread.h>
 #include "Core/3rdpart/FastDelegate.h"
 #include <vector>
-class FontEnumerator : public ZThread::Runnable {
+#include <thread>
+#include <memory>
+#include <algorithm>
+
+class FontEnumerator {
 	
 	public:
 		typedef fastdelegate::FastDelegate0<void> OnEnumerationFinishedDelegate;
@@ -82,7 +85,7 @@ TextParamsWindow::TextParamsWindow() : fontSizeComboboxCustomEdit_(this)
 TextParamsWindow::~TextParamsWindow()
 {
 	if ( fontEnumerationThread_ ) {
-		fontEnumerationThread_->wait();
+		fontEnumerationThread_->join();
 		delete fontEnumerationThread_;
 	}
 }
@@ -142,7 +145,8 @@ LRESULT TextParamsWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 	fontSizeComboboxCustomEdit_.SubclassWindow(fontSizeComboBox_.GetWindow( GW_CHILD));
 	CWindowDC dc(m_hWnd);
-	fontEnumerationThread_ = new ZThread::Thread(new FontEnumerator(dc, fonts_, FontEnumerator::OnEnumerationFinishedDelegate(this, &TextParamsWindow::OnFontEnumerationFinished)));
+	FontEnumerator* enumerator = new FontEnumerator(dc, fonts_, FontEnumerator::OnEnumerationFinishedDelegate(this, &TextParamsWindow::OnFontEnumerationFinished));
+	fontEnumerationThread_ = new std::thread(&FontEnumerator::run, std::shared_ptr<FontEnumerator>(enumerator));
 	GuiTools::AddComboBoxItems(m_hWnd, IDC_FONTSIZECOMBO, 19, _T("7"), _T("8"), _T("9"), _T("10"),_T("11"),_T("12"), _T("13"),
 		_T("14"), _T("15"),_T("16"),_T("18"),_T("20"),_T("22"), _T("24"),  _T("26"),  _T("28"),  _T("36"), _T("48"),_T("72")
 		);

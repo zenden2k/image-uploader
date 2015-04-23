@@ -27,28 +27,34 @@
 #include "AbstractVideoFrame.h"
 #include "AvcodecFrameGrabber.h"
 #include "Core/Utils/CoreUtils.h"
-#include <zthread/Thread.h>
-#include <zthread/Mutex.h>
 #include "Core/Logging.h"
-class VideoGrabberRunnable: public ZThread::Runnable{
+#include <atomic>
+
+class VideoGrabberRunnable {
 public:
 	VideoGrabberRunnable(VideoGrabber* videoGrabber)
 	{
 		videoGrabber_ = videoGrabber;
-		thread_ = 0;
 		currentGrabber_ = 0;
+		canceled_ = false;
+		isRunning_ = false;
 	}
 	~VideoGrabberRunnable() {
-		thread_ = 0;
 	}
 
+	void cancel()
+	{
+		canceled_ = true;
+	}
 	virtual void run()
 	{
+		isRunning_ = true;
         if ( !IuCoreUtils::FileExists(videoGrabber_->fileName_) ) {
             LOG(ERROR) << "File "<<videoGrabber_->fileName_<< "not found";
             if ( videoGrabber_->onFinished ) {
                 videoGrabber_->onFinished();
             }
+			isRunning_ = false;
             return;
         }
 		AbstractFrameGrabber* grabber = videoGrabber_->createGrabber();
@@ -61,13 +67,14 @@ public:
 				videoGrabber_->onFinished();
 			}
 			delete grabber;
+			isRunning_ = false;
 			return;
 		}
 		currentGrabber_ = grabber;
 		int64_t duration = grabber->duration();
 		int64_t step = duration / ( videoGrabber_->frameCount_ + 1 );
 		for( int i = 0; i < videoGrabber_->frameCount_; i++ ) {
-			if ( thread_ && thread_->canceled() ) {
+			if ( canceled_) {
 				break;
 			}
 			int64_t curTime = ( i + 0.5 ) * step;
@@ -99,27 +106,29 @@ public:
 		if ( videoGrabber_->onFinished ) {
 			videoGrabber_->onFinished();
 		}
+		isRunning_ = false;
 	}
 
-	void setThread(ZThread::Thread* thread) {
-		thread_ = thread;
+	bool isRunning() const
+	{
+		return isRunning_;
 	}
+
 protected:
 	VideoGrabber* videoGrabber_;
 	AbstractFrameGrabber* currentGrabber_;
-	ZThread::Thread* thread_;
+	std::atomic<bool> canceled_;
+	std::atomic<bool> isRunning_;
 };
 
 VideoGrabber::VideoGrabber()
 {
     videoEngine_ = veAuto;
     frameCount_ = 5;
-	currentThread_ = 0;
 }
 
 VideoGrabber::~VideoGrabber()
 {
-	delete currentThread_;
 }
 
 void VideoGrabber::grab(const Utf8String& fileName) {
@@ -128,17 +137,17 @@ void VideoGrabber::grab(const Utf8String& fileName) {
      }
 	 Utf8String ext = IuCoreUtils::ExtractFileExt(fileName);
      fileName_ = fileName;
-	 worker_ = new VideoGrabberRunnable(this);
-     currentThread_ =  new ZThread::Thread (worker_);
-	 worker_->setThread(currentThread_);
+	 worker_.reset(new VideoGrabberRunnable(this));
+	 std::thread t1(&VideoGrabberRunnable::run, worker_.get());
+	 t1.detach();
  }
 
 void VideoGrabber::abort() {
-	currentThread_->cancel();
+	worker_->cancel();
 }
 
 bool VideoGrabber::isRunning() {
-    return currentThread_;//&& currentThread_->
+	return worker_->isRunning();
 }
 
 void VideoGrabber::setVideoEngine(VideoEngine engine) {

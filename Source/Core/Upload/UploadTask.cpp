@@ -250,7 +250,7 @@ void UploadTask::stop()
 	{
 		isStopped_ = true;
 		isRunning_ = false;
-		isFinished_ = true;
+		setFinished(true);
 	}
 	std::lock_guard<std::mutex> lock(tasksMutex_);
 	for (auto& it : childTasks_)

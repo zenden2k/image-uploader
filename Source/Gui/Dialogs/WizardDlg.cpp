@@ -1816,7 +1816,6 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 	CScreenCaptureEngine engine;
 	
 	CString buf; // file name buffer
-	using namespace ZThread;
 	std_tr::shared_ptr<Gdiplus::Bitmap> result;
 	CWindowHandlesRegion::WindowCapturingFlags wcfFlags;
 	wcfFlags.AddShadow = Settings.ScreenshotSettings.AddShadow;

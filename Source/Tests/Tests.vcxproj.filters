@@ -25,14 +25,8 @@
     <Filter Include="Code\Core\3rdpart">
       <UniqueIdentifier>{3ff40a91-717f-4100-b3d1-61e7a4bcee2b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tests">
-      <UniqueIdentifier>{5dfbd723-1325-481f-abfc-b155c55d3b67}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Tests\Core">
-      <UniqueIdentifier>{f1a99499-2ea3-40c6-89eb-84f5ad98eb08}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Tests\Core\Utils">
-      <UniqueIdentifier>{698b8e1c-1b3b-4653-babc-6166fd08c890}</UniqueIdentifier>
+    <Filter Include="Code\Core\Utils\Tests">
+      <UniqueIdentifier>{401bfaf5-fdc7-46d0-bb5a-806aadb9e69c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -51,8 +45,8 @@
     <ClCompile Include="..\Core\3rdpart\CodePages.cpp">
       <Filter>Code\Core\3rdpart</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Utils\CoreUtilsTest.cpp">
-      <Filter>Tests\Core\Utils</Filter>
+    <ClCompile Include="..\Core\Utils\Tests\CoreUtilsTest.cpp">
+      <Filter>Code\Core\Utils\Tests</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

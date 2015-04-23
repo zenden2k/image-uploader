@@ -34,11 +34,10 @@
 #include "Core/Logging.h"
 #include <windows.h>
 #include "Core/3rdpart/dxerr.h"
-#include <zthread/Mutex.h>
-#include <zthread/Guard.h>
-#include <zthread/Condition.h>
 #include "DirectShowUtil.h"
 #define tr(arg) (arg)
+#include <mutex>
+
 class DirectshowVideoFrame: public AbstractVideoFrame {
 public :
     DirectshowVideoFrame(unsigned char *data, unsigned int dataSize, int64_t time, int width, int height) {
@@ -190,10 +189,9 @@ public:
 class CSampleGrabberCB : public ISampleGrabberCB
 {
 public:
-	CSampleGrabberCB() :condition(mutex) {
+	CSampleGrabberCB() {
 	}
-	ZThread::Mutex mutex;
-	ZThread::Condition condition;
+	std::mutex mutex;
     DirectshowFrameGrabberPrivate *directShowPrivate;
     //CImgSavingThread* SavingThread;
   //  CVideoGrabberPage* vg;
@@ -229,11 +227,7 @@ public:
 	}
 
 	DirectshowVideoFrame* currentFrame() {
-	//	ZThread::Guard<ZThread::Mutex> z(currentFrameMutex);
-		//ZThread::LockedScope lock(&currentFrameMutex);
-		//currentFrameMutex.acquire();
 		return currentFrame_;
-		//currentFrameMutex.release();
 	}
 
 	void setCurrentFrame(DirectshowVideoFrame* frame) {
@@ -257,9 +251,7 @@ public:
      CSampleGrabberCB CB;
 	 NoDirectVobSub graphBuilderCallback;
 protected:
-	 DirectshowVideoFrame * currentFrame_;
-	// ZThread::Mutex currentFrameMutex;
-    
+	 DirectshowVideoFrame * currentFrame_; 
 };
 
 
@@ -304,8 +296,6 @@ STDMETHODIMP CSampleGrabberCB::SampleCB( double SampleTime, IMediaSample* pSampl
 //
 STDMETHODIMP CSampleGrabberCB::BufferCB( double SampleTime, BYTE* pBuffer, long BufferSize )
 {
-	//ZThread::Guard<ZThread::Mutex> z(mutex);
-
     LONGLONG time = LONGLONG(SampleTime * 10000000);
     prev = time;
     TCHAR buf[256];
@@ -316,7 +306,6 @@ STDMETHODIMP CSampleGrabberCB::BufferCB( double SampleTime, BYTE* pBuffer, long 
     DirectshowVideoFrame *frame = new DirectshowVideoFrame(pBuffer, BufferSize, SampleTime, Width, Height);
     directShowPrivate->setCurrentFrame( frame);
     Grab = false;
-	condition.signal();
     return 0;
 }
 
@@ -605,7 +594,7 @@ bool DirectshowFrameGrabber::open(const Utf8String& fileName) {
     long EvCode = 0;
 
     long EventCode = 0, Param1 = 0, Param2 = 0;
-	d_ptr->CB.mutex.acquire();
+	d_ptr->CB.mutex.lock();
 
 
     return true;
@@ -672,7 +661,7 @@ void DirectshowFrameGrabber::abort() {
 	 if ( d_ptr->pControl ) {
 		d_ptr->pControl->Stop();
 	 }
-	 d_ptr->CB.mutex.release();
+	 d_ptr->CB.mutex.unlock();
 	 delete d_ptr;
 	 ::CoUninitialize();
  }

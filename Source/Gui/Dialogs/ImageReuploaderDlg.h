@@ -37,7 +37,7 @@
 #include "Gui/Controls/CustomEditControl.h"
 #include "Func/HistoryManager.h"
 #include "Core/Upload/UploadManager.h"
-#include <zthread/Mutex.h>
+#include <mutex>
 
 class CFileQueueUploader;
 class CMyEngineList;
@@ -149,7 +149,7 @@ class CImageReuploaderDlg:	public CDialogImpl <CImageReuploaderDlg>,
 		int m_serverId;
 		unsigned int htmlClipboardFormatId;
 		CString m_InitialBuffer;
-		ZThread::Mutex mutex_;
+		std::mutex mutex_;
 		std_tr::shared_ptr<CHistorySession> historySession_;
 		std::map<unsigned int, UploadedItem> uploadedItems_;
 		ServerProfile serverProfile_;

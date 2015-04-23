@@ -9,7 +9,6 @@
 #include "Gui/Dialogs/LogWindow.h"
 #include "UploadEngineManager.h"
 #include "Core/Upload/UploadFilter.h"
-//#include <zthread/ZThread.h>
 
 /* private CFileQueueUploaderPrivate class */
 /*class FileQueueUploaderPrivate::Runnable
@@ -250,8 +249,6 @@ void FileQueueUploaderPrivate::start() {
 	for (int i = 0; i < numThreads; i++)
 	{
 		m_nRunningThreads++;
-		//ZThread::Thread t1(new Runnable(this));// starting new thread
-
 		std::thread t1(&FileQueueUploaderPrivate::run, this);
 		t1.detach();
 
