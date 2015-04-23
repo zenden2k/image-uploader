@@ -24,6 +24,7 @@ ImageEditorWindow::ImageEditorWindow(std_tr::shared_ptr<Gdiplus::Bitmap> bitmap,
 	currentDoc_ =  new ImageEditor::Document(bitmap, hasTransparentPixels);
 	configurationProvider_ = configurationProvider;
 	askBeforeClose_ = false;
+    allowAltTab_ = false;
 	init();
 	
 }
@@ -34,6 +35,7 @@ ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvide
 	sourceFileName_ = imageFileName;
 	configurationProvider_ = configurationProvider;
 	askBeforeClose_ = true;
+    allowAltTab_ = false;
 	suggestedFileName_ = myExtractFileName(sourceFileName_);
 	init();
 }
@@ -331,6 +333,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 		canvas_->setBackgroundColor(configurationProvider_->backgroundColor());
 		canvas_->setFont(configurationProvider_->font());
 		canvas_->setRoundingRadius(configurationProvider_->roundingRadius());
+        allowAltTab_ = configurationProvider_->allowAltTab();
 		textParamsWindow_.setFont(configurationProvider_->font());
 	}
 	m_view.setCanvas( canvas_ );
@@ -586,6 +589,9 @@ LRESULT ImageEditorWindow::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT ImageEditorWindow::OnActivateApp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    if ( !allowAltTab_ ) {
+        return 0;
+    }
 	if ( displayMode_ == wdmFullscreen ) {
 		if ( !wParam ) { // if the window is being deactivated
 			SetWindowLong(GWL_EXSTYLE, 0);
@@ -913,6 +919,7 @@ std_tr::shared_ptr<Gdiplus::Bitmap>  ImageEditorWindow::loadToolbarIcon(int reso
 
 void ImageEditorWindow::EndDialog(DialogResult dr)
 {
+    allowAltTab_ = false;
 	dialogResult_ = dr;
 	PostQuitMessage(0);
 }

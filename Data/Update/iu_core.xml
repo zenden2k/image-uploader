@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<UpdateInfo Name="iu_core" DownloadUrl="http://dl.bintray.com/zenden/zenden-image-uploader/iu_core_1429546996.zip" TimeStamp="1429546996" Date="20.04.2015 18:23:16" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="1" DisplayName="Image Uploader 1.3.1.4316" Hash="1aafceef7ce0d523c2cfcf1d6c28324f">
+  <Info>[f] Fixed crash after pressing Escape when selecting screen region (old region select method choosen)
+[f] Fixed crash when uploading screenshot from tray (or by hotkey) and url shortening failed
+[f] Added option "Allow Alt-Tab in fullscreen image editor", disabled by default
+[f] Fixed truncating some settings (for example, album name on server)
+</Info>
+</UpdateInfo>

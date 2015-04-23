@@ -55,6 +55,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
 	TRC(IDC_FOREGROUNDWHENSHOOTING, "Выводить окно на передний план при выборе мышью");
 	TRC(IDC_PARAMETERSHINTLABEL, "%y - год, %m - месяц, %d - день\n%h - час, %n - минута, %s - секунда\n %i - порядковый номер,\n%width% - ширина,  %height% - высота изображения");
 	TRC(IDC_ADDSHADOW, "Добавлять тень окна");
+    TRC(IDC_ALLOWALTTABINIMAGEEDITOR, "Разрешить Alt+Tab в полноэкранном редакторе");
 	CString removeCornersText = TR("Удалять уголки у окна")+CString(_T(" (Windows Vista/7)"));
 	SetDlgItemText(IDC_REMOVECORNERS, removeCornersText);
 	TRC(IDC_REMOVEBACKGROUND, "Удалять фон окна");
@@ -93,7 +94,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
 	SetDlgItemInt(IDC_DELAYEDIT, Delay);
 	SetDlgItemInt(IDC_WINDOWHIDINGDELAY, Settings.ScreenshotSettings.WindowHidingDelay);
 	SendDlgItemMessage(IDC_FORMATLIST, CB_SETCURSEL, Format, 0);
-
+    GuiTools::SetCheck(m_hWnd, IDC_ALLOWALTTABINIMAGEEDITOR, Settings.ImageEditorSettings.AllowAltTab);
 	bool isVista = IsVista();
 	::EnableWindow(GetDlgItem(IDC_AEROONLY), isVista);
 	::EnableWindow(GetDlgItem(IDC_REMOVECORNERS), isVista);
@@ -131,7 +132,7 @@ bool CScreenshotSettingsPagePage::Apply()
 	Settings.ScreenshotSettings.AddShadow = SendDlgItemMessage(IDC_ADDSHADOW, BM_GETCHECK)!=0;
 	Settings.ScreenshotSettings.RemoveBackground = SendDlgItemMessage(IDC_REMOVEBACKGROUND, BM_GETCHECK)!=0;
 	Settings.ScreenshotSettings.UseOldRegionScreenshotMethod = GuiTools::GetCheck(m_hWnd, IDC_USEOLDREGIONSCREENSHOTMETHOD );
-
+    Settings.ImageEditorSettings.AllowAltTab = GuiTools::GetCheck(m_hWnd, IDC_ALLOWALTTABINIMAGEEDITOR);
 
 	 Settings.TrayIconSettings.ShortenLinks = GuiTools::GetCheck(m_hWnd, IDC_SHORTENURLFROMTRAYCHECKBOX);
 

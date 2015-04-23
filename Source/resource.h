@@ -552,6 +552,7 @@
 #define IDC_VIDEOENGINECOMBO            1273
 #define IDC_CHECK5                      1273
 #define IDC_REMEMBERFILESERVERSETTINGS  1273
+#define IDC_ALLOWALTTABINIMAGEEDITOR    1273
 #define IDC_FOUNDABUG                   1274
 #define IDC_RESULTSLABEL                1274
 #define IDC_OUTPUTTEXT                  1275

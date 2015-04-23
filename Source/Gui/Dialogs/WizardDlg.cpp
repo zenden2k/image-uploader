@@ -1892,7 +1892,10 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 	}
 	using namespace ImageEditor;
 	ImageEditorWindow::DialogResult dr = ImageEditorWindow::drCancel;
-	CString suggestingFileName = GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
+	CString suggestingFileName;
+    if ( result ) {
+        suggestingFileName = GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
+    }
 
 	if(result && ( (mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || (!m_bScreenshotFromTray && Settings.ScreenshotSettings.OpenInEditor ) || (m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_OPENINEDITOR) ))
 	{

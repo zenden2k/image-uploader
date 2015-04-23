@@ -2,6 +2,13 @@
 #
 # http://zenden.ws/imageuploader
 
+1.3.1.4316
+
+[f] Fixed crash after pressing Escape when selecting screen region (old region select method choosen)
+[f] Fixed crash when uploading screenshot from tray (or by hotkey) and url shortening failed
+[f] Added option "Allow Alt-Tab in fullscreen image editor", set lto fase by default
+[f] Fixed truncating some settings (for example, album name on server)
+
 1.3.1.4314
 
 [~] Fixed producing distorted images while grabbing images from video with DirectShow

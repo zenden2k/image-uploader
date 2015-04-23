@@ -431,6 +431,7 @@ CSettings::CSettings()
 	ImageEditorSettings.ForegroundColor = Gdiplus::Color(255,0,0);
 	ImageEditorSettings.PenSize = 12;
 	ImageEditorSettings.RoundingRadius = ImageEditorSettings.PenSize;
+    ImageEditorSettings.AllowAltTab = false;
 	StringToFont(_T("Arial,12,b,204"), &ImageEditorSettings.Font);
     
     
@@ -492,7 +493,7 @@ CSettings::CSettings()
 	imageEditor.nm_bind(ImageEditorSettings, PenSize);
 	imageEditor.nm_bind(ImageEditorSettings, RoundingRadius);
 	imageEditor.nm_bind(ImageEditorSettings, Font);
-
+    imageEditor.nm_bind(ImageEditorSettings, AllowAltTab);
 	SettingsNode& image = mgr_["Image"];
 	image["CurrentProfile"].bind(CurrentConvertProfileName);
 	image.nm_bind(UploadProfile, KeepAsIs);
