@@ -17,7 +17,7 @@ void UploadSession::addTask(std::shared_ptr<UploadTask> task)
 
 void UploadSession::removeTask(std::shared_ptr<UploadTask> task)
 {
-	std::lock_guard<std::mutex> lock(tasksMutex_);
+	std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
 	auto it = std::find(tasks_.begin(), tasks_.end(), task);
 	if (it != tasks_.end() )
 		tasks_.erase(it);
@@ -27,7 +27,7 @@ int  UploadSession::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<Up
 {
 	int count = 0;
 	//LOG(ERROR) << "UploadSession::getNextTask()";
-	std::lock_guard<std::mutex> lock(tasksMutex_);
+	std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
 	for (auto it = tasks_.begin(); it != tasks_.end(); it++)
 	{
 		UploadTask* uploadTask = it->get();
@@ -36,7 +36,7 @@ int  UploadSession::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<Up
 			if (acceptor->canAcceptUploadTask(uploadTask))
 			{
 				outTask = *it;
-				it->get()->setRunning(true);
+				it->get()->setStatus(UploadTask::StatusRunning);
 				return count;
 			}
 			
@@ -46,7 +46,7 @@ int  UploadSession::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<Up
 		count += childCount;
 		if (task)
 		{
-			task->setRunning(true);
+			task->setStatus(UploadTask::StatusRunning);
 			outTask = task;
 			return count;
 		}
@@ -56,7 +56,7 @@ int  UploadSession::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<Up
 
 bool UploadSession::isRunning()
 {
-	std::lock_guard<std::mutex> lock(tasksMutex_);
+	std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
 	for (auto it = tasks_.begin(); it != tasks_.end(); ++it)
 	{
 		if (it->get()->isRunning())
@@ -69,25 +69,32 @@ bool UploadSession::isRunning()
 
 bool UploadSession::isFinished()
 {
-	std::lock_guard<std::mutex> lock(tasksMutex_);
-	if (!tasks_.size())
-	{
-		return false;
-	}
-	for (int i = 0; i < tasks_.size(); i ++ )
-	{
-		if (!tasks_[i]->isFinished())
+	try {
+		std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
+		if (!tasks_.size())
 		{
 			return false;
 		}
+		for (int i = 0; i < tasks_.size(); i++)
+		{
+			if (!tasks_[i]->isFinished())
+			{
+				return false;
+			}
+		}
+		return true;
 	}
-	return true;
+	catch (std::exception& ex)
+	{
+		LOG(ERROR) << ex.what();
+	}
+	return false;
 	//return isFinished_;
 }
 
 int UploadSession::pendingTasksCount(UploadTaskAcceptor* acceptor)
 {
-	std::lock_guard<std::mutex> lock(tasksMutex_);
+	std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
 	int res = 0;
 	for (auto it = tasks_.begin(); it != tasks_.end(); it++)
 	{
@@ -103,20 +110,32 @@ int UploadSession::pendingTasksCount(UploadTaskAcceptor* acceptor)
 
 int UploadSession::taskCount()
 {
-	std::lock_guard<std::mutex> lock(tasksMutex_);
+	try {
+		std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
+		return tasks_.size();
+	} catch (std::exception& ex)
+	{
+		LOG(ERROR) << ex.what();
+	}
 	return tasks_.size();
 }
 
 int UploadSession::finishedTaskCount()
 {
-	std::lock_guard<std::mutex> lock(tasksMutex_);
 	int res = 0;
-	for (auto it = tasks_.begin(); it != tasks_.end(); it++)
-	{
-		if (it->get()->isFinished())
+	try {
+		std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
+	
+		for (auto it = tasks_.begin(); it != tasks_.end(); it++)
 		{
-			res++;
+			if (it->get()->isFinished())
+			{
+				res++;
+			}
 		}
+	}
+	catch (std::exception& ex) {
+		LOG(ERROR) << ex.what();
 	}
 	return res;
 }
@@ -139,7 +158,7 @@ void UploadSession::addTaskAddedCallback(const TaskAddedCallback& callback)
 void UploadSession::stop()
 {
 	stopSignal_ = true;
-	std::lock_guard<std::mutex> lock(tasksMutex_);
+	std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
 	int res = 0;
 	for (auto it = tasks_.begin(); it != tasks_.end(); it++)
 	{

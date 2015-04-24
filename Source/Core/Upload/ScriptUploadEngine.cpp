@@ -76,7 +76,7 @@ int CScriptUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params)
 	std::string FileName;
 
 	currentTask_ = task;
-	if ( task->getType() == "file" ) {
+	if (task->type() == UploadTask::TypeFile ) {
 		FileName = ((FileUploadTask*)task)->getFileName();
 	}
 	CFolderItem parent, newFolder = m_ServersSettings.newFolder;
@@ -101,7 +101,7 @@ int CScriptUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params)
 	try
 	{
 		SetStatus(stUploading);
-		if ( task->getType() == "file" ) {
+		if (task->type() == UploadTask::TypeFile) {
             Function func(vm_.GetRootTable(), "UploadFile");
             if ( func.IsNull() ) {
                  Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string("Function UploadFile not found in script")); 
@@ -114,7 +114,8 @@ int CScriptUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params)
             /*if ( ivalPtr ) {
                 ival = *ivalPtr.Get();
             }*/
-		} else if ( task->getType() == "url" ) {
+		}
+		else if (task->type() == UploadTask::TypeUrl ) {
 			UrlShorteningTask *urlShorteningTask = static_cast<UrlShorteningTask*>(task);
             Function func(vm_.GetRootTable(), "ShortenUrl");
             if ( func.IsNull() ) {

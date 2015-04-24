@@ -157,6 +157,7 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
         Func("setDirectUrl", &CIUUploadParams::setDirectUrl).
         Func("setThumbUrl", &CIUUploadParams::setThumbUrl).
         Func("getServerFileName", &CIUUploadParams::getServerFileName).
+		Func("getDisplayFileName", &CIUUploadParams::getDisplayFileName).
         Func("setViewUrl", &CIUUploadParams::setViewUrl).
         Func("getParam", &CIUUploadParams::getParam)
     );

@@ -49,10 +49,8 @@ public:
 	void removeSession(std::shared_ptr<UploadSession> uploadSession);
 	void addUploadFilter(UploadFilter* filter);
 	void removeUploadFilter(UploadFilter* filter);
-#ifndef IU_CLI
-	std::mutex mutex_;
-	std::mutex callMutex_;
-#endif
+	int sessionCount();
+	std_tr::shared_ptr<UploadSession> session(int index);
 	CFileQueueUploader *queueUploader_;
 	volatile bool m_NeedStop;
 	bool m_IsRunning;
@@ -63,13 +61,14 @@ public:
 	int m_nRunningThreads;
 	friend class CFileQueueUploader;
 protected:
-	class Runnable;
 	bool onNeedStopHandler();
 	void OnConfigureNetworkClient(CUploader*, NetworkClient* nm);
 	void onProgress(CUploader*, InfoProgress progress);
 	void onErrorMessage(CUploader*, ErrorInfo);
 	void onDebugMessage(CUploader*, const std::string& msg, bool isResponseBody);
 	void onTaskAdded(UploadSession*, UploadTask*);
+	std::mutex mutex_;
+	std::mutex callMutex_;
 	
 
 	int pendingTasksCount();

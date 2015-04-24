@@ -165,6 +165,8 @@ struct CIUUploadParams
 	Utf8String ViewUrl;
 	Utf8String ServerFileName;
 	Utf8String temp_;
+	Utf8String displayFileName;
+
 	const std::string getParam(const std::string& name)
 	{
 		temp_ = "";
@@ -175,11 +177,12 @@ struct CIUUploadParams
 		return temp_;
 	}
 
-	const std::string getFolderID() { return (folderId); }
-	void setDirectUrl(const std::string& url) { DirectUrl = (url);}
-	void setThumbUrl(const std::string& url) { ThumbUrl = (url);}
-	void setViewUrl(const std::string& url) { ViewUrl = (url);}
-	const std::string getServerFileName() { return (ServerFileName); }
+	const std::string getFolderID() { return folderId; }
+	void setDirectUrl(const std::string& url) { DirectUrl = url;}
+	void setThumbUrl(const std::string& url) { ThumbUrl = url;}
+	void setViewUrl(const std::string& url) { ViewUrl = url;}
+	const std::string getServerFileName() const { return ServerFileName; }
+	const std::string getDisplayFileName() const { return displayFileName; }
 };
 
 class  CUploadEngineList_Base

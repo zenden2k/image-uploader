@@ -35,7 +35,7 @@ class UploadSession
 		void taskFinished(UploadTask* task);
 		void childTaskAdded(UploadTask* task);
 		bool stopSignal();
-		std::mutex tasksMutex_;
+		std::recursive_mutex tasksMutex_;
 		std::vector<TaskAddedCallback> taskAddedCallbacks_;
 		std::vector<SessionFinishedCallback> sessionFinishedCallbacks_;
 		void notifyTaskAdded(UploadTask* task);

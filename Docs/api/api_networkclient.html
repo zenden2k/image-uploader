@@ -41,7 +41,12 @@ Note: After each completed request, most of the options are set to default value
 Добавляет к MULTIPART/DATA POST запросу параметр - файл. name - имя параметра запроса, filename - физический путь к файлу,
 displayname - отображаемое имя(то имя, которое передается серверу, не содержит пути), contentType - mime тип файла, может 
 быть пустой строкой или получен с помощью функции <code>GetFileMimeType</code>).
-Метод аналогичен элементу HTML формы -  <code>&lt;input type="file"&gt;</code>.
+Метод аналогичен элементу HTML формы -  <code>&lt;input type="file"&gt;</code>.<p>
+Example:<br>
+<pre class="prettyprint">
+local mimeType = GetFileMimeType(FileName);
+nc.addQueryParamFile("fileField", FileName, options.getDisplayFileName(), mimeType);
+</pre>
 <code class="f">doGet(<u>string</u> <i>url</i>)</code>
 Выполнение GET запроса(протокол HTTP).
 <code class="f">doPost(<u>string</u> <i>data</i>)</code>

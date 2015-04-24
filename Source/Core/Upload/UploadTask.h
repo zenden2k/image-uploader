@@ -53,23 +53,26 @@ class UploadTask {
 		virtual ~UploadTask();
 
 		enum Role { DefaultRole, ThumbRole, UrlShorteningRole };
+		enum Status { StatusInQueue, StatusRunning, StatusStopped, StatusFinished, StatusFailure };
+		enum Type { TypeFile, TypeUrl };
 		typedef fastdelegate::FastDelegate2<UploadTask*, bool> TaskFinishedCallback;
 
-		virtual std::string getType() const = 0;
+		virtual Type type() const = 0;
 		virtual std::string getMimeType() const = 0;
 		virtual int64_t getDataLength() const = 0;
 		UploadTask* parentTask() const;
+		std::shared_ptr<UploadTask> child(int index);
 		bool isRunning();
 		bool isRunningItself();
 		void setSession(UploadSession* session);
 		UploadSession* session();
 		bool isFinished();
 		bool isFinishedItself();
-		virtual void setFinished(bool finished);
-		void setRunning(bool running);
+		virtual void finishTask(Status status = StatusFinished);
 		int getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask);
 		int pendingTasksCount(UploadTaskAcceptor* acceptor);
 		void addChildTask(std::shared_ptr<UploadTask> child);
+		int childCount();
 		UploadResult* uploadResult();
 		UploadProgress* progress();
 		void addTaskFinishedCallback(const TaskFinishedCallback& callback);
@@ -90,8 +93,10 @@ class UploadTask {
 		bool shorteningStarted() const;
 		void setShorteningStarted(bool started);
 		void stop();
+		virtual std::string title() const = 0;
 		bool isStopped();
-		void setStopped(bool stopped);
+		void setStatus(Status status);
+		Status status() const;
 		virtual std::string toString() = 0;
 		friend class CUploader;
 
@@ -99,9 +104,9 @@ class UploadTask {
 		UploadTask* parentTask_;
 		std::vector<std::shared_ptr<UploadTask>> childTasks_;
 		
-		bool isRunning_;
-		bool isFinished_;
-		bool isStopped_;
+		//bool isRunning_;
+		//bool isFinished_;
+		//bool isStopped_;
 		UploadResult uploadResult_;
 		UploadProgress progress_;
 		ServerProfile serverProfile_;
@@ -116,11 +121,12 @@ class UploadTask {
 		bool stopSignal() const;
 		bool uploadSuccess_;
 		UploadSession* session_;
-		std::mutex tasksMutex_;
+		std::recursive_mutex tasksMutex_;
 		Role role_;
 		std::vector<TaskFinishedCallback> taskFinishedCallbacks_;
 		bool shorteningStarted_;
 		volatile bool stopSignal_;
+		Status status_;
 };	
 
 #endif

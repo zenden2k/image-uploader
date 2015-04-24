@@ -31,12 +31,12 @@ CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync) : CAbstractUp
 }
 
 int CDefaultUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params) {
-	if ( task->getType() == "file" ) {
+	if ( task->type() == UploadTask::TypeFile ) {
 		return doUploadFile(static_cast<FileUploadTask*>(task), params);
-	} else if ( task->getType() == "url" ) {
+	} else if ( task->type() == UploadTask::TypeUrl  ) {
 		return doUploadUrl(static_cast<UrlShorteningTask*>(task), params);
 	} else {
-		UploadError( ErrorInfo::mtError, "Upload task of type '" + task->getType() + "' is not supported", 0, false );
+		UploadError( ErrorInfo::mtError, "Upload task of type '" + task->toString() + "' is not supported", 0, false );
 	}
 	return 0;
 }
@@ -58,9 +58,9 @@ bool CDefaultUploadEngine::doUploadFile(FileUploadTask* task, CIUUploadParams &p
 
 	prepareUpload();
 	std::string FileExt = IuCoreUtils::ExtractFileExt(displayName);
-	m_Consts["_FILENAME"]           = IuCoreUtils::ExtractFileName(fileName);
+	m_Consts["_FILENAME"] = IuCoreUtils::ExtractFileName(displayName);
 	std::string OnlyFname;
-	OnlyFname = IuCoreUtils::ExtractFileNameNoExt(fileName);
+	OnlyFname = IuCoreUtils::ExtractFileNameNoExt(displayName);
 	m_Consts["_FILENAMEWITHOUTEXT"] = OnlyFname;
 	m_Consts["_FILEEXT"]            = FileExt;
 

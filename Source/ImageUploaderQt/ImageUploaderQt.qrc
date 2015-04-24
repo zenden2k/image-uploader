@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/images.ico</file>
+        <file>res/dropdown.ico</file>
+        <file>res/add.png</file>
+        <file>res/settings.png</file>
+        <file>res/grabmovie.ico</file>
+        <file>res/icon_main.ico</file>
+    </qresource>
+</RCC>

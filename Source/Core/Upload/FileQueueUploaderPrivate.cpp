@@ -127,6 +127,7 @@ void FileQueueUploaderPrivate::onTaskAdded(UploadSession*, UploadTask* task)
 	}*/
 	startFromSession_ = 0;
 	sessionsMutex_.unlock();
+	taskAdded(task);
 	start();
 }
 
@@ -176,8 +177,7 @@ std_tr::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
 				startFromSession_ = i + 1;
 			}
 			if (task) {
-				task->setRunning(true);
-				task->setFinished(false);
+				task->setStatus(UploadTask::StatusRunning);
 
 				return task;
 			}
@@ -240,6 +240,18 @@ void FileQueueUploaderPrivate::removeUploadFilter(UploadFilter* filter)
 	}
 }
 
+int FileQueueUploaderPrivate::sessionCount()
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	return sessions_.size();
+}
+
+std_tr::shared_ptr<UploadSession> FileQueueUploaderPrivate::session(int index)
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	return sessions_[index];
+}
+
 void FileQueueUploaderPrivate::start() {
 	std::lock_guard<std::mutex> lock(mutex_);
 	m_NeedStop = false;
@@ -288,7 +300,7 @@ void FileQueueUploaderPrivate::run()
 		CAbstractUploadEngine *engine = uploadEngineManager_->getUploadEngine(it->serverProfile());
 		if (!engine)
 		{
-			it->setFinished(true);
+			it->setStatus(UploadTask::StatusRunning);
 			continue;
 		}
 		
@@ -333,8 +345,7 @@ void FileQueueUploaderPrivate::run()
 		{
 			it->setUploadSuccess(false);
 		}
-		it->setFinished(true);
-		it->setRunning(false);
+		it->finishTask(res ? UploadTask::StatusFinished : UploadTask::StatusFailure);
 #ifndef IU_CLI
 		callMutex_.unlock();
 #endif

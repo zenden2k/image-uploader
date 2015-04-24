@@ -84,12 +84,30 @@ void CFileQueueUploader::removeUploadFilter(UploadFilter* filter)
 	_impl->removeUploadFilter(filter);
 }
 
+int CFileQueueUploader::sessionCount()
+{
+	return _impl->sessionCount();
+}
+
+std_tr::shared_ptr<UploadSession> CFileQueueUploader::session(int index)
+{
+	return _impl->session(index);
+}
+
 void CFileQueueUploader::sessionAdded(UploadSession* session)
 {
+	if (OnSessionAdded)
+	{
+		OnSessionAdded(session);
+	}
 }
 
 void CFileQueueUploader::taskAdded(UploadTask* task)
 {
+	if (OnTaskAdded)
+	{
+		taskAdded(task);
+	}
 }
 
 void CFileQueueUploader::addTask(std_tr::shared_ptr<UploadTask> task) {

@@ -19,8 +19,8 @@ FileUploadTask::~FileUploadTask()
 	delete tempFileDeleter_;
 }
 
-std::string FileUploadTask::getType() const {
-	return "file";
+UploadTask::Type FileUploadTask::type() const {
+	return TypeFile;
 }
 
 std::string FileUploadTask::getMimeType() const {
@@ -54,9 +54,9 @@ std::string FileUploadTask::originalFileName() const
 	return originalFileName_;
 }
 
-void FileUploadTask::setFinished(bool finished)
+void FileUploadTask::finishTask(Status status)
 {
-	if (finished && role_ == ThumbRole)
+	if (status == StatusFinished && role_ == ThumbRole )
 	{
 		assert(parentTask_);
 		if (!parentTask_)
@@ -66,7 +66,7 @@ void FileUploadTask::setFinished(bool finished)
 		//TODO: keep server thumbnail url
 		parentTask_->uploadResult()->thumbUrl = uploadResult_.directUrl;
 	}
-	UploadTask::setFinished(finished);
+	UploadTask::finishTask(status);
 }
 
 TempFileDeleter* FileUploadTask::tempFileDeleter(bool create)
@@ -81,4 +81,9 @@ TempFileDeleter* FileUploadTask::tempFileDeleter(bool create)
 std::string FileUploadTask::toString()
 {
 	return "FileUploadTask(" + fileName_ + ")";
+}
+
+std::string FileUploadTask::title() const
+{
+	return IuCoreUtils::ExtractFileName(originalFileName());
 }

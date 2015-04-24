@@ -112,7 +112,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
 	currentTask_ = task;
 
 
-	if ( task->getType() == "file" ) {
+	if (task->type() == UploadTask::TypeFile) {
 		FileName = static_cast<FileUploadTask*>(task.get())->getFileName();
 		if ( FileName.empty() ) {
 			Error(true, "Empty filename!");
@@ -142,6 +142,10 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
 
 	CIUUploadParams uparams;
 	uparams.thumbWidth = m_nThumbWidth;
+	if (task->type() == UploadTask::TypeFile) {
+		FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());
+		uparams.displayFileName = fileTask->getDisplayName();
+	}
 	m_NetworkClient.setProgressCallback(pluginProgressFunc, (void*)this);
 	int EngineRes = 0;
 	int i = 0;

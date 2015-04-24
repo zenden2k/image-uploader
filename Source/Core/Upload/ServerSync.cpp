@@ -1,6 +1,6 @@
 ﻿#include "ServerSync.h"
-#include "COre/Logging.h"
-
+#include "Core/Logging.h"
+#include <map>
 class ServerSyncPrivate
 {
 public:

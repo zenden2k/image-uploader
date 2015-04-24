@@ -12,14 +12,15 @@ class UrlShorteningTask: public UploadTask {
 		{
 			None, DirectUrl, DownloadUrl
 		};
-		virtual std::string getType() const;
-		virtual std::string getMimeType() const;
-		virtual int64_t getDataLength() const;
+		virtual Type type() const override;
+		virtual std::string getMimeType() const override;
+		virtual int64_t getDataLength() const override;
 		std::string getUrl() const;
-		void setFinished(bool finished) override;
+		virtual void finishTask(Status status = StatusFinished) override;
 		void setParentUrlType(ParentUrlType type);
 		ParentUrlType parentUrlType();
 		std::string toString() override;
+		std::string title() const override;
 protected:
 		std::string url_;
 		ParentUrlType parentUrlType_;

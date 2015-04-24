@@ -431,6 +431,11 @@ function  UploadFile(FileName, options)
 				return 0;
 		}
 	local ansiFileName = ExtractFileName(FileName);
+	try {
+		ansiFileName = options.getDisplayFileName();
+	} catch ( ex ) {
+		
+	}
 	//ansiFileName = reg_replace(ansiFileName, " ","_");
 	
 

@@ -32,15 +32,29 @@
 #error Gdiplus.h is already included. You have to include this file instead.
 #endif
 
+#include <algorithm>
+namespace Gdiplus
+{
+	using std::min;
+	using std::max;
+}
+#pragma warning(push)
+#pragma warning(disable : 4244)
+
 // Fix for STL iterator problem
 #define iterator _iterator
 #define list _list
 #define map _map
+//#include <algorithm>
 
 #define _GDIPLUSBASE_H
 
 namespace Gdiplus
 {
+
+    /*using std::min;
+    using std::max;*/
+
     namespace DllExports
     {
         #include "GdiplusMem.h"
@@ -181,5 +195,7 @@ using namespace Gdiplus;
 #undef iterator
 #undef list
 #undef map
+#include <GdiPlus.h>
+#pragma warning(pop)
 
 #endif

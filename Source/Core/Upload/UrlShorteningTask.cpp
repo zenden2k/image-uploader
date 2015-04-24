@@ -8,9 +8,8 @@ UrlShorteningTask::UrlShorteningTask(const std::string& url, UploadTask* parentT
 	parentUrlType_ = None;
 }
 
-
-std::string UrlShorteningTask::getType() const {
-	return "url";
+UploadTask::Type UrlShorteningTask::type() const {
+	return TypeUrl;
 }
 
 std::string UrlShorteningTask::getMimeType() const {
@@ -25,9 +24,9 @@ std::string UrlShorteningTask::getUrl() const {
 	return url_;
 }
 
-void UrlShorteningTask::setFinished(bool finished)
+void UrlShorteningTask::finishTask(Status status) 
 {
-	if (finished && role_ == UrlShorteningRole && uploadSuccess())
+	if (status == StatusFinished && role_ == UrlShorteningRole && uploadSuccess())
 	{
 		assert(parentTask_);
 		if (!parentTask_)
@@ -45,7 +44,7 @@ void UrlShorteningTask::setFinished(bool finished)
 		}
 		
 	}
-	UploadTask::setFinished(finished);
+	UploadTask::finishTask(status);
 }
 
 void UrlShorteningTask::setParentUrlType(ParentUrlType type)
@@ -61,4 +60,9 @@ UrlShorteningTask::ParentUrlType UrlShorteningTask::parentUrlType()
 std::string UrlShorteningTask::toString()
 {
 	return "UrlShorteningTask(" + url_ + ")";
+}
+
+std::string UrlShorteningTask::title() const
+{
+	return url_;
 }

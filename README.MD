@@ -5,7 +5,7 @@ Free program for Windows that allows you to upload images, screenshots, or any o
 
 [![Image Uploader main window](https://lh4.googleusercontent.com/-D6wvBfMHonw/VQHgBb9ZFzI/AAAAAAAAD1s/Hq1uUei_C-s/s0/download-button-en.png)](http://zenden.ws/imageuploader_downloads)
 
-Supported operating systems: Windows 8/7/Vista/XP/ (also server versions)
+Supported operating systems: Windows 8/7/Vista/XP SP2 (also server versions starting with Windows Server 2003 SP1)
 
 ##Main Features
 

@@ -9,7 +9,7 @@ class FileUploadTask: public UploadTask {
 	public:
 		FileUploadTask(const std::string& fileName, const std::string& displayName, UploadTask* parentTask = 0);
 		~FileUploadTask();
-		virtual std::string getType() const;
+		virtual Type type() const;
 		virtual std::string getMimeType() const;
 		virtual int64_t getDataLength() const;
 		std::string getFileName() const;
@@ -17,9 +17,10 @@ class FileUploadTask: public UploadTask {
 		std::string getDisplayName() const;
 		void setDisplayName(const std::string& name);
 		std::string originalFileName() const;
-		void setFinished(bool finished) override;
+		virtual void finishTask(Status status = StatusFinished) override;
 		TempFileDeleter* tempFileDeleter(bool create = true);
 		std::string toString() override;
+		std::string title() const override;
 protected:
 		std::string fileName_;
 		std::string originalFileName_;

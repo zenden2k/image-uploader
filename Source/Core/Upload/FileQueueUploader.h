@@ -48,8 +48,12 @@ class CFileQueueUploader
 		bool isSlotAvailableForServer(std::string serverName, int maxThreads);
 		void addUploadFilter(UploadFilter* filter);
 		void removeUploadFilter(UploadFilter* filter);
-
+		int sessionCount();
+		std_tr::shared_ptr<UploadSession> session(int index);
 		fastdelegate::FastDelegate1<CFileQueueUploader*> OnQueueFinished;
+		fastdelegate::FastDelegate1<UploadSession*> OnSessionAdded;
+		fastdelegate::FastDelegate1<UploadTask*> OnTaskAdded;
+
 		fastdelegate::FastDelegate2<CFileQueueUploader*, NetworkClient*> OnConfigureNetworkClient;
 		friend class FileQueueUploaderPrivate;
 	private:

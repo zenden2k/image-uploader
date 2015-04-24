@@ -707,7 +707,7 @@ bool CFloatingWindow::OnQueueFinished(CFileQueueUploader*) {
 */
 void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
 {
-	if (task->getType() == "url") {
+	if (task->type() == UploadTask::TypeUrl ) {
 		if ( ok ) {
 			CString url = Utf8ToWCstring(task->uploadResult()->directUrl);
 			IU_CopyTextToClipboard(url);

@@ -10,9 +10,7 @@ UploadTask::UploadTask()
 
 void UploadTask::init()
 {
-	isRunning_ = false;
-	isFinished_ = false;
-	isStopped_ = false;
+	status_ = StatusInQueue;
 	userData_ = NULL;
 	uploadSuccess_ = false;
 	session_ = 0;
@@ -66,9 +64,15 @@ UploadTask* UploadTask::parentTask() const
 	return parentTask_;
 }
 
+std::shared_ptr<UploadTask> UploadTask::child(int index)
+{
+	std::lock_guard<std::recursive_mutex> guard(tasksMutex_);
+	return childTasks_[index];
+}
+
 bool UploadTask::isRunning()
 {
-	std::lock_guard<std::mutex> guard(tasksMutex_);
+	std::lock_guard<std::recursive_mutex> guard(tasksMutex_);
 	for ( auto& it : childTasks_ )
 	{
 		if (it->isRunning())
@@ -76,12 +80,12 @@ bool UploadTask::isRunning()
 			return true;
 		}
 	}
-	return isRunning_;
+	return status_ == StatusRunning;
 }
 
 bool UploadTask::isRunningItself()
 {
-	return isRunning_;
+	return status_ == StatusRunning;
 }
 
 void UploadTask::setSession(UploadSession* session)
@@ -96,7 +100,7 @@ UploadSession* UploadTask::session()
 
 bool UploadTask::isFinished()
 {
-	std::lock_guard<std::mutex> lock(tasksMutex_);
+	std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
 	for (int i = 0; i < childTasks_.size(); i++)
 	{
 		if (!childTasks_[i]->isFinished())
@@ -104,31 +108,26 @@ bool UploadTask::isFinished()
 			return false;
 		}
 	}
-	return isFinished_;
+	return isFinishedItself();
 }
 
 bool UploadTask::isFinishedItself()
 {
-	return isFinished_;
+	return status_ == StatusFinished || status_ == StatusFailure || status_ ==  StatusStopped;
 }
 
-void UploadTask::setFinished(bool finished)
+void UploadTask::finishTask(Status status)
 {
-	isFinished_ = finished;
-	if (finished && parentTask_)
+	status_ = status;
+	if (parentTask_)
 	{
 		parentTask_->childTaskFinished(this);
 	}
 
-	if (isFinished_ && isFinished())
+	if (isFinished())
 	{
 		taskFinished();
 	}
-}
-
-void UploadTask::setRunning(bool running)
-{
-	isRunning_ = running;
 }
 
 void UploadTask::addChildTask(std::shared_ptr<UploadTask> child)
@@ -143,6 +142,12 @@ void UploadTask::addChildTask(std::shared_ptr<UploadTask> child)
 	{
 		OnChildTaskAdded(child.get());
 	}
+}
+
+int UploadTask::childCount()
+{
+	std::lock_guard<std::recursive_mutex> guard(tasksMutex_);
+	return childTasks_.size();
 }
 
 UploadResult* UploadTask::uploadResult()
@@ -202,7 +207,7 @@ bool UploadTask::uploadSuccess(bool withChilds)
 	{
 		return uploadSuccess_;
 	}
-	std::lock_guard<std::mutex> lock(tasksMutex_);
+	std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
 	for (int i = 0; i <count; i++)
 	{
 		if (!childTasks_[i]->isFinished() || !childTasks_[i]->uploadSuccess())
@@ -246,13 +251,11 @@ void UploadTask::stop()
 	{
 		currentUploadEngine_->stop();
 	}
-	if (!isRunning_)
+	if ( status_ != StatusRunning )
 	{
-		isStopped_ = true;
-		isRunning_ = false;
-		setFinished(true);
+		finishTask(StatusStopped);
 	}
-	std::lock_guard<std::mutex> lock(tasksMutex_);
+	std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
 	for (auto& it : childTasks_)
 	{
 		it->stop();
@@ -261,12 +264,18 @@ void UploadTask::stop()
 
 bool UploadTask::isStopped()
 {
-	return isStopped_;
+	return status_ == StatusStopped;
 }
 
-void UploadTask::setStopped(bool stopped)
+
+void UploadTask::setStatus(Status status)
 {
-	isStopped_ = stopped;
+	status_ = status;
+}
+
+UploadTask::Status UploadTask::status() const
+{
+	return status_;
 }
 
 void UploadTask::uploadProgress(InfoProgress progress)
@@ -319,7 +328,7 @@ int UploadTask::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<Upload
 		return 0;
 	}
 	int count = 0;
-	std::lock_guard<std::mutex> lock(tasksMutex_);
+	std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
 	for (auto it = childTasks_.begin(); it != childTasks_.end(); it++)
 	{
 		if (!it->get()->isFinished() && !it->get()->isRunning() && !it->get()->isStopped() )
@@ -342,7 +351,7 @@ int UploadTask::pendingTasksCount(UploadTaskAcceptor* acceptor)
 	{
 		return 0;
 	}
-	std::lock_guard<std::mutex> lock(tasksMutex_);
+	std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
 	int res = 0;
 	for (auto it = childTasks_.begin(); it != childTasks_.end(); it++)
 	{
