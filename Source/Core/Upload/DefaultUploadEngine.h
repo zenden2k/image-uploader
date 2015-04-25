@@ -33,7 +33,7 @@ class CDefaultUploadEngine: public CAbstractUploadEngine
 {
 	public:
 		CDefaultUploadEngine(ServerSync* serverSync);
-		virtual int doUpload(UploadTask* task, CIUUploadParams &params);
+		virtual int doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params);
 	
 	protected:
 		bool DoAction(UploadAction &Action);
@@ -47,8 +47,8 @@ class CDefaultUploadEngine: public CAbstractUploadEngine
 		void SetStatus(StatusType status, std::string param = "");
 		bool needStop();
 		void UploadError(bool error, const std::string errorStr, UploadAction* m_CurrentAction, bool writeToBuffer = true);
-		bool doUploadFile(FileUploadTask* task, CIUUploadParams &params);
-		bool doUploadUrl(UrlShorteningTask* task, CIUUploadParams &params);
+		bool doUploadFile(std::shared_ptr<FileUploadTask> task, CIUUploadParams& params);
+		bool doUploadUrl(std::shared_ptr<UrlShorteningTask> task, CIUUploadParams& params);
 		void prepareUpload();
 		bool executeActions();
 

@@ -30,18 +30,18 @@ CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync) : CAbstractUp
 	m_CurrentActionIndex = -1;
 }
 
-int CDefaultUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params) {
+int CDefaultUploadEngine::doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params) {
 	if ( task->type() == UploadTask::TypeFile ) {
-		return doUploadFile(static_cast<FileUploadTask*>(task), params);
+        return doUploadFile(std::dynamic_pointer_cast<FileUploadTask>(task), params);
 	} else if ( task->type() == UploadTask::TypeUrl  ) {
-		return doUploadUrl(static_cast<UrlShorteningTask*>(task), params);
+        return doUploadUrl(std::dynamic_pointer_cast<UrlShorteningTask>(task), params);
 	} else {
 		UploadError( ErrorInfo::mtError, "Upload task of type '" + task->toString() + "' is not supported", 0, false );
 	}
 	return 0;
 }
 
-bool CDefaultUploadEngine::doUploadFile(FileUploadTask* task, CIUUploadParams &params) {
+bool CDefaultUploadEngine::doUploadFile(std::shared_ptr<FileUploadTask> task, CIUUploadParams& params) {
 	std::string fileName = task->getFileName();
 	std::string displayName = task->getDisplayName();
 	if ( fileName.empty() ) {
@@ -79,7 +79,7 @@ bool CDefaultUploadEngine::doUploadFile(FileUploadTask* task, CIUUploadParams &p
 	return true;
 }
 
-bool  CDefaultUploadEngine::doUploadUrl(UrlShorteningTask* task, CIUUploadParams &params) {
+bool  CDefaultUploadEngine::doUploadUrl(std::shared_ptr<UrlShorteningTask> task, CIUUploadParams& params) {
 	prepareUpload();
 	m_Consts["_ORIGINALURL"] = task->getUrl();
 	bool actionsExecuteResult = executeActions();

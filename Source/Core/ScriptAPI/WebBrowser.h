@@ -26,8 +26,14 @@
 #include "Core/Squirrelnc.h"
 #include "HtmlDocument.h"
 
-namespace ScriptAPI {
-	class WebBrowserPrivate;
+namespace ScriptAPI {;
+class WebBrowserPrivate;
+    /**
+    Represents a web browser window. It is using Internet Explorer components on Windows, 
+    but is not implemented on other systems. 
+    Creating an instance: local webBrowser = CWebBrowser();
+    @since version 1.3.1 build 4270.
+    */
 	class CWebBrowser {
 		public:
 			CWebBrowser();

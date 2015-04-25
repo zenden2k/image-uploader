@@ -132,6 +132,7 @@ void UploadTask::finishTask(Status status)
 
 void UploadTask::addChildTask(std::shared_ptr<UploadTask> child)
 {
+    child->parentTask_ = this;
 	tasksMutex_.lock();
 	childTasks_.push_back(child);
 	tasksMutex_.unlock();

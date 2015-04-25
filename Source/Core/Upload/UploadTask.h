@@ -6,12 +6,13 @@
 #include "UploadResult.h"
 #include "Core/3rdpart/FastDelegate.h"
 #include "Core/Network/NetworkClient.h"
+#include "Core/Utils/EnumUtils.h"
 #include "ServerProfile.h"
 #include "CommonTypes.h"
 #include <mutex>
 #include <deque>
+
 class CAbstractUploadEngine;
-//#include <Core/Upload/UploadEngine.h>
 class UploadTask;
 class UploadSession;
 struct UploadProgressTimeInfo
@@ -52,7 +53,9 @@ class UploadTask {
 		UploadTask(UploadTask* parentTask);
 		virtual ~UploadTask();
 
-		enum Role { DefaultRole, ThumbRole, UrlShorteningRole };
+        DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(Role, (DefaultRole)(ThumbRole)(UrlShorteningRole));
+
+		//enum Role { DefaultRole, ThumbRole, UrlShorteningRole };
 		enum Status { StatusInQueue, StatusRunning, StatusStopped, StatusFinished, StatusFailure };
 		enum Type { TypeFile, TypeUrl };
 		typedef fastdelegate::FastDelegate2<UploadTask*, bool> TaskFinishedCallback;

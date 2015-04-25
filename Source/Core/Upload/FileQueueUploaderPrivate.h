@@ -67,7 +67,7 @@ protected:
 	void onErrorMessage(CUploader*, ErrorInfo);
 	void onDebugMessage(CUploader*, const std::string& msg, bool isResponseBody);
 	void onTaskAdded(UploadSession*, UploadTask*);
-	std::mutex mutex_;
+	std::recursive_mutex mutex_;
 	std::mutex callMutex_;
 	
 

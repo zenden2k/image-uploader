@@ -82,7 +82,7 @@ public:
 		HICON m_hIconSmall;
 		bool m_bStopCapturingWindows;
 		bool m_bIsUploading;
-		std::shared_ptr<UploadTask> lastUploadedItem_;
+		UploadTask* lastUploadedItem_;
 		std::shared_ptr<UrlShorteningTask> lastUrlShorteningTask_;
 		CString imageUrlShortened_;
 		CString downloadUrlShortened_;

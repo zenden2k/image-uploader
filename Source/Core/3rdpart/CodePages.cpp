@@ -2,15 +2,18 @@
 #include <string>
 #include "codepages.h"
 #include "Core/Utils/StringUtils.h"
+#include <unordered_map>
+#include <algorithm>
 
 namespace {
 
+/*
 struct lang_t {
     const char *name;
     int  codepage_id;
-};
+};*/
 
-lang_t langs[] = {
+std::unordered_map<std::string,int> langs = {
     { "437", 437 },
     { "_iso-2022-jp", 50221 },
     { "_iso-2022-jp$sio", 50222 },
@@ -34,6 +37,7 @@ lang_t langs[] = {
     { "cp866", 866 },
     { "cp870", 870 },
 	{ "cp_acp", 0},
+    { "cp_oem", CP_OEMCP },
     { "csascii", 1252 },
     { "csbig5", 950 },
     { "cseuckr", 51949 },
@@ -270,31 +274,22 @@ lang_t langs[] = {
 
 }
 
-int CodepageByName( const char * name )
+int CodepageByName(const std::string& name)
 {
-    int begin = -1;
-    int end = sizeof( langs ) / sizeof( lang_t );    
-    for(;;)
+    auto it = langs.find(name);
+    if (it != langs.end())
     {
-        int centre = ( begin + end ) / 2;
-        if( centre == begin )
-            return -1;
-		  int cmp = IuStringUtils::stricmp( name, langs[ centre ].name );
-        if( !cmp ) 
-            return langs[ centre ].codepage_id;
-        ( ( cmp < 0 ) ? end : begin ) = centre;
-    } 
+        return it->second;
+    }
     return 65001;
 }
 
 std::string NameByCodepage( int code )
 {
-	int begin = -1;
-	int end = sizeof( langs ) / sizeof( lang_t );    
-	for(int i=0; i<end; i++)
-	{
-		if(langs[i].codepage_id == code)
-			return langs[i].name;
-	} 
-	return "";
+    auto it = std::find_if(langs.begin(), langs.end(), [code](decltype(*langs.begin())& v) { return v.second == code; });
+    if (it != langs.end())
+    {
+        return it->first;
+    }
+	return std::string();
 }

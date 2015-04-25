@@ -87,3 +87,8 @@ std::string FileUploadTask::title() const
 {
 	return IuCoreUtils::ExtractFileName(originalFileName());
 }
+
+int64_t FileUploadTask::getFileSize() const
+{
+	return getDataLength();
+}

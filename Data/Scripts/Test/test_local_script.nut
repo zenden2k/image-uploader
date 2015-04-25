@@ -11,6 +11,16 @@ function regex_simple(data,regStr,start)
 
 function  UploadFile(FileName, options)
 {	
+	local process = Process("notepad.exe", true);
+	//process.setArguments(["d:\\Iñtërnâtiônàlizætiøn.txt"]);
+	//process.setArguments(["d:\\Iñtërnâtiônàlizætiøn.txt"]);
+	//process.start();
+	process.setReadOutput(true);
+	process.launchInShell("d:\\Backups\\imgupload\\imgupload.exe -s zippy d:\\Iñtërnâtiônàlizætiøn.txt");
+	local res = process.readOutput();
+	print(res);
+	return -1;
+
 	nm.setUrl("http://localhost/ImageUploader/Web/upload.php");
 	nm.addQueryParamFile("file",FileName, ExtractFileName(FileName),"");
 	local data = "";

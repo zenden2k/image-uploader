@@ -663,6 +663,15 @@
     <ClInclude Include="Source\Core\ScriptAPI\WebBrowserPrivateBase.h">
       <Filter>Source Files\Core\ScriptAPI</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\ScriptAPI\UploadTaskWrappers.h">
+      <Filter>Source Files\Core\ScriptAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utils\EnumUtils.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\ScriptAPI\Process.h">
+      <Filter>Source Files\Core\ScriptAPI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1558,6 +1567,12 @@
       <Filter>Source Files\Gui\Controls</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\ScriptAPI\WebBrowserPrivateBase.cpp">
+      <Filter>Source Files\Core\ScriptAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\ScriptAPI\UploadTaskWrappers.cpp">
+      <Filter>Source Files\Core\ScriptAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\ScriptAPI\Process.cpp">
       <Filter>Source Files\Core\ScriptAPI</Filter>
     </ClCompile>
   </ItemGroup>

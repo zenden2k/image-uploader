@@ -36,7 +36,7 @@ extern const Utf8String IuNewFolderMark;
 class CScriptUploadEngine: public CAbstractUploadEngine
 {
 	public:
-		int doUpload(UploadTask* task, CIUUploadParams &params);
+		int doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params);
 	protected:
 		bool needStop();
 		Utf8String m_ErrorReason;

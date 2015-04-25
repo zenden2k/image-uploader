@@ -8,6 +8,7 @@
 #endif
 #undef UNICODE // We do not want to compile sqplus with unicode support
 #undef _UNICODE
+#define _SQ64
 #include <squirrel.h>
 #include <sqrat.h>
 #include <sqrat/sqratVM.h>

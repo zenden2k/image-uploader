@@ -26,13 +26,13 @@
 #include "Core/Utils/CoreTypes.h"
 namespace ScriptAPI {
 
-
+/**
+PCRE-compatible regular expression
+*/
 class RegularExpression  {
 public:
-	//  Pcre(const std::string& expression);
-	RegularExpression(); 
-	//RegularExpression(const RegularExpression& r);
-	RegularExpression(const std::string& expression, const std::string& flags);
+	    RegularExpression(); 
+        RegularExpression(const std::string& expression, const std::string& flags);
 	  Sqrat::Array split(const std::string& piece);
 	  Sqrat::Array splitWithLimit(const std::string& piece, int limit);
 	  Sqrat::Array splitWithLimitOffset(const std::string& piece, int limit, int start_offset);

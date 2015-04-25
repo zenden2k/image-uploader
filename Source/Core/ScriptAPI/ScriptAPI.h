@@ -1,6 +1,8 @@
 #ifndef IU_CORE_SCRIPTAPI_SCRIPTAPI_H
 #define IU_CORE_SCRIPTAPI_SCRIPTAPI_H
 
+/*! @cond PRIVATE */
+
 #include "Functions.h"
 #include <memory>
 #include "Core/3rdpart/fastdelegate.h"
@@ -26,6 +28,8 @@ template<typename T>
 		return T();
 	}
 }
+
+/*! @endcond */
 
 
 #endif

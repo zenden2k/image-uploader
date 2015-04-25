@@ -52,6 +52,8 @@ openssl         https://www.openssl.org
 
 zlib            http://www.zlib.net
 
+Boost           http://www.boost.org
+
 pcre            http://www.pcre.org
 
 pcre++          http://www.daemon.de/PCRE
@@ -62,6 +64,8 @@ sqplus          http://sourceforge.net/projects/sqplus/
 
 ffmpeg          https://www.ffmpeg.org
 
+Boost.Process   http://www.highscore.de/boost/process/
+
 tinyxml         http://sourceforge.net/projects/tinyxml/
 
 minizip         http://www.winimage.com/zLibDll/minizip.html
@@ -70,20 +74,15 @@ jsoncpp         https://github.com/open-source-parsers/jsoncpp
 
 glog            https://github.com/google/glog
 
-boost           http://www.boost.org
 
 You can download ALL necessary libraries and headers (precompiled for MSVC 2013) by following link:
 
-https://bintray.com/artifact/download/zenden/zenden-image-uploader/Image_Uploader_Contrib_MSVC_2013_and_sources_v1.3.1_06.04.2015.7z
+https://bintray.com/artifact/download/zenden/zenden-image-uploader/Image_Uploader_Contrib_MSVC_2013_and_sources_v1.3.2_25.04.2015.7z
 
+mirror https://docs.google.com/file/d/0B_RKTUl10DcraUpKU1hneTBCQU0/edit?usp=drivesdk
 
 If you want to compile strmbase.lib by yourself you will need:
 
 DirectX 8 SDK
 
 DirectShow BaseClasses
-
-If you receive errors related to "TOKEN_ELEVATION" or "ITaskBar3", it means you haven't installed latest Platform SDK. 
-
-Also you can change WINVER value into "stdafx.h" file to 0x0600 or 0x0501 and compile Image Uploader 
-without Windows 7 TaskBar features support.

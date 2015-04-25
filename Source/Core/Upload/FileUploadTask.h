@@ -13,6 +13,7 @@ class FileUploadTask: public UploadTask {
 		virtual std::string getMimeType() const;
 		virtual int64_t getDataLength() const;
 		std::string getFileName() const;
+		int64_t getFileSize() const;
 		void setFileName(const std::string& fileName);
 		std::string getDisplayName() const;
 		void setDisplayName(const std::string& name);

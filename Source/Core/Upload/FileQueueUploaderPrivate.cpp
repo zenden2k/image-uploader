@@ -164,7 +164,7 @@ std_tr::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
 	if (m_NeedStop)
 		return std_tr::shared_ptr<UploadTask>();
 #ifndef IU_CLI
-	std::lock_guard<std::mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 #endif
 	//LOG(INFO) << "startFromSession_=" << startFromSession_;
 	if (!sessions_.empty() && !m_NeedStop)
@@ -242,18 +242,18 @@ void FileQueueUploaderPrivate::removeUploadFilter(UploadFilter* filter)
 
 int FileQueueUploaderPrivate::sessionCount()
 {
-	std::lock_guard<std::mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	return sessions_.size();
 }
 
 std_tr::shared_ptr<UploadSession> FileQueueUploaderPrivate::session(int index)
 {
-	std::lock_guard<std::mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	return sessions_[index];
 }
 
 void FileQueueUploaderPrivate::start() {
-	std::lock_guard<std::mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	m_NeedStop = false;
 	m_IsRunning = true;
 	int numThreads = std::min<int>(size_t(m_nThreadCount - m_nRunningThreads), pendingTasksCount());

@@ -144,7 +144,6 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
 	uparams.thumbWidth = m_nThumbWidth;
 	if (task->type() == UploadTask::TypeFile) {
 		FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());
-		uparams.displayFileName = fileTask->getDisplayName();
 	}
 	m_NetworkClient.setProgressCallback(pluginProgressFunc, (void*)this);
 	int EngineRes = 0;
@@ -156,7 +155,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
 			Cleanup();
 			return false;
 		}
-		EngineRes = m_CurrentEngine->doUpload(task.get(), uparams);
+		EngineRes = m_CurrentEngine->doUpload(task, uparams);
 		task->setCurrentUploadEngine(nullptr);
 
 		if ( EngineRes == -1 ) {

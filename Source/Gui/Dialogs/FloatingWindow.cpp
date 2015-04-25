@@ -50,6 +50,7 @@ CFloatingWindow::CFloatingWindow()
 	WM_TASKBARCREATED = RegisterWindowMessage(_T("TaskbarCreated"));
 	m_bIsUploading = 0;
 	uploadEngineManager_ = 0;
+	lastUploadedItem_ = 0;
 }
 
 CFloatingWindow::~CFloatingWindow()
@@ -170,17 +171,19 @@ LRESULT CFloatingWindow::OnTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 	{
 		std::vector<CUrlListItem> items;
 		CUrlListItem it;
-		UploadResult* uploadResult = lastUploadedItem_->uploadResult();
-		it.ImageUrl = Utf8ToWstring(uploadResult->directUrl).c_str();
-		it.ImageUrlShortened = Utf8ToWstring(uploadResult->directUrlShortened).c_str();
-		it.ThumbUrl = Utf8ToWstring(uploadResult->thumbUrl).c_str();
-		it.DownloadUrl = Utf8ToWstring(uploadResult->downloadUrl).c_str();
-		it.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
-		items.push_back(it);
-		if (it.ImageUrl.IsEmpty() && it.DownloadUrl.IsEmpty())
-			return 0;
-		CResultsWindow rp( pWizardDlg, items, false);
-		rp.DoModal(m_hWnd);
+		if (lastUploadedItem_) {
+			UploadResult* uploadResult = lastUploadedItem_->uploadResult();
+			it.ImageUrl = Utf8ToWstring(uploadResult->directUrl).c_str();
+			it.ImageUrlShortened = Utf8ToWstring(uploadResult->directUrlShortened).c_str();
+			it.ThumbUrl = Utf8ToWstring(uploadResult->thumbUrl).c_str();
+			it.DownloadUrl = Utf8ToWstring(uploadResult->downloadUrl).c_str();
+			it.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
+			items.push_back(it);
+			if (it.ImageUrl.IsEmpty() && it.DownloadUrl.IsEmpty())
+				return 0;
+			CResultsWindow rp(pWizardDlg, items, false);
+			rp.DoModal(m_hWnd);
+		}
 	}
 	return 0;
 }
@@ -720,12 +723,15 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
 		CString url;
 		UploadResult* uploadResult = task->uploadResult();
 		bool usedDirectLink = true;
-		if ((Settings.UseDirectLinks || uploadResult->downloadUrl.empty()) && !uploadResult->directUrl.empty())
-			url = Utf8ToWstring(uploadResult->directUrl).c_str();
+		if ((Settings.UseDirectLinks || uploadResult->downloadUrl.empty()) && !uploadResult->directUrl.empty()) {
+
+			url = Utf8ToWstring(!uploadResult->directUrlShortened.empty() ? uploadResult->directUrlShortened: uploadResult->directUrl).c_str();
+		}
 		else if ((!Settings.UseDirectLinks || uploadResult->directUrl.empty()) && !uploadResult->downloadUrl.empty()) {
-			url = Utf8ToWstring(uploadResult->downloadUrl).c_str();
+			url = Utf8ToWstring(!uploadResult->downloadUrlShortened.empty() ? uploadResult->downloadUrlShortened : uploadResult->downloadUrl).c_str();
 			usedDirectLink = false;
 		}
+		lastUploadedItem_ = task;
 		ShowImageUploadedMessage(url);
 	}
 	return;

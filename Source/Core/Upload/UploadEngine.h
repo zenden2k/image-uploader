@@ -29,6 +29,7 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Network/NetworkClient.h"
 #include "CommonTypes.h"
+#include <Core/ScriptAPI/UploadTaskWrappers.h>
 
 class ServerSync;
 
@@ -150,9 +151,13 @@ class CUploadEngineData
 		ServerType Type;
 		CUploadEngineData();
 };
-
-struct CIUUploadParams
+/** 
+CIUUploadParams class
+*/
+class CIUUploadParams
 {
+public:
+    /*! @cond PRIVATE */
 	int apiVersion;
 	int thumbWidth;
 	int thumbHeight;
@@ -165,7 +170,8 @@ struct CIUUploadParams
 	Utf8String ViewUrl;
 	Utf8String ServerFileName;
 	Utf8String temp_;
-	Utf8String displayFileName;
+    ScriptAPI::UploadTaskWrapper task_;
+    /*! @endcond */
 
 	const std::string getParam(const std::string& name)
 	{
@@ -182,7 +188,7 @@ struct CIUUploadParams
 	void setThumbUrl(const std::string& url) { ThumbUrl = url;}
 	void setViewUrl(const std::string& url) { ViewUrl = url;}
 	const std::string getServerFileName() const { return ServerFileName; }
-	const std::string getDisplayFileName() const { return displayFileName; }
+    ScriptAPI::UploadTaskWrapper getTask() { return task_; }
 };
 
 class  CUploadEngineList_Base
@@ -208,7 +214,7 @@ class CAbstractUploadEngine
 		CAbstractUploadEngine(ServerSync* serverSync);
 		virtual ~CAbstractUploadEngine();
 		void setThumbnailWidth(int width);
-		virtual int doUpload(UploadTask* task, CIUUploadParams &params) = 0;
+		virtual int doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params) = 0;
 		void setServerSettings(ServerSettingsStruct settings);
 		ServerSettingsStruct serverSettings();
 		virtual int RetryLimit()=0;
@@ -230,7 +236,7 @@ class CAbstractUploadEngine
 		CUploadEngineData * m_UploadData;
 		ServerSettingsStruct m_ServersSettings;
 		ServerSync* serverSync_;
-		UploadTask* currentTask_;
+		std::shared_ptr<UploadTask> currentTask_;
 		int m_ThumbnailWidth;
 		bool DebugMessage(const std::string& message, bool isServerResponseBody = false);
 		bool ErrorMessage(ErrorInfo);

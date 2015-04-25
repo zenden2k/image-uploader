@@ -432,7 +432,9 @@ function  UploadFile(FileName, options)
 		}
 	local ansiFileName = ExtractFileName(FileName);
 	try {
-		ansiFileName = options.getDisplayFileName();
+		local task = options.getTask();
+		ansiFileName = task.getDisplayName();
+		print(ansiFileName);
 	} catch ( ex ) {
 		
 	}

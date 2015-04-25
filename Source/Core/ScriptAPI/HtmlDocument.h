@@ -3,14 +3,19 @@
 #include "Core/Utils/CoreTypes.h"
 #include "HtmlElement.h"
 #include "Core/Squirrelnc.h"
-namespace ScriptAPI {
+namespace ScriptAPI {;
 
 class HtmlDocumentPrivate;
-
+/**
+Represents a web browser's html document.
+@since version 1.3.1 build 4272
+*/
 class HtmlDocument {
 public:
 	HtmlDocument();
+    /*! @cond PRIVATE */
 	HtmlDocument(HtmlDocumentPrivate* pr);
+    /*! @endcond */
 	HtmlElement rootElement();
 	HtmlElement getElementById(const std::string& id);
 	Sqrat::Array getElementsByTagName(const std::string& tag);

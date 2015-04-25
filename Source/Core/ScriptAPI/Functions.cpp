@@ -20,6 +20,8 @@
 
 #include "Functions.h"
 
+/** @file */
+
 #include "Core/AppParams.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Squirrelnc.h"
@@ -52,6 +54,8 @@
 
 using namespace Sqrat;
 
+
+
 namespace ScriptAPI {
 /*
 SquirrelObject* RootTable = 0;*/
@@ -61,6 +65,10 @@ const std::string GetScriptsDirectory()
 	return AppParams::instance()->settingsDirectory() + "Scripts/";
 }
 
+/**
+Returns name of the application's current language file (without .lng extension). For example: "English", "Russian".
+@since 1.3.1
+*/
 const std::string GetAppLanguageFile()
 {
 	std::string languageFile = AppParams::instance()->languageFile();
@@ -627,12 +635,8 @@ const std::string GetFileContents(const std::string& filename) {
 	return data;
 }
 
-unsigned int ScriptGetFileSize(const std::string& filename) {
-	return static_cast<unsigned int>(IuCoreUtils::getFileSize(filename));
-}
-
-double ScriptGetFileSizeDouble(const std::string& filename) {
-	return static_cast<double>(IuCoreUtils::getFileSize(filename));
+int64_t ScriptGetFileSize(const std::string& filename) {
+	return IuCoreUtils::getFileSize(filename);
 }
 
 const std::string scriptGetAppLanguage() {
@@ -722,7 +726,7 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("GetAppLocale", scriptGetAppLocale)
 
         .Func("GetFileSize", ScriptGetFileSize)	
-        .Func("GetFileSizeDouble", ScriptGetFileSizeDouble)	
+        .Func("GetFileSizeDouble", ScriptGetFileSize)
         .Func("WriteLog", scriptWriteLog)	
         .Func("MessageBox", scriptMessageBox);	
 

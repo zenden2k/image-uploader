@@ -6,11 +6,11 @@
 #include <memory>
 
 class ServerSyncPrivate;
-/*
-	ServerSync class contains server- (and account) specific data and tools for syncronization 
+
+/**
+	@brief ServerSync class contains server- (and account) specific data and tools for syncronization 
 	threads which are uploading to the same server (and account)
 */
-
 class ServerSync
 {
 	public:

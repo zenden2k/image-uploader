@@ -68,7 +68,7 @@ void CScriptUploadEngine::PrintCallback(const std::string& output)
 	std::thread::id threadId = std::this_thread::get_id();
 	Log(ErrorInfo::mtWarning, m_sName + ".nut [Task=" + taskName + ", ThreadId="  + IuCoreUtils::ThreadIdToString(threadId) + "]\r\n" + /*IuStringUtils::ConvertUnixLineEndingsToWindows*/(output));
 }
-int CScriptUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params)
+int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params)
 {
 	//std::thread::id threadId = std::this_thread::get_id();
 	//LOG(INFO) << "CScriptUploadEngine::doUpload this=" << this << " thread=" << threadId;
@@ -77,7 +77,7 @@ int CScriptUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params)
 
 	currentTask_ = task;
 	if (task->type() == UploadTask::TypeFile ) {
-		FileName = ((FileUploadTask*)task)->getFileName();
+		FileName = (dynamic_cast<FileUploadTask*>(task.get()))->getFileName();
 	}
 	CFolderItem parent, newFolder = m_ServersSettings.newFolder;
 	std::string folderID = m_ServersSettings.params["FolderID"];
@@ -96,6 +96,7 @@ int CScriptUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params)
 	}
 
 	params.folderId = folderID;
+    params.task_ = task;
     int ival = 0;
     clearSqratError();
 	try
@@ -116,7 +117,7 @@ int CScriptUploadEngine::doUpload(UploadTask* task, CIUUploadParams &params)
             }*/
 		}
 		else if (task->type() == UploadTask::TypeUrl ) {
-			UrlShorteningTask *urlShorteningTask = static_cast<UrlShorteningTask*>(task);
+			std::shared_ptr<UrlShorteningTask> urlShorteningTask = std::dynamic_pointer_cast<UrlShorteningTask>(task);
             Function func(vm_.GetRootTable(), "ShortenUrl");
             if ( func.IsNull() ) {
                  Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string("Function ShortenUrl not found in script")); 

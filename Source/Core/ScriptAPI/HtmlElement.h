@@ -22,10 +22,14 @@
 #define IU_CORE_HTMLELEMENT_H 
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Squirrelnc.h"
-namespace ScriptAPI {
+
+namespace ScriptAPI {;
 
 class HtmlElementPrivate;
 
+/**
+@since 1.3.1 build 4272.
+*/
 class HtmlElement {
 public:
 	HtmlElement();

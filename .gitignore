@@ -3,3 +3,5 @@ Build
 *.suo
 *.pdb
 *.ncb
+Dist/output/
+Dist/portable/

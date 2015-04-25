@@ -34,12 +34,19 @@
 std::string nm_trimStr(const std::string& str);
 void nm_splitString(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount = -1);
 
+/**
+@brief  HTTP/FTP client (libcurl wrapper).
+
+Note: After each completed request, most of the options are set to default values.
+*/
 class NetworkClient
 {
 	public:
+        /*! @cond PRIVATE */
 		enum ActionType {
 			atNone = 0, atPost, atUpload, atGet
 		};
+        /*! @endcond */
 		NetworkClient(void);
 		~NetworkClient(void);
 		void addQueryParam(const std::string& name, const std::string& value);
@@ -58,7 +65,9 @@ class NetworkClient
 		const std::string responseHeaderByName(const std::string& name);
 		std::string responseHeaderByIndex(const int index, std::string& name);
 		int responseHeaderCount();
+        /*! @cond PRIVATE */
 		void setProgressCallback(curl_progress_callback func, void *data);
+        /*! @endcond */
 		const std::string urlEncode(const std::string& str);
 		const std::string getCurlResultString();
 		void setCurlOption(int option, const std::string &value);
@@ -67,17 +76,25 @@ class NetworkClient
 		int getCurlInfoInt(int option);
 		double getCurlInfoDouble(int option);
 		void setMethod(const std::string &str);
+        /*! @cond PRIVATE */
 		void setProxy(const std::string &host, int port, int type);
 		void setProxyUserPassword(const std::string &username, const std::string password);
+        /*! @endcond */
 		void setReferer(const std::string &str);
 		void setOutputFile(const std::string &str);
+        /*! @cond PRIVATE */
 		void setUploadBufferSize(const int size);
+        /*! @endcond */
 		void setChunkOffset(double offset);
 		void setChunkSize(double size);
+        /*! @cond PRIVATE */
 		void setTreatErrorsAsWarnings(bool treat);
+        /*! @endcond */
 		int getCurlResult();
+        /*! @cond PRIVATE */
 		CURL* getCurlHandle();
 		static void Uninitialize();
+        /*! @endcond */
 		void enableResponseCodeChecking(bool enable);
 	private:
 		enum CallBackFuncType{funcTypeBody,funcTypeHeader};

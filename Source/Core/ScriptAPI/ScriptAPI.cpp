@@ -27,6 +27,7 @@
 #include "WebBrowserPrivateBase.h"
 #endif
 #include "RegularExpression.h"
+#include "Process.h"
 #include "Core/Network/NetworkClient.h"
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Upload/UploadEngine.h"
@@ -157,8 +158,8 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
         Func("setDirectUrl", &CIUUploadParams::setDirectUrl).
         Func("setThumbUrl", &CIUUploadParams::setThumbUrl).
         Func("getServerFileName", &CIUUploadParams::getServerFileName).
-		Func("getDisplayFileName", &CIUUploadParams::getDisplayFileName).
         Func("setViewUrl", &CIUUploadParams::setViewUrl).
+		Func("getTask", &CIUUploadParams::getTask).
         Func("getParam", &CIUUploadParams::getParam)
     );
 
@@ -180,6 +181,7 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
 		Func("setValue", &ServerSync::setValue).
 		Func("getValue", &ServerSync::getValue)
 	);
+
 }
 
 #ifdef _MSC_VER
@@ -196,6 +198,8 @@ void RegisterClasses(Sqrat::SqratVM& vm) {
     RegisterNetworkClientClass(vm);
     RegisterRegularExpressionClass(vm);
     RegisterUploadClasses(vm);
+    RegisterUploadTaskWrappers(vm);
+    RegisterProcessClass(vm);
 #ifdef _WIN32
 	RegisterWebBrowserClass(vm);
 	RegisterHtmlDocumentClass(vm);
