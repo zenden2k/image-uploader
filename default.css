@@ -1,0 +1,241 @@
+/** BASIC */
+
+body {
+	/*font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;*/
+    font-family: Verdana,sans-serif;
+    font-size: 13px;
+    line-height: 1.3em;
+	color: #333333;
+}
+
+h1, h2, h3 {
+	/*text-transform: lowercase;*/
+	color: #000099;
+}
+
+ul {
+	margin-left: 0px;
+	padding-left: 1em;
+	list-style-position: inside;
+}
+
+a {
+	text-decoration: none;
+	color: #000099;
+}
+
+a:hover {
+	text-decoration: underline;
+	color: #990000;
+}
+
+/** HEADER */
+
+#header {
+	width: 800px;
+	height: 60px;
+	margin: 0px auto;
+}
+
+#header #version {
+/*	width: 800px;
+	height: 60px;
+	margin: 0px auto; */
+	font-weight: bolder;
+	float: left;
+	margin: 0px;
+	padding: 35px 0px 0px 10px;
+}
+
+
+#header h1 {
+	float: left;
+	margin: 0px;
+	padding: 20px 0px 0px 0px;
+}
+
+#header h2 {
+	float: right;
+	margin: 0px;
+	padding: 27px 0px 0px 0px;
+}
+
+#header h2 {
+	float: right;
+	margin: 0px;
+	padding: 36px 0px 0px 0px;
+}
+
+/** MENU */
+
+#menu {
+	width: 800px;	
+height: 23px;
+	margin: 0px auto;
+	border: 1px solid #000099;      
+}
+
+#menu ul {
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+        float:right;
+}
+
+#menu li {
+	display: inline;        
+}
+
+#menu a {
+	display: block;
+	float: left;
+	padding: 3px 10px;
+	border-right: 1px solid #000099;
+	text-decoration: none;
+}
+
+#menu a:hover {
+	background: #000099;
+	color: #FFFFFF;
+}
+
+/** CONTENT */
+
+#content {
+	width: 800px;
+	margin: 0px auto;
+}
+
+#content h2 {
+	font-weight: normal;
+}
+
+h2 a {
+	font-size: 60%;
+	font-weight: lighter;
+}
+
+#left {
+	float: left;
+	width: 780px;        
+}
+
+#left #center{
+    text-align:center;
+}
+
+#right {
+	float: right;
+	width: 200px;
+}
+
+#right h2{
+	text-align: right;
+}
+
+/** FOOTER */
+
+#footer {
+	clear: both;
+	width: 780px;
+	margin: 0px auto;
+	padding: 5px 10px;
+	border: 1px solid #000099;
+}
+
+#footer p {
+	margin: 0px;
+	padding: 0px;
+	font-size: x-small;
+}
+
+.image_text{
+	text-align: center;
+	font-size: x-small;
+}
+
+.image{
+text-align: center;
+}
+.code
+{
+	border: 1px solid #000099;
+   
+}
+
+/**
+ * GeSHi (C) 2004 - 2007 Nigel McNie, 2007 - 2008 Benny Baumann
+ * (http://qbnz.com/highlighter/ and http://geshi.org/)
+ */
+.xml .de1, .xml .de2 {font: normal normal 12px monospace; margin:0; padding:0; background:none; vertical-align:top;color: #000020;}
+.xml  {font-family:monospace;color: #006; border: 1px solid #d0d0d0; background-color: #f0f0f0;}
+.xml a:link {color: #000060;}
+.xml a:hover {background-color: #f0f000;}
+.xml .imp {font-weight: bold; color: red;}
+.xml li, .xml .li1 {font-weight: normal; vertical-align:top;font: normal normal 12px 'Courier New', Courier, monospace; color: #003030;}
+.xml .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
+.xml .li2 {font-weight: bold; vertical-align:top;font-weight: bold; color: #006060;}
+.xml .es0 {color: #000099; font-weight: bold;}
+.xml .br0 {color: #66cc66;}
+.xml .sy0 {color: #66cc66;}
+.xml .st0 {color: #ff0000;}
+.xml .nu0 {color: #cc66cc;}
+.xml .sc-1 {color: #808080; font-style: italic;}
+.xml .sc0 {color: #00bbdd;}
+.xml .sc1 {color: #ddbb00;}
+.xml .sc2 {color: #339933;}
+.xml .sc3 {color: #009900;}
+.xml .re0 {color: #000066;}
+.xml .re1 {color: #000000; font-weight: bold;}
+.xml .re2 {color: #000000; font-weight: bold;}
+.xml span.xtra { display:block; }
+
+ul {
+  list-style-position: outside;
+}
+code {
+    padding: 1px 6px 1px 6px;
+    font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,sans-serif;
+    background-color: #eee;
+    white-space: normal;
+     font-weight: bold;
+     color: #1F1F1F;
+     white-space:nowrap;
+}
+
+ul li{
+margin-bottom:3px;
+
+    margin-left: 8px;
+
+}
+
+.script-functions code {
+
+}
+.script-functions code i {
+    color: black;
+    font-weight: normal;
+}
+.script-functions code u {
+    text-decoration: none;
+    color: #868686;
+    font-weight: normal;
+}
+.script-functions code.f {
+color: #5656C2;
+    display:block;
+    margin-top:15px;
+    margin-bottom: 5px;
+   white-space:normal;
+    /*width: 300px;*/
+}
+.script-functions code.f span {
+float: right;
+color: black;
+font-weight: normal;
+}
+i.var {
+font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,sans-serif;
+
+}

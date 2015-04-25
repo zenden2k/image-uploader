@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Image Uploader - Дополнительная информация по использованию</title>
+<link href="../default.css" rel="stylesheet" type="text/css" />
+<!--<link href="styles/../default.css" rel="stylesheet" type="text/css" />-->
+<link href="../prettify/prettify.css" rel="stylesheet" type="text/css" />
+</head>
+<body onload="prettyPrint()">
+<script type="text/javascript" src="../prettify/prettify.js"></script>
+<div id="header">
+<h1>Image Uploader scripting API</h1> <div id="version"></div>
+</div>
+ <div id="menu">
+    <ul>
+	<li><a href="api_example.html">Example script</a></li>
+	<li><a href="api_implement.html">Functions to implement</a></li>			
+        <li><a href="api_globals.html">Global functions</a></li>        
+        <li><a href="api_classes.html">Classes</a></li>
+    </ul>
+</div>
+<div id="content">
+    <div id="left">
+<h1>Classes</h1>
+<h2>NetworkClient</h2> 
+<p>HTTP/FTP client (libcurl wrapper).
+Note: After each completed request, most of the options are set to default values.
+<p>
+<div class="script-functions">
+<code>nm</code> - глобальный объект, являющийся экземпляром класса <code><a href="https://code.google.com/p/image-uploader/source/browse/trunk/Source/Core/Network/NetworkClient.h" target="_blank">NetworkClient</a></code>
+<p>Обращение к методам объекта: <code>nm.имяМетода(<i>параметры</i>);</code>
+<p>
+<b><i>Методы класса NetworkClient:</i></b><p>
+<code class="f">addQueryHeader(<u>string</u> <i>name</i>, <u>string</u> <i>value</i>)</code>
+Устанавливает значение заголовка HTTP запроса. Чтобы удалить заголовок, передайте пустую строку. Чтобы установить пустое значение, передайте "\n".
+<code class="f">addQueryParam(<u>string</u> <i>name</i>, <u>string</u> <i>value</i>)</code>
+Добавляет к POST запросу параметр с именем и значением
+<code class="f">addQueryParamFile(<u>string</u> <i>name</i>, <u>string</u> <i>fileName</i>, <u>string</u> <i>displayName</i>, <u>string</u> contentType)</code> 
+Добавляет к MULTIPART/DATA POST запросу параметр - файл. name - имя параметра запроса, filename - физический путь к файлу,
+displayname - отображаемое имя(то имя, которое передается серверу, не содержит пути), contentType - mime тип файла, может 
+быть пустой строкой или получен с помощью функции <code>GetFileMimeType</code>).
+Метод аналогичен элементу HTML формы -  <code>&lt;input type="file"&gt;</code>.<p>
+Example:<br>
+<pre class="prettyprint">
+local mimeType = GetFileMimeType(FileName);
+nc.addQueryParamFile("fileField", FileName, options.getDisplayFileName(), mimeType);
+</pre>
+<code class="f">doGet(<u>string</u> <i>url</i>)</code>
+Выполнение GET запроса(протокол HTTP).
+<code class="f">doPost(<u>string</u> <i>data</i>)</code>
+Выполняет POST запрос. data - тело запроса (например, "param1=value&amp;param2=value2" ). 
+Если data - пустая строка, используются параметры, предварительно заданные с помощью функции addQueryParam().
+<code class="f">doUpload(<u>string</u> <i>filename</i>, <u>string</u> <i>data</i>)</code> 
+Отправка файла или данных непосредственно в теле POST запроса 
+(не используется MULTIPART кодирование).
+<code class="f">doUploadMultipartData()</code>
+Посылает запрос по адресу, установленному функцией <code>setUrl</code>
+ в виде параметров и файлов, закодированных в формате MULTIPART/FORM-DATA. Аналогичен отправке формы с файлом с веб-страницы.
+<code class="f">enableResponseCodeChecking(<u>bool</u> <i>enable</i>)<span>version >= 1.3.0</span></code>
+Включает логгирование HTTP ошибок.
+<code class="f"><u>string</u> errorString()</code>
+Возвращает текст ошибки для последнего выполненного запроса.(например, <code>HTTP 404 not found</code>).
+<code class="f"><u>string</u> getCurlInfoString(<u>int</u> <i>option</i>)<span>version >= 1.3.2</span></code>
+Get information from curl.  <a href="http://curl.haxx.se/libcurl/c/curl_easy_getinfo.html" target="_blank">curl_easy_getinfo</a>. 
+Numeric values of  <i class="var">CURLINFO_*</i> constants you can find here <a href="curl_constants.txt" target="_blank">here</a>.
+<code class="f"><u>int</u> getCurlInfoInt(<u>int</u> <i>option</i>)<span>version >= 1.3.2</span></code>
+Get information from curl.  <a href="http://curl.haxx.se/libcurl/c/curl_easy_getinfo.html" target="_blank">curl_easy_getinfo</a>. 
+Numeric values of  <i class="var">CURLINFO_*</i> constants you can find here <a href="curl_constants.txt" target="_blank">here</a>.  
+<code class="f"><u>double</u> getCurlInfoInt(<u>int</u> <i>option</i>)<span>version >= 1.3.2</span></code>
+Get information from curl.  <a href="http://curl.haxx.se/libcurl/c/curl_easy_getinfo.html" target="_blank">curl_easy_getinfo</a>. 
+Numeric values of  <i class="var">CURLINFO_*</i> constants you can find here <a href="curl_constants.txt" target="_blank">here</a>.  
+<code class="f"><u>string</u> responseBody()</code>
+Возвращает тело ответа сервера (как правило, это текст HTML страницы, JSON, XML или другой формат).
+<code class="f"><u>int</u> responseHeaderCount()</code>
+Возвращает количество параметров в  HTTP -заголовке ответa.
+<code class="f"><u>string</u> responseHeaderText()<span>version >= 1.3.1.4302</span></code>
+Возвращает содержимое всего заголовка.
+<code class="f"><u>string</u> responseHeaderByName(<u>string</u> <i>fieldName</i>)<span>version >= 1.3.1.4302</span></code>
+Возвращает содержимое поля заголовка.
+<code class="f"><u>int</u> responseCode()</code>
+Возвращает код ответа (например, код 200 означает HTTP OK).
+<code class="f">setChunkOffset(<u>float</u> <i>offset</i>)<span>version >= 1.3.0</span></code>
+Set the byte offset of current chunk, relative to the beginning of the full file.
+<code class="f">setChunkSize(<u>float</u> <i>size</i>)<span>version >= 1.3.0</span></code>
+Sets size of current chunk.
+<code class="f">setCurlOption(<u>int</u> <i>option</i>, <u>string</u> <i>value</i>)<span>version >= 1.3.0</span></code>
+Устанавливает строковое значения для опции объекта CURL. Эквивалентно вызову функции <a href="http://curl.haxx.se/libcurl/c/curl_easy_setopt.html" target="_blank">curl_easy_setopt</a>. 
+Заметьте, что <i class="var">option</i> - это число. Список численных значений <i class="var">option</i> можно посмотреть <a href="curl_constants.txt" target="_blank">здесь</a>. 
+<code class="f">setCurlOptionInt(<u>int</u> <i>option</i>, <u>int</u> <i>value</i>)<span>version >= 1.3.0</span></code>
+Устанавливает численное значение для опции объекта CURL. Эквивалентно вызову функции <a href="http://curl.haxx.se/libcurl/c/curl_easy_setopt.html" target="_blank">curl_easy_setopt</a>. 
+Заметьте, что <i class="var">option</i> - это число. Список численных значений <i class="var">option</i> можно посмотреть <a href="curl_constants.txt" target="_blank">здесь</a>. 
+
+<code class="f">setMethod(<u>string</u> <i>method</i>)</code>
+Позволяет вручную задать тип запроса - POST, GET, PUT ...
+<code class="f">setReferer(<u>string</u> <i>referer</i>)<span>version >= 1.3.0</span></code>
+Устанавливает HTTP заголовок referer.
+<code class="f">setUrl(<u>string</u> <i>url</i>)</code> 
+Устанавливает адрес URL для следующего запроса.
+<code class="f">setUserAgent(<u>string</u> <i>agent</i>)<span>version >= 1.3.1</span></code>
+Устанавливает заголовок user-agent.
+<code class="f"><u>string</u> urlEncode(<u>string</u> <i>text</i>)</code>
+Процентное кодирование строки, необходимо при подготовке правильного GET-запроса.
+</div>
+</div>
+</div>
+<div id="footer">
+<p> Последнее обновление данного документа — 05.03.2015 года. Copyright &copy; 2007 - 2015, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
+</div>
+
+</body>
+</html>

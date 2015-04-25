@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Image Uploader - Дополнительная информация по использованию</title>
+<link href="../default.css" rel="stylesheet" type="text/css" />
+<!--<link href="styles/../default.css" rel="stylesheet" type="text/css" />-->
+<link href="../prettify/prettify.css" rel="stylesheet" type="text/css" />
+</head>
+<body onload="prettyPrint()">
+<script type="text/javascript" src="../prettify/prettify.js"></script>
+<div id="header">
+<h1>Image Uploader scripting API</h1> <div id="version"></div>
+</div>
+ <div id="menu">
+    <ul>
+	<li><a href="api_example.html">Example script</a></li>
+	<li><a href="api_implement.html">Functions to implement</a></li>			
+        <li><a href="api_globals.html">Global functions</a></li>        
+        <li><a href="api_classes.html">Classes</a></li>
+   	<li><a href="api_i18n.html">Internalization</a></li>
+    </ul>
+</div>
+<div id="content">
+    <div id="left">
+<h1>SimpleXml</h1>
+<h2 id="SimpleXml">SimpleXml class</h2> 
+<p>Creating instance: <code>local xml = SimpleXml();</code></p>
+<div class="script-functions">
+<b><i>Class methods: </i></b><p>
+<code class="f"><u>bool</u> LoadFromFile(<u>string</u> <i>filename</i>)</code>
+<br>
+<code class="f"><u>bool</u> LoadFromString(<u>string</u> <i>doc</i>)</code>
+<br>
+<code class="f"><u>bool</u> SaveToFile(<u>string</u> <i>filename</i>)</code>
+<br>
+<code class="f"><u>string</u> ToString()</code>
+<br>
+<code class="f"><u>SimpleXmlNode</u> GetRoot(<u>string</u> <i>name</i>, <u>bool</u> <i>create</i>)</code>
+<br>
+
+<h2 id="SimpleXmlNode">SimpleXmlNode class</h2> 
+<b><i>Class methods: </i></b><p>
+<code class="f"><u>string</u> Attribute(<u>string</u> <i>attributeName</i>)</code>
+<br>
+<code class="f"><u>int</u> AttributeInt(<u>string</u> <i>attributeName</i>)</code>
+<br>
+<code class="f"><u>bool</u> AttributeBool(<u>string</u> <i>attributeName</i>)</code>
+<br>
+<code class="f"><u>string</u> Name()</code>
+<br>
+<code class="f"><u>string</u> Text()</code>
+<br>
+<code class="f"><u>SimpleXmlNode</u> CreateChild(<u>string</u> <i>name</i>)</code>
+<br>
+<code class="f"><u>SimpleXmlNode</u> GetChild(<u>string</u> <i>name</i>, <u>bool</u> <i>createIfNotExists</i>)</code>
+<br>
+<code class="f">SetAttributeString(<u>string</u> <i>name</i>, <u>string</u> <i>value</i>)</code>
+<br>
+<code class="f">SetAttributeInt(<u>string</u> <i>name</i>, <u>int</u> <i>value</i>)</code>
+<br>
+<code class="f">SetAttributeBool(<u>string</u> <i>name</i>, <u>bool</u> <i>value</i>)</code>
+<br>
+<code class="f">SetText(<u>string</u> <i>value</i>)</code>
+<br>
+<code class="f"><u>bool</u> IsNull()</code>
+<br>
+<code class="f"> DeleteChilds()</code>
+
+<br>
+<code class="f"><u>int</u> GetChildCount()</code>
+<br>
+<code class="f"><u>SimpleXmlNode</u> GetChildByIndex()</code>
+<br>
+<code class="f"><u>int</u> GetAttributeCount()</code>
+<br>
+</div>
+</div>
+</div>
+<div id="footer">
+<p> Последнее обновление данного документа — 05.03.2015 года. Copyright &copy; 2007 - 2015, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
+</div>
+
+</body>
+</html>

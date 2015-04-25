@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Image Uploader - Дополнительная информация по использованию</title>
+<link href="../default.css" rel="stylesheet" type="text/css" />
+<!--<link href="styles/../default.css" rel="stylesheet" type="text/css" />-->
+<link href="../prettify/prettify.css" rel="stylesheet" type="text/css" />
+</head>
+<body onload="prettyPrint()">
+<script type="text/javascript" src="../prettify/prettify.js"></script>
+<div id="header">
+<h1>Image Uploader scripting API</h1> <div id="version"></div>
+</div>
+ <div id="menu">
+    <ul>
+	<li><a href="api_example.html">Example script</a></li>
+	<li><a href="api_implement.html">Functions to implement</a></li>			
+        <li><a href="api_globals.html">Global functions</a></li>        
+        <li><a href="api_classes.html">Classes</a></li>
+   	<li><a href="api_i18n.html">Internalization</a></li>
+    </ul>
+</div>
+<div id="content">
+    <div id="left">
+<h1>HtmlElement</h1>
+<h2 id="SimpleXml">HtmlElement class</h2> 
+
+Available since version 1.3.1 build 4272. <p> 
+<div class="script-functions">
+<b><i>Class methods: </i></b><p>
+<code class="f"><u>string</u> getAttribute(<u>string</u> <i>name</i>)</code>
+<br>
+<code class="f">setAttribute(<u>string</u> <i>name</i>, <u>string</u> <i>value</i>)</code>
+<br>
+<code class="f">removeAttribute(<u>string</u> <i>name</i>)</code>
+<br>
+<code class="f"><u>string</u> getId()</code>
+<br>
+<code class="f">setId(<u>string</u> <i>id</i>)</code>
+<br>
+<code class="f"><u>string</u> getInnerHTML()</code>
+<br>
+<code class="f">setInnerHTML(<u>string</u> <i>html</i>)</code>
+<br>
+<code class="f"><u>string</u> getInnerText()</code>
+<br>
+<code class="f">setInnerText(<u>string</u> <i>html</i>)</code>
+<br>
+<code class="f"><u>string</u> getOuterHTML()</code>
+<br>
+<code class="f">setOuterHTML(<u>string</u> <i>html</i>)</code>
+<br>
+<code class="f"><u>string</u> getOuterText()</code>
+<br>
+<code class="f">setOuterText(<u>string</u> <i>html</i>)</code>
+<br>
+<code class="f"><u>string</u> getTagName()</code>
+<br>
+<code class="f"><u>HtmlElement</u>  getParentElement(<u>string</u> <i>id</i>)</code>
+<br>
+<code class="f"><u>string</u> getValue()</code>
+Get value of an input element.
+<br>
+<code class="f">setValue(<u>string</u> <i>value</i>)</code>
+Set value of an input element.<br>
+Note: support of <code>&lt;input type="file" /&gt;</code> in this function is considered experimental. It works asynchronously. Do not call this function again until FileInputFilledCallback is called.
+<br>
+<code class="f">scrollIntoView()</code>
+<br>
+<code class="f">click()</code>
+<br>
+<code class="f">insertHTML(<u>string</u> <i>html</i>, <u>bool</u> <i>atEnd</i> = false)</code>
+<br>
+<code class="f">insertText(<u>string</u> <i>text</i>, <u>bool</u> <i>atEnd</i> = false)</code>
+<br>
+<code class="f"><u>bool</u> isNull()</code>
+<br>
+<code class="f"><u>array</u> getChildren()</code>
+Return an array containg child HtmlElements.
+</div>
+</div>
+</div>
+<div id="footer">
+<p> Последнее обновление данного документа — 30.03.2015 года. Copyright &copy; 2007 - 2015, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
+</div>
+
+</body>
+</html>
