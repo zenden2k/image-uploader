@@ -1,0 +1,117 @@
+﻿#include "Script.h"
+#include "API/ScriptAPI.h"
+#include "Core/Upload/ScriptUploadEngine.h"
+#include "Core/Logging.h"
+#include <Core/ThreadSync.h>
+
+Script::Script(const std::string& fileName, ThreadSync* serverSync)
+{
+    m_CreationTime = time(0);
+    m_SquirrelScript = 0;
+    m_bIsPluginLoaded = false;
+    sync_ = serverSync;
+    owningThread_ = std::this_thread::get_id();
+    load(fileName);
+}
+
+void Script::InitScriptEngine()
+{
+    sqstd_seterrorhandlers(vm_.GetVM());
+    ScriptAPI::SetPrintCallback(vm_, ScriptAPI::PrintCallback(this, &Script::PrintCallback));
+}
+
+void Script::DestroyScriptEngine()
+{
+    ScriptAPI::CleanUp();
+}
+
+void Script::FlushSquirrelOutput()
+{
+    ScriptAPI::FlushSquirrelOutput(vm_);
+}
+
+bool Script::preLoad()
+{
+    Sqrat::RootTable& rootTable = vm_.GetRootTable();
+    rootTable.SetInstance("Sync", sync_);
+    return true;
+}
+
+bool Script::postLoad()
+{
+    return true;
+}
+
+bool Script::isLoaded()
+{
+    return m_bIsPluginLoaded;
+}
+
+time_t Script::getCreationTime()
+{
+    return m_CreationTime;
+}
+
+void Script::switchToThisVM()
+{
+    ScriptAPI::SetCurrentThreadVM(vm_);
+}
+
+Sqrat::SqratVM& Script::getVM()
+{
+    return vm_;
+}
+
+bool Script::load(Utf8String fileName)
+{
+    using namespace Sqrat;
+    if (!IuCoreUtils::FileExists(fileName))
+        return false;
+
+    using namespace ScriptAPI;
+    try
+    {
+        InitScriptEngine();
+        ScriptAPI::RegisterAPI(vm_);
+
+        std::string scriptText;
+        if (!IuCoreUtils::ReadUtf8TextFile(fileName, scriptText)) {
+            LOG(ERROR) << "Failed to read script from file " << fileName;
+            return false;
+        }
+
+        preLoad();
+        ScriptAPI::RegisterShortTranslateFunctions(vm_);
+        switchToThisVM();
+        m_SquirrelScript = new Sqrat::Script(vm_.GetVM());
+        m_SquirrelScript->CompileString(scriptText.c_str(), IuCoreUtils::ExtractFileName(fileName).c_str());
+
+        m_SquirrelScript->Run();
+        postLoad();
+        m_bIsPluginLoaded = true;
+    }
+    catch (std::exception& e)
+    {
+        LOG(ERROR)<< "CScriptUploadEngine::Load failed\r\n" + std::string("Error: ") + e.what();
+        return false;
+    }
+    FlushSquirrelOutput();
+    return true;
+}
+
+
+
+void Script::PrintCallback(const std::string& output)
+{
+    std::thread::id threadId = std::this_thread::get_id();
+    LOG(WARNING) << IuCoreUtils::ExtractFileName(fileName_) << " [ ThreadId=" << IuCoreUtils::ThreadIdToString(threadId) << "]\r\n" << output;
+}
+
+void Script::checkCallingThread()
+{
+    std::thread::id threadId = std::this_thread::get_id();
+    if (threadId != owningThread_)
+    {
+        throw std::runtime_error("Script methods should be called only in the owning thread.");
+    }
+}
