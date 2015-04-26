@@ -21,7 +21,7 @@ function BeginLogin() {
 	}
 	catch ( ex ) {
 	}
-	return false;
+	return true;
 }
 
 function EndLogin() {
@@ -30,7 +30,7 @@ function EndLogin() {
 	} catch ( ex ) {
 		
 	}
-	return false;
+	return true;
 }
 
 function base64Encode(input) {
