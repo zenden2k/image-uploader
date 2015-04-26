@@ -44,13 +44,25 @@ std::unordered_map<HSQUIRRELVM, std::string> squirrelOutput;
 std::mutex squirrelOutputMutex;
 std::unordered_map<HSQUIRRELVM, PrintCallback> printCallbacks;
 std::mutex printCallbacksMutex;
+std::unordered_map<HSQUIRRELVM, std::string> scriptNames;
+std::mutex scriptNamesMutex;
 
+#ifndef _MSC_VER
+int _vscprintf(const char * format, va_list pargs) {
+    int retval;
+    va_list argcopy;
+    va_copy(argcopy, pargs);
+    retval = vsnprintf(NULL, 0, format, argcopy);
+    va_end(argcopy);
+    return retval;
+}
+#endif
 static void printFunc(HSQUIRRELVM v, const SQChar* s, ...)
 {
 	std::lock_guard<std::mutex> lock(squirrelOutputMutex);
 	va_list vl;
 	va_start(vl, s);
-	int len = 1024; // _vcsprintf( s,vl ) + 1;
+    int len = /*1024; /*/ _vscprintf(s, vl) + 1;
 	char* buffer = new char[len + 1];
 	vsnprintf(buffer, len, s, vl);
 	va_end(vl);
@@ -167,8 +179,8 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
     );
 
     Class<ThreadSync> threadSyncClass(vm.GetVM(), "ThreadSync");
-    threadSyncClass.Func("setValue", &ServerSync::setValue).
-        Func("getValue", &ServerSync::getValue);
+    threadSyncClass.Func("setValue", &ThreadSync::setValue).
+        Func("getValue", &ThreadSync::getValue);
 
     root.Bind("ServerSync", DerivedClass<ServerSync, ThreadSync>(vm.GetVM(), "ServerSync").
         Func("beginAuth", &ServerSync::beginAuth).
@@ -253,6 +265,28 @@ void SetPrintCallback(Sqrat::SqratVM& vm, const PrintCallback& callback)
 {
 	std::lock_guard<std::mutex> guard(printCallbacksMutex);
 	printCallbacks[vm.GetVM()] = callback;
+}
+
+void SetScriptName(Sqrat::SqratVM& vm, const std::string& fileName)
+{
+    std::lock_guard<std::mutex> lock(scriptNamesMutex);
+    scriptNames[vm.GetVM()] = fileName;
+}
+
+void ClearVmData(Sqrat::SqratVM& vm)
+{
+    std::lock_guard<std::mutex> lock(scriptNamesMutex);
+    auto it = scriptNames.find(vm.GetVM());
+    if (it != scriptNames.end())
+    {
+        scriptNames.erase(it);
+    }
+}
+
+const std::string GetScriptName(HSQUIRRELVM vm)
+{
+    std::lock_guard<std::mutex> lock(scriptNamesMutex);
+    return scriptNames[vm];
 }
 
 void FlushSquirrelOutput(Sqrat::SqratVM& vm) {

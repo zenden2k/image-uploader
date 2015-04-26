@@ -8,10 +8,11 @@
 #include <Core/ThreadSync.h>
 
 class ServerSync;
-
+class NetworkClient;
 class Script {
     public:
-        Script(const std::string& fileName, ThreadSync* serverSync);
+        Script(const std::string& fileName, ThreadSync* serverSync, bool load = true);
+        virtual ~Script();
         Sqrat::SqratVM& getVM();
         bool isLoaded();
         void InitScriptEngine();
@@ -29,13 +30,14 @@ class Script {
         void FlushSquirrelOutput();
         virtual bool preLoad();
         virtual bool postLoad();
-        const std::string fileName_;
+        std::string fileName_;
         Sqrat::SqratVM vm_;
         Sqrat::Script* m_SquirrelScript;
         time_t m_CreationTime;
         bool m_bIsPluginLoaded;
         std::thread::id owningThread_;
         ThreadSync* sync_;
+        std::unique_ptr<NetworkClient> networkClient_;
     private:
         DISALLOW_COPY_AND_ASSIGN(Script);
 

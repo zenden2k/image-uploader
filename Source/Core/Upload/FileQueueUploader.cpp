@@ -32,11 +32,9 @@
 #include "FileQueueUploaderPrivate.h"
 /* public CFileQueueUploader class */
 
-
-
-CFileQueueUploader::CFileQueueUploader(UploadEngineManager* uploadEngineManager)
+CFileQueueUploader::CFileQueueUploader(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager)
 {
-	_impl = new FileQueueUploaderPrivate(this, uploadEngineManager);
+    _impl = new FileQueueUploaderPrivate(this, uploadEngineManager, scriptsManager);
 }
 
 void CFileQueueUploader::addSession(std::shared_ptr<UploadSession> uploadSession)

@@ -99,6 +99,11 @@ Sqrat::Table GetAppVersion() {
 	return res;
 }
 
+const std::string GetCurrentScriptFileName()
+{
+    return GetScriptName(GetCurrentThreadVM().GetVM());
+}
+
 Sqrat::Object IncludeScript(const std::string& filename)
 {	
 	if ( filename.empty() ) {
@@ -109,7 +114,12 @@ Sqrat::Object IncludeScript(const std::string& filename)
 	if ( filename[0] == '/' || (filename.length()>1 && filename[1]==':' ) ) {
 		absolutePath = filename;
 	} else {
-		absolutePath = GetScriptsDirectory() + filename;
+        std::string dir = IuCoreUtils::ExtractFilePath(GetCurrentScriptFileName());
+        if (dir.empty())
+        {
+            dir = GetScriptsDirectory();
+        }
+        absolutePath = dir  + filename;
 	}
 
 	if ( !IuCoreUtils::FileExists(absolutePath) ) {
@@ -124,7 +134,7 @@ Sqrat::Object IncludeScript(const std::string& filename)
     Sqrat::Script squirrelScript(GetCurrentThreadVM().GetVM());
     squirrelScript.CompileString(scriptText.c_str(),IuCoreUtils::ExtractFileName(absolutePath).c_str());
     squirrelScript.Run();
-	return Sqrat::Object();
+    return squirrelScript;
 }
 
 Json::Value* translationRoot = 0;
@@ -655,6 +665,12 @@ const std::string scriptGetAppLocale() {
 #endif 
 }
 
+std::string GetCurrentThreadId()
+{
+    std::thread::id treadId = std::this_thread::get_id();
+    return IuCoreUtils::ThreadIdToString(treadId);
+}
+
 // older versions of Squirrel Standart Library have broken srand() function
 int pluginRandom()
 {
@@ -672,6 +688,7 @@ const std::string plugGetFileExtension(const std::string& path)
     std::string res = IuCoreUtils::ExtractFileExt(path);
     return res;
 }
+
 /*
 void DebugMessage(const std::string& message, bool isServerResponseBody)
 {
@@ -728,6 +745,8 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("GetFileSize", ScriptGetFileSize)	
         .Func("GetFileSizeDouble", ScriptGetFileSize)
         .Func("WriteLog", scriptWriteLog)	
+        .Func("GetCurrentScriptFileName", GetCurrentScriptFileName)
+        .Func("GetCurrentThreadId", GetCurrentThreadId)
         .Func("MessageBox", scriptMessageBox);	
 
     using namespace IuCoreUtils;

@@ -52,7 +52,7 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
         CScriptUploadEngine(Utf8String pluginName, ServerSync* serverSync, ServerSettingsStruct settings);
 		~CScriptUploadEngine();
 		void setNetworkClient(NetworkClient* nm);
-		bool load(Utf8String fileName, ServerSettingsStruct& params);
+		//bool load(Utf8String fileName, ServerSettingsStruct& params);
 		int getFolderList(CFolderList &FolderList);
 		int createFolder(CFolderItem &parent, CFolderItem &folder);
 		int modifyFolder(CFolderItem &folder);
@@ -71,7 +71,7 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
 	protected:
 		void Log(ErrorInfo::MessageType mt, const std::string& error);
         virtual void PrintCallback(const std::string& output) override;
-        virtual bool preLoad() override;
+        bool preLoad() override;
         bool postLoad() override;
         void clearSqratError();
 		CFolderList m_FolderList;

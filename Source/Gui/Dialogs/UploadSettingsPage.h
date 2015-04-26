@@ -47,7 +47,8 @@ virtual ~CUploadSettingsPage();
 		COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 		COMMAND_HANDLER(IDC_USEPROXYSERVER, BN_CLICKED, OnClickedUseProxy)
 		COMMAND_HANDLER(IDC_NEEDSAUTH, BN_CLICKED, OnClickedUseProxyAuth)
-	END_MSG_MAP()
+        COMMAND_HANDLER(IDC_BROWSESCRIPTBUTTON, BN_CLICKED, OnBnClickedBrowseScriptButton)
+    END_MSG_MAP()
 		
 	BEGIN_DDX_MAP(CScreenshotDlg)
 		DDX_INT(IDC_FILERETRYLIMIT, Settings.FileRetryLimit)
@@ -65,6 +66,7 @@ virtual ~CUploadSettingsPage();
 	LRESULT OnClickedUseProxyAuth(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	virtual bool Apply();
 	void TranslateUI();
+    LRESULT OnBnClickedBrowseScriptButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 };
 
 #endif // IU_GUI_DIALOGS_UPLOADSETTINGSPAGE_H

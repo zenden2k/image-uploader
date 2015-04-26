@@ -6,6 +6,7 @@
 #include "FileQueueUploader.h"
 #include "ServerSync.h"
 #include <mutex>
+#include <Core/Scripting/ScriptsManager.h>
 
 class CUploader;
 class CAbstractUploadEngine;
@@ -38,7 +39,7 @@ public:
 };
 class FileQueueUploaderPrivate : public  TaskAcceptorBase {
 public:
-	FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager);
+    FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager);
 	virtual ~FileQueueUploaderPrivate();
 	void start();
 	virtual void run();
@@ -77,6 +78,7 @@ protected:
 	bool autoStart_;
 	int startFromSession_;
 	UploadEngineManager* uploadEngineManager_;
+    ScriptsManager* scriptsManager_;
 };
 
 #endif

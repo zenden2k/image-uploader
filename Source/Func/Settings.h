@@ -237,6 +237,8 @@ bool UseNewIcon;
 		TrayIconSettingsStruct TrayIconSettings;
 		bool RememberImageServer;
 		bool RememberFileServer;
+        std::string ScriptFileName;
+        bool ExecuteScript;
 protected:
 		ThumbSettingsStruct ThumbSettings;
 public:
@@ -263,7 +265,7 @@ public:
 		bool SendToContextMenu;
 		bool SendToContextMenu_changed;
 		bool QuickUpload;
-
+        bool DeveloperMode;
 		bool IsPortable;
 
 		CString ImageEditorPath;

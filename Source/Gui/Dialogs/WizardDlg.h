@@ -87,7 +87,7 @@ extern CWizardDlg * pWizardDlg;
 extern TCHAR MediaInfoDllPath[MAX_PATH];
 class UploadManager;
 class UploadEngineManager;
-
+class ScriptsManager;
 class CWizardDlg : 
 	public CDialogImpl<CWizardDlg>	, public CUpdateUI<CWizardDlg>,
 		public CMessageFilter, public CIdleHandler, public IDropTarget, public CRegionSelectCallback
@@ -191,6 +191,7 @@ public:
 	CMyEngineList m_EngineList;
 	UploadManager* uploadManager_;
 	UploadEngineManager* uploadEngineManager_;
+    ScriptsManager* scriptsManager_;
 	long m_lRef;
 	bool QuickUploadMarker;
 	CString LastVideoFile;

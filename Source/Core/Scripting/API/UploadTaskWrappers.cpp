@@ -17,8 +17,14 @@ const std::string UploadTaskWrapperBase::role()
 
 void UploadTaskWrapperBase::setRole(const std::string& role)
 {
-	task_->setRole(UploadTask::StringToEnum(role.c_str()));
+	task_->setRole(UploadTask::StringToEnumRole(role.c_str()));
 }
+
+const std::string UploadTaskWrapperBase::type()
+{
+    return UploadTask::EnumToString(task_->type());
+}
+
 
 const std::string UploadTaskWrapperBase::getMimeType()
 {   
@@ -55,6 +61,16 @@ std::string UploadTaskWrapperBase::serverName() const
     return task_->serverName();
 }
 
+const std::string UploadTaskWrapperBase::profileName()
+{
+    return task_->serverProfile().profileName();
+}
+
+void UploadTaskWrapperBase::setStatusText(const std::string& status)
+{
+    task_->setStatusText(status);
+}
+
 std::string UploadTaskWrapperBase::toString()
 {
     return task_->toString();
@@ -63,6 +79,11 @@ std::string UploadTaskWrapperBase::toString()
 void UploadTaskWrapperBase::addChildTask(UploadTaskWrapper child)
 {
     task_->addChildTask(child.task_);
+}
+
+void UploadTaskWrapperBase::addTempFile(const std::string& fileName)
+{
+    task_->addTempFile(fileName);
 }
 
 std::string FileUploadTaskWrapper::getFileName() const
@@ -150,7 +171,7 @@ void UrlShorteningTaskWrapper::setParentUrlType(const std::string& type)
         LOG(ERROR) << BOOST_CURRENT_FUNCTION << std::endl << "this is not a UrlShorteningTask";
         return;
     }
-    urlShorteningTask->setParentUrlType(UrlShorteningTask::StringToEnum(type.c_str())); 
+    urlShorteningTask->setParentUrlType(UrlShorteningTask::StringToEnumParentUrlType(type.c_str())); 
 }
 
 const std::string UrlShorteningTaskWrapper::parentUrlType()
@@ -188,10 +209,16 @@ void RegisterUploadTaskWrappers(Sqrat::SqratVM& vm) {
     HSQUIRRELVM hvm = vm.GetVM();
     root.Bind("UploadTaskBase", Class<UploadTaskWrapperBase>(hvm, "UploadTaskBase").
         Func("role", &UploadTaskWrapperBase::role).
+        Func("type", &UploadTaskWrapperBase::type).
         Func("setRole", &UploadTaskWrapperBase::setRole).
         Func("getMimeType", &UploadTaskWrapperBase::getMimeType).
         Func("getDataLength", &UploadTaskWrapperBase::getDataLength).
-        Func("parentTask", &UploadTaskWrapperBase::parentTask)
+        Func("parentTask", &UploadTaskWrapperBase::parentTask).
+        Func("addTempFile", &UploadTaskWrapperBase::addTempFile).
+        Func("addChildTask", &UploadTaskWrapperBase::addChildTask).
+        Func("serverName", &UploadTaskWrapperBase::serverName).
+        Func("profileName", &UploadTaskWrapperBase::profileName).
+        Func("setStatusText", &UploadTaskWrapperBase::setStatusText)
         );
 
     root.Bind("FileUploadTask", DerivedClass<FileUploadTaskWrapper, UploadTaskWrapperBase>(hvm, "FileUploadTask").

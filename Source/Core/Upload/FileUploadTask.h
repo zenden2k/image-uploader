@@ -3,7 +3,7 @@
 
 #include "UploadTask.h"
 #include <string>
-#include "Core/TempFileDeleter.h"
+
 
 class FileUploadTask: public UploadTask {
 	public:
@@ -19,14 +19,13 @@ class FileUploadTask: public UploadTask {
 		void setDisplayName(const std::string& name);
 		std::string originalFileName() const;
 		virtual void finishTask(Status status = StatusFinished) override;
-		TempFileDeleter* tempFileDeleter(bool create = true);
 		std::string toString() override;
 		std::string title() const override;
 protected:
 		std::string fileName_;
 		std::string originalFileName_;
 		std::string displayName_;
-		TempFileDeleter* tempFileDeleter_;
+		
 };	
 
 #endif

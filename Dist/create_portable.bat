@@ -20,6 +20,7 @@ mkdir %temp_dir%\Data\Favicons
 mkdir %temp_dir%\Data\Scripts
 mkdir %temp_dir%\Data\Scripts\Lang
 mkdir %temp_dir%\Data\Scripts\Utils
+mkdir %temp_dir%\Data\Scripts\UploadFilters
 mkdir %temp_dir%\Data\Servers
 mkdir %temp_dir%\Data\Update
 
@@ -36,7 +37,8 @@ Copy "..\Data\template.txt" %temp_dir%\Data\
 Copy "..\Data\Favicons\*.ico" %temp_dir%\Data\Favicons\
 Copy "..\Data\Scripts\*.nut" %temp_dir%\Data\Scripts\
 Copy "..\Data\Scripts\Lang\*.json" %temp_dir%\Data\Scripts\Lang\
-Copy "..\Data\Scripts\Utils\*.json" %temp_dir%\Data\Scripts\Utils\
+Copy "..\Data\Scripts\Utils\*.nut" %temp_dir%\Data\Scripts\Utils\
+Copy "..\Data\Scripts\UploadFilters\*.nut" %temp_dir%\Data\Scripts\UploadFilters\
 Copy "..\Data\Update\iu_core.xml" %temp_dir%\Data\Update\
 Copy "..\Data\Update\iu_serversinfo.xml" %temp_dir%\Data\Update\
 Copy "..\Data\Update\iu_ffmpeg.xml" %temp_dir%\Data\Update\

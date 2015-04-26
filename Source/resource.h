@@ -2,7 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by Image Uploader.rc
 //
-
 #define IDR_RT_MANIFEST1                1
 #define IDC_STOP                        2
 #define IDC_FILEINFOLABEL               2
@@ -455,6 +454,7 @@
 #define IDC_CHECK3                      1185
 #define IDC_CASCADEDCONTEXTMENU         1185
 #define IDC_ADDSHADOW                   1185
+#define IDC_DEVELOPERMODE               1185
 #define IDC_LEFTBUTTONDOUBLECLICKLABEL  1186
 #define IDC_LEFTBUTTONCLICKLABEL        1187
 #define IDC_MIDDLEBUTTONCLICKLABEL      1188
@@ -528,6 +528,7 @@
 #define IDC_BUTTON1                     1263
 #define IDC_THUMBBACKGROUND             1263
 #define IDC_ADDITEM                     1263
+#define IDC_BROWSESCRIPTBUTTON          1263
 #define IDC_THUMBBACKGROUNDLABEL        1264
 #define IDC_DELETEITEM                  1264
 #define IDC_GOOGLECODELINK              1265
@@ -549,6 +550,7 @@
 #define IDC_OPENSCREENSHOTINEDITORCHECKBOX 1272
 #define IDC_DROPVIDEOFILESTOTHELIST     1272
 #define IDC_SHORTENLINKSCHECKBOX        1272
+#define IDC_EXECUTESCRIPTCHECKBOX       1272
 #define IDC_VIDEOENGINECOMBO            1273
 #define IDC_CHECK5                      1273
 #define IDC_REMEMBERFILESERVERSETTINGS  1273
@@ -608,6 +610,7 @@
 #define IDC_FOLDERICON                  1310
 #define IDC_SAVE                        1310
 #define IDC_FOLDERLABEL                 1311
+#define IDC_SCRIPTFILENAMEEDIT          1311
 #define IDC_IMAGEPROCESSINGPARAMS       1312
 #define IDC_SETTINGSBUTTONPLACEHOLDER   1313
 #define IDC_SETTINGSBUTTONPLACEHOLDER2  1314
@@ -669,7 +672,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        304
 #define _APS_NEXT_COMMAND_VALUE         32805
-#define _APS_NEXT_CONTROL_VALUE         1311
+#define _APS_NEXT_CONTROL_VALUE         1312
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

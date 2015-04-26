@@ -1,5 +1,7 @@
 ﻿#include "ScriptsManager.h"
 #include <Gui/Dialogs/LogWindow.h>
+#include "UploadFilterScript.h"
+#include <Func/Settings.h>
 
 ScriptsManager::ScriptsManager()
 {
@@ -10,14 +12,14 @@ ScriptsManager::~ScriptsManager()
     unloadScripts();
 }
 
-Script* ScriptsManager::getScript(std::string& fileName)
+Script* ScriptsManager::getScript(std::string& fileName, ScriptType type)
 {
     std::lock_guard<std::mutex> lock(scriptsMutex_);
     DWORD curTime = GetTickCount();
     bool UseExisting = false;
     std::thread::id threadId = std::this_thread::get_id();
-    Script* plugin = scripts_[threadId];
-    if (plugin && (GetTickCount() - plugin->getCreationTime() < 1000 * 60 * 5))
+    Script* plugin = scripts_[threadId][fileName];
+    if (plugin && (GetTickCount() - plugin->getCreationTime() < (Settings.DeveloperMode ? 3000 : 1000 * 60 * 5 )))
         UseExisting = true;
 
     if ( plugin && UseExisting ) {
@@ -32,9 +34,17 @@ Script* ScriptsManager::getScript(std::string& fileName)
         scripts_.erase(threadId);
     }
     ServerSync* serverSync = getServerSync(fileName);
-    Script* newPlugin = new Script(fileName, serverSync);
+    Script* newPlugin;
+    if (type == TypeUploadFilterScript)
+    {
+        newPlugin = new UploadFilterScript(fileName, serverSync);
+    } else
+    {
+        newPlugin  = new Script(fileName, serverSync);
+    }
+  
     if (newPlugin->isLoaded()) {
-        scripts_[threadId] = newPlugin;
+        scripts_[threadId][fileName] = newPlugin;
         return newPlugin;
     }
     else {
@@ -47,7 +57,9 @@ void ScriptsManager::unloadScripts()
 {
     std::lock_guard<std::mutex> lock(scriptsMutex_);
     for (auto it = scripts_.begin(); it != scripts_.end(); ++it) {
-        delete it->second; 
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+            delete it2->second;
+        }
     }
     scripts_.clear();
 }
@@ -58,7 +70,9 @@ void ScriptsManager::clearThreadData()
     std::thread::id threadId = std::this_thread::get_id();
     auto it = scripts_.find(threadId);
     if (it != scripts_.end()) {
-        delete it->second;
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+            delete it2->second;
+        }
         scripts_.erase(it);
     }
 }

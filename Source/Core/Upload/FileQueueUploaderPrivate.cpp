@@ -78,7 +78,7 @@ bool TaskAcceptorBase::canAcceptUploadTask(UploadTask* task)
 	return false;
 }
 
-FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager) {
+FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager) {
 	m_nThreadCount = 3;
 	m_NeedStop = false;
 	m_IsRunning = false;
@@ -86,6 +86,7 @@ FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUplo
 	queueUploader_ = queueUploader;
 	startFromSession_ = 0;
 	uploadEngineManager_ = uploadEngineManager;
+    scriptsManager_ = scriptsManager;
 	autoStart_ = true;
 }
 
@@ -297,10 +298,15 @@ void FileQueueUploaderPrivate::run()
 		mutex_.unlock();
 
 		//uploader.onProgress.bind(this, &FileQueueUploaderPrivate::onProgress);
-
+        bool res = true;
 		for (int i = 0; i < filters_.size(); i++) {
-			filters_[i]->PreUpload(it.get()); // ServerProfile can be changed in PreUpload filters
+            res = res && filters_[i]->PreUpload(it.get()); // ServerProfile can be changed in PreUpload filters
 		}
+        if (!res)
+        {
+            it->finishTask(UploadTask::StatusFailure);
+            continue;
+        }
         std::string serverName = it->serverName();
         std::string  profileName = it->serverProfile().profileName();
 
@@ -314,15 +320,15 @@ void FileQueueUploaderPrivate::run()
 		
 		uploader.setUploadEngine(engine);
 		uploader.onNeedStop.bind(this, &FileQueueUploaderPrivate::onNeedStopHandler);
-
+        it->setStatusText(_("Starting upload"));
 		//LOG(ERROR) << "uploader.Upload(it) " << (fut ? fut->getFileName() : "NULL");
-		bool res = uploader.Upload(it);
+		res = uploader.Upload(it);
 		//LOG(ERROR) << "uploader.Upload(it) finished " << (fut ? fut->getFileName() : "NULL");
-		
+        it->setUploadSuccess(res);
 #ifndef IU_CLI
 		serverThreadsMutex_.lock();
 #endif
-		if (!res && uploader.isFatalError())
+        if (!res && uploader.isFatalError())
 		{
             session->setFatalErrorForServer(serverName, profileName);
 			//serverThreads_[serverName].fatalError = true;
@@ -362,6 +368,8 @@ void FileQueueUploaderPrivate::run()
 
 	mutex_.unlock();
 	uploadEngineManager_->clearThreadData();
+    scriptsManager_->clearThreadData();
+    
 	if (!m_nRunningThreads)
 	{
 		m_IsRunning = false;

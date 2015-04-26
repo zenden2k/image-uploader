@@ -9,15 +9,15 @@
 class ServerSyncPrivate: public ThreadSyncPrivate
 {
 public:
-
 	std::mutex loginMutex_;
-    std::atomic<bool> authPerformed_ptr;
+    std::atomic<bool> authPerformed_;
     std::atomic<bool> authPerformedSuccess_;
 };
 ServerSync::ServerSync() : ThreadSync(new ServerSyncPrivate())
 {
     Q_D(ServerSync);
-    d->authPerformed_ptr = false;
+    d->authPerformed_ = false;
+    d->authPerformedSuccess_ = false;
 }
 
 bool ServerSync::beginAuth()
@@ -50,12 +50,12 @@ bool ServerSync::endAuth()
 void ServerSync::setAuthPerformed(bool success)
 {
     Q_D(ServerSync);
-    d->authPerformed_ptr = true;
+    d->authPerformed_ = true;
     d->authPerformedSuccess_ = success;
 }
 
 bool ServerSync::isAuthPerformed()
 {
     Q_D(ServerSync);
-    return d->authPerformed_ptr;
+    return d->authPerformed_;
 }

@@ -684,6 +684,12 @@
     <ClInclude Include="Source\Core\ThreadSync.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\Upload\Filters\UserFilter.h">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\UploadFilterScript.h">
+      <Filter>Source Files\Core\Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1595,6 +1601,12 @@
     </ClCompile>
     <ClCompile Include="Source\Core\ThreadSync.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\Filters\UserFilter.cpp">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\UploadFilterScript.cpp">
+      <Filter>Source Files\Core\Scripting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

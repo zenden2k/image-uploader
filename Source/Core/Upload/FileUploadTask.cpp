@@ -16,7 +16,7 @@ FileUploadTask::FileUploadTask(const std::string& fileName, const std::string& d
 
 FileUploadTask::~FileUploadTask()
 {
-	delete tempFileDeleter_;
+
 }
 
 UploadTask::Type FileUploadTask::type() const {
@@ -67,15 +67,6 @@ void FileUploadTask::finishTask(Status status)
 		parentTask_->uploadResult()->thumbUrl = uploadResult_.directUrl;
 	}
 	UploadTask::finishTask(status);
-}
-
-TempFileDeleter* FileUploadTask::tempFileDeleter(bool create)
-{
-	if (!tempFileDeleter_ && create )
-	{
-		tempFileDeleter_ = new TempFileDeleter();
-	}
-	return tempFileDeleter_;
 }
 
 std::string FileUploadTask::toString()

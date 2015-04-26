@@ -7,6 +7,7 @@
 #include "Core/Logging.h"
 #include "ServerSync.h"
 #include "Core/Scripting/API/ScriptAPI.h"
+#include <Func/Settings.h>
 
 UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList)
 {
@@ -75,7 +76,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
 	ServerSettingsStruct& params = serverProfile.serverSettings();
 	std::thread::id threadId = std::this_thread::get_id();
 	CScriptUploadEngine* plugin = m_plugins[threadId][serverName];
-	if (plugin && (GetTickCount() - plugin->getCreationTime() < 1000 * 60 * 5))
+    if (plugin && (GetTickCount() - plugin->getCreationTime() <(Settings.DeveloperMode ? 3000 : 1000 * 60 * 5)))
 		UseExisting = true;
 
 	if (plugin && UseExisting && plugin->name() == pluginName && plugin->serverSettings().authData.Login == params.authData.Login) {

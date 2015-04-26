@@ -23,6 +23,7 @@
 
 #include "wizarddlg.h"
 #include "Gui/GuiTools.h"
+#include <Func/WinUtils.h>
 
 // CUploadSettingsPage
 CUploadSettingsPage::CUploadSettingsPage()
@@ -53,6 +54,7 @@ void CUploadSettingsPage::TranslateUI()
 	TRC(IDC_RETRIES2LABEL, "Кол-во попыток для одной операции:");
 	TRC(IDC_UPLOADBUFFERLABEL, "Размер буфера отдачи:");
 	TRC(IDC_MAXTHREADSLABEL, "Число потоков");
+    TRC(IDC_EXECUTESCRIPTCHECKBOX, "Выполнять Squirrel-скрипт для каждой задачи (файла)");
 }
 	
 LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -89,6 +91,8 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 	SetDlgItemInt(IDC_MAXTHREADSEDIT, Settings.MaxThreads);
 	// Уведомление элементов
 	OnClickedUseProxy(BN_CLICKED, IDC_USEPROXYSERVER, 0, temp);
+    GuiTools::SetCheck(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX, Settings.ExecuteScript);
+    SetDlgItemText(IDC_SCRIPTFILENAMEEDIT, IuCoreUtils::Utf8ToWstring(Settings.ScriptFileName).c_str());
 
 	return 1;  // Let the system set the focus
 }
@@ -148,5 +152,38 @@ bool CUploadSettingsPage::Apply()
 	{
 		Settings.MaxThreads = 3;
 	}
+
+    GuiTools::GetCheck(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX, Settings.ExecuteScript);
+    CString scriptFile = GuiTools::GetDlgItemText(m_hWnd, IDC_SCRIPTFILENAMEEDIT);
+
+    if (!WinUtils::FileExists(scriptFile))
+    {
+        CString message;
+        message.Format(TR("Файл %s не существует"), scriptFile);
+        MessageBox(message, APPNAME);
+        return false;
+    }
+    Settings.ScriptFileName = IuCoreUtils::WstringToUtf8((LPCTSTR)scriptFile);
+
 	return true;
+}
+
+LRESULT CUploadSettingsPage::OnBnClickedBrowseScriptButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    TCHAR Buf[MAX_PATH * 4];
+    GuiTools::SelectDialogFilter(Buf, sizeof(Buf) / sizeof(TCHAR), 2,
+        CString(TR(".nut")),
+        _T("*.nut;"),
+        TR("Все файлы"),
+        _T("*.*"));
+
+    CFileDialog fd(true, 0, 0, 4 | 2, Buf, m_hWnd);
+   /* CString s;
+    s = WinUtils::GetAppFolder();
+    fd.m_ofn.lpstrInitialDir = s;*/
+    if (fd.DoModal() != IDOK || !fd.m_szFileName[0]) return 0;
+
+    SetDlgItemText(IDC_SCRIPTFILENAMEEDIT, fd.m_szFileName);
+
+    return 0;
 }

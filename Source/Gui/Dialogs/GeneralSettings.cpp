@@ -75,7 +75,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	TRC(IDC_AUTOSHOWLOG, "Автоматически показывать окно лога в случае ошибок");
 	TRC(IDC_CONFIRMONEXIT, "Спрашивать подтверждение при выходе");
 	TRC(IDC_DROPVIDEOFILESTOTHELIST, "Добавлять видеофайлы в список после перетаскивания");
-	
+    TRC(IDC_DEVELOPERMODE, "Режим разработчика");
 	SetDlgItemText(IDC_IMAGEEDITORPATH, Settings.ImageEditorPath);
 	
 
@@ -99,7 +99,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_SETCHECK, Settings.ConfirmOnExit);
 	SendDlgItemMessage(IDC_AUTOSHOWLOG, BM_SETCHECK, Settings.AutoShowLog);
 	GuiTools::SetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST, Settings.DropVideoFilesToTheList);
-	
+    GuiTools::SetCheck(m_hWnd, IDC_DEVELOPERMODE, Settings.DeveloperMode);
 	return 1;  // Let the system set the focus
 }
 
@@ -141,6 +141,7 @@ bool CGeneralSettings::Apply()
 	Settings.AutoShowLog = SendDlgItemMessage(IDC_AUTOSHOWLOG,  BM_GETCHECK )==BST_CHECKED;
 	Settings.ConfirmOnExit = SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_GETCHECK)==BST_CHECKED;
 	Settings.DropVideoFilesToTheList = GuiTools::GetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST);
+    GuiTools::GetCheck(m_hWnd, IDC_DEVELOPERMODE, Settings.DeveloperMode);
 	
 	return true;
 }

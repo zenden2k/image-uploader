@@ -632,11 +632,13 @@
     <ClInclude Include="Source\Core\Scripting\Script.h" />
     <ClInclude Include="Source\Core\Scripting\ScriptsManager.h" />
     <ClInclude Include="Source\Core\Scripting\Squirrelnc.h" />
+    <ClInclude Include="Source\Core\Scripting\UploadFilterScript.h" />
     <ClInclude Include="Source\Core\TempFileDeleter.h" />
     <ClInclude Include="Source\Core\ThreadSync.h" />
     <ClInclude Include="Source\Core\Upload\FileQueueUploaderPrivate.h" />
     <ClInclude Include="Source\Core\Upload\Filters\ImageConverterFilter.h" />
     <ClInclude Include="Source\Core\Upload\Filters\UrlShorteningFilter.h" />
+    <ClInclude Include="Source\Core\Upload\Filters\UserFilter.h" />
     <ClInclude Include="Source\Core\Upload\ServerProfile.h" />
     <ClInclude Include="Source\Core\Upload\ServerSync.h" />
     <ClInclude Include="Source\Core\Upload\UploadEngineManager.h" />
@@ -947,11 +949,13 @@
     <ClCompile Include="Source\Core\Scripting\API\WebBrowserPrivate_win.cpp" />
     <ClCompile Include="Source\Core\Scripting\Script.cpp" />
     <ClCompile Include="Source\Core\Scripting\ScriptsManager.cpp" />
+    <ClCompile Include="Source\Core\Scripting\UploadFilterScript.cpp" />
     <ClCompile Include="Source\Core\TempFileDeleter.cpp" />
     <ClCompile Include="Source\Core\ThreadSync.cpp" />
     <ClCompile Include="Source\Core\Upload\FileQueueUploaderPrivate.cpp" />
     <ClCompile Include="Source\Core\Upload\Filters\ImageConverterFilter.cpp" />
     <ClCompile Include="Source\Core\Upload\Filters\UrlShorteningFilter.cpp" />
+    <ClCompile Include="Source\Core\Upload\Filters\UserFilter.cpp" />
     <ClCompile Include="Source\Core\Upload\ServerProfile.cpp" />
     <ClCompile Include="Source\Core\Upload\ServerSync.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadEngineManager.cpp" />

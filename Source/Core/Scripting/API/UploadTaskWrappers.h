@@ -18,7 +18,8 @@ class UploadTaskWrapperBase
 public:
 	UploadTaskWrapperBase();
 	const std::string role();
-	void setRole(const std::string& role);   
+	void setRole(const std::string& role);  
+    const std::string type();
 	const std::string getMimeType();
 	int64_t getDataLength();
 	UploadTaskWrapper parentTask();
@@ -26,8 +27,12 @@ public:
 	int childCount();
 	UploadResult* uploadResult();
 	std::string serverName() const;
+    const std::string profileName();
+    void setStatusText(const std::string& status);
+
 	std::string toString();
 	void addChildTask(UploadTaskWrapper child);
+    void addTempFile(const std::string& fileName);
 protected:
 	std::shared_ptr<UploadTask> task_;
 };

@@ -135,7 +135,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_ALL, IID_ITaskbarList3, (void**)&ptl);
 	#endif
 
-	TRC(IDC_COMMONPROGRESS, "Общий прогресс:");
+	TRC(IDC_COMMONPROGRESS, "Прогресс:");
 	bool IsLastVideo = lstrlen(MediaInfoDllPath)!=0;
 
 	CVideoGrabberPage *vg = static_cast<CVideoGrabberPage*>(WizardDlg->Pages[1]);
@@ -702,13 +702,14 @@ void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
 void CUploadDlg::OnUploaderStatusChanged(UploadTask* task)
 {
 	UploadProgress* progress = task->progress();
-	FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(task->role() == UploadTask::DefaultRole ? task->userData() : task->parentTask()->userData());
-	if (!fps)
-	{
-		return;
-	}
+    FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(task->role() == UploadTask::DefaultRole ? task->userData() : task->parentTask()->userData());
+    if (!fps)
+    {
+        return;
+    }
 	FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
 	if (fileTask) {
+        
 		CString statusText = /*UploaderStatusToString(progress->statusType, progress->stage, progress->statusText)*/ IuCoreUtils::Utf8ToWstring(progress->statusText).c_str();
 
 		bool isThumb = task->role() == UploadTask::ThumbRole;

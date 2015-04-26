@@ -29,10 +29,30 @@ public:
 
         try
         {
+            #ifdef _WIN32
+            bp::win32_context ctx;
+            STARTUPINFO si;
+            if (hidden_ )
+            {
+                
+                ::ZeroMemory(&si, sizeof(si));
+                si.cb = sizeof(si);
+                si.wShowWindow = SW_HIDE;
+                si.dwFlags = STARTF_USESHOWWINDOW;
+                ctx.startupinfo = &si;
+            }
+            
+            #else
             bp::context ctx;
+            #endif
+         
             ctx.stdout_behavior = readProcessOutput_ ? bp::capture_stream() : bp::silence_stream();
             ctx.environment = boost::process::self::get_environment();
+            #ifdef _WIN32
+            child_.reset(new bp::win32_child(bp::win32_launch(executable_, args, ctx)));
+            #else
             child_.reset(new bp::child(bp::launch(executable_, args, ctx)));
+            #endif
         }
         catch (std::exception & ex){
             LOG(ERROR) << IuCoreUtils::SystemLocaleToUtf8(ex.what());
@@ -46,7 +66,22 @@ public:
     {
         try
         {
-            bp::context ctx;
+            #ifdef _WIN32
+                        bp::win32_context ctx;
+                        STARTUPINFO si;
+                        if (hidden_)
+                        {
+
+                            ::ZeroMemory(&si, sizeof(si));
+                            si.cb = sizeof(si);
+                            si.wShowWindow = SW_HIDE;
+                            si.dwFlags = STARTF_USESHOWWINDOW;
+                            ctx.startupinfo = &si;
+                        }
+
+            #else
+                        bp::context ctx;
+            #endif
             ctx.stdout_behavior = readProcessOutput_ ? bp::capture_stream() : bp::silence_stream();
             ctx.environment = boost::process::self::get_environment();
             child_.reset(new bp::child(bp::launch_shell(command, ctx)));
@@ -97,6 +132,7 @@ public:
     bool readProcessOutput_;
     std::unique_ptr<bp::child> child_;
     std::string outputEncoding_;
+    bool hidden_;
 };
 
 Process::Process()
@@ -161,7 +197,7 @@ const std::string Process::readOutput()
 
 void Process::setHidden(bool hidden)
 {
-
+    d_->hidden_ = true;
 }
 
 void Process::setCaptureOutput(bool read)
@@ -184,6 +220,7 @@ void Process::init()
     d_.reset(new ProcessPrivate());
     d_->readProcessOutput_ = false;
     d_->readProcessOutput_ = false;
+    d_->hidden_ = false;
 }
 
 void RegisterProcessClass(Sqrat::SqratVM& vm)
@@ -199,7 +236,9 @@ void RegisterProcessClass(Sqrat::SqratVM& vm)
         .Func("findExecutableInPath", &Process::findExecutableInPath)
         .Func("launchInShell", &Process::launchInShell)
         .Func("readOutput", &Process::readOutput)
-        .Func("setReadOutput", &Process::setCaptureOutput)
+        .Func("setCaptureOutput", &Process::setCaptureOutput)
+        .Func("waitForExit", &Process::waitForExit)
+        .Func("setHidden", &Process::setHidden)
         .Func("start", &Process::start)
     );
 

@@ -32,7 +32,7 @@
             default: return "[Unknown " BOOST_PP_STRINGIZE(name) "]";         \
 		        }                                                             \
 	    }                                                                     \
-		inline modifier name StringToEnum(const char* v)                      \
+		inline modifier name StringToEnum##name(const char* v)                      \
 		{                                                                     \
 			static std::map<std::string, name> enumMap = \
 {\

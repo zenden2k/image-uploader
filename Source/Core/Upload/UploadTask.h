@@ -8,6 +8,7 @@
 #include "Core/Network/NetworkClient.h"
 #include "Core/Utils/EnumUtils.h"
 #include "ServerProfile.h"
+#include "Core/TempFileDeleter.h"
 #include "CommonTypes.h"
 #include <mutex>
 #include <deque>
@@ -54,10 +55,9 @@ class UploadTask {
 		virtual ~UploadTask();
 
         DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(Role, (DefaultRole)(ThumbRole)(UrlShorteningRole));
-
+        DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(Type, (TypeFile)(TypeUrl));
 		//enum Role { DefaultRole, ThumbRole, UrlShorteningRole };
 		enum Status { StatusInQueue, StatusRunning, StatusStopped, StatusFinished, StatusFailure };
-		enum Type { TypeFile, TypeUrl };
 		typedef fastdelegate::FastDelegate2<UploadTask*, bool> TaskFinishedCallback;
 
 		virtual Type type() const = 0;
@@ -90,6 +90,7 @@ class UploadTask {
 		void setUserData(void* data);
 		void* userData() const;
 		bool uploadSuccess(bool withChilds = true);
+        void setUploadSuccess(bool success);
 		Role role() const;
 		void setRole(Role role);
 		bool shorteningStarted() const;
@@ -102,6 +103,8 @@ class UploadTask {
         Status status() const;
 		virtual std::string toString() = 0;
         static std::string UploaderStatusToString(StatusType status, int actionIndex, std::string param);
+        TempFileDeleter* tempFileDeleter(bool create = true);
+        void addTempFile(const std::string& fileName);
 		friend class CUploader;
 
 	protected:
@@ -131,7 +134,9 @@ class UploadTask {
 		std::vector<TaskFinishedCallback> taskFinishedCallbacks_;
 		bool shorteningStarted_;
 		volatile bool stopSignal_;
+        bool uploadSuccess_;
 		Status status_;
+        TempFileDeleter* tempFileDeleter_;
 };	
 
 #endif

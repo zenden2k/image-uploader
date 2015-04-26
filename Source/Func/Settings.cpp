@@ -360,8 +360,9 @@ CSettings::CSettings()
 	UseNewIcon = false;
 	RememberImageServer = true;
     RememberFileServer = true;
-	
+    ExecuteScript = false;
 	ShowUploadErrorDialog = true;
+    DeveloperMode = false;
 
 	ImageEditorPath = _T("mspaint.exe \"%1\"");
 	AutoCopyToClipboard = false;
@@ -565,6 +566,9 @@ CSettings::CSettings()
 	upload.n_bind(CodeType);
 	upload.n_bind(ShowUploadErrorDialog);
 	upload.n_bind(MaxThreads);
+    upload.n_bind(ScriptFileName);
+    upload.n_bind(ExecuteScript);
+    upload.n_bind(DeveloperMode);
 	
 	imageServer.bind(upload["Server"]);
 	fileServer.bind(upload["FileServer"]);

@@ -328,7 +328,7 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
             serverSync_->beginAuth();
             if (!serverSync_->isAuthPerformed()) {
                 Result = DoUploadAction(Current, false);
-                serverSync_->setAuthPerformed(Result);
+               // serverSync_->setAuthPerformed(Result);
             }
             serverSync_->endAuth();
         }

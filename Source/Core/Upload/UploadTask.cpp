@@ -4,8 +4,14 @@
 
 UploadTask::UploadTask()
 {
-	parentTask_ = 0;
-	init();
+    init();
+    parentTask_ = 0;
+}
+
+UploadTask::UploadTask(UploadTask* parentTask)
+{
+    init();
+    parentTask_ = parentTask;
 }
 
 void UploadTask::init()
@@ -17,6 +23,8 @@ void UploadTask::init()
 	shorteningStarted_ = false;
 	stopSignal_ = false;
 	currentUploadEngine_ = 0;
+    tempFileDeleter_ = 0;
+    uploadSuccess_ = false;
 }
 
 void UploadTask::childTaskFinished(UploadTask* child)
@@ -72,13 +80,9 @@ bool UploadTask::stopSignal() const
 	return stopSignal_;
 }
 
-UploadTask::UploadTask(UploadTask* parentTask)
-{
-	parentTask_ = parentTask;
-	init();
-}
-UploadTask::~UploadTask() {
 
+UploadTask::~UploadTask() {
+    delete tempFileDeleter_;
 }
 
 UploadTask* UploadTask::parentTask() const
@@ -154,6 +158,7 @@ void UploadTask::finishTask(Status status)
 
 void UploadTask::addChildTask(std::shared_ptr<UploadTask> child)
 {
+    child->setSession(session_);
     child->parentTask_ = this;
 	tasksMutex_.lock();
 	childTasks_.push_back(child);
@@ -228,7 +233,7 @@ bool UploadTask::uploadSuccess(bool withChilds)
 	int count = childTasks_.size();
 	if (!count || !withChilds )
 	{
-		return status_ == StatusFinished;
+        return uploadSuccess_;
 	}
 	std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
 	for (int i = 0; i <count; i++)
@@ -238,9 +243,13 @@ bool UploadTask::uploadSuccess(bool withChilds)
 			return false;
 		}
 	}
-    return  status_ == StatusFinished;
+    return  uploadSuccess_;
 }
 
+void UploadTask::setUploadSuccess(bool success)
+{
+    uploadSuccess_ = true;
+}
 
 UploadTask::Role UploadTask::role() const
 {
@@ -433,5 +442,20 @@ std::string UploadTask::UploaderStatusToString(StatusType status, int actionInde
     }
     return IuCoreUtils::WstringToUtf8((LPCTSTR)result);
 };
+
+
+TempFileDeleter* UploadTask::tempFileDeleter(bool create)
+{
+    if (!tempFileDeleter_ && create)
+    {
+        tempFileDeleter_ = new TempFileDeleter();
+    }
+    return tempFileDeleter_;
+}
+
+void UploadTask::addTempFile(const std::string& fileName)
+{
+    tempFileDeleter(true)->addFile(fileName);
+}
 
 /*void setCurrentUploadEngine(CAbstractUploadEngine* currentUploadEngine);*/

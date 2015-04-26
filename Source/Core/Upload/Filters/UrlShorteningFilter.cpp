@@ -9,25 +9,25 @@ bool UrlShorteningFilter::PreUpload(UploadTask* task)
 
 bool UrlShorteningFilter::PostUpload(UploadTask* task)
 {
-	if (task->parentTask() || !task->uploadSuccess(false) || task->shorteningStarted())
+	if (task->parentTask() || (!task->uploadSuccess(false) )|| task->shorteningStarted())
 	{
-		return false;
+		return true;
 	}
 	if (!task->serverProfile().shortenLinks())
 	{
-		return false;
+        return true;
 	}
 	ServerProfile & server = task->urlShorteningServer();
 	if (server.isNull())
 	{
 		LOG(ERROR) << "Shortening server not set";
-		return false;
+        return true;
 	}
 
 	FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
 	std::string directUrl = fileTask->uploadResult()->directUrl;
 	std::string downloadUrl = fileTask->uploadResult()->downloadUrl;
-	bool res = false;
+    bool res = true;
 	if (!directUrl.empty()) {
 		std::shared_ptr<UrlShorteningTask> shorteningTask(new UrlShorteningTask(directUrl, task));
 		shorteningTask->setServerProfile(server);

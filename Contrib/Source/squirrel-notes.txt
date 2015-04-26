@@ -1,3 +1,4 @@
+Squirrel MUST be compiled with 64 bit integers.
 Important patches for squirrel and sqrat:
 
 Added function sq_is_closed(HSQUIRRELVM vm) to sqapi.cpp; 
@@ -36,3 +37,5 @@ But I have no idea how to get current VM inside RemoveFromObjectTable() so I jus
 ~~~~~~
 
 Seems to be fixed in SVN https://sourceforge.net/p/scrat/code/ci/master/tree/include/sqrat/sqratClassType.h
+
+All functions which use printf and pf ( printfunction) and %d, should convert int64 to int.

@@ -4,11 +4,16 @@
 #include "Func/Base.h"
 #include "Func/LocalFileCache.h"
 #include "Core/Upload/FileUploadTask.h"
+#include "Core/Upload/Filters/UserFilter.h"
+#include "Core/Scripting/ScriptsManager.h"
 #include <Func/Settings.h>
 
-UploadManager::UploadManager(UploadEngineManager* uploadEngineManager) : CFileQueueUploader(uploadEngineManager)
+UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager) : 
+                                                    CFileQueueUploader(uploadEngineManager, scriptsManager), 
+                                                    userFilter(scriptsManager)
 {
 	addUploadFilter(&imageConverterFilter);
+    addUploadFilter(&userFilter);
 	addUploadFilter(&urlShorteningFilter);
 	setMaxThreadCount(Settings.MaxThreads);
 	Settings.addChangeCallback(CSettings::ChangeCallback(this, &UploadManager::settingsChanged));

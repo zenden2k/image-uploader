@@ -55,6 +55,7 @@
 #include "Core/Images/Utils.h"
 #include "Core/Upload/UploadManager.h"
 #include "Core/Upload/UploadEngineManager.h"
+#include "Core/Scripting/ScriptsManager.h"
 #include "Func/myutils.h"
 
 
@@ -77,8 +78,9 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 	_EngineList = &m_EngineList;
 	m_bScreenshotFromTray = false;
 	serversChanged_ = false;
+    scriptsManager_ = new ScriptsManager();
 	uploadEngineManager_ = new UploadEngineManager(&m_EngineList);
-	uploadManager_ = new UploadManager(uploadEngineManager_);
+    uploadManager_ = new UploadManager(uploadEngineManager_, scriptsManager_);
 	floatWnd.setUploadManager(uploadManager_);
 	floatWnd.setUploadEngineManager(uploadEngineManager_);
 }

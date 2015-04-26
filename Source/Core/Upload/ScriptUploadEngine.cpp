@@ -46,10 +46,12 @@
 const Utf8String IuNewFolderMark = "_iu_create_folder_";
 
 CScriptUploadEngine::CScriptUploadEngine(Utf8String fileName, ServerSync* serverSync, ServerSettingsStruct settings) : 
-                                                                                CAbstractUploadEngine(serverSync), Script(fileName, serverSync)
+                                                                                CAbstractUploadEngine(serverSync), Script(fileName, serverSync,false)
 {
-    m_sName = IuCoreUtils::ExtractFileName(fileName);
+    load(fileName);
+    m_sName = IuCoreUtils::ExtractFileNameNoExt(fileName);
     setServerSettings(settings);
+    
 }
 
 CScriptUploadEngine::~CScriptUploadEngine()
@@ -164,6 +166,7 @@ bool CScriptUploadEngine::preLoad()
         ServerSettingsStruct* par = &m_ServersSettings;
         Sqrat::RootTable& rootTable = vm_.GetRootTable();
 		rootTable.SetInstance("ServerParams", par);
+        rootTable.SetInstance("Sync", serverSync_);
 
 	}
     catch (std::exception& e)
