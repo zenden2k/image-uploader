@@ -2,7 +2,7 @@
 #define IU_CORE_HTMLDOCUMENT_H 
 #include "Core/Utils/CoreTypes.h"
 #include "HtmlElement.h"
-#include "Core/Squirrelnc.h"
+#include "Core/Scripting/Squirrelnc.h"
 namespace ScriptAPI {;
 
 class HtmlDocumentPrivate;

@@ -21,7 +21,7 @@
 #ifndef IU_CORE_HTMLELEMENT_H
 #define IU_CORE_HTMLELEMENT_H 
 #include "Core/Utils/CoreTypes.h"
-#include "Core/Squirrelnc.h"
+#include "Core/Scripting/Squirrelnc.h"
 
 namespace ScriptAPI {;
 

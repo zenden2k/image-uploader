@@ -13,7 +13,7 @@
 #include <security.h>
 #include <secext.h>
 #include <Lm.h>
-#include "Core/ScriptAPI/HtmlDocumentPrivate_win.h"
+#include "Core/Scripting/API/HtmlDocumentPrivate_win.h"
 
 
 // CAddDirectoryServerDialog

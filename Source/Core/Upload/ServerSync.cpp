@@ -1,21 +1,30 @@
 ﻿#include "ServerSync.h"
+
 #include "Core/Logging.h"
+#include "Core/ThreadSyncPrivate.h"
 #include <map>
-class ServerSyncPrivate
+#include <atomic>
+
+
+class ServerSyncPrivate: public ThreadSyncPrivate
 {
 public:
-	std::map<std::string, std::string> data_;
-	std::mutex dataMutex_;
+
 	std::mutex loginMutex_;
+    std::atomic<bool> authPerformed_ptr;
+    std::atomic<bool> authPerformedSuccess_;
 };
-ServerSync::ServerSync() : d_(new ServerSyncPrivate())
+ServerSync::ServerSync() : ThreadSync(new ServerSyncPrivate())
 {
+    Q_D(ServerSync);
+    d->authPerformed_ptr = false;
 }
 
-bool ServerSync::beginLogin()
+bool ServerSync::beginAuth()
 {
+    Q_D(ServerSync);
 	try {
-		d_->loginMutex_.lock();
+		d->loginMutex_.lock();
 	} catch (std::exception ex) {
 		LOG(ERROR) << "ServerSync::beginLogin exception: " << ex.what();
 		return false;
@@ -23,11 +32,12 @@ bool ServerSync::beginLogin()
 	return true;
 }
 
-bool ServerSync::endLogin()
+bool ServerSync::endAuth()
 {
+    Q_D(ServerSync);
 	try
 	{
-		d_->loginMutex_.unlock();
+		d->loginMutex_.unlock();
 	} catch (std::exception ex)
 	{
 		LOG(ERROR) << "ServerSync::endLogin exception: " << ex.what();
@@ -37,18 +47,15 @@ bool ServerSync::endLogin()
 	return true;
 }
 
-void ServerSync::setValue(const std::string& name, const std::string& value)
+void ServerSync::setAuthPerformed(bool success)
 {
-	std::lock_guard<std::mutex> lock(d_->dataMutex_);
-	d_->data_[name] = value;
+    Q_D(ServerSync);
+    d->authPerformed_ptr = true;
+    d->authPerformedSuccess_ = success;
 }
 
-const std::string ServerSync::getValue(const std::string& name)
+bool ServerSync::isAuthPerformed()
 {
-	std::lock_guard<std::mutex> lock(d_->dataMutex_);
-	auto it = d_->data_.find(name);
-	if (it == d_->data_.end()) {
-		return std::string();
-	} 
-	return it->second;
+    Q_D(ServerSync);
+    return d->authPerformed_ptr;
 }

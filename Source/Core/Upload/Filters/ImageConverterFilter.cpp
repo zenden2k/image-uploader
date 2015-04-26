@@ -5,6 +5,7 @@
 #include "Core/Images/ImageConverter.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Func/myutils.h"
+#include "Core/CommonDefs.h"
 
 bool ImageConverterFilter::PreUpload(UploadTask* task)
 {
@@ -35,6 +36,7 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
 		LOG(ERROR) << TR("Не могу загрузить файл миниатюры!") + CString(_T("\r\n")) + thumbTemplateFileName;
 		return false;
 	}
+    task->setStatusText(_("Preparing image..."));
 	imageConverter.setEnableProcessing(imageUploadParams.ProcessImages);
 	imageConverter.setImageConvertingParams(Settings.ConvertProfiles[imageUploadParams.ImageProfileName]);
 	imageConverter.setThumbCreatingParams(imageUploadParams.getThumb());

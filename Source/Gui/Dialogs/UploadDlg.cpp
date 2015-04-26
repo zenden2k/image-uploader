@@ -28,9 +28,7 @@
 #include "Func/Settings.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/GuiTools.h"
-#include "Func/LocalFileCache.h"
 #include "Core/3rdpart/FastDelegate.h"
-#include "Core/Upload/UrlShorteningTask.h"
 #include "Core/Upload/FileQueueUploader.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/MyUtils.h"
@@ -69,32 +67,6 @@ bool CTempFilesDeleter::Cleanup()
 	return true;
 }*/
 
-
-CString UploaderStatusToString(StatusType status, int actionIndex, std::string param)
-{
-	CString result;
-	switch(status)
-	{
-		case stWaitingAnswer:
-			result = TR("Ожидание ответа от сервера...");
-			break;
-		case stCreatingFolder:
-			result = CString(TR("Создание папки \"")) + Utf8ToWstring(param).c_str() + _T("\"...");
-			break;
-		case stUploading:
-			result = TR("Отправка файла на сервер...");
-			break;
-		case stAuthorization:
-			result = TR("Авторизация на сервере...");
-			break;
-		case stPerformingAction:
-			result.Format(TR("Выполняю действие #%d..."), actionIndex);
-			break;
-		case stUserDescription:
-			result = Utf8ToWstring(param).c_str();
-	}
-	return result;
-};
 
 // Преобразование размера файла в строку
 bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize)
@@ -283,7 +255,6 @@ DWORD CUploadDlg::Run()
 	int n = MainDlg->FileList.GetCount();
 	SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETPOS, 0);
 	SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, n));
-	SendDlgItemMessage(IDC_FILEPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
 	SetDlgItemText(IDC_COMMONPERCENTS, _T("0%"));
 
 	TotalUploadProgress(0, n);
@@ -569,115 +540,6 @@ return 0;
 
 LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	if (wParam == 1) // This timer becomes enabled when user presses "Stop" button
-	{
-		TimerInc--;
-		CString szBuffer;
-		if(TimerInc>0)
-		{
-			szBuffer.Format(CString(TR("Остановить"))+_T(" (%d)"), TimerInc);
-			SetNextCaption(szBuffer);
-		}
-		else
-		{
-			if(WizardDlg->IsWindowEnabled())
-			{
-				//Terminate();
-				ThreadTerminated();
-				FileProgress(TR("Загрузка файлов прервана пользователем."), false);
-			}
-		}
-	}
-
-	else if(wParam == 2) // Another timer which updates status information in the window
-	{
-
-		/*PrInfo.CS.Lock();
-		if(!PrInfo.ip.IsUploading) 
-		{
-			ShowProgress(false);
-			PrInfo.ip.clear();
-			PrInfo.Bytes.clear();
-				
-			if(m_CurrentUploader)
-			{
-
-				//ShowVar(m_CurrentUploader->GetStatus());
-				if ( m_CurrentUploader->GetStatus() == stUploading ) {
-					m_CurrentUploader->SetStatus(stWaitingAnswer);
-				}
-				CString StatusText = m_StatusText;
-				if(!StatusText.IsEmpty())
-					FileProgress(StatusText);
-			}
-			PrInfo.CS.Unlock();
-			return 0;
-		}
-		else if(PrInfo.ip.Total>0)
-		{
-			TCHAR buf1[100],buf2[100];
-			BytesToString(PrInfo.ip.Uploaded,buf1,sizeof(buf1));
-			BytesToString(PrInfo.ip.Total,buf2,sizeof(buf2));
-
-			int perc = int(((float)PrInfo.ip.Uploaded/(float)PrInfo.ip.Total)*100);
-			if(perc<0 || perc>100) perc=0;
-			if(perc>=100) 
-			{
-				ShowProgress(false);
-				PrInfo.Bytes.clear();
-				PrInfo.ip.Uploaded=0;
-				PrInfo.ip.Total = 0;
-				PrInfo.ip.IsUploading  = false;
-				
-				PrInfo.CS.Unlock();
-				return 0;
-			}
-			if(PrInfo.ip.IsUploading) 
-			{
-				if(!::IsWindowVisible(GetDlgItem(IDC_FILEPROGRESS)) )
-				{
-					::ShowWindow(GetDlgItem(IDC_FILEPROGRESS),SW_SHOW);
-					::ShowWindow(GetDlgItem(IDC_SPEEDLABEL),SW_SHOW);
-					::ShowWindow(GetDlgItem(IDC_PERCENTLABEL),SW_SHOW);
-				}
-			}
-			TCHAR ProgressBuffer[256]=_T("");
-			_stprintf (ProgressBuffer,TR("Загружено %s из %s"),buf1,buf2,(int)perc);
-			FileProgress(ProgressBuffer);
-			wsprintf (ProgressBuffer,_T ("%d %%"),(int)perc);
-			SetDlgItemText(IDC_PERCENTLABEL,ProgressBuffer);
-			SendDlgItemMessage(IDC_FILEPROGRESS,PBM_SETPOS,(int)perc);
-			UploadProgress(progressCurrent, progressTotal, perc/2);
-
-			DWORD Current =  PrInfo.ip.Uploaded;
-			TCHAR SpeedBuffer[256]=_T("\0");
-			buf1[0]=0;
-
-
-			int speed=0;
-			if(PrInfo.Bytes.size())
-			{
-				speed= int(((double)(Current-PrInfo.Bytes[0])/(double)PrInfo.Bytes.size())*4);
-			}
-			PrInfo.Bytes.push_back(Current);
-			if(PrInfo.Bytes.size()>11)
-			{
-				PrInfo.Bytes.pop_front(); //Deleting element at the beginning of the deque
-			}
-			if(speed>0)
-			{
-				BytesToString(speed,SpeedBuffer,sizeof(SpeedBuffer));
-				wsprintf (buf1,_T ("%s/s"),SpeedBuffer);
-				SetDlgItemText(IDC_SPEEDLABEL,buf1);
-			}
-			else SetDlgItemText(IDC_SPEEDLABEL,_T(""));
-
-
-			LastUpdate = Current;
-
-		}
-		PrInfo.CS.Unlock();*/
-	}
 	return 0;
 }
 
@@ -685,8 +547,8 @@ int CUploadDlg::ThreadTerminated(void)
 {
 	WizardDlg->QuickUploadMarker = false;
 	TCHAR szBuffer[MAX_PATH];
-	SetDlgItemText(IDC_COMMONPROGRESS2, TR("Загрузка завершена."));
-	TotalUploadProgress(MainDlg->FileList.GetCount(), MainDlg->FileList.GetCount());
+
+	//TotalUploadProgress(MainDlg->FileList.GetCount(), MainDlg->FileList.GetCount());
 	#if  WINVER	>= 0x0601
 		if(ptl)
 			ptl->SetProgressState(GetParent(), TBPF_NOPROGRESS);
@@ -694,16 +556,9 @@ int CUploadDlg::ThreadTerminated(void)
 	wsprintf(szBuffer,_T("%d %%"),100);
 	SetDlgItemText(IDC_COMMONPERCENTS,szBuffer);
 
-	if(CancelByUser)
-		FileProgress(TR("Загрузка файлов прервана пользователем."), false);
-	else
-	{
-
-	}
 	KillTimer(1);
 	KillTimer(2);
 	LastUpdate = 0;
-	ShowProgress(false);
 
 	SetNextCaption(TR("Завершить >"));
 	Terminated = true;
@@ -735,7 +590,6 @@ bool CUploadDlg::OnShow()
 	ShowPrev();
 	MainDlg = (CMainDlg*) WizardDlg->Pages[2];
 	//Toolbar.CheckButton(IDC_USETEMPLATE,Settings.UseTxtTemplate);
-	FileProgress(_T(""), false);
 	UrlList.clear();
 	ResultsWindow->Clear();
 	ResultsWindow->setShortenUrls(sessionImageServer_.shortenLinks());
@@ -798,24 +652,6 @@ bool CUploadDlg::OnNext()
 	return false;
 }
 
-void CUploadDlg::ShowProgress(bool Show)
-{
-	if(Show)
-	{
-		SetDlgItemText(IDC_SPEEDLABEL, _T(""));
-		SetDlgItemText(IDC_PERCENTLABEL, _T("0%"));
-		SetDlgItemText(IDC_FILEPROGRESS, _T(""));
-		SetTimer(2, 250); 
-	}	
-	
-	if(!Show)
-	{
-		::ShowWindow(GetDlgItem(IDC_FILEPROGRESS),Show?SW_SHOW:SW_HIDE);
-		::ShowWindow(GetDlgItem(IDC_SPEEDLABEL),Show?SW_SHOW:SW_HIDE);
-		::ShowWindow(GetDlgItem(IDC_PERCENTLABEL),Show?SW_SHOW:SW_HIDE);
-	}
-}
-
 bool CUploadDlg::OnHide()
 {
 	UrlList.clear();
@@ -837,31 +673,6 @@ int GetWindowLeft(HWND Wnd)
 	HWND Parent = GetParent(Wnd);
 	ScreenToClient(Parent, (LPPOINT)&WindowRect);
 	return WindowRect.left;
-}
-
-void CUploadDlg::FileProgress(const CString& Text, bool ShowPrefix)
-{
-	CString Temp;
-	if(ShowPrefix)
-	{ 
-		Temp += TR("Текущий файл:"); 
-		Temp += _T("  ");
-	}
-
-	Temp += Text;
-	SetDlgItemText(IDC_INFOUPLOAD, Temp);
-
-	bool IsProgressBar = ::IsWindowVisible(GetDlgItem(IDC_FILEPROGRESS))!=0;
-
-	RECT rc;
-	HWND Ctrl = GetDlgItem(IDC_INFOUPLOAD);
-	::GetClientRect(Ctrl, &rc);
-	int NewWidth = IsProgressBar?(GetWindowLeft(GetDlgItem(IDC_SPEEDLABEL))-GetWindowLeft(Ctrl)-5):400;
-	if(NewWidth!=rc.right)
-	{
-		::SetWindowPos(Ctrl, 0, 0,0, NewWidth,rc.bottom,SWP_NOMOVE);
-		::InvalidateRect(Ctrl, 0,0);
-	}
 }
 
 void CUploadDlg::GenerateOutput()
@@ -898,7 +709,7 @@ void CUploadDlg::OnUploaderStatusChanged(UploadTask* task)
 	}
 	FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
 	if (fileTask) {
-		CString statusText = UploaderStatusToString(progress->statusType, progress->stage, progress->statusText);
+		CString statusText = /*UploaderStatusToString(progress->statusType, progress->stage, progress->statusText)*/ IuCoreUtils::Utf8ToWstring(progress->statusText).c_str();
 
 		bool isThumb = task->role() == UploadTask::ThumbRole;
 		int columnIndex = isThumb ? 2 : 1;
@@ -1070,8 +881,31 @@ void CUploadDlg::showUploadProgressTab() {
 
 void CUploadDlg::onSessionFinished(UploadSession* session)
 {
+    //int successFileCount = session->finishedTaskCount(UploadTask::StatusFinished);
+    int failedFileCount = session->finishedTaskCount(UploadTask::StatusFailure);
+    //int totalFileCount = session->taskCount();
+
+    CString progressLabelText;
+    if (failedFileCount)
+    {
+        if (CancelByUser) {
+            progressLabelText = TR("Загрузка файлов прервана пользователем.");
+        }
+        else
+        {
+            progressLabelText.Format(TR("Ошибок: %d"), failedFileCount);
+            progressLabelText = CString(TR("Загрузка завершена.")) + _T(" ") + progressLabelText;
+        }
+    } else
+    {
+        progressLabelText = TR("Все файлы были успешно загружены.");
+    }
+
+    SetDlgItemText(IDC_COMMONPROGRESS2, progressLabelText);
 	ThreadTerminated();
-	showUploadResultsTab();
+    if (!failedFileCount) {
+        showUploadResultsTab();
+    }
 }
 
 void CUploadDlg::onTaskUploadProgress(UploadTask* task)
@@ -1123,8 +957,8 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
 		item.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
 		item.ThumbUrl = Utf8ToWCstring(uploadResult->thumbUrl);
 		UrlList[fps->tableRow] = item;
-		uploadListView_.SetItemText(fps->tableRow, 1, _T("Готово"));
-		TotalUploadProgress(uploadSession_->finishedTaskCount(), uploadSession_->taskCount(), 0);
+		//uploadListView_.SetItemText(fps->tableRow, 1, _T("Готово"));
+		TotalUploadProgress(uploadSession_->finishedTaskCount(UploadTask::StatusFinished), uploadSession_->taskCount(), 0);
 		filesFinished_++;
 	}
 	 else if (fileTask->role() == UploadTask::ThumbRole) {

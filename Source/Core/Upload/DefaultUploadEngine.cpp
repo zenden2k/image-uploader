@@ -24,21 +24,29 @@
 #include "FileUploadTask.h"
 #include "Core/Upload/UrlShorteningTask.h"
 #include "Core/Utils/StringUtils.h"
+#include "ServerSync.h"
 
 CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync) : CAbstractUploadEngine(serverSync)
 {
 	m_CurrentActionIndex = -1;
+    fatalError_ = false;
 }
 
 int CDefaultUploadEngine::doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params) {
+    fatalError_ = false;
+    int res = 0;
 	if ( task->type() == UploadTask::TypeFile ) {
-        return doUploadFile(std::dynamic_pointer_cast<FileUploadTask>(task), params);
+        res = doUploadFile(std::dynamic_pointer_cast<FileUploadTask>(task), params);
 	} else if ( task->type() == UploadTask::TypeUrl  ) {
-        return doUploadUrl(std::dynamic_pointer_cast<UrlShorteningTask>(task), params);
+        res = doUploadUrl(std::dynamic_pointer_cast<UrlShorteningTask>(task), params);
 	} else {
 		UploadError( ErrorInfo::mtError, "Upload task of type '" + task->toString() + "' is not supported", 0, false );
 	}
-	return 0;
+    if (!res && fatalError_)
+    {
+        return -1;
+    }
+	return res;
 }
 
 bool CDefaultUploadEngine::doUploadFile(std::shared_ptr<FileUploadTask> task, CIUUploadParams& params) {
@@ -152,6 +160,10 @@ bool CDefaultUploadEngine::executeActions() {
 		}
 		while (m_UploadData->Actions[i].NumOfTries < m_UploadData->Actions[i].RetryLimit && !ActionRes);
 		if ( !ActionRes ) {
+            if (m_UploadData->Actions[i].Type == "login")
+            {
+                fatalError_ = true;
+            }
 			return false;
 		}
 	}
@@ -312,8 +324,14 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
 	else
 	if (Action.Type == "login")
 	{
-		if (m_UploadData->NeedAuthorization && li.DoAuth)
-			Result = DoUploadAction(Current, false);
+        if (m_UploadData->NeedAuthorization && li.DoAuth) {
+            serverSync_->beginAuth();
+            if (!serverSync_->isAuthPerformed()) {
+                Result = DoUploadAction(Current, false);
+                serverSync_->setAuthPerformed(Result);
+            }
+            serverSync_->endAuth();
+        }
 	}
 	else
 	if (Action.Type == "get")

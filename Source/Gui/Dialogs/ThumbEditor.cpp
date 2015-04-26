@@ -23,7 +23,7 @@
 #include "Func/Settings.h"
 #include "Core/Images/Thumbnail.h"
 #include "Gui/GuiTools.h"
-#include "Core/ScriptAPI/HtmlDocumentPrivate_win.h"
+#include "Core/Scripting/API/HtmlDocumentPrivate_win.h"
 
 // CThumbEditor
 CThumbEditor::CThumbEditor(Thumbnail *thumb)

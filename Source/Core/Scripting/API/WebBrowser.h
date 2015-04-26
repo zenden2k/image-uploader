@@ -23,7 +23,7 @@
 
 #pragma once 
 
-#include "Core/Squirrelnc.h"
+#include "Core/Scripting/Squirrelnc.h"
 #include "HtmlDocument.h"
 
 namespace ScriptAPI {;

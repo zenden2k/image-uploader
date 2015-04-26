@@ -12,7 +12,6 @@ void UploadTask::init()
 {
 	status_ = StatusInQueue;
 	userData_ = NULL;
-	uploadSuccess_ = false;
 	session_ = 0;
 	role_ = DefaultRole;
 	shorteningStarted_ = false;
@@ -30,6 +29,21 @@ void UploadTask::childTaskFinished(UploadTask* child)
 
 void UploadTask::taskFinished()
 {
+    tasksMutex_.lock();
+    std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
+    Status newStatus = status_;
+    for (int i = 0; i < childTasks_.size(); i++ )
+    { 
+        if (childTasks_[i]->type() == TypeFile && childTasks_[i]->status() == StatusFailure)
+        {
+            newStatus = StatusFailure;
+        } 
+    }
+    tasksMutex_.unlock();
+    if (newStatus != status_)
+    {
+        setStatus(newStatus);
+    }
 	for (int i = 0; i < taskFinishedCallbacks_.size(); i++)
 	{
 		taskFinishedCallbacks_[i](this, uploadSuccess()); // invoke callback
@@ -38,6 +52,14 @@ void UploadTask::taskFinished()
 	{
 		session_->taskFinished(this);
 	}
+}
+
+void UploadTask::statusChanged()
+{
+    if (OnStatusChanged)
+    {
+        OnStatusChanged(this);
+    }
 }
 
 void UploadTask::setCurrentUploadEngine(CAbstractUploadEngine* currentUploadEngine)
@@ -118,7 +140,7 @@ bool UploadTask::isFinishedItself()
 
 void UploadTask::finishTask(Status status)
 {
-	status_ = status;
+	setStatus(status);
 	if (parentTask_)
 	{
 		parentTask_->childTaskFinished(this);
@@ -206,7 +228,7 @@ bool UploadTask::uploadSuccess(bool withChilds)
 	int count = childTasks_.size();
 	if (!count || !withChilds )
 	{
-		return uploadSuccess_;
+		return status_ == StatusFinished;
 	}
 	std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
 	for (int i = 0; i <count; i++)
@@ -216,13 +238,9 @@ bool UploadTask::uploadSuccess(bool withChilds)
 			return false;
 		}
 	}
-	return uploadSuccess_;
+    return  status_ == StatusFinished;
 }
 
-void UploadTask::setUploadSuccess(bool success)
-{
-	uploadSuccess_ = success;
-}
 
 UploadTask::Role UploadTask::role() const
 {
@@ -272,10 +290,34 @@ bool UploadTask::isStopped()
 void UploadTask::setStatus(Status status)
 {
 	status_ = status;
+
+    switch (status) {
+        case StatusRunning:
+            progress_.statusText = "Begin upload";
+            break;
+        case StatusStopped:
+            progress_.statusText = "Stopped";
+            break;
+        case StatusFinished:
+            progress_.statusText = "Finished";
+            break;
+        case StatusFailure:
+            progress_.statusText = "Error";
+            break;
+            
+    }
+    statusChanged();
+}
+
+void UploadTask::setStatusText(const std::string& text)
+{
+    progress_.statusText = text;
+    statusChanged();
 }
 
 UploadTask::Status UploadTask::status() const
 {
+
 	return status_;
 }
 
@@ -364,5 +406,32 @@ int UploadTask::pendingTasksCount(UploadTaskAcceptor* acceptor)
 	}
 	return res;
 }
+
+std::string UploadTask::UploaderStatusToString(StatusType status, int actionIndex, std::string param)
+{
+    std::string res;
+    CString result;
+    switch (status)
+    {
+    case stWaitingAnswer:
+        result = TR("Ожидание ответа от сервера...");
+        break;
+    case stCreatingFolder:
+        result = CString(TR("Создание папки \"")) + IuCoreUtils::Utf8ToWstring(param).c_str() + _T("\"...");
+        break;
+    case stUploading:
+        result = TR("Отправка файла на сервер...");
+        break;
+    case stAuthorization:
+        result = TR("Авторизация на сервере...");
+        break;
+    case stPerformingAction:
+        result.Format(TR("Выполняю действие #%d..."), actionIndex);
+        break;
+    case stUserDescription:
+        result = IuCoreUtils::Utf8ToWstring(param).c_str();
+    }
+    return IuCoreUtils::WstringToUtf8((LPCTSTR)result);
+};
 
 /*void setCurrentUploadEngine(CAbstractUploadEngine* currentUploadEngine);*/

@@ -24,7 +24,7 @@
 #include <atlapp.h>
 #include "IconButton.h"
 #include "Func/Common.h"
-#include "Core/ScriptAPI/HtmlDocumentPrivate_win.h"
+#include "Core/Scripting/API/HtmlDocumentPrivate_win.h"
 // local functions
 static int image_left (int cx, const CRect& Rect, DWORD style);
 static int image_top (int cy, const CRect& Rect, DWORD style);

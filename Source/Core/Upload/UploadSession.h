@@ -5,6 +5,8 @@
 #include "UploadTask.h"
 #include <mutex>
 #include "Func/HistoryManager.h"
+#include <atomic>
+#include <unordered_map>
 
 class UploadSession
 {
@@ -19,12 +21,15 @@ class UploadSession
 		bool isFinished();
 		int pendingTasksCount(UploadTaskAcceptor* acceptor);
 		int taskCount();
-		int finishedTaskCount();
+		int finishedTaskCount(UploadTask::Status status);
 		bool isStopped();
 		std::shared_ptr<UploadTask> getTask(int index);
 		void addSessionFinishedCallback(const SessionFinishedCallback& callback);
 		void addTaskAddedCallback(const TaskAddedCallback& callback);
 		void stop();
+        bool isFatalErrorSet(const std::string& serverName, const std::string& profileName);
+        void setFatalErrorForServer(const std::string& serverName, const std::string& profileName);
+        void clearErrorsForServer(const std::string& serverName, const std::string& profileName);
 		friend class UploadTask;
 		friend class UploadManager;
 		friend class HistoryUploadFilter;
@@ -40,8 +45,10 @@ class UploadSession
 		std::vector<SessionFinishedCallback> sessionFinishedCallbacks_;
 		void notifyTaskAdded(UploadTask* task);
 		std_tr::shared_ptr<CHistorySession> historySession_;
+        std::map<std::pair<std::string, std::string>, bool> serverFatalErrors_;
+        std::mutex serverFatalErrorsMutex_;
 		std::mutex historySessionMutex_;
-		volatile bool stopSignal_;
+		std::atomic<bool> stopSignal_;
 };
 
 #endif

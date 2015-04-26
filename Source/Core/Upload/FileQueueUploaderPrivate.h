@@ -16,13 +16,12 @@ struct ServerThreadsInfo {
 	int runningThreads;
 	int waitingFileCount;
 	CUploadEngineData* ued;
-	bool fatalError;
+	//bool fatalError;
 	ServerThreadsInfo()
 	{
 		runningThreads = 0;
 		waitingFileCount = 0;
 		ued = 0;
-		fatalError = false;
 	}
 };
 

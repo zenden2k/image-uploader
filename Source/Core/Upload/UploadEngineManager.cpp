@@ -6,7 +6,7 @@
 #include "DefaultUploadEngine.h"
 #include "Core/Logging.h"
 #include "ServerSync.h"
-#include "Core/ScriptAPI/ScriptAPI.h"
+#include "Core/Scripting/API/ScriptAPI.h"
 
 UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList)
 {
@@ -80,7 +80,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
 
 	if (plugin && UseExisting && plugin->name() == pluginName && plugin->serverSettings().authData.Login == params.authData.Login) {
 		plugin->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
-		ScriptAPI::SetCurrentThreadVM(plugin->getVM());
+        plugin->switchToThisVM();
 		return plugin;
 	}
 
@@ -90,9 +90,10 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
 		m_plugins[threadId][serverName] = 0;
 	}
 	ServerSync* serverSync = getServerSync(serverProfile);
-	CScriptUploadEngine* newPlugin = new CScriptUploadEngine(pluginName, serverSync);
+    std::string fileName = m_ScriptsDirectory + pluginName + ".nut";
+    CScriptUploadEngine* newPlugin = new CScriptUploadEngine(fileName, serverSync, params);
 	newPlugin->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
-	if (newPlugin->load(m_ScriptsDirectory + pluginName + ".nut", params)) {
+	if (newPlugin->isLoaded()) {
 		m_plugins[threadId][serverName] = newPlugin;
 		return newPlugin;
 	}

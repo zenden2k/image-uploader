@@ -32,20 +32,11 @@
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Core/Upload/FolderList.h"
-#include "Core/Squirrelnc.h"
+#include "Core/Scripting/Squirrelnc.h"
 #include "Core/Upload/ServerSync.h"
+#include "Core/Scripting/Squirrelnc.h"
 #include <set>
 #include <unordered_map>
-
-
-/*
-DECLARE_INSTANCE_TYPE(NetworkClient);
-DECLARE_INSTANCE_TYPE(SimpleXml);
-DECLARE_INSTANCE_TYPE(SimpleXmlNode);
-DECLARE_INSTANCE_TYPE(ServerSettingsStruct);
-DECLARE_INSTANCE_TYPE(CFolderList);
-DECLARE_INSTANCE_TYPE(CFolderItem);
-DECLARE_INSTANCE_TYPE(CIUUploadParams);*/
 
 namespace ScriptAPI {;
 
@@ -175,11 +166,13 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
         Func("getParam", &ServerSettingsStruct::getParam)
     );
 
-	root.Bind("ServerSync", Class<ServerSync>(vm.GetVM(), "ServerSync").
-		Func("beginLogin", &ServerSync::beginLogin).
-		Func("endLogin", &ServerSync::endLogin).
-		Func("setValue", &ServerSync::setValue).
-		Func("getValue", &ServerSync::getValue)
+    Class<ThreadSync> threadSyncClass(vm.GetVM(), "ThreadSync");
+    threadSyncClass.Func("setValue", &ServerSync::setValue).
+        Func("getValue", &ServerSync::getValue);
+
+    root.Bind("ServerSync", DerivedClass<ServerSync, ThreadSync>(vm.GetVM(), "ServerSync").
+        Func("beginAuth", &ServerSync::beginAuth).
+        Func("endAuth", &ServerSync::endAuth)
 	);
 
 }

@@ -60,7 +60,10 @@ bool TaskAcceptorBase::canAcceptUploadTask(UploadTask* task)
 		it->second.ued = task->serverProfile().uploadEngineData(); // FIXME
 	}
 
-	if ((!it->second.ued->MaxThreads || it->second.runningThreads < it->second.ued->MaxThreads) && !it->second.fatalError)
+    UploadSession* session = task->session();
+    bool isFatalError = session->isFatalErrorSet(task->serverName(), task->serverProfile().profileName());
+
+    if ((!it->second.ued->MaxThreads || it->second.runningThreads < it->second.ued->MaxThreads) && !isFatalError)
 	{
 		it->second.runningThreads++;
 		fileCount++;
@@ -288,7 +291,8 @@ void FileQueueUploaderPrivate::run()
 		
 		mutex_.lock();
 		serverThreads_[it->serverName()].waitingFileCount--;
-		std::string serverName = it->serverName();
+		
+        UploadSession* session = it->session();
 		//serverThreads_[serverName].runningThreads++;
 		mutex_.unlock();
 
@@ -297,10 +301,14 @@ void FileQueueUploaderPrivate::run()
 		for (int i = 0; i < filters_.size(); i++) {
 			filters_[i]->PreUpload(it.get()); // ServerProfile can be changed in PreUpload filters
 		}
+        std::string serverName = it->serverName();
+        std::string  profileName = it->serverProfile().profileName();
+
 		CAbstractUploadEngine *engine = uploadEngineManager_->getUploadEngine(it->serverProfile());
 		if (!engine)
 		{
-			it->setStatus(UploadTask::StatusRunning);
+            session->setFatalErrorForServer(serverName, profileName);
+			it->finishTask(UploadTask::StatusFailure);
 			continue;
 		}
 		
@@ -316,7 +324,8 @@ void FileQueueUploaderPrivate::run()
 #endif
 		if (!res && uploader.isFatalError())
 		{
-			serverThreads_[serverName].fatalError = true;
+            session->setFatalErrorForServer(serverName, profileName);
+			//serverThreads_[serverName].fatalError = true;
 		}
 		serverThreads_[serverName].runningThreads--;
 #ifndef IU_CLI
@@ -336,27 +345,22 @@ void FileQueueUploaderPrivate::run()
 			if (result->thumbUrl.empty()) {
 				result->thumbUrl = (uploader.getThumbUrl());
 			}
-			it->setUploadSuccess(true);
 			for (int i = 0; i < filters_.size(); i++) {
 				filters_[i]->PostUpload(it.get());
 			}
 		}
 		else
 		{
-			it->setUploadSuccess(false);
 		}
 		it->finishTask(res ? UploadTask::StatusFinished : UploadTask::StatusFailure);
-#ifndef IU_CLI
+
 		callMutex_.unlock();
-#endif
+
 	}
-#ifndef IU_CLI
 	mutex_.lock();
-#endif
 	m_nRunningThreads--;
-#ifndef IU_CLI
+
 	mutex_.unlock();
-#endif
 	uploadEngineManager_->clearThreadData();
 	if (!m_nRunningThreads)
 	{

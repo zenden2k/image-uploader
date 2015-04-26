@@ -27,7 +27,7 @@
 #include "Gui/Dialogs/WebViewWindow.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Logging.h"
-#include "Core/Squirrelnc.h"
+#include "Core/Scripting/Squirrelnc.h"
 #include "HtmlDocument.h"
 #if defined(_WIN32) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
 #include "Gui/Dialogs/WizardDlg.h"

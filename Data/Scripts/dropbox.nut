@@ -10,7 +10,7 @@ oauth_token <- "";
 
 function BeginLogin() {
 	try {
-		return serverSync.beginLogin();
+		return Sync.beginAuth();
 	}
 	catch ( ex ) {
 	}
@@ -19,7 +19,7 @@ function BeginLogin() {
 
 function EndLogin() {
 	try {
-		return serverSync.endLogin();
+		return Sync.endAuth();
 	} catch ( ex ) {
 		
 	}

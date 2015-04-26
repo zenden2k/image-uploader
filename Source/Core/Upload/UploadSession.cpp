@@ -120,7 +120,7 @@ int UploadSession::taskCount()
 	return tasks_.size();
 }
 
-int UploadSession::finishedTaskCount()
+int UploadSession::finishedTaskCount(UploadTask::Status status)
 {
 	int res = 0;
 	try {
@@ -128,7 +128,7 @@ int UploadSession::finishedTaskCount()
 	
 		for (auto it = tasks_.begin(); it != tasks_.end(); it++)
 		{
-			if (it->get()->isFinished())
+            if (it->get()->isFinished() && it->get()->status() == status)
 			{
 				res++;
 			}
@@ -165,6 +165,33 @@ void UploadSession::stop()
 		it->get()->stop();
 
 	}
+}
+
+bool UploadSession::isFatalErrorSet(const std::string& serverName, const std::string& profileName)
+{
+    std::lock_guard<std::mutex> lock(serverFatalErrorsMutex_);
+    auto it = serverFatalErrors_.find(std::make_pair(serverName, profileName));
+    if (it != serverFatalErrors_.end())
+    {
+        return it->second;
+    }
+    return false;
+}
+
+void UploadSession::setFatalErrorForServer(const std::string& serverName, const std::string& profileName)
+{
+    std::lock_guard<std::mutex> lock(serverFatalErrorsMutex_);
+    serverFatalErrors_[std::make_pair(serverName, profileName)] = true;
+}
+
+void UploadSession::clearErrorsForServer(const std::string& serverName, const std::string& profileName)
+{
+    std::lock_guard<std::mutex> lock(serverFatalErrorsMutex_);
+    auto it = serverFatalErrors_.find(std::make_pair(serverName, profileName));
+    if (it != serverFatalErrors_.end())
+    {
+        serverFatalErrors_.erase(it);
+    }
 }
 
 std::shared_ptr<UploadTask> UploadSession::getTask(int index)

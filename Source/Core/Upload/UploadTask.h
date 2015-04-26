@@ -90,7 +90,6 @@ class UploadTask {
 		void setUserData(void* data);
 		void* userData() const;
 		bool uploadSuccess(bool withChilds = true);
-		void setUploadSuccess(bool success);
 		Role role() const;
 		void setRole(Role role);
 		bool shorteningStarted() const;
@@ -99,8 +98,10 @@ class UploadTask {
 		virtual std::string title() const = 0;
 		bool isStopped();
 		void setStatus(Status status);
-		Status status() const;
+        void setStatusText(const std::string& text);
+        Status status() const;
 		virtual std::string toString() = 0;
+        static std::string UploaderStatusToString(StatusType status, int actionIndex, std::string param);
 		friend class CUploader;
 
 	protected:
@@ -120,9 +121,10 @@ class UploadTask {
 		void childTaskFinished(UploadTask* child);
 		void uploadProgress(InfoProgress progress);
 		void taskFinished();
+        void uploaderStatusChanged();
+        void statusChanged();
 		void setCurrentUploadEngine(CAbstractUploadEngine* currentUploadEngine);
 		bool stopSignal() const;
-		bool uploadSuccess_;
 		UploadSession* session_;
 		std::recursive_mutex tasksMutex_;
 		Role role_;

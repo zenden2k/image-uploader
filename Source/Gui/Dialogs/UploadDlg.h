@@ -77,9 +77,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 		bool OnShow();
 		bool OnNext();
 		bool OnHide();
-		void ShowProgress(bool Show=true);
 		DWORD LastUpdate;
-		void FileProgress(const CString& Text, bool ShowPrefix=true);
 		void GenThumb(LPCTSTR szImageFileName, Gdiplus::Image *bm, int ThumbWidth,int newwidth,int newheight,LPTSTR szBufferThumb, int fileformat);
 		bool CancelByUser;
 		void GenerateOutput();

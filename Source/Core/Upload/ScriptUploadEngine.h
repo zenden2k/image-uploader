@@ -24,16 +24,18 @@
 #include <vector>
 #include <string>
 
-#include "Core/Squirrelnc.h"
+#include "Core/Scripting/Squirrelnc.h"
 
 #include "CommonTypes.h"
 #include "UploadEngine.h"
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Upload/FolderList.h"
+#include "Core/Scripting/Script.h"
 
 extern const Utf8String IuNewFolderMark;
 
-class CScriptUploadEngine: public CAbstractUploadEngine
+class CScriptUploadEngine : public CAbstractUploadEngine, 
+                            public Script
 {
 	public:
 		int doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params);
@@ -47,39 +49,35 @@ class CScriptUploadEngine: public CAbstractUploadEngine
 		int m_nThumbWidth;
 	
 	public:
-		CScriptUploadEngine(Utf8String pluginName, ServerSync* serverSync);
+        CScriptUploadEngine(Utf8String pluginName, ServerSync* serverSync, ServerSettingsStruct settings);
 		~CScriptUploadEngine();
-		void InitScriptEngine();
-		static void DestroyScriptEngine();
-		void FlushSquirrelOutput();
 		void setNetworkClient(NetworkClient* nm);
 		bool load(Utf8String fileName, ServerSettingsStruct& params);
 		int getFolderList(CFolderList &FolderList);
-		int  createFolder(CFolderItem &parent, CFolderItem &folder);
-		int  modifyFolder(CFolderItem &folder);
+		int createFolder(CFolderItem &parent, CFolderItem &folder);
+		int modifyFolder(CFolderItem &folder);
 		int getAccessTypeList(std::vector<Utf8String> &list);
 		int getServerParamList(std::map<Utf8String, Utf8String> &list);
 		int doLogin();
-		bool isLoaded();
+
 		bool supportsSettings();
 		bool supportsBeforehandAuthorization();
 		Utf8String name();
-		time_t getCreationTime();
+		
 		int RetryLimit();
-		Sqrat::SqratVM& getVM();
+		
 		void stop() override;
 	//Sqrat::Table m_Object; 		
 	protected:
 		void Log(ErrorInfo::MessageType mt, const std::string& error);
-		void PrintCallback(const std::string& output);
+        virtual void PrintCallback(const std::string& output) override;
+        virtual bool preLoad() override;
+        bool postLoad() override;
         void clearSqratError();
 		CFolderList m_FolderList;
        
 		Utf8String m_sName;
-        Sqrat::SqratVM vm_;
-		Sqrat::Script* m_SquirrelScript;
-		time_t m_CreationTime;
-		bool m_bIsPluginLoaded;
+      
 		DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
 };
 

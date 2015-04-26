@@ -24,7 +24,7 @@
 
 #include "Core/AppParams.h"
 #include "Core/Utils/CoreUtils.h"
-#include "Core/Squirrelnc.h"
+#include "Core/Scripting/Squirrelnc.h"
 #include "Core/Logging.h"
 #include <json/json.h>
 #include "Core/Network/NetworkClient.h"

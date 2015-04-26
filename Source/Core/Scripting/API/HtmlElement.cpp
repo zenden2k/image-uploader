@@ -20,7 +20,7 @@
 
 #include "HtmlElement.h"
 
-#include "Core/Squirrelnc.h"
+#include "Core/Scripting/Squirrelnc.h"
 
 #ifdef _WIN32
 #include "HtmlElementPrivate_win.h"

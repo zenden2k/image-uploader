@@ -29,7 +29,7 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Network/NetworkClient.h"
 #include "CommonTypes.h"
-#include <Core/ScriptAPI/UploadTaskWrappers.h>
+#include <Core/Scripting/API/UploadTaskWrappers.h>
 
 class ServerSync;
 
@@ -229,14 +229,15 @@ class CAbstractUploadEngine
 		fastdelegate::FastDelegate1<InfoProgress> onProgress;
 		fastdelegate::FastDelegate3<StatusType, int, std::string> onStatusChanged;
 		fastdelegate::FastDelegate2< const std::string&, bool> onDebugMessage;
-		fastdelegate::FastDelegate1<ErrorInfo> onErrorMessage;
+        typedef fastdelegate::FastDelegate1<ErrorInfo> ErrorMessageCallback;
+        ErrorMessageCallback onErrorMessage;
 	protected:
 		bool m_bShouldStop;
 		NetworkClient * m_NetworkClient;
 		CUploadEngineData * m_UploadData;
 		ServerSettingsStruct m_ServersSettings;
-		ServerSync* serverSync_;
 		std::shared_ptr<UploadTask> currentTask_;
+        ServerSync* serverSync_;
 		int m_ThumbnailWidth;
 		bool DebugMessage(const std::string& message, bool isServerResponseBody = false);
 		bool ErrorMessage(ErrorInfo);

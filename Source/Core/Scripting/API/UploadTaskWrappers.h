@@ -4,7 +4,7 @@
 #pragma once
 #include <memory>
 #include "Core/Upload/UploadTask.h"
-#include "Core/Squirrelnc.h"
+#include "Core/Scripting/Squirrelnc.h"
 
 namespace ScriptAPI {;
 

@@ -24,7 +24,7 @@
 #include "PercentEdit.h"
 #include "Func/Common.h"
 #include "Gui/GuiTools.h"
-#include "Core/ScriptAPI/HtmlElementPrivate_win.h"
+#include "Core/Scripting/API/HtmlElementPrivate_win.h"
 
 CPercentEdit::CPercentEdit()
 {
