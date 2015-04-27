@@ -935,7 +935,7 @@ std::string CImageConverter::ReplaceVars(const std::string& expr)
 		if ( reg.search(str, pos))
 		{
 			pos = reg.get_match_end() + 1;
-			std::string vv = reg[0];
+			std::string vv = reg[1];
 			std::string value = m_Vars[vv];
 
 			Result = IuStringUtils::Replace(Result, std::string("$(") + vv + std::string(")"), value);
@@ -954,7 +954,7 @@ std::string CImageConverter::ReplaceVars(const std::string& expr)
 			if ( reg.search(str, pos))
 			{
 				pos = reg.get_match_end() + 1;
-				std::string vv = reg[0];
+				std::string vv = reg[1];
 				unsigned int res = strtoul(vv.c_str(), 0, 16);
 				std::string value = m_Vars[vv];
 

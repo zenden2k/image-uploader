@@ -110,17 +110,21 @@ bool CAbstractUploadEngine::DebugMessage(const std::string& message, bool isServ
 
 bool CAbstractUploadEngine::ErrorMessage(ErrorInfo ei)
 {
-	if (onErrorMessage)
-		onErrorMessage(ei);
+    if (onErrorMessage) {
+        onErrorMessage(ei);
+    } else
+    {
+        (ei.messageType == ErrorInfo::mtError ? LOG(ERROR) : LOG(WARNING)) << ei.error;
+    }
 	return true;
 }
 
-void CAbstractUploadEngine::setServerSettings(ServerSettingsStruct settings)
+void CAbstractUploadEngine::setServerSettings(ServerSettingsStruct* settings)
 {
 	m_ServersSettings = settings;
 }
 
-ServerSettingsStruct CAbstractUploadEngine::serverSettings()
+ServerSettingsStruct * CAbstractUploadEngine::serverSettings()
 {
 	return m_ServersSettings;
 }

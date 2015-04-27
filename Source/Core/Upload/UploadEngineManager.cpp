@@ -53,12 +53,12 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
 		if (!m_prevUpEngine)*/
 		ServerSync* serverSync = getServerSync(serverProfile);
 		result = new CDefaultUploadEngine(serverSync);
-		result->setServerSettings(serverProfile.serverSettings());
+		result->setServerSettings(&serverProfile.serverSettings());
 		result->setUploadData(ue);
 		result->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
 	}
 	
-	result->setServerSettings(serverProfile.serverSettings());
+	result->setServerSettings(&serverProfile.serverSettings());
 	result->setUploadData(ue);
 	result->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
 	return result;
@@ -79,7 +79,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     if (plugin && (GetTickCount() - plugin->getCreationTime() <(Settings.DeveloperMode ? 3000 : 1000 * 60 * 5)))
 		UseExisting = true;
 
-	if (plugin && UseExisting && plugin->name() == pluginName && plugin->serverSettings().authData.Login == params.authData.Login) {
+	if (plugin && UseExisting && plugin->name() == pluginName && plugin->serverSettings()->authData.Login == params.authData.Login) {
 		plugin->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
         plugin->switchToThisVM();
 		return plugin;
@@ -92,7 +92,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
 	}
 	ServerSync* serverSync = getServerSync(serverProfile);
     std::string fileName = m_ScriptsDirectory + pluginName + ".nut";
-    CScriptUploadEngine* newPlugin = new CScriptUploadEngine(fileName, serverSync, params);
+    CScriptUploadEngine* newPlugin = new CScriptUploadEngine(fileName, serverSync, &params);
 	newPlugin->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
 	if (newPlugin->isLoaded()) {
 		m_plugins[threadId][serverName] = newPlugin;

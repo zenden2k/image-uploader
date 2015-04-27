@@ -183,6 +183,12 @@ CString CSettings::getShellExtensionFileName() const {
 	return file;
 }
 
+ServerSettingsStruct* CSettings::getServerSettings(const ServerProfile& profile)
+{
+    std::lock_guard<std::mutex> lock(serverSettingsMutex_);
+    return &ServersSettings[profile.serverName()][profile.profileName()];
+}
+
 void CSettings::addChangeCallback(const ChangeCallback& callback)
 {
 	changeCallbacks_.push_back(callback);

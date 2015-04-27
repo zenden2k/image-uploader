@@ -73,7 +73,7 @@ bool ExtractLinks(CString text, std::vector<CString> &result)
 		if( reg.search(str, pos)) 
 		{ 
 			pos = reg.get_match_end()+1;
-			CString temp = Utf8ToWstring(reg[0]).c_str();
+			CString temp = Utf8ToWstring(reg[1]).c_str();
 			result.push_back(temp);
 		}
 		else

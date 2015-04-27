@@ -63,7 +63,7 @@ bool TaskAcceptorBase::canAcceptUploadTask(UploadTask* task)
     UploadSession* session = task->session();
     bool isFatalError = session->isFatalErrorSet(task->serverName(), task->serverProfile().profileName());
 
-    if ((!it->second.ued->MaxThreads || it->second.runningThreads < it->second.ued->MaxThreads) && !isFatalError)
+    if (!isFatalError && it->second.ued && (!it->second.ued->MaxThreads || it->second.runningThreads < it->second.ued->MaxThreads) )
 	{
 		it->second.runningThreads++;
 		fileCount++;

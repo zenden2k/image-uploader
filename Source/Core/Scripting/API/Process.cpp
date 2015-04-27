@@ -55,7 +55,7 @@ public:
             #endif
         }
         catch (std::exception & ex){
-            LOG(ERROR) << IuCoreUtils::SystemLocaleToUtf8(ex.what());
+            LOG(ERROR) << ex.what();
             return false;
         }
 
@@ -87,7 +87,7 @@ public:
             child_.reset(new bp::child(bp::launch_shell(command, ctx)));
         }
         catch (std::exception & ex){
-            LOG(ERROR) << IuCoreUtils::SystemLocaleToUtf8(ex.what());
+            LOG(ERROR) << ex.what();
             return false;
         }
         return true;
@@ -149,7 +149,12 @@ Process::Process(const std::string& program)
 Process::Process(const std::string& executable, bool findInPath)
 {
     init();
-    d_->executable_ = findInPath ? bp::find_executable_in_path(executable) : executable;
+    try {
+        d_->executable_ = findInPath ? bp::find_executable_in_path(executable) : executable;
+    } catch ( std::exception& ex )
+    {
+        LOG(ERROR) << ex.what();
+    }
 }
 
 void Process::setExecutable(const std::string& program)

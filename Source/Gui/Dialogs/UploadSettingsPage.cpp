@@ -156,7 +156,7 @@ bool CUploadSettingsPage::Apply()
     GuiTools::GetCheck(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX, Settings.ExecuteScript);
     CString scriptFile = GuiTools::GetDlgItemText(m_hWnd, IDC_SCRIPTFILENAMEEDIT);
 
-    if (!WinUtils::FileExists(scriptFile))
+    if (Settings.ExecuteScript && !WinUtils::FileExists(scriptFile))
     {
         CString message;
         message.Format(TR("Файл %s не существует"), scriptFile);
@@ -172,7 +172,7 @@ LRESULT CUploadSettingsPage::OnBnClickedBrowseScriptButton(WORD /*wNotifyCode*/,
 {
     TCHAR Buf[MAX_PATH * 4];
     GuiTools::SelectDialogFilter(Buf, sizeof(Buf) / sizeof(TCHAR), 2,
-        CString(TR(".nut")),
+        CString(_(".nut")),
         _T("*.nut;"),
         TR("Все файлы"),
         _T("*.*"));

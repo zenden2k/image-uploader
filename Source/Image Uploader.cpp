@@ -31,13 +31,21 @@
 #include "Core/Logging.h"
 #include "Func/MyLogSink.h"
 #include "Core/Upload/ScriptUploadEngine.h"
-
+#include <boost/filesystem/path.hpp>
+#include <boost/locale.hpp>
+#include <boost/filesystem/fstream.hpp>
 CAppModule _Module;
 
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
-	LogWindow.Create(0);
-
+	    
+    /*try {
+        boost::filesystem::ofstream hello("test.txt");
+    }
+    catch (std::exception& ex)
+    {
+        LOG(ERROR) << ex.what();
+    }*/
 	IuCommonFunctions::CreateTempFolder();
 	
 	std::vector<CString> fileList;
@@ -135,6 +143,10 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {	
+    // Create and install global locale
+    std::locale::global(boost::locale::generator().generate(""));
+    // Make boost.filesystem use it
+    boost::filesystem::path::imbue(std::locale());
 	//BOOL res = SetProcessDefaultLayout(LAYOUT_RTL);
 
 #if defined(_WIN32) && !defined(NDEBUG)
@@ -155,6 +167,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	//google::SetLogDestination(google::GLOG_INFO,"d:/" );
 	
 	google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
+    LogWindow.Create(0);
 	MyLogSink logSink;
 	google::AddLogSink(&logSink);
 

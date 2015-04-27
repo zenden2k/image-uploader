@@ -1,6 +1,7 @@
 
 function PreUpload(task,reserved) 
 {
+	
 	//print(task.serverName());
 	if ( task.type() == "TypeFile") {
 		local ext = GetFileExtension(task.getFileName());
@@ -22,9 +23,20 @@ function PreUpload(task,reserved)
 				if ( exitCode == 0 ) { // Success
 					task.setFileName(tempName);
 					task.setDisplayName( displayName +".png")
+					
+					local parent = task.parentTask();
+					if ( parent == null || parent.isNull() ) {
+						//local newTask = FileUploadTask(tempName, displayName+".png");
+						//task.addChildTask(newTask);
+						//print(parent.serverName());
+					}
+	
+				} else {
+					WriteLog("error", "Optipng returned code " + exitCode);
+					return false;
 				}
 			} else {
-				WriteLog("Cannot copy file to " + tempName);
+				WriteLog("error", "Cannot copy file to " + tempName);
 				return false;
 			}
 			

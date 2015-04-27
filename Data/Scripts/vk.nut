@@ -1,4 +1,3 @@
-
 clientId <- "4851603";
 redirectUri <- "https://oauth.vk.com/blank.html";
 redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.com\\/blank\\.html";
@@ -7,6 +6,16 @@ token <- "";
 expiresIn <- 0;
 userId <- "";
 testMode <- "1"; // not used
+
+regMatchOffset <- 0;
+try {
+	local ver = GetAppVersion();
+	if ( ver.Build > 4422 ) {
+		regMatchOffset = 1;
+	}
+} catch ( ex ) {
+}
+
 
 function BeginLogin() {
 	try {
@@ -44,21 +53,21 @@ function OnUrlChangedCallback(data) {
 		//DebugMessage(br.getDocumentBody(), true);
 		local regError = CRegExp("error=([^&]+)", "");
 		if ( regError.match(data.url) ) {
-			WriteLog("warning", regError.getMatch(0));
+			WriteLog("warning", regError.getMatch(regMatchOffset+0));
 		} else {
 			local regToken = CRegExp("access_token=([^&]+)", "");
 			if ( regToken.match(data.url) ) {
-				token = regToken.getMatch(0);
+				token = regToken.getMatch(regMatchOffset+0);
 			}
 			
 			local regExpires = CRegExp("expires_in=([^&]+)", "");
 			if ( regExpires.match(data.url) ) {
-				expiresIn = regExpires.getMatch(0);
+				expiresIn = regExpires.getMatch(regMatchOffset+0);
 			}
 			
 			local regUserId = CRegExp("user_id=([^&]+)", "");
 			if ( regUserId.match(data.url) ) {
-				userId = regUserId.getMatch(0);
+				userId = regUserId.getMatch(regMatchOffset+0);
 			}
 			
 			ServerParams.setParam("prevLogin", ServerParams.getParam("Login"));
@@ -90,6 +99,7 @@ function _DoLogin() {
 	token = ServerParams.getParam("token");
 	userId = ServerParams.getParam("userId");
 	local login = ServerParams.getParam("Login");
+	
 	if ( token != "" && ServerParams.getParam("prevLogin") == login ) {
 		local tokenTime  = 0;
 		local expiresIn = 0;

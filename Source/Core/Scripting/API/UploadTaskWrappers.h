@@ -29,12 +29,15 @@ public:
 	std::string serverName() const;
     const std::string profileName();
     void setStatusText(const std::string& status);
-
+    ServerProfile serverProfile();
+    void setServerProfile(const ServerProfile& profile);
 	std::string toString();
-	void addChildTask(UploadTaskWrapper child);
+    void addChildTask(UploadTaskWrapperBase* child);
     void addTempFile(const std::string& fileName);
+    bool isNull();
 protected:
 	std::shared_ptr<UploadTask> task_;
+    void checkNull(const char* func) const;
 };
 
 /**
@@ -42,6 +45,8 @@ protected:
 */
 class FileUploadTaskWrapper : public  UploadTaskWrapperBase  {
 public:
+    FileUploadTaskWrapper();
+    explicit FileUploadTaskWrapper(const std::string& fileName, const std::string& displayName);
 	std::string getFileName() const;
 	int64_t getFileSize() const;
     void setFileName(const std::string& fileName);
@@ -63,6 +68,7 @@ public:
 class UploadTaskWrapper : public UrlShorteningTaskWrapper {
 public:
     UploadTaskWrapper();
+    UploadTaskWrapper(const std::string& type);
     explicit UploadTaskWrapper(UploadTask* task);
     UploadTaskWrapper(std::shared_ptr<UploadTask> task);
 };

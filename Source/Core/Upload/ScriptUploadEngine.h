@@ -49,7 +49,7 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
 		int m_nThumbWidth;
 	
 	public:
-        CScriptUploadEngine(Utf8String pluginName, ServerSync* serverSync, ServerSettingsStruct settings);
+        CScriptUploadEngine(Utf8String pluginName, ServerSync* serverSync, ServerSettingsStruct* settings);
 		~CScriptUploadEngine();
 		void setNetworkClient(NetworkClient* nm);
 		//bool load(Utf8String fileName, ServerSettingsStruct& params);

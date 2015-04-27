@@ -193,8 +193,8 @@ public:
 		std::string domain = site;
 		std::string protocol = "http";
 		if ( reg.search(site)) {
-			protocol = reg.get_match(0);
-			domain = reg.get_match(1);
+			protocol = reg.get_match(1);
+			domain = reg.get_match(2);
 		}
 		CRegistry Reg;
 		Reg.SetRootKey( HKEY_CURRENT_USER );

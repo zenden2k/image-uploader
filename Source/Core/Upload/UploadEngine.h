@@ -95,13 +95,16 @@ struct CFolderItem
 
 struct ServerSettingsStruct
 {
-	ServerSettingsStruct(){authData.DoAuth=0;}
+    ServerSettingsStruct() : paramsMutex_(new std::mutex()){ authData.DoAuth = 0; }
 	std::map<std::string, std::string> params;
+    std::shared_ptr<std::mutex> paramsMutex_;
 	LoginInfo authData;
 	CFolderItem newFolder;
 	CFolderItem defaultFolder;
+
 	const std::string getParam(const std::string& name)
 	{
+        std::lock_guard<std::mutex> lock(*paramsMutex_);
 		std::string result;
 		std::string pname = name;
 		if(pname == "Password" && authData.DoAuth)
@@ -114,6 +117,7 @@ struct ServerSettingsStruct
 
 	void setParam(const std::string& name, const std::string& value)
 	{
+        std::lock_guard<std::mutex> lock(*paramsMutex_);
 		params[name] = value;
 	}
 
@@ -215,8 +219,8 @@ class CAbstractUploadEngine
 		virtual ~CAbstractUploadEngine();
 		void setThumbnailWidth(int width);
 		virtual int doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params) = 0;
-		void setServerSettings(ServerSettingsStruct settings);
-		ServerSettingsStruct serverSettings();
+		void setServerSettings(ServerSettingsStruct* settings);
+		ServerSettingsStruct * serverSettings();
 		virtual int RetryLimit()=0;
 		virtual void setNetworkClient(NetworkClient* nm);
 		void setUploadData(CUploadEngineData* data);
@@ -235,7 +239,7 @@ class CAbstractUploadEngine
 		bool m_bShouldStop;
 		NetworkClient * m_NetworkClient;
 		CUploadEngineData * m_UploadData;
-		ServerSettingsStruct m_ServersSettings;
+		ServerSettingsStruct* m_ServersSettings;
 		std::shared_ptr<UploadTask> currentTask_;
         ServerSync* serverSync_;
 		int m_ThumbnailWidth;

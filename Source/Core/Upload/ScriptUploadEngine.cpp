@@ -45,13 +45,12 @@
 
 const Utf8String IuNewFolderMark = "_iu_create_folder_";
 
-CScriptUploadEngine::CScriptUploadEngine(Utf8String fileName, ServerSync* serverSync, ServerSettingsStruct settings) : 
+CScriptUploadEngine::CScriptUploadEngine(Utf8String fileName, ServerSync* serverSync, ServerSettingsStruct* settings) : 
                                                                                 CAbstractUploadEngine(serverSync), Script(fileName, serverSync,false)
 {
-    load(fileName);
-    m_sName = IuCoreUtils::ExtractFileNameNoExt(fileName);
     setServerSettings(settings);
-    
+    m_sName = IuCoreUtils::ExtractFileNameNoExt(fileName);
+    load(fileName);
 }
 
 CScriptUploadEngine::~CScriptUploadEngine()
@@ -65,10 +64,10 @@ void CScriptUploadEngine::PrintCallback(const std::string& output)
     std::string taskName;
     if (currentTask_)
     {
-        taskName = currentTask_->toString();
+        taskName = "Task=" + currentTask_->toString() + ", ";
     }
     std::thread::id threadId = std::this_thread::get_id();
-    Log(ErrorInfo::mtWarning, m_sName + ".nut [Task=" + taskName + ", ThreadId=" + IuCoreUtils::ThreadIdToString(threadId) + "]\r\n" + /*IuStringUtils::ConvertUnixLineEndingsToWindows*/(output));
+    Log(ErrorInfo::mtWarning, m_sName + ".nut [" + taskName + "ThreadId=" + IuCoreUtils::ThreadIdToString(threadId) + "]\r\n" + /*IuStringUtils::ConvertUnixLineEndingsToWindows*/(output));
 }
 int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params)
 {
@@ -80,8 +79,8 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, CIUUploadPar
 	if (task->type() == UploadTask::TypeFile ) {
 		FileName = (dynamic_cast<FileUploadTask*>(task.get()))->getFileName();
 	}
-	CFolderItem parent, newFolder = m_ServersSettings.newFolder;
-	std::string folderID = m_ServersSettings.params["FolderID"];
+	CFolderItem parent, newFolder = m_ServersSettings->newFolder;
+	std::string folderID = m_ServersSettings->params["FolderID"];
 
 	if (folderID == IuNewFolderMark)
 	{
@@ -89,8 +88,8 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, CIUUploadPar
 		if ( createFolder(parent, newFolder))
 		{
 			folderID = newFolder.id;
-			m_ServersSettings.params["FolderID"] = folderID;
-			m_ServersSettings.params["FolderUrl"] = newFolder.viewUrl;
+			m_ServersSettings->params["FolderID"] = folderID;
+			m_ServersSettings->params["FolderUrl"] = newFolder.viewUrl;
 		}
 		else
 			folderID.clear();
@@ -163,7 +162,7 @@ bool CScriptUploadEngine::preLoad()
 {
 	try
 	{   
-        ServerSettingsStruct* par = &m_ServersSettings;
+        ServerSettingsStruct* par = m_ServersSettings;
         Sqrat::RootTable& rootTable = vm_.GetRootTable();
 		rootTable.SetInstance("ServerParams", par);
         rootTable.SetInstance("Sync", serverSync_);

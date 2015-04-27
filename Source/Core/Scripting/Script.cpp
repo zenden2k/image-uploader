@@ -23,10 +23,19 @@ Script::~Script()
     ScriptAPI::ClearVmData(vm_);
 }
 
+void CompilerErrorHandler(HSQUIRRELVM vm, const SQChar * desc, const SQChar * source, SQInteger line, SQInteger column) {
+    sq_getprintfunc(vm)(vm, ("Script compilation failed\r\nFile:  " + std::string(source) + "\r\nLine: " + IuCoreUtils::int64_tToString(line)
+        + "   Column: " + IuCoreUtils::int64_tToString(column) + "\r\n\r\n" + desc).c_str() );
+}
+
 void Script::InitScriptEngine()
 {
-    sqstd_seterrorhandlers(vm_.GetVM());
+   
     ScriptAPI::SetPrintCallback(vm_, ScriptAPI::PrintCallback(this, &Script::PrintCallback));
+    sqstd_seterrorhandlers(vm_.GetVM());
+    ScriptAPI::SetScriptName(vm_, fileName_);
+    sq_setcompilererrorhandler(vm_.GetVM(), CompilerErrorHandler);
+
 }
 
 void Script::DestroyScriptEngine()
@@ -98,7 +107,6 @@ bool Script::load(Utf8String fileName)
 
         preLoad();
  
-        ScriptAPI::SetScriptName(vm_, fileName_);
         switchToThisVM();
         m_SquirrelScript = new Sqrat::Script(vm_.GetVM());
         m_SquirrelScript->CompileString(scriptText.c_str(), IuCoreUtils::ExtractFileName(fileName).c_str());
@@ -123,7 +131,7 @@ bool Script::load(Utf8String fileName)
 void Script::PrintCallback(const std::string& output)
 {
     std::thread::id threadId = std::this_thread::get_id();
-    LOG(WARNING) << IuCoreUtils::ExtractFileName(fileName_) << " [ ThreadId=" << IuCoreUtils::ThreadIdToString(threadId) << "]\r\n" << output;
+    LOG(WARNING) << IuCoreUtils::ExtractFileName(fileName_) << " [ThreadId=" << IuCoreUtils::ThreadIdToString(threadId) << "]\r\n" << output;
 }
 
 void Script::checkCallingThread()

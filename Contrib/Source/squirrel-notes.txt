@@ -8,6 +8,15 @@ Without it Sqrat::Function destructor will crash in WebBrowserPrivate class.
 
 Added mutex for static storages.
 
+All functions which use printf and pf ( printfunction) and %d, should convert int64 to int.
+
+
+
+
+-------------------------------------------------------------
+
+Actual only for v0.8 (Fixed in 0.9):
+
 If you pass to SetInstance the SAME POINTER but within different VMs, program will crash on sq_close in ClassType<T>::RemoveFromObjectTable().
 
 I have to replace s_objectTable() function with this:
@@ -37,5 +46,3 @@ But I have no idea how to get current VM inside RemoveFromObjectTable() so I jus
 ~~~~~~
 
 Seems to be fixed in SVN https://sourceforge.net/p/scrat/code/ci/master/tree/include/sqrat/sqratClassType.h
-
-All functions which use printf and pf ( printfunction) and %d, should convert int64 to int.

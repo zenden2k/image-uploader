@@ -175,7 +175,7 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
 		m_fileList.erase(m_fileList.begin());
 
 		std::string ext = IuCoreUtils::ExtractFileExt(url);
-		std::string fileName = IuCoreUtils::ExtractFileName(url);
+        std::string fileName = IuCoreUtils::ExtractFileNameFromUrl(url);
 		CString wFileName =
 			GetUniqFileName(IuCommonFunctions::IUTempFolder + Utf8ToWstring(fileName.c_str()).c_str());
 		std::string filePath = WCstringToUtf8(wFileName);

@@ -217,6 +217,18 @@ const Utf8String ExtractFileNameNoExt(const Utf8String& fileName)
 	return result;
 }
 
+Utf8String ExtractFileNameFromUrl(const Utf8String fileName)
+{
+    int questionMarkPos = fileName.find_last_of('?');
+
+    Utf8String result;
+    if (questionMarkPos != std::string::npos)  {
+        return ExtractFileName(fileName.substr(0, questionMarkPos));
+    } 
+
+    return ExtractFileName(fileName);
+}
+
 Utf8String toString(int value)
 {
 	char buffer[256];

@@ -218,7 +218,7 @@ ConnectionSettingsStruct ConnectionSettings;
 #if !defined(IU_CLI)
 ImageEditorSettingsStruct ImageEditorSettings;
 #endif
-
+std::mutex serverSettingsMutex_;
 ServerSettingsMap ServersSettings;
 bool AutoShowLog;
 bool UseNewIcon;
@@ -277,6 +277,7 @@ protected:
 		CString CurrentConvertProfileName;
 public:
 		CString getShellExtensionFileName() const;
+        ServerSettingsStruct* getServerSettings(const ServerProfile& profile);
 #endif
 		
 #endif 

@@ -79,7 +79,7 @@ const std::string GetAppLanguageFile()
 }
 
 Sqrat::Table GetAppVersion() {
-	Sqrat::Table res;
+	Sqrat::Table res(GetCurrentThreadVM().GetVM());
 	std::string ver = _APP_VER;
 	std::vector<std::string> tokens;
 	IuStringUtils::Split(ver,".", tokens, 3);

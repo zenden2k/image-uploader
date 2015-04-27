@@ -584,7 +584,7 @@ CString CResultsPanel::ReplaceVars(const CString& Text)
 		if( reg.search(str, pos)) 
 		{
 			pos = reg.get_match_end()+1;
-			CString vv = Utf8ToWstring(reg[0]).c_str();
+			CString vv = Utf8ToWstring(reg[1]).c_str();
 			/*if(!vv.IsEmpty() && vv[0] == _T('_'))
 				Result.Replace(CString(_T("$(")) + vv + _T(")"),m_Consts[vv]);
 			else*/

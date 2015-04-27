@@ -359,12 +359,12 @@ bool CImageReuploaderDlg::ExtractLinks(std::string text, std::vector<std::string
 
 	while (pos <= str.length()) {
 		if( reg.search(str, pos)) { 
-			int questionMarkPos =  reg[0].find_last_of('?');
+			int questionMarkPos =  reg[1].find_last_of('?');
 			std::string url;
 			if ( questionMarkPos != std::string::npos ) {
-				url = reg[0].substr(0, questionMarkPos);
+				url = reg[1].substr(0, questionMarkPos);
 			} else {
-				url = reg[0];
+				url = reg[1];
 			}
 			std::string fileExt = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt(url) );
 			if ( fileExt == "png" || fileExt == "jpg" || fileExt == "gif" || fileExt == "jpeg" || fileExt == "bmp" ) { 

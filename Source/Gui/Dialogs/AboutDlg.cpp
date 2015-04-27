@@ -30,6 +30,8 @@
 #include "Func/IuCommonFunctions.h"
 #include <libavutil/ffversion.h>
 #include <boost/config.hpp>
+#include <boost/version.hpp>
+
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	
@@ -121,6 +123,14 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText +=  CString(L"Date: ") + CString(TIME) +  _T("\r\n\r\n");
 	memoText += TR("Libcurl version:")+ CString("\r\n");
 	memoText +=  IuCoreUtils::Utf8ToWstring( curl_version()).c_str() + CString("\r\n\r\n");
+    CString versionLabel;
+    versionLabel.Format(_T("%s version:"), _T("Boost"));
+    memoText += versionLabel + CString("\r\n");
+    CString boostVersion = CString(BOOST_LIB_VERSION);
+    boostVersion.Replace(L'_', L'.');
+    memoText += boostVersion  + L"\r\n\r\n";
+
+    
 	/*if ( Settings.IsFFmpegAvailable() ) { // Can't determine actual ffmpeg version
 		memoText += TR("FFmpeg version:")+ CString("\r\n");
 		memoText += FFMPEG_VERSION + CString("\r\n");

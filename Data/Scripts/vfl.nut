@@ -63,7 +63,7 @@ function findTextArea(el) {
 
 function findLinks(document) {
 	local thumbReg = CRegExp("\\[IMG\\](.+?)\\[\\/IMG\\]", "i");
-	local directReg = CRegExp("^(http:\\/\\/images\\.vfl\\.ru.+)", "i");
+	local directReg = CRegExp("^http:\\/\\/images\\.vfl\\.ru.+", "i");
 	local thumbUrl = null;
 	local directUrl = null;
 	local textAreas = document.getElementsByTagName("TEXTAREA");
@@ -170,7 +170,7 @@ function  UploadFile(FileName, options)
 	webBrowser.setOnFileInputFilledCallback(OnFileInputFilledCallback, null);
 	webBrowser.setOnNavigateErrorCallback(OnNavigateErrorCallback, null);
 
-	webBrowser.exec();
-	//webBrowser.showModal();
+	//webBrowser.exec();
+	webBrowser.showModal();
 	return uploadResult;
 }

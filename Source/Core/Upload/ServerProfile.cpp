@@ -126,11 +126,11 @@ void ServerProfile::setImageUploadParams(ImageUploadParams iup)
 }
 
 ServerSettingsStruct& ServerProfile::serverSettings() {
-	ServerSettingsStruct& res = Settings.ServersSettings[serverName_][profileName_];
-	res.setParam("FolderID", folderId_);
-	res.setParam("FolderUrl", folderUrl_);
-	res.setParam("FolderTitle", folderTitle_);
-	return res;
+    ServerSettingsStruct* res = Settings.getServerSettings(*this);
+	res->setParam("FolderID", folderId_);
+	res->setParam("FolderUrl", folderUrl_);
+	res->setParam("FolderTitle", folderTitle_);
+	return *res;
 }
 
 CUploadEngineData* ServerProfile::uploadEngineData() const {

@@ -1,3 +1,12 @@
+regMatchOffset <- 0;
+try {
+	local ver = GetAppVersion();
+	if ( ver.Build > 4422 ) {
+		regMatchOffset = 1;
+	}
+} catch ( ex ) {
+}
+
 fileName <- "";
 siteRegexp <- CRegExp("http://imgbox.com/", "i");
 //afterUploadRegexp <- CRegExp("index\\.sema?.*sa=kod", "");
@@ -19,13 +28,13 @@ function OnLoadFinished(data) {
 			}
 			local reg = CRegExp("\\[url=(.+?)\\]\\[img\\](.*?)\\[\\/img\\]", "i");
 			if ( reg.match(bbcode) ) {
-				opt.setThumbUrl(reg.getMatch(1));
-				opt.setViewUrl(reg.getMatch(0));
+				opt.setThumbUrl(reg.getMatch(regMatchOffset+1));
+				opt.setViewUrl(reg.getMatch(regMatchOffset+0));
 				data.browser.runJavaScript("tc('f');");
 				bbcode = doc.getElementById("code-bb-full").getInnerText();
 				local reg2 = CRegExp("\\[url=(.+?)\\]\\[img\\](.*?)\\[\\/img\\]", "i");
 				if ( reg2.match(bbcode) ) {
-					opt.setDirectUrl(reg2.getMatch(1));
+					opt.setDirectUrl(reg2.getMatch(regMatchOffset+1));
 				}
 				uploadResult = 1;
 				data.browser.close();

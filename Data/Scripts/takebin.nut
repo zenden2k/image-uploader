@@ -1,3 +1,12 @@
+regMatchOffset <- 0;
+try {
+	local ver = GetAppVersion();
+	if ( ver.Build > 4422 ) {
+		regMatchOffset = 1;
+	}
+} catch ( ex ) {
+}
+
 function  UploadFile(FileName, options)
 {		
 	nm.doGet("http://takebin.com");
@@ -8,7 +17,7 @@ function  UploadFile(FileName, options)
 	if ( !reg.match(nm.responseBody()) ) {
 		return 0;
 	}
-	local token = reg.getMatch(0);
+	local token = reg.getMatch(regMatchOffset + 0);
 	nm.setUrl("http://takebin.com/action");
 	nm.addQueryParamFile("file[]",FileName, ExtractFileName(FileName),"");
 	nm.addQueryParam("fileName[]", ExtractFileName(FileName));

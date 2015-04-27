@@ -47,6 +47,7 @@ namespace IuCoreUtils
 	Utf8String ExtractFileName(const Utf8String fileName);
 	Utf8String ExtractFileExt(const Utf8String fileName);
 	const Utf8String ExtractFileNameNoExt(const Utf8String& fileName);
+    Utf8String ExtractFileNameFromUrl(const Utf8String fileName);
 	Utf8String toString(int value);
 	Utf8String toString(unsigned int value);
 	Utf8String toString(double value, int precision);

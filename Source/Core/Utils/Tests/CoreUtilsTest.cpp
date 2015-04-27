@@ -60,6 +60,16 @@ TEST_F(CoreUtilsTest, ExtractFileNameNoExt)
     EXPECT_EQ(result, "archive.tar");
 }
 
+
+TEST_F(CoreUtilsTest, ExtractFileNameFromUrl)
+{
+    std::string result = ExtractFileNameFromUrl("http://www.directupload.net/file/d/3970/vmtbrege_jpg.htm");
+    EXPECT_EQ(result, "vmtbrege_jpg.htm");
+    result = ExtractFileNameFromUrl("http://www.directupload.net/file/d/3970/vmtbrege_jpg.html?test=124&grgrg=54+5435");
+    EXPECT_EQ(result, "vmtbrege_jpg.html");
+
+}
+
 TEST_F(CoreUtilsTest, toString) 
 {
    // std::string result = toString(100);
@@ -106,3 +116,13 @@ TEST_F(CoreUtilsTest, fileSizeToString)
     EXPECT_EQ(fileSizeToString(0), "0 bytes");
 }
 
+
+TEST_F(CoreUtilsTest, Utf8ToWstring)
+{
+    std::wstring result = Utf8ToWstring("\x49\xC3\xB1\x74\xC3\xAB\x72\x6E\xC3\xA2\x74\x69\xC3\xB4\x6E\xC3\xA0\x6C\x69\x7A\xC3\xA6\x74\x69\xC3\xB8\x6E");
+    EXPECT_EQ(result, L"I\u00F1t\u00EBrn\u00E2ti\u00F4n\u00E0liz\u00E6ti\u00F8n");
+    result = Utf8ToWstring("");
+    EXPECT_EQ(result, L"");
+    result = Utf8ToWstring("test test");
+    EXPECT_EQ(result, L"test test");
+}

@@ -111,7 +111,7 @@ bool  CDefaultUploadEngine::doUploadUrl(std::shared_ptr<UrlShorteningTask> task,
 void CDefaultUploadEngine::prepareUpload() {
 	m_Vars.clear();
 	if ( m_UploadData->NeedAuthorization ) {
-		li = m_ServersSettings.authData;
+		li = m_ServersSettings->authData;
 		if ( li.DoAuth ) {
 			m_Consts["_LOGIN"]    = li.Login;
 			m_Consts["_PASSWORD"] = li.Password;
@@ -223,7 +223,7 @@ bool reg_single_match(const std::string pattern, const std::string& text, std::s
 	pcrepp::Pcre reg(pattern, "imc"); // Case insensitive match
 	if ( reg.search(text) == true ) {
 		if ( reg.matches() > 0 ) {
-			res = reg.get_match(0);
+			res = reg.get_match(1);
 		}
 		return true;
 	}
@@ -255,7 +255,7 @@ bool CDefaultUploadEngine::ParseAnswer(UploadAction& Action, std::string& Body)
 				for (size_t i = 0; i < Action.Variables.size(); i++) {
 					ActionVariable& v = Action.Variables[i];
 					std::string temp;
-					temp = reg.get_match(v.nIndex);
+					temp = reg.get_match(1+v.nIndex);
 					if (!v.Name.empty() && v.Name[0] == '_')
 						m_Consts[v.Name] = temp;
 					m_Vars[v.Name] = temp;
@@ -430,8 +430,8 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
 		if ( reg.search(str, pos))
 		{
 
-			std::string VarName = reg[0];
-			std::string VarValue = reg[1];
+			std::string VarName = reg[1];
+			std::string VarValue = reg[2];
 			pos = reg.get_match_end() + 1;
 
 			if (!VarName.length())
@@ -484,7 +484,7 @@ std::string CDefaultUploadEngine::ReplaceVars(const std::string& Text)
 		if ( reg.search(str, pos))
 		{
 			pos = reg.get_match_end() + 1;
-			std::string vv = reg[0];
+			std::string vv = reg[1];
 			std::string varName = vv;
 			std::vector<std::string> tokens;
 			IuStringUtils::Split(vv, "|", tokens, -1);

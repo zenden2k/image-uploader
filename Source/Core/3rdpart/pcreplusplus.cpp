@@ -256,11 +256,11 @@ string Pcre::_replace_vars(const string& piece) {
   while ( dollar.search( with ) ) {
     // let's do some conversion first
     __pcredebug << "Pcre::dollar matched: " << piece << ". Match(0): " << dollar.get_match(0) << endl;
-    int iBracketIndex = atoi( dollar.get_match(0).data() );
+    int iBracketIndex = atoi( dollar.get_match(1).data() );
     string sBracketContent = get_match(iBracketIndex);
     
     // now we can splitt the stuff
-    string sSubSplit = "\\$" + dollar.get_match(0);
+    string sSubSplit = "\\$" + dollar.get_match(1);
     Pcre subsplit(sSubSplit);
                 
     // normally 2 (or more) parts, the one in front of and the other one after "$1"
@@ -358,14 +358,14 @@ bool Pcre::dosearch(const string& stuff, int OffSet){
     resultset = new vector<string>;
     const char **stringlist;
     did_match = true;
-    num_matches = num - 1;
+    num_matches = num /*- 1*/;
 
     __pcredebug << " - match with " << num_matches << " substrings" << endl;
 
     int res = pcre_get_substring_list((char *)stuff.c_str(), sub_vec, num, &stringlist);
     if(res == 0) {
       __pcredebug << "Pcre::dosearch(): matched substrings: " << endl;
-      for(int i=1; i<num; i++) {
+      for(int i=0; i<num; i++) {
 	__pcredebug << " " << string(stringlist[i]) << endl;
 	resultset->push_back(stringlist[i]);
       }
