@@ -11,6 +11,9 @@ class CoreUtilsTest : public ::testing::Test {
 };
  using namespace IuCoreUtils;
 
+const char * constSizeFileName = "TestData/file_with_const_size.png";
+int64_t contSizeFileSize = 14830;
+
 TEST_F(CoreUtilsTest, ExtractFilePath) 
 {
     std::string fileName = "c:\\Program Files (x86)\\Image Uploader\\Image Uploader.exe";
@@ -126,3 +129,24 @@ TEST_F(CoreUtilsTest, Utf8ToWstring)
     result = Utf8ToWstring("test test");
     EXPECT_EQ(result, L"test test");
 }
+
+TEST_F(CoreUtilsTest, getFileSize)
+{
+    int64_t size = IuCoreUtils::getFileSize("not_existing_file22342343");
+    EXPECT_EQ(size, 0);
+    size = IuCoreUtils::getFileSize(constSizeFileName);
+    EXPECT_EQ(size, contSizeFileSize);
+}
+
+
+TEST_F(CoreUtilsTest, copyFile)
+{
+    const char * destFile = "TestData/AnotherFolder/new_file.png";
+    bool res = IuCoreUtils::copyFile(constSizeFileName, destFile, true);
+    EXPECT_EQ(res, true);
+    EXPECT_EQ(IuCoreUtils::FileExists(destFile), true);
+    int64_t size = IuCoreUtils::getFileSize(destFile);
+    EXPECT_EQ(size, contSizeFileSize);
+}
+
+int ttt;

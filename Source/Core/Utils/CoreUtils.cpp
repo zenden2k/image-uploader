@@ -257,7 +257,7 @@ bool ReadUtf8TextFile(Utf8String utf8Filename, Utf8String& data)
 {
 	FILE *stream = fopen_utf8(utf8Filename.c_str(), "rb");
 	if(!stream) return false;
-        long size = getFileSize(utf8Filename);
+    int size = static_cast<int>(getFileSize(utf8Filename));
 	unsigned char buf[3];
 	fread(buf, 1, 3, stream);	
 

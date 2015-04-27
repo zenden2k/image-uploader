@@ -201,7 +201,7 @@ bool RemoveFile(const Utf8String& utf8Filename) {
 }
 
 bool MoveFileOrFolder(const Utf8String& from ,const Utf8String& to) {
-	return MoveFile(IuCoreUtils::Utf8ToWstring(from).c_str() ,IuCoreUtils::Utf8ToWstring(to).c_str());
+	return MoveFile(IuCoreUtils::Utf8ToWstring(from).c_str() ,IuCoreUtils::Utf8ToWstring(to).c_str()) != FALSE;
 }
 
 }
