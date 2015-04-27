@@ -450,7 +450,7 @@ int64_t getFileSize(Utf8String utf8Filename)
    #else
       _stati64 stats;
    #endif
-
+      memset(&stats, 0, sizeof(stats));
    _wstati64(Utf8ToWstring(utf8Filename).c_str(), &stats);
 #else
    struct stat64 stats;
