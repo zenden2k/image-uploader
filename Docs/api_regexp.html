@@ -142,7 +142,7 @@ Positions are starting at 0.<br>
 Example:<br>
 <pre class="prettyprint">
 
-local regex = CRegExp("([0-9]+)");               // search for numerical characters
+local regex = CRegExp("([0-9]+)", "");               // search for numerical characters
 regex.search("The 11th september.");  // do the search on this string
 local day = regex.getMatch(0);      // returns "11"
 local pos = regex.getMatchStart(0);   // returns 4, because "11" begins at the
@@ -161,7 +161,7 @@ Positions are starting at 0.<br>
 Example:<br>
 <pre class="prettyprint">
 
-local regex = CRegExp("([0-9]+)");               // search for numerical characters
+local regex = CRegExp("([0-9]+)", "");               // search for numerical characters
 regex.search("The 11th september.");  // do the search on this string
 local day = regex.getMatch(0);      // returns "11"
 local pos = regex.getMatchEnd(0);     // returns 5, because "11" ends at the
@@ -175,7 +175,7 @@ the entire match within the searched string.<br>
 
 Example:<br>
 <pre class="prettyprint">
-local regex = CRegExp("([0-9]+)\\s([a-z]+)");     // search for the date(makes 2 substrings
+local regex = CRegExp("([0-9]+)\\s([a-z]+)","");     // search for the date(makes 2 substrings
 regex.search("The 11th september.");  // do the search on this string
 local pos = regex.getEntireMatchStart();    // returns 4, because "11th september" begins at the
                                      // 4th character inside the search string.
@@ -190,7 +190,7 @@ the entire match within the searched string.<br>
 Example:<br>
 <pre class="prettyprint">
 
-local regex = CRegExp("([0-9]+)([a-z]+)\\s([a-z]+)");     // search for the date(makes 2 substrings
+local regex = CRegExp("([0-9]+)([a-z]+)\\s([a-z]+)","");     // search for the date(makes 2 substrings
 regex.search("The 11th september.");  // do the search on this string
 local pos = regex.getMatchEnd();      // returns 17, because "11th september", which is
                                            // the entire match, ends at the
