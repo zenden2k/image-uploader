@@ -42,29 +42,35 @@ libraries (squirrel, glog, jsoncpp) against your compiler version (so I recommen
 If you are using Visual Studio prior to 2010 version, you have to install Microsoft Windows 7 Platform SDK (or later) for enabling Windows 7 related features.
 Also yoo need to install "msinttypes" headers. 
 
-In order to compile Image Uploader you will need the following libraries:
+You can download ALL necessary libraries and headers (precompiled for MSVC 2013) by following link:
+
+https://bintray.com/artifact/download/zenden/zenden-image-uploader/Image_Uploader_Contrib_MSVC_2013_and_sources_v1.3.2_25.04.2015.7z
+
+mirror https://docs.google.com/file/d/0B_RKTUl10DcraUpKU1hneTBCQU0/edit?usp=drivesdk
+
+Image Uploader is using the following libraries:
 
 WTL             http://sourceforge.net/projects/wtl/
 
-libcurl         http://curl.haxx.se/libcurl/
+libcurl         http://curl.haxx.se/libcurl/ (patched version)
 
 openssl         https://www.openssl.org
 
 zlib            http://www.zlib.net
 
-Boost           http://www.boost.org
+Boost           http://www.boost.org (patched version)
 
 pcre            http://www.pcre.org
 
-pcre++          http://www.daemon.de/PCRE
+pcre++          http://www.daemon.de/PCRE (patched version)
 
-squirrel        http://squirrel-lang.org
+squirrel        http://squirrel-lang.org (patched version)
 
-sqplus          http://sourceforge.net/projects/sqplus/
+sqrat		    http://scrat.sourceforge.net (patched version)
 
 ffmpeg          https://www.ffmpeg.org
 
-Boost.Process   https://github.com/zenden2k/boost-process-utf8
+Boost.Process   https://github.com/zenden2k/boost-process-utf8 (patched version with utf-8 support)
 
 tinyxml         http://sourceforge.net/projects/tinyxml/
 
@@ -73,13 +79,6 @@ minizip         http://www.winimage.com/zLibDll/minizip.html
 jsoncpp         https://github.com/open-source-parsers/jsoncpp
 
 glog            https://github.com/google/glog
-
-
-You can download ALL necessary libraries and headers (precompiled for MSVC 2013) by following link:
-
-https://bintray.com/artifact/download/zenden/zenden-image-uploader/Image_Uploader_Contrib_MSVC_2013_and_sources_v1.3.2_25.04.2015.7z
-
-mirror https://docs.google.com/file/d/0B_RKTUl10DcraUpKU1hneTBCQU0/edit?usp=drivesdk
 
 If you want to compile strmbase.lib by yourself you will need:
 
