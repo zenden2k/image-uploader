@@ -242,7 +242,7 @@
 	</Server>
 	<Server Name="ipic.su">
 	<Actions>
-		<Action Type="upload" Url="http://ipic.su/" PostParams="link=/;action=loadimg;client=ipic.su;image=%filename%;name=;desc=;cropselect=800;tnsize=150;quality=85;" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
+		<Action Type="upload" Url="http://ipic.su/" PostParams="link=/;action=loadimg;client=ipic.su;image=%filename%;name=;desc=;cropselect=800;tnsize=150;quality=85;origin=on" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
 	</Actions>
 	<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
