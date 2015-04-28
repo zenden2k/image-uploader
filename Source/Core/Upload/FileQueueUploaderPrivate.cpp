@@ -1,7 +1,5 @@
 ﻿#include "FileQueueUploaderPrivate.h"
 
-#include <thread>
-#include <algorithm>
 #include "DefaultUploadEngine.h"
 #include "FileQueueUploader.h"
 #include "Uploader.h"
@@ -9,26 +7,8 @@
 #include "Gui/Dialogs/LogWindow.h"
 #include "UploadEngineManager.h"
 #include "Core/Upload/UploadFilter.h"
-
-/* private CFileQueueUploaderPrivate class */
-/*class FileQueueUploaderPrivate::Runnable
-#ifndef IU_CLI
-	: public ZThread::Runnable
-#endif
-
-{
-public:
-	FileQueueUploaderPrivate* uploader_;
-	Runnable(FileQueueUploaderPrivate* uploader)
-	{
-		uploader_ = uploader;
-	}
-
-	virtual void run()
-	{
-		uploader_->run();
-	}
-};*/
+#include <thread>
+#include <algorithm>
 
 TaskAcceptorBase::TaskAcceptorBase(bool useMutex )
 {
@@ -97,18 +77,6 @@ bool FileQueueUploaderPrivate::onNeedStopHandler() {
 	return m_NeedStop;
 }
 
-void FileQueueUploaderPrivate::onProgress(CUploader* uploader, InfoProgress progress) {
-	auto task = uploader->currentTask();
-	UploadProgress* prog = task->progress();
-	prog->totalUpload = progress.Total;
-	prog->uploaded = progress.Uploaded;
-	prog->isUploading = progress.IsUploading;
-	
-	if (task->OnUploadProgress) {
-		task->OnUploadProgress(task.get());
-	}
-}
-
 void FileQueueUploaderPrivate::onErrorMessage(CUploader*, ErrorInfo ei)
 {
 	DefaultErrorHandling::ErrorMessage(ei);
@@ -122,13 +90,6 @@ void FileQueueUploaderPrivate::onDebugMessage(CUploader*, const std::string& msg
 void FileQueueUploaderPrivate::onTaskAdded(UploadSession*, UploadTask* task)
 {
 	sessionsMutex_.lock();
-	/*FileUploadTask* fut = dynamic_cast<FileUploadTask*>(task);
-	if ( fut )
-	{
-		FileUploadTask* parent = dynamic_cast<FileUploadTask*>(fut->parentTask());
-		LOG(ERROR) << "FileQueueUploaderPrivate::onTaskAdded " << fut->getFileName() << (parent ? "\r\nparent="+parent->getDisplayName() : "");
-		
-	}*/
 	startFromSession_ = 0;
 	sessionsMutex_.unlock();
 	taskAdded(task);
@@ -159,9 +120,6 @@ void FileQueueUploaderPrivate::OnConfigureNetworkClient(CUploader* uploader, Net
 	{
 		queueUploader_->OnConfigureNetworkClient(queueUploader_, nm);
 	}
-	/*if (callback_) {
-		callback_->OnConfigureNetworkClient(queueUploader_, nm);
-	}*/
 }
 
 std_tr::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
@@ -198,8 +156,6 @@ void FileQueueUploaderPrivate::AddTask(std_tr::shared_ptr<UploadTask>  task) {
 	std::shared_ptr<UploadSession> session(new UploadSession());
 	session->addTask(task);
 	AddSession(session);
-	//serverThreads_[task->serv].waitingFileCount++;
-	//AddFile(newTask);
 }
 
 void FileQueueUploaderPrivate::AddSession(std::shared_ptr<UploadSession> uploadSession)
@@ -267,7 +223,6 @@ void FileQueueUploaderPrivate::start() {
 		m_nRunningThreads++;
 		std::thread t1(&FileQueueUploaderPrivate::run, this);
 		t1.detach();
-
 	}
 }
 
@@ -297,7 +252,6 @@ void FileQueueUploaderPrivate::run()
 		//serverThreads_[serverName].runningThreads++;
 		mutex_.unlock();
 
-		//uploader.onProgress.bind(this, &FileQueueUploaderPrivate::onProgress);
         bool res = true;
 		for (int i = 0; i < filters_.size(); i++) {
             res = res && filters_[i]->PreUpload(it.get()); // ServerProfile can be changed in PreUpload filters
@@ -321,27 +275,24 @@ void FileQueueUploaderPrivate::run()
 		uploader.setUploadEngine(engine);
 		uploader.onNeedStop.bind(this, &FileQueueUploaderPrivate::onNeedStopHandler);
         it->setStatusText(_("Starting upload"));
-		//LOG(ERROR) << "uploader.Upload(it) " << (fut ? fut->getFileName() : "NULL");
+
 		res = uploader.Upload(it);
-		//LOG(ERROR) << "uploader.Upload(it) finished " << (fut ? fut->getFileName() : "NULL");
+
         it->setUploadSuccess(res);
-#ifndef IU_CLI
+
 		serverThreadsMutex_.lock();
-#endif
+
         if (!res && uploader.isFatalError())
 		{
             session->setFatalErrorForServer(serverName, profileName);
 			//serverThreads_[serverName].fatalError = true;
 		}
 		serverThreads_[serverName].runningThreads--;
-#ifndef IU_CLI
-		serverThreadsMutex_.unlock();
-#endif
 
-		// m_CS.Lock();
-#ifndef IU_CLI
+		serverThreadsMutex_.unlock();
+
 		callMutex_.lock();
-#endif
+
 		UploadResult* result = it->uploadResult();
 		result->serverName = serverName;
 

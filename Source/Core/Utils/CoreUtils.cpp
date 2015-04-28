@@ -437,7 +437,7 @@ static int64_t zstrtoll(const char *nptr, const char **endptr, register int base
     return acc;
 }
 
-int64_t stringToint64_t(const Utf8String fileName)
+int64_t stringToInt64(const Utf8String fileName)
 {
     return zstrtoll(fileName.c_str(), 0, 10 , 0);
 }

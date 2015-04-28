@@ -99,9 +99,9 @@ TEST_F(CoreUtilsTest, int64_tToString)
 
 TEST_F(CoreUtilsTest, stringToint64_t) 
 {
-    EXPECT_TRUE(stringToint64_t("9223372036854775807")== 9223372036854775807);
-    EXPECT_TRUE(stringToint64_t("-9223372036854775808")== -9223372036854775808);
-    EXPECT_TRUE(stringToint64_t("0")== 0);
+    EXPECT_TRUE(stringToInt64("9223372036854775807")== 9223372036854775807);
+    EXPECT_TRUE(stringToInt64("-9223372036854775808")== -9223372036854775808);
+    EXPECT_TRUE(stringToInt64("0")== 0);
 }
 
 TEST_F(CoreUtilsTest, GetDefaultExtensionForMimeType) 

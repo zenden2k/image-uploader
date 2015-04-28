@@ -181,7 +181,7 @@ bool SimpleXmlNode::AttributeBool(const std::string& name) const
 
 int64_t SimpleXmlNode::AttributeInt64(const std::string& name) const
 {
-	return IuCoreUtils::stringToint64_t(Attribute(name).c_str());
+	return IuCoreUtils::stringToInt64(Attribute(name).c_str());
 }
 
 void SimpleXmlNode::SetAttribute(const std::string& name, const std::string& value)

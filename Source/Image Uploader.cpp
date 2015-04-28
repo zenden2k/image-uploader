@@ -34,6 +34,8 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <vld.h>
+
 CAppModule _Module;
 
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)

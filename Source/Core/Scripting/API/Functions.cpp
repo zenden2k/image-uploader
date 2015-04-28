@@ -84,10 +84,10 @@ Sqrat::Table GetAppVersion() {
 	std::vector<std::string> tokens;
 	IuStringUtils::Split(ver,".", tokens, 3);
 	if ( tokens.size() >=3 ) {
-		res.SetValue("Major", (SQInteger)IuCoreUtils::stringToint64_t(tokens[0]));
-		res.SetValue("Minor", (SQInteger)IuCoreUtils::stringToint64_t(tokens[1]));
-		res.SetValue("Release", (SQInteger)IuCoreUtils::stringToint64_t(tokens[2]));
-		res.SetValue("Build", (SQInteger)IuCoreUtils::stringToint64_t(BUILD));
+		res.SetValue("Major", (SQInteger)IuCoreUtils::stringToInt64(tokens[0]));
+		res.SetValue("Minor", (SQInteger)IuCoreUtils::stringToInt64(tokens[1]));
+		res.SetValue("Release", (SQInteger)IuCoreUtils::stringToInt64(tokens[2]));
+		res.SetValue("Build", (SQInteger)IuCoreUtils::stringToInt64(BUILD));
 		bool isGui = 
 #ifndef IU_CLI
 			true;

@@ -56,9 +56,9 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 	std::string ver = _APP_VER;
 	std::vector<std::string> tokens;
 	IuStringUtils::Split(ver,".", tokens, 3);
-	int majorVersion = (int)IuCoreUtils::stringToint64_t(tokens[0]);
-	int minorVersion = (int)IuCoreUtils::stringToint64_t(tokens[1]+tokens[2]);
-	int build = (int)IuCoreUtils::stringToint64_t(BUILD);
+	int majorVersion = (int)IuCoreUtils::stringToInt64(tokens[0]);
+	int minorVersion = (int)IuCoreUtils::stringToInt64(tokens[1]+tokens[2]);
+	int build = (int)IuCoreUtils::stringToInt64(BUILD);
 
 	for(size_t i=0; i<childs.size(); i++)
 	{
@@ -67,7 +67,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 		UE.NumOfTries = 0;
 		UE.NeedAuthorization = cur.AttributeInt("Authorize");
 		std::string needPassword = cur.Attribute("NeedPassword");
-		UE.NeedPassword = needPassword.empty() ? true : (bool)IuCoreUtils::stringToint64_t(needPassword);
+		UE.NeedPassword = needPassword.empty() ? true : (bool)IuCoreUtils::stringToInt64(needPassword);
 		
 		std::string RetryLimit = cur.Attribute("RetryLimit");
 		if(RetryLimit.empty())
@@ -85,9 +85,9 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 				std::vector<std::string> tokens;
 				IuStringUtils::Split(serverMinVersion,".", tokens, 4);
 				if ( tokens.size() >= 3 ) {
-					int serverMajorVersion = (int)IuCoreUtils::stringToint64_t(tokens[0]);
-					int serverMinorVersion = (int)IuCoreUtils::stringToint64_t(tokens[1]+tokens[2]);
-					int serverBuild = tokens.size() > 3 ? IuCoreUtils::stringToint64_t(tokens[3]) : 0;
+					int serverMajorVersion = (int)IuCoreUtils::stringToInt64(tokens[0]);
+					int serverMinorVersion = (int)IuCoreUtils::stringToInt64(tokens[1]+tokens[2]);
+					int serverBuild = tokens.size() > 3 ? IuCoreUtils::stringToInt64(tokens[3]) : 0;
 					if ( !( majorVersion > serverMajorVersion || ( majorVersion == serverMajorVersion && minorVersion > serverMinorVersion) 
 						|| ( majorVersion == serverMajorVersion && minorVersion ==  serverMinorVersion && ( !serverBuild || build >= serverBuild ))
 						) ) {
@@ -117,9 +117,8 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 					UE.MaxThreads = 1;
 				}
 			}
-			if (UE.MaxThreads < 0)
-			{
-				UE.MaxThreads = 0;
+            if (UE.PluginName == "directory" && MaxThreadsStr.empty() ) {
+				UE.MaxThreads = 1;
 			}
 		
 			UE.UsingPlugin = !UE.PluginName.empty();

@@ -63,7 +63,6 @@ public:
 protected:
 	bool onNeedStopHandler();
 	void OnConfigureNetworkClient(CUploader*, NetworkClient* nm);
-	void onProgress(CUploader*, InfoProgress progress);
 	void onErrorMessage(CUploader*, ErrorInfo);
 	void onDebugMessage(CUploader*, const std::string& msg, bool isResponseBody);
 	void onTaskAdded(UploadSession*, UploadTask*);

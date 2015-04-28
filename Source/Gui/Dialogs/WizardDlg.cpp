@@ -94,6 +94,10 @@ CWizardDlg::~CWizardDlg()
 		CWizardPage *p = Pages[i];
 		if(Pages[i]) delete p;
 	}
+    delete uploadManager_;
+    delete uploadEngineManager_;
+    delete scriptsManager_;
+
 }
 
 TCHAR MediaInfoDllPath[MAX_PATH] = _T("");

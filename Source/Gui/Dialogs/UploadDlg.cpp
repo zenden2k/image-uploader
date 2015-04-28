@@ -658,6 +658,11 @@ bool CUploadDlg::OnHide()
 	ResultsWindow->Clear();
 	uploadManager_->removeSession(uploadSession_);
 	uploadSession_.reset();
+    for (auto it : files_)
+    {
+        delete it;
+    }
+    files_.clear();
 	
 	Settings.UseTxtTemplate = (SendDlgItemMessage(IDC_USETEMPLATE, BM_GETCHECK) == BST_CHECKED);
 	Settings.CodeType = ResultsWindow->GetCodeType();

@@ -17,6 +17,11 @@ UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList)
 UploadEngineManager::~UploadEngineManager()
 {
 	UnloadPlugins();
+    for (auto sync : serverSyncs_)
+    {
+        delete sync.second;
+    }
+    serverSyncs_.clear();
 }
 
 CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serverProfile)

@@ -963,7 +963,9 @@
     <ClCompile Include="Source\Core\Upload\UploadManager.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadSession.cpp" />
     <ClCompile Include="Source\Gui\Controls\ResultsListView.cpp" />
-    <ClCompile Include="Source\Image Uploader.cpp" />
+    <ClCompile Include="Source\Image Uploader.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
     <ClCompile Include="Source\Core\Logging.cpp" />
     <ClCompile Include="Source\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

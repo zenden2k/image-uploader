@@ -19,6 +19,16 @@ CBTHookCallbackBase* AvailableCallbackSlots[kMaxCallbacks] = {
     new DynamicCBTHookCallback<0x0F>(),*/
 };
 
+struct Dummy {
+    ~Dummy()
+    {
+        for (auto it : AvailableCallbackSlots)
+        {
+            delete it;
+        }
+    }
+};
+Dummy dummyObject;
 
 CBTHookMemberFunctionCallback::CBTHookMemberFunctionCallback(CWebViewWindow* instance, LPFN_CBTHookMemberFunctionCallback method)
 {
