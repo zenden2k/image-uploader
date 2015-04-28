@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['ciuuploadparams',['CIUUploadParams',['../class_c_i_u_upload_params.html',1,'']]],
-  ['cwebbrowser',['CWebBrowser',['../class_script_a_p_i_1_1_c_web_browser.html',1,'ScriptAPI']]]
+  ['addqueryheader',['addQueryHeader',['../class_network_client.html#af32dea52db34ae547340d834cd652f3c',1,'NetworkClient']]]
 ];

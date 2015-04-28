@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.9.1"/>
-<title>Image Uploader Scripting API: Main Page</title>
+<title>Image Uploader Scripting API: Image Uploader Scripting API</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -77,13 +77,88 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div class="header">
   <div class="headertitle">
-<div class="title">Image Uploader Scripting API Documentation</div>  </div>
+<div class="title">Image Uploader Scripting API </div>  </div>
 </div><!--header-->
 <div class="contents">
-</div><!-- contents -->
+<div class="textblock"><dl class="section version"><dt>Version</dt><dd>1.3.2 <br />
+ <hr/>
+ </dd></dl>
+<h1><a class="anchor" id="Contents"></a>
+Contents</h1>
+<ol type="1">
+<li><a class="el" href="index.html#Introduction">Introduction</a></li>
+<li><a class="el" href="index.html#Example">Example</a></li>
+<li><a class="el" href="implement_8h.html#Implement">Functions to implement</a> </li>
+</ol>
+<h1><a class="anchor" id="Introduction"></a>
+Introduction</h1>
+<p>Image Uploader is using scripts written in <a href="http://www.squirrel-lang.org/" target="_blank">Squirrel 3</a> language. Squirrel is a high level imperative, object-oriented programming language, designed to be a light-weight scripting language that fits in the size, memory bandwidth, and real-time requirements of applications like video games.</p>
+<p><a href="http://www.squirrel-lang.org/doc/squirrel3.html" target="_blank">Squirrel 3.0 reference manual</a><br />
+ <a href="http://www.squirrel-lang.org/doc/sqstdlib3.html" target="_blank">Squirrel 3.0 Standard Libraries manual</a></p>
+<p>Scripts should be saved in utf-8 encoding in files with <code>.nut</code> extension and placed in the Data/Scripts directory. </p><hr/>
+<h1><a class="anchor" id="Example"></a>
+Example</h1>
+<div class="fragment"><div class="line">test &lt;- <span class="stringliteral">&quot;example&quot;</span>; <span class="comment">// global variable</span></div>
+<div class="line"></div>
+<div class="line"><span class="keyword">function</span>  <a class="code" href="implement_8h.html#a1d89941256771991813e93f27d060a00">UploadFile</a>(pathToFile, options)</div>
+<div class="line">{</div>
+<div class="line">    nm.setUrl(<span class="stringliteral">&quot;http://example.com/upload.php&quot;</span>);</div>
+<div class="line">    nm.addQueryParamFile(<span class="stringliteral">&quot;file&quot;</span>, pathToFile, ExtractFileName(pathToFile),<span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line">    nm.addQueryParam(<span class="stringliteral">&quot;submit&quot;</span>, <span class="stringliteral">&quot;Upload file!&quot;</span>);</div>
+<div class="line">    nm.doUploadMultipartData();</div>
+<div class="line"></div>
+<div class="line">    local response = nm.responseBody(); <span class="comment">// &#39;local&#39; it&#39;s like javascript&#39;s &#39;var&#39; but only for local variables</span></div>
+<div class="line">    local directUrl = regex_simple(response, <span class="stringliteral">&quot;\\[IMG\\](.+)\\[/IMG\\]&quot;</span>,0);</div>
+<div class="line">    </div>
+<div class="line">    options.setDirectUrl(directUrl);</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordflow">return</span> 1; <span class="comment">//успех</span></div>
+<div class="line">}</div>
+<div class="line"></div>
+<div class="line"><span class="keyword">function</span> regex_simple(data,regStr,start)</div>
+<div class="line">{</div>
+<div class="line">    local ex = regexp(regStr);</div>
+<div class="line">    local res = ex.capture(data, start);</div>
+<div class="line">    local resultStr = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line">    <span class="keywordflow">if</span>(res != null){    </div>
+<div class="line">        resultStr = data.slice(res[1].begin, res[1].end);</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keywordflow">return</span> resultStr;</div>
+<div class="line">}</div>
+<div class="line"></div>
+<div class="line"><span class="keyword">function</span> GetFolderList(list)</div>
+<div class="line">{</div>
+<div class="line">    <span class="comment">// Ваш код</span></div>
+<div class="line">    <span class="keywordflow">return</span> 1; <span class="comment">//успех</span></div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">function</span> CreateFolder(parentAlbum,album)</div>
+<div class="line">{</div>
+<div class="line">    <span class="comment">// Ваш код</span></div>
+<div class="line">    <span class="keywordflow">return</span> 1; <span class="comment">//успех</span></div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">function</span> ModifyFolder(album)</div>
+<div class="line">{</div>
+<div class="line">    <span class="comment">// Ваш код</span></div>
+<div class="line">    <span class="keywordflow">return</span> 1; <span class="comment">//успех</span></div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Функция, возвращающая список видов ограничений доступа к альбому:</span></div>
+<div class="line"><span class="comment">// приватный, общедоступный, только для друзей и т.п.</span></div>
+<div class="line"><span class="comment">// @return array </span></div>
+<div class="line"><span class="keyword">function</span> <a class="code" href="implement_8h.html#ae33a0f10bddfe575bd4d42d893b43050">GetFolderAccessTypeList</a>()</div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordflow">return</span> [<span class="stringliteral">&quot;ТипДоступа1&quot;</span>, <span class="stringliteral">&quot;ТипДоступа2&quot;</span>];</div>
+<div class="line">}</div>
+</div><!-- fragment --> <p>You have to implement at least one function — <code>UploadFile</code>.<br />
+ If you want to support album listing/creating/modifying, you have to implement also <code>GetFolderList</code>, <code>CreateFolder</code>, <code>ModifyFolder</code>, <code>GetFolderAccessTypeList</code>.</p>
+<p><code>nm</code> - global object - an instance of <a href="api_networkclient.html">NetworkClient</a><br />
+ <code>ServerParams</code> - global object - an instance of <a href="api_smallclasses.html#CServerParams">CServerParams</a> </p>
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 27 2015 15:39:25 for Image Uploader Scripting API by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 28 2015 18:12:46 for Image Uploader Scripting API by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['sethidden',['setHidden',['../class_script_a_p_i_1_1_process.html#ac36a6264460bf9bdea524f718d16da9a',1,'ScriptAPI::Process']]],
-  ['setoutputencoding',['setOutputEncoding',['../class_script_a_p_i_1_1_process.html#a6b04ae9ff4e1e4827d98c139c813c797',1,'ScriptAPI::Process']]]
+  ['doget',['doGet',['../class_network_client.html#aa1cb1b05df70c8fe67e70e3c7b2f71e7',1,'NetworkClient']]],
+  ['dopost',['doPost',['../class_network_client.html#a74ef346745086d1ec63de56a2386a300',1,'NetworkClient']]],
+  ['doupload',['doUpload',['../class_network_client.html#a7d69a903422fe00ec7cc7caa07dccb99',1,'NetworkClient']]],
+  ['douploadmultipartdata',['doUploadMultipartData',['../class_network_client.html#a4b414da668e16596a7c0d42a243ce779',1,'NetworkClient']]]
 ];
