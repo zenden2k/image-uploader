@@ -48,7 +48,16 @@ public:
 	void setOuterHTML(const std::string& html);
 	const std::string getOuterText();
 	void setOuterText(const std::string& text);
+    /**
+    Set value of an input element.
+    Note: support of <input type="file" /> in this function is considered experimental. 
+    It works asynchronously. Do not call this function again until FileInputFilledCallback is called.
+    */
 	void setValue(const std::string& value);
+
+    /**
+    Get value of an input element.
+    */
 	const std::string getValue();
 	const std::string getTagName();
 	HtmlElement getParentElement();
@@ -61,6 +70,10 @@ public:
 	Sqrat::Array getFormElements();
 	bool submitForm();
 	bool isNull();
+
+    /**
+    Return an array containg child HtmlElements.
+    */
 	Sqrat::Array getChildren();
 	friend class HtmlDocumentPrivate;
 protected:

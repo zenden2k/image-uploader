@@ -61,14 +61,19 @@ struct UploadAction
 	int NumOfTries;
 };
 
-struct CFolderItem
+/**
+CFolderItem class
+*/
+class CFolderItem
 {
+public:
 	CFolderItem()
 	{
 		accessType = 0;
 		itemCount = -1;
 	}
 
+    /*! @cond PRIVATE */
 	std::string title;
 	std::string summary;
 	std::string id;
@@ -76,6 +81,7 @@ struct CFolderItem
 	std::string viewUrl;
 	int accessType;
 	int itemCount;
+    /* @endcond */
 	const std::string getTitle() { return title;}
 	const std::string getSummary() { return summary;}
 	const std::string getId() { return (id);}

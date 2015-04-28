@@ -40,20 +40,40 @@ class WebBrowserPrivate;
 			~CWebBrowser();
 			bool navigateToUrl(const std::string& url);
 			void setTitle(const std::string& title);
+            /**
+            Returns current url.
+            */
 			const std::string url();
+
+            /**
+            Returns current page title or url if title is empty.
+            */
 			const std::string title();
+
+            /**
+            Show the web browser window and wait until it is closed. 
+            @return true (if the window was closed programatically), false - if the window was closed by user.
+            */
 			bool showModal();
+
+            /**
+            Mostly the same as showModal but the window may be hidden and does not block parent window.
+            */
 			bool exec();
 			void show();
 			void hide();
+
+            /**
+            Close the window. After call to this function, 
+            showModal() or exec() stops execution and returns true.
+            */
 			void close();
 			void setFocus();
-            void setOnUrlChangedCallback(Sqrat::Function callBack, Sqrat::Object context);
-			void setOnNavigateErrorCallback(Sqrat::Function callBack, Sqrat::Object context);
-			void setOnLoadFinishedCallback(Sqrat::Function callBack, Sqrat::Object context);
-			void setOnTimerCallback(int timerInterval, Sqrat::Function callBack, Sqrat::Object context);
-			void setOnFileInputFilledCallback(Sqrat::Function callBack, Sqrat::Object context);
-			const std::string getDocumentContents();
+                    
+            /**
+            Returns current page contents.
+            */
+            const std::string getDocumentContents();
 			HtmlDocument document();
 			bool setHtml(const std::string& html);
 			const std::string runJavaScript(const std::string& code);
@@ -61,6 +81,13 @@ class WebBrowserPrivate;
 			void setSilent(bool silent);
 			void addTrustedSite(const std::string& domain);
 			int getMajorVersion();
+
+            void setOnUrlChangedCallback(Sqrat::Function callBack, Sqrat::Object context);
+            void setOnNavigateErrorCallback(Sqrat::Function callBack, Sqrat::Object context);
+            void setOnLoadFinishedCallback(Sqrat::Function callBack, Sqrat::Object context);
+            void setOnTimerCallback(int timerInterval, Sqrat::Function callBack, Sqrat::Object context);
+            void setOnFileInputFilledCallback(Sqrat::Function callBack, Sqrat::Object context);
+
 			
 			friend class WebBrowserPrivate;
 		protected:

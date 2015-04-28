@@ -5,6 +5,7 @@
 #include <mutex>
 #include <memory>
 #include <string>
+#include <map>
 
 class ThreadSyncPrivate
 {

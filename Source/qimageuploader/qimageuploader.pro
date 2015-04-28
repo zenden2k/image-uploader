@@ -206,6 +206,7 @@ LIBS+=  -lsqplus  -lsquirrel -lsqstdlib  -ljsoncpp -lpcre
 win32 {
 INCLUDEPATH += $$_PRO_FILE_PWD_/../../Contrib/include/BaseClasses
 INCLUDEPATH += $$_PRO_FILE_PWD_/../../Contrib/include/DX
+INCLUDEPATH += $$_PRO_FILE_PWD_/../../Contrib/Source/boost/
 LIBS += -lstrmbase -lgdi32
 }
 
@@ -244,6 +245,6 @@ win32 {
 }
 
 RESOURCES += \
-    ImageUploaderQt.qrc
+    qimageuploader.qrc
 
 #include(3rdparty/qtdotnetstyle.pri)

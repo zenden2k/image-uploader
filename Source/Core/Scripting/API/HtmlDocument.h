@@ -21,6 +21,9 @@ public:
 	Sqrat::Array getElementsByTagName(const std::string& tag);
 	Sqrat::Array getElementsByName(const std::string& name);
 	HtmlElement querySelector(const std::string& query);
+    /**
+    Return an array of HtmlElement matched to query.
+    */
 	Sqrat::Array querySelectorAll(const std::string& query);
 	const std::string getHTML();
 protected:

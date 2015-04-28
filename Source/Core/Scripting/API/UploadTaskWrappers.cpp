@@ -279,6 +279,23 @@ void RegisterUploadTaskWrappers(Sqrat::SqratVM& vm) {
     HSQUIRRELVM hvm = vm.GetVM();
     Class<ServerProfile> serverProfileClass(hvm, "ServerProfile");
     root.Bind("ServerProfile", serverProfileClass);
+
+    root.Bind("UploadResult", Class<UploadResult>(hvm, "UploadResult").
+        Func("getDirectUrl", &UploadResult::getDirectUrl).
+        Func("setDirectUrl", &UploadResult::setDirectUrl).
+        Func("getDirectUrlShortened", &UploadResult::getDirectUrlShortened).
+        Func("setDirectUrlShortened", &UploadResult::setDirectUrlShortened).
+        Func("getThumbUrl", &UploadResult::getThumbUrl).
+        Func("setThumbUrl", &UploadResult::setThumbUrl).
+        Func("getDownloadUrl", &UploadResult::getDownloadUrl).
+        Func("setDownloadUrl", &UploadResult::setDownloadUrl).
+        Func("getDownloadUrlShortened", &UploadResult::getDownloadUrlShortened).
+        Func("setDownloadUrlShortened", &UploadResult::setDownloadUrlShortened).
+        Func("getServerName", &UploadResult::getServerName).
+        Func("setServerName", &UploadResult::setServerName).
+        Func("setServerName", &UploadResult::setServerName)
+        );
+
     root.Bind("UploadTaskBase", Class<UploadTaskWrapperBase>(hvm, "UploadTaskBase").
         Func("role", &UploadTaskWrapperBase::role).
         Func("type", &UploadTaskWrapperBase::type).
@@ -292,7 +309,8 @@ void RegisterUploadTaskWrappers(Sqrat::SqratVM& vm) {
         Func("profileName", &UploadTaskWrapperBase::profileName).
         Func("serverProfile", &UploadTaskWrapperBase::serverProfile).
         Func("isNull", &UploadTaskWrapperBase::isNull).
-        Func("setStatusText", &UploadTaskWrapperBase::setStatusText)
+        Func("setStatusText", &UploadTaskWrapperBase::setStatusText).
+        Func("uploadResult", &UploadTaskWrapperBase::uploadResult)
         );
 
     root.Bind("FileUploadTask", DerivedClass<FileUploadTaskWrapper, UploadTaskWrapperBase>(hvm, "FileUploadTask").

@@ -51,11 +51,39 @@ class NetworkClient
 		~NetworkClient(void);
 		void addQueryParam(const std::string& name, const std::string& value);
 		void addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName = "", const std::string& contentType = "");
+        /**
+        Example:
+        @include networkclient_header.nut
+        */
 		void addQueryHeader(const std::string& name, const std::string& value);
 		void setUrl(const std::string& url);
+        /**
+        Example 1
+        @include networkclient_post.nut
+        Example 2
+        @include networkclient_post_raw.nut
+        */
 		bool doPost(const std::string& data="");
+        /**
+        Example
+        @include networkclient_upload.nut
+        */
 		bool doUploadMultipartData();
+
+        /**
+        Example 1
+        @include networkclient_put.nut
+        Example 2
+        @include networkclient_ftp.nut
+        */
 		bool doUpload(const std::string& fileName,const std::string &data);
+
+        /**
+        Example 1
+        @include networkclient_get.nut
+        Example 2 
+        @include networkclient_get_file.nut
+        */
 		bool doGet(const std::string &url="");
 		const std::string responseBody();
 		int responseCode();
@@ -85,7 +113,16 @@ class NetworkClient
         /*! @cond PRIVATE */
 		void setUploadBufferSize(const int size);
         /*! @endcond */
+        /**
+        Set the byte offset of current chunk, relative to the beginning of the full file.
+        @since 1.3.0
+        */
 		void setChunkOffset(double offset);
+
+        /**
+        Sets size of current chunk.
+        @since 1.3.0
+        */
 		void setChunkSize(double size);
         /*! @cond PRIVATE */
 		void setTreatErrorsAsWarnings(bool treat);
