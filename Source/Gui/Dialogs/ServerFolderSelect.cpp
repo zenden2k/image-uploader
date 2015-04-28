@@ -123,20 +123,23 @@ LRESULT CServerFolderSelect::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 
 DWORD CServerFolderSelect::Run()
 {
+    CScriptUploadEngine * script = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+    script->setNetworkClient(&m_NetworkClient);
 	if (m_FolderOperationType == foGetFolders)
 	{
 		int count = 0;
 
-		if (!m_pluginLoader)
+		if (!script)
 			return -1;
+
 
 		m_FolderList.Clear();
 		m_FolderMap.clear();
-		m_pluginLoader = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+       
 		NetworkClient networkClient;
 		IU_ConfigureProxy(networkClient);
-		m_pluginLoader->setNetworkClient(&networkClient);
-		int retCode = m_pluginLoader->getFolderList(m_FolderList);
+		script->setNetworkClient(&networkClient);
+		int retCode = script->getFolderList(m_FolderList);
 		if (retCode < 1)
 		{
 			if (retCode == -1)
@@ -159,7 +162,7 @@ DWORD CServerFolderSelect::Run()
 
 	else if (m_FolderOperationType == foCreateFolder)
 	{
-		m_pluginLoader->createFolder(CFolderItem(), m_newFolder);
+		script->createFolder(CFolderItem(), m_newFolder);
 		m_FolderOperationType = foGetFolders;
 		Run();
 		m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_newFolder.id)]);
@@ -167,11 +170,12 @@ DWORD CServerFolderSelect::Run()
 
 	else if (m_FolderOperationType == foModifyFolder) // Modifying an existing folder
 	{
-		m_pluginLoader->modifyFolder(m_newFolder);
+		script->modifyFolder(m_newFolder);
 		m_FolderOperationType = foGetFolders;
 		Run();
 		m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_newFolder.id)]);
 	}
+    uploadEngineManager_->clearThreadData();
 	BlockWindow(false);
 	return 0;
 }
