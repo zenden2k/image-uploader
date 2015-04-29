@@ -98,8 +98,8 @@ void FileQueueUploaderPrivate::onTaskAdded(UploadSession*, UploadTask* task)
 
 int FileQueueUploaderPrivate::pendingTasksCount()
 {
-	std::lock_guard<std::mutex> lock(serverThreadsMutex_);
-	std::lock_guard<std::mutex> lock2(sessionsMutex_);
+	std::lock_guard<std::recursive_mutex> lock(serverThreadsMutex_);
+    std::lock_guard<std::recursive_mutex> lock2(sessionsMutex_);
 	TaskAcceptorBase acceptor(false); // do not use mutex
 	acceptor.serverThreads_ = this->serverThreads_;
 	for (size_t i = startFromSession_; i < sessions_.size(); i++)
@@ -177,7 +177,7 @@ void FileQueueUploaderPrivate::AddSession(std::shared_ptr<UploadSession> uploadS
 
 void FileQueueUploaderPrivate::removeSession(std::shared_ptr<UploadSession> uploadSession)
 {
-	std::lock_guard<std::mutex> lock(sessionsMutex_);
+	std::lock_guard<std::recursive_mutex> lock(sessionsMutex_);
 	auto it = std::find(sessions_.begin(), sessions_.end(), uploadSession);
 	if (it != sessions_.end() )
 	{
@@ -291,7 +291,7 @@ void FileQueueUploaderPrivate::run()
 
 		serverThreadsMutex_.unlock();
 
-		callMutex_.lock();
+		//callMutex_.lock();
 
 		UploadResult* result = it->uploadResult();
 		result->serverName = serverName;
@@ -311,7 +311,7 @@ void FileQueueUploaderPrivate::run()
 		}
 		it->finishTask(res ? UploadTask::StatusFinished : UploadTask::StatusFailure);
 
-		callMutex_.unlock();
+		//callMutex_.unlock();
 
 	}
 	mutex_.lock();

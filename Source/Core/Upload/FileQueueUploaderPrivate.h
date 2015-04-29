@@ -32,7 +32,7 @@ public:
 	TaskAcceptorBase(bool useMutex = true);
 	bool canAcceptUploadTask(UploadTask* task) override;
 	std::map<std::string, ServerThreadsInfo> serverThreads_;
-	std::mutex serverThreadsMutex_;
+	std::recursive_mutex serverThreadsMutex_;
 	int fileCount;
 	bool useMutex_;
 
@@ -55,7 +55,7 @@ public:
 	volatile bool m_NeedStop;
 	bool m_IsRunning;
 	std::vector<std::shared_ptr<UploadSession>> sessions_;
-	std::mutex sessionsMutex_;
+    std::recursive_mutex sessionsMutex_;
 	std::vector<UploadFilter*> filters_;
 	int m_nThreadCount;
 	int m_nRunningThreads;
@@ -67,7 +67,7 @@ protected:
 	void onDebugMessage(CUploader*, const std::string& msg, bool isResponseBody);
 	void onTaskAdded(UploadSession*, UploadTask*);
 	std::recursive_mutex mutex_;
-	std::mutex callMutex_;
+    std::recursive_mutex callMutex_;
 	
 
 	int pendingTasksCount();

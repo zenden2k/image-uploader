@@ -75,7 +75,7 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
 	{
 		tempFileDeleter->cleanup();
 	}
-	if (!fileTask->uploadSuccess())
+    if (!fileTask->uploadSuccess() || fileTask->status() != UploadTask::StatusFinished)
 	{
 		return ;
 	}

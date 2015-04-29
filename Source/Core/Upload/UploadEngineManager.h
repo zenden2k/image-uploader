@@ -22,7 +22,7 @@ public:
 protected:
 	CScriptUploadEngine* getPlugin(ServerProfile& serverProfile, const std::string& pluginName, bool UseExisting = false);
 	ServerSync* getServerSync(const ServerProfile& serverProfile);
-	std::map<std::thread::id, std::map< Utf8String, CScriptUploadEngine*>> m_plugins;
+	std::map<std::thread::id, std::map< Utf8String, CAbstractUploadEngine*>> m_plugins;
 	std::mutex pluginsMutex_;
 	Utf8String m_ScriptsDirectory;
 	CUploadEngineList* uploadEngineList_;

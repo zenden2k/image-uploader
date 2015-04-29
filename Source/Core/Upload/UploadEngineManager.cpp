@@ -33,7 +33,10 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
 	}
 	CUploadEngineData *ue = uploadEngineList_->byName(serverProfile.serverName());
 	CAbstractUploadEngine* result = NULL;
-	
+    std::string serverName = serverProfile.serverName();
+    std::thread::id threadId = std::this_thread::get_id();
+    ServerSettingsStruct& params = serverProfile.serverSettings();
+    
 	if (ue->UsingPlugin) {
 		result = getPlugin(serverProfile, ue->PluginName);
 		if (!result) {
@@ -43,6 +46,10 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
 		}
 		
 	} else {
+        CAbstractUploadEngine* plugin = m_plugins[threadId][serverName];
+        if (plugin &&  plugin->serverSettings()->authData.Login == params.authData.Login) {
+            return plugin;
+        }
 		/*if (m_prevUpEngine) {
 			if (m_prevUpEngine->getUploadData()->Name == data->Name &&
 				m_prevUpEngine->serverSettings().authData.Login == serverSettings.authData.Login
@@ -56,11 +63,15 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
 			}
 		}
 		if (!m_prevUpEngine)*/
+        delete plugin;
 		ServerSync* serverSync = getServerSync(serverProfile);
 		result = new CDefaultUploadEngine(serverSync);
 		result->setServerSettings(&serverProfile.serverSettings());
 		result->setUploadData(ue);
 		result->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
+        
+        m_plugins[threadId][serverName] = result;
+
 	}
 	
 	result->setServerSettings(&serverProfile.serverSettings());
@@ -80,7 +91,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
 	std::string serverName = serverProfile.serverName();
 	ServerSettingsStruct& params = serverProfile.serverSettings();
 	std::thread::id threadId = std::this_thread::get_id();
-	CScriptUploadEngine* plugin = m_plugins[threadId][serverName];
+    CScriptUploadEngine* plugin = dynamic_cast<CScriptUploadEngine*>(m_plugins[threadId][serverName]);
     if (plugin && (GetTickCount() - plugin->getCreationTime() <(Settings.DeveloperMode ? 3000 : 1000 * 60 * 5)))
 		UseExisting = true;
 

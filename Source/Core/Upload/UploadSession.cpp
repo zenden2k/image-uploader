@@ -77,10 +77,14 @@ bool UploadSession::isFinished()
 		}
 		for (int i = 0; i < tasks_.size(); i++)
 		{
-			if (!tasks_[i]->isFinished())
+            auto it = tasks_[i];
+            tasksMutex_.unlock();
+            if (!it->isFinished())
 			{
+                tasksMutex_.lock();
 				return false;
 			}
+            tasksMutex_.lock();
 		}
 		return true;
 	}
@@ -196,6 +200,7 @@ void UploadSession::clearErrorsForServer(const std::string& serverName, const st
 
 std::shared_ptr<UploadTask> UploadSession::getTask(int index)
 {
+    std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
 	return tasks_[index];
 }
 

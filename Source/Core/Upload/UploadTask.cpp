@@ -38,7 +38,7 @@ void UploadTask::childTaskFinished(UploadTask* child)
 void UploadTask::taskFinished()
 {
     tasksMutex_.lock();
-    std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
+   // std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
     Status newStatus = status_;
     for (int i = 0; i < childTasks_.size(); i++ )
     { 
