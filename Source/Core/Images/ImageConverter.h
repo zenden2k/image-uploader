@@ -6,7 +6,7 @@
 #include "Thumbnail.h"
 #include "Core/Utils/CoreTypes.h"
 
-
+class AbstractImage;
 
 struct ImageConvertingParams
 {
@@ -45,49 +45,30 @@ struct ThumbCreatingParams
 	uint32_t BackgroundColor;
 	EnumWrapper<ThumbFormatEnum> Format;
 	ThumbResizeEnum ResizeMode;
-
 };
 
-class CImageConverter
+class ImageConverterPrivate;
+
+class ImageConverter
 {
-	protected:
-		CString m_destinationFolder;
-		bool m_generateThumb;
-		CString m_sourceFile;
-		CString m_resultFileName;
-		CString m_thumbFileName;
-		ImageConvertingParams m_imageConvertingParams;
-		ThumbCreatingParams m_thumbCreatingParams;
 	public:
-		CImageConverter();
-		void setDestinationFolder(const CString& folder);
-		void setGenerateThumb(bool generate);
-		void setEnableProcessing(bool enable);
-		void setImageConvertingParams(const ImageConvertingParams& params);
-		void setThumbCreatingParams(const ThumbCreatingParams& params);
-		void setThumbnail(Thumbnail* thumb);
-		bool Convert(const CString& sourceFile);
-		const CString getThumbFileName();
-		const CString getImageFileName();
-		bool createThumbnail(Gdiplus::Image* image, Gdiplus::Image** outResult, int64_t fileSize, int fileFormat = 1);
+		ImageConverter();
+        ~ImageConverter();
+		bool Convert(const std::string& sourceFile);
+        const std::string getThumbFileName();
+        const std::string getImageFileName();
+        void setDestinationFolder(const std::string& folder);
+        void setGenerateThumb(bool generate);
+        void setEnableProcessing(bool enable);
+        void setImageConvertingParams(const ImageConvertingParams& params);
+        void setThumbCreatingParams(const ThumbCreatingParams& params);
+        void setThumbnail(Thumbnail* thumb);
+        bool createThumbnail(AbstractImage* image, AbstractImage** outResult, int64_t fileSize, int fileformat);
 	protected:
-		bool createThumb(Gdiplus::Image* bm, const CString& imageFile, int fileformat);
-		Thumbnail* thumbnail_template_;
-		std::map<std::string, std::string> m_Vars;
-		bool EvaluateRect(const std::string& rectStr, RECT* out);
-		int EvaluateExpression(const std::string& expr);
-		unsigned int EvaluateColor(const std::string& expr);
-		std::string ReplaceVars(const std::string& expr);
-		int64_t EvaluateSimpleExpression(const std::string& expr) const;
-		Gdiplus::Brush* CreateBrushFromString(const std::string& br,  RECT rect);
-		bool processing_enabled;
-};
+        ImageConverterPrivate* d_ptr;
+        Q_DECLARE_PRIVATE(ImageConverter);
+private:
+    DISALLOW_COPY_AND_ASSIGN(ImageConverter);
 
-bool MySaveImage(Gdiplus::Image* img, const CString& szFilename, CString& szBuffer, int Format, int Quality,
-                 LPCTSTR Folder = 0);
-void DrawGradient(Gdiplus::Graphics& gr, Gdiplus::Rect rect, Gdiplus::Color& Color1, Gdiplus::Color& Color2);
-void DrawStrokedText(Gdiplus::Graphics& gr, LPCTSTR Text, Gdiplus::RectF Bounds, Gdiplus::Font& font,
-                     Gdiplus::Color& ColorText, Gdiplus::Color& ColorStroke, int HorPos = 0, int VertPos = 0,
-                     int width = 1);
-int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
+};
 #endif

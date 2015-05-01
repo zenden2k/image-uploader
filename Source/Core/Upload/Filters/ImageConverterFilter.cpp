@@ -21,7 +21,7 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
 	{
 		return true;
 	}
-	CImageConverter imageConverter;
+	ImageConverter imageConverter;
 	Thumbnail thumb;
 	ImageUploadParams imageUploadParams = task->serverProfile().getImageUploadParams();
 	CString templateName = imageUploadParams.getThumb().TemplateName;
@@ -44,9 +44,9 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
 		((!imageUploadParams.UseServerThumbs) || (!task->serverProfile().uploadEngineData()->SupportThumbnails));
 	imageConverter.setThumbnail(&thumb);
 	imageConverter.setGenerateThumb(GenThumbs);
-	if (imageConverter.Convert(IuCoreUtils::Utf8ToWstring(fileTask->getFileName()).c_str())) {
+	if (imageConverter.Convert(fileTask->getFileName())) {
 		
-		std::string convertedImageFileName = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(imageConverter.getImageFileName()));
+		std::string convertedImageFileName = imageConverter.getImageFileName();
 		if (!convertedImageFileName.empty()) {
 			
 			if (convertedImageFileName != fileTask->getFileName())
@@ -59,7 +59,7 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
 			fileTask->setFileName(convertedImageFileName);
 		} 
 		if (GenThumbs) {
-			std::string thumbFileName = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(imageConverter.getThumbFileName()));
+			std::string thumbFileName = imageConverter.getThumbFileName();
 			if (!thumbFileName.empty())
 			{
 				std::shared_ptr<FileUploadTask> thumbTask(new FileUploadTask(thumbFileName, "", task));

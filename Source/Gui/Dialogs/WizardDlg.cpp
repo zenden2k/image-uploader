@@ -1899,7 +1899,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 	ImageEditorWindow::DialogResult dr = ImageEditorWindow::drCancel;
 	CString suggestingFileName;
     if ( result ) {
-        suggestingFileName = GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
+        suggestingFileName = IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
     }
 
 	if(result && ( (mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || (!m_bScreenshotFromTray && Settings.ScreenshotSettings.OpenInEditor ) || (m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_OPENINEDITOR) ))
@@ -1937,7 +1937,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 			if(savingFormat == 0) // jpeg
 				Gdip_RemoveAlpha(*result,Color(255,255,255,255));
 
-			CString saveFolder = GenerateFileName(Settings.ScreenshotSettings.Folder, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
+			CString saveFolder = IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.Folder, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
 			MySaveImage(result.get(),suggestingFileName,buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
 			screenshotIndex++;
 			if ( CopyToClipboard )

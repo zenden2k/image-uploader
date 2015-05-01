@@ -34,9 +34,12 @@
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
 #include "Core/Images/Utils.h"
+#include "Core/Video/GdiPlusImage.h"
 
 
 #pragma comment( lib, "uxtheme.lib" )
+#include <Core/Video/GdiPlusImage.h>
+
 // CThumbSettingsPage
 CThumbSettingsPage::CThumbSettingsPage()
 {
@@ -252,7 +255,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
 			return;
 		}
 	}
-	CImageConverter conv;
+	ImageConverter conv;
 	conv.setThumbCreatingParams(params_);
 	conv.setThumbnail(thumb);
 	Bitmap * bm = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_PNG2),_T("PNG"));
@@ -263,14 +266,14 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
 	}
 	
 	Bitmap *toUse = bm->Clone(0,300, bm->GetWidth(), bm->GetHeight()-300, PixelFormatDontCare);
-	
-	Image *result = 0;
-	conv.createThumbnail(toUse, &result, 50*1024);
+    GdiPlusImage source(toUse);
+	AbstractImage *result = 0;
+    conv.createThumbnail(&source, &result, 50 * 1024, 0);
 	if(result)	
-	img.LoadImage(0, result);
+        img.LoadImage(0, dynamic_cast<GdiPlusImage*>(result)->getBitmap());
 
 	delete toUse;
-	delete result;
+	//delete result;
 	delete bm;
 }
 

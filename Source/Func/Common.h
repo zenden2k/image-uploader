@@ -102,7 +102,7 @@ HRESULT IsElevated( __out_opt BOOL * pbElevated );
 bool IU_CopyTextToClipboard(CString text);
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
 
-CString GenerateFileName(const CString &templateStr, int index,const CPoint size, const CString& originalName=_T(""));
+
 CString GetUniqFileName(const CString &filePath);
 bool IU_GetClipboardText(CString &text);
 extern CMyEngineList *_EngineList;

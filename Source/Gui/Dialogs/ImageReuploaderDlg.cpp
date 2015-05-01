@@ -228,7 +228,7 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
 	} else {
 		localFile = localFileCache.getThumb(dit->originalUrl);
 		if ( !localFile.empty() ) {
-			CImageConverter imageConverter;
+			ImageConverter imageConverter;
 			Thumbnail thumb;
 
 			if (!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + serverProfile_.getImageUploadParams().getThumb().TemplateName +
@@ -245,9 +245,9 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
 					((!serverProfile_.getImageUploadParams().UseServerThumbs) || (!ue->SupportThumbnails));
 				imageConverter.setThumbnail(&thumb);
 				imageConverter.setGenerateThumb(true);
-				imageConverter.Convert(Utf8ToWCstring(localFile));
+				imageConverter.Convert(localFile);
 
-				CString thumbFileName = imageConverter.getThumbFileName();
+				CString thumbFileName = U2W(imageConverter.getThumbFileName());
 				if (!thumbFileName.IsEmpty()) {
 					if ( addUploadTask(it, WCstringToUtf8(thumbFileName)) ) {
 						updateStats();

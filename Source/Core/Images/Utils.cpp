@@ -26,8 +26,14 @@
 #include "3rdpart/QColorQuantizer.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Utils/CoreUtils.h"
+#include "Func/MyUtils.h"
+#include "Func/IuCommonFunctions.h"
+#include "Func/Common.h"
+#include "Gui/Dialogs/LogWindow.h"
 #include <math.h>
 #include <stdint.h>
+
+
 using namespace Gdiplus;
 
 
@@ -509,3 +515,316 @@ bool CopyBitmapToClipboard(HWND hwnd, HDC dc, Gdiplus::Bitmap* bm, bool preserve
 	}
 	return false;
 }
+
+
+void DrawGradient(Graphics& gr, Rect rect, Color& Color1, Color& Color2)
+{
+    Bitmap bm(rect.Width, rect.Height, &gr);
+    Graphics temp(&bm);
+    LinearGradientBrush
+        brush(/*TextBounds*/ Rect(0, 0, rect.Width, rect.Height), Color1, Color2, LinearGradientModeVertical);
+
+    temp.FillRectangle(&brush, Rect(0, 0, rect.Width, rect.Height));
+    gr.DrawImage(&bm, rect.X, rect.Y);
+}
+
+void DrawStrokedText(Graphics& gr, LPCTSTR Text, RectF Bounds, Font& font, Color& ColorText, Color& ColorStroke,
+    int HorPos, int VertPos,
+    int width)
+{
+    RectF OriginalTextRect, NewTextRect;
+    FontFamily ff;
+    font.GetFamily(&ff);
+    gr.SetPageUnit(UnitPixel);
+    gr.MeasureString(Text, -1, &font, PointF(0, 0), &OriginalTextRect);
+
+    Font NewFont(&ff, 48, font.GetStyle(), UnitPixel);
+    gr.MeasureString(Text, -1, &NewFont, RectF(0, 0, 5000, 1600), &NewTextRect);
+    OriginalTextRect.Height = OriginalTextRect.Height - OriginalTextRect.Y;
+    float newwidth, newheight;
+    newheight = OriginalTextRect.Height;
+    newwidth = OriginalTextRect.Height / NewTextRect.Height * NewTextRect.Width;
+    float k = 2 * width * NewTextRect.Height / OriginalTextRect.Height;
+    SolidBrush br(ColorText);
+    Bitmap temp((int)NewTextRect.Width, (int)NewTextRect.Height, &gr);
+
+    Graphics gr_temp(&temp);
+    StringFormat format;
+    gr_temp.SetPageUnit(UnitPixel);
+    GraphicsPath path;
+    gr_temp.SetSmoothingMode(SmoothingModeHighQuality);
+    path.AddString(Text, -1, &ff, (int)NewFont.GetStyle(), NewFont.GetSize(), Point(0, 0), &format);
+
+    Pen pen(ColorStroke, (float)k);
+    pen.SetAlignment(PenAlignmentCenter);
+
+    float x, y;
+    gr_temp.DrawPath(&pen, &path);
+    gr_temp.FillPath(&br, &path);
+    gr.SetSmoothingMode(SmoothingModeHighQuality);
+    gr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
+
+    if (HorPos == 0)
+        x = 2;
+    else
+        if (HorPos == 1)
+            x = (Bounds.Width - newwidth) / 2;
+        else
+            x = (Bounds.Width - newwidth) - 2;
+
+    if (VertPos == 0)
+        y = 2;
+    else
+        if (VertPos == 1)
+            y = (Bounds.Height - newheight) / 2;
+        else
+            y = (Bounds.Height - newheight) - 2;
+
+    gr.DrawImage(&temp, (int)(Bounds.GetLeft() + x), (int)(Bounds.GetTop() + y), (int)(newwidth), (int)(newheight));
+}
+
+
+// hack for stupid GDIplus
+void changeAplhaChannel(Bitmap& source, Bitmap& dest, int sourceChannel, int destChannel)
+{
+    Rect r(0, 0, source.GetWidth(), source.GetHeight());
+    BitmapData bdSrc;
+    BitmapData bdDst;
+    source.LockBits(&r, ImageLockModeRead, PixelFormat32bppARGB, &bdSrc);
+    dest.LockBits(&r, ImageLockModeWrite, PixelFormat32bppARGB, &bdDst);
+
+    BYTE* bpSrc = (BYTE*)bdSrc.Scan0;
+    BYTE* bpDst = (BYTE*)bdDst.Scan0;
+    bpSrc += (int)sourceChannel;
+    bpDst += (int)destChannel;
+
+    for (int i = r.Height * r.Width; i > 0; i--)
+    {
+        // if(*bpSrc != 255)
+        {
+            *bpDst = static_cast<BYTE>((float(255 - *bpSrc) / 255) *  *bpDst);
+        }
+
+        /*if(*bpDst == 0)
+        {
+        bpDst -=(int)destChannel;
+        *bpDst = 0;
+        *(bpDst+1) = 0;
+        *(bpDst+2) = 0;
+        bpDst +=(int)destChannel;
+        }*/
+        bpSrc += 4;
+        bpDst += 4;
+    }
+    source.UnlockBits(&bdSrc);
+    dest.UnlockBits(&bdDst);
+}
+
+Rect MeasureDisplayString(Graphics& graphics, CString text, RectF boundingRect, Font& font) {
+    CharacterRange charRange(0, text.GetLength());
+    Region pCharRangeRegions;
+    StringFormat strFormat;
+    strFormat.SetMeasurableCharacterRanges(1, &charRange);
+    graphics.MeasureCharacterRanges(text, text.GetLength(), &font, boundingRect, &strFormat, 1, &pCharRangeRegions);
+    Rect rc;
+    pCharRangeRegions.GetBounds(&rc, &graphics);
+
+    return rc;
+}
+
+
+bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int Format, int Quality, LPCTSTR Folder)
+{
+    if (Format == -1)
+        Format = 0;
+    std::auto_ptr<Bitmap> quantizedImage;
+    TCHAR szImgTypes[3][4] = { _T("jpg"), _T("png"), _T("gif") };
+    TCHAR szMimeTypes[3][12] = { _T("image/jpeg"), _T("image/png"), _T("image/gif") };
+    CString szNameBuffer;
+    TCHAR szBuffer2[MAX_PATH];
+    if (IsImage(szFilename))
+        szNameBuffer = GetOnlyFileName(szFilename);
+    else
+        szNameBuffer = szFilename;
+    CString userFolder;
+    if (Folder)
+        userFolder = Folder;
+    if (userFolder.Right(1) != _T('\\'))
+        userFolder += _T('\\');
+    wsprintf(szBuffer2, _T(
+        "%s%s.%s"), (LPCTSTR)(Folder ? userFolder : IuCommonFunctions::IUTempFolder), (LPCTSTR)szNameBuffer,
+        /*(int)GetTickCount(),*/ szImgTypes[Format]);
+    CString resultFilename = WinUtils::GetUniqFileName(szBuffer2);
+    IU_CreateFilePath(resultFilename);
+    CLSID clsidEncoder;
+    EncoderParameters eps;
+    eps.Count = 1;
+
+    if (Format == 0) // JPEG
+    {
+        eps.Parameter[0].Guid = EncoderQuality;
+        eps.Parameter[0].Type = EncoderParameterValueTypeLong;
+        eps.Parameter[0].NumberOfValues = 1;
+        eps.Parameter[0].Value = &Quality;
+    }
+    else
+        if (Format == 1)      // PNG
+        {
+            eps.Parameter[0].Guid = EncoderCompression;
+            eps.Parameter[0].Type = EncoderParameterValueTypeLong;
+            eps.Parameter[0].NumberOfValues = 1;
+            eps.Parameter[0].Value = &Quality;
+        }
+        else
+            if (Format == 2)
+            {
+                QColorQuantizer quantizer;
+                quantizedImage.reset(quantizer.GetQuantized(img, QColorQuantizer::Octree, (Quality < 50) ? 16 : 256));
+                if (quantizedImage.get() != 0)
+                    img = quantizedImage.get();
+            }
+
+    Gdiplus::Status result;
+
+    if (GetEncoderClsid(szMimeTypes[Format], &clsidEncoder) != -1)
+    {
+        if (Format == 0)
+            result = img->Save(resultFilename, &clsidEncoder, &eps);
+        else
+            result = img->Save(resultFilename, &clsidEncoder);
+    }
+    else
+        return false;
+    if (result != Ok)
+    {
+        WriteLog(logError, _T("Image Converter"), _T("Could not save image at path \r\n") + resultFilename + L"\r\nGdiplus status=" + IntToStr(result));
+        return false;
+    }
+    szBuffer = resultFilename;
+    return true;
+}
+
+CRect CenterRect(CRect r1, CRect intoR2)
+{
+    r1.OffsetRect((intoR2.Width() - r1.Width()) / 2, (intoR2.Height() - r1.Height()) / 2);
+    return r1;
+}
+
+void DrawRect(Bitmap& gr, Color& color, Rect rect)
+{
+    int i;
+    SolidBrush br(color);
+    for (i = rect.X; i < rect.Width; i++)
+    {
+        gr.SetPixel(i, 0, color);
+        gr.SetPixel(i, rect.Height - 1, color);
+    }
+
+    for (i = rect.Y; i < rect.Height; i++)
+    {
+        gr.SetPixel(0, i, color);
+        gr.SetPixel(rect.Width - 1, i, color);
+    }
+}
+/*
+void DrawStrokedText(Graphics &gr, LPCTSTR Text,RectF Bounds,Font &font,Color &ColorText,Color &ColorStroke,int HorPos,int VertPos, int width)
+{
+RectF OriginalTextRect;
+//	, NewTextRect;
+FontFamily ff;
+font.GetFamily(&ff);
+
+gr.SetPageUnit(UnitPixel);
+gr.MeasureString(Text,-1,&font,PointF(0,0),&OriginalTextRect);
+
+
+
+Font NewFont(&ff,48,font.GetStyle(),UnitPixel);
+Rect realSize = MeasureDisplayString(gr, Text, RectF(0,0,1000,200), NewFont);
+
+GraphicsPath path;
+StringFormat format;
+
+//format.SetAlignment(StringAlignmentCenter);
+//format.SetLineAlignment ( StringAlignmentCenter);
+StringFormat * f = format.GenericTypographic()->Clone();
+f->SetTrimming(StringTrimmingNone);
+f->SetFormatFlags( StringFormatFlagsMeasureTrailingSpaces);
+
+path.AddString(Text, -1,&ff, (int)NewFont.GetStyle(), NewFont.GetSize(), Point(0,0), f);
+RectF realTextBounds;
+path.GetBounds(&realTextBounds);
+
+float k = 2*width*realTextBounds.Height/OriginalTextRect.Height;
+Pen pen(ColorStroke,(float)k);
+realTextBounds.Inflate(k, k);
+pen.SetAlignment(PenAlignmentCenter);
+//path.GetBounds(&realTextBounds,0,&pen);
+k = 2*width*realTextBounds.Height/OriginalTextRect.Height; // recalculate K
+//Matrix matrix(1.0f, 0.0f, 0.0f, 1.0f, -realTextBounds.X,-realTextBounds.Y );
+//path.Transform(&matrix);
+//path.GetBounds(&realTextBounds,0,&pen);
+//gr.SetPageUnit(UnitPixel);
+
+
+//Font NewFont(&ff,48,font.GetStyle(),UnitPixel);
+
+RectF NewTextRect;
+
+gr.MeasureString(Text,-1,&NewFont,RectF(0,0,5000,1600),f, &NewTextRect);
+
+RectF RectWithPaddings;
+StringFormat f2;
+gr.MeasureString(Text,-1,&NewFont,RectF(0,0,5000,1600),&f2, &RectWithPaddings);
+
+
+OriginalTextRect.Height = OriginalTextRect.Height-OriginalTextRect.Y;
+float newwidth,newheight;
+newheight = OriginalTextRect.Height;
+newwidth=OriginalTextRect.Height/realTextBounds.Height*realTextBounds.Width;
+
+SolidBrush br(ColorText);
+
+Bitmap temp((int)(realTextBounds.Width+realTextBounds.X),(int)(realTextBounds.Height+realTextBounds.Y),&gr);
+//Bitmap temp((int)NewTextRect.Width,(int)NewTextRect.Height,&gr);
+
+Graphics gr_temp(&temp);
+
+gr_temp.SetPageUnit(UnitPixel);
+//	GraphicsPath path;
+gr_temp.SetSmoothingMode( SmoothingModeHighQuality);
+//path.AddString(Text, -1,&ff, (int)NewFont.GetStyle(), NewFont.GetSize(), Point(0,0), &format);
+gr_temp.SetSmoothingMode( SmoothingModeHighQuality);
+
+
+SolidBrush br2(Color(255,0,0));
+float x,y;
+//gr_temp.FillRectangle(&br2, (int)realTextBounds.X, (int)realTextBounds.Y,(int)(realTextBounds.Width),(int)(realTextBounds.Height));
+//gr_temp.Set( SmoothingModeHighQuality);
+gr_temp.SetInterpolationMode(InterpolationModeHighQualityBicubic  );
+gr_temp.DrawPath(&pen, &path);
+gr_temp.FillPath(&br, &path);
+
+gr.SetSmoothingMode( SmoothingModeHighQuality);
+gr.SetInterpolationMode(InterpolationModeHighQualityBicubic  );
+
+if(HorPos == 0)
+x = 2;
+else if(HorPos == 1)
+x = (Bounds.Width-newwidth)/2;
+else x=(Bounds.Width-newwidth)-2;
+
+if(VertPos==0)
+y=2;
+else if(VertPos==1)
+y=(Bounds.Height-newheight)/2;
+else y=(Bounds.Height-newheight)-2;
+
+
+Rect destRect ((int)(Bounds.GetLeft()+x), (int)(Bounds.GetTop()+y), (int)(newwidth),(int)(newheight));
+//	gr.SolidBrush br3(Color(0,255,0));
+
+//gr.FillRectangle(&br2, 0,0,(int)(realTextBounds.Width+realTextBounds.X),(int)(realTextBounds.Height+realTextBounds.Y));
+
+gr.DrawImage(&temp, destRect,(int)realTextBounds.X, (int)realTextBounds.Y,(int)(realTextBounds.Width),(int)(realTextBounds.Height), UnitPixel);
+}*/

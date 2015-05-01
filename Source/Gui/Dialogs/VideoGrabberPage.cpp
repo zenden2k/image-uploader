@@ -38,6 +38,7 @@
 #include "Func/IuCommonFunctions.h"
 #include "atlheaders.h"
 #include "Func/WinUtils.h"
+#include <Core/Images/Utils.h>
 
 CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
 {

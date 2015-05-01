@@ -1,0 +1,574 @@
+﻿#include "ImageConverterPrivate_gdiplus.h"
+
+#include "Func/MyUtils.h"
+#include "Core/Utils/StringUtils.h"
+#include "Core/3rdpart/pcreplusplus.h"
+#include "Core/3rdpart/parser.h"
+#include "Core/Utils/CoreUtils.h"
+#include "Core/CommonDefs.h"
+#include "Func/IuCommonFunctions.h"
+#include "Utils.h"
+#include <assert.h>
+
+#ifndef MYRGB
+    #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
+#endif
+#include <Core/Video/GdiPlusImage.h>
+
+
+bool ImageConverterPrivate::Convert(const std::string& sourceFile)
+{
+    sourceFile_ = sourceFile;
+    int fileformat;
+    double width, height, imgwidth, imgheight, newwidth, newheight;
+    CString sourceFileW = U2W(sourceFile);
+    CString imageFile = sourceFileW;
+    Bitmap bm(sourceFileW);
+    Bitmap* thumbSource = &bm;
+    std::auto_ptr<Bitmap> BackBuffer;
+    imgwidth = float(bm.GetWidth());
+    imgheight = float(bm.GetHeight());
+    double NewWidth = _wtof(m_imageConvertingParams.strNewWidth);
+    double NewHeight = _wtof(m_imageConvertingParams.strNewHeight);
+    if (m_imageConvertingParams.strNewWidth.Right(1) == _T("%"))
+        NewWidth = NewWidth * imgwidth / 100;
+
+
+
+    if (m_imageConvertingParams.strNewHeight.Right(1) == _T("%"))
+    {
+        NewHeight = NewHeight * imgheight / 100;
+    }
+
+    width = float(NewWidth);
+    height = float(NewHeight);
+
+    if (m_imageConvertingParams.Format < 1 || !processingEnabled_)
+        fileformat = GetSavingFormat(sourceFileW);
+    else
+        fileformat = m_imageConvertingParams.Format - 1;
+
+    if (fileformat == GetSavingFormat(sourceFileW) && imgwidth < width && imgheight < height)
+        processingEnabled_ = false;
+
+    newwidth = imgwidth;
+    newheight = imgheight;
+
+    // Если включена опция "Оставить без изменений", просто копируем имя исходного файла
+    if (!processingEnabled_)
+        resultFileName_ = sourceFile;
+    else
+    {
+        UINT propertyItemsSize = 0;
+        UINT propertyItemsCount = 0;
+        PropertyItem* pPropBuffer = NULL;
+        if (m_imageConvertingParams.PreserveExifInformation) {
+            bm.GetPropertySize(&propertyItemsSize, &propertyItemsCount);
+            if (propertyItemsSize) {
+                pPropBuffer = (PropertyItem*)malloc(propertyItemsSize);
+                bm.GetAllPropertyItems(propertyItemsSize, propertyItemsCount, pPropBuffer);
+            }
+        }
+        if (m_imageConvertingParams.ResizeMode == ImageConvertingParams::irmFit)
+        {
+            if (width && height && (imgwidth > width || imgheight > height))
+            {
+                double S = min(width / imgwidth, height / imgheight);
+                newwidth = S * imgwidth;
+                newheight = S  * imgheight;
+            }
+            else
+                if (width && imgwidth > width)
+                {
+                    newwidth = width;
+                    newheight = newwidth / imgwidth * imgheight;
+                }
+                else
+                    if (height && imgheight > height)
+                    {
+                        newheight = height;
+                        newwidth = newheight / imgheight * imgwidth;
+                    }
+        }
+        else
+        {
+            if (imgwidth > width || imgheight > height)
+            {
+                if (width > 0)
+                    newwidth = width;
+                if (height > 0)
+                    newheight = height;
+            }
+            else
+            {
+                newwidth = imgwidth;
+                newheight = imgheight;
+            }
+        }
+        BackBuffer.reset(new Bitmap((int)newwidth, (int)newheight));
+
+        Graphics gr(BackBuffer.get());
+        if (fileformat != 2) /* not GIF */
+            gr.Clear(Color(0, 255, 255, 255));
+        else
+            gr.Clear(Color(255, 255, 255, 255));
+
+        gr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
+
+        gr.SetPixelOffsetMode(PixelOffsetModeHalf);
+
+        ImageAttributes attr;
+        attr.SetWrapMode(WrapModeTileFlipXY);
+        if (m_imageConvertingParams.ResizeMode == ImageConvertingParams::irmFit || m_imageConvertingParams.ResizeMode ==
+            ImageConvertingParams::irmStretch)
+        {
+            if ((!width && !height) || ((int)newwidth == (int)imgwidth && (int)newheight == (int)imgheight))
+                gr.DrawImage(/*backBuffer*/ &bm, (int)0, (int)0, (int)newwidth, (int)newheight);
+            else
+                gr.DrawImage(&bm,
+                RectF(0.0, 0.0, float(newwidth), float(newheight)),
+                0,
+                0,
+                float(bm.GetWidth()),
+                float(bm.GetHeight()),
+                UnitPixel,
+                &attr);
+            // gr.DrawImage(/*backBuffer*/&bm, (int)-1, (int)-1, (int)newwidth+2,(int)newheight+2);
+        }
+        else
+            if (m_imageConvertingParams.ResizeMode == ImageConvertingParams::irmCrop)
+            {
+                int newVisibleWidth = 0;
+                int newVisibleHeight = 0;
+                double k = 1;
+                if (newwidth > newheight)
+                {
+                    newVisibleWidth = static_cast<int>(min(newwidth, imgwidth));
+                    k = newVisibleWidth / imgwidth;
+                    newVisibleHeight = static_cast<int>(newVisibleWidth / imgwidth * imgheight);
+                }
+                else
+                {
+                    newVisibleHeight = static_cast<int>(min(newheight, imgheight));
+                    k = newVisibleHeight / imgheight;
+                    newVisibleWidth = static_cast<int>(newVisibleHeight / imgheight * imgwidth);
+                }
+                CRect r(0, 0, newVisibleWidth, newVisibleHeight);
+                CRect destRect = CenterRect(r, CRect(0, 0, static_cast<int>(newwidth), static_cast<int>(newheight)));
+                CRect croppedRect;
+                croppedRect.IntersectRect(CRect(0, 0, int(newwidth), int(newheight)), destRect);
+                CRect sourceRect = croppedRect;
+                sourceRect.OffsetRect(/*(destRect.left < 0)?*/ -destRect.left, /*(destRect.top < 0)?*/ -destRect.top);
+                sourceRect.left = int(sourceRect.left / k);
+                sourceRect.top = int(sourceRect.top / k);
+                sourceRect.right = int(sourceRect.right / k);
+                sourceRect.bottom = int(sourceRect.bottom / k);
+                // = sourceRect.MulDiv(1, k);
+                gr.DrawImage(&bm,
+                    RectF(float(croppedRect.left), float(croppedRect.top), float(croppedRect.Width()),
+                    float(croppedRect.Height()))
+                    , float(sourceRect.left), float(sourceRect.top), float(sourceRect.Width()),
+                    float(sourceRect.Height()), UnitPixel,
+                    &attr);
+            }
+        RectF bounds(0, 0, float(newwidth), float(newheight));
+
+        // Добавляем текст на картинку (если опция включена)
+        if (m_imageConvertingParams.AddText)
+        {
+            SolidBrush brush(Color(GetRValue(m_imageConvertingParams.TextColor), GetGValue(
+                m_imageConvertingParams.TextColor), GetBValue(m_imageConvertingParams.TextColor)));
+
+            int HAlign[6] = { 0, 1, 2, 0, 1, 2 };
+            int VAlign[6] = { 0, 0, 0, 2, 2, 2 };
+
+            m_imageConvertingParams.Font.lfQuality = m_imageConvertingParams.Font.lfQuality | ANTIALIASED_QUALITY;
+            HDC dc = ::GetDC(0);
+            Font font(/*L"Tahoma", 10, FontStyleBold*/ dc, &m_imageConvertingParams.Font);
+            SolidBrush brush2(Color(70, 0, 0, 0));
+            RectF bounds2(1, 1, float(newwidth), float(newheight) + 1);
+            ReleaseDC(0, dc);
+            DrawStrokedText(gr, m_imageConvertingParams.Text, bounds2, font, MYRGB(255,
+                m_imageConvertingParams.TextColor),
+                MYRGB(180,
+                m_imageConvertingParams.StrokeColor), HAlign[m_imageConvertingParams.TextPosition],
+                VAlign[m_imageConvertingParams.TextPosition], 1);
+        }
+
+        if (m_imageConvertingParams.AddLogo)
+        {
+            Bitmap logo(m_imageConvertingParams.LogoFileName);
+            if (logo.GetLastStatus() == Ok)
+            {
+                int x, y;
+                int logowidth, logoheight;
+                logowidth = logo.GetWidth();
+                logoheight = logo.GetHeight();
+                if (m_imageConvertingParams.LogoPosition < 3)
+                    y = 0;
+                else
+                    y = int(newheight - logoheight);
+                if (m_imageConvertingParams.LogoPosition == 0 || m_imageConvertingParams.LogoPosition == 3)
+                    x = 0;
+                if (m_imageConvertingParams.LogoPosition == 2 || m_imageConvertingParams.LogoPosition == 5)
+                    x = int(newwidth - logowidth);
+                if (m_imageConvertingParams.LogoPosition == 1 || m_imageConvertingParams.LogoPosition == 4)
+                    x = int((newwidth - logowidth) / 2);
+
+                gr.DrawImage(&logo, (int)x, (int)y, logowidth, logoheight);
+            }
+        }
+        thumbSource = BackBuffer.get();
+        if (m_imageConvertingParams.PreserveExifInformation) {
+            for (int k = 0; k < propertyItemsCount; k++) {
+                BackBuffer->SetPropertyItem(pPropBuffer + k);
+            }
+        }
+        free(pPropBuffer);
+        CString resultFileName;
+        MySaveImage(BackBuffer.get(), IuCommonFunctions::GenerateFileName(L"img%md5.jpg", 1,
+            CPoint()), resultFileName, fileformat,
+            m_imageConvertingParams.Quality);
+     //   imageFile = resultFileName;
+        resultFileName_ = W2U(resultFileName);
+    }
+
+    if (!processingEnabled_)
+    {
+        CString Ext = GetFileExt(sourceFileW);
+        if (Ext == _T("png"))
+            fileformat = 1;
+        else
+            fileformat = 0;
+    }
+    if (generateThumb_)
+    {
+        // Генерирование превьюшки с шаблоном в отдельной функции
+        int thumbFormat = fileformat;
+        if (m_thumbCreatingParams.Format == ThumbCreatingParams::tfJPEG)
+            thumbFormat = 0;
+        else
+            if (m_thumbCreatingParams.Format == ThumbCreatingParams::tfPNG)
+                thumbFormat = 1;
+            else
+                if (m_thumbCreatingParams.Format == ThumbCreatingParams::tfGIF)
+                    thumbFormat = 2;
+        createThumb(thumbSource, imageFile, thumbFormat);
+    }
+    return true;
+}
+
+bool ImageConverterPrivate::createThumb(Gdiplus::Bitmap* bm, const CString& imageFile, int fileformat)
+{
+    bool result = false;
+    HDC dc = ::GetDC(0);
+    int newwidth = bm->GetWidth();
+    int newheight = bm->GetHeight();
+    int64_t FileSize = IuCoreUtils::getFileSize(W2U((imageFile)));
+
+
+    // Saving thumbnail (without template)
+    AbstractImage* res = 0;
+    GdiPlusImage src(bm);
+    if (createThumbnail(&src, &res, FileSize, fileformat))
+    {
+        CString thumbFileName;
+        result = MySaveImage(static_cast<GdiPlusImage*>(res)->getBitmap(), IuCommonFunctions::GenerateFileName(L"thumb_%md5.jpg", 1,
+            CPoint()), thumbFileName, fileformat, m_thumbCreatingParams.Quality);
+        thumbFileName_ = W2U(thumbFileName);
+        delete res;
+    }
+    // }
+    ReleaseDC(0, dc);
+    return result;
+}
+
+
+bool ImageConverterPrivate::createThumbnail(AbstractImage* abstractImg, AbstractImage** outResult, int64_t fileSize, int fileformat)
+{
+    GdiPlusImage* image = dynamic_cast<GdiPlusImage*>(abstractImg);
+    assert(thumbnailTemplate_);
+    bool result = false;
+    const Thumbnail::ThumbnailData* data = thumbnailTemplate_->getData();
+    CDC dc = ::GetDC(0);
+    int newwidth = image->getWidth();
+    int newheight = image->getHeight();
+    int64_t FileSize = IuCoreUtils::getFileSize(sourceFile_);
+    /*TCHAR SizeBuffer[100]=_T("\0");
+    if(FileSize>0)
+    NewBytesToString(FileSize,SizeBuffer,sizeof(SizeBuffer));*/
+
+    CString sizeString = U2W(IuCoreUtils::fileSizeToString(fileSize));
+    CString ThumbnailText = m_thumbCreatingParams.Text; // Text that will be drawn on thumbnail
+
+    ThumbnailText.Replace(_T("%width%"), IntToStr(newwidth)); // Replacing variables names with their values
+    ThumbnailText.Replace(_T("%height%"), IntToStr(newheight));
+    ThumbnailText.Replace(_T("%size%"), sizeString);
+
+    int thumbwidth = m_thumbCreatingParams.Size;
+    int thumbheight = m_thumbCreatingParams.Size;
+    Graphics g1(dc);
+    CString filePath = U2W(thumbnailTemplate_->getSpriteFileName());
+    Image templ(filePath);
+    int ww = templ.GetWidth();
+    CString s;
+
+    LOGFONT lf;
+    StringToFont(_T("Tahoma,7,b,204"), &lf);
+    if (thumbnailTemplate_->existsParam("Font"))
+    {
+        std::string font = thumbnailTemplate_->getParamString("Font");
+        CString wide_text = U2W(font);
+        StringToFont(wide_text, &lf);
+    }
+    Font font(dc, &lf);
+    RectF TextRect;
+
+    /*StringFormat * f = StringFormat::GenericTypographic()->Clone();
+    f->SetTrimming(StringTrimmingNone);
+    f->SetFormatFlags( StringFormatFlagsMeasureTrailingSpaces);*/
+
+    StringFormat format;
+    FontFamily ff;
+    font.GetFamily(&ff);
+    g1.SetPageUnit(UnitWorld);
+    g1.MeasureString(_T("test"), -1, &font, PointF(0, 0), &format, &TextRect);
+    //		delete f;
+    m_Vars["TextWidth"] = IuCoreUtils::toString((int)TextRect.Width);
+    m_Vars["TextHeight"] = IuCoreUtils::toString((int)TextRect.Height);
+    m_Vars["UserText"] = W2U(ThumbnailText);
+    std::string textTempl = thumbnailTemplate_->getParamString("Text");
+    if (textTempl.empty())
+        textTempl = "$(UserText)";
+    CString textToDraw = U2W(ReplaceVars(textTempl));
+
+    for (std::map<std::string, std::string>::const_iterator it = data->colors_.begin(); it != data->colors_.end(); ++it)
+    {
+        m_Vars[it->first] = it->second;
+    }
+
+    m_Vars["DrawText"] = IuCoreUtils::toString(m_Vars["DrawText"] == "1" && m_thumbCreatingParams.AddImageSize);
+
+    if (!m_thumbCreatingParams.ResizeMode == ThumbCreatingParams::trByHeight)
+    {
+        thumbwidth -= EvaluateExpression(thumbnailTemplate_->getWidthAddition());
+        if (thumbwidth < 10)
+            thumbwidth = 10;
+        thumbheight = int((float)thumbwidth / (float)newwidth * newheight);
+    }
+    else
+    {
+        thumbheight -= EvaluateExpression(thumbnailTemplate_->getHeightAddition());
+        if (thumbheight < 10)
+            thumbheight = 10;
+        thumbwidth = int((float)thumbheight / (float)newheight * newwidth);
+    }
+
+    int LabelHeight = int(TextRect.Height + 1);
+    int RealThumbWidth = thumbwidth + EvaluateExpression(thumbnailTemplate_->getWidthAddition());
+    int RealThumbHeight = thumbheight + EvaluateExpression(thumbnailTemplate_->getHeightAddition());
+
+    m_Vars["Width"] = IuCoreUtils::toString(RealThumbWidth);
+    m_Vars["Height"] = IuCoreUtils::toString(RealThumbHeight);
+    Bitmap* ThumbBuffer = new Bitmap(RealThumbWidth, RealThumbHeight, &g1);
+    Graphics thumbgr(ThumbBuffer);
+    thumbgr.SetPageUnit(UnitPixel);
+
+    if (fileformat == 0 || fileformat == 2)
+        thumbgr.Clear(MYRGB(255, m_thumbCreatingParams.BackgroundColor));
+    // thumbgr.Clear(Color(255,255,255,255));
+    RectF thu((float)(m_thumbCreatingParams.DrawFrame ? 1 : 0), (float)(m_thumbCreatingParams.DrawFrame ? 1 : 0),
+        (float)thumbwidth,
+        (float)thumbheight);
+    thumbgr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
+    // thumbgr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
+    // thumbgr.SetSmoothingMode( SmoothingModeHighQuality);
+    // //	thumbgr.SetSmoothingMode(SmoothingModeAntiAlias);
+    thumbgr.SetSmoothingMode(SmoothingModeNone);
+    // thumbgr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
+    // thumbgr.SetCompositingQuality(CompositingQualityHighQuality);
+
+    Bitmap* MaskBuffer = new Bitmap(RealThumbWidth, RealThumbHeight, PixelFormat32bppARGB);
+    Graphics maskgr(MaskBuffer);
+
+    for (size_t i = 0; i < data->drawing_operations_.size(); i++)
+    {
+        bool performOperation = true;
+        if (!data->drawing_operations_[i].condition.empty())
+        {
+            performOperation = EvaluateExpression(data->drawing_operations_[i].condition) != 0;
+        }
+        if (!performOperation)
+            continue;
+        Graphics* gr = &thumbgr;
+        std::string type = data->drawing_operations_[i].type;
+        CRect rc;
+        EvaluateRect(data->drawing_operations_[i].rect, &rc);
+        if (data->drawing_operations_[i].destination == "mask")
+        {
+            gr = &maskgr;
+        }
+        if (type == "text")
+        {
+            std::string colorsStr = data->drawing_operations_[i].text_colors;
+            std::vector<std::string> tokens;
+            IuStringUtils::Split(colorsStr, " ", tokens, 2);
+            unsigned int color1 = 0xB3FFFFFF;
+            unsigned int strokeColor = 0x5A000000;
+            if (tokens.size() > 0)
+                color1 = EvaluateColor(tokens[0]);
+            if (tokens.size() > 1)
+                strokeColor = EvaluateColor(tokens[1]);
+            RectF TextBounds((float)rc.left, (float)rc.top, (float)rc.right, (float)rc.bottom);
+            thumbgr.SetPixelOffsetMode(PixelOffsetModeDefault);
+            DrawStrokedText(*gr, /* Buffer*/ textToDraw, TextBounds, font, Color(color1), Color(
+                strokeColor) /*params.StrokeColor*/, 1, 1, 1);
+            thumbgr.SetPixelOffsetMode(PixelOffsetModeNone);
+        }
+        else
+            if (type == "fillrect")
+            {
+                Brush* fillBr = CreateBrushFromString(data->drawing_operations_[i].brush, rc);
+                gr->FillRectangle(fillBr, rc.left, rc.top, rc.right, rc.bottom);
+                delete fillBr;
+            }
+            else
+                if (type == "drawrect")
+                {
+                    GraphicsPath path;
+                    // path.AddRectangle(
+                    std::vector<std::string> tokens;
+                    IuStringUtils::Split(data->drawing_operations_[i].pen, " ", tokens, 2);
+                    if (tokens.size() > 1)
+                    {
+                        unsigned int color = EvaluateColor(tokens[0]);
+                        int size = EvaluateExpression(tokens[1]);
+                        Gdiplus::Pen p(color, float(size));
+                        if (size == 1)
+                        {
+                            rc.right--;
+                            rc.bottom--;
+                        }
+                        p.SetAlignment(PenAlignmentInset);
+                        gr->DrawRectangle(&p, rc.left, rc.top, rc.right, rc.bottom);
+                    }
+                }
+                else
+                    if (type == "blt")
+                    {
+                        RECT sourceRect;
+                        EvaluateRect(data->drawing_operations_[i].source_rect, &sourceRect);
+                        Rect t(int(rc.left), int(rc.top), int(rc.right), int(rc.bottom));
+
+                        if (data->drawing_operations_[i].source == "image")
+                        {
+                            SolidBrush whiteBr(Color(160, 130, 100));
+                            // thumbgr.FillRectangle(&whiteBr, (int)t.X, (int) t.Y/*(int)item->DrawFrame?1:0-1*/,thumbwidth,thumbheight);
+                            // thumbgr.SetInterpolationMode(InterpolationModeNearestNeighbor  );
+                            ImageAttributes attr;
+                            attr.SetWrapMode(WrapModeTileFlipXY);
+                            Rect dest(t.X, t.Y, thumbwidth, thumbheight);
+
+                            Bitmap tempImage(RealThumbWidth, RealThumbHeight, PixelFormat32bppARGB);
+                            Graphics tempGr(&tempImage);
+                            tempGr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
+                            tempGr.SetSmoothingMode(SmoothingModeHighQuality);
+                            tempGr.SetPixelOffsetMode(PixelOffsetModeHighQuality);
+                            tempGr.DrawImage(image->getBitmap(), dest, (INT)0, (int)0, (int)image->getWidth(),
+                                (int)image->getHeight(), UnitPixel, &attr);
+                            changeAplhaChannel(*MaskBuffer, tempImage, 3, 3);
+                            gr->DrawImage(&tempImage, 0, 0);
+                            tempGr.SetSmoothingMode(SmoothingModeNone);
+                        }
+                        else
+                        {
+                            ImageAttributes attr;
+                            attr.SetWrapMode(WrapModeClamp);    // we need this to avoid some glitches on the edges of interpolated image
+                            thumbgr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
+                            thumbgr.SetSmoothingMode(SmoothingModeHighQuality);
+                            gr->DrawImage(&templ, t, (int)sourceRect.left, (int)sourceRect.top, (int)sourceRect.right,
+                                (int)sourceRect.bottom, UnitPixel,
+                                &attr);
+                            thumbgr.SetSmoothingMode(SmoothingModeNone);
+                        }
+                    }
+    }
+
+    delete MaskBuffer;
+    *outResult = new GdiPlusImage(ThumbBuffer);
+
+    return true;
+}
+
+bool ImageConverterPrivate::EvaluateRect(const std::string& rectStr, RECT* out)
+{
+    std::vector<std::string> values;
+    IuStringUtils::Split(rectStr, ";", values, 4);
+    if (values.size() != 4)
+        return false;
+    int* target = reinterpret_cast<int*>(out);
+    for (size_t i = 0; i < values.size(); i++)
+    {
+        int coord = EvaluateExpression(IuStringUtils::Trim(values[i]));
+        *target = coord;
+        target++;
+    }
+    return true;
+}
+
+
+Gdiplus::Brush* ImageConverterPrivate::CreateBrushFromString(const std::string& brStr, RECT rect)
+{
+    std::vector<std::string> tokens;
+    IuStringUtils::Split(brStr, ":", tokens, 10);
+    if (tokens[0] == "solid")
+    {
+        unsigned int color = 0;
+        if (tokens.size() >= 2)
+        {
+            color = EvaluateColor(tokens[1]);
+        }
+        SolidBrush* br = new SolidBrush(Color(color));
+        return br;
+    }
+    else
+        if (tokens[0] == "gradient" && tokens.size() > 1)
+        {
+            std::vector<std::string> params;
+            IuStringUtils::Split(tokens[1], " ", params, 10);
+            if (params.size() >= 3)
+            {
+                unsigned int color1 = EvaluateColor(params[0]);
+                unsigned int color2 = EvaluateColor(params[1]);
+                int type = -1;
+                std::string gradType = params[2];
+                if (gradType == "vert")
+                {
+                    type = LinearGradientModeVertical;
+                }
+                else
+                    if (gradType == "hor")
+                    {
+                        type = LinearGradientModeHorizontal;
+                    }
+                    else
+                        if (gradType == "diag1")
+                        {
+                            type = LinearGradientModeForwardDiagonal;
+                        }
+                        else
+                            if (gradType == "diag2")
+                            {
+                                type = LinearGradientModeBackwardDiagonal;
+                            }
+                // return new LinearGradientBrush(Rect(0,0, /*rect.left+*/rect.right , /*rect.top+*/rect.bottom ), Color(color1), Color(color2), LinearGradientMode(type));
+                return new LinearGradientBrush(RectF(float(rect.left), float(-0.5 + rect.top), float(rect.right),
+                    /*rect.top+*/ float(rect.bottom)), Color(color1), Color(
+                    color2), LinearGradientMode(type));
+            }
+        }
+    SolidBrush*   br = new SolidBrush(0);
+    return br;
+}
+
+bool createThumbnail(Gdiplus::Image* image, Gdiplus::Image** outResult, int64_t fileSize, int fileFormat = 1);

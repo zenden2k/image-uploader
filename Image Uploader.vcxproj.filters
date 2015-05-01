@@ -690,6 +690,12 @@
     <ClInclude Include="Source\Core\Scripting\UploadFilterScript.h">
       <Filter>Source Files\Core\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\Images\ImageConverterPrivateBase.h">
+      <Filter>Source Files\Core\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Images\ImageConverterPrivate_gdiplus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1607,6 +1613,12 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Scripting\UploadFilterScript.cpp">
       <Filter>Source Files\Core\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Images\ImageConverterPrivateBase.cpp">
+      <Filter>Source Files\Core\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Images\ImageConverterPrivate_gdiplus.cpp">
+      <Filter>Source Files\Core\Images</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

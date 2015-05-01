@@ -9,15 +9,25 @@
 using namespace Gdiplus;
 
 GdiPlusImage::GdiPlusImage() {
-	bm_ = NULL;
-	data_ = 0;
-	width_ = 0;
-	height_ = 0;
+    init();
 }
 
+GdiPlusImage::GdiPlusImage(Gdiplus::Bitmap* bm)
+{
+    release_deleter<Gdiplus::Bitmap> deleter;
+    deleter.release();
+    bm_.reset(bm, deleter);
+    init();
+}
+
+void GdiPlusImage::init()
+{
+    data_ = 0;
+    width_ = 0;
+    height_ = 0;
+}
 
 GdiPlusImage::~GdiPlusImage() {
-	delete bm_;
 	delete[] data_;
 }
 
@@ -97,7 +107,17 @@ bool GdiPlusImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t
 
 Gdiplus::Bitmap* GdiPlusImage::getBitmap() const
 {
-	return bm_;
+	return bm_.get();
+}
+
+int GdiPlusImage::getWidth() const
+{
+    return bm_->GetWidth();
+}
+
+int GdiPlusImage::getHeight() const
+{
+    return bm_->GetHeight();
 }
 
 bool GdiPlusImage::loadFromRgb(int width, int height, uint8_t* data, size_t dataSize)
@@ -114,7 +134,7 @@ bool GdiPlusImage::loadFromRgb(int width, int height, uint8_t* data, size_t data
 	memset( &bi, 0, sizeof(bi) );
 	bi.bmiHeader = bih;
 
-	bm_ = new Gdiplus::Bitmap(&bi, data);
+	bm_.reset(new Gdiplus::Bitmap(&bi, data));
 
 	if ( bm_->GetLastStatus() == Ok ) {
 		width_ = width;
