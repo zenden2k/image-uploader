@@ -31,41 +31,41 @@ class UrlShorteningTask;
 
 class CDefaultUploadEngine: public CAbstractUploadEngine
 {
-	public:
-		CDefaultUploadEngine(ServerSync* serverSync);
-		virtual int doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params);
-	
-	protected:
-		bool DoAction(UploadAction &Action);
-		bool DoUploadAction(UploadAction &Action, bool bUpload);
-		bool DoGetAction(UploadAction &Action);
-		bool ParseAnswer(UploadAction &Action, std::string& Body);
-		std::string ReplaceVars(const std::string& Text);
-		int RetryLimit();
-		void AddQueryPostParams(UploadAction& Action);
-		bool ReadServerResponse(UploadAction& Action);
+    public:
+        CDefaultUploadEngine(ServerSync* serverSync);
+        virtual int doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params);
+    
+    protected:
+        bool DoAction(UploadAction &Action);
+        bool DoUploadAction(UploadAction &Action, bool bUpload);
+        bool DoGetAction(UploadAction &Action);
+        bool ParseAnswer(UploadAction &Action, std::string& Body);
+        std::string ReplaceVars(const std::string& Text);
+        int RetryLimit();
+        void AddQueryPostParams(UploadAction& Action);
+        bool ReadServerResponse(UploadAction& Action);
         void AddCustomHeaders(UploadAction& Action);
-		void SetStatus(StatusType status, std::string param = "");
-		bool needStop();
-		void UploadError(bool error, const std::string errorStr, UploadAction* m_CurrentAction, bool writeToBuffer = true);
-		bool doUploadFile(std::shared_ptr<FileUploadTask> task, CIUUploadParams& params);
-		bool doUploadUrl(std::shared_ptr<UrlShorteningTask> task, CIUUploadParams& params);
-		void prepareUpload();
-		bool executeActions();
+        void SetStatus(StatusType status, std::string param = "");
+        bool needStop();
+        void UploadError(bool error, const std::string errorStr, UploadAction* m_CurrentAction, bool writeToBuffer = true);
+        bool doUploadFile(std::shared_ptr<FileUploadTask> task, CIUUploadParams& params);
+        bool doUploadUrl(std::shared_ptr<UrlShorteningTask> task, CIUUploadParams& params);
+        void prepareUpload();
+        bool executeActions();
 
-		Utf8String m_ErrorReason;
-		Utf8String m_FileName;
-		Utf8String m_displayFileName;
+        Utf8String m_ErrorReason;
+        Utf8String m_FileName;
+        Utf8String m_displayFileName;
         bool fatalError_;
-		LoginInfo li;
-		ErrorInfo m_LastError;
-		std::string m_ErrorBuffer;
-		int m_CurrentActionIndex;
-		std::map<std::string, std::string> m_Vars;
-		std::map<std::string, std::string> m_Consts;
-		std::map<size_t, bool> m_PerformedActions;
-	private:
-		DISALLOW_COPY_AND_ASSIGN(CDefaultUploadEngine);
+        LoginInfo li;
+        ErrorInfo m_LastError;
+        std::string m_ErrorBuffer;
+        int m_CurrentActionIndex;
+        std::map<std::string, std::string> m_Vars;
+        std::map<std::string, std::string> m_Consts;
+        std::map<size_t, bool> m_PerformedActions;
+    private:
+        DISALLOW_COPY_AND_ASSIGN(CDefaultUploadEngine);
 };
 
 #endif

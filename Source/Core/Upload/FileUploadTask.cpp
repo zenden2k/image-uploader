@@ -4,14 +4,14 @@
 #include <assert.h>
 
 FileUploadTask::FileUploadTask(const std::string& fileName, const std::string& displayName, UploadTask* parentTask) : UploadTask(parentTask) {
-	fileName_ = fileName;
-	tempFileDeleter_ = 0;
-	originalFileName_ = fileName;
-	if ( displayName.empty() ) {
-		displayName_ = IuCoreUtils::ExtractFileName(fileName);
-	} else {
-		displayName_ = displayName;
-	}	
+    fileName_ = fileName;
+    tempFileDeleter_ = 0;
+    originalFileName_ = fileName;
+    if ( displayName.empty() ) {
+        displayName_ = IuCoreUtils::ExtractFileName(fileName);
+    } else {
+        displayName_ = displayName;
+    }    
 }
 
 FileUploadTask::~FileUploadTask()
@@ -20,66 +20,66 @@ FileUploadTask::~FileUploadTask()
 }
 
 UploadTask::Type FileUploadTask::type() const {
-	return TypeFile;
+    return TypeFile;
 }
 
 std::string FileUploadTask::getMimeType() const {
-	return IuCoreUtils::GetFileMimeType(fileName_);
+    return IuCoreUtils::GetFileMimeType(fileName_);
 }
 
 int64_t FileUploadTask::getDataLength() const {
-	return IuCoreUtils::getFileSize(fileName_);
+    return IuCoreUtils::getFileSize(fileName_);
 }
 
 std::string FileUploadTask::getFileName() const {
-	return fileName_;
+    return fileName_;
 }
 
 void FileUploadTask::setFileName(const std::string& fileName)
 {
-	fileName_ = fileName;
+    fileName_ = fileName;
 }
 
 std::string FileUploadTask::getDisplayName() const {
-	return displayName_;
+    return displayName_;
 }
 
 void FileUploadTask::setDisplayName(const std::string& name)
 {
-	displayName_ = name;
+    displayName_ = name;
 }
 
 std::string FileUploadTask::originalFileName() const
 {
-	return originalFileName_;
+    return originalFileName_;
 }
 
 void FileUploadTask::finishTask(Status status)
 {
-	if (status == StatusFinished && role_ == ThumbRole )
-	{
-		assert(parentTask_);
-		if (!parentTask_)
-		{
-			return;
-		}
-		//TODO: keep server thumbnail url
-		parentTask_->uploadResult()->thumbUrl = uploadResult_.directUrl;
-	}
-	UploadTask::finishTask(status);
+    if (status == StatusFinished && role_ == ThumbRole )
+    {
+        assert(parentTask_);
+        if (!parentTask_)
+        {
+            return;
+        }
+        //TODO: keep server thumbnail url
+        parentTask_->uploadResult()->thumbUrl = uploadResult_.directUrl;
+    }
+    UploadTask::finishTask(status);
 }
 
 std::string FileUploadTask::toString()
 {
-	return "FileUploadTask(" + fileName_ + ")";
+    return "FileUploadTask(" + fileName_ + ")";
 }
 
 std::string FileUploadTask::title() const
 {
-	return IuCoreUtils::ExtractFileName(originalFileName());
+    return IuCoreUtils::ExtractFileName(originalFileName());
 }
 
 int64_t FileUploadTask::getFileSize() const
 {
-	return getDataLength();
+    return getDataLength();
 }

@@ -25,16 +25,16 @@
 
 namespace IuCoreUtils
 {
-	class ZGlobalMutex
-	{
-		public:
-			ZGlobalMutex(const std::string &name);
-			void lock();
-			void unlock();
-			virtual ~ZGlobalMutex();
-		private:
-			void* m_data;
-	};
+    class ZGlobalMutex
+    {
+        public:
+            ZGlobalMutex(const std::string &name);
+            void lock();
+            void unlock();
+            virtual ~ZGlobalMutex();
+        private:
+            void* m_data;
+    };
 }
 
 #endif

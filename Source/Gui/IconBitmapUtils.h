@@ -41,23 +41,23 @@ typedef HRESULT (WINAPI *FN_EndBufferedPaint) (HPAINTBUFFER hBufferedPaint, BOOL
 class IconBitmapUtils
 {
 public:
-	IconBitmapUtils(void);
-	~IconBitmapUtils(void);
+    IconBitmapUtils(void);
+    ~IconBitmapUtils(void);
 
-	HBITMAP IconToBitmap(HINSTANCE hInst, UINT uIcon);
-	HBITMAP HIconToBitmapPARGB32(HICON hIcon);
-	HBITMAP IconToBitmapPARGB32(HINSTANCE hInst, UINT uIcon);
-	HRESULT Create32BitHBITMAP(HDC hdc, const SIZE *psize, __deref_opt_out void **ppvBits, __out HBITMAP* phBmp);
-	HRESULT ConvertBufferToPARGB32(HPAINTBUFFER hPaintBuffer, HDC hdc, HICON hicon, SIZE& sizIcon);
-	bool HasAlpha(__in Gdiplus::ARGB *pargb, SIZE& sizImage, int cxRow);
-	HRESULT ConvertToPARGB32(HDC hdc, __inout Gdiplus::ARGB *pargb, HBITMAP hbmp, SIZE& sizImage, int cxRow);
+    HBITMAP IconToBitmap(HINSTANCE hInst, UINT uIcon);
+    HBITMAP HIconToBitmapPARGB32(HICON hIcon);
+    HBITMAP IconToBitmapPARGB32(HINSTANCE hInst, UINT uIcon);
+    HRESULT Create32BitHBITMAP(HDC hdc, const SIZE *psize, __deref_opt_out void **ppvBits, __out HBITMAP* phBmp);
+    HRESULT ConvertBufferToPARGB32(HPAINTBUFFER hPaintBuffer, HDC hdc, HICON hicon, SIZE& sizIcon);
+    bool HasAlpha(__in Gdiplus::ARGB *pargb, SIZE& sizImage, int cxRow);
+    HRESULT ConvertToPARGB32(HDC hdc, __inout Gdiplus::ARGB *pargb, HBITMAP hbmp, SIZE& sizImage, int cxRow);
 
 
 private:
-	HMODULE hUxTheme;
-	std::map<UINT, HBITMAP>		bitmaps;
+    HMODULE hUxTheme;
+    std::map<UINT, HBITMAP>        bitmaps;
 
-	FN_GetBufferedPaintBits pfnGetBufferedPaintBits;
-	FN_BeginBufferedPaint pfnBeginBufferedPaint;
-	FN_EndBufferedPaint pfnEndBufferedPaint;
+    FN_GetBufferedPaintBits pfnGetBufferedPaintBits;
+    FN_BeginBufferedPaint pfnBeginBufferedPaint;
+    FN_EndBufferedPaint pfnEndBufferedPaint;
 };

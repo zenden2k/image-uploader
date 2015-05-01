@@ -29,33 +29,33 @@
 #include "Gui/Dialogs/settingspage.h"
 
 class CGeneralSettings : public CDialogImpl<CGeneralSettings>, 
-	                      public CSettingsPage	
+                          public CSettingsPage    
 {
-	public:
-		enum { IDD = IDD_GENERALSETTINGS };
+    public:
+        enum { IDD = IDD_GENERALSETTINGS };
 
-		CGeneralSettings();
-		virtual ~CGeneralSettings();
-		virtual bool Apply();
+        CGeneralSettings();
+        virtual ~CGeneralSettings();
+        virtual bool Apply();
 
-	protected:
-		BEGIN_MSG_MAP(CGeneralSettings)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
-			COMMAND_HANDLER(IDC_BROWSEBUTTON, BN_CLICKED, OnBnClickedBrowse)
-		END_MSG_MAP()
-		// Handler prototypes:
-		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		LRESULT OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		int GetNextLngFile(LPTSTR szBuffer, int nLength);
-		
-		HANDLE findfile;
-		CMyImage img;
-		WIN32_FIND_DATA wfd;
+    protected:
+        BEGIN_MSG_MAP(CGeneralSettings)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
+            COMMAND_HANDLER(IDC_BROWSEBUTTON, BN_CLICKED, OnBnClickedBrowse)
+        END_MSG_MAP()
+        // Handler prototypes:
+        //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        int GetNextLngFile(LPTSTR szBuffer, int nLength);
+        
+        HANDLE findfile;
+        CMyImage img;
+        WIN32_FIND_DATA wfd;
 };
 
 #endif // GENERALSETTINGS_H

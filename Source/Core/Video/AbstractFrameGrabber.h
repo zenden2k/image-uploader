@@ -7,12 +7,12 @@
 class AbstractFrameGrabber
 {
 public:
-	virtual ~AbstractFrameGrabber();
-	virtual bool open(const Utf8String& fileName)=0;
+    virtual ~AbstractFrameGrabber();
+    virtual bool open(const Utf8String& fileName)=0;
     virtual bool seek(int64_t time)=0;
     virtual AbstractVideoFrame* grabCurrentFrame()=0;
     virtual int64_t duration()=0;
-	Utf8String error();
+    Utf8String error();
     void frameGrabbed(AbstractVideoFrame *frame);
     
 //public slots:

@@ -25,23 +25,23 @@
 
 class CCmdLine
 {
-	public:
-		CCmdLine();
-		CCmdLine &operator=(const CCmdLine& p);
-		explicit CCmdLine(LPCTSTR szCmdLine);
-		void Parse(LPCTSTR szCmdLine);
-		int AddParam(LPCTSTR szParam);
+    public:
+        CCmdLine();
+        CCmdLine &operator=(const CCmdLine& p);
+        explicit CCmdLine(LPCTSTR szCmdLine);
+        void Parse(LPCTSTR szCmdLine);
+        int AddParam(LPCTSTR szParam);
 
-		//Returns command line without module name
-		CString OnlyParams();
-		CString operator[](int nIndex);
-		CString ModuleName();
-		bool GetNextFile(CString& FileName, int& nIndex);
-		bool IsOption(LPCTSTR Option, bool bUsePrefix = true);
-		size_t GetCount();
-	private:
-		CStringList m_Params;
-		CString m_OnlyParams;
+        //Returns command line without module name
+        CString OnlyParams();
+        CString operator[](int nIndex);
+        CString ModuleName();
+        bool GetNextFile(CString& FileName, int& nIndex);
+        bool IsOption(LPCTSTR Option, bool bUsePrefix = true);
+        size_t GetCount();
+    private:
+        CStringList m_Params;
+        CString m_OnlyParams;
 };
 
 extern CCmdLine CmdLine;

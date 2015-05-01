@@ -30,8 +30,8 @@
 
 CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager) :serverProfile_(serverProfile)
 {
-	m_UploadEngine = serverProfile_.uploadEngineData();
-	uploadEngineManager_ = uploadEngineManager;
+    m_UploadEngine = serverProfile_.uploadEngineData();
+    uploadEngineManager_ = uploadEngineManager;
 }
 
 CServerFolderSelect::~CServerFolderSelect()
@@ -40,318 +40,318 @@ CServerFolderSelect::~CServerFolderSelect()
 
 LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	m_FolderTree = GetDlgItem(IDC_FOLDERTREE);
-	CenterWindow(GetParent());
+    m_FolderTree = GetDlgItem(IDC_FOLDERTREE);
+    CenterWindow(GetParent());
 
-	DlgResize_Init();
+    DlgResize_Init();
 
-	HWND hWnd = GetDlgItem(IDC_ANIMATIONSTATIC);
-	if (hWnd)
-	{
-		m_wndAnimation.SubclassWindow(hWnd);
-		if (m_wndAnimation.Load(MAKEINTRESOURCE(IDR_PROGRESSGIF), _T("GIF")))
-			m_wndAnimation.Draw();
-		m_wndAnimation.ShowWindow(SW_HIDE);
-	}
+    HWND hWnd = GetDlgItem(IDC_ANIMATIONSTATIC);
+    if (hWnd)
+    {
+        m_wndAnimation.SubclassWindow(hWnd);
+        if (m_wndAnimation.Load(MAKEINTRESOURCE(IDR_PROGRESSGIF), _T("GIF")))
+            m_wndAnimation.Draw();
+        m_wndAnimation.ShowWindow(SW_HIDE);
+    }
 
-	// Internalization
-	TRC(IDCANCEL, "Отмена");
-	TRC(IDOK, "OK");
-	TRC(IDC_NEWFOLDERBUTTON, "Создать папку");
-	SetWindowText(TR("Список папок"));
+    // Internalization
+    TRC(IDCANCEL, "Отмена");
+    TRC(IDOK, "OK");
+    TRC(IDC_NEWFOLDERBUTTON, "Создать папку");
+    SetWindowText(TR("Список папок"));
 
-	HBITMAP hBitmap;
+    HBITMAP hBitmap;
 
-	// Get color depth (minimum requirement is 32-bits for alpha blended images).
-	int iBitsPixel = GetDeviceCaps(::GetDC(HWND_DESKTOP), BITSPIXEL);
+    // Get color depth (minimum requirement is 32-bits for alpha blended images).
+    int iBitsPixel = GetDeviceCaps(::GetDC(HWND_DESKTOP), BITSPIXEL);
 
-	hBitmap = LoadBitmap(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDB_SERVERTOOLBARBMP2));
-	m_PlaceSelectorImageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
-	m_PlaceSelectorImageList.Add(hBitmap, RGB(255, 0, 255));
+    hBitmap = LoadBitmap(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDB_SERVERTOOLBARBMP2));
+    m_PlaceSelectorImageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
+    m_PlaceSelectorImageList.Add(hBitmap, RGB(255, 0, 255));
 
-	m_FolderTree.SetImageList(m_PlaceSelectorImageList);
-	m_FolderMap[L""] = 0;
+    m_FolderTree.SetImageList(m_PlaceSelectorImageList);
+    m_FolderMap[L""] = 0;
 
-	IU_ConfigureProxy(m_NetworkClient);
+    IU_ConfigureProxy(m_NetworkClient);
 
-	m_FolderOperationType = foGetFolders;
-	m_pluginLoader = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+    m_FolderOperationType = foGetFolders;
+    m_pluginLoader = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
 
-	if (!m_pluginLoader)
-	{
-		SetDlgItemText(IDC_FOLDERLISTLABEL, TR("Ошибка при загрузке squirrel скрипта."));
-		return 0;
-	}
-	CString title;
-	title.Format(TR("Список папок на сервере %s для учетной записи '%s':"), (LPCTSTR)Utf8ToWCstring(m_UploadEngine->Name),
-	             (LPCTSTR)Utf8ToWCstring(serverProfile_.serverSettings().authData.Login));
-	SetDlgItemText(IDC_FOLDERLISTLABEL, title);
-	if (m_pluginLoader)
-	{
-		m_pluginLoader->setNetworkClient(&m_NetworkClient);
-		m_pluginLoader->getAccessTypeList(m_accessTypeList);
-		CreateLoadingThread();
-	}
-	return 1;  // Let the system set the focus
+    if (!m_pluginLoader)
+    {
+        SetDlgItemText(IDC_FOLDERLISTLABEL, TR("Ошибка при загрузке squirrel скрипта."));
+        return 0;
+    }
+    CString title;
+    title.Format(TR("Список папок на сервере %s для учетной записи '%s':"), (LPCTSTR)Utf8ToWCstring(m_UploadEngine->Name),
+                 (LPCTSTR)Utf8ToWCstring(serverProfile_.serverSettings().authData.Login));
+    SetDlgItemText(IDC_FOLDERLISTLABEL, title);
+    if (m_pluginLoader)
+    {
+        m_pluginLoader->setNetworkClient(&m_NetworkClient);
+        m_pluginLoader->getAccessTypeList(m_accessTypeList);
+        CreateLoadingThread();
+    }
+    return 1;  // Let the system set the focus
 }
 
 LRESULT CServerFolderSelect::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	HTREEITEM item = m_FolderTree.GetSelectedItem();
+    HTREEITEM item = m_FolderTree.GetSelectedItem();
 
-	if (!item)
-		return 0;
-	int nIndex = m_FolderTree.GetItemData(item);
+    if (!item)
+        return 0;
+    int nIndex = m_FolderTree.GetItemData(item);
 
-	if (nIndex < 0 || nIndex > m_FolderList.GetCount() - 1)
-		return 0;
+    if (nIndex < 0 || nIndex > m_FolderList.GetCount() - 1)
+        return 0;
 
-	if (!::IsWindowEnabled(GetDlgItem(IDOK)))
-		return 0;
+    if (!::IsWindowEnabled(GetDlgItem(IDOK)))
+        return 0;
 
-	m_SelectedFolder = m_FolderList[nIndex];
-	EndDialog(wID);
+    m_SelectedFolder = m_FolderList[nIndex];
+    EndDialog(wID);
 
-	return 0;
+    return 0;
 }
 
 LRESULT CServerFolderSelect::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	EndDialog(wID);
-	return 0;
+    EndDialog(wID);
+    return 0;
 }
 
 DWORD CServerFolderSelect::Run()
 {
     CScriptUploadEngine * script = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
     script->setNetworkClient(&m_NetworkClient);
-	if (m_FolderOperationType == foGetFolders)
-	{
-		int count = 0;
+    if (m_FolderOperationType == foGetFolders)
+    {
+        int count = 0;
 
-		if (!script)
-			return -1;
+        if (!script)
+            return -1;
 
 
-		m_FolderList.Clear();
-		m_FolderMap.clear();
+        m_FolderList.Clear();
+        m_FolderMap.clear();
        
-		NetworkClient networkClient;
-		IU_ConfigureProxy(networkClient);
-		script->setNetworkClient(&networkClient);
-		int retCode = script->getFolderList(m_FolderList);
-		if (retCode < 1)
-		{
-			if (retCode == -1)
-				TRC(IDC_FOLDERLISTLABEL, "Данный сервер не поддерживает получение списка папок");
-			else
-				TRC(IDC_FOLDERLISTLABEL, "Не удалось загрузить список папок.");
+        NetworkClient networkClient;
+        IU_ConfigureProxy(networkClient);
+        script->setNetworkClient(&networkClient);
+        int retCode = script->getFolderList(m_FolderList);
+        if (retCode < 1)
+        {
+            if (retCode == -1)
+                TRC(IDC_FOLDERLISTLABEL, "Данный сервер не поддерживает получение списка папок");
+            else
+                TRC(IDC_FOLDERLISTLABEL, "Не удалось загрузить список папок.");
 
-			OnLoadFinished();
-			return -1;
-		}
+            OnLoadFinished();
+            return -1;
+        }
 
-		HTREEITEM toSelect = 0;
-		int nNeedToBeSelected = -1;
+        HTREEITEM toSelect = 0;
+        int nNeedToBeSelected = -1;
 
-		m_FolderTree.DeleteAllItems();
-		BuildFolderTree(m_FolderList.m_folderItems, "");
-		m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_SelectedFolder.id)]);
-		OnLoadFinished();
-	}
+        m_FolderTree.DeleteAllItems();
+        BuildFolderTree(m_FolderList.m_folderItems, "");
+        m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_SelectedFolder.id)]);
+        OnLoadFinished();
+    }
 
-	else if (m_FolderOperationType == foCreateFolder)
-	{
-		script->createFolder(CFolderItem(), m_newFolder);
-		m_FolderOperationType = foGetFolders;
-		Run();
-		m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_newFolder.id)]);
-	}
+    else if (m_FolderOperationType == foCreateFolder)
+    {
+        script->createFolder(CFolderItem(), m_newFolder);
+        m_FolderOperationType = foGetFolders;
+        Run();
+        m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_newFolder.id)]);
+    }
 
-	else if (m_FolderOperationType == foModifyFolder) // Modifying an existing folder
-	{
-		script->modifyFolder(m_newFolder);
-		m_FolderOperationType = foGetFolders;
-		Run();
-		m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_newFolder.id)]);
-	}
+    else if (m_FolderOperationType == foModifyFolder) // Modifying an existing folder
+    {
+        script->modifyFolder(m_newFolder);
+        m_FolderOperationType = foGetFolders;
+        Run();
+        m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_newFolder.id)]);
+    }
     uploadEngineManager_->clearThreadData();
-	BlockWindow(false);
-	return 0;
+    BlockWindow(false);
+    return 0;
 }
 
 void CServerFolderSelect::OnLoadFinished()
 {
-	BlockWindow(false);
+    BlockWindow(false);
 }
 
 void CServerFolderSelect::NewFolder(const CString& parentFolderId)
 {
-	CFolderItem newFolder;
-	CNewFolderDlg dlg(newFolder, true, m_accessTypeList);
-	if (dlg.DoModal(m_hWnd) == IDOK)
-	{
-		m_newFolder = newFolder;
-		m_newFolder.parentid = WCstringToUtf8(parentFolderId);
-		m_FolderOperationType = foCreateFolder;
-		if (!IsRunning())
-		{
-			CreateLoadingThread();
-		}
-	}
+    CFolderItem newFolder;
+    CNewFolderDlg dlg(newFolder, true, m_accessTypeList);
+    if (dlg.DoModal(m_hWnd) == IDOK)
+    {
+        m_newFolder = newFolder;
+        m_newFolder.parentid = WCstringToUtf8(parentFolderId);
+        m_FolderOperationType = foCreateFolder;
+        if (!IsRunning())
+        {
+            CreateLoadingThread();
+        }
+    }
 }
 
 LRESULT CServerFolderSelect::OnBnClickedNewfolderbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	NewFolder("");
-	return 0;
+    NewFolder("");
+    return 0;
 }
 
 LRESULT CServerFolderSelect::OnFolderlistLbnDblclk(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-	SendDlgItemMessage(IDOK, BM_CLICK );
-	return 0;
+    SendDlgItemMessage(IDOK, BM_CLICK );
+    return 0;
 }
 
 LRESULT CServerFolderSelect::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	CMenu sub;
-	MENUITEMINFO mi;
-	mi.cbSize = sizeof(mi);
-	mi.fMask = MIIM_TYPE | MIIM_ID;
-	mi.fType = MFT_STRING;
-	sub.CreatePopupMenu();
+    CMenu sub;
+    MENUITEMINFO mi;
+    mi.cbSize = sizeof(mi);
+    mi.fMask = MIIM_TYPE | MIIM_ID;
+    mi.fType = MFT_STRING;
+    sub.CreatePopupMenu();
 
-	POINT ClientPoint, ScreenPoint;
-	HWND hwnd = (HWND) wParam;
-	if (hwnd != m_FolderTree.m_hWnd)
-		return 0;
+    POINT ClientPoint, ScreenPoint;
+    HWND hwnd = (HWND) wParam;
+    if (hwnd != m_FolderTree.m_hWnd)
+        return 0;
 
-	if (lParam == -1)
-	{
-		ClientPoint.x = 0;
-		ClientPoint.y = 0;
-		ScreenPoint = ClientPoint;
-		::ClientToScreen(hwnd, &ScreenPoint);
-	}
-	else
-	{
-		ScreenPoint.x = LOWORD(lParam);
-		ScreenPoint.y = HIWORD(lParam);
-		ClientPoint = ScreenPoint;
-		::ScreenToClient(hwnd, &ClientPoint);
-	}
+    if (lParam == -1)
+    {
+        ClientPoint.x = 0;
+        ClientPoint.y = 0;
+        ScreenPoint = ClientPoint;
+        ::ClientToScreen(hwnd, &ScreenPoint);
+    }
+    else
+    {
+        ScreenPoint.x = LOWORD(lParam);
+        ScreenPoint.y = HIWORD(lParam);
+        ClientPoint = ScreenPoint;
+        ::ScreenToClient(hwnd, &ClientPoint);
+    }
 
-	UINT flags;
-	HTREEITEM selectedItem = m_FolderTree.HitTest(ClientPoint, &flags);
-	if (!selectedItem)
-		return 0;
+    UINT flags;
+    HTREEITEM selectedItem = m_FolderTree.HitTest(ClientPoint, &flags);
+    if (!selectedItem)
+        return 0;
 
-	m_FolderTree.SelectItem(selectedItem);
+    m_FolderTree.SelectItem(selectedItem);
 
-	mi.wID = ID_EDITFOLDER;
-	mi.dwTypeData  = TR("Редактировать");
-	sub.InsertMenuItem(1, true, &mi);
+    mi.wID = ID_EDITFOLDER;
+    mi.dwTypeData  = TR("Редактировать");
+    sub.InsertMenuItem(1, true, &mi);
 
-	mi.wID = ID_OPENINBROWSER;
-	mi.dwTypeData  = TR("Открыть в браузере");
-	sub.InsertMenuItem(0, true, &mi);
+    mi.wID = ID_OPENINBROWSER;
+    mi.dwTypeData  = TR("Открыть в браузере");
+    sub.InsertMenuItem(0, true, &mi);
 
-	mi.wID = ID_CREATENESTEDFOLDER;
-	mi.dwTypeData  = TR("Создать вложенную папку");
-	sub.InsertMenuItem(2, true, &mi);
+    mi.wID = ID_CREATENESTEDFOLDER;
+    mi.dwTypeData  = TR("Создать вложенную папку");
+    sub.InsertMenuItem(2, true, &mi);
 
-	sub.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
-	return 0;
+    sub.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
+    return 0;
 }
 
 LRESULT CServerFolderSelect::OnEditFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	HTREEITEM item = m_FolderTree.GetSelectedItem();
+    HTREEITEM item = m_FolderTree.GetSelectedItem();
 
-	if (!item)
-		return 0;
-	int nIndex = m_FolderTree.GetItemData(item);
+    if (!item)
+        return 0;
+    int nIndex = m_FolderTree.GetItemData(item);
 
-	CFolderItem& folder = m_FolderList[nIndex];
+    CFolderItem& folder = m_FolderList[nIndex];
 
-	CNewFolderDlg dlg(folder, false, m_accessTypeList);
-	if (dlg.DoModal() == IDOK)
-	{
-		m_FolderOperationType = foModifyFolder;  // Editing an existing folder
-		m_newFolder = folder;
-		if (!IsRunning())
-		{
-			CreateLoadingThread();
-		}
-	}
-	return 0;
+    CNewFolderDlg dlg(folder, false, m_accessTypeList);
+    if (dlg.DoModal() == IDOK)
+    {
+        m_FolderOperationType = foModifyFolder;  // Editing an existing folder
+        m_newFolder = folder;
+        if (!IsRunning())
+        {
+            CreateLoadingThread();
+        }
+    }
+    return 0;
 }
 
 void CServerFolderSelect::BlockWindow(bool Block)
 {
-	m_wndAnimation.ShowWindow(Block ? SW_SHOW : SW_HIDE);
-	::EnableWindow(GetDlgItem(IDOK), !Block);
-	::EnableWindow(GetDlgItem(IDCANCEL), !Block);
-	::EnableWindow(GetDlgItem(IDC_NEWFOLDERBUTTON), !Block);
-	m_FolderTree.EnableWindow(!Block);
+    m_wndAnimation.ShowWindow(Block ? SW_SHOW : SW_HIDE);
+    ::EnableWindow(GetDlgItem(IDOK), !Block);
+    ::EnableWindow(GetDlgItem(IDCANCEL), !Block);
+    ::EnableWindow(GetDlgItem(IDC_NEWFOLDERBUTTON), !Block);
+    m_FolderTree.EnableWindow(!Block);
 }
 
 LRESULT CServerFolderSelect::OnOpenInBrowser(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	HTREEITEM item = m_FolderTree.GetSelectedItem();
+    HTREEITEM item = m_FolderTree.GetSelectedItem();
 
-	if (!item)
-		return 0;
-	int nIndex = m_FolderTree.GetItemData(item);
+    if (!item)
+        return 0;
+    int nIndex = m_FolderTree.GetItemData(item);
 
-	CFolderItem& folder = m_FolderList[nIndex];
+    CFolderItem& folder = m_FolderList[nIndex];
 
-	CString str = folder.viewUrl.c_str();
-	if (!str.IsEmpty())
-	{
-		ShellExecute(0, _T("open"), str, _T(""), 0, SW_SHOWNORMAL);
-	}
-	return 0;
+    CString str = folder.viewUrl.c_str();
+    if (!str.IsEmpty())
+    {
+        ShellExecute(0, _T("open"), str, _T(""), 0, SW_SHOWNORMAL);
+    }
+    return 0;
 }
 
 void CServerFolderSelect::CreateLoadingThread()
 {
-	BlockWindow(true);
-	Start();
+    BlockWindow(true);
+    Start();
 }
 
 LRESULT CServerFolderSelect::OnCreateNestedFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	HTREEITEM item = m_FolderTree.GetSelectedItem();
+    HTREEITEM item = m_FolderTree.GetSelectedItem();
 
-	if (!item)
-		return 0;
-	int nIndex = m_FolderTree.GetItemData(item);
+    if (!item)
+        return 0;
+    int nIndex = m_FolderTree.GetItemData(item);
 
-	CFolderItem& folder = m_FolderList[nIndex];
-	NewFolder(folder.id.c_str());
-	return 0;
+    CFolderItem& folder = m_FolderList[nIndex];
+    NewFolder(folder.id.c_str());
+    return 0;
 }
 
 void CServerFolderSelect::BuildFolderTree(std::vector<CFolderItem>& list, const CString& parentFolderId)
 {
-	for (size_t i = 0; i < list.size(); i++)
-	{
-		CFolderItem& cur = list[i];
-		if (cur.parentid.c_str() == parentFolderId)
-		{
-			CString title = Utf8ToWCstring(cur.title);
-			if (cur.itemCount != -1)
-				title += _T(" (") + WinUtils::IntToStr(cur.itemCount) + _T(")");
-			HTREEITEM res = m_FolderTree.InsertItem(title, 1, 1, m_FolderMap[Utf8ToWstring(cur.parentid)], TVI_SORT  );
-			m_FolderTree.SetItemData(res, i);
+    for (size_t i = 0; i < list.size(); i++)
+    {
+        CFolderItem& cur = list[i];
+        if (cur.parentid.c_str() == parentFolderId)
+        {
+            CString title = Utf8ToWCstring(cur.title);
+            if (cur.itemCount != -1)
+                title += _T(" (") + WinUtils::IntToStr(cur.itemCount) + _T(")");
+            HTREEITEM res = m_FolderTree.InsertItem(title, 1, 1, m_FolderMap[Utf8ToWstring(cur.parentid)], TVI_SORT  );
+            m_FolderTree.SetItemData(res, i);
 
-			m_FolderMap[Utf8ToWstring(cur.id)] = res;
-			if (cur.id != "")
-				BuildFolderTree(list, cur.id.c_str());
-			if (parentFolderId == _T(""))
-				m_FolderTree.Expand(res);
-		}
-	}
+            m_FolderMap[Utf8ToWstring(cur.id)] = res;
+            if (cur.id != "")
+                BuildFolderTree(list, cur.id.c_str());
+            if (parentFolderId == _T(""))
+                m_FolderTree.Expand(res);
+        }
+    }
 }

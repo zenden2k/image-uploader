@@ -5,13 +5,13 @@
 #include <string>
 
 class VideoUtils {
-	public:
-		static VideoUtils& Instance();
-		std::vector<std::string> videoFilesExtensions;
-	private:  
-		VideoUtils();
-		VideoUtils(VideoUtils& root){}
-		VideoUtils& operator=(VideoUtils&){return *this;}
+    public:
+        static VideoUtils& Instance();
+        std::vector<std::string> videoFilesExtensions;
+    private:  
+        VideoUtils();
+        VideoUtils(VideoUtils& root){}
+        VideoUtils& operator=(VideoUtils&){return *this;}
 
 };
 #endif

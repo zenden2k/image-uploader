@@ -31,68 +31,68 @@ CUploadEngineList_Base::CUploadEngineList_Base()
 }
 
 CUploadEngineData* CUploadEngineList_Base::byIndex(size_t index) {
-	if ( index < m_list.size() ) {
-		return &m_list[index];
-	} else {
-		return NULL;
-	}
+    if ( index < m_list.size() ) {
+        return &m_list[index];
+    } else {
+        return NULL;
+    }
 }
 
 int CUploadEngineList_Base::count()
 {
-	return m_list.size();
+    return m_list.size();
 }
 
 CUploadEngineData* CUploadEngineList_Base::byName(const std::string& name)
 {
-	for (size_t i = 0; i < m_list.size(); i++)
-	{
-		if (!IuStringUtils::stricmp(m_list[i].Name.c_str(), name.c_str()))
-			return &m_list[i];
-	}
-	return 0;
+    for (size_t i = 0; i < m_list.size(); i++)
+    {
+        if (!IuStringUtils::stricmp(m_list[i].Name.c_str(), name.c_str()))
+            return &m_list[i];
+    }
+    return 0;
 }
 
 CUploadEngineData*  CUploadEngineList_Base::firstEngineOfType(CUploadEngineData::ServerType type) {
-	for (size_t i = 0; i < m_list.size(); i++)
-	{
-		if ( m_list[i].Type == type) {
-			return &m_list[i];
-		}
-	}
-	return 0;
+    for (size_t i = 0; i < m_list.size(); i++)
+    {
+        if ( m_list[i].Type == type) {
+            return &m_list[i];
+        }
+    }
+    return 0;
 }
 
 int CUploadEngineList_Base::getRandomImageServer()
 {
-	std::vector<int> m_suitableServers;
-	for (size_t i = 0; i < m_list.size(); i++)
-	{
-		if (m_list[i].NeedAuthorization != 2 && m_list[i].ImageHost)
-			m_suitableServers.push_back(i);
-	}
-	return m_suitableServers[rand() % (m_suitableServers.size())];
+    std::vector<int> m_suitableServers;
+    for (size_t i = 0; i < m_list.size(); i++)
+    {
+        if (m_list[i].NeedAuthorization != 2 && m_list[i].ImageHost)
+            m_suitableServers.push_back(i);
+    }
+    return m_suitableServers[rand() % (m_suitableServers.size())];
 }
 
 int CUploadEngineList_Base::getRandomFileServer()
 {
-	std::vector<int> m_suitableServers;
-	for (size_t i = 0; i < m_list.size(); i++)
-	{
-		if (m_list[i].NeedAuthorization != 2 && !m_list[i].ImageHost)
-			m_suitableServers.push_back(i);
-	}
-	return m_suitableServers[rand() % m_suitableServers.size()];
+    std::vector<int> m_suitableServers;
+    for (size_t i = 0; i < m_list.size(); i++)
+    {
+        if (m_list[i].NeedAuthorization != 2 && !m_list[i].ImageHost)
+            m_suitableServers.push_back(i);
+    }
+    return m_suitableServers[rand() % m_suitableServers.size()];
 }
 
 int CUploadEngineList_Base::GetUploadEngineIndex(const std::string Name)
 {
-	for (size_t i = 0; i < m_list.size(); i++)
-	{
-		if (m_list[i].Name == Name)
-			return i;
-	}
-	return -1;
+    for (size_t i = 0; i < m_list.size(); i++)
+    {
+        if (m_list[i].Name == Name)
+            return i;
+    }
+    return -1;
 }
 
 /* CAbstractUploadEngine */
@@ -103,9 +103,9 @@ CAbstractUploadEngine::~CAbstractUploadEngine()
 
 bool CAbstractUploadEngine::DebugMessage(const std::string& message, bool isServerResponseBody)
 {
-	if (onDebugMessage)
-		onDebugMessage(message, isServerResponseBody);
-	return true;
+    if (onDebugMessage)
+        onDebugMessage(message, isServerResponseBody);
+    return true;
 }
 
 bool CAbstractUploadEngine::ErrorMessage(ErrorInfo ei)
@@ -116,65 +116,65 @@ bool CAbstractUploadEngine::ErrorMessage(ErrorInfo ei)
     {
         (ei.messageType == ErrorInfo::mtError ? LOG(ERROR) : LOG(WARNING)) << ei.error;
     }
-	return true;
+    return true;
 }
 
 void CAbstractUploadEngine::setServerSettings(ServerSettingsStruct* settings)
 {
-	m_ServersSettings = settings;
+    m_ServersSettings = settings;
 }
 
 ServerSettingsStruct * CAbstractUploadEngine::serverSettings()
 {
-	return m_ServersSettings;
+    return m_ServersSettings;
 }
 
 bool CAbstractUploadEngine::needStop()
 {
-	if (m_bShouldStop)
-		return m_bShouldStop;
-	if (onNeedStop)
-		m_bShouldStop = onNeedStop();  // delegate call
-	return m_bShouldStop;
+    if (m_bShouldStop)
+        return m_bShouldStop;
+    if (onNeedStop)
+        m_bShouldStop = onNeedStop();  // delegate call
+    return m_bShouldStop;
 }
 
 void CAbstractUploadEngine::SetStatus(StatusType status, std::string param)
 {
-	if (onStatusChanged)
-		onStatusChanged(status, 0,  param);
+    if (onStatusChanged)
+        onStatusChanged(status, 0,  param);
 }
 
 void CAbstractUploadEngine::setNetworkClient(NetworkClient* nm)
 {
-	m_NetworkClient = nm;
+    m_NetworkClient = nm;
 }
 
 void CAbstractUploadEngine::setUploadData(CUploadEngineData* data)
 {
-	m_UploadData = data;
+    m_UploadData = data;
 }
 
 CAbstractUploadEngine::CAbstractUploadEngine(ServerSync* serverSync)
 {
-	m_bShouldStop = 0;
-	m_NetworkClient = 0;
-	m_UploadData = 0;
-	serverSync_ = serverSync;
+    m_bShouldStop = 0;
+    m_NetworkClient = 0;
+    m_UploadData = 0;
+    serverSync_ = serverSync;
 }
 
 void CAbstractUploadEngine::setThumbnailWidth(int width)
 {
-	m_ThumbnailWidth = width;
+    m_ThumbnailWidth = width;
 }
 
 CUploadEngineData* CAbstractUploadEngine::getUploadData() const
 {
-	return m_UploadData;
+    return m_UploadData;
 }
 
 void CAbstractUploadEngine::setServerSync(ServerSync* sync)
 {
-	serverSync_ = sync;
+    serverSync_ = sync;
 }
 
 void CAbstractUploadEngine::stop()
@@ -184,5 +184,5 @@ void CAbstractUploadEngine::stop()
 
 ServerSync* CAbstractUploadEngine::serverSync() const
 {
-	return serverSync_;
+    return serverSync_;
 }

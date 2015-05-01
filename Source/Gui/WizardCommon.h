@@ -38,20 +38,20 @@
 class CWizardDlg;
 class CWizardPage
 {
-	public:
-		CWizardDlg* WizardDlg;
-		virtual ~CWizardPage() = NULL;
-		HBITMAP HeadBitmap;
-		virtual bool OnShow();
-		virtual bool OnHide();
-		virtual bool OnNext();
-		void EnableNext(bool Enable = true);
-		void EnablePrev(bool Enable = true);
-		void EnableExit(bool Enable = true);
-		void SetNextCaption(LPCTSTR Caption);
-		HWND PageWnd;
-		void ShowNext(bool Show = true);
-		void ShowPrev(bool Show = true);
+    public:
+        CWizardDlg* WizardDlg;
+        virtual ~CWizardPage() = NULL;
+        HBITMAP HeadBitmap;
+        virtual bool OnShow();
+        virtual bool OnHide();
+        virtual bool OnNext();
+        void EnableNext(bool Enable = true);
+        void EnablePrev(bool Enable = true);
+        void EnableExit(bool Enable = true);
+        void SetNextCaption(LPCTSTR Caption);
+        HWND PageWnd;
+        void ShowNext(bool Show = true);
+        void ShowPrev(bool Show = true);
 };
 
 extern CWizardDlg* pWizardDlg;

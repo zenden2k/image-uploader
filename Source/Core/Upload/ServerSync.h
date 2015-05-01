@@ -12,15 +12,15 @@
 class ServerSyncPrivate;
 class ThreadSyncPrivate;
 /**
-	@brief ServerSync class contains server- (and account) specific data and tools for syncronization 
-	threads which are uploading to the same server (and account)
+    @brief ServerSync class contains server- (and account) specific data and tools for syncronization 
+    threads which are uploading to the same server (and account)
 */
 class ServerSync: public ThreadSync
 {
-	public:
-		ServerSync();
-		bool beginAuth();
-		bool endAuth();
+    public:
+        ServerSync();
+        bool beginAuth();
+        bool endAuth();
         void setAuthPerformed(bool success);
         bool isAuthPerformed();
     private:

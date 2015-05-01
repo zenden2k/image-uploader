@@ -75,24 +75,24 @@ public :
     }
 
     bool saveToFile(const Utf8String& fileName) const {
-		AbstractImage* image = AbstractImage::createImage();
-		if ( !image ) {
-			return false;
-		} 
-		if ( !image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_,data_, dataSize_) ) {
-			return false;
-		}
-		return image->saveToFile(fileName);
+        AbstractImage* image = AbstractImage::createImage();
+        if ( !image ) {
+            return false;
+        } 
+        if ( !image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_,data_, dataSize_) ) {
+            return false;
+        }
+        return image->saveToFile(fileName);
     }
 
     AbstractImage* toImage() const  {
-		AbstractImage* image = AbstractImage::createImage();
-		if ( !image ) {
-			return 0;
-		} 
-		if ( !image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_,data_, dataSize_) ) {
-			delete image;
-		}
+        AbstractImage* image = AbstractImage::createImage();
+        if ( !image ) {
+            return 0;
+        } 
+        if ( !image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_,data_, dataSize_) ) {
+            delete image;
+        }
         return image;
     }
 
@@ -103,12 +103,12 @@ public :
 
 inline std::string GetMessageForHresult(HRESULT hr) { 
 
-	//_com_error error(hr); 
-	CString cs; 
-	WCHAR descr[1024]=L"";
-	DXGetErrorDescriptionW(hr,descr, ARRAY_SIZE(descr));
-	cs.Format(_T("\r\nError 0x%08x: %s\r\n%s"), hr, DXGetErrorStringW(hr), descr); 
-	return IuCoreUtils::WstringToUtf8((LPCTSTR)cs); 
+    //_com_error error(hr); 
+    CString cs; 
+    WCHAR descr[1024]=L"";
+    DXGetErrorDescriptionW(hr,descr, ARRAY_SIZE(descr));
+    cs.Format(_T("\r\nError 0x%08x: %s\r\n%s"), hr, DXGetErrorStringW(hr), descr); 
+    return IuCoreUtils::WstringToUtf8((LPCTSTR)cs); 
 } 
 
 
@@ -136,52 +136,52 @@ typedef struct tagVIDEOINFOHEADER2
 // некий COM-object для передачи в callback-функция GraphBulder, что-бы не грузить субтитры 
 class NoDirectVobSub : public IAMGraphBuilderCallback
 {
-	int Refs;
+    int Refs;
 
 public:
-	NoDirectVobSub() { Refs = 0; }
+    NoDirectVobSub() { Refs = 0; }
 
-	virtual STDMETHODIMP QueryInterface(REFIID riid, __deref_out void** ppv)
-	{
-		if (riid == IID_IUnknown)                        (*ppv) = static_cast<IUnknown*>(this);
-		else if (riid == IID_IAMGraphBuilderCallback)    (*ppv) = static_cast<IAMGraphBuilderCallback*>(this);
+    virtual STDMETHODIMP QueryInterface(REFIID riid, __deref_out void** ppv)
+    {
+        if (riid == IID_IUnknown)                        (*ppv) = static_cast<IUnknown*>(this);
+        else if (riid == IID_IAMGraphBuilderCallback)    (*ppv) = static_cast<IAMGraphBuilderCallback*>(this);
 
-		else { (*ppv)=0; return E_NOINTERFACE; }
+        else { (*ppv)=0; return E_NOINTERFACE; }
 
-		AddRef();
-		return S_OK;
-	}
+        AddRef();
+        return S_OK;
+    }
 
-	// Fake out any COM ref counting
-	STDMETHODIMP_(ULONG) AddRef() {
-		return 2;
-	}
-	STDMETHODIMP_(ULONG) Release() {
-		return 1;
-	}
+    // Fake out any COM ref counting
+    STDMETHODIMP_(ULONG) AddRef() {
+        return 2;
+    }
+    STDMETHODIMP_(ULONG) Release() {
+        return 1;
+    }
 
-	virtual HRESULT STDMETHODCALLTYPE SelectedFilter( /* [in] */ IMoniker* pMon)
-	{
-		HRESULT ret = S_OK;
-		//CLSID id; pMon->GetClassID( &id ); // получает всегда CLSID_DeviceMoniker - по нему не проверишь
+    virtual HRESULT STDMETHODCALLTYPE SelectedFilter( /* [in] */ IMoniker* pMon)
+    {
+        HRESULT ret = S_OK;
+        //CLSID id; pMon->GetClassID( &id ); // получает всегда CLSID_DeviceMoniker - по нему не проверишь
 
-		IBindCtx* bind;    ;
-		if (SUCCEEDED(CreateBindCtx( 0, &bind )))
-		{
-			LPOLESTR name;
-			if (SUCCEEDED(pMon->GetDisplayName( bind, 0, &name )))
-			{
-				// thanks to http://rsdn.ru/forum/media/4970888.1
-				if (wcsstr((wchar_t*)name, L"93A22E7A-5091-45EF-BA61-6DA26156A5D0" )!=0) ret = E_ABORT;    // DirectVobSub
-				if (wcsstr((wchar_t*)name, L"9852A670-F845-491B-9BE6-EBD841B8A613" )!=0) ret = E_ABORT;    // DirectVobSub autoload
-			}
-			bind->Release(); 
-		}
+        IBindCtx* bind;    ;
+        if (SUCCEEDED(CreateBindCtx( 0, &bind )))
+        {
+            LPOLESTR name;
+            if (SUCCEEDED(pMon->GetDisplayName( bind, 0, &name )))
+            {
+                // thanks to http://rsdn.ru/forum/media/4970888.1
+                if (wcsstr((wchar_t*)name, L"93A22E7A-5091-45EF-BA61-6DA26156A5D0" )!=0) ret = E_ABORT;    // DirectVobSub
+                if (wcsstr((wchar_t*)name, L"9852A670-F845-491B-9BE6-EBD841B8A613" )!=0) ret = E_ABORT;    // DirectVobSub autoload
+            }
+            bind->Release(); 
+        }
 
-		return ret;
-	}
+        return ret;
+    }
 
-	virtual HRESULT STDMETHODCALLTYPE CreatedFilter( /* [in] */ IBaseFilter* pFil) { return S_OK; }
+    virtual HRESULT STDMETHODCALLTYPE CreatedFilter( /* [in] */ IBaseFilter* pFil) { return S_OK; }
 };
 
 
@@ -189,9 +189,9 @@ public:
 class CSampleGrabberCB : public ISampleGrabberCB
 {
 public:
-	CSampleGrabberCB() {
-	}
-	std::mutex mutex;
+    CSampleGrabberCB() {
+    }
+    std::mutex mutex;
     DirectshowFrameGrabberPrivate *directShowPrivate;
     //CImgSavingThread* SavingThread;
   //  CVideoGrabberPage* vg;
@@ -218,21 +218,21 @@ public:
 
 class DirectshowFrameGrabberPrivate {
 public:
-	DirectshowFrameGrabberPrivate() {
-		currentFrame_ = NULL;
-	}
+    DirectshowFrameGrabberPrivate() {
+        currentFrame_ = NULL;
+    }
 
-	~DirectshowFrameGrabberPrivate() {
-		//pGraph.Detach();
-	}
+    ~DirectshowFrameGrabberPrivate() {
+        //pGraph.Detach();
+    }
 
-	DirectshowVideoFrame* currentFrame() {
-		return currentFrame_;
-	}
+    DirectshowVideoFrame* currentFrame() {
+        return currentFrame_;
+    }
 
-	void setCurrentFrame(DirectshowVideoFrame* frame) {
-		currentFrame_ = frame;
-	}
+    void setCurrentFrame(DirectshowVideoFrame* frame) {
+        currentFrame_ = frame;
+    }
     CComPtr<ISampleGrabber> pGrabber;
      CComPtr<IBaseFilter>    pSource;
      CComPtr<IBaseFilter>    pASF;
@@ -247,11 +247,11 @@ public:
      CComQIPtr<IFileSourceFilter, & IID_IFileSourceFilter> pLoad;
      CComPtr<IPin> pSourcePin;
      CComPtr<IPin> pGrabPin;
-	 CComQIPtr<IObjectWithSite> pObjectWithSite;
+     CComQIPtr<IObjectWithSite> pObjectWithSite;
      CSampleGrabberCB CB;
-	 NoDirectVobSub graphBuilderCallback;
+     NoDirectVobSub graphBuilderCallback;
 protected:
-	 DirectshowVideoFrame * currentFrame_; 
+     DirectshowVideoFrame * currentFrame_; 
 };
 
 
@@ -311,8 +311,8 @@ STDMETHODIMP CSampleGrabberCB::BufferCB( double SampleTime, BYTE* pBuffer, long 
 
 
 void GrabInfo(Utf8String text){
-	OutputDebugString(IuCoreUtils::Utf8ToWstring(text).c_str());
-	//LOG(ERROR) << text;
+    OutputDebugString(IuCoreUtils::Utf8ToWstring(text).c_str());
+    //LOG(ERROR) << text;
 }
 
 bool ShouldStop() {
@@ -341,7 +341,7 @@ bool DirectshowFrameGrabber::open(const Utf8String& fileName) {
     d_ptr->pGrabber.CoCreateInstance( CLSID_SampleGrabber );
     if ( !d_ptr->pGrabber )
     {
-		LOG(ERROR) << "Could not create CLSID_SampleGrabber instance.";
+        LOG(ERROR) << "Could not create CLSID_SampleGrabber instance.";
         return false;
     }
     d_ptr->pGrabberBase = ( d_ptr->pGrabber );
@@ -354,7 +354,7 @@ bool DirectshowFrameGrabber::open(const Utf8String& fileName) {
         d_ptr->pSource.CoCreateInstance( CLSID_AsyncReader  );
         if ( !d_ptr->pSource )
         {
-			LOG(ERROR) << "Couldn't create CLSID_AsyncReader instance.";
+            LOG(ERROR) << "Couldn't create CLSID_AsyncReader instance.";
             return false;
         }
     }
@@ -363,7 +363,7 @@ bool DirectshowFrameGrabber::open(const Utf8String& fileName) {
         d_ptr->pASF.CoCreateInstance( CLSID_WMAsfReader  );
         if ( !d_ptr->pASF )
         {
-			LOG(ERROR) << "Couldn't create CLSID_WMAsfReader instance.";
+            LOG(ERROR) << "Couldn't create CLSID_WMAsfReader instance.";
             return false;
         }
     }
@@ -372,11 +372,11 @@ bool DirectshowFrameGrabber::open(const Utf8String& fileName) {
     d_ptr->pGraph.CoCreateInstance( CLSID_FilterGraph );
     if ( !d_ptr->pGraph )
     {
-		LOG(ERROR) << "Couldn't create CLSID_FilterGraph instance.";
+        LOG(ERROR) << "Couldn't create CLSID_FilterGraph instance.";
         return false;
     }
-	d_ptr->pObjectWithSite = d_ptr->pGraph;
-	d_ptr->pObjectWithSite->SetSite(&d_ptr->graphBuilderCallback);
+    d_ptr->pObjectWithSite = d_ptr->pGraph;
+    d_ptr->pObjectWithSite->SetSite(&d_ptr->graphBuilderCallback);
     bool Error = false;
     CComPtr<IGraphBuilder>  pGraph2;
     /*bool IsAVI = true;
@@ -394,7 +394,7 @@ bool DirectshowFrameGrabber::open(const Utf8String& fileName) {
         hr = pGraph2->RenderFile(fileNameW, NULL);
         if ( FAILED( hr ) )
         {
-			LOG(ERROR) << "Couldn't find suitable codecs (probably format is not supported)" << GetMessageForHresult(hr);
+            LOG(ERROR) << "Couldn't find suitable codecs (probably format is not supported)" << GetMessageForHresult(hr);
             GrabInfo( tr("Невозможно подобрать кодеки (формат не поддерживается).") );
             Error = true;
         }
@@ -413,44 +413,44 @@ bool DirectshowFrameGrabber::open(const Utf8String& fileName) {
 
     if ( FAILED( hr ) )
     {
-		LOG(ERROR) << "Couldn't load codec"<<GetMessageForHresult(hr);
+        LOG(ERROR) << "Couldn't load codec"<<GetMessageForHresult(hr);
         return false;
     }
 
 
-	
+    
 
     CMediaType GrabType;
     GrabType.SetType( &MEDIATYPE_Video );
     GrabType.SetSubtype( &MEDIASUBTYPE_RGB24 );
     hr = d_ptr->pGrabber->SetMediaType( &GrabType );
 
-	if ( FAILED( hr ) )
-	{
-		LOG(ERROR) << "Unable to set MEDIASUBTYPE_RGB24" << GetMessageForHresult(hr);
-		return false;
-	}
+    if ( FAILED( hr ) )
+    {
+        LOG(ERROR) << "Unable to set MEDIASUBTYPE_RGB24" << GetMessageForHresult(hr);
+        return false;
+    }
 
     hr = d_ptr->pGraph->AddFilter( d_ptr->pGrabberBase, L"Grabber" );
-	
+    
     // Load the source
     //
     if (IsWMV)
     {
         CComQIPtr<IFileSourceFilter, & IID_IFileSourceFilter> pLoad( d_ptr->pASF);
-		hr = pLoad->Load( fileNameW, NULL );
+        hr = pLoad->Load( fileNameW, NULL );
     }
     else if (!IsOther)
     {
         d_ptr->pLoad = ( /*pASF*/ d_ptr->pSource);
-		if (!Error) {
+        if (!Error) {
             GrabInfo( tr("Загрузка файла...") );
-		}
+        }
         hr = d_ptr->pLoad->Load(fileNameW, NULL );
     }
     if ( FAILED( hr ) )
     {
-		LOG(ERROR) << "Failed to load source file '"<< fileName <<"'"<<GetMessageForHresult(hr);
+        LOG(ERROR) << "Failed to load source file '"<< fileName <<"'"<<GetMessageForHresult(hr);
         return false;
     }
 
@@ -469,7 +469,7 @@ bool DirectshowFrameGrabber::open(const Utf8String& fileName) {
     // Get the output pin and the input pin
     //
 
-    //	CSampleGrabberCB CB;
+    //    CSampleGrabberCB CB;
     if (IsWMV)
        d_ptr-> pSourcePin = DirectShowUtil::GetOutPin( d_ptr->pASF, 1 );
     else
@@ -482,30 +482,30 @@ bool DirectshowFrameGrabber::open(const Utf8String& fileName) {
         GrabInfo( tr("Подключение кодеков...") );
     else
         GrabInfo( tr("Ещё одна попытка подключения кодеков...") );
-	
-	
+    
+    
 
     hr = d_ptr->pGraph->Connect( d_ptr->pSourcePin, d_ptr->pGrabPin );
 
     if ( FAILED( hr ) )
     {
-		LOG(ERROR) << "Cannot connect filters (format probably is not supported)"<<GetMessageForHresult(hr);
+        LOG(ERROR) << "Cannot connect filters (format probably is not supported)"<<GetMessageForHresult(hr);
         GrabInfo(  tr("Ошибка соединения фильтров (формат не поддерживается).") );
         return false;
     }
 
-	
+    
 
 
-	AM_MEDIA_TYPE mt2;
-	ZeroMemory(&mt2, sizeof(mt2));
-	hr = d_ptr->pGrabber->GetConnectedMediaType( &mt2 );
-	if ( FAILED( hr ) )
-	{
-		LOG(ERROR) << "GetConnectedMediaType failed"<<GetMessageForHresult(hr);
-		//GrabInfo(  tr("Ошибка соединения фильтров (формат не поддерживается).") );
-		return false;
-	}
+    AM_MEDIA_TYPE mt2;
+    ZeroMemory(&mt2, sizeof(mt2));
+    hr = d_ptr->pGrabber->GetConnectedMediaType( &mt2 );
+    if ( FAILED( hr ) )
+    {
+        LOG(ERROR) << "GetConnectedMediaType failed"<<GetMessageForHresult(hr);
+        //GrabInfo(  tr("Ошибка соединения фильтров (формат не поддерживается).") );
+        return false;
+    }
 
     // This semi-COM object will receive sample callbacks for us
     //
@@ -530,22 +530,22 @@ bool DirectshowFrameGrabber::open(const Utf8String& fileName) {
         d_ptr->CB.Height = vih->bmiHeader.biHeight;
         FreeMediaType( mt );
     }
-	//remove DirectVobSub (actually not removing )
-	//DirectVobSubUtil::RemoveFromGraph( d_ptr->pGraph);
+    //remove DirectVobSub (actually not removing )
+    //DirectVobSubUtil::RemoveFromGraph( d_ptr->pGraph);
 
     // Render the grabber output pin (to a video renderer)
     //
-	CComPtr <IPin> pGrabOutPin = DirectShowUtil::GetOutPin( d_ptr->pGrabberBase, 0 );
+    CComPtr <IPin> pGrabOutPin = DirectShowUtil::GetOutPin( d_ptr->pGrabberBase, 0 );
     // GrabInfo( _T("Trying to render graph.") );
     hr = d_ptr->pGraph->Render( pGrabOutPin );
     if ( FAILED( hr ) )
     {
-		LOG(ERROR) << "Error while receiving data from filter's output pins."<<GetMessageForHresult(hr);
+        LOG(ERROR) << "Error while receiving data from filter's output pins."<<GetMessageForHresult(hr);
         return false;
     }
 
 
-	//DirectShowUtil::SaveGraphFile(d_ptr->pGraph, _T("Test.grf"));
+    //DirectShowUtil::SaveGraphFile(d_ptr->pGraph, _T("Test.grf"));
 
     // Don't buffer the samples as they pass through
     //
@@ -579,10 +579,10 @@ bool DirectshowFrameGrabber::open(const Utf8String& fileName) {
     d_ptr->pSeeking->GetDuration(&duration);
     if (duration == 0)
     {
-		LOG(ERROR) << "Cannot determine stream's length.";
+        LOG(ERROR) << "Cannot determine stream's length.";
         return 0;
     }
-	
+    
 
     duration_ = duration;
 
@@ -594,20 +594,20 @@ bool DirectshowFrameGrabber::open(const Utf8String& fileName) {
     long EvCode = 0;
 
     long EventCode = 0, Param1 = 0, Param2 = 0;
-	d_ptr->CB.mutex.lock();
+    d_ptr->CB.mutex.lock();
 
 
     return true;
 }
 
 bool DirectshowFrameGrabber::seek(int64_t time) {
-	//Sleep(300);
+    //Sleep(300);
     HRESULT  hr;
     int step = 0;
     long EvCode = 0;
     int i = 0;
-	d_ptr->setCurrentFrame(0);
-	
+    d_ptr->setCurrentFrame(0);
+    
     //for ( int i = 0; i < NumOfFrames; i++ )
     {
         if (ShouldStop())
@@ -620,25 +620,25 @@ bool DirectshowFrameGrabber::seek(int64_t time) {
         REFERENCE_TIME Start = /*(i + 1) * step - step*/ time /*/ 5 * 3*/; // **/(duration/NUM_FRAMES_TO_GRAB);//** UNITS*40*/;
         hr = d_ptr->pGrabber->SetOneShot( TRUE );
         hr = d_ptr->pSeeking->SetPositions( &Start, AM_SEEKING_AbsolutePositioning | AM_SEEKING_SeekToKeyFrame, 0, AM_SEEKING_NoPositioning);
-		if(FAILED(hr)) {
-			LOG(WARNING) << "pSeeking->SetPositions failed." << GetMessageForHresult(hr);
-		}
+        if(FAILED(hr)) {
+            LOG(WARNING) << "pSeeking->SetPositions failed." << GetMessageForHresult(hr);
+        }
         d_ptr->CB.Grab = true;
         hr = d_ptr->pControl->Run( );
-		if(FAILED(hr)) {
-			LOG(WARNING) << "pControl->Run() failed." << GetMessageForHresult(hr);
-		}
+        if(FAILED(hr)) {
+            LOG(WARNING) << "pControl->Run() failed." << GetMessageForHresult(hr);
+        }
         hr = d_ptr->pEvent->WaitForCompletion( INFINITE, &EvCode );
-		if(FAILED(hr)) {
-			LOG(WARNING) << "pEvent->WaitForCompletion() failed." << GetMessageForHresult(hr);
-		}
+        if(FAILED(hr)) {
+            LOG(WARNING) << "pEvent->WaitForCompletion() failed." << GetMessageForHresult(hr);
+        }
         d_ptr->pControl->Stop();
-		if(FAILED(hr)) {
-			LOG(WARNING) << "pControl->Stop() failed." << GetMessageForHresult(hr);
-		}
-		if ( !d_ptr->currentFrame() ) {
-			//bool res = d_ptr->CB.condition.wait(1000);
-		}
+        if(FAILED(hr)) {
+            LOG(WARNING) << "pControl->Stop() failed." << GetMessageForHresult(hr);
+        }
+        if ( !d_ptr->currentFrame() ) {
+            //bool res = d_ptr->CB.condition.wait(1000);
+        }
     }
 
     return true;
@@ -658,10 +658,10 @@ void DirectshowFrameGrabber::abort() {
 }
 
  DirectshowFrameGrabber::~DirectshowFrameGrabber() {
-	 if ( d_ptr->pControl ) {
-		d_ptr->pControl->Stop();
-	 }
-	 d_ptr->CB.mutex.unlock();
-	 delete d_ptr;
-	 ::CoUninitialize();
+     if ( d_ptr->pControl ) {
+        d_ptr->pControl->Stop();
+     }
+     d_ptr->CB.mutex.unlock();
+     delete d_ptr;
+     ::CoUninitialize();
  }

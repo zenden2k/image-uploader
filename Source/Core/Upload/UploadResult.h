@@ -11,12 +11,12 @@ struct UploadResult
 {
 public:
     /*! @cond PRIVATE */
-	std::string directUrl;
-	std::string directUrlShortened;
-	std::string thumbUrl;
-	std::string downloadUrl;
-	std::string downloadUrlShortened;
-	std::string serverName;
+    std::string directUrl;
+    std::string directUrlShortened;
+    std::string thumbUrl;
+    std::string downloadUrl;
+    std::string downloadUrlShortened;
+    std::string serverName;
     /* @endcond */
 
 
@@ -81,8 +81,8 @@ public:
     }
 
     UploadResult()
-	{
-	}
+    {
+    }
 };
 
 #endif

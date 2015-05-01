@@ -10,8 +10,8 @@ class UserFilter : public UploadFilter
 {
 public:
     UserFilter(ScriptsManager* scriptsManager);
-	virtual bool PreUpload(UploadTask* task) override;
-	virtual bool PostUpload(UploadTask* task) override;
+    virtual bool PreUpload(UploadTask* task) override;
+    virtual bool PostUpload(UploadTask* task) override;
 protected:
     ScriptsManager* scriptsManager_;
 

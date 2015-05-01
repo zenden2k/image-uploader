@@ -33,10 +33,10 @@
 
 class SettingsNodeBase
 {
-	public:
-		virtual std::string getValue()=0;
-		virtual void setValue(const std::string&)=0;
-		virtual ~SettingsNodeBase(){};
+    public:
+        virtual std::string getValue()=0;
+        virtual void setValue(const std::string&)=0;
+        virtual ~SettingsNodeBase(){};
 };
 
 template<class T> std::string myToString(const T& value)
@@ -67,58 +67,58 @@ inline void myFromString(const std::string& text, std::string & value)
 
 template<class T> class SettingsNodeVariant: public SettingsNodeBase
 {
-	private:
-		T* value_;
-		bool empty_;
-	public:
-		SettingsNodeVariant(T* value)
-		{
-			value_ = value;
-		}
+    private:
+        T* value_;
+        bool empty_;
+    public:
+        SettingsNodeVariant(T* value)
+        {
+            value_ = value;
+        }
 
-		virtual std::string getValue()
-		{
-			return 
-				myToString(*value_);
-		}
-		virtual void setValue(const std::string& text)
-		{
-			myFromString(text, *value_ );
-		}
-		virtual ~SettingsNodeVariant()
-		{
-		}
+        virtual std::string getValue()
+        {
+            return 
+                myToString(*value_);
+        }
+        virtual void setValue(const std::string& text)
+        {
+            myFromString(text, *value_ );
+        }
+        virtual ~SettingsNodeVariant()
+        {
+        }
 };
 
 class SettingsNode
 {
-	public:
-		SettingsNode();
-		virtual ~SettingsNode();
-		template<class T> void bind(T& var)
-		{
-			delete binded_value_;
-			binded_value_ = new SettingsNodeVariant<T>(&var);
-		}
-		SettingsNode& operator[](const std::string&);
-		void saveToXmlNode(SimpleXmlNode parentNode, const std::string& name, bool isRoot = false) const;
-		void loadFromXmlNode(SimpleXmlNode parentNode, const std::string& name, bool isRoot = false);
-	protected:
-		SettingsNodeBase * binded_value_;
-		std::map<std::string, SettingsNode*> childs_; 
-		DISALLOW_COPY_AND_ASSIGN(SettingsNode);
+    public:
+        SettingsNode();
+        virtual ~SettingsNode();
+        template<class T> void bind(T& var)
+        {
+            delete binded_value_;
+            binded_value_ = new SettingsNodeVariant<T>(&var);
+        }
+        SettingsNode& operator[](const std::string&);
+        void saveToXmlNode(SimpleXmlNode parentNode, const std::string& name, bool isRoot = false) const;
+        void loadFromXmlNode(SimpleXmlNode parentNode, const std::string& name, bool isRoot = false);
+    protected:
+        SettingsNodeBase * binded_value_;
+        std::map<std::string, SettingsNode*> childs_; 
+        DISALLOW_COPY_AND_ASSIGN(SettingsNode);
 };
 
 class SettingsManager
 {
-	public:
-		SettingsManager();
-		SettingsNode& operator[](const std::string&);
-		SettingsNode& root();
-		void saveToXmlNode(SimpleXmlNode parentNode) const;
-		void loadFromXmlNode(SimpleXmlNode parentNode);
-	protected:
-		SettingsNode root_;
-		DISALLOW_COPY_AND_ASSIGN(SettingsManager);
+    public:
+        SettingsManager();
+        SettingsNode& operator[](const std::string&);
+        SettingsNode& root();
+        void saveToXmlNode(SimpleXmlNode parentNode) const;
+        void loadFromXmlNode(SimpleXmlNode parentNode);
+    protected:
+        SettingsNode root_;
+        DISALLOW_COPY_AND_ASSIGN(SettingsManager);
 };
 #endif

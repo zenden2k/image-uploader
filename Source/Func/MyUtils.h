@@ -35,7 +35,7 @@
 const CString StringSection(const CString& str,TCHAR sep, int index);
 #endif
 
-#define xor(a,b) ((a || b) && !(a && b))	
+#define xor(a,b) ((a || b) && !(a && b))    
 
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
 
@@ -85,17 +85,17 @@ HFONT MakeFontBold(HFONT font);
 LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern);
 
 //#ifdef DEBUG
-	void ShowX(LPCTSTR str,int line,int n);
+    void ShowX(LPCTSTR str,int line,int n);
 
-	void ShowX(LPCTSTR str,int line,float n);
-	void ShowX(LPCTSTR str,int line,LPCTSTR n);
-	#define ShowVar(n) ShowX(_T(#n),__LINE__,n)
+    void ShowX(LPCTSTR str,int line,float n);
+    void ShowX(LPCTSTR str,int line,LPCTSTR n);
+    #define ShowVar(n) ShowX(_T(#n),__LINE__,n)
 //#endif
 #ifndef IU_SHELLEXT
 
 
-#define PROP_OBJECT_PTR			MAKEINTATOM(ga.atom)
-#define PROP_ORIGINAL_PROC		MAKEINTATOM(ga.atom)
+#define PROP_OBJECT_PTR            MAKEINTATOM(ga.atom)
+#define PROP_ORIGINAL_PROC        MAKEINTATOM(ga.atom)
 
 /*
  * typedefs
@@ -103,13 +103,13 @@ LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern);
 class CGlobalAtom
 {
 public:
-	CGlobalAtom(void)
-	{ atom = GlobalAddAtom(TEXT("_Hyperlink_Object_Pointer_")
-	         TEXT("\\{AFEED740-CC6D-47c5-831D-9848FD916EEF}")); }
-	~CGlobalAtom(void)
-	{ DeleteAtom(atom); }
+    CGlobalAtom(void)
+    { atom = GlobalAddAtom(TEXT("_Hyperlink_Object_Pointer_")
+             TEXT("\\{AFEED740-CC6D-47c5-831D-9848FD916EEF}")); }
+    ~CGlobalAtom(void)
+    { DeleteAtom(atom); }
 
-	ATOM atom;
+    ATOM atom;
 };
 
 /*

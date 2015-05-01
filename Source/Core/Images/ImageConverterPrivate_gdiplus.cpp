@@ -334,7 +334,7 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     font.GetFamily(&ff);
     g1.SetPageUnit(UnitWorld);
     g1.MeasureString(_T("test"), -1, &font, PointF(0, 0), &format, &TextRect);
-    //		delete f;
+    //        delete f;
     m_Vars["TextWidth"] = IuCoreUtils::toString((int)TextRect.Width);
     m_Vars["TextHeight"] = IuCoreUtils::toString((int)TextRect.Height);
     m_Vars["UserText"] = W2U(ThumbnailText);
@@ -384,7 +384,7 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     thumbgr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
     // thumbgr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
     // thumbgr.SetSmoothingMode( SmoothingModeHighQuality);
-    // //	thumbgr.SetSmoothingMode(SmoothingModeAntiAlias);
+    // //    thumbgr.SetSmoothingMode(SmoothingModeAntiAlias);
     thumbgr.SetSmoothingMode(SmoothingModeNone);
     // thumbgr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
     // thumbgr.SetCompositingQuality(CompositingQualityHighQuality);

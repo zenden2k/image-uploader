@@ -33,52 +33,52 @@ class UploadEngineManager;
 
 LoginInfo LoadLogin(int ServerId);
 
-class CLoginDlg : public CDialogImpl<CLoginDlg>	, public CThreadImpl<CLoginDlg>
+class CLoginDlg : public CDialogImpl<CLoginDlg>    , public CThreadImpl<CLoginDlg>
 {
-	public:
-		int ServerId;
-		CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool CreateNew = false );
-		~CLoginDlg();
-		enum { IDD = IDD_LOGINDLG };
-	protected:
-		BEGIN_MSG_MAP(CLoginDlg)
-		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-			COMMAND_HANDLER(IDC_USEIECOOKIES, BN_CLICKED, OnClickedUseIeCookies)
-			COMMAND_ID_HANDLER(IDC_DELETEACCOUNTLABEL, OnDeleteAccountClicked)
-			COMMAND_ID_HANDLER(IDC_DOLOGINLABEL, OnDoLoginClicked)	
-			COMMAND_HANDLER(IDC_LOGINEDIT, EN_CHANGE, OnLoginEditChange);
-		END_MSG_MAP()
-		// Handler prototypes:
-		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedUseIeCookies(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnDeleteAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnDoLoginClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		CUploadEngineData *m_UploadEngine;
-		CString accountName();
-		DWORD Run();
-		void OnProcessFinished();
-		void Accept();
+    public:
+        int ServerId;
+        CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool CreateNew = false );
+        ~CLoginDlg();
+        enum { IDD = IDD_LOGINDLG };
+    protected:
+        BEGIN_MSG_MAP(CLoginDlg)
+        MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
+            COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+            COMMAND_HANDLER(IDC_USEIECOOKIES, BN_CLICKED, OnClickedUseIeCookies)
+            COMMAND_ID_HANDLER(IDC_DELETEACCOUNTLABEL, OnDeleteAccountClicked)
+            COMMAND_ID_HANDLER(IDC_DOLOGINLABEL, OnDoLoginClicked)    
+            COMMAND_HANDLER(IDC_LOGINEDIT, EN_CHANGE, OnLoginEditChange);
+        END_MSG_MAP()
+        // Handler prototypes:
+        //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedUseIeCookies(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnDeleteAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnDoLoginClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        CUploadEngineData *m_UploadEngine;
+        CString accountName();
+        DWORD Run();
+        void OnProcessFinished();
+        void Accept();
 protected:
-	ServerProfile& serverProfile_;
-	CHyperLink deleteAccountLabel_;
-	CHyperLink doLoginLabel_;
-	CString accountName_;
-	bool createNew_;
-	bool ignoreExistingAccount_;
-	bool serverSupportsBeforehandAuthorization_;
-	void enableControls(bool enable);
-	NetworkClient NetworkClient_;
-	CPictureExWnd wndAnimation_;
-	UploadEngineManager* uploadEngineManager_;
-	
+    ServerProfile& serverProfile_;
+    CHyperLink deleteAccountLabel_;
+    CHyperLink doLoginLabel_;
+    CString accountName_;
+    bool createNew_;
+    bool ignoreExistingAccount_;
+    bool serverSupportsBeforehandAuthorization_;
+    void enableControls(bool enable);
+    NetworkClient NetworkClient_;
+    CPictureExWnd wndAnimation_;
+    UploadEngineManager* uploadEngineManager_;
+    
 };
 
 #endif // LOGINDLG_H

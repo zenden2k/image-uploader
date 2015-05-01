@@ -59,21 +59,21 @@ int _vscprintf(const char * format, va_list pargs) {
 #endif
 static void printFunc(HSQUIRRELVM v, const SQChar* s, ...)
 {
-	std::lock_guard<std::mutex> lock(squirrelOutputMutex);
-	va_list vl;
-	va_start(vl, s);
+    std::lock_guard<std::mutex> lock(squirrelOutputMutex);
+    va_list vl;
+    va_start(vl, s);
     int len = /*1024; /*/ _vscprintf(s, vl) + 1;
-	char* buffer = new char[len + 1];
-	vsnprintf(buffer, len, s, vl);
-	va_end(vl);
-	// std::wstring text =  Utf8ToWstring(buffer);
-	squirrelOutput[v] += buffer;
-	delete[] buffer;
+    char* buffer = new char[len + 1];
+    vsnprintf(buffer, len, s, vl);
+    va_end(vl);
+    // std::wstring text =  Utf8ToWstring(buffer);
+    squirrelOutput[v] += buffer;
+    delete[] buffer;
 }
 
 // Actually we do not need this since migrating to Sqrat
 void CompilerErrorHandler(HSQUIRRELVM, const SQChar * desc, const SQChar * source, SQInteger line, SQInteger column) {
-	LOG(ERROR) << "Script compilation failed\r\n" << "File:  " << source << "\r\nLine:" << line << "   Column:" << column << "\r\n\r\n" << desc;
+    LOG(ERROR) << "Script compilation failed\r\n" << "File:  " << source << "\r\nLine:" << line << "   Column:" << column << "\r\n\r\n" << desc;
 }
 
 void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
@@ -101,10 +101,10 @@ void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
         Func("setUserAgent", &NetworkClient::setUserAgent).
         Func("responseHeaderText", &NetworkClient::responseHeaderText).
         Func("responseHeaderByName", &NetworkClient::responseHeaderByName).
-		Func("getCurlInfoString", &NetworkClient::getCurlInfoString).
-		Func("getCurlInfoInt", &NetworkClient::getCurlInfoInt).
-		Func("getCurlInfoDouble", &NetworkClient::getCurlInfoDouble).
-		Func("setReferer", &NetworkClient::setReferer));
+        Func("getCurlInfoString", &NetworkClient::getCurlInfoString).
+        Func("getCurlInfoInt", &NetworkClient::getCurlInfoInt).
+        Func("getCurlInfoDouble", &NetworkClient::getCurlInfoDouble).
+        Func("setReferer", &NetworkClient::setReferer));
 }
 
 void RegisterSimpleXmlClass(Sqrat::SqratVM& vm) {
@@ -162,7 +162,7 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
         Func("setThumbUrl", &CIUUploadParams::setThumbUrl).
         Func("getServerFileName", &CIUUploadParams::getServerFileName).
         Func("setViewUrl", &CIUUploadParams::setViewUrl).
-		Func("getTask", &CIUUploadParams::getTask).
+        Func("getTask", &CIUUploadParams::getTask).
         Func("getParam", &CIUUploadParams::getParam)
     );
 
@@ -186,7 +186,7 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
     root.Bind("ServerSync", DerivedClass<ServerSync, ThreadSync>(vm.GetVM(), "ServerSync").
         Func("beginAuth", &ServerSync::beginAuth).
         Func("endAuth", &ServerSync::endAuth)
-	);
+    );
 
 }
 
@@ -207,16 +207,16 @@ void RegisterClasses(Sqrat::SqratVM& vm) {
     RegisterUploadTaskWrappers(vm);
     RegisterProcessClass(vm);
 #ifdef _WIN32
-	RegisterWebBrowserClass(vm);
-	RegisterHtmlDocumentClass(vm);
-	RegisterHtmlElementClass(vm);
+    RegisterWebBrowserClass(vm);
+    RegisterHtmlDocumentClass(vm);
+    RegisterHtmlElementClass(vm);
 #endif
 }
 void RegisterAPI(Sqrat::SqratVM& vm)
 {
-	threadVm = &vm;
-	//sq_setcompilererrorhandler(vm_.GetVM(), CompilerErrorHandler);
-	sq_setprintfunc(vm.GetVM(), printFunc, printFunc);
+    threadVm = &vm;
+    //sq_setcompilererrorhandler(vm_.GetVM(), CompilerErrorHandler);
+    sq_setprintfunc(vm.GetVM(), printFunc, printFunc);
     RegisterFunctions(vm);
     RegisterClasses(vm);
 }
@@ -227,45 +227,45 @@ void CleanUp()
 
 Sqrat::SqratVM& GetCurrentThreadVM()
 {
-	return *threadVm;
+    return *threadVm;
 }
 void SetCurrentThreadVM(Sqrat::SqratVM& vm) {
-	threadVm = &vm;
+    threadVm = &vm;
 }
 
 void StopAssociatedBrowsers(Sqrat::SqratVM& vm)
 {
-	std::lock_guard<std::mutex> guard(vmBrowsersMutex);
-	for ( auto& it : vmBrowsers[vm.GetVM()])
-	{
-		it->abort();
-	}
-	
+    std::lock_guard<std::mutex> guard(vmBrowsersMutex);
+    for ( auto& it : vmBrowsers[vm.GetVM()])
+    {
+        it->abort();
+    }
+    
 }
 
 void AddBrowserToVM(Sqrat::SqratVM& vm, WebBrowserPrivateBase* browser)
 {
-	std::lock_guard<std::mutex> guard(vmBrowsersMutex);
-	vmBrowsers[vm.GetVM()].insert(browser);
+    std::lock_guard<std::mutex> guard(vmBrowsersMutex);
+    vmBrowsers[vm.GetVM()].insert(browser);
 }
 
 void RemoveBrowserToVM(Sqrat::SqratVM& vm, WebBrowserPrivateBase* browser)
 {
-	try
-	{
-		std::lock_guard<std::mutex> guard(vmBrowsersMutex);
-		vmBrowsers[vm.GetVM()].erase(browser);
-	} catch (std::exception& ex)
-	{
-		LOG(ERROR) << ex.what();
-	}
+    try
+    {
+        std::lock_guard<std::mutex> guard(vmBrowsersMutex);
+        vmBrowsers[vm.GetVM()].erase(browser);
+    } catch (std::exception& ex)
+    {
+        LOG(ERROR) << ex.what();
+    }
 
 }
 
 void SetPrintCallback(Sqrat::SqratVM& vm, const PrintCallback& callback)
 {
-	std::lock_guard<std::mutex> guard(printCallbacksMutex);
-	printCallbacks[vm.GetVM()] = callback;
+    std::lock_guard<std::mutex> guard(printCallbacksMutex);
+    printCallbacks[vm.GetVM()] = callback;
 }
 
 void SetScriptName(Sqrat::SqratVM& vm, const std::string& fileName)
@@ -291,30 +291,30 @@ const std::string GetScriptName(HSQUIRRELVM vm)
 }
 
 void FlushSquirrelOutput(Sqrat::SqratVM& vm) {
-	std::lock_guard<std::mutex> guard(squirrelOutputMutex);
-	std::string& output = squirrelOutput[vm.GetVM()];
-	std::lock_guard<std::mutex> guard2(printCallbacksMutex);
-	
-	if (!output.empty())
-	{
-		auto it = printCallbacks.find(vm.GetVM());
-		if (it != printCallbacks.end())
-		{
-			PrintCallback& callback = it->second;
-			if (callback)
-			{
-				callback(output);
-			}
-			
-		}
-		output.clear();
-	}
+    std::lock_guard<std::mutex> guard(squirrelOutputMutex);
+    std::string& output = squirrelOutput[vm.GetVM()];
+    std::lock_guard<std::mutex> guard2(printCallbacksMutex);
+    
+    if (!output.empty())
+    {
+        auto it = printCallbacks.find(vm.GetVM());
+        if (it != printCallbacks.end())
+        {
+            PrintCallback& callback = it->second;
+            if (callback)
+            {
+                callback(output);
+            }
+            
+        }
+        output.clear();
+    }
 }
 
 }
 
 HSQUIRRELVM GetCurrentThreadHVM()
 {
-	return ScriptAPI::GetCurrentThreadVM().GetVM();
+    return ScriptAPI::GetCurrentThreadVM().GetVM();
 }
 

@@ -36,12 +36,12 @@
 #else
 #include <sys/io.h>
 #endif
-	#include <sys/stat.h>
-	#include "Core/Utils/utils_unix.h"
+    #include <sys/stat.h>
+    #include "Core/Utils/utils_unix.h"
 #endif
 #if defined(_MSC_VER) && _MSC_VER < 1800 
 long round(float number){
-	return number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5);
+    return number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5);
 }
 #endif
 
@@ -60,19 +60,19 @@ static const unsigned __int64 epoch = ((unsigned __int64)116444736000000000ULL);
 int
 gettimeofday(struct timeval * tp, struct timezone * tzp)
 {
-	FILETIME    file_time;
-	SYSTEMTIME  system_time;
-	ULARGE_INTEGER ularge;
+    FILETIME    file_time;
+    SYSTEMTIME  system_time;
+    ULARGE_INTEGER ularge;
 
-	GetSystemTime(&system_time);
-	SystemTimeToFileTime(&system_time, &file_time);
-	ularge.LowPart = file_time.dwLowDateTime;
-	ularge.HighPart = file_time.dwHighDateTime;
+    GetSystemTime(&system_time);
+    SystemTimeToFileTime(&system_time, &file_time);
+    ularge.LowPart = file_time.dwLowDateTime;
+    ularge.HighPart = file_time.dwHighDateTime;
 
-	tp->tv_sec = (long)((ularge.QuadPart - epoch) / 10000000L);
-	tp->tv_usec = (long)(system_time.wMilliseconds * 1000);
+    tp->tv_sec = (long)((ularge.QuadPart - epoch) / 10000000L);
+    tp->tv_usec = (long)(system_time.wMilliseconds * 1000);
 
-	return 0;
+    return 0;
 }
 #endif
 
@@ -81,21 +81,21 @@ namespace IuCoreUtils {
 FILE * fopen_utf8(const char * filename, const char * mode)
 {
 #ifdef _WIN32
-	return _wfopen(Utf8ToWstring(filename).c_str(), Utf8ToWstring(mode).c_str());
+    return _wfopen(Utf8ToWstring(filename).c_str(), Utf8ToWstring(mode).c_str());
 #else
-	return fopen(Utf8ToSystemLocale(filename).c_str(), mode);
+    return fopen(Utf8ToSystemLocale(filename).c_str(), mode);
 #endif
 }
 
 bool FileExists(const Utf8String& fileName)
 {
-	#ifdef WIN32
-		if(GetFileAttributes(Utf8ToWstring(fileName).c_str())== (unsigned long)-1) return false;
-	#else
-		if(getFileSize(fileName) == -1) return false;
-		// TODO
-	#endif
-	return true;
+    #ifdef WIN32
+        if(GetFileAttributes(Utf8ToWstring(fileName).c_str())== (unsigned long)-1) return false;
+    #else
+        if(getFileSize(fileName) == -1) return false;
+        // TODO
+    #endif
+    return true;
 }
 
 typedef std::codecvt_base::result res;
@@ -128,31 +128,31 @@ std::codecvt_base::result fromWstring (const std::wstring & str,
 std::codecvt_base::result toWstring (const std::string & str, 
    const std::locale & loc, std::wstring & out)
 { 
-	const codecvt_type& cdcvt = std::use_facet<codecvt_type>(loc);
-	std::codecvt_base::result r;
+    const codecvt_type& cdcvt = std::use_facet<codecvt_type>(loc);
+    std::codecvt_base::result r;
   
-	wchar_t * wchars = new wchar_t[str.size() + 1];
+    wchar_t * wchars = new wchar_t[str.size() + 1];
  
-	const char *in_next = 0;
-	wchar_t *out_next = 0;
+    const char *in_next = 0;
+    wchar_t *out_next = 0;
   
-	r = cdcvt.in (state, str.c_str (), str.c_str () + str.size (), in_next,
+    r = cdcvt.in (state, str.c_str (), str.c_str () + str.size (), in_next,
                 wchars, wchars + str.size () + 1, out_next);
-	*out_next = '\0';
-	out = wchars;    
+    *out_next = '\0';
+    out = wchars;    
   
-	delete [] wchars;
+    delete [] wchars;
   
-	return r;
+    return r;
 }
 
 std::string SystemLocaleToUtf8(const Utf8String& str)
 {
-	std::locale const oloc = std::locale ("");
+    std::locale const oloc = std::locale ("");
    std::wstring out;
    std::wstring wideStr;
-	toWstring (str, oloc, wideStr);
-	return WstringToUtf8(wideStr);
+    toWstring (str, oloc, wideStr);
+    return WstringToUtf8(wideStr);
 }
 
 std::string Utf8ToSystemLocale(const Utf8String& str)
@@ -166,55 +166,55 @@ std::string Utf8ToSystemLocale(const Utf8String& str)
 
 Utf8String ExtractFileName(const Utf8String fileName)
 {
-		Utf8String temp = fileName;
-		int Qpos = temp.find_last_of('?');
-		if(Qpos>=0) temp = temp.substr(0, Qpos-1);
-		int i,len = temp.length();
-		for(i=len-1; i>=0; i--)
-		{
-			if(temp[i] == '\\' || temp[i]=='/')
-				break;
-		}
-		return temp.substr(i+1);
+        Utf8String temp = fileName;
+        int Qpos = temp.find_last_of('?');
+        if(Qpos>=0) temp = temp.substr(0, Qpos-1);
+        int i,len = temp.length();
+        for(i=len-1; i>=0; i--)
+        {
+            if(temp[i] == '\\' || temp[i]=='/')
+                break;
+        }
+        return temp.substr(i+1);
 }
 
 Utf8String ExtractFileExt(const Utf8String fileName)
 {
-	int nLen = fileName.length();
+    int nLen = fileName.length();
 
-	Utf8String result;
-	for( int i=nLen-1; i>=0; i-- )
-	{
-		if(fileName[i] == '.')
-		{
-			result = fileName.substr(i + 1);
-			break;
-		}
-		else if(fileName[i] == '\\' || fileName[i] == '/') break;
-	}
-	return result;
+    Utf8String result;
+    for( int i=nLen-1; i>=0; i-- )
+    {
+        if(fileName[i] == '.')
+        {
+            result = fileName.substr(i + 1);
+            break;
+        }
+        else if(fileName[i] == '\\' || fileName[i] == '/') break;
+    }
+    return result;
 }
 
 const Utf8String ExtractFilePath(const Utf8String& fileName)
 {
-	int i, len = fileName.length();
-	for(i = len-1; i >= 0; i--)
-	{
-		if(fileName[i] == '\\' || fileName[i]=='/')
-		{
-			return fileName.substr(0, i+1);
-		}
-			
-	}
-	return "";
+    int i, len = fileName.length();
+    for(i = len-1; i >= 0; i--)
+    {
+        if(fileName[i] == '\\' || fileName[i]=='/')
+        {
+            return fileName.substr(0, i+1);
+        }
+            
+    }
+    return "";
 }
 
 const Utf8String ExtractFileNameNoExt(const Utf8String& fileName)
 {
-	Utf8String result = ExtractFileName(fileName);
-	int Qpos = result.find_last_of('.');
-	if(Qpos>=0) result = result.substr(0, Qpos);
-	return result;
+    Utf8String result = ExtractFileName(fileName);
+    int Qpos = result.find_last_of('.');
+    if(Qpos>=0) result = result.substr(0, Qpos);
+    return result;
 }
 
 Utf8String ExtractFileNameFromUrl(const Utf8String fileName)
@@ -231,81 +231,81 @@ Utf8String ExtractFileNameFromUrl(const Utf8String fileName)
 
 Utf8String toString(int value)
 {
-	char buffer[256];
-	sprintf(buffer, "%d", value);
-	return buffer;
+    char buffer[256];
+    sprintf(buffer, "%d", value);
+    return buffer;
 }
 
 Utf8String toString(unsigned int value)
 {
-	char buffer[256];
-	sprintf(buffer, "%u", value);
-	return buffer;
+    char buffer[256];
+    sprintf(buffer, "%u", value);
+    return buffer;
 }
 
 Utf8String StrReplace(Utf8String text, Utf8String s, Utf8String d)
 {
     for(int index=0; index=text.find(s, index), index!=std::string::npos;)
-	{
-		text.replace(index, s.length(), d);
-		index += d.length();
-	}
-	return text;
+    {
+        text.replace(index, s.length(), d);
+        index += d.length();
+    }
+    return text;
 }
 
 bool ReadUtf8TextFile(Utf8String utf8Filename, Utf8String& data)
 {
-	FILE *stream = fopen_utf8(utf8Filename.c_str(), "rb");
-	if(!stream) return false;
+    FILE *stream = fopen_utf8(utf8Filename.c_str(), "rb");
+    if(!stream) return false;
     int size = static_cast<int>(getFileSize(utf8Filename));
-	unsigned char buf[3];
-	fread(buf, 1, 3, stream);	
+    unsigned char buf[3];
+    fread(buf, 1, 3, stream);    
 
 
-	if(buf[0] == 0xEF || buf[1] == 0xBB || buf[2] == 0xBF) // UTF8 Byte Order Mark (BOM)
-	{	
-		size -= 3;	
-	}
-	else if(buf[0] == 0xFF || buf[1] == 0xFE ) {
-		// UTF-16LE encoding
-		size -= 2;
-		fseek( stream, 2L,  SEEK_SET );
-		std::wstring res;
-		int charCount = size/2;
-		res.resize(charCount);
-		size_t charsRead = fread(&res[0], 2, charCount, stream);	
-		res[charsRead]=0;
-		fclose(stream);
-		data = WstringToUtf8(res);
-		return true;
-	} 
-	else {
-		// no BOM was found; seeking backward
-		fseek( stream, 0L,  SEEK_SET );
-	}
-	data.resize(size + 1);
-	size_t bytesRead = fread(&data[0], 1, size, stream);	
-	data[bytesRead] = 0;
-	fclose(stream);
-	return true;
+    if(buf[0] == 0xEF || buf[1] == 0xBB || buf[2] == 0xBF) // UTF8 Byte Order Mark (BOM)
+    {    
+        size -= 3;    
+    }
+    else if(buf[0] == 0xFF || buf[1] == 0xFE ) {
+        // UTF-16LE encoding
+        size -= 2;
+        fseek( stream, 2L,  SEEK_SET );
+        std::wstring res;
+        int charCount = size/2;
+        res.resize(charCount);
+        size_t charsRead = fread(&res[0], 2, charCount, stream);    
+        res[charsRead]=0;
+        fclose(stream);
+        data = WstringToUtf8(res);
+        return true;
+    } 
+    else {
+        // no BOM was found; seeking backward
+        fseek( stream, 0L,  SEEK_SET );
+    }
+    data.resize(size + 1);
+    size_t bytesRead = fread(&data[0], 1, size, stream);    
+    data[bytesRead] = 0;
+    fclose(stream);
+    return true;
 }
 
 bool PutFileContents(const Utf8String& utf8Filename, const Utf8String& content)
 {
-	FILE *stream = fopen_utf8(utf8Filename.c_str(), "wb");
-	if(!stream) return false;
-	fwrite(content.c_str(), content.length(),1, stream);
-	fclose(stream);
-	return true;
+    FILE *stream = fopen_utf8(utf8Filename.c_str(), "wb");
+    if(!stream) return false;
+    fwrite(content.c_str(), content.length(),1, stream);
+    fclose(stream);
+    return true;
 }
 
 const std::string timeStampToString(time_t t)
 {
-	// TODO: add system locale support
-	tm * timeinfo = localtime ( &t );
-	char buf[50];
-	sprintf(buf, "%02d.%02d.%04d %02d:%02d:%02d", (int)timeinfo->tm_mday,(int) timeinfo->tm_mon+1, (int)1900+timeinfo->tm_year, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec); 
-	return buf;
+    // TODO: add system locale support
+    tm * timeinfo = localtime ( &t );
+    char buf[50];
+    sprintf(buf, "%02d.%02d.%04d %02d:%02d:%02d", (int)timeinfo->tm_mday,(int) timeinfo->tm_mon+1, (int)1900+timeinfo->tm_year, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec); 
+    return buf;
 }
 
 std::string ulonglongToStr(int64_t l, int base)
@@ -356,12 +356,12 @@ Utf8String int64_tToString(int64_t value)
     if ( !value ) {
         return "0";
     }
-	return longlongtoStr(value, 10);
+    return longlongtoStr(value, 10);
 }
 
 #ifndef LLONG_MIN
-	#define LLONG_MIN (-9223372036854775807-1)
-	#define LLONG_MAX (-9223372036854775807-1)
+    #define LLONG_MIN (-9223372036854775807-1)
+    #define LLONG_MAX (-9223372036854775807-1)
 #endif 
 
 static int64_t zstrtoll(const char *nptr, const char **endptr, register int base, bool *ok)
@@ -460,70 +460,70 @@ int64_t getFileSize(Utf8String utf8Filename)
       return -1;
    }
 #endif
-	 return stats.st_size;
+     return stats.st_size;
 }
 
 // Преобразование размера файла в строку
 Utf8String fileSizeToString(int64_t nBytes)
 {
-	double number = 0;
-	Utf8String postfix;
-	int precision = 0;
-	if(nBytes < 0)
-	{
-		return "n/a";
-	}
+    double number = 0;
+    Utf8String postfix;
+    int precision = 0;
+    if(nBytes < 0)
+    {
+        return "n/a";
+    }
 
-	if(nBytes < 1024)
-	{
-		number = double(nBytes);
-		postfix = "bytes";
-	}
-	else if( nBytes < 1048576)
-	{
-		number = (double)nBytes / 1024.0;
-		postfix = "KB";
-	}
-	else if(nBytes<((int64_t)1073741824)) /*< 1 GB*/
-	{
-		postfix= "MB";
-		number= (double)nBytes / 1048576.0;
-		precision = 1;
-	}
-	else if(nBytes>=1073741824)
-	{
-		postfix= "GB";
-		precision = 1;
-		number = (double)nBytes / 1073741824.0;
-	}
-	return toString(number, precision) + " " + postfix;
+    if(nBytes < 1024)
+    {
+        number = double(nBytes);
+        postfix = "bytes";
+    }
+    else if( nBytes < 1048576)
+    {
+        number = (double)nBytes / 1024.0;
+        postfix = "KB";
+    }
+    else if(nBytes<((int64_t)1073741824)) /*< 1 GB*/
+    {
+        postfix= "MB";
+        number= (double)nBytes / 1048576.0;
+        precision = 1;
+    }
+    else if(nBytes>=1073741824)
+    {
+        postfix= "GB";
+        precision = 1;
+        number = (double)nBytes / 1073741824.0;
+    }
+    return toString(number, precision) + " " + postfix;
 }
 
 Utf8String toString(double value, int precision)
 {
-	char buffer[100];
-	sprintf(buffer, ("%0." + toString(precision) + "f").c_str(), value);
-	return buffer;
+    char buffer[100];
+    sprintf(buffer, ("%0." + toString(precision) + "f").c_str(), value);
+    return buffer;
 }
 
 Utf8String GetDefaultExtensionForMimeType(const Utf8String mimeType) {
-	std::map<std::string, std::string> mimeToExt;
-	mimeToExt["image/gif"] = "gif";
-	mimeToExt["image/png"] = "png";
-	mimeToExt["image/jpeg"] = "jpg";
+    std::map<std::string, std::string> mimeToExt;
+    mimeToExt["image/gif"] = "gif";
+    mimeToExt["image/png"] = "png";
+    mimeToExt["image/jpeg"] = "jpg";
 
-	std::map<std::string, std::string>::iterator found = mimeToExt.find(mimeType);
-	if ( found != mimeToExt.end() ) {
-		return found->second;
-	}
-	return "";
+    std::map<std::string, std::string>::iterator found = mimeToExt.find(mimeType);
+    if ( found != mimeToExt.end() ) {
+        return found->second;
+    }
+    return "";
 }
 
 std::string ThreadIdToString(const std::thread::id& id)
 {
-	std::stringstream threadIdSS;
-	threadIdSS << id;
-	return threadIdSS.str();
+    std::stringstream threadIdSS;
+    threadIdSS << id;
+    return threadIdSS.str();
 }
 
 } // end of namespace IuCoreUtils

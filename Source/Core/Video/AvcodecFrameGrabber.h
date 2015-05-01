@@ -8,7 +8,7 @@ class AvcodecFrameGrabberPrivate;
 class AvcodecFrameGrabber: public AbstractFrameGrabber {
     public:
         AvcodecFrameGrabber();
-		~AvcodecFrameGrabber();
+        ~AvcodecFrameGrabber();
         bool open(const Utf8String& fileName);
         bool seek(int64_t time);
         AbstractVideoFrame* grabCurrentFrame();

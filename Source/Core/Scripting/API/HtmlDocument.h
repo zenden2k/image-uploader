@@ -12,22 +12,22 @@ Represents a web browser's html document.
 */
 class HtmlDocument {
 public:
-	HtmlDocument();
+    HtmlDocument();
     /*! @cond PRIVATE */
-	HtmlDocument(HtmlDocumentPrivate* pr);
+    HtmlDocument(HtmlDocumentPrivate* pr);
     /*! @endcond */
-	HtmlElement rootElement();
-	HtmlElement getElementById(const std::string& id);
-	Sqrat::Array getElementsByTagName(const std::string& tag);
-	Sqrat::Array getElementsByName(const std::string& name);
-	HtmlElement querySelector(const std::string& query);
+    HtmlElement rootElement();
+    HtmlElement getElementById(const std::string& id);
+    Sqrat::Array getElementsByTagName(const std::string& tag);
+    Sqrat::Array getElementsByName(const std::string& name);
+    HtmlElement querySelector(const std::string& query);
     /**
     Return an array of HtmlElement matched to query.
     */
-	Sqrat::Array querySelectorAll(const std::string& query);
-	const std::string getHTML();
+    Sqrat::Array querySelectorAll(const std::string& query);
+    const std::string getHTML();
 protected:
-	std_tr::shared_ptr<HtmlDocumentPrivate> d_;
+    std_tr::shared_ptr<HtmlDocumentPrivate> d_;
 };
 
 void RegisterHtmlDocumentClass(Sqrat::SqratVM& vm);

@@ -21,7 +21,7 @@ class CBTHookCallbackBase
 public:
     // input: pointer to a unique C callback. 
     CBTHookCallbackBase(LPFN_CBTHookCallback pCCallback)
-        :	m_pClass( NULL ),
+        :    m_pClass( NULL ),
         m_pMethod( NULL ),
         m_pCCallback( pCCallback )
     {
@@ -61,7 +61,7 @@ template <int context> class DynamicCBTHookCallback : public CBTHookCallbackBase
 {
 public:
     DynamicCBTHookCallback()
-        :	CBTHookCallbackBase(&DynamicCBTHookCallback<context>::GeneratedStaticFunction)
+        :    CBTHookCallbackBase(&DynamicCBTHookCallback<context>::GeneratedStaticFunction)
     {
     }
 

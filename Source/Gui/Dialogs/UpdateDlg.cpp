@@ -31,280 +31,280 @@
 /* This function doesn't work as intended */
 bool CanWriteToFolder(CString folder)
 {
-	HANDLE hFile = ::CreateFile(folder, GENERIC_WRITE, FILE_SHARE_READ, NULL,
-	                            OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+    HANDLE hFile = ::CreateFile(folder, GENERIC_WRITE, FILE_SHARE_READ, NULL,
+                                OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
 
-	if (hFile == INVALID_HANDLE_VALUE)
-	{
-		return false;
-		printf("Could not open file for write (error %d)\n", (int)GetLastError());
-	}
-	else
-	{
-		printf("Write access allowed\n");
-		::CloseHandle(hFile);
-		return true;
-	}
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        return false;
+        printf("Could not open file for write (error %d)\n", (int)GetLastError());
+    }
+    else
+    {
+        printf("Write access allowed\n");
+        ::CloseHandle(hFile);
+        return true;
+    }
 }
 
 CUpdateDlg::CUpdateDlg()
 {
-	m_UpdateCallback = NULL;
-	m_Checked = false;
-	m_bUpdateFinished = false;
+    m_UpdateCallback = NULL;
+    m_Checked = false;
+    m_bUpdateFinished = false;
 
-	m_Modal = false;
+    m_Modal = false;
 }
 
 CUpdateDlg::~CUpdateDlg()
 {
-	m_hWnd = 0;
-	m_InteractiveUpdate = false;
-	m_bClose = false;
+    m_hWnd = 0;
+    m_InteractiveUpdate = false;
+    m_bClose = false;
 }
 
 LRESULT CUpdateDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	// FIXME
-	DlgResize_Init();
-	m_UpdateEvent.Create();
-	SetWindowText(TR("Обновление Image Uploader"));
-	m_listView.m_hWnd = GetDlgItem(IDC_UPDATELISTVIEW);
-	m_listView.AddColumn(TR("Название компонента"), 0);
-	m_listView.AddColumn( TR("Статус"), 1);
+    // FIXME
+    DlgResize_Init();
+    m_UpdateEvent.Create();
+    SetWindowText(TR("Обновление Image Uploader"));
+    m_listView.m_hWnd = GetDlgItem(IDC_UPDATELISTVIEW);
+    m_listView.AddColumn(TR("Название компонента"), 0);
+    m_listView.AddColumn( TR("Статус"), 1);
 
-	m_listView.SetColumnWidth(0, 170);
-	m_listView.SetColumnWidth(1, 290);
-	m_UpdateManager.setUpdateStatusCallback(this);
+    m_listView.SetColumnWidth(0, 170);
+    m_listView.SetColumnWidth(1, 290);
+    m_UpdateManager.setUpdateStatusCallback(this);
 
-	::ShowWindow(GetDlgItem(IDOK), SW_HIDE);
+    ::ShowWindow(GetDlgItem(IDOK), SW_HIDE);
 
-	TRC(IDCANCEL, "Отмена");
-	if (!m_Modal)
-		Start();  // Beginning update process
-	return 1;  // Let the system set the focus
+    TRC(IDCANCEL, "Отмена");
+    if (!m_Modal)
+        Start();  // Beginning update process
+    return 1;  // Let the system set the focus
 }
 
 LRESULT CUpdateDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	if (!m_bUpdateFinished)
-	{
-		// Begin Update Process
-		CString pid = WinUtils::IntToStr(GetCurrentProcessId());
+    if (!m_bUpdateFinished)
+    {
+        // Begin Update Process
+        CString pid = WinUtils::IntToStr(GetCurrentProcessId());
 
-		BOOL elev = false;
-		bool isVista = WinUtils::IsVista();
-		if (isVista)
-			IsElevated(&elev);
-		bool CanWrite = WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"));
+        BOOL elev = false;
+        bool isVista = WinUtils::IsVista();
+        if (isVista)
+            IsElevated(&elev);
+        bool CanWrite = WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"));
 
-		bool NeedElevation = m_UpdateManager.AreCoreUpdates() && isVista && !elev && !CmdLine.IsOption(_T("update"));
-		NeedElevation |= isVista && !elev && !CanWrite;
-		//	&& !CanWriteToFolder(IU_GetDataFolder());
-		if (NeedElevation)
-		{
-			IU_RunElevated(CString(_T("/update ")) + _T("/waitforpid=") + pid);
-			m_bClose = 2;
+        bool NeedElevation = m_UpdateManager.AreCoreUpdates() && isVista && !elev && !CmdLine.IsOption(_T("update"));
+        NeedElevation |= isVista && !elev && !CanWrite;
+        //    && !CanWriteToFolder(IU_GetDataFolder());
+        if (NeedElevation)
+        {
+            IU_RunElevated(CString(_T("/update ")) + _T("/waitforpid=") + pid);
+            m_bClose = 2;
 
-			return 0;
-		}
-		Start();
-	}
-	else
-	{
-		// Closing and reexecuting image uploader
-		CString pid = WinUtils::IntToStr(GetCurrentProcessId());
-		if (!CmdLine.IsOption(_T("update")))
-			IULaunchCopy(_T("/afterupdate /waitforpid=") + pid);  // executing new IU copy with the same command line params
-		else
-			IULaunchCopy(_T("/afterupdate /waitforpid=") + pid, CAtlArray<CString>());
+            return 0;
+        }
+        Start();
+    }
+    else
+    {
+        // Closing and reexecuting image uploader
+        CString pid = WinUtils::IntToStr(GetCurrentProcessId());
+        if (!CmdLine.IsOption(_T("update")))
+            IULaunchCopy(_T("/afterupdate /waitforpid=") + pid);  // executing new IU copy with the same command line params
+        else
+            IULaunchCopy(_T("/afterupdate /waitforpid=") + pid, CAtlArray<CString>());
 
-		m_bClose = 2;
-		return 0;
-	}
+        m_bClose = 2;
+        return 0;
+    }
 
-	return 0;
+    return 0;
 }
 
 LRESULT CUpdateDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	if (IsRunning())
-	{
-		m_UpdateManager.stop();
-	}
-	else
-	{
-		m_bClose = true; // Closing "modal" dialog
-	}
-	return 0;
+    if (IsRunning())
+    {
+        m_UpdateManager.stop();
+    }
+    else
+    {
+        m_bClose = true; // Closing "modal" dialog
+    }
+    return 0;
 }
 
 void CUpdateDlg::CheckUpdates()
 {
-	m_listView.ShowWindow(SW_HIDE);
-	::ShowWindow(GetDlgItem(IDC_UPDATEINFO), SW_SHOW);
-	m_Checked = true;
+    m_listView.ShowWindow(SW_HIDE);
+    ::ShowWindow(GetDlgItem(IDC_UPDATEINFO), SW_SHOW);
+    m_Checked = true;
 
-	SetDlgItemText(IDC_UPDATEINFO, TR("Проверка обновлений..."));
-	if (!m_UpdateManager.CheckUpdates())
-	{
-		TRC(IDCANCEL, "Закрыть");
-		m_Checked = false;
-		CString errorStr = TR("Ошибка при получении данных об обновлениях.");
-		errorStr += "\r\n";
-		errorStr += m_UpdateManager.ErrorString();
-		SetDlgItemText(IDC_UPDATEINFO, errorStr);
-		return;
-	}
+    SetDlgItemText(IDC_UPDATEINFO, TR("Проверка обновлений..."));
+    if (!m_UpdateManager.CheckUpdates())
+    {
+        TRC(IDCANCEL, "Закрыть");
+        m_Checked = false;
+        CString errorStr = TR("Ошибка при получении данных об обновлениях.");
+        errorStr += "\r\n";
+        errorStr += m_UpdateManager.ErrorString();
+        SetDlgItemText(IDC_UPDATEINFO, errorStr);
+        return;
+    }
 
-	Settings.LastUpdateTime = static_cast<int>(time(0));
-	if (m_UpdateManager.AreUpdatesAvailable())
-	{
-		if ( !m_UpdateManager.AreCoreUpdates() && !IsWindowVisible() ) {
-			DoUpdates();
-			return;
-		}
-		if (CmdLine.IsOption(_T("update")))
-		{
-			DoUpdates();
-			return;
-		}
+    Settings.LastUpdateTime = static_cast<int>(time(0));
+    if (m_UpdateManager.AreUpdatesAvailable())
+    {
+        if ( !m_UpdateManager.AreCoreUpdates() && !IsWindowVisible() ) {
+            DoUpdates();
+            return;
+        }
+        if (CmdLine.IsOption(_T("update")))
+        {
+            DoUpdates();
+            return;
+        }
 
-		::ShowWindow(GetDlgItem(IDOK), SW_SHOW);
-		TRC(IDOK, "Обновить");
-		if (m_UpdateCallback)
-			m_UpdateCallback->UpdateAvailabilityChanged(true);
+        ::ShowWindow(GetDlgItem(IDOK), SW_SHOW);
+        TRC(IDOK, "Обновить");
+        if (m_UpdateCallback)
+            m_UpdateCallback->UpdateAvailabilityChanged(true);
 
-		if (ShouldStop())
-			return;
+        if (ShouldStop())
+            return;
 
-		if (!IsWindowVisible())
-			SetTimer(2, 2000, 0);
+        if (!IsWindowVisible())
+            SetTimer(2, 2000, 0);
 
-		CString text = m_UpdateManager.generateReport();
-		SetDlgItemText(IDC_UPDATEINFO, text);
-		return;
-	}
-	else
-	{
-		TRC(IDCANCEL, "Закрыть");
-		SetDlgItemText(IDC_UPDATEINFO, TR("Обновление не требуется."));
-	}
+        CString text = m_UpdateManager.generateReport();
+        SetDlgItemText(IDC_UPDATEINFO, text);
+        return;
+    }
+    else
+    {
+        TRC(IDCANCEL, "Закрыть");
+        SetDlgItemText(IDC_UPDATEINFO, TR("Обновление не требуется."));
+    }
 }
 
 void CUpdateDlg::DoUpdates()
 {
-	::ShowWindow(GetDlgItem(IDOK), SW_HIDE);
-	::ShowWindow(GetDlgItem(IDC_UPDATEINFO), SW_HIDE);
-	m_listView.DeleteAllItems();
+    ::ShowWindow(GetDlgItem(IDOK), SW_HIDE);
+    ::ShowWindow(GetDlgItem(IDC_UPDATEINFO), SW_HIDE);
+    m_listView.DeleteAllItems();
 
-	for (size_t i = 0; i < m_UpdateManager.m_updateList.size(); i++)
-	{
-		m_listView.AddItem(i, 0, m_UpdateManager.m_updateList[i].displayName());
-		m_listView.AddItem(i, 1, TR("В очереди"));
-	}
-	m_listView.ShowWindow(SW_SHOW);
-	m_UpdateManager.DoUpdates();
+    for (size_t i = 0; i < m_UpdateManager.m_updateList.size(); i++)
+    {
+        m_listView.AddItem(i, 0, m_UpdateManager.m_updateList[i].displayName());
+        m_listView.AddItem(i, 1, TR("В очереди"));
+    }
+    m_listView.ShowWindow(SW_SHOW);
+    m_UpdateManager.DoUpdates();
 
-	if (m_UpdateManager.successPackageUpdatesCount())
-	{
-		::ShowWindow(GetDlgItem(IDCANCEL), SW_HIDE);
-		::ShowWindow(GetDlgItem(IDOK), SW_SHOW);
-		TRC(IDOK, "Завершить");
-		m_bUpdateFinished = true;
-	}
-	else
-	{
-		::ShowWindow(GetDlgItem(IDCANCEL), SW_SHOW);
-		::ShowWindow(GetDlgItem(IDOK), SW_HIDE);
-		TRC(IDCANCEL, "Закрыть");
-		m_bUpdateFinished = false;
-	}
-	m_Checked = false;
+    if (m_UpdateManager.successPackageUpdatesCount())
+    {
+        ::ShowWindow(GetDlgItem(IDCANCEL), SW_HIDE);
+        ::ShowWindow(GetDlgItem(IDOK), SW_SHOW);
+        TRC(IDOK, "Завершить");
+        m_bUpdateFinished = true;
+    }
+    else
+    {
+        ::ShowWindow(GetDlgItem(IDCANCEL), SW_SHOW);
+        ::ShowWindow(GetDlgItem(IDOK), SW_HIDE);
+        TRC(IDCANCEL, "Закрыть");
+        m_bUpdateFinished = false;
+    }
+    m_Checked = false;
 }
 
 DWORD CUpdateDlg::Run()
 {
-	if (!m_Checked)
-		CheckUpdates();
-	else
-		DoUpdates();
-	return 0;
+    if (!m_Checked)
+        CheckUpdates();
+    else
+        DoUpdates();
+    return 0;
 }
 
 void CUpdateDlg::updateStatus(int packageIndex, const CString& status)
 {
-	m_listView.SetItemText(packageIndex, 1, status);
+    m_listView.SetItemText(packageIndex, 1, status);
 }
 
 bool CUpdateDlg::ShowModal(HWND parent)
 {
-	m_Modal = true;
-	Settings.LastUpdateTime = static_cast<int>(time(0));
-	if (!m_hWnd)
-		Create(parent);
-	m_bClose = false;
+    m_Modal = true;
+    Settings.LastUpdateTime = static_cast<int>(time(0));
+    if (!m_hWnd)
+        Create(parent);
+    m_bClose = false;
 
-	KillTimer(2);
-	CenterWindow(GetParent());
-	ShowWindow(SW_SHOW);
-	::EnableWindow(GetParent(), false);
+    KillTimer(2);
+    CenterWindow(GetParent());
+    ShowWindow(SW_SHOW);
+    ::EnableWindow(GetParent(), false);
 
-	if (!m_Checked && !IsRunning())
-	{
-		Start();
-	}
+    if (!m_Checked && !IsRunning())
+    {
+        Start();
+    }
 
-	MSG msg;
-	while (::GetMessage(&msg, NULL, 0, 0) && !m_bClose)
-	{
-		if (!IsDialogMessage(&msg))
-		{
-			::TranslateMessage(&msg);
-			::DispatchMessage(&msg);
-		}
-	}
-	if (msg.message == WM_QUIT)
-		PostQuitMessage(0);
+    MSG msg;
+    while (::GetMessage(&msg, NULL, 0, 0) && !m_bClose)
+    {
+        if (!IsDialogMessage(&msg))
+        {
+            ::TranslateMessage(&msg);
+            ::DispatchMessage(&msg);
+        }
+    }
+    if (msg.message == WM_QUIT)
+        PostQuitMessage(0);
 
-	m_Modal = false;
-	if (m_bClose == 2)
-		::PostMessage(GetParent(), WM_MY_EXIT, 5, 0);
+    m_Modal = false;
+    if (m_bClose == 2)
+        ::PostMessage(GetParent(), WM_MY_EXIT, 5, 0);
 
-	::EnableWindow(GetParent(), true);
-	ShowWindow(SW_HIDE);
-	return true;
+    ::EnableWindow(GetParent(), true);
+    ShowWindow(SW_HIDE);
+    return true;
 }
 
 LRESULT CUpdateDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	UINT wTimerID = wParam;
+    UINT wTimerID = wParam;
 
-	if (wTimerID == 2)
-	{
-		HWND parent = GetParent();
-		if ((m_UpdateCallback && m_UpdateCallback->CanShowWindow()) || !m_UpdateCallback)
-		{
-			ShowModal(m_hWnd);
-			KillTimer(2);
-		}
-	}
-	else if (wTimerID == 1)
-	{
-	}
-	return 0;
+    if (wTimerID == 2)
+    {
+        HWND parent = GetParent();
+        if ((m_UpdateCallback && m_UpdateCallback->CanShowWindow()) || !m_UpdateCallback)
+        {
+            ShowModal(m_hWnd);
+            KillTimer(2);
+        }
+    }
+    else if (wTimerID == 1)
+    {
+    }
+    return 0;
 }
 
 void CUpdateDlg::Abort()
 {
-	if (IsRunning())
-	{
-		m_UpdateManager.stop();
-		Terminate();
-	}
+    if (IsRunning())
+    {
+        m_UpdateManager.stop();
+        Terminate();
+    }
 }
 
 void CUpdateDlg::setUpdateCallback(CUpdateDlgCallback* callback)
 {
-	m_UpdateCallback = callback;
+    m_UpdateCallback = callback;
 }

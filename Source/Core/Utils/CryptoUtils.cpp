@@ -32,151 +32,151 @@ namespace IuCoreUtils {
 
 const std::string CryptoUtils::CalcMD5Hash(const void* data, size_t size)
 {
-	std::string result;
-	MD5_CTX context;
+    std::string result;
+    MD5_CTX context;
 
-	MD5_Init(&context);
-	MD5_Update(&context, data, size);
+    MD5_Init(&context);
+    MD5_Update(&context, data, size);
 
-	unsigned char buff[16] = "";    
+    unsigned char buff[16] = "";    
 
-	MD5_Final(buff, &context);
+    MD5_Final(buff, &context);
 
-	for(int i=0;i<16; i++)
-	{
-		char temp[5];
-		sprintf(temp, "%02x",buff[i]);
-		result += temp;
-	}
-	return result;
+    for(int i=0;i<16; i++)
+    {
+        char temp[5];
+        sprintf(temp, "%02x",buff[i]);
+        result += temp;
+    }
+    return result;
 }
 
 const std::string CryptoUtils::CalcMD5HashFromString(const std::string& data)
 {
-	std::string result;
-	MD5_CTX context;
+    std::string result;
+    MD5_CTX context;
 
-	MD5_Init(&context);
-	MD5_Update(&context, (unsigned char*)data.c_str(), data.length());
+    MD5_Init(&context);
+    MD5_Update(&context, (unsigned char*)data.c_str(), data.length());
 
-	unsigned char buff[16] = "";    
+    unsigned char buff[16] = "";    
 
-	MD5_Final(buff, &context);
+    MD5_Final(buff, &context);
 
-	for(int i=0;i<16; i++)
-	{
-		char temp[5];
-		sprintf(temp, "%02x",buff[i]);
-		result += temp;
-	}
-	return result;
+    for(int i=0;i<16; i++)
+    {
+        char temp[5];
+        sprintf(temp, "%02x",buff[i]);
+        result += temp;
+    }
+    return result;
 }
 
 const std::string CryptoUtils::CalcMD5HashFromFile(const std::string& filename) {
-	std::string result;
-	MD5_CTX context;
+    std::string result;
+    MD5_CTX context;
 
-	MD5_Init(&context);
-	FILE* f = IuCoreUtils::fopen_utf8( filename.c_str(), "rb" );
-	if (f) {
-		unsigned char buf[4096];
-		while ( !feof(f) ) {
-			size_t bytesRead = fread( buf, 1, sizeof(buf), f );
-			if (  bytesRead == 0 ) {
-				break;
-			}
-			MD5_Update(&context, (unsigned char*)buf, bytesRead);
-		}
-		unsigned char buff[16] = "";
+    MD5_Init(&context);
+    FILE* f = IuCoreUtils::fopen_utf8( filename.c_str(), "rb" );
+    if (f) {
+        unsigned char buf[4096];
+        while ( !feof(f) ) {
+            size_t bytesRead = fread( buf, 1, sizeof(buf), f );
+            if (  bytesRead == 0 ) {
+                break;
+            }
+            MD5_Update(&context, (unsigned char*)buf, bytesRead);
+        }
+        unsigned char buff[16] = "";
 
-		MD5_Final(buff, &context);
+        MD5_Final(buff, &context);
 
-		fclose(f);
+        fclose(f);
 
-		for (int i = 0; i < 16; i++) {
-			char temp[5];
-			sprintf( temp, "%02x", buff[i] );
-			result += temp;
-		}
-	}
+        for (int i = 0; i < 16; i++) {
+            char temp[5];
+            sprintf( temp, "%02x", buff[i] );
+            result += temp;
+        }
+    }
 
-	return result;
+    return result;
 }
 
 const std::string CryptoUtils::CalcSHA1Hash(const void* data, size_t size) {
-	const int HashSize = 20;
-	std::string result;
-	SHA_CTX context;
+    const int HashSize = 20;
+    std::string result;
+    SHA_CTX context;
 
-	SHA1_Init( &context );
-	SHA1_Update( &context, data, size );
+    SHA1_Init( &context );
+    SHA1_Update( &context, data, size );
 
-	unsigned char buff[HashSize] = "";    
+    unsigned char buff[HashSize] = "";    
 
-	SHA1_Final( buff, &context);
+    SHA1_Final( buff, &context);
 
-	for ( int i = 0; i < HashSize; i++) {
-		char temp[5];
-		sprintf(temp, "%02x",buff[i]);
-		result += temp;
-	}
-	return result;
+    for ( int i = 0; i < HashSize; i++) {
+        char temp[5];
+        sprintf(temp, "%02x",buff[i]);
+        result += temp;
+    }
+    return result;
 }
 
 const std::string CryptoUtils::CalcHMACSHA1Hash(const std::string& key, const void* data, size_t size, bool base64) {
-	unsigned char* digest;
+    unsigned char* digest;
 
-	// Using sha1 hash engine here.
-	// You may use other hash engines. e.g EVP_md5(), EVP_sha224, EVP_sha512, etc
-	digest = HMAC(EVP_sha1(), key.c_str(), key.length(), (unsigned char*)data, size, NULL, NULL);    
+    // Using sha1 hash engine here.
+    // You may use other hash engines. e.g EVP_md5(), EVP_sha224, EVP_sha512, etc
+    digest = HMAC(EVP_sha1(), key.c_str(), key.length(), (unsigned char*)data, size, NULL, NULL);    
 
-	char mdString[50]="";
-	for(int i = 0; i < 20; i++) {
-		sprintf(&mdString[i*2], "%02x", (unsigned int)digest[i]);
-	}
-	if ( base64 ) {
-		return 	base64_encode(digest,20);
-	}
+    char mdString[50]="";
+    for(int i = 0; i < 20; i++) {
+        sprintf(&mdString[i*2], "%02x", (unsigned int)digest[i]);
+    }
+    if ( base64 ) {
+        return     base64_encode(digest,20);
+    }
 
-	return mdString;
+    return mdString;
 }
 
 const std::string CryptoUtils::CalcHMACSHA1HashFromString(const std::string& key, const std::string& data, bool base64) {
-	return CalcHMACSHA1Hash( key, data.c_str(), data.size(), base64 );
+    return CalcHMACSHA1Hash( key, data.c_str(), data.size(), base64 );
 }
 
 const std::string CryptoUtils::CalcSHA1HashFromString(const std::string& data) {
-	return CalcSHA1Hash( data.c_str(), data.size() );
+    return CalcSHA1Hash( data.c_str(), data.size() );
 }
 
 const std::string CryptoUtils::CalcSHA1HashFromFile(const std::string& filename) {
-	const int HashSize = 20;
-	std::string result;
-	SHA_CTX context;
+    const int HashSize = 20;
+    std::string result;
+    SHA_CTX context;
 
-	SHA1_Init(&context);
-	FILE* f = IuCoreUtils::fopen_utf8( filename.c_str(), "rb" );
+    SHA1_Init(&context);
+    FILE* f = IuCoreUtils::fopen_utf8( filename.c_str(), "rb" );
 
-	if (f) {
-		unsigned char buf[4096];
-		while ( !feof(f) ) {
-			size_t bytesRead = fread(buf, 1, sizeof(buf), f);
+    if (f) {
+        unsigned char buf[4096];
+        while ( !feof(f) ) {
+            size_t bytesRead = fread(buf, 1, sizeof(buf), f);
 
-			SHA1_Update(&context, (unsigned char*)buf, bytesRead);
-		}
-		unsigned char buff[HashSize] = "";
+            SHA1_Update(&context, (unsigned char*)buf, bytesRead);
+        }
+        unsigned char buff[HashSize] = "";
 
-		SHA1_Final(buff, &context);
+        SHA1_Final(buff, &context);
 
-		fclose(f);
+        fclose(f);
 
-		for (int i = 0; i < HashSize; i++) {
-			char temp[5];
-			sprintf(temp, "%02x", buff[i]);
-			result += temp;
-		}
-	}
-	return result;
+        for (int i = 0; i < HashSize; i++) {
+            char temp[5];
+            sprintf(temp, "%02x", buff[i]);
+            result += temp;
+        }
+    }
+    return result;
 }
 
 }; // end of namespace IuCoreUtils

@@ -10,51 +10,51 @@ class AbstractImage;
 
 struct ImageConvertingParams
 {
-	enum ImageResizeMode { irmFit,  irmCrop, irmStretch };
-	ImageConvertingParams();
+    enum ImageResizeMode { irmFit,  irmCrop, irmStretch };
+    ImageConvertingParams();
 
-	CString strNewWidth, strNewHeight;
-	BOOL AddText;
-	CString Text;
-	int Format;
-	int Quality;
-	BOOL SaveProportions;
-	LOGFONT Font;
-	BOOL AddLogo;
-	int LogoPosition;
-	int LogoBlend;
-	int TextPosition;
-	bool SmartConverting;
-	CString LogoFileName;
-	COLORREF TextColor, StrokeColor;
-	EnumWrapper<ImageResizeMode> ResizeMode;
-	bool PreserveExifInformation;
+    CString strNewWidth, strNewHeight;
+    BOOL AddText;
+    CString Text;
+    int Format;
+    int Quality;
+    BOOL SaveProportions;
+    LOGFONT Font;
+    BOOL AddLogo;
+    int LogoPosition;
+    int LogoBlend;
+    int TextPosition;
+    bool SmartConverting;
+    CString LogoFileName;
+    COLORREF TextColor, StrokeColor;
+    EnumWrapper<ImageResizeMode> ResizeMode;
+    bool PreserveExifInformation;
 };
 
 struct ThumbCreatingParams
 {
-	enum ThumbFormatEnum { tfSameAsImageFormat = 0, tfJPEG, tfPNG, tfGIF };
-	enum ThumbResizeEnum { trByWidth = 0, trByHeight, trByBiggerSide };
+    enum ThumbFormatEnum { tfSameAsImageFormat = 0, tfJPEG, tfPNG, tfGIF };
+    enum ThumbResizeEnum { trByWidth = 0, trByHeight, trByBiggerSide };
 
-	unsigned int Quality;
-	CString Text;
-	CString TemplateName;
-	int Size;
-	bool DrawFrame;
-	bool AddImageSize;
-	uint32_t BackgroundColor;
-	EnumWrapper<ThumbFormatEnum> Format;
-	ThumbResizeEnum ResizeMode;
+    unsigned int Quality;
+    CString Text;
+    CString TemplateName;
+    int Size;
+    bool DrawFrame;
+    bool AddImageSize;
+    uint32_t BackgroundColor;
+    EnumWrapper<ThumbFormatEnum> Format;
+    ThumbResizeEnum ResizeMode;
 };
 
 class ImageConverterPrivate;
 
 class ImageConverter
 {
-	public:
-		ImageConverter();
+    public:
+        ImageConverter();
         ~ImageConverter();
-		bool Convert(const std::string& sourceFile);
+        bool Convert(const std::string& sourceFile);
         const std::string getThumbFileName();
         const std::string getImageFileName();
         void setDestinationFolder(const std::string& folder);
@@ -64,7 +64,7 @@ class ImageConverter
         void setThumbCreatingParams(const ThumbCreatingParams& params);
         void setThumbnail(Thumbnail* thumb);
         std::shared_ptr<AbstractImage> createThumbnail(AbstractImage* image, int64_t fileSize, int fileformat);
-	protected:
+    protected:
         ImageConverterPrivate* d_ptr;
         Q_DECLARE_PRIVATE(ImageConverter);
 private:

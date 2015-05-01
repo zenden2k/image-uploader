@@ -25,7 +25,7 @@
 
 
 #ifndef IU_CLI
-	#include "Gui/Dialogs/LogWindow.h"
+    #include "Gui/Dialogs/LogWindow.h"
 #endif
 #include "Core/Upload/Uploader.h"
 
@@ -39,80 +39,80 @@ CFileQueueUploader::CFileQueueUploader(UploadEngineManager* uploadEngineManager,
 
 void CFileQueueUploader::addSession(std::shared_ptr<UploadSession> uploadSession)
 {
-	_impl->AddSession(uploadSession);
+    _impl->AddSession(uploadSession);
 }
 
 
 bool CFileQueueUploader::start()
 {
-	_impl->start();
-	return true;
+    _impl->start();
+    return true;
 }
 
 
 void CFileQueueUploader::stop()
 {
-	_impl->m_NeedStop = true;
+    _impl->m_NeedStop = true;
 }
 
 bool CFileQueueUploader::IsRunning() const {
-	return _impl->m_IsRunning;
+    return _impl->m_IsRunning;
 }
 
 CFileQueueUploader::~CFileQueueUploader() {
-	delete _impl;
+    delete _impl;
 }
 
 void CFileQueueUploader::setMaxThreadCount(int threadCount) {
-	_impl->m_nThreadCount = threadCount;
+    _impl->m_nThreadCount = threadCount;
 }
 
 bool CFileQueueUploader::isSlotAvailableForServer(std::string serverName, int maxThreads) {
-	int threads = _impl->serverThreads_[serverName].runningThreads + _impl->serverThreads_[serverName].waitingFileCount;
-	return threads < maxThreads && threads < _impl->m_nThreadCount;
+    int threads = _impl->serverThreads_[serverName].runningThreads + _impl->serverThreads_[serverName].waitingFileCount;
+    return threads < maxThreads && threads < _impl->m_nThreadCount;
 }
 
 void CFileQueueUploader::addUploadFilter(UploadFilter* filter)
 {
-	_impl->addUploadFilter(filter);
+    _impl->addUploadFilter(filter);
 }
 
 void CFileQueueUploader::removeUploadFilter(UploadFilter* filter)
 {
-	_impl->removeUploadFilter(filter);
+    _impl->removeUploadFilter(filter);
 }
 
 int CFileQueueUploader::sessionCount()
 {
-	return _impl->sessionCount();
+    return _impl->sessionCount();
 }
 
 std_tr::shared_ptr<UploadSession> CFileQueueUploader::session(int index)
 {
-	return _impl->session(index);
+    return _impl->session(index);
 }
 
 void CFileQueueUploader::sessionAdded(UploadSession* session)
 {
-	if (OnSessionAdded)
-	{
-		OnSessionAdded(session);
-	}
+    if (OnSessionAdded)
+    {
+        OnSessionAdded(session);
+    }
 }
 
 void CFileQueueUploader::taskAdded(UploadTask* task)
 {
-	if (OnTaskAdded)
-	{
-		taskAdded(task);
-	}
+    if (OnTaskAdded)
+    {
+        taskAdded(task);
+    }
 }
 
 void CFileQueueUploader::addTask(std_tr::shared_ptr<UploadTask> task) {
-	_impl->AddTask(task);
+    _impl->AddTask(task);
 }
 
 void CFileQueueUploader::removeSession(std::shared_ptr<UploadSession> uploadSession)
 {
-	_impl->removeSession(uploadSession);
+    _impl->removeSession(uploadSession);
 }

@@ -37,48 +37,48 @@ extern const Utf8String IuNewFolderMark;
 class CScriptUploadEngine : public CAbstractUploadEngine, 
                             public Script
 {
-	public:
-		int doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params);
-	protected:
-		bool needStop();
-		Utf8String m_ErrorReason;
-		Utf8String m_FileName;
-		Utf8String m_displayFileName;
-		LoginInfo li;
-		int m_CurrentActionIndex;
-		int m_nThumbWidth;
-	
-	public:
+    public:
+        int doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params);
+    protected:
+        bool needStop();
+        Utf8String m_ErrorReason;
+        Utf8String m_FileName;
+        Utf8String m_displayFileName;
+        LoginInfo li;
+        int m_CurrentActionIndex;
+        int m_nThumbWidth;
+    
+    public:
         CScriptUploadEngine(Utf8String pluginName, ServerSync* serverSync, ServerSettingsStruct* settings);
-		~CScriptUploadEngine();
-		void setNetworkClient(NetworkClient* nm);
-		//bool load(Utf8String fileName, ServerSettingsStruct& params);
-		int getFolderList(CFolderList &FolderList);
-		int createFolder(CFolderItem &parent, CFolderItem &folder);
-		int modifyFolder(CFolderItem &folder);
-		int getAccessTypeList(std::vector<Utf8String> &list);
-		int getServerParamList(std::map<Utf8String, Utf8String> &list);
-		int doLogin();
+        ~CScriptUploadEngine();
+        void setNetworkClient(NetworkClient* nm);
+        //bool load(Utf8String fileName, ServerSettingsStruct& params);
+        int getFolderList(CFolderList &FolderList);
+        int createFolder(CFolderItem &parent, CFolderItem &folder);
+        int modifyFolder(CFolderItem &folder);
+        int getAccessTypeList(std::vector<Utf8String> &list);
+        int getServerParamList(std::map<Utf8String, Utf8String> &list);
+        int doLogin();
 
-		bool supportsSettings();
-		bool supportsBeforehandAuthorization();
-		Utf8String name();
-		
-		int RetryLimit();
-		
-		void stop() override;
-	//Sqrat::Table m_Object; 		
-	protected:
-		void Log(ErrorInfo::MessageType mt, const std::string& error);
+        bool supportsSettings();
+        bool supportsBeforehandAuthorization();
+        Utf8String name();
+        
+        int RetryLimit();
+        
+        void stop() override;
+    //Sqrat::Table m_Object;         
+    protected:
+        void Log(ErrorInfo::MessageType mt, const std::string& error);
         virtual void PrintCallback(const std::string& output) override;
         bool preLoad() override;
         bool postLoad() override;
         void clearSqratError();
-		CFolderList m_FolderList;
+        CFolderList m_FolderList;
        
-		Utf8String m_sName;
+        Utf8String m_sName;
       
-		DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
+        DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
 };
 
 

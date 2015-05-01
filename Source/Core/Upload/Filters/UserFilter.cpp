@@ -21,12 +21,12 @@ bool UserFilter::PreUpload(UploadTask* task)
         }
         return script->preUpload(task);
     }
-	return true;
+    return true;
 }
 
 bool UserFilter::PostUpload(UploadTask* task)
 {
-	
+    
     if (Settings.ExecuteScript && !Settings.ScriptFileName.empty())
     {
         UploadFilterScript* script = dynamic_cast<UploadFilterScript*>(scriptsManager_->getScript(Settings.ScriptFileName, ScriptsManager::TypeUploadFilterScript));

@@ -28,7 +28,7 @@
 // CUploadSettingsPage
 CUploadSettingsPage::CUploadSettingsPage()
 {
-		
+        
 }
 
 CUploadSettingsPage::~CUploadSettingsPage()
@@ -37,121 +37,121 @@ CUploadSettingsPage::~CUploadSettingsPage()
 
 void CUploadSettingsPage::TranslateUI()
 {
-	TRC(IDOK, "OK");
-	TRC(IDCANCEL, "Отмена");
-	TRC(IDC_CONNECTIONSETTINGS, "Параметры подключения");
-	TRC(IDC_USEPROXYSERVER, "Использовать прокси-сервер");
-	TRC(IDC_ADDRESSLABEL, "Адрес:");
-	TRC(IDC_PORTLABEL, "Порт:");
-	TRC(IDC_SERVERTYPE, "Тип сервера:");
-	TRC(IDC_NEEDSAUTH, "Необходима авторизация");
-	TRC(IDC_LOGINLABEL, "Логин:");
-	TRC(IDC_PASSWORDLABEL, "Пароль:");
-	TRC(IDC_AUTOCOPYTOCLIPBOARD, "Автоматически копировать результаты в буфер обмена");
-	TRC(IDC_UPLOADERRORLABEL, "Ошибки загрузки");
-	TRC(IDC_IGNOREERRORS, "Показывать диалоговое окно в случае ошибки");
-	TRC(IDC_RETRIES1LABEL, "Кол-во попыток загрузки файла:");
-	TRC(IDC_RETRIES2LABEL, "Кол-во попыток для одной операции:");
-	TRC(IDC_UPLOADBUFFERLABEL, "Размер буфера отдачи:");
-	TRC(IDC_MAXTHREADSLABEL, "Число потоков");
+    TRC(IDOK, "OK");
+    TRC(IDCANCEL, "Отмена");
+    TRC(IDC_CONNECTIONSETTINGS, "Параметры подключения");
+    TRC(IDC_USEPROXYSERVER, "Использовать прокси-сервер");
+    TRC(IDC_ADDRESSLABEL, "Адрес:");
+    TRC(IDC_PORTLABEL, "Порт:");
+    TRC(IDC_SERVERTYPE, "Тип сервера:");
+    TRC(IDC_NEEDSAUTH, "Необходима авторизация");
+    TRC(IDC_LOGINLABEL, "Логин:");
+    TRC(IDC_PASSWORDLABEL, "Пароль:");
+    TRC(IDC_AUTOCOPYTOCLIPBOARD, "Автоматически копировать результаты в буфер обмена");
+    TRC(IDC_UPLOADERRORLABEL, "Ошибки загрузки");
+    TRC(IDC_IGNOREERRORS, "Показывать диалоговое окно в случае ошибки");
+    TRC(IDC_RETRIES1LABEL, "Кол-во попыток загрузки файла:");
+    TRC(IDC_RETRIES2LABEL, "Кол-во попыток для одной операции:");
+    TRC(IDC_UPLOADBUFFERLABEL, "Размер буфера отдачи:");
+    TRC(IDC_MAXTHREADSLABEL, "Число потоков");
     TRC(IDC_EXECUTESCRIPTCHECKBOX, "Выполнять Squirrel-скрипт для каждой задачи (файла)");
 }
-	
+    
 LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	TabBackgroundFix(m_hWnd);
-	TranslateUI();
+    TabBackgroundFix(m_hWnd);
+    TranslateUI();
 
-	BOOL temp;
-	DoDataExchange(FALSE);
-	SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("HTTP"));
+    BOOL temp;
+    DoDataExchange(FALSE);
+    SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("HTTP"));
 
-	SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS4"));
-	SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS4A"));
-	SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS5"));
-	SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS5(DNS)"));
+    SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS4"));
+    SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS4A"));
+    SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS5"));
+    SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS5(DNS)"));
 
-	// ---- Инициализация элементов (заполнение) ----
-	
-	// ---- заполнение connection settings -----
-	SetDlgItemText(IDC_ADDRESSEDIT, Settings.ConnectionSettings.ServerAddress);
-	SendDlgItemMessage(IDC_NEEDSAUTH, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.NeedsAuth);
-	SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_SETCHECK, (WPARAM) Settings.AutoCopyToClipboard);
-	
-		SendDlgItemMessage(IDC_USEPROXYSERVER, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.UseProxy);
-	SetDlgItemText(IDC_PROXYLOGINEDIT, Settings.ConnectionSettings.ProxyUser);
-	SetDlgItemText(IDC_PROXYPASSWORDEDIT, Settings.ConnectionSettings.ProxyPassword);
-	SetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT,Settings.UploadBufferSize/1024);
-	if(Settings.ConnectionSettings.ProxyPort) // Только если порт не равен нулю
-		SetDlgItemInt(IDC_PORTEDIT, Settings.ConnectionSettings.ProxyPort);
+    // ---- Инициализация элементов (заполнение) ----
+    
+    // ---- заполнение connection settings -----
+    SetDlgItemText(IDC_ADDRESSEDIT, Settings.ConnectionSettings.ServerAddress);
+    SendDlgItemMessage(IDC_NEEDSAUTH, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.NeedsAuth);
+    SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_SETCHECK, (WPARAM) Settings.AutoCopyToClipboard);
+    
+        SendDlgItemMessage(IDC_USEPROXYSERVER, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.UseProxy);
+    SetDlgItemText(IDC_PROXYLOGINEDIT, Settings.ConnectionSettings.ProxyUser);
+    SetDlgItemText(IDC_PROXYPASSWORDEDIT, Settings.ConnectionSettings.ProxyPassword);
+    SetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT,Settings.UploadBufferSize/1024);
+    if(Settings.ConnectionSettings.ProxyPort) // Только если порт не равен нулю
+        SetDlgItemInt(IDC_PORTEDIT, Settings.ConnectionSettings.ProxyPort);
 
 
-	SendDlgItemMessage(IDC_SERVERTYPECOMBO, CB_SETCURSEL, Settings.ConnectionSettings.ProxyType);
-	SendDlgItemMessage(IDC_NEEDSAUTH, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.NeedsAuth);
-	SetDlgItemInt(IDC_MAXTHREADSEDIT, Settings.MaxThreads);
-	// Уведомление элементов
-	OnClickedUseProxy(BN_CLICKED, IDC_USEPROXYSERVER, 0, temp);
+    SendDlgItemMessage(IDC_SERVERTYPECOMBO, CB_SETCURSEL, Settings.ConnectionSettings.ProxyType);
+    SendDlgItemMessage(IDC_NEEDSAUTH, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.NeedsAuth);
+    SetDlgItemInt(IDC_MAXTHREADSEDIT, Settings.MaxThreads);
+    // Уведомление элементов
+    OnClickedUseProxy(BN_CLICKED, IDC_USEPROXYSERVER, 0, temp);
     GuiTools::SetCheck(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX, Settings.ExecuteScript);
     SetDlgItemText(IDC_SCRIPTFILENAMEEDIT, IuCoreUtils::Utf8ToWstring(Settings.ScriptFileName).c_str());
 
-	return 1;  // Let the system set the focus
+    return 1;  // Let the system set the focus
 }
 
 LRESULT CUploadSettingsPage::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	EndDialog(wID);
-	return 0;
+    EndDialog(wID);
+    return 0;
 }
 
 LRESULT CUploadSettingsPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	EndDialog(wID);
-	return 0;
+    EndDialog(wID);
+    return 0;
 }
 
 LRESULT CUploadSettingsPage::OnClickedUseProxy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& bHandled)
 {
-	bool Checked = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK)!=0;
-	GuiTools::EnableNextN(GetDlgItem(wID),Checked? 8: 11, Checked);
+    bool Checked = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK)!=0;
+    GuiTools::EnableNextN(GetDlgItem(wID),Checked? 8: 11, Checked);
 
-	if(Checked)
-		OnClickedUseProxyAuth(BN_CLICKED, IDC_NEEDSAUTH, 0, bHandled);
+    if(Checked)
+        OnClickedUseProxyAuth(BN_CLICKED, IDC_NEEDSAUTH, 0, bHandled);
 
-	//::EnableWindow(GetDlgItem(IDC_ADDRESSEDIT), Checked);
-	return 0;
+    //::EnableWindow(GetDlgItem(IDC_ADDRESSEDIT), Checked);
+    return 0;
 }
-	
+    
 LRESULT CUploadSettingsPage::OnClickedUseProxyAuth(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	bool Checked = SendDlgItemMessage(wID, BM_GETCHECK)!=0;
-	GuiTools::EnableNextN(GetDlgItem(wID), 4, Checked);
-	return 0;
+    bool Checked = SendDlgItemMessage(wID, BM_GETCHECK)!=0;
+    GuiTools::EnableNextN(GetDlgItem(wID), 4, Checked);
+    return 0;
 }
 
 bool CUploadSettingsPage::Apply()
 {
-	DoDataExchange(TRUE);
-	Settings.ConnectionSettings.UseProxy = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK)!=0;
-	Settings.ConnectionSettings.NeedsAuth = SendDlgItemMessage(IDC_NEEDSAUTH, BM_GETCHECK);
-	Settings.AutoCopyToClipboard = SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_GETCHECK)!=0;
-	TCHAR Buffer[128];
+    DoDataExchange(TRUE);
+    Settings.ConnectionSettings.UseProxy = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK)!=0;
+    Settings.ConnectionSettings.NeedsAuth = SendDlgItemMessage(IDC_NEEDSAUTH, BM_GETCHECK);
+    Settings.AutoCopyToClipboard = SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_GETCHECK)!=0;
+    TCHAR Buffer[128];
 
-	GetDlgItemText(IDC_ADDRESSEDIT,Buffer, 128);
-	Settings.ConnectionSettings.ServerAddress = Buffer;
-	Settings.ConnectionSettings.ProxyPort = GetDlgItemInt(IDC_PORTEDIT);
-	
-	GetDlgItemText(IDC_PROXYLOGINEDIT, Buffer, 128);
-	Settings.ConnectionSettings.ProxyUser = Buffer;
-	GetDlgItemText(IDC_PROXYPASSWORDEDIT, Buffer, 128);
-	Settings.ConnectionSettings.ProxyPassword = Buffer;
-	Settings.ConnectionSettings.ProxyType = SendDlgItemMessage(IDC_SERVERTYPECOMBO, CB_GETCURSEL);
-	Settings.UploadBufferSize = GetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT)*1024;
-	if(!Settings.UploadBufferSize) Settings.UploadBufferSize = 65536;
-	Settings.MaxThreads = GetDlgItemInt(IDC_MAXTHREADSEDIT);
-	if (Settings.MaxThreads < 0 || Settings.MaxThreads > 50 )
-	{
-		Settings.MaxThreads = 3;
-	}
+    GetDlgItemText(IDC_ADDRESSEDIT,Buffer, 128);
+    Settings.ConnectionSettings.ServerAddress = Buffer;
+    Settings.ConnectionSettings.ProxyPort = GetDlgItemInt(IDC_PORTEDIT);
+    
+    GetDlgItemText(IDC_PROXYLOGINEDIT, Buffer, 128);
+    Settings.ConnectionSettings.ProxyUser = Buffer;
+    GetDlgItemText(IDC_PROXYPASSWORDEDIT, Buffer, 128);
+    Settings.ConnectionSettings.ProxyPassword = Buffer;
+    Settings.ConnectionSettings.ProxyType = SendDlgItemMessage(IDC_SERVERTYPECOMBO, CB_GETCURSEL);
+    Settings.UploadBufferSize = GetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT)*1024;
+    if(!Settings.UploadBufferSize) Settings.UploadBufferSize = 65536;
+    Settings.MaxThreads = GetDlgItemInt(IDC_MAXTHREADSEDIT);
+    if (Settings.MaxThreads < 0 || Settings.MaxThreads > 50 )
+    {
+        Settings.MaxThreads = 3;
+    }
 
     GuiTools::GetCheck(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX, Settings.ExecuteScript);
     CString scriptFile = GuiTools::GetDlgItemText(m_hWnd, IDC_SCRIPTFILENAMEEDIT);
@@ -165,7 +165,7 @@ bool CUploadSettingsPage::Apply()
     }
     Settings.ScriptFileName = IuCoreUtils::WstringToUtf8((LPCTSTR)scriptFile);
 
-	return true;
+    return true;
 }
 
 LRESULT CUploadSettingsPage::OnBnClickedBrowseScriptButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

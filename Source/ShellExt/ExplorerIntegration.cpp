@@ -31,15 +31,15 @@
 class CExplorerIntegrationModule : public CAtlDllModuleT< CExplorerIntegrationModule >
 {
 public :
-	DECLARE_LIBID(LIBID_ExplorerIntegrationLib)
-	DECLARE_REGISTRY_APPID_RESOURCEID(IDR_EXPLORERINTEGRATION, "{B3E19CB7-7EF2-4C97-A1DC-324F6A6CF2E5}")
+    DECLARE_LIBID(LIBID_ExplorerIntegrationLib)
+    DECLARE_REGISTRY_APPID_RESOURCEID(IDR_EXPLORERINTEGRATION, "{B3E19CB7-7EF2-4C97-A1DC-324F6A6CF2E5}")
 };
 
 CExplorerIntegrationModule _AtlModule;
 
-	BEGIN_OBJECT_MAP(ObjectMap)
-	OBJECT_ENTRY(CLSID_IShellContextMenu, CIShellContextMenu)
-	END_OBJECT_MAP()
+    BEGIN_OBJECT_MAP(ObjectMap)
+    OBJECT_ENTRY(CLSID_IShellContextMenu, CIShellContextMenu)
+    END_OBJECT_MAP()
 
 
 #ifdef _MANAGED
@@ -48,42 +48,42 @@ CExplorerIntegrationModule _AtlModule;
 
 // DLL Entry Point
 extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
-	{
-		hDllInstance=hInstance;
+    {
+        hDllInstance=hInstance;
 
-		if(dwReason == DLL_PROCESS_ATTACH)
-		{
-			OleInitialize(NULL);
-			TCHAR szFileName[256], szPath[256];
-			GetModuleFileName(hInstance, szFileName, 1023);
-			ExtractFilePath(szFileName, szPath);
-			Lang.SetDirectory(CString(szPath) + "Lang\\");
+        if(dwReason == DLL_PROCESS_ATTACH)
+        {
+            OleInitialize(NULL);
+            TCHAR szFileName[256], szPath[256];
+            GetModuleFileName(hInstance, szFileName, 1023);
+            ExtractFilePath(szFileName, szPath);
+            Lang.SetDirectory(CString(szPath) + "Lang\\");
 
-			CRegistry Reg;
-			CString lang;
-			Reg.SetRootKey(HKEY_CURRENT_USER);
-			if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
-			{
-				lang = Reg.ReadString("Language");
-			}
-			else
-			{
-				#ifdef _WIN64
-					Reg.SetWOW64Flag(KEY_WOW64_32KEY);
-					Reg.SetRootKey(HKEY_CURRENT_USER);
-					if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
-					{
-						lang = Reg.ReadString("Language");
-					}
-				#endif
-			}
-			
+            CRegistry Reg;
+            CString lang;
+            Reg.SetRootKey(HKEY_CURRENT_USER);
+            if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
+            {
+                lang = Reg.ReadString("Language");
+            }
+            else
+            {
+                #ifdef _WIN64
+                    Reg.SetWOW64Flag(KEY_WOW64_32KEY);
+                    Reg.SetRootKey(HKEY_CURRENT_USER);
+                    if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
+                    {
+                        lang = Reg.ReadString("Language");
+                    }
+                #endif
+            }
+            
 
-			Lang.LoadLanguage(lang);
-		}
+            Lang.LoadLanguage(lang);
+        }
 
-		return _AtlModule.DllMain(dwReason, lpReserved); 
-	}
+        return _AtlModule.DllMain(dwReason, lpReserved); 
+    }
 
 #ifdef _MANAGED
 #pragma managed(pop)
@@ -106,12 +106,12 @@ STDAPI DllRegisterServer(void)
 {
     // registers object, typelib and all interfaces in typelib
     HRESULT hr = _AtlModule.DllRegisterServer();
-	return hr;
+    return hr;
 }
 
 // DllUnregisterServer - Removes entries from the system registry
 STDAPI DllUnregisterServer(void)
 {
-	HRESULT hr = _AtlModule.DllUnregisterServer();
-	return hr;
+    HRESULT hr = _AtlModule.DllUnregisterServer();
+    return hr;
 }

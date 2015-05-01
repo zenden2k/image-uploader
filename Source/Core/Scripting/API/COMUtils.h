@@ -4,7 +4,7 @@
 #include <string>
 #pragma once
 namespace ScriptAPI {
-	std::string ComVariantToString(const CComVariant& variant);
+    std::string ComVariantToString(const CComVariant& variant);
 }
 
 #endif

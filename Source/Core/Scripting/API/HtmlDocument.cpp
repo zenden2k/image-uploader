@@ -30,52 +30,52 @@ namespace ScriptAPI {
 
 HtmlDocument::HtmlDocument()
 {
-//	d_.reset(new HtmlDocumentPrivate());
+//    d_.reset(new HtmlDocumentPrivate());
 }
 
 HtmlDocument::HtmlDocument(HtmlDocumentPrivate* pr)
 {
-	d_.reset(pr);
+    d_.reset(pr);
 }
 
 HtmlElement HtmlDocument::rootElement()
 {
-	return d_->rootElement();
+    return d_->rootElement();
 }
 
 HtmlElement HtmlDocument::getElementById(const std::string& id)
 {
-	return d_->getElementById(id);
+    return d_->getElementById(id);
 }
 
 Sqrat::Array HtmlDocument::getElementsByTagName(const std::string& tag)
 {
-	return d_->getElementsByTagName(tag);
+    return d_->getElementsByTagName(tag);
 }
 
 Sqrat::Array HtmlDocument::getElementsByName(const std::string& name)
 {
-	return d_->getElementsByName(name);
+    return d_->getElementsByName(name);
 }
 
 HtmlElement HtmlDocument::querySelector(const std::string& query)
 {
-	return d_->querySelector(query);
+    return d_->querySelector(query);
 }
 
 Sqrat::Array HtmlDocument::querySelectorAll(const std::string& query)
 {
-	return d_->querySelectorAll(query);
+    return d_->querySelectorAll(query);
 }
 
 const std::string HtmlDocument::getHTML()
 {
-	return d_->getHTML();
+    return d_->getHTML();
 }
 
 void RegisterHtmlDocumentClass(Sqrat::SqratVM& vm)
 {
-	using namespace Sqrat;
+    using namespace Sqrat;
     vm.GetRootTable().Bind("HtmlDocument", Class<HtmlDocument>(vm.GetVM(), "HtmlDocument")
         .Func("rootElement", &HtmlDocument::rootElement)
         .Func("getElementById", &HtmlDocument::getElementById)
@@ -89,7 +89,7 @@ void RegisterHtmlDocumentClass(Sqrat::SqratVM& vm)
 
 void RegisterHtmlElementClass(Sqrat::SqratVM& vm)
 {
-	using namespace Sqrat;
+    using namespace Sqrat;
     vm.GetRootTable().Bind("HtmlElement", Class<HtmlElement>(vm.GetVM(), "HtmlElement")
         .Func("getAttribute", &HtmlElement::getAttribute)
         .Func("setAttribute", &HtmlElement::setAttribute)
@@ -115,7 +115,7 @@ void RegisterHtmlElementClass(Sqrat::SqratVM& vm)
         .Func("isNull", &HtmlElement::isNull)
         .Func("submitForm", &HtmlElement::submitForm)
         .Func("getChildren", &HtmlElement::getChildren)
-	);
+    );
 }
 
 }

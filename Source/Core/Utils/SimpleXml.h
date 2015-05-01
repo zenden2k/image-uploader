@@ -35,57 +35,57 @@ SimpleXmlNode class
 */
 class SimpleXmlNode
 {
-	public:
-		explicit SimpleXmlNode();
+    public:
+        explicit SimpleXmlNode();
         /*! @cond PRIVATE */
-		SimpleXmlNode(const SimpleXmlNode& node);
+        SimpleXmlNode(const SimpleXmlNode& node);
         /*! @endcond */
-		virtual ~SimpleXmlNode();
-		
-		const std::string Attribute(const std::string& name) const;
+        virtual ~SimpleXmlNode();
+        
+        const std::string Attribute(const std::string& name) const;
         /*! @cond PRIVATE */
         SimpleXmlNode operator[](const std::string& name);
-		bool GetAttribute(const std::string& name, std::string& value) const;
+        bool GetAttribute(const std::string& name, std::string& value) const;
         bool GetAttributeBool(const std::string& name, bool & value) const;
         bool GetAttributeInt(const std::string& name, int & value) const;
         /*! @endcond */
 
-		int AttributeInt(const std::string& name) const;
+        int AttributeInt(const std::string& name) const;
         /*! @cond PRIVATE */
-		int64_t AttributeInt64(const std::string& name) const;
+        int64_t AttributeInt64(const std::string& name) const;
         /*! @endcond */
-		bool AttributeBool(const std::string& name) const;
-		const std::string Name() const;
-		const std::string Text() const;
+        bool AttributeBool(const std::string& name) const;
+        const std::string Name() const;
+        const std::string Text() const;
 
-		// Write
-		SimpleXmlNode CreateChild(const std::string& name);
-		SimpleXmlNode GetChild(const std::string& name, bool create = true);
-		SimpleXmlNode GetChildByIndex(int index);
-		int GetChildCount();
-		void SetAttribute(const std::string& name, const std::string& value);
-		void SetAttributeString(const std::string& name, const std::string& value);
-		void SetAttribute(const std::string& name, int value);
-		void SetAttributeInt(const std::string& name, int value);
-		void SetAttribute(const std::string& name, int64_t value);
-		void SetAttributeBool(const std::string& name, bool value);
-		void SetText(const std::string& value);
+        // Write
+        SimpleXmlNode CreateChild(const std::string& name);
+        SimpleXmlNode GetChild(const std::string& name, bool create = true);
+        SimpleXmlNode GetChildByIndex(int index);
+        int GetChildCount();
+        void SetAttribute(const std::string& name, const std::string& value);
+        void SetAttributeString(const std::string& name, const std::string& value);
+        void SetAttribute(const std::string& name, int value);
+        void SetAttributeInt(const std::string& name, int value);
+        void SetAttribute(const std::string& name, int64_t value);
+        void SetAttributeBool(const std::string& name, bool value);
+        void SetText(const std::string& value);
 
-		bool IsNull() const;
+        bool IsNull() const;
         /*! @cond PRIVATE */
-		bool GetChilds(const std::string& name,std::vector<SimpleXmlNode> &out) const;
-		bool GetAttributes(std::vector<std::string> &out) const;
+        bool GetChilds(const std::string& name,std::vector<SimpleXmlNode> &out) const;
+        bool GetAttributes(std::vector<std::string> &out) const;
         /*! @endcond */
-		int GetAttributeCount();
-		void DeleteChilds();
+        int GetAttributeCount();
+        void DeleteChilds();
         /*! @cond PRIVATE */
-		SimpleXmlNode& operator = (const SimpleXmlNode& node);
+        SimpleXmlNode& operator = (const SimpleXmlNode& node);
         /*! @endcond */
-	protected:
-		SimpleXmlNode(void *el);
-	private:
-		SimpleXmlNode_impl *impl_;
-		friend class SimpleXml;
+    protected:
+        SimpleXmlNode(void *el);
+    private:
+        SimpleXmlNode_impl *impl_;
+        friend class SimpleXml;
 };
 
 /**
@@ -95,17 +95,17 @@ class SimpleXmlNode
 */
 class SimpleXml
 {
-	public:
-		SimpleXml();
-		virtual ~SimpleXml();
-		bool LoadFromFile(const std::string& fileName);
-		bool LoadFromString(const std::string& string);
-		bool SaveToFile(const std::string& fileName) const;
-		SimpleXmlNode getRoot(const std::string& name, bool create = true);
-		const std::string ToString();
-	private:
-		SimpleXml_impl *impl_;
-		//DISALLOW_COPY_AND_ASSIGN(SimpleXml);
+    public:
+        SimpleXml();
+        virtual ~SimpleXml();
+        bool LoadFromFile(const std::string& fileName);
+        bool LoadFromString(const std::string& string);
+        bool SaveToFile(const std::string& fileName) const;
+        SimpleXmlNode getRoot(const std::string& name, bool create = true);
+        const std::string ToString();
+    private:
+        SimpleXml_impl *impl_;
+        //DISALLOW_COPY_AND_ASSIGN(SimpleXml);
 };
 
 #endif

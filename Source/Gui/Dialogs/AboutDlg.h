@@ -25,30 +25,30 @@
 
 class CAboutDlg : public CDialogImpl<CAboutDlg>
 {
-	public:
-		enum { IDD = IDD_ABOUTBOX };
+    public:
+        enum { IDD = IDD_ABOUTBOX };
 
-	protected:
-		BEGIN_MSG_MAP(CAboutDlg)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
-			COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
-			COMMAND_ID_HANDLER(IDC_DOCUMENTATION, OnDocumentationClicked)
-			MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnCtlColorStatic)
-		END_MSG_MAP()
-		CMyImage LogoImage;
-		CHyperLink m_WebSiteLink;
-		CHyperLink m_GoogleCodeLink;
-		CHyperLink m_ReportBugLink;
-		CHyperLink m_Documentation;
-		// Handler prototypes (uncomment arguments if needed):
-		//	LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-		//	LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-		//	LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
+    protected:
+        BEGIN_MSG_MAP(CAboutDlg)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
+            COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
+            COMMAND_ID_HANDLER(IDC_DOCUMENTATION, OnDocumentationClicked)
+            MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnCtlColorStatic)
+        END_MSG_MAP()
+        CMyImage LogoImage;
+        CHyperLink m_WebSiteLink;
+        CHyperLink m_GoogleCodeLink;
+        CHyperLink m_ReportBugLink;
+        CHyperLink m_Documentation;
+        // Handler prototypes (uncomment arguments if needed):
+        //    LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+        //    LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+        //    LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
 
-		// Message handlers
-		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-		LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		LRESULT OnDocumentationClicked(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		LRESULT OnCtlColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        // Message handlers
+        LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnDocumentationClicked(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnCtlColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 };

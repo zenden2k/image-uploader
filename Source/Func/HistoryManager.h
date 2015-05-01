@@ -29,20 +29,20 @@
 
 struct HistoryItem
 {
-	std::string localFilePath;
-	std::string directUrl;
-	std::string directUrlShortened;
-	std::string viewUrl;
-	std::string viewUrlShortened;
-	std::string thumbUrl;
+    std::string localFilePath;
+    std::string directUrl;
+    std::string directUrlShortened;
+    std::string viewUrl;
+    std::string viewUrlShortened;
+    std::string thumbUrl;
 
-	std::string serverName;
-	time_t timeStamp;
-	int64_t uploadFileSize;
-	HistoryItem() {
-		timeStamp = 0;
-		uploadFileSize = 0;
-	}
+    std::string serverName;
+    time_t timeStamp;
+    int64_t uploadFileSize;
+    HistoryItem() {
+        timeStamp = 0;
+        uploadFileSize = 0;
+    }
 };
 
 class SimpleXmlNode;
@@ -50,47 +50,47 @@ class CHistoryReader_impl;
 
 class CHistorySession
 {
-	public:
-		CHistorySession(const std::string& filename, const std::string& sessionId);
-		bool AddItem(const HistoryItem& ht);
+    public:
+        CHistorySession(const std::string& filename, const std::string& sessionId);
+        bool AddItem(const HistoryItem& ht);
 
-		int entriesCount() const;
-		HistoryItem entry(const int index) const;
-		std::string serverName() const;
-		time_t timeStamp() const;
-		void loadFromXml(SimpleXmlNode& sessionNode);
-	private:
-		std::string m_historyXmlFileName;
-		std::string m_sessId;
-		time_t m_timeStamp;
-		std::string m_serverName;
-		std::vector<HistoryItem> m_entries;
+        int entriesCount() const;
+        HistoryItem entry(const int index) const;
+        std::string serverName() const;
+        time_t timeStamp() const;
+        void loadFromXml(SimpleXmlNode& sessionNode);
+    private:
+        std::string m_historyXmlFileName;
+        std::string m_sessId;
+        time_t m_timeStamp;
+        std::string m_serverName;
+        std::vector<HistoryItem> m_entries;
 };
 
 class CHistoryManager
 {
-	public:
-		CHistoryManager();
-		virtual ~CHistoryManager();
-		void setHistoryFileName(const std::string& filepath, const std::string& nameprefix);
-		std_tr::shared_ptr<CHistorySession> newSession();
-		std::string makeFileName() const;
+    public:
+        CHistoryManager();
+        virtual ~CHistoryManager();
+        void setHistoryFileName(const std::string& filepath, const std::string& nameprefix);
+        std_tr::shared_ptr<CHistorySession> newSession();
+        std::string makeFileName() const;
 
-	private:
-		std::string m_historyFilePath;
-		std::string m_historyFileNamePrefix;
+    private:
+        std::string m_historyFilePath;
+        std::string m_historyFileNamePrefix;
 };
 
 class CHistoryReader
 {
-	public:
-		CHistoryReader();
-		virtual ~CHistoryReader();
-		bool loadFromFile(const std::string& filename);
-		int getSessionCount() const;
-		CHistorySession* getSession(const int index);
-	private:
+    public:
+        CHistoryReader();
+        virtual ~CHistoryReader();
+        bool loadFromFile(const std::string& filename);
+        int getSessionCount() const;
+        CHistorySession* getSession(const int index);
+    private:
         DISALLOW_COPY_AND_ASSIGN(CHistoryReader);
-		CHistoryReader_impl* _impl;
+        CHistoryReader_impl* _impl;
 };
 #endif

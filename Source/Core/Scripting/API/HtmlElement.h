@@ -32,53 +32,53 @@ class HtmlElementPrivate;
 */
 class HtmlElement {
 public:
-	HtmlElement();
-	HtmlElement(HtmlElementPrivate* pr);
+    HtmlElement();
+    HtmlElement(HtmlElementPrivate* pr);
 
-	const std::string getAttribute(const std::string& name);
-	void setAttribute(const std::string& name, const std::string& value);
-	void removeAttribute(const std::string& name);
-	const std::string getId();
-	void setId(const std::string& id);
-	const std::string getInnerHTML();
-	void setInnerHTML(const std::string& html);
-	const std::string getInnerText();
-	void setInnerText(const std::string& text);
-	const std::string getOuterHTML();
-	void setOuterHTML(const std::string& html);
-	const std::string getOuterText();
-	void setOuterText(const std::string& text);
+    const std::string getAttribute(const std::string& name);
+    void setAttribute(const std::string& name, const std::string& value);
+    void removeAttribute(const std::string& name);
+    const std::string getId();
+    void setId(const std::string& id);
+    const std::string getInnerHTML();
+    void setInnerHTML(const std::string& html);
+    const std::string getInnerText();
+    void setInnerText(const std::string& text);
+    const std::string getOuterHTML();
+    void setOuterHTML(const std::string& html);
+    const std::string getOuterText();
+    void setOuterText(const std::string& text);
     /**
     Set value of an input element.
     Note: support of <input type="file" /> in this function is considered experimental. 
     It works asynchronously. Do not call this function again until FileInputFilledCallback is called.
     */
-	void setValue(const std::string& value);
+    void setValue(const std::string& value);
 
     /**
     Get value of an input element.
     */
-	const std::string getValue();
-	const std::string getTagName();
-	HtmlElement getParentElement();
-	void scrollIntoView();
-	void click();
-	void insertHTML(const std::string& name, bool atEnd = false );
-	void insertText(const std::string& name, bool atEnd = false );
-	HtmlElement querySelector(const std::string& query);
-	Sqrat::Array querySelectorAll(const std::string& query);
-	Sqrat::Array getFormElements();
-	bool submitForm();
-	bool isNull();
+    const std::string getValue();
+    const std::string getTagName();
+    HtmlElement getParentElement();
+    void scrollIntoView();
+    void click();
+    void insertHTML(const std::string& name, bool atEnd = false );
+    void insertText(const std::string& name, bool atEnd = false );
+    HtmlElement querySelector(const std::string& query);
+    Sqrat::Array querySelectorAll(const std::string& query);
+    Sqrat::Array getFormElements();
+    bool submitForm();
+    bool isNull();
 
     /**
     Return an array containg child HtmlElements.
     */
-	Sqrat::Array getChildren();
-	friend class HtmlDocumentPrivate;
+    Sqrat::Array getChildren();
+    friend class HtmlDocumentPrivate;
 protected:
-	std_tr::shared_ptr<HtmlElementPrivate> d_;
-	bool checkNull(const char * func);
+    std_tr::shared_ptr<HtmlElementPrivate> d_;
+    bool checkNull(const char * func);
 };
 
 void RegisterHtmlElementClass(Sqrat::SqratVM& vm);

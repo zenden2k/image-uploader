@@ -34,53 +34,53 @@ class WebBrowserPrivate;
     Creating an instance: local webBrowser = CWebBrowser();
     @since version 1.3.1 build 4270.
     */
-	class CWebBrowser {
-		public:
-			CWebBrowser();
-			~CWebBrowser();
-			bool navigateToUrl(const std::string& url);
-			void setTitle(const std::string& title);
+    class CWebBrowser {
+        public:
+            CWebBrowser();
+            ~CWebBrowser();
+            bool navigateToUrl(const std::string& url);
+            void setTitle(const std::string& title);
             /**
             Returns current url.
             */
-			const std::string url();
+            const std::string url();
 
             /**
             Returns current page title or url if title is empty.
             */
-			const std::string title();
+            const std::string title();
 
             /**
             Show the web browser window and wait until it is closed. 
             @return true (if the window was closed programatically), false - if the window was closed by user.
             */
-			bool showModal();
+            bool showModal();
 
             /**
             Mostly the same as showModal but the window may be hidden and does not block parent window.
             */
-			bool exec();
-			void show();
-			void hide();
+            bool exec();
+            void show();
+            void hide();
 
             /**
             Close the window. After call to this function, 
             showModal() or exec() stops execution and returns true.
             */
-			void close();
-			void setFocus();
+            void close();
+            void setFocus();
                     
             /**
             Returns current page contents.
             */
             const std::string getDocumentContents();
-			HtmlDocument document();
-			bool setHtml(const std::string& html);
-			const std::string runJavaScript(const std::string& code);
-			const std::string callJavaScriptFunction(const std::string& funcName, Sqrat::Object args);
-			void setSilent(bool silent);
-			void addTrustedSite(const std::string& domain);
-			int getMajorVersion();
+            HtmlDocument document();
+            bool setHtml(const std::string& html);
+            const std::string runJavaScript(const std::string& code);
+            const std::string callJavaScriptFunction(const std::string& funcName, Sqrat::Object args);
+            void setSilent(bool silent);
+            void addTrustedSite(const std::string& domain);
+            int getMajorVersion();
 
             void setOnUrlChangedCallback(Sqrat::Function callBack, Sqrat::Object context);
             void setOnNavigateErrorCallback(Sqrat::Function callBack, Sqrat::Object context);
@@ -88,13 +88,13 @@ class WebBrowserPrivate;
             void setOnTimerCallback(int timerInterval, Sqrat::Function callBack, Sqrat::Object context);
             void setOnFileInputFilledCallback(Sqrat::Function callBack, Sqrat::Object context);
 
-			
-			friend class WebBrowserPrivate;
-		protected:
-			WebBrowserPrivate *d_;
-	};
+            
+            friend class WebBrowserPrivate;
+        protected:
+            WebBrowserPrivate *d_;
+    };
 
-	void RegisterWebBrowserClass(Sqrat::SqratVM& vm);
+    void RegisterWebBrowserClass(Sqrat::SqratVM& vm);
 }
 
 #endif

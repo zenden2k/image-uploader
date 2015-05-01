@@ -42,88 +42,88 @@
 class UploadManager;
 
 class CUploadDlg : public CDialogImpl<CUploadDlg>,
-						 public CWizardPage
+                         public CWizardPage
 {
-	public:
-		CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager);
-		~CUploadDlg();
-		enum { IDD = IDD_UPLOADDLG };
-		enum {
-			IDC_UPLOADPROCESSTAB = WM_USER + 100, IDC_UPLOADRESULTSTAB = IDC_UPLOADPROCESSTAB + 1
-		};
-		int TimerInc;
-		bool IsStopTimer;
-		bool Terminated;
-		
-		 BEGIN_MSG_MAP(CUploadDlg)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			MESSAGE_HANDLER(WM_TIMER, OnTimer)
-			COMMAND_HANDLER(IDC_UPLOADPROCESSTAB, BN_CLICKED, OnUploadProcessButtonClick)
-			COMMAND_HANDLER(IDC_UPLOADRESULTSTAB, BN_CLICKED, OnUploadResultsButtonClick)
-			COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
-		END_MSG_MAP()
+    public:
+        CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager);
+        ~CUploadDlg();
+        enum { IDD = IDD_UPLOADDLG };
+        enum {
+            IDC_UPLOADPROCESSTAB = WM_USER + 100, IDC_UPLOADRESULTSTAB = IDC_UPLOADPROCESSTAB + 1
+        };
+        int TimerInc;
+        bool IsStopTimer;
+        bool Terminated;
+        
+         BEGIN_MSG_MAP(CUploadDlg)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            MESSAGE_HANDLER(WM_TIMER, OnTimer)
+            COMMAND_HANDLER(IDC_UPLOADPROCESSTAB, BN_CLICKED, OnUploadProcessButtonClick)
+            COMMAND_HANDLER(IDC_UPLOADRESULTSTAB, BN_CLICKED, OnUploadResultsButtonClick)
+            COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
+        END_MSG_MAP()
 
-		 // Handler prototypes:
-		 //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		 //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		 //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		 DWORD Run();
-		 CMainDlg *MainDlg;
-		 CResultsWindow *ResultsWindow;
-		int ThreadTerminated(void);
-		std::vector<CUrlListItem> UrlList;
-		bool OnShow();
-		bool OnNext();
-		bool OnHide();
-		DWORD LastUpdate;
-		void GenThumb(LPCTSTR szImageFileName, Gdiplus::Image *bm, int ThumbWidth,int newwidth,int newheight,LPTSTR szBufferThumb, int fileformat);
-		bool CancelByUser;
-		void GenerateOutput();
-		void TotalUploadProgress(int CurPos, int Total,int FileProgress=0);
-		int progressCurrent, progressTotal;
-		CMyEngineList *m_EngineList;
-		CString m_StatusText;
-		
-		void OnUploaderStatusChanged(UploadTask* task);
-		void onShortenUrlChanged(bool shortenUrl);
-		void AddShortenUrlTask(CUrlListItem* item);
-		void AddShortenUrlTask(CUrlListItem* item, CString linkType);
-		virtual bool OnFileFinished(std::shared_ptr<UploadTask> task, bool ok);
-		virtual bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);
-	protected:
-		LRESULT OnUploadProcessButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnUploadResultsButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		void showUploadResultsTab();
-		void showUploadProgressTab();
-		void onSessionFinished(UploadSession* session);
-		void onTaskUploadProgress(UploadTask* task);
-		void onTaskFinished(UploadTask* task, bool ok);
-		void onChildTaskAdded(UploadTask* child);
-		void backgroundThreadStarted();
-		void createToolbar();
-		int currentTab_;
-		int filesFinished_;
-		CResultsListView uploadListView_;
-		std::shared_ptr<UploadSession> uploadSession_;
-		struct FileProcessingStruct {
-			CString fileName;
-			int tableRow;
-		};
-		std::vector<FileProcessingStruct*> files_;
-		//std::mutex uploadListViewMutex_;
-		bool alreadyShortened_;
-		ServerProfile sessionImageServer_, sessionFileServer_;
-		bool backgroundThreadStarted_;
-		std::mutex backgroundThreadStartedMutex_;
-		
-		#if  WINVER	>= 0x0601
-				ITaskbarList3* ptl;
-		#endif
-		UploadManager* uploadManager_;
-		CToolBarCtrl toolbar_;
+         // Handler prototypes:
+         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+         DWORD Run();
+         CMainDlg *MainDlg;
+         CResultsWindow *ResultsWindow;
+        int ThreadTerminated(void);
+        std::vector<CUrlListItem> UrlList;
+        bool OnShow();
+        bool OnNext();
+        bool OnHide();
+        DWORD LastUpdate;
+        void GenThumb(LPCTSTR szImageFileName, Gdiplus::Image *bm, int ThumbWidth,int newwidth,int newheight,LPTSTR szBufferThumb, int fileformat);
+        bool CancelByUser;
+        void GenerateOutput();
+        void TotalUploadProgress(int CurPos, int Total,int FileProgress=0);
+        int progressCurrent, progressTotal;
+        CMyEngineList *m_EngineList;
+        CString m_StatusText;
+        
+        void OnUploaderStatusChanged(UploadTask* task);
+        void onShortenUrlChanged(bool shortenUrl);
+        void AddShortenUrlTask(CUrlListItem* item);
+        void AddShortenUrlTask(CUrlListItem* item, CString linkType);
+        virtual bool OnFileFinished(std::shared_ptr<UploadTask> task, bool ok);
+        virtual bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);
+    protected:
+        LRESULT OnUploadProcessButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnUploadResultsButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        void showUploadResultsTab();
+        void showUploadProgressTab();
+        void onSessionFinished(UploadSession* session);
+        void onTaskUploadProgress(UploadTask* task);
+        void onTaskFinished(UploadTask* task, bool ok);
+        void onChildTaskAdded(UploadTask* child);
+        void backgroundThreadStarted();
+        void createToolbar();
+        int currentTab_;
+        int filesFinished_;
+        CResultsListView uploadListView_;
+        std::shared_ptr<UploadSession> uploadSession_;
+        struct FileProcessingStruct {
+            CString fileName;
+            int tableRow;
+        };
+        std::vector<FileProcessingStruct*> files_;
+        //std::mutex uploadListViewMutex_;
+        bool alreadyShortened_;
+        ServerProfile sessionImageServer_, sessionFileServer_;
+        bool backgroundThreadStarted_;
+        std::mutex backgroundThreadStartedMutex_;
+        
+        #if  WINVER    >= 0x0601
+                ITaskbarList3* ptl;
+        #endif
+        UploadManager* uploadManager_;
+        CToolBarCtrl toolbar_;
 };
 
 

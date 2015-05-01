@@ -27,41 +27,41 @@
 // CMyImage
 
 class CMyImage :
-	public CWindowImpl<CMyImage>
+    public CWindowImpl<CMyImage>
 {
 public:
-	CMyImage();
-	~CMyImage();
-	DECLARE_WND_CLASS(_T("CMyImage"))
-	
+    CMyImage();
+    ~CMyImage();
+    DECLARE_WND_CLASS(_T("CMyImage"))
+    
     BEGIN_MSG_MAP(CMyImage)
-		MESSAGE_HANDLER(WM_PAINT, OnPaint)
-		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-		MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBkg)
-		MSG_WM_LBUTTONDOWN(OnLButtonDown)
-		MSG_WM_RBUTTONDOWN(OnLButtonDown)
-		MSG_WM_MBUTTONUP(OnLButtonDown)
-		MSG_WM_KEYDOWN(OnKeyDown)
+        MESSAGE_HANDLER(WM_PAINT, OnPaint)
+        MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+        MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBkg)
+        MSG_WM_LBUTTONDOWN(OnLButtonDown)
+        MSG_WM_RBUTTONDOWN(OnLButtonDown)
+        MSG_WM_MBUTTONUP(OnLButtonDown)
+        MSG_WM_KEYDOWN(OnKeyDown)
     END_MSG_MAP()
-	
-	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	Gdiplus::Bitmap *bm_;
-	bool IsImage;
-	bool HideParent; // —пециально дл€ всплывающего окна просмотра
-	LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);
+    
+    LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    Gdiplus::Bitmap *bm_;
+    bool IsImage;
+    bool HideParent; // —пециально дл€ всплывающего окна просмотра
+    LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
-	bool LoadImage(LPCTSTR FileName,Gdiplus::Image *img=NULL, int ResourceID=0,bool Bitmap=false, COLORREF transp=0);
-	LRESULT OnLButtonDown(UINT Flags, CPoint Pt);
-	int ImageWidth, ImageHeight;
-	HBITMAP BackBufferBm;
-	HDC BackBufferDc;
-	int BackBufferWidth, BackBufferHeight;
+    bool LoadImage(LPCTSTR FileName,Gdiplus::Image *img=NULL, int ResourceID=0,bool Bitmap=false, COLORREF transp=0);
+    LRESULT OnLButtonDown(UINT Flags, CPoint Pt);
+    int ImageWidth, ImageHeight;
+    HBITMAP BackBufferBm;
+    HDC BackBufferDc;
+    int BackBufferWidth, BackBufferHeight;
 };
 
 #endif // MYIMAGE_H

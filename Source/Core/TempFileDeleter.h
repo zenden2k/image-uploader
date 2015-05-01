@@ -8,13 +8,13 @@
 class TempFileDeleter
 {
 public:
-	TempFileDeleter();
-	~TempFileDeleter();
-	void addFile(const std::string& fileName);
-	bool cleanup();
+    TempFileDeleter();
+    ~TempFileDeleter();
+    void addFile(const std::string& fileName);
+    bool cleanup();
 
 protected:
-	std::vector<std::string> m_files;
+    std::vector<std::string> m_files;
 };
 
 #endif

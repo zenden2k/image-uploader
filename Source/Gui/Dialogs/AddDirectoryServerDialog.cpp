@@ -19,10 +19,10 @@
 // CAddDirectoryServerDialog
 CAddDirectoryServerDialog::CAddDirectoryServerDialog(CUploadEngineList* uploadEngineList)
 {
-	connectionNameEdited = false;
-	downloadUrlEdited = false;
-	serverNameEdited = false;
-	uploadEngineList_ = uploadEngineList;
+    connectionNameEdited = false;
+    downloadUrlEdited = false;
+    serverNameEdited = false;
+    uploadEngineList_ = uploadEngineList;
 }
 
 CAddDirectoryServerDialog::~CAddDirectoryServerDialog()
@@ -31,206 +31,206 @@ CAddDirectoryServerDialog::~CAddDirectoryServerDialog()
 
 LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	SetWindowText(TR("Добавление папки как сервера"));
-	TRC(IDC_CONNECTIONNAMELABEL,"Имя сервера:");
-	TRC(IDC_DIRECTORYLABEL,"Папка:");
-	TRC(IDC_DOWNLOADURLLABEL,"URL для скачивания:");
-	TRC(IDCANCEL,"Отмена");
-	TRC(IDC_THEURLOFUPLOADEDLABEL,"Ссылка для скачивания будет выглядеть так:");
-	TRC(IDC_ADDFILEPROTOCOL,"Конвертировать UNC путь \"\\\\\" в \"file://///\"");
+    SetWindowText(TR("Добавление папки как сервера"));
+    TRC(IDC_CONNECTIONNAMELABEL,"Имя сервера:");
+    TRC(IDC_DIRECTORYLABEL,"Папка:");
+    TRC(IDC_DOWNLOADURLLABEL,"URL для скачивания:");
+    TRC(IDCANCEL,"Отмена");
+    TRC(IDC_THEURLOFUPLOADEDLABEL,"Ссылка для скачивания будет выглядеть так:");
+    TRC(IDC_ADDFILEPROTOCOL,"Конвертировать UNC путь \"\\\\\" в \"file://///\"");
 
-	
-	HICON ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON	, 16,16,0);
-	SendDlgItemMessage(IDC_PRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
-	presetButton_.SubclassWindow(GetDlgItem(IDC_PRESETSBUTTON));
-	::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));
-	LoadComputerAddresses();
-	GuiTools::ShowDialogItem(m_hWnd, IDC_ADDFILEPROTOCOL, false);
-	
-	CenterWindow(GetParent());
-	return 0;  // Let the system set the focus
+    
+    HICON ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON    , 16,16,0);
+    SendDlgItemMessage(IDC_PRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
+    presetButton_.SubclassWindow(GetDlgItem(IDC_PRESETSBUTTON));
+    ::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));
+    LoadComputerAddresses();
+    GuiTools::ShowDialogItem(m_hWnd, IDC_ADDFILEPROTOCOL, false);
+    
+    CenterWindow(GetParent());
+    return 0;  // Let the system set the focus
 }
 
 LRESULT CAddDirectoryServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	CString connectionName = GuiTools::GetDlgItemText(m_hWnd, IDC_CONNECTIONNAMEEDIT);
-	connectionName.TrimLeft(L" ");
-	connectionName.TrimRight(L" ");
-	if ( connectionName.IsEmpty() ) {
-		MessageBox(TR("Название соединения не может быть пустым"),TR("Ошибка"), MB_ICONERROR);
-		return 0;
-	}
+    CString connectionName = GuiTools::GetDlgItemText(m_hWnd, IDC_CONNECTIONNAMEEDIT);
+    connectionName.TrimLeft(L" ");
+    connectionName.TrimRight(L" ");
+    if ( connectionName.IsEmpty() ) {
+        MessageBox(TR("Название соединения не может быть пустым"),TR("Ошибка"), MB_ICONERROR);
+        return 0;
+    }
 
-	CString downloadUrl = GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT);
-	downloadUrl.TrimLeft(L" ");
-	downloadUrl.TrimRight(L" ");
-	if ( downloadUrl.IsEmpty() ) {
-		MessageBox(TR("Ссылка для скачивания не может быть пустой."),TR("Ошибка"), MB_ICONERROR);
-		return 0;
-	}
+    CString downloadUrl = GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT);
+    downloadUrl.TrimLeft(L" ");
+    downloadUrl.TrimRight(L" ");
+    if ( downloadUrl.IsEmpty() ) {
+        MessageBox(TR("Ссылка для скачивания не может быть пустой."),TR("Ошибка"), MB_ICONERROR);
+        return 0;
+    }
 
-	CString directory = GuiTools::GetDlgItemText(m_hWnd, IDC_DIRECTORYEDIT);
-	if ( directory.Right(1) != _T("\\") ) {
-		directory += _T("\\");
+    CString directory = GuiTools::GetDlgItemText(m_hWnd, IDC_DIRECTORYEDIT);
+    if ( directory.Right(1) != _T("\\") ) {
+        directory += _T("\\");
 
-	}
-	CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDITBOX);
-	CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDITBOX);
-	bool addFileProtocol = GuiTools::GetCheck(m_hWnd, IDC_ADDFILEPROTOCOL);
-	
-	ServerListManager slm(Settings.SettingsFolder + "Servers\\", uploadEngineList_, Settings.ServersSettings);
-	if ( slm.addDirectoryAsServer(IuCoreUtils::WstringToUtf8((LPCTSTR)connectionName), IuCoreUtils::WstringToUtf8((LPCTSTR)directory), IuCoreUtils::WstringToUtf8((LPCTSTR)downloadUrl), addFileProtocol) ) {
-			createdServerName_ = IuCoreUtils::Utf8ToWstring(slm.createdServerName()).c_str();
-			EndDialog(wID);
-	} else {
-		CString errorMessage = TR("Не удалось добавить сервер.");
-		CString reason = IuCoreUtils::Utf8ToWstring(slm.errorMessage()).c_str();
-		if ( !reason.IsEmpty() ) {
-			errorMessage += CString(L"\r\n") + TR("Причина:") + L"\r\n" + reason;
-		}
-		MessageBox(errorMessage,TR("Ошибка"), MB_ICONERROR);
+    }
+    CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDITBOX);
+    CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDITBOX);
+    bool addFileProtocol = GuiTools::GetCheck(m_hWnd, IDC_ADDFILEPROTOCOL);
+    
+    ServerListManager slm(Settings.SettingsFolder + "Servers\\", uploadEngineList_, Settings.ServersSettings);
+    if ( slm.addDirectoryAsServer(IuCoreUtils::WstringToUtf8((LPCTSTR)connectionName), IuCoreUtils::WstringToUtf8((LPCTSTR)directory), IuCoreUtils::WstringToUtf8((LPCTSTR)downloadUrl), addFileProtocol) ) {
+            createdServerName_ = IuCoreUtils::Utf8ToWstring(slm.createdServerName()).c_str();
+            EndDialog(wID);
+    } else {
+        CString errorMessage = TR("Не удалось добавить сервер.");
+        CString reason = IuCoreUtils::Utf8ToWstring(slm.errorMessage()).c_str();
+        if ( !reason.IsEmpty() ) {
+            errorMessage += CString(L"\r\n") + TR("Причина:") + L"\r\n" + reason;
+        }
+        MessageBox(errorMessage,TR("Ошибка"), MB_ICONERROR);
 
-	}	
-	return 0;
+    }    
+    return 0;
 }
 
 LRESULT CAddDirectoryServerDialog::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	EndDialog(wID);
-	return 0;
+    EndDialog(wID);
+    return 0;
 }
 
 LRESULT CAddDirectoryServerDialog::OnConnectionNameEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-	if ( GetFocus() == hWndCtl ) {
-		connectionNameEdited = !GuiTools::GetDlgItemText(m_hWnd, IDC_CONNECTIONNAMEEDIT).IsEmpty();
-	}
+    if ( GetFocus() == hWndCtl ) {
+        connectionNameEdited = !GuiTools::GetDlgItemText(m_hWnd, IDC_CONNECTIONNAMEEDIT).IsEmpty();
+    }
 
-	return 0; 
+    return 0; 
 
 }
 
 LRESULT CAddDirectoryServerDialog::OnPresetMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	int presetIndex = wID - IDC_PRESETMENU_FIRST_ID;
-	if ( presetIndex < 0 || presetIndex >= addresses_.size() ) {
-		return 0;
-	}
-	SetDlgItemText(IDC_DOWNLOADURLEDIT, addresses_[presetIndex]);
-	GenerateExampleUrl();
-	return 0;
+    int presetIndex = wID - IDC_PRESETMENU_FIRST_ID;
+    if ( presetIndex < 0 || presetIndex >= addresses_.size() ) {
+        return 0;
+    }
+    SetDlgItemText(IDC_DOWNLOADURLEDIT, addresses_[presetIndex]);
+    GenerateExampleUrl();
+    return 0;
 }
 
 LRESULT CAddDirectoryServerDialog::OnPresetSharedFolderMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	int presetIndex = wID - IDC_PRESETMENU_SHARED_FOLDER_FIRST_ID;
-	if ( presetIndex < 0 || presetIndex >= sharedFolders_.size() ) {
-		return 0;
-	}
-	SetDlgItemText(IDC_DOWNLOADURLEDIT, sharedFolders_[presetIndex]);
-	GenerateExampleUrl();
-	return 0;
+    int presetIndex = wID - IDC_PRESETMENU_SHARED_FOLDER_FIRST_ID;
+    if ( presetIndex < 0 || presetIndex >= sharedFolders_.size() ) {
+        return 0;
+    }
+    SetDlgItemText(IDC_DOWNLOADURLEDIT, sharedFolders_[presetIndex]);
+    GenerateExampleUrl();
+    return 0;
 }
 
 LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-	CString directory =  GuiTools::GetDlgItemText(m_hWnd, IDC_DIRECTORYEDIT);
-	if ( !connectionNameEdited ) {
-		
-		CString serverName = TR("Папка ") + WinUtils::TrimString(directory, 30);
-		SetDlgItemText(IDC_CONNECTIONNAMEEDIT, serverName);
-	}
-	GenerateDownloadLink();
+    CString directory =  GuiTools::GetDlgItemText(m_hWnd, IDC_DIRECTORYEDIT);
+    if ( !connectionNameEdited ) {
+        
+        CString serverName = TR("Папка ") + WinUtils::TrimString(directory, 30);
+        SetDlgItemText(IDC_CONNECTIONNAMEEDIT, serverName);
+    }
+    GenerateDownloadLink();
 
-	PSHARE_INFO_502 BufPtr,p;
-	NET_API_STATUS res;
-	LPTSTR lpszServer = NULL;
-	DWORD er=0,tr=0,resume=0;
-	int i = 0;
-	sharedFolders_.clear();
+    PSHARE_INFO_502 BufPtr,p;
+    NET_API_STATUS res;
+    LPTSTR lpszServer = NULL;
+    DWORD er=0,tr=0,resume=0;
+    int i = 0;
+    sharedFolders_.clear();
 
-	//
-	do // begin do
-	{
-		res = NetShareEnum ((LPTSTR)lpszServer, 502, (LPBYTE *) &BufPtr, MAX_PREFERRED_LENGTH, &er, &tr, &resume);
-		//
-		// If the call succeeds,
-		//
-		if(res == ERROR_SUCCESS || res == ERROR_MORE_DATA)
-		{
-			p=BufPtr;
-			//
-			// Loop through the entries;
-			// print retrieved data.
-			//
-			for(i=1;i<=er;i++)
-			{
-				LPCTSTR str = (LPCTSTR)p->shi502_remark;
-				if( ! (p->shi502_type & STYPE_SPECIAL) ) {
-					CString path = p->shi502_path+CString(L"\\");
-					if (directory ==  p->shi502_path) {
-							sharedFolders_.push_back(L"\\\\" + computerName_ + "\\" + p->shi502_netname+"\\");
-					} else if ( directory.Find(path) == 0  ) {
-						sharedFolders_.push_back(L"\\\\" + computerName_ + "\\" + p->shi502_netname+"\\" + directory.Mid(path.GetLength())+CString(L"\\"));
-					}
-				}
-				p++;
-			}
-			//
-			// Free the allocated buffer.
-			//
-			NetApiBufferFree(BufPtr);
-		}
-		else 
-			printf("Error: %ld\n",(int)res);
-	}
-	// Continue to call NetShareEnum while 
-	// there are more entries. 
-	// 
-	while (res==ERROR_MORE_DATA); // end do
+    //
+    do // begin do
+    {
+        res = NetShareEnum ((LPTSTR)lpszServer, 502, (LPBYTE *) &BufPtr, MAX_PREFERRED_LENGTH, &er, &tr, &resume);
+        //
+        // If the call succeeds,
+        //
+        if(res == ERROR_SUCCESS || res == ERROR_MORE_DATA)
+        {
+            p=BufPtr;
+            //
+            // Loop through the entries;
+            // print retrieved data.
+            //
+            for(i=1;i<=er;i++)
+            {
+                LPCTSTR str = (LPCTSTR)p->shi502_remark;
+                if( ! (p->shi502_type & STYPE_SPECIAL) ) {
+                    CString path = p->shi502_path+CString(L"\\");
+                    if (directory ==  p->shi502_path) {
+                            sharedFolders_.push_back(L"\\\\" + computerName_ + "\\" + p->shi502_netname+"\\");
+                    } else if ( directory.Find(path) == 0  ) {
+                        sharedFolders_.push_back(L"\\\\" + computerName_ + "\\" + p->shi502_netname+"\\" + directory.Mid(path.GetLength())+CString(L"\\"));
+                    }
+                }
+                p++;
+            }
+            //
+            // Free the allocated buffer.
+            //
+            NetApiBufferFree(BufPtr);
+        }
+        else 
+            printf("Error: %ld\n",(int)res);
+    }
+    // Continue to call NetShareEnum while 
+    // there are more entries. 
+    // 
+    while (res==ERROR_MORE_DATA); // end do
 
-	return 0;
+    return 0;
 }
 
 LRESULT CAddDirectoryServerDialog::OnDownloadUrlEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-	if ( GetFocus() == hWndCtl ) {
-		downloadUrlEdited = !GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT).IsEmpty();
-		GenerateExampleUrl();
-	}
-	CString downloadUrl = GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT);
-	GuiTools::ShowDialogItem(m_hWnd, IDC_ADDFILEPROTOCOL, downloadUrl.Left(2) == _T("\\\\") ); 
-	return 0;
+    if ( GetFocus() == hWndCtl ) {
+        downloadUrlEdited = !GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT).IsEmpty();
+        GenerateExampleUrl();
+    }
+    CString downloadUrl = GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT);
+    GuiTools::ShowDialogItem(m_hWnd, IDC_ADDFILEPROTOCOL, downloadUrl.Left(2) == _T("\\\\") ); 
+    return 0;
 }
 
 CString CAddDirectoryServerDialog::createdServerName()
 {
-	return createdServerName_;
+    return createdServerName_;
 }
 
 void CAddDirectoryServerDialog::GenerateDownloadLink()
 {
-	if ( !downloadUrlEdited ) {
-		CString serverName;
-		CString generatedDownloadUrl;
-		
-		if ( !serverName.IsEmpty() ) {
-			SetDlgItemText(IDC_DOWNLOADURLEDIT, generatedDownloadUrl);
-			
-		}
-	}
-	GenerateExampleUrl();
+    if ( !downloadUrlEdited ) {
+        CString serverName;
+        CString generatedDownloadUrl;
+        
+        if ( !serverName.IsEmpty() ) {
+            SetDlgItemText(IDC_DOWNLOADURLEDIT, generatedDownloadUrl);
+            
+        }
+    }
+    GenerateExampleUrl();
 }
 
 void CAddDirectoryServerDialog::GenerateExampleUrl()
 {
-	CString downloadUrl = GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT);
+    CString downloadUrl = GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT);
 
-	bool addFileProtocol = GuiTools::GetCheck(m_hWnd, IDC_ADDFILEPROTOCOL);
+    bool addFileProtocol = GuiTools::GetCheck(m_hWnd, IDC_ADDFILEPROTOCOL);
 
-	if ( addFileProtocol && downloadUrl.Left(2) == _T("\\\\") ) {
-		downloadUrl.Replace(L"\\", L"/");
-		downloadUrl = L"file:///" + downloadUrl;
-	}
+    if ( addFileProtocol && downloadUrl.Left(2) == _T("\\\\") ) {
+        downloadUrl.Replace(L"\\", L"/");
+        downloadUrl = L"file:///" + downloadUrl;
+    }
 
-	SetDlgItemText(IDC_EXAMPLEURLLABEL, downloadUrl + "example.png");
+    SetDlgItemText(IDC_EXAMPLEURLLABEL, downloadUrl + "example.png");
 }
 
 #define WORKING_BUFFER_SIZE 15000
@@ -241,196 +241,196 @@ void CAddDirectoryServerDialog::GenerateExampleUrl()
 #define FREE(x) HeapFree(GetProcessHeap(), 0, (x))
 bool CAddDirectoryServerDialog::LoadComputerAddresses()
 {
-	bool isWindowsXpOrLater;
-	OSVERSIONINFO ovi = { 0 };
-	ovi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	BOOL bRet = ::GetVersionEx(&ovi);
-	isWindowsXpOrLater =  ovi.dwMajorVersion > 5 || (ovi.dwMajorVersion == 5 && ovi.dwMinorVersion >= 1);
+    bool isWindowsXpOrLater;
+    OSVERSIONINFO ovi = { 0 };
+    ovi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+    BOOL bRet = ::GetVersionEx(&ovi);
+    isWindowsXpOrLater =  ovi.dwMajorVersion > 5 || (ovi.dwMajorVersion == 5 && ovi.dwMinorVersion >= 1);
 
 
-	if (isWindowsXpOrLater) {
-		/* Declare and initialize variables */
+    if (isWindowsXpOrLater) {
+        /* Declare and initialize variables */
 
-		DWORD dwSize = 0;
-		DWORD dwRetVal = 0;
+        DWORD dwSize = 0;
+        DWORD dwRetVal = 0;
 
-		unsigned int i = 0;
+        unsigned int i = 0;
 
-		// Set the flags to pass to GetAdaptersAddresses
-		ULONG flags = GAA_FLAG_INCLUDE_PREFIX;
+        // Set the flags to pass to GetAdaptersAddresses
+        ULONG flags = GAA_FLAG_INCLUDE_PREFIX;
 
-		// default to unspecified address family (both)
-		ULONG family = AF_UNSPEC;
+        // default to unspecified address family (both)
+        ULONG family = AF_UNSPEC;
 
-		LPVOID lpMsgBuf = NULL;
+        LPVOID lpMsgBuf = NULL;
 
-		PIP_ADAPTER_ADDRESSES pAddresses = NULL;
-		ULONG outBufLen = 0;
-		ULONG Iterations = 0;
+        PIP_ADAPTER_ADDRESSES pAddresses = NULL;
+        ULONG outBufLen = 0;
+        ULONG Iterations = 0;
 
-		PIP_ADAPTER_ADDRESSES pCurrAddresses = NULL;
-		PIP_ADAPTER_UNICAST_ADDRESS pUnicast = NULL;
-		PIP_ADAPTER_ANYCAST_ADDRESS pAnycast = NULL;
-		PIP_ADAPTER_MULTICAST_ADDRESS pMulticast = NULL;
-		IP_ADAPTER_DNS_SERVER_ADDRESS *pDnServer = NULL;
-		IP_ADAPTER_PREFIX *pPrefix = NULL;
+        PIP_ADAPTER_ADDRESSES pCurrAddresses = NULL;
+        PIP_ADAPTER_UNICAST_ADDRESS pUnicast = NULL;
+        PIP_ADAPTER_ANYCAST_ADDRESS pAnycast = NULL;
+        PIP_ADAPTER_MULTICAST_ADDRESS pMulticast = NULL;
+        IP_ADAPTER_DNS_SERVER_ADDRESS *pDnServer = NULL;
+        IP_ADAPTER_PREFIX *pPrefix = NULL;
 
-		family = AF_INET;
+        family = AF_INET;
 
-		outBufLen = WORKING_BUFFER_SIZE;
+        outBufLen = WORKING_BUFFER_SIZE;
 
-		do {
+        do {
 
-			pAddresses = (IP_ADAPTER_ADDRESSES *) MALLOC(outBufLen);
-			if (pAddresses == NULL) {
-				printf
-					("Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
-			}
+            pAddresses = (IP_ADAPTER_ADDRESSES *) MALLOC(outBufLen);
+            if (pAddresses == NULL) {
+                printf
+                    ("Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
+            }
 
-			dwRetVal =
-				GetAdaptersAddresses(family, flags, NULL, pAddresses, &outBufLen);
+            dwRetVal =
+                GetAdaptersAddresses(family, flags, NULL, pAddresses, &outBufLen);
 
-			if (dwRetVal == ERROR_BUFFER_OVERFLOW) {
-				FREE(pAddresses);
-				pAddresses = NULL;
-			} else {
-				break;
-			}
+            if (dwRetVal == ERROR_BUFFER_OVERFLOW) {
+                FREE(pAddresses);
+                pAddresses = NULL;
+            } else {
+                break;
+            }
 
-			Iterations++;
+            Iterations++;
 
-		} while ((dwRetVal == ERROR_BUFFER_OVERFLOW) && (Iterations < MAX_TRIES));
+        } while ((dwRetVal == ERROR_BUFFER_OVERFLOW) && (Iterations < MAX_TRIES));
 
-		if (dwRetVal == NO_ERROR) {
-			// If successful, output some information from the data we received
-			pCurrAddresses = pAddresses;
-			while (pCurrAddresses) {
+        if (dwRetVal == NO_ERROR) {
+            // If successful, output some information from the data we received
+            pCurrAddresses = pAddresses;
+            while (pCurrAddresses) {
 
-				pUnicast = pCurrAddresses->FirstUnicastAddress;
-				if (pUnicast != NULL && pCurrAddresses->OperStatus == IfOperStatusUp && pCurrAddresses->IfType != IF_TYPE_SOFTWARE_LOOPBACK ) {
-					for (i = 0; pUnicast != NULL; i++) {
-						sockaddr_in  *addr = (sockaddr_in*)pUnicast->Address.lpSockaddr;
-						char *ip = inet_ntoa(addr->sin_addr);
-						addresses_.push_back(CString(L"http://")+ip+L"/");
-						pUnicast = pUnicast->Next;
-					}
-				} 
+                pUnicast = pCurrAddresses->FirstUnicastAddress;
+                if (pUnicast != NULL && pCurrAddresses->OperStatus == IfOperStatusUp && pCurrAddresses->IfType != IF_TYPE_SOFTWARE_LOOPBACK ) {
+                    for (i = 0; pUnicast != NULL; i++) {
+                        sockaddr_in  *addr = (sockaddr_in*)pUnicast->Address.lpSockaddr;
+                        char *ip = inet_ntoa(addr->sin_addr);
+                        addresses_.push_back(CString(L"http://")+ip+L"/");
+                        pUnicast = pUnicast->Next;
+                    }
+                } 
 
-				pCurrAddresses = pCurrAddresses->Next;
-			}
-		} else {
-			printf("Call to GetAdaptersAddresses failed with error: %d\n", (int)dwRetVal);
-			if (dwRetVal == ERROR_NO_DATA) {}
-				//printf("\tNo addresses were found for the requested parameters\n");
-			else {
+                pCurrAddresses = pCurrAddresses->Next;
+            }
+        } else {
+            printf("Call to GetAdaptersAddresses failed with error: %d\n", (int)dwRetVal);
+            if (dwRetVal == ERROR_NO_DATA) {}
+                //printf("\tNo addresses were found for the requested parameters\n");
+            else {
 
-				if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-					FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
-					NULL, dwRetVal, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),   
-					// Default language
-					(LPTSTR) & lpMsgBuf, 0, NULL)) {
-						printf("\tError: %s", lpMsgBuf);
-						LocalFree(lpMsgBuf);
-						if (pAddresses)
-							FREE(pAddresses);
-				}
-			}
-		}
+                if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                    FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
+                    NULL, dwRetVal, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),   
+                    // Default language
+                    (LPTSTR) & lpMsgBuf, 0, NULL)) {
+                        printf("\tError: %s", lpMsgBuf);
+                        LocalFree(lpMsgBuf);
+                        if (pAddresses)
+                            FREE(pAddresses);
+                }
+            }
+        }
 
-		if (pAddresses) {
-			FREE(pAddresses);
-		}
-	} else {
-		PIP_ADAPTER_INFO pAdapterInfo;
-		PIP_ADAPTER_INFO pAdapter = NULL;
-		DWORD dwRetVal = 0;
-		UINT i;
+        if (pAddresses) {
+            FREE(pAddresses);
+        }
+    } else {
+        PIP_ADAPTER_INFO pAdapterInfo;
+        PIP_ADAPTER_INFO pAdapter = NULL;
+        DWORD dwRetVal = 0;
+        UINT i;
 
-		/* variables used to print DHCP time info */
-		struct tm newtime;
-		char buffer[32];
-		errno_t error;
+        /* variables used to print DHCP time info */
+        struct tm newtime;
+        char buffer[32];
+        errno_t error;
 
-		ULONG ulOutBufLen = sizeof (IP_ADAPTER_INFO);
-		pAdapterInfo = (IP_ADAPTER_INFO *) MALLOC(sizeof (IP_ADAPTER_INFO));
-		if (pAdapterInfo == NULL) {
-			printf("Error allocating memory needed to call GetAdaptersinfo\n");
-			return 1;
-		}
-		// Make an initial call to GetAdaptersInfo to get
-		// the necessary size into the ulOutBufLen variable
-		if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
-			FREE(pAdapterInfo);
-			pAdapterInfo = (IP_ADAPTER_INFO *) MALLOC(ulOutBufLen);
-			if (pAdapterInfo == NULL) {
-				printf("Error allocating memory needed to call GetAdaptersinfo\n");
-				return 1;
-			}
-		}
+        ULONG ulOutBufLen = sizeof (IP_ADAPTER_INFO);
+        pAdapterInfo = (IP_ADAPTER_INFO *) MALLOC(sizeof (IP_ADAPTER_INFO));
+        if (pAdapterInfo == NULL) {
+            printf("Error allocating memory needed to call GetAdaptersinfo\n");
+            return 1;
+        }
+        // Make an initial call to GetAdaptersInfo to get
+        // the necessary size into the ulOutBufLen variable
+        if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
+            FREE(pAdapterInfo);
+            pAdapterInfo = (IP_ADAPTER_INFO *) MALLOC(ulOutBufLen);
+            if (pAdapterInfo == NULL) {
+                printf("Error allocating memory needed to call GetAdaptersinfo\n");
+                return 1;
+            }
+        }
 
-		if ((dwRetVal = GetAdaptersInfo(pAdapterInfo, &ulOutBufLen)) == NO_ERROR) {
-			pAdapter = pAdapterInfo;
-			while (pAdapter) {
-				addresses_.push_back(CString(L"http://")+pAdapter->IpAddressList.IpAddress.String+L"/");
-				pAdapter = pAdapter->Next;
-				}
-			}else {
+        if ((dwRetVal = GetAdaptersInfo(pAdapterInfo, &ulOutBufLen)) == NO_ERROR) {
+            pAdapter = pAdapterInfo;
+            while (pAdapter) {
+                addresses_.push_back(CString(L"http://")+pAdapter->IpAddressList.IpAddress.String+L"/");
+                pAdapter = pAdapter->Next;
+                }
+            }else {
 
-		}
-		if (pAdapterInfo)
-			FREE(pAdapterInfo);
-	}
+        }
+        if (pAdapterInfo)
+            FREE(pAdapterInfo);
+    }
 
-	TCHAR computerName[1024]=L"";
-	DWORD size = ARRAY_SIZE(computerName);
-	if ( GetComputerName(computerName, &size) ) {
-		computerName_ = computerName;
-		addresses_.push_back(CString(L"\\\\") + computerName + L"\\");
-	}
-	return true;
+    TCHAR computerName[1024]=L"";
+    DWORD size = ARRAY_SIZE(computerName);
+    if ( GetComputerName(computerName, &size) ) {
+        computerName_ = computerName;
+        addresses_.push_back(CString(L"\\\\") + computerName + L"\\");
+    }
+    return true;
 }
 
 LRESULT CAddDirectoryServerDialog::OnBnClickedBrowsebutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	// TODO: Add your control notification handler code here
-	CFolderDialog fd(m_hWnd,TR("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE );
-	CString path = GuiTools::GetWindowText(GetDlgItem(IDC_DIRECTORYEDIT));
-	fd.SetInitialFolder(path,true);
-	if(fd.DoModal(m_hWnd) == IDOK)
-	{
-		SetDlgItemText(IDC_DIRECTORYEDIT,fd.GetFolderPath());
-		return true;
-	}
-	return 0;
+    // TODO: Add your control notification handler code here
+    CFolderDialog fd(m_hWnd,TR("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE );
+    CString path = GuiTools::GetWindowText(GetDlgItem(IDC_DIRECTORYEDIT));
+    fd.SetInitialFolder(path,true);
+    if(fd.DoModal(m_hWnd) == IDOK)
+    {
+        SetDlgItemText(IDC_DIRECTORYEDIT,fd.GetFolderPath());
+        return true;
+    }
+    return 0;
 }
 
 LRESULT CAddDirectoryServerDialog::OnPresetButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	RECT rc;
-	::GetWindowRect(hWndCtl, &rc );
-	POINT menuOrigin = {rc.left,rc.bottom};
+    RECT rc;
+    ::GetWindowRect(hWndCtl, &rc );
+    POINT menuOrigin = {rc.left,rc.bottom};
 
-	CMenu popupMenu;
-	popupMenu.CreatePopupMenu();
-	int id =  IDC_PRESETMENU_SHARED_FOLDER_FIRST_ID;
-	for( int i =0; i< sharedFolders_.size(); i++ ) {
-		popupMenu.AppendMenu(MF_STRING, id++, sharedFolders_[i]);
+    CMenu popupMenu;
+    popupMenu.CreatePopupMenu();
+    int id =  IDC_PRESETMENU_SHARED_FOLDER_FIRST_ID;
+    for( int i =0; i< sharedFolders_.size(); i++ ) {
+        popupMenu.AppendMenu(MF_STRING, id++, sharedFolders_[i]);
 
-	}
-	id =  IDC_PRESETMENU_FIRST_ID;
-	for( int i =0; i< addresses_.size(); i++ ) {
-		popupMenu.AppendMenu(MF_STRING, id++, addresses_[i]);
-	}
-	
-	
-	popupMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd);
+    }
+    id =  IDC_PRESETMENU_FIRST_ID;
+    for( int i =0; i< addresses_.size(); i++ ) {
+        popupMenu.AppendMenu(MF_STRING, id++, addresses_[i]);
+    }
+    
+    
+    popupMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd);
 
-	return 0;
+    return 0;
 }
 LRESULT CAddDirectoryServerDialog::OnBnClickedAddfileprotocol(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	GenerateExampleUrl();
-	// TODO: Add your control notification handler code here
+    GenerateExampleUrl();
+    // TODO: Add your control notification handler code here
 
-	return 0;
+    return 0;
 }

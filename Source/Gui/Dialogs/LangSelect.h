@@ -29,33 +29,33 @@
 // CLangSelect
 
 
-class CLangSelect : public CDialogImpl<CLangSelect>	
+class CLangSelect : public CDialogImpl<CLangSelect>    
 {
-	public:
-		CLangSelect();
-		~CLangSelect();
-	
-		enum { IDD = IDD_LANGSELECT };
-	protected:
-		BEGIN_MSG_MAP(CLangSelect)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-		END_MSG_MAP()
+    public:
+        CLangSelect();
+        ~CLangSelect();
+    
+        enum { IDD = IDD_LANGSELECT };
+    protected:
+        BEGIN_MSG_MAP(CLangSelect)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
+            COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+        END_MSG_MAP()
 
-		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	
- 		int GetNextLngFile(LPTSTR szBuffer, int nLength);
-		TCHAR Language[128];
+        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    
+         int GetNextLngFile(LPTSTR szBuffer, int nLength);
+        TCHAR Language[128];
 
-	private:
-		WIN32_FIND_DATA wfd;
-		HANDLE findfile;
-		CMyImage LogoImage;
+    private:
+        WIN32_FIND_DATA wfd;
+        HANDLE findfile;
+        CMyImage LogoImage;
 
-		void SelectLang(LPCTSTR Lang);
+        void SelectLang(LPCTSTR Lang);
 };
 
 

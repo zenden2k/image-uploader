@@ -5,7 +5,7 @@
 
 class ImageEditorConfigurationProvider : public ImageEditor::ConfigurationProvider {
 public:
-	ImageEditorConfigurationProvider();
-	virtual void saveConfiguration();
+    ImageEditorConfigurationProvider();
+    virtual void saveConfiguration();
 };
 #endif

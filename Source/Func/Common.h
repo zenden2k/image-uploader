@@ -32,31 +32,31 @@ class CCmdLine;
 
 struct CUrlListItem
 {
-	bool IsImage, IsThumb;
-	CString FileName;
-	CString ImageUrl;
-	CString ImageUrlShortened;
-	CString ThumbUrl;
-	CString ThumbUrlShortened;
-	CString DownloadUrl;
-	CString DownloadUrlShortened;
+    bool IsImage, IsThumb;
+    CString FileName;
+    CString ImageUrl;
+    CString ImageUrlShortened;
+    CString ThumbUrl;
+    CString ThumbUrlShortened;
+    CString DownloadUrl;
+    CString DownloadUrlShortened;
 
-	CString getDownloadUrl(bool shortened = false) {
-		return (shortened && !DownloadUrlShortened.IsEmpty()) ? DownloadUrlShortened : DownloadUrl; 
-	}
+    CString getDownloadUrl(bool shortened = false) {
+        return (shortened && !DownloadUrlShortened.IsEmpty()) ? DownloadUrlShortened : DownloadUrl; 
+    }
 
-	CString getImageUrl(bool shortened = false) {
-		return (shortened && !ImageUrlShortened.IsEmpty()) ? ImageUrlShortened : ImageUrl; 
-	}
+    CString getImageUrl(bool shortened = false) {
+        return (shortened && !ImageUrlShortened.IsEmpty()) ? ImageUrlShortened : ImageUrl; 
+    }
 
-	CString getThumbUrl(bool shortened = false) {
-		return (shortened && !ThumbUrlShortened.IsEmpty()) ? ThumbUrlShortened : ThumbUrl; 
-	}
+    CString getThumbUrl(bool shortened = false) {
+        return (shortened && !ThumbUrlShortened.IsEmpty()) ? ThumbUrlShortened : ThumbUrl; 
+    }
 
-	bool isNull()
-	{
-		return ImageUrl.IsEmpty() && DownloadUrl.IsEmpty();
-	}
+    bool isNull()
+    {
+        return ImageUrl.IsEmpty() && DownloadUrl.IsEmpty();
+    }
 
 };
 
@@ -66,14 +66,14 @@ bool IULaunchCopy();
 extern CCmdLine CmdLine;
 
 bool __fastcall CreateShortCut( 
-							 LPCWSTR pwzShortCutFileName, 
-							   LPCTSTR pszPathAndFileName, 
-							   LPCTSTR pszWorkingDirectory, 
-							   LPCTSTR pszArguments, 
-							   WORD wHotKey, 
-							   int iCmdShow, 
-							   LPCTSTR pszIconFileName, 
-							   int iIconIndex) ;
+                             LPCWSTR pwzShortCutFileName, 
+                               LPCTSTR pszPathAndFileName, 
+                               LPCTSTR pszWorkingDirectory, 
+                               LPCTSTR pszArguments, 
+                               WORD wHotKey, 
+                               int iCmdShow, 
+                               LPCTSTR pszIconFileName, 
+                               int iIconIndex) ;
 #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 
 bool IULaunchCopy(CString params, CAtlArray<CString> &files);
@@ -88,12 +88,12 @@ bool IULaunchCopy(CString additionalParams=_T(""));
 
 inline COLORREF RGB2COLORREF(unsigned int color)
 {
-	return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
+    return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
 }
 
 inline unsigned int COLORREF2RGB( COLORREF color)
 {
-	return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
+    return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
 }
 void IU_RunElevated(CString params);
 HRESULT IsElevated( __out_opt BOOL * pbElevated );

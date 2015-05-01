@@ -8,13 +8,13 @@
 
 namespace ImageEditor {
 
-	class Canvas;
+    class Canvas;
 
 class VectorElementTool: public MoveAndResizeTool {
 public:
-	VectorElementTool( Canvas* canvas, ElementType type );
+    VectorElementTool( Canvas* canvas, ElementType type );
 
-	virtual CursorType getCursor(int x, int y);
+    virtual CursorType getCursor(int x, int y);
 };
 
 

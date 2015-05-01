@@ -30,7 +30,7 @@ namespace ScriptAPI {
 
 RegularExpression::RegularExpression(const std::string& expression, const std::string& flags)
 {
-	pcre_.reset( new Pcre(expression, flags));
+    pcre_.reset( new Pcre(expression, flags));
 }
 
 RegularExpression::RegularExpression()
@@ -40,212 +40,212 @@ RegularExpression::RegularExpression()
 /*
 RegularExpression::RegularExpression(const RegularExpression& r)
 {
-	
+    
 }
 */
 Sqrat::Array RegularExpression::split(const std::string& piece)
 {
-	try {
-		std::vector<std::string> res = pcre_->split(piece);
+    try {
+        std::vector<std::string> res = pcre_->split(piece);
         Sqrat::Array obj(GetCurrentThreadVM().GetVM(), res.size());
-		for( int i = 0; i  < res.size(); i++ ) {
-			obj.SetValue(i, res[i].c_str());
-		}
-		return obj;
-	} catch( Pcre::exception ex ) {
-		LOG(ERROR) << ex.what();
-		return Sqrat::Array();
-	}
+        for( int i = 0; i  < res.size(); i++ ) {
+            obj.SetValue(i, res[i].c_str());
+        }
+        return obj;
+    } catch( Pcre::exception ex ) {
+        LOG(ERROR) << ex.what();
+        return Sqrat::Array();
+    }
 }
 
 Sqrat::Array RegularExpression::splitWithLimitOffset(const std::string& piece, int limit, int start_offset)
 {
-	try {
-		std::vector<std::string> res = pcre_->split(piece,limit,start_offset);
-		Sqrat::Array obj(GetCurrentThreadVM().GetVM(), res.size());
-		for( int i = 0; i  < res.size(); i++ ) {
-			obj.SetValue(i, res[i].c_str());
-		}
-		return obj;
-	}
-	catch( Pcre::exception ex ) {
-		LOG(ERROR) << ex.what();
+    try {
+        std::vector<std::string> res = pcre_->split(piece,limit,start_offset);
+        Sqrat::Array obj(GetCurrentThreadVM().GetVM(), res.size());
+        for( int i = 0; i  < res.size(); i++ ) {
+            obj.SetValue(i, res[i].c_str());
+        }
+        return obj;
+    }
+    catch( Pcre::exception ex ) {
+        LOG(ERROR) << ex.what();
         return Sqrat::Array();
-	}
+    }
 }
 
 Sqrat::Array RegularExpression::splitWithLimit(const std::string& piece, int limit)
 {
-	try {
-		std::vector<std::string> res = pcre_->split(piece,limit);
-		Sqrat::Array obj(GetCurrentThreadVM().GetVM(), res.size());
-		for( int i = 0; i  < res.size(); i++ ) {
-			obj.SetValue(i, res[i].c_str());
-		}
-		return obj;
-	}
-	catch( Pcre::exception ex ) {
-		LOG(ERROR) << ex.what();
+    try {
+        std::vector<std::string> res = pcre_->split(piece,limit);
+        Sqrat::Array obj(GetCurrentThreadVM().GetVM(), res.size());
+        for( int i = 0; i  < res.size(); i++ ) {
+            obj.SetValue(i, res[i].c_str());
+        }
+        return obj;
+    }
+    catch( Pcre::exception ex ) {
+        LOG(ERROR) << ex.what();
         return Sqrat::Array();
-	}
+    }
 }
 Sqrat::Array RegularExpression::splitWithLimitStartEndOffset(const std::string& piece, int limit, int start_offset, int end_offset)
 {
-	try {
-		std::vector<std::string> res = pcre_->split(piece,limit,start_offset,end_offset);
-		Sqrat::Array obj(GetCurrentThreadVM().GetVM(), res.size());
-		for( int i = 0; i  < res.size(); i++ ) {
-			obj.SetValue(i, res[i].c_str());
-		}
-		return obj;
-	}
-	catch( Pcre::exception ex ) {
-		LOG(ERROR) << ex.what();
+    try {
+        std::vector<std::string> res = pcre_->split(piece,limit,start_offset,end_offset);
+        Sqrat::Array obj(GetCurrentThreadVM().GetVM(), res.size());
+        for( int i = 0; i  < res.size(); i++ ) {
+            obj.SetValue(i, res[i].c_str());
+        }
+        return obj;
+    }
+    catch( Pcre::exception ex ) {
+        LOG(ERROR) << ex.what();
         return Sqrat::Array();
-	}
+    }
 }
 
 const std::string RegularExpression::getMatch(int pos) const
 {
-	try {
-		return pcre_->get_match(pos);
-	}
-	catch( Pcre::exception ex ) {
-		LOG(ERROR) << ex.what();
-		return std::string();
-	}
+    try {
+        return pcre_->get_match(pos);
+    }
+    catch( Pcre::exception ex ) {
+        LOG(ERROR) << ex.what();
+        return std::string();
+    }
 }
 
 bool RegularExpression::search(const std::string& stuff)
 {
-	try {
-		return pcre_->search(stuff);
-	} catch( Pcre::exception ex ) {
-		LOG(ERROR) << ex.what();
-		return false;
-	}
+    try {
+        return pcre_->search(stuff);
+    } catch( Pcre::exception ex ) {
+        LOG(ERROR) << ex.what();
+        return false;
+    }
 }
 
 bool RegularExpression::searchWithOffset(const std::string& stuff, int OffSet)
 {
-	try {
-		return pcre_->search(stuff, OffSet);
-	} catch( Pcre::exception ex ) {
-		LOG(ERROR) << ex.what();
-		return false;
-	}
+    try {
+        return pcre_->search(stuff, OffSet);
+    } catch( Pcre::exception ex ) {
+        LOG(ERROR) << ex.what();
+        return false;
+    }
 }
 
 const std::string RegularExpression::replace(const std::string& piece, const std::string& with)
 {
-	try {
-		return pcre_->replace(piece, with);
-	} catch( Pcre::exception ex ) {
-		LOG(ERROR) << ex.what();
-		return std::string();
-	}
+    try {
+        return pcre_->replace(piece, with);
+    } catch( Pcre::exception ex ) {
+        LOG(ERROR) << ex.what();
+        return std::string();
+    }
 }
 
 int RegularExpression::getEntireMatchStart() const
 {
-	return pcre_->get_match_start();
+    return pcre_->get_match_start();
 }
 
 int RegularExpression::getMatchStart(int pos) const
 {
-	try {
-		return pcre_->get_match_start(pos);
-	} catch( Pcre::exception ex ) {
-		LOG(ERROR) << ex.what();
-		return 0;
-	}
+    try {
+        return pcre_->get_match_start(pos);
+    } catch( Pcre::exception ex ) {
+        LOG(ERROR) << ex.what();
+        return 0;
+    }
 }
 
 int RegularExpression::getEntireMatchEnd() const
 {
-	return pcre_->get_match_end();
+    return pcre_->get_match_end();
 }
 
 int RegularExpression::getMatchEnd(int pos) const
 {
-	try {
-		return pcre_->get_match_end(pos);
-	} catch( Pcre::exception ex ) {
-		LOG(ERROR) << ex.what();
-		return 0;
-	}
+    try {
+        return pcre_->get_match_end(pos);
+    } catch( Pcre::exception ex ) {
+        LOG(ERROR) << ex.what();
+        return 0;
+    }
 }
 
 bool RegularExpression::matched()
 {
-	return pcre_->matched();
+    return pcre_->matched();
 }
 
 int RegularExpression::matchesCount()
 {
-	return pcre_->matches();
+    return pcre_->matches();
 }
 
 Sqrat::Array RegularExpression::getSubStrings()
 {
-	try {
-		std::vector<std::string>* substrings =  pcre_->get_sub_strings();
-		if ( !substrings ) {
-			return Sqrat::Array();
-		}
-		Sqrat::Array res(GetCurrentThreadVM().GetVM(), substrings->size());
-		for ( int i = 0; i < substrings->size(); i++ ) {
-			res.SetValue(i, (*substrings)[i].c_str());
-		}
-		return res;
-	} catch( Pcre::exception ex ) {
-		LOG(ERROR) << ex.what();
-		return Sqrat::Array();
-	}
+    try {
+        std::vector<std::string>* substrings =  pcre_->get_sub_strings();
+        if ( !substrings ) {
+            return Sqrat::Array();
+        }
+        Sqrat::Array res(GetCurrentThreadVM().GetVM(), substrings->size());
+        for ( int i = 0; i < substrings->size(); i++ ) {
+            res.SetValue(i, (*substrings)[i].c_str());
+        }
+        return res;
+    } catch( Pcre::exception ex ) {
+        LOG(ERROR) << ex.what();
+        return Sqrat::Array();
+    }
 }
 
 bool RegularExpression::match(const std::string& stuff)
 {
-	return search(stuff);
+    return search(stuff);
 }
 
 Sqrat::Array RegularExpression::findAll(const std::string& str)
 {
-	try {
-		size_t pos = 0;
-		Sqrat::Array res(GetCurrentThreadVM().GetVM(), 0);
-		while (pos <= str.length()) 
-		{
-			if ( pcre_->search(str, pos)) 
-			{ 
-				pos = pcre_->get_match_end()+1;
-				int count = matchesCount();
-				Sqrat::Array mat(GetCurrentThreadVM().GetVM(), count);
-				for ( int i = 0; i < count; i++ ) {
-					mat.SetValue(i, pcre_->get_match(i).c_str());
-				}
-				res.Append(mat);
-			}
-			else {
-				break;
-			}
-		}
-		return res;
-	} catch( Pcre::exception ex ) {
-		LOG(ERROR) << ex.what();
-		return Sqrat::Array();
-	}
+    try {
+        size_t pos = 0;
+        Sqrat::Array res(GetCurrentThreadVM().GetVM(), 0);
+        while (pos <= str.length()) 
+        {
+            if ( pcre_->search(str, pos)) 
+            { 
+                pos = pcre_->get_match_end()+1;
+                int count = matchesCount();
+                Sqrat::Array mat(GetCurrentThreadVM().GetVM(), count);
+                for ( int i = 0; i < count; i++ ) {
+                    mat.SetValue(i, pcre_->get_match(i).c_str());
+                }
+                res.Append(mat);
+            }
+            else {
+                break;
+            }
+        }
+        return res;
+    } catch( Pcre::exception ex ) {
+        LOG(ERROR) << ex.what();
+        return Sqrat::Array();
+    }
 }
 
 ScriptAPI::RegularExpression CreateRegExp(const std::string& expression, const std::string& flags)
 {
-	return RegularExpression(expression,flags);
+    return RegularExpression(expression,flags);
 }
 
 void RegisterRegularExpressionClass(Sqrat::SqratVM& vm) {
-	using namespace Sqrat;
+    using namespace Sqrat;
     Sqrat::RootTable& root = vm.GetRootTable();
-	root.Bind("RegularExpression", Class<RegularExpression>(vm.GetVM(), "RegularExpression")
+    root.Bind("RegularExpression", Class<RegularExpression>(vm.GetVM(), "RegularExpression")
         .Func("search", &RegularExpression::search)
         .Func("findAll", &RegularExpression::findAll)
         .Func("match", &RegularExpression::match)
@@ -264,7 +264,7 @@ void RegisterRegularExpressionClass(Sqrat::SqratVM& vm) {
         .Func("getEntireMatchEnd", &RegularExpression::getEntireMatchEnd)
     );
 
-	root.Func("CRegExp", CreateRegExp);	
+    root.Func("CRegExp", CreateRegExp);    
 }
 
 }

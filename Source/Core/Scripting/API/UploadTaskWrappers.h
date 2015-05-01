@@ -16,27 +16,27 @@ class UploadTaskWrapper;
 class UploadTaskWrapperBase
 {
 public:
-	UploadTaskWrapperBase();
-	const std::string role();
-	void setRole(const std::string& role);  
+    UploadTaskWrapperBase();
+    const std::string role();
+    void setRole(const std::string& role);  
     const std::string type();
-	const std::string getMimeType();
-	int64_t getDataLength();
-	UploadTaskWrapper parentTask();
-	UploadTaskWrapper child(int index);
-	int childCount();
-	UploadResult* uploadResult();
-	std::string serverName() const;
+    const std::string getMimeType();
+    int64_t getDataLength();
+    UploadTaskWrapper parentTask();
+    UploadTaskWrapper child(int index);
+    int childCount();
+    UploadResult* uploadResult();
+    std::string serverName() const;
     const std::string profileName();
     void setStatusText(const std::string& status);
     ServerProfile serverProfile();
     void setServerProfile(const ServerProfile& profile);
-	std::string toString();
+    std::string toString();
     void addChildTask(UploadTaskWrapperBase* child);
     void addTempFile(const std::string& fileName);
     bool isNull();
 protected:
-	std::shared_ptr<UploadTask> task_;
+    std::shared_ptr<UploadTask> task_;
     void checkNull(const char* func) const;
 };
 
@@ -47,8 +47,8 @@ class FileUploadTaskWrapper : public  UploadTaskWrapperBase  {
 public:
     FileUploadTaskWrapper();
     explicit FileUploadTaskWrapper(const std::string& fileName, const std::string& displayName);
-	std::string getFileName() const;
-	int64_t getFileSize() const;
+    std::string getFileName() const;
+    int64_t getFileSize() const;
     void setFileName(const std::string& fileName);
     std::string getDisplayName() const;
     void setDisplayName(const std::string& name);

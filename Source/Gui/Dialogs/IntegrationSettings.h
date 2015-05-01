@@ -32,60 +32,60 @@
 
 class UploadEngineManager;
 class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>, 
-	                      public CSettingsPage	
+                          public CSettingsPage    
 {
-	public:
-		enum { IDD = IDD_INTEGRATIONSETTINGS };
+    public:
+        enum { IDD = IDD_INTEGRATIONSETTINGS };
 
-		CIntegrationSettings(UploadEngineManager *uploadEngineManager);
-		virtual ~CIntegrationSettings();
-		virtual bool Apply();
+        CIntegrationSettings(UploadEngineManager *uploadEngineManager);
+        virtual ~CIntegrationSettings();
+        virtual bool Apply();
 
-		struct ListItemData {
-			ServerProfile serverProfile;
-			CString name;
-			bool invalid;
-			CString itemId;
-			ListItemData() {
-				invalid = false;
-			}
-		};
+        struct ListItemData {
+            ServerProfile serverProfile;
+            CString name;
+            bool invalid;
+            CString itemId;
+            ListItemData() {
+                invalid = false;
+            }
+        };
 
-	protected:
-		BEGIN_MSG_MAP(CIntegrationSettings)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-			COMMAND_HANDLER(IDC_SHELLINTEGRATION, BN_CLICKED, OnShellIntegrationCheckboxChanged)
-			COMMAND_HANDLER(IDC_STARTUPLOADINGFROMSHELL, BN_CLICKED, OnClickedQuickUpload)	
-			COMMAND_HANDLER(IDC_ADDITEM, BN_CLICKED, OnBnClickedAdditem)
-			COMMAND_HANDLER(IDC_DELETEITEM, BN_CLICKED, OnBnClickedDeleteitem)
-			COMMAND_HANDLER(IDC_DOWNBUTTON, BN_CLICKED, OnBnClickedDownbutton)
-			COMMAND_HANDLER(IDC_UPBUTTON, BN_CLICKED, OnBnClickedUpbutton)
-			REFLECT_NOTIFICATIONS()
-		END_MSG_MAP()
-		// Handler prototypes:
-		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnShellIntegrationCheckboxChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		void ShellIntegrationChanged();
-		std::string newMethod();
-		LRESULT OnClickedQuickUpload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		ServerProfilesMap serverProfiles_;
-		CListBox menuItemsListBox_;
-		bool menuItemsChanged_;
-		CIconButton upButton_;
-		CIconButton downButton_;
-		CIconButton addItemButton_;
-		CIconButton deleteItemButton_;
-		UploadEngineManager *uploadEngineManager_;
+    protected:
+        BEGIN_MSG_MAP(CIntegrationSettings)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+            COMMAND_HANDLER(IDC_SHELLINTEGRATION, BN_CLICKED, OnShellIntegrationCheckboxChanged)
+            COMMAND_HANDLER(IDC_STARTUPLOADINGFROMSHELL, BN_CLICKED, OnClickedQuickUpload)    
+            COMMAND_HANDLER(IDC_ADDITEM, BN_CLICKED, OnBnClickedAdditem)
+            COMMAND_HANDLER(IDC_DELETEITEM, BN_CLICKED, OnBnClickedDeleteitem)
+            COMMAND_HANDLER(IDC_DOWNBUTTON, BN_CLICKED, OnBnClickedDownbutton)
+            COMMAND_HANDLER(IDC_UPBUTTON, BN_CLICKED, OnBnClickedUpbutton)
+            REFLECT_NOTIFICATIONS()
+        END_MSG_MAP()
+        // Handler prototypes:
+        //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnShellIntegrationCheckboxChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        void ShellIntegrationChanged();
+        std::string newMethod();
+        LRESULT OnClickedQuickUpload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        ServerProfilesMap serverProfiles_;
+        CListBox menuItemsListBox_;
+        bool menuItemsChanged_;
+        CIconButton upButton_;
+        CIconButton downButton_;
+        CIconButton addItemButton_;
+        CIconButton deleteItemButton_;
+        UploadEngineManager *uploadEngineManager_;
 public:
-	LRESULT OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnBnClickedDownbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnBnClickedUpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnBnClickedDownbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnBnClickedUpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 };
 
 #endif // IntegrationSettings_H

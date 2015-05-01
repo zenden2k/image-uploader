@@ -39,11 +39,11 @@ extern HINSTANCE hDllInstance;
 
 struct Shell_ContextMenuItem
 {
-	int cmd;
-	CString text;
-	CString commandArgument;
-	WORD icon;
-	int id;
+    int cmd;
+    CString text;
+    CString commandArgument;
+    WORD icon;
+    int id;
 };
 #define MENUITEM_UPLOADFILES 0
 #define MENUITEM_UPLOADONLYIMAGES 1
@@ -54,53 +54,53 @@ struct Shell_ContextMenuItem
 CString GetDllFolder();
 
 class ATL_NO_VTABLE CIShellContextMenu :
-	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CIShellContextMenu, &CLSID_IShellContextMenu>,
-	public IContextMenu3, public IShellExtInit,
-	public IDispatchImpl<IIShellContextMenu, &IID_IIShellContextMenu, &LIBID_ExplorerIntegrationLib, /*wMajor =*/ 1, /*wMinor =*/ 0>
-	{
-		public:
-		CAtlArray<CString> m_FileList;
-		std::map<int, Shell_ContextMenuItem> m_nCommands;
-		std::map<UINT, HBITMAP>		bitmaps;
-		CIShellContextMenu();
+    public CComObjectRootEx<CComSingleThreadModel>,
+    public CComCoClass<CIShellContextMenu, &CLSID_IShellContextMenu>,
+    public IContextMenu3, public IShellExtInit,
+    public IDispatchImpl<IIShellContextMenu, &IID_IIShellContextMenu, &LIBID_ExplorerIntegrationLib, /*wMajor =*/ 1, /*wMinor =*/ 0>
+    {
+        public:
+        CAtlArray<CString> m_FileList;
+        std::map<int, Shell_ContextMenuItem> m_nCommands;
+        std::map<UINT, HBITMAP>        bitmaps;
+        CIShellContextMenu();
 
-		DECLARE_REGISTRY_RESOURCEID(IDR_ISHELLCONTEXTMENU)
+        DECLARE_REGISTRY_RESOURCEID(IDR_ISHELLCONTEXTMENU)
 
-		BEGIN_COM_MAP(CIShellContextMenu)
-			COM_INTERFACE_ENTRY(IIShellContextMenu)
-			COM_INTERFACE_ENTRY(IDispatch)
-			COM_INTERFACE_ENTRY(IContextMenu)
-			COM_INTERFACE_ENTRY(IContextMenu2)
-			COM_INTERFACE_ENTRY(IContextMenu3)
-			COM_INTERFACE_ENTRY(IShellExtInit)
-		END_COM_MAP()
+        BEGIN_COM_MAP(CIShellContextMenu)
+            COM_INTERFACE_ENTRY(IIShellContextMenu)
+            COM_INTERFACE_ENTRY(IDispatch)
+            COM_INTERFACE_ENTRY(IContextMenu)
+            COM_INTERFACE_ENTRY(IContextMenu2)
+            COM_INTERFACE_ENTRY(IContextMenu3)
+            COM_INTERFACE_ENTRY(IShellExtInit)
+        END_COM_MAP()
 
-		DECLARE_PROTECT_FINAL_CONSTRUCT()
+        DECLARE_PROTECT_FINAL_CONSTRUCT()
 
-		HRESULT FinalConstruct()
-		{
-			return S_OK;
-		}
+        HRESULT FinalConstruct()
+        {
+            return S_OK;
+        }
 
-		void FinalRelease()
-		{
-		}
-		bool MyInsertMenu(HMENU hMenu, int pos, UINT id, int nInternalCommand, const LPCTSTR szTitle, int firstCmd, CString commandArgument = CString(), bool UseBitmaps = true, HBITMAP bm=0,WORD resid=0,HICON ico = 0);
-		bool MyInsertMenuSeparator(HMENU hMenu, int pos, UINT id);
+        void FinalRelease()
+        {
+        }
+        bool MyInsertMenu(HMENU hMenu, int pos, UINT id, int nInternalCommand, const LPCTSTR szTitle, int firstCmd, CString commandArgument = CString(), bool UseBitmaps = true, HBITMAP bm=0,WORD resid=0,HICON ico = 0);
+        bool MyInsertMenuSeparator(HMENU hMenu, int pos, UINT id);
 
-		bool m_bMediaInfoInstalled;
-		IconBitmapUtils m_IconBitmapUtils;
-	HBITMAP IconToBitmap(HINSTANCE hInst, UINT uIcon);
-	public:
-		STDMETHOD(HandleMenuMsg)(UINT uMsg, WPARAM wParam, LPARAM lParam);
-		STDMETHOD(HandleMenuMsg2)(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT *pResult);
+        bool m_bMediaInfoInstalled;
+        IconBitmapUtils m_IconBitmapUtils;
+    HBITMAP IconToBitmap(HINSTANCE hInst, UINT uIcon);
+    public:
+        STDMETHOD(HandleMenuMsg)(UINT uMsg, WPARAM wParam, LPARAM lParam);
+        STDMETHOD(HandleMenuMsg2)(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT *pResult);
 
-	
-		STDMETHOD(QueryContextMenu)(HMENU hmenu, UINT indexMenu,UINT idCmdFirst, UINT idCmdLast, UINT uFlags);
-		STDMETHOD(InvokeCommand)(LPCMINVOKECOMMANDINFO lpici);
-		STDMETHOD(GetCommandString)(UINT_PTR idCmd, UINT uType, UINT *pwReserved, LPSTR pszName, UINT cchMax);
-  		STDMETHOD(Initialize)(LPCITEMIDLIST pidlFolder, LPDATAOBJECT dataObject, HKEY hkeyProgID);
+    
+        STDMETHOD(QueryContextMenu)(HMENU hmenu, UINT indexMenu,UINT idCmdFirst, UINT idCmdLast, UINT uFlags);
+        STDMETHOD(InvokeCommand)(LPCMINVOKECOMMANDINFO lpici);
+        STDMETHOD(GetCommandString)(UINT_PTR idCmd, UINT uType, UINT *pwReserved, LPSTR pszName, UINT cchMax);
+          STDMETHOD(Initialize)(LPCITEMIDLIST pidlFolder, LPDATAOBJECT dataObject, HKEY hkeyProgID);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(IShellContextMenu), CIShellContextMenu)

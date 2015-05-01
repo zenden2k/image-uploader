@@ -36,131 +36,131 @@ namespace ScriptAPI {
 
 CWebBrowser::CWebBrowser()
 {
-	d_ = new WebBrowserPrivate(this);
+    d_ = new WebBrowserPrivate(this);
 }
 
 CWebBrowser::~CWebBrowser()
 {
-	delete d_;
+    delete d_;
 }
 
 bool CWebBrowser::navigateToUrl(const std::string& url)
 {
-	return d_->navigateToUrl(url);
+    return d_->navigateToUrl(url);
 }
 
 void CWebBrowser::setOnUrlChangedCallback(Sqrat::Function callBack, Sqrat::Object context)
 {
-	d_->setOnUrlChangedCallback(callBack, context);
+    d_->setOnUrlChangedCallback(callBack, context);
 }
 
 void CWebBrowser::setOnNavigateErrorCallback(Sqrat::Function callBack, Sqrat::Object context)
 {
-	d_->setOnNavigateErrorCallback(callBack, context);
+    d_->setOnNavigateErrorCallback(callBack, context);
 }
 
 void CWebBrowser::setOnLoadFinishedCallback(Sqrat::Function callBack, Sqrat::Object context)
 {
-	d_->setOnLoadFinishedCallback(callBack, context);
+    d_->setOnLoadFinishedCallback(callBack, context);
 }
 
 void CWebBrowser::setOnTimerCallback(int timerInterval, Sqrat::Function callBack, Sqrat::Object context)
 {
-	d_->setOnTimerCallback(timerInterval,  callBack, context);
+    d_->setOnTimerCallback(timerInterval,  callBack, context);
 }
 
 void CWebBrowser::setOnFileInputFilledCallback(Sqrat::Function callBack, Sqrat::Object context)
 {
-	d_->setOnFileInputFilledCallback(callBack, context);
+    d_->setOnFileInputFilledCallback(callBack, context);
 }
 
 const std::string CWebBrowser::getDocumentContents()
 {
-	return d_->getDocumentContents();
+    return d_->getDocumentContents();
 }
 
 ScriptAPI::HtmlDocument CWebBrowser::document()
 {
-	return d_->document();
-}	
+    return d_->document();
+}    
 
 bool CWebBrowser::setHtml(const std::string& html)
 {
-	return d_->setHtml(html);
+    return d_->setHtml(html);
 }
 
 const std::string CWebBrowser::runJavaScript(const std::string& code)
 {
-	return d_->runJavaScript(code);
+    return d_->runJavaScript(code);
 }
 
 const std::string CWebBrowser::callJavaScriptFunction(const std::string& funcName, Sqrat::Object args)
 {
-	return d_->callJavaScriptFunction(funcName, args);
+    return d_->callJavaScriptFunction(funcName, args);
 }
 
 void CWebBrowser::setSilent(bool silent)
 {
-	d_->setSilent(silent);
+    d_->setSilent(silent);
 }
 
 void CWebBrowser::addTrustedSite(const std::string& domain)
 {
-	d_->addTrustedSite(domain);
+    d_->addTrustedSite(domain);
 }
 
 int CWebBrowser::getMajorVersion()
 {
-	return d_->getMajorVersion();
+    return d_->getMajorVersion();
 }
 
 bool CWebBrowser::showModal()
 {
-	return d_->showModal();
+    return d_->showModal();
 }
 
 bool CWebBrowser::exec()
 {
-	return d_->exec();
+    return d_->exec();
 }
 
 void CWebBrowser::show()
 {
-	d_->show();
+    d_->show();
 }
 
 void CWebBrowser::hide()
 {
-	d_->hide();
+    d_->hide();
 }
 
 void CWebBrowser::close()
 {
-	d_->close();
+    d_->close();
 }
 
 void CWebBrowser::setFocus()
 {
-	d_->setFocus();
+    d_->setFocus();
 }
 
 void CWebBrowser::setTitle(const std::string& title)
 {
-	d_->setTitle(title);
+    d_->setTitle(title);
 }
 
 const std::string CWebBrowser::url()
 {
-	return d_->url();
+    return d_->url();
 }
 
 const std::string CWebBrowser::title()
 {
-	return d_->title();
+    return d_->title();
 }
 
 void RegisterWebBrowserClass(Sqrat::SqratVM& vm) {
-	using namespace Sqrat;
+    using namespace Sqrat;
     vm.GetRootTable().Bind("CWebBrowser", Class<CWebBrowser>(vm.GetVM(), "CWebBrowser")
         .Func("navigateToUrl", &CWebBrowser::navigateToUrl)
         .Func("showModal", &CWebBrowser::showModal)

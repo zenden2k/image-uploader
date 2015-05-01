@@ -38,46 +38,46 @@ const int SettingsPageCount = 10;
 
 class CSettingsDlg : public CDialogImpl<CSettingsDlg>
 {
-	public:
-		CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager);
-		~CSettingsDlg();
-		enum { IDD = IDD_SETTINGSDLG };
-		enum SettingsPage { spGeneral, spServers, spImages, spThumbnails, spScreenshot,
-		spVideo, spUploading, spIntegration, spTrayIcon, spHotkeys};
-	protected:
-		BEGIN_MSG_MAP(CSettingsDlg)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-			NOTIFY_HANDLER(IDC_TABCONTROL, TCN_SELCHANGE, OnTabChanged)
-			COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-			COMMAND_HANDLER_EX(IDC_APPLY, BN_CLICKED, OnApplyBnClicked)
-		COMMAND_HANDLER(IDC_SETTINGSPAGESLIST, LBN_SELCHANGE, OnSettingsPagesSelChanged)
-			REFLECT_NOTIFICATIONS()
-	END_MSG_MAP()
+    public:
+        CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager);
+        ~CSettingsDlg();
+        enum { IDD = IDD_SETTINGSDLG };
+        enum SettingsPage { spGeneral, spServers, spImages, spThumbnails, spScreenshot,
+        spVideo, spUploading, spIntegration, spTrayIcon, spHotkeys};
+    protected:
+        BEGIN_MSG_MAP(CSettingsDlg)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+            NOTIFY_HANDLER(IDC_TABCONTROL, TCN_SELCHANGE, OnTabChanged)
+            COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
+            COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+            COMMAND_HANDLER_EX(IDC_APPLY, BN_CLICKED, OnApplyBnClicked)
+        COMMAND_HANDLER(IDC_SETTINGSPAGESLIST, LBN_SELCHANGE, OnSettingsPagesSelChanged)
+            REFLECT_NOTIFICATIONS()
+    END_MSG_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	void CloseDialog(int nVal);
-	LRESULT OnSettingsPagesSelChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	int CurPage;
-	CIcon hIcon;
-	CIcon hIconSmall;
-	int PrevPage,NextPage;
-	bool CreatePage(int PageID);
-	CSettingsPage* Pages[SettingsPageCount];
-	int PageToShow;
-	bool ShowPage(int idPage);
-	CTabListBox m_SettingsPagesListBox;
-	LRESULT OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+    LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    void CloseDialog(int nVal);
+    LRESULT OnSettingsPagesSelChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    int CurPage;
+    CIcon hIcon;
+    CIcon hIconSmall;
+    int PrevPage,NextPage;
+    bool CreatePage(int PageID);
+    CSettingsPage* Pages[SettingsPageCount];
+    int PageToShow;
+    bool ShowPage(int idPage);
+    CTabListBox m_SettingsPagesListBox;
+    LRESULT OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 protected:
-	UploadEngineManager* uploadEngineManager_;
+    UploadEngineManager* uploadEngineManager_;
 };
 
 #endif // SETTINGSDLG_H

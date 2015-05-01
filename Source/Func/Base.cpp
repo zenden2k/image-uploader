@@ -27,37 +27,37 @@ ZBase* ZBase::m_base = 0;
 
 void ZBase::cleanUp()
 {
-	delete m_base;
+    delete m_base;
 }
 
 ZBase::ZBase()
 {
-	m_hm.setHistoryFileName(Settings.SettingsFolder+"/History/","history");
+    m_hm.setHistoryFileName(Settings.SettingsFolder+"/History/","history");
 }
 
 ZBase* ZBase::get()
 {
-	if(m_base == 0) {
-		m_base = new ZBase();
-		atexit(&cleanUp);
-	}
-	return m_base;
+    if(m_base == 0) {
+        m_base = new ZBase();
+        atexit(&cleanUp);
+    }
+    return m_base;
 }
 
 CHistoryManager* ZBase::historyManager() 
 {
-	return &m_hm;
+    return &m_hm;
 }
 
 
 void ZBase::addToGlobalCache(const std::string fileName, const std::string url)
 {
-	LocalFileCache::instance().addFile(url, fileName);
-	//m_UrlCache[url] = fileName;
+    LocalFileCache::instance().addFile(url, fileName);
+    //m_UrlCache[url] = fileName;
 }
 
 std::string ZBase::getFromCache(const std::string url)
 {
-	return LocalFileCache::instance().get(url);
+    return LocalFileCache::instance().get(url);
 
 }

@@ -26,29 +26,29 @@
 
 class CLang
 {
-	public:
-		CLang();
-		~CLang();
-		LPTSTR GetString(LPCTSTR Name);
-		bool SetDirectory(LPCTSTR Directory);
-		bool LoadLanguage(LPCTSTR Lang);
-		CString GetLanguageName();
-		CString getLanguage() const;
-		CString getLocale() const;
-		CString getLanguageFileNameForLocale(const CString& locale);
-	private:
-		struct TranslateListItem
-		{
-			int Hash;
-			TCHAR *Name;
-			TCHAR *Text;
-		};
-		TCHAR m_Directory[MAX_PATH];
-		CString m_sLang;
-		CAtlArray<TranslateListItem> StringList;
-		CAtlArray<CString> LanguagesList;
-		CString locale_;
-		CString language_;
+    public:
+        CLang();
+        ~CLang();
+        LPTSTR GetString(LPCTSTR Name);
+        bool SetDirectory(LPCTSTR Directory);
+        bool LoadLanguage(LPCTSTR Lang);
+        CString GetLanguageName();
+        CString getLanguage() const;
+        CString getLocale() const;
+        CString getLanguageFileNameForLocale(const CString& locale);
+    private:
+        struct TranslateListItem
+        {
+            int Hash;
+            TCHAR *Name;
+            TCHAR *Text;
+        };
+        TCHAR m_Directory[MAX_PATH];
+        CString m_sLang;
+        CAtlArray<TranslateListItem> StringList;
+        CAtlArray<CString> LanguagesList;
+        CString locale_;
+        CString language_;
 };
 extern CLang Lang;
 

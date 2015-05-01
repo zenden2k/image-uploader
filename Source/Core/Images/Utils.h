@@ -7,7 +7,7 @@
 #include <string>
 
 enum SaveImageFormat {
-	sifJPEG,sifPNG,sifGIF, sifDetectByExtension
+    sifJPEG,sifPNG,sifGIF, sifDetectByExtension
 };
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 

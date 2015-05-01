@@ -29,21 +29,21 @@ using namespace Gdiplus;
 
 ImageConvertingParams::ImageConvertingParams()
 {
-	StrokeColor = RGB(0, 0, 0);
-	SmartConverting = false;
-	AddLogo  = false;
-	AddText = false;
-	Format = 1;
-	Quality = 85;
-	SaveProportions = true;
-	ResizeMode = irmFit;
-	LogoPosition = 0;
-	LogoBlend = 0;
-	Text = APPNAME;
-	TextPosition = 5;
-	TextColor = 0x00ffffff;
-	WinUtils::StringToFont(_T("Tahoma,8,,204"), &Font);
-	PreserveExifInformation = true;
+    StrokeColor = RGB(0, 0, 0);
+    SmartConverting = false;
+    AddLogo  = false;
+    AddText = false;
+    Format = 1;
+    Quality = 85;
+    SaveProportions = true;
+    ResizeMode = irmFit;
+    LogoPosition = 0;
+    LogoBlend = 0;
+    Text = APPNAME;
+    TextPosition = 5;
+    TextColor = 0x00ffffff;
+    WinUtils::StringToFont(_T("Tahoma,8,,204"), &Font);
+    PreserveExifInformation = true;
 }
 
 ImageConverter::ImageConverter() : d_ptr(new ImageConverterPrivate())
@@ -65,7 +65,7 @@ bool ImageConverter::Convert(const std::string& sourceFile)
 void ImageConverter::setDestinationFolder(const std::string& folder)
 {
     Q_D(ImageConverter);
-	d->destinationFolder_ = folder;
+    d->destinationFolder_ = folder;
 }
 
 void ImageConverter::setGenerateThumb(bool generate)

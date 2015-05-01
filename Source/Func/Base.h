@@ -27,17 +27,17 @@
 
 class ZBase
 {
-	public:
-		ZBase();
-		static ZBase* get();
-		CHistoryManager* historyManager();
-		void addToGlobalCache(const std::string fileName, const std::string url);
-		std::string getFromCache(const std::string url);
+    public:
+        ZBase();
+        static ZBase* get();
+        CHistoryManager* historyManager();
+        void addToGlobalCache(const std::string fileName, const std::string url);
+        std::string getFromCache(const std::string url);
 
-	private:
-		static ZBase* m_base;
-		CHistoryManager m_hm;
-		std::map<std::string, std::string> m_UrlCache;
-		static void cleanUp();
+    private:
+        static ZBase* m_base;
+        CHistoryManager m_hm;
+        std::map<std::string, std::string> m_UrlCache;
+        static void cleanUp();
 };
 #endif

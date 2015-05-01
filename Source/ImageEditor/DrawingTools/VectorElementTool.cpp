@@ -33,14 +33,14 @@
 namespace ImageEditor {
 
 VectorElementTool::VectorElementTool( Canvas* canvas, ElementType type ) : MoveAndResizeTool( canvas, type ) {
-	currentElement_       = NULL;
-	allowMovingElements_ = false;
+    currentElement_       = NULL;
+    allowMovingElements_ = false;
 }
 
 
 ImageEditor::CursorType VectorElementTool::getCursor(int x, int y)
 {
-	return ctCross;
+    return ctCross;
 }
 
 }

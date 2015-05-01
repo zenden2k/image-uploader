@@ -28,16 +28,16 @@
 
 class CUploadEngineList: public CUploadEngineList_Base
 {
-	public:
-		CUploadEngineList();
-		bool LoadFromFile(const std::string& filename,std::map <std::string, std::map <std::string, ServerSettingsStruct>>&);
-		void setNumOfRetries(int Engine, int Action);
-		bool addServer(const CUploadEngineData& data);
-	protected:
-		int m_EngineNumOfRetries;
-		int m_ActionNumOfRetries;	
-	private:
-		bool static compareEngines(const CUploadEngineData& elem1, const CUploadEngineData& elem2);
+    public:
+        CUploadEngineList();
+        bool LoadFromFile(const std::string& filename,std::map <std::string, std::map <std::string, ServerSettingsStruct>>&);
+        void setNumOfRetries(int Engine, int Action);
+        bool addServer(const CUploadEngineData& data);
+    protected:
+        int m_EngineNumOfRetries;
+        int m_ActionNumOfRetries;    
+    private:
+        bool static compareEngines(const CUploadEngineData& elem1, const CUploadEngineData& elem2);
 };
 
 #endif // IU_CORE_UPLOADENGINELIST_H

@@ -36,7 +36,7 @@ std::unordered_map<std::string,int> langs = {
     { "cp852", 852 },
     { "cp866", 866 },
     { "cp870", 870 },
-	{ "cp_acp", 0},
+    { "cp_acp", 0},
     { "cp_oem", CP_OEMCP },
     { "csascii", 1252 },
     { "csbig5", 950 },
@@ -291,5 +291,5 @@ std::string NameByCodepage( int code )
     {
         return it->first;
     }
-	return std::string();
+    return std::string();
 }

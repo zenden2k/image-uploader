@@ -46,236 +46,236 @@ using namespace Sqrat;
 
 class WebBrowserPrivate : public WebBrowserPrivateBase {
 public:
-	WebBrowserPrivate(CWebBrowser * browser ) {
-		browser_ = browser;
-		webViewWindow_.view_.onNavigateComplete2.bind(this, &WebBrowserPrivate::OnPageLoaded);
-		webViewWindow_.view_.onNavigateError.bind(this, &WebBrowserPrivate::OnNavigateError);
-		webViewWindow_.view_.onDocumentComplete.bind(this, &WebBrowserPrivate::OnDocumentComplete);
-		webViewWindow_.onTimer.bind(this, &WebBrowserPrivate::OnTimer);
-		webViewWindow_.onFileFieldFilled.bind(this, &WebBrowserPrivate::OnFileFieldFilled);
-		initialWidth_ = 800;
-		initialHeight_ = 600;
-		initialTitle_ = _T("Web Browser");
-		timerInterval_ = 0;
-		initialSilent_ = true;
-	}
+    WebBrowserPrivate(CWebBrowser * browser ) {
+        browser_ = browser;
+        webViewWindow_.view_.onNavigateComplete2.bind(this, &WebBrowserPrivate::OnPageLoaded);
+        webViewWindow_.view_.onNavigateError.bind(this, &WebBrowserPrivate::OnNavigateError);
+        webViewWindow_.view_.onDocumentComplete.bind(this, &WebBrowserPrivate::OnDocumentComplete);
+        webViewWindow_.onTimer.bind(this, &WebBrowserPrivate::OnTimer);
+        webViewWindow_.onFileFieldFilled.bind(this, &WebBrowserPrivate::OnFileFieldFilled);
+        initialWidth_ = 800;
+        initialHeight_ = 600;
+        initialTitle_ = _T("Web Browser");
+        timerInterval_ = 0;
+        initialSilent_ = true;
+    }
 
-	~WebBrowserPrivate() {
-		if ( IsWindow(webViewWindow_.m_hWnd) ) {
-			webViewWindow_.destroyFromAnotherThread();
-		}
-		webViewWindow_.m_hWnd = 0;
-	}
+    ~WebBrowserPrivate() {
+        if ( IsWindow(webViewWindow_.m_hWnd) ) {
+            webViewWindow_.destroyFromAnotherThread();
+        }
+        webViewWindow_.m_hWnd = 0;
+    }
 
-	void setSilent(bool silent) {
-		if ( webViewWindow_.m_hWnd) {
-			webViewWindow_.view_.PutSilent(silent);
-		} else {
-			initialSilent_ = silent;
-		}
-	}
-	bool navigateToUrl(const std::string& url) {
-		if ( webViewWindow_.m_hWnd) {
-			return webViewWindow_.NavigateTo(IuCoreUtils::Utf8ToWstring(url).c_str());
-		} else {
-			initialUrl_ = IuCoreUtils::Utf8ToWstring(url).c_str();
-			return true;
-		}
-	}
+    void setSilent(bool silent) {
+        if ( webViewWindow_.m_hWnd) {
+            webViewWindow_.view_.PutSilent(silent);
+        } else {
+            initialSilent_ = silent;
+        }
+    }
+    bool navigateToUrl(const std::string& url) {
+        if ( webViewWindow_.m_hWnd) {
+            return webViewWindow_.NavigateTo(IuCoreUtils::Utf8ToWstring(url).c_str());
+        } else {
+            initialUrl_ = IuCoreUtils::Utf8ToWstring(url).c_str();
+            return true;
+        }
+    }
 
 
-	bool showModal() {
-		HWND parent = 
+    bool showModal() {
+        HWND parent = 
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
-			pWizardDlg->m_hWnd;
+            pWizardDlg->m_hWnd;
 #else 
-			0;
+            0;
 #endif
-			create(parent);
-		
-		if ( !initialUrl_.IsEmpty() ) {
-			webViewWindow_.NavigateTo(initialUrl_);
-		} else if ( !initialHtml_.IsEmpty()) {
-			webViewWindow_.view_.displayHTML(initialHtml_);
-		}
-		
-		return webViewWindow_.DoModal(parent);
+            create(parent);
+        
+        if ( !initialUrl_.IsEmpty() ) {
+            webViewWindow_.NavigateTo(initialUrl_);
+        } else if ( !initialHtml_.IsEmpty()) {
+            webViewWindow_.view_.displayHTML(initialHtml_);
+        }
+        
+        return webViewWindow_.DoModal(parent);
 
-		//DestroyWindow();
-		return true;
-	}
+        //DestroyWindow();
+        return true;
+    }
 
-	bool exec() {
-		create();
-		if ( !initialUrl_.IsEmpty() ) {
-			webViewWindow_.NavigateTo(initialUrl_);
-		} else if ( !initialHtml_.IsEmpty()) {
-			webViewWindow_.view_.displayHTML(initialHtml_);
-		}
+    bool exec() {
+        create();
+        if ( !initialUrl_.IsEmpty() ) {
+            webViewWindow_.NavigateTo(initialUrl_);
+        } else if ( !initialHtml_.IsEmpty()) {
+            webViewWindow_.view_.displayHTML(initialHtml_);
+        }
 
-		return webViewWindow_.exec();
-	}
+        return webViewWindow_.exec();
+    }
 
-	void show() {
-		create();
-		webViewWindow_.ShowWindow(SW_SHOW);
-	}
+    void show() {
+        create();
+        webViewWindow_.ShowWindow(SW_SHOW);
+    }
 
-	void hide() {
-		webViewWindow_.ShowWindow(SW_HIDE);
-	}
+    void hide() {
+        webViewWindow_.ShowWindow(SW_HIDE);
+    }
 
-	void close() override {
-		if (webViewWindow_.m_hWnd) {
-			webViewWindow_.close(); 
-		}
-	}
+    void close() override {
+        if (webViewWindow_.m_hWnd) {
+            webViewWindow_.close(); 
+        }
+    }
 
-	void abort() override
-	{
-		WebBrowserPrivateBase::abort();
-		if (webViewWindow_.m_hWnd) {
-			webViewWindow_.abortFromAnotherThread(); // close as user
-		}
-	}
+    void abort() override
+    {
+        WebBrowserPrivateBase::abort();
+        if (webViewWindow_.m_hWnd) {
+            webViewWindow_.abortFromAnotherThread(); // close as user
+        }
+    }
 
-	bool setHtml(const std::string& html) {
-		if ( webViewWindow_.m_hWnd) {
-			return webViewWindow_.view_.displayHTML(IuCoreUtils::Utf8ToWstring(html).c_str()) == ERROR_SUCCESS;
-		} else {
-			initialHtml_ = IuCoreUtils::Utf8ToWstring(html).c_str();
-			return true;
-		}
-	}
+    bool setHtml(const std::string& html) {
+        if ( webViewWindow_.m_hWnd) {
+            return webViewWindow_.view_.displayHTML(IuCoreUtils::Utf8ToWstring(html).c_str()) == ERROR_SUCCESS;
+        } else {
+            initialHtml_ = IuCoreUtils::Utf8ToWstring(html).c_str();
+            return true;
+        }
+    }
 
-	void resize(int w, int h) {
-		if ( webViewWindow_.m_hWnd) {
-			CDC hdc = ::GetDC(webViewWindow_.m_hWnd);
-			float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
-			float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
-			webViewWindow_.ResizeClient(w * dpiScaleX_, h * dpiScaleY_);
+    void resize(int w, int h) {
+        if ( webViewWindow_.m_hWnd) {
+            CDC hdc = ::GetDC(webViewWindow_.m_hWnd);
+            float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
+            float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+            webViewWindow_.ResizeClient(w * dpiScaleX_, h * dpiScaleY_);
 
-		} else {
-			initialWidth_ = w;
-			initialHeight_ = h;
-		}
-	}
+        } else {
+            initialWidth_ = w;
+            initialHeight_ = h;
+        }
+    }
 
-	void setTitle(const std::string& title) {
-		if ( webViewWindow_.m_hWnd) {
-			webViewWindow_.SetWindowText(IuCoreUtils::Utf8ToWstring(title).c_str());
-		} else {
-			initialTitle_ = IuCoreUtils::Utf8ToWstring(title).c_str();
-		}
-	}
+    void setTitle(const std::string& title) {
+        if ( webViewWindow_.m_hWnd) {
+            webViewWindow_.SetWindowText(IuCoreUtils::Utf8ToWstring(title).c_str());
+        } else {
+            initialTitle_ = IuCoreUtils::Utf8ToWstring(title).c_str();
+        }
+    }
 
-	const std::string url() {
-		if ( webViewWindow_.m_hWnd) {
-			return IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.view_.GetLocationURL());
-		} 
-		return std::string();
-	}
+    const std::string url() {
+        if ( webViewWindow_.m_hWnd) {
+            return IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.view_.GetLocationURL());
+        } 
+        return std::string();
+    }
 
-	const std::string title() {
-		if ( webViewWindow_.m_hWnd) {
-			return IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.view_.GetLocationName());
-		} 
-		return IuCoreUtils::WstringToUtf8((LPCTSTR)initialTitle_);
-	}
+    const std::string title() {
+        if ( webViewWindow_.m_hWnd) {
+            return IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.view_.GetLocationName());
+        } 
+        return IuCoreUtils::WstringToUtf8((LPCTSTR)initialTitle_);
+    }
 
-	const std::string getDocumentContents() {
-		return /*IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.view_.GetHTML());*/document().getHTML();
-	}
+    const std::string getDocumentContents() {
+        return /*IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.view_.GetHTML());*/document().getHTML();
+    }
 
-	void addTrustedSite(const std::string& site) {
+    void addTrustedSite(const std::string& site) {
 
-		pcrepp::Pcre reg("(.+?)://(.+)/?", "");
-		std::string domain = site;
-		std::string protocol = "http";
-		if ( reg.search(site)) {
-			protocol = reg.get_match(1);
-			domain = reg.get_match(2);
-		}
-		CRegistry Reg;
-		Reg.SetRootKey( HKEY_CURRENT_USER );
-		if ( Reg.SetKey( CString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\ZoneMap\\Domains\\"))+domain.c_str(), true ) ) {
-			Reg.WriteDword(CString(protocol.c_str()), 2);
-		}	
-	}
-	HtmlDocument document();
+        pcrepp::Pcre reg("(.+?)://(.+)/?", "");
+        std::string domain = site;
+        std::string protocol = "http";
+        if ( reg.search(site)) {
+            protocol = reg.get_match(1);
+            domain = reg.get_match(2);
+        }
+        CRegistry Reg;
+        Reg.SetRootKey( HKEY_CURRENT_USER );
+        if ( Reg.SetKey( CString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\ZoneMap\\Domains\\"))+domain.c_str(), true ) ) {
+            Reg.WriteDword(CString(protocol.c_str()), 2);
+        }    
+    }
+    HtmlDocument document();
 
-	IWebBrowser2* getBrowserInterface() {
-		return  webViewWindow_.view_.GetBrowserInterface();
-	}
+    IWebBrowser2* getBrowserInterface() {
+        return  webViewWindow_.view_.GetBrowserInterface();
+    }
 
-	int getMajorVersion() {
-		return WinUtils::GetInternetExplorerMajorVersion();
-	}
+    int getMajorVersion() {
+        return WinUtils::GetInternetExplorerMajorVersion();
+    }
 
-	const std::string runJavaScript(const std::string& code) {
-		if ( webViewWindow_.m_hWnd) {
-			CComVariant res;
-			/*CComBSTR strSource();
-			CComVariant bstrTarget;
-			
-			bstrTarget.vt = VT_BSTR;
-			bstrTarget.bstrVal = strSource.Copy();*/
-			if ( webViewWindow_.view_.CallJScript(_T("eval"), IuCoreUtils::Utf8ToWstring(code).c_str(), &res) ) {
-				return ComVariantToString(res);
-			}
-		} else {
-			LOG(ERROR) << "injectJavaScript: WebBrowser control is not created yet.";
-		}
-		return std::string();
-	}
+    const std::string runJavaScript(const std::string& code) {
+        if ( webViewWindow_.m_hWnd) {
+            CComVariant res;
+            /*CComBSTR strSource();
+            CComVariant bstrTarget;
+            
+            bstrTarget.vt = VT_BSTR;
+            bstrTarget.bstrVal = strSource.Copy();*/
+            if ( webViewWindow_.view_.CallJScript(_T("eval"), IuCoreUtils::Utf8ToWstring(code).c_str(), &res) ) {
+                return ComVariantToString(res);
+            }
+        } else {
+            LOG(ERROR) << "injectJavaScript: WebBrowser control is not created yet.";
+        }
+        return std::string();
+    }
 
-	const std::string callJavaScriptFunction(const std::string& funcName, Sqrat::Array args) {
-		if ( webViewWindow_.m_hWnd) {
-			CComVariant res;
-			webViewWindow_.view_.CallJScript(IuCoreUtils::Utf8ToWstring(funcName).c_str(), &res);
-			return ComVariantToString(res);
-		} else {
-			LOG(ERROR) << "injectJavaScript: WebBrowser control is not created yet.";
-		}
-		return std::string();
-	}
+    const std::string callJavaScriptFunction(const std::string& funcName, Sqrat::Array args) {
+        if ( webViewWindow_.m_hWnd) {
+            CComVariant res;
+            webViewWindow_.view_.CallJScript(IuCoreUtils::Utf8ToWstring(funcName).c_str(), &res);
+            return ComVariantToString(res);
+        } else {
+            LOG(ERROR) << "injectJavaScript: WebBrowser control is not created yet.";
+        }
+        return std::string();
+    }
 
-	void setFocus();
-	friend class HtmlElementPrivate;
+    void setFocus();
+    friend class HtmlElementPrivate;
 protected:
-	CWebViewWindow webViewWindow_;
-	CString initialUrl_;
-	CString initialTitle_;
-	CString initialHtml_;
-	CWebBrowser* browser_;
-	bool initialSilent_;
-	int initialWidth_;
-	int initialHeight_;
+    CWebViewWindow webViewWindow_;
+    CString initialUrl_;
+    CString initialTitle_;
+    CString initialHtml_;
+    CWebBrowser* browser_;
+    bool initialSilent_;
+    int initialWidth_;
+    int initialHeight_;
 
-	void create(HWND parent = 0 ) {
-		if ( webViewWindow_.m_hWnd) {
-			return;
-		}
+    void create(HWND parent = 0 ) {
+        if ( webViewWindow_.m_hWnd) {
+            return;
+        }
 
-		CRect r(0,0, initialWidth_, initialWidth_);
-		webViewWindow_.Create(parent,CWindow::rcDefault,initialTitle_, WS_POPUP | WS_OVERLAPPEDWINDOW	);
-		webViewWindow_.view_.PutSilent(initialSilent_);
-		CDC hdc = ::GetDC(webViewWindow_.m_hWnd);
-		float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
-		float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+        CRect r(0,0, initialWidth_, initialWidth_);
+        webViewWindow_.Create(parent,CWindow::rcDefault,initialTitle_, WS_POPUP | WS_OVERLAPPEDWINDOW    );
+        webViewWindow_.view_.PutSilent(initialSilent_);
+        CDC hdc = ::GetDC(webViewWindow_.m_hWnd);
+        float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
+        float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
 
-		if ( initialWidth_ && initialHeight_ ) {
-			webViewWindow_.ResizeClient(initialWidth_ * dpiScaleX_, initialHeight_ * dpiScaleY_);
-		}
-		if ( timerInterval_ ) {
-			webViewWindow_.setTimerInterval(timerInterval_);
-		}
-	}
-	void OnPageLoaded(const CString& url);
-	void OnDocumentComplete(const CString& url);
-	bool OnNavigateError(const CString& url, LONG statusCode);
-	void OnTimer();
-	void OnFileFieldFilled(const CString& fileName);
+        if ( initialWidth_ && initialHeight_ ) {
+            webViewWindow_.ResizeClient(initialWidth_ * dpiScaleX_, initialHeight_ * dpiScaleY_);
+        }
+        if ( timerInterval_ ) {
+            webViewWindow_.setTimerInterval(timerInterval_);
+        }
+    }
+    void OnPageLoaded(const CString& url);
+    void OnDocumentComplete(const CString& url);
+    bool OnNavigateError(const CString& url, LONG statusCode);
+    void OnTimer();
+    void OnFileFieldFilled(const CString& fileName);
 };
 
 }

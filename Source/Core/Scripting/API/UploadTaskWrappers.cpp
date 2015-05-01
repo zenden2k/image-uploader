@@ -13,13 +13,13 @@ UploadTaskWrapperBase::UploadTaskWrapperBase()
 const std::string UploadTaskWrapperBase::role()
 {
     checkNull(BOOST_CURRENT_FUNCTION);
-	return UploadTask::EnumToString(task_->role());
+    return UploadTask::EnumToString(task_->role());
 }
 
 void UploadTaskWrapperBase::setRole(const std::string& role)
 {
     checkNull(BOOST_CURRENT_FUNCTION);
-	task_->setRole(UploadTask::StringToEnumRole(role.c_str()));
+    task_->setRole(UploadTask::StringToEnumRole(role.c_str()));
 }
 
 const std::string UploadTaskWrapperBase::type()

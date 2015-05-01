@@ -1,9 +1,9 @@
 #include "AbstractImage.h"
 
 #ifdef QT_VERSION 
-	#include "QtImage.h"
+    #include "QtImage.h"
 #elif defined(_WIN32)
-	#include "GdiPlusImage.h"
+    #include "GdiPlusImage.h"
 #endif
 #include "Core/logging.h"
 
@@ -20,14 +20,14 @@ int AbstractImage::getHeight() const {
 
 AbstractImage* AbstractImage::createImage()
 {
-	#ifdef QT_VERSION 
-		return new QtImage();
-	#elif defined(_WIN32)
-		return new GdiPlusImage();
-	#else
-		LOG(ERROR) << "No suitable image class found";
-	#endif
-	return 0;
+    #ifdef QT_VERSION 
+        return new QtImage();
+    #elif defined(_WIN32)
+        return new GdiPlusImage();
+    #else
+        LOG(ERROR) << "No suitable image class found";
+    #endif
+    return 0;
 }
 
 AbstractImage::~AbstractImage() {
@@ -36,6 +36,6 @@ AbstractImage::~AbstractImage() {
 
 bool AbstractImage::loadFromFile(const Utf8String& fileName)
 {
-	LOG(ERROR) << "loadFromFile not implemented";
-	return false;
+    LOG(ERROR) << "loadFromFile not implemented";
+    return false;
 }

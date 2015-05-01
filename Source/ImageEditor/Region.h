@@ -8,21 +8,21 @@
 
 namespace ImageEditor 
 {
-	class Region {
-	public:
-		Region(int x,int y, int w, int h);
-		~Region();
-		#ifndef QT_VERSION
-		Region(Gdiplus::Region* rgn );
-		#endif
-		Region intersected(const Region & r) const;
-		Region subtracted(const Region & r) const;
-		Region united(const Region & r) const;
-		std_tr::shared_ptr<Gdiplus::Region> toNativeRegion() const;
-	private:
+    class Region {
+    public:
+        Region(int x,int y, int w, int h);
+        ~Region();
+        #ifndef QT_VERSION
+        Region(Gdiplus::Region* rgn );
+        #endif
+        Region intersected(const Region & r) const;
+        Region subtracted(const Region & r) const;
+        Region united(const Region & r) const;
+        std_tr::shared_ptr<Gdiplus::Region> toNativeRegion() const;
+    private:
 #ifndef QT_VERSION
-		std_tr::shared_ptr<Gdiplus::Region> rgn_;
+        std_tr::shared_ptr<Gdiplus::Region> rgn_;
 #endif
-	};
+    };
 }
 #endif

@@ -36,33 +36,33 @@ class FileQueueUploaderPrivate;
 
 class CFileQueueUploader
 {
-	public:
+    public:
         CFileQueueUploader(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager);
-		void addSession(std::shared_ptr<UploadSession> uploadSession);
-		void addTask(std_tr::shared_ptr<UploadTask> task);
-		void removeSession(std::shared_ptr<UploadSession> uploadSession);
-		virtual ~CFileQueueUploader();
-		bool start();
-		void stop();
-		bool IsRunning() const;
-		void setMaxThreadCount(int threadCount);
-		bool isSlotAvailableForServer(std::string serverName, int maxThreads);
-		void addUploadFilter(UploadFilter* filter);
-		void removeUploadFilter(UploadFilter* filter);
-		int sessionCount();
-		std_tr::shared_ptr<UploadSession> session(int index);
-		fastdelegate::FastDelegate1<CFileQueueUploader*> OnQueueFinished;
-		fastdelegate::FastDelegate1<UploadSession*> OnSessionAdded;
-		fastdelegate::FastDelegate1<UploadTask*> OnTaskAdded;
+        void addSession(std::shared_ptr<UploadSession> uploadSession);
+        void addTask(std_tr::shared_ptr<UploadTask> task);
+        void removeSession(std::shared_ptr<UploadSession> uploadSession);
+        virtual ~CFileQueueUploader();
+        bool start();
+        void stop();
+        bool IsRunning() const;
+        void setMaxThreadCount(int threadCount);
+        bool isSlotAvailableForServer(std::string serverName, int maxThreads);
+        void addUploadFilter(UploadFilter* filter);
+        void removeUploadFilter(UploadFilter* filter);
+        int sessionCount();
+        std_tr::shared_ptr<UploadSession> session(int index);
+        fastdelegate::FastDelegate1<CFileQueueUploader*> OnQueueFinished;
+        fastdelegate::FastDelegate1<UploadSession*> OnSessionAdded;
+        fastdelegate::FastDelegate1<UploadTask*> OnTaskAdded;
 
-		fastdelegate::FastDelegate2<CFileQueueUploader*, NetworkClient*> OnConfigureNetworkClient;
-		friend class FileQueueUploaderPrivate;
-	private:
-		DISALLOW_COPY_AND_ASSIGN(CFileQueueUploader);
-		FileQueueUploaderPrivate* _impl;
-	protected:
-		virtual void sessionAdded(UploadSession* session);
-		virtual void taskAdded(UploadTask* task);
+        fastdelegate::FastDelegate2<CFileQueueUploader*, NetworkClient*> OnConfigureNetworkClient;
+        friend class FileQueueUploaderPrivate;
+    private:
+        DISALLOW_COPY_AND_ASSIGN(CFileQueueUploader);
+        FileQueueUploaderPrivate* _impl;
+    protected:
+        virtual void sessionAdded(UploadSession* session);
+        virtual void taskAdded(UploadTask* task);
 };
 
 #endif

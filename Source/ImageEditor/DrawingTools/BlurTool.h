@@ -9,18 +9,18 @@
 #include "BrushTool.h"
 namespace ImageEditor {
 
-	class Canvas;
+    class Canvas;
 
 
 
 #if GDIPVER >= 0x0110 
 class BlurTool: public BrushTool  {
 public:
-	BlurTool( Canvas* canvas );
+    BlurTool( Canvas* canvas );
 protected:
-	virtual void drawLine(int x0, int y0, int x1, int y1);
+    virtual void drawLine(int x0, int y0, int x1, int y1);
 
-	virtual void endDraw(int x, int y);
+    virtual void endDraw(int x, int y);
 
 };
 #endif

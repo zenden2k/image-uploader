@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace Gdiplus {
-	class Bitmap;
+    class Bitmap;
 }
 const std::wstring Utf8ToWstring(const std::string &str);
 #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
@@ -19,95 +19,95 @@ const std::wstring Utf8ToWstring(const std::string &str);
 namespace WinUtils {
 
 
-	bool IsWinXP();
-	bool IsWinXPOrLater();
-	bool IsDirectory(LPCTSTR szFileName);
-	bool IsVista();
-	bool IsWindows64Bit();
-	bool IsWindows8orLater();
-	bool IsWine();
-	// Function that gets path to SendTo folder
-	CString GetSendToPath();
-	CString GetSystemSpecialPath(int csidl);
-	CString GetApplicationDataPath();
-	CString GetCommonApplicationDataPath();
-	bool    CopyTextToClipboard(CString text);
-	bool    GetClipboardText(CString &text);
-	bool GetClipboardHtml(CString& text, CString& outSourceUrl);
-	DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
+    bool IsWinXP();
+    bool IsWinXPOrLater();
+    bool IsDirectory(LPCTSTR szFileName);
+    bool IsVista();
+    bool IsWindows64Bit();
+    bool IsWindows8orLater();
+    bool IsWine();
+    // Function that gets path to SendTo folder
+    CString GetSendToPath();
+    CString GetSystemSpecialPath(int csidl);
+    CString GetApplicationDataPath();
+    CString GetCommonApplicationDataPath();
+    bool    CopyTextToClipboard(CString text);
+    bool    GetClipboardText(CString &text);
+    bool GetClipboardHtml(CString& text, CString& outSourceUrl);
+    DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
 
-	bool CreateShortCut( 
-		LPCWSTR pwzShortCutFileName, 
-		LPCTSTR pszPathAndFileName, 
-		LPCTSTR pszWorkingDirectory, 
-		LPCTSTR pszArguments, 
-		WORD wHotKey, 
-		int iCmdShow, 
-		LPCTSTR pszIconFileName, 
-		int iIconIndex) ;
+    bool CreateShortCut( 
+        LPCWSTR pwzShortCutFileName, 
+        LPCTSTR pszPathAndFileName, 
+        LPCTSTR pszWorkingDirectory, 
+        LPCTSTR pszArguments, 
+        WORD wHotKey, 
+        int iCmdShow, 
+        LPCTSTR pszIconFileName, 
+        int iIconIndex) ;
 
-	bool CreateFolder(LPCTSTR szFolder);
-	bool CreateFilePath(LPCTSTR szFilePath);
-	HICON GetAssociatedIcon (LPCTSTR filename, bool Small);
+    bool CreateFolder(LPCTSTR szFolder);
+    bool CreateFilePath(LPCTSTR szFilePath);
+    HICON GetAssociatedIcon (LPCTSTR filename, bool Small);
 
-	// File path functions
-	LPTSTR ExtractFilePath(LPCTSTR FileName,LPTSTR buf);
-	CString myExtractFileName(const CString & FileName);
-	LPCTSTR GetFileExt(LPCTSTR szFileName);
-	CString GetOnlyFileName(const CString& szFilename);
-	bool FileExists(LPCTSTR FileName);
-	const CString TrimString(const CString& source, int nMaxLen);
-	bool IsStrInList(LPCTSTR szExt,LPCTSTR szList);
-	bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
-	bool ShowFilePropertiesDialog(HWND hWnd, const CString& fileName);
-	CString IntToStr(int n);
+    // File path functions
+    LPTSTR ExtractFilePath(LPCTSTR FileName,LPTSTR buf);
+    CString myExtractFileName(const CString & FileName);
+    LPCTSTR GetFileExt(LPCTSTR szFileName);
+    CString GetOnlyFileName(const CString& szFilename);
+    bool FileExists(LPCTSTR FileName);
+    const CString TrimString(const CString& source, int nMaxLen);
+    bool IsStrInList(LPCTSTR szExt,LPCTSTR szList);
+    bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
+    bool ShowFilePropertiesDialog(HWND hWnd, const CString& fileName);
+    CString IntToStr(int n);
 
-	CString GetAppFolder();
-	CString GetAppFileName();
-	CString FormatWindowsErrorMessage(int idCode);
-	bool IsElevated();
-	void DeleteDir2(LPCTSTR Dir);
-	CString GetUniqFileName(const CString& filePath);
-	int GetFolderFileList(std::vector<CString> &list, CString folder, CString mask);
+    CString GetAppFolder();
+    CString GetAppFileName();
+    CString FormatWindowsErrorMessage(int idCode);
+    bool IsElevated();
+    void DeleteDir2(LPCTSTR Dir);
+    CString GetUniqFileName(const CString& filePath);
+    int GetFolderFileList(std::vector<CString> &list, CString folder, CString mask);
 
-	inline COLORREF RGB2COLORREF(unsigned int color) {
-		return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
-	}
+    inline COLORREF RGB2COLORREF(unsigned int color) {
+        return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
+    }
 
-	inline unsigned int COLORREF2RGB( COLORREF color){
-		return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
-	}
+    inline unsigned int COLORREF2RGB( COLORREF color){
+        return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
+    }
 
-	bool FontToString(LOGFONT const * lFont, CString &Result);
-	bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont);
-	RECT AutoSizeStaticControl(HWND control);
+    bool FontToString(LOGFONT const * lFont, CString &Result);
+    bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont);
+    RECT AutoSizeStaticControl(HWND control);
 
-	bool ExtractStrFromList(
-		LPCTSTR szString /* Source string */,
-		int nIndex, /* Zero based item index */
-		LPTSTR szBuffer /* Destination buffer */,
-		LONG nSize ,/* Length in characters of destination buffer */
-		LPCTSTR szDefString = NULL,
-		TCHAR cSeparator = _T(',') /* Character to be separator in list */);
-	const CString StringSection(const CString& str,TCHAR sep, int index);
-	bool IsWindows64Bit();
+    bool ExtractStrFromList(
+        LPCTSTR szString /* Source string */,
+        int nIndex, /* Zero based item index */
+        LPTSTR szBuffer /* Destination buffer */,
+        LONG nSize ,/* Length in characters of destination buffer */
+        LPCTSTR szDefString = NULL,
+        TCHAR cSeparator = _T(',') /* Character to be separator in list */);
+    const CString StringSection(const CString& str,TCHAR sep, int index);
+    bool IsWindows64Bit();
 
-	void DeleteDir2(LPCTSTR Dir);
-	CString GetAppFolder();
-	float GetMonitorScaleFactor();
-	CString GetLastErrorAsString();
-	BOOL MakeDirectoryWritable(LPCTSTR lpPath);
-	int GetInternetExplorerMajorVersion();
-	void RemoveBrowserKey();
-	void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective = false);
-	void TimerWait(int Delay);
-	WTL::CString ConvertRelativePathToAbsolute(const WTL::CString& fileName);
-	bool IsProcessRunning(DWORD pid);
+    void DeleteDir2(LPCTSTR Dir);
+    CString GetAppFolder();
+    float GetMonitorScaleFactor();
+    CString GetLastErrorAsString();
+    BOOL MakeDirectoryWritable(LPCTSTR lpPath);
+    int GetInternetExplorerMajorVersion();
+    void RemoveBrowserKey();
+    void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective = false);
+    void TimerWait(int Delay);
+    WTL::CString ConvertRelativePathToAbsolute(const WTL::CString& fileName);
+    bool IsProcessRunning(DWORD pid);
 #ifndef IU_SHELLEXT
-	std::wstring strtows(const std::string &str, UINT codePage);
-	std::string wstostr(const std::wstring &ws, UINT codePage);
-	const std::string AnsiToUtf8(const std::string &str, int codepage);
-	const std::string Utf8ToAnsi(const std::string &str, int codepage);
+    std::wstring strtows(const std::string &str, UINT codePage);
+    std::string wstostr(const std::wstring &ws, UINT codePage);
+    const std::string AnsiToUtf8(const std::string &str, int codepage);
+    const std::string Utf8ToAnsi(const std::string &str, int codepage);
 #endif
 
 };
@@ -115,7 +115,7 @@ namespace WinUtils {
 
 namespace Test
 {
-	
+    
 }
 
 #endif

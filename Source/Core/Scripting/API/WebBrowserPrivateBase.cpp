@@ -5,31 +5,31 @@ namespace ScriptAPI {
 
 WebBrowserPrivateBase::WebBrowserPrivateBase()
 {
-	AddBrowserToVM(GetCurrentThreadVM(), this);
+    AddBrowserToVM(GetCurrentThreadVM(), this);
 }
 
 WebBrowserPrivateBase::~WebBrowserPrivateBase()
 {
-	RemoveBrowserToVM(GetCurrentThreadVM(), this);
+    RemoveBrowserToVM(GetCurrentThreadVM(), this);
 }
 
 void WebBrowserPrivateBase::abort()
 {
-	clearCallbacks();
+    clearCallbacks();
 }
 
 void WebBrowserPrivateBase::clearCallbacks()
 {
-	onUrlChangedCallback_.Release();
-	onUrlChangedCallbackContext_.Release();
-	onNavigateErrorCallback_.Release();
-	onNavigateErrorCallbackContext_.Release();
-	onLoadFinishedCallback_.Release();
-	onLoadFinishedCallbackContext_.Release();
-	onTimerCallback_.Release();
-	onTimerCallbackContext_.Release();
-	onFileFieldFilledCallback_.Release();
-	onFileFieldFilledCallbackContext_.Release();
+    onUrlChangedCallback_.Release();
+    onUrlChangedCallbackContext_.Release();
+    onNavigateErrorCallback_.Release();
+    onNavigateErrorCallbackContext_.Release();
+    onLoadFinishedCallback_.Release();
+    onLoadFinishedCallbackContext_.Release();
+    onTimerCallback_.Release();
+    onTimerCallbackContext_.Release();
+    onFileFieldFilledCallback_.Release();
+    onFileFieldFilledCallbackContext_.Release();
 }
 
 }

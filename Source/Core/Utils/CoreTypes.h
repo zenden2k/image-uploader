@@ -25,8 +25,8 @@ namespace std_tr = std;
 // A macro to disallow the copy constructor and operator= functions
 // This should be used in the private: declarations for a class
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \
-	TypeName(const TypeName&);               \
-	void operator=(const TypeName&)
+    TypeName(const TypeName&);               \
+    void operator=(const TypeName&)
 
 
 // The ARRAY_SIZE(arr) macro returns the # of elements in an array arr.
@@ -58,22 +58,22 @@ char (&ArraySizeHelper(const T (&array)[N]))[N];
 
 template <class T> struct EnumWrapper
 {
-	T value_;
-	operator T&()
-	{
-		return value_;
-	}
+    T value_;
+    operator T&()
+    {
+        return value_;
+    }
 
-	T& operator =(const T& value)
-	{
-		value_ = value;
-		return *this;
-	}
+    T& operator =(const T& value)
+    {
+        value_ = value;
+        return *this;
+    }
 
-	bool operator==(const T value)
-	{
-		return value_ == value;
-	}
+    bool operator==(const T value)
+    {
+        return value_ == value;
+    }
 };
 
 // std::shared_ptr release() implementation
@@ -82,19 +82,19 @@ template <class T> struct EnumWrapper
 template <typename T>
 class release_deleter{
 public:
-	release_deleter() : released_(new bool(false)){}
-	void release() {*released_ = true;}
-	void reset_released() { *released_ = false;}
-	void operator()(T* ptr){
-		if(!*released_)  {
-			delete ptr;
-		}
-			
-	}
+    release_deleter() : released_(new bool(false)){}
+    void release() {*released_ = true;}
+    void reset_released() { *released_ = false;}
+    void operator()(T* ptr){
+        if(!*released_)  {
+            delete ptr;
+        }
+            
+    }
 
 private:
-	//DISALLOW_COPY_AND_ASSIGN(release_deleter<T>);
-	std_tr::shared_ptr<bool> released_;
+    //DISALLOW_COPY_AND_ASSIGN(release_deleter<T>);
+    std_tr::shared_ptr<bool> released_;
 };
 
 #ifndef Q_DECLARE_PRIVATE

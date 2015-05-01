@@ -23,65 +23,65 @@
 namespace ScriptAPI {;
 
 HtmlElement HtmlDocumentPrivate::rootElement() {
-	if ( rootElement_.isNull() ) {
-		CComPtr<IHTMLElementCollection> collection;
-		CComBSTR tagBstr = _T("html");
-		doc3_->getElementsByTagName(tagBstr, &collection);
-		long count  = 0;
-		if ( !SUCCEEDED(collection->get_length(&count))) {
-			return HtmlElement();
-		}
-		for ( int i = 0; i < count; i ++ ) {
-			IDispatchPtr  disp = 0;
-			collection->item(CComVariant(i), CComVariant(0), &disp);
-			rootElement_ = new HtmlElementPrivate(disp, this); 
-			return rootElement_;
-		}
-	}
-	return rootElement_;
+    if ( rootElement_.isNull() ) {
+        CComPtr<IHTMLElementCollection> collection;
+        CComBSTR tagBstr = _T("html");
+        doc3_->getElementsByTagName(tagBstr, &collection);
+        long count  = 0;
+        if ( !SUCCEEDED(collection->get_length(&count))) {
+            return HtmlElement();
+        }
+        for ( int i = 0; i < count; i ++ ) {
+            IDispatchPtr  disp = 0;
+            collection->item(CComVariant(i), CComVariant(0), &disp);
+            rootElement_ = new HtmlElementPrivate(disp, this); 
+            return rootElement_;
+        }
+    }
+    return rootElement_;
 }
 
 HtmlElement HtmlDocumentPrivate::getElementById(const std::string& id) {
-	CComPtr<IHTMLElement> elem = 0;
-	CComBSTR idBstr = IuCoreUtils::Utf8ToWstring(id).c_str();
-	if ( SUCCEEDED( doc3_->getElementById(idBstr, &elem))  && elem  ) {
-		return new HtmlElementPrivate(elem, this);
-	}
-	return HtmlElement();
+    CComPtr<IHTMLElement> elem = 0;
+    CComBSTR idBstr = IuCoreUtils::Utf8ToWstring(id).c_str();
+    if ( SUCCEEDED( doc3_->getElementById(idBstr, &elem))  && elem  ) {
+        return new HtmlElementPrivate(elem, this);
+    }
+    return HtmlElement();
 }
 
 Sqrat::Array HtmlDocumentPrivate::getElementsByTagName(const std::string& tag) {
-	CComPtr<IHTMLElementCollection> collection;
-	CComBSTR tagBstr = IuCoreUtils::Utf8ToWstring(tag).c_str();
-	doc3_->getElementsByTagName(tagBstr, &collection);
-	long count  = 0;
-	if ( !SUCCEEDED(collection->get_length(&count))) {
-		return Sqrat::Array();
-	}
+    CComPtr<IHTMLElementCollection> collection;
+    CComBSTR tagBstr = IuCoreUtils::Utf8ToWstring(tag).c_str();
+    doc3_->getElementsByTagName(tagBstr, &collection);
+    long count  = 0;
+    if ( !SUCCEEDED(collection->get_length(&count))) {
+        return Sqrat::Array();
+    }
     Sqrat::Array res(GetCurrentThreadVM().GetVM(), count);
-	for ( int i = 0; i < count; i ++ ) {
-		IDispatchPtr  disp = 0;
-		collection->item(CComVariant(i), CComVariant(0), &disp);
-		res.SetValue(i, HtmlElement(new HtmlElementPrivate(disp, this)));
-	}
-	return res;
+    for ( int i = 0; i < count; i ++ ) {
+        IDispatchPtr  disp = 0;
+        collection->item(CComVariant(i), CComVariant(0), &disp);
+        res.SetValue(i, HtmlElement(new HtmlElementPrivate(disp, this)));
+    }
+    return res;
 }
 
 Sqrat::Array HtmlDocumentPrivate::getElementsByName(const std::string& name) {
-	CComPtr<IHTMLElementCollection> collection;
-	CComBSTR tagBstr = IuCoreUtils::Utf8ToWstring(name).c_str();
-	doc3_->getElementsByName(tagBstr, &collection);
-	long count  = 0;
-	if ( !SUCCEEDED(collection->get_length(&count))) {
+    CComPtr<IHTMLElementCollection> collection;
+    CComBSTR tagBstr = IuCoreUtils::Utf8ToWstring(name).c_str();
+    doc3_->getElementsByName(tagBstr, &collection);
+    long count  = 0;
+    if ( !SUCCEEDED(collection->get_length(&count))) {
         return Sqrat::Array();
-	}
+    }
     Sqrat::Array res(GetCurrentThreadVM().GetVM(), count);
-	for ( int i = 0; i < count; i ++ ) {
-		IDispatchPtr  disp = 0;
-		collection->item(CComVariant(i), CComVariant(0), &disp);
-		res.SetValue(i, HtmlElement(new HtmlElementPrivate(disp, this)));
-	}
-	return res;
+    for ( int i = 0; i < count; i ++ ) {
+        IDispatchPtr  disp = 0;
+        collection->item(CComVariant(i), CComVariant(0), &disp);
+        res.SetValue(i, HtmlElement(new HtmlElementPrivate(disp, this)));
+    }
+    return res;
 }
 
 }

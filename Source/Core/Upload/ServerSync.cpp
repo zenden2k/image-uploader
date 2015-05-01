@@ -9,7 +9,7 @@
 class ServerSyncPrivate: public ThreadSyncPrivate
 {
 public:
-	std::mutex loginMutex_;
+    std::mutex loginMutex_;
     std::atomic<bool> authPerformed_;
     std::atomic<bool> authPerformedSuccess_;
 };
@@ -23,28 +23,28 @@ ServerSync::ServerSync() : ThreadSync(new ServerSyncPrivate())
 bool ServerSync::beginAuth()
 {
     Q_D(ServerSync);
-	try {
-		d->loginMutex_.lock();
-	} catch (std::exception ex) {
-		LOG(ERROR) << "ServerSync::beginLogin exception: " << ex.what();
-		return false;
-	}
-	return true;
+    try {
+        d->loginMutex_.lock();
+    } catch (std::exception ex) {
+        LOG(ERROR) << "ServerSync::beginLogin exception: " << ex.what();
+        return false;
+    }
+    return true;
 }
 
 bool ServerSync::endAuth()
 {
     Q_D(ServerSync);
-	try
-	{
-		d->loginMutex_.unlock();
-	} catch (std::exception ex)
-	{
-		LOG(ERROR) << "ServerSync::endLogin exception: " << ex.what();
-		return false;
-	}
-	
-	return true;
+    try
+    {
+        d->loginMutex_.unlock();
+    } catch (std::exception ex)
+    {
+        LOG(ERROR) << "ServerSync::endLogin exception: " << ex.what();
+        return false;
+    }
+    
+    return true;
 }
 
 void ServerSync::setAuthPerformed(bool success)

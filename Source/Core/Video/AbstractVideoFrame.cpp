@@ -22,6 +22,6 @@ int64_t AbstractVideoFrame::getTime() const {
 }
 
 AbstractImage*  AbstractVideoFrame::toImage() const {
-	LOG(ERROR) << "toImage not implemented";
+    LOG(ERROR) << "toImage not implemented";
     return NULL;
 }

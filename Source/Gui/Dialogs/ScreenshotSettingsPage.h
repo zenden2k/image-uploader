@@ -27,28 +27,28 @@
 #include <atlcrack.h>
 #include "SettingsPage.h"
 
-class CScreenshotSettingsPagePage :	public CDialogImpl<CScreenshotSettingsPagePage>, 
-	                                 public CSettingsPage	
+class CScreenshotSettingsPagePage :    public CDialogImpl<CScreenshotSettingsPagePage>, 
+                                     public CSettingsPage    
 {
-	public:
-		CScreenshotSettingsPagePage();
-		~CScreenshotSettingsPagePage();
-		enum { IDD = IDD_SCREENSHOTSETTINGSPAGE};
+    public:
+        CScreenshotSettingsPagePage();
+        ~CScreenshotSettingsPagePage();
+        enum { IDD = IDD_SCREENSHOTSETTINGSPAGE};
 
-	protected:
-		BEGIN_MSG_MAP(CScreenshotSettingsPagePage)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			COMMAND_HANDLER(IDC_SCREENSHOTSFOLDERSELECT, BN_CLICKED, OnScreenshotsFolderSelect)
-		END_MSG_MAP()
-		// Handler prototypes:
-		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		bool Apply();
-		LRESULT OnScreenshotsFolderSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    protected:
+        BEGIN_MSG_MAP(CScreenshotSettingsPagePage)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            COMMAND_HANDLER(IDC_SCREENSHOTSFOLDERSELECT, BN_CLICKED, OnScreenshotsFolderSelect)
+        END_MSG_MAP()
+        // Handler prototypes:
+        //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        bool Apply();
+        LRESULT OnScreenshotsFolderSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 };
 
 

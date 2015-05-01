@@ -29,44 +29,44 @@
 
 class CFileDownloader
 {
-	public:
-		struct DownloadFileListItem
-		{
-			std::string fileName;
-			std::string displayName;
-			std::string url;
-			std::string referer;
-			void* id;
-		};
+    public:
+        struct DownloadFileListItem
+        {
+            std::string fileName;
+            std::string displayName;
+            std::string url;
+            std::string referer;
+            void* id;
+        };
 
-		CFileDownloader();
-		virtual ~CFileDownloader();
-		void AddFile(const std::string& url, void* id, const std::string& referer = std::string());
-		bool start();
-		bool waitForFinished(unsigned int msec = -1);
-		void setThreadCount(int n);
-		void stop();
-		bool IsRunning();
+        CFileDownloader();
+        virtual ~CFileDownloader();
+        void AddFile(const std::string& url, void* id, const std::string& referer = std::string());
+        bool start();
+        bool waitForFinished(unsigned int msec = -1);
+        void setThreadCount(int n);
+        void stop();
+        bool IsRunning();
 
-		fastdelegate::FastDelegate0<> onQueueFinished;
-		fastdelegate::FastDelegate1<NetworkClient*> onConfigureNetworkClient;
-		fastdelegate::FastDelegate3<bool, int, DownloadFileListItem, bool> onFileFinished;
-	protected:
-		CString m_ErrorStr;
-		CAutoCriticalSection m_CS;
-		std::vector<DownloadFileListItem> m_fileList;
-		int m_nThreadCount;
-		int m_nRunningThreads;
-		std::vector<HANDLE> m_hThreads;
-		bool m_NeedStop;
-		volatile bool m_IsRunning;
-		static int ProgressFunc (void* userData, double dltotal, double dlnow, double ultotal, double ulnow);
-		static unsigned int __stdcall thread_func(void* param);
-		void memberThreadFunc();
-		bool getNextJob(DownloadFileListItem& item);
+        fastdelegate::FastDelegate0<> onQueueFinished;
+        fastdelegate::FastDelegate1<NetworkClient*> onConfigureNetworkClient;
+        fastdelegate::FastDelegate3<bool, int, DownloadFileListItem, bool> onFileFinished;
+    protected:
+        CString m_ErrorStr;
+        CAutoCriticalSection m_CS;
+        std::vector<DownloadFileListItem> m_fileList;
+        int m_nThreadCount;
+        int m_nRunningThreads;
+        std::vector<HANDLE> m_hThreads;
+        bool m_NeedStop;
+        volatile bool m_IsRunning;
+        static int ProgressFunc (void* userData, double dltotal, double dlnow, double ultotal, double ulnow);
+        static unsigned int __stdcall thread_func(void* param);
+        void memberThreadFunc();
+        bool getNextJob(DownloadFileListItem& item);
 
-	private:
-		DISALLOW_COPY_AND_ASSIGN(CFileDownloader);
+    private:
+        DISALLOW_COPY_AND_ASSIGN(CFileDownloader);
 };
 
 #endif

@@ -28,62 +28,62 @@
 
 namespace GuiTools
 {
-	int AddComboBoxItem(HWND hDlg, int itemId, LPCTSTR item);
-	bool AddComboBoxItems(HWND hDlg, int itemId, int itemCount, LPCTSTR item, ...);
+    int AddComboBoxItem(HWND hDlg, int itemId, LPCTSTR item);
+    bool AddComboBoxItems(HWND hDlg, int itemId, int itemCount, LPCTSTR item, ...);
    void GetCheck(HWND dlg, int id, bool& check);
-	bool GetCheck(HWND dlg, int id);
+    bool GetCheck(HWND dlg, int id);
    void SetCheck(HWND dlg, int id, bool check);
-	void MakeLabelBold(HWND Label);
-	void EnableNextN(HWND Control, int n, bool Enable);
-	bool InsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP bm=0);
-	void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, bool Horizontal);
-	bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...);
-	RECT GetDialogItemRect(HWND dialog, int itemId);
-	void ShowDialogItem(HWND dlg, int itemId, bool show);
-	void EnableDialogItem(HWND dlg, int itemId, bool enable);
-	
-	// Converts pixels to Win32 dialog units
-	int dlgX(int WidthInPixels);
-	int dlgY(int HeightInPixels);
+    void MakeLabelBold(HWND Label);
+    void EnableNextN(HWND Control, int n, bool Enable);
+    bool InsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP bm=0);
+    void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, bool Horizontal);
+    bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...);
+    RECT GetDialogItemRect(HWND dialog, int itemId);
+    void ShowDialogItem(HWND dlg, int itemId, bool show);
+    void EnableDialogItem(HWND dlg, int itemId, bool enable);
+    
+    // Converts pixels to Win32 dialog units
+    int dlgX(int WidthInPixels);
+    int dlgY(int HeightInPixels);
 
-	CString GetWindowText(HWND wnd);
-	CString GetDlgItemText(HWND dialog, int controlId);
+    CString GetWindowText(HWND wnd);
+    CString GetDlgItemText(HWND dialog, int controlId);
 
-	int GetWindowLeft(HWND Wnd);
+    int GetWindowLeft(HWND Wnd);
 
-	HFONT MakeFontUnderLine(HFONT font);
-	HFONT MakeFontBold(HFONT font);
-	HFONT MakeFontSmaller(HFONT font);
-	void MakeLabelItalic(HWND Label);
+    HFONT MakeFontUnderLine(HFONT font);
+    HFONT MakeFontBold(HFONT font);
+    HFONT MakeFontSmaller(HFONT font);
+    void MakeLabelItalic(HWND Label);
 
-	int GetFontSize(int nFontHeight);
-	int GetFontHeight(int nFontSize);
-	HFONT GetSystemDialogFont();
+    int GetFontSize(int nFontHeight);
+    int GetFontHeight(int nFontSize);
+    HFONT GetSystemDialogFont();
 
-	int ScreenBPP();
-	BOOL Is32BPP();
+    int ScreenBPP();
+    BOOL Is32BPP();
 
-	bool IsChecked(HWND dlg, int id);
+    bool IsChecked(HWND dlg, int id);
 
-	CString SelectFolderDialog(HWND hWndParent, CString initialDir);
-	RECT AutoSizeStaticControl(HWND control);
+    CString SelectFolderDialog(HWND hWndParent, CString initialDir);
+    RECT AutoSizeStaticControl(HWND control);
 
-	struct IconInfo
-	{
-		int     nWidth;
-		int     nHeight;
-		int     nBitsPerPixel;
-	};
+    struct IconInfo
+    {
+        int     nWidth;
+        int     nHeight;
+        int     nBitsPerPixel;
+    };
 
-	IconInfo GetIconInfo(HICON hIcon);
+    IconInfo GetIconInfo(HICON hIcon);
 
-	bool GetScreenBounds(RECT& rect);
-	HRGN CloneRegion(HRGN source);
-	HFONT MakeFontBigger(HFONT font);
-	HWND CreateToolTipForWindow(HWND hwnd, const CString& text);
-	CHARFORMAT LogFontToCharFormat(const LOGFONT & lf);
-	LOGFONT CharFormatToLogFont(const CHARFORMAT & cf);
-	HICON LoadSmallIcon(int resourceId);
-	HICON LoadBigIcon(int resourceId, int maxAvailableSize = 48);
+    bool GetScreenBounds(RECT& rect);
+    HRGN CloneRegion(HRGN source);
+    HFONT MakeFontBigger(HFONT font);
+    HWND CreateToolTipForWindow(HWND hwnd, const CString& text);
+    CHARFORMAT LogFontToCharFormat(const LOGFONT & lf);
+    LOGFONT CharFormatToLogFont(const CHARFORMAT & cf);
+    HICON LoadSmallIcon(int resourceId);
+    HICON LoadBigIcon(int resourceId, int maxAvailableSize = 48);
 };
 #endif

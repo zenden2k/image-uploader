@@ -13,7 +13,7 @@ class VideoGrabber
 public:
     enum VideoEngine { veAuto = 0, veDirectShow, veAvcodec };
     explicit VideoGrabber();
-	~VideoGrabber();
+    ~VideoGrabber();
     void setVideoEngine(VideoEngine engine);
     VideoEngine videoEngine() const;
     void grab(const Utf8String& fileName);
@@ -21,8 +21,8 @@ public:
     bool isRunning();
     void setFrameCount(int frameCount);
 
-	fastdelegate::FastDelegate3<const Utf8String&, int64_t, AbstractImage*> onFrameGrabbed;
-	fastdelegate::FastDelegate0<void> onFinished;
+    fastdelegate::FastDelegate3<const Utf8String&, int64_t, AbstractImage*> onFrameGrabbed;
+    fastdelegate::FastDelegate0<void> onFinished;
 
     void run();
 private:
@@ -31,8 +31,8 @@ private:
     AbstractFrameGrabber* createGrabber();
     VideoEngine videoEngine_;
     int frameCount_;
-	friend class VideoGrabberRunnable;
-	std::unique_ptr<VideoGrabberRunnable> worker_;
+    friend class VideoGrabberRunnable;
+    std::unique_ptr<VideoGrabberRunnable> worker_;
 };
 
 #endif // VIDEOGRABBER_H

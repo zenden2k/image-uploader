@@ -31,34 +31,34 @@
 class CServerSelectorControl;
 class UploadEngineManager;
 class CDefaultServersSettings : public CDialogImpl<CDefaultServersSettings>, 
-	                      public CSettingsPage	
+                          public CSettingsPage    
 {
-	public:
-		enum { IDD = IDD_DEFAULTSERVERSSETTINGS };
+    public:
+        enum { IDD = IDD_DEFAULTSERVERSSETTINGS };
 
-		CDefaultServersSettings(UploadEngineManager* uploadEngineManager);
-		virtual ~CDefaultServersSettings();
-		virtual bool Apply();
+        CDefaultServersSettings(UploadEngineManager* uploadEngineManager);
+        virtual ~CDefaultServersSettings();
+        virtual bool Apply();
 
-	protected:
-		BEGIN_MSG_MAP(CDefaultServersSettings)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			MESSAGE_HANDLER(WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED, OnServerListChanged)
-			
-		END_MSG_MAP()
-		// Handler prototypes:
-		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		LRESULT OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    protected:
+        BEGIN_MSG_MAP(CDefaultServersSettings)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            MESSAGE_HANDLER(WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED, OnServerListChanged)
+            
+        END_MSG_MAP()
+        // Handler prototypes:
+        //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 protected:
-	CServerSelectorControl *imageServerSelector_;
-	CServerSelectorControl *fileServerSelector_; 
-	CServerSelectorControl *trayServerSelector_;
-	CServerSelectorControl *contextMenuServerSelector_;
-	CServerSelectorControl *urlShortenerServerSelector_;
-	UploadEngineManager* uploadEngineManager_;
+    CServerSelectorControl *imageServerSelector_;
+    CServerSelectorControl *fileServerSelector_; 
+    CServerSelectorControl *trayServerSelector_;
+    CServerSelectorControl *contextMenuServerSelector_;
+    CServerSelectorControl *urlShortenerServerSelector_;
+    UploadEngineManager* uploadEngineManager_;
 
 };
 

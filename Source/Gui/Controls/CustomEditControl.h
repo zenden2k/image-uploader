@@ -9,16 +9,16 @@ class CCustomEditControl : public CWindowImpl<CCustomEditControl, CEdit> {
     public:
 
     BEGIN_MSG_MAP(CCustomEditControl<T>)
-		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
-		MESSAGE_HANDLER(WM_PASTE, OnPaste)
+        MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
+        MESSAGE_HANDLER(WM_PASTE, OnPaste)
     END_MSG_MAP()
 
-	DECLARE_WND_SUPERCLASS(_T("CCustomEditControl"), CCustomEditControl::GetWndClassName())
-	CCustomEditControl();
-	LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnPaste(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    DECLARE_WND_SUPERCLASS(_T("CCustomEditControl"), CCustomEditControl::GetWndClassName())
+    CCustomEditControl();
+    LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnPaste(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     bool AttachToDlgItem(HWND parent, UINT dlgID);
-	fastdelegate::FastDelegate1<CCustomEditControl*,bool> onPaste;
+    fastdelegate::FastDelegate1<CCustomEditControl*,bool> onPaste;
 }; // end class
 
 #endif

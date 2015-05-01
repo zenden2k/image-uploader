@@ -25,58 +25,58 @@
 
 struct InfoProgress
 {
-	int64_t Uploaded, Total;
-	bool IsUploading;
-	void clear()
-	{
-		Uploaded = 0;
-		Total = 0;
-		IsUploading = false;
-	}
+    int64_t Uploaded, Total;
+    bool IsUploading;
+    void clear()
+    {
+        Uploaded = 0;
+        Total = 0;
+        IsUploading = false;
+    }
 };
 
 enum StatusType {
-	stNone = 0, stUploading, stWaitingAnswer,  stAuthorization, stPerformingAction, stCreatingFolder,
-	stUserDescription
+    stNone = 0, stUploading, stWaitingAnswer,  stAuthorization, stPerformingAction, stCreatingFolder,
+    stUserDescription
 };
 
 enum ErrorType {
-	etNone, etOther, etRepeating, etRetriesLimitReached, etActionRepeating, etActionRetriesLimitReached,
-	etRegularExpressionError, etNetworkError, etUserError
+    etNone, etOther, etRepeating, etRetriesLimitReached, etActionRepeating, etActionRetriesLimitReached,
+    etRegularExpressionError, etNetworkError, etUserError
 };
 
 struct ErrorInfo
 {
-	enum MessageType {
-		mtError, mtWarning
-	};
-	Utf8String error;
-	Utf8String Url;
-	Utf8String ServerName;
-	Utf8String FileName;
-	int ActionIndex;
-	MessageType messageType;
-	ErrorType errorType;
-	int RetryIndex;
-	Utf8String sender;
+    enum MessageType {
+        mtError, mtWarning
+    };
+    Utf8String error;
+    Utf8String Url;
+    Utf8String ServerName;
+    Utf8String FileName;
+    int ActionIndex;
+    MessageType messageType;
+    ErrorType errorType;
+    int RetryIndex;
+    Utf8String sender;
 
-	ErrorInfo()
-	{
-		RetryIndex = -1;
-		ActionIndex = -1;
-	}
+    ErrorInfo()
+    {
+        RetryIndex = -1;
+        ActionIndex = -1;
+    }
 
-	void Clear()
-	{
-		error.clear();
-		Url.clear();
-		ServerName.clear();
-		FileName.clear();
-		sender.clear();
-		ActionIndex = -1;
-		// messageType = mtNone;
-		errorType = etNone;
-		RetryIndex = -1;
-	}
+    void Clear()
+    {
+        error.clear();
+        Url.clear();
+        ServerName.clear();
+        FileName.clear();
+        sender.clear();
+        ActionIndex = -1;
+        // messageType = mtNone;
+        errorType = etNone;
+        RetryIndex = -1;
+    }
 };
 #endif

@@ -23,13 +23,13 @@ void ClearVmData(Sqrat::SqratVM& vm);
 const std::string GetScriptName(HSQUIRRELVM);
 void FlushSquirrelOutput(Sqrat::SqratVM& vm);
 template<typename T>
-	T GetValue(const Sqrat::SharedPtr<T> p)
-	{
-		if (!!p) {
-			return *p.Get();
-		}
-		return T();
-	}
+    T GetValue(const Sqrat::SharedPtr<T> p)
+    {
+        if (!!p) {
+            return *p.Get();
+        }
+        return T();
+    }
 }
 
 /*! @endcond */
