@@ -175,7 +175,7 @@ NetworkClient::NetworkClient(void)
 	m_nUploadDataOffset = 0;
 	treatErrorsAsWarnings_ = false;
 	curl_easy_setopt(curl_handle, CURLOPT_COOKIELIST, "");
-	setUserAgent("Mozilla/5.0");
+	setUserAgent("Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
 
 	curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, private_static_writer);
 	curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &m_bodyFuncData);	

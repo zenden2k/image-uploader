@@ -54,6 +54,7 @@ struct UploadAction
 	std::string Description;
 	std::string Referer;
 	std::string PostParams;
+    std::string CustomHeaders;
 	std::string Type;
 	std::string RegExp;
 	std::vector<ActionVariable> Variables;
@@ -155,6 +156,7 @@ class CUploadEngineData
 		std::string ThumbUrlTemplate, ImageUrlTemplate, DownloadUrlTemplate;
 		std::vector<UploadAction> Actions;
 		std::string LoginLabel;
+        std::string UserAgent;
 		int RetryLimit;
 		int NumOfTries;
 		int MaxThreads;

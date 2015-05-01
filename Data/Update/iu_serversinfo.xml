@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1430136524.dat" TimeStamp="1430136524" Date="27.04.2015 14:08:44" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="39eb1418ddb4c14b6ce14b551bce92dc">
+<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1430510919.dat" TimeStamp="1430510919" Date="01.05.2015 22:08:39" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="51825c26ed6492b719468f3cd331cd74">
   <Info>
-fixes
+[~] Faster vfl.ru uploads
 </Info>
 </UpdateInfo>

@@ -12,10 +12,12 @@ GdiPlusImage::GdiPlusImage() {
     init();
 }
 
-GdiPlusImage::GdiPlusImage(Gdiplus::Bitmap* bm)
+GdiPlusImage::GdiPlusImage(Gdiplus::Bitmap* bm, bool takeOwnership)
 {
     release_deleter<Gdiplus::Bitmap> deleter;
-    deleter.release();
+    if (!takeOwnership) {
+        deleter.release();
+    }
     bm_.reset(bm, deleter);
     init();
 }

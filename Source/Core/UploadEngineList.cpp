@@ -98,6 +98,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 
 			UE.SupportsFolders = cur.AttributeBool("SupportsFolders");
 			UE.RegistrationUrl = cur.Attribute("RegistrationUrl");
+            UE.UserAgent = cur.Attribute("UserAgent");
 			UE.PluginName = cur.Attribute("Plugin");
 			std::string MaxThreadsStr = cur.Attribute("MaxThreads");
 			UE.MaxThreads = atoi(MaxThreadsStr.c_str());
@@ -170,6 +171,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 				UA.Url = actionNode.Attribute("Url");
 
 				UA.PostParams = actionNode.Attribute("PostParams");
+				UA.CustomHeaders = actionNode.Attribute("CustomHeaders");
 				UA.RegExp = actionNode.Attribute("RegExp");
 				UA.OnlyOnce = actionNode.AttributeBool("OnlyOnce");
 

@@ -9,7 +9,7 @@ class GdiPlusImage: public AbstractImage
 {
 public:
     GdiPlusImage();
-    explicit GdiPlusImage(Gdiplus::Bitmap *bm);
+    explicit GdiPlusImage(Gdiplus::Bitmap *bm, bool takeOwnership  = true);
     virtual ~GdiPlusImage();
     virtual bool saveToFile(const Utf8String& fileName) const;
 	virtual bool isNull() const;

@@ -44,6 +44,7 @@ class CDefaultUploadEngine: public CAbstractUploadEngine
 		int RetryLimit();
 		void AddQueryPostParams(UploadAction& Action);
 		bool ReadServerResponse(UploadAction& Action);
+        void AddCustomHeaders(UploadAction& Action);
 		void SetStatus(StatusType status, std::string param = "");
 		bool needStop();
 		void UploadError(bool error, const std::string errorStr, UploadAction* m_CurrentAction, bool writeToBuffer = true);

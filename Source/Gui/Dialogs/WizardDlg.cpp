@@ -83,7 +83,15 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
     uploadManager_ = new UploadManager(uploadEngineManager_, scriptsManager_);
 	floatWnd.setUploadManager(uploadManager_);
 	floatWnd.setUploadEngineManager(uploadEngineManager_);
+    Settings.addChangeCallback(CSettings::ChangeCallback(this, &CWizardDlg::settingsChanged));
 }
+
+void CWizardDlg::settingsChanged(CSettings* settings)
+{
+    CString templateName = settings->imageServer.getImageUploadParamsRef().getThumbRef().TemplateName;
+    sessionImageServer_.getImageUploadParamsRef().getThumbRef().TemplateName = templateName;
+}
+
 
 CWizardDlg::~CWizardDlg()
 {

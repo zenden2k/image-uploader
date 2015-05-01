@@ -170,6 +170,7 @@ public:
 protected:
 	ServerProfile sessionImageServer_, sessionFileServer_;
 	bool serversChanged_;
+    void settingsChanged(CSettings* settings);
 public:
 	bool ShowPage(int idPage,int prev=-1,int next=-1);
 	bool AddImage(const CString &FileName, const CString &VirtualFileName, bool Show=true);

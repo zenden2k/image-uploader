@@ -312,6 +312,11 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
 	Current.Url = ReplaceVars(temp);
 	if (m_UploadData->Debug)
 		DebugMessage("\r\nType:" + Action.Type + "\r\nURL: " + Current.Url);
+    if (!m_UploadData->UserAgent.empty())
+    {
+        m_NetworkClient->setUserAgent(m_UploadData->UserAgent);
+    }
+    AddCustomHeaders(Current);
 
 	if (Action.Type == "upload")
 		Result = DoUploadAction(Current, true);
@@ -405,8 +410,6 @@ bool CDefaultUploadEngine::ReadServerResponse(UploadAction& Action)
 
 void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
 {
-	m_NetworkClient->setReferer(Action.Referer.empty() ? Action.Url : ReplaceVars(Action.Referer));
-
 	std::string Txt = Action.PostParams;
 	int len = Txt.length();
 	if (len)
@@ -464,12 +467,57 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
 			break;
 	}
 
-	//m_NetworkClient->addQueryHeader("Origin", "http://radikal.ru/");
-	//m_NetworkClient->addQueryHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36");
-	//m_NetworkClient->addQueryHeader("User-Agent", "RADIKALCLIENT");
 
 	if (m_UploadData->Debug)
 		DebugMessage(_Post);
+}
+
+void CDefaultUploadEngine::AddCustomHeaders(UploadAction& Action)
+{
+    m_NetworkClient->setReferer(Action.Referer.empty() ? Action.Url : ReplaceVars(Action.Referer));
+
+    std::string Txt = Action.CustomHeaders;
+    int len = Txt.length();
+    if (len)
+    {
+        if (Txt[len - 1] != ';')
+        {
+            Txt += ";";
+        }
+
+        pcrepp::Pcre reg("(.*?):(.*?[^\\x5c]{0,1});", "imc");
+
+        std::string str = Txt;
+
+        size_t pos = 0;
+        while (pos < str.length())
+        {
+
+            if (reg.search(str, pos))
+            {
+
+                std::string VarName = reg[1];
+                std::string VarValue = reg[2];
+                pos = reg.get_match_end() + 1;
+
+                if (!VarName.length())
+                    continue;
+
+                std::string NewValue = VarValue;
+                NewValue = IuCoreUtils::StrReplace(NewValue, "\\;", ";");
+
+                std::string NewName = VarName;
+
+                NewName = ReplaceVars(NewName);
+                std::string vv = NewName;
+
+                NewValue = ReplaceVars(NewValue);
+                m_NetworkClient->addQueryHeader(NewName, NewValue);
+            }
+            else
+                break;
+        }
+    }
 }
 
 std::string CDefaultUploadEngine::ReplaceVars(const std::string& Text)

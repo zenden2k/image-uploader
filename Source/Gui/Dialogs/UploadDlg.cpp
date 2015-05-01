@@ -1013,6 +1013,8 @@ void CUploadDlg::backgroundThreadStarted()
 	SetNextCaption(TR("Остановить"));
 }
 
+
+
 LRESULT CUploadDlg::OnUploadProcessButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
 	showUploadProgressTab();
 	return 0;

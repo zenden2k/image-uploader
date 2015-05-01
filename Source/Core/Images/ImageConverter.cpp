@@ -80,10 +80,10 @@ void ImageConverter::setThumbnail(Thumbnail* thumb)
     d->thumbnailTemplate_ = thumb;
 }
 
-bool ImageConverter::createThumbnail(AbstractImage* image, AbstractImage** outResult, int64_t fileSize, int fileformat)
+std::shared_ptr<AbstractImage> ImageConverter::createThumbnail(AbstractImage* image, int64_t fileSize, int fileformat)
 {
     Q_D(ImageConverter);
-    return d->createThumbnail(image, outResult, fileSize, fileformat);
+    return d->createThumbnail(image, fileSize, fileformat);
 }
 
 void ImageConverter::setImageConvertingParams(const ImageConvertingParams& params)

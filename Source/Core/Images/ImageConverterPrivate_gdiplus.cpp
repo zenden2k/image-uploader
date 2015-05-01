@@ -268,25 +268,26 @@ bool ImageConverterPrivate::createThumb(Gdiplus::Bitmap* bm, const CString& imag
 
 
     // Saving thumbnail (without template)
-    AbstractImage* res = 0;
-    GdiPlusImage src(bm);
-    if (createThumbnail(&src, &res, FileSize, fileformat))
+    GdiPlusImage src(bm, false);
+    std::shared_ptr<GdiPlusImage> res = std::static_pointer_cast<GdiPlusImage>(createThumbnail(&src, FileSize, fileformat));
+    if (res)
     {
         CString thumbFileName;
-        result = MySaveImage(static_cast<GdiPlusImage*>(res)->getBitmap(), IuCommonFunctions::GenerateFileName(L"thumb_%md5.jpg", 1,
+        result = MySaveImage(res->getBitmap(), IuCommonFunctions::GenerateFileName(L"thumb_%md5.jpg", 1,
             CPoint()), thumbFileName, fileformat, m_thumbCreatingParams.Quality);
         thumbFileName_ = W2U(thumbFileName);
-        delete res;
     }
+
     // }
     ReleaseDC(0, dc);
     return result;
 }
 
 
-bool ImageConverterPrivate::createThumbnail(AbstractImage* abstractImg, AbstractImage** outResult, int64_t fileSize, int fileformat)
+std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractImage* abstractImg, int64_t fileSize, int fileformat)
 {
     GdiPlusImage* image = dynamic_cast<GdiPlusImage*>(abstractImg);
+    assert(image);
     assert(thumbnailTemplate_);
     bool result = false;
     const Thumbnail::ThumbnailData* data = thumbnailTemplate_->getData();
@@ -495,9 +496,8 @@ bool ImageConverterPrivate::createThumbnail(AbstractImage* abstractImg, Abstract
     }
 
     delete MaskBuffer;
-    *outResult = new GdiPlusImage(ThumbBuffer);
 
-    return true;
+    return std::make_shared<GdiPlusImage>(ThumbBuffer);
 }
 
 bool ImageConverterPrivate::EvaluateRect(const std::string& rectStr, RECT* out)

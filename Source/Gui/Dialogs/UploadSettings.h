@@ -200,6 +200,7 @@ protected:
 	void selectServer(ServerProfile& sp, int serverIndex);
 	void updateUrlShorteningCheckboxLabel();
 	void shorteningUrlServerChanged(CServerSelectorControl* selectorControl);
+    void settingsChanged(CSettings* settings);
 	std::map<int, HICON> serverMenuIcons_;
 	HWND useServerThumbnailsTooltip_;
 	UploadEngineManager * uploadEngineManager_;

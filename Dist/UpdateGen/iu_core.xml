@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<UpdatePackageSource Name="iu_core" DisplayName="Image Uploader 1.3.2-alpha.4430" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%"  CoreUpdate="1" >
+<UpdatePackageSource Name="iu_core" DisplayName="Image Uploader 1.3.2-alpha.4433" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%"  CoreUpdate="1" >
 	<Entries>
 		<Entry Name="Image Uploader.exe" SaveToFolder="%apppath%/" Action="add"/>
 		<Entry Name="ExplorerIntegration*.dll" SaveToFolder="%apppath%/" Action="add"/>
@@ -14,6 +14,7 @@
         <Entry Name="Data/Thumbnails/*" SaveToFolder="%datapath%/Thumbnails/" Action="add"/>
 		<Entry Name="Data/templates.xml" SaveToFolder="%datapath%/templates.xml" Action="add"/>
 	</Entries>
-<Info>[~] Fixed deadlocks
+<Info>[+] Added CustomHeaders and UserAgent options to servers.xml
+[~] Fixed memory leaks
 </Info>
 </UpdatePackageSource>

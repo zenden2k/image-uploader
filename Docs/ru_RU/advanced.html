@@ -6,10 +6,10 @@
 <title>Image Uploader - Дополнительная информация по использованию</title>
 <link href="../default.css" rel="stylesheet" type="text/css" />
 <!--<link href="styles/default.css" rel="stylesheet" type="text/css" />-->
-<link href="prettify/prettify.css" rel="stylesheet" type="text/css" />
+<link href="../prettify/prettify.css" rel="stylesheet" type="text/css" />
 </head>
 <body onload="prettyPrint()">
-<script type="text/javascript" src="prettify/prettify.js"></script>
+<script type="text/javascript" src="../prettify/prettify.js"></script>
 <div id="header">
 <h1>Image Uploader</h1> <div id="version"></div>
 </div>
@@ -129,6 +129,7 @@
 		&lt; 1.2.5.<br />  <a href="#scripts">Подробнее о создании плагинов...</a></li>
 	<li><code>SupportsFolders</code> — поддержка альбомов скриптом загрузки. Используется вместе с атрибутом <i>Plugin</i>.</li>
 	<li><code>RegistrationUrl</code>  — адрес, по которому можно зарегистрироваться на данном сервере.
+	<li><code>UserAgent</code> — (ver >= 1.3.2.4432 ) — custom http header "User-Agent"
 </ul>
 
 <p>Узел <code>&lt;Actions&gt;</code> (без атрибутов) содержит вложенные узлы Action, каждый из которых обозначает одно действие - запрос к серверу. Запросы выполняются в том порядке, в котором они указаны в файле, т.е. сверху вниз.</p> 
@@ -166,6 +167,10 @@
 <li><code>Referer</code> — (опциональный параметр) адрес страницы источника запроса. Используется, если сервер ограничивает запросы с чужих сайтов.
  По умолчанию программа устанавливает Referer такой же, как и адрес запрашиваемой страницы.</li>
 <li><code>Description</code> — опциональный параметр, содержащий описание текущего действия. Отображается в окне программы.</li>
+<li><code>CustomHeaders</code> — (ver >= 1.3.2.4432) список дополнительных полей заголовка, разделенных точкой с запятой. 
+Список должен иметь следующий вид: <code>НазваниеПараметра1:Значение1;НазваниеПараметра2:Значение2;...</code><br />
+To remove default field, pass an empty value.
+<br />
 </ul>
 <p>Типичный вид xml-узла Result:</p>
 <pre class="prettyprint">
@@ -224,12 +229,12 @@
 <a name="scripts"></a>
 <h2>Создание плагинов</h2> 
 <p>Для расширенной поддержки серверов в программе используются скрипты на <a href="http://www.squirrel-lang.org/" target="_blank">
- языке Squirrel 2</a>.</p>
+ языке Squirrel 3</a> (до версии 1.3.2 использовался Squirrel 2).</p> 
 <p>
 <a href="../api/api_implement.html">Scripting API</a><p>
 <a href="../api/html/index.html">Scripting API reference</a><p>
-<a href="http://www.squirrel-lang.org/doc/squirrel2.html" target="_blank">Документация языка Squirrel</a><br>
-<a href="http://www.squirrel-lang.org/doc/sqstdlib2.html" target="_blank">Документация стандартной библиотеки языка Squirrel</a>
+<a href="http://www.squirrel-lang.org/doc/squirrel3.html" target="_blank">Документация языка Squirrel</a><br>
+<a href="http://www.squirrel-lang.org/doc/sqstdlib3.html" target="_blank">Документация стандартной библиотеки языка Squirrel</a>
 </p>
 <p>Они должны быть сохранены в кодировке utf-8 в файлах с расширением <code>.nut</code>.
 </pre>
@@ -237,7 +242,7 @@
 </div>
 </div>
 <div id="footer">
-<p> Последнее обновление данного документа — 19.03.2015 года. Copyright &copy; 2007 - 2015, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
+<p>Copyright &copy; 2007 - 2015, <a href="http://zenden.ws/imageuploader" class="link1">ZendeN</a></p>
 </div>
 
 </body>

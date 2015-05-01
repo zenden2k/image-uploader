@@ -45,11 +45,18 @@ CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager
    	iconBitmapUtils_ = new IconBitmapUtils();
 	useServerThumbnailsTooltip_ = 0;
 	uploadEngineManager_ = uploadEngineManager;
+    Settings.addChangeCallback(CSettings::ChangeCallback(this, &CUploadSettings::settingsChanged));
 }
 
 CUploadSettings::~CUploadSettings()
 {
 	delete iconBitmapUtils_;
+}
+
+
+void CUploadSettings::settingsChanged(CSettings* settings)
+{
+    sessionImageServer_.getImageUploadParamsRef().getThumbRef().TemplateName = settings->imageServer.getImageUploadParamsRef().getThumbRef().TemplateName;
 }
 
 void CUploadSettings::TranslateUI()

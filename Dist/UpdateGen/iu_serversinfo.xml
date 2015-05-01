@@ -10,6 +10,6 @@
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
 <Info>
-fixes
+[~] Faster vfl.ru uploads
 </Info>
 </UpdatePackageSource>

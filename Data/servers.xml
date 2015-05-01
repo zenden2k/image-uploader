@@ -61,7 +61,6 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)"/>
 	</Server>
-	
 	<Server Name="funkyimg.com" Authorize="0" Plugin="funkyimg">
 		<Actions>
 		</Actions>
@@ -448,9 +447,13 @@
 	<Server3 Name="Google Drive" FileHost="1" Authorize="2" Type="file" Plugin="googledrive" SupportsFolders="1" NeedPassword="0" >
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" ViewUrlTemplate="stub"/>
 	</Server3>
-	<Server3 Name="vfl.ru" Authorize="0" Type="image"  Plugin="vfl"  MinVersion="1.3.1.4274" MaxThreads="1" >
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server3> <!-- MaxThreads="2"  -->
+	<Server3 Name="vfl.ru" Debug="0" MinVersion="1.3.2.4432" UserAgent="Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.3 (KHTML, like Gecko) Version/8.0 Mobile/12A4345d Safari/600.1.4">
+		<Actions>
+			<Action Type="get"  Url="http://m.vfl.ru/" OnlyOnce="1"/>
+			<Action Type="upload" Url="http://storage.vfl.ru/index.sema" Referer="http://m.vfl.ru/" PostParams="a=fotos;sa=upload;img_id=1;mvfl=1;upload_file1=%filename%;" RegExp="\[IMG\]([\s\S]*?)\[IMG\](.*?)\[([\s\S]*?)&lt;textarea[^&gt;]+&gt;(http:\/\/images\.vfl\.ru\/.*?)\s*&lt;" AssignVars="Thumb:1;Image:3;"/>
+			</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server3>
 	<Server3 Name="imgbox.com"  Type="image"  Authorize="0" Plugin="imgbox" >
 	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" ViewUrlTemplate="stub"/>
 	</Server3>

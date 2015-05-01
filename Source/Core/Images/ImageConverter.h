@@ -63,7 +63,7 @@ class ImageConverter
         void setImageConvertingParams(const ImageConvertingParams& params);
         void setThumbCreatingParams(const ThumbCreatingParams& params);
         void setThumbnail(Thumbnail* thumb);
-        bool createThumbnail(AbstractImage* image, AbstractImage** outResult, int64_t fileSize, int fileformat);
+        std::shared_ptr<AbstractImage> createThumbnail(AbstractImage* image, int64_t fileSize, int fileformat);
 	protected:
         ImageConverterPrivate* d_ptr;
         Q_DECLARE_PRIVATE(ImageConverter);

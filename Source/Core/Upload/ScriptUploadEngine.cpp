@@ -384,6 +384,11 @@ int CScriptUploadEngine::createFolder(CFolderItem& parent, CFolderItem& folder)
 void CScriptUploadEngine::setNetworkClient(NetworkClient* nm)
 {
 	CAbstractUploadEngine::setNetworkClient(nm);
+    if (!m_UploadData->UserAgent.empty())
+    {
+        nm->setUserAgent(m_UploadData->UserAgent);
+    }
+   
     vm_.GetRootTable().SetInstance("nm", nm);
 	//BindVariable(m_Object, nm, "nm");
 }
