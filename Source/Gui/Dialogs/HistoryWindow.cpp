@@ -83,13 +83,13 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
         m_HistoryFiles.push_back(files[i]);
 
         CString monthLabel = Utf8ToWCstring( IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8 (files[i])));
-
+         
         
         size_t pos = 0;
 
         if ( regExp.search(WCstringToUtf8(monthLabel), pos) ) { 
-            std::string yearStr = regExp[0];
-            std::string monthStr = regExp[1];
+            std::string yearStr = regExp[1];
+            std::string monthStr = regExp[2];
             int year = atoi(yearStr.c_str());
             int month = atoi(monthStr.c_str());
             monthLabel.Format(_T("%d/%02d"), year, month);

@@ -87,6 +87,22 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
     return FALSE;  
 }
 
+LRESULT CServerSelectorControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    int count = serverComboBox_.GetCount();
+    for (int i = 0; i < count; i++)
+    {
+        char * data = reinterpret_cast<char*>(serverComboBox_.GetItemDataPtr(i));
+        if (data && *data != '<')
+        {
+            delete[] data;
+        }
+        
+    }
+
+    return 0;
+}
+
 void CServerSelectorControl::setTitle(CString title) {
     if (m_hWnd)
     {

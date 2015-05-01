@@ -39,6 +39,58 @@ size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
     return  fread(ptr, size, nmemb, (FILE*)stream);
 }
 
+#define USE_OPENSSL
+#define NUMT 4
+
+/* we have this global to let the callback get easy access to it */
+static std::vector<std::mutex*> lockarray;
+
+#ifdef USE_OPENSSL
+#include <openssl/crypto.h>
+static void lock_callback(int mode, int type, char const *file, int line)
+{
+    (void)file;
+    (void)line;
+    if (mode & CRYPTO_LOCK) {
+        lockarray[type]->lock();
+    }
+    else {
+        lockarray[type]->unlock();
+    }
+}
+
+static unsigned long thread_id(void)
+{
+    unsigned long ret;
+
+    ret = (unsigned long)std::hash<std::thread::id>()(std::this_thread::get_id());
+    return(ret);
+}
+
+static void init_locks(void)
+{
+    int i;
+
+    lockarray.resize(CRYPTO_num_locks());
+    for (i = 0; i<CRYPTO_num_locks(); i++) {
+        lockarray[i] = new std::mutex(); 
+    }
+
+    CRYPTO_set_id_callback((unsigned long(*)())thread_id);
+    CRYPTO_set_locking_callback(lock_callback);
+}
+
+static void kill_locks(void)
+{
+    int i;
+
+    CRYPTO_set_locking_callback(NULL);
+    for (i = 0; i<CRYPTO_num_locks(); i++)
+        delete lockarray[i];
+    lockarray.clear();
+}
+#endif
+
 int NetworkClient::set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose) 
 {
     #ifdef _WIN32
@@ -137,6 +189,7 @@ NetworkClient::NetworkClient(void)
     if(!_curl_init)
     {
         enableResponseCodeChecking_ = true;
+        init_locks();
         curl_global_init(CURL_GLOBAL_ALL);
         curl_version_info_data * infoData = curl_version_info(CURLVERSION_NOW);
         _is_openssl =  strstr(infoData->ssl_version, "WinSSL")!=infoData->ssl_version;
