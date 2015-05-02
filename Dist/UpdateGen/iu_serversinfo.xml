@@ -9,7 +9,6 @@
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
 <Info>
-[+] takebin.com
-[+] imgbox.com
+[+] zalivalka.ru
 </Info>
 </UpdatePackageSource>

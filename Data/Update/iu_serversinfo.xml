@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1428831972.dat" TimeStamp="1428831972" Date="12.04.2015 11:46:12" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="ce9e71c59eb0408f3e322f88e7b3bb45">
+<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1430563969.dat" TimeStamp="1430563969" Date="02.05.2015 12:52:49" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="edc09d536e6f9f6c00f30ab20ff13a2f">
   <Info>
-[+] takebin.com
-[+] imgbox.com
+[+] zalivalka.ru
 </Info>
 </UpdateInfo>
