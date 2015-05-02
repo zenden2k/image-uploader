@@ -50,6 +50,12 @@ CResultsPanel::CResultsPanel(CWizardDlg *dlg,std::vector<CUrlListItem>  & urlLis
 CResultsPanel::~CResultsPanel()
 {
     if(TemplateHead) delete[] TemplateHead;
+    if (webViewWindow_ && webViewWindow_->m_hWnd)
+    {
+        webViewWindow_->DestroyWindow();
+        delete webViewWindow_;
+    }
+    
 }
     
 bool CResultsPanel::LoadTemplate()
@@ -821,10 +827,37 @@ LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND h
         CString outputTempFileName = IuCommonFunctions::IUTempFolder  + "preview.html";
         CString code = GenerateOutput();
         //ShowVar(m_Page);
-        if ( m_Page == 0) {
+        /*if ( m_Page == 0) {
             code = Utf8ToWCstring(IuTextUtils::BbCodeToHtml(WCstringToUtf8(code)));
-        } 
-        IuTextUtils::FileSaveContents(WCstringToUtf8(outputTempFileName), WCstringToUtf8(code));
+        } */
+        std::string res = "<html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />"
+            "<style>img {border:none;}</style>"
+            "</head><body>";
+        res += "<span id=\"resultcode\">" + W2U(code) + "</span>";
+        if (m_Page == 0) {
+            std::string script;
+            std::string scriptFileName = W2U(IuCommonFunctions::GetDataFolder()) + "Utils/xbbcode.js";
+            if (!IuCoreUtils::ReadUtf8TextFile(scriptFileName, script))
+            {
+                LOG(ERROR) << "Cannot read file " << scriptFileName;
+            }
+            int len = script.length();
+            res += "<script type=\"text/javascript\">" + script +
+                "\r\n"
+                "var el = document.getElementById('resultcode');\r\n"
+                "var result = XBBCODE.process({   \r\n"
+                "   text: el.innerHTML,   \r\n"
+                "   removeMisalignedTags: false,  \r\n"
+                "   addInLineBreaks: true   \r\n"
+                "});  \r\n"
+                "el.innerHTML = result.html; \r\n"
+                "</script>";
+        }
+       res+= "</body></html>";
+
+        if (!IuTextUtils::FileSaveContents(W2U(outputTempFileName), res) ) {
+            LOG(ERROR) << "Could not save temporary file " << outputTempFileName;
+        }
         url = "file:///" + outputTempFileName;
         
     }

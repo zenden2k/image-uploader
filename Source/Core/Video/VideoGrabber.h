@@ -16,18 +16,18 @@ public:
     ~VideoGrabber();
     void setVideoEngine(VideoEngine engine);
     VideoEngine videoEngine() const;
-    void grab(const Utf8String& fileName);
+    void grab(const std::string& fileName);
     void abort();
     bool isRunning();
     void setFrameCount(int frameCount);
 
-    fastdelegate::FastDelegate3<const Utf8String&, int64_t, AbstractImage*> onFrameGrabbed;
+    fastdelegate::FastDelegate3<const std::string&, int64_t, AbstractImage*> onFrameGrabbed;
     fastdelegate::FastDelegate0<void> onFinished;
 
     void run();
 private:
-    Utf8String fileName_;
-    //void _frameGrabbed(const Utf8String& fileName, AbstractImage image);
+    std::string fileName_;
+    //void _frameGrabbed(const std::string& fileName, AbstractImage image);
     AbstractFrameGrabber* createGrabber();
     VideoEngine videoEngine_;
     int frameCount_;

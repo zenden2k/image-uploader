@@ -29,7 +29,7 @@
 #include <mutex>
 
 #include "Core/Utils/CoreUtils.h"
-
+#include "CurlShare.h"
 
 std::string nm_trimStr(const std::string& str);
 void nm_splitString(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount = -1);
@@ -131,6 +131,7 @@ class NetworkClient
         /*! @cond PRIVATE */
         CURL* getCurlHandle();
         static void Uninitialize();
+        void setCurlShare(CurlShare* share);
         /*! @endcond */
         void enableResponseCodeChecking(bool enable);
     private:
@@ -195,13 +196,14 @@ class NetworkClient
         std::string internalBuffer;
         std::string m_headerBuffer;
         std::string m_userAgent;
-        char m_errorBuffer[CURL_ERROR_SIZE];;
+        char m_errorBuffer[CURL_ERROR_SIZE];
         std::string m_method;
         struct curl_slist * chunk_;
         bool enableResponseCodeChecking_;
         int64_t chunkOffset_;
         int64_t chunkSize_;
         bool treatErrorsAsWarnings_;
+        CurlShare* curlShare_;
         static std::mutex _mutex;
         static bool _curl_init;
         static bool _is_openssl;

@@ -369,12 +369,12 @@ bool CWizardDlg::ParseCmdLine()
                 ServerProfile & sp = Settings.ServerProfiles[serverProfileName];
                 CUploadEngineData *ued = sp.uploadEngineData();
                 if ( ued ) {
-                    if ( ued ->Type == CUploadEngineData::TypeFileServer ) {
+                    if ( ued ->hasType(CUploadEngineData::TypeFileServer) ) {
                         sessionImageServer_ = sp;
                         sessionFileServer_ = sp;
                         serversChanged_ = true;
                         
-                    } else if ( ued ->Type == CUploadEngineData::TypeImageServer ) {
+                    } else if ( ued ->hasType(CUploadEngineData::TypeImageServer) ) {
                         sessionImageServer_ = sp;
                         serversChanged_ = true; 
                     }
@@ -1830,7 +1830,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
     CScreenCaptureEngine engine;
     
     CString buf; // file name buffer
-    std_tr::shared_ptr<Gdiplus::Bitmap> result;
+    std::shared_ptr<Gdiplus::Bitmap> result;
     CWindowHandlesRegion::WindowCapturingFlags wcfFlags;
     wcfFlags.AddShadow = Settings.ScreenshotSettings.AddShadow;
     wcfFlags.RemoveBackground =     Settings.ScreenshotSettings.RemoveBackground;
@@ -1842,7 +1842,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
     {
         engine.setDelay(WindowHidingDelay + Settings.ScreenshotSettings.Delay*1000);
         engine.captureScreen();
-        result = std_tr::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
+        result = std::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
     }
     else if (mode == cmActiveWindow)
     {
@@ -1853,12 +1853,12 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
         winRegion.setWindowCapturingFlags(wcfFlags);
         winRegion.SetWindowHidingDelay(Settings.ScreenshotSettings.WindowHidingDelay);
         engine.captureRegion(&winRegion);
-        result = std_tr::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
+        result = std::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
     }
     else if(engine.captureScreen())
     {
         if ( mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod ) {
-            result = std_tr::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
+            result = std::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
         } else {
             RegionSelect.Parent = m_hWnd;
             SelectionMode selMode;
@@ -1870,7 +1870,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
                 selMode = smWindowHandles;
 
             RegionSelect.m_SelectionMode = selMode;
-            std_tr::shared_ptr<Gdiplus::Bitmap> res(engine.capturedBitmap());
+            std::shared_ptr<Gdiplus::Bitmap> res(engine.capturedBitmap());
             if(res)
             {
                 HBITMAP gdiBitmap=0;
@@ -1895,7 +1895,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
                             whr->setWindowCapturingFlags(wcfFlags);
                         }
                         engine.captureRegion(rgn);    
-                        result = std_tr::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
+                        result = std::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
                         DeleteObject(gdiBitmap);
                     }
                 }

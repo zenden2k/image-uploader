@@ -6,6 +6,7 @@
 #include <memory>
 #include "Core/Utils/CoreTypes.h"
 
+class CurlShare;
 class ThreadSyncPrivate;
 
 /**
@@ -20,6 +21,11 @@ class ThreadSync
         virtual ~ThreadSync();
         void setValue(const std::string& name, const std::string& value);
         const std::string getValue(const std::string& name);
+        /*! @cond PRIVATE */
+        CurlShare* getCurlShare();
+        void incrementThreadCount();
+        void decrementThreadCount();
+        /* @endcond */
     protected:
         std::shared_ptr<ThreadSyncPrivate> d_ptr; // ServerSync should not be copied, but we need to use pimpl idiom for Squirrel binding
         Q_DECLARE_PRIVATE_PTR(ThreadSync);

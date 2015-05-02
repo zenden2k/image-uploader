@@ -131,6 +131,7 @@ LRESULT CLogWindow::OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 void CLogWindow::TranslateUI()
 {
     TRC(IDCANCEL, "Скрыть");
+    TRC(IDC_CLEARLOGBUTTON, "Очистить");
     SetWindowText(TR("Лог ошибок"));
 }
 
@@ -240,4 +241,12 @@ void DebugMessage(const std::string& msg, bool isResponseBody)
         }
     }
 }
+}
+
+
+LRESULT CLogWindow::OnBnClickedClearLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    MsgList.Clear();
+    return 0;
+    return 0;
 }

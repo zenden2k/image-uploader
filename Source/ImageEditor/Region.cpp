@@ -60,7 +60,7 @@ Region Region::united(const Region & r) const
     return rgn;
 }
 
-std_tr::shared_ptr<Gdiplus::Region> Region::toNativeRegion() const
+std::shared_ptr<Gdiplus::Region> Region::toNativeRegion() const
 {
     return rgn_;
 }

@@ -627,7 +627,7 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     //uploadSession->
     //uploadSession-
 
-    uploadManager_->addTask(std_tr::shared_ptr<UploadTask>(task));
+    uploadManager_->addTask(std::shared_ptr<UploadTask>(task));
     uploadManager_->start();
 
     CString msg;
@@ -668,7 +668,7 @@ bool CFloatingWindow::OnQueueFinished(CFileQueueUploader*) {
         }
 
         CHistoryManager* mgr = ZBase::get()->historyManager();
-        std_tr::shared_ptr<CHistorySession> session = mgr->newSession();
+        std::shared_ptr<CHistorySession> session = mgr->newSession();
         HistoryItem hi;
         hi.localFilePath = source_file_name_;
         hi.serverName = server_name_;
@@ -679,7 +679,7 @@ bool CFloatingWindow::OnQueueFinished(CFileQueueUploader*) {
         session->AddItem(hi);
 
         if ( Settings.TrayIconSettings.ShortenLinks ) {
-            std_tr::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
+            std::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
 
             CUploadEngineData *ue = Settings.urlShorteningServer.uploadEngineData();
             if ( !ue ) {

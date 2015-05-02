@@ -749,7 +749,7 @@ void Canvas::updateView( RECT boundingRect ) {
 void Canvas::createDoubleBuffer() {
 //    delete buffer_;
     delete bufferedGr_;
-    buffer_ = std_tr::shared_ptr<Gdiplus::Bitmap>(new Gdiplus::Bitmap( canvasWidth_, canvasHeight_, PixelFormat32bppARGB  ));
+    buffer_ = std::shared_ptr<Gdiplus::Bitmap>(new Gdiplus::Bitmap( canvasWidth_, canvasHeight_, PixelFormat32bppARGB  ));
     bufferedGr_ = new Gdiplus::Graphics( buffer_.get() );
 }
 
@@ -881,7 +881,7 @@ void Canvas::addUndoHistoryItem(const UndoHistoryItem& item)
     isDocumentModified_ = true;
 }
 
-std_tr::shared_ptr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
+std::shared_ptr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
 {
     using namespace Gdiplus;
     Rect rc(0,0, getWidth(), getHeigth());
@@ -906,7 +906,7 @@ std_tr::shared_ptr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
     Bitmap* bm = new Bitmap(cropWidth, cropHeight);
     Graphics gr(bm);
     gr.DrawImage( &*buffer_, 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel );
-    return std_tr::shared_ptr<Gdiplus::Bitmap>(bm);
+    return std::shared_ptr<Gdiplus::Bitmap>(bm);
 }
 
 float Canvas::getZoomFactor() const

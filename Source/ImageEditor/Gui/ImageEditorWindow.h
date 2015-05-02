@@ -38,7 +38,7 @@ public:
     struct SubMenuItem {
         int command;
         int parentCommand;
-        std_tr::shared_ptr<Gdiplus::Bitmap> icon;
+        std::shared_ptr<Gdiplus::Bitmap> icon;
         CString hint;
     };
 
@@ -54,14 +54,14 @@ public:
 
     ImageEditor::CImageEditorView m_view;
 
-    ImageEditorWindow(std_tr::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider/* = 0*/);
+    ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider/* = 0*/);
     ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider/* = 0*/);
     ~ImageEditorWindow();
     void setInitialDrawingTool(Canvas::DrawingToolType dt);
     void showUploadButton(bool show);
     void showAddToWizardButton(bool show);
     void setSuggestedFileName(CString string);
-    std_tr::shared_ptr<Gdiplus::Bitmap> getResultingBitmap();
+    std::shared_ptr<Gdiplus::Bitmap> getResultingBitmap();
     void setServerName(const CString & serverName);
     void setAskBeforeClose(bool ask);
 
@@ -163,7 +163,7 @@ public:
         HWND cropToolTip_;
         int imageQuality_;
         bool allowAltTab_;
-        std_tr::shared_ptr<Gdiplus::Bitmap> resultingBitmap_;
+        std::shared_ptr<Gdiplus::Bitmap> resultingBitmap_;
         ConfigurationProvider* configurationProvider_; 
         TextParamsWindow textParamsWindow_;
         void createToolbars();
@@ -174,7 +174,7 @@ public:
         void OnTextEditFinished(ImageEditor::TextElement * textElement);
         void OnSelectionChanged();
         void updateRoundingRadiusSlider();
-        std_tr::shared_ptr<Gdiplus::Bitmap>  loadToolbarIcon(int resource);
+        std::shared_ptr<Gdiplus::Bitmap>  loadToolbarIcon(int resource);
         void EndDialog(DialogResult dr);
         void init();
         bool saveDocument(bool toClipboard =  false );

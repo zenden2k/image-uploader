@@ -53,9 +53,9 @@ class CDefaultUploadEngine: public CAbstractUploadEngine
         void prepareUpload();
         bool executeActions();
 
-        Utf8String m_ErrorReason;
-        Utf8String m_FileName;
-        Utf8String m_displayFileName;
+        std::string m_ErrorReason;
+        std::string m_FileName;
+        std::string m_displayFileName;
         bool fatalError_;
         LoginInfo li;
         ErrorInfo m_LastError;

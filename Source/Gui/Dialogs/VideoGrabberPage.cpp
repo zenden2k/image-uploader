@@ -496,7 +496,7 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
             videoEngine = CSettings::VideoEngineDirectshow;
         } else {
             videoEngine = CSettings::VideoEngineFFmpeg;
-            Utf8String ext = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt( IuCoreUtils::WstringToUtf8((LPCTSTR)szFile) ) );
+            std::string ext = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt( IuCoreUtils::WstringToUtf8((LPCTSTR)szFile) ) );
             if ( ext == "wmv" || ext == "asf" ) {
                 videoEngine = CSettings::VideoEngineDirectshow;
             }
@@ -544,7 +544,7 @@ bool CVideoGrabberPage::OnShow()
 }
 
 
-void CVideoGrabberPage::OnFrameGrabbed(const Utf8String& timeStr, int64_t, AbstractImage* img )
+void CVideoGrabberPage::OnFrameGrabbed(const std::string& timeStr, int64_t, AbstractImage* img )
 {
     GdiPlusImage *image = dynamic_cast<GdiPlusImage*>(img);
     if ( !image ) {

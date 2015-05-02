@@ -150,7 +150,7 @@ class CImageReuploaderDlg:    public CDialogImpl <CImageReuploaderDlg>,
         unsigned int htmlClipboardFormatId;
         CString m_InitialBuffer;
         std::mutex mutex_;
-        std_tr::shared_ptr<CHistorySession> historySession_;
+        std::shared_ptr<CHistorySession> historySession_;
         std::map<unsigned int, UploadedItem> uploadedItems_;
         ServerProfile serverProfile_;
         static const TCHAR LogTitle[];

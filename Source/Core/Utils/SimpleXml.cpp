@@ -274,7 +274,7 @@ SimpleXml::~SimpleXml()
 
 bool SimpleXml::LoadFromFile(const std::string& fileName)
 {
-    Utf8String text;
+    std::string text;
     if (!IuCoreUtils::ReadUtf8TextFile(fileName, text))
         return false;
 

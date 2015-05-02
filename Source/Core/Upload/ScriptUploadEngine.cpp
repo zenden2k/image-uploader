@@ -43,9 +43,9 @@
 #include <unordered_map>
 
 
-const Utf8String IuNewFolderMark = "_iu_create_folder_";
+const std::string IuNewFolderMark = "_iu_create_folder_";
 
-CScriptUploadEngine::CScriptUploadEngine(Utf8String fileName, ServerSync* serverSync, ServerSettingsStruct* settings) : 
+CScriptUploadEngine::CScriptUploadEngine(std::string fileName, ServerSync* serverSync, ServerSettingsStruct* settings) : 
                                                                                 CAbstractUploadEngine(serverSync), Script(fileName, serverSync,false)
 {
     setServerSettings(settings);
@@ -136,12 +136,17 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, CIUUploadPar
             }*/
         }
     }
+    catch (ServerSyncException& e)
+    {
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));
+        ival = -1; // fatal error
+    }
     catch (std::exception & e)
     {
-        Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + Utf8String(e.what()));
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));
     }
     /*if ( Error::Occurred(vm_.GetVM() ) ) {
-        Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + Utf8String(Error::Message(vm_.GetVM()))); 
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(Error::Message(vm_.GetVM()))); 
         return false;
     }*/
     
@@ -183,7 +188,7 @@ bool CScriptUploadEngine::postLoad()
     return 0;
 }
 
-int CScriptUploadEngine::getAccessTypeList(std::vector<Utf8String>& list)
+int CScriptUploadEngine::getAccessTypeList(std::vector<std::string>& list)
 {
      using namespace Sqrat;
     try
@@ -198,7 +203,7 @@ int CScriptUploadEngine::getAccessTypeList(std::vector<Utf8String>& list)
         SharedPtr<Sqrat::Array> arr = func.Evaluate<Sqrat::Array>();
 
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
-            Log(ErrorInfo::mtError, "CScriptUploadEngine::getAccessTypeList\r\n" + Utf8String(Error::Message(vm_.GetVM()))); 
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::getAccessTypeList\r\n" + std::string(Error::Message(vm_.GetVM()))); 
             return 0;
         }*/
 
@@ -219,7 +224,7 @@ int CScriptUploadEngine::getAccessTypeList(std::vector<Utf8String>& list)
     return 1;
 }
 
-int CScriptUploadEngine::getServerParamList(std::map<Utf8String, Utf8String>& list)
+int CScriptUploadEngine::getServerParamList(std::map<std::string, std::string>& list)
 {
     using namespace Sqrat;
     Sqrat::Table arr;
@@ -236,12 +241,12 @@ int CScriptUploadEngine::getServerParamList(std::map<Utf8String, Utf8String>& li
         SharedPtr<Table> arr = func.Evaluate<Sqrat::Table>();
 
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
-            Log(ErrorInfo::mtError, "CScriptUploadEngine::getServerParamList\r\n" + Utf8String(Error::Message(vm_.GetVM()))); 
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::getServerParamList\r\n" + std::string(Error::Message(vm_.GetVM()))); 
             return 0;
         }*/
         if (!arr)
         {
-            Log(ErrorInfo::mtError, "CScriptUploadEngine::getServerParamList\r\n" + Utf8String("GetServerParamList result is NULL"));
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::getServerParamList\r\n" + std::string("GetServerParamList result is NULL"));
 
             clearSqratError();
             return -1;
@@ -254,7 +259,7 @@ int CScriptUploadEngine::getServerParamList(std::map<Utf8String, Utf8String>& li
         {
             std::string t = Sqrat::Object(it.getValue(), vm_.GetVM()).Cast<std::string>();
             /*if ( t ) */{
-                Utf8String title = t;
+                std::string title = t;
                 list[it.getName()] =  title;
             }
         }
@@ -281,7 +286,7 @@ int CScriptUploadEngine::doLogin()
         }
         int res = ScriptAPI::GetValue(func.Evaluate<int>());
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
-            Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + Utf8String(Error::Message(vm_.GetVM()))); 
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + std::string(Error::Message(vm_.GetVM()))); 
             return 0;
         }*/
         return res;
@@ -308,13 +313,13 @@ int CScriptUploadEngine::modifyFolder(CFolderItem& folder)
         }
         res = ScriptAPI::GetValue(func.Evaluate<int>(&folder));
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
-            Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + Utf8String(Error::Message(vm_.GetVM()))); 
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + std::string(Error::Message(vm_.GetVM()))); 
             return 0;
         }*/
     }
     catch (std::exception& e)
     {
-        Log(ErrorInfo::mtError, "CScriptUploadEngine::getServerParamList\r\n" + Utf8String(e.what()));
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::getServerParamList\r\n" + std::string(e.what()));
     }
     FlushSquirrelOutput();
     return res;
@@ -335,18 +340,18 @@ int CScriptUploadEngine::getFolderList(CFolderList& FolderList)
         }
         ival = ScriptAPI::GetValue(func.Evaluate<int>(&FolderList));
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
-            Log(ErrorInfo::mtError, "CScriptUploadEngine::getFolderList\r\n" + Utf8String(Error::Message(vm_.GetVM()))); 
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::getFolderList\r\n" + std::string(Error::Message(vm_.GetVM()))); 
         }*/
     }
     catch (std::exception& e)
     {
-        Log(ErrorInfo::mtError, "CScriptUploadEngine::getFolderList\r\n" + Utf8String(e.what()));
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::getFolderList\r\n" + std::string(e.what()));
     }
     FlushSquirrelOutput();
     return ival;
 }
 
-Utf8String CScriptUploadEngine::name()
+std::string CScriptUploadEngine::name()
 {
     return m_sName;
 }
@@ -367,13 +372,13 @@ int CScriptUploadEngine::createFolder(CFolderItem& parent, CFolderItem& folder)
             
         ival = ScriptAPI::GetValue(func.Evaluate<int>(&parent, &folder));
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
-            Log(ErrorInfo::mtError, "CScriptUploadEngine::createFolder\r\n" + Utf8String(Error::Message(vm_.GetVM()))); 
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::createFolder\r\n" + std::string(Error::Message(vm_.GetVM()))); 
             return false;
         }*/
     }
     catch (std::exception& e)
     {
-        Log(ErrorInfo::mtError, "CScriptUploadEngine::createFolder\r\n" + Utf8String(e.what()));
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::createFolder\r\n" + std::string(e.what()));
     }
     FlushSquirrelOutput();
     return ival;
@@ -388,7 +393,7 @@ void CScriptUploadEngine::setNetworkClient(NetworkClient* nm)
     {
         nm->setUserAgent(m_UploadData->UserAgent);
     }
-   
+    nm->setCurlShare(sync_->getCurlShare());
     vm_.GetRootTable().SetInstance("nm", nm);
     //BindVariable(m_Object, nm, "nm");
 }

@@ -33,3 +33,20 @@ const std::string ThreadSync::getValue(const std::string& name)
     } 
     return it->second;
 }
+
+CurlShare* ThreadSync::getCurlShare()
+{
+    return &d_ptr->curlShare_;
+}
+
+void ThreadSync::incrementThreadCount()
+{
+    std::lock_guard<std::mutex> lock(d_ptr->threadCountMutex_);
+    d_ptr->threadCount_++;
+}
+
+void ThreadSync::decrementThreadCount()
+{
+    std::lock_guard<std::mutex> lock(d_ptr->threadCountMutex_);
+    d_ptr->threadCount_--;
+}

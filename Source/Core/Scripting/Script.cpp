@@ -51,6 +51,7 @@ void Script::FlushSquirrelOutput()
 bool Script::preLoad()
 {
     networkClient_.reset(new NetworkClient());
+    networkClient_->setCurlShare(sync_->getCurlShare());
     IU_ConfigureProxy(*(networkClient_.get()));
     Sqrat::RootTable& rootTable = vm_.GetRootTable();
     rootTable.SetInstance("Sync", sync_);
@@ -83,7 +84,7 @@ Sqrat::SqratVM& Script::getVM()
     return vm_;
 }
 
-bool Script::load(Utf8String fileName)
+bool Script::load(std::string fileName)
 {
     using namespace Sqrat;
     if (!IuCoreUtils::FileExists(fileName))

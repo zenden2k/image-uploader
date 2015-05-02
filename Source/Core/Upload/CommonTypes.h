@@ -50,15 +50,15 @@ struct ErrorInfo
     enum MessageType {
         mtError, mtWarning
     };
-    Utf8String error;
-    Utf8String Url;
-    Utf8String ServerName;
-    Utf8String FileName;
+    std::string error;
+    std::string Url;
+    std::string ServerName;
+    std::string FileName;
     int ActionIndex;
     MessageType messageType;
     ErrorType errorType;
     int RetryIndex;
-    Utf8String sender;
+    std::string sender;
 
     ErrorInfo()
     {

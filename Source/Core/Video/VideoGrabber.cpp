@@ -91,7 +91,7 @@ public:
                 continue;
             }
             int64_t SampleTime = frame->getTime();
-            Utf8String s;
+            std::string s;
             char buffer[100];
             sprintf(buffer,"%02d:%02d:%02d",int(SampleTime / 3600), (int)(long(SampleTime) / 60) % 60,
                 (int)long(long(SampleTime) % 60) );
@@ -131,11 +131,11 @@ VideoGrabber::~VideoGrabber()
 {
 }
 
-void VideoGrabber::grab(const Utf8String& fileName) {
+void VideoGrabber::grab(const std::string& fileName) {
      if ( !IuCoreUtils::FileExists(fileName) ) {
          return;
      }
-     Utf8String ext = IuCoreUtils::ExtractFileExt(fileName);
+     std::string ext = IuCoreUtils::ExtractFileExt(fileName);
      fileName_ = fileName;
      worker_.reset(new VideoGrabberRunnable(this));
      std::thread t1(&VideoGrabberRunnable::run, worker_.get());

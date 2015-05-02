@@ -13,7 +13,7 @@
    // Проверяем загружен ли файл
    if(is_uploaded_file($_FILES["file"]["tmp_name"]))
    {
-	   usleep(1000000);
+	   usleep(100000);
      // Если файл загружен успешно, перемещаем его
      // из временной директории в конечную
 	 $web_root = 'http://localhost/ImageUploader/Web';

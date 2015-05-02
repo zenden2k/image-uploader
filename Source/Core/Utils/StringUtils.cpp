@@ -71,7 +71,7 @@ void Split(const std::string& str, const std::string& delimiters, std::vector<st
     }
 }
 
-Utf8String Replace(const Utf8String& text, const Utf8String& s, const Utf8String& d)
+std::string Replace(const std::string& text, const std::string& s, const std::string& d)
 {
     std::string result = text;
     for (unsigned index = 0; index = result.find(s, index), index != std::string::npos; )

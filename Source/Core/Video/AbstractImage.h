@@ -9,8 +9,8 @@ public:
     enum DataFormat { dfRGB888, dfBitmapRgb} ;
     AbstractImage();
     virtual ~AbstractImage();
-    virtual bool loadFromFile(const Utf8String& fileName);
-    virtual bool saveToFile(const Utf8String& fileName) const = 0;
+    virtual bool loadFromFile(const std::string& fileName);
+    virtual bool saveToFile(const std::string& fileName) const = 0;
     virtual int getWidth() const;
     virtual int getHeight() const;
     virtual bool isNull() const = 0;

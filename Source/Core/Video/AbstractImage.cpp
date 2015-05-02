@@ -34,7 +34,7 @@ AbstractImage::~AbstractImage() {
 
 }
 
-bool AbstractImage::loadFromFile(const Utf8String& fileName)
+bool AbstractImage::loadFromFile(const std::string& fileName)
 {
     LOG(ERROR) << "loadFromFile not implemented";
     return false;

@@ -16,6 +16,7 @@ protected:
     ImageConverterFilter imageConverterFilter;
     UrlShorteningFilter urlShorteningFilter;
     UserFilter userFilter;
+    UploadEngineManager* uploadEngineManager_;
 
     void configureNetwork(CFileQueueUploader* uploader, NetworkClient* networkClient);
     void sessionAdded(UploadSession* session) override;

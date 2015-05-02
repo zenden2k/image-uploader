@@ -381,17 +381,17 @@ void CServerSelectorControl::updateServerList()
         for( int i = 0; i < _EngineList->count(); i++) {    
             CUploadEngineData * ue = _EngineList->byIndex( i ); 
 
-            if ( serversMask_ != smUrlShorteners && ue->Type != CUploadEngineData::TypeFileServer && ue->Type != CUploadEngineData::TypeImageServer) {
+            if (serversMask_ != smUrlShorteners && !ue->hasType(CUploadEngineData::TypeFileServer) && !ue->hasType(CUploadEngineData::TypeImageServer)) {
                 continue;
             }
-            if ( ue->Type == CUploadEngineData::TypeImageServer && !(currentLoopMask & smImageServers) ) {
+            if ( ue->hasType(CUploadEngineData::TypeImageServer) && !(currentLoopMask & smImageServers) ) {
                 continue;
             }
-            if ( ue->Type == CUploadEngineData::TypeFileServer && !(currentLoopMask & smFileServers) ) {
+            if ( ue->hasType(CUploadEngineData::TypeFileServer) && !(currentLoopMask & smFileServers) ) {
                 continue;
             }
 
-            if ( ue->Type == CUploadEngineData::TypeUrlShorteningServer && !(currentLoopMask & smUrlShorteners) ) {
+            if ( ue->hasType(CUploadEngineData::TypeUrlShorteningServer) && !(currentLoopMask & smUrlShorteners) ) {
                 continue;
             }
             HICON hImageIcon = _EngineList->getIconForServer(ue->Name);

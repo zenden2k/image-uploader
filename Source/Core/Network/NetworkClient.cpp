@@ -194,16 +194,18 @@ NetworkClient::NetworkClient(void)
         curl_version_info_data * infoData = curl_version_info(CURLVERSION_NOW);
         _is_openssl =  strstr(infoData->ssl_version, "WinSSL")!=infoData->ssl_version;
 #ifdef WIN32
-        GetModuleFileNameA(0, CertFileName, 1023);
-        int i, len = lstrlenA(CertFileName);
-        for(i=len; i>=0; i--)
-        {
-            if(CertFileName[i] == '\\') {
-                CertFileName[i+1] = 0;
-                break;
+        if (_is_openssl) {
+            GetModuleFileNameA(0, CertFileName, 1023);
+            int i, len = lstrlenA(CertFileName);
+            for (i = len; i >= 0; i--)
+            {
+                if (CertFileName[i] == '\\') {
+                    CertFileName[i + 1] = 0;
+                    break;
+                }
             }
+            strcat(CertFileName, "curl-ca-bundle.crt");
         }
-        strcat(CertFileName, "curl-ca-bundle.crt");
 #endif
         atexit(&curl_cleanup);
         _curl_init = true;
@@ -215,6 +217,7 @@ NetworkClient::NetworkClient(void)
     chunkOffset_ = -1;
     chunkSize_ = -1;
     chunk_ = 0;
+    curlShare_ = 0;
     m_CurrentFileSize = -1;
     m_uploadingFile = NULL;
     *m_errorBuffer = 0;
@@ -242,9 +245,18 @@ NetworkClient::NetworkClient(void)
     curl_easy_setopt(curl_handle, CURLOPT_ENCODING, "");
     curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
     curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTDATA, this);
-     
+    /*
+    TODO:
+#if LIBCURL_VERSION_NUM >= 0x072000
+
+    curl_easy_setopt(curl_handle, CURLOPT_XFERINFOFUNCTION, xferinfo);
+    curl_easy_setopt(curl_handle, CURLOPT_XFERINFODATA, file);
+#endif
+     */
 #ifdef _WIN32
-    curl_easy_setopt(curl_handle, CURLOPT_CAINFO, CertFileName);
+    if (_is_openssl) {
+        curl_easy_setopt(curl_handle, CURLOPT_CAINFO, CertFileName);
+    }
 #endif
     curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 1L); 
     curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 2L);
@@ -499,6 +511,7 @@ void NetworkClient::private_checkResponse()
 void NetworkClient::curl_cleanup()
 {
     curl_global_cleanup();
+    kill_locks();
 }
 
 const std::string NetworkClient::responseHeaderText()
@@ -794,6 +807,11 @@ void NetworkClient::Uninitialize()
     }
 }
 
+void NetworkClient::setCurlShare(CurlShare* share)
+{
+    curlShare_ = share;
+    curl_easy_setopt(curl_handle, CURLOPT_SHARE, share->getHandle());
+}
 
 void NetworkClient::enableResponseCodeChecking(bool enable)
 {

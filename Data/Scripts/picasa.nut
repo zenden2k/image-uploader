@@ -1,12 +1,12 @@
 ﻿login <- ""; 
 
 function BeginLogin() {
-	/*try */{
+	try {
 		Sync.getValue("tes");
 		return Sync.beginAuth();
 	}
-	/*catch ( ex ) {
-	}*/
+	catch ( ex ) {
+	}
 	return false;
 }
 

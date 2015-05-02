@@ -11,5 +11,6 @@
 	</Entries>
 <Info>
 [~] Faster vfl.ru uploads
+[~] Interrupt upload on authentication error
 </Info>
 </UpdatePackageSource>

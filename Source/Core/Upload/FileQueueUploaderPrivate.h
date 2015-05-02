@@ -43,14 +43,14 @@ public:
     virtual ~FileQueueUploaderPrivate();
     void start();
     virtual void run();
-    std_tr::shared_ptr<UploadTask> getNextJob();
-    void AddTask(std_tr::shared_ptr<UploadTask> task);
+    std::shared_ptr<UploadTask> getNextJob();
+    void AddTask(std::shared_ptr<UploadTask> task);
     void AddSession(std::shared_ptr<UploadSession> uploadSession);
     void removeSession(std::shared_ptr<UploadSession> uploadSession);
     void addUploadFilter(UploadFilter* filter);
     void removeUploadFilter(UploadFilter* filter);
     int sessionCount();
-    std_tr::shared_ptr<UploadSession> session(int index);
+    std::shared_ptr<UploadSession> session(int index);
     CFileQueueUploader *queueUploader_;
     volatile bool m_NeedStop;
     bool m_IsRunning;

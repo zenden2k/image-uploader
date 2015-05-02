@@ -18,10 +18,10 @@ namespace ImageEditor
         Region intersected(const Region & r) const;
         Region subtracted(const Region & r) const;
         Region united(const Region & r) const;
-        std_tr::shared_ptr<Gdiplus::Region> toNativeRegion() const;
+        std::shared_ptr<Gdiplus::Region> toNativeRegion() const;
     private:
 #ifndef QT_VERSION
-        std_tr::shared_ptr<Gdiplus::Region> rgn_;
+        std::shared_ptr<Gdiplus::Region> rgn_;
 #endif
     };
 }

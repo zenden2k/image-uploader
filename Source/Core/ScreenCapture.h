@@ -134,12 +134,12 @@ class CScreenCaptureEngine
         void setSource(HBITMAP src);
         bool captureRegion(CScreenshotRegion* region);
         void setDelay(int msec);
-        std_tr::shared_ptr<Gdiplus::Bitmap> capturedBitmap();
+        std::shared_ptr<Gdiplus::Bitmap> capturedBitmap();
         Gdiplus::Bitmap* releaseCapturedBitmap();
 
     private:
         int m_captureDelay;
-        std_tr::shared_ptr<Gdiplus::Bitmap> m_capturedBitmap;
+        std::shared_ptr<Gdiplus::Bitmap> m_capturedBitmap;
         release_deleter<Gdiplus::Bitmap> capturedBitmapDeleter_;
         /*static */bool capturedBitmapReleased_;
         HBITMAP m_source;

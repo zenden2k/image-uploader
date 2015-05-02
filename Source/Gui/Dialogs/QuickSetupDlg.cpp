@@ -97,7 +97,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     std::string selectedServerName = "directupload.net" ;
     for( int i = 0; i < _EngineList->count(); i++) {    
         CUploadEngineData * ue = _EngineList->byIndex( i ); 
-        if ( ue->Type !=  CUploadEngineData::TypeImageServer && ue->Type !=  CUploadEngineData::TypeFileServer ) {
+        if (!ue->hasType(CUploadEngineData::TypeImageServer) && !ue->hasType(CUploadEngineData::TypeFileServer)) {
             continue;
         }
         HICON hImageIcon = _EngineList->getIconForServer(ue->Name);

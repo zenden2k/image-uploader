@@ -224,7 +224,7 @@
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;zlibd.lib;minizipd.lib;gdiplus.lib;strmbasd.lib;libcurld_imp.lib;Ws2_32.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;dwmapi.lib;squirrel.lib;sqstdlib.lib;ssleay32.lib;libeay32.lib;pcred.lib;pcre++.lib;wininet.lib;winmm.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;zlibd.lib;minizipd.lib;gdiplus.lib;strmbasd.lib;libcurl.lib;Ws2_32.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;dwmapi.lib;squirrel.lib;sqstdlib.lib;ssleay32.lib;libeay32.lib;pcred.lib;pcre++.lib;wininet.lib;winmm.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Debug;$(SolutionDir)Contrib\Lib\;$(SolutionDir)\Contrib\Source\boost\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;LIBCMT.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Iphlpapi.dll;Netapi32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
@@ -618,6 +618,7 @@
     <ClInclude Include="Source\Core\CommonDefs.h" />
     <ClInclude Include="Source\Core\Images\ImageConverterPrivateBase.h" />
     <ClInclude Include="Source\Core\Images\ImageConverterPrivate_gdiplus.h" />
+    <ClInclude Include="Source\Core\Network\CurlShare.h" />
     <ClInclude Include="Source\Core\Scripting\API\COMUtils.h" />
     <ClInclude Include="Source\Core\Scripting\API\Functions.h" />
     <ClInclude Include="Source\Core\Scripting\API\HtmlDocument.h" />
@@ -650,6 +651,7 @@
     <ClInclude Include="Source\Core\Upload\UploadSession.h" />
     <ClInclude Include="Source\Core\Utils\EnumUtils.h" />
     <ClInclude Include="Source\Gui\Controls\ResultsListView.h" />
+    <ClInclude Include="Source\Gui\Dialogs\VideoGrabberPage.h" />
     <ClInclude Include="Source\logging.h" />
     <ClInclude Include="Source\resource.h" />
     <ClInclude Include="Source\versioninfo.h" />
@@ -938,6 +940,7 @@
   <ItemGroup>
     <ClCompile Include="Source\Core\Images\ImageConverterPrivateBase.cpp" />
     <ClCompile Include="Source\Core\Images\ImageConverterPrivate_gdiplus.cpp" />
+    <ClCompile Include="Source\Core\Network\CurlShare.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\COMUtils.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\Functions.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\HtmlDocument.cpp" />

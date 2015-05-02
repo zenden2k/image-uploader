@@ -5,7 +5,7 @@
 #include "Core/Utils/CoreUtils.h"
 namespace IuTextUtils
 {
-    Utf8String BbCodeToHtml(const Utf8String& bbcode) {
+    std::string BbCodeToHtml(const std::string& bbcode) {
         std::string work = bbcode;
         
         pcrepp::Pcre reg2("\\[img\\](.+?)\\[\\/img\\]", "imc");
@@ -28,7 +28,7 @@ namespace IuTextUtils
         return work3;
     }
 
-    bool FileSaveContents(const Utf8String& fileName, const Utf8String& contents) {
+    bool FileSaveContents(const std::string& fileName, const std::string& contents) {
         FILE * f = IuCoreUtils::fopen_utf8(fileName.c_str(), "wb");
         if ( !f ) {
             return false;

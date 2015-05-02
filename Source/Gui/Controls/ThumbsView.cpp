@@ -410,7 +410,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
             WCHAR Buffer[256];
             int f = MyGetFileSize(GetFileName(ItemID));
             WCHAR buf2[25];
-            Utf8String fileSizeStr = IuCoreUtils::fileSizeToString(IuCoreUtils::getFileSize(WCstringToUtf8(Filename)));
+            std::string fileSizeStr = IuCoreUtils::fileSizeToString(IuCoreUtils::getFileSize(WCstringToUtf8(Filename)));
             lstrcpy(buf2, Utf8ToWCstring(fileSizeStr));
             //NewBytesToString(f, buf2, 25);
             WCHAR FileExt[25];

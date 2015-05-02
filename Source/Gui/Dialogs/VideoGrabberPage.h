@@ -93,7 +93,7 @@ class CVideoGrabberPage : public CWizardPage,  public CDialogImpl<CVideoGrabberP
 		void CheckEnableNext();
 		bool OnNext(); // Reimplemented function of CWizardPage
 		bool OnShow(); // Reimplemented function of CWizardPage
-		void OnFrameGrabbed(const Utf8String&, int64_t, AbstractImage*);
+		void OnFrameGrabbed(const std::string&, int64_t, AbstractImage*);
 		void OnFrameGrabbingFinished();
 
 		CHyperLink openInFolderLink_;

@@ -132,20 +132,40 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
             UE.MaxFileSize =   cur.AttributeInt("MaxFileSize");
 
             std::string typeString =  cur.Attribute("Type");
-            UE.Type = UE.ImageHost ? CUploadEngineData::TypeImageServer : CUploadEngineData::TypeFileServer; 
+
+            UE.TypeMask = UE.ImageHost ? CUploadEngineData::TypeImageServer : CUploadEngineData::TypeFileServer; 
             
-            if ( !typeString.empty() ) {    
-                if ( typeString == "image" ) {
-                    UE.Type = CUploadEngineData::TypeImageServer;
-                } else if ( typeString == "file" ) {
-                    UE.Type =  CUploadEngineData::TypeFileServer;
-                } else if ( typeString == "text" ) {
-                    UE.Type = CUploadEngineData::TypeTextServer;
-                } else if ( typeString == "urlshortening") {
-                    UE.Type = CUploadEngineData::TypeUrlShorteningServer;
-                } 
-                UE.ImageHost = (UE.Type == CUploadEngineData::TypeImageServer);
+            std::vector<std::string> types;
+            
+            std::string typesListString = cur.Attribute("Types");
+            if (!typesListString.empty())
+            {
+                IuStringUtils::Split(typesListString, ",", types, 10);
             }
+            if (!typeString.empty()) {
+                types.push_back(typeString);
+            }
+
+            for (auto& it : types)
+            {
+                if (!typeString.empty()) {
+                    if (it == "image") {
+                        UE.TypeMask |= CUploadEngineData::TypeImageServer;
+                    }
+                    else if (it == "file") {
+                        UE.TypeMask |= CUploadEngineData::TypeFileServer;
+                    }
+                    else if (it == "text") {
+                        UE.TypeMask |= CUploadEngineData::TypeTextServer;
+                    }
+                    else if (it == "urlshortening") {
+                        UE.TypeMask |= CUploadEngineData::TypeUrlShorteningServer;
+                    }
+                   
+                }
+            }
+
+            UE.ImageHost = (UE.TypeMask & CUploadEngineData::TypeImageServer);
 
             std::vector<SimpleXmlNode> actions;
             cur["Actions"].GetChilds("Action", actions);
@@ -201,10 +221,29 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
             {
 
                 UE.DownloadUrlTemplate = resultNode.Attribute("DownloadUrlTemplate");
+                if (UE.DownloadUrlTemplate.empty())
+                {
+                    UE.DownloadUrlTemplate = resultNode.Attribute("DownloadUrl");
+                }
                 UE.ImageUrlTemplate = resultNode.Attribute("ImageUrlTemplate");
+                if (UE.ImageUrlTemplate.empty())
+                {
+                    UE.ImageUrlTemplate = resultNode.Attribute("ImageUrl");
+                }
                 UE.ThumbUrlTemplate = resultNode.Attribute("ThumbUrlTemplate");
+                if (UE.ThumbUrlTemplate.empty())
+                {
+                    UE.ThumbUrlTemplate = resultNode.Attribute("ThumbUrl");
+                }
+                UE.EditUrlTemplate = resultNode.Attribute("EditUrl");
+                UE.DeleteUrlTemplate = resultNode.Attribute("DeleteUrl");
                 std::string directUrlTemplate = resultNode.Attribute("DirectUrlTemplate"); 
+                if (directUrlTemplate.empty())
+                {
+                    directUrlTemplate = resultNode.Attribute("DirectUrl");
+                }
                 if ( !directUrlTemplate.empty() ) {
+
                     UE.ImageUrlTemplate = directUrlTemplate;
                 }
 

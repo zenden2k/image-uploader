@@ -29,6 +29,11 @@ bool ServerSync::beginAuth()
         LOG(ERROR) << "ServerSync::beginLogin exception: " << ex.what();
         return false;
     }
+    if (d->authPerformed_ && !d->authPerformedSuccess_)
+    {
+        d->loginMutex_.unlock();
+        throw ServerSyncException("Upload aborted: Authentication failed");
+    }
     return true;
 }
 
@@ -58,4 +63,21 @@ bool ServerSync::isAuthPerformed()
 {
     Q_D(ServerSync);
     return d->authPerformed_;
+}
+
+void ServerSync::resetAuthorization()
+{
+    Q_D(ServerSync);
+    d->authPerformed_ = false;
+    d->authPerformedSuccess_ = false;
+}
+
+void ServerSync::resetFailedAuthorization()
+{
+    Q_D(ServerSync);
+    std::lock_guard<std::mutex> lock(d_ptr->threadCountMutex_);
+    if (!d_ptr->threadCount_ && d->authPerformed_ && !d->authPerformedSuccess_ )
+    {
+        d->authPerformed_ = false;
+    }
 }

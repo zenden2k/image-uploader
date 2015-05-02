@@ -78,7 +78,7 @@ class CShortenUrlDlg:    public CDialogImpl <CShortenUrlDlg>,
         CCustomEditControl outputEditControl_;
         CBrush backgroundBrush_;
         CBrush greenBrush_;
-        std::vector<std_tr::shared_ptr<CUploadEngineData>> uploadEngineDataVector;
+        std::vector<std::shared_ptr<CUploadEngineData>> uploadEngineDataVector;
 };
 
 

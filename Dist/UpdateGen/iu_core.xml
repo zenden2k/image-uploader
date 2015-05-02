@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<UpdatePackageSource Name="iu_core" DisplayName="Image Uploader 1.3.2-alpha.4434" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%"  CoreUpdate="1" >
+<UpdatePackageSource Name="iu_core" DisplayName="Image Uploader 1.3.2-alpha.4435" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%"  CoreUpdate="1" >
 	<Entries>
 		<Entry Name="Image Uploader.exe" SaveToFolder="%apppath%/" Action="add"/>
 		<Entry Name="ExplorerIntegration*.dll" SaveToFolder="%apppath%/" Action="add"/>
-		<Entry Name="curl-ca-bundle.crt" SaveToFolder="%apppath%/" Action="add"/>
+		<Entry Name="curl-ca-bundle.crt" SaveToFolder="%apppath%/" Action="delete"/>
 		<Entry Name="new-icon.ico" SaveToFolder="%apppath%/" Action="add"/>
         <Entry Name="Lang/*.lng" SaveToFolder="%apppath%/Lang/" Action="add"/>
 		<Entry Name="Lang/Turkce.lng" SaveToFolder="%apppath%/Lang/" Action="delete"/>
@@ -14,7 +14,6 @@
         <Entry Name="Data/Thumbnails/*" SaveToFolder="%datapath%/Thumbnails/" Action="add"/>
 		<Entry Name="Data/templates.xml" SaveToFolder="%datapath%/templates.xml" Action="add"/>
 	</Entries>
-<Info>[+] Added CustomHeaders and UserAgent options to servers.xml
-[~] Fixed memory leaks
+<Info>Share cookies, dns cache, SSL connections between threads
 </Info>
 </UpdatePackageSource>

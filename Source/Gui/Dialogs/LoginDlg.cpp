@@ -235,7 +235,7 @@ void CLoginDlg::Accept()
     GetDlgItemText(IDC_PASSWORDEDIT, Buffer, 256);
     li.Password = WCstringToUtf8(Buffer);
     li.DoAuth = SendDlgItemMessage(IDC_DOAUTH, BM_GETCHECK) != FALSE;
-
+    uploadEngineManager_->resetAuthorization(serverProfile_);
     serverProfile_.serverSettings().authData = li;
     EndDialog(IDOK);
 }

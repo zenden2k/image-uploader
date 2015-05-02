@@ -49,7 +49,8 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         ~CUploadDlg();
         enum { IDD = IDD_UPLOADDLG };
         enum {
-            IDC_UPLOADPROCESSTAB = WM_USER + 100, IDC_UPLOADRESULTSTAB = IDC_UPLOADPROCESSTAB + 1
+            IDC_UPLOADPROCESSTAB = WM_USER + 100, IDC_UPLOADRESULTSTAB = IDC_UPLOADPROCESSTAB + 1,
+            kEnableNextButtonTimer = 5
         };
         int TimerInc;
         bool IsStopTimer;
@@ -107,6 +108,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         int currentTab_;
         int filesFinished_;
         CResultsListView uploadListView_;
+        bool isEnableNextButtonTimerRunning_;
         std::shared_ptr<UploadSession> uploadSession_;
         struct FileProcessingStruct {
             CString fileName;

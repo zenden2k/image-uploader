@@ -101,7 +101,7 @@ class Canvas {
         void setZoomFactor(float zoomFactor);
         Gdiplus::Bitmap* getBufferBitmap();
         void addUndoHistoryItem(const UndoHistoryItem& item);
-        std_tr::shared_ptr<Gdiplus::Bitmap> getBitmapForExport();
+        std::shared_ptr<Gdiplus::Bitmap> getBitmapForExport();
     
         float getZoomFactor() const;
         MovableElement* getElementAtPosition(int x, int y, ElementType et = etNone);
@@ -154,7 +154,7 @@ class Canvas {
         void setCursor(CursorType cursor);
         void renderInBuffer(Gdiplus::Rect  rect, bool forExport =false);
 
-        std_tr::shared_ptr<Gdiplus::Bitmap> buffer_;
+        std::shared_ptr<Gdiplus::Bitmap> buffer_;
         Document* doc_;
         Gdiplus::Graphics* bufferedGr_;
         float blurRadius_;

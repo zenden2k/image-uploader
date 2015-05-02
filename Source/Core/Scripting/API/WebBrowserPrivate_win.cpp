@@ -44,7 +44,7 @@ void WebBrowserPrivate::OnPageLoaded(const CString& url) {
         }
         catch (std::exception& e)
         {
-            LOG(ERROR) << "onUrlChangedCallback: "<<Utf8String(e.what());
+            LOG(ERROR) << "onUrlChangedCallback: "<<std::string(e.what());
             FlushSquirrelOutput(GetCurrentThreadVM());
         }
     }
@@ -65,7 +65,7 @@ void WebBrowserPrivate::OnDocumentComplete(const CString& url) {
         }
         catch (std::exception& e)
         {
-            LOG(ERROR) << "onLoadFinishedCallback: " << Utf8String(e.what());
+            LOG(ERROR) << "onLoadFinishedCallback: " << std::string(e.what());
             FlushSquirrelOutput(GetCurrentThreadVM());
         }
     }
@@ -101,7 +101,7 @@ bool WebBrowserPrivate::OnNavigateError(const CString& url, LONG statusCode) {
         }
         catch (std::exception& e)
         {
-            LOG(ERROR) << "onNavigateErrorCallback: " << Utf8String(e.what());
+            LOG(ERROR) << "onNavigateErrorCallback: " << std::string(e.what());
             FlushSquirrelOutput(GetCurrentThreadVM());
         }
     }
@@ -124,7 +124,7 @@ void WebBrowserPrivate::OnTimer()
         }
         catch (std::exception& e)
         {
-            LOG(ERROR) << "onTimerCallback: " << Utf8String(e.what());
+            LOG(ERROR) << "onTimerCallback: " << std::string(e.what());
             FlushSquirrelOutput(GetCurrentThreadVM());
         }
     }
@@ -148,7 +148,7 @@ void WebBrowserPrivate::OnFileFieldFilled(const CString& fileName)
         
         catch (std::exception& e)
         {
-            LOG(ERROR) << "onFileFieldFilledCallback: " << Utf8String(e.what());
+            LOG(ERROR) << "onFileFieldFilledCallback: " << std::string(e.what());
             FlushSquirrelOutput(GetCurrentThreadVM());
         }
     }

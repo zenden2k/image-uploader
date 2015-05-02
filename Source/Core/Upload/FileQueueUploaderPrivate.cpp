@@ -122,9 +122,9 @@ void FileQueueUploaderPrivate::OnConfigureNetworkClient(CUploader* uploader, Net
     }
 }
 
-std_tr::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
+std::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
     if (m_NeedStop)
-        return std_tr::shared_ptr<UploadTask>();
+        return std::shared_ptr<UploadTask>();
 #ifndef IU_CLI
     std::lock_guard<std::recursive_mutex> lock(mutex_);
 #endif
@@ -133,7 +133,7 @@ std_tr::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
     {
         for (size_t i = startFromSession_; i < sessions_.size(); i++)
         {
-            std_tr::shared_ptr<UploadTask> task;
+            std::shared_ptr<UploadTask> task;
             if (!sessions_[i]->getNextTask(this, task))
             {
                 startFromSession_ = i + 1;
@@ -149,10 +149,10 @@ std_tr::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
 #ifndef IU_CLI
 
 #endif
-    return std_tr::shared_ptr<UploadTask>();
+    return std::shared_ptr<UploadTask>();
 }
 
-void FileQueueUploaderPrivate::AddTask(std_tr::shared_ptr<UploadTask>  task) {
+void FileQueueUploaderPrivate::AddTask(std::shared_ptr<UploadTask>  task) {
     std::shared_ptr<UploadSession> session(new UploadSession());
     session->addTask(task);
     AddSession(session);
@@ -169,6 +169,7 @@ void FileQueueUploaderPrivate::AddSession(std::shared_ptr<UploadSession> uploadS
     }
     sessions_.push_back(uploadSession);
     sessionsMutex_.unlock();
+    queueUploader_->sessionAdded(uploadSession.get());
     if (autoStart_)
     {
         start();
@@ -206,7 +207,7 @@ int FileQueueUploaderPrivate::sessionCount()
     return sessions_.size();
 }
 
-std_tr::shared_ptr<UploadSession> FileQueueUploaderPrivate::session(int index)
+std::shared_ptr<UploadSession> FileQueueUploaderPrivate::session(int index)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     return sessions_[index];
@@ -265,13 +266,14 @@ void FileQueueUploaderPrivate::run()
         std::string  profileName = it->serverProfile().profileName();
 
         CAbstractUploadEngine *engine = uploadEngineManager_->getUploadEngine(it->serverProfile());
+
         if (!engine)
         {
             session->setFatalErrorForServer(serverName, profileName);
             it->finishTask(UploadTask::StatusFailure);
             continue;
         }
-        
+        engine->serverSync()->incrementThreadCount();
         uploader.setUploadEngine(engine);
         uploader.onNeedStop.bind(this, &FileQueueUploaderPrivate::onNeedStopHandler);
         it->setStatusText(_("Starting upload"));
@@ -309,6 +311,7 @@ void FileQueueUploaderPrivate::run()
         else
         {
         }
+        engine->serverSync()->decrementThreadCount();
         it->finishTask(res ? UploadTask::StatusFinished : UploadTask::StatusFailure);
 
         //callMutex_.unlock();

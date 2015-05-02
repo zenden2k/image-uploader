@@ -53,7 +53,7 @@ public :
         //delete[] data_;
     }
 
-    bool saveToFile(const Utf8String& fileName) const {
+    bool saveToFile(const std::string& fileName) const {
         AbstractImage* img = AbstractImage::createImage();
         if ( !img ) {
             return false;
@@ -129,7 +129,7 @@ public:
           }
 
 
-    bool open(const Utf8String& fileName) {
+    bool open(const std::string& fileName) {
         int numOfFrames = 5;
         if(numOfFrames<=0) return false;
 
@@ -238,7 +238,7 @@ public:
          sec = sec%60;
          int64_t hr = min/60;
          min=min%60;
-         //Utf8String s;
+         //std::string s;
          ic = pFormatCtx;
          int64_t full_sec =0; //длина видео, в секундах
 
@@ -520,7 +520,7 @@ AvcodecFrameGrabber::~AvcodecFrameGrabber()
     delete d_ptr;
 }
 
-bool AvcodecFrameGrabber::open(const Utf8String& fileName) {
+bool AvcodecFrameGrabber::open(const std::string& fileName) {
     return d_ptr->open(fileName);
 }
 
@@ -538,7 +538,7 @@ int64_t AvcodecFrameGrabber::duration() {
 
 //bool NeedStop;
 
-Utf8String timestamp_to_str(int64_t duration,int64_t units) {
+std::string timestamp_to_str(int64_t duration,int64_t units) {
     int hours, mins, secs, us;
     secs = duration / units;
     us = duration % units;
@@ -565,7 +565,7 @@ void memswap(void *p1, void *p2, size_t count) {
     }
 };
 
-/*void SaveFrame(AVFrame *pFrame, int width, int height, int iFrame,int headerlen,const Utf8String& Title, CSampleGrabberCB * cb, int64_t target_frame) {
+/*void SaveFrame(AVFrame *pFrame, int width, int height, int iFrame,int headerlen,const std::string& Title, CSampleGrabberCB * cb, int64_t target_frame) {
     cb->Grab = true;
 
     int dataSize = width*height * 3;

@@ -77,13 +77,15 @@ bool CDefaultUploadEngine::doUploadFile(std::shared_ptr<FileUploadTask> task, CI
         return false;
     }
 
-    Utf8String m_ThumbUrl    = ReplaceVars( m_UploadData->ThumbUrlTemplate ); 
-    Utf8String m_ImageUrl    = ReplaceVars( m_UploadData->ImageUrlTemplate ); 
-    Utf8String m_DownloadUrl = ReplaceVars( m_UploadData->DownloadUrlTemplate ); 
+    std::string m_ThumbUrl    = ReplaceVars( m_UploadData->ThumbUrlTemplate ); 
+    std::string m_ImageUrl    = ReplaceVars( m_UploadData->ImageUrlTemplate ); 
+    std::string m_DownloadUrl = ReplaceVars( m_UploadData->DownloadUrlTemplate ); 
 
     params.ThumbUrl  = m_ThumbUrl;
     params.DirectUrl = m_ImageUrl;
     params.ViewUrl   = m_DownloadUrl;
+    params.EditUrl = ReplaceVars(m_UploadData->EditUrlTemplate);
+    params.DeleteUrl = ReplaceVars(m_UploadData->DeleteUrlTemplate);
     return true;
 }
 
@@ -94,9 +96,9 @@ bool  CDefaultUploadEngine::doUploadUrl(std::shared_ptr<UrlShorteningTask> task,
     if ( !actionsExecuteResult ) {
         return false;
     }
-    Utf8String m_ThumbUrl    = ReplaceVars( m_UploadData->ThumbUrlTemplate ); 
-    Utf8String m_ImageUrl    = ReplaceVars( m_UploadData->ImageUrlTemplate ); 
-    Utf8String m_DownloadUrl = ReplaceVars( m_UploadData->DownloadUrlTemplate ); 
+    std::string m_ThumbUrl    = ReplaceVars( m_UploadData->ThumbUrlTemplate ); 
+    std::string m_ImageUrl    = ReplaceVars( m_UploadData->ImageUrlTemplate ); 
+    std::string m_DownloadUrl = ReplaceVars( m_UploadData->DownloadUrlTemplate ); 
 
     params.ThumbUrl  = m_ThumbUrl;
     params.DirectUrl = m_ImageUrl;
@@ -117,10 +119,11 @@ void CDefaultUploadEngine::prepareUpload() {
             m_Consts["_PASSWORD"] = li.Password;
         }
     }
-
     int n = rand() % (256 * 256);
+    std::thread::id currentThreadId = std::this_thread::get_id();;
     m_Consts["_RAND16BITS"]         = IuCoreUtils::toString(n);
     m_Consts["_THUMBWIDTH"]         = IuCoreUtils::toString( m_ThumbnailWidth );
+    m_Consts["_THREADID"] = IuCoreUtils::ThreadIdToString(currentThreadId);
 }
 
 bool CDefaultUploadEngine::executeActions() {
@@ -333,7 +336,11 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
             serverSync_->beginAuth();
             if (!serverSync_->isAuthPerformed()) {
                 Result = DoUploadAction(Current, false);
-               // serverSync_->setAuthPerformed(Result);
+                if (!Action.OnlyOnce)
+                {
+                    serverSync_->setAuthPerformed(Result);
+                }
+                
             }
             serverSync_->endAuth();
         }
@@ -522,6 +529,10 @@ void CDefaultUploadEngine::AddCustomHeaders(UploadAction& Action)
 
 std::string CDefaultUploadEngine::ReplaceVars(const std::string& Text)
 {
+    if (Text.empty())
+    {
+        return Text;
+    }
     std::string Result =  Text;
 
     pcrepp::Pcre reg("\\$\\(([A-z0-9_|]*?)\\)", "imc");

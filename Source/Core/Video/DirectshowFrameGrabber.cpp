@@ -74,7 +74,7 @@ public :
         delete[] data_;
     }
 
-    bool saveToFile(const Utf8String& fileName) const {
+    bool saveToFile(const std::string& fileName) const {
         AbstractImage* image = AbstractImage::createImage();
         if ( !image ) {
             return false;
@@ -310,7 +310,7 @@ STDMETHODIMP CSampleGrabberCB::BufferCB( double SampleTime, BYTE* pBuffer, long 
 }
 
 
-void GrabInfo(Utf8String text){
+void GrabInfo(std::string text){
     OutputDebugString(IuCoreUtils::Utf8ToWstring(text).c_str());
     //LOG(ERROR) << text;
 }
@@ -325,7 +325,7 @@ DirectshowFrameGrabber::DirectshowFrameGrabber(): d_ptr(new DirectshowFrameGrabb
 
 _COM_SMARTPTR_TYPEDEF(ISampleGrabber, __uuidof(ISampleGrabber));
 
-bool DirectshowFrameGrabber::open(const Utf8String& fileName) {
+bool DirectshowFrameGrabber::open(const std::string& fileName) {
     CoInitializeEx(NULL, COINIT_MULTITHREADED);
     CString fileNameW = IuCoreUtils::Utf8ToWstring(fileName).c_str();
 

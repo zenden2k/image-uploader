@@ -44,7 +44,7 @@ class UploadSession
         std::vector<TaskAddedCallback> taskAddedCallbacks_;
         std::vector<SessionFinishedCallback> sessionFinishedCallbacks_;
         void notifyTaskAdded(UploadTask* task);
-        std_tr::shared_ptr<CHistorySession> historySession_;
+        std::shared_ptr<CHistorySession> historySession_;
         std::map<std::pair<std::string, std::string>, bool> serverFatalErrors_;
         std::mutex serverFatalErrorsMutex_;
         std::mutex historySessionMutex_;

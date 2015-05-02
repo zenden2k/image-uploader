@@ -66,7 +66,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     for(int i=0; i<m_EngineList->count(); i++)
     {    
         CUploadEngineData * ue = m_EngineList->byIndex(i);
-        if ( ue->Type != CUploadEngineData::TypeImageServer && ue->Type != CUploadEngineData::TypeFileServer ) {
+        if ( !ue->hasType(CUploadEngineData::TypeImageServer) && !ue->hasType(CUploadEngineData::TypeFileServer) ) {
             continue;
         }
         TCHAR buf[300]=_T(" ");

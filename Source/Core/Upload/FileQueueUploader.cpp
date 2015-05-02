@@ -87,7 +87,7 @@ int CFileQueueUploader::sessionCount()
     return _impl->sessionCount();
 }
 
-std_tr::shared_ptr<UploadSession> CFileQueueUploader::session(int index)
+std::shared_ptr<UploadSession> CFileQueueUploader::session(int index)
 {
     return _impl->session(index);
 }
@@ -108,7 +108,7 @@ void CFileQueueUploader::taskAdded(UploadTask* task)
     }
 }
 
-void CFileQueueUploader::addTask(std_tr::shared_ptr<UploadTask> task) {
+void CFileQueueUploader::addTask(std::shared_ptr<UploadTask> task) {
     _impl->AddTask(task);
 }
 

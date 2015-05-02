@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1430510919.dat" TimeStamp="1430510919" Date="01.05.2015 22:08:39" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="51825c26ed6492b719468f3cd331cd74">
+<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1430522972.dat" TimeStamp="1430522972" Date="02.05.2015 01:29:32" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="9bc970d1d609fc868e233742ff88ced8">
   <Info>
 [~] Faster vfl.ru uploads
+[~] Interrupt upload on authentication error
 </Info>
 </UpdateInfo>

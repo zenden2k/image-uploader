@@ -1,4 +1,40 @@
 authorized <- false;
+
+function BeginLogin() {
+	try {
+		return Sync.beginAuth();
+	}
+	catch ( ex ) {
+	}
+	return false;
+}
+
+function EndLogin() {
+	try {
+		return Sync.endAuth();
+	} catch ( ex ) {
+		
+	}
+	return false;
+}
+
+function SetAuthPerformed(res) {
+	try {
+		Sync.setAuthPerformed(res);
+	}
+	catch ( ex ) {
+	}
+}
+
+function IsAuthPerformed() {
+	try {
+		return Sync.isAuthPerformed();
+	}
+	catch ( ex ) {
+	}
+	return false;
+}
+
 function regex_simple(data,regStr,start)
 {
 	local ex = regexp(regStr);
@@ -44,7 +80,7 @@ function reg_replace(str, pattern, replace_with)
 
 
 
-function DoLogin()
+function _DoLogin()
 {
 	local login = ServerParams.getParam("Login");
 	local pass =  ServerParams.getParam("Password");
@@ -60,12 +96,26 @@ function DoLogin()
 			local t = ParseJSON(nm.responseBody());
 			if ( t == null || t.IsError )  {
 				_WriteLog("error", tr("radikal.login_error", "Authentication error on radikal.ru"));
+				SetAuthPerformed(false);
 				return 0;
 			} 
 			authorized = true;
 		} catch ( ex ) { }
 	}
+	SetAuthPerformed(true);
 	return 1;
+}
+
+function DoLogin() {
+	if (!BeginLogin() ) {
+		return false;
+	}
+	local res  = 1;
+	if ( !IsAuthPerformed() ) {
+		res = _DoLogin();
+	}
+	EndLogin();
+	return res;
 }
 
 function  UploadFile(FileName, options)
@@ -97,7 +147,7 @@ function  UploadFile(FileName, options)
 	nm.addQueryParam("Filename", ExtractFileName(FileName));
 	nm.addQueryParamFile("Filedata",FileName, ExtractFileName(FileName),GetFileMimeType(FileName));
 
-		nm.addQueryParam("Upload", "Submit Query");
+	nm.addQueryParam("Upload", "Submit Query");
 	local data = "";
 	nm.doUploadMultipartData();
 	data = nm.responseBody();

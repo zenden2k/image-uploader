@@ -52,7 +52,7 @@ public:
       int  matchesCount();
       Sqrat::Array getSubStrings();
 protected:
-    std_tr::shared_ptr<pcrepp::Pcre> pcre_;
+    std::shared_ptr<pcrepp::Pcre> pcre_;
 
 };
 

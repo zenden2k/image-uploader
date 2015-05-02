@@ -42,7 +42,7 @@ Document::Document(const wchar_t* fileName) {
     }
 }
 
-Document::Document(std_tr::shared_ptr<Gdiplus::Bitmap> sourceImage,  bool hasTransparentPixels ) {
+Document::Document(std::shared_ptr<Gdiplus::Bitmap> sourceImage,  bool hasTransparentPixels ) {
     currentImage_ = sourceImage;
     hasTransparentPixels_ = hasTransparentPixels;
     init();

@@ -7,11 +7,13 @@
 #include "Core/Upload/Filters/UserFilter.h"
 #include "Core/Scripting/ScriptsManager.h"
 #include <Func/Settings.h>
+#include "UploadEngineManager.h"
 
 UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager) : 
                                                     CFileQueueUploader(uploadEngineManager, scriptsManager), 
                                                     userFilter(scriptsManager)
 {
+    uploadEngineManager_ = uploadEngineManager;
     addUploadFilter(&imageConverterFilter);
     addUploadFilter(&userFilter);
     addUploadFilter(&urlShorteningFilter);
@@ -45,12 +47,13 @@ void UploadManager::configureNetwork(CFileQueueUploader* uploader, NetworkClient
 
 void UploadManager::sessionAdded(UploadSession* session)
 {
+    CFileQueueUploader::sessionAdded(session);
     session->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &UploadManager::onSessionFinished));
 }
 
 void UploadManager::onSessionFinished(UploadSession* uploadSession)
 {
-    
+    uploadEngineManager_->resetFailedAuthorization();
 }
 
 void UploadManager::onTaskFinished(UploadTask* task, bool ok)
@@ -58,7 +61,7 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
     UploadSession* uploadSession = task->session();
     CHistoryManager * mgr = ZBase::get()->historyManager();
     std::lock_guard<std::mutex> lock(uploadSession->historySessionMutex_);
-    std_tr::shared_ptr<CHistorySession> session = uploadSession->historySession_;
+    std::shared_ptr<CHistorySession> session = uploadSession->historySession_;
     if (!session) {
         session = mgr->newSession();
         uploadSession->historySession_ = session;

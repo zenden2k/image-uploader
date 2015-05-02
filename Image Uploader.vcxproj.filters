@@ -694,7 +694,13 @@
       <Filter>Source Files\Core\Images</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Images\ImageConverterPrivate_gdiplus.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\Core\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Network\CurlShare.h">
+      <Filter>Source Files\Core\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\VideoGrabberPage.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1619,6 +1625,9 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Images\ImageConverterPrivate_gdiplus.cpp">
       <Filter>Source Files\Core\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Network\CurlShare.cpp">
+      <Filter>Source Files\Core\Network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

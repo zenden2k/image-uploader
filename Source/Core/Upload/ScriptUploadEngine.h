@@ -32,7 +32,7 @@
 #include "Core/Upload/FolderList.h"
 #include "Core/Scripting/Script.h"
 
-extern const Utf8String IuNewFolderMark;
+extern const std::string IuNewFolderMark;
 
 class CScriptUploadEngine : public CAbstractUploadEngine, 
                             public Script
@@ -41,28 +41,28 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
         int doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params);
     protected:
         bool needStop();
-        Utf8String m_ErrorReason;
-        Utf8String m_FileName;
-        Utf8String m_displayFileName;
+        std::string m_ErrorReason;
+        std::string m_FileName;
+        std::string m_displayFileName;
         LoginInfo li;
         int m_CurrentActionIndex;
         int m_nThumbWidth;
     
     public:
-        CScriptUploadEngine(Utf8String pluginName, ServerSync* serverSync, ServerSettingsStruct* settings);
+        CScriptUploadEngine(std::string pluginName, ServerSync* serverSync, ServerSettingsStruct* settings);
         ~CScriptUploadEngine();
         void setNetworkClient(NetworkClient* nm);
-        //bool load(Utf8String fileName, ServerSettingsStruct& params);
+        //bool load(std::string fileName, ServerSettingsStruct& params);
         int getFolderList(CFolderList &FolderList);
         int createFolder(CFolderItem &parent, CFolderItem &folder);
         int modifyFolder(CFolderItem &folder);
-        int getAccessTypeList(std::vector<Utf8String> &list);
-        int getServerParamList(std::map<Utf8String, Utf8String> &list);
+        int getAccessTypeList(std::vector<std::string> &list);
+        int getServerParamList(std::map<std::string, std::string> &list);
         int doLogin();
 
         bool supportsSettings();
         bool supportsBeforehandAuthorization();
-        Utf8String name();
+        std::string name();
         
         int RetryLimit();
         
@@ -76,7 +76,7 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
         void clearSqratError();
         CFolderList m_FolderList;
        
-        Utf8String m_sName;
+        std::string m_sName;
       
         DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
 };

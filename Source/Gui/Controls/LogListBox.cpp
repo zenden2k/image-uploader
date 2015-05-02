@@ -27,9 +27,6 @@
 const int LLB_VertDivider = 10;
 const int LLB_VertMargin = 5;
 
-HFONT MakeFontBold(HFONT font);
-
-HFONT MakeFontUnderLine(HFONT font);
 
 // CLogListBox
 CLogListBox::CLogListBox()

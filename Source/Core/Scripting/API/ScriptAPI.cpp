@@ -159,9 +159,16 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
     root.Bind("CIUUploadParams", Class<CIUUploadParams>(vm.GetVM(), "CIUUploadParams").
         Func("getFolderID", &CIUUploadParams::getFolderID).
         Func("setDirectUrl", &CIUUploadParams::setDirectUrl).
+        Func("getDirectUrl", &CIUUploadParams::getDirectUrl).
         Func("setThumbUrl", &CIUUploadParams::setThumbUrl).
-        Func("getServerFileName", &CIUUploadParams::getServerFileName).
+        Func("getThumbUrl", &CIUUploadParams::getThumbUrl).
         Func("setViewUrl", &CIUUploadParams::setViewUrl).
+        Func("getViewUrl", &CIUUploadParams::getViewUrl).
+        Func("setDeleteUrl", &CIUUploadParams::setDeleteUrl).
+        Func("getDeleteUrl", &CIUUploadParams::getDeleteUrl).
+        Func("setEditUrl", &CIUUploadParams::setEditUrl).
+        Func("getEditUrl", &CIUUploadParams::getEditUrl).
+        Func("getServerFileName", &CIUUploadParams::getServerFileName).
         Func("getTask", &CIUUploadParams::getTask).
         Func("getParam", &CIUUploadParams::getParam)
     );
@@ -185,7 +192,9 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
 
     root.Bind("ServerSync", DerivedClass<ServerSync, ThreadSync>(vm.GetVM(), "ServerSync").
         Func("beginAuth", &ServerSync::beginAuth).
-        Func("endAuth", &ServerSync::endAuth)
+        Func("endAuth", &ServerSync::endAuth).
+        Func("isAuthPerformed", &ServerSync::isAuthPerformed).
+        Func("setAuthPerformed", &ServerSync::setAuthPerformed)
     );
 
 }

@@ -27,7 +27,7 @@ public:
     Sqrat::Array querySelectorAll(const std::string& query);
     const std::string getHTML();
 protected:
-    std_tr::shared_ptr<HtmlDocumentPrivate> d_;
+    std::shared_ptr<HtmlDocumentPrivate> d_;
 };
 
 void RegisterHtmlDocumentClass(Sqrat::SqratVM& vm);

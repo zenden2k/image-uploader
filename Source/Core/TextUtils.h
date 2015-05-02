@@ -9,8 +9,8 @@
 
 namespace IuTextUtils
 {
-    Utf8String BbCodeToHtml(const Utf8String& bbcode);
-    bool FileSaveContents(const Utf8String& fileName, const Utf8String& contents);
+    std::string BbCodeToHtml(const std::string& bbcode);
+    bool FileSaveContents(const std::string& fileName, const std::string& contents);
 };
 
 #endif

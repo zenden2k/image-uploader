@@ -29,7 +29,7 @@
 namespace IuStringUtils
 {
     std::string Trim(const std::string& str);
-    Utf8String Replace(const Utf8String& text, const Utf8String& s, const Utf8String& d);
+    std::string Replace(const std::string& text, const std::string& s, const std::string& d);
     void Split(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount);
     
     // Current version of toLower works only with ASCII strings

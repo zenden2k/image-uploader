@@ -136,7 +136,7 @@ struct ServerSettingsStruct
 class CUploadEngineData
 {
     public:
-        enum ServerType { TypeImageServer, TypeFileServer, TypeUrlShorteningServer, TypeTextServer};
+        enum ServerType { TypeImageServer = 1, TypeFileServer = 2 , TypeUrlShorteningServer = 4, TypeTextServer = 8};
         enum NeedAuthorizationEnum { naNotAvailable = 0, naAvailable, naObligatory };
 
         std::string Name;
@@ -153,14 +153,15 @@ class CUploadEngineData
         std::string RegistrationUrl;
         std::string CodedLogin;
         std::string CodedPassword;
-        std::string ThumbUrlTemplate, ImageUrlTemplate, DownloadUrlTemplate;
+        std::string ThumbUrlTemplate, ImageUrlTemplate, DownloadUrlTemplate, DeleteUrlTemplate, EditUrlTemplate;
         std::vector<UploadAction> Actions;
         std::string LoginLabel;
         std::string UserAgent;
         int RetryLimit;
         int NumOfTries;
         int MaxThreads;
-        ServerType Type;
+        int TypeMask;
+        bool hasType(ServerType type);
         CUploadEngineData();
 };
 /** 
@@ -173,15 +174,18 @@ public:
     int apiVersion;
     int thumbWidth;
     int thumbHeight;
-    Utf8String serverName;
-    Utf8String data;
-    Utf8String folderId;
-    Utf8String DirectUrl;
+    std::string serverName;
+    std::string data;
+    std::string folderId;
+    std::string DirectUrl;
 
-    Utf8String ThumbUrl;
-    Utf8String ViewUrl;
-    Utf8String ServerFileName;
-    Utf8String temp_;
+    std::string ThumbUrl;
+    std::string ViewUrl; 
+    std::string EditUrl;
+    std::string DeleteUrl;
+
+    std::string ServerFileName;
+    std::string temp_;
     ScriptAPI::UploadTaskWrapper task_;
     /*! @endcond */
 
@@ -199,6 +203,51 @@ public:
     void setDirectUrl(const std::string& url) { DirectUrl = url;}
     void setThumbUrl(const std::string& url) { ThumbUrl = url;}
     void setViewUrl(const std::string& url) { ViewUrl = url;}
+    /**
+    @since version 1.3.2
+    */
+    void setEditUrl(const std::string& url) { EditUrl = url;}
+    /**
+    @since version 1.3.2
+    */
+    void setDeleteUrl(const std::string& url) { DeleteUrl = url;}
+
+    /**
+    @since version 1.3.2
+    */
+    std::string getDirectUrl() const
+    {
+        return DirectUrl;
+    }
+    /**
+    @since version 1.3.2
+    */
+    std::string getThumbUrl() const
+    {
+        return ThumbUrl;
+    }
+    /**
+    @since version 1.3.2
+    */
+    std::string getViewUrl() const
+    {
+        return ViewUrl;
+    }
+    /**
+    @since version 1.3.2
+    */
+    std::string getEditUrl() const
+    {
+        return EditUrl;
+    }
+    /**
+    @since version 1.3.2
+    */
+    std::string getDeleteUrl() const
+    {
+        return DeleteUrl;
+    }
+
     const std::string getServerFileName() const { return ServerFileName; }
     ScriptAPI::UploadTaskWrapper getTask() { return task_; }
 };

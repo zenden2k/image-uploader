@@ -17,14 +17,16 @@ public:
     CAbstractUploadEngine* getUploadEngine(ServerProfile &serverProfile);
     CScriptUploadEngine* getScriptUploadEngine(ServerProfile &serverProfile);
     void UnloadPlugins();
-    void setScriptsDirectory(const Utf8String & directory);
+    void setScriptsDirectory(const std::string & directory);
     void clearThreadData();
+    void resetAuthorization(const ServerProfile& serverProfile);
+    void resetFailedAuthorization();
 protected:
     CScriptUploadEngine* getPlugin(ServerProfile& serverProfile, const std::string& pluginName, bool UseExisting = false);
     ServerSync* getServerSync(const ServerProfile& serverProfile);
-    std::map<std::thread::id, std::map< Utf8String, CAbstractUploadEngine*>> m_plugins;
+    std::map<std::thread::id, std::map< std::string, CAbstractUploadEngine*>> m_plugins;
     std::mutex pluginsMutex_;
-    Utf8String m_ScriptsDirectory;
+    std::string m_ScriptsDirectory;
     CUploadEngineList* uploadEngineList_;
     typedef std::pair<std::string, std::string> ServerSyncMapKey;
     std::map<ServerSyncMapKey, ServerSync*> serverSyncs_;

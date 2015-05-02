@@ -23,7 +23,7 @@ class Document {
         };
         Document(int width, int height);
         Document(const wchar_t* fileName);
-        Document(std_tr::shared_ptr<Gdiplus::Bitmap> sourceImage, bool hasTransparentPixels = false);
+        Document(std::shared_ptr<Gdiplus::Bitmap> sourceImage, bool hasTransparentPixels = false);
         virtual ~Document();
         
         Painter* getGraphicsObject();
@@ -40,7 +40,7 @@ class Document {
         bool isNull();
         bool hasTransparentPixels() const;
     private:
-        std_tr::shared_ptr<Gdiplus::Bitmap> currentImage_;
+        std::shared_ptr<Gdiplus::Bitmap> currentImage_;
         Gdiplus::Bitmap* originalImage_;
         Painter* currentCanvas_;
         std::vector<HistoryItem> history_;

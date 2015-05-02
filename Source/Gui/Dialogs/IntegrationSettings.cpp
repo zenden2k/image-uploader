@@ -180,7 +180,7 @@ bool CIntegrationSettings::Apply()
                         CString icon = _EngineList->getIconNameForServer(lid->serverProfile.serverName());
                         CUploadEngineData * ued = lid->serverProfile.uploadEngineData();
                         if ( ued ) {
-                            Reg2.WriteDword( "ServerType", (unsigned int) ued->Type );
+                            Reg2.WriteDword( "ServerTypeMask", (unsigned int) ued->TypeMask );
                         }
                         Reg2.WriteString( "Icon", icon);
                         

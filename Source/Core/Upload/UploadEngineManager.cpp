@@ -131,7 +131,7 @@ void UploadEngineManager::UnloadPlugins() {
     m_plugins.clear();
 }
 
-void UploadEngineManager::setScriptsDirectory(const Utf8String & directory) {
+void UploadEngineManager::setScriptsDirectory(const std::string & directory) {
     m_ScriptsDirectory = directory;
 }
 
@@ -145,6 +145,21 @@ void UploadEngineManager::clearThreadData()
             delete it2->second;
         }
         m_plugins.erase(it);
+    }
+}
+
+void UploadEngineManager::resetAuthorization(const ServerProfile& serverProfile)
+{
+    ServerSync* sync = getServerSync(serverProfile);
+    sync->resetAuthorization();
+}
+
+void UploadEngineManager::resetFailedAuthorization()
+{
+    std::lock_guard<std::mutex> lock(serverSyncsMutex_);
+    for (auto sync : serverSyncs_)
+    {
+        sync.second->resetFailedAuthorization();
     }
 }
 

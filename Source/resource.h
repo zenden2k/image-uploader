@@ -529,6 +529,7 @@
 #define IDC_THUMBBACKGROUND             1263
 #define IDC_ADDITEM                     1263
 #define IDC_BROWSESCRIPTBUTTON          1263
+#define IDC_CLEARLOGBUTTON              1263
 #define IDC_THUMBBACKGROUNDLABEL        1264
 #define IDC_DELETEITEM                  1264
 #define IDC_GOOGLECODELINK              1265

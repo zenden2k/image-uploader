@@ -87,7 +87,7 @@ FILE * fopen_utf8(const char * filename, const char * mode)
 #endif
 }
 
-bool FileExists(const Utf8String& fileName)
+bool FileExists(const std::string& fileName)
 {
     #ifdef WIN32
         if(GetFileAttributes(Utf8ToWstring(fileName).c_str())== (unsigned long)-1) return false;
@@ -146,7 +146,7 @@ std::codecvt_base::result toWstring (const std::string & str,
     return r;
 }
 
-std::string SystemLocaleToUtf8(const Utf8String& str)
+std::string SystemLocaleToUtf8(const std::string& str)
 {
     std::locale const oloc = std::locale ("");
    std::wstring out;
@@ -155,7 +155,7 @@ std::string SystemLocaleToUtf8(const Utf8String& str)
     return WstringToUtf8(wideStr);
 }
 
-std::string Utf8ToSystemLocale(const Utf8String& str)
+std::string Utf8ToSystemLocale(const std::string& str)
 {
    std::wstring wideStr = Utf8ToWstring(str);
    std::locale const oloc = std::locale ("");
@@ -164,9 +164,9 @@ std::string Utf8ToSystemLocale(const Utf8String& str)
    return out;
 }
 
-Utf8String ExtractFileName(const Utf8String fileName)
+std::string ExtractFileName(const std::string fileName)
 {
-        Utf8String temp = fileName;
+        std::string temp = fileName;
         int Qpos = temp.find_last_of('?');
         if(Qpos>=0) temp = temp.substr(0, Qpos-1);
         int i,len = temp.length();
@@ -178,11 +178,11 @@ Utf8String ExtractFileName(const Utf8String fileName)
         return temp.substr(i+1);
 }
 
-Utf8String ExtractFileExt(const Utf8String fileName)
+std::string ExtractFileExt(const std::string fileName)
 {
     int nLen = fileName.length();
 
-    Utf8String result;
+    std::string result;
     for( int i=nLen-1; i>=0; i-- )
     {
         if(fileName[i] == '.')
@@ -195,7 +195,7 @@ Utf8String ExtractFileExt(const Utf8String fileName)
     return result;
 }
 
-const Utf8String ExtractFilePath(const Utf8String& fileName)
+const std::string ExtractFilePath(const std::string& fileName)
 {
     int i, len = fileName.length();
     for(i = len-1; i >= 0; i--)
@@ -209,19 +209,19 @@ const Utf8String ExtractFilePath(const Utf8String& fileName)
     return "";
 }
 
-const Utf8String ExtractFileNameNoExt(const Utf8String& fileName)
+const std::string ExtractFileNameNoExt(const std::string& fileName)
 {
-    Utf8String result = ExtractFileName(fileName);
+    std::string result = ExtractFileName(fileName);
     int Qpos = result.find_last_of('.');
     if(Qpos>=0) result = result.substr(0, Qpos);
     return result;
 }
 
-Utf8String ExtractFileNameFromUrl(const Utf8String fileName)
+std::string ExtractFileNameFromUrl(const std::string fileName)
 {
     int questionMarkPos = fileName.find_last_of('?');
 
-    Utf8String result;
+    std::string result;
     if (questionMarkPos != std::string::npos)  {
         return ExtractFileName(fileName.substr(0, questionMarkPos));
     } 
@@ -229,21 +229,21 @@ Utf8String ExtractFileNameFromUrl(const Utf8String fileName)
     return ExtractFileName(fileName);
 }
 
-Utf8String toString(int value)
+std::string toString(int value)
 {
     char buffer[256];
     sprintf(buffer, "%d", value);
     return buffer;
 }
 
-Utf8String toString(unsigned int value)
+std::string toString(unsigned int value)
 {
     char buffer[256];
     sprintf(buffer, "%u", value);
     return buffer;
 }
 
-Utf8String StrReplace(Utf8String text, Utf8String s, Utf8String d)
+std::string StrReplace(std::string text, std::string s, std::string d)
 {
     for(int index=0; index=text.find(s, index), index!=std::string::npos;)
     {
@@ -253,7 +253,7 @@ Utf8String StrReplace(Utf8String text, Utf8String s, Utf8String d)
     return text;
 }
 
-bool ReadUtf8TextFile(Utf8String utf8Filename, Utf8String& data)
+bool ReadUtf8TextFile(std::string utf8Filename, std::string& data)
 {
     FILE *stream = fopen_utf8(utf8Filename.c_str(), "rb");
     if(!stream) return false;
@@ -283,14 +283,14 @@ bool ReadUtf8TextFile(Utf8String utf8Filename, Utf8String& data)
         // no BOM was found; seeking backward
         fseek( stream, 0L,  SEEK_SET );
     }
-    data.resize(size + 1);
+    data.resize(size);
     size_t bytesRead = fread(&data[0], 1, size, stream);    
-    data[bytesRead] = 0;
+    //data[bytesRead] = 0;
     fclose(stream);
     return true;
 }
 
-bool PutFileContents(const Utf8String& utf8Filename, const Utf8String& content)
+bool PutFileContents(const std::string& utf8Filename, const std::string& content)
 {
     FILE *stream = fopen_utf8(utf8Filename.c_str(), "wb");
     if(!stream) return false;
@@ -351,7 +351,7 @@ std::string longlongtoStr(int64_t l, int base)
 }
 
 
-Utf8String int64_tToString(int64_t value)
+std::string int64_tToString(int64_t value)
 {
     if ( !value ) {
         return "0";
@@ -437,12 +437,12 @@ static int64_t zstrtoll(const char *nptr, const char **endptr, register int base
     return acc;
 }
 
-int64_t stringToInt64(const Utf8String fileName)
+int64_t stringToInt64(const std::string fileName)
 {
     return zstrtoll(fileName.c_str(), 0, 10 , 0);
 }
 
-int64_t getFileSize(Utf8String utf8Filename)
+int64_t getFileSize(std::string utf8Filename)
 {
 #ifdef _WIN32
    #ifdef _MSC_VER
@@ -464,10 +464,10 @@ int64_t getFileSize(Utf8String utf8Filename)
 }
 
 // Преобразование размера файла в строку
-Utf8String fileSizeToString(int64_t nBytes)
+std::string fileSizeToString(int64_t nBytes)
 {
     double number = 0;
-    Utf8String postfix;
+    std::string postfix;
     int precision = 0;
     if(nBytes < 0)
     {
@@ -499,14 +499,14 @@ Utf8String fileSizeToString(int64_t nBytes)
     return toString(number, precision) + " " + postfix;
 }
 
-Utf8String toString(double value, int precision)
+std::string toString(double value, int precision)
 {
     char buffer[100];
     sprintf(buffer, ("%0." + toString(precision) + "f").c_str(), value);
     return buffer;
 }
 
-Utf8String GetDefaultExtensionForMimeType(const Utf8String mimeType) {
+std::string GetDefaultExtensionForMimeType(const std::string mimeType) {
     std::map<std::string, std::string> mimeToExt;
     mimeToExt["image/gif"] = "gif";
     mimeToExt["image/png"] = "png";

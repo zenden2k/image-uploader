@@ -21,6 +21,12 @@
 #include "UploadEngine.h"
 #include <stdlib.h>
 #include "Core/Utils/StringUtils.h"
+#include "Core/Upload/ServerSync.h"
+
+bool CUploadEngineData::hasType(ServerType type)
+{
+    return TypeMask & type;
+}
 
 CUploadEngineData::CUploadEngineData()
 {
@@ -56,7 +62,7 @@ CUploadEngineData* CUploadEngineList_Base::byName(const std::string& name)
 CUploadEngineData*  CUploadEngineList_Base::firstEngineOfType(CUploadEngineData::ServerType type) {
     for (size_t i = 0; i < m_list.size(); i++)
     {
-        if ( m_list[i].Type == type) {
+        if ( m_list[i].hasType(type)) {
             return &m_list[i];
         }
     }
@@ -147,6 +153,7 @@ void CAbstractUploadEngine::SetStatus(StatusType status, std::string param)
 void CAbstractUploadEngine::setNetworkClient(NetworkClient* nm)
 {
     m_NetworkClient = nm;
+    m_NetworkClient->setCurlShare(serverSync_->getCurlShare());
 }
 
 void CAbstractUploadEngine::setUploadData(CUploadEngineData* data)
@@ -179,7 +186,7 @@ void CAbstractUploadEngine::setServerSync(ServerSync* sync)
 
 void CAbstractUploadEngine::stop()
 {
-
+    //serverSync_->stop();
 }
 
 ServerSync* CAbstractUploadEngine::serverSync() const

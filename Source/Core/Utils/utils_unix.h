@@ -50,7 +50,7 @@ const std::wstring Utf8ToWstring(const std::string &str) {
     return res;
 }
 
-const Utf8String WstringToUtf8(const std::wstring &str) {
+const std::string WstringToUtf8(const std::wstring &str) {
     using namespace utf8;
     std::string res;
     try {
@@ -63,12 +63,12 @@ const Utf8String WstringToUtf8(const std::wstring &str) {
     return res;
 }
 
-Utf8String ConvertToUtf8(const Utf8String &text, const Utf8String codePage) {
+std::string ConvertToUtf8(const std::string &text, const std::string codePage) {
     // FIXME: stub
     return text;
 }
 
-Utf8String GetFileMimeType(const Utf8String name)
+std::string GetFileMimeType(const std::string name)
 {
     std::string defaultType = "application/octet-stream";
     FILE* stream = popen(Utf8ToSystemLocale("file -b --mime-type '" + name + "'").c_str(), "r");
@@ -166,16 +166,16 @@ int mkpath(const char *path, mode_t mode)
     return (status);
 }
 
-bool createDirectory(const Utf8String& path,unsigned int mode)
+bool createDirectory(const std::string& path,unsigned int mode)
 {
     return mkpath(path.c_str(), (mode_t)mode) == 0;
 }
 
-bool RemoveFile(const Utf8String& utf8Filename) {
+bool RemoveFile(const std::string& utf8Filename) {
     return remove(utf8Filename.c_str())==0;
 }
 
-bool MoveFileOrFolder(const Utf8String& from ,const Utf8String& to) {
+bool MoveFileOrFolder(const std::string& from ,const std::string& to) {
     return rename(from.c_str() ,to.c_str())==0;
 }
 

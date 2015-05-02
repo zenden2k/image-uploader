@@ -23,10 +23,11 @@ mkdir %temp_dir%\Data\Scripts\Utils
 mkdir %temp_dir%\Data\Scripts\UploadFilters
 mkdir %temp_dir%\Data\Servers
 mkdir %temp_dir%\Data\Update
+mkdir %temp_dir%\Data\Utils
 
 call signcode.bat
 Copy "..\Build\release optimized\Image Uploader.exe" %temp_dir%\
-Copy "..\Build\release optimized\curl-ca-bundle.crt" %temp_dir%\
+rem Copy "..\Build\release optimized\curl-ca-bundle.crt" %temp_dir%\
 Copy "..\Source\res\new-icon.ico" %temp_dir%\
 Copy "..\Lang\*.lng" %temp_dir%\Lang\
 Copy "..\Build\release optimized\Modules\*" %temp_dir%\Modules\
@@ -43,6 +44,7 @@ Copy "..\Data\Update\iu_core.xml" %temp_dir%\Data\Update\
 Copy "..\Data\Update\iu_serversinfo.xml" %temp_dir%\Data\Update\
 Copy "..\Data\Update\iu_ffmpeg.xml" %temp_dir%\Data\Update\
 Copy "..\Data\Thumbnails\*.*" %temp_dir%\Data\Thumbnails\
+Copy "..\Data\Utils\*" %temp_dir%\Data\Utils\
 rem Copy "..\Data\Servers\*.xml" %temp_dir%\Data\Servers\
 Copy "..\Build\release optimized\ExplorerIntegration.dll" %temp_dir%\
 Copy "..\Build\release optimized\ExplorerIntegration64.dll" %temp_dir%\

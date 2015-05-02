@@ -92,6 +92,7 @@ CUploadDlg::CUploadDlg(CWizardDlg *dlg,UploadManager* uploadManager) :ResultsWin
     m_EngineList = _EngineList;
     LastUpdate = 0;
     backgroundThreadStarted_ = false;
+    isEnableNextButtonTimerRunning_ = false;
     //fastdelegate::FastDelegate1<bool> fd;
     //fd.bind(this, &CUploadDlg::onShortenUrlChanged);
     uploadManager_ = uploadManager;
@@ -540,6 +541,12 @@ return 0;
 
 LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    if (wParam == kEnableNextButtonTimer)
+    {
+        EnableNext(true);
+        isEnableNextButtonTimerRunning_ = false;
+        KillTimer(kEnableNextButtonTimer);
+    }
     return 0;
 }
 
@@ -588,12 +595,14 @@ bool CUploadDlg::OnShow()
     CancelByUser = false;
     ShowNext();
     ShowPrev();
+    EnableNext(false);
+    isEnableNextButtonTimerRunning_ = true;
+    SetTimer(kEnableNextButtonTimer, 1000);
     MainDlg = (CMainDlg*) WizardDlg->Pages[2];
     //Toolbar.CheckButton(IDC_USETEMPLATE,Settings.UseTxtTemplate);
     UrlList.clear();
     ResultsWindow->Clear();
     ResultsWindow->setShortenUrls(sessionImageServer_.shortenLinks());
-
 
     int code = ResultsWindow->GetCodeType();
     int newcode = code;
@@ -782,7 +791,7 @@ void CUploadDlg::AddShortenUrlTask(CUrlListItem* item, CString linkType) {
     if ( url.IsEmpty() ) {
         return;
     }
-    std_tr::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
+    std::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
     queueUploader_->AddUploadTask(task, reinterpret_cast<void*>(userData), e);
     queueUploader_->start();*/
 }
@@ -1008,7 +1017,11 @@ void CUploadDlg::backgroundThreadStarted()
     }
     backgroundThreadStarted_ = true;
     EnablePrev(false);
-    EnableNext();
+    if (!isEnableNextButtonTimerRunning_)
+    {
+        EnableNext();
+    }
+    
     EnableExit(false);
     SetNextCaption(TR("Остановить"));
 }

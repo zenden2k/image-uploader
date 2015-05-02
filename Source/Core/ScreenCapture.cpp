@@ -1053,7 +1053,7 @@ void CScreenCaptureEngine::setDelay(int msec)
     m_captureDelay = msec;
 }
 
-std_tr::shared_ptr<Gdiplus::Bitmap> CScreenCaptureEngine::capturedBitmap()
+std::shared_ptr<Gdiplus::Bitmap> CScreenCaptureEngine::capturedBitmap()
 {
     return m_capturedBitmap;
 }
@@ -1088,11 +1088,11 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
     Gdiplus::Bitmap* capturedBitmap;
     bool result =  region->GetImage(srcDC, &capturedBitmap);
     typedef release_deleter<Gdiplus::Bitmap>& releaseDeleterRef;
-    //m_capturedBitmap.reset<Gdiplus::Bitmap>(capturedBitmap, std_tr::bind(&CScreenCaptureEngine::capturedBitmapDeleteFunction, this, _1));
+    //m_capturedBitmap.reset<Gdiplus::Bitmap>(capturedBitmap, std::bind(&CScreenCaptureEngine::capturedBitmapDeleteFunction, this, _1));
     capturedBitmapReleased_ = false;
     m_capturedBitmap.reset(capturedBitmap,capturedBitmapDeleter_);
-    /*m_capturedBitmap.reset<Gdiplus::Bitmap,  release_deleter<Gdiplus::Bitmap>&>(capturedBitmap, std_tr::ref(capturedBitmapDeleter_));
-    m_c*apturedBitmap.reset<Gdiplus::Bitmap,  std_tr::reference_wrapper<release_deleter<Gdiplus::Bitmap>>>(capturedBitmap, std_tr::ref(capturedBitmapDeleter_));*
+    /*m_capturedBitmap.reset<Gdiplus::Bitmap,  release_deleter<Gdiplus::Bitmap>&>(capturedBitmap, std::ref(capturedBitmapDeleter_));
+    m_c*apturedBitmap.reset<Gdiplus::Bitmap,  std::reference_wrapper<release_deleter<Gdiplus::Bitmap>>>(capturedBitmap, std::ref(capturedBitmapDeleter_));*
     */
     capturedBitmapDeleter_.reset_released();
     region->AfterShooting();

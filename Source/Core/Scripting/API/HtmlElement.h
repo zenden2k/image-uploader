@@ -77,7 +77,7 @@ public:
     Sqrat::Array getChildren();
     friend class HtmlDocumentPrivate;
 protected:
-    std_tr::shared_ptr<HtmlElementPrivate> d_;
+    std::shared_ptr<HtmlElementPrivate> d_;
     bool checkNull(const char * func);
 };
 

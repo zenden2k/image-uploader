@@ -7,12 +7,12 @@
 //#include "Core/3rdpart/pstdint.h"
 #include <memory>
 #include "Core/Logging.h"
-typedef std::string Utf8String;
+/*
 #if _MSC_VER  && (_MSC_VER < 1800)
-namespace std_tr = std::tr1;
+namespace std:: = std::tr1;
 #else
-namespace std_tr = std;
-#endif
+namespace std:: = std;
+#endif*/
 
 /*#ifdef _MSC_VER
    typedef __int64 int64_t;
@@ -94,7 +94,7 @@ public:
 
 private:
     //DISALLOW_COPY_AND_ASSIGN(release_deleter<T>);
-    std_tr::shared_ptr<bool> released_;
+    std::shared_ptr<bool> released_;
 };
 
 #ifndef Q_DECLARE_PRIVATE

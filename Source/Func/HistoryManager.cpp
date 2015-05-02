@@ -51,14 +51,14 @@ void CHistoryManager::setHistoryFileName(const std::string& filepath, const std:
     m_historyFileNamePrefix = nameprefix;
 }
 
-std_tr::shared_ptr<CHistorySession> CHistoryManager::newSession()
+std::shared_ptr<CHistorySession> CHistoryManager::newSession()
 {
     time_t t = time(0);
     tm * timeinfo = localtime ( &t );
     std::string fileName = m_historyFilePath + m_historyFileNamePrefix +"_" + IuCoreUtils::toString(1900+timeinfo->tm_year)+"_" + IuCoreUtils::toString(timeinfo->tm_mon+1) + ".xml";
     std::string str = IuCoreUtils::toString(rand()%(256 * 256)) + IuCoreUtils::toString(int(t));
     std::string id = IuCoreUtils::CryptoUtils::CalcMD5HashFromString(str + IuCoreUtils::toString(rand()%(256))).substr(0, 16);
-    return std_tr::shared_ptr<CHistorySession>(new CHistorySession(fileName, id));
+    return std::shared_ptr<CHistorySession>(new CHistorySession(fileName, id));
 }
 
 CHistorySession::CHistorySession(const std::string& filename, const std::string&  sessionId)
@@ -158,7 +158,7 @@ bool CHistorySession::AddItem(const HistoryItem &ht)
         entry.SetAttribute("ViewUrl", ht.viewUrl);
     entry.SetAttribute("UploadFileSize", ht.uploadFileSize);
 
-    Utf8String dir = IuCoreUtils::ExtractFilePath(fileName);
+    std::string dir = IuCoreUtils::ExtractFilePath(fileName);
     if(!IuCoreUtils::DirectoryExists(dir))
     {
         IuCoreUtils::createDirectory(dir);

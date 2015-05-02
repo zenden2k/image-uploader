@@ -21,7 +21,7 @@ public:
     struct Item {
         CString title;
         int command;
-        std_tr::shared_ptr<Gdiplus::Bitmap> icon;
+        std::shared_ptr<Gdiplus::Bitmap> icon;
         CString hint;
         ItemState state;
         bool checkable;
@@ -31,7 +31,7 @@ public:
         bool isChecked;
         HWND tooltipWnd;
         ToolbarItemDelegate* itemDelegate;
-        Item(CString title, std_tr::shared_ptr<Gdiplus::Bitmap> icon, int command, CString hint = CString(), ItemType type = itButton, bool checkable = false, int group = -1) {
+        Item(CString title, std::shared_ptr<Gdiplus::Bitmap> icon, int command, CString hint = CString(), ItemType type = itButton, bool checkable = false, int group = -1) {
             this->title = title;
             this->icon = icon;
             this->command = command;

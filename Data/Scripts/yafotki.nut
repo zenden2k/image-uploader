@@ -21,6 +21,23 @@ function EndLogin() {
 	return true;
 }
 
+function SetAuthPerformed(res) {
+	try {
+		Sync.setAuthPerformed(res);
+	}
+	catch ( ex ) {
+	}
+}
+
+function IsAuthPerformed() {
+	try {
+		return Sync.isAuthPerformed();
+	}
+	catch ( ex ) {
+	}
+	return false;
+}
+
 function tr(key, text) {
 	try {
 		return Translate(key, text);
@@ -140,6 +157,7 @@ function _DoLogin()
 			nm.addQueryParam("client_secret", "fed316382d3e4bcda82903382a8d00c0");
 			nm.doPost("");
 			if ( !checkResponse() ) {
+				SetAuthPerformed(false);
 				return 0;
 			}
 				
@@ -158,6 +176,7 @@ function _DoLogin()
 					nm.doGet("http://api-fotki.yandex.ru/api/me/");
 						
 					if ( !checkResponse() ) {
+						SetAuthPerformed(false);
 						return 0;
 					}
 					
@@ -166,10 +185,11 @@ function _DoLogin()
 					ServerParams.setParam("OAuthLogin", login);
 				} 
 		
-			
+				SetAuthPerformed(true);
 				return 1;
 			} else {
 				print("Unable to get OAuth token!");
+				SetAuthPerformed(false);
 				return 0;
 			}
 		}
@@ -182,6 +202,7 @@ function _DoLogin()
 	if(login == "" || pass=="")
 	{
 		print("E-mail and password should not be empty!");
+		SetAuthPerformed(false);
 		return 0;
 	}
 	nm.addQueryHeader("Expect","");
@@ -212,9 +233,11 @@ function _DoLogin()
 	if(token == "")
 	{
 		print("Authentication failed for username '"+login +"'");
+		SetAuthPerformed(false);
 		return 0;
 	}
 	ServerParams.setParam("tokenType", "");
+	SetAuthPerformed(true);
 	return 1; //Success login
 } 
 

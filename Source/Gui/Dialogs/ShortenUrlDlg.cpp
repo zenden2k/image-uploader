@@ -79,7 +79,7 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
         
         char *serverName = new char[ue->Name.length() + 1];
         lstrcpyA( serverName, ue->Name.c_str() );
-        if ( ue->Type ==  CUploadEngineData::TypeUrlShorteningServer ) {
+        if ( ue->hasType(CUploadEngineData::TypeUrlShorteningServer) ) {
             int itemIndex = SendDlgItemMessage(IDC_SERVERCOMBOBOX, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)Utf8ToWCstring( ue->Name ));
             if ( ue->Name == selectedServerName ){
                 selectedIndex = itemIndex;
@@ -176,10 +176,10 @@ bool CShortenUrlDlg::StartProcess() {
     wndAnimation_.ShowWindow(SW_SHOW);
     CString url = GuiTools::GetDlgItemText(m_hWnd, IDC_INPUTEDIT);
 
-    std_tr::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
+    std::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
     task->setServerProfile(Settings.urlShorteningServer);
     task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CShortenUrlDlg::OnFileFinished));
-    std_tr::shared_ptr<UploadSession> session(new UploadSession());
+    std::shared_ptr<UploadSession> session(new UploadSession());
     session->addTask(task);
     session->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CShortenUrlDlg::OnQueueFinished));
     uploadManager_->addSession(session);

@@ -67,12 +67,12 @@ const std::string AnsiToUtf8(const std::string &str, int codepage)
     return wstostr(strtows(str, codepage), CP_UTF8);
 }
 
-const Utf8String WstringToUtf8(const std::wstring &str)
+const std::string WstringToUtf8(const std::wstring &str)
 {
     return wstostr(str, CP_UTF8);
 }
 
-const std::wstring Utf8ToWstring(const Utf8String &str)
+const std::wstring Utf8ToWstring(const std::string &str)
 {
 
     return strtows(str, CP_UTF8);
@@ -85,7 +85,7 @@ const std::string Utf8ToAnsi(const std::string &str, int codepage)
 }
 
 
-Utf8String ConvertToUtf8(const Utf8String &text, const Utf8String codePage)
+std::string ConvertToUtf8(const std::string &text, const std::string codePage)
 {
     unsigned int codePageNum = CodepageByName(codePage.c_str());
     if(codePageNum != CP_UTF8)
@@ -93,9 +93,9 @@ Utf8String ConvertToUtf8(const Utf8String &text, const Utf8String codePage)
     return text;
 }
 
-Utf8String GetFileMimeType(const Utf8String fileName)
+std::string GetFileMimeType(const std::string fileName)
 {
-    const Utf8String DefaultMimeType = "application/octet-stream";
+    const std::string DefaultMimeType = "application/octet-stream";
     FILE * InputFile = fopen_utf8(fileName.c_str(), "rb");
     if (!InputFile) return "";
 
@@ -120,7 +120,7 @@ Utf8String GetFileMimeType(const Utf8String fileName)
         return DefaultMimeType;
     }
 
-    Utf8String result = WstringToUtf8(szMimeW);
+    std::string result = WstringToUtf8(szMimeW);
     if(result == "image/x-png")
         result = "image/png";
     else if(result == "image/pjpeg")
@@ -130,7 +130,7 @@ Utf8String GetFileMimeType(const Utf8String fileName)
     return result;
 }
 
-bool DirectoryExists(const Utf8String path)
+bool DirectoryExists(const std::string path)
 {
 
     DWORD dwFileAttributes = GetFileAttributes(Utf8ToWstring(path).c_str());
@@ -141,9 +141,9 @@ bool DirectoryExists(const Utf8String path)
     return false;
 }
 
-bool createDirectory(const Utf8String& path_,unsigned int mode)
+bool createDirectory(const std::string& path_,unsigned int mode)
 {
-     Utf8String path = path_;
+     std::string path = path_;
     if(path.empty()) return false;
     if ( path[path.length()-1] == '\\' ||  path[path.length()-1] == '/') {
         path.resize(path.length()-1);
@@ -196,11 +196,11 @@ bool copyFile(const std::string& src, const std::string & dest, bool overwrite)
     return ::CopyFile(Utf8ToWstring(src).c_str(), Utf8ToWstring(dest).c_str(), !overwrite)!=FALSE;
 }
 
-bool RemoveFile(const Utf8String& utf8Filename) {
+bool RemoveFile(const std::string& utf8Filename) {
     return DeleteFile(IuCoreUtils::Utf8ToWstring(utf8Filename).c_str())!=FALSE;
 }
 
-bool MoveFileOrFolder(const Utf8String& from ,const Utf8String& to) {
+bool MoveFileOrFolder(const std::string& from ,const std::string& to) {
     return MoveFile(IuCoreUtils::Utf8ToWstring(from).c_str() ,IuCoreUtils::Utf8ToWstring(to).c_str()) != FALSE;
 }
 

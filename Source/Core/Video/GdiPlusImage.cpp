@@ -34,7 +34,7 @@ GdiPlusImage::~GdiPlusImage() {
 }
 
 
-bool GdiPlusImage::saveToFile(const Utf8String& fileName) const
+bool GdiPlusImage::saveToFile(const std::string& fileName) const
 {
     std::map<std::string, std::string> mimeTypes;
     mimeTypes["jpg"] = "image/jpeg";

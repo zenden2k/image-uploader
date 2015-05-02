@@ -10,7 +10,7 @@ class DirectshowFrameGrabber : public AbstractFrameGrabber
 public:
     DirectshowFrameGrabber();
     ~DirectshowFrameGrabber();
-    virtual bool open(const Utf8String& fileName);
+    virtual bool open(const std::string& fileName);
     virtual bool seek(int64_t time);
     virtual AbstractVideoFrame* grabCurrentFrame();
     virtual int64_t duration();
