@@ -83,6 +83,9 @@ void CHistorySession::loadFromXml(SimpleXmlNode& sessionNode)
         ht.directUrl = allEntries[i].Attribute("DirectUrl" );
         ht.thumbUrl = allEntries[i].Attribute("ThumbUrl");
         ht.viewUrl = allEntries[i].Attribute("ViewUrl");
+        ht.editUrl = allEntries[i].Attribute("EditUrl");
+        ht.deleteUrl = allEntries[i].Attribute("DeleteUrl");
+        ht.displayName = allEntries[i].Attribute("DisplayName");
         ht.uploadFileSize = allEntries[i].AttributeInt64("UploadFileSize");
         if ( ht.uploadFileSize > 1000000000000 || ht.uploadFileSize < 0 ){
              ht.uploadFileSize  = 0;
@@ -157,6 +160,14 @@ bool CHistorySession::AddItem(const HistoryItem &ht)
     if(! ht.viewUrl.empty())
         entry.SetAttribute("ViewUrl", ht.viewUrl);
     entry.SetAttribute("UploadFileSize", ht.uploadFileSize);
+
+    if (!ht.editUrl.empty())
+        entry.SetAttribute("EditUrl", ht.editUrl);
+
+    if (!ht.deleteUrl.empty())
+        entry.SetAttribute("DeleteUrl", ht.deleteUrl);
+    if (!ht.displayName.empty())
+        entry.SetAttribute("DisplayName", ht.displayName);
 
     std::string dir = IuCoreUtils::ExtractFilePath(fileName);
     if(!IuCoreUtils::DirectoryExists(dir))

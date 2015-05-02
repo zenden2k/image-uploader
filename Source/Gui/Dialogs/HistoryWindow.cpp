@@ -186,6 +186,14 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         {
             menu.AppendMenu(MF_STRING, ID_OPENFOLDER, TR("Открыть папку с файлом"));
         }
+        if (!historyItem->editUrl.empty())
+        {
+            menu.AppendMenu(MF_STRING, ID_EDITFILEONSERVER, TR("Редактировать файл на сервере"));
+        }
+        if (!historyItem->deleteUrl.empty())
+        {
+            menu.AppendMenu(MF_STRING, ID_DELETEFILEONSERVER, TR("Удалить файл с сервера"));
+        }
     }
     menu.SetMenuDefaultItem(0, true);
     menu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
@@ -311,6 +319,24 @@ LRESULT CHistoryWindow::OnOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
     {
         ShellExecute(NULL, _T("open"), Utf8ToWCstring(directory), NULL, NULL, SW_SHOWNORMAL);
     }
+    return 0;
+}
+
+LRESULT CHistoryWindow::OnEditFileOnServer(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+    TreeItem* item = m_treeView.selectedItem();
+    if (!item) return 0;
+    HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
+    ShellExecute(0, _T("open"), U2W(historyItem->editUrl), NULL, NULL, SW_SHOWNORMAL);
+    return 0;
+}
+
+LRESULT CHistoryWindow::OnDeleteFileOnServer(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+    TreeItem* item = m_treeView.selectedItem();
+    if (!item) return 0;
+    HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
+    ShellExecute(0, _T("open"), U2W(historyItem->deleteUrl), NULL, NULL, SW_SHOWNORMAL);
     return 0;
 }
 

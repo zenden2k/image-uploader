@@ -82,7 +82,7 @@ public:
     std::string viewUrl;
     int accessType;
     int itemCount;
-    /* @endcond */
+    /*! @endcond */
     const std::string getTitle() { return title;}
     const std::string getSummary() { return summary;}
     const std::string getId() { return (id);}
@@ -100,14 +100,24 @@ public:
     void setItemCount(const int count) {  itemCount=count; }    
 };
 
-struct ServerSettingsStruct
+/**
+ServerSettingsStruct
+*/
+class ServerSettingsStruct
 {
+public:
+    /*! @cond PRIVATE */
     ServerSettingsStruct() : paramsMutex_(new std::mutex()){ authData.DoAuth = 0; }
     std::map<std::string, std::string> params;
     std::shared_ptr<std::mutex> paramsMutex_;
     LoginInfo authData;
     CFolderItem newFolder;
     CFolderItem defaultFolder;
+
+    bool isEmpty() {
+        return authData.Login.empty() && authData.Password.empty() && !authData.DoAuth && !params.size() && defaultFolder.getId().empty();
+    }
+    /*! @endcond */
 
     const std::string getParam(const std::string& name)
     {
@@ -126,10 +136,6 @@ struct ServerSettingsStruct
     {
         std::lock_guard<std::mutex> lock(*paramsMutex_);
         params[name] = value;
-    }
-
-    bool isEmpty() {
-        return authData.Login.empty() && authData.Password.empty() && !authData.DoAuth && !params.size() && defaultFolder.getId().empty();
     }
 };
 
@@ -167,7 +173,7 @@ class CUploadEngineData
 /** 
 CIUUploadParams class
 */
-class CIUUploadParams
+class UploadParams
 {
 public:
     /*! @cond PRIVATE */
@@ -275,7 +281,7 @@ class CAbstractUploadEngine
         CAbstractUploadEngine(ServerSync* serverSync);
         virtual ~CAbstractUploadEngine();
         void setThumbnailWidth(int width);
-        virtual int doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params) = 0;
+        virtual int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) = 0;
         void setServerSettings(ServerSettingsStruct* settings);
         ServerSettingsStruct * serverSettings();
         virtual int RetryLimit()=0;

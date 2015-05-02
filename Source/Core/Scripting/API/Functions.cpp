@@ -46,7 +46,6 @@
 #include <sstream>
 #include <iomanip>
 #include <math.h>
-#include "Core/3rdpart/CP_RSA.h"
 #include "Core/3rdpart/base64.h"
 #include "Core/3rdpart/codepages.h"
 #include "versioninfo.h"
@@ -269,20 +268,6 @@ const std::string InputDialog(const std::string& text, const std::string& defaul
     return "";
 }
 
-
-const std::string YandexRsaEncrypter(const std::string& key, const std::string& data)
-{
-    if (key.empty())
-        return "";              // otherwise we get segfault
-    // std::cout<<"key="<<key<<"  data="<<data<<std::endl;
-    CCryptoProviderRSA encrypter;
-    encrypter.ImportPublicKey(key.c_str());
-    char crypted_data[MAX_CRYPT_BITS / sizeof(char)] = "\0";
-    size_t crypted_len = 0;
-    encrypter.Encrypt(data.c_str(), data.length(), crypted_data, crypted_len);
-
-    return base64_encode((unsigned char*)crypted_data, crypted_len);
-}
 
 const std::string scriptGetFileMimeType(const std::string& filename)
 {
@@ -718,7 +703,6 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("sleep", scriptSleep)
         .Func("md5", scriptMD5)
         .Func("AnsiToUtf8", scriptAnsiToUtf8)
-        .Func("YandexRsaEncrypter", YandexRsaEncrypter)
         .Func("Utf8ToAnsi", scriptUtf8ToAnsi)
         .Func("ExtractFileName", plugExtractFileName)
         .Func("GetFileExtension", plugGetFileExtension)

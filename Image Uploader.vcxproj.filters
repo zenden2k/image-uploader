@@ -1155,9 +1155,6 @@
     <ClCompile Include="Source\Core\3rdpart\CodePages.cpp">
       <Filter>Source Files\Core\3rdpart</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\3rdpart\CP_RSA.cpp">
-      <Filter>Source Files\Core\3rdpart</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Core\3rdpart\dxerr.cpp">
       <Filter>Source Files\Core\3rdpart</Filter>
     </ClCompile>

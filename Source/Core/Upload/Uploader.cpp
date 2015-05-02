@@ -140,7 +140,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     m_CurrentEngine->setThumbnailWidth(m_nThumbWidth);
     task->setCurrentUploadEngine(m_CurrentEngine);
 
-    CIUUploadParams uparams;
+    UploadParams uparams;
     uparams.thumbWidth = m_nThumbWidth;
     if (task->type() == UploadTask::TypeFile) {
         FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());
@@ -182,12 +182,19 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
         Cleanup();
         return false;
     }
+    UploadResult* result = task->uploadResult();
+    result->directUrl = uparams.DirectUrl;
+    result->downloadUrl = uparams.ViewUrl;
+    if (result->thumbUrl.empty()) {
+        result->thumbUrl = uparams.ThumbUrl;
+    }
+    result->deleteUrl = uparams.DeleteUrl;
+    result->editUrl = uparams.EditUrl;
 
-    m_ImageUrl = (uparams.DirectUrl);
-
-    m_ThumbUrl = (uparams.ThumbUrl);
-
-    m_DownloadUrl =  (uparams.ViewUrl);
+    if (result->directUrl.empty() && result->downloadUrl.empty() && result->editUrl.empty())
+    {
+        return false;
+    }
     return true;
 }
 
@@ -216,11 +223,6 @@ bool CUploader::isFatalError() const
     return isFatalError_;
 }
 
-const std::string CUploader::getDownloadUrl()
-{
-    return m_DownloadUrl;
-}
-
 CAbstractUploadEngine* CUploader::getUploadEngine()
 {
     return m_CurrentEngine;
@@ -231,15 +233,6 @@ void CUploader::setThumbnailWidth(int width)
     m_nThumbWidth = width;
 }
 
-const std::string CUploader::getDirectUrl()
-{
-    return m_ImageUrl;
-}
-
-const std::string CUploader::getThumbUrl()
-{
-    return m_ThumbUrl;
-}
 
 void CUploader::stop()
 {

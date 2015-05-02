@@ -91,6 +91,10 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
     hi.thumbUrl = uploadResult->thumbUrl;
     hi.viewUrl = uploadResult->downloadUrl;
     hi.viewUrlShortened = uploadResult->downloadUrlShortened;
+    hi.editUrl = uploadResult->editUrl;
+    hi.deleteUrl = uploadResult->deleteUrl;
+    hi.displayName = fileTask->getDisplayName();
+
     hi.uploadFileSize = fileTask->getDataLength();
     if (!hi.directUrl.empty())
     {

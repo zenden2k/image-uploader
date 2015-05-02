@@ -32,7 +32,7 @@ CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync) : CAbstractUp
     fatalError_ = false;
 }
 
-int CDefaultUploadEngine::doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params) {
+int CDefaultUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) {
     fatalError_ = false;
     int res = 0;
     if ( task->type() == UploadTask::TypeFile ) {
@@ -49,7 +49,7 @@ int CDefaultUploadEngine::doUpload(std::shared_ptr<UploadTask> task, CIUUploadPa
     return res;
 }
 
-bool CDefaultUploadEngine::doUploadFile(std::shared_ptr<FileUploadTask> task, CIUUploadParams& params) {
+bool CDefaultUploadEngine::doUploadFile(std::shared_ptr<FileUploadTask> task, UploadParams& params) {
     std::string fileName = task->getFileName();
     std::string displayName = task->getDisplayName();
     if ( fileName.empty() ) {
@@ -89,7 +89,7 @@ bool CDefaultUploadEngine::doUploadFile(std::shared_ptr<FileUploadTask> task, CI
     return true;
 }
 
-bool  CDefaultUploadEngine::doUploadUrl(std::shared_ptr<UrlShorteningTask> task, CIUUploadParams& params) {
+bool  CDefaultUploadEngine::doUploadUrl(std::shared_ptr<UrlShorteningTask> task, UploadParams& params) {
     prepareUpload();
     m_Consts["_ORIGINALURL"] = task->getUrl();
     bool actionsExecuteResult = executeActions();

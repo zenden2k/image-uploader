@@ -39,9 +39,6 @@ class CUploader
         void setThumbnailWidth(int width);
         bool UploadFile(const std::string & FileName, const std::string displayFileName);
         bool Upload(std::shared_ptr<UploadTask> task);
-        const std::string  getDownloadUrl();
-        const std::string  getDirectUrl();
-        const std::string  getThumbUrl();
         void stop();
         bool needStop();
         std::shared_ptr<UploadTask> currentTask();
@@ -66,10 +63,6 @@ class CUploader
         StatusType m_CurrentStatus;
         std::string m_FileName;
         std::string m_displayFileName;
-        
-        std::string m_ThumbUrl;
-        std::string m_ImageUrl;
-        std::string m_DownloadUrl;
         std::string m_ErrorReason;
         bool isFatalError_;
         

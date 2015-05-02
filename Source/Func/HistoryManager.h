@@ -35,6 +35,9 @@ struct HistoryItem
     std::string viewUrl;
     std::string viewUrlShortened;
     std::string thumbUrl;
+    std::string editUrl;
+    std::string deleteUrl;
+    std::string displayName;
 
     std::string serverName;
     time_t timeStamp;

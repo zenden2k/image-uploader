@@ -69,7 +69,7 @@ void CScriptUploadEngine::PrintCallback(const std::string& output)
     std::thread::id threadId = std::this_thread::get_id();
     Log(ErrorInfo::mtWarning, m_sName + ".nut [" + taskName + "ThreadId=" + IuCoreUtils::ThreadIdToString(threadId) + "]\r\n" + /*IuStringUtils::ConvertUnixLineEndingsToWindows*/(output));
 }
-int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params)
+int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams& params)
 {
     //LOG(INFO) << "CScriptUploadEngine::doUpload this=" << this << " thread=" << threadId;
     using namespace Sqrat;

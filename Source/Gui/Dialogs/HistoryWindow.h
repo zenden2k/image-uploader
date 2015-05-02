@@ -35,6 +35,8 @@ class CHistoryReader;
 #define ID_COPYTOCLIPBOARD ID_OPENINBROWSER + 1
 #define ID_VIEWBBCODE ID_OPENINBROWSER + 2
 #define ID_OPENFOLDER ID_OPENINBROWSER + 3
+#define ID_EDITFILEONSERVER ID_OPENINBROWSER + 4
+#define ID_DELETEFILEONSERVER ID_OPENINBROWSER + 5
 #define WM_MY_OPENHISTORYFILE WM_USER + 101
 
 class CHistoryWindow : public CDialogImpl <CHistoryWindow>,
@@ -57,6 +59,8 @@ class CHistoryWindow : public CDialogImpl <CHistoryWindow>,
             COMMAND_ID_HANDLER(ID_COPYTOCLIPBOARD, OnCopyToClipboard)
             COMMAND_ID_HANDLER(ID_VIEWBBCODE, OnViewBBCode)
             COMMAND_ID_HANDLER(ID_OPENFOLDER, OnOpenFolder)
+            COMMAND_ID_HANDLER(ID_EDITFILEONSERVER, OnEditFileOnServer)
+            COMMAND_ID_HANDLER(ID_DELETEFILEONSERVER, OnDeleteFileOnServer)
             COMMAND_HANDLER(IDC_MONTHCOMBO, CBN_SELCHANGE, OnMonthChanged)
             COMMAND_HANDLER(IDC_DOWNLOADTHUMBS, BN_CLICKED, OnDownloadThumbsCheckboxChecked)
             CHAIN_MSG_MAP(CDialogResize<CHistoryWindow>)
@@ -101,6 +105,8 @@ class CHistoryWindow : public CDialogImpl <CHistoryWindow>,
         LRESULT OnCopyToClipboard(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnEditFileOnServer(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnDeleteFileOnServer(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnMonthChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 };
 

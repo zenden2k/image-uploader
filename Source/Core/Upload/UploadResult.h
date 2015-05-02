@@ -17,6 +17,8 @@ public:
     std::string downloadUrl;
     std::string downloadUrlShortened;
     std::string serverName;
+    std::string editUrl;
+    std::string deleteUrl;
     /* @endcond */
 
 

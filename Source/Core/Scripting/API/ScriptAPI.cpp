@@ -156,21 +156,21 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
         Func("getItemCount", &CFolderItem::getItemCount)
     );
 
-    root.Bind("CIUUploadParams", Class<CIUUploadParams>(vm.GetVM(), "CIUUploadParams").
-        Func("getFolderID", &CIUUploadParams::getFolderID).
-        Func("setDirectUrl", &CIUUploadParams::setDirectUrl).
-        Func("getDirectUrl", &CIUUploadParams::getDirectUrl).
-        Func("setThumbUrl", &CIUUploadParams::setThumbUrl).
-        Func("getThumbUrl", &CIUUploadParams::getThumbUrl).
-        Func("setViewUrl", &CIUUploadParams::setViewUrl).
-        Func("getViewUrl", &CIUUploadParams::getViewUrl).
-        Func("setDeleteUrl", &CIUUploadParams::setDeleteUrl).
-        Func("getDeleteUrl", &CIUUploadParams::getDeleteUrl).
-        Func("setEditUrl", &CIUUploadParams::setEditUrl).
-        Func("getEditUrl", &CIUUploadParams::getEditUrl).
-        Func("getServerFileName", &CIUUploadParams::getServerFileName).
-        Func("getTask", &CIUUploadParams::getTask).
-        Func("getParam", &CIUUploadParams::getParam)
+    root.Bind("CIUUploadParams", Class<UploadParams>(vm.GetVM(), "CIUUploadParams").
+        Func("getFolderID", &UploadParams::getFolderID).
+        Func("setDirectUrl", &UploadParams::setDirectUrl).
+        Func("getDirectUrl", &UploadParams::getDirectUrl).
+        Func("setThumbUrl", &UploadParams::setThumbUrl).
+        Func("getThumbUrl", &UploadParams::getThumbUrl).
+        Func("setViewUrl", &UploadParams::setViewUrl).
+        Func("getViewUrl", &UploadParams::getViewUrl).
+        Func("setDeleteUrl", &UploadParams::setDeleteUrl).
+        Func("getDeleteUrl", &UploadParams::getDeleteUrl).
+        Func("setEditUrl", &UploadParams::setEditUrl).
+        Func("getEditUrl", &UploadParams::getEditUrl).
+        Func("getServerFileName", &UploadParams::getServerFileName).
+        Func("getTask", &UploadParams::getTask).
+        Func("getParam", &UploadParams::getParam)
     );
 
 

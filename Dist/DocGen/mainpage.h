@@ -24,7 +24,7 @@ You have to implement at least one function — <code>UploadFile</code>.<br>
 If you want to support album listing/creating/modifying, you have to implement also <code>GetFolderList</code>, <code>CreateFolder</code>, 
 <code>ModifyFolder</code>, <code>GetFolderAccessTypeList</code></i>.</p>
 
-<code>nm</code> - global object - an instance of <a href=api_networkclient.html>NetworkClient</a><br>
-<code>ServerParams</code> - global object - an instance of <a href=api_smallclasses.html#CServerParams>CServerParams</a>
+<code>nm</code> - global object - an instance of NetworkClient<br>
+<code>ServerParams</code> - global object - an instance of ServerSettingsStruct 
 <p>
 */

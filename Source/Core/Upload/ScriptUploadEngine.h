@@ -38,7 +38,7 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
                             public Script
 {
     public:
-        int doUpload(std::shared_ptr<UploadTask> task, CIUUploadParams& params);
+        int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params);
     protected:
         bool needStop();
         std::string m_ErrorReason;

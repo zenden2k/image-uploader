@@ -9,8 +9,6 @@
 		<!-- favicons -->
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
-<Info>
-[~] Faster vfl.ru uploads
-[~] Interrupt upload on authentication error
+<Info>[+] zalivalka.ru
 </Info>
 </UpdatePackageSource>
