@@ -7,6 +7,8 @@
 -# @ref Introduction 
 -# @ref Example 
 -# @ref Implement 
+-# @ref UploadFilters 
+
 @section Introduction Introduction
 <p>Image Uploader is using scripts written in <a href="http://www.squirrel-lang.org/" target="_blank">Squirrel 3</a> language.
 Squirrel is a high level imperative, object-oriented programming language, designed to be a light-weight scripting language that fits in the size, memory bandwidth, and real-time requirements of applications like video games.</p>
