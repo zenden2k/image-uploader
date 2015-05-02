@@ -418,14 +418,14 @@ HRESULT CIShellContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpici)
 	{
 	case MENUITEM_UPLOADFILES:
 		{
-			IULaunchCopy(m_FileList,_T("/fromcontextmenu"));
+			IULaunchCopy(m_FileList,_T("/fromcontextmenu /upload"));
 
 			return S_OK;
 		}
 		break;
 	case MENUITEM_UPLOADONLYIMAGES:
 		{
-			IULaunchCopy(m_FileList,_T("/fromcontextmenu /imagesonly"));
+			IULaunchCopy(m_FileList,_T("/fromcontextmenu /imagesonly /upload"));
 
 			return S_OK;
 		}
