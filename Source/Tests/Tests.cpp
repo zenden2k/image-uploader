@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-
+#include <vld.h>
 
 
 int _tmain(int argc, _TCHAR* argv[])

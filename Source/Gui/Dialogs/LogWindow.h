@@ -69,6 +69,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
         BEGIN_DLGRESIZE_MAP(CLogWindow)
             DLGRESIZE_CONTROL(IDC_MSGLIST, DLSZ_SIZE_X | DLSZ_SIZE_Y)
             DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X | DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_CLEARLOGBUTTON, DLSZ_MOVE_X | DLSZ_MOVE_Y)
         END_DLGRESIZE_MAP()
 
         // Handler prototypes:

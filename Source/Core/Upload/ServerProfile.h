@@ -5,7 +5,7 @@
 #include "Core/Images/ImageConverter.h"
 
 class CUploadEngineData;
-struct ServerSettingsStruct;
+class ServerSettingsStruct;
 class SettingsNode;
 
 struct ImageUploadParams {

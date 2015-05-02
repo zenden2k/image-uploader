@@ -31,21 +31,21 @@
 #include <iostream>
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Logging.h"
-
+#if defined(_WIN32) 
+#include "Func/WinUtils.h"
+#endif
 char NetworkClient::CertFileName[1024]= "";
 
 size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
     return  fread(ptr, size, nmemb, (FILE*)stream);
 }
-
-#define USE_OPENSSL
+#ifdef USE_OPENSSL
 #define NUMT 4
 
 /* we have this global to let the callback get easy access to it */
 static std::vector<std::mutex*> lockarray;
 
-#ifdef USE_OPENSSL
 #include <openssl/crypto.h>
 static void lock_callback(int mode, int type, char const *file, int line)
 {
@@ -189,12 +189,21 @@ NetworkClient::NetworkClient(void)
     if(!_curl_init)
     {
         enableResponseCodeChecking_ = true;
-        init_locks();
+
+       
         curl_global_init(CURL_GLOBAL_ALL);
         curl_version_info_data * infoData = curl_version_info(CURLVERSION_NOW);
         _is_openssl =  strstr(infoData->ssl_version, "WinSSL")!=infoData->ssl_version;
+#ifdef USE_OPENSSL
+        if (_is_openssl)
+        {
+            init_locks();
+        }
+#endif
+        
 #ifdef WIN32
         if (_is_openssl) {
+           
             GetModuleFileNameA(0, CertFileName, 1023);
             int i, len = lstrlenA(CertFileName);
             for (i = len; i >= 0; i--)
@@ -253,13 +262,17 @@ NetworkClient::NetworkClient(void)
     curl_easy_setopt(curl_handle, CURLOPT_XFERINFODATA, file);
 #endif
      */
-#ifdef _WIN32
+#if defined(_WIN32) && defined(USE_OPENSSL)
     if (_is_openssl) {
         curl_easy_setopt(curl_handle, CURLOPT_CAINFO, CertFileName);
     }
 #endif
-    curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 1L); 
-    curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 2L);
+    //if (_is_openssl || !WinUtils::IsWine())
+    {
+        curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 1L);
+        curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 2L);
+    }
+   
     //curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L); 
     //curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0L);
 
@@ -511,7 +524,12 @@ void NetworkClient::private_checkResponse()
 void NetworkClient::curl_cleanup()
 {
     curl_global_cleanup();
-    kill_locks();
+#ifdef USE_OPENSSL
+    if (_is_openssl)
+    {
+        kill_locks();
+    }
+#endif
 }
 
 const std::string NetworkClient::responseHeaderText()

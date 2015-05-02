@@ -20,7 +20,6 @@
 
 #include "Common.h"
 
-#include <openssl/md5.h>
 
 #include "atlheaders.h"
 #include "Common/CmdLine.h"
@@ -37,40 +36,8 @@ CString IUCommonTempFolder;
 
 CString IU_md5_file(const CString& filename)
 {
-    CString result;
-    MD5_CTX context;
-
-    MD5_Init(&context);
-    FILE* f = _wfopen(filename, _T("rb"));
-
-    if (f)
-    {
-        unsigned char buf[4096];
-        while (!feof(f))
-        {
-            size_t bytesRead = fread(buf, 1, sizeof(buf), f);
-
-            MD5_Update(&context, (unsigned char*)buf, bytesRead);
-        }
-        unsigned char buff[16] = "";
-
-        MD5_Final(buff, &context);
-
-        fclose(f);
-
-        for (int i = 0; i < 16; i++)
-        {
-            TCHAR temp[5];
-            swprintf(temp, _T("%02x"), buff[i]);
-            result += temp;
-        }
-    }
-    return result;
+    return U2W(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(W2U(filename)));
 }
-
-
-
-
 
 bool IULaunchCopy(CString additionalParams)
 {

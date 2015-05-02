@@ -30,7 +30,7 @@ linux-g++:{
 } # eval
 } # unix
 
-DEFINES += TIXML_USE_STL
+DEFINES += TIXML_USE_STL USE_OPENSSL
 
 
 SOURCES += main.cpp \

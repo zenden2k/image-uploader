@@ -149,4 +149,14 @@ TEST_F(CoreUtilsTest, copyFile)
     EXPECT_EQ(size, contSizeFileSize);
 }
 
+TEST_F(CoreUtilsTest, gettimeofday)
+{
+    struct timeval tp;
+    gettimeofday(&tp, NULL);
+    int64_t curTime = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    gettimeofday(&tp, NULL);
+    int64_t curTime2 = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    EXPECT_GE(curTime2, curTime2);
+}
+
 int ttt;
