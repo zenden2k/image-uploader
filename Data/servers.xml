@@ -460,4 +460,9 @@
 	<Server3 Name="takebin.com" Type="file" FileHost="1" Plugin="takebin" >
 		<Result DownloadUrlTemplate="stub"/>
 	</Server3>
+	<Server Name="zalivalka.ru" Type="file" Types="image,file" Plugin="zalivalka">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
 </Servers>
