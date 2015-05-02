@@ -48,14 +48,14 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CryptoUtilsTest.cpp">
-      <Filter>Code\Core\Utils\Tests</Filter>
-    </ClCompile>
     <ClCompile Include="..\Core\Utils\CryptoUtils.cpp">
       <Filter>Code\Core\Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\base64.cpp">
       <Filter>Code\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\Tests\CryptoUtilsTest.cpp">
+      <Filter>Code\Core\Utils\Tests</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -100,7 +100,7 @@
     <ClCompile Include="..\Core\3rdpart\base64.cpp" />
     <ClCompile Include="..\Core\Utils\CryptoUtils.cpp" />
     <ClCompile Include="..\Core\Utils\Tests\CoreUtilsTest.cpp" />
-    <ClCompile Include="CryptoUtilsTest.cpp" />
+    <ClCompile Include="..\Core\Utils\Tests\CryptoUtilsTest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
