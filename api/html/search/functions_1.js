@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['close',['close',['../class_script_a_p_i_1_1_c_web_browser.html#a5ae591df94fc66ccb85cbb6565368bca',1,'ScriptAPI::CWebBrowser']]]
+  ['beginauth',['beginAuth',['../class_server_sync.html#a6c5a77bcef4bba050f2e401084e55500',1,'ServerSync']]]
 ];
