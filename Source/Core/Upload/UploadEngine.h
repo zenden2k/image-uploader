@@ -45,6 +45,13 @@ struct ActionVariable
     int nIndex;
 };
 
+struct ActionRegExp {
+    std::string Pattern;
+    std::string Data;
+    std::string AssignVars;
+    std::vector<ActionVariable> Variables;
+    bool Required;
+};
 struct UploadAction
 {
     int Index;
@@ -56,8 +63,9 @@ struct UploadAction
     std::string PostParams;
     std::string CustomHeaders;
     std::string Type;
-    std::string RegExp;
-    std::vector<ActionVariable> Variables;
+   // std::string RegExp;
+
+    std::vector<ActionRegExp> Regexes;
     int RetryLimit;
     int NumOfTries;
 };

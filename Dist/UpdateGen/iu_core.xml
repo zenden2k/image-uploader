@@ -9,11 +9,16 @@
 		<Entry Name="Lang/Turkce.lng" SaveToFolder="%apppath%/Lang/" Action="delete"/>
         <Entry Name="Modules/*.dll" SaveToFolder="%apppath%/Modules/" Action="add"/>
         <Entry Name="Docs/*" SaveToFolder="%apppath%/Docs/" Action="add"/>
+		<Entry Name="Docs/ru_RU/*" SaveToFolder="%apppath%/Docs/ru_RU/" Action="add"/>
+		<Entry Name="Docs/api/*" SaveToFolder="%apppath%/Docs/api/" Action="add"/>
+		<Entry Name="Docs/api/html/*" SaveToFolder="%apppath%/Docs/api/html/" Action="add"/>
+		<Entry Name="Docs/api/html/*" SaveToFolder="%apppath%/Docs/api/html/" Action="add"/>
+		<Entry Name="Docs/api/html/search/*" SaveToFolder="%apppath%/Docs/api/html/search/" Action="add"/>
         <Entry Name="Docs/Pics/*" SaveToFolder="%apppath%/Docs/Pics/" Action="add"/>
         <Entry Name="Docs/prettify/*" SaveToFolder="%apppath%/Docs/prettify/" Action="add"/>
         <Entry Name="Data/Thumbnails/*" SaveToFolder="%datapath%/Thumbnails/" Action="add"/>
 		<Entry Name="Data/templates.xml" SaveToFolder="%datapath%/templates.xml" Action="add"/>
 	</Entries>
-<Info>Share cookies, dns cache, SSL connections between threads
+<Info>[+] Multiple regexps in servers.xml Action node
 </Info>
 </UpdatePackageSource>

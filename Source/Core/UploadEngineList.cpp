@@ -192,27 +192,47 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 
                 UA.PostParams = actionNode.Attribute("PostParams");
                 UA.CustomHeaders = actionNode.Attribute("CustomHeaders");
-                UA.RegExp = actionNode.Attribute("RegExp");
                 UA.OnlyOnce = actionNode.AttributeBool("OnlyOnce");
 
-                std::string AssignVars = actionNode.Attribute("AssignVars");
+                ActionRegExp regexp;
+                regexp.Pattern = actionNode.Attribute("RegExp");
+                regexp.AssignVars = actionNode.Attribute("AssignVars");
+                regexp.Required = true;
+                UA.Regexes.push_back(regexp);
 
-                std::vector<std::string> Vars;
-                nm_splitString(AssignVars, ";", Vars);
+                std::vector<SimpleXmlNode> regexpNodes;
+                actionNode.GetChilds("RegExp", regexpNodes);
 
-                for(std::vector<std::string>::iterator it = Vars.begin(); it!=Vars.end(); it++)
+                for (auto& regexpNode : regexpNodes)
                 {
-                    std::vector<std::string> NameAndValue;
-                //    std::cout<<"*************"<<*it<<std::endl;
-                    nm_splitString(*it, ":", NameAndValue);
-                    if(NameAndValue.size() == 2)
+                    ActionRegExp newRegexp;
+                    newRegexp.Pattern = regexpNode.Attribute("Pattern");
+                    newRegexp.AssignVars = regexpNode.Attribute("AssignVars");
+                    newRegexp.Required = regexpNode.AttributeBool("Required");
+                    newRegexp.Data = regexpNode.Attribute("Data");
+                    UA.Regexes.push_back(newRegexp);
+                }
+
+                for (auto& reg : UA.Regexes)
+                {
+                    std::vector<std::string> Vars;
+                    nm_splitString(reg.AssignVars, ";", Vars);
+
+                    for (std::vector<std::string>::iterator it = Vars.begin(); it != Vars.end(); it++)
                     {
-                        ActionVariable AV;
-                        AV.Name = NameAndValue[0];
-                        AV.nIndex = atoi(NameAndValue[1].c_str());
-                        UA.Variables.push_back(AV);
+                        std::vector<std::string> NameAndValue;
+                        //    std::cout<<"*************"<<*it<<std::endl;
+                        nm_splitString(*it, ":", NameAndValue);
+                        if (NameAndValue.size() == 2)
+                        {
+                            ActionVariable AV;
+                            AV.Name = NameAndValue[0];
+                            AV.nIndex = atoi(NameAndValue[1].c_str());
+                            reg.Variables.push_back(AV);
+                        }
                     }
                 }
+                
 
                 UE.Actions.push_back(UA);
             }

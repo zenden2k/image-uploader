@@ -9,6 +9,6 @@
 		<!-- favicons -->
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
-<Info>[+] zalivalka.ru
+<Info>saving imgur.com delete link
 </Info>
 </UpdatePackageSource>

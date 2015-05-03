@@ -40,7 +40,15 @@ size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
     return  fread(ptr, size, nmemb, (FILE*)stream);
 }
-#ifdef USE_OPENSSL
+#ifdef _MSC_VER
+    #if defined(USE_OPENSSL) 
+        #pragma comment(lib, "libcurl_openssl.lib")
+    #else
+        #pragma comment(lib, "libcurl.lib")
+    #endif
+#endif
+
+#if defined(USE_OPENSSL) 
 #define NUMT 4
 
 /* we have this global to let the callback get easy access to it */

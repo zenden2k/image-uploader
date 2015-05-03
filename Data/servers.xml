@@ -49,9 +49,11 @@
 	<Server Name="imgur.com" MaxFileSize="10485760"  Authorize="0" Debug="0" MaxThreads="1">
 		<Actions>
 			<Action Type="login" Url="http://imgur.com/signin" PostParams="username=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="0" Description="Authorization on imgur.com"/>
-			<Action Type="upload" Url="http://imgur.com/api/upload.xml" PostParams="image=%filename%;key=2dd16e2e19119996855ae9312b7a1305;" RegExp='&lt;original_image&gt;(.*?)&lt;\/original_image&gt;([\s\S]*?)&lt;small_thumbnail>(.*?)&lt;\/small_thumbnail&gt;' AssignVars="Image:0;Thumb:2"/>
+			<Action Type="upload" Url="http://imgur.com/api/upload.xml" PostParams="image=%filename%;key=2dd16e2e19119996855ae9312b7a1305;" RegExp='&lt;original_image&gt;(.*?)&lt;\/original_image&gt;([\s\S]*?)&lt;small_thumbnail>(.*?)&lt;\/small_thumbnail&gt;' AssignVars="Image:0;Thumb:2">
+				<RegExp Pattern="&lt;delete_page&gt;(.*?)&lt;\/delete_page&gt;" AssignVars="DeleteUrl:0;"/>
+			</Action>
 		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DeleteUrl="$(DeleteUrl)"/>
 	</Server>
 	<Server Name="Imageshack.us" Authorize="2" MaxFileSize="5000000" Debug="0" Plugin="imageshack">
 		<Actions>

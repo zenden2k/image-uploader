@@ -39,7 +39,7 @@ class CDefaultUploadEngine: public CAbstractUploadEngine
         bool DoAction(UploadAction &Action);
         bool DoUploadAction(UploadAction &Action, bool bUpload);
         bool DoGetAction(UploadAction &Action);
-        bool ParseAnswer(UploadAction &Action, std::string& Body);
+        bool ParseAnswer(UploadAction &Action, const std::string& Body);
         std::string ReplaceVars(const std::string& Text);
         int RetryLimit();
         void AddQueryPostParams(UploadAction& Action);

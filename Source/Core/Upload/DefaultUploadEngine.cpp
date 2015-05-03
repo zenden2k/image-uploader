@@ -234,53 +234,77 @@ bool reg_single_match(const std::string pattern, const std::string& text, std::s
     return false;
 }
 
-bool CDefaultUploadEngine::ParseAnswer(UploadAction& Action, std::string& Body)
+bool CDefaultUploadEngine::ParseAnswer(UploadAction& Action, const std::string& Body)
 {
-    if ( !Action.RegExp.empty() ) {
-        std::string codePage;
-        if ( reg_single_match( "text/html;\\s+charset=([\\w-]+)", Body, codePage ) ) {
-            IuCoreUtils::ConvertToUtf8( Body, codePage );
-        }
-        if ( m_UploadData->Debug ) {
-            DebugMessage( Body, true );
-        }
-
-        try {
-            pcrepp::Pcre reg( Action.RegExp, "imc" );
-
-            std::string DebugVars = "Regex: " + Action.RegExp + "\r\n\r\n";
-            if ( reg.search(Body) ) {
-                reg.matches();
-                if (Action.Variables.empty()) {
-                    DebugVars += "Variables list is empty!\r\n";
-                }
-
-                for (size_t i = 0; i < Action.Variables.size(); i++) {
-                    ActionVariable& v = Action.Variables[i];
-                    std::string temp;
-                    temp = reg.get_match(1+v.nIndex);
-                    if (!v.Name.empty() && v.Name[0] == '_')
-                        m_Consts[v.Name] = temp;
-                    m_Vars[v.Name] = temp;
-                    DebugVars += v.Name + " = " + temp + "\r\n";
-                }
+    if (!Action.Regexes.empty() && m_UploadData->Debug) {
+        DebugMessage(Body, true);
+    }
+    std::string DebugVars;
+    for (auto& actionRegExp : Action.Regexes)
+    {
+        if (!actionRegExp.Pattern.empty()) {
+            std::string codePage;
+            if (reg_single_match("text/html;\\s+charset=([\\w-]+)", Body, codePage)) {
+                IuCoreUtils::ConvertToUtf8(Body, codePage);
             }
-            else {
-                if (m_UploadData->Debug) {
-                    DebugVars += "NO MATCHES FOUND!";
-                    DebugMessage( DebugVars );
+            const std::string* data = &Body;
+            std::string dataSrc;
+            if (!actionRegExp.Data.empty())
+            {
+                dataSrc = ReplaceVars(actionRegExp.Data);
+                data = &dataSrc;
+            }
+            try {
+                pcrepp::Pcre reg(actionRegExp.Pattern, "imc");
+
+                DebugVars += "Regex: " + actionRegExp.Pattern + "\r\n\r\n";
+                if (reg.search(*data)) {
+                    reg.matches();
+                    if (actionRegExp.Variables.empty()) {
+                        DebugVars += "Variables list is empty!\r\n";
+                    }
+
+                    for (size_t i = 0; i < actionRegExp.Variables.size(); i++) {
+                        ActionVariable& v = actionRegExp.Variables[i];
+                        std::string temp;
+                        temp = reg.get_match(1 + v.nIndex);
+                        if (!v.Name.empty() && v.Name[0] == '_')
+                            m_Consts[v.Name] = temp;
+                        m_Vars[v.Name] = temp;
+                        DebugVars += v.Name + " = " + temp + "\r\n";
+                    }
                 }
-                UploadError( false, "Cannot obtain the necessary information from server response.", &Action );
-                return false; // ERROR! Current action failed!
+                else {
+                    if (m_UploadData->Debug) {
+                        DebugVars += "NO MATCHES FOUND!\r\n";
+                       
+                    }
+
+                    if (actionRegExp.Required)
+                    {
+                        if (m_UploadData->Debug)
+                        {
+                            DebugMessage(DebugVars);
+                        }
+                      
+                        UploadError(false, "Cannot obtain the necessary information from server response.", &Action);
+                        return false; // ERROR! Current action failed!
+                    }
+                   
+                }
+               
             }
-            if (m_UploadData->Debug) {
-                DebugMessage( DebugVars );
+            catch (const std::exception& e) {
+                UploadError(true, std::string("Regular expression error:") + e.what(), &Action, false);
             }
-        }
-        catch (const std::exception& e) {
-            UploadError( true, std::string("Regular expression error:") + e.what(), &Action, false );
+            DebugVars += "\r\n";
         }
     }
+
+    if (!DebugVars.empty() && m_UploadData->Debug) {
+        DebugMessage(DebugVars);
+    }
+    
     return true;
 }
 
@@ -313,8 +337,12 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
     UploadAction Current = Action;
     std::string temp = Current.Url;
     Current.Url = ReplaceVars(temp);
-    if (m_UploadData->Debug)
-        DebugMessage("\r\nType:" + Action.Type + "\r\nURL: " + Current.Url);
+    if (m_UploadData->Debug) {
+        if (Action.Type != "login" || (m_UploadData->NeedAuthorization && li.DoAuth ) ) {
+            DebugMessage("\r\nType:" + Action.Type + "\r\nURL: " + Current.Url);
+        }
+    }
+        
     if (!m_UploadData->UserAgent.empty())
     {
         m_NetworkClient->setUserAgent(m_UploadData->UserAgent);
@@ -409,8 +437,10 @@ bool CDefaultUploadEngine::ReadServerResponse(UploadAction& Action)
         std::string answer = m_NetworkClient->responseBody();
         Result =  ParseAnswer(Action, answer);
 
-        if (!Result)
+        if (!Result && answer.empty())
+        {
             UploadError(false, "Empty response!", &Action);
+        }   
     }
     return Result;
 }
