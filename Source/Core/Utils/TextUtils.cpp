@@ -3,6 +3,8 @@
 #include "Core/3rdpart/pcreplusplus.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Utils/CoreUtils.h"
+#include "Core/3rdpart/htmlentities.h"
+
 namespace IuTextUtils
 {
     std::string BbCodeToHtml(const std::string& bbcode) {
@@ -38,4 +40,13 @@ namespace IuTextUtils
         fclose(f);
         return true;
     }
+
+std::string DecodeHtmlEntities(const std::string& src)
+{
+    std::string res = src;
+    decode_html_entities_utf8(&res[0], 0);
+    res.resize(strlen(&res[0]));
+    return res;
+}
+
 };

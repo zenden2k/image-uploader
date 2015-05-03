@@ -11,6 +11,7 @@ namespace IuTextUtils
 {
     std::string BbCodeToHtml(const std::string& bbcode);
     bool FileSaveContents(const std::string& fileName, const std::string& contents);
+    std::string DecodeHtmlEntities(const std::string& src);
 };
 
 #endif

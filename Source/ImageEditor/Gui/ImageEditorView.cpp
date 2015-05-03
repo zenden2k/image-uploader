@@ -107,6 +107,12 @@ LRESULT CImageEditorView::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 LRESULT CImageEditorView::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
     int cx =   GET_X_LPARAM(lParam); 
     int cy =   GET_Y_LPARAM(lParam); 
+    
+    if (GetFocus() != m_hWnd)
+    {
+        SetFocus();
+    }
+
     POINT ptScroll;
     GetScrollOffset(ptScroll);
     cx += ptScroll.x;

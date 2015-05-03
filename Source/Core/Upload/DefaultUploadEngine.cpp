@@ -25,6 +25,7 @@
 #include "Core/Upload/UrlShorteningTask.h"
 #include "Core/Utils/StringUtils.h"
 #include "ServerSync.h"
+#include "Core/Utils/TextUtils.h"
 
 CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync) : CAbstractUploadEngine(serverSync)
 {
@@ -591,6 +592,9 @@ std::string CDefaultUploadEngine::ReplaceVars(const std::string& Text)
                 std::string modifier = tokens[i];
                 if ( modifier == "urlencode" ) {
                     value = m_NetworkClient->urlEncode(value);
+                } else if (modifier == "htmldecode")
+                {
+                    value = IuTextUtils::DecodeHtmlEntities(value);
                 }
             }
             

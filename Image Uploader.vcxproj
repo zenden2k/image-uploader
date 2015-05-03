@@ -615,6 +615,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Core\3rdpart\htmlentities.h" />
     <ClInclude Include="Source\Core\CommonDefs.h" />
     <ClInclude Include="Source\Core\Images\ImageConverterPrivateBase.h" />
     <ClInclude Include="Source\Core\Images\ImageConverterPrivate_gdiplus.h" />
@@ -650,6 +651,7 @@
     <ClInclude Include="Source\Core\Upload\UploadResult.h" />
     <ClInclude Include="Source\Core\Upload\UploadSession.h" />
     <ClInclude Include="Source\Core\Utils\EnumUtils.h" />
+    <ClInclude Include="Source\Core\Utils\TextUtils.h" />
     <ClInclude Include="Source\Gui\Controls\ResultsListView.h" />
     <ClInclude Include="Source\Gui\Dialogs\VideoGrabberPage.h" />
     <ClInclude Include="Source\logging.h" />
@@ -722,7 +724,6 @@
     <ClInclude Include="Source\Core\ScreenCapture.h" />
     <ClInclude Include="Source\Core\ServerListManager.h" />
     <ClInclude Include="Source\Core\SettingsManager.h" />
-    <ClInclude Include="Source\Core\TextUtils.h" />
     <ClInclude Include="Source\Core\UploadEngineList.h" />
     <ClInclude Include="Source\Core\Upload\CommonTypes.h" />
     <ClInclude Include="Source\Core\Upload\DefaultUploadEngine.h" />
@@ -938,6 +939,7 @@
     <ResourceCompile Include="Source\Image Uploader.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Core\3rdpart\htmlentities.cpp" />
     <ClCompile Include="Source\Core\Images\ImageConverterPrivateBase.cpp" />
     <ClCompile Include="Source\Core\Images\ImageConverterPrivate_gdiplus.cpp" />
     <ClCompile Include="Source\Core\Network\CurlShare.cpp" />
@@ -969,6 +971,7 @@
     <ClCompile Include="Source\Core\Upload\UploadFilter.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadManager.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadSession.cpp" />
+    <ClCompile Include="Source\Core\Utils\TextUtils.cpp" />
     <ClCompile Include="Source\Gui\Controls\ResultsListView.cpp" />
     <ClCompile Include="Source\Image Uploader.cpp">
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
@@ -992,7 +995,6 @@
     <ClCompile Include="Source\Core\ScreenCapture.cpp" />
     <ClCompile Include="Source\Core\ServerListManager.cpp" />
     <ClCompile Include="Source\Core\SettingsManager.cpp" />
-    <ClCompile Include="Source\Core\TextUtils.cpp" />
     <ClCompile Include="Source\Core\UploadEngineList.cpp" />
     <ClCompile Include="Source\Core\Upload\DefaultUploadEngine.cpp" />
     <ClCompile Include="Source\Core\Upload\FileQueueUploader.cpp" />

@@ -297,9 +297,6 @@
     <ClInclude Include="Source\Core\SettingsManager.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\TextUtils.h">
-      <Filter>Source Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Core\UploadEngineList.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
@@ -702,6 +699,12 @@
     <ClInclude Include="Source\Gui\Dialogs\VideoGrabberPage.h">
       <Filter>Header Files\Gui\Dialogs</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\htmlentities.h">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utils\TextUtils.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1084,9 +1087,6 @@
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\SettingsManager.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\TextUtils.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\UploadEngineList.cpp">
@@ -1625,6 +1625,12 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Network\CurlShare.cpp">
       <Filter>Source Files\Core\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\htmlentities.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Utils\TextUtils.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

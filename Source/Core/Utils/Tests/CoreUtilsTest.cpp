@@ -18,11 +18,11 @@ TEST_F(CoreUtilsTest, ExtractFilePath)
 {
     std::string fileName = "c:\\Program Files (x86)\\Image Uploader\\Image Uploader.exe";
     std::string result = ExtractFilePath(fileName);
-    EXPECT_EQ(result, "c:\\Program Files (x86)\\Image Uploader\\");
+    EXPECT_EQ("c:\\Program Files (x86)\\Image Uploader\\", result);
     result = ExtractFilePath("c:/Program Files (x86)\\Image Uploader/ExplorerIntegration64.dll");
-    EXPECT_EQ(result, "c:/Program Files (x86)\\Image Uploader/");
+    EXPECT_EQ("c:/Program Files (x86)\\Image Uploader/", result);
     result = ExtractFilePath("avcodec-56.dll");
-    EXPECT_EQ(result, "");
+    EXPECT_EQ("", result);
 }
 
 
@@ -67,9 +67,9 @@ TEST_F(CoreUtilsTest, ExtractFileNameNoExt)
 TEST_F(CoreUtilsTest, ExtractFileNameFromUrl)
 {
     std::string result = ExtractFileNameFromUrl("http://www.directupload.net/file/d/3970/vmtbrege_jpg.htm");
-    EXPECT_EQ(result, "vmtbrege_jpg.htm");
+    EXPECT_EQ("vmtbrege_jpg.htm", result);
     result = ExtractFileNameFromUrl("http://www.directupload.net/file/d/3970/vmtbrege_jpg.html?test=124&grgrg=54+5435");
-    EXPECT_EQ(result, "vmtbrege_jpg.html");
+    EXPECT_EQ("vmtbrege_jpg.html", result);
 
 }
 

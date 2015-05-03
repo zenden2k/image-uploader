@@ -87,9 +87,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     
     memoText += CString(L"WTL")+ "\t\thttp://sourceforge.net/projects/wtl/\r\n";
     memoText += CString(L"libcurl")+ "\t\thttp://curl.haxx.se/libcurl/\r\n";
-#ifdef USE_OPENSSL
+//#ifdef USE_OPENSSL
     memoText += CString(L"openssl") +"\t\thttps://www.openssl.org\r\n";
-#endif
+//#endif
     memoText += CString(L"zlib") +"\t\thttp://www.zlib.net\r\n";
     memoText += CString(L"squirrel") +"\t\thttp://squirrel-lang.org\r\n";
     memoText += CString(L"sqrat") +"\t\thttp://scrat.sourceforge.net\r\n";
@@ -117,6 +117,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(L"CPropertyList") +"\thttp://www.viksoe.dk/code/propertylist.htm\r\n";
     memoText += CString(L"GDI+ helper") +"\thttp://www.codeproject.com/Articles/4969/GDI-and-MFC-memory-leak-detection\r\n";
     memoText += CString(L"xbbcode") +"\t\thttps://github.com/patorjk/Extendible-BBCode-Parser\r\n";
+    memoText += CString(L"entities.c") + "\t\thttps://bitbucket.org/cggaertner/cstuff/\r\n";
+
     memoText += CString(_T("Resources:\r\n")) +
         _T("famfamfam icons\thttp://www.famfamfam.com/lab/icons/\r\n\r\n");
 

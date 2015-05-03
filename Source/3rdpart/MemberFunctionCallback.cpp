@@ -1,4 +1,5 @@
 #include "MemberFunctionCallback.h"
+#include <mutex>
 
 CBTHookCallbackBase* AvailableCallbackSlots[kMaxCallbacks] = {
     new DynamicCBTHookCallback<0x00>(),
@@ -18,6 +19,7 @@ CBTHookCallbackBase* AvailableCallbackSlots[kMaxCallbacks] = {
     new DynamicCBTHookCallback<0x0E>(),
     new DynamicCBTHookCallback<0x0F>(),*/
 };
+std::mutex AvailableCallbackSlotsMutex;
 
 struct Dummy {
     ~Dummy()
@@ -32,6 +34,7 @@ Dummy dummyObject;
 
 CBTHookMemberFunctionCallback::CBTHookMemberFunctionCallback(CWebViewWindow* instance, LPFN_CBTHookMemberFunctionCallback method)
 {
+    std::lock_guard<std::mutex> lock(AvailableCallbackSlotsMutex);
     int imax = sizeof(AvailableCallbackSlots)/sizeof(AvailableCallbackSlots[0]);
     for( m_nAllocIndex = 0; m_nAllocIndex < imax; ++m_nAllocIndex )
     {
@@ -45,6 +48,7 @@ CBTHookMemberFunctionCallback::~CBTHookMemberFunctionCallback()
 {
     if( IsValid() )
     {
+        std::lock_guard<std::mutex> lock(AvailableCallbackSlotsMutex);
         AvailableCallbackSlots[m_nAllocIndex]->Free();
     }
 }

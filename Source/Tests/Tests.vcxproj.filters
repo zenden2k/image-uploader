@@ -57,6 +57,18 @@
     <ClCompile Include="..\Core\Utils\Tests\CryptoUtilsTest.cpp">
       <Filter>Code\Core\Utils\Tests</Filter>
     </ClCompile>
+    <ClCompile Include="..\Core\Utils\Tests\TextUtilsTest.cpp">
+      <Filter>Code\Core\Utils\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\TextUtils.cpp">
+      <Filter>Code\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\htmlentities.cpp">
+      <Filter>Code\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\pcreplusplus.cpp">
+      <Filter>Code\Core\3rdpart</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">

@@ -20,8 +20,6 @@
 
 #include "Functions.h"
 
-/** @file */
-
 #include "Core/AppParams.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Scripting/Squirrelnc.h"
@@ -48,6 +46,7 @@
 #include <math.h>
 #include "Core/3rdpart/base64.h"
 #include "Core/3rdpart/codepages.h"
+#include "Core/Utils/TextUtils.h"
 #include "versioninfo.h"
 #include "ScriptAPI.h"
 
@@ -64,10 +63,6 @@ const std::string GetScriptsDirectory()
     return AppParams::instance()->settingsDirectory() + "Scripts/";
 }
 
-/**
-Returns name of the application's current language file (without .lng extension). For example: "English", "Russian".
-@since 1.3.1
-*/
 const std::string GetAppLanguageFile()
 {
     std::string languageFile = AppParams::instance()->languageFile();
@@ -269,12 +264,12 @@ const std::string InputDialog(const std::string& text, const std::string& defaul
 }
 
 
-const std::string scriptGetFileMimeType(const std::string& filename)
+const std::string GetFileMimeType(const std::string& filename)
 {
     return IuCoreUtils::GetFileMimeType(filename);
 }
 
-const std::string scriptAnsiToUtf8(const std::string& str, int codepage)
+const std::string AnsiToUtf8(const std::string& str, int codepage)
 {
 #ifdef _WIN32
     return IuCoreUtils::ConvertToUtf8(str, NameByCodepage(codepage));
@@ -294,13 +289,13 @@ const std::string scriptUtf8ToAnsi(const std::string& str, int codepage )
 #endif
 }
 
-void scriptWriteLog(const std::string& type, const std::string& message) {
+void WriteLog(const std::string& type, const std::string& message) {
 #ifndef IU_CLI
     LogMsgType msgType = logWarning;
     if ( type == "error" ) {
         msgType = logError;
     }
-    WriteLog(msgType,_T("Script Engine"),Utf8ToWCstring(message));
+    ::WriteLog(msgType,_T("Script Engine"),Utf8ToWCstring(message));
 #else
     std::cerr << type <<" : ";
     #ifdef _WIN32
@@ -311,16 +306,16 @@ void scriptWriteLog(const std::string& type, const std::string& message) {
 #endif
 }
 
-const std::string scriptMD5(const std::string& data)
+const std::string md5(const std::string& data)
 {
     return IuCoreUtils::CryptoUtils::CalcMD5HashFromString(data);
 }
 
-void scriptSleep(int msec) {
+void sleep(int msec) {
 #ifdef _WIN32
-    Sleep(msec);
+    ::Sleep(msec);
 #else
-    sleep(ceil(msec/1000.0));
+    ::sleep(ceil(msec/1000.0));
 #endif
 }
 
@@ -328,11 +323,11 @@ void scriptSleep(int msec) {
     return DebugMessage( data, true );
 }*/
 
-const std::string escapeJsonString( const std::string& src) {
+const std::string JsonEscapeString( const std::string& src) {
     return Json::valueToQuotedString(src.data());
 }
 
-const std::string scriptGetTempDirectory() {
+const std::string GetTempDirectory() {
 #ifdef _WIN32
     #ifndef IU_CLI
         return IuCoreUtils::WstringToUtf8((LPCTSTR)IuCommonFunctions::IUTempFolder);
@@ -386,7 +381,7 @@ void DebugMessage(const std::string& msg, bool isResponseBody)
 #endif
 }
 
-const std::string scriptMessageBox( const std::string& message, const std::string &title,const std::string& buttons , const std::string& type) {
+const std::string MessageBox( const std::string& message, const std::string &title,const std::string& buttons , const std::string& type) {
 #if defined(_WIN32) && !defined(IU_CLI)
     UINT uButtons = MB_OK;
     if ( buttons == "ABORT_RETRY_IGNORE") {
@@ -414,7 +409,7 @@ const std::string scriptMessageBox( const std::string& message, const std::strin
     } else if ( type == "ERROR") {
         icon = MB_ICONERROR;
     } 
-    int res = MessageBox(GetActiveWindow(), IuCoreUtils::Utf8ToWstring(message).c_str(),  IuCoreUtils::Utf8ToWstring(title).c_str(), uButtons |icon );
+    int res = ::MessageBox(GetActiveWindow(), IuCoreUtils::Utf8ToWstring(message).c_str(),  IuCoreUtils::Utf8ToWstring(title).c_str(), uButtons |icon );
     if ( res == IDABORT ) {
         return "ABORT";
     } else if ( res == IDCANCEL ) {
@@ -555,7 +550,7 @@ Sqrat::Object parseJSONObj(Json::Value root) {
     return Sqrat::Object();
 }
 
-Sqrat::Object jsonToSquirrelObject(const std::string& json) {
+Sqrat::Object ParseJSON(const std::string& json) {
     Json::Value root;
     Json::Reader reader;
     Sqrat::Object sq;
@@ -614,7 +609,7 @@ Json::Value sqObjToJson(Sqrat::Object obj ) {
     return Json::Value(Json::nullValue);
 }
 
-const std::string squirrelObjectToJson(Sqrat::Object  obj) {
+const std::string ToJSON(Sqrat::Object  obj) {
     Json::Value root = sqObjToJson(obj);
     Json::StreamWriterBuilder builder;
     builder["commentStyle"] = "None";
@@ -634,7 +629,7 @@ int64_t ScriptGetFileSize(const std::string& filename) {
     return IuCoreUtils::getFileSize(filename);
 }
 
-const std::string scriptGetAppLanguage() {
+const std::string GetAppLanguage() {
 #ifndef IU_CLI
     return IuCoreUtils::WstringToUtf8((LPCTSTR)Lang.getLanguage());
 #else 
@@ -642,7 +637,7 @@ const std::string scriptGetAppLanguage() {
 #endif 
 }
 
-const std::string scriptGetAppLocale() {
+const std::string GetAppLocale() {
 #ifndef IU_CLI
     return IuCoreUtils::WstringToUtf8((LPCTSTR)Lang.getLocale());
 #else 
@@ -655,20 +650,20 @@ std::string GetCurrentThreadId()
     std::thread::id treadId = std::this_thread::get_id();
     return IuCoreUtils::ThreadIdToString(treadId);
 }
-
+#undef random
 // older versions of Squirrel Standart Library have broken srand() function
-int pluginRandom()
+int random()
 {
     return rand();
 }
 
-const std::string plugExtractFileName(const std::string& path)
+const std::string ExtractFileName(const std::string& path)
 {
     std::string res = IuCoreUtils::ExtractFileName(path);
     return res;
 }
 
-const std::string plugGetFileExtension(const std::string& path)
+const std::string GetFileExtension(const std::string& path)
 {
     std::string res = IuCoreUtils::ExtractFileExt(path);
     return res;
@@ -699,39 +694,40 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("Translate", Translate)
         .Func("GetAppVersion", GetAppVersion)
 
-        .Func("random", pluginRandom)
-        .Func("sleep", scriptSleep)
-        .Func("md5", scriptMD5)
-        .Func("AnsiToUtf8", scriptAnsiToUtf8)
+        .Func("random", random)
+        .Func("sleep", sleep)
+        .Func("md5", md5)
+        .Func("AnsiToUtf8", AnsiToUtf8)
         .Func("Utf8ToAnsi", scriptUtf8ToAnsi)
-        .Func("ExtractFileName", plugExtractFileName)
-        .Func("GetFileExtension", plugGetFileExtension)
+        .Func("ExtractFileName", ExtractFileName)
+        .Func("GetFileExtension", GetFileExtension)
         .Func("AskUserCaptcha", AskUserCaptcha)
         .Func("InputDialog", InputDialog)
-        .Func("GetFileMimeType", scriptGetFileMimeType)
-        .Func("JsonEscapeString", escapeJsonString)
+        .Func("GetFileMimeType", GetFileMimeType)
+        .Func("JsonEscapeString", JsonEscapeString)
         .Func("ShellOpenUrl", ShellOpenUrl)
+        .Func("ParseJSON", ParseJSON)
+        .Func("ToJSON", ToJSON)
+        .Func("GetFileContents", GetFileContents)
+        .Func("GetTempDirectory", GetTempDirectory)
         .Func("ExtractFileNameNoExt", IuCoreUtils::ExtractFileNameNoExt)
         .Func("ExtractFilePath", IuCoreUtils::ExtractFilePath)
-        .Func("ParseJSON", jsonToSquirrelObject)
-        .Func("ToJSON", squirrelObjectToJson)
         .Func("CopyFile", IuCoreUtils::copyFile)
         .Func("CreateDirectory", IuCoreUtils::createDirectory)
         .Func("FileExists", IuCoreUtils::FileExists)
-        .Func("GetFileContents", GetFileContents)
-        .Func("GetTempDirectory", scriptGetTempDirectory)
         .Func("MoveFileOrFolder", IuCoreUtils::MoveFileOrFolder)
         .Func("PutFileContents", IuCoreUtils::PutFileContents)
         .Func("DeleteFile", IuCoreUtils::RemoveFile)
-        .Func("GetAppLanguage", scriptGetAppLanguage)
-        .Func("GetAppLocale", scriptGetAppLocale)
+        .Func("GetAppLanguage", GetAppLanguage)
+        .Func("GetAppLocale", GetAppLocale)
+        .Func("HtmlEntitiesDecode", IuTextUtils::DecodeHtmlEntities)
 
         .Func("GetFileSize", ScriptGetFileSize)    
         .Func("GetFileSizeDouble", ScriptGetFileSize)
-        .Func("WriteLog", scriptWriteLog)    
+        .Func("WriteLog", WriteLog)    
         .Func("GetCurrentScriptFileName", GetCurrentScriptFileName)
         .Func("GetCurrentThreadId", GetCurrentThreadId)
-        .Func("MessageBox", scriptMessageBox);    
+        .Func("MessageBox", MessageBox);    
 
     using namespace IuCoreUtils;
     root

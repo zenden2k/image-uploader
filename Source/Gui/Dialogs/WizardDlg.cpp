@@ -45,7 +45,7 @@
 
 #include "Gui/Dialogs/WebViewWindow.h"
 #include "Core/Utils/CryptoUtils.h"
-#include "Core/TextUtils.h"
+#include "Core/Utils/TextUtils.h"
 #include "Func/WinUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Gui/Dialogs/QuickSetupDlg.h"

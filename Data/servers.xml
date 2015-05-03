@@ -70,9 +70,11 @@
 	</Server>
     <Server Name="savepic.ru" Authorize="0" MaxFileSize="4000000">
         <Actions>
-            <Action Type="upload" Url="http://savepic.ru/index.php" PostParams="file=%filename%;note=;font1=decor;font2=20;orient=h;size1=1;size2=1024x768;rotate=00;flip=0;mini=200x150;opt3[]=zoom;email=" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0"/>
+            <Action Type="upload" Url="http://savepic.ru/index.php" PostParams="file=%filename%;note=;font1=decor;font2=20;orient=h;size1=1;size2=1024x768;rotate=00;flip=0;mini=200x150;opt3[]=zoom;email=" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0">
+				<RegExp Pattern="(http:\/\/savepic\.ru\/remove\.php.+?)&quot;" AssignVars="DeleteUrl:0;"/>
+			</Action>
         </Actions>
-        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DeleteUrl="$(DeleteUrl|htmldecode)"/>
     </Server>
 <Server Name="firepic.org">
 	<Actions>
@@ -114,9 +116,11 @@
 	</Server>
 	<Server Name="fastpic.ru" MaxFileSize="5000000" Debug="0">
 		<Actions>
-				<Action Type="upload" Url="http://fastpic.ru/upload?api=1" PostParams="method=file;file1=%filename%;check_thumb=size;uploading=1;orig_rotate=0;thumb_size=$(_THUMBWIDTH)" RegExp='&lt;imagepath&gt;(.*?)&lt;\/imagepath&gt;([\s\S]*?)&lt;thumbpath&gt;(.*?)&lt;\/thumbpath&gt;' AssignVars="Image:0;Thumb:2"/>
+			<Action Type="upload" Url="http://fastpic.ru/upload?api=1" PostParams="method=file;file1=%filename%;check_thumb=size;uploading=1;orig_rotate=0;thumb_size=$(_THUMBWIDTH)" RegExp='&lt;imagepath&gt;(.*?)&lt;\/imagepath&gt;([\s\S]*?)&lt;thumbpath&gt;(.*?)&lt;\/thumbpath&gt;' AssignVars="Image:0;Thumb:2">
+				<RegExp Pattern="&lt;viewurl&gt;(.*?)&lt;\/viewurl&gt;" AssignVars="DownloadUrl:0;"/>
+			</Action>
 		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrl="$(DownloadUrl)" />
 	</Server>
 	<Server Name="multi-up.com" FileHost="1">
 		<Actions>

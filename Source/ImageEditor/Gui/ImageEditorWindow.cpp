@@ -927,6 +927,10 @@ void ImageEditorWindow::EndDialog(DialogResult dr)
 
 
 LRESULT ImageEditorWindow::OnMenuItemClick(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    if (GetFocus() != m_view.m_hWnd)
+    {
+        ::SetFocus(m_view.m_hWnd);
+    }
     Canvas::DrawingToolType toolId =  static_cast<Canvas::DrawingToolType>(menuItems_[wID]);
     canvas_->setDrawingToolType( toolId  );
     updateToolbarDrawingTool(toolId);
@@ -988,6 +992,10 @@ LRESULT ImageEditorWindow::OnClickedShare(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT ImageEditorWindow::OnClickedSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+    if (GetFocus() != m_view.m_hWnd)
+    {
+        ::SetFocus(m_view.m_hWnd);
+    }
     if ( !sourceFileName_.IsEmpty() ) {
         outFileName_ = sourceFileName_;
         saveDocument();
@@ -1007,6 +1015,10 @@ LRESULT ImageEditorWindow::OnClickedSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 LRESULT ImageEditorWindow::OnClickedCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+    if (GetFocus() != m_view.m_hWnd)
+    {
+        ::SetFocus(m_view.m_hWnd);
+    }
     saveDocument(true);
     return 0;
 }
