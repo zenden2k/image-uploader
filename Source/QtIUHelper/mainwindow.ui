@@ -228,11 +228,6 @@ p, li { white-space: pre-wrap; }
    <zorder>statusLabel</zorder>
    <zorder>label_8</zorder>
    <zorder>label_9</zorder>
-   <zorder>horizontalLayoutWidget</zorder>
-   <zorder>horizontalLayoutWidget_2</zorder>
-   <zorder>regexpEdit</zorder>
-   <zorder>verticalLayoutWidget</zorder>
-   <zorder>verticalLayoutWidget</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -240,17 +235,9 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>558</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
-  </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
@@ -258,7 +245,7 @@ p, li { white-space: pre-wrap; }
   <customwidget>
    <class>QWebView</class>
    <extends>QWidget</extends>
-   <header>QtWebKit/QWebView</header>
+   <header>QtWebKitWidgets/QWebView</header>
   </customwidget>
  </customwidgets>
  <resources/>
