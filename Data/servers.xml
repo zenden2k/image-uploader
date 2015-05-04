@@ -462,4 +462,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
+	<Server Name="mirrorcreator.com" Plugin="mirrorcreator.com" FileHost="1" MaxFileSize="419430400">
+		<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
 </Servers>
