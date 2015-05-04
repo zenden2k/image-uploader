@@ -40,7 +40,8 @@ OutputBaseFilename=image-uploader-{#_APP_VER}-build-{#BUILD}-setup
 Compression=lzma/max 
 SolidCompression=yes
 SignTool=zenden2k
-CloseApplications=no
+CloseApplications=yes
+CloseApplicationsFilter=*.exe
 
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
@@ -79,6 +80,8 @@ Name: "{code:GetDataFolder}\Image Uploader\Scripts"; Permissions: users-modify
 Name: "{code:GetDataFolder}\Image Uploader\Favicons"; Permissions: users-modify
 Name: "{code:GetDataFolder}\Image Uploader\Update"; Permissions: users-modify
 [Files]
+Source: "{app}\ExplorerIntegration64.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration64.dll.old"; Flags: external skipifsourcedoesntexist
+Source: "{app}\ExplorerIntegration.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration.dll.old"; Flags: external skipifsourcedoesntexist
 Source: "..\Build\release optimized\Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
 ;Source: "..\Build\release optimized\curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Source\res\new-icon.ico"; DestDir: "{app}"; Flags: ignoreversion

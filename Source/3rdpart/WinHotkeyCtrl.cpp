@@ -9,16 +9,15 @@
 #include <atldlgs.h>
 #include "WinHotkeyCtrl.h"
 #include "vkCodes.h"
-
-
+#include "3rdpart/MemberFunctionCallback.h"
 
 // CWinHotkeyCtrl
 
 HHOOK CWinHotkeyCtrl::sm_hhookKb = NULL;
 CWinHotkeyCtrl* CWinHotkeyCtrl::sm_pwhcFocus = NULL;
 
-CWinHotkeyCtrl::CWinHotkeyCtrl() 
-: m_vkCode(0), m_fModSet(0), m_fModRel(0), m_fIsPressed(FALSE) {
+CWinHotkeyCtrl::CWinHotkeyCtrl()  
+    : m_vkCode(0), m_fModSet(0), m_fModRel(0), m_fIsPressed(FALSE), m_callback(HookCallback(this, &CWinHotkeyCtrl::LowLevelKeyboardProc)){
 }
 
 CWinHotkeyCtrl::~CWinHotkeyCtrl() {
@@ -49,15 +48,22 @@ LRESULT CALLBACK CWinHotkeyCtrl::KeyboardProc(
 
 #else // _WIN32_WINNT >= 0x500
 
-LRESULT CALLBACK CWinHotkeyCtrl::LowLevelKeyboardProc(
+LRESULT /*CALLBACK*/ CWinHotkeyCtrl::LowLevelKeyboardProc(
     int nCode, WPARAM wParam, LPARAM lParam) {
 
+    if (nCode < 0)
+    {
+        return CallNextHookEx(sm_hhookKb, nCode, wParam, lParam);
+    }
     if (nCode == HC_ACTION && (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN ||
         wParam == WM_KEYUP || wParam == WM_SYSKEYUP) && sm_pwhcFocus) {
             sm_pwhcFocus->PostMessage(WM_KEY, 
                 ((PKBDLLHOOKSTRUCT)lParam)->vkCode, (wParam & 1));
+            return(1);
+           
     }
-    return(1);
+    
+    return CallNextHookEx(sm_hhookKb, nCode, wParam, lParam);
 }
 
 #endif // _WIN32_WINNT >= 0x500
@@ -74,7 +80,7 @@ BOOL CWinHotkeyCtrl::InstallKbHook() {
         (HOOKPROC)KeyboardProc, NULL, GetCurrentThreadId());
 #else // _WIN32_WINNT >= 0x500
     sm_hhookKb = ::SetWindowsHookEx(WH_KEYBOARD_LL, 
-        (HOOKPROC)LowLevelKeyboardProc, GetModuleHandle(NULL), NULL);
+        (HOOKPROC)m_callback, GetModuleHandle(NULL), NULL);
 #endif // _WIN32_WINNT >= 0x500
 
     return(sm_hhookKb != NULL);
@@ -312,7 +318,7 @@ void CWinHotkeyCtrl::OnContextMenu(HWND /*pWnd*/, CPoint pt) {
 LRESULT CWinHotkeyCtrl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     bHandled = false;
-    if (sm_pwhcFocus == this)
+    //if (sm_pwhcFocus == this)
         sm_pwhcFocus->UninstallKbHook();
     return 0;
 }

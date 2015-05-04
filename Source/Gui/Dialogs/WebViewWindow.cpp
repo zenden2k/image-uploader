@@ -5,7 +5,7 @@
 #include <UrlMon.h>
 HWND CWebViewWindow::window = 0;
  //CWebViewWindow* CWebViewWindow::instance = 0;
- CWebViewWindow::CWebViewWindow() : subclassWindow_(this), callback_(this, &CWebViewWindow::CBTHook) {
+CWebViewWindow::CWebViewWindow() : subclassWindow_(this), callback_(HookCallback(this, &CWebViewWindow::CBTHook)) {
     //instance = this;
     isModal_ = false;
     captureActivate_ = false;

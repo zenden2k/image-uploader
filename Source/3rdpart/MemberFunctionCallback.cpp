@@ -22,6 +22,7 @@ CBTHookCallbackBase* AvailableCallbackSlots[kMaxCallbacks] = {
 std::mutex AvailableCallbackSlotsMutex;
 
 struct Dummy {
+
     ~Dummy()
     {
         for (auto it : AvailableCallbackSlots)
@@ -32,16 +33,20 @@ struct Dummy {
 };
 Dummy dummyObject;
 
-CBTHookMemberFunctionCallback::CBTHookMemberFunctionCallback(CWebViewWindow* instance, LPFN_CBTHookMemberFunctionCallback method)
+CBTHookMemberFunctionCallback::CBTHookMemberFunctionCallback(const HookCallback& method)
 {
     std::lock_guard<std::mutex> lock(AvailableCallbackSlotsMutex);
     int imax = sizeof(AvailableCallbackSlots)/sizeof(AvailableCallbackSlots[0]);
     for( m_nAllocIndex = 0; m_nAllocIndex < imax; ++m_nAllocIndex )
     {
-        m_cbCallback = AvailableCallbackSlots[m_nAllocIndex]->Reserve(instance, method);
-        if( m_cbCallback != NULL )
-            break;
+        m_cbCallback = AvailableCallbackSlots[m_nAllocIndex]->Reserve( method);
+        if (m_cbCallback != NULL)
+        {
+            return;
+        }
+    
     }
+    LOG(ERROR) << "Cannot create member function callback";
 }
 
 CBTHookMemberFunctionCallback::~CBTHookMemberFunctionCallback()

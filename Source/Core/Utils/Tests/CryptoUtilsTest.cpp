@@ -43,4 +43,14 @@ TEST_F(CryptoUtilsTest, CalcSHA1HashFromFile)
     EXPECT_EQ("9eaa90959561639b4f1abc4914ce7b8943e0351c", result);
 }
 
+TEST_F(CryptoUtilsTest, Base64Encode)
+{
+    EXPECT_EQ("QmFzZTY0IGlzIGEgZ2VuZXJpYyB0ZXJtIGZvciBhIG51bWJlciBvZiBzaW1pbGFyIGVuY29kaW5nIHNjaGVtZXMgdGhhdCBlbmNvZGU=", Base64Encode("Base64 is a generic term for a number of similar encoding schemes that encode"));
+    EXPECT_EQ("", Base64Encode(""));
+}
 
+TEST_F(CryptoUtilsTest, Base64Decode)
+{
+    EXPECT_EQ("Base64 is a generic term for a number of similar encoding schemes that encode", Base64Decode("QmFzZTY0IGlzIGEgZ2VuZXJpYyB0ZXJtIGZvciBhIG51bWJlciBvZiBzaW1pbGFyIGVuY29kaW5nIHNjaGVtZXMgdGhhdCBlbmNvZGU="));
+    EXPECT_EQ("", Base64Decode(""));
+}

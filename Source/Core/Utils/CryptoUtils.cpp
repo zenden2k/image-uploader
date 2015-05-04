@@ -27,3 +27,20 @@
 #else 
 #include "CryptoUtils_unix.h"
 #endif
+
+#include "Core/3rdpart/base64.h"
+namespace IuCoreUtils {
+namespace CryptoUtils {
+
+std::string Base64Encode(const std::string& data)
+{
+    return base64_encode((unsigned char const*)data.data(), data.length());
+}
+
+std::string Base64Decode(const std::string& data)
+{
+    return base64_decode(data.data());
+}
+
+}
+}

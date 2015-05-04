@@ -79,6 +79,8 @@ namespace ScriptAPI {
     bool DeleteFile(const std::string& utf8Filename);
     Sqrat::Object include(const std::string& filename);
     void print(std::string arg);
+    std::string Base64Encode(const std::string& data);
+    std::string Base64Decode(const std::string& data);
 
     /** 
     Execute shell command. Parameter cmd is using default operating system locale (so it won't work with utf-8 strings on windows).

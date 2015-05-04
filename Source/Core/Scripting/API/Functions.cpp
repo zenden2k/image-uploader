@@ -735,6 +735,8 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("sha1", &CryptoUtils::CalcSHA1HashFromString)
         .Func("sha1_file", &CryptoUtils::CalcSHA1HashFromFile)
         .Func("hmac_sha1", &CryptoUtils::CalcHMACSHA1HashFromString)
+        .Func("Base64Decode", &CryptoUtils::Base64Decode)
+        .Func("Base64Encode", &CryptoUtils::Base64Encode)
         .Func("url_encode", url_encode)
         .Func("DebugMessage", DebugMessage);
     srand(static_cast<unsigned int>(time(0)));

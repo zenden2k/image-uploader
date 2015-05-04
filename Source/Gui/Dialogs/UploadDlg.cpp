@@ -899,7 +899,7 @@ void CUploadDlg::onSessionFinished(UploadSession* session)
     //int successFileCount = session->finishedTaskCount(UploadTask::StatusFinished);
     int failedFileCount = session->finishedTaskCount(UploadTask::StatusFailure);
     //int totalFileCount = session->taskCount();
-
+    KillTimer(kEnableNextButtonTimer);
     CString progressLabelText;
     if (failedFileCount)
     {
