@@ -2,6 +2,9 @@
 #
 # http://zenden.ws/imageuploader
 
+1.3.1.4317
+[f] Fixed uploading video files from Explorer's context menu
+
 1.3.1.4316
 
 [f] Fixed crash after pressing Escape when selecting screen region (old region select method choosen)
