@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1430563969.dat" TimeStamp="1430563969" Date="02.05.2015 12:52:49" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="edc09d536e6f9f6c00f30ab20ff13a2f">
+<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1430817743.dat" TimeStamp="1430817743" Date="05.05.2015 11:22:23" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="fcf15426c62c9d54f6bb9b9178c0d7aa">
   <Info>
-[+] zalivalka.ru
+[+] mirrorcreator.ru
+[+] picplus.ru
 </Info>
 </UpdateInfo>

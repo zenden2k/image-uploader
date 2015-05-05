@@ -465,4 +465,10 @@
 	<Server Name="mirrorcreator.com" Plugin="mirrorcreator.com" FileHost="1" MaxFileSize="419430400">
 		<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
+	<Server Name="picplus.ru">
+		<Actions>
+			<Action Type="upload" Url="http://picplus.ru/upload.php" PostParams="userfile1=%filename%;thumb_size=180;check_orent=h;texttype=dimensions;text=;" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
 </Servers>

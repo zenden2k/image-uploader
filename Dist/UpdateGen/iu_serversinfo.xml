@@ -9,6 +9,7 @@
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
 <Info>
-[+] zalivalka.ru
+[+] mirrorcreator.ru
+[+] picplus.ru
 </Info>
 </UpdatePackageSource>

@@ -176,6 +176,13 @@ class UpdateGenerator {
     }
 }
 
-$package = isset($_GET['f']) ? $_GET['f'] : 'serversinfo';
+if ( isset($_GET['f'] )) {
+	$package  =  $_GET['f'];
+} else if ( isset($argv[1] ) ) {
+	$package  =  $argv[1];
+} else {
+	die("empty argument");
+}
+
 $generator = new UpdateGenerator($package, SRCDIR);
 $generator->generate();
