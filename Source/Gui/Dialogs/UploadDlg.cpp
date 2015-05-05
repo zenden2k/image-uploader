@@ -123,9 +123,9 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     CDC hdc = GetDC();
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
-    uploadListView_.SetColumnWidth(0, 170 * dpiScaleX);
-    uploadListView_.SetColumnWidth(1, 170 * dpiScaleX);
-    uploadListView_.SetColumnWidth(2, 170 * dpiScaleX );
+    uploadListView_.SetColumnWidth(0, static_cast<int>(170 * dpiScaleX));
+    uploadListView_.SetColumnWidth(1, static_cast<int>(170 * dpiScaleX));
+    uploadListView_.SetColumnWidth(2, static_cast<int>(170 * dpiScaleX));
 
     createToolbar();
 
@@ -938,7 +938,7 @@ void CUploadDlg::onTaskUploadProgress(UploadTask* task)
         int percent = 0;
         UploadProgress* progress = task->progress();
         if (progress->totalUpload) {
-            percent = 100 * ((float)progress->uploaded) / progress->totalUpload;
+            percent = static_cast<int>(100 * ((float)progress->uploaded) / progress->totalUpload);
         }
         CString uploadSpeed = Utf8ToWCstring(progress->speed);
         _stprintf(ProgressBuffer, TR("%s из %s (%d%%) %s"), (LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->uploaded)),

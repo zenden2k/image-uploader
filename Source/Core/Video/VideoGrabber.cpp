@@ -77,7 +77,7 @@ public:
             if ( canceled_) {
                 break;
             }
-            int64_t curTime = ( i + 0.5 ) * step;
+            int64_t curTime = static_cast<int64_t>(( i + 0.5 ) * step);
 
             
             grabber->seek(curTime);

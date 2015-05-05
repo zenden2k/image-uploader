@@ -8,6 +8,8 @@ win32 {
     QMAKE_CFLAGS_RELEASE += /MT
     QMAKE_CXXFLAGS_RELEASE += /MT
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
+} else {
+	DEFINES += _FILE_OFFSET_BITS=64
 }
 unix:{
 eval(QMAKE_TARGET.arch = ""):{

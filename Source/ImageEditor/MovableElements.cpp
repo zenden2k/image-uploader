@@ -56,7 +56,7 @@ void Line::render(Painter* gr) {
     if ( !gr ) {
         return;
     }
-    Gdiplus::Pen pen( color_, penSize_ );
+    Gdiplus::Pen pen( color_, static_cast<REAL>(penSize_) );
     pen.SetStartCap(LineCapRound);
     pen.SetEndCap(LineCapRound);
     //CustomLineCap cap()
@@ -411,7 +411,7 @@ void CropOverlay::render(Painter* gr)
     Rect rc (0,0, canvas_->getWidth(), canvas_->getHeigth());
     rc.Intersect(canvas_->currentRenderingRect());
     Region rgn(rc.X,rc.Y, rc.Width, rc.Height);
-    for ( int i = 0; i < crops.size(); i++ ) {
+    for (size_t i = 0; i < crops.size(); i++) {
         rgn = rgn.subtracted(Region(crops[i]->getX(),crops[i]->getY(),crops[i]->getWidth(),crops[i]->getHeight()));
     }
 
@@ -451,7 +451,7 @@ void Rectangle::render(Painter* gr) {
     }
     SmoothingMode prevSmoothingMode = gr->GetSmoothingMode();
     gr->SetSmoothingMode(SmoothingModeNone);
-    Gdiplus::Pen pen( color_, penSize_ );
+    Gdiplus::Pen pen( color_, static_cast<REAL>(penSize_) );
     int x = getX()+penSize_/2/*-(1-penSize_%2)*/;
     int y = getY()+penSize_/2/*-(1-penSize_%2)*/;
     int width = getWidth()-penSize_;
@@ -522,7 +522,7 @@ Arrow::Arrow(Canvas* canvas,int startX, int startY, int endX,int endY) : Line(ca
 void Arrow::render(Painter* gr)
 {
     using namespace Gdiplus;
-    Gdiplus::Pen pen(/* color_*/color_, penSize_ );
+    Gdiplus::Pen pen(/* color_*/color_, static_cast<REAL>(penSize_) );
     // Create two AdjustableArrowCap objects
     AdjustableArrowCap cap1(/*penSize_/2*/3, /*penSize_/2*/3, true);
     //AdjustableArrowCap cap2 = new AdjustableArrowCap(2, 1);
@@ -660,7 +660,7 @@ RoundedRectangle::RoundedRectangle(Canvas* canvas, int startX, int startY, int e
 void RoundedRectangle::render(Painter* gr)
 {
     using namespace Gdiplus;
-    Gdiplus::Pen pen( color_, penSize_ );
+    Gdiplus::Pen pen( color_, static_cast<REAL>(penSize_) );
     int x = getX() + penSize_/2 /*- (1-penSize_%2)*/;
     int y = getY() + penSize_/2 /*- (1-penSize_%2)*/;
     int width = max(getWidth()-penSize_,1);
@@ -698,7 +698,7 @@ Ellipse::Ellipse(Canvas* canvas, bool filled /*= false */) : MovableElement(canv
 void Ellipse::render(Painter* gr)
 {
     using namespace Gdiplus;
-    Gdiplus::Pen pen( color_, penSize_ );
+    Gdiplus::Pen pen( color_, static_cast<REAL>(penSize_) );
     int x = getX() + penSize_/2 /*- (1-penSize_%2)*/;
     int y = getY() + penSize_/2 /*- (1-penSize_%2)*/;
     int width = getWidth()-penSize_;

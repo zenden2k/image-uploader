@@ -60,7 +60,6 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
 
     menuItemsListBox_.m_hWnd = GetDlgItem(IDC_CONTEXTMENUITEMSLIST);
 
-    TCHAR buf[MAX_PATH];
     CString buf2;
 
     SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_SETCHECK, Settings.ExplorerContextMenu);
@@ -97,7 +96,7 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
     std::vector<CString> keyNames;
     CString keyPath = "Software\\Zenden.ws\\Image Uploader\\ContextMenuItems";
     Reg.GetChildKeysNames(keyPath,keyNames);
-    for(int i =0; i < keyNames.size() ; i++ ) {
+    for(size_t i =0; i < keyNames.size() ; i++ ) {
         if ( Reg.SetKey(keyPath + _T("\\") + keyNames[i], false) ) {
             CString title = Reg.ReadString("Name");
             CString displayTitle = title;

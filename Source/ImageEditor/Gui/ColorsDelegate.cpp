@@ -23,7 +23,7 @@ ColorsDelegate::ColorsDelegate(Toolbar* toolbar, int itemIndex, Canvas* canvas) 
 }
 
 SIZE ColorsDelegate::CalcItemSize(Toolbar::Item& item, float dpiScaleX, float dpiScaleY) {
-    SIZE res = { (kSquareSize + kOffset + kPadding )* dpiScaleX,(kSquareSize + kOffset+4)* dpiScaleY};
+    SIZE res = { static_cast<LONG>((kSquareSize + kOffset + kPadding)* dpiScaleX), static_cast<LONG>((kSquareSize + kOffset + 4)* dpiScaleY ) };
     return res;
 }
 
@@ -34,11 +34,12 @@ void ColorsDelegate::DrawItem(Toolbar::Item& item, Gdiplus::Graphics* gr, int x,
     SolidBrush backgroundBrush(backgroundColor_);
     SolidBrush foregroundBrush(foregroundColor_);
 
-    backgroundRect_ = Rect(x+(kPadding+kOffset)*dpiScaleX, y+kOffset*dpiScaleY, kSquareSize * dpiScaleX, kSquareSize*  dpiScaleY);
+    backgroundRect_ = Rect(static_cast<int>(x+(kPadding+kOffset)*dpiScaleX), static_cast<int>(y+kOffset*dpiScaleY), 
+                        static_cast<int>(kSquareSize * dpiScaleX), static_cast<int>(kSquareSize * dpiScaleY));
     gr->FillRectangle(&backgroundBrush, backgroundRect_);
     gr->DrawRectangle(&borderPen, backgroundRect_);
 
-    foregroundRect_ = Rect(kPadding*dpiScaleX + x, y, kSquareSize * dpiScaleX, kSquareSize *  dpiScaleY);
+    foregroundRect_ = Rect(static_cast<int>(kPadding*dpiScaleX + x), y, static_cast<int>(kSquareSize * dpiScaleX), static_cast<int>(kSquareSize *  dpiScaleY));
     gr->FillRectangle(&foregroundBrush, foregroundRect_);
     gr->DrawRectangle(&borderPen, foregroundRect_);
 

@@ -135,7 +135,7 @@ win32 {
     QMAKE_CXXFLAGS_RELEASE += /MT
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
 } else {
-	 DEFINES +=  USE_OPENSSL
+	 DEFINES +=  USE_OPENSSL _FILE_OFFSET_BITS=64
 }
 unix:{
 eval(QMAKE_TARGET.arch = ""):{

@@ -172,7 +172,7 @@ int NetworkClient::ProgressFunc(void *clientp, double dltotal, double dlnow, dou
     if(nm && nm->m_progressCallbackFunc)
     {
         if  (nm->chunkOffset_>=0 && nm->chunkSize_>0 && nm->m_currentActionType == atUpload) {
-            ultotal = nm->m_CurrentFileSize;
+            ultotal = static_cast<double>(nm->m_CurrentFileSize);
             ulnow = nm->chunkOffset_ + ulnow;
         } else if( ((ultotal<=0 && nm->m_CurrentFileSize>0)) && nm->m_currentActionType == atUpload)
             ultotal = double(nm->m_CurrentFileSize);
@@ -722,7 +722,7 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
             return false;
         if ( chunkSize_  >0 && chunkOffset_ >= 0 ) {
             m_currentUploadDataSize = chunkSize_;
-            if ( fseek(m_uploadingFile, chunkOffset_, SEEK_SET)) {
+            if ( IuCoreUtils::fseek_64(m_uploadingFile, chunkOffset_, SEEK_SET)) {
             }
         } 
         m_currentActionType = atUpload;
@@ -803,12 +803,12 @@ void NetworkClient::setUploadBufferSize(const int size)
 
 void NetworkClient::setChunkOffset(double offset)
 {
-    chunkOffset_ = offset;
+    chunkOffset_ = static_cast<uint64_t>(offset);
 }
 
 void NetworkClient::setChunkSize(double size)
 {
-    chunkSize_ = size;
+    chunkSize_ = static_cast<uint64_t>(size);
 }
 
 void NetworkClient::setTreatErrorsAsWarnings(bool treat)

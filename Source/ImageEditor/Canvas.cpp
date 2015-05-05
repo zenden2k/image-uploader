@@ -74,7 +74,7 @@ Canvas::~Canvas() {
     delete bufferedGr_;
     delete currentDrawingTool_;
     delete overlay_;
-    for ( int i = 0; i < elementsToDelete_.size(); i++ ) {
+    for (size_t i = 0; i < elementsToDelete_.size(); i++) {
         delete elementsToDelete_[i];
     }
 }
@@ -248,7 +248,7 @@ Gdiplus::Rect Canvas::currentRenderingRect()
 
 bool Canvas::isRoundingRectangleSelected()
 {
-    for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() && (elementsOnCanvas_[i] ->getType() == etRoundedRectangle || elementsOnCanvas_[i]->getType() == etFilledRoundedRectangle ) ) {
             return true;
         }
@@ -278,7 +278,7 @@ void Canvas::setPenSize(int size) {
     if ( currentDrawingTool_ ) {
         currentDrawingTool_->setPenSize(size);
     }
-    for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->isPenSizeUsed() ) {
             RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
             elementsOnCanvas_[i]->setPenSize(size);
@@ -310,7 +310,7 @@ void Canvas::endPenSizeChanging(int penSize) {
     int updatedElementsCount = 0;
     UndoHistoryItem uhi;
     uhi.type = uitPenSizeChanged;
-    for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected()) {
             UndoHistoryItemElement uhie;
             uhie.penSize = originalPenSize_;
@@ -339,7 +339,7 @@ void Canvas::setRoundingRadius(int radius) {
     if ( currentDrawingTool_ ) {
         currentDrawingTool_->setRoundingRadius(radius);
     }
-    for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->isPenSizeUsed() ) {
             RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
             elementsOnCanvas_[i]->setRoundingRadius(radius);
@@ -371,7 +371,7 @@ void Canvas::endRoundingRadiusChanging(int radius) {
     int updatedElementsCount = 0;
     UndoHistoryItem uhi;
     uhi.type = uitRoundingRadiusChanged;
-    for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i] ->getType() == etRoundedRectangle || elementsOnCanvas_[i]->getType() == etFilledRoundedRectangle) {
             UndoHistoryItemElement uhie;
             uhie.penSize = originalRoundingRadius_;
@@ -400,7 +400,7 @@ void Canvas::setForegroundColor(Gdiplus::Color color)
     int updatedElementsCount = 0;
     UndoHistoryItem uhi;
     uhi.type = uitElementForegroundColorChanged;
-    for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->isColorUsed() ) {
             UndoHistoryItemElement uhie;
             uhie.color = elementsOnCanvas_[i]->getColor();
@@ -428,7 +428,7 @@ void Canvas::setBackgroundColor(Gdiplus::Color color)
     int updatedElementsCount = 0;
     UndoHistoryItem uhi;
     uhi.type = uitElementBackgroundColorChanged;
-    for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->isBackgroundColorUsed()) {
             UndoHistoryItemElement uhie;
             uhie.color = elementsOnCanvas_[i]->getBackgroundColor();
@@ -464,7 +464,7 @@ void Canvas::setFont(LOGFONT font, DWORD changeMask)
     int updatedElementsCount = 0;
 /*    UndoHistoryItem uhi;
     uhi.type = uitFontChanged;*/
-    for ( int i =0; i < elementsOnCanvas_.size(); i++ ) {
+    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->getType() == etText ) {
             /*UndoHistoryItemElement uhie;
             uhie.color = elementsOnCanvas_[i]->getColor();
@@ -498,8 +498,6 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
     
     //showOverlay(toolType == dtCrop );
 
-    
-    ElementType type;
     delete currentDrawingTool_;
     currentDrawingTool_ = 0;
     if ( toolType == dtPen) {
@@ -637,7 +635,7 @@ int Canvas::deleteSelectedElements()
     UndoHistoryItem uhi;
     uhi.type = uitElementRemoved;
 
-    for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
+    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->getType() != etCrop ) {
             UndoHistoryItemElement uhie;
             uhie.movableElement = elementsOnCanvas_[i];
@@ -689,7 +687,7 @@ void Canvas::selectionChanged()
 
 void Canvas::deleteMovableElement(MovableElement* element)
 {
-    for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
+    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i] == element ) {
 
             elementsOnCanvas_.erase(elementsOnCanvas_.begin() + i);
@@ -824,7 +822,7 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
             }
         }*/
 
-    for ( int i=0; i< elementsOnCanvas_.size(); i++) {
+    for (size_t i = 0; i< elementsOnCanvas_.size(); i++) {
         RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
         RECT intersection;
         RECT rect = { rc.X, rc.Y, rc.GetRight(), rc.GetBottom()};
@@ -839,7 +837,7 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
             overlay_->render(bufferedGr_);
         }
 
-        for ( int i=0; i< elementsOnCanvas_.size(); i++) {
+        for (size_t i = 0; i< elementsOnCanvas_.size(); i++) {
             elementsOnCanvas_[i]->renderGrips(bufferedGr_);
         }
     }
@@ -888,7 +886,7 @@ std::shared_ptr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
     fullRender_ = true;
     renderInBuffer(rc, true);
     Crop * crop = 0;
-    for ( int i=0; i< elementsOnCanvas_.size(); i++) {
+    for (size_t i = 0; i< elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->getType() == etCrop ) {
             crop = dynamic_cast<Crop*>(elementsOnCanvas_[i]);
             break;
@@ -944,7 +942,7 @@ MovableElement* Canvas::getElementAtPosition(int x, int y, ElementType et)
 int Canvas::deleteElementsByType(ElementType elementType)
 {
     int count = 0;
-    for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
+    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->getType() == elementType ) {
             elementsOnCanvas_.erase(elementsOnCanvas_.begin() + i);
             i--;
@@ -981,7 +979,7 @@ bool Canvas::undo() {
     if ( item.type == uitDocumentChanged ){
         result =  doc_->undo();
     } else if ( item.type == uitElementAdded ) {
-        for ( int i = 0; i< item.elements.size(); i++ ) {
+        for (size_t i = 0; i< item.elements.size(); i++) {
             deleteMovableElement(item.elements[i].movableElement);
         }
         result = true;
@@ -1081,7 +1079,7 @@ void Canvas::setCurrentlyEditedTextElement(TextElement* textElement)
 int Canvas::unselectAllElements()
 {
     int count = 0;
-    for ( int i = 0; i < elementsOnCanvas_.size(); i++ ) {
+    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() ) {
             elementsOnCanvas_[i]->setSelected(false);
             updateView(elementsOnCanvas_[i]->getPaintBoundingRect());

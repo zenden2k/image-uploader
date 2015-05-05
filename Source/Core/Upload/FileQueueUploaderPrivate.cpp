@@ -254,7 +254,7 @@ void FileQueueUploaderPrivate::run()
         mutex_.unlock();
 
         bool res = true;
-        for (int i = 0; i < filters_.size(); i++) {
+        for (size_t i = 0; i < filters_.size(); i++) {
             res = res && filters_[i]->PreUpload(it.get()); // ServerProfile can be changed in PreUpload filters
         }
         if (!res)
@@ -299,7 +299,7 @@ void FileQueueUploaderPrivate::run()
         result->serverName = serverName;
 
         if (res) {
-            for (int i = 0; i < filters_.size(); i++) {
+            for (size_t i = 0; i < filters_.size(); i++) {
                 filters_[i]->PostUpload(it.get());
             }
         }

@@ -28,7 +28,6 @@
 // Not implemented
 #endif
 
-using namespace ScriptAPI;
 
 
 namespace ScriptAPI {

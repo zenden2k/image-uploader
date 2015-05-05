@@ -67,7 +67,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
         UE.NumOfTries = 0;
         UE.NeedAuthorization = cur.AttributeInt("Authorize");
         std::string needPassword = cur.Attribute("NeedPassword");
-        UE.NeedPassword = needPassword.empty() ? true : (bool)IuCoreUtils::stringToInt64(needPassword);
+        UE.NeedPassword = needPassword.empty() ? true : (bool)(IuCoreUtils::stringToInt64(needPassword)!=0);
         
         std::string RetryLimit = cur.Attribute("RetryLimit");
         if(RetryLimit.empty())
@@ -87,7 +87,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
                 if ( tokens.size() >= 3 ) {
                     int serverMajorVersion = (int)IuCoreUtils::stringToInt64(tokens[0]);
                     int serverMinorVersion = (int)IuCoreUtils::stringToInt64(tokens[1]+tokens[2]);
-                    int serverBuild = tokens.size() > 3 ? IuCoreUtils::stringToInt64(tokens[3]) : 0;
+                    int serverBuild = static_cast<int>(tokens.size() > 3 ? IuCoreUtils::stringToInt64(tokens[3]) : 0);
                     if ( !( majorVersion > serverMajorVersion || ( majorVersion == serverMajorVersion && minorVersion > serverMinorVersion) 
                         || ( majorVersion == serverMajorVersion && minorVersion ==  serverMinorVersion && ( !serverBuild || build >= serverBuild ))
                         ) ) {

@@ -215,7 +215,6 @@ LRESULT CUploadSettings::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 // It is called only on XP and older versions
 LRESULT CUploadSettings::OnDrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    LPCTSTR resource;
     DRAWITEMSTRUCT* lpdis = reinterpret_cast<DRAWITEMSTRUCT*>(lParam);
     if ((lpdis==NULL)||(lpdis->CtlType != ODT_MENU))
         return S_OK;        //not for a menu
@@ -874,7 +873,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
     excludeArea.rcExclude = rc;
     sub.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
     bHandled = true;
-    for ( int i = 0; i < bitmaps.size(); i++ ) {
+    for (size_t i = 0; i < bitmaps.size(); i++) {
         DeleteObject(bitmaps[i]);
     }
     return TBDDRET_DEFAULT;

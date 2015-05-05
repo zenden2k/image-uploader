@@ -100,7 +100,7 @@ void MarkerTool::drawLine(int x0, int y0, int x1, int y1) {
     using namespace Gdiplus;
     Graphics *gr = canvas_->currentDocument()->getGraphicsObject();
     gr->SetSmoothingMode(SmoothingModeAntiAlias);
-    Pen pen(foregroundColor_,penSize_);
+    Pen pen(foregroundColor_, static_cast<Gdiplus::REAL>(penSize_));
     pen.SetStartCap(LineCapRound);
     pen.SetEndCap(LineCapRound);
     //gr->DrawLine(&pen, x0,y0, x1, y1);
@@ -128,14 +128,14 @@ void MarkerTool::drawLine(int x0, int y0, int x1, int y1) {
     float sinA = ( x1 - x0 ) / len;
     float cosA = sqrt( 1 - sinA * sinA );
 
-    float x = x0;
-    float y = y0;
+    float x = static_cast<float>(x0);
+    float y = static_cast<float>(y0);
     SolidBrush br( foregroundColor_ );
     if ( x1 == x0 ) {
         //    MessageBox(0,0,0,0);
         for( int y = yStart; y <= yEnd; y++ ) {
-            x = x0;
-            RECT rc = {x - penSize_/2, y - penSize_/2, penSize_, penSize_ };
+            x = static_cast<float>(x0);
+            RECT rc = { static_cast<LONG>(x - penSize_ / 2), static_cast<LONG>(y - penSize_ / 2), penSize_, penSize_ };
             rc.right += rc.left;
             rc.bottom += rc.top;
             UnionRect(&updatedRect, &updatedRect, &rc);
@@ -168,9 +168,7 @@ void MarkerTool::drawLine(int x0, int y0, int x1, int y1) {
             x = x0 + a * sinA;
             y = y0 + a * cosA;
 
-
-
-            RECT rc = {x - penSize_/2, y - penSize_/2, penSize_ , penSize_ };
+            RECT rc = {static_cast<LONG>(x - penSize_/2), static_cast<LONG>(y - penSize_/2), penSize_ , penSize_ };
             rc.right += rc.left;
             rc.bottom += rc.top;
             UnionRect(&updatedRect, &updatedRect, &rc);
@@ -187,8 +185,8 @@ void MarkerTool::highlightRegion(RECT rc)
 {
     Bitmap* canvasBm = canvas_->currentDocument()->getBitmap();
     BitmapData canvasData;
-    int w = min(canvasBm->GetWidth()-rc.left,rc.right - rc.left);
-    int h = min(canvasBm->GetHeight()-rc.top, rc.bottom - rc.top);
+    int w = min(canvasBm->GetWidth()-rc.left,static_cast<UINT>(rc.right - rc.left));
+    int h = min(canvasBm->GetHeight() - rc.top, static_cast<UINT>(rc.bottom - rc.top));
     rc.left = max(0,rc.left);
     rc.top = max(0,rc.top);
     Rect rc2 (rc.left , rc.top, w, h);
@@ -230,9 +228,9 @@ void MarkerTool::highlightRegion(RECT rc)
                 }*/
                 int offset = i*stride+j*4;
                 int circleOffset = i * circleStride_ + j* 4;
-                int Y = 0.299 * source[offset] + 0.587 * source[offset+1] + 0.114 * source[offset+2];
+                int Y = static_cast<int>(0.299 * source[offset] + 0.587 * source[offset+1] + 0.114 * source[offset+2]);
 
-                float srcA =  pow(brSource[circleOffset+3]/255.0 * (Y/255.0),15); // why pow 15 ?? I don't know
+                float srcA =  static_cast<float>(pow(brSource[circleOffset+3]/255.0 * (Y/255.0),15)); // why pow 15 ?? I don't know
                 uint8_t srcR=  brSource[circleOffset];
                 uint8_t srcG=  brSource[circleOffset+1];
                 uint8_t srcB=  brSource[circleOffset+2];
@@ -240,18 +238,18 @@ void MarkerTool::highlightRegion(RECT rc)
                     srcA = srcA;
                 }*/
 
-                float dstA =  source[offset+3]/255.0;
+                float dstA =  static_cast<float>(source[offset+3]/255.0);
                 uint8_t dstR=  source[offset];
                 uint8_t dstG=  source[offset+1];
                 uint8_t dstB=  source[offset+2];
                 float outA = srcA + dstA*(1-srcA);
-                uint8_t outR=  (srcR * srcA + dstR * dstA * ( 1 - srcA))/ outA;
-                uint8_t outG=  (srcG * srcA + dstG * dstA* ( 1 - srcA))/ outA;
-                uint8_t outB=  (srcB * srcA + dstB * dstA* ( 1 - srcA))/ outA;
+                uint8_t outR=  static_cast<uint8_t>((srcR * srcA + dstR * dstA * ( 1 - srcA))/ outA);
+                uint8_t outG = static_cast<uint8_t>((srcG * srcA + dstG * dstA* (1 - srcA)) / outA);
+                uint8_t outB = static_cast<uint8_t>((srcB * srcA + dstB * dstA* (1 - srcA)) / outA);
                 source[offset] = outR;
                 source[offset+1] = outG ;
                 source[offset+2] = outB;
-                source[offset+3] = outA * 255; 
+                source[offset+3] = static_cast<uint8_t>(outA * 255); 
 
             }
         }

@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 
-struct CFolderItem;
+class CFolderItem;
 
 class CNewFolderDlg : 
     public CDialogImpl<CNewFolderDlg>,

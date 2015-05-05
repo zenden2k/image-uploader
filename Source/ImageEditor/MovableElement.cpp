@@ -86,7 +86,7 @@ void MovableElement::renderGrips(Painter* gr)
         createGrips();
 
         
-        for( int i = 0; i < grips_.size(); i++ ) {
+        for (size_t i = 0; i < grips_.size(); i++) {
             int x = grips_[i].pt.x;
             int y = grips_[i].pt.y;
             gr->FillRectangle( &brush, x-halfSize, y-halfSize, rectSize, rectSize );
@@ -150,7 +150,7 @@ RECT MovableElement::getPaintBoundingRect()
 {
     int radius = max(penSize_, kGripSize);
     if ( canvas_->hasBlurRectangles() ) {
-        radius += canvas_->getBlurRadius();
+        radius += static_cast<int>(canvas_->getBlurRadius());
     }
     RECT res = { getX()-radius, getY()-radius, getWidth()+radius*2, getHeight()+radius*2};
     res.right += res.left;

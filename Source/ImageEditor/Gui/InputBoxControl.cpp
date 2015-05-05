@@ -91,7 +91,7 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
 
 bool InputBoxControl::isVisible()
 {
-    return IsWindowVisible();
+    return IsWindowVisible()!=FALSE;
 }
 
 void InputBoxControl::invalidate()
@@ -154,7 +154,7 @@ DWORD CALLBACK InputBoxControl::EditStreamOutCallback(DWORD_PTR dwCookie, LPBYTE
 DWORD CALLBACK InputBoxControl::EditStreamInCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb)
 {
     std::stringstream* rtf = reinterpret_cast<std::stringstream*>(dwCookie);
-    *pcb = rtf->readsome((CHAR*)pbBuff, cb);
+    *pcb = static_cast<LONG>(rtf->readsome((CHAR*)pbBuff, cb));
     return 0;
 }
 

@@ -92,7 +92,7 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
     using namespace Gdiplus;
     Graphics *gr = canvas_->currentDocument()->getGraphicsObject();
     gr->SetSmoothingMode(SmoothingModeAntiAlias);
-    Pen pen(foregroundColor_,penSize_);
+    Pen pen(foregroundColor_, static_cast<Gdiplus::REAL>(penSize_));
     pen.SetStartCap(LineCapRound);
     pen.SetEndCap(LineCapRound);
     if ( x0 == x1 && y0 == y1 ) {
@@ -125,14 +125,14 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
     float sinA = ( x1 - x0 ) / len;
     float cosA = sqrt( 1 - sinA * sinA );
 
-    float x = x0;
-    float y = y0;
+    float x = static_cast<float>(x0);
+    float y = static_cast<float>(y0);
     SolidBrush br( foregroundColor_ );
     if ( x1 == x0 ) {
         //    MessageBox(0,0,0,0);
         for( int y = yStart; y <= yEnd; y++ ) {
-            x = x0;
-            RECT rc = {x - penSize_-1, y - penSize_-1, penSize_ * 2+1, penSize_ * 2+2 };
+            x = static_cast<float>(x0);
+            RECT rc = { static_cast<LONG>(x)-penSize_ - 1, static_cast<LONG>(y) - penSize_ - 1, penSize_ * 2 + 1, penSize_ * 2 + 2 };
             rc.right += rc.left;
             rc.bottom += rc.top;
             UnionRect(&updatedRect, &updatedRect, &rc);
@@ -157,7 +157,7 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
 
 
 
-            RECT rc = {x - penSize_-1, y - penSize_-1, penSize_ * 2+2, penSize_ * 2+2 };
+            RECT rc = { static_cast<LONG>(x)-penSize_ - 1, static_cast<LONG>(y) - penSize_ - 1, penSize_ * 2 + 2, penSize_ * 2 + 2 };
             rc.right += rc.left;
             rc.bottom += rc.top;
             UnionRect(&updatedRect, &updatedRect, &rc);

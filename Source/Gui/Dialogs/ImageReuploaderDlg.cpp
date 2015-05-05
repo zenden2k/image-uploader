@@ -439,7 +439,7 @@ bool CImageReuploaderDlg::BeginDownloading()
         uploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CImageReuploaderDlg::OnQueueFinished));
         uploadManager_->addSession(uploadSession_);
         std::string result;
-        for ( int i = 0; i < links.size(); i++ ) {
+        for (size_t i = 0; i < links.size(); i++) {
             std::string url = links[i];
             std::string fileExt = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt( url ) );
 

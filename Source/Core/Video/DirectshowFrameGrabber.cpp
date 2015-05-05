@@ -303,7 +303,7 @@ STDMETHODIMP CSampleGrabberCB::BufferCB( double SampleTime, BYTE* pBuffer, long 
              (int)long(long(SampleTime) % 60) /*,long(SampleTime/100)*/);
 
 
-    DirectshowVideoFrame *frame = new DirectshowVideoFrame(pBuffer, BufferSize, SampleTime, Width, Height);
+    DirectshowVideoFrame *frame = new DirectshowVideoFrame(pBuffer, BufferSize, static_cast<int64_t>(SampleTime), Width, Height);
     directShowPrivate->setCurrentFrame( frame);
     Grab = false;
     return 0;

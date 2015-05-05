@@ -380,7 +380,7 @@ MovableElement::Grip MoveAndResizeTool::checkElementsBoundaries( int x, int y, M
 
 MovableElement::Grip  MoveAndResizeTool::checkElementBoundaries(MovableElement* element, int x, int y)
 {
-    for ( int i = 0 ; i < element->grips_.size(); i++ ) {
+    for (size_t i = 0; i < element->grips_.size(); i++) {
         if ( abs (x - element->grips_[i].pt.x) <= MovableElement::kGripSize+2 &&  abs (y - element->grips_[i].pt.y) <= MovableElement::kGripSize+2 ) {
             return element->grips_[i];
         }

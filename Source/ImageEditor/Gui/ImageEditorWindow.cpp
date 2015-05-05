@@ -272,8 +272,8 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
     CDC hdc = ::GetDC(0);
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
-    int desiredClientWidth = currentDoc_->getWidth()  + 50 * dpiScaleX; // with toolbars
-    int desiredClientHeight = currentDoc_->getHeight()  + 50 * dpiScaleX;
+    int desiredClientWidth = currentDoc_->getWidth()  + static_cast<int>(50 * dpiScaleX); // with toolbars
+    int desiredClientHeight = currentDoc_->getHeight() + static_cast<int>(50 * dpiScaleX);
     CRect rc(rcDefault);
     DWORD initialWindowStyle =  WS_OVERLAPPED | WS_POPUP | WS_CAPTION |  WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | 
         WS_MINIMIZEBOX|WS_CLIPCHILDREN;
@@ -376,8 +376,8 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
     if ( displayMode_ == wdmWindowed ) {
         CRect newClientRect(0,0,desiredClientWidth,desiredClientHeight);
         AdjustWindowRect(newClientRect, GetStyle(), false);
-        int newWidth = max(500 *dpiScaleX,newClientRect.right - newClientRect.left);
-        int newHeight = max(500 *dpiScaleY,newClientRect.bottom - newClientRect.top);
+        int newWidth = max(static_cast<LONG>(500 * dpiScaleX), newClientRect.right - newClientRect.left);
+        int newHeight = max(static_cast<LONG>(500 * dpiScaleY), newClientRect.bottom - newClientRect.top);
         ResizeClient(newWidth, newHeight);
         CenterWindow(parent);
     }

@@ -17,7 +17,6 @@ bool CopyFileAndImageToClipboard(LPCTSTR fileName) {
 
 bool CopyFilesToClipboard(const std::vector<LPCTSTR>& fileNames, bool clearClipboard ) {
     int argc = fileNames.size();
-    WCHAR buf[MAX_PATH];
     WCHAR *pFullNames = (WCHAR*) malloc(argc * MAX_PATH * sizeof(WCHAR));
     WCHAR *p = pFullNames;
     for ( int i = 0; i < argc; i++ ) {

@@ -208,8 +208,8 @@ int CScriptUploadEngine::getAccessTypeList(std::vector<std::string>& list)
         }*/
 
         list.clear();
-        int count =  arr->GetSize();
-        for (int i = 0; i < count; i++)
+        auto count =  arr->GetSize();
+        for (auto i = 0; i < count; i++)
         {
             std::string title;
             title = arr->GetSlot(i).Cast<std::string>();

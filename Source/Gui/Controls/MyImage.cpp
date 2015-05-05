@@ -174,8 +174,8 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
 
     if (ResourceID)
     {
-        newwidth = /*static_cast<float>(bm->GetWidth())*/BackBufferWidth;
-        newheight = /*static_cast<float>(bm->GetHeight())*/ BackBufferHeight;
+        newwidth = static_cast<float>(BackBufferWidth);
+        newheight = static_cast<float>(BackBufferHeight);
     }
 
     if (WhiteBg)

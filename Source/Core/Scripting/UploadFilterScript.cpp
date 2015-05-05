@@ -17,9 +17,9 @@ bool UploadFilterScript::preUpload(UploadTask* task)
 
         Function func(vm_.GetRootTable(), "PreUpload");
         if (func.IsNull()) {
-            return 0;
+            return true;
         }
-        int res = ScriptAPI::GetValue(func.Evaluate<int>(ScriptAPI::UploadTaskWrapper(task), 0));
+        bool res = ScriptAPI::GetValue(func.Evaluate<bool>(ScriptAPI::UploadTaskWrapper(task), 0));
         FlushSquirrelOutput();
         return res;
     }
@@ -40,9 +40,9 @@ bool UploadFilterScript::postUpload(UploadTask* task)
 
         Function func(vm_.GetRootTable(), "PostUpload");
         if (func.IsNull()) {
-            return 0;
+            return true;
         }
-        int res = ScriptAPI::GetValue(func.Evaluate<int>(ScriptAPI::UploadTaskWrapper(task),0));
+        bool res = ScriptAPI::GetValue(func.Evaluate<bool>(ScriptAPI::UploadTaskWrapper(task), 0));
         FlushSquirrelOutput();
         return res;
     }
@@ -51,4 +51,5 @@ bool UploadFilterScript::postUpload(UploadTask* task)
         LOG(ERROR) << "UploadFilterScript::postUpload\r\n" << std::string(e.what());
     }
     FlushSquirrelOutput();
+    return false;
 }

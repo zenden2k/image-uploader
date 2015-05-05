@@ -99,10 +99,7 @@ public:
             webViewWindow_.view_.displayHTML(initialHtml_);
         }
         
-        return webViewWindow_.DoModal(parent);
-
-        //DestroyWindow();
-        return true;
+        return webViewWindow_.DoModal(parent) != 0;
     }
 
     bool exec() {
@@ -113,7 +110,7 @@ public:
             webViewWindow_.view_.displayHTML(initialHtml_);
         }
 
-        return webViewWindow_.exec();
+        return webViewWindow_.exec()!=0;
     }
 
     void show() {
@@ -153,7 +150,7 @@ public:
             CDC hdc = ::GetDC(webViewWindow_.m_hWnd);
             float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
             float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
-            webViewWindow_.ResizeClient(w * dpiScaleX_, h * dpiScaleY_);
+            webViewWindow_.ResizeClient(static_cast<int>(w * dpiScaleX_), static_cast<int>(h * dpiScaleY_));
 
         } else {
             initialWidth_ = w;
@@ -265,7 +262,7 @@ protected:
         float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
 
         if ( initialWidth_ && initialHeight_ ) {
-            webViewWindow_.ResizeClient(initialWidth_ * dpiScaleX_, initialHeight_ * dpiScaleY_);
+            webViewWindow_.ResizeClient(static_cast<int>(initialWidth_ * dpiScaleX_), static_cast<int>(initialHeight_ * dpiScaleY_));
         }
         if ( timerInterval_ ) {
             webViewWindow_.setTimerInterval(timerInterval_);

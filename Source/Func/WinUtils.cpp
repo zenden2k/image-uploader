@@ -237,7 +237,7 @@ bool CreateFilePath(LPCTSTR szFilePath)
 
     free(szPath);
 
-    return bRes;
+    return bRes!=FALSE;
 }
 
 HICON GetAssociatedIcon (LPCTSTR filename, bool Small)
@@ -486,7 +486,7 @@ bool IsElevated()
         &hToken ) )
     {
         ATLASSERT( FALSE );
-        return hResult;
+        return hResult!=0;
     }
 
     TOKEN_ELEVATION te = { 0 };
@@ -513,7 +513,7 @@ bool IsElevated()
 
     ::CloseHandle( hToken );
 
-    return pbElevated;
+    return pbElevated!=FALSE;
 }
 
 
@@ -1007,8 +1007,6 @@ void TimerWait(int Delay)
     CloseHandle(hTimer);
 }
 
-
-#ifndef IU_SHELLEXT
 std::wstring strtows(const std::string &str, UINT codePage)
 {
     std::wstring ws;
@@ -1051,7 +1049,7 @@ std::string chcp(const std::string &str, UINT codePageSrc, UINT codePageDst)
 {
     return wstostr(strtows(str, codePageSrc), codePageDst);
 }
-#endif
+
 };
 
 const std::wstring Utf8ToWstring(const std::string &str)

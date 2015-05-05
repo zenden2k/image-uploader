@@ -220,7 +220,7 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
         }
         thumbSource = BackBuffer.get();
         if (m_imageConvertingParams.PreserveExifInformation) {
-            for (int k = 0; k < propertyItemsCount; k++) {
+            for (UINT k = 0; k < propertyItemsCount; k++) {
                 BackBuffer->SetPropertyItem(pPropBuffer + k);
             }
         }

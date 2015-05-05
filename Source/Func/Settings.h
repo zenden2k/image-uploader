@@ -67,8 +67,8 @@ struct TrayIconSettingsStruct
     int RightClickCommand;
     int MiddleClickCommand;
     int TrayScreenshotAction;
-    BOOL DontLaunchCopy;
-    BOOL ShortenLinks;
+    bool DontLaunchCopy;
+    bool ShortenLinks;
 };
 struct ThumbSettingsStruct: public ThumbCreatingParams
 {

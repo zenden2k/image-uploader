@@ -275,14 +275,14 @@ public:
         ATLASSERT(m_pBrowser);
         CComBSTR szResult;
         m_pBrowser->get_LocationName(&szResult);
-        return szResult;
+        return String(szResult);
     }
     String GetLocationURL() const
     {
         ATLASSERT(m_pBrowser);
         CComBSTR szResult;
         m_pBrowser->get_LocationURL(&szResult);
-        return szResult;
+        return String(szResult);
     }
     void PutRegisterAsBrowser(BOOL bNewValue)
     {

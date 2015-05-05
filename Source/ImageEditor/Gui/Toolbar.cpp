@@ -71,7 +71,7 @@ int Toolbar::addButton(Item item)
 int Toolbar::getItemAtPos(int clientX, int clientY)
 {
     POINT pt = {clientX, clientY};
-    for ( int i  = 0; i < buttons_.size(); i++ ) {
+    for (size_t i = 0; i < buttons_.size(); i++) {
         if ( PtInRect(&buttons_[i].rect,pt ) ) {
             return i;
         }
@@ -81,7 +81,7 @@ int Toolbar::getItemAtPos(int clientX, int clientY)
 
 int Toolbar::getItemIndexByCommand(int command)
 {
-    for ( int i  = 0; i < buttons_.size(); i++ ) {
+    for (size_t i = 0; i < buttons_.size(); i++) {
         if (buttons_[i].command == command ) {
             return i;
         }
@@ -102,7 +102,7 @@ void Toolbar::repaintItem(int index)
 
 void Toolbar::clickButton(int index)
 {
-    if ( index < 0 || index >= buttons_.size() ) {
+    if ( index < 0 || index >= static_cast<int>(buttons_.size()) ) {
         LOG(ERROR) << "Out of range";
     }
     Item& item = buttons_[index];
@@ -117,8 +117,8 @@ void Toolbar::clickButton(int index)
     if ( item.group != -1 ) {
 
         // Uncheck all other buttons with same group id
-        for( int i = 0; i < buttons_.size(); i++ ) {
-            if ( i != index & buttons_[i].group == item.group && buttons_[i].checkable && buttons_[i].isChecked ) {
+        for (size_t i = 0; i < buttons_.size(); i++) {
+            if ( i != index && buttons_[i].group == item.group && buttons_[i].checkable && buttons_[i].isChecked ) {
                 buttons_[i].isChecked  = false;
                 buttons_[i].state = isNormal;
                 InvalidateRect(&buttons_[i].rect, FALSE);
@@ -156,26 +156,26 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
     }
 
     enum {kItemMargin = 3, kItemHorPadding = 5, kItemVertPadding = 3, kIconSize = 20};
-    itemMargin_ = kItemMargin *dpiScaleX_;
-    itemHorPadding_ = kItemHorPadding * dpiScaleX_;
-    itemVertPadding_ = kItemVertPadding * dpiScaleY_;
-    iconSizeX_ = kIconSize * dpiScaleX_;
-    iconSizeY_ = kIconSize * dpiScaleY_;
+    itemMargin_ = static_cast<int>(kItemMargin *dpiScaleX_);
+    itemHorPadding_ = static_cast<int>(kItemHorPadding * dpiScaleX_);
+    itemVertPadding_ = static_cast<int>(kItemVertPadding * dpiScaleY_);
+    iconSizeX_ = static_cast<int>(kIconSize * dpiScaleX_);
+    iconSizeY_ = static_cast<int>(kIconSize * dpiScaleY_);
     font_ = new Gdiplus::Font(hdc, systemFont_);
-    subpanelHeight_ = 25 * dpiScaleY_;
-    subpanelLeftOffset_ = 50*dpiScaleX_;
-    RECT sliderRect = {0,0, 100 * dpiScaleX_,subpanelHeight_ - 2 * dpiScaleY_};
+    subpanelHeight_ = static_cast<int>(25 * dpiScaleY_);
+    subpanelLeftOffset_ = static_cast<int>(50 * dpiScaleX_);
+    RECT sliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_ ) };
     if ( orientation_ == orHorizontal ) {
         penSizeSlider_.Create(m_hWnd, sliderRect, 0, WS_CHILD|WS_VISIBLE|TBS_NOTICKS);
         createHintForSliders(penSizeSlider_.m_hWnd, TR("Толщина линии"));
-        RECT pixelLabelRect = {0,0, 45 * dpiScaleX_,subpanelHeight_ - 5 * dpiScaleY_ };
+        RECT pixelLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
         pixelLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD|WS_VISIBLE);
         pixelLabel_.SetFont(systemFont_);
 
-        RECT radiusSliderRect = {0,0, 100 * dpiScaleX_,subpanelHeight_ - 2 * dpiScaleY_};
+        RECT radiusSliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_ ) };
         roundRadiusSlider_.Create(m_hWnd, radiusSliderRect, 0, WS_CHILD|TBS_NOTICKS);
         createHintForSliders(roundRadiusSlider_.m_hWnd, TR("Радиус закругления"));
-        RECT radiusLabelRect = {0,0, 45 * dpiScaleX_,subpanelHeight_ - 5 * dpiScaleY_ };
+        RECT radiusLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
         roundRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD);
         roundRadiusLabel_.SetFont(systemFont_);
     }
@@ -231,7 +231,7 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
             /*rect.top+*/ float(buttonsRect_.bottom) ), Color(252,252,252), Color(
             200,200,200), orientation_ == orHorizontal ? LinearGradientModeVertical : LinearGradientModeHorizontal);
 
-    rect = Rect( subpanelLeftOffset_, buttonsRect_.bottom-2*dpiScaleY_, kSubpanelWidth*dpiScaleX_, clientRect.bottom);
+    rect = Rect(subpanelLeftOffset_, static_cast<INT>(buttonsRect_.bottom - 2 * dpiScaleY_), static_cast<INT>(kSubpanelWidth*dpiScaleX_), clientRect.bottom);
     rect.Height -= rect.Y;
 
     SolidBrush br2 (subpanelColor_);
@@ -258,7 +258,7 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
     //gr.FillRectangle(&br,rect);
     int x = itemMargin_;
     int y = itemMargin_;
-    for ( int i =0; i < buttons_.size(); i++ ) {
+    for (size_t i = 0; i < buttons_.size(); i++) {
         SIZE s = CalcItemSize(i);
         drawItem(i, &gr, x, y);
 
@@ -339,7 +339,7 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
     int yPos = GET_Y_LPARAM(lParam); 
     if ( selectedItemIndex_ != -1 ) {
         Item& item = buttons_[selectedItemIndex_];
-        if ( item.type == Toolbar::itComboButton && xPos >  item.rect.right - dropDownIcon_->GetWidth() - itemMargin_  ) {
+        if ( item.type == Toolbar::itComboButton && xPos >  static_cast<int>(item.rect.right - dropDownIcon_->GetWidth() - itemMargin_)  ) {
             item.state = isDropDown;
         } else if ( item.type == Toolbar::itTinyCombo ) {
             if ( xPos >  item.rect.right - 6*dpiScaleX_ - itemMargin_ && yPos >   item.rect.bottom - 6*dpiScaleY_ - itemMargin_ ) {
@@ -409,7 +409,7 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
         } else {
             HWND parent = GetParent();
             int command = item.command;
-            if ( item.type == Toolbar::itComboButton && xPos >  item.rect.right - dropDownIcon_->GetWidth() - itemMargin_  ) {
+            if ( item.type == Toolbar::itComboButton && xPos > static_cast<int>( item.rect.right - dropDownIcon_->GetWidth() - itemMargin_ ) ) {
                 ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
             } else if ( item.type == Toolbar::itTinyCombo && xPos >  item.rect.right - 6*dpiScaleX_ - itemMargin_ && yPos >   item.rect.bottom - 6*dpiScaleY_ - itemMargin_  ) {
                 ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
@@ -477,8 +477,8 @@ SIZE Toolbar::CalcItemSize(int index)
         PointF origin(0,0);
         RectF textBoundingBox;
         if (  gr.MeasureString(item.title, item.title.GetLength(), font_, origin, &textBoundingBox) == Ok ) {
-            res.cx = textBoundingBox.Width;
-            res.cy = textBoundingBox.Height;
+            res.cx = static_cast<LONG>(textBoundingBox.Width);
+            res.cy = static_cast<LONG>(textBoundingBox.Height);
         }
     }
 
@@ -488,7 +488,7 @@ SIZE Toolbar::CalcItemSize(int index)
     }
 
     if ( item.type == itComboButton ) {
-        res.cx += dropDownIcon_ ->GetWidth()*dpiScaleX_ + itemHorPadding_;
+        res.cx += static_cast<int>(dropDownIcon_ ->GetWidth()*dpiScaleX_) + itemHorPadding_;
     }/*else if ( item.type == itTinyCombo ) {
         res.cx += 5*dpiScaleX;
     }*/
@@ -514,10 +514,10 @@ int Toolbar::AutoSize()
     for ( int j = 0; j < 1; j ++ ) {
         x = itemMargin_;
         y = itemMargin_;
-        for ( int i =0; i < buttons_.size(); i++ ) {
+        for (size_t i = 0; i < buttons_.size(); i++) {
             SIZE s = CalcItemSize(i);
             Item& item = buttons_[i];
-            RectF bounds(x, y, float(s.cx), float(s.cy));
+            RectF bounds(static_cast<Gdiplus::REAL>(x), static_cast<Gdiplus::REAL>(y), float(s.cx), float(s.cy));
             item.rect.left = x;
             item.rect.top = y;
             item.rect.right = s.cx + x;
@@ -525,7 +525,7 @@ int Toolbar::AutoSize()
 
             if ( orientation_ == orHorizontal ) {
                 x+= s.cx + itemMargin_;
-                width = max(x, subpanelLeftOffset_ +(kSubpanelWidth + 20 )*dpiScaleX_) ;
+                width = max(x, subpanelLeftOffset_ + static_cast<int>((kSubpanelWidth + 20 )*dpiScaleX_));
                 height = max(s.cy + itemMargin_*2, height);
             } else {
                 y+= s.cy + itemMargin_;
@@ -542,27 +542,27 @@ int Toolbar::AutoSize()
 
     if ( orientation_ == orHorizontal ) {
         SetWindowPos(0, 0,0,width,height + subpanelHeight_,SWP_NOMOVE);
-        penSizeSlider_.SetWindowPos(0,subpanelLeftOffset_ + 3 * dpiScaleX_, buttonsRect_.bottom + 1 * dpiScaleY_, 0,0, SWP_NOSIZE);
+        penSizeSlider_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE);
         penSizeSlider_.SetRange(1,Canvas::kMaxPenSize);
         RECT penSizeSliderRect;
         penSizeSlider_.GetClientRect(&penSizeSliderRect);
         penSizeSlider_.ClientToScreen(&penSizeSliderRect);
         ScreenToClient(&penSizeSliderRect);
-        pixelLabel_.SetWindowPos(0, penSizeSliderRect.right, buttonsRect_.bottom + 3 * dpiScaleY_, 0,0, SWP_NOSIZE);
+        pixelLabel_.SetWindowPos(0, penSizeSliderRect.right, static_cast<int>(buttonsRect_.bottom + 3 * dpiScaleY_), 0, 0, SWP_NOSIZE);
 
 
-        roundRadiusSlider_.SetWindowPos(0,subpanelLeftOffset_ + 150 * dpiScaleX_, buttonsRect_.bottom + 1 * dpiScaleY_, 0,0, SWP_NOSIZE);
+        roundRadiusSlider_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(150 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + 1 * dpiScaleY_), 0, 0, SWP_NOSIZE);
         roundRadiusSlider_.SetRange(1,Canvas::kMaxRoundingRadius);
         RECT radiusSliderRect;
         roundRadiusSlider_.GetClientRect(&radiusSliderRect);
         roundRadiusSlider_.ClientToScreen(&radiusSliderRect);
         ScreenToClient(&radiusSliderRect);
-        roundRadiusLabel_.SetWindowPos(0, radiusSliderRect.right, buttonsRect_.bottom + 3 * dpiScaleY_, 0,0, SWP_NOSIZE);
+        roundRadiusLabel_.SetWindowPos(0, radiusSliderRect.right, buttonsRect_.bottom + static_cast<int>(3 * dpiScaleY_), 0, 0, SWP_NOSIZE);
 
 
     }
 
-    for ( int i = 0; i < buttons_.size(); i++ ) {
+    for (size_t i = 0; i < buttons_.size(); i++) {
         CreateToolTipForItem(i);
     }
     //x += itemMargin_ * 2;
@@ -582,7 +582,7 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
         return;
     }
 
-    RectF bounds(x, y, float(size.cx), float(size.cy));
+    RectF bounds(static_cast<Gdiplus::REAL>(x), static_cast<Gdiplus::REAL>(y), float(size.cx), float(size.cy));
     item.rect.left = x;
     item.rect.top = y;
     item.rect.right = size.cx + x;

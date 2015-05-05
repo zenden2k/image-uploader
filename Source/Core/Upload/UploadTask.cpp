@@ -40,7 +40,7 @@ void UploadTask::taskFinished()
     tasksMutex_.lock();
    // std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
     Status newStatus = status_;
-    for (int i = 0; i < childTasks_.size(); i++ )
+    for (size_t i = 0; i < childTasks_.size(); i++)
     { 
         if (childTasks_[i]->type() == TypeFile && childTasks_[i]->status() == StatusFailure)
         {
@@ -52,7 +52,7 @@ void UploadTask::taskFinished()
     {
         setStatus(newStatus);
     }
-    for (int i = 0; i < taskFinishedCallbacks_.size(); i++)
+    for (size_t i = 0; i < taskFinishedCallbacks_.size(); i++)
     {
         taskFinishedCallbacks_[i](this, uploadSuccess()); // invoke callback
     }
@@ -127,7 +127,7 @@ UploadSession* UploadTask::session()
 bool UploadTask::isFinished()
 {
     std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
-    for (int i = 0; i < childTasks_.size(); i++)
+    for (size_t i = 0; i < childTasks_.size(); i++)
     {
         if (!childTasks_[i]->isFinished())
         {

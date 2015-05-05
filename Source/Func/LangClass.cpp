@@ -237,7 +237,7 @@ CString CLang::getLanguageFileNameForLocale(const CString& locale)
 
 CLang::~CLang()
 {
-    for( int i =0; i< StringList.GetCount(); i++ ) {
+    for (size_t i = 0; i< StringList.GetCount(); i++) {
         delete[] StringList[i].Name;
         delete[] StringList[i].Text;
     }

@@ -6,7 +6,7 @@ CResultsListView::CResultsListView() {
 bool CResultsListView::AttachToDlgItem(HWND parent, UINT dlgID) {
 
     HWND hWnd = ::GetDlgItem(parent,dlgID);
-    return SubclassWindow(hWnd);
+    return SubclassWindow(hWnd)!=FALSE;
 }
 /*
 LRESULT CResultsListView::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {

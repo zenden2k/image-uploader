@@ -166,7 +166,7 @@ public:
 
         // Find the first video stream
         videoStream = -1;
-        for (int i=0; i<pFormatCtx->nb_streams; i++) {
+        for (size_t i = 0; i<pFormatCtx->nb_streams; i++) {
             if ( pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
                  videoStream=i;
                  break;
@@ -244,7 +244,7 @@ public:
 
          if (ic->duration != AV_NOPTS_VALUE) {
              int hours, mins, secs, us;
-             secs = ic->duration / AV_TIME_BASE;
+             secs = static_cast<int>(ic->duration / AV_TIME_BASE);
              full_sec = secs;
              us = ic->duration % AV_TIME_BASE;
              mins = secs / 60;
@@ -271,14 +271,14 @@ public:
         int64_t seek_target;
 
         duration_ = ic->duration;
-         my_start_time = (double)ic->duration / numOfFrames*1.6;
+        my_start_time = static_cast<uint64_t>((double)ic->duration / numOfFrames*1.6);
 
          AVRational rat = {1, AV_TIME_BASE};
          //my_start_time = av_rescale_q(my_start_time, rat, pFormatCtx->streams[videoStream]->time_base);
-        seek_target = av_rescale_q((double)my_start_time, rat, pFormatCtx->streams[videoStream]->time_base);;
+        seek_target = av_rescale_q(my_start_time, rat, pFormatCtx->streams[videoStream]->time_base);
          if ( seekByBytes ){
              uint64_t size=  avio_size(pFormatCtx->pb);
-             seek_target = (double)my_start_time / ic->duration * size;
+             seek_target = static_cast<uint64_t>((double)my_start_time / ic->duration * size);
          }
          if ( avformat_seek_file(pFormatCtx, videoStream, 0, seek_target, seek_target, seekByBytes?AVSEEK_FLAG_BYTE:0)  < 0 ) {
              LOG(ERROR) << "avformat_seek_file failed to seek to position "<<seek_target<< " seekByBytes="<<seekByBytes;;
@@ -307,9 +307,6 @@ public:
              av_free_packet(&packet);
              // memset( &packet, 0, sizeof( packet ) );
          }
-
-
-    finish:
 
          return true;
     }
@@ -349,7 +346,6 @@ public:
         int i = AV_PIX_FMT_YUV420P;
         FILE* outfile;
         char filename[32];
-        int y;
 
         // Open file
         sprintf(filename, "d:\\frame%d.yuv", iframe);
@@ -424,13 +420,13 @@ public:
             //seekByBytes = true;
             if ( seekByBytes ) {
                 uint64_t size=  avio_size(pFormatCtx->pb);
-                seek_target = (double)seek_target / ic->duration * size;
+                seek_target = static_cast<int64_t>((double)seek_target / ic->duration * size);
             } else {
                 seek_target = av_rescale_q(seek_target, rat, pFormatCtx->streams[videoStream]->time_base);
             }
 
-            int64_t seek_min= seek_target*0.9;
-            int64_t seek_max= /*INT64_MAX*/seek_target*1.1;
+            int64_t seek_min= static_cast<int64_t>(seek_target*0.9);
+            int64_t seek_max = static_cast<int64_t>(/*INT64_MAX*/seek_target*1.1);
 
             if ( avformat_seek_file(pFormatCtx, videoStream,0, seek_target, seek_target, seekByBytes?AVSEEK_FLAG_BYTE:0) < 0  )  {
                 LOG(WARNING) << "avformat_seek_file failed to seek to position "<<seek_target << " seekByBytes="<<seekByBytes;
@@ -477,10 +473,10 @@ public:
                         }
 
                         int ret = sws_scale(img_convert_ctx, pFrame->data, pFrame->linesize, 0, pCodecCtx->height, pFrameRGB->data, pFrameRGB->linesize);
-                         int64_t display_time =    (double)av_rescale_q(pFrame->pkt_pts, pFormatCtx->streams[videoStream]->time_base, rat)/ (double)AV_TIME_BASE; 
+                        int64_t display_time = static_cast<int64_t>((double)av_rescale_q(pFrame->pkt_pts, pFormatCtx->streams[videoStream]->time_base, rat) / (double)AV_TIME_BASE);
                          //pFrame->pkt_pts/ (double)AV_TIME_BASE;
                          if ( display_time <= 0 ) {
-                             display_time = (double)time/ (double)AV_TIME_BASE;
+                             display_time = static_cast<int64_t>((double)time/ (double)AV_TIME_BASE);
                          }
                              
                          if ( display_time < 0 ) {
@@ -540,8 +536,8 @@ int64_t AvcodecFrameGrabber::duration() {
 
 std::string timestamp_to_str(int64_t duration,int64_t units) {
     int hours, mins, secs, us;
-    secs = duration / units;
-    us = duration % units;
+    secs = static_cast<int>(duration / units);
+    us = static_cast<int>(duration % units);
     mins = secs / 60;
     secs %= 60;
     hours = mins / 60;

@@ -49,9 +49,9 @@ LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     CDC hdc = GetDC();
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
-    m_HotkeyList.SetColumnWidth(0,175 * dpiScaleX);
-    m_HotkeyList.SetColumnWidth(1,82 * dpiScaleX);
-    m_HotkeyList.SetColumnWidth(2,82 * dpiScaleX );
+    m_HotkeyList.SetColumnWidth(0, static_cast<int>(175 * dpiScaleX));
+    m_HotkeyList.SetColumnWidth(1, static_cast<int>(82 * dpiScaleX));
+    m_HotkeyList.SetColumnWidth(2, static_cast<int>(82 * dpiScaleX));
     m_HotkeyList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
     hotkeyList = Settings.Hotkeys;
 
@@ -155,7 +155,7 @@ LRESULT CHotkeySettingsPage::OnClearHotkey(WORD wNotifyCode, WORD wID, HWND hWnd
 
 LRESULT CHotkeySettingsPage::OnClearAllHotkeys(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    for(size_t i=0; i<int(hotkeyList.size())-1; i++)
+    for(int i=0; i<int(hotkeyList.size())-1; i++)
     {
         hotkeyList[i+1].Clear();
         m_HotkeyList.SetItem(i, 1, LVIF_TEXT,_T(""),0,0,0,0);

@@ -25,7 +25,7 @@
 
 bool CUploadEngineData::hasType(ServerType type)
 {
-    return TypeMask & type;
+    return (TypeMask & type) == type;
 }
 
 CUploadEngineData::CUploadEngineData()

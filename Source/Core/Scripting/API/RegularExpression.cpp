@@ -48,7 +48,7 @@ Sqrat::Array RegularExpression::split(const std::string& piece)
     try {
         std::vector<std::string> res = pcre_->split(piece);
         Sqrat::Array obj(GetCurrentThreadVM().GetVM(), res.size());
-        for( int i = 0; i  < res.size(); i++ ) {
+        for( size_t i = 0; i  < res.size(); i++ ) {
             obj.SetValue(i, res[i].c_str());
         }
         return obj;
@@ -63,7 +63,7 @@ Sqrat::Array RegularExpression::splitWithLimitOffset(const std::string& piece, i
     try {
         std::vector<std::string> res = pcre_->split(piece,limit,start_offset);
         Sqrat::Array obj(GetCurrentThreadVM().GetVM(), res.size());
-        for( int i = 0; i  < res.size(); i++ ) {
+        for( size_t i = 0; i  < res.size(); i++ ) {
             obj.SetValue(i, res[i].c_str());
         }
         return obj;
@@ -79,7 +79,7 @@ Sqrat::Array RegularExpression::splitWithLimit(const std::string& piece, int lim
     try {
         std::vector<std::string> res = pcre_->split(piece,limit);
         Sqrat::Array obj(GetCurrentThreadVM().GetVM(), res.size());
-        for( int i = 0; i  < res.size(); i++ ) {
+        for( size_t i = 0; i  < res.size(); i++ ) {
             obj.SetValue(i, res[i].c_str());
         }
         return obj;
@@ -94,7 +94,7 @@ Sqrat::Array RegularExpression::splitWithLimitStartEndOffset(const std::string& 
     try {
         std::vector<std::string> res = pcre_->split(piece,limit,start_offset,end_offset);
         Sqrat::Array obj(GetCurrentThreadVM().GetVM(), res.size());
-        for( int i = 0; i  < res.size(); i++ ) {
+        for( size_t i = 0; i  < res.size(); i++ ) {
             obj.SetValue(i, res[i].c_str());
         }
         return obj;
@@ -194,7 +194,7 @@ Sqrat::Array RegularExpression::getSubStrings()
             return Sqrat::Array();
         }
         Sqrat::Array res(GetCurrentThreadVM().GetVM(), substrings->size());
-        for ( int i = 0; i < substrings->size(); i++ ) {
+        for ( size_t i = 0; i < substrings->size(); i++ ) {
             res.SetValue(i, (*substrings)[i].c_str());
         }
         return res;

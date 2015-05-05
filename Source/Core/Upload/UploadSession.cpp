@@ -75,7 +75,7 @@ bool UploadSession::isFinished()
         {
             return false;
         }
-        for (int i = 0; i < tasks_.size(); i++)
+        for (size_t i = 0; i < tasks_.size(); i++)
         {
             auto it = tasks_[i];
             tasksMutex_.unlock();
@@ -208,7 +208,7 @@ void UploadSession::taskFinished(UploadTask* task)
 {
     if (isFinished())
     {
-        for (int i = 0; i < sessionFinishedCallbacks_.size(); i++)
+        for (size_t i = 0; i < sessionFinishedCallbacks_.size(); i++)
         {
             sessionFinishedCallbacks_[i](this);
         }
@@ -227,7 +227,7 @@ bool UploadSession::stopSignal()
 
 void UploadSession::notifyTaskAdded(UploadTask* task)
 {
-    for (int i = 0; i < taskAddedCallbacks_.size(); i++)
+    for (size_t i = 0; i < taskAddedCallbacks_.size(); i++)
     {
         taskAddedCallbacks_[i](this, task);
     }

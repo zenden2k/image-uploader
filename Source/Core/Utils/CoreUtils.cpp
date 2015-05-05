@@ -80,10 +80,19 @@ namespace IuCoreUtils {
 
 FILE * fopen_utf8(const char * filename, const char * mode)
 {
-#ifdef _WIN32
+#ifdef _MSC_VER
     return _wfopen(Utf8ToWstring(filename).c_str(), Utf8ToWstring(mode).c_str());
 #else
     return fopen(Utf8ToSystemLocale(filename).c_str(), mode);
+#endif
+}
+
+int fseek_64(FILE* stream, int64_t offset, int origin)
+{
+#ifdef _MSC_VER
+    return _fseeki64(stream, offset, origin);
+#else
+    return fseeko64(stream, offset, origin);
 #endif
 }
 
@@ -400,7 +409,7 @@ static int64_t zstrtoll(const char *nptr, const char **endptr, register int base
 
     qbase = unsigned(base);
     cutoff = neg ? ((int64_t)(0-(LLONG_MIN + LLONG_MAX))) + LLONG_MAX : LLONG_MAX;
-    cutlim = cutoff % qbase;
+    cutlim = static_cast<int>(cutoff % qbase);
     cutoff /= qbase;
     for (acc = 0, any = 0;; c = *s++) {
         if (!isascii(c))

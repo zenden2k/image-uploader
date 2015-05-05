@@ -112,7 +112,7 @@ LRESULT CAddDirectoryServerDialog::OnConnectionNameEditChange(WORD wNotifyCode, 
 LRESULT CAddDirectoryServerDialog::OnPresetMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     int presetIndex = wID - IDC_PRESETMENU_FIRST_ID;
-    if ( presetIndex < 0 || presetIndex >= addresses_.size() ) {
+    if ( presetIndex < 0 || presetIndex >= static_cast<int>(addresses_.size()) ) {
         return 0;
     }
     SetDlgItemText(IDC_DOWNLOADURLEDIT, addresses_[presetIndex]);
@@ -123,7 +123,7 @@ LRESULT CAddDirectoryServerDialog::OnPresetMenuItemClick(WORD wNotifyCode, WORD 
 LRESULT CAddDirectoryServerDialog::OnPresetSharedFolderMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     int presetIndex = wID - IDC_PRESETMENU_SHARED_FOLDER_FIRST_ID;
-    if ( presetIndex < 0 || presetIndex >= sharedFolders_.size() ) {
+    if ( presetIndex < 0 || presetIndex >= static_cast<int>(sharedFolders_.size()) ) {
         return 0;
     }
     SetDlgItemText(IDC_DOWNLOADURLEDIT, sharedFolders_[presetIndex]);
@@ -144,7 +144,6 @@ LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD 
     NET_API_STATUS res;
     LPTSTR lpszServer = NULL;
     DWORD er=0,tr=0,resume=0;
-    int i = 0;
     sharedFolders_.clear();
 
     //
@@ -161,7 +160,7 @@ LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD 
             // Loop through the entries;
             // print retrieved data.
             //
-            for(i=1;i<=er;i++)
+            for(size_t i=1;i<=er;i++)
             {
                 LPCTSTR str = (LPCTSTR)p->shi502_remark;
                 if( ! (p->shi502_type & STYPE_SPECIAL) ) {
@@ -344,12 +343,6 @@ bool CAddDirectoryServerDialog::LoadComputerAddresses()
         PIP_ADAPTER_INFO pAdapterInfo;
         PIP_ADAPTER_INFO pAdapter = NULL;
         DWORD dwRetVal = 0;
-        UINT i;
-
-        /* variables used to print DHCP time info */
-        struct tm newtime;
-        char buffer[32];
-        errno_t error;
 
         ULONG ulOutBufLen = sizeof (IP_ADAPTER_INFO);
         pAdapterInfo = (IP_ADAPTER_INFO *) MALLOC(sizeof (IP_ADAPTER_INFO));
@@ -413,12 +406,12 @@ LRESULT CAddDirectoryServerDialog::OnPresetButtonClicked(WORD wNotifyCode, WORD 
     CMenu popupMenu;
     popupMenu.CreatePopupMenu();
     int id =  IDC_PRESETMENU_SHARED_FOLDER_FIRST_ID;
-    for( int i =0; i< sharedFolders_.size(); i++ ) {
+    for( size_t i =0; i< sharedFolders_.size(); i++ ) {
         popupMenu.AppendMenu(MF_STRING, id++, sharedFolders_[i]);
 
     }
     id =  IDC_PRESETMENU_FIRST_ID;
-    for( int i =0; i< addresses_.size(); i++ ) {
+    for (size_t i = 0; i< addresses_.size(); i++) {
         popupMenu.AppendMenu(MF_STRING, id++, addresses_[i]);
     }
     

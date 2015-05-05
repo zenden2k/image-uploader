@@ -133,7 +133,6 @@ BOOL CRegistry::DeleteWithSubkeys(CString strKey)
 
         DWORD i, retCode; 
 
-        TCHAR  achValue[MAX_VALUE_NAME]; 
         DWORD cchValue = MAX_VALUE_NAME; 
 
         // Get the class name and the value count. 
@@ -236,7 +235,6 @@ BOOL CRegistry::GetChildKeysNames(CString strKey, std::vector<CString>& outNames
 
         DWORD i, retCode; 
 
-        TCHAR  achValue[MAX_VALUE_NAME]; 
         DWORD cchValue = MAX_VALUE_NAME; 
 
         // Get the class name and the value count. 

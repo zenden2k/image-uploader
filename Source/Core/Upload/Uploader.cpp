@@ -73,8 +73,8 @@ int CUploader::pluginProgressFunc (void* userData, double dltotal, double dlnow,
     if (fabs(ultotal - ulnow) < 1)
     {
         uploader->m_PrInfo.IsUploading = false;
-        uploader->m_PrInfo.Total = ultotal;
-        uploader->m_PrInfo.Uploaded = ulnow;
+        uploader->m_PrInfo.Total = static_cast<uint64_t>(ultotal);
+        uploader->m_PrInfo.Uploaded = static_cast<uint64_t>(ulnow);
 
         if (ultotal != 0 && uploader->m_CurrentStatus == stUploading) {
             //OutputDebugStringW(L"Set status waiting\r\n");
@@ -88,8 +88,8 @@ int CUploader::pluginProgressFunc (void* userData, double dltotal, double dlnow,
     {
         
         uploader->m_PrInfo.IsUploading = true;
-        uploader->m_PrInfo.Total = ultotal;
-        uploader->m_PrInfo.Uploaded = ulnow;
+        uploader->m_PrInfo.Total = static_cast<uint64_t>(ultotal);
+        uploader->m_PrInfo.Uploaded = static_cast<uint64_t>(ulnow);
     }
     uploader->currentTask_->uploadProgress(uploader->m_PrInfo);
 

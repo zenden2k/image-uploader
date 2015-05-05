@@ -430,8 +430,8 @@ CSettings::CSettings()
 
     TrayIconSettings.RightClickCommand = 1; // context menu
     TrayIconSettings.MiddleClickCommand = 7; // region screenshot
-    TrayIconSettings.DontLaunchCopy = FALSE;
-    TrayIconSettings.ShortenLinks = FALSE;
+    TrayIconSettings.DontLaunchCopy = false;
+    TrayIconSettings.ShortenLinks = false;
     TrayIconSettings.TrayScreenshotAction = TRAY_SCREENSHOT_OPENINEDITOR;
 
     ImageEditorSettings.BackgroundColor = Gdiplus::Color(255,255,255);
@@ -993,7 +993,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 
 void CSettings::notifyChange()
 {
-    for (int i = 0; i < changeCallbacks_.size(); i++ )
+    for (size_t i = 0; i < changeCallbacks_.size(); i++)
     {
         changeCallbacks_[i](this);
     }
@@ -1285,13 +1285,13 @@ int CSettings::getFileServerID()
 
 bool CSettings::IsFFmpegAvailable() {
     CString appFolder = WinUtils::GetAppFolder();
-    return FileExists( appFolder + "avcodec-56.dll");
+    return FileExists( appFolder + "avcodec-56.dll")!=FALSE;
 }
 
 CString CSettings::prepareVideoDialogFilters() {
     CString result;
     std::vector<std::string>& extensions = VideoUtils::Instance().videoFilesExtensions;
-    for ( int i = 0; i < extensions.size(); i++ ) {
+    for (size_t i = 0; i < extensions.size(); i++) {
         result += CString("*.") + CString(extensions[i].c_str()) + _T(";");
     }
     return result;

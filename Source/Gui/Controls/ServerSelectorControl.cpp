@@ -678,7 +678,7 @@ int CServerSelectorControl::showPopup(HWND parent, POINT pt)
         }
 
         
-        bool isChildMessage = ::IsChild(hwndPopup, msg.hwnd);
+        bool isChildMessage = ::IsChild(hwndPopup, msg.hwnd)!=FALSE;
         if (!isChildMessage)
         {
             TCHAR className[MAX_PATH];
@@ -812,7 +812,7 @@ bool CServerSelectorControl::exitPopup(int nCommandId)
 {
     BOOL bRet = SetProp(m_hWnd, MENU_EXIT_NOTIFY, (HANDLE)1);
     SetProp(m_hWnd, MENU_EXIT_COMMAND_ID, (HANDLE)nCommandId);
-    return bRet;
+    return bRet !=FALSE;
 }
 
 DLGTEMPLATE* CServerSelectorControl::GetTemplate()

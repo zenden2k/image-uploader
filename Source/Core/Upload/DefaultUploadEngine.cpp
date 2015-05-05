@@ -588,7 +588,7 @@ std::string CDefaultUploadEngine::ReplaceVars(const std::string& Text)
             } else {
                 value = m_Vars[varName];
             }
-            for ( int i = 1; i < tokens.size(); i++ ) {
+            for ( size_t i = 1; i < tokens.size(); i++ ) {
                 std::string modifier = tokens[i];
                 if ( modifier == "urlencode" ) {
                     value = m_NetworkClient->urlEncode(value);

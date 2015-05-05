@@ -1915,7 +1915,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
         ImageEditorConfigurationProvider configProvider;
         ImageEditor::ImageEditorWindow imageEditor(result, mode == cmFreeform ||   mode == cmActiveWindow, &configProvider);
         imageEditor.setInitialDrawingTool((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) ? ImageEditor::Canvas::dtCrop : ImageEditor::Canvas::dtBrush);
-        imageEditor.showUploadButton(m_bScreenshotFromTray);
+        imageEditor.showUploadButton(m_bScreenshotFromTray!=0);
         if ( m_bScreenshotFromTray ) {
             imageEditor.setServerName(Utf8ToWCstring(Settings.quickScreenshotServer.serverName()));
         }

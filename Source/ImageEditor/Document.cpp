@@ -50,7 +50,7 @@ Document::Document(std::shared_ptr<Gdiplus::Bitmap> sourceImage,  bool hasTransp
 
 Document::~Document()
 {
-    for( int i = 0; i < history_.size(); i++ ) {
+    for( size_t i = 0; i < history_.size(); i++ ) {
         delete[] history_[i].data;
     }
     delete currentCanvas_;
