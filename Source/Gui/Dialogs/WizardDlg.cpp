@@ -371,7 +371,7 @@ bool CWizardDlg::ParseCmdLine()
 	
 	if(CmdLine.GetNextFile(FileName, nIndex))
 	{
-		if(IsVideoFile(FileName) && !CmdLine.IsOption(_T("upload")))
+		if(IsVideoFile(FileName) && !CmdLine.IsOption(_T("upload")) && !CmdLine.IsOption(_T("quick")))
 		{
 			ShowPage(1, CurPage, (Pages[2])?2:3);
 			CVideoGrabberPage* dlg = (CVideoGrabberPage*) Pages[1];

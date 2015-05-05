@@ -445,7 +445,7 @@ HRESULT CIShellContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpici)
 		}
 		break;
 	case MENUITEM_SERVER_PROFILE:
-		IULaunchCopy(m_FileList,_T("/quick /serverprofile=") +item.commandArgument );
+		IULaunchCopy(m_FileList,_T("/upload /quick /serverprofile=") +item.commandArgument );
 		return S_OK;
 		break;
 
