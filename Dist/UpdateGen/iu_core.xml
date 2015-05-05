@@ -19,6 +19,6 @@
         <Entry Name="Data/Thumbnails/*" SaveToFolder="%datapath%/Thumbnails/" Action="add"/>
 		<Entry Name="Data/templates.xml" SaveToFolder="%datapath%/templates.xml" Action="add"/>
 	</Entries>
-<Info>[+] Multiple regexps in servers.xml Action node
+<Info>[f] Fixed uploading video files from Explorer's context menu custom items
 </Info>
 </UpdatePackageSource>

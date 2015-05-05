@@ -676,7 +676,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             mi.wID = IDC_FILESERVER_LAST_ID + 1;
             mi.fType = MFT_SEPARATOR;
             
-            if ( menuItemCount && (menuItemCount - lastMenuBreakIndex) >= 17   ) {
+            if ( menuItemCount && (menuItemCount - lastMenuBreakIndex) >= 23   ) {
                 nextItemBreaksLine = true;
             } else {
                 sub.InsertMenuItem(menuItemCount++, true, &mi);
@@ -711,7 +711,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             if ( mi.hbmpItem ) {
                 mi.fMask |= MIIM_BITMAP;
             }
-            if ( menuItemCount && ((menuItemCount - lastMenuBreakIndex) % 30 == 0 || nextItemBreaksLine )  ) {
+            if ( menuItemCount && ((menuItemCount - lastMenuBreakIndex) % 34 == 0 || nextItemBreaksLine )  ) {
 
                 mi.fType |= MFT_MENUBARBREAK ;
                 lastMenuBreakIndex = menuItemCount;
@@ -721,18 +721,32 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 
             sub.InsertMenuItem(menuItemCount++, true, &mi);    
         }
+        
         ZeroMemory(&mi, sizeof(mi));
         mi.cbSize = sizeof(mi);
         mi.wID = IDC_FILESERVER_LAST_ID + 1;
         mi.fType = MFT_SEPARATOR;
+        /*if (menuItemCount && (menuItemCount - lastMenuBreakIndex) >= 30) {
+            nextItemBreaksLine = true;
+        }
+        else*/
+        {
+            sub.InsertMenuItem(menuItemCount++, true, &mi);
+        }
     
-        sub.InsertMenuItem(menuItemCount++, true, &mi);
         ZeroMemory(&mi, sizeof(mi));
         mi.cbSize = sizeof(mi);
         mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
         mi.fType = MFT_STRING;
         mi.wID = ImageServer ? IDC_ADD_FTP_SERVER : IDC_ADD_FTP_SERVER_FROM_FILESERVER_LIST;
+        if (nextItemBreaksLine)
+        {
+            nextItemBreaksLine = false;
+            mi.fType |= MFT_MENUBARBREAK;
+            lastMenuBreakIndex = menuItemCount;
+        }
         
+
         mi.dwTypeData  = TR("Добавить FTP сервер...");
         mi.hbmpItem = 0;
         sub.InsertMenuItem(menuItemCount++, true, &mi);    
