@@ -431,7 +431,7 @@ bool CUpdatePackage::doUpdate()
         CString copyFrom, copyTo;
         copyFrom = m_PackageFolder + ue.name;
         copyTo = ue.saveTo;
-        if( (ue.hash != IuCoreUtils::Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)copyFrom))).c_str() || ue.hash.IsEmpty()) && ue.action != _T("delete"))
+        if (ue.action != _T("delete") && (ue.hash != IuCoreUtils::Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)copyFrom))).c_str() || ue.hash.IsEmpty()))
         {
             /*std::cout << std::endl << IuCoreUtils::WstringToUtf8((LPCTSTR)copyFrom)<<std::endl;
             std::cout <<  IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)copyFrom))<<std::endl;

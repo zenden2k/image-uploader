@@ -390,31 +390,31 @@ bool CWizardDlg::ParseCmdLine()
         }
     }
 
-    CString FileName;
-    
-    if(CmdLine.GetNextFile(FileName, nIndex))
-    {
-        if(IsVideoFile(FileName) && !CmdLine.IsOption(_T("upload")))
-        {
-            ShowPage(1, CurPage, (Pages[2])?2:3);
-            CVideoGrabberPage* dlg = (CVideoGrabberPage*) Pages[1];
-            dlg->SetFileName(FileName);            
-            return true;
-        }    
-    }
-    nIndex = 0;
-    CStringList Paths;
-    while(CmdLine.GetNextFile(FileName, nIndex))
-    {
-        if(WinUtils::FileExists(FileName) || WinUtils::IsDirectory(FileName))
-         Paths.Add(FileName);        
-    }
-    if(!Paths.IsEmpty())
-    {
-        QuickUploadMarker = (fromContextMenu && Settings.QuickUpload && !CmdLine.IsOption(_T("noquick"))) || (CmdLine.IsOption(_T("quick")));    
-        FolderAdd.Do(Paths, CmdLine.IsOption(_T("imagesonly")), true);
-    }
-    return count!=0;
+	CString FileName;
+	
+	if(CmdLine.GetNextFile(FileName, nIndex))
+	{
+		if(IsVideoFile(FileName) && !CmdLine.IsOption(_T("upload")) && !CmdLine.IsOption(_T("quick")))
+		{
+			ShowPage(1, CurPage, (Pages[2])?2:3);
+			CVideoGrabberPage* dlg = (CVideoGrabberPage*) Pages[1];
+			dlg->SetFileName(FileName);			
+			return true;
+		}	
+	}
+	nIndex = 0;
+	CStringList Paths;
+	while(CmdLine.GetNextFile(FileName, nIndex))
+	{
+		if(FileExists(FileName) || IsDirectory(FileName))
+		 Paths.Add(FileName);		
+	}
+	if(!Paths.IsEmpty())
+	{
+		QuickUploadMarker = (fromContextMenu && Settings.QuickUpload && !CmdLine.IsOption(_T("noquick"))) || (CmdLine.IsOption(_T("quick")));	
+		FolderAdd.Do(Paths, CmdLine.IsOption(_T("imagesonly")), true);
+	}
+	return count!=0;
 }
 
 LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
