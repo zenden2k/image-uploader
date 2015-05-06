@@ -37,6 +37,9 @@
 #include "Core/Scripting/Squirrelnc.h"
 #include <set>
 #include <unordered_map>
+#ifndef _WIN32
+#include <unistd.h>
+#endif
 
 namespace ScriptAPI {;
 

@@ -12,6 +12,8 @@ public:
     std::mutex loginMutex_;
     std::atomic<bool> authPerformed_;
     std::atomic<bool> authPerformedSuccess_;
+    std::map<std::string, std::string> constVars_;
+    std::mutex  constVarsMutex_;
 };
 ServerSync::ServerSync() : ThreadSync(new ServerSyncPrivate())
 {
@@ -80,4 +82,23 @@ void ServerSync::resetFailedAuthorization()
     {
         d->authPerformed_ = false;
     }
+}
+
+void ServerSync::setConstVar(const std::string& name, const std::string& value)
+{
+    Q_D(ServerSync);
+    std::lock_guard<std::mutex> lock(d->constVarsMutex_);
+    d->constVars_[name] = value;
+}
+
+std::string ServerSync::getConstVar(const std::string& name)
+{
+    Q_D(ServerSync);
+    std::lock_guard<std::mutex> lock(d->constVarsMutex_);
+    auto it = d->constVars_.find(name);
+    if (it != d->constVars_.end())
+    {
+        return it->second;
+    }
+    return std::string();
 }

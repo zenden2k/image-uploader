@@ -18,8 +18,6 @@
 
 */
 
-/* This module contains uploading engine which uses SqPlus binding library
- for executing Squirrel scripts */
 
 #include "ScriptUploadEngine.h"
 #include <stdarg.h>
@@ -33,15 +31,11 @@
 #include "Core/Upload/UrlShorteningTask.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Logging.h"
-#ifndef _WIN32
-#include <unistd.h>
-#endif
 #include "Core/Scripting/API/ScriptAPI.h"
 #include "Core/Upload/ServerSync.h"
 #include "Core/ThreadSync.h"
 #include <thread>
 #include <unordered_map>
-
 
 const std::string IuNewFolderMark = "_iu_create_folder_";
 

@@ -62,7 +62,6 @@ class CDefaultUploadEngine: public CAbstractUploadEngine
         std::string m_ErrorBuffer;
         int m_CurrentActionIndex;
         std::map<std::string, std::string> m_Vars;
-        std::map<std::string, std::string> m_Consts;
         std::map<size_t, bool> m_PerformedActions;
     private:
         DISALLOW_COPY_AND_ASSIGN(CDefaultUploadEngine);

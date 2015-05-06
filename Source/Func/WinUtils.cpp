@@ -64,16 +64,22 @@ CString GetCommonApplicationDataPath()
     return GetSystemSpecialPath(CSIDL_COMMON_APPDATA);
 }
 
-bool GetClipboardText(CString& text)
+bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
 {
-    if (OpenClipboard(NULL))
+    if (OpenClipboard(hwnd))
     {
         HGLOBAL hglb = GetClipboardData(CF_UNICODETEXT);
+        if (!hglb) {
+            LOG(ERROR) << "GetClipboardData call failed. ErrorCode=" << ::GetLastError();
+        }
         LPCWSTR lpstr = (LPCWSTR)GlobalLock(hglb);
         text = lpstr;
         GlobalUnlock(hglb);
         CloseClipboard();
         return true;
+    }
+    else if (raiseError ) {
+        LOG(ERROR) << "OpenClipboard call failed. ErrorCode=" << ::GetLastError();
     }
     return false;
 }

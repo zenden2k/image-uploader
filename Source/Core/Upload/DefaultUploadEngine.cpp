@@ -67,11 +67,11 @@ bool CDefaultUploadEngine::doUploadFile(std::shared_ptr<FileUploadTask> task, Up
 
     prepareUpload();
     std::string FileExt = IuCoreUtils::ExtractFileExt(displayName);
-    m_Consts["_FILENAME"] = IuCoreUtils::ExtractFileName(displayName);
+    m_Vars["_FILENAME"] = IuCoreUtils::ExtractFileName(displayName);
     std::string OnlyFname;
     OnlyFname = IuCoreUtils::ExtractFileNameNoExt(displayName);
-    m_Consts["_FILENAMEWITHOUTEXT"] = OnlyFname;
-    m_Consts["_FILEEXT"]            = FileExt;
+    m_Vars["_FILENAMEWITHOUTEXT"] = OnlyFname;
+    m_Vars["_FILEEXT"] = FileExt;
 
     bool actionsExecuteResult = executeActions();
     if ( !actionsExecuteResult ) {
@@ -92,7 +92,7 @@ bool CDefaultUploadEngine::doUploadFile(std::shared_ptr<FileUploadTask> task, Up
 
 bool  CDefaultUploadEngine::doUploadUrl(std::shared_ptr<UrlShorteningTask> task, UploadParams& params) {
     prepareUpload();
-    m_Consts["_ORIGINALURL"] = task->getUrl();
+    m_Vars["_ORIGINALURL"] = task->getUrl();
     bool actionsExecuteResult = executeActions();
     if ( !actionsExecuteResult ) {
         return false;
@@ -116,15 +116,15 @@ void CDefaultUploadEngine::prepareUpload() {
     if ( m_UploadData->NeedAuthorization ) {
         li = m_ServersSettings->authData;
         if ( li.DoAuth ) {
-            m_Consts["_LOGIN"]    = li.Login;
-            m_Consts["_PASSWORD"] = li.Password;
+            m_Vars["_LOGIN"] = li.Login;
+            m_Vars["_PASSWORD"] = li.Password;
         }
     }
     int n = rand() % (256 * 256);
     std::thread::id currentThreadId = std::this_thread::get_id();;
-    m_Consts["_RAND16BITS"]         = IuCoreUtils::toString(n);
-    m_Consts["_THUMBWIDTH"]         = IuCoreUtils::toString( m_ThumbnailWidth );
-    m_Consts["_THREADID"] = IuCoreUtils::ThreadIdToString(currentThreadId);
+    m_Vars["_RAND16BITS"] = IuCoreUtils::toString(n);
+    m_Vars["_THUMBWIDTH"] = IuCoreUtils::toString(m_ThumbnailWidth);
+    m_Vars["_THREADID"] = IuCoreUtils::ThreadIdToString(currentThreadId);
 }
 
 bool CDefaultUploadEngine::executeActions() {
@@ -269,16 +269,22 @@ bool CDefaultUploadEngine::ParseAnswer(UploadAction& Action, const std::string& 
                         ActionVariable& v = actionRegExp.Variables[i];
                         std::string temp;
                         temp = reg.get_match(1 + v.nIndex);
-                        if (!v.Name.empty() && v.Name[0] == '_')
-                            m_Consts[v.Name] = temp;
-                        m_Vars[v.Name] = temp;
-                        DebugVars += v.Name + " = " + temp + "\r\n";
+                        if (!v.Name.empty() ) {
+                            if (v.Name[0] == '_')
+                            {
+                                serverSync_->setConstVar(v.Name, temp);
+                            } else
+                            {
+                                m_Vars[v.Name] = temp;
+                            }
+                            DebugVars += v.Name + " = " + temp + "\r\n";
+                        }
+
                     }
                 }
                 else {
                     if (m_UploadData->Debug) {
                         DebugVars += "NO MATCHES FOUND!\r\n";
-                       
                     }
 
                     if (actionRegExp.Required)
@@ -583,10 +589,13 @@ std::string CDefaultUploadEngine::ReplaceVars(const std::string& Text)
             }
             std::string value;
 
-            if (!vv.empty() && vv[0] == '_') {
-                value = m_Consts[varName];
-            } else {
-                value = m_Vars[varName];
+            if (!vv.empty() ) {
+                auto it = m_Vars.find(varName);  // first search variable in local map
+                if (it != m_Vars.end()) {
+                    value = it->second;
+                } else if (vv[0] == '_') {
+                    value = serverSync_->getConstVar(varName); // then search variable in shared map
+                }
             }
             for ( size_t i = 1; i < tokens.size(); i++ ) {
                 std::string modifier = tokens[i];

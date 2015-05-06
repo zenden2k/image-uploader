@@ -36,6 +36,8 @@ class ServerSync: public ThreadSync
         /*! @cond PRIVATE */
         void resetAuthorization();
         void resetFailedAuthorization();
+        void setConstVar(const std::string& name, const std::string& value);
+        std::string getConstVar(const std::string& name);
         /* @endcond */
     private:
         Q_DECLARE_PRIVATE_PTR(ServerSync);

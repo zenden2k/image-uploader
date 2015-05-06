@@ -106,23 +106,24 @@ LRESULT CImageDownloaderDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lP
     HWND hwndNext = (HWND) lParam;
 
     if(hwndRemove == PrevClipboardViewer) PrevClipboardViewer = hwndNext;
-    else ::SendMessage(PrevClipboardViewer, WM_CHANGECBCHAIN, wParam, lParam);
+    else ::PostMessage(PrevClipboardViewer, WM_CHANGECBCHAIN, wParam, lParam);
     return 0;
 }
 
 void CImageDownloaderDlg::OnDrawClipboard()
 {
-    bool IsClipboard = IsClipboardFormatAvailable(CF_TEXT)!=0;
+    bool IsClipboard = IsClipboardFormatAvailable(CF_UNICODETEXT) != 0;
 
     if(IsClipboard && SendDlgItemMessage(IDC_WATCHCLIPBOARD,BM_GETCHECK)==BST_CHECKED && !m_FileDownloader.IsRunning()    )
     {
         CString str;  
-        IU_GetClipboardText(str);
-        ParseBuffer(str, false);
-        
+        if (WinUtils::GetClipboardText(str, m_hWnd, true))
+        {
+            ParseBuffer(str, false);
+        }
     }
     //Sending WM_DRAWCLIPBOARD msg to the next window in the chain
-    if(PrevClipboardViewer) ::SendMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0); 
+    if (PrevClipboardViewer) ::PostMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0);
 }
 
 LRESULT CImageDownloaderDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1430817979.dat" TimeStamp="1430817979" Date="05.05.2015 11:26:19" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="88825700d14d51b5bcac96d05271c63b">
+<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1430947567.dat" TimeStamp="1430947567" Date="06.05.2015 23:26:07" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="12e1cb6ecf052bb23e0ed47684eb6b67">
   <Info>
 [+] mirrorcreator.ru
 [+] picplus.ru

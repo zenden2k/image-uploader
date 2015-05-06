@@ -109,7 +109,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
     ShowNext(false);
     ShowPrev(false);    
-   PrevClipboardViewer = SetClipboardViewer();
+    PrevClipboardViewer = SetClipboardViewer();
     ListBox.SetFocus();
     ShowWindow(SW_HIDE);
 
@@ -187,7 +187,7 @@ void CWelcomeDlg::OnDrawClipboard()
     else ListBox.Items[4].Visible = IsClipboard; 
 
     //Sending WM_DRAWCLIPBOARD msg to the next window in the chain
-    if(PrevClipboardViewer) ::SendMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0); 
+    if(PrevClipboardViewer) ::PostMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0); 
 }
 
 LRESULT CWelcomeDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -196,7 +196,7 @@ LRESULT CWelcomeDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     HWND hwndNext = (HWND) lParam;
 
     if(hwndRemove == PrevClipboardViewer) PrevClipboardViewer = hwndNext;
-    else ::SendMessage(PrevClipboardViewer, WM_CHANGECBCHAIN, wParam, lParam);
+    else ::PostMessage(PrevClipboardViewer, WM_CHANGECBCHAIN, wParam, lParam);
     return 0;
 }
 
