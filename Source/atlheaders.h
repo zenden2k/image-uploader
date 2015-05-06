@@ -6,6 +6,7 @@
 #define UNICODE
 #define _UNICODE
 #endif
+#define _WTL_USE_CSTRING
 #define WIN32_LEAN_AND_MEAN 
 //#include <winsock2.h>
 #include <windows.h>

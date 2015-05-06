@@ -652,6 +652,7 @@
     <ClInclude Include="Source\Core\Upload\UploadSession.h" />
     <ClInclude Include="Source\Core\Utils\EnumUtils.h" />
     <ClInclude Include="Source\Core\Utils\TextUtils.h" />
+    <ClInclude Include="Source\Gui\Components\NewStyleFolderDialog.h" />
     <ClInclude Include="Source\Gui\Controls\ResultsListView.h" />
     <ClInclude Include="Source\Gui\Dialogs\VideoGrabberPage.h" />
     <ClInclude Include="Source\logging.h" />

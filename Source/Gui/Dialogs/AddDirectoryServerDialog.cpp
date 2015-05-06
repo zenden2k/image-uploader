@@ -14,7 +14,7 @@
 #include <secext.h>
 #include <Lm.h>
 #include "Core/Scripting/API/HtmlDocumentPrivate_win.h"
-
+#include "Gui/Components/NewStyleFolderDialog.h"
 
 // CAddDirectoryServerDialog
 CAddDirectoryServerDialog::CAddDirectoryServerDialog(CUploadEngineList* uploadEngineList)
@@ -385,10 +385,9 @@ bool CAddDirectoryServerDialog::LoadComputerAddresses()
 
 LRESULT CAddDirectoryServerDialog::OnBnClickedBrowsebutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    // TODO: Add your control notification handler code here
-    CFolderDialog fd(m_hWnd,TR("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE );
     CString path = GuiTools::GetWindowText(GetDlgItem(IDC_DIRECTORYEDIT));
-    fd.SetInitialFolder(path,true);
+    CNewStyleFolderDialog fd(m_hWnd, path, TR("Выбор папки"), BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE);
+  
     if(fd.DoModal(m_hWnd) == IDOK)
     {
         SetDlgItemText(IDC_DIRECTORYEDIT,fd.GetFolderPath());

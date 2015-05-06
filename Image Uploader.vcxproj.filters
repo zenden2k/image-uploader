@@ -85,6 +85,9 @@
     <Filter Include="Source Files\Core\Scripting\API">
       <UniqueIdentifier>{1755a0c6-d9e3-49c5-b4bb-cfad5f183e83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Gui\Components">
+      <UniqueIdentifier>{7deab3a3-a633-4576-b949-399c8b1b9fe2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\logging.h">
@@ -704,6 +707,9 @@
     </ClInclude>
     <ClInclude Include="Source\Core\Utils\TextUtils.h">
       <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Components\NewStyleFolderDialog.h">
+      <Filter>Source Files\Gui\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

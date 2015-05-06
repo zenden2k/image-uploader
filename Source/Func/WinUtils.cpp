@@ -350,8 +350,7 @@ CString FormatWindowsErrorMessage(int idCode)
 
 bool FileExists(LPCTSTR FileName)
 {
-    if(!FileName || GetFileAttributes(FileName)==-1) return FALSE;
-    return TRUE;
+    return (FileName && GetFileAttributes(FileName)!=-1);
 }
 
 const CString TrimString(const CString& source, int nMaxLen)

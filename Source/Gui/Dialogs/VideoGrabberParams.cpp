@@ -22,6 +22,7 @@
 
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
+#include "Gui/Components/NewStyleFolderDialog.h"
 
 #define CheckBounds(n, a, b, d) {if ((n < a) || (n > b)) n = d; }
 
@@ -107,9 +108,10 @@ LRESULT CVideoGrabberParams::OnShowMediaInfoTextBnClicked(WORD wNotifyCode, WORD
 }
 
 LRESULT CVideoGrabberParams::OnVideoSnapshotsFolderButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    CFolderDialog fd(m_hWnd,TR("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE );
     CString path = GuiTools::GetWindowText(GetDlgItem(IDC_VIDEOSNAPSHOTSFOLDEREDIT));
-    fd.SetInitialFolder(path,true);
+
+    CNewStyleFolderDialog fd(m_hWnd, path, TR("Выбор папки") );
+   
     if ( fd.DoModal(m_hWnd) == IDOK ) {
         SetDlgItemText(IDC_VIDEOSNAPSHOTSFOLDEREDIT,fd.GetFolderPath());
         return true;

@@ -24,9 +24,11 @@
 #include "LogWindow.h"
 #include "Func/Settings.h"
 #include "Gui/GuiTools.h"
+#include "Gui/Components/NewStyleFolderDialog.h"
 
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
 #include "Func/myutils.h"
+#include <Core/Scripting/API/HtmlDocumentPrivate_win.h>
 
 // CScreenshotSettingsPagePage
 CScreenshotSettingsPagePage::CScreenshotSettingsPagePage()
@@ -141,13 +143,15 @@ bool CScreenshotSettingsPagePage::Apply()
 
 LRESULT CScreenshotSettingsPagePage::OnScreenshotsFolderSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    CFolderDialog fd(m_hWnd,TR("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE );
     CString path = GuiTools::GetWindowText(GetDlgItem(IDC_SCREENSHOTFOLDEREDIT));
-    fd.SetInitialFolder(path,true);
-    if(fd.DoModal(m_hWnd) == IDOK)
+
+    CNewStyleFolderDialog fd(m_hWnd, path, TR("Выбор папки") );
+        
+    if (fd.DoModal(m_hWnd) == IDOK)
     {
-        SetDlgItemText(IDC_SCREENSHOTFOLDEREDIT,fd.GetFolderPath());
+        SetDlgItemText(IDC_SCREENSHOTFOLDEREDIT, fd.GetFolderPath());
         return true;
     }
+   
     return 0;
 }
