@@ -129,9 +129,6 @@
     <ClCompile Include="..\Core\3rdpart\pcreplusplus.cpp">
       <Filter>Source Files\Additional</Filter>
     </ClCompile>
-    <ClCompile Include="..\Func\PluginLoader.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
     <ClCompile Include="..\3rdpart\QColorQuantizer.cpp">
       <Filter>Source Files\Additional</Filter>
     </ClCompile>

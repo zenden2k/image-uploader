@@ -406,8 +406,11 @@ bool CWizardDlg::ParseCmdLine()
 	CStringList Paths;
 	while(CmdLine.GetNextFile(FileName, nIndex))
 	{
-		if(FileExists(FileName) || IsDirectory(FileName))
-		 Paths.Add(FileName);		
+        if (FileExists(FileName) || IsDirectory(FileName)) {
+            Paths.Add(WinUtils::ConvertRelativePathToAbsolute(FileName));
+        }
+
+		
 	}
 	if(!Paths.IsEmpty())
 	{

@@ -7,6 +7,8 @@
 #include "3rdpart/GdiplusH.h"
 #include <Aclapi.h>
 #include "3rdpart/Registry.h"
+#include "Gui/GuiTools.h"
+#include "TlHelp32.h"
 
 namespace WinUtils {
 
@@ -66,20 +68,40 @@ CString GetCommonApplicationDataPath()
 
 bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
 {
-    if (OpenClipboard(hwnd))
-    {
-        HGLOBAL hglb = GetClipboardData(CF_UNICODETEXT);
-        if (!hglb) {
-            LOG(ERROR) << "GetClipboardData call failed. ErrorCode=" << ::GetLastError();
+    for (int i = 0; i < 4; i++) {
+        if (OpenClipboard(hwnd)) {
+            HGLOBAL hglb = GetClipboardData(CF_UNICODETEXT);
+            if (!hglb) {
+                LOG(ERROR) << "GetClipboardData call failed. ErrorCode=" << ::GetLastError();
+                CloseClipboard();
+                return false;
+            }
+            LPCWSTR lpstr = (LPCWSTR)GlobalLock(hglb);
+            text = lpstr;
+            GlobalUnlock(hglb);
+            CloseClipboard();
+            return true;
         }
-        LPCWSTR lpstr = (LPCWSTR)GlobalLock(hglb);
-        text = lpstr;
-        GlobalUnlock(hglb);
-        CloseClipboard();
-        return true;
+        Sleep(50);
     }
-    else if (raiseError ) {
-        LOG(ERROR) << "OpenClipboard call failed. ErrorCode=" << ::GetLastError();
+   
+    if (raiseError ) {
+        DWORD lastError = ::GetLastError();
+        CString message;
+        HWND clipboardOwner = GetClipboardOwner();
+        if ( clipboardOwner ) {
+            CString windowTitle = GuiTools::GetWindowText(clipboardOwner);
+            TCHAR windowClassName[256] = _T("");
+            GetClassName(clipboardOwner, windowClassName, 255);
+            DWORD proccessId;
+            GetWindowThreadProcessId(clipboardOwner, &proccessId);
+            message += _T("\r\n");
+            message += _T("Clipboard is owned by window:\r\n");
+            message += _T("Title: '") + windowTitle + _T("'\r\n");
+            message += _T("Class: '") + CString(windowClassName) + _T("'\r\n");
+            message += _T("Process: '") + WinUtils::GetProcessName(proccessId) + _T("' (PID=") + IntToStr(proccessId) + _T(")\r\n");
+        }
+        LOG(ERROR) << "OpenClipboard call failed. ErrorCode=" << lastError << message;
     }
     return false;
 }
@@ -1014,6 +1036,16 @@ void TimerWait(int Delay)
     CloseHandle(hTimer);
 }
 
+CString ConvertRelativePathToAbsolute(const CString& fileName)
+{
+    TCHAR result[MAX_PATH+1];
+    if (!GetFullPathName(fileName, MAX_PATH, result, 0))
+    {
+        return fileName;
+    }
+    return result;
+}
+
 std::wstring strtows(const std::string &str, UINT codePage)
 {
     std::wstring ws;
@@ -1051,6 +1083,26 @@ const std::string Utf8ToAnsi(const std::string &str, int codepage)
     return wstostr(strtows(str, CP_UTF8), codepage);
 }
 
+CString GetProcessName(DWORD pid)
+{
+    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnapshot) {
+        PROCESSENTRY32 pe32;
+        pe32.dwSize = sizeof(PROCESSENTRY32);
+        if (Process32First(hSnapshot, &pe32)) {
+            do {
+                if (pe32.th32ProcessID == pid) {
+                    CloseHandle(hSnapshot);
+                    return pe32.szExeFile;
+                }
+                
+            }
+            while (Process32Next(hSnapshot, &pe32));
+        }
+        CloseHandle(hSnapshot);
+    }
+    return CString();
+}
 
 std::string chcp(const std::string &str, UINT codePageSrc, UINT codePageDst)
 {

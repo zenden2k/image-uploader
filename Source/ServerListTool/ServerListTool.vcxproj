@@ -478,7 +478,6 @@
     <ClCompile Include="..\Core\Network\NetworkClient.cpp" />
     <ClCompile Include="..\Core\3rdpart\parser.cpp" />
     <ClCompile Include="..\Core\3rdpart\pcreplusplus.cpp" />
-    <ClCompile Include="..\Func\PluginLoader.cpp" />
     <ClCompile Include="..\3rdpart\QColorQuantizer.cpp" />
     <ClCompile Include="..\3rdpart\Registry.cpp" />
     <ClCompile Include="..\Core\Upload\ScriptUploadEngine.cpp">

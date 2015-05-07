@@ -77,5 +77,7 @@ namespace IuCoreUtils
     bool RemoveFile(const std::string& utf8Filename);
     bool MoveFileOrFolder(const std::string& from ,const std::string& to);
     std::string ThreadIdToString(const std::thread::id& id);
+
+    void func();
 };
 #endif

@@ -137,7 +137,7 @@ LRESULT CImageDownloaderDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lP
     HWND hwndNext = (HWND) lParam;
 
     if(hwndRemove == PrevClipboardViewer) PrevClipboardViewer = hwndNext;
-    else ::PostMessage(PrevClipboardViewer, WM_CHANGECBCHAIN, wParam, lParam);
+    else ::SendMessage(PrevClipboardViewer, WM_CHANGECBCHAIN, wParam, lParam);
     return 0;
 }
 
@@ -145,7 +145,7 @@ void CImageDownloaderDlg::OnDrawClipboard()
 {
     clipboardUpdated();
     //Sending WM_DRAWCLIPBOARD msg to the next window in the chain
-    if (PrevClipboardViewer) ::PostMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0);
+    if (PrevClipboardViewer) ::SendMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0);
 }
 
 

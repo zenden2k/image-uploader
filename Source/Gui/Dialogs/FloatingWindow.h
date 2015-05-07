@@ -27,7 +27,7 @@
 #pragma once
 #include "atlheaders.h"
 #include <atlcrack.h>
-#include "Common/trayicon.h"
+#include "Gui/Components/trayicon.h"
 #include "SettingsDlg.h"
 #include "TraySettings.h"
 #include "Core/Upload/FileQueueUploader.h"

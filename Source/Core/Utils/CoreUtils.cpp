@@ -535,4 +535,7 @@ std::string ThreadIdToString(const std::thread::id& id)
     return threadIdSS.str();
 }
 
+void func()
+{
+}
 } // end of namespace IuCoreUtils
