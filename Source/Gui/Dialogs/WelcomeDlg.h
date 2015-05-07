@@ -60,7 +60,7 @@ public:
         COMMAND_HANDLER(IDC_ADDFILES, BN_CLICKED, OnBnClickedAddFiles)
         COMMAND_HANDLER(IDC_REUPLOADIMAGES, BN_CLICKED, OnBnClickedReuploadImages)
         COMMAND_HANDLER(IDC_SHORTENURL, BN_CLICKED, OnBnClickedShortenUrl)
-        
+        MESSAGE_HANDLER(WM_CLIPBOARDUPDATE, OnClipboardUpdate) // Windows Vista and later
         MESSAGE_HANDLER(WM_SHOWWINDOW, OnShowWindow)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         MESSAGE_HANDLER(WM_CHANGECBCHAIN, OnChangeCbChain)
@@ -92,9 +92,11 @@ public:
     LRESULT OnViewHistoryClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedReuploadImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedShortenUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnClipboardUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     
     LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     void OnDrawClipboard();
+    void clipboardUpdated();
     LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     CHyperLinkControl ListBox;
     LRESULT OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);
@@ -105,6 +107,9 @@ public:
     bool QuickRegionPrint;
     CMyImage LeftImage;CMyImage LogoImage;
     CFont NewFont;
+    typedef BOOL(WINAPI * AddClipboardFormatListenerFunc)(HWND hwnd);
+    typedef BOOL(WINAPI * RemoveClipboardFormatListenerFunc)(HWND hwnd);
+    RemoveClipboardFormatListenerFunc fRemoveClipboardFormatListener_;
 };
 
 

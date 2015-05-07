@@ -266,15 +266,17 @@ bool IsDirectory(LPCTSTR szFileName)
 }
 
 bool IsVista() {
-    OSVERSIONINFO osver;
-    osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
+    static int isVista = -1;
+    if (isVista == -1)
+    {
+        OSVERSIONINFO osver;
+        osver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
-    if ( ::GetVersionEx( &osver ) && 
-        osver.dwPlatformId == VER_PLATFORM_WIN32_NT && 
-        (osver.dwMajorVersion >= 6 ) )
-        return TRUE;
-
-    return FALSE;
+        isVista = (::GetVersionEx(&osver) &&
+            osver.dwPlatformId == VER_PLATFORM_WIN32_NT &&
+            (osver.dwMajorVersion >= 6));
+    }
+    return isVista != FALSE;
 }
 
 bool IsWindows8orLater() {

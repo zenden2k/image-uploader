@@ -50,6 +50,7 @@ class CImageDownloaderDlg:    public CDialogImpl <CImageDownloaderDlg>,
             MSG_WM_DRAWCLIPBOARD(OnDrawClipboard)
             MESSAGE_HANDLER(WM_CHANGECBCHAIN, OnChangeCbChain)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+            MESSAGE_HANDLER(WM_CLIPBOARDUPDATE, OnClipboardUpdate) // Windows Vista and later
             CHAIN_MSG_MAP(CDialogResize<CImageDownloaderDlg>)
         END_MSG_MAP()
 
@@ -72,6 +73,7 @@ class CImageDownloaderDlg:    public CDialogImpl <CImageDownloaderDlg>,
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClipboardUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         bool BeginDownloading();
         static bool LinksAvailableInText(const CString &text);
         void ParseBuffer(const CString& text, bool OnlyImages);
@@ -79,12 +81,18 @@ class CImageDownloaderDlg:    public CDialogImpl <CImageDownloaderDlg>,
         bool OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it);
         void OnConfigureNetworkClient(NetworkClient* nm);
 
+        void clipboardUpdated();
+
         CString m_FileName;
         CFileDownloader m_FileDownloader;
         CWizardDlg * m_WizardDlg;
         int m_nFilesCount;
         int m_nFileDownloaded;
         CString m_InitialBuffer;
+        bool isVistaOrLater_;
+        typedef BOOL(WINAPI * AddClipboardFormatListenerFunc)(HWND hwnd);
+        typedef BOOL(WINAPI * RemoveClipboardFormatListenerFunc)(HWND hwnd);
+        RemoveClipboardFormatListenerFunc fRemoveClipboardFormatListener_;
 };
 
 

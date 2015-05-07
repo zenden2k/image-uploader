@@ -28,6 +28,7 @@
 #include "Screenshotdlg.h"
 #include "Gui/GuiTools.h"
 #include "Func/MyUtils.h"
+#include <Core/Scripting/API/HtmlDocumentPrivate_win.h>
 
 // CWelcomeDlg
 CWelcomeDlg::CWelcomeDlg()
@@ -109,7 +110,18 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
     ShowNext(false);
     ShowPrev(false);    
-    PrevClipboardViewer = SetClipboardViewer();
+
+
+    if (WinUtils::IsVista()) {
+        HMODULE module = LoadLibrary(_T("user32.dll"));
+        AddClipboardFormatListenerFunc fAddClipboardFormatListener = reinterpret_cast<AddClipboardFormatListenerFunc>(GetProcAddress(module, "AddClipboardFormatListener"));
+        fAddClipboardFormatListener(m_hWnd);
+        fRemoveClipboardFormatListener_ = reinterpret_cast<RemoveClipboardFormatListenerFunc>(GetProcAddress(module, "RemoveClipboardFormatListener"));
+    }
+    else {
+        PrevClipboardViewer = SetClipboardViewer(); // using old fragile cliboard listening method on pre Vista systems
+    }
+
     ListBox.SetFocus();
     ShowWindow(SW_HIDE);
 
@@ -176,18 +188,23 @@ LRESULT CWelcomeDlg::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     
 void CWelcomeDlg::OnDrawClipboard()
 {
+    clipboardUpdated();
+
+    //Sending WM_DRAWCLIPBOARD msg to the next window in the chain
+    if(PrevClipboardViewer) ::PostMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0); 
+}
+
+void CWelcomeDlg::clipboardUpdated()
+{
     // Checking if there is an bitmap in clipboard
     bool IsClipboard = WizardDlg->IsClipboardDataAvailable();
 
-    if(ListBox.Items[4].Visible != IsClipboard)
+    if (ListBox.Items[4].Visible != IsClipboard)
     {
         ListBox.Items[4].Visible = IsClipboard;
         ListBox.InvalidateRect(&ListBox.Items[4].ItemRect, false); // Stupid OOP
     }
-    else ListBox.Items[4].Visible = IsClipboard; 
-
-    //Sending WM_DRAWCLIPBOARD msg to the next window in the chain
-    if(PrevClipboardViewer) ::PostMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0); 
+    else ListBox.Items[4].Visible = IsClipboard;
 }
 
 LRESULT CWelcomeDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -246,5 +263,11 @@ LRESULT CWelcomeDlg::OnBnClickedReuploadImages(WORD /*wNotifyCode*/, WORD /*wID*
 
 LRESULT CWelcomeDlg::OnBnClickedShortenUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     WizardDlg->executeFunc(_T("shortenurl"));
+    return 0;
+}
+
+LRESULT CWelcomeDlg::OnClipboardUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    clipboardUpdated();
     return 0;
 }

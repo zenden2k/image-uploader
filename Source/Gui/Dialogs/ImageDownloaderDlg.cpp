@@ -32,6 +32,8 @@ CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg,const CString &in
 {
     m_WizardDlg = wizardDlg;
     m_InitialBuffer = initialBuffer;
+    fRemoveClipboardFormatListener_ = NULL;
+    PrevClipboardViewer = NULL;
 }
 
 CImageDownloaderDlg::~CImageDownloaderDlg()
@@ -42,7 +44,19 @@ CImageDownloaderDlg::~CImageDownloaderDlg()
 LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     CenterWindow(GetParent());
-    PrevClipboardViewer = SetClipboardViewer();
+
+    isVistaOrLater_ = WinUtils::IsVista();
+
+    if (isVistaOrLater_)
+    {
+        HMODULE module = LoadLibrary(_T("user32.dll"));
+        AddClipboardFormatListenerFunc fAddClipboardFormatListener = reinterpret_cast<AddClipboardFormatListenerFunc>(GetProcAddress(module, "AddClipboardFormatListener"));
+        fAddClipboardFormatListener(m_hWnd);
+        fRemoveClipboardFormatListener_ = reinterpret_cast<RemoveClipboardFormatListenerFunc>(GetProcAddress(module, "RemoveClipboardFormatListener"));
+    } else {
+        PrevClipboardViewer = SetClipboardViewer(); // using old fragile cliboard listening method on pre Vista systems
+    }
+    
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
  
     ::SetFocus(GetDlgItem(IDOK));
@@ -53,7 +67,7 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     TRC(IDC_IMAGEDOWNLOADERTIP, "¬ведите список ссылок (http:// или ftp://, по одной ccылке в строке)");
     ::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS), SW_HIDE);
     SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_SETCHECK, Settings.WatchClipboard?BST_CHECKED:BST_UNCHECKED);
-     
+
     if(!m_InitialBuffer.IsEmpty())
     {
         ParseBuffer(m_InitialBuffer, false);
@@ -61,6 +75,17 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     }
     ::SetFocus(GetDlgItem(IDC_FILEINFOEDIT));
     return 1; 
+}
+
+LRESULT CImageDownloaderDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    if (isVistaOrLater_) {
+        fRemoveClipboardFormatListener_(m_hWnd);
+    } else {
+        ChangeClipboardChain(PrevClipboardViewer);
+    }
+
+    return 0;
 }
 
 bool ExtractLinks(CString text, std::vector<CString> &result)
@@ -100,6 +125,12 @@ LRESULT CImageDownloaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
     return 0;
 }
 
+LRESULT CImageDownloaderDlg::OnClipboardUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    clipboardUpdated();
+    return 0;
+}
+
 LRESULT CImageDownloaderDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     HWND hwndRemove = (HWND) wParam;  // handle of window being removed 
@@ -112,25 +143,11 @@ LRESULT CImageDownloaderDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lP
 
 void CImageDownloaderDlg::OnDrawClipboard()
 {
-    bool IsClipboard = IsClipboardFormatAvailable(CF_UNICODETEXT) != 0;
-
-    if(IsClipboard && SendDlgItemMessage(IDC_WATCHCLIPBOARD,BM_GETCHECK)==BST_CHECKED && !m_FileDownloader.IsRunning()    )
-    {
-        CString str;  
-        if (WinUtils::GetClipboardText(str, m_hWnd, true))
-        {
-            ParseBuffer(str, false);
-        }
-    }
+    clipboardUpdated();
     //Sending WM_DRAWCLIPBOARD msg to the next window in the chain
     if (PrevClipboardViewer) ::PostMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0);
 }
 
-LRESULT CImageDownloaderDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    ChangeClipboardChain(PrevClipboardViewer);
-    return 0;
-}
 
 CString GetExtensionByMime(CString mime)
 {
@@ -257,4 +274,18 @@ void CImageDownloaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)
 void CImageDownloaderDlg::OnConfigureNetworkClient(NetworkClient* nm)
 {
     IU_ConfigureProxy(*nm);
+}
+
+void CImageDownloaderDlg::clipboardUpdated()
+{
+    bool IsClipboard = IsClipboardFormatAvailable(CF_UNICODETEXT) != 0;
+
+    if (IsClipboard && SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_GETCHECK) == BST_CHECKED && !m_FileDownloader.IsRunning())
+    {
+        CString str;
+        if (WinUtils::GetClipboardText(str, m_hWnd, true))
+        {
+            ParseBuffer(str, false);
+        }
+    }
 }
