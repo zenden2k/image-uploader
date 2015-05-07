@@ -46,7 +46,7 @@
 #ifndef _WIN32
 #include <sys/time.h>
 #endif
-#define IU_CLI_VER "0.2.4"
+#define IU_CLI_VER "0.2.5"
 
 #ifdef _WIN32
 CAppModule _Module;
@@ -673,6 +673,11 @@ mkdir(settingsFolder.c_str(), 0700);
    if(! list.LoadFromFile(dataFolder + "servers.xml", Settings.ServersSettings))
    {
 	   std::cerr<<"Cannot load server list!"<<std::endl;
+   }
+
+   if( IuCoreUtils::FileExists(dataFolder + "userservers.xml") && !list.LoadFromFile(dataFolder + "userservers.xml", Settings.ServersSettings))
+   {
+	   std::cerr<<"Cannot load server list userservers.xml!"<<std::endl;
    }
     Settings.LoadSettings(settingsFolder,"settings_cli.xml");
 

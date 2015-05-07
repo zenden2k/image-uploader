@@ -462,6 +462,14 @@
 				Name="Func"
 				>
 			</Filter>
+			<Filter
+				Name="3rdpart"
+				>
+				<File
+					RelativePath="..\3rdpart\MemberFunctionCallback.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -475,6 +483,10 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
+		<File
+			RelativePath=".\ClassDiagram1.cd"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

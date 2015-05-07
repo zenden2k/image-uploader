@@ -218,7 +218,9 @@ void RegisterClasses(Sqrat::SqratVM& vm) {
     RegisterUploadClasses(vm);
     RegisterUploadTaskWrappers(vm);
     RegisterProcessClass(vm);
+    RegisterSimpleXmlClass(vm);
 #ifdef _WIN32
+  
     RegisterWebBrowserClass(vm);
     RegisterHtmlDocumentClass(vm);
     RegisterHtmlElementClass(vm);
