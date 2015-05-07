@@ -42,17 +42,20 @@ class CSettingsDlg : public CDialogImpl<CSettingsDlg>
         CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager);
         ~CSettingsDlg();
         enum { IDD = IDD_SETTINGSDLG };
+        enum { kStatusLabelTimer = 1 };
         enum SettingsPage { spGeneral, spServers, spImages, spThumbnails, spScreenshot,
         spVideo, spUploading, spIntegration, spTrayIcon, spHotkeys};
     protected:
         BEGIN_MSG_MAP(CSettingsDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+            MESSAGE_HANDLER(WM_TIMER, OnTimer)
             NOTIFY_HANDLER(IDC_TABCONTROL, TCN_SELCHANGE, OnTabChanged)
             COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             COMMAND_HANDLER_EX(IDC_APPLY, BN_CLICKED, OnApplyBnClicked)
-        COMMAND_HANDLER(IDC_SETTINGSPAGESLIST, LBN_SELCHANGE, OnSettingsPagesSelChanged)
+            COMMAND_HANDLER(IDC_SETTINGSPAGESLIST, LBN_SELCHANGE, OnSettingsPagesSelChanged)
+            MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
             REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
     // Handler prototypes:
@@ -61,11 +64,13 @@ class CSettingsDlg : public CDialogImpl<CSettingsDlg>
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     void CloseDialog(int nVal);
     LRESULT OnSettingsPagesSelChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnCtlColorStatic(HDC hdc, HWND hwndChild);
     int CurPage;
     CIcon hIcon;
     CIcon hIconSmall;
@@ -78,6 +83,7 @@ class CSettingsDlg : public CDialogImpl<CSettingsDlg>
     LRESULT OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 protected:
     UploadEngineManager* uploadEngineManager_;
+    CBrush backgroundBrush_;
 };
 
 #endif // SETTINGSDLG_H

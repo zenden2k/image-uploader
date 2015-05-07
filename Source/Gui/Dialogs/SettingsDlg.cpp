@@ -40,6 +40,7 @@ CSettingsDlg::CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager)
     PrevPage = -1;
     ZeroMemory(Pages, sizeof(Pages));
     uploadEngineManager_ = uploadEngineManager;
+    backgroundBrush_.CreateSysColorBrush(COLOR_BTNFACE);
 }
 
 CSettingsDlg::~CSettingsDlg()
@@ -53,6 +54,8 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     //SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYOUTRTL);  // test :))
     // center the dialog on the screen
     CenterWindow();
+    GuiTools::MakeLabelBold(GetDlgItem(IDC_SAVESTATUSLABEL));
+
     HWND parent = GetParent();
     if(!parent || !::IsWindowVisible(parent))
     {
@@ -80,6 +83,7 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     TRC(IDOK, "OK");
     TRC(IDCANCEL, "Отмена");
     TRC(IDC_APPLY, "Применить");
+    TRC(IDC_SAVESTATUSLABEL, "Настройки сохранены.");
     SetWindowText(TR("Настройки"));
     
     m_SettingsPagesListBox.SetCurSel(PageToShow);
@@ -111,6 +115,13 @@ LRESULT CSettingsDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
 
 LRESULT CSettingsDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    return 0;
+}
+
+LRESULT CSettingsDlg::OnTimer(UINT, WPARAM, LPARAM, BOOL&)
+{
+    GuiTools::ShowDialogItem(m_hWnd, IDC_SAVESTATUSLABEL, false);
+    KillTimer(kStatusLabelTimer);
     return 0;
 }
 
@@ -152,7 +163,9 @@ LRESULT CSettingsDlg::OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
             ShowPage(i);
             return 0;
         }
-    
+
+    GuiTools::ShowDialogItem(m_hWnd, IDC_SAVESTATUSLABEL, true);
+    SetTimer(kStatusLabelTimer, 3000);
     Settings.SaveSettings();
     return 0;
 }
@@ -261,4 +274,14 @@ LRESULT CSettingsDlg::OnSettingsPagesSelChanged(WORD wNotifyCode, WORD wID, HWND
 
     return 0;
 }
-   
+
+LRESULT CSettingsDlg::OnCtlColorStatic(HDC hdc, HWND hwndChild)
+{
+    if (hwndChild == GetDlgItem(IDC_SAVESTATUSLABEL)) {
+        SetTextColor(hdc, RGB(0, 180, 0));
+        SetBkMode(hdc, TRANSPARENT);
+        return (LRESULT)(HBRUSH)backgroundBrush_;
+    }
+    return 0;
+    return 0;
+}   
