@@ -180,7 +180,7 @@ win32 {
 LIBS+=  -lsqplus  -lsquirrel -lsqstdlib  -ljsoncpp -lpcre
 
 #-lZThread
-!win32 {
+win32 {
 CONFIG += c++11
 }
 win32 {
