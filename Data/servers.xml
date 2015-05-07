@@ -205,12 +205,14 @@
 		</Actions>
 		<Result DownloadUrlTemplate="http://sendfile.su/$(FileId)"/>
 	</Server>
-	<Server Name="jpegshare.net"> 
-		<Actions> 
-			<Action Type="upload" Url="http://jpegshare.net/upload.php" PostParams="imgfile=%filename%" RegExp="\[img\]http:\/\/jpegshare.net\/thumbs\/(.*?)\[/img\]" AssignVars="Thumb:0;"/> 
-		</Actions> 
-		<Result ImageUrlTemplate="http://jpegshare.net/images/$(Thumb)" ThumbUrlTemplate="http://jpegshare.net/thumbs/$(Thumb)"/> 
-	</Server> 
+	<Server Name="jpegshare.net">
+		<Actions>
+			<Action Type="upload" Url="http://jpegshare.net/upload.php" PostParams="imgfile=%filename%;" RegExp="\]\[img\](http://jpegshare.net/images/.*?)\[" AssignVars="Image:0;">
+				<RegExp Pattern="\[img\](http://jpegshare.net/thumbs/.*?)\[" AssignVars="Thumb:0;" Required="0"/>
+			</Action>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
 	<Server Name="load.to" FileHost="1" Debug="0">
 		<Actions>
 			<Action Type="get" Url="http://load.to" RegExp="&lt;form name=&quot;form_upload&quot;([^&gt;]+)action=&quot;(.+?)&quot;" AssignVars="_UploadUrl:1" OnlyOnce="1" />
