@@ -128,12 +128,12 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
             {
                 UE.MaxThreads = 1;
             }
-            UE.ImageHost =  !cur.AttributeBool("FileHost");
+            bool fileHost =  cur.AttributeBool("FileHost");
             UE.MaxFileSize =   cur.AttributeInt("MaxFileSize");
 
             std::string typeString =  cur.Attribute("Type");
 
-            UE.TypeMask = UE.ImageHost ? CUploadEngineData::TypeImageServer : CUploadEngineData::TypeFileServer; 
+            UE.TypeMask = 0;
             
             std::vector<std::string> types;
             
@@ -145,27 +145,31 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
             if (!typeString.empty()) {
                 types.push_back(typeString);
             }
-
+            if (types.empty())
+            {
+                types.push_back(fileHost ? "file" : "image");
+            }
             for (auto& it : types)
             {
-                if (!typeString.empty()) {
-                    if (it == "image") {
-                        UE.TypeMask |= CUploadEngineData::TypeImageServer;
-                    }
-                    else if (it == "file") {
-                        UE.TypeMask |= CUploadEngineData::TypeFileServer;
-                    }
-                    else if (it == "text") {
-                        UE.TypeMask |= CUploadEngineData::TypeTextServer;
-                    }
-                    else if (it == "urlshortening") {
-                        UE.TypeMask |= CUploadEngineData::TypeUrlShorteningServer;
-                    }
-                   
+                if (it == "image")
+                {
+                    UE.TypeMask |= CUploadEngineData::TypeImageServer;
+                }
+                else if (it == "file")
+                {
+                    UE.TypeMask |= CUploadEngineData::TypeFileServer;
+                }
+                else if (it == "text")
+                {
+                    UE.TypeMask |= CUploadEngineData::TypeTextServer;
+                }
+                else if (it == "urlshortening")
+                {
+                    UE.TypeMask |= CUploadEngineData::TypeUrlShorteningServer;
                 }
             }
 
-            UE.ImageHost = (UE.TypeMask & CUploadEngineData::TypeImageServer);
+//            UE.ImageHost = (UE.TypeMask & CUploadEngineData::TypeImageServer);
 
             std::vector<SimpleXmlNode> actions;
             cur["Actions"].GetChilds("Action", actions);

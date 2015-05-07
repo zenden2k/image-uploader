@@ -74,7 +74,7 @@ int CUploadEngineList_Base::getRandomImageServer()
     std::vector<int> m_suitableServers;
     for (size_t i = 0; i < m_list.size(); i++)
     {
-        if (m_list[i].NeedAuthorization != 2 && m_list[i].ImageHost)
+        if (m_list[i].NeedAuthorization != 2 && m_list[i].hasType(CUploadEngineData::TypeImageServer))
             m_suitableServers.push_back(i);
     }
     return m_suitableServers[rand() % (m_suitableServers.size())];
@@ -85,7 +85,7 @@ int CUploadEngineList_Base::getRandomFileServer()
     std::vector<int> m_suitableServers;
     for (size_t i = 0; i < m_list.size(); i++)
     {
-        if (m_list[i].NeedAuthorization != 2 && !m_list[i].ImageHost)
+        if (m_list[i].NeedAuthorization != 2 && !m_list[i].hasType(CUploadEngineData::TypeFileServer))
             m_suitableServers.push_back(i);
     }
     return m_suitableServers[rand() % m_suitableServers.size()];

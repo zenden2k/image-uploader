@@ -20,6 +20,10 @@ public:
     {
         threadCount_ = 0;
     }
+     virtual ~ThreadSyncPrivate()
+    {
+        
+    }
 };
 
 #endif

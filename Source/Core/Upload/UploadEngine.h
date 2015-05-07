@@ -158,7 +158,7 @@ class CUploadEngineData
         bool SupportsFolders;
         bool UsingPlugin;
         bool Debug;
-        bool ImageHost;
+        //bool ImageHost;
         bool SupportThumbnails;
         bool BeforehandAuthorization;
         int NeedAuthorization;
