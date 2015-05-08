@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1431027493.dat" TimeStamp="1431027493" Date="07.05.2015 21:38:13" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="7e9145a204df792bd47b0807d5798e35">
+<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1431128681.dat" TimeStamp="1431128681" Date="09.05.2015 01:44:41" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="657916cf1f43d8b1bbdd11e6b411eb41">
   <Info>
-[f] Fixed jpegshare.net
+New image hostings:
+[+] pixic.ru
+[+] fotosklad.org.ua
+
+Url shorteners:
+[+] g.ua
 </Info>
 </UpdateInfo>

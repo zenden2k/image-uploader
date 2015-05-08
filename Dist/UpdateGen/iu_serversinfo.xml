@@ -9,6 +9,11 @@
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
 <Info>
-[f] Fixed jpegshare.net
+New image hostings:
+[+] pixic.ru
+[+] fotosklad.org.ua
+
+Url shorteners:
+[+] g.ua
 </Info>
 </UpdatePackageSource>
