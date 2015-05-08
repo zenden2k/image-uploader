@@ -44,9 +44,9 @@ Also yoo need to install "msinttypes" headers.
 
 You can download ALL necessary libraries and headers (precompiled for MSVC 2013) by following link:
 
-https://bintray.com/artifact/download/zenden/zenden-image-uploader/Image_Uploader_Contrib_MSVC_2013_and_sources_v1.3.2_27.04.2015.7z
+https://bintray.com/artifact/download/zenden/zenden-image-uploader/Image_Uploader_Contrib_MSVC_2013_and_sources_v1.3.2_08.05.2015.7z
 
-mirror https://docs.google.com/file/d/0B_RKTUl10DcrdGs5VVM3N3RQUGs/edit?usp=drivesdk
+mirror https://docs.google.com/file/d/0B_RKTUl10DcrVDRBVk16d3lNbE0/edit?usp=drivesdk
 
 Image Uploader is using the following libraries:
 
