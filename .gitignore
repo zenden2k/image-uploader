@@ -5,3 +5,4 @@ Build
 *.ncb
 Dist/output/
 Dist/portable/
+Data/Snapshots

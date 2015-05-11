@@ -4,6 +4,7 @@
 #include "Core/Logging.h"
 #include <Core/ThreadSync.h>
 #include <Func/Common.h>
+#include "Core/CoreFunctions.h"
 
 Script::Script(const std::string& fileName, ThreadSync* serverSync, bool doLoad)
 {
@@ -52,7 +53,7 @@ bool Script::preLoad()
 {
     networkClient_.reset(new NetworkClient());
     networkClient_->setCurlShare(sync_->getCurlShare());
-    IU_ConfigureProxy(*(networkClient_.get()));
+    CoreFunctions::ConfigureProxy(networkClient_.get());
     Sqrat::RootTable& rootTable = vm_.GetRootTable();
     rootTable.SetInstance("Sync", sync_);
     rootTable.SetInstance("nm", networkClient_.get());

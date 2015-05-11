@@ -27,6 +27,7 @@
 #include "Func/WinUtils.h"
 #include "Func/myutils.h"
 #include <Core/ServiceLocator.h>
+#include <Core/CoreFunctions.h>
 
 // CImageDownloaderDlg
 CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg,const CString &initialBuffer)
@@ -274,7 +275,7 @@ void CImageDownloaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)
 
 void CImageDownloaderDlg::OnConfigureNetworkClient(NetworkClient* nm)
 {
-    IU_ConfigureProxy(*nm);
+    CoreFunctions::ConfigureProxy(nm);
 }
 
 void CImageDownloaderDlg::clipboardUpdated()

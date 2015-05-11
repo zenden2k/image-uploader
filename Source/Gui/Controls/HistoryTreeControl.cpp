@@ -27,6 +27,7 @@
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
 #include "Core/LocalFileCache.h"
+#include <Core/CoreFunctions.h>
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl()
@@ -786,5 +787,5 @@ void CHistoryTreeControl::ResetContent()
 void CHistoryTreeControl::OnConfigureNetworkClient(NetworkClient* nm)
 {
     //MessageBox(_T("OnConfigureNetworkClient"),0,0);
-    IU_ConfigureProxy(*nm);
+    CoreFunctions::ConfigureProxy(nm);
 }

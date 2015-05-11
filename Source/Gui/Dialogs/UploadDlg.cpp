@@ -35,6 +35,8 @@
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Upload/UploadManager.h"
 #include "Func/WinUtils.h"
+#include <Core/CoreFunctions.h>
+
 /*
 class TempFilesDeleter
 {
@@ -817,7 +819,7 @@ bool CUploadDlg::OnFileFinished(std::shared_ptr<UploadTask> task, bool ok) {
 }
 
 bool CUploadDlg::OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm) {
-    IU_ConfigureProxy(*nm);
+    CoreFunctions::ConfigureProxy(nm);
     return true;
 }
 

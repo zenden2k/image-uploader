@@ -618,10 +618,13 @@
     <ClInclude Include="Source\CLI\ConsoleScriptDialogProvider.h" />
     <ClInclude Include="Source\Core\3rdpart\htmlentities.h" />
     <ClInclude Include="Source\Core\CommonDefs.h" />
+    <ClInclude Include="Source\Core\CoreFunctions.h" />
     <ClInclude Include="Source\Core\HistoryManager.h" />
+    <ClInclude Include="Source\Core\i18n\Translator.h" />
     <ClInclude Include="Source\Core\Images\ImageConverterPrivateBase.h" />
     <ClInclude Include="Source\Core\Images\ImageConverterPrivate_gdiplus.h" />
     <ClInclude Include="Source\Core\LocalFileCache.h" />
+    <ClInclude Include="Source\Core\Logging.h" />
     <ClInclude Include="Source\Core\Logging\ConsoleLogger.h" />
     <ClInclude Include="Source\Core\Logging\Logger.h" />
     <ClInclude Include="Source\Core\Network\CurlShare.h" />
@@ -676,7 +679,6 @@
     <ClInclude Include="Source\Gui\Components\NewStyleFolderDialog.h" />
     <ClInclude Include="Source\Gui\Controls\ResultsListView.h" />
     <ClInclude Include="Source\Gui\Dialogs\VideoGrabberPage.h" />
-    <ClInclude Include="Source\logging.h" />
     <ClInclude Include="Source\resource.h" />
     <ClInclude Include="Source\versioninfo.h" />
     <ClInclude Include="Source\Gui\WizardCommon.h" />
@@ -961,10 +963,12 @@
   <ItemGroup>
     <ClCompile Include="Source\CLI\ConsoleScriptDialogProvider.cpp" />
     <ClCompile Include="Source\Core\3rdpart\htmlentities.cpp" />
+    <ClCompile Include="Source\Core\CoreFunctions.cpp" />
     <ClCompile Include="Source\Core\HistoryManager.cpp" />
     <ClCompile Include="Source\Core\Images\ImageConverterPrivateBase.cpp" />
     <ClCompile Include="Source\Core\Images\ImageConverterPrivate_gdiplus.cpp" />
     <ClCompile Include="Source\Core\LocalFileCache.cpp" />
+    <ClCompile Include="Source\Core\Logging.cpp" />
     <ClCompile Include="Source\Core\Logging\ConsoleLogger.cpp" />
     <ClCompile Include="Source\Core\Network\CurlShare.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\COMUtils.cpp" />
@@ -1011,7 +1015,6 @@
     <ClCompile Include="Source\Image Uploader.cpp">
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
-    <ClCompile Include="Source\Core\Logging.cpp" />
     <ClCompile Include="Source\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'">Create</PrecompiledHeader>

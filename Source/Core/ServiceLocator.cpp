@@ -10,6 +10,8 @@ public:
         programWindow_ = nullptr;
         uploadErrorHandler_ = nullptr;
         logger_ = nullptr;
+        dialogProvider_ = nullptr;
+        translator_ = nullptr;
     }
     CUploadEngineList_Base* engineList_;
     CHistoryManager historyManager;
@@ -17,6 +19,7 @@ public:
     IUploadErrorHandler* uploadErrorHandler_;
     ILogger* logger_;
     IDialogProvider* dialogProvider_;
+    ITranslator* translator_;
 };
 
 ServiceLocator::ServiceLocator() : d_ptr(new ServiceLocatorPrivate()){
@@ -64,6 +67,14 @@ IDialogProvider* ServiceLocator::dialogProvider() {
 
 void ServiceLocator::setDialogProvider(IDialogProvider* dialogProvider) {
     d_ptr->dialogProvider_ = dialogProvider;
+}
+
+ITranslator* ServiceLocator::translator() {
+    return d_ptr->translator_;
+}
+
+void ServiceLocator::setTranslator(ITranslator* transl) {
+    d_ptr->translator_ = transl;
 }
 
 void ServiceLocator::setProgramWindow(IProgramWindow* window) {

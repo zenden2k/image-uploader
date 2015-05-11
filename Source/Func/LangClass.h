@@ -23,8 +23,10 @@
 #pragma once
 
 #include "atlheaders.h"
+#include "Core/i18n/Translator.h"
+#include <string>
 
-class CLang
+class CLang : public ITranslator
 {
     public:
         CLang();
@@ -36,6 +38,8 @@ class CLang
         CString getLanguage() const;
         CString getLocale() const;
         CString getLanguageFileNameForLocale(const CString& locale);
+        virtual std::string getCurrentLanguage() override;
+        virtual std::string getCurrentLocale() override;
     private:
         struct TranslateListItem
         {

@@ -9,9 +9,9 @@
 #define U2Q(str) QString::fromUtf8(str.c_str())
 #define _(str) str
 
-#ifdef IU_WTL
+//#ifdef IU_WTL
     #define W2U(str) IuCoreUtils::WstringToUtf8(((LPCTSTR)(str)))
     #define U2W(str) CString(IuCoreUtils::Utf8ToWstring(str).c_str())
-#endif
+//#endif
 
 #endif

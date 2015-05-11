@@ -668,6 +668,19 @@ mkdir(settingsFolder.c_str(), 0700);
 	AppParams* params = AppParams::instance();
 	params->setDataDirectory(dataFolder);
 	params->setSettingsDirectory(settingsFolder);
+	
+#ifdef _WIN32
+    TCHAR ShortPath[1024];
+    GetTempPath(ARRAY_SIZE(ShortPath), ShortPath);
+    TCHAR TempPath[1024];
+    if (!GetLongPathName(ShortPath,TempPath, ARRAY_SIZE(TempPath)) ) {
+        lstrcpy(TempPath, ShortPath);
+    }
+    params->setTempDirectory(IuCoreUtils::WstringToUtf8(TempPath);
+#else
+    return  params->setTempDirectory("/var/tmp/");
+#endif
+
 
    std::cerr<<"Zenden Image Uploader console utility v"<< IU_CLI_VER <<" (based on IU v"<<_APP_VER<<" build "<<BUILD<<")"<<std::endl;
    if(! list.LoadFromFile(dataFolder + "servers.xml", Settings.ServersSettings))

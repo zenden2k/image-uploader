@@ -8,6 +8,7 @@
 #include "Core/Scripting/ScriptsManager.h"
 #include "Core/Settings.h"
 #include "UploadEngineManager.h"
+#include <Core/CoreFunctions.h>
 
 UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler) :
                 CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler),
@@ -44,7 +45,7 @@ bool UploadManager::shortenLinksInSession(std::shared_ptr<UploadSession> session
 
 void UploadManager::configureNetwork(CFileQueueUploader* uploader, NetworkClient* networkClient)
 {
-    IU_ConfigureProxy(*networkClient);
+    CoreFunctions::ConfigureProxy(networkClient);
 }
 
 void UploadManager::sessionAdded(UploadSession* session)

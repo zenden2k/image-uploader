@@ -27,6 +27,7 @@
 #include "Core/Settings.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Func/WinUtils.h"
+#include <Core/CoreFunctions.h>
 
 CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager) :serverProfile_(serverProfile)
 {
@@ -72,7 +73,7 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     m_FolderTree.SetImageList(m_PlaceSelectorImageList);
     m_FolderMap[L""] = 0;
 
-    IU_ConfigureProxy(m_NetworkClient);
+    CoreFunctions::ConfigureProxy(&m_NetworkClient);
 
     m_FolderOperationType = foGetFolders;
     m_pluginLoader = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
@@ -137,7 +138,7 @@ DWORD CServerFolderSelect::Run()
         m_FolderMap.clear();
        
         NetworkClient networkClient;
-        IU_ConfigureProxy(networkClient);
+        CoreFunctions::ConfigureProxy(&networkClient);
         script->setNetworkClient(&networkClient);
         int retCode = script->getFolderList(m_FolderList);
         if (retCode < 1)

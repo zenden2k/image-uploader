@@ -46,6 +46,7 @@ void WriteLog(LogMsgType MsgType, const CString& Sender, const CString& Msg, con
 
 #endif
 #include <Core/ServiceLocator.h>
+#include <Core/CoreFunctions.h>
 
 BOOL CreateFolder(LPCTSTR szFolder)
 {
@@ -281,7 +282,7 @@ bool CUpdateManager::internal_load_update(CString name)
     CUpdateInfo remotePackage;
     NetworkClient nm;
     nm.setTreatErrorsAsWarnings(true);
-    IU_ConfigureProxy(nm);    
+    CoreFunctions::ConfigureProxy(&nm);
 
     CString url = localPackage.updateUrl();
     url.Replace(_T("%appver%"), IuCommonFunctions::GetVersion());
@@ -318,7 +319,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 {
     CString filename = IuCommonFunctions::IUTempFolder + ui.packageName() +_T(".zip");
     std::string filenamea= IuCoreUtils::WstringToUtf8((LPCTSTR)filename);
-    IU_ConfigureProxy(nm_); 
+    CoreFunctions::ConfigureProxy(&nm_);
     nm_.setOutputFile( filenamea);
     m_statusCallback->updateStatus(nCurrentIndex, TR("Downloading file ")+ ui.downloadUrl());
     

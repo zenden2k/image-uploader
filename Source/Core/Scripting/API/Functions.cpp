@@ -30,7 +30,9 @@
     #include <windows.h>
     #ifndef IU_CLI
         #include "Func/IuCommonFunctions.h"
+#ifdef IU_WTL
         #include "Func/LangClass.h"
+#endif
         #include "Func/WinUtils.h"
     #endif
 #endif
@@ -178,7 +180,7 @@ const std::string Translate(const std::string& key, const std::string& originalT
         }
     }
 
-#ifndef IU_CLI
+#ifdef IU_WTL
     return IuCoreUtils::WstringToUtf8((LPCTSTR)Lang.GetString(IuCoreUtils::Utf8ToWstring(originalText).c_str()));
 #endif
     return originalText;
@@ -249,21 +251,7 @@ const std::string JsonEscapeString( const std::string& src) {
 }
 
 const std::string GetTempDirectory() {
-#ifdef _WIN32
-    #ifndef IU_CLI
-        return IuCoreUtils::WstringToUtf8((LPCTSTR)IuCommonFunctions::IUTempFolder);
-    #else
-    TCHAR ShortPath[1024];
-    GetTempPath(ARRAY_SIZE(ShortPath), ShortPath);
-    TCHAR TempPath[1024];
-    if (!GetLongPathName(ShortPath,TempPath, ARRAY_SIZE(TempPath)) ) {
-        lstrcpy(TempPath, ShortPath);
-    }
-    return IuCoreUtils::WstringToUtf8(TempPath);
-    #endif
-#else
-    return "/var/tmp/";
-#endif
+    return AppParams::instance()->tempDirectory();
 }
 
 const std::string url_encode(const std::string &value) {
@@ -541,7 +529,7 @@ int64_t ScriptGetFileSize(const std::string& filename) {
 
 const std::string GetAppLanguage() {
 #ifndef IU_CLI
-    return IuCoreUtils::WstringToUtf8((LPCTSTR)Lang.getLanguage());
+    return ServiceLocator::instance()->translator()->getCurrentLanguage();
 #else 
     return "en";
 #endif 
@@ -549,7 +537,7 @@ const std::string GetAppLanguage() {
 
 const std::string GetAppLocale() {
 #ifndef IU_CLI
-    return IuCoreUtils::WstringToUtf8((LPCTSTR)Lang.getLocale());
+    return ServiceLocator::instance()->translator()->getCurrentLocale();
 #else 
     return "en_US";
 #endif 

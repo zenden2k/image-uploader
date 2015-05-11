@@ -37,6 +37,7 @@
 #include "Func/IuCommonFunctions.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "Core/Upload/FileUploadTask.h"
+#include <Core/CoreFunctions.h>
 
 const TCHAR CImageReuploaderDlg::LogTitle[] = _T("Image Reuploader");
 
@@ -534,12 +535,12 @@ void CImageReuploaderDlg::OnQueueFinished(UploadSession* uploadSession) {
 }
 
 bool  CImageReuploaderDlg::OnConfigureNetworkClient(CFileQueueUploader* ,NetworkClient* nm) {
-    IU_ConfigureProxy(*nm);
+    CoreFunctions::ConfigureProxy(nm);
     return true;
 }
 
 void CImageReuploaderDlg::FileDownloader_OnConfigureNetworkClient(NetworkClient* nm) {
-    IU_ConfigureProxy(*nm);
+    CoreFunctions::ConfigureProxy(nm);
 }
 
 void CImageReuploaderDlg::generateOutputText() {

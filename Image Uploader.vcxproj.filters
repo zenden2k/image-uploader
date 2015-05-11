@@ -94,11 +94,11 @@
     <Filter Include="Source Files\Gui\ImageEditor\DrawingTools">
       <UniqueIdentifier>{c032cdc2-e181-4f34-851e-3bcc711e5018}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core\i18n">
+      <UniqueIdentifier>{5014a579-3d18-45d3-b174-50e54e7676ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\logging.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -774,6 +774,15 @@
     <ClInclude Include="Source\Core\Utils\DesktopUtils.h">
       <Filter>Source Files\Core\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\CoreFunctions.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\i18n\Translator.h">
+      <Filter>Source Files\Core\i18n</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Logging.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1111,9 +1120,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Image Uploader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\Logging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\stdafx.cpp">
@@ -1733,6 +1739,12 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Utils\DesktopUtils.cpp">
       <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\CoreFunctions.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Logging.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -188,6 +188,14 @@ CString CLang::getLocale() const
     return locale_;
 }
 
+std::string CLang::getCurrentLanguage() {
+    return W2U(m_sLang);
+}
+
+std::string CLang::getCurrentLocale() {
+    return W2U(locale_);
+}
+
 CString CLang::getLanguageFileNameForLocale(const CString& locale)
 {
     std::vector<CString> list;

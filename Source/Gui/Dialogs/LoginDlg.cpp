@@ -26,6 +26,7 @@
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Func/WinUtils.h"
 #include "Core/Upload/UploadEngineManager.h"
+#include <Core/CoreFunctions.h>
 
 // CLoginDlg
 CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool createNew) : serverProfile_(serverProfile)
@@ -185,7 +186,7 @@ DWORD CLoginDlg::Run()
             return 0;
         }
 
-        IU_ConfigureProxy(NetworkClient_);
+        CoreFunctions::ConfigureProxy(&NetworkClient_);
         plugin_->setNetworkClient(&NetworkClient_);
         int res = plugin_->doLogin();
         if ( res ) {

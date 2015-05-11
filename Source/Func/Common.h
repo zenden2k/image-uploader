@@ -78,8 +78,6 @@ bool __fastcall CreateShortCut(
 
 bool IULaunchCopy(CString params, CAtlArray<CString> &files);
 
-void IU_ConfigureProxy(NetworkClient& nm);
-
 const CString IU_GetVersion();
 #define IU_NEWFOLDERMARK ("_iu_create_folder_")
 void DeleteDir2(LPCTSTR Dir);

@@ -30,6 +30,7 @@
 #include <Wininet.h>
 #include "Func/WebUtils.h"
 #include "Core/Upload/UploadManager.h"
+#include <Core/CoreFunctions.h>
 
 // CShortenUrlDlg
 CShortenUrlDlg::CShortenUrlDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager* uploadManager, const CString &initialBuffer)
@@ -234,7 +235,7 @@ LRESULT CShortenUrlDlg::OnCtlColorMsgDlg(HDC hdc, HWND hwnd) {
 }
 
 bool  CShortenUrlDlg::OnConfigureNetworkClient(CFileQueueUploader* ,NetworkClient* nm) {
-    IU_ConfigureProxy(*nm);
+    CoreFunctions::ConfigureProxy(nm);
     return true;
 }
 

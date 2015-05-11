@@ -39,6 +39,7 @@
 #include "Func/DefaultUploadErrorHandler.h"
 #include "Func/DefaultLogger.h"
 #include "Func/WtlScriptDialogProvider.h"
+#include "Core/AppParams.h"
 
 CAppModule _Module;
 
@@ -54,6 +55,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
     }*/
     IuCommonFunctions::CreateTempFolder();
     
+    AppParams::instance()->setTempDirectory(W2U(IuCommonFunctions::IUTempFolder));
     std::vector<CString> fileList;
     WinUtils::GetFolderFileList( fileList, WinUtils::GetAppFolder() + _T("\\"), _T("*.old") );
     for ( size_t i=0; i<fileList.size(); i++ ) {
@@ -185,6 +187,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
     google::AddLogSink(&logSink);
     WtlScriptDialogProvider dialogProvider;
     serviceLocator->setDialogProvider(&dialogProvider);
+    serviceLocator->setTranslator(&Lang);
 
     OleInitialize(NULL);
     HRESULT hRes ;

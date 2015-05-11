@@ -29,3 +29,11 @@ void AppParams::setLanguageFile(const std::string& languageFile)
 {
     languageFile_ = languageFile;
 }
+
+void AppParams::setTempDirectory(const std::string& directory) {
+    tempDirectory_ = directory;
+}
+
+std::string AppParams::tempDirectory() const {
+    return tempDirectory_;
+}

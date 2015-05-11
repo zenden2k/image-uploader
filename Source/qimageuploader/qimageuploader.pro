@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui webkitwidgets
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -87,7 +87,9 @@ SOURCES += main.cpp\
     ../Core/Settings/EncodedPassword.cpp \
     ../Core/Settings/CommonGuiSettings.cpp \
     ../Core/SettingsManager.cpp \
-    ../Core/Utils/DesktopUtils.cpp
+    ../Core/Utils/DesktopUtils.cpp \
+    ../Core/CoreFunctions.cpp \
+    ../Core/Logging.cpp
 
 HEADERS  += Gui/mainwindow.h \
     ../Core/Network/NetworkClient.h \
@@ -181,7 +183,8 @@ HEADERS  += Gui/mainwindow.h \
     ../Core/Settings/BasicSettings.h \
     ../Core/Settings/QtGuiSettings.h \
     ../Core/Settings/EncodedPassword.h \
-    ../Core/Settings/CommonGuiSettings.h
+    ../Core/Settings/CommonGuiSettings.h \
+    ../Core/Logging.h
 
 FORMS    += Gui/ui/mainwindow.ui \
     Gui/ui/FrameGrabberDlg.ui

@@ -2,6 +2,9 @@
 #include "UploadSession.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 
+#ifndef IU_WTL
+#define TR(a) L##a
+#endif
 UploadTask::UploadTask()
 {
     init();

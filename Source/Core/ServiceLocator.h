@@ -13,6 +13,7 @@ class CUploadEngineList_Base;
 class LocalFileCache;
 class CHistoryManager;
 class ServiceLocatorPrivate;
+class ITranslator;
 
 class ServiceLocator : public Singleton<ServiceLocator> {
 public:
@@ -29,6 +30,8 @@ public:
     void setLogger(ILogger* logger);
     IDialogProvider* dialogProvider();
     void setDialogProvider(IDialogProvider* dialogProvider);
+    ITranslator* translator();
+    void setTranslator(ITranslator* transl);
 protected:
     std::unique_ptr<ServiceLocatorPrivate> d_ptr;
 };
