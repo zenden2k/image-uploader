@@ -4,7 +4,7 @@
 #include "AddFtpServerDialog.h"
 #include "Gui/GuiTools.h"
 #include "Core/ServerListManager.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Func//IuCommonFunctions.h"
 
 // CAddFtpServerDialog

@@ -25,7 +25,7 @@
 #include <math.h>
 #include "resource.h"
 #ifndef IU_CLI
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #else
 #define TR(a) _T(a)
 #endif

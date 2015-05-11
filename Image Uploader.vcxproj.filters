@@ -67,15 +67,6 @@
     <Filter Include="Source Files\Func">
       <UniqueIdentifier>{ba6120b1-ddf4-46f8-95a4-4c93dda6b03c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\ImageEditor">
-      <UniqueIdentifier>{5aba9f79-9f62-48a6-b822-f504f4fb38e8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ImageEditor\Gui">
-      <UniqueIdentifier>{4f779f8f-d493-4333-b723-0717cccc7baf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ImageEditor\DrawingTools">
-      <UniqueIdentifier>{c032cdc2-e181-4f34-851e-3bcc711e5018}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Core\Upload\Filters">
       <UniqueIdentifier>{0a071e63-e048-429b-94f8-3023eaf3f3a2}</UniqueIdentifier>
     </Filter>
@@ -87,6 +78,21 @@
     </Filter>
     <Filter Include="Source Files\Gui\Components">
       <UniqueIdentifier>{7deab3a3-a633-4576-b949-399c8b1b9fe2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Settings">
+      <UniqueIdentifier>{32cca66b-e1a6-4772-9371-37112cd13f97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Logging">
+      <UniqueIdentifier>{26e9922b-3105-48a7-bcf2-48f77455746d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gui\ImageEditor">
+      <UniqueIdentifier>{5aba9f79-9f62-48a6-b822-f504f4fb38e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gui\ImageEditor\Gui">
+      <UniqueIdentifier>{4f779f8f-d493-4333-b723-0717cccc7baf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gui\ImageEditor\DrawingTools">
+      <UniqueIdentifier>{c032cdc2-e181-4f34-851e-3bcc711e5018}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -477,16 +483,10 @@
     <ClInclude Include="Source\Gui\Controls\WTLBrowserView.h">
       <Filter>Source Files\Gui\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Func\Base.h">
-      <Filter>Source Files\Func</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Func\ImageEditorConfigurationProvider.h">
       <Filter>Source Files\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\IuCommonFunctions.h">
-      <Filter>Source Files\Func</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Func\LocalFileCache.h">
       <Filter>Source Files\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\MyDataObject.h">
@@ -511,85 +511,85 @@
       <Filter>Source Files\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\BasicTypes.h">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\Canvas.h">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\Document.h">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\DrawingElement.h">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\DrawingTool.h">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\InputBox.h">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\MovableElement.h">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\MovableElements.h">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\Region.h">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\resource.h">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\Gui\ColorsDelegate.h">
-      <Filter>Source Files\ImageEditor\Gui</Filter>
+      <Filter>Source Files\Gui\ImageEditor\Gui</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\Gui\ImageEditorView.h">
-      <Filter>Source Files\ImageEditor\Gui</Filter>
+      <Filter>Source Files\Gui\ImageEditor\Gui</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\Gui\ImageEditorWindow.h">
-      <Filter>Source Files\ImageEditor\Gui</Filter>
+      <Filter>Source Files\Gui\ImageEditor\Gui</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\Gui\InputBoxControl.h">
-      <Filter>Source Files\ImageEditor\Gui</Filter>
+      <Filter>Source Files\Gui\ImageEditor\Gui</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\Gui\TextParamsWindow.h">
-      <Filter>Source Files\ImageEditor\Gui</Filter>
+      <Filter>Source Files\Gui\ImageEditor\Gui</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\Gui\Toolbar.h">
-      <Filter>Source Files\ImageEditor\Gui</Filter>
+      <Filter>Source Files\Gui\ImageEditor\Gui</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\DrawingTools\AbstractDrawingTool.h">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\DrawingTools\BlurTool.h">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\DrawingTools\BrushTool.h">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\DrawingTools\ColorPickerTool.h">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\DrawingTools\CropTool.h">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\DrawingTools\MarkerTool.h">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\DrawingTools\MoveAndResizeTool.h">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\DrawingTools\PenTool.h">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\DrawingTools\SelectionTool.h">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\DrawingTools\TextTool.h">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\DrawingTools\VectorElementTool.h">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Upload\UploadFilter.h">
       <Filter>Source Files\Core\Upload</Filter>
@@ -710,6 +710,69 @@
     </ClInclude>
     <ClInclude Include="Source\Gui\Components\NewStyleFolderDialog.h">
       <Filter>Source Files\Gui\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Settings\BasicSettings.h">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Settings\CliSettings.h">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Settings\CommonGuiSettings.h">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Settings\QtGuiSettings.h">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Settings\WtlGuiSettings.h">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Settings.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Settings\EncodedPassword.h">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Settings\StringConvert.h">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\ServiceLocator.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\HistoryManager.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\LocalFileCache.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\UploadErrorHandler.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\DefaultUploadErrorHandler.h">
+      <Filter>Source Files\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\ConsoleUploadErrorHandler.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Logging\Logger.h">
+      <Filter>Source Files\Core\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\DefaultLogger.h">
+      <Filter>Source Files\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Logging\ConsoleLogger.h">
+      <Filter>Source Files\Core\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\DialogProvider.h">
+      <Filter>Source Files\Core\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\WtlScriptDialogProvider.h">
+      <Filter>Source Files\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CLI\ConsoleScriptDialogProvider.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utils\DesktopUtils.h">
+      <Filter>Source Files\Core\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1407,16 +1470,10 @@
     <ClCompile Include="Source\Gui\Controls\WTLBrowserView.cpp">
       <Filter>Source Files\Gui\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Func\Base.cpp">
-      <Filter>Source Files\Func</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Func\Common.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\FileInfoHelper.cpp">
-      <Filter>Source Files\Func</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Func\HistoryManager.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\ImageEditorConfigurationProvider.cpp">
@@ -1426,9 +1483,6 @@
       <Filter>Source Files\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\LangClass.cpp">
-      <Filter>Source Files\Func</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Func\LocalFileCache.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\MyDataObject.cpp">
@@ -1446,9 +1500,6 @@
     <ClCompile Include="Source\Func\MyUtils.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Func\Settings.cpp">
-      <Filter>Source Files\Func</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Func\SystemUtils.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
@@ -1462,79 +1513,79 @@
       <Filter>Source Files\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\BasicTypes.cpp">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\Canvas.cpp">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\Document.cpp">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\DrawingElement.cpp">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\DrawingTool.cpp">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\MovableElement.cpp">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\MovableElements.cpp">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\Region.cpp">
-      <Filter>Source Files\ImageEditor</Filter>
+      <Filter>Source Files\Gui\ImageEditor</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\Gui\ColorsDelegate.cpp">
-      <Filter>Source Files\ImageEditor\Gui</Filter>
+      <Filter>Source Files\Gui\ImageEditor\Gui</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\Gui\ImageEditorView.cpp">
-      <Filter>Source Files\ImageEditor\Gui</Filter>
+      <Filter>Source Files\Gui\ImageEditor\Gui</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\Gui\ImageEditorWindow.cpp">
-      <Filter>Source Files\ImageEditor\Gui</Filter>
+      <Filter>Source Files\Gui\ImageEditor\Gui</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\Gui\InputBoxControl.cpp">
-      <Filter>Source Files\ImageEditor\Gui</Filter>
+      <Filter>Source Files\Gui\ImageEditor\Gui</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\Gui\TextParamsWindow.cpp">
-      <Filter>Source Files\ImageEditor\Gui</Filter>
+      <Filter>Source Files\Gui\ImageEditor\Gui</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\Gui\Toolbar.cpp">
-      <Filter>Source Files\ImageEditor\Gui</Filter>
+      <Filter>Source Files\Gui\ImageEditor\Gui</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\DrawingTools\AbstractDrawingTool.cpp">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\DrawingTools\BlurTool.cpp">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\DrawingTools\BrushTool.cpp">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\DrawingTools\ColorPickerTool.cpp">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\DrawingTools\CropTool.cpp">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\DrawingTools\MarkerTool.cpp">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\DrawingTools\MoveAndResizeTool.cpp">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\DrawingTools\PenTool.cpp">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\DrawingTools\SelectionTool.cpp">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\DrawingTools\TextTool.cpp">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\DrawingTools\VectorElementTool.cpp">
-      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+      <Filter>Source Files\Gui\ImageEditor\DrawingTools</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Upload\UploadFilter.cpp">
       <Filter>Source Files\Core</Filter>
@@ -1636,6 +1687,51 @@
       <Filter>Source Files\Core\3rdpart</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Utils\TextUtils.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Settings\BasicSettings.cpp">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Settings\CliSettings.cpp">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Settings\CommonGuiSettings.cpp">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Settings\WtlGuiSettings.cpp">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Settings\EncodedPassword.cpp">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\ServiceLocator.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\HistoryManager.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\LocalFileCache.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\DefaultUploadErrorHandler.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\ConsoleUploadErrorHandler.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\DefaultLogger.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Logging\ConsoleLogger.cpp">
+      <Filter>Source Files\Core\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\WtlScriptDialogProvider.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CLI\ConsoleScriptDialogProvider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Utils\DesktopUtils.cpp">
       <Filter>Source Files\Core\Utils</Filter>
     </ClCompile>
   </ItemGroup>

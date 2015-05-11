@@ -5,6 +5,7 @@
 #include <thread>
 #include <mutex>
 
+class IUploadErrorHandler;
 class CScriptUploadEngine;
 class CUploadEngineList;
 class ServerProfile;
@@ -12,7 +13,7 @@ class ServerProfile;
 class UploadEngineManager
 {
 public:
-    UploadEngineManager(CUploadEngineList* uploadEngineList);
+    UploadEngineManager(CUploadEngineList* uploadEngineList, IUploadErrorHandler* uploadErrorHandler);
     ~UploadEngineManager();
     CAbstractUploadEngine* getUploadEngine(ServerProfile &serverProfile);
     CScriptUploadEngine* getScriptUploadEngine(ServerProfile &serverProfile);
@@ -31,6 +32,7 @@ protected:
     typedef std::pair<std::string, std::string> ServerSyncMapKey;
     std::map<ServerSyncMapKey, ServerSync*> serverSyncs_;
     std::mutex serverSyncsMutex_;
+    IUploadErrorHandler* uploadErrorHandler_;
 };
 
 #endif

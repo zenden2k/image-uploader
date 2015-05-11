@@ -24,13 +24,14 @@
 #include "Core/3rdpart/pcreplusplus.h"
 #include "mediainfodlg.h"
 #include "LogWindow.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/WebViewWindow.h"
 #include "Core/Utils/TextUtils.h"
 #include "Core/Utils/StringUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
+#include <Core/ServiceLocator.h>
 
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg,std::vector<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)
@@ -43,7 +44,7 @@ CResultsPanel::CResultsPanel(CWizardDlg *dlg,std::vector<CUrlListItem>  & urlLis
     shortenUrl_ = false;
     if(!LoadTemplates(TemplateLoadError))
     {
-        WriteLog(logWarning, _T("Results Module"), TemplateLoadError);
+        ServiceLocator::instance()->logger()->write(logWarning, _T("Results Module"), TemplateLoadError);
     }
 }
 

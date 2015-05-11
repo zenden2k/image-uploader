@@ -26,7 +26,7 @@
 #include "Func/common.h"
 #include "3rdpart/PropertyList.h"
 #include "Core/Upload/UploadEngine.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 class ServerProfile;
 class CServerParamsDlg : 

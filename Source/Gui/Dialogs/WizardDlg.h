@@ -32,13 +32,14 @@
 #include "resource.h"       // main symbols
 #include "screenshotdlg.h"
 #include "Gui/Dialogs/UpdateDlg.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 
 #define ID_PASTE 9888
 #define ID_HOTKEY_BASE 10000
 #define WM_MY_ADDIMAGE WM_USER + 222
 #define WM_MY_SHOWPAGE WM_USER + 223
 #define WM_MY_EXIT WM_USER + 224
+#include <Core/ProgramWindow.h>
 // CWizardDlg
 
 class CFolderAdd;
@@ -83,7 +84,6 @@ public:
         HWND SubdirsCheckbox;
 
 };
-extern CWizardDlg * pWizardDlg;
 extern TCHAR MediaInfoDllPath[MAX_PATH];
 class UploadManager;
 class UploadEngineManager;
@@ -91,7 +91,8 @@ class ScriptsManager;
 class CWizardDlg : 
     public CDialogImpl<CWizardDlg>    , public CUpdateUI<CWizardDlg>,
         public CMessageFilter, public CIdleHandler, public IDropTarget, public CRegionSelectCallback
-        , public CUpdateDlg::CUpdateDlgCallback
+        , public CUpdateDlg::CUpdateDlgCallback,
+        public IProgramWindow
 {
 public:
     struct AddImageStruct
@@ -101,7 +102,7 @@ public:
     };
 
     CWizardDlg();
-    ~CWizardDlg();
+    virtual ~CWizardDlg();
     CStringList m_Paths;
     enum { IDD = IDD_WIZARDDLG };
     virtual BOOL PreTranslateMessage(MSG* pMsg);
@@ -165,12 +166,14 @@ public:
     void setSessionFileServer(ServerProfile server);
     ServerProfile getSessionImageServer() const;
     ServerProfile getSessionFileServer() const;
-    void setServersChanged(bool changed);
+    void setServersChanged(bool changed) override;
     bool serversChanged() const;
+    virtual WindowHandle getHandle() override;
+    virtual WindowNativeHandle getNativeHandle() override;
 protected:
     ServerProfile sessionImageServer_, sessionFileServer_;
     bool serversChanged_;
-    void settingsChanged(CSettings* settings);
+    void settingsChanged(BasicSettings* settings);
 public:
     bool ShowPage(int idPage,int prev=-1,int next=-1);
     bool AddImage(const CString &FileName, const CString &VirtualFileName, bool Show=true);

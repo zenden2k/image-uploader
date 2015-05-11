@@ -1,7 +1,7 @@
 ﻿#include "ScriptsManager.h"
 #include <Gui/Dialogs/LogWindow.h>
 #include "UploadFilterScript.h"
-#include <Func/Settings.h>
+#include "Core/Settings.h"
 
 ScriptsManager::ScriptsManager()
 {

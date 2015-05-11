@@ -21,9 +21,9 @@
 #include "HistoryWindow.h"
 
 #include "Func/LangClass.h"
-#include "Func/Settings.h"
-#include "Func/HistoryManager.h"
-#include "Func/Base.h"
+#include "Core/Settings.h"
+#include "Core/HistoryManager.h"
+#include "Core/ServiceLocator.h"
 #include "ResultsPanel.h"
 #include "ResultsWindow.h"
 #include "Gui/WizardCommon.h"
@@ -31,10 +31,11 @@
 #include "Func/WinUtils.h"
 
 // CHistoryWindow
-CHistoryWindow::CHistoryWindow()
+CHistoryWindow::CHistoryWindow(CWizardDlg* wizardDlg)
 {
     m_historyReader = 0;
     delayed_closing_ = false;
+    wizardDlg_ = wizardDlg;
 }
 
 CHistoryWindow::~CHistoryWindow()
@@ -71,7 +72,7 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
         m_wndAnimation.ShowWindow(SW_HIDE);
     }
 
-    std::string fName = ZBase::get()->historyManager()->makeFileName();
+    std::string fName = ServiceLocator::instance()->historyManager()->makeFileName();
     
     std::vector<CString> files;
     historyFolder = IuCoreUtils::Utf8ToWstring(Settings.SettingsFolder).c_str()+CString(_T("\\History\\"));
@@ -298,7 +299,7 @@ LRESULT CHistoryWindow::OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
         CUrlListItem it  = fromHistoryItem(*hit);
         items.push_back(it);
     }
-    CResultsWindow rp( pWizardDlg, items,false);
+    CResultsWindow rp(wizardDlg_, items, false);
     rp.DoModal(m_hWnd);
     return 0;
 }

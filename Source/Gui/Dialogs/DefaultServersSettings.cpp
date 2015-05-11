@@ -22,12 +22,13 @@
 
 #include <uxtheme.h>
 #include "Func/common.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "LogWindow.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "WizardDlg.h"
+#include <Core/ServiceLocator.h>
 
 // CDefaultServersSettings
 CDefaultServersSettings::CDefaultServersSettings(UploadEngineManager* uploadEngineManager)
@@ -146,7 +147,7 @@ bool CDefaultServersSettings::Apply()
     Settings.urlShorteningServer = urlShortenerServerSelector_->serverProfile();
     Settings.RememberImageServer = GuiTools::GetCheck(m_hWnd, IDC_REMEMBERIMAGESERVERSETTINGS);
     Settings.RememberFileServer = GuiTools::GetCheck(m_hWnd, IDC_REMEMBERFILESERVERSETTINGS);
-    pWizardDlg->setServersChanged(true);
+    ServiceLocator::instance()->programWindow()->setServersChanged(true);
     return true;
 }
 

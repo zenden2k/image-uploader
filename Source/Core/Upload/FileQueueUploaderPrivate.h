@@ -7,6 +7,7 @@
 #include "ServerSync.h"
 #include <mutex>
 #include <Core/Scripting/ScriptsManager.h>
+#include "Core/Upload/UploadErrorHandler.h"
 
 class CUploader;
 class CAbstractUploadEngine;
@@ -39,7 +40,9 @@ public:
 };
 class FileQueueUploaderPrivate : public  TaskAcceptorBase {
 public:
-    FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager);
+    FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager,
+        IUploadErrorHandler* uploadErrorHandler
+        );
     virtual ~FileQueueUploaderPrivate();
     void start();
     virtual void run();
@@ -77,7 +80,8 @@ protected:
     bool autoStart_;
     int startFromSession_;
     UploadEngineManager* uploadEngineManager_;
-    ScriptsManager* scriptsManager_;
+    ScriptsManager* scriptsManager_; 
+    IUploadErrorHandler* uploadErrorHandler_;
 };
 
 #endif

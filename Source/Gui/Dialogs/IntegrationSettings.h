@@ -27,7 +27,7 @@
 #include "resource.h"       // main symbols
 #include "Gui/Controls/MyImage.h"
 #include "Gui/Dialogs/settingspage.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/Controls/IconButton.h"
 
 class UploadEngineManager;

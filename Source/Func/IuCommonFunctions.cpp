@@ -1,6 +1,6 @@
 #include "IuCommonFunctions.h"
 #ifndef IU_SHELLEXT
-#include "Settings.h"
+#include "Core/Settings.h"
 #endif
 #include "versioninfo.h"
 #include "WinUtils.h"

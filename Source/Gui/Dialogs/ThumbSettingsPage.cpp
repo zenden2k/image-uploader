@@ -25,7 +25,7 @@
 #include <uxtheme.h>
 #include "LogWindow.h"
 #include "Func/LangClass.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Images/Thumbnail.h"
 #include "Func/MyUtils.h"
@@ -39,6 +39,7 @@
 
 #pragma comment( lib, "uxtheme.lib" )
 #include <Core/Video/GdiPlusImage.h>
+#include <Core/ServiceLocator.h>
 
 // CThumbSettingsPage
 CThumbSettingsPage::CThumbSettingsPage()
@@ -251,7 +252,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
         autoPtrThumb.reset(thumb);
         if(!thumb->LoadFromFile(fileName))
         {
-            WriteLog(logError, _T("CThumbSettingsPage"), TR("Не могу загрузить файл миниатюры!"));
+            ServiceLocator::instance()->logger()->write(logError, _T("CThumbSettingsPage"), TR("Не могу загрузить файл миниатюры!"));
             return;
         }
     }

@@ -28,6 +28,7 @@
 #include <atlddx.h>
 #include <atlframe.h>
 #include "Core/Upload/CommonTypes.h"
+#include "Core/Logging/Logger.h"
 
 #define MYWM_WRITELOG WM_USER + 100
 
@@ -69,7 +70,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
         BEGIN_DLGRESIZE_MAP(CLogWindow)
             DLGRESIZE_CONTROL(IDC_MSGLIST, DLSZ_SIZE_X | DLSZ_SIZE_Y)
             DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X | DLSZ_MOVE_Y)
-            DLGRESIZE_CONTROL(IDC_CLEARLOGBUTTON, DLSZ_MOVE_X | DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_CLEARLOGBUTTON, DLSZ_MOVE_Y)
         END_DLGRESIZE_MAP()
 
         // Handler prototypes:
@@ -79,7 +80,6 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        void WriteLog(LogMsgType MsgType, const CString& Sender, const CString& Msg, const CString& Info = CString() );
         CLogListBox MsgList;
         void Show();
         LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL & /*bHandled*/);
@@ -87,16 +87,11 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
         LRESULT OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
         void TranslateUI();
         LRESULT OnBnClickedClearLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        static void WriteLog(LogMsgType MsgType, const CString& Sender, const CString&  Msg, const CString&  Info = CString());
+protected:
+    void WriteLogImpl(LogMsgType MsgType, const CString& Sender, const CString& Msg, const CString& Info = CString());
 };
 
 extern CLogWindow LogWindow;
-
-void WriteLog(LogMsgType MsgType, const CString& Sender,  const CString&  Msg,  const CString&  Info = CString());
-
-namespace DefaultErrorHandling {
-void ErrorMessage(ErrorInfo);
-void DebugMessage(const std::string&, bool);
-
-};
 
 #endif // LOGWINDOW_H

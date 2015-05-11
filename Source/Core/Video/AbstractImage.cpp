@@ -1,6 +1,6 @@
 #include "AbstractImage.h"
 
-#ifdef QT_VERSION 
+#ifdef IU_QT
     #include "QtImage.h"
 #elif defined(_WIN32)
     #include "GdiPlusImage.h"
@@ -20,7 +20,7 @@ int AbstractImage::getHeight() const {
 
 AbstractImage* AbstractImage::createImage()
 {
-    #ifdef QT_VERSION 
+    #ifdef IU_QT
         return new QtImage();
     #elif defined(_WIN32)
         return new GdiPlusImage();

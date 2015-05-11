@@ -25,7 +25,7 @@
 #include "Gui/Dialogs/wizarddlg.h"
 #include "Gui/Dialogs/floatingwindow.h"
 #include "Common/CmdLine.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Func/WinUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Core/Logging.h"
@@ -35,6 +35,10 @@
 #include <boost/locale.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <vld.h>
+#include "Core/ServiceLocator.h"
+#include "Func/DefaultUploadErrorHandler.h"
+#include "Func/DefaultLogger.h"
+#include "Func/WtlScriptDialogProvider.h"
 
 CAppModule _Module;
 
@@ -94,7 +98,9 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
         }
     }
 
-    pWizardDlg = &dlgMain;
+    ServiceLocator::instance()->setProgramWindow(&dlgMain);
+    floatWnd.setWizardDlg(&dlgMain);
+
     if ( dlgMain.Create( 0, (LPARAM)&DlgCreationResult ) == NULL ) {
             ATLTRACE( _T("Main dialog creation failed!  :( sorry\n") );
             dlgMain.m_hWnd = 0;
@@ -167,11 +173,18 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 #endif
     FLAGS_logtostderr = true;
     //google::SetLogDestination(google::GLOG_INFO,"d:/" );
-    
+    DefaultLogger defaultLogger;
+    DefaultUploadErrorHandler uploadErrorHandler(&defaultLogger);
+   
     google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
     LogWindow.Create(0);
-    MyLogSink logSink;
+    ServiceLocator* serviceLocator = ServiceLocator::instance();
+    serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
+    serviceLocator->setLogger(&defaultLogger);
+    MyLogSink logSink(&defaultLogger);
     google::AddLogSink(&logSink);
+    WtlScriptDialogProvider dialogProvider;
+    serviceLocator->setDialogProvider(&dialogProvider);
 
     OleInitialize(NULL);
     HRESULT hRes ;

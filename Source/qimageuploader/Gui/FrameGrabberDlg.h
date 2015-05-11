@@ -15,7 +15,7 @@ public:
     explicit FrameGrabberDlg(QWidget *parent = 0);
     ~FrameGrabberDlg();
     
-    void frameGrabbed(const Utf8String&, int64_t, AbstractImage*);
+    void frameGrabbed(const std::string&, int64_t, AbstractImage*);
 private slots:
     void on_pushButton_clicked();
 

@@ -18,7 +18,7 @@
 
 */
 
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #ifdef _WIN32
 #include <atlheaders.h>
 #include <Shlobj.h>
@@ -126,8 +126,6 @@ inline void myFromString(const std::string& text, CHotkeyList& value) {
 }
 
 #endif
-
-CSettings Settings;
 
 #if !defined  (IU_CLI)
 void RunIuElevated(CString params) {

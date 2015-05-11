@@ -22,7 +22,7 @@
 #include "Func/Common.h"
 #include "Core/3rdpart/pcreplusplus.h"
 #include "LogWindow.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Upload/FileQueueUploader.h"
@@ -32,8 +32,8 @@
 #include <algorithm>
 #include <set>
 #include "Gui/Controls/CustomEditControl.h"
-#include "Func/LocalFileCache.h"
-#include "Func/Base.h"
+#include "Core/LocalFileCache.h"
+#include "Core/ServiceLocator.h"
 #include "Func/IuCommonFunctions.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "Core/Upload/FileUploadTask.h"
@@ -201,7 +201,7 @@ bool CImageReuploaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloade
             logMessageType = logWarning;
         }
         
-        WriteLog(logMessageType, LogTitle, _T("Cannot download the image '") + Utf8ToWCstring(it.url) + _T("'.")
+        ServiceLocator::instance()->logger()->write(logMessageType, LogTitle, _T("Cannot download the image '") + Utf8ToWCstring(it.url) + _T("'.")
             + _T("\r\nStatus code:") + IntToStr(statusCode) + (cacheLogMessage.IsEmpty() ? _T("") : (_T("\r\n\r\n") + cacheLogMessage)) + _T("\r\n") );
 
         /*if ( !cacheLogMessage.IsEmpty() ) {
@@ -214,10 +214,10 @@ bool CImageReuploaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloade
 
 bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListItem it, CString& logMessage) {
     DownloadItemData* dit = reinterpret_cast<DownloadItemData*>(it.id);
-    LocalFileCache& localFileCache = LocalFileCache::instance();
+    LocalFileCache* localFileCache = LocalFileCache::instance();
     bool success = false;
-    localFileCache.ensureHistoryParsed();
-    std::string localFile = localFileCache.get(dit->originalUrl);
+    localFileCache->ensureHistoryParsed();
+    std::string localFile = localFileCache->get(dit->originalUrl);
     CString message;
     if ( !localFile.empty() ) {
         message.Format(_T("File '%s' has been found on local computer ('%s')"), (LPCTSTR)Utf8ToWCstring(it.url), (LPCTSTR)Utf8ToWCstring(localFile) );
@@ -226,14 +226,14 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
             success = true;
         }
     } else {
-        localFile = localFileCache.getThumb(dit->originalUrl);
+        localFile = localFileCache->getThumb(dit->originalUrl);
         if ( !localFile.empty() ) {
             ImageConverter imageConverter;
             Thumbnail thumb;
 
             if (!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + serverProfile_.getImageUploadParams().getThumb().TemplateName +
                 _T(".xml")))) {
-                WriteLog(logError, LogTitle, TR("Не могу загрузить файл миниатюры!"));
+                ServiceLocator::instance()->logger()->write(logError, LogTitle, TR("Не могу загрузить файл миниатюры!"));
             } else {
                 message.Format(_T("Generating the thumbnail from local file ('%s')"),  (LPCTSTR)Utf8ToWCstring(localFile) );
 
@@ -265,7 +265,7 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
 bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it, std::string localFileName ) {
     std::string mimeType = IuCoreUtils::GetFileMimeType(localFileName);
     if (mimeType.find("image/") == std::string::npos) {
-        WriteLog(logError, LogTitle, _T("File '") + Utf8ToWCstring(it.url) +
+        ServiceLocator::instance()->logger()->write(logError, LogTitle, _T("File '") + Utf8ToWCstring(it.url) +
             _T("'\r\n doesn't seems to be an image.\r\nIt has mime type '") + Utf8ToWCstring(mimeType) + "'.");
         return false;
     } 
@@ -453,7 +453,7 @@ bool CImageReuploaderDlg::BeginDownloading()
             InternetCrackUrl(urlWide, urlWide.GetLength(), 0, &urlComponents);
             if ( !lstrlen( urlComponents.lpszScheme ) )  {
                 if ( sourceUrl.IsEmpty() ) {
-                    WriteLog(logError, LogTitle, _T("Cannot download file by relative url: \"") + urlWide + _T("\".\r\n You must provide base URL."));
+                    ServiceLocator::instance()->logger()->write(logError, LogTitle, _T("Cannot download file by relative url: \"") + urlWide + _T("\".\r\n You must provide base URL."));
                     continue;
                 }
                 TCHAR absoluteUrlBuffer[MAX_PATH+1];
@@ -475,7 +475,7 @@ bool CImageReuploaderDlg::BeginDownloading()
             GuiTools::EnableDialogItem(m_hWnd, IDOK, false);
 
             SetDlgItemText(IDCANCEL, TR("Остановить"));
-            CHistoryManager * mgr = ZBase::get()->historyManager();
+            CHistoryManager * mgr = ServiceLocator::instance()->historyManager();
         
             historySession_ = mgr->newSession();
 

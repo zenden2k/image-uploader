@@ -30,7 +30,7 @@
 #include "Func/WinUtils.h"
 #include "LogWindow.h"
 #include "mediainfodlg.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Utils/CryptoUtils.h"
 #include "Core/Logging.h"
@@ -39,6 +39,7 @@
 #include "atlheaders.h"
 #include "Func/WinUtils.h"
 #include <Core/Images/Utils.h>
+#include <Core/ServiceLocator.h>
 
 CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
 {
@@ -272,7 +273,7 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
                 if ( !IuCoreUtils::createDirectory(snapshotsFolderUtf8) ) {
                     CString logMessage;
                     logMessage.Format(_T("Could not create folder '%s'."), (LPCTSTR)snapshotsFolder);
-                    WriteLog(logError, _T("Video Grabber"), logMessage);
+                    ServiceLocator::instance()->logger()->write(logError, _T("Video Grabber"), logMessage);
                     snapshotsFolder = IuCommonFunctions::IUTempFolder;
 
                 }

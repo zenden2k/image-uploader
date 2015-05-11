@@ -1,3 +1,6 @@
+@echo off
+echo Have you called create_portable ?
+pause
 call set_vars.bat
 pushd UpdateGen\
 php -f gen-update.php serversinfo

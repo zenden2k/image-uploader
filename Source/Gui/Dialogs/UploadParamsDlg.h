@@ -25,7 +25,7 @@
 #include "resource.h"       // main symbols
 #include "Core/Upload/UploadEngine.h"
 #include "3rdpart/ColorButton.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 
 // CUploadParamsDlg
 

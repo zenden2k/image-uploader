@@ -22,7 +22,7 @@
 #include "ContextMenuItemDlg.h"
 #include "wizarddlg.h"
 #include "Func/Common.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "Func/WinUtils.h"

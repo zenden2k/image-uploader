@@ -89,6 +89,7 @@ public:
 
     CFloatingWindow();
     ~CFloatingWindow();
+    void setWizardDlg(CWizardDlg* wizardDlg);
     DECLARE_WND_CLASS(_T("CFloatingWindow"))
     
     BEGIN_MSG_MAP(CFloatingWindow)
@@ -189,6 +190,7 @@ public:
          utImage, utUrl, utShorteningImageUrl
      };
      UploadType uploadType_;
+     CWizardDlg* wizardDlg_;
 };
 extern CFloatingWindow floatWnd;
 void CreateFloatWindow();

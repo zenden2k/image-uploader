@@ -54,6 +54,4 @@ class CWizardPage
         void ShowPrev(bool Show = true);
 };
 
-extern CWizardDlg* pWizardDlg;
-
 #endif // IU_GUI_WIZARDCOMMON_H

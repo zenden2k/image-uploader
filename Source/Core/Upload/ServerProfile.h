@@ -75,11 +75,13 @@ public:
 #ifndef IU_SERVERLISTTOOL
     void bind(SettingsNode& n);
 #endif
+#ifdef IU_WTL
     ImageUploadParams getImageUploadParams();
     ImageUploadParams& getImageUploadParamsRef();
+
     void setImageUploadParams(ImageUploadParams iup);
     friend struct ImageUploadParams;
-
+#endif
 protected:
     std::string serverName_;
     std::string profileName_;
@@ -89,7 +91,7 @@ protected:
     std::string folderUrl_;
     bool shortenLinks_;
 
-    friend class CSettings;
+    friend class CommonGuiSettings;
 };
 
 #endif

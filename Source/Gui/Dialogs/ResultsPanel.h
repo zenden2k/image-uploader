@@ -26,7 +26,7 @@
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/WizardCommon.h"
 #include "3rdpart/thread.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 
 #define IDC_OPTIONSMENU 10002
 #define IDC_USEDIRECTLINKS 10003

@@ -24,7 +24,7 @@
 
 #include "versioninfo.h"
 #include <curl/curl.h>
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Func/IuCommonFunctions.h"

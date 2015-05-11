@@ -58,7 +58,8 @@ bool TaskAcceptorBase::canAcceptUploadTask(UploadTask* task)
     return false;
 }
 
-FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager) {
+FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager, 
+    ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler) {
     m_nThreadCount = 3;
     m_NeedStop = false;
     m_IsRunning = false;
@@ -67,6 +68,7 @@ FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUplo
     startFromSession_ = 0;
     uploadEngineManager_ = uploadEngineManager;
     scriptsManager_ = scriptsManager;
+    uploadErrorHandler_ = uploadErrorHandler;
     autoStart_ = true;
 }
 
@@ -79,12 +81,12 @@ bool FileQueueUploaderPrivate::onNeedStopHandler() {
 
 void FileQueueUploaderPrivate::onErrorMessage(CUploader*, ErrorInfo ei)
 {
-    DefaultErrorHandling::ErrorMessage(ei);
+    uploadErrorHandler_->ErrorMessage(ei);
 }
 
 void FileQueueUploaderPrivate::onDebugMessage(CUploader*, const std::string& msg, bool isResponseBody)
 {
-    DefaultErrorHandling::DebugMessage(msg, isResponseBody);
+    uploadErrorHandler_->DebugMessage(msg, isResponseBody);
 }
 
 void FileQueueUploaderPrivate::onTaskAdded(UploadSession*, UploadTask* task)

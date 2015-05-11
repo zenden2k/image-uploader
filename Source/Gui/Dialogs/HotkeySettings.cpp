@@ -22,7 +22,7 @@
 
 #include "traysettings.h"
 #include "hotkeyeditor.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Scripting/API/WebBrowserPrivate_win.h"
 

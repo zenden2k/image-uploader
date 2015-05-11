@@ -1,6 +1,7 @@
 ﻿#include "ServerProfile.h"
 #include "Core/SettingsManager.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
+#include "Core/ServiceLocator.h"
 
 ServerProfile::ServerProfile() {
     UseDefaultSettings = true;
@@ -84,7 +85,9 @@ void ServerProfile::clearFolderInfo()
 ServerProfile ServerProfile::deepCopy()
 {
     ServerProfile res = *this;
+#ifdef IU_WTL
     res.imageUploadParams = getImageUploadParams();
+#endif
     res.UseDefaultSettings = false;
     UseDefaultSettings = false;
     return res;
@@ -101,10 +104,13 @@ void ServerProfile::bind(SettingsNode& serverNode)
     serverNode["@ProfileName"].bind(profileName_);
     serverNode["@UseDefaultSettings"].bind(UseDefaultSettings);
     serverNode["@ShortenLinks"].bind(shortenLinks_);
+#ifdef IU_WTL
     imageUploadParams.bind(serverNode);
+#endif
 }
 #endif
 
+#ifdef IU_WTL
 ImageUploadParams ServerProfile::getImageUploadParams()
 {
 #ifndef IU_SERVERLISTTOOL
@@ -124,6 +130,7 @@ void ServerProfile::setImageUploadParams(ImageUploadParams iup)
 {
     imageUploadParams = iup;
 }
+#endif
 
 ServerSettingsStruct& ServerProfile::serverSettings() {
     ServerSettingsStruct* res = Settings.getServerSettings(*this);
@@ -134,5 +141,5 @@ ServerSettingsStruct& ServerProfile::serverSettings() {
 }
 
 CUploadEngineData* ServerProfile::uploadEngineData() const {
-    return _EngineList->byName(IuCoreUtils::Utf8ToWstring(serverName_).c_str());
+    return ServiceLocator::instance()->engineList()->byName(serverName_);
 }

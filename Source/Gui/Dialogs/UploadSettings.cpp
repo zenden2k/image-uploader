@@ -26,7 +26,7 @@
 #include "Gui/GuiTools.h"
 #include "ConvertPresetDlg.h"
 #include "Func/MyEngineList.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/Dialogs/SettingsDlg.h"
 #include "Gui/GuiTools.h"
 #include "Gui/IconBitmapUtils.h"
@@ -54,8 +54,9 @@ CUploadSettings::~CUploadSettings()
 }
 
 
-void CUploadSettings::settingsChanged(CSettings* settings)
+void CUploadSettings::settingsChanged(BasicSettings* settingsBase)
 {
+    WtlGuiSettings* settings = static_cast<WtlGuiSettings*>(settingsBase);
     sessionImageServer_.getImageUploadParamsRef().getThumbRef().TemplateName = settings->imageServer.getImageUploadParamsRef().getThumbRef().TemplateName;
 }
 

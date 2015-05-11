@@ -31,11 +31,12 @@
     #include <io.h>
     #include "Core/Utils/utils_Win.h"
 #else
-#ifdef __APPLE__
-#include <sys/uio.h>
-#else
-#include <sys/io.h>
-#endif
+    #include <boost/filesystem.hpp>
+    #ifdef __APPLE__
+        #include <sys/uio.h>
+    #else
+        #include <sys/io.h>
+    #endif
     #include <sys/stat.h>
     #include "Core/Utils/utils_unix.h"
 #endif
@@ -101,8 +102,8 @@ bool FileExists(const std::string& fileName)
     #ifdef WIN32
         if(GetFileAttributes(Utf8ToWstring(fileName).c_str())== (unsigned long)-1) return false;
     #else
-        if(getFileSize(fileName) == -1) return false;
-        // TODO
+        return boost::filesystem::exists(fileName);
+        //if(getFileSize(fileName) == -1) return false;
     #endif
     return true;
 }
@@ -535,7 +536,4 @@ std::string ThreadIdToString(const std::thread::id& id)
     return threadIdSS.str();
 }
 
-void func()
-{
-}
 } // end of namespace IuCoreUtils

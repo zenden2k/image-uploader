@@ -22,7 +22,7 @@
 #include "atlheaders.h"
 #include "Func/common.h"
 #include "Core/Upload/UploadEngine.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Core/ScreenCapture.h"
 #include "Gui/GuiTools.h"
 #include "Func/myutils.h"

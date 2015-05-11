@@ -28,7 +28,6 @@ SOURCES += main.cpp\
     ../Core/3rdpart/tinystr.cpp \
     ../Core/3rdpart/pcreplusplus.cpp \
     ../Core/3rdpart/parser.cpp \
-    ../Core/3rdpart/CP_RSA.cpp \
     ../Core/3rdpart/CodePages.cpp \
     ../Core/3rdpart/base64.cpp \
     ../Core/Upload/Uploader.cpp \
@@ -59,8 +58,36 @@ SOURCES += main.cpp\
     ../Core/Upload/UploadSession.cpp \
     ../Core/Upload/UploadTask.cpp \
     ../Core/Upload/UrlShorteningTask.cpp \
-    ../Core/Upload/Filters/ImageConverterFilter.cpp \
-    ../Core/Upload/Filters/UrlShorteningFilter.cpp
+    ../Core/Upload/Filters/UrlShorteningFilter.cpp \
+    ../Core/Settings/QtGuiSettings.cpp \
+    ../Core/ServiceLocator.cpp \
+    ../Core/Network/CurlShare.cpp \
+    ../Core/Video/DirectShowUtil.cpp \
+    ../Core/Scripting/API/COMUtils.cpp \
+    ../Core/Scripting/API/Functions.cpp \
+    ../Core/Scripting/API/Process.cpp \
+    ../Core/Scripting/API/RegularExpression.cpp \
+    ../Core/Scripting/API/ScriptAPI.cpp \
+    ../Core/Scripting/API/UploadTaskWrappers.cpp \
+    ../Core/Scripting/Script.cpp \
+    ../Core/Scripting/ScriptsManager.cpp \
+    ../Core/Scripting/UploadFilterScript.cpp \
+    ../Core/ThreadSync.cpp \
+    ../Core/Utils/TextUtils.cpp \
+    ../Core/3rdpart/htmlentities.cpp \
+    ../3rdpart/Registry.cpp \
+    ../Func/WinUtils.cpp \
+    ../Core/AppParams.cpp \
+    ../Core/TempFileDeleter.cpp \
+    ../Core/Upload/Filters/UserFilter.cpp \
+    ../Core/HistoryManager.cpp \
+    ../Core/3rdpart/dxerr.cpp \
+    ../Core/LocalFileCache.cpp \
+    ../Core/Settings/BasicSettings.cpp \
+    ../Core/Settings/EncodedPassword.cpp \
+    ../Core/Settings/CommonGuiSettings.cpp \
+    ../Core/SettingsManager.cpp \
+    ../Core/Utils/DesktopUtils.cpp
 
 HEADERS  += Gui/mainwindow.h \
     ../Core/Network/NetworkClient.h \
@@ -119,7 +146,42 @@ HEADERS  += Gui/mainwindow.h \
     ../Core/Upload/UploadTask.h \
     ../Core/Upload/UrlShorteningTask.h \
     ../Core/Upload/Filters/ImageConverterFilter.h \
-    ../Core/Upload/Filters/UrlShorteningFilter.h
+    ../Core/Upload/Filters/UrlShorteningFilter.h \
+    ../Core/ServiceLocator.h \
+    ../Core/Network/CurlShare.h \
+    ../Core/Video/DirectShowUtil.h \
+    ../Core/Scripting/API/COMUtils.h \
+    ../Core/Scripting/API/Functions.h \
+    ../Core/Scripting/API/HtmlDocument.h \
+    ../Core/Scripting/API/HtmlDocumentPrivate_win.h \
+    ../Core/Scripting/API/HtmlElement.h \
+    ../Core/Scripting/API/HtmlElementPrivate_win.h \
+    ../Core/Scripting/API/Process.h \
+    ../Core/Scripting/API/RegularExpression.h \
+    ../Core/Scripting/API/ScriptAPI.h \
+    ../Core/Scripting/API/UploadTaskWrappers.h \
+    ../Core/Scripting/API/WebBrowser.h \
+    ../Core/Scripting/API/WebBrowserPrivate_win.h \
+    ../Core/Scripting/API/WebBrowserPrivateBase.h \
+    ../Core/Scripting/Script.h \
+    ../Core/Scripting/ScriptsManager.h \
+    ../Core/Scripting/Squirrelnc.h \
+    ../Core/Scripting/UploadFilterScript.h \
+    ../Core/ThreadSync.h \
+    ../Core/Utils/TextUtils.h \
+    ../Core/3rdpart/htmlentities.h \
+    ../3rdpart/Registry.h \
+    ../Func/WinUtils.h \
+    ../Core/AppParams.h \
+    ../Core/TempFileDeleter.h \
+    ../Core/Upload/Filters/UserFilter.h \
+    ../Core/HistoryManager.h \
+    ../Core/3rdpart/dxerr.h \
+    ../Core/LocalFileCache.h \
+    ../Core/Settings/BasicSettings.h \
+    ../Core/Settings/QtGuiSettings.h \
+    ../Core/Settings/EncodedPassword.h \
+    ../Core/Settings/CommonGuiSettings.h
 
 FORMS    += Gui/ui/mainwindow.ui \
     Gui/ui/FrameGrabberDlg.ui
@@ -174,7 +236,7 @@ unix {
 win32 {
 INCLUDEPATH += ../../Contrib/Include/Libs/
 }
-DEFINES += TIXML_USE_STL IU_CLI GOOGLE_GLOG_DLL_DECL=
+DEFINES += TIXML_USE_STL IU_QT GOOGLE_GLOG_DLL_DECL=
 
 contains(QMAKE_TARGET.arch, x86_64) {
     DEFINES += _SQ64
@@ -189,6 +251,7 @@ contains(QMAKE_TARGET.arch, x86_64) {
 win32 {
 LIBS+=  -L../../Contrib/Lib/Release/
 LIBS+=  -L../../Contrib/Lib/
+LIBS+=  -L../../Contrib/Source/boost/stage/lib/
 }
 unix {
 LIBS+=  -L../../Contrib/Lib/Linux/$$ARCH

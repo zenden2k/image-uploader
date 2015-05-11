@@ -1,5 +1,5 @@
 #include "ImageEditorConfigurationProvider.h"
-#include "Settings.h"
+#include "Core/Settings.h"
 
 ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
 {

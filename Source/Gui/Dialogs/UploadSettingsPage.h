@@ -29,7 +29,7 @@
 #include "Gui/Controls/MyImage.h"
 #include "settingspage.h"
 #include "Gui/WizardCommon.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 // CUploadSettingsPage
 
 class CUploadSettingsPage : 

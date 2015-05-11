@@ -24,7 +24,7 @@
 #include "Func/common.h"
 #include "NewFolderDlg.h"
 #include "LogWindow.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Func/WinUtils.h"
 

@@ -29,7 +29,7 @@
 #include "Gui/Controls/IconButton.h"
 #include <atlcrack.h>
 #include "Gui/Controls/PercentEdit.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #define IDC_SELECTFOLDER 4050
 #define IDC_SERVERBUTTON 4000
@@ -200,7 +200,7 @@ protected:
     void selectServer(ServerProfile& sp, int serverIndex);
     void updateUrlShorteningCheckboxLabel();
     void shorteningUrlServerChanged(CServerSelectorControl* selectorControl);
-    void settingsChanged(CSettings* settings);
+    void settingsChanged(BasicSettings* settings);
     std::map<int, HICON> serverMenuIcons_;
     HWND useServerThumbnailsTooltip_;
     UploadEngineManager * uploadEngineManager_;

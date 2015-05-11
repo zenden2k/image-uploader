@@ -1,24 +1,26 @@
 #include "UploadManager.h"
 #include "Func/Common.h"
-#include "Func/HistoryManager.h"
-#include "Func/Base.h"
-#include "Func/LocalFileCache.h"
+#include "Core/HistoryManager.h"
+#include "Core/ServiceLocator.h"
+#include "Core/LocalFileCache.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Upload/Filters/UserFilter.h"
 #include "Core/Scripting/ScriptsManager.h"
-#include <Func/Settings.h>
+#include "Core/Settings.h"
 #include "UploadEngineManager.h"
 
-UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager) : 
-                                                    CFileQueueUploader(uploadEngineManager, scriptsManager), 
+UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler) :
+                CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler),
                                                     userFilter(scriptsManager)
 {
     uploadEngineManager_ = uploadEngineManager;
+#ifdef IU_WTL
     addUploadFilter(&imageConverterFilter);
+#endif
     addUploadFilter(&userFilter);
     addUploadFilter(&urlShorteningFilter);
     setMaxThreadCount(Settings.MaxThreads);
-    Settings.addChangeCallback(CSettings::ChangeCallback(this, &UploadManager::settingsChanged));
+    Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &UploadManager::settingsChanged));
     OnConfigureNetworkClient.bind(this, &UploadManager::configureNetwork);
 }
 
@@ -59,7 +61,7 @@ void UploadManager::onSessionFinished(UploadSession* uploadSession)
 void UploadManager::onTaskFinished(UploadTask* task, bool ok)
 {
     UploadSession* uploadSession = task->session();
-    CHistoryManager * mgr = ZBase::get()->historyManager();
+    CHistoryManager * mgr = ServiceLocator::instance()->historyManager();
     std::lock_guard<std::mutex> lock(uploadSession->historySessionMutex_);
     std::shared_ptr<CHistorySession> session = uploadSession->historySession_;
     if (!session) {
@@ -98,7 +100,7 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
     hi.uploadFileSize = fileTask->getDataLength();
     if (!hi.directUrl.empty())
     {
-        LocalFileCache::instance().addFile(hi.directUrl, hi.localFilePath);
+        LocalFileCache::instance()->addFile(hi.directUrl, hi.localFilePath);
     }
     session->AddItem(hi);
 }
@@ -118,7 +120,7 @@ void UploadManager::taskAdded(UploadTask* task)
     task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &UploadManager::onTaskFinished));
 }
 
-void UploadManager::settingsChanged(CSettings* settings)
+void UploadManager::settingsChanged(BasicSettings* settings)
 {
     setMaxThreadCount(Settings.MaxThreads);
 }

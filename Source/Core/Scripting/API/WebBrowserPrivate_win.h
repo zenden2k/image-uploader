@@ -37,6 +37,7 @@
 #include "Func/WinUtils.h"
 #include "COMUtils.h"
 #include "Core/3rdpart/pcreplusplus.h"
+#include <Core/ServiceLocator.h>
 
 namespace ScriptAPI {
 class CWebBrowser;
@@ -87,7 +88,7 @@ public:
     bool showModal() {
         HWND parent = 
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
-            pWizardDlg->m_hWnd;
+            ServiceLocator::instance()->programWindow()->getNativeHandle();
 #else 
             0;
 #endif

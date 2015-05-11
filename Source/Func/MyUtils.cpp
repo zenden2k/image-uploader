@@ -27,7 +27,7 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/StringUtils.h"
 #include <algorithm>
-//#include "Func/Settings.h"
+//#include "Core/Settings.h"
 #include "Core/Video/VideoUtils.h"
 
 typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);

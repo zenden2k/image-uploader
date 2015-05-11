@@ -7,7 +7,7 @@
 #include "Func/Myutils.h"
 #include "Core/Upload/Uploader.h"
 
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "3rdpart/GdiPlusH.h"
 #include "Gui/Dialogs/InputDialog.h"

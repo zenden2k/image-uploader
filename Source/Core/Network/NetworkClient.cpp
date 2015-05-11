@@ -131,8 +131,8 @@ void NetworkClient::setProxy(const std::string &host, int port, int type)
     curl_easy_setopt(curl_handle, CURLOPT_PROXY, host.c_str());
     curl_easy_setopt(curl_handle, CURLOPT_PROXYPORT, (long)port);    
     curl_easy_setopt(curl_handle, CURLOPT_PROXYTYPE, (long)type);
-    //FIXME
-    //curl_easy_setopt(curl_handle, CURLOPT_NOPROXY, "localhost,127.0.0.1"); // test
+ 
+    curl_easy_setopt(curl_handle, CURLOPT_NOPROXY, "localhost,127.0.0.1"); 
 } 
 
 void NetworkClient::setProxyUserPassword(const std::string &username, const std::string password)

@@ -22,10 +22,11 @@
 #include "Func/Common.h"
 #include "Core/3rdpart/pcreplusplus.h"
 #include "LogWindow.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Func/myutils.h"
+#include <Core/ServiceLocator.h>
 
 // CImageDownloaderDlg
 CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg,const CString &initialBuffer)
@@ -189,7 +190,7 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloade
                 add = false;
                 CString errorStr;
                 errorStr.Format(TR("Файл '%s' не является файлом изображения (Mime-Type: %s)."),(LPCTSTR)(Utf8ToWstring(it.url).c_str()),(LPCTSTR)mimeType);
-                WriteLog(logError,_T("Image Downloader"),errorStr);
+                ServiceLocator::instance()->logger()->write(logError, _T("Image Downloader"), errorStr);
             }
         }
         if(add)

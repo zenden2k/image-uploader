@@ -22,7 +22,7 @@
 #include "Func/common.h"
 #include "ScreenshotDlg.h"
 #include "LogWindow.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Func/MyUtils.h"
 

@@ -4,7 +4,7 @@
 #pragma once
 #include "atlheaders.h"
 #include "resource.h"
-#include "Func/HistoryManager.h"
+#include "Core/HistoryManager.h"
 #include <map>
 
 struct HistoryTreeViewItem

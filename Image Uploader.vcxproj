@@ -72,7 +72,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
     <UseOfAtl>false</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -615,10 +615,15 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\CLI\ConsoleScriptDialogProvider.h" />
     <ClInclude Include="Source\Core\3rdpart\htmlentities.h" />
     <ClInclude Include="Source\Core\CommonDefs.h" />
+    <ClInclude Include="Source\Core\HistoryManager.h" />
     <ClInclude Include="Source\Core\Images\ImageConverterPrivateBase.h" />
     <ClInclude Include="Source\Core\Images\ImageConverterPrivate_gdiplus.h" />
+    <ClInclude Include="Source\Core\LocalFileCache.h" />
+    <ClInclude Include="Source\Core\Logging\ConsoleLogger.h" />
+    <ClInclude Include="Source\Core\Logging\Logger.h" />
     <ClInclude Include="Source\Core\Network\CurlShare.h" />
     <ClInclude Include="Source\Core\Scripting\API\COMUtils.h" />
     <ClInclude Include="Source\Core\Scripting\API\Functions.h" />
@@ -633,12 +638,23 @@
     <ClInclude Include="Source\Core\Scripting\API\WebBrowser.h" />
     <ClInclude Include="Source\Core\Scripting\API\WebBrowserPrivateBase.h" />
     <ClInclude Include="Source\Core\Scripting\API\WebBrowserPrivate_win.h" />
+    <ClInclude Include="Source\Core\Scripting\DialogProvider.h" />
     <ClInclude Include="Source\Core\Scripting\Script.h" />
     <ClInclude Include="Source\Core\Scripting\ScriptsManager.h" />
     <ClInclude Include="Source\Core\Scripting\Squirrelnc.h" />
     <ClInclude Include="Source\Core\Scripting\UploadFilterScript.h" />
+    <ClInclude Include="Source\Core\ServiceLocator.h" />
+    <ClInclude Include="Source\Core\Settings.h" />
+    <ClInclude Include="Source\Core\Settings\BasicSettings.h" />
+    <ClInclude Include="Source\Core\Settings\CliSettings.h" />
+    <ClInclude Include="Source\Core\Settings\CommonGuiSettings.h" />
+    <ClInclude Include="Source\Core\Settings\EncodedPassword.h" />
+    <ClInclude Include="Source\Core\Settings\QtGuiSettings.h" />
+    <ClInclude Include="Source\Core\Settings\StringConvert.h" />
+    <ClInclude Include="Source\Core\Settings\WtlGuiSettings.h" />
     <ClInclude Include="Source\Core\TempFileDeleter.h" />
     <ClInclude Include="Source\Core\ThreadSync.h" />
+    <ClInclude Include="Source\Core\Upload\ConsoleUploadErrorHandler.h" />
     <ClInclude Include="Source\Core\Upload\FileQueueUploaderPrivate.h" />
     <ClInclude Include="Source\Core\Upload\Filters\ImageConverterFilter.h" />
     <ClInclude Include="Source\Core\Upload\Filters\UrlShorteningFilter.h" />
@@ -646,12 +662,17 @@
     <ClInclude Include="Source\Core\Upload\ServerProfile.h" />
     <ClInclude Include="Source\Core\Upload\ServerSync.h" />
     <ClInclude Include="Source\Core\Upload\UploadEngineManager.h" />
+    <ClInclude Include="Source\Core\Upload\UploadErrorHandler.h" />
     <ClInclude Include="Source\Core\Upload\UploadFilter.h" />
     <ClInclude Include="Source\Core\Upload\UploadManager.h" />
     <ClInclude Include="Source\Core\Upload\UploadResult.h" />
     <ClInclude Include="Source\Core\Upload\UploadSession.h" />
+    <ClInclude Include="Source\Core\Utils\DesktopUtils.h" />
     <ClInclude Include="Source\Core\Utils\EnumUtils.h" />
     <ClInclude Include="Source\Core\Utils\TextUtils.h" />
+    <ClInclude Include="Source\Func\DefaultLogger.h" />
+    <ClInclude Include="Source\Func\DefaultUploadErrorHandler.h" />
+    <ClInclude Include="Source\Func\WtlScriptDialogProvider.h" />
     <ClInclude Include="Source\Gui\Components\NewStyleFolderDialog.h" />
     <ClInclude Include="Source\Gui\Controls\ResultsListView.h" />
     <ClInclude Include="Source\Gui\Dialogs\VideoGrabberPage.h" />
@@ -784,10 +805,8 @@
     <ClInclude Include="Source\Gui\Controls\PictureExWnd.h" />
     <ClInclude Include="Source\Gui\Controls\ServerSelectorControl.h" />
     <ClInclude Include="Source\Gui\Controls\WTLBrowserView.h" />
-    <ClInclude Include="Source\Func\Base.h" />
     <ClInclude Include="Source\Func\ImageEditorConfigurationProvider.h" />
     <ClInclude Include="Source\Func\IuCommonFunctions.h" />
-    <ClInclude Include="Source\Func\LocalFileCache.h" />
     <ClInclude Include="Source\Func\MyDataObject.h" />
     <ClInclude Include="Source\Func\MyDropSource.h" />
     <ClInclude Include="Source\Func\MyEngineList.h" />
@@ -940,9 +959,13 @@
     <ResourceCompile Include="Source\Image Uploader.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\CLI\ConsoleScriptDialogProvider.cpp" />
     <ClCompile Include="Source\Core\3rdpart\htmlentities.cpp" />
+    <ClCompile Include="Source\Core\HistoryManager.cpp" />
     <ClCompile Include="Source\Core\Images\ImageConverterPrivateBase.cpp" />
     <ClCompile Include="Source\Core\Images\ImageConverterPrivate_gdiplus.cpp" />
+    <ClCompile Include="Source\Core\LocalFileCache.cpp" />
+    <ClCompile Include="Source\Core\Logging\ConsoleLogger.cpp" />
     <ClCompile Include="Source\Core\Network\CurlShare.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\COMUtils.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\Functions.cpp" />
@@ -960,8 +983,15 @@
     <ClCompile Include="Source\Core\Scripting\Script.cpp" />
     <ClCompile Include="Source\Core\Scripting\ScriptsManager.cpp" />
     <ClCompile Include="Source\Core\Scripting\UploadFilterScript.cpp" />
+    <ClCompile Include="Source\Core\ServiceLocator.cpp" />
+    <ClCompile Include="Source\Core\Settings\BasicSettings.cpp" />
+    <ClCompile Include="Source\Core\Settings\CliSettings.cpp" />
+    <ClCompile Include="Source\Core\Settings\CommonGuiSettings.cpp" />
+    <ClCompile Include="Source\Core\Settings\EncodedPassword.cpp" />
+    <ClCompile Include="Source\Core\Settings\WtlGuiSettings.cpp" />
     <ClCompile Include="Source\Core\TempFileDeleter.cpp" />
     <ClCompile Include="Source\Core\ThreadSync.cpp" />
+    <ClCompile Include="Source\Core\Upload\ConsoleUploadErrorHandler.cpp" />
     <ClCompile Include="Source\Core\Upload\FileQueueUploaderPrivate.cpp" />
     <ClCompile Include="Source\Core\Upload\Filters\ImageConverterFilter.cpp" />
     <ClCompile Include="Source\Core\Upload\Filters\UrlShorteningFilter.cpp" />
@@ -972,7 +1002,11 @@
     <ClCompile Include="Source\Core\Upload\UploadFilter.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadManager.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadSession.cpp" />
+    <ClCompile Include="Source\Core\Utils\DesktopUtils.cpp" />
     <ClCompile Include="Source\Core\Utils\TextUtils.cpp" />
+    <ClCompile Include="Source\Func\DefaultLogger.cpp" />
+    <ClCompile Include="Source\Func\DefaultUploadErrorHandler.cpp" />
+    <ClCompile Include="Source\Func\WtlScriptDialogProvider.cpp" />
     <ClCompile Include="Source\Gui\Controls\ResultsListView.cpp" />
     <ClCompile Include="Source\Image Uploader.cpp">
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
@@ -1106,20 +1140,16 @@
     <ClCompile Include="Source\Gui\Controls\TabListBox.cpp" />
     <ClCompile Include="Source\Gui\Controls\ThumbsView.cpp" />
     <ClCompile Include="Source\Gui\Controls\WTLBrowserView.cpp" />
-    <ClCompile Include="Source\Func\Base.cpp" />
     <ClCompile Include="Source\Func\Common.cpp" />
     <ClCompile Include="Source\Func\FileInfoHelper.cpp" />
-    <ClCompile Include="Source\Func\HistoryManager.cpp" />
     <ClCompile Include="Source\Func\ImageEditorConfigurationProvider.cpp" />
     <ClCompile Include="Source\Func\IuCommonFunctions.cpp" />
     <ClCompile Include="Source\Func\LangClass.cpp" />
-    <ClCompile Include="Source\Func\LocalFileCache.cpp" />
     <ClCompile Include="Source\Func\MyDataObject.cpp" />
     <ClCompile Include="Source\Func\MyDropSource.cpp" />
     <ClCompile Include="Source\Func\MyEngineList.cpp" />
     <ClCompile Include="Source\Func\MyLogSink.cpp" />
     <ClCompile Include="Source\Func\MyUtils.cpp" />
-    <ClCompile Include="Source\Func\Settings.cpp" />
     <ClCompile Include="Source\Func\SystemUtils.cpp" />
     <ClCompile Include="Source\Func\UpdatePackage.cpp" />
     <ClCompile Include="Source\Func\WebUtils.cpp" />

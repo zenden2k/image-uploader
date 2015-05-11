@@ -4,7 +4,7 @@
 #pragma once
 #include "UploadTask.h"
 #include <mutex>
-#include "Func/HistoryManager.h"
+#include "Core/HistoryManager.h"
 #include <atomic>
 #include <unordered_map>
 

@@ -35,7 +35,7 @@
 #include "Core/Upload/FileQueueUploader.h"
 #include "Gui/Controls/PictureExWnd.h"
 #include "Gui/Controls/CustomEditControl.h"
-#include "Func/HistoryManager.h"
+#include "Core/HistoryManager.h"
 #include "Core/Upload/UploadManager.h"
 #include <mutex>
 

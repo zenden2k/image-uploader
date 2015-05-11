@@ -24,7 +24,7 @@
 #include <math.h>
 #include "LogWindow.h"
 #include "Func/LangClass.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 //#include <Gdipluseffects.h>
 

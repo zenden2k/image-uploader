@@ -21,7 +21,7 @@
 #include "atlheaders.h"
 #include "ServerParamsDlg.h"
 #include "Func/LangClass.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ServerFolderSelect.h"
 #include "Gui/Dialogs/InputDialog.h"

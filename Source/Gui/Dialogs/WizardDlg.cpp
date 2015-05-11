@@ -21,8 +21,8 @@
 
 #include <io.h>
 #include "Core/Images/ImageConverter.h"
-#include "Func/Base.h"
-#include "Func/HistoryManager.h"
+#include "Core/ServiceLocator.h"
+#include "Core/HistoryManager.h"
 
 #include "welcomedlg.h"
 #include "maindlg.h"
@@ -37,7 +37,7 @@
 #include "LogWindow.h"
 #include "Common/CmdLine.h"
 #include "Gui/Dialogs/UpdateDlg.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/Dialogs/MediaInfoDlg.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ImageReuploaderDlg.h"
@@ -57,7 +57,7 @@
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/Scripting/ScriptsManager.h"
 #include "Func/myutils.h"
-
+#include "Core/ServiceLocator.h"
 
 using namespace Gdiplus;
 // CWizardDlg
@@ -76,18 +76,21 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
     m_bHandleCmdLineFunc = false;
     updateDlg = 0;
     _EngineList = &m_EngineList;
+    Settings.setEngineList(_EngineList);
     m_bScreenshotFromTray = false;
+    ServiceLocator::instance()->setEngineList(&m_EngineList);
     serversChanged_ = false;
     scriptsManager_ = new ScriptsManager();
-    uploadEngineManager_ = new UploadEngineManager(&m_EngineList);
-    uploadManager_ = new UploadManager(uploadEngineManager_, scriptsManager_);
+    IUploadErrorHandler* uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
+    uploadEngineManager_ = new UploadEngineManager(&m_EngineList, uploadErrorHandler);
+    uploadManager_ = new UploadManager(uploadEngineManager_, scriptsManager_, uploadErrorHandler);
     floatWnd.setUploadManager(uploadManager_);
     floatWnd.setUploadEngineManager(uploadEngineManager_);
-    Settings.addChangeCallback(CSettings::ChangeCallback(this, &CWizardDlg::settingsChanged));
+    Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &CWizardDlg::settingsChanged));
 }
 
-void CWizardDlg::settingsChanged(CSettings* settings)
-{
+void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
+    CommonGuiSettings* settings = static_cast<CommonGuiSettings*>(settingsBase);
     CString templateName = settings->imageServer.getImageUploadParamsRef().getThumbRef().TemplateName;
     sessionImageServer_.getImageUploadParamsRef().getThumbRef().TemplateName = templateName;
 }
@@ -252,11 +255,12 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         quickSetupDialog.DoModal(m_hWnd);
     }
 
+    ServiceLocator::instance()->historyManager()->setHistoryDirectory(Settings.SettingsFolder + "\\History\\");
     sessionImageServer_ = Settings.imageServer;
     sessionFileServer_ = Settings.fileServer;
 
     if(!*MediaInfoDllPath)
-        WriteLog(logWarning, APPNAME, TR("Библиотека MediaInfo.dll не найдена. \nПолучение технических данных о файлах мультимедиа будет недоступно.")); 
+        ServiceLocator::instance()->logger()->write(logWarning, APPNAME, TR("Библиотека MediaInfo.dll не найдена. \nПолучение технических данных о файлах мультимедиа будет недоступно."));
     if(!CmdLine.IsOption(_T("tray")))
         TRC(IDCANCEL,"Выход");
     else 
@@ -663,6 +667,14 @@ void CWizardDlg::setServersChanged(bool changed)
 bool CWizardDlg::serversChanged() const
 {
     return serversChanged_;
+}
+
+WindowHandle CWizardDlg::getHandle() {
+    return m_hWnd;
+}
+
+WindowNativeHandle CWizardDlg::getNativeHandle() {
+    return m_hWnd;
 }
 
 // Функция генерации заголовка страницы (если он нужен)
@@ -2039,7 +2051,6 @@ bool CWizardDlg::funcShortenUrl() {
     return false;
 }
 
-CWizardDlg * pWizardDlg;
 LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
     // TODO: Add your control notification handler code here

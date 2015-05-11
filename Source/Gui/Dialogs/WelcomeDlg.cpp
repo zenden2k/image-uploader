@@ -251,7 +251,7 @@ LRESULT CWelcomeDlg::OnBnClickedDownloadImages(WORD /*wNotifyCode*/, WORD /*wID*
 
 LRESULT CWelcomeDlg::OnViewHistoryClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    CHistoryWindow dlg;
+    CHistoryWindow dlg(WizardDlg);
     dlg.DoModal(m_hWnd);
     return 0;
 }

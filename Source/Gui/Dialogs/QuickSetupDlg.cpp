@@ -23,7 +23,7 @@
 #include "Func/Common.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Func/MyUtils.h"
 #include "Gui/Dialogs/ServerParamsDlg.h"
 

@@ -22,10 +22,10 @@
 
 #include <shobjidl.h>
 #include "Core/Images/ImageConverter.h"
-#include "Func/Base.h"
+#include "Core/ServiceLocator.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/InputDialog.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/GuiTools.h"
 #include "Core/3rdpart/FastDelegate.h"

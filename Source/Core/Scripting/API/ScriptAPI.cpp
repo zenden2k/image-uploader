@@ -20,7 +20,7 @@
 
 #include "ScriptAPI.h"
 
-#ifdef _WIN32
+#ifdef IU_WTL
 #include "WebBrowser.h"
 #include "HtmlDocument.h"
 #include "HtmlElement.h"
@@ -219,7 +219,7 @@ void RegisterClasses(Sqrat::SqratVM& vm) {
     RegisterUploadTaskWrappers(vm);
     RegisterProcessClass(vm);
     RegisterSimpleXmlClass(vm);
-#ifdef _WIN32
+#ifdef IU_WTL
   
     RegisterWebBrowserClass(vm);
     RegisterHtmlDocumentClass(vm);
@@ -247,14 +247,16 @@ void SetCurrentThreadVM(Sqrat::SqratVM& vm) {
     threadVm = &vm;
 }
 
+
 void StopAssociatedBrowsers(Sqrat::SqratVM& vm)
 {
+#ifdef IU_WTL
     std::lock_guard<std::mutex> guard(vmBrowsersMutex);
     for ( auto& it : vmBrowsers[vm.GetVM()])
     {
         it->abort();
     }
-    
+#endif
 }
 
 void AddBrowserToVM(Sqrat::SqratVM& vm, WebBrowserPrivateBase* browser)

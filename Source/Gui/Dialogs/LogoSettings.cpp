@@ -22,7 +22,7 @@
 #include "atlheaders.h"
 #include <uxtheme.h>
 #include "LogWindow.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "InputDialog.h"
 #include "Gui/GuiTools.h"

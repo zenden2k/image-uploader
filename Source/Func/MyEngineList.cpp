@@ -22,7 +22,7 @@
 
 #include "Func/MyUtils.h"
 #include "Func/Common.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Core/Upload/DefaultUploadEngine.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Gui/Dialogs/LogWindow.h"

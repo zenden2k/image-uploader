@@ -22,7 +22,7 @@
 #include "atlheaders.h"
 #include "Core/3rdpart/MediaInfoDLL.h"
 #include "LangClass.h"
-#include "Settings.h"
+#include "Core/Settings.h"
 #include "WinUtils.h"
 
 void AddStr(CString &Str, const CString& Str2)

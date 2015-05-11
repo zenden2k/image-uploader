@@ -424,6 +424,9 @@ bool CDefaultUploadEngine::ReadServerResponse(UploadAction& Action)
     }
 
     std::string Refresh = m_NetworkClient->responseHeaderByName("Refresh");
+    if (Refresh.empty()) {
+        Refresh = m_NetworkClient->responseHeaderByName("refresh");
+    }
 
     if (!Refresh.empty()) // Redirecting to URL
     {

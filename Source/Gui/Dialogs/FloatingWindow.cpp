@@ -25,10 +25,10 @@
 
 #include "ResultsPanel.h"
 #include "ScreenshotDlg.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "LogWindow.h"
-#include "Func/Base.h"
-#include "Func/HistoryManager.h"
+#include "Core/ServiceLocator.h"
+#include "Core/HistoryManager.h"
 #include "Core/Utils/CoreTypes.h"
 #include "Func/WebUtils.h"
 #include "Func/WinUtils.h"
@@ -58,6 +58,10 @@ CFloatingWindow::~CFloatingWindow()
     CloseHandle(hMutex);
     DeleteObject(m_hIconSmall);
     m_hWnd = 0;
+}
+
+void CFloatingWindow::setWizardDlg(CWizardDlg* wizardDlg) {
+    wizardDlg_ = wizardDlg;
 }
 
 LRESULT CFloatingWindow::OnClose(void)
@@ -109,7 +113,7 @@ LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 LRESULT CFloatingWindow::OnExit(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    pWizardDlg->CloseWizard();
+    wizardDlg_->CloseWizard();
     return 0;
 }
 
@@ -181,7 +185,7 @@ LRESULT CFloatingWindow::OnTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
             items.push_back(it);
             if (it.ImageUrl.IsEmpty() && it.DownloadUrl.IsEmpty())
                 return 0;
-            CResultsWindow rp(pWizardDlg, items, false);
+            CResultsWindow rp(wizardDlg_, items, false);
             rp.DoModal(m_hWnd);
         }
     }
@@ -190,14 +194,14 @@ LRESULT CFloatingWindow::OnTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 
 LRESULT CFloatingWindow::OnMenuSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    if (!pWizardDlg->IsWindowEnabled())
+    if (!wizardDlg_->IsWindowEnabled())
     {
-        HWND childModalDialog = pWizardDlg->GetLastActivePopup();
+        HWND childModalDialog = wizardDlg_->GetLastActivePopup();
         if (childModalDialog && ::IsWindowVisible(childModalDialog))
             SetForegroundWindow(childModalDialog);
         return 0;
     }
-    HWND hParent  = pWizardDlg->m_hWnd; // pWizardDlg->IsWindowEnabled()?  : 0;
+    HWND hParent  = wizardDlg_->m_hWnd; // wizardDlg_->IsWindowEnabled()?  : 0;
     CSettingsDlg dlg(CSettingsDlg::spTrayIcon, uploadEngineManager_);
     dlg.DoModal(hParent);
     return 0;
@@ -206,8 +210,8 @@ LRESULT CFloatingWindow::OnMenuSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl
 LRESULT CFloatingWindow::OnCloseTray(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     ShowWindow(SW_HIDE);
-    pWizardDlg->ShowWindow(SW_SHOW);
-    pWizardDlg->SetDlgItemText(IDCANCEL, TR("Выход"));
+    wizardDlg_->ShowWindow(SW_SHOW);
+    wizardDlg_->SetDlgItemText(IDCANCEL, TR("Выход"));
     CloseHandle(hMutex);
     RemoveIcon();
     UnRegisterHotkeys();
@@ -232,22 +236,22 @@ LRESULT CFloatingWindow::OnReloadSettings(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 LRESULT CFloatingWindow::OnImportvideo(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    if (pWizardDlg->executeFunc(_T("importvideo,1")))
-        pWizardDlg->ShowWindow(SW_SHOW);
+    if (wizardDlg_->executeFunc(_T("importvideo,1")))
+        wizardDlg_->ShowWindow(SW_SHOW);
     return 0;
 }
 
 LRESULT CFloatingWindow::OnUploadFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    if (pWizardDlg->executeFunc(_T("addfiles,1")))
-        pWizardDlg->ShowWindow(SW_SHOW);
+    if (wizardDlg_->executeFunc(_T("addfiles,1")))
+        wizardDlg_->ShowWindow(SW_SHOW);
     return 0;
 }
 
 LRESULT CFloatingWindow::OnReUploadImages(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    if (pWizardDlg->executeFunc(_T("reuploadimages,1"))) {
-        pWizardDlg->ShowWindow(SW_SHOW);
+    if (wizardDlg_->executeFunc(_T("reuploadimages,1"))) {
+        wizardDlg_->ShowWindow(SW_SHOW);
     }
     return 0;
 }
@@ -255,45 +259,45 @@ LRESULT CFloatingWindow::OnReUploadImages(WORD wNotifyCode, WORD wID, HWND hWndC
 
 LRESULT CFloatingWindow::OnUploadImages(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    if (pWizardDlg->executeFunc(_T("addimages,1")))
-        pWizardDlg->ShowWindow(SW_SHOW);
+    if (wizardDlg_->executeFunc(_T("addimages,1")))
+        wizardDlg_->ShowWindow(SW_SHOW);
     return 0;
 }
 
 LRESULT CFloatingWindow::OnPasteFromWeb(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    if (pWizardDlg->executeFunc(_T("downloadimages,1")))
-        pWizardDlg->ShowWindow(SW_SHOW);
+    if (wizardDlg_->executeFunc(_T("downloadimages,1")))
+        wizardDlg_->ShowWindow(SW_SHOW);
     return 0;
 }
 
 LRESULT CFloatingWindow::OnScreenshotDlg(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    pWizardDlg->executeFunc(_T("screenshotdlg,2"));
+    wizardDlg_->executeFunc(_T("screenshotdlg,2"));
     return 0;
 }
 
 LRESULT CFloatingWindow::OnRegionScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    pWizardDlg->executeFunc(_T("regionscreenshot_dontshow,") + (m_bFromHotkey ? CString(_T("1")) : CString(_T("2"))));
+    wizardDlg_->executeFunc(_T("regionscreenshot_dontshow,") + (m_bFromHotkey ? CString(_T("1")) : CString(_T("2"))));
     return 0;
 }
 
 LRESULT CFloatingWindow::OnFullScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    pWizardDlg->executeFunc(_T("fullscreenshot,") + (m_bFromHotkey ? CString(_T("1")) : CString(_T("2"))));
+    wizardDlg_->executeFunc(_T("fullscreenshot,") + (m_bFromHotkey ? CString(_T("1")) : CString(_T("2"))));
     return 0;
 }
 
 LRESULT CFloatingWindow::OnWindowHandleScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    pWizardDlg->executeFunc(_T("windowhandlescreenshot,") + (m_bFromHotkey ? CString(_T("1")) : CString(_T("2"))));
+    wizardDlg_->executeFunc(_T("windowhandlescreenshot,") + (m_bFromHotkey ? CString(_T("1")) : CString(_T("2"))));
     return 0;
 }
 
 LRESULT CFloatingWindow::OnFreeformScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    pWizardDlg->executeFunc(_T("freeformscreenshot,") + (m_bFromHotkey ? CString(_T("1")) : CString(_T("2"))));
+    wizardDlg_->executeFunc(_T("freeformscreenshot,") + (m_bFromHotkey ? CString(_T("1")) : CString(_T("2"))));
     return 0;
 }
 
@@ -325,41 +329,41 @@ LRESULT CFloatingWindow::OnWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWn
 {
     if (m_PrevActiveWindow)
         SetForegroundWindow(m_PrevActiveWindow);
-    pWizardDlg->executeFunc(_T("windowscreenshot_delayed,") + (m_bFromHotkey ? CString(_T("1")) : CString(_T("2"))));
+    wizardDlg_->executeFunc(_T("windowscreenshot_delayed,") + (m_bFromHotkey ? CString(_T("1")) : CString(_T("2"))));
 
     return 0;
 }
 
 LRESULT CFloatingWindow::OnAddFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    if (pWizardDlg->executeFunc(_T("addfolder")))
-        pWizardDlg->ShowWindow(SW_SHOW);
+    if (wizardDlg_->executeFunc(_T("addfolder")))
+        wizardDlg_->ShowWindow(SW_SHOW);
     return 0;
 }
 
 LRESULT CFloatingWindow::OnShortenUrl(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
-    if (pWizardDlg->executeFunc(_T("shortenurl")))
-        pWizardDlg->ShowWindow(SW_SHOW);
+    if (wizardDlg_->executeFunc(_T("shortenurl")))
+        wizardDlg_->ShowWindow(SW_SHOW);
     return 0;
 }
 
 
 LRESULT CFloatingWindow::OnShowAppWindow(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    if (pWizardDlg->IsWindowEnabled())
+    if (wizardDlg_->IsWindowEnabled())
     {
-        pWizardDlg->ShowWindow(SW_SHOWNORMAL);
-        if (pWizardDlg->IsWindowVisible())
+        wizardDlg_->ShowWindow(SW_SHOWNORMAL);
+        if (wizardDlg_->IsWindowVisible())
         {
             // SetForegroundWindow(m_hWnd);
-            pWizardDlg->SetActiveWindow();
-            SetForegroundWindow(pWizardDlg->m_hWnd);
+            wizardDlg_->SetActiveWindow();
+            SetForegroundWindow(wizardDlg_->m_hWnd);
         }
     }
     else
     {
         // Activating some child modal dialog if exists one
-        HWND childModalDialog = pWizardDlg->GetLastActivePopup();
+        HWND childModalDialog = wizardDlg_->GetLastActivePopup();
         if (childModalDialog && ::IsWindowVisible(childModalDialog))
             SetForegroundWindow(childModalDialog);
     }
@@ -537,7 +541,7 @@ void CFloatingWindow::RegisterHotkeys()
                 CString msg;
                 msg.Format(TR("Невозможно зарегистрировать глобальное сочетание клавиш\n%s.\n Возможно, оно занято другой программой."),
                            (LPCTSTR)m_hotkeys[i].globalKey.toString());
-                WriteLog(logWarning, _T("Hotkeys"), msg);
+                ServiceLocator::instance()->logger()->write(logWarning, _T("Hotkeys"), msg);
             }
         }
     }
@@ -552,7 +556,7 @@ LRESULT CFloatingWindow::OnHotKey(int HotKeyID, UINT flags, UINT vk)
 
     if (m_hotkeys[HotKeyID].func == _T("windowscreenshot"))
     {
-        pWizardDlg->executeFunc(_T("windowscreenshot,1"));
+        wizardDlg_->executeFunc(_T("windowscreenshot,1"));
     }
     else
     {
@@ -577,15 +581,15 @@ void CFloatingWindow::UnRegisterHotkeys()
 
 LRESULT CFloatingWindow::OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    if (pWizardDlg->executeFunc(_T("paste")))
-        pWizardDlg->ShowWindow(SW_SHOW);
+    if (wizardDlg_->executeFunc(_T("paste")))
+        wizardDlg_->ShowWindow(SW_SHOW);
     return 0;
 }
 
 LRESULT CFloatingWindow::OnMediaInfo(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    if (pWizardDlg->executeFunc(_T("mediainfo")))
-        pWizardDlg->ShowWindow(SW_SHOW);
+    if (wizardDlg_->executeFunc(_T("mediainfo")))
+        wizardDlg_->ShowWindow(SW_SHOW);
     return 0;
 }
 

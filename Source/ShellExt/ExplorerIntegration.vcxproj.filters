@@ -26,14 +26,14 @@
     <Filter Include="Source Files\Core\3rdpart">
       <UniqueIdentifier>{6fa91d7e-0169-451a-8078-48f351d38074}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Func">
+      <UniqueIdentifier>{62e9a912-77ac-4cd2-8fef-a5f8bdf95cbc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\3rdpart">
+      <UniqueIdentifier>{64f21170-9bd1-432d-ac2b-fe43646fb78c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Core\AppParams.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\3rdpart\CodePages.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Core\Utils\CoreUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -46,28 +46,10 @@
     <ClCompile Include="IShellContextMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Func\IuCommonFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Func\LangClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Func\MyUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdpart\Registry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Core\Utils\StringUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Core\Video\VideoUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Func\WinUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Generated\ExplorerIntegration_i.c">
@@ -78,6 +60,30 @@
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\base64.cpp">
       <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\WinUtils.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\IuCommonFunctions.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\LangClass.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\MyUtils.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdpart\Registry.cpp">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\CodePages.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\AppParams.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\StringUtils.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,9 +103,6 @@
     </Midl>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\MyUtils.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="IconBitmapUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -120,6 +123,9 @@
     </ClInclude>
     <ClInclude Include="..\Core\3rdpart\base64.h">
       <Filter>Source Files\Core\3rdpart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MyUtils.h">
+      <Filter>Source Files\Func</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

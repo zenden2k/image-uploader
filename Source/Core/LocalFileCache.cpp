@@ -1,6 +1,6 @@
 #include "LocalFileCache.h"
 
-#include "Settings.h"
+#include "Core/Settings.h"
 #include "HistoryManager.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Func/WinUtils.h"

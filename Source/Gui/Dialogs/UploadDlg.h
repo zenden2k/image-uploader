@@ -36,7 +36,7 @@
 #include "Gui/Dialogs/SizeExceed.h"
 #include "Gui/Dialogs/ResultsWindow.h"
 #include "Core/Upload/FileQueueUploader.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/Controls/ResultsListView.h"
 
 class UploadManager;

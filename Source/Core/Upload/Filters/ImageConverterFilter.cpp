@@ -1,6 +1,6 @@
 #include "ImageConverterFilter.h"
 #include "Func/IuCommonFunctions.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Core/Logging.h"
 #include "Core/Images/ImageConverter.h"
 #include "Core/Upload/FileUploadTask.h"

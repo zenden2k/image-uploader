@@ -45,6 +45,7 @@ void WriteLog(LogMsgType MsgType, const CString& Sender, const CString& Msg, con
 }
 
 #endif
+#include <Core/ServiceLocator.h>
 
 BOOL CreateFolder(LPCTSTR szFolder)
 {
@@ -91,7 +92,7 @@ bool CUpdateInfo::LoadUpdateFromFile(const CString& filename)
     SimpleXml xml;
     if(!xml.LoadFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)filename)))    
     {
-        WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file "))+filename+_T("\r\n"));
+        ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), CString(_T("Failed to load update file ")) + filename + _T("\r\n"));
     }
     m_FileName = filename;
     Parse(xml);
@@ -114,7 +115,7 @@ bool CUpdateInfo::LoadUpdateFromBuffer(const CString& buffer)
     SimpleXml m_xml;
     if(!m_xml.LoadFromString(IuCoreUtils::WstringToUtf8((LPCTSTR)buffer)))
     {
-        WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file \r\n"))+_T("\r\nServer answer:\r\n")+buffer);
+        ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), CString(_T("Failed to load update file \r\n")) + _T("\r\nServer answer:\r\n") + buffer);
         return false;
     }
     m_Buffer = buffer;
@@ -273,7 +274,7 @@ bool CUpdateManager::internal_load_update(CString name)
 
     if(!localPackage.LoadUpdateFromFile(name))
     {
-        WriteLog(logError,_T("Update Engine"),CString(TR("Could not download the update file \'"))+name);
+        ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), CString(TR("Could not download the update file \'")) + name);
         return false;
     }
 
@@ -290,7 +291,7 @@ bool CUpdateManager::internal_load_update(CString name)
 
     if(nm.responseCode() != 200)
     {
-        WriteLog(logWarning,_T("Update Engine"), _T("Невозможно загрузить информацию о пакете обновления ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: "))+IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm.responseCode())).c_str()+_T("\r\n")+ IuCoreUtils::Utf8ToWstring(nm.errorString()).c_str(),CString("URL=")+url);        
+        ServiceLocator::instance()->logger()->write(logWarning, _T("Update Engine"), _T("Невозможно загрузить информацию о пакете обновления ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm.responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm.errorString()).c_str(), CString("URL=") + url);
         return false;
     }
 
@@ -324,7 +325,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
     nm_.doGet(IuCoreUtils::WstringToUtf8((LPCTSTR) ui.downloadUrl()));
     if(nm_.responseCode() != 200)
     {
-        WriteLog(logError,_T("Update Engine"),TR("Error while updating component ") + ui.packageName() + CString(_T("\r\nHTTP response code: "))+IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm_.responseCode())).c_str()+_T("\r\n")+ IuCoreUtils::Utf8ToWstring(nm_.errorString()).c_str(),CString("URL=")+ui.downloadUrl());        
+        ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), TR("Error while updating component ") + ui.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm_.responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm_.errorString()).c_str(), CString("URL=") + ui.downloadUrl());
         return 0;
     }
 
@@ -377,7 +378,7 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
 {
     if(!IuCoreUtils::FileExists(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))) return false;
     if(!m_xml.LoadFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))) {
-        WriteLog(logError,_T("Update Engine"),CString(_T("Failed to load update file \'"))+IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))).c_str());
+        ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), CString(_T("Failed to load update file \'")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))).c_str());
         return false;
     }
 
@@ -459,7 +460,7 @@ bool CUpdatePackage::doUpdate()
             if ( !IuCoreUtils::createDirectory(dir) ) {
                 CString logMessage;
                 logMessage.Format(_T("Could not create folder '%s'."), (LPCTSTR)IuCoreUtils::Utf8ToWstring(dir).c_str());
-                WriteLog(logError,_T("Update Engine"),logMessage);
+                ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), logMessage);
 
             }
         }
@@ -506,7 +507,7 @@ bool CUpdatePackage::doUpdate()
             
             if(!CopyFile(copyFrom,copyTo,FALSE))
             {
-                WriteLog(logWarning,_T("Update Engine"),CString(_T("Could not write file "))+IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)copyTo))).c_str());
+                ServiceLocator::instance()->logger()->write(logWarning, _T("Update Engine"), CString(_T("Could not write file ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)copyTo))).c_str());
                 
             }
             else 

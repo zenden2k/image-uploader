@@ -22,7 +22,7 @@
 #include "UploadParamsDlg.h"
 #include "wizarddlg.h"
 #include "Func/Common.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Func/Myutils.h"

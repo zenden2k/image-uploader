@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <curl/curl.h>
 #include <mutex>
+#include "Core/Utils/CoreTypes.h"
 
 class CurlShare {
 public:

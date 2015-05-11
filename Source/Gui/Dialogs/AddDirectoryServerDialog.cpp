@@ -4,7 +4,7 @@
 #include "AddDirectoryServerDialog.h"
 #include "Gui/GuiTools.h"
 #include "Core/ServerListManager.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Func//IuCommonFunctions.h"
 #include <Ws2tcpip.h>
 #include <winsock2.h> 

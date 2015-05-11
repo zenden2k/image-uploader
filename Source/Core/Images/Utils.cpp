@@ -32,6 +32,7 @@
 #include "Gui/Dialogs/LogWindow.h"
 #include <math.h>
 #include <stdint.h>
+#include <Core/ServiceLocator.h>
 
 
 using namespace Gdiplus;
@@ -699,7 +700,7 @@ bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int F
         return false;
     if (result != Ok)
     {
-        WriteLog(logError, _T("Image Converter"), _T("Could not save image at path \r\n") + resultFilename + L"\r\nGdiplus status=" + IntToStr(result));
+        ServiceLocator::instance()->logger()->write(logError, _T("Image Converter"), _T("Could not save image at path \r\n") + resultFilename + L"\r\nGdiplus status=" + IntToStr(result));
         return false;
     }
     szBuffer = resultFilename;

@@ -22,7 +22,7 @@
 #include "Func/Common.h"
 #include "Core/3rdpart/pcreplusplus.h"
 #include "LogWindow.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Upload/FileQueueUploader.h"
 #include "Core/Upload/UrlShorteningTask.h"

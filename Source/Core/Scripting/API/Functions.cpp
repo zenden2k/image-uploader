@@ -29,14 +29,13 @@
 #ifdef _WIN32
     #include <windows.h>
     #ifndef IU_CLI
-        #include "Gui/Dialogs/InputDialog.h"
-        #include "Func/Common.h"
         #include "Func/IuCommonFunctions.h"
         #include "Func/LangClass.h"
         #include "Func/WinUtils.h"
-        #include "Gui/Dialogs/LogWindow.h"
     #endif
 #endif
+
+#include "Core/Scripting/DialogProvider.h"
 
 #include "Core/Utils/StringUtils.h"
 #include "Core/Utils/CryptoUtils.h"
@@ -49,10 +48,11 @@
 #include "Core/Utils/TextUtils.h"
 #include "versioninfo.h"
 #include "ScriptAPI.h"
+#include "Core/ServiceLocator.h"
+#include "Core/Upload/UploadErrorHandler.h"
+#include "Core/Utils/DesktopUtils.h"
 
 using namespace Sqrat;
-
-
 
 namespace ScriptAPI {
 /*
@@ -184,83 +184,13 @@ const std::string Translate(const std::string& key, const std::string& originalT
     return originalText;
 }
 
-
-#ifdef _WIN32
-#ifndef IU_CLI
-
-const std::string Impl_AskUserCaptcha(NetworkClient *nm, const std::string& url)
-{
-    CString wFileName = GetUniqFileName(IuCommonFunctions::IUTempFolder+Utf8ToWstring("captcha").c_str());
-
-    nm->setOutputFile(IuCoreUtils::WstringToUtf8((const TCHAR*)wFileName));
-    if(!nm->doGet(url))
-        return "";
-    CInputDialog dlg(_T("Image Uploader"), TR("¬ведите текст с картинки:"), CString(IuCoreUtils::Utf8ToWstring("").c_str()),wFileName);
-    nm->setOutputFile("");
-    if(dlg.DoModal()==IDOK)
-        return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
-    return "";
-}
-#endif
-#endif
-
-bool ShellOpenUrl(const std::string& url) {
-#ifdef _WIN32
-    return ShellExecute(0, _T("open"), IuCoreUtils::Utf8ToWstring(url).c_str(), NULL, NULL, SW_SHOWNORMAL)!=0;
-#else
-#ifdef __APPLE__
-    return system(("open \""+url+"\"").c_str());
-#else
-    return system(("xdg-open \""+url+"\" >/dev/null 2>&1 & ").c_str());
-#endif
-#endif
-}
-
 const std::string AskUserCaptcha(NetworkClient* nm, const std::string& url)
 {
-#ifndef IU_CLI
-    return Impl_AskUserCaptcha(nm, url);
-#else
-    ShellOpenUrl(url);
-    std::cerr << "Enter text from the image:"<<std::endl;
-#ifdef _WIN32
-    std::wstring result;
-    std::wcin>>result;
-    return IuCoreUtils::WstringToUtf8(result);
-#else
-    std::string result;
-    std::cin>>result;
-    return result;
-#endif
-
-
-#endif
-    return "";
+    return ServiceLocator::instance()->dialogProvider()->askUserCaptcha(nm, url);
 }
 
-#ifndef IU_CLI
-const std::string Impl_InputDialog(const std::string& text, const std::string& defaultValue)
-{
-    CInputDialog dlg(_T("Image Uploader"), Utf8ToWCstring(text), Utf8ToWCstring(defaultValue));
-
-    if(dlg.DoModal(GetActiveWindow())==IDOK) {
-        return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
-    }
-    return "";
-}
-#endif
-
-const std::string InputDialog(const std::string& text, const std::string& defaultValue)
-{
-#ifndef IU_CLI
-    return Impl_InputDialog(text, defaultValue);
-#else
-    std::string result;
-    std::cerr<<std::endl<<text<<std::endl;
-    std::cin>>result;
-    return result;
-#endif
-    return "";
+const std::string InputDialog(const std::string& text, const std::string& defaultValue) {
+    return ServiceLocator::instance()->dialogProvider()->inputDialog(text, defaultValue);
 }
 
 
@@ -290,20 +220,11 @@ const std::string scriptUtf8ToAnsi(const std::string& str, int codepage )
 }
 
 void WriteLog(const std::string& type, const std::string& message) {
-#ifndef IU_CLI
     LogMsgType msgType = logWarning;
     if ( type == "error" ) {
         msgType = logError;
     }
-    ::WriteLog(msgType,_T("Script Engine"),Utf8ToWCstring(message));
-#else
-    std::cerr << type <<" : ";
-    #ifdef _WIN32
-        std::wcerr<<IuCoreUtils::Utf8ToWstring(message)<<std::endl;;
-    #else
-        std::cerr<<IuCoreUtils::Utf8ToSystemLocale(message)<<std::endl;
-    #endif
-#endif
+    ServiceLocator::instance()->logger()->write(msgType,_T("Script Engine"),Utf8ToWCstring(message));
 }
 
 const std::string md5(const std::string& data)
@@ -366,19 +287,8 @@ const std::string url_encode(const std::string &value) {
     return escaped.str();
 }
 
-
-void DebugMessage(const std::string& msg, bool isResponseBody)
-{
-#ifndef IU_CLI
-    DefaultErrorHandling::DebugMessage(msg,isResponseBody);
-#else
-#ifdef _WIN32
-    std::wcerr<<IuCoreUtils::Utf8ToWstring(msg)<<std::endl;;
-#else
-    std::cerr<<IuCoreUtils::Utf8ToSystemLocale(msg)<<std::endl;
-#endif
-    //getc(stdin);
-#endif
+void DebugMessage(const std::string& msg, bool isResponseBody) {
+    ServiceLocator::instance()->uploadErrorHandler()->DebugMessage(msg,isResponseBody);
 }
 
 const std::string MessageBox( const std::string& message, const std::string &title,const std::string& buttons , const std::string& type) {
@@ -705,7 +615,7 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("InputDialog", InputDialog)
         .Func("GetFileMimeType", GetFileMimeType)
         .Func("JsonEscapeString", JsonEscapeString)
-        .Func("ShellOpenUrl", ShellOpenUrl)
+        .Func("ShellOpenUrl", DesktopUtils::ShellOpenUrl)
         .Func("ParseJSON", ParseJSON)
         .Func("ToJSON", ToJSON)
         .Func("GetFileContents", GetFileContents)

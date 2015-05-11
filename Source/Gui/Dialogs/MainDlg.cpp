@@ -22,7 +22,7 @@
 #include "atlheaders.h"
 #include "resource.h"
 #include "aboutdlg.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Common/CmdLine.h"
 #include "Func/SystemUtils.h"
 #include "Func/WinUtils.h"

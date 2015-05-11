@@ -20,7 +20,7 @@
 
 #include "ThumbEditor.h"
 
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Core/Images/Thumbnail.h"
 #include "Gui/GuiTools.h"
 #include "Core/Scripting/API/HtmlDocumentPrivate_win.h"

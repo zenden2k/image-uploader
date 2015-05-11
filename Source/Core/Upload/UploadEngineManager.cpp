@@ -7,11 +7,13 @@
 #include "Core/Logging.h"
 #include "ServerSync.h"
 #include "Core/Scripting/API/ScriptAPI.h"
-#include <Func/Settings.h>
+#include "Core/Settings.h"
+#include "Core/Upload/UploadErrorHandler.h"
 
-UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList)
+UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList, IUploadErrorHandler* uploadErrorHandler)
 {
     uploadEngineList_ = uploadEngineList;
+    uploadErrorHandler_ = uploadErrorHandler;
 }
 
 UploadEngineManager::~UploadEngineManager()
@@ -68,7 +70,7 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
         result = new CDefaultUploadEngine(serverSync);
         result->setServerSettings(&serverProfile.serverSettings());
         result->setUploadData(ue);
-        result->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
+        result->onErrorMessage.bind(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
         
         m_plugins[threadId][serverName] = result;
 
@@ -76,7 +78,7 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
     
     result->setServerSettings(&serverProfile.serverSettings());
     result->setUploadData(ue);
-    result->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
+    result->onErrorMessage.bind(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
     return result;
 }
 
@@ -96,7 +98,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
         UseExisting = true;
 
     if (plugin && UseExisting && plugin->name() == pluginName && plugin->serverSettings()->authData.Login == params.authData.Login) {
-        plugin->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
+        plugin->onErrorMessage.bind(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
         plugin->switchToThisVM();
         return plugin;
     }
@@ -109,7 +111,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     ServerSync* serverSync = getServerSync(serverProfile);
     std::string fileName = m_ScriptsDirectory + pluginName + ".nut";
     CScriptUploadEngine* newPlugin = new CScriptUploadEngine(fileName, serverSync, &params);
-    newPlugin->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
+    newPlugin->onErrorMessage.bind(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
     if (newPlugin->isLoaded()) {
         m_plugins[threadId][serverName] = newPlugin;
         return newPlugin;

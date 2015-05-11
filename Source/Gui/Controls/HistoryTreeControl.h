@@ -10,7 +10,7 @@
 #include <atlcrack.h>
 
 #include "3rdpart/thread.h"
-#include "Func/HistoryManager.h"
+#include "Core/HistoryManager.h"
 #include "Core/FileDownloader.h"
 #include "Core/3rdpart/FastDelegate.h"
 #include "resource.h"

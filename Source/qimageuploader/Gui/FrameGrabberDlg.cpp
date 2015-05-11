@@ -18,7 +18,7 @@ FrameGrabberDlg::~FrameGrabberDlg()
     delete ui;
 }
 
-void FrameGrabberDlg::frameGrabbed(const Utf8String& timeStr, int64_t time, AbstractImage* image) {
+void FrameGrabberDlg::frameGrabbed(const std::string& timeStr, int64_t time, AbstractImage* image) {
     //image.save("D:\\frame2.png");
     QListWidgetItem * item = new QListWidgetItem(ui->listWidget);
     item->setText(U2Q(timeStr));

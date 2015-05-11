@@ -22,7 +22,7 @@
 
 #include <uxtheme.h>
 #include "Func/common.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "LogWindow.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"

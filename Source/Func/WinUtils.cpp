@@ -66,6 +66,14 @@ CString GetCommonApplicationDataPath()
     return GetSystemSpecialPath(CSIDL_COMMON_APPDATA);
 }
 
+CString MyGetWindowText(HWND wnd) {
+    int len = GetWindowTextLength(wnd);
+    CString buf;
+    GetWindowText(wnd, buf.GetBuffer(len + 1), len + 1);
+    buf.ReleaseBuffer(-1);
+    return buf;
+}
+
 bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
 {
     for (int i = 0; i < 4; i++) {
@@ -90,7 +98,7 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
         CString message;
         HWND clipboardOwner = GetClipboardOwner();
         if ( clipboardOwner ) {
-            CString windowTitle = GuiTools::GetWindowText(clipboardOwner);
+            CString windowTitle = MyGetWindowText(clipboardOwner);
             TCHAR windowClassName[256] = _T("");
             GetClassName(clipboardOwner, windowClassName, 255);
             DWORD proccessId;

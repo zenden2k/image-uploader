@@ -22,10 +22,11 @@
 #include "Func/Myutils.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Func/Common.h"
-#include "Func/Base.h"
+#include "Core/ServiceLocator.h"
 #include "Gui/GuiTools.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
+#include "Core/LocalFileCache.h"
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl()
@@ -672,7 +673,7 @@ void CHistoryTreeControl::DownloadThumb(HistoryTreeItem * it)
     {
         std::string thumbUrl = it->hi.thumbUrl;
         if(thumbUrl.empty()) return ;
-        std::string cacheFile =     ZBase::get()->getFromCache(thumbUrl);
+        std::string cacheFile =     ServiceLocator::instance()->localFileCache()->get(thumbUrl);
         if(!cacheFile.empty() && IuCoreUtils::FileExists(cacheFile))
         {
             it->thumbnailSource = cacheFile;
@@ -734,7 +735,7 @@ bool CHistoryTreeControl::OnFileFinished(bool ok, int statusCode, CFileDownloade
             //MessageBox(Utf8ToWCstring(it.url));
         }
         hit->thumbnailSource = it.fileName;
-        ZBase::get()->addToGlobalCache(it.fileName, it.url);
+        ServiceLocator::instance()->localFileCache()->addFile(it.url, it.fileName);
         m_thumbLoadingQueue.push_back(hit);
         StartLoadingThumbnails();
     }

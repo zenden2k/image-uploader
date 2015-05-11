@@ -26,6 +26,7 @@
 #include "Core/Upload/UploadEngine.h"
 #include "UploadSession.h"
 
+class IUploadErrorHandler;
 class ScriptsManager;
 class UploadEngineManager;
 class UploadFilter;
@@ -37,7 +38,7 @@ class FileQueueUploaderPrivate;
 class CFileQueueUploader
 {
     public:
-        CFileQueueUploader(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager);
+        CFileQueueUploader(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler);
         void addSession(std::shared_ptr<UploadSession> uploadSession);
         void addTask(std::shared_ptr<UploadTask> task);
         void removeSession(std::shared_ptr<UploadSession> uploadSession);

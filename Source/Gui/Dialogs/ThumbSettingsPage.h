@@ -26,7 +26,7 @@
 #include "resource.h"       // main symbols
 #include "Gui/Controls/MyImage.h"
 #include "SettingsPage.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "3rdpart/ColorButton.h"
 #include <atlcrack.h>
 // CThumbSettingsPage

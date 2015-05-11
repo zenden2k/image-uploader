@@ -20,7 +20,7 @@
 
 #include "VideoGrabberParams.h"
 
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 

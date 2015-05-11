@@ -29,6 +29,7 @@
 #define THUMBNAIL_HEIGHT 120
 #include "Func/WinUtils.h"
 #include "Func/myutils.h"
+#include <Core/ServiceLocator.h>
 
 bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
 
@@ -323,7 +324,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
         format.SetAlignment(StringAlignmentCenter);
         format.SetLineAlignment(StringAlignmentCenter);
         Font font(L"Arial", 12, FontStyleBold);
-        WriteLog(logWarning, TR("Список изображений"),TR("Невозможно загрузить миниатюру к файлу."), CString(TR("Файл:"))+_T(" ")+GetFileName(ItemID));
+        ServiceLocator::instance()->logger()->write(logWarning, TR("Список изображений"), TR("Невозможно загрузить миниатюру к файлу."), CString(TR("Файл:")) + _T(" ") + GetFileName(ItemID));
         gr.DrawString(TR("Невозможно загрузить изображение"), -1, &font, bounds, &format, &brush);
     }
 

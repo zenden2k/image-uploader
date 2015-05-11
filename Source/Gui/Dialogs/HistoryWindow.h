@@ -27,6 +27,7 @@
 #include "Gui/Controls/HistoryTreeControl.h"
 #include "Gui/Controls/PictureExWnd.h"
 
+class CWizardDlg;
 class CHistoryReader;
 
 // CHistoryWindow
@@ -45,7 +46,7 @@ class CHistoryWindow : public CDialogImpl <CHistoryWindow>,
     public CMessageFilter
 {
     public:
-        CHistoryWindow();
+        CHistoryWindow(CWizardDlg* wizardDlg);
         ~CHistoryWindow();
         enum { IDD = IDD_HISTORYWINDOW };
         virtual BOOL PreTranslateMessage(MSG* pMsg);
@@ -98,6 +99,7 @@ class CHistoryWindow : public CDialogImpl <CHistoryWindow>,
         std::vector<CString> m_HistoryFiles;
         bool delayed_closing_;
         CString historyFolder;
+        CWizardDlg* wizardDlg_;
         void LoadHistoryFile(CString fileName);
         CPictureExWnd m_wndAnimation;
         // Context menu callbacks

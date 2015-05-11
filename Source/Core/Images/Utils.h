@@ -30,7 +30,7 @@ void DrawStrokedText(Gdiplus::Graphics& gr, LPCTSTR Text, Gdiplus::RectF Bounds,
     int width = 1);
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 void changeAplhaChannel(Bitmap& source, Bitmap& dest, int sourceChannel, int destChannel);
-Rect MeasureDisplayString(Graphics& graphics, CString text, RectF boundingRect, Font& font);
+Rect MeasureDisplayString(Graphics& graphics, CString text, RectF boundingRect, Gdiplus::Font& font);
 CRect CenterRect(CRect r1, CRect intoR2);
 void DrawRect(Bitmap& gr, Color& color, Rect rect);
 #endif
