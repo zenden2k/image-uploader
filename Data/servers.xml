@@ -441,6 +441,11 @@
 		</Actions>
 		<Result DirectUrlTemplate="$(ShortUrl)" />
 	</Server2>
+	<Server2 Name="g.ua" Debug="0" Type="urlshortening" Plugin="g.ua">
+		<Actions>
+		</Actions>
+		<Result DirectUrlTemplate="stub" />
+	</Server2>
 	<Server2 Name="goo.gl" Debug="0" Type="urlshortening" Plugin="googl">
 		<Actions>
 		</Actions>
@@ -478,7 +483,19 @@
 	</Server>
 	<Server Name="picplus.ru" MaxFileSize="5242880">
 		<Actions>
-			<Action Type="upload" Url="http://picplus.ru/upload.php" PostParams="userfile1=%filename%;thumb_size=180;check_orent=h;texttype=dimensions;text=;" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
+			<Action Type="upload" Url="http://picplus.ru/upload.php" PostParams="userfile1=%filename%;thumb_size=$(_THUMBWIDTH);check_orent=h;texttype=dimensions;text=;" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
+	<Server Name="pixic.ru">
+		<Actions>
+			<Action Type="upload" Url="http://www.pixic.ru/" PostParams="submit=Загрузить;files=;file1=%filename%;orig_resize=500;res_select=500;orig_rotate=0;jpeg_quality=75;check_thumb=size;thumb_text=Увеличить;thumb_size=170;send=1;" RegExp="\[IMG\]([\s\S]*?)\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Image:1;Thumb:3;"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
+	<Server Name="fotosklad.org.ua">
+		<Actions>
+			<Action Type="upload" Url="http://fotosklad.org.ua/upload_image.html" PostParams="img1=%filename%;resize_width=800;if_preview=on;preview_width=$(_THUMBWIDTH);rotate_degree=0;comment=;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
