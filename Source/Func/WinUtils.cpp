@@ -404,7 +404,7 @@ CString GetAppFolder()
 {
     TCHAR szFileName[1024], szPath[1024];
     HINSTANCE inst;
-#if !defined(IU_SHELLEXT) && !defined(IU_CLI)
+#if defined(IU_WTL)
     inst =  _Module.GetModuleInstance();
 #elif defined(IU_SHELLEXT)
     inst = hDllInstance;

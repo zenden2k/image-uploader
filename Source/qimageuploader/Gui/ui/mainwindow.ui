@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>QImageUploader</string>
+   <string>qimageuploader</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../../qimageuploader.qrc">

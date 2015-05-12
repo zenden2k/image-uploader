@@ -34,6 +34,11 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
         return 0;
     }
     CUploadEngineData *ue = uploadEngineList_->byName(serverProfile.serverName());
+    if (!ue)
+    {
+        LOG(ERROR) << "No such server " << serverProfile.serverName();
+        return 0;
+    }
     CAbstractUploadEngine* result = NULL;
     std::string serverName = serverProfile.serverName();
     std::thread::id threadId = std::this_thread::get_id();

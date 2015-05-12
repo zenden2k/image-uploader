@@ -1,9 +1,3 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2012-12-15T09:51:21
-#
-#-------------------------------------------------
-
 QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -189,13 +183,19 @@ HEADERS  += Gui/mainwindow.h \
 FORMS    += Gui/ui/mainwindow.ui \
     Gui/ui/FrameGrabberDlg.ui
 
+CONFIG += pch.h
+PRECOMPILED_HEADER = pch.h
+win32-msvc* {
+    PRECOMPILED_SOURCE = pch.cpp /* other .cpp files will be with use option*/
+}
+
 INCLUDEPATH += $$_PRO_FILE_PWD_/../
 #INCLUDEPATH += $$_PRO_FILE_PWD_/libs/include
 
 INCLUDEPATH += $$_PRO_FILE_PWD_/
 
 win32 {
-    DEFINES += UNICODE _UNICODE CURL_STATICLIB PCRE_STATIC _WIN32_IE=0x0603 WINVER=0x0601 _WIN32_WINNT=0x0601
+    DEFINES += UNICODE _UNICODE CURL_STATICLIB PCRE_STATIC _WIN32_IE=0x0603 WINVER=0x0601 _WIN32_WINNT=0x0601 _CRT_SECURE_NO_WARNINGS
     QMAKE_CFLAGS_RELEASE += /MT
     QMAKE_CXXFLAGS_RELEASE += /MT
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
@@ -252,9 +252,10 @@ contains(QMAKE_TARGET.arch, x86_64) {
 #DEPENDPATH += SQUIRREL2/lib
 #LIBS+= -L$$PWD/SQUIRREL2/lib/
 win32 {
-LIBS+=  -L../../Contrib/Lib/Release/
-LIBS+=  -L../../Contrib/Lib/
-LIBS+=  -L../../Contrib/Source/boost/stage/lib/
+    #release:LIBS+=  -L../../Contrib/Lib/Release/
+    debug:LIBS+=  -L../../Contrib/Lib/Debug/
+    LIBS+=  -L../../Contrib/Lib/
+    LIBS+=  -L../../Contrib/Source/boost/stage/lib/
 }
 unix {
 LIBS+=  -L../../Contrib/Lib/Linux/$$ARCH
@@ -268,7 +269,7 @@ win32 {
 } else {
     LIBS+=   -lcurl   -lssl -lcrypto -lglog
 }
-LIBS+=  -lsqplus  -lsquirrel -lsqstdlib  -ljsoncpp -lpcre
+LIBS+=  -lsquirrel -lsqstdlib  -ljsoncpp -lpcre
 
 
 win32 {
@@ -284,7 +285,8 @@ LIBS += -lavcodec -lswresample -lavformat -lavutil -lswscale
 CONFIG += c++11
 
 win32 {
-   QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:CONSOLE,5.01
+    QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:CONSOLE,5.01
+    QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.01
 
     DEFINES += _ATL_XP_TARGETING
     QMAKE_CFLAGS += /D _USING_V110_SDK71_

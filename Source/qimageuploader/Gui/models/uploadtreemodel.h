@@ -52,7 +52,7 @@ class UploadTreeModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-         UploadTreeModel(QObject *parent, UploadManager *uploadManager);
+    UploadTreeModel(QObject *parent, UploadManager *uploadManager);
 	 ~UploadTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const;
@@ -66,29 +66,31 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
 private:
-         void setupModelData(UploadManager *uploadManager);
-         struct InternalItem{
-             int index;
-             std::shared_ptr<UploadTask> task;
-             std::shared_ptr<UploadSession> session;
-             InternalItem() {
-                 index = 0;
-             }
-         };
-         UploadManager *m_uploadManager;
-         std::map<UploadTask*, InternalItem*> m_objMap;
-         std::map<UploadSession*, InternalItem*> sessionsMap_;
-         int byUploadTask(UploadTask* obj) const;
-         int byUploadSession(UploadSession* obj) const;
-	 bool insertRow(const QModelIndex &parent);
-         void recalcObjMap();
-
-public slots:
-         void data_OnChildAdded(UploadTask* child);
-         void data_OnUploadProgress(UploadTask* task);
-         void data_OnStatusChanged(UploadTask* it);
-
-
+    void setupModelData(UploadManager *uploadManager);
+    struct InternalItem{
+        int index;
+        std::shared_ptr<UploadTask> task;
+        std::shared_ptr<UploadSession> session;
+        InternalItem() {
+            index = 0;
+        }
+    };
+    UploadManager *m_uploadManager;
+    std::map<UploadTask*, InternalItem*> m_objMap;
+    std::map<UploadSession*, InternalItem*> sessionsMap_;
+    int byUploadTask(UploadTask* obj) const;
+    int byUploadSession(UploadSession* obj) const;
+    bool insertRow(const QModelIndex &parent);
+    void recalcObjMap();
+    void data_OnChildAdded(UploadTask* child);
+    void data_OnUploadProgress(UploadTask* task);
+    void data_OnSessionAdded(UploadSession* task);
+    void data_OnStatusChanged(UploadTask* it);
+    //public slots:
+    Q_INVOKABLE  void onChildAdded(UploadTask* child);
+    Q_INVOKABLE  void onUploadProgress(UploadTask* task);
+    Q_INVOKABLE  void onStatusChanged(UploadTask* it);
+    Q_INVOKABLE  void OnSessionAdded(UploadSession* session);
  };
 
 
