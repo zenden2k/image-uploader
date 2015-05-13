@@ -247,6 +247,7 @@ void CLoginDlg::enableControls(bool enable)
     GuiTools::EnableDialogItem(m_hWnd, IDC_LOGINEDIT, enable);
     GuiTools::EnableDialogItem(m_hWnd, IDC_PASSWORDEDIT, enable&&m_UploadEngine->NeedPassword);
     GuiTools::EnableDialogItem(m_hWnd, IDOK, enable);
+    GuiTools::EnableDialogItem(m_hWnd, IDCANCEL, enable);
     doLoginLabel_.EnableWindow(enable);
     deleteAccountLabel_.ShowWindow(enable?SW_SHOW : SW_HIDE);
 }
