@@ -488,4 +488,10 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
+	<Server Name="ovrload.ru" FileHost="1" Type="file" Types="image,file">
+		<Actions>
+			<Action Type="upload" Url="http://ovrload.ru/" PostParams="clipboard=;fileframe=true;file=%filename%;" RegExp="&quot;(http:\/\/ovrload\.ru\/.*?)&quot;" AssignVars="File:0;"/>
+		</Actions>
+	<Result ImageUrlTemplate="$(File)" />
+	</Server>
 </Servers>
