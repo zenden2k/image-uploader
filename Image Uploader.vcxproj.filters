@@ -768,9 +768,6 @@
     <ClInclude Include="Source\Func\WtlScriptDialogProvider.h">
       <Filter>Source Files\Func</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CLI\ConsoleScriptDialogProvider.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Core\Utils\DesktopUtils.h">
       <Filter>Source Files\Core\Utils</Filter>
     </ClInclude>
@@ -782,6 +779,9 @@
     </ClInclude>
     <ClInclude Include="Source\Core\Logging.h">
       <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\Filters\SizeExceedFilter.h">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1734,9 +1734,6 @@
     <ClCompile Include="Source\Func\WtlScriptDialogProvider.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CLI\ConsoleScriptDialogProvider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Core\Utils\DesktopUtils.cpp">
       <Filter>Source Files\Core\Utils</Filter>
     </ClCompile>
@@ -1745,6 +1742,9 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Logging.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\Filters\SizeExceedFilter.cpp">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

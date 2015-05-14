@@ -27,9 +27,9 @@ public:
     {
         return IuCoreUtils::Utf8ToWstring(data_).c_str();
     }
-    operator LPCTSTR() {
+    /*operator LPCTSTR() {
         return IuCoreUtils::Utf8ToWstring(data_).c_str();
-    }
+    }*/
     CEncodedPassword& operator=(const CString& text);
 #endif
     operator std::string&() {

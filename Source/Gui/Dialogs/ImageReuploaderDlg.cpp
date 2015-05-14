@@ -287,6 +287,7 @@ bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it
     }
     std::shared_ptr<FileUploadTask> fileUploadTask(new FileUploadTask(localFileName, displayName));
     fileUploadTask->setServerProfile(serverProfile_);
+    fileUploadTask->setIsImage(true);
     fileUploadTask->setUserData(uploadItemData);
     fileUploadTask->setUrlShorteningServer(Settings.urlShorteningServer);
     fileUploadTask->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CImageReuploaderDlg::OnFileFinished));

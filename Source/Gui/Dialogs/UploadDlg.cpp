@@ -287,6 +287,7 @@ DWORD CUploadDlg::Run()
         std::shared_ptr<FileUploadTask> task(new FileUploadTask(fileNameA, displayName));
         task->OnUploadProgress.bind(this, &CUploadDlg::onTaskUploadProgress);
         task->setUserData(fps);
+        task->setIsImage(isImage);
         task->OnStatusChanged.bind(this, &CUploadDlg::OnUploaderStatusChanged);
         task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CUploadDlg::onTaskFinished));
         task->setServerProfile(isImage ? sessionImageServer_ : sessionFileServer_);

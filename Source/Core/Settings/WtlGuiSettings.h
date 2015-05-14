@@ -142,7 +142,6 @@ public:
     void FindDataFolder();
 protected:
     void EnableAutostartup(bool enable);
-
     bool LoadConvertProfiles(SimpleXmlNode root);
     bool LoadConvertProfile(const CString& name, SimpleXmlNode profileNode);
     bool SaveConvertProfiles(SimpleXmlNode root);
@@ -151,6 +150,8 @@ protected:
     bool SaveServerProfiles(SimpleXmlNode root);
     bool PostLoadSettings(SimpleXml &xml) override;
     bool PostSaveSettings(SimpleXml &xml) override;
+
+    void BindToManager();
 private:
     TCHAR m_Directory[MAX_PATH];
 };

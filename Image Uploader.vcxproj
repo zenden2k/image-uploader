@@ -615,7 +615,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\CLI\ConsoleScriptDialogProvider.h" />
     <ClInclude Include="Source\Core\3rdpart\htmlentities.h" />
     <ClInclude Include="Source\Core\CommonDefs.h" />
     <ClInclude Include="Source\Core\CoreFunctions.h" />
@@ -660,6 +659,7 @@
     <ClInclude Include="Source\Core\Upload\ConsoleUploadErrorHandler.h" />
     <ClInclude Include="Source\Core\Upload\FileQueueUploaderPrivate.h" />
     <ClInclude Include="Source\Core\Upload\Filters\ImageConverterFilter.h" />
+    <ClInclude Include="Source\Core\Upload\Filters\SizeExceedFilter.h" />
     <ClInclude Include="Source\Core\Upload\Filters\UrlShorteningFilter.h" />
     <ClInclude Include="Source\Core\Upload\Filters\UserFilter.h" />
     <ClInclude Include="Source\Core\Upload\ServerProfile.h" />
@@ -961,7 +961,6 @@
     <ResourceCompile Include="Source\Image Uploader.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\CLI\ConsoleScriptDialogProvider.cpp" />
     <ClCompile Include="Source\Core\3rdpart\htmlentities.cpp" />
     <ClCompile Include="Source\Core\CoreFunctions.cpp" />
     <ClCompile Include="Source\Core\HistoryManager.cpp" />
@@ -998,6 +997,7 @@
     <ClCompile Include="Source\Core\Upload\ConsoleUploadErrorHandler.cpp" />
     <ClCompile Include="Source\Core\Upload\FileQueueUploaderPrivate.cpp" />
     <ClCompile Include="Source\Core\Upload\Filters\ImageConverterFilter.cpp" />
+    <ClCompile Include="Source\Core\Upload\Filters\SizeExceedFilter.cpp" />
     <ClCompile Include="Source\Core\Upload\Filters\UrlShorteningFilter.cpp" />
     <ClCompile Include="Source\Core\Upload\Filters\UserFilter.cpp" />
     <ClCompile Include="Source\Core\Upload\ServerProfile.cpp" />

@@ -10,16 +10,23 @@
 #include "UploadEngineManager.h"
 #include <Core/CoreFunctions.h>
 
-UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler) :
+UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler) :
                 CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler),
-                                                    userFilter(scriptsManager)
+                userFilter(scriptsManager)
+#ifdef IU_WTL
+                ,sizeExceedFilter_(engineList, uploadEngineManager)
+#endif
 {
     uploadEngineManager_ = uploadEngineManager;
 #ifdef IU_WTL
     addUploadFilter(&imageConverterFilter);
 #endif
     addUploadFilter(&userFilter);
+#ifdef IU_WTL
+    addUploadFilter(&sizeExceedFilter_);
+#endif
     addUploadFilter(&urlShorteningFilter);
+
     setMaxThreadCount(Settings.MaxThreads);
     Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &UploadManager::settingsChanged));
     OnConfigureNetworkClient.bind(this, &UploadManager::configureNetwork);

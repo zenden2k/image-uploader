@@ -3,5 +3,5 @@
 QtGuiSettings Settings;
 
 QtGuiSettings::QtGuiSettings() : CommonGuiSettings() {
-
+    BindToManager();
 }

@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     scriptsManager_ = new ScriptsManager();
     IUploadErrorHandler* uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
     uploadEngineManager_ = new UploadEngineManager(&engineList_, uploadErrorHandler);
-    uploadManager_ = new UploadManager(uploadEngineManager_, scriptsManager_, uploadErrorHandler);
+    uploadManager_ = new UploadManager(uploadEngineManager_,&engineList_, scriptsManager_, uploadErrorHandler);
     uploadTreeModel_ = new UploadTreeModel(this, uploadManager_);
 
     ui->treeView->setModel(uploadTreeModel_);

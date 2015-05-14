@@ -624,6 +624,7 @@ void CFloatingWindow::ShowBaloonTip(const CString& text, const CString& title)
 void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& displayName)
 {
     FileUploadTask *  task(new FileUploadTask(IuCoreUtils::WstringToUtf8((LPCTSTR)realName), IuCoreUtils::WstringToUtf8((LPCTSTR)displayName)));
+    task->setIsImage(true);
     //std::shared_ptr<UploadSession> uploadSession(new UploadSession());
     task->setServerProfile(Settings.quickScreenshotServer);
     task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CFloatingWindow::OnFileFinished));

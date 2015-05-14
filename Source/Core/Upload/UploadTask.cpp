@@ -233,12 +233,13 @@ void* UploadTask::userData() const
 
 bool UploadTask::uploadSuccess(bool withChilds)
 {
+    std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
     int count = childTasks_.size();
     if (!count || !withChilds )
     {
         return uploadSuccess_;
     }
-    std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
+   
     for (int i = 0; i <count; i++)
     {
         if (!childTasks_[i]->isFinished() || !childTasks_[i]->uploadSuccess())
@@ -377,13 +378,13 @@ void UploadTask::uploadProgress(InfoProgress progress)
 
 int UploadTask::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask)
 {
+    std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
     int taskCount = childTasks_.size();
     if (!taskCount)
     {
         return 0;
     }
     int count = 0;
-    std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
     for (auto it = childTasks_.begin(); it != childTasks_.end(); it++)
     {
         if (!it->get()->isFinished() && !it->get()->isRunning() && !it->get()->isStopped() )
@@ -461,4 +462,20 @@ void UploadTask::addTempFile(const std::string& fileName)
     tempFileDeleter(true)->addFile(fileName);
 }
 
-/*void setCurrentUploadEngine(CAbstractUploadEngine* currentUploadEngine);*/
+void UploadTask::deletePostponedChilds() {
+    std::lock_guard<std::recursive_mutex> guard(tasksMutex_);
+    for ( auto it = childTasks_.begin(); it != childTasks_.end(); ++it ) {
+        if ( it->get()->status() == StatusPostponed ) {
+            childTasks_.erase(it);
+        }
+    }
+}
+
+void UploadTask::schedulePostponedChilds() {
+    std::lock_guard<std::recursive_mutex> guard(tasksMutex_);
+    for (auto it = childTasks_.begin(); it != childTasks_.end(); ++it) {
+        if (it->get()->status() == StatusPostponed) {
+            it->get()->setStatus(StatusInQueue);
+        }
+    }
+}

@@ -7,6 +7,7 @@ FileUploadTask::FileUploadTask(const std::string& fileName, const std::string& d
     fileName_ = fileName;
     tempFileDeleter_ = 0;
     originalFileName_ = fileName;
+    isImage_ = false;
     if ( displayName.empty() ) {
         displayName_ = IuCoreUtils::ExtractFileName(fileName);
     } else {
@@ -77,6 +78,14 @@ std::string FileUploadTask::toString()
 std::string FileUploadTask::title() const
 {
     return IuCoreUtils::ExtractFileName(originalFileName());
+}
+
+bool FileUploadTask::isImage() {
+    return isImage_;
+}
+
+void FileUploadTask::setIsImage(bool image) {
+    isImage_ = image;
 }
 
 int64_t FileUploadTask::getFileSize() const

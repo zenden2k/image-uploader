@@ -325,157 +325,11 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
     Hotkeys_changed = false;
 #endif
 
-    /* binding settings */
-    SettingsNode& general = mgr_["General"];
-    general.n_bind(LastUpdateTime);
-#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
-    general.n_bind(Language);
-    general.n_bind(ExplorerContextMenu);
-    /*general.n_bind(ExplorerVideoContextMenu);
-    general.n_bind(ExplorerCascadedMenu);*/
-#endif
-#if !defined(IU_SHELLEXT) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
-
-
-
-    general.n_bind(ConfirmOnExit);
-    general.n_bind(SendToContextMenu);
-    general.n_bind(ParseSubDirs);
-    general.n_bind(ImageEditorPath);
-    //general.n_bind(AutoStartup);
-    general.n_bind(ShowTrayIcon);
-    general.n_bind(AutoCopyToClipboard);
-    general.n_bind(AutoShowLog);
-    general.n_bind(ImagesFolder);
-    general.n_bind(VideoFolder);
-    general.n_bind(WatchClipboard);
-    general.n_bind(UseNewIcon);
-    general.n_bind(RememberFileServer);
-    general.n_bind(RememberImageServer);
-#ifndef IU_SERVERLISTTOOL
-    general.n_bind(Hotkeys);
-#endif
-    SettingsNode& screenshot = mgr_["Screenshot"];
-    screenshot.nm_bind(ScreenshotSettings, Delay);
-    screenshot.nm_bind(ScreenshotSettings, Format);
-    screenshot.nm_bind(ScreenshotSettings, Quality);
-    screenshot.nm_bind(ScreenshotSettings, ShowForeground);
-    screenshot.nm_bind(ScreenshotSettings, FilenameTemplate);
-    screenshot.nm_bind(ScreenshotSettings, Folder);
-    screenshot.nm_bind(ScreenshotSettings, AddShadow);
-    screenshot.nm_bind(ScreenshotSettings, RemoveBackground);
-    screenshot.nm_bind(ScreenshotSettings, RemoveCorners);
-    screenshot.nm_bind(ScreenshotSettings, CopyToClipboard);
-    screenshot.nm_bind(ScreenshotSettings, brushColor);
-    screenshot.nm_bind(ScreenshotSettings, WindowHidingDelay);
-    screenshot.nm_bind(ScreenshotSettings, OpenInEditor);
-    screenshot.nm_bind(ScreenshotSettings, UseOldRegionScreenshotMethod);
-
-    SettingsNode& imageEditor = mgr_["ImageEditor"];
-    imageEditor.nm_bind(ImageEditorSettings, ForegroundColor);
-    imageEditor.nm_bind(ImageEditorSettings, BackgroundColor);
-    imageEditor.nm_bind(ImageEditorSettings, PenSize);
-    imageEditor.nm_bind(ImageEditorSettings, RoundingRadius);
-    imageEditor.nm_bind(ImageEditorSettings, Font);
-    imageEditor.nm_bind(ImageEditorSettings, AllowAltTab);
-    SettingsNode& image = mgr_["Image"];
-    image["CurrentProfile"].bind(CurrentConvertProfileName);
-    image.nm_bind(UploadProfile, KeepAsIs);
-
-    /*SettingsNode& thumbnails = mgr_["Thumbnails"];
-    thumbnails.nm_bind(ThumbSettings, FileName);
-    thumbnails.nm_bind(ThumbSettings, CreateThumbs);
-    thumbnails.nm_bind(ThumbSettings, ThumbWidth);
-    thumbnails.nm_bind(ThumbSettings, ThumbHeight);
-    thumbnails.nm_bind(ThumbSettings, ScaleByHeight);
-    thumbnails.nm_bind(ThumbSettings, FrameColor);
-    thumbnails.nm_bind(ThumbSettings, ThumbColor1);
-    thumbnails.nm_bind(ThumbSettings, ThumbColor2);
-    thumbnails.nm_bind(ThumbSettings, UseServerThumbs);
-    thumbnails.nm_bind(ThumbSettings, ThumbAddImageSize);
-    thumbnails.nm_bind(ThumbSettings, DrawFrame);
-    thumbnails.nm_bind(ThumbSettings, Quality);
-    thumbnails.nm_bind(ThumbSettings, Format);
-    thumbnails.nm_bind(ThumbSettings, Text);
-    thumbnails["Text"]["@Color"].bind(ThumbSettings.ThumbTextColor);
-    thumbnails["Text"]["@Font"].bind(ThumbSettings.ThumbFont);
-    thumbnails["Text"]["@TextOverThumb"].bind(ThumbSettings.TextOverThumb);
-    thumbnails["Text"]["@ThumbAlpha"].bind(ThumbSettings.ThumbAlpha);*/
-
-    SettingsNode& video = mgr_["VideoGrabber"];
-    video.nm_bind(VideoSettings, Columns);
-    video.nm_bind(VideoSettings, TileWidth);
-    video.nm_bind(VideoSettings, GapWidth);
-    video.nm_bind(VideoSettings, GapHeight);
-    video.nm_bind(VideoSettings, NumOfFrames);
-    video.nm_bind(VideoSettings, JPEGQuality);
-    video.nm_bind(VideoSettings, ShowMediaInfo);
-    video.nm_bind(VideoSettings, TextColor);
-    video.nm_bind(VideoSettings, Font);
-    video.nm_bind(VideoSettings, Engine);
-    video.nm_bind(VideoSettings, SnapshotsFolder);
-    video.nm_bind(VideoSettings, SnapshotFileTemplate);
-
-    SettingsNode& tray = mgr_["TrayIcon"];
-    tray.nm_bind(TrayIconSettings, LeftDoubleClickCommand);
-    tray.nm_bind(TrayIconSettings, LeftClickCommand);
-    tray.nm_bind(TrayIconSettings, RightClickCommand);
-    tray.nm_bind(TrayIconSettings, MiddleClickCommand);
-    tray.nm_bind(TrayIconSettings, DontLaunchCopy);
-    tray.nm_bind(TrayIconSettings, ShortenLinks);
-    tray.nm_bind(TrayIconSettings, TrayScreenshotAction);
-
-    SettingsNode& history = mgr_["History"];
-    history.nm_bind(HistorySettings, EnableDownloading);
-
-
-
-    SettingsNode& imageReuploader = mgr_["ImageReuploader"];
-    imageReuploader.nm_bind(ImageReuploaderSettings, PasteHtmlOnCtrlV);
-#endif
-
-    SettingsNode& upload = mgr_["Uploading"];
-#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
-    //    upload.n_bind(UrlShorteningServer);
-    upload.n_bind(QuickUpload);
-    upload.n_bind(CodeLang);
-    upload.n_bind(ThumbsPerLine);
-    upload.n_bind(UseDirectLinks);
-    upload.n_bind(UseTxtTemplate);
-    upload.n_bind(DropVideoFilesToTheList);
-    upload.n_bind(CodeType);
-    upload.n_bind(ShowUploadErrorDialog);
-    upload.n_bind(MaxThreads);
-    upload.n_bind(ScriptFileName);
-    upload.n_bind(ExecuteScript);
-    upload.n_bind(DeveloperMode);
-
-    imageServer.bind(upload["Server"]);
-    fileServer.bind(upload["FileServer"]);
-    quickScreenshotServer.bind(upload["QuickScreenshotServer"]);
-    contextMenuServer.bind(upload["ContextMenuServer"]);
-    urlShorteningServer.bind(upload["UrlShorteningServer"]);
-
-    ConvertProfiles["Default"] = ImageConvertingParams();
-    CurrentConvertProfileName = "Default";
-#endif
-    upload.n_bind(UploadBufferSize);
-    upload.n_bind(FileRetryLimit);
-
-    upload.n_bind(ActionRetryLimit);
-#if  !defined  (IU_CLI) && !defined(IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
-    SettingsNode& proxy = upload["Proxy"];
-    proxy["@UseProxy"].bind(ConnectionSettings.UseProxy);
-    proxy["@NeedsAuth"].bind(ConnectionSettings.NeedsAuth);
-    proxy.nm_bind(ConnectionSettings, ServerAddress);
-    proxy.nm_bind(ConnectionSettings, ProxyPort);
-    proxy.nm_bind(ConnectionSettings, ProxyType);
-    proxy.nm_bind(ConnectionSettings, ProxyUser);
-    proxy.nm_bind(ConnectionSettings, ProxyPassword);;
-#endif
+    BindToManager();
 }
 
 bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
+    CommonGuiSettings::PostLoadSettings(xml);
     SimpleXmlNode settingsNode = xml.getRoot("ImageUploader").GetChild("Settings");
 
 #if !defined(IU_CLI) && !defined( IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
@@ -688,6 +542,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 
 bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
 {
+    CommonGuiSettings::PostSaveSettings(xml);
 #if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
     SaveConvertProfiles(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("Image").GetChild("Profiles"));
     SaveServerProfiles(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("Uploading").GetChild("ServerProfiles"));
@@ -757,6 +612,158 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     Settings.Hotkeys_changed = false;
 #endif
     return true;
+}
+
+void WtlGuiSettings::BindToManager() {
+    CommonGuiSettings::BindToManager();
+    /* binding settings */
+    SettingsNode& general = mgr_["General"];
+    general.n_bind(LastUpdateTime);
+#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
+    general.n_bind(Language);
+    general.n_bind(ExplorerContextMenu);
+    /*general.n_bind(ExplorerVideoContextMenu);
+    general.n_bind(ExplorerCascadedMenu);*/
+#endif
+#if !defined(IU_SHELLEXT) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
+
+
+
+    general.n_bind(ConfirmOnExit);
+    general.n_bind(SendToContextMenu);
+    general.n_bind(ParseSubDirs);
+    general.n_bind(ImageEditorPath);
+    //general.n_bind(AutoStartup);
+    general.n_bind(ShowTrayIcon);
+    general.n_bind(AutoCopyToClipboard);
+    general.n_bind(AutoShowLog);
+    general.n_bind(ImagesFolder);
+    general.n_bind(VideoFolder);
+    general.n_bind(WatchClipboard);
+    general.n_bind(UseNewIcon);
+    general.n_bind(RememberFileServer);
+    general.n_bind(RememberImageServer);
+#ifndef IU_SERVERLISTTOOL
+    general.n_bind(Hotkeys);
+#endif
+    SettingsNode& screenshot = mgr_["Screenshot"];
+    screenshot.nm_bind(ScreenshotSettings, Delay);
+    screenshot.nm_bind(ScreenshotSettings, Format);
+    screenshot.nm_bind(ScreenshotSettings, Quality);
+    screenshot.nm_bind(ScreenshotSettings, ShowForeground);
+    screenshot.nm_bind(ScreenshotSettings, FilenameTemplate);
+    screenshot.nm_bind(ScreenshotSettings, Folder);
+    screenshot.nm_bind(ScreenshotSettings, AddShadow);
+    screenshot.nm_bind(ScreenshotSettings, RemoveBackground);
+    screenshot.nm_bind(ScreenshotSettings, RemoveCorners);
+    screenshot.nm_bind(ScreenshotSettings, CopyToClipboard);
+    screenshot.nm_bind(ScreenshotSettings, brushColor);
+    screenshot.nm_bind(ScreenshotSettings, WindowHidingDelay);
+    screenshot.nm_bind(ScreenshotSettings, OpenInEditor);
+    screenshot.nm_bind(ScreenshotSettings, UseOldRegionScreenshotMethod);
+
+    SettingsNode& imageEditor = mgr_["ImageEditor"];
+    imageEditor.nm_bind(ImageEditorSettings, ForegroundColor);
+    imageEditor.nm_bind(ImageEditorSettings, BackgroundColor);
+    imageEditor.nm_bind(ImageEditorSettings, PenSize);
+    imageEditor.nm_bind(ImageEditorSettings, RoundingRadius);
+    imageEditor.nm_bind(ImageEditorSettings, Font);
+    imageEditor.nm_bind(ImageEditorSettings, AllowAltTab);
+    SettingsNode& image = mgr_["Image"];
+    image["CurrentProfile"].bind(CurrentConvertProfileName);
+    image.nm_bind(UploadProfile, KeepAsIs);
+
+    /*SettingsNode& thumbnails = mgr_["Thumbnails"];
+    thumbnails.nm_bind(ThumbSettings, FileName);
+    thumbnails.nm_bind(ThumbSettings, CreateThumbs);
+    thumbnails.nm_bind(ThumbSettings, ThumbWidth);
+    thumbnails.nm_bind(ThumbSettings, ThumbHeight);
+    thumbnails.nm_bind(ThumbSettings, ScaleByHeight);
+    thumbnails.nm_bind(ThumbSettings, FrameColor);
+    thumbnails.nm_bind(ThumbSettings, ThumbColor1);
+    thumbnails.nm_bind(ThumbSettings, ThumbColor2);
+    thumbnails.nm_bind(ThumbSettings, UseServerThumbs);
+    thumbnails.nm_bind(ThumbSettings, ThumbAddImageSize);
+    thumbnails.nm_bind(ThumbSettings, DrawFrame);
+    thumbnails.nm_bind(ThumbSettings, Quality);
+    thumbnails.nm_bind(ThumbSettings, Format);
+    thumbnails.nm_bind(ThumbSettings, Text);
+    thumbnails["Text"]["@Color"].bind(ThumbSettings.ThumbTextColor);
+    thumbnails["Text"]["@Font"].bind(ThumbSettings.ThumbFont);
+    thumbnails["Text"]["@TextOverThumb"].bind(ThumbSettings.TextOverThumb);
+    thumbnails["Text"]["@ThumbAlpha"].bind(ThumbSettings.ThumbAlpha);*/
+
+    SettingsNode& video = mgr_["VideoGrabber"];
+    video.nm_bind(VideoSettings, Columns);
+    video.nm_bind(VideoSettings, TileWidth);
+    video.nm_bind(VideoSettings, GapWidth);
+    video.nm_bind(VideoSettings, GapHeight);
+    video.nm_bind(VideoSettings, NumOfFrames);
+    video.nm_bind(VideoSettings, JPEGQuality);
+    video.nm_bind(VideoSettings, ShowMediaInfo);
+    video.nm_bind(VideoSettings, TextColor);
+    video.nm_bind(VideoSettings, Font);
+    video.nm_bind(VideoSettings, Engine);
+    video.nm_bind(VideoSettings, SnapshotsFolder);
+    video.nm_bind(VideoSettings, SnapshotFileTemplate);
+
+    SettingsNode& tray = mgr_["TrayIcon"];
+    tray.nm_bind(TrayIconSettings, LeftDoubleClickCommand);
+    tray.nm_bind(TrayIconSettings, LeftClickCommand);
+    tray.nm_bind(TrayIconSettings, RightClickCommand);
+    tray.nm_bind(TrayIconSettings, MiddleClickCommand);
+    tray.nm_bind(TrayIconSettings, DontLaunchCopy);
+    tray.nm_bind(TrayIconSettings, ShortenLinks);
+    tray.nm_bind(TrayIconSettings, TrayScreenshotAction);
+
+    SettingsNode& history = mgr_["History"];
+    history.nm_bind(HistorySettings, EnableDownloading);
+
+
+
+    SettingsNode& imageReuploader = mgr_["ImageReuploader"];
+    imageReuploader.nm_bind(ImageReuploaderSettings, PasteHtmlOnCtrlV);
+#endif
+
+    SettingsNode& upload = mgr_["Uploading"];
+#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
+    //    upload.n_bind(UrlShorteningServer);
+    upload.n_bind(QuickUpload);
+    upload.n_bind(CodeLang);
+    upload.n_bind(ThumbsPerLine);
+    upload.n_bind(UseDirectLinks);
+    upload.n_bind(UseTxtTemplate);
+    upload.n_bind(DropVideoFilesToTheList);
+    upload.n_bind(CodeType);
+    upload.n_bind(ShowUploadErrorDialog);
+    upload.n_bind(MaxThreads);
+    upload.n_bind(ScriptFileName);
+    upload.n_bind(ExecuteScript);
+    upload.n_bind(DeveloperMode);
+
+    imageServer.bind(upload["Server"]);
+    fileServer.bind(upload["FileServer"]);
+    quickScreenshotServer.bind(upload["QuickScreenshotServer"]);
+    contextMenuServer.bind(upload["ContextMenuServer"]);
+    urlShorteningServer.bind(upload["UrlShorteningServer"]);
+
+    ConvertProfiles["Default"] = ImageConvertingParams();
+    CurrentConvertProfileName = "Default";
+#endif
+    upload.n_bind(UploadBufferSize);
+    upload.n_bind(FileRetryLimit);
+
+    upload.n_bind(ActionRetryLimit);
+#if  !defined  (IU_CLI) && !defined(IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
+    SettingsNode& proxy = upload["Proxy"];
+    proxy["@UseProxy"].bind(ConnectionSettings.UseProxy);
+    proxy["@NeedsAuth"].bind(ConnectionSettings.NeedsAuth);
+    proxy.nm_bind(ConnectionSettings, ServerAddress);
+    proxy.nm_bind(ConnectionSettings, ProxyPort);
+    proxy.nm_bind(ConnectionSettings, ProxyType);
+    proxy.nm_bind(ConnectionSettings, ProxyUser);
+    proxy.nm_bind(ConnectionSettings, ProxyPassword);;
+#endif
 }
 
 // The following code should  be deleted in next releases

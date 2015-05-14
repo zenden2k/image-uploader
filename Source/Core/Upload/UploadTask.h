@@ -57,7 +57,7 @@ class UploadTask {
         DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(Role, (DefaultRole)(ThumbRole)(UrlShorteningRole));
         DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(Type, (TypeFile)(TypeUrl));
         //enum Role { DefaultRole, ThumbRole, UrlShorteningRole };
-        enum Status { StatusInQueue, StatusRunning, StatusStopped, StatusFinished, StatusFailure };
+        enum Status { StatusInQueue, StatusRunning, StatusStopped, StatusFinished, StatusFailure, StatusPostponed };
         typedef fastdelegate::FastDelegate2<UploadTask*, bool> TaskFinishedCallback;
 
         virtual Type type() const = 0;
@@ -105,6 +105,8 @@ class UploadTask {
         static std::string UploaderStatusToString(StatusType status, int actionIndex, std::string param);
         TempFileDeleter* tempFileDeleter(bool create = true);
         void addTempFile(const std::string& fileName);
+        void deletePostponedChilds();
+        void schedulePostponedChilds();
         friend class CUploader;
 
     protected:

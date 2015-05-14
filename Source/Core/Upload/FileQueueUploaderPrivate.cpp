@@ -250,7 +250,7 @@ void FileQueueUploaderPrivate::run()
         
         mutex_.lock();
         serverThreads_[it->serverName()].waitingFileCount--;
-        
+        std::string initialServerName = it->serverName();
         UploadSession* session = it->session();
         //serverThreads_[serverName].runningThreads++;
         mutex_.unlock();
@@ -261,10 +261,23 @@ void FileQueueUploaderPrivate::run()
         }
         if (!res)
         {
+            it->deletePostponedChilds(); // delete thumbnail
             it->finishTask(UploadTask::StatusFailure);
             continue;
         }
+
+        it->schedulePostponedChilds();
+
         std::string serverName = it->serverName();
+
+        if (initialServerName != serverName) {
+            if (fut) {
+                fut->setFileName(fut->originalFileName());
+            }
+            it->setStatus(UploadTask::StatusInQueue);
+            continue;
+        }
+        
         std::string  profileName = it->serverProfile().profileName();
 
         CAbstractUploadEngine *engine = uploadEngineManager_->getUploadEngine(it->serverProfile());

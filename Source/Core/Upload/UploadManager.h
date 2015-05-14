@@ -4,20 +4,24 @@
 #include "FileQueueUploader.h"
 #ifdef IU_WTL
     #include "Filters/ImageConverterFilter.h"
+    #include "Filters/SizeExceedFilter.h"
 #endif
 #include "Filters/UrlShorteningFilter.h"
 #include "Filters/UserFilter.h"
 
+class CMyEngineList;
 class ScriptsManager;
 class BasicSettings;
+class CUploadEngineList;
 class UploadManager : public CFileQueueUploader
 {
 public:
-    UploadManager(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler);
+    UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler);
     bool shortenLinksInSession(std::shared_ptr<UploadSession> session);
 protected:
     #ifdef IU_WTL
     ImageConverterFilter imageConverterFilter;
+    SizeExceedFilter sizeExceedFilter_;
     #endif
     UrlShorteningFilter urlShorteningFilter;
     UserFilter userFilter;

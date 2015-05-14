@@ -4,6 +4,7 @@
 #pragma once
 
 #include <string>
+#include <mutex>
 
 class NetworkClient;
 
@@ -12,6 +13,9 @@ public:
     virtual ~IDialogProvider() {};
     virtual std::string askUserCaptcha(NetworkClient *nm, const std::string& url) = 0;
     virtual std::string inputDialog(const std::string& text, const std::string& defaultValue) = 0;
+    friend class SizeExceedFilter;
+protected:
+    std::mutex dialogMutex_;
 };
 
 #endif
