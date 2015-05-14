@@ -15,7 +15,7 @@ protected:
     void SetUp() override {
     };
 
-    void TestEscape(const std::string& symbolic_code, char value, const char* expected) {
+    void TestEscape(const std::string& symbolic_code, unsigned char value, const char* expected) {
         std::string symbolic_escaped = "&"+ symbolic_code+";";
         char numeric_escaped[20];
         sprintf(numeric_escaped, "&#%02d;", static_cast<unsigned char>(value));

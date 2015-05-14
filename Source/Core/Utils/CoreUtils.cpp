@@ -293,7 +293,14 @@ bool ReadUtf8TextFile(std::string utf8Filename, std::string& data)
         // no BOM was found; seeking backward
         fseek( stream, 0L,  SEEK_SET );
     }
-    data.resize(size);
+    try {
+        data.resize(size);
+    } catch ( std::exception& ex ) {
+        LOG(ERROR) << ex.what();
+        fclose(stream);
+        return false;
+    }
+   
     size_t bytesRead = fread(&data[0], 1, size, stream);    
     //data[bytesRead] = 0;
     fclose(stream);

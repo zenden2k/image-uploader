@@ -131,8 +131,9 @@ void NetworkClient::setProxy(const std::string &host, int port, int type)
     curl_easy_setopt(curl_handle, CURLOPT_PROXY, host.c_str());
     curl_easy_setopt(curl_handle, CURLOPT_PROXYPORT, (long)port);    
     curl_easy_setopt(curl_handle, CURLOPT_PROXYTYPE, (long)type);
- 
+#ifdef NDEBUG
     curl_easy_setopt(curl_handle, CURLOPT_NOPROXY, "localhost,127.0.0.1"); 
+#endif
 } 
 
 void NetworkClient::setProxyUserPassword(const std::string &username, const std::string password)
@@ -364,26 +365,54 @@ bool NetworkClient::doUploadMultipartData()
                         return false; /* can't continue */
                     }
                     openedFiles.push_back(curFile);
-                    // FIXME: 64bit file size support!
-                    long  curFileSize = IuCoreUtils::getFileSize(fileName);
+                    // FIXME: > 2gb  file size & unicode filenames support on Windows
+                    uint64_t  curFileSize = IuCoreUtils::getFileSize(fileName);
 
-                if(it->contentType.empty())
-                    curl_formadd(&formpost,
-                        &lastptr,
-                        CURLFORM_COPYNAME, it->name.c_str(),
-                        CURLFORM_FILENAME, it->displayName.c_str(),
-                        CURLFORM_STREAM, /*it->value.c_str()*/curFile,
-                        CURLFORM_CONTENTSLENGTH, curFileSize,
-                        CURLFORM_END);
-                else 
-                    curl_formadd(&formpost,
-                        &lastptr,
-                        CURLFORM_COPYNAME, it->name.c_str(),
-                        CURLFORM_FILENAME, it->displayName.c_str(),
-                        CURLFORM_STREAM, /*it->value.c_str()*/curFile,
-                        CURLFORM_CONTENTSLENGTH, curFileSize,
-                        CURLFORM_CONTENTTYPE, it->contentType.c_str(),
-                        CURLFORM_END);
+                    if (curFileSize > LONG_MAX ) {
+                        std::string ansiFileName =
+#if defined(_WIN32) && defined(CURL_WIN32_UTF8_FILENAMES)
+                            fileName
+#else
+                            IuCoreUtils::Utf8ToSystemLocale(fileName)
+#endif
+                            ;
+#if defined(_WIN32) && !defined(CURL_WIN32_UTF8_FILENAMES)
+                        LOG(WARNING) << "Uploading files bigger than 2 GB via multipart/form-data wih file names non representable in system locale is not supported";
+#endif
+                        if (it->contentType.empty())
+                            curl_formadd(&formpost,
+                            &lastptr,
+                            CURLFORM_COPYNAME, it->name.c_str(),
+                            CURLFORM_FILENAME, it->displayName.c_str(),
+                            CURLFORM_FILE, ansiFileName.c_str(),
+                            CURLFORM_END);
+                        else
+                            curl_formadd(&formpost,
+                            &lastptr,
+                            CURLFORM_COPYNAME, it->name.c_str(),
+                            CURLFORM_FILENAME, it->displayName.c_str(),
+                            CURLFORM_FILE, ansiFileName.c_str(),
+                            CURLFORM_CONTENTTYPE, it->contentType.c_str(),
+                            CURLFORM_END);
+                    } else {
+                        if (it->contentType.empty())
+                            curl_formadd(&formpost,
+                            &lastptr,
+                            CURLFORM_COPYNAME, it->name.c_str(),
+                            CURLFORM_FILENAME, it->displayName.c_str(),
+                            CURLFORM_STREAM, /*it->value.c_str()*/curFile,
+                            CURLFORM_CONTENTSLENGTH, static_cast<long>(curFileSize),
+                            CURLFORM_END);
+                        else
+                            curl_formadd(&formpost,
+                            &lastptr,
+                            CURLFORM_COPYNAME, it->name.c_str(),
+                            CURLFORM_FILENAME, it->displayName.c_str(),
+                            CURLFORM_STREAM, /*it->value.c_str()*/curFile,
+                            CURLFORM_CONTENTSLENGTH, static_cast<long>(curFileSize),
+                            CURLFORM_CONTENTTYPE, it->contentType.c_str(),
+                            CURLFORM_END);
+                    }     
             }
             else
             {

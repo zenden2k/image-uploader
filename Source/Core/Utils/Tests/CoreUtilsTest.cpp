@@ -159,4 +159,12 @@ TEST_F(CoreUtilsTest, gettimeofday)
     EXPECT_GE(curTime2, curTime2);
 }
 
-int ttt;
+TEST_F(CoreUtilsTest, ReadUtf8TextFile)
+{
+    std::string res;
+    //ReadUtf8TextFile("d:\\Video\\Video\\Movies\\Laskovyy.may.2009.BDRip.avi", res);
+
+    //EXPECT_EQ(size, );
+}
+
+

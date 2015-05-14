@@ -29,6 +29,7 @@
 #include <mutex>
 
 #include "Core/Utils/CoreUtils.h"
+#include "Core/Utils/CoreTypes.h"
 #include "CurlShare.h"
 
 std::string nm_trimStr(const std::string& str);
@@ -134,7 +135,9 @@ class NetworkClient
         void setCurlShare(CurlShare* share);
         /*! @endcond */
         void enableResponseCodeChecking(bool enable);
+
     private:
+        //DISALLOW_COPY_AND_ASSIGN(NetworkClient);
         enum CallBackFuncType{funcTypeBody,funcTypeHeader};
 
         struct CallBackData

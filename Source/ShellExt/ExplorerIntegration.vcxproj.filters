@@ -85,6 +85,9 @@
     <ClCompile Include="..\Core\Utils\StringUtils.cpp">
       <Filter>Source Files\Core\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="..\Core\Logging.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ExplorerIntegration.def">
