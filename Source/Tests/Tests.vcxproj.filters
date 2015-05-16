@@ -28,6 +28,12 @@
     <Filter Include="Code\Core\Utils\Tests">
       <UniqueIdentifier>{401bfaf5-fdc7-46d0-bb5a-806aadb9e69c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Code\Core\3rdpart\GumboQuery">
+      <UniqueIdentifier>{4985c8fc-0676-41bf-8d04-b2de089b9737}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Core\3rdpart\GumboQuery\Tests">
+      <UniqueIdentifier>{de8325fd-11f9-4e94-a5d5-abc3cf5af835}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tests.cpp">
@@ -68,6 +74,30 @@
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\pcreplusplus.cpp">
       <Filter>Code\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Document.cpp">
+      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Node.cpp">
+      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Object.cpp">
+      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Parser.cpp">
+      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\QueryUtil.cpp">
+      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Selection.cpp">
+      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Selector.cpp">
+      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Tests\GumboTest.cpp">
+      <Filter>Code\Core\3rdpart\GumboQuery\Tests</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

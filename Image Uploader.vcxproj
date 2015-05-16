@@ -211,7 +211,7 @@
     <ClCompile>
       <AdditionalOptions>/MP$(NUMBER_OF_PROCESSORS) %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Source\boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Source\boost\;$(SolutionDir)\Contrib\Include\gumbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX;TIXML_USE_STL;PCRE_STATIC;CURL_STATICLIB;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100;SCRAT_USE_EXCEPTIONS;IU_GUI;IU_WTL;USE_OPENSSL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -222,9 +222,10 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <CallingConvention>Cdecl</CallingConvention>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;zlibd.lib;minizip.lib;gdiplus.lib;strmbasd.lib;Ws2_32.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;dwmapi.lib;squirrel.lib;sqstdlib.lib;pcre.lib;pcre++.lib;wininet.lib;winmm.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;zlibd.lib;minizip.lib;gdiplus.lib;strmbasd.lib;Ws2_32.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;dwmapi.lib;squirrel.lib;sqstdlib.lib;pcre.lib;pcre++.lib;wininet.lib;winmm.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;gumbo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Debug;$(SolutionDir)Contrib\Lib\;$(SolutionDir)\Contrib\Source\boost\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;LIBCMT.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Iphlpapi.dll;Netapi32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
@@ -275,7 +276,7 @@
       <Optimization>Disabled</Optimization>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Source\boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Source\boost\;$(SolutionDir)\Contrib\Include\gumbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;POCO_STATIC;TIXML_USE_STL;PCRE_STATIC;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100;SCRAT_USE_EXCEPTIONS;IU_GUI;IU_WTL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -288,6 +289,7 @@
       <DebugInformationFormat />
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <PreLinkEvent>
       <Command />
@@ -297,7 +299,7 @@
     </ProjectReference>
     <Link>
       <AdditionalOptions> /ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>gdiplus.lib;STRMBASE.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbccp32.lib;minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;dwmapi.lib;pcre.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;urlmon.lib;avformat.lib;avutil.lib;swscale.lib;avcodec.lib;wininet.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gdiplus.lib;STRMBASE.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbccp32.lib;minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;dwmapi.lib;pcre.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;urlmon.lib;avformat.lib;avutil.lib;swscale.lib;avcodec.lib;wininet.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;gumbo.lib;gumbo_query.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Release;$(SolutionDir)\Contrib\Lib\;$(SolutionDir)\Contrib\Source\boost\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>msvcprt.lib MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -479,7 +481,7 @@
       <Optimization>Full</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Source\boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Source\boost\;$(SolutionDir)\Contrib\Include\gumbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100;SCRAT_USE_EXCEPTIONS;IU_GUI;IU_WTL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -493,6 +495,7 @@
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <ForcedUsingFiles>stdafx.h;%(ForcedUsingFiles)</ForcedUsingFiles>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <PreLinkEvent>
       <Command />
@@ -501,7 +504,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>gdiplus.lib;STRMBASE.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbccp32.lib;minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;dwmapi.lib;pcre.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;urlmon.lib;avformat.lib;avutil.lib;swscale.lib;avcodec.lib;wininet.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gdiplus.lib;STRMBASE.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbccp32.lib;minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;dwmapi.lib;pcre.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;urlmon.lib;avformat.lib;avutil.lib;swscale.lib;avcodec.lib;wininet.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;gumbo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib;$(SolutionDir)\Contrib\Lib\Release;$(SolutionDir)\Contrib\Source\boost\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>msvcprt.lib MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -615,6 +618,13 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Document.h" />
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Node.h" />
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Object.h" />
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Parser.h" />
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\QueryUtil.h" />
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Selection.h" />
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Selector.h" />
     <ClInclude Include="Source\Core\3rdpart\htmlentities.h" />
     <ClInclude Include="Source\Core\CommonDefs.h" />
     <ClInclude Include="Source\Core\CoreFunctions.h" />
@@ -629,6 +639,7 @@
     <ClInclude Include="Source\Core\Network\CurlShare.h" />
     <ClInclude Include="Source\Core\Scripting\API\COMUtils.h" />
     <ClInclude Include="Source\Core\Scripting\API\Functions.h" />
+    <ClInclude Include="Source\Core\Scripting\API\GumboBingings\Document.h" />
     <ClInclude Include="Source\Core\Scripting\API\HtmlDocument.h" />
     <ClInclude Include="Source\Core\Scripting\API\HtmlDocumentPrivate_win.h" />
     <ClInclude Include="Source\Core\Scripting\API\HtmlElement.h" />
@@ -961,6 +972,13 @@
     <ResourceCompile Include="Source\Image Uploader.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Document.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Node.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Object.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Parser.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\QueryUtil.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Selection.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Selector.cpp" />
     <ClCompile Include="Source\Core\3rdpart\htmlentities.cpp" />
     <ClCompile Include="Source\Core\CoreFunctions.cpp" />
     <ClCompile Include="Source\Core\HistoryManager.cpp" />
@@ -972,6 +990,7 @@
     <ClCompile Include="Source\Core\Network\CurlShare.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\COMUtils.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\Functions.cpp" />
+    <ClCompile Include="Source\Core\Scripting\API\GumboBingings\Document.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\HtmlDocument.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\HtmlDocumentPrivate_win.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\HtmlElement.cpp" />

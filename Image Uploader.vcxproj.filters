@@ -97,6 +97,12 @@
     <Filter Include="Source Files\Core\i18n">
       <UniqueIdentifier>{5014a579-3d18-45d3-b174-50e54e7676ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core\Scripting\API\GumboBindings">
+      <UniqueIdentifier>{7e0fa242-a1be-43a1-9a76-7289ac9a20c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\3rdpart\GumboQuery">
+      <UniqueIdentifier>{174e6ece-c0ce-4b02-94d7-19a43aef2156}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\resource.h">
@@ -782,6 +788,30 @@
     </ClInclude>
     <ClInclude Include="Source\Core\Upload\Filters\SizeExceedFilter.h">
       <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\API\GumboBingings\Document.h">
+      <Filter>Source Files\Core\Scripting\API\GumboBindings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Document.h">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Object.h">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Parser.h">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\QueryUtil.h">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Selection.h">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Selector.h">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Node.h">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1745,6 +1775,30 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Upload\Filters\SizeExceedFilter.cpp">
       <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\API\GumboBingings\Document.cpp">
+      <Filter>Source Files\Core\Scripting\API\GumboBindings</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Document.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Object.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Parser.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\QueryUtil.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Selection.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Selector.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Node.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

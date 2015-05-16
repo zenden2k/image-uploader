@@ -20,14 +20,16 @@
 
 #include "ScriptAPI.h"
 
+#include "RegularExpression.h"
+#include "Process.h"
+#include "GumboBingings/Document.h"
 #ifdef IU_WTL
 #include "WebBrowser.h"
 #include "HtmlDocument.h"
 #include "HtmlElement.h"
 #include "WebBrowserPrivateBase.h"
 #endif
-#include "RegularExpression.h"
-#include "Process.h"
+
 #include "Core/Network/NetworkClient.h"
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Upload/UploadEngine.h"
@@ -199,7 +201,6 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
         Func("isAuthPerformed", &ServerSync::isAuthPerformed).
         Func("setAuthPerformed", &ServerSync::setAuthPerformed)
     );
-
 }
 
 #ifdef _MSC_VER
@@ -219,8 +220,9 @@ void RegisterClasses(Sqrat::SqratVM& vm) {
     RegisterUploadTaskWrappers(vm);
     RegisterProcessClass(vm);
     RegisterSimpleXmlClass(vm);
+    RegisterGumboClasses(vm);
+
 #ifdef IU_WTL
-  
     RegisterWebBrowserClass(vm);
     RegisterHtmlDocumentClass(vm);
     RegisterHtmlElementClass(vm);

@@ -74,6 +74,10 @@ Boost.Process   https://github.com/zenden2k/boost-process-utf8 (patched version 
 
 tinyxml         http://sourceforge.net/projects/tinyxml/
 
+gumbo           https://github.com/google/gumbo-parser
+
+gumbo-query     https://github.com/lazytiger/gumbo-query
+
 minizip         http://www.winimage.com/zLibDll/minizip.html
 
 jsoncpp         https://github.com/open-source-parsers/jsoncpp

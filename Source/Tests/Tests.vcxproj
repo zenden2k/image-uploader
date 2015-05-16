@@ -53,7 +53,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\sqplus;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Source\boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Source\boost\;$(SolutionDir)\Contrib\Include\gumbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;GOOGLE_GLOG_DLL_DECL=;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;PCRE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -65,7 +65,7 @@
       <AdditionalOptions>/MP$(NUMBER_OF_PROCESSORS) %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>gtestd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;zlibd.lib;minizip.lib;gdiplus.lib;strmbasd.lib;libcurl.lib;Ws2_32.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;dwmapi.lib;squirrel.lib;sqstdlib.lib;libeay32.lib;pcre.lib;wininet.lib;winmm.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gtestd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;zlibd.lib;minizip.lib;gdiplus.lib;strmbasd.lib;libcurl.lib;Ws2_32.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;dwmapi.lib;squirrel.lib;sqstdlib.lib;libeay32.lib;pcre.lib;wininet.lib;winmm.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;gumbo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Debug;$(SolutionDir)Contrib\Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
@@ -77,7 +77,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\sqplus;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Source\boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Source\boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;GOOGLE_GLOG_DLL_DECL=;PCRE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -99,6 +99,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Core\3rdpart\base64.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Document.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Node.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Object.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Parser.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\QueryUtil.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Selection.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Selector.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Tests\GumboTest.cpp" />
     <ClCompile Include="..\Core\3rdpart\htmlentities.cpp" />
     <ClCompile Include="..\Core\3rdpart\pcreplusplus.cpp" />
     <ClCompile Include="..\Core\Utils\CryptoUtils.cpp" />

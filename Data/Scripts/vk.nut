@@ -299,7 +299,7 @@ function  UploadFile(FileName, options)
 		
 	local uploadUrl = t.response.upload_url;
 	
-	nm.addQueryParamFile("file1", FileName, ExtractFileName(FileName),"");
+	nm.addQueryParamFile("file1", FileName, ExtractFileName(FileName),GetFileMimeType(FileName));
 	nm.setUrl(uploadUrl);
 	nm.doUploadMultipartData();
 	if ( nm.responseCode() >= 200 && nm.responseCode() <= 299 ) {

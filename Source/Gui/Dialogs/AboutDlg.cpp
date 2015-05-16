@@ -99,6 +99,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(L"pcre++") +"\t\thttp://www.daemon.de/PCRE\r\n";
     
     memoText += CString(L"tinyxml") +"\t\thttp://sourceforge.net/projects/tinyxml/\r\n";
+    memoText += CString(L"gumbo parser") +"\thttps://github.com/google/gumbo-parser\r\n";
+    memoText += CString(L"gumbo-query") +"\thttps://github.com/lazytiger/gumbo-query\r\n";
     memoText += CString(L"glog") +"\t\thttps://github.com/google/glog\r\n";
 
 

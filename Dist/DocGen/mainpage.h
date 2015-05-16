@@ -9,7 +9,7 @@
 -# @ref Implement 
 -# @ref Globals
 -# @ref UploadFilters 
-
+-# @ref ParsingHtml 
 @section Introduction Introduction
 <p>Image Uploader is using scripts written in <a href="http://www.squirrel-lang.org/" target="_blank">Squirrel 3</a> language.
 Squirrel is a high level imperative, object-oriented programming language, designed to be a light-weight scripting language that fits in the size, memory bandwidth, and real-time requirements of applications like video games.</p>
@@ -30,4 +30,7 @@ If you want to support album listing/creating/modifying, you have to implement a
 <code>nm</code> - global object - an instance of NetworkClient<br>
 <code>ServerParams</code> - global object - an instance of ServerSettingsStruct 
 <p>
+
+@section ParsingHtml Parsing HTML with gumbo-query
+@include gumbo_query.nut
 */
