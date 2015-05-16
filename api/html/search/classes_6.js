@@ -1,7 +1,4 @@
 var searchData=
 [
-  ['serversettingsstruct',['ServerSettingsStruct',['../class_server_settings_struct.html',1,'']]],
-  ['serversync',['ServerSync',['../class_server_sync.html',1,'']]],
-  ['simplexml',['SimpleXml',['../class_simple_xml.html',1,'']]],
-  ['simplexmlnode',['SimpleXmlNode',['../class_simple_xml_node.html',1,'']]]
+  ['regularexpression',['RegularExpression',['../class_script_a_p_i_1_1_regular_expression.html',1,'ScriptAPI']]]
 ];
