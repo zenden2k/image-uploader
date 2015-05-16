@@ -14,6 +14,7 @@
  **/
 
 #include "Object.h"
+#include <stdexcept>
 
 CObject::CObject()
 {
@@ -24,7 +25,7 @@ CObject::~CObject()
 {
 	if (mReferences != 1)
 	{
-		throw "something wrong, reference count not zero";
+		throw std::runtime_error("something wrong, reference count not zero");
 	}
 }
 
@@ -37,7 +38,7 @@ void CObject::release()
 {
 	if (mReferences < 0)
 	{
-		throw "something wrong, reference count is negative";
+        throw std::runtime_error("something wrong, reference count is negative");
 	}
 
 	if (mReferences == 1)

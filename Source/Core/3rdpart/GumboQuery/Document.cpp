@@ -35,7 +35,7 @@ CSelection CDocument::find(std::string aSelector)
 {
 	if (mpOutput == NULL)
 	{
-		throw "document not initialized";
+		throw std::runtime_error("CDocument::find: document not initialized");
 	}
 
 	CSelection sel(mpOutput->root);

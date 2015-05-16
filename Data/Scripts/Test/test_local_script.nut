@@ -16,7 +16,7 @@ function  UploadFile(FileName, options)
     print(doc.find("h1 a").text()+"\r\n");
     print(doc.find("h1 a").length()+"\r\n");
     print(doc.find("#logo").attr("class")+"\r\n");
-    
+    return -1;
     nm.doGet("http://zenden.ws");
     txt = nm.responseBody();
     doc = Document(txt);
@@ -24,7 +24,6 @@ function  UploadFile(FileName, options)
         print(elem.text()+"-\r\n"); 
     });
 
-    
     return -1;
     
     

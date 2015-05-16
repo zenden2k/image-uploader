@@ -19,6 +19,6 @@
         <Entry Name="Data/Thumbnails/*" SaveToFolder="%datapath%/Thumbnails/" Action="add"/>
 		<Entry Name="Data/templates.xml" SaveToFolder="%datapath%/templates.xml" Action="add"/>
 	</Entries>
-<Info>[f] Added missing SimpleXml class
+<Info>[+] Added gumbo-query to scripting API (jquery-like interface for google/gumbo HTML5 parser))
 </Info>
 </UpdatePackageSource>

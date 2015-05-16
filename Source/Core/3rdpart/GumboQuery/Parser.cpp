@@ -85,7 +85,7 @@ CSelector* CParser::parseSelector()
 		{
 			return ret;
 		}
-
+        CSelector* oldRet = ret;
 		CSelector* sel = parseSimpleSelectorSequence();
 		if (combinator == ' ')
 		{
@@ -105,11 +105,13 @@ CSelector* CParser::parseSelector()
 		}
 		else
 		{
-			throw error("impossible");
+            throw std::runtime_error(error("impossible"));
 		}
+        oldRet->release();
+        sel->release();
 	}
 
-	throw error("impossible");
+    throw std::runtime_error(error("impossible"));
 }
 
 CSelector* CParser::parseSimpleSelectorSequence()
@@ -117,7 +119,7 @@ CSelector* CParser::parseSimpleSelectorSequence()
 	CSelector* ret = NULL;
 	if (mOffset >= mInput.size())
 	{
-		throw error("expected selector, found EOF instead");
+        throw std::runtime_error(error("expected selector, found EOF instead"));
 	}
 
 	char c = mInput[mOffset];
@@ -221,7 +223,7 @@ void CParser::parseNth(int& aA, int& aB)
 			}
 			else
 			{
-				throw error("expected 'odd' or 'even', invalid found");
+                throw std::runtime_error(error("expected 'odd' or 'even', invalid found"));
 			}
 			return;
 		}
@@ -333,12 +335,12 @@ void CParser::parseNth(int& aA, int& aB)
 
 	eof:
 	{
-		throw error("unexpected EOF while attempting to parse expression of form an+b");
+        throw std::runtime_error(error("unexpected EOF while attempting to parse expression of form an+b"));
 	}
 
 	invalid:
 	{
-		throw error("unexpected character while attempting to parse expression of form an+b");
+        throw std::runtime_error(error("unexpected character while attempting to parse expression of form an+b"));
 	}
 
 }
@@ -359,7 +361,7 @@ int CParser::parseInteger()
 
 	if (offset == mOffset)
 	{
-		throw error("expected integer, but didn't find it.");
+        throw std::runtime_error(error("expected integer, but didn't find it."));
 	}
 	mOffset = offset;
 
@@ -370,7 +372,7 @@ CSelector* CParser::parsePseudoclassSelector()
 {
 	if (mOffset >= mInput.size() || mInput[mOffset] != ':')
 	{
-		throw error("expected pseudoclass selector (:pseudoclass), found invalid char");
+        throw std::runtime_error(error("expected pseudoclass selector (:pseudoclass), found invalid char"));
 	}
 	mOffset++;
 	std::string name = parseIdentifier();
@@ -379,13 +381,13 @@ CSelector* CParser::parsePseudoclassSelector()
 	{
 		if (!consumeParenthesis())
 		{
-			throw error("expected '(' but didn't find it");
+            throw std::runtime_error(error("expected '(' but didn't find it"));
 		}
 
 		CSelector* sel = parseSelectorGroup();
 		if (!consumeClosingParenthesis())
 		{
-			throw error("expected ')' but didn't find it");
+            throw std::runtime_error(error("expected ')' but didn't find it"));
 		}
 
 		CUnarySelector::TOperator op;
@@ -403,7 +405,7 @@ CSelector* CParser::parsePseudoclassSelector()
 		}
 		else
 		{
-			throw error("impossbile");
+            throw std::runtime_error(error("impossbile"));
 		}
 		return new CUnarySelector(op, sel);
 	}
@@ -411,7 +413,7 @@ CSelector* CParser::parsePseudoclassSelector()
 	{
 		if (!consumeParenthesis() || mOffset >= mInput.size())
 		{
-			throw error("expected '(' but didn't find it");
+            throw std::runtime_error(error("expected '(' but didn't find it"));
 		}
 
 		std::string value;
@@ -429,7 +431,7 @@ CSelector* CParser::parsePseudoclassSelector()
 
 		if (!consumeClosingParenthesis())
 		{
-			throw error("expected ')' but didn't find it");
+            throw std::runtime_error(error("expected ')' but didn't find it"));
 		}
 
 		CTextSelector::TOperator op;
@@ -443,14 +445,14 @@ CSelector* CParser::parsePseudoclassSelector()
 		}
 		else
 		{
-			throw error("impossibile");
+            throw std::runtime_error(error("impossibile"));
 		}
 		return new CTextSelector(op, value);
 	}
 	else if (name == "matches" || name == "matchesown")
 	{
 		//TODO
-		throw error("unsupported regex");
+        throw std::runtime_error(error("unsupported regex"));
 	}
 	else if (name == "nth-child" || name == "nth-last-child" || name == "nth-of-type"
 			|| name == "nth-last-of-type")
@@ -465,7 +467,7 @@ CSelector* CParser::parsePseudoclassSelector()
 
 		if (!consumeClosingParenthesis())
 		{
-			throw error("expected ')' but didn't find it");
+            throw std::runtime_error(error("expected ')' but didn't find it"));
 		}
 
 		return new CSelector(a, b, name == "nth-last-child" || name == "nth-last-of-type",
@@ -501,7 +503,7 @@ CSelector* CParser::parsePseudoclassSelector()
 	}
 	else
 	{
-		throw error("unsupported op:" + name);
+        throw std::runtime_error(error("unsupported op:" + name));
 	}
 }
 
@@ -509,7 +511,7 @@ CSelector* CParser::parseAttributeSelector()
 {
 	if (mOffset >= mInput.size() || mInput[mOffset] != '[')
 	{
-		throw error("expected attribute selector ([attribute]), found invalid char");
+        throw std::runtime_error(error("expected attribute selector ([attribute]), found invalid char"));
 	}
 	mOffset++;
 	skipWhitespace();
@@ -517,7 +519,7 @@ CSelector* CParser::parseAttributeSelector()
 	skipWhitespace();
 	if (mOffset >= mInput.size())
 	{
-		throw error("unexpected EOF in attribute selector");
+        throw std::runtime_error(error("unexpected EOF in attribute selector"));
 	}
 
 	if (mInput[mOffset] == ']')
@@ -528,7 +530,7 @@ CSelector* CParser::parseAttributeSelector()
 
 	if (mOffset + 2 > mInput.size())
 	{
-		throw error("unexpected EOF in attribute selector");
+        throw std::runtime_error(error("unexpected EOF in attribute selector"));
 	}
 
 	std::string op = mInput.substr(mOffset, 2);
@@ -538,21 +540,21 @@ CSelector* CParser::parseAttributeSelector()
 	}
 	else if (op[1] != '=')
 	{
-		throw error("expected equality operator, found invalid char");
+        throw std::runtime_error(error("expected equality operator, found invalid char"));
 	}
 
 	mOffset += op.size();
 	skipWhitespace();
 	if (mOffset >= mInput.size())
 	{
-		throw error("unexpected EOF in attribute selector");
+        throw std::runtime_error(error("unexpected EOF in attribute selector"));
 	}
 
 	std::string value;
 	if (op == "#=")
 	{
 		//TODo
-		throw error("unsupported regex");
+        throw std::runtime_error(error("unsupported regex"));
 	}
 	else
 	{
@@ -569,7 +571,7 @@ CSelector* CParser::parseAttributeSelector()
 	skipWhitespace();
 	if (mOffset >= mInput.size() || mInput[mOffset] != ']')
 	{
-		throw error("expected attribute selector ([attribute]), found invalid char");
+        throw std::runtime_error(error("expected attribute selector ([attribute]), found invalid char"));
 	}
 	mOffset++;
 
@@ -601,11 +603,11 @@ CSelector* CParser::parseAttributeSelector()
 	else if (op == "#=")
 	{
 		//TODO
-		throw error("unsupported regex");
+        throw std::runtime_error(error("unsupported regex"));
 	}
 	else
 	{
-		throw error("unsupported op:" + op);
+        throw std::runtime_error(error("unsupported op:" + op));
 	}
 	return new CAttributeSelector(aop, key, value);
 }
@@ -614,7 +616,7 @@ CSelector* CParser::parseClassSelector()
 {
 	if (mOffset >= mInput.size() || mInput[mOffset] != '.')
 	{
-		throw error("expected class selector (.class), found invalid char");
+        throw std::runtime_error(error("expected class selector (.class), found invalid char"));
 	}
 	mOffset++;
 	std::string clazz = parseIdentifier();
@@ -626,7 +628,7 @@ CSelector* CParser::parseIDSelector()
 {
 	if (mOffset >= mInput.size() || mInput[mOffset] != '#')
 	{
-		throw error("expected id selector (#id), found invalid char");
+        throw std::runtime_error(error("expected id selector (#id), found invalid char"));
 	}
 	mOffset++;
 	std::string id = parseName();
@@ -704,7 +706,7 @@ std::string CParser::parseString()
 	unsigned int offset = mOffset;
 	if (mInput.size() < offset + 2)
 	{
-		throw error("expected string, found EOF instead");
+        throw std::runtime_error(error("expected string, found EOF instead"));
 	}
 
 	char quote = mInput[offset];
@@ -744,7 +746,7 @@ std::string CParser::parseString()
 		}
 		else if (c == '\r' || c == '\n' || c == '\f')
 		{
-			throw error("unexpected end of line in string");
+            throw std::runtime_error(error("unexpected end of line in string"));
 		}
 		else
 		{
@@ -764,7 +766,7 @@ std::string CParser::parseString()
 
 	if (offset >= mInput.size())
 	{
-		throw error("EOF in string");
+        throw std::runtime_error(error("EOF in string"));
 	}
 
 	offset++;
@@ -803,7 +805,7 @@ std::string CParser::parseName()
 
 	if (ret == "")
 	{
-		throw error("expected name, found EOF instead");
+        throw std::runtime_error(error("expected name, found EOF instead"));
 	}
 
 	mOffset = offset;
@@ -821,13 +823,13 @@ std::string CParser::parseIdentifier()
 
 	if (mInput.size() <= mOffset)
 	{
-		throw error("expected identifier, found EOF instead");
+        throw std::runtime_error(error("expected identifier, found EOF instead"));
 	}
 
 	char c = mInput[mOffset];
 	if (!nameStart(c) && c != '\\')
 	{
-		throw error("expected identifier, found invalid char");
+        throw std::runtime_error(error("expected identifier, found invalid char"));
 	}
 
 	std::string name = parseName();
@@ -858,14 +860,14 @@ std::string CParser::parseEscape()
 {
 	if (mInput.size() < mOffset + 2 || mInput[mOffset] != '\\')
 	{
-		throw error("invalid escape sequence");
+        throw std::runtime_error(error("invalid escape sequence"));
 	}
 
 	unsigned int start = mOffset + 1;
 	char c = mInput[start];
 	if (c == '\r' || c == '\n' || c == '\f')
 	{
-		throw error("escaped line ending outside string");
+        throw std::runtime_error(error("escaped line ending outside string"));
 	}
 
 	if (!hexDigit(c))
@@ -896,7 +898,7 @@ std::string CParser::parseEscape()
 		}
 		else
 		{
-			throw error("impossible");
+            throw std::runtime_error(error("impossible"));
 		}
 
 		if ((i - start) % 2)
@@ -913,7 +915,7 @@ std::string CParser::parseEscape()
 
 	if (ret.size() == 0 || c != 0)
 	{
-		throw error("invalid hex digit");
+        throw std::runtime_error(error("invalid hex digit"));
 	}
 
 	if (mInput.size() > i)
@@ -956,9 +958,11 @@ std::string CParser::error(std::string message)
 	}
 
 	std::string ret = message + " at:";
-	for (unsigned int i = ds.size() - 1; i >= 0; i--)
+    unsigned int sz = ds.size();
+    unsigned int diff = sz - 1;
+    for (std::string::reverse_iterator rit = ds.rbegin(); rit != ds.rend(); ++rit)
 	{
-		ret.push_back(ds[i]);
+        ret.push_back(*rit);
 	}
 
 	return ret;
