@@ -11,7 +11,7 @@
 #elif defined(IU_QT)
     #include "Core/Settings/QtGuiSettings.h"
     typedef QtGuiSettings CSettings;
-#ele
+#else
     typedef BasicSettings CSettings;
 #endif
     extern CSettings Settings;

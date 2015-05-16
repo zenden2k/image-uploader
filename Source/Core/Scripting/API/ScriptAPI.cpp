@@ -22,7 +22,7 @@
 
 #include "RegularExpression.h"
 #include "Process.h"
-#include "GumboBingings/Document.h"
+#include "GumboBingings/GumboDocument.h"
 #ifdef IU_WTL
 #include "WebBrowser.h"
 #include "HtmlDocument.h"

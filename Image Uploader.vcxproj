@@ -618,7 +618,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Document.h" />
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\GQDocument.h" />
     <ClInclude Include="Source\Core\3rdpart\GumboQuery\Node.h" />
     <ClInclude Include="Source\Core\3rdpart\GumboQuery\Object.h" />
     <ClInclude Include="Source\Core\3rdpart\GumboQuery\Parser.h" />
@@ -639,7 +639,7 @@
     <ClInclude Include="Source\Core\Network\CurlShare.h" />
     <ClInclude Include="Source\Core\Scripting\API\COMUtils.h" />
     <ClInclude Include="Source\Core\Scripting\API\Functions.h" />
-    <ClInclude Include="Source\Core\Scripting\API\GumboBingings\Document.h" />
+    <ClInclude Include="Source\Core\Scripting\API\GumboBingings\GumboDocument.h" />
     <ClInclude Include="Source\Core\Scripting\API\HtmlDocument.h" />
     <ClInclude Include="Source\Core\Scripting\API\HtmlDocumentPrivate_win.h" />
     <ClInclude Include="Source\Core\Scripting\API\HtmlElement.h" />
@@ -972,7 +972,7 @@
     <ResourceCompile Include="Source\Image Uploader.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Document.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\GQDocument.cpp" />
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\Node.cpp" />
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\Object.cpp" />
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\Parser.cpp" />
@@ -990,7 +990,7 @@
     <ClCompile Include="Source\Core\Network\CurlShare.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\COMUtils.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\Functions.cpp" />
-    <ClCompile Include="Source\Core\Scripting\API\GumboBingings\Document.cpp" />
+    <ClCompile Include="Source\Core\Scripting\API\GumboBingings\GumboDocument.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\HtmlDocument.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\HtmlDocumentPrivate_win.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\HtmlElement.cpp" />

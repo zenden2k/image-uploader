@@ -958,8 +958,7 @@ std::string CParser::error(std::string message)
 	}
 
 	std::string ret = message + " at:";
-    unsigned int sz = ds.size();
-    unsigned int diff = sz - 1;
+
     for (std::string::reverse_iterator rit = ds.rbegin(); rit != ds.rend(); ++rit)
 	{
         ret.push_back(*rit);

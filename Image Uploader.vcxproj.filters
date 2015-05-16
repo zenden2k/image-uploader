@@ -789,12 +789,6 @@
     <ClInclude Include="Source\Core\Upload\Filters\SizeExceedFilter.h">
       <Filter>Source Files\Core\Upload\Filters</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Scripting\API\GumboBingings\Document.h">
-      <Filter>Source Files\Core\Scripting\API\GumboBindings</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Document.h">
-      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Core\3rdpart\GumboQuery\Object.h">
       <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
     </ClInclude>
@@ -811,6 +805,12 @@
       <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\3rdpart\GumboQuery\Node.h">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\API\GumboBingings\GumboDocument.h">
+      <Filter>Source Files\Core\Scripting\API\GumboBindings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\GQDocument.h">
       <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1776,12 +1776,6 @@
     <ClCompile Include="Source\Core\Upload\Filters\SizeExceedFilter.cpp">
       <Filter>Source Files\Core\Upload\Filters</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Scripting\API\GumboBingings\Document.cpp">
-      <Filter>Source Files\Core\Scripting\API\GumboBindings</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Document.cpp">
-      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\Object.cpp">
       <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
@@ -1798,6 +1792,12 @@
       <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\Node.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\API\GumboBingings\GumboDocument.cpp">
+      <Filter>Source Files\Core\Scripting\API\GumboBindings</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\GQDocument.cpp">
       <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
   </ItemGroup>

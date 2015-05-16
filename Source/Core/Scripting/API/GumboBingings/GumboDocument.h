@@ -8,6 +8,7 @@
 
 #include "Core/3rdpart/GumboQuery/Document.h"
 #include "Core/3rdpart/GumboQuery/Node.h"
+#include <memory>
 
 namespace ScriptAPI {
 

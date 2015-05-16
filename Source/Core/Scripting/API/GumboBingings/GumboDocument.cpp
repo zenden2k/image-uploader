@@ -1,4 +1,4 @@
-#include "Document.h"
+#include "GumboDocument.h"
 
 namespace ScriptAPI {
 
