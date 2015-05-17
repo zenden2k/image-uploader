@@ -23,6 +23,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include <map>
+#include "atlheaders.h"
 #include "resource.h"
 #include "3rdpart/thread.h"
 #include "Core/Upload/UploadEngine.h"
@@ -30,6 +31,8 @@
 #include "Func/MyEngineList.h"
 #include "Core/Utils/SimpleXml.h"
 
+class UploadManager;
+class UploadEngineManager;
 class NetworkClient;
 
 struct ServerData
@@ -41,6 +44,14 @@ struct ServerData
     int timeElapsed;
 };
 
+struct UploadTaskUserData {
+    int rowIndex;
+    DWORD startTime;
+    UploadTaskUserData() {
+        rowIndex = 0;
+        startTime = 0;
+    }
+};
 struct MyFileInfo
 {
     int width;
@@ -54,7 +65,7 @@ class CMainDlg :
 {
 public:
     enum { IDD = IDD_MAINDLG };
-
+    CMainDlg(UploadEngineManager *uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList);
     BEGIN_MSG_MAP(CMainDlg)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
@@ -66,6 +77,7 @@ public:
         COMMAND_ID_HANDLER(IDC_TOOLBROWSEBUTTON, OnBrowseButton)
         NOTIFY_HANDLER(IDC_TOOLSERVERLIST, NM_CUSTOMDRAW, OnListViewNMCustomDraw)
         CHAIN_MSG_MAP(CDialogResize<CMainDlg>)
+        COMMAND_HANDLER(IDC_STOPBUTTON, BN_CLICKED, OnBnClickedStopbutton)
     END_MSG_MAP()
 
     BEGIN_DLGRESIZE_MAP(CMainDlg)
@@ -93,7 +105,6 @@ public:
     LRESULT OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
     CListViewCtrl m_ListView;
-    CMyEngineList m_ServerList;
     DWORD Run();
     void stop();
     bool m_NeedStop;
@@ -104,12 +115,21 @@ public:
     CImageList m_ImageList;
     CString m_srcFileHash;
     MyFileInfo m_sourceFileInfo;
-    void OnConfigureNetworkClient(NetworkClient *nm);
+    void OnConfigureNetworkClient(NetworkClient* nm);
+    void OnConfigureNetworkClient(CUploader* uploader, NetworkClient* nm);
+    void onTaskStatusChanged(UploadTask* task);
+    void onTaskFinished(UploadTask* task, bool ok);
+    void onSessionFinished(UploadSession* session);
     virtual bool OnFileFinished(bool ok, int statusCode,  CFileDownloader::DownloadFileListItem it);
     void MarkServer(int id);
     CFileDownloader m_FileDownloader;
     LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     bool OnNeedStop();
-    
+    void processFinished();
+    UploadEngineManager *uploadEngineManager_;
+    UploadManager* uploadManager_;
+    CMyEngineList* engineList_;
+    std::shared_ptr<UploadSession> uploadSession_;
     SimpleXml xml;
+    LRESULT OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 };

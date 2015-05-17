@@ -82,7 +82,7 @@ class CommonGuiSettings : public BasicSettings {
         CString DataFolder;
         CString m_SettingsDir;
         CString Language;
-        int MaxThreads;
+
         ConnectionSettingsStruct ConnectionSettings;
 #ifndef IU_SERVERLISTTOOL   
         bool ShowTrayIcon;
@@ -99,7 +99,6 @@ class CommonGuiSettings : public BasicSettings {
         int CodeType;
 
         bool UseProxyServer;
-        bool DeveloperMode;
         bool IsPortable;
 
         CString VideoFolder, ImagesFolder;
@@ -109,7 +108,7 @@ class CommonGuiSettings : public BasicSettings {
     protected:
         CString CurrentConvertProfileName;
     public:
-        ServerSettingsStruct* getServerSettings(const ServerProfile& profile);
+
 #endif
     public:
         static const TCHAR VideoEngineDirectshow[];

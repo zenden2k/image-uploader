@@ -10,6 +10,7 @@ BasicSettings::BasicSettings()
     ActionRetryLimit = 2;
     ExecuteScript = false;
     loadFromRegistry_ = false;
+    MaxThreads = 3;
 }
 
 BasicSettings::~BasicSettings() {
@@ -117,7 +118,8 @@ bool BasicSettings::SaveAccounts(SimpleXmlNode root)
 
 void BasicSettings::BindToManager()
 {
-
+    SettingsNode& upload = mgr_["Uploading"];
+    upload.n_bind(MaxThreads);
 }
 
 bool BasicSettings::PostLoadSettings(SimpleXml &xml)
@@ -148,6 +150,7 @@ bool BasicSettings::LoadSettings(std::string szDir, std::string fileName, bool L
     SimpleXml xml;
     xml.LoadFromFile(fileName_);
     mgr_.loadFromXmlNode(xml.getRoot("ImageUploader").GetChild("Settings"));
+    LoadAccounts(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("ServersParams"));
     PostLoadSettings(xml);
     notifyChange();
     return true;
@@ -169,4 +172,10 @@ bool BasicSettings::SaveSettings()
 void BasicSettings::addChangeCallback(const ChangeCallback& callback)
 {
     changeCallbacks_.push_back(callback);
+}
+
+ServerSettingsStruct* BasicSettings::getServerSettings(const ServerProfile& profile)
+{
+    std::lock_guard<std::mutex> lock(serverSettingsMutex_);
+    return &ServersSettings[profile.serverName()][profile.profileName()];
 }

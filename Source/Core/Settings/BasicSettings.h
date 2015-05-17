@@ -30,9 +30,13 @@ public:
     ServerSettingsMap ServersSettings;
     std::string ScriptFileName;
     bool ExecuteScript;
+    bool DeveloperMode;
+    int MaxThreads;
+    bool AutoShowLog;
 
     int UploadBufferSize;
     std::string SettingsFolder;
+    ServerSettingsStruct* getServerSettings(const ServerProfile& profile);
 protected:
     SettingsManager mgr_;
     std::string fileName_;

@@ -216,8 +216,8 @@ BOOL  CLogListBox::SubclassWindow(HWND hWnd)
 void CLogListBox::Init()
 {
     NormalFont = GetFont();
-    UnderlineFont =  MakeFontUnderLine(NormalFont);
-    BoldFont = MakeFontBold(NormalFont);
+    UnderlineFont =  GuiTools::MakeFontUnderLine(NormalFont);
+    BoldFont = GuiTools::MakeFontBold(NormalFont);
 }
 
 LRESULT CLogListBox::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)

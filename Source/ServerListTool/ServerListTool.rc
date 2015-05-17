@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Russian resources
+// Russian (Russia) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
-#ifdef _WIN32
 LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 #pragma code_page(1251)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -34,6 +32,19 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     PUSHBUTTON      "Hide",IDCANCEL,171,154,60,15
     LISTBOX         IDC_MSGLIST,4,5,247,145,LBS_OWNERDRAWVARIABLE | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Clear log",IDC_CLEARLOGBUTTON,4,155,50,14
+END
+
+IDD_INPUTDIALOG DIALOGEX 0, 0, 263, 98
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "title"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    LTEXT           "Description",IDC_DESCRIPTIONLABEL,6,7,251,43
+    EDITTEXT        IDC_VALUEEDIT,6,57,251,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "OK",IDOK,148,79,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,207,79,50,14
+    LTEXT           "",IDC_IMAGE,6,16,251,8
 END
 
 
@@ -43,7 +54,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_LOGWINDOW, DIALOG
     BEGIN
@@ -52,21 +63,37 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 169
     END
+
+    IDD_INPUTDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 257
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 93
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Russian resources
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICONWARNING         ICON                    "res\\Warning.ico"
+IDI_ERRORICON           ICON                    "res\\Error.ico"
+#endif    // Russian (Russia) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -79,8 +106,8 @@ CAPTION "About"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,92,126,50,14
-    CTEXT           "ServerListChecker v.0.9.5\n\nfor Image Uploader  v1.2.x\n\n(c) 2010-2011 by Zenden.ws",IDC_STATIC,29,42,78,73
-    ICON            IDR_MAINFRAME,IDC_STATIC,55,18,21,20
+    CTEXT           "ServerListChecker v.1.0\n\nfor Image Uploader  v1.3.2\n\n(c) 2010-2015 Sergey Svistunov",IDC_STATIC,29,42,78,73
+    ICON            IDR_MAINFRAME,IDC_STATIC,55,18,20,20
     GROUPBOX        "",IDC_STATIC,7,7,133,116
 END
 
@@ -106,6 +133,7 @@ BEGIN
     PUSHBUTTON      "View Error Log",IDC_ERRORLOGBUTTON,165,280,81,14
     DEFPUSHBUTTON   "Start",IDOK,495,280,50,14
     PUSHBUTTON      "Close",IDCANCEL,558,280,50,14
+    PUSHBUTTON      "Stop",IDC_STOPBUTTON,409,280,50,14,NOT WS_VISIBLE
 END
 
 
@@ -115,7 +143,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -175,7 +203,7 @@ IDR_MAINFRAME           ICON                    "res\\ServerListTool.ico"
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
@@ -237,12 +265,12 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDR_MAINFRAME           "ServerListTool"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_NEW             "Create a new document\nNew"
     ID_FILE_OPEN            "Open an existing document\nOpen"
@@ -255,19 +283,19 @@ BEGIN
     ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
     ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
     ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_WINDOW_NEW           "Open another window for the active document\nNew Window"
     ID_WINDOW_ARRANGE       "Arrange icons at the bottom of the window\nArrange Icons"
@@ -277,7 +305,7 @@ BEGIN
     ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_EDIT_CLEAR           "Erase the selection\nErase"
     ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
@@ -292,7 +320,7 @@ BEGIN
     ID_EDIT_REDO            "Redo the previously undone action\nRedo"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ATL_IDS_SCSIZE          "Change the window size"
     ATL_IDS_SCMOVE          "Change the window position"
@@ -303,24 +331,24 @@ BEGIN
     ATL_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ATL_IDS_SCRESTORE       "Restore the window to normal size"
     ATL_IDS_SCTASKLIST      "Activate Task List"
     ATL_IDS_MDICHILD        "Activate this window"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ATL_IDS_IDLEMESSAGE     "Ready"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ATL_IDS_MRU_FILE        "Open this document"
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

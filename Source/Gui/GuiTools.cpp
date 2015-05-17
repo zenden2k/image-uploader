@@ -657,7 +657,7 @@ HICON LoadSmallIcon(int resourceId) {
         iconHeight = 48;
     } 
 
-  #ifndef IU_CLI
+#ifdef IU_WTL_APP
     if ( resourceId == IDR_MAINFRAME && Settings.UseNewIcon) {
         return  (HICON)::LoadImage(_Module.GetResourceInstance(), WinUtils::GetAppFolder()+_T("new-icon.ico"), 
             IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR|LR_LOADFROMFILE);
@@ -682,7 +682,7 @@ HICON LoadBigIcon(int resourceId, int maxAvailableSize) {
         iconHeight = 48;
     } 
 
-#ifndef IU_CLI
+#ifdef IU_WTL_APP
     if ( resourceId == IDR_MAINFRAME && Settings.UseNewIcon) {
         return  (HICON)::LoadImage(_Module.GetResourceInstance(), WinUtils::GetAppFolder()+_T("new-icon.ico"), 
             IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR|LR_LOADFROMFILE);

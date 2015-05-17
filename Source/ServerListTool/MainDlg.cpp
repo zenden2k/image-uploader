@@ -15,6 +15,11 @@
 #include "Gui/GuiTools.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
+#include "Core/Utils/CryptoUtils.h"
+#include "Core/CoreFunctions.h"
+#include "Core/Upload/FileUploadTask.h"
+#include "Core/Upload/UploadSession.h"
+#include "Core/Upload/UploadManager.h"
 
 const CString MyBytesToString(__int64 nBytes )
 {
@@ -25,8 +30,8 @@ CString IU_GetFileInfo(CString fileName,MyFileInfo* mfi=0)
 {
     CString result;
     int fileSize = MyGetFileSize(fileName);
-    result =  MyBytesToString(fileSize)+_T("(")+IntToStr(fileSize)+_T(" bytes);");
-   CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8(fileName)));
+    result =  MyBytesToString(fileSize)+_T("(")+WinUtils::IntToStr(fileSize)+_T(" bytes);");
+    CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8(fileName)));
     result+=mimeType+_T(";");
     if(mfi) mfi->mimeType = mimeType;
     if(mimeType.Find(_T("image/"))>=0)
@@ -39,12 +44,16 @@ CString IU_GetFileInfo(CString fileName,MyFileInfo* mfi=0)
             mfi->width = width;
             mfi->height = height;
         }
-        result+= IntToStr(width)+_T("x")+IntToStr(height);
+        result+= WinUtils::IntToStr(width)+_T("x")+WinUtils::IntToStr(height);
     }
     return result;
 }
 
-
+CMainDlg::CMainDlg(UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList) {
+    uploadEngineManager_ = uploadEngineManager;
+    uploadManager_ = uploadManager;
+    engineList_ = engineList;
+}
 
 //#include "../Uploader.h"
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -64,7 +73,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     SetIcon(hIconSmall, FALSE);
     m_ListView = GetDlgItem(IDC_TOOLSERVERLIST);
 
-    LogWindow.Create(0);
+    //LogWindow.Create(0);
     m_ListView.AddColumn(_T("N"), 0);
     m_ListView.AddColumn(_T("Server"), 1);
     m_ListView.AddColumn(_T("Status"), 2);
@@ -83,33 +92,30 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     SendDlgItemMessage(IDC_RADIOWITHACCS, BM_SETCHECK, 1);
     SendDlgItemMessage(IDC_CHECKIMAGESERVERS, BM_SETCHECK, 1);
     m_ListView.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
-
     
-    CString serversFileName = WinUtils::GetAppFolder() + "Data/" + _T("servers.xml");
+
     CString testFileName = WinUtils::GetAppFolder() + "testfile.jpg";
     if(xml.LoadFromFile( WCstringToUtf8((WinUtils::GetAppFolder() + "servertool.xml"))))
     {
         SimpleXmlNode root = xml.getRoot("ServerListTool");
         std::string name = root.Attribute("FileName");
-        if(!name.empty())
+        if (!name.empty()) {
             testFileName = Utf8ToWstring(name.c_str()).c_str();
+        }
     }
-    
+    Settings.MaxThreads = 10;
+
     SetDlgItemText(IDC_TOOLFILEEDIT, testFileName);
     Settings.LoadSettings("", "");
-    iuPluginManager.setScriptsDirectory(WstrToUtf8((LPCTSTR)(WinUtils::GetAppFolder() + "Data/Scripts/")));
-    if(!m_ServerList.LoadFromFile(serversFileName))
-    {
-        MessageBox(_T("Cannot load server list!"));
-    }
+    //iuPluginManager.setScriptsDirectory(WstrToUtf8((LPCTSTR)(WinUtils::GetAppFolder() + "Data/Scripts/")));
+
 
     m_ImageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
     m_ListView.SetImageList(m_ImageList, LVSIL_NORMAL);
-    for(int i=0; i<m_ServerList.count(); i++)
-    {
-        m_skipMap[i]=false;
-        m_ListView.AddItem(i, 0, IntToStr(i), i);
-        m_ListView.SetItemText(i, 1, Utf8ToWstring(m_ServerList.byIndex(i)->Name).c_str());
+    for (int i = 0; i < engineList_->count(); i++) {
+        m_skipMap[i] = false;
+        m_ListView.AddItem(i, 0, WinUtils::IntToStr(i), i);
+        m_ListView.SetItemText(i, 1, Utf8ToWstring(engineList_->byIndex(i)->Name).c_str());
     }
 
     m_FileDownloader.onConfigureNetworkClient.bind(this, &CMainDlg::OnConfigureNetworkClient);
@@ -126,98 +132,95 @@ LRESULT CMainDlg::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+    CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
+    if (!WinUtils::FileExists(fileName)) {
+        LOG(ERROR) << "File not found " << fileName;
+        return 0;
+    }
     m_ListView.DeleteAllItems();
-    for(int i=0; i<m_ServerList.count(); i++)
-    {
+    for (int i = 0; i < engineList_->count(); i++) {
         ServerData sd;
-        ZeroMemory(&sd,sizeof(sd));
-        
-
-        m_CheckedServersMap[i]=sd;
-        m_ListView.AddItem(i,0,IntToStr(i));
-        m_ListView.SetItemText(i, 1, Utf8ToWstring( m_ServerList.byIndex(i)->Name).c_str());
+        ZeroMemory(&sd, sizeof(sd));
+        m_CheckedServersMap[i] = sd;
+        m_ListView.AddItem(i, 0, WinUtils::IntToStr(i));
+        m_ListView.SetItemText(i, 1, Utf8ToWstring(engineList_->byIndex(i)->Name).c_str());
         //m_ListView.AddItem(i+1,0,_T(""));
     }
-    CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
-    m_srcFileHash = IU_md5_file(fileName);
-    CString report = _T("Source file: ")+IU_GetFileInfo(fileName, &m_sourceFileInfo);
-    SetDlgItemText(IDC_TOOLSOURCEFILE,report);
-    ::EnableWindow(GetDlgItem(IDOK),false);
-    m_NeedStop= false;
+   
+    m_srcFileHash = U2W(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(W2U(fileName)));
+    CString report = _T("Source file: ") + IU_GetFileInfo(fileName, &m_sourceFileInfo);
+    SetDlgItemText(IDC_TOOLSOURCEFILE, report);
+    ::EnableWindow(GetDlgItem(IDOK), false);
+    GuiTools::ShowDialogItem(m_hWnd, IDC_STOPBUTTON, true);
+    m_NeedStop = false;
     m_bIsRunning = true;
-    Start(); // start working thread
+    //Start(); // start working thread
+    Run(); 
     return 0;
 }
 
 LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    if(isRunning())
-    {
+    if (isRunning()) {
         stop();
-    }
-    else 
-    {
+    } else {
         SimpleXml savexml;
         CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
         SimpleXmlNode root = savexml.getRoot("ServerListTool");
         root.SetAttribute("FileName", WstrToUtf8((LPCTSTR)fileName));
         root.SetAttribute("Time", int(GetTickCount()));
-        savexml.SaveToFile(WstrToUtf8((LPCTSTR)(WinUtils::GetAppFolder()+"servertool.xml")));
+        savexml.SaveToFile(WstrToUtf8((LPCTSTR)(WinUtils::GetAppFolder() + "servertool.xml")));
         EndDialog(wID);
     }
     return 0;
 }
 
-DWORD CMainDlg::Run()
-{
-    
-    bool useAccounts = SendDlgItemMessage(IDC_RADIOWITHACCS,BM_GETCHECK) || SendDlgItemMessage(IDC_RADIOALWAYSACCS,BM_GETCHECK);
-    bool onlyAccs = SendDlgItemMessage(IDC_RADIOALWAYSACCS,BM_GETCHECK) == BST_CHECKED;
+DWORD CMainDlg::Run() {
+    bool useAccounts = SendDlgItemMessage(IDC_RADIOWITHACCS, BM_GETCHECK) || SendDlgItemMessage(IDC_RADIOALWAYSACCS, BM_GETCHECK);
+    bool onlyAccs = SendDlgItemMessage(IDC_RADIOALWAYSACCS, BM_GETCHECK) == BST_CHECKED;
 
-    bool CheckImageServers = SendDlgItemMessage(IDC_CHECKIMAGESERVERS,BM_GETCHECK) == BST_CHECKED;
-    bool CheckFileServers = SendDlgItemMessage(IDC_CHECKFILESERVERS,BM_GETCHECK) == BST_CHECKED;
+    bool CheckImageServers = SendDlgItemMessage(IDC_CHECKIMAGESERVERS, BM_GETCHECK) == BST_CHECKED;
+    bool CheckFileServers = SendDlgItemMessage(IDC_CHECKFILESERVERS, BM_GETCHECK) == BST_CHECKED;
     CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
-    if(!FileExists(fileName))
-    {
-            return -1;
+    if (!WinUtils::FileExists(fileName)) {
+        LOG(ERROR) << "File not found " << fileName;
+        return -1;
     }
 
-    for(int i=0; i<m_ServerList.count(); i++)
-    {
-        if(m_NeedStop) break;
-        if(m_skipMap[i]) continue;
-        CUploader uploader;
-        
-        uploader.onConfigureNetworkClient.bind(this, &CMainDlg::OnConfigureNetworkClient);
-        uploader.setThumbnailWidth(160);
-        uploader.onNeedStop.bind(this, &CMainDlg::OnNeedStop);
-        //uploader.ShouldStop = &m_NeedStop;
-        CUploadEngineData *ue = m_ServerList.byIndex(i);
-        if(ue->ImageHost && !CheckImageServers)
-            continue;
-        if(!ue->ImageHost && !CheckFileServers)
-            continue;
+    uploadSession_.reset(new UploadSession());
+    uploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CMainDlg::onSessionFinished));
+    int taskCount = 0;
+    for (int i = 0; i < engineList_->count(); i++) {
+        if (m_NeedStop) break;
+        if (m_skipMap[i]) continue;
 
+        //uploader.ShouldStop = &m_NeedStop;
+        CUploadEngineData *ue = engineList_->byIndex(i);
+        if (!(ue->hasType(CUploadEngineData::TypeImageServer) && CheckImageServers) &&
+            !(ue->hasType(CUploadEngineData::TypeFileServer) && CheckFileServers))  {
+            continue;
+        }
+            
         ServerSettingsStruct  ss;
         std::map <std::string, ServerSettingsStruct>::iterator it = Settings.ServersSettings[ue->Name].begin();
 
-
-        if ( it!= Settings.ServersSettings[ue->Name].end() ) {
-            if ( it->first.empty() ) {
-                it++;
-                if ( it != Settings.ServersSettings[ue->Name].end() ) {
-                    ss = it->second;
-                }
-            } else {
+        if (!useAccounts) {
+            if (it != Settings.ServersSettings[ue->Name].end()) {
                 ss = it->second;
             }
+        } else {
+            if (it != Settings.ServersSettings[ue->Name].end()) {
+                if (it->first.empty()) {
+                    ++it;
+                    if (it != Settings.ServersSettings[ue->Name].end()) {
+                        ss = it->second;
+                    }
+                } else {
+                    ss = it->second;
+                }
+            }
         }
-
-        if(!useAccounts)
-        {
-            ss.authData.DoAuth  = false;
-        ss.authData.Login = "";
-        }
+        
         if((ue->NeedAuthorization==2 || (onlyAccs && ue->NeedAuthorization)) && ss.authData.Login.empty())    
         {
             m_ListView.SetItemText(i,2,CString(_T("No account is set")));
@@ -228,92 +231,30 @@ DWORD CMainDlg::Run()
             m_ListView.SetItemText(i,2,CString(_T("skipped")));
             continue;
         }
-        CAbstractUploadEngine * uploadEngine =  m_ServerList.getUploadEngine(ue,ss);
-        if(!uploadEngine)  
-        {
-            m_ListView.SetItemText(i,2,CString(_T("FAILED to create upload engine..")));
-            continue;
-        }
-        uploadEngine->setServerSettings(ss);
-        uploader.setUploadEngine(uploadEngine);
-        
-        m_ListView.SetItemText(i,2,CString(_T("Uploading file..")));
-        DWORD startTime = GetTickCount();
-        if(!uploader.UploadFile(WCstringToUtf8(fileName),WCstringToUtf8(myExtractFileName(fileName))))
-        {
-            MarkServer(i);
-        }
-        
-        DWORD endTime = GetTickCount() - startTime;
-        m_CheckedServersMap[i].timeElapsed = endTime;
-        
-        CString imgUrl = Utf8ToWstring(uploader.getDirectUrl()).c_str();
-        CString thumbUrl = Utf8ToWstring(uploader.getThumbUrl()).c_str();
-        CString viewUrl = Utf8ToWstring(uploader.getDownloadUrl()).c_str();
-        int nFilesToCheck=0;
-        if(!imgUrl.IsEmpty())
-        {
-            m_FileDownloader.AddFile(uploader.getDirectUrl(), reinterpret_cast<void*>(i*10));
-            nFilesToCheck++;
-            m_ListView.SetItemText(i,3,imgUrl);
-            
-        }
-        else 
-        {
-            if(!ue->ImageUrlTemplate.empty())
-            {
-                if(!ue->UsingPlugin)
-                m_CheckedServersMap[i].filesChecked++;
-                m_ListView.SetItemText(i, 3, _T("<empty>"));
-            }
-        }
+        ServerProfile serverProfile(ue->Name);
 
-        if(!thumbUrl.IsEmpty())
-        {
-
-            nFilesToCheck++;
-            m_FileDownloader.AddFile(uploader.getThumbUrl(),reinterpret_cast<void*>(i*10+1));
-            m_ListView.SetItemText(i, 4, thumbUrl);
-        }
-        else 
-        {
-            
-            if(!ue->ThumbUrlTemplate.empty())
-            {
-                if(!ue->UsingPlugin)
-                m_CheckedServersMap[i].filesChecked++;
-                m_ListView.SetItemText(i, 4, _T("<empty>"));
-            }
-        }
-        
-        if(!viewUrl.IsEmpty())
-        {
-            nFilesToCheck++;
-            m_FileDownloader.AddFile(uploader.getDownloadUrl(), reinterpret_cast<void*>(i*10+2));
-            m_ListView.SetItemText(i,5,viewUrl);
-        }
-        else 
-        {
-            
-            if(!ue->DownloadUrlTemplate.empty())
-            {
-                if(!ue->UsingPlugin)
-                m_CheckedServersMap[i].filesChecked++;
-                m_ListView.SetItemText(i,5,_T("<empty>"));
-            }
-
-        }
-        m_CheckedServersMap[i].fileToCheck = nFilesToCheck;
-        m_FileDownloader.start();
-        
-        if(nFilesToCheck)
-        m_ListView.SetItemText(i,2,CString(_T("Checking links")));
-        else
-            MarkServer(i);
+        std::shared_ptr<FileUploadTask> fileTask(new FileUploadTask(WCstringToUtf8(fileName), WCstringToUtf8(myExtractFileName(fileName))));
+        fileTask->setServerProfile(serverProfile);
+        fileTask->OnStatusChanged.bind(this, &CMainDlg::onTaskStatusChanged);
+        fileTask->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CMainDlg::onTaskFinished));
+        UploadTaskUserData* userData = new UploadTaskUserData();
+        userData->rowIndex = i;
+       
+        fileTask->setUserData(userData);
+        uploadSession_->addTask(fileTask);
+        taskCount++;
+        /*if (i > 3) {
+            break;
+        }*/
+       // break;
+    }
+    if (taskCount) {
+        uploadManager_->addSession(uploadSession_);
+        uploadManager_->start();
+    } else {
+        processFinished();
     }
     
-    ::EnableWindow(GetDlgItem(IDOK),true);
-    m_bIsRunning = false;
     return 0;
 }
 
@@ -323,7 +264,7 @@ bool CMainDlg::OnFileFinished(bool ok, int statusCode, CFileDownloader::Download
     int fileId = reinterpret_cast<int>(it.id) % 10;
     int columnIndex=-1;
     
-        columnIndex = 3 +fileId;
+    columnIndex = 3 +fileId;
     m_CheckedServersMap[serverId].filesChecked++;
     m_CheckedServersMap[serverId].fileToCheck--;
     CString fileName = Utf8ToWstring(it.fileName).c_str();
@@ -333,7 +274,7 @@ bool CMainDlg::OnFileFinished(bool ok, int statusCode, CFileDownloader::Download
         m_CheckedServersMap[serverId].stars[fileId] = 0;
         m_ListView.SetItemText(serverId,columnIndex, _T("Cannot download file"));
     }
-    if(IU_md5_file(fileName)== m_srcFileHash)
+    if(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(W2U(fileName))== W2U(m_srcFileHash))
     {
         if(fileId == 0)
         m_CheckedServersMap[serverId].stars[fileId] = 5;
@@ -465,24 +406,104 @@ bool CMainDlg::OnNeedStop()
 {
     return m_NeedStop;
 }
-/*
-const std::string Impl_AskUserCaptcha(NetworkClient *nm, const std::string& url)
-{
-    CString wFileName = GetUniqFileName(IuCommonFunctions::IUTempFolder+Utf8ToWstring("captcha").c_str());
 
-    nm->setOutputFile(IuCoreUtils::WstringToUtf8((const TCHAR*)wFileName));
-    if(!nm->doGet(url))
-        return "";
-    CInputDialog dlg(_T("Image Uploader"), TR("¬ведите текст с картинки:"), CString(IuCoreUtils::Utf8ToWstring("").c_str()),wFileName);
-    nm->setOutputFile("");
-    if(dlg.DoModal()==IDOK)
-        return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());
-    return "";
-}*/
+void CMainDlg::processFinished() {
+    ::EnableWindow(GetDlgItem(IDOK), true);
+    m_bIsRunning = false;
+    GuiTools::ShowDialogItem(m_hWnd, IDC_STOPBUTTON, false);
+}
 
-void CMainDlg::OnConfigureNetworkClient(NetworkClient *nm)
+void CMainDlg::OnConfigureNetworkClient(NetworkClient* nm)
 {
-    IU_ConfigureProxy(*nm);
+    CoreFunctions::ConfigureProxy(nm);
+}
+void CMainDlg::OnConfigureNetworkClient(CUploader* uploader, NetworkClient* nm)
+{
+    CoreFunctions::ConfigureProxy(nm);
+}
+
+void CMainDlg::onTaskStatusChanged(UploadTask* task) {
+    CUploadEngineData* ue = task->serverProfile().uploadEngineData();
+    UploadTaskUserData* userData = reinterpret_cast<UploadTaskUserData*>(task->userData());
+    int i = userData->rowIndex;
+    if (task->status() == UploadTask::StatusRunning) {
+        userData->startTime = GetTickCount();
+        m_ListView.SetItemText(i, 2, CString(_T("Uploading file..")));
+    } else if (task->status() == UploadTask::StatusFinished) {
+       
+    } else if (task->status() == UploadTask::StatusFailure) {
+        
+    }
+}
+
+void CMainDlg::onTaskFinished(UploadTask* task, bool ok) {
+    CUploadEngineData* ue = task->serverProfile().uploadEngineData();
+    UploadTaskUserData* userData = reinterpret_cast<UploadTaskUserData*>(task->userData());
+    int i = userData->rowIndex;
+    if (ok) {
+        DWORD endTime = GetTickCount() - userData->startTime;
+        UploadResult* result = task->uploadResult();
+        m_CheckedServersMap[i].timeElapsed = endTime;
+
+        CString imgUrl = Utf8ToWstring(result->getDirectUrl()).c_str();
+        CString thumbUrl = Utf8ToWstring(result->getThumbUrl()).c_str();
+        CString viewUrl = Utf8ToWstring(result->getDownloadUrl()).c_str();
+        int nFilesToCheck = 0;
+        if (!imgUrl.IsEmpty()) {
+            m_FileDownloader.AddFile(result->getDirectUrl(), reinterpret_cast<void*>(i * 10));
+            nFilesToCheck++;
+            m_ListView.SetItemText(i, 3, imgUrl);
+
+        } else {
+            if (!ue->ImageUrlTemplate.empty()) {
+                if (!ue->UsingPlugin)
+                    m_CheckedServersMap[i].filesChecked++;
+                m_ListView.SetItemText(i, 3, _T("<empty>"));
+            }
+        }
+
+        if (!thumbUrl.IsEmpty()) {
+
+            nFilesToCheck++;
+            m_FileDownloader.AddFile(result->getThumbUrl(), reinterpret_cast<void*>(i * 10 + 1));
+            m_ListView.SetItemText(i, 4, thumbUrl);
+        } else {
+
+            if (!ue->ThumbUrlTemplate.empty()) {
+                if (!ue->UsingPlugin)
+                    m_CheckedServersMap[i].filesChecked++;
+                m_ListView.SetItemText(i, 4, _T("<empty>"));
+            }
+        }
+
+        if (!viewUrl.IsEmpty()) {
+            nFilesToCheck++;
+            m_FileDownloader.AddFile(result->getDownloadUrl(), reinterpret_cast<void*>(i * 10 + 2));
+            m_ListView.SetItemText(i, 5, viewUrl);
+        } else {
+
+            if (!ue->DownloadUrlTemplate.empty()) {
+                if (!ue->UsingPlugin)
+                    m_CheckedServersMap[i].filesChecked++;
+                m_ListView.SetItemText(i, 5, _T("<empty>"));
+            }
+
+        }
+        m_CheckedServersMap[i].fileToCheck = nFilesToCheck;
+        m_FileDownloader.start();
+
+        if (nFilesToCheck)
+            m_ListView.SetItemText(i, 2, CString(_T("Checking links")));
+        else
+            MarkServer(i);
+    } else {
+        MarkServer(i);
+    }
+}
+
+void CMainDlg::onSessionFinished(UploadSession* session) {
+    processFinished();
+    LOG(WARNING) << "Uploader has finished";
 }
 
 LRESULT CMainDlg::OnErrorLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -493,10 +514,18 @@ LRESULT CMainDlg::OnErrorLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT CMainDlg::OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    for(int i = 0; i < m_ServerList.count(); i++)
+    for(int i = 0; i < engineList_->count(); i++)
     {
         m_skipMap[i] = true;
         m_ListView.SetItemText(i, 2, _T("<SKIP>"));
     }
+    return 0;
+}
+
+
+LRESULT CMainDlg::OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    uploadSession_->stop();
+    m_FileDownloader.stop();
     return 0;
 }

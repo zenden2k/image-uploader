@@ -6,6 +6,7 @@ namespace CoreFunctions {
 
 void ConfigureProxy(NetworkClient* nm)
 {
+#ifndef IU_SERVERLISTTOOL
     if (Settings.ConnectionSettings.UseProxy) {
         int ProxyTypeList[5] = { CURLPROXY_HTTP, CURLPROXY_SOCKS4, CURLPROXY_SOCKS4A,
             CURLPROXY_SOCKS5, CURLPROXY_SOCKS5_HOSTNAME };
@@ -18,6 +19,7 @@ void ConfigureProxy(NetworkClient* nm)
                 Settings.ConnectionSettings.ProxyPassword);
         }
     }
+#endif
     nm->setUploadBufferSize(Settings.UploadBufferSize);
 }
 

@@ -51,12 +51,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|x64'" Label="Configuration">
@@ -112,7 +112,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)Build\ServerTool\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)Build\Temp\ServerTool\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)Build\Temp\ServerTool\ServerTool\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -122,7 +122,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)Build\ServerTool\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)Build\Temp\ServerTool\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)Build\Temp\ServerTool\ServerTool\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -165,16 +165,17 @@
     <ClCompile>
       <AdditionalOptions>-MP$(NUMBER_OF_PROCESSORS) %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;$(SolutionDir)\Include\tinyxml;$(SolutionDir)\Include\pcre;$(SolutionDir)\Include\sqplus;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;IU_SERVERLISTTOOL;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Source\ServerListTool;$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Source\boost\;$(SolutionDir)\Contrib\Include\gumbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;IU_SERVERLISTTOOL;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;IU_WTL;GOOGLE_GLOG_DLL_DECL=;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>StdAfx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -182,9 +183,9 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;zthread.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;Oleacc.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\Libs;$(SolutionDir)\Libs\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <AdditionalDependencies>minizip.lib;zlibd.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;Oleacc.lib;gumbo.lib;jsoncpp.lib;libglog_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Debug;$(SolutionDir)Contrib\Lib\;$(SolutionDir)\Contrib\Source\boost\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -245,7 +246,7 @@
     </Midl>
     <ClCompile>
       <AdditionalOptions>/MP$(NUMBER_OF_PROCESSORS) %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\sqplus;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Source\boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Source\ServerListTool;$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Source\boost\;$(SolutionDir)\Contrib\Include\gumbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;IU_SERVERLISTTOOL;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL=;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -253,6 +254,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat />
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -260,8 +262,8 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;zthread.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;libglog_static.lib;jsoncpp.lib;Oleacc.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Release;$(SolutionDir)\Contrib\Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;libglog_static.lib;jsoncpp.lib;Oleacc.lib;gumbo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Release;$(SolutionDir)\Contrib\Lib\;$(SolutionDir)\Contrib\Source\boost\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
@@ -444,6 +446,97 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\3rdpart\MemberFunctionCallback.cpp" />
+    <ClCompile Include="..\3rdpart\QColorQuantizer.cpp" />
+    <ClCompile Include="..\3rdpart\Registry.cpp" />
+    <ClCompile Include="..\Common\CmdLine.cpp" />
+    <ClCompile Include="..\Core\3rdpart\base64.cpp" />
+    <ClCompile Include="..\Core\3rdpart\dxerr.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\GQDocument.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Node.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Object.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Parser.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\QueryUtil.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Selection.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Selector.cpp" />
+    <ClCompile Include="..\Core\3rdpart\htmlentities.cpp" />
+    <ClCompile Include="..\Core\3rdpart\parser.cpp" />
+    <ClCompile Include="..\Core\3rdpart\pcreplusplus.cpp" />
+    <ClCompile Include="..\Core\3rdpart\tinystr.cpp" />
+    <ClCompile Include="..\Core\3rdpart\tinyxml.cpp" />
+    <ClCompile Include="..\Core\3rdpart\tinyxmlerror.cpp" />
+    <ClCompile Include="..\Core\3rdpart\tinyxmlparser.cpp" />
+    <ClCompile Include="..\Core\CoreFunctions.cpp" />
+    <ClCompile Include="..\Core\FileDownloader.cpp" />
+    <ClCompile Include="..\Core\HistoryManager.cpp" />
+    <ClCompile Include="..\Core\LocalFileCache.cpp" />
+    <ClCompile Include="..\Core\Network\CurlShare.cpp" />
+    <ClCompile Include="..\Core\Network\NetworkClient.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\COMUtils.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\Functions.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\GumboBingings\GumboDocument.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\HtmlDocument.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\HtmlDocumentPrivate_win.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\HtmlElement.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\HtmlElementPrivate_win.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\Process.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\RegularExpression.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\ScriptAPI.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\UploadTaskWrappers.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\WebBrowser.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\WebBrowserPrivateBase.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\WebBrowserPrivate_win.cpp" />
+    <ClCompile Include="..\Core\Scripting\Script.cpp" />
+    <ClCompile Include="..\Core\Scripting\ScriptsManager.cpp" />
+    <ClCompile Include="..\Core\Scripting\UploadFilterScript.cpp" />
+    <ClCompile Include="..\Core\ServiceLocator.cpp" />
+    <ClCompile Include="..\Core\Settings.cpp">
+      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ShowIncludes>
+    </ClCompile>
+    <ClCompile Include="..\Core\SettingsManager.cpp" />
+    <ClCompile Include="..\Core\Settings\BasicSettings.cpp" />
+    <ClCompile Include="..\Core\Settings\EncodedPassword.cpp" />
+    <ClCompile Include="..\Core\TempFileDeleter.cpp" />
+    <ClCompile Include="..\Core\ThreadSync.cpp" />
+    <ClCompile Include="..\Core\Upload\DefaultUploadEngine.cpp" />
+    <ClCompile Include="..\Core\Upload\FileQueueUploader.cpp" />
+    <ClCompile Include="..\Core\Upload\FileQueueUploaderPrivate.cpp" />
+    <ClCompile Include="..\Core\Upload\FileUploadTask.cpp" />
+    <ClCompile Include="..\Core\Upload\Filters\UrlShorteningFilter.cpp" />
+    <ClCompile Include="..\Core\Upload\Filters\UserFilter.cpp" />
+    <ClCompile Include="..\Core\Upload\FolderList.cpp" />
+    <ClCompile Include="..\Core\Upload\ScriptUploadEngine.cpp" />
+    <ClCompile Include="..\Core\Upload\ServerProfile.cpp" />
+    <ClCompile Include="..\Core\Upload\ServerSync.cpp" />
+    <ClCompile Include="..\Core\Upload\UploadEngine.cpp" />
+    <ClCompile Include="..\Core\Upload\UploadEngineManager.cpp" />
+    <ClCompile Include="..\Core\Upload\Uploader.cpp" />
+    <ClCompile Include="..\Core\Upload\UploadFilter.cpp" />
+    <ClCompile Include="..\Core\Upload\UploadManager.cpp" />
+    <ClCompile Include="..\Core\Upload\UploadSession.cpp" />
+    <ClCompile Include="..\Core\Upload\UploadTask.cpp" />
+    <ClCompile Include="..\Core\Upload\UrlShorteningTask.cpp" />
+    <ClCompile Include="..\Core\Utils\CoreUtils.cpp" />
+    <ClCompile Include="..\Core\Utils\DesktopUtils.cpp" />
+    <ClCompile Include="..\Core\Utils\GlobalMutex.cpp" />
+    <ClCompile Include="..\Core\Utils\SimpleXml.cpp" />
+    <ClCompile Include="..\Core\Utils\StringUtils.cpp" />
+    <ClCompile Include="..\Core\Utils\TextUtils.cpp" />
+    <ClCompile Include="..\Func\Common.cpp" />
+    <ClCompile Include="..\Func\DefaultLogger.cpp" />
+    <ClCompile Include="..\Func\DefaultUploadErrorHandler.cpp" />
+    <ClCompile Include="..\Func\IuCommonFunctions.cpp" />
+    <ClCompile Include="..\Func\LangClass.cpp" />
+    <ClCompile Include="..\Func\MyEngineList.cpp" />
+    <ClCompile Include="..\Func\MyUtils.cpp" />
+    <ClCompile Include="..\Func\WebUtils.cpp" />
+    <ClCompile Include="..\Func\WinUtils.cpp" />
+    <ClCompile Include="..\Func\WtlScriptDialogProvider.cpp" />
+    <ClCompile Include="..\Gui\Controls\LogListBox.cpp" />
+    <ClCompile Include="..\Gui\Controls\MyImage.cpp" />
+    <ClCompile Include="..\Gui\Dialogs\InputDialog.cpp" />
+    <ClCompile Include="..\Gui\Dialogs\LogWindow.cpp" />
+    <ClCompile Include="..\Gui\GuiTools.cpp" />
     <ClCompile Include="MainDlg.cpp" />
     <ClCompile Include="ServerListTool.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -457,79 +550,18 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Core\UploadEngineList.cpp" />
-    <ClCompile Include="..\Core\3rdpart\base64.cpp" />
-    <ClCompile Include="..\Common\CmdLine.cpp" />
-    <ClCompile Include="..\Func\Common.cpp" />
-    <ClCompile Include="..\Core\Utils\CoreUtils.cpp" />
-    <ClCompile Include="..\Core\3rdpart\CP_RSA.cpp" />
-    <ClCompile Include="..\Core\Upload\DefaultUploadEngine.cpp" />
-    <ClCompile Include="..\Core\FileDownloader.cpp" />
-    <ClCompile Include="..\Core\Upload\FileQueueUploader.cpp" />
-    <ClCompile Include="..\Core\Utils\GlobalMutex.cpp" />
-    <ClCompile Include="..\Gui\GuiTools.cpp" />
-    <ClCompile Include="..\Gui\Dialogs\InputDialog.cpp" />
-    <ClCompile Include="..\Func\IuCommonFunctions.cpp" />
-    <ClCompile Include="..\Func\LangClass.cpp" />
-    <ClCompile Include="..\Gui\Controls\LogListBox.cpp" />
-    <ClCompile Include="..\Gui\Dialogs\LogWindow.cpp" />
-    <ClCompile Include="..\Func\MyEngineList.cpp" />
-    <ClCompile Include="..\Gui\Controls\MyImage.cpp" />
-    <ClCompile Include="..\Func\MyUtils.cpp" />
-    <ClCompile Include="..\Core\Network\NetworkClient.cpp" />
-    <ClCompile Include="..\Core\3rdpart\parser.cpp" />
-    <ClCompile Include="..\Core\3rdpart\pcreplusplus.cpp" />
-    <ClCompile Include="..\3rdpart\QColorQuantizer.cpp" />
-    <ClCompile Include="..\3rdpart\Registry.cpp" />
-    <ClCompile Include="..\Core\Upload\ScriptUploadEngine.cpp">
-      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ShowIncludes>
-    </ClCompile>
-    <ClCompile Include="..\Func\Settings.cpp" />
-    <ClCompile Include="..\Core\SettingsManager.cpp" />
-    <ClCompile Include="..\Core\Utils\SimpleXml.cpp" />
-    <ClCompile Include="..\Core\Utils\StringUtils.cpp" />
-    <ClCompile Include="..\Func\SystemUtils.cpp" />
-    <ClCompile Include="..\Gui\Dialogs\TextViewDlg.cpp" />
-    <ClCompile Include="..\Core\Images\Thumbnail.cpp" />
-    <ClCompile Include="..\Core\3rdpart\tinystr.cpp" />
-    <ClCompile Include="..\Core\3rdpart\tinyxml.cpp" />
-    <ClCompile Include="..\Core\3rdpart\tinyxmlerror.cpp" />
-    <ClCompile Include="..\Core\3rdpart\tinyxmlparser.cpp" />
-    <ClCompile Include="..\Core\Upload\UploadEngine.cpp" />
-    <ClCompile Include="..\Core\Upload\Uploader.cpp" />
-    <ClCompile Include="..\Func\WebUtils.cpp" />
-    <ClCompile Include="..\Func\WinUtils.cpp" />
     <ClCompile Include="..\Core\AppParams.cpp" />
     <ClCompile Include="..\Core\Logging.cpp" />
-    <ClCompile Include="..\Core\Upload\FileUploadTask.cpp" />
-    <ClCompile Include="..\Core\Upload\UploadTask.cpp" />
-    <ClCompile Include="..\Core\Upload\UrlShorteningTask.cpp" />
     <ClCompile Include="..\Core\Video\VideoUtils.cpp" />
     <ClCompile Include="..\Core\Utils\CryptoUtils.cpp" />
     <ClCompile Include="..\Core\3rdpart\CodePages.cpp" />
-    <ClCompile Include="..\Core\Images\ImageConverter.cpp" />
     <ClCompile Include="..\Core\Images\Utils.cpp" />
-    <ClCompile Include="..\Core\ScriptAPI\COMUtils.cpp" />
-    <ClCompile Include="..\Core\ScriptAPI\Functions.cpp" />
-    <ClCompile Include="..\Core\ScriptAPI\HtmlDocument.cpp" />
-    <ClCompile Include="..\Core\ScriptAPI\HtmlDocumentPrivate_win.cpp" />
-    <ClCompile Include="..\Core\ScriptAPI\HtmlElement.cpp" />
-    <ClCompile Include="..\Core\ScriptAPI\HtmlElementPrivate_win.cpp" />
-    <ClCompile Include="..\Core\ScriptAPI\RegularExpression.cpp" />
-    <ClCompile Include="..\Core\ScriptAPI\ScriptAPI.cpp" />
-    <ClCompile Include="..\Core\ScriptAPI\WebBrowser.cpp" />
-    <ClCompile Include="..\Core\ScriptAPI\WebBrowserPrivate_win.cpp" />
     <ClCompile Include="..\Func\MyLogSink.cpp" />
     <ClCompile Include="..\Gui\Dialogs\WebViewWindow.cpp" />
     <ClCompile Include="..\Gui\Controls\WTLBrowserView.cpp" />
     <ClCompile Include="..\3rdpart\GdiplusH.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Func\SystemUtils.h" />
-    <ClInclude Include="..\Func\WebUtils.h" />
-    <ClInclude Include="..\Func\WinUtils.h" />
-    <ClInclude Include="..\Core\Upload\FileUploadTask.h" />
-    <ClInclude Include="..\Core\Upload\UploadTask.h" />
-    <ClInclude Include="..\Core\Upload\UrlShorteningTask.h" />
     <ClInclude Include="..\Core\Video\VideoUtils.h" />
     <ClInclude Include="..\Core\Utils\CoreTypes.h" />
     <ClInclude Include="..\Core\Utils\CryptoUtils.h" />
@@ -550,7 +582,9 @@
     <ClInclude Include="..\Core\Utils\utils_win.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\Error.ico" />
     <Image Include="res\ServerListTool.ico" />
+    <Image Include="res\Warning.ico" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ServerListTool.rc" />
@@ -558,4 +592,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="ServerListTool.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

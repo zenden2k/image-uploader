@@ -93,7 +93,6 @@ class WtlGuiSettings : public CommonGuiSettings {
 public:
     WtlGuiSettings();
     ~WtlGuiSettings();
-    bool AutoShowLog;
     bool UseNewIcon;
     ImageEditorSettingsStruct ImageEditorSettings;
 

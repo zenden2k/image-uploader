@@ -214,30 +214,30 @@ void WtlGuiSettings::FindDataFolder()
 #endif
 
 void WtlGuiSettings::fixInvalidServers() {
-	CUploadEngineData* ue = imageServer.uploadEngineData();
-	if (!ue) {
-		imageServer.setServerName("directupload.net");
-		imageServer.setProfileName("");
-	}
+    CUploadEngineData* ue = imageServer.uploadEngineData();
+    if (!ue) {
+        imageServer.setServerName("directupload.net");
+        imageServer.setProfileName("");
+    }
 
-	ue = fileServer.uploadEngineData();
-	if (!ue) {
-		fileServer.setServerName("zippyshare.net");
-		fileServer.setProfileName("");
-	}
+    ue = fileServer.uploadEngineData();
+    if (!ue) {
+        fileServer.setServerName("zippyshare.net");
+        fileServer.setProfileName("");
+    }
 
-	if (urlShorteningServer.serverName().empty()) {
-		std::string defaultServerName = "is.gd";
-		CUploadEngineData * uploadEngineData = engineList_->byName(defaultServerName);
-		if (uploadEngineData) {
-			urlShorteningServer.setServerName(defaultServerName);
-		} else {
-			uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeUrlShorteningServer);
-			if (uploadEngineData) {
-				urlShorteningServer.setServerName(uploadEngineData->Name);
-			}
-		}
-	}
+    if (urlShorteningServer.serverName().empty()) {
+        std::string defaultServerName = "is.gd";
+        CUploadEngineData * uploadEngineData = engineList_->byName(defaultServerName);
+        if (uploadEngineData) {
+            urlShorteningServer.setServerName(defaultServerName);
+        } else {
+            uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeUrlShorteningServer);
+            if (uploadEngineData) {
+                urlShorteningServer.setServerName(uploadEngineData->Name);
+            }
+        }
+    }
 
 }
 
@@ -393,7 +393,7 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
     LoadConvertProfiles(settingsNode.GetChild("Image").GetChild("Profiles"));
     LoadServerProfiles(settingsNode.GetChild("Uploading").GetChild("ServerProfiles"));
 #endif
-    LoadAccounts(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("ServersParams"));
+
 #if !defined(IU_CLI) && !defined( IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
     // Fixing profies
     if (!imageServer.profileName().empty() && ServersSettings[imageServer.serverName()].find(imageServer.profileName()) == ServersSettings[imageServer.serverName()].end()) {

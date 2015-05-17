@@ -34,13 +34,16 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <vld.h>
+
 #include "Core/ServiceLocator.h"
 #include "Func/DefaultUploadErrorHandler.h"
 #include "Func/DefaultLogger.h"
 #include "Func/WtlScriptDialogProvider.h"
 #include "Core/AppParams.h"
 
+#ifndef NDEBUG
+#include <vld.h>
+#endif
 CAppModule _Module;
 
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)

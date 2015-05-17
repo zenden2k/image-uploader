@@ -1650,9 +1650,6 @@
     <ClCompile Include="Source\Core\Upload\ServerSync.cpp">
       <Filter>Source Files\Core\Upload</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\TempFileDeleter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Gui\Controls\ResultsListView.cpp">
       <Filter>Source Files\Gui\Controls</Filter>
     </ClCompile>
@@ -1799,6 +1796,9 @@
     </ClCompile>
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\GQDocument.cpp">
       <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\TempFileDeleter.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

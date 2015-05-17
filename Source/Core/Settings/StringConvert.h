@@ -3,8 +3,6 @@
 
 #ifdef _WIN32
 #include "EncodedPassword.h"
-#include <Gui/Dialogs/HotkeySettings.h>
-#include <Core/Images/Utils.h>
 
 inline std::string myToString(const CString& value)
 {

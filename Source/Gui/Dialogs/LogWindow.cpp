@@ -20,7 +20,6 @@
 #include "LogWindow.h"
 #include "atlheaders.h"
 #include "Core/Settings.h"
-#include "TextViewDlg.h"
 #include "Func/WinUtils.h"
 
 // CLogWindow
@@ -46,7 +45,7 @@ LRESULT CLogWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     // TODO
 
     return 1;  // Let the system set the focus
-}
+} 
 
 BOOL CLogWindow::PreTranslateMessage(MSG* pMsg)
 {
@@ -82,7 +81,7 @@ LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 {
     HWND hwnd = (HWND) wParam;
     POINT ClientPoint, ScreenPoint;
-    if (hwnd != GetDlgItem(IDC_FILELIST))
+    if (hwnd != GetDlgItem(IDC_MSGLIST))
         return 0;
 
     if (lParam == -1)

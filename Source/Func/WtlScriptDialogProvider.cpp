@@ -4,7 +4,8 @@
 #include "IuCommonFunctions.h"
 #include "Core/Network/NetworkClient.h"
 
-std::string WtlScriptDialogProvider::askUserCaptcha(NetworkClient* nm, const std::string& url) {    
+std::string WtlScriptDialogProvider::askUserCaptcha(NetworkClient* nm, const std::string& url) {   
+    std::lock_guard<std::mutex> guard(dialogMutex_);
     CString wFileName = WinUtils::GetUniqFileName(IuCommonFunctions::IUTempFolder + Utf8ToWstring("captcha").c_str());
 
     nm->setOutputFile(IuCoreUtils::WstringToUtf8((const TCHAR*)wFileName));
@@ -18,6 +19,7 @@ std::string WtlScriptDialogProvider::askUserCaptcha(NetworkClient* nm, const std
 }
 
 std::string WtlScriptDialogProvider::inputDialog(const std::string& text, const std::string& defaultValue) {
+    std::lock_guard<std::mutex> guard(dialogMutex_);
     CInputDialog dlg(_T("Image Uploader"), Utf8ToWCstring(text), Utf8ToWCstring(defaultValue));
 
     if (dlg.DoModal(GetActiveWindow()) == IDOK) {

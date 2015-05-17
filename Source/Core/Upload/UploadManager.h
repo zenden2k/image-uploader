@@ -19,10 +19,10 @@ public:
     UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler);
     bool shortenLinksInSession(std::shared_ptr<UploadSession> session);
 protected:
-    #ifdef IU_WTL
+#ifdef IU_WTL_APP
     ImageConverterFilter imageConverterFilter;
     SizeExceedFilter sizeExceedFilter_;
-    #endif
+#endif
     UrlShorteningFilter urlShorteningFilter;
     UserFilter userFilter;
     UploadEngineManager* uploadEngineManager_;

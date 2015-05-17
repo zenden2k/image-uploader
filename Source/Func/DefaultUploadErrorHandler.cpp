@@ -1,9 +1,9 @@
 #include "DefaultUploadErrorHandler.h"
 
-#include "Gui/Dialogs/LogWindow.h"
-#include "Gui/Dialogs/IntegrationSettings.h"
+#ifdef IU_WTL_APP
 #include "Gui/Dialogs/TextViewDlg.h"
-
+#endif
+#include "Func/WinUtils.h"
 
 DefaultUploadErrorHandler::DefaultUploadErrorHandler(ILogger* logger) {
     logger_ = logger;
@@ -56,6 +56,7 @@ void DefaultUploadErrorHandler::DebugMessage(const std::string& msg, bool isResp
     if (!isResponseBody)
         MessageBox(0, Utf8ToWCstring(msg.c_str()), _T("Uploader"), MB_ICONINFORMATION);
     else {
+#ifdef IU_WTL_APP
         CTextViewDlg TextViewDlg(Utf8ToWstring(msg).c_str(), CString(_T("Server reponse")), CString(_T("Server reponse:")),
             _T("Save to file?"));
 
@@ -74,5 +75,6 @@ void DefaultUploadErrorHandler::DebugMessage(const std::string& msg, bool isResp
                 }
             }
         }
+#endif
     }
 }

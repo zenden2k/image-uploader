@@ -5,9 +5,6 @@
       <UniqueIdentifier>{4ae7f1e7-3533-4dd8-8eea-af1527e9db03}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
     </Filter>
-    <Filter Include="Source Files\Additional">
-      <UniqueIdentifier>{19338b75-4fdc-43c2-b50e-23e69f7d3772}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{1978848a-b929-471f-8807-27476227685a}</UniqueIdentifier>
     </Filter>
@@ -25,9 +22,6 @@
     </Filter>
     <Filter Include="Source Files\Core\Image">
       <UniqueIdentifier>{0de73286-bebd-44db-a81d-53b08bef7571}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Core\ScriptAPI">
-      <UniqueIdentifier>{0c697c53-5b99-4a52-98f9-0433535091c3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Func">
       <UniqueIdentifier>{05f2768f-8879-4d6e-8da3-b41fbbbc6efa}</UniqueIdentifier>
@@ -52,6 +46,30 @@
       <UniqueIdentifier>{b6df2672-c80a-419e-a7f0-1dab5e0f85bc}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;jpg;jpeg;jpe;manifest</Extensions>
     </Filter>
+    <Filter Include="Source Files\Core\Settings">
+      <UniqueIdentifier>{c7baed26-fc54-44ac-bd05-df3d984b8672}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Scripting">
+      <UniqueIdentifier>{3b77ff49-628d-45dc-85d7-75f7a91ea43a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Scripting\API">
+      <UniqueIdentifier>{b84ec4ea-1e06-4f1c-b789-195b994a54b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Scripting\API\GumboBindings">
+      <UniqueIdentifier>{fd270e86-c2fd-40e3-8ecb-6085a2d49b08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\3rdpart\GumboQuery">
+      <UniqueIdentifier>{e526e185-9fb0-43c6-9586-558a7e4ff22c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Upload\Filters">
+      <UniqueIdentifier>{db3d10e4-5a90-4c98-b6be-d5257140fd90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Network">
+      <UniqueIdentifier>{b3f40df8-5bda-4b2d-8ee6-00a455a3a637}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common">
+      <UniqueIdentifier>{016d0c78-db4a-49ae-8456-90ecfc6307f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainDlg.cpp">
@@ -66,137 +84,11 @@
     <ClCompile Include="..\Core\UploadEngineList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Core\3rdpart\base64.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\CmdLine.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Func\Common.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Utils\CoreUtils.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\3rdpart\CP_RSA.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Upload\DefaultUploadEngine.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\FileDownloader.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Upload\FileQueueUploader.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Utils\GlobalMutex.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Gui\GuiTools.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Gui\Dialogs\InputDialog.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Func\IuCommonFunctions.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Func\LangClass.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Gui\Controls\LogListBox.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Gui\Dialogs\LogWindow.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Func\MyEngineList.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Gui\Controls\MyImage.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Func\MyUtils.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Network\NetworkClient.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\3rdpart\parser.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\3rdpart\pcreplusplus.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdpart\QColorQuantizer.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdpart\Registry.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Upload\ScriptUploadEngine.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Func\Settings.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\SettingsManager.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Utils\SimpleXml.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Utils\StringUtils.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Func\SystemUtils.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Gui\Dialogs\TextViewDlg.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Images\Thumbnail.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\3rdpart\tinystr.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\3rdpart\tinyxml.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\3rdpart\tinyxmlerror.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\3rdpart\tinyxmlparser.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Upload\UploadEngine.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Upload\Uploader.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Func\WebUtils.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Func\WinUtils.cpp">
-      <Filter>Source Files\Additional</Filter>
-    </ClCompile>
     <ClCompile Include="..\Core\AppParams.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\Logging.cpp">
       <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Upload\FileUploadTask.cpp">
-      <Filter>Source Files\Core\Upload</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Upload\UploadTask.cpp">
-      <Filter>Source Files\Core\Upload</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Upload\UrlShorteningTask.cpp">
-      <Filter>Source Files\Core\Upload</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\Video\VideoUtils.cpp">
       <Filter>Source Files\Core\Video</Filter>
@@ -207,41 +99,8 @@
     <ClCompile Include="..\Core\3rdpart\CodePages.cpp">
       <Filter>Source Files\Core\3rdpart</Filter>
     </ClCompile>
-    <ClCompile Include="..\Core\Images\ImageConverter.cpp">
-      <Filter>Source Files\Core\Image</Filter>
-    </ClCompile>
     <ClCompile Include="..\Core\Images\Utils.cpp">
       <Filter>Source Files\Core\Image</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\ScriptAPI\COMUtils.cpp">
-      <Filter>Source Files\Core\ScriptAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\ScriptAPI\Functions.cpp">
-      <Filter>Source Files\Core\ScriptAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\ScriptAPI\HtmlDocument.cpp">
-      <Filter>Source Files\Core\ScriptAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\ScriptAPI\HtmlDocumentPrivate_win.cpp">
-      <Filter>Source Files\Core\ScriptAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\ScriptAPI\HtmlElement.cpp">
-      <Filter>Source Files\Core\ScriptAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\ScriptAPI\HtmlElementPrivate_win.cpp">
-      <Filter>Source Files\Core\ScriptAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\ScriptAPI\RegularExpression.cpp">
-      <Filter>Source Files\Core\ScriptAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\ScriptAPI\ScriptAPI.cpp">
-      <Filter>Source Files\Core\ScriptAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\ScriptAPI\WebBrowser.cpp">
-      <Filter>Source Files\Core\ScriptAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\ScriptAPI\WebBrowserPrivate_win.cpp">
-      <Filter>Source Files\Core\ScriptAPI</Filter>
     </ClCompile>
     <ClCompile Include="..\Func\MyLogSink.cpp">
       <Filter>Source Files\Func</Filter>
@@ -255,26 +114,275 @@
     <ClCompile Include="..\3rdpart\GdiplusH.cpp">
       <Filter>Source Files\3rdpart</Filter>
     </ClCompile>
+    <ClCompile Include="..\Core\Settings\BasicSettings.cpp">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\Script.cpp">
+      <Filter>Source Files\Core\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\ScriptsManager.cpp">
+      <Filter>Source Files\Core\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\UploadFilterScript.cpp">
+      <Filter>Source Files\Core\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\COMUtils.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\Functions.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\HtmlDocument.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\HtmlDocumentPrivate_win.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\HtmlElement.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\HtmlElementPrivate_win.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\Process.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\RegularExpression.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\ScriptAPI.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\UploadTaskWrappers.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\WebBrowser.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\WebBrowserPrivate_win.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\WebBrowserPrivateBase.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\GumboBingings\GumboDocument.cpp">
+      <Filter>Source Files\Core\Scripting\API\GumboBindings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\GQDocument.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Node.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Object.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Parser.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\QueryUtil.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Selection.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\Selector.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\base64.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\dxerr.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\htmlentities.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\parser.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\pcreplusplus.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\tinystr.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\tinyxml.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\tinyxmlerror.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\tinyxmlparser.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\DefaultLogger.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\DefaultUploadErrorHandler.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\IuCommonFunctions.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\LangClass.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\WebUtils.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\WinUtils.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\WtlScriptDialogProvider.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\SimpleXml.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\StringUtils.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\TextUtils.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\TempFileDeleter.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\DefaultUploadEngine.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\FileQueueUploader.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\FileQueueUploaderPrivate.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\FileUploadTask.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\FolderList.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\ScriptUploadEngine.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\ServerProfile.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\ServerSync.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\UploadEngine.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\UploadEngineManager.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\Uploader.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\UploadFilter.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\UploadManager.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\UploadSession.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\UploadTask.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\UrlShorteningTask.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\Filters\UrlShorteningFilter.cpp">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Network\CurlShare.cpp">
+      <Filter>Source Files\Core\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Network\NetworkClient.cpp">
+      <Filter>Source Files\Core\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Gui\GuiTools.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\CoreFunctions.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\ServiceLocator.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\CoreUtils.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\ThreadSync.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\SettingsManager.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\FileDownloader.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\HistoryManager.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Gui\Dialogs\LogWindow.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdpart\QColorQuantizer.cpp">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdpart\Registry.cpp">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\GlobalMutex.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\LocalFileCache.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdpart\MemberFunctionCallback.cpp">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Gui\Dialogs\InputDialog.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Gui\Controls\LogListBox.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Gui\Controls\MyImage.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\DesktopUtils.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Settings\EncodedPassword.cpp">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Settings.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\MyEngineList.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\Filters\UserFilter.cpp">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\MyUtils.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\Common.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\CmdLine.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Func\SystemUtils.h">
-      <Filter>Source Files\Additional</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Func\WebUtils.h">
-      <Filter>Source Files\Additional</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Func\WinUtils.h">
-      <Filter>Source Files\Additional</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Core\Upload\FileUploadTask.h">
-      <Filter>Source Files\Core\Upload</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Core\Upload\UploadTask.h">
-      <Filter>Source Files\Core\Upload</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Core\Upload\UrlShorteningTask.h">
-      <Filter>Source Files\Core\Upload</Filter>
-    </ClInclude>
     <ClInclude Include="..\Core\Video\VideoUtils.h">
       <Filter>Source Files\Core\Video</Filter>
     </ClInclude>
@@ -332,6 +440,12 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\ServerListTool.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Warning.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Error.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

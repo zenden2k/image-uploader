@@ -23,11 +23,7 @@ CommonGuiSettings::CommonGuiSettings() : BasicSettings()
 CommonGuiSettings::~CommonGuiSettings() {
 }
 
-ServerSettingsStruct* CommonGuiSettings::getServerSettings(const ServerProfile& profile)
-{
-    std::lock_guard<std::mutex> lock(serverSettingsMutex_);
-    return &ServersSettings[profile.serverName()][profile.profileName()];
-}
+
 
 
 bool CommonGuiSettings::IsFFmpegAvailable() {

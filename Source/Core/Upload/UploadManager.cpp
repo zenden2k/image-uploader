@@ -13,16 +13,16 @@
 UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler) :
                 CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler),
                 userFilter(scriptsManager)
-#ifdef IU_WTL
+#ifdef IU_WTL_APP
                 ,sizeExceedFilter_(engineList, uploadEngineManager)
 #endif
 {
     uploadEngineManager_ = uploadEngineManager;
-#ifdef IU_WTL
+#ifdef IU_WTL_APP
     addUploadFilter(&imageConverterFilter);
 #endif
     addUploadFilter(&userFilter);
-#ifdef IU_WTL
+#ifdef IU_WTL_APP
     addUploadFilter(&sizeExceedFilter_);
 #endif
     addUploadFilter(&urlShorteningFilter);
@@ -92,6 +92,8 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
     {
         return ;
     }
+
+#ifndef IU_SERVERLISTTOOL
     HistoryItem hi;
     hi.localFilePath = fileTask->originalFileName();
     hi.serverName = fileTask->serverProfile().serverName();
@@ -111,6 +113,7 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
         LocalFileCache::instance()->addFile(hi.directUrl, hi.localFilePath);
     }
     session->AddItem(hi);
+#endif
 }
 
 void UploadManager::taskAdded(UploadTask* task)
