@@ -505,4 +505,12 @@
 		</Actions>
 	<Result ImageUrlTemplate="$(File)" />
 	</Server>
+    <Server Name="imagebam.com">
+        <Actions>
+            <Action Type="upload" Url="http://www.imagebam.com/sys/upload/save" PostParams="file[]=%filename%;content_type=1;thumb_size=180;thumb_aspect_ratio=resize;thumb_file_type=jpg;" RegExp="\[URL=(.*?)\]([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Image:0;Thumb:2;">
+                <RegExp Pattern="(http:\/\/www\.imagebam\.com\/remove\/[0-9a-z]+\/[0-9a-z]+)" AssignVars="DeleteUrl:0"/>
+            </Action>
+        </Actions>
+    <Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DeleteUrl="$(DeleteUrl)"/>
+    </Server>
 </Servers>
