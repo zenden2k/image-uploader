@@ -210,7 +210,36 @@ void WtlGuiSettings::FindDataFolder()
         params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
     }
 }
+
 #endif
+
+void WtlGuiSettings::fixInvalidServers() {
+	CUploadEngineData* ue = imageServer.uploadEngineData();
+	if (!ue) {
+		imageServer.setServerName("directupload.net");
+		imageServer.setProfileName("");
+	}
+
+	ue = fileServer.uploadEngineData();
+	if (!ue) {
+		fileServer.setServerName("zippyshare.net");
+		fileServer.setProfileName("");
+	}
+
+	if (urlShorteningServer.serverName().empty()) {
+		std::string defaultServerName = "is.gd";
+		CUploadEngineData * uploadEngineData = engineList_->byName(defaultServerName);
+		if (uploadEngineData) {
+			urlShorteningServer.setServerName(defaultServerName);
+		} else {
+			uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeUrlShorteningServer);
+			if (uploadEngineData) {
+				urlShorteningServer.setServerName(uploadEngineData->Name);
+			}
+		}
+	}
+
+}
 
 WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
 {

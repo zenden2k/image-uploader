@@ -140,6 +140,7 @@ public:
     ServerSettingsStruct& WtlGuiSettings::ServerByName(CString name);
     ServerSettingsStruct& WtlGuiSettings::ServerByUtf8Name(std::string name);
     void FindDataFolder();
+	void fixInvalidServers();
 protected:
     void EnableAutostartup(bool enable);
     bool LoadConvertProfiles(SimpleXmlNode root);

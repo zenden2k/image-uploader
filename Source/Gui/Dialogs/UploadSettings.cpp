@@ -453,11 +453,16 @@ LRESULT CUploadSettings::OnBnClickedUseServerThumbnails(WORD /*wNotifyCode*/, WO
     
 LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-bool ImageServer = (hWndCtl == Toolbar.m_hWnd);    
+	bool ImageServer = (hWndCtl == Toolbar.m_hWnd);    
 //    int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
     
     ServerProfile& serverProfile = ImageServer ? sessionImageServer_ : sessionFileServer_;
     CUploadEngineData *ue = serverProfile.uploadEngineData();
+
+	if (!ue) {
+		LOG(ERROR) << "serverProfile.uploadEngineData() cannot be NULL";
+		return 0;
+	}
 
     if(ue->SupportsFolders){
         CServerFolderSelect as(serverProfile, uploadEngineManager_);
@@ -539,6 +544,10 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
     }
 
     uploadEngine =  serverProfile.uploadEngineData();
+	if (!uploadEngine) {
+		LOG(ERROR) << "uploadEngine cannot be NULL";
+		return;
+	}
     //MessageBox(serverProfile.serverName());
     CString serverTitle = (!serverProfile.isNull()) ? Utf8ToWCstring(serverProfile.serverName()): TR("Выберите сервер");
 

@@ -9,7 +9,7 @@ bool UrlShorteningFilter::PreUpload(UploadTask* task)
 
 bool UrlShorteningFilter::PostUpload(UploadTask* task)
 {
-    if (task->parentTask() || (!task->uploadSuccess(false) )|| task->shorteningStarted())
+    if (task->parentTask() || (!task->uploadSuccess(false) )|| task->shorteningStarted() || task->type() != UploadTask::TypeUrl)
     {
         return true;
     }

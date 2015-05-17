@@ -78,8 +78,8 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     for( int i = 0; i < engineList_->count(); i++) {    
         CUploadEngineData * ue = _EngineList->byIndex( i ); 
         
-        char *serverName = new char[ue->Name.length() + 1];
-        lstrcpyA( serverName, ue->Name.c_str() );
+        /*char *serverName = new char[ue->Name.length() + 1];
+        lstrcpyA( serverName, ue->Name.c_str() );*/
         if ( ue->hasType(CUploadEngineData::TypeUrlShorteningServer) ) {
             int itemIndex = SendDlgItemMessage(IDC_SERVERCOMBOBOX, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)Utf8ToWCstring( ue->Name ));
             if ( ue->Name == selectedServerName ){
@@ -172,13 +172,23 @@ bool CShortenUrlDlg::StartProcess() {
     if ( selectedIndex < 0 ) {
         return false;
     }
+	TCHAR serverName[256]=_T("");
+	SendDlgItemMessage(IDC_SERVERCOMBOBOX, CB_GETLBTEXT, selectedIndex, (WPARAM)serverName);
+	CUploadEngineData* ue = engineList_->byName(serverName);
+	if (!ue) {
+		LOG(ERROR) << "CUploadEngineData* ue cannot be NULL";
+		return false;
+	}
+	ServerProfile profile(ue->Name);
+	profile.setShortenLinks(false);
     ::ShowWindow(GetDlgItem(IDC_RESULTSLABEL), SW_SHOW);
     GuiTools::EnableDialogItem(m_hWnd, IDOK, false);
     wndAnimation_.ShowWindow(SW_SHOW);
     CString url = GuiTools::GetDlgItemText(m_hWnd, IDC_INPUTEDIT);
 
     std::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
-    task->setServerProfile(Settings.urlShorteningServer);
+	
+	task->setServerProfile(profile);
     task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CShortenUrlDlg::OnFileFinished));
     std::shared_ptr<UploadSession> session(new UploadSession());
     session->addTask(task);

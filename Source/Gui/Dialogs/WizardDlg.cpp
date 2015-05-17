@@ -235,21 +235,10 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         }
     }
 
-    if ( Settings.urlShorteningServer.serverName().empty() ) {
-        std::string defaultServerName = "is.gd";
-        CUploadEngineData * uploadEngineData = static_cast<CUploadEngineList*>(&m_EngineList)->byName(defaultServerName);
-        if ( uploadEngineData ) {
-            Settings.urlShorteningServer.setServerName(defaultServerName);
-        } else {
-            uploadEngineData = m_EngineList.firstEngineOfType(CUploadEngineData::TypeUrlShorteningServer);
-            if ( uploadEngineData ) {
-                Settings.urlShorteningServer.setServerName(uploadEngineData->Name);
-            }
-        }
-    }
-
+    
     LoadUploadEngines(_T("userservers.xml"), ErrorStr);    
 
+	Settings.fixInvalidServers();
     if ( isFirstRun ) {
         CQuickSetupDlg quickSetupDialog;
         quickSetupDialog.DoModal(m_hWnd);
