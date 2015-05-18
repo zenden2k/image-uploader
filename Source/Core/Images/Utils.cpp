@@ -760,6 +760,60 @@ UINT VoidToInt(void* data, unsigned int size) {
     }
 }
 
+typedef IStream * (STDAPICALLTYPE *SHCreateMemStreamFuncType)(const BYTE *pInit, UINT cbInit);
+SHCreateMemStreamFuncType SHCreateMemStreamFunc = 0;
+
+Gdiplus::Bitmap* BitmapFromMemory(BYTE* data, unsigned int imageSize) {
+    if (WinUtils::IsVista()) {
+        if (!SHCreateMemStreamFunc) {
+            HMODULE lib = LoadLibrary(_T("Shlwapi.dll"));
+            SHCreateMemStreamFunc = reinterpret_cast<SHCreateMemStreamFuncType>(GetProcAddress(lib, "SHCreateMemStream"));
+            if (!SHCreateMemStreamFunc) {
+                return 0;
+            }
+        }
+
+        Gdiplus::Bitmap * bitmap;
+        IStream* pStream = SHCreateMemStreamFunc(data, imageSize);
+        if (pStream) {
+            bitmap = Gdiplus::Bitmap::FromStream(pStream);
+            pStream->Release();
+            if (bitmap) {
+                if (bitmap->GetLastStatus() == Gdiplus::Ok) {
+                    return bitmap;
+                }
+                delete bitmap;
+            }
+        }
+    } else {
+        HGLOBAL buffer = ::GlobalAlloc(GMEM_MOVEABLE, imageSize);
+        if (buffer) {
+            void* pBuffer = ::GlobalLock(buffer);
+            if (pBuffer) {
+                Gdiplus::Bitmap * bitmap;
+                CopyMemory(pBuffer, data, imageSize);
+
+                IStream* pStream = NULL;
+                if (::CreateStreamOnHGlobal(buffer, FALSE, &pStream) == S_OK) {
+                    bitmap = Gdiplus::Bitmap::FromStream(pStream);
+                    pStream->Release();
+                    if (bitmap) {
+                        if (bitmap->GetLastStatus() == Gdiplus::Ok) {
+                            return bitmap;
+                        }
+
+                        delete bitmap;
+                    }
+                }
+                ::GlobalUnlock(buffer);
+            }
+            ::GlobalFree(buffer);
+        }
+    }
+
+    return 0;
+}
+
 // Based on original method from http://danbystrom.se/2009/01/05/imagegetthumbnailimage-and-beyond/
 Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus::Size* realSize) {
     using namespace Gdiplus;
@@ -817,7 +871,7 @@ Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus
             PropertyItem* thumbDataItem = GetPropertyItemFromImage(bm, PropertyTagThumbnailData);
             if (thumbDataItem) {
                 if (compression == ThumbCompressionJPEG) {
-                    Bitmap* src = BitmapFromMemory(thumbDataItem->value, thumbDataItem->length);
+                    Bitmap* src = BitmapFromMemory(reinterpret_cast<BYTE*>(thumbDataItem->value), thumbDataItem->length);
                     free(thumbDataItem);
                     if (src) {
                         gr.DrawImage(src, 0, 0, sz.Width, sz.Height);
@@ -888,7 +942,7 @@ Gdiplus::Bitmap* GetThumbnail(const CString& filename, int width, int height, Gd
     return GetThumbnail(&bm, width, height, realSize);
 }
 
-Gdiplus::Size AdaptProportionalSize(Gdiplus::Size szMax, Gdiplus::Size szReal)
+Gdiplus::Size AdaptProportionalSize(const Gdiplus::Size& szMax, const Gdiplus::Size& szReal)
 {
     int nWidth;
     int nHeight;
@@ -910,33 +964,6 @@ Gdiplus::Size AdaptProportionalSize(Gdiplus::Size szMax, Gdiplus::Size szReal)
     }
 
     return Size(nWidth, nHeight);
-}
-
-Gdiplus::Bitmap* BitmapFromMemory(void* data, unsigned imageSize) {
-    HGLOBAL buffer = ::GlobalAlloc(GMEM_MOVEABLE, imageSize);
-    if (buffer) {
-        void* pBuffer = ::GlobalLock(buffer);
-        if (pBuffer) {
-            Gdiplus::Bitmap * bitmap;
-            CopyMemory(pBuffer, data, imageSize);
-            
-            IStream* pStream = NULL;
-            if (::CreateStreamOnHGlobal(buffer, FALSE, &pStream) == S_OK) {
-                bitmap = Gdiplus::Bitmap::FromStream(pStream);
-                pStream->Release();
-                if (bitmap) {
-                    if (bitmap->GetLastStatus() == Gdiplus::Ok) {
-                        return bitmap;
-                    }
-
-                    delete bitmap;
-                }
-            }
-            ::GlobalUnlock(buffer);
-        }
-        ::GlobalFree(buffer);
-    }
-    return 0;
 }
 
 /*

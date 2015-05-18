@@ -18,7 +18,7 @@ class LocalFileCache : public Singleton<LocalFileCache> {
         bool historyParsed;
         std::map<std::string, std::string> cache_;
         std::map<std::string, std::string> thumbCache_;
-        std::mutex mutex_;
+        std::recursive_mutex mutex_;
         std::mutex cacheMutex_;
         bool parseHistory();
         bool parseHistoryFile(const std::string& fileName);

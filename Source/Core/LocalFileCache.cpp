@@ -19,7 +19,7 @@ bool LocalFileCache::ensureHistoryParsed() {
 }
 
 bool LocalFileCache::parseHistory() {
-    std::lock_guard<std::mutex> guard(mutex_);
+    std::lock_guard<std::recursive_mutex> guard(mutex_);
     std::vector<CString> files;
     CString historyFolder = IuCoreUtils::Utf8ToWstring(Settings.SettingsFolder).c_str()+CString(_T("\\History\\"));
     WinUtils::GetFolderFileList(files, historyFolder , _T("history*.xml"));
@@ -57,7 +57,7 @@ bool LocalFileCache::parseHistoryFile(const std::string&  fileName) {
 }
 
 bool LocalFileCache::addFile(const std::string& url, const std::string& localFileName) {
-    std::lock_guard<std::mutex> guard(mutex_);
+    std::lock_guard<std::recursive_mutex> guard(mutex_);
     cache_[url] = localFileName; 
     return true;
 }
@@ -78,7 +78,7 @@ std::string LocalFileCache::get(const std::string& url){
 }
 
 bool LocalFileCache::addThumb(const std::string& url, const std::string& localFileName) {
-    std::lock_guard<std::mutex> guard(mutex_);
+    std::lock_guard<std::recursive_mutex> guard(mutex_);
     thumbCache_[url] = localFileName; 
     return true;
 }

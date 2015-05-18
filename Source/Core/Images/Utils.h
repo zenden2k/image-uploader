@@ -35,6 +35,6 @@ CRect CenterRect(CRect r1, CRect intoR2);
 void DrawRect(Bitmap& gr, Color& color, Rect rect);
 Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus::Size* realSize = 0);
 Gdiplus::Bitmap* GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize = 0);
-Gdiplus::Size AdaptProportionalSize(Gdiplus::Size szMax, Gdiplus::Size szReal);
-Gdiplus::Bitmap* BitmapFromMemory(void* data, unsigned int size);
+Size AdaptProportionalSize(const Size& szMax, const Size& szReal);
+Gdiplus::Bitmap* BitmapFromMemory(BYTE* data, unsigned int size);
 #endif
