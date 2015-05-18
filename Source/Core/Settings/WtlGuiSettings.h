@@ -15,6 +15,7 @@
 #define TRAY_SCREENSHOT_SHOWWIZARD 2
 #define TRAY_SCREENSHOT_ADDTOWIZARD 3
 #define TRAY_SCREENSHOT_OPENINEDITOR 4
+#include <Core/Images/Utils.h>
 
 struct ImageReuploaderSettingsStruct {
     bool PasteHtmlOnCtrlV;
