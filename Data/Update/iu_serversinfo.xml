@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1431128681.dat" TimeStamp="1431128681" Date="09.05.2015 01:44:41" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="657916cf1f43d8b1bbdd11e6b411eb41">
+<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1431543213.dat" TimeStamp="1431543213" Date="13.05.2015 20:53:33" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="090ea2da941dc3eb044d0865eeadfbec">
   <Info>
-New image hostings:
-[+] pixic.ru
-[+] fotosklad.org.ua
-
-Url shorteners:
-[+] g.ua
+[+] ovrload.ru
 </Info>
 </UpdateInfo>

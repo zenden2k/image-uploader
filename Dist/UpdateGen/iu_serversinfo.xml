@@ -9,11 +9,6 @@
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
 <Info>
-New image hostings:
-[+] pixic.ru
-[+] fotosklad.org.ua
-
-Url shorteners:
-[+] g.ua
+[+] ovrload.ru
 </Info>
 </UpdatePackageSource>
