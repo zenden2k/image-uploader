@@ -434,7 +434,7 @@ public:
 
             avcodec_flush_buffers(pCodecCtx) ;
             AVPixelFormat pixelFormat = 
-#ifdef QT_VERSION
+#ifdef IU_QT
                 PIX_FMT_RGB24;
 #else
                 

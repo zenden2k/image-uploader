@@ -33,4 +33,8 @@ void changeAplhaChannel(Bitmap& source, Bitmap& dest, int sourceChannel, int des
 Rect MeasureDisplayString(Graphics& graphics, CString text, RectF boundingRect, Gdiplus::Font& font);
 CRect CenterRect(CRect r1, CRect intoR2);
 void DrawRect(Bitmap& gr, Color& color, Rect rect);
+Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus::Size* realSize = 0);
+Gdiplus::Bitmap* GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize = 0);
+Gdiplus::Size AdaptProportionalSize(Gdiplus::Size szMax, Gdiplus::Size szReal);
+Gdiplus::Bitmap* BitmapFromMemory(void* data, unsigned int size);
 #endif

@@ -511,7 +511,12 @@ bool CWizardDlg::ShowPage(int idPage,int prev,int next)
         return SendMessage(WM_MY_SHOWPAGE, (WPARAM)idPage)!=FALSE;
     }
    
-     if(!CreatePage(idPage)) return false;
+    if (CurPage >= 0) {
+        Pages[CurPage]->OnHide();
+    }
+   
+
+    if(!CreatePage(idPage)) return false;
 
     SetDlgItemText(IDC_NEXT,TR("Далее >"));
 
@@ -529,16 +534,16 @@ bool CWizardDlg::ShowPage(int idPage,int prev,int next)
     
         ::ShowWindow(GetDlgItem(IDC_UPDATESLABEL), idPage == 0);
     ::ShowWindow(GetDlgItem(IDC_HELPBUTTON), idPage == 0);
-    if(CurPage >= 0)
-    {
-        
-        ::ShowWindow(Pages[CurPage]->PageWnd, SW_HIDE);
-        Pages[CurPage]->OnHide();
-    }
-    
+    int oldCurPage = CurPage;
     PrevPage = prev;
     NextPage = next;
     CurPage = idPage;
+    if (oldCurPage >= 0)
+    {
+        ::ShowWindow(Pages[oldCurPage]->PageWnd, SW_HIDE);
+    }
+    
+   
     return false;
 }
 

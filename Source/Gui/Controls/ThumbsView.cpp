@@ -30,6 +30,7 @@
 #include "Func/WinUtils.h"
 #include "Func/myutils.h"
 #include <Core/ServiceLocator.h>
+#include "Core/Images/Utils.h"
 
 bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
 
@@ -252,58 +253,42 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
     {
         filename  = GetFileName(ItemID);
     }
-
-    if(IsImage(filename))
+    int width, height, imgwidth = 0, imgheight = 0, newwidth, newheight;
+    width = THUMBNAIL_WIDTH/*rc.right-2*/;
+    height = THUMBNAIL_HEIGHT/*rc.bottom-16*/;
+    int thumbwidth = THUMBNAIL_WIDTH;
+    int  thumbheight = THUMBNAIL_HEIGHT;
+    bool isImage = Img || IsImage(filename);
+    if ( isImage)
     {
-        if(Img)
-            bm=Img;
+        if (Img) {
+            //bm = Img;
+
+            imgwidth = Img->GetWidth();
+            imgheight = Img->GetHeight();
+            bm = GetThumbnail(Img, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, 0);
+            if (bm) {
+                newwidth = bm->GetWidth();
+                newheight = bm->GetHeight();
+            }
+        }
+           
         else 
             if(ItemID>=0) 
             {
-                bm=new Image(filename);
+                Gdiplus::Size originalImageSize;
+                bm = GetThumbnail(filename, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, &originalImageSize);
+                if (bm) {
+                    imgwidth = originalImageSize.Width;
+                    imgheight = originalImageSize.Height;
+                    newwidth = bm->GetWidth();
+                    newheight = bm->GetHeight();
+                }
+          
             }
     }
-
-    int width,height,imgwidth,imgheight,newwidth,newheight;
-    width=THUMBNAIL_WIDTH/*rc.right-2*/;
-    height=THUMBNAIL_HEIGHT/*rc.bottom-16*/;
-    int thumbwidth=THUMBNAIL_WIDTH;
-    int  thumbheight=THUMBNAIL_HEIGHT;
-
-    if(bm)
-    {
-        imgwidth=bm->GetWidth();
-        imgheight=bm->GetHeight();
-        if(imgwidth>maxwidth) maxwidth=imgwidth;
-        if(imgheight>maxheight) maxheight=imgheight;
-
-        if((float)imgwidth/imgheight>(float)width/height)
-        {
-            if(imgwidth<=width)
-            {
-                newwidth=imgwidth;
-                newheight=imgheight;
-            }
-            else
-            {
-                newwidth=width;
-                newheight=static_cast<int>((float)newwidth/imgwidth*imgheight);}
-        }
-        else
-        {
-            if(imgheight<=height)
-            {
-                newwidth=imgwidth;
-                newheight=imgheight;
-            }
-            else
-            {
-                newheight=height;
-                newwidth=static_cast<int>((float)newheight/imgheight*imgwidth);
-            }
-        }
-    }
-
+    if (imgwidth>maxwidth) maxwidth = imgwidth;
+    if (imgheight>maxheight) maxheight = imgheight;
     Graphics g(m_hWnd,true);
     ImgBuffer = new Bitmap(thumbwidth, thumbheight+30, &g);
 
@@ -314,8 +299,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
 
     RectF bounds(1, 1, float(width), float(height));
 
-    if(bm && !bm->GetWidth() && ItemID>=0) 
-    {
+    if ( (isImage &&  ItemID >= 0 ) && (!bm || !bm->GetWidth() ) ) {
         LinearGradientBrush 
             brush(bounds, Color(130, 255, 0, 0), Color(255, 0, 0, 0), 
             LinearGradientModeBackwardDiagonal); 
@@ -420,7 +404,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
                 lstrcpy(FileExt,_T("JPEG"));
             if(IsImage(filename) && bm)
             {
-                wsprintf(Buffer,_T("%s %dx%d (%s)"),(LPCTSTR)FileExt,(int)bm->GetWidth(),(int)bm->GetHeight(), (LPCTSTR)buf2 );
+                wsprintf(Buffer,_T("%s %dx%d (%s)"),(LPCTSTR)FileExt,imgwidth, imgheight, (LPCTSTR)buf2 );
             }
             else
             {
