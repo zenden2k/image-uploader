@@ -9,8 +9,7 @@ bool UrlShorteningFilter::PreUpload(UploadTask* task)
 
 bool UrlShorteningFilter::PostUpload(UploadTask* task)
 {
-    if (task->parentTask() || (!task->uploadSuccess(false) )|| task->shorteningStarted() || task->type() != UploadTask::TypeUrl)
-    {
+    if (task->parentTask() || (!task->uploadSuccess(false) )|| task->shorteningStarted() || task->type() != UploadTask::TypeFile ) {
         return true;
     }
     if (!task->serverProfile().shortenLinks())
