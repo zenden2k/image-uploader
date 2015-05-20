@@ -136,6 +136,11 @@ class NetworkClient
         /*! @endcond */
         void enableResponseCodeChecking(bool enable);
 
+        class AbortedException : public std::runtime_error {
+        public:
+            AbortedException(const std::string& msg) : std::runtime_error(msg) {}
+            AbortedException(const AbortedException& ex) : std::runtime_error(ex) {}
+        };
     private:
         //DISALLOW_COPY_AND_ASSIGN(NetworkClient);
         enum CallBackFuncType{funcTypeBody,funcTypeHeader};

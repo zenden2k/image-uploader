@@ -440,6 +440,9 @@ bool NetworkClient::private_on_finish_request()
     private_parse_headers();
     if (curl_result != CURLE_OK)
     {
+        if (curl_result == CURLE_ABORTED_BY_CALLBACK) {
+            throw AbortedException("Aborted by callback");
+        }
         return false; //fail
     }
 

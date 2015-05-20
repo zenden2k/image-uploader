@@ -872,10 +872,11 @@ Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus
             if (thumbDataItem) {
                 if (compression == ThumbCompressionJPEG) {
                     Bitmap* src = BitmapFromMemory(reinterpret_cast<BYTE*>(thumbDataItem->value), thumbDataItem->length);
-                    free(thumbDataItem);
+                   
                     if (src) {
                         gr.DrawImage(src, 0, 0, sz.Width, sz.Height);
                         delete src;
+                        free(thumbDataItem);
                         return res;
                     }
                 } else if (compression == ThumbCompressionRGB) {
@@ -917,7 +918,7 @@ Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus
                             free(thumbDataItem);
                             return res;
                         }
-                        free(thumbDataItem);
+                        
                     }
 
                 } else {

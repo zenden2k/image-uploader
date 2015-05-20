@@ -130,6 +130,9 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
             }*/
         }
     }
+    catch (NetworkClient::AbortedException & ex) {
+        throw ex;
+    }
     catch (ServerSyncException& e)
     {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));

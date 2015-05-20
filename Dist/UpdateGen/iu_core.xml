@@ -17,6 +17,7 @@
         <Entry Name="Docs/Pics/*" SaveToFolder="%apppath%/Docs/Pics/" Action="add"/>
         <Entry Name="Docs/prettify/*" SaveToFolder="%apppath%/Docs/prettify/" Action="add"/>
         <Entry Name="Data/Thumbnails/*" SaveToFolder="%datapath%/Thumbnails/" Action="add"/>
+        <Entry Name="Data/templates.xmltemplates.xml" SaveToFolder="%datapath%/" Action="delete"/>
 		<Entry Name="Data/templates.xml" SaveToFolder="%datapath%/templates.xml" Action="add"/>
 	</Entries>
 <Info>[+] Added gumbo-query to scripting API (jquery-like interface for google/gumbo HTML5 parser))

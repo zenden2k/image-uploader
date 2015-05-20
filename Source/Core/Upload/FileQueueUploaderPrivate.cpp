@@ -293,37 +293,39 @@ void FileQueueUploaderPrivate::run()
         uploader.onNeedStop.bind(this, &FileQueueUploaderPrivate::onNeedStopHandler);
         it->setStatusText(_("Starting upload"));
 
-        res = uploader.Upload(it);
-
-        it->setUploadSuccess(res);
-
-        serverThreadsMutex_.lock();
-
-        if (!res && uploader.isFatalError())
-        {
-            session->setFatalErrorForServer(serverName, profileName);
-            //serverThreads_[serverName].fatalError = true;
-        }
-        serverThreads_[serverName].runningThreads--;
-
-        serverThreadsMutex_.unlock();
-
-        //callMutex_.lock();
-
-        UploadResult* result = it->uploadResult();
-        result->serverName = serverName;
-
-        if (res) {
-            for (size_t i = 0; i < filters_.size(); i++) {
-                filters_[i]->PostUpload(it.get());
+        try {
+            res = uploader.Upload(it);
+            it->setUploadSuccess(res);
+            if (!res && uploader.isFatalError()) {
+                session->setFatalErrorForServer(serverName, profileName);
+                //serverThreads_[serverName].fatalError = true;
             }
-        }
-        else
-        {
-        }
-        engine->serverSync()->decrementThreadCount();
-        it->finishTask(res ? UploadTask::StatusFinished : UploadTask::StatusFailure);
+            serverThreadsMutex_.lock();
 
+
+            serverThreads_[serverName].runningThreads--;
+
+            serverThreadsMutex_.unlock();
+
+            //callMutex_.lock();
+
+            UploadResult* result = it->uploadResult();
+            result->serverName = serverName;
+
+            if (res) {
+                for (size_t i = 0; i < filters_.size(); i++) {
+                    filters_[i]->PostUpload(it.get());
+                }
+            } else {
+            }
+           
+            it->finishTask(res ? UploadTask::StatusFinished : UploadTask::StatusFailure);
+        } catch (NetworkClient::AbortedException & ex) {
+            it->finishTask(UploadTask::StatusStopped);
+        }
+       
+        engine->serverSync()->decrementThreadCount();
+       
         //callMutex_.unlock();
 
     }

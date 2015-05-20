@@ -899,29 +899,25 @@ void CUploadDlg::showUploadProgressTab() {
 
 void CUploadDlg::onSessionFinished(UploadSession* session)
 {
-    //int successFileCount = session->finishedTaskCount(UploadTask::StatusFinished);
+    int successFileCount = session->finishedTaskCount(UploadTask::StatusFinished);
     int failedFileCount = session->finishedTaskCount(UploadTask::StatusFailure);
-    //int totalFileCount = session->taskCount();
+    int totalFileCount = session->taskCount();
     KillTimer(kEnableNextButtonTimer);
     CString progressLabelText;
-    if (failedFileCount)
-    {
+    if (successFileCount == totalFileCount) {
+        progressLabelText = TR("Все файлы были успешно загружены.");
+    } else {
         if (CancelByUser) {
             progressLabelText = TR("Загрузка файлов прервана пользователем.");
-        }
-        else
-        {
+        } else if (failedFileCount) {
             progressLabelText.Format(TR("Ошибок: %d"), failedFileCount);
             progressLabelText = CString(TR("Загрузка завершена.")) + _T(" ") + progressLabelText;
         }
-    } else
-    {
-        progressLabelText = TR("Все файлы были успешно загружены.");
     }
 
     SetDlgItemText(IDC_COMMONPROGRESS2, progressLabelText);
     ThreadTerminated();
-    if (!failedFileCount) {
+    if (successFileCount == totalFileCount) {
         showUploadResultsTab();
     }
 }

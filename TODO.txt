@@ -1,2 +1,3 @@
 - Fix memory leaks in gumbo-query (when exception is thrown, e.g. invalid selector)
 - Syncronize performed actions in DefaultUploadEngine (<Action OnlyOnce="1">)
+- Show maximum file sizes for servers in SizeExceed dialog
