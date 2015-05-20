@@ -131,7 +131,6 @@ class NetworkClient
         int getCurlResult();
         /*! @cond PRIVATE */
         CURL* getCurlHandle();
-        static void Uninitialize();
         void setCurlShare(CurlShare* share);
         /*! @endcond */
         void enableResponseCodeChecking(bool enable);
@@ -180,7 +179,10 @@ class NetworkClient
         bool private_on_finish_request();
         void private_initTransfer();
         void private_checkResponse();
+        public:
+        static void curl_init();
         static void curl_cleanup();
+        protected:
 
         int m_UploadBufferSize;
         CURL *curl_handle;
@@ -214,7 +216,7 @@ class NetworkClient
         CurlShare* curlShare_;
         static std::mutex _mutex;
         static bool _curl_init;
-        static bool _is_openssl;
+//        static bool _is_openssl;
         static char CertFileName[1024];
 };
 

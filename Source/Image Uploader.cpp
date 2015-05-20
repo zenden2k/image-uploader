@@ -183,11 +183,13 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
    
     google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
     LogWindow.Create(0);
+    MyLogSink logSink(&defaultLogger);
+    google::AddLogSink(&logSink);
+
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
     serviceLocator->setLogger(&defaultLogger);
-    MyLogSink logSink(&defaultLogger);
-    google::AddLogSink(&logSink);
+
     WtlScriptDialogProvider dialogProvider;
     serviceLocator->setDialogProvider(&dialogProvider);
     serviceLocator->setTranslator(&Lang);
@@ -253,5 +255,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
     OleUninitialize();
     google::RemoveLogSink(&logSink);
     google::ShutdownGoogleLogging();
+    
     return 0;
 }

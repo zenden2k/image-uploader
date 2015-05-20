@@ -53,8 +53,12 @@ size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 
 /* we have this global to let the callback get easy access to it */
 static std::vector<std::mutex*> lockarray;
-
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 #include <openssl/crypto.h>
+#include <openssl/evp.h>
+#include <openssl/conf.h>
+#include <openssl/engine.h>
 static void lock_callback(int mode, int type, char const *file, int line)
 {
     (void)file;
@@ -69,10 +73,11 @@ static void lock_callback(int mode, int type, char const *file, int line)
 
 static unsigned long thread_id(void)
 {
-    unsigned long ret;
-
-    ret = (unsigned long)std::hash<std::thread::id>()(std::this_thread::get_id());
-    return(ret);
+#ifdef _WIN32
+    return ::GetCurrentThreadId();
+#else
+    return std::hash<std::thread::id>()(std::this_thread::get_id());
+#endif
 }
 
 static void init_locks(void)
@@ -84,15 +89,18 @@ static void init_locks(void)
         lockarray[i] = new std::mutex(); 
     }
 
-    CRYPTO_set_id_callback((unsigned long(*)())thread_id);
+    CRYPTO_set_id_callback(thread_id);
     CRYPTO_set_locking_callback(lock_callback);
 }
 
 static void kill_locks(void)
 {
     int i;
-
+    if (lockarray.empty()) {
+        return;
+    }
     CRYPTO_set_locking_callback(NULL);
+    CRYPTO_set_id_callback(NULL);
     for (i = 0; i<CRYPTO_num_locks(); i++)
         delete lockarray[i];
     lockarray.clear();
@@ -188,49 +196,14 @@ void NetworkClient::setMethod(const std::string &str)
 }
 
 bool  NetworkClient::_curl_init = false;
-bool  NetworkClient::_is_openssl = false;
+//bool  NetworkClient::_is_openssl = false;
 
 std::mutex NetworkClient::_mutex;
 
 NetworkClient::NetworkClient(void)
 {
-    _mutex.lock();
-    if(!_curl_init)
-    {
-        enableResponseCodeChecking_ = true;
-
-       
-        curl_global_init(CURL_GLOBAL_ALL);
-        curl_version_info_data * infoData = curl_version_info(CURLVERSION_NOW);
-        _is_openssl =  strstr(infoData->ssl_version, "WinSSL")!=infoData->ssl_version;
-#ifdef USE_OPENSSL
-        if (_is_openssl)
-        {
-            init_locks();
-        }
-#endif
-        
-#ifdef WIN32
-        if (_is_openssl) {
-           
-            GetModuleFileNameA(0, CertFileName, 1023);
-            int i, len = lstrlenA(CertFileName);
-            for (i = len; i >= 0; i--)
-            {
-                if (CertFileName[i] == '\\') {
-                    CertFileName[i + 1] = 0;
-                    break;
-                }
-            }
-            strcat(CertFileName, "curl-ca-bundle.crt");
-        }
-#endif
-        atexit(&curl_cleanup);
-        _curl_init = true;
-    }
-
-    _mutex.unlock();
-
+    curl_init();
+    enableResponseCodeChecking_ = true;
     m_hOutFile = 0;
     chunkOffset_ = -1;
     chunkSize_ = -1;
@@ -272,9 +245,7 @@ NetworkClient::NetworkClient(void)
 #endif
      */
 #if defined(_WIN32) && defined(USE_OPENSSL)
-    if (_is_openssl) {
-        curl_easy_setopt(curl_handle, CURLOPT_CAINFO, CertFileName);
-    }
+    curl_easy_setopt(curl_handle, CURLOPT_CAINFO, CertFileName);
 #endif
     //if (_is_openssl || !WinUtils::IsWine())
     {
@@ -304,6 +275,9 @@ NetworkClient::~NetworkClient(void)
 {
     curl_easy_setopt(curl_handle, CURLOPT_PROGRESSFUNCTION, (long)NULL);
     curl_easy_cleanup(curl_handle);
+#ifdef USE_OPENSSL
+    ERR_remove_thread_state(0);
+#endif
 }
 
 void NetworkClient::addQueryParam(const std::string& name, const std::string& value)
@@ -561,14 +535,39 @@ void NetworkClient::private_checkResponse()
     }
 }
 
+void NetworkClient::curl_init() {
+    std::lock_guard<std::mutex> guard(_mutex);
+    if (!_curl_init) {
+#ifdef USE_OPENSSL
+        init_locks(); // init locks should be called BEFORE curl_global_init
+#endif
+
+        curl_global_init(CURL_GLOBAL_ALL);
+        //curl_version_info_data * infoData = curl_version_info(CURLVERSION_NOW);
+        //_is_openssl = strstr(infoData->ssl_version, "WinSSL") != infoData->ssl_version;
+
+#if defined(WIN32) && defined(USE_OPENSSL)
+            GetModuleFileNameA(0, CertFileName, 1023);
+            int i, len = lstrlenA(CertFileName);
+            for (i = len; i >= 0; i--) {
+                if (CertFileName[i] == '\\') {
+                    CertFileName[i + 1] = 0;
+                    break;
+                }
+            }
+            strcat(CertFileName, "curl-ca-bundle.crt");
+#endif
+        atexit(&curl_cleanup);
+        _curl_init = true;
+    }
+}
+
 void NetworkClient::curl_cleanup()
 {
-    curl_global_cleanup();
+    curl_global_cleanup(); 
 #ifdef USE_OPENSSL
-    if (_is_openssl)
-    {
-        kill_locks();
-    }
+    SSL_COMP_free_compression_methods();
+    kill_locks();
 #endif
 }
 
@@ -857,18 +856,11 @@ const std::string  NetworkClient::getCurlResultString()
     return res;
 }
 
-void NetworkClient::Uninitialize()
-{
-    if(_curl_init)
-    {
-        curl_global_cleanup();    
-    }
-}
 
 void NetworkClient::setCurlShare(CurlShare* share)
 {
     curlShare_ = share;
-    curl_easy_setopt(curl_handle, CURLOPT_SHARE, share->getHandle());
+    //curl_easy_setopt(curl_handle, CURLOPT_SHARE, share->getHandle());
 }
 
 void NetworkClient::enableResponseCodeChecking(bool enable)

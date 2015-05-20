@@ -3,3 +3,5 @@ ms\do_nasm
 #Run ms\do_ms
 nmake -f ms\nt.mak
 nmake -f ms\nt.mak install
+
+perl Configure debug-VC-WIN32 no-shared --prefix=c:\Build-OpenSSL-VC-32-dbg\
