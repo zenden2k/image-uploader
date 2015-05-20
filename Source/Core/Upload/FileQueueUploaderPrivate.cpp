@@ -320,7 +320,7 @@ void FileQueueUploaderPrivate::run()
             }
            
             it->finishTask(res ? UploadTask::StatusFinished : UploadTask::StatusFailure);
-        } catch (NetworkClient::AbortedException & ex) {
+        } catch (NetworkClient::AbortedException &) {
             it->finishTask(UploadTask::StatusStopped);
         }
        

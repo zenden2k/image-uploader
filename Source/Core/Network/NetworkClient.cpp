@@ -860,7 +860,7 @@ const std::string  NetworkClient::getCurlResultString()
 void NetworkClient::setCurlShare(CurlShare* share)
 {
     curlShare_ = share;
-    //curl_easy_setopt(curl_handle, CURLOPT_SHARE, share->getHandle());
+    curl_easy_setopt(curl_handle, CURLOPT_SHARE, share->getHandle());
 }
 
 void NetworkClient::enableResponseCodeChecking(bool enable)
