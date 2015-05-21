@@ -38,14 +38,6 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<Server Name="pikucha.ru" MaxFileSize="10485760" Authorize="1" Debug="0" Plugin="pikucha">
-		<Actions>
-			<Action Type="login" Url="http://pikucha.ru/entry" PostParams="Action=entry;email=$(_LOGIN);password=$(_PASSWORD);entry=Войти;" OnlyOnce="1"/>
-			<Action Type="post" Url="http://pikucha.ru/api?object=user&amp;action=data"/>
-			<Action Type="upload" Url="http://pikucha.ru/api?object=image&amp;action=upload" PostParams="files[]=%filename%;thumbnail_dimension=$(_THUMBWIDTH);thumbnail_size=0;" RegExp="url=(.*?)\]\[img\](.*?)\[\/img\][" AssignVars="ViewUrl:0;Thumb:1"/>
-		</Actions>
-		<Result DownloadUrlTemplate="$(ViewUrl)" ThumbUrlTemplate="$(Thumb)"/>
-	</Server>
 	<Server Name="imgur.com" MaxFileSize="10485760"  Authorize="0" Debug="0" MaxThreads="1">
 		<Actions>
 			<Action Type="login" Url="http://imgur.com/signin" PostParams="username=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="0" Description="Authorization on imgur.com"/>
@@ -495,7 +487,7 @@
 	</Server>
 	<Server Name="fotosklad.org.ua">
 		<Actions>
-			<Action Type="upload" Url="http://fotosklad.org.ua/upload_image.html" PostParams="img1=%filename%;resize_width=800;if_preview=on;preview_width=$(_THUMBWIDTH);rotate_degree=0;comment=;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
+			<Action Type="upload" Url="http://fotosklad.org.ua/upload_image.html" PostParams="img1=%filename%;resize_width=800;if_preview=on;preview_width=$(_THUMBWIDTH);rotate_degree=0;comment=;" RegExp="(http:\/\/s[0-9]+\.fotosklad\.org\.ua\/[0-9]+\/f\/.*?)&quot;[\s\S]*\[IMG\](http:\/\/s[0-9]+\.fotosklad\.org\.ua\/[0-9]+\/preview\/.*?)\[" AssignVars="Image:0;Thumb:1;"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
