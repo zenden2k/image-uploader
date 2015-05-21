@@ -110,7 +110,12 @@ void CFileDownloader::memberThreadFunc()
         if ( !curItem.referer.empty() ) {
             nm.setReferer(curItem.referer);
         }
-        nm.doGet(url);
+        try {
+            nm.doGet(url);
+        } catch (NetworkClient::AbortedException&) {
+            break;
+        }
+        
         if (m_NeedStop)
             break;
 

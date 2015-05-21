@@ -5,7 +5,7 @@ For /F "tokens=2,3 delims= " %%i In (..\Source\VersionInfo.h) Do (set %%i=%%~j)
 echo Creating distribution archive for Image Uploader version %_APP_VER% %BUILD%
 
 set temp_dir=serverchecker\temp
-set filename=servers-checker-1.0-iu-core-%_APP_VER%-build-%BUILD%.7z
+set filename=servers-checker-1.0.1-iu-core-%_APP_VER%-build-%BUILD%.7z
 echo %temp_dir%
 
 rmdir /q /s  %temp_dir%

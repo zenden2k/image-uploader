@@ -67,7 +67,7 @@ void UploadTask::taskFinished()
 
 void UploadTask::statusChanged()
 {
-    if (OnStatusChanged)
+    if (OnStatusChanged && status_ != StatusPostponed) // use StatusPostponed to avoid deadlocks
     {
         OnStatusChanged(this);
     }

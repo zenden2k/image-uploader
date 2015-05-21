@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<UpdatePackageSource Name="iu_core" DisplayName="Image Uploader 1.3.2-alpha.4448" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%"  CoreUpdate="1" >
+<UpdatePackageSource Name="iu_core" DisplayName="Image Uploader 1.3.2-alpha.4455" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%"  CoreUpdate="1" >
 	<Entries>
 		<Entry Name="Image Uploader.exe" SaveToFolder="%apppath%/" Action="add"/>
 		<Entry Name="ExplorerIntegration*.dll" SaveToFolder="%apppath%/" Action="add"/>
@@ -20,6 +20,10 @@
         <Entry Name="Data/templates.xmltemplates.xml" SaveToFolder="%datapath%/" Action="delete"/>
 		<Entry Name="Data/templates.xml" SaveToFolder="%datapath%/templates.xml" Action="add"/>
 	</Entries>
-<Info>[+] Added gumbo-query to scripting API (jquery-like interface for google/gumbo HTML5 parser))
+<Info>
+[f] Fixed crash in reuploader
+[f] Update language files, closes issue #157
+[c] Use fast method of loading JPEG thumbnails (from EXIF) 
+[f] Fixed crash when server name is empty or invalid
 </Info>
 </UpdatePackageSource>

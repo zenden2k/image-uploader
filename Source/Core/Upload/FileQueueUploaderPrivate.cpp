@@ -127,9 +127,9 @@ void FileQueueUploaderPrivate::OnConfigureNetworkClient(CUploader* uploader, Net
 std::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
     if (m_NeedStop)
         return std::shared_ptr<UploadTask>();
-#ifndef IU_CLI
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-#endif
+
+    std::lock_guard<std::recursive_mutex> lock(sessionsMutex_);
+
     //LOG(INFO) << "startFromSession_=" << startFromSession_;
     if (!sessions_.empty() && !m_NeedStop)
     {
@@ -141,7 +141,7 @@ std::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
                 startFromSession_ = i + 1;
             }
             if (task) {
-                task->setStatus(UploadTask::StatusRunning);
+                task->setStatus(UploadTask::StatusPostponed);
 
                 return task;
             }
@@ -247,7 +247,7 @@ void FileQueueUploaderPrivate::run()
         //LOG(ERROR) << "getNextJob() returned " << (fut ? fut->getFileName() : "NULL");
         if (!it)
             break;
-        
+        it->setStatus(UploadTask::StatusRunning);
         mutex_.lock();
         serverThreads_[it->serverName()].waitingFileCount--;
         std::string initialServerName = it->serverName();

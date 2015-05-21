@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_core" DownloadUrl="http://dl.bintray.com/zenden/zenden-image-uploader/iu_core_1431793316.zip" TimeStamp="1431793316" Date="16.05.2015 18:21:56" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="1" DisplayName="Image Uploader 1.3.2-alpha.4448" Hash="dfe682f6eb64e8baf66ed7524215065d">
-  <Info>[+] Added gumbo-query to scripting API (jquery-like interface for google/gumbo HTML5 parser))
+<UpdateInfo Name="iu_core" DownloadUrl="http://dl.bintray.com/zenden/zenden-image-uploader/iu_core_1432221179.zip" TimeStamp="1432221179" Date="21.05.2015 17:12:59" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="1" DisplayName="Image Uploader 1.3.2-alpha.4455" Hash="32933af7fe439dc9d29a057b2036936e">
+  <Info>
+[f] Fixed crash in reuploader
+[f] Update language files, closes issue #157
+[c] Use fast method of loading JPEG thumbnails (from EXIF) 
+[f] Fixed crash when server name is empty or invalid
 </Info>
 </UpdateInfo>

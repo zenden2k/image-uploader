@@ -53,6 +53,7 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
         }
         
     } else {
+        std::lock_guard<std::mutex> guard(pluginsMutex_);
         CAbstractUploadEngine* plugin = m_plugins[threadId][serverName];
         if (plugin &&  plugin->serverSettings()->authData.Login == params.authData.Login) {
             return plugin;

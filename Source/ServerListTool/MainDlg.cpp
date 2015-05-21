@@ -232,6 +232,8 @@ DWORD CMainDlg::Run() {
             continue;
         }
         ServerProfile serverProfile(ue->Name);
+        serverProfile.setShortenLinks(false);
+        serverProfile.setProfileName(ss.authData.Login);
 
         std::shared_ptr<FileUploadTask> fileTask(new FileUploadTask(WCstringToUtf8(fileName), WCstringToUtf8(myExtractFileName(fileName))));
         fileTask->setServerProfile(serverProfile);
@@ -440,6 +442,10 @@ void CMainDlg::onTaskFinished(UploadTask* task, bool ok) {
     CUploadEngineData* ue = task->serverProfile().uploadEngineData();
     UploadTaskUserData* userData = reinterpret_cast<UploadTaskUserData*>(task->userData());
     int i = userData->rowIndex;
+    if (task->status() == UploadTask::StatusStopped) {
+        m_ListView.SetItemText(i, 2, CString(_T("")));
+        return;
+    }
     if (ok) {
         DWORD endTime = GetTickCount() - userData->startTime;
         UploadResult* result = task->uploadResult();

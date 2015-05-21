@@ -36,7 +36,7 @@ int  UploadSession::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<Up
             if (acceptor->canAcceptUploadTask(uploadTask))
             {
                 outTask = *it;
-                it->get()->setStatus(UploadTask::StatusRunning);
+                it->get()->setStatus(UploadTask::StatusPostponed);
                 return count;
             }
             
@@ -46,7 +46,7 @@ int  UploadSession::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<Up
         count += childCount;
         if (task)
         {
-            task->setStatus(UploadTask::StatusRunning);
+            task->setStatus(UploadTask::StatusPostponed);
             outTask = task;
             return count;
         }
