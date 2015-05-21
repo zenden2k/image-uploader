@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1431543213.dat" TimeStamp="1431543213" Date="13.05.2015 20:53:33" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="090ea2da941dc3eb044d0865eeadfbec">
+<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1432222637.dat" TimeStamp="1432222637" Date="21.05.2015 17:37:17" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="9597bbfe0cefa8b6781cd2093f55e563">
   <Info>
-[+] ovrload.ru
+[+] imagebam.com
+[f] fotosklad.org.ua (keep original image size)
+[-] pikucha.ru
 </Info>
 </UpdateInfo>
