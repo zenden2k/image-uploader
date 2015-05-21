@@ -99,7 +99,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Core\3rdpart\base64.cpp" />
-    <ClCompile Include="..\Core\3rdpart\GumboQuery\Document.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\GQDocument.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Node.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Object.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Parser.cpp" />

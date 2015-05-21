@@ -72,8 +72,6 @@ LPTSTR fgetline(LPTSTR buf,int num,FILE *f);
 BOOL FileExists(LPCTSTR FileName);
 const CString TrimString(const CString& source, int nMaxLen);
 
-bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
-
 LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int nBufferSize);
 CString IntToStr(int n);
 

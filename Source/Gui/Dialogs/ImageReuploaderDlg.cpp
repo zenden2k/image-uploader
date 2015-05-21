@@ -137,7 +137,7 @@ LRESULT CImageReuploaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
         closeWindow = false;
     }
     if ( uploadManager_->IsRunning() ) {
-        uploadManager_->stop();
+        uploadSession_->stop();
         closeWindow = false;
     }
 

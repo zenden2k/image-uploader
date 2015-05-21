@@ -1913,7 +1913,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
         }
     }
     using namespace ImageEditor;
-    ImageEditorWindow::DialogResult dr = ImageEditorWindow::drCancel;
+    ImageEditorWindow::DialogResult dialogResult = ImageEditorWindow::drCancel;
     CString suggestingFileName;
     if ( result ) {
         suggestingFileName = IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
@@ -1929,8 +1929,8 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
             imageEditor.setServerName(Utf8ToWCstring(Settings.quickScreenshotServer.serverName()));
         }
         imageEditor.setSuggestedFileName(suggestingFileName);
-        dr = imageEditor.DoModal(m_hWnd, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen ) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
-        if ( dr == ImageEditorWindow::drAddToWizard || dr == ImageEditorWindow::drUpload ) {
+        dialogResult = imageEditor.DoModal(m_hWnd, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen ) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
+        if ( dialogResult == ImageEditorWindow::drAddToWizard || dialogResult == ImageEditorWindow::drUpload ) {
             result = imageEditor.getResultingBitmap();
         }else {
             CanceledByUser = true;
@@ -1967,7 +1967,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
                     }
                 }
             }
-            if(!m_bScreenshotFromTray || dr == ImageEditorWindow::drAddToWizard || (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD || Settings.TrayIconSettings.TrayScreenshotAction== TRAY_SCREENSHOT_SHOWWIZARD))
+            if(!m_bScreenshotFromTray || dialogResult == ImageEditorWindow::drAddToWizard || (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD || Settings.TrayIconSettings.TrayScreenshotAction== TRAY_SCREENSHOT_SHOWWIZARD))
             {
                 CreatePage(2); 
                 ((CMainDlg*)Pages[2])->AddToFileList(buf);
@@ -1976,7 +1976,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
                 ((CMainDlg*)Pages[2])->ThumbsView.SetFocus();
                 ShowPage(2,0,3);
             }
-            else if(m_bScreenshotFromTray && (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD || dr == ImageEditorWindow::drUpload))
+            else if(m_bScreenshotFromTray && (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD || dialogResult == ImageEditorWindow::drUpload))
             {
                 Result = false;
                 floatWnd.UploadScreenshot(buf,buf);

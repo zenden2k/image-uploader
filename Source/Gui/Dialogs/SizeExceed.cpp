@@ -88,7 +88,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     
     int f = MyGetFileSize(m_szFileName);
     WCHAR buf2[25];
-    NewBytesToString(f, buf2, 25);
+    WinUtils::NewBytesToString(f, buf2, 25);
 
     CString name;
     CString params; 
@@ -101,7 +101,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     name = TR("Файл") + params;
 
     SetDlgItemText(IDC_FILEEXCEEDNAME, name);
-    NewBytesToString(m_EngineList->byName(fileTask_->serverProfile().serverName())->MaxFileSize, buf2, 25);
+    WinUtils::NewBytesToString(m_EngineList->byName(fileTask_->serverProfile().serverName())->MaxFileSize, buf2, 25);
 
     TCHAR szBuf[1000];
     wsprintf(szBuf, TR("Файл превышает максимальный размер, допустимый для загрузки на сервер %s (%s)."),

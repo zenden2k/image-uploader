@@ -37,56 +37,9 @@
 #include "Func/WinUtils.h"
 #include <Core/CoreFunctions.h>
 
-/*
-class TempFilesDeleter
-{
-    public:
-        CTempFilesDeleter();
-        void AddFile(const CString& fileName);
-        bool Cleanup();
-
-    protected:
-        std::vector<CString> m_files;
-};
-
-CTempFilesDeleter::CTempFilesDeleter()
-{
-
-}
-
-void CTempFilesDeleter::AddFile(const CString& fileName)
-{
-    m_files.push_back(fileName);
-}
-
-bool CTempFilesDeleter::Cleanup()
-{
-    for(size_t i=0; i<m_files.size(); i++)
-    {
-        DeleteFile(m_files[i]);
-    }
-    m_files.clear();
-    return true;
-}*/
-
-
-// Преобразование размера файла в строку
-bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize)
-{
-    std::string res = IuCoreUtils::fileSizeToString(nBytes);
-    lstrcpyn(szBuffer, Utf8ToWstring(res).c_str(), nBufSize);
-    return TRUE;
-}
-
-bool BytesToString(__int64 nBytes, LPTSTR szBuffer,int nBufSize)
-{
-    return NewBytesToString(nBytes, szBuffer, nBufSize);
-}
-
 // CUploadDlg
 CUploadDlg::CUploadDlg(CWizardDlg *dlg,UploadManager* uploadManager) :ResultsWindow(new CResultsWindow(dlg, UrlList, true))
 {
-    filesFinished_ = 0;
     MainDlg = NULL;
     TimerInc = 0;
     IsStopTimer = false;
@@ -160,100 +113,16 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     return 1;  
 }
 
-#define Terminat() {Terminated=true; return 0;}
-
-DWORD CUploadDlg::Run()
-{
+bool CUploadDlg::startUpload() {
     HRESULT hRes = ::CoInitialize(NULL);
     if(!MainDlg) return 0;
     
-    #if  WINVER    >= 0x0601
+    #if  WINVER  >= 0x0601
         if(ptl)
             ptl->SetProgressState(GetParent(), TBPF_NORMAL); // initialise Windows 7 taskbar button progress 
     #endif
-    /*Uploader.onNeedStop.bind(this, &CUploadDlg::OnUploaderNeedStop);
-    Uploader.onProgress.bind(this, &CUploadDlg::OnUploaderProgress);
-    Uploader.onDebugMessage.bind(DefaultErrorHandling::DebugMessage);
-    Uploader.onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
-    Uploader.onStatusChanged.bind(this, &CUploadDlg::OnUploaderStatusChanged);
-    Uploader.onConfigureNetworkClient.bind(this, &CUploadDlg::OnUploaderConfigureNetworkClient);*/
 
-    /*if(Settings.QuickUpload && !WizardDlg->Pages[3]) {
-        Server = Settings.getQuickServerID();
-    }
-    else Server = Settings.getServerID();*/
-    /*ServerProfile& serverProfile = sessionImageServer_;
-    int ServerId = _EngineList->GetUploadEngineIndex(sessionImageServer_.serverName());
-
-    int FileServer = _EngineList->GetUploadEngineIndex(sessionFileServer_.serverName());
-    
-
-    if(ServerId == -1)
-    {
-        ServerId = m_EngineList->getRandomImageServer();
-        if(ServerId == -1)
-            return ThreadTerminated();
-    }
-
-    if(FileServer == -1)
-    {
-        FileServer = m_EngineList->getRandomFileServer();
-        if(FileServer == -1)
-            return ThreadTerminated();
-    }
-
-    CUploadEngineData *ue = m_EngineList->byIndex(ServerId);
-    if (!ue  || sessionImageServer_.serverName().IsEmpty()) {
-        WriteLog(logError, L"CUploadDlg", L"Server not selected");
-        return ThreadTerminated();
-    }
-    if(ue->SupportsFolders)
-    {
-        ResultsWindow->AddServer(serverProfile);
-    }
-
-    if(m_EngineList->byIndex(FileServer)->SupportsFolders)
-    {
-        ResultsWindow->AddServer(Utf8ToWCstring(m_EngineList->byIndex(FileServer)->Name));
-    }*/
-
-    /*ShowProgress(false);
-    SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETPOS, 0);
-    SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, n));
-    SendDlgItemMessage(IDC_FILEPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
-    SetDlgItemText(IDC_COMMONPERCENTS, _T("0%"));
-
-    UploadProgress(0, n);*/
-
-    /*int i;
-    CString FileName;
-    TCHAR szBuffer[MAX_PATH];
-    
-    int NumUploaded=0;
-    bool CreateThumbs = sessionImageServer_.getImageUploadParams().CreateThumbs;
-
-    Thumbnail thumb;
-    CString templateName = sessionImageServer_.getImageUploadParams().getThumb().TemplateName;
-    if ( templateName.IsEmpty() ) {
-        templateName = _T("default");
-    }
-    CString thumbTemplateFileName = IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\")+templateName+_T(".xml");
-    if(!thumb.LoadFromFile(WCstringToUtf8(thumbTemplateFileName)))
-    {
-        WriteLog(logError, _T("CUploadDlg"), TR("Не могу загрузить файл миниатюры!")+CString(_T("\r\n")) + thumbTemplateFileName);
-        return ThreadTerminated();
-    }
-
-    int thumbwidth=sessionImageServer_.getImageUploadParams().getThumb().Size;
-    if(thumbwidth<1|| thumbwidth>1024) thumbwidth=150;
-    */
-
-    //= Settings.ImageSettings;
-   //InitialParams.upload_profile.ServerID = Server;
-
-    //iss = InitialParams;
     SetDlgItemText(IDC_COMMONPROGRESS2, _T(""));
-    filesFinished_ = 0;
     showUploadProgressTab();
     int n = MainDlg->FileList.GetCount();
     SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETPOS, 0);
@@ -268,8 +137,7 @@ DWORD CUploadDlg::Run()
     UrlList.resize(n);
     
     uploadSession_.reset(new UploadSession());
-    for(int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         CString FileName = MainDlg->FileList[i].FileName;
         std::string fileNameA = WCstringToUtf8(FileName);
         std::string displayName = WCstringToUtf8(MainDlg->FileList[i].VirtualFileName);
@@ -281,8 +149,6 @@ DWORD CUploadDlg::Run()
         uploadListView_.AddItem(i, 0, MainDlg->FileList[i].VirtualFileName);
         uploadListView_.AddItem(i, 1, TR("В очереди"));
         uploadListView_.SetItemData(i, reinterpret_cast<DWORD_PTR>(fps));
-
-
         bool isImage = IsImage(FileName);
         std::shared_ptr<FileUploadTask> task(new FileUploadTask(fileNameA, displayName));
         task->OnUploadProgress.bind(this, &CUploadDlg::onTaskUploadProgress);
@@ -294,252 +160,10 @@ DWORD CUploadDlg::Run()
         task->OnChildTaskAdded.bind(this, &CUploadDlg::onChildTaskAdded);
         task->setUrlShorteningServer(Settings.urlShorteningServer);
         uploadSession_->addTask(task);
-        /*if ( isImage )
-        {
-            CAbstractUploadEngine * e = m_EngineList->getUploadEngine(ServerId, iss.upload_profile.serverSettings());
-            if(!e) 
-            {
-                WriteLog(logError, _T("Custom Uploader"), _T("Cannot create image upload engine!"));
-                continue;
-            }
-            Uploader.setUploadEngine(e);
-        }
-        std::shared_ptr<UploadTask> task(new FileUploadTask(WCstringToUtf8(FileName), ))
-
-        wsprintf(szBuffer,TR("Обрабатывается файл %d из %d..."),i+1,n/*,ExtractFileName(FileName),UrlBuffer*);
-
-        SetDlgItemText(IDC_COMMONPROGRESS2,szBuffer);
-
-        SendDlgItemMessage(IDC_FILEPROGRESS,PBM_SETPOS,0);
-
-        
-        if(IsImage(MainDlg->FileList[i].FileName))
-        {
-            FileProgress(TR("Подготовка файла к отправке.."));
-            if(ShouldStop()) 
-                return ThreadTerminated();
-
-            CImageConverter imageConverter;
-         imageConverter.setImageConvertingParams(iss.convert_profile);
-         imageConverter.setEnableProcessing(iss.upload_profile.getImageUploadParams().ProcessImages);
-            imageConverter.setThumbnail(&thumb);
-            imageConverter.setThumbCreatingParams(iss.upload_profile.getImageUploadParams().getThumb());
-            bool GenThumb = false;
-            if(CreateThumbs && ((!sessionImageServer_.getImageUploadParams().UseServerThumbs)||(!ue->SupportThumbnails)))
-                GenThumb = true;
-                //GenerateImages(MainDlg->FileList[i].FileName,ImageFileName,ThumbFileName,thumbwidth, iss);
-            else 
-                GenThumb = false;
-
-            imageConverter.setGenerateThumb(GenThumb);
-            imageConverter.Convert(MainDlg->FileList[i].FileName);
-            ImageFileName = imageConverter.getImageFileName();
-            ThumbFileName = imageConverter.getThumbFileName();
-         if(iss.upload_profile.getImageUploadParams().ProcessImages && ImageFileName != MainDlg->FileList[i].FileName)
-            {
-                //MessageBox(ImageFileName);
-                TempFilesDeleter.AddFile(ImageFileName);
-                if(lstrlen(ThumbFileName))
-                TempFilesDeleter.AddFile(ThumbFileName);
-            }
-        }
-        else // if we upload any type of file
-        {
-            ImageFileName = MainDlg->FileList[i].FileName;
-            CAbstractUploadEngine * fileUploadEngine = m_EngineList->getUploadEngine(FileServer, sessionFileServer_.serverSettings());
-            if(!fileUploadEngine)
-            {
-                WriteLog(logError, _T("Custom Uploader"), _T("Cannot create file upload engine!"));
-                continue;
-            }
-            Uploader.setUploadEngine(fileUploadEngine);            
-        }
-
-        FileName = (MainDlg->FileList[i].FileName);
-        SendDlgItemMessage(IDC_FILEPROGRESS,PBM_SETPOS,0);
-        PrInfo.ip.Total=0;
-        PrInfo.ip.Uploaded=0;
-        PrInfo.Bytes.clear(); 
-        PrInfo.ip.IsUploading = false;
-        LastUpdate=0;
-        ShowProgress(true);
-
-        if(!FileExists(ImageFileName))
-        {
-            CString Buf;
-            Buf.Format(TR("Файл \"%s\" не найден."), (LPCTSTR)ImageFileName);
-            WriteLog(logError, TR("Модуль загрузки"),Buf);
-            continue;
-        }
-
-        if(IsImage(MainDlg->FileList[i].FileName)&& ue->MaxFileSize && MyGetFileSize(ImageFileName)>static_cast<int>(ue->MaxFileSize))
-        {
-            CSizeExceed SE(ImageFileName, iss,m_EngineList);
-
-            int res = SE.DoModal(m_hWnd);
-            if(res==IDOK || res==3 )
-            {
-                if(res==3) InitialParams = iss; // if user choose button USE FOR ALL
-
-                i--;
-                continue;
-            }
-        }
-        ShowProgress(true);
-
-        if(IsImage(MainDlg->FileList[i].FileName))
-            FileProgress(TR("Загрузка изображения.."));
-        else 
-            FileProgress(CString(TR("Загрузка файла")) + _T(" ") + myExtractFileName(MainDlg->FileList[i].FileName));
-
-        DirectUrl= _T("");
-        ThumbUrl = _T("");
-        
-        
-        Uploader.setThumbnailWidth(thumbwidth);
-        BOOL result = Uploader.UploadFile(WCstringToUtf8(ImageFileName),WCstringToUtf8(virtualName));
-        if(result)
-        {
-            ThumbUrl = Utf8ToWstring(Uploader.getThumbUrl()).c_str();
-            DirectUrl = Utf8ToWstring(Uploader.getDirectUrl()).c_str();
-            DownloadUrl = Utf8ToWstring(Uploader.getDownloadUrl()).c_str();
-        }
-        
-        ShowProgress(false);
-
-        if(ShouldStop()) {
-            return ThreadTerminated();
-        }
-
-        if(!result)
-        {
-            CString Err;
-            Err.Format(TR("Не удалось загрузить файл \"%s\" на сервер. "), (LPCTSTR)MainDlg->FileList[i].FileName );
-            if(Settings.ShowUploadErrorDialog)
-            {
-                int res = MessageBox(Err,APPNAME, MB_ABORTRETRYIGNORE|MB_ICONERROR);
-                if(res == IDABORT) { ThreadTerminated();FileProgress(TR("Загрузка файлов прервана пользователем."), false);return 0;}
-                else if(res == IDRETRY)
-                {
-                    i--;
-                    continue;
-                }
-            }
-        }
-
-        if(result  &&  (!DirectUrl.IsEmpty() || !DownloadUrl.IsEmpty()))
-        {
-            if(ue->SupportsFolders)
-            {
-                ResultsWindow->AddServer(Utf8ToWCstring(ue->Name));
-            }
-
-            NumUploaded++;
-
-
-            PrInfo.ip.Total=0;
-            PrInfo.ip.Uploaded=0;
-            LastUpdate=0;
-            //ShowVar((int)sessionImageServer_.getImageUploadParams().CreateThumbs);
-
-            // Если мы не используем серверные превьюшки
-            if(IsImage(MainDlg->FileList[i].FileName) &&  !ue->ImageUrlTemplate.empty() && sessionImageServer_.getImageUploadParams().CreateThumbs && (((!sessionImageServer_.getImageUploadParams().UseServerThumbs)||(!ue->SupportThumbnails)) || (lstrlen(ThumbUrl)<1)))
-            {
-    thumb_retry:
-                FileProgress(TR("Загрузка миниатюры.."));
-                ShowProgress(true);
-                ThumbUrl = _T("");
-                PrInfo.ip.Total=0;
-                PrInfo.Bytes.clear();
-                PrInfo.ip.Uploaded=0;
-                PrInfo.ip.IsUploading = false;
-                BOOL result = Uploader.UploadFile(WCstringToUtf8(ThumbFileName),WCstringToUtf8(myExtractFileName(ThumbFileName)));
-                
-                if(result)
-                {
-                    ThumbUrl = Utf8ToWstring(Uploader.getDirectUrl()).c_str();
-                }
-                if(ShouldStop()) 
-                    return ThreadTerminated();
-
-                if(!result && Settings.ShowUploadErrorDialog)
-                {
-                    CString Err;
-                    Err.Format(TR("Не удалось загрузить миниатюру к изображению \"%s\" на сервер. "), (LPCTSTR)MainDlg->FileList[i].FileName );
-                    int res = MessageBox(Err,APPNAME, MB_ABORTRETRYIGNORE|MB_ICONERROR);
-                    if(res == IDABORT) { ThreadTerminated();FileProgress(TR("Загрузка файлов прервана пользователем."), false);return 0;}
-                    else if(res == IDRETRY)
-                    {
-                        goto thumb_retry;
-                    }
-                }
-            }
-            ShowProgress(false);
-            CUrlListItem item;
-            item.ImageUrl=_T("");
-            item.ThumbUrl=_T("");
-
-            item.ImageUrl = DirectUrl;
-            item.FileName = MainDlg->FileList[i].FileName;
-            item.DownloadUrl = DownloadUrl;
-            //if(CreateThumbs)
-            if ( item.ThumbUrl.IsEmpty()) {
-                item.ThumbUrl = ThumbUrl;
-            }
-            ResultsWindow->Lock();
-            UrlList.Add(item);
-
-            CAbstractUploadEngine *upEngine = Uploader.getUploadEngine();
-            std::string serverName = ue->Name;
-            if(upEngine)
-                serverName = upEngine->getUploadData()->Name;
-            HistoryItem hi;
-            hi.localFilePath = WCstringToUtf8(item.FileName);
-            hi.serverName = serverName;
-            hi.directUrl =  WCstringToUtf8(DirectUrl);
-            hi.thumbUrl = WCstringToUtf8(item.ThumbUrl);
-            hi.viewUrl = WCstringToUtf8(item.DownloadUrl);
-            hi.uploadFileSize = IuCoreUtils::getFileSize(WCstringToUtf8(ImageFileName));
-            if ( !hi.directUrl.empty() ) {
-                LocalFileCache::instance().addFile(hi.directUrl, hi.localFilePath);
-            }
-            session->AddItem(hi);
-            
-            
-            ResultsWindow->Unlock();
-            GenerateOutput();
-
-        }
-        ShowProgress(false);
-        UploadProgress(i+1, n);
-        wsprintf(szBuffer,_T("%d %%"),(int)((float)(i+1)/(float)n*100));
-        SetDlgItemText(IDC_COMMONPERCENTS,szBuffer);
-
-        ThumbUrl = _T("");
-        DirectUrl = _T("");
-
-        TempFilesDeleter.Cleanup();
-        iss = InitialParams;*/
     }
     uploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CUploadDlg::onSessionFinished));
     uploadManager_->addSession(uploadSession_);
-    /*
-
-    UploadProgress(n, n);
-    wsprintf(szBuffer,_T("%d %%"),100);
-    SetDlgItemText(IDC_COMMONPERCENTS,szBuffer);
-    
-    
-    int Errors = n-NumUploaded;
-    if(Errors>0)
-        wsprintf(szBuffer,CString(TR("Вcего %d файлов было загружено."))+_T(" ")
-        +TR("%d файлов загружены не были из-за ошибок."),NumUploaded,Errors);
-    else
-        wsprintf(szBuffer,CString(TR("Вcего %d файлов было загружено."))+_T(" ")+TR("Ошибок нет."), NumUploaded );
-
-    ResultsWindow->FinishUpload();
-    FileProgress(szBuffer, false);*/
-return 0;
+    return 0;
 }
 
 LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -628,7 +252,7 @@ bool CUploadDlg::OnShow()
     ::SetFocus(GetDlgItem(IDC_CODEEDIT));
     alreadyShortened_ = false;
     backgroundThreadStarted();
-    Run();    
+    startUpload();
     return true;
 }
 
@@ -973,7 +597,6 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         UrlList[fps->tableRow] = item;
         //uploadListView_.SetItemText(fps->tableRow, 1, _T("Готово"));
         TotalUploadProgress(uploadSession_->finishedTaskCount(UploadTask::StatusFinished), uploadSession_->taskCount(), 0);
-        filesFinished_++;
     }
      else if (fileTask->role() == UploadTask::ThumbRole) {
          FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(task->parentTask()->userData());

@@ -70,9 +70,9 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
          //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-         DWORD Run();
-         CMainDlg *MainDlg;
-         CResultsWindow *ResultsWindow;
+        bool startUpload();
+        CMainDlg *MainDlg;
+        CResultsWindow *ResultsWindow;
         int ThreadTerminated(void);
         std::vector<CUrlListItem> UrlList;
         bool OnShow();
@@ -106,7 +106,6 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         void backgroundThreadStarted();
         void createToolbar();
         int currentTab_;
-        int filesFinished_;
         CResultsListView uploadListView_;
         bool isEnableNextButtonTimerRunning_;
         std::shared_ptr<UploadSession> uploadSession_;

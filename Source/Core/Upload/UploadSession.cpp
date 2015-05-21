@@ -36,7 +36,7 @@ int  UploadSession::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<Up
             if (acceptor->canAcceptUploadTask(uploadTask))
             {
                 outTask = *it;
-                it->get()->setStatus(UploadTask::StatusPostponed);
+                it->get()->setStatus(UploadTask::StatusPostponed); // FIXME: add new property instead of settings status = StatusPostponed
                 return count;
             }
             

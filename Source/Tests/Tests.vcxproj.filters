@@ -75,9 +75,6 @@
     <ClCompile Include="..\Core\3rdpart\pcreplusplus.cpp">
       <Filter>Code\Core\3rdpart</Filter>
     </ClCompile>
-    <ClCompile Include="..\Core\3rdpart\GumboQuery\Document.cpp">
-      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
-    </ClCompile>
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Node.cpp">
       <Filter>Code\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
@@ -98,6 +95,9 @@
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Tests\GumboTest.cpp">
       <Filter>Code\Core\3rdpart\GumboQuery\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\GQDocument.cpp">
+      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

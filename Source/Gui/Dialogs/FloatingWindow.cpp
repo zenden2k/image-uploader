@@ -312,7 +312,7 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
         return false;
     }
 
-    lastUrlShorteningTask_.reset(new UrlShorteningTask(WCstringToUtf8(url)));
+    lastUrlShorteningTask_.reset(new UrlShorteningTask(W2U(url)));
     lastUrlShorteningTask_->setServerProfile(Settings.urlShorteningServer);
     lastUrlShorteningTask_->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CFloatingWindow::OnFileFinished));
     uploadManager_->addTask(lastUrlShorteningTask_);
@@ -629,8 +629,6 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     task->setServerProfile(Settings.quickScreenshotServer);
     task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CFloatingWindow::OnFileFinished));
     task->setUrlShorteningServer(Settings.urlShorteningServer);
-    //uploadSession->
-    //uploadSession-
 
     uploadManager_->addTask(std::shared_ptr<UploadTask>(task));
     uploadManager_->start();
