@@ -14,6 +14,9 @@ class UploadSession
         UploadSession();
         typedef fastdelegate::FastDelegate2<UploadSession*, UploadTask*> TaskAddedCallback;
         typedef fastdelegate::FastDelegate1<UploadSession*> SessionFinishedCallback;
+        /**
+        This function is NOT thread safe!
+        */
         void addTask(std::shared_ptr<UploadTask> task);
         void removeTask(std::shared_ptr<UploadTask> task);
         int getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask);
@@ -40,7 +43,8 @@ class UploadSession
         void taskFinished(UploadTask* task);
         void childTaskAdded(UploadTask* task);
         bool stopSignal();
-        std::recursive_mutex tasksMutex_;
+        // Do not need this mutex because tasks_ vector is used in read-only mode
+        //std::recursive_mutex tasksMutex_;
         std::vector<TaskAddedCallback> taskAddedCallbacks_;
         std::vector<SessionFinishedCallback> sessionFinishedCallbacks_;
         void notifyTaskAdded(UploadTask* task);

@@ -402,12 +402,11 @@ int UploadTask::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<Upload
 
 int UploadTask::pendingTasksCount(UploadTaskAcceptor* acceptor)
 {
+    std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
     int taskCount = childTasks_.size();
-    if (!taskCount)
-    {
+    if (!taskCount) {
         return 0;
     }
-    std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
     int res = 0;
     for (auto it = childTasks_.begin(); it != childTasks_.end(); it++)
     {
