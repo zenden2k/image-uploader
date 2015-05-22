@@ -100,10 +100,11 @@ void FileQueueUploaderPrivate::onTaskAdded(UploadSession*, UploadTask* task)
 
 int FileQueueUploaderPrivate::pendingTasksCount()
 {
-    std::lock_guard<std::recursive_mutex> lock(serverThreadsMutex_);
     std::lock_guard<std::recursive_mutex> lock2(sessionsMutex_);
     TaskAcceptorBase acceptor(false); // do not use mutex
+    serverThreadsMutex_.lock();
     acceptor.serverThreads_ = this->serverThreads_;
+    serverThreadsMutex_.unlock();
     for (size_t i = startFromSession_; i < sessions_.size(); i++)
     {
         sessions_[i]->pendingTasksCount(&acceptor);
@@ -148,9 +149,6 @@ std::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
             
         }
     }
-#ifndef IU_CLI
-
-#endif
     return std::shared_ptr<UploadTask>();
 }
 
@@ -232,21 +230,25 @@ void FileQueueUploaderPrivate::start() {
 
 void FileQueueUploaderPrivate::run()
 {
-    CUploader uploader;
-    uploader.onConfigureNetworkClient.bind(this, &FileQueueUploaderPrivate::OnConfigureNetworkClient);
-    
-    
-    // TODO
-    uploader.onErrorMessage.bind(this, &FileQueueUploaderPrivate::onErrorMessage);
-    uploader.onDebugMessage.bind(this, &FileQueueUploaderPrivate::onDebugMessage);
+   
     
     for (;;)
     {
         auto it = getNextJob();
-        FileUploadTask* fut = dynamic_cast<FileUploadTask*>(it.get());
+
+       
         //LOG(ERROR) << "getNextJob() returned " << (fut ? fut->getFileName() : "NULL");
         if (!it)
             break;
+        CUploader uploader;
+        uploader.onConfigureNetworkClient.bind(this, &FileQueueUploaderPrivate::OnConfigureNetworkClient);
+
+
+        // TODO
+        uploader.onErrorMessage.bind(this, &FileQueueUploaderPrivate::onErrorMessage);
+        uploader.onDebugMessage.bind(this, &FileQueueUploaderPrivate::onDebugMessage);
+        FileUploadTask* fut = dynamic_cast<FileUploadTask*>(it.get());
+       
         it->setStatus(UploadTask::StatusRunning);
         mutex_.lock();
         serverThreads_[it->serverName()].waitingFileCount--;
@@ -266,7 +268,10 @@ void FileQueueUploaderPrivate::run()
             continue;
         }
 
-        it->schedulePostponedChilds();
+        if (it->schedulePostponedChilds()) {
+            startFromSession_ = 0;
+            start();
+        }
 
         std::string serverName = it->serverName();
 

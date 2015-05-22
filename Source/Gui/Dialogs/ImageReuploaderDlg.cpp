@@ -81,7 +81,7 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     TRC(IDC_SHOWLOG, "Показать лог");
 
     RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
-    imageServerSelector_ = new CServerSelectorControl(uploadEngineManager_, true);
+    imageServerSelector_ .reset(new CServerSelectorControl(uploadEngineManager_, true));
     imageServerSelector_->Create(m_hWnd, serverSelectorRect);
     imageServerSelector_->setTitle(TR("Сервер для хранения изображений"));
     imageServerSelector_->ShowWindow( SW_SHOW );
@@ -266,14 +266,17 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
 bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it, std::string localFileName ) {
     std::string mimeType = IuCoreUtils::GetFileMimeType(localFileName);
     if (mimeType.find("image/") == std::string::npos) {
-        ServiceLocator::instance()->logger()->write(logError, LogTitle, _T("File '") + Utf8ToWCstring(it.url) +
-            _T("'\r\n doesn't seems to be an image.\r\nIt has mime type '") + Utf8ToWCstring(mimeType) + "'.");
+        ServiceLocator::instance()->logger()->write(logError, LogTitle, _T("File '") + U2W(it.url) +
+            _T("'\r\n doesn't seems to be an image.\r\nIt has mime type '") + U2W(mimeType) + "'.");
         return false;
     } 
 
     DownloadItemData* dit = reinterpret_cast<DownloadItemData*>(it.id);
-
+    
     UploadItemData* uploadItemData = new UploadItemData;
+    uploadItemsMutex_.lock();
+    uploadItems_.push_back(std::unique_ptr<UploadItemData>(uploadItemData));
+    uploadItemsMutex_.unlock();
     uploadItemData->sourceUrl = it.url;
 
     uploadItemData->sourceIndex = dit->sourceIndex;
@@ -291,8 +294,10 @@ bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it
     fileUploadTask->setUserData(uploadItemData);
     fileUploadTask->setUrlShorteningServer(Settings.urlShorteningServer);
     fileUploadTask->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CImageReuploaderDlg::OnFileFinished));
+    uploadSessionMutex_.lock();
     uploadSession_->addTask(fileUploadTask);
     uploadManager_->start();
+    uploadSessionMutex_.unlock();
     return true;
 }
 
@@ -466,6 +471,7 @@ bool CImageReuploaderDlg::BeginDownloading()
 
             result += absoluteUrl + "\r\n";
             DownloadItemData * dit = new DownloadItemData();
+            downloadItems_.push_back(std::unique_ptr<DownloadItemData>(dit));
             dit->originalUrl = url;
             dit->sourceIndex = i;
             m_FileDownloader.AddFile( absoluteUrl, reinterpret_cast<void*>(dit), WCstringToUtf8(sourceUrl) );

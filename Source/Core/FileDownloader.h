@@ -26,7 +26,9 @@
 #include "Core/3rdpart/FastDelegate.h"
 #include "Core/Network/NetworkClient.h"
 #include "Core/Utils/CoreTypes.h"
+#include <memory>
 
+class Object;
 class CFileDownloader
 {
     public:
@@ -41,7 +43,7 @@ class CFileDownloader
 
         CFileDownloader();
         virtual ~CFileDownloader();
-        void AddFile(const std::string& url, void* id, const std::string& referer = std::string());
+        void AddFile(const std::string& url,void* userData, const std::string& referer = std::string());
         bool start();
         bool waitForFinished(unsigned int msec = -1);
         void setThreadCount(int n);

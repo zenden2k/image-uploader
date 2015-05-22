@@ -154,9 +154,13 @@ class CImageReuploaderDlg:    public CDialogImpl <CImageReuploaderDlg>,
         std::map<unsigned int, UploadedItem> uploadedItems_;
         ServerProfile serverProfile_;
         static const TCHAR LogTitle[];
-        CServerSelectorControl *imageServerSelector_;
+        std::unique_ptr<CServerSelectorControl> imageServerSelector_;
         std::shared_ptr<UploadSession> uploadSession_;
+        std::mutex uploadSessionMutex_;
         UploadEngineManager *uploadEngineManager_;
+        std::vector<std::unique_ptr<DownloadItemData>> downloadItems_; 
+        std::vector<std::unique_ptr<UploadItemData>> uploadItems_;
+        std::mutex uploadItemsMutex_;
 
         struct Match {
             int start;

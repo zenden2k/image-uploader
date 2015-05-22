@@ -19,7 +19,6 @@ struct ZUploadObject
 
 class ZOutputCodeGenerator
 {
-
     public:
         enum CodeLang {clHTML, clBBCode, clPlain};
         enum CodeType {ctTableOfThumbnails, ctClickableThumbnails, ctImages, ctLinks};

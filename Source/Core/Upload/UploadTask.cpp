@@ -387,7 +387,7 @@ int UploadTask::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<Upload
     int count = 0;
     for (auto it = childTasks_.begin(); it != childTasks_.end(); it++)
     {
-        if (!it->get()->isFinished() && !it->get()->isRunning() && !it->get()->isStopped() )
+        if (it->get()->status()== StatusInQueue )
         {
             count++;
             if (acceptor->canAcceptUploadTask(it->get()))
@@ -470,11 +470,14 @@ void UploadTask::deletePostponedChilds() {
     }
 }
 
-void UploadTask::schedulePostponedChilds() {
+bool UploadTask::schedulePostponedChilds() {
+    bool res = false;
     std::lock_guard<std::recursive_mutex> guard(tasksMutex_);
     for (auto it = childTasks_.begin(); it != childTasks_.end(); ++it) {
         if (it->get()->status() == StatusPostponed) {
             it->get()->setStatus(StatusInQueue);
+            res = true;
         }
     }
+    return res;
 }

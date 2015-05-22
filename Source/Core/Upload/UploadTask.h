@@ -106,7 +106,7 @@ class UploadTask {
         TempFileDeleter* tempFileDeleter(bool create = true);
         void addTempFile(const std::string& fileName);
         void deletePostponedChilds();
-        void schedulePostponedChilds();
+        bool schedulePostponedChilds();
         friend class CUploader;
 
     protected:

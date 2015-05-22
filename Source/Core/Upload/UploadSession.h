@@ -40,10 +40,10 @@ class UploadSession
         std::vector<std::shared_ptr<UploadTask>> tasks_;
         bool isFinished_;
         bool isStopped_;
+        std::atomic<int> finishedCount_;
         void taskFinished(UploadTask* task);
         void childTaskAdded(UploadTask* task);
         bool stopSignal();
-        // Do not need this mutex because tasks_ vector is used in read-only mode
         //std::recursive_mutex tasksMutex_;
         std::vector<TaskAddedCallback> taskAddedCallbacks_;
         std::vector<SessionFinishedCallback> sessionFinishedCallbacks_;

@@ -31,8 +31,10 @@
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/AppParams.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Core/Logging.h"
+#include "Core/Logging/ConsoleLogger.h"
+#include "ConsoleScriptDialogProvider.h"
 #ifdef _WIN32
 #include "Func/UpdatePackage.h"
 #include <fcntl.h>
@@ -68,7 +70,6 @@ std::string proxyUser;
 std::string proxyPassword;
 
 CUploadEngineList list;
-
 
 ZOutputCodeGenerator::CodeType codeType = ZOutputCodeGenerator::ctClickableThumbnails;
 ZOutputCodeGenerator::CodeLang codeLang = ZOutputCodeGenerator::clPlain;
@@ -115,7 +116,6 @@ void destr()
 {
 
 }
-
 
 void IU_ConfigureProxy(NetworkClient& nm)
 {
@@ -500,32 +500,43 @@ CAbstractUploadEngine* getUploadEngineByData(CUploadEngineData * data,std::strin
 int func()
 {
 	int res = 0;
-   CUploader uploader;
+    ConsoleLogger defaultLogger;
+    DefaultUploadErrorHandler uploadErrorHandler(&defaultLogger);
 
-   uploader.onProgress.bind(OnProgress);
-   uploader.onConfigureNetworkClient.bind(OnConfigureNM);
-   uploader.onErrorMessage.bind(OnError);
-  CUploadEngineData* uploadEngineData = 0;
-  if(!serverName.empty())
-   {
-      uploadEngineData = getServerByName(serverName);
-     if(!uploadEngineData)
-      {
-        std::cerr<<"No such server '"<<serverName<<"'!"<<std::endl;
-        return 0;
-     }
-  }
-  else
-  {
-     int index = list.getRandomImageServer();
-     uploadEngineData = list.byIndex(index);
-  }
+    ServiceLocator* serviceLocator = ServiceLocator::instance();
+    serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
+    serviceLocator->setLogger(&defaultLogger);
+    MyLogSink logSink(&defaultLogger);
+    google::AddLogSink(&logSink);
+    ConsoleScriptDialogProvider dialogProvider;
+    serviceLocator->setDialogProvider(&dialogProvider);
+    serviceLocator->setTranslator(&Lang);
+
+    Settings.setEngineList(&list);
+    ServiceLocator::instance()->setEngineList(&list);
+    ScriptsManager scriptsManager;
+    UploadEngineManager uploadEngineManager(_EngineList, &uploadErrorHandler);
+    uploadEngineManager.setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
+    UploadManager uploadManager(&uploadEngineManager, _EngineList, &scriptsManager, &uploadErrorHandler);
+
+    CUploadEngineData* uploadEngineData = 0;
+    if(!serverName.empty()) {
+        uploadEngineData = getServerByName(serverName);
+        if(!uploadEngineData) {
+            std::cerr<<"No such server '"<<serverName<<"'!"<<std::endl;
+            return 0;
+        }
+    } else {
+        int index = list.getRandomImageServer();
+        uploadEngineData = list.byIndex(index);
+    }
 
 	if(uploadEngineData->NeedAuthorization == 2 && login.empty())
 	{
 		std::cerr<<"Server '"<<uploadEngineData->Name<<"' requires authentication! Use -u and -p options."<<std::endl;
 		return -1;
 	}
+
 
   std::vector<ZUploadObject> uploadedList;
   for(size_t i=0; i<filesToUpload.size(); i++)
@@ -607,7 +618,6 @@ protected:
 	CUpdateManager m_UpdateManager;
 };
 
-
 void DoUpdates(bool force) {
 	if(force || time(0) - Settings.LastUpdateTime > 3600*24*7 /* 7 days */) {
 		IuCommonFunctions::CreateTempFolder();
@@ -616,9 +626,7 @@ void DoUpdates(bool force) {
 		IuCommonFunctions::ClearTempFolder(IuCommonFunctions::IUTempFolder);
 		Settings.LastUpdateTime = time(0);
 	}
-
 }
-
 
 char ** convertArgv(int argc, _TCHAR* argvW[]) {
 	char ** result = new char *[argc];

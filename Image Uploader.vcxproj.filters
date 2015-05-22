@@ -813,6 +813,9 @@
     <ClInclude Include="Source\Core\3rdpart\GumboQuery\GQDocument.h">
       <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\Object.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1798,6 +1801,9 @@
       <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\TempFileDeleter.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Object.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
