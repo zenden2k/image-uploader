@@ -324,7 +324,58 @@
             /> 
         </Actions> 
         <Result DownloadUrlTemplate="http://www.mirrorupload.net/file/$(ID)/$(Name)" /> 
-    </Server> 
+    </Server>
+	<Server Name="multiupload.biz" FileHost="1" Debug="0">
+		<Actions>
+			<Action Type="get" Url="http://multiupload.biz/" RegExp="(http:\/\/(([\w.-]+)[:\d]*)\/cgi-bin\/+upload\.cgi\?upload_id=(\d+))" AssignVars="Url:0;HostPort:1;Host:2;ID:3" OnlyOnce="0" />
+			<Action	Type="upload" Url="$(Url)"
+				PostParams="u_hash=;remote=0;upload_id=$(ID);files=1;file0=%filename%;description1=;submit_btn=%20Start%20Upload;links=;site=1000;site=1007;site=1016;site=1037;site=1027;site=1030;site=1041;site=1044;site=1049;site=1059;site=1060;site=1071"
+			/>
+			<Action Type="get" Url="http://$(HostPort)/tmp/$(ID).json" RegExp="code: '(\w+)', filename: &quot;([^&quot;]+)" AssignVars="Code:0;Name:1;"	/>
+		</Actions>
+		<Result DownloadUrlTemplate="http://$(Host)/$(Code)/$(Name)" />
+	</Server>
+	<Server Name="directmirror.com" FileHost="1" MaxFileSize="536870912" Debug="0">
+		<Actions>
+			<Action Type="get" Url="http://directmirror.com/" RegExp="(http:\/\/(([\w.-]+)[:\d]*)\/cgi-bin\/+upload\.cgi\?upload_id=(\d+))" AssignVars="Url:0;HostPort:1;Host:2;ID:3" OnlyOnce="0" />
+			<Action	Type="upload" Url="$(Url)"
+				PostParams="u_hash=;remote=0;upload_id=$(ID);files=1;file0=%filename%;description1=;submit_btn=%20Start%20Upload%20;links=;site=1052;site=1067;site=1014;site=1016;site=1051;site=1042;site=1038;site=1000;site=1050;site=1011;"
+			/>
+			<Action Type="get" Url="http://$(HostPort)/tmp/$(ID).json" RegExp="code: '(\w+)', filename: &quot;([^&quot;]+)" AssignVars="Code:0;Name:1;"	/>
+		</Actions>
+		<Result DownloadUrlTemplate="http://$(Host)/$(Code)/$(Name)" />
+	</Server>
+	<Server Name="multi.hotshare.biz" FileHost="1" Debug="0">
+		<Actions>
+			<Action Type="get" Url="http://multi.hotshare.biz/" RegExp="(http:\/\/(([\w.-]+)[:\d]*)\/cgi-bin\/+upload\.cgi\?upload_id=(\d+))" AssignVars="Url:0;HostPort:1;Host:2;ID:3" OnlyOnce="0" />
+			<Action	Type="upload" Url="$(Url)"
+				PostParams="u_hash=;remote=0;upload_id=$(ID);files=1;file0=%filename%;description1=;submit_btn=%20Start%20Upload%20;site=1074;site=1000;site=1044;site=1075;site=1027;site=1030;site=1004;site=1041;site=1024;site=1033;site=1042;site=1067"
+			/>
+			<Action Type="get" Url="http://$(HostPort)/tmp/$(ID).json" RegExp="code: '(\w+)'" AssignVars="Code:0;"	/> <!-- no filename -->
+		</Actions>
+		<Result DownloadUrlTemplate="http://$(Host)/$(Code)" />
+	</Server>
+	<Server Name="uploadmagnet.com" FileHost="1" Debug="0">
+		<Actions>
+			<Action Type="get" Url="http://www.uploadmagnet.com/" RegExp="(http:\/\/(([\w.-]+)[:\d]*)\/cgi-bin\/+upload\.cgi\?upload_id=(\d+))" AssignVars="Url:0;HostPort:1;Host:2;ID:3" OnlyOnce="0" />
+			<Action	Type="upload" Url="$(Url)"
+				PostParams="u_hash=;remote=0;upload_id=$(ID);files=1;file0=%filename%;description1=;file1=;submit_btn=%20Start%20Upload%20;site=1066;site=1061;site=1060;site=1011;site=1000;site=1016;site=1004;site=1050;site=1059;site=1065"
+			/>
+			<Action Type="get" Url="http://$(HostPort)/tmp/$(ID).json" RegExp="code: '(\w+)', filename: &quot;([^&quot;]+)" AssignVars="Code:0;Name:1;"	/>
+		</Actions>
+		<Result DownloadUrlTemplate="http://$(Host)/$(Code)/$(Name)" />
+	</Server>
+	<Server Name="multimirrorupload.com" FileHost="1" Debug="0">
+		<Actions>
+			<Action Type="get" Url="http://multimirrorupload.com/" RegExp="(http:\/\/(([\w.-]+)[:\d]*)\/cgi-bin\/+upload\.cgi\?upload_id=(\d+))" AssignVars="Url:0;HostPort:1;Host:2;ID:3" OnlyOnce="0" />
+			<Action	Type="upload" Url="$(Url)"
+				PostParams="u_hash=;remote=0;upload_id=$(ID);files=1;file0=%filename%;description1=;submit_btn=%20Start%20Upload%20;links=;site=1044;site=1000;site=1041;site=1042;site=1075;site=1016;site=1007;site=1014;site=1074;site=1076;site=1037;site=1033;site=1027;site=1030;site=1026;site=1067;site=1035;site=1004"
+			/>
+			<Action Type="get" Url="http://$(HostPort)/tmp/$(ID).json" RegExp="code: '(\w+)', filename: &quot;([^&quot;]+)" AssignVars="Code:0;Name:1;"	/>
+		</Actions>
+		<Result DownloadUrlTemplate="http://$(Host)/$(Code)/$(Name)" />
+	</Server>
+    <!-- /Thanks to Alex_Qwerty -->
 	 <Server Name="multiup.org" FileHost="1" MaxFileSize="2147483647"> 
         <Actions> 
             <Action Type="get" Url="http://www.multiup.org/api/get-fastest-server" 
