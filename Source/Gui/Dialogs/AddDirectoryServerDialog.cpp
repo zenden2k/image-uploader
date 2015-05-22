@@ -162,7 +162,7 @@ LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD 
             //
             for(size_t i=1;i<=er;i++)
             {
-                LPCTSTR str = (LPCTSTR)p->shi502_remark;
+                //LPCTSTR str = (LPCTSTR)p->shi502_remark;
                 if( ! (p->shi502_type & STYPE_SPECIAL) ) {
                     CString path = p->shi502_path+CString(L"\\");
                     if (directory ==  p->shi502_path) {
@@ -243,14 +243,13 @@ bool CAddDirectoryServerDialog::LoadComputerAddresses()
     bool isWindowsXpOrLater;
     OSVERSIONINFO ovi = { 0 };
     ovi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-    BOOL bRet = ::GetVersionEx(&ovi);
+    /*BOOL bRet = */::GetVersionEx(&ovi);
     isWindowsXpOrLater =  ovi.dwMajorVersion > 5 || (ovi.dwMajorVersion == 5 && ovi.dwMinorVersion >= 1);
 
 
     if (isWindowsXpOrLater) {
         /* Declare and initialize variables */
 
-        DWORD dwSize = 0;
         DWORD dwRetVal = 0;
 
         unsigned int i = 0;
@@ -269,10 +268,10 @@ bool CAddDirectoryServerDialog::LoadComputerAddresses()
 
         PIP_ADAPTER_ADDRESSES pCurrAddresses = NULL;
         PIP_ADAPTER_UNICAST_ADDRESS pUnicast = NULL;
-        PIP_ADAPTER_ANYCAST_ADDRESS pAnycast = NULL;
+        /*PIP_ADAPTER_ANYCAST_ADDRESS pAnycast = NULL;
         PIP_ADAPTER_MULTICAST_ADDRESS pMulticast = NULL;
-        IP_ADAPTER_DNS_SERVER_ADDRESS *pDnServer = NULL;
-        IP_ADAPTER_PREFIX *pPrefix = NULL;
+        IP_ADAPTER_DNS_SERVER_ADDRESS *pDnServer = NULL;*/
+        //IP_ADAPTER_PREFIX *pPrefix = NULL;
 
         family = AF_INET;
 
@@ -386,7 +385,7 @@ bool CAddDirectoryServerDialog::LoadComputerAddresses()
 LRESULT CAddDirectoryServerDialog::OnBnClickedBrowsebutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     CString path = GuiTools::GetWindowText(GetDlgItem(IDC_DIRECTORYEDIT));
-    CNewStyleFolderDialog fd(m_hWnd, path, TR("Выбор папки"), BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE);
+    CNewStyleFolderDialog fd(m_hWnd, path, TR("Выбор папки"));
   
     if(fd.DoModal(m_hWnd) == IDOK)
     {

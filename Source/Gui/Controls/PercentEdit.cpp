@@ -90,7 +90,7 @@ LRESULT CPercentEdit::OnGetText(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     int nCount = wParam;
     TCHAR * destination = (TCHAR*)lParam;
     TCHAR buf[256];
-    LRESULT result = DefWindowProc(uMsg, 256, (LPARAM)buf);
+    /*LRESULT result = */DefWindowProc(uMsg, 256, (LPARAM)buf);
     int quality = _wtoi(buf);
     CString res = WinUtils::IntToStr(quality);
     int copied = min(res.GetLength()+1, nCount);

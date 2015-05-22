@@ -353,7 +353,7 @@ std::string CScriptUploadEngine::name()
     return m_sName;
 }
 
-int CScriptUploadEngine::createFolder(CFolderItem& parent, CFolderItem& folder)
+int CScriptUploadEngine::createFolder(const CFolderItem& parent, CFolderItem& folder)
 {
     using namespace Sqrat;
     int ival = 0;

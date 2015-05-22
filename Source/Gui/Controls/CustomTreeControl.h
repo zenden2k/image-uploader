@@ -243,7 +243,7 @@ public:
         parent->AddItem(item);
         if(autoExpand)
         {
-            int nItem = TBase::AddString( (LPCTSTR)item);
+            /*int nItem =*/ TBase::AddString( (LPCTSTR)item);
             parent->setExpanded(true);
         }
         return item;
@@ -271,7 +271,7 @@ public:
        for(int i=0; i< item->ItemCount(); i++)
        {
            
-           int insertedIndex =  TBase::InsertString(++index, (LPCTSTR)item->item(i));
+           /*int insertedIndex =  */TBase::InsertString(++index, (LPCTSTR)item->item(i));
            //TBase::SetItemData(insertedIndex, (DWORD_PTR) item->item(i));
        }
        item->setExpanded(true);
@@ -546,7 +546,7 @@ public:
         int idx = GetCurSel();
         if( idx != -1 ) 
         {
-              TreeItem * it = GetItem(idx); 
+              /*TreeItem * it = */GetItem(idx); 
            
               CollapseItem(idx);
                     
@@ -569,9 +569,9 @@ public:
 //      int iIndent = CATEGORY_INDENT;
      // if( (m_dwExtStyle & PLS_EX_NOCOLUMNRESIZE) == 0 &&
       //    GET_X_LPARAM(lParam) == m_iMiddle + iIndent ) 
-      {
-        int m_iPrevious = GET_X_LPARAM(lParam);
-      }
+      //{
+       // int m_iPrevious = GET_X_LPARAM(lParam);
+     // }
 
       int idx = GetCurSel();
       if( idx != -1 ) {
@@ -784,7 +784,7 @@ public:
 #endif
       // Calculate rectangles for the two sides
       RECT rcName = rc;
-      RECT rcValue = rc;
+     // RECT rcValue = rc;
       // Special handling of XP-like categories
 /*      if( kind == PROPKIND_CATEGORY /*&& (m_dwExtStyle & PLS_EX_XPLOOK) != 0 *) {
          rcName.right = rcValue.left = rc.right;

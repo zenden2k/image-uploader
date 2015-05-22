@@ -701,8 +701,6 @@ bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont)
     }
 
     ZeroMemory(lFont,sizeof(LOGFONT));
-
-
     lstrcpy(lFont->lfFaceName,szFontName);
     HDC dc = ::GetDC(0);
     lFont->lfHeight = -MulDiv(nFontSize, GetDeviceCaps(dc , LOGPIXELSY), 72);
@@ -904,7 +902,7 @@ CString GetLastErrorAsString()
         return "No error message has been recorded";
 
     LPTSTR messageBuffer = 0;
-    size_t size = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
         NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&messageBuffer, 0, NULL);
 
     CString res = messageBuffer;
@@ -938,7 +936,7 @@ BOOL MakeDirectoryWritable(LPCTSTR lpPath) {
     ea.Trustee.ptstrName = (LPTSTR)pSid;
 
     ACL* pNewDACL = 0;
-    DWORD err = SetEntriesInAcl(1,&ea,pOldDACL,&pNewDACL);
+    /*DWORD err = */SetEntriesInAcl(1,&ea,pOldDACL,&pNewDACL);
 
     if(pNewDACL)
         SetSecurityInfo(hDir,SE_FILE_OBJECT,DACL_SECURITY_INFORMATION,NULL, NULL, pNewDACL, NULL);

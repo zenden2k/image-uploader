@@ -136,7 +136,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     pLoop->AddIdleHandler(this);
     OleInitialize(NULL);
     
-    HRESULT res = ::RegisterDragDrop(m_hWnd, this);
+    ::RegisterDragDrop(m_hWnd, this);
     *MediaInfoDllPath=0;
     TCHAR Buffer[MAX_PATH];
     HKEY ExtKey;
@@ -289,7 +289,6 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
 bool CWizardDlg::ParseCmdLine()
 { 
-    int type = 0;
     int count = 0;
 
     int nIndex = 0;
@@ -581,8 +580,6 @@ bool CWizardDlg::CreatePage(int PageID)
     RECT rc2 = {3,100,636,500};
     RECT rcc;
     GetClientRect(&rcc);
-    int width = rcc.right - rcc.left;
-    int height = 430;
     if(((PVOID)Pages[PageID])!=0) return true;;
     switch(PageID)
     {
@@ -684,7 +681,6 @@ HBITMAP CWizardDlg::GenHeadBitmap(int PageID)
     
     BackBuffer = new Bitmap(width, 50, &g);
     Graphics gr(BackBuffer);
-    COLORREF color=GetSysColor(COLOR_BTNFACE);
     
     LinearGradientBrush 
         brush(bounds, Color(255, 255, 255, 255), Color(255, 235,235,235), 
@@ -701,8 +697,6 @@ HBITMAP CWizardDlg::GenHeadBitmap(int PageID)
     format.SetLineAlignment(StringAlignmentCenter);
     Gdiplus::Font font(L"Arial", 12, FontStyleBold);
 
-    
-    LPTSTR Buffer = NULL;
     if(PageID == 3)
         gr.DrawString(TR("Параметры изображений и выбор сервера"), -1, &font, bounds, &format, &br2);
     else if(PageID==4)
@@ -915,7 +909,7 @@ bool SaveFromIStream(IStream *pStream, const CString& FileName, CString &OutName
 
 bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 {
-    FORMATETC tc2 = { RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR), 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+    FORMATETC tc2 = { static_cast<CLIPFORMAT>(RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR)), 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
     if(pDataObj->QueryGetData(&tc2)==S_OK )
     {
         STGMEDIUM ddd;
@@ -927,7 +921,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
             CStringList Paths;
             for(size_t i=0; i<fgd->cItems; i++)
             {
-                FORMATETC tc3 = { RegisterClipboardFormat(CFSTR_FILECONTENTS), 0, DVASPECT_CONTENT, i, TYMED_HGLOBAL };
+                FORMATETC tc3 = { static_cast<CLIPFORMAT>(RegisterClipboardFormat(CFSTR_FILECONTENTS)), 0, DVASPECT_CONTENT, i, TYMED_HGLOBAL };
                 if(pDataObj->QueryGetData(&tc3) == S_OK )
                 {
                     STGMEDIUM ddd2;
@@ -1650,9 +1644,8 @@ bool CWizardDlg::RegisterLocalHotkeys()
     {
         if(!m_hotkeys[i].localKey.keyCode) continue;
         Accels[j]= m_hotkeys[i].localKey.toAccel();
-        Accels[j].cmd = 10000+i;
-        j++;
-            
+        Accels[j].cmd = static_cast<WORD>(10000+i);
+        j++;   
     }
 
     hLocalHotkeys = CreateAcceleratorTable(Accels,j);
@@ -1870,7 +1863,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
             result = std::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
         } else {
             RegionSelect.Parent = m_hWnd;
-            SelectionMode selMode;
+            SelectionMode selMode = smRectangles;
             if(mode == cmFreeform)
                 selMode = smFreeform;
             if(mode == cmRectangles)
@@ -2063,6 +2056,5 @@ LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
     popupMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd);
 
-    return 0;
     return 0;
 }

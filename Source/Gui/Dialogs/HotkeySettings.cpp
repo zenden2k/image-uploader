@@ -48,7 +48,7 @@ LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     m_HotkeyList.AddColumn(TR("Глобальные"),2);
     CDC hdc = GetDC();
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
-    float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+    //float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
     m_HotkeyList.SetColumnWidth(0, static_cast<int>(175 * dpiScaleX));
     m_HotkeyList.SetColumnWidth(1, static_cast<int>(82 * dpiScaleX));
     m_HotkeyList.SetColumnWidth(2, static_cast<int>(82 * dpiScaleX));

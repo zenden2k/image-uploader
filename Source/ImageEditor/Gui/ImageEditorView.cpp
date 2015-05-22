@@ -187,7 +187,7 @@ void CImageEditorView::updateView( Canvas* canvas,  Gdiplus::Rect rect  ) {
     rect.Offset(-pt.x, -pt.y);
 
     RECT rc = {rect.X, rect.Y, rect.GetRight(), rect.GetBottom()};
-    RECT fullRect = { 0,0, canvas_->getWidth(), canvas_->getHeigth()};
+    //RECT fullRect = { 0,0, canvas_->getWidth(), canvas_->getHeigth()};
     //GetClientRect(&clientRect);
     InvalidateRect(&rc);
 }

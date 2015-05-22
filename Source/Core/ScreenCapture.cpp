@@ -41,7 +41,6 @@ using namespace Gdiplus;
 void ProcessEvents(void)
 {
     MSG msg;
-    bool wasPaint = false;
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
     {
         TranslateMessage(&msg);
@@ -716,9 +715,9 @@ bool AddBorderShadow(Bitmap* input, bool roundedShadowCorners, Bitmap** out)
     input->GetPixel(width - 1, 0, &c);
     bool topRightRound = c.GetAlpha() < 20;
     input->GetPixel(0, height - 1, &c);
-    bool bottomLeftRound = c.GetAlpha() < 20;
+    //bool bottomLeftRound = c.GetAlpha() < 20;
     input->GetPixel(width - 1, height - 1, &c);
-    bool bottomRightRound = c.GetAlpha() < 20;
+    //bool bottomRightRound = c.GetAlpha() < 20;
     Bitmap* leftShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_leftShadow), _T("PNG")); // Resources.leftShadow;
     Bitmap* rightShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_rightShadow), _T("PNG"));
     Bitmap* topShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_topShadow), _T("PNG"));
@@ -864,10 +863,6 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
     Bitmap* preResult = 0;
     if (m_ClearBackground)
     {
-        int width1 = bm1->GetWidth();
-        int height1 = bm1->GetHeight();
-        int width2 = bm2->GetWidth();
-        int height2 = bm2->GetHeight();
         if (AreImagesEqual(bm1, bm3))
         {
             ComputeOriginal(bm1, bm2, &original);
@@ -980,7 +975,7 @@ bool CWindowHandlesRegion::GetImage(HDC src, Bitmap** res)
     *res = resultBm;
     if (!resultBm)
     {
-        bool result = CRectRegion::GetImage(src, res);
+        /*bool result = */CRectRegion::GetImage(src, res);
         if (topWindow && move)
             ::SetWindowPos(topWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     }
@@ -1069,7 +1064,7 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
     //m_capturedBitmap = NULL;
     HDC srcDC;
     HDC screenDC = ::GetDC(0);
-    HGDIOBJ oldBm;
+    HGDIOBJ oldBm = 0;
     if (m_source)
     {
         HDC sourceDC = CreateCompatibleDC(screenDC);
@@ -1143,7 +1138,6 @@ bool CFreeFormRegion::IsEmpty()
     if (m_curvePoints.empty()) return true;
     GraphicsPath grPath;
     std::vector<Point> points;
-    POINT prevPoint = {-1, -1};
     std::vector<POINT> curveAvgPoints;
     average_polyline(m_curvePoints, curveAvgPoints, 29);
     for (size_t i = 0; i < curveAvgPoints.size(); i++)
@@ -1163,7 +1157,6 @@ bool CFreeFormRegion::GetImage(HDC src, Bitmap** res)
 {
     GraphicsPath grPath;
     std::vector<Point> points;
-    POINT prevPoint = {-1, -1};
     std::vector<POINT> curveAvgPoints;
     average_polyline(m_curvePoints, curveAvgPoints, 29);
     for (size_t i = 0; i < curveAvgPoints.size(); i++)

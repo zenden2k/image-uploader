@@ -182,7 +182,7 @@ bool CImageReuploaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloade
 {
     bool success = false;
 
-    DownloadItemData* dit = reinterpret_cast<DownloadItemData*>(it.id);
+    //DownloadItemData* dit = reinterpret_cast<DownloadItemData*>(it.id);
 
     if ( ok ) {        
         m_nFilesDownloaded++;
@@ -237,13 +237,11 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
                 ServiceLocator::instance()->logger()->write(logError, LogTitle, TR("Не могу загрузить файл миниатюры!"));
             } else {
                 message.Format(_T("Generating the thumbnail from local file ('%s')"),  (LPCTSTR)Utf8ToWCstring(localFile) );
-
-                CUploadEngineData *ue = m_EngineList->byIndex(m_serverId);
                 imageConverter.setEnableProcessing(false);
                 imageConverter.setImageConvertingParams(Settings.ConvertProfiles[serverProfile_.getImageUploadParams().ImageProfileName]);
                 imageConverter.setThumbCreatingParams(serverProfile_.getImageUploadParams().getThumb());
-                bool GenThumbs = serverProfile_.getImageUploadParams().CreateThumbs &&
-                    ((!serverProfile_.getImageUploadParams().UseServerThumbs) || (!ue->SupportThumbnails));
+                /*bool GenThumbs = serverProfile_.getImageUploadParams().CreateThumbs &&
+                    ((!serverProfile_.getImageUploadParams().UseServerThumbs) || (!ue->SupportThumbnails));*/
                 imageConverter.setThumbnail(&thumb);
                 imageConverter.setGenerateThumb(true);
                 imageConverter.Convert(localFile);
@@ -415,7 +413,6 @@ bool CImageReuploaderDlg::BeginDownloading()
     m_nFilesDownloaded = 0;
     m_nFilesUploaded = 0;
     uploadedItems_.clear();
-    int index = 0;
     std::string inputText = WCstringToUtf8( GuiTools::GetWindowText(GetDlgItem(IDC_INPUTTEXT)) );
     std::vector<std::string> links;
     ExtractLinks(inputText, links);

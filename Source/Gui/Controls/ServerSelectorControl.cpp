@@ -324,8 +324,8 @@ void CServerSelectorControl::updateInfoLabel() {
 
     GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERLABEL, showFolder );
     GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERICON, showFolder );
-    RECT accountLabelRect = GuiTools::AutoSizeStaticControl(GetDlgItem(IDC_ACCOUNTINFO));
-    int folderIconX = accountLabelRect.right + GuiTools::dlgX(10);
+    /*RECT accountLabelRect = */GuiTools::AutoSizeStaticControl(GetDlgItem(IDC_ACCOUNTINFO));
+    //int folderIconX = accountLabelRect.right + GuiTools::dlgX(10);
     //::SetWindowPos(GetDlgItem(IDC_FOLDERICON), 0, folderIconX, accountLabelRect.top, 0, 0, SWP_NOSIZE );
     //::SetWindowPos(GetDlgItem(IDC_FOLDERLABEL), 0, folderIconX + 16 + GuiTools::dlgX(3), accountLabelRect.top, 0, 0, SWP_NOSIZE );
 }
@@ -619,7 +619,6 @@ void CServerSelectorControl::setShowImageProcessingParamsLink(bool show) {
 LRESULT CServerSelectorControl::OnImageProcessingParamsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     int serverComboElementIndex = serverComboBox_.GetCurSel();
     std::string serverName = reinterpret_cast<char*>( serverComboBox_.GetItemData(serverComboElementIndex) );
-    CUploadEngineData* uploadEngineData = _EngineList->byName(Utf8ToWCstring( serverName ));
     CUploadParamsDlg dlg(serverProfile_, showImageProcessingParams_, defaultServer_);
     if (dlg.DoModal(isChildWindow_ ? m_hWnd : GetParent()) == IDOK) {
         serverProfile_.setImageUploadParams(dlg.imageUploadParams());

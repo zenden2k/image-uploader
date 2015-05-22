@@ -139,7 +139,7 @@ std::string InputBoxControl::getRawText()
     EDITSTREAM es = {0};
     es.dwCookie = (DWORD_PTR) &rawRtfText;
     es.pfnCallback = &EditStreamOutCallback; 
-    int bytes = SendMessage(EM_STREAMOUT, SF_RTF, (LPARAM)&es);
+    /*int bytes = */SendMessage(EM_STREAMOUT, SF_RTF, (LPARAM)&es);
     return rawRtfText.str();
 }
 

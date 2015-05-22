@@ -233,21 +233,19 @@ bool CUpdateManager::CheckUpdates()
     m_ErrorStr.Empty();
     Clear();
     std::vector<CString> fileList;
-    WinUtils::GetFolderFileList(fileList, IuCommonFunctions::GetDataFolder() +_T("Update"),_T("*.xml"));
+    WinUtils::GetFolderFileList(fileList, IuCommonFunctions::GetDataFolder() + _T("Update"), _T("*.xml"));
 
     bool Result = true;
 
-    if(fileList.size() == 0)
-    {
-        m_ErrorStr = "No update files found in folder '" +IuCommonFunctions::GetDataFolder() + _T("Update\\'");
+    if (fileList.size() == 0) {
+        m_ErrorStr = "No update files found in folder '" + IuCommonFunctions::GetDataFolder() + _T("Update\\'");
         return false;
     }
 
-    for(size_t i=0; i<fileList.size(); i++)
-    {
-        CString fileName = IuCommonFunctions::GetDataFolder()+_T("Update\\") + fileList[i];
-        if(!internal_load_update(fileName))
-            Result= false;
+    for (size_t i = 0; i < fileList.size(); i++) {
+        CString fileName = IuCommonFunctions::GetDataFolder() + _T("Update\\") + fileList[i];
+        if (!internal_load_update(fileName))
+            Result = false;
     }
 
     return Result;
@@ -260,21 +258,19 @@ const CString CUpdateManager::ErrorString()
 
 bool CUpdateManager::DoUpdates()
 {
-    for(size_t i=0; i<m_updateList.size(); i++)
-    {
+    for (size_t i = 0; i < m_updateList.size(); i++) {
         nCurrentIndex = i;
-        if(m_stop) return 0;
+        if (m_stop) return 0;
         internal_do_update(m_updateList[i]);
     }
     return true;
 }
 
 bool CUpdateManager::internal_load_update(CString name)
-{    
+{
     CUpdateInfo localPackage;
 
-    if(!localPackage.LoadUpdateFromFile(name))
-    {
+    if (!localPackage.LoadUpdateFromFile(name)) {
         ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), CString(TR("Could not download the update file \'")) + name);
         return false;
     }
@@ -287,9 +283,12 @@ bool CUpdateManager::internal_load_update(CString name)
     CString url = localPackage.updateUrl();
     url.Replace(_T("%appver%"), IuCommonFunctions::GetVersion());
     url.Replace(_T("%name%"), localPackage.packageName());
-
-    nm.doGet(IuCoreUtils::WstringToUtf8((LPCTSTR)url));
-
+    try {
+        nm.doGet(IuCoreUtils::WstringToUtf8((LPCTSTR)url));
+    } catch ( NetworkClient::AbortedException&) {
+    return false;
+    }
+   
     if(nm.responseCode() != 200)
     {
         ServiceLocator::instance()->logger()->write(logWarning, _T("Update Engine"), _T("Невозможно загрузить информацию о пакете обновления ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm.responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm.errorString()).c_str(), CString("URL=") + url);
@@ -322,8 +321,12 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
     CoreFunctions::ConfigureProxy(&nm_);
     nm_.setOutputFile( filenamea);
     m_statusCallback->updateStatus(nCurrentIndex, TR("Downloading file ")+ ui.downloadUrl());
+    try {
+        nm_.doGet(W2U(ui.downloadUrl()));
+    } catch (NetworkClient::AbortedException&) {
+        return false;
+    }
     
-    nm_.doGet(IuCoreUtils::WstringToUtf8((LPCTSTR) ui.downloadUrl()));
     if(nm_.responseCode() != 200)
     {
         ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), TR("Error while updating component ") + ui.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm_.responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm_.errorString()).c_str(), CString("URL=") + ui.downloadUrl());
@@ -587,7 +590,7 @@ int CUpdateManager::progressCallback(void *clientp, double dltotal, double dlnow
     if(percent > 100) percent = 0;
     text.Format(TR("Downloaded %s of %s (%d %%)"),(LPCTSTR)buf1, (LPCTSTR)buf2,percent);
     um->updateStatus(0, text);
-    if(um->m_stop) return 1;
+    if(um->m_stop) return -1;
     return 0;
 }
 

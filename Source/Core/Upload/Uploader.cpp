@@ -142,9 +142,9 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
 
     UploadParams uparams;
     uparams.thumbWidth = m_nThumbWidth;
-    if (task->type() == UploadTask::TypeFile) {
+    /*if (task->type() == UploadTask::TypeFile) {
         FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());
-    }
+    }*/
     m_NetworkClient.setProgressCallback(pluginProgressFunc, (void*)this);
     int EngineRes = 0;
     int i = 0;

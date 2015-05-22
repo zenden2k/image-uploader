@@ -243,7 +243,7 @@ public:
    }
    BOOL Create(LPCTSTR pstrName = NULL, BOOL bManualReset = FALSE, BOOL bInitialState = FALSE, LPSECURITY_ATTRIBUTES pEventAttributes = NULL)
    {
-      _ASSERTE(pstrName==NULL || !::IsBadStringPtr(pstrName,-1));
+       _ASSERTE(pstrName == NULL || !::IsBadStringPtr(pstrName, static_cast<UINT_PTR>(-1)));
       _ASSERTE(m_hEvent==INVALID_HANDLE_VALUE);
       m_hEvent = ::CreateEvent(pEventAttributes, bManualReset, bInitialState, pstrName);
       _ASSERTE(m_hEvent!=INVALID_HANDLE_VALUE);
@@ -251,7 +251,7 @@ public:
    }
    BOOL Open(LPCTSTR pstrName, DWORD dwDesiredAccess = EVENT_ALL_ACCESS, BOOL bInheritHandle = TRUE)
    {
-      _ASSERTE(!::IsBadStringPtr(pstrName,-1));
+      _ASSERTE(!::IsBadStringPtr(pstrName, static_cast<UINT_PTR>(-1)));
       _ASSERTE(m_hEvent==INVALID_HANDLE_VALUE);
       m_hEvent = ::OpenEvent(dwDesiredAccess, bInheritHandle, pstrName);
       _ASSERTE(m_hEvent!=INVALID_HANDLE_VALUE);

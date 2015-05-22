@@ -221,7 +221,7 @@ LRESULT CHyperLinkControl::OnSetFocus(HWND hwndOldFocus)
 
 LRESULT CHyperLinkControl::OnLButtonUp(UINT Flags, CPoint Pt)
 {
-    BOOL OutSide=false;
+    //BOOL OutSide=false;
     RECT ClientRect;
     GetClientRect(&ClientRect);
 

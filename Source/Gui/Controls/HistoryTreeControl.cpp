@@ -161,7 +161,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     int curY = 0;
     bool draw = !outHeight;
 
-    bool isSelected = (itemState & CDIS_SELECTED) || (itemState&CDIS_FOCUS);
+    //bool isSelected = (itemState & CDIS_SELECTED) || (itemState&CDIS_FOCUS);
     CRect clientRect;
     GetClientRect(clientRect);
     //HistoryItem * it2 = new HistoryItem(it);
@@ -338,10 +338,6 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
             dc.SetTextColor(RGB(0,0,0));
         }
 
-        int indent = 24;
-
-        RECT fullRect = invRC;
-
         CBrush backgroundBrush;
         backgroundBrush.CreateSolidBrush(RGB(255, 255, 255));
         
@@ -393,7 +389,7 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
         
         if(draw)
         {
-            HBITMAP bm = GetItemThumbnail(hti);
+            /*HBITMAP bm = */GetItemThumbnail(hti);
             if(hti->thumbnail)
             {
                 DrawBitmap(dc, hti->thumbnail,  thumbRect.left+1,thumbRect.top+1);
@@ -443,10 +439,8 @@ LRESULT CHistoryTreeControl::OnLButtonDoubleClick(UINT uMsg, WPARAM wParam, LPAR
 LRESULT CHistoryTreeControl::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     int xPos = LOWORD(lParam);  // horizontal position of cursor 
-    int yPos = HIWORD(lParam);
-    UINT flags = 0;
-        if(xPos >50) xPos = 50;
-    POINT pt = {xPos, yPos};
+    //int yPos = HIWORD(lParam);
+    if(xPos >50) xPos = 50;
     bHandled = false;
     return 0;
 }
@@ -459,7 +453,6 @@ LRESULT CHistoryTreeControl::ReflectContextMenu(UINT uMsg, WPARAM wParam, LPARAM
 bool CHistoryTreeControl::IsItemAtPos(int x, int y, bool &isRoot)
 {
     if(x > 50) x = 50;
-    UINT flags = 0;
     POINT pt = {x, y};
     BOOL out;
     int index = ItemFromPoint(pt, out);

@@ -31,7 +31,7 @@ namespace ScriptAPI {
         {
             // Ask the service for a IHTMLElement object.
             CComQIPtr<IHTMLElement> spHtmlElement;
-            HRESULT hRes = spServProvider->QueryService(IID_IHTMLElement, IID_IHTMLElement,
+            /*HRESULT hRes = */ spServProvider->QueryService(IID_IHTMLElement, IID_IHTMLElement,
                 (void**)&spHtmlElement);
 
             return spHtmlElement;
@@ -159,7 +159,7 @@ CComQIPtr<IAccessible> HTMLElementToAccessible(IHTMLElement* pHtmlElement)
     {
         // Ask the service for a IAccessible object.
         CComQIPtr<IAccessible> spAccessible;
-        HRESULT hRes = spServProvider->QueryService(IID_IAccessible, IID_IAccessible,
+        /*HRESULT hRes = */spServProvider->QueryService(IID_IAccessible, IID_IAccessible,
             (void**)&spAccessible);
 
         return spAccessible;

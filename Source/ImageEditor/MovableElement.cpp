@@ -210,9 +210,6 @@ void MovableElement::resize(int width, int height)
 
 void MovableElement::createGrips()
 {
-    int rectSize = kGripSize;
-    int halfSize = rectSize /2 ;
-    
     int x = getX();
     int y = getY();
     int width = getWidth()-1;

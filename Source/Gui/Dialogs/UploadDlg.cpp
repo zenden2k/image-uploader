@@ -77,7 +77,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     uploadListView_.AddColumn(TR("Миниатюра"), 2);
     CDC hdc = GetDC();
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
-    float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+    //float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
     uploadListView_.SetColumnWidth(0, static_cast<int>(170 * dpiScaleX));
     uploadListView_.SetColumnWidth(1, static_cast<int>(170 * dpiScaleX));
     uploadListView_.SetColumnWidth(2, static_cast<int>(170 * dpiScaleX));
@@ -114,7 +114,6 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 }
 
 bool CUploadDlg::startUpload() {
-    HRESULT hRes = ::CoInitialize(NULL);
     if(!MainDlg) return 0;
     
     #if  WINVER  >= 0x0601
@@ -585,7 +584,6 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         {
             return;
         }
-        bool isThumb = false;
         CUrlListItem item;
         UploadResult* uploadResult = task->uploadResult();
         item.ImageUrl = Utf8ToWCstring(uploadResult->directUrl);

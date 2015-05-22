@@ -26,8 +26,8 @@ AbstractImage* AbstractImage::createImage()
         return new GdiPlusImage();
     #else
         LOG(ERROR) << "No suitable image class found";
+        return 0;
     #endif
-    return 0;
 }
 
 AbstractImage::~AbstractImage() {

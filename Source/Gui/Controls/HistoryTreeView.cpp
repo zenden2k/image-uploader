@@ -313,7 +313,7 @@ void CHistoryTreeView::DrawItem(HTREEITEM item, HDC hdc, DWORD itemState, RECT i
     int curY = 0;
     bool draw = !outHeight;
 
-    bool isSelected = (itemState & CDIS_SELECTED) || (itemState & CDIS_FOCUS);
+    //bool isSelected = (itemState & CDIS_SELECTED) || (itemState & CDIS_FOCUS);
     CRect clientRect;
     GetClientRect(clientRect);
     // HistoryItem * it2 = new HistoryItem(it);
@@ -462,7 +462,7 @@ void CHistoryTreeView::DrawSubItem(HTREEITEM item, HDC hdc, DWORD itemState, REC
     dc.SetTextColor(RGB(0, 0, 0));
 
     DWORD color = RGB(255, 255, 255);
-    int indent = static_cast<int>(GetIndent() * 1.5);
+    //int indent = static_cast<int>(GetIndent() * 1.5);
     if (itemState & CDIS_SELECTED)
         color = 0x9fd5ff;
     RECT fullRect;

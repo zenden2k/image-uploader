@@ -25,8 +25,8 @@ void Gdip_RemoveAlpha(Gdiplus::Bitmap& source, Gdiplus::Color color );
 bool MySaveImage(Gdiplus::Image* img, const CString& szFilename, CString& szBuffer, int Format, int Quality,
     LPCTSTR Folder = 0);
 void DrawGradient(Gdiplus::Graphics& gr, Gdiplus::Rect rect, Gdiplus::Color& Color1, Gdiplus::Color& Color2);
-void DrawStrokedText(Gdiplus::Graphics& gr, LPCTSTR Text, Gdiplus::RectF Bounds, Gdiplus::Font& font,
-    Gdiplus::Color& ColorText, Gdiplus::Color& ColorStroke, int HorPos = 0, int VertPos = 0,
+void DrawStrokedText(Gdiplus::Graphics& gr, LPCTSTR Text, Gdiplus::RectF Bounds, const Gdiplus::Font& font,
+    const Gdiplus::Color& ColorText, const Gdiplus::Color& ColorStroke, int HorPos = 0, int VertPos = 0,
     int width = 1);
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 void changeAplhaChannel(Bitmap& source, Bitmap& dest, int sourceChannel, int destChannel);

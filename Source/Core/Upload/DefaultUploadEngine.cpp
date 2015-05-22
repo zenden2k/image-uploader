@@ -201,7 +201,6 @@ bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
         std::cerr<<ex.what()<<std::endl;
         return false;
     }
-    return true;
 }
 
 bool CDefaultUploadEngine::DoGetAction(UploadAction& Action)

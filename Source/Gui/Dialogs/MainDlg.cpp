@@ -202,8 +202,6 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, G
     if(!FileExists(FileName)) return FALSE;
     fl.selected = false;
 
-    int len = lstrlen(FileName);
-
     fl.FileName = FileName;
 
     if(virtualFileName.IsEmpty())
@@ -211,8 +209,6 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, G
     else
     fl.VirtualFileName = virtualFileName;
     
-
-    TCHAR szBuffer[256] = _T("\0");
     int FileSize = MyGetFileSize(FileName);
     if(FileSize<-1) FileSize = 0;
 
@@ -251,7 +247,7 @@ LRESULT CMainDlg::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
     imageEditor.showUploadButton(false);
     imageEditor.showAddToWizardButton(false);
     
-    ImageEditorWindow::DialogResult dr = imageEditor.DoModal(WizardDlg->m_hWnd, ImageEditorWindow::wdmAuto);
+    /*ImageEditorWindow::DialogResult dr = */imageEditor.DoModal(WizardDlg->m_hWnd, ImageEditorWindow::wdmAuto);
     
     ThumbsView.OutDateThumb(nCurItem);
     ThumbsView.UpdateOutdated();
@@ -412,7 +408,7 @@ DWORD CMainDlg::Run()
     HANDLE Events[2];
     Events[0] = m_EditorProcess;
     Events[1] = WaitThreadStop.m_hEvent;
-    DWORD res = WaitForMultipleObjects(2, Events, FALSE, INFINITE);
+    WaitForMultipleObjects(2, Events, FALSE, INFINITE);
     ThumbsView.UpdateOutdated();
     WaitThreadStop.ResetEvent();
     return 0;

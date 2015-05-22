@@ -152,7 +152,7 @@ bool __fastcall CreateShortCut(
     return SUCCEEDED(hRes);
 }
 
-bool IULaunchCopy(CString params, CAtlArray<CString>& files)
+bool IULaunchCopy(CString params, const CAtlArray<CString>& files)
 {
     STARTUPINFO si;
     PROCESS_INFORMATION pi;

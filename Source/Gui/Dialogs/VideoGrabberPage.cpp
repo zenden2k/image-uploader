@@ -390,7 +390,7 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
     {
         TCHAR buffer[256];
         GetDlgItemText(IDC_FILEEDIT, buffer, 256);
-        bool bMediaInfoResult = GetMediaFileInfo(buffer, Report);
+        /*bool bMediaInfoResult = */GetMediaFileInfo(buffer, Report);
 
         Graphics g1(m_hWnd);
 
@@ -609,7 +609,6 @@ bool CVideoGrabberPage::OnNext()
     }
 
     ThumbsView.MyDeleteAllItems();
-    BOOL scheck = SendDlgItemMessage(IDC_MULTIPLEFILES, BM_GETCHECK);
 
     Settings.VideoSettings.NumOfFrames = GetDlgItemInt(IDC_NUMOFFRAMESEDIT);
 

@@ -84,7 +84,6 @@ void WebBrowserPrivate::setFocus()
 }
 
 bool WebBrowserPrivate::OnNavigateError(const CString& url, LONG statusCode) {
-    return false;
     if ( !onNavigateErrorCallback_.IsNull() ) {
         try
         {

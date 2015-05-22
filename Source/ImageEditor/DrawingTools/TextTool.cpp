@@ -65,11 +65,6 @@ void TextTool::endDraw( int x, int y ) {
     if (!currentElement_) {
         return;
     }
-    int xStart = min( startPoint_.x, x );
-    int xEnd   = max( startPoint_.x, x );
-
-    int yStart = min( startPoint_.y, y );
-    int yEnd   = max( startPoint_.y, y );
 
     int width = currentElement_->getWidth();
     int height = currentElement_->getHeight();

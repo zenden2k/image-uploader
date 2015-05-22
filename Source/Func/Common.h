@@ -76,7 +76,7 @@ bool __fastcall CreateShortCut(
                                int iIconIndex) ;
 #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 
-bool IULaunchCopy(CString params, CAtlArray<CString> &files);
+bool IULaunchCopy(CString params, const CAtlArray<CString> &files);
 
 const CString IU_GetVersion();
 #define IU_NEWFOLDERMARK ("_iu_create_folder_")

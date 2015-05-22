@@ -51,7 +51,6 @@ void CropTool::endDraw(int x, int y)
 {
     MoveAndResizeTool::endDraw(x, y);
     if ( currentElement_ ) {
-        POINT pt = { x, y };
         if ( x == startPoint_.x && y == startPoint_.y ) {
             canvas_->deleteMovableElement(currentElement_);
             currentElement_ = 0;

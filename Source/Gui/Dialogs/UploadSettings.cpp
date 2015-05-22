@@ -98,7 +98,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     CBitmap hBitmap;
     HDC dc = ::GetDC(HWND_DESKTOP);
     // Get color depth (minimum requirement is 32-bits for alpha blended images).
-    int iBitsPixel = GetDeviceCaps(dc,BITSPIXEL);
+    //int iBitsPixel = GetDeviceCaps(dc,BITSPIXEL);
     /*if (iBitsPixel >= 32)
     {
         hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_BITMAP5));
@@ -219,8 +219,6 @@ LRESULT CUploadSettings::OnDrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     DRAWITEMSTRUCT* lpdis = reinterpret_cast<DRAWITEMSTRUCT*>(lParam);
     if ((lpdis==NULL)||(lpdis->CtlType != ODT_MENU))
         return S_OK;        //not for a menu
-    int i =0;
-    int iconID=0;
 
     HICON hIcon = serverMenuIcons_[lpdis->itemID];
 
@@ -637,11 +635,9 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
     mi.fType = MFT_STRING;
     sub.CreatePopupMenu();
     //sub.SetMenuInfo()
-    bool isVistaOrLater = WinUtils::IsVista();
     if(pnmtb->iItem == IDC_SERVERBUTTON)
     {
         int menuItemCount=0;
-        int FirstFileServerIndex = -1;
         int lastMenuBreakIndex = 0;
         bool nextItemBreaksLine = false;
         
@@ -961,11 +957,8 @@ void CUploadSettings::OnFolderButtonContextMenu(POINT pt, bool isImageServerTool
 LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     bool ImageServer = (wID % 2)!=0;
-    CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
+    //CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
     ServerProfile & serverProfile = ImageServer ? sessionImageServer_ : sessionFileServer_;
-
-    
-    CUploadEngineData *ue = serverProfile.uploadEngineData();
 
     CScriptUploadEngine *m_pluginLoader = uploadEngineManager_->getScriptUploadEngine(serverProfile);
     if(!m_pluginLoader) return 0;
@@ -995,11 +988,9 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 LRESULT CUploadSettings::OnOpenInBrowser(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     bool ImageServer = (wID % 2)!=0;
-    CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
+    //CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
 //    int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
     ServerProfile & serverProfile = ImageServer? sessionImageServer_ : sessionFileServer_;
-    CUploadEngineData *ue = serverProfile.uploadEngineData();
-
 
     CString str = Utf8ToWCstring(serverProfile.serverSettings().params["FolderUrl"]);
     if(!str.IsEmpty())
@@ -1036,7 +1027,7 @@ void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerTool
 LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     bool ImageServer = (wID % 2)!=0;
-    CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
+    //CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
 
     ServerProfile& serverProfile = ImageServer ? sessionImageServer_ : sessionFileServer_;
     CUploadEngineData *ue = serverProfile.uploadEngineData();
@@ -1063,23 +1054,23 @@ LRESULT CUploadSettings::OnOpenSignupPage(WORD /*wNotifyCode*/, WORD wID, HWND /
 
 LRESULT CUploadSettings::OnResizePresetButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-   RECT rc;
-   ::GetWindowRect(hWndCtl, &rc );
-   POINT menuOrigin = {rc.left,rc.bottom};
+    RECT rc;
+    ::GetWindowRect(hWndCtl, &rc);
+    POINT menuOrigin = {rc.left,rc.bottom};
 
     CMenu FolderMenu;
-   int id =  IDC_RESIZEPRESETMENU_FIRST_ID;
+    int id = IDC_RESIZEPRESETMENU_FIRST_ID;
     FolderMenu.CreatePopupMenu();
-   FolderMenu.AppendMenu(MF_STRING, id++, TR("Без изменения"));
-   FolderMenu.AppendMenu(MF_SEPARATOR, -1, _T(""));
-   FolderMenu.AppendMenu(MF_STRING, id++, _T("800\u00D7600"));
+    FolderMenu.AppendMenu(MF_STRING, id++, TR("Без изменения"));
+    FolderMenu.AppendMenu(MF_SEPARATOR, static_cast<WPARAM>(-1), _T(""));
+    FolderMenu.AppendMenu(MF_STRING, id++, _T("800\u00D7600"));
     FolderMenu.AppendMenu(MF_STRING, id++, _T("1024\u00D7768"));
-   FolderMenu.AppendMenu(MF_STRING, id++, _T("1600\u00D71200"));
-   FolderMenu.AppendMenu(MF_SEPARATOR, -1,  _T(""));
-     FolderMenu.AppendMenu(MF_STRING, id++, _T("25%"));
-      FolderMenu.AppendMenu(MF_STRING, id++, _T("50%"));
-FolderMenu.AppendMenu(MF_STRING, id++, _T("75%"));
-    FolderMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd);
+    FolderMenu.AppendMenu(MF_STRING, id++, _T("1600\u00D71200"));
+    FolderMenu.AppendMenu(MF_SEPARATOR, static_cast<UINT_PTR>(-1), _T(""));
+    FolderMenu.AppendMenu(MF_STRING, id++, _T("25%"));
+    FolderMenu.AppendMenu(MF_STRING, id++, _T("50%"));
+    FolderMenu.AppendMenu(MF_STRING, id++, _T("75%"));
+    FolderMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd);
     
    return 0;
 }
@@ -1148,7 +1139,7 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
       if(it->first == CurrentProfileName) found = true;
     }
     if(!found) GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, CurrentProfileName);
-    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, -1,(LPARAM)(LPCTSTR) CurrentProfileName); 
+    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) CurrentProfileName); 
  }
 
  void CUploadSettings::selectServer(ServerProfile& sp, int serverIndex)
@@ -1221,7 +1212,7 @@ void CUploadSettings::ShowParams(const ImageConvertingParams& params)
    CurrentProfileOriginalName = profileName; 
    ShowParams(сonvert_profiles_[profileName]);
    
-    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, -1,(LPARAM)(LPCTSTR) profileName); 
+    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) profileName); 
  }
 
  bool CUploadSettings::SaveParams(ImageConvertingParams& params)
@@ -1298,7 +1289,7 @@ LRESULT CUploadSettings::OnAddAccountClicked(WORD wNotifyCode, WORD wID, HWND hW
     CLoginDlg dlg(serverProfileCopy, uploadEngineManager_, true);
 
 
-    ServerSettingsStruct & ss = ImageServer ? sessionImageServer_.serverSettings() : sessionFileServer_.serverSettings();
+    //ServerSettingsStruct & ss = ImageServer ? sessionImageServer_.serverSettings() : sessionFileServer_.serverSettings();
     if( dlg.DoModal(m_hWnd) == IDOK)
     {
         

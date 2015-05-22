@@ -532,7 +532,8 @@ public:
         }
         if (szHeaders)
             vtHeaders=szHeaders;
-        return m_pBrowser->Navigate(T2BSTR(szURL),&CComVariant((LONG)dwFlags),&vtTargetFrameName,&vtPostData,&vtHeaders);
+        CComVariant flags((LONG)dwFlags);
+        return m_pBrowser->Navigate(T2BSTR(szURL), &flags,&vtTargetFrameName,&vtPostData,&vtHeaders);
     }
     HRESULT Navigate2(LPCTSTR szURL,DWORD dwFlags=0,LPCTSTR szTargetFrameName=NULL,LPCVOID pPostData=NULL,DWORD dwPostDataLength=0,LPCTSTR szHeaders=NULL)
     {
@@ -888,7 +889,7 @@ private:
         ATLASSERT(V_VT(pvTargetFrameName) == VT_BSTR);
         ATLASSERT(V_VT(pvStatusCode) == (VT_I4));
         ATLASSERT(pbCancel != NULL);
-        *pbCancel=pT->OnNavigateError(pDisp,V_BSTR(pvURL),V_BSTR(pvTargetFrameName),V_I4(pvStatusCode));
+        *pbCancel = static_cast<VARIANT_BOOL>(pT->OnNavigateError(pDisp, V_BSTR(pvURL), V_BSTR(pvTargetFrameName), V_I4(pvStatusCode)));
     }
     
     void __stdcall __PrivacyImpactedStateChange(VARIANT_BOOL bImpacted)

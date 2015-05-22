@@ -234,7 +234,7 @@ void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOff
         bi.bmiHeader.biHeight = -buffer_->GetHeight();
         bi.bmiHeader.biBitCount = 32;
         // Faster than Graphics::DrawImage and there is no tearing!
-        int res = SetDIBitsToDevice (dc, rectInWindowCoordinates.left,rectInWindowCoordinates.top,rect.right - rect.left, rect.bottom - rect.top, rect.left, rect.top, rect.top, rect.bottom - rect.top, source + rect.top * stride, &bi, DIB_RGB_COLORS );
+        /*int res =*/ SetDIBitsToDevice (dc, rectInWindowCoordinates.left,rectInWindowCoordinates.top,rect.right - rect.left, rect.bottom - rect.top, rect.left, rect.top, rect.top, rect.bottom - rect.top, source + rect.top * stride, &bi, DIB_RGB_COLORS );
         buffer_->UnlockBits(&bitmapData);
     }
     //gr->DrawImage( &*buffer_, rectInWindowCoordinates.left, rectInWindowCoordinates.top, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, UnitPixel );
@@ -461,7 +461,6 @@ void Canvas::setFont(LOGFONT font, DWORD changeMask)
     /*if ( currentDrawingTool_ ) {
         currentDrawingTool_->setForegroundColor(color);
     }*/
-    int updatedElementsCount = 0;
 /*    UndoHistoryItem uhi;
     uhi.type = uitFontChanged;*/
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
@@ -1056,7 +1055,7 @@ InputBox* Canvas::getInputBox( const RECT& rect ) {
     rc.top -= scrollOffset_.x;
     rc.left -= scrollOffset_.y;
         
-    HWND wnd = inputBox_->Create( parentWindow_, rc, _T(""), WS_CHILD |ES_MULTILINE|/*ES_AUTOHSCROLL|*/ES_AUTOVSCROLL|  ES_WANTRETURN
+    /*HWND wnd =*/ inputBox_->Create( parentWindow_, rc, _T(""), WS_CHILD |ES_MULTILINE|/*ES_AUTOHSCROLL|*/ES_AUTOVSCROLL|  ES_WANTRETURN
             |  ES_NOHIDESEL /*| ES_LEFT */,WS_EX_TRANSPARENT );
 
     inputBox_->SetWindowPos(HWND_TOP,0,0,0,0, SWP_NOSIZE|SWP_NOMOVE);

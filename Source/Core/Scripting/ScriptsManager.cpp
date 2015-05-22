@@ -15,7 +15,6 @@ ScriptsManager::~ScriptsManager()
 Script* ScriptsManager::getScript(std::string& fileName, ScriptType type)
 {
     std::lock_guard<std::mutex> lock(scriptsMutex_);
-    DWORD curTime = GetTickCount();
     bool UseExisting = false;
     std::thread::id threadId = std::this_thread::get_id();
     Script* plugin = scripts_[threadId][fileName];

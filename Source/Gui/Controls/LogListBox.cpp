@@ -122,7 +122,7 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
         return 0;
     }
     HDC dc = GetDC();
-    float dpiScaleX_ = GetDeviceCaps(dc, LOGPIXELSX) / 96.0f;
+    //float dpiScaleX_ = GetDeviceCaps(dc, LOGPIXELSX) / 96.0f;
     float dpiScaleY_ = GetDeviceCaps(dc, LOGPIXELSY) / 96.0f;
     SelectObject(dc, NormalFont);
 

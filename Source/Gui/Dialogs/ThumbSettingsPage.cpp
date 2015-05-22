@@ -75,7 +75,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     TRC(IDC_THUMBQUALITYLABEL,"Качество:");
     
     ThumbBackground.SubclassWindow(GetDlgItem(IDC_THUMBBACKGROUND));
-    RECT rc = {13, 170, 290, 400};
+    //RECT rc = {13, 170, 290, 400};
     img.SubclassWindow(GetDlgItem(IDC_COMBOPREVIEW));
     //img.Create(m_hWnd, rc);
     img.LoadImage(0);
@@ -94,7 +94,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     
     
     SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_SETCHECK, params_.AddImageSize);
-    SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, -1, (LPARAM) (LPCTSTR) params_.TemplateName);
+    SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1), (LPARAM)(LPCTSTR)params_.TemplateName);
     SetDlgItemText(IDC_THUMBTEXT, params_.Text);
     SetDlgItemInt(IDC_THUMBQUALITYEDIT,  params_.Quality);
     SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, params_.Format);
@@ -168,7 +168,7 @@ LRESULT  CThumbSettingsPage::OnBnClickedNewThumbnail(WORD wNotifyCode, WORD wID,
         GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(newName) );
         
     }
-    SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, -1, (LPARAM) (LPCTSTR)Utf8ToWCstring( newName));
+    SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1), (LPARAM)(LPCTSTR)Utf8ToWCstring(newName));
     GuiTools::EnableDialogItem(m_hWnd, IDC_EDITTHUMBNAILPRESET, true);
     showSelectedThumbnailPreview();
     return 0;

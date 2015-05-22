@@ -354,7 +354,6 @@ BOOL CPictureExWnd::Load(HGLOBAL hGlobal, DWORD dwSize)
             TFrame frame;
             UINT nBlockLen;
             HGLOBAL hFrameData;
-            UINT nCurFrame = 0;
 
             ResetDataPointer();
             while (hFrameData = GetNextGraphicBlock(&nBlockLen,

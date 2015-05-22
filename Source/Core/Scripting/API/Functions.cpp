@@ -180,10 +180,11 @@ const std::string Translate(const std::string& key, const std::string& originalT
         }
     }
 
-#ifdef IU_WTL
+#ifdef IU_WTL_APP
     return IuCoreUtils::WstringToUtf8((LPCTSTR)Lang.GetString(IuCoreUtils::Utf8ToWstring(originalText).c_str()));
-#endif
+#else
     return originalText;
+#endif
 }
 
 const std::string AskUserCaptcha(NetworkClient* nm, const std::string& url)
@@ -445,7 +446,6 @@ Sqrat::Object parseJSONObj(Json::Value root) {
         }
         return obj;
     }
-    return Sqrat::Object();
 }
 
 Sqrat::Object ParseJSON(const std::string& json) {

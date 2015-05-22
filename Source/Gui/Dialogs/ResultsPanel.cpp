@@ -518,9 +518,6 @@ void  CResultsPanel::EnableMediaInfo(bool Enable)
 
 bool CResultsPanel::LoadTemplates(CString &Error)
 {
-    int i =0;
-
-
     CString XmlFileName = IuCommonFunctions::GetDataFolder() + _T("templates.xml");
     LoadTemplateFromFile(XmlFileName, Error);
     CString userTemplateError;
@@ -616,10 +613,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
     sub.CreatePopupMenu();
     RECT rc;
     
-    ::GetWindowRect(GetDlgItem(IDC_RESULTSTOOLBAR),&rc);
-    POINT ScreenPoint ={rc.left,rc.top};
-        
-    
+    ::GetWindowRect(GetDlgItem(IDC_RESULTSTOOLBAR),&rc); 
     int count = 0;
         mi.fType = MFT_STRING;
         mi.wID = IDC_SHORTENURLITEM;
@@ -842,7 +836,6 @@ LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND h
             {
                 LOG(ERROR) << "Cannot read file " << scriptFileName;
             }
-            int len = script.length();
             res += "<script type=\"text/javascript\">" + script +
                 "\r\n"
                 "var el = document.getElementById('resultcode');\r\n"

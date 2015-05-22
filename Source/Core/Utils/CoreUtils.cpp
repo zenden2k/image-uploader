@@ -170,7 +170,7 @@ std::string Utf8ToSystemLocale(const std::string& str)
    std::wstring wideStr = Utf8ToWstring(str);
    std::locale const oloc = std::locale ("");
    std::string out;
-   std::codecvt_base::result r = fromWstring (wideStr, oloc, out);
+   /*std::codecvt_base::result r = */fromWstring (wideStr, oloc, out);
    return out;
 }
 
@@ -301,7 +301,7 @@ bool ReadUtf8TextFile(std::string utf8Filename, std::string& data)
         return false;
     }
    
-    size_t bytesRead = fread(&data[0], 1, size, stream);    
+    /*size_t bytesRead = */fread(&data[0], 1, size, stream);    
     //data[bytesRead] = 0;
     fclose(stream);
     return true;

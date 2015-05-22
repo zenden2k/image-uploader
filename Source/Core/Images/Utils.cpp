@@ -121,7 +121,7 @@ void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* back
     SolidBrush br(Color(255,255,255));
 
     // We need to draw background on new HDC, otherwise the text will look ugly
-    Status st = gr2.DrawImage(background,layoutArea.GetLeft(),layoutArea.GetTop(),layoutArea.GetLeft(), layoutArea.GetTop(), layoutArea.Width, layoutArea.Height,Gdiplus::UnitPixel/*gr2.GetPageUnit()*/);
+    gr2.DrawImage(background,layoutArea.GetLeft(),layoutArea.GetTop(),layoutArea.GetLeft(), layoutArea.GetTop(), layoutArea.Width, layoutArea.Height,Gdiplus::UnitPixel/*gr2.GetPageUnit()*/);
 
     FORMATRANGE fmtRange;
     fmtRange.chrg.cpMax = -1;                    //Indicate character from to character to 
@@ -132,7 +132,7 @@ void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* back
     fmtRange.rcPage = rectLayoutArea;    //Indicate size of page
 
 
-    int characterCount = ::SendMessage(hwnd, EM_FORMATRANGE, 1, (LPARAM)&fmtRange);
+    /*int characterCount = */::SendMessage(hwnd, EM_FORMATRANGE, 1, (LPARAM)&fmtRange);
 
     //Release the device context handle obtained by a previous call
     graphics->ReleaseHDC(hdc);
@@ -172,7 +172,7 @@ bool SaveImage(Image* img, const CString& filename, SaveImageFormat format, int 
 
 
     std::auto_ptr<Bitmap> quantizedImage;
-    TCHAR szImgTypes[3][4] = {_T("jpg"), _T("png"), _T("gif")};
+    //TCHAR szImgTypes[3][4] = {_T("jpg"), _T("png"), _T("gif")};
     TCHAR szMimeTypes[3][12] = {_T("image/jpeg"), _T("image/png"), _T("image/gif")};
 
     
@@ -237,6 +237,9 @@ Gdiplus::Bitmap* IconToBitmap(HICON ico)
 
     Gdiplus::Status st = temp.LockBits(&rc, Gdiplus::ImageLockModeRead, temp.GetPixelFormat(), &lockedBitmapData);
 
+    if (st != Gdiplus::Ok) {
+        return 0;
+    }
 
     Gdiplus::Bitmap* image = new Gdiplus::Bitmap(
         lockedBitmapData.Width, lockedBitmapData.Height, lockedBitmapData.Stride,
@@ -531,7 +534,7 @@ void DrawGradient(Graphics& gr, Rect rect, Color& Color1, Color& Color2)
     gr.DrawImage(&bm, rect.X, rect.Y);
 }
 
-void DrawStrokedText(Graphics& gr, LPCTSTR Text, RectF Bounds, Font& font, Color& ColorText, Color& ColorStroke,
+void DrawStrokedText(Graphics& gr, LPCTSTR Text, RectF Bounds, const Font& font, const Color& ColorText, const Color& ColorStroke,
     int HorPos, int VertPos,
     int width)
 {
@@ -851,7 +854,7 @@ Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus
                     compression = ThumbCompressionRGB;
                     PropertyItem* photometricInterpretationItem = GetPropertyItemFromImage(bm, PropertyTagPhotometricInterp);
                     if (photometricInterpretationItem) {
-                        WORD photoMetricInterpretationTag = VoidToInt(photometricInterpretationItem->value, photometricInterpretationItem->length);
+                        UINT photoMetricInterpretationTag = VoidToInt(photometricInterpretationItem->value, photometricInterpretationItem->length);
                         free(photometricInterpretationItem);
                         if (photoMetricInterpretationTag == 6) {
                             compression = ThumbCompressionYCbCr;

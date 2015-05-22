@@ -150,7 +150,7 @@ public:
             return false; // Couldn't open file
         }
 
-        AVInputFormat *inputFormat = av_find_input_format( fileName.c_str() );
+        /*AVInputFormat *inputFormat = */av_find_input_format( fileName.c_str() );
 
         // Retrieve stream information
         if(avformat_find_stream_info(pFormatCtx,0)<0) {
@@ -221,7 +221,6 @@ public:
         pCodecCtx->width, pCodecCtx->height);
 
        // Read frames and save first five frames to disk
-       int i=0;
 
        int64_t dur = pFormatCtx->streams[videoStream]->duration;
        int64_t dur2 = pFormatCtx->duration;
@@ -236,7 +235,7 @@ public:
          int64_t sec=dur/ss.den;
          int64_t min = sec/60;
          sec = sec%60;
-         int64_t hr = min/60;
+         //int64_t hr = min/60;
          min=min%60;
          //std::string s;
          ic = pFormatCtx;
@@ -343,7 +342,7 @@ public:
     }
     void write_frame_to_file(AVFrame* frame, int width, int height, int iframe)
     {
-        int i = AV_PIX_FMT_YUV420P;
+        //int i = AV_PIX_FMT_YUV420P;
         FILE* outfile;
         char filename[32];
 
@@ -425,8 +424,8 @@ public:
                 seek_target = av_rescale_q(seek_target, rat, pFormatCtx->streams[videoStream]->time_base);
             }
 
-            int64_t seek_min= static_cast<int64_t>(seek_target*0.9);
-            int64_t seek_max = static_cast<int64_t>(/*INT64_MAX*/seek_target*1.1);
+            /*int64_t seek_min= static_cast<int64_t>(seek_target*0.9);
+            int64_t seek_max = static_cast<int64_t>(/INT64_MAX*seek_target*1.1);*/
 
             if ( avformat_seek_file(pFormatCtx, videoStream,0, seek_target, seek_target, seekByBytes?AVSEEK_FLAG_BYTE:0) < 0  )  {
                 LOG(WARNING) << "avformat_seek_file failed to seek to position "<<seek_target << " seekByBytes="<<seekByBytes;
@@ -472,7 +471,7 @@ public:
                             }
                         }
 
-                        int ret = sws_scale(img_convert_ctx, pFrame->data, pFrame->linesize, 0, pCodecCtx->height, pFrameRGB->data, pFrameRGB->linesize);
+                        sws_scale(img_convert_ctx, pFrame->data, pFrame->linesize, 0, pCodecCtx->height, pFrameRGB->data, pFrameRGB->linesize);
                         int64_t display_time = static_cast<int64_t>((double)av_rescale_q(pFrame->pkt_pts, pFormatCtx->streams[videoStream]->time_base, rat) / (double)AV_TIME_BASE);
                          //pFrame->pkt_pts/ (double)AV_TIME_BASE;
                          if ( display_time <= 0 ) {

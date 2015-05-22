@@ -116,7 +116,6 @@ BOOL CRegistry::DeleteWithSubkeys(CString strKey)
     {
         
         const int MAX_KEY_LENGTH = 256;
-        const int MAX_VALUE_NAME = 1024;
 
         TCHAR    achKey[MAX_KEY_LENGTH];   // buffer for subkey name
         DWORD    cbName;                   // size of name string 
@@ -132,8 +131,6 @@ BOOL CRegistry::DeleteWithSubkeys(CString strKey)
         FILETIME ftLastWriteTime;      // last write time 
 
         DWORD i, retCode; 
-
-        DWORD cchValue = MAX_VALUE_NAME; 
 
         // Get the class name and the value count. 
         retCode = RegQueryInfoKey(
@@ -218,7 +215,6 @@ BOOL CRegistry::GetChildKeysNames(CString strKey, std::vector<CString>& outNames
     {
 
         const int MAX_KEY_LENGTH = 256;
-        const int MAX_VALUE_NAME = 1024;
 
         TCHAR    achKey[MAX_KEY_LENGTH];   // buffer for subkey name
         DWORD    cbName;                   // size of name string 
@@ -235,7 +231,6 @@ BOOL CRegistry::GetChildKeysNames(CString strKey, std::vector<CString>& outNames
 
         DWORD i, retCode; 
 
-        DWORD cchValue = MAX_VALUE_NAME; 
 
         // Get the class name and the value count. 
         retCode = RegQueryInfoKey(

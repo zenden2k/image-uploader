@@ -138,7 +138,6 @@ void Document::saveDocumentState( /*DrawingElement* element*/ ) {
     }
     
     BYTE* bpSrc = (BYTE*)bdSrc.Scan0;
-    unsigned int segmentSize = AffectedSegments::kSegmentSize * AffectedSegments::kSegmentSize * pixelSize;
 
     unsigned char* pImageData = imageData;
     AffectedSegments outSegments(srcImageWidth, srcImageHeight);

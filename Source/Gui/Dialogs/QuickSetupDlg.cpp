@@ -90,7 +90,6 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
     //serverComboBox_.AddItem( _T("<") + CString(TR("Случайный сервер")) + _T(">"), -1, -1, 0, static_cast<LPARAM>( -1 ) );
 
-    HICON hImageIcon = NULL, hFileIcon = NULL;
     int selectedIndex = 0;
 
     //CUploadEngineData *uploadEngine = _EngineList->byIndex( Settings.getServerID() );
@@ -219,9 +218,6 @@ LRESULT CQuickSetupDlg::OnServerComboSelChange(WORD wNotifyCode, WORD wID, HWND 
     return 0;
 }
 
-void CQuickSetupDlg::showFtpButton(bool show) {
-    ::ShowWindow( GetDlgItem( IDC_FTPSETTINGSBUTTON ), show? SW_SHOW : SW_HIDE);
-}
 
 void  CQuickSetupDlg::serverChanged() {
     int serverComboElementIndex = serverComboBox_.GetCurSel();
@@ -232,8 +228,6 @@ void  CQuickSetupDlg::serverChanged() {
             return ;
         }
         CString serverName = Utf8ToWCstring( uploadEngineData->Name );
-        bool isFtpServer = serverName.Find(_T("FTP")) != -1;
-        showFtpButton(isFtpServer);
         bool authorizationAvailable = uploadEngineData->NeedAuthorization != 0;
         showAuthorizationControls( authorizationAvailable );
         bool forceAuthorization = uploadEngineData->NeedAuthorization == 2;
@@ -250,18 +244,5 @@ void  CQuickSetupDlg::serverChanged() {
     } else {
         showAuthorizationControls(false);
     }
-}
-
-LRESULT CQuickSetupDlg::OnClickedFtpSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    int serverComboElementIndex = serverComboBox_.GetCurSel();
-    if ( serverComboElementIndex > 0 ) {
-        int serverIndex = serverComboElementIndex - 1;
-        CUploadEngineData * uploadEngineData = _EngineList->byIndex( serverIndex );
-/*        ServerProfile serverProfile;
-        serverProfile.setServerName( Utf8ToWCstring( uploadEngineData->Name ) );
-        CServerParamsDlg dlg(serverProfile);
-        dlg.DoModal();*/
-    }
-    return 0;
 }
 

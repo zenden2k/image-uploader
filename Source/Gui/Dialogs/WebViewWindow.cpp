@@ -156,7 +156,7 @@ LRESULT /*CALLBACK*/ CWebViewWindow::CBTHook(int nCode, WPARAM wParam, LPARAM lP
     if(nCode == HCBT_CREATEWND)
     {
         HWND hwnd = (HWND)wParam;
-        CBT_CREATEWND *cw = (CBT_CREATEWND*)lParam;
+        //CBT_CREATEWND *cw = (CBT_CREATEWND*)lParam;
 
         if ( !lstrcmp(GetWndClass(wParam, lParam), _T("#32770"))) { 
                 /*instance->*/handleDialogCreation(hwnd, true);
@@ -224,7 +224,7 @@ void CWebViewWindow::handleDialogCreation(HWND wnd, bool fromHook)
     //LOG(ERROR) << "CWebViewWindowOnActivate="<<GuiTools::GetWindowText(wnd);
     EnumChildWindows(wnd, EnumChildProc, (LPARAM)this);
 
-    bool isWindowVisible = ::IsWindowVisible(fileDialog_)!=FALSE;
+    //bool isWindowVisible = ::IsWindowVisible(fileDialog_)!=FALSE;
     if (editControl_ ) {
 
         fileDialog_ = wnd;
@@ -345,7 +345,7 @@ LRESULT CWebViewWindow::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
         CComPtr<IAccessible> editControlAccesible;
         if ( ::IsWindow(editControl_) ) {
             
-            HRESULT hr = ::AccessibleObjectFromWindow(editControl_, OBJID_CLIENT , IID_IAccessible, (void**)(&editControlAccesible)); 
+            /*HRESULT hr =*/ ::AccessibleObjectFromWindow(editControl_, OBJID_CLIENT , IID_IAccessible, (void**)(&editControlAccesible)); 
         }
 
         if ( editControl_ && (!::IsWindow(editControl_) || !editControlAccesible )) {
@@ -487,11 +487,7 @@ LRESULT FileDialogSubclassWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
     bHandled = false;
     EnumChildWindows(m_hWnd, EnumChildProc, (LPARAM)this);
 
-    bool isWindowVisible = IsWindowVisible() != FALSE;
     if (this->editControl_ ) {
-
-
-        //LOG(INFO) << "isWindowVisible" << isWindowVisible;
         this->SetWindowLong( GWL_STYLE, this->GetWindowLong(GWL_STYLE) & WS_CHILD & ~ (WS_CAPTION |  WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | 
             WS_MINIMIZEBOX|WS_POPUP|WS_BORDER|WS_VISIBLE));
         this->SetWindowLong( GWL_EXSTYLE, 0);
@@ -571,8 +567,7 @@ LRESULT FileDialogSubclassWindow::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /
         v.lVal  = CHILDID_SELF;
         CComPtr<IAccessible> editControlAccesible;
         if ( ::IsWindow(editControl_) ) {
-            
-            HRESULT hr = ::AccessibleObjectFromWindow(editControl_, OBJID_CLIENT , IID_IAccessible, (void**)(&editControlAccesible)); 
+            /*HRESULT hr =*/ ::AccessibleObjectFromWindow(editControl_, OBJID_CLIENT , IID_IAccessible, (void**)(&editControlAccesible)); 
         }
 
         if ( editControl_ && (!::IsWindow(editControl_) || !editControlAccesible )) {

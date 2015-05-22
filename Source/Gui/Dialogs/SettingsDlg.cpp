@@ -283,5 +283,4 @@ LRESULT CSettingsDlg::OnCtlColorStatic(HDC hdc, HWND hwndChild)
         return (LRESULT)(HBRUSH)backgroundBrush_;
     }
     return 0;
-    return 0;
 }   

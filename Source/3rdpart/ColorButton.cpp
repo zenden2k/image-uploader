@@ -297,7 +297,7 @@ LRESULT CColorButton::OnClicked (WORD wNotifyCode,
     // Get the parent window
     //
 
-    HWND hWndParent = GetParent ();
+//    HWND hWndParent = GetParent ();
 
     //
     // Send the drop down notification to the parent

@@ -392,6 +392,7 @@ LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
                 InvalidateRect(&RectToRepaint);
                 UpdateWindow();
             }
+            SelectObject(memDC2, oldPen2);
             cxOld = cx;
             cyOld = cy;    
         }

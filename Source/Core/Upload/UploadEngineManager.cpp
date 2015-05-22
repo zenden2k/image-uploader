@@ -95,7 +95,6 @@ CScriptUploadEngine* UploadEngineManager::getScriptUploadEngine(ServerProfile& s
 
 CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile, const std::string& pluginName, bool UseExisting) {
     std::lock_guard<std::mutex> lock(pluginsMutex_);
-    DWORD curTime = GetTickCount();
     std::string serverName = serverProfile.serverName();
     ServerSettingsStruct& params = serverProfile.serverSettings();
     std::thread::id threadId = std::this_thread::get_id();

@@ -104,13 +104,6 @@ void Line::getAffectedSegments( AffectedSegments* segments ) {
 
 void Line::createGrips()
 {
-    int rectSize = kGripSize;
-
-    int x = getX();
-    int y = getY();
-    int width = getWidth();
-    int height = getHeight();
-
     Grip grip1;
     Grip grip2;
     grip1.pt.x = startPoint_.x;

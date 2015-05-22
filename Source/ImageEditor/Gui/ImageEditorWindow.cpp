@@ -146,7 +146,6 @@ bool ImageEditorWindow::saveDocument(bool toClipboard)
         CopyBitmapToClipboard(m_hWnd, dc, resultingBitmap_.get(), true);
         return true;
     }
-    return false;
 }
 
 void ImageEditorWindow::updateToolbarDrawingTool(Canvas::DrawingToolType dt)
@@ -320,7 +319,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 
     //RECT rc;
     GetClientRect(&rc);
-    HWND m_hWndClient = m_view.Create(m_hWnd, rc, _T("ImageEditor_Canvas"), WS_CHILD | WS_VISIBLE /*| WS_CLIPSIBLINGS | WS_CLIPCHILDREN*/, 0 );
+    /*HWND m_hWndClient = */m_view.Create(m_hWnd, rc, _T("ImageEditor_Canvas"), WS_CHILD | WS_VISIBLE /*| WS_CLIPSIBLINGS | WS_CLIPCHILDREN*/, 0 );
 
     canvas_ = new ImageEditor::Canvas( m_view );
     canvas_->setSize( currentDoc_->getWidth(), currentDoc_->getHeight());
@@ -685,9 +684,6 @@ LRESULT ImageEditorWindow::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 void ImageEditorWindow::createToolbars()
 {
-    RECT rc = {0,0,30,30};
-    const int IDC_DUMMY = 100;
-
     if ( !horizontalToolbar_.Create(m_hWnd, displayMode_ == wdmWindowed) ) {
         LOG(ERROR) << "Failed to create horizontal toolbar";
         return;

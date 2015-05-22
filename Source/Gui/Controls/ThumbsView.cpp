@@ -393,7 +393,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
             Font font(L"Tahoma", 8, FontStyleRegular );
             LPCTSTR Filename = GetFileName(ItemID);
             WCHAR Buffer[256];
-            int f = MyGetFileSize(GetFileName(ItemID));
+            //int f = MyGetFileSize(GetFileName(ItemID));
             WCHAR buf2[25];
             std::string fileSizeStr = IuCoreUtils::fileSizeToString(IuCoreUtils::getFileSize(WCstringToUtf8(Filename)));
             lstrcpy(buf2, Utf8ToWCstring(fileSizeStr));
@@ -516,7 +516,7 @@ LRESULT CThumbsView::OnLvnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandl
 {
     if(GetItemCount() < 1) return 0;
 
-    NM_LISTVIEW *pnmv = (NM_LISTVIEW FAR *) pnmh;  
+    //NM_LISTVIEW *pnmv = (NM_LISTVIEW FAR *) pnmh;  
     DWORD dwEffect=0;
 
     CMyDropSource *pDropSource = new CMyDropSource();
@@ -531,7 +531,7 @@ LRESULT CThumbsView::OnLvnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandl
     }
     while(nItem!=-1);
 
-    DWORD dwResult = ::DoDragDrop(pDataObject, pDropSource, DROPEFFECT_COPY, &dwEffect);
+    /*DWORD dwResult = */::DoDragDrop(pDataObject, pDropSource, DROPEFFECT_COPY, &dwEffect);
     pDropSource->Release();
     pDataObject->Release();
 

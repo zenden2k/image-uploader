@@ -54,7 +54,7 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
         void setNetworkClient(NetworkClient* nm);
         //bool load(std::string fileName, ServerSettingsStruct& params);
         int getFolderList(CFolderList &FolderList);
-        int createFolder(CFolderItem &parent, CFolderItem &folder);
+        int createFolder(const CFolderItem &parent, CFolderItem &folder);
         int modifyFolder(CFolderItem &folder);
         int getAccessTypeList(std::vector<std::string> &list);
         int getServerParamList(std::map<std::string, std::string> &list);

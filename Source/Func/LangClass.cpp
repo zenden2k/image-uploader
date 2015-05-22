@@ -46,8 +46,7 @@ BYTE hex_digit(TCHAR f)
 int hexstr2int(LPTSTR hex)
 {
     int len = lstrlen(hex);
-    int res = 0, step = 1;
-    int c = 0;
+    int  step = 1;
 
     BYTE b[4];
     if (len > 8)

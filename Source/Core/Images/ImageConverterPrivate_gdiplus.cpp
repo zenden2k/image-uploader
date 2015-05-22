@@ -262,8 +262,6 @@ bool ImageConverterPrivate::createThumb(Gdiplus::Bitmap* bm, const CString& imag
 {
     bool result = false;
     HDC dc = ::GetDC(0);
-    int newwidth = bm->GetWidth();
-    int newheight = bm->GetHeight();
     int64_t FileSize = IuCoreUtils::getFileSize(W2U((imageFile)));
 
 
@@ -289,12 +287,11 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     GdiPlusImage* image = dynamic_cast<GdiPlusImage*>(abstractImg);
     assert(image);
     assert(thumbnailTemplate_);
-    bool result = false;
     const Thumbnail::ThumbnailData* data = thumbnailTemplate_->getData();
     CDC dc = ::GetDC(0);
     int newwidth = image->getWidth();
     int newheight = image->getHeight();
-    int64_t FileSize = IuCoreUtils::getFileSize(sourceFile_);
+    //int64_t FileSize = IuCoreUtils::getFileSize(sourceFile_);
     /*TCHAR SizeBuffer[100]=_T("\0");
     if(FileSize>0)
     NewBytesToString(FileSize,SizeBuffer,sizeof(SizeBuffer));*/
@@ -311,7 +308,6 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     Graphics g1(dc);
     CString filePath = U2W(thumbnailTemplate_->getSpriteFileName());
     Image templ(filePath);
-    int ww = templ.GetWidth();
     CString s;
 
     LOGFONT lf;
@@ -365,7 +361,6 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
         thumbwidth = int((float)thumbheight / (float)newheight * newwidth);
     }
 
-    int LabelHeight = int(TextRect.Height + 1);
     int RealThumbWidth = thumbwidth + EvaluateExpression(thumbnailTemplate_->getWidthAddition());
     int RealThumbHeight = thumbheight + EvaluateExpression(thumbnailTemplate_->getHeightAddition());
 

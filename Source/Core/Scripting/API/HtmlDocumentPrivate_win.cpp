@@ -28,15 +28,15 @@ HtmlElement HtmlDocumentPrivate::rootElement() {
         CComBSTR tagBstr = _T("html");
         doc3_->getElementsByTagName(tagBstr, &collection);
         long count  = 0;
-        if ( !SUCCEEDED(collection->get_length(&count))) {
+        if ( !SUCCEEDED(collection->get_length(&count)) || !count) {
             return HtmlElement();
         }
-        for ( int i = 0; i < count; i ++ ) {
-            IDispatchPtr  disp = 0;
-            collection->item(CComVariant(i), CComVariant(0), &disp);
-            rootElement_ = new HtmlElementPrivate(disp, this); 
-            return rootElement_;
-        }
+
+        IDispatchPtr  disp = 0;
+        collection->item(CComVariant(0), CComVariant(0), &disp);
+        rootElement_ = new HtmlElementPrivate(disp, this); 
+        return rootElement_;
+        
     }
     return rootElement_;
 }

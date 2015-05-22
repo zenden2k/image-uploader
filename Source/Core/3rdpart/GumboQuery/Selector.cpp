@@ -265,8 +265,6 @@ bool CBinarySelector::match(GumboNode* apNode)
 		default:
 			return false;
 	}
-
-	return false;
 }
 
 CAttributeSelector::CAttributeSelector(TOperator aOp, std::string aKey, std::string aValue)

@@ -65,7 +65,6 @@ struct MYHOTKEY
         if (fExtended)
             lScan |= 0x01000000L;
 
-        int nBufferLen = 64;
         // CString str;
         TCHAR buf[20];
         int nLen;
@@ -95,7 +94,7 @@ struct MYHOTKEY
         CString res;
         HotkeyToString(keyCode, keyModifier, res );
         return res;
-        CString strKeyName;
+        /*CString strKeyName;
         WORD wCode = keyCode;
         WORD wModifiers = keyModifier;
         if (!wCode)
@@ -127,7 +126,7 @@ struct MYHOTKEY
 
             strKeyName += getKeyName(wCode, wModifiers & HOTKEYF_EXT);
         }
-        return strKeyName;
+        return strKeyName;*/
     }
 
     WORD keyCode;

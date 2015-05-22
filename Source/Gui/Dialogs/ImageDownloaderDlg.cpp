@@ -221,8 +221,6 @@ void CImageDownloaderDlg::OnQueueFinished()
 
 bool CImageDownloaderDlg::BeginDownloading()
 {
-    int index=0;
-
     std::string links = WCstringToUtf8(GuiTools::GetWindowText(GetDlgItem(IDC_FILEINFOEDIT)));
     std::vector<std::string> tokens;
     nm_splitString(links,"\n",tokens,-1);

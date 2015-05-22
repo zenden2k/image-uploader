@@ -45,7 +45,6 @@ class CQuickSetupDlg : public CDialogImpl<CQuickSetupDlg>
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 			COMMAND_HANDLER(IDC_DOAUTHCHECKBOX, BN_CLICKED, OnClickedDoAuthCheckbox)
 			COMMAND_HANDLER(IDC_SERVERCOMBOBOX, CBN_SELCHANGE, OnServerComboSelChange)
-			COMMAND_HANDLER(IDC_FTPSETTINGSBUTTON, BN_CLICKED, OnClickedFtpSettings)
 		END_MSG_MAP()
 
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -54,7 +53,6 @@ class CQuickSetupDlg : public CDialogImpl<CQuickSetupDlg>
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedDoAuthCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnServerComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedFtpSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
 	private:
 		CMyImage LogoImage;
@@ -65,7 +63,6 @@ class CQuickSetupDlg : public CDialogImpl<CQuickSetupDlg>
 		CComboBoxEx serverComboBox_;
 		CImageList comboBoxImageList_;
 		void showAuthorizationControls(bool show);
-		void showFtpButton(bool show);
 		void serverChanged();
 };
 

@@ -166,5 +166,4 @@ LRESULT CLogWindow::OnBnClickedClearLogButtonClicked(WORD /*wNotifyCode*/, WORD 
 {
     MsgList.Clear();
     return 0;
-    return 0;
 }

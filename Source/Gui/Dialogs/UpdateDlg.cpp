@@ -37,11 +37,9 @@ bool CanWriteToFolder(CString folder)
     if (hFile == INVALID_HANDLE_VALUE)
     {
         return false;
-        printf("Could not open file for write (error %d)\n", (int)GetLastError());
     }
     else
     {
-        printf("Write access allowed\n");
         ::CloseHandle(hFile);
         return true;
     }
@@ -282,7 +280,7 @@ LRESULT CUpdateDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 
     if (wTimerID == 2)
     {
-        HWND parent = GetParent();
+        //HWND parent = GetParent();
         if ((m_UpdateCallback && m_UpdateCallback->CanShowWindow()) || !m_UpdateCallback)
         {
             ShowModal(m_hWnd);

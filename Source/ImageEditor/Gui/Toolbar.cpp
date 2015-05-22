@@ -175,7 +175,7 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
         RECT radiusSliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_ ) };
         roundRadiusSlider_.Create(m_hWnd, radiusSliderRect, 0, WS_CHILD|TBS_NOTICKS);
         createHintForSliders(roundRadiusSlider_.m_hWnd, TR("Радиус закругления"));
-        RECT radiusLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
+        //RECT radiusLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
         roundRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD);
         roundRadiusLabel_.SetFont(systemFont_);
     }
@@ -319,8 +319,8 @@ LRESULT Toolbar::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 
 LRESULT Toolbar::OnMouseLeave(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    int xPos = GET_X_LPARAM(lParam); 
-    int yPos = GET_Y_LPARAM(lParam); 
+    /*int xPos = GET_X_LPARAM(lParam); 
+    int yPos = GET_Y_LPARAM(lParam); */
     trackMouse_ = false;
     if ( selectedItemIndex_ != -1 ) {
         buttons_[selectedItemIndex_].state = isNormal;
@@ -437,7 +437,6 @@ LRESULT Toolbar::OnRButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 
         if ( item.type == Toolbar::itTinyCombo ) {
             HWND parent = GetParent();
-            int command = item.command;
             ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
             selectedItemIndex_ = -1;
             OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);

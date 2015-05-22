@@ -64,7 +64,7 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     HBITMAP hBitmap;
 
     // Get color depth (minimum requirement is 32-bits for alpha blended images).
-    int iBitsPixel = GetDeviceCaps(::GetDC(HWND_DESKTOP), BITSPIXEL);
+    //int iBitsPixel = GetDeviceCaps(::GetDC(HWND_DESKTOP), BITSPIXEL);
 
     hBitmap = LoadBitmap(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDB_SERVERTOOLBARBMP2));
     m_PlaceSelectorImageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
@@ -128,11 +128,9 @@ DWORD CServerFolderSelect::Run()
     script->setNetworkClient(&m_NetworkClient);
     if (m_FolderOperationType == foGetFolders)
     {
-        int count = 0;
 
         if (!script)
-            return -1;
-
+            return 0;
 
         m_FolderList.Clear();
         m_FolderMap.clear();
@@ -149,11 +147,8 @@ DWORD CServerFolderSelect::Run()
                 TRC(IDC_FOLDERLISTLABEL, "Не удалось загрузить список папок.");
 
             OnLoadFinished();
-            return -1;
+            return 0;
         }
-
-        HTREEITEM toSelect = 0;
-        int nNeedToBeSelected = -1;
 
         m_FolderTree.DeleteAllItems();
         BuildFolderTree(m_FolderList.m_folderItems, "");

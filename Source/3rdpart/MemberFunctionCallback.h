@@ -65,6 +65,7 @@ private:
     static LRESULT CALLBACK GeneratedStaticFunction(int a, WPARAM b, LPARAM c)
     {
         int ab = context;
+        ab;
         return StaticInvoke(context, a, b,c);
     }
 };

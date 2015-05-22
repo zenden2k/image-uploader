@@ -44,7 +44,7 @@ CURLSH* CurlShare::getHandle() const
     return share_;
 }
 
-void CurlShare::lockData(CURL *handle, curl_lock_data data, curl_lock_access access, void *useptr){
+void CurlShare::lockData(CURL *handle, curl_lock_data data, curl_lock_access, void *useptr){
     CurlShare* pthis = reinterpret_cast<CurlShare*>(useptr);
     pthis->mutexes_[data].lock();
 }
