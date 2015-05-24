@@ -38,7 +38,6 @@
 	write_header( $f );
 
 	$hashes = array( );
-	$strings = array( );
 
 	function int2hex( $intega ) {
         $Ziffer = "0123456789ABCDEF";
@@ -61,24 +60,26 @@
         //echo htmlspecialchars($code)."<br>";
         $str = eval( $code );
 
-        global $hashes, $strings;
-        foreach ( $strings as $item ) {
+        global $hashes;
+
+        /*foreach ( $strings as $item ) {
             if ( $item == $str ) {
                 return;
             }
-        }
+        }*/
 
         $item_u = mb_convert_encoding( $str, "UTF-16LE", "Windows-1251" );
-        $hashes[] = dump_dword( myhash( $item_u ) );
         $str = str_ireplace( "\n", "\\n", $str );
-        $strings[] = $str;
+        $hashes[dump_dword( myhash( $item_u ) )] = $str;
+
+        //$strings[] = ;
     }
 
 	function dump_dword( $hash ) {
-        $f = fopen( "aaaa", "a+" );
+        //$f = fopen( "aaaa", "a+" );
         $hash = pack( "l", $hash );
-        fwrite( $f, $hash );
-        fclose( $f );
+        //fwrite( $f, $hash );
+        //fclose( $f );
         $res = sprintf( "%02x%02x%02x%02x", ord( $hash[0] ), ord( $hash[1] ), ord( $hash[2] ), ord( $hash[3] ) );
         return $res;
     }
@@ -102,7 +103,7 @@
         return $result;
     }
 	
-	function parse_language_file( $path, $filename, $hashes, $stringAr ) {
+	function parse_language_file( $path, $filename, $hashes ) {
         $file = fopen( $filename . ".new", "w" );
         write_header( $file );
         $data = file_get_contents( $filename );
@@ -111,8 +112,8 @@
 
         if ( $filename != "default" && $filename != "English" ) {
             $english_strings = read_language_file( $path . "\\English.lng" );
-            echo "OLOLO<br>";
-            var_dump( $english_strings );
+            //echo "OLOLO<br>";
+            //var_dump( $english_strings );
         }
 
         foreach ( $strings as $key => $item )
@@ -121,27 +122,25 @@
                 $item = ltrim( $item, "\xff\xfe" );
             }
 
-            $dd = explode( "=\0", $item );
+            $dd = explode( "=", $item );
             $hash = $dd[0];
 
             $hash = trim( mb_convert_encoding( $hash, "Windows-1251", "UTF-16LE" ) );
 
-
-            $k = array_search( $hash, $hashes );
+            $k = isset($hashes[$hash]) ? $hashes[$hash] : false;
             if ( $hash === 'language' || !( $k === false ) ) {
                 fwrite( $file, $item . "\r\0\n\0" );
-                unset( $hashes[$k] );
-                unset( $stringAr[$k] );
+                unset( $hashes[$hash] );
             }
         }
 
-        foreach ( $stringAr as $ki => $it )
+        foreach ( $hashes as $ki => $it )
         {
-            $value = $english_strings[$hashes[$ki]];
+            $value = $english_strings[$ki];
             if ( $value == "" ) {
                 $value = $it;
             }
-            $rrr = $hashes[$ki] . " = $value\r\n";
+            $rrr = $ki . " = $value\r\n";
             $str = mb_convert_encoding( $rrr, "UTF-16LE", "Windows-1251" );
 
             fwrite( $file, $str );
@@ -196,7 +195,7 @@ print "<p><b>Total: $i source files parsed</b>";
 
 
 $count = 0;echo "<p>Saving to file...</p>";
-foreach ( $strings as $item ) {
+foreach ( $hashes as $key => $item ) {
 
     $item_u = mb_convert_encoding( $item, "UTF-16LE", "Windows-1251" );
 
@@ -213,7 +212,7 @@ echo "Total $count language records";
 
 fclose( $f );
 
-
+var_dump($hashes);
 	if ( $lang_dir ) {
         echo "<p><h3>Parsing other language files (in directory \"" . stripslashes( $lang_dir ) . "\") </h3>";
         $dh = opendir( $lang_dir );
@@ -224,7 +223,7 @@ fclose( $f );
             if ( $file != "." && $file != ".." ) {
                 if ( substr( $file, -4, 4 ) == ".lng" && $file != "default.lng" ) {
                     echo "<p><B>$i. Parsing $file<br /></b>";
-                    parse_language_file( $lang_dir, $lang_dir . '\\' . $file, $hashes, $strings );
+                    parse_language_file( $lang_dir, $lang_dir . '\\' . $file, $hashes );
                     $i++;
                 }
                 else {
