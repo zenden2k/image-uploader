@@ -69,7 +69,7 @@ Root: HKLM; Subkey: "Software\Zenden.ws\Image Uploader"; ValueType: string; Valu
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:Additional}"; Flags: unchecked
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:Additional}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 Name: "installffmpeg"; Description: "{cm:InstallFFmpeg}"; GroupDescription: "{cm:Additional}"; Flags: unchecked
-Name: "newicon"; Description: "{cm:NewIcon}"; GroupDescription: "{cm:Additional}"; Flags: unchecked
+Name: "newicon"; Description: "{cm:NewIcon}"; GroupDescription: "{cm:Additional}"; 
 ;Name: common; Description: All users; GroupDescription: Install for:; Flags: exclusive
 ;Name: installuser; Description: The current user only; GroupDescription: Install for:; Flags: exclusive unchecked
 [Dirs]
