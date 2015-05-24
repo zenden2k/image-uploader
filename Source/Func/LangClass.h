@@ -25,6 +25,7 @@
 #include "atlheaders.h"
 #include "Core/i18n/Translator.h"
 #include <string>
+#include <map>
 
 class CLang : public ITranslator
 {
@@ -43,13 +44,12 @@ class CLang : public ITranslator
     private:
         struct TranslateListItem
         {
-            int Hash;
             TCHAR *Name;
             TCHAR *Text;
         };
         TCHAR m_Directory[MAX_PATH];
         CString m_sLang;
-        CAtlArray<TranslateListItem> StringList;
+        std::map<int, TranslateListItem> StringList;
         CAtlArray<CString> LanguagesList;
         CString locale_;
         CString language_;

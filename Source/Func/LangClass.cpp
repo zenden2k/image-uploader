@@ -86,7 +86,7 @@ bool CLang::SetDirectory(LPCTSTR Directory)
 
 bool CLang::LoadLanguage(LPCTSTR Lang)
 {
-    StringList.RemoveAll();
+    StringList.clear();
     if (!Lang ) {
         return false;
     }
@@ -147,9 +147,8 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
         TranslateListItem tli = {NULL, NULL};
         tli.Name = pName;
         tli.Text = pText;
-
-        tli.Hash = hexstr2int(pName);
-        StringList.Add(tli);
+        int hash = hexstr2int(pName);
+        StringList[hash] = tli;
     }
 
     fclose(f);
@@ -158,14 +157,11 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
     return true;
 }
 
-LPTSTR CLang::GetString(LPCTSTR Name)
-{
-    int n = StringList.GetCount();
-
-    for (int i = 0; i < n; i++)
-    {
-        if (StringList[i].Hash == myhash((PBYTE) Name, lstrlen( Name) * sizeof(TCHAR)))
-            return StringList[i].Text;
+LPTSTR CLang::GetString(LPCTSTR Name) {
+    int hash = myhash((PBYTE)Name, lstrlen(Name) * sizeof(TCHAR));
+    auto it = StringList.find(hash);
+    if (it != StringList.end()) {
+        return it->second.Text;
     }
 
     // return _T("$NO_SUCH_STRING");
@@ -244,8 +240,8 @@ CString CLang::getLanguageFileNameForLocale(const CString& locale)
 
 CLang::~CLang()
 {
-    for (size_t i = 0; i< StringList.GetCount(); i++) {
-        delete[] StringList[i].Name;
-        delete[] StringList[i].Text;
+    for (auto& it : StringList) {
+        delete[] it.second.Name;
+        delete[] it.second.Text;
     }
 }
