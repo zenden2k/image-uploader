@@ -56,7 +56,6 @@ CServerSelectorControl::~CServerSelectorControl()
 }
 
 void CServerSelectorControl::TranslateUI() {
-    TRC(IDC_EDIT, "Параметры");
 }
     
 LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

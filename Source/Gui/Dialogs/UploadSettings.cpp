@@ -69,9 +69,7 @@ void CUploadSettings::TranslateUI()
     //TRC(IDC_YOURLOGO,"Добавить водяной знак");
     TRC(IDC_XLABEL,"и/или высоты:");
     TRC(IDC_PROFILELABEL,"Профиль:");
-    TRC(IDC_YOURTEXT,"Добавить текст на картинку");
     TRC(IDC_IMAGEPARAMETERS,"Параметры изображений");
-    TRC(IDC_LOGOOPTIONS,"Дополнительно...");
     TRC(IDC_KEEPASIS,"Обрабатывать изображения");
     TRC(IDC_THUMBSETTINGS,"Миниаютюры");
     TRC(IDC_CREATETHUMBNAILS,"Создавать миниатюры (превью)");

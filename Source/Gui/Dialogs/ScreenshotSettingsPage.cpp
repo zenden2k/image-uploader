@@ -61,7 +61,6 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     CString removeCornersText = TR("Удалять уголки у окна")+CString(_T(" (Windows Vista/7)"));
     SetDlgItemText(IDC_REMOVECORNERS, removeCornersText);
     TRC(IDC_REMOVEBACKGROUND, "Удалять фон окна");
-    TRC(IDC_SHORTENURLFROMTRAYCHECKBOX, "Сокращать ссылки при быстрой загрузке (по горячей клавише)");
     TRC(IDC_AEROONLY, "Только для Aero (Windows Vista и новее)");
     TRC(IDC_USEOLDREGIONSCREENSHOTMETHOD, "Использовать старый способ выбора области экрана");
     
@@ -80,7 +79,6 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     SendDlgItemMessage(IDC_ADDSHADOW, BM_SETCHECK, Settings.ScreenshotSettings.AddShadow);
     SendDlgItemMessage(IDC_REMOVEBACKGROUND, BM_SETCHECK, Settings.ScreenshotSettings.RemoveBackground);
 
-    GuiTools::SetCheck(m_hWnd, IDC_SHORTENURLFROMTRAYCHECKBOX, Settings.TrayIconSettings.ShortenLinks);
     GuiTools::SetCheck(m_hWnd, IDC_USEOLDREGIONSCREENSHOTMETHOD, Settings.ScreenshotSettings.UseOldRegionScreenshotMethod);
 
     int Quality, Delay, Format;
@@ -135,8 +133,6 @@ bool CScreenshotSettingsPagePage::Apply()
     Settings.ScreenshotSettings.RemoveBackground = SendDlgItemMessage(IDC_REMOVEBACKGROUND, BM_GETCHECK)!=0;
     Settings.ScreenshotSettings.UseOldRegionScreenshotMethod = GuiTools::GetCheck(m_hWnd, IDC_USEOLDREGIONSCREENSHOTMETHOD );
     Settings.ImageEditorSettings.AllowAltTab = GuiTools::GetCheck(m_hWnd, IDC_ALLOWALTTABINIMAGEEDITOR);
-
-     Settings.TrayIconSettings.ShortenLinks = GuiTools::GetCheck(m_hWnd, IDC_SHORTENURLFROMTRAYCHECKBOX);
 
     return true;
 }

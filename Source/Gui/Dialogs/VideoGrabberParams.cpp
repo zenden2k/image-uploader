@@ -48,7 +48,6 @@ LRESULT CVideoGrabberParams::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     SendDlgItemMessage(IDC_MEDIAINFOONIMAGE, BM_SETCHECK, Settings.VideoSettings.ShowMediaInfo);
 
     SetWindowText(TR("Настройки внешнего вида"));
-    TRC(IDCANCEL, "Отмена");
     TRC(IDC_COLUMNSEDITLABEL, "Количество колонок:");
     TRC(IDC_PREVIEWWIDTHLABEL, "Ширина превьюшки:");
     TRC(IDC_INTERVALHORLABEL, "Горизонтальный промежуток:");

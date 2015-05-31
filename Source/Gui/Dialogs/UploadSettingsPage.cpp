@@ -37,8 +37,6 @@ CUploadSettingsPage::~CUploadSettingsPage()
 
 void CUploadSettingsPage::TranslateUI()
 {
-    TRC(IDOK, "OK");
-    TRC(IDCANCEL, "Отмена");
     TRC(IDC_CONNECTIONSETTINGS, "Параметры подключения");
     TRC(IDC_USEPROXYSERVER, "Использовать прокси-сервер");
     TRC(IDC_ADDRESSLABEL, "Адрес:");

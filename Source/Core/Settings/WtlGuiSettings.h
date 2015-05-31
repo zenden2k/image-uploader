@@ -37,7 +37,6 @@ struct TrayIconSettingsStruct {
     int MiddleClickCommand;
     int TrayScreenshotAction;
     bool DontLaunchCopy;
-    bool ShortenLinks;
 };
 
 struct ScreenshotSettingsStruct {

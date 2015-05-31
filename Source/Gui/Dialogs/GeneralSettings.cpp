@@ -63,10 +63,7 @@ int CGeneralSettings::GetNextLngFile(LPTSTR szBuffer, int nLength)
 
 LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    
     // Translating controls
-    TRC(IDOK, "OK");
-    TRC(IDCANCEL, "Отмена");
     TRC(IDC_CHANGESWILLBE, "Внимание: чтобы изменения в языке вступили в силу, программу необходимо перезапустить.");
     TRC(IDC_LANGUAGELABEL, "Язык интерфейса:");
     TRC(IDC_VIEWLOG, "Показать лог");

@@ -61,9 +61,6 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     TabBackgroundFix(m_hWnd);
     // Translating controls
 
-    TRC(IDC_TEXTONIMAGEGROUP, "Текст на картинке");
-    TRC(IDC_ENTERYOURTEXTLABEL, "Введите текст:");
-    TRC(IDC_THUMBFONT, "Шрифт...");
     TRC(IDC_THUMBTEXTCHECKBOX, "Надпись на миниатюре:");
     TRC(IDC_THUMBBACKGROUNDLABEL, "Цвет фона:");
     TRC(IDC_WIDTHRADIO, "Ширина:");

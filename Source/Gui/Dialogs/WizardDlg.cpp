@@ -254,7 +254,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         TRC(IDCANCEL,"Выход");
     else 
         TRC(IDCANCEL,"Скрыть");
-    TRC(IDC_UPDATESLABEL, "Проверить обновления");
+    //TRC(IDC_UPDATESLABEL, "Проверить обновления");
     TRC(IDC_PREV,"< Назад");
 
     ACCEL accel;

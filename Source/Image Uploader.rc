@@ -583,8 +583,6 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,256,236,10
     CONTROL         "#Use old region screnshot method",IDC_USEOLDREGIONSCREENSHOTMETHOD,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,271,226,10
-    CONTROL         "—окращать ссылки при быстрой загрузке (по гор€чей клавише)",IDC_SHORTENURLFROMTRAYCHECKBOX,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,285,233,10
     GROUPBOX        "ѕараметры сохранени€ снимков",IDC_SCREENSHOTSAVINGPARAMS,10,3,246,140
 END
 

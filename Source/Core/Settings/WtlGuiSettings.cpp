@@ -340,7 +340,6 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
     TrayIconSettings.RightClickCommand = 1; // context menu
     TrayIconSettings.MiddleClickCommand = 7; // region screenshot
     TrayIconSettings.DontLaunchCopy = false;
-    TrayIconSettings.ShortenLinks = false;
     TrayIconSettings.TrayScreenshotAction = TRAY_SCREENSHOT_OPENINEDITOR;
 
     ImageEditorSettings.BackgroundColor = Gdiplus::Color(255, 255, 255);
@@ -742,7 +741,6 @@ void WtlGuiSettings::BindToManager() {
     tray.nm_bind(TrayIconSettings, RightClickCommand);
     tray.nm_bind(TrayIconSettings, MiddleClickCommand);
     tray.nm_bind(TrayIconSettings, DontLaunchCopy);
-    tray.nm_bind(TrayIconSettings, ShortenLinks);
     tray.nm_bind(TrayIconSettings, TrayScreenshotAction);
 
     SettingsNode& history = mgr_["History"];

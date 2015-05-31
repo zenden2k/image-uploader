@@ -40,15 +40,12 @@ CIntegrationSettings::~CIntegrationSettings()
 {
 
 }
-    
 
 LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     serverProfiles_ = Settings.ServerProfiles;
     menuItemsChanged_ = false;
     // Translating controls
-    TRC(IDOK, "OK");
-    TRC(IDCANCEL, "Отмена");
     TRC(IDC_INTEGRATIONGROUP, "Интеграция с проводником Windows");
     TRC(IDC_SHELLINTEGRATION, "Интеграция в контекстное меню оболочки");
     //TRC(IDC_SHELLIMGCONTEXTMENUITEM, "Пункт в контекстное меню файлов изображений");

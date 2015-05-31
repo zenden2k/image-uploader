@@ -25,7 +25,7 @@
 #include "atlheaders.h"
 #include "Core/i18n/Translator.h"
 #include <string>
-#include <map>
+#include <unordered_map>
 
 class CLang : public ITranslator
 {
@@ -49,7 +49,7 @@ class CLang : public ITranslator
         };
         TCHAR m_Directory[MAX_PATH];
         CString m_sLang;
-        std::map<int, TranslateListItem> StringList;
+        std::unordered_map<int, TranslateListItem> StringList;
         CAtlArray<CString> LanguagesList;
         CString locale_;
         CString language_;
@@ -58,7 +58,11 @@ extern CLang Lang;
 
 // Begin: translation macros
 #define TR(str) Lang.GetString(_T(str))
+#ifdef NDEBUG
 #define TRC(c, str) SetDlgItemText(c, Lang.GetString(_T(str)))
+#else
+#define TRC(c, str) (ATLASSERT(GetDlgItem(c)),SetDlgItemText(c, Lang.GetString(_T(str))), (void)0)
+#endif
 // End
 
 #endif  // LANGCLASS_H

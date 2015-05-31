@@ -58,11 +58,6 @@ void CLogoSettings::TranslateUI()
     TRC(IDC_TEXTSTROKECOLOR, "Цвет обводки:");
     TRC(IDC_SELECTFONT, "Шрифт...");
     TRC(IDC_TEXTPOSITIONLABEL, "Позиция текста:");
-    TRC(IDC_THUMBPARAMS, "Параметры эскизов");
-    TRC(IDC_FRAMECOLORLABEL, "Цвет рамки");
-    TRC(IDC_THUMBTEXTCOLORLABEL, "Цвет текста:");
-    TRC(IDC_GRADIENTCOLOR1LABEL, "Цвет градиента 1:");
-    TRC(IDC_GRADIENTCOLOR2LABEL, "Цвет градиента 2:");
     TRC(IDC_PRESERVE_EXIF, "Сохранять EXIF информацию");
     SetWindowText(TR("Дополнительные параметры"));    
 }
