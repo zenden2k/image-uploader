@@ -575,7 +575,6 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     SaveConvertProfiles(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("Image").GetChild("Profiles"));
     SaveServerProfiles(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("Uploading").GetChild("ServerProfiles"));
 #endif
-    SaveAccounts(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("ServersParams"));
     //std::cerr << "Saving setting to "<< IuCoreUtils::WstringToUtf8((LPCTSTR)fileName_);
 #if !defined(IU_SERVERLISTTOOL) && !defined(IU_CLI)
     CRegistry Reg;
