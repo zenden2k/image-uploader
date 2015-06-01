@@ -367,7 +367,17 @@
 		</Actions>
 		<Result DownloadUrlTemplate="http://$(Host)/$(Code)/$(Name)" />
 	</Server>
-    <!-- /Thanks to Alex_Qwerty -->
+    <Server Name="sharenxs.com" Debug="0"> 
+        <Actions> 
+            <Action Type="get" Url="http://sharenxs.com/" RegExp="'directory': '([^']+)'" AssignVars="Dir:0" OnlyOnce="0" /> 
+            <Action Type="upload" Url="http://sharenxs.com/upload" 
+                PostParams="directory=$(Dir);safe=0;gallery=;qquuid=$(_THREADID)$(_RAND16BITS);qqfile=%filename%" 
+                RegExp="&quot;photo_link&quot;:&quot;\\\/photos\\\/(\w+)\\\/(\w+)\\\/(\w+)\\\/(\w+)\\\/([^&quot;]+)&quot;" 
+                AssignVars="Y:0;M:1;D:2;ID:3;Name:4" 
+            /> 
+        </Actions> 
+        <Result ImageUrlTemplate="http://sharenxs.com/photos/$(Y)/$(M)/$(D)/$(ID)/$(Name)" ThumbUrlTemplate="http://sharenxs.com/photos/$(Y)/$(M)/$(D)/$(ID)/smnxs-$(Name)"/> 
+    </Server>
 	 <Server Name="multiup.org" FileHost="1" MaxFileSize="2147483647"> 
         <Actions> 
             <Action Type="get" Url="http://www.multiup.org/api/get-fastest-server" 
@@ -385,6 +395,7 @@
         </Actions> 
         <Result DownloadUrlTemplate="http://www.multiup.org/download/$(Hash)/$(Name)" /> 
     </Server> 
+        <!-- /Thanks to Alex_Qwerty -->
 	<!--
 		Since 1.3.x release server declaration for "urlshortening" server node must be "Server2",
 	-->
