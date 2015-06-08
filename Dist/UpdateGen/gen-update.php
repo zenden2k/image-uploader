@@ -154,8 +154,7 @@ class UpdateGenerator {
         $outUpdateInfoXml->addAttribute("CoreUpdate", $root['CoreUpdate']);
         $outUpdateInfoXml->addAttribute("DisplayName", $root['DisplayName']);
         $outUpdateInfoXml->addAttribute("Hash", md5_file($zipFileName));
-        $outUpdateInfoXml->addChild('Info',$root->Info);
-
+        $outUpdateInfoXml->addChild('Info',trim($root->Info));
 
         $dom = new DOMDocument("1.0",'UTF-8');
 
