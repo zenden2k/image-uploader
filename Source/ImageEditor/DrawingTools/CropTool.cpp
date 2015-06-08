@@ -43,6 +43,18 @@ void CropTool::beginDraw(int x, int y)
 
 void CropTool::continueDraw(int x, int y, DWORD flags)
 {
+    if (x >= canvas_->getWidth()) {
+        x = canvas_->getWidth()-1;
+    } 
+    if (y >= canvas_->getHeigth()) {
+        y = canvas_->getHeigth()-1;
+    }
+    if (x < 0) {
+        x = 0;
+    }
+    if (y < 0) {
+        y = 0;
+    }
     MoveAndResizeTool::continueDraw(x,y,flags);
 
 }

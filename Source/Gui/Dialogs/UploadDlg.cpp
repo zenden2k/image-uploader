@@ -475,20 +475,12 @@ void CUploadDlg::createToolbar()
     toolbar_.SetImageList(m_hToolBarImageList);
     toolbar_.AddButton(IDC_UPLOADPROCESSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED | TBSTATE_PRESSED, 0, TR("Процесс загрузки"), 0);
     toolbar_.AddButton(IDC_UPLOADRESULTSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Ссылки на файлы"), 0);
-    bool IsLastVideo = false;
-    toolbar_.AddButton(IDC_MEDIAFILEINFO, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Инфо о последнем видео"), 0);
-    toolbar_.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Лог ошибок"), 0);
-
-
-    if (!IsLastVideo) {
-        toolbar_.HideButton(IDC_MEDIAFILEINFO);
-    }
+    toolbar_.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Лог"), 0);
 
     toolbar_.AutoSize();
     toolbar_.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);
     toolbar_.ShowWindow(SW_SHOW);
 }
-
 
 LRESULT CUploadDlg::OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     LogWindow.Show();

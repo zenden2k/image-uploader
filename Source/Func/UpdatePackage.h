@@ -28,6 +28,7 @@
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Network/NetworkClient.h"
 #include "Core/Utils/SimpleXml.h"
+#include <atomic>
 
 struct CUpdateItem
 {
@@ -75,6 +76,7 @@ class CUpdateInfo
 class CUpdateStatusCallback
 {
     public:
+        virtual ~CUpdateStatusCallback() {};
         virtual void updateStatus(int packageIndex, const CString& status)=0;
 };
 
@@ -131,7 +133,7 @@ class CUpdateManager: public CUpdateStatusCallback
         
         NetworkClient nm_;
         int m_nSuccessPackageUpdates;
-        bool m_stop;
+        std::atomic<bool> m_stop;
         int m_nCoreUpdates;
     private:
         DISALLOW_COPY_AND_ASSIGN(CUpdateManager);

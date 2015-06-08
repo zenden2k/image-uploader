@@ -235,6 +235,8 @@ LRESULT CThumbsView::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
         }
     } else if ( vk == _T('C') && GetKeyState(VK_CONTROL) ) {
         CopySelectedItemsToClipboard();
+    } else {
+        SetMsgHandled(FALSE);
     }
     return 0;
 }

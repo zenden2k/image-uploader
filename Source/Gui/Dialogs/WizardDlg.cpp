@@ -767,8 +767,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
     }
     
     DragFinish(hDrop);
-    return 0;
-   
+    return 0;  
 }
 
 bool CWizardDlg::LoadUploadEngines(const CString &filename, CString &Error)

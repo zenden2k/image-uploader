@@ -36,6 +36,7 @@ CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync) : CAbstractUp
 int CDefaultUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) {
     fatalError_ = false;
     int res = 0;
+    currentTask_ = task;
     if ( task->type() == UploadTask::TypeFile ) {
         res = doUploadFile(std::dynamic_pointer_cast<FileUploadTask>(task), params);
     } else if ( task->type() == UploadTask::TypeUrl  ) {
@@ -641,7 +642,9 @@ void CDefaultUploadEngine::UploadError(bool error, const std::string errorStr, U
                                        bool writeToBuffer )
 {
     m_LastError.ServerName = m_UploadData->Name;
-
+    if (currentTask_) {
+        m_LastError.FileName = currentTask_->toString();
+    }
     if (m_CurrentAction)
     {
         m_LastError.ActionIndex = m_CurrentAction->Index + 1;

@@ -92,7 +92,7 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     for(size_t i=0; i<files.size(); i++) {
         GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBTEMPLATECOMBO, 1, Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt( WCstringToUtf8( files[i]))) );
     }
-    SendDlgItemMessage(IDC_THUMBTEMPLATECOMBO, CB_SELECTSTRING, -1,(LPARAM)(LPCTSTR) params_.getThumbRef().TemplateName); 
+    SendDlgItemMessage(IDC_THUMBTEMPLATECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) params_.getThumbRef().TemplateName); 
 
     GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 4, TR("Как у изображения"),
         _T("JPEG"), _T("PNG"), _T("GIF"));
