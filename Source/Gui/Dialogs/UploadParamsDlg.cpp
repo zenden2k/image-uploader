@@ -52,7 +52,6 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     SetWindowText(TR("Обработка изображений"));
     TRC(IDC_DEFAULTSETTINGSCHECKBOX, "Настройки по-умолчанию");
     TRC(IDC_IMAGEPARAMETERS, "Параметры изображения");
-    TRC(IDC_ADDFILESIZE, "Текст на эскизе");
     TRC(IDC_PROCESSIMAGESCHECKBOX, "Обрабатывать изображения");
     TRC(IDC_PROFILELABEL, "Профиль:");
     TRC(IDC_THUMBSETTINGS, "Настройки миниатюры");
@@ -263,9 +262,10 @@ void  CUploadParamsDlg::defaultThumbSettingsCheckboxChanged() {
 }
 
 void  CUploadParamsDlg::thumbTextCheckboxChanged() {
+    bool createThumbnails = GuiTools::IsChecked(m_hWnd, IDC_CREATETHUMBNAILS);
     bool isChecked = GuiTools::IsChecked(m_hWnd, IDC_THUMBTEXTCHECKBOX);
     bool useDefaultThumbnailSettings = GuiTools::IsChecked(m_hWnd, IDC_DEFAULTTHUMBSETTINGSCHECKBOX);
-    GuiTools::EnableDialogItem(m_hWnd, IDC_THUMBTEXT, isChecked && !useDefaultThumbnailSettings);
+    GuiTools::EnableDialogItem(m_hWnd, IDC_THUMBTEXT, isChecked && !useDefaultThumbnailSettings && createThumbnails);
 }
 
 LRESULT CUploadParamsDlg::OnClickedThumbTextCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {

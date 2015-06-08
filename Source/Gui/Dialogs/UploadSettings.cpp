@@ -1077,7 +1077,7 @@ LRESULT CUploadSettings::OnShorteningUrlServerButtonClicked(WORD wNotifyCode, WO
 {
     CServerSelectorControl serverSelectorControl(uploadEngineManager_, false, false);
     serverSelectorControl.setServersMask(CServerSelectorControl::smUrlShorteners);
-    serverSelectorControl.setShowImageProcessingParamsLink(false);
+    serverSelectorControl.setShowImageProcessingParams(false);
     serverSelectorControl.setTitle(TR("Сервер для сокращения ссылок"));
     serverSelectorControl.setServerProfile(Settings.urlShorteningServer);
     RECT clientRect;

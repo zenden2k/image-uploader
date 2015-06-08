@@ -70,8 +70,6 @@ void MarkerTool::continueDraw( int x, int y, DWORD flags ) {
 
     oldPoint_.x = x;
     oldPoint_.y = y;
-
-
 }
 
 void MarkerTool::endDraw( int x, int y ) {
@@ -116,10 +114,6 @@ void MarkerTool::drawLine(int x0, int y0, int x1, int y1) {
 
     int yStart = min( y0, y1 );
     int yEnd   = max( y0, y1 );
-
-
-
-
 
     float len = sqrt(  pow((float)x1-x0, 2) + pow ((float) y1- y0, 2 ) );
     if ( ((int)len) == 0 ) {
@@ -275,8 +269,12 @@ void MarkerTool::createCircle()
     Bitmap * circle = new Bitmap(penSize_, penSize_, PixelFormat32bppARGB);
     Graphics gr2(circle);
     SolidBrush br(Color(255,255,0));
-    gr2.FillEllipse( &br, 0, 0, circle->GetWidth(), circle->GetHeight());
-
+    if (penSize_ == 1) {
+        gr2.FillRectangle(&br, 0, 0, 1, 1);
+    } else {
+        gr2.FillEllipse(&br, 0, 0, circle->GetWidth(), circle->GetHeight());
+    }
+   
     BitmapData circleData;
 
     Rect lc(0,0,circle->GetWidth(),circle->GetHeight());

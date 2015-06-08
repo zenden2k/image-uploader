@@ -2053,8 +2053,11 @@ LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     popupMenu.AppendMenu(MF_SEPARATOR, 99999,_T(""));
     popupMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, TR("Показать лог"));
 
-
-    popupMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd);
+    TPMPARAMS excludeArea;
+    ZeroMemory(&excludeArea, sizeof(excludeArea));
+    excludeArea.cbSize = sizeof(excludeArea);
+    excludeArea.rcExclude = rc;
+    popupMenu.TrackPopupMenuEx(TPM_LEFTALIGN|TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
 
     return 0;
 }

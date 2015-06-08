@@ -151,8 +151,6 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     SetDlgItemText(IDC_IMAGEUPLOADERLABEL, buildInfo);
     CenterWindow(GetParent());
 
-
-    TRC(IDC_CONTACTEMAIL, "Контактный e-mail:");
     TRC(IDC_AUTHORLABEL, "Автор:");
     TRC(IDC_WEBSITELABEL, "Веб-сайт:");
     

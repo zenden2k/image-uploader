@@ -252,7 +252,7 @@ bool UploadTask::uploadSuccess(bool withChilds)
 
 void UploadTask::setUploadSuccess(bool success)
 {
-    uploadSuccess_ = true;
+    uploadSuccess_ = success;
 }
 
 UploadTask::Role UploadTask::role() const

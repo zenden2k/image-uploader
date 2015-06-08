@@ -77,7 +77,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 
     fileServerSelector_ = new CServerSelectorControl(uploadEngineManager_);
     fileServerSelector_->setServersMask(CServerSelectorControl::smFileServers);
-    fileServerSelector_->setShowImageProcessingParamsLink(false);
+    fileServerSelector_->setShowImageProcessingParams(false);
     fileServerSelector_->Create(m_hWnd, serverSelectorRect);
     fileServerSelector_->ShowWindow( SW_SHOW );
     fileServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
@@ -111,7 +111,8 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 
     urlShortenerServerSelector_ = new CServerSelectorControl(uploadEngineManager_);
     urlShortenerServerSelector_->setServersMask(CServerSelectorControl::smUrlShorteners);
-    urlShortenerServerSelector_->setShowImageProcessingParamsLink(false);
+    urlShortenerServerSelector_->setShowImageProcessingParams(false);
+    urlShortenerServerSelector_->setShowParamsLink(false);
     urlShortenerServerSelector_->Create(m_hWnd, serverSelectorRect);
     urlShortenerServerSelector_->ShowWindow( SW_SHOW );
     urlShortenerServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);

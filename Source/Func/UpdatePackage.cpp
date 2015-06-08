@@ -278,6 +278,8 @@ bool CUpdateManager::internal_load_update(CString name)
     CUpdateInfo remotePackage;
     NetworkClient nm;
     nm.setTreatErrorsAsWarnings(true);
+    nm.enableResponseCodeChecking(false);
+    nm.setProgressCallback(&CUpdateManager::progressCallback, this);
     CoreFunctions::ConfigureProxy(&nm);
 
     CString url = localPackage.updateUrl();
@@ -286,7 +288,7 @@ bool CUpdateManager::internal_load_update(CString name)
     try {
         nm.doGet(IuCoreUtils::WstringToUtf8((LPCTSTR)url));
     } catch ( NetworkClient::AbortedException&) {
-    return false;
+        return false;
     }
    
     if(nm.responseCode() != 200)
@@ -321,6 +323,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
     CoreFunctions::ConfigureProxy(&nm_);
     nm_.setOutputFile( filenamea);
     m_statusCallback->updateStatus(nCurrentIndex, TR("Downloading file ")+ ui.downloadUrl());
+
     try {
         nm_.doGet(W2U(ui.downloadUrl()));
     } catch (NetworkClient::AbortedException&) {
@@ -385,7 +388,6 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
         ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), CString(_T("Failed to load update file \'")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))).c_str());
         return false;
     }
-
     
     m_PackageFolder = IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFilePath(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))).c_str();
     m_PackageFolder += "\\";

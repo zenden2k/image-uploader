@@ -3,3 +3,5 @@
 - Show maximum file size for servers in SizeExceed dialog, also "For all" button is not working
 - Write unit tests for Scripting API (see examples in sqrat)
 - ReuploadDlg session->addTask usage is not thread safe and may crash!
+- Check creation of new album on server in multithreaded mode (IuNewFolderMark)
+- Console version (display progress of multithreaded upload using pdcurses or ncurses or something like this)

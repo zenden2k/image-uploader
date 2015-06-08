@@ -94,7 +94,8 @@ virtual ~CServerSelectorControl();
     enum ServerMaskEnum{ smAll = 0xffff, smImageServers = 0x1, smFileServers = 0x2, smUrlShorteners = 0x4};
 
     ServerProfile serverProfile() const;
-    void setShowImageProcessingParamsLink(bool show);
+    void setShowImageProcessingParams(bool show);
+    void setShowParamsLink(bool show);
     fastdelegate::FastDelegate1<CServerSelectorControl*> OnChange;
 private:
     CComboBoxEx serverComboBox_;
@@ -105,6 +106,7 @@ private:
     ServerProfile serverProfile_;
     bool showDefaultServerItem_;
     bool showImageProcessingParams_;
+    bool showParamsLink_;
     void addAccount();
     CString currentUserName_;
     int serversMask_;

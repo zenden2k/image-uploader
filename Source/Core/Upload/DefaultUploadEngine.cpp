@@ -125,6 +125,7 @@ void CDefaultUploadEngine::prepareUpload() {
     m_Vars["_RAND16BITS"] = IuCoreUtils::toString(n);
     m_Vars["_THUMBWIDTH"] = IuCoreUtils::toString(m_ThumbnailWidth);
     m_Vars["_THREADID"] = IuCoreUtils::ThreadIdToString(currentThreadId);
+    m_NetworkClient->enableResponseCodeChecking(false);
 }
 
 bool CDefaultUploadEngine::executeActions() {

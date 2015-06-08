@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1432223426.dat" TimeStamp="1432223426" Date="21.05.2015 17:50:26" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="e20380b10c92d56d9d02dcfdf7aeb8f3">
+<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1433144354.dat" TimeStamp="1433144354" Date="01.06.2015 09:39:14" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="eaee555801105c39c08b2fba5c111e13">
   <Info>
-[+] imagebam.com
-[f] fotosklad.org.ua (keep original image size)
-[-] pikucha.ru
+[+] sharenxs.com
+
+File hostings (multi-upload): thanks to Alex_Qwerty
+[+] multiupload.biz
+[+] directmirror.com
+[+] multi.hotshare.biz
+[+] uploadmagnet.com
+[+] multimirrorupload.com
 </Info>
 </UpdateInfo>

@@ -17,12 +17,12 @@
     limitations under the License.
 
 */
+
+#include "ThumbSettingsPage.h"
+
 #include "atlheaders.h"
 #include "3rdpart/GdiplusH.h"
 #include <GdiPlusPixelFormats.h>
-#include "ThumbSettingsPage.h"
-
-#include <uxtheme.h>
 #include "LogWindow.h"
 #include "Func/LangClass.h"
 #include "Core/Settings.h"
@@ -35,17 +35,14 @@
 #include "Func/WinUtils.h"
 #include "Core/Images/Utils.h"
 #include "Core/Video/GdiPlusImage.h"
-
+#include "Core/ServiceLocator.h"
 
 #pragma comment( lib, "uxtheme.lib" )
-#include <Core/Video/GdiPlusImage.h>
-#include <Core/ServiceLocator.h>
 
-// CThumbSettingsPage
 CThumbSettingsPage::CThumbSettingsPage()
 {
     params_ = Settings.imageServer.getImageUploadParams().getThumb();
-   m_CatchFormChanges = false;
+    m_CatchFormChanges = false;
 }
 
 CThumbSettingsPage::~CThumbSettingsPage()
@@ -84,48 +81,47 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
         _T("JPEG"), _T("PNG"), _T("GIF"));
 
     std::vector<CString> files;
-    CString folder = IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\");
-    WinUtils::GetFolderFileList(files, folder , _T("*.xml"));
-    for(size_t i=0; i<files.size(); i++)
-        GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt( WCstringToUtf8( files[i]))) );
-    
-    
+    CString folder = IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\");
+    WinUtils::GetFolderFileList(files, folder, _T("*.xml"));
+    for (size_t i = 0; i < files.size(); i++) {
+        GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, U2W(IuCoreUtils::ExtractFileNameNoExt(W2U(files[i]))));
+    }
+
     SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_SETCHECK, params_.AddImageSize);
     SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1), (LPARAM)(LPCTSTR)params_.TemplateName);
     SetDlgItemText(IDC_THUMBTEXT, params_.Text);
-    SetDlgItemInt(IDC_THUMBQUALITYEDIT,  params_.Quality);
+    SetDlgItemInt(IDC_THUMBQUALITYEDIT, params_.Quality);
     SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, params_.Format);
-    SendDlgItemMessage(IDC_WIDTHRADIO, BM_SETCHECK,  params_.ResizeMode == ThumbCreatingParams::trByWidth);
-     SendDlgItemMessage(IDC_HEIGHTRADIO, BM_SETCHECK,  params_.ResizeMode == ThumbCreatingParams::trByHeight);
-    SetDlgItemInt(IDC_WIDTHEDIT,params_.Size);
-   SetDlgItemInt(IDC_HEIGHTEDIT,params_.Size);
+    SendDlgItemMessage(IDC_WIDTHRADIO, BM_SETCHECK, params_.ResizeMode == ThumbCreatingParams::trByWidth);
+    SendDlgItemMessage(IDC_HEIGHTRADIO, BM_SETCHECK, params_.ResizeMode == ThumbCreatingParams::trByHeight);
+    SetDlgItemInt(IDC_WIDTHEDIT, params_.Size);
+    SetDlgItemInt(IDC_HEIGHTEDIT, params_.Size);
     BOOL b;
     ThumbBackground.SetColor(params_.BackgroundColor);
-    OnThumbComboChanged(0,0,0,b);
+    OnThumbComboChanged(0, 0, 0, b);
     ::EnableWindow(GetDlgItem(IDC_WIDTHEDIT), params_.ResizeMode == ThumbCreatingParams::trByWidth);
-   ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT), ThumbCreatingParams::trByHeight);
- m_CatchFormChanges = true;
+    ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT), ThumbCreatingParams::trByHeight);
+    m_CatchFormChanges = true;
     return 1;  // Let the system set the focus
 }
 
 bool CThumbSettingsPage::Apply()
 {
-    params_.AddImageSize =  SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
-    TCHAR buf[256] =_T("\0");
+    params_.AddImageSize = SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
+    TCHAR buf[256] = _T("\0");
     GetDlgItemText(IDC_THUMBSCOMBO, buf, 255);
-     params_.TemplateName =buf;
-     params_.Format = static_cast<ThumbCreatingParams::ThumbFormatEnum>(SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_GETCURSEL ));
+    params_.TemplateName = buf;
+    params_.Format = static_cast<ThumbCreatingParams::ThumbFormatEnum>(SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_GETCURSEL));
     params_.Quality = GetDlgItemInt(IDC_THUMBQUALITYEDIT);
     params_.ResizeMode = SendDlgItemMessage(IDC_WIDTHRADIO, BM_GETCHECK) == FALSE ? ThumbCreatingParams::trByHeight : ThumbCreatingParams::trByWidth;
     params_.Text = GuiTools::GetWindowText(GetDlgItem(IDC_THUMBTEXT));
-    params_.Size  = params_.ResizeMode == ThumbCreatingParams::trByWidth ?  GetDlgItemInt(IDC_WIDTHEDIT) : GetDlgItemInt(IDC_HEIGHTEDIT);
+    params_.Size = params_.ResizeMode == ThumbCreatingParams::trByWidth ? GetDlgItemInt(IDC_WIDTHEDIT) : GetDlgItemInt(IDC_HEIGHTEDIT);
     params_.BackgroundColor = ThumbBackground.GetColor();
     ImageUploadParams iup = Settings.imageServer.getImageUploadParamsRef();
     iup.setThumb(params_);
     Settings.imageServer.setImageUploadParams(iup);
 
-   for(std::map<std::string, Thumbnail*>::const_iterator it = thumb_cache_.begin(); it!= thumb_cache_.end(); ++it)
-    {
+    for (std::map<std::string, Thumbnail*>::const_iterator it = thumb_cache_.begin(); it != thumb_cache_.end(); ++it) {
         it->second->SaveToFile();
     }
     return TRUE;
@@ -265,7 +261,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
     
     Bitmap *toUse = bm->Clone(0,300, bm->GetWidth(), bm->GetHeight()-300, PixelFormatDontCare);
     GdiPlusImage source(toUse);
-    std::shared_ptr<AbstractImage> result = conv.createThumbnail(&source,  50 * 1024, 0);
+    std::shared_ptr<AbstractImage> result = conv.createThumbnail(&source,  50 * 1024, 1);
     if(result)    
         img.LoadImage(0, dynamic_cast<GdiPlusImage*>(result.get())->getBitmap());
 

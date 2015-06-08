@@ -43,6 +43,7 @@ CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngine
         showDefaultServerItem_ = false;
         serversMask_ = smImageServers | smFileServers;
         showImageProcessingParams_ = true;
+        showParamsLink_ = true;
         defaultServer_ = defaultServer;
         iconBitmapUtils_ = new IconBitmapUtils();
         previousSelectedServerIndex = -1;
@@ -68,7 +69,7 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
     CString linkLabel = showImageProcessingParams_ ? TR("Обработка изображений...") : TR("Параметры...");
     imageProcessingParamsLink_.SetLabel(linkLabel);
     imageProcessingParamsLink_.SetToolTipText(linkLabel);
-
+    imageProcessingParamsLink_.ShowWindow(showParamsLink_ ? SW_SHOW : SW_HIDE);
     accountLink_.SubclassWindow(GetDlgItem(IDC_ACCOUNTINFO));
     accountLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON ; 
     accountLink_.m_clrLink = CSettings::DefaultLinkColor;
@@ -611,8 +612,12 @@ void CServerSelectorControl::createSettingsButton() {
     settingsButtonToolbar_.AddButton(IDC_EDIT, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Настройки сервера и параметры авторизации"), 0);
 }
 
-void CServerSelectorControl::setShowImageProcessingParamsLink(bool show) {
+void CServerSelectorControl::setShowImageProcessingParams(bool show) {
     showImageProcessingParams_ = show;
+}
+
+void CServerSelectorControl::setShowParamsLink(bool show) {
+    showParamsLink_ = show;
 }
 
 LRESULT CServerSelectorControl::OnImageProcessingParamsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {

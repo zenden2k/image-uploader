@@ -723,19 +723,23 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
             ShowBaloonTip( TR("Для подробностей смотрите лог."), TR("Не удалось сократить ссылку...") );
         }
     } else {
-        CString url;
-        UploadResult* uploadResult = task->uploadResult();
-        bool usedDirectLink = true;
-        if ((Settings.UseDirectLinks || uploadResult->downloadUrl.empty()) && !uploadResult->directUrl.empty()) {
+        if (ok) {
+            CString url;
+            UploadResult* uploadResult = task->uploadResult();
+            bool usedDirectLink = true;
+            if ((Settings.UseDirectLinks || uploadResult->downloadUrl.empty()) && !uploadResult->directUrl.empty()) {
 
-            url = Utf8ToWstring(!uploadResult->directUrlShortened.empty() ? uploadResult->directUrlShortened: uploadResult->directUrl).c_str();
+                url = Utf8ToWstring(!uploadResult->directUrlShortened.empty() ? uploadResult->directUrlShortened : uploadResult->directUrl).c_str();
+            } else if ((!Settings.UseDirectLinks || uploadResult->directUrl.empty()) && !uploadResult->downloadUrl.empty()) {
+                url = Utf8ToWstring(!uploadResult->downloadUrlShortened.empty() ? uploadResult->downloadUrlShortened : uploadResult->downloadUrl).c_str();
+                usedDirectLink = false;
+            }
+            lastUploadedItem_ = task;
+            ShowImageUploadedMessage(url);
+        } else {
+            ShowBaloonTip(TR("Для подробностей смотрите лог."), TR("Не удалось загрузить снимок :("));
         }
-        else if ((!Settings.UseDirectLinks || uploadResult->directUrl.empty()) && !uploadResult->downloadUrl.empty()) {
-            url = Utf8ToWstring(!uploadResult->downloadUrlShortened.empty() ? uploadResult->downloadUrlShortened : uploadResult->downloadUrl).c_str();
-            usedDirectLink = false;
-        }
-        lastUploadedItem_ = task;
-        ShowImageUploadedMessage(url);
+        
     }
     return;
 }
