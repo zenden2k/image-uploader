@@ -37,23 +37,23 @@ CThumbEditor::~CThumbEditor()
 
 LRESULT CThumbEditor::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    TRC(IDCANCEL, "Отмена");
+    TRC(IDCANCEL, "Cancel");
     TRC(IDOK, "OK");
-    TRC(IDC_THUMBSTROKECOLOR, "Цвет каймы:");
-    TRC(IDC_COLORSGROUP, "Цвета");
-    TRC(IDC_FRAMECOLORLABEL, "Цвет рамки:");
-    TRC(IDC_GRADIENTCOLOR1LABEL, "Цвет градиента 1:");
-    TRC(IDC_GRADIENTCOLOR2LABEL, "Цвет градиента 2:");
-    TRC(IDC_DRAWFRAME, "Обводить в рамку");
-    TRC(IDC_FRAMEWIDTHLABEL, "Толщина:");
-    TRC(IDC_THUMBPARAMS, "Параметры текста:");
-    TRC(IDC_THUMBTEXTCOLORLABEL, "Цвет текста:");
-    TRC(IDC_THUMBSTROKECOLORLABEL, "Цвет обводки:");
-    TRC(IDC_THUMBTEXTLABEL, "Текст:");
-    TRC(IDC_THUMBFONT, "Шрифт...");
-    TRC(IDC_ADDFILESIZE, "Выводить текст");
+    TRC(IDC_THUMBSTROKECOLOR, "Stroke color:");
+    TRC(IDC_COLORSGROUP, "Colors");
+    TRC(IDC_FRAMECOLORLABEL, "Frame color:");
+    TRC(IDC_GRADIENTCOLOR1LABEL, "Gradient color 1:");
+    TRC(IDC_GRADIENTCOLOR2LABEL, "Gradient color 2:");
+    TRC(IDC_DRAWFRAME, "Draw frame");
+    TRC(IDC_FRAMEWIDTHLABEL, "Width:");
+    TRC(IDC_THUMBPARAMS, "Text Settings:");
+    TRC(IDC_THUMBTEXTCOLORLABEL, "Text color:");
+    TRC(IDC_THUMBSTROKECOLORLABEL, "Stroke color:");
+    TRC(IDC_THUMBTEXTLABEL, "Text:");
+    TRC(IDC_THUMBFONT, "Font...");
+    TRC(IDC_ADDFILESIZE, "Add text");
     
-    SetWindowText(TR("Редактирование шаблона миниатюры"));
+    SetWindowText(TR("Thumbnail Preset Editor"));
     FrameColor.SubclassWindow(GetDlgItem(IDC_FRAMECOLOR));
     Color1.SubclassWindow(GetDlgItem(IDC_COLOR1));
     Color2.SubclassWindow(GetDlgItem(IDC_COLOR2));

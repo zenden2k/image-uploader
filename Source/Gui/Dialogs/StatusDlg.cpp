@@ -39,7 +39,7 @@ LRESULT CStatusDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     CenterWindow(GetParent());
     m_bNeedStop = false;
     SetTimer(1, 500);
-    TRC(IDCANCEL, "Остановить");
+    TRC(IDCANCEL, "Stop");
     GuiTools::MakeLabelBold(GetDlgItem(IDC_TITLE));
     return 1;  // Let the system set the focus
 }

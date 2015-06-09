@@ -406,7 +406,7 @@ CString SelectFolderDialog(HWND hWndParent, CString initialDir){
         }
         
     } else {
-        CFolderDialog fd(hWndParent,TR("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE );
+        CFolderDialog fd(hWndParent,TR("Select folder"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE );
         if ( !initialDir.IsEmpty() ) {
             fd.SetInitialFolder(initialDir, true);
         }

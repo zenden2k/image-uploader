@@ -77,21 +77,21 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     SetDlgItemInt(IDC_NUMOFFRAMESEDIT, Settings.VideoSettings.NumOfFrames);
     SetDlgItemInt(IDC_QUALITY, Settings.VideoSettings.JPEGQuality);
 
-    TRC(IDC_EXTRACTFRAMES, "Извлечение видео кадров");
-    TRC(IDC_SELECTVIDEO, "Обзор...");
+    TRC(IDC_EXTRACTFRAMES, "Extracting frames from video");
+    TRC(IDC_SELECTVIDEO, "Browse...");
 
-    TRC(IDC_PATHTOFILELABEL, "Имя файла:");
-    TRC(IDCANCEL, "Остановить");
-    TRC(IDC_DEINTERLACE, "Деинтерлейсинг");
-    TRC(IDC_FRAMELABEL, "Кол-во кадров:");
-    TRC(IDC_MULTIPLEFILES, "множество файлов");
-    TRC(IDC_SAVEASONE, "один файл");
-    TRC(IDC_SAVEAS, "Сохранить как:");
-    TRC(IDC_GRAB, "Извлечь");
-    TRC(IDC_QUALITYLABEL, "Качество:");
-    TRC(IDC_GRABBERPARAMS, "Параметры...");
-    TRC(IDC_FILEINFOBUTTON, "Информация о файле");
-    openInFolderLink_.SetLabel(TR("Открыть папку с изображениями"));
+    TRC(IDC_PATHTOFILELABEL, "Filename:");
+    TRC(IDCANCEL, "Stop");
+    TRC(IDC_DEINTERLACE, "Deinterlace");
+    TRC(IDC_FRAMELABEL, "Number of frames:");
+    TRC(IDC_MULTIPLEFILES, "Multiple files");
+    TRC(IDC_SAVEASONE, "Single file");
+    TRC(IDC_SAVEAS, "Save as:");
+    TRC(IDC_GRAB, "Grab");
+    TRC(IDC_QUALITYLABEL, "Quality:");
+    TRC(IDC_GRABBERPARAMS, "Settings...");
+    TRC(IDC_FILEINFOBUTTON, "Information about file");
+    openInFolderLink_.SetLabel(TR("Open containing folder"));
     openInFolderLink_.SubclassWindow(GetDlgItem(IDC_OPENFOLDER));
     openInFolderLink_.m_dwExtendedStyle |= HLINK_COMMANDBUTTON | HLINK_UNDERLINEHOVER; 
     openInFolderLink_.m_clrLink = CSettings::DefaultLinkColor;
@@ -192,11 +192,11 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
     }*/
     //videoEngineIndex ? CSettings::VideoEngineFFmpeg : CSettings::VideoEngineDirectshow;
 
-    SetNextCaption(TR("Далее >"));
+    SetNextCaption(TR("Next >"));
     EnableNext(false);
     EnablePrev(false);
     EnableExit(false);
-    TRC(IDC_STOP, "Остановить");
+    TRC(IDC_STOP, "Stop");
 
     NumOfFrames = GetDlgItemInt(IDC_NUMOFFRAMESEDIT);
     if (!NumOfFrames)
@@ -240,7 +240,7 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
     using namespace Gdiplus;
     CString fileNameBuffer;
 
-    GrabInfo(CString(TR("Извлекаю кадр ")) + title);
+    GrabInfo(CString(TR("Extracting frame ")) + title);
 
 
     if (SendDlgItemMessage(IDC_DEINTERLACE, BM_GETCHECK) == BST_CHECKED)
@@ -327,7 +327,7 @@ int CVideoGrabberPage::ThreadTerminated()
     ::ShowWindow(GetDlgItem(IDC_STOP), SW_HIDE);
     ::ShowWindow(GetDlgItem(IDC_PROGRESSBAR), SW_HIDE);
     if (CanceledByUser)
-        GrabInfo(TR("Извлечение кадров было остановлено пользователем."));
+        GrabInfo(TR("Extracting video frames was stopped by user."));
 
     ::ShowWindow(GetDlgItem(IDC_FRAMELABEL), SW_SHOW);
     ::ShowWindow(GetDlgItem(IDC_DEINTERLACE), SW_SHOW);
@@ -349,7 +349,7 @@ LRESULT CVideoGrabberPage::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     TCHAR szBuffer[256];
     if (TimerInc > 0)
     {
-        wsprintf(szBuffer, CString(TR("Остановить")) + _T(" (%d)"), TimerInc);
+        wsprintf(szBuffer, CString(TR("Stop")) + _T(" (%d)"), TimerInc);
         SetDlgItemText(IDC_STOP, szBuffer);
     }
     else
@@ -472,9 +472,9 @@ LRESULT CVideoGrabberPage::OnBnClickedButton1(WORD /*wNotifyCode*/, WORD /*wID*/
 {
     TCHAR Buf[MAX_PATH*4];
     GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
-        CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv, mkv ...)"),
+        CString(TR("Video files"))+ _T(" (avi, mpg, vob, wmv, mkv ...)"),
         Settings.prepareVideoDialogFilters(),
-        TR("Все файлы"),
+        TR("All files"),
         _T("*.*"));
 
     CFileDialog fd(true,0,0,4|2,Buf,m_hWnd);
@@ -531,7 +531,7 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
 
 bool CVideoGrabberPage::OnShow()
 {
-    SetNextCaption(TR("Извлечь"));
+    SetNextCaption(TR("Grab"));
     SetDlgItemText(IDC_FILEEDIT, m_szFileName);
     ::ShowWindow(GetDlgItem(IDC_FILEINFOBUTTON), (*MediaInfoDllPath) ? SW_SHOW : SW_HIDE);
     EnableNext(true);
@@ -566,7 +566,7 @@ void CVideoGrabberPage::OnFrameGrabbingFinished()
     ThreadTerminated();
     if (!CanceledByUser)
     {
-        GrabInfo(TR("Извлечение кадров было завершено."));
+        GrabInfo(TR("Extracting video frames was finished."));
     }
 }
 

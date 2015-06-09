@@ -53,7 +53,7 @@ LRESULT CInputDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     SetWindowText(title_);
     SetDlgItemText(IDC_DESCRIPTIONLABEL, description_);
     SetDlgItemText(IDC_VALUEEDIT, value_);
-    TRC(IDCANCEL, "Отмена");
+    TRC(IDCANCEL, "Cancel");
     TRC(IDOK, "OK");
 
     imgControl.SubclassWindow(GetDlgItem(IDC_IMAGE));

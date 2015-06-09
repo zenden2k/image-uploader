@@ -45,15 +45,15 @@ LRESULT CContextMenuItemDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
     imageServerSelector_ = new CServerSelectorControl(uploadEngineManager_, false);
     imageServerSelector_->Create(m_hWnd, serverSelectorRect);
-    imageServerSelector_->setTitle(TR("Выберите сервер"));
+    imageServerSelector_->setTitle(TR("Choose server"));
     imageServerSelector_->ShowWindow( SW_SHOW );
     imageServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
     imageServerSelector_->setServerProfile(Settings.imageServer);
 
-    SetWindowText(TR("Добавить пункт меню"));
-    TRC(IDC_MENUITEMLABEL, "Название:");
+    SetWindowText(TR("Add Menu Item"));
+    TRC(IDC_MENUITEMLABEL, "Name:");
 
-    TRC(IDCANCEL, "Отмена");
+    TRC(IDCANCEL, "Cancel");
     generateTitle();
     
     ::SetFocus(GetDlgItem(IDC_MENUITEMTITLEEDIT));
@@ -64,19 +64,19 @@ LRESULT CContextMenuItemDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
 {    
     title_ = GuiTools::GetDlgItemText(m_hWnd, IDC_MENUITEMTITLEEDIT);
     if ( title_.IsEmpty() ) {
-        MessageBox(TR("Название не может быть пустым"),TR("Ошибка"), MB_ICONERROR);
+        MessageBox(TR("Name cannot be empty"),TR("Error"), MB_ICONERROR);
         return 0;
     }
     serverProfile_ = imageServerSelector_->serverProfile();
     if ( serverProfile_.isNull() ) {
-        MessageBox(TR("Вы не выбрали сервер"),TR("Ошибка"), MB_ICONERROR);
+        MessageBox(TR("You have not selected server"),TR("Error"), MB_ICONERROR);
         return 0;
     }
 
     if ( !imageServerSelector_->isAccountChosen() ) {
         CString message;
-        message.Format(TR("Вы не выбрали аккаунт для сервера \"%s\""), imageServerSelector_->serverProfile().serverName());
-        MessageBox(message, TR("Ошибка"));
+        message.Format(TR("You have not selected account for server \"%s\""), imageServerSelector_->serverProfile().serverName());
+        MessageBox(message, TR("Error"));
         return 0;
     }
 
@@ -119,7 +119,7 @@ void CContextMenuItemDlg::generateTitle()
     if ( !titleEdited_ ) {    
         ServerProfile sp = imageServerSelector_->serverProfile();
         CString title;
-        title.Format(TR("Загрузить на %s"), IuCoreUtils::Utf8ToWstring(sp.serverName()).c_str());
+        title.Format(TR("Upload to %s"), IuCoreUtils::Utf8ToWstring(sp.serverName()).c_str());
         CString additional;
         if ( !sp.profileName().empty()) {
             additional += Utf8ToWCstring(sp.profileName());
@@ -129,7 +129,7 @@ void CContextMenuItemDlg::generateTitle()
                 additional += _T(", ");
             }
             CString temp;
-            temp.Format(TR("папка \"%s\""), (LPCTSTR) Utf8ToWCstring(sp.folderTitle()) );
+            temp.Format(TR("folder \"%s\""), (LPCTSTR) Utf8ToWCstring(sp.folderTitle()) );
             additional+= temp;
         }
         if ( !additional.IsEmpty() ) {

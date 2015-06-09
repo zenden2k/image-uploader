@@ -43,19 +43,19 @@ CSizeExceed::~CSizeExceed()
 
 void CSizeExceed::Translate()
 {
-    TRC(IDC_WHATTODO, "Измените настройки изображения или выберите другой сервер, чтобы изображение могло быть загружено.");
-    TRC(IDC_IMAGESETTINGS, "Параметры изображения");
-    TRC(IDC_FORMATLABEL, "Формат:");
-    TRC(IDC_QUALITYLABEL, "Качество:");
-    TRC(IDC_RESIZEBYWIDTH, "Изменение ширины:");
-    TRC(IDC_SAVEPROPORTIONS, "Сохранять пропорции");
-    TRC(IDC_XLABEL, "и/или высоты:");
+    TRC(IDC_WHATTODO, "Change image processing settings or choose another server, so your image can be uploaded.");
+    TRC(IDC_IMAGESETTINGS, "Image settings");
+    TRC(IDC_FORMATLABEL, "Format:");
+    TRC(IDC_QUALITYLABEL, "Quality:");
+    TRC(IDC_RESIZEBYWIDTH, "Change width:");
+    TRC(IDC_SAVEPROPORTIONS, "Constrain proportions");
+    TRC(IDC_XLABEL, "and/or height:");
     TRC(IDOK, "OK");
-    TRC(IDC_FORALL, "Для всех");
-    TRC(IDCANCEL, "Игнорировать");
-    TRC(IDC_SELECTSERVERLABEL, "Сервер для загрузки изображений:");
-    TRC(IDC_KEEPASIS, "Оставить без изменения");
-    SetWindowText(TR("Превышение размера"));
+    TRC(IDC_FORALL, "To all");
+    TRC(IDCANCEL, "Ignore");
+    TRC(IDC_SELECTSERVERLABEL, "Server for images:");
+    TRC(IDC_KEEPASIS, "Keep as is");
+    SetWindowText(TR("File size exceeding"));
 }
 
 LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -72,7 +72,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     RECT serverSelectorRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_SERVERPLACEHOLDER);
     imageServerSelector_.reset(new CServerSelectorControl(uploadEngineManager_, true));
     imageServerSelector_->Create(m_hWnd, serverSelectorRect);
-    imageServerSelector_->setTitle(fileTask_->isImage() ? TR("Сервер для хранения изображений") : TR("Сервер для хранения других типов файлов"));
+    imageServerSelector_->setTitle(fileTask_->isImage() ? TR("Server for uploading images") : TR("Server for other file types"));
     if (!fileTask_->isImage()) {
         imageServerSelector_->setServersMask(CServerSelectorControl::smFileServers);
     }
@@ -98,13 +98,13 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         params.Format(_T(" %s (%s)"), (LPCTSTR)myExtractFileName(m_szFileName), (LPCTSTR)buf2);
     }
    
-    name = TR("Файл") + params;
+    name = TR("File") + params;
 
     SetDlgItemText(IDC_FILEEXCEEDNAME, name);
     WinUtils::NewBytesToString(m_EngineList->byName(fileTask_->serverProfile().serverName())->MaxFileSize, buf2, 25);
 
     TCHAR szBuf[1000];
-    wsprintf(szBuf, TR("Файл превышает максимальный размер, допустимый для загрузки на сервер %s (%s)."),
+    wsprintf(szBuf, TR("File exceeds filesize limit of \"%s\" server (%s)."),
         (LPCTSTR)U2W(fileTask_->serverProfile().serverName()), buf2);
     SetDlgItemText(IDC_FILEEXCEEDSIZE2, szBuf);
     Translate();

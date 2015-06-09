@@ -38,19 +38,19 @@ CNewFolderDlg::~CNewFolderDlg()
 
 LRESULT CNewFolderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    TRC(IDC_FOLDERNAMELABEL, "Название папки/альбома:");
-    TRC(IDC_FOLDERDESCRLABEL, "Описание:");
-    TRC(IDC_ACCESSTYPELABEL, "Доступ:");
-    TRC(IDCANCEL, "Отмена");
+    TRC(IDC_FOLDERNAMELABEL, "Folder name:");
+    TRC(IDC_FOLDERDESCRLABEL, "Summary:");
+    TRC(IDC_ACCESSTYPELABEL, "Access:");
+    TRC(IDCANCEL, "Cancel");
     TRC(IDOK, "OK");
     
     
     DlgResize_Init();
     CenterWindow(GetParent());
     if(m_bCreateNewFolder)
-        SetWindowText(TR("Новая папка (альбом)"));
+        SetWindowText(TR("Create folder (album)"));
     else
-        SetWindowText(TR("Редактирование папки"));
+        SetWindowText(TR("Edit folder"));
     SetDlgItemText(IDC_FOLDERTITLEEDIT, Utf8ToWCstring(m_folder.title));
     CString text = Utf8ToWCstring(m_folder.summary);
     text.Replace(_T("\r"), _T(""));

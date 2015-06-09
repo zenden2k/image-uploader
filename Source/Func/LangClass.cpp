@@ -24,6 +24,7 @@
 #include "Func/WinUtils.h"
 #include "Core/AppParams.h"
 #include "Core/Utils/CoreUtils.h"
+#include "Core/Utils/StringUtils.h"
 
 CLang Lang;
 
@@ -93,23 +94,25 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
 
     CString Filename = CString(m_Directory) + Lang + _T(".lng");
 
-    FILE* f = _tfopen(Filename, _T("rb"));
-    if (!f) {
-        if ( Lang == CString("Русский") ) {
-            AppParams::instance()->setLanguageFile(IuCoreUtils::WstringToUtf8((LPCTSTR)(CString(m_Directory) + "Russian" + _T(".lng"))));
+    std::string fileContents;
+   
+    if (!IuCoreUtils::ReadUtf8TextFile(W2U(Filename), fileContents)) {
+        if ( Lang == CString("English")  ) {
+            AppParams::instance()->setLanguageFile(IuCoreUtils::WstringToUtf8((LPCTSTR)(CString(m_Directory) + "English" + _T(".lng"))));
         }
         return false;
     }
 
-    fseek(f, 2, 0);
-    TCHAR Buffer[1024];
+    std::vector<std::string> lines;
+    CString Buffer;
     TCHAR Name[128];
     TCHAR Text[512];
+    IuStringUtils::Split(fileContents, "\r\n", lines, -1);
 
-    while (!feof(f))
-    {
-        *Buffer = *Name = *Text = 0;
-        fgetline(Buffer, sizeof(Buffer) / sizeof(TCHAR), f);
+    for (const auto& line : lines) {
+        Buffer.Empty();
+        *Name = *Text = 0;
+        Buffer = U2W(line);
 
         if (*Buffer == _T('#'))
             continue;
@@ -127,8 +130,6 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
 
         if (!NameLen || !TextLen)
             continue;
-
-        
 
         TCHAR* pName = new TCHAR[NameLen + 1];
         TCHAR* pText = new TCHAR[TextLen + 1];
@@ -151,7 +152,6 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
         StringList[hash] = tli;
     }
 
-    fclose(f);
     m_sLang = Lang;
     AppParams::instance()->setLanguageFile(IuCoreUtils::WstringToUtf8((LPCTSTR)Filename));
     return true;

@@ -40,12 +40,12 @@ LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 {
     TabBackgroundFix(m_hWnd);
     m_HotkeyList.m_hWnd = GetDlgItem(IDC_HOTKEYLIST);
-    TRC(IDC_EDITHOTKEY, "Редактировать...");
-    TRC(IDC_ATTENTION, "Внимание! Глобальные сочетания действуют, только если включена опция \"Показывать иконку в трее\".");
+    TRC(IDC_EDITHOTKEY, "Edit hotkey...");
+    TRC(IDC_ATTENTION, "Attention! Global hotkeys are active only when tray icon is shown.");
     GuiTools::MakeLabelBold(GetDlgItem(IDC_ATTENTION));
-    m_HotkeyList.AddColumn(TR("Действие"),0);
-    m_HotkeyList.AddColumn(TR("Локальные"),1);
-    m_HotkeyList.AddColumn(TR("Глобальные"),2);
+    m_HotkeyList.AddColumn(TR("Action"),0);
+    m_HotkeyList.AddColumn(TR("Local"),1);
+    m_HotkeyList.AddColumn(TR("Global"),2);
     CDC hdc = GetDC();
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     //float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
@@ -134,8 +134,8 @@ LRESULT CHotkeySettingsPage::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
         ::ScreenToClient(hwnd, &ClientPoint);
     }
     HMENU TrayMenu = ::CreatePopupMenu();
-    GuiTools::InsertMenu(TrayMenu, 0, IDM_CLEARHOTKEY, TR("Очистить")); 
-    GuiTools::InsertMenu(TrayMenu, 1, IDM_CLEARALLHOTKEYS, TR("Очистить всё")); 
+    GuiTools::InsertMenu(TrayMenu, 0, IDM_CLEARHOTKEY, TR("Clear")); 
+    GuiTools::InsertMenu(TrayMenu, 1, IDM_CLEARALLHOTKEYS, TR("Clear all")); 
     ::TrackPopupMenu(TrayMenu, TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, 0,m_hWnd,0);
     return 0;
 }
@@ -169,27 +169,27 @@ CHotkeyList::CHotkeyList()
 #undef TR
 #define TR
     m_bChanged = false;
-    AddItem(TR("Нет действия"), _T(""), 0);
-    AddItem(TR("Контекстное меню значка"), _T("contextmenu"), IDM_CONTEXTMENU);
-    AddItem(TR("Загрузить изображения"),_T("addimages"), IDM_UPLOADIMAGES);
-    AddItem(TR("Загрузить файлы"),_T("addimages"), IDM_UPLOADFILES);
-    AddItem(TR("Загрузить папку"),_T("addfolder"), IDM_ADDFOLDERS);
-    AddItem(TR("Импорт видео"),_T("importvideo"), IDM_IMPORTVIDEO);
-    AddItem(TR("Скриншот"),_T("screenshotdlg"), IDM_SCREENSHOTDLG);
-    AddItem(TR("Снимок прямоугольной области"),_T("regionscreenshot"), IDM_REGIONSCREENSHOT);
-    AddItem(TR("Снимок всего экрана"),_T("fullscreenshot"), IDM_FULLSCREENSHOT);
-    AddItem(TR("Снимок активного окна"),_T("windowscreenshot"), IDM_WINDOWSCREENSHOT);
-    AddItem(TR("Снимок выбранного элемента"),_T("windowhandlescreenshot"), IDM_WINDOWHANDLESCREENSHOT);
-    AddItem(TR("Снимок произвольной формы"),_T("freeformscreenshot"), IDM_FREEFORMSCREENSHOT);
-    AddItem(TR("Показать окно программы"),_T("showmainwindow"), IDM_SHOWAPPWINDOW);
-    AddItem(TR("Настройки"),_T("settings"), IDM_SETTINGS);
-    AddItem(TR("Вставить из буфера"),_T("paste"), IDM_PASTEFROMCLIPBOARD,0x56, MOD_CONTROL); // Ctrl+V keyboard shortcut
-    AddItem(TR("Изображения из Web"),_T("downloadimages"), IDM_PASTEFROMWEB); // Ctrl+V keyboard shortcut
-    AddItem(TR("Информация о медиафайле"),_T("mediainfo"), IDM_MEDIAINFO);
-    AddItem(TR("Выход"),_T("mediainfo"), IDM_EXIT);
-    AddItem(TR("Сократить ссылку"),_T("shortenurl"), IDM_SHORTENURL);
-    AddItem(TR("Сократить ссылку из буфера"),_T("shortenurlclipboard"), IDM_SHORTENURLCLIPBOARD);
-    AddItem(TR("Перезаливка изображений"),_T("reuploadimages"), IDM_REUPLOADIMAGES);
+    AddItem(TR("Do nothing"), _T(""), 0);
+    AddItem(TR("Tray icon context menu"), _T("contextmenu"), IDM_CONTEXTMENU);
+    AddItem(TR("Upload images"),_T("addimages"), IDM_UPLOADIMAGES);
+    AddItem(TR("Upload files"),_T("addimages"), IDM_UPLOADFILES);
+    AddItem(TR("Upload folder"),_T("addfolder"), IDM_ADDFOLDERS);
+    AddItem(TR("Import Video File"),_T("importvideo"), IDM_IMPORTVIDEO);
+    AddItem(TR("Screenshot"),_T("screenshotdlg"), IDM_SCREENSHOTDLG);
+    AddItem(TR("Capture Rectangular Region"),_T("regionscreenshot"), IDM_REGIONSCREENSHOT);
+    AddItem(TR("Capture the Entire Screen"),_T("fullscreenshot"), IDM_FULLSCREENSHOT);
+    AddItem(TR("Capture the Active Window"),_T("windowscreenshot"), IDM_WINDOWSCREENSHOT);
+    AddItem(TR("Capture Selected Object"),_T("windowhandlescreenshot"), IDM_WINDOWHANDLESCREENSHOT);
+    AddItem(TR("Freehand Capture"),_T("freeformscreenshot"), IDM_FREEFORMSCREENSHOT);
+    AddItem(TR("Show program's window"),_T("showmainwindow"), IDM_SHOWAPPWINDOW);
+    AddItem(TR("Settings"),_T("settings"), IDM_SETTINGS);
+    AddItem(TR("Paste"),_T("paste"), IDM_PASTEFROMCLIPBOARD,0x56, MOD_CONTROL); // Ctrl+V keyboard shortcut
+    AddItem(TR("Images from web"),_T("downloadimages"), IDM_PASTEFROMWEB); // Ctrl+V keyboard shortcut
+    AddItem(TR("View Media File Information"),_T("mediainfo"), IDM_MEDIAINFO);
+    AddItem(TR("Exit"),_T("mediainfo"), IDM_EXIT);
+    AddItem(TR("Shorten a link"),_T("shortenurl"), IDM_SHORTENURL);
+    AddItem(TR("Shorten a link from the clipboard"),_T("shortenurlclipboard"), IDM_SHORTENURLCLIPBOARD);
+    AddItem(TR("Reupload images"),_T("reuploadimages"), IDM_REUPLOADIMAGES);
 }
 
 CHotkeyItem& CHotkeyList::getByFunc(const CString &func)

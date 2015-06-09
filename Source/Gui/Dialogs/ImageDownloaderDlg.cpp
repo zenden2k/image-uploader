@@ -62,11 +62,11 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
  
     ::SetFocus(GetDlgItem(IDOK));
-    SetWindowText(TR("Загрузчик изображений"));
-    TRC(IDOK, "Добавить");
-    TRC(IDCANCEL, "Отмена");
-    TRC(IDC_WATCHCLIPBOARD, "Вести наблюдение за буфером обмена");
-    TRC(IDC_IMAGEDOWNLOADERTIP, "Введите список ссылок (http:// или ftp://, по одной ccылке в строке)");
+    SetWindowText(TR("Image Downloader"));
+    TRC(IDOK, "Add");
+    TRC(IDCANCEL, "Cancel");
+    TRC(IDC_WATCHCLIPBOARD, "Watch Clipboard for URLs");
+    TRC(IDC_IMAGEDOWNLOADERTIP, "Enter URLs (one http:// or ftp:// link per line)");
     ::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS), SW_HIDE);
     SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_SETCHECK, Settings.WatchClipboard?BST_CHECKED:BST_UNCHECKED);
 
@@ -190,7 +190,7 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloade
             {
                 add = false;
                 CString errorStr;
-                errorStr.Format(TR("Файл '%s' не является файлом изображения (Mime-Type: %s)."),(LPCTSTR)(Utf8ToWstring(it.url).c_str()),(LPCTSTR)mimeType);
+                errorStr.Format(TR("File '%s' is not an image (Mime-Type: %s)."),(LPCTSTR)(Utf8ToWstring(it.url).c_str()),(LPCTSTR)mimeType);
                 ServiceLocator::instance()->logger()->write(logError, _T("Image Downloader"), errorStr);
             }
         }
@@ -213,7 +213,7 @@ void CImageDownloaderDlg::OnQueueFinished()
     }
     ::EnableWindow(GetDlgItem(IDOK),true);
     ::EnableWindow(GetDlgItem(IDC_FILEINFOEDIT),true);
-    TRC(IDCANCEL, "Закрыть");
+    TRC(IDCANCEL, "Close");
     SetDlgItemText(IDC_FILEINFOEDIT, _T(""));
     ::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS),SW_HIDE);
     ::EnableWindow(GetDlgItem(IDC_WATCHCLIPBOARD),true);
@@ -233,7 +233,7 @@ bool CImageDownloaderDlg::BeginDownloading()
     }
     if(m_nFilesCount)
     {
-        TRC(IDCANCEL, "Отмена");
+        TRC(IDCANCEL, "Cancel");
         ::EnableWindow(GetDlgItem(IDOK),false);
         ::EnableWindow(GetDlgItem(IDC_WATCHCLIPBOARD),false);
         ::EnableWindow(GetDlgItem(IDC_FILEINFOEDIT),false);

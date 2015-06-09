@@ -60,18 +60,18 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     }
 
     ::SetFocus(GetDlgItem(IDOK));
-    SetWindowText(TR("Результаты загрузки"));
+    SetWindowText(TR("Upload results"));
     
-    TRC(IDCANCEL, "Закрыть");
+    TRC(IDCANCEL, "Close");
     
     TC_ITEM item;
-    item.pszText = TR("Для форума (BBCode)"); 
+    item.pszText = TR("Forum code (BBCode)"); 
     item.mask = TCIF_TEXT;
     TabCtrl_InsertItem(GetDlgItem(IDC_RESULTSTAB), 0, &item);
-    item.pszText = TR("Для сайта (HTML)"); 
+    item.pszText = TR("HTML code"); 
     item.mask = TCIF_TEXT;
     TabCtrl_InsertItem(GetDlgItem(IDC_RESULTSTAB), 1, &item);
-    item.pszText = TR("Просто ссылки (URL)"); 
+    item.pszText = TR("Links (URL)"); 
     item.mask = TCIF_TEXT;
     TabCtrl_InsertItem(GetDlgItem(IDC_RESULTSTAB), 2, &item);
 

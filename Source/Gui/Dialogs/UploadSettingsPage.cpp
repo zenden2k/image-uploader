@@ -37,22 +37,22 @@ CUploadSettingsPage::~CUploadSettingsPage()
 
 void CUploadSettingsPage::TranslateUI()
 {
-    TRC(IDC_CONNECTIONSETTINGS, "Параметры подключения");
-    TRC(IDC_USEPROXYSERVER, "Использовать прокси-сервер");
-    TRC(IDC_ADDRESSLABEL, "Адрес:");
-    TRC(IDC_PORTLABEL, "Порт:");
-    TRC(IDC_SERVERTYPE, "Тип сервера:");
-    TRC(IDC_NEEDSAUTH, "Необходима авторизация");
-    TRC(IDC_LOGINLABEL, "Логин:");
-    TRC(IDC_PASSWORDLABEL, "Пароль:");
-    TRC(IDC_AUTOCOPYTOCLIPBOARD, "Автоматически копировать результаты в буфер обмена");
-    TRC(IDC_UPLOADERRORLABEL, "Ошибки загрузки");
-    TRC(IDC_IGNOREERRORS, "Показывать диалоговое окно в случае ошибки");
-    TRC(IDC_RETRIES1LABEL, "Кол-во попыток загрузки файла:");
-    TRC(IDC_RETRIES2LABEL, "Кол-во попыток для одной операции:");
-    TRC(IDC_UPLOADBUFFERLABEL, "Размер буфера отдачи:");
-    TRC(IDC_MAXTHREADSLABEL, "Число потоков");
-    TRC(IDC_EXECUTESCRIPTCHECKBOX, "Выполнять Squirrel-скрипт для каждой задачи (файла)");
+    TRC(IDC_CONNECTIONSETTINGS, "Connection settings");
+    TRC(IDC_USEPROXYSERVER, "Use proxy server");
+    TRC(IDC_ADDRESSLABEL, "Address:");
+    TRC(IDC_PORTLABEL, "Port:");
+    TRC(IDC_SERVERTYPE, "Proxy type:");
+    TRC(IDC_NEEDSAUTH, "Authorization on proxy");
+    TRC(IDC_LOGINLABEL, "Login:");
+    TRC(IDC_PASSWORDLABEL, "Password:");
+    TRC(IDC_AUTOCOPYTOCLIPBOARD, "Copy automatically results to clipboard");
+    TRC(IDC_UPLOADERRORLABEL, "Uploading errors");
+    TRC(IDC_IGNOREERRORS, "Show dialog box in case of error");
+    TRC(IDC_RETRIES1LABEL, " Num of retries per file:");
+    TRC(IDC_RETRIES2LABEL, "Num of retries per action:");
+    TRC(IDC_UPLOADBUFFERLABEL, "Upload Buffer Size:");
+    TRC(IDC_MAXTHREADSLABEL, "Threads number:");
+    TRC(IDC_EXECUTESCRIPTCHECKBOX, "Execute Squirrel script for each task (file)");
 }
     
 LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -157,7 +157,7 @@ bool CUploadSettingsPage::Apply()
     if (Settings.ExecuteScript && !WinUtils::FileExists(scriptFile))
     {
         CString message;
-        message.Format(TR("Файл %s не существует"), scriptFile);
+        message.Format(TR("File %s doesn't exist"), scriptFile);
         MessageBox(message, APPNAME);
         return false;
     }
@@ -172,7 +172,7 @@ LRESULT CUploadSettingsPage::OnBnClickedBrowseScriptButton(WORD /*wNotifyCode*/,
     GuiTools::SelectDialogFilter(Buf, sizeof(Buf) / sizeof(TCHAR), 2,
         CString(_(".nut")),
         _T("*.nut;"),
-        TR("Все файлы"),
+        TR("All files"),
         _T("*.*"));
 
     CFileDialog fd(true, 0, 0, 4 | 2, Buf, m_hWnd);

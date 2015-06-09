@@ -271,7 +271,7 @@ bool CUpdateManager::internal_load_update(CString name)
     CUpdateInfo localPackage;
 
     if (!localPackage.LoadUpdateFromFile(name)) {
-        ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), CString(TR("Could not download the update file \'")) + name);
+        ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), CString(TR("Could not download the update file \\'")) + name);
         return false;
     }
 

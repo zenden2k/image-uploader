@@ -279,11 +279,11 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		MyInsertMenuSeparator(PopupMenu, subIndex++, 0);
 	}
 	if(AreOnlyImages(m_FileList))
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES, TR("Загрузить изображения"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES, TR("Upload images"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
 	else
 	{
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADFILES, TR("Загрузить файлы"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES,TR("Загрузить только изображения"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADFILES, TR("Upload files"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES,TR("Upload images only"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
 	}
 	bool separatorInserted = false;
 
@@ -315,9 +315,9 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 
 	if(ExplorerVideoContextMenu&&  m_FileList.GetCount()==1 &&IsVideoFile( m_FileList[0]))
 	{
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO,  TR("Импорт видео"),idCmdFirst,CString(),UseBitmaps,0,ExplorerCascadedMenu?0:IDI_ICONMOVIE);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO,  TR("Import Video File"),idCmdFirst,CString(),UseBitmaps,0,ExplorerCascadedMenu?0:IDI_ICONMOVIE);
 		if(m_bMediaInfoInstalled)
-			MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_MEDIAINFO, TR("Информация о файле"),idCmdFirst,CString(),UseBitmaps,0 ,ExplorerCascadedMenu?0:IDI_ICONINFO);
+			MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_MEDIAINFO, TR("Information about file"),idCmdFirst,CString(),UseBitmaps,0 ,ExplorerCascadedMenu?0:IDI_ICONINFO);
 	}
 	if ( !ExplorerCascadedMenu ) {
 		MyInsertMenuSeparator(PopupMenu, subIndex++, 0);
@@ -395,8 +395,8 @@ bool IULaunchCopy(CAtlArray<CString> & CmdLine,const CString params=_T(""))
         &pi )                   // Pointer to PROCESS_INFORMATION structure.
 		) {
 			CString errorMessage;
-			errorMessage.Format(TR("Не удалось запустить процесс '%s'"),(LPCTSTR)TempCmdLine);
-		MessageBox(0, errorMessage, TR("Ошибка"),0);
+			errorMessage.Format(TR("Unable to start process '%s'"),(LPCTSTR)TempCmdLine);
+		MessageBox(0, errorMessage, TR("Error"),0);
         return false;
 	}
 

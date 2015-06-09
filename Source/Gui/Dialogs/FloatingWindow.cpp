@@ -211,7 +211,7 @@ LRESULT CFloatingWindow::OnCloseTray(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     ShowWindow(SW_HIDE);
     wizardDlg_->ShowWindow(SW_SHOW);
-    wizardDlg_->SetDlgItemText(IDCANCEL, TR("Выход"));
+    wizardDlg_->SetDlgItemText(IDCANCEL, TR("Exit"));
     CloseHandle(hMutex);
     RemoveIcon();
     UnRegisterHotkeys();
@@ -319,7 +319,7 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
     uploadManager_->start();
 
     CString msg;
-    msg.Format(TR("Cокращаю ссылку \"%s\" с помощью %s"), (LPCTSTR)url,
+    msg.Format(TR("Shortening URL \"%s\" using %s"), (LPCTSTR)url,
         (LPCTSTR)Utf8ToWstring(Settings.urlShorteningServer.serverName()).c_str());
     ShowBaloonTip(msg, _T("Image Uploader"));
     return 0;
@@ -383,8 +383,8 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
     {
         // Inserting menu items
         int i = 0;
-        MyInsertMenu(TrayMenu, i++, IDM_UPLOADFILES, TR("Загрузить файлы") + CString(_T("...")));
-        MyInsertMenu(TrayMenu, i++, IDM_ADDFOLDERS, TR("Загрузить папку") + CString(_T("...")));
+        MyInsertMenu(TrayMenu, i++, IDM_UPLOADFILES, TR("Upload files") + CString(_T("...")));
+        MyInsertMenu(TrayMenu, i++, IDM_ADDFOLDERS, TR("Upload folder") + CString(_T("...")));
         MyInsertMenu(TrayMenu, i++, 0, 0);
         bool IsClipboard = false;
 
@@ -395,40 +395,40 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         }
         if (IsClipboard)
         {
-            MyInsertMenu(TrayMenu, i++, IDM_PASTEFROMCLIPBOARD, TR("Вставить из буфера"));
+            MyInsertMenu(TrayMenu, i++, IDM_PASTEFROMCLIPBOARD, TR("Paste"));
             MyInsertMenu(TrayMenu, i++, 0, 0);
         }
-        MyInsertMenu(TrayMenu, i++, IDM_IMPORTVIDEO, TR("Импорт видео"));
+        MyInsertMenu(TrayMenu, i++, IDM_IMPORTVIDEO, TR("Import Video File"));
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        MyInsertMenu(TrayMenu, i++, IDM_SCREENSHOTDLG, TR("Скриншот") + CString(_T("...")));
-        MyInsertMenu(TrayMenu, i++, IDM_REGIONSCREENSHOT, TR("Снимок выделенной области"));
-        MyInsertMenu(TrayMenu, i++, IDM_FULLSCREENSHOT, TR("Снимок всего экрана"));
-        MyInsertMenu(TrayMenu, i++, IDM_WINDOWSCREENSHOT, TR("Снимок активного окна"));
-        MyInsertMenu(TrayMenu, i++, IDM_WINDOWHANDLESCREENSHOT, TR("Снимок выбранного элемента"));
-        MyInsertMenu(TrayMenu, i++, IDM_FREEFORMSCREENSHOT, TR("Снимок произвольной формы"));
+        MyInsertMenu(TrayMenu, i++, IDM_SCREENSHOTDLG, TR("Screenshot") + CString(_T("...")));
+        MyInsertMenu(TrayMenu, i++, IDM_REGIONSCREENSHOT, TR("Capture Selected Area"));
+        MyInsertMenu(TrayMenu, i++, IDM_FULLSCREENSHOT, TR("Capture the Entire Screen"));
+        MyInsertMenu(TrayMenu, i++, IDM_WINDOWSCREENSHOT, TR("Capture the Active Window"));
+        MyInsertMenu(TrayMenu, i++, IDM_WINDOWHANDLESCREENSHOT, TR("Capture Selected Object"));
+        MyInsertMenu(TrayMenu, i++, IDM_FREEFORMSCREENSHOT, TR("Freehand Capture"));
 
         CMenu SubMenu;
         SubMenu.CreatePopupMenu();
         SubMenu.InsertMenu(
             0, MFT_STRING | MFT_RADIOCHECK |
             (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_OPENINEDITOR ? MFS_CHECKED : 0),
-            IDM_SCREENTSHOTACTION_OPENINEDITOR, TR("Открыть в редакторе"));
+            IDM_SCREENTSHOTACTION_OPENINEDITOR, TR("Open in the editor"));
         SubMenu.InsertMenu(
            0, MFT_STRING | MFT_RADIOCHECK |
            (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD ? MFS_CHECKED : 0),
-           IDM_SCREENTSHOTACTION_UPLOAD, TR("Загрузить на сервер"));
+           IDM_SCREENTSHOTACTION_UPLOAD, TR("Upload to Web"));
         SubMenu.InsertMenu(
            1, MFT_STRING | MFT_RADIOCHECK |
            (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD ? MFS_CHECKED : 0),
-           IDM_SCREENTSHOTACTION_TOCLIPBOARD, TR("Копировать в буфер обмена"));
+           IDM_SCREENTSHOTACTION_TOCLIPBOARD, TR("Copy to Clipboard"));
         SubMenu.InsertMenu(
            2, MFT_STRING | MFT_RADIOCHECK |
            (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_SHOWWIZARD ? MFS_CHECKED : 0),
-           IDM_SCREENTSHOTACTION_SHOWWIZARD, TR("Открыть в окне мастера"));
+           IDM_SCREENTSHOTACTION_SHOWWIZARD, TR("Open in Wizard"));
         SubMenu.InsertMenu(
            3, MFT_STRING | MFT_RADIOCHECK |
            (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD ? MFS_CHECKED : 0),
-           IDM_SCREENTSHOTACTION_ADDTOWIZARD, TR("Добавить в мастер"));
+           IDM_SCREENTSHOTACTION_ADDTOWIZARD, TR("Add to Wizard"));
 
         MENUITEMINFO mi;
         mi.cbSize = sizeof(mi);
@@ -436,18 +436,18 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         mi.fType = MFT_STRING;
         mi.hSubMenu = SubMenu;
         mi.wID = 10000;
-        mi.dwTypeData  = TR("Действие со снимком");
+        mi.dwTypeData  = TR("Screenshot Action");
         TrayMenu.InsertMenuItem(i++, true, &mi);
 
         SubMenu.Detach();
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        MyInsertMenu(TrayMenu, i++, IDM_SHORTENURL, TR("Сократить ссылку"));
+        MyInsertMenu(TrayMenu, i++, IDM_SHORTENURL, TR("Shorten a link"));
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        MyInsertMenu(TrayMenu, i++, IDM_SHOWAPPWINDOW, TR("Показать окно программы"));
+        MyInsertMenu(TrayMenu, i++, IDM_SHOWAPPWINDOW, TR("Show program's window"));
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        MyInsertMenu(TrayMenu, i++, IDM_SETTINGS, TR("Настройки") + CString(_T("...")));
+        MyInsertMenu(TrayMenu, i++, IDM_SETTINGS, TR("Settings") + CString(_T("...")));
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        MyInsertMenu(TrayMenu, i++, IDM_EXIT, TR("Выход"));
+        MyInsertMenu(TrayMenu, i++, IDM_EXIT, TR("Exit"));
         if (Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId)
         {
             SetMenuDefaultItem(TrayMenu, Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId,
@@ -455,7 +455,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         }
     }
     else
-        MyInsertMenu(TrayMenu, 0, IDM_STOPUPLOAD, TR("Прервать загрузку"));
+        MyInsertMenu(TrayMenu, 0, IDM_STOPUPLOAD, TR("Stop uploading"));
     m_hTrayIconMenu = TrayMenu;
     CMenuHandle oPopup(m_hTrayIconMenu);
     PrepareMenu(oPopup);
@@ -539,7 +539,7 @@ void CFloatingWindow::RegisterHotkeys()
             if (!RegisterHotKey(m_hWnd, i, m_hotkeys[i].globalKey.keyModifier, m_hotkeys[i].globalKey.keyCode))
             {
                 CString msg;
-                msg.Format(TR("Невозможно зарегистрировать глобальное сочетание клавиш\n%s.\n Возможно, оно занято другой программой."),
+                msg.Format(TR("Cannot register global hotkey:\r\n%s.\r\n Maybe it is being used by another process."),
                            (LPCTSTR)m_hotkeys[i].globalKey.toString());
                 ServiceLocator::instance()->logger()->write(logWarning, _T("Hotkeys"), msg);
             }
@@ -634,9 +634,9 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     uploadManager_->start();
 
     CString msg;
-    msg.Format(TR("Идет загрузка \"%s\" на сервер %s"), (LPCTSTR) GetOnlyFileName(displayName),
+    msg.Format(TR("File \"%s\" is beeing uploaded to server %s.."), (LPCTSTR) GetOnlyFileName(displayName),
         (LPCTSTR)Utf8ToWstring(Settings.quickScreenshotServer.serverName()).c_str());
-    ShowBaloonTip(msg, TR("Загрузка снимка"));
+    ShowBaloonTip(msg, TR("Uploading screenshot"));
 }
 
 void CFloatingWindow::setUploadManager(UploadManager* manager)
@@ -666,7 +666,7 @@ bool CFloatingWindow::OnQueueFinished(CFileQueueUploader*) {
 
         if (url.IsEmpty())
         {
-            ShowBaloonTip(TR("Не удалось загрузить снимок :("), _T("Image Uploader"));
+            ShowBaloonTip(TR("Could not upload screenshot :("), _T("Image Uploader"));
             return true;
         }
 
@@ -718,9 +718,9 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
             CString url = Utf8ToWCstring(task->uploadResult()->directUrl);
             IU_CopyTextToClipboard(url);
             ShowBaloonTip( TrimString(url, 70) + CString("\r\n")
-                + TR("(адрес был автоматически помещен в буфер обмена)"), TR("Короткая ссылка"));
+                + TR("(the link has been copied to the clipboard)"), TR("Short URL"));
         } else {
-            ShowBaloonTip( TR("Для подробностей смотрите лог."), TR("Не удалось сократить ссылку...") );
+            ShowBaloonTip( TR("View log for details."), TR("Unable to shorten the link...") );
         }
     } else {
         if (ok) {
@@ -737,7 +737,7 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
             lastUploadedItem_ = task;
             ShowImageUploadedMessage(url);
         } else {
-            ShowBaloonTip(TR("Для подробностей смотрите лог."), TR("Не удалось загрузить снимок :("));
+            ShowBaloonTip(TR("View log for details."), TR("Could not upload screenshot :("));
         }
         
     }
@@ -754,5 +754,5 @@ LRESULT CFloatingWindow::OnStopUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 void CFloatingWindow::ShowImageUploadedMessage(const CString& url) {
     IU_CopyTextToClipboard(url);
     ShowBaloonTip(TrimString(url, 70) + CString("\r\n") 
-        + TR("(адрес был автоматически помещен в буфер обмена)")+ + CString("\r\n") + TR("Нажмите на это сообщение для открытия окна с кодом...") , TR("Снимок успешно загружен"));
+        + TR("(the link has been copied to the clipboard)")+ + CString("\r\n") + TR("Click on this message to view details...") , TR("Screenshot was uploaded"));
 }

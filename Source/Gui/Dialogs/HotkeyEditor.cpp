@@ -59,9 +59,9 @@ LRESULT CHotkeyEditor::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     SetWindowText(m_data.GetDisplayName());
     CenterWindow(GetParent());
     TRC(IDOK, "OK");
-    TRC(IDCANCEL, "Отмена");
-    TRC(IDC_LOCALHOTKEYLABEL, "Локальная комбинация клавиш:");
-    TRC(IDC_GLOBALHOTKEYLABEL, "Глобальная комбинация:");
+    TRC(IDCANCEL, "Cancel");
+    TRC(IDC_LOCALHOTKEYLABEL, "Local hotkey:");
+    TRC(IDC_GLOBALHOTKEYLABEL, "Global hotkey:");
 
     localHotkeyCtrl.SubclassWindow(GetDlgItem(IDC_LOCALHOTKEY));
     globalHotkeyCtrl.SubclassWindow(GetDlgItem(IDC_GLOBALHOTKEY));

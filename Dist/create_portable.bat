@@ -30,6 +30,7 @@ Copy "..\Build\release optimized\Image Uploader.exe" %temp_dir%\
 rem Copy "..\Build\release optimized\curl-ca-bundle.crt" %temp_dir%\
 Copy "..\Source\res\new-icon.ico" %temp_dir%\
 Copy "..\Lang\*.lng" %temp_dir%\Lang\
+Copy "..\Lang\English.lng.src" %temp_dir%\Lang\
 Copy "..\Build\release optimized\Modules\*" %temp_dir%\Modules\
 xcopy "..\Docs" %temp_dir%\Docs\ /s /e /y /i
 Copy "..\Data\servers.xml" %temp_dir%\Data\

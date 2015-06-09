@@ -49,23 +49,23 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     ThumbBackground_.SubclassWindow(GetDlgItem(IDC_THUMBBACKGROUND));
     ThumbBackground_.SetColor(Settings.imageServer.getImageUploadParams().getThumb().BackgroundColor);
 
-    SetWindowText(TR("Обработка изображений"));
-    TRC(IDC_DEFAULTSETTINGSCHECKBOX, "Настройки по-умолчанию");
-    TRC(IDC_IMAGEPARAMETERS, "Параметры изображения");
-    TRC(IDC_PROCESSIMAGESCHECKBOX, "Обрабатывать изображения");
-    TRC(IDC_PROFILELABEL, "Профиль:");
-    TRC(IDC_THUMBSETTINGS, "Настройки миниатюры");
-    TRC(IDC_CREATETHUMBNAILS, "Создавать миниатюры (превью)");
-    TRC(IDC_USESERVERTHUMBNAILS, "Использовать серверные миниатюры");
-    TRC(IDC_THUMBTEMPLATECOMBOLABEL, "Шаблон миниатюры:");
-    TRC(IDC_THUMBRESIZELABEL, "Масштабирование");
-    TRC(IDC_DEFAULTTHUMBSETTINGSCHECKBOX, "Настройки эскизов по-умолчанию");
-    TRC(IDC_SHORTENLINKSCHECKBOX, "Сокращать ссылки");
-    TRC(IDCANCEL, "Отмена");
-    TRC(IDC_THUMBFORMATLABEL,"Формат:");
-    TRC(IDC_THUMBQUALITYLABEL,"Качество:");
-    TRC(IDC_THUMBTEXTCHECKBOX, "Надпись на миниатюре:");
-    TRC(IDC_THUMBBACKGROUNDLABEL, "Цвет фона:");
+    SetWindowText(TR("Image processing"));
+    TRC(IDC_DEFAULTSETTINGSCHECKBOX, "Default settings");
+    TRC(IDC_IMAGEPARAMETERS, "Image settings");
+    TRC(IDC_PROCESSIMAGESCHECKBOX, "Process images before upload");
+    TRC(IDC_PROFILELABEL, "Profile:");
+    TRC(IDC_THUMBSETTINGS, "Thumbnail settings");
+    TRC(IDC_CREATETHUMBNAILS, "Create thumbnails");
+    TRC(IDC_USESERVERTHUMBNAILS, "Use server-side thumbnails");
+    TRC(IDC_THUMBTEMPLATECOMBOLABEL, "Thumbnail Preset:");
+    TRC(IDC_THUMBRESIZELABEL, "Scaling:");
+    TRC(IDC_DEFAULTTHUMBSETTINGSCHECKBOX, "Use default thumbnail settings");
+    TRC(IDC_SHORTENLINKSCHECKBOX, "Shorten URLs");
+    TRC(IDCANCEL, "Cancel");
+    TRC(IDC_THUMBFORMATLABEL, "Format:");
+    TRC(IDC_THUMBQUALITYLABEL, "Quality:");
+    TRC(IDC_THUMBTEXTCHECKBOX, "Thumbnail text:");
+    TRC(IDC_THUMBBACKGROUNDLABEL, "Background color:");
 
     //Fill profile combobox
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_RESETCONTENT);
@@ -94,11 +94,11 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     }
     SendDlgItemMessage(IDC_THUMBTEMPLATECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) params_.getThumbRef().TemplateName); 
 
-    GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 4, TR("Как у изображения"),
+    GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 4, TR("Same format as image"),
         _T("JPEG"), _T("PNG"), _T("GIF"));
 
     GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBRESIZECOMBO, 2, 
-        TR("По ширине"), TR("По высоте"), TR("По большей стороне") );
+        TR("By width"), TR("By height"), TR("By larger side") );
     SendDlgItemMessage(IDC_THUMBRESIZECOMBO, CB_SETCURSEL, (int)params_.getThumbRef().ResizeMode,0);
 
     GuiTools::SetCheck(m_hWnd, IDC_PROCESSIMAGESCHECKBOX, params_.ProcessImages);

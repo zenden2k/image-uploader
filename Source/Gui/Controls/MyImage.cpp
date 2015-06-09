@@ -200,7 +200,7 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
         format.SetLineAlignment(StringAlignmentCenter);
         Font font(L"Arial", 12, FontStyleBold);
 
-        gr.DrawString(TR("Невозможно загрузить изображение"), -1, &font, bounds, &format, &brush);
+        gr.DrawString(TR("Unable to load picture"), -1, &font, bounds, &format, &brush);
     }
 
     else

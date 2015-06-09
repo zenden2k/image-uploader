@@ -24,19 +24,19 @@
  
 CTrayActions::CTrayActions()
     {
-        /*AddTrayAction(TR("Нет действия"), 0);
-        AddTrayAction(TR("Контекстное меню значка"), IDM_CONTEXTMENU);
-        AddTrayAction(TR("Загрузить файлы"), IDM_UPLOADFILES);
-        AddTrayAction(TR("Загрузить папку"), IDM_ADDFOLDER);
-        AddTrayAction(TR("Импорт видео"),IDM_IMPORTVIDEO);
-        AddTrayAction(TR("Скриншот"),IDM_SCREENSHOTDLG);
-        AddTrayAction(TR("Скриншот выделенной области"),IDM_REGIONSCREENSHOT);
-        AddTrayAction(TR("Скриншот всего экрана"),IDM_FULLSCREENSHOT);
-        AddTrayAction(TR("Скриншот текущего окна"),IDM_WINDOWSCREENSHOT);
-        AddTrayAction(TR("Показать окно программы"), IDM_SHOWAPPWINDOW);
-        AddTrayAction(TR("Настройки"), IDM_SETTINGS);
+        /*AddTrayAction(TR("Do nothing"), 0);
+        AddTrayAction(TR("Tray icon context menu"), IDM_CONTEXTMENU);
+        AddTrayAction(TR("Upload files"), IDM_UPLOADFILES);
+        AddTrayAction(TR("Upload folder"), IDM_ADDFOLDER);
+        AddTrayAction(TR("Import Video File"),IDM_IMPORTVIDEO);
+        AddTrayAction(TR("Screenshot"),IDM_SCREENSHOTDLG);
+        AddTrayAction(TR("Capture selected region"),IDM_REGIONSCREENSHOT);
+        AddTrayAction(TR("Capture entire screen"),IDM_FULLSCREENSHOT);
+        AddTrayAction(TR("Сapture current window"),IDM_WINDOWSCREENSHOT);
+        AddTrayAction(TR("Show program's window"), IDM_SHOWAPPWINDOW);
+        AddTrayAction(TR("Settings"), IDM_SETTINGS);
         
-        AddTrayAction(TR("Выход"), IDM_EXIT);*/
+        AddTrayAction(TR("Exit"), IDM_EXIT);*/
     
     }
 
@@ -52,14 +52,14 @@ CTraySettingsPage::~CTraySettingsPage()
 
 LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    TRC(IDC_SHOWTRAYICON,"Показывать значок в трее");
-    TRC(IDC_MOUSEREACTIONGROUP,"Реакция на действия мыши");
-    TRC(IDC_LEFTBUTTONDOUBLECLICKLABEL,"Двойной клик левой кнопкой");
-    TRC(IDC_LEFTBUTTONCLICKLABEL,"Одиночный клик левой кнопкой");
-    TRC(IDC_MIDDLEBUTTONCLICKLABEL,"Клик средней кнопкой");
-    TRC(IDC_RIGHTBUTTONCLICKLABEL,"Клик правой кнопкой");
-    TRC(IDC_ONEINSTANCE,"Не запускать новые копии программы из трея");
-    TRC(IDC_AUTOSTARTUP, "Запуск программы при старте Windows");
+    TRC(IDC_SHOWTRAYICON, "Show tray icon");
+    TRC(IDC_MOUSEREACTIONGROUP, "Mouse clicks handlers");
+    TRC(IDC_LEFTBUTTONDOUBLECLICKLABEL, "Left button double-click");
+    TRC(IDC_LEFTBUTTONCLICKLABEL, "Left button single click:");
+    TRC(IDC_MIDDLEBUTTONCLICKLABEL, "Middle button click:");
+    TRC(IDC_RIGHTBUTTONCLICKLABEL, "Right button click:");
+    TRC(IDC_ONEINSTANCE, "Do not launch new program's instance from tray");
+    TRC(IDC_AUTOSTARTUP, "Launch program on Windows startup");
     //CTrayActions trayActions;
     for(size_t i=0; i< Settings.Hotkeys/*trayActions*/.size(); i++)
     {

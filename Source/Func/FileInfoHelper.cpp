@@ -51,7 +51,7 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
 
     if(!MI.IsReady())
     {
-        Buffer =  TR("Невозможно загрузить библиотеку MediaInfo.dll!");
+        Buffer =  TR("Unable to load library MediaInfo.dll!");
         return FALSE;
     }
 
@@ -65,24 +65,24 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
     int VideoCount =   MI.Count_Get(Stream_Video); //Count of video streams in file
     int SubsCount =   MI.Count_Get(Stream_Text);
 
-    Result+=CString(TR("Имя файла: ")) + WinUtils::myExtractFileName(FileName);
+    Result+=CString(TR("Filename: ")) + WinUtils::myExtractFileName(FileName);
     Result+=_T("\r\n");
-    Result+=CString(TR("Размер файла: ")) + MI.Get(Stream_General, 0, _T("FileSize/String"), Info_Text, Info_Name);
+    Result+=CString(TR("Filesize: ")) + MI.Get(Stream_General, 0, _T("FileSize/String"), Info_Text, Info_Name);
     Result+=_T("\r\n");
     CString Duration = MI.Get(Stream_General, 0, _T("Duration/String"), Info_Text, Info_Name);
-    AddStr(Result, Duration, CString(_T("\r\n")), CString(TR("Длительность: ")));
+    AddStr(Result, Duration, CString(_T("\r\n")), CString(TR("Duration: ")));
 
     if(count + VideoCount > 1) // if file contains more than one audio/video stream 
     {
         AddStr(Result, MI.Get(Stream_General, 0, _T("OverallBitRate/String"), Info_Text, Info_Name),
-            CString(_T("\r\n")),CString(TR("Общий битрейт: ")));
+            CString(_T("\r\n")),CString(TR("Overall bitrate: ")));
     }
 
     if(VideoCount) // If file contains one or more video streams
     {
         // The next piece of code gets information only from the first video stream
         // e.g. there is no support for multiple video streams
-        CString VideoTotal = TR("Видео: ");
+        CString VideoTotal = TR("Video: ");
         VideoFormat = VIDEO("Format");
         VideoVersion = VIDEO("Format_Version");
 
@@ -153,12 +153,12 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
     {
         CString AudioTotal;
         TCHAR buf[256];
-        wsprintf(buf, CString(TR("Аудио"))+_T(" #%d: "), i+1);
+        wsprintf(buf, CString(TR("Audio"))+_T(" #%d: "), i+1);
 
         if(count>1)
             AudioTotal = buf;
         else 
-            AudioTotal+=CString(TR("Аудио"))+_T(": ");
+            AudioTotal+=CString(TR("Audio"))+_T(": ");
 
         AudioFormat = AUDIO(i, "Format");
         AudioFormatProfile = AUDIO(i, "Format_Profile");
@@ -196,7 +196,7 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
 
         if(SubsTotal.GetLength())
         {
-            SubsTotal=CString(TR("Субтитры: "))+SubsTotal;
+            SubsTotal=CString(TR("Subtitles: "))+SubsTotal;
             Result+=SubsTotal;
             Result+=_T("\r\n");
         }

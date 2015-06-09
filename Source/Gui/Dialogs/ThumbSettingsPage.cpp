@@ -58,15 +58,15 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     TabBackgroundFix(m_hWnd);
     // Translating controls
 
-    TRC(IDC_THUMBTEXTCHECKBOX, "Надпись на миниатюре:");
-    TRC(IDC_THUMBBACKGROUNDLABEL, "Цвет фона:");
-    TRC(IDC_WIDTHRADIO, "Ширина:");
-    TRC(IDC_HEIGHTRADIO, "Высота:");
-    TRC(IDC_THUMBSCOMBOLABEL, "Шаблон миниатюры:");
-    TRC(IDC_EDITTHUMBNAILPRESET, "Редактировать");
-    TRC(IDC_NEWTHUMBNAIL, "Создать копию");
-    TRC(IDC_THUMBFORMATLABEL,"Формат:");
-    TRC(IDC_THUMBQUALITYLABEL,"Качество:");
+    TRC(IDC_THUMBTEXTCHECKBOX, "Thumbnail text:");
+    TRC(IDC_THUMBBACKGROUNDLABEL, "Background color:");
+    TRC(IDC_WIDTHRADIO, "Width:");
+    TRC(IDC_HEIGHTRADIO, "Height:");
+    TRC(IDC_THUMBSCOMBOLABEL, "Thumbnail Preset:");
+    TRC(IDC_EDITTHUMBNAILPRESET, "Edit");
+    TRC(IDC_NEWTHUMBNAIL, "Create a Copy");
+    TRC(IDC_THUMBFORMATLABEL, "Format:");
+    TRC(IDC_THUMBQUALITYLABEL, "Quality:");
     
     ThumbBackground.SubclassWindow(GetDlgItem(IDC_THUMBBACKGROUND));
     //RECT rc = {13, 170, 290, 400};
@@ -77,7 +77,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );    
     SetDlgItemText(IDC_THUMBTEXT, params_.Text);
 
-    GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 4, TR("Как у изображения"),
+    GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 4, TR("Same format as image"),
         _T("JPEG"), _T("PNG"), _T("GIF"));
 
     std::vector<CString> files;
@@ -133,7 +133,7 @@ LRESULT  CThumbSettingsPage::OnBnClickedNewThumbnail(WORD wNotifyCode, WORD wID,
     if(fileName.empty())
         return 0;
     std::string newName = "copy_" + IuCoreUtils::ExtractFileNameNoExt(fileName);
-    CInputDialog dlg(TR("Окно ввода"), TR("Введите имя нового шаблона миниатюры:"), Utf8ToWCstring(newName));
+    CInputDialog dlg(TR("Input Box"), TR("Enter new thumbnail preset name:"), Utf8ToWCstring(newName));
     if(dlg.DoModal() == IDOK)
     {
         newName = WCstringToUtf8(dlg.getValue());
@@ -143,7 +143,7 @@ LRESULT  CThumbSettingsPage::OnBnClickedNewThumbnail(WORD wNotifyCode, WORD wID,
     std::string destination = srcFolder + newName + ".xml";
     if(IuCoreUtils::FileExists(destination))
     {
-        MessageBox(TR("Шаблон с таким именем уже существует!"), APPNAME, MB_ICONERROR);
+        MessageBox(TR("Profile with such name already exists!"), APPNAME, MB_ICONERROR);
         return 0;
     }
     Thumbnail * thumb = 0;
@@ -191,7 +191,7 @@ LRESULT  CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, H
         autoPtrThumb.reset(thumb);
         if(!thumb->LoadFromFile(fileName))
         {
-            MessageBox(TR("Не могу загрузить файл миниатюры!"));
+            MessageBox(TR("Couldn't load thumbnail preset!"));
             return 0;
         }
     }
@@ -245,7 +245,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
         autoPtrThumb.reset(thumb);
         if(!thumb->LoadFromFile(fileName))
         {
-            ServiceLocator::instance()->logger()->write(logError, _T("CThumbSettingsPage"), TR("Не могу загрузить файл миниатюры!"));
+            ServiceLocator::instance()->logger()->write(logError, _T("CThumbSettingsPage"), TR("Couldn't load thumbnail preset!"));
             return;
         }
     }
@@ -255,7 +255,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
     Bitmap * bm = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_PNG2),_T("PNG"));
     if(!bm) 
     {
-        MessageBox(TR("Не могу загрузить файл миниатюры!"));
+        MessageBox(TR("Couldn't load thumbnail preset!"));
         return ;
     }
     

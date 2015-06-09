@@ -55,10 +55,10 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
  
     ::SetFocus(GetDlgItem(IDOK));
-    SetWindowText(TR("Сокращение ссылок"));
-    TRC(IDOK, "Сократить");
-    TRC(IDCANCEL, "Закрыть");
-    TRC(IDC_SHORTENURLTIP, "Введите URL:");
+    SetWindowText(TR("Url Shortener"));
+    TRC(IDOK, "Shorten");
+    TRC(IDCANCEL, "Close");
+    TRC(IDC_SHORTENURLTIP, "Paste a link to shorten it:");
     GuiTools::MakeLabelBold(GetDlgItem(IDC_RESULTSLABEL));
 
     ::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS), SW_HIDE);
@@ -204,7 +204,7 @@ void CShortenUrlDlg::OnFileFinished(UploadTask* task, bool ok) {
         CString shortUrl = Utf8ToWCstring(task->uploadResult()->directUrl);
         SetDlgItemText(IDC_RESULTSEDIT, shortUrl);
         WinUtils::CopyTextToClipboard(shortUrl);
-        SetDlgItemText(IDC_RESULTSLABEL, TR("Короткая ссылка скопирована в буфер обмена!"));
+        SetDlgItemText(IDC_RESULTSLABEL, TR("The short link has been copied to the clipboard!"));
         ::ShowWindow(GetDlgItem(IDC_RESULTSLABEL), SW_SHOW);
         ::SetFocus(GetDlgItem(IDC_RESULTSEDIT));
     }

@@ -183,7 +183,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         Settings.Language = LS.Language;
         Lang.LoadLanguage(Settings.Language);
         
-        /*if(MessageBox(TR("Добавить Image Uploader в контекстное меню проводника Windows?"),APPNAME, MB_YESNO|MB_ICONQUESTION)==IDYES)
+        /*if(MessageBox(TR("Enable integration in Explorer's context menu?"),APPNAME, MB_YESNO|MB_ICONQUESTION)==IDYES)
         {
             Settings.ExplorerContextMenu = true;
             Settings.ExplorerContextMenu_changed = true;
@@ -201,7 +201,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     if(!LoadUploadEngines(IuCommonFunctions::GetDataFolder()+_T("servers.xml"), ErrorStr))  // Завершаем работу программы, если файл servers.lst отсутствует
     {
         CString ErrBuf;
-        ErrBuf.Format(TR("Невозможно открыть файл со спиком серверов \"servers.xml\"!\n\nПричина:  %s\n\nПродолжить работу программы?"),(LPCTSTR)ErrorStr);
+        ErrBuf.Format(TR("Couldn't load servers list file \"servers.xml\"!\r\n\r\nThe reason is:  %s\r\n\r\nDo you wish to continue?"),(LPCTSTR)ErrorStr);
     
         if(MessageBox(ErrBuf, APPNAME, MB_ICONERROR|MB_YESNO)==IDNO)
         {
@@ -249,13 +249,13 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     sessionFileServer_ = Settings.fileServer;
 
     if(!*MediaInfoDllPath)
-        ServiceLocator::instance()->logger()->write(logWarning, APPNAME, TR("Библиотека MediaInfo.dll не найдена. \nПолучение технических данных о файлах мультимедиа будет недоступно."));
+        ServiceLocator::instance()->logger()->write(logWarning, APPNAME, TR("MediaInfo.dll Not found! \r\nGetting technical information of media files will not be accessible."));
     if(!CmdLine.IsOption(_T("tray")))
-        TRC(IDCANCEL,"Выход");
+        TRC(IDCANCEL, "Exit");
     else 
-        TRC(IDCANCEL,"Скрыть");
-    //TRC(IDC_UPDATESLABEL, "Проверить обновления");
-    TRC(IDC_PREV,"< Назад");
+        TRC(IDCANCEL, "Hide");
+    //TRC(IDC_UPDATESLABEL, "Check for Updates");
+    TRC(IDC_PREV, "< Back");
 
     ACCEL accel;
     accel.cmd = ID_PASTE;
@@ -356,7 +356,7 @@ bool CWizardDlg::ParseCmdLine()
             
             if ( Settings.ServerProfiles.find(serverProfileName) == Settings.ServerProfiles.end()) {
                 CString msg;
-                msg.Format(TR("Профиль \"%s\" не найден."),TR("Ошибка"),MB_ICONWARNING);
+                msg.Format(TR("Profile \"%s\" not found."),TR("Error"),MB_ICONWARNING);
             } else {
                 ServerProfile & sp = Settings.ServerProfiles[serverProfileName];
                 CUploadEngineData *ued = sp.uploadEngineData();
@@ -517,7 +517,7 @@ bool CWizardDlg::ShowPage(int idPage,int prev,int next)
 
     if(!CreatePage(idPage)) return false;
 
-    SetDlgItemText(IDC_NEXT,TR("Далее >"));
+    SetDlgItemText(IDC_NEXT,TR("Next >"));
 
     HBITMAP bmp = Pages[idPage]->HeadBitmap;
     if(!bmp) ::ShowWindow(GetDlgItem(IDC_HEADBITMAP),SW_HIDE);
@@ -698,9 +698,9 @@ HBITMAP CWizardDlg::GenHeadBitmap(int PageID)
     Gdiplus::Font font(L"Arial", 12, FontStyleBold);
 
     if(PageID == 3)
-        gr.DrawString(TR("Параметры изображений и выбор сервера"), -1, &font, bounds, &format, &br2);
+        gr.DrawString(TR("Images settings and choosing server"), -1, &font, bounds, &format, &br2);
     else if(PageID==4)
-        gr.DrawString(TR("Загрузка файлов на сервер"), -1, &font, bounds, &format, &br2);
+        gr.DrawString(TR("Uploading file on server"), -1, &font, bounds, &format, &br2);
 
     HBITMAP bmp=0;
     BackBuffer->GetHBITMAP(Color(255,255,255), &bmp);
@@ -741,7 +741,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
         {
             if(CurPage == 2)
             {
-                if(Settings.DropVideoFilesToTheList || MessageBox(TR("Вы хотите извлечь кадры из этого видеофайла? \r\n(иначе файл будет просто добавлен в список)"),APPNAME,MB_YESNO)==IDNO)
+                if(Settings.DropVideoFilesToTheList || MessageBox(TR("Would you like to grab frames from this video?\r\n(otherwise file just  will be added to list)"),APPNAME,MB_YESNO)==IDNO)
                     goto filehost;
             }
             ShowPage(1, CurPage, (Pages[2])?2:3);
@@ -1120,7 +1120,7 @@ void CFolderAdd::Do(CStringList &Paths, bool ImagesOnly, bool SubDirs)
     m_bSubDirs = SubDirs;
    if(!dlg.m_hWnd)
     dlg.Create(m_pWizardDlg->m_hWnd, rc);
-    dlg.SetWindowTitle(CString(ImagesOnly?TR("Поиск графических файлов..."):TR("Сбор файлов...")));
+    dlg.SetWindowTitle(CString(ImagesOnly?TR("Searching for picture files..."):TR("Collecting files...")));
     m_Paths.RemoveAll();
     m_Paths.Copy(Paths);
     findfile = 0;
@@ -1133,7 +1133,7 @@ int CFolderAdd::ProcessDir( CString currentDir, bool bRecursive /* = true  */ )
 {
     CString strWildcard;
     
-     dlg.SetInfo(CString(TR("Обрабатывается каталог:")), currentDir);
+     dlg.SetInfo(CString(TR("Processing folder:")), currentDir);
     strWildcard = currentDir + "\\*";
 
     _tfinddata_t s_Dir;
@@ -1196,7 +1196,7 @@ DWORD CFolderAdd::Run()
     EnableWindow(m_pWizardDlg->m_hWnd, true);
 
     if(!count) 
-        MessageBox(m_pWizardDlg->m_hWnd, m_bImagesOnly?TR("Не найдено ни одного файла изображений."):TR("Не найдено ни одного файла."), APPNAME, MB_ICONINFORMATION);
+        MessageBox(m_pWizardDlg->m_hWnd, m_bImagesOnly?TR("No pictures were found."):TR("No files were found."), APPNAME, MB_ICONINFORMATION);
     else     
     {
         if( m_pWizardDlg->QuickUploadMarker)
@@ -1266,13 +1266,13 @@ LRESULT CWizardDlg::OnAddImages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 }
 
 CMyFolderDialog::CMyFolderDialog(HWND hWnd):
-                CFolderDialogImpl(hWnd, TR("Выбор папки"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE|BIF_NONEWFOLDERBUTTON|BIF_VALIDATE )
+                CFolderDialogImpl(hWnd, TR("Select folder"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE|BIF_NONEWFOLDERBUTTON|BIF_VALIDATE )
 {
     OleInitialize(NULL);
 }
 void CMyFolderDialog::OnInitialized()
 {
-    HWND wnd = CreateWindowEx(0, _T("button"), TR("Включая поддиректории"), WS_VISIBLE|BS_CHECKBOX|WS_CHILD|BS_AUTOCHECKBOX, 15,30, 200,24, m_hWnd, 0,0, 0);
+    HWND wnd = CreateWindowEx(0, _T("button"), TR("Including subdirectories"), WS_VISIBLE|BS_CHECKBOX|WS_CHILD|BS_AUTOCHECKBOX, 15,30, 200,24, m_hWnd, 0,0, 0);
     SendMessage(wnd, WM_SETFONT, (WPARAM)SendMessage(m_hWnd, WM_GETFONT, 0,0),  MAKELPARAM(false, 0));
     SendMessage(wnd, BM_SETCHECK, (WPARAM)(m_bSubdirs?BST_CHECKED    :BST_UNCHECKED),0);
     SetProp(m_hWnd, PROP_OBJECT_PTR, (HANDLE) this);
@@ -1310,12 +1310,12 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 {
     TCHAR Buf[MAX_PATH * 4];
     if(AnyFiles)
-        GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 1, TR("Любые файлы"),
+        GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 1, TR("Any file"),
                                       _T("*.*"));
     else
     GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 2, 
-                                   CString(TR("Изображения")) + _T(" (jpeg, bmp, png, gif ...)"),
-                                   _T("*.jpg;*.jpeg;*.gif;*.png;*.bmp;*.tiff"), TR("Любые файлы"),
+                                   CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"),
+                                   _T("*.jpg;*.jpeg;*.gif;*.png;*.bmp;*.tiff"), TR("Any file"),
                                    _T("*.*"));
 
     int nCount = 0;  
@@ -1437,9 +1437,9 @@ bool CWizardDlg::funcImportVideo()
 {
     TCHAR Buf[MAX_PATH*4];
     GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
-            CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv ...)"),
+            CString(TR("Video files"))+ _T(" (avi, mpg, vob, wmv ...)"),
             Settings.prepareVideoDialogFilters(),
-        TR("Все файлы"),
+        TR("All files"),
         _T("*.*"));
 
     CFileDialog fd(true,0,0,4|2,Buf,m_hWnd);
@@ -1545,9 +1545,9 @@ bool CWizardDlg::funcAddFolder()
 LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     if(!floatWnd.m_hWnd)
-      TRC(IDCANCEL, "Выход");
+      TRC(IDCANCEL, "Exit");
     else 
-        TRC(IDCANCEL, "Скрыть");
+        TRC(IDCANCEL, "Hide");
 
     if(!(m_hotkeys == Settings.Hotkeys))
     {
@@ -1626,7 +1626,7 @@ LRESULT CWizardDlg::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 void CWizardDlg::CloseWizard()
 {
     if(CurPage!=0 && CurPage!=4 && Settings.ConfirmOnExit)
-        if(MessageBox(TR("Вы уверены что хотите выйти из программы?"),APPNAME, MB_YESNO|MB_ICONQUESTION) != IDYES) return ;
+        if(MessageBox(TR("Are you sure to quit?"),APPNAME, MB_YESNO|MB_ICONQUESTION) != IDYES) return ;
     
     CloseDialog(0);
 }
@@ -1704,13 +1704,13 @@ bool CWizardDlg::funcMediaInfo()
 {
     TCHAR Buf[MAX_PATH*4]; //String buffer which will contain filter for CFileDialog
     GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),3, 
-            CString(TR("Видео файлы"))+ _T(" (avi, mpg, vob, wmv ...)"),
+            CString(TR("Video files"))+ _T(" (avi, mpg, vob, wmv ...)"),
         /*_T("*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;*.rm;")*/
         Settings.prepareVideoDialogFilters(),
-        CString(TR("Аудио файлы"))+ _T(" (mp3, wma, wav ...)"),
+        CString(TR("Audio files"))+ _T(" (mp3, wma, wav ...)"),
         _T("*.mp3;*.wav;*.wma;*.mid;*.asx"),
         
-        TR("Все файлы"),
+        TR("All files"),
         _T("*.*"));
 
     CFileDialog fd(true,0,0,4|2,Buf,m_hWnd);
@@ -1729,7 +1729,7 @@ bool CWizardDlg::funcMediaInfo()
 bool CWizardDlg::funcAddFiles()
 {
     TCHAR Buf[MAX_PATH*4];
-    GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),1, TR("Любые файлы"), _T("*.*"));
+    GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),1, TR("Any file"), _T("*.*"));
 
     int nCount=0;
     CMultiFileDialog fd(0, 0, OFN_HIDEREADONLY, Buf, m_hWnd);
@@ -1792,7 +1792,7 @@ void CWizardDlg::UpdateAvailabilityChanged(bool Available)
 {
     if(Available)
     {
-        TRC(IDC_UPDATESLABEL, "Доступны обновления");
+        TRC(IDC_UPDATESLABEL, "Updates are available");
     }
 }
     
@@ -1954,7 +1954,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
                 CDC dc = GetDC();
                 if ( CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) { // remove alpha if saving format is JPEG
                     if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD) {
-                        floatWnd.ShowBaloonTip(TR("Снимок сохранен в буфере обмена"),_T("Image Uploader"));
+                        floatWnd.ShowBaloonTip(TR("Screenshot was saved to clipboard."),_T("Image Uploader"));
                         Result = false;
                     }
                 }
@@ -2046,11 +2046,11 @@ LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
     CMenu popupMenu;
     popupMenu.CreatePopupMenu();
-    popupMenu.AppendMenu(MF_STRING, IDC_ABOUT, TR("О программе..."));
-    popupMenu.AppendMenu(MF_STRING, IDC_DOCUMENTATION, TR("Документация"));
-    popupMenu.AppendMenu(MF_STRING, IDC_UPDATESLABEL, TR("Проверить обновления"));
+    popupMenu.AppendMenu(MF_STRING, IDC_ABOUT, TR("About..."));
+    popupMenu.AppendMenu(MF_STRING, IDC_DOCUMENTATION, TR("Documentation"));
+    popupMenu.AppendMenu(MF_STRING, IDC_UPDATESLABEL, TR("Check for Updates"));
     popupMenu.AppendMenu(MF_SEPARATOR, 99999,_T(""));
-    popupMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, TR("Показать лог"));
+    popupMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, TR("Show Error Log"));
 
     TPMPARAMS excludeArea;
     ZeroMemory(&excludeArea, sizeof(excludeArea));

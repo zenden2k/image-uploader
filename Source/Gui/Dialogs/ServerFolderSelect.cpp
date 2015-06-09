@@ -56,10 +56,10 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     }
 
     // Internalization
-    TRC(IDCANCEL, "Отмена");
+    TRC(IDCANCEL, "Cancel");
     TRC(IDOK, "OK");
-    TRC(IDC_NEWFOLDERBUTTON, "Создать папку");
-    SetWindowText(TR("Список папок"));
+    TRC(IDC_NEWFOLDERBUTTON, "Create folder");
+    SetWindowText(TR("Folder list"));
 
     HBITMAP hBitmap;
 
@@ -80,11 +80,11 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     if (!m_pluginLoader)
     {
-        SetDlgItemText(IDC_FOLDERLISTLABEL, TR("Ошибка при загрузке squirrel скрипта."));
+        SetDlgItemText(IDC_FOLDERLISTLABEL, TR("An error occured while loading squirrel script."));
         return 0;
     }
     CString title;
-    title.Format(TR("Список папок на сервере %s для учетной записи '%s':"), (LPCTSTR)Utf8ToWCstring(m_UploadEngine->Name),
+    title.Format(TR("Folder list on server %s for account '%s':"), (LPCTSTR)Utf8ToWCstring(m_UploadEngine->Name),
                  (LPCTSTR)Utf8ToWCstring(serverProfile_.serverSettings().authData.Login));
     SetDlgItemText(IDC_FOLDERLISTLABEL, title);
     if (m_pluginLoader)
@@ -142,9 +142,9 @@ DWORD CServerFolderSelect::Run()
         if (retCode < 1)
         {
             if (retCode == -1)
-                TRC(IDC_FOLDERLISTLABEL, "Данный сервер не поддерживает получение списка папок");
+                TRC(IDC_FOLDERLISTLABEL, "This server doesn't support folders listing.");
             else
-                TRC(IDC_FOLDERLISTLABEL, "Не удалось загрузить список папок.");
+                TRC(IDC_FOLDERLISTLABEL, "Failed to load folder list.");
 
             OnLoadFinished();
             return 0;
@@ -246,15 +246,15 @@ LRESULT CServerFolderSelect::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
     m_FolderTree.SelectItem(selectedItem);
 
     mi.wID = ID_EDITFOLDER;
-    mi.dwTypeData  = TR("Редактировать");
+    mi.dwTypeData  = TR("Edit");
     sub.InsertMenuItem(1, true, &mi);
 
     mi.wID = ID_OPENINBROWSER;
-    mi.dwTypeData  = TR("Открыть в браузере");
+    mi.dwTypeData  = TR("Open in Web Browser");
     sub.InsertMenuItem(0, true, &mi);
 
     mi.wID = ID_CREATENESTEDFOLDER;
-    mi.dwTypeData  = TR("Создать вложенную папку");
+    mi.dwTypeData  = TR("Create nested folder");
     sub.InsertMenuItem(2, true, &mi);
 
     sub.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);

@@ -55,13 +55,13 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     m_treeView.SubclassWindow(GetDlgItem(IDC_HISTORYTREE));
     m_treeView.onThreadsFinished.bind(this, &CHistoryWindow::threadsFinished);
     m_treeView.onThreadsStarted.bind(this, &CHistoryWindow::threadsStarted);
-    TRC(IDCANCEL, "Закрыть");
-    TRC(IDC_SESSIONSCOUNTDESCR, "Всего сессий:");
-    TRC(IDC_FILESCOUNTDESCR, "Всего файлов:");
-    TRC(IDC_UPLOADTRAFFICDESCR, "Общий объем:");
-    SetWindowText(TR("История загрузок"));
-    TRC(IDC_TIMEPERIODLABEL, "Период времени:");
-    TRC(IDC_DOWNLOADTHUMBS, "Загружать миниатюры из Интернета");
+    TRC(IDCANCEL, "Close");
+    TRC(IDC_SESSIONSCOUNTDESCR, "Session total:");
+    TRC(IDC_FILESCOUNTDESCR, "Files total:");
+    TRC(IDC_UPLOADTRAFFICDESCR, "Total size:");
+    SetWindowText(TR("Upload History"));
+    TRC(IDC_TIMEPERIODLABEL, "Time Period:");
+    TRC(IDC_DOWNLOADTHUMBS, "Retrieve thumbnails from the Internet");
 
     HWND hWnd = GetDlgItem(IDC_ANIMATIONSTATIC);
     if (hWnd)
@@ -176,24 +176,24 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     menu.CreatePopupMenu();
     if(!isSessionItem)
     {
-        menu.AppendMenu(MF_STRING, ID_OPENINBROWSER, TR("Открыть в браузере"));
-        menu.AppendMenu(MF_STRING, ID_COPYTOCLIPBOARD, TR("Копировать адрес"));
+        menu.AppendMenu(MF_STRING, ID_OPENINBROWSER, TR("Open in Web Browser"));
+        menu.AppendMenu(MF_STRING, ID_COPYTOCLIPBOARD, TR("Copy URL"));
     }
-    menu.AppendMenu(MF_STRING, ID_VIEWBBCODE, TR("Коды BBCode/HTML"));
+    menu.AppendMenu(MF_STRING, ID_VIEWBBCODE, TR("View BBCode/HTML codes"));
     if(!isSessionItem)
     {
         std::string fileName  = historyItem->localFilePath;
         if(!isSessionItem && !fileName.empty() && IuCoreUtils::DirectoryExists(IuCoreUtils::ExtractFilePath(fileName)))
         {
-            menu.AppendMenu(MF_STRING, ID_OPENFOLDER, TR("Открыть папку с файлом"));
+            menu.AppendMenu(MF_STRING, ID_OPENFOLDER, TR("Open in folder"));
         }
         if (!historyItem->editUrl.empty())
         {
-            menu.AppendMenu(MF_STRING, ID_EDITFILEONSERVER, TR("Редактировать файл на сервере"));
+            menu.AppendMenu(MF_STRING, ID_EDITFILEONSERVER, TR("Edit file on server"));
         }
         if (!historyItem->deleteUrl.empty())
         {
-            menu.AppendMenu(MF_STRING, ID_DELETEFILEONSERVER, TR("Удалить файл с сервера"));
+            menu.AppendMenu(MF_STRING, ID_DELETEFILEONSERVER, TR("Delete file from server"));
         }
     }
     menu.SetMenuDefaultItem(0, true);

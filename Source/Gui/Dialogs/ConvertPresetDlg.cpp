@@ -49,11 +49,11 @@ LRESULT CConvertPresetDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     }
 
     TC_ITEM item;
-    item.pszText = TR("Изображения");
+    item.pszText = TR("Images");
     item.mask = TCIF_TEXT;
     TabCtrl_InsertItem(GetDlgItem(IDC_TABCONTROL), 0, &item);
 
-    item.pszText = TR("Миниатюры");
+    item.pszText = TR("Thumbnails");
     item.mask = TCIF_TEXT;
     TabCtrl_InsertItem(GetDlgItem(IDC_TABCONTROL), 1, &item);
 
@@ -67,9 +67,9 @@ LRESULT CConvertPresetDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     SetIcon(hIconSmall, FALSE);
 
     TRC(IDOK, "OK");
-    TRC(IDCANCEL, "Отмена");
-    TRC(IDC_APPLY, "Применить");
-    SetWindowText(TR("Настройки обработки изображений"));
+    TRC(IDCANCEL, "Cancel");
+    TRC(IDC_APPLY, "Apply");
+    SetWindowText(TR("Image Processing Options"));
 
     ShowPage(PageToShow);
     return 0;  // Let the system set the focus

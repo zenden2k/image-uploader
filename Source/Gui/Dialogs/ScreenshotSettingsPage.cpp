@@ -42,27 +42,27 @@ CScreenshotSettingsPagePage::~CScreenshotSettingsPagePage()
 
 LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    TRC(IDC_GROUPPARAMS, "Дополнительно");
-    TRC(IDC_QUALITYLABEL, "Качество:");
-    TRC(IDC_DELAYLABEL, "Задержка:");
-    TRC(IDC_FORMATLABEL, "Формат:");
-    TRC(IDC_SECLABEL, "сек");
-    TRC(IDC_MSECLABEL, "мс");
-    TRC(IDC_SCREENSHOTSFOLDERSELECT, "Обзор");
-    TRC(IDC_SCREENSHOTFOLDERLABEL, "Папка для сохранения скриншотов:");
-    TRC(IDC_SCREENSHOTFILENAMELABEL, "Формат имени файла");
-    TRC(IDC_DELAYLABEL2, "Задержка при скрытии окон:");
-    TRC(IDC_ALWAYSCOPYTOCLIPBOARD, "Всегда копировать в буфер обмена");
-    TRC(IDC_SCREENSHOTSAVINGPARAMS, "Параметры сохранения снимков");
-    TRC(IDC_FOREGROUNDWHENSHOOTING, "Выводить окно на передний план при выборе мышью");
-    TRC(IDC_PARAMETERSHINTLABEL, "%y - год, %m - месяц, %d - день\n%h - час, %n - минута, %s - секунда\n %i - порядковый номер,\n%width% - ширина,  %height% - высота изображения");
-    TRC(IDC_ADDSHADOW, "Добавлять тень окна");
-    TRC(IDC_ALLOWALTTABINIMAGEEDITOR, "Разрешить Alt+Tab в полноэкранном редакторе");
-    CString removeCornersText = TR("Удалять уголки у окна")+CString(_T(" (Windows Vista/7)"));
+    TRC(IDC_GROUPPARAMS, "Additional settings");
+    TRC(IDC_QUALITYLABEL, "Quality:");
+    TRC(IDC_DELAYLABEL, "Timeout:");
+    TRC(IDC_FORMATLABEL, "Format:");
+    TRC(IDC_SECLABEL, "sec");
+    TRC(IDC_MSECLABEL, "msec");
+    TRC(IDC_SCREENSHOTSFOLDERSELECT, "Browse..");
+    TRC(IDC_SCREENSHOTFOLDERLABEL, "Directory to save screenshots:");
+    TRC(IDC_SCREENSHOTFILENAMELABEL, "Filename format:");
+    TRC(IDC_DELAYLABEL2, "Delay when hiding window:");
+    TRC(IDC_ALWAYSCOPYTOCLIPBOARD, "Always copy captured image to clipboard");
+    TRC(IDC_SCREENSHOTSAVINGPARAMS, "Saving parameters");
+    TRC(IDC_FOREGROUNDWHENSHOOTING, "Bring window to foreground when selected by mouse");
+    TRC(IDC_PARAMETERSHINTLABEL, "%y - year, %m - month, %d - day\r\n%h - hour, %n - minute, %s - seconds\r\n %i - image index,\r\n%width% - width of image,  %height% - height of image");
+    TRC(IDC_ADDSHADOW, "Capture with shadow");
+    TRC(IDC_ALLOWALTTABINIMAGEEDITOR, "Allow Alt+Tab in fullscreen editor");
+    CString removeCornersText = TR("Clear window transparent corners")+CString(_T(" (Windows Vista/7)"));
     SetDlgItemText(IDC_REMOVECORNERS, removeCornersText);
-    TRC(IDC_REMOVEBACKGROUND, "Удалять фон окна");
-    TRC(IDC_AEROONLY, "Только для Aero (Windows Vista и новее)");
-    TRC(IDC_USEOLDREGIONSCREENSHOTMETHOD, "Использовать старый способ выбора области экрана");
+    TRC(IDC_REMOVEBACKGROUND, "Clear window's background");
+    TRC(IDC_AEROONLY, "Aero only (Windows Vista or later)");
+    TRC(IDC_USEOLDREGIONSCREENSHOTMETHOD, "Use old method of rectangular area selection");
     
     SetDlgItemText(IDC_SCREENSHOTFILENAMEEDIT, Settings.ScreenshotSettings.FilenameTemplate);
 
@@ -108,7 +108,7 @@ bool CScreenshotSettingsPagePage::Apply()
     CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
     if(!CheckFileName(fileName))
     {
-        MessageBox(TR("Имя файла содержит запрещенные символы!"));
+        MessageBox(TR("File name cannot contains forbidden characters!"));
         ::SetFocus(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
         return false;
     }
@@ -141,7 +141,7 @@ LRESULT CScreenshotSettingsPagePage::OnScreenshotsFolderSelect(WORD wNotifyCode,
 {
     CString path = GuiTools::GetWindowText(GetDlgItem(IDC_SCREENSHOTFOLDEREDIT));
 
-    CNewStyleFolderDialog fd(m_hWnd, path, TR("Выбор папки") );
+    CNewStyleFolderDialog fd(m_hWnd, path, TR("Select folder") );
         
     if (fd.DoModal(m_hWnd) == IDOK)
     {

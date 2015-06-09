@@ -22,18 +22,18 @@ CAddFtpServerDialog::~CAddFtpServerDialog()
 
 LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    SetWindowText(TR("Добавление FTP сервера"));
-    TRC(IDC_CONNECTIONNAMELABEL,"Имя соединения:");
-    TRC(IDC_SERVERSTATIC,"Сервер [:порт]:");
-    TRC(IDC_AUTHENTICATIONLABEL,"Авторизация:");
-    TRC(IDC_LOGINLABEL,"Логин:");
-    TRC(IDC_PASSWORDLABEL,"Пароль:");
-    TRC(IDC_REMOTEDIRECTORYLABEL,"Удал. директория:");
-    TRC(IDC_DOWNLOADURLLABEL,"URL для скачивания:");
-    TRC(IDCANCEL,"Отмена");
-    TRC(IDC_THEURLOFUPLOADEDLABEL,"Ссылка для скачивания будет выглядеть так:");
+    SetWindowText(TR("Add FTP server"));
+    TRC(IDC_CONNECTIONNAMELABEL, "Connection  name:");
+    TRC(IDC_SERVERSTATIC, "Server [:port]:");
+    TRC(IDC_AUTHENTICATIONLABEL, "Authenticaton:");
+    TRC(IDC_LOGINLABEL, "Login:");
+    TRC(IDC_PASSWORDLABEL, "Password:");
+    TRC(IDC_REMOTEDIRECTORYLABEL, "Remote directory:");
+    TRC(IDC_DOWNLOADURLLABEL, "URL for downloading:");
+    TRC(IDCANCEL, "Cancel");
+    TRC(IDC_THEURLOFUPLOADEDLABEL, "URL for downloading will look like:");
 
-    //TRC(IDC_CONNECTIONNAMEEDIT, "Новое FTP соединение");
+    //TRC(IDC_CONNECTIONNAMEEDIT, "New FTP Connection");
     ::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));
     SetDlgItemText(IDC_REMOTEDIRECTORYEDIT, _T("/"));
     CenterWindow(GetParent());
@@ -47,14 +47,14 @@ LRESULT CAddFtpServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
     serverName.TrimRight(L" ");
 
     if ( serverName.IsEmpty() ) {
-        MessageBox(TR("Имя сервера не может быть пустым"),TR("Ошибка"), MB_ICONERROR);
+        MessageBox(TR("Server's name cannot be empty"),TR("Error"), MB_ICONERROR);
         return 0;
     }
     CString connectionName = GuiTools::GetDlgItemText(m_hWnd, IDC_CONNECTIONNAMEEDIT);
     connectionName.TrimLeft(L" ");
     connectionName.TrimRight(L" ");
     if ( connectionName.IsEmpty() ) {
-        MessageBox(TR("Название соединения не может быть пустым"),TR("Ошибка"), MB_ICONERROR);
+        MessageBox(TR("Connection name cannot be empty"),TR("Error"), MB_ICONERROR);
         return 0;
     }
 
@@ -62,7 +62,7 @@ LRESULT CAddFtpServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
     downloadUrl.TrimLeft(L" ");
     downloadUrl.TrimRight(L" ");
     if ( downloadUrl.IsEmpty() ) {
-        MessageBox(TR("Ссылка для скачивания не может быть пустой."),TR("Ошибка"), MB_ICONERROR);
+        MessageBox(TR("Download URL cannot be empty."),TR("Error"), MB_ICONERROR);
         return 0;
     }
 
@@ -85,12 +85,12 @@ LRESULT CAddFtpServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
             createdServerLogin_ = login;
             EndDialog(wID);
     } else {
-        CString errorMessage = TR("Не удалось добавить сервер.");
+        CString errorMessage = TR("Could not add server.");
         CString reason = IuCoreUtils::Utf8ToWstring(slm.errorMessage()).c_str();
         if ( !reason.IsEmpty() ) {
-            errorMessage += CString(L"\r\n") + TR("Причина:") + L"\r\n" + reason;
+            errorMessage += CString(L"\r\n") + TR("Reason:") + L"\r\n" + reason;
         }
-        MessageBox(errorMessage,TR("Ошибка"), MB_ICONERROR);
+        MessageBox(errorMessage,TR("Error"), MB_ICONERROR);
 
     }
 

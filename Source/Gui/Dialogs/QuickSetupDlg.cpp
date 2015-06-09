@@ -37,18 +37,18 @@ CQuickSetupDlg::~CQuickSetupDlg() {
 
 
 LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled){
-    TRC(IDC_FTPSETTINGSBUTTON, "Настройки FTP");
-    TRC(IDOK, "Продолжить");
-    TRC(IDCANCEL, "Отмена");
-    TRC(IDC_LOGINLABEL, "Логин:");
-    TRC(IDC_PASSWORDLABEL, "Пароль:");
-    TRC(IDC_SERVERLABEL, "На какой сервер будем загружать картинки?");
-    TRC(IDC_AUTOSTARTUPCHECKBOX, "Запуск программы при старте Windows");
-    TRC(IDC_CAPTUREPRINTSCREENCHECKBOX, "Перехватывать нажатия PrintScreen и Alt+PrintScreen");
-    TRC(IDC_EXPLORERINTEGRATION, "Добавить пункт в контекстное меню проводника Windows");
+    TRC(IDC_FTPSETTINGSBUTTON, "FTP settings");
+    TRC(IDOK, "Continue");
+    TRC(IDCANCEL, "Cancel");
+    TRC(IDC_LOGINLABEL, "Login:");
+    TRC(IDC_PASSWORDLABEL, "Password:");
+    TRC(IDC_SERVERLABEL, "Choose server for uploading images");
+    TRC(IDC_AUTOSTARTUPCHECKBOX, "Launch program on Windows startup");
+    TRC(IDC_CAPTUREPRINTSCREENCHECKBOX, "Intercept PrintScreen и Alt+PrintScreen hotkeys");
+    TRC(IDC_EXPLORERINTEGRATION, "Add an item to the context menu of Windows Explorer");
     SetWindowText( APPNAME );
     CString titleText;
-    titleText.Format(TR("%s - быстрая настройка"), APPNAME );
+    titleText.Format(TR("%s - Quick Setup"), APPNAME );
     SetDlgItemText(IDC_TITLE, titleText );
 
     CenterWindow();
@@ -88,7 +88,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     
     comboBoxImageList_.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
 
-    //serverComboBox_.AddItem( _T("<") + CString(TR("Случайный сервер")) + _T(">"), -1, -1, 0, static_cast<LPARAM>( -1 ) );
+    //serverComboBox_.AddItem( _T("<") + CString(TR("Random server")) + _T(">"), -1, -1, 0, static_cast<LPARAM>( -1 ) );
 
     int selectedIndex = 0;
 
@@ -146,7 +146,7 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
             Settings.imageServer.setProfileName(WCstringToUtf8(login));
             CString password = GuiTools::GetDlgItemText( m_hWnd, IDC_PASSWORDEDIT );
             if ( login.IsEmpty() ) {
-                MessageBox(TR("Введите данные учетной записи"), APPNAME, MB_ICONEXCLAMATION);
+                MessageBox(TR("Enter your account information"), APPNAME, MB_ICONEXCLAMATION);
                 return 0;
             }
             LoginInfo& loginInfo = Settings.ServersSettings[WCstringToUtf8((LPCTSTR)Settings.getServerName())][WCstringToUtf8((LPCTSTR)(login))].authData;
@@ -231,11 +231,11 @@ void  CQuickSetupDlg::serverChanged() {
         bool authorizationAvailable = uploadEngineData->NeedAuthorization != 0;
         showAuthorizationControls( authorizationAvailable );
         bool forceAuthorization = uploadEngineData->NeedAuthorization == 2;
-        CString doAuthCheckboxText = forceAuthorization ? TR("Выполнять авторизацию") : CString(TR("У меня есть учетная запись на этом сервере") ); //+ (forceAuthorization? _T("") : TR(" (необязательно)"));
+        CString doAuthCheckboxText = forceAuthorization ? TR("Authorize") : CString(TR("I have an account on this server") ); //+ (forceAuthorization? _T("") : TR(" (optional)"));
         SetDlgItemText( IDC_DOAUTHCHECKBOX, doAuthCheckboxText );
         ::EnableWindow( GetDlgItem( IDC_DOAUTHCHECKBOX), !forceAuthorization);
         SendDlgItemMessage( IDC_DOAUTHCHECKBOX, BM_SETCHECK, forceAuthorization? BST_CHECKED : BST_UNCHECKED );
-        CString loginLabelText = uploadEngineData->LoginLabel.empty()? CString(TR("Логин:")) : CString(Utf8ToWCstring( uploadEngineData->LoginLabel )) + _T(":");
+        CString loginLabelText = uploadEngineData->LoginLabel.empty()? CString(TR("Login:")) : CString(Utf8ToWCstring( uploadEngineData->LoginLabel )) + _T(":");
         SetDlgItemText( IDC_LOGINLABEL, loginLabelText );
         
         doAuthCheckboxChanged();

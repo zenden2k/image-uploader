@@ -46,14 +46,14 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
     serverProfiles_ = Settings.ServerProfiles;
     menuItemsChanged_ = false;
     // Translating controls
-    TRC(IDC_INTEGRATIONGROUP, "Интеграция с проводником Windows");
-    TRC(IDC_SHELLINTEGRATION, "Интеграция в контекстное меню оболочки");
-    //TRC(IDC_SHELLIMGCONTEXTMENUITEM, "Пункт в контекстное меню файлов изображений");
-    TRC(IDC_STARTUPLOADINGFROMSHELL, "Сразу начинать загрузку на сервер");
-    TRC(IDC_SHELLVIDEOCONTEXTMENUITEM, "Пункт в контекстном меню видеофайлов");
-    TRC(IDC_CASCADEDCONTEXTMENU, "Вложенное контекстное меню");
-    TRC(IDC_SHELLSENDTOITEM, "Добавить Image Uploader в меню \"Отправить\"");
-    TRC(IDC_CONTEXTMENUITEMSLABEL, "Пользовательские элементы меню:");
+    TRC(IDC_INTEGRATIONGROUP, "Windows Explorer integration");
+    TRC(IDC_SHELLINTEGRATION, "Shell context menu integration");
+    //TRC(IDC_SHELLIMGCONTEXTMENUITEM, "Add item to pictures' context menu");
+    TRC(IDC_STARTUPLOADINGFROMSHELL, "Immediately begin uploading to the server");
+    TRC(IDC_SHELLVIDEOCONTEXTMENUITEM, "Add item to video files' context menu");
+    TRC(IDC_CASCADEDCONTEXTMENU, "Cascaded context menu");
+    TRC(IDC_SHELLSENDTOITEM, "Integration in menu \"Send to\"");
+    TRC(IDC_CONTEXTMENUITEMSLABEL, "Context menu custom items:");
 
     menuItemsListBox_.m_hWnd = GetDlgItem(IDC_CONTEXTMENUITEMSLIST);
 

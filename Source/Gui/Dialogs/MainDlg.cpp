@@ -34,11 +34,11 @@
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     PageWnd = m_hWnd;
-    TRC(IDC_ADDIMAGES, "Добавить файлы");
-    TRC(IDC_ADDVIDEO, "Импорт видео");
-    TRC(IDC_SCREENSHOT, "Cнимок экрана");
-    TRC(IDC_PROPERTIES, "Свойства");
-    TRC(IDC_DELETE, "Удалить из списка");
+    TRC(IDC_ADDIMAGES, "Add Files");
+    TRC(IDC_ADDVIDEO, "Import Video File");
+    TRC(IDC_SCREENSHOT, "Screenshot");
+    TRC(IDC_PROPERTIES, "Properties");
+    TRC(IDC_DELETE, "Remove from list");
     
     ThumbsView.SubclassWindow(GetDlgItem(IDC_FILELIST));
     ThumbsView.Init(true);
@@ -117,19 +117,19 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         mi.cbSize = sizeof(mi);
         mi.fMask = MIIM_TYPE;
         mi.fType = MFT_STRING;
-        mi.dwTypeData = TR("Добавить изображения");
+        mi.dwTypeData = TR("Add Images");
         sub.SetMenuItemInfo(IDC_ADDIMAGES, false, &mi);
-        mi.dwTypeData = TR("Добавить файлы");
+        mi.dwTypeData = TR("Add Files");
         sub.SetMenuItemInfo(IDM_ADDFILES, false, &mi);
-        mi.dwTypeData = TR("Добавить каталог");
+        mi.dwTypeData = TR("Add folder");
         sub.SetMenuItemInfo(IDM_ADDFOLDER, false, &mi);
         TCHAR buf[MAX_PATH];
-        lstrcpy(buf, TR("Вставить"));
+        lstrcpy(buf, TR("Paste"));
         lstrcat(buf, _T("\t"));
         lstrcat(buf,Settings.Hotkeys.getByFunc("paste").localKey.toString());
         mi.dwTypeData = buf;
         sub.SetMenuItemInfo(IDC_PASTE, false, &mi);
-        mi.dwTypeData = TR("Удалить всё");
+        mi.dwTypeData = TR("Remove all");
         sub.SetMenuItemInfo(IDC_DELETEALL, false, &mi);
         sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
     }
@@ -160,31 +160,31 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
             sub.DeleteMenu(IDM_EDIT, MF_BYCOMMAND );
         }
 
-         mi.dwTypeData  = TR("Просмотр");
+         mi.dwTypeData  = TR("View");
         sub.SetMenuItemInfo(IDM_VIEW, false, &mi);
 
-        mi.dwTypeData  = TR("Открыть папку с файлом");
+        mi.dwTypeData  = TR("Open in folder");
         sub.SetMenuItemInfo(IDM_OPENINFOLDER, false, &mi);
 
-        mi.dwTypeData  = TR("Сохранить как...");
+        mi.dwTypeData  = TR("Save as...");
         sub.SetMenuItemInfo(IDM_SAVEAS, false, &mi); 
 
-        CString menuItemTitle = (LPWSTR)( isImage ?  TR("Копировать изображение") : TR("Копировать") ) + CString(_T("\tCtrl+C"));
+        CString menuItemTitle = (LPWSTR)( isImage ?  TR("Copy image") : TR("Copy") ) + CString(_T("\tCtrl+C"));
         lstrcpy(buf, menuItemTitle);
         mi.dwTypeData  = buf;
         sub.SetMenuItemInfo(IDM_COPYFILETOCLIPBOARD, false, &mi);
-        mi.dwTypeData  = TR("Удалить");
+        mi.dwTypeData  = TR("Remove");
         sub.SetMenuItemInfo(IDM_DELETE, false, &mi);
-        mi.dwTypeData  = TR("Свойства");
+        mi.dwTypeData  = TR("Properties");
         sub.SetMenuItemInfo(IDC_PROPERTIES, false, &mi);
         
-        mi.dwTypeData  = TR("Редактировать");
+        mi.dwTypeData  = TR("Edit");
         sub.SetMenuItemInfo(IDM_EDIT, false, &mi);
 
-        mi.dwTypeData  = TR("Редактировать");
+        mi.dwTypeData  = TR("Edit");
         sub.SetMenuItemInfo(IDM_EDIT, false, &mi);
 
-        mi.dwTypeData  = TR("Открыть во внешнем редакторе");
+        mi.dwTypeData  = TR("Open in external editor");
         sub.SetMenuItemInfo(IDM_EDITINEXTERNALEDITOR, false, &mi);
         
         sub.EnableMenuItem(IDM_EDIT, bIsImageFile?MF_ENABLED    :MF_GRAYED    );
@@ -493,8 +493,8 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
         CString FileName = selectedFiles[0];
         CString fileExt = WinUtils::GetFileExt(FileName);
         GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2,
-            TR("Файлы")+CString(" *.")+fileExt, CString(_T("*."))+fileExt,
-            TR("Все файлы"),_T("*.*"));
+            TR("Files")+CString(" *.")+fileExt, CString(_T("*."))+fileExt,
+            TR("All files"),_T("*.*"));
         CFileDialog fd(false, fileExt, FileName,OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,Buf,m_hWnd);
         if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return 0;
 

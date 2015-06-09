@@ -30,7 +30,7 @@
         fwrite( $f, $head_utf16 );
     }
 
-	$f = fopen( $lang_dir . "\\default.lng", "w" );
+	$f = fopen( $lang_dir . "\\English.lng.src", "w" );
 
 	if ( !$f ) {
         die( "Could not create output file" );
@@ -221,7 +221,7 @@ var_dump($hashes);
         while ( ( $file = readdir( $dh ) ) !== false )
         {
             if ( $file != "." && $file != ".." ) {
-                if ( substr( $file, -4, 4 ) == ".lng" && $file != "default.lng" ) {
+                if ( substr( $file, -4, 4 ) == ".lng" && $file != "English.lng.src" ) {
                     echo "<p><B>$i. Parsing $file<br /></b>";
                     parse_language_file( $lang_dir, $lang_dir . '\\' . $file, $hashes );
                     $i++;

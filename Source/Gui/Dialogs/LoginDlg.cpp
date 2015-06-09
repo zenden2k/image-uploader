@@ -57,13 +57,13 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
     LoginInfo li = serverProfile_.serverSettings().authData;
 
-    SetWindowText(TR("Параметры авторизации"));
-    TRC(IDC_LOGINLABEL, "Логин:");
-    TRC(IDC_PASSWORDLABEL, "Пароль:");
-    TRC(IDC_DOAUTH, "Выполнять авторизацию");
-    TRC(IDC_DOLOGINLABEL, "Выполнить авторизацию...");
-    TRC(IDCANCEL, "Отмена");
-    TRC(IDC_DELETEACCOUNTLABEL, "Удалить аккаунт");
+    SetWindowText(TR("Autorization parameters"));
+    TRC(IDC_LOGINLABEL, "Login:");
+    TRC(IDC_PASSWORDLABEL, "Password:");
+    TRC(IDC_DOAUTH, "Authorize");
+    TRC(IDC_DOLOGINLABEL, "Sign in...");
+    TRC(IDCANCEL, "Cancel");
+    TRC(IDC_DELETEACCOUNTLABEL, "Delete account");
 
     HWND hWnd = GetDlgItem(IDC_ANIMATIONSTATIC);
     if (hWnd)
@@ -76,7 +76,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
     doLoginLabel_.SubclassWindow(GetDlgItem(IDC_DOLOGINLABEL));
     doLoginLabel_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
-    doLoginLabel_.SetLabel(TR("Выполнить авторизацию..."));
+    doLoginLabel_.SetLabel(TR("Sign in..."));
     doLoginLabel_.m_clrLink = CSettings::DefaultLinkColor;
     doLoginLabel_.ShowWindow(serverSupportsBeforehandAuthorization_?SW_SHOW:SW_HIDE);
 
@@ -163,7 +163,7 @@ DWORD CLoginDlg::Run()
         li.Login = WCstringToUtf8(login);
         std::string serverNameA = serverProfile_.serverName();
         if ( !ignoreExistingAccount_ && createNew_ && Settings.ServersSettings[serverNameA].find(li.Login ) != Settings.ServersSettings[serverNameA].end() ) {
-            MessageBox(TR("Учетная запись с таким именем уже существует."),TR("Ошибка"), MB_ICONERROR);
+            MessageBox(TR("Account with such name already exists."),TR("Error"), MB_ICONERROR);
             OnProcessFinished();
         }
 
@@ -191,12 +191,12 @@ DWORD CLoginDlg::Run()
         int res = plugin_->doLogin();
         if ( res ) {
             OnProcessFinished();
-            MessageBox(TR("Авторизация была выполнена успешно"));
+            MessageBox(TR("Authenticated succesfully."));
             Accept();
             
             return 0;
         } else {
-            doLoginLabel_.SetLabel( TR("Не удалось авторизоваться. Попробовать еще раз."));
+            doLoginLabel_.SetLabel( TR("Could not authenticate. Please try again."));
         }
         
     }
@@ -218,12 +218,12 @@ void CLoginDlg::Accept()
     li.Login = WCstringToUtf8(Buffer);
 
     if ( li.Login.empty() ) {
-        MessageBox(TR("Логин не может быть пустым"),TR("Ошибка"), MB_ICONERROR);
+        MessageBox(TR("Login cannot be empty"),TR("Error"), MB_ICONERROR);
         return;
     }
     std::string serverNameA = serverProfile_.serverName();
     if ( !ignoreExistingAccount_ &&  createNew_ && Settings.ServersSettings[serverNameA].find(li.Login ) != Settings.ServersSettings[serverNameA].end() ) {
-        MessageBox(TR("Учетная запись с таким именем уже существует."),TR("Ошибка"), MB_ICONERROR);
+        MessageBox(TR("Account with such name already exists."),TR("Error"), MB_ICONERROR);
         return;
     }
 

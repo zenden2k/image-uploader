@@ -55,18 +55,18 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
     CommandBox.m_bHyperLinks = false;
     CommandBox.Init();
-    CommandBox.AddString(TR("Снимок всего экрана"), _T(" "), IDC_FULLSCREEN, LOADICO(IDI_SCREENSHOT));
-    CommandBox.AddString(TR("Снимок активного окна"), _T(" "), IDC_SCRACTIVEWINDOW,LOADICO(IDI_WINDOW));
-    CommandBox.AddString(TR("Снимок прямоугольной области..."), _T(" "), IDC_REGIONSELECT,LOADICO(IDI_ICONREGION));
-    CommandBox.AddString(TR("Снимок произвольной области..."), _T(" "), IDC_FREEFORMREGION,LOADICO(IDI_FREEFORM));
-    CommandBox.AddString(TR("Снимок элемента управления..."), _T(" "), IDC_HWNDSREGION,LOADICO(IDI_ICONWINDOWS));
+    CommandBox.AddString(TR("Capture the Entire Screen"), _T(" "), IDC_FULLSCREEN, LOADICO(IDI_SCREENSHOT));
+    CommandBox.AddString(TR("Capture the Active Window"), _T(" "), IDC_SCRACTIVEWINDOW,LOADICO(IDI_WINDOW));
+    CommandBox.AddString(TR("Capture Selected Area"), _T(" "), IDC_REGIONSELECT,LOADICO(IDI_ICONREGION));
+    CommandBox.AddString(TR("Freehand Capture"), _T(" "), IDC_FREEFORMREGION,LOADICO(IDI_FREEFORM));
+    CommandBox.AddString(TR("Capture Selected Object"), _T(" "), IDC_HWNDSREGION,LOADICO(IDI_ICONWINDOWS));
     //CommandBox.AddString(TR(""),0, IDC_VIEWSETTINGS,LOADICO16(IDI_ADDITIONAL));
-    //CommandBox.AddString(TR("Закрыть"), 0, IDCANCEL,LOADICO16(IDI_CLOSE),true, 2);
+    //CommandBox.AddString(TR("Close"), 0, IDCANCEL,LOADICO16(IDI_CLOSE),true, 2);
     
-    SetWindowText(TR("Снимок экрана"));
-    TRC(IDC_DELAYLABEL, "Задержка:");
-    TRC(IDC_SECLABEL, "сек");
-    TRC(IDC_OPENSCREENSHOTINEDITORCHECKBOX, "Открыть скриншот в редакторе");
+    SetWindowText(TR("Screen Capture"));
+    TRC(IDC_DELAYLABEL, "Timeout:");
+    TRC(IDC_SECLABEL, "sec");
+    TRC(IDC_OPENSCREENSHOTINEDITORCHECKBOX, "Open screenshot in the editor");
     GuiTools::SetCheck(m_hWnd, IDC_OPENSCREENSHOTINEDITORCHECKBOX, Settings.ScreenshotSettings.OpenInEditor);
     SetDlgItemInt(IDC_DELAYEDIT, Settings.ScreenshotSettings.Delay);
     SendDlgItemMessage(IDC_DELAYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)30, (short)0) );

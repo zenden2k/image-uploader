@@ -33,7 +33,7 @@ class CTextViewDlg :
     public:
         CTextViewDlg(const CString& text, const CString& title, const CString& info, const CString& question,
                      const CString& okCaption = TR(
-                           "OK"), const CString& cancelCaption = TR("Отмена"));
+                           "OK"), const CString& cancelCaption = TR("Cancel"));
         ~CTextViewDlg();
         enum { IDD = IDD_TEXTVIEWDLG };
 

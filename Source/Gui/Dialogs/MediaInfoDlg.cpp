@@ -44,9 +44,9 @@ LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
     // Translating controls' text
     TRC(IDOK, "OK");
-    SetWindowText(TR("Информация о файле"));
-    TRC(IDC_COPYALL, "Копировать в буфер");
-    SetDlgItemText(IDC_FILEINFOEDIT, TR("Загрузка..."));
+    SetWindowText(TR("Information about file"));
+    TRC(IDC_COPYALL, "Copy to clipboard");
+    SetDlgItemText(IDC_FILEINFOEDIT, TR("Loading..."));
     
     ::SetFocus(GetDlgItem(IDOK));
 
@@ -78,12 +78,12 @@ DWORD CMediaInfoDlg::Run()
     CString  ShortFileName = WinUtils::TrimString(WinUtils::myExtractFileName(m_FileName), 40);
     if(!FileExists(m_FileName))
     { 
-        SetDlgItemText(IDC_FILEINFOLABEL, CString(TR("Ошибка:")));
-        SetDlgItemText(IDC_FILEINFOEDIT, CString(TR("Файл \"")) + ShortFileName + TR("\" не найден!"));
+        SetDlgItemText(IDC_FILEINFOLABEL, CString(TR("Error:")));
+        SetDlgItemText(IDC_FILEINFOEDIT, CString(TR("File \"")) + ShortFileName + TR("\" not found!"));
         return 0;
     }
 
-    SetDlgItemText(IDC_FILEINFOLABEL,CString(TR("Информация о файле"))+_T(" \"")+ ShortFileName+_T("\" :"));
+    SetDlgItemText(IDC_FILEINFOLABEL,CString(TR("Information about file"))+_T(" \"")+ ShortFileName+_T("\" :"));
     CString Report;
     GetMediaFileInfo(m_FileName, Report);
     SetDlgItemText(IDC_FILEINFOEDIT, Report);

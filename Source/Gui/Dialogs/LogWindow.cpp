@@ -109,9 +109,9 @@ LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
     CMenu FolderMenu;
     FolderMenu.CreatePopupMenu();
     if ( index != 0xffff && !bOutside ) {
-        FolderMenu.AppendMenu(MF_STRING, IDC_COPYTEXTTOCLIPBOARD, TR("Копировать"));
+        FolderMenu.AppendMenu(MF_STRING, IDC_COPYTEXTTOCLIPBOARD, TR("Copy"));
     }
-    FolderMenu.AppendMenu(MF_STRING, IDC_CLEARLIST, TR("Очистить список"));
+    FolderMenu.AppendMenu(MF_STRING, IDC_CLEARLIST, TR("Clear list"));
 
     FolderMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
     return 0;
@@ -128,9 +128,9 @@ LRESULT CLogWindow::OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 void CLogWindow::TranslateUI()
 {
-    TRC(IDCANCEL, "Скрыть");
-    TRC(IDC_CLEARLOGBUTTON, "Очистить");
-    SetWindowText(TR("Лог ошибок"));
+    TRC(IDCANCEL, "Hide");
+    TRC(IDC_CLEARLOGBUTTON, "Clear");
+    SetWindowText(TR("Error log"));
 }
 
 LRESULT CLogWindow::OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

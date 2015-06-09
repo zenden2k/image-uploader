@@ -11,7 +11,7 @@ std::string WtlScriptDialogProvider::askUserCaptcha(NetworkClient* nm, const std
     nm->setOutputFile(IuCoreUtils::WstringToUtf8((const TCHAR*)wFileName));
     if (!nm->doGet(url))
         return "";
-    CInputDialog dlg(_T("Image Uploader"), TR("¬ведите текст с картинки:"), CString(IuCoreUtils::Utf8ToWstring("").c_str()), wFileName);
+    CInputDialog dlg(_T("Image Uploader"), TR("Please enter the text you see in the image:"), CString(IuCoreUtils::Utf8ToWstring("").c_str()), wFileName);
     nm->setOutputFile("");
     if (dlg.DoModal() == IDOK)
         return IuCoreUtils::WstringToUtf8((const TCHAR*)dlg.getValue());

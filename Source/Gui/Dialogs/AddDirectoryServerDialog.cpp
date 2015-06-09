@@ -31,13 +31,13 @@ CAddDirectoryServerDialog::~CAddDirectoryServerDialog()
 
 LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    SetWindowText(TR("Добавление папки как сервера"));
-    TRC(IDC_CONNECTIONNAMELABEL,"Имя сервера:");
-    TRC(IDC_DIRECTORYLABEL,"Папка:");
-    TRC(IDC_DOWNLOADURLLABEL,"URL для скачивания:");
-    TRC(IDCANCEL,"Отмена");
-    TRC(IDC_THEURLOFUPLOADEDLABEL,"Ссылка для скачивания будет выглядеть так:");
-    TRC(IDC_ADDFILEPROTOCOL,"Конвертировать UNC путь \"\\\\\" в \"file://///\"");
+    SetWindowText(TR("Adding directory as server"));
+    TRC(IDC_CONNECTIONNAMELABEL, "Server name:");
+    TRC(IDC_DIRECTORYLABEL, "Folder:");
+    TRC(IDC_DOWNLOADURLLABEL, "URL for downloading:");
+    TRC(IDCANCEL, "Cancel");
+    TRC(IDC_THEURLOFUPLOADEDLABEL, "URL for downloading will look like:");
+    TRC(IDC_ADDFILEPROTOCOL, "Convert UNC path \"\\\\\" to \"file://///\"");
 
     
     HICON ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON    , 16,16,0);
@@ -57,7 +57,7 @@ LRESULT CAddDirectoryServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND 
     connectionName.TrimLeft(L" ");
     connectionName.TrimRight(L" ");
     if ( connectionName.IsEmpty() ) {
-        MessageBox(TR("Название соединения не может быть пустым"),TR("Ошибка"), MB_ICONERROR);
+        MessageBox(TR("Connection name cannot be empty"),TR("Error"), MB_ICONERROR);
         return 0;
     }
 
@@ -65,7 +65,7 @@ LRESULT CAddDirectoryServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND 
     downloadUrl.TrimLeft(L" ");
     downloadUrl.TrimRight(L" ");
     if ( downloadUrl.IsEmpty() ) {
-        MessageBox(TR("Ссылка для скачивания не может быть пустой."),TR("Ошибка"), MB_ICONERROR);
+        MessageBox(TR("Download URL cannot be empty."),TR("Error"), MB_ICONERROR);
         return 0;
     }
 
@@ -83,12 +83,12 @@ LRESULT CAddDirectoryServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND 
             createdServerName_ = IuCoreUtils::Utf8ToWstring(slm.createdServerName()).c_str();
             EndDialog(wID);
     } else {
-        CString errorMessage = TR("Не удалось добавить сервер.");
+        CString errorMessage = TR("Could not add server.");
         CString reason = IuCoreUtils::Utf8ToWstring(slm.errorMessage()).c_str();
         if ( !reason.IsEmpty() ) {
-            errorMessage += CString(L"\r\n") + TR("Причина:") + L"\r\n" + reason;
+            errorMessage += CString(L"\r\n") + TR("Reason:") + L"\r\n" + reason;
         }
-        MessageBox(errorMessage,TR("Ошибка"), MB_ICONERROR);
+        MessageBox(errorMessage,TR("Error"), MB_ICONERROR);
 
     }    
     return 0;
@@ -135,7 +135,7 @@ LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD 
     CString directory =  GuiTools::GetDlgItemText(m_hWnd, IDC_DIRECTORYEDIT);
     if ( !connectionNameEdited ) {
         
-        CString serverName = TR("Папка ") + WinUtils::TrimString(directory, 30);
+        CString serverName = TR("Folder ") + WinUtils::TrimString(directory, 30);
         SetDlgItemText(IDC_CONNECTIONNAMEEDIT, serverName);
     }
     GenerateDownloadLink();
@@ -385,7 +385,7 @@ bool CAddDirectoryServerDialog::LoadComputerAddresses()
 LRESULT CAddDirectoryServerDialog::OnBnClickedBrowsebutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     CString path = GuiTools::GetWindowText(GetDlgItem(IDC_DIRECTORYEDIT));
-    CNewStyleFolderDialog fd(m_hWnd, path, TR("Выбор папки"));
+    CNewStyleFolderDialog fd(m_hWnd, path, TR("Select folder"));
   
     if(fd.DoModal(m_hWnd) == IDOK)
     {

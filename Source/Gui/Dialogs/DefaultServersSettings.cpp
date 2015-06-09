@@ -61,14 +61,14 @@ LRESULT CDefaultServersSettings::OnServerListChanged(UINT uMsg, WPARAM wParam, L
 
 LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    TRC(IDC_REMEMBERIMAGESERVERSETTINGS, "Запоминать в мастере настройки сервера для картинок");
-    TRC(IDC_REMEMBERFILESERVERSETTINGS, "Запоминать в мастере настройки сервера для других типов файлов");
+    TRC(IDC_REMEMBERIMAGESERVERSETTINGS, "Remember image server's settings in wizard");
+    TRC(IDC_REMEMBERFILESERVERSETTINGS, "Remember file server's settings in wizard");
     RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
     imageServerSelector_ = new CServerSelectorControl(uploadEngineManager_, true);
     if ( !imageServerSelector_->Create(m_hWnd, serverSelectorRect) ) {
         return 0;
     }
-    imageServerSelector_->setTitle(TR("Сервер по-умолчанию для хранения изображений"));
+    imageServerSelector_->setTitle(TR("Default server for uploading images"));
     imageServerSelector_->ShowWindow( SW_SHOW );
     imageServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
     imageServerSelector_->setServerProfile(Settings.imageServer);
@@ -82,7 +82,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     fileServerSelector_->ShowWindow( SW_SHOW );
     fileServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
     fileServerSelector_->setServerProfile(Settings.fileServer);
-    fileServerSelector_->setTitle(TR("Сервер по-умолчанию для хранения других типов файлов"));
+    fileServerSelector_->setTitle(TR("Default server for other file types"));
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_TRAYSERVERPLACEHOLDER);
     trayServerSelector_ = new CServerSelectorControl(uploadEngineManager_);
@@ -92,7 +92,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     trayServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
 
     trayServerSelector_->setServerProfile(Settings.quickScreenshotServer);
-    trayServerSelector_->setTitle(TR("Сервер для быстрой загрузки скриншотов"));
+    trayServerSelector_->setTitle(TR("Server for quick screenshot uploading"));
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_CONTEXTMENUSERVERPLACEHOLDER);
 
@@ -104,7 +104,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     contextMenuServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
 
     contextMenuServerSelector_->setServerProfile(Settings.contextMenuServer);
-    contextMenuServerSelector_->setTitle(TR("Сервер для загрузки из контекстного меню проводника"));
+    contextMenuServerSelector_->setTitle(TR("Server for uploading from Explorer's context menu"));
 
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_URLSHORTENERPLACEHOLDER);
@@ -117,7 +117,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     urlShortenerServerSelector_->ShowWindow( SW_SHOW );
     urlShortenerServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
     urlShortenerServerSelector_->setServerProfile(Settings.urlShorteningServer);
-    urlShortenerServerSelector_->setTitle(TR("Сервер для сокращения ссылок"));
+    urlShortenerServerSelector_->setTitle(TR("URL shortening server"));
     
     GuiTools::SetCheck(m_hWnd, IDC_REMEMBERIMAGESERVERSETTINGS, Settings.RememberImageServer);
     GuiTools::SetCheck(m_hWnd, IDC_REMEMBERFILESERVERSETTINGS, Settings.RememberFileServer);
@@ -136,8 +136,8 @@ bool CDefaultServersSettings::Apply()
     for(int i = 0; i< ARRAY_SIZE(controls); i++ ) {
         if ( !controls[i]->serverProfile().serverName().empty() && !controls[i]->isAccountChosen() ) {
             CString message;
-            message.Format(TR("Вы не выбрали аккаунт для сервера \"%s\""), IuCoreUtils::Utf8ToWstring(controls[i]->serverProfile().serverName()).c_str());
-            MessageBox(message, TR("Ошибка"));
+            message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(controls[i]->serverProfile().serverName()).c_str());
+            MessageBox(message, TR("Error"));
             return 0;
         }
     }

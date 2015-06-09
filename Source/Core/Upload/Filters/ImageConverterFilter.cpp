@@ -33,7 +33,7 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
 
     if (!thumb.LoadFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)thumbTemplateFileName)))
     {
-        LOG(ERROR) << TR("Не могу загрузить файл миниатюры!") + CString(_T("\r\n")) + thumbTemplateFileName;
+        LOG(ERROR) << TR("Couldn't load thumbnail preset!") + CString(_T("\r\n")) + thumbTemplateFileName;
         return false;
     }
     task->setStatusText(_("Preparing image..."));

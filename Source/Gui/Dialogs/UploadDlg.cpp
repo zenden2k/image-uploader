@@ -72,9 +72,9 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     ::MapWindowPoints(0,m_hWnd, (POINT*)&rc, 2);
 
     uploadListView_.AttachToDlgItem(m_hWnd, IDC_UPLOADTABLE);
-    uploadListView_.AddColumn(TR("Файл"), 1);
-    uploadListView_.AddColumn(TR("Статус"), 1);
-    uploadListView_.AddColumn(TR("Миниатюра"), 2);
+    uploadListView_.AddColumn(TR("File"), 1);
+    uploadListView_.AddColumn(TR("Status"), 1);
+    uploadListView_.AddColumn(TR("Thumbnail"), 2);
     CDC hdc = GetDC();
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     //float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
@@ -91,7 +91,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_ALL, IID_ITaskbarList3, (void**)&ptl);
     #endif
 
-    TRC(IDC_COMMONPROGRESS, "Прогресс:");
+    TRC(IDC_COMMONPROGRESS, "Progress:");
     bool IsLastVideo = lstrlen(MediaInfoDllPath)!=0;
 
     CVideoGrabberPage *vg = static_cast<CVideoGrabberPage*>(WizardDlg->Pages[1]);
@@ -146,7 +146,7 @@ bool CUploadDlg::startUpload() {
         fps->tableRow = i;
         files_.push_back(fps);
         uploadListView_.AddItem(i, 0, MainDlg->FileList[i].VirtualFileName);
-        uploadListView_.AddItem(i, 1, TR("В очереди"));
+        uploadListView_.AddItem(i, 1, TR("Queued"));
         uploadListView_.SetItemData(i, reinterpret_cast<DWORD_PTR>(fps));
         bool isImage = IsImage(FileName);
         std::shared_ptr<FileUploadTask> task(new FileUploadTask(fileNameA, displayName));
@@ -193,7 +193,7 @@ int CUploadDlg::ThreadTerminated(void)
     KillTimer(2);
     LastUpdate = 0;
 
-    SetNextCaption(TR("Завершить >"));
+    SetNextCaption(TR("Finish >"));
     Terminated = true;
     IsStopTimer = false;
     backgroundThreadStarted_ = false;
@@ -273,7 +273,7 @@ bool CUploadDlg::OnNext()
             {
                 this->Terminate();
                 ThreadTerminated();
-                FileProgress(TR("Загрузка файлов прервана пользователем."), false);
+                FileProgress(TR("File uploading was cancelled by user."), false);
             }
         }*/
 
@@ -334,7 +334,7 @@ void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
     progressCurrent = CurPos;
     progressTotal = Total;
     CString res;
-    res.Format(TR("Ссылки на файлы (%d)"), CurPos);
+    res.Format(TR("Links (%d)"), CurPos);
     toolbar_.SetButtonInfo(IDC_UPLOADRESULTSTAB, TBIF_TEXT, 0, 0, res,0, 0, 0, 0);
 }
 
@@ -473,9 +473,9 @@ void CUploadDlg::createToolbar()
     toolbar_.SetButtonStructSize();
     toolbar_.SetButtonSize(30, 18);
     toolbar_.SetImageList(m_hToolBarImageList);
-    toolbar_.AddButton(IDC_UPLOADPROCESSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED | TBSTATE_PRESSED, 0, TR("Процесс загрузки"), 0);
-    toolbar_.AddButton(IDC_UPLOADRESULTSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Ссылки на файлы"), 0);
-    toolbar_.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Лог"), 0);
+    toolbar_.AddButton(IDC_UPLOADPROCESSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED | TBSTATE_PRESSED, 0, TR("Upload progress"), 0);
+    toolbar_.AddButton(IDC_UPLOADRESULTSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Links"), 0);
+    toolbar_.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Log"), 0);
 
     toolbar_.AutoSize();
     toolbar_.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);
@@ -520,13 +520,13 @@ void CUploadDlg::onSessionFinished(UploadSession* session)
     KillTimer(kEnableNextButtonTimer);
     CString progressLabelText;
     if (successFileCount == totalFileCount) {
-        progressLabelText = TR("Все файлы были успешно загружены.");
+        progressLabelText = TR("All files have been successfully uploaded.");
     } else {
         if (CancelByUser) {
-            progressLabelText = TR("Загрузка файлов прервана пользователем.");
+            progressLabelText = TR("File uploading was cancelled by user.");
         } else if (failedFileCount) {
-            progressLabelText.Format(TR("Ошибок: %d"), failedFileCount);
-            progressLabelText = CString(TR("Загрузка завершена.")) + _T(" ") + progressLabelText;
+            progressLabelText.Format(TR("Errors: %d"), failedFileCount);
+            progressLabelText = CString(TR("Uploading has been finished.")) + _T(" ") + progressLabelText;
         }
     }
 
@@ -555,7 +555,7 @@ void CUploadDlg::onTaskUploadProgress(UploadTask* task)
             percent = static_cast<int>(100 * ((float)progress->uploaded) / progress->totalUpload);
         }
         CString uploadSpeed = Utf8ToWCstring(progress->speed);
-        _stprintf(ProgressBuffer, TR("%s из %s (%d%%) %s"), (LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->uploaded)),
+        _stprintf(ProgressBuffer, TR("%s of %s (%d%%) %s"), (LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->uploaded)),
             (LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->totalUpload)), percent, (LPCTSTR)uploadSpeed);
         int columnIndex = isThumb ? 2 : 1;
         uploadListView_.SetItemText(fps->tableRow, columnIndex, ProgressBuffer);
@@ -635,7 +635,7 @@ void CUploadDlg::backgroundThreadStarted()
     }
     
     EnableExit(false);
-    SetNextCaption(TR("Остановить"));
+    SetNextCaption(TR("Stop"));
 }
 
 

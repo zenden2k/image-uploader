@@ -426,19 +426,19 @@ std::string UploadTask::UploaderStatusToString(StatusType status, int actionInde
     switch (status)
     {
     case stWaitingAnswer:
-        result = TR("Ожидание ответа от сервера...");
+        result = TR("Waiting response from server...");
         break;
     case stCreatingFolder:
-        result = CString(TR("Создание папки \"")) + IuCoreUtils::Utf8ToWstring(param).c_str() + _T("\"...");
+        result = CString(TR("Creating folder \"")) + IuCoreUtils::Utf8ToWstring(param).c_str() + _T("\"...");
         break;
     case stUploading:
-        result = TR("Отправка файла на сервер...");
+        result = TR("Sending file to server...");
         break;
     case stAuthorization:
-        result = TR("Авторизация на сервере...");
+        result = TR("Autorization on server...");
         break;
     case stPerformingAction:
-        result.Format(TR("Выполняю действие #%d..."), actionIndex);
+        result.Format(TR("Doing action #%d..."), actionIndex);
         break;
     case stUserDescription:
         result = IuCoreUtils::Utf8ToWstring(param).c_str();

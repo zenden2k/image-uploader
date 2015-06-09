@@ -66,24 +66,24 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     sourceTextEditControl.onPaste.bind(this, &CImageReuploaderDlg::OnEditControlPaste);
     outputEditControl.AttachToDlgItem(m_hWnd, IDC_OUTPUTTEXT);
     ::SetFocus(GetDlgItem(IDOK));
-    SetWindowText(TR("Повторная загрузка изображений"));
-    TRC(IDOK, "Перезалить");
-    TRC(IDCANCEL, "Закрыть");
-    TRC(IDC_COPYTOCLIPBOARD, "Копировать в буфер");
-    TRC(IDC_SOURCECODERADIO, "Исходный код");
-    TRC(IDC_LINKSLISTRADIO, "Список ссылок");
-    TRC(IDC_WATCHCLIPBOARD, "Вести наблюдение за буфером обмена");
-    TRC(IDC_IMAGEDOWNLOADERTIP, "Введите текст (код HTML, BB-code, или просто список URL):");
-    TRC(IDC_PASTEHTML, "Вставить HTML из буфера");
-    TRC(IDC_SOURCEURLLABEL, "URL источника (опционально):");
-    TRC(IDC_PASTEHTMLONCTRLVCHECKBOX, "Вставлять HTML при нажатии Ctrl+V");
-    TRC(IDC_DESCRIPTION, "Перезаливка изображений в тексте с сохранением исходной разметки");
-    TRC(IDC_SHOWLOG, "Показать лог");
+    SetWindowText(TR("Re-upload images"));
+    TRC(IDOK, "Reupload");
+    TRC(IDCANCEL, "Close");
+    TRC(IDC_COPYTOCLIPBOARD, "Copy to clipboard");
+    TRC(IDC_SOURCECODERADIO, "Source code");
+    TRC(IDC_LINKSLISTRADIO, "List of URLs");
+    TRC(IDC_WATCHCLIPBOARD, "Watch Clipboard for URLs");
+    TRC(IDC_IMAGEDOWNLOADERTIP, "Enter the text containing links to images (HTML, BBcode, or just plain text):");
+    TRC(IDC_PASTEHTML, "Paste HTML from clipboard");
+    TRC(IDC_SOURCEURLLABEL, "Source URL (optional):");
+    TRC(IDC_PASTEHTMLONCTRLVCHECKBOX, "Paste HTML on Ctrl+V");
+    TRC(IDC_DESCRIPTION, "Reuploading images in the text with preserving it's original markup");
+    TRC(IDC_SHOWLOG, "Show Error Log");
 
     RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
     imageServerSelector_ .reset(new CServerSelectorControl(uploadEngineManager_, true));
     imageServerSelector_->Create(m_hWnd, serverSelectorRect);
-    imageServerSelector_->setTitle(TR("Сервер для хранения изображений"));
+    imageServerSelector_->setTitle(TR("Server for uploading images"));
     imageServerSelector_->ShowWindow( SW_SHOW );
     imageServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
     imageServerSelector_->setServerProfile(Settings.imageServer);
@@ -113,7 +113,7 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
             return false;
         }
     }
-    SetDlgItemText(IDC_SERVENAMELABEL, CString(TR("Сервер")) + _T(": ") + Utf8ToWCstring(serverProfile_.serverName()));
+    SetDlgItemText(IDC_SERVENAMELABEL, CString(TR("Server")) + _T(": ") + Utf8ToWCstring(serverProfile_.serverName()));
 
     SetDlgItemText(IDC_RESULTSLABEL, _T(""));
     ::SetFocus(GetDlgItem(IDC_FILEINFOEDIT));
@@ -234,7 +234,7 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
 
             if (!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + serverProfile_.getImageUploadParams().getThumb().TemplateName +
                 _T(".xml")))) {
-                ServiceLocator::instance()->logger()->write(logError, LogTitle, TR("Не могу загрузить файл миниатюры!"));
+                ServiceLocator::instance()->logger()->write(logError, LogTitle, TR("Couldn't load thumbnail preset!"));
             } else {
                 message.Format(_T("Generating the thumbnail from local file ('%s')"),  (LPCTSTR)Utf8ToWCstring(localFile) );
                 imageConverter.setEnableProcessing(false);
@@ -429,14 +429,14 @@ bool CImageReuploaderDlg::BeginDownloading()
 
         if ( !lstrlen(urlComponents.lpszScheme) ) {
             CString message;
-            message.Format(TR("Недопустимый URL источника '%s'. Нужно ввести полный URL, включая схему (http,https и т.п.)"), (LPCTSTR)sourceUrl  );
+            message.Format(TR("Invalid source URL: '%s'. Absolute URL is needed, including schema (http,https,etc)"), (LPCTSTR)sourceUrl  );
             MessageBox(message, APPNAME, MB_OK | MB_ICONEXCLAMATION);
             return false;
         }
     }
 
     if ( !links.size() ) {
-        MessageBox(TR("Не найдено ссылок на изображения!"), APPNAME, MB_OK | MB_ICONEXCLAMATION);
+        MessageBox(TR("Could not find links in the given text!"), APPNAME, MB_OK | MB_ICONEXCLAMATION);
         return false;
     } else {
         uploadSession_.reset(new UploadSession());
@@ -479,7 +479,7 @@ bool CImageReuploaderDlg::BeginDownloading()
             m_wndAnimation.ShowWindow(SW_SHOW);
             GuiTools::EnableDialogItem(m_hWnd, IDOK, false);
 
-            SetDlgItemText(IDCANCEL, TR("Остановить"));
+            SetDlgItemText(IDCANCEL, TR("Stop"));
             CHistoryManager * mgr = ServiceLocator::instance()->historyManager();
         
             historySession_ = mgr->newSession();
@@ -573,9 +573,9 @@ LRESULT CImageReuploaderDlg::OnClickedOutputRadioButton(WORD wNotifyCode, WORD w
 }
 
 void CImageReuploaderDlg::updateStats() {
-    CString text =  CString(TR("Загружено изображений: ")) + IntToStr(uploadedItems_.size())
+    CString text =  CString(TR("Uploaded images: ")) + IntToStr(uploadedItems_.size())
         + (m_nFilesDownloaded ? CString(_T("/")) + IntToStr(m_nFilesDownloaded) : CString(_T("")))
-        + CString(_T(", ")) + TR("Скачано: ") 
+        + CString(_T(", ")) + TR("Downloaded: ") 
         + WinUtils::IntToStr(m_nFilesDownloaded) + CString(_T("/")) + WinUtils::IntToStr(m_nFilesCount);
     SetDlgItemText( IDC_RESULTSLABEL,text);
 }
@@ -583,11 +583,11 @@ void CImageReuploaderDlg::updateStats() {
 void CImageReuploaderDlg::processFinished() {
     ::EnableWindow(GetDlgItem(IDOK),true);
     ::EnableWindow(GetDlgItem(IDC_FILEINFOEDIT),true);
-    TRC(IDCANCEL, "Закрыть");
+    TRC(IDCANCEL, "Close");
     ::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS),SW_HIDE);
     ::EnableWindow(GetDlgItem(IDC_WATCHCLIPBOARD),true);
     m_wndAnimation.ShowWindow(SW_HIDE);
-    SetDlgItemText(IDCANCEL, TR("Закрыть"));
+    SetDlgItemText(IDCANCEL, TR("Close"));
 }
     
 LRESULT CImageReuploaderDlg::OnClickedCopyToClipboardButton(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {

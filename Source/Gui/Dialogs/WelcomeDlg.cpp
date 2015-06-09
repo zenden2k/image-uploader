@@ -55,38 +55,38 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE );
     LogoImage.LoadImage(0, 0, Settings.UseNewIcon ? IDR_ICONMAINNEW : IDR_PNG1, false, RGB(255,255,255));
 
-    TRC(IDC_SELECTOPTION, "Выберите действие:");
-    TRC(IDC_SOVET, "Совет:");
-    TRC(IDC_SOVET2, "Просто перетащите изображения или видео-файл в окно программы и программа обработает их.");
-    TRC(IDC_WELCOMEMSG, "Добро пожаловать в мастер публикации изображений, который поможет вам разместить ваши фотографии, изображения, кадры из видео-файлов в Интернете!");
+    TRC(IDC_SELECTOPTION, "Select action:");
+    TRC(IDC_SOVET, "Advice:");
+    TRC(IDC_SOVET2, "Just drag-n-drop your files on Image Uploader's window and it will process them.");
+    TRC(IDC_WELCOMEMSG, "Welcome to pictures Publishing Wizard, that will help you to upload your images, photos, video frames on Internet!");
     SetDlgItemText(IDC_TITLE, APPNAME);
 
     ListBox.Init();
-    ListBox.AddString(TR("Добавить изображения"), TR("JPEG, PNG, GIF, BMP и любые другие файлы"), IDC_ADDIMAGES, LOADICO(IDI_IMAGES));
+    ListBox.AddString(TR("Add Images"), TR("JPEG, PNG, GIF, BMP or any other file"), IDC_ADDIMAGES, LOADICO(IDI_IMAGES));
     
-    ListBox.AddString(TR("Добавить файлы.."), 0, IDC_ADDFILES, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONADD), IMAGE_ICON    , 16,16,0));
+    ListBox.AddString(TR("Add Files..."), 0, IDC_ADDFILES, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONADD), IMAGE_ICON    , 16,16,0));
 
-    ListBox.AddString(TR("Из интернета"), 0, IDC_DOWNLOADIMAGES, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONWEB), IMAGE_ICON    , 16,16,0),true);
+    ListBox.AddString(TR("From Web"), 0, IDC_DOWNLOADIMAGES, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONWEB), IMAGE_ICON    , 16,16,0),true);
 
     
-    ListBox.AddString(TR("Добавить папку..."), 0, IDC_ADDFOLDER, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONADDFOLDER), IMAGE_ICON    , 16,16,0),true,0,true);
+    ListBox.AddString(TR("Add Folder..."), 0, IDC_ADDFOLDER, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONADDFOLDER), IMAGE_ICON    , 16,16,0),true,0,true);
 
-    ListBox.AddString(TR("Из буфера обмена"), 0, IDC_CLIPBOARD, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_CLIPBOARD), IMAGE_ICON    , 16,16,0),true);
+    ListBox.AddString(TR("From Clipboard"), 0, IDC_CLIPBOARD, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_CLIPBOARD), IMAGE_ICON    , 16,16,0),true);
     
-    ListBox.AddString(TR("Перезаливка"), 0, IDC_REUPLOADIMAGES, LOADICO(IDI_ICONRELOAD), true,0, true);
-    ListBox.AddString(TR("Сократить ссылку"), 0, IDC_SHORTENURL, LOADICO(IDI_ICONLINK), true,0, false);
+    ListBox.AddString(TR("Reupload"), 0, IDC_REUPLOADIMAGES, LOADICO(IDI_ICONRELOAD), true,0, true);
+    ListBox.AddString(TR("Shorten a link"), 0, IDC_SHORTENURL, LOADICO(IDI_ICONLINK), true,0, false);
 
 
-    ListBox.AddString(TR("Снимок экрана"), TR("всего экрана или выбранной части"), IDC_SCREENSHOT, LOADICO(IDI_SCREENSHOT));
-    ListBox.AddString(TR("Снимок выбранной области..."), 0, IDC_REGIONPRINT,LOADICO(IDI_ICONREGION));
+    ListBox.AddString(TR("Screen Capture"), TR("a pic of the whole screen or selected region"), IDC_SCREENSHOT, LOADICO(IDI_SCREENSHOT));
+    ListBox.AddString(TR("Shot of Selected Region..."), 0, IDC_REGIONPRINT,LOADICO(IDI_ICONREGION));
     
-    ListBox.AddString(TR("Импортировать видео файл"), TR("извлечение кадров из видеоролика"), IDC_ADDVIDEO, LOADICO(IDI_GRAB));
+    ListBox.AddString(TR("Import Video File"), TR("Extracting frames from video"), IDC_ADDVIDEO, LOADICO(IDI_GRAB));
 
     if(lstrlen(MediaInfoDllPath))
-        ListBox.AddString(TR("Информация о медиа файле..."), 0, IDC_MEDIAFILEINFO, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONINFO), IMAGE_ICON    , 16,16,0));
+        ListBox.AddString(TR("View Media File Information"), 0, IDC_MEDIAFILEINFO, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONINFO), IMAGE_ICON    , 16,16,0));
 
-    ListBox.AddString(TR("Настройки программы"), TR("Для опытных пользователей"), IDC_SETTINGS, GuiTools::LoadBigIcon(IDI_ICONSETTINGS, 128));
-    ListBox.AddString(TR("История"), 0, ID_VIEWHISTORY,LOADICO(IDI_ICONHISTORY));
+    ListBox.AddString(TR("Program Settings"), TR("a tool for advanced users"), IDC_SETTINGS, GuiTools::LoadBigIcon(IDI_ICONSETTINGS, 128));
+    ListBox.AddString(TR("History"), 0, ID_VIEWHISTORY,LOADICO(IDI_ICONHISTORY));
     
     HFONT font = GetFont();
     LOGFONT alf;

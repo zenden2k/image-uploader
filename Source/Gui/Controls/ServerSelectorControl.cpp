@@ -66,14 +66,14 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
     imageProcessingParamsLink_.SubclassWindow(GetDlgItem(IDC_IMAGEPROCESSINGPARAMS));
     imageProcessingParamsLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
     imageProcessingParamsLink_.m_clrLink = CSettings::DefaultLinkColor;
-    CString linkLabel = showImageProcessingParams_ ? TR("Обработка изображений...") : TR("Параметры...");
+    CString linkLabel = showImageProcessingParams_ ? TR("Image processing settings...") : TR("Settings...");
     imageProcessingParamsLink_.SetLabel(linkLabel);
     imageProcessingParamsLink_.SetToolTipText(linkLabel);
     imageProcessingParamsLink_.ShowWindow(showParamsLink_ ? SW_SHOW : SW_HIDE);
     accountLink_.SubclassWindow(GetDlgItem(IDC_ACCOUNTINFO));
     accountLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON ; 
     accountLink_.m_clrLink = CSettings::DefaultLinkColor;
-    accountLink_.SetToolTipText(TR("Имя пользователя"));
+    accountLink_.SetToolTipText(TR("User name"));
 
     createSettingsButton();
     setTitle(title_);
@@ -287,11 +287,11 @@ void CServerSelectorControl::updateInfoLabel() {
 
     CString accountInfoText;// = TR("Prof:") + serverProfile_.profileName() + _T(" ");
     LoginInfo loginInfo = serverProfile_.serverSettings().authData;
-    //accountInfoText += TR("Учетная запись:") + CString(" ");
+    //accountInfoText += TR("Account:") + CString(" ");
     
     if ( loginInfo.Login.empty() || (!loginInfo.DoAuth  && uploadEngineData->NeedAuthorization != 2 ) ) {
-        accountInfoText += TR("Учетная запись...");
-        accountLink_.SetToolTipText(TR("Ввести данные учетной записи"));
+        accountInfoText += TR("Account...");
+        accountLink_.SetToolTipText(TR("Enter account information"));
     } else {
         accountInfoText += Utf8ToWCstring( serverProfile_.serverSettings().authData.Login );
         currentUserName_  =  Utf8ToWCstring( serverProfile_.serverSettings().authData.Login );
@@ -299,9 +299,9 @@ void CServerSelectorControl::updateInfoLabel() {
     CString folderTitle;
     if ( uploadEngineData->SupportsFolders ) {
          folderTitle = Utf8ToWCstring( serverProfile_.folderTitle() );
-        //accountInfoText += CString(_T("\r\n")) + TR("Папка/альбом:") + _T(" ");
+        //accountInfoText += CString(_T("\r\n")) + TR("Folder/album:") + _T(" ");
         /*if ( folderTitle.IsEmpty() ) {
-            folderTitle = TR("не задана");
+            folderTitle = TR("not set");
         } */
         
     }
@@ -360,9 +360,9 @@ void CServerSelectorControl::updateServerList()
     
 
     if ( showDefaultServerItem_ ) {
-        serverComboBox_.AddItem(TR("По умолчанию"), -1, -1, 0, reinterpret_cast<LPARAM>( strdup("default") ));
+        serverComboBox_.AddItem(TR("By default"), -1, -1, 0, reinterpret_cast<LPARAM>( strdup("default") ));
     }
-    serverComboBox_.AddItem( /*_T("<") +*/ CString(TR("")) /*+ _T(">")*/, -1, -1, 0, reinterpret_cast<LPARAM>( strdup("random") ) );
+    serverComboBox_.AddItem(L"", -1, -1, 0, reinterpret_cast<LPARAM>( strdup("random") ) );
 
     CIcon hImageIcon = NULL, hFileIcon = NULL;
     int selectedIndex = 0;
@@ -410,8 +410,8 @@ void CServerSelectorControl::updateServerList()
     }
     if (serversMask_ != smUrlShorteners ) {
         serverComboBox_.AddItem(line, -1, -1, 0,  0 );
-        serverComboBox_.AddItem(  TR("Добавить FTP сервер..."), -1, -1, 1, reinterpret_cast<LPARAM>( kAddFtpServer ) );
-        serverComboBox_.AddItem(  TR("Добавить локальную папку..."), -1, -1, 1, reinterpret_cast<LPARAM>( kAddDirectoryAsServer ) );
+        serverComboBox_.AddItem(  TR("Add FTP server..."), -1, -1, 1, reinterpret_cast<LPARAM>( kAddFtpServer ) );
+        serverComboBox_.AddItem(  TR("Add local folder..."), -1, -1, 1, reinterpret_cast<LPARAM>( kAddDirectoryAsServer ) );
     }
 
     serverComboBox_.SetImageList( comboBoxImageList_ );
@@ -448,7 +448,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
             //ShowVar((int)serverUsers.size() );
             if ( serverUsers.size() && !serverProfile_.profileName().empty()) {
                 mi.wID = IDC_LOGINMENUITEM;
-                mi.dwTypeData  = TR("Изменить данные учетной записи");
+                mi.dwTypeData  = TR("Change account settings");
                 sub.InsertMenuItem(i++, true, &mi);
             } else {
                 addedSeparator = true;
@@ -499,7 +499,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
                 mi.fType = MFT_STRING;
                 mi.wID = IDC_NO_ACCOUNT;
 
-                mi.dwTypeData  = (LPWSTR)(LPCTSTR)TR("<без авторизации>");
+                mi.dwTypeData  = (LPWSTR)(LPCTSTR)TR("<no authentication>");
                 sub.InsertMenuItem(i++, true, &mi);
             }
 
@@ -521,7 +521,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
             mi.fType = MFT_STRING;
             mi.wID = IDC_ADD_ACCOUNT ;
 
-            mi.dwTypeData  = (LPWSTR)(LPCTSTR)TR("Добавить учетную запись...");
+            mi.dwTypeData  = (LPWSTR)(LPCTSTR)TR("New account...");
 
 
             sub.InsertMenuItem(i++, true, &mi);
@@ -609,7 +609,7 @@ void CServerSelectorControl::createSettingsButton() {
     list.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
     list.AddIcon(ico);
     settingsButtonToolbar_.SetImageList(list);
-    settingsButtonToolbar_.AddButton(IDC_EDIT, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Настройки сервера и параметры авторизации"), 0);
+    settingsButtonToolbar_.AddButton(IDC_EDIT, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Server and authentication settings"), 0);
 }
 
 void CServerSelectorControl::setShowImageProcessingParams(bool show) {

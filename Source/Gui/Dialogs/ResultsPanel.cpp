@@ -95,8 +95,8 @@ bool CResultsPanel::LoadTemplate()
 
 LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    TRC(IDC_IMAGEUPLOADERLABEL, "Картинок в строке:");
-    TRC(IDC_CODETYPELABEL, "Тип кода:");
+    TRC(IDC_IMAGEUPLOADERLABEL, "Images per string:");
+    TRC(IDC_CODETYPELABEL, "Code type:");
     if(rectNeeded.left != -1)
     {
     
@@ -134,14 +134,14 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     Toolbar.SetButtonStructSize();
     Toolbar.SetButtonSize(30,18);
     Toolbar.SetImageList(m_hToolBarImageList);
-    Toolbar.AddButton(IDC_COPYALL, TBSTYLE_BUTTON|BTNS_AUTOSIZE ,TBSTATE_ENABLED, 0, TR("Копировать в буфер"), 0);
+    Toolbar.AddButton(IDC_COPYALL, TBSTYLE_BUTTON|BTNS_AUTOSIZE ,TBSTATE_ENABLED, 0, TR("Copy to clipboard"), 0);
     
     bool IsLastVideo = false;
 
-    Toolbar.AddButton(IDC_MEDIAFILEINFO, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Инфо о последнем видео"), 0);
-    Toolbar.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Лог ошибок"), 0);
-    Toolbar.AddButton(IDC_OPTIONSMENU, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Опции"), 0);
-    Toolbar.AddButton(IDC_PREVIEWBUTTON, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 4, TR("Предпросмотр"), 0);
+    Toolbar.AddButton(IDC_MEDIAFILEINFO, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Info about last video"), 0);
+    Toolbar.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Error log"), 0);
+    Toolbar.AddButton(IDC_OPTIONSMENU, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Options"), 0);
+    Toolbar.AddButton(IDC_PREVIEWBUTTON, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 4, TR("Preview"), 0);
     
     
     if(!IsLastVideo) 
@@ -153,10 +153,10 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
     SetDlgItemInt(IDC_THUMBSPERLINE, Settings.ThumbsPerLine);
     SendDlgItemMessage(IDC_THUMBPERLINESPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)0) );
-    SendDlgItemMessage(IDC_CODETYPE, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)(TR("Таблица эскизов с увеличением по клику")));
-    SendDlgItemMessage(IDC_CODETYPE, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)(TR("Эскизы с увеличением по клику")));
-    SendDlgItemMessage(IDC_CODETYPE, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)(TR("Изображения")));
-    SendDlgItemMessage(IDC_CODETYPE, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)(TR("Ссылки на картинки/файлы")));    
+    SendDlgItemMessage(IDC_CODETYPE, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)(TR("Table of clickable thumbnails")));
+    SendDlgItemMessage(IDC_CODETYPE, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)(TR("Clickable thumbnails")));
+    SendDlgItemMessage(IDC_CODETYPE, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)(TR("Images")));
+    SendDlgItemMessage(IDC_CODETYPE, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)(TR("Links to Images/Files")));    
         
     for(size_t i=0;i<Templates.GetCount(); i++)
     {
@@ -532,7 +532,7 @@ bool CResultsPanel::LoadTemplateFromFile(const CString fileName, CString &Error)
     SimpleXml XML;
     if(!WinUtils::FileExists(fileName))
     {
-        Error = TR("Файл не найден.");
+        Error = TR("File not found.");
         return false;
     }
 
@@ -619,9 +619,9 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
         mi.wID = IDC_SHORTENURLITEM;
         CString menuItemTitle;
         if ( OnShortenUrlChanged ) {
-            menuItemTitle.Format(TR("Сократить ссылки с помощью %s"), IuCoreUtils::Utf8ToWstring(Settings.urlShorteningServer.serverName()).c_str());
+            menuItemTitle.Format(TR("Shorten URL using %s"), IuCoreUtils::Utf8ToWstring(Settings.urlShorteningServer.serverName()).c_str());
         } else {
-            menuItemTitle.Format(TR("Сократить ссылки"));
+            menuItemTitle.Format(TR("Shorten URL"));
         }
         mi.dwTypeData  = (LPWSTR)(LPCTSTR)menuItemTitle;
         sub.InsertMenuItem(count++, true, &mi);
@@ -629,17 +629,17 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 
     mi.fType = MFT_STRING;
     mi.wID = IDC_USEDIRECTLINKS;
-    mi.dwTypeData  = TR("Использовать прямые ссылки");//TR("Параметры авторизации");
+    mi.dwTypeData  = TR("Use direct links");//TR("Autorization parameters");
     sub.InsertMenuItem(count++, true, &mi);
 
 /*    mi.fType = MFT_STRING;
     mi.wID = IDC_USEDIRECTLINKS;
-    mi.dwTypeData  = TR("Открывать ссылки в новой вкладке (для HTML)");//TR("Параметры авторизации");
+    mi.dwTypeData  = TR("Open links in new tab (HTML only)");//TR("Autorization parameters");
     sub.InsertMenuItem(count++, true, &mi);*/
 
 
     mi.wID = IDC_USETEMPLATE;
-     mi.dwTypeData  = TR("Использовать шаблон");
+     mi.dwTypeData  = TR("Use template");
     sub.InsertMenuItem(count++, true, &mi);
 
     int insertedServersCount = 0;
@@ -653,9 +653,9 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
         CString folderUrl = Utf8ToWCstring(m_Servers[i].folderUrl());
 
         if(folderTitle.IsEmpty() || folderUrl.IsEmpty()) continue;
-        CString title = TR("Копировать URL адрес ") + Utf8ToWCstring(ue->Name)+ _T("->")+folderTitle;
+        CString title = TR("Copy URL  ") + Utf8ToWCstring(ue->Name)+ _T("->")+folderTitle;
         mi.wID = IDC_COPYFOLDERURL + i;
-        mi.dwTypeData  = (LPWSTR)(LPCTSTR) title;//TR("Параметры авторизации");
+        mi.dwTypeData  = (LPWSTR)(LPCTSTR) title;//TR("Autorization parameters");
         sub.InsertMenuItem(count++, true, &mi);
         insertedServersCount++;
     }
@@ -863,7 +863,7 @@ LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND h
     CRect r(0,0,600,400);
     if ( !webViewWindow_ ) {
         webViewWindow_ = new CWebViewWindow();
-        webViewWindow_->Create(0,r,TR("Окно предпросмотра"),WS_POPUP|WS_OVERLAPPEDWINDOW,WS_EX_TOPMOST    );
+        webViewWindow_->Create(0,r,TR("Preview Window"),WS_POPUP|WS_OVERLAPPEDWINDOW,WS_EX_TOPMOST    );
         webViewWindow_->CenterWindow(WizardDlg->m_hWnd);
         webViewWindow_->ShowWindow(SW_SHOW);
     

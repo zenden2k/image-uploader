@@ -230,12 +230,12 @@ LRESULT InputBoxControl::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam,B
     POINT pt = {x,y};
 //    ClientToScreen(&pt);
     contextMenu.CreatePopupMenu();
-    contextMenu.AppendMenu(MF_STRING, IDMM_UNDO, TR("Отменить"));
-    contextMenu.AppendMenu(MF_STRING, IDMM_REDO, TR("Повторить"));
+    contextMenu.AppendMenu(MF_STRING, IDMM_UNDO, TR("Undo"));
+    contextMenu.AppendMenu(MF_STRING, IDMM_REDO, TR("Redo"));
     contextMenu.AppendMenu(MF_SEPARATOR, 1, _T(""));
-    contextMenu.AppendMenu(MF_STRING, IDMM_CUT, TR("Вырезать"));
-    contextMenu.AppendMenu(MF_STRING, IDMM_COPY, TR("Копировать"));
-    contextMenu.AppendMenu(MF_STRING, IDMM_PASTE, TR("Вставить"));
+    contextMenu.AppendMenu(MF_STRING, IDMM_CUT, TR("Cut"));
+    contextMenu.AppendMenu(MF_STRING, IDMM_COPY, TR("Copy"));
+    contextMenu.AppendMenu(MF_STRING, IDMM_PASTE, TR("Paste"));
     contextMenu.EnableMenuItem(IDMM_PASTE, CanPaste()?MF_ENABLED : MF_DISABLED );
     contextMenu.EnableMenuItem(IDMM_UNDO, CanUndo()?MF_ENABLED : MF_DISABLED  );
     contextMenu.EnableMenuItem(IDMM_REDO, CanRedo()?MF_ENABLED : MF_DISABLED  );

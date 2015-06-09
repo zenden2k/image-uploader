@@ -64,22 +64,22 @@ int CGeneralSettings::GetNextLngFile(LPTSTR szBuffer, int nLength)
 LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     // Translating controls
-    TRC(IDC_CHANGESWILLBE, "Внимание: чтобы изменения в языке вступили в силу, программу необходимо перезапустить.");
-    TRC(IDC_LANGUAGELABEL, "Язык интерфейса:");
-    TRC(IDC_VIEWLOG, "Показать лог");
-    TRC(IDC_LOGGROUP, "Контроль ошибок");
-    TRC(IDC_IMAGEEDITLABEL, "Графический редактор:");
-    TRC(IDC_AUTOSHOWLOG, "Автоматически показывать окно лога в случае ошибок");
-    TRC(IDC_CONFIRMONEXIT, "Спрашивать подтверждение при выходе");
-    TRC(IDC_DROPVIDEOFILESTOTHELIST, "Добавлять видеофайлы в список после перетаскивания");
-    TRC(IDC_DEVELOPERMODE, "Режим разработчика");
+    TRC(IDC_CHANGESWILLBE, "Please note that program needs to be restarted for new language settings to take affect.");
+    TRC(IDC_LANGUAGELABEL, "Interface language:");
+    TRC(IDC_VIEWLOG, "Show Error Log");
+    TRC(IDC_LOGGROUP, "Error control");
+    TRC(IDC_IMAGEEDITLABEL, "Images editor:");
+    TRC(IDC_AUTOSHOWLOG, "Show automatically log window in case of error");
+    TRC(IDC_CONFIRMONEXIT, "Ask confirmation on exit");
+    TRC(IDC_DROPVIDEOFILESTOTHELIST, "Add video files to the list after Drag'n'Drop");
+    TRC(IDC_DEVELOPERMODE, "Developer mode");
     SetDlgItemText(IDC_IMAGEEDITORPATH, Settings.ImageEditorPath);
     
 
     TCHAR buf[MAX_PATH];
     CString buf2;
 
-    SendDlgItemMessage(IDC_LANGLIST,CB_ADDSTRING,0,(WPARAM)_T("Русский"));
+    SendDlgItemMessage(IDC_LANGLIST,CB_ADDSTRING,0,(WPARAM)_T("English"));
 
     while(GetNextLngFile(buf, sizeof(buf)/sizeof(TCHAR)))
     {
@@ -104,9 +104,9 @@ LRESULT CGeneralSettings::OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, 
 {
     TCHAR Buf[MAX_PATH*4];
     GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
-        CString(TR("Исполняемые файлы")),
+        CString(TR("Executables")),
         _T("*.exe;*.com;*.bat;*.cmd;"),
-        TR("Все файлы"),
+        TR("All files"),
         _T("*.*"));
 
     CFileDialog fd(true, 0, 0, 4|2, Buf, m_hWnd);

@@ -14,12 +14,12 @@ ColorsDelegate::ColorsDelegate(Toolbar* toolbar, int itemIndex, Canvas* canvas) 
     foregroundButton_.SetFont(font_);
     foregroundColorButton_.SubclassWindow(foregroundButton_.m_hWnd);
     foregroundColorButton_.OnSelChange.bind(this, &ColorsDelegate::OnForegroundButtonSelChanged);
-    foregroundColorButton_.SetCustomText(TR("Больше цветов..."));
+    foregroundColorButton_.SetCustomText(TR("More colors..."));
     backgroundButton_.Create(toolbar->m_hWnd, rc, 0,WS_CHILD|WS_VISIBLE|BS_PUSHBUTTON);
     backgroundButton_.SetFont(font_);
     backgroundColorButton_.SubclassWindow(backgroundButton_.m_hWnd);
     backgroundColorButton_.OnSelChange.bind(this, &ColorsDelegate::OnBackgroundButtonSelChanged);
-    backgroundColorButton_.SetCustomText(TR("Больше цветов..."));
+    backgroundColorButton_.SetCustomText(TR("More colors..."));
 }
 
 SIZE ColorsDelegate::CalcItemSize(Toolbar::Item& item, float dpiScaleX, float dpiScaleY) {

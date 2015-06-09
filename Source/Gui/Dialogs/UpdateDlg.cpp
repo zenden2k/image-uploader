@@ -66,10 +66,10 @@ LRESULT CUpdateDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     // FIXME
     DlgResize_Init();
     m_UpdateEvent.Create();
-    SetWindowText(TR("Обновление Image Uploader"));
+    SetWindowText(TR("Image Uploader Updates"));
     m_listView.m_hWnd = GetDlgItem(IDC_UPDATELISTVIEW);
-    m_listView.AddColumn(TR("Название компонента"), 0);
-    m_listView.AddColumn( TR("Статус"), 1);
+    m_listView.AddColumn(TR("Component name"), 0);
+    m_listView.AddColumn( TR("Status"), 1);
 
     m_listView.SetColumnWidth(0, 170);
     m_listView.SetColumnWidth(1, 290);
@@ -77,7 +77,7 @@ LRESULT CUpdateDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
     ::ShowWindow(GetDlgItem(IDOK), SW_HIDE);
 
-    TRC(IDCANCEL, "Отмена");
+    TRC(IDCANCEL, "Cancel");
     if (!m_Modal)
         Start();  // Beginning update process
     return 1;  // Let the system set the focus
@@ -143,12 +143,12 @@ void CUpdateDlg::CheckUpdates()
     ::ShowWindow(GetDlgItem(IDC_UPDATEINFO), SW_SHOW);
     m_Checked = true;
 
-    SetDlgItemText(IDC_UPDATEINFO, TR("Проверка обновлений..."));
+    SetDlgItemText(IDC_UPDATEINFO, TR("Checking for updates..."));
     if (!m_UpdateManager.CheckUpdates())
     {
-        TRC(IDCANCEL, "Закрыть");
+        TRC(IDCANCEL, "Close");
         m_Checked = false;
-        CString errorStr = TR("Ошибка при получении данных об обновлениях.");
+        CString errorStr = TR("An error occured while receiving update information from server.");
         errorStr += "\r\n";
         errorStr += m_UpdateManager.ErrorString();
         SetDlgItemText(IDC_UPDATEINFO, errorStr);
@@ -169,7 +169,7 @@ void CUpdateDlg::CheckUpdates()
         }
 
         ::ShowWindow(GetDlgItem(IDOK), SW_SHOW);
-        TRC(IDOK, "Обновить");
+        TRC(IDOK, "Update");
         if (m_UpdateCallback)
             m_UpdateCallback->UpdateAvailabilityChanged(true);
 
@@ -185,8 +185,8 @@ void CUpdateDlg::CheckUpdates()
     }
     else
     {
-        TRC(IDCANCEL, "Закрыть");
-        SetDlgItemText(IDC_UPDATEINFO, TR("Обновление не требуется."));
+        TRC(IDCANCEL, "Close");
+        SetDlgItemText(IDC_UPDATEINFO, TR("There are no updates available."));
     }
 }
 
@@ -199,7 +199,7 @@ void CUpdateDlg::DoUpdates()
     for (size_t i = 0; i < m_UpdateManager.m_updateList.size(); i++)
     {
         m_listView.AddItem(i, 0, m_UpdateManager.m_updateList[i].displayName());
-        m_listView.AddItem(i, 1, TR("В очереди"));
+        m_listView.AddItem(i, 1, TR("Queued"));
     }
     m_listView.ShowWindow(SW_SHOW);
     m_UpdateManager.DoUpdates();
@@ -208,14 +208,14 @@ void CUpdateDlg::DoUpdates()
     {
         ::ShowWindow(GetDlgItem(IDCANCEL), SW_HIDE);
         ::ShowWindow(GetDlgItem(IDOK), SW_SHOW);
-        TRC(IDOK, "Завершить");
+        TRC(IDOK, "Finish");
         m_bUpdateFinished = true;
     }
     else
     {
         ::ShowWindow(GetDlgItem(IDCANCEL), SW_SHOW);
         ::ShowWindow(GetDlgItem(IDOK), SW_HIDE);
-        TRC(IDCANCEL, "Закрыть");
+        TRC(IDCANCEL, "Close");
         m_bUpdateFinished = false;
     }
     m_Checked = false;

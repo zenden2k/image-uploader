@@ -76,35 +76,35 @@ void ImageEditorWindow::init()
     item.parentCommand = ID_RECTANGLE;
     item.icon = loadToolbarIcon(IDB_ICONTOOLRECTANGLEPNG);
     item.command = ID_RECTANGLE;
-    item.hint = TR("Прямоугольник");
+    item.hint = TR("Rectangle");
     subMenuItems_[Canvas::dtRectangle] = item;
 
     item.icon = loadToolbarIcon(IDB_ICONTOOLROUNDEDRECTANGLE);
     item.command = ID_ROUNDEDRECTANGLE;
-    item.hint = TR("Скругленный прямоугольник");
+    item.hint = TR("Rounded rectangle");
     subMenuItems_[Canvas::dtRoundedRectangle] = item;
 
     item.icon = loadToolbarIcon(IDB_ICONTOOLELLIPSE);
     item.command = ID_ELLIPSE;
-    item.hint = TR("Эллипс");
+    item.hint = TR("Ellipse");
     subMenuItems_[Canvas::dtEllipse] = item;
 
     item.parentCommand = ID_FILLEDRECTANGLE;
     item.command = ID_FILLEDRECTANGLE;
-    item.hint = TR("Заполненный прямоугольник");
+    item.hint = TR("Filled rectangle");
     item.icon = loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE);
     subMenuItems_[Canvas::dtFilledRectangle] = item;
 
 
     item.icon = loadToolbarIcon(IDB_ICONTOOLFILLEDROUNDEDRECTANGLE);
     item.command = ID_FILLEDROUNDEDRECTANGLE;
-    item.hint = TR("Скругленный прямоугольник");
+    item.hint = TR("Rounded rectangle");
     subMenuItems_[Canvas::dtFilledRoundedRectangle] = item;
 
 
     item.icon = loadToolbarIcon(IDB_ICONTOOLFILLEDELLIPSE);
     item.command = ID_FILLEDELLIPSE;
-    item.hint =  TR("Заполненный эллипс");
+    item.hint =  TR("Filled ellipse");
     subMenuItems_[Canvas::dtFilledEllipse] = item;
     selectedSubMenuItems_[ID_RECTANGLE] = ID_RECTANGLE;
     selectedSubMenuItems_[ID_FILLEDRECTANGLE] = ID_FILLEDRECTANGLE;
@@ -412,7 +412,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 
 LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    SetWindowText(TR("Редактор изображений"));
+    SetWindowText(TR("Image Editor"));
     LoadLibrary(CRichEditCtrl::GetLibraryName());
 
 
@@ -618,9 +618,9 @@ LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARA
         RECT rc = item->rect;
         verticalToolbar_.ClientToScreen(&rc);
         rectangleMenu.CreatePopupMenu();
-        rectangleMenu.AppendMenu(MF_STRING, ID_RECTANGLE, TR("Прямоугольник"));
-        rectangleMenu.AppendMenu(MF_STRING, ID_ROUNDEDRECTANGLE, TR("Скругленный прямоугольник"));
-        rectangleMenu.AppendMenu(MF_STRING, ID_ELLIPSE, TR("Эллипс"));
+        rectangleMenu.AppendMenu(MF_STRING, ID_RECTANGLE, TR("Rectangle"));
+        rectangleMenu.AppendMenu(MF_STRING, ID_ROUNDEDRECTANGLE, TR("Rounded rectangle"));
+        rectangleMenu.AppendMenu(MF_STRING, ID_ELLIPSE, TR("Ellipse"));
         TPMPARAMS excludeArea;
         ZeroMemory(&excludeArea, sizeof(excludeArea));
         excludeArea.cbSize = sizeof(excludeArea);
@@ -631,9 +631,9 @@ LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARA
         RECT rc = item->rect;
         verticalToolbar_.ClientToScreen(&rc);
         rectangleMenu.CreatePopupMenu();
-        rectangleMenu.AppendMenu(MF_STRING, ID_FILLEDRECTANGLE, TR("Заполненный прямоугольник"));
-        rectangleMenu.AppendMenu(MF_STRING, ID_FILLEDROUNDEDRECTANGLE, TR("Скругленный прямоугольник"));
-        rectangleMenu.AppendMenu(MF_STRING, ID_FILLEDELLIPSE, TR("Заполненный эллипс"));
+        rectangleMenu.AppendMenu(MF_STRING, ID_FILLEDRECTANGLE, TR("Filled rectangle"));
+        rectangleMenu.AppendMenu(MF_STRING, ID_FILLEDROUNDEDRECTANGLE, TR("Rounded rectangle"));
+        rectangleMenu.AppendMenu(MF_STRING, ID_FILLEDELLIPSE, TR("Filled ellipse"));
         TPMPARAMS excludeArea;
         ZeroMemory(&excludeArea, sizeof(excludeArea));
         excludeArea.cbSize = sizeof(excludeArea);
@@ -644,7 +644,7 @@ LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARA
         RECT rc = item->rect;
         horizontalToolbar_.ClientToScreen(&rc);
         rectangleMenu.CreatePopupMenu();
-        rectangleMenu.AppendMenu(MF_STRING, ID_SAVEAS, TR("Сохранить как"));
+        rectangleMenu.AppendMenu(MF_STRING, ID_SAVEAS, TR("Save as"));
         TPMPARAMS excludeArea;
         ZeroMemory(&excludeArea, sizeof(excludeArea));
         excludeArea.cbSize = sizeof(excludeArea);
@@ -690,21 +690,21 @@ void ImageEditorWindow::createToolbars()
     }
     if ( showAddToWizardButton_ ) {
         CString buttonHint=  (showUploadButton_ ? _T("") : _T(" (Enter)"));
-        horizontalToolbar_.addButton(Toolbar::Item(CString(TR("Добавить в список")), loadToolbarIcon(IDB_ICONADDPNG),ID_ADDTOWIZARD, buttonHint));
+        horizontalToolbar_.addButton(Toolbar::Item(CString(TR("Add to the list")), loadToolbarIcon(IDB_ICONADDPNG),ID_ADDTOWIZARD, buttonHint));
     }
     if ( showUploadButton_ ) {
         CString uploadButtonText;
         if ( serverName_.IsEmpty() ) {
-            uploadButtonText = TR("Загрузить на сервер");
+            uploadButtonText = TR("Upload to Web");
         } else {
-            uploadButtonText.Format(TR("Загрузить на %s"), serverName_);
+            uploadButtonText.Format(TR("Upload to %s"), serverName_);
         }
         horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG),ID_UPLOAD, _T(" (Enter)"), Toolbar::itButton));
     }
-    //horizontalToolbar_.addButton(Toolbar::Item(TR("Поделиться"),0,ID_SHARE, CString(),Toolbar::itComboButton));
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Сохранить"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, CString(_T("(Ctrl+S)")),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Копировать в буфер"),loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, CString(), Toolbar::itButton ));
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Закрыть"),std::shared_ptr<Gdiplus::Bitmap> () ,ID_CLOSE, CString(_T("(Esc)"))));
+    //horizontalToolbar_.addButton(Toolbar::Item(TR("Share"),0,ID_SHARE, CString(),Toolbar::itComboButton));
+    horizontalToolbar_.addButton(Toolbar::Item(TR("Save"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, CString(_T("(Ctrl+S)")),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
+    horizontalToolbar_.addButton(Toolbar::Item(TR("Copy to clipboard"),loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, CString(), Toolbar::itButton ));
+    horizontalToolbar_.addButton(Toolbar::Item(TR("Close"),std::shared_ptr<Gdiplus::Bitmap> () ,ID_CLOSE, CString(_T("(Esc)"))));
     horizontalToolbar_.AutoSize();
     if ( displayMode_ != wdmFullscreen ) {
         horizontalToolbar_.ShowWindow(SW_SHOW);
@@ -718,25 +718,25 @@ void ImageEditorWindow::createToolbars()
     kMarkerKey = 'H', kBlurringRectangleKey = 'R', kArrowKey = 'A', kLineKey = 'L'
     };
     */ 
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_TOOLMOVEICONPNG),ID_MOVE,TR("Перемещение") + CString(_T(" (")) + (char)kMoveKey  + CString(_T(")")), Toolbar::itButton, true, 1));
-    //verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLSELECTION),ID_SELECTION,TR("Выделение"), Toolbar::itButton, true, 1));
+    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_TOOLMOVEICONPNG),ID_MOVE,TR("Move") + CString(_T(" (")) + (char)kMoveKey  + CString(_T(")")), Toolbar::itButton, true, 1));
+    //verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLSELECTION),ID_SELECTION,TR("Selection"), Toolbar::itButton, true, 1));
 
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_TOOLCROPPING), ID_CROP,TR("Обрезка")+ CString(_T(" (")) + (char)kCropKey  + CString(_T(")")), Toolbar::itButton, true,1));
+    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_TOOLCROPPING), ID_CROP,TR("Crop")+ CString(_T(" (")) + (char)kCropKey  + CString(_T(")")), Toolbar::itButton, true,1));
     //verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLPENCIL), ID_PEN,T_R("Карандаш"), Toolbar::itButton, true,1));
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BRUSH,TR("Кисть")+ CString(_T(" (")) + (char)kBrushKey  + CString(_T(")")), Toolbar::itButton, true,1));
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLMARKER), ID_MARKER,TR("Подсвечивающий маркер")+ CString(_T(" (")) + (char)kMarkerKey  + CString(_T(")")), Toolbar::itButton, true,1));
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLLINE), ID_LINE,TR("Линия")+ CString(_T(" (")) + (char)kLineKey  + CString(_T(")")), Toolbar::itButton, true,1));
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLARROWPNG), ID_ARROW,TR("Стрелка")+ CString(_T(" (")) + (char)kArrowKey  + CString(_T(")")), Toolbar::itButton, true,1));
+    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BRUSH,TR("Brush")+ CString(_T(" (")) + (char)kBrushKey  + CString(_T(")")), Toolbar::itButton, true,1));
+    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLMARKER), ID_MARKER,TR("Highlight")+ CString(_T(" (")) + (char)kMarkerKey  + CString(_T(")")), Toolbar::itButton, true,1));
+    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLLINE), ID_LINE,TR("Line")+ CString(_T(" (")) + (char)kLineKey  + CString(_T(")")), Toolbar::itButton, true,1));
+    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLARROWPNG), ID_ARROW,TR("Arrow")+ CString(_T(" (")) + (char)kArrowKey  + CString(_T(")")), Toolbar::itButton, true,1));
 
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLRECTANGLEPNG), ID_RECTANGLE,TR("Прямоугольник")+ CString(_T(" (")) + (char)kRectangleKey  + CString(_T(")")), Toolbar::itTinyCombo, true,1));
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE), ID_FILLEDRECTANGLE,TR("Заполненный прямоугольник")+ CString(_T(" (")) + (char)kFilledRectangle  + CString(_T(")")), Toolbar::itTinyCombo, true,1));
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLTEXTPNG), ID_TEXT,TR("Текст")+ CString(_T(" (")) + (char)kTextKey  + CString(_T(")")), Toolbar::itButton, true,1));
+    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLRECTANGLEPNG), ID_RECTANGLE,TR("Rectangle")+ CString(_T(" (")) + (char)kRectangleKey  + CString(_T(")")), Toolbar::itTinyCombo, true,1));
+    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE), ID_FILLEDRECTANGLE,TR("Filled rectangle")+ CString(_T(" (")) + (char)kFilledRectangle  + CString(_T(")")), Toolbar::itTinyCombo, true,1));
+    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLTEXTPNG), ID_TEXT,TR("Text")+ CString(_T(" (")) + (char)kTextKey  + CString(_T(")")), Toolbar::itButton, true,1));
 
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBLURINGRECTANGLEPNG), ID_BLURRINGRECTANGLE,TR("Размывающий прямоугольник")+ CString(_T(" (")) + (char)kBlurringRectangleKey  + CString(_T(")")), Toolbar::itButton, true,1));
+    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBLURINGRECTANGLEPNG), ID_BLURRINGRECTANGLE,TR("Blurring rectangle")+ CString(_T(" (")) + (char)kBlurringRectangleKey  + CString(_T(")")), Toolbar::itButton, true,1));
 
-    //verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BLUR,TR("Размытие"), Toolbar::itButton, true,1));
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONCOLORPICKERPNG), ID_COLORPICKER,TR("Выбрать цвет")+ CString(_T(" (")) + (char)kColorPickerKey  + CString(_T(")")), Toolbar::itButton, true,1));
-    int index = verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,TR("Отменить") + CString(L" (Ctrl+Z)"), Toolbar::itButton, false));
+    //verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BLUR,TR("Blur"), Toolbar::itButton, true,1));
+    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONCOLORPICKERPNG), ID_COLORPICKER,TR("Color chooser")+ CString(_T(" (")) + (char)kColorPickerKey  + CString(_T(")")), Toolbar::itButton, true,1));
+    int index = verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,TR("Undo") + CString(L" (Ctrl+Z)"), Toolbar::itButton, false));
 
     Toolbar::Item colorsButton(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,CString(), Toolbar::itButton, false);
     colorsDelegate_ = new ColorsDelegate(&verticalToolbar_, index+1, canvas_);
@@ -950,7 +950,7 @@ LRESULT ImageEditorWindow::OnClickedClose(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 {
     DialogResult dr = drCancel;
     if ( askBeforeClose_ && canvas_->isDocumentModified() ) {
-        int msgBoxResult = MessageBox(TR("Сохранить изменения?"),APPNAME, MB_YESNOCANCEL|MB_ICONQUESTION);
+        int msgBoxResult = MessageBox(TR("Save changes?"),APPNAME, MB_YESNOCANCEL|MB_ICONQUESTION);
         if ( msgBoxResult == IDYES ) {
             dr = outFileName_.IsEmpty() ? drCancel : drSave;
             OnClickedSave(NM_CLICK, ID_SAVE, 0, bHandled);
@@ -1037,7 +1037,7 @@ bool ImageEditorWindow::createTooltip() {
     ti.uFlags   = TTF_SUBCLASS;
     ti.hwnd     = m_view.m_hWnd;
     ti.hinst    = _Module.GetModuleInstance();
-    ti.lpszText =  TR("Выберите область");;
+    ti.lpszText =  TR("Select region");;
     m_view.GetClientRect(&ti.rect);
 
     // Associate the tooltip with the "tool" window.
@@ -1057,7 +1057,7 @@ void ImageEditorWindow::OnSaveAs()
     GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 2,
         _T("PNG"), CString(_T("*.png")),
         _T("JPEG"), CString(_T("*.jpg;*.jpeg")),
-        TR("Все файлы"),_T("*.*"));
+        TR("All files"),_T("*.*"));
     CFileDialog fd(false, GetFileExt(suggestedFileName_), suggestedFileName_ ,OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,Buf,m_hWnd);
     if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return;
 

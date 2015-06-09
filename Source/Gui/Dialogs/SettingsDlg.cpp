@@ -62,16 +62,16 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
         SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) & WS_EX_APPWINDOW);
     }
     m_SettingsPagesListBox.SubclassWindow(GetDlgItem(IDC_SETTINGSPAGESLIST));
-    m_SettingsPagesListBox.AddString(TR("Основные"));
-    m_SettingsPagesListBox.AddString(TR("Серверы"));
-    m_SettingsPagesListBox.AddString(TR("Изображения"));
-    m_SettingsPagesListBox.AddString(TR("Миниатюры"));
-    m_SettingsPagesListBox.AddString(TR("Снимок экрана"));
-    m_SettingsPagesListBox.AddString(TR("Видео"));
-    m_SettingsPagesListBox.AddString(TR("Загрузка"));
-    m_SettingsPagesListBox.AddString(TR("Интеграция"));
-    m_SettingsPagesListBox.AddString(TR("Трей"));
-    m_SettingsPagesListBox.AddString(TR("Горячие клавиши"));
+    m_SettingsPagesListBox.AddString(TR("General"));
+    m_SettingsPagesListBox.AddString(TR("Servers"));
+    m_SettingsPagesListBox.AddString(TR("Images"));
+    m_SettingsPagesListBox.AddString(TR("Thumbnails"));
+    m_SettingsPagesListBox.AddString(TR("Screen Capture"));
+    m_SettingsPagesListBox.AddString(TR("Video"));
+    m_SettingsPagesListBox.AddString(TR("Uploading"));
+    m_SettingsPagesListBox.AddString(TR("Integration"));
+    m_SettingsPagesListBox.AddString(TR("Tray icon"));
+    m_SettingsPagesListBox.AddString(TR("Hotkeys"));
     // set icons 
 
     hIcon = GuiTools::LoadBigIcon(IDR_MAINFRAME);
@@ -81,10 +81,10 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     SetIcon(hIconSmall, FALSE);
 
     TRC(IDOK, "OK");
-    TRC(IDCANCEL, "Отмена");
-    TRC(IDC_APPLY, "Применить");
-    TRC(IDC_SAVESTATUSLABEL, "Настройки сохранены.");
-    SetWindowText(TR("Настройки"));
+    TRC(IDCANCEL, "Cancel");
+    TRC(IDC_APPLY, "Apply");
+    TRC(IDC_SAVESTATUSLABEL, "Settings have been saved.");
+    SetWindowText(TR("Settings"));
     
     m_SettingsPagesListBox.SetCurSel(PageToShow);
     ShowPage(PageToShow);

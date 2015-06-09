@@ -310,8 +310,8 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
         format.SetAlignment(StringAlignmentCenter);
         format.SetLineAlignment(StringAlignmentCenter);
         Font font(L"Arial", 12, FontStyleBold);
-        ServiceLocator::instance()->logger()->write(logWarning, TR("Список изображений"), TR("Невозможно загрузить миниатюру к файлу."), CString(TR("Файл:")) + _T(" ") + GetFileName(ItemID));
-        gr.DrawString(TR("Невозможно загрузить изображение"), -1, &font, bounds, &format, &brush);
+        ServiceLocator::instance()->logger()->write(logWarning, TR("List of Images"), TR("Cannot load thumbnail for image."), CString(TR("File:")) + _T(" ") + GetFileName(ItemID));
+        gr.DrawString(TR("Unable to load picture"), -1, &font, bounds, &format, &brush);
     }
 
     // 

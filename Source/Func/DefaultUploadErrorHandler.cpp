@@ -17,13 +17,13 @@ void DefaultUploadErrorHandler::ErrorMessage(ErrorInfo errorInfo)
 
     CString infoText;
     if (!errorInfo.FileName.empty())
-        infoText += TR("Файл: ") + Utf8ToWCstring(errorInfo.FileName) + _T("\n");
+        infoText += TR("File: ") + Utf8ToWCstring(errorInfo.FileName) + _T("\n");
 
     if (!errorInfo.ServerName.empty()) {
         CString serverName = Utf8ToWCstring(errorInfo.ServerName);
         if (!errorInfo.sender.empty())
             serverName += _T("(") + Utf8ToWCstring(errorInfo.sender) + _T(")");
-        infoText += TR("Сервер: ") + serverName + _T("\n");
+        infoText += TR("Server: ") + serverName + _T("\n");
     }
 
     if (!errorInfo.Url.empty())
@@ -38,13 +38,13 @@ void DefaultUploadErrorHandler::ErrorMessage(ErrorInfo errorInfo)
         errorMsg += Utf8ToWCstring(errorInfo.error);
     } else {
         if (errorInfo.errorType == etRepeating) {
-            errorMsg.Format(TR("Загрузка на сервер не удалась. Повторяю (%d)..."), errorInfo.RetryIndex);
+            errorMsg.Format(TR("Upload failed. Another retry (%d)..."), errorInfo.RetryIndex);
         } else if (errorInfo.errorType == etRetriesLimitReached) {
-            errorMsg = TR("Загрузка не сервер удалась! (лимит попыток исчерпан)");
+            errorMsg = TR("Upload failed! (retry limit reached)");
         }
     }
 
-    CString sender = TR("Модуль загрузки");
+    CString sender = TR("Uploading module");
     if (!errorMsg.IsEmpty())
         logger_->write(type, sender, errorMsg, infoText);
 }

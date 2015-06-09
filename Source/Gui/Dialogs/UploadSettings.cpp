@@ -62,24 +62,24 @@ void CUploadSettings::settingsChanged(BasicSettings* settingsBase)
 
 void CUploadSettings::TranslateUI()
 {
-    TRC(IDC_FORMATLABEL,"Формат:");
-    TRC(IDC_QUALITYLABEL,"Качество:");
-    TRC(IDC_RESIZEBYWIDTH,"Изменение ширины:");
-    //TRC(IDC_SAVEPROPORTIONS,"Сохранять пропорции");
-    //TRC(IDC_YOURLOGO,"Добавить водяной знак");
-    TRC(IDC_XLABEL,"и/или высоты:");
-    TRC(IDC_PROFILELABEL,"Профиль:");
-    TRC(IDC_IMAGEPARAMETERS,"Параметры изображений");
-    TRC(IDC_KEEPASIS,"Обрабатывать изображения");
-    TRC(IDC_THUMBSETTINGS,"Миниаютюры");
-    TRC(IDC_CREATETHUMBNAILS,"Создавать миниатюры (превью)");
-    TRC(IDC_IMAGESERVERGROUPBOX,"Cервер для загрузки изображений");
-    TRC(IDC_USESERVERTHUMBNAILS,"Использовать серверные миниатюры");
-    TRC(IDC_WIDTHLABEL,"Ширина миниатюры:");
-    TRC(IDC_ADDFILESIZE,"Надпись на миниатюре");
-    TRC(IDC_PRESSUPLOADBUTTON,"Нажмите кнопку \"Загрузить\" чтобы начать процесс загрузки");
-    TRC(IDC_FILESERVERGROUPBOX, "Сервер для остальных типов файлов");
-    useServerThumbnailsTooltip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_USESERVERTHUMBNAILS), TR("Это означает, что миниатюры будут создаваться сайтом, а не программой.")); //  \r\nПри этом то, как они будут выглядеть, напрямую зависит от выбранного сайта.
+    TRC(IDC_FORMATLABEL, "Format:");
+    TRC(IDC_QUALITYLABEL, "Quality:");
+    TRC(IDC_RESIZEBYWIDTH, "Change width:");
+    //TRC(IDC_SAVEPROPORTIONS, "Constrain proportions");
+    //TRC(IDC_YOURLOGO, "Add watermark");
+    TRC(IDC_XLABEL, "and/or height:");
+    TRC(IDC_PROFILELABEL, "Profile:");
+    TRC(IDC_IMAGEPARAMETERS, "Image settings");
+    TRC(IDC_KEEPASIS, "Process images before upload");
+    TRC(IDC_THUMBSETTINGS, "Thumbnails");
+    TRC(IDC_CREATETHUMBNAILS, "Create thumbnails");
+    TRC(IDC_IMAGESERVERGROUPBOX, "Server to host your images");
+    TRC(IDC_USESERVERTHUMBNAILS, "Use server-side thumbnails");
+    TRC(IDC_WIDTHLABEL, "Thumbnail width:");
+    TRC(IDC_ADDFILESIZE, "Add text on thumbnail");
+    TRC(IDC_PRESSUPLOADBUTTON, "Click button \"Upload\" for starting process of uploading.");
+    TRC(IDC_FILESERVERGROUPBOX, "Server to host other file formats");
+    useServerThumbnailsTooltip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_USESERVERTHUMBNAILS), TR("This means that the thumbnail will be created by site, not the program.")); //  \r\nПри этом то, как они будут выглядеть, напрямую зависит от выбранного сайта.
 }
 
 LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -132,7 +132,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     list.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
     list.AddIcon(ico);
     m_ProfileEditToolbar.SetImageList(list);
-    m_ProfileEditToolbar.AddButton(IDC_EDITPROFILE, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Редактировать профиль"), 0);
+    m_ProfileEditToolbar.AddButton(IDC_EDITPROFILE, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Edit Profile"), 0);
 
    RECT Toolbar1Rect;
     ::GetWindowRect(GetDlgItem(IDC_IMAGESERVERGROUPBOX), &Toolbar1Rect);
@@ -160,13 +160,13 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         CurrentToolbar.SetButtonSize(30,18);
         CurrentToolbar.SetImageList(m_PlaceSelectorImageList);
         
-        CurrentToolbar.AddButton(IDC_SERVERBUTTON, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, -1, TR("Выберите сервер..."), 0);
+        CurrentToolbar.AddButton(IDC_SERVERBUTTON, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, -1, TR("Choose server..."), 0);
         CurrentToolbar.AddButton(IDC_TOOLBARSEPARATOR1, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR(""), 0);
         
         CurrentToolbar.AddButton(IDC_LOGINTOOLBUTTON + !i, /*TBSTYLE_BUTTON*/TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0, _T(""), 0);
         CurrentToolbar.AddButton(IDC_TOOLBARSEPARATOR2, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR(""), 0);
         
-        CurrentToolbar.AddButton(IDC_SELECTFOLDER, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Выберите папку..."), 0);
+        CurrentToolbar.AddButton(IDC_SELECTFOLDER, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Choose folder..."), 0);
         CurrentToolbar.AutoSize();
     }
 
@@ -180,7 +180,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     SendDlgItemMessage(IDC_THUMBQUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
     
     
-    SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)TR("Авто"));
+    SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)TR("Auto"));
     SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("JPEG"));
     SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("PNG"));
     SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("GIF"));
@@ -306,7 +306,7 @@ bool CUploadSettings::OnNext()
         if(ue->NeedAuthorization ==2 && sessionImageServer_.profileName().empty())
         { 
             CString errorMsg;
-            errorMsg.Format(TR("Загрузка файлов на сервер '%s' невозможна без наличия учетной записи.\nПожалуйста, зарегистрируйтесь на данном сервере и укажите ваши регистрационные данные в программе."), (LPCTSTR)Utf8ToWCstring(ue->Name));
+            errorMsg.Format(TR("Upload to server '%s' is impossible without account.\r\nYou should sign Up on this server and specify your account details in program settings."), (LPCTSTR)Utf8ToWCstring(ue->Name));
             MessageBox(errorMsg, APPNAME, MB_ICONERROR);
             return false;
         }
@@ -317,7 +317,7 @@ bool CUploadSettings::OnNext()
         if(ue2->NeedAuthorization == 2 && sessionFileServer_.profileName().empty())
         {
             CString errorMsg;
-            errorMsg.Format(TR("Вы не задали параметры авторизации на сервере '%s'!"), (LPCTSTR)Utf8ToWstring(ue2->Name).c_str());
+            errorMsg.Format(TR("Please specify authentication settings for '%s' server!"), (LPCTSTR)Utf8ToWstring(ue2->Name).c_str());
             MessageBox(errorMsg, APPNAME, MB_ICONWARNING);
             return false;
         }
@@ -379,7 +379,7 @@ bool CUploadSettings::OnShow()
     OnBnClickedCreatethumbnails(0, 0, 0, temp);
     OnBnClickedKeepasis(0, 0, 0, temp);
     EnableNext();
-    SetNextCaption(TR("&Загрузить"));
+    SetNextCaption(TR("&Upload"));
     return true;
 }
 
@@ -422,7 +422,7 @@ LRESULT CUploadSettings::OnBnClickedUseThumbTemplate(WORD /*wNotifyCode*/, WORD 
 
     if(checked && !WinUtils::FileExists(IuCommonFunctions::GetDataFolder() + _T("thumb.png")) && wID == IDC_USETHUMBTEMPLATE)
     {
-        MessageBox(TR("Невозможно использовать шаблон для миниатюры. Файл шаблона \"Data\\Thumb.png\" не найден."), APPNAME, MB_ICONWARNING);
+        MessageBox(TR("File \"Data\\Thumb.png\" not found!"), APPNAME, MB_ICONWARNING);
         SendDlgItemMessage(IDC_USETHUMBTEMPLATE, BM_SETCHECK, false);
         return 0;
     }
@@ -545,7 +545,7 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 		return;
 	}
     //MessageBox(serverProfile.serverName());
-    CString serverTitle = (!serverProfile.isNull()) ? Utf8ToWCstring(serverProfile.serverName()): TR("Выберите сервер");
+    CString serverTitle = (!serverProfile.isNull()) ? Utf8ToWCstring(serverProfile.serverName()): TR("Choose server");
 
     ZeroMemory(&bi, sizeof(bi));
     bi.cbSize = sizeof(bi);
@@ -565,9 +565,9 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
     if(!ShowLoginButton)
     {
         if(uploadEngine->NeedAuthorization == 2)
-            login = TR("Задать пользователя...");
+            login = TR("Specify account...");
         else 
-            login = TR("Аккаунт не выбран");
+            login = TR("Account is not enabled");
 
     }
     bi.pszText = (LPWSTR)(LPCTSTR)login;
@@ -579,7 +579,7 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
     CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR2,!ShowFolderButton);
         
     CString title = WinUtils::TrimString(Utf8ToWCstring(serverProfile.folderTitle()), 27);
-    if(title.IsEmpty()) title = TR("Папка не выбрана");
+    if(title.IsEmpty()) title = TR("No Folder Selected");
     bi.pszText = (LPWSTR)(LPCTSTR)title;
     CurrentToolbar.SetButtonInfo(IDC_SELECTFOLDER, &bi);
     
@@ -751,7 +751,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         }
         
 
-        mi.dwTypeData  = TR("Добавить FTP сервер...");
+        mi.dwTypeData  = TR("Add FTP server...");
         mi.hbmpItem = 0;
         sub.InsertMenuItem(menuItemCount++, true, &mi);    
 
@@ -759,7 +759,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         mi.fType = MFT_STRING;
         mi.wID = ImageServer ? IDC_ADD_DIRECTORY_AS_SERVER : IDC_ADD_DIRECTORY_AS_SERVER_FROM_FILESERVER_LIST;
 
-        mi.dwTypeData  = TR("Добавить локальную папку как сервер...");
+        mi.dwTypeData  = TR("Add local folder as new server...");
         mi.hbmpItem = 0;
         sub.InsertMenuItem(menuItemCount++, true, &mi);    
 
@@ -781,7 +781,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             //ShowVar((int)serverUsers.size() );
             if ( serverUsers.size() && !serverProfile.profileName().empty() ) {
                 mi.wID = IDC_LOGINTOOLBUTTON + (int)ImageServer;
-                 mi.dwTypeData  = TR("Изменить данные учетной записи");
+                 mi.dwTypeData  = TR("Change account settings");
                 sub.InsertMenuItem(i++, true, &mi);
             } else {
                 addedSeparator = true;
@@ -793,7 +793,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             if(plug && plug->supportsSettings()) {
    
                 mi.wID = IDC_SERVERPARAMS + (int)ImageServer;
-                 mi.dwTypeData  = TR("Настройки сервера...");
+                 mi.dwTypeData  = TR("Server settings...");
                 sub.InsertMenuItem(i++, true, &mi);
             }
             int command = IDC_USERNAME_FIRST_ID;
@@ -844,7 +844,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 mi.fType = MFT_STRING;
                 mi.wID = IDC_NO_ACCOUNT + !ImageServer;
 
-                mi.dwTypeData  = (LPWSTR)(LPCTSTR)TR("<без авторизации>");
+                mi.dwTypeData  = (LPWSTR)(LPCTSTR)TR("<no authentication>");
                 sub.InsertMenuItem(i++, true, &mi);
             }
 
@@ -866,7 +866,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             mi.fType = MFT_STRING;
             mi.wID = IDC_ADD_ACCOUNT + !ImageServer;
 
-            mi.dwTypeData  = (LPWSTR)(LPCTSTR)TR("Добавить учетную запись...");
+            mi.dwTypeData  = (LPWSTR)(LPCTSTR)TR("New account...");
 
             
             sub.InsertMenuItem(i++, true, &mi);
@@ -942,11 +942,11 @@ void CUploadSettings::OnFolderButtonContextMenu(POINT pt, bool isImageServerTool
 
     sub.CreatePopupMenu();
     mi.wID = IDC_NEWFOLDER + (int)isImageServerToolbar;
-    mi.dwTypeData  = TR("Новая папка");
+    mi.dwTypeData  = TR("New folder");
     sub.InsertMenuItem(0, true, &mi);
 
     mi.wID = IDC_OPENINBROWSER + (int)isImageServerToolbar;
-    mi.dwTypeData  = TR("Открыть в браузере");
+    mi.dwTypeData  = TR("Open in Web Browser");
     sub.InsertMenuItem(1, true, &mi);
             
     sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, pt.x, pt.y, m_hWnd);
@@ -1011,12 +1011,12 @@ void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerTool
     mi.fType = MFT_STRING;
     sub.CreatePopupMenu();
     mi.wID = IDC_SERVERPARAMS + (int)isImageServerToolbar;
-    mi.dwTypeData  = TR("Настройки сервера");
+    mi.dwTypeData  = TR("Server settings");
     sub.InsertMenuItem(0, true, &mi);
     if(!serverProfile.uploadEngineData()->RegistrationUrl.empty())
     {
         mi.wID = IDC_OPENREGISTERURL + (int)isImageServerToolbar;
-        mi.dwTypeData  = TR("Открыть страницу регистрации");
+        mi.dwTypeData  = TR("Go to signup page");
         sub.InsertMenuItem(1, true, &mi);
     }
     sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, pt.x, pt.y, m_hWnd);
@@ -1059,7 +1059,7 @@ LRESULT CUploadSettings::OnResizePresetButtonClicked(WORD wNotifyCode, WORD wID,
     CMenu FolderMenu;
     int id = IDC_RESIZEPRESETMENU_FIRST_ID;
     FolderMenu.CreatePopupMenu();
-    FolderMenu.AppendMenu(MF_STRING, id++, TR("Без изменения"));
+    FolderMenu.AppendMenu(MF_STRING, id++, TR("Don't resize"));
     FolderMenu.AppendMenu(MF_SEPARATOR, static_cast<WPARAM>(-1), _T(""));
     FolderMenu.AppendMenu(MF_STRING, id++, _T("800\u00D7600"));
     FolderMenu.AppendMenu(MF_STRING, id++, _T("1024\u00D7768"));
@@ -1078,7 +1078,7 @@ LRESULT CUploadSettings::OnShorteningUrlServerButtonClicked(WORD wNotifyCode, WO
     CServerSelectorControl serverSelectorControl(uploadEngineManager_, false, false);
     serverSelectorControl.setServersMask(CServerSelectorControl::smUrlShorteners);
     serverSelectorControl.setShowImageProcessingParams(false);
-    serverSelectorControl.setTitle(TR("Сервер для сокращения ссылок"));
+    serverSelectorControl.setTitle(TR("URL shortening server"));
     serverSelectorControl.setServerProfile(Settings.urlShorteningServer);
     RECT clientRect;
     m_ShorteningServerButton.GetClientRect(&clientRect);
@@ -1165,7 +1165,7 @@ void CUploadSettings::updateUrlShorteningCheckboxLabel()
 {
     CString text;
     CString serverName = Utf8ToWCstring(Settings.urlShorteningServer.serverName());
-    text.Format(TR("Сократить ссылки с помощью %s"), static_cast<LPCTSTR>(serverName));
+    text.Format(TR("Shorten URL using %s"), static_cast<LPCTSTR>(serverName));
     SetDlgItemText(IDC_SHORTENLINKSCHECKBOX, text);
 }
 
@@ -1197,12 +1197,12 @@ void CUploadSettings::ShowParams(const ImageConvertingParams& params)
  {
     if(sessionImageServer_.getImageUploadParams().getThumb().ResizeMode!= ThumbCreatingParams::trByHeight)
    {
-      TRC(IDC_WIDTHLABEL,"Ширина:");
+      TRC(IDC_WIDTHLABEL, "Width:");
       SetDlgItemInt(IDC_THUMBWIDTH,sessionImageServer_.getImageUploadParams().getThumb().Size);
    }
    else
    {
-      TRC(IDC_WIDTHLABEL,"Высота:");
+      TRC(IDC_WIDTHLABEL, "Height:");
       SetDlgItemInt(IDC_THUMBWIDTH,sessionImageServer_.getImageUploadParams().getThumb().Size);
    }
     if(CurrentProfileName == profileName) return;
@@ -1230,8 +1230,8 @@ if(!m_CatchChanges) return;
     if(!m_ProfileChanged)
     {
        CurrentProfileOriginalName = CurrentProfileName;
-       CurrentProfileName.Replace(CString(_T(" "))+TR("(изменен)"), _T(""));
-      CurrentProfileName = CurrentProfileName + _T(" ")+ TR("(изменен)");
+       CurrentProfileName.Replace(CString(_T(" "))+TR("(edited)"), _T(""));
+      CurrentProfileName = CurrentProfileName + _T(" ")+ TR("(edited)");
      // ::SetWindowText(GetDlgItem(IDC_PROFILECOMBO), CurrentProfileName);
         m_ProfileChanged = true;
         UpdateProfileList();

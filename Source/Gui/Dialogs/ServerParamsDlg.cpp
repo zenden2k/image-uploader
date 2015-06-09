@@ -41,18 +41,18 @@ CServerParamsDlg::~CServerParamsDlg()
 LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     CenterWindow(GetParent());
-    TRC(IDCANCEL, "Отмена");
+    TRC(IDCANCEL, "Cancel");
     TRC(IDOK, "OK");
-    TRC(IDC_LOGINLABEL, "Логин:");
-    TRC(IDC_PASSWORDLABEL, "Пароль:");
-    TRC(IDC_DOAUTH, "Выполнять авторизацию");
-    TRC(IDC_FOLDERLABEL, "Папка/альбом:");
-    TRC(IDC_BROWSESERVERFOLDERS, "Выбрать...");
-    TRC(IDC_PARAMETERSLABEL, "Параметры:");
+    TRC(IDC_LOGINLABEL, "Login:");
+    TRC(IDC_PASSWORDLABEL, "Password:");
+    TRC(IDC_DOAUTH, "Authorize");
+    TRC(IDC_FOLDERLABEL, "Folder/album:");
+    TRC(IDC_BROWSESERVERFOLDERS, "Select...");
+    TRC(IDC_PARAMETERSLABEL, "Parameters:");
     DlgResize_Init();
     CString WindowTitle;
     CString serverName = Utf8ToWCstring(m_ue->Name);
-    WindowTitle.Format(TR("Параметры сервера %s"),(LPCTSTR)serverName);
+    WindowTitle.Format(TR("%s server settings"),(LPCTSTR)serverName);
     SetWindowText(WindowTitle);
     GuiTools::ShowDialogItem(m_hWnd, IDC_BROWSESERVERFOLDERS, m_ue->SupportsFolders);
     GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERLABEL, m_ue->SupportsFolders);
@@ -105,7 +105,7 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     }
     CString folderTitle = Utf8ToWCstring( serverProfile_.folderTitle()) ;
 
-    SetDlgItemText(IDC_FOLDERNAMELABEL, folderTitle.IsEmpty() ? (CString("<") + TR("не выбран") + CString(">")) : folderTitle);
+    SetDlgItemText(IDC_FOLDERNAMELABEL, folderTitle.IsEmpty() ? (CString("<") + TR("not selected") + CString(">")) : folderTitle);
 
     return 1;  // Let the system set the focus
 }
@@ -216,7 +216,7 @@ LRESULT CServerParamsDlg::OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWn
         serverProfile_.setFolderId("");
         serverProfile_.setFolderTitle("");
         serverProfile_.setFolderUrl("");
-        SetDlgItemText(IDC_FOLDERNAMELABEL,  (CString("<") + TR("не выбран") + CString(">")) );
+        SetDlgItemText(IDC_FOLDERNAMELABEL,  (CString("<") + TR("not selected") + CString(">")) );
 
     }
     return 0;

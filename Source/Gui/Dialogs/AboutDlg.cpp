@@ -51,20 +51,20 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
     m_ReportBugLink.SubclassWindow(GetDlgItem(IDC_FOUNDABUG));
     m_ReportBugLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER; 
-    m_ReportBugLink.SetLabel(TR("Нашли ошибку? Сообщите автору"));
+    m_ReportBugLink.SetLabel(TR("Found a bug? Send it to the author"));
     m_ReportBugLink.SetHyperLink(_T("https://github.com/zenden2k/image-uploader/issues"));
 
     m_Documentation.SubclassWindow(GetDlgItem(IDC_DOCUMENTATION));
     m_Documentation.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
-    m_Documentation.SetLabel(TR("Документация"));
+    m_Documentation.SetLabel(TR("Documentation"));
 
     CString memoText;
-    memoText += TR("Путь к файлу с настройками:") + CString(_T("\r\n"))+ Settings.getSettingsFileName() + _T("\r\n\r\n");
-    memoText += TR("Благодарности:") + CString("\r\n\r\n");
-    memoText += TR("Контрибьюторам:") + CString("\r\n");
+    memoText += TR("Settings file path:") + CString(_T("\r\n"))+ Settings.getSettingsFileName() + _T("\r\n\r\n");
+    memoText += TR("Thanks to:") + CString("\r\n\r\n");
+    memoText += TR("Contributors:") + CString("\r\n");
     memoText += L"arhangelsoft\thttps://github.com/arhangelsoft\r\nTahir Yilmaz\thttps://github.com/thrylmz\r\nAlex_Qwerty\r\n\r\n";
 
-    memoText += TR("Переводчикам:")+ CString("\r\n");
+    memoText += TR("Translators:")+ CString("\r\n");
 
     CString translatorName = TR("translator_name");
     if ( translatorName == "translator_name") {
@@ -78,11 +78,11 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     } 
     memoText += L"Mishunika, Adrianis, \r\nHessam Mohamadi, ozzii.translate@***.com\r\n\r\n";
 
-    memoText += TR("Бета-тестерам:")+ CString("\r\n");
+    memoText += TR("Beta-testers:")+ CString("\r\n");
     memoText += L"Graf, CKA3O4H1K, Geslot, Alex_Qwerty\r\n\r\n";
 
     //memoText += CString(T_R("Thanks to the authors of the following open-source libraries:"))+L"\r\n\r\n";
-    memoText += CString(TR("Спасибо авторам следующих библиотек с открытым исходным кодом:"))+L"\r\n\r\n";
+    memoText += CString(TR("Thanks to the authors of the following open-source libraries:"))+L"\r\n\r\n";
     
     memoText += CString(L"WTL")+ "\t\thttp://sourceforge.net/projects/wtl/\r\n";
     memoText += CString(L"libcurl")+ "\t\thttp://curl.haxx.se/libcurl/\r\n";
@@ -151,10 +151,10 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     SetDlgItemText(IDC_IMAGEUPLOADERLABEL, buildInfo);
     CenterWindow(GetParent());
 
-    TRC(IDC_AUTHORLABEL, "Автор:");
-    TRC(IDC_WEBSITELABEL, "Веб-сайт:");
+    TRC(IDC_AUTHORLABEL, "Author:");
+    TRC(IDC_WEBSITELABEL, "Website:");
     
-    SetWindowText(TR("О программе"));
+    SetWindowText(TR("About Image Uploader"));
     return TRUE;
 }
 

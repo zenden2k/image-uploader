@@ -269,7 +269,7 @@ void CWinHotkeyCtrl::OnContextMenu(HWND /*pWnd*/, CPoint pt) {
     AppendMenu(hmenu, MF_SEPARATOR, 0, NULL);
     AppendMenu(hmenu, MF_STRING, VK_SNAPSHOT, GetKeyName(VK_SNAPSHOT));
     AppendMenu(hmenu, MF_SEPARATOR, 0, NULL);
-    AppendMenu(hmenu, MF_STRING, IDM_CLEARHOTKEYDATA, TR("Очистить"));
+    AppendMenu(hmenu, MF_STRING, IDM_CLEARHOTKEYDATA, TR("Clear"));
     
     UINT uMenuID = TrackPopupMenu(hmenu, 
         TPM_RIGHTALIGN | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD,

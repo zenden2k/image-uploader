@@ -139,7 +139,7 @@ LOGFONT TextParamsWindow::getFont()
 
 LRESULT TextParamsWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    SetWindowText(TR("Параметры текста"));
+    SetWindowText(TR("Text Options"));
     fontComboBox_.Attach(GetDlgItem(IDC_FONTCOMBO));
     fontSizeComboBox_.Attach(GetDlgItem(IDC_FONTSIZECOMBO));
 

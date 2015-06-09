@@ -38,28 +38,28 @@ CLogoSettings::CLogoSettings()
 
 void CLogoSettings::TranslateUI()
 {
-    TRC(IDC_CURRENTPROFILELABEL, "Профиль:");
-    TRC(IDC_FORMATLABEL,"Формат:");
-    TRC(IDC_QUALITYLABEL,"Качество:");
-    TRC(IDC_RESIZEBYWIDTH,"Изменение ширины:");
-    TRC(IDC_YOURLOGO,"Добавить водяной знак");
-    TRC(IDC_SMARTCONVERTING, "Не обрабатывать изображение, если оно уже в нужном формате");
-    //TRC(IDC_SAVEPROPORTIONS,"Сохранять пропорции");
-    //TRC(IDC_YOURLOGO,"Добавить водяной знак");
-    TRC(IDC_YOURTEXT,"Добавить текст на картинку");
-    TRC(IDC_XLABEL,"и/или высоты:");
-    TRC(IDC_RESIZEMODELABEL, "Режим:");
-    TRC(IDC_FILENAMELABEL, "Имя файла:");
-    TRC(IDC_LOGOPOSITIONLABEL, "Позиция логотипа:");
-    TRC(IDC_LOGOGROUP, "Водяной знак");
-    TRC(IDC_TEXTONIMAGEGROUP, "Текст на картинке");
-    TRC(IDC_ENTERYOURTEXTLABEL, "Введите текст:");
-    TRC(IDC_TEXTCOLORLABEL, "Цвет текста:");
-    TRC(IDC_TEXTSTROKECOLOR, "Цвет обводки:");
-    TRC(IDC_SELECTFONT, "Шрифт...");
-    TRC(IDC_TEXTPOSITIONLABEL, "Позиция текста:");
-    TRC(IDC_PRESERVE_EXIF, "Сохранять EXIF информацию");
-    SetWindowText(TR("Дополнительные параметры"));    
+    TRC(IDC_CURRENTPROFILELABEL, "Profile:");
+    TRC(IDC_FORMATLABEL, "Format:");
+    TRC(IDC_QUALITYLABEL, "Quality:");
+    TRC(IDC_RESIZEBYWIDTH, "Change width:");
+    TRC(IDC_YOURLOGO, "Add watermark");
+    TRC(IDC_SMARTCONVERTING, "Skip image processing step if the image has right parameters");
+    //TRC(IDC_SAVEPROPORTIONS, "Constrain proportions");
+    //TRC(IDC_YOURLOGO, "Add watermark");
+    TRC(IDC_YOURTEXT, "Add text to image");
+    TRC(IDC_XLABEL, "and/or height:");
+    TRC(IDC_RESIZEMODELABEL, "Resize mode:");
+    TRC(IDC_FILENAMELABEL, "Filename:");
+    TRC(IDC_LOGOPOSITIONLABEL, "Watermark position:");
+    TRC(IDC_LOGOGROUP, "Watermark");
+    TRC(IDC_TEXTONIMAGEGROUP, "Text on image");
+    TRC(IDC_ENTERYOURTEXTLABEL, "Enter your text:");
+    TRC(IDC_TEXTCOLORLABEL, "Text color:");
+    TRC(IDC_TEXTSTROKECOLOR, "Stroke color:");
+    TRC(IDC_SELECTFONT, "Font...");
+    TRC(IDC_TEXTPOSITIONLABEL, "Text position:");
+    TRC(IDC_PRESERVE_EXIF, "Preserve EXIF data");
+    SetWindowText(TR("Additional params"));    
 }
 
 CLogoSettings::~CLogoSettings()
@@ -78,25 +78,25 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
    img.ShowWindow(SW_HIDE);
     img.LoadImage(0);
 
-   GuiTools::AddComboBoxItems(m_hWnd, IDC_RESIZEMODECOMBO, 3, TR("Подогнать"), TR("По центру"), TR("Растянуть"));
-   GuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 4, TR("Авто"), _T("JPEG"), _T("PNG"),_T("GIF"));
+   GuiTools::AddComboBoxItems(m_hWnd, IDC_RESIZEMODECOMBO, 3, TR("Fit"), TR("Center"), TR("Stretch"));
+   GuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 4, TR("Auto"), _T("JPEG"), _T("PNG"),_T("GIF"));
   
     SendDlgItemMessage(IDC_TRANSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)0) );
     SendDlgItemMessage(IDC_QUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
     
-    SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Верхний левый угол"));
-    SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Сверху посередине"));
-    SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Правый верхний угол"));
-    SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Левый нижний угол"));
-    SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Снизу посередине"));
-    SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Правый нижний угол"));
+    SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Top left corner"));
+    SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Top center"));
+    SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Top right corner"));
+    SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Bottom left corner"));
+    SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Bottom center"));
+    SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Bottom right corner"));
 
-    SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Верхний левый угол"));
-    SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Сверху посередине"));
-    SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Правый верхний угол"));
-   SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Левый нижний угол"));
-   SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Снизу посередине"));
-   SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Правый нижний угол"));
+    SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Top left corner"));
+    SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Top center"));
+    SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Top right corner"));
+   SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Bottom left corner"));
+   SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Bottom center"));
+   SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Bottom right corner"));
 
    TextColor.SubclassWindow(GetDlgItem(IDC_SELECTCOLOR));
 
@@ -122,9 +122,9 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
    list.AddIcon(saveIcon);
     list.AddIcon(deleteIcon);
    m_ProfileEditToolbar.SetImageList(list);
-   m_ProfileEditToolbar.AddButton(IDC_NEWPROFILE, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0, TR("Создать профиль"), 0);
-   m_ProfileEditToolbar.AddButton(IDC_SAVEPROFILE, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Сохранить профиль"), 0);
-    m_ProfileEditToolbar.AddButton(IDC_DELETEPROFILE, TBSTYLE_BUTTON |BTNS_AUTOSIZE,  TBSTATE_ENABLED, 2, TR("Удалить профиль"), 0);
+   m_ProfileEditToolbar.AddButton(IDC_NEWPROFILE, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0, TR("New Profile"), 0);
+   m_ProfileEditToolbar.AddButton(IDC_SAVEPROFILE, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Save Profile"), 0);
+    m_ProfileEditToolbar.AddButton(IDC_DELETEPROFILE, TBSTYLE_BUTTON |BTNS_AUTOSIZE,  TBSTATE_ENABLED, 2, TR("Delete Profile"), 0);
 
    ShowParams(Settings.imageServer.getImageUploadParams().ImageProfileName);
    UpdateProfileList();
@@ -147,9 +147,9 @@ LRESULT CLogoSettings::OnBnClickedLogobrowse(WORD /*wNotifyCode*/, WORD /*wID*/,
 {
     TCHAR Buf[MAX_PATH*4];
     GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
-        CString(TR("Изображения"))+ _T(" (jpeg, bmp, png, gif ...)"),
+        CString(TR("Images"))+ _T(" (jpeg, bmp, png, gif ...)"),
         _T("*.jpg;*.gif;*.png;*.bmp;*.tiff"),
-        TR("Все файлы"),
+        TR("All files"),
         _T("*.*"));
 
     CFileDialog fd(true, 0, 0, 4|2, Buf, m_hWnd);
@@ -260,7 +260,7 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
     
     if(LogoPos == TextPos && addLogo && addText) // если "водяной знак" и надпись поставлены в одно и то же место на картинке
     {
-        if(MessageBox(TR("Вы действительно хотите поместить текст и логотип в одном месте на изображении?"),TR("Параметры изображений"),MB_ICONQUESTION|MB_YESNO)!=IDYES)
+        if(MessageBox(TR("Are you sure to place text and logo in the same position on image?"),TR("Image settings"),MB_ICONQUESTION|MB_YESNO)!=IDYES)
             return false;
     } 
 
@@ -299,7 +299,7 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
  }
  LRESULT CLogoSettings::OnSaveProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
  {
-    CInputDialog dlg(TR("Имя нового профиля"), TR("Введите имя профиля для сохранения:"), CurrentProfileOriginalName);
+    CInputDialog dlg(TR("New Profile Name"), TR("Enter new profile name:"), CurrentProfileOriginalName);
     if(dlg.DoModal()==IDOK)
     {
          ImageConvertingParams params;
@@ -317,7 +317,7 @@ LRESULT CLogoSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND 
 {
     if(m_ProfileChanged)
     {
-        if(MessageBox(TR("Текущий профиль не был сохранен. Продолжить?"), APPNAME, MB_YESNO|MB_ICONWARNING)!= IDYES) 
+        if(MessageBox(TR("Current profile's changes weren't saved. Do you want to continue?"), APPNAME, MB_YESNO|MB_ICONWARNING)!= IDYES) 
         {
             SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) CurrentProfileName); 
             return 0;
@@ -350,8 +350,8 @@ void CLogoSettings::ProfileChanged()
     if(!m_ProfileChanged)
     {
         CurrentProfileOriginalName = CurrentProfileName;
-        CurrentProfileName.Replace(CString(_T(" "))+TR("(изменен)"), _T(""));
-        CurrentProfileName = CurrentProfileName + _T(" ")+ TR("(изменен)");
+        CurrentProfileName.Replace(CString(_T(" "))+TR("(edited)"), _T(""));
+        CurrentProfileName = CurrentProfileName + _T(" ")+ TR("(edited)");
         m_ProfileChanged = true;
         UpdateProfileList();
     }
@@ -365,7 +365,7 @@ LRESULT CLogoSettings::OnProfileEditedNotification(int idCtrl, LPNMHDR pnmh, BOO
 
 LRESULT CLogoSettings::OnNewProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    CString name = TR("Новый профиль");
+    CString name = TR("New Profile");
     CString generatedName = name;
     int i = 1;
     while(сonvert_profiles_.count(generatedName) > 0)
@@ -383,8 +383,8 @@ LRESULT CLogoSettings::OnNewProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 LRESULT CLogoSettings::OnDeleteProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     CString question;
-    question.Format(TR("Вы действительно хотите удалить профиль '%s'?"), CurrentProfileName);
-    if(MessageBox(question,TR("Параметры изображений"),MB_ICONQUESTION|MB_YESNO) != IDYES)
+    question.Format(TR("Are you sure you want to delete profile '%s'?"), CurrentProfileName);
+    if(MessageBox(question,TR("Image settings"),MB_ICONQUESTION|MB_YESNO) != IDYES)
         return 0;
     if(CurrentProfileName=="Default") return 0;
     if(сonvert_profiles_.count(CurrentProfileName)>0)

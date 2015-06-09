@@ -364,8 +364,10 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
     imageServer.getImageUploadParamsRef().UseDefaultThumbSettings = false;
     if (Language == _T("T\u00FCrk\u00E7e")) {  //fixes
         Language = _T("Turkish");
-    } else if (Language == _T("\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430.lng")) {
+    } else if (Language == _T("\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430")) {
         Language = _T("Ukrainian");
+    } else if (Language == _T("Русский")) {
+        Language = _T("Russian");
     }
     std::string temp;
     if (!settingsNode["Image"]["Format"].IsNull()) {
@@ -533,7 +535,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
         NULL);
 
     if (res != ERROR_SUCCESS) {
-        ServiceLocator::instance()->logger()->write(logWarning, TR("Настройки"), CString(TR(
+        ServiceLocator::instance()->logger()->write(logWarning, TR("Settings"), CString(TR(
             "Не могу создать запись в реестре для расширения ")) +
             Extension + _T("\r\n") + DisplayError(res));
         return 0;
@@ -830,7 +832,7 @@ void WtlGuiSettings::ApplyRegSettingsRightNow()
             {
                 while ((*szList) != 0) {
                     Res =
-                        AddToExplorerContextMenu(szList, (/*ExplorerImagesContextMenu?TR("Загрузить изображения"):*/ 0),
+                        AddToExplorerContextMenu(szList, (/*ExplorerImagesContextMenu?TR("Upload images"):*/ 0),
                         szFileName,
                         true);
                     szList += lstrlen(szList) + 1;
@@ -842,7 +844,7 @@ void WtlGuiSettings::ApplyRegSettingsRightNow()
                 szList = VIDEO_FORMATS;
                 while ((*szList) != 0) {
                     Res =
-                        AddToExplorerContextMenu(szList, (/*ExplorerVideoContextMenu?TR("Открыть в Image Uploader"):*/ 0),
+                        AddToExplorerContextMenu(szList, (/*ExplorerVideoContextMenu?TR("Open by Image Uploader"):*/ 0),
                         szFileName,
                         false);
                     szList += lstrlen(szList) + 1;

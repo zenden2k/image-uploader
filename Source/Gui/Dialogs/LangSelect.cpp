@@ -73,7 +73,7 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     GuiTools::MakeLabelBold(GetDlgItem(IDC_PLEASECHOOSE));
 
     // Russian language is always in language list
-    SendDlgItemMessage(IDC_LANGLIST, CB_ADDSTRING, 0, (WPARAM)_T("Русский"));
+    SendDlgItemMessage(IDC_LANGLIST, CB_ADDSTRING, 0, (WPARAM)_T("English"));
 
     int n = 0;
     while (GetNextLngFile(buf, sizeof(buf) / sizeof(TCHAR)) )
@@ -88,7 +88,7 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     if (!n)
     {
         EndDialog(IDOK);
-        lstrcpy(Language, _T("Русский"));
+        lstrcpy(Language, _T("English"));
         return 0;
     }
 
@@ -96,7 +96,7 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     if ( !Settings.Language.IsEmpty() ) {
             SelectLang(Settings.Language);
     } else  if (GetUserDefaultLangID() == 0x419) {
-        SelectLang(_T("Русский"));
+        SelectLang(_T("Russian"));
     } else if (GetUserDefaultLangID() == 0x0418) {
         SelectLang(_T("Romanian"));
     } else {
