@@ -24,10 +24,8 @@
 
 <?php
 	function write_header( $f ) {
-        fwrite( $f, "\xff\xfe" );
-        $head = "# This generated file is Image Uploader's language file. It must be saved in UTF-16LE encoding. 777011a3 = translator's name (and optional e-mail, website)\r\n";
-        $head_utf16 = mb_convert_encoding( $head, "UTF-16LE", "Windows-1251" );
-        fwrite( $f, $head_utf16 );
+        $head = "# This generated file is Image Uploader's language file. It must be saved in UTF-8 encoding. 777011a3 = translator's name (and optional e-mail, website)\r\n";
+        fwrite( $f, $head );
     }
 
 	$f = fopen( $lang_dir . "\\English.lng.src", "w" );
@@ -68,7 +66,7 @@
             }
         }*/
 
-        $item_u = mb_convert_encoding( $str, "UTF-16LE", "Windows-1251" );
+        $item_u = mb_convert_encoding( $str, "UTF-16LE", "UTF-8" );
         $str = str_ireplace( "\n", "\\n", $str );
         $hashes[dump_dword( myhash( $item_u ) )] = $str;
 
@@ -86,15 +84,15 @@
 
 	function read_language_file( $filename ) {
         $result = array( );
-        $data = file_get_contents( $filename );
-        $data = trim( mb_convert_encoding( $data, "Windows-1251", "UTF-16LE" ) );
+        $data = trim( file_get_contents( $filename ) );
+        //$data = trim( mb_convert_encoding( $data, "UTF-8", "UTF-16LE" ) );
         $strings = explode( "\r\n", $data );
 
         foreach ( $strings as $key => $item )
         {
-            if ( $key == 0 ) {
-                $item = ltrim( $item, "\xff\xfe" );
-            }
+            /*if ( $key == 0 ) {
+                $item = ltrim( $item, "\xff\xfe" ); remove BOM
+            }*/
             $dd = explode( "= ", $item );
             $hash = trim( $dd[0] );
             $value = $dd[1];
@@ -107,29 +105,26 @@
         $file = fopen( $filename . ".new", "w" );
         write_header( $file );
         $data = file_get_contents( $filename );
-        $strings = explode( "\r\0\n\0", $data );
+        $strings = explode( "\r\n", $data );
 
 
         if ( $filename != "default" && $filename != "English" ) {
-            $english_strings = read_language_file( $path . "\\English.lng" );
+            $english_strings = read_language_file( $path . "\\English.lng.src" );
             //echo "OLOLO<br>";
             //var_dump( $english_strings );
         }
 
         foreach ( $strings as $key => $item )
         {
-            if ( $key == 0 ) {
-                $item = ltrim( $item, "\xff\xfe" );
-            }
 
             $dd = explode( "=", $item );
             $hash = $dd[0];
 
-            $hash = trim( mb_convert_encoding( $hash, "Windows-1251", "UTF-16LE" ) );
+            $hash = trim( $hash );
 
             $k = isset($hashes[$hash]) ? $hashes[$hash] : false;
             if ( $hash === 'language' || !( $k === false ) ) {
-                fwrite( $file, $item . "\r\0\n\0" );
+                fwrite( $file, $item . "\r\n" );
                 unset( $hashes[$hash] );
             }
         }
@@ -140,8 +135,7 @@
             if ( $value == "" ) {
                 $value = $it;
             }
-            $rrr = $ki . " = $value\r\n";
-            $str = mb_convert_encoding( $rrr, "UTF-16LE", "Windows-1251" );
+            $str = $ki . " = $value\r\n";
 
             fwrite( $file, $str );
             echo "<br> Not found>> $it ($value)";
@@ -197,13 +191,12 @@ print "<p><b>Total: $i source files parsed</b>";
 $count = 0;echo "<p>Saving to file...</p>";
 foreach ( $hashes as $key => $item ) {
 
-    $item_u = mb_convert_encoding( $item, "UTF-16LE", "Windows-1251" );
+    $item_u = mb_convert_encoding( $item, "UTF-16LE", "UTF-8" );
 
     $hass = myhash( $item_u );
 
-    $rrr = dump_dword( $hass ) . " = $item\r\n";
+    $str = dump_dword( $hass ) . " = $item\r\n";
     //echo "$item, $hass, $rrr<br>";
-    $str = mb_convert_encoding( $rrr, "UTF-16LE", "Windows-1251" );
 
     fwrite( $f, $str );
     $count++;

@@ -32,7 +32,7 @@ CTrayActions::CTrayActions()
         AddTrayAction(TR("Screenshot"),IDM_SCREENSHOTDLG);
         AddTrayAction(TR("Capture selected region"),IDM_REGIONSCREENSHOT);
         AddTrayAction(TR("Capture entire screen"),IDM_FULLSCREENSHOT);
-        AddTrayAction(TR("Ñapture current window"),IDM_WINDOWSCREENSHOT);
+        AddTrayAction(TR("Capture current window"),IDM_WINDOWSCREENSHOT);
         AddTrayAction(TR("Show program's window"), IDM_SHOWAPPWINDOW);
         AddTrayAction(TR("Settings"), IDM_SETTINGS);
         

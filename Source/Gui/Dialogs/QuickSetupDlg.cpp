@@ -44,7 +44,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     TRC(IDC_PASSWORDLABEL, "Password:");
     TRC(IDC_SERVERLABEL, "Choose server for uploading images");
     TRC(IDC_AUTOSTARTUPCHECKBOX, "Launch program on Windows startup");
-    TRC(IDC_CAPTUREPRINTSCREENCHECKBOX, "Intercept PrintScreen è Alt+PrintScreen hotkeys");
+    TRC(IDC_CAPTUREPRINTSCREENCHECKBOX, "Intercept PrintScreen and Alt+PrintScreen hotkeys");
     TRC(IDC_EXPLORERINTEGRATION, "Add an item to the context menu of Windows Explorer");
     SetWindowText( APPNAME );
     CString titleText;
