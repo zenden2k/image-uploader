@@ -567,4 +567,7 @@
         </Actions>
     <Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DeleteUrl="$(DeleteUrl)"/>
     </Server>
+	<Server3 Name="drp.io"  Type="image" MinVersion="1.3.0"  Authorize="0" Plugin="drpio" >
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" ViewUrlTemplate="stub"/>
+	</Server3>
 </Servers>
