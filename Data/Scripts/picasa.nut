@@ -2,7 +2,6 @@
 
 function BeginLogin() {
 	try {
-		Sync.getValue("tes");
 		return Sync.beginAuth();
 	}
 	catch ( ex ) {
@@ -146,7 +145,7 @@ function _DoLogin()
 	local url = "https://accounts.google.com/o/oauth2/auth?scope="+ nm.urlEncode(scope) +"&redirect_uri="+redirectUrl+"&response_type=code&"+ "client_id="+clientId;
 	openUrl(url);
 	
-	local confirmCode = inputBox("You need to need to sign in to your Google Picasa Web Albums account in web browser which just have opened and then copy confirmation code into the text field below. Please enter confirmation code:", "Image Uploader - Enter confirmation code");
+	local confirmCode = inputBox("You need to need to sign in to your Google Picasa Web Albums account in web browser which just have opened and then copy confirmation code into the text field below. Please enter the confirmation code:", "Image Uploader - Enter confirmation code");
 	
 	if ( confirmCode == "" ) {
 		print("Cannot authenticate without confirm code");

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<UpdatePackageSource Name="iu_core" DisplayName="Image Uploader 1.3.2-alpha.4455" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%"  CoreUpdate="1" >
+<UpdatePackageSource Name="iu_core" DisplayName="Image Uploader 1.3.2-alpha.4461" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%"  CoreUpdate="1" >
 	<Entries>
 		<Entry Name="Image Uploader.exe" SaveToFolder="%apppath%/" Action="add"/>
 		<Entry Name="ExplorerIntegration*.dll" SaveToFolder="%apppath%/" Action="add"/>
 		<Entry Name="curl-ca-bundle.crt" SaveToFolder="%apppath%/" Action="delete"/>
 		<Entry Name="new-icon.ico" SaveToFolder="%apppath%/" Action="add"/>
         <Entry Name="Lang/*.lng" SaveToFolder="%apppath%/Lang/" Action="add"/>
-		<Entry Name="Lang/Turkce.lng" SaveToFolder="%apppath%/Lang/" Action="delete"/>
+		<Entry Name="Turkce.lng" SaveToFolder="%apppath%/Lang/" Action="delete"/>
+		<Entry Name="English.lng" SaveToFolder="%apppath%/Lang/" Action="delete"/>
         <Entry Name="Modules/*.dll" SaveToFolder="%apppath%/Modules/" Action="add"/>
         <Entry Name="Docs/*" SaveToFolder="%apppath%/Docs/" Action="add"/>
 		<Entry Name="Docs/ru_RU/*" SaveToFolder="%apppath%/Docs/ru_RU/" Action="add"/>
@@ -21,9 +22,11 @@
 		<Entry Name="Data/templates.xml" SaveToFolder="%datapath%/templates.xml" Action="add"/>
 	</Entries>
 <Info>
-[f] Fixed crash in reuploader
-[f] Update language files, closes issue #157
-[c] Use fast method of loading JPEG thumbnails (from EXIF) 
-[f] Fixed crash when server name is empty or invalid
+[f] Fixed keyboard not working in file list
+[f] ImageEditor: Fixed crop rectangle out of boundaries issue
+[f] ImageEditor: Fixed marker 1px pen issue
+[f] Fixed duplicate accounts in settings.xml
+[c] Localization fix: swapped Russian and English texts
+[c] Updated icon
 </Info>
 </UpdatePackageSource>

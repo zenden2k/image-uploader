@@ -9,13 +9,6 @@
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
 <Info>
-[+] sharenxs.com
-
-File hostings (multi-upload): thanks to Alex_Qwerty
-[+] multiupload.biz
-[+] directmirror.com
-[+] multi.hotshare.biz
-[+] uploadmagnet.com
-[+] multimirrorupload.com
+[+] drp.io (thanks to @arhangelsoft)
 </Info>
 </UpdatePackageSource>
