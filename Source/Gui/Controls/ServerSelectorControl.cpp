@@ -375,6 +375,9 @@ void CServerSelectorControl::updateServerList()
     line[ARRAY_SIZE(line)-1] = 0;
     for ( int mask = 1; mask <= 4; mask*=2 ) {
         int currentLoopMask = mask & serversMask_;
+        if (!currentLoopMask) {
+            continue;
+        }
         if ( addedItems && currentLoopMask ) {
             serverComboBox_.AddItem(line, -1, -1, 0,  0 );
         }
@@ -384,14 +387,14 @@ void CServerSelectorControl::updateServerList()
             if (serversMask_ != smUrlShorteners && !ue->hasType(CUploadEngineData::TypeFileServer) && !ue->hasType(CUploadEngineData::TypeImageServer)) {
                 continue;
             }
-            if ( ue->hasType(CUploadEngineData::TypeImageServer) && !(currentLoopMask & smImageServers) ) {
+            if (!ue->hasType(CUploadEngineData::TypeImageServer) && ((currentLoopMask & smImageServers) == smImageServers)) {
                 continue;
             }
-            if ( ue->hasType(CUploadEngineData::TypeFileServer) && !(currentLoopMask & smFileServers) ) {
+            if (!ue->hasType(CUploadEngineData::TypeFileServer) && ((currentLoopMask & smFileServers) == smFileServers)) {
                 continue;
             }
 
-            if ( ue->hasType(CUploadEngineData::TypeUrlShorteningServer) && !(currentLoopMask & smUrlShorteners) ) {
+            if ( !ue->hasType(CUploadEngineData::TypeUrlShorteningServer) && (currentLoopMask & smUrlShorteners) ) {
                 continue;
             }
             HICON hImageIcon = _EngineList->getIconForServer(ue->Name);
