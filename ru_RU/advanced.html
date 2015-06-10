@@ -172,6 +172,21 @@
 <li><code>CustomHeaders</code> — (ver >= 1.3.2.4432) список дополнительных полей заголовка, разделенных точкой с запятой. 
 Список должен иметь следующий вид: <code>НазваниеПараметра1:Значение1;НазваниеПараметра2:Значение2;...</code><br />
 To remove default field, pass an empty value.
+<li>Вложенные узлы (version >= 1.3.2)<br> 
+<code>RegExp</code> 
+<pre class="prettyprint">
+&lt;Action Type=&quot;upload&quot; Url=&quot;http://imgur.com/api/upload.xml&quot; PostParams=&quot;image=%filename%;key=2dd16e2e19119996855ae9312b7a1305;&quot; RegExp='&amp;lt;original_image&amp;gt;(.*?)&amp;lt;\/original_image&amp;gt;([\s\S]*?)&amp;lt;small_thumbnail&gt;(.*?)&amp;lt;\/small_thumbnail&amp;gt;' AssignVars=&quot;Image:0;Thumb:2&quot;&gt;
+	&lt;RegExp Pattern=&quot;&amp;lt;delete_page&amp;gt;(.*?)&amp;lt;\/delete_page&amp;gt;&quot; AssignVars=&quot;DeleteUrl:0;&quot;/&gt;
+&lt;/Action&gt;
+</pre>	
+<ul>
+	<li><code>Pattern</code> - то же самое, что атрибут RegExp у узла Action.</li>
+	<li><code>AssignVars</code> - то же самое, что атрибут AssignVars у узла Action.</li>
+	<li><code>Required</code>  - генерировать ошибку, если сопоставление регулярному выражению не удалось. (по умолчанию 0)</li>
+	<li><code>Data</code> - в каком тексте производить поиск. Может содержать переменные. (по умолчанию  - текст ответа от сервера)</li>
+</ul>
+</li>
+		
 <br />
 </ul>
 <p>Типичный вид xml-узла Result:</p>
@@ -231,6 +246,7 @@ To remove default field, pass an empty value.
 <p>Список фильтров:</p>
 <p>
 <code>urlencode</code> - процентное кодирование. Пример <code>Url="http://example.com?filename=$(_FILENAME|urlencode)"</code><br>
+<code>htmldecode</code> - (version >= 1.3.2) decode HTML entities <br>
 <a name="scripts"></a>
 <h2>Создание плагинов</h2> 
 <p>Для расширенной поддержки серверов в программе используются скрипты на <a href="http://www.squirrel-lang.org/" target="_blank">
