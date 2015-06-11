@@ -24,64 +24,52 @@
 #include "Func/Common.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
-// TODO: 1. use ZThread classes instead  CThread with ,
-// 2. remove dependency from non-core headers ( "myutils.h", "Common.h")
 
+// TODO: 1. use std::threads  instead of CThread ,
+// 2. remove dependency from non-core headers ( "myutils.h", "Common.h")
 // 3. Use pimpl
 CFileDownloader::CFileDownloader()
 {
-    m_nThreadCount = 3;
-    m_NeedStop = false;
-    m_IsRunning = false;
-    m_nRunningThreads = 0;
+    maxThreads_ = 3;
+    stopSignal_ = false;
+    isRunning_ = false;
+    runningThreads_ = 0;
 }
 
 CFileDownloader::~CFileDownloader()
 {
+    waitForFinished();
 }
 
 void CFileDownloader::AddFile(const std::string& url, void* id, const std::string& referer) {
-    if (m_NeedStop)
+    if (stopSignal_)
         return;  // Cannot add file to queue while stopping process
-    m_CS.Lock();
+    mutex_.lock();
 
     DownloadFileListItem newItem;
     newItem.url = url;
     newItem.id = reinterpret_cast <void*>(id);
     newItem.referer = referer;
     m_fileList.push_back(newItem);
-    m_CS.Unlock();
+    mutex_.unlock();
 }
-
-
 
 void CFileDownloader::setThreadCount(int n)
 {
-    m_nThreadCount = n;
+    maxThreads_ = n;
 }
 
-bool CFileDownloader::start()
-{
-    // TODO: Rewrite this using ZThread features
-    m_NeedStop = false;
-    m_CS.Lock();
+bool CFileDownloader::start() {
+    stopSignal_ = false;
+    std::lock_guard<std::mutex> guard(mutex_);
 
-    size_t numThreads = min(m_nThreadCount - m_nRunningThreads, int(m_fileList.size()));
-    for (size_t i = 0; i < numThreads; i++)
-    {
-        m_nRunningThreads++;
-        m_IsRunning = true;
-        m_hThreads.push_back((HANDLE) _beginthreadex(0, 0, thread_func, this, 0, 0));
+    size_t numThreads = min(maxThreads_ - runningThreads_, int(m_fileList.size()));
+    for (size_t i = 0; i < numThreads; i++) {
+        runningThreads_++;
+        isRunning_ = true;
+        threads_.push_back(std::thread(&CFileDownloader::memberThreadFunc, this));
     }
 
-    m_CS.Unlock();
-    return 0;
-}
-
-unsigned int __stdcall CFileDownloader::thread_func(void* param)
-{
-    CFileDownloader* p = reinterpret_cast<CFileDownloader*>(param);
-    p->memberThreadFunc();
     return 0;
 }
 
@@ -91,10 +79,10 @@ void CFileDownloader::memberThreadFunc()
 
     // Providing callback function to stop downloading
     nm.setProgressCallback(CFileDownloader::ProgressFunc, this);
-    m_CS.Lock();
+    mutex_.lock();
     if (onConfigureNetworkClient)
         onConfigureNetworkClient(&nm);
-    m_CS.Unlock();
+    mutex_.unlock();
 
     for (;; )
     {
@@ -116,62 +104,44 @@ void CFileDownloader::memberThreadFunc()
             break;
         }
         
-        if (m_NeedStop)
+        if (stopSignal_)
             break;
 
-        m_CS.Lock();
-        if (nm.responseCode() >= 200 && nm.responseCode() <= 299)
-        {
-            std::string name = IuCoreUtils::ExtractFileName(url);
-            if (!onFileFinished.empty())
-                onFileFinished(true, nm.responseCode(), curItem);                                                                                                                                                                                                                                                  // delegate call
-        }
-        else
-        {
-            if (!onFileFinished.empty())
-                onFileFinished(false, nm.responseCode(), curItem);                                                                                                                                                                                                                                                 // delegate call
+        mutex_.lock();
+        bool success = nm.responseCode() >= 200 && nm.responseCode() <= 299;
+
+        if (!onFileFinished.empty()) {
+            onFileFinished(success, nm.responseCode(), curItem);
         }
 
-        if (m_NeedStop)
+        if (stopSignal_)
             m_fileList.clear();
-        m_CS.Unlock();
+        mutex_.unlock();
     }
 
-    m_CS.Lock();
+    mutex_.lock();
+    runningThreads_--;
 
-    HANDLE hThread = GetCurrentThread();
-    for (size_t i = 0; i < m_hThreads.size(); i++)
-    {
-        if (m_hThreads[i] == hThread)
-        {
-            m_hThreads.erase(m_hThreads.begin() + i);
-            break;
-        }
-    }
-
-    m_nRunningThreads--;
-
-    if (m_NeedStop)
+    if (stopSignal_)
         m_fileList.clear();
-    m_CS.Unlock();  // We need to release  mutex before calling  onQueueFinished()
+    mutex_.unlock();  // We need to release  mutex before calling  onQueueFinished()
 
+    threadsStatusMutex_.lock();
     // otherwise we may get a deadlock
-    if (!m_nRunningThreads)
-    {
-        m_IsRunning = false;
-        m_NeedStop = false;
-        if (onQueueFinished)                                                                                                                         // it is a delegate
+    if (!runningThreads_ && isRunning_){
+        isRunning_ = false;
+        stopSignal_ = false;
+        if (onQueueFinished)
             onQueueFinished();
     }
-
-    return;
+    threadsStatusMutex_.unlock();
 }
 
 bool CFileDownloader::getNextJob(DownloadFileListItem& item)
 {
     bool result = false;
-    m_CS.Lock();
-    if (!m_fileList.empty() && !m_NeedStop)
+    mutex_.lock();
+    if (!m_fileList.empty() && !stopSignal_)
     {
         item = *m_fileList.begin();
 
@@ -193,39 +163,31 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
         result = true;
     }
 
-    m_CS.Unlock();
+    mutex_.unlock();
     return result;
 }
 
 void CFileDownloader::stop()
 {
-    m_NeedStop = true;
+    stopSignal_ = true;
 }
 
 bool CFileDownloader::IsRunning()
 {
-    return m_IsRunning;
+    return isRunning_;
 }
 
-bool CFileDownloader::waitForFinished(unsigned int msec)
+bool CFileDownloader::waitForFinished()
 {
-    if (!m_IsRunning)
+    int nCount = threads_.size();
+    if (!nCount) {
         return true;
-
-    int nCount = m_hThreads.size();
-    if (!nCount)
-        return true;
-    m_CS.Lock();
-
-    HANDLE* threads = new HANDLE[m_hThreads.size()];
-    memcpy(threads, &m_hThreads[0], sizeof(HANDLE) * nCount);
-    m_CS.Unlock();
-
-    DWORD res = WaitForMultipleObjects(nCount, threads, TRUE, msec);
-    if (res == WAIT_TIMEOUT || res == WAIT_FAILED)
-        return false;
-    else
-        return true;
+    }
+       
+    for (auto& th : threads_) {
+        th.join();
+    }
+    return true;
 }
 
 int CFileDownloader::ProgressFunc(void* userData, double dltotal, double dlnow,
@@ -233,7 +195,7 @@ int CFileDownloader::ProgressFunc(void* userData, double dltotal, double dlnow,
                                   double ulnow)
 {
     CFileDownloader* fd = reinterpret_cast<CFileDownloader*>(userData);
-    if (fd->m_NeedStop)
+    if (fd->stopSignal_)
         return -1;
     return 0;
 }

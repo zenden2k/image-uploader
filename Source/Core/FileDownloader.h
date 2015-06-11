@@ -27,6 +27,9 @@
 #include "Core/Network/NetworkClient.h"
 #include "Core/Utils/CoreTypes.h"
 #include <memory>
+#include <mutex>
+#include <atomic>
+#include <thread>
 
 class Object;
 class CFileDownloader
@@ -45,7 +48,7 @@ class CFileDownloader
         virtual ~CFileDownloader();
         void AddFile(const std::string& url,void* userData, const std::string& referer = std::string());
         bool start();
-        bool waitForFinished(unsigned int msec = -1);
+        bool waitForFinished();
         void setThreadCount(int n);
         void stop();
         bool IsRunning();
@@ -55,15 +58,15 @@ class CFileDownloader
         fastdelegate::FastDelegate3<bool, int, DownloadFileListItem, bool> onFileFinished;
     protected:
         CString m_ErrorStr;
-        CAutoCriticalSection m_CS;
+        std::mutex mutex_;
         std::vector<DownloadFileListItem> m_fileList;
-        int m_nThreadCount;
-        int m_nRunningThreads;
-        std::vector<HANDLE> m_hThreads;
-        bool m_NeedStop;
-        volatile bool m_IsRunning;
+        int maxThreads_;
+        int runningThreads_;
+        std::mutex threadsStatusMutex_;
+        std::vector<std::thread> threads_;
+        std::atomic<bool> stopSignal_;
+        std::atomic<bool> isRunning_;
         static int ProgressFunc (void* userData, double dltotal, double dlnow, double ultotal, double ulnow);
-        static unsigned int __stdcall thread_func(void* param);
         void memberThreadFunc();
         bool getNextJob(DownloadFileListItem& item);
 

@@ -28,6 +28,7 @@
 #include "Func/myutils.h"
 #include <Core/ServiceLocator.h>
 #include <Core/CoreFunctions.h>
+#include "Func/WebUtils.h"
 
 // CImageDownloaderDlg
 CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg,const CString &initialBuffer)
@@ -74,6 +75,14 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     {
         ParseBuffer(m_InitialBuffer, false);
         BeginDownloading(); 
+    } else {
+        CString text;
+        if (WinUtils::GetClipboardText(text, m_hWnd)) {
+            if (WebUtils::DoesTextLookLikeUrl(text)) {
+                SetDlgItemText(IDC_FILEINFOEDIT, text);
+            }
+        }
+
     }
     ::SetFocus(GetDlgItem(IDC_FILEINFOEDIT));
     return 1; 
@@ -265,6 +274,9 @@ void CImageDownloaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)
     {
         CString fileName = WinUtils::myExtractFileName(links[i]);
         if( ((!OnlyImages && CString(WinUtils::GetFileExt(fileName)).IsEmpty()) || IsImage(fileName)) &&  text.Find(links[i]) == -1 ) {
+            if (text.Right(1) != _T("\n")) {
+                text += "\r\n";
+            }
             text+=links[i]+_T("\r\n");
         }
     }
