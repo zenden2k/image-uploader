@@ -335,7 +335,7 @@ void CLogoSettings::ShowParams(const CString profileName)
     CurrentProfileName = profileName;
     CurrentProfileOriginalName = profileName; 
     ShowParams(ñonvert_profiles_[profileName]);
-    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, -1,(LPARAM)(LPCTSTR) profileName); 
+    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) profileName); 
 }
 
 LRESULT CLogoSettings::OnProfileEditedCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

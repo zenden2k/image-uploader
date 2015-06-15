@@ -126,7 +126,7 @@ int SimpleXmlNode::GetChildCount()
 {
     int count = 0;
     TiXmlNode * child = 0;
-    while ( child = impl_->m_el->IterateChildren(child ) )
+    while ( (child = impl_->m_el->IterateChildren(child )) != 0 )
     {
         count++;
     }
@@ -144,7 +144,7 @@ bool SimpleXmlNode::GetChilds(const std::string& name, std::vector<SimpleXmlNode
     if (!impl_->m_el)
         return false;
     int count = 0;
-    while ( child = impl_->m_el->IterateChildren(name.c_str(), child ) )
+    while ( (child = impl_->m_el->IterateChildren(name.c_str(), child )) != 0 )
     {
         count++;
         TiXmlElement* el = child->ToElement();

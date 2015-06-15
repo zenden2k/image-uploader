@@ -42,7 +42,7 @@ void CEncodedPassword::DecodeString(const std::string& encodedString, std::strin
             j = 0;
 
         BYTE b;
-        b = (szSource[i * 2] - L'A') * 16 + (szSource[i * 2 + 1] - L'A');
+        b = static_cast<BYTE>((szSource[i * 2] - L'A') * 16 + (szSource[i * 2 + 1] - L'A'));
         b = b ^ code[j];
         data[i] = b;
         j++;

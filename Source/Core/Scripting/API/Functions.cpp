@@ -518,8 +518,22 @@ const std::string ToJSON(Sqrat::Object  obj) {
 
 
 const std::string GetFileContents(const std::string& filename) {
-    std::string data;
-    IuCoreUtils::ReadUtf8TextFile(filename, data);
+    std::string data; 
+    FILE *stream = IuCoreUtils::fopen_utf8(filename.c_str(), "rb");
+    if (!stream) return false;
+    int size = static_cast<int>(IuCoreUtils::getFileSize(filename));
+    
+    try {
+        data.resize(size);
+    } catch (std::exception& ex) {
+        LOG(ERROR) << ex.what();
+        fclose(stream);
+        return std::string();
+    }
+
+    /*size_t bytesRead = */fread(&data[0], 1, size, stream);
+    //data[bytesRead] = 0;
+    fclose(stream);
     return data;
 }
 

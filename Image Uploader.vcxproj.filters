@@ -1551,9 +1551,6 @@
     <ClCompile Include="Source\Func\WinUtils.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ImageEditor\BasicTypes.cpp">
-      <Filter>Source Files\ImageEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Source\ImageEditor\Canvas.cpp">
       <Filter>Source Files\ImageEditor</Filter>
     </ClCompile>

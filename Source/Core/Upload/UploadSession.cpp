@@ -115,12 +115,12 @@ int UploadSession::pendingTasksCount(UploadTaskAcceptor* acceptor)
 
 int UploadSession::taskCount()
 {
-    try {
-        //std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
+    /*try {
+        std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
         return tasks_.size();
     } catch (std::exception& ex) {
         LOG(ERROR) << ex.what();
-    }
+    }*/
     return tasks_.size();
 }
 

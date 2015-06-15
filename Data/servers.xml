@@ -567,7 +567,10 @@
         </Actions>
     <Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DeleteUrl="$(DeleteUrl)"/>
     </Server>
-	<Server3 Name="drp.io"  FileHost="1" Type="file" Types="image,file" MinVersion="1.3.0"  Authorize="0" Plugin="drpio" >
+	<Server2 Name="drp.io"  FileHost="1" Type="file" Types="image,file" MinVersion="1.3.0"  Authorize="0" Plugin="drpio" >
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" ViewUrlTemplate="stub"/>
+	</Server2>
+    <Server3 Name="geekpic.net" Plugin="geekpic" MinVersion="1.3.2.4462">
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" ViewUrlTemplate="stub"/>
 	</Server3>
 </Servers>

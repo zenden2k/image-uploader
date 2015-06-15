@@ -122,8 +122,10 @@ void CDefaultUploadEngine::prepareUpload() {
         }
     }
     int n = rand() % (256 * 256);
-    std::thread::id currentThreadId = std::this_thread::get_id();;
-    m_Vars["_RAND16BITS"] = IuCoreUtils::toString(n);
+    char nStr[10];
+    sprintf(nStr, "%05d", n);
+    std::thread::id currentThreadId = std::this_thread::get_id();
+    m_Vars["_RAND16BITS"] = nStr;
     m_Vars["_THUMBWIDTH"] = IuCoreUtils::toString(m_ThumbnailWidth);
     m_Vars["_THREADID"] = IuCoreUtils::ThreadIdToString(currentThreadId);
     m_NetworkClient->enableResponseCodeChecking(false);

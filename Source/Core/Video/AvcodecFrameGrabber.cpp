@@ -259,7 +259,7 @@ public:
          step = full_sec / numOfFrames;
 
          AVDictionaryEntry  *tag = NULL;
-         while ((tag=av_dict_get (pFormatCtx->streams[videoStream]->metadata,"",tag,AV_DICT_IGNORE_SUFFIX ))) {
+         while ((tag=av_dict_get (pFormatCtx->streams[videoStream]->metadata,"",tag,AV_DICT_IGNORE_SUFFIX )) !=0 ) {
          }
 
         int start_time = 3000;

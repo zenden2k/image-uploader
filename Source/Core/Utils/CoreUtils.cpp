@@ -276,7 +276,7 @@ bool ReadUtf8TextFile(std::string utf8Filename, std::string& data)
     {    
         size -= 3;    
     }
-    else if(buf[0] == 0xFF || buf[1] == 0xFE ) {
+    else if(buf[0] == 0xFF && buf[1] == 0xFE ) {
         // UTF-16LE encoding
         size -= 2;
         fseek( stream, 2L,  SEEK_SET );

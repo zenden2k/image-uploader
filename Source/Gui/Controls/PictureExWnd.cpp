@@ -218,7 +218,7 @@ BOOL CPictureExWnd::Load(HGLOBAL hGlobal, DWORD dwSize)
     IStream *pStream = NULL;
     UnLoad();
 
-    if (!(m_pRawData = reinterpret_cast<unsigned char*> (GlobalLock(hGlobal))) )
+    if (0 == (m_pRawData = reinterpret_cast<unsigned char*> (GlobalLock(hGlobal))) )
     {
         ATLTRACE(_T("Load: Error locking memory\n"));
         return FALSE;
@@ -356,9 +356,9 @@ BOOL CPictureExWnd::Load(HGLOBAL hGlobal, DWORD dwSize)
             HGLOBAL hFrameData;
 
             ResetDataPointer();
-            while (hFrameData = GetNextGraphicBlock(&nBlockLen,
+            while ( (hFrameData = GetNextGraphicBlock(&nBlockLen,
                 &frame.m_nDelay, &frame.m_frameSize,
-                &frame.m_frameOffset, &frame.m_nDisposal) )
+                &frame.m_frameOffset, &frame.m_nDisposal)) != 0)
             {
                 #ifdef GIF_TRACING
                 //////////////////////////////////////////////
@@ -509,7 +509,7 @@ BOOL CPictureExWnd::Load(LPCTSTR szFileName)
     HGLOBAL hGlobal;
     DWORD dwSize;
     
-    if (!(file = _tfopen(szFileName,_T("rb"))))
+    if (0 == (file = _tfopen(szFileName,_T("rb"))))
     {
         ATLTRACE(_T("Load (file): Error opening file %s\n"),szFileName);
         return FALSE;
@@ -560,7 +560,7 @@ BOOL CPictureExWnd::Load(LPCTSTR szResourceName, LPCTSTR szResourceType)
 
     HRSRC hPicture = FindResource(_Module.GetResourceInstance(),szResourceName,szResourceType);
     HGLOBAL hResData;
-    if (!hPicture || !(hResData = LoadResource(_Module.GetResourceInstance(),hPicture)))
+    if (!hPicture || 0 == (hResData = LoadResource(_Module.GetResourceInstance(),hPicture)))
     {
         ATLTRACE(_T("Load (resource): Error loading resource %s\n"),szResourceName);
         return FALSE;

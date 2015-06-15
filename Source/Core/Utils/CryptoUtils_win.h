@@ -139,8 +139,8 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType)
         return std::string();
     }
 
-    while (bResult = ReadFile(hFile, rgbFile, BUFSIZE,
-        &cbRead, NULL))
+    while ((bResult = ReadFile(hFile, rgbFile, BUFSIZE,
+        &cbRead, NULL)) != 0)
     {
         if (0 == cbRead)
         {

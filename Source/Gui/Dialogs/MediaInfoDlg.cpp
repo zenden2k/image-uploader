@@ -95,6 +95,6 @@ LRESULT CMediaInfoDlg::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     // Copying text to clipboard
     SendDlgItemMessage(IDC_FILEINFOEDIT, EM_SETSEL, 0, -1);
     SendDlgItemMessage(IDC_FILEINFOEDIT, WM_COPY, 0, 0);
-    SendDlgItemMessage(IDC_FILEINFOEDIT, EM_SETSEL, -1, 0);
+    SendDlgItemMessage(IDC_FILEINFOEDIT, EM_SETSEL, static_cast<WPARAM>(-1), 0);
     return 0;
 }
