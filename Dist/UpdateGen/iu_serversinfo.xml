@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<UpdatePackageSource Name="iu_serversinfo" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" DownloadPath="http://zenden.ws/updates/" CoreUpdate="0" DisplayName="Servers update">
+<UpdatePackageSource Name="iu_serversinfo" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%&amp;os_name=OS_NAME&amp;os_ver=OS_VER&amp;cpu_f=CPU_FEATURES" DownloadPath="http://zenden.ws/updates/" CoreUpdate="0" DisplayName="Servers update">
 	<Entries>
 		<Entry Name="Data/servers.xml" SaveToFolder="%datapath%/" Action="add"/>
 		<Entry Name="Data/Scripts/*.nut" SaveToFolder="%datapath%/Scripts/" Action="add"/>
@@ -9,6 +9,8 @@
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
 <Info>
-[+] drp.io (thanks to @arhangelsoft)
+[+] radikall.org
+[+] picvid.ru
+[+] boompic.ru
 </Info>
 </UpdatePackageSource>

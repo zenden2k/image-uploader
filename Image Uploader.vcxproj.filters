@@ -816,6 +816,9 @@
     <ClInclude Include="Source\Core\Object.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\Utils\SystemUtils.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1802,6 +1805,9 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Object.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Utils\SystemUtils.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

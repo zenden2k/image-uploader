@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1433933897.dat" TimeStamp="1433933897" Date="10.06.2015 12:58:17" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="0" DisplayName="Servers update" Hash="975a917873d2ff8cf3fdbd2d2b3ab45b">
-  <Info>[+] drp.io (thanks to @arhangelsoft)</Info>
+<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1434379803.dat" TimeStamp="1434379803" Date="15.06.2015 16:50:03" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%&amp;os_name=OS_NAME&amp;os_ver=OS_VER&amp;cpu_f=CPU_FEATURES" CoreUpdate="0" DisplayName="Servers update" Hash="bdeaa07fadc6a739826c64d3623ea9ec">
+  <Info>[+] radikall.org
+[+] picvid.ru
+[+] boompic.ru</Info>
 </UpdateInfo>
