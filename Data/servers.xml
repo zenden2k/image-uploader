@@ -563,4 +563,22 @@
         </Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
+    <Server Name="picvid.ru">
+        <Actions>
+            <Action Type="upload" Url="http://www.picvid.ru/" PostParams="action=upload;local_uploadfile[]=%filename%;web_uploadfile=;thumb=true;thumb_width=170;thumb_height=;texttype=dimensions;" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
+        </Actions>
+        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+    </Server>
+    <Server Name="boompic.ru">
+        <Actions>
+            <Action Type="upload" Url="http://boompic.ru/" PostParams="action=upload;width=screenshot 2015-03-09 001_en.png;local_uploadfile[]=%filename%;web_uploadfile=;thumb=true;thumb_width=180;thumb_height=;texttype=dimensions;" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
+        </Actions>
+        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+    </Server>
+    <Server Name="ifotki.info">
+        <Actions>
+            <Action Type="upload" Url="http://ifotki.info/index.php?mode=" PostParams="add=true;foto1=%filename%;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
+        </Actions>
+        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+    </Server>
 </Servers>
