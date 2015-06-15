@@ -573,4 +573,24 @@
     <Server3 Name="geekpic.net" Plugin="geekpic" MinVersion="1.3.2.4462">
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" ViewUrlTemplate="stub"/>
 	</Server3>
+    <Server Name="radikall.org" Debug="0" MaxThreads="1">
+		<Actions>
+			<Action Type="get" Url="http://radikall.org/" RegExp="session_id = &quot;(.+?)&quot;" AssignVars="SID:0;"/>
+			<Action Type="upload" Url="http://radikall.org/upload.php" PostParams="Filename=$(_FILENAME);sID=$(SID);doShort=false;ImageUp=%filename%;" RegExp="image_id_public&quot;:&quot;(.+?)&quot;" AssignVars="Id:0"/>
+            <Action Type="get" Url="http://radikall.org/image/$(Id)" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:2;Image:0;"/>
+        </Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
+    <Server Name="picvid.ru">
+        <Actions>
+            <Action Type="upload" Url="http://www.picvid.ru/" PostParams="action=upload;local_uploadfile[]=%filename%;web_uploadfile=;thumb=true;thumb_width=170;thumb_height=;texttype=dimensions;" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
+        </Actions>
+        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+    </Server>
+    <Server Name="boompic.ru">
+        <Actions>
+            <Action Type="upload" Url="http://boompic.ru/" PostParams="action=upload;width=screenshot 2015-03-09 001_en.png;local_uploadfile[]=%filename%;web_uploadfile=;thumb=true;thumb_width=180;thumb_height=;texttype=dimensions;" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
+        </Actions>
+        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+    </Server>
 </Servers>
