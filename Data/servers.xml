@@ -555,4 +555,12 @@
         </Actions>
     <Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DeleteUrl="$(DeleteUrl)"/>
     </Server>
+    <Server Name="radikall.org" Debug="0" MaxThreads="1">
+		<Actions>
+			<Action Type="get" Url="http://radikall.org/" RegExp="session_id = &quot;(.+?)&quot;" AssignVars="SID:0;"/>
+			<Action Type="upload" Url="http://radikall.org/upload.php" PostParams="Filename=$(_FILENAME);sID=$(SID);doShort=false;ImageUp=%filename%;" RegExp="image_id_public&quot;:&quot;(.+?)&quot;" AssignVars="Id:0"/>
+            <Action Type="get" Url="http://radikall.org/image/$(Id)" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:2;Image:0;"/>
+        </Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
 </Servers>
