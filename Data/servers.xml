@@ -581,4 +581,10 @@
         </Actions>
         <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
     </Server>
+    <Server Name="cubeupload.com">
+        <Actions>
+            <Action Type="upload" Url="http://cubeupload.com/upload_json.php" PostParams="name=$(FILENAME);userHash=false;userID=false;fileinput[0]=%filename%;" RegExp="&quot;file_name&quot;:&quot;(.+?)&quot;" AssignVars="Id:0"/>
+        </Actions>
+        <Result ImageUrlTemplate="http://i.cubeupload.com/$(Id)" ThumbUrlTemplate="http://i.cubeupload.com/t/$(Id)"/>
+    </Server>
 </Servers>
