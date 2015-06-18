@@ -291,12 +291,12 @@ bool CWizardDlg::ParseCmdLine()
 { 
     int count = 0;
 
-    int nIndex = 0;
+    size_t nIndex = 0;
     bool fromContextMenu = false;
 
     if(CmdLine.IsOption(_T("mediainfo")))
     {
-        int nIndex = 0;
+        size_t nIndex = 0;
         CString VideoFileName;
         if(CmdLine.GetNextFile(VideoFileName, nIndex))
         {
@@ -309,7 +309,7 @@ bool CWizardDlg::ParseCmdLine()
 
     if(CmdLine.IsOption(_T("imageeditor")))
     {
-        int nIndex = 0;
+        size_t nIndex = 0;
         CString imageFileName;
         if(CmdLine.GetNextFile(imageFileName, nIndex))
         {

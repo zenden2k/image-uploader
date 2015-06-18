@@ -146,7 +146,7 @@ RECT ScreenFromRectangle(RECT rc)
     EnumDisplayMonitors(0, 0, MonitorEnumProc, 0);
     CRect result;
     int max = 0;
-    int iMax = 0;
+    size_t iMax = 0;
     for (size_t i = 0; i < monitorsRects.size(); i++)
     {
         CRect Bounds = monitorsRects[i];

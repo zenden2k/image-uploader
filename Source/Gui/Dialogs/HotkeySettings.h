@@ -40,6 +40,7 @@ class CHotkeyList: public std::vector<CHotkeyItem>
 {
     public:
         CHotkeyList();
+        CHotkeyList(const CHotkeyList&) = delete;
         bool m_bChanged;
         bool Changed();
 

@@ -317,6 +317,9 @@ void UploadTask::setStatus(Status status)
         case StatusFailure:
             progress_.statusText = "Error";
             break;
+        case StatusInQueue:
+            progress_.statusText = "In queue";
+            break;
             
     }
     statusChanged();

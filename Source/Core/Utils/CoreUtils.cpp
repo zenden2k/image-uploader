@@ -177,7 +177,7 @@ std::string Utf8ToSystemLocale(const std::string& str)
 std::string ExtractFileName(const std::string fileName)
 {
         std::string temp = fileName;
-        int Qpos = temp.find_last_of('?');
+        int Qpos = temp.find_last_of('?'); //FIXME
         if(Qpos>=0) temp = temp.substr(0, Qpos-1);
         int i,len = temp.length();
         for(i=len-1; i>=0; i--)

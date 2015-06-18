@@ -563,9 +563,9 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 
     if (DropTarget) {
         RegSetValueEx(DropTargetKey, _T("Clsid"), 0, REG_SZ, (LPBYTE)MY_CLSID, (lstrlen(MY_CLSID) + 1) * sizeof(TCHAR));
+        RegCloseKey(DropTargetKey);
     }
 
-    RegCloseKey(DropTargetKey);
     return 1; // That's means ALL OK! :)
 }
 #endif

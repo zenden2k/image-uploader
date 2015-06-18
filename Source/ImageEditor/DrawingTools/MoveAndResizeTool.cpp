@@ -347,14 +347,14 @@ void MoveAndResizeTool::createElement() {
         case etFilledRectangle:
             currentElement_ = new FilledRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
             break;
-
+        default:
+            LOG(ERROR) << "Unsupported element type";
     }
     if ( currentElement_ ) {
         currentElement_->setPenSize(penSize_);
         currentElement_->setColor(foregroundColor_);
         currentElement_->setBackgroundColor(backgroundColor_);
     }
-
 }
 
 MovableElement::Grip MoveAndResizeTool::checkElementsBoundaries( int x, int y, MovableElement** elem)

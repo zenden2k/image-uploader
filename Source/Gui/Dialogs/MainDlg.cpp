@@ -502,8 +502,8 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
     } else {
         CString newPath = GuiTools::SelectFolderDialog(m_hWnd, CString());
         if ( !newPath.IsEmpty() ) {
-            int fileCount = selectedFiles.size();
-            for ( int i = 0; i < fileCount; i++ ) {
+            size_t fileCount = selectedFiles.size();
+            for ( size_t i = 0; i < fileCount; i++ ) {
                 CopyFile( selectedFiles[i], newPath + _T("\\") + WinUtils::myExtractFileName(selectedFiles[i] ) , false );
             }
         }

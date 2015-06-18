@@ -74,7 +74,7 @@ void Split(const std::string& str, const std::string& delimiters, std::vector<st
 std::string Replace(const std::string& text, const std::string& s, const std::string& d)
 {
     std::string result = text;
-    for (unsigned index = 0; index = result.find(s, index), index != std::string::npos; )
+    for (size_t index = 0; index = result.find(s, index), index != std::string::npos; )
     {
         result.replace(index, s.length(), d);
         index += d.length();

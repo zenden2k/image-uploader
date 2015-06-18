@@ -633,7 +633,7 @@ void BlurringRectangle::render(Painter* gr)
 
         st = gr->DrawImage(background,  &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
         #else
-        ApplyGaussianBlur(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, blurRadius_);
+        ApplyGaussianBlur(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, static_cast<int>(blurRadius_));
         #endif
     }
 }
@@ -714,8 +714,8 @@ bool Ellipse::ContainsPoint(Gdiplus::Rect ellipse, Gdiplus::Point location) {
                 ellipse.GetLeft() + (ellipse.Width / 2),
                   ellipse.GetTop() + (ellipse.Height / 2));
 
-            double _xRadius = ellipse.Width / 2;
-            double _yRadius = ellipse.Height / 2;
+            double _xRadius = ellipse.Width / 2.0;
+            double _yRadius = ellipse.Height / 2.0;
 
 
             if (_xRadius <= 0.0 || _yRadius <= 0.0)

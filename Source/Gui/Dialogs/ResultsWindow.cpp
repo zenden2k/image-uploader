@@ -185,7 +185,7 @@ DLGTEMPLATE* CResultsWindow::GetTemplate()
     HRSRC res = FindResource( hInst, MAKEINTRESOURCE(IDD_RESULTSWINDOW),RT_DIALOG);
     DLGTEMPLATE* dit=(DLGTEMPLATE*)LockResource( LoadResource(hInst, res));
     
-    unsigned long sizeDlg = ::SizeofResource(hInst, res);
+    size_t sizeDlg = ::SizeofResource(hInst, res);
     HGLOBAL hMyDlgTemplate = ::GlobalAlloc(GPTR, sizeDlg);
     DLGTEMPLATEEX *pMyDlgTemplate = (DLGTEMPLATEEX *)::GlobalLock(hMyDlgTemplate);
     ::memcpy(pMyDlgTemplate, dit, sizeDlg);

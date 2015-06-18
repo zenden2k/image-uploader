@@ -40,7 +40,7 @@ struct MYHOTKEY
     {
         DWORD data = MAKELONG(keyCode, keyModifier);
         CString res;
-        res.Format(_T("%i"), data);
+        res.Format(_T("%u"), data);
         return res;
     }
 

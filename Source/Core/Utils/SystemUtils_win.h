@@ -56,8 +56,6 @@ std::string getOsVersion() {
     return res;
 }
 
-
-
 }
 
 #endif

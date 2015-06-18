@@ -1077,7 +1077,7 @@ void Canvas::setCurrentlyEditedTextElement(TextElement* textElement)
 
 int Canvas::unselectAllElements()
 {
-    int count = 0;
+    size_t count = 0;
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() ) {
             elementsOnCanvas_[i]->setSelected(false);

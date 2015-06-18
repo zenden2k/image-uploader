@@ -56,16 +56,16 @@ void CCmdLine::Parse(LPCTSTR szCmdLine)
     return;
 }
 
-int CCmdLine::AddParam(LPCTSTR szParam)
+size_t CCmdLine::AddParam(LPCTSTR szParam)
 {
-    m_Params.Add(szParam);
-    return m_Params.GetCount() - 1;
+    return m_Params.Add(szParam);
 }
 
-CString CCmdLine::operator[](int nIndex)
+CString CCmdLine::operator[](size_t nIndex)
 {
-    if (nIndex < 0 || nIndex > int(m_Params.GetCount()) - 1)
+    if (nIndex + 1 > m_Params.GetCount() ) {
         return _T("");
+    }
     return m_Params[nIndex];
 }
 
@@ -79,7 +79,7 @@ CString CCmdLine::ModuleName()
     return m_Params.GetCount() ? m_Params[0] : _T("");
 }
 
-bool CCmdLine::GetNextFile(CString& FileName, int& nIndex)
+bool CCmdLine::GetNextFile(CString& FileName, size_t& nIndex)
 {
     for (size_t i = nIndex + 1; i < m_Params.GetCount(); i++)
     {

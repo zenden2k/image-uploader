@@ -110,7 +110,7 @@ public:
 
     SIZE CalcItemSize(int index);
     int AutoSize();
-    void CreateToolTipForItem(int index);
+    void CreateToolTipForItem(unsigned index);
     CTrackBarCtrl  penSizeSlider_;
     CTrackBarCtrl  roundRadiusSlider_;
     CStatic pixelLabel_;

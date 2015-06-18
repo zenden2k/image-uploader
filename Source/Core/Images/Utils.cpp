@@ -445,13 +445,14 @@ Gdiplus::Color StringToColor(const std::string& str) {
         std::vector<std::string> tokens;
         IuStringUtils::Split(str.substr(5, str.length()-5 ),",", tokens,4);
         if ( tokens.size() == 4 ) {
-            return Gdiplus::Color(static_cast<BYTE>(round(atof(tokens[3].c_str())*255)), atoi(tokens[0].c_str()), atoi(tokens[1].c_str()), atoi(tokens[2].c_str()));
+            return Gdiplus::Color(static_cast<BYTE>(round(atof(tokens[3].c_str())*255)), static_cast<BYTE>(atoi(tokens[0].c_str())),
+                static_cast<BYTE>(atoi(tokens[1].c_str())), static_cast<BYTE>(atoi(tokens[2].c_str())));
         }
     } else if ( str.substr(0,4) == "rgb" && str.length() >= 13 ) {
         std::vector<std::string> tokens;
         IuStringUtils::Split(str.substr(4, str.length()-4 ),",", tokens,3);
         if ( tokens.size() == 3 ) {
-            return Gdiplus::Color( atoi(tokens[0].c_str()), atoi(tokens[1].c_str()), atoi(tokens[2].c_str()));
+            return Gdiplus::Color( static_cast<BYTE>(atoi(tokens[0].c_str())), static_cast<BYTE>(atoi(tokens[1].c_str())), static_cast<BYTE>(atoi(tokens[2].c_str())));
         }
     }
     return Gdiplus::Color();
@@ -766,7 +767,7 @@ UINT VoidToInt(void* data, unsigned int size) {
 typedef IStream * (STDAPICALLTYPE *SHCreateMemStreamFuncType)(const BYTE *pInit, UINT cbInit);
 SHCreateMemStreamFuncType SHCreateMemStreamFunc = 0;
 
-Gdiplus::Bitmap* BitmapFromMemory(BYTE* data, unsigned int imageSize) {
+Gdiplus::Bitmap* BitmapFromMemory(BYTE* data, size_t imageSize) {
     if (WinUtils::IsVista()) {
         if (!SHCreateMemStreamFunc) {
             HMODULE lib = LoadLibrary(_T("Shlwapi.dll"));

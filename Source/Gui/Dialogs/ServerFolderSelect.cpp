@@ -125,12 +125,14 @@ LRESULT CServerFolderSelect::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 DWORD CServerFolderSelect::Run()
 {
     CScriptUploadEngine * script = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+
+    if (!script)
+        return 0;
+
     script->setNetworkClient(&m_NetworkClient);
     if (m_FolderOperationType == foGetFolders)
     {
 
-        if (!script)
-            return 0;
 
         m_FolderList.Clear();
         m_FolderMap.clear();

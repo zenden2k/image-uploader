@@ -69,21 +69,21 @@ CLogoSettings::~CLogoSettings()
 
 LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-   ñonvert_profiles_ = Settings.ConvertProfiles;
+    ñonvert_profiles_ = Settings.ConvertProfiles;
     TabBackgroundFix(m_hWnd);
     // Translating controls
     TranslateUI();
     RECT rc = {13, 20, 290, 95};
     img.Create(GetDlgItem(IDC_LOGOGROUP), rc);
-   img.ShowWindow(SW_HIDE);
+    img.ShowWindow(SW_HIDE);
     img.LoadImage(0);
 
-   GuiTools::AddComboBoxItems(m_hWnd, IDC_RESIZEMODECOMBO, 3, TR("Fit"), TR("Center"), TR("Stretch"));
-   GuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 4, TR("Auto"), _T("JPEG"), _T("PNG"),_T("GIF"));
-  
-    SendDlgItemMessage(IDC_TRANSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)0) );
-    SendDlgItemMessage(IDC_QUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
-    
+    GuiTools::AddComboBoxItems(m_hWnd, IDC_RESIZEMODECOMBO, 3, TR("Fit"), TR("Center"), TR("Stretch"));
+    GuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 4, TR("Auto"), _T("JPEG"), _T("PNG"),_T("GIF"));
+
+    SendDlgItemMessage(IDC_TRANSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)0));
+    SendDlgItemMessage(IDC_QUALITYSPIN,UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1));
+
     SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Top left corner"));
     SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Top center"));
     SendDlgItemMessage(IDC_LOGOPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Top right corner"));
@@ -94,41 +94,41 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Top left corner"));
     SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Top center"));
     SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Top right corner"));
-   SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Bottom left corner"));
-   SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Bottom center"));
-   SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Bottom right corner"));
+    SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Bottom left corner"));
+    SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Bottom center"));
+    SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Bottom right corner"));
 
-   TextColor.SubclassWindow(GetDlgItem(IDC_SELECTCOLOR));
+    TextColor.SubclassWindow(GetDlgItem(IDC_SELECTCOLOR));
 
 
-   StrokeColor.SubclassWindow(GetDlgItem(IDC_STROKECOLOR));
+    StrokeColor.SubclassWindow(GetDlgItem(IDC_STROKECOLOR));
 
-   CIcon ico = (HICON)LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONWHITEPAGE));
-   //LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONWHITEPAGE), IMAGE_ICON    , 16,16,0);
-   RECT profileRect;
-   ::GetWindowRect(GetDlgItem(IDC_PROFILETOOBLARPLACEBUTTON), &profileRect);
-   ::MapWindowPoints(0, m_hWnd, (LPPOINT)&profileRect, 2);
+    CIcon ico = (HICON)LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONWHITEPAGE));
+    //LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONWHITEPAGE), IMAGE_ICON    , 16,16,0);
+    RECT profileRect;
+    ::GetWindowRect(GetDlgItem(IDC_PROFILETOOBLARPLACEBUTTON), &profileRect);
+    ::MapWindowPoints(0, m_hWnd, (LPPOINT)&profileRect, 2);
 
-   m_ProfileEditToolbar.Create(m_hWnd,profileRect,_T(""), WS_CHILD|WS_VISIBLE|WS_CHILD | TBSTYLE_LIST |TBSTYLE_FLAT| TBSTYLE_TOOLTIPS|CCS_NORESIZE|/*CCS_BOTTOM |CCS_ADJUSTABLE|*/CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
+    m_ProfileEditToolbar.Create(m_hWnd, profileRect,_T(""), WS_CHILD | WS_VISIBLE | WS_CHILD | TBSTYLE_LIST | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS | CCS_NORESIZE | /*CCS_BOTTOM |CCS_ADJUSTABLE|*/CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
     m_ProfileEditToolbar.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
-   m_ProfileEditToolbar.SetButtonStructSize();
-   m_ProfileEditToolbar.SetButtonSize(17,17);
+    m_ProfileEditToolbar.SetButtonStructSize();
+    m_ProfileEditToolbar.SetButtonSize(17, 17);
 
-   CIcon saveIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONSAVE));
+    CIcon saveIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONSAVE));
     CIcon deleteIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONDELETE));
-   CImageList list;
-   list.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
-   list.AddIcon(ico);
-   list.AddIcon(saveIcon);
+    CImageList list;
+    list.Create(16, 16,ILC_COLOR32 | ILC_MASK, 0, 6);
+    list.AddIcon(ico);
+    list.AddIcon(saveIcon);
     list.AddIcon(deleteIcon);
-   m_ProfileEditToolbar.SetImageList(list);
-   m_ProfileEditToolbar.AddButton(IDC_NEWPROFILE, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0, TR("New Profile"), 0);
-   m_ProfileEditToolbar.AddButton(IDC_SAVEPROFILE, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Save Profile"), 0);
-    m_ProfileEditToolbar.AddButton(IDC_DELETEPROFILE, TBSTYLE_BUTTON |BTNS_AUTOSIZE,  TBSTATE_ENABLED, 2, TR("Delete Profile"), 0);
+    m_ProfileEditToolbar.SetImageList(list);
+    m_ProfileEditToolbar.AddButton(IDC_NEWPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 0, TR("New Profile"), 0);
+    m_ProfileEditToolbar.AddButton(IDC_SAVEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Save Profile"), 0);
+    m_ProfileEditToolbar.AddButton(IDC_DELETEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Delete Profile"), 0);
 
-   ShowParams(Settings.imageServer.getImageUploadParams().ImageProfileName);
-   UpdateProfileList();
-   return 1; 
+    ShowParams(Settings.imageServer.getImageUploadParams().ImageProfileName);
+    UpdateProfileList();
+    return 1; 
 }
 
 LRESULT CLogoSettings::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)

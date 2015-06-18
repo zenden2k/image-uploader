@@ -40,7 +40,7 @@
 
 class DirectshowVideoFrame: public AbstractVideoFrame {
 public :
-    DirectshowVideoFrame(unsigned char *data, unsigned int dataSize, int64_t time, int width, int height) {
+    DirectshowVideoFrame(unsigned char *data, size_t dataSize, int64_t time, int width, int height) {
         time_ = time;
 
         BITMAPFILEHEADER bfh;
@@ -98,7 +98,7 @@ public :
 
  protected:
     unsigned char *data_;
-    unsigned int dataSize_;
+    size_t dataSize_;
 };
 
 inline std::string GetMessageForHresult(HRESULT hr) { 

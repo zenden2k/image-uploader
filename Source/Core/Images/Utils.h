@@ -36,5 +36,5 @@ void DrawRect(Bitmap& gr, Color& color, Rect rect);
 Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus::Size* realSize = 0);
 Gdiplus::Bitmap* GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize = 0);
 Size AdaptProportionalSize(const Size& szMax, const Size& szReal);
-Gdiplus::Bitmap* BitmapFromMemory(BYTE* data, unsigned int size);
+Bitmap* BitmapFromMemory(unsigned char* data, unsigned size);
 #endif

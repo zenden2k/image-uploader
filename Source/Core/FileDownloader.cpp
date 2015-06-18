@@ -179,8 +179,7 @@ bool CFileDownloader::IsRunning()
 
 bool CFileDownloader::waitForFinished()
 {
-    int nCount = threads_.size();
-    if (!nCount) {
+    if (threads_.empty()) {
         return true;
     }
        

@@ -677,7 +677,7 @@ void Toolbar::createHintForSliders(HWND slider, CString hint)
     delete[] textBuffer;
 }
 
-void Toolbar::CreateToolTipForItem(int index)
+void Toolbar::CreateToolTipForItem(size_t index)
 {
     Item& item = buttons_[index];
     if ( item.tooltipWnd ) {

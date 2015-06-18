@@ -223,8 +223,8 @@ LRESULT TextParamsWindow::OnUnderlineClick(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 void TextParamsWindow::OnFontEnumerationFinished()
 {
-    int fontCount = fonts_.size();
-    for ( int i = 0; i < fontCount; i++ ) {
+    size_t fontCount = fonts_.size();
+    for ( size_t i = 0; i < fontCount; i++ ) {
         fontComboBox_.AddString(fonts_[i].lfFaceName);
     }
     fontComboBox_.SelectString(-1, fontName_);

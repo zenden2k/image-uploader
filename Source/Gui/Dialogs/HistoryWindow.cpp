@@ -99,7 +99,6 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
             monthLabel.Replace(_T("_"), _T("/"));
         }
 
-
         int newItemIndex = SendDlgItemMessage(IDC_MONTHCOMBO, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)monthLabel);
         if ( newItemIndex >=0 ) {
             SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETITEMDATA, newItemIndex, (LPARAM)i);

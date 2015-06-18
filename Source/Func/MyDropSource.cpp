@@ -70,7 +70,7 @@ ULONG __stdcall CMyDropSource::Release()
 HRESULT __stdcall CMyDropSource::QueryContinueDrag(BOOL fEscapePressed,DWORD grfKeyState)
 {
     // If the escape key has been pressed we cancel the operation.
-    if (fEscapePressed == TRUE)
+    if (fEscapePressed != FALSE)
         return DRAGDROP_S_CANCEL;
 
     // If the left button has been released we should drop.

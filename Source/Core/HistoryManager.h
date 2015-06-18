@@ -92,7 +92,7 @@ class CHistoryReader
         virtual ~CHistoryReader();
         bool loadFromFile(const std::string& filename);
         int getSessionCount() const;
-        CHistorySession* getSession(const int index);
+        CHistorySession* getSession(size_t index);
     private:
         DISALLOW_COPY_AND_ASSIGN(CHistoryReader);
         CHistoryReader_impl* _impl;

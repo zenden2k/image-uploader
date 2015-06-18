@@ -416,7 +416,7 @@ LRESULT CRegionSelect::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     CRgn newRegion;    RECT winRect;
     SHORT shiftState = GetAsyncKeyState(VK_SHIFT);
 
-    WORD fwKeys = wParam; 
+    WPARAM fwKeys = wParam; 
     m_bPictureChanged = true;
 
     if(m_SelectionMode == smFreeform) 
@@ -468,18 +468,18 @@ LRESULT CRegionSelect::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
         RectCount++;
         Invalidate();
     }
-    else{
-    RectCount++;
+    else {
+        RectCount++;
 
         RECT RectToRepaint;
         //if(m_SelectionMode != smWindowHandles)
         {
-    RectToRepaint.left = min(Start.x, End.x) - m_brushSize;
-    RectToRepaint.top = min(Start.y, End.y) - m_brushSize;
-    RectToRepaint.right = max(Start.x, End.x) + m_brushSize;
-    RectToRepaint.bottom = max(Start.y, End.y) + m_brushSize;
-        
-InvalidateRect(&RectToRepaint);
+            RectToRepaint.left = min(Start.x, End.x) - m_brushSize;
+            RectToRepaint.top = min(Start.y, End.y) - m_brushSize;
+            RectToRepaint.right = max(Start.x, End.x) + m_brushSize;
+            RectToRepaint.bottom = max(Start.y, End.y) + m_brushSize;
+
+            InvalidateRect(&RectToRepaint);
         }
 
     }

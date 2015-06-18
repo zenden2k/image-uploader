@@ -75,7 +75,7 @@ LRESULT CContextMenuItemDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
 
     if ( !imageServerSelector_->isAccountChosen() ) {
         CString message;
-        message.Format(TR("You have not selected account for server \"%s\""), imageServerSelector_->serverProfile().serverName());
+        message.Format(TR("You have not selected account for server \"%s\""), U2W(imageServerSelector_->serverProfile().serverName()));
         MessageBox(message, TR("Error"));
         return 0;
     }

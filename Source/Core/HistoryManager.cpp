@@ -217,7 +217,7 @@ int CHistoryReader::getSessionCount() const
 
 // The pointer returned by this function is only valid
 //  during lifetime of CHistoryReader object
-CHistorySession* CHistoryReader::getSession(const int index)
+CHistorySession* CHistoryReader::getSession(size_t index)
 {
     return &_impl->m_sessions[index];
 }
