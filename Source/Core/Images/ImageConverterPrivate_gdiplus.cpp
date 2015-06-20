@@ -28,8 +28,8 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
     std::auto_ptr<Bitmap> BackBuffer;
     imgwidth = float(bm.GetWidth());
     imgheight = float(bm.GetHeight());
-    double NewWidth = stof(m_imageConvertingParams.strNewWidth);
-    double NewHeight = stof(m_imageConvertingParams.strNewHeight);
+    double NewWidth = atof(m_imageConvertingParams.strNewWidth.c_str());
+    double NewHeight = atof(m_imageConvertingParams.strNewHeight.c_str());
     if (IuStringUtils::Tail(m_imageConvertingParams.strNewWidth, 1) == "%") {
         NewWidth = NewWidth * imgwidth / 100;
     }

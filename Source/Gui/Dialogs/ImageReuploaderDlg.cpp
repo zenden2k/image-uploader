@@ -177,7 +177,6 @@ LRESULT CImageReuploaderDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     return 0;
 }
 
-
 bool CImageReuploaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it)
 {
     bool success = false;

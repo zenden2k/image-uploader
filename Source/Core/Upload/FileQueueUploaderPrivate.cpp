@@ -215,9 +215,12 @@ std::shared_ptr<UploadSession> FileQueueUploaderPrivate::session(int index)
 void FileQueueUploaderPrivate::start() {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     m_NeedStop = false;
-    m_IsRunning = true;
+   
     int numThreads = std::min<int>(size_t(m_nThreadCount - m_nRunningThreads), pendingTasksCount());
 
+    if (numThreads) {
+        m_IsRunning = true;
+    }
     for (int i = 0; i < numThreads; i++)
     {
         m_nRunningThreads++;
