@@ -126,7 +126,7 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     m_ProfileEditToolbar.AddButton(IDC_SAVEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Save Profile"), 0);
     m_ProfileEditToolbar.AddButton(IDC_DELETEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Delete Profile"), 0);
 
-    ShowParams(Settings.imageServer.getImageUploadParams().ImageProfileName);
+    ShowParams(U2W(Settings.imageServer.getImageUploadParams().ImageProfileName));
     UpdateProfileList();
     return 1; 
 }
@@ -218,12 +218,12 @@ void CLogoSettings::ShowParams(const ImageConvertingParams& params)
 {
    m_ProfileChanged = false;
    m_CatchChanges = false;
-   SetDlgItemText(IDC_LOGOEDIT, params.LogoFileName);
+   SetDlgItemText(IDC_LOGOEDIT, U2W(params.LogoFileName));
     
-    if(*params.LogoFileName) 
-        img.LoadImage(params.LogoFileName);
+    if(!params.LogoFileName.empty()) 
+        img.LoadImage(U2W(params.LogoFileName));
 
-    SetDlgItemText(IDC_EDITYOURTEXT,params.Text);
+    SetDlgItemText(IDC_EDITYOURTEXT,U2W(params.Text));
    SendDlgItemMessage(IDC_LOGOPOSITION, CB_SETCURSEL, params.LogoPosition);
     SendDlgItemMessage(IDC_TEXTPOSITION, CB_SETCURSEL, params.TextPosition);
     TextColor.SetColor(params.TextColor);
@@ -241,9 +241,9 @@ void CLogoSettings::ShowParams(const ImageConvertingParams& params)
    SendDlgItemMessage(IDC_YOURTEXT,BM_SETCHECK,  params.AddText);
 
    GuiTools::SetCheck(m_hWnd, IDC_SMARTCONVERTING, params.SmartConverting);
-   SetDlgItemText(IDC_IMAGEWIDTH,params.strNewWidth);
+   SetDlgItemText(IDC_IMAGEWIDTH,U2W(params.strNewWidth));
 
-    SetDlgItemText(IDC_IMAGEHEIGHT,params.strNewHeight);
+    SetDlgItemText(IDC_IMAGEHEIGHT,U2W(params.strNewHeight));
 
    OnYourLogoCheckboxClicked(0,0,GetDlgItem(IDC_YOURLOGO));
     OnAddTextChecboxClicked(0,0,GetDlgItem(IDC_YOURTEXT));
@@ -262,26 +262,26 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
     {
         if(MessageBox(TR("Are you sure to place text and logo in the same position on image?"),TR("Image settings"),MB_ICONQUESTION|MB_YESNO)!=IDYES)
             return false;
-    } 
+    }
 
     params.LogoPosition = LogoPos;
     params.TextPosition = TextPos;
-   params.LogoFileName = GuiTools::GetWindowText(GetDlgItem(IDC_LOGOEDIT));
-    params.Text = GuiTools::GetWindowText(GetDlgItem(IDC_EDITYOURTEXT));;
+    params.LogoFileName = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_LOGOEDIT)));
+    params.Text = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_EDITYOURTEXT)));
     params.Font = lf;
     params.AddLogo = addLogo;
-   params.AddText = addText;
+    params.AddText = addText;
 
     GuiTools::GetCheck(m_hWnd, IDC_SMARTCONVERTING, params.SmartConverting);
-    params.TextColor=TextColor.GetColor();
-    params.StrokeColor=StrokeColor.GetColor();
-   params.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
+    params.TextColor = TextColor.GetColor();
+    params.StrokeColor = StrokeColor.GetColor();
+    params.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
     params.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);
     params.ResizeMode = static_cast<ImageConvertingParams::ImageResizeMode>(SendDlgItemMessage(IDC_RESIZEMODECOMBO,CB_GETCURSEL));
-   params.strNewWidth = GuiTools::GetWindowText( GetDlgItem(IDC_IMAGEWIDTH));
-   params.strNewHeight =  GuiTools::GetWindowText( GetDlgItem(IDC_IMAGEHEIGHT));
-   GuiTools::GetCheck(m_hWnd, IDC_PRESERVE_EXIF, params.PreserveExifInformation );
-   return true;
+    params.strNewWidth = W2U(GuiTools::GetWindowText( GetDlgItem(IDC_IMAGEWIDTH)));
+    params.strNewHeight = W2U(GuiTools::GetWindowText( GetDlgItem(IDC_IMAGEHEIGHT)));
+    GuiTools::GetCheck(m_hWnd, IDC_PRESERVE_EXIF, params.PreserveExifInformation);
+    return true;
 }
 
  void CLogoSettings::UpdateProfileList()

@@ -1,5 +1,7 @@
 #include "EncodedPassword.h"
+
 #include "Core/Utils/CoreUtils.h"
+#include <wchar.h>
 
 CEncodedPassword::CEncodedPassword() {
 }
@@ -41,8 +43,8 @@ void CEncodedPassword::DecodeString(const std::string& encodedString, std::strin
         if (j >= br)
             j = 0;
 
-        BYTE b;
-        b = static_cast<BYTE>((szSource[i * 2] - L'A') * 16 + (szSource[i * 2 + 1] - L'A'));
+        uint8_t b;
+        b = static_cast<uint8_t>((szSource[i * 2] - L'A') * 16 + (szSource[i * 2 + 1] - L'A'));
         b = b ^ code[j];
         data[i] = b;
         j++;
@@ -65,13 +67,13 @@ void CEncodedPassword::EncodeString(const std::string& plainText, std::string& R
         if (j >= br)
             j = 0;
 
-        BYTE b;
+        uint8_t b;
         b = data[i] ^ code[j];
-        TCHAR bb[2] = { 0, 0 };
+        wchar_t bb[2] = { 0, 0 };
         bb[0] = L'A' + b / 16;
-        lstrcat(szDestination, bb);
+        wcscat(szDestination, bb);
         bb[0] = L'A' + b % 16;
-        lstrcat(szDestination, bb);
+        wcscat(szDestination, bb);
         j++;
     }
     Result = IuCoreUtils::WstringToUtf8(szDestination);

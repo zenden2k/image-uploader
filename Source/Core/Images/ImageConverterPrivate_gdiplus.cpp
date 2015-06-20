@@ -28,15 +28,14 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
     std::auto_ptr<Bitmap> BackBuffer;
     imgwidth = float(bm.GetWidth());
     imgheight = float(bm.GetHeight());
-    double NewWidth = _wtof(m_imageConvertingParams.strNewWidth);
-    double NewHeight = _wtof(m_imageConvertingParams.strNewHeight);
-    if (m_imageConvertingParams.strNewWidth.Right(1) == _T("%"))
+    double NewWidth = stof(m_imageConvertingParams.strNewWidth);
+    double NewHeight = stof(m_imageConvertingParams.strNewHeight);
+    if (IuStringUtils::Tail(m_imageConvertingParams.strNewWidth, 1) == "%") {
         NewWidth = NewWidth * imgwidth / 100;
+    }
 
 
-
-    if (m_imageConvertingParams.strNewHeight.Right(1) == _T("%"))
-    {
+    if ( IuStringUtils::Tail(m_imageConvertingParams.strNewHeight, 1)==  "%" ) {
         NewHeight = NewHeight * imgheight / 100;
     }
 
@@ -188,7 +187,7 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
             SolidBrush brush2(Color(70, 0, 0, 0));
             RectF bounds2(1, 1, float(newwidth), float(newheight) + 1);
             ReleaseDC(0, dc);
-            DrawStrokedText(gr, m_imageConvertingParams.Text, bounds2, font, MYRGB(255,
+            DrawStrokedText(gr, U2W(m_imageConvertingParams.Text), bounds2, font, MYRGB(255,
                 m_imageConvertingParams.TextColor),
                 MYRGB(180,
                 m_imageConvertingParams.StrokeColor), HAlign[m_imageConvertingParams.TextPosition],
@@ -197,7 +196,7 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
 
         if (m_imageConvertingParams.AddLogo)
         {
-            Bitmap logo(m_imageConvertingParams.LogoFileName);
+            Bitmap logo(U2W(m_imageConvertingParams.LogoFileName));
             if (logo.GetLastStatus() == Ok)
             {
                 int x, y;
@@ -297,7 +296,7 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     NewBytesToString(FileSize,SizeBuffer,sizeof(SizeBuffer));*/
 
     CString sizeString = U2W(IuCoreUtils::fileSizeToString(fileSize));
-    CString ThumbnailText = m_thumbCreatingParams.Text; // Text that will be drawn on thumbnail
+    CString ThumbnailText = U2W(m_thumbCreatingParams.Text); // Text that will be drawn on thumbnail
 
     ThumbnailText.Replace(_T("%width%"), IntToStr(newwidth)); // Replacing variables names with their values
     ThumbnailText.Replace(_T("%height%"), IntToStr(newheight));

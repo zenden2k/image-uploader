@@ -1,10 +1,9 @@
 #ifndef IU_IMAGECONVERTER_H
 #define IU_IMAGECONVERTER_H
 
-#include "atlheaders.h"
-#include "3rdpart/GdiplusH.h"
 #include "Thumbnail.h"
 #include "Core/Utils/CoreTypes.h"
+#include <string>
 
 class AbstractImage;
 
@@ -13,20 +12,22 @@ struct ImageConvertingParams
     enum ImageResizeMode { irmFit,  irmCrop, irmStretch };
     ImageConvertingParams();
 
-    CString strNewWidth, strNewHeight;
-    BOOL AddText;
-    CString Text;
+    std::string strNewWidth, strNewHeight;
+    bool AddText;
+    std::string Text;
     int Format;
     int Quality;
-    BOOL SaveProportions;
+    bool SaveProportions;
+#ifdef _WIN32
     LOGFONT Font;
-    BOOL AddLogo;
+#endif
+    bool AddLogo;
     int LogoPosition;
     int LogoBlend;
     int TextPosition;
     bool SmartConverting;
-    CString LogoFileName;
-    COLORREF TextColor, StrokeColor;
+    std::string LogoFileName;
+    uint32_t TextColor, StrokeColor;
     EnumWrapper<ImageResizeMode> ResizeMode;
     bool PreserveExifInformation;
 };
@@ -37,8 +38,8 @@ struct ThumbCreatingParams
     enum ThumbResizeEnum { trByWidth = 0, trByHeight, trByBiggerSide };
 
     unsigned int Quality;
-    CString Text;
-    CString TemplateName;
+    std::string Text;
+    std::string TemplateName;
     int Size;
     bool DrawFrame;
     bool AddImageSize;

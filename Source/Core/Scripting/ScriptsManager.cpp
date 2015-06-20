@@ -1,5 +1,5 @@
 ﻿#include "ScriptsManager.h"
-#include <Gui/Dialogs/LogWindow.h>
+
 #include "UploadFilterScript.h"
 #include "Core/Settings.h"
 
@@ -18,7 +18,7 @@ Script* ScriptsManager::getScript(std::string& fileName, ScriptType type)
     bool UseExisting = false;
     std::thread::id threadId = std::this_thread::get_id();
     Script* plugin = scripts_[threadId][fileName];
-    if (plugin && (GetTickCount() - plugin->getCreationTime() < (Settings.DeveloperMode ? 3000 : 1000 * 60 * 5 )))
+    if (plugin && (time(0) - plugin->getCreationTime() < (Settings.DeveloperMode ? 3000 : 1000 * 60 * 5 )))
         UseExisting = true;
 
     if ( plugin && UseExisting ) {

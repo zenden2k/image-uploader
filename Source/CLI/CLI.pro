@@ -14,6 +14,7 @@ win32 {
 } else {
     DEFINES += _FILE_OFFSET_BITS=64
 }
+DEFINES += __STDC_WANT_LIB_EXT1__=1
 unix:{
 eval(QMAKE_TARGET.arch = ""):{
 # QMAKE_TARGET.arch isn't set properly on Linux.
@@ -250,7 +251,6 @@ DEFINES += TIXML_USE_STL IU_CLI GOOGLE_GLOG_DLL_DECL=
 contains(QMAKE_TARGET.arch, x86_64) {
     DEFINES += _SQ64
     ARCH = amd64
-	message("64 bit!!!!")
 } else {
     ARCH = i386
 }
@@ -272,14 +272,14 @@ LIBS+=  -L../../Contrib/Lib/Mac/$$ARCH
 win32 {
     LIBS+= -llibcurl -llibeay32  -lOleacc -llibglog_static -lminizip
 } else {
-    LIBS+=   -lcurl   -lssl -lcrypto -lglog 
+    LIBS+=   -lcurl   -lssl -lcrypto -lglog  -lpthread -lboost_filesystem -lboost_system -lncurses
 }
 LIBS+=  -lsquirrel -lsqstdlib  -ljsoncpp -lpcre -lgumbo
 
 #-lZThread
-win32 {
+
 CONFIG += c++11
-}
+
 win32 {
    QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:CONSOLE,5.01
 

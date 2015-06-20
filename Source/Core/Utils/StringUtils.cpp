@@ -104,6 +104,13 @@ std::string toLower(const std::string& str)
     return s1;
 }
 
+std::string Tail(std::string const& source, size_t length) {
+    if (length >= source.size()) {
+        return source;
+    }
+    return source.substr(source.size() - length);
+}
+
 std::string ConvertUnixLineEndingsToWindows(const std::string& text) {
     if ( text.empty() ) {
         return text;

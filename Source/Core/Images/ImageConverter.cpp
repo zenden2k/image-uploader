@@ -39,7 +39,7 @@ ImageConvertingParams::ImageConvertingParams()
     ResizeMode = irmFit;
     LogoPosition = 0;
     LogoBlend = 0;
-    Text = APPNAME;
+    Text = W2U(APPNAME);
     TextPosition = 5;
     TextColor = 0x00ffffff;
     WinUtils::StringToFont(_T("Tahoma,8,,204"), &Font);

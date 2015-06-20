@@ -39,7 +39,7 @@ public:
    
 
     static void DecodeString(const std::string& encodedString, std::string & Result, const char* code = "{DAb[]=_T('')+b/16;H3N SHJ");
-    static void CEncodedPassword::EncodeString(const std::string& plainText, std::string& Result, const char* code = "{DAb[]=_T('')+b/16;H3N SHJ");
+    static void EncodeString(const std::string& plainText, std::string& Result, const char* code = "{DAb[]=_T('')+b/16;H3N SHJ");
 private:
     std::string data_;
 };

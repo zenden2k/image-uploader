@@ -31,7 +31,8 @@ namespace IuStringUtils
     std::string Trim(const std::string& str);
     std::string Replace(const std::string& text, const std::string& s, const std::string& d);
     void Split(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount);
-    
+    std::string Tail(std::string const& source, size_t const length); 
+
     // Current version of toLower works only with ASCII strings
     std::string toLower(const std::string& str);
 

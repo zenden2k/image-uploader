@@ -91,7 +91,7 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 
 void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
     CommonGuiSettings* settings = static_cast<CommonGuiSettings*>(settingsBase);
-    CString templateName = settings->imageServer.getImageUploadParamsRef().getThumbRef().TemplateName;
+    std::string templateName = settings->imageServer.getImageUploadParamsRef().getThumbRef().TemplateName;
     sessionImageServer_.getImageUploadParamsRef().getThumbRef().TemplateName = templateName;
 }
 

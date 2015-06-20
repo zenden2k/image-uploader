@@ -186,7 +186,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("GIF"));
     
     ShowParams();
-    ShowParams(sessionImageServer_.getImageUploadParams().ImageProfileName);
+    ShowParams(U2W(sessionImageServer_.getImageUploadParams().ImageProfileName));
     UpdateProfileList();
     UpdateAllPlaceSelectors();
     return 1;  // Let the system set the focus
@@ -373,7 +373,7 @@ bool CUploadSettings::OnShow()
         ShowParams();
     }
 
-   ShowParams(sessionImageServer_.getImageUploadParamsRef().ImageProfileName);
+   ShowParams(U2W(sessionImageServer_.getImageUploadParamsRef().ImageProfileName));
    UpdateProfileList();
    UpdateAllPlaceSelectors();
     OnBnClickedCreatethumbnails(0, 0, 0, temp);
@@ -1120,9 +1120,9 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
    CSettingsDlg dlg(CSettingsDlg::spImages, uploadEngineManager_);
     dlg.DoModal(m_hWnd);
    CurrentProfileName = "";
-   ShowParams(sessionImageServer_.getImageUploadParamsRef().ImageProfileName);
+   ShowParams(U2W(sessionImageServer_.getImageUploadParamsRef().ImageProfileName));
    UpdateProfileList();
-   ShowParams(sessionImageServer_.getImageUploadParamsRef().ImageProfileName);
+   ShowParams(U2W(sessionImageServer_.getImageUploadParamsRef().ImageProfileName));
    return 0;
 }
 
@@ -1187,8 +1187,8 @@ void CUploadSettings::ShowParams(const ImageConvertingParams& params)
    SendDlgItemMessage(IDC_FORMATLIST,CB_SETCURSEL, params.Format);
    SendDlgItemMessage(IDC_YOURLOGO,BM_SETCHECK,  params.AddLogo);
    SendDlgItemMessage(IDC_YOURTEXT,BM_SETCHECK,  params.AddText);
-   SetDlgItemText(IDC_IMAGEWIDTH,params.strNewWidth);
-    SetDlgItemText(IDC_IMAGEHEIGHT,params.strNewHeight);
+   SetDlgItemText(IDC_IMAGEWIDTH,U2W(params.strNewWidth));
+    SetDlgItemText(IDC_IMAGEHEIGHT,U2W(params.strNewHeight));
    m_ProfileChanged = false;
     m_CatchChanges = true;
  }
@@ -1213,16 +1213,15 @@ void CUploadSettings::ShowParams(const ImageConvertingParams& params)
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) profileName); 
  }
 
- bool CUploadSettings::SaveParams(ImageConvertingParams& params)
- {
-   params.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
+bool CUploadSettings::SaveParams(ImageConvertingParams& params) {
+    params.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
     params.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);
 
-   params.strNewWidth = GuiTools::GetWindowText( GetDlgItem(IDC_IMAGEWIDTH));
+    params.strNewWidth = W2U(GuiTools::GetWindowText( GetDlgItem(IDC_IMAGEWIDTH)));
 
-  params.strNewHeight =  GuiTools::GetWindowText( GetDlgItem(IDC_IMAGEHEIGHT));
-   return true;
- }
+    params.strNewHeight = W2U(GuiTools::GetWindowText( GetDlgItem(IDC_IMAGEHEIGHT)));
+    return true;
+}
 
  void  CUploadSettings::ProfileChanged()
  {
@@ -1321,14 +1320,14 @@ LRESULT CUploadSettings::OnNoAccountClicked(WORD wNotifyCode, WORD wID, HWND hWn
 
 void CUploadSettings::SaveCurrentProfile()
 {
-     CString saveToProfile = CurrentProfileName;
-   if(CurrentProfileOriginalName == _T("Default"))
-saveToProfile = CurrentProfileOriginalName;
+    CString saveToProfile = CurrentProfileName;
+    if (CurrentProfileOriginalName == _T("Default"))
+        saveToProfile = CurrentProfileOriginalName;
 
-   if(!SaveParams(ñonvert_profiles_[saveToProfile]))
-      return;
+    if (!SaveParams(ñonvert_profiles_[saveToProfile]))
+        return;
 
-   sessionImageServer_.getImageUploadParamsRef().ImageProfileName = saveToProfile;
+    sessionImageServer_.getImageUploadParamsRef().ImageProfileName = W2U(saveToProfile);
 }
 
 bool  CUploadSettings::OnHide()

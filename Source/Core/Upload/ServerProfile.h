@@ -20,9 +20,9 @@ struct ImageUploadParams {
         Thumb.AddImageSize = true;
         Thumb.Format = ThumbCreatingParams::tfPNG;
         Thumb.TemplateName = "default";
-        Thumb.BackgroundColor = RGB(255, 255, 255);
+        Thumb.BackgroundColor = 0xffffff;
         Thumb.Quality = 85;
-        Thumb.Text = _T("%width%x%height% (%size%)");
+        Thumb.Text = "%width%x%height% (%size%)";
     }
 #ifndef IU_SERVERLISTTOOL
 
@@ -34,7 +34,7 @@ struct ImageUploadParams {
     bool ProcessImages;
     bool ThumbAddImageSize;
 
-    CString ImageProfileName;
+    std::string ImageProfileName;
 
     bool UseDefaultThumbSettings;
     ThumbCreatingParams getThumb();

@@ -232,13 +232,14 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
             ImageConverter imageConverter;
             Thumbnail thumb;
 
-            if (!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + serverProfile_.getImageUploadParams().getThumb().TemplateName +
-                _T(".xml")))) {
+            if (!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\"))
+                + serverProfile_.getImageUploadParams().getThumb().TemplateName +
+                ".xml")) {
                 ServiceLocator::instance()->logger()->write(logError, LogTitle, TR("Couldn't load thumbnail preset!"));
             } else {
                 message.Format(_T("Generating the thumbnail from local file ('%s')"),  (LPCTSTR)Utf8ToWCstring(localFile) );
                 imageConverter.setEnableProcessing(false);
-                imageConverter.setImageConvertingParams(Settings.ConvertProfiles[serverProfile_.getImageUploadParams().ImageProfileName]);
+                imageConverter.setImageConvertingParams(Settings.ConvertProfiles[U2W(serverProfile_.getImageUploadParams().ImageProfileName)]);
                 imageConverter.setThumbCreatingParams(serverProfile_.getImageUploadParams().getThumb());
                 /*bool GenThumbs = serverProfile_.getImageUploadParams().CreateThumbs &&
                     ((!serverProfile_.getImageUploadParams().UseServerThumbs) || (!ue->SupportThumbnails));*/

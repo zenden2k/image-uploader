@@ -1,5 +1,5 @@
 #include "UploadManager.h"
-#include "Func/Common.h"
+//#include "Func/Common.h"
 #include "Core/HistoryManager.h"
 #include "Core/ServiceLocator.h"
 #include "Core/LocalFileCache.h"

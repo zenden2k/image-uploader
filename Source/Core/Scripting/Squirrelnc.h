@@ -15,7 +15,9 @@
 #define UNICODE
 #define _UNICODE
 #else
-#include <sqplus.h>
+#include <squirrel.h>
+#include <sqrat.h>
+#include <sqrat/sqratVM.h>
 #endif
 
 #ifndef _SQ64

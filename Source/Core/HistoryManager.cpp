@@ -23,9 +23,10 @@
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/CryptoUtils.h"
-#include "Core/Utils/GlobalMutex.h"
+
 #include <time.h>
 #include <sstream>
+#include "Utils/GlobalMutex.h"
 
 class CHistoryReader_impl
 {
@@ -64,7 +65,7 @@ std::shared_ptr<CHistorySession> CHistoryManager::newSession()
     std::string fileName = m_historyFilePath + m_historyFileNamePrefix +"_" + IuCoreUtils::toString(1900+timeinfo->tm_year)+"_" + IuCoreUtils::toString(timeinfo->tm_mon+1) + ".xml";
     std::string str = IuCoreUtils::toString(rand()%(256 * 256)) + IuCoreUtils::toString(int(t));
     std::string id = IuCoreUtils::CryptoUtils::CalcMD5HashFromString(str + IuCoreUtils::toString(rand()%(256))).substr(0, 16);
-    return std::shared_ptr<CHistorySession>(new CHistorySession(fileName, id));
+    return std::make_shared<CHistorySession>(fileName, id);
 }
 
 CHistorySession::CHistorySession(const std::string& filename, const std::string&  sessionId)
@@ -127,8 +128,13 @@ bool CHistorySession::AddItem(const HistoryItem &ht)
    /* Converting time_t variable to string */
     char dateStr[50];
     memset(dateStr, 0, sizeof(dateStr));
+#ifdef _MSC_VER
     ctime_s(dateStr, sizeof(dateStr), &t);
-    dateStr[strlen(dateStr)-1] = 0;
+#else
+    char *str = ctime(&t);
+    strcpy(dateStr, str);
+#endif
+    //dateStr[strlen(dateStr)-1] = 0;
 
     SimpleXmlNode root = xml.getRoot("History");
     std::vector<SimpleXmlNode> allSessions;

@@ -4,8 +4,15 @@
 #include <windows.h>
 #else
 #include <unistd.h>
+//#include <ncurses.h>
 #endif
+#include <stdio.h>
+
 namespace ConsoleUtils {
+
+void InitScreen() {
+    //initscr();
+}
 
 void Clear() {
 #ifdef _WIN32
@@ -32,7 +39,11 @@ void SetCursorPos(int x, int y) {
 
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Coord);
 #else
-    printf("\033[%d;%dH", x+1, y+1);
+     printf("%c[%d;%df",0x1B,y,x);
+    //printf("\033[%d;%dH", x+1, y+1);
+    fflush(stdout);
+    //move(x,y);
+    //refresh();
 #endif
 }
 

@@ -75,7 +75,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     img.LoadImage(0);
 
     SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );    
-    SetDlgItemText(IDC_THUMBTEXT, params_.Text);
+    SetDlgItemText(IDC_THUMBTEXT, U2W(params_.Text));
 
     GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 4, TR("Same format as image"),
         _T("JPEG"), _T("PNG"), _T("GIF"));
@@ -88,8 +88,8 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     }
 
     SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_SETCHECK, params_.AddImageSize);
-    SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1), (LPARAM)(LPCTSTR)params_.TemplateName);
-    SetDlgItemText(IDC_THUMBTEXT, params_.Text);
+    SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1), (LPARAM)(LPCTSTR)U2W(params_.TemplateName));
+    SetDlgItemText(IDC_THUMBTEXT, U2W(params_.Text));
     SetDlgItemInt(IDC_THUMBQUALITYEDIT, params_.Quality);
     SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, params_.Format);
     SendDlgItemMessage(IDC_WIDTHRADIO, BM_SETCHECK, params_.ResizeMode == ThumbCreatingParams::trByWidth);
@@ -110,11 +110,11 @@ bool CThumbSettingsPage::Apply()
     params_.AddImageSize = SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
     TCHAR buf[256] = _T("\0");
     GetDlgItemText(IDC_THUMBSCOMBO, buf, 255);
-    params_.TemplateName = buf;
+    params_.TemplateName = W2U(buf);
     params_.Format = static_cast<ThumbCreatingParams::ThumbFormatEnum>(SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_GETCURSEL));
     params_.Quality = GetDlgItemInt(IDC_THUMBQUALITYEDIT);
     params_.ResizeMode = SendDlgItemMessage(IDC_WIDTHRADIO, BM_GETCHECK) == FALSE ? ThumbCreatingParams::trByHeight : ThumbCreatingParams::trByWidth;
-    params_.Text = GuiTools::GetWindowText(GetDlgItem(IDC_THUMBTEXT));
+    params_.Text = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_THUMBTEXT)));
     params_.Size = params_.ResizeMode == ThumbCreatingParams::trByWidth ? GetDlgItemInt(IDC_WIDTHEDIT) : GetDlgItemInt(IDC_HEIGHTEDIT);
     params_.BackgroundColor = ThumbBackground.GetColor();
     ImageUploadParams iup = Settings.imageServer.getImageUploadParamsRef();
@@ -287,7 +287,7 @@ void CThumbSettingsPage::ThumbTextCheckboxChange()
 LRESULT CThumbSettingsPage::OnThumbTextChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
    if(!m_CatchFormChanges) return 0;
-    params_.Text = GuiTools::GetWindowText(GetDlgItem(IDC_THUMBTEXT));
+    params_.Text = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_THUMBTEXT)));
     showSelectedThumbnailPreview();
     return 0;
 }

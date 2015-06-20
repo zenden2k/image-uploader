@@ -566,7 +566,9 @@ void NetworkClient::curl_cleanup()
 {
     curl_global_cleanup(); 
 #ifdef USE_OPENSSL
-    SSL_COMP_free_compression_methods();
+    #if defined(_WIN32) && !defined(OPENSSL_NO_COMP)
+        SSL_COMP_free_compression_methods(); // to avoid memory leaks
+    #endif
     kill_locks();
 #endif
 }

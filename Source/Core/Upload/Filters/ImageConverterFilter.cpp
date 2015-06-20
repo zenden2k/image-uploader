@@ -24,7 +24,7 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
     ImageConverter imageConverter;
     Thumbnail thumb;
     ImageUploadParams imageUploadParams = task->serverProfile().getImageUploadParams();
-    CString templateName = imageUploadParams.getThumb().TemplateName;
+    CString templateName = U2W(imageUploadParams.getThumb().TemplateName);
     if (templateName.IsEmpty()) {
         templateName = _T("default");
     }
@@ -38,7 +38,7 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
     }
     task->setStatusText(_("Preparing image..."));
     imageConverter.setEnableProcessing(imageUploadParams.ProcessImages);
-    imageConverter.setImageConvertingParams(Settings.ConvertProfiles[imageUploadParams.ImageProfileName]);
+    imageConverter.setImageConvertingParams(Settings.ConvertProfiles[U2W(imageUploadParams.ImageProfileName)]);
     imageConverter.setThumbCreatingParams(imageUploadParams.getThumb());
     bool GenThumbs = imageUploadParams.CreateThumbs &&
         ((!imageUploadParams.UseServerThumbs) || (!task->serverProfile().uploadEngineData()->SupportThumbnails));

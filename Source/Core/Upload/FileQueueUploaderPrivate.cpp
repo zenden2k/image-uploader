@@ -1,12 +1,11 @@
 ﻿#include "FileQueueUploaderPrivate.h"
 
-#include "DefaultUploadEngine.h"
 #include "FileQueueUploader.h"
 #include "Uploader.h"
 #include "Core/Upload/FileUploadTask.h"
-#include "Gui/Dialogs/LogWindow.h"
 #include "UploadEngineManager.h"
 #include "Core/Upload/UploadFilter.h"
+#include "Core/CommonDefs.h"
 #include <thread>
 #include <algorithm>
 

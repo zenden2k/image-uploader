@@ -16,13 +16,14 @@
     typedef HWND WindowNativeHandle;
 #elif defined(IU_QT)
     class QWidget;
-    typedef QWidget* WindowHandle;
+    typedef QWidget* WindowNativeHandle;
 #else
-    typedef int WindowHandle;
+    typedef int WindowNativeHandle;
 #endif
 
 class IProgramWindow {
 public:
+    virtual ~IProgramWindow() {}
     virtual WindowHandle getHandle() = 0;
     virtual WindowNativeHandle getNativeHandle() = 0;
     virtual void setServersChanged(bool changed) = 0;

@@ -1,12 +1,11 @@
 ﻿#include "UploadEngineManager.h"
+
 #include "../UploadEngineList.h"
 #include "ServerProfile.h"
 #include "ScriptUploadEngine.h"
-#include "Gui/Dialogs/LogWindow.h"
 #include "DefaultUploadEngine.h"
 #include "Core/Logging.h"
 #include "ServerSync.h"
-#include "Core/Scripting/API/ScriptAPI.h"
 #include "Core/Settings.h"
 #include "Core/Upload/UploadErrorHandler.h"
 
@@ -47,7 +46,6 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
     if (ue->UsingPlugin) {
         result = getPlugin(serverProfile, ue->PluginName);
         if (!result) {
-            CString errorMessage;
             LOG(ERROR) << "Cannot load plugin '" << ue->PluginName << "'";
             return NULL;
         }
@@ -99,7 +97,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     ServerSettingsStruct& params = serverProfile.serverSettings();
     std::thread::id threadId = std::this_thread::get_id();
     CScriptUploadEngine* plugin = dynamic_cast<CScriptUploadEngine*>(m_plugins[threadId][serverName]);
-    if (plugin && (GetTickCount() - plugin->getCreationTime() <(Settings.DeveloperMode ? 3000 : 1000 * 60 * 5)))
+    if (plugin && (time(0)- plugin->getCreationTime() <(Settings.DeveloperMode ? 3000 : 1000 * 60 * 5)))
         UseExisting = true;
 
     if (plugin && UseExisting && plugin->name() == pluginName && plugin->serverSettings()->authData.Login == params.authData.Login) {

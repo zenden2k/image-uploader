@@ -27,6 +27,8 @@
 #include "Core/3rdpart/utf8.h"
 #include "Core/Utils/StringUtils.h"
 #include <errno.h>
+#include <boost/filesystem.hpp>
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif /* HAVE_UNISTD_H */
@@ -177,6 +179,13 @@ bool RemoveFile(const std::string& utf8Filename) {
 
 bool MoveFileOrFolder(const std::string& from ,const std::string& to) {
     return rename(from.c_str() ,to.c_str())==0;
+}
+
+
+bool DirectoryExists(const std::string path)
+{
+    return boost::filesystem::is_directory(path) && boost::filesystem::exists(path);
+    return false;
 }
 
 }

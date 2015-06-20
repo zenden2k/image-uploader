@@ -3,7 +3,7 @@
 
 #ifdef _WIN32
 #include "EncodedPassword.h"
-
+#include "atlheaders.h"
 inline std::string myToString(const CString& value)
 {
     return IuCoreUtils::WstringToUtf8((LPCTSTR)value);

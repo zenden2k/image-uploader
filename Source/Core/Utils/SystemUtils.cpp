@@ -2,6 +2,8 @@
 
 #ifdef _WIN32
 #include "SystemUtils_win.h"
+#else
+#include "SystemUtils_unix.h"
 #endif
 
 #ifdef _WIN32
@@ -22,8 +24,21 @@ void cpuid(int CPUInfo[4], int InfoType){
         "a" (InfoType), "c" (0)
         );
 }
+#if __GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 4
+static inline unsigned long long _xgetbv(unsigned int index){
+  unsigned int eax, edx;
+  __asm__ __volatile__("xgetbv" : "=a"(eax), "=d"(edx) : "c"(index));
+  return ((unsigned long long)edx << 32) | eax;
+
+}
+ #else
+#define _xgetbv() 0
+#endif
+
+
 
 #endif
+#include <immintrin.h>
 
 namespace IuCoreUtils
 {
@@ -135,14 +150,14 @@ std::string getCpuFeatures() {
     // Note that XGETBV is only available on 686 or later CPUs, so
     // the instruction needs to be conditionally run.
     int cpuInfo[4];
-    __cpuid(cpuInfo, 1);
+    cpuid(cpuInfo, 1);
 
     bool osUsesXSAVE_XRSTORE = cpuInfo[2] & (1 << 27) || false;
     bool cpuAVXSuport = cpuInfo[2] & (1 << 28) || false;
 
     if (osUsesXSAVE_XRSTORE && cpuAVXSuport) {
         // Check if the OS will save the YMM registers
-        unsigned long long xcrFeatureMask = _xgetbv(_XCR_XFEATURE_ENABLED_MASK);
+        unsigned long long xcrFeatureMask = _xgetbv(/*_XCR_XFEATURE_ENABLED_MASK*/0);
         avxSupported = (xcrFeatureMask & 0x6) || false;
     }
 

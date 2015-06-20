@@ -33,7 +33,7 @@ libsquirrel.a
 
 Install dev libraries:
 
-sudo apt-get install qt5-qmake libcurl4-openssl-dev libpcre3-dev libgoogle-glog-dev  
+sudo apt-get install qt5-qmake libcurl4-openssl-dev libpcre3-dev libgoogle-glog-dev libboost-system-dev libboost-filesystem-dev
 
 Create directory:
 mkdir <source_root>/Build/CLI/linux/

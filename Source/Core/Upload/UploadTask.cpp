@@ -1,11 +1,10 @@
 #include "UploadTask.h"
 #include "UploadSession.h"
 #include "Core/Upload/ScriptUploadEngine.h"
+#include <boost/format.hpp>
 
-#ifndef IU_WTL
 #undef TR
-#define TR(a) L##a
-#endif
+#define TR(a) a
 
 UploadTask::UploadTask()
 {
@@ -426,15 +425,14 @@ int UploadTask::pendingTasksCount(UploadTaskAcceptor* acceptor)
 
 std::string UploadTask::UploaderStatusToString(StatusType status, int actionIndex, std::string param)
 {
-    std::string res;
-    CString result;
+    std::string result;
     switch (status)
     {
     case stWaitingAnswer:
         result = TR("Waiting response from server...");
         break;
     case stCreatingFolder:
-        result = CString(TR("Creating folder \"")) + IuCoreUtils::Utf8ToWstring(param).c_str() + _T("\"...");
+        result = TR("Creating folder \"") + param + "\"...";
         break;
     case stUploading:
         result = TR("Sending file to server...");
@@ -443,12 +441,12 @@ std::string UploadTask::UploaderStatusToString(StatusType status, int actionInde
         result = TR("Autorization on server...");
         break;
     case stPerformingAction:
-        result.Format(TR("Doing action #%d..."), actionIndex);
+        result = str(boost::format(TR("Doing action #%d..."))% actionIndex);
         break;
     case stUserDescription:
-        result = IuCoreUtils::Utf8ToWstring(param).c_str();
+        result = param;
     }
-    return IuCoreUtils::WstringToUtf8((LPCTSTR)result);
+    return result;
 };
 
 

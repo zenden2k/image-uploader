@@ -1,9 +1,9 @@
 ﻿#include "Script.h"
+
 #include "API/ScriptAPI.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Core/Logging.h"
-#include <Core/ThreadSync.h>
-#include <Func/Common.h>
+#include "Core/ThreadSync.h"
 #include "Core/CoreFunctions.h"
 
 Script::Script(const std::string& fileName, ThreadSync* serverSync, bool doLoad)

@@ -33,6 +33,6 @@ public:
     ITranslator* translator();
     void setTranslator(ITranslator* transl);
 protected:
-    std::unique_ptr<ServiceLocatorPrivate> d_ptr;
+    std::shared_ptr<ServiceLocatorPrivate> d_ptr; // unique_ptr won't compile with incomplete type
 };
 #endif

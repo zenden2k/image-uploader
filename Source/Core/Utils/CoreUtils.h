@@ -22,20 +22,21 @@
 #define _IU_CORE_UTILS_H
 
 #pragma once
+
 #include <cstdio>
 #include <string>
+#include <thread>
+
 #include "CoreTypes.h"
 
 #if defined(_MSC_VER) && _MSC_VER < 1800 
-
 long round(float number);
 #endif
 
 #ifdef _WIN32
-#include <thread>
-
 int gettimeofday(struct timeval * tp, struct timezone * tzp);
 #endif
+
 namespace IuCoreUtils
 {
     // A version of fopen() function which supports utf8 file names

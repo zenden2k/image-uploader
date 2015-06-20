@@ -383,10 +383,10 @@ template<class T,class V> void setObjValues(T key, Json::ValueIterator it, V &ob
             obj.SetValue(key,Sqrat::Object());
             break;
         case intValue:      ///< signed integer value
-            obj.SetValue(key, (INT)it->asInt());
+            obj.SetValue(key, static_cast<SQInteger>(it->asInt()));
             break;
         case uintValue:     ///< unsigned integer value
-            obj.SetValue(key, (INT)it->asInt());
+            obj.SetValue(key, static_cast<SQInteger>(it->asInt()));
             break;
         case realValue:
             obj.SetValue(key, it->asFloat());

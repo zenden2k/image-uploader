@@ -43,23 +43,26 @@
 #include "Core/Logging.h"
 #include "Core/Logging/MyLogSink.h"
 #include "Core/Logging/ConsoleLogger.h"
+#include "Core/i18n/Translator.h"
 #include "ConsoleScriptDialogProvider.h"
 #include "ConsoleUtils.h"
 #ifdef _WIN32
-#include <windows.h>
-#include "Func/UpdatePackage.h"
-#include <fcntl.h>
-#include <io.h>
-#include <stdio.h>
-#include "Func/IuCommonFunctions.h"
+    #include <windows.h>
+    #include "Func/UpdatePackage.h"
+    #include <fcntl.h>
+    #include <io.h>
+    #include <stdio.h>
+    #include "Func/IuCommonFunctions.h"
+    //#ifndef NDEBUG
+        //#include <vld.h>
+    //#endif
 #else
-#include <sys/stat.h>
+    #include <sys/stat.h>
+    #include <sys/time.h>
 #endif
 #include "versioninfo.h"
-#ifndef _WIN32
-#include <sys/time.h>
-#endif
-#define IU_CLI_VER "0.2.5"
+
+#define IU_CLI_VER "0.2.6"
 
 #ifdef _WIN32
 CAppModule _Module;
@@ -99,17 +102,17 @@ struct TaskUserData {
     int index;
 };
 
-void SignalHandler (int param)
-{
+std::vector<std::unique_ptr<TaskUserData>> userDataArray;
+
+void SignalHandler (int param) {
     if ( session ) {
         session->stop();
     }
 }
 
 void PrintWelcomeMessage() {
-    std::cerr<<"imgupload v"<< IU_CLI_VER <<" (based on IU v"<<_APP_VER<<" build "<<BUILD<<")"<<std::endl;
+    std::cerr << "imgupload v" << IU_CLI_VER << " (based on IU v" << _APP_VER << " build " << BUILD << ")" << std::endl;
 }
-
 
 class Translator: public ITranslator{
 public:
@@ -138,7 +141,7 @@ void PrintUsage(bool help = false) {
 
 void PrintHelp() {
    std::cerr<<"\r\nAvailable options:"<<std::endl;
-   std::cerr<<" -l   Prints server list"<<std::endl;
+   std::cerr<<" -l Prints server list"<<std::endl;
    std::cerr<<" -s <server_name>"<<std::endl;
    std::cerr<<" -u <username>"<<std::endl;
    std::cerr<<" -p <password>"<<std::endl;
@@ -175,203 +178,205 @@ void PrintServerList()
 
 bool parseCommandLine(int argc, char *argv[])
 {
-   if(argc == 1)
-   {
-      PrintUsage();
-      return false;
-   }
-   int i = 1;
-   while(i < argc)
-   {
-      char *opt = argv[i];
-      if(!IuStringUtils::stricmp(opt, "--help"))
-      {
-         PrintUsage(true);
-         PrintHelp();
-         i++;
-         continue;
-      }
-      else if(!IuStringUtils::stricmp(opt, "-s"))
-      {
-         if(i+1 == argc)
-            return false;
-         serverName = argv[++i];
-         i++;
-         continue;
-      }
-      else if(!IuStringUtils::stricmp(opt, "-l"))
-      {
-        PrintServerList();
-         i++;
-         continue;
-      }
-      else if(!IuStringUtils::stricmp(opt, "-cl"))
-      {
-         if(i+1 == argc)
-            return false;
-         char * codelang = argv[++i];
-         if(!IuStringUtils::stricmp(codelang, "plain"))
-            codeLang =  ZOutputCodeGenerator::clPlain;
-         else if(!IuStringUtils::stricmp(codelang, "html"))
-           codeLang =  ZOutputCodeGenerator::clHTML;
-         else if(!IuStringUtils::stricmp(codelang, "bbcode"))
-            codeLang =  ZOutputCodeGenerator::clBBCode;
-         i++;
-         continue;
-      }
-      else if(!IuStringUtils::stricmp(opt, "-ct"))
-      {
-         if(i+1 == argc)
-            return false;
-         char * codetype = argv[++i];
-         if(!IuStringUtils::stricmp(codetype, "TableOfThumbnails"))
-            codeType =  ZOutputCodeGenerator::ctTableOfThumbnails;
-         else if(!IuStringUtils::stricmp(codetype, "ClickableThumbnails"))
-           codeType =  ZOutputCodeGenerator::ctClickableThumbnails;
-         else if(!IuStringUtils::stricmp(codetype, "Images"))
-            codeType =  ZOutputCodeGenerator::ctImages;
-         else if(!IuStringUtils::stricmp(codetype, "Links"))
-            codeType =  ZOutputCodeGenerator::ctLinks;
-         i++;
-         continue;
-      }
-      else if(!IuStringUtils::stricmp(opt, "-u"))
-      {
-         if(i+1 == argc)
-            return false;
-         login = argv[++i];
-         i++;
-         continue;
-      }
-      else if(!IuStringUtils::stricmp(opt, "-p"))
-      {
-         if(i+1 == argc)
-            return false;
-         password = argv[++i];
-         i++;
-         continue;
-	  }
-	  else if(!IuStringUtils::stricmp(opt, "-fl"))
-	  {
-		  if(i+1 == argc)
-			  return false;
-		  folderId = argv[++i];
-		  i++;
-		  continue;
-	  }
-	  else if(!IuStringUtils::stricmp(opt, "-pr"))
-	  {
-		  if(i+1 == argc)
-			  return false;
-		  proxy = argv[++i];
-		  std::vector<std::string> tokens;
-		  IuStringUtils::Split(proxy,":",tokens,2);
-		  if ( tokens.size() > 1) {
-			proxy = tokens[0];
-            proxyPort = IuCoreUtils::stringToInt64(tokens[1]);
-		  }
-		  i++;
-		  continue;
-	  }
-	  else if(!IuStringUtils::stricmp(opt, "-pu"))
-	  {
-		  if(i+1 == argc)
-			  return false;
-		  proxyUser = argv[++i];
-		  
-		  i++;
-		  continue;
-	  }
-	  else if(!IuStringUtils::stricmp(opt, "-pp"))
-	  {
-		  if(i+1 == argc)
-			  return false;
-		  proxyPassword = argv[++i];
-
-		  i++;
-		  continue;
-	  }
-	  else if(!IuStringUtils::stricmp(opt, "-pt"))
-	  {
-		  if(i+1 == argc)
-			  return false;
-		  std::map<std::string, int> types;
-		  std::string type = argv[++i];
-		  types["http"] = CURLPROXY_HTTP;
-		  types["socks4"] = CURLPROXY_SOCKS4;
-		  types["socks4a"] = CURLPROXY_SOCKS4A;
-		  types["socks5"] = CURLPROXY_SOCKS5;
-		  types["socks5dns"] = CURLPROXY_SOCKS5_HOSTNAME;
-		  std::map<std::string, int>::const_iterator it = types.find(type);
-		  if ( it != types.end() ) {
-			proxyType = it->second; 
-		  } else {
-			  std::cerr<<"Invalid proxy type"<<std::endl;
-		  }
-
-		  i++;
-		  continue;
-	  }
-	  #ifdef _WIN32
-	  else if(!IuStringUtils::stricmp(opt, "-up"))
-	  {
-		 DoUpdates(true);
-		  i++;
-		  return 0;
-	  }
-	  else if(!IuStringUtils::stricmp(opt, "--disable-update"))
-	  {
-		  autoUpdate = false;
-          i++;
-          continue;
-	  }
-
-#endif
-
-    std::string fileName =
-#ifndef _WIN32
-    IuCoreUtils::SystemLocaleToUtf8(argv[i]);
-#else
-    argv[i];
-#endif
-    if ( !IuCoreUtils::FileExists(fileName) ) {
-        std::cerr << "File '" + fileName + "' doesn't exist!" << std::endl;
+    if(argc == 1)
+    {
+        PrintUsage();
+        return false;
     }
-    filesToUpload.push_back(fileName);
-      //else if()
-      i++;
-   }
+    int i = 1;
+    while(i < argc)
+    {
+        char *opt = argv[i];
+        if(!IuStringUtils::stricmp(opt, "--help"))
+        {
+            PrintUsage(true);
+            PrintHelp();
+            i++;
+            continue;
+        }
+        else if(!IuStringUtils::stricmp(opt, "-s"))
+        {
+            if(i+1 == argc)
+                return false;
+            serverName = argv[++i];
+            i++;
+            continue;
+        }
+        else if(!IuStringUtils::stricmp(opt, "-l"))
+        {
+            PrintServerList();
+            i++;
+            continue;
+        }
+        else if(!IuStringUtils::stricmp(opt, "-cl"))
+        {
+            if(i+1 == argc)
+                return false;
+            char * codelang = argv[++i];
+            if(!IuStringUtils::stricmp(codelang, "plain"))
+                codeLang =  ZOutputCodeGenerator::clPlain;
+            else if(!IuStringUtils::stricmp(codelang, "html"))
+                codeLang =  ZOutputCodeGenerator::clHTML;
+            else if(!IuStringUtils::stricmp(codelang, "bbcode"))
+                codeLang =  ZOutputCodeGenerator::clBBCode;
+            i++;
+            continue;
+        }
+        else if(!IuStringUtils::stricmp(opt, "-ct"))
+        {
+            if(i+1 == argc)
+                return false;
+            char * codetype = argv[++i];
+            if(!IuStringUtils::stricmp(codetype, "TableOfThumbnails"))
+                codeType =  ZOutputCodeGenerator::ctTableOfThumbnails;
+            else if(!IuStringUtils::stricmp(codetype, "ClickableThumbnails"))
+                codeType =  ZOutputCodeGenerator::ctClickableThumbnails;
+            else if(!IuStringUtils::stricmp(codetype, "Images"))
+                codeType =  ZOutputCodeGenerator::ctImages;
+            else if(!IuStringUtils::stricmp(codetype, "Links"))
+                codeType =  ZOutputCodeGenerator::ctLinks;
+            i++;
+            continue;
+        }
+        else if(!IuStringUtils::stricmp(opt, "-u"))
+        {
+            if(i+1 == argc)
+                return false;
+            login = argv[++i];
+            i++;
+            continue;
+        }
+        else if(!IuStringUtils::stricmp(opt, "-p"))
+        {
+            if(i+1 == argc)
+                return false;
+            password = argv[++i];
+            i++;
+            continue;
+        }
+        else if(!IuStringUtils::stricmp(opt, "-fl"))
+        {
+            if(i+1 == argc)
+                return false;
+            folderId = argv[++i];
+            i++;
+            continue;
+        }
+        else if(!IuStringUtils::stricmp(opt, "-pr"))
+        {
+            if(i+1 == argc)
+                return false;
+            proxy = argv[++i];
+            std::vector<std::string> tokens;
+            IuStringUtils::Split(proxy,":",tokens,2);
+            if ( tokens.size() > 1) {
+                proxy = tokens[0];
+                proxyPort = atoi(tokens[1].c_str());
+            }
+            i++;
+            continue;
+        }
+        else if(!IuStringUtils::stricmp(opt, "-pu"))
+        {
+            if(i+1 == argc)
+                return false;
+            proxyUser = argv[++i];
 
-   return true;
+            i++;
+            continue;
+        }
+        else if(!IuStringUtils::stricmp(opt, "-pp"))
+        {
+            if(i+1 == argc)
+                return false;
+            proxyPassword = argv[++i];
+
+            i++;
+            continue;
+        }
+        else if(!IuStringUtils::stricmp(opt, "-pt"))
+        {
+            if(i+1 == argc)
+                return false;
+            std::map<std::string, int> types;
+            std::string type = argv[++i];
+            types["http"] = CURLPROXY_HTTP;
+            types["socks4"] = CURLPROXY_SOCKS4;
+            types["socks4a"] = CURLPROXY_SOCKS4A;
+            types["socks5"] = CURLPROXY_SOCKS5;
+            types["socks5dns"] = CURLPROXY_SOCKS5_HOSTNAME;
+            std::map<std::string, int>::const_iterator it = types.find(type);
+            if ( it != types.end() ) {
+                proxyType = it->second;
+            } else {
+                std::cerr<<"Invalid proxy type"<<std::endl;
+            }
+
+            i++;
+            continue;
+        }
+#ifdef _WIN32
+        else if(!IuStringUtils::stricmp(opt, "-up"))
+        {
+            DoUpdates(true);
+            i++;
+            return 0;
+        }
+        else if(!IuStringUtils::stricmp(opt, "--disable-update"))
+        {
+            autoUpdate = false;
+            i++;
+            continue;
+        }
+
+#endif
+
+        std::string fileName =
+        #ifndef _WIN32
+                IuCoreUtils::SystemLocaleToUtf8(argv[i]);
+#else
+                argv[i];
+#endif
+        if ( !IuCoreUtils::FileExists(fileName) ) {
+            std::cerr << "File '" + fileName + "' doesn't exist!" << std::endl;
+        }
+        filesToUpload.push_back(fileName);
+        i++;
+    }
+
+    return true;
 }
 
-CUploadEngineData* getServerByName(std::string name)
-{
+CUploadEngineData* getServerByName(std::string name) {
     CUploadEngineData*   uploadEngineData = list.byName(serverName);
-    if(!uploadEngineData)
-    {
+    if(!uploadEngineData) {
         for(int i=0; i<list.count(); i++)
         {
-            if((IuStringUtils::toLower(list.byIndex(i)->Name).find(IuStringUtils::toLower((name)))) != -1)
+            if((IuStringUtils::toLower(list.byIndex(i)->Name).find(IuStringUtils::toLower((name)))) != std::string::npos)
                 return list.byIndex(i);
         }
     }
     return uploadEngineData;
 }
 
-void UploadSessionFinished(UploadSession* session) {
+void OnUploadSessionFinished(UploadSession* session) {
     int taskCount = session->taskCount();
     std::vector<ZUploadObject> uploadedList;
     for ( int i = 0; i < taskCount; i++ ) {
         auto task = session->getTask(i);
         UploadResult* res = task->uploadResult();
+        FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());
         if ( task->uploadSuccess() ) {
             ZUploadObject uo;
             uo.directUrl = res->directUrl;
             uo.thumbUrl = res->thumbUrl;
             uo.viewUrl = res->downloadUrl;
             uo.serverName = task->serverName();
-            //uo.localFilePath = task->
+            if ( fileTask ) {
+                uo.localFilePath = fileTask->getFileName();
+                uo.displayFileName = fileTask->getDisplayName();
+            }
+            uo.uploadFileSize = task->getDataLength();
             uploadedList.push_back(uo);
         }
     }
@@ -407,32 +412,32 @@ void UploadTaskProgress(UploadTask* task) {
     lastProgressTime = ms;
     int totaldotz=25;
     if(progress->totalUpload == 0)
-       return;
+        return;
 
     ConsoleUtils::SetCursorPos(0, 2 + userData->index);
     double fractiondownloaded = static_cast<double>(progress->uploaded) / progress->totalUpload;
-       if(fractiondownloaded > 100)
-          fractiondownloaded = 0;
-       // part of the progressmeter that's already "full"
-       int dotz = floor(fractiondownloaded * totaldotz);
+    if(fractiondownloaded > 100)
+        fractiondownloaded = 0;
+    // part of the progressmeter that's already "full"
+    int dotz = static_cast<int>(floor(fractiondownloaded * totaldotz));
 
-       // create the "meter"
-       int ii=0;
-       fprintf(stderr, "%3.0f%% [",fractiondownloaded*100);
-       // part  that's full already
-       for ( ; ii < dotz;ii++) {
-           fprintf(stderr,"=");
-       }
-       // remaining part (spaces)
-       for ( ; ii < totaldotz;ii++) {
-           fprintf(stderr," ");
-       }
-       // and back to line begin - do not forget the fflush to avoid output buffering problems!
-       fprintf(stderr,"]");
-       fprintf(stderr," %s/%s", IuCoreUtils::fileSizeToString(progress->uploaded).c_str(),
-               IuCoreUtils::fileSizeToString(progress->totalUpload).c_str());
-       //fprintf(stderr,"\r");
-       fflush(stderr);
+    // create the "meter"
+    int ii=0;
+    fprintf(stderr, "%3.0f%% [",fractiondownloaded*100);
+    // part  that's full already
+    for ( ; ii < dotz;ii++) {
+        fprintf(stderr,"=");
+    }
+    // remaining part (spaces)
+    for ( ; ii < totaldotz;ii++) {
+        fprintf(stderr," ");
+    }
+    // and back to line begin - do not forget the fflush to avoid output buffering problems!
+    fprintf(stderr,"]");
+    fprintf(stderr," %s/%s", IuCoreUtils::fileSizeToString(progress->uploaded).c_str(),
+            IuCoreUtils::fileSizeToString(progress->totalUpload).c_str());
+    //fprintf(stderr,"\r");
+    fflush(stderr);
 }
 
 void OnUploadTaskStatusChanged(UploadTask* task) {
@@ -461,7 +466,9 @@ int func() {
     ServiceLocator::instance()->setEngineList(&list);
     ScriptsManager scriptsManager;
     uploadEngineManager.reset( new UploadEngineManager(&list, &uploadErrorHandler));
+#ifdef _WIN32
     uploadEngineManager->setScriptsDirectory(IuCoreUtils::WstringToUtf8((LPCTSTR)(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\"))));
+#endif
     uploadManager.reset( new UploadManager(uploadEngineManager.get(), &list, &scriptsManager, &uploadErrorHandler));
 
     if ( !proxy.empty()) {
@@ -503,13 +510,13 @@ int func() {
     //printf("Login: %s", login.c_str());
     s.authData.Password = password;
     s.authData.Login = login;
-    if(!login.empty())
-    s.authData.DoAuth = true;
+    if(!login.empty()) {
+        s.authData.DoAuth = true;
+    }
 
     s.setParam("FolderID", folderId);
     serverProfile.setFolderId(folderId);
 
-    //std::vector<ZUploadObject> uploadedList;
     session.reset(new UploadSession);
     for(size_t i=0; i<filesToUpload.size(); i++) {
         if(!IuCoreUtils::FileExists(filesToUpload[i]))
@@ -526,10 +533,11 @@ int func() {
         TaskUserData *userData = new TaskUserData;
         userData->index = i;
         task->setUserData(userData);
+        userDataArray.push_back(std::unique_ptr<TaskUserData>(userData));
         session->addTask(task);
     }
-    session->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(UploadSessionFinished));
-
+    session->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(OnUploadSessionFinished));
+    ConsoleUtils::InitScreen();
     ConsoleUtils::Clear();
     PrintWelcomeMessage();
     uploadManager->addSession(session);
@@ -616,7 +624,6 @@ int _tmain(int argc, _TCHAR* argvW[]) {
 	FLAGS_logtostderr = true;
 	//google::SetLogDestination(google::GLOG_INFO,"d:/" );
 
-	google::InitGoogleLogging(argv[0]);
 
 	/*UINT oldcp = GetConsoleOutputCP();
 	SetConsoleOutputCP(CP_UTF8);*/
@@ -624,8 +631,9 @@ int _tmain(int argc, _TCHAR* argvW[]) {
 #else
 int main(int argc, char *argv[]){
 #endif
-	int res  = 0;
-	std::string appDirectory = IuCoreUtils::ExtractFilePath(argv[0]);
+    google::InitGoogleLogging(argv[0]);
+    int res  = 0;
+    std::string appDirectory = IuCoreUtils::ExtractFilePath(argv[0]);
     std::string settingsFolder;
     setlocale(LC_ALL, "");
     signal(SIGINT, SignalHandler);
@@ -634,25 +642,24 @@ int main(int argc, char *argv[]){
     //SetConsoleTitle(_T("imgupload");
 #endif
 
-   if(IuCoreUtils::FileExists(appDirectory + "/Data/servers.xml"))
-	{
-		dataFolder = appDirectory+"/Data/";
+    if(IuCoreUtils::FileExists(appDirectory + "/Data/servers.xml")) {
+        dataFolder = appDirectory+"/Data/";
         settingsFolder = dataFolder;
     }
 #ifndef _WIN32
-   else {
-dataFolder = "/usr/share/imgupload/";
-   }
+    else {
+        dataFolder = "/usr/share/imgupload/";
+    }
 #ifndef __APPLE__
-settingsFolder = getenv("HOME")+std::string("/.config/imgupload/");
-mkdir(settingsFolder.c_str(), 0700);
+    settingsFolder = getenv("HOME")+std::string("/.config/imgupload/");
+    mkdir(settingsFolder.c_str(), 0700);
 #endif
 
 #endif
-	AppParams* params = AppParams::instance();
-	params->setDataDirectory(dataFolder);
-	params->setSettingsDirectory(settingsFolder);
-	
+    AppParams* params = AppParams::instance();
+    params->setDataDirectory(dataFolder);
+    params->setSettingsDirectory(settingsFolder);
+
 #ifdef _WIN32
     TCHAR ShortPath[1024];
     GetTempPath(ARRAY_SIZE(ShortPath), ShortPath);
@@ -662,43 +669,41 @@ mkdir(settingsFolder.c_str(), 0700);
     }
     params->setTempDirectory(IuCoreUtils::WstringToUtf8(TempPath));
 #else
-    return  params->setTempDirectory("/var/tmp/");
+    params->setTempDirectory("/var/tmp/");
 #endif
     PrintWelcomeMessage();
-    if(! list.LoadFromFile(dataFolder + "servers.xml", Settings.ServersSettings))
-   {
-	   std::cerr<<"Cannot load server list!"<<std::endl;
-   }
+    if(! list.LoadFromFile(dataFolder + "servers.xml", Settings.ServersSettings)) {
+        std::cerr<<"Cannot load server list!"<<std::endl;
+    }
 
-   if( IuCoreUtils::FileExists(dataFolder + "userservers.xml") && !list.LoadFromFile(dataFolder + "userservers.xml", Settings.ServersSettings))
-   {
-	   std::cerr<<"Cannot load server list userservers.xml!"<<std::endl;
-   }
+    if( IuCoreUtils::FileExists(dataFolder + "userservers.xml") && !list.LoadFromFile(dataFolder + "userservers.xml", Settings.ServersSettings)) {
+        std::cerr<<"Cannot load server list userservers.xml!"<<std::endl;
+    }
     Settings.LoadSettings(settingsFolder,"settings_cli.xml");
 
-   
-   if(!parseCommandLine(argc, argv))
-   {
-      return 0;
-   }
-   if(!filesToUpload.size())
-         return 0;
+
+    if(!parseCommandLine(argc, argv))
+    {
+        return 0;
+    }
+    if(!filesToUpload.size())
+        return 0;
 
 #ifdef _WIN32
-   if (autoUpdate) {
-	   DoUpdates();
-   }
+    if (autoUpdate) {
+        DoUpdates();
+    }
 #endif
 
-   res = func();
+    res = func();
 
-   if ( !Settings.SaveSettings() ) {
-       std::cerr<<"Cannot save settings!"<<std::endl;
-   }
+    if ( !Settings.SaveSettings() ) {
+        std::cerr<<"Cannot save settings!"<<std::endl;
+    }
 
-	CScriptUploadEngine::DestroyScriptEngine();
+    CScriptUploadEngine::DestroyScriptEngine();
 #ifdef _WIN32
-//SetConsoleOutputCP(oldcp);
+    //SetConsoleOutputCP(oldcp);
 #endif
-  return res;
+    return res;
 }

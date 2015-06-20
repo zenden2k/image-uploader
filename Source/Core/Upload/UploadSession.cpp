@@ -1,4 +1,6 @@
 ﻿#include "UploadSession.h"
+#include "UploadTask.h"
+#include <algorithm>
 
 UploadSession::UploadSession()
 {

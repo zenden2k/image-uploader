@@ -69,14 +69,13 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
     //Fill profile combobox
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_RESETCONTENT);
-    std::map<CString, ImageConvertingParams> ::const_iterator it;
-        bool found = false;
-        int selectedIndex = -1;
-        int i =0;
-    for(it = Settings.ConvertProfiles.begin(); it != Settings.ConvertProfiles.end(); ++it)
-    {
+    std::map<CString, ImageConvertingParams>::const_iterator it;
+    bool found = false;
+    int selectedIndex = -1;
+    int i = 0;
+    for (it = Settings.ConvertProfiles.begin(); it != Settings.ConvertProfiles.end(); ++it) {
         GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
-        if(it->first == serverProfile_.getImageUploadParams().ImageProfileName ) {
+        if (it->first == U2W(serverProfile_.getImageUploadParams().ImageProfileName)) {
             found = true;
             selectedIndex = i;
         }
@@ -92,7 +91,7 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     for(size_t i=0; i<files.size(); i++) {
         GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBTEMPLATECOMBO, 1, Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt( WCstringToUtf8( files[i]))) );
     }
-    SendDlgItemMessage(IDC_THUMBTEMPLATECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) params_.getThumbRef().TemplateName); 
+    SendDlgItemMessage(IDC_THUMBTEMPLATECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) U2W(params_.getThumbRef().TemplateName)); 
 
     GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 4, TR("Same format as image"),
         _T("JPEG"), _T("PNG"), _T("GIF"));
@@ -117,7 +116,7 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     GuiTools::SetCheck(m_hWnd, IDC_THUMBTEXTCHECKBOX,params_.getThumbRef().AddImageSize);
     GuiTools::SetCheck(m_hWnd, IDC_SHORTENLINKSCHECKBOX, serverProfile_.shortenLinks());
 
-    SetDlgItemText(IDC_THUMBTEXT,params_.getThumbRef().Text );
+    SetDlgItemText(IDC_THUMBTEXT, U2W(params_.getThumbRef().Text) );
 
     SetDlgItemText(IDC_WIDTHEDIT, IntToStr(params_.getThumbRef().Size));
         SetDlgItemInt(IDC_THUMBQUALITYEDIT,  params_.getThumbRef().Quality);
@@ -146,19 +145,19 @@ LRESULT CUploadParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
         GuiTools::GetCheck(m_hWnd, IDC_DEFAULTTHUMBSETTINGSCHECKBOX, params_.UseDefaultThumbSettings);
         GuiTools::GetCheck(m_hWnd, IDC_DEFAULTSETTINGSCHECKBOX, serverProfile_.UseDefaultSettings);
         params_.getThumbRef().AddImageSize = GuiTools::GetCheck(m_hWnd, IDC_THUMBTEXTCHECKBOX);
-        params_.getThumbRef().Text = GuiTools::GetDlgItemText(m_hWnd, IDC_THUMBTEXT);
+        params_.getThumbRef().Text = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_THUMBTEXT));
         
         int profileIndex = SendDlgItemMessage(IDC_PROFILECOMBO, CB_GETCURSEL, 0, 0);
         TCHAR buf[256] = _T("");
         SendDlgItemMessage(IDC_PROFILECOMBO, CB_GETLBTEXT, profileIndex, (WPARAM)buf);
-        params_.ImageProfileName = (buf);
+        params_.ImageProfileName = W2U(buf);
         params_.getThumbRef().Size = GetDlgItemInt(IDC_WIDTHEDIT);
 
         buf[0] = 0;
         profileIndex = SendDlgItemMessage(IDC_THUMBTEMPLATECOMBO, CB_GETCURSEL, 0, 0);
         SendDlgItemMessage(IDC_THUMBTEMPLATECOMBO, CB_GETLBTEXT, profileIndex, (WPARAM)buf);
         ThumbCreatingParams& Thumb = params_.getThumbRef();
-        Thumb.TemplateName = buf;
+        Thumb.TemplateName = W2U(buf);
 
         Thumb.ResizeMode = (ThumbCreatingParams::ThumbResizeEnum) SendDlgItemMessage(IDC_THUMBRESIZECOMBO, CB_GETCURSEL, 0, 0);
 

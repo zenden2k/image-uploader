@@ -2,9 +2,10 @@
 
 #include "Core/Settings.h"
 #include "HistoryManager.h"
-#include "Gui/Dialogs/LogWindow.h"
-#include "Func/WinUtils.h"
 #include <mutex>
+#include <boost/filesystem.hpp>
+#include "Core/3rdpart/pcreplusplus.h"
+
 LocalFileCache::LocalFileCache() {
     historyParsed = false;
 }
@@ -20,12 +21,29 @@ bool LocalFileCache::ensureHistoryParsed() {
 
 bool LocalFileCache::parseHistory() {
     std::lock_guard<std::recursive_mutex> guard(mutex_);
-    std::vector<CString> files;
-    CString historyFolder = IuCoreUtils::Utf8ToWstring(Settings.SettingsFolder).c_str()+CString(_T("\\History\\"));
-    WinUtils::GetFolderFileList(files, historyFolder , _T("history*.xml"));
+    std::vector<std::string> files;
+    std::string historyFolder = Settings.SettingsFolder + "/History/";
+    boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
 
-    for(size_t i=0; i<files.size(); i++) {
-        parseHistoryFile(WCstringToUtf8(historyFolder + files[i]));
+    pcrepp::Pcre regexp("^history.+\\.xml$");
+    for (boost::filesystem::directory_iterator i(historyFolder); i != end_itr; ++i) {
+        // Skip if not a file
+        if (!boost::filesystem::is_regular_file(i->status())) {
+            continue;
+        }
+
+        // Skip if no match
+        if (!regexp.search(i->path().filename().string())) {
+            continue;
+        }
+
+        // File matches, store it
+        files.push_back(i->path().string());
+    }
+    //WinUtils::GetFolderFileList(files, historyFolder , _T("history*.xml"));
+
+    for(const auto& file: files) {
+        parseHistoryFile(historyFolder + file);
     }
     return true;
 }

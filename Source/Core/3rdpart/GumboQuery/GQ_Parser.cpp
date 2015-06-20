@@ -16,6 +16,7 @@
 #include "Parser.h"
 #include "Selector.h"
 #include "QueryUtil.h"
+#include <stdexcept>
 
 CParser::CParser(std::string aInput)
 {
