@@ -1,9 +1,10 @@
+#include "Registry.h"
 
 #include <windows.h>
 #include <winreg.h>
-#include "Registry.h"
+
 #include <string.h>
-#include "Func/MyUtils.h"
+//#include "Func/MyUtils.h"
 #define CLASS_NAME_LENGTH 255
 
 /* IMPORTANT NOTES ABOUT CREGISTRY:
@@ -319,8 +320,6 @@ DWORD CRegistry::GetDataType(CString strValueName)
 
     return 0;
 }
-
-
 
 int CRegistry::GetSubKeyCount()
 {

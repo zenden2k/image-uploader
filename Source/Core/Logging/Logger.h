@@ -2,6 +2,7 @@
 #define IU_CORE_LOGGIN_LOGGER_H
 
 #pragma once
+#include <string>
 
 enum LogMsgType { logError = 1, logWarning };
 

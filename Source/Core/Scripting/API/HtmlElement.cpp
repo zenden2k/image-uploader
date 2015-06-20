@@ -28,8 +28,6 @@
 // Not implemented
 #endif
 
-
-
 namespace ScriptAPI {
 
 HtmlElement::HtmlElement()

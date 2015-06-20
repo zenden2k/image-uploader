@@ -1,5 +1,3 @@
-
-
 #ifndef __REGISTRY_H__
 #define __REGISTRY_H__
 

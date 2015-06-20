@@ -227,7 +227,7 @@ void WriteLog(const std::string& type, const std::string& message) {
     if ( type == "error" ) {
         msgType = logError;
     }
-    ServiceLocator::instance()->logger()->write(msgType,_T("Script Engine"),Utf8ToWCstring(message));
+    ServiceLocator::instance()->logger()->write(msgType, "Script Engine", message);
 }
 
 const std::string md5(const std::string& data)

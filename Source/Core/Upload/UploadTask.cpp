@@ -3,8 +3,10 @@
 #include "Core/Upload/ScriptUploadEngine.h"
 
 #ifndef IU_WTL
+#undef TR
 #define TR(a) L##a
 #endif
+
 UploadTask::UploadTask()
 {
     init();

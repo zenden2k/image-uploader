@@ -1,5 +1,6 @@
 #include "MemberFunctionCallback.h"
 #include <mutex>
+#include "Core/Logging.h"
 
 CBTHookCallbackBase* AvailableCallbackSlots[kMaxCallbacks] = {
     new DynamicCBTHookCallback<0x00>(),

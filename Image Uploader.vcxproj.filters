@@ -504,9 +504,6 @@
     <ClInclude Include="Source\Func\MyEngineList.h">
       <Filter>Source Files\Func</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Func\MyLogSink.h">
-      <Filter>Source Files\Func</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Func\SystemUtils.h">
       <Filter>Source Files\Func</Filter>
     </ClInclude>
@@ -818,6 +815,9 @@
     </ClInclude>
     <ClInclude Include="Source\Core\Utils\SystemUtils.h">
       <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Logging\MyLogSink.h">
+      <Filter>Source Files\Core\Logging</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1536,9 +1536,6 @@
     <ClCompile Include="Source\Func\MyEngineList.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Func\MyLogSink.cpp">
-      <Filter>Source Files\Func</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Func\MyUtils.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
@@ -1779,9 +1776,6 @@
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\Object.cpp">
       <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Parser.cpp">
-      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\QueryUtil.cpp">
       <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
@@ -1808,6 +1802,12 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Utils\SystemUtils.cpp">
       <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Logging\MyLogSink.cpp">
+      <Filter>Source Files\Core\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\GQ_Parser.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

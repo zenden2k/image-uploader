@@ -23,11 +23,9 @@
 #include <time.h>
 #include "atlheaders.h"
 #include "3rdpart/unzipper.h"
-#include "Gui/Dialogs/TextViewDlg.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Core/Utils/StringUtils.h"
 #include "Func/Common.h"
-#include "Core/Upload/UploadEngineManager.h"
 #include "Core/Utils/CryptoUtils.h"
 #include "WinUtils.h"
 #include <iostream>
@@ -541,6 +539,7 @@ CUpdateManager::CUpdateManager()
 {
     m_statusCallback= 0;
     m_nCoreUpdates = 0;
+    nCurrentIndex = 0;
     
     m_nSuccessPackageUpdates = 0;
     m_stop = false;
@@ -575,7 +574,7 @@ void CUpdateManager::setUpdateStatusCallback(CUpdateStatusCallback * callback)
 void CUpdateManager::updateStatus(int packageIndex, const CString& status)
 {
     if(m_statusCallback)
-        m_statusCallback->updateStatus(nCurrentIndex, status);
+        m_statusCallback->updateStatus(packageIndex, status);
 }
 
 bool CUpdateManager::AreUpdatesAvailable()

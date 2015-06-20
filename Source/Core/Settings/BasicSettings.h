@@ -6,8 +6,19 @@
 #include "Core/SettingsManager.h"
 #include "Core/Upload/UploadEngine.h"
 #include "StringConvert.h"
+#include "EncodedPassword.h"
 
 typedef std::map <std::string, std::map <std::string, ServerSettingsStruct>> ServerSettingsMap;
+
+struct ConnectionSettingsStruct {
+    bool UseProxy;
+    std::string ServerAddress;
+    int ProxyPort;
+    bool NeedsAuth;
+    std::string ProxyUser;
+    CEncodedPassword ProxyPassword;
+    int ProxyType;
+};
 
 class BasicSettings {
 public:
@@ -36,6 +47,9 @@ public:
 
     int UploadBufferSize;
     std::string SettingsFolder;
+
+    ConnectionSettingsStruct ConnectionSettings;
+
     ServerSettingsStruct* getServerSettings(const ServerProfile& profile);
 protected:
     SettingsManager mgr_;

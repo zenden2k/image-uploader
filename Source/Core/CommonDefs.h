@@ -14,4 +14,7 @@
     #define U2W(str) CString(IuCoreUtils::Utf8ToWstring(str).c_str())
 //#endif
 
+#pragma warning(disable:4996)
+#pragma warning( disable: 4100 ) // unreferenced formal parameter
+
 #endif

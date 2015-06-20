@@ -1,5 +1,4 @@
 #include "MyLogSink.h"
-#include "Gui/Dialogs/LogWindow.h"
 #include "Core/Utils/CoreUtils.h"
 
 MyLogSink::MyLogSink(ILogger* logger) {
@@ -10,7 +9,6 @@ void MyLogSink::send(google::LogSeverity severity, const char* full_filename, co
 {
     std::string sender = base_filename;
     sender += ":"+IuCoreUtils::int64_tToString(line);
-    CString msg = IuCoreUtils::Utf8ToWstring(message).c_str();
-    logger_->write(severity == google::GLOG_ERROR ? logError : logWarning, IuCoreUtils::Utf8ToWstring(sender).c_str(), msg);
+    logger_->write(severity == google::GLOG_ERROR ? logError : logWarning, sender, message);
 }
 

@@ -54,7 +54,10 @@ class CLang : public ITranslator
         CString locale_;
         CString language_;
 };
+#ifdef IU_WTL_APP
 extern CLang Lang;
+
+#endif
 
 // Begin: translation macros
 #define TR(str) Lang.GetString(_T(str))

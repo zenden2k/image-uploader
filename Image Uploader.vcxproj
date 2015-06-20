@@ -636,6 +636,7 @@
     <ClInclude Include="Source\Core\Logging.h" />
     <ClInclude Include="Source\Core\Logging\ConsoleLogger.h" />
     <ClInclude Include="Source\Core\Logging\Logger.h" />
+    <ClInclude Include="Source\Core\Logging\MyLogSink.h" />
     <ClInclude Include="Source\Core\Network\CurlShare.h" />
     <ClInclude Include="Source\Core\Object.h" />
     <ClInclude Include="Source\Core\Scripting\API\COMUtils.h" />
@@ -825,7 +826,6 @@
     <ClInclude Include="Source\Func\MyDataObject.h" />
     <ClInclude Include="Source\Func\MyDropSource.h" />
     <ClInclude Include="Source\Func\MyEngineList.h" />
-    <ClInclude Include="Source\Func\MyLogSink.h" />
     <ClInclude Include="Source\Func\SystemUtils.h" />
     <ClInclude Include="Source\Func\WebUtils.h" />
     <ClInclude Include="Source\Func\WinUtils.h" />
@@ -975,9 +975,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\GQDocument.cpp" />
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\GQ_Parser.cpp" />
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\Node.cpp" />
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\Object.cpp" />
-    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Parser.cpp" />
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\QueryUtil.cpp" />
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\Selection.cpp" />
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\Selector.cpp" />
@@ -989,6 +989,7 @@
     <ClCompile Include="Source\Core\LocalFileCache.cpp" />
     <ClCompile Include="Source\Core\Logging.cpp" />
     <ClCompile Include="Source\Core\Logging\ConsoleLogger.cpp" />
+    <ClCompile Include="Source\Core\Logging\MyLogSink.cpp" />
     <ClCompile Include="Source\Core\Network\CurlShare.cpp" />
     <ClCompile Include="Source\Core\Object.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\COMUtils.cpp" />
@@ -996,7 +997,9 @@
     <ClCompile Include="Source\Core\Scripting\API\GumboBingings\GumboDocument.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\HtmlDocument.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\HtmlDocumentPrivate_win.cpp" />
-    <ClCompile Include="Source\Core\Scripting\API\HtmlElement.cpp" />
+    <ClCompile Include="Source\Core\Scripting\API\HtmlElement.cpp">
+      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ShowIncludes>
+    </ClCompile>
     <ClCompile Include="Source\Core\Scripting\API\HtmlElementPrivate_win.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\Process.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\RegularExpression.cpp" />
@@ -1169,12 +1172,13 @@
     <ClCompile Include="Source\Func\Common.cpp" />
     <ClCompile Include="Source\Func\FileInfoHelper.cpp" />
     <ClCompile Include="Source\Func\ImageEditorConfigurationProvider.cpp" />
-    <ClCompile Include="Source\Func\IuCommonFunctions.cpp" />
+    <ClCompile Include="Source\Func\IuCommonFunctions.cpp">
+      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ShowIncludes>
+    </ClCompile>
     <ClCompile Include="Source\Func\LangClass.cpp" />
     <ClCompile Include="Source\Func\MyDataObject.cpp" />
     <ClCompile Include="Source\Func\MyDropSource.cpp" />
     <ClCompile Include="Source\Func\MyEngineList.cpp" />
-    <ClCompile Include="Source\Func\MyLogSink.cpp" />
     <ClCompile Include="Source\Func\MyUtils.cpp" />
     <ClCompile Include="Source\Func\SystemUtils.cpp" />
     <ClCompile Include="Source\Func\UpdatePackage.cpp" />

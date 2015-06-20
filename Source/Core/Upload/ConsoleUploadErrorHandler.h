@@ -3,7 +3,6 @@
 
 #pragma once
 
-
 #include "Core/Upload/UploadErrorHandler.h"
 
 class ConsoleUploadErrorHandler : public IUploadErrorHandler {

@@ -58,16 +58,6 @@ struct VideoSettingsStruct {
     CString SnapshotFileTemplate;
 };
 
-struct ConnectionSettingsStruct {
-    bool UseProxy;
-    CString ServerAddress;
-    int ProxyPort;
-    bool NeedsAuth;
-    CString ProxyUser;
-    CEncodedPassword ProxyPassword;
-    int ProxyType;
-};
-
 struct HistorySettingsStruct {
     bool EnableDownloading;
 };
@@ -83,7 +73,6 @@ class CommonGuiSettings : public BasicSettings {
         CString m_SettingsDir;
         CString Language;
 
-        ConnectionSettingsStruct ConnectionSettings;
 #ifndef IU_SERVERLISTTOOL   
         bool ShowTrayIcon;
         bool ShowTrayIcon_changed;

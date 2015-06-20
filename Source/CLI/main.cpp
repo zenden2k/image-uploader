@@ -22,20 +22,31 @@
 #include <curl/curl.h>
 #include <iostream>
 #include <fstream>
+#include <signal.h>
+#include <condition_variable>
 #include "Core/Upload/Uploader.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Network/NetworkClient.h"
 #include "Core/UploadEngineList.h"
+#include "Core/Upload/UploadManager.h"
 #include "Core/Upload/DefaultUploadEngine.h"
+#include "Core/Upload/FileUploadTask.h"
+#include "Core/Upload/UploadSession.h"
+#include "Core/Upload/ConsoleUploadErrorHandler.h"
+#include "Core/Upload/UploadEngineManager.h"
 #include "Core/OutputCodeGenerator.h"
 #include "Core/Upload/ScriptUploadEngine.h"
+#include "Core/ServiceLocator.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/AppParams.h"
 #include "Core/Settings.h"
 #include "Core/Logging.h"
+#include "Core/Logging/MyLogSink.h"
 #include "Core/Logging/ConsoleLogger.h"
 #include "ConsoleScriptDialogProvider.h"
+#include "ConsoleUtils.h"
 #ifdef _WIN32
+#include <windows.h>
 #include "Func/UpdatePackage.h"
 #include <fcntl.h>
 #include <io.h>
@@ -63,183 +74,69 @@ std::string login;
 std::string password;
 std::string folderId;
 std::string proxy;
-int  proxyPort;
+int proxyPort;
 int proxyType; /* CURLPROXY_HTTP, CURLPROXY_SOCKS4, CURLPROXY_SOCKS4A, 
 			   CURLPROXY_SOCKS5, CURLPROXY_SOCKS5_HOSTNAME */
 std::string proxyUser;
 std::string proxyPassword;
 
 CUploadEngineList list;
+std::unique_ptr<UploadEngineManager> uploadEngineManager;
+std::unique_ptr<UploadManager> uploadManager;
 
 ZOutputCodeGenerator::CodeType codeType = ZOutputCodeGenerator::ctClickableThumbnails;
 ZOutputCodeGenerator::CodeLang codeLang = ZOutputCodeGenerator::clPlain;
 bool autoUpdate = true;
+std::shared_ptr<UploadSession> session;
+
+std::mutex finishSignalMutex;
+std::condition_variable finishSignal;
+bool finished = false;
+
+std::mutex progressMutex;
+
+struct TaskUserData {
+    int index;
+};
+
+void SignalHandler (int param)
+{
+    if ( session ) {
+        session->stop();
+    }
+}
+
+void PrintWelcomeMessage() {
+    std::cerr<<"imgupload v"<< IU_CLI_VER <<" (based on IU v"<<_APP_VER<<" build "<<BUILD<<")"<<std::endl;
+}
 
 
+class Translator: public ITranslator{
+public:
+    virtual std::string getCurrentLanguage() override {
+        return "English";
+    }
+    virtual std::string getCurrentLocale() override {
+        return "en_US";
+    }
+
+};
+Translator translator; // dummy translator
 
 #ifdef _WIN32
 void DoUpdates(bool force = false);
 #endif
-void DebugMessage2(const std::string& message, bool isServerResponseBody)
-{
-#ifdef _WIN32
-	std::wcerr << IuCoreUtils::Utf8ToWstring(message);
-#else
-	std::cerr << IuCoreUtils::Utf8ToSystemLocale(message);
-#endif
-}
-
-bool UploadFile(CUploader &uploader, std::string fileName, /*[out]*/ ZUploadObject &uo)
-{
-   std::cerr<<" Uploading file '";
-	#ifdef _WIN32
-   std::wcerr<<IuCoreUtils::Utf8ToWstring(fileName);
-	#else
-	std::cerr<<IuCoreUtils::Utf8ToSystemLocale(fileName);
-#endif
-   std::cerr<<"' to server "<< uploader.getUploadEngine()->getUploadData()->Name<<std::endl;
-   uploader.onDebugMessage.bind(&DebugMessage2);
-   //return false;
-   if(!uploader.UploadFile(fileName, IuCoreUtils::ExtractFileName(fileName)))
-   {
-      std::cerr<<"Unable to upload file!"<<std::endl;
-      return false;
-   }
-   uo.displayFileName = IuCoreUtils::ExtractFileName(fileName);
-   uo.directUrl = uploader.getDirectUrl();
-   uo.thumbUrl = uploader.getThumbUrl();
-   uo.viewUrl = uploader.getDownloadUrl();
-   return true;
-}
-
-void destr()
-{
-
-}
-
-void IU_ConfigureProxy(NetworkClient& nm)
-{
-	if ( !proxy.empty())
-	{
-		
-		nm.setProxy(proxy,proxyPort, proxyType);
-
-		if( !proxyUser.empty()) {
-			nm.setProxyUserPassword(proxyUser,proxyPassword);
-		}
-	}
-	nm.setUploadBufferSize(Settings.UploadBufferSize);
-}
-
-void OnConfigureNM(NetworkClient* nm) {
-	IU_ConfigureProxy(*nm);
-}
 
 int64_t lastProgressTime = 0;
-void OnProgress(CUploader* uploader, InfoProgress info)
-{
-    struct timeval tp;
-    gettimeofday(&tp, NULL);
-    int64_t ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 
-    if ( info.Total != info.Uploaded && ms - lastProgressTime < 500 ) { // Windows console output is too slow
-        return;
-    }
-    lastProgressTime = ms;
-    int totaldotz=40;
-    if(info.Total == 0)
-       return;
-       double fractiondownloaded = static_cast<double>(info.Uploaded) / info.Total;
-       if(fractiondownloaded > 100)
-          fractiondownloaded = 0;
-       // part of the progressmeter that's already "full"
-       int dotz = floor(fractiondownloaded * totaldotz);
-
-       // create the "meter"
-       int ii=0;
-       fprintf(stderr, "%3.0f%% [",fractiondownloaded*100);
-       // part  that's full already
-       for ( ; ii < dotz;ii++) {
-           fprintf(stderr,"=");
-       }
-       // remaining part (spaces)
-       for ( ; ii < totaldotz;ii++) {
-           fprintf(stderr," ");
-       }
-       // and back to line begin - do not forget the fflush to avoid output buffering problems!
-       fprintf(stderr,"]");
-       fprintf(stderr," %s/%s            ", IuCoreUtils::fileSizeToString(info.Uploaded).c_str(), IuCoreUtils::fileSizeToString(info.Total).c_str());
-       fprintf(stderr,"\r");
-       fflush(stderr);
-}
-
-void OnError(ErrorInfo errorInfo)
-{
-   /*std::cerr<<"---------------------"<<std::endl;
-   if(ei.errorType == etUserError)
-	{
-      std::cerr<<"Error: "<<ei.error<<std::endl;
-	}
-   else std::cerr<<"Unknown error!"<<std::endl;
-   std::cerr<<"---------------------"<<std::endl;*/
-	
-	std::string errorMsg;
-
-	std::string infoText;
-	if(!errorInfo.FileName.empty())
-		infoText += "File: " + errorInfo.FileName+ "\n";
-
-	if(!errorInfo.ServerName.empty())
-	{
-		std::string serverName = errorInfo.ServerName;
-		if(!errorInfo.sender.empty())
-		serverName+= "("+errorInfo.sender+")";
-		infoText += "Server: " +serverName +  "\n";
-	}
-
-	if(!errorInfo.Url.empty())
-		infoText += "URL: " + errorInfo.Url+ "\n";
-
-
-	if(errorInfo.ActionIndex != -1)
-		infoText += "Action: #" + IuCoreUtils::toString(errorInfo.ActionIndex);
-
-
-	if(!errorInfo.error.empty())
-	{
-		errorMsg += errorInfo.error;
-	
-	}else
-	{
-		if(errorInfo.errorType == etRepeating)
-
-		{
-			char buf[256];
-			sprintf(buf, "Upload failed. Another retry (%d)", errorInfo.RetryIndex);
-			errorMsg = buf;
-		}
-		else if (errorInfo.errorType == etRetriesLimitReached)
-		{
-			errorMsg = "Upload failed! (retry limit reached)";
-		}
-	}
-
-	std::cerr<<infoText<<std::endl;
-	std::cerr<<errorMsg<<std::endl;
-	std::cerr<<"---------------------"<<std::endl;
-		
-}
-
-void PrintUsage(bool help = false)
-{
+void PrintUsage(bool help = false) {
    std::cerr<<"USAGE:  "<<"imgupload [OPTIONS] filename1 filename2 ..."<<std::endl;
    if ( !help ) {
 	std::cerr<<"Use '--help' option for more detailed information."<<std::endl;
    }
 }
 
-void PrintHelp()
-{
+void PrintHelp() {
    std::cerr<<"\r\nAvailable options:"<<std::endl;
    std::cerr<<" -l   Prints server list"<<std::endl;
    std::cerr<<" -s <server_name>"<<std::endl;
@@ -269,14 +166,12 @@ void PrintHelp()
 void PrintServerList()
 {
 	for(int i=0; i<list.count(); i++) {
-   
-	   if ( list.byIndex(i)->Type == CUploadEngineData::TypeUrlShorteningServer ) {
+       if ( !list.byIndex(i)->hasType(CUploadEngineData::TypeImageServer) && !list.byIndex(i)->hasType(CUploadEngineData::TypeFileServer) ) {
 		   continue;
 	   }
       std::cout<<list.byIndex(i)->Name<<std::endl;
    }
 }
-
 
 bool parseCommandLine(int argc, char *argv[])
 {
@@ -373,7 +268,7 @@ bool parseCommandLine(int argc, char *argv[])
 		  IuStringUtils::Split(proxy,":",tokens,2);
 		  if ( tokens.size() > 1) {
 			proxy = tokens[0];
-			proxyPort = IuCoreUtils::stringToint64_t(tokens[1]);
+            proxyPort = IuCoreUtils::stringToInt64(tokens[1]);
 		  }
 		  i++;
 		  continue;
@@ -427,16 +322,22 @@ bool parseCommandLine(int argc, char *argv[])
 	  else if(!IuStringUtils::stricmp(opt, "--disable-update"))
 	  {
 		  autoUpdate = false;
-			  i++;
-		           continue;
+          i++;
+          continue;
 	  }
 
 #endif
-#ifndef _WIN32	
-		filesToUpload.push_back(IuCoreUtils::SystemLocaleToUtf8(argv[i]));
+
+    std::string fileName =
+#ifndef _WIN32
+    IuCoreUtils::SystemLocaleToUtf8(argv[i]);
 #else
-	filesToUpload.push_back(argv[i]);
+    argv[i];
 #endif
+    if ( !IuCoreUtils::FileExists(fileName) ) {
+        std::cerr << "File '" + fileName + "' doesn't exist!" << std::endl;
+    }
+    filesToUpload.push_back(fileName);
       //else if()
       i++;
    }
@@ -446,62 +347,106 @@ bool parseCommandLine(int argc, char *argv[])
 
 CUploadEngineData* getServerByName(std::string name)
 {
-   CUploadEngineData*   uploadEngineData = list.byName(serverName);
-   if(!uploadEngineData)
-   {
-      for(int i=0; i<list.count(); i++)
-      {
-         if((IuStringUtils::toLower(list.byIndex(i)->Name).find(IuStringUtils::toLower((name)))) != -1)
-            return list.byIndex(i);
-      }
-   }
-   return uploadEngineData;
+    CUploadEngineData*   uploadEngineData = list.byName(serverName);
+    if(!uploadEngineData)
+    {
+        for(int i=0; i<list.count(); i++)
+        {
+            if((IuStringUtils::toLower(list.byIndex(i)->Name).find(IuStringUtils::toLower((name)))) != -1)
+                return list.byIndex(i);
+        }
+    }
+    return uploadEngineData;
 }
 
-CAbstractUploadEngine *lastEngine = 0;
-//ServerSettingsStruct s;
-CAbstractUploadEngine* getUploadEngineByData(CUploadEngineData * data,std::string login)
-{
-	ServerSettingsStruct& s = Settings.ServersSettings[data->Name][login];
-	
-	//printf("Login: %s", login.c_str());
-	s.authData.Password = password;
-	s.authData.Login = login;
-	if(!login.empty())
-	s.authData.DoAuth = true;
+void UploadSessionFinished(UploadSession* session) {
+    int taskCount = session->taskCount();
+    std::vector<ZUploadObject> uploadedList;
+    for ( int i = 0; i < taskCount; i++ ) {
+        auto task = session->getTask(i);
+        UploadResult* res = task->uploadResult();
+        if ( task->uploadSuccess() ) {
+            ZUploadObject uo;
+            uo.directUrl = res->directUrl;
+            uo.thumbUrl = res->thumbUrl;
+            uo.viewUrl = res->downloadUrl;
+            uo.serverName = task->serverName();
+            //uo.localFilePath = task->
+            uploadedList.push_back(uo);
+        }
+    }
+    ZOutputCodeGenerator generator;
+    generator.setLang(codeLang);
+    generator.setType(codeType);
+    ConsoleUtils::SetCursorPos(0, taskCount + 2);
+    if ( !uploadedList.empty() ) {
+        std::cerr<<std::endl<<"Result:"<<std::endl;
+        std::cout<<generator.generate(uploadedList);
+        std::cerr<<std::endl;
+    }
+    {
+        std::lock_guard<std::mutex> lk(finishSignalMutex);
+        finished = true;
+    }
 
-	s.setParam("FolderID", folderId);
-
-      if(lastEngine && lastEngine->getUploadData() == data)
-      {
-         return lastEngine;
-      }
-      delete lastEngine;
-   if(data->PluginName.empty())
-   {
-      lastEngine = new CDefaultUploadEngine();
-	lastEngine->setServerSettings(s);
-   }
-   else
-   {
-      CScriptUploadEngine * eng = new CScriptUploadEngine(data->Name);
-
-      
-      if(!eng->load(dataFolder + "Scripts/"+data->PluginName+".nut", s))
-      {
-         std::cout<<"Cannot load script!"<<std::endl;
-         return 0;
-      }
-      lastEngine = eng;
-   }
-   return lastEngine;
+    finishSignal.notify_one();
 }
 
-int func()
-{
+void UploadTaskProgress(UploadTask* task) {
+    std::lock_guard<std::mutex> guard(progressMutex);
+    UploadProgress* progress = task->progress();
+    TaskUserData *userData = reinterpret_cast<TaskUserData*>(task->userData());
+
+    struct timeval tp;
+    gettimeofday(&tp, NULL);
+    int64_t ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+
+    if ( progress->totalUpload != progress->uploaded && ms - lastProgressTime < 500 ) { // Windows console output is too slow
+        return;
+    }
+    lastProgressTime = ms;
+    int totaldotz=25;
+    if(progress->totalUpload == 0)
+       return;
+
+    ConsoleUtils::SetCursorPos(0, 2 + userData->index);
+    double fractiondownloaded = static_cast<double>(progress->uploaded) / progress->totalUpload;
+       if(fractiondownloaded > 100)
+          fractiondownloaded = 0;
+       // part of the progressmeter that's already "full"
+       int dotz = floor(fractiondownloaded * totaldotz);
+
+       // create the "meter"
+       int ii=0;
+       fprintf(stderr, "%3.0f%% [",fractiondownloaded*100);
+       // part  that's full already
+       for ( ; ii < dotz;ii++) {
+           fprintf(stderr,"=");
+       }
+       // remaining part (spaces)
+       for ( ; ii < totaldotz;ii++) {
+           fprintf(stderr," ");
+       }
+       // and back to line begin - do not forget the fflush to avoid output buffering problems!
+       fprintf(stderr,"]");
+       fprintf(stderr," %s/%s", IuCoreUtils::fileSizeToString(progress->uploaded).c_str(),
+               IuCoreUtils::fileSizeToString(progress->totalUpload).c_str());
+       //fprintf(stderr,"\r");
+       fflush(stderr);
+}
+
+void OnUploadTaskStatusChanged(UploadTask* task) {
+    std::lock_guard<std::mutex> guard(progressMutex);
+    UploadProgress* progress = task->progress();
+    TaskUserData *userData = reinterpret_cast<TaskUserData*>(task->userData());
+    ConsoleUtils::SetCursorPos(55, 2 + userData->index);
+    fprintf(stderr, progress->statusText.c_str());
+}
+
+int func() {
 	int res = 0;
     ConsoleLogger defaultLogger;
-    DefaultUploadErrorHandler uploadErrorHandler(&defaultLogger);
+    ConsoleUploadErrorHandler uploadErrorHandler;
 
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
@@ -510,14 +455,26 @@ int func()
     google::AddLogSink(&logSink);
     ConsoleScriptDialogProvider dialogProvider;
     serviceLocator->setDialogProvider(&dialogProvider);
-    serviceLocator->setTranslator(&Lang);
+    serviceLocator->setTranslator(&translator);
 
     Settings.setEngineList(&list);
     ServiceLocator::instance()->setEngineList(&list);
     ScriptsManager scriptsManager;
-    UploadEngineManager uploadEngineManager(_EngineList, &uploadErrorHandler);
-    uploadEngineManager.setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
-    UploadManager uploadManager(&uploadEngineManager, _EngineList, &scriptsManager, &uploadErrorHandler);
+    uploadEngineManager.reset( new UploadEngineManager(&list, &uploadErrorHandler));
+    uploadEngineManager->setScriptsDirectory(IuCoreUtils::WstringToUtf8((LPCTSTR)(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\"))));
+    uploadManager.reset( new UploadManager(uploadEngineManager.get(), &list, &scriptsManager, &uploadErrorHandler));
+
+    if ( !proxy.empty()) {
+        Settings.ConnectionSettings.UseProxy = true;
+        Settings.ConnectionSettings.ServerAddress= proxy;
+        Settings.ConnectionSettings.ProxyPort = proxyPort;
+
+        if( !proxyUser.empty()) {
+            Settings.ConnectionSettings.NeedsAuth = true;
+            Settings.ConnectionSettings.ProxyUser = proxyUser;
+            Settings.ConnectionSettings.ProxyPassword = proxyPassword;
+        }
+    }
 
     CUploadEngineData* uploadEngineData = 0;
     if(!serverName.empty()) {
@@ -537,85 +494,99 @@ int func()
 		return -1;
 	}
 
+    ServerProfile serverProfile(uploadEngineData->Name);
+    serverProfile.setProfileName(login);
+    serverProfile.setShortenLinks(false);
 
-  std::vector<ZUploadObject> uploadedList;
-  for(size_t i=0; i<filesToUpload.size(); i++)
-  {
-		if(!IuCoreUtils::FileExists(filesToUpload[i]))
-		{
-				std::cerr<<"File '"+ filesToUpload[i] + "' doesn't exist!"<<std::endl;	
-				res ++;
-				continue;				
-		}
-     CAbstractUploadEngine* engine = getUploadEngineByData(uploadEngineData,login);
-     if(!engine) return false;
-     engine->setUploadData(uploadEngineData);
-     uploader.setUploadEngine(engine);
+    ServerSettingsStruct& s = Settings.ServersSettings[uploadEngineData->Name][login];
 
-     ZUploadObject uo;
-     UploadFile(uploader, filesToUpload[i], uo);
-     uploadedList.push_back(uo);
-  }
+    //printf("Login: %s", login.c_str());
+    s.authData.Password = password;
+    s.authData.Login = login;
+    if(!login.empty())
+    s.authData.DoAuth = true;
 
-  ZOutputCodeGenerator generator;
-  generator.setLang(codeLang);
-  generator.setType(codeType);
-  if ( !uploadedList.empty() ) {
-	  std::cerr<<std::endl<<"Result:"<<std::endl;
-	  std::cout<<generator.generate(uploadedList);
-	  std::cerr<<std::endl;
-  }
+    s.setParam("FolderID", folderId);
+    serverProfile.setFolderId(folderId);
+
+    //std::vector<ZUploadObject> uploadedList;
+    session.reset(new UploadSession);
+    for(size_t i=0; i<filesToUpload.size(); i++) {
+        if(!IuCoreUtils::FileExists(filesToUpload[i]))
+        {
+            std::cerr<<"File '"+ filesToUpload[i] + "' doesn't exist!"<<std::endl;
+            res++;
+            continue;
+        }
+
+        std::shared_ptr<FileUploadTask> task(new FileUploadTask(filesToUpload[i], IuCoreUtils::ExtractFileName(filesToUpload[i])));
+        task->setServerProfile(serverProfile);
+        task->OnUploadProgress.bind(UploadTaskProgress);
+        task->OnStatusChanged.bind(OnUploadTaskStatusChanged);
+        TaskUserData *userData = new TaskUserData;
+        userData->index = i;
+        task->setUserData(userData);
+        session->addTask(task);
+    }
+    session->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(UploadSessionFinished));
+
+    ConsoleUtils::Clear();
+    PrintWelcomeMessage();
+    uploadManager->addSession(session);
+    uploadManager->start();
+
+    // Wait until upload session is finished
+    std::unique_lock<std::mutex> lk(finishSignalMutex);
+    finishSignal.wait(lk, [] {return finished;});
 	return res;	
 }
 
 #ifdef _WIN32
-
-
 class Updater: public CUpdateStatusCallback {
-	public:
+public:
+    Updater() {
+        m_UpdateManager.setUpdateStatusCallback(this);
+    }
 
-		Updater() {
-			m_UpdateManager.setUpdateStatusCallback(this);
-		}
-	void updateServers() {
-		
-		
-		std::cout<<"Checking for updates..."<<std::endl;
-		if (!m_UpdateManager.CheckUpdates()) {
-			std::cout<<"Error while updating"<<std::endl;
-			return;
-		}
+    void updateServers() {
+        std::cout<<"Checking for updates..."<<std::endl;
+        if (!m_UpdateManager.CheckUpdates()) {
+            std::cout<<"Error while updating"<<std::endl;
+            return;
+        }
 
-		Settings.LastUpdateTime = static_cast<int>(time(0));
-		if (m_UpdateManager.AreUpdatesAvailable())
-		{
-			for (size_t i = 0; i < m_UpdateManager.m_updateList.size(); i++)
-			{
-				std::cerr<<"Beginning to update: "<< IuCoreUtils::WstringToUtf8((LPCTSTR)m_UpdateManager.m_updateList[i].displayName())<<std::endl;
-			}
+        Settings.LastUpdateTime = static_cast<int>(time(0));
+        if (m_UpdateManager.AreUpdatesAvailable())
+        {
+            for (size_t i = 0; i < m_UpdateManager.m_updateList.size(); i++)
+            {
+                std::cerr<<"Beginning to update: "<< IuCoreUtils::WstringToUtf8((LPCTSTR)m_UpdateManager.m_updateList[i].displayName())<<std::endl;
+            }
 
-			m_UpdateManager.DoUpdates();
-			if (m_UpdateManager.successPackageUpdatesCount())
-			{
-				std::cerr<<"Succesfully updated!";
-			}
-		} 
-		else
-		{
-			
-			std::cerr<<"All is up-to-date"<<std::endl;
-		}
+            m_UpdateManager.DoUpdates();
+            if (m_UpdateManager.successPackageUpdatesCount())
+            {
+                std::cerr<<"Succesfully updated!";
+            }
+        }
+        else
+        {
 
-	}
-	virtual void updateStatus(int packageIndex, const CString& status) {	
-		//std::wcout << (LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName() <<" : "<< (LPCTSTR)status<<std::endl;
-		fprintf(stderr, "%s : %s", IuCoreUtils::WstringToUtf8((LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName()).c_str(), IuCoreUtils::WstringToUtf8((LPCTSTR)status).c_str());
-		fprintf(stderr, "\r");
-		fflush(stderr);
-		//std::cout<< "\r"<<IuCoreUtils::WstringToUtf8((LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName()) <<" : "<< IuCoreUtils::WstringToUtf8((LPCTSTR)status);
-	}
+            std::cerr<<"All is up-to-date"<<std::endl;
+        }
+
+    }
+    virtual void updateStatus(int packageIndex, const CString& status) override {
+        //std::wcout << (LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName() <<" : "<< (LPCTSTR)status<<std::endl;
+        if ( m_UpdateManager.m_updateList.size() > packageIndex+1) {
+            fprintf(stderr, "%s : %s", IuCoreUtils::WstringToUtf8((LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName()).c_str(), IuCoreUtils::WstringToUtf8((LPCTSTR)status).c_str());
+            fprintf(stderr, "\r");
+            fflush(stderr);
+        }
+        //std::cout<< "\r"<<IuCoreUtils::WstringToUtf8((LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName()) <<" : "<< IuCoreUtils::WstringToUtf8((LPCTSTR)status);
+    }
 protected:
-	CUpdateManager m_UpdateManager;
+    CUpdateManager m_UpdateManager;
 };
 
 void DoUpdates(bool force) {
@@ -628,6 +599,7 @@ void DoUpdates(bool force) {
 	}
 }
 
+// Convert UNICODE (UCS-2) command line arguments to utf-8
 char ** convertArgv(int argc, _TCHAR* argvW[]) {
 	char ** result = new char *[argc];
 	for ( int i = 0; i < argc; i++) {
@@ -652,11 +624,15 @@ int _tmain(int argc, _TCHAR* argvW[]) {
 #else
 int main(int argc, char *argv[]){
 #endif
-
 	int res  = 0;
 	std::string appDirectory = IuCoreUtils::ExtractFilePath(argv[0]);
     std::string settingsFolder;
     setlocale(LC_ALL, "");
+    signal(SIGINT, SignalHandler);
+#ifdef _WIN32
+    //SetConsoleCtrlHandler ();
+    //SetConsoleTitle(_T("imgupload");
+#endif
 
    if(IuCoreUtils::FileExists(appDirectory + "/Data/servers.xml"))
 	{
@@ -684,14 +660,12 @@ mkdir(settingsFolder.c_str(), 0700);
     if (!GetLongPathName(ShortPath,TempPath, ARRAY_SIZE(TempPath)) ) {
         lstrcpy(TempPath, ShortPath);
     }
-    params->setTempDirectory(IuCoreUtils::WstringToUtf8(TempPath);
+    params->setTempDirectory(IuCoreUtils::WstringToUtf8(TempPath));
 #else
     return  params->setTempDirectory("/var/tmp/");
 #endif
-
-
-   std::cerr<<"Zenden Image Uploader console utility v"<< IU_CLI_VER <<" (based on IU v"<<_APP_VER<<" build "<<BUILD<<")"<<std::endl;
-   if(! list.LoadFromFile(dataFolder + "servers.xml", Settings.ServersSettings))
+    PrintWelcomeMessage();
+    if(! list.LoadFromFile(dataFolder + "servers.xml", Settings.ServersSettings))
    {
 	   std::cerr<<"Cannot load server list!"<<std::endl;
    }
@@ -716,13 +690,12 @@ mkdir(settingsFolder.c_str(), 0700);
    }
 #endif
 
-  res = func();
+   res = func();
 
-  if ( !Settings.SaveSettings() ) {
-	std::cerr<<"Cannot save settings!"<<std::endl;
-  }
+   if ( !Settings.SaveSettings() ) {
+       std::cerr<<"Cannot save settings!"<<std::endl;
+   }
 
-    delete lastEngine;
 	CScriptUploadEngine::DestroyScriptEngine();
 #ifdef _WIN32
 //SetConsoleOutputCP(oldcp);

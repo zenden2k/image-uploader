@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <string>
+
 namespace IuCoreUtils
 {
     std::string getOsName();

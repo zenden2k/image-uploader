@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef IU_CORE_NETWORK_CURLSHARE_H
+#define IU_CORE_NETWORK_CURLSHARE_H
+
+#pragma once
 #include <curl/curl.h>
 #include <mutex>
 #include "Core/Utils/CoreTypes.h"
@@ -15,3 +18,5 @@ private:
     static void lockData(CURL *handle, curl_lock_data data, curl_lock_access access, void *useptr);
     static void unlockData(CURL *handle, curl_lock_data data, void *useptr);
 };
+
+#endif

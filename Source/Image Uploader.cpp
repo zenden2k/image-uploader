@@ -29,7 +29,7 @@
 #include "Func/WinUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Core/Logging.h"
-#include "Func/MyLogSink.h"
+#include "Core/Logging/MyLogSink.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>

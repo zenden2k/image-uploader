@@ -72,12 +72,12 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     // ---- Инициализация элементов (заполнение) ----
     
     // ---- заполнение connection settings -----
-    SetDlgItemText(IDC_ADDRESSEDIT, Settings.ConnectionSettings.ServerAddress);
+    SetDlgItemText(IDC_ADDRESSEDIT, U2W(Settings.ConnectionSettings.ServerAddress));
     SendDlgItemMessage(IDC_NEEDSAUTH, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.NeedsAuth);
     SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_SETCHECK, (WPARAM) Settings.AutoCopyToClipboard);
     
         SendDlgItemMessage(IDC_USEPROXYSERVER, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.UseProxy);
-    SetDlgItemText(IDC_PROXYLOGINEDIT, Settings.ConnectionSettings.ProxyUser);
+    SetDlgItemText(IDC_PROXYLOGINEDIT, U2W(Settings.ConnectionSettings.ProxyUser));
     SetDlgItemText(IDC_PROXYPASSWORDEDIT, (CString)Settings.ConnectionSettings.ProxyPassword);
     SetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT,Settings.UploadBufferSize/1024);
     if(Settings.ConnectionSettings.ProxyPort) // Только если порт не равен нулю
@@ -135,11 +135,11 @@ bool CUploadSettingsPage::Apply()
     TCHAR Buffer[128];
 
     GetDlgItemText(IDC_ADDRESSEDIT,Buffer, 128);
-    Settings.ConnectionSettings.ServerAddress = Buffer;
+    Settings.ConnectionSettings.ServerAddress = W2U(Buffer);
     Settings.ConnectionSettings.ProxyPort = GetDlgItemInt(IDC_PORTEDIT);
     
     GetDlgItemText(IDC_PROXYLOGINEDIT, Buffer, 128);
-    Settings.ConnectionSettings.ProxyUser = Buffer;
+    Settings.ConnectionSettings.ProxyUser = W2U(Buffer);
     GetDlgItemText(IDC_PROXYPASSWORDEDIT, Buffer, 128);
     Settings.ConnectionSettings.ProxyPassword = Buffer;
     Settings.ConnectionSettings.ProxyType = SendDlgItemMessage(IDC_SERVERTYPECOMBO, CB_GETCURSEL);

@@ -1,4 +1,5 @@
 #include "IuCommonFunctions.h"
+
 #ifndef IU_SHELLEXT
 #include "Core/Settings.h"
 #endif

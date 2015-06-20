@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "Core/Logging.h"
 #include "Core/Logging/Logger.h"
 
 class GOOGLE_GLOG_DLL_DECL MyLogSink: public google::LogSink {
