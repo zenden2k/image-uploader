@@ -36,7 +36,7 @@
 #include "AddDirectoryServerDIalog.h"
 #include <Gui/Controls/ServerSelectorControl.h>
 
-CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager * uploadEngineManager) :ñonvert_profiles_(Settings.ConvertProfiles)
+CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager * uploadEngineManager) :convert_profiles_(Settings.ConvertProfiles)
 {
     nImageIndex = nFileIndex = -1;
     m_EngineList = EngineList;
@@ -1131,7 +1131,7 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_RESETCONTENT);
     std::map<CString, ImageConvertingParams> ::const_iterator it;
     bool found = false;
-    for(it = ñonvert_profiles_.begin(); it!=ñonvert_profiles_.end(); ++it)
+    for(it = convert_profiles_.begin(); it!=convert_profiles_.end(); ++it)
     {
       GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
       if(it->first == CurrentProfileName) found = true;
@@ -1208,7 +1208,7 @@ void CUploadSettings::ShowParams(const ImageConvertingParams& params)
     if(CurrentProfileName == profileName) return;
    CurrentProfileName = profileName;
    CurrentProfileOriginalName = profileName; 
-   ShowParams(ñonvert_profiles_[profileName]);
+   ShowParams(convert_profiles_[profileName]);
    
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) profileName); 
  }
@@ -1324,7 +1324,7 @@ void CUploadSettings::SaveCurrentProfile()
     if (CurrentProfileOriginalName == _T("Default"))
         saveToProfile = CurrentProfileOriginalName;
 
-    if (!SaveParams(ñonvert_profiles_[saveToProfile]))
+    if (!SaveParams(convert_profiles_[saveToProfile]))
         return;
 
     sessionImageServer_.getImageUploadParamsRef().ImageProfileName = W2U(saveToProfile);
