@@ -19,7 +19,7 @@
  */
 
 #include "LangSelect.h"
-#include "Func/Common.h"
+
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/Settings.h"

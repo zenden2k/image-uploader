@@ -795,10 +795,10 @@ void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
         vertToolbarPos.x = x + w + kToolbarOffset ;
         vertToolbarPos.y = y + h - vertRc.bottom;
 
-        horToolbarPos.x = min(max( horToolbarPos.x, 0),clientRect.right - vertRc.right - horRc.right);
+        horToolbarPos.x = min(max<LONG>( horToolbarPos.x, 0),clientRect.right - vertRc.right - horRc.right);
         horToolbarPos.y = min( max( horToolbarPos.y, vertRc.bottom + kToolbarOffset ) , clientRect.bottom - horRc.bottom - kToolbarOffset);
         vertToolbarPos.x = min(max( vertToolbarPos.x, horRc.right + kToolbarOffset ), clientRect.right - vertRc.right);
-        vertToolbarPos.y = min( max( vertToolbarPos.y, 0), clientRect.bottom - horRc.bottom - kToolbarOffset - vertRc.bottom);
+        vertToolbarPos.y = min( max<LONG>( vertToolbarPos.y, 0), clientRect.bottom - horRc.bottom - kToolbarOffset - vertRc.bottom);
 
     } else if ( pos == pTopLeft ) {
         horToolbarPos.x = x;
@@ -808,8 +808,8 @@ void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
         vertToolbarPos.y = y ;
 
         horToolbarPos.x = min(max( horToolbarPos.x,  vertRc.right), clientRect.right - horRc.right - kToolbarOffset);
-        horToolbarPos.y = min(max( horToolbarPos.y, 0), clientRect.bottom - vertRc.bottom- horRc.bottom - kToolbarOffset);
-        vertToolbarPos.x = min(max( vertToolbarPos.x, 0), clientRect.right - horRc.right- vertRc.right - kToolbarOffset);
+        horToolbarPos.y = min(max<LONG>( horToolbarPos.y, 0), clientRect.bottom - vertRc.bottom- horRc.bottom - kToolbarOffset);
+        vertToolbarPos.x = min(max<LONG>( vertToolbarPos.x, 0), clientRect.right - horRc.right- vertRc.right - kToolbarOffset);
         vertToolbarPos.y = min(max( vertToolbarPos.y, horRc.bottom), clientRect.bottom - vertRc.bottom - kToolbarOffset);
     } else if ( pos == pTopRight ) {
         horToolbarPos.x = x + w - horRc.right - kToolbarOffset;
@@ -818,8 +818,8 @@ void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
         vertToolbarPos.x = x + w + kToolbarOffset;
         vertToolbarPos.y = y ;
 
-        horToolbarPos.x = /*min*(*/max( horToolbarPos.x,  0)/*, clientRect.right - horRc.right - kToolbarOffset)*/;
-        horToolbarPos.y = min(max( horToolbarPos.y, 0), clientRect.bottom - vertRc.bottom- horRc.bottom - kToolbarOffset);
+        horToolbarPos.x = /*min*(*/max<LONG>( horToolbarPos.x,  0)/*, clientRect.right - horRc.right - kToolbarOffset)*/;
+        horToolbarPos.y = min(max<LONG>( horToolbarPos.y, 0), clientRect.bottom - vertRc.bottom- horRc.bottom - kToolbarOffset);
         vertToolbarPos.x = /*min(*/max( vertToolbarPos.x, horRc.right + kToolbarOffset)/*, clientRect.right - horRc.right- vertRc.right - kToolbarOffset)*/;
         vertToolbarPos.y = min(max( vertToolbarPos.y, horRc.bottom), clientRect.bottom - vertRc.bottom - kToolbarOffset);
     } else if ( pos == pBottomLeft ) {
@@ -831,11 +831,11 @@ void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
 
         horToolbarPos.x = min(max( horToolbarPos.x,  vertRc.right), clientRect.right - horRc.right - kToolbarOffset);
     
-        vertToolbarPos.x = min(max( vertToolbarPos.x, 0), clientRect.right - horRc.right- vertRc.right - kToolbarOffset);
+        vertToolbarPos.x = min(max<LONG>( vertToolbarPos.x, 0), clientRect.right - horRc.right- vertRc.right - kToolbarOffset);
     
         //horToolbarPos.y = max( horToolbarPos.y, vertRc.bottom + kToolbarOffset );
         horToolbarPos.y = max( horToolbarPos.y,  vertRc.bottom + kToolbarOffset);
-        vertToolbarPos.y = max( vertToolbarPos.y, 0);
+        vertToolbarPos.y = max<LONG>( vertToolbarPos.y, 0);
     }
     //SIZE toolbarRect = {  horRc.right + vertRc.right, vertRc.bottom + horRc.bottom}
 

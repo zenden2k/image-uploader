@@ -99,15 +99,13 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     SendDlgItemMessage(IDC_TEXTPOSITION, CB_ADDSTRING, 0, (LPARAM)TR("Bottom right corner"));
 
     TextColor.SubclassWindow(GetDlgItem(IDC_SELECTCOLOR));
-
-
     StrokeColor.SubclassWindow(GetDlgItem(IDC_STROKECOLOR));
 
-    CIcon ico = (HICON)LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONWHITEPAGE));
+    CIcon ico = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONWHITEPAGE));
     //LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONWHITEPAGE), IMAGE_ICON    , 16,16,0);
     RECT profileRect;
     ::GetWindowRect(GetDlgItem(IDC_PROFILETOOBLARPLACEBUTTON), &profileRect);
-    ::MapWindowPoints(0, m_hWnd, (LPPOINT)&profileRect, 2);
+    ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&profileRect), 2);
 
     m_ProfileEditToolbar.Create(m_hWnd, profileRect,_T(""), WS_CHILD | WS_VISIBLE | WS_CHILD | TBSTYLE_LIST | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS | CCS_NORESIZE | /*CCS_BOTTOM |CCS_ADJUSTABLE|*/CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
     m_ProfileEditToolbar.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
@@ -211,44 +209,43 @@ LRESULT CLogoSettings::OnAddTextChecboxClicked(WORD wNotifyCode, WORD wID, HWND 
     bool bChecked = SendDlgItemMessage(IDC_YOURTEXT, BM_GETCHECK) == BST_CHECKED;
     GuiTools::EnableNextN(hWndCtl, 9, bChecked);
     ProfileChanged();
-   return 0;
+    return 0;
 }
 
-void CLogoSettings::ShowParams(const ImageConvertingParams& params)
-{
-   m_ProfileChanged = false;
-   m_CatchChanges = false;
-   SetDlgItemText(IDC_LOGOEDIT, U2W(params.LogoFileName));
-    
-    if(!params.LogoFileName.empty()) 
+void CLogoSettings::ShowParams(const ImageConvertingParams& params) {
+    m_ProfileChanged = false;
+    m_CatchChanges = false;
+    SetDlgItemText(IDC_LOGOEDIT, U2W(params.LogoFileName));
+
+    if (!params.LogoFileName.empty())
         img.LoadImage(U2W(params.LogoFileName));
 
     SetDlgItemText(IDC_EDITYOURTEXT,U2W(params.Text));
-   SendDlgItemMessage(IDC_LOGOPOSITION, CB_SETCURSEL, params.LogoPosition);
+    SendDlgItemMessage(IDC_LOGOPOSITION, CB_SETCURSEL, params.LogoPosition);
     SendDlgItemMessage(IDC_TEXTPOSITION, CB_SETCURSEL, params.TextPosition);
     TextColor.SetColor(params.TextColor);
-   StrokeColor.SetColor(params.StrokeColor);
-   lf = params.Font;
-   if(params.Quality)
-        SetDlgItemInt(IDC_QUALITYEDIT,params.Quality);
+    StrokeColor.SetColor(params.StrokeColor);
+    lf = params.Font;
+    if (params.Quality)
+        SetDlgItemInt(IDC_QUALITYEDIT, params.Quality);
     else
-        SetDlgItemText(IDC_QUALITYEDIT,_T(""));
-   SendDlgItemMessage(IDC_FORMATLIST,CB_SETCURSEL, params.Format);
-   
-    SendDlgItemMessage(IDC_RESIZEMODECOMBO,CB_SETCURSEL, (WPARAM)(int)(ImageConvertingParams::ImageResizeMode&)params.ResizeMode);
-   
-   SendDlgItemMessage(IDC_YOURLOGO,BM_SETCHECK,  params.AddLogo);
-   SendDlgItemMessage(IDC_YOURTEXT,BM_SETCHECK,  params.AddText);
+    SetDlgItemText(IDC_QUALITYEDIT,_T(""));
+    SendDlgItemMessage(IDC_FORMATLIST,CB_SETCURSEL, params.Format);
 
-   GuiTools::SetCheck(m_hWnd, IDC_SMARTCONVERTING, params.SmartConverting);
-   SetDlgItemText(IDC_IMAGEWIDTH,U2W(params.strNewWidth));
+    SendDlgItemMessage(IDC_RESIZEMODECOMBO,CB_SETCURSEL, (WPARAM)(int)(ImageConvertingParams::ImageResizeMode&)params.ResizeMode);
+
+    SendDlgItemMessage(IDC_YOURLOGO,BM_SETCHECK, params.AddLogo);
+    SendDlgItemMessage(IDC_YOURTEXT,BM_SETCHECK, params.AddText);
+
+    GuiTools::SetCheck(m_hWnd, IDC_SMARTCONVERTING, params.SmartConverting);
+    SetDlgItemText(IDC_IMAGEWIDTH,U2W(params.strNewWidth));
 
     SetDlgItemText(IDC_IMAGEHEIGHT,U2W(params.strNewHeight));
 
-   OnYourLogoCheckboxClicked(0,0,GetDlgItem(IDC_YOURLOGO));
-    OnAddTextChecboxClicked(0,0,GetDlgItem(IDC_YOURTEXT));
+    OnYourLogoCheckboxClicked(0, 0, GetDlgItem(IDC_YOURLOGO));
+    OnAddTextChecboxClicked(0, 0, GetDlgItem(IDC_YOURTEXT));
     GuiTools::SetCheck(m_hWnd, IDC_PRESERVE_EXIF, params.PreserveExifInformation);
-   m_CatchChanges = true;
+    m_CatchChanges = true;
 }
 
 bool CLogoSettings::SaveParams(ImageConvertingParams& params)

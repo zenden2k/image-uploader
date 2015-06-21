@@ -81,9 +81,6 @@
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Object.cpp">
       <Filter>Code\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
-    <ClCompile Include="..\Core\3rdpart\GumboQuery\Parser.cpp">
-      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
-    </ClCompile>
     <ClCompile Include="..\Core\3rdpart\GumboQuery\QueryUtil.cpp">
       <Filter>Code\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
@@ -97,6 +94,9 @@
       <Filter>Code\Core\3rdpart\GumboQuery\Tests</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\GumboQuery\GQDocument.cpp">
+      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\GQ_Parser.cpp">
       <Filter>Code\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
   </ItemGroup>

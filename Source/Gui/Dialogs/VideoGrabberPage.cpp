@@ -20,13 +20,10 @@
 
 #include "VideoGrabberPage.h"
 
-
 #include "Core/Video/VideoGrabber.h"
 #include "Core/Video/GdiPlusImage.h"
-#include "Gui/Controls/MyImage.h"
 #include "Gui/Dialogs/SettingsDlg.h"
 #include "Func/fileinfohelper.h"
-#include "Core/Images/ImageConverter.h"
 #include "Func/WinUtils.h"
 #include "LogWindow.h"
 #include "mediainfodlg.h"
@@ -36,10 +33,9 @@
 #include "Core/Logging.h"
 #include "Core/Utils/StringUtils.h"
 #include "Func/IuCommonFunctions.h"
-#include "atlheaders.h"
-#include "Func/WinUtils.h"
 #include <Core/Images/Utils.h>
 #include <Core/ServiceLocator.h>
+#include "Gui/Dialogs/WizardDlg.h"
 
 CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
 {
@@ -62,14 +58,14 @@ bool CVideoGrabberPage::SetFileName(LPCTSTR FileName)
 {
     lstrcpy(m_szFileName, FileName);
     // Заносим в текстовое поле имя файла, полученное от главного окна
-    SetDlgItemText(IDC_FILEEDIT, m_szFileName);
+    fileEdit_.SetWindowText(m_szFileName);
     return false;
 }
 
 LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     PageWnd = m_hWnd;
-
+    DoDataExchange(FALSE);
     // Установка интервалов UpDown контролов
     SendDlgItemMessage(IDC_UPDOWN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
     SendDlgItemMessage(IDC_QUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
@@ -108,7 +104,7 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     }
     SendDlgItemMessage(IDC_VIDEOENGINECOMBO, CB_SETCURSEL, itemIndex );
     // Заносим в текстовое поле имя файла, полученное от главного окна
-    SetDlgItemText(IDC_FILEEDIT, m_szFileName);
+    fileEdit_.SetWindowText(m_szFileName);
 
     bool check = true;
     // Установка режима сохранения
@@ -242,7 +238,6 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
 
     GrabInfo(CString(TR("Extracting frame ")) + title);
 
-
     if (SendDlgItemMessage(IDC_DEINTERLACE, BM_GETCHECK) == BST_CHECKED)
     {
         // Genial deinterlace realization ;)
@@ -292,7 +287,7 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
     std::string outDir = IuCoreUtils::ExtractFilePath(WCstringToUtf8(fullOutFileName));
     CString fileNameNoExt = Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(fullOutFileName)));*/
     
-    MySaveImage(bm, outFilename, fileNameBuffer, 1, 100, !wOutDir.IsEmpty() ? (LPCTSTR)wOutDir : NULL);
+    MySaveImage(bm, outFilename, fileNameBuffer, 1, 100, !wOutDir.IsEmpty() ? static_cast<LPCTSTR>(wOutDir) : NULL);
     ThumbsView.AddImage(fileNameBuffer, title, bm);
     grabbedFramesCount++;
     return true;
@@ -482,14 +477,13 @@ LRESULT CVideoGrabberPage::OnBnClickedButton1(WORD /*wNotifyCode*/, WORD /*wID*/
     if (fd.DoModal() != IDOK || !fd.m_szFileName[0])
         return 0;
 
-    SetDlgItemText(IDC_FILEEDIT, fd.m_szFileName);
+    fileEdit_.SetWindowText(fd.m_szFileName);
 
     return 0;
 }
 
 int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
 {
-
     CString videoEngine = Settings.VideoSettings.Engine;
 
     if ( videoEngine == CSettings::VideoEngineAuto) {
@@ -519,20 +513,14 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
     }
 
     videoGrabber_->setVideoEngine(engine);
-
-
-    videoGrabber_->grab(WCstringToUtf8(szFile));
-
-        //SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETPOS, (i + 1)*10);
-    
-
+    videoGrabber_->grab(W2U(szFile));
     return 0;
 }
 
 bool CVideoGrabberPage::OnShow()
 {
     SetNextCaption(TR("Grab"));
-    SetDlgItemText(IDC_FILEEDIT, m_szFileName);
+    fileEdit_.SetWindowText(m_szFileName);
     ::ShowWindow(GetDlgItem(IDC_FILEINFOBUTTON), (*MediaInfoDllPath) ? SW_SHOW : SW_HIDE);
     EnableNext(true);
     ShowPrev();
@@ -625,13 +613,11 @@ LRESULT CVideoGrabberPage::OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL&
 LRESULT CVideoGrabberPage::OnBnClickedFileinfobutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     CMediaInfoDlg dlg;
-    TCHAR buffer[256];
-    GetDlgItemText(IDC_FILEEDIT, buffer, 256);
-
-    dlg.ShowInfo(buffer);
+    CString fileName;
+    fileEdit_.GetWindowText(fileName);
+    dlg.ShowInfo(fileName);
     return 0;
 }
-
 
 CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateStr, int index, const CPoint size, const CString& originalName)
 {
@@ -647,17 +633,16 @@ CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateS
     indexStr.Format(_T("%03d"), index);
     CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(WCstringToUtf8(WinUtils::IntToStr(GetTickCount() + random(100))))).c_str();
     CString uid = md5.Mid(5,6);
-    result.Replace(_T("%md5%"), (LPCTSTR)md5);
-    result.Replace(_T("%uid%"), (LPCTSTR)uid);
+    result.Replace(_T("%md5%"), md5);
+    result.Replace(_T("%uid%"), uid);
     result.Replace(_T("%cx%"), WinUtils::IntToStr(size.x));
     result.Replace(_T("%cy%"), WinUtils::IntToStr(size.y));
     year.Format(_T("%04d"), (int)1900 + timeinfo->tm_year);
-    month.Format(_T("%02d"), (int) timeinfo->tm_mon + 1);
-    day.Format(_T("%02d"), (int) timeinfo->tm_mday);
-    hours.Format(_T("%02d"), (int)timeinfo->tm_hour);
-    seconds.Format(_T("%02d"), (int)timeinfo->tm_sec);
-    minutes.Format(_T("%02d"), (int)timeinfo->tm_min);
-
+    month.Format(_T("%02d"), timeinfo->tm_mon + 1);
+    day.Format(_T("%02d"), timeinfo->tm_mday);
+    hours.Format(_T("%02d"), timeinfo->tm_hour);
+    seconds.Format(_T("%02d"), timeinfo->tm_sec);
+    minutes.Format(_T("%02d"), timeinfo->tm_min);
     result.Replace(_T("%y%"), year);
     result.Replace(_T("%m%"), month);
     result.Replace(_T("%d%"), day);
@@ -669,8 +654,6 @@ CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateS
     result.Replace(_T("%f%"), fileNameNoExt);
     return result;
 }
-
-
 
 LRESULT CVideoGrabberPage::OnOpenFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     ShellExecute(NULL, L"open", snapshotsFolder, 0, 0, SW_SHOWDEFAULT);

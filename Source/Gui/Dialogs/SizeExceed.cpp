@@ -78,11 +78,11 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     }
     
     imageServerSelector_->ShowWindow(SW_SHOW);
-    imageServerSelector_->SetWindowPos(0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
+    imageServerSelector_->SetWindowPos(0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, 
+                                        serverSelectorRect.bottom - serverSelectorRect.top, 0);
     imageServerSelector_->setServerProfile(Settings.imageServer);
     
     CString serverName = U2W(fileTask_->serverProfile().serverName());
-
 
     GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEEXCEEDNAME));
     
@@ -93,9 +93,9 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     CString name;
     CString params; 
     if (isImage) {
-        params.Format(_T(" %s (%dx%d, %s)"), (LPCTSTR)myExtractFileName(m_szFileName), (int)img.ImageWidth, (int)img.ImageHeight, (LPCTSTR)buf2);
+        params.Format(_T(" %s (%dx%d, %s)"), static_cast<LPCTSTR>(myExtractFileName(m_szFileName)), img.ImageWidth, img.ImageHeight, static_cast<LPCTSTR>(buf2));
     } else {
-        params.Format(_T(" %s (%s)"), (LPCTSTR)myExtractFileName(m_szFileName), (LPCTSTR)buf2);
+        params.Format(_T(" %s (%s)"), static_cast<LPCTSTR>(myExtractFileName(m_szFileName)), static_cast<LPCTSTR>(buf2));
     }
    
     name = TR("File") + params;
@@ -105,7 +105,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
     TCHAR szBuf[1000];
     wsprintf(szBuf, TR("File exceeds filesize limit of \"%s\" server (%s)."),
-        (LPCTSTR)U2W(fileTask_->serverProfile().serverName()), buf2);
+        static_cast<LPCTSTR>(U2W(fileTask_->serverProfile().serverName())), buf2);
     SetDlgItemText(IDC_FILEEXCEEDSIZE2, szBuf);
     Translate();
 

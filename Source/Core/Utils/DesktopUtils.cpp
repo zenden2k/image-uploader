@@ -1,5 +1,9 @@
 #include "DesktopUtils.h"
+
 #include "CoreUtils.h"
+#ifdef _WIN32
+#include <shellapi.h>
+#endif
 
 namespace DesktopUtils {
 

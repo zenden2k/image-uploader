@@ -18,7 +18,6 @@
 
 #include "Canvas.h"
 
-
 #include "DrawingElement.h"
 #include "Document.h"
 #include "DrawingTool.h"
@@ -26,7 +25,7 @@
 #include "MovableElements.h"
 #include <ImageEditor/Gui/InputBoxControl.h>
 #include "Core/Logging.h"
-#include <math.h>
+#include <cmath>
 #include <cassert>
 #include <algorithm>
 #include "3rdpart/GdiplusH.h"
@@ -719,7 +718,7 @@ void Canvas::updateView( RECT boundingRect ) {
     using namespace Gdiplus;
     //CRgn region;
     //LOG(INFO) << "updateView " << boundingRect;
-    Rect newRect(max(0,boundingRect.left), max(0,boundingRect.top), boundingRect.right - boundingRect.left, boundingRect.bottom - boundingRect.top );
+    Rect newRect(std::max<int>(0,boundingRect.left), std::max<int>(0,boundingRect.top), boundingRect.right - boundingRect.left, boundingRect.bottom - boundingRect.top );
     newRect.Width = min(canvasWidth_ - newRect.X, newRect.Width);
     newRect.Height = min(canvasHeight_ - newRect.Y, newRect.Height);
     if ( newRect.Width <=0 || newRect.Height <=0 ) {

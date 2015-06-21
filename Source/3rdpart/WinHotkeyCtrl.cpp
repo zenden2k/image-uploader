@@ -1,12 +1,6 @@
 // WinHotkeyCtrl.cpp : implementation file
 //
 
-#include <atlbase.h>
-#include <atlapp.h>
-#include <atlwin.h>
-#include <atlframe.h>
-#include <atlctrls.h>
-#include <atldlgs.h>
 #include "WinHotkeyCtrl.h"
 #include "vkCodes.h"
 #include "3rdpart/MemberFunctionCallback.h"
@@ -22,9 +16,6 @@ CWinHotkeyCtrl::CWinHotkeyCtrl()
 
 CWinHotkeyCtrl::~CWinHotkeyCtrl() {
 }
-
-
-
 
 // CWinHotkeyCtrl
 

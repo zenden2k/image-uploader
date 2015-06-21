@@ -148,7 +148,7 @@ int MovableElement::getY()
 
 RECT MovableElement::getPaintBoundingRect()
 {
-    int radius = max(penSize_, kGripSize);
+    int radius = (std::max<int>)(penSize_, kGripSize);
     if ( canvas_->hasBlurRectangles() ) {
         radius += static_cast<int>(canvas_->getBlurRadius());
     }

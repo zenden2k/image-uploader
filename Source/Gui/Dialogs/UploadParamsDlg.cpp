@@ -18,10 +18,9 @@
 
 */
 
-
 #include "UploadParamsDlg.h"
+
 #include "wizarddlg.h"
-#include "Func/Common.h"
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
@@ -120,14 +119,11 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
     SetDlgItemText(IDC_WIDTHEDIT, IntToStr(params_.getThumbRef().Size));
         SetDlgItemInt(IDC_THUMBQUALITYEDIT,  params_.getThumbRef().Quality);
-    SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL,(int) (params_.getThumbRef().Format),0);
+    SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, static_cast<int>( (params_.getThumbRef().Format)), 0);
 
     //GuiTools::SetCheck(m_hWnd, IDC_DEFAULTTHUMBSETTINGSCHECKBOX, params_.);
 
-    
-    
     SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );    
-
 
     createThumbnailsCheckboxChanged();
     processImagesChanged();
@@ -149,17 +145,17 @@ LRESULT CUploadParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
         
         int profileIndex = SendDlgItemMessage(IDC_PROFILECOMBO, CB_GETCURSEL, 0, 0);
         TCHAR buf[256] = _T("");
-        SendDlgItemMessage(IDC_PROFILECOMBO, CB_GETLBTEXT, profileIndex, (WPARAM)buf);
+        SendDlgItemMessage(IDC_PROFILECOMBO, CB_GETLBTEXT, profileIndex, reinterpret_cast<WPARAM>(buf));
         params_.ImageProfileName = W2U(buf);
         params_.getThumbRef().Size = GetDlgItemInt(IDC_WIDTHEDIT);
 
         buf[0] = 0;
         profileIndex = SendDlgItemMessage(IDC_THUMBTEMPLATECOMBO, CB_GETCURSEL, 0, 0);
-        SendDlgItemMessage(IDC_THUMBTEMPLATECOMBO, CB_GETLBTEXT, profileIndex, (WPARAM)buf);
+        SendDlgItemMessage(IDC_THUMBTEMPLATECOMBO, CB_GETLBTEXT, profileIndex, reinterpret_cast<WPARAM>(buf));
         ThumbCreatingParams& Thumb = params_.getThumbRef();
         Thumb.TemplateName = W2U(buf);
 
-        Thumb.ResizeMode = (ThumbCreatingParams::ThumbResizeEnum) SendDlgItemMessage(IDC_THUMBRESIZECOMBO, CB_GETCURSEL, 0, 0);
+        Thumb.ResizeMode = static_cast<ThumbCreatingParams::ThumbResizeEnum>(SendDlgItemMessage(IDC_THUMBRESIZECOMBO, CB_GETCURSEL, 0, 0));
 
         Thumb.Format = static_cast<ThumbCreatingParams::ThumbFormatEnum>(SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_GETCURSEL));
         Thumb.Quality = GetDlgItemInt(IDC_THUMBQUALITYEDIT);
@@ -196,14 +192,13 @@ void CUploadParamsDlg::createThumbnailsCheckboxChanged() {
 
 void CUploadParamsDlg::processImagesChanged() {
     bool isChecked = GuiTools::IsChecked(m_hWnd, IDC_PROCESSIMAGESCHECKBOX);
-        GuiTools::EnableNextN(GetDlgItem(IDC_PROCESSIMAGESCHECKBOX), 2, isChecked );
+    GuiTools::EnableNextN(GetDlgItem(IDC_PROCESSIMAGESCHECKBOX), 2, isChecked );
 }
 
 LRESULT CUploadParamsDlg::OnClickedProcessImagesCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     processImagesChanged();
     return 0;
 }
-
 
 void CUploadParamsDlg::defaultSettingsCheckboxChanged() {
     bool isChecked = GuiTools::IsChecked(m_hWnd, IDC_DEFAULTSETTINGSCHECKBOX);
@@ -226,7 +221,6 @@ LRESULT  CUploadParamsDlg::OnClickedDefaultThumbSettingsCheckbox(WORD wNotifyCod
     defaultThumbSettingsCheckboxChanged();
     return 0;
 }
-
 
 void  CUploadParamsDlg::defaultThumbSettingsCheckboxChanged() {
     bool useDefaultThumbnailSettings = GuiTools::IsChecked(m_hWnd, IDC_DEFAULTTHUMBSETTINGSCHECKBOX);

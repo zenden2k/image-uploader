@@ -19,8 +19,8 @@
 */
 
 #include "LoginDlg.h"
+
 #include "wizarddlg.h"
-#include "Func/Common.h"
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Upload/ScriptUploadEngine.h"
@@ -43,7 +43,6 @@ CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, boo
         }
     }
     createNew_ = createNew;
-    //serverSupportsBeforehandAuthorization_ = serv
 }
 
 CLoginDlg::~CLoginDlg()
@@ -96,7 +95,6 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     deleteAccountLabel_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
 //    deleteAccountLabel_.SetLabel(deleteAccountLabelText);
     deleteAccountLabel_.m_clrLink = CSettings::DefaultLinkColor;
-
 
     deleteAccountLabel_.ShowWindow((createNew_ || accountName_.IsEmpty()) ? SW_HIDE : SW_SHOW);
 

@@ -18,9 +18,10 @@
 
 */
 
-#include "atlheaders.h"
-#include "wizarddlg.h"
 #include "settingspage.h"
+
+#include "wizarddlg.h"
+
 #include "uxtheme.h"
 
 #pragma comment(lib, "uxtheme.lib")
@@ -88,7 +89,7 @@ typedef HRESULT (STDAPICALLTYPE *ETDT_Func)(HWND,DWORD);
 void TabBackgroundFix(HWND hwnd)
 {
     if(!DllModule) return;
-    ETDT_Func Func = (ETDT_Func) GetProcAddress(DllModule, "EnableThemeDialogTexture");
+    ETDT_Func Func = reinterpret_cast<ETDT_Func>(GetProcAddress(DllModule, "EnableThemeDialogTexture"));
 
     if(!Func) return; 
     Func(hwnd, ETDT_ENABLETAB);
@@ -103,7 +104,6 @@ void CSettingsPage::FixBackground()
 {
     TabBackgroundFix(PageWnd);
 }
-
 
 CSettingsPage::~CSettingsPage()
 {

@@ -37,6 +37,7 @@
 #include "Gui/GuiTools.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Func/myutils.h"
+#include "Gui/Dialogs/WizardDlg.h"
 
 // FloatingWindow
 CFloatingWindow::CFloatingWindow()

@@ -483,7 +483,7 @@ SIZE Toolbar::CalcItemSize(int index)
 
     if ( item.icon ) {
         res.cx += iconSizeX_  + (item.title.IsEmpty() ? 0 :itemHorPadding_ ) ;
-        res.cy = max(iconSizeY_, res.cy);
+        res.cy = std::max<int>(iconSizeY_, res.cy);
     }
 
     if ( item.type == itComboButton ) {
@@ -524,12 +524,12 @@ int Toolbar::AutoSize()
 
             if ( orientation_ == orHorizontal ) {
                 x+= s.cx + itemMargin_;
-                width = max(x, subpanelLeftOffset_ + static_cast<int>((kSubpanelWidth + 20 )*dpiScaleX_));
-                height = max(s.cy + itemMargin_*2, height);
+                width = std::max<int>(x, subpanelLeftOffset_ + static_cast<int>((kSubpanelWidth + 20 )*dpiScaleX_));
+                height = std::max<int>(s.cy + itemMargin_*2, height);
             } else {
                 y+= s.cy + itemMargin_;
                 height = y;
-                width = max(s.cx+itemMargin_*2, width);
+                width = std::max<int>(s.cx+itemMargin_*2, width);
             }
         }
         if ( j == 0 ) {

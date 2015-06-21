@@ -1,9 +1,8 @@
 ﻿#include "ThreadSync.h"
-#include "Core/Logging.h"
+
 #include <map>
 #include <atomic>
 #include "ThreadSyncPrivate.h"
-
 
 ThreadSync::ThreadSync() : d_ptr(new ThreadSyncPrivate())
 {
@@ -41,12 +40,10 @@ CurlShare* ThreadSync::getCurlShare()
 
 void ThreadSync::incrementThreadCount()
 {
-    std::lock_guard<std::mutex> lock(d_ptr->threadCountMutex_);
-    d_ptr->threadCount_++;
+    ++d_ptr->threadCount_;
 }
 
 void ThreadSync::decrementThreadCount()
 {
-    std::lock_guard<std::mutex> lock(d_ptr->threadCountMutex_);
-    d_ptr->threadCount_--;
+    --d_ptr->threadCount_;
 }

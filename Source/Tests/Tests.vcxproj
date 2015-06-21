@@ -54,7 +54,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Source\boost\;$(SolutionDir)\Contrib\Include\gumbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;GOOGLE_GLOG_DLL_DECL=;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;PCRE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;GOOGLE_GLOG_DLL_DECL=;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;PCRE_STATIC;_WTL_NO_CSTRING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -100,9 +100,9 @@
   <ItemGroup>
     <ClCompile Include="..\Core\3rdpart\base64.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\GQDocument.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\GQ_Parser.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Node.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Object.cpp" />
-    <ClCompile Include="..\Core\3rdpart\GumboQuery\Parser.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\QueryUtil.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Selection.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Selector.cpp" />

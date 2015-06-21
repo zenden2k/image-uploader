@@ -25,10 +25,9 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Logging.h"
 
-#include <math.h>
+#include <cmath>
 #include <cassert>
 #include "3rdpart/GdiplusH.h"
-#include <math.h>
 
 namespace ImageEditor {
 using namespace Gdiplus;
@@ -179,10 +178,10 @@ void MarkerTool::highlightRegion(RECT rc)
 {
     Bitmap* canvasBm = canvas_->currentDocument()->getBitmap();
     BitmapData canvasData;
-    int w = min(canvasBm->GetWidth()-rc.left,static_cast<UINT>(rc.right - rc.left));
-    int h = min(canvasBm->GetHeight() - rc.top, static_cast<UINT>(rc.bottom - rc.top));
-    rc.left = max(0,rc.left);
-    rc.top = max(0,rc.top);
+    int w = min<int>(canvasBm->GetWidth()-rc.left,static_cast<UINT>(rc.right - rc.left));
+    int h = min<int>(canvasBm->GetHeight() - rc.top, static_cast<UINT>(rc.bottom - rc.top));
+    rc.left = max<LONG>(0,rc.left);
+    rc.top = max<LONG>(0,rc.top);
     Rect rc2 (rc.left , rc.top, w, h);
     segments_.markRect( rc );
     if (canvasBm->LockBits(& rc2, ImageLockModeRead|ImageLockModeWrite, PixelFormat32bppARGB, & canvasData) == Ok) {

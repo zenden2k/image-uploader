@@ -3,11 +3,9 @@
 #include "Core/Utils/CoreUtils.h"
 #include <sstream>
 #include "Core/Utils/StringUtils.h"
-#include "Func/MyUtils.h"
 #include "3rdpart/GdiplusH.h"
 #include <Aclapi.h>
 #include "3rdpart/Registry.h"
-#include "Gui/GuiTools.h"
 #include "TlHelp32.h"
 
 namespace WinUtils {
@@ -90,10 +88,10 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
             CloseClipboard();
             return true;
         }
-        Sleep(50);
+        Sleep(50); // Clipboard may be owned by another application, wait and try again
     }
    
-    if (raiseError ) {
+    if ( raiseError ) {
         DWORD lastError = ::GetLastError();
         CString message;
         HWND clipboardOwner = GetClipboardOwner();
@@ -128,9 +126,9 @@ bool CopyTextToClipboard(CString text)
         CloseClipboard();
         return FALSE;
     }
-    lptstrCopy = (LPTSTR) GlobalLock(hglbCopy);
-    memcpy(lptstrCopy, (LPCTSTR)text, text.GetLength() * sizeof(TCHAR));
-    lptstrCopy[cch] = (TCHAR) 0;
+    lptstrCopy = reinterpret_cast<LPTSTR>(GlobalLock(hglbCopy));
+    memcpy(lptstrCopy, static_cast<LPCTSTR>(text), text.GetLength() * sizeof(TCHAR));
+    lptstrCopy[cch] = 0;
     GlobalUnlock(hglbCopy);
     SetClipboardData(CF_UNICODETEXT, hglbCopy);
     CloseClipboard();
@@ -339,14 +337,14 @@ bool IsWindows64Bit()
     PGNSI pGNSI;
     ZeroMemory(&si, sizeof(SYSTEM_INFO));
     // Call GetNativeSystemInfo if supported or GetSystemInfo otherwise.
-    pGNSI = (PGNSI) GetProcAddress(GetModuleHandle(_T("kernel32.dll")), 
-        "GetNativeSystemInfo");
-    if(NULL != pGNSI)
+    pGNSI = reinterpret_cast<PGNSI>(GetProcAddress(GetModuleHandle(_T("kernel32.dll")), "GetNativeSystemInfo"));
+    if (NULL != pGNSI) {
         pGNSI(&si);
-    else GetSystemInfo(&si);
+    } else {
+        GetSystemInfo(&si);
+    }
     return si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;    
 }
-
 
 CString GetSystemSpecialPath(int csidl)
 {
@@ -373,7 +371,6 @@ CString GetSystemSpecialPath(int csidl)
     return result;
 }
 
-
 CString FormatWindowsErrorMessage(int idCode)
 {
     LPVOID lpMsgBuf;
@@ -384,7 +381,6 @@ CString FormatWindowsErrorMessage(int idCode)
     LocalFree( lpMsgBuf );
     return res;
 }
-
 
 bool FileExists(LPCTSTR FileName)
 {
@@ -592,7 +588,6 @@ CString GetUniqFileName(const CString& filePath)
     return result;
 }
 
-
 int GetFolderFileList(std::vector<CString>& list, CString folder, CString mask)
 {
     WIN32_FIND_DATA wfd;
@@ -710,11 +705,10 @@ bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont)
     lFont->lfStrikeOut=bStrikeOut;
     lFont->lfWeight=bBold?FW_BOLD:FW_NORMAL;
     lFont->lfUnderline=bUnderline;
-    lFont->lfCharSet=nCharSet;
+    lFont->lfCharSet=static_cast<BYTE>(nCharSet);
 
     return true;
 }
-
 
 bool ExtractStrFromList(
                                 LPCTSTR szString /* Source string */,
@@ -1119,9 +1113,5 @@ std::string chcp(const std::string &str, UINT codePageSrc, UINT codePageDst)
 
 const std::wstring Utf8ToWstring(const std::string &str)
 {
-
     return WinUtils::strtows(str, CP_UTF8);
 }
-
-
-

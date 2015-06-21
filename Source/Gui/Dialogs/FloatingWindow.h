@@ -27,10 +27,14 @@
 #pragma once
 #include "atlheaders.h"
 #include <atlcrack.h>
+#include <memory>
 #include "Gui/Components/trayicon.h"
 #include "SettingsDlg.h"
 #include "TraySettings.h"
 #include "Core/Upload/FileQueueUploader.h"
+#include "Core/Upload/UploadManager.h"
+#include "Core/Upload/UrlShorteningTask.h"
+
 // FloatingWindow
 
 // TODO: rewrite using an enum
@@ -64,7 +68,6 @@
 
 #define WM_CLOSETRAYWND (WM_USER+2)
 #define WM_RELOADSETTINGS (WM_USER+3)
-#include "Core/Upload/UploadManager.h"
 
 
 class CFloatingWindow :
@@ -74,18 +77,18 @@ class CFloatingWindow :
 public:
     HANDLE hMutex;
     HWND m_ActiveWindow;
-        HMENU m_hTrayIconMenu;
-        UINT WM_TASKBARCREATED;
-        bool EnableClicks;
-        HWND m_PrevActiveWindow;
-        CHotkeyList m_hotkeys;
-        HICON m_hIconSmall;
-        bool m_bStopCapturingWindows;
-        bool m_bIsUploading;
-        UploadTask* lastUploadedItem_;
-        std::shared_ptr<UrlShorteningTask> lastUrlShorteningTask_;
-        CString imageUrlShortened_;
-        CString downloadUrlShortened_;
+    HMENU m_hTrayIconMenu;
+    UINT WM_TASKBARCREATED;
+    bool EnableClicks;
+    HWND m_PrevActiveWindow;
+    CHotkeyList m_hotkeys;
+    HICON m_hIconSmall;
+    bool m_bStopCapturingWindows;
+    bool m_bIsUploading;
+    UploadTask* lastUploadedItem_;
+    std::shared_ptr<UrlShorteningTask> lastUrlShorteningTask_;
+    CString imageUrlShortened_;
+    CString downloadUrlShortened_;
 
     CFloatingWindow();
     ~CFloatingWindow();

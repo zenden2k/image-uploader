@@ -284,9 +284,9 @@ bool CUpdateManager::internal_load_update(CString name)
     CString url = localPackage.updateUrl();
     url.Replace(_T("%appver%"), IuCommonFunctions::GetVersion());
     url.Replace(_T("%name%"), localPackage.packageName());
-    url.Replace(_T("OS_NAME"), U2W(nm.urlEncode(IuCoreUtils::getOsName())));
-    url.Replace(_T("OS_VER"), U2W(nm.urlEncode(IuCoreUtils::getOsVersion())));
-    url.Replace(_T("CPU_FEATURES"), U2W(nm.urlEncode(IuCoreUtils::getCpuFeatures())));
+    url.Replace(_T("OS_NAME"), U2W(nm.urlEncode(IuCoreUtils::GetOsName())));
+    url.Replace(_T("OS_VER"), U2W(nm.urlEncode(IuCoreUtils::GetOsVersion())));
+    url.Replace(_T("CPU_FEATURES"), U2W(nm.urlEncode(IuCoreUtils::GetCpuFeatures())));
     try {
         nm.doGet(IuCoreUtils::WstringToUtf8((LPCTSTR)url));
     } catch ( NetworkClient::AbortedException&) {

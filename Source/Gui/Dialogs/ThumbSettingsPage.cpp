@@ -28,7 +28,6 @@
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Images/Thumbnail.h"
-#include "Func/MyUtils.h"
 #include "ThumbEditor.h"
 #include "InputDialog.h"
 #include "Func/IuCommonFunctions.h"
@@ -223,7 +222,7 @@ std::string CThumbSettingsPage::getSelectedThumbnailName()
     TCHAR buf[256];
     int index = SendDlgItemMessage(IDC_THUMBSCOMBO, CB_GETCURSEL);
     if(index < 0) return "";
-    SendDlgItemMessage(IDC_THUMBSCOMBO, CB_GETLBTEXT, index, (WPARAM)buf);
+    SendDlgItemMessage(IDC_THUMBSCOMBO, CB_GETLBTEXT, index, reinterpret_cast<WPARAM>(buf));
     return WCstringToUtf8(buf);
 }
 
@@ -294,12 +293,12 @@ LRESULT CThumbSettingsPage::OnThumbTextChange(WORD wNotifyCode, WORD wID, HWND h
 
 LRESULT CThumbSettingsPage::OnWidthEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-   if(!m_CatchFormChanges) return 0;
-   params_.ResizeMode = (SendDlgItemMessage(IDC_WIDTHRADIO, BM_GETCHECK) == FALSE)?ThumbCreatingParams::trByHeight : ThumbCreatingParams::trByWidth ;
-   ::EnableWindow(GetDlgItem(IDC_WIDTHEDIT), params_.ResizeMode == ThumbCreatingParams::trByWidth);
-   ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT),  params_.ResizeMode == ThumbCreatingParams::trByHeight);
+    if (!m_CatchFormChanges) return 0;
+    params_.ResizeMode = (SendDlgItemMessage(IDC_WIDTHRADIO, BM_GETCHECK) == FALSE) ? ThumbCreatingParams::trByHeight : ThumbCreatingParams::trByWidth ;
+    ::EnableWindow(GetDlgItem(IDC_WIDTHEDIT), params_.ResizeMode == ThumbCreatingParams::trByWidth);
+    ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT), params_.ResizeMode == ThumbCreatingParams::trByHeight);
     params_.Size = GetDlgItemInt(IDC_WIDTHEDIT);
     params_.Size = GetDlgItemInt(IDC_HEIGHTEDIT);
-   showSelectedThumbnailPreview();
-   return 0;
+    showSelectedThumbnailPreview();
+    return 0;
 }

@@ -44,7 +44,7 @@ void OffsetControl(HWND control, int offset)
     RECT rc;
 
     GetWindowRect(control, &rc);
-    MapWindowPoints(0, GetParent(control), (LPPOINT)&rc, 2);
+    MapWindowPoints(0, GetParent(control), reinterpret_cast<LPPOINT>(&rc), 2);
     SetWindowPos(control, 0, rc.left, rc.top + offset, 0, 0, SWP_NOSIZE);
 }
 

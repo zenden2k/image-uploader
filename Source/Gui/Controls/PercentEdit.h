@@ -1,10 +1,7 @@
 
 #pragma once
-#include <atlapp.h>
-#include <atlbase.h>
-#include <atlmisc.h>
-#include <atlcrack.h>
-#include <atlctrls.h>
+
+#include "atlheaders.h"
 
 class CPercentEdit : public CWindowImpl<CPercentEdit>
 {

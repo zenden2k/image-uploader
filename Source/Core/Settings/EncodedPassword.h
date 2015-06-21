@@ -4,6 +4,9 @@
 #pragma once
 
 #include <string>
+#ifdef IU_WTL
+#include "atlheaders.h"
+#endif
 
 class CEncodedPassword {
 public:

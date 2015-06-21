@@ -21,13 +21,10 @@
 #include "atlheaders.h"
 #include "RegionSelect.h"
 #include "Func/common.h"
-#include <math.h>
-#include "LogWindow.h"
+#include <cmath>
 #include "Func/LangClass.h"
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
-//#include <Gdipluseffects.h>
-
 
 struct WindowsListItem
 {

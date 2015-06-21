@@ -32,6 +32,7 @@
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
 #include <Core/ServiceLocator.h>
+#include "Gui/Dialogs/WizardDlg.h"
 
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg,std::vector<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)
@@ -74,7 +75,7 @@ bool CResultsPanel::LoadTemplate()
 
     dwFileSize = GetFileSize (hFile, NULL) ; 
     if(!dwFileSize) return false;
-    DWORD dwMemoryNeeded = min(35536, dwFileSize);
+    DWORD dwMemoryNeeded = min(35536ul, dwFileSize);
     LPTSTR TemplateText = (LPTSTR) new CHAR[dwMemoryNeeded+2]; 
     ZeroMemory(TemplateText,dwMemoryNeeded);
     ::ReadFile(hFile, (LPVOID)TemplateText , 2, &dwBytesRead, NULL); //Reading BOM

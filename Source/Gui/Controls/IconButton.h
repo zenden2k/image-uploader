@@ -18,12 +18,8 @@
 //
 
 #pragma once
-#include <atlapp.h>
-#include <atlbase.h>
-#include <atlmisc.h>
-#include <atlcrack.h>
-#include <atlctrls.h>
-#include <atltheme.h>
+
+#include "atlheaders.h"
 
 class CIconButton : public CWindowImpl<CIconButton>, 
    public CThemeImpl <CIconButton>//, 

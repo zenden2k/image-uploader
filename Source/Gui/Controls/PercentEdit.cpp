@@ -19,9 +19,9 @@
 // to access the functions in the "uxtheme.dll" yet still load when
 // the DLL isn't available.
 //
-#include <atlbase.h>
-#include <atlapp.h>
+
 #include "PercentEdit.h"
+
 #include "Func/Common.h"
 #include "Gui/GuiTools.h"
 #include "Core/Scripting/API/HtmlElementPrivate_win.h"

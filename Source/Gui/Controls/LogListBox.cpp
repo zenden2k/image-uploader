@@ -23,6 +23,7 @@
 #include "Func/Myutils.h"
 #include "Gui/GuiTools.h"
 #include "Core/Logging.h"
+#include <algorithm>
 
 const int LLB_VertDivider = 10;
 const int LLB_VertMargin = 5;
@@ -153,8 +154,8 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
     CString str;
     lpmis->itemWidth = ItemWidth;
     lpmis->itemHeight = LLB_VertMargin + item->TitleHeight + LLB_VertDivider + item->TextHeight + (item->InfoHeight?(LLB_VertDivider + item->InfoHeight):0) + LLB_VertMargin+2;
-    lpmis->itemHeight = max(lpmis->itemHeight, static_cast<UINT>(dpiScaleY_ * 70) );
-    lpmis->itemHeight = min(254 , lpmis->itemHeight);
+    lpmis->itemHeight = std::max(lpmis->itemHeight, static_cast<UINT>(dpiScaleY_ * 70) );
+    lpmis->itemHeight = std::min(254u , lpmis->itemHeight);
 
     ReleaseDC(dc);
     return 0;

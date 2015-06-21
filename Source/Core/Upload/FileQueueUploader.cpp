@@ -52,11 +52,11 @@ bool CFileQueueUploader::start()
 
 void CFileQueueUploader::stop()
 {
-    _impl->m_NeedStop = true;
+    _impl->stopSignal_ = true;
 }
 
 bool CFileQueueUploader::IsRunning() const {
-    return _impl->m_IsRunning;
+    return _impl->isRunning_;
 }
 
 CFileQueueUploader::~CFileQueueUploader() {
@@ -64,12 +64,12 @@ CFileQueueUploader::~CFileQueueUploader() {
 }
 
 void CFileQueueUploader::setMaxThreadCount(int threadCount) {
-    _impl->m_nThreadCount = threadCount;
+    _impl->threadCount_ = threadCount;
 }
 
 bool CFileQueueUploader::isSlotAvailableForServer(std::string serverName, int maxThreads) {
     int threads = _impl->serverThreads_[serverName].runningThreads + _impl->serverThreads_[serverName].waitingFileCount;
-    return threads < maxThreads && threads < _impl->m_nThreadCount;
+    return threads < maxThreads && threads < _impl->threadCount_;
 }
 
 void CFileQueueUploader::addUploadFilter(UploadFilter* filter)

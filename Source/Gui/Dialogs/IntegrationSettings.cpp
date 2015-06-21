@@ -110,7 +110,6 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
         }
     }
 
-
     BOOL b;
     OnClickedQuickUpload(0, IDC_STARTUPLOADINGFROMSHELL,0, b);
     ::EnableWindow(GetDlgItem(IDC_SHELLVIDEOCONTEXTMENUITEM), shellIntegrationAvailable);
@@ -121,7 +120,6 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
     return 1;  // Let the system set the focus
 }
 
-    
 bool CIntegrationSettings::Apply()
 {
     Settings.ExplorerContextMenu_changed = Settings.ExplorerContextMenu; 
@@ -186,8 +184,7 @@ bool CIntegrationSettings::Apply()
             }
         Settings.ServerProfiles = serverProfiles_;
     }
-    
-    //MessageBoxA(0,Settings.ServerProfiles[itemId].folderTitle().c_str(),0,0);
+
     return true;
 }
 
@@ -196,15 +193,11 @@ LRESULT CIntegrationSettings::OnClickedQuickUpload(WORD /*wNotifyCode*/, WORD wI
     return 0;
 }
 
-
-
 LRESULT CIntegrationSettings::OnShellIntegrationCheckboxChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     ShellIntegrationChanged();
     return 0;
 }
-
-
 
 void CIntegrationSettings::ShellIntegrationChanged()
 {
@@ -224,10 +217,9 @@ LRESULT CIntegrationSettings::OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wI
         ListItemData* lid = new ListItemData();
         lid->name = dlg.menuItemTitle();
         lid->serverProfile = dlg.serverProfile();
-        menuItemsListBox_.SetItemData(newIndex, (DWORD_PTR) lid);
+        menuItemsListBox_.SetItemData(newIndex, reinterpret_cast<DWORD_PTR>(lid));
         menuItemsChanged_ = true; 
     }
-    // TODO: Add your control notification handler code here
 
     return 0;
 }
@@ -236,7 +228,7 @@ LRESULT CIntegrationSettings::OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /
 {
     int currentIndex = menuItemsListBox_.GetCurSel();
     if ( currentIndex != -1 ) {
-        ListItemData* lid = (ListItemData*) menuItemsListBox_.GetItemData(currentIndex);
+        ListItemData* lid = reinterpret_cast<ListItemData*>(menuItemsListBox_.GetItemData(currentIndex));
         menuItemsListBox_.DeleteString(currentIndex);
         delete lid;
         menuItemsChanged_ = true;

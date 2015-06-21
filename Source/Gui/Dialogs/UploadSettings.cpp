@@ -35,6 +35,7 @@
 #include "AddFtpServerDialog.h"
 #include "AddDirectoryServerDIalog.h"
 #include <Gui/Controls/ServerSelectorControl.h>
+#include "Gui/Dialogs/WizardDlg.h"
 
 CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager * uploadEngineManager) :convert_profiles_(Settings.ConvertProfiles)
 {
@@ -42,7 +43,7 @@ CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager
     m_EngineList = EngineList;
     m_ProfileChanged  = false;
     m_CatchChanges = false;
-       iconBitmapUtils_ = new IconBitmapUtils();
+    iconBitmapUtils_ = new IconBitmapUtils();
     useServerThumbnailsTooltip_ = 0;
     uploadEngineManager_ = uploadEngineManager;
     Settings.addChangeCallback(CSettings::ChangeCallback(this, &CUploadSettings::settingsChanged));
@@ -52,7 +53,6 @@ CUploadSettings::~CUploadSettings()
 {
     delete iconBitmapUtils_;
 }
-
 
 void CUploadSettings::settingsChanged(BasicSettings* settingsBase)
 {
@@ -323,14 +323,14 @@ bool CUploadSettings::OnNext()
         }
     }
     
-   if(sessionImageServer_.getImageUploadParamsRef().getThumbRef().ResizeMode != ThumbCreatingParams::trByHeight)
+   //if(sessionImageServer_.getImageUploadParamsRef().getThumbRef().ResizeMode != ThumbCreatingParams::trByHeight)
    {
      sessionImageServer_.getImageUploadParamsRef().getThumbRef().Size = GetDlgItemInt(IDC_THUMBWIDTH);
    }
-   else
+   /*else
    {
         sessionImageServer_.getImageUploadParamsRef().getThumbRef().Size=  GetDlgItemInt(IDC_THUMBWIDTH);
-   }
+   }*/
 
     sessionImageServer_.getImageUploadParamsRef().ProcessImages = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
     sessionImageServer_.getImageUploadParamsRef().CreateThumbs = IS_CHECKED(IDC_CREATETHUMBNAILS);
@@ -363,9 +363,8 @@ bool CUploadSettings::OnShow()
 {
     BOOL temp;
 
-    if ( WizardDlg->serversChanged() ) {
+    if (WizardDlg->serversChanged()) {
         sessionImageServer_ = WizardDlg->getSessionImageServer();
-        //MessageBox(sessionImageServer_.serverName());
         sessionFileServer_ = WizardDlg->getSessionFileServer();
         imageServerLogin_ = sessionImageServer_.serverSettings().authData.Login;
         fileServerLogin_ = sessionFileServer_.serverSettings().authData.Login;
@@ -373,9 +372,9 @@ bool CUploadSettings::OnShow()
         ShowParams();
     }
 
-   ShowParams(U2W(sessionImageServer_.getImageUploadParamsRef().ImageProfileName));
-   UpdateProfileList();
-   UpdateAllPlaceSelectors();
+    ShowParams(U2W(sessionImageServer_.getImageUploadParamsRef().ImageProfileName));
+    UpdateProfileList();
+    UpdateAllPlaceSelectors();
     OnBnClickedCreatethumbnails(0, 0, 0, temp);
     OnBnClickedKeepasis(0, 0, 0, temp);
     EnableNext();
@@ -596,7 +595,6 @@ LRESULT CUploadSettings::OnImageServerSelect(WORD /*wNotifyCode*/, WORD wID, HWN
     int nServerIndex = wID - IDC_IMAGESERVER_FIRST_ID;
     selectServer(sessionImageServer_, nServerIndex);
     
-
     UpdateAllPlaceSelectors();
     return 0;
 }
@@ -665,10 +663,8 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                     mi.fMask |= MIIM_BITMAP;
                 }
                 if ( menuItemCount && (menuItemCount - lastMenuBreakIndex) % 34 == 0  ) {
-                    
                     mi.fType |= MFT_MENUBARBREAK ;
                     lastMenuBreakIndex = menuItemCount;
-                    
                 }
 
                 sub.InsertMenuItem(menuItemCount++, true, &mi);
@@ -685,9 +681,6 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             } else {
                 sub.InsertMenuItem(menuItemCount++, true, &mi);
             }
-            
-
-            
         }
 
         mi.fType = MFT_STRING;
@@ -709,8 +702,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 bm = iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon);
                 bitmaps.push_back(bm);
             }
-        
-            
+          
             mi.hbmpItem =  WinUtils::IsVista() ? bm: HBMMENU_CALLBACK;
             if ( mi.hbmpItem ) {
                 mi.fMask |= MIIM_BITMAP;
@@ -847,19 +839,14 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 mi.dwTypeData  = (LPWSTR)(LPCTSTR)TR("<no authentication>");
                 sub.InsertMenuItem(i++, true, &mi);
             }
-
-
-            
+  
             ZeroMemory(&mi,sizeof(mi));
             mi.cbSize = sizeof(mi);
             mi.fMask = MIIM_TYPE|MIIM_ID;
             mi.wID = IDC_FILESERVER_LAST_ID + 1;
             mi.fType = MFT_SEPARATOR;
 
-
             sub.InsertMenuItem(i++, true, &mi);
-
-
             ZeroMemory(&mi,sizeof(mi));
             mi.cbSize = sizeof(mi);
             mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
@@ -868,12 +855,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 
             mi.dwTypeData  = (LPWSTR)(LPCTSTR)TR("New account...");
 
-            
             sub.InsertMenuItem(i++, true, &mi);
-
-
-
-
             sub.SetMenuDefaultItem(0,TRUE);
         }
         else

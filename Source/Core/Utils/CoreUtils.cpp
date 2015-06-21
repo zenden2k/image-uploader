@@ -25,11 +25,12 @@
 #include <cstdio>
 #include <map>
 #include <string>
-#include <math.h>
+#include <cmath>
 
 #ifdef _WIN32
     #include <io.h>
     #include "Core/Utils/utils_Win.h"
+    #include <WinSock.h>
 #else
     #include <boost/filesystem.hpp>
     #ifdef __APPLE__

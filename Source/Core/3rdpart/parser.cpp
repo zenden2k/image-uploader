@@ -5,7 +5,7 @@
 
 // Includes
 
-#include <math.h>
+#include <cmath>
 #include "parser.h"
 
 // Defines

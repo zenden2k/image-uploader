@@ -55,13 +55,13 @@ public:
     int sessionCount();
     std::shared_ptr<UploadSession> session(int index);
     CFileQueueUploader *queueUploader_;
-    volatile bool m_NeedStop;
-    bool m_IsRunning;
+    volatile bool stopSignal_;
+    bool isRunning_;
     std::vector<std::shared_ptr<UploadSession>> sessions_;
     std::recursive_mutex sessionsMutex_;
     std::vector<UploadFilter*> filters_;
-    int m_nThreadCount;
-    int m_nRunningThreads;
+    int threadCount_;
+    int runningThreads_;
     friend class CFileQueueUploader;
 protected:
     bool onNeedStopHandler();

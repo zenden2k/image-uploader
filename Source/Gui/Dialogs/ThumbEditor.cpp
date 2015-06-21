@@ -23,9 +23,7 @@
 #include "Core/Settings.h"
 #include "Core/Images/Thumbnail.h"
 #include "Gui/GuiTools.h"
-#include "Core/Scripting/API/HtmlDocumentPrivate_win.h"
 
-// CThumbEditor
 CThumbEditor::CThumbEditor(Thumbnail *thumb)
 {
     thumb_ = thumb;

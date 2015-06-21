@@ -1,9 +1,7 @@
 #ifndef __REGISTRY_H__
 #define __REGISTRY_H__
 
-#include <atlbase.h>
-#include <atlapp.h>
-#include <atlmisc.h>
+#include "atlheaders.h"
 #include <vector>
 
 class CRegistry

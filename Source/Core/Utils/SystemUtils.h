@@ -7,10 +7,10 @@
 
 namespace IuCoreUtils
 {
-    std::string getOsName();
-    std::string getOsVersion();
-    std::string getCpuFeatures();
-    bool isOs64Bit();
+    std::string GetOsName();
+    std::string GetOsVersion();
+    std::string GetCpuFeatures();
+    bool IsOs64Bit();
 }
 
 #endif

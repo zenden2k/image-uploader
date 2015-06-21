@@ -22,7 +22,7 @@
 #include <cstdlib>
 #include <ctime>
 #include "Core/Upload/FileUploadTask.h"
-#include <math.h>
+#include <cmath>
 
 CUploader::CUploader(void)
 {

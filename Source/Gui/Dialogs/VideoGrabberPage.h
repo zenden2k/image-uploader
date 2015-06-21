@@ -22,18 +22,17 @@
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include "3rdpart/thread.h"
 #include "Gui/WizardCommon.h"
-#include "Gui/Dialogs/MainDlg.h"
-#include "Gui/Dialogs/videograbberparams.h"
-#include "Gui/Dialogs/WizardDlg.h"
 #include "Gui/Controls/ThumbsView.h"
+
 class AbstractImage;
 #define WM_MYADDIMAGE (WM_USER + 22)
 
 class VideoGrabber;
-
 class CVideoGrabberPage;
+class UploadEngineManager;
+class CMainDlg;
+
 struct SENDPARAMS
 {
 	BYTE* pBuffer;
@@ -42,8 +41,9 @@ struct SENDPARAMS
 	long BufSize;
 	CVideoGrabberPage* vg;
 };
-class CVideoGrabberPage : public CWizardPage,  public CDialogImpl<CVideoGrabberPage>
-{
+
+class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPage>, public CWinDataExchange <CVideoGrabberPage>
+{ 
 	public:
 		CVideoGrabberPage(UploadEngineManager * uploadEngineManager);
 		~CVideoGrabberPage();
@@ -64,6 +64,10 @@ class CVideoGrabberPage : public CWizardPage,  public CDialogImpl<CVideoGrabberP
 			COMMAND_HANDLER(IDC_FILEINFOBUTTON, BN_CLICKED, OnBnClickedFileinfobutton)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
+        
+        BEGIN_DDX_MAP(CVideoGrabberPage)
+            DDX_CONTROL_HANDLE(IDC_FILEEDIT, fileEdit_)
+        END_DDX_MAP()
 
 		// Handler prototypes:
 		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -72,7 +76,6 @@ class CVideoGrabberPage : public CWizardPage,  public CDialogImpl<CVideoGrabberP
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnLvnKeydownThumblist(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandled*/);
 		LRESULT OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandled*/);
 		LRESULT OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnBnClickedGrabberparams(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
@@ -112,6 +115,7 @@ class CVideoGrabberPage : public CWizardPage,  public CDialogImpl<CVideoGrabberP
 		TCHAR m_szFileName[MAX_PATH];
 		bool CanceledByUser;
 		CMainDlg* MainDlg;
+        CEdit fileEdit_;
 		UploadEngineManager * uploadEngineManager_;
 };
 

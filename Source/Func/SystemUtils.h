@@ -1,6 +1,7 @@
 #ifndef FUNC_SYSTEM_UTILS_H
 #define FUNC_SYSTEM_UTILS_H
 
+#include "atlheaders.h"
 #include "3rdpart/GdiplusH.h"
 #include <vector>
 

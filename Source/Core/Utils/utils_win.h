@@ -24,6 +24,7 @@
 #include <windows.h>
 #include "Core/3rdpart/codepages.h"
 #include "Core/Logging.h"
+#include <ObjIdl.h>
 
 namespace IuCoreUtils
 {

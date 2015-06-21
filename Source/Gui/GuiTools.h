@@ -65,7 +65,6 @@ namespace GuiTools
 
     bool IsChecked(HWND dlg, int id);
 
-    CString SelectFolderDialog(HWND hWndParent, CString initialDir);
     RECT AutoSizeStaticControl(HWND control);
 
     struct IconInfo

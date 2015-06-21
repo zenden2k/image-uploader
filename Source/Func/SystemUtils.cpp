@@ -1,6 +1,5 @@
 #include "SystemUtils.h"
 
-#include "atlheaders.h"
 #include "MyUtils.h"
 #include <vector>
 
@@ -17,7 +16,7 @@ bool CopyFileAndImageToClipboard(LPCTSTR fileName) {
 
 bool CopyFilesToClipboard(const std::vector<LPCTSTR>& fileNames, bool clearClipboard ) {
     int argc = fileNames.size();
-    WCHAR *pFullNames = (WCHAR*) malloc(argc * MAX_PATH * sizeof(WCHAR));
+    WCHAR *pFullNames = reinterpret_cast<WCHAR*>(malloc(argc * MAX_PATH * sizeof(WCHAR)));
     WCHAR *p = pFullNames;
     for ( int i = 0; i < argc; i++ ) {
         lstrcpy(p, fileNames[i]);
@@ -27,7 +26,7 @@ bool CopyFilesToClipboard(const std::vector<LPCTSTR>& fileNames, bool clearClipb
     DWORD dwDataBytes = sizeof(WCHAR) * (p - pFullNames);
     DROPFILES df = {sizeof(DROPFILES), {0, 0}, 0, TRUE};
     HGLOBAL hMem = GlobalAlloc(GMEM_ZEROINIT|GMEM_MOVEABLE|GMEM_DDESHARE, sizeof(DROPFILES) + dwDataBytes);
-    WCHAR *pGlobal = (WCHAR *) GlobalLock(hMem);
+    WCHAR *pGlobal = reinterpret_cast<WCHAR*>(GlobalLock(hMem));
     CopyMemory(pGlobal, &df, sizeof(DROPFILES));
     CopyMemory(pGlobal + 10, pFullNames, dwDataBytes); // that's pGlobal + 20 bytes (the size of DROPFILES);
     GlobalUnlock(hMem);

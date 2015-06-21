@@ -6,7 +6,7 @@
 namespace IuCoreUtils
 {
 
-bool isOs64Bit() {
+bool IsOs64Bit() {
 #if _WIN64
         return true;
 
@@ -37,11 +37,11 @@ bool isOs64Bit() {
 #endif
     }
 
-std::string getOsName() {
+std::string GetOsName() {
     return "Windows";
 }
 
-std::string getOsVersion() {
+std::string GetOsVersion() {
     OSVERSIONINFOEX osvi;
 
     ZeroMemory(&osvi, sizeof(osvi));

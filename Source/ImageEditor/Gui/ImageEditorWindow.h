@@ -1,6 +1,7 @@
 #ifndef IMAGEEDITOR_MAINFRM_H
 #define IMAGEEDITOR_MAINFRM_H
 
+#include "atlheaders.h"
 #include "resource.h"
 #include "ImageEditorView.h"
 #include "ImageEditor/Document.h"

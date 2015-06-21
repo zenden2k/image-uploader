@@ -7,7 +7,7 @@
 namespace IuCoreUtils
 {
 
-bool isOs64Bit() {
+bool IsOs64Bit() {
     if (sizeof(void *) * CHAR_BIT == 64) {
         return true;
     }
@@ -16,12 +16,12 @@ bool isOs64Bit() {
     }
 }
 
-std::string getOsName() {
+std::string GetOsName() {
     // TODO:
     return "Unix";
 }
 
-std::string getOsVersion() {
+std::string GetOsVersion() {
     // TODO: 
     std::string res;
     

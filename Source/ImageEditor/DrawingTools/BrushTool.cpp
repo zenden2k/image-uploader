@@ -25,10 +25,9 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Logging.h"
 
-#include <math.h>
+#include <cmath>
 #include <cassert>
 #include "3rdpart/GdiplusH.h"
-#include <math.h>
 
 namespace ImageEditor {
 

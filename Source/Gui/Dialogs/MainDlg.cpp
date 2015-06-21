@@ -19,18 +19,19 @@
 */
 
 #include "MainDlg.h"
+
 #include "atlheaders.h"
-#include "resource.h"
-#include "aboutdlg.h"
 #include "Core/Settings.h"
 #include "Common/CmdLine.h"
 #include "Func/SystemUtils.h"
 #include "Func/WinUtils.h"
 #include "Func/Myutils.h"
-#include "Func/Common.h"
 #include "Gui/GuiTools.h"
 #include <ImageEditor/Gui/ImageEditorWindow.h>
 #include "Func/ImageEditorConfigurationProvider.h"
+#include <Gui/Components/NewStyleFolderDialog.h>
+#include "Gui/Dialogs/WizardDlg.h"
+
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     PageWnd = m_hWnd;
@@ -66,7 +67,7 @@ bool CMainDlg::CheckEditInteger(int Control)
     TCHAR Buffer[MAX_PATH];
     GetDlgItemText(Control, Buffer, sizeof(Buffer)/sizeof(TCHAR));
     if(lstrlen(Buffer) == 0) return false;
-    int n = GetDlgItemInt(Control, false);
+    int n = GetDlgItemInt(Control);
     if(n) SetDlgItemInt(Control, (n<0)?(-n):n);
     else SetDlgItemText(Control, _T(""));
 
@@ -82,7 +83,7 @@ LRESULT CMainDlg::OnBnClickedAddimages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     MENUITEMINFO mi;
-    HWND     hwnd = (HWND) wParam;  
+    HWND hwnd = reinterpret_cast<HWND>(wParam);  
     POINT ClientPoint, ScreenPoint;
     if(hwnd != GetDlgItem(IDC_FILELIST)) return 0;
 
@@ -113,7 +114,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         FolderMenu.LoadMenu(IDR_CONTEXTMENU2);
         CMenu sub = FolderMenu.GetSubMenu(0);
         bool IsClipboard=    WizardDlg->IsClipboardDataAvailable();
-        sub.EnableMenuItem(IDC_PASTE, (IsClipboard)?MF_ENABLED    :MF_GRAYED    );
+        sub.EnableMenuItem(IDC_PASTE, (IsClipboard) ? MF_ENABLED : MF_GRAYED);
         mi.cbSize = sizeof(mi);
         mi.fMask = MIIM_TYPE;
         mi.fType = MFT_STRING;
@@ -345,7 +346,7 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     CString EditorCmd = Settings.ImageEditorPath;
     CString EditorCmdLine ;
     EditorCmd.Replace(_T("%1"), _T("%s"));
-    EditorCmdLine.Format(EditorCmd, (LPCTSTR)FileName);
+    EditorCmdLine.Format(EditorCmd, static_cast<LPCTSTR>(FileName));
     
     TCHAR FilePathBuffer[256];
     ExtractFilePath(FileName, FilePathBuffer);
@@ -500,13 +501,16 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 
         CopyFile( FileName, fd.m_szFileName, false );
     } else {
-        CString newPath = GuiTools::SelectFolderDialog(m_hWnd, CString());
-        if ( !newPath.IsEmpty() ) {
-            size_t fileCount = selectedFiles.size();
-            for ( size_t i = 0; i < fileCount; i++ ) {
-                CopyFile( selectedFiles[i], newPath + _T("\\") + WinUtils::myExtractFileName(selectedFiles[i] ) , false );
+        CNewStyleFolderDialog dlg(m_hWnd, CString(), CString());
+        if (dlg.DoModal(m_hWnd) == IDOK) {
+            CString newPath = dlg.GetFolderPath();
+            if (!newPath.IsEmpty()) {
+                size_t fileCount = selectedFiles.size();
+                for (size_t i = 0; i < fileCount; i++) {
+                    CopyFile(selectedFiles[i], newPath + _T("\\") + WinUtils::myExtractFileName(selectedFiles[i]), false);
+                }
             }
-        }
+        }    
     }
 
     return 0;

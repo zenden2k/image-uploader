@@ -24,12 +24,7 @@ limitations under the License.
 #include "atlheaders.h"
 #include "Func/WinUtils.h"
 
-typedef HRESULT(__stdcall *SHCreateItemFromParsingNameFunc)(
-    _In_  PCWSTR   pszPath,
-    _In_  IBindCtx *pbc,
-    _In_  REFIID   riid,
-    _Out_ void     **ppv
-    );
+typedef HRESULT(__stdcall *SHCreateItemFromParsingNameFunc)(PCWSTR, IBindCtx *, REFIID, void**);
 
 class CNewStyleFolderDialog {
 public:

@@ -20,12 +20,7 @@
 
 #include "Func/MyEngineList.h"
 
-#include "Func/MyUtils.h"
-#include "Func/Common.h"
 #include "Core/Settings.h"
-#include "Core/Upload/DefaultUploadEngine.h"
-#include "Core/Upload/ScriptUploadEngine.h"
-#include "Gui/Dialogs/LogWindow.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
 
@@ -49,7 +44,7 @@ CUploadEngineData* CMyEngineList::byName(const CString& name)
     return CUploadEngineList_Base::byName(WCstringToUtf8(name));
 }
 
-int CMyEngineList::GetUploadEngineIndex(const CString Name)
+int CMyEngineList::GetUploadEngineIndex(const CString& Name)
 {
     return CUploadEngineList_Base::GetUploadEngineIndex(WCstringToUtf8(Name));
 }
@@ -58,55 +53,6 @@ const CString CMyEngineList::ErrorStr()
 {
     return m_ErrorStr;
 }
-/*
-CAbstractUploadEngine* CMyEngineList::getUploadEngine(CUploadEngineData* data, ServerSettingsStruct& serverSettings)
-{
-    CAbstractUploadEngine* result = NULL;
-    if (data->UsingPlugin)
-    {
-        result = iuPluginManager.getPlugin(data->Name, data->PluginName, serverSettings);
-        if ( !result ) {
-            CString errorMessage;
-            errorMessage.Format(_T("Cannot load plugin '%s'"), static_cast<LPCTSTR>(Utf8ToWCstring(data->PluginName)));
-            WriteLog(logError, _T("CMyEngineList"), errorMessage);
-        }
-    }
-    else
-    {
-        if (m_prevUpEngine)
-        {
-            if (m_prevUpEngine->getUploadData()->Name == data->Name &&
-                m_prevUpEngine->serverSettings().authData.Login == serverSettings.authData.Login
-                
-                )
-                result = m_prevUpEngine;
-            else
-            {
-                delete m_prevUpEngine;
-                m_prevUpEngine = 0;
-            }
-        }
-        if (!m_prevUpEngine)
-            m_prevUpEngine = new CDefaultUploadEngine();
-        result = m_prevUpEngine;
-    }
-    if (!result)
-        return 0;
-    result->setUploadData(data);
-    result->setServerSettings(serverSettings);
-    result->onErrorMessage.bind(DefaultErrorHandling::ErrorMessage);
-    return result;
-}
-
-CAbstractUploadEngine* CMyEngineList::getUploadEngine(std::string name, ServerSettingsStruct& serverSettings)
-{
-    return getUploadEngine(CUploadEngineList_Base::byName(name), serverSettings);
-}
-
-CAbstractUploadEngine* CMyEngineList::getUploadEngine(int index, ServerSettingsStruct& serverSettings)
-{
-    return getUploadEngine(CUploadEngineList_Base::byIndex(index),serverSettings);
-}*/
 
 bool CMyEngineList::LoadFromFile(const CString& filename)
 {
@@ -117,24 +63,7 @@ bool CMyEngineList::LoadFromFile(const CString& filename)
     }
     return CUploadEngineList::LoadFromFile(WCstringToUtf8(filename),Settings.ServersSettings);
 }
-/*
-bool CMyEngineList::DestroyCachedEngine(const std::string& name, const std::string& profileName)
-{
-    if (m_prevUpEngine == 0)
-        return false;
 
-    CUploadEngineData* ued = m_prevUpEngine->getUploadData();
-    if (!ued)
-        return false;
-    if (ued->Name == name && m_prevUpEngine->serverSettings().authData.Login == profileName)
-    {
-        delete m_prevUpEngine;
-        m_prevUpEngine = 0;
-        return true;
-    }
-    return false;
-}
-*/
 HICON CMyEngineList::getIconForServer(const std::string& name) {
     std::map<std::string, HICON>::iterator iconIt = serverIcons_.find(name);
     if ( iconIt != serverIcons_.end() )
@@ -150,7 +79,7 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
     }
 
     if (!icon ) {
-        icon = (HICON)LoadImage(0,iconFileName,IMAGE_ICON    ,16,16,LR_LOADFROMFILE);
+        icon = reinterpret_cast<HICON>(LoadImage(0, iconFileName, IMAGE_ICON, 16, 16, LR_LOADFROMFILE));
     }
     
     if ( !icon ) {

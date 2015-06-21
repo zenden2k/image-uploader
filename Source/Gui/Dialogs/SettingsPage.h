@@ -3,6 +3,7 @@
 
 #pragma once 
 
+#include "atlheaders.h"
 #include <windows.h>
 
 class CWizardDlg;

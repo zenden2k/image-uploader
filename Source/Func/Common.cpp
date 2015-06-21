@@ -20,7 +20,6 @@
 
 #include "Common.h"
 
-
 #include "atlheaders.h"
 #include "Common/CmdLine.h"
 #include "versioninfo.h"
@@ -28,9 +27,7 @@
 #include "Func/MyUtils.h"
 #include "Core/Settings.h"
 #include "Core/Utils/CryptoUtils.h"
-#include "versioninfo.h"
 #include "Func/WinUtils.h"
-#include <thread>
 
 CString IUCommonTempFolder;
 
@@ -344,7 +341,7 @@ void DecodeString(LPCTSTR szSource, CString& Result, LPSTR code)
             j = 0;
 
         BYTE b;
-        b = (szSource[i * 2] - _T('A')) * 16 + (szSource[i * 2 + 1] - _T('A'));
+        b = static_cast<BYTE>((szSource[i * 2] - _T('A')) * 16 + (szSource[i * 2 + 1] - _T('A')));
         b = b ^ code[j];
         data[i] = b;
         j++;
@@ -445,8 +442,6 @@ BOOL Is32BPP()
 {
     return (IsWinXP() & (ScreenBPP() >= 32));
 }
-
-
 
 CString GetSystemSpecialPath(int csidl)
 {

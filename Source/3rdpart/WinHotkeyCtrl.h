@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../atlheaders.h"
 #include <atlcrack.h>
 #include <atlmisc.h>

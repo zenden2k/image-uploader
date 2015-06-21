@@ -19,8 +19,8 @@
 */
 
 #include "UploadSettingsPage.h"
-#include <uxtheme.h>
 
+#include "Core/CommonDefs.h"
 #include "wizarddlg.h"
 #include "Gui/GuiTools.h"
 #include <Func/WinUtils.h>
@@ -62,12 +62,12 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     BOOL temp;
     DoDataExchange(FALSE);
-    SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("HTTP"));
+    serverTypeCombo_.AddString(_T("HTTP"));
 
-    SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS4"));
-    SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS4A"));
-    SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS5"));
-    SendDlgItemMessage(IDC_SERVERTYPECOMBO,CB_ADDSTRING,0,(WPARAM)_T("SOCKS5(DNS)"));
+    serverTypeCombo_.AddString(_T("SOCKS4"));
+    serverTypeCombo_.AddString(_T("SOCKS4A"));
+    serverTypeCombo_.AddString(_T("SOCKS5"));
+    serverTypeCombo_.AddString(_T("SOCKS5(DNS)"));
 
     // ---- Инициализация элементов (заполнение) ----
     
@@ -76,7 +76,7 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     SendDlgItemMessage(IDC_NEEDSAUTH, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.NeedsAuth);
     SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_SETCHECK, (WPARAM) Settings.AutoCopyToClipboard);
     
-        SendDlgItemMessage(IDC_USEPROXYSERVER, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.UseProxy);
+    SendDlgItemMessage(IDC_USEPROXYSERVER, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.UseProxy);
     SetDlgItemText(IDC_PROXYLOGINEDIT, U2W(Settings.ConnectionSettings.ProxyUser));
     SetDlgItemText(IDC_PROXYPASSWORDEDIT, (CString)Settings.ConnectionSettings.ProxyPassword);
     SetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT,Settings.UploadBufferSize/1024);
@@ -161,7 +161,7 @@ bool CUploadSettingsPage::Apply()
         MessageBox(message, APPNAME);
         return false;
     }
-    Settings.ScriptFileName = IuCoreUtils::WstringToUtf8((LPCTSTR)scriptFile);
+    Settings.ScriptFileName = W2U(scriptFile);
 
     return true;
 }

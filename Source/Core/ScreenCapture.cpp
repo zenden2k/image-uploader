@@ -20,7 +20,7 @@
 
 #include "Core/ScreenCapture.h"
 
-#include <math.h>
+#include <cmath>
 #include <deque>
 #include <Dwmapi.h>
 #include "atlheaders.h"

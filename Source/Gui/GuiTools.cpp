@@ -18,7 +18,6 @@
 
 */
 
-
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include <Shobjidl.h>
@@ -80,7 +79,7 @@ namespace GuiTools
         alf.lfWeight = FW_BOLD;
 
         HFONT NewFont = CreateFontIndirect(&alf);
-        SendMessage(Label,WM_SETFONT,(WPARAM)NewFont,MAKELPARAM(false, 0));
+        SendMessage(Label,WM_SETFONT,(WPARAM)NewFont, MAKELPARAM(false, 0));
         CWindowDC dc(0);
         alf.lfHeight = -MulDiv(13, GetDeviceCaps(dc, LOGPIXELSY), 72);
     }
@@ -342,81 +341,6 @@ BOOL Is32BPP(){
     return (WinUtils::IsWinXP() & (ScreenBPP() >= 32));
 }
 
-typedef HRESULT  (STDAPICALLTYPE  *SHCreateItemFromParsingNameFuncType)(__in PCWSTR pszPath, __in_opt IBindCtx *pbc, __in REFIID riid, __deref_out void **ppv);
-
-
-CString SelectFolderDialog(HWND hWndParent, CString initialDir){
-    CString result;
-    
-    if ( WinUtils::IsVista() ) {
-        static SHCreateItemFromParsingNameFuncType SHCreateItemFromParsingNameFunc = 0;
-        if ( !SHCreateItemFromParsingNameFunc ) {
-            HMODULE module = LoadLibrary(_T("shell32.dll"));
-            SHCreateItemFromParsingNameFunc = (SHCreateItemFromParsingNameFuncType)GetProcAddress(module,"SHCreateItemFromParsingName");
-
-        }
-        // CoCreate the File Open Dialog object.
-        IFileDialog *pfd = NULL;
-        IShellItem *pInitDir = NULL;
-        HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
-
-        if ( SUCCEEDED(hr) ) {
-            // Set the options on the dialog.
-            DWORD dwFlags;
-
-            // Before setting, always get the options first in order 
-            // not to override existing options.
-            hr = pfd->GetOptions(&dwFlags);
-            if (SUCCEEDED(hr)) {
-                if (!initialDir.IsEmpty()){
-                    SHCreateItemFromParsingNameFunc(initialDir, NULL, __uuidof(IShellItem), (LPVOID *)&pInitDir);
-                    pfd->SetFolder(pInitDir);
-                }
-                // In this case, get shell items only for file system items.
-                hr = pfd->SetOptions(dwFlags | FOS_FORCEFILESYSTEM | FOS_PICKFOLDERS);
-                if (SUCCEEDED(hr)) {
-                    // Show the dialog
-                    hr = pfd->Show(NULL);
-                    if (SUCCEEDED(hr)) {
-                        // Obtain the result once the user clicks 
-                        // the 'Open' button.
-                        // The result is an IShellItem object.
-                        IShellItem *psiResult;
-                        hr = pfd->GetResult(&psiResult);
-                        if (SUCCEEDED(hr))
-                        {
-                            // We are just going to print out the 
-                            // name of the file for sample sake.
-                            PWSTR pszFilePath = NULL;
-                            hr = psiResult->GetDisplayName(SIGDN_FILESYSPATH, 
-                                &pszFilePath);
-                            if (SUCCEEDED(hr))
-                            {
-
-                                result = pszFilePath;
-                                CoTaskMemFree(pszFilePath);
-                            }
-                            psiResult->Release();
-                        }
-                    }
-                }
-            }
-
-            pfd->Release();
-        }
-        
-    } else {
-        CFolderDialog fd(hWndParent,TR("Select folder"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE );
-        if ( !initialDir.IsEmpty() ) {
-            fd.SetInitialFolder(initialDir, true);
-        }
-        if(fd.DoModal(hWndParent) == IDOK) {
-            return  fd.GetFolderPath();
-        }
-    }
-    return result;
-}
-
 RECT GetDialogItemRect(HWND dialog, int itemId) {
     HWND control = ::GetDlgItem( dialog, itemId );
     RECT controlRect={0,0,0,0};
@@ -432,7 +356,7 @@ void ShowDialogItem(HWND dlg, int itemId, bool show) {
 RECT AutoSizeStaticControl(HWND control) {
     CString text = GuiTools::GetWindowText(control);
     HDC dc = ::GetDC(control);
-    HFONT font = (HFONT) SendMessage(control, WM_GETFONT, 0, 0);
+    HFONT font = reinterpret_cast<HFONT>(SendMessage(control, WM_GETFONT, 0, 0));
 
     SIZE textSize;
     HGDIOBJ oldFont = SelectObject(dc, font);
@@ -504,7 +428,7 @@ int GetWindowLeft(HWND Wnd)
 
     GetWindowRect(Wnd,&WindowRect);
     HWND Parent = GetParent(Wnd);
-    ScreenToClient(Parent, (LPPOINT)&WindowRect);
+    ScreenToClient(Parent, reinterpret_cast<LPPOINT>(&WindowRect));
     return WindowRect.left;
 }
 
@@ -644,7 +568,6 @@ LOGFONT CharFormatToLogFont(const CHARFORMAT & cf)
     return lf;
 
 }
-
 
 HICON LoadSmallIcon(int resourceId) {
     int iconWidth =  ::GetSystemMetrics(SM_CXSMICON);

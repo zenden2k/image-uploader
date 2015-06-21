@@ -148,8 +148,8 @@ void Document::saveDocumentState( /*DrawingElement* element*/ ) {
         if ( x < 0 || y < 0 ) {
             continue;;
         }
-        int rectWidth  = min(it->right - it->left, srcImageWidth - x);
-        int rectHeight = min(it->bottom - it->top, srcImageHeight - y);
+        int rectWidth  = std::min<int>(it->right - it->left, srcImageWidth - x);
+        int rectHeight = std::min<int>(it->bottom - it->top, srcImageHeight - y);
         if ( rectWidth <= 0 || rectHeight <= 0) {
             // invalid rectangle. Out of bounds;
             continue;
@@ -179,7 +179,7 @@ void Document::checkTransparentPixels()
 {
     using namespace Gdiplus;
     BitmapData bitmapData;
-    Rect lockRect(0,0, min(10, currentImage_->GetWidth()), min(10, currentImage_->GetHeight()));
+    Rect lockRect(0,0, std::min<int>(10, currentImage_->GetWidth()), std::min<int>(10, currentImage_->GetHeight()));
     if ( currentImage_->LockBits(&lockRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData) == Ok) {
         uint8_t * source = (uint8_t *) bitmapData.Scan0;
         unsigned int stride;

@@ -44,7 +44,7 @@
 #include <json/json.h>
 #include <sstream>
 #include <iomanip>
-#include <math.h>
+#include <cmath>
 #include "Core/3rdpart/base64.h"
 #include "Core/3rdpart/codepages.h"
 #include "Core/Utils/TextUtils.h"

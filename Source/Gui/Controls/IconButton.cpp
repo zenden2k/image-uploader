@@ -20,8 +20,6 @@
 // the DLL isn't available.
 //
 
-#include <atlbase.h>
-#include <atlapp.h>
 #include "IconButton.h"
 #include "Func/Common.h"
 #include "Core/Scripting/API/HtmlDocumentPrivate_win.h"

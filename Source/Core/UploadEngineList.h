@@ -25,6 +25,7 @@
 
 #include <string>
 #include "Upload/UploadEngine.h"
+#include "Core/Utils/CoreTypes.h"
 
 class CUploadEngineList: public CUploadEngineList_Base
 {
@@ -37,6 +38,7 @@ class CUploadEngineList: public CUploadEngineList_Base
         int m_EngineNumOfRetries;
         int m_ActionNumOfRetries;    
     private:
+        DISALLOW_COPY_AND_ASSIGN(CUploadEngineList);
         bool static compareEngines(const CUploadEngineData& elem1, const CUploadEngineData& elem2);
 };
 

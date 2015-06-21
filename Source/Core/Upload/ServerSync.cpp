@@ -77,7 +77,7 @@ void ServerSync::resetAuthorization()
 void ServerSync::resetFailedAuthorization()
 {
     Q_D(ServerSync);
-    std::lock_guard<std::mutex> lock(d_ptr->threadCountMutex_);
+//    std::lock_guard<std::mutex> lock(d_ptr->threadCountMutex_);
     if (!d_ptr->threadCount_ && d->authPerformed_ && !d->authPerformedSuccess_ )
     {
         d->authPerformed_ = false;

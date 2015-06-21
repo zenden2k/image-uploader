@@ -59,10 +59,10 @@ bool TaskAcceptorBase::canAcceptUploadTask(UploadTask* task)
 
 FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager, 
     ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler) {
-    m_nThreadCount = 3;
-    m_NeedStop = false;
-    m_IsRunning = false;
-    m_nRunningThreads = 0;
+    threadCount_ = 3;
+    stopSignal_ = false;
+    isRunning_ = false;
+    runningThreads_ = 0;
     queueUploader_ = queueUploader;
     startFromSession_ = 0;
     uploadEngineManager_ = uploadEngineManager;
@@ -75,7 +75,7 @@ FileQueueUploaderPrivate::~FileQueueUploaderPrivate() {
 }
 
 bool FileQueueUploaderPrivate::onNeedStopHandler() {
-    return m_NeedStop;
+    return stopSignal_;
 }
 
 void FileQueueUploaderPrivate::onErrorMessage(CUploader*, ErrorInfo ei)
@@ -125,13 +125,13 @@ void FileQueueUploaderPrivate::OnConfigureNetworkClient(CUploader* uploader, Net
 }
 
 std::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
-    if (m_NeedStop)
+    if (stopSignal_)
         return std::shared_ptr<UploadTask>();
 
     std::lock_guard<std::recursive_mutex> lock(sessionsMutex_);
 
     //LOG(INFO) << "startFromSession_=" << startFromSession_;
-    if (!sessions_.empty() && !m_NeedStop)
+    if (!sessions_.empty() && !stopSignal_)
     {
         for (size_t i = startFromSession_; i < sessions_.size(); i++)
         {
@@ -214,16 +214,16 @@ std::shared_ptr<UploadSession> FileQueueUploaderPrivate::session(int index)
 
 void FileQueueUploaderPrivate::start() {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
-    m_NeedStop = false;
+    stopSignal_ = false;
    
-    int numThreads = std::min<int>(size_t(m_nThreadCount - m_nRunningThreads), pendingTasksCount());
+    int numThreads = std::min<int>(size_t(threadCount_ - runningThreads_), pendingTasksCount());
 
     if (numThreads) {
-        m_IsRunning = true;
+        isRunning_ = true;
     }
     for (int i = 0; i < numThreads; i++)
     {
-        m_nRunningThreads++;
+        runningThreads_++;
         std::thread t1(&FileQueueUploaderPrivate::run, this);
         t1.detach();
     }
@@ -337,15 +337,15 @@ void FileQueueUploaderPrivate::run()
 
     }
     mutex_.lock();
-    m_nRunningThreads--;
+    runningThreads_--;
 
     mutex_.unlock();
     uploadEngineManager_->clearThreadData();
     scriptsManager_->clearThreadData();
     
-    if (!m_nRunningThreads)
+    if (!runningThreads_)
     {
-        m_IsRunning = false;
+        isRunning_ = false;
         if (queueUploader_->OnQueueFinished) {
             queueUploader_->OnQueueFinished(queueUploader_);
         }

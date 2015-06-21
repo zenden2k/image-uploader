@@ -18,15 +18,12 @@
 
 */
 
+#ifndef IU_FUNC_MY_ENGINE_LIST_H
+#define IU_FUNC_MY_ENGINE_LIST_H
 
-#ifndef IU_MY_ENGINE_LIST_H
-#define IU_MY_ENGINE_LIST_H
+#include "atlheaders.h"
 
-#include <atlbase.h>
-#include <atlapp.h>
-#include <atlmisc.h>
 #include "Core/UploadEngineList.h"
-#include "Core/Upload/DefaultUploadEngine.h"
 
 class CMyEngineList: public CUploadEngineList
 {
@@ -36,13 +33,8 @@ class CMyEngineList: public CUploadEngineList
         CString m_ErrorStr;
         const CString ErrorStr();
         CUploadEngineData* byName(const CString &name);
-        int GetUploadEngineIndex(const CString Name);
-        /*CAbstractUploadEngine* getUploadEngine(CUploadEngineData* data, ServerSettingsStruct& serverSettings);
-        CAbstractUploadEngine* getUploadEngine(std::string name, ServerSettingsStruct& serverSettings);
-        CAbstractUploadEngine* getUploadEngine(int index, ServerSettingsStruct& serverSettings);*/
-public:
+        int GetUploadEngineIndex(const CString& Name);
         bool LoadFromFile(const CString& filename);
-        /*bool DestroyCachedEngine(const std::string& name, const std::string& profileName);**/
         HICON CMyEngineList::getIconForServer(const std::string& name);
         CString CMyEngineList::getIconNameForServer(const std::string& name);
         static char DefaultServer[];

@@ -18,9 +18,8 @@
 
 */
 
-#include "atlheaders.h"
 #include "SettingsDlg.h"
-#include "langselect.h"
+
 #include "traysettings.h"
 #include "hotkeysettings.h"
 #include "ScreenshotSettingsPage.h"
@@ -254,7 +253,7 @@ bool CSettingsDlg::CreatePage(int PageID)
     WINDOWPLACEMENT wp;
     ::GetWindowPlacement(GetDlgItem(IDC_TABCONTROL), &wp);
     TabCtrl_AdjustRect(GetDlgItem(IDC_TABCONTROL),FALSE, &wp.rcNormalPosition);     
-    ::SetWindowPos(Pages[PageID]->PageWnd,  0, wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left+wp.rcNormalPosition.right,  -wp.rcNormalPosition.top+wp.rcNormalPosition.bottom, 0);
+    ::SetWindowPos(Pages[PageID]->PageWnd, 0, wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left+wp.rcNormalPosition.right,  -wp.rcNormalPosition.top+wp.rcNormalPosition.bottom, 0);
 
     Pages[PageID]->FixBackground();
     return true;
@@ -280,7 +279,7 @@ LRESULT CSettingsDlg::OnCtlColorStatic(HDC hdc, HWND hwndChild)
     if (hwndChild == GetDlgItem(IDC_SAVESTATUSLABEL)) {
         SetTextColor(hdc, RGB(0, 180, 0));
         SetBkMode(hdc, TRANSPARENT);
-        return (LRESULT)(HBRUSH)backgroundBrush_;
+        return reinterpret_cast<LRESULT>(static_cast<HBRUSH>(backgroundBrush_));
     }
     return 0;
 }   

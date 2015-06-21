@@ -43,7 +43,7 @@ static inline unsigned long long _xgetbv(unsigned int index){
 namespace IuCoreUtils
 {
 
-std::string getCpuFeatures() {
+std::string GetCpuFeatures() {
     //  Misc.
     bool HW_MMX = false;
     bool HW_x64 = false;
@@ -192,7 +192,7 @@ std::string getCpuFeatures() {
     if (avxSupported) {
         res += "avx,";
     }
-    if (isOs64Bit()) {
+    if (IsOs64Bit()) {
         res += "64bit,";
     }
     return res;

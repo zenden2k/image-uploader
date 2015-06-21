@@ -1,4 +1,5 @@
 #include "GdiPlusImage.h"
+
 #include "Core/logging.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Logging.h"

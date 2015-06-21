@@ -36,6 +36,7 @@
 #include "Core/Upload/UploadManager.h"
 #include "Func/WinUtils.h"
 #include <Core/CoreFunctions.h>
+#include "Gui/Dialogs/WizardDlg.h"
 
 // CUploadDlg
 CUploadDlg::CUploadDlg(CWizardDlg *dlg,UploadManager* uploadManager) :ResultsWindow(new CResultsWindow(dlg, UrlList, true))

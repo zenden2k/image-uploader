@@ -30,13 +30,11 @@
 #include "Func/IuCommonFunctions.h"
 #include "Func/Common.h"
 #include "Gui/Dialogs/LogWindow.h"
-#include <math.h>
+#include <cmath>
 #include <stdint.h>
 #include <Core/ServiceLocator.h>
 
-
 using namespace Gdiplus;
-
 
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 {

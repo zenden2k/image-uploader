@@ -25,6 +25,7 @@
 #include "Gui/GuiTools.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
+#include <algorithm>
 
 const int LLB_VertDivider = 10;
 const int LLB_VertMargin = 5;
@@ -158,7 +159,7 @@ LRESULT CHistoryTreeView::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,
     lpmis->itemWidth = ItemWidth;
     lpmis->itemHeight = LLB_VertMargin + item->TitleHeight + LLB_VertDivider + item->TextHeight +
        (item->InfoHeight ? (LLB_VertDivider + item->InfoHeight) : 0) + LLB_VertMargin + 2;
-    lpmis->itemHeight = max(lpmis->itemHeight, 35);
+    lpmis->itemHeight = max(lpmis->itemHeight, 35u);
     ReleaseDC(dc);
     return 0;
 }

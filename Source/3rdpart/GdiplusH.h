@@ -4,6 +4,7 @@
 #pragma once
 
 #include <Windows.h>
+#include <ObjIdl.h>
 // 
 // GDI+ helper file v1.0
 // 

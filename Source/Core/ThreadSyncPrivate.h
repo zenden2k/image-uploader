@@ -7,6 +7,7 @@
 #include <string>
 #include <map>
 #include "Network/CurlShare.h"
+#include <atomic>
 
 class ThreadSyncPrivate
 {
@@ -14,8 +15,8 @@ public:
 	std::map<std::string, std::string> data_;
 	std::mutex dataMutex_;
     CurlShare curlShare_;
-    int threadCount_;
-    std::mutex threadCountMutex_;
+    std::atomic<int> threadCount_;
+
     ThreadSyncPrivate()
     {
         threadCount_ = 0;

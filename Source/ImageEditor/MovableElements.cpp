@@ -140,7 +140,7 @@ bool Line::isItemAtPos(int x, int y)
     int itemY = getY();
     int itemWidth = getWidth();
     int itemHeight = getHeight();
-    int selectRadius = max(kSelectRadius, penSize_);
+    int selectRadius = (std::max<int>)(kSelectRadius, penSize_);
     // Line equation
     if ( endPoint_.x - startPoint_.x != 0 ) {
         float k = float(endPoint_.y - startPoint_.y)/float(endPoint_.x - startPoint_.x);
@@ -481,7 +481,7 @@ bool Rectangle::isItemAtPos(int x, int y)
     int elementY = getY();
     int elementWidth = getWidth();
     int elementHeight = getHeight();
-    int selectRadius = max(kSelectRadius, penSize_);
+    int selectRadius = std::max<int>(kSelectRadius, penSize_);
     return 
         ((( x >= elementX - selectRadius && x  <= elementX  + selectRadius )  || ( x >= elementX +elementWidth - selectRadius && x  <= elementX  +elementWidth+ selectRadius ) ) 
         && y>= elementY - selectRadius && y <= elementY + elementHeight + selectRadius )
@@ -771,7 +771,7 @@ bool Ellipse::isItemAtPos(int x, int y)
     int elY = getY();
     int width = getWidth();
     int height = getHeight();
-    int selectRadius = max(penSize_, kSelectRadius);
+    int selectRadius = std::max<int>(penSize_, kSelectRadius);
     if ( filled_ ) {
         return ContainsPoint(Rect(elX,elY, width, height), Point(x,y));
     } else {

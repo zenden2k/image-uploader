@@ -51,6 +51,7 @@ virtual ~CUploadSettingsPage();
     END_MSG_MAP()
         
     BEGIN_DDX_MAP(CScreenshotDlg)
+        DDX_CONTROL_HANDLE(IDC_SERVERTYPECOMBO, serverTypeCombo_)
         DDX_INT(IDC_FILERETRYLIMIT, Settings.FileRetryLimit)
         DDX_INT(IDC_ACTIONRETRYLIMIT, Settings.ActionRetryLimit)
         DDX_CHECK(IDC_IGNOREERRORS,Settings.ShowUploadErrorDialog)
@@ -67,6 +68,8 @@ virtual ~CUploadSettingsPage();
     virtual bool Apply();
     void TranslateUI();
     LRESULT OnBnClickedBrowseScriptButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+protected:
+    CComboBox serverTypeCombo_;
 };
 
 #endif // IU_GUI_DIALOGS_UPLOADSETTINGSPAGE_H

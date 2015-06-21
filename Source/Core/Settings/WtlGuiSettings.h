@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "CommonGuiSettings.h"
 #include "atlheaders.h"
+#include "CommonGuiSettings.h"
 #include "Func/langclass.h"
 #include "Func/Common.h"
 #include "Func/WinUtils.h"

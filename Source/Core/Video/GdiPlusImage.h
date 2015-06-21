@@ -2,6 +2,7 @@
 #define GDIPLUSIMAGE_H
 
 #include "AbstractImage.h"
+#include <windows.h>
 #include "3rdpart/GdiplusH.h"
 #include <memory>
 

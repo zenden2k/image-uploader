@@ -27,7 +27,7 @@
 #include "Core/Upload/FileQueueUploader.h"
 #include "Core/Upload/UrlShorteningTask.h"
 #include "Func/WinUtils.h"
-#include <Wininet.h>
+#include "Core/CommonDefs.h"
 #include "Func/WebUtils.h"
 #include "Core/Upload/UploadManager.h"
 #include <Core/CoreFunctions.h>
@@ -81,7 +81,7 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
         /*char *serverName = new char[ue->Name.length() + 1];
         lstrcpyA( serverName, ue->Name.c_str() );*/
         if ( ue->hasType(CUploadEngineData::TypeUrlShorteningServer) ) {
-            int itemIndex = SendDlgItemMessage(IDC_SERVERCOMBOBOX, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)Utf8ToWCstring( ue->Name ));
+            int itemIndex = SendDlgItemMessage(IDC_SERVERCOMBOBOX, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(static_cast<LPCTSTR>(U2W( ue->Name ))));
             if ( ue->Name == selectedServerName ){
                 selectedIndex = itemIndex;
             }
@@ -138,8 +138,8 @@ LRESULT CShortenUrlDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl
 
 LRESULT CShortenUrlDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    HWND hwndRemove = (HWND) wParam;  // handle of window being removed 
-    HWND hwndNext = (HWND) lParam;
+    HWND hwndRemove = reinterpret_cast<HWND>(wParam);  // handle of window being removed 
+    HWND hwndNext = reinterpret_cast<HWND>(lParam);
 
     if(hwndRemove == PrevClipboardViewer) PrevClipboardViewer = hwndNext;
     else ::SendMessage(PrevClipboardViewer, WM_CHANGECBCHAIN, wParam, lParam);
@@ -172,8 +172,8 @@ bool CShortenUrlDlg::StartProcess() {
     if ( selectedIndex < 0 ) {
         return false;
     }
-    TCHAR serverName[256]=_T("");
-    SendDlgItemMessage(IDC_SERVERCOMBOBOX, CB_GETLBTEXT, selectedIndex, (WPARAM)serverName);
+    TCHAR serverName[256] = _T("");
+    SendDlgItemMessage(IDC_SERVERCOMBOBOX, CB_GETLBTEXT, selectedIndex, reinterpret_cast<WPARAM>(serverName));
     CUploadEngineData* ue = engineList_->byName(serverName);
     if (!ue) {
         LOG(ERROR) << "CUploadEngineData* ue cannot be NULL";
@@ -239,7 +239,7 @@ LRESULT CShortenUrlDlg::OnCtlColorMsgDlg(HDC hdc, HWND hwnd) {
     if ( hwnd == GetDlgItem(IDC_RESULTSLABEL ) ) {
         SetTextColor(hdc, RGB(0,180,0));
         SetBkMode(hdc, TRANSPARENT);
-        return (LRESULT)(HBRUSH) backgroundBrush_; 
+        return reinterpret_cast<LRESULT>(static_cast<HBRUSH>(backgroundBrush_)); 
     }
     return 0;
 }
