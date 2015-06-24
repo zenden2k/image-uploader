@@ -20,6 +20,7 @@
 
 #include "VideoGrabberPage.h"
 
+#include "Core/CommonDefs.h"
 #include "Core/Video/VideoGrabber.h"
 #include "Core/Video/GdiPlusImage.h"
 #include "Gui/Dialogs/SettingsDlg.h"
@@ -409,7 +410,7 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
     int gapheight = Settings.VideoSettings.GapHeight;
     infoHeight += gapheight;
     int tilewidth = Settings.VideoSettings.TileWidth;
-    int tileheight = int(((float)tilewidth) / ((float)maxwidth) * ((float)maxheight));
+    int tileheight = static_cast<int>(((float)tilewidth) / ((float)maxwidth) * ((float)maxheight));
     int needwidth = gapwidth + ncols * (tilewidth + gapwidth);
     int needheight = gapheight + nstrings * (tileheight + gapheight) + infoHeight;
 
@@ -491,7 +492,7 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
             videoEngine = CSettings::VideoEngineDirectshow;
         } else {
             videoEngine = CSettings::VideoEngineFFmpeg;
-            std::string ext = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt( IuCoreUtils::WstringToUtf8((LPCTSTR)szFile) ) );
+            std::string ext = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt( W2U(szFile) ) );
             if ( ext == "wmv" || ext == "asf" ) {
                 videoEngine = CSettings::VideoEngineDirectshow;
             }

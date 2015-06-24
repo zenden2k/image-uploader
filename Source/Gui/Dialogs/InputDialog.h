@@ -24,7 +24,6 @@
 #pragma once
 
 #include "atlheaders.h"
-#include <atlframe.h>
 #include "resource.h"       // main symbols
 #include "3rdpart/ColorButton.h"
 #include "Core/Images/Thumbnail.h"

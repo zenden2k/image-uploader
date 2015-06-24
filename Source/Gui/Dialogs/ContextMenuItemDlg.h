@@ -25,6 +25,8 @@
 #include "resource.h"       // main symbols
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/Controls/ServerSelectorControl.h"
+#include <memory>
+
 class ServerProfile;
 class CServerSelectorControl;
 // CContextMenuItemDlg
@@ -58,7 +60,7 @@ class CContextMenuItemDlg : public CDialogImpl<CContextMenuItemDlg>
         ServerProfile serverProfile();
         CString menuItemTitle();
 protected:
-    CServerSelectorControl *imageServerSelector_;
+    std::unique_ptr<CServerSelectorControl> imageServerSelector_;
     ServerProfile serverProfile_;
     bool titleEdited_;
     CString title_;

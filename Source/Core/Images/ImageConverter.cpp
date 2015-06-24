@@ -98,13 +98,13 @@ void ImageConverter::setThumbCreatingParams(const ThumbCreatingParams& params)
     d->m_thumbCreatingParams = params;
 }
 
-const std::string ImageConverter::getThumbFileName()
+std::string ImageConverter::getThumbFileName()
 {
     Q_D(ImageConverter);
     return d->thumbFileName_;
 }
 
-const std::string ImageConverter::getImageFileName()
+std::string ImageConverter::getImageFileName()
 {
     Q_D(ImageConverter);
     return d->resultFileName_;

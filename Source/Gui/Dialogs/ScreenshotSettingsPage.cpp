@@ -18,17 +18,14 @@
 
 */
 
-#include "atlheaders.h"
 #include "ScreenshotSettingsPage.h"
-#include "Func/Common.h"
-#include "LogWindow.h"
+
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
 #include "Func/myutils.h"
-#include <Core/Scripting/API/HtmlDocumentPrivate_win.h>
 
 // CScreenshotSettingsPagePage
 CScreenshotSettingsPagePage::CScreenshotSettingsPagePage()

@@ -85,7 +85,7 @@ bool CHotkeySettingsPage::Apply()
 
 LRESULT CHotkeySettingsPage::OnHotkeylistNmDblclk(LPNMHDR pnmh)
 {
-    LPNMITEMACTIVATE ia = (LPNMITEMACTIVATE)pnmh;
+    LPNMITEMACTIVATE ia = reinterpret_cast<LPNMITEMACTIVATE>(pnmh);
     if(ia)
         EditHotkey(ia->iItem);
 

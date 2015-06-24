@@ -19,15 +19,13 @@
  */
 
 #include "ServerFolderSelect.h"
-#include "atlheaders.h"
+
 #include "Core/Upload/UploadEngineManager.h"
-#include "Func/common.h"
 #include "NewFolderDlg.h"
-#include "LogWindow.h"
 #include "Core/Settings.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Func/WinUtils.h"
-#include <Core/CoreFunctions.h>
+#include "Core/CoreFunctions.h"
 
 CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager) :serverProfile_(serverProfile)
 {
@@ -132,8 +130,6 @@ DWORD CServerFolderSelect::Run()
     script->setNetworkClient(&m_NetworkClient);
     if (m_FolderOperationType == foGetFolders)
     {
-
-
         m_FolderList.Clear();
         m_FolderMap.clear();
        
@@ -221,7 +217,7 @@ LRESULT CServerFolderSelect::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
     sub.CreatePopupMenu();
 
     POINT ClientPoint, ScreenPoint;
-    HWND hwnd = (HWND) wParam;
+    HWND hwnd = reinterpret_cast<HWND>(wParam);
     if (hwnd != m_FolderTree.m_hWnd)
         return 0;
 

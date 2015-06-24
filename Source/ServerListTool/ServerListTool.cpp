@@ -1,14 +1,13 @@
 // ServerListTool.cpp : main source file for ServerListTool.exe
 //
 
-#include "resource.h"
 #include "MainDlg.h"
 #include "atlheaders.h"
 #include "3rdpart/GdiPlusH.h"
 #include "Func/Common.h"
 #include "Func/IuCommonFunctions.h"
 #include "Core/Logging.h"
-#include "Func/MyLogSink.h"
+#include "Core/Logging/MyLogSink.h"
 #include "Func/WinUtils.h"
 #include <Func/DefaultLogger.h>
 #include <Func/DefaultUploadErrorHandler.h>
@@ -52,7 +51,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     DefaultLogger defaultLogger;
     DefaultUploadErrorHandler uploadErrorHandler(&defaultLogger);
 
-    google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
+    google::InitGoogleLogging(W2U(WinUtils::GetAppFileName()).c_str());
     LogWindow.Create(0);
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
@@ -78,7 +77,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     UploadEngineManager uploadEngineManager(_EngineList, &uploadErrorHandler);
     uploadEngineManager.setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
     UploadManager uploadManager(&uploadEngineManager, _EngineList, &scriptsManager, &uploadErrorHandler);
-
 
     IuCommonFunctions::CreateTempFolder();
 

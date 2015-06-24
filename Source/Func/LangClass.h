@@ -54,7 +54,7 @@ class CLang : public ITranslator
         CString locale_;
         CString language_;
 };
-#ifdef IU_WTL_APP
+#if defined(IU_WTL_APP) || defined(IU_SERVERLISTTOOL)
 extern CLang Lang;
 
 #endif

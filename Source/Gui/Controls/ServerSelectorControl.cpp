@@ -19,12 +19,10 @@
 */
 
 #include "ServerSelectorControl.h"
-#include <uxtheme.h>
 
 #include "Gui/Dialogs/wizarddlg.h"
 #include "Gui/GuiTools.h"
 #include "Func/Common.h"
-#include "Func/MyUtils.h"
 #include "Gui/Dialogs/ServerParamsDlg.h"
 #include "Gui/Dialogs/UploadParamsDlg.h"
 #include "Func/WinUtils.h"
@@ -170,7 +168,6 @@ void CServerSelectorControl::addAccount()
 }
 
 void CServerSelectorControl::serverChanged() {
-    //return;
     CUploadEngineData * uploadEngineData =  0;
     CString profileName;
     int serverComboElementIndex = serverComboBox_.GetCurSel();
@@ -318,7 +315,7 @@ void CServerSelectorControl::updateInfoLabel() {
     RECT rect;
     int settingsBtnPlaceHolderId = ( showFolder || showAccount ) ? IDC_SETTINGSBUTTONPLACEHOLDER : IDC_SETTINGSBUTTONPLACEHOLDER2;
     ::GetWindowRect(GetDlgItem(settingsBtnPlaceHolderId), &rect);
-    ::MapWindowPoints(0, m_hWnd, (LPPOINT)&rect, 2);
+    ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&rect), 2);
     settingsButtonToolbar_.SetWindowPos(0, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, 0);
     settingsButtonToolbar_.ShowWindow(showServerParams ? SW_SHOW : SW_HIDE);
 
@@ -340,7 +337,7 @@ void CServerSelectorControl::setServersMask(int mask) {
 
 void CServerSelectorControl::notifyChange()
 {
-    ::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_CHANGE, (WPARAM)m_hWnd, 0);
+    ::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_CHANGE, reinterpret_cast<WPARAM>(m_hWnd), 0);
     if (OnChange)
     {
         OnChange(this);
@@ -349,7 +346,7 @@ void CServerSelectorControl::notifyChange()
 
 void CServerSelectorControl::notifyServerListChanged()
 {
-    ::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED, (WPARAM)m_hWnd, 0);
+    ::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED, reinterpret_cast<WPARAM>(m_hWnd), 0);
 }
 
 void CServerSelectorControl::updateServerList()
@@ -429,115 +426,109 @@ bool CServerSelectorControl::isAccountChosen()
 }
 
 LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    
-    CMenu sub;    
+    CMenu sub;
     MENUITEMINFO mi;
     ZeroMemory(&mi,sizeof(mi));
     mi.cbSize = sizeof(mi);
-    mi.fMask = MIIM_TYPE|MIIM_ID;
+    mi.fMask = MIIM_TYPE | MIIM_ID;
     mi.fType = MFT_STRING;
     sub.CreatePopupMenu();
     CUploadEngineData* uploadEngine = serverProfile_.uploadEngineData();
 
+    std::map<std::string, ServerSettingsStruct>& serverUsers = Settings.ServersSettings[serverProfile_.serverName()];
 
+    if (/*uploadEngine->UsingPlugin &&*/ (serverUsers.size() > 1 || serverUsers.find("") == serverUsers.end())) {
+        bool addedSeparator = false;
 
-        std::map <std::string, ServerSettingsStruct>& serverUsers = Settings.ServersSettings[serverProfile_.serverName()];
+        int i = 0;
+        //ShowVar((int)serverUsers.size() );
+        if (serverUsers.size() && !serverProfile_.profileName().empty()) {
+            mi.wID = IDC_LOGINMENUITEM;
+            mi.dwTypeData = TR("Change account settings");
+            sub.InsertMenuItem(i++, true, &mi);
+        }
+        else {
+            addedSeparator = true;
+        }
 
-        if(/*uploadEngine->UsingPlugin &&*/ (serverUsers.size()>1 || serverUsers.find("") == serverUsers.end()) )
-        {
-            bool addedSeparator = false;
-            
-            int i =0;
-            //ShowVar((int)serverUsers.size() );
-            if ( serverUsers.size() && !serverProfile_.profileName().empty()) {
-                mi.wID = IDC_LOGINMENUITEM;
-                mi.dwTypeData  = TR("Change account settings");
-                sub.InsertMenuItem(i++, true, &mi);
-            } else {
-                addedSeparator = true;
-            }
+        menuOpenedUserNames_.clear();
 
-            menuOpenedUserNames_.clear();
+        int command = IDC_USERNAME_FIRST_ID;
+        HICON userIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONUSER));
 
-            int command = IDC_USERNAME_FIRST_ID;
-            HICON userIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONUSER));
-            
-            for( std::map <std::string, ServerSettingsStruct>::iterator it = serverUsers.begin(); it!= serverUsers.end(); ++it ) {
-                //    CString login = Utf8ToWCstring(it->second.authData.Login);
-                CString login = Utf8ToWCstring(it->first);
-                if (!login.IsEmpty() )/*&& it->second.authData.DoAuth**/ {
-                    if ( !addedSeparator ) {
-                        ZeroMemory(&mi,sizeof(mi));
-                        mi.cbSize = sizeof(mi);
-                        mi.fMask = MIIM_TYPE|MIIM_ID;
-                        mi.wID =  1;
-                        mi.fType = MFT_SEPARATOR;
-
-                        sub.InsertMenuItem(i++, true, &mi);
-                        addedSeparator =  true;
-                    }
+        for (std::map<std::string, ServerSettingsStruct>::iterator it = serverUsers.begin(); it != serverUsers.end(); ++it) {
+            //    CString login = Utf8ToWCstring(it->second.authData.Login);
+            CString login = Utf8ToWCstring(it->first);
+            if (!login.IsEmpty())/*&& it->second.authData.DoAuth**/ {
+                if (!addedSeparator) {
                     ZeroMemory(&mi,sizeof(mi));
                     mi.cbSize = sizeof(mi);
+                    mi.fMask = MIIM_TYPE | MIIM_ID;
+                    mi.wID = 1;
+                    mi.fType = MFT_SEPARATOR;
 
-                    mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
-                    mi.fType = MFT_STRING;
-                    mi.wID = command;
-
-                    mi.dwTypeData  = (LPWSTR)(LPCTSTR)login;
-
-                    mi.hbmpItem =  WinUtils::IsVista() ? iconBitmapUtils_->HIconToBitmapPARGB32(userIcon): HBMMENU_CALLBACK;
-                    if ( mi.hbmpItem ) {
-                        mi.fMask |= MIIM_BITMAP;
-                    }
-                    menuOpenedUserNames_.push_back(login);
                     sub.InsertMenuItem(i++, true, &mi);
-                    command++;
+                    addedSeparator = true;
                 }
-
-            }
-            if ( uploadEngine->NeedAuthorization != CUploadEngineData::naObligatory ) {
                 ZeroMemory(&mi,sizeof(mi));
                 mi.cbSize = sizeof(mi);
-                mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
-                mi.fType = MFT_STRING;
-                mi.wID = IDC_NO_ACCOUNT;
 
-                mi.dwTypeData  = (LPWSTR)(LPCTSTR)TR("<no authentication>");
+                mi.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STRING;
+                mi.fType = MFT_STRING;
+                mi.wID = command;
+
+                mi.dwTypeData = (LPWSTR)(LPCTSTR)login;
+
+                mi.hbmpItem = WinUtils::IsVista() ? iconBitmapUtils_->HIconToBitmapPARGB32(userIcon) : HBMMENU_CALLBACK;
+                if (mi.hbmpItem) {
+                    mi.fMask |= MIIM_BITMAP;
+                }
+                menuOpenedUserNames_.push_back(login);
                 sub.InsertMenuItem(i++, true, &mi);
+                command++;
             }
 
-
-
-            ZeroMemory(&mi,sizeof(mi));
-            mi.cbSize = sizeof(mi);
-            mi.fMask = MIIM_TYPE|MIIM_ID;
-            mi.wID = 1;
-            mi.fType = MFT_SEPARATOR;
-
-
-            sub.InsertMenuItem(i++, true, &mi);
-
-
-            ZeroMemory(&mi,sizeof(mi));
-            mi.cbSize = sizeof(mi);
-            mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
-            mi.fType = MFT_STRING;
-            mi.wID = IDC_ADD_ACCOUNT ;
-
-            mi.dwTypeData  = (LPWSTR)(LPCTSTR)TR("New account...");
-
-
-            sub.InsertMenuItem(i++, true, &mi);
-            sub.SetMenuDefaultItem(0,TRUE);
-        } else {
-            addAccount();
-            return 0;
         }
-        
-        RECT rc={0,0,0,0};
-        ::GetClientRect(GetDlgItem(IDC_ACCOUNTINFO), &rc);
-        ::ClientToScreen(GetDlgItem(IDC_ACCOUNTINFO), (LPPOINT)&rc);
-        ::ClientToScreen(GetDlgItem(IDC_ACCOUNTINFO), 1+(LPPOINT)&rc);
+        if (uploadEngine->NeedAuthorization != CUploadEngineData::naObligatory) {
+            ZeroMemory(&mi,sizeof(mi));
+            mi.cbSize = sizeof(mi);
+            mi.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STRING;
+            mi.fType = MFT_STRING;
+            mi.wID = IDC_NO_ACCOUNT;
+
+            mi.dwTypeData = (LPWSTR)(LPCTSTR)TR("<no authentication>");
+            sub.InsertMenuItem(i++, true, &mi);
+        }
+
+        ZeroMemory(&mi,sizeof(mi));
+        mi.cbSize = sizeof(mi);
+        mi.fMask = MIIM_TYPE | MIIM_ID;
+        mi.wID = 1;
+        mi.fType = MFT_SEPARATOR;
+
+        sub.InsertMenuItem(i++, true, &mi);
+
+        ZeroMemory(&mi,sizeof(mi));
+        mi.cbSize = sizeof(mi);
+        mi.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STRING;
+        mi.fType = MFT_STRING;
+        mi.wID = IDC_ADD_ACCOUNT ;
+
+        mi.dwTypeData = (LPWSTR)(LPCTSTR)TR("New account...");
+
+
+        sub.InsertMenuItem(i++, true, &mi);
+        sub.SetMenuDefaultItem(0,TRUE);
+    }
+    else {
+        addAccount();
+        return 0;
+    }
+
+    RECT rc = {0,0,0,0};
+    ::GetClientRect(GetDlgItem(IDC_ACCOUNTINFO), &rc);
+    ::ClientToScreen(GetDlgItem(IDC_ACCOUNTINFO), reinterpret_cast<LPPOINT>(&rc));
+    ::ClientToScreen(GetDlgItem(IDC_ACCOUNTINFO), 1 + reinterpret_cast<LPPOINT>(&rc));
 
     TPMPARAMS excludeArea;
     ZeroMemory(&excludeArea, sizeof(excludeArea));
@@ -598,10 +589,10 @@ LRESULT CServerSelectorControl::OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM
 }
 
 void CServerSelectorControl::createSettingsButton() {
-    CIcon ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONSETTINGS2), IMAGE_ICON    , 16,16,0);
+    CIcon ico = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONSETTINGS2), IMAGE_ICON    , 16,16,0));
     RECT profileRect;
     ::GetWindowRect(GetDlgItem(IDC_SETTINGSBUTTONPLACEHOLDER), &profileRect);
-    ::MapWindowPoints(0, m_hWnd, (LPPOINT)&profileRect, 2);
+    ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&profileRect), 2);
 
     settingsButtonToolbar_.Create(m_hWnd,profileRect,_T(""), WS_CHILD|WS_VISIBLE|WS_CHILD | TBSTYLE_LIST |TBSTYLE_FLAT| CCS_NORESIZE|CCS_RIGHT|/*CCS_BOTTOM |CCS_ADJUSTABLE|*/TBSTYLE_TOOLTIPS|CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
     settingsButtonToolbar_.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
@@ -825,11 +816,11 @@ DLGTEMPLATE* CServerSelectorControl::GetTemplate()
 {
     HINSTANCE hInst = GetModuleHandle(0);
     HRSRC res = FindResource(hInst, MAKEINTRESOURCE(IDD), RT_DIALOG);
-    DLGTEMPLATE* dit = (DLGTEMPLATE*)LockResource(LoadResource(hInst, res));
+    DLGTEMPLATE* dit = reinterpret_cast<DLGTEMPLATE*>(LockResource(LoadResource(hInst, res)));
 
     unsigned long sizeDlg = ::SizeofResource(hInst, res);
     HGLOBAL hMyDlgTemplate = ::GlobalAlloc(GPTR, sizeDlg);
-    DLGTEMPLATEEX *pMyDlgTemplate = (DLGTEMPLATEEX *)::GlobalLock(hMyDlgTemplate);
+    DLGTEMPLATEEX *pMyDlgTemplate = reinterpret_cast<DLGTEMPLATEEX *>(::GlobalLock(hMyDlgTemplate));
     ::memcpy(pMyDlgTemplate, dit, sizeDlg);
 
     if (isChildWindow_)
@@ -849,5 +840,5 @@ DLGTEMPLATE* CServerSelectorControl::GetTemplate()
 
         pMyDlgTemplate->style = pMyDlgTemplate->style | WS_POPUP | WS_BORDER/* | WS_CAPTION*/ ;
     }
-    return (DLGTEMPLATE*)pMyDlgTemplate;
+    return reinterpret_cast<DLGTEMPLATE*>(pMyDlgTemplate);
 }

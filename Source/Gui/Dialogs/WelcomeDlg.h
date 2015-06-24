@@ -102,7 +102,7 @@ public:
     LRESULT OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);
     LRESULT OnShowWindow(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     HWND PrevClipboardViewer;
-    HBRUSH br; 
+    CBrush br; 
     bool OnShow();
     bool QuickRegionPrint;
     CMyImage LeftImage;CMyImage LogoImage;

@@ -18,15 +18,10 @@
 
 */
 
-
 #include "ScriptUploadEngine.h"
-#include <stdarg.h>
-#include <iostream>
+
 #include "Core/Scripting/Squirrelnc.h"
-#include <sqstdaux.h>
-
 #include "Core/Scripting/API/ScriptAPI.h"
-
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Upload/UrlShorteningTask.h"
 #include "Core/Utils/StringUtils.h"
@@ -43,7 +38,7 @@ CScriptUploadEngine::CScriptUploadEngine(std::string fileName, ServerSync* serve
                                                                                 CAbstractUploadEngine(serverSync), Script(fileName, serverSync,false)
 {
     setServerSettings(settings);
-    m_sName = IuCoreUtils::ExtractFileNameNoExt(fileName);
+    name_ = IuCoreUtils::ExtractFileNameNoExt(fileName);
     load(fileName);
 }
 
@@ -61,7 +56,7 @@ void CScriptUploadEngine::PrintCallback(const std::string& output)
         taskName = "Task=" + currentTask_->toString() + ", ";
     }
     std::thread::id threadId = std::this_thread::get_id();
-    Log(ErrorInfo::mtWarning, m_sName + ".nut [" + taskName + "ThreadId=" + IuCoreUtils::ThreadIdToString(threadId) + "]\r\n" + /*IuStringUtils::ConvertUnixLineEndingsToWindows*/(output));
+    Log(ErrorInfo::mtWarning, name_ + ".nut [" + taskName + "ThreadId=" + IuCoreUtils::ThreadIdToString(threadId) + "]\r\n" + /*IuStringUtils::ConvertUnixLineEndingsToWindows*/(output));
 }
 int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams& params)
 {
@@ -92,7 +87,7 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
     params.folderId = folderID;
     params.task_ = task;
     int ival = 0;
-    clearSqratError();
+
     try
     {
         checkCallingThread();
@@ -101,7 +96,6 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
             Function func(vm_.GetRootTable(), "UploadFile");
             if ( func.IsNull() ) {
                  Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string("Function UploadFile not found in script")); 
-                 clearSqratError();
                  currentTask_ = 0;
                  return -1;
             }
@@ -116,7 +110,6 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
             Function func(vm_.GetRootTable(), "ShortenUrl");
             if ( func.IsNull() ) {
                  Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string("Function ShortenUrl not found in script")); 
-                 clearSqratError();
                  currentTask_ = 0;
                  return -1;
             }
@@ -191,10 +184,10 @@ int CScriptUploadEngine::getAccessTypeList(std::vector<std::string>& list)
     try
     {
         checkCallingThread();
-        clearSqratError();
+
         Function func(vm_.GetRootTable(), "GetFolderAccessTypeList");
         if (func.IsNull()) {
-            clearSqratError();
+
             return -1;
         }
         SharedPtr<Sqrat::Array> arr = func.Evaluate<Sqrat::Array>();
@@ -229,10 +222,8 @@ int CScriptUploadEngine::getServerParamList(std::map<std::string, std::string>& 
     try
     {
         checkCallingThread();
-        clearSqratError();
         Function func(vm_.GetRootTable(), "GetServerParamList");
         if (func.IsNull()) {
-            clearSqratError();
             return -1;
         }
         SharedPtr<Table> arr = func.Evaluate<Sqrat::Table>();
@@ -245,7 +236,6 @@ int CScriptUploadEngine::getServerParamList(std::map<std::string, std::string>& 
         {
             Log(ErrorInfo::mtError, "CScriptUploadEngine::getServerParamList\r\n" + std::string("GetServerParamList result is NULL"));
 
-            clearSqratError();
             return -1;
         }
 
@@ -275,10 +265,9 @@ int CScriptUploadEngine::doLogin()
     try
     {
         checkCallingThread();
-        clearSqratError();
+
         Function func(vm_.GetRootTable(), "DoLogin");
         if (func.IsNull()) {
-            clearSqratError();
             return 0;
         }
         int res = ScriptAPI::GetValue(func.Evaluate<int>());
@@ -303,10 +292,9 @@ int CScriptUploadEngine::modifyFolder(CFolderItem& folder)
     try
     {
         checkCallingThread();
-        clearSqratError();
         Function func(vm_.GetRootTable(), "ModifyFolder");
         if (func.IsNull()) {
-            clearSqratError();
+            return 0;
         }
         res = ScriptAPI::GetValue(func.Evaluate<int>(&folder));
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
@@ -329,10 +317,8 @@ int CScriptUploadEngine::getFolderList(CFolderList& FolderList)
     try
     {
         checkCallingThread();
-        clearSqratError();
         Function func(vm_.GetRootTable(), "GetFolderList");
         if (func.IsNull()) {
-            clearSqratError();
             return -1;
         }
         ival = ScriptAPI::GetValue(func.Evaluate<int>(&FolderList));
@@ -350,7 +336,7 @@ int CScriptUploadEngine::getFolderList(CFolderList& FolderList)
 
 std::string CScriptUploadEngine::name()
 {
-    return m_sName;
+    return name_;
 }
 
 int CScriptUploadEngine::createFolder(const CFolderItem& parent, CFolderItem& folder)
@@ -360,10 +346,8 @@ int CScriptUploadEngine::createFolder(const CFolderItem& parent, CFolderItem& fo
     try
     {
         checkCallingThread();
-        clearSqratError();
         Function func(vm_.GetRootTable(), "CreateFolder");
         if (func.IsNull()) {
-            clearSqratError();
             return -1;
         }
             
@@ -402,10 +386,8 @@ bool CScriptUploadEngine::supportsSettings()
     try
     {
         checkCallingThread();
-        clearSqratError();
         Function func(vm_.GetRootTable(), "GetServerParamList");
         if (func.IsNull()) {
-            clearSqratError();
             return false;
         }
 
@@ -425,10 +407,8 @@ bool CScriptUploadEngine::supportsBeforehandAuthorization()
     try
     {
         checkCallingThread();
-        clearSqratError();
         Function func(vm_.GetRootTable(), "DoLogin");
         if (func.IsNull()) {
-            clearSqratError();
             return false;
         }
     }
@@ -460,9 +440,4 @@ void CScriptUploadEngine::Log(ErrorInfo::MessageType mt, const std::string& erro
     ei.error = error;
     ei.sender = "CScriptUploadEngine";
     ErrorMessage(ei);
-}
-
-void CScriptUploadEngine::clearSqratError()
-{
-    //SQCLEAR(vm_.GetVM());
 }

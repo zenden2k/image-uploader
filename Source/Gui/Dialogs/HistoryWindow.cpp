@@ -24,9 +24,7 @@
 #include "Core/Settings.h"
 #include "Core/HistoryManager.h"
 #include "Core/ServiceLocator.h"
-#include "ResultsPanel.h"
 #include "ResultsWindow.h"
-#include "Gui/WizardCommon.h"
 #include "Core/3rdpart/pcreplusplus.h"
 #include "Func/WinUtils.h"
 
@@ -75,7 +73,7 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     std::string fName = ServiceLocator::instance()->historyManager()->makeFileName();
     
     std::vector<CString> files;
-    historyFolder = IuCoreUtils::Utf8ToWstring(Settings.SettingsFolder).c_str()+CString(_T("\\History\\"));
+    historyFolder = U2W(Settings.SettingsFolder) + CString(_T("\\History\\"));
     WinUtils::GetFolderFileList(files, historyFolder , _T("history*.xml"));
     pcrepp::Pcre regExp("history_(\\d+)_(\\d+)", "imcu");
 
@@ -84,8 +82,7 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
         m_HistoryFiles.push_back(files[i]);
 
         CString monthLabel = Utf8ToWCstring( IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8 (files[i])));
-         
-        
+          
         size_t pos = 0;
 
         if ( regExp.search(WCstringToUtf8(monthLabel), pos) ) { 
@@ -104,10 +101,10 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
             SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETITEMDATA, newItemIndex, (LPARAM)i);
         }
     }
-    int selectedIndex = files.size()-1;
+    int selectedIndex = files.size() - 1;
     SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETCURSEL, selectedIndex, 0);
     
-    SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_SETCHECK, (WPARAM)Settings.HistorySettings.EnableDownloading);
+    SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_SETCHECK, static_cast<WPARAM>(Settings.HistorySettings.EnableDownloading));
     BOOL bDummy;
     OnMonthChanged(0,0, 0,bDummy);
     m_treeView.SetFocus();
@@ -146,7 +143,7 @@ void CHistoryWindow::Show()
 
 LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    HWND     hwnd = (HWND) wParam;  
+    HWND hwnd = reinterpret_cast<HWND>(wParam);  
     POINT ClientPoint, ScreenPoint;
     if(hwnd != GetDlgItem(IDC_HISTORYTREE)) return 0;
 
@@ -354,8 +351,7 @@ void CHistoryWindow::LoadHistoryFile(CString fileName)
 {
     m_delayedFileName = fileName;
     if(!m_treeView.isRunning())
-    {
-        
+    {   
         m_treeView.ResetContent();
 
         delete m_historyReader;

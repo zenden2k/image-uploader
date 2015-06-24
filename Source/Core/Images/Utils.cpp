@@ -47,7 +47,7 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
     if (size == 0)
         return -1;  // Failure
 
-    pImageCodecInfo = (ImageCodecInfo*)(malloc(size));
+    pImageCodecInfo = reinterpret_cast<ImageCodecInfo*>(malloc(size));
     if (pImageCodecInfo == NULL)
         return -1;  // Failure
 
@@ -66,8 +66,6 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
     free(pImageCodecInfo);
     return -1;  // Failure
 }
-
-
 
 Gdiplus::Bitmap* BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szResType)
 {
@@ -109,10 +107,10 @@ void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* back
     //double anInch = 1440.0  /  GetDeviceCaps(hdc1, LOGPIXELSX);
 
     RECT rectLayoutArea;
-    rectLayoutArea.top = (int)(layoutArea.GetTop() * anInchY);
-    rectLayoutArea.bottom = (int)(layoutArea.GetBottom() * anInchY);
-    rectLayoutArea.left = (int)(layoutArea.GetLeft() *anInchX  );
-    rectLayoutArea.right = (int)(layoutArea.GetRight() * anInchX);
+    rectLayoutArea.top = static_cast<int>(layoutArea.GetTop() * anInchY);
+    rectLayoutArea.bottom = static_cast<int>(layoutArea.GetBottom() * anInchY);
+    rectLayoutArea.left = static_cast<int>(layoutArea.GetLeft() *anInchX  );
+    rectLayoutArea.right = static_cast<int>(layoutArea.GetRight() * anInchX);
 
     HDC hdc = graphics->GetHDC();
     Gdiplus::Graphics gr2(hdc);
@@ -129,8 +127,7 @@ void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* back
     fmtRange.rc = rectLayoutArea;            //Indicate the area on page to print
     fmtRange.rcPage = rectLayoutArea;    //Indicate size of page
 
-
-    /*int characterCount = */::SendMessage(hwnd, EM_FORMATRANGE, 1, (LPARAM)&fmtRange);
+    /*int characterCount = */::SendMessage(hwnd, EM_FORMATRANGE, 1, reinterpret_cast<LPARAM>(&fmtRange));
 
     //Release the device context handle obtained by a previous call
     graphics->ReleaseHDC(hdc);
@@ -153,7 +150,6 @@ void DrawRoundedRectangle(Gdiplus::Graphics* gr, Gdiplus::Rect r, int d, Gdiplus
 
 }
 
-
 bool SaveImage(Image* img, const CString& filename, SaveImageFormat format, int Quality)
 {
     if (format == sifDetectByExtension ) {
@@ -167,7 +163,6 @@ bool SaveImage(Image* img, const CString& filename, SaveImageFormat format, int 
             format = sifPNG;
         }
     }
-
 
     std::auto_ptr<Bitmap> quantizedImage;
     //TCHAR szImgTypes[3][4] = {_T("jpg"), _T("png"), _T("gif")};
@@ -327,7 +322,6 @@ void boxBlur_4 (DummyBitmap& scl, DummyBitmap& tcl, int w, int h, int r) {
     boxBlurT_4(scl, tcl, w, h, r);
 }
 
-
 void gaussBlur_4 (DummyBitmap& scl, DummyBitmap& tcl, int w, int h, int r) {
     int* bxs = boxesForGauss(static_cast<float>(r), 3);
     boxBlur_4 (scl, tcl, w, h, (bxs[0]-1)/2);
@@ -352,7 +346,7 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
 
     if (bm->LockBits(& rc, ImageLockModeRead|ImageLockModeWrite, PixelFormat32bppARGB, & dataSource) == Ok)
     {
-        uint8_t * source= (uint8_t *) dataSource.Scan0;
+        uint8_t * source = reinterpret_cast<uint8_t *>(dataSource.Scan0);
         UINT stride;
         if (dataSource.Stride > 0) { stride = dataSource.Stride;
         } else {
@@ -415,8 +409,8 @@ Gdiplus::Bitmap* LoadImageFromFileWithoutLocking(const WCHAR* fileName) {
     if (src.LockBits(& rc, ImageLockModeRead, PixelFormat32bppARGB, & srcData) == Ok)
     {
         if ( dst->LockBits(& rc, ImageLockModeWrite, PixelFormat32bppARGB, & dstData) == Ok ) {
-            uint8_t * srcBits = (uint8_t *) srcData.Scan0;
-            uint8_t * dstBits = (uint8_t *) dstData.Scan0;
+            uint8_t * srcBits = reinterpret_cast<uint8_t *>(srcData.Scan0);
+            uint8_t * dstBits = reinterpret_cast<uint8_t *>(dstData.Scan0);
             unsigned int stride;
             if (srcData.Stride > 0) { 
                 stride = srcData.Stride;
@@ -472,25 +466,22 @@ void Gdip_RemoveAlpha(Gdiplus::Bitmap& source, Gdiplus::Color color )
     BitmapData  bdSrc;
     source.LockBits( &r,  ImageLockModeRead , PixelFormat32bppARGB,&bdSrc);
 
-    BYTE* bpSrc = (BYTE*)bdSrc.Scan0;
+    BYTE* bpSrc = reinterpret_cast<BYTE*>(bdSrc.Scan0);
 
     //bpSrc += (int)sourceChannel;
 
-
     for ( int i = r.Height * r.Width; i > 0; i-- )
     {
-        BGRA_COLOR * c = (BGRA_COLOR *)bpSrc;
+        BGRA_COLOR * c = reinterpret_cast<BGRA_COLOR *>(bpSrc);
 
         if(c->a!=255)
         {
             //c = 255;
-
-            DWORD * d= (DWORD*)bpSrc;
+            DWORD * d= reinterpret_cast<DWORD*>(bpSrc);
             *d= color.ToCOLORREF();
             c ->a= 255;
         }
         bpSrc += 4;
-
     }
     source.UnlockBits( &bdSrc );
 }
@@ -521,7 +512,6 @@ bool CopyBitmapToClipboard(HWND hwnd, HDC dc, Gdiplus::Bitmap* bm, bool preserve
     return false;
 }
 
-
 void DrawGradient(Graphics& gr, Rect rect, Color& Color1, Color& Color2)
 {
     Bitmap bm(rect.Width, rect.Height, &gr);
@@ -551,16 +541,16 @@ void DrawStrokedText(Graphics& gr, LPCTSTR Text, RectF Bounds, const Font& font,
     newwidth = OriginalTextRect.Height / NewTextRect.Height * NewTextRect.Width;
     float k = 2 * width * NewTextRect.Height / OriginalTextRect.Height;
     SolidBrush br(ColorText);
-    Bitmap temp((int)NewTextRect.Width, (int)NewTextRect.Height, &gr);
+    Bitmap temp(static_cast<int>(NewTextRect.Width), static_cast<int>(NewTextRect.Height), &gr);
 
     Graphics gr_temp(&temp);
     StringFormat format;
     gr_temp.SetPageUnit(UnitPixel);
     GraphicsPath path;
     gr_temp.SetSmoothingMode(SmoothingModeHighQuality);
-    path.AddString(Text, -1, &ff, (int)NewFont.GetStyle(), NewFont.GetSize(), Point(0, 0), &format);
+    path.AddString(Text, -1, &ff, static_cast<int>(NewFont.GetStyle()), NewFont.GetSize(), Point(0, 0), &format);
 
-    Pen pen(ColorStroke, (float)k);
+    Pen pen(ColorStroke, static_cast<float>(k));
     pen.SetAlignment(PenAlignmentCenter);
 
     float x, y;
@@ -587,7 +577,6 @@ void DrawStrokedText(Graphics& gr, LPCTSTR Text, RectF Bounds, const Font& font,
 
     gr.DrawImage(&temp, (int)(Bounds.GetLeft() + x), (int)(Bounds.GetTop() + y), (int)(newwidth), (int)(newheight));
 }
-
 
 // hack for stupid GDIplus
 void changeAplhaChannel(Bitmap& source, Bitmap& dest, int sourceChannel, int destChannel)
@@ -637,7 +626,6 @@ Rect MeasureDisplayString(Graphics& graphics, CString text, RectF boundingRect, 
     return rc;
 }
 
-
 bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int Format, int Quality, LPCTSTR Folder)
 {
     if (Format == -1)
@@ -657,7 +645,7 @@ bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int F
     if (userFolder.Right(1) != _T('\\'))
         userFolder += _T('\\');
     wsprintf(szBuffer2, _T(
-        "%s%s.%s"), (LPCTSTR)(Folder ? userFolder : IuCommonFunctions::IUTempFolder), (LPCTSTR)szNameBuffer,
+        "%s%s.%s"), static_cast<LPCTSTR>(Folder ? userFolder : IuCommonFunctions::IUTempFolder), static_cast<LPCTSTR>(szNameBuffer),
         /*(int)GetTickCount(),*/ szImgTypes[Format]);
     CString resultFilename = WinUtils::GetUniqFileName(szBuffer2);
     IU_CreateFilePath(resultFilename);

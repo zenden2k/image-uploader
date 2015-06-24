@@ -70,6 +70,9 @@
     <Filter Include="Source Files\Common">
       <UniqueIdentifier>{016d0c78-db4a-49ae-8456-90ecfc6307f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core\Logging">
+      <UniqueIdentifier>{73d404cc-6cc9-44bc-b0bc-416aaf7a0f95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainDlg.cpp">
@@ -101,9 +104,6 @@
     </ClCompile>
     <ClCompile Include="..\Core\Images\Utils.cpp">
       <Filter>Source Files\Core\Image</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Func\MyLogSink.cpp">
-      <Filter>Source Files\Func</Filter>
     </ClCompile>
     <ClCompile Include="..\Gui\Dialogs\WebViewWindow.cpp">
       <Filter>Source Files\Gui\Dialogs</Filter>
@@ -175,9 +175,6 @@
       <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Object.cpp">
-      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\3rdpart\GumboQuery\Parser.cpp">
       <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\GumboQuery\QueryUtil.cpp">
@@ -380,6 +377,12 @@
     </ClCompile>
     <ClCompile Include="..\Common\CmdLine.cpp">
       <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\GQ_Parser.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Logging\MyLogSink.cpp">
+      <Filter>Source Files\Core\Logging</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

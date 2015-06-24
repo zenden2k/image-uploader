@@ -18,10 +18,8 @@
 
 */
 
-#include "atlheaders.h"
-#include "Func/common.h"
 #include "ScreenshotDlg.h"
-#include "LogWindow.h"
+
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Func/MyUtils.h"
@@ -93,31 +91,7 @@ LRESULT CScreenshotDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl
 
 LRESULT CScreenshotDlg::OnCtlColorMsgDlg(HDC hdc, HWND hwndChild)
 {
-    return (LRESULT)(HBRUSH) m_WhiteBr; // Returning brush solid filled with COLOR_WINDOW color
-}
-
-void CScreenshotDlg::ExpandDialog() const
-{
-    /*m_bExpanded=!m_bExpanded;
-    RECT rc, CmdBoxRect;
-    CommandBox.GetClientRect(&CmdBoxRect);
-    GetClientRect(&rc);
-
-    if(m_bExpanded)
-    {
-        SetClientRect(m_hWnd, rc.right, nFullWindowHeight);    
-    }
-    else 
-        SetClientRect(m_hWnd, rc.right, CmdBoxRect.bottom);
-    EnableNextN(GetDlgItem(IDC_COMMANDBOX),11, m_bExpanded);
-    if(m_bExpanded)
-        ::SetFocus(GetDlgItem(IDC_DELAYEDIT));*/
-}
-
-LRESULT CScreenshotDlg::OnSettingsClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-    ExpandDialog();
-    return 0;
+    return reinterpret_cast<LRESULT>(static_cast<HBRUSH>(m_WhiteBr)); // Returning brush solid filled with COLOR_WINDOW color
 }
 
 LRESULT CScreenshotDlg::OnEnter(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)

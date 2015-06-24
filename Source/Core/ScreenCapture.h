@@ -64,8 +64,8 @@ class CRectRegion : public CScreenshotRegion
         CRectRegion();
         CRectRegion(int x, int y, int width, int height);
         CRectRegion(HRGN region);
-        virtual bool GetImage(HDC src, Gdiplus::Bitmap** res);
-        bool IsEmpty();
+        virtual bool GetImage(HDC src, Gdiplus::Bitmap** res) override;
+        bool IsEmpty() override;
         ~CRectRegion();
     protected:
         CRgn m_ScreenRegion;
@@ -87,8 +87,8 @@ class CWindowHandlesRegion : public CRectRegion
         void Clear();
         void SetWindowHidingDelay(int delay);
         void setWindowCapturingFlags(WindowCapturingFlags flags);
-        virtual bool GetImage(HDC src, Gdiplus::Bitmap** res);
-        bool IsEmpty();
+        virtual bool GetImage(HDC src, Gdiplus::Bitmap** res) override;
+        bool IsEmpty() override;
         ~CWindowHandlesRegion();
     protected:
         struct CWindowHandlesRegionItem

@@ -40,7 +40,7 @@ class CWizardPage
 {
     public:
         CWizardDlg* WizardDlg;
-        virtual ~CWizardPage() = NULL;
+        virtual ~CWizardPage();
         HBITMAP HeadBitmap;
         virtual bool OnShow();
         virtual bool OnHide();

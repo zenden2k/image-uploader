@@ -20,9 +20,6 @@
 
 #include "HotkeyEditor.h"
 
-
-
-// CHotkeyEditor
 CHotkeyEditor::CHotkeyEditor()
 {
 }
@@ -77,7 +74,7 @@ LRESULT CHotkeyEditor::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 LRESULT CHotkeyEditor::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {    
     m_data.localKey = ConvertHotkeyToPair(static_cast<WORD>(localHotkeyCtrl.GetWinHotkey()));
-    m_data.globalKey =ConvertHotkeyToPair( static_cast<WORD>(globalHotkeyCtrl.GetWinHotkey()));
+    m_data.globalKey = ConvertHotkeyToPair( static_cast<WORD>(globalHotkeyCtrl.GetWinHotkey()));
     DoDataExchange(TRUE);
     EndDialog(wID);
     return 0;

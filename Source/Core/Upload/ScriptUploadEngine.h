@@ -38,7 +38,7 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
                             public Script
 {
     public:
-        int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params);
+        int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) override;
     protected:
         bool needStop();
         std::string m_ErrorReason;
@@ -51,7 +51,7 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
     public:
         CScriptUploadEngine(std::string pluginName, ServerSync* serverSync, ServerSettingsStruct* settings);
         ~CScriptUploadEngine();
-        void setNetworkClient(NetworkClient* nm);
+        void setNetworkClient(NetworkClient* nm) override;
         //bool load(std::string fileName, ServerSettingsStruct& params);
         int getFolderList(CFolderList &FolderList);
         int createFolder(const CFolderItem &parent, CFolderItem &folder);
@@ -64,20 +64,16 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
         bool supportsBeforehandAuthorization();
         std::string name();
         
-        int RetryLimit();
+        int RetryLimit() override;
         
-        void stop() override;
-    //Sqrat::Table m_Object;         
+        void stop() override;         
     protected:
         void Log(ErrorInfo::MessageType mt, const std::string& error);
         virtual void PrintCallback(const std::string& output) override;
         bool preLoad() override;
         bool postLoad() override;
-        void clearSqratError();
-        CFolderList m_FolderList;
-       
-        std::string m_sName;
-      
+        CFolderList folderList_;
+        std::string name_;
         DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
 };
 

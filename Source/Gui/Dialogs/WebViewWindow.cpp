@@ -3,6 +3,7 @@
 #include "Gui/GuiTools.h"
 #include "Core/Logging.h"
 #include <UrlMon.h>
+
 HWND CWebViewWindow::window = 0;
  //CWebViewWindow* CWebViewWindow::instance = 0;
 CWebViewWindow::CWebViewWindow() : subclassWindow_(this), callback_(HookCallback(this, &CWebViewWindow::CBTHook)) {

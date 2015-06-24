@@ -74,16 +74,15 @@ BOOL MyGetWindowRect(HWND hWnd, RECT* res, bool MaximizedFix = true)
     static HMODULE DllModule =  LoadLibrary(_T("dwmapi.dll"));
     if (DllModule)
     {
-        DwmIsCompositionEnabled_Func IsCompEnabledFunc = (DwmIsCompositionEnabled_Func) GetProcAddress(
-              DllModule, "DwmIsCompositionEnabled");
+        DwmIsCompositionEnabled_Func IsCompEnabledFunc = reinterpret_cast<DwmIsCompositionEnabled_Func>( GetProcAddress(
+              DllModule, "DwmIsCompositionEnabled"));
         if (IsCompEnabledFunc)
         {
             BOOL isEnabled = false;
             if (S_OK == IsCompEnabledFunc( &isEnabled))
                 if (isEnabled)
                 {
-                    DwmGetWindowAttribute_Func Func = (DwmGetWindowAttribute_Func) GetProcAddress(DllModule,
-                                                                                                  "DwmGetWindowAttribute");
+                    DwmGetWindowAttribute_Func Func = reinterpret_cast<DwmGetWindowAttribute_Func>(GetProcAddress(DllModule, "DwmGetWindowAttribute"));
                     if (Func)
                     {
                         if (S_OK == Func( hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, res, sizeof(RECT)))
@@ -186,7 +185,7 @@ RECT MaximizedWindowFix(HWND handle, RECT windowRect)
 
 void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsigned n);
 
-typedef enum ChannelARGB {
+enum ChannelARGB {
     Blue = 0,
     Green = 1,
     Red = 2,
@@ -202,8 +201,8 @@ void transferOneARGBChannelFromOneBitmapToAnother(Bitmap& source, Bitmap& dest, 
     BitmapData bdDst;
     source.LockBits( &r,  ImageLockModeRead, PixelFormat32bppARGB, &bdSrc);
     dest.LockBits( &r,  ImageLockModeWrite, PixelFormat32bppARGB, &bdDst);
-    BYTE* bpSrc = (BYTE*)bdSrc.Scan0;
-    BYTE* bpDst = (BYTE*)bdDst.Scan0;
+    BYTE* bpSrc = reinterpret_cast<BYTE*>(bdSrc.Scan0);
+    BYTE* bpDst = reinterpret_cast<BYTE*>(bdDst.Scan0);
     bpSrc += (int)sourceChannel;
     bpDst += (int)destChannel;
     for ( int i = r.Height * r.Width; i > 0; i-- )
@@ -426,8 +425,8 @@ bool AreImagesEqual(Bitmap* b1, Bitmap* b2)
     BitmapData b2Data;
     b2->LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, &b2Data);
     assert(sizeof(unsigned long*) == 4);
-    unsigned long* pImage1 = ( unsigned long*) b1Data.Scan0;
-    unsigned long* pImage2 = ( unsigned long*)b2Data.Scan0;
+    unsigned long* pImage1 = reinterpret_cast<unsigned long*>(b1Data.Scan0);
+    unsigned long* pImage2 = reinterpret_cast<unsigned long*>(b2Data.Scan0);
     for (int y = 0; y < height; y++)
     {
         for (int x = 0; x < width; x++)

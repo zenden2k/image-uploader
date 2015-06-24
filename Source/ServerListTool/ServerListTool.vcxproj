@@ -454,9 +454,9 @@
     <ClCompile Include="..\Core\3rdpart\base64.cpp" />
     <ClCompile Include="..\Core\3rdpart\dxerr.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\GQDocument.cpp" />
+    <ClCompile Include="..\Core\3rdpart\GumboQuery\GQ_Parser.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Node.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Object.cpp" />
-    <ClCompile Include="..\Core\3rdpart\GumboQuery\Parser.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\QueryUtil.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Selection.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Selector.cpp" />
@@ -471,6 +471,7 @@
     <ClCompile Include="..\Core\FileDownloader.cpp" />
     <ClCompile Include="..\Core\HistoryManager.cpp" />
     <ClCompile Include="..\Core\LocalFileCache.cpp" />
+    <ClCompile Include="..\Core\Logging\MyLogSink.cpp" />
     <ClCompile Include="..\Core\Network\CurlShare.cpp" />
     <ClCompile Include="..\Core\Network\NetworkClient.cpp" />
     <ClCompile Include="..\Core\Scripting\API\COMUtils.cpp" />
@@ -557,7 +558,6 @@
     <ClCompile Include="..\Core\Utils\CryptoUtils.cpp" />
     <ClCompile Include="..\Core\3rdpart\CodePages.cpp" />
     <ClCompile Include="..\Core\Images\Utils.cpp" />
-    <ClCompile Include="..\Func\MyLogSink.cpp" />
     <ClCompile Include="..\Gui\Dialogs\WebViewWindow.cpp" />
     <ClCompile Include="..\Gui\Controls\WTLBrowserView.cpp" />
     <ClCompile Include="..\3rdpart\GdiplusH.cpp" />

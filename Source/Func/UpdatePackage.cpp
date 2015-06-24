@@ -288,7 +288,7 @@ bool CUpdateManager::internal_load_update(CString name)
     url.Replace(_T("OS_VER"), U2W(nm.urlEncode(IuCoreUtils::GetOsVersion())));
     url.Replace(_T("CPU_FEATURES"), U2W(nm.urlEncode(IuCoreUtils::GetCpuFeatures())));
     try {
-        nm.doGet(IuCoreUtils::WstringToUtf8((LPCTSTR)url));
+        nm.doGet(W2U(url));
     } catch ( NetworkClient::AbortedException&) {
         return false;
     }
@@ -385,13 +385,13 @@ CUpdatePackage::CUpdatePackage()
 
 bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
 {
-    if(!IuCoreUtils::FileExists(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))) return false;
-    if(!m_xml.LoadFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))) {
+    if(!IuCoreUtils::FileExists(W2U(filename))) return false;
+    if(!m_xml.LoadFromFile(W2U(filename))) {
         ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), CString(_T("Failed to load update file \'")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))).c_str());
         return false;
     }
     
-    m_PackageFolder = IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFilePath(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))).c_str();
+    m_PackageFolder = IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFilePath(W2U(filename))).c_str();
     m_PackageFolder += "\\";
     SimpleXmlNode root = m_xml.getRoot("UpdatePackage", false);
     if(root.IsNull()) return false;
@@ -510,9 +510,7 @@ bool CUpdatePackage::doUpdate()
                 MoveFile(copyTo,renameTo); 
             }
             setStatusText( _T("Copying file '") + copyFrom + _T("' to location '") + copyTo);
-            
-
-            
+                  
             if(!CopyFile(copyFrom,copyTo,FALSE))
             {
                 ServiceLocator::instance()->logger()->write(logWarning, _T("Update Engine"), CString(_T("Could not write file ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)copyTo))).c_str());
@@ -555,7 +553,7 @@ CString CUpdateManager::generateReport()
         time_t t = m_updateList[i].timeStamp();
         tm * timeinfo = localtime ( &t );
         CString date;
-        date.Format(_T("[%02d.%02d.%04d]"),(int)timeinfo->tm_mday,(int) timeinfo->tm_mon+1, (int)1900+timeinfo->tm_year);
+        date.Format(_T("[%02d.%02d.%04d]"), timeinfo->tm_mday, timeinfo->tm_mon+1, 1900+timeinfo->tm_year);
         text += _T(" * ")+m_updateList[i].displayName()+_T("  ")+date+_T("\r\n\r\n");
         text += m_updateList[i].readableText();
         text += _T("\r\n");        
@@ -587,13 +585,13 @@ int CUpdateManager::progressCallback(void *clientp, double dltotal, double dlnow
     CUpdateManager * um = reinterpret_cast<CUpdateManager*>( clientp);
     CString text;
     CString buf1, buf2;
-    buf1 = IuCoreUtils::Utf8ToWstring(IuCoreUtils::fileSizeToString(int64_t(dlnow))).c_str();
-    buf2 = IuCoreUtils::Utf8ToWstring(IuCoreUtils::fileSizeToString(int64_t(dltotal))).c_str();
+    buf1 = U2W(IuCoreUtils::fileSizeToString(int64_t(dlnow)));
+    buf2 = U2W(IuCoreUtils::fileSizeToString(int64_t(dltotal)));
     int percent = 0;
     if(dltotal != 0 )
     percent = int((dlnow/ dltotal) * 100);
     if(percent > 100) percent = 0;
-    text.Format(TR("Downloaded %s of %s (%d %%)"),(LPCTSTR)buf1, (LPCTSTR)buf2,percent);
+    text.Format(TR("Downloaded %s of %s (%d %%)"), static_cast<LPCTSTR>(buf1), static_cast<LPCTSTR>(buf2), percent);
     um->updateStatus(0, text);
     if(um->m_stop) return -1;
     return 0;

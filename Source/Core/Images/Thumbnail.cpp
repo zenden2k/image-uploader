@@ -19,12 +19,11 @@
 */
 
 #include "Thumbnail.h"
+
 #include <stdlib.h>
-#include <string.h>
 
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/SimpleXml.h"
-#include "Core/3rdpart/parser.h"
 #include "Core/Utils/StringUtils.h"
 
 Thumbnail::Thumbnail()

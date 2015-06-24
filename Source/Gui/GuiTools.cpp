@@ -19,6 +19,7 @@
 */
 
 #include "Gui/GuiTools.h"
+
 #include "Func/WinUtils.h"
 #include <Shobjidl.h>
 #include <math.h>
@@ -33,7 +34,7 @@ namespace GuiTools
 {
     int AddComboBoxItem(HWND hDlg, int itemId, LPCTSTR item)
     {
-        return ::SendDlgItemMessage(hDlg, itemId, CB_ADDSTRING, 0, (LPARAM)item);
+        return ::SendDlgItemMessage(hDlg, itemId, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(item));
     }
 
     bool AddComboBoxItems(HWND hDlg, int itemId, int itemCount, LPCTSTR item, ...)
@@ -79,7 +80,7 @@ namespace GuiTools
         alf.lfWeight = FW_BOLD;
 
         HFONT NewFont = CreateFontIndirect(&alf);
-        SendMessage(Label,WM_SETFONT,(WPARAM)NewFont, MAKELPARAM(false, 0));
+        SendMessage(Label,WM_SETFONT, reinterpret_cast<WPARAM>(NewFont), MAKELPARAM(false, 0));
         CWindowDC dc(0);
         alf.lfHeight = -MulDiv(13, GetDeviceCaps(dc, LOGPIXELSY), 72);
     }
@@ -97,7 +98,7 @@ namespace GuiTools
         alf.lfItalic = 1;
 
         HFONT NewFont = CreateFontIndirect(&alf);
-        SendMessage(Label,WM_SETFONT,(WPARAM)NewFont,MAKELPARAM(false, 0));
+        SendMessage(Label,WM_SETFONT, reinterpret_cast<WPARAM>(NewFont),MAKELPARAM(false, 0));
     }
 
     void EnableNextN(HWND Control ,int n, bool Enable)
@@ -454,7 +455,6 @@ bool GetScreenBounds(RECT& rect)
     }
     rect = result;
     return true;
-
 }
 
 HRGN CloneRegion(HRGN source)
@@ -463,7 +463,6 @@ HRGN CloneRegion(HRGN source)
     CombineRgn(resultRgn, source, resultRgn, RGN_OR);
     return resultRgn;
 }
-
 
 HWND CreateToolTipForWindow(HWND hwnd, const CString& text)
 {
@@ -582,13 +581,13 @@ HICON LoadSmallIcon(int resourceId) {
 
 #ifdef IU_WTL_APP
     if ( resourceId == IDR_MAINFRAME && Settings.UseNewIcon) {
-        return  (HICON)::LoadImage(_Module.GetResourceInstance(), WinUtils::GetAppFolder()+_T("new-icon.ico"), 
-            IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR|LR_LOADFROMFILE);
+        return  reinterpret_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), WinUtils::GetAppFolder()+_T("new-icon.ico"), 
+            IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR|LR_LOADFROMFILE));
     } else
 #endif
     {
-        return  (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), 
-            IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR);
+        return  reinterpret_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), 
+            IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR));
     }
 }
 
@@ -607,14 +606,14 @@ HICON LoadBigIcon(int resourceId, int maxAvailableSize) {
 
 #ifdef IU_WTL_APP
     if ( resourceId == IDR_MAINFRAME && Settings.UseNewIcon) {
-        return  (HICON)::LoadImage(_Module.GetResourceInstance(), WinUtils::GetAppFolder()+_T("new-icon.ico"), 
-            IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR|LR_LOADFROMFILE);
+        return reinterpret_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), WinUtils::GetAppFolder()+_T("new-icon.ico"), 
+            IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR|LR_LOADFROMFILE));
     } else
 #endif
 
     {
-        return  (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), 
-            IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR);
+        return  reinterpret_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), 
+            IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR));
     }
 }
 

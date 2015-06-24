@@ -19,6 +19,7 @@
 */
 
 #include "ThumbsView.h"
+
 #include "Func/mydropsource.h"
 #include "Func/mydataobject.h"
 #include "Func/common.h"

@@ -21,7 +21,6 @@
 #include "settingspage.h"
 
 #include "wizarddlg.h"
-
 #include "uxtheme.h"
 
 #pragma comment(lib, "uxtheme.lib")

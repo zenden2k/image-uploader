@@ -18,10 +18,8 @@
 
 */
 #include "ShortenUrlDlg.h"
-#include "atlheaders.h"
+
 #include "Func/Common.h"
-#include "Core/3rdpart/pcreplusplus.h"
-#include "LogWindow.h"
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Upload/FileQueueUploader.h"

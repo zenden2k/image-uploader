@@ -18,17 +18,12 @@
 
 */
 #include "WelcomeDlg.h"
-#include "atlheaders.h"
+
 #include "ImageDownloaderDlg.h"
 #include "HistoryWindow.h"
-#include "Common/CmdLine.h"
 #include "settingsdlg.h"
-#include "mediainfodlg.h"
-#include "regionselect.h"
-#include "Screenshotdlg.h"
 #include "Gui/GuiTools.h"
 #include "Func/MyUtils.h"
-#include <Core/Scripting/API/HtmlDocumentPrivate_win.h>
 
 // CWelcomeDlg
 CWelcomeDlg::CWelcomeDlg()
@@ -45,7 +40,6 @@ LRESULT CWelcomeDlg::OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     
 CWelcomeDlg::~CWelcomeDlg()
 {
-    DeleteObject(br);
 } 
 
 LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -64,18 +58,16 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     ListBox.Init();
     ListBox.AddString(TR("Add Images"), TR("JPEG, PNG, GIF, BMP or any other file"), IDC_ADDIMAGES, LOADICO(IDI_IMAGES));
     
-    ListBox.AddString(TR("Add Files..."), 0, IDC_ADDFILES, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONADD), IMAGE_ICON    , 16,16,0));
-
-    ListBox.AddString(TR("From Web"), 0, IDC_DOWNLOADIMAGES, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONWEB), IMAGE_ICON    , 16,16,0),true);
-
+    ListBox.AddString(TR("Add Files..."), 0, IDC_ADDFILES, reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONADD), IMAGE_ICON, 16,16,0)));
     
-    ListBox.AddString(TR("Add Folder..."), 0, IDC_ADDFOLDER, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONADDFOLDER), IMAGE_ICON    , 16,16,0),true,0,true);
+    ListBox.AddString(TR("From Web"), 0, IDC_DOWNLOADIMAGES, reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONWEB), IMAGE_ICON, 16, 16, 0)), true);
 
-    ListBox.AddString(TR("From Clipboard"), 0, IDC_CLIPBOARD, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_CLIPBOARD), IMAGE_ICON    , 16,16,0),true);
+    ListBox.AddString(TR("Add Folder..."), 0, IDC_ADDFOLDER, reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONADDFOLDER), IMAGE_ICON, 16,16,0)),true,0,true);
+
+    ListBox.AddString(TR("From Clipboard"), 0, IDC_CLIPBOARD, reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_CLIPBOARD), IMAGE_ICON, 16,16,0)),true);
     
-    ListBox.AddString(TR("Reupload"), 0, IDC_REUPLOADIMAGES, LOADICO(IDI_ICONRELOAD), true,0, true);
-    ListBox.AddString(TR("Shorten a link"), 0, IDC_SHORTENURL, LOADICO(IDI_ICONLINK), true,0, false);
-
+    ListBox.AddString(TR("Reupload"), 0, IDC_REUPLOADIMAGES, LOADICO(IDI_ICONRELOAD), true, 0, true);
+    ListBox.AddString(TR("Shorten a link"), 0, IDC_SHORTENURL, LOADICO(IDI_ICONLINK), true, 0, false);
 
     ListBox.AddString(TR("Screen Capture"), TR("a pic of the whole screen or selected region"), IDC_SCREENSHOT, LOADICO(IDI_SCREENSHOT));
     ListBox.AddString(TR("Shot of Selected Region..."), 0, IDC_REGIONPRINT,LOADICO(IDI_ICONREGION));
@@ -83,7 +75,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     ListBox.AddString(TR("Import Video File"), TR("Extracting frames from video"), IDC_ADDVIDEO, LOADICO(IDI_GRAB));
 
     if(lstrlen(MediaInfoDllPath))
-        ListBox.AddString(TR("View Media File Information"), 0, IDC_MEDIAFILEINFO, (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONINFO), IMAGE_ICON    , 16,16,0));
+        ListBox.AddString(TR("View Media File Information"), 0, IDC_MEDIAFILEINFO, reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONINFO), IMAGE_ICON, 16,16,0)));
 
     ListBox.AddString(TR("Program Settings"), TR("a tool for advanced users"), IDC_SETTINGS, GuiTools::LoadBigIcon(IDI_ICONSETTINGS, 128));
     ListBox.AddString(TR("History"), 0, ID_VIEWHISTORY,LOADICO(IDI_ICONHISTORY));
@@ -110,7 +102,6 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
     ShowNext(false);
     ShowPrev(false);    
-
 
     if (WinUtils::IsVista()) {
         HMODULE module = LoadLibrary(_T("user32.dll"));
@@ -149,7 +140,7 @@ LRESULT CWelcomeDlg::OnBnClickedAddimages(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT CWelcomeDlg::OnCtlColorMsgDlg(HDC hdc, HWND hwndChild)
 {
-    return (LRESULT)br; // Returning brush solid filled with COLOR_WINDOW color
+    return reinterpret_cast<LRESULT>(static_cast<HBRUSH>(br)); // Returning brush solid filled with COLOR_WINDOW color
 }
 
 bool CWelcomeDlg::OnShow()
@@ -209,8 +200,8 @@ void CWelcomeDlg::clipboardUpdated()
 
 LRESULT CWelcomeDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    HWND hwndRemove = (HWND) wParam;  // handle of window being removed 
-    HWND hwndNext = (HWND) lParam;
+    HWND hwndRemove = reinterpret_cast<HWND>(wParam);  // handle of window being removed 
+    HWND hwndNext = reinterpret_cast<HWND>(lParam);
 
     if(hwndRemove == PrevClipboardViewer) PrevClipboardViewer = hwndNext;
     else ::PostMessage(PrevClipboardViewer, WM_CHANGECBCHAIN, wParam, lParam);

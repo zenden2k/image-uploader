@@ -54,7 +54,6 @@ class CScreenshotDlg :
             MSG_WM_CTLCOLORBTN(OnCtlColorMsgDlg)
             MSG_WM_CTLCOLORSTATIC(OnCtlColorMsgDlg)*/
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-            COMMAND_ID_HANDLER(IDC_VIEWSETTINGS,  OnSettingsClick)
             COMMAND_HANDLER(IDC_FULLSCREEN, BN_CLICKED, OnClickedFullscreenCapture)
             COMMAND_ID_HANDLER(IDC_SCRACTIVEWINDOW,  OnClickedActiveWindowCapture)
             COMMAND_HANDLER(IDC_REGIONSELECT, BN_CLICKED, OnBnClickedRegionselect)
@@ -70,10 +69,7 @@ class CScreenshotDlg :
         // Handlers:
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        LRESULT OnSettingsClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnEnter(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);
 
@@ -83,8 +79,6 @@ class CScreenshotDlg :
         LRESULT OnClickedActiveWindowCapture(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnBnClickedRegionselect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         
-        void ExpandDialog() const;
-
         CBrush m_WhiteBr;
         CHyperLinkControl CommandBox;
         CaptureMode m_CaptureMode;

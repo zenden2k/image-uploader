@@ -33,7 +33,7 @@
 // CDefaultServersSettings
 CDefaultServersSettings::CDefaultServersSettings(UploadEngineManager* uploadEngineManager)
 {
-    fileServerSelector_ = 0 ;
+    fileServerSelector_ = 0;
     imageServerSelector_ = 0;
     trayServerSelector_ = 0;
     contextMenuServerSelector_ = 0;
@@ -96,7 +96,6 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_CONTEXTMENUSERVERPLACEHOLDER);
 
-
     contextMenuServerSelector_ = new CServerSelectorControl(uploadEngineManager_);
     //contextMenuServerSelector_->setShowDefaultServerItem(true);
     contextMenuServerSelector_->Create(m_hWnd, serverSelectorRect);
@@ -122,14 +121,9 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     GuiTools::SetCheck(m_hWnd, IDC_REMEMBERIMAGESERVERSETTINGS, Settings.RememberImageServer);
     GuiTools::SetCheck(m_hWnd, IDC_REMEMBERFILESERVERSETTINGS, Settings.RememberFileServer);
 
-
-    
-    
     return 1;  // Let the system set the focus
 }
-
-
-    
+ 
 bool CDefaultServersSettings::Apply()
 {
     CServerSelectorControl* controls[] = { fileServerSelector_, imageServerSelector_, trayServerSelector_, contextMenuServerSelector_, urlShortenerServerSelector_ };

@@ -19,8 +19,7 @@
 */
 
 #include "ResultsPanel.h"
-#include <uxtheme.h>
-#include "atlheaders.h"
+
 #include "Core/3rdpart/pcreplusplus.h"
 #include "mediainfodlg.h"
 #include "LogWindow.h"
@@ -28,7 +27,6 @@
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/WebViewWindow.h"
 #include "Core/Utils/TextUtils.h"
-#include "Core/Utils/StringUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
 #include <Core/ServiceLocator.h>
@@ -56,8 +54,7 @@ CResultsPanel::~CResultsPanel()
     {
         webViewWindow_->DestroyWindow();
         delete webViewWindow_;
-    }
-    
+    }  
 }
     
 bool CResultsPanel::LoadTemplate()
@@ -70,7 +67,7 @@ bool CResultsPanel::LoadTemplate()
     if(TemplateHead) delete[] TemplateHead;
     TemplateHead = NULL;
     TemplateFoot = NULL;
-    HANDLE hFile = CreateFile(FileName,    GENERIC_READ    ,0,0,OPEN_EXISTING    ,0,0);
+    HANDLE hFile = CreateFile(FileName, GENERIC_READ, 0, 0,OPEN_EXISTING, 0, 0);
     if(!hFile) return false;
 
     dwFileSize = GetFileSize (hFile, NULL) ; 
@@ -605,7 +602,7 @@ CString CResultsPanel::ReplaceVars(const CString& Text)
 
 LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
-    NMTOOLBAR* pnmtb = (NMTOOLBAR *) pnmh;
+    NMTOOLBAR* pnmtb = reinterpret_cast<NMTOOLBAR *>(pnmh);
     CMenu sub;    
     MENUITEMINFO mi;
     mi.cbSize = sizeof(mi);
@@ -669,15 +666,12 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
         count++;
     }
     
-
-
-    
     sub.CheckMenuItem(IDC_USEDIRECTLINKS, MF_BYCOMMAND    | (Settings.UseDirectLinks? MF_CHECKED    : MF_UNCHECKED)    );
     sub.CheckMenuItem(IDC_USETEMPLATE, MF_BYCOMMAND    | (Settings.UseTxtTemplate? MF_CHECKED    : MF_UNCHECKED)    );        
     sub.CheckMenuItem(IDC_SHORTENURLITEM, MF_BYCOMMAND    | (shortenUrl_? MF_CHECKED    : MF_UNCHECKED)    );    
     
-   ::SendMessage(Toolbar.m_hWnd,TB_GETRECT, pnmtb->iItem, (LPARAM)&rc);
-   Toolbar.ClientToScreen(&rc);
+    ::SendMessage(Toolbar.m_hWnd,TB_GETRECT, pnmtb->iItem, reinterpret_cast<LPARAM>(&rc));
+    Toolbar.ClientToScreen(&rc);
     TPMPARAMS excludeArea;
     ZeroMemory(&excludeArea, sizeof(excludeArea));
     excludeArea.cbSize = sizeof(excludeArea);
@@ -727,7 +721,7 @@ void CResultsPanel::AddServer(ServerProfile server)
 }
 LRESULT CResultsPanel::OnResulttoolbarNMCustomDraw(LPNMHDR pnmh)
 {
-    LPNMTBCUSTOMDRAW lpNMCustomDraw = (LPNMTBCUSTOMDRAW)pnmh;
+    LPNMTBCUSTOMDRAW lpNMCustomDraw = reinterpret_cast<LPNMTBCUSTOMDRAW>(pnmh);
     HDC dc = lpNMCustomDraw->nmcd.hdc;
     RECT toolbarRect = lpNMCustomDraw->nmcd.rc;
     //HTHEME hTheme = OpenThemeData(m_hWnd, _T("TAB"));
@@ -744,8 +738,7 @@ LRESULT CResultsPanel::OnResulttoolbarNMCustomDraw(LPNMHDR pnmh)
     {
         typedef BOOL (*ISAPPTHEMEDPROC)();
         ISAPPTHEMEDPROC pIsAppThemed;
-        pIsAppThemed = 
-          (ISAPPTHEMEDPROC) ::GetProcAddress(hinstDll, "IsAppThemed");
+        pIsAppThemed = reinterpret_cast<ISAPPTHEMEDPROC>(::GetProcAddress(hinstDll, "IsAppThemed"));
 
         if(pIsAppThemed)
             m_bThemeActive = pIsAppThemed() != FALSE;
@@ -853,8 +846,7 @@ LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND h
         if (!IuTextUtils::FileSaveContents(W2U(outputTempFileName), res) ) {
             LOG(ERROR) << "Could not save temporary file " << outputTempFileName;
         }
-        url = "file:///" + outputTempFileName;
-        
+        url = "file:///" + outputTempFileName;   
     }
 
     if (url.IsEmpty() ) {
@@ -867,7 +859,6 @@ LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND h
         webViewWindow_->Create(0,r,TR("Preview Window"),WS_POPUP|WS_OVERLAPPEDWINDOW,WS_EX_TOPMOST    );
         webViewWindow_->CenterWindow(WizardDlg->m_hWnd);
         webViewWindow_->ShowWindow(SW_SHOW);
-    
     }
     
     webViewWindow_->NavigateTo(url);

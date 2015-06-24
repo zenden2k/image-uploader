@@ -56,8 +56,8 @@ class ImageConverter
         ImageConverter();
         ~ImageConverter();
         bool Convert(const std::string& sourceFile);
-        const std::string getThumbFileName();
-        const std::string getImageFileName();
+        std::string getThumbFileName();
+        std::string getImageFileName();
         void setDestinationFolder(const std::string& folder);
         void setGenerateThumb(bool generate);
         void setEnableProcessing(bool enable);

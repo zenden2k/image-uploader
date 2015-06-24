@@ -18,15 +18,15 @@
 
 */
 
-
 #include "ContextMenuItemDlg.h"
+
 #include "wizarddlg.h"
 #include "Func/Common.h"
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "Func/WinUtils.h"
-// CContextMenuItemDlg
+
 CContextMenuItemDlg::CContextMenuItemDlg(UploadEngineManager * uploadEngineManager)
 {
     titleEdited_ = false;
@@ -43,7 +43,7 @@ LRESULT CContextMenuItemDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     CenterWindow(GetParent());
 
     RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
-    imageServerSelector_ = new CServerSelectorControl(uploadEngineManager_, false);
+    imageServerSelector_.reset(new CServerSelectorControl(uploadEngineManager_, false));
     imageServerSelector_->Create(m_hWnd, serverSelectorRect);
     imageServerSelector_->setTitle(TR("Choose server"));
     imageServerSelector_->ShowWindow( SW_SHOW );
@@ -119,7 +119,7 @@ void CContextMenuItemDlg::generateTitle()
     if ( !titleEdited_ ) {    
         ServerProfile sp = imageServerSelector_->serverProfile();
         CString title;
-        title.Format(TR("Upload to %s"), IuCoreUtils::Utf8ToWstring(sp.serverName()).c_str());
+        title.Format(TR("Upload to %s"), U2W(sp.serverName()));
         CString additional;
         if ( !sp.profileName().empty()) {
             additional += Utf8ToWCstring(sp.profileName());
@@ -129,7 +129,7 @@ void CContextMenuItemDlg::generateTitle()
                 additional += _T(", ");
             }
             CString temp;
-            temp.Format(TR("folder \"%s\""), (LPCTSTR) Utf8ToWCstring(sp.folderTitle()) );
+            temp.Format(TR("folder \"%s\""), static_cast<LPCTSTR>(Utf8ToWCstring(sp.folderTitle())) );
             additional+= temp;
         }
         if ( !additional.IsEmpty() ) {

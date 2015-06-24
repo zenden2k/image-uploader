@@ -18,7 +18,7 @@
 
 */
 #include "ImageDownloaderDlg.h"
-#include "atlheaders.h"
+
 #include "Func/Common.h"
 #include "Core/3rdpart/pcreplusplus.h"
 #include "LogWindow.h"
@@ -26,8 +26,8 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Func/myutils.h"
-#include <Core/ServiceLocator.h>
-#include <Core/CoreFunctions.h>
+#include "Core/ServiceLocator.h"
+#include "Core/CoreFunctions.h"
 #include "Func/WebUtils.h"
 
 // CImageDownloaderDlg
@@ -144,8 +144,8 @@ LRESULT CImageDownloaderDlg::OnClipboardUpdate(UINT uMsg, WPARAM wParam, LPARAM 
 
 LRESULT CImageDownloaderDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    HWND hwndRemove = (HWND) wParam;  // handle of window being removed 
-    HWND hwndNext = (HWND) lParam;
+    HWND hwndRemove = reinterpret_cast<HWND>(wParam);  // handle of window being removed 
+    HWND hwndNext = reinterpret_cast<HWND>(lParam);
 
     if(hwndRemove == PrevClipboardViewer) PrevClipboardViewer = hwndNext;
     else ::SendMessage(PrevClipboardViewer, WM_CHANGECBCHAIN, wParam, lParam);
@@ -158,7 +158,6 @@ void CImageDownloaderDlg::OnDrawClipboard()
     //Sending WM_DRAWCLIPBOARD msg to the next window in the chain
     if (PrevClipboardViewer) ::SendMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0);
 }
-
 
 CString GetExtensionByMime(CString mime)
 {
