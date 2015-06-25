@@ -40,9 +40,9 @@ libraries (boost, glog, jsoncpp, etc) against your compiler version (so I recomm
 
 You can download ALL necessary libraries and headers (precompiled for MSVC 2013) by following link:
 
-https://bintray.com/artifact/download/zenden/zenden-image-uploader/Image_Uploader_Contrib_MSVC_2013_and_sources_v1.3.2_16.05.2015.7z
+https://bintray.com/artifact/download/zenden/zenden-image-uploader/Image_Uploader_Contrib_MSVC_2013_and_sources_v1.3.2_25.06.2015.7z
 
-mirror https://docs.google.com/file/d/0B_RKTUl10DcrdzFsTF90aS1TUEk/edit?usp=drivesdk
+mirror https://drive.google.com/file/d/0B_RKTUl10DcraGM1eS15VnZNSjQ/edit?usp=drivesdk
 
 Image Uploader is using the following libraries:
 

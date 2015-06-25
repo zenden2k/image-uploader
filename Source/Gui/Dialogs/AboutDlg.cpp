@@ -20,14 +20,11 @@
 
 #include "AboutDlg.h"
 
-#include "resource.h"
-
 #include "versioninfo.h"
 #include <curl/curl.h>
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
-#include "Func/IuCommonFunctions.h"
 #include <libavutil/ffversion.h>
 #include <boost/config.hpp>
 #include <boost/version.hpp>
@@ -116,10 +113,11 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(L"CUnzipper") +"\thttp://www.codeproject.com/Articles/4288/Win-Wrapper-classes-for-Gilles-Volant-s-Zip-Unzi\r\n";
     memoText += CString(L"CThread") +"\t\thttp://www.viksoe.dk/code/thread.htm\r\n";
     memoText += CString(L"CPropertyList") +"\thttp://www.viksoe.dk/code/propertylist.htm\r\n";
+    memoText += CString(L"uriparser") + "\t\thttp://uriparser.sourceforge.net/\r\n";
     memoText += CString(L"GDI+ helper") +"\thttp://www.codeproject.com/Articles/4969/GDI-and-MFC-memory-leak-detection\r\n";
     memoText += CString(L"xbbcode") +"\t\thttps://github.com/patorjk/Extendible-BBCode-Parser\r\n";
     memoText += CString(L"entities.c") + "\t\thttps://bitbucket.org/cggaertner/cstuff/\r\n";
-
+   
     memoText += CString(_T("Resources:\r\n")) +
         _T("famfamfam icons\thttp://www.famfamfam.com/lab/icons/\r\n\r\n");
 

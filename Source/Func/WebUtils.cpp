@@ -5,19 +5,6 @@
 
 namespace WebUtils {
     bool DoesTextLookLikeUrl(CString& text) {
-        /*URL_COMPONENTS urlComponents;
-        TCHAR schemeBuffer[MAX_PATH] = _T("\0");
-        TCHAR hostNameBuffer[MAX_PATH] = _T("\0");
-        memset(&urlComponents, 0, sizeof(urlComponents));
-        urlComponents.lpszHostName = hostNameBuffer;
-        urlComponents.dwHostNameLength = ARRAY_SIZE(hostNameBuffer);
-        urlComponents.lpszScheme = schemeBuffer;
-        urlComponents.dwSchemeLength = ARRAY_SIZE(schemeBuffer);
-        bool result = InternetCrackUrl(text, text.GetLength(), 0, &urlComponents);
-        if ( result  && lstrlen(hostNameBuffer) ) {
-            return true;
-        }*/
-
         if ( text.Left(4) == _T("www.") ) {
             text = "http://" + text;
             return true;

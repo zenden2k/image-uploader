@@ -37,7 +37,8 @@
 #include "Func/IuCommonFunctions.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "Core/Upload/FileUploadTask.h"
-#include <Core/CoreFunctions.h>
+#include "Core/CoreFunctions.h"
+#include "Core/3rdpart/UriParser.h"
 
 const TCHAR CImageReuploaderDlg::LogTitle[] = _T("Image Reuploader");
 
@@ -401,7 +402,6 @@ bool CImageReuploaderDlg::ExtractLinks(std::string text, std::vector<std::string
             uniqueLinks.insert(link);
             result.push_back(link);
         }
-    
     }
 
     return true;
@@ -418,18 +418,14 @@ bool CImageReuploaderDlg::BeginDownloading()
     ExtractLinks(inputText, links);
 
     CString sourceUrl = GuiTools::GetDlgItemText( m_hWnd, IDC_SOURCEURLEDIT );
-    URL_COMPONENTS urlComponents;
-    TCHAR schemeBuffer[MAX_PATH] = _T("\0");
+    std::string sourceUrlUtf8 = W2U(sourceUrl);
 
     if ( !sourceUrl.IsEmpty() ) {
-        memset(&urlComponents, 0, sizeof(urlComponents));
-        urlComponents.lpszScheme = schemeBuffer;
-        urlComponents.dwSchemeLength = ARRAY_SIZE(schemeBuffer);
-        InternetCrackUrl(sourceUrl, sourceUrl.GetLength(), 0, &urlComponents);
+        uriparser::Uri uri(sourceUrlUtf8);
 
-        if ( !lstrlen(urlComponents.lpszScheme) ) {
+        if ( uri.scheme().empty() ) {
             CString message;
-            message.Format(TR("Invalid source URL: '%s'. Absolute URL is needed, including schema (http,https,etc)"), (LPCTSTR)sourceUrl  );
+            message.Format(TR("Invalid source URL: '%s'. Absolute URL is needed, including schema (http,https,etc)"), static_cast<LPCTSTR>(sourceUrl) );
             MessageBox(message, APPNAME, MB_OK | MB_ICONEXCLAMATION);
             return false;
         }
@@ -445,19 +441,32 @@ bool CImageReuploaderDlg::BeginDownloading()
         std::string result;
         for (size_t i = 0; i < links.size(); i++) {
             std::string url = links[i];
-            std::string fileExt = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt( url ) );
+            uriparser::Uri uri(url);
+            std::string scheme = uri.scheme();
+            std::string host = uri.host();
+            std::string path = uri.path();
 
-            schemeBuffer[0] = 0;
+            std::string fileExt = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt( path ) );
+
             CString urlWide = Utf8ToWCstring(url);
-            memset(&urlComponents, 0, sizeof(urlComponents));
-            urlComponents.lpszScheme = schemeBuffer;
-            urlComponents.dwSchemeLength = ARRAY_SIZE(schemeBuffer);
+            if ( scheme.empty() && !host.empty() /*urlWide.Left(2) == _T("//")*/) { // links without protocol
+                std::string newScheme = "http";
+                if (!sourceUrlUtf8.empty()) {
+                    uriparser::Uri pageUri(sourceUrlUtf8);
+                    newScheme = pageUri.scheme();
+                }
+                if (!newScheme.empty()) {
+                    urlWide = U2W(newScheme) + _T(":") + urlWide;
+                    url = newScheme + ":" + url;
+                    scheme = newScheme;
+                }
+            }
+
             std::string absoluteUrl = url;
 
-            InternetCrackUrl(urlWide, urlWide.GetLength(), 0, &urlComponents);
-            if ( !lstrlen( urlComponents.lpszScheme ) )  {
+            if ( scheme.empty() )  {
                 if ( sourceUrl.IsEmpty() ) {
-                    ServiceLocator::instance()->logger()->write(logError, LogTitle, _T("Cannot download file by relative url: \"") + urlWide + _T("\".\r\n You must provide base URL."));
+                    ServiceLocator::instance()->logger()->write(logError, LogTitle, _T("Cannot download file by relative url: \"") + urlWide + _T("\".\r\nYou must provide base URL."));
                     continue;
                 }
                 TCHAR absoluteUrlBuffer[MAX_PATH+1];
@@ -513,15 +522,6 @@ void CImageReuploaderDlg::OnFileFinished(UploadTask* task, bool ok) {
         item.newUrl = result->directUrl;
         mutex_.lock();
         uploadedItems_[uploadItemData->sourceIndex] =  item ;
-        
-        /*HistoryItem hi;
-        hi.localFilePath = result.fileName;
-        hi.serverName = result.serverName;
-        hi.directUrl =  (result.imageUrl);
-        hi.thumbUrl = (result.thumbUrl);
-        hi.viewUrl = (result.downloadUrl);
-        hi.uploadFileSize = result.fileSize; // IuCoreUtils::getFileSize(WCstringToUtf8(ImageFileName));
-        historySession_->AddItem(hi);*/
 
         generateOutputText();
         m_nFilesUploaded++;
@@ -602,9 +602,9 @@ bool GetClipboardHtml(CString& text, CString& outSourceUrl)
     if (OpenClipboard(NULL))
     {
         HGLOBAL hglb = GetClipboardData(clipboardFormat);
-        LPCSTR lpstr = (LPCSTR)GlobalLock(hglb);
+        LPCSTR lpstr = reinterpret_cast<LPCSTR>(GlobalLock(hglb));
         //std::string tempStr = lpstr;
-        std::string ansiString = (LPCSTR)lpstr;
+        std::string ansiString = lpstr;
 
         std::istringstream f(ansiString);
         std::string line;    
