@@ -3,7 +3,9 @@
 
 #include "atlheaders.h"
 
-
+/**
+ ListView with no flickering
+**/
 class CResultsListView : public CWindowImpl<CResultsListView, CListViewCtrl> {
     public:
 

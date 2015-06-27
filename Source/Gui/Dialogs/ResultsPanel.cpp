@@ -568,7 +568,6 @@ bool CResultsPanel::LoadTemplateFromFile(const CString fileName, CString &Error)
             Template.Items = Utf8ToWCstring(itemsNode.Text());
         }
 
-
         Templates.Add(Template);
     }
     return true;
@@ -745,34 +744,33 @@ LRESULT CResultsPanel::OnResulttoolbarNMCustomDraw(LPNMHDR pnmh)
 
         ::FreeLibrary(hinstDll);
     }
-     if(m_bThemeActive){
-    //rc.top-=10;
+    if (m_bThemeActive) {
+        //rc.top-=10;
 
-    //m_wndTab.GetWindowRect(&rc);
+        //m_wndTab.GetWindowRect(&rc);
 
         // Get the tab control DC
 
-      //  HDC hDC = m_wndTab.GetDC();
+        //  HDC hDC = m_wndTab.GetDC();
 
         // Create a compatible DC
 
         HDC hDCMem = ::CreateCompatibleDC(dc);
-        HBITMAP hBmp = ::CreateCompatibleBitmap(dc, 
-               rc.right - rc.left, rc.bottom - rc.top);
-        HBITMAP hBmpOld = (HBITMAP)(::SelectObject(hDCMem, hBmp));
+        HBITMAP hBmp = ::CreateCompatibleBitmap(dc, rc.right - rc.left, rc.bottom - rc.top);
+        HBITMAP hBmpOld = reinterpret_cast<HBITMAP>(::SelectObject(hDCMem, hBmp));
 
         // Tell the tab control to paint in our DC
 
-       /* m_wndTab.*/SendMessage(WM_PRINTCLIENT, (WPARAM)(hDCMem), 
-           (LPARAM)(PRF_ERASEBKGND | PRF_CLIENT | PRF_NONCLIENT));
-    
-        ::MapWindowPoints( Toolbar.m_hWnd,m_hWnd, (LPPOINT)&toolbarRect, 2);
-         BitBlt(dc, 0,0,toolbarRect.right-toolbarRect.left,toolbarRect.bottom - toolbarRect.top,hDCMem,toolbarRect.left,toolbarRect.top,SRCCOPY);
+        /* m_wndTab.*/
+        SendMessage(WM_PRINTCLIENT, reinterpret_cast<WPARAM>(hDCMem), PRF_ERASEBKGND | PRF_CLIENT | PRF_NONCLIENT);
 
-         SelectObject(hDCMem, hBmpOld);
-         DeleteObject(hBmp);
-         DeleteDC(hDCMem);
-     }
+        ::MapWindowPoints(Toolbar.m_hWnd, m_hWnd, reinterpret_cast<LPPOINT>(&toolbarRect), 2);
+        BitBlt(dc, 0, 0, toolbarRect.right - toolbarRect.left, toolbarRect.bottom - toolbarRect.top, hDCMem, toolbarRect.left, toolbarRect.top,SRCCOPY);
+
+        SelectObject(hDCMem, hBmpOld);
+        DeleteObject(hBmp);
+        DeleteDC(hDCMem);
+    }
 
     return CDRF_DODEFAULT; // Default handler
 }

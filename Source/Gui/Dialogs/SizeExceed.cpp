@@ -19,7 +19,7 @@
 */
 
 #include "SizeExceed.h"
-#include "atlheaders.h"
+
 #include "Func/common.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Core/Settings.h"

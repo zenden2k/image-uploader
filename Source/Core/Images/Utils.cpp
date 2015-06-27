@@ -209,10 +209,18 @@ bool SaveImage(Image* img, const CString& filename, SaveImageFormat format, int 
     }
     
     if (result != Ok) {
-        LOG(ERROR) <<  _T("Could not save image at path \r\n") + filename;
+        if (result == Gdiplus::Win32Error) {
+            LOG(ERROR) << _T("Could not save image at path \r\n") + filename << "\r\n" << WinUtils::GetLastErrorAsString();
+        } else {
+            LOG(ERROR) << _T("Could not save image at path \r\n") + filename << "\r\nGdiPlus error:" << static_cast<int>(result);
+        }
         return false;
     }
-
+    uint64_t fileSize = IuCoreUtils::getFileSize(W2U(filename));
+    if (!fileSize) {
+        LOG(ERROR) << _T("Could not save image at path \r\n") + filename + "\r\nOutput file's size is zero.";
+        return false;
+    }
     return true;
 }
 
@@ -508,6 +516,8 @@ bool CopyBitmapToClipboard(HWND hwnd, HDC dc, Gdiplus::Bitmap* bm, bool preserve
         CloseClipboard(); 
         DeleteObject(out);
         return true;
+    } else {
+        LOG(ERROR) << TR("Cannot copy image to clipboard.") << "\r\n" << WinUtils::GetLastErrorAsString();
     }
     return false;
 }
@@ -575,7 +585,7 @@ void DrawStrokedText(Graphics& gr, LPCTSTR Text, RectF Bounds, const Font& font,
         else
             y = (Bounds.Height - newheight) - 2;
 
-    gr.DrawImage(&temp, (int)(Bounds.GetLeft() + x), (int)(Bounds.GetTop() + y), (int)(newwidth), (int)(newheight));
+    gr.DrawImage(&temp, static_cast<int>(Bounds.GetLeft() + x), static_cast<int>(Bounds.GetTop() + y), static_cast<int>(newwidth), static_cast<int>(newheight));
 }
 
 // hack for stupid GDIplus
@@ -587,10 +597,10 @@ void changeAplhaChannel(Bitmap& source, Bitmap& dest, int sourceChannel, int des
     source.LockBits(&r, ImageLockModeRead, PixelFormat32bppARGB, &bdSrc);
     dest.LockBits(&r, ImageLockModeWrite, PixelFormat32bppARGB, &bdDst);
 
-    BYTE* bpSrc = (BYTE*)bdSrc.Scan0;
-    BYTE* bpDst = (BYTE*)bdDst.Scan0;
-    bpSrc += (int)sourceChannel;
-    bpDst += (int)destChannel;
+    BYTE* bpSrc = reinterpret_cast<BYTE*>(bdSrc.Scan0);
+    BYTE* bpDst = reinterpret_cast<BYTE*>(bdDst.Scan0);
+    bpSrc += static_cast<int>(sourceChannel);
+    bpDst += static_cast<int>(destChannel);
 
     for (int i = r.Height * r.Width; i > 0; i--)
     {

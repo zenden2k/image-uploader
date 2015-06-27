@@ -20,7 +20,6 @@
 
 #include "ThumbSettingsPage.h"
 
-#include "atlheaders.h"
 #include "3rdpart/GdiplusH.h"
 #include <GdiPlusPixelFormats.h>
 #include "LogWindow.h"
@@ -210,7 +209,7 @@ std::string CThumbSettingsPage::getSelectedThumbnailFileName()
     TCHAR buf[256];
     int index = SendDlgItemMessage(IDC_THUMBSCOMBO, CB_GETCURSEL);
     if(index < 0) return "";
-    SendDlgItemMessage(IDC_THUMBSCOMBO, CB_GETLBTEXT, index, (WPARAM)buf);
+    SendDlgItemMessage(IDC_THUMBSCOMBO, CB_GETLBTEXT, index, reinterpret_cast<WPARAM>(buf));
     CString thumbFileName = buf;
     Thumbnail thumb;
     CString folder = IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\");

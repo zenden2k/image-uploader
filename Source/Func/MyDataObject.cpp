@@ -20,7 +20,6 @@
 
 #include "MyDataObject.h"
 
-
 CMyDataObject::CMyDataObject()
 {
     // Reference count must ALWAYS start at 1.
@@ -115,7 +114,7 @@ HRESULT __stdcall CMyDataObject::GetData(FORMATETC *pFormatEtc, STGMEDIUM *pStgM
         GlobalAlloc(GMEM_SHARE,sizeof(DROPFILES)+(TotalLength+1)*sizeof(TCHAR) );
     
     // Формирование структуры DROPFILES для драгндропа файлов
-    DROPFILES *DP = (LPDROPFILES) GlobalLock(pStgMedium->hGlobal);
+    DROPFILES *DP = reinterpret_cast<LPDROPFILES>(GlobalLock(pStgMedium->hGlobal));
     ZeroMemory(DP, sizeof(DROPFILES));
     DP->fWide = TRUE;
     DP->pFiles = sizeof(DROPFILES);

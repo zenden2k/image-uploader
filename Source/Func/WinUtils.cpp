@@ -31,7 +31,7 @@ bool IsWinXP()
     return FALSE;
 }
 
-    bool IsWinXPOrLater()
+bool IsWinXPOrLater()
 {
     // Проверка операционной системы
     DWORD dwVersion = GetVersion();
@@ -82,7 +82,7 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
                 CloseClipboard();
                 return false;
             }
-            LPCWSTR lpstr = (LPCWSTR)GlobalLock(hglb);
+            LPCWSTR lpstr = reinterpret_cast<LPCWSTR>(GlobalLock(hglb));
             text = lpstr;
             GlobalUnlock(hglb);
             CloseClipboard();
@@ -179,7 +179,7 @@ bool CreateShortCut(
     CoInitialize(NULL);
     // return false;
     // Получение экземпляра компонента "Ярлык"
-    hRes = CoCreateInstance(CLSID_ShellLink, 0,  CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID*)&pSL);
+    hRes = CoCreateInstance(CLSID_ShellLink, 0,  CLSCTX_INPROC_SERVER, IID_IShellLink, reinterpret_cast<LPVOID*>(&pSL));
 
     if ( SUCCEEDED(hRes) )
     {
@@ -202,7 +202,7 @@ bool CreateShortCut(
                             if ( SUCCEEDED(hRes) )
                             {
                                 // Получение компонента хранилища параметров
-                                hRes = pSL->QueryInterface(IID_IPersistFile, (LPVOID*)&pPF);
+                                hRes = pSL->QueryInterface(IID_IPersistFile, reinterpret_cast<LPVOID*>(&pPF));
                                 if ( SUCCEEDED(hRes) )
                                 {
                                     // Сохранение созданного ярлыка
@@ -375,8 +375,8 @@ CString FormatWindowsErrorMessage(int idCode)
 {
     LPVOID lpMsgBuf;
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,NULL,
-        idCode, 0, (LPTSTR) &lpMsgBuf, 0, NULL);
-    CString res = (LPCTSTR)lpMsgBuf;
+        idCode, 0, reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, NULL);
+    CString res = reinterpret_cast<LPCTSTR>(lpMsgBuf);
     // Free the buffer.
     LocalFree( lpMsgBuf );
     return res;
@@ -527,7 +527,7 @@ bool IsElevated()
 
     if ( !::GetTokenInformation(
         hToken,
-        (TOKEN_INFORMATION_CLASS) TokenElevation,
+        static_cast<TOKEN_INFORMATION_CLASS>(TokenElevation),
         &te,
         sizeof(te),
         &dwReturnLength ) )
@@ -809,8 +809,8 @@ bool GetClipboardHtml(CString& text, CString& outSourceUrl) {
     UINT clipboardFormat = RegisterClipboardFormat(_T("HTML Format"));
     if ( OpenClipboard(NULL) ) {
         HGLOBAL hglb = GetClipboardData(clipboardFormat);
-        LPCSTR lpstr = (LPCSTR)GlobalLock(hglb);
-        std::string ansiString = (LPCSTR)lpstr;
+        LPCSTR lpstr = reinterpret_cast<LPCSTR>(GlobalLock(hglb));
+        std::string ansiString = lpstr;
 
         std::istringstream f(ansiString);
         std::string line;    

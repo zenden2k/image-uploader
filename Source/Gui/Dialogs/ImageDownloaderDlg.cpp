@@ -19,9 +19,9 @@
 */
 #include "ImageDownloaderDlg.h"
 
+#include "Core/CommonDefs.h"
 #include "Func/Common.h"
 #include "Core/3rdpart/pcreplusplus.h"
-#include "LogWindow.h"
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
@@ -198,12 +198,13 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloade
             {
                 add = false;
                 CString errorStr;
-                errorStr.Format(TR("File '%s' is not an image (Mime-Type: %s)."),(LPCTSTR)(Utf8ToWstring(it.url).c_str()),(LPCTSTR)mimeType);
+                errorStr.Format(TR("File '%s' is not an image (Mime-Type: %s)."),(LPCTSTR)(Utf8ToWstring(it.url).c_str()),
+                    static_cast<LPCTSTR>(mimeType));
                 ServiceLocator::instance()->logger()->write(logError, _T("Image Downloader"), errorStr);
             }
         }
         if(add)
-            SendMessage(m_WizardDlg->m_hWnd, WM_MY_ADDIMAGE,(WPARAM)&ais,  0);
+            SendMessage(m_WizardDlg->m_hWnd, WM_MY_ADDIMAGE, reinterpret_cast<WPARAM>(&ais),  0);
 
     }
     m_nFileDownloaded++;
@@ -229,14 +230,14 @@ void CImageDownloaderDlg::OnQueueFinished()
 
 bool CImageDownloaderDlg::BeginDownloading()
 {
-    std::string links = WCstringToUtf8(GuiTools::GetWindowText(GetDlgItem(IDC_FILEINFOEDIT)));
+    std::string links = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_FILEINFOEDIT)));
     std::vector<std::string> tokens;
     nm_splitString(links,"\n",tokens,-1);
     m_nFilesCount =0;
     m_nFileDownloaded = 0;
     for(size_t i=0; i<tokens.size(); i++)
     {
-        m_FileDownloader.AddFile(nm_trimStr(tokens[i]), (void*)i);
+        m_FileDownloader.AddFile(nm_trimStr(tokens[i]), reinterpret_cast<void*>(i));
         m_nFilesCount++;
     }
     if(m_nFilesCount)

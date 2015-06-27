@@ -499,7 +499,9 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
         CFileDialog fd(false, fileExt, FileName,OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,Buf,m_hWnd);
         if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return 0;
 
-        CopyFile( FileName, fd.m_szFileName, false );
+        if (!CopyFile(FileName, fd.m_szFileName, false)) {
+            MessageBox(TR("Cannot copy file: ")+WinUtils::GetLastErrorAsString(), APPNAME, MB_ICONERROR);
+        }
     } else {
         CNewStyleFolderDialog dlg(m_hWnd, CString(), CString());
         if (dlg.DoModal(m_hWnd) == IDOK) {
@@ -507,7 +509,9 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
             if (!newPath.IsEmpty()) {
                 size_t fileCount = selectedFiles.size();
                 for (size_t i = 0; i < fileCount; i++) {
-                    CopyFile(selectedFiles[i], newPath + _T("\\") + WinUtils::myExtractFileName(selectedFiles[i]), false);
+                    if (!CopyFile(selectedFiles[i], newPath + _T("\\") + WinUtils::myExtractFileName(selectedFiles[i]), false)) {
+                        LOG(ERROR) << TR("Cannot copy file ")<< selectedFiles[i] << "\r\n" << WinUtils::GetLastErrorAsString();
+                    }
                 }
             }
         }    

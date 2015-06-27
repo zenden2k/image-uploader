@@ -98,7 +98,7 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
         int newItemIndex = SendDlgItemMessage(IDC_MONTHCOMBO, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)monthLabel);
         if ( newItemIndex >=0 ) {
-            SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETITEMDATA, newItemIndex, (LPARAM)i);
+            SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETITEMDATA, newItemIndex, i);
         }
     }
     int selectedIndex = files.size() - 1;
@@ -165,9 +165,9 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     TreeItem* item = m_treeView.selectedItem();
     if(!item) return 0;
     
-     isSessionItem = item->level()==0;
+    isSessionItem = item->level()==0;
     
-     HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
+    HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
     CMenu menu;
     menu.CreatePopupMenu();
     if(!isSessionItem)
@@ -209,7 +209,7 @@ void CHistoryWindow::FillList(CHistoryReader * mgr)
     int64_t totalFileSize = 0;
     for(int i=0; i<nSessionsCount; i++)
     {
-         CHistorySession* ses = mgr->getSession(i);
+        CHistorySession* ses = mgr->getSession(i);
         std::string serverName = ses->serverName();
         if(serverName.empty()) serverName = "n/a";
 
@@ -251,7 +251,7 @@ LRESULT CHistoryWindow::OnOpenInBrowser(WORD wNotifyCode, WORD wID, HWND hWndCtl
     if(!item) return 0;
     HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
     std::string url = historyItem->directUrl.length()?historyItem->directUrl:historyItem->viewUrl;
-     ShellExecute(NULL, _T("open"), Utf8ToWCstring(url), NULL, NULL, SW_SHOWNORMAL);
+    ShellExecute(NULL, _T("open"), Utf8ToWCstring(url), NULL, NULL, SW_SHOWNORMAL);
     return 0;
 }
 
@@ -376,7 +376,7 @@ void CHistoryWindow::threadsFinished()
     
     if(!m_delayedFileName.IsEmpty())
     {
-        SendMessage(WM_MY_OPENHISTORYFILE, (WPARAM)(LPCTSTR)m_delayedFileName);
+        SendMessage(WM_MY_OPENHISTORYFILE, reinterpret_cast<WPARAM>(static_cast<LPCTSTR>(m_delayedFileName)));
         //LoadHistoryFile(m_delayedFileName);
         
     }

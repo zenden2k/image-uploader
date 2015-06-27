@@ -1933,8 +1933,6 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
     {
         if(result)
         {
-            
-            
             Result = true;
             bool CopyToClipboard = false;
             if((m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD) || Settings.ScreenshotSettings.CopyToClipboard)

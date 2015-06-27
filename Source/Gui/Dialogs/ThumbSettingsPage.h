@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Controls/MyImage.h"
 #include "SettingsPage.h"
@@ -57,11 +58,9 @@ public:
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     public:
-        bool Apply();
+        bool Apply() override;
     protected:
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnThumbTextChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         CMyImage img;
         std::string getSelectedThumbnailFileName();
@@ -75,9 +74,8 @@ public:
         LRESULT OnWidthEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl);
         ThumbCreatingParams params_;
         std::map<std::string, Thumbnail*> thumb_cache_;
-      bool m_CatchFormChanges;
+        bool m_CatchFormChanges;
         CColorButton ThumbBackground;
-   
 };
 
 #endif // THUMBSETTINGSPAGE_H

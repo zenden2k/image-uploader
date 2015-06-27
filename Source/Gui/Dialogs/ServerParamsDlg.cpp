@@ -133,9 +133,6 @@ LRESULT CServerParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
         serverSettings.params[WCstringToUtf8(name)]= WCstringToUtf8(vValue.bstrVal);          
     }
 
-    
-
-
     EndDialog(wID);
     return 0;
 }
@@ -162,8 +159,6 @@ void CServerParamsDlg::doAuthChanged() {
 
 
 LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-
-    
     CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT);
     serverProfile_.setProfileName(WCstringToUtf8(login));
     ServerSettingsStruct& serverSettings = serverProfile_.serverSettings();
@@ -190,9 +185,7 @@ LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND
         }
 
         SetDlgItemText(IDC_FOLDERNAMELABEL, Utf8ToWCstring( folder.getTitle() ));
-
-
-    };
+    }
     if(!m_pluginLoader)
     {
         return 0;

@@ -33,7 +33,7 @@ LRESULT CResultsListView::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
     dcMem.FillSolidRect(rcClient, ::GetSysColor(COLOR_WINDOW));
 
-    this->DefWindowProc(WM_PAINT, (WPARAM)dcMem.m_hDC, (LPARAM)0);
+    this->DefWindowProc(WM_PAINT, reinterpret_cast<WPARAM>(dcMem.m_hDC), 0);
 
     dc.BitBlt(0, 0, rcClient.Width(), rcClient.Height(), dcMem, 0, 0, SRCCOPY);
     dcMem.SelectBitmap(pbmOld);

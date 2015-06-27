@@ -7,7 +7,7 @@
 #pragma once
 
 // CTabListBox
-
+// This class is used in SettingsDlg
 // LISTBOX control should have  LBS_HASSTRINGS style and LBS_OWNERDRAWVARIABLE style
 class CTabListBox :
     public CWindowImpl<CTabListBox, CListBox>

@@ -20,7 +20,6 @@
 
 #include "MyImage.h"
 
-#include "Gui/Dialogs/LogWindow.h"
 #include "Func/LangClass.h"
 #include "Core/Settings.h"
 #include "Core/Images/Utils.h"

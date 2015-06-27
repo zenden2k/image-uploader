@@ -20,10 +20,8 @@
 
 #include "DefaultServersSettings.h"
 
-#include <uxtheme.h>
 #include "Func/common.h"
 #include "Core/Settings.h"
-#include "LogWindow.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Gui/Controls/ServerSelectorControl.h"

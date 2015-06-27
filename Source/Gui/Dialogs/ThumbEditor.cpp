@@ -116,8 +116,6 @@ void CThumbEditor::LoadParams()
     bool DrawText = thumb_->getParam("DrawText")!=0;
     SendDlgItemMessage(IDC_ADDFILESIZE, BM_SETCHECK, DrawText);
 
-    
-
     if(thumb_->existsParam("FrameColor"))
         FrameColor.SetColor(RGB2COLORREF(thumb_->getColor("FrameColor")));
     else 
