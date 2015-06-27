@@ -125,9 +125,9 @@ CString FindDataFolder()
         CString lang;
 
         Reg.SetRootKey(HKEY_CURRENT_USER);
-        if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
+        if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false))
         {
-            CString dir = Reg.ReadString("DataPath");
+            CString dir = Reg.ReadString(_T("DataPath"));
 
             if (!dir.IsEmpty() && WinUtils::IsDirectory(dir))
             {
@@ -139,9 +139,9 @@ CString FindDataFolder()
     {
         CRegistry Reg;
         Reg.SetRootKey(HKEY_LOCAL_MACHINE);
-        if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
+        if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false))
         {
-            CString dir = Reg.ReadString("DataPath");
+            CString dir = Reg.ReadString(_T("DataPath"));
 
             if (!dir.IsEmpty() && WinUtils::IsDirectory(dir))
             {

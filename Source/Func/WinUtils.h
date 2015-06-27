@@ -65,7 +65,7 @@ namespace WinUtils {
     bool IsElevated();
     void DeleteDir2(LPCTSTR Dir);
     CString GetUniqFileName(const CString& filePath);
-    int GetFolderFileList(std::vector<CString> &list, CString folder, CString mask);
+    size_t GetFolderFileList(std::vector<CStringT<wchar_t, StrTraitATL<wchar_t, ChTraitsCRT<wchar_t>>>>& list, CStringT<wchar_t, StrTraitATL<wchar_t, ChTraitsCRT<wchar_t>>> folder, CStringT<wchar_t, StrTraitATL<wchar_t, ChTraitsCRT<wchar_t>>> mask);
 
     inline COLORREF RGB2COLORREF(unsigned int color) {
         return RGB(GetBValue(color), GetGValue(color), GetRValue(color));

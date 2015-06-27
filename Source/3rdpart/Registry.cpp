@@ -734,7 +734,7 @@ BOOL CRegistry::WriteString(CString strName, CString strValue)
     
 #ifdef _UNICODE
     if (::RegSetValueEx(hKey, LPCTSTR(strName), 0,
-        REG_SZ, (LPBYTE)sz, (wcslen(sz) + 1)*sizeof(TCHAR))
+        REG_SZ, (LPBYTE)sz, static_cast<DWORD>((wcslen(sz) + 1)*sizeof(TCHAR)))
          != ERROR_SUCCESS) bSuccess = FALSE;
 #else
     if (::RegSetValueEx(hKey, LPCTSTR(strName), 0,

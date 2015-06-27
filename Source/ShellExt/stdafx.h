@@ -47,11 +47,14 @@
 
 #define _ATL_APARTMENT_THREADED
 #define _ATL_NO_AUTOMATIC_NAMESPACE
-
+#ifndef _WTL_NO_CSTRING
+#define _WTL_NO_CSTRING
+#endif
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS    // some CString constructors will be explicit
 
 
 #include "resource.h"
+#include <atlstr.h>
 #include <atlbase.h>
 #include <atlcom.h>
 #include <atlapp.h>

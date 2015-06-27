@@ -67,7 +67,7 @@ UINT QColorQuantizer::ThreadProc(LPVOID pParam)
     QColorQuantizer * pThis = (QColorQuantizer *) pParam;
 
     
-    Bitmap * pResult = pThis->Calculate();
+    /*Bitmap * pResult = */pThis->Calculate();
     
 
 

@@ -35,11 +35,11 @@ BYTE hex_digit(TCHAR f)
     BYTE p;
     if (f >= _T('0') && f <= _T('9'))
     {
-        p = f - _T('0');
+        p = static_cast<BYTE>(f - _T('0'));
     }
     else
     {
-        p = f - _T('a') + 10;
+        p = static_cast<BYTE>(f - _T('a') + 10);
     }
     return p;
 }
@@ -98,7 +98,7 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
    
     if (!IuCoreUtils::ReadUtf8TextFile(W2U(Filename), fileContents)) {
         if ( Lang == CString("English")  ) {
-            AppParams::instance()->setLanguageFile(IuCoreUtils::WstringToUtf8((LPCTSTR)(CString(m_Directory) + "English" + _T(".lng"))));
+            AppParams::instance()->setLanguageFile(IuCoreUtils::WstringToUtf8((LPCTSTR)(CString(m_Directory) + _T("English.lng"))));
         }
         return false;
     }

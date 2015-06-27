@@ -223,14 +223,16 @@ const std::string ExtractFilePath(const std::string& fileName)
 const std::string ExtractFileNameNoExt(const std::string& fileName)
 {
     std::string result = ExtractFileName(fileName);
-    int Qpos = result.find_last_of('.');
-    if(Qpos>=0) result = result.substr(0, Qpos);
+    size_t Qpos = result.find_last_of('.');
+    if (Qpos != std::string::npos) {
+        result = result.substr(0, Qpos);
+    }
     return result;
 }
 
 std::string ExtractFileNameFromUrl(const std::string fileName)
 {
-    int questionMarkPos = fileName.find_last_of('?');
+    size_t questionMarkPos = fileName.find_last_of('?');
 
     std::string result;
     if (questionMarkPos != std::string::npos)  {
@@ -256,7 +258,7 @@ std::string toString(unsigned int value)
 
 std::string StrReplace(std::string text, std::string s, std::string d)
 {
-    for(int index=0; index=text.find(s, index), index!=std::string::npos;)
+    for(size_t index=0; index=text.find(s, index), index!=std::string::npos;)
     {
         text.replace(index, s.length(), d);
         index += d.length();

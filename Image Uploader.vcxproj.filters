@@ -1139,6 +1139,18 @@
     <Image Include="Source\res\Warning.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\new-icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\new-icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon_main_old.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_main_old.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\res\ImageEditor\colorpicker.cur">

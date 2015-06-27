@@ -20,13 +20,13 @@
 
 #include "Core/FileDownloader.h"
 #include <algorithm>
-#include "Func/myutils.h"
+
 #include "Func/Common.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
 
-// TODO: 1. use std::threads  instead of CThread ,
-// 2. remove dependency from non-core headers ( "myutils.h", "Common.h")
+// TODO:
+// 2. remove dependency from non-core headers ( "Common.h")
 // 3. Use pimpl
 CFileDownloader::CFileDownloader()
 {

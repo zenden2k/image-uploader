@@ -218,7 +218,7 @@ bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont)
     lFont->lfStrikeOut=bStrikeOut;
     lFont->lfWeight=bBold?FW_BOLD:FW_NORMAL;
     lFont->lfUnderline=bUnderline;
-    lFont->lfCharSet=nCharSet;
+    lFont->lfCharSet=static_cast<BYTE>(nCharSet);
     
     return true;
 }
@@ -417,11 +417,10 @@ const CString TrimString(const CString& source, int nMaxLen)
     return source.Left(PartSize)+_T("...")+source.Right(PartSize);
 }
 
-
 LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int nBufferSize)
 {
-    int nLen=0;
-    if(!szString || !szPattern ||!szBuffer || nBufferSize<0) return FALSE;
+    size_t nLen=0;
+    if(!szString || !szPattern ||!szBuffer || nBufferSize<0) return 0;
 
     LPCTSTR szStart = (LPTSTR) _tcsstr(szString, szPattern);
 
@@ -498,7 +497,7 @@ HFONT MakeFontUnderLine(HFONT font)
 
 LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern)
 {
-    int nLen;
+    size_t nLen;
 
     if(!szString || !szPattern) return szString;
 

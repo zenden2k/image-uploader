@@ -311,7 +311,7 @@ TParserNode *TParser::Expr4(void)
 
 TParserNode *TParser::Expr5(void)
 {
-   TParserNode *temp;
+   TParserNode *temp = 0;
    
    switch(typToken)
    {

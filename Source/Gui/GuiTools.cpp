@@ -579,42 +579,24 @@ HICON LoadSmallIcon(int resourceId) {
         iconHeight = 48;
     } 
 
-#ifdef IU_WTL_APP
-    if ( resourceId == IDR_MAINFRAME && Settings.UseNewIcon) {
-        return  reinterpret_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), WinUtils::GetAppFolder()+_T("new-icon.ico"), 
-            IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR|LR_LOADFROMFILE));
-    } else
-#endif
-    {
-        return  reinterpret_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), 
-            IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR));
-    }
+    return reinterpret_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), 
+        IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR));
 }
 
 HICON LoadBigIcon(int resourceId, int maxAvailableSize) {
     int iconWidth =  ::GetSystemMetrics(SM_CXICON);
     int iconHeight =  ::GetSystemMetrics(SM_CYICON);
 
-     if ( iconWidth > 32 ) {
+    if ( iconWidth > 32 ) {
         iconWidth = 48;
     } 
-
 
     if ( iconHeight > 32 ) {
         iconHeight = 48;
     } 
 
-#ifdef IU_WTL_APP
-    if ( resourceId == IDR_MAINFRAME && Settings.UseNewIcon) {
-        return reinterpret_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), WinUtils::GetAppFolder()+_T("new-icon.ico"), 
-            IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR|LR_LOADFROMFILE));
-    } else
-#endif
-
-    {
-        return  reinterpret_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), 
-            IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR));
-    }
+    return reinterpret_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), 
+        IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR));
 }
 
 };

@@ -61,7 +61,7 @@ std::string GetHashText(const void * data, const size_t data_size, HashType hash
         return std::string();
     }
 
-    if (!CryptHashData(hHash, static_cast<const BYTE *>(data), data_size, 0)) {
+    if (!CryptHashData(hHash, static_cast<const BYTE *>(data), static_cast<DWORD>(data_size), 0)) {
         CryptDestroyHash(hHash);
         CryptReleaseContext(hProv, 0);
         return std::string();
@@ -221,17 +221,16 @@ std::string HMAC(const void* data, size_t size, const std::string& password, boo
 
     ZeroMemory(pbHash, sizeof(dwDataLen));
 
-
     my_blob * kb = NULL;
-    DWORD kbSize = sizeof(my_blob) + password.length();
+    DWORD kbSize = static_cast<DWORD>(sizeof(my_blob) + password.length());
 
-    kb = (my_blob*)malloc(kbSize);
+    kb = reinterpret_cast<my_blob*>(malloc(kbSize));
     kb->header.bType = PLAINTEXTKEYBLOB;
     kb->header.bVersion = CUR_BLOB_VERSION;
     kb->header.reserved = 0;
     kb->header.aiKeyAlg = CALG_RC2;
     memcpy(&kb->key, password.c_str(), password.length());
-    kb->len = password.length();
+    kb->len = static_cast<DWORD>(password.length());
 
     if (!CryptAcquireContext(&hProv, NULL, MS_ENHANCED_PROV, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT | CRYPT_NEWKEYSET)){
         dwStatus = GetLastError();
@@ -262,7 +261,7 @@ std::string HMAC(const void* data, size_t size, const std::string& password, boo
         goto Exit;
     }
 
-    if (!CryptHashData(hHmacHash, (BYTE*)data, size, 0)){
+    if (!CryptHashData(hHmacHash, (BYTE*)data, static_cast<DWORD>(size), 0)){
         dwStatus = GetLastError();
         LOG(ERROR) << "CryptHashData failed: " << dwStatus;
         err = 1;

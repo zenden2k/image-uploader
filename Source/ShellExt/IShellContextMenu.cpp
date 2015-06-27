@@ -36,7 +36,6 @@ CString GetStartMenuPath()
 	CString result;
 	LPITEMIDLIST pidl;
 	TCHAR        szSendtoPath [MAX_PATH];
-	HANDLE       hFile;
 	LPMALLOC     pMalloc;
 
 	if(SUCCEEDED( SHGetSpecialFolderLocation ( NULL, CSIDL_STARTMENU, &pidl )))
@@ -170,7 +169,6 @@ STDMETHODIMP CIShellContextMenu::HandleMenuMsg2(UINT uMsg, WPARAM wParam, LPARAM
 		break;
 	case WM_DRAWITEM:
 		{
-			LPCTSTR resource;
 			HICON hIcon=0;
 			DRAWITEMSTRUCT* lpdis = reinterpret_cast<DRAWITEMSTRUCT*>(lParam);
 			if ((lpdis==NULL)||(lpdis->CtlType != ODT_MENU))
@@ -228,12 +226,12 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 	bool ExplorerVideoContextMenu= true;
 	CRegistry Reg;
 	Reg.SetRootKey(HKEY_CURRENT_USER);
-	if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
+	if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false))
 	{
-		ExplorerCascadedMenu = Reg.ReadBool("ExplorerCascadedMenu", true);
+		ExplorerCascadedMenu = Reg.ReadBool(_T("ExplorerCascadedMenu"), true);
 	//	ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
-		ExplorerVideoContextMenu = Reg.ReadBool("ExplorerVideoContextMenu", true);
-		CString lang = Reg.ReadString("Language");
+		ExplorerVideoContextMenu = Reg.ReadBool(_T("ExplorerVideoContextMenu"), true);
+		CString lang = Reg.ReadString(_T("Language"));
 		//MessageBox(0, lang,0,0);
 		if(lang != Lang.GetLanguageName())
 		{
@@ -244,12 +242,12 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		else 
 		{	
 			Reg.SetWOW64Flag(KEY_WOW64_32KEY);
-			if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
+			if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false))
 			{
-				ExplorerCascadedMenu = Reg.ReadBool("ExplorerCascadedMenu");
+				ExplorerCascadedMenu = Reg.ReadBool(_T("ExplorerCascadedMenu"));
 			//	ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
-				ExplorerVideoContextMenu = Reg.ReadBool("ExplorerVideoContextMenu");
-				CString lang = Reg.ReadString("Language");
+				ExplorerVideoContextMenu = Reg.ReadBool(_T("ExplorerVideoContextMenu"));
+				CString lang = Reg.ReadString(_T("Language"));
 				//MessageBox(0, lang,0,0);
 				if(lang != Lang.GetLanguageName())
 				{
@@ -290,7 +288,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 	CRegistry Reg2;
 	Reg2.SetRootKey( HKEY_CURRENT_USER );
 	std::vector<CString> keyNames;
-	CString keyPath = "Software\\Zenden.ws\\Image Uploader\\ContextMenuItems";
+	CString keyPath = _T("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems");
 	Reg2.GetChildKeysNames(keyPath,keyNames);
 	int w = GetSystemMetrics(SM_CXSMICON);
 	int h = GetSystemMetrics(SM_CYSMICON);
@@ -302,8 +300,8 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 					MyInsertMenuSeparator(PopupMenu, subIndex++, 0);
 					separatorInserted = true;
 			}
-				CString title = Reg2.ReadString("Name");
-				CString iconFileName = Reg2.ReadString("Icon");
+				CString title = Reg2.ReadString(_T("Name"));
+				CString iconFileName = Reg2.ReadString(_T("Icon"));
 				CIcon ico;
 				if ( !iconFileName.IsEmpty() ) {
 					ico = (HICON)LoadImage(0,dataFolder +L"\\Favicons\\"+iconFileName,IMAGE_ICON	,w,h,LR_LOADFROMFILE);
@@ -378,7 +376,7 @@ bool IULaunchCopy(CAtlArray<CString> & CmdLine,const CString params=_T(""))
 	for(int i=0;i <CmdLine.GetCount(); i++)
 		{
 			if(!lstrcmpi(CmdLine[i], _T("-Embedding"))) continue;
-			TempCmdLine = TempCmdLine + " \"" + CmdLine[i] + "\""; 
+			TempCmdLine = TempCmdLine + _T(" \"") + CmdLine[i] + _T("\""); 
 		}
 
     // Start the child process.

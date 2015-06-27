@@ -149,5 +149,8 @@
     <Image Include="..\res\icon_main.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\res\new-icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

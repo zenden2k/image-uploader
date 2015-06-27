@@ -34,12 +34,12 @@ typedef HRESULT  (STDAPICALLTYPE  *FindMimeFromDataFunc)(LPBC, LPCWSTR, LPVOID, 
 std::wstring strtows(const std::string &str, UINT codePage)
 {
      std::wstring ws;
-     int n = MultiByteToWideChar(codePage, 0, str.c_str(), str.size()+1, /*dst*/NULL, 0);
+     int n = MultiByteToWideChar(codePage, 0, str.c_str(), static_cast<int>(str.size()+1), /*dst*/NULL, 0);
      if(n)
      {
           ws.reserve(n);
           ws.resize(n-1);
-          if(MultiByteToWideChar(codePage, 0, str.c_str(), str.size()+1, /*dst*/&ws[0], n) == 0)
+          if(MultiByteToWideChar(codePage, 0, str.c_str(), static_cast<int>(str.size()+1), /*dst*/&ws[0], n) == 0)
                 ws.clear();
      }
      return ws;
@@ -50,7 +50,7 @@ std::string wstostr(const std::wstring &ws, UINT codePage)
     // prior to C++11 std::string and std::wstring were not guaranteed to have their memory be contiguous,
     // although all real-world implementations make them contiguous
      std::string str;
-     int srcLen = ws.size();
+     int srcLen = static_cast<int>(ws.size());
      int n = WideCharToMultiByte(codePage, 0, ws.c_str(), srcLen+1, NULL, 0, /*defchr*/0, NULL);
      if(n)
      {
@@ -101,7 +101,7 @@ std::string GetFileMimeType(const std::string fileName)
     if (!InputFile) return "";
 
     BYTE byBuff[256] ;
-    int nRead = fread(byBuff, 1, 256, InputFile);
+    unsigned int nRead = static_cast<unsigned int>(fread(byBuff, 1, 256, InputFile));
 
     fclose(InputFile);
 
@@ -110,8 +110,7 @@ std::string GetFileMimeType(const std::string fileName)
     HMODULE urlMonDll = LoadLibraryA("urlmon.dll");
     if(!urlMonDll)
         return DefaultMimeType;
-    FindMimeFromDataFunc _Win32_FindMimeFromData = (FindMimeFromDataFunc)
-                                                                  GetProcAddress(urlMonDll,"FindMimeFromData");
+    FindMimeFromDataFunc _Win32_FindMimeFromData = reinterpret_cast<FindMimeFromDataFunc>(GetProcAddress(urlMonDll,"FindMimeFromData"));
 
     if(!_Win32_FindMimeFromData)
         return DefaultMimeType;

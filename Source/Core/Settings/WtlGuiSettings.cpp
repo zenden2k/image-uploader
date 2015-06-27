@@ -290,7 +290,6 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
     SendToContextMenu = 0;
     QuickUpload = 1;
     ParseSubDirs = 1;
-    UseNewIcon = false;
     RememberImageServer = true;
     RememberFileServer = true;
 
@@ -375,14 +374,9 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
         LoadConvertProfile("Old profile", settingsNode);
     }
 
-    if (CmdLine.IsOption(_T("afterinstall"))) {
-        if (CmdLine.IsOption(_T("usenewicon"))) {
-            UseNewIcon = true;
-        } else {
-            UseNewIcon = false;
-        }
+    /*if (CmdLine.IsOption(_T("afterinstall"))) {
         SaveSettings();
-    }
+    }*/
 
     // Migrating from 1.3.0 to 1.3.1 (added ImageEditor has been addded)
     if (settingsNode["ImageEditor"].IsNull()) {
@@ -669,7 +663,6 @@ void WtlGuiSettings::BindToManager() {
     general.n_bind(ImagesFolder);
     general.n_bind(VideoFolder);
     general.n_bind(WatchClipboard);
-    general.n_bind(UseNewIcon);
     general.n_bind(RememberFileServer);
     general.n_bind(RememberImageServer);
 #ifndef IU_SERVERLISTTOOL

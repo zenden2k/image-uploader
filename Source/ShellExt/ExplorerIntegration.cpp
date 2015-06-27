@@ -20,6 +20,7 @@
 // ExplorerIntegration.cpp : Implementation of DLL Exports.
 
 #include "resource.h"
+#include <atlstr.h>
 #include <atlbase.h>
 #include <atlapp.h>
 #include "Generated/ExplorerIntegration.h"
@@ -57,23 +58,23 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRes
             TCHAR szFileName[256], szPath[256];
             GetModuleFileName(hInstance, szFileName, 1023);
             ExtractFilePath(szFileName, szPath);
-            Lang.SetDirectory(CString(szPath) + "Lang\\");
+            Lang.SetDirectory(CString(szPath) + _T("Lang\\"));
 
             CRegistry Reg;
             CString lang;
             Reg.SetRootKey(HKEY_CURRENT_USER);
-            if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
+            if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false))
             {
-                lang = Reg.ReadString("Language");
+                lang = Reg.ReadString(_T("Language"));
             }
             else
             {
                 #ifdef _WIN64
                     Reg.SetWOW64Flag(KEY_WOW64_32KEY);
                     Reg.SetRootKey(HKEY_CURRENT_USER);
-                    if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
+                    if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false))
                     {
-                        lang = Reg.ReadString("Language");
+                        lang = Reg.ReadString(_T("Language"));
                     }
                 #endif
             }

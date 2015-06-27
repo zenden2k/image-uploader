@@ -7,16 +7,17 @@
 #define IDR_ISHELLCONTEXTMENU           102
 #define IDB_BITMAP1                     201
 #define IDB_BITMAP2                     205
-#define IDI_ICONMAIN                    208
 #define IDI_ICONINFO                    209
 #define IDI_ICONMOVIE                   210
 #define IDI_ICONUPLOAD                  211
+#define IDI_ICON1                       212
+#define IDI_ICONMAIN                    212
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        212
+#define _APS_NEXT_RESOURCE_VALUE        213
 #define _APS_NEXT_COMMAND_VALUE         32768
 #define _APS_NEXT_CONTROL_VALUE         201
 #define _APS_NEXT_SYMED_VALUE           104

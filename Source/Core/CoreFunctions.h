@@ -8,5 +8,4 @@ namespace CoreFunctions {
     void ConfigureProxy(NetworkClient* nm);
 }
 
-
 #endif

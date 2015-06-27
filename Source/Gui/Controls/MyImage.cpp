@@ -48,11 +48,14 @@ CMyImage::~CMyImage()
 LRESULT CMyImage::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
     PAINTSTRUCT ps;
+    HDC hdc = 0;
     bHandled = true;
-    if (!wParam)
+    if (!wParam) {
         BeginPaint(&ps);
-
-    HDC hdc = wParam ? (HDC)wParam : ps.hdc;
+        hdc = ps.hdc;
+    } else {
+        hdc = BeginPaint(&ps);
+    }
 
     if (IsImage)
     {

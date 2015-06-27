@@ -47,7 +47,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     DoDataExchange(FALSE);
     LeftImage.LoadImage(0, 0, IDR_PNG2, false, RGB(255,255,255));
     LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE );
-    LogoImage.LoadImage(0, 0, Settings.UseNewIcon ? IDR_ICONMAINNEW : IDR_PNG1, false, RGB(255,255,255));
+    LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, RGB(255,255,255));
 
     TRC(IDC_SELECTOPTION, "Select action:");
     TRC(IDC_SOVET, "Advice:");

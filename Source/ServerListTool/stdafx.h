@@ -4,8 +4,9 @@
 //
 
 #pragma once
-
+#ifndef IU_SERVERLISTTOOL
 #define IU_SERVERLISTTOOL
+#endif
 // Change these values to use different versions
 #define WINVER        0x0601
 #define _WIN32_WINNT    0x0600

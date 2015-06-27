@@ -181,7 +181,7 @@ LRESULT CHyperLinkControl::OnMouseMove(UINT Flags, CPoint Pt)
                 if(!CursorHand)
                     SetCursor(HandCursor);  // we need this because system doesn't send WM_CURSOR message immediately
             }
-            if(Selected == i ) return 0;
+            if(static_cast<size_t>(Selected) == i ) return 0;
             Items[i].Hover = true;
             SelectItem(i);
 
@@ -284,7 +284,6 @@ int CHyperLinkControl::NotifyParent(int nItem)
 
 LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-
     CPaintDC dc(m_hWnd);
     RECT rc;
     GetClientRect(&rc);
@@ -307,7 +306,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
         if(*(item.szTip)) // If we draw "big" item (with tip)
         {
             RECT TextRect = item.ItemRect;
-            if(!m_bHyperLinks && Selected == i)
+            if(!m_bHyperLinks && static_cast<size_t>(Selected) == i)
             {    
                 CRect rec = item.ItemRect;
                 rec.right = rc.right-6;
@@ -320,7 +319,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
                 TextRect.left +=ScaleX(20);
                 TextRect.right +=ScaleX(20);
             }
-            if(Selected == i && m_bHyperLinks)
+            if(static_cast<size_t>(Selected) == i && m_bHyperLinks)
                 dc.SelectFont(BoldUnderLineFont); else
                 dc.SelectFont(BoldFont);
 
@@ -335,7 +334,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
         
 
             ExtTextOutW(dc.m_hDC, TextRect.left, textY, ETO_CLIPPED, &TextRect, item.szTitle, wcslen(item.szTitle), 0);
-            if(Selected==i && m_bHyperLinks)
+            if(static_cast<size_t>(Selected)==i && m_bHyperLinks)
                 dc.SelectFont(UnderlineFont); else 
                 dc.SelectFont(GetFont());
             dc.SetTextColor(RGB(100,100,100));
@@ -351,7 +350,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
         else 
         {
-            if(Selected==i) // If item we draw is selected
+            if(static_cast<size_t>(Selected)==i) // If item we draw is selected
                 dc.SelectFont(UnderlineFont); 
             else
                 dc.SelectFont(GetFont());

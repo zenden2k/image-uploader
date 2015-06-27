@@ -21,9 +21,7 @@
 
 #pragma once
 #include "resource.h"       // main symbols
-#include <atlapp.h>
-#include <atlmisc.h>
-#include <atlcoll.h>
+#include "atlheaders.h"
 #include "Generated/ExplorerIntegration.h"
 #include "IconBitmapUtils.h"
 #include <shobjidl.h>

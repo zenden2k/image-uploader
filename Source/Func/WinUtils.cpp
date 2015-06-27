@@ -588,7 +588,7 @@ CString GetUniqFileName(const CString& filePath)
     return result;
 }
 
-int GetFolderFileList(std::vector<CString>& list, CString folder, CString mask)
+size_t GetFolderFileList(std::vector<CString>& list, CString folder, CString mask)
 {
     WIN32_FIND_DATA wfd;
     ZeroMemory(&wfd, sizeof(wfd));
@@ -893,7 +893,7 @@ CString GetLastErrorAsString()
     //Get the error message, if any.
     DWORD errorMessageID = ::GetLastError();
     if(errorMessageID == 0)
-        return "No error message has been recorded";
+        return _T("No error message has been recorded");
 
     LPTSTR messageBuffer = 0;
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -958,10 +958,10 @@ int GetInternetExplorerMajorVersion()
 {
     CRegistry Reg;
     Reg.SetRootKey( HKEY_LOCAL_MACHINE );
-    if ( Reg.SetKey( "Software\\Microsoft\\Internet Explorer" , FALSE ) ) {
-        CString version = Reg.ReadString("svcVersion");
+    if ( Reg.SetKey( _T("Software\\Microsoft\\Internet Explorer") , FALSE ) ) {
+        CString version = Reg.ReadString(_T("svcVersion"));
         if ( version.IsEmpty() ) {
-            version = Reg.ReadString("Version");
+            version = Reg.ReadString(_T("Version"));
         }
         int dotPos = version.Find(L'.');
         if ( dotPos != -1 ) {

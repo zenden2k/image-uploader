@@ -1354,7 +1354,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "res\\icon_main.ico"
+IDR_MAINFRAME           ICON                    "res\\new-icon.ico"
 IDI_GRAB                ICON                    "res\\grabmovie.ico"
 IDI_SCREENSHOT          ICON                    "res\\screen.ico"
 IDI_IMAGES              ICON                    "res\\images.ico"
@@ -1391,6 +1391,7 @@ IDI_ICONDOWN            ICON                    "res\\icon_down.ico"
 IDI_ICONBOLD            ICON                    "res\\ImageEditor\\icon_bold.ico"
 IDI_ICONITALIC          ICON                    "res\\ImageEditor\\icon_italic.ico"
 IDI_ICONUNDERLINE       ICON                    "res\\ImageEditor\\icon_underline.ico"
+IDI_ICON_MAIN_OLD       ICON                    "res\\icon_main_old.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

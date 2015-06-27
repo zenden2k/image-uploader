@@ -81,6 +81,7 @@ class CHistoryManager
         std::string makeFileName() const;
 
     private:
+        DISALLOW_COPY_AND_ASSIGN(CHistoryManager);
         std::string m_historyFilePath;
         std::string m_historyFileNamePrefix;
 };
