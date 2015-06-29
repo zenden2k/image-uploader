@@ -346,8 +346,8 @@ void MoveAndResizeTool::createElement() {
         case etFilledRectangle:
             currentElement_ = new FilledRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
             break;
-        default:
-            LOG(ERROR) << "Unsupported element type";
+        //default:
+            //LOG(ERROR) << "Unsupported element type";
     }
     if ( currentElement_ ) {
         currentElement_->setPenSize(penSize_);

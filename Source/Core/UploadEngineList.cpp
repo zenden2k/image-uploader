@@ -140,7 +140,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
             std::string typesListString = cur.Attribute("Types");
             if (!typesListString.empty())
             {
-                IuStringUtils::Split(typesListString, ",", types, 10);
+                IuStringUtils::Split(typesListString, " ", types, 10);
             }
             if (!typeString.empty()) {
                 types.push_back(typeString);
