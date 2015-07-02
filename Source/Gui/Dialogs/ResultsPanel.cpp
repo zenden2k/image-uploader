@@ -21,6 +21,7 @@
 #include "ResultsPanel.h"
 
 #include "Core/3rdpart/pcreplusplus.h"
+#include "UploadSettings.h"
 #include "mediainfodlg.h"
 #include "LogWindow.h"
 #include "Core/Settings.h"
@@ -73,7 +74,7 @@ bool CResultsPanel::LoadTemplate()
     dwFileSize = GetFileSize (hFile, NULL) ; 
     if(!dwFileSize) return false;
     DWORD dwMemoryNeeded = min(35536ul, dwFileSize);
-    LPTSTR TemplateText = (LPTSTR) new CHAR[dwMemoryNeeded+2]; 
+    LPTSTR TemplateText = (LPTSTR)new CHAR[dwMemoryNeeded+2]; 
     ZeroMemory(TemplateText,dwMemoryNeeded);
     ::ReadFile(hFile, (LPVOID)TemplateText , 2, &dwBytesRead, NULL); //Reading BOM
     if (::ReadFile(hFile, (LPVOID)TemplateText , dwFileSize, &dwBytesRead, NULL) == FALSE)
@@ -81,7 +82,7 @@ bool CResultsPanel::LoadTemplate()
     
     TemplateHead = TemplateText;
 
-    LPTSTR szStart = (LPTSTR) wcsstr(TemplateText , _T("%images%"));
+    LPTSTR szStart = wcsstr(TemplateText , _T("%images%"));
     if(szStart)
     {
         *szStart= 0;
@@ -466,7 +467,7 @@ LRESULT CResultsPanel::OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/
 LRESULT CResultsPanel::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     CString buffer = GenerateOutput();
-    IU_CopyTextToClipboard(buffer);
+    WinUtils::CopyTextToClipboard(buffer);
     return 0;
 }
 
@@ -702,7 +703,7 @@ LRESULT CResultsPanel::OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND h
     CUploadEngineData *ue = m_Servers[index].uploadEngineData();
     if(!ue) return 0;
     CString folderUrl = Utf8ToWCstring( m_Servers[index].folderUrl());
-    IU_CopyTextToClipboard(folderUrl);
+    WinUtils::CopyTextToClipboard(folderUrl);
     return 0;
 }
 

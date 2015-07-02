@@ -65,7 +65,7 @@ int GetNextImgFile(LPCTSTR folder, LPTSTR szBuffer, int nLength)
     TCHAR szBuffer2[MAX_PATH], TempPath[256];
 
     GetTempPath(256, TempPath);
-    wsprintf(szBuffer2, _T("%s*.*"), (LPCTSTR)folder);
+    wsprintf(szBuffer2, _T("%s*.*"), folder);
 
     if (!findfile)
     {
@@ -102,7 +102,7 @@ void ClearTempFolder(LPCTSTR folder)
         if (!lstrcmpi(szBuffer, _T("log.txt")))
             continue;
 #endif
-        wsprintf(szBuffer2, _T("%s%s"), (LPCTSTR) folder, (LPCTSTR)szBuffer);
+        wsprintf(szBuffer2, _T("%s%s"), folder, (LPCTSTR)szBuffer);
         DeleteFile(szBuffer2);
     }
     if (!RemoveDirectory(folder))
@@ -162,8 +162,6 @@ CString FindDataFolder()
     }
     return DataFolder;
 }
-
-
 
 CString GenerateFileName(const CString& templateStr, int index, const CPoint size, const CString& originalName)
 {

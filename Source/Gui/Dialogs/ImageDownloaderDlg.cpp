@@ -217,7 +217,7 @@ void CImageDownloaderDlg::OnQueueFinished()
     if(!m_InitialBuffer.IsEmpty())
     {
         EndDialog(0);
-        IU_CopyTextToClipboard("");
+        WinUtils::CopyTextToClipboard("");
         return;
     }
     ::EnableWindow(GetDlgItem(IDOK),true);

@@ -23,12 +23,10 @@
 
 #include "FloatingWindow.h"
 
-#include "ResultsPanel.h"
-#include "ScreenshotDlg.h"
+#include "ResultsWindow.h"
 #include "Core/Settings.h"
 #include "LogWindow.h"
 #include "Core/ServiceLocator.h"
-#include "Core/HistoryManager.h"
 #include "Core/Utils/CoreTypes.h"
 #include "Func/WebUtils.h"
 #include "Func/WinUtils.h"
@@ -163,7 +161,7 @@ LRESULT CFloatingWindow::OnTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
         if (!Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId)
             SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys[Settings.TrayIconSettings.LeftClickCommand].commandId, 0));
         else
-            SetTimer(1, (UINT) (1.2 * GetDoubleClickTime()));
+            SetTimer(1, static_cast<UINT>(1.2 * GetDoubleClickTime()));
     }
     else if (LOWORD(lParam) == WM_MBUTTONUP)
     {
@@ -307,7 +305,7 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
         return false;
     }
 
-     CString url;
+    CString url;
     WinUtils::GetClipboardText(url);
     if ( !url.IsEmpty() && !WebUtils::DoesTextLookLikeUrl(url) ) {
         return false;
@@ -320,8 +318,8 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
     uploadManager_->start();
 
     CString msg;
-    msg.Format(TR("Shortening URL \"%s\" using %s"), (LPCTSTR)url,
-        (LPCTSTR)Utf8ToWstring(Settings.urlShorteningServer.serverName()).c_str());
+    msg.Format(TR("Shortening URL \"%s\" using %s"), static_cast<LPCTSTR>(url),
+        static_cast<LPCTSTR>(Utf8ToWstring(Settings.urlShorteningServer.serverName()).c_str()));
     ShowBaloonTip(msg, _T("Image Uploader"));
     return 0;
 }
@@ -541,7 +539,7 @@ void CFloatingWindow::RegisterHotkeys()
             {
                 CString msg;
                 msg.Format(TR("Cannot register global hotkey:\r\n%s.\r\n Maybe it is being used by another process."),
-                           (LPCTSTR)m_hotkeys[i].globalKey.toString());
+                           static_cast<LPCTSTR>(m_hotkeys[i].globalKey.toString()));
                 ServiceLocator::instance()->logger()->write(logWarning, _T("Hotkeys"), msg);
             }
         }
@@ -624,7 +622,7 @@ void CFloatingWindow::ShowBaloonTip(const CString& text, const CString& title)
 
 void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& displayName)
 {
-    FileUploadTask *  task(new FileUploadTask(IuCoreUtils::WstringToUtf8((LPCTSTR)realName), IuCoreUtils::WstringToUtf8((LPCTSTR)displayName)));
+    FileUploadTask *  task(new FileUploadTask(W2U(realName), W2U(displayName)));
     task->setIsImage(true);
     //std::shared_ptr<UploadSession> uploadSession(new UploadSession());
     task->setServerProfile(Settings.quickScreenshotServer);
@@ -635,8 +633,8 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     uploadManager_->start();
 
     CString msg;
-    msg.Format(TR("File \"%s\" is beeing uploaded to server %s.."), (LPCTSTR) GetOnlyFileName(displayName),
-        (LPCTSTR)Utf8ToWstring(Settings.quickScreenshotServer.serverName()).c_str());
+    msg.Format(TR("File \"%s\" is beeing uploaded to server %s.."), static_cast<LPCTSTR>(GetOnlyFileName(displayName)),
+        static_cast<LPCTSTR>(Utf8ToWstring(Settings.quickScreenshotServer.serverName()).c_str()));
     ShowBaloonTip(msg, TR("Uploading screenshot"));
 }
 
@@ -717,7 +715,7 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
     if (task->type() == UploadTask::TypeUrl ) {
         if ( ok ) {
             CString url = Utf8ToWCstring(task->uploadResult()->directUrl);
-            IU_CopyTextToClipboard(url);
+            WinUtils::CopyTextToClipboard(url);
             ShowBaloonTip( TrimString(url, 70) + CString("\r\n")
                 + TR("(the link has been copied to the clipboard)"), TR("Short URL"));
         } else {
@@ -753,7 +751,7 @@ LRESULT CFloatingWindow::OnStopUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 }
 
 void CFloatingWindow::ShowImageUploadedMessage(const CString& url) {
-    IU_CopyTextToClipboard(url);
+    WinUtils::CopyTextToClipboard(url);
     ShowBaloonTip(TrimString(url, 70) + CString("\r\n") 
         + TR("(the link has been copied to the clipboard)")+ + CString("\r\n") + TR("Click on this message to view details...") , TR("Screenshot was uploaded"));
 }

@@ -18,8 +18,8 @@
 
 */
 
-#include "atlheaders.h"
 #include "MediaInfoDlg.h"
+
 #include "Func/fileinfohelper.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"

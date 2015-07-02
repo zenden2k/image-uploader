@@ -28,7 +28,7 @@ namespace WinUtils {
     CString GetSystemSpecialPath(int csidl);
     CString GetApplicationDataPath();
     CString GetCommonApplicationDataPath();
-    bool    CopyTextToClipboard(CString text);
+    bool    CopyTextToClipboard(const CString& text);
     bool    GetClipboardText(CString &text, HWND hwnd = NULL, bool raiseError = false);
     bool GetClipboardHtml(CString& text, CString& outSourceUrl);
     DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);

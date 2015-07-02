@@ -31,11 +31,9 @@
 #include "Core/Images/ImageConverter.h"
 #include <atlcrack.h>
 
-// CLogoSettings
 #define IDC_NEWPROFILE 10001
 #define IDC_SAVEPROFILE 10002
 #define IDC_DELETEPROFILE 10003
-
 
 class CLogoSettings : 
     public CDialogImpl<CLogoSettings>, public CSettingsPage    

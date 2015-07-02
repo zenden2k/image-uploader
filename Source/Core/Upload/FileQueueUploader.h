@@ -32,9 +32,9 @@ class UploadEngineManager;
 class UploadFilter;
 class NetworkClient;
 
-
 class FileQueueUploaderPrivate;
 
+// TODO: rewrite this class using queue and regular thread pool
 class CFileQueueUploader
 {
     public:

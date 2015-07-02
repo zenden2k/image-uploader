@@ -97,18 +97,13 @@ void IU_RunElevated(CString params);
 HRESULT IsElevated( __out_opt BOOL * pbElevated );
 #define randomize() (srand((unsigned)time(NULL)))
 #define random(x) (rand() % x)
-bool IU_CopyTextToClipboard(CString text);
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
 
 
 CString GetUniqFileName(const CString &filePath);
-bool IU_GetClipboardText(CString &text);
 extern CMyEngineList *_EngineList;
 
-BOOL IU_CreateFolder(LPCTSTR szFolder);
-BOOL IU_CreateFilePath(LPCTSTR szFilePath);
 HICON GetAssociatedIcon (LPCTSTR filename, bool Small);
-BOOL IsWinXP();
 int ScreenBPP();
 BOOL Is32BPP();
 CString GetSystemSpecialPath(int csidl);

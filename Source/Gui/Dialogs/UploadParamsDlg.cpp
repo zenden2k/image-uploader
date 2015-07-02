@@ -117,7 +117,7 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
     SetDlgItemText(IDC_THUMBTEXT, U2W(params_.getThumbRef().Text) );
 
-    SetDlgItemText(IDC_WIDTHEDIT, IntToStr(params_.getThumbRef().Size));
+    SetDlgItemText(IDC_WIDTHEDIT, WinUtils::IntToStr(params_.getThumbRef().Size));
         SetDlgItemInt(IDC_THUMBQUALITYEDIT,  params_.getThumbRef().Quality);
     SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, static_cast<int>( (params_.getThumbRef().Format)), 0);
 

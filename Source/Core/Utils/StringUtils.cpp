@@ -26,6 +26,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
+#include <utf8/unchecked.h>
 
 namespace IuStringUtils {
 
@@ -143,4 +144,9 @@ std::string ConvertUnixLineEndingsToWindows(const std::string& text) {
     delete[] res;
     return result;
 }
+
+size_t LenghtOfUtf8String(const std::string &utf8_string) {
+    return utf8::unchecked::distance(utf8_string.begin(), utf8_string.end());
+}
+
 }

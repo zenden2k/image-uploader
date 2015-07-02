@@ -3,11 +3,11 @@
 
 #pragma once
 #include "UploadTask.h"
-#include <mutex>
-#include "Core/HistoryManager.h"
+#include "Core/Utils/CoreUtils.h"
 #include <atomic>
 #include <unordered_map>
 
+class CHistorySession;
 class UploadSession
 {
     public:
@@ -53,6 +53,8 @@ class UploadSession
         std::mutex serverFatalErrorsMutex_;
         std::mutex historySessionMutex_;
         std::atomic<bool> stopSignal_;
+private:
+    DISALLOW_COPY_AND_ASSIGN(UploadSession);
 };
 
 #endif

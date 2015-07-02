@@ -13,25 +13,25 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
-    <Filter Include="Code">
+    <Filter Include="Source">
       <UniqueIdentifier>{52814f44-df2d-4791-873e-3382cc224860}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Core">
+    <Filter Include="Source\Core">
       <UniqueIdentifier>{2ae681c5-4d58-46a5-b5c1-21595b640c77}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Core\Utils">
+    <Filter Include="Source\Core\Utils">
       <UniqueIdentifier>{d08f58d8-2a88-412a-b828-9868508b66fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Core\3rdpart">
-      <UniqueIdentifier>{3ff40a91-717f-4100-b3d1-61e7a4bcee2b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Code\Core\Utils\Tests">
+    <Filter Include="Source\Core\Utils\Tests">
       <UniqueIdentifier>{401bfaf5-fdc7-46d0-bb5a-806aadb9e69c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Core\3rdpart\GumboQuery">
+    <Filter Include="Source\Core\3rdpart">
+      <UniqueIdentifier>{3ff40a91-717f-4100-b3d1-61e7a4bcee2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\3rdpart\GumboQuery">
       <UniqueIdentifier>{4985c8fc-0676-41bf-8d04-b2de089b9737}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Core\3rdpart\GumboQuery\Tests">
+    <Filter Include="Source\Core\3rdpart\GumboQuery\Tests">
       <UniqueIdentifier>{de8325fd-11f9-4e94-a5d5-abc3cf5af835}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -40,64 +40,67 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\Utils\CoreUtils.cpp">
-      <Filter>Code\Core\Utils</Filter>
+      <Filter>Source\Core\Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\Utils\StringUtils.cpp">
-      <Filter>Code\Core\Utils</Filter>
+      <Filter>Source\Core\Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\CodePages.cpp">
-      <Filter>Code\Core\3rdpart</Filter>
+      <Filter>Source\Core\3rdpart</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\Utils\Tests\CoreUtilsTest.cpp">
-      <Filter>Code\Core\Utils\Tests</Filter>
+      <Filter>Source\Core\Utils\Tests</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\Utils\CryptoUtils.cpp">
-      <Filter>Code\Core\Utils</Filter>
+      <Filter>Source\Core\Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\base64.cpp">
-      <Filter>Code\Core\3rdpart</Filter>
+      <Filter>Source\Core\3rdpart</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\Utils\Tests\CryptoUtilsTest.cpp">
-      <Filter>Code\Core\Utils\Tests</Filter>
+      <Filter>Source\Core\Utils\Tests</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\Utils\Tests\TextUtilsTest.cpp">
-      <Filter>Code\Core\Utils\Tests</Filter>
+      <Filter>Source\Core\Utils\Tests</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\Utils\TextUtils.cpp">
-      <Filter>Code\Core\Utils</Filter>
+      <Filter>Source\Core\Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\htmlentities.cpp">
-      <Filter>Code\Core\3rdpart</Filter>
+      <Filter>Source\Core\3rdpart</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\pcreplusplus.cpp">
-      <Filter>Code\Core\3rdpart</Filter>
+      <Filter>Source\Core\3rdpart</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Node.cpp">
-      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
+      <Filter>Source\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Object.cpp">
-      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
+      <Filter>Source\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\GumboQuery\QueryUtil.cpp">
-      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
+      <Filter>Source\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Selection.cpp">
-      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
+      <Filter>Source\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Selector.cpp">
-      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
+      <Filter>Source\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Tests\GumboTest.cpp">
-      <Filter>Code\Core\3rdpart\GumboQuery\Tests</Filter>
+      <Filter>Source\Core\3rdpart\GumboQuery\Tests</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\GumboQuery\GQDocument.cpp">
-      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
+      <Filter>Source\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\GumboQuery\GQ_Parser.cpp">
-      <Filter>Code\Core\3rdpart\GumboQuery</Filter>
+      <Filter>Source\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\Tests\StringUtilsTest.cpp">
+      <Filter>Source\Core\Utils\Tests</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

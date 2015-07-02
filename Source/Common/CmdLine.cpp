@@ -96,8 +96,10 @@ bool CCmdLine::GetNextFile(CString& FileName, size_t& nIndex)
 
 CCmdLine &CCmdLine::operator=(const CCmdLine& p)
 {
-    m_Params.RemoveAll();
-    m_Params.Copy(p.m_Params);
+    if (this != &p) {
+        m_Params.RemoveAll();
+        m_Params.Copy(p.m_Params);
+    }
     return *this;
 }
 
@@ -114,13 +116,6 @@ bool CCmdLine::IsOption(LPCTSTR Option, bool bUsePrefix)
     }
 
     return false;
-}
-
-CString IntToStr(int n)
-{
-    CString Result;
-    Result.Format(_T("%d"), n);
-    return Result;
 }
 
 size_t CCmdLine::GetCount()

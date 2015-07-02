@@ -203,7 +203,7 @@ bool CImageReuploaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloade
         }
         
         ServiceLocator::instance()->logger()->write(logMessageType, LogTitle, _T("Cannot download the image '") + Utf8ToWCstring(it.url) + _T("'.")
-            + _T("\r\nStatus code:") + IntToStr(statusCode) + (cacheLogMessage.IsEmpty() ? _T("") : (_T("\r\n\r\n") + cacheLogMessage)) + _T("\r\n") );
+            + _T("\r\nStatus code:") + WinUtils::IntToStr(statusCode) + (cacheLogMessage.IsEmpty() ? _T("") : (_T("\r\n\r\n") + cacheLogMessage)) + _T("\r\n") );
 
         /*if ( !cacheLogMessage.IsEmpty() ) {
             WriteLog(logWarning, LogTitle, cacheLogMessage);
@@ -573,8 +573,8 @@ LRESULT CImageReuploaderDlg::OnClickedOutputRadioButton(WORD wNotifyCode, WORD w
 }
 
 void CImageReuploaderDlg::updateStats() {
-    CString text =  CString(TR("Uploaded images: ")) + IntToStr(uploadedItems_.size())
-        + (m_nFilesDownloaded ? CString(_T("/")) + IntToStr(m_nFilesDownloaded) : CString(_T("")))
+    CString text =  CString(TR("Uploaded images: ")) + WinUtils::IntToStr(uploadedItems_.size())
+        + (m_nFilesDownloaded ? CString(_T("/")) + WinUtils::IntToStr(m_nFilesDownloaded) : CString(_T("")))
         + CString(_T(", ")) + TR("Downloaded: ") 
         + WinUtils::IntToStr(m_nFilesDownloaded) + CString(_T("/")) + WinUtils::IntToStr(m_nFilesCount);
     SetDlgItemText( IDC_RESULTSLABEL,text);

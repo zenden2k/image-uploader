@@ -112,6 +112,7 @@
     <ClCompile Include="..\Core\Utils\CryptoUtils.cpp" />
     <ClCompile Include="..\Core\Utils\Tests\CoreUtilsTest.cpp" />
     <ClCompile Include="..\Core\Utils\Tests\CryptoUtilsTest.cpp" />
+    <ClCompile Include="..\Core\Utils\Tests\StringUtilsTest.cpp" />
     <ClCompile Include="..\Core\Utils\Tests\TextUtilsTest.cpp" />
     <ClCompile Include="..\Core\Utils\TextUtils.cpp" />
     <ClCompile Include="stdafx.cpp">

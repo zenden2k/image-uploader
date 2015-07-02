@@ -19,9 +19,7 @@
 */
 
 #include "LogoSettings.h"
-#include "atlheaders.h"
-#include <uxtheme.h>
-#include "LogWindow.h"
+
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "InputDialog.h"
@@ -32,8 +30,8 @@
 CLogoSettings::CLogoSettings()
 {
     ZeroMemory(&lf, sizeof(lf));
-   m_CatchChanges = false;
-   m_ProfileChanged = false;
+    m_CatchChanges = false;
+    m_ProfileChanged = false;
 }
 
 void CLogoSettings::TranslateUI()
@@ -229,10 +227,10 @@ void CLogoSettings::ShowParams(const ImageConvertingParams& params) {
     if (params.Quality)
         SetDlgItemInt(IDC_QUALITYEDIT, params.Quality);
     else
-    SetDlgItemText(IDC_QUALITYEDIT,_T(""));
+        SetDlgItemText(IDC_QUALITYEDIT,_T(""));
     SendDlgItemMessage(IDC_FORMATLIST,CB_SETCURSEL, params.Format);
 
-    SendDlgItemMessage(IDC_RESIZEMODECOMBO,CB_SETCURSEL, (WPARAM)(int)(ImageConvertingParams::ImageResizeMode&)params.ResizeMode);
+    SendDlgItemMessage(IDC_RESIZEMODECOMBO,CB_SETCURSEL, static_cast<WPARAM>(params.ResizeMode.toInt()));
 
     SendDlgItemMessage(IDC_YOURLOGO,BM_SETCHECK, params.AddLogo);
     SendDlgItemMessage(IDC_YOURTEXT,BM_SETCHECK, params.AddText);
@@ -284,10 +282,9 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
  void CLogoSettings::UpdateProfileList()
  {
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_RESETCONTENT);
-    std::map<CString, ImageConvertingParams> ::const_iterator it;\
+
     bool found = false;
-    for(it = ñonvert_profiles_.begin(); it != ñonvert_profiles_.end(); ++it)
-    {
+    for (auto it = ñonvert_profiles_.begin(); it != ñonvert_profiles_.end(); ++it) {
       GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
       if(it->first == CurrentProfileName) found = true;
     }

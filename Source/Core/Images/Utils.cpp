@@ -658,7 +658,7 @@ bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int F
         "%s%s.%s"), static_cast<LPCTSTR>(Folder ? userFolder : IuCommonFunctions::IUTempFolder), static_cast<LPCTSTR>(szNameBuffer),
         /*(int)GetTickCount(),*/ szImgTypes[Format]);
     CString resultFilename = WinUtils::GetUniqFileName(szBuffer2);
-    IU_CreateFilePath(resultFilename);
+    WinUtils::CreateFilePath(resultFilename);
     CLSID clsidEncoder;
     EncoderParameters eps;
     eps.Count = 1;

@@ -398,7 +398,7 @@ bool CWizardDlg::ParseCmdLine()
 	CStringList Paths;
 	while(CmdLine.GetNextFile(FileName, nIndex))
 	{
-        if (FileExists(FileName) || IsDirectory(FileName)) {
+        if (FileExists(FileName) || WinUtils::IsDirectory(FileName)) {
             Paths.Add(WinUtils::ConvertRelativePathToAbsolute(FileName));
         }
 
@@ -1053,7 +1053,7 @@ LRESULT CWizardDlg::OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHan
     if(IsClipboardFormatAvailable(CF_UNICODETEXT)) 
     {
         CString text;
-        IU_GetClipboardText(text);
+        WinUtils::GetClipboardText(text);
         if(CImageDownloaderDlg::LinksAvailableInText(text))
         {
             CImageDownloaderDlg dlg(this,CString(text));
@@ -2013,7 +2013,7 @@ bool CWizardDlg::IsClipboardDataAvailable()
         if(IsClipboardFormatAvailable(CF_UNICODETEXT)) 
         {
             CString text;
-            IU_GetClipboardText(text);
+            WinUtils::GetClipboardText(text);
             if(CImageDownloaderDlg::LinksAvailableInText(text))
             {
                 IsClipboard = true;

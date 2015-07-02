@@ -139,9 +139,9 @@ void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, b
         COLORREF c;
 
         if(!Horizontal)
-            fStep = (float)(FillRect.bottom - FillRect.top) / 256;
+            fStep = (FillRect.bottom - FillRect.top) / 256.0f;
         else 
-            fStep = (float)(FillRect.right - FillRect.left) / 256;
+            fStep = (FillRect.right - FillRect.left) / 256.0f;
 
         if( fStep < 1)
         {
@@ -152,11 +152,11 @@ void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, b
                 n = (FillRect.right - FillRect.left);
         }
 
-        r = (float)(GetRValue(finish)-GetRValue(start))/(n-1);
+        r = static_cast<float>(GetRValue(finish)-GetRValue(start))/(n-1);
 
-        g = (float)(GetGValue(finish)-GetGValue(start))/(n-1);
+        g = static_cast<float>(GetGValue(finish)-GetGValue(start))/(n-1);
 
-        b = (float)(GetBValue(finish)-GetBValue(start))/(n-1);
+        b = static_cast<float>(GetBValue(finish)-GetBValue(start))/(n-1);
 
         //Начало прорисовки
         for (i = 0; i < n; i++) 
@@ -181,38 +181,35 @@ void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, b
         }
 }
 
-    bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...)
-    {
-        *szBuffer = 0;
-        LPCTSTR *pszName, *pszFilter;
-        pszName = &szName;
-        pszFilter = &szFilter; 
+bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...) {
+    *szBuffer = 0;
+    LPCTSTR *pszName, *pszFilter;
+    pszName = &szName;
+    pszFilter = &szFilter;
 
-        for(int i=0; i<nCount; i++)
-        {
-            int nLen = lstrlen(*pszName);
-            lstrcpy(szBuffer, *pszName);
-            szBuffer[nLen]=0;
-            szBuffer+=nLen+1;
+    for (int i = 0; i < nCount; i++) {
+        int nLen = lstrlen(*pszName);
+        lstrcpy(szBuffer, *pszName);
+        szBuffer[nLen] = 0;
+        szBuffer += nLen + 1;
 
-            nLen = lstrlen(*pszFilter);
-            lstrcpy(szBuffer, *pszFilter);
-            szBuffer[nLen]=0;
-            szBuffer+=nLen+1;
-            pszName+=2;
-            pszFilter+=2;
-        }
-        *szBuffer=0;
-        return true;
+        nLen = lstrlen(*pszFilter);
+        lstrcpy(szBuffer, *pszFilter);
+        szBuffer[nLen] = 0;
+        szBuffer += nLen + 1;
+        pszName += 2;
+        pszFilter += 2;
     }
+    *szBuffer = 0;
+    return true;
+}
 
-    // Converts pixels to Win32 dialog units
-    int dlgX(int WidthInPixels)
-    {
-        LONG units = GetDialogBaseUnits();
-        short baseunitX = LOWORD(units);
-        return WidthInPixels * baseunitX / 4;
-    }
+// Converts pixels to Win32 dialog units
+int dlgX(int WidthInPixels) {
+    LONG units = GetDialogBaseUnits();
+    short baseunitX = LOWORD(units);
+    return WidthInPixels * baseunitX / 4;
+}
 
 // Converts pixels to Win32 dialog units
 int dlgY(int HeightInPixels) {

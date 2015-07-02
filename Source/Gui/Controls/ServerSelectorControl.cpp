@@ -282,9 +282,8 @@ void CServerSelectorControl::updateInfoLabel() {
     }
 
 
-    CString accountInfoText;// = TR("Prof:") + serverProfile_.profileName() + _T(" ");
+    CString accountInfoText;
     LoginInfo loginInfo = serverProfile_.serverSettings().authData;
-    //accountInfoText += TR("Account:") + CString(" ");
     
     if ( loginInfo.Login.empty() || (!loginInfo.DoAuth  && uploadEngineData->NeedAuthorization != 2 ) ) {
         accountInfoText += TR("Account...");

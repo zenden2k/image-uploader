@@ -6,7 +6,6 @@
 #include "Core/Video/AbstractImage.h"
 #include <string>
 
-
 class ImageConverterPrivate: public ImageConverterPrivateBase {
 public:
     bool ImageConverterPrivate::Convert(const std::string& sourceFile);

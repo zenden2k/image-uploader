@@ -73,7 +73,6 @@ BOOL FileExists(LPCTSTR FileName);
 const CString TrimString(const CString& source, int nMaxLen);
 
 LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int nBufferSize);
-CString IntToStr(int n);
 
 
 CString DisplayError(int idCode);
@@ -117,8 +116,5 @@ static CGlobalAtom ga;
 #endif
 #endif
 
-bool IsDirectory(LPCTSTR szFileName);
-bool IsVista();
 
-FILE * fopen_utf8(const char * filename, const char * mode);
 bool CheckFileName(const CString& fileName);

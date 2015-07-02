@@ -22,10 +22,7 @@
 
 #include "atlheaders.h"
 #include "Common/CmdLine.h"
-#include "versioninfo.h"
-#include "Core/Settings.h"
 #include "Func/MyUtils.h"
-#include "Core/Settings.h"
 #include "Core/Utils/CryptoUtils.h"
 #include "Func/WinUtils.h"
 
@@ -201,7 +198,7 @@ void IU_RunElevated(CString params)
     TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
     TempInfo.fMask = 0;
     TempInfo.hwnd = NULL;
-    if (IsVista())
+    if (WinUtils::IsVista())
         TempInfo.lpVerb = _T("runas");
     else
         TempInfo.lpVerb = _T("open");
@@ -211,43 +208,6 @@ void IU_RunElevated(CString params)
     TempInfo.nShow = SW_NORMAL;
 
     ::ShellExecuteEx(&TempInfo);
-}
-
-bool IU_GetClipboardText(CString& text)
-{
-    if (OpenClipboard(NULL))
-    {
-        HGLOBAL hglb = GetClipboardData(CF_UNICODETEXT);
-        LPCWSTR lpstr = (LPCWSTR)GlobalLock(hglb);
-        text = lpstr;
-        GlobalUnlock(hglb);
-        CloseClipboard();
-        return true;
-    }
-    return false;
-}
-
-bool IU_CopyTextToClipboard(CString text)
-{
-    LPTSTR lptstrCopy;
-    HGLOBAL hglbCopy;
-    int cch = text.GetLength();
-    if (!OpenClipboard( NULL))
-        return FALSE;
-    EmptyClipboard();
-    hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (cch + 1) * sizeof(TCHAR));
-    if (hglbCopy == NULL)
-    {
-        CloseClipboard();
-        return FALSE;
-    }
-    lptstrCopy = (LPTSTR) GlobalLock(hglbCopy);
-    memcpy(lptstrCopy, (LPCTSTR)text, text.GetLength() * sizeof(TCHAR));
-    lptstrCopy[cch] = (TCHAR) 0;
-    GlobalUnlock(hglbCopy);
-    SetClipboardData(CF_UNICODETEXT, hglbCopy);
-    CloseClipboard();
-    return true;
 }
 
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
@@ -265,8 +225,6 @@ DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
     return 1;
 }
 
-
-
 CString GetUniqFileName(const CString& filePath)
 {
     TCHAR path[256];
@@ -279,7 +237,7 @@ CString GetUniqFileName(const CString& filePath)
     CString result;
     for (int i = 2;; i++)
     {
-        result = path + name + IntToStr(i) + (extension.IsEmpty() ? _T("") : _T(".") + extension);
+        result = path + name + WinUtils::IntToStr(i) + (extension.IsEmpty() ? _T("") : _T(".") + extension);
         if (!FileExists(result))
             break;
     }
@@ -408,23 +366,6 @@ HICON GetAssociatedIcon (LPCTSTR filename, bool Small)
     return Info.hIcon;
 }
 
-BOOL IsWinXP()
-{
-    // ѕроверка операционной системы
-    DWORD dwVersion = GetVersion();
-
-    // Get major and minor version numbers of Windows
-    DWORD dwWindowsMajorVersion = (DWORD)(LOBYTE(LOWORD(dwVersion)));
-    DWORD dwWindowsMinorVersion = (DWORD)(HIBYTE(LOWORD(dwVersion)));
-
-    // Check for Windows XP
-    if ((dwVersion < 0x80000000) &&                 // The OS is a NT family
-        (dwWindowsMajorVersion >= 5) &&
-        (dwWindowsMinorVersion >= 1))         // Windows NT 5.1 is an Windows XP version
-        return TRUE;
-    return FALSE;
-}
-
 int ScreenBPP()
 {
 // ¬озвращает количество битов на точку в данном режиме
@@ -440,7 +381,7 @@ int ScreenBPP()
 
 BOOL Is32BPP()
 {
-    return (IsWinXP() & (ScreenBPP() >= 32));
+    return (WinUtils::IsWinXP() & (ScreenBPP() >= 32));
 }
 
 CString GetSystemSpecialPath(int csidl)

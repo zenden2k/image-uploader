@@ -27,6 +27,7 @@ class CCmdLine
 {
     public:
         CCmdLine();
+        CCmdLine(const CCmdLine&) = delete;
         CCmdLine &operator=(const CCmdLine& p);
         explicit CCmdLine(LPCTSTR szCmdLine);
         void Parse(LPCTSTR szCmdLine);

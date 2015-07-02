@@ -2,11 +2,10 @@
 
 #include "Func/MyUtils.h"
 #include "Core/Utils/StringUtils.h"
-#include "Core/3rdpart/pcreplusplus.h"
-#include "Core/3rdpart/parser.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/CommonDefs.h"
 #include "Func/IuCommonFunctions.h"
+#include "Func/WinUtils.h"
 #include "Utils.h"
 #include <assert.h>
 
@@ -14,7 +13,6 @@
     #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 #endif
 #include <Core/Video/GdiPlusImage.h>
-
 
 bool ImageConverterPrivate::Convert(const std::string& sourceFile)
 {
@@ -33,7 +31,6 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
     if (IuStringUtils::Tail(m_imageConvertingParams.strNewWidth, 1) == "%") {
         NewWidth = NewWidth * imgwidth / 100;
     }
-
 
     if ( IuStringUtils::Tail(m_imageConvertingParams.strNewHeight, 1)==  "%" ) {
         NewHeight = NewHeight * imgheight / 100;
@@ -64,7 +61,7 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
         if (m_imageConvertingParams.PreserveExifInformation) {
             bm.GetPropertySize(&propertyItemsSize, &propertyItemsCount);
             if (propertyItemsSize) {
-                pPropBuffer = (PropertyItem*)malloc(propertyItemsSize);
+                pPropBuffer = reinterpret_cast<PropertyItem*>(malloc(propertyItemsSize));
                 bm.GetAllPropertyItems(propertyItemsSize, propertyItemsCount, pPropBuffer);
             }
         }
@@ -104,7 +101,7 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
                 newheight = imgheight;
             }
         }
-        BackBuffer.reset(new Bitmap((int)newwidth, (int)newheight));
+        BackBuffer.reset(new Bitmap(static_cast<int>(newwidth), static_cast<int>(newheight)));
 
         Graphics gr(BackBuffer.get());
         if (fileformat != 2) /* not GIF */
@@ -214,7 +211,7 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
                 if (m_imageConvertingParams.LogoPosition == 1 || m_imageConvertingParams.LogoPosition == 4)
                     x = int((newwidth - logowidth) / 2);
 
-                gr.DrawImage(&logo, (int)x, (int)y, logowidth, logoheight);
+                gr.DrawImage(&logo, x, y, logowidth, logoheight);
             }
         }
         thumbSource = BackBuffer.get();
@@ -263,23 +260,19 @@ bool ImageConverterPrivate::createThumb(Gdiplus::Bitmap* bm, const CString& imag
     HDC dc = ::GetDC(0);
     int64_t FileSize = IuCoreUtils::getFileSize(W2U((imageFile)));
 
-
     // Saving thumbnail (without template)
     GdiPlusImage src(bm, false);
     std::shared_ptr<GdiPlusImage> res = std::static_pointer_cast<GdiPlusImage>(createThumbnail(&src, FileSize, fileformat));
-    if (res)
-    {
+    if (res) {
         CString thumbFileName;
         result = MySaveImage(res->getBitmap(), IuCommonFunctions::GenerateFileName(L"thumb_%md5.jpg", 1,
             CPoint()), thumbFileName, fileformat, m_thumbCreatingParams.Quality);
         thumbFileName_ = W2U(thumbFileName);
     }
 
-    // }
     ReleaseDC(0, dc);
     return result;
 }
-
 
 std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractImage* abstractImg, int64_t fileSize, int fileformat)
 {
@@ -298,8 +291,8 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     CString sizeString = U2W(IuCoreUtils::fileSizeToString(fileSize));
     CString ThumbnailText = U2W(m_thumbCreatingParams.Text); // Text that will be drawn on thumbnail
 
-    ThumbnailText.Replace(_T("%width%"), IntToStr(newwidth)); // Replacing variables names with their values
-    ThumbnailText.Replace(_T("%height%"), IntToStr(newheight));
+    ThumbnailText.Replace(_T("%width%"), WinUtils::IntToStr(newwidth)); // Replacing variables names with their values
+    ThumbnailText.Replace(_T("%height%"), WinUtils::IntToStr(newheight));
     ThumbnailText.Replace(_T("%size%"), sizeString);
 
     int thumbwidth = m_thumbCreatingParams.Size;
@@ -330,8 +323,8 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     g1.SetPageUnit(UnitWorld);
     g1.MeasureString(_T("test"), -1, &font, PointF(0, 0), &format, &TextRect);
     //        delete f;
-    m_Vars["TextWidth"] = IuCoreUtils::toString((int)TextRect.Width);
-    m_Vars["TextHeight"] = IuCoreUtils::toString((int)TextRect.Height);
+    m_Vars["TextWidth"] = IuCoreUtils::toString(static_cast<int>(TextRect.Width));
+    m_Vars["TextHeight"] = IuCoreUtils::toString(static_cast<int>(TextRect.Height));
     m_Vars["UserText"] = W2U(ThumbnailText);
     std::string textTempl = thumbnailTemplate_->getParamString("Text");
     if (textTempl.empty())
@@ -372,9 +365,9 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     if (fileformat == 0 || fileformat == 2)
         thumbgr.Clear(MYRGB(255, m_thumbCreatingParams.BackgroundColor));
     // thumbgr.Clear(Color(255,255,255,255));
-    RectF thu((float)(m_thumbCreatingParams.DrawFrame ? 1 : 0), (float)(m_thumbCreatingParams.DrawFrame ? 1 : 0),
-        (float)thumbwidth,
-        (float)thumbheight);
+    RectF thu((m_thumbCreatingParams.DrawFrame ? 1.0f : 0.f), (m_thumbCreatingParams.DrawFrame ? 1.0f : 0.f),
+        static_cast<float>(thumbwidth),
+        static_cast<float>(thumbheight));
     thumbgr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
     // thumbgr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
     // thumbgr.SetSmoothingMode( SmoothingModeHighQuality);
@@ -481,8 +474,8 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
                             attr.SetWrapMode(WrapModeClamp);    // we need this to avoid some glitches on the edges of interpolated image
                             thumbgr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
                             thumbgr.SetSmoothingMode(SmoothingModeHighQuality);
-                            gr->DrawImage(&templ, t, (int)sourceRect.left, (int)sourceRect.top, (int)sourceRect.right,
-                                (int)sourceRect.bottom, UnitPixel,
+                            gr->DrawImage(&templ, t, static_cast<int>(sourceRect.left), static_cast<int>(sourceRect.top), static_cast<int>(sourceRect.right),
+                                static_cast<int>(sourceRect.bottom), UnitPixel,
                                 &attr);
                             thumbgr.SetSmoothingMode(SmoothingModeNone);
                         }

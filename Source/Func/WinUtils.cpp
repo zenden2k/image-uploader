@@ -112,7 +112,7 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
     return false;
 }
 
-bool CopyTextToClipboard(CString text)
+bool CopyTextToClipboard(const CString& text)
 {
     LPTSTR lptstrCopy;
     HGLOBAL hglbCopy;

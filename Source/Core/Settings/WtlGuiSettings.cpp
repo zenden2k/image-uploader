@@ -133,7 +133,7 @@ void RegisterShellExtension(bool Register) {
     TempInfo.hwnd = NULL;
     BOOL b = FALSE;
     IsElevated(&b);
-    if (IsVista() && !b) {
+    if (WinUtils::IsVista() && !b) {
         TempInfo.lpVerb = _T("runas");
     } else {
         TempInfo.lpVerb = _T("open");
@@ -156,7 +156,7 @@ and store it's path into DataFolder member
 void WtlGuiSettings::FindDataFolder()
 {
     AppParams* params = AppParams::instance();
-    if (IsDirectory(WinUtils::GetAppFolder() + _T("Data"))) {
+    if (WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"))) {
         DataFolder = WinUtils::GetAppFolder() + _T("Data\\");
         SettingsFolder = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(DataFolder));
 
@@ -178,7 +178,7 @@ void WtlGuiSettings::FindDataFolder()
         if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
             CString dir = Reg.ReadString("DataPath");
 
-            if (!dir.IsEmpty() && IsDirectory(dir)) {
+            if (!dir.IsEmpty() && WinUtils::IsDirectory(dir)) {
                 DataFolder = dir;
                 params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
                 return;
@@ -191,7 +191,7 @@ void WtlGuiSettings::FindDataFolder()
         if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
             CString dir = Reg.ReadString("DataPath");
 
-            if (!dir.IsEmpty() && IsDirectory(dir)) {
+            if (!dir.IsEmpty() && WinUtils::IsDirectory(dir)) {
                 DataFolder = dir;
                 params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
                 return;
@@ -246,10 +246,10 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
     IsPortable = false;
     FindDataFolder();
-    if (!IsDirectory(DataFolder)) {
+    if (!WinUtils::IsDirectory(DataFolder)) {
         CreateDirectory(DataFolder, 0);
     }
-    if (!IsDirectory(IuCoreUtils::Utf8ToWstring(SettingsFolder).c_str())) {
+    if (!WinUtils::IsDirectory(IuCoreUtils::Utf8ToWstring(SettingsFolder).c_str())) {
         CreateDirectory(IuCoreUtils::Utf8ToWstring(SettingsFolder).c_str(), 0);
     }
     BOOL isElevated = false;
@@ -601,7 +601,7 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     if (SendToContextMenu_changed || ExplorerContextMenu_changed) {
         AutoStartup_changed = false;
         BOOL b;
-        if (IsVista() && IsElevated(&b) != S_OK) {
+        if (WinUtils::IsVista() && IsElevated(&b) != S_OK) {
             // Start new elevated process 
             ApplyRegistrySettings();
         } else {
@@ -947,11 +947,10 @@ void WtlGuiSettings::BindConvertProfile(SettingsNode& image, ImageConvertingPara
 }
 #endif
 
-
 #if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
 void WtlGuiSettings::Uninstall() {
     BOOL b;
-    if (IsVista() && IsElevated(&b) != S_OK) {
+    if (WinUtils::IsVista() && IsElevated(&b) != S_OK) {
         RunIuElevated("/uninstall");
         return;
     }

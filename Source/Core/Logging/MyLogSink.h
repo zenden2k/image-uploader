@@ -6,7 +6,7 @@
 #include "Core/Logging.h"
 #include "Core/Logging/Logger.h"
 
-class GOOGLE_GLOG_DLL_DECL MyLogSink: public google::LogSink {
+class MyLogSink: public google::LogSink {
 public:
     MyLogSink(ILogger* logger);
     virtual void send(google::LogSeverity severity, const char* full_filename,
@@ -14,6 +14,7 @@ public:
         const struct ::tm* tm_time,
         const char* message, size_t message_len) override;
 protected:
+    DISALLOW_COPY_AND_ASSIGN(MyLogSink);
     ILogger* logger_;
 }; 
 

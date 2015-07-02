@@ -67,7 +67,7 @@ void ActivateWindowRepeat(HWND handle, int count)
 
 BOOL MyGetWindowRect(HWND hWnd, RECT* res, bool MaximizedFix = true)
 {
-    if (!IsVista())
+    if (!WinUtils::IsVista())
     {
         return GetWindowRect(hWnd, res);
     }
@@ -965,7 +965,7 @@ bool CWindowHandlesRegion::GetImage(HDC src, Bitmap** res)
     GetScreenBounds(scr);
     m_ScreenRegion.OffsetRgn(-scr.left, -scr.top);
     Bitmap* resultBm = 0;
-    if (m_bFromScreen && parentIsInList /*&& GetParent(topWindow)==HWND_DESKTOP */ &&  IsVista() &&
+    if (m_bFromScreen && parentIsInList /*&& GetParent(topWindow)==HWND_DESKTOP */ &&  WinUtils::IsVista() &&
         IsCompositionActive() && topWindow && !(GetWindowLong(topWindow, GWL_STYLE) & WS_CHILD)
         && (m_ClearBackground || m_RemoveCorners || m_PreserveShadow))
     {

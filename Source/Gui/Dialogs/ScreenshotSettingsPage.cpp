@@ -92,7 +92,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     SetDlgItemInt(IDC_WINDOWHIDINGDELAY, Settings.ScreenshotSettings.WindowHidingDelay);
     SendDlgItemMessage(IDC_FORMATLIST, CB_SETCURSEL, Format, 0);
     GuiTools::SetCheck(m_hWnd, IDC_ALLOWALTTABINIMAGEEDITOR, Settings.ImageEditorSettings.AllowAltTab);
-    bool isVista = IsVista();
+    bool isVista = WinUtils::IsVista();
     ::EnableWindow(GetDlgItem(IDC_AEROONLY), isVista);
     ::EnableWindow(GetDlgItem(IDC_REMOVECORNERS), isVista);
     ::EnableWindow(GetDlgItem(IDC_ADDSHADOW), isVista);

@@ -11,6 +11,7 @@ void ConsoleLogger::write(LogMsgType MsgType, const std::string& Sender, const s
 #endif*/
 }
 
+#ifdef _WIN32
 void ConsoleLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar_t* Msg, const wchar_t* Info) {
     std::cerr << ( MsgType == logError ? "error" : "warning" ) << " : ";
 //#ifdef _WIN32
@@ -19,3 +20,5 @@ void ConsoleLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar
     std::cerr << IuCoreUtils::Utf8ToSystemLocale(IuCoreUtils::WstringToUtf8(Msg)) << std::endl;
 #endif*/
 }
+
+#endif

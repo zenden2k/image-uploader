@@ -33,6 +33,7 @@ Copy "..\Lang\English.lng.src" %temp_dir%\Lang\
 Copy "..\Build\release optimized\Modules\*" %temp_dir%\Modules\
 xcopy "..\Docs" %temp_dir%\Docs\ /s /e /y /i
 Copy "..\Data\servers.xml" %temp_dir%\Data\
+Copy "..\Data\servers.xsd" %temp_dir%\Data\
 Copy "..\Data\templates.xml" %temp_dir%\Data\
 Copy "..\Data\template.txt" %temp_dir%\Data\
 Copy "..\Data\Favicons\*.ico" %temp_dir%\Data\Favicons\

@@ -71,8 +71,8 @@ gettimeofday(struct timeval * tp, struct timezone * tzp)
     ularge.LowPart = file_time.dwLowDateTime;
     ularge.HighPart = file_time.dwHighDateTime;
 
-    tp->tv_sec = (long)((ularge.QuadPart - epoch) / 10000000L);
-    tp->tv_usec = (long)(system_time.wMilliseconds * 1000);
+    tp->tv_sec = static_cast<long>((ularge.QuadPart - epoch) / 10000000L);
+    tp->tv_usec = static_cast<long>(system_time.wMilliseconds * 1000);
 
     return 0;
 }

@@ -25,8 +25,8 @@ namespace std:: = std;
 // A macro to disallow the copy constructor and operator= functions
 // This should be used in the private: declarations for a class
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \
-    TypeName(const TypeName&);               \
-    void operator=(const TypeName&)
+    TypeName(const TypeName&) = delete;               \
+    void operator=(const TypeName&) =delete
 
 
 // The ARRAY_SIZE(arr) macro returns the # of elements in an array arr.
@@ -59,20 +59,21 @@ char (&ArraySizeHelper(const T (&array)[N]))[N];
 template <class T> struct EnumWrapper
 {
     T value_;
-    operator T&()
-    {
+    operator T&() {
         return value_;
     }
 
-    T& operator =(const T& value)
-    {
+    T& operator =(const T& value) {
         value_ = value;
         return *this;
     }
 
-    bool operator==(const T value)
-    {
+    bool operator==(const T value) {
         return value_ == value;
+    }
+
+    int toInt() const {
+        return static_cast<int>(value_);
     }
 };
 
@@ -117,7 +118,6 @@ private:
         inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(d_ptr.get()); } \
         friend class Class##Private;
 #define Q_D(Class) Class##Private * const d = d_func()
-
 
 
 #endif

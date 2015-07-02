@@ -34,12 +34,16 @@
 #if defined(_WIN32) 
 #include "Func/WinUtils.h"
 #endif
-char NetworkClient::CertFileName[1024]= "";
 
-size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
-{
-    return  fread(ptr, size, nmemb, (FILE*)stream);
-}
+#ifdef USE_OPENSSL
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/crypto.h>
+#include <openssl/evp.h>
+#include <openssl/conf.h>
+#include <openssl/engine.h>
+#endif
+
 #ifdef _MSC_VER
     #if defined(USE_OPENSSL) 
         #pragma comment(lib, "libcurl_openssl.lib")
@@ -48,25 +52,27 @@ size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
     #endif
 #endif
 
-#if defined(USE_OPENSSL) 
-#define NUMT 4
+namespace NetworkClientInternal {
 
+size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
+{
+    return  fread(ptr, size, nmemb, reinterpret_cast<FILE*>(stream));
+}
+
+#if defined(USE_OPENSSL) 
+char CertFileName[1024] = "";
+
+#define NUMT 4
 /* we have this global to let the callback get easy access to it */
 static std::vector<std::mutex*> lockarray;
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <openssl/crypto.h>
-#include <openssl/evp.h>
-#include <openssl/conf.h>
-#include <openssl/engine.h>
+
 static void lock_callback(int mode, int type, char const *file, int line)
 {
     (void)file;
     (void)line;
     if (mode & CRYPTO_LOCK) {
         lockarray[type]->lock();
-    }
-    else {
+    } else {
         lockarray[type]->unlock();
     }
 }
@@ -85,8 +91,8 @@ static void init_locks(void)
     int i;
 
     lockarray.resize(CRYPTO_num_locks());
-    for (i = 0; i<CRYPTO_num_locks(); i++) {
-        lockarray[i] = new std::mutex(); 
+    for (i = 0; i < CRYPTO_num_locks(); i++) {
+        lockarray[i] = new std::mutex();
     }
 
     CRYPTO_set_id_callback(thread_id);
@@ -101,11 +107,12 @@ static void kill_locks(void)
     }
     CRYPTO_set_locking_callback(NULL);
     CRYPTO_set_id_callback(NULL);
-    for (i = 0; i<CRYPTO_num_locks(); i++)
+    for (i = 0; i < CRYPTO_num_locks(); i++)
         delete lockarray[i];
     lockarray.clear();
 }
 #endif
+}
 
 int NetworkClient::set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose) 
 {
@@ -137,20 +144,18 @@ int NetworkClient::private_static_writer(char *data, size_t size, size_t nmemb, 
 void NetworkClient::setProxy(const std::string &host, int port, int type)
 {
     curl_easy_setopt(curl_handle, CURLOPT_PROXY, host.c_str());
-    curl_easy_setopt(curl_handle, CURLOPT_PROXYPORT, (long)port);    
-    curl_easy_setopt(curl_handle, CURLOPT_PROXYTYPE, (long)type);
+    curl_easy_setopt(curl_handle, CURLOPT_PROXYPORT, static_cast<long>(port));    
+    curl_easy_setopt(curl_handle, CURLOPT_PROXYTYPE, static_cast<long>(type));
 #ifdef NDEBUG
     curl_easy_setopt(curl_handle, CURLOPT_NOPROXY, "localhost,127.0.0.1"); 
 #endif
 } 
 
-void NetworkClient::setProxyUserPassword(const std::string &username, const std::string password)
-{
-    if(username.empty());
-        //curl_easy_setopt(curl_handle, CURLOPT_PROXYUSERPWD,"");
-    else
-    {
-        std::string authStr = username+":"+password;
+void NetworkClient::setProxyUserPassword(const std::string &username, const std::string password) {
+    if (username.empty() && password.empty()) {
+        curl_easy_setopt(curl_handle, CURLOPT_PROXYUSERPWD, NULL);
+    } else {
+        std::string authStr = urlEncode(username) + ":" + urlEncode(password);
         curl_easy_setopt(curl_handle, CURLOPT_PROXYUSERPWD, authStr.c_str());
     }
 }
@@ -232,12 +237,12 @@ NetworkClient::NetworkClient(void)
     curl_easy_setopt(curl_handle, CURLOPT_PROGRESSFUNCTION, &ProgressFunc);
     curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 0L);
     curl_easy_setopt(curl_handle, CURLOPT_PROGRESSDATA, this);
-        curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1L);
+    curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl_handle, CURLOPT_ENCODING, "");
     curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
     curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTDATA, this);
     /*
-    TODO:
+    TODO: use new progress callbacks
 #if LIBCURL_VERSION_NUM >= 0x072000
 
     curl_easy_setopt(curl_handle, CURLOPT_XFERINFOFUNCTION, xferinfo);
@@ -245,7 +250,7 @@ NetworkClient::NetworkClient(void)
 #endif
      */
 #if defined(_WIN32) && defined(USE_OPENSSL)
-    curl_easy_setopt(curl_handle, CURLOPT_CAINFO, CertFileName);
+    curl_easy_setopt(curl_handle, CURLOPT_CAINFO, NetworkClientInternal::CertFileName);
 #endif
     //if (_is_openssl || !WinUtils::IsWine())
     {
@@ -273,7 +278,7 @@ NetworkClient::NetworkClient(void)
 
 NetworkClient::~NetworkClient(void)
 {
-    curl_easy_setopt(curl_handle, CURLOPT_PROGRESSFUNCTION, (long)NULL);
+    curl_easy_setopt(curl_handle, CURLOPT_PROGRESSFUNCTION, nullptr);
     curl_easy_cleanup(curl_handle);
 #ifdef USE_OPENSSL
     ERR_remove_thread_state(0);
@@ -330,7 +335,7 @@ bool NetworkClient::doUploadMultipartData()
         {
             if(it->isFile)
             {
-                    curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, simple_read_callback);
+                    curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, NetworkClientInternal::simple_read_callback);
                                         std::string fileName = it->value;
                     FILE * curFile = IuCoreUtils::fopen_utf8(it->value.c_str(), "rb"); /* open file to upload */
                     if(!curFile) 
@@ -539,7 +544,7 @@ void NetworkClient::curl_init() {
     std::lock_guard<std::mutex> guard(_mutex);
     if (!_curl_init) {
 #ifdef USE_OPENSSL
-        init_locks(); // init locks should be called BEFORE curl_global_init
+        NetworkClientInternal::init_locks(); // init locks should be called BEFORE curl_global_init
 #endif
 
         curl_global_init(CURL_GLOBAL_ALL);
@@ -547,6 +552,7 @@ void NetworkClient::curl_init() {
         //_is_openssl = strstr(infoData->ssl_version, "WinSSL") != infoData->ssl_version;
 
 #if defined(WIN32) && defined(USE_OPENSSL)
+            using namespace NetworkClientInternal;
             GetModuleFileNameA(0, CertFileName, 1023);
             int i, len = lstrlenA(CertFileName);
             for (i = len; i >= 0; i--) {
@@ -569,7 +575,7 @@ void NetworkClient::curl_cleanup()
     #if defined(_WIN32) && !defined(OPENSSL_NO_COMP)
         SSL_COMP_free_compression_methods(); // to avoid memory leaks
     #endif
-    kill_locks();
+    NetworkClientInternal::kill_locks();
 #endif
 }
 
@@ -697,7 +703,7 @@ void NetworkClient::private_cleanup_after()
     }
     m_OutFileName.clear();
     m_method = "";
-    curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, (curl_off_t )-1);
+    curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(-1));
 
     m_uploadData.clear();
     m_uploadingFile = NULL;
@@ -778,7 +784,7 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
         addQueryHeader("Content-Length", IuCoreUtils::int64_tToString(m_currentUploadDataSize));
     }
     private_initTransfer();
-    curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, (curl_off_t)m_currentUploadDataSize);
+    curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(m_currentUploadDataSize));
     
     curl_result = curl_easy_perform(curl_handle);
     if(m_uploadingFile)
@@ -871,11 +877,11 @@ void NetworkClient::enableResponseCodeChecking(bool enable)
 }
 
 void NetworkClient::setCurlOption(int option, const std::string &value) {
-    curl_easy_setopt(curl_handle, (CURLoption)option, value.c_str());
+    curl_easy_setopt(curl_handle, static_cast<CURLoption>(option), value.c_str());
 }
 
 void NetworkClient::setCurlOptionInt(int option, long value) {
-    curl_easy_setopt(curl_handle, (CURLoption)option, value);
+    curl_easy_setopt(curl_handle, static_cast<CURLoption>(option), value);
 }
 
 const std::string NetworkClient::getCurlInfoString(int option)

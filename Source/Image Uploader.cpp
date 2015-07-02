@@ -106,7 +106,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
     ServiceLocator::instance()->setProgramWindow(&dlgMain);
     floatWnd.setWizardDlg(&dlgMain);
 
-    if ( dlgMain.Create( 0, (LPARAM)&DlgCreationResult ) == NULL ) {
+    if ( dlgMain.Create( 0, reinterpret_cast<LPARAM>(&DlgCreationResult) ) == NULL ) {
             ATLTRACE( _T("Main dialog creation failed!  :( sorry\n") );
             dlgMain.m_hWnd = 0;
             return 0;

@@ -111,7 +111,7 @@ LRESULT CLangSelect::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL&
     int Index = SendDlgItemMessage(IDC_LANGLIST, CB_GETCURSEL);
     if (Index < 0)
         return 0;
-    SendDlgItemMessage(IDC_LANGLIST, CB_GETLBTEXT, Index, (WPARAM)Language);
+    SendDlgItemMessage(IDC_LANGLIST, CB_GETLBTEXT, Index, reinterpret_cast<WPARAM>(Language));
     return EndDialog(wID);
 }
 

@@ -12,7 +12,6 @@ ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
     allowAltTab_ = Settings.ImageEditorSettings.AllowAltTab;
 }
 
-
 void ImageEditorConfigurationProvider::saveConfiguration()
 {
     Settings.ImageEditorSettings.PenSize = penSize_;

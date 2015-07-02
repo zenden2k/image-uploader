@@ -19,6 +19,7 @@
 */
 
 #include "HistoryTreeControl.h"
+
 #include "Func/Myutils.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Func/Common.h"
@@ -320,7 +321,7 @@ void DrawBitmap(HDC hdc, HBITMAP bmp, int x, int y)
 {
     HDC hdcMem = CreateCompatibleDC(hdc);
     BITMAP bm;
-    HBITMAP hbmOld = (HBITMAP)SelectObject(hdcMem, bmp);
+    HBITMAP hbmOld = reinterpret_cast<HBITMAP>(SelectObject(hdcMem, bmp));
     GetObject(bmp, sizeof(bm), &bm);
     BitBlt(hdc, x, y, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);
     SelectObject(hdcMem, hbmOld);
@@ -425,8 +426,7 @@ HICON CHistoryTreeControl::getIconForServer(const CString& serverName)
     if(m_serverIconCache[serverName]!=0)
         return m_serverIconCache[serverName];
     else
-
-        ico = (HICON)LoadImage(0,IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+serverName+_T(".ico"),IMAGE_ICON    ,16,16,LR_LOADFROMFILE);
+        ico = reinterpret_cast<HICON>(LoadImage(0,IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+serverName+_T(".ico"), IMAGE_ICON, 16, 16, LR_LOADFROMFILE));
     m_serverIconCache[serverName] = ico;
     return ico;        
 }
@@ -612,11 +612,11 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
                 lstrcpy(FileExt,_T("JPEG"));
             if(IsImage(filename) && bm)
             {
-                wsprintf(Buffer,_T("%s %dx%d (%s)"),(LPCTSTR)FileExt,(int)bm->GetWidth(),(int)bm->GetHeight(), (LPCTSTR)buf2 );
+                wsprintf(Buffer,_T("%s %dx%d (%s)"),static_cast<LPCTSTR>(FileExt),(int)bm->GetWidth(),(int)bm->GetHeight(), (LPCTSTR)buf2 );
             }
             else
             {
-                wsprintf(Buffer,_T("%s"), (LPCTSTR)buf2 );
+                wsprintf(Buffer,_T("%s"), static_cast<LPCTSTR>(buf2) );
 
             }
             gr.DrawString(Buffer, -1, &font, bounds, &format, &brush);

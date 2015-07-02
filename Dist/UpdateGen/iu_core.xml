@@ -4,7 +4,6 @@
 		<Entry Name="Image Uploader.exe" SaveToFolder="%apppath%/" Action="add"/>
 		<Entry Name="ExplorerIntegration*.dll" SaveToFolder="%apppath%/" Action="add"/>
 		<Entry Name="curl-ca-bundle.crt" SaveToFolder="%apppath%/" Action="delete"/>
-		<Entry Name="new-icon.ico" SaveToFolder="%apppath%/" Action="add"/>
         <Entry Name="Lang/*.lng" SaveToFolder="%apppath%/Lang/" Action="add"/>
 		<Entry Name="Turkce.lng" SaveToFolder="%apppath%/Lang/" Action="delete"/>
 		<Entry Name="English.lng" SaveToFolder="%apppath%/Lang/" Action="delete"/>

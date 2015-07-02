@@ -1,4 +1,5 @@
 ﻿#include "UploadSession.h"
+
 #include "UploadTask.h"
 #include <algorithm>
 
@@ -31,7 +32,7 @@ int  UploadSession::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<Up
     int count = 0;
     //LOG(ERROR) << "UploadSession::getNextTask()";
 //    std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
-    for (auto it = tasks_.begin(); it != tasks_.end(); it++)
+    for (auto it = tasks_.begin(); it != tasks_.end(); ++it)
     {
         UploadTask* uploadTask = it->get();
         if (uploadTask->status() == UploadTask::StatusInQueue) {
@@ -75,7 +76,7 @@ bool UploadSession::isFinished()
     try {
 //        std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
         //return tasks_.size() == finishedCount_;
-        if (!tasks_.size())
+        if (tasks_.empty())
         {
             return false;
         }
@@ -132,7 +133,7 @@ int UploadSession::finishedTaskCount(UploadTask::Status status)
     try {
         //std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
     
-        for (auto it = tasks_.begin(); it != tasks_.end(); it++)
+        for (auto it = tasks_.begin(); it != tasks_.end(); ++it)
         {
             if (it->get()->isFinished() && it->get()->status() == status)
             {

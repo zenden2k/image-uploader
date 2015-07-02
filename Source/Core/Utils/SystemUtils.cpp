@@ -6,6 +6,8 @@
 #include "SystemUtils_unix.h"
 #endif
 
+// Useful link:
+// https://code.google.com/p/chromium/codesearch#chromium/src/base/cpu.cc&sq=package:chromium&type=cs
 #ifdef _WIN32
 
 //  Windows

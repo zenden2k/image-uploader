@@ -261,11 +261,11 @@ LRESULT CHistoryWindow::OnCopyToClipboard(WORD wNotifyCode, WORD wID, HWND hWndC
     if(!item) return 0;
     HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
     std::string url = historyItem->directUrl.length()?historyItem->directUrl:historyItem->viewUrl;
-    IU_CopyTextToClipboard(Utf8ToWCstring(url));
+    WinUtils::CopyTextToClipboard(Utf8ToWCstring(url));
     return 0;
 }
 
-CUrlListItem fromHistoryItem(HistoryItem historyItem)
+CUrlListItem fromHistoryItem(const HistoryItem& historyItem)
 {
     CUrlListItem it;
     it.ImageUrl = Utf8ToWstring(historyItem.directUrl).c_str();
@@ -341,7 +341,7 @@ LRESULT CHistoryWindow::OnMonthChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 {
     int nIndex = SendDlgItemMessage(IDC_MONTHCOMBO, CB_GETCURSEL);
     if(nIndex == -1) return 0;
-    int historyFileIndex = (int)SendDlgItemMessage(IDC_MONTHCOMBO, CB_GETITEMDATA, nIndex);
+    int historyFileIndex = static_cast<int>(SendDlgItemMessage(IDC_MONTHCOMBO, CB_GETITEMDATA, nIndex));
     LoadHistoryFile(m_HistoryFiles[historyFileIndex]);
     m_treeView.SetFocus();
     return 0;

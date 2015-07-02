@@ -170,7 +170,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         mi.dwTypeData  = TR("Save as...");
         sub.SetMenuItemInfo(IDM_SAVEAS, false, &mi); 
 
-        CString menuItemTitle = (LPWSTR)( isImage ?  TR("Copy image") : TR("Copy") ) + CString(_T("\tCtrl+C"));
+        CString menuItemTitle = ( isImage ?  TR("Copy image") : TR("Copy") ) + CString(_T("\tCtrl+C"));
         lstrcpy(buf, menuItemTitle);
         mi.dwTypeData  = buf;
         sub.SetMenuItemInfo(IDM_COPYFILETOCLIPBOARD, false, &mi);
@@ -356,7 +356,7 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     SHELLEXECUTEINFO Sei;
     ZeroMemory(&Sei, sizeof(Sei));
     Sei.cbSize = sizeof(Sei);
-    Sei.fMask  = SEE_MASK_NOCLOSEPROCESS    ;
+    Sei.fMask  = SEE_MASK_NOCLOSEPROCESS;
     Sei.hwnd = m_hWnd;
     Sei.lpVerb = _T ("open");
 
@@ -455,7 +455,7 @@ LRESULT CMainDlg::OnCopyFileToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
     std::vector<LPCTSTR> selectedFiles;
     while ((nCurItem = ThumbsView.GetNextItem(nCurItem, LVNI_ALL|LVNI_SELECTED)) >= 0 ) {
         LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
-        if ( ! FileName ) {
+        if ( !FileName ) {
             continue;
         }
         selectedFiles.push_back( FileName );
@@ -480,7 +480,7 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
     std::deque<CString> selectedFiles;
     while ((nCurItem = ThumbsView.GetNextItem(nCurItem, LVNI_ALL|LVNI_SELECTED)) >= 0 ) {
         LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
-        if ( ! FileName ) {
+        if ( !FileName ) {
             continue;
         }
         selectedFiles.push_back( FileName );

@@ -28,6 +28,7 @@
 
 
 #pragma once
+#include "atlheaders.h"
 #include "maindlg.h"
 #include "resource.h"       
 

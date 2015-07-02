@@ -31,6 +31,7 @@
 #include <iostream>
 #include "IuCommonFunctions.h"
 #include "Core/Utils/SystemUtils.h"
+#include "Core/CommonDefs.h"
 
 #ifdef IU_CLI
 #undef TR
@@ -90,7 +91,7 @@ CUpdateInfo::CUpdateInfo()
 bool CUpdateInfo::LoadUpdateFromFile(const CString& filename)
 {
     SimpleXml xml;
-    if(!xml.LoadFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)filename)))    
+    if(!xml.LoadFromFile(W2U(filename)))    
     {
         ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), CString(_T("Failed to load update file ")) + filename + _T("\r\n"));
     }
@@ -104,7 +105,7 @@ bool CUpdateInfo::SaveToFile(const CString& filename)
     FILE *f = _wfopen(filename, _T("wb"));
     if(!f) return false;
     
-    std::string outbuf = IuCoreUtils::WstringToUtf8((LPCTSTR)m_Buffer);
+    std::string outbuf = W2U(m_Buffer);
     fwrite(outbuf.c_str(), 1, outbuf.size(), f);
     fclose(f);
     return false;
@@ -113,7 +114,7 @@ bool CUpdateInfo::SaveToFile(const CString& filename)
 bool CUpdateInfo::LoadUpdateFromBuffer(const CString& buffer)
 {
     SimpleXml m_xml;
-    if(!m_xml.LoadFromString(IuCoreUtils::WstringToUtf8((LPCTSTR)buffer)))
+    if(!m_xml.LoadFromString(W2U(buffer)))
     {
         ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), CString(_T("Failed to load update file \r\n")) + _T("\r\nServer answer:\r\n") + buffer);
         return false;
@@ -474,7 +475,7 @@ bool CUpdatePackage::doUpdate()
         }
         CString renameTo = copyTo + _T(".")+IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(random(10000))).c_str()+ _T(".old");
 
-        CString buffer = IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFilePath(IuCoreUtils::WstringToUtf8((LPCTSTR)copyTo))).c_str();
+        CString buffer = U2W(IuCoreUtils::ExtractFilePath(W2U(copyTo)));
         std::vector<std::string> tokens;
         IuStringUtils::Split(ue.flags, ",", tokens, -1);
         bool skipFile = false;

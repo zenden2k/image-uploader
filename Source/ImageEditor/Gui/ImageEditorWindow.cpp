@@ -555,7 +555,7 @@ LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
          canvas_->setPenSize(canvas_->getPenSize()-1);
          horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
          updatePixelLabels();
-         m_view.SendMessage(WM_SETCURSOR, (LPARAM)m_view.m_hWnd, 0);
+         m_view.SendMessage(WM_SETCURSOR, reinterpret_cast<LPARAM>(m_view.m_hWnd), 0);
      } else if ( (it = drawingToolsHotkeys_.find((DrawingToolHotkey)wParam)) != drawingToolsHotkeys_.end() 
          && !(GetKeyState(VK_CONTROL) & 0x8000) 
          && !(GetKeyState(VK_SHIFT) & 0x8000)
@@ -600,8 +600,6 @@ LRESULT ImageEditorWindow::OnActivateApp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*
             if ( foregroundWindow != m_hWnd ) {
                 ::SetWindowPos(foregroundWindow, m_hWnd, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
             }
-            
-        
         } else {
             SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
             SetWindowLong(GWL_EXSTYLE, WS_EX_TOPMOST);
@@ -612,7 +610,7 @@ LRESULT ImageEditorWindow::OnActivateApp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*
 
 LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {    
-    Toolbar::Item* item = (Toolbar::Item*)wParam;
+    Toolbar::Item* item = reinterpret_cast<Toolbar::Item*>(wParam);
     if ( item->command == ID_RECTANGLE || item->command == ID_ROUNDEDRECTANGLE || item->command == ID_ELLIPSE) {
         CMenu rectangleMenu;
         RECT rc = item->rect;
@@ -920,8 +918,6 @@ void ImageEditorWindow::EndDialog(DialogResult dr)
     PostQuitMessage(0);
 }
 
-
-
 LRESULT ImageEditorWindow::OnMenuItemClick(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     if (GetFocus() != m_view.m_hWnd)
     {
@@ -1079,7 +1075,8 @@ void ImageEditorWindow::saveSettings()
 
 LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    if ( (HWND)lParam == horizontalToolbar_.penSizeSlider_.m_hWnd  ) {
+    HWND hwndSender = reinterpret_cast<HWND>(lParam);
+    if ( hwndSender == horizontalToolbar_.penSizeSlider_.m_hWnd  ) {
         int penSize = HIWORD(wParam);
         switch( LOWORD(wParam ) ) {
         case TB_ENDTRACK:
@@ -1105,7 +1102,7 @@ LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
             updatePixelLabels();
             break;
         }
-    } else if ( (HWND)lParam == horizontalToolbar_.roundRadiusSlider_.m_hWnd ) {
+    } else if ( hwndSender == horizontalToolbar_.roundRadiusSlider_.m_hWnd ) {
         int roundingRadius = HIWORD(wParam);
         switch( LOWORD(wParam ) ) {
         case TB_ENDTRACK:
@@ -1144,4 +1141,3 @@ LRESULT ImageEditorWindow::OnTextParamWindowFontChanged(UINT /*uMsg*/, WPARAM /*
 }
 
 }
-

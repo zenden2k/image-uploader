@@ -24,7 +24,6 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/Settings.h"
-#include "Func/MyUtils.h"
 #include "Gui/Dialogs/ServerParamsDlg.h"
 
 

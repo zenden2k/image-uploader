@@ -217,7 +217,6 @@ class NetworkClient
         static std::mutex _mutex;
         static bool _curl_init;
 //        static bool _is_openssl;
-        static char CertFileName[1024];
 };
 
 #endif

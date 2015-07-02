@@ -20,10 +20,8 @@
 
 #include "IntegrationSettings.h"
 
-#include <uxtheme.h>
 #include "Func/common.h"
 #include "Core/Settings.h"
-#include "LogWindow.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "ContextMenuItemDlg.h"
@@ -73,15 +71,15 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
     SendDlgItemMessage(IDC_ADDITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
     addItemButton_.SubclassWindow(GetDlgItem(IDC_ADDITEM));
 
-    HICON icon2 = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONDELETEITEM), IMAGE_ICON    , 16,16,0);
+    HICON icon2 = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONDELETEITEM), IMAGE_ICON    , 16,16,0));
     SendDlgItemMessage(IDC_DELETEITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon2);
     deleteItemButton_.SubclassWindow(GetDlgItem(IDC_DELETEITEM));
 
-    HICON icon3 = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONUP), IMAGE_ICON    , 16,16,0);
+    HICON icon3 = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONUP), IMAGE_ICON    , 16,16,0));
     SendDlgItemMessage(IDC_UPBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon3);
     upButton_.SubclassWindow(GetDlgItem(IDC_UPBUTTON));
 
-    HICON icon4 = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONDOWN), IMAGE_ICON    , 16,16,0);
+    HICON icon4 = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONDOWN), IMAGE_ICON    , 16,16,0));
     SendDlgItemMessage(IDC_DOWNBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon4);
     downButton_.SubclassWindow(GetDlgItem(IDC_DOWNBUTTON));
 
@@ -106,7 +104,7 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
             }
             lid->name  = title;
             int newIndex = menuItemsListBox_.AddString(displayTitle);
-            menuItemsListBox_.SetItemData(newIndex, (DWORD_PTR) lid);
+            menuItemsListBox_.SetItemData(newIndex, reinterpret_cast<DWORD_PTR>(lid));
         }
     }
 
@@ -150,8 +148,8 @@ bool CIntegrationSettings::Apply()
         CString itemId;
         if ( Reg.SetKey( "Software\\Zenden.ws\\Image Uploader\\ContextMenuItems", true ) ) {
 
-                for( int i =0; i< menuItemCount; i++ ){
-                    ListItemData* lid = (    ListItemData*)menuItemsListBox_.GetItemData(i);
+                for( int i = 0; i< menuItemCount; i++ ){
+                    ListItemData* lid = reinterpret_cast<ListItemData*>(menuItemsListBox_.GetItemData(i));
                     if ( lid->invalid ) {
                         continue;
                     }
@@ -174,7 +172,7 @@ bool CIntegrationSettings::Apply()
                         CString icon = _EngineList->getIconNameForServer(lid->serverProfile.serverName());
                         CUploadEngineData * ued = lid->serverProfile.uploadEngineData();
                         if ( ued ) {
-                            Reg2.WriteDword( "ServerTypeMask", (unsigned int) ued->TypeMask );
+                            Reg2.WriteDword( "ServerTypeMask", static_cast<DWORD>(ued->TypeMask) );
                         }
                         Reg2.WriteString( "Icon", icon);
                         

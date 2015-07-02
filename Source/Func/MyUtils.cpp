@@ -438,18 +438,15 @@ LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int n
     return szStart+1;
 }
 
-
 #undef PixelFormat8bppIndexed 
 #define PixelFormat8bppIndexed (3 | ( 8 << 8) | PixelFormatIndexed | PixelFormatGDI)
-
-
 
 CString DisplayError(int idCode)
 {
     LPVOID lpMsgBuf;
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,NULL,
-                        idCode, 0, (LPTSTR) &lpMsgBuf, 0, NULL);
-    CString res = (LPCTSTR)lpMsgBuf;
+                        idCode, 0, reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, NULL);
+    CString res = reinterpret_cast<LPCTSTR>(lpMsgBuf);
     // Free the buffer.
     LocalFree( lpMsgBuf );
     return res;
@@ -504,7 +501,7 @@ LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern)
     nLen = wcslen(szPattern);
     if(!nLen) return szString;
     
-    LPTSTR szStart = (LPTSTR) wcsstr(szString, szPattern);
+    LPTSTR szStart = wcsstr(szString, szPattern);
 
     if(!szStart) return szString;
     else szString = szStart+nLen;
@@ -532,26 +529,6 @@ void ShowX(LPCTSTR str,int line,LPCTSTR n)
     ::MessageBox(0,buf,0,0);
 }
 #endif
-
-bool IsDirectory(LPCTSTR szFileName)
-{
-    DWORD res = GetFileAttributes(szFileName);
-     return (res&FILE_ATTRIBUTE_DIRECTORY) && (res != -1);    
-}
-
-bool IsVista()
-{
-    OSVERSIONINFO osver;
-    osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-
-    if (    ::GetVersionEx( &osver ) && 
-        osver.dwPlatformId == VER_PLATFORM_WIN32_NT && 
-        (osver.dwMajorVersion >= 6 ) )
-        return TRUE;
-
-    return FALSE;
-}
-
 
 bool CheckFileName(const CString& fileName)
 {
