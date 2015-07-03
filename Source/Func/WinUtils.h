@@ -106,8 +106,8 @@ namespace WinUtils {
     const std::string AnsiToUtf8(const std::string &str, int codepage);
     const std::string Utf8ToAnsi(const std::string &str, int codepage);
     CString GetProcessName(DWORD pid);
+    CString ErrorCodeToString(DWORD idCode);
 //#endif
-
 };
 
 

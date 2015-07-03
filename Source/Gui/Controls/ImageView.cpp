@@ -20,8 +20,6 @@
 
 #include "atlheaders.h"
 #include "ImageView.h"
-#include "Gui/Dialogs/LogWindow.h"
-#include "Core/Settings.h"
 
 // CImageView
 CImageView::CImageView()

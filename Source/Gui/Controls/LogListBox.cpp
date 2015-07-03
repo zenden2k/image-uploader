@@ -18,9 +18,8 @@
 
 */
 
-#include "atlheaders.h"
 #include "LogListBox.h"
-#include "Func/Myutils.h"
+
 #include "Gui/GuiTools.h"
 #include "Core/Logging.h"
 #include <algorithm>

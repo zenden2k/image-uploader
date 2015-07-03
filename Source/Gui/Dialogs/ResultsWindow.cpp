@@ -65,13 +65,13 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     TRC(IDCANCEL, "Close");
     
     TC_ITEM item;
-    item.pszText = TR("Forum code (BBCode)"); 
+    item.pszText = const_cast<LPWSTR>(TR("Forum code (BBCode)")); 
     item.mask = TCIF_TEXT;
     TabCtrl_InsertItem(GetDlgItem(IDC_RESULTSTAB), 0, &item);
-    item.pszText = TR("HTML code"); 
+    item.pszText = const_cast<LPWSTR>(TR("HTML code"));
     item.mask = TCIF_TEXT;
     TabCtrl_InsertItem(GetDlgItem(IDC_RESULTSTAB), 1, &item);
-    item.pszText = TR("Links (URL)"); 
+    item.pszText = const_cast<LPWSTR>(TR("Links (URL)"));
     item.mask = TCIF_TEXT;
     TabCtrl_InsertItem(GetDlgItem(IDC_RESULTSTAB), 2, &item);
 

@@ -240,9 +240,6 @@
     <ClInclude Include="Source\Gui\Controls\HyperLinkControl.h">
       <Filter>Header Files\Gui\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Gui\Controls\ImageView.h">
-      <Filter>Header Files\Gui\Controls</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Gui\Controls\LogListBox.h">
       <Filter>Header Files\Gui\Controls</Filter>
     </ClInclude>
@@ -762,9 +759,6 @@
     <ClInclude Include="Source\Func\DefaultLogger.h">
       <Filter>Source Files\Func</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Logging\ConsoleLogger.h">
-      <Filter>Source Files\Core\Logging</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Core\Scripting\DialogProvider.h">
       <Filter>Source Files\Core\Scripting</Filter>
     </ClInclude>
@@ -818,6 +812,9 @@
     </ClInclude>
     <ClInclude Include="Source\Core\Logging\MyLogSink.h">
       <Filter>Source Files\Core\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\ImageView.h">
+      <Filter>Source Files\Gui\Controls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1494,9 +1491,6 @@
     <ClCompile Include="Source\Gui\Controls\IconButton.cpp">
       <Filter>Source Files\Gui\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Gui\Controls\ImageView.cpp">
-      <Filter>Source Files\Gui\Controls</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Gui\Controls\LogListBox.cpp">
       <Filter>Source Files\Gui\Controls</Filter>
     </ClCompile>
@@ -1761,9 +1755,6 @@
     <ClCompile Include="Source\Func\DefaultLogger.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Logging\ConsoleLogger.cpp">
-      <Filter>Source Files\Core\Logging</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Func\WtlScriptDialogProvider.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
@@ -1814,6 +1805,9 @@
     </ClCompile>
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\GQ_Parser.cpp">
       <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\ImageView.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

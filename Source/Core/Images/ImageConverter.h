@@ -70,6 +70,5 @@ class ImageConverter
         Q_DECLARE_PRIVATE(ImageConverter);
 private:
     DISALLOW_COPY_AND_ASSIGN(ImageConverter);
-
 };
 #endif

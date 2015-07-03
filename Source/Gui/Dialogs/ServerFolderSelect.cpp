@@ -276,15 +276,15 @@ LRESULT CServerFolderSelect::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
     m_FolderTree.SelectItem(selectedItem);
 
     mi.wID = ID_EDITFOLDER;
-    mi.dwTypeData  = TR("Edit");
+    mi.dwTypeData = TR_CONST("Edit");
     sub.InsertMenuItem(1, true, &mi);
 
     mi.wID = ID_OPENINBROWSER;
-    mi.dwTypeData  = TR("Open in Web Browser");
+    mi.dwTypeData = TR_CONST("Open in Web Browser");
     sub.InsertMenuItem(0, true, &mi);
 
     mi.wID = ID_CREATENESTEDFOLDER;
-    mi.dwTypeData  = TR("Create nested folder");
+    mi.dwTypeData = TR_CONST("Create nested folder");
     sub.InsertMenuItem(2, true, &mi);
 
     sub.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);

@@ -42,7 +42,6 @@ LRESULT CLogWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     CenterWindow();
     DlgResize_Init();
     MsgList.SubclassWindow(GetDlgItem(IDC_MSGLIST));
-    // TODO
 
     return 1;  // Let the system set the focus
 } 

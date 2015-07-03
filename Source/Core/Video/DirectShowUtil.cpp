@@ -1,8 +1,6 @@
 #include "DirectShowUtil.h"
-#include "atlheaders.h"
-#include "Core/Logging.h"
 
-namespace DirectShowUtil {;
+namespace DirectShowUtil {
 
 HRESULT GetPin( IBaseFilter* pFilter, PIN_DIRECTION dirrequired, int iNum, IPin** ppPin)
 {
@@ -20,7 +18,7 @@ HRESULT GetPin( IBaseFilter* pFilter, PIN_DIRECTION dirrequired, int iNum, IPin*
 
     while (S_OK == pEnum->Next(1, &pPin, &ulFound))
     {
-        PIN_DIRECTION pindir = (PIN_DIRECTION)3;
+        PIN_DIRECTION pindir = static_cast<PIN_DIRECTION>(3);
 
         pPin->QueryDirection(&pindir);
         if (pindir == dirrequired)
@@ -63,34 +61,31 @@ GUID GuidFromString(const CString& guidStr)
     return res;
 }
 
-CComPtr<IBaseFilter> FindFilterByClassID(CComPtr<IGraphBuilder> graphBuilder, GUID classID)
-{
+CComPtr<IBaseFilter> FindFilterByClassID(CComPtr<IGraphBuilder> graphBuilder, GUID classID) {
     CComPtr<IBaseFilter> filterFound;
 
     CComPtr<IEnumFilters> ienumFilt;
-        HRESULT hr = graphBuilder->EnumFilters(&ienumFilt);
-        if (SUCCEEDED(hr) && ienumFilt )
-        { 
-            ULONG iFetched;
-            IBaseFilter* filter;
-        
-            do
-            {
-                hr = ienumFilt->Next(1, &filter, &iFetched);
-                if (SUCCEEDED(hr) && iFetched == 1) {
-                    GUID filterGuid;
-                    HRESULT hr2 = filter->GetClassID(&filterGuid);
+    HRESULT hr = graphBuilder->EnumFilters(&ienumFilt);
+    if (SUCCEEDED(hr) && ienumFilt) {
+        ULONG iFetched;
+        IBaseFilter* filter;
 
-                    if (filterGuid == classID)
-                    {
-                        filterFound.Attach(filter);
-                        return filterFound;
-                    }
-                    filter->Release();
-                    filter = 0;
+        do {
+            hr = ienumFilt->Next(1, &filter, &iFetched);
+            if (SUCCEEDED(hr) && iFetched == 1) {
+                GUID filterGuid;
+                HRESULT hr2 = filter->GetClassID(&filterGuid);
+
+                if (filterGuid == classID) {
+                    filterFound.Attach(filter);
+                    return filterFound;
                 }
-            } while (iFetched == 1 && SUCCEEDED(hr));
+                filter->Release();
+                filter = 0;
+            }
         }
+        while (iFetched == 1 && SUCCEEDED(hr));
+    }
 
     return filterFound;
 } 
@@ -101,10 +96,7 @@ HRESULT SaveGraphFile(IGraphBuilder *pGraph, WCHAR *wszPath)
     HRESULT hr;
 
     IStorage *pStorage = NULL;
-    hr = StgCreateDocfile(
-        wszPath,
-        STGM_CREATE | STGM_TRANSACTED | STGM_READWRITE | STGM_SHARE_EXCLUSIVE,
-        0, &pStorage);
+    hr = StgCreateDocfile(wszPath, STGM_CREATE | STGM_TRANSACTED | STGM_READWRITE | STGM_SHARE_EXCLUSIVE, 0, &pStorage);
     if(FAILED(hr)) 
     {
         return hr;
@@ -122,7 +114,7 @@ HRESULT SaveGraphFile(IGraphBuilder *pGraph, WCHAR *wszPath)
     }
 
     IPersistStream *pPersist = NULL;
-    pGraph->QueryInterface(IID_IPersistStream, (void**)&pPersist);
+    pGraph->QueryInterface(IID_IPersistStream, reinterpret_cast<void**>(&pPersist));
     hr = pPersist->Save(pStream, TRUE);
     pStream->Release();
     pPersist->Release();

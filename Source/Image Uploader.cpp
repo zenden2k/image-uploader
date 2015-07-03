@@ -74,7 +74,6 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
     _Module.AddMessageLoop( &theLoop );
     CWizardDlg  dlgMain;
     
-
     DWORD DlgCreationResult = 0;
     bool ShowMainWindow     = true;
     Settings.LoadSettings();
@@ -142,7 +141,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
         // Extract Proccess ID from temp folder name
         CString pidStr = folders[i]; 
         pidStr.Replace( _T("iu_temp_"), _T("") );
-        unsigned int pid =  wcstoul( pidStr, 0, 16 ) ^  0xa1234568;
+        unsigned long pid =  wcstoul( pidStr, 0, 16 ) ^  0xa1234568;
         if ( pid && !WinUtils::IsProcessRunning( pid ) )
             IuCommonFunctions::ClearTempFolder( IuCommonFunctions::IUCommonTempFolder + _T("\\") + folders[i] );
     }
@@ -220,14 +219,11 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
                             }
                         }
                     }
-                    
                 }
-                
             }
         } else if ( CurrentParam == "/debuglog") {
             FLAGS_logtostderr = false;
             FLAGS_alsologtostderr = true;
-
         }
     }
 

@@ -17,6 +17,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 */
+
 #include "WtlGuiSettings.h"
 
 #ifdef _WIN32
@@ -60,7 +61,7 @@ WtlGuiSettings::~WtlGuiSettings() {
 }
 
 #if !defined  (IU_CLI)
-void RunIuElevated(CString params) {
+void RunIuElevated(const CString& params) {
     SHELLEXECUTEINFO TempInfo = { 0 };
 
     TCHAR buf[MAX_PATH];
@@ -147,7 +148,6 @@ void RegisterShellExtension(bool Register) {
     WaitForSingleObject(TempInfo.hProcess, INFINITE);
     CloseHandle(TempInfo.hProcess);
 }
-
 
 /*
 Determine where data folder is situated
@@ -531,7 +531,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
     if (res != ERROR_SUCCESS) {
         ServiceLocator::instance()->logger()->write(logWarning, TR("Settings"), CString(TR(
             "Не могу создать запись в реестре для расширения ")) +
-            Extension + _T("\r\n") + DisplayError(res));
+            Extension + _T("\r\n") + WinUtils::ErrorCodeToString(res));
         return 0;
     }
 

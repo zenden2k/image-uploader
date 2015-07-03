@@ -12,14 +12,13 @@ ImageConverterPrivateBase::ImageConverterPrivateBase()
     processingEnabled_ = true;
 }
 
-unsigned int ImageConverterPrivateBase::EvaluateColor(const std::string& expr)
+uint32_t ImageConverterPrivateBase::EvaluateColor(const std::string& expr)
 {
-    unsigned int color = 0;
+    uint32_t color = 0;
     color = EvaluateExpression(expr);
     color = ((color << 8) >> 8) | ((255 - (color >> 24)) << 24);
     return color;
 }
-
 
 int ImageConverterPrivateBase::EvaluateExpression(const std::string& expr)
 {
@@ -36,8 +35,9 @@ int64_t ImageConverterPrivateBase::EvaluateSimpleExpression(const std::string& e
         parser.Compile(expr.c_str());
         res = static_cast<int64_t>(parser.Evaluate());
     }
-    catch (...)
+    catch (TError& err)
     {
+        LOG(ERROR) << err.error;
     }
     return res;
 }

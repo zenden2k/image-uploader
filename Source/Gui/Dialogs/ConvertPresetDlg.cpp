@@ -49,11 +49,11 @@ LRESULT CConvertPresetDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     }
 
     TC_ITEM item;
-    item.pszText = TR("Images");
+    item.pszText = const_cast<LPWSTR>(TR("Images"));
     item.mask = TCIF_TEXT;
     TabCtrl_InsertItem(GetDlgItem(IDC_TABCONTROL), 0, &item);
 
-    item.pszText = TR("Thumbnails");
+    item.pszText = const_cast<LPWSTR>(TR("Thumbnails"));
     item.mask = TCIF_TEXT;
     TabCtrl_InsertItem(GetDlgItem(IDC_TABCONTROL), 1, &item);
 

@@ -62,7 +62,7 @@ void CHyperLinkControl::Init(COLORREF BkColor)
     OpenThemeData();
 }
 
-int GetTextWidth(HDC dc, LPTSTR Text, HFONT Font)
+int GetTextWidth(HDC dc, LPCTSTR Text, HFONT Font)
 {
     SIZE sz;
     HGDIOBJ  OldFont = SelectObject(dc, Font);
@@ -71,7 +71,7 @@ int GetTextWidth(HDC dc, LPTSTR Text, HFONT Font)
     return sz.cx;
 }
 
-int CHyperLinkControl::AddString(LPTSTR szTitle,LPTSTR szTip,int idCommand,HICON hIcon,bool Visible,int Align,  bool LineBreak)
+int CHyperLinkControl::AddString(LPCTSTR szTitle,LPCTSTR szTip,int idCommand,HICON hIcon,bool Visible,int Align,  bool LineBreak)
 {
     // TODO: This shit should be rewritten from scratch
     RECT ClientRect;

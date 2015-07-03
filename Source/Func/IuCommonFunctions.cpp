@@ -35,7 +35,6 @@ const CString GetVersion()
     return CString(_APP_VER)+_T(".") + _T(BUILD);
 }
 
-
 BOOL CreateTempFolder()
 {
     TCHAR ShortPath[1024];
@@ -45,17 +44,16 @@ BOOL CreateTempFolder()
         lstrcpy(TempPath, ShortPath);
     }
     DWORD pid = GetCurrentProcessId() ^ 0xa1234568;
-    IUCommonTempFolder.Format(_T("%stmd_iu_temp"), (LPCTSTR)TempPath);
+    IUCommonTempFolder.Format(_T("%stmd_iu_temp"), static_cast<LPCTSTR>(TempPath));
 
     CreateDirectory(IUCommonTempFolder, 0);
-    IUTempFolder.Format(_T("%s\\iu_temp_%x"), (LPCTSTR) IUCommonTempFolder, pid);
+    IUTempFolder.Format(_T("%s\\iu_temp_%x"), static_cast<LPCTSTR>(IUCommonTempFolder), pid);
 
     CreateDirectory(IUTempFolder, 0);
 
     IUTempFolder += _T("\\");
     return TRUE;
 }
-
 
 WIN32_FIND_DATA wfd;
 HANDLE findfile = 0;

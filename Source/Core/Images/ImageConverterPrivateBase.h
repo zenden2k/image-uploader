@@ -15,7 +15,7 @@ public:
     int EvaluateExpression(const std::string& expr);
     std::string ReplaceVars(const std::string& expr);
     int64_t EvaluateSimpleExpression(const std::string& expr) const;
-    unsigned int EvaluateColor(const std::string& expr);
+    uint32_t EvaluateColor(const std::string& expr);
 
     std::string destinationFolder_;
     bool generateThumb_;

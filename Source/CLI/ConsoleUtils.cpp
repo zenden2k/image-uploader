@@ -8,13 +8,13 @@
 #endif
 #include <stdio.h>
 
-namespace ConsoleUtils {
 
-void InitScreen() {
+void ConsoleUtils::InitScreen() {
     //initscr();
 }
 
-void Clear() {
+void ConsoleUtils::Clear() {
+    std::lock_guard<std::mutex> guard(outputMutex_);
 #ifdef _WIN32
     HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
       COORD coord = {0, 0};
@@ -30,7 +30,8 @@ void Clear() {
 #endif
 }
 
-void SetCursorPos(int x, int y) {
+void ConsoleUtils::SetCursorPos(int x, int y) {
+    std::lock_guard<std::mutex> guard(outputMutex_);
 #ifdef _WIN32
     COORD Coord;
 
@@ -47,6 +48,9 @@ void SetCursorPos(int x, int y) {
 #endif
 }
 
+std::mutex& ConsoleUtils::getOuputMutex() {
+    return outputMutex_;
 }
+
 
 

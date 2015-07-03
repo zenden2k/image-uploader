@@ -9,6 +9,5 @@ public:
     virtual ~ITranslator() {};
     virtual std::string getCurrentLanguage() = 0;
     virtual std::string getCurrentLocale() = 0;
-
 };
 #endif

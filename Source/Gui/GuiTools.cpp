@@ -32,92 +32,82 @@
 
 namespace GuiTools
 {
-    int AddComboBoxItem(HWND hDlg, int itemId, LPCTSTR item)
-    {
-        return ::SendDlgItemMessage(hDlg, itemId, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(item));
+int AddComboBoxItem(HWND hDlg, int itemId, LPCTSTR item) {
+    return ::SendDlgItemMessage(hDlg, itemId, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(item));
+}
+
+bool AddComboBoxItems(HWND hDlg, int itemId, int itemCount, LPCTSTR item, ...) {
+    bool result = true;
+    for (int i = 0; i < itemCount; i++) {
+        if (AddComboBoxItem(hDlg, itemId, *(&item + i)) < 0)
+            result = false;
     }
+    return result;
+}
 
-    bool AddComboBoxItems(HWND hDlg, int itemId, int itemCount, LPCTSTR item, ...)
-    {
-        bool result = true;
-        for(int i=0; i<itemCount; i++)
-        {
-            if(AddComboBoxItem(hDlg, itemId, *(&item + i)) < 0)
-                result = false;
-        }
-        return result;
+bool IsChecked(HWND dlg, int id) {
+    return ::SendDlgItemMessage(dlg, id,BM_GETCHECK, 0, 0) == BST_CHECKED;
+}
+
+void GetCheck(HWND dlg, int id, bool& check) {
+    check = ::SendDlgItemMessage(dlg, id,BM_GETCHECK, 0, 0) == BST_CHECKED;
+}
+
+bool GetCheck(HWND dlg, int id) {
+    return ::SendDlgItemMessage(dlg, id,BM_GETCHECK, 0, 0) == BST_CHECKED;
+}
+
+void SetCheck(HWND dlg, int id, bool check) {
+    ::SendDlgItemMessage(dlg, id,BM_SETCHECK, check, 0);
+}
+
+void MakeLabelBold(HWND Label) {
+    HFONT Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT, 0, 0));
+
+    if (!Font) return;
+
+    LOGFONT alf;
+
+    if (!(::GetObject(Font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT))) return;
+
+    alf.lfWeight = FW_BOLD;
+
+    HFONT NewFont = CreateFontIndirect(&alf);
+    SendMessage(Label,WM_SETFONT, reinterpret_cast<WPARAM>(NewFont), MAKELPARAM(false, 0));
+    CWindowDC dc(0);
+    alf.lfHeight = -MulDiv(13, GetDeviceCaps(dc, LOGPIXELSY), 72);
+}
+
+void MakeLabelItalic(HWND Label) {
+    HFONT Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT, 0, 0));
+
+    if (!Font) return;
+
+    LOGFONT alf;
+
+    if (!(::GetObject(Font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT))) return;
+
+    alf.lfItalic = 1;
+
+    HFONT NewFont = CreateFontIndirect(&alf);
+    SendMessage(Label,WM_SETFONT, reinterpret_cast<WPARAM>(NewFont),MAKELPARAM(false, 0));
+}
+
+void EnableNextN(HWND Control, int n, bool Enable) {
+    for (int i = 0; i < n; i++) {
+        Control = GetNextWindow(Control, GW_HWNDNEXT);
+        EnableWindow(Control, Enable);
     }
+}
 
-   bool IsChecked(HWND dlg, int id)
-   {
-      return  ::SendDlgItemMessage(dlg, id,BM_GETCHECK,0,0) == BST_CHECKED;
-   }
-
-   void  GetCheck(HWND dlg, int id, bool& check)
-   {
-      check = ::SendDlgItemMessage(dlg, id,BM_GETCHECK,0,0)==BST_CHECKED;
-   }
-
-    bool GetCheck(HWND dlg, int id) {
-        return ::SendDlgItemMessage(dlg, id,BM_GETCHECK,0,0) == BST_CHECKED;
-    }
-
-   void  SetCheck(HWND dlg, int id, bool check)
-   {
-      ::SendDlgItemMessage(dlg, id,BM_SETCHECK, check,0);
-   }
-
-    void MakeLabelBold(HWND Label)
-    {
-        HFONT Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT,0,0));  
-
-        if(!Font) return;
-
-        LOGFONT alf;
-
-        if(!(::GetObject(Font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT))) return;
-
-        alf.lfWeight = FW_BOLD;
-
-        HFONT NewFont = CreateFontIndirect(&alf);
-        SendMessage(Label,WM_SETFONT, reinterpret_cast<WPARAM>(NewFont), MAKELPARAM(false, 0));
-        CWindowDC dc(0);
-        alf.lfHeight = -MulDiv(13, GetDeviceCaps(dc, LOGPIXELSY), 72);
-    }
-
-    void MakeLabelItalic(HWND Label)
-    {
-        HFONT Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT,0,0));  
-
-        if(!Font) return;
-
-        LOGFONT alf;
-
-        if(!(::GetObject(Font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT))) return;
-
-        alf.lfItalic = 1;
-
-        HFONT NewFont = CreateFontIndirect(&alf);
-        SendMessage(Label,WM_SETFONT, reinterpret_cast<WPARAM>(NewFont),MAKELPARAM(false, 0));
-    }
-
-    void EnableNextN(HWND Control ,int n, bool Enable)
-    {
-        for(int i=0;i< n; i++)
-        {
-            Control = GetNextWindow(Control, GW_HWNDNEXT);
-            EnableWindow(Control, Enable);
-        }
-    }
-
-bool InsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP bm){
+bool InsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm){
     MENUITEMINFO MenuItem;
 
     MenuItem.cbSize = sizeof(MenuItem);
     if(szTitle)
         MenuItem.fType = MFT_STRING;
     else MenuItem.fType = MFT_SEPARATOR;
-    MenuItem.fMask = MIIM_TYPE    | MIIM_ID | MIIM_DATA;
+    MenuItem.fMask = MIIM_TYPE | MIIM_ID | MIIM_DATA;
     if(bm)
         MenuItem.fMask |= MIIM_CHECKMARKS;
     MenuItem.wID = id;
@@ -158,10 +148,10 @@ void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, b
 
         b = static_cast<float>(GetBValue(finish)-GetBValue(start))/(n-1);
 
-        //Ќачало прорисовки
+        //Begin paint
         for (i = 0; i < n; i++) 
         {
-            //¬зависимости от того, кто мы - горизонтальный или вертикальный градиент
+            // Horizontal or vertical gradient
             if(!Horizontal)
                 SetRect(&rectFill, FillRect.left, int((i * fStep)+FillRect.top),
                 FillRect.right+1, int(FillRect.top+(i+1) * fStep)); 
@@ -461,8 +451,7 @@ HRGN CloneRegion(HRGN source)
     return resultRgn;
 }
 
-HWND CreateToolTipForWindow(HWND hwnd, const CString& text)
-{
+HWND CreateToolTipForWindow(HWND hwnd, const CString& text) {
     // Create a tooltip.
     HWND hwndTT = ::CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL, 
         WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, 
@@ -486,7 +475,7 @@ HWND CreateToolTipForWindow(HWND hwnd, const CString& text)
     ti.rect  = clientRect;
 
     // Associate the tooltip with the "tool" window.
-    SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);    
+    SendMessage(hwndTT, TTM_ADDTOOL, 0, reinterpret_cast<LPARAM>(&ti));    
     delete[] textBuffer;
     return hwndTT;
 } 
@@ -521,7 +510,7 @@ CHARFORMAT LogFontToCharFormat(const LOGFONT & lf)
 
     //temporary create DC
     CDC dc;
-    dc.CreateDC(_T("DISPLAY"),NULL,NULL,NULL);
+    dc.CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
     cf.yHeight = 20*long( 0.5 + fabs(double(72*lf.lfHeight)/dc.GetDeviceCaps(LOGPIXELSY)));
     dc.DeleteDC();
 
@@ -543,14 +532,12 @@ LOGFONT CharFormatToLogFont(const CHARFORMAT & cf)
     lf.lfQuality = DEFAULT_QUALITY;
     lf.lfPitchAndFamily = DEFAULT_PITCH;
 
-
-    if ( (cf.dwEffects & CFE_BOLD) == CFE_BOLD)
-    {
+    if ( (cf.dwEffects & CFE_BOLD) == CFE_BOLD) {
         lf.lfWeight = FW_BOLD;
     }
 
     CDC dc;
-    dc.CreateDC(_T("DISPLAY"),NULL,NULL,NULL);
+    dc.CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
     lf.lfHeight = -MulDiv(cf.yHeight/20, dc.GetDeviceCaps(LOGPIXELSY), 72);
     dc.DeleteDC();
 
@@ -562,7 +549,6 @@ LOGFONT CharFormatToLogFont(const CHARFORMAT & cf)
     _tcscpy_s(lf.lfFaceName, LF_FACESIZE, cf.szFaceName);
 
     return lf;
-
 }
 
 HICON LoadSmallIcon(int resourceId) {

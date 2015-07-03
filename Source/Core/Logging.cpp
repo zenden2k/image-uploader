@@ -35,7 +35,7 @@ std::ostream& operator<<(std::ostream& out, const std::wstring& str) {
 std::ostream& operator<<(std::ostream& out, RECT rc) {
     char buffer[100];
     sprintf(buffer, "%d %d %d %d", rc.top, rc.left, rc.right - rc.left, rc.bottom - rc.top);
-    return operator<<(out, buffer); ;
+    return operator<<(out, buffer);
 }
 
 #endif

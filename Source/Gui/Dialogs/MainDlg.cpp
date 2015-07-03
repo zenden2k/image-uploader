@@ -118,11 +118,11 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         mi.cbSize = sizeof(mi);
         mi.fMask = MIIM_TYPE;
         mi.fType = MFT_STRING;
-        mi.dwTypeData = TR("Add Images");
+        mi.dwTypeData = const_cast<LPWSTR>(TR("Add Images"));
         sub.SetMenuItemInfo(IDC_ADDIMAGES, false, &mi);
-        mi.dwTypeData = TR("Add Files");
+        mi.dwTypeData = const_cast<LPWSTR>(TR("Add Files"));
         sub.SetMenuItemInfo(IDM_ADDFILES, false, &mi);
-        mi.dwTypeData = TR("Add folder");
+        mi.dwTypeData = const_cast<LPWSTR>(TR("Add folder"));
         sub.SetMenuItemInfo(IDM_ADDFOLDER, false, &mi);
         TCHAR buf[MAX_PATH];
         lstrcpy(buf, TR("Paste"));
@@ -130,7 +130,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         lstrcat(buf,Settings.Hotkeys.getByFunc("paste").localKey.toString());
         mi.dwTypeData = buf;
         sub.SetMenuItemInfo(IDC_PASTE, false, &mi);
-        mi.dwTypeData = TR("Remove all");
+        mi.dwTypeData = const_cast<LPWSTR>(TR("Remove all"));
         sub.SetMenuItemInfo(IDC_DELETEALL, false, &mi);
         sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
     }
@@ -161,31 +161,31 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
             sub.DeleteMenu(IDM_EDIT, MF_BYCOMMAND );
         }
 
-         mi.dwTypeData  = TR("View");
+        mi.dwTypeData = const_cast<LPWSTR>(TR("View"));
         sub.SetMenuItemInfo(IDM_VIEW, false, &mi);
 
-        mi.dwTypeData  = TR("Open in folder");
+        mi.dwTypeData = const_cast<LPWSTR>(TR("Open in folder"));
         sub.SetMenuItemInfo(IDM_OPENINFOLDER, false, &mi);
 
-        mi.dwTypeData  = TR("Save as...");
+        mi.dwTypeData = const_cast<LPWSTR>(TR("Save as..."));
         sub.SetMenuItemInfo(IDM_SAVEAS, false, &mi); 
 
         CString menuItemTitle = ( isImage ?  TR("Copy image") : TR("Copy") ) + CString(_T("\tCtrl+C"));
         lstrcpy(buf, menuItemTitle);
         mi.dwTypeData  = buf;
         sub.SetMenuItemInfo(IDM_COPYFILETOCLIPBOARD, false, &mi);
-        mi.dwTypeData  = TR("Remove");
+        mi.dwTypeData = const_cast<LPWSTR>(TR("Remove"));
         sub.SetMenuItemInfo(IDM_DELETE, false, &mi);
-        mi.dwTypeData  = TR("Properties");
+        mi.dwTypeData = const_cast<LPWSTR>(TR("Properties"));
         sub.SetMenuItemInfo(IDC_PROPERTIES, false, &mi);
         
-        mi.dwTypeData  = TR("Edit");
+        mi.dwTypeData = const_cast<LPWSTR>(TR("Edit"));
         sub.SetMenuItemInfo(IDM_EDIT, false, &mi);
 
-        mi.dwTypeData  = TR("Edit");
+        mi.dwTypeData = const_cast<LPWSTR>(TR("Edit"));
         sub.SetMenuItemInfo(IDM_EDIT, false, &mi);
 
-        mi.dwTypeData  = TR("Open in external editor");
+        mi.dwTypeData = const_cast<LPWSTR>(TR("Open in external editor"));
         sub.SetMenuItemInfo(IDM_EDITINEXTERNALEDITOR, false, &mi);
         
         sub.EnableMenuItem(IDM_EDIT, bIsImageFile?MF_ENABLED    :MF_GRAYED    );

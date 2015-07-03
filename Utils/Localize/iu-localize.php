@@ -152,6 +152,13 @@
             //echo "<br>$item";
             add_string( $item );
         }
+        
+        preg_match_all( "/TR_CONST\(\"(.*?[^\\x5c])\"\)/", $content, $matches );
+
+        foreach ( $matches[1] as $item ) {
+            //echo "<br>$item";
+            add_string( $item );
+        }
 
         preg_match_all( "/TRC\((.*?),[ ]*\"(.*?[^\\x5c])\"\)/", $content, $matches );
 

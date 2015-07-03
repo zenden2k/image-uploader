@@ -443,7 +443,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
         //ShowVar((int)serverUsers.size() );
         if (serverUsers.size() && !serverProfile_.profileName().empty()) {
             mi.wID = IDC_LOGINMENUITEM;
-            mi.dwTypeData = TR("Change account settings");
+            mi.dwTypeData = const_cast<LPWSTR>(TR("Change account settings"));
             sub.InsertMenuItem(i++, true, &mi);
         }
         else {

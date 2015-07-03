@@ -30,8 +30,7 @@ class CMyEngineList: public CUploadEngineList
     public:
         CMyEngineList();
         ~CMyEngineList();
-        CString m_ErrorStr;
-        const CString ErrorStr();
+        CString ErrorStr() const;
         CUploadEngineData* byName(const CString &name);
         int GetUploadEngineIndex(const CString& Name);
         bool LoadFromFile(const CString& filename);
@@ -41,5 +40,6 @@ class CMyEngineList: public CUploadEngineList
         static char RandomServer[];
     private:
         std::map<std::string, HICON> serverIcons_;
+        CString m_ErrorStr;
 };
 #endif

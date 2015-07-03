@@ -6,10 +6,8 @@
 
 #pragma once
 
+#include "atlheaders.h"
 #include "resource.h"
-#include <atlbase.h>
-#include <atlctrls.h>
-#include <atlmisc.h>
 #include <atlcrack.h>
 #include "Core/Logging/Logger.h"
 #define LOGMSGTYPE

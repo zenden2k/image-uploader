@@ -627,7 +627,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 
     mi.fType = MFT_STRING;
     mi.wID = IDC_USEDIRECTLINKS;
-    mi.dwTypeData  = TR("Use direct links");//TR("Autorization parameters");
+    mi.dwTypeData = TR_CONST("Use direct links");//TR("Autorization parameters");
     sub.InsertMenuItem(count++, true, &mi);
 
 /*    mi.fType = MFT_STRING;
@@ -637,7 +637,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 
 
     mi.wID = IDC_USETEMPLATE;
-     mi.dwTypeData  = TR("Use template");
+    mi.dwTypeData = TR_CONST("Use template");
     sub.InsertMenuItem(count++, true, &mi);
 
     int insertedServersCount = 0;

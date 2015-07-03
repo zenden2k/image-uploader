@@ -1033,7 +1033,7 @@ bool ImageEditorWindow::createTooltip() {
     ti.uFlags   = TTF_SUBCLASS;
     ti.hwnd     = m_view.m_hWnd;
     ti.hinst    = _Module.GetModuleInstance();
-    ti.lpszText =  TR("Select region");;
+    ti.lpszText = TR_CONST("Select region");;
     m_view.GetClientRect(&ti.rect);
 
     // Associate the tooltip with the "tool" window.

@@ -23,8 +23,6 @@ public:
 
     fastdelegate::FastDelegate3<const std::string&, int64_t, AbstractImage*> onFrameGrabbed;
     fastdelegate::FastDelegate0<void> onFinished;
-
-    void run();
 private:
     std::string fileName_;
     //void _frameGrabbed(const std::string& fileName, AbstractImage image);
@@ -33,6 +31,7 @@ private:
     int frameCount_;
     friend class VideoGrabberRunnable;
     std::unique_ptr<VideoGrabberRunnable> worker_;
+    DISALLOW_COPY_AND_ASSIGN(VideoGrabber);
 };
 
 #endif // VIDEOGRABBER_H

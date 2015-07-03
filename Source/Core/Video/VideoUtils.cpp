@@ -1,4 +1,5 @@
 #include "VideoUtils.h"
+
 #include "Core/Utils/StringUtils.h"
 
 VideoUtils& VideoUtils::Instance()

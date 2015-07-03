@@ -45,7 +45,6 @@ CBTHookMemberFunctionCallback::CBTHookMemberFunctionCallback(const HookCallback&
         {
             return;
         }
-    
     }
     LOG(ERROR) << "Cannot create member function callback";
 }

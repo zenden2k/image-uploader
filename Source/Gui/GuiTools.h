@@ -30,12 +30,12 @@ namespace GuiTools
 {
     int AddComboBoxItem(HWND hDlg, int itemId, LPCTSTR item);
     bool AddComboBoxItems(HWND hDlg, int itemId, int itemCount, LPCTSTR item, ...);
-   void GetCheck(HWND dlg, int id, bool& check);
+    void GetCheck(HWND dlg, int id, bool& check);
     bool GetCheck(HWND dlg, int id);
-   void SetCheck(HWND dlg, int id, bool check);
+    void SetCheck(HWND dlg, int id, bool check);
     void MakeLabelBold(HWND Label);
     void EnableNextN(HWND Control, int n, bool Enable);
-    bool InsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP bm=0);
+    bool InsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm = 0);
     void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, bool Horizontal);
     bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...);
     RECT GetDialogItemRect(HWND dialog, int itemId);

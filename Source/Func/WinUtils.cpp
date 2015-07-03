@@ -1109,6 +1109,17 @@ std::string chcp(const std::string &str, UINT codePageSrc, UINT codePageDst)
     return wstostr(strtows(str, codePageSrc), codePageDst);
 }
 
+CString ErrorCodeToString(DWORD idCode)
+{
+    LPVOID lpMsgBuf;
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL,
+        idCode, 0, reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, NULL);
+    CString res = reinterpret_cast<LPCTSTR>(lpMsgBuf);
+    // Free the buffer.
+    LocalFree(lpMsgBuf);
+    return res;
+}
+
 };
 
 const std::wstring Utf8ToWstring(const std::string &str)

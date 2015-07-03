@@ -96,8 +96,6 @@ std::mutex finishSignalMutex;
 std::condition_variable finishSignal;
 bool finished = false;
 
-std::mutex progressMutex;
-
 struct TaskUserData {
     int index;
 };
@@ -383,7 +381,7 @@ void OnUploadSessionFinished(UploadSession* session) {
     ZOutputCodeGenerator generator;
     generator.setLang(codeLang);
     generator.setType(codeType);
-    ConsoleUtils::SetCursorPos(0, taskCount + 2);
+    ConsoleUtils::instance()->SetCursorPos(0, taskCount + 2);
     if ( !uploadedList.empty() ) {
         std::cerr<<std::endl<<"Result:"<<std::endl;
         std::cout<<generator.generate(uploadedList);
@@ -398,7 +396,7 @@ void OnUploadSessionFinished(UploadSession* session) {
 }
 
 void UploadTaskProgress(UploadTask* task) {
-    std::lock_guard<std::mutex> guard(progressMutex);
+    std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOuputMutex());
     UploadProgress* progress = task->progress();
     TaskUserData *userData = reinterpret_cast<TaskUserData*>(task->userData());
 
@@ -414,7 +412,7 @@ void UploadTaskProgress(UploadTask* task) {
     if(progress->totalUpload == 0)
         return;
 
-    ConsoleUtils::SetCursorPos(0, 2 + userData->index);
+    ConsoleUtils::instance()->SetCursorPos(0, 2 + userData->index);
     double fractiondownloaded = static_cast<double>(progress->uploaded) / progress->totalUpload;
     if(fractiondownloaded > 100)
         fractiondownloaded = 0;
@@ -441,10 +439,10 @@ void UploadTaskProgress(UploadTask* task) {
 }
 
 void OnUploadTaskStatusChanged(UploadTask* task) {
-    std::lock_guard<std::mutex> guard(progressMutex);
+    std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOuputMutex());
     UploadProgress* progress = task->progress();
     TaskUserData *userData = reinterpret_cast<TaskUserData*>(task->userData());
-    ConsoleUtils::SetCursorPos(55, 2 + userData->index);
+    ConsoleUtils::instance()->SetCursorPos(55, 2 + userData->index);
     fprintf(stderr, progress->statusText.c_str());
 }
 
@@ -537,8 +535,8 @@ int func() {
         session->addTask(task);
     }
     session->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(OnUploadSessionFinished));
-    ConsoleUtils::InitScreen();
-    ConsoleUtils::Clear();
+    ConsoleUtils::instance()->InitScreen();
+    ConsoleUtils::instance()->Clear();
     PrintWelcomeMessage();
     uploadManager->addSession(session);
     uploadManager->start();

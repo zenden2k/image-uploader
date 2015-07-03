@@ -1,4 +1,24 @@
-﻿#include "Script.h"
+﻿/*
+
+Image Uploader -  free application for uploading images/files to the Internet
+
+Copyright 2007-2015 Sergey Svistunov (zenden2k@gmail.com)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+*/
+
+#include "Script.h"
 
 #include "API/ScriptAPI.h"
 #include "Core/Upload/ScriptUploadEngine.h"
@@ -94,7 +114,6 @@ bool Script::load(std::string fileName)
         return false;
     }
        
-
     using namespace ScriptAPI;
     try
     {
@@ -127,8 +146,6 @@ bool Script::load(std::string fileName)
     FlushSquirrelOutput();
     return true;
 }
-
-
 
 void Script::PrintCallback(const std::string& output)
 {

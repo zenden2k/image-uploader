@@ -24,6 +24,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "Core/Utils/CoreTypes.h"
 
 class Thumbnail
 {
@@ -77,5 +78,6 @@ class Thumbnail
     private:
         ThumbnailData data_;
         std::string file_name_;
+        DISALLOW_COPY_AND_ASSIGN(Thumbnail);
 };
 #endif

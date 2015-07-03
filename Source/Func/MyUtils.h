@@ -74,9 +74,6 @@ const CString TrimString(const CString& source, int nMaxLen);
 
 LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int nBufferSize);
 
-
-CString DisplayError(int idCode);
-
 HFONT MakeFontUnderLine(HFONT font);
 HFONT MakeFontBold(HFONT font);
 LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern);

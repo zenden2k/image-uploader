@@ -8,7 +8,6 @@ Source: http://p-nand-q.com/programming/cplusplus/using_member_functions_with_c_
 #include <windows.h>
 #include "Core/3rdpart/fastdelegate.h"
 
-
 typedef LRESULT (CALLBACK *LPFN_CBTHookCallback)(int nCode, WPARAM wParam, LPARAM lParam);
 
 class CBTHookCallbackBase;
@@ -95,7 +94,5 @@ private:
     CBTHookMemberFunctionCallback( const CBTHookMemberFunctionCallback& os );
     CBTHookMemberFunctionCallback& operator=( const CBTHookMemberFunctionCallback& os );
 };
-
-
 
 #endif

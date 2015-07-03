@@ -634,7 +634,6 @@
     <ClInclude Include="Source\Core\Images\ImageConverterPrivate_gdiplus.h" />
     <ClInclude Include="Source\Core\LocalFileCache.h" />
     <ClInclude Include="Source\Core\Logging.h" />
-    <ClInclude Include="Source\Core\Logging\ConsoleLogger.h" />
     <ClInclude Include="Source\Core\Logging\Logger.h" />
     <ClInclude Include="Source\Core\Logging\MyLogSink.h" />
     <ClInclude Include="Source\Core\Network\CurlShare.h" />
@@ -691,6 +690,7 @@
     <ClInclude Include="Source\Func\DefaultUploadErrorHandler.h" />
     <ClInclude Include="Source\Func\WtlScriptDialogProvider.h" />
     <ClInclude Include="Source\Gui\Components\NewStyleFolderDialog.h" />
+    <ClInclude Include="Source\Gui\Controls\ImageView.h" />
     <ClInclude Include="Source\Gui\Controls\ResultsListView.h" />
     <ClInclude Include="Source\Gui\Dialogs\VideoGrabberPage.h" />
     <ClInclude Include="Source\resource.h" />
@@ -738,7 +738,6 @@
     <ClInclude Include="Source\Gui\Controls\HistoryTreeView.h" />
     <ClInclude Include="Source\Gui\Controls\hyperlink.h" />
     <ClInclude Include="Source\Gui\Controls\HyperLinkControl.h" />
-    <ClInclude Include="Source\Gui\Controls\ImageView.h" />
     <ClInclude Include="Source\Gui\Controls\LogListBox.h" />
     <ClInclude Include="Source\Gui\Controls\MyImage.h" />
     <ClInclude Include="Source\Gui\Controls\TabListBox.h" />
@@ -992,7 +991,6 @@
     <ClCompile Include="Source\Core\Images\ImageConverterPrivate_gdiplus.cpp" />
     <ClCompile Include="Source\Core\LocalFileCache.cpp" />
     <ClCompile Include="Source\Core\Logging.cpp" />
-    <ClCompile Include="Source\Core\Logging\ConsoleLogger.cpp" />
     <ClCompile Include="Source\Core\Logging\MyLogSink.cpp" />
     <ClCompile Include="Source\Core\Network\CurlShare.cpp" />
     <ClCompile Include="Source\Core\Object.cpp" />
@@ -1040,6 +1038,7 @@
     <ClCompile Include="Source\Func\DefaultLogger.cpp" />
     <ClCompile Include="Source\Func\DefaultUploadErrorHandler.cpp" />
     <ClCompile Include="Source\Func\WtlScriptDialogProvider.cpp" />
+    <ClCompile Include="Source\Gui\Controls\ImageView.cpp" />
     <ClCompile Include="Source\Gui\Controls\ResultsListView.cpp" />
     <ClCompile Include="Source\Image Uploader.cpp">
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
@@ -1162,7 +1161,6 @@
     <ClCompile Include="Source\Gui\Controls\HistoryTreeView.cpp" />
     <ClCompile Include="Source\Gui\Controls\HyperLinkControl.cpp" />
     <ClCompile Include="Source\Gui\Controls\IconButton.cpp" />
-    <ClCompile Include="Source\Gui\Controls\ImageView.cpp" />
     <ClCompile Include="Source\Gui\Controls\LogListBox.cpp" />
     <ClCompile Include="Source\Gui\Controls\MyImage.cpp" />
     <ClCompile Include="Source\Gui\Controls\PercentEdit.cpp" />

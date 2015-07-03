@@ -503,59 +503,43 @@ bool ImageConverterPrivate::EvaluateRect(const std::string& rectStr, RECT* out)
     return true;
 }
 
-
-Gdiplus::Brush* ImageConverterPrivate::CreateBrushFromString(const std::string& brStr, RECT rect)
-{
+Gdiplus::Brush* ImageConverterPrivate::CreateBrushFromString(const std::string& brStr, RECT rect) {
     std::vector<std::string> tokens;
     IuStringUtils::Split(brStr, ":", tokens, 10);
-    if (tokens[0] == "solid")
-    {
-        unsigned int color = 0;
-        if (tokens.size() >= 2)
-        {
+    if (tokens[0] == "solid") {
+        uint32_t color = 0;
+        if (tokens.size() >= 2) {
             color = EvaluateColor(tokens[1]);
         }
         SolidBrush* br = new SolidBrush(Color(color));
         return br;
     }
-    else
-        if (tokens[0] == "gradient" && tokens.size() > 1)
-        {
-            std::vector<std::string> params;
-            IuStringUtils::Split(tokens[1], " ", params, 10);
-            if (params.size() >= 3)
-            {
-                unsigned int color1 = EvaluateColor(params[0]);
-                unsigned int color2 = EvaluateColor(params[1]);
-                int type = -1;
-                std::string gradType = params[2];
-                if (gradType == "vert")
-                {
-                    type = LinearGradientModeVertical;
-                }
-                else
-                    if (gradType == "hor")
-                    {
-                        type = LinearGradientModeHorizontal;
-                    }
-                    else
-                        if (gradType == "diag1")
-                        {
-                            type = LinearGradientModeForwardDiagonal;
-                        }
-                        else
-                            if (gradType == "diag2")
-                            {
-                                type = LinearGradientModeBackwardDiagonal;
-                            }
-                // return new LinearGradientBrush(Rect(0,0, /*rect.left+*/rect.right , /*rect.top+*/rect.bottom ), Color(color1), Color(color2), LinearGradientMode(type));
-                return new LinearGradientBrush(RectF(float(rect.left), float(-0.5 + rect.top), float(rect.right),
-                    /*rect.top+*/ float(rect.bottom)), Color(color1), Color(
-                    color2), LinearGradientMode(type));
+    else if (tokens[0] == "gradient" && tokens.size() > 1) {
+        std::vector<std::string> params;
+        IuStringUtils::Split(tokens[1], " ", params, 10);
+        if (params.size() >= 3) {
+            unsigned int color1 = EvaluateColor(params[0]);
+            unsigned int color2 = EvaluateColor(params[1]);
+            int type = -1;
+            std::string gradType = params[2];
+            if (gradType == "vert") {
+                type = LinearGradientModeVertical;
             }
+            else if (gradType == "hor") {
+                type = LinearGradientModeHorizontal;
+            }
+            else if (gradType == "diag1") {
+                type = LinearGradientModeForwardDiagonal;
+            }
+            else if (gradType == "diag2") {
+                type = LinearGradientModeBackwardDiagonal;
+            }
+            // return new LinearGradientBrush(Rect(0,0, /*rect.left+*/rect.right , /*rect.top+*/rect.bottom ), Color(color1), Color(color2), LinearGradientMode(type));
+            return new LinearGradientBrush(RectF(float(rect.left), float(-0.5 + rect.top), float(rect.right),
+                                                 /*rect.top+*/ float(rect.bottom)), Color(color1), Color(
+                                               color2), LinearGradientMode(type));
         }
-    SolidBrush*   br = new SolidBrush(0);
+    }
+    SolidBrush* br = new SolidBrush(0);
     return br;
 }
-
-bool createThumbnail(Gdiplus::Image* image, Gdiplus::Image** outResult, int64_t fileSize, int fileFormat = 1);

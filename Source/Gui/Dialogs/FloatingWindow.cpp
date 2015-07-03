@@ -435,7 +435,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         mi.fType = MFT_STRING;
         mi.hSubMenu = SubMenu;
         mi.wID = 10000;
-        mi.dwTypeData  = TR("Screenshot Action");
+        mi.dwTypeData  = TR_CONST("Screenshot Action");
         TrayMenu.InsertMenuItem(i++, true, &mi);
 
         SubMenu.Detach();

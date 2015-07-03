@@ -157,7 +157,7 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
     return true;
 }
 
-LPTSTR CLang::GetString(LPCTSTR Name) {
+LPCTSTR CLang::GetString(LPCTSTR Name) {
     int hash = myhash((PBYTE)Name, lstrlen(Name) * sizeof(TCHAR));
     auto it = StringList.find(hash);
     if (it != StringList.end()) {
@@ -165,7 +165,7 @@ LPTSTR CLang::GetString(LPCTSTR Name) {
     }
 
     // return _T("$NO_SUCH_STRING");
-    return (LPTSTR)Name;
+    return Name;
 }
 
 CString CLang::GetLanguageName()
