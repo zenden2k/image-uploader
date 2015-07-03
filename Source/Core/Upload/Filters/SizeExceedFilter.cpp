@@ -20,7 +20,7 @@ bool SizeExceedFilter::PreUpload(UploadTask* task) {
                 std::lock_guard<std::mutex> guard(ServiceLocator::instance()->dialogProvider()->dialogMutex_);
                 CSizeExceed SE(fileTask, engineList_, uploadEngineManager_);
                 HWND parent = ServiceLocator::instance()->programWindow()->getNativeHandle();
-                int res = SE.DoModal(parent);
+                INT_PTR res = SE.DoModal(parent);
                 if (res == IDOK || res == 3) {
                     if (res == 3) {
                         //InitialParams = iss; // if user choose button USE FOR ALL

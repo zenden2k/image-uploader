@@ -31,6 +31,7 @@ CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile, UploadEng
 {
     m_UploadEngine = serverProfile_.uploadEngineData();
     uploadEngineManager_ = uploadEngineManager;
+    runningScript_ = nullptr;
 }
 
 CServerFolderSelect::~CServerFolderSelect()
@@ -72,11 +73,12 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     m_FolderMap[L""] = 0;
 
     CoreFunctions::ConfigureProxy(&m_NetworkClient);
-
+   
     m_FolderOperationType = foGetFolders;
-    m_pluginLoader = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+    CScriptUploadEngine *uploadScript;
+    uploadScript = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
 
-    if (!m_pluginLoader)
+    if (!uploadScript)
     {
         SetDlgItemText(IDC_FOLDERLISTLABEL, TR("An error occured while loading squirrel script."));
         return 0;
@@ -85,10 +87,11 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     title.Format(TR("Folder list on server %s for account '%s':"), (LPCTSTR)Utf8ToWCstring(m_UploadEngine->Name),
                  (LPCTSTR)Utf8ToWCstring(serverProfile_.serverSettings().authData.Login));
     SetDlgItemText(IDC_FOLDERLISTLABEL, title);
-    if (m_pluginLoader)
+    
+    if (uploadScript)
     {
-        m_pluginLoader->setNetworkClient(&m_NetworkClient);
-        m_pluginLoader->getAccessTypeList(m_accessTypeList);
+        uploadScript->setNetworkClient(&m_NetworkClient);
+        uploadScript->getAccessTypeList(m_accessTypeList);
         CreateLoadingThread();
     }
     return 1;  // Let the system set the focus
@@ -116,7 +119,15 @@ LRESULT CServerFolderSelect::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
 
 LRESULT CServerFolderSelect::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    EndDialog(wID);
+    {
+        std::lock_guard<std::mutex> guard(runningScriptMutex_);
+        if (runningScript_) {
+            runningScript_->stop();
+            stopSignal = true;
+        } else {
+            EndDialog(wID);
+        }
+    }
     return 0;
 }
 
@@ -127,7 +138,14 @@ DWORD CServerFolderSelect::Run()
     if (!script)
         return 0;
 
+    runningScriptMutex_.lock();
+    runningScript_ = script;
+    runningScriptMutex_.unlock();
+
     script->setNetworkClient(&m_NetworkClient);
+    m_NetworkClient.setProgressCallback(NetworkClient::ProgressCallback(this, &CServerFolderSelect::progressCallback));
+
+
     if (m_FolderOperationType == foGetFolders)
     {
         m_FolderList.Clear();
@@ -136,6 +154,8 @@ DWORD CServerFolderSelect::Run()
         NetworkClient networkClient;
         CoreFunctions::ConfigureProxy(&networkClient);
         script->setNetworkClient(&networkClient);
+        networkClient.setProgressCallback(NetworkClient::ProgressCallback(this, &CServerFolderSelect::progressCallback));
+
         int retCode = script->getFolderList(m_FolderList);
         if (retCode < 1)
         {
@@ -143,7 +163,7 @@ DWORD CServerFolderSelect::Run()
                 TRC(IDC_FOLDERLISTLABEL, "This server doesn't support folders listing.");
             else
                 TRC(IDC_FOLDERLISTLABEL, "Failed to load folder list.");
-
+        
             OnLoadFinished();
             return 0;
         }
@@ -151,7 +171,6 @@ DWORD CServerFolderSelect::Run()
         m_FolderTree.DeleteAllItems();
         BuildFolderTree(m_FolderList.m_folderItems, "");
         m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_SelectedFolder.id)]);
-        OnLoadFinished();
     }
 
     else if (m_FolderOperationType == foCreateFolder)
@@ -169,13 +188,19 @@ DWORD CServerFolderSelect::Run()
         Run();
         m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_newFolder.id)]);
     }
-    uploadEngineManager_->clearThreadData();
-    BlockWindow(false);
+
+    OnLoadFinished();
     return 0;
 }
 
 void CServerFolderSelect::OnLoadFinished()
 {
+    {
+        std::lock_guard<std::mutex> guard(runningScriptMutex_);
+        runningScript_ = nullptr;
+        stopSignal = false;
+        uploadEngineManager_->clearThreadData();
+    }
     BlockWindow(false);
 }
 
@@ -193,6 +218,13 @@ void CServerFolderSelect::NewFolder(const CString& parentFolderId)
             CreateLoadingThread();
         }
     }
+}
+
+int CServerFolderSelect::progressCallback(NetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow) {
+    if (stopSignal) {
+        return -1; // abort operation
+    }
+    return 0;
 }
 
 LRESULT CServerFolderSelect::OnBnClickedNewfolderbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -286,7 +318,7 @@ void CServerFolderSelect::BlockWindow(bool Block)
 {
     m_wndAnimation.ShowWindow(Block ? SW_SHOW : SW_HIDE);
     ::EnableWindow(GetDlgItem(IDOK), !Block);
-    ::EnableWindow(GetDlgItem(IDCANCEL), !Block);
+    //::EnableWindow(GetDlgItem(IDCANCEL), !Block);
     ::EnableWindow(GetDlgItem(IDC_NEWFOLDERBUTTON), !Block);
     m_FolderTree.EnableWindow(!Block);
 }

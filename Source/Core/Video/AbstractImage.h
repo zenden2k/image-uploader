@@ -19,6 +19,7 @@ public:
 protected:
     int width_;
     int height_;
+    DISALLOW_COPY_AND_ASSIGN(AbstractImage);
 };
 
 #endif

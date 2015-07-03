@@ -80,7 +80,6 @@ SOURCES += main.cpp \
     ../Core/Upload/ServerProfile.cpp \
     ../Core/Upload/ServerSync.cpp \
     ../Core/Upload/UploadEngineManager.cpp \
-    ../Core/Upload/UploadFilter.cpp \
     ../Core/Upload/UploadManager.cpp \
     ../Core/Upload/UploadSession.cpp \
     ../Core/ServiceLocator.cpp \

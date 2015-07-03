@@ -4,6 +4,7 @@
 #include "Core/Utils/StringUtils.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/3rdpart/htmlentities.h"
+#include <stdio.h>
 
 namespace IuTextUtils
 {

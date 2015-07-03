@@ -3,8 +3,12 @@
 
 #pragma once
 #include <string>
+
 namespace DesktopUtils
 {
-    bool ShellOpenUrl(const std::string& url);
+/** 
+Opens a file or an URL in associated application
+**/
+bool ShellOpenUrl(const std::string& url);
 }
 #endif

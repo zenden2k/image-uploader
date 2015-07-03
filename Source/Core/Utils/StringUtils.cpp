@@ -99,7 +99,7 @@ std::string toLower(const std::string& str)
 {
     std::string s1 = str;
     for (size_t i = 0; i < s1.length(); i++)
-        s1[i] = ::tolower(s1[i]);
+        s1[i] = static_cast<char>(::tolower(s1[i]));
     // std::string s1;
     // std::transform(str.begin(), str.end(), std::back_inserter(s1), std::tolower);
     return s1;
@@ -117,7 +117,7 @@ std::string ConvertUnixLineEndingsToWindows(const std::string& text) {
         return text;
     }
     const char* srcString = text.c_str();
-    int srcLen = text.length();
+    size_t srcLen = text.length();
     char * res = new char[(srcLen*2)+1];
     char * cur = res;
     const char * srcEnd = srcString + srcLen;

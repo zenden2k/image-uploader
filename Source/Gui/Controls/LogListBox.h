@@ -14,7 +14,6 @@
 #include "Core/Logging/Logger.h"
 #define LOGMSGTYPE
 
-
 struct LogListBoxItem
 {
     CString strTitle;
@@ -61,8 +60,6 @@ class CLogListBox :
         int AddString(LogMsgType Type, const CString& szTitle,const CString& szText, const CString& szInfo=CString());
         LogListBoxItem* getItemFromIndex(int index);
         LRESULT OnKillFocus(HWND hwndNewFocus);
-    public:
-        int NotifyParent(int nItem);
         CIcon ErrorIcon, WarningIcon;
         CFont UnderlineFont, NormalFont, BoldFont;
         BOOL SubclassWindow(HWND hWnd);

@@ -232,19 +232,15 @@ void FileQueueUploaderPrivate::start() {
 
 void FileQueueUploaderPrivate::run()
 {
-   
-    
     for (;;)
     {
         auto it = getNextJob();
 
-       
         //LOG(ERROR) << "getNextJob() returned " << (fut ? fut->getFileName() : "NULL");
         if (!it)
             break;
         CUploader uploader;
         uploader.onConfigureNetworkClient.bind(this, &FileQueueUploaderPrivate::OnConfigureNetworkClient);
-
 
         // TODO
         uploader.onErrorMessage.bind(this, &FileQueueUploaderPrivate::onErrorMessage);
@@ -308,7 +304,6 @@ void FileQueueUploaderPrivate::run()
                 //serverThreads_[serverName].fatalError = true;
             }
             serverThreadsMutex_.lock();
-
 
             serverThreads_[serverName].runningThreads--;
 

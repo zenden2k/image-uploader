@@ -19,7 +19,7 @@
 */
 
 #include "DefaultUploadEngine.h"
-#include "Core/3rdpart/codepages.h"
+
 #include "Core/3rdpart/pcreplusplus.h"
 #include "FileUploadTask.h"
 #include "Core/Upload/UrlShorteningTask.h"
@@ -177,8 +177,6 @@ bool CDefaultUploadEngine::executeActions() {
     }
     return true;
 }
-
-
 
 bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
 {
@@ -401,10 +399,8 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
 
 bool CDefaultUploadEngine::ReadServerResponse(UploadAction& Action)
 {
-
     bool Result = false;
     bool Exit = false;
-
 
     int StatusCode = m_NetworkClient->responseCode();
 
@@ -477,12 +473,8 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
     std::string str = Txt;
 
     size_t pos = 0;
-    while (pos < str.length())
-    {
-
-        if ( reg.search(str, pos))
-        {
-
+    while (pos < str.length()) {
+        if ( reg.search(str, pos)) {
             std::string VarName = reg[1];
             std::string VarValue = reg[2];
             pos = reg.get_match_end() + 1;
@@ -498,25 +490,19 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
             NewName = ReplaceVars(NewName);
             std::string vv = NewName;
 
-            if (NewValue == "%filename%")
-            {
+            if (NewValue == "%filename%") {
                 _Post += NewName + " = ** FILE CONTENTS ** \r\n";
-                m_NetworkClient->addQueryParamFile(NewName, m_FileName,
-                                                    IuCoreUtils::ExtractFileName(
-                                                       m_displayFileName), IuCoreUtils::GetFileMimeType(m_FileName));
-            }
-            else
-            {
+                m_NetworkClient->addQueryParamFile(NewName, m_FileName, IuCoreUtils::ExtractFileName(m_displayFileName),
+                    IuCoreUtils::GetFileMimeType(m_FileName));
+            } else {
                 NewValue = ReplaceVars(NewValue);
                 _Post += NewName + " = " + NewValue + "\r\n";
                 m_NetworkClient->addQueryParam(NewName, NewValue);
             }
-
         }
         else
             break;
     }
-
 
     if (m_UploadData->Debug)
         DebugMessage(_Post);
@@ -545,7 +531,6 @@ void CDefaultUploadEngine::AddCustomHeaders(UploadAction& Action)
 
             if (reg.search(str, pos))
             {
-
                 std::string VarName = reg[1];
                 std::string VarValue = reg[2];
                 pos = reg.get_match_end() + 1;

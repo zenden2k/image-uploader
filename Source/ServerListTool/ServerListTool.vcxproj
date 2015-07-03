@@ -493,7 +493,7 @@
     <ClCompile Include="..\Core\Scripting\UploadFilterScript.cpp" />
     <ClCompile Include="..\Core\ServiceLocator.cpp" />
     <ClCompile Include="..\Core\Settings.cpp">
-      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ShowIncludes>
+      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ShowIncludes>
     </ClCompile>
     <ClCompile Include="..\Core\SettingsManager.cpp" />
     <ClCompile Include="..\Core\Settings\BasicSettings.cpp" />
@@ -513,7 +513,6 @@
     <ClCompile Include="..\Core\Upload\UploadEngine.cpp" />
     <ClCompile Include="..\Core\Upload\UploadEngineManager.cpp" />
     <ClCompile Include="..\Core\Upload\Uploader.cpp" />
-    <ClCompile Include="..\Core\Upload\UploadFilter.cpp" />
     <ClCompile Include="..\Core\Upload\UploadManager.cpp" />
     <ClCompile Include="..\Core\Upload\UploadSession.cpp" />
     <ClCompile Include="..\Core\Upload\UploadTask.cpp" />

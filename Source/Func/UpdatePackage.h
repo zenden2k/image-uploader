@@ -122,7 +122,7 @@ class CUpdateManager: public CUpdateStatusCallback
         void stop();
         std::vector<CUpdateInfo> m_updateList;
     protected:
-        static int progressCallback(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
+        int progressCallback(NetworkClient *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
         void updateStatus(int packageIndex, const CString& status);
         bool internal_load_update(CString name);
         bool internal_do_update(CUpdateInfo& ui);

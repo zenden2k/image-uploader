@@ -24,21 +24,21 @@
 #include <string>
 #include "CoreTypes.h"
 
-namespace IuCoreUtils
-{
-    class ZGlobalMutexPrivate;
-    class ZGlobalMutex
-    {
-        public:
-            ZGlobalMutex(const std::string &name);
-            void lock();
-            void unlock();
-            virtual ~ZGlobalMutex();
-        private:
-            DISALLOW_COPY_AND_ASSIGN(ZGlobalMutex);
-            ZGlobalMutexPrivate* d_ptr;
-            void* m_data;
-    };
+namespace IuCoreUtils {
+
+class ZGlobalMutexPrivate;
+
+class ZGlobalMutex {
+public:
+    explicit ZGlobalMutex(const std::string& name);
+    void lock();
+    void unlock();
+    virtual ~ZGlobalMutex();
+private:
+    DISALLOW_COPY_AND_ASSIGN(ZGlobalMutex);
+    ZGlobalMutexPrivate* d_ptr;
+    void* m_data;
+};
 }
 
 #endif

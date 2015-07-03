@@ -1032,7 +1032,6 @@
     <ClCompile Include="Source\Core\Upload\ServerProfile.cpp" />
     <ClCompile Include="Source\Core\Upload\ServerSync.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadEngineManager.cpp" />
-    <ClCompile Include="Source\Core\Upload\UploadFilter.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadManager.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadSession.cpp" />
     <ClCompile Include="Source\Core\Utils\DesktopUtils.cpp" />
@@ -1082,7 +1081,6 @@
     <ClCompile Include="Source\Core\Utils\CryptoUtils.cpp" />
     <ClCompile Include="Source\Core\Utils\GlobalMutex.cpp" />
     <ClCompile Include="Source\Core\Utils\SimpleXml.cpp" />
-    <ClCompile Include="Source\Core\Utils\Singleton.cpp" />
     <ClCompile Include="Source\Core\Utils\StringUtils.cpp" />
     <ClCompile Include="Source\Core\Images\ImageConverter.cpp" />
     <ClCompile Include="Source\Core\Images\Thumbnail.cpp" />

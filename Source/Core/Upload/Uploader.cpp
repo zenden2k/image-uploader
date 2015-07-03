@@ -49,9 +49,9 @@ void CUploader::Cleanup()
     m_CurrentEngine->onErrorMessage.clear();
 }
 
-int CUploader::pluginProgressFunc (void* userData, double dltotal, double dlnow, double ultotal, double ulnow)
+int CUploader::pluginProgressFunc (NetworkClient* nc, double dltotal, double dlnow, double ultotal, double ulnow)
 {
-    CUploader* uploader = reinterpret_cast<CUploader*>(userData);
+    CUploader* uploader = this;
 
     if (!uploader)
         return 0;
@@ -65,7 +65,6 @@ int CUploader::pluginProgressFunc (void* userData, double dltotal, double dlnow,
     /*CString format;
     format.Format(L"Total =  %d Current = %d\r\n", (int)ultotal,(int)ulnow );
     OutputDebugStringW(format);*/
-
 
     if ( ultotal != 0 && ulnow == 0 && uploader->m_CurrentStatus == stWaitingAnswer ) {
             uploader->SetStatus(stUploading);
@@ -86,7 +85,6 @@ int CUploader::pluginProgressFunc (void* userData, double dltotal, double dlnow,
     }
     else
     {
-        
         uploader->m_PrInfo.IsUploading = true;
         uploader->m_PrInfo.Total = static_cast<uint64_t>(ultotal);
         uploader->m_PrInfo.Uploaded = static_cast<uint64_t>(ulnow);
@@ -145,7 +143,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     /*if (task->type() == UploadTask::TypeFile) {
         FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());
     }*/
-    m_NetworkClient.setProgressCallback(pluginProgressFunc, (void*)this);
+    m_NetworkClient.setProgressCallback(NetworkClient::ProgressCallback(this, &CUploader::pluginProgressFunc));
     int EngineRes = 0;
     int i = 0;
     do

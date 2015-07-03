@@ -120,7 +120,7 @@ int NetworkClient::set_sockopts(void * clientp, curl_socket_t sockfd, curlsockty
         // See http://support.microsoft.com/kb/823764
         NetworkClient* nm = reinterpret_cast<NetworkClient*>(clientp);
         int val = nm->m_UploadBufferSize + 32;
-        setsockopt(sockfd, SOL_SOCKET, SO_SNDBUF, (const char *)&val, sizeof(val));
+        setsockopt(sockfd, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char *>(&val), sizeof(val));
     #endif
     return 0;
 }
@@ -190,7 +190,7 @@ int NetworkClient::ProgressFunc(void *clientp, double dltotal, double dlnow, dou
             ulnow = nm->chunkOffset_ + ulnow;
         } else if( ((ultotal<=0 && nm->m_CurrentFileSize>0)) && nm->m_currentActionType == atUpload)
             ultotal = double(nm->m_CurrentFileSize);
-        return nm->m_progressCallbackFunc(nm->m_progressData, dltotal, dlnow, ultotal, ulnow);
+        return nm->m_progressCallbackFunc(nm, dltotal, dlnow, ultotal, ulnow);
     }
     return 0;
 }
@@ -607,10 +607,10 @@ void nm_splitString(const std::string& str, const std::string& delimiters, std::
         pos = str.find_first_of(delimiters, lastPos);
     }
 }
-void NetworkClient::setProgressCallback(curl_progress_callback func, void *data)
+void NetworkClient::setProgressCallback(const ProgressCallback& func)
 {
-    m_progressCallbackFunc = func;
-    m_progressData = data;
+    //m_progressCallbackFunc = func;
+    //m_progressData = data;
 }
 
 std::string nm_trimStr(const std::string& str)

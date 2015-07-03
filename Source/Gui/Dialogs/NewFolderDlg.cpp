@@ -19,10 +19,9 @@
 */
 
 #include "NewFolderDlg.h"
+
 #include "Func/Common.h"
-#include "LogWindow.h"
 #include "Core/Settings.h"
-#include "Core/Upload/UploadEngineManager.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 
@@ -43,7 +42,6 @@ LRESULT CNewFolderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     TRC(IDC_ACCESSTYPELABEL, "Access:");
     TRC(IDCANCEL, "Cancel");
     TRC(IDOK, "OK");
-    
     
     DlgResize_Init();
     CenterWindow(GetParent());
@@ -68,7 +66,7 @@ LRESULT CNewFolderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
 LRESULT CNewFolderDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    m_sTitle= GuiTools::GetWindowText(GetDlgItem(IDC_FOLDERTITLEEDIT));
+    m_sTitle = GuiTools::GetWindowText(GetDlgItem(IDC_FOLDERTITLEEDIT));
     m_folder.title = WCstringToUtf8(m_sTitle);
     m_sDescription = GuiTools::GetWindowText(GetDlgItem(IDC_FOLDERDESCREDIT));
     m_folder.summary = WCstringToUtf8(m_sDescription);

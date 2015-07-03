@@ -67,7 +67,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
         UE.NumOfTries = 0;
         UE.NeedAuthorization = cur.AttributeInt("Authorize");
         std::string needPassword = cur.Attribute("NeedPassword");
-        UE.NeedPassword = needPassword.empty() ? true : (bool)(IuCoreUtils::stringToInt64(needPassword)!=0);
+        UE.NeedPassword = needPassword.empty() ? true : (IuCoreUtils::stringToInt64(needPassword)!=0);
         
         std::string RetryLimit = cur.Attribute("RetryLimit");
         if(RetryLimit.empty())
@@ -237,7 +237,6 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
                     }
                 }
                 
-
                 UE.Actions.push_back(UA);
             }
 

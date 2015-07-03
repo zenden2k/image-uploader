@@ -30,8 +30,6 @@
 #include "Core/Upload/CommonTypes.h"
 #include "Core/Logging/Logger.h"
 
-#define MYWM_WRITELOG WM_USER + 100
-
 // CLogWindow
 
 class CLogWindow : public CDialogImpl <CLogWindow>,
@@ -52,8 +50,8 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
         CLogWindow();
         ~CLogWindow();
         enum { IDD = IDD_LOGWINDOW };
-        enum { IDC_CLEARLIST = 12000, IDC_COPYTEXTTOCLIPBOARD};
-        virtual BOOL PreTranslateMessage(MSG* pMsg);
+        enum { IDC_CLEARLIST = 12000, IDC_COPYTEXTTOCLIPBOARD, MYWM_WRITELOG = WM_USER + 100 };
+        virtual BOOL PreTranslateMessage(MSG* pMsg) override;
 
         BEGIN_MSG_MAP(CLogWindow)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)

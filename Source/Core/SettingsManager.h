@@ -76,12 +76,12 @@ template<class T> class SettingsNodeVariant: public SettingsNodeBase
             value_ = value;
         }
 
-        virtual std::string getValue()
+        virtual std::string getValue() override
         {
             return 
                 myToString(*value_);
         }
-        virtual void setValue(const std::string& text)
+        virtual void setValue(const std::string& text) override
         {
             myFromString(text, *value_ );
         }

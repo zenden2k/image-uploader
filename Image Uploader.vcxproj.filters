@@ -1257,9 +1257,6 @@
     <ClCompile Include="Source\Core\Utils\SimpleXml.cpp">
       <Filter>Source Files\Core\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Utils\Singleton.cpp">
-      <Filter>Source Files\Core\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Core\Utils\StringUtils.cpp">
       <Filter>Source Files\Core\Utils</Filter>
     </ClCompile>
@@ -1634,9 +1631,6 @@
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\DrawingTools\VectorElementTool.cpp">
       <Filter>Source Files\ImageEditor\DrawingTools</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\Upload\UploadFilter.cpp">
-      <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Upload\FileQueueUploaderPrivate.cpp">
       <Filter>Source Files\Core\Upload</Filter>

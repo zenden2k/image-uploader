@@ -2,6 +2,7 @@
 #define IU_CORE_TEMPFILEDELETER_H
 
 #pragma once
+#include "Core/Utils/CoreTypes.h"
 #include <string>
 #include <vector>
 
@@ -15,6 +16,8 @@ public:
 
 protected:
     std::vector<std::string> m_files;
+private:
+    DISALLOW_COPY_AND_ASSIGN(TempFileDeleter);
 };
 
 #endif

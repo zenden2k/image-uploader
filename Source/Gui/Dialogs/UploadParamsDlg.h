@@ -64,8 +64,6 @@ class CUploadParamsDlg : public CDialogImpl<CUploadParamsDlg>
         LRESULT OnClickedThumbTextCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedUseServerThumbnailsCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
-        
-        
         void createThumbnailsCheckboxChanged();
         void processImagesChanged();
         void defaultSettingsCheckboxChanged();

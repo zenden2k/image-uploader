@@ -279,7 +279,7 @@ bool CUpdateManager::internal_load_update(CString name)
     NetworkClient nm;
     nm.setTreatErrorsAsWarnings(true);
     nm.enableResponseCodeChecking(false);
-    nm.setProgressCallback(&CUpdateManager::progressCallback, this);
+    nm.setProgressCallback(NetworkClient::ProgressCallback(this,&CUpdateManager::progressCallback));
     CoreFunctions::ConfigureProxy(&nm);
 
     CString url = localPackage.updateUrl();
@@ -542,7 +542,7 @@ CUpdateManager::CUpdateManager()
     
     m_nSuccessPackageUpdates = 0;
     m_stop = false;
-    nm_.setProgressCallback(progressCallback, this);
+    nm_.setProgressCallback(NetworkClient::ProgressCallback(this, &CUpdateManager::progressCallback));
 }
 
 CString CUpdateManager::generateReport()
@@ -581,9 +581,9 @@ bool CUpdateManager::AreUpdatesAvailable()
     return (m_updateList.size() != 0);
 }
 
-int CUpdateManager::progressCallback(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
+int CUpdateManager::progressCallback(NetworkClient *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
 {
-    CUpdateManager * um = reinterpret_cast<CUpdateManager*>( clientp);
+    CUpdateManager * um = this;
     CString text;
     CString buf1, buf2;
     buf1 = U2W(IuCoreUtils::fileSizeToString(int64_t(dlnow)));

@@ -39,16 +39,6 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
 {
     public:
         int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) override;
-    protected:
-        bool needStop();
-        std::string m_ErrorReason;
-        std::string m_FileName;
-        std::string m_displayFileName;
-        LoginInfo li;
-        int m_CurrentActionIndex;
-        int m_nThumbWidth;
-    
-    public:
         CScriptUploadEngine(std::string pluginName, ServerSync* serverSync, ServerSettingsStruct* settings);
         ~CScriptUploadEngine();
         void setNetworkClient(NetworkClient* nm) override;
@@ -65,8 +55,9 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
         std::string name();
         
         int RetryLimit() override;
-        
-        void stop() override;         
+
+        // FIXME: not working
+        virtual void stop() override;         
     protected:
         void Log(ErrorInfo::MessageType mt, const std::string& error);
         virtual void PrintCallback(const std::string& output) override;
@@ -74,6 +65,13 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
         bool postLoad() override;
         CFolderList folderList_;
         std::string name_;
+        bool needStop();
+        std::string m_ErrorReason;
+        std::string m_FileName;
+        std::string m_displayFileName;
+        LoginInfo li;
+        int m_CurrentActionIndex;
+        int m_nThumbWidth;
         DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
 };
 

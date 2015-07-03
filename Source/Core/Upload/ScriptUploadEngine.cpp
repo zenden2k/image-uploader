@@ -24,7 +24,6 @@
 #include "Core/Scripting/API/ScriptAPI.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Upload/UrlShorteningTask.h"
-#include "Core/Utils/StringUtils.h"
 #include "Core/Logging.h"
 #include "Core/Scripting/API/ScriptAPI.h"
 #include "Core/Upload/ServerSync.h"
@@ -47,7 +46,6 @@ CScriptUploadEngine::~CScriptUploadEngine()
     delete m_SquirrelScript;
 }
 
-
 void CScriptUploadEngine::PrintCallback(const std::string& output)
 {
     std::string taskName;
@@ -58,6 +56,7 @@ void CScriptUploadEngine::PrintCallback(const std::string& output)
     std::thread::id threadId = std::this_thread::get_id();
     Log(ErrorInfo::mtWarning, name_ + ".nut [" + taskName + "ThreadId=" + IuCoreUtils::ThreadIdToString(threadId) + "]\r\n" + /*IuStringUtils::ConvertUnixLineEndingsToWindows*/(output));
 }
+
 int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams& params)
 {
     //LOG(INFO) << "CScriptUploadEngine::doUpload this=" << this << " thread=" << threadId;
@@ -365,13 +364,10 @@ int CScriptUploadEngine::createFolder(const CFolderItem& parent, CFolderItem& fo
     return ival;
 }
 
-
-
 void CScriptUploadEngine::setNetworkClient(NetworkClient* nm)
 {
     CAbstractUploadEngine::setNetworkClient(nm);
-    if (!m_UploadData->UserAgent.empty())
-    {
+    if (!m_UploadData->UserAgent.empty()) {
         nm->setUserAgent(m_UploadData->UserAgent);
     }
     nm->setCurlShare(sync_->getCurlShare());
@@ -390,7 +386,6 @@ bool CScriptUploadEngine::supportsSettings()
         if (func.IsNull()) {
             return false;
         }
-
     }
     catch (std::exception& e)
     {
@@ -429,6 +424,7 @@ int CScriptUploadEngine::RetryLimit()
 void CScriptUploadEngine::stop()
 {
     ScriptAPI::StopAssociatedBrowsers(vm_);
+    CAbstractUploadEngine::stop();
 }
 
 void CScriptUploadEngine::Log(ErrorInfo::MessageType mt, const std::string& error)

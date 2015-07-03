@@ -132,10 +132,9 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
     }
     _Module.RemoveMessageLoop();
 
-
     Gdiplus::GdiplusShutdown( gdiplusToken );
 
-    // Удаляем временные файлы
+    // Remove temporary files
     IuCommonFunctions::ClearTempFolder( IuCommonFunctions::IUTempFolder ); 
     std::vector<CString> folders;
     WinUtils::GetFolderFileList( folders, IuCommonFunctions::IUCommonTempFolder, "iu_temp_*" );

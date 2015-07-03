@@ -18,7 +18,7 @@
 
 */
 #include "LogWindow.h"
-#include "atlheaders.h"
+
 #include "Core/Settings.h"
 #include "Func/WinUtils.h"
 
@@ -79,7 +79,7 @@ void CLogWindow::Show()
 
 LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    HWND hwnd = (HWND) wParam;
+    HWND hwnd = reinterpret_cast<HWND>(wParam);
     POINT ClientPoint, ScreenPoint;
     if (hwnd != GetDlgItem(IDC_MSGLIST))
         return 0;
@@ -103,7 +103,7 @@ LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
     UINT index = MsgList.ItemFromPoint(ClientPoint, bOutside);
 
     if ( !bOutside ) {
-        MsgList.SetCurSel( index );
+        MsgList.SetSel( index, TRUE );
     }
 
     CMenu FolderMenu;
@@ -118,11 +118,25 @@ LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 }
 
 LRESULT CLogWindow::OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/) {
-    int messageIndex = MsgList.GetCurSel();
-    LogListBoxItem* item = MsgList.getItemFromIndex( messageIndex );
-    CString text;
-    text.Format(_T("[%s] %s\r\n%s\r\n\r\n%s"), (LPCTSTR)item->Time, (LPCTSTR)item->Info, (LPCTSTR)item->strTitle, (LPCTSTR)item->strText);
-    WinUtils::CopyTextToClipboard(text);
+    const int maxItems = 1000;
+    int selectedItems[maxItems];
+    memset(selectedItems, 0, sizeof(selectedItems));
+    int selectedItemsCount = MsgList.GetSelItems(maxItems, selectedItems);
+
+    if (selectedItemsCount >= 0) { 
+        CString result;
+        for (int i = 0; i < selectedItemsCount; i++) {
+            int itemIndex = selectedItems[i];
+            LogListBoxItem* item = MsgList.getItemFromIndex(itemIndex);
+            CString text;
+            text.Format(_T("[%s] %s\r\n%s\r\n\r\n%s"), static_cast<LPCTSTR>(item->Time), static_cast<LPCTSTR>(item->Info),
+                static_cast<LPCTSTR>(item->strTitle), static_cast<LPCTSTR>(item->strText));
+            result += text;
+            result += "\r\n\r\n";
+        }
+        WinUtils::CopyTextToClipboard(result);
+    }
+    
     return 0;
 }
 
@@ -135,7 +149,7 @@ void CLogWindow::TranslateUI()
 
 LRESULT CLogWindow::OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    CLogWndMsg* msg = (CLogWndMsg*) wParam;
+    CLogWndMsg* msg = reinterpret_cast<CLogWndMsg*>(wParam);
     WriteLogImpl(msg->MsgType, msg->Sender, msg->Msg, msg->Info);
     delete msg;
     return 0;
@@ -151,12 +165,12 @@ void CLogWindow::WriteLog(LogMsgType MsgType, const CString&  Sender, const CStr
 {
     if (!LogWindow.m_hWnd)
         return;
-    CLogWindow::CLogWndMsg* msg = new CLogWindow::CLogWndMsg();
+    CLogWindow::CLogWndMsg* msg = new CLogWndMsg; // will be freed by consumer
     msg->Msg = Msg;
     msg->Info = Info;
     msg->Sender = Sender;
     msg->MsgType = MsgType;
-    LogWindow.PostMessage(MYWM_WRITELOG, (WPARAM)msg);
+    LogWindow.PostMessage(MYWM_WRITELOG, reinterpret_cast<WPARAM>(msg));
 }
 
 CLogWindow LogWindow;

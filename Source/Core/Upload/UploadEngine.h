@@ -268,17 +268,19 @@ public:
 
 class  CUploadEngineList_Base
 {
-    protected:
-        std::vector<CUploadEngineData> m_list;
-    public:
-        CUploadEngineList_Base();
-        CUploadEngineData* byIndex(size_t index);
-        CUploadEngineData* byName(const std::string &name);
-        CUploadEngineData*  firstEngineOfType(CUploadEngineData::ServerType type);
-        int count();
-        int getRandomImageServer();
-        int getRandomFileServer();
-        int GetUploadEngineIndex(const std::string Name);
+public:
+    CUploadEngineList_Base();
+    CUploadEngineData* byIndex(size_t index);
+    CUploadEngineData* byName(const std::string& name);
+    CUploadEngineData* firstEngineOfType(CUploadEngineData::ServerType type);
+    int count();
+    int getRandomImageServer();
+    int getRandomFileServer();
+    int GetUploadEngineIndex(const std::string Name);
+protected:
+    std::vector<CUploadEngineData> m_list;
+private:
+    DISALLOW_COPY_AND_ASSIGN(CUploadEngineList_Base);
 };
 
 class UploadTask;
@@ -306,6 +308,7 @@ class CAbstractUploadEngine
         fastdelegate::FastDelegate2< const std::string&, bool> onDebugMessage;
         typedef fastdelegate::FastDelegate1<ErrorInfo> ErrorMessageCallback;
         ErrorMessageCallback onErrorMessage;
+        DISALLOW_COPY_AND_ASSIGN(CAbstractUploadEngine);
     protected:
         bool m_bShouldStop;
         NetworkClient * m_NetworkClient;

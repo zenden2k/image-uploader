@@ -213,19 +213,19 @@ std::string CHistoryManager::makeFileName() const
 //
 CHistoryReader::CHistoryReader()
 {
-    _impl = new CHistoryReader_impl();
+    d_ptr = new CHistoryReader_impl();
 }
 
 int CHistoryReader::getSessionCount() const
 {
-    return _impl->m_sessions.size();
+    return d_ptr->m_sessions.size();
 }
 
 // The pointer returned by this function is only valid
 //  during lifetime of CHistoryReader object
 CHistorySession* CHistoryReader::getSession(size_t index)
 {
-    return &_impl->m_sessions[index];
+    return &d_ptr->m_sessions[index];
 }
 
 // filename must be utf-8 encoded
@@ -233,11 +233,11 @@ bool CHistoryReader::loadFromFile(const std::string& filename)
 {
     if(IuCoreUtils::FileExists(filename))
     {
-        _impl->m_xml.LoadFromFile(filename);
+        d_ptr->m_xml.LoadFromFile(filename);
     }
     else 
         return false;
-    SimpleXmlNode root = _impl->m_xml.getRoot("History");
+    SimpleXmlNode root = d_ptr->m_xml.getRoot("History");
     std::vector<SimpleXmlNode> allSessions;
     root.GetChilds("Session", allSessions);
 
@@ -246,12 +246,12 @@ bool CHistoryReader::loadFromFile(const std::string& filename)
         std::string fName = filename;
         CHistorySession session(fName, "0");
         session.loadFromXml(allSessions[i]);
-        _impl->m_sessions.push_back(session);
+        d_ptr->m_sessions.push_back(session);
     }
     return true;
 }
 
 CHistoryReader::~CHistoryReader()
 {
-    delete _impl;
+    delete d_ptr;
 }

@@ -39,7 +39,7 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
 
         CIntegrationSettings(UploadEngineManager *uploadEngineManager);
         virtual ~CIntegrationSettings();
-        virtual bool Apply();
+        virtual bool Apply() override;
 
         struct ListItemData {
             ServerProfile serverProfile;
@@ -70,7 +70,6 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnShellIntegrationCheckboxChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         void ShellIntegrationChanged();
-        std::string newMethod();
         LRESULT OnClickedQuickUpload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         ServerProfilesMap serverProfiles_;
         CListBox menuItemsListBox_;

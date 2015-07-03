@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "Core/Utils/CoreTypes.h"
 #include "Core/Logging.h"
 #include "Core/Logging/Logger.h"
 

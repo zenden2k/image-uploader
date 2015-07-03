@@ -5,6 +5,7 @@
 #include <thread>
 #include <mutex>
 #include "Script.h"
+#include "Core/Utils/CoreTypes.h"
 #include "Core/Upload/ServerSync.h"
 
 class ScriptsManager {
@@ -23,6 +24,8 @@ protected:
     typedef std::string ServerSyncMapKey;
     std::map<ServerSyncMapKey, ServerSync*> serverSyncs_;
     std::mutex serverSyncsMutex_;
+private:
+    DISALLOW_COPY_AND_ASSIGN(ScriptsManager);
 };
 
 

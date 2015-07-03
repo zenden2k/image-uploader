@@ -18,7 +18,6 @@
 
 */
 
-
 #ifndef IU_CORE_UTILS_SIMPLEXML_H
 #define IU_CORE_UTILS_SIMPLEXML_H
 

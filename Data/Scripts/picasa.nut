@@ -136,7 +136,9 @@ function _DoLogin()
 					tokenType = "";
 					return 0;
 				}
-			}
+			} else {
+                //return 0; <-- need to check this
+            }
 		} else {
 			return 1;
 		}

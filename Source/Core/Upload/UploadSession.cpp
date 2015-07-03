@@ -166,7 +166,7 @@ void UploadSession::stop()
 {
     stopSignal_ = true;
     //std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
-    for (auto it = tasks_.begin(); it != tasks_.end(); it++)
+    for (auto it = tasks_.begin(); it != tasks_.end(); ++it)
     {
         it->get()->stop();
 

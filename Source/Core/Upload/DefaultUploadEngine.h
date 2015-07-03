@@ -21,7 +21,7 @@
 #ifndef IU_DEFAULT_UPLOAD_ENGINE_H
 #define IU_DEFAULT_UPLOAD_ENGINE_H
 
-#include <vector>
+#include <map>
 #include <string>
 #include "CommonTypes.h"
 #include "UploadEngine.h"
@@ -33,7 +33,7 @@ class CDefaultUploadEngine: public CAbstractUploadEngine
 {
     public:
         CDefaultUploadEngine(ServerSync* serverSync);
-        virtual int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params);
+        virtual int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) override;
     
     protected:
         bool DoAction(UploadAction &Action);
@@ -41,7 +41,7 @@ class CDefaultUploadEngine: public CAbstractUploadEngine
         bool DoGetAction(UploadAction &Action);
         bool ParseAnswer(UploadAction &Action, const std::string& Body);
         std::string ReplaceVars(const std::string& Text);
-        int RetryLimit();
+        int RetryLimit() override;
         void AddQueryPostParams(UploadAction& Action);
         bool ReadServerResponse(UploadAction& Action);
         void AddCustomHeaders(UploadAction& Action);

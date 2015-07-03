@@ -3,10 +3,10 @@
 
 #include <string>
 #include <map>
-#include "Core/Upload/UploadEngine.h"
+#include "Core/Utils/CoreTypes.h"
 #include "Core/Settings.h"
-class CUploadEngineList;
 
+class CUploadEngineList;
 
 class ServerListManager
 {
@@ -19,12 +19,12 @@ public:
     std::string errorMessage() const;
     std::string createdServerName() const;
 protected:
+    DISALLOW_COPY_AND_ASSIGN(ServerListManager);
     CUploadEngineList * uploadEngineList_;
     std::string serversDirectory_;
     ServerSettingsMap& serversSettings_;
     std::string errorMessage_;
     std::string createdServerName_;
-
 };
 
 #endif

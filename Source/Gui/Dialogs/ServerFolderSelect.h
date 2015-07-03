@@ -36,11 +36,15 @@
 #define ID_EDITFOLDER 10001
 #define ID_OPENINBROWSER 10002
 #define ID_CREATENESTEDFOLDER 10003
+#include <atomic>
 
 class UploadEngineManager;
 class ServerProfile;
+
 class CServerFolderSelect : 
-    public CDialogImpl<CServerFolderSelect>    , public CThreadImpl<CServerFolderSelect>, public CDialogResize<CServerFolderSelect>    
+    public CDialogImpl<CServerFolderSelect>, 
+    public CThreadImpl<CServerFolderSelect>, 
+    public CDialogResize<CServerFolderSelect>    
 {
     public:
         CServerFolderSelect(ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager);
@@ -79,22 +83,24 @@ class CServerFolderSelect :
     LRESULT OnCreateNestedFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     
     DWORD Run();
- void OnLoadFinished();
- CImageList m_PlaceSelectorImageList;
- CFolderItem m_SelectedFolder;
+    void OnLoadFinished();
+    CImageList m_PlaceSelectorImageList;
+    CFolderItem m_SelectedFolder;
 protected:
-    typedef enum FolderOperationType            /* Defines an enumeration type    */
+    enum FolderOperationType          
     {
         foGetFolders = 0, foCreateFolder, foModifyFolder 
     };
     CPictureExWnd m_wndAnimation;
-    CScriptUploadEngine *m_pluginLoader;
+    CScriptUploadEngine *runningScript_;
+    std::mutex runningScriptMutex_;
     UploadEngineManager * uploadEngineManager_;
     CUploadEngineData *m_UploadEngine;
     CFolderList m_FolderList;
     CFolderItem m_newFolder;
     std::vector<std::string> m_accessTypeList;
     std::map<std::wstring,HTREEITEM> m_FolderMap;
+    std::atomic<bool> stopSignal;
     CTreeViewCtrl m_FolderTree;
     ServerProfile& serverProfile_;
     //IU_PLUGIN_FolderItem * m_folderItems;
@@ -102,6 +108,7 @@ protected:
     NetworkClient m_NetworkClient;
     void BlockWindow(bool Block);
     void NewFolder(const CString& parentFolderId);
+    int progressCallback(NetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow);
     //CString m_sNewFolderName, m_sNewFolderDescription;
 public:
     
@@ -112,7 +119,5 @@ public:
     void CreateLoadingThread();
     void BuildFolderTree(std::vector<CFolderItem> &list,const CString& parentFolderId);
 };
-
-
 
 #endif // SERVERFOLDERSELECT_H

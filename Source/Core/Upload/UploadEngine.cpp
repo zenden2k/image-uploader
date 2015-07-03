@@ -82,7 +82,7 @@ int CUploadEngineList_Base::getRandomImageServer()
 
 int CUploadEngineList_Base::getRandomFileServer()
 {
-    std::vector<int> m_suitableServers;
+    std::vector<size_t> m_suitableServers;
     for (size_t i = 0; i < m_list.size(); i++)
     {
         if (m_list[i].NeedAuthorization != 2 && !m_list[i].hasType(CUploadEngineData::TypeFileServer))

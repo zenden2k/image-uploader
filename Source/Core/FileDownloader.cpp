@@ -78,7 +78,7 @@ void CFileDownloader::memberThreadFunc()
     NetworkClient nm;
 
     // Providing callback function to stop downloading
-    nm.setProgressCallback(CFileDownloader::ProgressFunc, this);
+    nm.setProgressCallback(NetworkClient::ProgressCallback(this, &CFileDownloader::ProgressFunc));
     mutex_.lock();
     if (onConfigureNetworkClient)
         onConfigureNetworkClient(&nm);
@@ -189,12 +189,10 @@ bool CFileDownloader::waitForFinished()
     return true;
 }
 
-int CFileDownloader::ProgressFunc(void* userData, double dltotal, double dlnow,
-                                  double ultotal,
-                                  double ulnow)
-{
-    CFileDownloader* fd = reinterpret_cast<CFileDownloader*>(userData);
-    if (fd->stopSignal_)
+int CFileDownloader::ProgressFunc(NetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow) {
+    if (stopSignal_) {
         return -1;
+    }
+       
     return 0;
 }

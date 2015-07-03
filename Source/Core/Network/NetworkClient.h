@@ -27,6 +27,7 @@
 #include <curl/curl.h>
 //#include <curl/types.h>
 #include <mutex>
+#include "Core/3rdpart/fastdelegate.h"
 
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/CoreTypes.h"
@@ -47,6 +48,8 @@ class NetworkClient
         enum ActionType {
             atNone = 0, atPost, atUpload, atGet
         };
+        typedef fastdelegate::FastDelegate5<NetworkClient*, double, double, double, double,int> ProgressCallback;
+
         /*! @endcond */
         NetworkClient(void);
         ~NetworkClient(void);
@@ -95,7 +98,7 @@ class NetworkClient
         std::string responseHeaderByIndex(const int index, std::string& name);
         int responseHeaderCount();
         /*! @cond PRIVATE */
-        void setProgressCallback(curl_progress_callback func, void *data);
+        void setProgressCallback(const ProgressCallback& func);
         /*! @endcond */
         const std::string urlEncode(const std::string& str);
         const std::string getCurlResultString();
@@ -140,6 +143,7 @@ class NetworkClient
             AbortedException(const std::string& msg) : std::runtime_error(msg) {}
             AbortedException(const AbortedException& ex) : std::runtime_error(ex) {}
         };
+
     private:
         //DISALLOW_COPY_AND_ASSIGN(NetworkClient);
         enum CallBackFuncType{funcTypeBody,funcTypeHeader};
@@ -193,7 +197,7 @@ class NetworkClient
         ActionType m_currentActionType;
         int m_nUploadDataOffset;
         CallBackData m_bodyFuncData;
-        curl_progress_callback m_progressCallbackFunc;
+        ProgressCallback m_progressCallbackFunc;
         CallBackData m_headerFuncData;
         std::string m_url;
         void* m_progressData;

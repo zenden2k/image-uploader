@@ -52,6 +52,7 @@ Name: "fa"; MessagesFile: "Languages\Farsi.isl"
 Name: "sr"; MessagesFile: "Languages\SerbianCyrillic.isl"
 Name: "sv"; MessagesFile: "Languages\Swedish.isl"
 Name: "tr"; MessagesFile: "Languages\Turkish.isl"
+Name: "ko"; MessagesFile: "Languages\Korean.isl"
 Name: "uk"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 [CustomMessages]
 InstallFFmpeg=Install FFmpeg library (better video formats support)

@@ -93,8 +93,6 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     openInFolderLink_.m_dwExtendedStyle |= HLINK_COMMANDBUTTON | HLINK_UNDERLINEHOVER; 
     openInFolderLink_.m_clrLink = CSettings::DefaultLinkColor;
 
-    
-
     GuiTools::AddComboBoxItems(m_hWnd, IDC_VIDEOENGINECOMBO, 3, CSettings::VideoEngineAuto, CSettings::VideoEngineDirectshow,CSettings::VideoEngineFFmpeg);
     int itemIndex = SendDlgItemMessage( IDC_VIDEOENGINECOMBO, CB_FINDSTRING, 0, (LPARAM)(LPCTSTR) Settings.VideoSettings.Engine );
     if ( itemIndex == CB_ERR){
@@ -227,7 +225,7 @@ DWORD CVideoGrabberPage::Run()
         return 0;
     }
 
-    GrabBitmaps((LPCTSTR)fileName);
+    GrabBitmaps(fileName);
 
     return 0;
 }
@@ -271,7 +269,6 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
                     logMessage.Format(_T("Could not create folder '%s'."), (LPCTSTR)snapshotsFolder);
                     ServiceLocator::instance()->logger()->write(logError, _T("Video Grabber"), logMessage);
                     snapshotsFolder = IuCommonFunctions::IUTempFolder;
-
                 }
             }
         }
@@ -657,6 +654,9 @@ CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateS
 }
 
 LRESULT CVideoGrabberPage::OnOpenFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    ShellExecute(NULL, L"open", snapshotsFolder, 0, 0, SW_SHOWDEFAULT);
+    HINSTANCE  hinst = ShellExecute(NULL, L"open", snapshotsFolder, 0, 0, SW_SHOWDEFAULT);
+    if (reinterpret_cast<int>(hinst) <= 32) {
+        LOG(ERROR) << "ShellExecute failed. Error code=" << reinterpret_cast<int>(hinst);
+    }
     return 0;
 }

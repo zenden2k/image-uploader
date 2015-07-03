@@ -274,7 +274,6 @@ bool ReadUtf8TextFile(std::string utf8Filename, std::string& data)
     unsigned char buf[3];
     fread(buf, 1, 3, stream);    
 
-
     if(buf[0] == 0xEF || buf[1] == 0xBB || buf[2] == 0xBF) // UTF8 Byte Order Mark (BOM)
     {    
         size -= 3;    

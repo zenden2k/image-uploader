@@ -298,7 +298,7 @@ HRGN GetWindowVisibleRegion(HWND wnd)
         RECT rc;
         if (GetClientRect(wnd, &rc))
         {
-            MapWindowPoints(wnd, 0, (POINT*)&rc, 2);
+            MapWindowPoints(wnd, 0, reinterpret_cast<POINT*>(&rc), 2);
             // parentRgn.CreateRectRgnIndirect(&rc);
         }
         result.IntersectRect(&result, &rc);
@@ -495,10 +495,10 @@ bool ComputeOriginal(Bitmap* whiteBGImage, Bitmap* blackBGImage, Bitmap** out)
                 resultG = 255;
                 resultB = 255;
             }
-            resultImageRGB[offset + 3] = (byte)alphaR;
-            resultImageRGB[offset + 2] = (byte)resultR;
-            resultImageRGB[offset + 1] = (byte)resultG;
-            resultImageRGB[offset + 0] = (byte)resultB;
+            resultImageRGB[offset + 3] = static_cast<byte>(alphaR);
+            resultImageRGB[offset + 2] = static_cast<byte>(resultR);
+            resultImageRGB[offset + 1] = static_cast<byte>(resultG);
+            resultImageRGB[offset + 0] = static_cast<byte>(resultB);
             offset += 4;
         }
     }
@@ -558,7 +558,7 @@ HWND CreateDummyWindow(RECT rc)
     WndClsEx.cbWndExtra    = 0;
     WndClsEx.hIcon         = LoadIcon(NULL, IDI_APPLICATION);
     WndClsEx.hCursor       = LoadCursor(NULL, IDC_ARROW);
-    WndClsEx.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+    WndClsEx.hbrBackground = reinterpret_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
     WndClsEx.lpszMenuName  = NULL;
     WndClsEx.lpszClassName = clsName;
     WndClsEx.hInstance     = GetModuleHandle(0);

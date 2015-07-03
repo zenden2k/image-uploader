@@ -96,6 +96,6 @@ class CHistoryReader
         CHistorySession* getSession(size_t index);
     private:
         DISALLOW_COPY_AND_ASSIGN(CHistoryReader);
-        CHistoryReader_impl* _impl;
+        CHistoryReader_impl* d_ptr;
 };
 #endif

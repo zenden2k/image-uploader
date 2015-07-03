@@ -417,9 +417,6 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
         return false;
     }
 
-
-    
-
     CMediaType GrabType;
     GrabType.SetType( &MEDIATYPE_Video );
     GrabType.SetSubtype( &MEDIASUBTYPE_RGB24 );
@@ -434,7 +431,6 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
     hr = d_ptr->pGraph->AddFilter( d_ptr->pGrabberBase, L"Grabber" );
     
     // Load the source
-    //
     if (IsWMV)
     {
         CComQIPtr<IFileSourceFilter, & IID_IFileSourceFilter> pLoad( d_ptr->pASF);
@@ -483,8 +479,6 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
     else
         GrabInfo( tr("Ещё одна попытка подключения кодеков...") );
     
-    
-
     hr = d_ptr->pGraph->Connect( d_ptr->pSourcePin, d_ptr->pGrabPin );
 
     if ( FAILED( hr ) )
@@ -493,9 +487,6 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
         GrabInfo(  tr("Ошибка соединения фильтров (формат не поддерживается).") );
         return false;
     }
-
-    
-
 
     AM_MEDIA_TYPE mt2;
     ZeroMemory(&mt2, sizeof(mt2));
@@ -508,14 +499,9 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
     }
 
     // This semi-COM object will receive sample callbacks for us
-    //
-    //d_ptr->CB.vg = this;
-
-    //d_ptr->CB.SavingThread = &SavingThread;
     d_ptr->CB.BufferEvent = CreateEvent(0, FALSE, FALSE, 0);
 
     // Ask for the connection media type so we know its size
-    //
     AM_MEDIA_TYPE mt;
     hr = d_ptr->pGrabber->GetConnectedMediaType( &mt );
     if (FAILED( hr ))
@@ -523,7 +509,7 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
         //GrabInfo(  TEXT("Unable to determine what we connected.") );
         return false;
     }
-    VIDEOINFOHEADER* vih = (VIDEOINFOHEADER*) mt.pbFormat;
+    VIDEOINFOHEADER* vih = reinterpret_cast<VIDEOINFOHEADER*>(mt.pbFormat);
     if (!FAILED( hr ))
     {
         d_ptr->CB.Width  = vih->bmiHeader.biWidth;
@@ -544,25 +530,20 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
         return false;
     }
 
-
     //DirectShowUtil::SaveGraphFile(d_ptr->pGraph, _T("Test.grf"));
 
     // Don't buffer the samples as they pass through
-    //
     hr = d_ptr->pGrabber->SetBufferSamples( FALSE );
 
     // Only grab one at a time, stop stream after
     // grabbing one sample
-    //
     hr = d_ptr->pGrabber->SetOneShot( TRUE );
 
     // Set the callback, so we can grab the one sample
-    //
     hr = d_ptr->pGrabber->SetCallback( &d_ptr->CB, 1 );
     //SavingThread.vg = this;
     //SavingThread.Start();
     // Get the seeking interface, so we can seek to a location
-    //
     d_ptr->pSeeking = d_ptr->pGraph;
 
     // Query the graph for the IVideoWindow interface and use it to
@@ -583,7 +564,6 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
         return 0;
     }
     
-
     duration_ = duration;
 
     int NumOfFrames = 1;
@@ -591,17 +571,11 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
     d_ptr->pControl = d_ptr->pGraph;
     d_ptr->pEvent = d_ptr->pGraph;
 
-    long EvCode = 0;
-
-    long EventCode = 0, Param1 = 0, Param2 = 0;
     d_ptr->CB.mutex.lock();
-
-
     return true;
 }
 
 bool DirectshowFrameGrabber::seek(int64_t time) {
-    //Sleep(300);
     HRESULT  hr;
     int step = 0;
     long EvCode = 0;
@@ -651,7 +625,6 @@ AbstractVideoFrame* DirectshowFrameGrabber::grabCurrentFrame() {
 int64_t DirectshowFrameGrabber::duration() {
     return duration_;
 }
-
 
 void DirectshowFrameGrabber::abort() {
 

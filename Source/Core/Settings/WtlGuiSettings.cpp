@@ -1077,5 +1077,4 @@ void ImageUploadParams::setThumb(ThumbCreatingParams tcp)
     Thumb = tcp;
 }
 
-
 #endif

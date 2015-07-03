@@ -279,9 +279,6 @@
     <ClCompile Include="..\Core\Upload\Uploader.cpp">
       <Filter>Source Files\Core\Upload</Filter>
     </ClCompile>
-    <ClCompile Include="..\Core\Upload\UploadFilter.cpp">
-      <Filter>Source Files\Core\Upload</Filter>
-    </ClCompile>
     <ClCompile Include="..\Core\Upload\UploadManager.cpp">
       <Filter>Source Files\Core\Upload</Filter>
     </ClCompile>

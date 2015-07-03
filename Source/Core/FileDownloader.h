@@ -66,7 +66,7 @@ class CFileDownloader
         std::vector<std::thread> threads_;
         std::atomic<bool> stopSignal_;
         std::atomic<bool> isRunning_;
-        static int ProgressFunc (void* userData, double dltotal, double dlnow, double ultotal, double ulnow);
+        int ProgressFunc (NetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow);
         void memberThreadFunc();
         bool getNextJob(DownloadFileListItem& item);
 

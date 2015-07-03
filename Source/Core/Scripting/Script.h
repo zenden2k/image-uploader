@@ -20,7 +20,7 @@ class Script {
         time_t getCreationTime();
         /**
         Using multiple Squirrel VMs in the SAME thread is not supported. 
-        This function should be called each time current script is changed.
+        This function should be called each time current threads's script is changed.
         */
         void switchToThisVM();
     protected:
@@ -40,7 +40,6 @@ class Script {
         std::unique_ptr<NetworkClient> networkClient_;
     private:
         DISALLOW_COPY_AND_ASSIGN(Script);
-
 };
 
 #endif
