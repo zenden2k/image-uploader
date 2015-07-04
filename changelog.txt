@@ -19,6 +19,11 @@
 [c] Language files are now in UTF-8 encoding
 [c] Use winssl instead of openssl
 
+[c] MediaInfo: changed duration display style
+[+] Multiselection in log window
+[-] Removed old icon
+[+] Added support for "//example.com" links in re-uploader
+
 
 1.3.1.4318
 [f] Fixed uploading video files from Explorer's context menu (custom menu entries)

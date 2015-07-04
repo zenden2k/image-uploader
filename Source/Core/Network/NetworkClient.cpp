@@ -610,8 +610,7 @@ void nm_splitString(const std::string& str, const std::string& delimiters, std::
 }
 void NetworkClient::setProgressCallback(const ProgressCallback& func)
 {
-    //m_progressCallbackFunc = func;
-    //m_progressData = data;
+    m_progressCallbackFunc = func;
 }
 
 std::string nm_trimStr(const std::string& str)

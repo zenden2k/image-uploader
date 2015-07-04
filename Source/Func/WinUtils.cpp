@@ -78,7 +78,10 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
         if (OpenClipboard(hwnd)) {
             HGLOBAL hglb = GetClipboardData(CF_UNICODETEXT);
             if (!hglb) {
-                LOG(ERROR) << "GetClipboardData call failed. ErrorCode=" << ::GetLastError();
+                if (raiseError) {
+                    LOG(ERROR) << "GetClipboardData call failed. ErrorCode=" << ::GetLastError();
+                }
+                
                 CloseClipboard();
                 return false;
             }
