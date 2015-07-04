@@ -114,7 +114,7 @@ CString WtlGuiSettings::getShellExtensionFileName() const {
 
 void RegisterShellExtension(bool Register) {
     CString moduleName = Settings.getShellExtensionFileName();
-    if (!FileExists(moduleName)) {
+    if (!WinUtils::FileExists(moduleName)) {
         return;
     }
 
@@ -199,7 +199,7 @@ void WtlGuiSettings::FindDataFolder()
         }
     }
 
-    if (FileExists(GetCommonApplicationDataPath() + SETTINGS_FILE_NAME)) {
+    if (WinUtils::FileExists(GetCommonApplicationDataPath() + SETTINGS_FILE_NAME)) {
         DataFolder = GetCommonApplicationDataPath() + _T("Image Uploader\\");
         params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
     } else
@@ -261,7 +261,7 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
     CString copyFrom = WinUtils::GetAppFolder() + SETTINGS_FILE_NAME;
     CString copyTo = DataFolder + SETTINGS_FILE_NAME;
-    if (FileExists(copyFrom) && !FileExists(copyTo)) {
+    if (WinUtils::FileExists(copyFrom) && !WinUtils::FileExists(copyTo)) {
         MoveFile(copyFrom, copyTo);
     }
 
@@ -799,7 +799,7 @@ void WtlGuiSettings::ApplyRegSettingsRightNow()
         CString ShortcutName = GetSendToPath() + _T("\\Image Uploader.lnk");
 
         if (SendToContextMenu) {
-            if (FileExists(ShortcutName))
+            if (WinUtils::FileExists(ShortcutName))
                 DeleteFile(ShortcutName);
 
             CreateShortCut(ShortcutName, CmdLine.ModuleName(), WinUtils::GetAppFolder(), _T(

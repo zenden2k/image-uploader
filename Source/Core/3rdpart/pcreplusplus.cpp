@@ -180,8 +180,8 @@ string Pcre::replace(const string& piece, const string& with) {
        * to eat redundant parenteses, e.g. "((((1))))" returns the same
        * result as "((1))".
        */
-      _expression = "(" + _expression;
-      _expression=_expression + ")"; 
+        _expression = "(" + _expression;
+        _expression=_expression + ")"; 
     }
 
     _have_paren = true;
@@ -257,7 +257,7 @@ string Pcre::_replace_vars(const string& piece) {
     // let's do some conversion first
     __pcredebug << "Pcre::dollar matched: " << piece << ". Match(0): " << dollar.get_match(0) << endl;
     int iBracketIndex = atoi( dollar.get_match(1).data() );
-    string sBracketContent = get_match(iBracketIndex);
+    string sBracketContent = get_match(iBracketIndex+1);
     
     // now we can splitt the stuff
     string sSubSplit = "\\$" + dollar.get_match(1);

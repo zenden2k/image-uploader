@@ -395,13 +395,13 @@ LRESULT CMainDlg::OnBrowseButton(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 void CMainDlg::stop()
 {
     m_NeedStop = true;
-    if(m_FileDownloader.IsRunning())
+    if(m_FileDownloader.isRunning())
         m_FileDownloader.stop();
 }
 
 bool CMainDlg::isRunning()
 {
-    return m_bIsRunning || m_FileDownloader.IsRunning();
+    return m_bIsRunning || m_FileDownloader.isRunning();
 }
 
 bool CMainDlg::OnNeedStop()
@@ -456,7 +456,7 @@ void CMainDlg::onTaskFinished(UploadTask* task, bool ok) {
         CString viewUrl = Utf8ToWstring(result->getDownloadUrl()).c_str();
         int nFilesToCheck = 0;
         if (!imgUrl.IsEmpty()) {
-            m_FileDownloader.AddFile(result->getDirectUrl(), reinterpret_cast<void*>(i * 10));
+            m_FileDownloader.addFile(result->getDirectUrl(), reinterpret_cast<void*>(i * 10));
             nFilesToCheck++;
             m_ListView.SetItemText(i, 3, imgUrl);
 
@@ -471,7 +471,7 @@ void CMainDlg::onTaskFinished(UploadTask* task, bool ok) {
         if (!thumbUrl.IsEmpty()) {
 
             nFilesToCheck++;
-            m_FileDownloader.AddFile(result->getThumbUrl(), reinterpret_cast<void*>(i * 10 + 1));
+            m_FileDownloader.addFile(result->getThumbUrl(), reinterpret_cast<void*>(i * 10 + 1));
             m_ListView.SetItemText(i, 4, thumbUrl);
         } else {
 
@@ -484,7 +484,7 @@ void CMainDlg::onTaskFinished(UploadTask* task, bool ok) {
 
         if (!viewUrl.IsEmpty()) {
             nFilesToCheck++;
-            m_FileDownloader.AddFile(result->getDownloadUrl(), reinterpret_cast<void*>(i * 10 + 2));
+            m_FileDownloader.addFile(result->getDownloadUrl(), reinterpret_cast<void*>(i * 10 + 2));
             m_ListView.SetItemText(i, 5, viewUrl);
         } else {
 

@@ -112,7 +112,7 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
     {
         LocalFileCache::instance()->addFile(hi.directUrl, hi.localFilePath);
     }
-    session->AddItem(hi);
+    session->addItem(hi);
 #endif
 }
 

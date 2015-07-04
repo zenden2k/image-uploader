@@ -20,6 +20,7 @@
 
 #include "langclass.h"
 
+#include "Core/CommonDefs.h"
 #include "myutils.h"
 #include "Func/WinUtils.h"
 #include "Core/AppParams.h"
@@ -95,11 +96,14 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
     CString Filename = CString(m_Directory) + Lang + _T(".lng");
 
     std::string fileContents;
-   
+
+    if (Lang == CString("English")) { // English is built-in language
+        AppParams::instance()->setLanguageFile(IuCoreUtils::WstringToUtf8((LPCTSTR)(CString(m_Directory) + _T("English.lng"))));
+        return true;
+    }
+
     if (!IuCoreUtils::ReadUtf8TextFile(W2U(Filename), fileContents)) {
-        if ( Lang == CString("English")  ) {
-            AppParams::instance()->setLanguageFile(IuCoreUtils::WstringToUtf8((LPCTSTR)(CString(m_Directory) + _T("English.lng"))));
-        }
+       
         return false;
     }
 
@@ -153,7 +157,7 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
     }
 
     m_sLang = Lang;
-    AppParams::instance()->setLanguageFile(IuCoreUtils::WstringToUtf8((LPCTSTR)Filename));
+    AppParams::instance()->setLanguageFile(W2U(Filename));
     return true;
 }
 

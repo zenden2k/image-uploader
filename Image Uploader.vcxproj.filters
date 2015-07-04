@@ -255,9 +255,6 @@
     <ClInclude Include="Source\Func\Common.h">
       <Filter>Header Files\Func</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Func\FileInfoHelper.h">
-      <Filter>Header Files\Func</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Func\HistoryManager.h">
       <Filter>Header Files\Func</Filter>
     </ClInclude>
@@ -1518,9 +1515,6 @@
     <ClCompile Include="Source\Func\Common.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Func\FileInfoHelper.cpp">
-      <Filter>Source Files\Func</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Func\ImageEditorConfigurationProvider.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
@@ -1808,6 +1802,9 @@
     </ClCompile>
     <ClCompile Include="Source\Gui\Controls\ImageView.cpp">
       <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\MediaInfoHelper.cpp">
+      <Filter>Source Files\Func</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

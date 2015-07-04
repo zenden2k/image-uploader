@@ -126,7 +126,6 @@ class UploadTask {
         void childTaskFinished(UploadTask* child);
         void uploadProgress(InfoProgress progress);
         void taskFinished();
-        void uploaderStatusChanged();
         void statusChanged();
         void setCurrentUploadEngine(CAbstractUploadEngine* currentUploadEngine);
         bool stopSignal() const;

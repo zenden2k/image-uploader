@@ -41,7 +41,7 @@ CFileDownloader::~CFileDownloader()
     waitForFinished();
 }
 
-void CFileDownloader::AddFile(const std::string& url, void* id, const std::string& referer) {
+void CFileDownloader::addFile(const std::string& url, void* id, const std::string& referer) {
     if (stopSignal_)
         return;  // Cannot add file to queue while stopping process
     mutex_.lock();
@@ -50,7 +50,7 @@ void CFileDownloader::AddFile(const std::string& url, void* id, const std::strin
     newItem.url = url;
     newItem.id = reinterpret_cast <void*>(id);
     newItem.referer = referer;
-    m_fileList.push_back(newItem);
+    fileList_.push_back(newItem);
     mutex_.unlock();
 }
 
@@ -63,7 +63,7 @@ bool CFileDownloader::start() {
     stopSignal_ = false;
     std::lock_guard<std::mutex> guard(mutex_);
 
-    size_t numThreads = min(maxThreads_ - runningThreads_, int(m_fileList.size()));
+    size_t numThreads = min(maxThreads_ - runningThreads_, int(fileList_.size()));
     for (size_t i = 0; i < numThreads; i++) {
         runningThreads_++;
         isRunning_ = true;
@@ -115,7 +115,7 @@ void CFileDownloader::memberThreadFunc()
         }
 
         if (stopSignal_)
-            m_fileList.clear();
+            fileList_.clear();
         mutex_.unlock();
     }
 
@@ -123,7 +123,7 @@ void CFileDownloader::memberThreadFunc()
     runningThreads_--;
 
     if (stopSignal_)
-        m_fileList.clear();
+        fileList_.clear();
     mutex_.unlock();  // We need to release  mutex before calling  onQueueFinished()
 
     threadsStatusMutex_.lock();
@@ -141,13 +141,13 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
 {
     bool result = false;
     mutex_.lock();
-    if (!m_fileList.empty() && !stopSignal_)
+    if (!fileList_.empty() && !stopSignal_)
     {
-        item = *m_fileList.begin();
+        item = *fileList_.begin();
 
         std::string url;
         url = item.url;
-        m_fileList.erase(m_fileList.begin());
+        fileList_.erase(fileList_.begin());
 
         std::string ext = IuCoreUtils::ExtractFileExt(url);
         std::string fileName = IuCoreUtils::ExtractFileNameFromUrl(url);
@@ -172,7 +172,7 @@ void CFileDownloader::stop()
     stopSignal_ = true;
 }
 
-bool CFileDownloader::IsRunning()
+bool CFileDownloader::isRunning()
 {
     return isRunning_;
 }

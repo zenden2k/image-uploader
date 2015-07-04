@@ -20,14 +20,13 @@
 
 #include "QuickSetupDlg.h"
 
+#include "Core/CommonDefs.h"
 #include "Func/Common.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/Settings.h"
 #include "Gui/Dialogs/ServerParamsDlg.h"
 
-
-// CQuickSetupDlg
 CQuickSetupDlg::CQuickSetupDlg() {
 }
 
@@ -36,15 +35,7 @@ CQuickSetupDlg::~CQuickSetupDlg() {
 
 
 LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled){
-    TRC(IDC_FTPSETTINGSBUTTON, "FTP settings");
-    TRC(IDOK, "Continue");
-    TRC(IDCANCEL, "Cancel");
-    TRC(IDC_LOGINLABEL, "Login:");
-    TRC(IDC_PASSWORDLABEL, "Password:");
-    TRC(IDC_SERVERLABEL, "Choose server for uploading images");
-    TRC(IDC_AUTOSTARTUPCHECKBOX, "Launch program on Windows startup");
-    TRC(IDC_CAPTUREPRINTSCREENCHECKBOX, "Intercept PrintScreen and Alt+PrintScreen hotkeys");
-    TRC(IDC_EXPLORERINTEGRATION, "Add an item to the context menu of Windows Explorer");
+    translateUI();
     SetWindowText( APPNAME );
     CString titleText;
     titleText.Format(TR("%s - Quick Setup"), APPNAME );
@@ -148,7 +139,7 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
                 MessageBox(TR("Enter your account information"), APPNAME, MB_ICONEXCLAMATION);
                 return 0;
             }
-            LoginInfo& loginInfo = Settings.ServersSettings[WCstringToUtf8((LPCTSTR)Settings.getServerName())][WCstringToUtf8((LPCTSTR)(login))].authData;
+            LoginInfo& loginInfo = Settings.ServersSettings[W2U(Settings.getServerName())][W2U(login)].authData;
             loginInfo.DoAuth = true;
             loginInfo.Login = WCstringToUtf8( login );
             loginInfo.Password = WCstringToUtf8( password );
@@ -156,7 +147,6 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
         Settings.quickScreenshotServer = Settings.imageServer;
         Settings.contextMenuServer = Settings.imageServer;
         Settings.fileServer.setServerName("zippyshare.com");
-
     } else {
 
     }
@@ -175,7 +165,6 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
     } else {
         Settings.Hotkeys.getByFunc( _T("regionscreenshot") ).Clear();
         Settings.Hotkeys.getByFunc( _T("windowscreenshot") ).Clear();
-
     }
 
     if ( Settings.AutoStartup || capturePrintScreen ) {
@@ -200,7 +189,19 @@ LRESULT CQuickSetupDlg::OnClickedDoAuthCheckbox(WORD wNotifyCode, WORD wID, HWND
 
 void CQuickSetupDlg::doAuthCheckboxChanged() {
     bool isDoAuthChecked = SendDlgItemMessage(IDC_DOAUTHCHECKBOX, BM_GETCHECK) == BST_CHECKED;
-    GuiTools::EnableNextN( GetDlgItem( IDC_DOAUTHCHECKBOX) , 4, isDoAuthChecked);
+    GuiTools::EnableNextN( GetDlgItem( IDC_DOAUTHCHECKBOX), 4, isDoAuthChecked);
+}
+
+void CQuickSetupDlg::translateUI() {
+    TRC(IDC_FTPSETTINGSBUTTON, "FTP settings");
+    TRC(IDOK, "Continue");
+    TRC(IDCANCEL, "Cancel");
+    TRC(IDC_LOGINLABEL, "Login:");
+    TRC(IDC_PASSWORDLABEL, "Password:");
+    TRC(IDC_SERVERLABEL, "Choose server for uploading images");
+    TRC(IDC_AUTOSTARTUPCHECKBOX, "Launch program on Windows startup");
+    TRC(IDC_CAPTUREPRINTSCREENCHECKBOX, "Intercept PrintScreen and Alt+PrintScreen hotkeys");
+    TRC(IDC_EXPLORERINTEGRATION, "Add an item to the context menu of Windows Explorer");
 }
 
 void CQuickSetupDlg::showAuthorizationControls(bool show) {
@@ -216,7 +217,6 @@ LRESULT CQuickSetupDlg::OnServerComboSelChange(WORD wNotifyCode, WORD wID, HWND 
     serverChanged();
     return 0;
 }
-
 
 void  CQuickSetupDlg::serverChanged() {
     int serverComboElementIndex = serverComboBox_.GetCurSel();

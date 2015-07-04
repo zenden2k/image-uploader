@@ -5,7 +5,9 @@
 #include "Network/NetworkClient.h"
 
 namespace CoreFunctions {
-    void ConfigureProxy(NetworkClient* nm);
+
+void ConfigureProxy(NetworkClient* nm);
+
 }
 
 #endif

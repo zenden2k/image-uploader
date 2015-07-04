@@ -33,6 +33,5 @@ protected:
     void onTaskFinished(UploadTask* task, bool ok);
     void taskAdded(UploadTask* task) override;
     void settingsChanged(BasicSettings* settings);
-
 };
 #endif

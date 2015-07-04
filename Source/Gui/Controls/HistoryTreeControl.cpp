@@ -75,7 +75,7 @@ void CHistoryTreeControl::abortLoadingThreads()
     {
         SignalStop();
     }
-    if(m_FileDownloader && m_FileDownloader->IsRunning())
+    if(m_FileDownloader && m_FileDownloader->isRunning())
     {
         
         m_FileDownloader->stop();
@@ -555,8 +555,6 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
 
     Graphics g(m_hWnd,true);
     ImgBuffer = new Bitmap(thumbwidth, thumbheight, &g);
-
-
     Graphics gr(ImgBuffer);
     gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
     gr.Clear(Color(255,255,255,255));
@@ -589,9 +587,6 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
                 br2(bounds, Color(240, 255, 255, 255), Color(200, 210, 210, 210), 
                 LinearGradientModeBackwardDiagonal /*LinearGradientModeVertical*/); 
             gr.FillRectangle(&br2,(float)1, (float)height+1, (float)width-2, (float)height+20-1);
-
-
-
         }
 
         if(item)
@@ -678,7 +673,7 @@ void CHistoryTreeControl::DownloadThumb(HistoryTreeItem * it)
         if(downloading_enabled_)
         {
             CreateDownloader();
-            m_FileDownloader->AddFile(thumbUrl, it);
+            m_FileDownloader->addFile(thumbUrl, it);
             if(onThreadsStarted)    
                 onThreadsStarted();
             m_FileDownloader->start();
@@ -703,7 +698,7 @@ DWORD CHistoryTreeControl::Run()
         }
     }
     m_bIsRunning = false;
-    if(!m_FileDownloader || !m_FileDownloader->IsRunning()) 
+    if(!m_FileDownloader || !m_FileDownloader->isRunning()) 
         threadsFinished();
     return 0;
 }
@@ -759,7 +754,7 @@ void CHistoryTreeControl::QueueFinishedEvent()
 
 bool CHistoryTreeControl::isRunning() const
 {
-    return (m_bIsRunning || (m_FileDownloader && m_FileDownloader->IsRunning()) );
+    return (m_bIsRunning || (m_FileDownloader && m_FileDownloader->isRunning()) );
 }
 
 void CHistoryTreeControl::setDownloadingEnabled(bool enabled)
@@ -769,7 +764,7 @@ void CHistoryTreeControl::setDownloadingEnabled(bool enabled)
 
 void CHistoryTreeControl::ResetContent()
 {
-    if(m_bIsRunning || (m_FileDownloader && m_FileDownloader->IsRunning()))
+    if(m_bIsRunning || (m_FileDownloader && m_FileDownloader->isRunning()))
     {
         //MessageBox(_T("Cannot reset list while threads are still running!"));
         return;
@@ -777,8 +772,7 @@ void CHistoryTreeControl::ResetContent()
     CCustomTreeControlImpl<CHistoryTreeControl>::ResetContent();
 }
 
-void CHistoryTreeControl::OnConfigureNetworkClient(NetworkClient* nm)
-{
-    //MessageBox(_T("OnConfigureNetworkClient"),0,0);
+void CHistoryTreeControl::OnConfigureNetworkClient(NetworkClient* nm) {
     CoreFunctions::ConfigureProxy(nm);
+    nm->setTreatErrorsAsWarnings(true); // no need to bother user with download errors
 }

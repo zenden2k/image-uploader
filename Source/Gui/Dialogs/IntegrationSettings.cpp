@@ -70,19 +70,22 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
     HICON ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONADDITEM), IMAGE_ICON    , 16,16,0);
     SendDlgItemMessage(IDC_ADDITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
     addItemButton_.SubclassWindow(GetDlgItem(IDC_ADDITEM));
+    GuiTools::CreateToolTipForWindow(addItemButton_.m_hWnd, TR("Add Item"));
 
     HICON icon2 = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONDELETEITEM), IMAGE_ICON    , 16,16,0));
     SendDlgItemMessage(IDC_DELETEITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon2);
     deleteItemButton_.SubclassWindow(GetDlgItem(IDC_DELETEITEM));
+    GuiTools::CreateToolTipForWindow(deleteItemButton_.m_hWnd, TR("Remove Item"));
 
     HICON icon3 = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONUP), IMAGE_ICON    , 16,16,0));
     SendDlgItemMessage(IDC_UPBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon3);
     upButton_.SubclassWindow(GetDlgItem(IDC_UPBUTTON));
+    GuiTools::CreateToolTipForWindow(upButton_.m_hWnd, TR("Move Up"));
 
     HICON icon4 = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONDOWN), IMAGE_ICON    , 16,16,0));
     SendDlgItemMessage(IDC_DOWNBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon4);
     downButton_.SubclassWindow(GetDlgItem(IDC_DOWNBUTTON));
-
+    GuiTools::CreateToolTipForWindow(downButton_.m_hWnd, TR("Move Down"));
 
     CRegistry Reg;
     Reg.SetRootKey( HKEY_CURRENT_USER );

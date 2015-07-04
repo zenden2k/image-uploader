@@ -27,7 +27,6 @@
 const int LLB_VertDivider = 10;
 const int LLB_VertMargin = 5;
 
-
 // CLogListBox
 CLogListBox::CLogListBox()
 {

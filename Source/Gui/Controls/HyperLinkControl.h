@@ -19,6 +19,7 @@
 */
 
 #pragma once
+#include "atlheaders.h"
 #include "resource.h"
 #include <atlcrack.h>
 
@@ -75,13 +76,14 @@ public:
     void Init(COLORREF BkColor=RGB(255,255,255));
     int ScaleX(int x);
     int ScaleY(int y);
-public:
     bool m_bHyperLinks;
     int NotifyParent(int nItem);
+    int Selected;
     CAtlArray<HyperLinkControlItem> Items;
+protected:
     int BottomY, SubItemRightY;
     CFont BoldFont, UnderlineFont,BoldUnderLineFont;
-    int Selected; 
+
     void SelectItem(int Index);
     bool CursorHand;
     HCURSOR HandCursor;

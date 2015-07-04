@@ -133,7 +133,7 @@ LRESULT CImageReuploaderDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
 LRESULT CImageReuploaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     bool closeWindow = true;
-    if (m_FileDownloader.IsRunning() ) {
+    if (m_FileDownloader.isRunning() ) {
         m_FileDownloader.stop();
         closeWindow = false;
     }
@@ -480,7 +480,7 @@ bool CImageReuploaderDlg::BeginDownloading()
             downloadItems_.push_back(std::unique_ptr<DownloadItemData>(dit));
             dit->originalUrl = url;
             dit->sourceIndex = i;
-            m_FileDownloader.AddFile( absoluteUrl, reinterpret_cast<void*>(dit), WCstringToUtf8(sourceUrl) );
+            m_FileDownloader.addFile( absoluteUrl, reinterpret_cast<void*>(dit), WCstringToUtf8(sourceUrl) );
             m_nFilesCount ++;    
 
         }
@@ -533,7 +533,7 @@ void CImageReuploaderDlg::OnFileFinished(UploadTask* task, bool ok) {
 void CImageReuploaderDlg::OnQueueFinished(UploadSession* uploadSession) {
     GuiTools::EnableDialogItem(m_hWnd, IDOK, true);
     updateStats();
-    if ( !m_FileDownloader.IsRunning() ) {
+    if ( !m_FileDownloader.isRunning() ) {
         processFinished();
     }
 }

@@ -148,7 +148,7 @@ void CShortenUrlDlg::OnDrawClipboard()
 {
     bool IsClipboard = IsClipboardFormatAvailable(CF_TEXT)!=0;
 
-    if(IsClipboard && SendDlgItemMessage(IDC_WATCHCLIPBOARD,BM_GETCHECK)==BST_CHECKED && !m_FileDownloader.IsRunning()    )
+    if(IsClipboard && SendDlgItemMessage(IDC_WATCHCLIPBOARD,BM_GETCHECK)==BST_CHECKED && !m_FileDownloader.isRunning()    )
     {
         CString str;
         WinUtils::GetClipboardText(str);

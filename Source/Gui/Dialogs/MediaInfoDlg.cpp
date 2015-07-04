@@ -20,7 +20,7 @@
 
 #include "MediaInfoDlg.h"
 
-#include "Func/fileinfohelper.h"
+#include "Func/MediaInfoHelper.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Func/myutils.h"
@@ -76,7 +76,7 @@ void CMediaInfoDlg::ShowInfo(LPCTSTR FileName)
 DWORD CMediaInfoDlg::Run()
 {
     CString  ShortFileName = WinUtils::TrimString(WinUtils::myExtractFileName(m_FileName), 40);
-    if(!FileExists(m_FileName))
+    if(!WinUtils::FileExists(m_FileName))
     { 
         SetDlgItemText(IDC_FILEINFOLABEL, CString(TR("Error:")));
         SetDlgItemText(IDC_FILEINFOEDIT, CString(TR("File \"")) + ShortFileName + TR("\" not found!"));
@@ -85,7 +85,7 @@ DWORD CMediaInfoDlg::Run()
 
     SetDlgItemText(IDC_FILEINFOLABEL,CString(TR("Information about file"))+_T(" \"")+ ShortFileName+_T("\" :"));
     CString Report;
-    GetMediaFileInfo(m_FileName, Report);
+    MediaInfoHelper::GetMediaFileInfo(m_FileName, Report);
     SetDlgItemText(IDC_FILEINFOEDIT, Report);
     return 0;
 }

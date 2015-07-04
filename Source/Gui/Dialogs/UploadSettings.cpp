@@ -92,7 +92,6 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     //m_ThumbSizeEdit.SubclassWindow(GetDlgItem(IDC_QUALITYEDIT));
     TranslateUI();
 
-
     CBitmap hBitmap;
     HDC dc = ::GetDC(HWND_DESKTOP);
     // Get color depth (minimum requirement is 32-bits for alpha blended images).
@@ -103,41 +102,40 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         m_PlaceSelectorImageList.Create(16,16,ILC_COLOR32,0,6);
         m_PlaceSelectorImageList.Add(hBitmap, (HBITMAP) NULL);
     }
-    else*/
-    {
+    else*/ {
         hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_SERVERTOOLBARBMP2));
-        m_PlaceSelectorImageList.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
+        m_PlaceSelectorImageList.Create(16, 16,ILC_COLOR32 | ILC_MASK, 0, 6);
         m_PlaceSelectorImageList.Add(hBitmap,RGB(255,0,255));
     }
-    ::ReleaseDC(HWND_DESKTOP,dc) ;
-   HICON ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON    , 16,16,0);
-    SendDlgItemMessage( IDC_RESIZEPRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
-   m_ResizePresetIconButton.SubclassWindow(GetDlgItem(IDC_RESIZEPRESETSBUTTON));
-    
-   SendDlgItemMessage(IDC_SHORTENINGURLSERVERBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
-   m_ShorteningServerButton.SubclassWindow(GetDlgItem(IDC_SHORTENINGURLSERVERBUTTON));
-   
-   
-   ico = (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONEDIT), IMAGE_ICON    , 16,16,0);
-   RECT profileRect;
+    ::ReleaseDC(HWND_DESKTOP, dc) ;
+    HICON ico = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16, 16, 0));
+    SendDlgItemMessage(IDC_RESIZEPRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
+    m_ResizePresetIconButton.SubclassWindow(GetDlgItem(IDC_RESIZEPRESETSBUTTON));
+
+    SendDlgItemMessage(IDC_SHORTENINGURLSERVERBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
+    m_ShorteningServerButton.SubclassWindow(GetDlgItem(IDC_SHORTENINGURLSERVERBUTTON));
+
+
+    ico = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONEDIT), IMAGE_ICON, 16, 16, 0));
+    RECT profileRect;
     ::GetWindowRect(GetDlgItem(IDC_EDITPROFILE), &profileRect);
-   ::MapWindowPoints(0, m_hWnd, (LPPOINT)&profileRect, 2);
-   
-   m_ProfileEditToolbar.Create(m_hWnd,profileRect,_T(""), WS_CHILD|WS_VISIBLE|WS_CHILD | TBSTYLE_LIST |TBSTYLE_FLAT| CCS_NORESIZE|/*CCS_BOTTOM |CCS_ADJUSTABLE|*/TBSTYLE_TOOLTIPS|CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
+    ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&profileRect), 2);
+
+    m_ProfileEditToolbar.Create(m_hWnd, profileRect,_T(""), WS_CHILD | WS_VISIBLE | WS_CHILD | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE | /*CCS_BOTTOM |CCS_ADJUSTABLE|*/TBSTYLE_TOOLTIPS | CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
     m_ProfileEditToolbar.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
-   m_ProfileEditToolbar.SetButtonStructSize();
-    m_ProfileEditToolbar.SetButtonSize(17,17);
-        
+    m_ProfileEditToolbar.SetButtonStructSize();
+    m_ProfileEditToolbar.SetButtonSize(17, 17);
+
     CImageList list;
-    list.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
+    list.Create(16, 16,ILC_COLOR32 | ILC_MASK, 0, 6);
     list.AddIcon(ico);
     m_ProfileEditToolbar.SetImageList(list);
-    m_ProfileEditToolbar.AddButton(IDC_EDITPROFILE, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Edit Profile"), 0);
+    m_ProfileEditToolbar.AddButton(IDC_EDITPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Edit Profile"), 0);
 
-   RECT Toolbar1Rect;
+    RECT Toolbar1Rect;
     ::GetWindowRect(GetDlgItem(IDC_IMAGESERVERGROUPBOX), &Toolbar1Rect);
   
-    ::MapWindowPoints(0, m_hWnd, (LPPOINT)&Toolbar1Rect, 2);
+    ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&Toolbar1Rect), 2);
     Toolbar1Rect.top += GuiTools::dlgY(9);
     Toolbar1Rect.bottom -= GuiTools::dlgY(3);
     Toolbar1Rect.left += GuiTools::dlgX(6);
@@ -145,7 +143,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 
     RECT Toolbar2Rect;
     ::GetWindowRect(GetDlgItem(IDC_FILESERVERGROUPBOX), &Toolbar2Rect);
-    ::MapWindowPoints(0, m_hWnd, (LPPOINT)&Toolbar2Rect, 2);
+    ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&Toolbar2Rect), 2);
     Toolbar2Rect.top += GuiTools::dlgY(9);
     Toolbar2Rect.bottom -= GuiTools::dlgY(3);
     Toolbar2Rect.left += GuiTools::dlgX(6);
@@ -175,15 +173,10 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 
     SendDlgItemMessage(IDC_THUMBWIDTHSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)1000, (short)40) );
     
-
     SendDlgItemMessage(IDC_QUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
     SendDlgItemMessage(IDC_THUMBQUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
     
-    
-    SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)TR("Auto"));
-    SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("JPEG"));
-    SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("PNG"));
-    SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("GIF"));
+    GuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 4, TR("Auto"), _T("JPEG"), _T("PNG"), _T("GIF"));
     
     ShowParams();
     ShowParams(U2W(sessionImageServer_.getImageUploadParams().ImageProfileName));
@@ -215,19 +208,19 @@ LRESULT CUploadSettings::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 LRESULT CUploadSettings::OnDrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     DRAWITEMSTRUCT* lpdis = reinterpret_cast<DRAWITEMSTRUCT*>(lParam);
-    if ((lpdis==NULL)||(lpdis->CtlType != ODT_MENU))
-        return S_OK;        //not for a menu
+    if ((lpdis == NULL) || (lpdis->CtlType != ODT_MENU))
+        return S_OK; //not for a menu
 
     HICON hIcon = serverMenuIcons_[lpdis->itemID];
 
     if (hIcon == NULL)
         return 0;
     // fix from http://miranda.svn.sourceforge.net/viewvc/miranda/trunk/miranda/src/modules/clist/genmenu.cpp
-    int    w = GetSystemMetrics(SM_CXSMICON);
+    int w = GetSystemMetrics(SM_CXSMICON);
     int h = GetSystemMetrics(SM_CYSMICON);
     int y = lpdis->rcItem.top + (lpdis->rcItem.bottom - lpdis->rcItem.top - h) / 2;
     int x = 2;
-    
+
     DrawIconEx(lpdis->hDC, x, y, hIcon, w, h, 0, NULL, DI_NORMAL);
     DeleteObject(hIcon);
     return TRUE;
@@ -317,7 +310,7 @@ bool CUploadSettings::OnNext()
         if(ue2->NeedAuthorization == 2 && sessionFileServer_.profileName().empty())
         {
             CString errorMsg;
-            errorMsg.Format(TR("Please specify authentication settings for '%s' server!"), (LPCTSTR)Utf8ToWstring(ue2->Name).c_str());
+            errorMsg.Format(TR("Please specify authentication settings for '%s' server!"), static_cast<LPCTSTR>(U2W(ue2->Name)));
             MessageBox(errorMsg, APPNAME, MB_ICONWARNING);
             return false;
         }
@@ -610,7 +603,7 @@ LRESULT CUploadSettings::OnFileServerSelect(WORD /*wNotifyCode*/, WORD wID, HWND
     
 LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
-    NMTOOLBAR* pnmtb = (NMTOOLBAR *) pnmh;
+    NMTOOLBAR* pnmtb = reinterpret_cast<NMTOOLBAR *>(pnmh);
 
     bool ImageServer = (idCtrl == IDC_IMAGETOOLBAR);
     ServerProfile & serverProfile = ImageServer ? sessionImageServer_ : sessionFileServer_;
@@ -686,13 +679,13 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         mi.fType = MFT_STRING;
         for(int i=0; i<m_EngineList->count(); i++)
         {
-            mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
+            mi.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STRING;
             mi.fType = MFT_STRING;
             if(!m_EngineList->byIndex(i)->hasType(CUploadEngineData::TypeFileServer)) continue;
             mi.wID = (ImageServer?IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
             CUploadEngineData* ued = m_EngineList->byIndex(i);
             CString name  = Utf8ToWCstring(ued->Name); 
-            mi.dwTypeData  = (LPWSTR)(LPCTSTR) name;
+            mi.dwTypeData  = (LPWSTR)(LPCTSTR)name;
             HICON hImageIcon = m_EngineList->getIconForServer(ued->Name);
             if (! WinUtils::IsVista() ) {
                 serverMenuIcons_[mi.wID] = hImageIcon;
@@ -771,7 +764,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             int i =0;
             //ShowVar((int)serverUsers.size() );
             if ( serverUsers.size() && !serverProfile.profileName().empty() ) {
-                mi.wID = IDC_LOGINTOOLBUTTON + (int)ImageServer;
+                mi.wID = IDC_LOGINTOOLBUTTON + static_cast<int>(ImageServer);
                 mi.dwTypeData = TR_CONST("Change account settings");
                 sub.InsertMenuItem(i++, true, &mi);
             } else {
@@ -782,7 +775,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             menuOpenedIsImageServer_ = ImageServer;
 
             if(plug && plug->supportsSettings()) {
-                mi.wID = IDC_SERVERPARAMS + (int)ImageServer;
+                mi.wID = IDC_SERVERPARAMS + static_cast<int>(ImageServer);
                 mi.dwTypeData = TR_CONST("Server settings...");
                 sub.InsertMenuItem(i++, true, &mi);
             }
@@ -834,7 +827,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 mi.fType = MFT_STRING;
                 mi.wID = IDC_NO_ACCOUNT + !ImageServer;
 
-                mi.dwTypeData  = (LPWSTR)(LPCTSTR)TR("<no authentication>");
+                mi.dwTypeData  = TR_CONST("<no authentication>");
                 sub.InsertMenuItem(i++, true, &mi);
             }
   
@@ -851,7 +844,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             mi.fType = MFT_STRING;
             mi.wID = IDC_ADD_ACCOUNT + !ImageServer;
 
-            mi.dwTypeData  = (LPWSTR)(LPCTSTR)TR("New account...");
+            mi.dwTypeData  = TR_CONST("New account...");
 
             sub.InsertMenuItem(i++, true, &mi);
             sub.SetMenuDefaultItem(0,TRUE);
@@ -863,7 +856,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
     }
         
     RECT rc;
-    ::SendMessage(CurrentToolbar.m_hWnd,TB_GETRECT, pnmtb->iItem, (LPARAM)&rc);
+    ::SendMessage(CurrentToolbar.m_hWnd,TB_GETRECT, pnmtb->iItem, reinterpret_cast<LPARAM>(&rc));
     CurrentToolbar.ClientToScreen(&rc);
     TPMPARAMS excludeArea;
     ZeroMemory(&excludeArea, sizeof(excludeArea));
@@ -879,7 +872,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 
 LRESULT CUploadSettings::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    HWND hwnd = (HWND) wParam;
+    HWND hwnd = reinterpret_cast<HWND>(wParam);
     int xPos = LOWORD(lParam); 
     int yPos = HIWORD(lParam); 
 

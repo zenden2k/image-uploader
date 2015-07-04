@@ -22,10 +22,10 @@
 #define IU_CORE_SCREEN_CAPTURE_H
 
 #include <vector>
+#include "Core/Utils/CoreTypes.h"
 #include "atlheaders.h"
 #include "3rdpart/GdiplusH.h"
 #include "Core/Utils/CoreTypes.h"
-
 
 HRGN GetWindowVisibleRegion(HWND wnd);
 
@@ -88,7 +88,7 @@ class CWindowHandlesRegion : public CRectRegion
         void SetWindowHidingDelay(int delay);
         void setWindowCapturingFlags(WindowCapturingFlags flags);
         virtual bool GetImage(HDC src, Gdiplus::Bitmap** res) override;
-        bool IsEmpty() override;
+        virtual bool IsEmpty() override;
         ~CWindowHandlesRegion();
     protected:
         struct CWindowHandlesRegionItem
@@ -109,7 +109,7 @@ class CActiveWindowRegion : public CWindowHandlesRegion
 {
     public:
         CActiveWindowRegion();
-        virtual bool GetImage(HDC src, Gdiplus::Bitmap** res);
+        virtual bool GetImage(HDC src, Gdiplus::Bitmap** res) override;
 };
 
 class CFreeFormRegion : public CRectRegion
@@ -118,8 +118,8 @@ class CFreeFormRegion : public CRectRegion
         CFreeFormRegion();
         void AddPoint(POINT point);
         void Clear();
-        bool IsEmpty();
-        virtual bool GetImage(HDC src, Gdiplus::Bitmap** res);
+        virtual bool IsEmpty() override;
+        virtual bool GetImage(HDC src, Gdiplus::Bitmap** res) override;
         ~CFreeFormRegion();
     protected:
         std::vector<POINT> m_curvePoints;
@@ -144,6 +144,8 @@ class CScreenCaptureEngine
         /*static */bool capturedBitmapReleased_;
         HBITMAP m_source;
         /*static*/ void capturedBitmapDeleteFunction(Gdiplus::Bitmap* bm);
+private:
+    DISALLOW_COPY_AND_ASSIGN(CScreenCaptureEngine);
 };
 
 #endif  // IU_CORE_SCREEN_CAPTURE_H

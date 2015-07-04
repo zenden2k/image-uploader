@@ -200,7 +200,7 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, G
     
     if(!FileName) return FALSE;
 
-    if(!FileExists(FileName)) return FALSE;
+    if(!WinUtils::FileExists(FileName)) return FALSE;
     fl.selected = false;
 
     fl.FileName = FileName;

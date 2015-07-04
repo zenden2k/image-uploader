@@ -60,6 +60,7 @@ class CQuickSetupDlg : public CDialogImpl<CQuickSetupDlg>
 		CIcon hIcon;
 		CIcon hIconSmall;
 		void doAuthCheckboxChanged();
+        void translateUI();
 		CComboBoxEx serverComboBox_;
 		CImageList comboBoxImageList_;
 		void showAuthorizationControls(bool show);

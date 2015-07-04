@@ -400,14 +400,6 @@ LPTSTR fgetline(LPTSTR buf,int num,FILE *f)
     return Result;
 }
 
-
-
-BOOL FileExists(LPCTSTR FileName)
-{
-    if(!FileName || GetFileAttributes(FileName)==-1) return FALSE;
-    return TRUE;
-}
-
 const CString TrimString(const CString& source, int nMaxLen)
 {
     int nLen = source.GetLength();

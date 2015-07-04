@@ -463,7 +463,7 @@ HWND CreateToolTipForWindow(HWND hwnd, const CString& text) {
 
     // Set up "tool" information. In this case, the "tool" is the entire parent window.
     RECT clientRect;
-    ::GetClientRect(hwndTT, &clientRect);
+    ::GetClientRect(hwnd, &clientRect);
     TOOLINFO ti = { 0 };
     ti.cbSize   = sizeof(TOOLINFO);
     ti.uFlags   = TTF_SUBCLASS;

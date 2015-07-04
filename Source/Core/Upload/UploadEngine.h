@@ -91,12 +91,12 @@ public:
     int accessType;
     int itemCount;
     /*! @endcond */
-    const std::string getTitle() { return title;}
-    const std::string getSummary() { return summary;}
-    const std::string getId() { return (id);}
-    const std::string getParentId() { return (parentid);}
-    const int getItemCount() { return itemCount; }
-    const int getAccessType() { return accessType; }
+    std::string getTitle() const { return title;}
+    std::string getSummary() const { return summary;}
+    std::string getId() const { return (id);}
+    std::string getParentId() const { return (parentid);}
+    int getItemCount() const { return itemCount; }
+    int getAccessType() const { return accessType; }
 
     void setTitle(const std::string& str) { title = (str); }
     void setViewUrl(const std::string& str) { viewUrl = (str); }
@@ -127,7 +127,7 @@ public:
     }
     /*! @endcond */
 
-    const std::string getParam(const std::string& name)
+    std::string getParam(const std::string& name)
     {
         std::lock_guard<std::mutex> lock(*paramsMutex_);
         std::string result;

@@ -24,6 +24,12 @@
 #pragma once
 
 #include "atlheaders.h"
+namespace MediaInfoHelper {
+
+bool FindMediaInfoDllPath();
+bool IsMediaInfoAvailable();
 bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer);
+
+}
 
 #endif  // IU_FUNC_FILEINFOHELPER_H

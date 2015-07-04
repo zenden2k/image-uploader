@@ -39,7 +39,8 @@ public:
         canceled_ = false;
         isRunning_ = false;
     }
-    ~VideoGrabberRunnable() {
+
+    virtual ~VideoGrabberRunnable() {
     }
 
     void cancel()

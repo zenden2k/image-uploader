@@ -55,7 +55,7 @@ class CHistorySession
 {
     public:
         CHistorySession(const std::string& filename, const std::string& sessionId);
-        bool AddItem(const HistoryItem& ht);
+        bool addItem(const HistoryItem& ht);
 
         int entriesCount() const;
         HistoryItem entry(const int index) const;

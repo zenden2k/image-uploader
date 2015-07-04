@@ -69,7 +69,6 @@ bool IsStrInList(LPCTSTR szExt,LPCTSTR szList);
 int MyGetFileSize(LPCTSTR FileName);
 
 LPTSTR fgetline(LPTSTR buf,int num,FILE *f);
-BOOL FileExists(LPCTSTR FileName);
 const CString TrimString(const CString& source, int nMaxLen);
 
 LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int nBufferSize);

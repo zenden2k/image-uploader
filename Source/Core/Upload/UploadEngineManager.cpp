@@ -1,4 +1,24 @@
-﻿#include "UploadEngineManager.h"
+﻿/*
+
+Image Uploader -  free application for uploading images/files to the Internet
+
+Copyright 2007-2015 Sergey Svistunov (zenden2k@gmail.com)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+*/
+
+#include "UploadEngineManager.h"
 
 #include "../UploadEngineList.h"
 #include "ServerProfile.h"
@@ -17,7 +37,7 @@ UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList, IU
 
 UploadEngineManager::~UploadEngineManager()
 {
-    UnloadPlugins();
+    unloadUploadEngines();
     for (auto sync : serverSyncs_)
     {
         delete sync.second;
@@ -77,7 +97,6 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
         result->onErrorMessage.bind(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
         
         m_plugins[threadId][serverName] = result;
-
     }
     
     result->setServerSettings(&serverProfile.serverSettings());
@@ -112,7 +131,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
         m_plugins[threadId][serverName] = 0;
     }
     ServerSync* serverSync = getServerSync(serverProfile);
-    std::string fileName = m_ScriptsDirectory + pluginName + ".nut";
+    std::string fileName = scriptsDirectory_ + pluginName + ".nut";
     CScriptUploadEngine* newPlugin = new CScriptUploadEngine(fileName, serverSync, &params);
     newPlugin->onErrorMessage.bind(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
     if (newPlugin->isLoaded()) {
@@ -125,8 +144,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     return NULL;
 }
 
-
-void UploadEngineManager::UnloadPlugins() {
+void UploadEngineManager::unloadUploadEngines() {
     std::lock_guard<std::mutex> lock(pluginsMutex_);
     for (auto it = m_plugins.begin(); it != m_plugins.end(); ++it) {
         for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
@@ -137,7 +155,7 @@ void UploadEngineManager::UnloadPlugins() {
 }
 
 void UploadEngineManager::setScriptsDirectory(const std::string & directory) {
-    m_ScriptsDirectory = directory;
+    scriptsDirectory_ = directory;
 }
 
 void UploadEngineManager::clearThreadData()

@@ -126,7 +126,7 @@ LRESULT CImageDownloaderDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
 
 LRESULT CImageDownloaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    if(m_FileDownloader.IsRunning()) 
+    if(m_FileDownloader.isRunning()) 
         m_FileDownloader.stop();
     else
     {
@@ -237,7 +237,7 @@ bool CImageDownloaderDlg::BeginDownloading()
     m_nFileDownloaded = 0;
     for(size_t i=0; i<tokens.size(); i++)
     {
-        m_FileDownloader.AddFile(nm_trimStr(tokens[i]), reinterpret_cast<void*>(i));
+        m_FileDownloader.addFile(nm_trimStr(tokens[i]), reinterpret_cast<void*>(i));
         m_nFilesCount++;
     }
     if(m_nFilesCount)
@@ -292,7 +292,7 @@ void CImageDownloaderDlg::clipboardUpdated()
 {
     bool IsClipboard = IsClipboardFormatAvailable(CF_UNICODETEXT) != 0;
 
-    if (IsClipboard && SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_GETCHECK) == BST_CHECKED && !m_FileDownloader.IsRunning())
+    if (IsClipboard && SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_GETCHECK) == BST_CHECKED && !m_FileDownloader.isRunning())
     {
         CString str;
         if (WinUtils::GetClipboardText(str, m_hWnd, true))

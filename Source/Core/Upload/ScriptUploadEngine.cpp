@@ -154,16 +154,12 @@ bool CScriptUploadEngine::needStop()
 
 bool CScriptUploadEngine::preLoad()
 {
-    try
-    {   
+    try {   
         ServerSettingsStruct* par = m_ServersSettings;
         Sqrat::RootTable& rootTable = vm_.GetRootTable();
         rootTable.SetInstance("ServerParams", par);
         rootTable.SetInstance("Sync", serverSync_);
-
-    }
-    catch (std::exception& e)
-    {
+    } catch (std::exception& e) {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::preLoad failed\r\n" + std::string("Error: ") + e.what());
         return false;
     }
@@ -216,7 +212,6 @@ int CScriptUploadEngine::getAccessTypeList(std::vector<std::string>& list)
 int CScriptUploadEngine::getServerParamList(std::map<std::string, std::string>& list)
 {
     using namespace Sqrat;
-    Sqrat::Table arr;
 
     try
     {

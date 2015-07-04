@@ -24,7 +24,7 @@
 #include "Core/Video/VideoGrabber.h"
 #include "Core/Video/GdiPlusImage.h"
 #include "Gui/Dialogs/SettingsDlg.h"
-#include "Func/fileinfohelper.h"
+#include "Func/MediaInfoHelper.h"
 #include "Func/WinUtils.h"
 #include "LogWindow.h"
 #include "mediainfodlg.h"
@@ -383,7 +383,8 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
     {
         TCHAR buffer[256];
         GetDlgItemText(IDC_FILEEDIT, buffer, 256);
-        /*bool bMediaInfoResult = */GetMediaFileInfo(buffer, Report);
+        /*bool bMediaInfoResult = */
+        MediaInfoHelper::GetMediaFileInfo(buffer, Report);
 
         Graphics g1(m_hWnd);
 

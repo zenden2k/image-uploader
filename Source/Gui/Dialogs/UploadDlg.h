@@ -23,17 +23,11 @@
 
 #pragma once
 
-#include <deque>
 #include <Shobjidl.h>
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include "3rdpart/thread.h"
-
 #include "Core/Upload/Uploader.h"
-#include "Gui/Controls/HyperLinkControl.h"
 #include "Gui/Dialogs/maindlg.h"
-#include "Gui/Dialogs/LogoSettings.h"
-#include "Gui/Dialogs/SizeExceed.h"
 #include "Gui/Dialogs/ResultsWindow.h"
 #include "Core/Upload/FileQueueUploader.h"
 #include "Core/Settings.h"
@@ -52,9 +46,6 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
             IDC_UPLOADPROCESSTAB = WM_USER + 100, IDC_UPLOADRESULTSTAB = IDC_UPLOADPROCESSTAB + 1,
             kEnableNextButtonTimer = 5
         };
-        int TimerInc;
-        bool IsStopTimer;
-        bool Terminated;
         
          BEGIN_MSG_MAP(CUploadDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -72,25 +63,20 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         bool startUpload();
         CMainDlg *MainDlg;
-        CResultsWindow *ResultsWindow;
+        CResultsWindow *resultsWindow_;
         int ThreadTerminated(void);
-        std::vector<CUrlListItem> UrlList;
-        bool OnShow();
-        bool OnNext();
-        bool OnHide();
-        DWORD LastUpdate;
-        void GenThumb(LPCTSTR szImageFileName, Gdiplus::Image *bm, int ThumbWidth,int newwidth,int newheight,LPTSTR szBufferThumb, int fileformat);
+        std::vector<CUrlListItem> urlList_;
+        bool OnShow() override;
+        bool OnNext() override;
+        bool OnHide() override;
         bool CancelByUser;
         void GenerateOutput();
         void TotalUploadProgress(int CurPos, int Total,int FileProgress=0);
         int progressCurrent, progressTotal;
-        CMyEngineList *m_EngineList;
-        CString m_StatusText;
+        CMyEngineList *engineList_;
         
         void OnUploaderStatusChanged(UploadTask* task);
         void onShortenUrlChanged(bool shortenUrl);
-        void AddShortenUrlTask(CUrlListItem* item);
-        void AddShortenUrlTask(CUrlListItem* item, CString linkType);
         virtual bool OnFileFinished(std::shared_ptr<UploadTask> task, bool ok);
         virtual bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);
     protected:

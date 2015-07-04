@@ -58,6 +58,7 @@
 #include "Core/Scripting/ScriptsManager.h"
 #include "Func/myutils.h"
 #include "Core/ServiceLocator.h"
+#include "Func/MediaInfoHelper.h"
 
 using namespace Gdiplus;
 // CWizardDlg
@@ -137,25 +138,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     OleInitialize(NULL);
     
     ::RegisterDragDrop(m_hWnd, this);
-    *MediaInfoDllPath=0;
-    TCHAR Buffer[MAX_PATH];
-    HKEY ExtKey;
-    Buffer[0]=0;
-    RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\KLCodecPack"), 0,/* REG_OPTION_NON_VOLATILE, */KEY_QUERY_VALUE,  &ExtKey/* NULL*/);
-    TCHAR ClassName[MAX_PATH]=_T("\0");
-    DWORD BufSize = sizeof(ClassName)/sizeof(TCHAR);
-    DWORD Type = REG_SZ;
-    RegQueryValueEx(ExtKey, _T("installdir"), 0, &Type, (LPBYTE)&ClassName, &BufSize);
-    RegCloseKey(ExtKey);
- 
-    
-    CString MediaDll = WinUtils::GetAppFolder() + _T("\\Modules\\MediaInfo.dll");
-    if(WinUtils::FileExists( MediaDll)) lstrcpy(MediaInfoDllPath, MediaDll);
-    else
-    {
-        CString MediaDll2 = CString(ClassName) + _T("\\Tools\\MediaInfo.dll");
-        if(WinUtils::FileExists( MediaDll2)) lstrcpy(MediaInfoDllPath, MediaDll2);
-    }
+    MediaInfoHelper::FindMediaInfoDllPath();
     SetWindowText(APPNAME);
 
    Lang.SetDirectory(WinUtils::GetAppFolder() + "Lang\\");
@@ -229,12 +212,9 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
         for(size_t i=0; i<list.size(); i++)
         {
-            //MessageBox(list[i]);
-            
             LoadUploadEngines(userServersFolder+list[i], ErrorStr);
         }
     }
-
     
     LoadUploadEngines(_T("userservers.xml"), ErrorStr);    
 
@@ -269,7 +249,6 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     CreatePage(0); 
     ShowPage(0);
     ::SetFocus(Pages[0]->PageWnd);
-
 
     if(CmdLine.IsOption(_T("update")))
     {
@@ -331,7 +310,6 @@ bool CWizardDlg::ParseCmdLine()
             return 1;
         }
     }
-
 
     for(size_t i=0; i<CmdLine.GetCount(); i++)
     {
@@ -398,11 +376,9 @@ bool CWizardDlg::ParseCmdLine()
 	CStringList Paths;
 	while(CmdLine.GetNextFile(FileName, nIndex))
 	{
-        if (FileExists(FileName) || WinUtils::IsDirectory(FileName)) {
+        if (WinUtils::FileExists(FileName) || WinUtils::IsDirectory(FileName)) {
             Paths.Add(WinUtils::ConvertRelativePathToAbsolute(FileName));
         }
-
-		
 	}
 	if(!Paths.IsEmpty())
 	{

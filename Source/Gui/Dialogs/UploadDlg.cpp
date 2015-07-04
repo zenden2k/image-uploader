@@ -21,56 +21,45 @@
 #include "UploadDlg.h"
 
 #include <shobjidl.h>
-#include "Core/Images/ImageConverter.h"
-#include "Core/ServiceLocator.h"
 #include "Gui/Dialogs/LogWindow.h"
-#include "Gui/Dialogs/InputDialog.h"
 #include "Core/Settings.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/GuiTools.h"
 #include "Core/3rdpart/FastDelegate.h"
 #include "Core/Upload/FileQueueUploader.h"
-#include "Func/IuCommonFunctions.h"
 #include "Func/MyUtils.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Upload/UploadManager.h"
 #include "Func/WinUtils.h"
-#include <Core/CoreFunctions.h>
+#include "Core/CoreFunctions.h"
 #include "Gui/Dialogs/WizardDlg.h"
+#include "Func/MediaInfoHelper.h"
 
 // CUploadDlg
-CUploadDlg::CUploadDlg(CWizardDlg *dlg,UploadManager* uploadManager) :ResultsWindow(new CResultsWindow(dlg, UrlList, true))
+CUploadDlg::CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager) : resultsWindow_(new CResultsWindow(dlg, urlList_, true))
 {
-    MainDlg = NULL;
-    TimerInc = 0;
-    IsStopTimer = false;
-    Terminated = false;
-    m_EngineList = _EngineList;
-    LastUpdate = 0;
+    MainDlg = nullptr;
+    engineList_ = _EngineList;
     backgroundThreadStarted_ = false;
     isEnableNextButtonTimerRunning_ = false;
-    //fastdelegate::FastDelegate1<bool> fd;
-    //fd.bind(this, &CUploadDlg::onShortenUrlChanged);
     uploadManager_ = uploadManager;
-    ResultsWindow->setOnShortenUrlChanged(fastdelegate::MakeDelegate(this, &CUploadDlg::onShortenUrlChanged));
+    resultsWindow_->setOnShortenUrlChanged(fastdelegate::MakeDelegate(this, &CUploadDlg::onShortenUrlChanged));
     #if  WINVER    >= 0x0601
-        ptl = NULL;
+        ptl = nullptr;
     #endif
 }
 
 CUploadDlg::~CUploadDlg()
 {
-    delete ResultsWindow;
+    delete resultsWindow_;
 }
-
-//Gdiplus::Bitmap* BitmapFromResource(HINSTANCE hInstance,LPCTSTR szResName, LPCTSTR szResType);
 
 LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     // Initializing Windows 7 taskbar related stuff
     RECT rc;
     ::GetWindowRect(GetDlgItem(IDC_RESULTSPLACEHOLDER), &rc);
-    ::MapWindowPoints(0,m_hWnd, (POINT*)&rc, 2);
+    ::MapWindowPoints(0,m_hWnd, reinterpret_cast<POINT*>(&rc), 2);
 
     uploadListView_.AttachToDlgItem(m_hWnd, IDC_UPLOADTABLE);
     uploadListView_.AddColumn(TR("File"), 1);
@@ -85,22 +74,22 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
     createToolbar();
 
-    ResultsWindow->Create(m_hWnd);
-    ResultsWindow->SetWindowPos(0,&rc,0);
+    resultsWindow_->Create(m_hWnd);
+    resultsWindow_->SetWindowPos(0,&rc,0);
     #if  WINVER    >= 0x0601
         const GUID IID_ITaskbarList3 = { 0xea1afb91,0x9e28,0x4b86,{0x90,0xe9,0x9e,0x9f, 0x8a,0x5e,0xef,0xaf}};
         CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_ALL, IID_ITaskbarList3, (void**)&ptl);
     #endif
 
     TRC(IDC_COMMONPROGRESS, "Progress:");
-    bool IsLastVideo = lstrlen(MediaInfoDllPath)!=0;
+    bool IsLastVideo = false;
+    if (MediaInfoHelper::IsMediaInfoAvailable()) {
+        CVideoGrabberPage *vg = static_cast<CVideoGrabberPage*>(WizardDlg->Pages[1]);
 
-    CVideoGrabberPage *vg = static_cast<CVideoGrabberPage*>(WizardDlg->Pages[1]);
-
-    if(vg && lstrlen(vg->m_szFileName))
-        IsLastVideo=true;
-
-    ResultsWindow->EnableMediaInfo(IsLastVideo);
+        if (vg && lstrlen(vg->m_szFileName))
+            IsLastVideo = true;
+    }
+    resultsWindow_->EnableMediaInfo(IsLastVideo);
 
     SetDlgItemInt(IDC_THUMBSPERLINE, 4);
     SendDlgItemMessage(IDC_THUMBPERLINESPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
@@ -108,8 +97,8 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPROGRESS));
     GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPERCENTS));
     PageWnd = m_hWnd;
-    ResultsWindow->SetPage(Settings.CodeLang);
-    ResultsWindow->SetCodeType(Settings.CodeType);
+    resultsWindow_->SetPage(Settings.CodeLang);
+    resultsWindow_->SetCodeType(Settings.CodeType);
     showUploadProgressTab();
     return 1;  
 }
@@ -133,8 +122,8 @@ bool CUploadDlg::startUpload() {
 
     uploadListView_.DeleteAllItems();
 
-    UrlList.clear();
-    UrlList.resize(n);
+    urlList_.clear();
+    urlList_.resize(n);
     
     uploadSession_.reset(new UploadSession());
     for (int i = 0; i < n; i++) {
@@ -190,13 +179,7 @@ int CUploadDlg::ThreadTerminated(void)
     wsprintf(szBuffer,_T("%d %%"),100);
     SetDlgItemText(IDC_COMMONPERCENTS,szBuffer);
 
-    KillTimer(1);
-    KillTimer(2);
-    LastUpdate = 0;
-
     SetNextCaption(TR("Finish >"));
-    Terminated = true;
-    IsStopTimer = false;
     backgroundThreadStarted_ = false;
     EnablePrev();
     EnableNext();
@@ -210,15 +193,14 @@ bool CUploadDlg::OnShow()
     sessionImageServer_ = WizardDlg->getSessionImageServer();
     bool IsLastVideo=false;
 
-    if(lstrlen(MediaInfoDllPath))
-    { 
-        CVideoGrabberPage *vg =(CVideoGrabberPage *) WizardDlg->Pages[1];
+    if ( MediaInfoHelper::IsMediaInfoAvailable()) {
+        CVideoGrabberPage *vg = (CVideoGrabberPage *) WizardDlg->Pages[1];
 
         if(vg && lstrlen(vg->m_szFileName))
             IsLastVideo=true;
     }
-    ResultsWindow->InitUpload();
-    ResultsWindow->EnableMediaInfo(IsLastVideo);
+    resultsWindow_->InitUpload();
+    resultsWindow_->EnableMediaInfo(IsLastVideo);
     CancelByUser = false;
     ShowNext();
     ShowPrev();
@@ -227,11 +209,11 @@ bool CUploadDlg::OnShow()
     SetTimer(kEnableNextButtonTimer, 1000);
     MainDlg = (CMainDlg*) WizardDlg->Pages[2];
     //Toolbar.CheckButton(IDC_USETEMPLATE,Settings.UseTxtTemplate);
-    UrlList.clear();
-    ResultsWindow->Clear();
-    ResultsWindow->setShortenUrls(sessionImageServer_.shortenLinks());
+    urlList_.clear();
+    resultsWindow_->Clear();
+    resultsWindow_->setShortenUrls(sessionImageServer_.shortenLinks());
 
-    int code = ResultsWindow->GetCodeType();
+    int code = resultsWindow_->GetCodeType();
     int newcode = code;
     bool Thumbs = sessionImageServer_.getImageUploadParams().CreateThumbs!=0;
 
@@ -246,8 +228,8 @@ bool CUploadDlg::OnShow()
         if(code<2)
             newcode=2;
     }
-    ResultsWindow->SetCodeType(newcode);
-    ResultsWindow->SetPage(Settings.CodeLang);
+    resultsWindow_->SetCodeType(newcode);
+    resultsWindow_->SetPage(Settings.CodeLang);
 
     ::SetFocus(GetDlgItem(IDC_CODEEDIT));
     alreadyShortened_ = false;
@@ -256,31 +238,12 @@ bool CUploadDlg::OnShow()
     return true;
 }
 
-bool CUploadDlg::OnNext()
-{
-    if(uploadSession_->isRunning())
-    {
-        if(!IsStopTimer)
-        {
-            uploadSession_->stop();
-            CancelByUser = true;
-            //TimerInc = 5;
-            //SetTimer(1, 1000, NULL);
-            //IsStopTimer = true;
-        }
-        /*else 
-        {
-            if(TimerInc<5)
-            {
-                this->Terminate();
-                ThreadTerminated();
-                FileProgress(TR("File uploading was cancelled by user."), false);
-            }
-        }*/
-
+bool CUploadDlg::OnNext() {
+    if (uploadSession_->isRunning()) {
+        uploadSession_->stop();
+        CancelByUser = true;
     }
-    else 
-    {
+    else {
         MainDlg->ThumbsView.MyDeleteAllItems();
         EnableExit();
         return true;
@@ -290,19 +253,18 @@ bool CUploadDlg::OnNext()
 
 bool CUploadDlg::OnHide()
 {
-    UrlList.clear();
-    ResultsWindow->Clear();
+    urlList_.clear();
+    resultsWindow_->Clear();
     uploadManager_->removeSession(uploadSession_);
     uploadSession_.reset();
-    for (auto it : files_)
-    {
+    for (auto it : files_) {
         delete it;
     }
     files_.clear();
     
     Settings.UseTxtTemplate = (SendDlgItemMessage(IDC_USETEMPLATE, BM_GETCHECK) == BST_CHECKED);
-    Settings.CodeType = ResultsWindow->GetCodeType();
-    Settings.CodeLang = ResultsWindow->GetPage();
+    Settings.CodeType = resultsWindow_->GetCodeType();
+    Settings.CodeLang = resultsWindow_->GetPage();
     return true; 
 }
 
@@ -312,13 +274,13 @@ int GetWindowLeft(HWND Wnd)
 
     GetWindowRect(Wnd,&WindowRect);
     HWND Parent = GetParent(Wnd);
-    ScreenToClient(Parent, (LPPOINT)&WindowRect);
+    ScreenToClient(Parent, reinterpret_cast<LPPOINT>(&WindowRect));
     return WindowRect.left;
 }
 
 void CUploadDlg::GenerateOutput()
 {
-    ResultsWindow->UpdateOutput();
+    resultsWindow_->UpdateOutput();
 }
 
 void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
@@ -339,7 +301,6 @@ void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
     toolbar_.SetButtonInfo(IDC_UPLOADRESULTSTAB, TBIF_TEXT, 0, 0, res,0, 0, 0, 0);
 }
 
-
 void CUploadDlg::OnUploaderStatusChanged(UploadTask* task)
 {
     UploadProgress* progress = task->progress();
@@ -357,17 +318,7 @@ void CUploadDlg::OnUploaderStatusChanged(UploadTask* task)
         int columnIndex = isThumb ? 2 : 1;
         uploadListView_.SetItemText(fps->tableRow, columnIndex, statusText);
     }
-    /*PrInfo.CS.Lock();
-    //m_StatusText = 
-    PrInfo.Bytes.clear(); 
-    PrInfo.ip.clear();
-    PrInfo.CS.Unlock();*/
 }
-
-
-
-
-
 
 void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
     if ( !alreadyShortened_ && shortenUrl ) {
@@ -379,65 +330,7 @@ void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
     }
 }
 
-void CUploadDlg::AddShortenUrlTask(CUrlListItem* item) {
-    /*if ( !item->ImageUrl.IsEmpty() && item->ImageUrlShortened.IsEmpty() ) {
-        AddShortenUrlTask(item, _T("ImageUrl") );
-    }
-    if ( !item->DownloadUrl.IsEmpty() && item->DownloadUrlShortened.IsEmpty() ) {
-        AddShortenUrlTask(item, _T("DownloadUrl") );
-    }*/
-    /*if ( !item->ThumbUrl.IsEmpty() && item->ThumbUrlShortened.IsEmpty() ) {
-        AddShortenUrlTask(item, _T("ThumbUrl") );
-    }*/
-}
-
-void CUploadDlg::AddShortenUrlTask(CUrlListItem* item, CString linkType) {
-    /*CUploadEngineData *ue = Settings.urlShorteningServer.uploadEngineData();
-    if ( !ue ) {
-        WriteLog(logError, _T("Uploader"), _T("Cannot create url shortening engine '" + Settings.urlShorteningServer.serverName() + "'"));
-        return;
-    }
-    CUploadEngineData* newData = new CUploadEngineData();
-    *newData = *ue;
-    CAbstractUploadEngine * e = m_EngineList->getUploadEngine(ue,Settings.urlShorteningServer.serverSettings());
-    e->setUploadData(newData);
-    ServerSettingsStruct& settings = Settings.urlShorteningServer.serverSettings();
-    e->setServerSettings(settings);
-    ShortenUrlUserData* userData = new ShortenUrlUserData;
-    userData->item = item;
-    userData->linkType = linkType;
-    CString url;
-    if ( linkType == _T("ImageUrl") ) {
-        url = item->ImageUrl;
-    } else if ( linkType == _T("DownloadUrl") ) {
-        url = item->DownloadUrl;
-    } else if ( linkType == _T("ThumbUrl") ) {
-        url = item->ThumbUrl;
-    }
-    
-    if ( url.IsEmpty() ) {
-        return;
-    }
-    std::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
-    queueUploader_->AddUploadTask(task, reinterpret_cast<void*>(userData), e);
-    queueUploader_->start();*/
-}
-
 bool CUploadDlg::OnFileFinished(std::shared_ptr<UploadTask> task, bool ok) {
-    /*ShortenUrlUserData* shortenUrlUserData  = reinterpret_cast<ShortenUrlUserData*>(result.uploadTask->userData);
-        
-    if ( shortenUrlUserData->linkType == "ImageUrl" ){
-        shortenUrlUserData->item->ImageUrlShortened = Utf8ToWCstring(result.imageUrl);
-    }
-
-    if ( shortenUrlUserData->linkType == "DownloadUrl" ) {
-        shortenUrlUserData->item->DownloadUrlShortened = Utf8ToWCstring(result.imageUrl);
-    }
-
-    if ( shortenUrlUserData->linkType == "ThumbUrl" ) {
-        shortenUrlUserData->item->ThumbUrlShortened = Utf8ToWCstring(result.imageUrl);
-    }*/
-
     GenerateOutput();
 
     return false;
@@ -497,7 +390,7 @@ void CUploadDlg::showUploadResultsTab() {
 
     currentTab_ = IDC_UPLOADRESULTSTAB;
     uploadListView_.ShowWindow(SW_HIDE);
-    ResultsWindow->ShowWindow(SW_SHOW);
+    resultsWindow_->ShowWindow(SW_SHOW);
 }
 
 void CUploadDlg::showUploadProgressTab() {
@@ -510,7 +403,7 @@ void CUploadDlg::showUploadProgressTab() {
     toolbar_.SetButtonInfo(IDC_UPLOADPROCESSTAB, TBIF_STATE, 0, TBSTATE_ENABLED | TBSTATE_PRESSED, 0, 0, 0, 0, 0);
 
     uploadListView_.ShowWindow(SW_SHOW);
-    ResultsWindow->ShowWindow(SW_HIDE);
+    resultsWindow_->ShowWindow(SW_HIDE);
 }
 
 void CUploadDlg::onSessionFinished(UploadSession* session)
@@ -565,7 +458,6 @@ void CUploadDlg::onTaskUploadProgress(UploadTask* task)
 
 void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
 {
-    
     FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
     if (!fileTask)
     {
@@ -585,11 +477,11 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         item.DownloadUrl = Utf8ToWCstring(uploadResult->downloadUrl);
         item.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
         item.ThumbUrl = Utf8ToWCstring(uploadResult->thumbUrl);
-        UrlList[fps->tableRow] = item;
+        urlList_[fps->tableRow] = item;
         //uploadListView_.SetItemText(fps->tableRow, 1, _T("Готово"));
         TotalUploadProgress(uploadSession_->finishedTaskCount(UploadTask::StatusFinished), uploadSession_->taskCount(), 0);
     }
-     else if (fileTask->role() == UploadTask::ThumbRole) {
+    else if (fileTask->role() == UploadTask::ThumbRole) {
          FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(task->parentTask()->userData());
          if (!fps)
          {
@@ -603,7 +495,6 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
 
 void CUploadDlg::onChildTaskAdded(UploadTask* child)
 {
-
     if (!backgroundThreadStarted_)
     {
         backgroundThreadStarted();
@@ -638,8 +529,6 @@ void CUploadDlg::backgroundThreadStarted()
     EnableExit(false);
     SetNextCaption(TR("Stop"));
 }
-
-
 
 LRESULT CUploadDlg::OnUploadProcessButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     showUploadProgressTab();

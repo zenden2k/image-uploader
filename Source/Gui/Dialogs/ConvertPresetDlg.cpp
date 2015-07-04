@@ -19,6 +19,7 @@
  */
 
 #include "ConvertPresetDlg.h"
+
 #include "Func/LangClass.h"
 #include "ThumbSettingsPage.h"
 #include "Gui/Dialogs/LogoSettings.h"

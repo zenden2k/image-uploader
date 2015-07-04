@@ -12,10 +12,10 @@ namespace IuTextUtils
         std::string work = bbcode;
         
         pcrepp::Pcre reg2("\\[img\\](.+?)\\[\\/img\\]", "imc");
-        std::string work2 = reg2.replace(work, "<img src=\"$0\" border=\"0\">");
+        std::string work2 = reg2.replace(work, "<img src=\"$1\" style=\"border:0\">");
         
         pcrepp::Pcre reg("\\[url=(.+?)\\](.+?)\\[/url\\]", "imc");
-        std::string work3 = reg.replace(work2, "<a href=\"$0\" target=\"_blank\">$2</a>");
+        std::string work3 = reg.replace(work2, "<a href=\"$1\" target=\"_blank\">$2</a>");
         
 
         /*std::string work4;

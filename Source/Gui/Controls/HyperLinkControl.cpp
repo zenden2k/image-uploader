@@ -18,8 +18,8 @@
 
 */
 
-#include "atlheaders.h"
 #include "HyperLinkControl.h"
+
 #include "Func/Common.h"
 #include "Gui/GuiTools.h"
 
@@ -202,7 +202,6 @@ LRESULT CHyperLinkControl::OnMouseLeave(void)
     return 0;
 }
 
-
 LRESULT CHyperLinkControl::OnKillFocus(HWND hwndNewFocus)
 {
     SelectItem(-1);
@@ -264,7 +263,6 @@ LRESULT CHyperLinkControl::OnKeyUp(TCHAR vk, UINT cRepeat, UINT flags)
 
         SelectItem(NewSelect);
     }
-
 
     if (vk==VK_RETURN || vk==VK_SPACE)
     {
@@ -332,7 +330,6 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
             }
         
-
             ExtTextOutW(dc.m_hDC, TextRect.left, textY, ETO_CLIPPED, &TextRect, item.szTitle, wcslen(item.szTitle), 0);
             if(static_cast<size_t>(Selected)==i && m_bHyperLinks)
                 dc.SelectFont(UnderlineFont); else 

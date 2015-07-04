@@ -41,25 +41,25 @@ class CFileDownloader
             std::string displayName;
             std::string url;
             std::string referer;
-            void* id;
+            void* id; // pointer to user data
         };
 
         CFileDownloader();
         virtual ~CFileDownloader();
-        void AddFile(const std::string& url,void* userData, const std::string& referer = std::string());
+        void addFile(const std::string& url,void* userData, const std::string& referer = std::string());
         bool start();
         bool waitForFinished();
         void setThreadCount(int n);
         void stop();
-        bool IsRunning();
+        bool isRunning();
 
         fastdelegate::FastDelegate0<> onQueueFinished;
         fastdelegate::FastDelegate1<NetworkClient*> onConfigureNetworkClient;
         fastdelegate::FastDelegate3<bool, int, DownloadFileListItem, bool> onFileFinished;
     protected:
-        CString m_ErrorStr;
+        CString errorStr_;
         std::mutex mutex_;
-        std::vector<DownloadFileListItem> m_fileList;
+        std::vector<DownloadFileListItem> fileList_;
         int maxThreads_;
         int runningThreads_;
         std::mutex threadsStatusMutex_;

@@ -111,7 +111,7 @@ HistoryItem CHistorySession::entry(const int index) const
     return m_entries[index];
 }
 
-bool CHistorySession::AddItem(const HistoryItem &ht)
+bool CHistorySession::addItem(const HistoryItem &ht)
 {
     IuCoreUtils::ZGlobalMutex mutex("IuHistoryFileSessionMutex");
     SimpleXml xml;
@@ -207,7 +207,6 @@ std::string CHistoryManager::makeFileName() const
     std::string fileName = m_historyFilePath + m_historyFileNamePrefix +"_" + IuCoreUtils::toString(1900+timeinfo->tm_year)+"_" + IuCoreUtils::toString(timeinfo->tm_mon+1) + ".xml";
     return fileName;
 }
-
 
 // class CHistoryReader
 //

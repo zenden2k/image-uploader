@@ -743,7 +743,6 @@
     <ClInclude Include="Source\Gui\Controls\TabListBox.h" />
     <ClInclude Include="Source\Gui\Controls\ThumbsView.h" />
     <ClInclude Include="Source\Func\Common.h" />
-    <ClInclude Include="Source\Func\FileInfoHelper.h" />
     <ClInclude Include="Source\Func\HistoryManager.h" />
     <ClInclude Include="Source\Func\LangClass.h" />
     <ClInclude Include="Source\Func\MyUtils.h" />
@@ -1037,6 +1036,7 @@
     <ClCompile Include="Source\Core\Utils\TextUtils.cpp" />
     <ClCompile Include="Source\Func\DefaultLogger.cpp" />
     <ClCompile Include="Source\Func\DefaultUploadErrorHandler.cpp" />
+    <ClCompile Include="Source\Func\MediaInfoHelper.cpp" />
     <ClCompile Include="Source\Func\WtlScriptDialogProvider.cpp" />
     <ClCompile Include="Source\Gui\Controls\ImageView.cpp" />
     <ClCompile Include="Source\Gui\Controls\ResultsListView.cpp" />
@@ -1170,7 +1170,6 @@
     <ClCompile Include="Source\Gui\Controls\ThumbsView.cpp" />
     <ClCompile Include="Source\Gui\Controls\WTLBrowserView.cpp" />
     <ClCompile Include="Source\Func\Common.cpp" />
-    <ClCompile Include="Source\Func\FileInfoHelper.cpp" />
     <ClCompile Include="Source\Func\ImageEditorConfigurationProvider.cpp" />
     <ClCompile Include="Source\Func\IuCommonFunctions.cpp">
       <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ShowIncludes>
