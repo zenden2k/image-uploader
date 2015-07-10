@@ -34,6 +34,33 @@
     <Filter Include="Source\Core\3rdpart\GumboQuery\Tests">
       <UniqueIdentifier>{de8325fd-11f9-4e94-a5d5-abc3cf5af835}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Core\Scripting">
+      <UniqueIdentifier>{ebcc9904-683d-4add-8957-4954341b6a03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Scripting\API">
+      <UniqueIdentifier>{7dc1014b-2592-4ca3-8d9e-45a258f6d5a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Network">
+      <UniqueIdentifier>{138b874e-d395-42d5-861c-b57b45981666}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Scripting\API\GumboBindings">
+      <UniqueIdentifier>{ea55d538-3c08-46f3-8c48-9bb57d35f34b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Upload">
+      <UniqueIdentifier>{21b92aee-0e6c-4d39-a9e1-f63ef97ed304}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Settings">
+      <UniqueIdentifier>{407fac5b-4e69-4674-a217-0f7394226d86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Upload\UploadFilters">
+      <UniqueIdentifier>{cfbcfc47-8688-4464-b6d5-e2e9dc5e5b59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Scripting\API\Tests">
+      <UniqueIdentifier>{9dd28b02-f5e3-46e5-be5a-3f1995b0eccb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Logging">
+      <UniqueIdentifier>{c131354d-94e0-405d-bf08-d99b82023755}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tests.cpp">
@@ -102,6 +129,159 @@
     <ClCompile Include="..\Core\Utils\Tests\StringUtilsTest.cpp">
       <Filter>Source\Core\Utils\Tests</Filter>
     </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\COMUtils.cpp">
+      <Filter>Source\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\Functions.cpp">
+      <Filter>Source\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\Process.cpp">
+      <Filter>Source\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\RegularExpression.cpp">
+      <Filter>Source\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\ScriptAPI.cpp">
+      <Filter>Source\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\UploadTaskWrappers.cpp">
+      <Filter>Source\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\AppParams.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\ServiceLocator.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\DesktopUtils.cpp">
+      <Filter>Source\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Network\NetworkClient.cpp">
+      <Filter>Source\Core\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Network\CurlShare.cpp">
+      <Filter>Source\Core\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\API\GumboBingings\GumboDocument.cpp">
+      <Filter>Source\Core\Scripting\API\GumboBindings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\SimpleXml.cpp">
+      <Filter>Source\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\ConsoleUploadErrorHandler.cpp">
+      <Filter>Source\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\DefaultUploadEngine.cpp">
+      <Filter>Source\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\FileQueueUploader.cpp">
+      <Filter>Source\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\FileQueueUploaderPrivate.cpp">
+      <Filter>Source\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\FileUploadTask.cpp">
+      <Filter>Source\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\FolderList.cpp">
+      <Filter>Source\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\ScriptUploadEngine.cpp">
+      <Filter>Source\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\ServerProfile.cpp">
+      <Filter>Source\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\ServerSync.cpp">
+      <Filter>Source\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\UploadEngine.cpp">
+      <Filter>Source\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\UploadEngineManager.cpp">
+      <Filter>Source\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\Uploader.cpp">
+      <Filter>Source\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\UploadManager.cpp">
+      <Filter>Source\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\UploadSession.cpp">
+      <Filter>Source\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\UploadTask.cpp">
+      <Filter>Source\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\UrlShorteningTask.cpp">
+      <Filter>Source\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\tinystr.cpp">
+      <Filter>Source\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\tinyxml.cpp">
+      <Filter>Source\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\tinyxmlerror.cpp">
+      <Filter>Source\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\3rdpart\tinyxmlparser.cpp">
+      <Filter>Source\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\TempFileDeleter.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\ThreadSync.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\LocalFileCache.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\HistoryManager.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\GlobalMutex.cpp">
+      <Filter>Source\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\Script.cpp">
+      <Filter>Source\Core\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\ScriptsManager.cpp">
+      <Filter>Source\Core\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Scripting\UploadFilterScript.cpp">
+      <Filter>Source\Core\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\CoreFunctions.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Settings.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Settings\BasicSettings.cpp">
+      <Filter>Source\Core\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\SettingsManager.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Settings\EncodedPassword.cpp">
+      <Filter>Source\Core\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\Filters\UrlShorteningFilter.cpp">
+      <Filter>Source\Core\Upload\UploadFilters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\Filters\UserFilter.cpp">
+      <Filter>Source\Core\Upload\UploadFilters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Logging\ConsoleLogger.cpp">
+      <Filter>Source\Core\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\ConsoleUtils.cpp">
+      <Filter>Source\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Logging\MyLogSink.cpp">
+      <Filter>Source\Core\Logging</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -110,5 +290,16 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Core\3rdpart\tinystr.h">
+      <Filter>Source\Core\3rdpart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\3rdpart\tinyxml.h">
+      <Filter>Source\Core\3rdpart</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Core\Scripting\API\Tests\globals.nut">
+      <Filter>Source\Core\Scripting\API\Tests</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -141,10 +141,7 @@ class CHotkeyItem
         CString func;
         DWORD commandId;
         CString name;
-        CString GetDisplayName()
-        {
-            return Lang.GetString(name);
-        }
+        CString GetDisplayName();
 
         void Clear()
         {

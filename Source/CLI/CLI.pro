@@ -58,6 +58,7 @@ SOURCES += main.cpp \
     ../Core/Utils/CryptoUtils.cpp \
     ../Core/Utils/SimpleXml.cpp \
     ../Core/Utils/StringUtils.cpp \
+    ../Core/Utils/ConsoleUtils.cpp \
     ../Core/3rdpart/base64.cpp \
     ../Core/3rdpart/pcreplusplus.cpp \
     ../Core/3rdpart/tinystr.cpp \
@@ -116,7 +117,6 @@ SOURCES += main.cpp \
     ../Core/Utils/TextUtils.cpp \
     ../Core/Scripting/UploadFilterScript.cpp \
     ../Core/3rdpart/htmlentities.cpp \
-    ConsoleUtils.cpp
 
 win32 {
 SOURCES += ../Core/Scripting/API/HtmlDocument.cpp \

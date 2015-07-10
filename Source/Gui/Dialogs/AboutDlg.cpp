@@ -61,19 +61,18 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += TR("Contributors:") + CString("\r\n");
     memoText += L"arhangelsoft\thttps://github.com/arhangelsoft\r\nTahir Yilmaz\thttps://github.com/thrylmz\r\nAlex_Qwerty\r\n\r\n";
 
-    memoText += TR("Translators:")+ CString("\r\n");
-
+   
     CString translatorName = TR("translator_name");
     if ( translatorName == "translator_name") {
         translatorName.Empty();
     }
     if ( !translatorName.IsEmpty() ) {
+        memoText += TR("Translators:") + CString("\r\n");
+
         CString trans;
         trans.Format(TR("%s translation:"),Lang.GetLanguageName());
         memoText += L"\r\n"+ trans + L"\r\n"+ translatorName +L"\r\n\r\n";
-        memoText += L"Other languages: \r\n";
     } 
-    memoText += L"Mishunika, Adrianis, \r\nHessam Mohamadi, ozzii.translate@***.com\r\n\r\n";
 
     memoText += TR("Beta-testers:")+ CString("\r\n");
     memoText += L"Graf, CKA3O4H1K, Geslot, Alex_Qwerty\r\n\r\n";
@@ -133,7 +132,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     boostVersion.Replace(L'_', L'.');
     memoText += boostVersion  + L"\r\n\r\n";
 
-    
+    SetDlgItemText(IDC_AUTHORNAMELABEL, (Lang.GetLanguageName() == _T("Russian") ? U2W("\xD0\xA1\xD0\xB5\xD1\x80\xD0\xB3\xD0\xB5\xD0\xB9\x20\xD0\xA1\xD0\xB2\xD0\xB8\xD1\x81\xD1\x82\xD1\x83\xD0\xBD\xD0\xBE\xD0\xB2")
+        : _T("Sergey Svistunov")) + CString(_T(" (zenden2k@gmail.com)")));
     /*if ( Settings.IsFFmpegAvailable() ) { // Can't determine actual ffmpeg version
         memoText += TR("FFmpeg version:")+ CString("\r\n");
         memoText += FFMPEG_VERSION + CString("\r\n");

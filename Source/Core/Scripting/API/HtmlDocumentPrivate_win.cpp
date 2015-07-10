@@ -36,7 +36,6 @@ HtmlElement HtmlDocumentPrivate::rootElement() {
         collection->item(CComVariant(0), CComVariant(0), &disp);
         rootElement_ = new HtmlElementPrivate(disp, this); 
         return rootElement_;
-        
     }
     return rootElement_;
 }

@@ -543,18 +543,26 @@ int64_t ScriptGetFileSize(const std::string& filename) {
 
 const std::string GetAppLanguage() {
 #ifndef IU_CLI
-    return ServiceLocator::instance()->translator()->getCurrentLanguage();
-#else 
-    return "en";
+    ITranslator* translator = ServiceLocator::instance()->translator();
+    if ( !translator ) {
+        LOG(ERROR) << "No translator set";
+    } else {
+        return translator->getCurrentLanguage();
+    }
 #endif 
+    return "en";
 }
 
 const std::string GetAppLocale() {
 #ifndef IU_CLI
-    return ServiceLocator::instance()->translator()->getCurrentLocale();
-#else 
-    return "en_US";
+    ITranslator* translator = ServiceLocator::instance()->translator();
+    if (!translator) {
+        LOG(ERROR) << "No translator set";
+    } else {
+        return ServiceLocator::instance()->translator()->getCurrentLocale();
+    }
 #endif 
+    return "en_US";
 }
 
 std::string GetCurrentThreadId()

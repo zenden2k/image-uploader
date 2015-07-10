@@ -3,7 +3,7 @@
 #include "Core/Network/NetworkClient.h"
 #include "Core/Utils/DesktopUtils.h"
 #include "Core/Utils/CoreUtils.h"
-#include "ConsoleUtils.h"
+#include "Core/Utils/ConsoleUtils.h"
 
 std::string ConsoleScriptDialogProvider::askUserCaptcha(NetworkClient* nm, const std::string& url) {
     std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOuputMutex());

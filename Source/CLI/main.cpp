@@ -45,7 +45,7 @@
 #include "Core/Logging/ConsoleLogger.h"
 #include "Core/i18n/Translator.h"
 #include "ConsoleScriptDialogProvider.h"
-#include "ConsoleUtils.h"
+#include "Core/Utils/ConsoleUtils.h"
 #ifdef _WIN32
     #include <windows.h>
     #include "Func/UpdatePackage.h"

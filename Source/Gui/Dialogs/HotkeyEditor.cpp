@@ -85,3 +85,7 @@ LRESULT CHotkeyEditor::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl,
     EndDialog(wID);
     return 0;
 }
+
+CString CHotkeyItem::GetDisplayName() {
+    return Lang.GetString(name);
+}

@@ -25,6 +25,14 @@ void ConsoleUtils::Clear() {
                                  csbi.dwSize.X * csbi.dwSize.Y,
                                  coord, &count);
       SetConsoleCursorPosition(hStdOut, coord);
+/* Fill the entire buffer with the current colors and attributes *
+  if (!FillConsoleOutputAttribute(
+    hStdOut,
+    csbi.wAttributes,
+    cellCount,
+    homeCoords,
+    &count
+    )) return;*/
 #else
     write(1,"\E[H\E[2J",7);
 #endif

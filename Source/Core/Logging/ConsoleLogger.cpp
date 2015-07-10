@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include "Core/Utils/CoreUtils.h"
-#include "ConsoleUtils.h"
+#include "Core/Utils/ConsoleUtils.h"
 #include <mutex>
 
 void ConsoleLogger::write(LogMsgType MsgType, const std::string& Sender, const std::string& Msg, const std::string& Info) {

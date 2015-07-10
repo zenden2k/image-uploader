@@ -282,7 +282,7 @@ BEGIN
     LTEXT           "https://github.com/zenden2k/image-uploader",IDC_GOOGLECODELINK,95,98,163,8
     LTEXT           "Git:",IDC_STATIC,31,98,54,8
     LTEXT           "#Author:",IDC_AUTHORLABEL,31,67,58,8
-    LTEXT           "Sergey Svistunov (zenden2k@gmail.com)",IDC_STATIC,96,67,172,8
+    LTEXT           "Sergey Svistunov (zenden2k@gmail.com)",IDC_AUTHORNAMELABEL,96,67,172,8
     CTEXT           "Found a bug?",IDC_FOUNDABUG,12,113,227,8
     EDITTEXT        IDC_MEMO,5,129,263,121,ES_MULTILINE | ES_AUTOHSCROLL | WS_VSCROLL
     LTEXT           "Документация",IDC_DOCUMENTATION,10,259,106,8,NOT WS_VISIBLE

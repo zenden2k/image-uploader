@@ -23,7 +23,7 @@
 #include "RegularExpression.h"
 #include "Process.h"
 #include "GumboBingings/GumboDocument.h"
-#ifdef IU_WTL
+#if defined(IU_WTL) && !defined(IU_NOWEBBROWSER)
 #include "WebBrowser.h"
 #include "HtmlDocument.h"
 #include "HtmlElement.h"
@@ -204,7 +204,10 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
 }
 
 #ifdef _MSC_VER
-__declspec(thread) Sqrat::SqratVM* threadVm;
+#ifndef IU_TESTS // to avoid vld memory leaks messages; We use just one thread in test cases
+__declspec(thread) 
+#endif
+Sqrat::SqratVM* threadVm;
 #else
 thread_local  Sqrat::SqratVM* threadVm;
 #endif
@@ -222,7 +225,7 @@ void RegisterClasses(Sqrat::SqratVM& vm) {
     RegisterSimpleXmlClass(vm);
     RegisterGumboClasses(vm);
 
-#ifdef IU_WTL
+#if defined(IU_WTL) && !defined(IU_NOWEBBROWSER)
     RegisterWebBrowserClass(vm);
     RegisterHtmlDocumentClass(vm);
     RegisterHtmlElementClass(vm);

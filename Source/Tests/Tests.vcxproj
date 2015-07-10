@@ -54,7 +54,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Source\boost\;$(SolutionDir)\Contrib\Include\gumbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;GOOGLE_GLOG_DLL_DECL=;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;PCRE_STATIC;_WTL_NO_CSTRING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;GOOGLE_GLOG_DLL_DECL=;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;PCRE_STATIC;_WTL_NO_CSTRING;CURL_STATICLIB;IU_NOWEBBROWSER;IU_TESTS;TIXML_USE_STL;SQTEST_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -65,8 +65,8 @@
       <AdditionalOptions>/MP$(NUMBER_OF_PROCESSORS) %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>gtestd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;zlibd.lib;minizip.lib;gdiplus.lib;strmbasd.lib;libcurl.lib;Ws2_32.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;dwmapi.lib;squirrel.lib;sqstdlib.lib;libeay32.lib;pcre.lib;wininet.lib;winmm.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;gumbo.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Debug;$(SolutionDir)Contrib\Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>gtestd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;zlibd.lib;minizip.lib;gdiplus.lib;strmbasd.lib;libcurl.lib;Ws2_32.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;dwmapi.lib;squirrel.lib;sqstdlib.lib;libeay32.lib;pcre.lib;wininet.lib;winmm.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;gumbo.lib;sqtest.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Debug;$(SolutionDir)Contrib\Lib\;$(SolutionDir)\Contrib\Source\boost\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -89,7 +89,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>gdiplus.lib;STRMBASE.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbccp32.lib;minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;urlmon.lib;avformat.lib;avutil.lib;swscale.lib;avcodec.lib;wininet.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;gtest.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Release;$(SolutionDir)\Contrib\Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Release;$(SolutionDir)\Contrib\Lib\;$(SolutionDir)\Contrib\Source\boost\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -109,7 +109,58 @@
     <ClCompile Include="..\Core\3rdpart\GumboQuery\Tests\GumboTest.cpp" />
     <ClCompile Include="..\Core\3rdpart\htmlentities.cpp" />
     <ClCompile Include="..\Core\3rdpart\pcreplusplus.cpp" />
+    <ClCompile Include="..\Core\3rdpart\tinystr.cpp" />
+    <ClCompile Include="..\Core\3rdpart\tinyxml.cpp" />
+    <ClCompile Include="..\Core\3rdpart\tinyxmlerror.cpp" />
+    <ClCompile Include="..\Core\3rdpart\tinyxmlparser.cpp" />
+    <ClCompile Include="..\Core\AppParams.cpp" />
+    <ClCompile Include="..\Core\CoreFunctions.cpp" />
+    <ClCompile Include="..\Core\HistoryManager.cpp" />
+    <ClCompile Include="..\Core\LocalFileCache.cpp" />
+    <ClCompile Include="..\Core\Logging\ConsoleLogger.cpp" />
+    <ClCompile Include="..\Core\Logging\MyLogSink.cpp" />
+    <ClCompile Include="..\Core\Network\CurlShare.cpp" />
+    <ClCompile Include="..\Core\Network\NetworkClient.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\COMUtils.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\Functions.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\GumboBingings\GumboDocument.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\Process.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\RegularExpression.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\ScriptAPI.cpp" />
+    <ClCompile Include="..\Core\Scripting\API\UploadTaskWrappers.cpp" />
+    <ClCompile Include="..\Core\Scripting\Script.cpp" />
+    <ClCompile Include="..\Core\Scripting\ScriptsManager.cpp" />
+    <ClCompile Include="..\Core\Scripting\UploadFilterScript.cpp" />
+    <ClCompile Include="..\Core\ServiceLocator.cpp" />
+    <ClCompile Include="..\Core\Settings.cpp" />
+    <ClCompile Include="..\Core\SettingsManager.cpp" />
+    <ClCompile Include="..\Core\Settings\BasicSettings.cpp" />
+    <ClCompile Include="..\Core\Settings\EncodedPassword.cpp" />
+    <ClCompile Include="..\Core\TempFileDeleter.cpp" />
+    <ClCompile Include="..\Core\ThreadSync.cpp" />
+    <ClCompile Include="..\Core\Upload\ConsoleUploadErrorHandler.cpp" />
+    <ClCompile Include="..\Core\Upload\DefaultUploadEngine.cpp" />
+    <ClCompile Include="..\Core\Upload\FileQueueUploader.cpp" />
+    <ClCompile Include="..\Core\Upload\FileQueueUploaderPrivate.cpp" />
+    <ClCompile Include="..\Core\Upload\FileUploadTask.cpp" />
+    <ClCompile Include="..\Core\Upload\Filters\UrlShorteningFilter.cpp" />
+    <ClCompile Include="..\Core\Upload\Filters\UserFilter.cpp" />
+    <ClCompile Include="..\Core\Upload\FolderList.cpp" />
+    <ClCompile Include="..\Core\Upload\ScriptUploadEngine.cpp" />
+    <ClCompile Include="..\Core\Upload\ServerProfile.cpp" />
+    <ClCompile Include="..\Core\Upload\ServerSync.cpp" />
+    <ClCompile Include="..\Core\Upload\UploadEngine.cpp" />
+    <ClCompile Include="..\Core\Upload\UploadEngineManager.cpp" />
+    <ClCompile Include="..\Core\Upload\Uploader.cpp" />
+    <ClCompile Include="..\Core\Upload\UploadManager.cpp" />
+    <ClCompile Include="..\Core\Upload\UploadSession.cpp" />
+    <ClCompile Include="..\Core\Upload\UploadTask.cpp" />
+    <ClCompile Include="..\Core\Upload\UrlShorteningTask.cpp" />
+    <ClCompile Include="..\Core\Utils\ConsoleUtils.cpp" />
     <ClCompile Include="..\Core\Utils\CryptoUtils.cpp" />
+    <ClCompile Include="..\Core\Utils\DesktopUtils.cpp" />
+    <ClCompile Include="..\Core\Utils\GlobalMutex.cpp" />
+    <ClCompile Include="..\Core\Utils\SimpleXml.cpp" />
     <ClCompile Include="..\Core\Utils\Tests\CoreUtilsTest.cpp" />
     <ClCompile Include="..\Core\Utils\Tests\CryptoUtilsTest.cpp" />
     <ClCompile Include="..\Core\Utils\Tests\StringUtilsTest.cpp" />
@@ -125,8 +176,13 @@
     <ClCompile Include="..\Core\3rdpart\CodePages.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Core\3rdpart\tinystr.h" />
+    <ClInclude Include="..\Core\3rdpart\tinyxml.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Core\Scripting\API\Tests\globals.nut" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
