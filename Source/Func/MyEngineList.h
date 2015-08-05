@@ -32,8 +32,8 @@ class CMyEngineList: public CUploadEngineList
         ~CMyEngineList();
         CString ErrorStr() const;
         CUploadEngineData* byName(const CString &name);
-        int GetUploadEngineIndex(const CString& Name);
-        bool LoadFromFile(const CString& filename);
+        int getUploadEngineIndex(const CString& Name);
+        bool loadFromFile(const CString& filename);
         HICON CMyEngineList::getIconForServer(const std::string& name);
         CString CMyEngineList::getIconNameForServer(const std::string& name);
         static char DefaultServer[];

@@ -33,15 +33,15 @@
 #include "screenshotdlg.h"
 #include "Gui/Dialogs/UpdateDlg.h"
 #include "Core/Settings.h"
+#include <Core/ProgramWindow.h>
 
 #define ID_PASTE 9888
 #define ID_HOTKEY_BASE 10000
 #define WM_MY_ADDIMAGE WM_USER + 222
 #define WM_MY_SHOWPAGE WM_USER + 223
 #define WM_MY_EXIT WM_USER + 224
-#include <Core/ProgramWindow.h>
-// CWizardDlg
 
+// CWizardDlg
 class CFolderAdd;
 class CWizardPage;
 class CWizardDlg;
@@ -62,7 +62,7 @@ class CFolderAdd: public CThreadImpl<CFolderAdd>
         TCHAR m_szPath[MAX_PATH];
         WIN32_FIND_DATA wfd;
         HANDLE findfile;
-            CStatusDlg dlg;
+        CStatusDlg dlg;
         int GetNextImgFile(LPTSTR szBuffer, int nLength);
         int ProcessDir( CString currentDir, bool bRecursive /* = true  */ );
 };
@@ -90,8 +90,8 @@ class UploadEngineManager;
 class ScriptsManager;
 class CWizardDlg : 
     public CDialogImpl<CWizardDlg>    , public CUpdateUI<CWizardDlg>,
-        public CMessageFilter, public CIdleHandler, public IDropTarget, public CRegionSelectCallback
-        , public CUpdateDlg::CUpdateDlgCallback,
+        public CMessageFilter, public CIdleHandler, public IDropTarget, public CRegionSelectCallback,
+        public CUpdateDlg::CUpdateDlgCallback,
         public IProgramWindow
 {
 public:
@@ -123,7 +123,7 @@ public:
         MESSAGE_HANDLER(WM_MY_EXIT, OnWmMyExit)
         
         MESSAGE_HANDLER(WM_ENABLE,OnEnable)
-      COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+        COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
         COMMAND_HANDLER(IDC_UPDATESLABEL, BN_CLICKED, OnUpdateClicked)
         
         COMMAND_HANDLER(ID_PASTE, 1, OnPaste)
@@ -227,8 +227,8 @@ public:
 
     public:
     CUpdateDlg *updateDlg;
-    bool CanShowWindow();
-    void UpdateAvailabilityChanged(bool Available);
+    bool CanShowWindow() override;
+    void UpdateAvailabilityChanged(bool Available) override;
     HACCEL hAccel;
     //CSpecialHyperLink m_UpdateLink;
     HACCEL hLocalHotkeys;
@@ -258,8 +258,8 @@ public:
     void AddFolder(LPCTSTR szFolder, bool SubDirs = false);
     
     //CRegionSelectCallback
-    void OnScreenshotFinished(int Result);
-    void OnScreenshotSaving(LPTSTR FileName, Gdiplus::Bitmap* Bm);
+    void OnScreenshotFinished(int Result) override;
+    void OnScreenshotSaving(LPTSTR FileName, Gdiplus::Bitmap* Bm) override;
     void CloseWizard();
     bool RegisterLocalHotkeys();
     bool UnRegisterLocalHotkeys();

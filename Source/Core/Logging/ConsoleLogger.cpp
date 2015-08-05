@@ -6,7 +6,7 @@
 #include <mutex>
 
 void ConsoleLogger::write(LogMsgType MsgType, const std::string& Sender, const std::string& Msg, const std::string& Info) {
-    std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOuputMutex());
+    std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
 //#ifdef _WIN32
     std::wcerr << IuCoreUtils::Utf8ToWstring(Msg) << std::endl;;
 /*#else
@@ -16,7 +16,7 @@ void ConsoleLogger::write(LogMsgType MsgType, const std::string& Sender, const s
 
 #ifdef _WIN32
 void ConsoleLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar_t* Msg, const wchar_t* Info) {
-    std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOuputMutex());
+    std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
     std::cerr << ( MsgType == logError ? "error" : "warning" ) << " : ";
 //#ifdef _WIN32
     std::wcerr << Msg << std::endl;

@@ -56,7 +56,7 @@ void ConsoleUtils::SetCursorPos(int x, int y) {
 #endif
 }
 
-std::mutex& ConsoleUtils::getOuputMutex() {
+std::mutex& ConsoleUtils::getOutputMutex() {
     return outputMutex_;
 }
 

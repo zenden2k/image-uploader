@@ -64,7 +64,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     CMyEngineList engineList;
     _EngineList = &engineList;
     CString serversFileName = WinUtils::GetAppFolder() + "Data/" + _T("servers.xml");
-    if (!engineList.LoadFromFile(serversFileName)) {
+    if (!engineList.loadFromFile(serversFileName)) {
         MessageBox(0, _T("Cannot load server list!"), 0, 0);
         return false;
     }

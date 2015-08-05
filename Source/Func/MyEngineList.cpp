@@ -44,7 +44,7 @@ CUploadEngineData* CMyEngineList::byName(const CString& name)
     return CUploadEngineList_Base::byName(WCstringToUtf8(name));
 }
 
-int CMyEngineList::GetUploadEngineIndex(const CString& Name)
+int CMyEngineList::getUploadEngineIndex(const CString& Name)
 {
     return CUploadEngineList_Base::GetUploadEngineIndex(WCstringToUtf8(Name));
 }
@@ -54,7 +54,7 @@ CString CMyEngineList::ErrorStr() const
     return m_ErrorStr;
 }
 
-bool CMyEngineList::LoadFromFile(const CString& filename)
+bool CMyEngineList::loadFromFile(const CString& filename)
 {
     if (!IuCoreUtils::FileExists(WCstringToUtf8(filename)))
     {

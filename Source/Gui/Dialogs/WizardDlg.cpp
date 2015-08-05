@@ -32,7 +32,6 @@
 #include "aboutdlg.h"
 #include "langselect.h"
 #include "floatingwindow.h"
-#include "TextViewDlg.h"
 #include "ImageDownloaderDlg.h"
 #include "LogWindow.h"
 #include "Common/CmdLine.h"
@@ -44,8 +43,6 @@
 #include "Gui/Dialogs/ShortenUrlDlg.h"
 
 #include "Gui/Dialogs/WebViewWindow.h"
-#include "Core/Utils/CryptoUtils.h"
-#include "Core/Utils/TextUtils.h"
 #include "Func/WinUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Gui/Dialogs/QuickSetupDlg.h"
@@ -119,7 +116,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     srand(unsigned int(time(0)));
     m_bShowWindow = true;
        
-    LPDWORD DlgCreationResult = (LPDWORD) lParam; 
+    LPDWORD DlgCreationResult = reinterpret_cast<LPDWORD>(lParam); 
     
     ATLASSERT(DlgCreationResult != NULL);
     // center the dialog on the screen
@@ -141,7 +138,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     MediaInfoHelper::FindMediaInfoDllPath();
     SetWindowText(APPNAME);
 
-   Lang.SetDirectory(WinUtils::GetAppFolder() + "Lang\\");
+    Lang.SetDirectory(WinUtils::GetAppFolder() + "Lang\\");
     bool isFirstRun =  Settings.Language.IsEmpty() || FALSE;
     for(size_t i=0; i<CmdLine.GetCount(); i++)
     {
@@ -200,7 +197,6 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     for(size_t i=0; i<list.size(); i++)
     {
         LoadUploadEngines(serversFolder+list[i], ErrorStr);
-        //MessageBox(list[i]);
     }
     list.clear();
 
@@ -749,7 +745,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 bool CWizardDlg::LoadUploadEngines(const CString &filename, CString &Error)
 {
     m_EngineList.setNumOfRetries(Settings.FileRetryLimit, Settings.ActionRetryLimit);
-    bool Result = m_EngineList.LoadFromFile(filename);
+    bool Result = m_EngineList.loadFromFile(filename);
     Error = m_EngineList.ErrorStr();
     return Result;
 }
@@ -1787,9 +1783,6 @@ void CWizardDlg::CreateUpdateDlg()
         updateDlg->setUpdateCallback(this);
     }
 }
-  
-
-
 
 bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 {

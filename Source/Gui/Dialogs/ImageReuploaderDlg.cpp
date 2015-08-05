@@ -106,7 +106,7 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
         sourceTextEditControl.SendMessage(WM_PASTE);
     } 
 
-    m_serverId = _EngineList->GetUploadEngineIndex(Utf8ToWCstring(serverProfile_.serverName()));
+    m_serverId = _EngineList->getUploadEngineIndex(Utf8ToWCstring(serverProfile_.serverName()));
 
     if(m_serverId == -1) {
         m_serverId = m_EngineList->getRandomImageServer();

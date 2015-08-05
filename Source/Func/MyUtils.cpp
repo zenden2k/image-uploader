@@ -21,20 +21,14 @@
 #include "myutils.h"
 
 #include "atlheaders.h"
-#include <shobjidl.h>
-#include "3rdpart/GdiplusH.h"
-#include <gdiplusheaders.h>
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/StringUtils.h"
-#include <algorithm>
-//#include "Core/Settings.h"
 #include "Core/Video/VideoUtils.h"
 
 typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
 typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
 
 #define STRING MAX_PATH
-
 
 int GetFontSize(int nFontHeight)
 {

@@ -763,11 +763,12 @@ UINT VoidToInt(void* data, unsigned int size) {
 typedef IStream * (STDAPICALLTYPE *SHCreateMemStreamFuncType)(const BYTE *pInit, UINT cbInit);
 SHCreateMemStreamFuncType SHCreateMemStreamFunc = 0;
 
+
 Gdiplus::Bitmap* BitmapFromMemory(BYTE* data, size_t imageSize) {
     if (WinUtils::IsVista()) {
         if (!SHCreateMemStreamFunc) {
-            HMODULE lib = LoadLibrary(_T("Shlwapi.dll"));
-            SHCreateMemStreamFunc = reinterpret_cast<SHCreateMemStreamFuncType>(GetProcAddress(lib, "SHCreateMemStream"));
+            HMODULE shlwapiLib = LoadLibrary(_T("Shlwapi.dll"));
+            SHCreateMemStreamFunc = reinterpret_cast<SHCreateMemStreamFuncType>(GetProcAddress(shlwapiLib, "SHCreateMemStream"));
             if (!SHCreateMemStreamFunc) {
                 return 0;
             }

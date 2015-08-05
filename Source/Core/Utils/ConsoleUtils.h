@@ -9,7 +9,7 @@ public:
     void InitScreen();
     void Clear();
     void SetCursorPos(int x, int y);
-    std::mutex& getOuputMutex();
+    std::mutex& getOutputMutex();
 protected:
     std::mutex outputMutex_;
 };

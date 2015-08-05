@@ -33,7 +33,6 @@
 #include "Core/Upload/ScriptUploadEngine.h"
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
-#include <boost/filesystem/fstream.hpp>
 
 #include "Core/ServiceLocator.h"
 #include "Func/DefaultUploadErrorHandler.h"

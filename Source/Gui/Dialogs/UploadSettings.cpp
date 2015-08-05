@@ -748,8 +748,8 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         sub.InsertMenuItem(menuItemCount++, true, &mi);    
 
         sub.SetMenuDefaultItem(ImageServer ? 
-            (IDC_IMAGESERVER_FIRST_ID + _EngineList->GetUploadEngineIndex(Utf8ToWCstring(sessionImageServer_.serverName()))) :
-            (IDC_FILESERVER_FIRST_ID+_EngineList->GetUploadEngineIndex(Utf8ToWCstring(sessionFileServer_.serverName()))),FALSE);
+            (IDC_IMAGESERVER_FIRST_ID + _EngineList->getUploadEngineIndex(Utf8ToWCstring(sessionImageServer_.serverName()))) :
+            (IDC_FILESERVER_FIRST_ID+_EngineList->getUploadEngineIndex(Utf8ToWCstring(sessionFileServer_.serverName()))),FALSE);
     }
     else
     {

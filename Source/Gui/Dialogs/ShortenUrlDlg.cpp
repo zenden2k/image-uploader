@@ -36,7 +36,7 @@ CShortenUrlDlg::CShortenUrlDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList
     m_WizardDlg = wizardDlg;
     m_InitialBuffer = initialBuffer;
     engineList_ = engineList;
-    serverId_ = engineList_->GetUploadEngineIndex(_T("Local Shorten server"));
+    serverId_ = engineList_->getUploadEngineIndex(_T("Local Shorten server"));
     backgroundBrush_.CreateSysColorBrush(COLOR_BTNFACE);
     uploadManager_ = uploadManager;
 }

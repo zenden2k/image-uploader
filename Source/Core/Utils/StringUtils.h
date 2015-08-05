@@ -42,7 +42,7 @@ namespace IuStringUtils
     //     to match, or be greater than s2.
     int stricmp(const char *s1, const char *s2);
     std::string ConvertUnixLineEndingsToWindows(const std::string& text);
-    size_t LenghtOfUtf8String(const std::string &utf8_string);
+    size_t LengthOfUtf8String(const std::string &utf8_string);
 };
 
 #endif
