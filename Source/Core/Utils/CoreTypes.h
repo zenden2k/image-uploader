@@ -4,6 +4,7 @@
 #include <string>
 #define __STDC_CONSTANT_MACROS
 #include <stdint.h>
+// Since Visual Studio 2012 stdint.h is included
 //#include "Core/3rdpart/pstdint.h"
 #include <memory>
 #include "Core/Logging.h"

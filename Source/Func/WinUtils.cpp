@@ -1123,6 +1123,19 @@ CString ErrorCodeToString(DWORD idCode)
     return res;
 }
 
+CString ExpandEnvironmentStrings(const CString& s)
+{
+    DWORD len = ::ExpandEnvironmentStrings(s, NULL, 0);
+    if (len == 0)
+        return s;
+
+    std::unique_ptr<TCHAR[]> buf(new TCHAR[len + 1]);
+    if (::ExpandEnvironmentStrings(s, buf.get(), len) == 0)
+        return s;
+
+    return buf.get();
+}
+
 };
 
 const std::wstring Utf8ToWstring(const std::string &str)

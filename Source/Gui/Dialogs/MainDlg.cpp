@@ -345,8 +345,8 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     // Edit this bullshit
     CString EditorCmd = Settings.ImageEditorPath;
     CString EditorCmdLine ;
-    EditorCmd.Replace(_T("%1"), _T("%s"));
-    EditorCmdLine.Format(EditorCmd, static_cast<LPCTSTR>(FileName));
+    EditorCmd.Replace(_T("%1"), FileName);
+    EditorCmdLine = WinUtils::ExpandEnvironmentStrings(EditorCmd);
     
     TCHAR FilePathBuffer[256];
     ExtractFilePath(FileName, FilePathBuffer);
@@ -358,13 +358,16 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     Sei.cbSize = sizeof(Sei);
     Sei.fMask  = SEE_MASK_NOCLOSEPROCESS;
     Sei.hwnd = m_hWnd;
-    Sei.lpVerb = _T ("open");
+    Sei.lpVerb = _T("open");
 
     Sei.lpFile = EditorLine.ModuleName();
     Sei.lpParameters = EditorLine.OnlyParams();
     Sei.nShow = SW_SHOW;
     
-    ShellExecuteEx(&Sei);
+    if (!ShellExecuteEx(&Sei)) {
+        LOG(ERROR) << "Opening external editor failed." << std::endl << "Reason: " << WinUtils::ErrorCodeToString(GetLastError());
+        return 0;
+    }
 
     if(Sei.hProcess)
     {
