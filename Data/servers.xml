@@ -525,9 +525,9 @@
 	</Server>
 	<Server Name="picplus.ru" MaxFileSize="5242880">
 		<Actions>
-			<Action Type="upload" Url="http://picplus.ru/upload.php" PostParams="userfile1=%filename%;thumb_size=$(_THUMBWIDTH);check_orent=h;texttype=dimensions;text=;" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
+			<Action Type="upload" Url="http://picplus.ru/upload.php" PostParams="userfile1=%filename%;thumb_size=$(_THUMBWIDTH);check_orent=h;texttype=dimensions;text=;" RegExp="\[img\](.*?)\[([\s\S]*?)\[url=(.*?)\]\[img\](.*?)\[" AssignVars="Image:0;DownloadUrl:2;Thumb:3;"/>
 		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(DownloadUrl)"/>
 	</Server>
 	<Server Name="pixic.ru">
 		<Actions>
@@ -562,6 +562,14 @@
             <Action Type="get" Url="http://radikall.org/image/$(Id)" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:2;Image:0;"/>
         </Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	</Server>
+      <Server Name="imgice.ru" Debug="0" MaxThreads="1" OnlyOnce="1">
+		<Actions>
+			<Action Type="get" Url="http://imgice.ru/" RegExp="session_id = &quot;(.+?)&quot;" AssignVars="SID:0;"/>
+			<Action Type="upload" Url="http://imgice.ru/upload.php" PostParams="Filename=$(_FILENAME);sID=$(SID);doShort=false;ImageUp=%filename%;" RegExp="image_id_public&quot;:&quot;(.+?)&quot;" AssignVars="Id:0"/>
+            <Action Type="get" Url="http://imgice.ru/image/$(Id)" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:2;Image:0;"/>
+        </Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="http://imgice.ru/$(Id)"/>
 	</Server>
     <Server Name="picvid.ru">
         <Actions>
