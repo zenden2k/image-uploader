@@ -42,6 +42,7 @@
 #ifndef _WIN32
 #include <unistd.h>
 #endif
+#include <Core/3rdpart/tinyxml.h>
 
 namespace ScriptAPI {;
 
@@ -112,6 +113,36 @@ void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
         Func("setReferer", &NetworkClient::setReferer));
 }
 
+namespace SimpleXmlExtend
+{
+SimpleXmlNode& Each(SimpleXmlNode* pthis, Sqrat::Function callback) {
+    pthis->each([&callback](int i, SimpleXmlNode& child) {
+        Sqrat::SharedPtr<bool> res = callback.Evaluate<bool>(i, child);
+
+        if (!!res && *res) {
+            return true;
+        }
+        i++;
+        return false;
+    });
+
+    return *pthis;
+}
+
+Sqrat::Array GetChildren(SimpleXmlNode* pthis, const std::string& name) {
+    std::vector<SimpleXmlNode> childs;
+    pthis->GetChilds(name, childs);
+    Sqrat::Array res(GetCurrentThreadVM().GetVM(), childs.size());
+    res.Resize(childs.size());
+    int i = 0;
+    for (auto& child : childs) {
+        res.SetValue(i++, child);
+    }
+    return res;
+}
+
+};
+
 void RegisterSimpleXmlClass(Sqrat::SqratVM& vm) {
     using namespace Sqrat;
      vm.GetRootTable().Bind("SimpleXml", Class<SimpleXml>(vm.GetVM(), "SimpleXml").
@@ -122,23 +153,26 @@ void RegisterSimpleXmlClass(Sqrat::SqratVM& vm) {
          Func("GetRoot", &SimpleXml::getRoot)
      );
 
-    vm.GetRootTable().Bind("SimpleXmlNode", Class<SimpleXmlNode>(vm.GetVM(), "SimpleXmlNode").
-        Func("Attribute", &SimpleXmlNode::Attribute).
-        Func("AttributeInt", &SimpleXmlNode::AttributeInt).
-        Func("AttributeBool", &SimpleXmlNode::AttributeBool).
-        Func("Name", &SimpleXmlNode::Name).
-        Func("Text", &SimpleXmlNode::Text).
-        Func("CreateChild", &SimpleXmlNode::CreateChild).
-        Func("GetChild", &SimpleXmlNode::GetChild).
-        Func("SetAttribute", &SimpleXmlNode::SetAttributeString).
-        Func("SetAttributeInt", &SimpleXmlNode::SetAttributeInt).
-        Func("SetAttributeBool", &SimpleXmlNode::SetAttributeBool).
-        Func("SetText", &SimpleXmlNode::SetText).
-        Func("IsNull", &SimpleXmlNode::IsNull).
-        Func("DeleteChilds", &SimpleXmlNode::DeleteChilds).
-        Func("GetChildCount", &SimpleXmlNode::GetChildCount).
-        Func("GetChildByIndex", &SimpleXmlNode::GetChildByIndex).
-        Func("GetAttributeCount", &SimpleXmlNode::GetAttributeCount)
+     vm.GetRootTable().Bind("SimpleXmlNode", Class<SimpleXmlNode>(vm.GetVM(), "SimpleXmlNode").
+         Func("Attribute", &SimpleXmlNode::Attribute).
+         Func("AttributeInt", &SimpleXmlNode::AttributeInt).
+         Func("AttributeBool", &SimpleXmlNode::AttributeBool).
+         Func("Name", &SimpleXmlNode::Name).
+         Func("Text", &SimpleXmlNode::Text).
+         Func("CreateChild", &SimpleXmlNode::CreateChild).
+         Func("GetChild", &SimpleXmlNode::GetChild).
+         Func("SetAttribute", &SimpleXmlNode::SetAttributeString).
+         Func("SetAttributeInt", &SimpleXmlNode::SetAttributeInt).
+         Func("SetAttributeBool", &SimpleXmlNode::SetAttributeBool).
+         Func("SetText", &SimpleXmlNode::SetText).
+         Func("IsNull", &SimpleXmlNode::IsNull).
+         Func("DeleteChilds", &SimpleXmlNode::DeleteChilds).
+         Func("GetChildCount", &SimpleXmlNode::GetChildCount).
+         Func("GetChildByIndex", &SimpleXmlNode::GetChildByIndex).
+         Func("GetAttributeCount", &SimpleXmlNode::GetAttributeCount).
+         GlobalFunc("each", SimpleXmlExtend::Each).
+         GlobalFunc("Each", SimpleXmlExtend::Each).
+         GlobalFunc("GetChildren", SimpleXmlExtend::GetChildren)
     );
 }
 

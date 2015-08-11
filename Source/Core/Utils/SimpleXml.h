@@ -26,11 +26,21 @@
 #include <vector>
 #include "CoreTypes.h"
 
+class TiXmlElement;
+
+namespace Sqrat{
+class Array;
+class Function;
+}
+
 class SimpleXml_impl;
 class SimpleXmlNode_impl;
+class SimpleXmlExtend;
 
 /**
+
 SimpleXmlNode class
+
 */
 class SimpleXmlNode
 {
@@ -56,7 +66,7 @@ class SimpleXmlNode
         bool AttributeBool(const std::string& name) const;
         const std::string Name() const;
         const std::string Text() const;
-
+       
         // Write
         SimpleXmlNode CreateChild(const std::string& name);
         SimpleXmlNode GetChild(const std::string& name, bool create = true);
@@ -74,14 +84,34 @@ class SimpleXmlNode
         /*! @cond PRIVATE */
         bool GetChilds(const std::string& name,std::vector<SimpleXmlNode> &out) const;
         bool GetAttributes(std::vector<std::string> &out) const;
+        SimpleXmlNode& each(std::function<bool(int, SimpleXmlNode&)> callback);
+
         /*! @endcond */
         int GetAttributeCount();
         void DeleteChilds();
         /*! @cond PRIVATE */
         SimpleXmlNode& operator = (const SimpleXmlNode& node);
         /*! @endcond */
+
+        /**
+        Iterate over childs
+        @since 1.3.2
+
+        Example:
+        @include xml_each.nut
+        */
+        SimpleXmlNode& Each(Sqrat::Function callback); // this declaration is only for docs, should not be implemented
+
+        /**
+        Get children by tag name
+        @since 1.3.2
+
+        Example:
+        @include xml_children.nut
+        */
+        Sqrat::Array GetChilds(const std::string& name);
     protected:
-        SimpleXmlNode(void *el);
+        SimpleXmlNode(TiXmlElement *el);
     private:
         SimpleXmlNode_impl *impl_;
         friend class SimpleXml;

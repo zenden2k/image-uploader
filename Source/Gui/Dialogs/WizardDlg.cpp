@@ -1037,7 +1037,11 @@ LRESULT CWizardDlg::OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHan
 
 LRESULT CWizardDlg::OnDocumentation(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    ShellExecute(0,L"open",WinUtils::GetAppFolder()+"Docs\\index.html",0,WinUtils::GetAppFolder()+"Docs\\",SW_SHOWNORMAL);
+    HINSTANCE hinst = ShellExecute(0, L"open", WinUtils::GetAppFolder() + "Docs\\index.html", 0, WinUtils::GetAppFolder() + "Docs\\", SW_SHOWNORMAL);
+    if (reinterpret_cast<int>(hinst) <= 32) {
+        LOG(ERROR) << "ShellExecute failed. Error code=" << reinterpret_cast<int>(hinst);
+        return 0;
+    }
     return 0;
 }
 
@@ -1090,8 +1094,9 @@ void CFolderAdd::Do(CStringList &Paths, bool ImagesOnly, bool SubDirs)
     m_bImagesOnly = ImagesOnly;
     RECT rc={0,0,0,0};
     m_bSubDirs = SubDirs;
-   if(!dlg.m_hWnd)
-    dlg.Create(m_pWizardDlg->m_hWnd, rc);
+    if (!dlg.m_hWnd) {
+        dlg.Create(m_pWizardDlg->m_hWnd, rc);
+    }
     dlg.SetWindowTitle(CString(ImagesOnly?TR("Searching for picture files..."):TR("Collecting files...")));
     m_Paths.RemoveAll();
     m_Paths.Copy(Paths);
@@ -1248,7 +1253,7 @@ void CMyFolderDialog::OnInitialized()
     SendMessage(wnd, WM_SETFONT, (WPARAM)SendMessage(m_hWnd, WM_GETFONT, 0,0),  MAKELPARAM(false, 0));
     SendMessage(wnd, BM_SETCHECK, (WPARAM)(m_bSubdirs?BST_CHECKED    :BST_UNCHECKED),0);
     SetProp(m_hWnd, PROP_OBJECT_PTR, (HANDLE) this);
-    OldProc  = (DLGPROC) SetWindowLongPtr(m_hWnd, DWLP_DLGPROC, (LONG_PTR)DialogProc);    
+    OldProc  = reinterpret_cast<DLGPROC>(SetWindowLongPtr(m_hWnd, DWLP_DLGPROC, reinterpret_cast<LONG_PTR>(DialogProc)));    
     SubdirsCheckbox = wnd;
     m_bSubdirs = true;
 }
@@ -1940,7 +1945,6 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
                 Result = false;
                 floatWnd.UploadScreenshot(buf,buf);
             }
-
         }
         else
         {

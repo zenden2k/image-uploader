@@ -76,10 +76,10 @@ SimpleXmlNode::~SimpleXmlNode()
     delete impl_;
 }
 
-SimpleXmlNode::SimpleXmlNode(void* el)
+SimpleXmlNode::SimpleXmlNode(TiXmlElement* el)
 {
     impl_ = new SimpleXmlNode_impl();
-    impl_->m_el = reinterpret_cast<TiXmlElement*>(el);
+    impl_->m_el = el;
 }
 
 SimpleXmlNode SimpleXmlNode::operator[](const std::string& name)
@@ -245,6 +245,21 @@ const std::string SimpleXmlNode::Text() const
             result = str;
     }
     return result;
+}
+
+SimpleXmlNode& SimpleXmlNode::each(std::function<bool(int, SimpleXmlNode&)> callback) {
+    int i = 0;
+    TiXmlNode * child = 0;
+    while ((child = impl_->m_el->IterateChildren(child)) != 0) {
+        TiXmlElement* el = child->ToElement();
+        SimpleXmlNode node(el);
+        bool res = callback(i, node);
+        if (res ) {
+            break;
+        }
+        i++;
+    }
+    return *this;
 }
 
 SimpleXmlNode SimpleXmlNode::CreateChild(const std::string& name)

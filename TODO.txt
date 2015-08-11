@@ -6,4 +6,5 @@
 - Reload server list after update
 - Link to the album is missing in upload dialog
 - Preserve photo order for some servers (like Picasa)
+- Convert korean.lng!
 - Fix memory leaks in gumbo-query (when exception is thrown, e.g. invalid selector)

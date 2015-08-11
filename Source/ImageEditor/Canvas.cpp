@@ -745,7 +745,7 @@ void Canvas::updateView( RECT boundingRect ) {
 void Canvas::createDoubleBuffer() {
 //    delete buffer_;
     delete bufferedGr_;
-    buffer_ = std::shared_ptr<Gdiplus::Bitmap>(new Gdiplus::Bitmap( canvasWidth_, canvasHeight_, PixelFormat32bppARGB  ));
+    buffer_ = std::make_shared<Gdiplus::Bitmap>(canvasWidth_, canvasHeight_, PixelFormat32bppARGB);
     bufferedGr_ = new Gdiplus::Graphics( buffer_.get() );
 }
 

@@ -27,9 +27,9 @@
 #include "Func/WinUtils.h"
 #include "Func/Myutils.h"
 #include "Gui/GuiTools.h"
-#include <ImageEditor/Gui/ImageEditorWindow.h>
+#include "ImageEditor/Gui/ImageEditorWindow.h"
 #include "Func/ImageEditorConfigurationProvider.h"
-#include <Gui/Components/NewStyleFolderDialog.h>
+#include "Gui/Components/NewStyleFolderDialog.h"
 #include "Gui/Dialogs/WizardDlg.h"
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -106,7 +106,6 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     LV_HITTESTINFO hti;
     hti.pt = ClientPoint;
     ThumbsView.HitTest(&hti);
-
 
     if(hti.iItem<0) // 
     {

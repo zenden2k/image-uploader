@@ -149,4 +149,18 @@ size_t LengthOfUtf8String(const std::string &utf8_string) {
     return utf8::unchecked::distance(utf8_string.begin(), utf8_string.end());
 }
 
+std::string Join(const std::vector<std::string>& strings, const std::string& delim)
+{
+    std::ostringstream result;
+
+    if (!strings.empty()) {
+        std::vector<std::string>::const_iterator next = strings.begin();
+        result << *next;
+        for (++next; next != strings.end(); ++next) {
+            result << delim << *next;
+        }
+    }
+    return result.str();
+}
+
 }
