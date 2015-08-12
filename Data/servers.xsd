@@ -137,7 +137,7 @@
                             <xs:element name="Actions" minOccurs="0">
                                 <xs:complexType mixed="true">
                                     <xs:sequence>
-                                        <xs:element name="Action" minOccurs="0">
+                                        <xs:element name="Action" maxOccurs="unbounded" minOccurs="0">
                                             <xs:complexType>
                                                 <xs:simpleContent>
                                                     <xs:extension base="xs:string">

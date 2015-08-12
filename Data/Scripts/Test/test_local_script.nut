@@ -11,6 +11,13 @@ function regex_simple(data,regStr,start)
 
 function  UploadFile(FileName, options)
 {	
+    local xml = SimpleXml();
+    xml.LoadFromFile("d:\\Develop\\imageuploader-1.3.2-vs2013\\image-uploader\\Data\\servers.xml");
+    local childs = xml.GetRoot("Servers", false).GetChildren("Server");
+    foreach (i,el in childs) {
+         print(el.Attribute("Name") + "\r\n");
+    }
+    return -1;
     local txt = "<h1><a id=\"logo\">some link</a></h1>";
     local doc = Document(txt);
     print(doc.find("h1 a").text()+"\r\n");
