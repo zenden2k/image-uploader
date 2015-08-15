@@ -24,6 +24,7 @@
 #pragma once
 
 #include <vector>
+#include <functional>
 #include "CoreTypes.h"
 
 class TiXmlElement;

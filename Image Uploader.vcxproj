@@ -686,6 +686,7 @@
     <ClInclude Include="Source\Core\Utils\EnumUtils.h" />
     <ClInclude Include="Source\Core\Utils\SystemUtils.h" />
     <ClInclude Include="Source\Core\Utils\TextUtils.h" />
+    <ClInclude Include="Source\Func\CmdLine.h" />
     <ClInclude Include="Source\Func\DefaultLogger.h" />
     <ClInclude Include="Source\Func\DefaultUploadErrorHandler.h" />
     <ClInclude Include="Source\Func\WtlScriptDialogProvider.h" />
@@ -750,7 +751,6 @@
     <ClInclude Include="Source\Func\UpdatePackage.h" />
     <ClInclude Include="Source\atlheaders.h" />
     <ClInclude Include="Source\stdafx.h" />
-    <ClInclude Include="Source\Common\CmdLine.h" />
     <ClInclude Include="Source\3rdpart\MemberFunctionCallback.h" />
     <ClInclude Include="Source\3rdpart\QColorQuantizer.h" />
     <ClInclude Include="Source\3rdpart\vkCodes.h" />
@@ -1034,6 +1034,7 @@
     <ClCompile Include="Source\Core\Utils\DesktopUtils.cpp" />
     <ClCompile Include="Source\Core\Utils\SystemUtils.cpp" />
     <ClCompile Include="Source\Core\Utils\TextUtils.cpp" />
+    <ClCompile Include="Source\Func\CmdLine.cpp" />
     <ClCompile Include="Source\Func\DefaultLogger.cpp" />
     <ClCompile Include="Source\Func\DefaultUploadErrorHandler.cpp" />
     <ClCompile Include="Source\Func\MediaInfoHelper.cpp" />
@@ -1048,7 +1049,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\Common\CmdLine.cpp" />
     <ClCompile Include="Source\3rdpart\ColorButton.cpp" />
     <ClCompile Include="Source\3rdpart\MemberFunctionCallback.cpp" />
     <ClCompile Include="Source\3rdpart\QColorQuantizer.cpp" />

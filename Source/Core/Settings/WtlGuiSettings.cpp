@@ -28,7 +28,7 @@ limitations under the License.
 
 #include "Func/myutils.h"
 #include "Gui/Dialogs/LogWindow.h"
-#include "Common/CmdLine.h"
+#include "Func/CmdLine.h"
 #include "3rdpart/Registry.h"
 #include "Core/Video/VideoUtils.h"
 #include "Func/WinUtils.h"

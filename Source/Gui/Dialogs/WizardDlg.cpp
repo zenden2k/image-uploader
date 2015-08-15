@@ -34,7 +34,7 @@
 #include "floatingwindow.h"
 #include "ImageDownloaderDlg.h"
 #include "LogWindow.h"
-#include "Common/CmdLine.h"
+#include "Func/CmdLine.h"
 #include "Gui/Dialogs/UpdateDlg.h"
 #include "Core/Settings.h"
 #include "Gui/Dialogs/MediaInfoDlg.h"

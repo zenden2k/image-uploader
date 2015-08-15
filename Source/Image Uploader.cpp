@@ -24,7 +24,7 @@
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/wizarddlg.h"
 #include "Gui/Dialogs/floatingwindow.h"
-#include "Common/CmdLine.h"
+#include "Func/CmdLine.h"
 #include "Core/Settings.h"
 #include "Func/WinUtils.h"
 #include "Func/IuCommonFunctions.h"

@@ -61,6 +61,12 @@
     <Filter Include="Source\Core\Logging">
       <UniqueIdentifier>{c131354d-94e0-405d-bf08-d99b82023755}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Func">
+      <UniqueIdentifier>{5c7a80c4-9be8-4e93-a54d-66496bf1a559}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Func\Tests">
+      <UniqueIdentifier>{cc44f947-14a0-4b24-902f-3079f3645472}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tests.cpp">
@@ -282,6 +288,21 @@
     <ClCompile Include="..\Core\Logging\MyLogSink.cpp">
       <Filter>Source\Core\Logging</Filter>
     </ClCompile>
+    <ClCompile Include="..\Func\CmdLine.cpp">
+      <Filter>Source\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\Tests\CmdLineTest.cpp">
+      <Filter>Source\Func\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\WinUtils.cpp">
+      <Filter>Source\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdpart\Registry.cpp">
+      <Filter>Source\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Logging.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -295,6 +316,9 @@
     </ClInclude>
     <ClInclude Include="..\Core\3rdpart\tinyxml.h">
       <Filter>Source\Core\3rdpart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdpart\Registry.h">
+      <Filter>Source\Func</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

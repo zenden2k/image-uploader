@@ -22,7 +22,7 @@
 
 #include "atlheaders.h"
 #include "Core/Settings.h"
-#include "Common/CmdLine.h"
+#include "Func/CmdLine.h"
 #include "Func/SystemUtils.h"
 #include "Func/WinUtils.h"
 #include "Func/Myutils.h"

@@ -34,15 +34,15 @@ class CCmdLine
         size_t AddParam(LPCTSTR szParam);
 
         //Returns command line without module name
-        CString OnlyParams();
-        CString operator[](size_t nIndex);
-        CString ModuleName();
-        bool GetNextFile(CString& FileName, size_t& nIndex);
-        bool IsOption(LPCTSTR Option, bool bUsePrefix = true);
-        size_t GetCount();
+        CString OnlyParams() const;
+        CString operator[](size_t nIndex) const;
+        CString ModuleName() const;
+        bool GetNextFile(CString& FileName, size_t& nIndex) const;
+        bool IsOption(LPCTSTR Option, bool bUsePrefix = true) const;
+        size_t GetCount() const;
     private:
-        CStringList m_Params;
-        CString m_OnlyParams;
+        CStringList params_;
+        CString onlyParams_;
 };
 
 extern CCmdLine CmdLine;

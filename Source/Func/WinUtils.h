@@ -108,6 +108,7 @@ namespace WinUtils {
     CString GetProcessName(DWORD pid);
     CString ErrorCodeToString(DWORD idCode);
     CString ExpandEnvironmentStrings(const CString& s);
+    void ArgvQuote(const std::wstring& Argument, std::wstring& CommandLine, bool Force);
 //#endif
 };
 

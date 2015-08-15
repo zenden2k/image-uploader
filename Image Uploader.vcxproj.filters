@@ -25,9 +25,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Source Files\Common">
-      <UniqueIdentifier>{04fd2251-8f28-4c40-8a7f-36f5480a8526}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\3rdpart">
       <UniqueIdentifier>{88369759-f951-4b59-ac2f-5e0aa3c204dc}</UniqueIdentifier>
     </Filter>
@@ -275,9 +272,6 @@
     </ClInclude>
     <ClInclude Include="Source\stdafx.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Common\CmdLine.h">
-      <Filter>Source Files\Common</Filter>
     </ClInclude>
     <ClInclude Include="Source\3rdpart\MemberFunctionCallback.h">
       <Filter>Source Files\3rdpart</Filter>
@@ -813,6 +807,9 @@
     <ClInclude Include="Source\Gui\Controls\ImageView.h">
       <Filter>Source Files\Gui\Controls</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Func\CmdLine.h">
+      <Filter>Source Files\Func</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1166,9 +1163,6 @@
     </ClCompile>
     <ClCompile Include="Source\stdafx.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Common\CmdLine.cpp">
-      <Filter>Source Files\Common</Filter>
     </ClCompile>
     <ClCompile Include="Source\3rdpart\ColorButton.cpp">
       <Filter>Source Files\3rdpart</Filter>
@@ -1804,6 +1798,9 @@
       <Filter>Source Files\Gui\Controls</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\MediaInfoHelper.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\CmdLine.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
   </ItemGroup>

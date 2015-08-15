@@ -22,7 +22,7 @@
 
 #include "Func/common.h"
 #include "Gui/Dialogs/WizardDlg.h"
-#include "Common/CmdLine.h"
+#include "Func/CmdLine.h"
 #include "Core/Settings.h"
 #include "Func/WinUtils.h"
 

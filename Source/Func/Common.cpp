@@ -21,7 +21,7 @@
 #include "Common.h"
 
 #include "atlheaders.h"
-#include "Common/CmdLine.h"
+#include "Func/CmdLine.h"
 #include "Func/MyUtils.h"
 #include "Core/Utils/CryptoUtils.h"
 #include "Func/WinUtils.h"
