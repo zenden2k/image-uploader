@@ -109,6 +109,7 @@ namespace WinUtils {
     CString ErrorCodeToString(DWORD idCode);
     CString ExpandEnvironmentStrings(const CString& s);
     void ArgvQuote(const std::wstring& Argument, std::wstring& CommandLine, bool Force);
+    bool GetProxyInfo(CString& proxy_address, CString& proxy_bypass);
 //#endif
 };
 

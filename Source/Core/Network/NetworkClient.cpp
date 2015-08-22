@@ -145,7 +145,9 @@ int NetworkClient::private_static_writer(char *data, size_t size, size_t nmemb, 
 void NetworkClient::setProxy(const std::string &host, int port, int type)
 {
     curl_easy_setopt(curl_handle, CURLOPT_PROXY, host.c_str());
-    curl_easy_setopt(curl_handle, CURLOPT_PROXYPORT, static_cast<long>(port));    
+    if (port) {
+        curl_easy_setopt(curl_handle, CURLOPT_PROXYPORT, static_cast<long>(port));
+    }
     curl_easy_setopt(curl_handle, CURLOPT_PROXYTYPE, static_cast<long>(type));
 #ifdef NDEBUG
     curl_easy_setopt(curl_handle, CURLOPT_NOPROXY, "localhost,127.0.0.1"); 
@@ -155,10 +157,18 @@ void NetworkClient::setProxy(const std::string &host, int port, int type)
 void NetworkClient::setProxyUserPassword(const std::string &username, const std::string password) {
     if (username.empty() && password.empty()) {
         curl_easy_setopt(curl_handle, CURLOPT_PROXYUSERPWD, NULL);
+        curl_easy_setopt(curl_handle, CURLOPT_PROXYAUTH, NULL);
     } else {
         std::string authStr = urlEncode(username) + ":" + urlEncode(password);
         curl_easy_setopt(curl_handle, CURLOPT_PROXYUSERPWD, authStr.c_str());
+        curl_easy_setopt(curl_handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
     }
+}
+
+void NetworkClient::clearProxy() {
+    curl_easy_setopt(curl_handle, CURLOPT_PROXY, "");
+    curl_easy_setopt(curl_handle, CURLOPT_PROXYUSERPWD, NULL);
+    curl_easy_setopt(curl_handle, CURLOPT_PROXYAUTH, NULL);
 }
 
 int NetworkClient::private_writer(char *data, size_t size, size_t nmemb)
@@ -904,4 +914,14 @@ double NetworkClient::getCurlInfoDouble(int option)
     double res = 0;
     curl_easy_getinfo(curl_handle, static_cast<CURLINFO>(option), &res);
     return res;
+}
+
+void NetworkClient::setTimeout(uint32_t timeout)
+{
+    curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, timeout);
+}
+
+void NetworkClient::setConnectionTimeout(uint32_t connection_timeout)
+{
+    curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, connection_timeout);
 }

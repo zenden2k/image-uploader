@@ -6,7 +6,8 @@
 #include "3rdpart/GdiplusH.h"
 #include <Aclapi.h>
 #include "3rdpart/Registry.h"
-#include "TlHelp32.h"
+#include <TlHelp32.h>
+#include <Winhttp.h>
 
 namespace WinUtils {
 
@@ -1177,6 +1178,33 @@ void ArgvQuote(const std::wstring& Argument, std::wstring& CommandLine, bool For
         CommandLine.push_back(L'"');
     }
    
+}
+
+bool GetProxyInfo(CString& proxy_address, CString& proxy_bypass)
+{
+    proxy_address.Empty();
+    proxy_bypass.Empty();
+
+    WINHTTP_CURRENT_USER_IE_PROXY_CONFIG proxy_info;
+    if (FALSE == WinHttpGetIEProxyConfigForCurrentUser(&proxy_info))
+        return false;
+
+    if (proxy_info.lpszProxy)
+        proxy_address = proxy_info.lpszProxy;
+
+    if (proxy_info.lpszProxyBypass)
+        proxy_bypass = proxy_info.lpszProxyBypass;
+
+    if (proxy_info.lpszProxy) {
+        GlobalFree(proxy_info.lpszProxy);
+    }
+    if (proxy_info.lpszProxyBypass) {
+        GlobalFree(proxy_info.lpszProxyBypass);
+    }
+    if (proxy_info.lpszAutoConfigUrl) {
+        GlobalFree(proxy_info.lpszAutoConfigUrl);
+    }
+    return !proxy_address.IsEmpty();
 }
 
 };

@@ -39,7 +39,7 @@ void CCmdLine::Parse(LPCTSTR szCmdLine)
 
     // If szCmdLine is an empty string the CommandLineToArgvW function returns the path to the current executable file.
     // but this is not what we need
-    if (*szCmdLine) {
+    if (szCmdLine && *szCmdLine) {
         int argCount;
         
         LPWSTR* szArgList = CommandLineToArgvW(szCmdLine, &argCount);

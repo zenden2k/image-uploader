@@ -38,7 +38,7 @@ protected:
 TEST_F(TextUtilsTest, DecodeHtmlEntities)
 {
     std::string result = DecodeHtmlEntities("Foo &#xA9; bar &#x1D306; baz &#x2603; qux");
-    EXPECT_EQ(result, "\x46\x6F\x6F\x20\xC2\xA9\x20\x62\x61\x72\x20\xF0\x9D\x8C\x86\x20\x62\x61\x7A\x20\xE2\x98\x83\x20\x71\x75\x78");
+    EXPECT_EQ("\x46\x6F\x6F\x20\xC2\xA9\x20\x62\x61\x72\x20\xF0\x9D\x8C\x86\x20\x62\x61\x7A\x20\xE2\x98\x83\x20\x71\x75\x78", result);
     static const char kListView[] =
         "http://list.taobao.com/market/baby.htm?spm=1.151829.71436.25&"
         "cat=50032645&sort=_bid&spercent=95&isprepay=1&user_type=0&gobaby=1&"

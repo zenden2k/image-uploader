@@ -597,4 +597,11 @@
         </Actions>
         <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
     </Server>
+    <Server3 Name="savephoto.ru" Type="image" MinVersion="1.3.2" Authorize="0">
+        <Actions>
+            <Action Type="get" Url="http://savephoto.ru/" PostParams="" RegExp="\/Upload\/UploadHandler\.ashx\?id=(.+?)&quot;" AssignVars="uphost:0"/>
+            <Action Type="upload" Url="http://savephoto.ru$(uphost)" PostParams="files[]=%filename%" RegExp="\[IMG\](.+)\[\/IMG\]" AssignVars="Image:0"/>
+        </Actions>
+        <Result ImageUrlTemplate="$(Image)"/>
+    </Server3>
 </Servers>

@@ -30,10 +30,6 @@ CommonGuiSettings::CommonGuiSettings() : BasicSettings()
 {
     // Default values of settings
 
-    ConnectionSettings.UseProxy = FALSE;
-    ConnectionSettings.ProxyPort = 0;
-    ConnectionSettings.NeedsAuth = false;
-    ConnectionSettings.ProxyType = 0;
     ShowTrayIcon = false;
     ShowTrayIcon_changed = false;
     MaxThreads = 3;

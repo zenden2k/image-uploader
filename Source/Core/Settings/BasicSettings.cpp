@@ -31,6 +31,12 @@ BasicSettings::BasicSettings()
     ExecuteScript = false;
     loadFromRegistry_ = false;
     MaxThreads = 3;
+
+    ConnectionSettings.UseProxy = false;
+    ConnectionSettings.SystemProxy = false;
+    ConnectionSettings.ProxyPort = 0;
+    ConnectionSettings.NeedsAuth = false;
+    ConnectionSettings.ProxyType = 0;
 }
 
 BasicSettings::~BasicSettings() {

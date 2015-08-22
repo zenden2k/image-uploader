@@ -111,8 +111,9 @@ class NetworkClient
         double getCurlInfoDouble(int option);
         void setMethod(const std::string &str);
         /*! @cond PRIVATE */
-        void setProxy(const std::string &host, int port, int type);
+        void setProxy(const std::string &host, int port = 0 , int type = 0);
         void setProxyUserPassword(const std::string &username, const std::string password);
+        void clearProxy();
         /*! @endcond */
         void setReferer(const std::string &str);
         void setOutputFile(const std::string &str);
@@ -137,6 +138,8 @@ class NetworkClient
         /*! @cond PRIVATE */
         CURL* getCurlHandle();
         void setCurlShare(CurlShare* share);
+        void setTimeout(uint32_t timeout);
+        void setConnectionTimeout(uint32_t connection_timeout);
         /*! @endcond */
         void enableResponseCodeChecking(bool enable);
 

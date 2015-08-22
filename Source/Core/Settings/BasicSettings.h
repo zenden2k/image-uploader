@@ -12,6 +12,7 @@ typedef std::map <std::string, std::map <std::string, ServerSettingsStruct>> Ser
 
 struct ConnectionSettingsStruct {
     bool UseProxy;
+    bool SystemProxy;
     std::string ServerAddress;
     int ProxyPort;
     bool NeedsAuth;
