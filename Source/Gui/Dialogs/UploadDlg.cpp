@@ -34,6 +34,7 @@
 #include "Core/CoreFunctions.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Func/MediaInfoHelper.h"
+#include <Func/IuCommonFunctions.h>
 
 // CUploadDlg
 CUploadDlg::CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager) : resultsWindow_(new CResultsWindow(dlg, urlList_, true))
@@ -138,7 +139,7 @@ bool CUploadDlg::startUpload() {
         uploadListView_.AddItem(i, 0, MainDlg->FileList[i].VirtualFileName);
         uploadListView_.AddItem(i, 1, TR("Queued"));
         uploadListView_.SetItemData(i, reinterpret_cast<DWORD_PTR>(fps));
-        bool isImage = IsImage(FileName);
+        bool isImage = IuCommonFunctions::IsImage(FileName);
         std::shared_ptr<FileUploadTask> task(new FileUploadTask(fileNameA, displayName));
         task->OnUploadProgress.bind(this, &CUploadDlg::onTaskUploadProgress);
         task->setUserData(fps);

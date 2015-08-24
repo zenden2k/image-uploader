@@ -17,7 +17,7 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
     {
         return true;
     }
-    if (!IsImage(IuCoreUtils::Utf8ToWstring(fileTask->getFileName()).c_str()))
+    if (!IuCommonFunctions::IsImage(IuCoreUtils::Utf8ToWstring(fileTask->getFileName()).c_str()))
     {
         return true;
     }

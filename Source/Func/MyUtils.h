@@ -59,13 +59,10 @@ int GetFontSizeInTwips(int nFontSize);
 const CString myExtractFileName(const CString & FileName);
 
 LPCTSTR GetFileExt(LPCTSTR szFileName);
-bool IsImage(LPCTSTR szFileName);
-bool IsVideoFile(LPCTSTR szFileName);
 
-const CString GetOnlyFileName(const CString& szFilename);
+bool IsVideoFile(LPCTSTR szFileName);
 bool ReadSetting(LPTSTR szSettingName,int* Value,int DefaultValue,LPTSTR szString=NULL,LPTSTR szDefString=NULL);
 int GetSavingFormat(LPCTSTR szFileName);
-bool IsStrInList(LPCTSTR szExt,LPCTSTR szList);
 int MyGetFileSize(LPCTSTR FileName);
 
 LPTSTR fgetline(LPTSTR buf,int num,FILE *f);

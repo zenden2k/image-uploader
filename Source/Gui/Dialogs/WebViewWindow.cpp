@@ -20,6 +20,9 @@ CWebViewWindow::CWebViewWindow() : subclassWindow_(this), callback_(HookCallback
     //dialogHook_ = 0;
 }
 CWebViewWindow::~CWebViewWindow() {
+    if (urlmonDll_) {
+        FreeLibrary(urlmonDll_);
+    }
     /*if ( dialogHook_) {
         dialogHook_->Hook(0);
     }*/
@@ -41,8 +44,10 @@ LRESULT CWebViewWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     WinUtils::UseLatestInternetExplorerVersion(false);
 
     typedef HRESULT  (STDAPICALLTYPE *CoInternetSetFeatureEnabledFuncType) (INTERNETFEATURELIST , DWORD , BOOL); 
-    HMODULE module = LoadLibrary(_T("Urlmon.dll"));
-    CoInternetSetFeatureEnabledFuncType CoInternetSetFeatureEnabledFunc = (CoInternetSetFeatureEnabledFuncType)GetProcAddress(module, "CoInternetSetFeatureEnabled");
+    if (!urlmonDll_) {
+        urlmonDll_ = LoadLibrary(_T("Urlmon.dll"));
+    }
+    CoInternetSetFeatureEnabledFuncType CoInternetSetFeatureEnabledFunc = reinterpret_cast<CoInternetSetFeatureEnabledFuncType>(GetProcAddress(urlmonDll_, "CoInternetSetFeatureEnabled"));
     if ( CoInternetSetFeatureEnabledFunc ) { 
         CoInternetSetFeatureEnabledFunc(FEATURE_DISABLE_NAVIGATION_SOUNDS, SET_FEATURE_ON_PROCESS, true);
     }
@@ -346,7 +351,7 @@ LRESULT CWebViewWindow::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
         CComPtr<IAccessible> editControlAccesible;
         if ( ::IsWindow(editControl_) ) {
             
-            /*HRESULT hr =*/ ::AccessibleObjectFromWindow(editControl_, OBJID_CLIENT , IID_IAccessible, (void**)(&editControlAccesible)); 
+            /*HRESULT hr =*/ ::AccessibleObjectFromWindow(editControl_, static_cast<DWORD>(OBJID_CLIENT), IID_IAccessible, (void**)(&editControlAccesible)); 
         }
 
         if ( editControl_ && (!::IsWindow(editControl_) || !editControlAccesible )) {
@@ -568,7 +573,7 @@ LRESULT FileDialogSubclassWindow::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /
         v.lVal  = CHILDID_SELF;
         CComPtr<IAccessible> editControlAccesible;
         if ( ::IsWindow(editControl_) ) {
-            /*HRESULT hr =*/ ::AccessibleObjectFromWindow(editControl_, OBJID_CLIENT , IID_IAccessible, (void**)(&editControlAccesible)); 
+            /*HRESULT hr =*/ ::AccessibleObjectFromWindow(editControl_, static_cast<DWORD>(OBJID_CLIENT), IID_IAccessible, (void**)(&editControlAccesible)); 
         }
 
         if ( editControl_ && (!::IsWindow(editControl_) || !editControlAccesible )) {

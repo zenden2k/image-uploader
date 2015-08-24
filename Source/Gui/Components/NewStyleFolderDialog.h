@@ -23,13 +23,14 @@ limitations under the License.
 
 #include "atlheaders.h"
 #include "Func/WinUtils.h"
+#include <Func/Library.h>
 
 typedef HRESULT(__stdcall *SHCreateItemFromParsingNameFunc)(PCWSTR, IBindCtx *, REFIID, void**);
 
 class CNewStyleFolderDialog {
 public:
     
-    CNewStyleFolderDialog(HWND parent, const CString& initialFolder, const CString& title, bool onlyFsDirs = true)
+    CNewStyleFolderDialog(HWND parent, const CString& initialFolder, const CString& title, bool onlyFsDirs = true) : shellDll_(L"shell32.dll")
     {
         isVista_ = WinUtils::IsVista();
  
@@ -42,9 +43,8 @@ public:
             newStyleDialog_= new CShellFileOpenDialog(/*WinUtils::myExtractFileName(initialFolder)*/0, FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST | FOS_PICKFOLDERS | (onlyFsDirs ? FOS_FORCEFILESYSTEM : 0));
             
             // SHCreateItemFromParsingName function not available on Windows XP
-            HMODULE lib = LoadLibrary(_T("shell32.dll"));
             IShellItem *psi;
-            SHCreateItemFromParsingNameFunc ParseDisplayName = reinterpret_cast<SHCreateItemFromParsingNameFunc>(GetProcAddress(lib, "SHCreateItemFromParsingName"));
+            SHCreateItemFromParsingNameFunc ParseDisplayName = shellDll_.GetProcAddress<SHCreateItemFromParsingNameFunc>("SHCreateItemFromParsingName");
             HRESULT hresult = ParseDisplayName(initialFolder, 0, IID_IShellItem, reinterpret_cast<void**>(&psi));
             if (SUCCEEDED(hresult)) {
                 newStyleDialog_->m_spFileDlg->SetFolder(psi);
@@ -83,6 +83,7 @@ protected:
     CFolderDialog* oldStyleDialog_;
     CShellFileOpenDialog* newStyleDialog_;
     bool isVista_;
+    Library shellDll_;
 
 };
 #endif

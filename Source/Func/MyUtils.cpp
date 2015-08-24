@@ -24,6 +24,7 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Video/VideoUtils.h"
+#include "Func/WinUtils.h"
 
 typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
 typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
@@ -268,34 +269,7 @@ LPCTSTR GetFileExt(LPCTSTR szFileName)
     return szReturn;
 }
 
-bool IsStrInList(LPCTSTR szExt,LPCTSTR szList)
-{
-    if(!szList || !szExt) return false;
-
-    while ((*szList)!=0)
-    {
-        if(lstrcmpi(szExt,szList)==0) return true;
-        szList += lstrlen(szList)+1;
-    }
-    return false;
-}
-
-const CString GetOnlyFileName(const CString& szFilename)
-{
-    CString tempName = myExtractFileName(szFilename);
-    int dotPos = tempName.ReverseFind(_T('.'));
-    if(dotPos != -1)
-        tempName=tempName.Left(dotPos);
-    
-    return tempName;
-}
-
-bool IsImage(LPCTSTR szFileName)
-{
-    LPCTSTR szExt = GetFileExt(szFileName);
-    if(lstrlen(szExt)<1) return false;
-    return IsStrInList(szExt,_T("jpg\0jpeg\0png\0bmp\0gif\0tif\0tiff\0\0"));
-}
+                                                             
 
 bool IsVideoFile(LPCTSTR szFileName)
 {
@@ -359,11 +333,11 @@ int GetSavingFormat(LPCTSTR szFileName)
 {
     if(!szFileName) return -1;
     LPCTSTR FileType = GetFileExt(szFileName);
-    if(IsStrInList(FileType,_T("jpg\0jpeg\0\0")))
+    if(WinUtils::IsStrInList(FileType,_T("jpg\0jpeg\0\0")))
         return 0;
-    else if(IsStrInList(FileType,_T("png\0\0")))
+    else if(WinUtils::IsStrInList(FileType,_T("png\0\0")))
         return 1;
-    else if(IsStrInList(FileType,_T("gif\0\0")))
+    else if(WinUtils::IsStrInList(FileType,_T("gif\0\0")))
         return 2;
     else return 0;
 }

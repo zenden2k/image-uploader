@@ -18,7 +18,7 @@ namespace IuCommonFunctions {
 const CString GetDataFolder()
 {
     CString result;
-#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
+#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)&& !defined(IU_TESTS)
     result= Settings.DataFolder;
 #else 
     result= WinUtils::GetAppFolder()+"\\Data\\";
@@ -189,6 +189,14 @@ CString GenerateFileName(const CString& templateStr, int index, const CPoint siz
     result.Replace(_T("%s"), seconds);
     result.Replace(_T("%i"), indexStr);
     return result;
+}
+
+
+bool IsImage(LPCTSTR szFileName)
+{
+    LPCTSTR szExt = WinUtils::GetFileExt(szFileName);
+    if (lstrlen(szExt)<1) return false;
+    return WinUtils::IsStrInList(szExt, _T("jpg\0jpeg\0png\0bmp\0gif\0tif\0tiff\0\0"));
 }
 
 };

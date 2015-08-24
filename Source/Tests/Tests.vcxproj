@@ -98,6 +98,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\3rdpart\QColorQuantizer.cpp" />
     <ClCompile Include="..\3rdpart\Registry.cpp" />
     <ClCompile Include="..\Core\3rdpart\base64.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\GQDocument.cpp" />
@@ -117,6 +118,8 @@
     <ClCompile Include="..\Core\AppParams.cpp" />
     <ClCompile Include="..\Core\CoreFunctions.cpp" />
     <ClCompile Include="..\Core\HistoryManager.cpp" />
+    <ClCompile Include="..\Core\Images\Tests\UtilsTest.cpp" />
+    <ClCompile Include="..\Core\Images\Utils.cpp" />
     <ClCompile Include="..\Core\LocalFileCache.cpp" />
     <ClCompile Include="..\Core\Logging.cpp" />
     <ClCompile Include="..\Core\Logging\ConsoleLogger.cpp" />
@@ -169,6 +172,8 @@
     <ClCompile Include="..\Core\Utils\Tests\TextUtilsTest.cpp" />
     <ClCompile Include="..\Core\Utils\TextUtils.cpp" />
     <ClCompile Include="..\Func\CmdLine.cpp" />
+    <ClCompile Include="..\Func\GdiPlusInitializer.cpp" />
+    <ClCompile Include="..\Func\IuCommonFunctions.cpp" />
     <ClCompile Include="..\Func\Tests\CmdLineTest.cpp" />
     <ClCompile Include="..\Func\WinUtils.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -19,8 +19,6 @@
  
 #include "atlheaders.h"
 #include <shellapi.h> 
-#include "resource.h"
-#include "3rdpart/GdiplusH.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/wizarddlg.h"
 #include "Gui/Dialogs/floatingwindow.h"
@@ -43,6 +41,7 @@
 #ifndef NDEBUG
 #include <vld.h>
 #endif
+#include "Func/GdiPlusInitializer.h"
 CAppModule _Module;
 
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
@@ -64,10 +63,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
         DeleteFile( WinUtils::GetAppFolder() + fileList[i] );
     }
 
-    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-    
-    ULONG_PTR gdiplusToken;
-    Gdiplus::GdiplusStartup( &gdiplusToken, &gdiplusStartupInput, NULL );
+    GdiPlusInitializer gdiPlusInitializer;
 
     CMessageLoop theLoop;
     _Module.AddMessageLoop( &theLoop );
@@ -130,7 +126,6 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
     }
     _Module.RemoveMessageLoop();
 
-    Gdiplus::GdiplusShutdown( gdiplusToken );
 
     // Remove temporary files
     IuCommonFunctions::ClearTempFolder( IuCommonFunctions::IUTempFolder ); 

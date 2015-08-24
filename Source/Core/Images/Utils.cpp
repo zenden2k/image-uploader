@@ -33,6 +33,7 @@
 #include <cmath>
 #include <stdint.h>
 #include <Core/ServiceLocator.h>
+#include <Func/Library.h>
 
 using namespace Gdiplus;
 
@@ -517,7 +518,7 @@ bool CopyBitmapToClipboard(HWND hwnd, HDC dc, Gdiplus::Bitmap* bm, bool preserve
         DeleteObject(out);
         return true;
     } else {
-        LOG(ERROR) << TR("Cannot copy image to clipboard.") << "\r\n" << WinUtils::GetLastErrorAsString();
+        LOG(ERROR) << ("Cannot copy image to clipboard.") << "\r\n" << WinUtils::GetLastErrorAsString();
     }
     return false;
 }
@@ -645,8 +646,8 @@ bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int F
     TCHAR szMimeTypes[3][12] = { _T("image/jpeg"), _T("image/png"), _T("image/gif") };
     CString szNameBuffer;
     TCHAR szBuffer2[MAX_PATH];
-    if (IsImage(szFilename))
-        szNameBuffer = GetOnlyFileName(szFilename);
+    if (IuCommonFunctions::IsImage(szFilename))
+        szNameBuffer = WinUtils::GetOnlyFileName(szFilename);
     else
         szNameBuffer = szFilename;
     CString userFolder;
@@ -763,12 +764,12 @@ UINT VoidToInt(void* data, unsigned int size) {
 typedef IStream * (STDAPICALLTYPE *SHCreateMemStreamFuncType)(const BYTE *pInit, UINT cbInit);
 SHCreateMemStreamFuncType SHCreateMemStreamFunc = 0;
 
+Library shlwapiLib(L"Shlwapi.dll");
 
 Gdiplus::Bitmap* BitmapFromMemory(BYTE* data, size_t imageSize) {
     if (WinUtils::IsVista()) {
         if (!SHCreateMemStreamFunc) {
-            HMODULE shlwapiLib = LoadLibrary(_T("Shlwapi.dll"));
-            SHCreateMemStreamFunc = reinterpret_cast<SHCreateMemStreamFuncType>(GetProcAddress(shlwapiLib, "SHCreateMemStream"));
+            SHCreateMemStreamFunc = shlwapiLib.GetProcAddress<SHCreateMemStreamFuncType>("SHCreateMemStream");
             if (!SHCreateMemStreamFunc) {
                 return 0;
             }

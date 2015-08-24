@@ -25,6 +25,7 @@
 #include "SimpleXml.h"
 #include "Core/3rdpart/tinyxml.h"
 #include "CoreUtils.h"
+#include <boost/format.hpp>
 
 class SimpleXml_impl
 {
@@ -336,8 +337,10 @@ const std::string SimpleXml::ToString()
 bool SimpleXml::SaveToFile(const std::string& fileName) const
 {
     FILE* f = IuCoreUtils::fopen_utf8(fileName.c_str(), "wb");
-    if (!f)
+    if (!f) {
+        LOG(ERROR) << boost::format("Could not save xml to file '%s'.") % fileName << std::endl << "Reason: " << strerror(errno);
         return false;
+    }
     bool res =  impl_->doc.SaveFile(f);
     fclose(f);
     return res;

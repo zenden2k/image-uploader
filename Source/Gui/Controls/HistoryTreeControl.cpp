@@ -508,7 +508,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
     else  
         filename = Utf8ToWCstring(item->hi.localFilePath);
     bool error = false;
-    if(IsImage(filename))
+    if(IuCommonFunctions::IsImage(filename))
     {
         bm=new Image(filename);
     }
@@ -571,7 +571,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
             br(bounds, Color(255, 255, 255, 255), Color(255, 210, 210, 210), 
             LinearGradientModeBackwardDiagonal/* LinearGradientModeVertical*/); 
 
-        if(IsImage(filename))
+        if(IuCommonFunctions::IsImage(filename))
             gr.FillRectangle(&br,1, 1, width-1,height-1);
         gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
 
@@ -605,7 +605,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
             lstrcpy(FileExt, GetFileExt(Filename));
             if(!lstrcmpi(FileExt, _T("jpg"))) 
                 lstrcpy(FileExt,_T("JPEG"));
-            if(IsImage(filename) && bm)
+            if(IuCommonFunctions::IsImage(filename) && bm)
             {
                 wsprintf(Buffer,_T("%s %dx%d (%s)"),static_cast<LPCTSTR>(FileExt),(int)bm->GetWidth(),(int)bm->GetHeight(), (LPCTSTR)buf2 );
             }
@@ -638,7 +638,7 @@ HBITMAP CHistoryTreeControl::GetItemThumbnail(HistoryTreeItem* item)
     
     std::string stdLocalFileName = item->hi.localFilePath;
     CString localFileName = Utf8ToWCstring(stdLocalFileName);
-    if(!IsImage(localFileName))
+    if(!IuCommonFunctions::IsImage(localFileName))
     {
         return 0;
     }

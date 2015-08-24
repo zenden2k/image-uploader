@@ -689,6 +689,8 @@
     <ClInclude Include="Source\Func\CmdLine.h" />
     <ClInclude Include="Source\Func\DefaultLogger.h" />
     <ClInclude Include="Source\Func\DefaultUploadErrorHandler.h" />
+    <ClInclude Include="Source\Func\GdiPlusInitializer.h" />
+    <ClInclude Include="Source\Func\Library.h" />
     <ClInclude Include="Source\Func\WtlScriptDialogProvider.h" />
     <ClInclude Include="Source\Gui\Components\NewStyleFolderDialog.h" />
     <ClInclude Include="Source\Gui\Controls\ImageView.h" />
@@ -1037,6 +1039,7 @@
     <ClCompile Include="Source\Func\CmdLine.cpp" />
     <ClCompile Include="Source\Func\DefaultLogger.cpp" />
     <ClCompile Include="Source\Func\DefaultUploadErrorHandler.cpp" />
+    <ClCompile Include="Source\Func\GdiPlusInitializer.cpp" />
     <ClCompile Include="Source\Func\MediaInfoHelper.cpp" />
     <ClCompile Include="Source\Func\WtlScriptDialogProvider.cpp" />
     <ClCompile Include="Source\Gui\Controls\ImageView.cpp" />

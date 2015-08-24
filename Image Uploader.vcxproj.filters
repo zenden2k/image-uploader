@@ -810,6 +810,12 @@
     <ClInclude Include="Source\Func\CmdLine.h">
       <Filter>Source Files\Func</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Func\Library.h">
+      <Filter>Source Files\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\GdiPlusInitializer.h">
+      <Filter>Source Files\Func</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1801,6 +1807,9 @@
       <Filter>Source Files\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\CmdLine.cpp">
+      <Filter>Source Files\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\GdiPlusInitializer.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
   </ItemGroup>

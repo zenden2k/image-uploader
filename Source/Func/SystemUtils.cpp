@@ -2,11 +2,12 @@
 
 #include "MyUtils.h"
 #include <vector>
+#include "IuCommonFunctions.h"
 
 namespace SystemUtils {
 
 bool CopyFileAndImageToClipboard(LPCTSTR fileName) {
-    if ( IsImage(fileName) ) {
+    if (IuCommonFunctions::IsImage(fileName) ) {
         CopyImageToClipboard(fileName);
     }
     std::vector<LPCTSTR> fileNames;

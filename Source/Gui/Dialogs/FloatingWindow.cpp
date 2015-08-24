@@ -633,7 +633,7 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     uploadManager_->start();
 
     CString msg;
-    msg.Format(TR("File \"%s\" is beeing uploaded to server %s.."), static_cast<LPCTSTR>(GetOnlyFileName(displayName)),
+    msg.Format(TR("File \"%s\" is beeing uploaded to server %s.."), static_cast<LPCTSTR>(WinUtils::GetOnlyFileName(displayName)),
         static_cast<LPCTSTR>(Utf8ToWstring(Settings.quickScreenshotServer.serverName()).c_str()));
     ShowBaloonTip(msg, TR("Uploading screenshot"));
 }

@@ -32,6 +32,7 @@
 #include "Func/myutils.h"
 #include <Core/ServiceLocator.h>
 #include "Core/Images/Utils.h"
+#include <Func/IuCommonFunctions.h>
 
 bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
 
@@ -261,7 +262,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
     height = THUMBNAIL_HEIGHT/*rc.bottom-16*/;
     int thumbwidth = THUMBNAIL_WIDTH;
     int  thumbheight = THUMBNAIL_HEIGHT;
-    bool isImage = Img || IsImage(filename);
+    bool isImage = Img || IuCommonFunctions::IsImage(filename);
     if ( isImage)
     {
         if (Img) {
@@ -322,11 +323,11 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
             br(bounds, Color(255, 255, 255, 255), Color(255, 210, 210, 210), 
             LinearGradientModeBackwardDiagonal/* LinearGradientModeVertical*/); 
 
-        if(IsImage(filename))
+        if(IuCommonFunctions::IsImage(filename))
             gr.FillRectangle(&br,1, 1, width-1,height-1);
         gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
 
-        if(ItemID>=0 && !Img && !IsImage(filename))
+        if(ItemID>=0 && !Img && !IuCommonFunctions::IsImage(filename))
         {
 
 
@@ -405,7 +406,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
             lstrcpy(FileExt, WinUtils::GetFileExt(Filename));
             if(!lstrcmpi(FileExt, _T("jpg"))) 
                 lstrcpy(FileExt,_T("JPEG"));
-            if(IsImage(filename) && bm)
+            if(IuCommonFunctions::IsImage(filename) && bm)
             {
                 wsprintf(Buffer,_T("%s %dx%d (%s)"),(LPCTSTR)FileExt,imgwidth, imgheight, (LPCTSTR)buf2 );
             }
@@ -511,7 +512,7 @@ void CThumbsView::ViewSelectedImage()
 
     LPCTSTR FileName = GetFileName(nCurItem);
 
-    if(!FileName || !IsImage(FileName)) return;
+    if(!FileName || !IuCommonFunctions::IsImage(FileName)) return;
     ImageView.ViewImage(FileName);
 }
 

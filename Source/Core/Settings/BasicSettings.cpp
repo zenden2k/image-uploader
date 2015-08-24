@@ -19,8 +19,8 @@ limitations under the License.
 */
 
 #include "BasicSettings.h"
-#include "EncodedPassword.h"
 
+#include "EncodedPassword.h"
 
 BasicSettings::BasicSettings()
 {
@@ -168,8 +168,6 @@ bool BasicSettings::LoadSettings(std::string szDir, std::string fileName, bool L
     loadFromRegistry_ = LoadFromRegistry;
     fileName_ = !szDir.empty() ? szDir + ((!fileName.empty()) ? fileName : "Settings.xml")
         : SettingsFolder + (!fileName.empty() ? fileName : "Settings.xml");
-    //std::cout<< fileName_;
-    //MessageBoxA(0,fileName_.c_str(),0,0);
     if (!IuCoreUtils::FileExists(fileName_)) {
         return true;
     }
@@ -182,7 +180,6 @@ bool BasicSettings::LoadSettings(std::string szDir, std::string fileName, bool L
     return true;
 }
 
-
 bool BasicSettings::SaveSettings()
 {
     SimpleXml xml;
@@ -190,9 +187,13 @@ bool BasicSettings::SaveSettings()
     PostSaveSettings(xml);
     SaveAccounts(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("ServersParams"));
     //std::cerr << "Saving setting to "<< IuCoreUtils::WstringToUtf8((LPCTSTR)fileName_);
-    xml.SaveToFile(fileName_);
+    bool result = true;
+    if (!xml.SaveToFile(fileName_)) {
+        LOG(ERROR) << "Could not save settings!" << std::endl << "File: "<< fileName_;
+        result = false;
+    }
     notifyChange();
-    return true;
+    return result;
 }
 
 void BasicSettings::addChangeCallback(const ChangeCallback& callback)

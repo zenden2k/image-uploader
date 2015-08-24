@@ -184,7 +184,7 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>minizip.lib;zlibd.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;Oleacc.lib;gumbo.lib;jsoncpp.lib;libglog_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>minizip.lib;zlibd.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;Oleacc.lib;gumbo.lib;jsoncpp.lib;libglog_static.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Debug;$(SolutionDir)Contrib\Lib\;$(SolutionDir)\Contrib\Source\boost\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libcmt.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -450,7 +450,6 @@
     <ClCompile Include="..\3rdpart\MemberFunctionCallback.cpp" />
     <ClCompile Include="..\3rdpart\QColorQuantizer.cpp" />
     <ClCompile Include="..\3rdpart\Registry.cpp" />
-    <ClCompile Include="..\Common\CmdLine.cpp" />
     <ClCompile Include="..\Core\3rdpart\base64.cpp" />
     <ClCompile Include="..\Core\3rdpart\dxerr.cpp" />
     <ClCompile Include="..\Core\3rdpart\GumboQuery\GQDocument.cpp" />
@@ -523,6 +522,7 @@
     <ClCompile Include="..\Core\Utils\SimpleXml.cpp" />
     <ClCompile Include="..\Core\Utils\StringUtils.cpp" />
     <ClCompile Include="..\Core\Utils\TextUtils.cpp" />
+    <ClCompile Include="..\Func\CmdLine.cpp" />
     <ClCompile Include="..\Func\Common.cpp" />
     <ClCompile Include="..\Func\DefaultLogger.cpp" />
     <ClCompile Include="..\Func\DefaultUploadErrorHandler.cpp" />

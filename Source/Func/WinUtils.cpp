@@ -330,7 +330,9 @@ bool IsWine()
 
     if (hDll)
     {
-        return GetProcAddress(hDll, "wine_get_version") != 0;
+        bool res =  GetProcAddress(hDll, "wine_get_version") != 0;
+        FreeLibrary(hDll);
+        return res;
     }
     return false;
 }

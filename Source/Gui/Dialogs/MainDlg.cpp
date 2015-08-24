@@ -31,6 +31,7 @@
 #include "Func/ImageEditorConfigurationProvider.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 #include "Gui/Dialogs/WizardDlg.h"
+#include <Func/IuCommonFunctions.h>
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -139,7 +140,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         bool isImage = false;
         if ( ThumbsView.GetSelectedCount() == 1 ) {
             singleSelectedItem = getSelectedFileName();
-            isImage = IsImage(singleSelectedItem);
+            isImage = IuCommonFunctions::IsImage(singleSelectedItem);
         }
         
         TCHAR buf[MAX_PATH];
@@ -154,7 +155,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         CMenu sub = menu.GetSubMenu(0);
         sub.SetMenuDefaultItem(0, true);
 
-        bool bIsImageFile = IsImage( FileList[hti.iItem].FileName);
+        bool bIsImageFile = IuCommonFunctions::IsImage( FileList[hti.iItem].FileName);
         if(!bIsImageFile){
             sub.DeleteMenu(IDM_VIEW, MF_BYCOMMAND );
             sub.DeleteMenu(IDM_EDIT, MF_BYCOMMAND );
@@ -215,8 +216,8 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, G
     FileList.Add(fl);
 
     CString Buf;
-    if(IsImage(FileName))
-    Buf = GetOnlyFileName(FileName );
+    if(IuCommonFunctions::IsImage(FileName))
+    Buf = WinUtils::GetOnlyFileName(FileName );
     else Buf = myExtractFileName(FileName);
     if(FileName) 
         ThumbsView.AddImage(fl.FileName, fl.VirtualFileName, Img);

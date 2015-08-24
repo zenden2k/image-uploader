@@ -67,6 +67,12 @@
     <Filter Include="Source\Func\Tests">
       <UniqueIdentifier>{cc44f947-14a0-4b24-902f-3079f3645472}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Core\Images">
+      <UniqueIdentifier>{57681546-a707-4888-9d70-0b60e306486b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Images\Tests">
+      <UniqueIdentifier>{a060515e-30e8-43e8-baec-667da856795a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tests.cpp">
@@ -302,6 +308,21 @@
     </ClCompile>
     <ClCompile Include="..\Core\Logging.cpp">
       <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Images\Utils.cpp">
+      <Filter>Source\Core\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdpart\QColorQuantizer.cpp">
+      <Filter>Source\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\IuCommonFunctions.cpp">
+      <Filter>Source\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Images\Tests\UtilsTest.cpp">
+      <Filter>Source\Core\Images\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\GdiPlusInitializer.cpp">
+      <Filter>Source\Func</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

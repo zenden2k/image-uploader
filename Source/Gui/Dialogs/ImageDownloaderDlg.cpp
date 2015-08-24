@@ -29,6 +29,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/CoreFunctions.h"
 #include "Func/WebUtils.h"
+#include <Func/IuCommonFunctions.h>
 
 // CImageDownloaderDlg
 CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg,const CString &initialBuffer)
@@ -52,7 +53,7 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     if (isVistaOrLater_)
     {
-        HMODULE module = LoadLibrary(_T("user32.dll"));
+        HMODULE module = GetModuleHandle(_T("user32.dll"));
         AddClipboardFormatListenerFunc fAddClipboardFormatListener = reinterpret_cast<AddClipboardFormatListenerFunc>(GetProcAddress(module, "AddClipboardFormatListener"));
         fAddClipboardFormatListener(m_hWnd);
         fRemoveClipboardFormatListener_ = reinterpret_cast<RemoveClipboardFormatListenerFunc>(GetProcAddress(module, "RemoveClipboardFormatListener"));
@@ -180,7 +181,7 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloade
         ais.RealFileName = Utf8ToWstring(it.fileName).c_str();
         ais.VirtualFileName =  Utf8ToWstring(it.displayName).c_str();
         bool add = true;
-        if(!IsImage(ais.RealFileName))
+        if(!IuCommonFunctions::IsImage(ais.RealFileName))
         {
             CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8(ais.RealFileName)));
             if(mimeType.Find(_T("image/"))>=0)
@@ -273,7 +274,7 @@ void CImageDownloaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)
     for(size_t i=0; i<links.size(); i++)
     {
         CString fileName = WinUtils::myExtractFileName(links[i]);
-        if( ((!OnlyImages && CString(WinUtils::GetFileExt(fileName)).IsEmpty()) || IsImage(fileName)) &&  text.Find(links[i]) == -1 ) {
+        if( ((!OnlyImages && CString(WinUtils::GetFileExt(fileName)).IsEmpty()) || IuCommonFunctions::IsImage(fileName)) &&  text.Find(links[i]) == -1 ) {
             if (text.Right(1) != _T("\n")) {
                 text += "\r\n";
             }

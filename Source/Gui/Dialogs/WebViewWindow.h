@@ -200,6 +200,7 @@ protected:
     CComPtr<IAccessible> accesible_;
     //static CWebViewWindow* instance;
     CBTHookMemberFunctionCallback callback_;
+    HMODULE urlmonDll_;
 };
 
 

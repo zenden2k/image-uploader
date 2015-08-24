@@ -690,13 +690,15 @@ LRESULT CWizardDlg::OnBnClickedAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 
 void CWizardDlg::Exit()
 {
-    Settings.SaveSettings();
+    if (!Settings.SaveSettings()) {
+        MessageBox(TR("Could not save settings file. See error log for details."), APPNAME, MB_ICONERROR);
+    }
 }
 
 LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
     bHandled = true;
-    HDROP hDrop = (HDROP) wParam;
+    HDROP hDrop = reinterpret_cast<HDROP>(wParam);
     TCHAR szBuffer[256] = _T("\0");
     if(CurPage > 2) return 0;
 
@@ -1130,7 +1132,7 @@ int CFolderAdd::ProcessDir( CString currentDir, bool bRecursive /* = true  */ )
         }
         else if ( s_Dir.name[ 0 ] != '.' )
           {
-                if(!m_bImagesOnly || IsImage(s_Dir.name))
+                if(!m_bImagesOnly || IuCommonFunctions::IsImage(s_Dir.name))
                 {
                     CWizardDlg::AddImageStruct ais;
                     ais.show = !m_pWizardDlg->QuickUploadMarker;
@@ -1156,7 +1158,7 @@ DWORD CFolderAdd::Run()
         if(WinUtils::IsDirectory(CurPath))
             ProcessDir(CurPath, m_bSubDirs);
         else 
-            if(!m_bImagesOnly || IsImage(CurPath))
+            if(!m_bImagesOnly || IuCommonFunctions::IsImage(CurPath))
             {
                 CWizardDlg::AddImageStruct ais;
                 ais.show = !m_pWizardDlg->QuickUploadMarker;

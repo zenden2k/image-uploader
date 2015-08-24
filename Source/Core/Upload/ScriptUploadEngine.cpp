@@ -320,7 +320,7 @@ int CScriptUploadEngine::getFolderList(CFolderList& FolderList)
             Log(ErrorInfo::mtError, "CScriptUploadEngine::getFolderList\r\n" + std::string(Error::Message(vm_.GetVM()))); 
         }*/
     }
-    catch (NetworkClient::AbortedException& ex) {
+    catch (NetworkClient::AbortedException& ) {
         FlushSquirrelOutput();
         return 0;
     }

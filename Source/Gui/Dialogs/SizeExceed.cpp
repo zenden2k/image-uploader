@@ -27,6 +27,7 @@
 #include "Func/myutils.h"
 #include "Func/WinUtils.h"
 #include "Core/Upload/FileUploadTask.h"
+#include <Func/IuCommonFunctions.h>
 
 // CSizeExceed
 CSizeExceed::CSizeExceed(FileUploadTask * fileTask, CUploadEngineList * EngineList, UploadEngineManager* uploadEngineManager):
@@ -62,7 +63,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 {
     RECT rc = {12, 30, 162, 144};
     img.Create(m_hWnd, rc);
-    bool isImage = fileTask_->isImage() && IsImage(m_szFileName);
+    bool isImage = fileTask_->isImage() && IuCommonFunctions::IsImage(m_szFileName);
     if (isImage) {
         img.LoadImage(m_szFileName);
     }

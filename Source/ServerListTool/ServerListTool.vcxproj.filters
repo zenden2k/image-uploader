@@ -67,9 +67,6 @@
     <Filter Include="Source Files\Core\Network">
       <UniqueIdentifier>{b3f40df8-5bda-4b2d-8ee6-00a455a3a637}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Common">
-      <UniqueIdentifier>{016d0c78-db4a-49ae-8456-90ecfc6307f4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Core\Logging">
       <UniqueIdentifier>{73d404cc-6cc9-44bc-b0bc-416aaf7a0f95}</UniqueIdentifier>
     </Filter>
@@ -372,14 +369,14 @@
     <ClCompile Include="..\Func\Common.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\CmdLine.cpp">
-      <Filter>Source Files\Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\Core\3rdpart\GumboQuery\GQ_Parser.cpp">
       <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\Logging\MyLogSink.cpp">
       <Filter>Source Files\Core\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Func\CmdLine.cpp">
+      <Filter>Source Files\Func</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
