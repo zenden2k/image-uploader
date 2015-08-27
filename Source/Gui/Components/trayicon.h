@@ -71,6 +71,17 @@ public:
 		return Shell_NotifyIcon(NIM_DELETE, &m_nid) ? true : false;
 	}
 
+    bool UpdateIcon(HICON hIcon) 
+    {
+        T* pT = static_cast<T*>(this);
+        // Fill in the data		
+        m_nid.hWnd = pT->m_hWnd;
+        m_nid.hIcon = hIcon;
+        m_nid.uFlags = NIF_ICON;
+        m_nid.uCallbackMessage = WM_TRAYICON;
+        return Shell_NotifyIcon(NIM_MODIFY, &m_nid) != FALSE;
+	}
+
 	// Set the icon tooltip text
 	// returns true on success
 	bool SetTooltipText(LPCTSTR pszTooltipText)

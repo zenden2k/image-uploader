@@ -50,12 +50,13 @@ CFloatingWindow::CFloatingWindow()
     m_bIsUploading = 0;
     uploadEngineManager_ = 0;
     lastUploadedItem_ = 0;
+    iconAnimationCounter_ = 0;
+    animationEnabled_ = false;
 }
 
 CFloatingWindow::~CFloatingWindow()
 {
     CloseHandle(hMutex);
-    DeleteObject(m_hIconSmall);
     m_hWnd = 0;
 }
 
@@ -96,8 +97,8 @@ LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
         w = 32;
     }
     int h = w;*/
+    activeIcon_ = GuiTools::LoadSmallIcon(IDI_ICONTRAYACTIVE);
     m_hIconSmall = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
-    SetIcon(m_hIconSmall, FALSE);
 
     RegisterHotkeys();
     InstallIcon(APPNAME, m_hIconSmall, /*TrayMenu*/ 0);
@@ -321,6 +322,8 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
     msg.Format(TR("Shortening URL \"%s\" using %s"), static_cast<LPCTSTR>(url),
         static_cast<LPCTSTR>(Utf8ToWstring(Settings.urlShorteningServer.serverName()).c_str()));
     ShowBaloonTip(msg, _T("Image Uploader"));
+    setStatusText(msg);
+    startIconAnimation();
     return 0;
 }
 
@@ -473,11 +476,17 @@ LRESULT CFloatingWindow::OnTimer(UINT id)
     {
         KillTimer(1);
         SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys[Settings.TrayIconSettings.LeftClickCommand].commandId, 0));
-    }
-    if (id == 2)
+    } else if (id == 2) {
         EnableClicks = true;
-
-    KillTimer(id);
+        KillTimer(id);
+    } else if (id == kStatusTimer) {
+        removeStatusText();
+        KillTimer(id);
+    } else if (id == kIconAnimationTimer && animationEnabled_) {
+        UpdateIcon(iconAnimationCounter_++ == 0 ? activeIcon_ : m_hIconSmall );
+        iconAnimationCounter_ = iconAnimationCounter_ % 2;
+    }
+   
     return 0;
 }
 
@@ -633,9 +642,12 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     uploadManager_->start();
 
     CString msg;
-    msg.Format(TR("File \"%s\" is beeing uploaded to server %s.."), static_cast<LPCTSTR>(WinUtils::GetOnlyFileName(displayName)),
+    CString onlyFileName = WinUtils::GetOnlyFileName(displayName);
+    msg.Format(TR("File \"%s\" is beeing uploaded to server %s.."), static_cast<LPCTSTR>(onlyFileName),
         static_cast<LPCTSTR>(Utf8ToWstring(Settings.quickScreenshotServer.serverName()).c_str()));
     ShowBaloonTip(msg, TR("Uploading screenshot"));
+    setStatusText(msg);
+    startIconAnimation();
 }
 
 void CFloatingWindow::setUploadManager(UploadManager* manager)
@@ -646,6 +658,37 @@ void CFloatingWindow::setUploadManager(UploadManager* manager)
 void CFloatingWindow::setUploadEngineManager(UploadEngineManager* manager)
 {
     uploadEngineManager_ = manager;
+}
+
+void CFloatingWindow::setStatusText(const CString& text, int timeoutMs) {
+    statusText_ = text;
+    if (statusText_.IsEmpty()) {
+        SetTooltipText(CString(APPNAME));
+    } else {
+        SetTooltipText(CString(APPNAME) + _T("\r\n") + statusText_);
+    }
+    if (timeoutMs) {
+        SetTimer(kStatusTimer, timeoutMs);
+    } else {
+        KillTimer(kStatusTimer);
+    }
+}
+
+void CFloatingWindow::removeStatusText() {
+    setStatusText(CString());
+}
+
+void CFloatingWindow::startIconAnimation() {    
+    animationEnabled_ = true;
+    iconAnimationCounter_ = 0;
+    SetTimer(kIconAnimationTimer, 400);
+}
+
+void CFloatingWindow::stopIconAnimation() {
+    // KillTimer does not remove the WM_TIMER from message queue, so we need to use a flag 
+    animationEnabled_ = false;
+    KillTimer(kIconAnimationTimer);
+    UpdateIcon(m_hIconSmall);
 }
 
 /*
@@ -716,10 +759,14 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
         if ( ok ) {
             CString url = Utf8ToWCstring(task->uploadResult()->directUrl);
             WinUtils::CopyTextToClipboard(url);
-            ShowBaloonTip( TrimString(url, 70) + CString("\r\n")
-                + TR("(the link has been copied to the clipboard)"), TR("Short URL"));
+            CString text = TrimString(url, 70) + CString("\r\n")
+                + TR("(the link has been copied to the clipboard)");
+            ShowBaloonTip(text, TR("Short URL"));
+            setStatusText(text, kStatusHideTimeout);
         } else {
-            ShowBaloonTip( TR("View log for details."), TR("Unable to shorten the link...") );
+            CString statusText = TR("Unable to shorten the link...");
+            ShowBaloonTip(TR("View log for details."), statusText);
+            setStatusText(statusText, kStatusHideTimeout);
         }
     } else {
         if (ok) {
@@ -735,11 +782,15 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
             }
             lastUploadedItem_ = task;
             ShowImageUploadedMessage(url);
+
         } else {
-            ShowBaloonTip(TR("View log for details."), TR("Could not upload screenshot :("));
+            CString statusText = TR("Could not upload screenshot :(");
+            ShowBaloonTip(TR("View log for details."), statusText);
+            setStatusText(statusText, kStatusHideTimeout);
         }
         
     }
+    stopIconAnimation();
     return;
 }
 
@@ -752,6 +803,9 @@ LRESULT CFloatingWindow::OnStopUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 
 void CFloatingWindow::ShowImageUploadedMessage(const CString& url) {
     WinUtils::CopyTextToClipboard(url);
-    ShowBaloonTip(TrimString(url, 70) + CString("\r\n") 
+    CString trimmedUrl = TrimString(url, 70);
+    ShowBaloonTip(trimmedUrl + CString("\r\n")
         + TR("(the link has been copied to the clipboard)")+ + CString("\r\n") + TR("Click on this message to view details...") , TR("Screenshot was uploaded"));
+    CString statusText = TR("Screenshot was uploaded") + CString(_T("\r\n")) + trimmedUrl;
+    setStatusText(statusText, kStatusHideTimeout);
 }

@@ -82,7 +82,8 @@ public:
     bool EnableClicks;
     HWND m_PrevActiveWindow;
     CHotkeyList m_hotkeys;
-    HICON m_hIconSmall;
+    CIcon m_hIconSmall;
+    CIcon activeIcon_;
     bool m_bStopCapturingWindows;
     bool m_bIsUploading;
     UploadTask* lastUploadedItem_;
@@ -134,6 +135,11 @@ public:
         //CHAIN_MSG_MAP(CTrayIconImpl<CFloatingWindow>)
     END_MSG_MAP()
 
+    enum {
+        kStatusTimer = 3,
+        kIconAnimationTimer = 4,
+        kStatusHideTimeout = 20000 // 20 sec
+    };
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -176,7 +182,19 @@ public:
      void UploadScreenshot(const CString& realName, const CString &displayName);
      void setUploadManager(UploadManager * manager);
      void setUploadEngineManager(UploadEngineManager * manager);
+
+     // Text displayed in tray icon tooltip
+     void setStatusText(const CString& text, int timeoutMs = 0);
+     void removeStatusText();
+
+     void startIconAnimation();
+     void stopIconAnimation();
+     bool animationEnabled_;
+
      CString fileName, realFileName;
+     
+     // Text displayed in tray icon tooltip
+     CString statusText_;
      UploadManager * uploadManager_;
      UploadEngineManager* uploadEngineManager_;
      bool m_bFromHotkey;
@@ -184,6 +202,8 @@ public:
      void ShowImageUploadedMessage(const CString& url);
      std::string source_file_name_;
      std::string server_name_;
+     int iconAnimationCounter_;
+
 
      struct UploadTaskUserData {
         CString linkTypeToShorten; 

@@ -858,9 +858,13 @@
     <ClInclude Include="Source\ImageEditor\DrawingTools\VectorElementTool.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\icon_main_active.ico" />
+    <Image Include="res\icon_main_active.png" />
     <Image Include="res\icon_main_old.ico" />
     <Image Include="res\new-icon.ico" />
     <Image Include="Source\res\addition.ico" />
+    <Image Include="Source\res\icon_main_active.ico" />
+    <Image Include="Source\res\icon_main_active.png" />
     <Image Include="Source\res\icon_main_old.ico" />
     <Image Include="Source\res\new-icon.ico" />
     <Image Include="Source\res\shadows\bottomLeftShadow.png" />

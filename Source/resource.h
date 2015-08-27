@@ -148,6 +148,7 @@
 #define IDB_ICONCLIPBOARDPNG            303
 #define IDI_ICON8                       305
 #define IDI_ICON_MAIN_OLD               305
+#define IDI_ICONTRAYACTIVE              307
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -676,7 +677,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        306
+#define _APS_NEXT_RESOURCE_VALUE        308
 #define _APS_NEXT_COMMAND_VALUE         32805
 #define _APS_NEXT_CONTROL_VALUE         1315
 #define _APS_NEXT_SYMED_VALUE           128
