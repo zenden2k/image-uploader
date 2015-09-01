@@ -46,21 +46,13 @@ CAppModule _Module;
 
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
-        
-    /*try {
-        boost::filesystem::ofstream hello("test.txt");
-    }
-    catch (std::exception& ex)
-    {
-        LOG(ERROR) << ex.what();
-    }*/
     IuCommonFunctions::CreateTempFolder();
     
     AppParams::instance()->setTempDirectory(W2U(IuCommonFunctions::IUTempFolder));
     std::vector<CString> fileList;
     WinUtils::GetFolderFileList( fileList, WinUtils::GetAppFolder() + _T("\\"), _T("*.old") );
-    for ( size_t i=0; i<fileList.size(); i++ ) {
-        DeleteFile( WinUtils::GetAppFolder() + fileList[i] );
+    for ( const auto& file : fileList ) {
+        DeleteFile(WinUtils::GetAppFolder() + file);
     }
 
     GdiPlusInitializer gdiPlusInitializer;
@@ -126,18 +118,17 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
     }
     _Module.RemoveMessageLoop();
 
-
     // Remove temporary files
     IuCommonFunctions::ClearTempFolder( IuCommonFunctions::IUTempFolder ); 
     std::vector<CString> folders;
     WinUtils::GetFolderFileList( folders, IuCommonFunctions::IUCommonTempFolder, "iu_temp_*" );
-    for ( size_t i=0; i < folders.size(); i++ ) {
+    for ( const auto& folder : folders) {
         // Extract Proccess ID from temp folder name
-        CString pidStr = folders[i]; 
+        CString pidStr = folder;
         pidStr.Replace( _T("iu_temp_"), _T("") );
         unsigned long pid =  wcstoul( pidStr, 0, 16 ) ^  0xa1234568;
         if ( pid && !WinUtils::IsProcessRunning( pid ) )
-            IuCommonFunctions::ClearTempFolder( IuCommonFunctions::IUCommonTempFolder + _T("\\") + folders[i] );
+            IuCommonFunctions::ClearTempFolder(IuCommonFunctions::IUCommonTempFolder + _T("\\") + folder);
     }
     
     // deletes empty temp directory
@@ -188,13 +179,13 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
     OleInitialize(NULL);
     HRESULT hRes ;
-    for( size_t i = 0; i < CmdLine.GetCount(); i++ ) {
-        CString CurrentParam = CmdLine[i];
+    for (const auto& CurrentParam: CmdLine) {
         if ( CurrentParam.Left(12) == _T("/waitforpid=") )    {
             CString pidStr = CurrentParam.Right( CurrentParam.GetLength() - 12 );
             DWORD pid = _ttoi( pidStr );
             HANDLE hProcess = OpenProcess( SYNCHRONIZE, false, pid ); 
             WaitForSingleObject( hProcess, 20000 );
+            CloseHandle(hProcess);
 
             // Workaround for version prior to 1.1.7
             if (!CmdLine.IsOption(_T("update")) && !CmdLine.IsOption(L"afterupdate")) {

@@ -1,4 +1,8 @@
 #define __STDC_LIMIT_MACROS
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
 #include <stdint.h>
 #include <string>
 //#include <limits.h>
@@ -89,10 +93,11 @@ TEST_F(CoreUtilsTest, toString)
 
 TEST_F(CoreUtilsTest, int64_tToString) 
 {
+    EXPECT_EQ("-2147483648", int64_tToString(std::numeric_limits<int>::min()));
     EXPECT_EQ(int64_tToString(INT64_MAX), "9223372036854775807");
-    //EXPECT_EQ(int64_tToString(INT64_MIN), "-9223372036854775808");
-    EXPECT_EQ(int64_tToString(INT64_MIN+1), "-9223372036854775807");
-    
+    EXPECT_EQ("-9223372036854775808", int64_tToString(INT64_MIN));
+    EXPECT_EQ("-9223372036854775807", int64_tToString(INT64_MIN + 1) );
+   
     EXPECT_EQ(int64_tToString(0), "0");
 }
 

@@ -58,7 +58,7 @@ namespace WinUtils {
     bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
     bool ShowFilePropertiesDialog(HWND hWnd, const CString& fileName);
     CString IntToStr(int n);
-
+    CString GetModuleFullName(HMODULE module = NULL);
     CString GetAppFolder();
     CString GetAppFileName();
     CString FormatWindowsErrorMessage(int idCode);

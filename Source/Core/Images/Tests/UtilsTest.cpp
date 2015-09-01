@@ -75,3 +75,11 @@ TEST_F(UtilsTest, GetThumbnail) {
     EXPECT_EQ(3637300478, color.GetValue());
     delete thumb3;
 }
+
+TEST_F(UtilsTest, CopyBitmapToClipboardInDataUriFormat) {
+    const char* fileName = "TestData/file_with_const_size.png";
+    Bitmap* bm = Bitmap::FromFile(U2W(fileName));
+    ASSERT_TRUE(bm != nullptr);
+    //CopyBitmapToClipboardInDataUriFormat(bm, 0, 85);
+
+}

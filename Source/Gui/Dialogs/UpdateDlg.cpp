@@ -29,7 +29,7 @@
 // CUpdateDlg
 
 /* This function doesn't work as intended */
-bool CanWriteToFolder(CString folder)
+bool CanWriteToFolder(const CString& folder)
 {
     HANDLE hFile = ::CreateFile(folder, GENERIC_WRITE, FILE_SHARE_READ, NULL,
                                 OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);

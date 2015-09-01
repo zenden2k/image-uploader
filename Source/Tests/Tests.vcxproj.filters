@@ -73,6 +73,15 @@
     <Filter Include="Source\Core\Images\Tests">
       <UniqueIdentifier>{a060515e-30e8-43e8-baec-667da856795a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\ImageEditor">
+      <UniqueIdentifier>{fd17a845-100e-4f66-9ae5-c37e3ee00b49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ImageEditor\Helpers">
+      <UniqueIdentifier>{a18a7055-138e-4ccc-9043-af2bdbca2c9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ImageEditor\Helpers\Tests">
+      <UniqueIdentifier>{ba606d34-5604-41f0-8ced-bf21a2a5e11c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tests.cpp">
@@ -323,6 +332,12 @@
     </ClCompile>
     <ClCompile Include="..\Func\GdiPlusInitializer.cpp">
       <Filter>Source\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ImageEditor\Helpers\Tests\FontEnumeratorTest.cpp">
+      <Filter>Source\ImageEditor\Helpers\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ImageEditor\Helpers\FontEnumerator.cpp">
+      <Filter>Source\ImageEditor\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

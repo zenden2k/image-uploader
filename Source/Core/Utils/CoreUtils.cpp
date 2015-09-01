@@ -372,10 +372,11 @@ std::string longlongtoStr(int64_t l, int base)
 
 std::string int64_tToString(int64_t value)
 {
-    if ( !value ) {
+    return std::to_string(value);
+    /*if ( !value ) {
         return "0";
     }
-    return longlongtoStr(value, 10);
+    return longlongtoStr(value, 10);*/
 }
 
 #ifndef LLONG_MIN

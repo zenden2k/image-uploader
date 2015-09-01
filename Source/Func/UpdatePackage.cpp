@@ -315,7 +315,7 @@ bool CUpdateManager::AreCoreUpdates()
 bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 {
     CString filename = IuCommonFunctions::IUTempFolder + ui.packageName() +_T(".zip");
-    std::string filenamea= IuCoreUtils::WstringToUtf8((LPCTSTR)filename);
+    std::string filenamea = W2U(filename);
     CoreFunctions::ConfigureProxy(&nm_);
     nm_.setOutputFile( filenamea);
     m_statusCallback->updateStatus(nCurrentIndex, TR("Downloading file ")+ ui.downloadUrl());

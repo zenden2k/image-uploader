@@ -34,7 +34,7 @@ CCmdLine::CCmdLine(LPCTSTR szCmdLine)
 
 void CCmdLine::Parse(LPCTSTR szCmdLine)
 {
-    params_.RemoveAll();
+    params_.clear();
     onlyParams_.Empty();
 
     // If szCmdLine is an empty string the CommandLineToArgvW function returns the path to the current executable file.
@@ -59,18 +59,19 @@ void CCmdLine::Parse(LPCTSTR szCmdLine)
 
         LocalFree(szArgList);
     } else {
-        params_.Add(_T(""));
+        params_.push_back(_T(""));
     }
 }
 
 size_t CCmdLine::AddParam(LPCTSTR szParam)
 {
-    return params_.Add(szParam);
+    params_.push_back(szParam);
+    return params_.size() - 1;
 }
 
 CString CCmdLine::operator[](size_t nIndex) const
 {
-    if (nIndex + 1 > params_.GetCount() ) {
+    if (nIndex + 1 > params_.size() ) {
         return _T("");
     }
     return params_[nIndex];
@@ -83,12 +84,12 @@ CString CCmdLine::OnlyParams() const
 
 CString CCmdLine::ModuleName() const
 {
-    return params_.GetCount() ? params_[0] : _T("");
+    return params_.size() ? params_[0] : _T("");
 }
 
 bool CCmdLine::GetNextFile(CString& FileName, size_t& nIndex) const
 {
-    for (size_t i = nIndex + 1; i < params_.GetCount(); i++)
+    for (size_t i = nIndex + 1; i < params_.size(); i++)
     {
         if (params_[i].GetLength() && params_[i][0] != _T('/'))
         {
@@ -104,8 +105,7 @@ bool CCmdLine::GetNextFile(CString& FileName, size_t& nIndex) const
 CCmdLine &CCmdLine::operator=(const CCmdLine& p)
 {
     if (this != &p) {
-        params_.RemoveAll();
-        params_.Copy(p.params_);
+        params_ = p.params_;
     }
     return *this;
 }
@@ -116,7 +116,7 @@ bool CCmdLine::IsOption(LPCTSTR Option, bool bUsePrefix) const
     if (bUsePrefix)
         Temp = CString("/");
     Temp += Option;
-    for (size_t i = 1; i < params_.GetCount(); i++)
+    for (size_t i = 1; i < params_.size(); i++)
     {
         if (lstrcmpi(params_[i], Temp) == 0)
             return true;
@@ -127,7 +127,15 @@ bool CCmdLine::IsOption(LPCTSTR Option, bool bUsePrefix) const
 
 size_t CCmdLine::GetCount() const
 {
-    return params_.GetCount();
+    return params_.size();
+}
+
+std::vector<CString>::const_iterator CCmdLine::begin() const {
+    return params_.begin();
+}
+
+std::vector<CString>::const_iterator CCmdLine::end() const {
+    return params_.end();
 }
 
 CCmdLine CmdLine;

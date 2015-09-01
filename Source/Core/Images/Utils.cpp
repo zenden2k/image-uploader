@@ -459,6 +459,8 @@ Gdiplus::Color StringToColor(const std::string& str) {
     return Gdiplus::Color();
 }
 
+
+
 struct BGRA_COLOR
 {
     BYTE b;
@@ -641,9 +643,9 @@ bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int F
 {
     if (Format == -1)
         Format = 0;
-    std::auto_ptr<Bitmap> quantizedImage;
+    
     TCHAR szImgTypes[3][4] = { _T("jpg"), _T("png"), _T("gif") };
-    TCHAR szMimeTypes[3][12] = { _T("image/jpeg"), _T("image/png"), _T("image/gif") };
+    
     CString szNameBuffer;
     TCHAR szBuffer2[MAX_PATH];
     if (IuCommonFunctions::IsImage(szFilename))
@@ -660,6 +662,17 @@ bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int F
         /*(int)GetTickCount(),*/ szImgTypes[Format]);
     CString resultFilename = WinUtils::GetUniqFileName(szBuffer2);
     WinUtils::CreateFilePath(resultFilename);
+    bool res = SaveImageToFile(img, resultFilename, nullptr, Format, Quality);
+    
+    szBuffer = resultFilename;
+    return res;
+}
+
+bool SaveImageToFile(Gdiplus::Image* img, const CString& fileName, IStream* stream, int Format, int Quality) {
+    std::unique_ptr<Bitmap> quantizedImage;
+    
+    Gdiplus::Status result;
+    TCHAR szMimeTypes[3][12] = { _T("image/jpeg"), _T("image/png"), _T("image/gif") };
     CLSID clsidEncoder;
     EncoderParameters eps;
     eps.Count = 1;
@@ -670,41 +683,34 @@ bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int F
         eps.Parameter[0].Type = EncoderParameterValueTypeLong;
         eps.Parameter[0].NumberOfValues = 1;
         eps.Parameter[0].Value = &Quality;
-    }
-    else
-        if (Format == 1)      // PNG
-        {
-            eps.Parameter[0].Guid = EncoderCompression;
-            eps.Parameter[0].Type = EncoderParameterValueTypeLong;
-            eps.Parameter[0].NumberOfValues = 1;
-            eps.Parameter[0].Value = &Quality;
-        }
-        else
-            if (Format == 2)
-            {
-                QColorQuantizer quantizer;
-                quantizedImage.reset(quantizer.GetQuantized(img, QColorQuantizer::Octree, (Quality < 50) ? 16 : 256));
-                if (quantizedImage.get() != 0)
-                    img = quantizedImage.get();
-            }
-
-    Gdiplus::Status result;
-
-    if (GetEncoderClsid(szMimeTypes[Format], &clsidEncoder) != -1)
+    } else if (Format == 1) // PNG
     {
+        eps.Parameter[0].Guid = EncoderCompression;
+        eps.Parameter[0].Type = EncoderParameterValueTypeLong;
+        eps.Parameter[0].NumberOfValues = 1;
+        eps.Parameter[0].Value = &Quality;
+    } else if (Format == 2) {
+        QColorQuantizer quantizer;
+        quantizedImage.reset(quantizer.GetQuantized(img, QColorQuantizer::Octree, (Quality < 50) ? 16 : 256));
+        if (quantizedImage.get() != 0)
+            img = quantizedImage.get();
+    }
+    if (GetEncoderClsid(szMimeTypes[Format], &clsidEncoder) != -1) {
         if (Format == 0)
-            result = img->Save(resultFilename, &clsidEncoder, &eps);
+            result = stream ? img->Save(stream, &clsidEncoder, &eps)  : img->Save(fileName, &clsidEncoder, &eps);
         else
-            result = img->Save(resultFilename, &clsidEncoder);
-    }
-    else
-        return false;
-    if (result != Ok)
-    {
-        ServiceLocator::instance()->logger()->write(logError, _T("Image Converter"), _T("Could not save image at path \r\n") + resultFilename + L"\r\nGdiplus status=" + WinUtils::IntToStr(result));
+            result = stream ? img->Save(stream, &clsidEncoder, &eps)  : img->Save(fileName, &clsidEncoder);
+    } else {
+        ServiceLocator::instance()->logger()->write(logError, _T("Image Converter"), _T("Could not find suitable converter"));
         return false;
     }
-    szBuffer = resultFilename;
+    
+
+    if (result != Ok) {
+        ServiceLocator::instance()->logger()->write(logError, _T("Image Converter"), _T("Could not save image at path \r\n") + fileName + L"\r\nGdiplus status=" + WinUtils::IntToStr(result));
+        return false;
+    }
+
     return true;
 }
 
@@ -765,6 +771,18 @@ typedef IStream * (STDAPICALLTYPE *SHCreateMemStreamFuncType)(const BYTE *pInit,
 SHCreateMemStreamFuncType SHCreateMemStreamFunc = 0;
 
 Library shlwapiLib(L"Shlwapi.dll");
+
+CComPtr<IStream>  CreateMemStream(const BYTE* pInit, UINT cbInit) {
+    CComPtr<IStream> res;
+    if (!SHCreateMemStreamFunc) {
+        SHCreateMemStreamFunc = shlwapiLib.GetProcAddress<SHCreateMemStreamFuncType>(WinUtils::IsVista() ? "SHCreateMemStream" : MAKEINTRESOURCEA(12));
+        if (!SHCreateMemStreamFunc) {
+            return res;
+        }
+    }
+    res.Attach(SHCreateMemStreamFunc(pInit, cbInit));
+    return res;
+}
 
 Gdiplus::Bitmap* BitmapFromMemory(BYTE* data, size_t imageSize) {
     if (WinUtils::IsVista()) {
@@ -1071,3 +1089,28 @@ Rect destRect ((int)(Bounds.GetLeft()+x), (int)(Bounds.GetTop()+y), (int)(newwid
 
 gr.DrawImage(&temp, destRect,(int)realTextBounds.X, (int)realTextBounds.Y,(int)(realTextBounds.Width),(int)(realTextBounds.Height), UnitPixel);
 }*/
+bool CopyBitmapToClipboardInDataUriFormat(Bitmap* bm, int Format, int Quality) {
+    CComPtr<IStream> stream = CreateMemStream(nullptr, 0);
+    bool res = SaveImageToFile(bm, CString(), stream, Format, Quality);
+    STATSTG stats;
+    HRESULT hr = stream->Stat(&stats, STATFLAG_NONAME);
+    if (SUCCEEDED(hr)) {
+        hr = stream->Seek({ 0, 0 }, STREAM_SEEK_SET, nullptr);
+        if (SUCCEEDED(hr)) {
+            ULONGLONG offset = 0;
+            ULONGLONG leftBytes = stats.cbSize.QuadPart;
+            const ULONG buf_size = 1024;
+            BYTE buffer[buf_size];
+            ULONG readBytes;
+            while (offset < stats.cbSize.QuadPart) {
+                hr = stream->Read(buffer, std::min<ULONGLONG>(buf_size, leftBytes), &readBytes);
+                if (!SUCCEEDED(hr)) {
+                    break;
+                }
+                leftBytes -= readBytes;
+            }
+        }
+    }
+    return res;
+
+}

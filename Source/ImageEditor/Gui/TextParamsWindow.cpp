@@ -23,59 +23,10 @@
 #include "resource.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
-#include "Core/3rdpart/FastDelegate.h"
+#include "ImageEditor/Helpers/FontEnumerator.h"
 #include <vector>
 #include <thread>
 #include <memory>
-#include <algorithm>
-
-class FontEnumerator {
-    
-    public:
-        typedef fastdelegate::FastDelegate0<void> OnEnumerationFinishedDelegate;
-        FontEnumerator(HDC dc, std::vector<LOGFONT>& fonts, const OnEnumerationFinishedDelegate& onEnumerationFinished) : fonts_(fonts) {
-            onEnumerationFinished_ = onEnumerationFinished;
-            dc_ = dc;
-        }
-
-        virtual void run()
-        {
-            LOGFONT logFont;
-            memset(&logFont, 0, sizeof(logFont));
-            logFont.lfCharSet = DEFAULT_CHARSET;
-            EnumFontFamiliesEx(dc_, &logFont, EnumFontFamExProc, reinterpret_cast<LPARAM>(this),  0);
-            std::sort(fonts_.begin(), fonts_.end(), sortCompareLogFont);
-            std::vector<LOGFONT>::iterator it;
-            it = std::unique(fonts_.begin(), fonts_.end(), compareLogFont);
-            fonts_.resize( std::distance(fonts_.begin(),it) );
-            onEnumerationFinished_();
-        }
-    protected:
-        OnEnumerationFinishedDelegate onEnumerationFinished_;
-        HDC dc_;
-        std::vector<LOGFONT>& fonts_;
-        
-
-        static int CALLBACK EnumFontFamExProc(const LOGFONT *lpelfe, const TEXTMETRIC *lpntme, DWORD FontType, LPARAM lParam) {
-            FontEnumerator* enumerator = reinterpret_cast<FontEnumerator*>(lParam);
-            if ( lpelfe->lfFaceName[0] != _T('@')) {
-                enumerator->fonts_.push_back(*lpelfe);
-            }
-            return 1;
-        }
-
-        static bool compareLogFont ( LOGFONT font1, LOGFONT font2)
-        {
-            return lstrcmp(font1.lfFaceName, font2.lfFaceName) == 0;
-        };
-
-        static bool sortCompareLogFont ( LOGFONT font1, LOGFONT font2)
-        {
-            return lstrcmp(font1.lfFaceName, font2.lfFaceName) <0;
-        };
-
-
-};
 
 TextParamsWindow::TextParamsWindow() : fontSizeComboboxCustomEdit_(this)
 {

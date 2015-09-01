@@ -40,8 +40,18 @@ class CCmdLine
         bool GetNextFile(CString& FileName, size_t& nIndex) const;
         bool IsOption(LPCTSTR Option, bool bUsePrefix = true) const;
         size_t GetCount() const;
+        std::vector<CString>::const_iterator begin() const;
+        std::vector<CString>::const_iterator end() const;
+        /**int * begin()
+        {
+            return &v[0];
+        }
+        int * end()
+        {
+            return &v[10];
+        }*/
     private:
-        CStringList params_;
+        std::vector<CString> params_;
         CString onlyParams_;
 };
 

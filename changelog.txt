@@ -9,6 +9,7 @@
 [+] Added edit, delete items to history window context menu
 [+] Added CustomHeaders and UserAgent options to servers.xml
 [+] Display url shortening option before upload
+[+] Added animation of tray icon
 [c] Scripting API changes: added Process class, new functions
 [f] Fixed keyboard not working in file list
 

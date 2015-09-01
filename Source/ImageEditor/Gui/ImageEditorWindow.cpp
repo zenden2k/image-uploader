@@ -5,17 +5,16 @@
 
 #include "ImageEditorWindow.h"
 
-#include "resource.h"
 #include "ImageEditorView.h"
-#include <ImageEditor/Gui/Toolbar.h>
+#include "ImageEditor/Gui/Toolbar.h"
 #include "ColorsDelegate.h"
 #include "Core/Logging.h"
-#include <resource.h>
+#include "resource.h"
 #include "Core/Images/Utils.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Func/MyUtils.h"
-#include <ImageEditor/MovableElements.h>
+#include "ImageEditor/MovableElements.h"
 
 namespace ImageEditor {
     
@@ -996,8 +995,6 @@ LRESULT ImageEditorWindow::OnClickedSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
     }
     return 0;
 }
-
-
 
 LRESULT ImageEditorWindow::OnClickedSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {

@@ -61,9 +61,6 @@
     <Filter Include="Source Files\Gui\Controls">
       <UniqueIdentifier>{4db79d77-cd93-46bb-b6f9-ceca4546d2ba}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Func">
-      <UniqueIdentifier>{ba6120b1-ddf4-46f8-95a4-4c93dda6b03c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Core\Upload\Filters">
       <UniqueIdentifier>{0a071e63-e048-429b-94f8-3023eaf3f3a2}</UniqueIdentifier>
     </Filter>
@@ -99,6 +96,15 @@
     </Filter>
     <Filter Include="Source Files\ImageEditor\DrawingTools">
       <UniqueIdentifier>{c032cdc2-e181-4f34-851e-3bcc711e5018}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\WebServer">
+      <UniqueIdentifier>{e16c3e3e-08e7-41f1-82ee-a6c84341b8ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\3rdpart\Func">
+      <UniqueIdentifier>{ba6120b1-ddf4-46f8-95a4-4c93dda6b03c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ImageEditor\Helpers">
+      <UniqueIdentifier>{5d8a63bc-8565-4e70-8a93-e5eb3ab311a1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -478,28 +484,28 @@
       <Filter>Source Files\Gui\Controls</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\ImageEditorConfigurationProvider.h">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\IuCommonFunctions.h">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\MyDataObject.h">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\MyDropSource.h">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\MyEngineList.h">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\SystemUtils.h">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\WebUtils.h">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\WinUtils.h">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\BasicTypes.h">
       <Filter>Source Files\ImageEditor</Filter>
@@ -739,7 +745,7 @@
       <Filter>Source Files\Core\Upload</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\DefaultUploadErrorHandler.h">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Upload\ConsoleUploadErrorHandler.h">
       <Filter>Source Files\Core\Upload</Filter>
@@ -748,13 +754,13 @@
       <Filter>Source Files\Core\Logging</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\DefaultLogger.h">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Scripting\DialogProvider.h">
       <Filter>Source Files\Core\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\WtlScriptDialogProvider.h">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Utils\DesktopUtils.h">
       <Filter>Source Files\Core\Utils</Filter>
@@ -808,13 +814,22 @@
       <Filter>Source Files\Gui\Controls</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\CmdLine.h">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\Library.h">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClInclude>
     <ClInclude Include="Source\Func\GdiPlusInitializer.h">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\WebServer\WebServer.h">
+      <Filter>Source Files\Core\WebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\WebServer\CivetServer.h">
+      <Filter>Source Files\Core\WebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\Helpers\FontEnumerator.h">
+      <Filter>Source Files\ImageEditor\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1148,16 +1163,10 @@
     <Image Include="Source\res\icon_main_old.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\icon_main_active.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\icon_main_active.ico">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Source\res\icon_main_active.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Source\res\icon_main_active.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
@@ -1525,40 +1534,40 @@
       <Filter>Source Files\Gui\Controls</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\Common.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\ImageEditorConfigurationProvider.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\IuCommonFunctions.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\LangClass.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\MyDataObject.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\MyDropSource.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\MyEngineList.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\MyUtils.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\SystemUtils.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\UpdatePackage.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\WebUtils.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\WinUtils.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\Canvas.cpp">
       <Filter>Source Files\ImageEditor</Filter>
@@ -1753,16 +1762,16 @@
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\DefaultUploadErrorHandler.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Upload\ConsoleUploadErrorHandler.cpp">
       <Filter>Source Files\Core\Upload</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\DefaultLogger.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\WtlScriptDialogProvider.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Utils\DesktopUtils.cpp">
       <Filter>Source Files\Core\Utils</Filter>
@@ -1816,13 +1825,22 @@
       <Filter>Source Files\Gui\Controls</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\MediaInfoHelper.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\CmdLine.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
     </ClCompile>
     <ClCompile Include="Source\Func\GdiPlusInitializer.cpp">
-      <Filter>Source Files\Func</Filter>
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\WebServer\CivetServer.cpp">
+      <Filter>Source Files\Core\WebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\WebServer\WebServer.cpp">
+      <Filter>Source Files\Core\WebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\Helpers\FontEnumerator.cpp">
+      <Filter>Source Files\ImageEditor\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

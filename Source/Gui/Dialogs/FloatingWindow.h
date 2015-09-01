@@ -169,6 +169,7 @@ public:
      LRESULT OnStopUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnShortenUrl(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+     LRESULT OnTaskbarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam);
      
      LRESULT OnTimer(UINT id);
      void CreateTrayIcon();
@@ -177,8 +178,6 @@ public:
      LRESULT OnHotKey(int HotKeyID, UINT flags, UINT vk);
      LRESULT OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl);
       LRESULT OnPasteFromWeb(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-     LRESULT OnTaskbarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam);
-     void ShowBaloonTip(const CString& text, const CString& title);
      void UploadScreenshot(const CString& realName, const CString &displayName);
      void setUploadManager(UploadManager * manager);
      void setUploadEngineManager(UploadEngineManager * manager);

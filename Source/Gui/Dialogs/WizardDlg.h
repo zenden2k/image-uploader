@@ -33,13 +33,15 @@
 #include "screenshotdlg.h"
 #include "Gui/Dialogs/UpdateDlg.h"
 #include "Core/Settings.h"
-#include <Core/ProgramWindow.h>
+#include "Core/ProgramWindow.h"
+#include "Core/WebServer/WebServer.h"
 
 #define ID_PASTE 9888
 #define ID_HOTKEY_BASE 10000
 #define WM_MY_ADDIMAGE WM_USER + 222
 #define WM_MY_SHOWPAGE WM_USER + 223
 #define WM_MY_EXIT WM_USER + 224
+
 
 // CWizardDlg
 class CFolderAdd;
@@ -108,7 +110,7 @@ public:
     virtual BOOL PreTranslateMessage(MSG* pMsg);
     virtual BOOL OnIdle();
     CString m_bCurrentFunc;
-
+    WebServer webServer_;
     BEGIN_UPDATE_UI_MAP(CWizardDlg)
     END_UPDATE_UI_MAP()
 

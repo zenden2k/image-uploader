@@ -404,7 +404,8 @@ const CString TrimString(const CString& source, int nMaxLen)
 
 CString GetAppFolder()
 {
-    TCHAR szFileName[1024], szPath[1024];
+    CString szFileName;
+    CString szPath;
     HINSTANCE inst;
 #if defined(IU_WTL)
     inst =  _Module.GetModuleInstance();
@@ -413,15 +414,38 @@ CString GetAppFolder()
 #else
     inst = GetModuleHandle(0);
 #endif
-    GetModuleFileName(inst, szFileName, 1023);
-    ExtractFilePath(szFileName, szPath);
+    szFileName = GetModuleFullName(inst);
+    ExtractFilePath(szFileName, szPath.GetBuffer(szFileName.GetLength() + 1));
+    szPath.ReleaseBuffer();
     return szPath;
 }
 
+CString GetModuleFullName(HMODULE module) {
+    std::unique_ptr<TCHAR[]> buf;
+    DWORD  bufLen = MAX_PATH;
+    DWORD  retLen; 
+    CString res;
+
+    while (32768 >= bufLen) {
+        buf.reset(new TCHAR[bufLen]);
+
+        if ((retLen = GetModuleFileName(NULL, buf.get(), bufLen)) == 0) {
+            /* GetModuleFileName failed */
+            break;
+        } else if (bufLen > retLen) {
+            /* Success */
+            res = buf.get();
+            break;
+        }
+
+        bufLen *= 2;
+    }
+
+    return res;
+}
+
 CString GetAppFileName() {
-    TCHAR szFileName[1024];
-    GetModuleFileName(0, szFileName, 1023);
-    return szFileName;
+    return GetModuleFullName(NULL);
 }
 
 LPTSTR ExtractFilePath(LPCTSTR FileName, LPTSTR buf)
@@ -1006,7 +1030,8 @@ void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective) {
     //Value reference: http://msdn.microsoft.com/en-us/library/ee330730%28v=VS.85%29.aspx
     //IDOC Reference:  http://msdn.microsoft.com/en-us/library/ms535242%28v=vs.85%29.aspx
     //majorVersion = 7;
-    switch (majorVersion) {
+    if (majorVersion <= 11) {
+        switch (majorVersion) {
         case 8:
             value = IgnoreIDocDirective ? 8888 : 8000;
             break;
@@ -1017,11 +1042,14 @@ void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective) {
             value = IgnoreIDocDirective ? 10001 : 10000;
             break;
         case 11:
-            value = IgnoreIDocDirective ? 11001 :  11000;
+            value = IgnoreIDocDirective ? 11001 : 11000;
             break;
         default:
             return;
-        
+
+        }
+    } else {
+        value = IgnoreIDocDirective ? 11001 : 11000;
     }
 
     CRegistry Reg;

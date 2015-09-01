@@ -225,7 +225,7 @@
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;zlibd.lib;minizip.lib;gdiplus.lib;strmbasd.lib;Ws2_32.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;dwmapi.lib;squirrel.lib;sqstdlib.lib;pcre.lib;pcre++.lib;winmm.lib;wininet.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;gumbo.lib;uriparser.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;zlibd.lib;minizip.lib;gdiplus.lib;strmbasd.lib;Ws2_32.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;dwmapi.lib;squirrel.lib;sqstdlib.lib;pcre.lib;pcre++.lib;winmm.lib;wininet.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;gumbo.lib;uriparser.lib;Winhttp.lib;civetweb.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Debug;$(SolutionDir)Contrib\Lib\;$(SolutionDir)\Contrib\Source\boost\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;LIBCMT.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>uxtheme.dll;dwmapi.dll;avcodec-56.dll;avformat-56.dll;avutil-54.dll;swscale-3.dll;Iphlpapi.dll;Netapi32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
@@ -299,7 +299,7 @@
     </ProjectReference>
     <Link>
       <AdditionalOptions> /ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>gdiplus.lib;STRMBASE.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbccp32.lib;minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;dwmapi.lib;pcre.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;urlmon.lib;avformat.lib;avutil.lib;swscale.lib;avcodec.lib;wininet.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;gumbo.lib;gumbo_query.lib;uriparser.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gdiplus.lib;STRMBASE.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbccp32.lib;minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;dwmapi.lib;pcre.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;urlmon.lib;avformat.lib;avutil.lib;swscale.lib;avcodec.lib;wininet.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;gumbo.lib;gumbo_query.lib;uriparser.lib;Winhttp.lib;civetweb.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Release;$(SolutionDir)\Contrib\Lib\;$(SolutionDir)\Contrib\Source\boost\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>msvcprt.lib MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -504,7 +504,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>gdiplus.lib;STRMBASE.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbccp32.lib;minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;dwmapi.lib;pcre.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;urlmon.lib;avformat.lib;avutil.lib;swscale.lib;avcodec.lib;wininet.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;gumbo.lib;uriparser.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gdiplus.lib;STRMBASE.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbccp32.lib;minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;dwmapi.lib;pcre.lib;squirrel.lib;sqstdlib.lib;sqplus.lib;urlmon.lib;avformat.lib;avutil.lib;swscale.lib;avcodec.lib;wininet.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;gumbo.lib;uriparser.lib;Winhttp.lib;civetweb.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib;$(SolutionDir)\Contrib\Lib\Release;$(SolutionDir)\Contrib\Source\boost\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>msvcprt.lib MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -686,6 +686,8 @@
     <ClInclude Include="Source\Core\Utils\EnumUtils.h" />
     <ClInclude Include="Source\Core\Utils\SystemUtils.h" />
     <ClInclude Include="Source\Core\Utils\TextUtils.h" />
+    <ClInclude Include="Source\Core\WebServer\CivetServer.h" />
+    <ClInclude Include="Source\Core\WebServer\WebServer.h" />
     <ClInclude Include="Source\Func\CmdLine.h" />
     <ClInclude Include="Source\Func\DefaultLogger.h" />
     <ClInclude Include="Source\Func\DefaultUploadErrorHandler.h" />
@@ -696,6 +698,7 @@
     <ClInclude Include="Source\Gui\Controls\ImageView.h" />
     <ClInclude Include="Source\Gui\Controls\ResultsListView.h" />
     <ClInclude Include="Source\Gui\Dialogs\VideoGrabberPage.h" />
+    <ClInclude Include="Source\ImageEditor\Helpers\FontEnumerator.h" />
     <ClInclude Include="Source\resource.h" />
     <ClInclude Include="Source\versioninfo.h" />
     <ClInclude Include="Source\Gui\WizardCommon.h" />
@@ -859,12 +862,10 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\icon_main_active.ico" />
-    <Image Include="res\icon_main_active.png" />
     <Image Include="res\icon_main_old.ico" />
     <Image Include="res\new-icon.ico" />
     <Image Include="Source\res\addition.ico" />
     <Image Include="Source\res\icon_main_active.ico" />
-    <Image Include="Source\res\icon_main_active.png" />
     <Image Include="Source\res\icon_main_old.ico" />
     <Image Include="Source\res\new-icon.ico" />
     <Image Include="Source\res\shadows\bottomLeftShadow.png" />
@@ -1040,6 +1041,8 @@
     <ClCompile Include="Source\Core\Utils\DesktopUtils.cpp" />
     <ClCompile Include="Source\Core\Utils\SystemUtils.cpp" />
     <ClCompile Include="Source\Core\Utils\TextUtils.cpp" />
+    <ClCompile Include="Source\Core\WebServer\CivetServer.cpp" />
+    <ClCompile Include="Source\Core\WebServer\WebServer.cpp" />
     <ClCompile Include="Source\Func\CmdLine.cpp" />
     <ClCompile Include="Source\Func\DefaultLogger.cpp" />
     <ClCompile Include="Source\Func\DefaultUploadErrorHandler.cpp" />
@@ -1051,6 +1054,7 @@
     <ClCompile Include="Source\Image Uploader.cpp">
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
+    <ClCompile Include="Source\ImageEditor\Helpers\FontEnumerator.cpp" />
     <ClCompile Include="Source\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'">Create</PrecompiledHeader>

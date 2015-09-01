@@ -245,6 +245,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     CreatePage(0); 
     ShowPage(0);
     ::SetFocus(Pages[0]->PageWnd);
+    //webServer_.start();
 
     if(CmdLine.IsOption(_T("update")))
     {
@@ -1928,7 +1929,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
                 CDC dc = GetDC();
                 if ( CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) { // remove alpha if saving format is JPEG
                     if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD) {
-                        floatWnd.ShowBaloonTip(TR("Screenshot was saved to clipboard."),_T("Image Uploader"));
+                        floatWnd.ShowBaloonTip(TR("Screenshot was saved to clipboard."),_T("Image Uploader"), 12000);
                         Result = false;
                     }
                 }

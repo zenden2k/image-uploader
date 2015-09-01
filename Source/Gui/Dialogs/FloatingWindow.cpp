@@ -321,7 +321,7 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
     CString msg;
     msg.Format(TR("Shortening URL \"%s\" using %s"), static_cast<LPCTSTR>(url),
         static_cast<LPCTSTR>(Utf8ToWstring(Settings.urlShorteningServer.serverName()).c_str()));
-    ShowBaloonTip(msg, _T("Image Uploader"));
+    ShowBaloonTip(msg, _T("Image Uploader"), 6000);
     setStatusText(msg);
     startIconAnimation();
     return 0;
@@ -615,19 +615,7 @@ LRESULT CFloatingWindow::OnScreenshotActionChanged(WORD wNotifyCode, WORD wID, H
 }
 
 
-void CFloatingWindow::ShowBaloonTip(const CString& text, const CString& title)
-{
-    NOTIFYICONDATA nid;
-    ZeroMemory(&nid, sizeof(nid));
-    nid.cbSize = NOTIFYICONDATA_V2_SIZE;
-    nid.hWnd = m_hWnd;
-    nid.uTimeout = 5500;
-    nid.uFlags = NIF_INFO;
-    nid.dwInfoFlags = NIIF_INFO;
-    lstrcpyn(nid.szInfo, text, ARRAY_SIZE(nid.szInfo) - 1);
-    lstrcpyn(nid.szInfoTitle, title, ARRAY_SIZE(nid.szInfoTitle) - 1);
-    Shell_NotifyIcon(NIM_MODIFY, &nid);
-}
+
 
 void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& displayName)
 {
@@ -645,7 +633,7 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     CString onlyFileName = WinUtils::GetOnlyFileName(displayName);
     msg.Format(TR("File \"%s\" is beeing uploaded to server %s.."), static_cast<LPCTSTR>(onlyFileName),
         static_cast<LPCTSTR>(Utf8ToWstring(Settings.quickScreenshotServer.serverName()).c_str()));
-    ShowBaloonTip(msg, TR("Uploading screenshot"));
+    ShowBaloonTip(msg, TR("Uploading screenshot"), 6000);
     setStatusText(msg);
     startIconAnimation();
 }
@@ -761,11 +749,11 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
             WinUtils::CopyTextToClipboard(url);
             CString text = TrimString(url, 70) + CString("\r\n")
                 + TR("(the link has been copied to the clipboard)");
-            ShowBaloonTip(text, TR("Short URL"));
+            ShowBaloonTip(text, TR("Short URL"), 17000);
             setStatusText(text, kStatusHideTimeout);
         } else {
             CString statusText = TR("Unable to shorten the link...");
-            ShowBaloonTip(TR("View log for details."), statusText);
+            ShowBaloonTip(TR("View log for details."), statusText, 17000);
             setStatusText(statusText, kStatusHideTimeout);
         }
     } else {
@@ -785,7 +773,7 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
 
         } else {
             CString statusText = TR("Could not upload screenshot :(");
-            ShowBaloonTip(TR("View log for details."), statusText);
+            ShowBaloonTip(TR("View log for details."), statusText, 17000);
             setStatusText(statusText, kStatusHideTimeout);
         }
         
@@ -805,7 +793,7 @@ void CFloatingWindow::ShowImageUploadedMessage(const CString& url) {
     WinUtils::CopyTextToClipboard(url);
     CString trimmedUrl = TrimString(url, 70);
     ShowBaloonTip(trimmedUrl + CString("\r\n")
-        + TR("(the link has been copied to the clipboard)")+ + CString("\r\n") + TR("Click on this message to view details...") , TR("Screenshot was uploaded"));
+        + TR("(the link has been copied to the clipboard)")+ + CString("\r\n") + TR("Click on this message to view details...") , TR("Screenshot was uploaded"), 17000);
     CString statusText = TR("Screenshot was uploaded") + CString(_T("\r\n")) + trimmedUrl;
     setStatusText(statusText, kStatusHideTimeout);
 }

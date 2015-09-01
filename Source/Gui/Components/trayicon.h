@@ -98,7 +98,20 @@ public:
 	// Set the default menu item ID
 	inline void SetDefaultItem(UINT nID) { m_nDefault = nID; }
 
-	
+    void ShowBaloonTip(const CString& text, const CString& title, unsigned int timeout)
+    {
+        T* pT = static_cast<T*>(this);
+        NOTIFYICONDATA nid;
+        ZeroMemory(&nid, sizeof(nid));
+        nid.cbSize = NOTIFYICONDATA_V2_SIZE;
+        nid.hWnd = pT->m_hWnd;
+        nid.uTimeout = timeout;
+        nid.uFlags = NIF_INFO;
+        nid.dwInfoFlags = NIIF_INFO;
+        lstrcpyn(nid.szInfo, text, ARRAY_SIZE(nid.szInfo) - 1);
+        lstrcpyn(nid.szInfoTitle, title, ARRAY_SIZE(nid.szInfoTitle) - 1);
+        Shell_NotifyIcon(NIM_MODIFY, &nid);
+    }
 
 	// Allow the menu items to be enabled/checked/etc.
 	virtual void PrepareMenu(HMENU hMenu)
