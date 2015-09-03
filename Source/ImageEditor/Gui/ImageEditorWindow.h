@@ -15,14 +15,16 @@
 namespace ImageEditor {
 
 class ColorsDelegate;
-
+                                                                                               
 class ConfigurationProvider;
 
 class ImageEditorWindow : public CWindowImpl<ImageEditorWindow>
 {
 public:
     DECLARE_WND_CLASS(_T("ImageEditorWindow"))
-    enum { ID_UNDO = 1000,  ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE , ID_SAVE, ID_SAVEAS, ID_COPYBITMAPTOCLIBOARD,
+    enum {
+        ID_UNDO = 1000, ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE, ID_SAVE, ID_SAVEAS, ID_COPYBITMAPTOCLIBOARD, ID_COPYBITMAPTOCLIBOARDASDATAURI,
+        ID_COPYBITMAPTOCLIBOARDASDATAURIHTML,
         ID_PEN = 1600, 
         ID_BRUSH, ID_MARKER,ID_BLUR, ID_BLURRINGRECTANGLE, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_ROUNDEDRECTANGLE, ID_ELLIPSE,
         ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_MOVE};
@@ -48,7 +50,7 @@ public:
     enum DialogResult{
         drCancel, drAddToWizard, drUpload, drShare, drSave
     };
-
+    enum class ClipboardFormat{ None, Bitmap, DataUri, DataUriHtml };
     enum WindowDisplayMode {
         wdmAuto, wdmFullscreen, wdmWindowed
     };
@@ -96,6 +98,8 @@ public:
         COMMAND_ID_HANDLER( ID_SAVE, OnClickedSave )    
         COMMAND_ID_HANDLER( ID_SAVEAS, OnClickedSaveAs )
         COMMAND_ID_HANDLER( ID_COPYBITMAPTOCLIBOARD, OnClickedCopyToClipboard )
+        COMMAND_ID_HANDLER(ID_COPYBITMAPTOCLIBOARDASDATAURI, OnClickedCopyToClipboardAsDataUri)
+        COMMAND_ID_HANDLER(ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, OnClickedCopyToClipboardAsDataUriHtml)
         MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
         
         REFLECT_NOTIFICATIONS()
@@ -134,6 +138,8 @@ public:
         LRESULT OnClickedSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnClickedSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnClickedCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnClickedCopyToClipboardAsDataUri(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnClickedCopyToClipboardAsDataUriHtml(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
         LRESULT OnTextParamWindowFontChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
@@ -178,7 +184,7 @@ public:
         std::shared_ptr<Gdiplus::Bitmap>  loadToolbarIcon(int resource);
         void EndDialog(DialogResult dr);
         void init();
-        bool saveDocument(bool toClipboard =  false );
+        bool saveDocument(ClipboardFormat clipboardFormat = ClipboardFormat::None);
         void updateToolbarDrawingTool(Canvas::DrawingToolType dt);
         void OnForegroundColorChanged(Gdiplus::Color color);
         void OnBackgroundColorChanged(Gdiplus::Color color);

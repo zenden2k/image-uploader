@@ -189,6 +189,22 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         sub.SetMenuItemInfo(IDM_EDITINEXTERNALEDITOR, false, &mi);
         
         sub.EnableMenuItem(IDM_EDIT, bIsImageFile?MF_ENABLED    :MF_GRAYED    );
+
+        if (isImage) {
+            CMenu subMenu;
+            subMenu.CreatePopupMenu();
+
+            subMenu.AppendMenu(MFT_STRING, IDM_COPYFILEASDATAURI, TR_CONST("data:URI"));
+            subMenu.AppendMenu(MFT_STRING, IDM_COPYFILEASDATAURIHTML, TR_CONST("data:URI (html)"));
+
+            MENUITEMINFO miiNew = { 0 };
+            miiNew.cbSize = sizeof(MENUITEMINFO);
+            miiNew.fMask = MIIM_SUBMENU | MIIM_STRING;
+            miiNew.hSubMenu = subMenu.Detach();   // Detach() to keep the pop-up menu alive
+            miiNew.dwTypeData = TR_CONST("Copy &as...");
+            sub.InsertMenuItem(IDM_DELETE, false, &miiNew);
+        }
+
         sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
     }
     return 0;
@@ -520,5 +536,25 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
         }    
     }
 
+    return 0;
+}
+
+LRESULT CMainDlg::OnCopyFileAsDataUri(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    CString fileName = getSelectedFileName();
+    if (!fileName.IsEmpty()) {
+        if (!CopyFileToClipboardInDataUriFormat(fileName, 0, 85, false)) {
+            MessageBox(_T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
+        }
+    }
+    return 0;
+}
+
+LRESULT CMainDlg::OnCopyFileAsDataUriHtml(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    CString fileName = getSelectedFileName();
+    if (!fileName.IsEmpty()) {
+        if (!CopyFileToClipboardInDataUriFormat(fileName, 0, 85, true)) {
+            MessageBox(_T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
+        }
+    }
     return 0;
 }

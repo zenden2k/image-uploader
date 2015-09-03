@@ -8,6 +8,7 @@
 #include "3rdpart/Registry.h"
 #include <TlHelp32.h>
 #include <Winhttp.h>
+#include <boost/format.hpp>
 
 namespace WinUtils {
 
@@ -79,10 +80,22 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
         if (OpenClipboard(hwnd)) {
             HGLOBAL hglb = GetClipboardData(CF_UNICODETEXT);
             if (!hglb) {
-                if (raiseError) {
-                    LOG(ERROR) << "GetClipboardData call failed. ErrorCode=" << ::GetLastError();
+                if (OpenClipboard(hwnd)) {
+                    hglb = GetClipboardData(CF_TEXT);
                 }
-                
+               
+                if (!hglb) {
+                    if (raiseError) {
+                        LOG(ERROR) << "GetClipboardData call failed. ErrorCode=" << ::GetLastError();
+                        //CloseClipboard();
+                    }
+                } else {
+                    LPCSTR lpstr = reinterpret_cast<LPCSTR>(GlobalLock(hglb));
+                    text = lpstr;
+                    GlobalUnlock(hglb);
+                    CloseClipboard();
+                    return true;
+                }
                 CloseClipboard();
                 return false;
             }
@@ -137,6 +150,83 @@ bool CopyTextToClipboard(const CString& text)
     SetClipboardData(CF_UNICODETEXT, hglbCopy);
     CloseClipboard();
     return true;
+}
+
+bool CopyHtmlToClipboard(const CString& text)
+{
+    LPSTR lptstrCopy;
+    HGLOBAL hglbCopy;
+   
+    if (!OpenClipboard(NULL))
+        return FALSE;
+    EmptyClipboard();
+    std::string textUtf8 = W2U(text);
+    std::string html = TextToClipboardHtmlFormat(textUtf8.c_str(), 0);
+    unsigned htmlClipboardFormatId = RegisterClipboardFormat(_T("HTML Format"));
+    int cch = html.size();
+    hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (cch + 1) );
+    if (hglbCopy == NULL) {
+        CloseClipboard();
+        return FALSE;
+    }
+    lptstrCopy = reinterpret_cast<LPSTR>(GlobalLock(hglbCopy));
+    memcpy(lptstrCopy, html.c_str(), cch-1);
+    lptstrCopy[cch] = 0;
+    GlobalUnlock(hglbCopy);
+    SetClipboardData(htmlClipboardFormatId, hglbCopy);
+    CloseClipboard();
+    return true;
+}
+
+std::string TextToClipboardHtmlFormat(const char* html, int length, const std::string& base_url) {
+    // chromium//src/ui/base/clipboard/clipboard_util_win.cc
+#define MAX_DIGITS 10
+#define MAKE_NUMBER_FORMAT_1(digits) MAKE_NUMBER_FORMAT_2(digits)
+#define MAKE_NUMBER_FORMAT_2(digits) "%0" #digits "u"
+#define NUMBER_FORMAT MAKE_NUMBER_FORMAT_1(MAX_DIGITS)
+
+    static const char* header = "Version:0.9\r\n"
+        "StartHTML:" NUMBER_FORMAT "\r\n"
+        "EndHTML:" NUMBER_FORMAT "\r\n"
+        "StartFragment:" NUMBER_FORMAT "\r\n"
+        "EndFragment:" NUMBER_FORMAT "\r\n";
+    static const char* source_url_prefix = "SourceURL:";
+
+    static const char* start_markup =
+        "<html>\r\n<body>\r\n<!--StartFragment-->";
+    static const char* end_markup =
+        "<!--EndFragment-->\r\n</body>\r\n</html>";
+
+    // Calculate offsets
+    size_t start_html_offset = strlen(header) - strlen(NUMBER_FORMAT) * 4 +
+        MAX_DIGITS * 4;
+    if (!base_url.empty()) {
+        start_html_offset += strlen(source_url_prefix) +
+            base_url.length() + 2;  // Add 2 for \r\n.
+    }
+    size_t start_fragment_offset = start_html_offset + strlen(start_markup);
+    size_t end_fragment_offset = start_fragment_offset + length;
+    size_t end_html_offset = end_fragment_offset + strlen(end_markup);
+
+    std::string result = str(boost::format(header) %
+        start_html_offset %
+        end_html_offset %
+        start_fragment_offset %
+        end_fragment_offset);
+    if (!base_url.empty()) {
+        result.append(source_url_prefix);
+        result.append(base_url);
+        result.append("\r\n");
+    }
+    result.append(start_markup);
+    result.append(html, length);
+    result.append(end_markup);
+
+#undef MAX_DIGITS
+#undef MAKE_NUMBER_FORMAT_1
+#undef MAKE_NUMBER_FORMAT_2
+#undef NUMBER_FORMAT
+    return result;
 }
 
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)

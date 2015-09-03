@@ -123,7 +123,7 @@ void ImageEditorWindow::init()
     dialogResult_ = drCancel;
 }
 
-bool ImageEditorWindow::saveDocument(bool toClipboard)
+bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat)
 {
     resultingBitmap_ = canvas_->getBitmapForExport();
     canvas_->setDocumentModified(false);
@@ -131,7 +131,7 @@ bool ImageEditorWindow::saveDocument(bool toClipboard)
         LOG(ERROR) << "canvas_->getBitmapForExport() returned NULL";
         return false;
     }
-    if ( !toClipboard ) {
+    if (clipboardFormat == ClipboardFormat::None) {
         if ( !outFileName_.IsEmpty() ) {
             SaveImage(resultingBitmap_.get(), outFileName_, sifDetectByExtension, imageQuality_);
             canvas_->updateView();
@@ -140,11 +140,15 @@ bool ImageEditorWindow::saveDocument(bool toClipboard)
             return true;
             //LOG(ERROR) << "ImageEditorWindow::saveDocument:  outFileName is empty";
         }
-    } else {
+    } else if (clipboardFormat  == ClipboardFormat::Bitmap ) {
         CDC dc = GetDC();
         CopyBitmapToClipboard(m_hWnd, dc, resultingBitmap_.get(), true);
         return true;
+    } else if (clipboardFormat == ClipboardFormat::DataUri || clipboardFormat == ClipboardFormat::DataUriHtml) {
+        CopyBitmapToClipboardInDataUriFormat(resultingBitmap_.get(), 0, 85, clipboardFormat == ClipboardFormat::DataUriHtml);
+        return true;
     }
+    return false;
 }
 
 void ImageEditorWindow::updateToolbarDrawingTool(Canvas::DrawingToolType dt)
@@ -647,6 +651,18 @@ LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARA
         excludeArea.cbSize = sizeof(excludeArea);
         excludeArea.rcExclude = rc;
         rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
+    } else if (item->command == ID_COPYBITMAPTOCLIBOARD) {
+        CMenu rectangleMenu;
+        RECT rc = item->rect;
+        horizontalToolbar_.ClientToScreen(&rc);
+        rectangleMenu.CreatePopupMenu();
+        rectangleMenu.AppendMenu(MF_STRING, ID_COPYBITMAPTOCLIBOARDASDATAURI, TR("Copy in data:URI format"));
+        rectangleMenu.AppendMenu(MF_STRING, ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, TR("Copy in data:URI format (html)"));
+        TPMPARAMS excludeArea;
+        ZeroMemory(&excludeArea, sizeof(excludeArea));
+        excludeArea.cbSize = sizeof(excludeArea);
+        excludeArea.rcExclude = rc;
+        rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
     }
     return 0;
 }
@@ -700,7 +716,7 @@ void ImageEditorWindow::createToolbars()
     }
     //horizontalToolbar_.addButton(Toolbar::Item(TR("Share"),0,ID_SHARE, CString(),Toolbar::itComboButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Save"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, CString(_T("(Ctrl+S)")),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Copy to clipboard"),loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, CString(), Toolbar::itButton ));
+    horizontalToolbar_.addButton(Toolbar::Item(TR("Copy to clipboard"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, CString(), Toolbar::itComboButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Close"),std::shared_ptr<Gdiplus::Bitmap> () ,ID_CLOSE, CString(_T("(Esc)"))));
     horizontalToolbar_.AutoSize();
     if ( displayMode_ != wdmFullscreen ) {
@@ -1008,7 +1024,23 @@ LRESULT ImageEditorWindow::OnClickedCopyToClipboard(WORD /*wNotifyCode*/, WORD /
     {
         ::SetFocus(m_view.m_hWnd);
     }
-    saveDocument(true);
+    saveDocument(ClipboardFormat::Bitmap);
+    return 0;
+}
+
+LRESULT ImageEditorWindow::OnClickedCopyToClipboardAsDataUri(WORD, WORD, HWND, BOOL&) {
+    if (GetFocus() != m_view.m_hWnd) {
+        ::SetFocus(m_view.m_hWnd);
+    }
+    saveDocument(ClipboardFormat::DataUri);
+    return 0;
+}
+
+LRESULT ImageEditorWindow::OnClickedCopyToClipboardAsDataUriHtml(WORD, WORD, HWND, BOOL&) {
+    if (GetFocus() != m_view.m_hWnd) {
+        ::SetFocus(m_view.m_hWnd);
+    }
+    saveDocument(ClipboardFormat::DataUriHtml);
     return 0;
 }
 

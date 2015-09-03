@@ -3,10 +3,26 @@
 #include "Core/Images/Utils.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Func/GdiPlusInitializer.h"
+#include "Func/WinUtils.h"
+#include "Core/Utils/CryptoUtils.h"
 
 class UtilsTest : public ::testing::Test {
 private:
     GdiPlusInitializer init;
+public:
+
+    void waitFormatAvailable() {
+        bool isClipboardOpened = OpenClipboard(0) != FALSE;
+        ASSERT_TRUE(isClipboardOpened);
+        DWORD startTime = ::GetTickCount();
+        while (IsClipboardFormatAvailable(CF_UNICODETEXT) == FALSE) {
+            if (::GetTickCount() - startTime > 1000) {
+                ASSERT_TRUE(false);
+                break;
+            }
+        }
+        CloseClipboard();
+    }
 };
 
 TEST_F(UtilsTest, BitmapFromMemory)
@@ -55,7 +71,7 @@ TEST_F(UtilsTest, GetThumbnail) {
 
     Gdiplus::Bitmap* thumb2 = GetThumbnail(bm, 251, 366, &size);
     ASSERT_TRUE(thumb2 != nullptr);
-  
+
     EXPECT_EQ(251, thumb2->GetWidth());
     EXPECT_EQ(366, thumb2->GetHeight());
     delete thumb2;
@@ -78,8 +94,29 @@ TEST_F(UtilsTest, GetThumbnail) {
 
 TEST_F(UtilsTest, CopyBitmapToClipboardInDataUriFormat) {
     const char* fileName = "TestData/file_with_const_size.png";
-    Bitmap* bm = Bitmap::FromFile(U2W(fileName));
+    std::unique_ptr<Bitmap> bm(Bitmap::FromFile(U2W(fileName)));
     ASSERT_TRUE(bm != nullptr);
-    //CopyBitmapToClipboardInDataUriFormat(bm, 0, 85);
+    bool res = CopyBitmapToClipboardInDataUriFormat(bm.get(), 1, 85); 
+    EXPECT_TRUE(res);
 
+    waitFormatAvailable();
+    
+    CString clipboardText;
+    res = WinUtils::GetClipboardText(clipboardText, 0, true);
+    ASSERT_TRUE(res);
+    std::string clipboardTextA = W2U(clipboardText);
+    std::string md5 = IuCoreUtils::CryptoUtils::CalcMD5HashFromString(clipboardTextA);
+    EXPECT_EQ("7b0e5e0e312bfed196c117fe821a4e30", md5);
+
+    
+    // Test HTML format
+    res = CopyBitmapToClipboardInDataUriFormat(bm.get(), 1, 85, true);
+    EXPECT_TRUE(res);
+    waitFormatAvailable();
+    CString clipboardText2;
+    res = WinUtils::GetClipboardText(clipboardText2, 0, true);
+    ASSERT_TRUE(res);
+    std::string clipboardTextA2 = W2U(clipboardText2);
+    std::string md52 = IuCoreUtils::CryptoUtils::CalcMD5HashFromString(clipboardTextA2);
+    EXPECT_EQ("88d4f8b907c9b4d596a920419ccdd6f4", md52);
 }

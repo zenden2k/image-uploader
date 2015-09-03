@@ -672,13 +672,16 @@
 #define ID_0_SAVEAS                     32802
 #define ID_0_EDITINEXTERNALEDITOR       32803
 #define IDM_EDITINEXTERNALEDITOR        32804
+#define ID_Menu32805                    32805
+#define ID__DATA                        32806
+#define ID__DATA32807                   32807
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        308
-#define _APS_NEXT_COMMAND_VALUE         32805
+#define _APS_NEXT_COMMAND_VALUE         32808
 #define _APS_NEXT_CONTROL_VALUE         1315
 #define _APS_NEXT_SYMED_VALUE           128
 #endif

@@ -34,6 +34,8 @@
 #include <stdint.h>
 #include <Core/ServiceLocator.h>
 #include <Func/Library.h>
+#include <libbase64.h>
+#include <boost/format.hpp>
 
 using namespace Gdiplus;
 
@@ -668,7 +670,7 @@ bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int F
     return res;
 }
 
-bool SaveImageToFile(Gdiplus::Image* img, const CString& fileName, IStream* stream, int Format, int Quality) {
+bool SaveImageToFile(Gdiplus::Image* img, const CString& fileName, IStream* stream, int Format, int Quality, CString* mimeType) {
     std::unique_ptr<Bitmap> quantizedImage;
     
     Gdiplus::Status result;
@@ -700,6 +702,9 @@ bool SaveImageToFile(Gdiplus::Image* img, const CString& fileName, IStream* stre
             result = stream ? img->Save(stream, &clsidEncoder, &eps)  : img->Save(fileName, &clsidEncoder, &eps);
         else
             result = stream ? img->Save(stream, &clsidEncoder, &eps)  : img->Save(fileName, &clsidEncoder);
+        if (mimeType) {
+            *mimeType = szMimeTypes[Format];
+        }
     } else {
         ServiceLocator::instance()->logger()->write(logError, _T("Image Converter"), _T("Could not find suitable converter"));
         return false;
@@ -1089,26 +1094,134 @@ Rect destRect ((int)(Bounds.GetLeft()+x), (int)(Bounds.GetTop()+y), (int)(newwid
 
 gr.DrawImage(&temp, destRect,(int)realTextBounds.X, (int)realTextBounds.Y,(int)(realTextBounds.Width),(int)(realTextBounds.Height), UnitPixel);
 }*/
-bool CopyBitmapToClipboardInDataUriFormat(Bitmap* bm, int Format, int Quality) {
+
+bool CopyDataToClipboardInDataUriFormat(ULONGLONG dataSize, std::string mimeType, bool html, std::function<size_t(void*, size_t)> readCallback) {
+    ULONGLONG offset = 0;
+    ULONGLONG leftBytes = dataSize;
+    const ULONG buf_size = 1024;
+    BYTE buffer[buf_size];
+
+    const char* footer = "\" alt=\"\" />";
+    int footerLen = strlen(footer);
+    const char* head = "<img src=\"";
+    int headLen = strlen(head);
+
+    HGLOBAL hglbCopy;
+    int cch = dataSize * 4 / 3 + 40;
+    if (html) {
+        cch += footerLen + headLen;
+    }
+    if (!OpenClipboard(NULL)) {
+        LOG(ERROR) << "Failed to open clipboard";
+        return FALSE;
+    }
+
+    EmptyClipboard();
+    size_t bytesToAlloc = (cch + 1) * sizeof(char);
+    hglbCopy = GlobalAlloc(GMEM_MOVEABLE, bytesToAlloc);
+    if (hglbCopy == NULL) {
+        LOG(ERROR) << "Failed to alloc global memory (" << bytesToAlloc << " bytes).";
+        CloseClipboard();
+        return FALSE;
+    }
+
+    base64_state state;
+    base64_stream_encode_init(&state, BASE64_FORCE_PLAIN);
+    char* encodedData = reinterpret_cast<char*>(GlobalLock(hglbCopy));
+    char* encodedDataCur = encodedData;
+
+    if (html) {
+
+        strncpy(encodedDataCur, head, headLen);
+        encodedDataCur += headLen;
+    }
+    strncpy(encodedDataCur, "data:", 5);
+    encodedDataCur += 5;
+   
+    strncpy(encodedDataCur, mimeType.c_str(), mimeType.length());
+    encodedDataCur += mimeType.length();
+    strncpy(encodedDataCur, ";base64,", 8);
+    encodedDataCur += 8;
+    size_t outlen = 0;
+    while (offset < dataSize) {
+        size_t readBytes = readCallback(buffer, std::min<ULONGLONG>(buf_size, leftBytes));
+        if (!readBytes) {
+            break;
+        }
+        leftBytes -= readBytes;
+        offset += readBytes;
+        outlen = 0;
+        base64_stream_encode(&state, (const char*)buffer, readBytes, (char*)encodedDataCur, &outlen);
+        encodedDataCur += outlen;
+    }
+    base64_stream_encode_final(&state, (char*)encodedDataCur, &outlen);
+    encodedDataCur += outlen;
+    if (html) {
+        strncpy(encodedDataCur, footer, footerLen);
+        encodedDataCur += footerLen;
+    }
+
+    *encodedDataCur = 0;
+
+    GlobalUnlock(hglbCopy);
+    SetClipboardData(CF_TEXT, hglbCopy);
+
+    if (html) {
+        std::string clipboardHtml = WinUtils::TextToClipboardHtmlFormat(encodedData, encodedDataCur - encodedData);
+        unsigned htmlClipboardFormatId = RegisterClipboardFormat(_T("HTML Format"));
+        size_t clipboardHtmlSize = clipboardHtml.size();
+        HGLOBAL hglbHtml = GlobalAlloc(GMEM_MOVEABLE, clipboardHtmlSize + 1);
+        char* htmlData = reinterpret_cast<char*>(GlobalLock(hglbHtml));
+
+        strncpy(htmlData, clipboardHtml.c_str(), clipboardHtmlSize);
+        htmlData[clipboardHtmlSize] = 0;
+        GlobalUnlock(hglbHtml);
+        SetClipboardData(htmlClipboardFormatId, hglbHtml);
+    }
+    CloseClipboard();
+    return true;
+}
+
+bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int Quality, bool html) {
+    std::string fileNameUtf8 = W2U(fileName);
+    std::string mimeType = IuCoreUtils::GetFileMimeType(fileNameUtf8);
+    FILE* f = IuCoreUtils::fopen_utf8(fileNameUtf8.c_str(), "rb");
+    if (!f) {
+        LOG(ERROR) << boost::format("Could not save xml to file '%s'.") % fileName << std::endl << "Reason: " << strerror(errno);
+        return false;
+    }
+    int64_t fileSize = IuCoreUtils::getFileSize(fileNameUtf8);
+    if (fileSize > 10 * 1024 * 1024) {
+        LOG(ERROR) << "File is too big"; 
+        return false;
+    }
+    
+    return CopyDataToClipboardInDataUriFormat(fileSize, mimeType, html, [&](void* buffer, size_t size) -> size_t {
+        if (feof(f)) {
+            return 0;
+        }
+        return fread(buffer, 1, size, f);
+    });
+}
+
+bool CopyBitmapToClipboardInDataUriFormat(Bitmap* bm, int Format, int Quality, bool html) {
     CComPtr<IStream> stream = CreateMemStream(nullptr, 0);
-    bool res = SaveImageToFile(bm, CString(), stream, Format, Quality);
+    CString mimeType;
+    bool res = SaveImageToFile(bm, CString(), stream, Format, Quality, &mimeType);
+    std::string mimeTypeA = W2U(mimeType);
     STATSTG stats;
     HRESULT hr = stream->Stat(&stats, STATFLAG_NONAME);
     if (SUCCEEDED(hr)) {
         hr = stream->Seek({ 0, 0 }, STREAM_SEEK_SET, nullptr);
         if (SUCCEEDED(hr)) {
-            ULONGLONG offset = 0;
-            ULONGLONG leftBytes = stats.cbSize.QuadPart;
-            const ULONG buf_size = 1024;
-            BYTE buffer[buf_size];
-            ULONG readBytes;
-            while (offset < stats.cbSize.QuadPart) {
-                hr = stream->Read(buffer, std::min<ULONGLONG>(buf_size, leftBytes), &readBytes);
+            CopyDataToClipboardInDataUriFormat(stats.cbSize.QuadPart, mimeTypeA, html, [&](void* buffer, size_t size) -> size_t {
+                unsigned long readBytes;
+                HRESULT hr = stream->Read(buffer, size, &readBytes);
                 if (!SUCCEEDED(hr)) {
-                    break;
+                    return 0;
                 }
-                leftBytes -= readBytes;
-            }
+                return readBytes;
+            });
         }
     }
     return res;

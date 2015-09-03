@@ -30,6 +30,7 @@ namespace WinUtils {
     CString GetCommonApplicationDataPath();
     bool    CopyTextToClipboard(const CString& text);
     bool    GetClipboardText(CString &text, HWND hwnd = NULL, bool raiseError = false);
+    bool CopyHtmlToClipboard(const CString& text);
     bool GetClipboardHtml(CString& text, CString& outSourceUrl);
     DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
 
@@ -110,6 +111,7 @@ namespace WinUtils {
     CString ExpandEnvironmentStrings(const CString& s);
     void ArgvQuote(const std::wstring& Argument, std::wstring& CommandLine, bool Force);
     bool GetProxyInfo(CString& proxy_address, CString& proxy_bypass);
+    std::string TextToClipboardHtmlFormat(const char* html, int length, const std::string& base_url = std::string());
 //#endif
 };
 

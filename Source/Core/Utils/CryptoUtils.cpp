@@ -29,11 +29,19 @@
 #endif
 
 #include "Core/3rdpart/base64.h"
+//#include <libbase64.h>
+
 namespace IuCoreUtils {
 namespace CryptoUtils {
 
 std::string Base64Encode(const std::string& data)
 {
+    /*std::string res;
+    size_t outlen = (data.length() * 4 )/ 3+10;
+    res.resize(outlen);
+    base64_encode(data.data(), data.length(), &res[0], &outlen, BASE64_FORCE_PLAIN );
+    res.resize(outlen);
+    return res;*/
     return base64_encode((unsigned char const*)data.data(), data.length());
 }
 
