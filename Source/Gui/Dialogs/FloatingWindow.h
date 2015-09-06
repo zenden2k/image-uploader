@@ -185,9 +185,10 @@ public:
      // Text displayed in tray icon tooltip
      void setStatusText(const CString& text, int timeoutMs = 0);
      void removeStatusText();
-
+     void ShowBaloonTip(const CString& text, const CString& title, unsigned int timeout, const std::function<void()>& onClick=std::function<void()>());
      void startIconAnimation();
      void stopIconAnimation();
+     void showLastUploadedCode();
      bool animationEnabled_;
 
      CString fileName, realFileName;
@@ -213,6 +214,7 @@ public:
      };
      UploadType uploadType_;
      CWizardDlg* wizardDlg_;
+    std::function<void()> balloonClickFunction_;
 };
 extern CFloatingWindow floatWnd;
 void CreateFloatWindow();

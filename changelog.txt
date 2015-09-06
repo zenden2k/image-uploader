@@ -10,6 +10,8 @@
 [+] Added CustomHeaders and UserAgent options to servers.xml
 [+] Display url shortening option before upload
 [+] Added animation of tray icon
+[+] Copy image in data:URL format
+[f] Fixed wrong icon for "Log" and "Options button" in uploaddlg
 [c] Scripting API changes: added Process class, new functions
 [f] Fixed keyboard not working in file list
 
@@ -19,6 +21,7 @@
 [c] Updated icon
 [c] Language files are now in UTF-8 encoding
 [c] Use winssl instead of openssl
+
 
 [c] MediaInfo: changed duration display style
 [+] Multiselection in log window

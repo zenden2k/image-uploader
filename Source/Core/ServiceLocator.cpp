@@ -20,6 +20,7 @@ public:
     ILogger* logger_;
     IDialogProvider* dialogProvider_;
     ITranslator* translator_;
+    ITaskDispatcher* dispatcher_;
 };
 
 ServiceLocator::ServiceLocator() : d_ptr(new ServiceLocatorPrivate()){
@@ -75,6 +76,14 @@ ITranslator* ServiceLocator::translator() {
 
 void ServiceLocator::setTranslator(ITranslator* transl) {
     d_ptr->translator_ = transl;
+}
+
+ITaskDispatcher* ServiceLocator::taskDispatcher() {
+    return d_ptr->dispatcher_;
+}
+
+void ServiceLocator::setTaskDispatcher(ITaskDispatcher* dispatcher) {
+    d_ptr->dispatcher_ = dispatcher;
 }
 
 void ServiceLocator::setProgramWindow(IProgramWindow* window) {

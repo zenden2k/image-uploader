@@ -78,6 +78,7 @@ LRESULT CUpdateDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     ::ShowWindow(GetDlgItem(IDOK), SW_HIDE);
 
     TRC(IDCANCEL, "Cancel");
+   
     if (!m_Modal)
         Start();  // Beginning update process
     return 1;  // Let the system set the focus
@@ -285,6 +286,8 @@ LRESULT CUpdateDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
         {
             ShowModal(m_hWnd);
             KillTimer(2);
+        } else if (m_UpdateCallback){
+            m_UpdateCallback->ShowUpdateMessage(m_UpdateManager.generateUpdateMessage());
         }
     }
     else if (wTimerID == 1)

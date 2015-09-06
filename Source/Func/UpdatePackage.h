@@ -114,6 +114,7 @@ class CUpdateManager: public CUpdateStatusCallback
         bool DoUpdates();
         const CString ErrorString();
         CString generateReport();
+        CString generateUpdateMessage();
         void Clear();
         bool AreUpdatesAvailable();
         bool AreCoreUpdates();

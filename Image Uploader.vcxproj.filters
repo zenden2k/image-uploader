@@ -831,6 +831,15 @@
     <ClInclude Include="Source\ImageEditor\Helpers\FontEnumerator.h">
       <Filter>Source Files\ImageEditor\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\ClearHistoryDlg.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\TaskDispatcher.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\FolderAddDlg.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1841,6 +1850,12 @@
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\Helpers\FontEnumerator.cpp">
       <Filter>Source Files\ImageEditor\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\ClearHistoryDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\FolderAddDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -108,6 +108,7 @@
 #define IDD_TEXTPARAMSWINDOW            270
 #define IDI_ICON7                       271
 #define IDI_ICONDOWN                    271
+#define IDD_CLEARHISTORYDLG             271
 #define IDB_PNG2                        272
 #define IDB_PNG3                        273
 #define IDB_DROPDOWNICONPNG             273
@@ -281,6 +282,7 @@
 #define IDC_MULTIPLEFILES               1043
 #define IDC_SOURCECODERADIO             1043
 #define IDC_PASSWORDEDITBOX             1043
+#define IDC_ALLTIMERADIO                1043
 #define IDC_RADIO2                      1044
 #define IDC_SAVEASONE                   1044
 #define IDC_HEIGHTRADIO                 1044
@@ -533,6 +535,7 @@
 #define IDC_ADDITEM                     1263
 #define IDC_BROWSESCRIPTBUTTON          1263
 #define IDC_CLEARLOGBUTTON              1263
+#define IDC_CLEARHISTORYBTN             1263
 #define IDC_THUMBBACKGROUNDLABEL        1264
 #define IDC_DELETEITEM                  1264
 #define IDC_GOOGLECODELINK              1265
@@ -622,6 +625,8 @@
 #define IDC_SETTINGSBUTTONPLACEHOLDER2  1314
 #define IDC_AUTHORNAMELABEL             1314
 #define IDC_DEFAULTSETTINGSCHECKBOX     1315
+#define IDC_RADIO3                      1315
+#define IDC_CURRENTMONTHRADIO           1315
 #define IDC_PROCESSIMAGESCHECKBOX       1316
 #define IDC_DEFAULTTHUMBSETTINGSCHECKBOX 1317
 #define IDC_THUMBTEMPLATECOMBOLABEL     1318
@@ -682,7 +687,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        308
 #define _APS_NEXT_COMMAND_VALUE         32808
-#define _APS_NEXT_CONTROL_VALUE         1315
+#define _APS_NEXT_CONTROL_VALUE         1316
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

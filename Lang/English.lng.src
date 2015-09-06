@@ -1,6 +1,5 @@
 # This generated file is Image Uploader's language file. It must be saved in UTF-8 encoding. 777011a3 = translator's name (and optional e-mail, website)
 9e633393 = Clear
-df185ba8 = Cannot copy image to clipboard.
 8c7b45f3 = Settings
 99bc0cca = Upload images
 e7e220d3 = Open by Image Uploader
@@ -137,8 +136,8 @@ cf8b0d37 = Uploading screenshot
 73da5d18 = Could not upload screenshot :(
 7120b941 = (the link has been copied to the clipboard)
 b58b28a1 = Short URL
-45888c59 = View log for details.
 ee24a065 = Unable to shorten the link...
+45888c59 = View log for details.
 3f8429be = Click on this message to view details...
 09302efd = Screenshot was uploaded
 eb4db82c = Screenshot Action
@@ -282,6 +281,9 @@ f8447066 = Copy image
 b2a9297f = Files
 e239d81f = Cannot copy file: 
 56f81ded = Cannot copy file 
+8cb30cae = data:URI
+5b90df8e = data:URI (html)
+d302a09d = Copy &as...
 5db723dc = Remove from list
 c1b5404d = Information about file
 28585bdd = Loading...
@@ -518,6 +520,7 @@ e67c195b = Couldn't load servers list file "servers.xml"!\n\nThe reason is:  %
 7f6216d0 = Profile "%s" not found.
 b5363619 = Images settings and choosing server
 b107c545 = Uploading file on server
+98204ade = Could not save settings file. See error log for details.
 6437e6b4 = Would you like to grab frames from this video?\n(otherwise file just  will be added to list)
 76fe1f3d = Searching for picture files...
 c20599e4 = Collecting files...
@@ -541,6 +544,8 @@ c267a508 = Ellipse
 13c2e2ec = Filled ellipse
 599838c6 = Image Editor
 be2c5569 = Save as
+7ebec4a3 = Copy in data:URI format
+35510b87 = Copy in data:URI format (html)
 9092168a = Add to the list
 c7e5a3d7 = Share
 2d2173a8 = Save

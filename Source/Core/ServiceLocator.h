@@ -14,6 +14,7 @@ class LocalFileCache;
 class CHistoryManager;
 class ServiceLocatorPrivate;
 class ITranslator;
+class ITaskDispatcher;
 
 class ServiceLocator : public Singleton<ServiceLocator> {
 public:
@@ -32,6 +33,8 @@ public:
     void setDialogProvider(IDialogProvider* dialogProvider);
     ITranslator* translator();
     void setTranslator(ITranslator* transl);
+    ITaskDispatcher* taskDispatcher();
+    void setTaskDispatcher(ITaskDispatcher* dispatcher);
 protected:
     std::shared_ptr<ServiceLocatorPrivate> d_ptr; // unique_ptr won't compile with incomplete type
 };

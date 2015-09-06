@@ -27,6 +27,7 @@
 #include "ResultsWindow.h"
 #include "Core/3rdpart/pcreplusplus.h"
 #include "Func/WinUtils.h"
+#include "ClearHistoryDlg.h"
 
 // CHistoryWindow
 CHistoryWindow::CHistoryWindow(CWizardDlg* wizardDlg)
@@ -60,6 +61,7 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     SetWindowText(TR("Upload History"));
     TRC(IDC_TIMEPERIODLABEL, "Time Period:");
     TRC(IDC_DOWNLOADTHUMBS, "Retrieve thumbnails from the Internet");
+    TRC(IDC_CLEARHISTORYBTN, "Clear History...");
 
     HWND hWnd = GetDlgItem(IDC_ANIMATIONSTATIC);
     if (hWnd)
@@ -72,41 +74,10 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
     std::string fName = ServiceLocator::instance()->historyManager()->makeFileName();
     
-    std::vector<CString> files;
-    historyFolder = U2W(Settings.SettingsFolder) + CString(_T("\\History\\"));
-    WinUtils::GetFolderFileList(files, historyFolder , _T("history*.xml"));
-    pcrepp::Pcre regExp("history_(\\d+)_(\\d+)", "imcu");
-
-    for(size_t i=0; i<files.size(); i++)
-    {
-        m_HistoryFiles.push_back(files[i]);
-
-        CString monthLabel = Utf8ToWCstring( IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8 (files[i])));
-          
-        size_t pos = 0;
-
-        if ( regExp.search(WCstringToUtf8(monthLabel), pos) ) { 
-            std::string yearStr = regExp[1];
-            std::string monthStr = regExp[2];
-            int year = atoi(yearStr.c_str());
-            int month = atoi(monthStr.c_str());
-            monthLabel.Format(_T("%d/%02d"), year, month);
-        }  else {
-            monthLabel.Replace(_T("history_"), _T(""));
-            monthLabel.Replace(_T("_"), _T("/"));
-        }
-
-        int newItemIndex = SendDlgItemMessage(IDC_MONTHCOMBO, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)monthLabel);
-        if ( newItemIndex >=0 ) {
-            SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETITEMDATA, newItemIndex, i);
-        }
-    }
-    int selectedIndex = files.size() - 1;
-    SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETCURSEL, selectedIndex, 0);
+    LoadMonthList();
     
     SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_SETCHECK, static_cast<WPARAM>(Settings.HistorySettings.EnableDownloading));
-    BOOL bDummy;
-    OnMonthChanged(0,0, 0,bDummy);
+    SelectedMonthChanged();
     m_treeView.SetFocus();
     return 1;  // Let the system set the focus
 }
@@ -139,6 +110,40 @@ void CHistoryWindow::Show()
     if(!IsWindowVisible())
             ShowWindow(SW_SHOW);
     SetForegroundWindow(m_hWnd);
+}
+
+void CHistoryWindow::LoadMonthList() {
+    SendDlgItemMessage(IDC_MONTHCOMBO, CB_RESETCONTENT, 0, 0);
+    std::vector<CString> files;
+    historyFolder = U2W(Settings.SettingsFolder) + CString(_T("\\History\\"));
+    WinUtils::GetFolderFileList(files, historyFolder, _T("history*.xml"));
+    pcrepp::Pcre regExp("history_(\\d+)_(\\d+)", "imcu");
+
+    for (size_t i = 0; i<files.size(); i++) {
+        m_HistoryFiles.push_back(files[i]);
+
+        CString monthLabel = Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(files[i])));
+
+        size_t pos = 0;
+
+        if (regExp.search(WCstringToUtf8(monthLabel), pos)) {
+            std::string yearStr = regExp[1];
+            std::string monthStr = regExp[2];
+            int year = atoi(yearStr.c_str());
+            int month = atoi(monthStr.c_str());
+            monthLabel.Format(_T("%d/%02d"), year, month);
+        } else {
+            monthLabel.Replace(_T("history_"), _T(""));
+            monthLabel.Replace(_T("_"), _T("/"));
+        }
+
+        int newItemIndex = SendDlgItemMessage(IDC_MONTHCOMBO, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)monthLabel);
+        if (newItemIndex >= 0) {
+            SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETITEMDATA, newItemIndex, i);
+        }
+    }
+    int selectedIndex = files.size() - 1;
+    SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETCURSEL, selectedIndex, 0);
 }
 
 LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -339,11 +344,7 @@ LRESULT CHistoryWindow::OnDeleteFileOnServer(WORD wNotifyCode, WORD wID, HWND hW
 
 LRESULT CHistoryWindow::OnMonthChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    int nIndex = SendDlgItemMessage(IDC_MONTHCOMBO, CB_GETCURSEL);
-    if(nIndex == -1) return 0;
-    int historyFileIndex = static_cast<int>(SendDlgItemMessage(IDC_MONTHCOMBO, CB_GETITEMDATA, nIndex));
-    LoadHistoryFile(m_HistoryFiles[historyFileIndex]);
-    m_treeView.SetFocus();
+    SelectedMonthChanged();
     return 0;
 }
         
@@ -364,18 +365,28 @@ void CHistoryWindow::LoadHistoryFile(CString fileName)
     {
         ::EnableWindow(GetDlgItem(IDC_MONTHCOMBO), false);
         ::EnableWindow(GetDlgItem(IDCANCEL), false);
+        ::EnableWindow(GetDlgItem(IDC_CLEARHISTORYBTN), false);
         m_treeView.EnableWindow(false);
         m_treeView.abortLoadingThreads();
     }
 }
 
+void CHistoryWindow::SelectedMonthChanged() {
+    int nIndex = SendDlgItemMessage(IDC_MONTHCOMBO, CB_GETCURSEL);
+    if (nIndex == -1) {
+        m_treeView.ResetContent();
+        return;
+    }
+    int historyFileIndex = static_cast<int>(SendDlgItemMessage(IDC_MONTHCOMBO, CB_GETITEMDATA, nIndex));
+    LoadHistoryFile(m_HistoryFiles[historyFileIndex]);
+    m_treeView.SetFocus();
+}
+
 void CHistoryWindow::threadsFinished()
 {
-    //MessageBoxA(0,IuCoreUtils::toString((int)GetTickCount()).c_str(), "threadsFinished",0);
     m_wndAnimation.ShowWindow(SW_HIDE);
     
-    if(!m_delayedFileName.IsEmpty())
-    {
+    if(!m_delayedFileName.IsEmpty()) {
         SendMessage(WM_MY_OPENHISTORYFILE, reinterpret_cast<WPARAM>(static_cast<LPCTSTR>(m_delayedFileName)));
         //LoadHistoryFile(m_delayedFileName);
         
@@ -388,6 +399,7 @@ void CHistoryWindow::threadsFinished()
     ::EnableWindow(GetDlgItem(IDC_MONTHCOMBO), true);
     m_treeView.EnableWindow(true);
     ::EnableWindow(GetDlgItem(IDCANCEL), true);
+    ::EnableWindow(GetDlgItem(IDC_CLEARHISTORYBTN), true);
 }
 
 void CHistoryWindow::threadsStarted()
@@ -407,5 +419,18 @@ LRESULT CHistoryWindow::OnWmOpenHistoryFile(UINT uMsg, WPARAM wParam, LPARAM lPa
     LPCTSTR fileName = reinterpret_cast<TCHAR*>(wParam);
     //m_treeView.setDownloadingEnabled(false);
     LoadHistoryFile(fileName);
+    return 0;
+}
+
+LRESULT CHistoryWindow::OnBnClickedClearHistoryBtn(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    CClearHistoryDlg dlg;
+    if (dlg.DoModal(m_hWnd) == IDOK) {
+        if (ServiceLocator::instance()->historyManager()->clearHistory(dlg.GetValue())) {
+            LoadMonthList();
+            SelectedMonthChanged();
+            MessageBox(TR("History has been cleared succesfully."), APPNAME, MB_ICONINFORMATION);
+        }
+    }
     return 0;
 }

@@ -69,7 +69,7 @@ class CHistorySession
         std::string m_serverName;
         std::vector<HistoryItem> m_entries;
 };
-
+enum class HistoryClearPeriod { ClearAll, CurrentMonth };
 class CHistoryManager
 {
     public:
@@ -79,7 +79,7 @@ class CHistoryManager
         void setHistoryFileName(const std::string& filepath, const std::string& nameprefix);
         std::shared_ptr<CHistorySession> newSession();
         std::string makeFileName() const;
-
+        bool clearHistory(HistoryClearPeriod period);
     private:
         DISALLOW_COPY_AND_ASSIGN(CHistoryManager);
         std::string m_historyFilePath;

@@ -554,6 +554,21 @@ CString CUpdateManager::generateReport()
     }
     return text;
 }
+
+CString CUpdateManager::generateUpdateMessage() {
+    CString text;
+
+    for (size_t i = 0; i<m_updateList.size(); i++) {
+        time_t t = m_updateList[i].timeStamp();
+        tm * timeinfo = localtime(&t);
+        CString date;
+        date.Format(_T("[%02d.%02d.%04d]"), timeinfo->tm_mday, timeinfo->tm_mon + 1, 1900 + timeinfo->tm_year);
+        text += _T(" * ") + m_updateList[i].displayName() + _T("  ") + date + _T("\r\n\r\n");
+
+    }
+    return text;
+}
+
 void CUpdatePackage::setUpdateStatusCallback(CUpdateStatusCallback * callback)
 {
     m_statusCallback = callback;

@@ -235,7 +235,7 @@ function  UploadFile(FileName, options) {
 		_WriteLog("error","fileSize < 0 ");
 		return 0;
 	}
-	local path = "sandbox/" + userPath + ExtractFileName(FileName);
+	local path = "sandbox/" + userPath;
 	if ( fileSize > 150000000 ) {
 		local chunkCount = ceil(fileSize / chunkSize);
 		local upload_id = null;
@@ -279,7 +279,7 @@ function  UploadFile(FileName, options) {
 			_WriteLog("error","Upload failed");
 			return 0;
 		}
-		url = "https://api-content.dropbox.com/1/commit_chunked_upload/auto/" + path;
+		url = "https://api-content.dropbox.com/1/commit_chunked_upload/auto/" + path+ ExtractFileName(FileName);
 		
 		nm.setUrl(url);
 		signRequest(url, oauth_token,oauth_token_secret);

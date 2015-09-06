@@ -64,6 +64,7 @@ class CHistoryWindow : public CDialogImpl <CHistoryWindow>,
             COMMAND_ID_HANDLER(ID_DELETEFILEONSERVER, OnDeleteFileOnServer)
             COMMAND_HANDLER(IDC_MONTHCOMBO, CBN_SELCHANGE, OnMonthChanged)
             COMMAND_HANDLER(IDC_DOWNLOADTHUMBS, BN_CLICKED, OnDownloadThumbsCheckboxChecked)
+            COMMAND_HANDLER(IDC_CLEARHISTORYBTN, BN_CLICKED, OnBnClickedClearHistoryBtn)
             CHAIN_MSG_MAP(CDialogResize<CHistoryWindow>)
             REFLECT_NOTIFICATIONS()
         END_MSG_MAP()
@@ -88,6 +89,7 @@ class CHistoryWindow : public CDialogImpl <CHistoryWindow>,
         LRESULT OnDownloadThumbsCheckboxChecked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnWmOpenHistoryFile(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         void Show();
+        void LoadMonthList();
         void FillList(CHistoryReader* mgr);
         CHistoryTreeControl m_treeView;
         CHistoryReader* m_historyReader;
@@ -101,6 +103,7 @@ class CHistoryWindow : public CDialogImpl <CHistoryWindow>,
         CString historyFolder;
         CWizardDlg* wizardDlg_;
         void LoadHistoryFile(CString fileName);
+        void SelectedMonthChanged();
         CPictureExWnd m_wndAnimation;
         // Context menu callbacks
         LRESULT OnOpenInBrowser(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -110,6 +113,7 @@ class CHistoryWindow : public CDialogImpl <CHistoryWindow>,
         LRESULT OnEditFileOnServer(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnDeleteFileOnServer(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnMonthChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnBnClickedClearHistoryBtn(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 };
 
 #endif // HISTORYWINDOW_H

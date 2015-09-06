@@ -173,20 +173,8 @@ LRESULT CFloatingWindow::OnTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
     }
     else if (LOWORD(lParam) == NIN_BALLOONUSERCLICK)
     {
-        std::vector<CUrlListItem> items;
-        CUrlListItem it;
-        if (lastUploadedItem_) {
-            UploadResult* uploadResult = lastUploadedItem_->uploadResult();
-            it.ImageUrl = Utf8ToWstring(uploadResult->directUrl).c_str();
-            it.ImageUrlShortened = Utf8ToWstring(uploadResult->directUrlShortened).c_str();
-            it.ThumbUrl = Utf8ToWstring(uploadResult->thumbUrl).c_str();
-            it.DownloadUrl = Utf8ToWstring(uploadResult->downloadUrl).c_str();
-            it.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
-            items.push_back(it);
-            if (it.ImageUrl.IsEmpty() && it.DownloadUrl.IsEmpty())
-                return 0;
-            CResultsWindow rp(wizardDlg_, items, false);
-            rp.DoModal(m_hWnd);
+        if (balloonClickFunction_) {
+            balloonClickFunction_();
         }
     }
     return 0;
@@ -666,6 +654,11 @@ void CFloatingWindow::removeStatusText() {
     setStatusText(CString());
 }
 
+void CFloatingWindow::ShowBaloonTip(const CString& text, const CString& title, unsigned timeout, const std::function<void()>& onClick) {
+    balloonClickFunction_ = onClick;
+    CTrayIconImpl<CFloatingWindow>::ShowBaloonTip(text, title, timeout);
+}
+
 void CFloatingWindow::startIconAnimation() {    
     animationEnabled_ = true;
     iconAnimationCounter_ = 0;
@@ -677,6 +670,24 @@ void CFloatingWindow::stopIconAnimation() {
     animationEnabled_ = false;
     KillTimer(kIconAnimationTimer);
     UpdateIcon(m_hIconSmall);
+}
+
+void CFloatingWindow::showLastUploadedCode() {
+    std::vector<CUrlListItem> items;
+    CUrlListItem it;
+    if (lastUploadedItem_) {
+        UploadResult* uploadResult = lastUploadedItem_->uploadResult();
+        it.ImageUrl = Utf8ToWstring(uploadResult->directUrl).c_str();
+        it.ImageUrlShortened = Utf8ToWstring(uploadResult->directUrlShortened).c_str();
+        it.ThumbUrl = Utf8ToWstring(uploadResult->thumbUrl).c_str();
+        it.DownloadUrl = Utf8ToWstring(uploadResult->downloadUrl).c_str();
+        it.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
+        items.push_back(it);
+        if (it.ImageUrl.IsEmpty() && it.DownloadUrl.IsEmpty())
+            return ;
+        CResultsWindow rp(wizardDlg_, items, false);
+        rp.DoModal(m_hWnd);
+    }
 }
 
 /*
@@ -753,7 +764,7 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
             setStatusText(text, kStatusHideTimeout);
         } else {
             CString statusText = TR("Unable to shorten the link...");
-            ShowBaloonTip(TR("View log for details."), statusText, 17000);
+            ShowBaloonTip(TR("View log for details."), statusText, 17000, [&] {LogWindow.Show(); });
             setStatusText(statusText, kStatusHideTimeout);
         }
     } else {
@@ -773,7 +784,7 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
 
         } else {
             CString statusText = TR("Could not upload screenshot :(");
-            ShowBaloonTip(TR("View log for details."), statusText, 17000);
+            ShowBaloonTip(TR("View log for details."), statusText, 17000, [&] {LogWindow.Show(); });
             setStatusText(statusText, kStatusHideTimeout);
         }
         
@@ -793,7 +804,8 @@ void CFloatingWindow::ShowImageUploadedMessage(const CString& url) {
     WinUtils::CopyTextToClipboard(url);
     CString trimmedUrl = TrimString(url, 70);
     ShowBaloonTip(trimmedUrl + CString("\r\n")
-        + TR("(the link has been copied to the clipboard)")+ + CString("\r\n") + TR("Click on this message to view details...") , TR("Screenshot was uploaded"), 17000);
+        + TR("(the link has been copied to the clipboard)")+ + CString("\r\n") + TR("Click on this message to view details...") , 
+        TR("Screenshot was uploaded"), 17000, [this] {showLastUploadedCode(); });
     CString statusText = TR("Screenshot was uploaded") + CString(_T("\r\n")) + trimmedUrl;
     setStatusText(statusText, kStatusHideTimeout);
 }

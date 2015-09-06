@@ -27,6 +27,8 @@
 #include <time.h>
 #include <sstream>
 #include "Utils/GlobalMutex.h"
+#include <boost/filesystem.hpp>
+#include <Core/3rdpart/pcreplusplus.h>
 
 class CHistoryReader_impl
 {
@@ -206,6 +208,41 @@ std::string CHistoryManager::makeFileName() const
     tm * timeinfo = localtime(&t);
     std::string fileName = m_historyFilePath + m_historyFileNamePrefix +"_" + IuCoreUtils::toString(1900+timeinfo->tm_year)+"_" + IuCoreUtils::toString(timeinfo->tm_mon+1) + ".xml";
     return fileName;
+}
+
+bool CHistoryManager::clearHistory(HistoryClearPeriod period) {
+    IuCoreUtils::ZGlobalMutex mutex("IuHistoryFileSessionMutex");
+    std::vector<std::string> files;
+    std::string historyFolder = m_historyFilePath;
+    boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
+
+    pcrepp::Pcre regexp("^history_(\\d+)_(\\d+)\\.xml$");
+    time_t t = time(nullptr);
+    tm * timeinfo = localtime(&t);
+    int currentMonth = timeinfo->tm_mon + 1;
+    int currentYear = 1900 + timeinfo->tm_year;
+
+    for (boost::filesystem::directory_iterator i(historyFolder); i != end_itr; ++i) {
+        // Skip if not a file
+        if (!boost::filesystem::is_regular_file(i->status())) {
+            continue;
+        }
+
+        // Skip if no match
+        if (!regexp.search(i->path().filename().string())) {
+            continue;
+        }
+        int year = atoi(regexp[1].c_str());
+        int month = atoi(regexp[2].c_str());
+        if (period == HistoryClearPeriod::ClearAll || (period == HistoryClearPeriod::CurrentMonth && month == currentMonth && year == currentYear)) {
+            std::string fileName = i->path().string();
+            bool res = IuCoreUtils::RemoveFile(fileName);
+            if (!res) {
+                LOG(ERROR) << "Unable to delete file " << fileName;
+            }
+        }
+    }
+    return true;
 }
 
 // class CHistoryReader

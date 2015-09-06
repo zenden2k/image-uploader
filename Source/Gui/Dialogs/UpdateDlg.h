@@ -44,6 +44,7 @@ class CUpdateDlg :
             public:
                 virtual bool CanShowWindow() = 0;
                 virtual void UpdateAvailabilityChanged(bool Available) = 0;
+                virtual void ShowUpdateMessage(const CString& msg) = 0;
         };
     protected:
         BEGIN_MSG_MAP(CUpdateDlg)

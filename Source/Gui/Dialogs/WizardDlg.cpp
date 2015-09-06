@@ -19,7 +19,7 @@
 */
 #include "WizardDlg.h"
 
-#include <io.h>
+
 #include "Core/Images/ImageConverter.h"
 #include "Core/ServiceLocator.h"
 #include "Core/HistoryManager.h"
@@ -58,6 +58,17 @@
 #include "Func/MediaInfoHelper.h"
 
 using namespace Gdiplus;
+namespace
+{
+
+struct TaskDispatcherMessageStruct {
+    TaskDispatcherTask callback;
+    bool async;
+    //Object* sender;
+};
+
+}
+
 // CWizardDlg
 CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
 { 
@@ -77,6 +88,7 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
     Settings.setEngineList(_EngineList);
     m_bScreenshotFromTray = false;
     ServiceLocator::instance()->setEngineList(&m_EngineList);
+    ServiceLocator::instance()->setTaskDispatcher(this);
     serversChanged_ = false;
     scriptsManager_ = new ScriptsManager();
     IUploadErrorHandler* uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
@@ -260,6 +272,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
             updateDlg->Create(m_hWnd);
         }
     }
+
     return 0;  // Let the system set the focus
 }
 
@@ -639,6 +652,19 @@ WindowHandle CWizardDlg::getHandle() {
 
 WindowNativeHandle CWizardDlg::getNativeHandle() {
     return m_hWnd;
+}
+
+void CWizardDlg::ShowUpdateMessage(const CString& msg) {
+    if ((CurPage == 2 || CurPage == 0) && !IsWindowVisible() && IsWindowEnabled() && floatWnd.m_hWnd) {
+        CString title;
+        title.Format(TR("%s - Updates available"), static_cast<LPCTSTR>(APPNAME));
+        floatWnd.ShowBaloonTip(msg, title, 8000, [&] {
+            CreateUpdateDlg();
+            if (!updateDlg->IsWindowVisible()) {
+                updateDlg->ShowModal(m_hWnd);
+            }
+        });
+    }
 }
 
 // Функция генерации заголовка страницы (если он нужен)
@@ -1086,145 +1112,6 @@ void CWizardDlg::AddFolder(LPCTSTR szFolder, bool SubDirs )
     FolderAdd.Do(Paths, true, SubDirs);
 }
 
-CFolderAdd::CFolderAdd(CWizardDlg *WizardDlg): m_pWizardDlg(WizardDlg)
-{
-    m_bSubDirs = true; 
-}
-
-void CFolderAdd::Do(CStringList &Paths, bool ImagesOnly, bool SubDirs)
-{
-    count = 0;
-    m_bImagesOnly = ImagesOnly;
-    RECT rc={0,0,0,0};
-    m_bSubDirs = SubDirs;
-    if (!dlg.m_hWnd) {
-        dlg.Create(m_pWizardDlg->m_hWnd, rc);
-    }
-    dlg.SetWindowTitle(CString(ImagesOnly?TR("Searching for picture files..."):TR("Collecting files...")));
-    m_Paths.RemoveAll();
-    m_Paths.Copy(Paths);
-    findfile = 0;
-    ZeroMemory(&wfd, sizeof(wfd));
-
-    Start(THREAD_PRIORITY_BELOW_NORMAL);
-}
-
-int CFolderAdd::ProcessDir( CString currentDir, bool bRecursive /* = true  */ )
-{
-    CString strWildcard;
-    
-     dlg.SetInfo(CString(TR("Processing folder:")), currentDir);
-    strWildcard = currentDir + "\\*";
-
-    _tfinddata_t s_Dir;
-    intptr_t hDir;
-  
-    if( (hDir = _tfindfirst( strWildcard, &s_Dir )) == -1L )
-        
-         return 1;
-
-    do
-    {
-         if(dlg.NeedStop()) { _findclose( hDir ); return 0;}
-
-        if( s_Dir.name[ 0 ] != '.'  && ( s_Dir.attrib & _A_SUBDIR ) && bRecursive == true )
-        {
-            ProcessDir( currentDir + '\\' + s_Dir.name, bRecursive );
-        }
-        else if ( s_Dir.name[ 0 ] != '.' )
-          {
-                if(!m_bImagesOnly || IuCommonFunctions::IsImage(s_Dir.name))
-                {
-                    CWizardDlg::AddImageStruct ais;
-                    ais.show = !m_pWizardDlg->QuickUploadMarker;
-                    CString name = CString(currentDir) + CString(_T("\\"))+ CString( s_Dir.name);
-                    ais.RealFileName = name;
-                    if(SendMessage(m_pWizardDlg->m_hWnd, WM_MY_ADDIMAGE,(WPARAM) &ais,0 ))
-                        count++;
-                }
-          }
-     } while( _tfindnext( hDir, &s_Dir ) == 0 );
-
-    _findclose( hDir );
-
-    return 0;
-}
-
-DWORD CFolderAdd::Run()
-{
-    EnableWindow(m_pWizardDlg->m_hWnd, false);
-    for(size_t i=0; i<m_Paths.GetCount(); i++)
-    {
-        CString CurPath = m_Paths[i];
-        if(WinUtils::IsDirectory(CurPath))
-            ProcessDir(CurPath, m_bSubDirs);
-        else 
-            if(!m_bImagesOnly || IuCommonFunctions::IsImage(CurPath))
-            {
-                CWizardDlg::AddImageStruct ais;
-                ais.show = !m_pWizardDlg->QuickUploadMarker;
-                CString name = CurPath;
-                ais.RealFileName = CurPath;
-                if(SendMessage(m_pWizardDlg->m_hWnd, WM_MY_ADDIMAGE,(WPARAM) &ais,0 ))
-        
-                count++;
-            }
-        if(dlg.NeedStop()) break;
-    }
-
-    dlg.Hide();
-    EnableWindow(m_pWizardDlg->m_hWnd, true);
-
-    if(!count) 
-        MessageBox(m_pWizardDlg->m_hWnd, m_bImagesOnly?TR("No pictures were found."):TR("No files were found."), APPNAME, MB_ICONINFORMATION);
-    else     
-    {
-        if( m_pWizardDlg->QuickUploadMarker)
-        {
-
-            m_pWizardDlg->ShowPage(4);
-        }
-        else
-        {
-
-            m_pWizardDlg->ShowPage(2);
-
-            ((CMainDlg*) m_pWizardDlg->Pages[2])->ThumbsView.LoadThumbnails();
-        }
-    }
-    dlg.DestroyWindow();
-    dlg.m_hWnd = NULL;
-    return 0;
-}
-
-int CFolderAdd::GetNextImgFile(LPTSTR szBuffer, int nLength)
-{
-    TCHAR szBuffer2[MAX_PATH], TempPath[256];
-    
-    GetTempPath(256, TempPath);
-    wsprintf(szBuffer2,_T("%s*.*"), (LPCTSTR)m_szPath);
-    
-    if(!findfile)
-    {
-        findfile=FindFirstFile(szBuffer2, &wfd);
-        if(!findfile) goto error;
-    }
-    else 
-    {
-        if(!FindNextFile(findfile, &wfd))
-            goto error;
-
-    }
-    if(lstrlen(wfd.cFileName) < 1) goto error;
-    lstrcpyn(szBuffer, wfd.cFileName, nLength);
-
-    return TRUE;
-
-    error:
-    if(findfile) FindClose(findfile);
-    return FALSE;
-}
-
 bool CWizardDlg::AddImage(const CString &FileName, const CString &VirtualFileName, bool Show)
 {
     CreatePage(2);
@@ -1285,7 +1172,17 @@ LRESULT     CWizardDlg::OnWmShowPage(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPar
     ShowPage(PageIndex);
     return 0;
 }
-    
+
+LRESULT CWizardDlg::OnTaskDispatcherMsg(UINT, WPARAM wParam, LPARAM, BOOL&) {
+    TaskDispatcherMessageStruct* msg = reinterpret_cast<TaskDispatcherMessageStruct*>(wParam);
+    msg->callback();
+    if (msg->async) {
+        delete msg;
+        msg = nullptr;
+    }
+    return 0;
+}
+
 bool CWizardDlg::funcAddImages(bool AnyFiles)
 {
     TCHAR Buf[MAX_PATH * 4];
@@ -1772,7 +1669,7 @@ void CWizardDlg::UpdateAvailabilityChanged(bool Available)
 {
     if(Available)
     {
-        TRC(IDC_UPDATESLABEL, "Updates are available");
+        //TRC(IDC_UPDATESLABEL, "Updates are available");
     }
 }
     
@@ -2033,4 +1930,18 @@ LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     popupMenu.TrackPopupMenuEx(TPM_LEFTALIGN|TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
 
     return 0;
+}
+
+void CWizardDlg::runInGuiThread(TaskDispatcherTask&& task, bool async) {
+    if (async) {
+        TaskDispatcherMessageStruct* msg = new TaskDispatcherMessageStruct();
+        msg->callback = std::move(task);
+        msg->async = true;
+        PostMessage(WM_TASKDISPATCHERMSG, reinterpret_cast<WPARAM>(msg), 0);
+    } else {
+        TaskDispatcherMessageStruct msg;
+        msg.callback = std::move(task);
+        msg.async = false;
+        SendMessage(WM_TASKDISPATCHERMSG, reinterpret_cast<WPARAM>(&msg), 0);
+    }
 }

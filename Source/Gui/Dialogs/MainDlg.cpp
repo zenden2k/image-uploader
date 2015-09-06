@@ -195,7 +195,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
             subMenu.CreatePopupMenu();
 
             subMenu.AppendMenu(MFT_STRING, IDM_COPYFILEASDATAURI, TR_CONST("data:URI"));
-            subMenu.AppendMenu(MFT_STRING, IDM_COPYFILEASDATAURIHTML, TR_CONST("data:URI (html)"));
+            subMenu.AppendMenu(MFT_STRING, IDM_COPYFILEASDATAURIHTML, TR_CONST("data:URI (HTML)"));
 
             MENUITEMINFO miiNew = { 0 };
             miiNew.cbSize = sizeof(MENUITEMINFO);

@@ -621,7 +621,7 @@ function GetFolderAccessTypeList()
 	return a;
 }
 
-/*function GetServerParamList()
+function GetServerParamList()
 {
 	return 
 	{
@@ -633,4 +633,4 @@ function GetFolderAccessTypeList()
 		OAuthLogin = "OAuthLogin"
 		
 	};
-}*/
+}

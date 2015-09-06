@@ -35,13 +35,15 @@
 #include "Core/Settings.h"
 #include "Core/ProgramWindow.h"
 #include "Core/WebServer/WebServer.h"
+#include "Core/TaskDispatcher.h"
+#include "FolderAddDlg.h"
 
 #define ID_PASTE 9888
 #define ID_HOTKEY_BASE 10000
 #define WM_MY_ADDIMAGE WM_USER + 222
 #define WM_MY_SHOWPAGE WM_USER + 223
 #define WM_MY_EXIT WM_USER + 224
-
+#define WM_TASKDISPATCHERMSG WM_USER + 225
 
 // CWizardDlg
 class CFolderAdd;
@@ -49,41 +51,21 @@ class CWizardPage;
 class CWizardDlg;
 class CUpdateDlg;
 
-class CFolderAdd: public CThreadImpl<CFolderAdd>
-{
-    public:
-        CFolderAdd(CWizardDlg *WizardDlg);
-        void Do(CStringList &Paths, bool ImagesOnly, bool SubDirs  = false);
-        DWORD Run();
-    private:
-        int count;
-        CStringList m_Paths;
-        bool m_bSubDirs;
-        bool m_bImagesOnly;
-        CWizardDlg *m_pWizardDlg;
-        TCHAR m_szPath[MAX_PATH];
-        WIN32_FIND_DATA wfd;
-        HANDLE findfile;
-        CStatusDlg dlg;
-        int GetNextImgFile(LPTSTR szBuffer, int nLength);
-        int ProcessDir( CString currentDir, bool bRecursive /* = true  */ );
-};
-class CMyFolderDialog: public CFolderDialogImpl<CMyFolderDialog>
-{
+class CMyFolderDialog : public CFolderDialogImpl<CMyFolderDialog> {
 public:
     void OnInitialized();
     static BOOL CALLBACK DialogProc(
 
-    HWND hwndDlg,    // handle to dialog box
-    UINT uMsg,    // message
-    WPARAM wParam,    // first message parameter
-    LPARAM lParam     // second message parameter
-   );
+        HWND hwndDlg,    // handle to dialog box
+        UINT uMsg,    // message
+        WPARAM wParam,    // first message parameter
+        LPARAM lParam     // second message parameter
+        );
     DLGPROC OldProc;
-    public:
-        CMyFolderDialog(HWND hWnd);
-        bool m_bSubdirs;
-        HWND SubdirsCheckbox;
+public:
+    CMyFolderDialog(HWND hWnd);
+    bool m_bSubdirs;
+    HWND SubdirsCheckbox;
 
 };
 extern TCHAR MediaInfoDllPath[MAX_PATH];
@@ -94,7 +76,8 @@ class CWizardDlg :
     public CDialogImpl<CWizardDlg>    , public CUpdateUI<CWizardDlg>,
         public CMessageFilter, public CIdleHandler, public IDropTarget, public CRegionSelectCallback,
         public CUpdateDlg::CUpdateDlgCallback,
-        public IProgramWindow
+        public IProgramWindow,
+        public ITaskDispatcher
 {
 public:
     struct AddImageStruct
@@ -103,6 +86,7 @@ public:
         bool show;
     };
 
+    void runInGuiThread(TaskDispatcherTask&& task, bool async) override;
     CWizardDlg();
     virtual ~CWizardDlg();
     CStringList m_Paths;
@@ -123,6 +107,7 @@ public:
         MESSAGE_HANDLER(WM_MY_ADDIMAGE, OnAddImages)
         MESSAGE_HANDLER(WM_MY_SHOWPAGE, OnWmShowPage)
         MESSAGE_HANDLER(WM_MY_EXIT, OnWmMyExit)
+        MESSAGE_HANDLER(WM_TASKDISPATCHERMSG, OnTaskDispatcherMsg)
         
         MESSAGE_HANDLER(WM_ENABLE,OnEnable)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
@@ -147,6 +132,7 @@ public:
     LRESULT OnAddImages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnWmShowPage(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnTaskDispatcherMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -172,6 +158,7 @@ public:
     bool serversChanged() const;
     virtual WindowHandle getHandle() override;
     virtual WindowNativeHandle getNativeHandle() override;
+    virtual void ShowUpdateMessage(const CString& msg) override;
 protected:
     ServerProfile sessionImageServer_, sessionFileServer_;
     bool serversChanged_;

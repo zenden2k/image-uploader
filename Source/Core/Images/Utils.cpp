@@ -1098,7 +1098,7 @@ gr.DrawImage(&temp, destRect,(int)realTextBounds.X, (int)realTextBounds.Y,(int)(
 bool CopyDataToClipboardInDataUriFormat(ULONGLONG dataSize, std::string mimeType, bool html, std::function<size_t(void*, size_t)> readCallback) {
     ULONGLONG offset = 0;
     ULONGLONG leftBytes = dataSize;
-    const ULONG buf_size = 1024;
+    const ULONG buf_size = 1024 * 32;
     BYTE buffer[buf_size];
 
     const char* footer = "\" alt=\"\" />";
@@ -1126,7 +1126,7 @@ bool CopyDataToClipboardInDataUriFormat(ULONGLONG dataSize, std::string mimeType
     }
 
     base64_state state;
-    base64_stream_encode_init(&state, BASE64_FORCE_PLAIN);
+    base64_stream_encode_init(&state, 0);
     char* encodedData = reinterpret_cast<char*>(GlobalLock(hglbCopy));
     char* encodedDataCur = encodedData;
 
@@ -1196,12 +1196,14 @@ bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int
         return false;
     }
     
-    return CopyDataToClipboardInDataUriFormat(fileSize, mimeType, html, [&](void* buffer, size_t size) -> size_t {
+    bool res = CopyDataToClipboardInDataUriFormat(fileSize, mimeType, html, [&](void* buffer, size_t size) -> size_t {
         if (feof(f)) {
             return 0;
         }
         return fread(buffer, 1, size, f);
     });
+    fclose(f);
+    return res;
 }
 
 bool CopyBitmapToClipboardInDataUriFormat(Bitmap* bm, int Format, int Quality, bool html) {

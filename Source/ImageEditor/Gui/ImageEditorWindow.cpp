@@ -145,7 +145,7 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat)
         CopyBitmapToClipboard(m_hWnd, dc, resultingBitmap_.get(), true);
         return true;
     } else if (clipboardFormat == ClipboardFormat::DataUri || clipboardFormat == ClipboardFormat::DataUriHtml) {
-        CopyBitmapToClipboardInDataUriFormat(resultingBitmap_.get(), 0, 85, clipboardFormat == ClipboardFormat::DataUriHtml);
+        CopyBitmapToClipboardInDataUriFormat(resultingBitmap_.get(), 1, 85, clipboardFormat == ClipboardFormat::DataUriHtml);
         return true;
     }
     return false;

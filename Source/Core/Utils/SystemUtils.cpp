@@ -41,6 +41,9 @@ static inline unsigned long long _xgetbv(unsigned int index){
 
 #endif
 #include <immintrin.h>
+#ifndef _XCR_XFEATURE_ENABLED_MASK
+#define _XCR_XFEATURE_ENABLED_MASK
+#endif
 
 namespace IuCoreUtils
 {
