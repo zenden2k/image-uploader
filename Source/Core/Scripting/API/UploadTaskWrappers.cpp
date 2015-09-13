@@ -1,8 +1,9 @@
 ﻿#include "UploadTaskWrappers.h"
+
 #include "Core/Scripting/Squirrelnc.h"
-#include <Core/Upload/FileUploadTask.h>
+#include "Core/Upload/FileUploadTask.h"
 #include <boost/current_function.hpp>
-#include <Core/Upload/UrlShorteningTask.h>
+#include "Core/Upload/UrlShorteningTask.h"
 
 namespace ScriptAPI {;
 

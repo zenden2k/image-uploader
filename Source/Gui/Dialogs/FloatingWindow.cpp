@@ -361,6 +361,11 @@ LRESULT CFloatingWindow::OnShowAppWindow(WORD wNotifyCode, WORD wID, HWND hWndCt
     return 0;
 }
 
+LRESULT CFloatingWindow::OnOpenScreenshotsFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    wizardDlg_->executeFunc(_T("open_screenshot_folder"));
+    return 0;
+}
+
 LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     if (!IsWindowEnabled())
@@ -434,6 +439,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         MyInsertMenu(TrayMenu, i++, IDM_SHORTENURL, TR("Shorten a link"));
         MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_SHOWAPPWINDOW, TR("Show program's window"));
+        MyInsertMenu(TrayMenu, i++, IDM_OPENSCREENSHOTSFOLDER, TR("Open screenshots folder"));
         MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_SETTINGS, TR("Settings") + CString(_T("...")));
         MyInsertMenu(TrayMenu, i++, 0, 0);

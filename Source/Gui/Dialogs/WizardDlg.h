@@ -91,6 +91,7 @@ public:
     virtual ~CWizardDlg();
     CStringList m_Paths;
     enum { IDD = IDD_WIZARDDLG };
+    enum { IDM_OPENSCREENSHOTS_FOLDER = 9889 };
     virtual BOOL PreTranslateMessage(MSG* pMsg);
     virtual BOOL OnIdle();
     CString m_bCurrentFunc;
@@ -112,6 +113,7 @@ public:
         MESSAGE_HANDLER(WM_ENABLE,OnEnable)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
         COMMAND_HANDLER(IDC_UPDATESLABEL, BN_CLICKED, OnUpdateClicked)
+        COMMAND_HANDLER(IDM_OPENSCREENSHOTS_FOLDER, BN_CLICKED, OnOpenScreenshotFolderClicked)
         
         COMMAND_HANDLER(ID_PASTE, 1, OnPaste)
         COMMAND_RANGE_HANDLER(ID_HOTKEY_BASE, ID_HOTKEY_BASE +100, OnLocalHotkey);
@@ -143,6 +145,7 @@ public:
     LRESULT OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnDocumentation(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnShowLog(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnOpenScreenshotFolderClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     void CloseDialog(int nVal);
     bool DragndropEnabled;
     int CurPage;
@@ -207,6 +210,7 @@ public:
     bool funcDownloadImages();
     bool funcReuploadImages();
     bool funcShortenUrl();
+    bool funcOpenScreenshotFolder();
     // end of functions
     bool executeFunc(CString funcName);
 

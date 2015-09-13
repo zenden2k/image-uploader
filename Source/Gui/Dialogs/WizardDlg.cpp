@@ -56,6 +56,7 @@
 #include "Func/myutils.h"
 #include "Core/ServiceLocator.h"
 #include "Func/MediaInfoHelper.h"
+#include "Core/Utils/DesktopUtils.h"
 
 using namespace Gdiplus;
 namespace
@@ -1080,6 +1081,11 @@ LRESULT CWizardDlg::OnShowLog(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bH
         return 0;
 }
 
+LRESULT CWizardDlg::OnOpenScreenshotFolderClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    funcOpenScreenshotFolder();
+    return 0;
+}
+
 void CWizardDlg::PasteBitmap(HBITMAP Bmp)
 {
     if(CurPage!=0 && CurPage!=2) return;
@@ -1306,6 +1312,11 @@ bool CWizardDlg::executeFunc(CString funcBody)
         return funcShortenUrl();
     else if(funcName == _T("mediainfo"))
         return funcMediaInfo();
+
+    else if (funcName == _T("mediainfo"))
+        return funcMediaInfo();
+    else if (funcName == _T("open_screenshot_folder"))
+        return funcOpenScreenshotFolder();
 
     return false;
 }
@@ -1908,6 +1919,20 @@ bool CWizardDlg::funcShortenUrl() {
     return false;
 }
 
+bool CWizardDlg::funcOpenScreenshotFolder() {
+    CString screenshotFolder = Settings.ScreenshotSettings.Folder;
+
+    if (screenshotFolder.IsEmpty()) {
+        screenshotFolder = IuCommonFunctions::IUTempFolder;
+    }
+
+    if (!screenshotFolder.IsEmpty()) {
+        DesktopUtils::ShellOpenUrl(W2U(screenshotFolder));
+    }
+
+    return false;
+}
+
 LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
     // TODO: Add your control notification handler code here
@@ -1920,7 +1945,9 @@ LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     popupMenu.AppendMenu(MF_STRING, IDC_ABOUT, TR("About..."));
     popupMenu.AppendMenu(MF_STRING, IDC_DOCUMENTATION, TR("Documentation"));
     popupMenu.AppendMenu(MF_STRING, IDC_UPDATESLABEL, TR("Check for Updates"));
-    popupMenu.AppendMenu(MF_SEPARATOR, 99999,_T(""));
+    popupMenu.AppendMenu(MF_SEPARATOR, 99998,_T(""));
+    popupMenu.AppendMenu(MF_STRING, IDM_OPENSCREENSHOTS_FOLDER, TR("Open screenshots folder"));
+    popupMenu.AppendMenu(MF_SEPARATOR, 99999, _T(""));
     popupMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, TR("Show Error Log"));
 
     TPMPARAMS excludeArea;

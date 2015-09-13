@@ -182,6 +182,7 @@ CHotkeyList::CHotkeyList()
     AddItem(TR("Capture Selected Object"),_T("windowhandlescreenshot"), IDM_WINDOWHANDLESCREENSHOT);
     AddItem(TR("Freehand Capture"),_T("freeformscreenshot"), IDM_FREEFORMSCREENSHOT);
     AddItem(TR("Show program's window"),_T("showmainwindow"), IDM_SHOWAPPWINDOW);
+    AddItem(TR("Open screenshots folder"), _T("open_screenshot_folder"), IDM_OPENSCREENSHOTSFOLDER);
     AddItem(TR("Settings"),_T("settings"), IDM_SETTINGS);
     AddItem(TR("Paste"),_T("paste"), IDM_PASTEFROMCLIPBOARD,0x56, MOD_CONTROL); // Ctrl+V keyboard shortcut
     AddItem(TR("Images from web"),_T("downloadimages"), IDM_PASTEFROMWEB); // Ctrl+V keyboard shortcut

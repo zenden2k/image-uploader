@@ -101,10 +101,21 @@ int fseek_64(FILE* stream, int64_t offset, int origin)
 bool FileExists(const std::string& fileName)
 {
     #ifdef WIN32
-        if(GetFileAttributes(Utf8ToWstring(fileName).c_str())== (unsigned long)-1) return false;
+    DWORD res = GetFileAttributes(Utf8ToWstring(fileName).c_str());
+    if (res == static_cast<DWORD>(-1)) {
+        switch (GetLastError()) {
+        case ERROR_FILE_NOT_FOUND:
+            return false;
+        case ERROR_PATH_NOT_FOUND:
+            return false;
+        case ERROR_ACCESS_DENIED:
+            return true;
+        default:
+            return false;
+        }
+    }
     #else
         return boost::filesystem::exists(fileName);
-        //if(getFileSize(fileName) == -1) return false;
     #endif
     return true;
 }
