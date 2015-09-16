@@ -20,7 +20,6 @@ public:
     void abort();
     bool isRunning();
     void setFrameCount(int frameCount);
-
     fastdelegate::FastDelegate3<const std::string&, int64_t, AbstractImage*> onFrameGrabbed;
     fastdelegate::FastDelegate0<void> onFinished;
 private:

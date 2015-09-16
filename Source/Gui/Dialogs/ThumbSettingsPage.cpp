@@ -127,50 +127,13 @@ bool CThumbSettingsPage::Apply()
 
 LRESULT  CThumbSettingsPage::OnBnClickedNewThumbnail(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    std::string fileName = getSelectedThumbnailFileName();
-    if(fileName.empty())
-        return 0;
-    std::string newName = "copy_" + IuCoreUtils::ExtractFileNameNoExt(fileName);
-    CInputDialog dlg(TR("Input Box"), TR("Enter new thumbnail preset name:"), Utf8ToWCstring(newName));
-    if(dlg.DoModal() == IDOK)
-    {
-        newName = WCstringToUtf8(dlg.getValue());
-    }
-    else return 0;
-    std::string srcFolder = IuCoreUtils::ExtractFilePath(fileName) +"/";
-    std::string destination = srcFolder + newName + ".xml";
-    if(IuCoreUtils::FileExists(destination))
-    {
-        MessageBox(TR("Profile with such name already exists!"), APPNAME, MB_ICONERROR);
-        return 0;
-    }
-    Thumbnail * thumb = 0;
-    if(thumb_cache_.count(fileName)) {
-    
-        thumb =  thumb_cache_[fileName];
-    } else {
-        thumb = new Thumbnail();
-        thumb->LoadFromFile(fileName);
-    }
-    std::string sprite = thumb->getSpriteFileName();
-    thumb->setSpriteFileName(newName + '.' + IuCoreUtils::ExtractFileExt(sprite));
-    if ( ( sprite.empty() || IuCoreUtils::copyFile(sprite,srcFolder + newName + '.' + IuCoreUtils::ExtractFileExt(sprite))) && IuCoreUtils::copyFile(fileName, destination) && thumb->SaveToFile(destination) ) 
-    {
-        GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(newName) );
-        
-    }
-    SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1), (LPARAM)(LPCTSTR)Utf8ToWCstring(newName));
-    GuiTools::EnableDialogItem(m_hWnd, IDC_EDITTHUMBNAILPRESET, true);
-    showSelectedThumbnailPreview();
+    CreateNewThumbnail();
     return 0;
 }
 
 LRESULT CThumbSettingsPage::OnThumbComboChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    std::string fileName = getSelectedThumbnailName();
-    bool isStandartThumbnail = ( fileName == "default" || fileName == "classic" || fileName == "classic2" || fileName == "flat"
-        || fileName == "transp");
-    GuiTools::EnableDialogItem(m_hWnd, IDC_EDITTHUMBNAILPRESET, !isStandartThumbnail);
+
 
     showSelectedThumbnailPreview();
     return 0;
@@ -178,7 +141,17 @@ LRESULT CThumbSettingsPage::OnThumbComboChanged(WORD wNotifyCode, WORD wID, HWND
 
 LRESULT  CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    std::string fileName = getSelectedThumbnailFileName();
+    std::string fileName = getSelectedThumbnailName();
+    bool isStandartThumbnail = (fileName == "default" || fileName == "classic" || fileName == "classic2" || fileName == "flat"
+        || fileName == "transp");
+
+    if (isStandartThumbnail) {
+        // User should create copy of default thumbnail preset first
+        if (!CreateNewThumbnail()) {
+            return 0;
+        }
+    }
+    fileName = getSelectedThumbnailFileName();
     std::auto_ptr<Thumbnail> autoPtrThumb;
     Thumbnail * thumb = 0;
     if(thumb_cache_.count(fileName))
@@ -265,6 +238,41 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
 
     //delete toUse;
     delete bm;
+}
+
+bool CThumbSettingsPage::CreateNewThumbnail() {
+    std::string fileName = getSelectedThumbnailFileName();
+    if (fileName.empty())
+        return false;
+    std::string newName = "copy_" + IuCoreUtils::ExtractFileNameNoExt(fileName);
+    CInputDialog dlg(TR("Input Box"), TR("Enter new thumbnail preset name:"), Utf8ToWCstring(newName));
+    if (dlg.DoModal() == IDOK) {
+        newName = WCstringToUtf8(dlg.getValue());
+    } else return 0;
+    std::string srcFolder = IuCoreUtils::ExtractFilePath(fileName) + "/";
+    std::string destination = srcFolder + newName + ".xml";
+    if (IuCoreUtils::FileExists(destination)) {
+        MessageBox(TR("Profile with such name already exists!"), APPNAME, MB_ICONERROR);
+        return false;
+    }
+    Thumbnail * thumb = 0;
+    if (thumb_cache_.count(fileName)) {
+
+        thumb = thumb_cache_[fileName];
+    } else {
+        thumb = new Thumbnail();
+        thumb->LoadFromFile(fileName);
+    }
+    std::string sprite = thumb->getSpriteFileName();
+    thumb->setSpriteFileName(newName + '.' + IuCoreUtils::ExtractFileExt(sprite));
+    if ((sprite.empty() || IuCoreUtils::copyFile(sprite, srcFolder + newName + '.' + IuCoreUtils::ExtractFileExt(sprite))) && IuCoreUtils::copyFile(fileName, destination) && thumb->SaveToFile(destination)) {
+        GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(newName));
+
+    }
+    SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1), (LPARAM)(LPCTSTR)Utf8ToWCstring(newName));
+    GuiTools::EnableDialogItem(m_hWnd, IDC_EDITTHUMBNAILPRESET, true);
+    showSelectedThumbnailPreview();
+    return true;
 }
 
 LRESULT CThumbSettingsPage::OnThumbTextCheckboxClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)

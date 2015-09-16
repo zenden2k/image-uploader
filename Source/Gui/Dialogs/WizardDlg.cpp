@@ -57,6 +57,7 @@
 #include "Core/ServiceLocator.h"
 #include "Func/MediaInfoHelper.h"
 #include "Core/Utils/DesktopUtils.h"
+#include "Gui/Win7JumpList.h"
 
 using namespace Gdiplus;
 namespace
@@ -98,6 +99,7 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
     floatWnd.setUploadManager(uploadManager_);
     floatWnd.setUploadEngineManager(uploadEngineManager_);
     Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &CWizardDlg::settingsChanged));
+	win7JumpList_.reset(new Win7JumpList);
 }
 
 void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
@@ -258,6 +260,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     CreatePage(0); 
     ShowPage(0);
     ::SetFocus(Pages[0]->PageWnd);
+	//win7JumpList_->CreateJumpList();
     //webServer_.start();
 
     if(CmdLine.IsOption(_T("update")))

@@ -840,6 +840,9 @@
     <ClInclude Include="Source\Gui\Dialogs\FolderAddDlg.h">
       <Filter>Source Files\Gui\Dialogs</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Gui\Win7JumpList.h">
+      <Filter>Source Files\Gui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1856,6 +1859,9 @@
     </ClCompile>
     <ClCompile Include="Source\Gui\Dialogs\FolderAddDlg.cpp">
       <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Win7JumpList.cpp">
+      <Filter>Source Files\Gui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -72,6 +72,7 @@ extern TCHAR MediaInfoDllPath[MAX_PATH];
 class UploadManager;
 class UploadEngineManager;
 class ScriptsManager;
+class Win7JumpList;
 class CWizardDlg : 
     public CDialogImpl<CWizardDlg>    , public CUpdateUI<CWizardDlg>,
         public CMessageFilter, public CIdleHandler, public IDropTarget, public CRegionSelectCallback,
@@ -188,6 +189,7 @@ public:
     UploadManager* uploadManager_;
     UploadEngineManager* uploadEngineManager_;
     ScriptsManager* scriptsManager_;
+	std::unique_ptr<Win7JumpList> win7JumpList_;
     long m_lRef;
     bool QuickUploadMarker;
     CString LastVideoFile;

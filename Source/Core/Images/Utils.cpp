@@ -1097,9 +1097,9 @@ gr.DrawImage(&temp, destRect,(int)realTextBounds.X, (int)realTextBounds.Y,(int)(
 
 bool CopyDataToClipboardInDataUriFormat(ULONGLONG dataSize, std::string mimeType, bool html, std::function<size_t(void*, size_t)> readCallback) {
     ULONGLONG offset = 0;
-    ULONGLONG leftBytes = dataSize;
+    size_t leftBytes = static_cast<size_t>(dataSize);
     const ULONG buf_size = 1024 * 32;
-    BYTE buffer[buf_size];
+    char buffer[buf_size];
 
     const char* footer = "\" alt=\"\" />";
     int footerLen = strlen(footer);
@@ -1107,7 +1107,7 @@ bool CopyDataToClipboardInDataUriFormat(ULONGLONG dataSize, std::string mimeType
     int headLen = strlen(head);
 
     HGLOBAL hglbCopy;
-    int cch = dataSize * 4 / 3 + 40;
+    int cch = static_cast<int>(dataSize * 4 / 3 + 40);
     if (html) {
         cch += footerLen + headLen;
     }
@@ -1144,17 +1144,17 @@ bool CopyDataToClipboardInDataUriFormat(ULONGLONG dataSize, std::string mimeType
     encodedDataCur += 8;
     size_t outlen = 0;
     while (offset < dataSize) {
-        size_t readBytes = readCallback(buffer, std::min<ULONGLONG>(buf_size, leftBytes));
+        size_t readBytes = readCallback(buffer, std::min<size_t>(buf_size, leftBytes));
         if (!readBytes) {
             break;
         }
         leftBytes -= readBytes;
         offset += readBytes;
         outlen = 0;
-        base64_stream_encode(&state, (const char*)buffer, readBytes, (char*)encodedDataCur, &outlen);
+        base64_stream_encode(&state, buffer, readBytes, encodedDataCur, &outlen);
         encodedDataCur += outlen;
     }
-    base64_stream_encode_final(&state, (char*)encodedDataCur, &outlen);
+    base64_stream_encode_final(&state, encodedDataCur, &outlen);
     encodedDataCur += outlen;
     if (html) {
         strncpy(encodedDataCur, footer, footerLen);

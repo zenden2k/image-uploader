@@ -71,6 +71,7 @@ public:
         LRESULT OnThumbComboChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnBnClickedNewThumbnail(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         void showSelectedThumbnailPreview();
+        bool CreateNewThumbnail();
         LRESULT OnWidthEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl);
         ThumbCreatingParams params_;
         std::map<std::string, Thumbnail*> thumb_cache_;

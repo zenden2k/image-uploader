@@ -496,6 +496,7 @@
       <ForcedUsingFiles>stdafx.h;%(ForcedUsingFiles)</ForcedUsingFiles>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <PreLinkEvent>
       <Command />
@@ -701,6 +702,7 @@
     <ClInclude Include="Source\Gui\Dialogs\ClearHistoryDlg.h" />
     <ClInclude Include="Source\Gui\Dialogs\FolderAddDlg.h" />
     <ClInclude Include="Source\Gui\Dialogs\VideoGrabberPage.h" />
+    <ClInclude Include="Source\Gui\Win7JumpList.h" />
     <ClInclude Include="Source\ImageEditor\Helpers\FontEnumerator.h" />
     <ClInclude Include="Source\resource.h" />
     <ClInclude Include="Source\versioninfo.h" />
@@ -1056,6 +1058,7 @@
     <ClCompile Include="Source\Gui\Controls\ResultsListView.cpp" />
     <ClCompile Include="Source\Gui\Dialogs\ClearHistoryDlg.cpp" />
     <ClCompile Include="Source\Gui\Dialogs\FolderAddDlg.cpp" />
+    <ClCompile Include="Source\Gui\Win7JumpList.cpp" />
     <ClCompile Include="Source\Image Uploader.cpp">
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
