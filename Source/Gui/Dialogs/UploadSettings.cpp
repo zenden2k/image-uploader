@@ -36,6 +36,7 @@
 #include "AddDirectoryServerDIalog.h"
 #include <Gui/Controls/ServerSelectorControl.h>
 #include "Gui/Dialogs/WizardDlg.h"
+#include "LoginDlg.h"
 
 CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager * uploadEngineManager) :convert_profiles_(Settings.ConvertProfiles)
 {
@@ -382,12 +383,13 @@ LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND h
     ServerProfile & serverProfile = ImageServer? sessionImageServer_ : sessionFileServer_;
     CLoginDlg dlg(serverProfile, uploadEngineManager_);
 
-
     ServerSettingsStruct & ss = ImageServer ? sessionImageServer_.serverSettings() : sessionFileServer_.serverSettings();
     std::string UserName = ss.authData.Login; 
     bool prevAuthEnabled = ss.authData.DoAuth;
-    if( dlg.DoModal(m_hWnd) == IDOK)
-    {
+    UINT dlgResult = dlg.DoModal(m_hWnd);
+        
+    if (dlgResult  == IDOK) {
+        ServerSettingsStruct & ss = ImageServer ? sessionImageServer_.serverSettings() : sessionFileServer_.serverSettings();
         if ( ImageServer ) {
             imageServerLogin_ = WCstringToUtf8(dlg.accountName());
         } else {
@@ -399,10 +401,14 @@ LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND h
             serverProfile.setFolderId("");
             serverProfile.setFolderTitle("");
             serverProfile.setFolderUrl("");
-            //iuPluginManager.UnloadPlugins();
-            //m_EngineList->DestroyCachedEngine(WCstringToUtf8(serverProfile.serverName()), WCstringToUtf8(serverProfile.profileName()));
         }
             
+        UpdateAllPlaceSelectors();
+    } else if (dlgResult == CLoginDlg::ID_DELETEACCOUNT) {
+        serverProfile.setFolderId("");
+        serverProfile.setFolderTitle("");
+        serverProfile.setFolderUrl("");
+        serverProfile.setProfileName("");
         UpdateAllPlaceSelectors();
     }
     return 0;
@@ -1064,6 +1070,12 @@ LRESULT CUploadSettings::OnShorteningUrlServerButtonClicked(WORD wNotifyCode, WO
     return 0;
 }
 
+LRESULT CUploadSettings::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	::DestroyWindow(useServerThumbnailsTooltip_);
+	useServerThumbnailsTooltip_ = nullptr;
+	return 0;
+}
+
 LRESULT CUploadSettings::OnResizePresetMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
   struct resize_preset
@@ -1257,25 +1269,23 @@ LRESULT CUploadSettings::OnAddAccountClicked(WORD wNotifyCode, WORD wID, HWND hW
     ServerProfile serverProfileCopy = serverProfile;
     serverProfileCopy.setProfileName("");
     CLoginDlg dlg(serverProfileCopy, uploadEngineManager_, true);
-
-
+    UINT dlgResult = dlg.DoModal(m_hWnd);
     //ServerSettingsStruct & ss = ImageServer ? sessionImageServer_.serverSettings() : sessionFileServer_.serverSettings();
-    if( dlg.DoModal(m_hWnd) == IDOK)
-    {
-        
-        if ( ImageServer ) {
+    if (dlgResult  != IDCANCEL) {
+        if (ImageServer) {
             imageServerLogin_ = WCstringToUtf8(dlg.accountName());
-        } else {
-            fileServerLogin_ =  WCstringToUtf8(dlg.accountName());
+        }
+        else {
+            fileServerLogin_ = WCstringToUtf8(dlg.accountName());
         }
         serverProfileCopy.setProfileName(WCstringToUtf8(dlg.accountName()));
-            serverProfileCopy.setFolderId("");
-            serverProfileCopy.setFolderTitle("");
-            serverProfileCopy.setFolderUrl("");
-        
-            serverProfile = serverProfileCopy;
+        serverProfileCopy.setFolderId("");
+        serverProfileCopy.setFolderTitle("");
+        serverProfileCopy.setFolderUrl("");
+
+        serverProfile = serverProfileCopy;
         UpdateAllPlaceSelectors();
-    }
+    } 
     return 0;
 }
 

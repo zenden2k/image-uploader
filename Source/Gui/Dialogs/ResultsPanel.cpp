@@ -30,7 +30,7 @@
 #include "Core/Utils/TextUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
-#include <Core/ServiceLocator.h>
+#include "Core/ServiceLocator.h"
 #include "Gui/Dialogs/WizardDlg.h"
 
 // CResultsPanel

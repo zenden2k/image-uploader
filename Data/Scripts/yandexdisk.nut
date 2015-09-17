@@ -607,7 +607,6 @@ function  UploadFile(FileName, options)
 	
 	options.setViewUrl(viewUrl);
 	} catch ( ex ) {
-		//msgBox(ex.tostring());
 		_WriteLog("error", "Exception:" + ex.tostring());
 		return 0;
 	}
@@ -623,14 +622,12 @@ function GetFolderAccessTypeList()
 
 function GetServerParamList()
 {
-	return 
-	{
+    return { // '{' should be on the same line
 		useWebdav = "Use WebDav",
 		token = "Token",
 		enableOAuth ="enableOAuth",
 		tokenType = "tokenType",
 		PrevLogin = "PrevLogin",
 		OAuthLogin = "OAuthLogin"
-		
 	};
 }

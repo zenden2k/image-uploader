@@ -167,6 +167,7 @@ protected:
     ServerProfile sessionImageServer_, sessionFileServer_;
     bool serversChanged_;
     void settingsChanged(BasicSettings* settings);
+    bool pasteFromClipboard();
 public:
     bool ShowPage(int idPage,int prev=-1,int next=-1);
     bool AddImage(const CString &FileName, const CString &VirtualFileName, bool Show=true);
@@ -213,6 +214,7 @@ public:
     bool funcReuploadImages();
     bool funcShortenUrl();
     bool funcOpenScreenshotFolder();
+    bool funcFromClipboard();
     // end of functions
     bool executeFunc(CString funcName);
 

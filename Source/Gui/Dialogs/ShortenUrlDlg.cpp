@@ -28,7 +28,7 @@
 #include "Core/CommonDefs.h"
 #include "Func/WebUtils.h"
 #include "Core/Upload/UploadManager.h"
-#include <Core/CoreFunctions.h>
+#include "Core/CoreFunctions.h"
 
 // CShortenUrlDlg
 CShortenUrlDlg::CShortenUrlDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager* uploadManager, const CString &initialBuffer)

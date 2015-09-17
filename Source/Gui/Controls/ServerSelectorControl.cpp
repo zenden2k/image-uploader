@@ -154,7 +154,7 @@ void CServerSelectorControl::addAccount()
     serverProfileCopy.setProfileName("");
     CLoginDlg dlg(serverProfileCopy, uploadEngineManager_, true);
 
-    if (dlg.DoModal(isChildWindow_ ? m_hWnd : GetParent()) == IDOK)
+    if (dlg.DoModal(isChildWindow_ ? m_hWnd : GetParent()) != IDCANCEL)
     {
         serverProfileCopy.setProfileName(WCstringToUtf8(dlg.accountName()));
         serverProfileCopy.setFolderId("");
@@ -552,7 +552,7 @@ LRESULT CServerSelectorControl::OnLoginMenuItemClicked(WORD wNotifyCode, WORD wI
     ServerProfile copy = serverProfile_;
     CLoginDlg dlg(copy, uploadEngineManager_);
     
-    if( dlg.DoModal(m_hWnd) == IDOK)
+    if( dlg.DoModal(m_hWnd) != IDCANCEL)
     {
         copy.setProfileName(WCstringToUtf8(dlg.accountName()));
         if(Utf8ToWCstring(UserName) != dlg.accountName())

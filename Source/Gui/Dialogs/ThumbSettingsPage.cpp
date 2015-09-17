@@ -244,8 +244,8 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
     std::string fileName = getSelectedThumbnailFileName();
     if (fileName.empty())
         return false;
-    std::string newName = "copy_" + IuCoreUtils::ExtractFileNameNoExt(fileName);
-    CInputDialog dlg(TR("Input Box"), TR("Enter new thumbnail preset name:"), Utf8ToWCstring(newName));
+    std::string newName = IuCoreUtils::ExtractFileNameNoExt(fileName) + "_copy";
+    CInputDialog dlg(TR("Creating new thumbnail preset"), TR("Enter new thumbnail preset name:"), Utf8ToWCstring(newName));
     if (dlg.DoModal() == IDOK) {
         newName = WCstringToUtf8(dlg.getValue());
     } else return 0;

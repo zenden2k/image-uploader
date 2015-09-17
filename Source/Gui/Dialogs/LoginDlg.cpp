@@ -26,7 +26,7 @@
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Func/WinUtils.h"
 #include "Core/Upload/UploadEngineManager.h"
-#include <Core/CoreFunctions.h>
+#include "Core/CoreFunctions.h"
 
 // CLoginDlg
 CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool createNew) : serverProfile_(serverProfile)
@@ -95,6 +95,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     deleteAccountLabel_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
 //    deleteAccountLabel_.SetLabel(deleteAccountLabelText);
     deleteAccountLabel_.m_clrLink = CSettings::DefaultLinkColor;
+    deleteAccountLabel_.SetToolTipText(TR("Remove this account from the list (not from the remote server)"));
 
     deleteAccountLabel_.ShowWindow((createNew_ || accountName_.IsEmpty()) ? SW_HIDE : SW_SHOW);
 
@@ -129,7 +130,7 @@ LRESULT CLoginDlg::OnDeleteAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndC
     ss.erase(WCstringToUtf8(accountName_));
 
     accountName_ = "";
-    EndDialog(IDOK);
+    EndDialog(ID_DELETEACCOUNT);
     return 0;
 }
 

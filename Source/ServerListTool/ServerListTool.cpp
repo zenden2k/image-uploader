@@ -16,8 +16,8 @@
 #include <Func/WtlScriptDialogProvider.h>
 #include <boost/locale/generator.hpp>
 #include <boost/filesystem/path.hpp>
-#include <Core/AppParams.h>
-#include <Core/Scripting/ScriptsManager.h>
+#include "Core/AppParams.h"
+#include "Core/Scripting/ScriptsManager.h"
 #include "Core/Settings.h"
 #include "Core/Upload/UploadManager.h"
 #include "Core/Upload/UploadEngineManager.h"

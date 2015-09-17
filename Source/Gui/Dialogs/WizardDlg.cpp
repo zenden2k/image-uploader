@@ -108,6 +108,32 @@ void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
     sessionImageServer_.getImageUploadParamsRef().getThumbRef().TemplateName = templateName;
 }
 
+bool CWizardDlg::pasteFromClipboard() {
+    if (IsClipboardFormatAvailable(CF_BITMAP)) {
+        if (!OpenClipboard()) return 0;
+        HBITMAP bmp = reinterpret_cast<HBITMAP>(GetClipboardData(CF_BITMAP));
+
+        if (!bmp) {
+            CloseClipboard();
+            return false;
+        }
+
+        PasteBitmap(bmp);
+        CloseClipboard();
+        return true;
+    }
+
+    if (IsClipboardFormatAvailable(CF_UNICODETEXT)) {
+        CString text;
+        WinUtils::GetClipboardText(text);
+        if (CImageDownloaderDlg::LinksAvailableInText(text)) {
+            CImageDownloaderDlg dlg(this, CString(text));
+            dlg.DoModal(m_hWnd);
+            return true;
+        }
+    }
+    return false;
+}
 
 CWizardDlg::~CWizardDlg()
 {
@@ -1044,27 +1070,7 @@ STDMETHODIMP CWizardDlg::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL p
 
 LRESULT CWizardDlg::OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    if(IsClipboardFormatAvailable(CF_BITMAP)) 
-    {
-        if(!OpenClipboard()) return 0;
-        HBITMAP bmp = (HBITMAP) GetClipboardData(CF_BITMAP);
-
-        if(!bmp) return CloseClipboard();
-
-        PasteBitmap(bmp);
-        CloseClipboard();
-    }
-
-    if(IsClipboardFormatAvailable(CF_UNICODETEXT)) 
-    {
-        CString text;
-        WinUtils::GetClipboardText(text);
-        if(CImageDownloaderDlg::LinksAvailableInText(text))
-        {
-            CImageDownloaderDlg dlg(this,CString(text));
-            dlg.DoModal(m_hWnd);
-        }
-    }    
+    pasteFromClipboard();
     return 0;
 }
 
@@ -1091,8 +1097,8 @@ LRESULT CWizardDlg::OnOpenScreenshotFolderClicked(WORD wNotifyCode, WORD wID, HW
 
 void CWizardDlg::PasteBitmap(HBITMAP Bmp)
 {
-    if(CurPage!=0 && CurPage!=2) return;
-
+    if (CurPage != 0 && CurPage != 2 && CurPage != -1) return;
+   
     CString buf2;
     SIZE dim;
     GetBitmapDimensionEx(Bmp, &dim);
@@ -1315,7 +1321,8 @@ bool CWizardDlg::executeFunc(CString funcBody)
         return funcShortenUrl();
     else if(funcName == _T("mediainfo"))
         return funcMediaInfo();
-
+    else if (funcName == _T("fromclipboard"))
+        return funcFromClipboard();
     else if (funcName == _T("mediainfo"))
         return funcMediaInfo();
     else if (funcName == _T("open_screenshot_folder"))
@@ -1933,6 +1940,16 @@ bool CWizardDlg::funcOpenScreenshotFolder() {
         DesktopUtils::ShellOpenUrl(W2U(screenshotFolder));
     }
 
+    return false;
+}
+
+bool CWizardDlg::funcFromClipboard() {
+    if (pasteFromClipboard()) {
+        ShowWindow(SW_SHOW);
+        ShowPage(2, 0, 3);
+        m_bShowWindow = true;
+        return true;
+    }
     return false;
 }
 

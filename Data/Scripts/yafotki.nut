@@ -402,8 +402,7 @@ function GetFolderAccessTypeList()
 
 function GetServerParamList()
 {
-	return 
-	{
+	return { // '{' should be on the same line!!!
 		token = "token",
 		tokenType = "TokenType",
 		OAuthLogin = "OAuthLogin",

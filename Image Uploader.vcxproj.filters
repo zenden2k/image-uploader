@@ -843,6 +843,9 @@
     <ClInclude Include="Source\Gui\Win7JumpList.h">
       <Filter>Source Files\Gui</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Gui\HwndScopedWrapper.h">
+      <Filter>Source Files\Gui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">

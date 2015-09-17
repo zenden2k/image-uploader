@@ -24,6 +24,7 @@
 #include "resource.h"       // main symbols
 #include "Gui/WizardCommon.h"
 #include "Gui/Controls/ThumbsView.h"
+#include "Gui/HwndScopedWrapper.h"
 
 class AbstractImage;
 #define WM_MYADDIMAGE (WM_USER + 22)
@@ -53,12 +54,13 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		BEGIN_MSG_MAP(CVideoGrabberPage)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			MESSAGE_HANDLER(WM_TIMER, OnTimer)
+			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 			COMMAND_HANDLER(IDC_GRAB, BN_CLICKED, OnBnClickedGrab)
 			COMMAND_HANDLER(IDC_GRABBERPARAMS, BN_CLICKED, OnBnClickedGrabberparams)
 			COMMAND_HANDLER(IDC_MULTIPLEFILES, BN_CLICKED, OnBnClickedMultiplefiles)
 			COMMAND_HANDLER(IDC_SAVEASONE, BN_CLICKED, OnBnClickedMultiplefiles)
-			COMMAND_HANDLER(IDC_SELECTVIDEO, BN_CLICKED, OnBnClickedButton1)
+			COMMAND_HANDLER(IDC_SELECTVIDEO, BN_CLICKED, OnBnClickedBrowseButton)
 			COMMAND_ID_HANDLER(IDC_OPENFOLDER, OnOpenFolder)
 			NOTIFY_HANDLER(IDC_THUMBLIST, LVN_DELETEITEM, OnLvnItemDelete)
 			COMMAND_HANDLER(IDC_FILEINFOBUTTON, BN_CLICKED, OnBnClickedFileinfobutton)
@@ -76,12 +78,14 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
 		LRESULT OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandled*/);
 		LRESULT OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnBnClickedGrabberparams(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnBnClickedMultiplefiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnBnClickedFileinfobutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
-		LRESULT OnBnClickedButton1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
+		LRESULT OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnOpenFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		
 		int GrabBitmaps(const CString& szFile );
@@ -117,6 +121,7 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		CMainDlg* MainDlg;
         CEdit fileEdit_;
 		UploadEngineManager * uploadEngineManager_;
+        HwndScopedWrapper engineComboToolTip_;
 };
 
 #endif // VIDEOGRABBER_H

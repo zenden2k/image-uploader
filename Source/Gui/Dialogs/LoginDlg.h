@@ -40,6 +40,7 @@ class CLoginDlg : public CDialogImpl<CLoginDlg>    , public CThreadImpl<CLoginDl
         CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool CreateNew = false );
         ~CLoginDlg();
         enum { IDD = IDD_LOGINDLG };
+        enum { ID_DELETEACCOUNT = 30 };
     protected:
         BEGIN_MSG_MAP(CLoginDlg)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)

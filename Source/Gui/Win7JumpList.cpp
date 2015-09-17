@@ -188,6 +188,22 @@ HRESULT Win7JumpList::AddTasksToList(ICustomDestinationList *pcdl)
 			psl->Release();
 		}
 
+        if (SUCCEEDED(hr)) {
+            hr = CreateShellLink(L"/func=fromclipboard", TR("From Clipboard"), IDI_CLIPBOARD, &psl);
+            if (SUCCEEDED(hr)) {
+                hr = poc->AddObject(psl);
+                psl->Release();
+            }
+        }
+
+        if (SUCCEEDED(hr)) {
+            hr = CreateShellLink(L"/func=reuploadimages", TR("Reupload"), IDI_ICONRELOAD, &psl);
+            if (SUCCEEDED(hr)) {
+                hr = poc->AddObject(psl);
+                psl->Release();
+            }
+        }
+
 		if (SUCCEEDED(hr)) {
 			hr = CreateShellLink(L"/func=screenshotdlg", TR("Screenshot..."), IDI_SCREENSHOT, &psl);
 			if (SUCCEEDED(hr)) {

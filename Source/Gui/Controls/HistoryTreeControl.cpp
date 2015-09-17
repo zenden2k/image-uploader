@@ -28,7 +28,7 @@
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
 #include "Core/LocalFileCache.h"
-#include <Core/CoreFunctions.h>
+#include "Core/CoreFunctions.h"
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl()

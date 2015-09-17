@@ -702,6 +702,7 @@
     <ClInclude Include="Source\Gui\Dialogs\ClearHistoryDlg.h" />
     <ClInclude Include="Source\Gui\Dialogs\FolderAddDlg.h" />
     <ClInclude Include="Source\Gui\Dialogs\VideoGrabberPage.h" />
+    <ClInclude Include="Source\Gui\HwndScopedWrapper.h" />
     <ClInclude Include="Source\Gui\Win7JumpList.h" />
     <ClInclude Include="Source\ImageEditor\Helpers\FontEnumerator.h" />
     <ClInclude Include="Source\resource.h" />

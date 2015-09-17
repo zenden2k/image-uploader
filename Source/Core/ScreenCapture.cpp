@@ -52,7 +52,7 @@ bool IsWindowMaximized(HWND handle)
 {
     WINDOWPLACEMENT wp;
     GetWindowPlacement(handle, &wp);
-    return wp.showCmd == (int)SW_MAXIMIZE;
+    return wp.showCmd == static_cast<UINT>(SW_MAXIMIZE);
 }
 
 void ActivateWindowRepeat(HWND handle, int count)

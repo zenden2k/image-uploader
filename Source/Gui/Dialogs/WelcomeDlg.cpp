@@ -115,6 +115,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
     ListBox.SetFocus();
     ShowWindow(SW_HIDE);
+    clipboardUpdated();
 
     return 0;  // Let the system set the focus
 }

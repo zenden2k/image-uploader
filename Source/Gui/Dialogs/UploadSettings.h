@@ -86,6 +86,7 @@ class CUploadSettings :
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         MESSAGE_HANDLER(WM_MEASUREITEM, OnMeasureItem)
         MESSAGE_HANDLER(WM_DRAWITEM, OnDrawItem)
+        MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 
         COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
@@ -167,6 +168,7 @@ class CUploadSettings :
     LRESULT OnNoAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnResizePresetButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnShorteningUrlServerButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //int m_nImageServer, m_nFileServer;
     void ShowParams();
     CToolBarCtrl Toolbar;

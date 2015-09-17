@@ -1,9 +1,9 @@
 #ifndef IMAGEDITOR_HELPERS_FONT_ENUMERATOR
 #define IMAGEDITOR_HELPERS_FONT_ENUMERATOR
 
-#include <Core/3rdpart/FastDelegate.h>
 #include <windows.h>
 #include <vector>
+#include "Core/3rdpart/FastDelegate.h"
 
 class FontEnumerator {
 

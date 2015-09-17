@@ -222,10 +222,6 @@ int CScriptUploadEngine::getServerParamList(std::map<std::string, std::string>& 
         }
         SharedPtr<Table> arr = func.Evaluate<Sqrat::Table>();
 
-        /*if ( Error::Occurred(vm_.GetVM() ) ) {
-            Log(ErrorInfo::mtError, "CScriptUploadEngine::getServerParamList\r\n" + std::string(Error::Message(vm_.GetVM()))); 
-            return 0;
-        }*/
         if (!arr)
         {
             Log(ErrorInfo::mtError, "CScriptUploadEngine::getServerParamList\r\n" + std::string("GetServerParamList result is NULL"));

@@ -26,10 +26,9 @@
 #include "../3rdpart/Registry.h"
 #include "../Func/LangClass.h"
 #include <shlobj.h>
-#include <Core/Video/VideoUtils.h>
-#include <Func/IuCommonFunctions.h>
-#include <Gui/Components/NewStyleFolderDialog.h>
-
+#include "Core/Video/VideoUtils.h"
+#include "Func/IuCommonFunctions.h"
+#include "Func/WinUtils.h"
 HINSTANCE hDllInstance;
 
 CString GetStartMenuPath() 

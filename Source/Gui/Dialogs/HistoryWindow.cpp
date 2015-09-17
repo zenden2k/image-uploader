@@ -427,6 +427,9 @@ LRESULT CHistoryWindow::OnBnClickedClearHistoryBtn(WORD /*wNotifyCode*/, WORD /*
     CClearHistoryDlg dlg;
     if (dlg.DoModal(m_hWnd) == IDOK) {
         if (ServiceLocator::instance()->historyManager()->clearHistory(dlg.GetValue())) {
+            SetDlgItemInt(IDC_FILESCOUNTLABEL, 0, false);
+            SetDlgItemInt(IDC_SESSIONSCOUNTLABEL, 0, false);
+            SetDlgItemText(IDC_UPLOADTRAFFICLABEL, L"0");
             LoadMonthList();
             SelectedMonthChanged();
             MessageBox(TR("History has been cleared succesfully."), APPNAME, MB_ICONINFORMATION);

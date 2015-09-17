@@ -34,17 +34,18 @@
 #include "Core/Logging.h"
 #include "Core/Utils/StringUtils.h"
 #include "Func/IuCommonFunctions.h"
-#include <Core/Images/Utils.h>
-#include <Core/ServiceLocator.h>
+#include "Core/Images/Utils.h"
+#include "Core/ServiceLocator.h"
 #include "Gui/Dialogs/WizardDlg.h"
 
 CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
 {
-    Terminated = true;
+	Terminated = true;
     grabbedFramesCount = 0;
     originalGrabInfoLabelWidth_ = 0;
     videoGrabber_ = 0;
     uploadEngineManager_ = uploadEngineManager;
+    engineComboToolTip_ = nullptr;
 }
 
 CVideoGrabberPage::~CVideoGrabberPage()
@@ -115,6 +116,10 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     SavingMethodChanged();
     ThumbsView.SubclassWindow(GetDlgItem(IDC_THUMBLIST));
     ThumbsView.Init();
+
+    engineComboToolTip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_VIDEOENGINECOMBO),
+        TR("Video engine which is used to extract frames from a video file."));
+
 
     return 1;  // Let the system set the focus
 }
@@ -353,6 +358,10 @@ LRESULT CVideoGrabberPage::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     return 0;
 }
 
+LRESULT CVideoGrabberPage::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    return 0;
+}
+
 LRESULT CVideoGrabberPage::OnBnClickedGrabberparams(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     CSettingsDlg dlg(CSettingsDlg::spVideo, uploadEngineManager_);
@@ -462,7 +471,7 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
     return 0;
 }
 
-LRESULT CVideoGrabberPage::OnBnClickedButton1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CVideoGrabberPage::OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     TCHAR Buf[MAX_PATH*4];
     GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 

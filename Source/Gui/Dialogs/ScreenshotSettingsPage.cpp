@@ -45,7 +45,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     TRC(IDC_FORMATLABEL, "Format:");
     TRC(IDC_SECLABEL, "sec");
     TRC(IDC_MSECLABEL, "msec");
-    TRC(IDC_SCREENSHOTSFOLDERSELECT, "Browse..");
+    TRC(IDC_SCREENSHOTSFOLDERSELECT, "Browse...");
     TRC(IDC_SCREENSHOTFOLDERLABEL, "Directory to save screenshots:");
     TRC(IDC_SCREENSHOTFILENAMELABEL, "Filename format:");
     TRC(IDC_DELAYLABEL2, "Delay when hiding window:");
