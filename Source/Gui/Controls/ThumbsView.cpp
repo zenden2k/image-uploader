@@ -56,7 +56,7 @@ void CThumbsView::Init(bool Extended)
     ImageList.Create(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT + (ExtendedView?20:0), ILC_COLOR24, 0, 3);
     SetImageList(ImageList, LVSIL_NORMAL);
     DWORD style = GetExtendedListViewStyle();
-    style = style | LVS_EX_DOUBLEBUFFER | LVS_EX_BORDERSELECT ;
+    style = style | LVS_EX_DOUBLEBUFFER | LVS_EX_BORDERSELECT;
     SetExtendedListViewStyle(style);
     SendMessage(LVM_SETICONSPACING, 0, MAKELONG(THUMBNAIL_WIDTH+5, THUMBNAIL_HEIGHT+25+(ExtendedView?20:0)));
 }
@@ -126,6 +126,9 @@ LRESULT CThumbsView::OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
         UpdateImageIndexes(ItemIndex);
         if(NeedRestart)
             LoadThumbnails();
+        if (callback_) {
+            callback_(this);
+        }
     }
     else if(GetNextItem(-1,LVNI_SELECTED)>=0)
     {
@@ -167,6 +170,9 @@ int CThumbsView::DeleteSelected(void)
     Arrange(LVA_ALIGNTOP);
     if(IsRun )
         LoadThumbnails();
+    if (callback_) {
+        callback_(this);
+    }
     return 0;
 }
 
@@ -610,4 +616,19 @@ LRESULT CThumbsView::OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 
 bool CThumbsView::CopySelectedItemsToClipboard() {
     return ::SendMessage(GetParent(), WM_COMMAND, MAKELPARAM(IDM_COPYFILETOCLIPBOARD, 0), 0) != FALSE;
+}
+
+
+LRESULT CThumbsView::OnItemChanged(int, LPNMHDR hdr, BOOL&) {
+    NMLISTVIEW* lpStateChange = reinterpret_cast<NMLISTVIEW*>(hdr);
+    if ((lpStateChange->uNewState ^ lpStateChange->uOldState) & LVIS_SELECTED) {
+        if (callback_) {
+            callback_(this);
+        }
+    }
+    return 0;
+}
+
+void CThumbsView::SetOnItemCountChanged(ItemCountChangedCallback&& callback) {  
+    callback_ = std::move(callback);
 }

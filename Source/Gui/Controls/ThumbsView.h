@@ -53,6 +53,7 @@ public:
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_BEGINDRAG, OnLvnBeginDrag)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEITEM, OnDeleteItem)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEALLITEMS, OnDeleteItem)
+        REFLECTED_NOTIFY_CODE_HANDLER(LVN_ITEMCHANGED, OnItemChanged)
     END_MSG_MAP()
 
     // Handler prototypes:
@@ -61,6 +62,9 @@ public:
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnLvnBeginDrag(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
     LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+    typedef std::function<void(CThumbsView*)> ItemCountChangedCallback;
+    void SetOnItemCountChanged(ItemCountChangedCallback&& callback);
     bool m_NeedUpdate;
     CAutoCriticalSection ImageListCS;
     LRESULT OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -90,6 +94,8 @@ public:
     void SelectLastItem();
     bool CopySelectedItemsToClipboard();
     LRESULT OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+protected:
+    ItemCountChangedCallback callback_;
 };
 
 

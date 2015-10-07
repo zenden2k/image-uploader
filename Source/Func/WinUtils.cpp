@@ -519,7 +519,7 @@ CString GetModuleFullName(HMODULE module) {
     while (32768 >= bufLen) {
         buf.reset(new TCHAR[bufLen]);
 
-        if ((retLen = GetModuleFileName(NULL, buf.get(), bufLen)) == 0) {
+        if ((retLen = GetModuleFileName(module, buf.get(), bufLen)) == 0) {
             /* GetModuleFileName failed */
             break;
         } else if (bufLen > retLen) {
@@ -535,7 +535,7 @@ CString GetModuleFullName(HMODULE module) {
 }
 
 CString GetAppFileName() {
-    return GetModuleFullName(NULL);
+    return GetModuleFullName(nullptr);
 }
 
 LPTSTR ExtractFilePath(LPCTSTR FileName, LPTSTR buf)

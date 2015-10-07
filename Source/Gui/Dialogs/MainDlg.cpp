@@ -31,10 +31,13 @@
 #include "Func/ImageEditorConfigurationProvider.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 #include "Gui/Dialogs/WizardDlg.h"
-#include <Func/IuCommonFunctions.h>
+#include "Func/IuCommonFunctions.h"
+#include <boost/format.hpp>
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    listChanged_ = false;
+    SetTimer(kStatusTimer, 500);
     PageWnd = m_hWnd;
     TRC(IDC_ADDIMAGES, "Add Files");
     TRC(IDC_ADDVIDEO, "Import Video File");
@@ -44,6 +47,8 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     
     ThumbsView.SubclassWindow(GetDlgItem(IDC_FILELIST));
     ThumbsView.Init(true);
+    ThumbsView.SetOnItemCountChanged([&](CThumbsView*){UpdateStatusLabel(); });
+    UpdateStatusLabel();
 
     WaitThreadStop.Create();
     WaitThreadStop.ResetEvent();
@@ -239,6 +244,7 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, G
         ThumbsView.AddImage(fl.FileName, fl.VirtualFileName, Img);
         
     EnableNext(FileList.GetCount()>0);
+    listChanged_ = true;
     return TRUE;
 }
 
@@ -299,12 +305,14 @@ LRESULT CMainDlg::OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& bHandled
 
     EnableNext(FileList.GetCount()>0);
     bHandled = false;
+    UpdateStatusLabel();
     return 0;
 }
 
 LRESULT CMainDlg::OnBnClickedDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     ThumbsView.DeleteSelected();
+    UpdateStatusLabel();
     return 0;
 }
 
@@ -318,6 +326,7 @@ bool CMainDlg::OnHide()
     }
     return false;
 }
+
 
 // Системный диалог свойств файла
 BOOL CMainDlg::FileProp()
@@ -420,6 +429,7 @@ LRESULT CMainDlg::OnAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 LRESULT CMainDlg::OnBnClickedDeleteAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     ThumbsView.MyDeleteAllItems();
+    UpdateStatusLabel();
     return 0;
 }
 
@@ -557,4 +567,28 @@ LRESULT CMainDlg::OnCopyFileAsDataUriHtml(WORD /*wNotifyCode*/, WORD /*wID*/, HW
         }
     }
     return 0;
+}
+
+LRESULT CMainDlg::OnTimer(UINT, WPARAM wParam, LPARAM, BOOL&) {
+    if (wParam == kStatusTimer && listChanged_) {
+        UpdateStatusLabel();
+    }
+    return 0;
+}
+
+void CMainDlg::UpdateStatusLabel() {
+    int nCurItem = -1;
+    int selectedItemsCount = 0;
+    while ((nCurItem = ThumbsView.GetNextItem(nCurItem, LVNI_SELECTED)) >= 0) {
+        selectedItemsCount++;
+    }
+    int totalCount = ThumbsView.GetItemCount();
+    std::string statusText;
+    if (selectedItemsCount) {
+        statusText = str(boost::format("%1% files selected/%2% files total") % selectedItemsCount % totalCount);
+    } else {
+        statusText = str(boost::format("%d files") % totalCount);
+    }
+    SetDlgItemText(IDC_STATUSLABEL, U2W(statusText));
+    listChanged_ = false;
 }

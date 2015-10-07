@@ -35,9 +35,9 @@ int64_t ImageConverterPrivateBase::EvaluateSimpleExpression(const std::string& e
         parser.Compile(expr.c_str());
         res = static_cast<int64_t>(parser.Evaluate());
     }
-    catch (TError& err)
+    catch (const TParserError& err)
     {
-        LOG(ERROR) << err.error;
+        LOG(ERROR) << err.what();
     }
     return res;
 }

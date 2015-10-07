@@ -1245,6 +1245,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
     Settings.ImagesFolder = Buffer;
     if(nCount)
         ShowPage(2, 0, 3);
+    ((CMainDlg*)Pages[2])->UpdateStatusLabel();
 
     if(CurPage == 2)
         ((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
@@ -1664,6 +1665,7 @@ bool CWizardDlg::funcAddFiles()
     Settings.ImagesFolder = Buffer;
     if(nCount)
         ShowPage(2, 0, 3);
+    ((CMainDlg*)Pages[2])->UpdateStatusLabel();
 
     if(CurPage == 2)
         ((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
@@ -1955,7 +1957,6 @@ bool CWizardDlg::funcFromClipboard() {
 
 LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-    // TODO: Add your control notification handler code here
     RECT rc;
     ::GetWindowRect(hWndCtl, &rc );
     POINT menuOrigin = {rc.left,rc.bottom};
