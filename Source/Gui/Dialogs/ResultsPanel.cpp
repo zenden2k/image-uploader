@@ -120,13 +120,17 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
         m_hToolBarImageList = ImageList_Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
         ImageList_AddMasked(m_hToolBarImageList,hBitmap,RGB(255,0,255));
     }
+    CDC hdc = GetDC();
+    float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
+    float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+
 
     RECT rc = {0,0,100,24};
     GetClientRect(&rc);
-    rc.top = rc.bottom - GuiTools::dlgY(13);
-    rc.bottom-= GuiTools::dlgY(1);
-    rc.left = GuiTools::dlgX(3);
-    rc.right -= GuiTools::dlgX(3);
+    rc.top = rc.bottom - dpiScaleY_ * 28;
+    rc.bottom -= dpiScaleY_ * 4;
+    rc.left = dpiScaleX_ * 8;
+    rc.right -= dpiScaleX_ * 8;
     Toolbar.Create(m_hWnd,rc,_T(""), WS_CHILD|WS_CHILD | TBSTYLE_LIST |TBSTYLE_CUSTOMERASE|TBSTYLE_FLAT| CCS_NORESIZE/*|*/|CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
     //TabBackgroundFix(Toolbar.m_hWnd);
     

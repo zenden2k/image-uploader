@@ -31,7 +31,7 @@
 #include <thread>
 #include <unordered_map>
 
-const std::string IuNewFolderMark = "_iu_create_folder_";
+
 
 CScriptUploadEngine::CScriptUploadEngine(std::string fileName, ServerSync* serverSync, ServerSettingsStruct* settings) : 
                                                                                 CAbstractUploadEngine(serverSync), Script(fileName, serverSync,false)
@@ -54,7 +54,7 @@ void CScriptUploadEngine::PrintCallback(const std::string& output)
         taskName = "Task=" + currentTask_->toString() + ", ";
     }
     std::thread::id threadId = std::this_thread::get_id();
-    Log(ErrorInfo::mtWarning, name_ + ".nut [" + taskName + "ThreadId=" + IuCoreUtils::ThreadIdToString(threadId) + "]\r\n" + /*IuStringUtils::ConvertUnixLineEndingsToWindows*/(output));
+    Log(ErrorInfo::mtWarning, name_ + ".nut [" + taskName + "ThreadId=" + IuCoreUtils::ThreadIdToString(threadId) + "]\r\n");
 }
 
 int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams& params)
@@ -67,49 +67,55 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
     if (task->type() == UploadTask::TypeFile ) {
         FileName = (dynamic_cast<FileUploadTask*>(task.get()))->getFileName();
     }
-    CFolderItem parent, newFolder = m_ServersSettings->newFolder;
-    std::string folderID = m_ServersSettings->params["FolderID"];
+    CFolderItem parent;
 
-    if (folderID == IuNewFolderMark)
     {
-        SetStatus(stCreatingFolder, newFolder.title);
-        if ( createFolder(parent, newFolder))
-        {
-            folderID = newFolder.id;
-            m_ServersSettings->params["FolderID"] = folderID;
-            m_ServersSettings->params["FolderUrl"] = newFolder.viewUrl;
-        }
-        else
-            folderID.clear();
-    }
+        std::string folderID;
+        std::lock_guard<std::mutex> guard(serverSync_->folderMutex());
+        CFolderItem& newFolder = m_ServersSettings->newFolder;
+        if (task->serverProfile().folderId() == CFolderItem::NewFolderMark) {
+            task->serverProfile().setFolderId(newFolder.getId());
+            task->serverProfile().setFolderTitle(newFolder.getTitle());
 
-    params.folderId = folderID;
+            if (newFolder.getId() == CFolderItem::NewFolderMark) {
+                SetStatus(stCreatingFolder, newFolder.title);
+                if (createFolder(parent, newFolder)) {
+                    folderID = newFolder.id;
+                    task->serverProfile().setFolderId(folderID);
+                    m_ServersSettings->setParam("FolderID", folderID);
+                    m_ServersSettings->setParam("FolderUrl", newFolder.viewUrl);
+                } else {
+                    folderID.clear();
+                }
+            }
+        }
+    }
+   
+    params.folderId = task->serverProfile().folderId();
     params.task_ = task;
     int ival = 0;
 
-    try
-    {
+    if (!params.folderId.empty() && task->OnFolderUsed) {
+        task->OnFolderUsed(task.get());
+    }
+    try {
         checkCallingThread();
         SetStatus(stUploading);
         if (task->type() == UploadTask::TypeFile) {
             Function func(vm_.GetRootTable(), "UploadFile");
             if ( func.IsNull() ) {
                  Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string("Function UploadFile not found in script")); 
-                 currentTask_ = 0;
+                 currentTask_ = nullptr;
                  return -1;
             }
             std::string fname = FileName;
-            /*SharedPtr<int> ivalPtr *=*/ ival = ScriptAPI::GetValue(func.Evaluate<int>(fname.c_str(), &params));
-            /*if ( ivalPtr ) {
-                ival = *ivalPtr.Get();
-            }*/
-        }
-        else if (task->type() == UploadTask::TypeUrl ) {
+            ival = ScriptAPI::GetValue(func.Evaluate<int>(fname.c_str(), &params));
+        } else if (task->type() == UploadTask::TypeUrl ) {
             std::shared_ptr<UrlShorteningTask> urlShorteningTask = std::dynamic_pointer_cast<UrlShorteningTask>(task);
             Function func(vm_.GetRootTable(), "ShortenUrl");
             if ( func.IsNull() ) {
                  Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string("Function ShortenUrl not found in script")); 
-                 currentTask_ = 0;
+                 currentTask_ = nullptr;
                  return -1;
             }
             std::string url = urlShorteningTask->getUrl();
@@ -117,38 +123,30 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
             if ( ival > 0 ) {
                 ival = ival && !params.DirectUrl.empty();
             }
-           /* if ( ivalPtr ) {
-                ival = *ivalPtr.Get() && !params.DirectUrl.empty();
-            }*/
         }
     }
     catch (NetworkClient::AbortedException & ex) {
         throw ex;
     }
-    catch (ServerSyncException& e)
-    {
+    catch (ServerSyncException& e) {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));
         ival = -1; // fatal error
     }
-    catch (std::exception & e)
-    {
+    catch (std::exception & e) {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));
     }
-    /*if ( Error::Occurred(vm_.GetVM() ) ) {
-        Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(Error::Message(vm_.GetVM()))); 
-        return false;
-    }*/
     
     FlushSquirrelOutput();
-    currentTask_ = 0;
+    currentTask_ = nullptr;
     return ival;
 }
 
 bool CScriptUploadEngine::needStop()
 {
     bool shouldStop = false;
-    if (onNeedStop)
+    if (onNeedStop) {
         shouldStop = onNeedStop();  // delegate call
+    }
     return shouldStop;
 }
 
@@ -175,7 +173,7 @@ bool CScriptUploadEngine::postLoad()
 
 int CScriptUploadEngine::getAccessTypeList(std::vector<std::string>& list)
 {
-     using namespace Sqrat;
+    using namespace Sqrat;
     try
     {
         checkCallingThread();
@@ -374,16 +372,13 @@ bool CScriptUploadEngine::supportsSettings()
 {
     using namespace Sqrat;
 
-    try
-    {
+    try {
         checkCallingThread();
         Function func(vm_.GetRootTable(), "GetServerParamList");
         if (func.IsNull()) {
             return false;
         }
-    }
-    catch (std::exception& e)
-    {
+    } catch (std::exception& e) {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::supportsSettings\r\n" + std::string(e.what()));
         return false;
     }
@@ -394,16 +389,13 @@ bool CScriptUploadEngine::supportsSettings()
 bool CScriptUploadEngine::supportsBeforehandAuthorization()
 {
     using namespace Sqrat;
-    try
-    {
+    try {
         checkCallingThread();
         Function func(vm_.GetRootTable(), "DoLogin");
         if (func.IsNull()) {
             return false;
         }
-    }
-    catch (std::exception& e)
-    {
+    } catch (std::exception& e) {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::supportsBeforehandAuthorization\r\n" + std::string(e.what()));
         return false;
     }

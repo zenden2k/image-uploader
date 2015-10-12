@@ -82,6 +82,8 @@ public:
         itemCount = -1;
     }
 
+    static const std::string NewFolderMark;
+
     /*! @cond PRIVATE */
     std::string title;
     std::string summary;

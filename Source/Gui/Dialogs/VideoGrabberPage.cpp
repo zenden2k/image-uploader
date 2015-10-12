@@ -277,7 +277,9 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
                 }
             }
         }
+        ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this] { openInFolderLink_.SetToolTipText(snapshotsFolder); });
     }
+
     CString wOutDir;
     if ( IuCoreUtils::DirectoryExists(WCstringToUtf8(snapshotsFolder)) ) {
         wOutDir = snapshotsFolder;

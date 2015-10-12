@@ -149,6 +149,7 @@ bool CUploadDlg::startUpload() {
         task->setServerProfile(isImage ? sessionImageServer_ : sessionFileServer_);
         task->OnChildTaskAdded.bind(this, &CUploadDlg::onChildTaskAdded);
         task->setUrlShorteningServer(Settings.urlShorteningServer);
+        task->OnFolderUsed.bind(this, &CUploadDlg::OnFolderUsed);
         uploadSession_->addTask(task);
     }
     uploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CUploadDlg::onSessionFinished));
@@ -170,15 +171,15 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 int CUploadDlg::ThreadTerminated(void)
 {
     WizardDlg->QuickUploadMarker = false;
-    TCHAR szBuffer[MAX_PATH];
+    //TCHAR szBuffer[MAX_PATH];
 
     //TotalUploadProgress(MainDlg->FileList.GetCount(), MainDlg->FileList.GetCount());
     #if  WINVER    >= 0x0601
         if(ptl)
             ptl->SetProgressState(GetParent(), TBPF_NOPROGRESS);
     #endif
-    wsprintf(szBuffer,_T("%d %%"),100);
-    SetDlgItemText(IDC_COMMONPERCENTS,szBuffer);
+    //wsprintf(szBuffer,_T("%d %%"),100);
+    //SetDlgItemText(IDC_COMMONPERCENTS,szBuffer);
 
     SetNextCaption(TR("Finish >"));
     backgroundThreadStarted_ = false;
@@ -318,13 +319,16 @@ void CUploadDlg::OnUploaderStatusChanged(UploadTask* task)
     }
     FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
     if (fileTask) {
-        
-        CString statusText = /*UploaderStatusToString(progress->statusType, progress->stage, progress->statusText)*/ IuCoreUtils::Utf8ToWstring(progress->statusText).c_str();
+        CString statusText = IuCoreUtils::Utf8ToWstring(progress->statusText).c_str();
 
         bool isThumb = task->role() == UploadTask::ThumbRole;
         int columnIndex = isThumb ? 2 : 1;
         uploadListView_.SetItemText(fps->tableRow, columnIndex, statusText);
     }
+}
+
+void CUploadDlg::OnFolderUsed(UploadTask* task) {
+    resultsWindow_->AddServer(task->serverProfile());
 }
 
 void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {

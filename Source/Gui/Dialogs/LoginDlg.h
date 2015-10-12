@@ -71,6 +71,7 @@ protected:
     ServerProfile& serverProfile_;
     CHyperLink deleteAccountLabel_;
     CHyperLink doLoginLabel_;
+    CHyperLink signupLink_;
     CString accountName_;
     bool createNew_;
     bool ignoreExistingAccount_;

@@ -85,6 +85,7 @@ virtual ~CServerSelectorControl();
     void setServerProfile(ServerProfile serverProfile);
     void setShowDefaultServerItem(bool show);
     void setServersMask(int mask);
+    void setShowFilesizeLimis(bool show);
     void notifyChange();
     void notifyServerListChanged();
     void updateServerList();
@@ -122,6 +123,7 @@ private:
     UploadEngineManager* uploadEngineManager_;
     bool isPopingUp_;
     bool isChildWindow_;
+    bool showFileSizeLimits_;
     CString title_;
 
 };

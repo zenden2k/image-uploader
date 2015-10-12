@@ -913,6 +913,8 @@ LRESULT CUploadSettings::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 void CUploadSettings::OnFolderButtonContextMenu(POINT pt, bool isImageServerToolbar)
 {
+    ServerProfile & serverProfile = isImageServerToolbar ? sessionImageServer_ : sessionFileServer_;
+
     CMenu sub;    
     MENUITEMINFO mi;
     mi.cbSize = sizeof(mi);    
@@ -924,9 +926,9 @@ void CUploadSettings::OnFolderButtonContextMenu(POINT pt, bool isImageServerTool
     mi.dwTypeData = TR_CONST("New folder");
     sub.InsertMenuItem(0, true, &mi);
 
-    mi.wID = IDC_OPENINBROWSER + static_cast<int>(isImageServerToolbar);
-    mi.dwTypeData = TR_CONST("Open in Web Browser");
-    sub.InsertMenuItem(1, true, &mi);
+    if (!serverProfile.folderUrl().empty()) {
+        sub.AppendMenu(MFT_STRING, IDC_OPENINBROWSER + static_cast<int>(isImageServerToolbar), TR("Open in Web Browser"));
+    }
             
     sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, pt.x, pt.y, m_hWnd);
 }
@@ -934,7 +936,6 @@ void CUploadSettings::OnFolderButtonContextMenu(POINT pt, bool isImageServerTool
 LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     bool ImageServer = (wID % 2)!=0;
-    //CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
     ServerProfile & serverProfile = ImageServer ? sessionImageServer_ : sessionFileServer_;
 
     CScriptUploadEngine *m_pluginLoader = uploadEngineManager_->getScriptUploadEngine(serverProfile);
@@ -945,17 +946,17 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 
     m_pluginLoader->getAccessTypeList(accessTypeList);
     CFolderItem newFolder;
-    if(serverProfile.folderId()    == IU_NEWFOLDERMARK)
+    if(serverProfile.folderId() == CFolderItem::NewFolderMark)
         newFolder = serverProfile.serverSettings().newFolder;
 
      CNewFolderDlg dlg(newFolder, true, accessTypeList);
      if(dlg.DoModal(m_hWnd) == IDOK)
      {
          serverProfile.setFolderTitle(newFolder.title.c_str());
-         serverProfile.setFolderId(IU_NEWFOLDERMARK);
+         serverProfile.setFolderId(CFolderItem::NewFolderMark);
          serverProfile.setFolderUrl("");
+         newFolder.setId(CFolderItem::NewFolderMark);
 
-        
         serverProfile.serverSettings().newFolder = newFolder;
         UpdateAllPlaceSelectors();
      }

@@ -14,6 +14,7 @@ public:
     std::atomic<bool> authPerformedSuccess_;
     std::map<std::string, std::string> constVars_;
     std::mutex  constVarsMutex_;
+    std::mutex  folderMutex_;
 };
 ServerSync::ServerSync() : ThreadSync(new ServerSyncPrivate())
 {
@@ -101,4 +102,9 @@ std::string ServerSync::getConstVar(const std::string& name)
         return it->second;
     }
     return std::string();
+}
+
+std::mutex& ServerSync::folderMutex() {
+    Q_D(ServerSync);
+    return d->folderMutex_;
 }

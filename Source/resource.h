@@ -606,6 +606,8 @@
 #define IDC_EXPLORERINTEGRATION         1305
 #define IDC_URLSHORTENERPLACEHOLDER     1305
 #define IDC_PARAMETERSLABEL             1305
+#define IDC_DOLOGINLABEL2               1305
+#define IDC_SIGNUPLINK                  1305
 #define IDC_ACCOUNTINFO                 1306
 #define IDC_AUTHORLABEL                 1306
 #define IDC_EDIT                        1307

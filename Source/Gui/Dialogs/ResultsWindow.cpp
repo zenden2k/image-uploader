@@ -149,7 +149,7 @@ int CResultsWindow::GetPage()
 }
 void CResultsWindow::AddServer(ServerProfile server)
 {
-    ResultsPanel->AddServer( server);
+    ResultsPanel->AddServer(server);
 }
 
 void CResultsWindow::InitUpload()

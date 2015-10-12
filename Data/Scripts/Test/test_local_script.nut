@@ -52,3 +52,10 @@ function  UploadFile(FileName, options)
 		return 0;
 	}
 }
+
+function CreateFolder(parentAlbum,album)
+{
+	WriteLog("error", "Folder created! " + album.getTitle());
+    album.setId("cool_id");
+    return 1;
+}

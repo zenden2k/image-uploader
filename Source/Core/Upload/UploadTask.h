@@ -82,6 +82,7 @@ class UploadTask {
         fastdelegate::FastDelegate1<UploadTask*> OnUploadProgress;
         fastdelegate::FastDelegate1<UploadTask*> OnStatusChanged;
         fastdelegate::FastDelegate1<UploadTask*> OnChildTaskAdded;
+        fastdelegate::FastDelegate1<UploadTask*> OnFolderUsed;
         std::string serverName() const;
         ServerProfile& serverProfile();
         void setServerProfile(ServerProfile profile);

@@ -193,3 +193,5 @@ ServerSync* CAbstractUploadEngine::serverSync() const
 {
     return serverSync_;
 }
+
+const std::string CFolderItem::NewFolderMark = "_iu_create_folder_";

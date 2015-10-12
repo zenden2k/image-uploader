@@ -76,6 +76,9 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         CMyEngineList *engineList_;
         
         void OnUploaderStatusChanged(UploadTask* task);
+        // Is called when upload engine is uploading to remote folder(album)
+        // Then this album will appear in dropdown list "Options"
+        void OnFolderUsed(UploadTask* task);
         void onShortenUrlChanged(bool shortenUrl);
         virtual bool OnFileFinished(std::shared_ptr<UploadTask> task, bool ok);
         virtual bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);

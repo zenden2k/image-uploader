@@ -11,10 +11,6 @@
 #include <string.h>
 #include <vector>
 
-// Defines
-#define MAX_EXPR_LEN   255
-#define MAX_TOKEN_LEN  80
-
 struct TParserNode
 {
    double value;
@@ -41,6 +37,7 @@ class TParser
   private:
    TParserNode *root;
    char *expr;
+   enum { MAX_EXPR_LEN =  255, MAX_TOKEN_LEN  = 80};
    char curToken[MAX_TOKEN_LEN];
    enum { PARSER_PLUS, PARSER_MINUS, PARSER_MULTIPLY, PARSER_DIVIDE, PARSER_PERCENT, PARSER_POWER,
           PARSER_SIN, PARSER_COS, PARSER_TG, PARSER_CTG, PARSER_ARCSIN, PARSER_ARCCOS, PARSER_ARCTG, PARSER_ARCCTG, PARSER_SH, PARSER_CH, PARSER_TH, PARSER_CTH,
@@ -51,8 +48,6 @@ class TParser
    double result;
 
    std::vector<TParserNode *> history;
-
-  private:
    TParserNode *CreateNode(double _value=0.0, TParserNode *_left=NULL, TParserNode *_right=NULL);
 
    TParserNode *Expr(void);

@@ -79,7 +79,6 @@ bool __fastcall CreateShortCut(
 bool IULaunchCopy(CString params, const CAtlArray<CString> &files);
 
 const CString IU_GetVersion();
-#define IU_NEWFOLDERMARK ("_iu_create_folder_")
 void DeleteDir2(LPCTSTR Dir);
 bool BytesToString(__int64 nBytes, LPTSTR szBuffer,int nBufSize);
 bool IULaunchCopy(CString additionalParams=_T(""));

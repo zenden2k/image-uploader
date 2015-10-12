@@ -45,17 +45,10 @@ CSizeExceed::~CSizeExceed()
 void CSizeExceed::Translate()
 {
     TRC(IDC_WHATTODO, "Change image processing settings or choose another server, so your image can be uploaded.");
-    TRC(IDC_IMAGESETTINGS, "Image settings");
-    TRC(IDC_FORMATLABEL, "Format:");
-    TRC(IDC_QUALITYLABEL, "Quality:");
-    TRC(IDC_RESIZEBYWIDTH, "Change width:");
-    TRC(IDC_SAVEPROPORTIONS, "Constrain proportions");
-    TRC(IDC_XLABEL, "and/or height:");
+
     TRC(IDOK, "OK");
     TRC(IDC_FORALL, "To all");
     TRC(IDCANCEL, "Ignore");
-    TRC(IDC_SELECTSERVERLABEL, "Server for images:");
-    TRC(IDC_KEEPASIS, "Keep as is");
     SetWindowText(TR("File size exceeding"));
 }
 
@@ -115,6 +108,17 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
 LRESULT CSizeExceed::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
+    std::string serverName = imageServerSelector_->serverProfile().serverName();
+    if (serverName.empty()) {
+        MessageBox(TR("You have not selected server!"), TR("Error"), MB_ICONERROR);
+        return 0;
+    } else if (!imageServerSelector_->isAccountChosen()) {
+        CString message;
+        message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(imageServerSelector_->serverProfile().serverName()).c_str());
+        MessageBox(message, TR("Error"), MB_ICONERROR);
+        return 0;
+    }
+
     fileTask_->setServerProfile(imageServerSelector_->serverProfile());
     EndDialog(wID);
     return 0;

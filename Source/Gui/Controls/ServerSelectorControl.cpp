@@ -47,6 +47,7 @@ CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngine
         previousSelectedServerIndex = -1;
         uploadEngineManager_ = uploadEngineManager;
         isChildWindow_ = isChildWindow;
+        showFileSizeLimits_ = false;
 }
 
 CServerSelectorControl::~CServerSelectorControl()
@@ -116,7 +117,16 @@ void CServerSelectorControl::setServerProfile(ServerProfile serverProfile) {
         return;
     }
 
-    int comboboxItemIndex = serverComboBox_.FindStringExact(-1, Utf8ToWCstring(serverProfile.serverName()));
+    int count = serverComboBox_.GetCount();
+    int comboboxItemIndex = CB_ERR;
+    for (int i = 0; i < count; i++) {
+        char * data = reinterpret_cast<char*>(serverComboBox_.GetItemDataPtr(i));
+        if (data && !strcmp(data, serverProfile.serverName().c_str())) {
+            comboboxItemIndex = i; 
+            break;
+        }
+
+    }
 
     if ( comboboxItemIndex == CB_ERR) {
         serverComboBox_.SetCurSel(0); //random server
@@ -334,6 +344,10 @@ void CServerSelectorControl::setServersMask(int mask) {
     serversMask_ = mask;
 }
 
+void CServerSelectorControl::setShowFilesizeLimis(bool show) {
+    showFileSizeLimits_ = show;
+}
+
 void CServerSelectorControl::notifyChange()
 {
     ::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_CHANGE, reinterpret_cast<WPARAM>(m_hWnd), 0);
@@ -360,7 +374,7 @@ void CServerSelectorControl::updateServerList()
     }
     serverComboBox_.AddItem(L"", -1, -1, 0, reinterpret_cast<LPARAM>( strdup("random") ) );
 
-    CIcon hImageIcon = NULL, hFileIcon = NULL;
+    //CIcon hImageIcon = NULL, hFileIcon = NULL;
     int selectedIndex = 0;
     int addedItems = 0;
     std::string selectedServerName = serverProfile_.serverName();
@@ -400,7 +414,11 @@ void CServerSelectorControl::updateServerList()
             }
             char *serverName = new char[ue->Name.length() + 1];
             lstrcpyA( serverName, ue->Name.c_str() );
-            int itemIndex = serverComboBox_.AddItem( Utf8ToWCstring( ue->Name ), nImageIndex, nImageIndex, 1, reinterpret_cast<LPARAM>( serverName ) );
+            std::string displayName = ue->Name;
+            if (ue->MaxFileSize) {
+                displayName += " (" + IuCoreUtils::fileSizeToString(ue->MaxFileSize) + ")";
+            }
+            int itemIndex = serverComboBox_.AddItem(U2W(displayName), nImageIndex, nImageIndex, 1, reinterpret_cast<LPARAM>(serverName));
             if ( ue->Name == selectedServerName ){
                 selectedIndex = itemIndex;
             }
@@ -455,7 +473,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
         int command = IDC_USERNAME_FIRST_ID;
         HICON userIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONUSER));
 
-        for (std::map<std::string, ServerSettingsStruct>::iterator it = serverUsers.begin(); it != serverUsers.end(); ++it) {
+        for (auto it = serverUsers.begin(); it != serverUsers.end(); ++it) {
             //    CString login = Utf8ToWCstring(it->second.authData.Login);
             CString login = Utf8ToWCstring(it->first);
             if (!login.IsEmpty())/*&& it->second.authData.DoAuth**/ {

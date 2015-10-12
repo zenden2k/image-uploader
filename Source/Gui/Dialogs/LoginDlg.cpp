@@ -79,6 +79,17 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     doLoginLabel_.m_clrLink = CSettings::DefaultLinkColor;
     doLoginLabel_.ShowWindow(serverSupportsBeforehandAuthorization_?SW_SHOW:SW_HIDE);
 
+    if (!m_UploadEngine->RegistrationUrl.empty()) {
+        signupLink_.SubclassWindow(GetDlgItem(IDC_SIGNUPLINK));
+        signupLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
+        signupLink_.m_clrLink = CSettings::DefaultLinkColor;
+        CString linkText;
+        linkText.Format(TR("Don't have an account? Sign up on %s right now"), static_cast<LPCTSTR>(U2W(m_UploadEngine->Name)));
+        signupLink_.SetLabel(linkText);
+        signupLink_.SetHyperLink(U2W(m_UploadEngine->RegistrationUrl));
+        signupLink_.ShowWindow(SW_SHOW);
+    }
+
     CString deleteAccountLabelText;
     accountName_ = Utf8ToWCstring(li.Login);
     //deleteAccountLabelText.Format(R( "Удалить учетную запись \"%s\" из списка"), (LPCTSTR)accountName_);

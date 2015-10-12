@@ -38,6 +38,7 @@ class ServerSync: public ThreadSync
         void resetFailedAuthorization();
         void setConstVar(const std::string& name, const std::string& value);
         std::string getConstVar(const std::string& name);
+        std::mutex& folderMutex();
         /* @endcond */
     private:
         Q_DECLARE_PRIVATE_PTR(ServerSync);

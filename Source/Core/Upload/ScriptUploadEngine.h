@@ -32,8 +32,6 @@
 #include "Core/Upload/FolderList.h"
 #include "Core/Scripting/Script.h"
 
-extern const std::string IuNewFolderMark;
-
 class CScriptUploadEngine : public CAbstractUploadEngine, 
                             public Script
 {
@@ -51,6 +49,9 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
         int doLogin();
 
         bool supportsSettings();
+        /**
+        Beforehand authorization - obtain access token only once then use it for all requests (before upload)
+        **/
         bool supportsBeforehandAuthorization();
         std::string name();
         
