@@ -346,6 +346,7 @@ unsigned int prevSize=0;
 void BlurCleanup() {
     delete[] prevBuf;
     prevBuf = 0;
+    prevSize = 0;
 }
 
 void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radius) {
@@ -353,7 +354,6 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
     Rect rc(x, y, w, h);
 
     BitmapData dataSource;
-
 
     if (bm->LockBits(& rc, ImageLockModeRead|ImageLockModeWrite, PixelFormat32bppARGB, & dataSource) == Ok)
     {
@@ -368,39 +368,44 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
             buf = prevBuf;
         } else {
             delete[] prevBuf;
-            buf = new uint8_t[stride * h];
-            prevSize = stride * h;
+            size_t bufSize = stride * dataSource.Height;
+            buf = new uint8_t[bufSize];
+            prevSize = bufSize;
             prevBuf = buf;
         }
         
-        memcpy(buf, source,stride * h);
+        uint8_t *bufCur = buf;
+        uint8_t *sourceCur = source;
+        size_t myStride = 4 * w;
+        for (int i = 0; i < h; i++) {
+            memcpy(bufCur, sourceCur, myStride);
+            bufCur += myStride;
+            sourceCur += stride;
+        }
 
-        //bm->UnlockBits(&dataSource);
+        //memcpy(buf, source, stride * (h - 1) + w * 4 /*PixelFormat32bppARGB*/);
 
         DummyBitmap srcR(source,  stride, w, h, 0);
-        DummyBitmap dstR(buf,  stride, w,h, 0);
+        DummyBitmap dstR(buf, myStride, w, h, 0);
         DummyBitmap srcG(source,  stride, w, h, 1);
-        DummyBitmap dstG(buf,  stride, w,h, 1);
+        DummyBitmap dstG(buf, myStride, w, h, 1);
         DummyBitmap srcB(source,  stride,  w, h,2);
-        DummyBitmap dstB(buf,  stride, w, h, 2);
-        /*DummyBitmap srcB(source,  stride,  w, h,3);
-        DummyBitmap dstB(buf,  stride, w, h, 3);*/
+        DummyBitmap dstB(buf, myStride, w, h, 2);
+
         gaussBlur_4(srcR, dstR, w, h, radius);
         gaussBlur_4(srcG, dstG, w, h, radius);
         gaussBlur_4(srcB, dstB, w, h, radius);
-        /*buf2[rand() % stride * h]=0;*/
-        //memset(buf2, 255, stride * h/2);
-        /*-if (bm->LockBits(& rc, ImageLockModeWrite, PixelFormat24bppRGB, & dataSource) == Ok)
-        {
-            memcpy(pRowSource ,  buf2,stride * h);
-            bm->UnlockBits(&dataSource);
-        }*/
-        //gaussBlur_4(srcR, dstR, w, h, 10);
-        //memcpy(pRowSource ,  buf,stride * h);
-        memcpy(source ,  buf,stride * h);
+
+        bufCur = buf;
+        sourceCur = source;
+        for (int i = 0; i < h; i++) {
+            memcpy(sourceCur, bufCur, myStride);
+            bufCur += myStride;
+            sourceCur += stride;
+        }
+
+        //memcpy(source, buf, stride * (h-1)+w * 4 /*PixelFormat32bppARGB*/);
         bm->UnlockBits(&dataSource);
-        //delete[] buf;
-    //    delete[] buf2;
     }
 
 }

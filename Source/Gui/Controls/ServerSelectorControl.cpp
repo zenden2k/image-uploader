@@ -415,7 +415,7 @@ void CServerSelectorControl::updateServerList()
             char *serverName = new char[ue->Name.length() + 1];
             lstrcpyA( serverName, ue->Name.c_str() );
             std::string displayName = ue->Name;
-            if (ue->MaxFileSize) {
+            if (showFileSizeLimits_ && ue->MaxFileSize) {
                 displayName += " (" + IuCoreUtils::fileSizeToString(ue->MaxFileSize) + ")";
             }
             int itemIndex = serverComboBox_.AddItem(U2W(displayName), nImageIndex, nImageIndex, 1, reinterpret_cast<LPARAM>(serverName));

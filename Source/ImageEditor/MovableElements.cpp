@@ -615,8 +615,10 @@ void BlurringRectangle::render(Painter* gr)
     Bitmap* background = canvas_->getBufferBitmap();
     drawDashedRectangle_ = isMoving_;
     Rect currentRenderingRect = canvas_->currentRenderingRect();
+    Rect canvasRect(0, 0, canvas_->getWidth(), canvas_->getHeigth());
     Rect elRect(getX(), getY(), getWidth(), getHeight());
     elRect.Intersect(currentRenderingRect);
+    elRect.Intersect(canvasRect);
     if ( elRect.Width < 1 || elRect.Height < 1 ) {
         return;
     }
