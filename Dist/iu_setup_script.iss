@@ -206,9 +206,6 @@ begin
 
 
 end;
-  if (CurPageId = wpSelectTasks) and IsWine then begin
-       WizardForm.TasksList.ItemEnabled[WizardForm.TasksList.Items.Count-1] := false; // disable alternative icon on wine
-  end;
 end;
 
 
