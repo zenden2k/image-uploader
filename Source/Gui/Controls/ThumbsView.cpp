@@ -42,6 +42,7 @@ CThumbsView::CThumbsView()
     maxwidth = 0;
     maxheight = 0;
     m_NeedUpdate  = FALSE;
+    callbackLastCallTime_ = 0;
 }
 
 CThumbsView::~CThumbsView()
@@ -126,9 +127,7 @@ LRESULT CThumbsView::OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
         UpdateImageIndexes(ItemIndex);
         if(NeedRestart)
             LoadThumbnails();
-        if (callback_) {
-            callback_(this);
-        }
+        NotifyItemCountChanged();
     }
     else if(GetNextItem(-1,LVNI_SELECTED)>=0)
     {
@@ -170,9 +169,7 @@ int CThumbsView::DeleteSelected(void)
     Arrange(LVA_ALIGNTOP);
     if(IsRun )
         LoadThumbnails();
-    if (callback_) {
-        callback_(this);
-    }
+    NotifyItemCountChanged();
     return 0;
 }
 
@@ -614,6 +611,12 @@ LRESULT CThumbsView::OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
     return 0;
 }
 
+void CThumbsView::NotifyItemCountChanged(bool selected) {  
+    if (callback_) {
+        callback_(this, selected);
+    }
+}
+
 bool CThumbsView::CopySelectedItemsToClipboard() {
     return ::SendMessage(GetParent(), WM_COMMAND, MAKELPARAM(IDM_COPYFILETOCLIPBOARD, 0), 0) != FALSE;
 }
@@ -622,9 +625,7 @@ bool CThumbsView::CopySelectedItemsToClipboard() {
 LRESULT CThumbsView::OnItemChanged(int, LPNMHDR hdr, BOOL&) {
     NMLISTVIEW* lpStateChange = reinterpret_cast<NMLISTVIEW*>(hdr);
     if ((lpStateChange->uNewState ^ lpStateChange->uOldState) & LVIS_SELECTED) {
-        if (callback_) {
-            callback_(this);
-        }
+        NotifyItemCountChanged(lpStateChange->uNewState & LVIS_SELECTED);
     }
     return 0;
 }

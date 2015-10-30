@@ -36,6 +36,7 @@
 #include <Func/Library.h>
 #include <libbase64.h>
 #include <boost/format.hpp>
+#include <cassert>
 
 using namespace Gdiplus;
 
@@ -358,17 +359,21 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
     if (bm->LockBits(& rc, ImageLockModeRead|ImageLockModeWrite, PixelFormat32bppARGB, & dataSource) == Ok)
     {
         uint8_t * source = reinterpret_cast<uint8_t *>(dataSource.Scan0);
+        assert(h == dataSource.Height);
         UINT stride;
         if (dataSource.Stride > 0) { stride = dataSource.Stride;
         } else {
             stride = - dataSource.Stride;
         }
         uint8_t *buf;
-        if ( prevBuf && prevSize >= stride * h ) {
+        size_t myStride = 4 * (w /*& ~3*/);
+        size_t bufSize = myStride * h;
+
+        if (prevBuf && prevSize >= bufSize) {
             buf = prevBuf;
         } else {
             delete[] prevBuf;
-            size_t bufSize = stride * dataSource.Height;
+            
             buf = new uint8_t[bufSize];
             prevSize = bufSize;
             prevBuf = buf;
@@ -376,7 +381,7 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
         
         uint8_t *bufCur = buf;
         uint8_t *sourceCur = source;
-        size_t myStride = 4 * w;
+       
         for (int i = 0; i < h; i++) {
             memcpy(bufCur, sourceCur, myStride);
             bufCur += myStride;

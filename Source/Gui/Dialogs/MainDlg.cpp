@@ -37,6 +37,7 @@
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     listChanged_ = false;
+    callbackLastCallType_ = false;
     SetTimer(kStatusTimer, 500);
     PageWnd = m_hWnd;
     TRC(IDC_ADDIMAGES, "Add Files");
@@ -47,7 +48,19 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     
     ThumbsView.SubclassWindow(GetDlgItem(IDC_FILELIST));
     ThumbsView.Init(true);
-    ThumbsView.SetOnItemCountChanged([&](CThumbsView*){UpdateStatusLabel(); });
+    callbackLastCallTime_ = 0;
+    ThumbsView.SetOnItemCountChanged([&](CThumbsView*, bool selected)
+    {
+        DWORD curTime = ::GetTickCount();
+
+        listChanged_ = true;
+        if (callbackLastCallType_ == selected && curTime - callbackLastCallTime_ < 150) {
+            return;
+        }
+        callbackLastCallTime_ = curTime;
+        callbackLastCallType_ = selected;
+        UpdateStatusLabel();
+    });
     UpdateStatusLabel();
 
     WaitThreadStop.Create();
@@ -305,7 +318,7 @@ LRESULT CMainDlg::OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& bHandled
 
     EnableNext(FileList.GetCount()>0);
     bHandled = false;
-    UpdateStatusLabel();
+    //UpdateStatusLabel();
     return 0;
 }
 
@@ -578,10 +591,7 @@ LRESULT CMainDlg::OnTimer(UINT, WPARAM wParam, LPARAM, BOOL&) {
 
 void CMainDlg::UpdateStatusLabel() {
     int nCurItem = -1;
-    int selectedItemsCount = 0;
-    while ((nCurItem = ThumbsView.GetNextItem(nCurItem, LVNI_SELECTED)) >= 0) {
-        selectedItemsCount++;
-    }
+    int selectedItemsCount = ThumbsView.GetSelectedCount();
     int totalCount = ThumbsView.GetItemCount();
     std::string statusText;
     if (selectedItemsCount) {

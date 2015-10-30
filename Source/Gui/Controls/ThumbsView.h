@@ -63,7 +63,7 @@ public:
     LRESULT OnLvnBeginDrag(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
     LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
-    typedef std::function<void(CThumbsView*)> ItemCountChangedCallback;
+    typedef std::function<void(CThumbsView*, bool)> ItemCountChangedCallback;
     void SetOnItemCountChanged(ItemCountChangedCallback&& callback);
     bool m_NeedUpdate;
     CAutoCriticalSection ImageListCS;
@@ -96,6 +96,8 @@ public:
     LRESULT OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 protected:
     ItemCountChangedCallback callback_;
+    DWORD callbackLastCallTime_;
+    void NotifyItemCountChanged(bool selected = true);
 };
 
 
