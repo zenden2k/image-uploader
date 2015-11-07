@@ -259,9 +259,9 @@ const CString CResultsPanel::GenerateOutput()
                 continue;
             }
             CString fname= WinUtils::myExtractFileName(UrlList[i].FileName);
-
+            CString imageUrl = UrlList[i].getImageUrl(shortenUrl_);
             m_Vars[_T("DownloadUrl")]=UrlList[i].getDownloadUrl(shortenUrl_);
-            m_Vars[_T("ImageUrl")]=UrlList[i].getImageUrl(shortenUrl_);
+            m_Vars[_T("ImageUrl")] = imageUrl.IsEmpty() ? UrlList[i].getDownloadUrl(shortenUrl_) : imageUrl;
             m_Vars[_T("ThumbUrl")]=UrlList[i].getThumbUrl(shortenUrl_);
             m_Vars[_T("FileName")]=fname;
             m_Vars[_T("FullFileName")]=UrlList[i].FileName;
