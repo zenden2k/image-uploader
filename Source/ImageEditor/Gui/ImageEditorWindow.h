@@ -48,7 +48,7 @@ public:
     enum { kCanvasMargin = 4 , kToolbarOffset = 6}; // margin between toolbars and canvas in windowed mode
 
     enum DialogResult{
-        drCancel, drAddToWizard, drUpload, drShare, drSave
+        drCancel, drAddToWizard, drUpload, drShare, drSave, drCopiedToClipboard
     };
     enum class ClipboardFormat{ None, Bitmap, DataUri, DataUriHtml };
     enum WindowDisplayMode {
@@ -193,6 +193,7 @@ public:
         void updatePixelLabels();
         void OnSaveAs();
         void saveSettings();
+        bool CopyBitmapToClipboardAndClose(ClipboardFormat format = ClipboardFormat::None);
 };
 
 class ConfigurationProvider {

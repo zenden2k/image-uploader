@@ -305,14 +305,17 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
         //windowStyle = GetStyle();
         DWORD windowStyle = WS_POPUP|WS_CLIPCHILDREN;
         SetWindowLong(GWL_STYLE, windowStyle);
+        HWND insertAfter = nullptr;
+#ifndef NDEBUG
         SetWindowLong(GWL_EXSTYLE, WS_EX_TOPMOST);
-        SetWindowPos(HWND_TOPMOST , displayBounds.left, displayBounds.top, displayBounds.right-displayBounds.left, displayBounds.bottom-displayBounds.top,0);
+        insertAfter = HWND_TOPMOST;
+#endif
+        SetWindowPos(insertAfter, displayBounds.left, displayBounds.top, displayBounds.right - displayBounds.left, displayBounds.bottom - displayBounds.top, 0);
     }
 
     if ( displayMode_ == wdmWindowed ) {
         CenterWindow();
     }
-
 
     icon_ = GuiTools::LoadBigIcon(IDR_MAINFRAME);
     iconSmall_ = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
@@ -1020,27 +1023,18 @@ LRESULT ImageEditorWindow::OnClickedSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 LRESULT ImageEditorWindow::OnClickedCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    if (GetFocus() != m_view.m_hWnd)
-    {
-        ::SetFocus(m_view.m_hWnd);
-    }
-    saveDocument(ClipboardFormat::Bitmap);
+    CopyBitmapToClipboardAndClose(ClipboardFormat::Bitmap);
+   
     return 0;
 }
 
 LRESULT ImageEditorWindow::OnClickedCopyToClipboardAsDataUri(WORD, WORD, HWND, BOOL&) {
-    if (GetFocus() != m_view.m_hWnd) {
-        ::SetFocus(m_view.m_hWnd);
-    }
-    saveDocument(ClipboardFormat::DataUri);
+    CopyBitmapToClipboardAndClose(ClipboardFormat::DataUri);
     return 0;
 }
 
 LRESULT ImageEditorWindow::OnClickedCopyToClipboardAsDataUriHtml(WORD, WORD, HWND, BOOL&) {
-    if (GetFocus() != m_view.m_hWnd) {
-        ::SetFocus(m_view.m_hWnd);
-    }
-    saveDocument(ClipboardFormat::DataUriHtml);
+    CopyBitmapToClipboardAndClose(ClipboardFormat::DataUriHtml);
     return 0;
 }
 
@@ -1100,6 +1094,17 @@ void ImageEditorWindow::saveSettings()
         configurationProvider_->setRoundingRadius(canvas_->getRoundingRadius());
         configurationProvider_->saveConfiguration();
     }
+}
+
+bool ImageEditorWindow::CopyBitmapToClipboardAndClose(ClipboardFormat format) {
+    if (GetFocus() != m_view.m_hWnd) {
+        ::SetFocus(m_view.m_hWnd);
+    }
+    bool res = saveDocument(format);
+    if (res && displayMode_ == wdmFullscreen &&  !(GetKeyState(VK_SHIFT) & 0x8000)) {
+        EndDialog(drCopiedToClipboard);
+    }
+    return res;
 }
 
 LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)

@@ -203,6 +203,7 @@ public:
      bool m_bFromHotkey;
      void OnFileFinished(UploadTask*  task, bool ok);
      void ShowImageUploadedMessage(const CString& url);
+     void ShowScreenshotCopiedToClipboardMessage();
      std::string source_file_name_;
      std::string server_name_;
      int iconAnimationCounter_;

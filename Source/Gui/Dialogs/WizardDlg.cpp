@@ -338,9 +338,9 @@ bool CWizardDlg::ParseCmdLine()
             imageEditor.showUploadButton(false);
             m_bShowWindow=false;
             ImageEditorWindow::DialogResult dr = imageEditor.DoModal(m_hWnd, ImageEditorWindow::wdmAuto);
-            if ( dr == ImageEditorWindow::drCancel ) {
+            if (dr == ImageEditorWindow::drCancel) {
                 PostQuitMessage(0);    
-            } else {
+            } else if (dr != ImageEditorWindow::drCopiedToClipboard){
                 this->AddImage(imageFileName, myExtractFileName(imageFileName), true);
                 //ShowPage(1);
                 m_bShowAfter = true;
@@ -1821,7 +1821,10 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
         dialogResult = imageEditor.DoModal(m_hWnd, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen ) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
         if ( dialogResult == ImageEditorWindow::drAddToWizard || dialogResult == ImageEditorWindow::drUpload ) {
             result = imageEditor.getResultingBitmap();
-        }else {
+        } else {
+            if (dialogResult == ImageEditorWindow::drCopiedToClipboard && floatWnd.m_hWnd) {
+                floatWnd.ShowScreenshotCopiedToClipboardMessage();
+            }
             CanceledByUser = true;
         }
     } 
