@@ -98,7 +98,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPROGRESS));
     GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPERCENTS));
     PageWnd = m_hWnd;
-    resultsWindow_->SetPage(Settings.CodeLang);
+    resultsWindow_->SetPage(static_cast<CResultsPanel::TabPage>(Settings.CodeLang));
     resultsWindow_->SetCodeType(Settings.CodeType);
     showUploadProgressTab();
     return 1;  
@@ -231,7 +231,7 @@ bool CUploadDlg::OnShow()
             newcode=2;
     }
     resultsWindow_->SetCodeType(newcode);
-    resultsWindow_->SetPage(Settings.CodeLang);
+    resultsWindow_->SetPage(static_cast<CResultsPanel::TabPage>(Settings.CodeLang));
 
     ::SetFocus(GetDlgItem(IDC_CODEEDIT));
     alreadyShortened_ = false;

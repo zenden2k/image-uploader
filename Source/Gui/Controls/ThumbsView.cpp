@@ -625,7 +625,7 @@ bool CThumbsView::CopySelectedItemsToClipboard() {
 LRESULT CThumbsView::OnItemChanged(int, LPNMHDR hdr, BOOL&) {
     NMLISTVIEW* lpStateChange = reinterpret_cast<NMLISTVIEW*>(hdr);
     if ((lpStateChange->uNewState ^ lpStateChange->uOldState) & LVIS_SELECTED) {
-        NotifyItemCountChanged(lpStateChange->uNewState & LVIS_SELECTED);
+        NotifyItemCountChanged((lpStateChange->uNewState & LVIS_SELECTED) == LVIS_SELECTED);
     }
     return 0;
 }

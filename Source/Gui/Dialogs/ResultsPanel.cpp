@@ -34,11 +34,12 @@
 #include "Gui/Dialogs/WizardDlg.h"
 
 // CResultsPanel
-CResultsPanel::CResultsPanel(CWizardDlg *dlg,std::vector<CUrlListItem>  & urlList):WizardDlg(dlg),UrlList(urlList)
+CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>  & urlList, bool openedFromHistory) :WizardDlg(dlg), UrlList(urlList)
 {
     webViewWindow_ = NULL;
     m_nImgServer = m_nFileServer = -1;
-    TemplateHead = TemplateFoot = NULL;    
+    TemplateHead = TemplateFoot = NULL; 
+    openedFromHistory_ = openedFromHistory;
     rectNeeded.left = -1;
     CString TemplateLoadError;
     shortenUrl_ = false;
@@ -171,7 +172,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     return 1;  // Let the system set the focus
 }
 
-void CResultsPanel::SetPage(int Index)
+void CResultsPanel::SetPage(TabPage Index)
 {
     ::EnableWindow(GetDlgItem(IDC_CODETYPELABEL), Index!=2);
     ::EnableWindow(GetDlgItem(IDC_CODETYPE), Index!=2);
@@ -187,7 +188,7 @@ void CResultsPanel::SetPage(int Index)
     UpdateOutput();
     BOOL temp;
 
-    if(!UrlList.empty() && Settings.AutoCopyToClipboard)
+    if (!openedFromHistory_ && !UrlList.empty() && Settings.AutoCopyToClipboard)
         OnBnClickedCopyall(0,0,0,temp);
 }
 
@@ -472,6 +473,9 @@ LRESULT CResultsPanel::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 {
     CString buffer = GenerateOutput();
     WinUtils::CopyTextToClipboard(buffer);
+    if (m_Page == kHtml && !buffer.IsEmpty()) {
+        WinUtils::CopyHtmlToClipboard(buffer);
+    }
     return 0;
 }
 

@@ -152,16 +152,18 @@ bool CopyTextToClipboard(const CString& text)
     return true;
 }
 
-bool CopyHtmlToClipboard(const CString& text)
+bool CopyHtmlToClipboard(const CString& text, bool emptyClipboard)
 {
     LPSTR lptstrCopy;
     HGLOBAL hglbCopy;
    
     if (!OpenClipboard(NULL))
         return FALSE;
-    EmptyClipboard();
+    if (emptyClipboard) {
+        EmptyClipboard();
+    }
     std::string textUtf8 = W2U(text);
-    std::string html = TextToClipboardHtmlFormat(textUtf8.c_str(), 0);
+    std::string html = TextToClipboardHtmlFormat(textUtf8.c_str(), textUtf8.length());
     unsigned htmlClipboardFormatId = RegisterClipboardFormat(_T("HTML Format"));
     int cch = html.size();
     hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (cch + 1) );
@@ -170,7 +172,7 @@ bool CopyHtmlToClipboard(const CString& text)
         return FALSE;
     }
     lptstrCopy = reinterpret_cast<LPSTR>(GlobalLock(hglbCopy));
-    memcpy(lptstrCopy, html.c_str(), cch-1);
+    memcpy(lptstrCopy, html.c_str(), cch);
     lptstrCopy[cch] = 0;
     GlobalUnlock(hglbCopy);
     SetClipboardData(htmlClipboardFormatId, hglbCopy);

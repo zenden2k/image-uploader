@@ -27,7 +27,7 @@
 CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,std::vector<CUrlListItem>  & urlList,bool ChildWindow)
 {
     m_WizardDlg = wizardDlg;
-    ResultsPanel = new CResultsPanel(wizardDlg, urlList);
+    ResultsPanel = new CResultsPanel(wizardDlg, urlList, !ChildWindow);
     m_childWindow = ChildWindow;
 }
 
@@ -137,7 +137,7 @@ void CResultsWindow::EnableMediaInfo(bool Enable)
     ResultsPanel->EnableMediaInfo(Enable);
 }
 
-void CResultsWindow::SetPage(int Index)
+void CResultsWindow::SetPage(CResultsPanel::TabPage Index)
 {
     TabCtrl_SetCurSel(GetDlgItem(IDC_RESULTSTAB), Index);
     ResultsPanel->SetPage(Index);
@@ -175,7 +175,7 @@ void CResultsWindow::setUrlList(CAtlArray<CUrlListItem>  * urlList)
 LRESULT CResultsWindow::OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
     int Index = TabCtrl_GetCurSel(GetDlgItem(idCtrl));
-    ResultsPanel->SetPage(Index);
+    ResultsPanel->SetPage(static_cast<CResultsPanel::TabPage>(Index));
     return 0;
 }
 

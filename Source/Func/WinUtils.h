@@ -30,7 +30,7 @@ namespace WinUtils {
     CString GetCommonApplicationDataPath();
     bool    CopyTextToClipboard(const CString& text);
     bool    GetClipboardText(CString &text, HWND hwnd = NULL, bool raiseError = false);
-    bool CopyHtmlToClipboard(const CString& text);
+    bool CopyHtmlToClipboard(const CString& text, bool emptyClipboard = false);
     bool GetClipboardHtml(CString& text, CString& outSourceUrl);
     DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
 

@@ -51,7 +51,7 @@ class CResultsPanel :
     public CDialogImpl<CResultsPanel>    
 {
     public:
-        CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>  & urlList);
+        CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>  & urlList, bool openedFromHistory = false);
         virtual ~CResultsPanel();
         enum { IDD = IDD_RESULTSPANEL};
 
@@ -74,6 +74,7 @@ class CResultsPanel :
         END_MSG_MAP()
 
     fastdelegate::FastDelegate1<bool> OnShortenUrlChanged;
+    enum TabPage { kBbCode = 0, kHtml, kPlainText };
 
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -89,7 +90,7 @@ class CResultsPanel :
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
     CToolBarCtrl Toolbar;
-    void SetPage(int Index);
+    void SetPage(TabPage Index);
     void setEngineList(CMyEngineList* EngineList);
     std::vector<CUrlListItem>  &UrlList;
     const CString GenerateOutput();
@@ -97,7 +98,8 @@ class CResultsPanel :
     
     bool LoadTemplate();
     LPTSTR TemplateHead,TemplateFoot; //TemplateFoot is only pointer to part of TemplateHead 
-    int m_Page;
+  
+    TabPage m_Page;
     LRESULT OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -123,6 +125,7 @@ class CResultsPanel :
     void AddServer(ServerProfile server);
     RECT rectNeeded;
     bool shortenUrl_;
+    bool openedFromHistory_;
     void InitUpload();
     void setUrlList(CAtlArray<CUrlListItem>  * urlList);
     LRESULT OnResulttoolbarNMCustomDraw(LPNMHDR pnmh);

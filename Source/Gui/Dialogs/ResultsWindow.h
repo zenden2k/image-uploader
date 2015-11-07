@@ -44,7 +44,7 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
         void UpdateOutput();
         void SetCodeType(int Index);
         void Clear();
-        void SetPage(int Index);
+        void SetPage(CResultsPanel::TabPage Index);
         int GetPage();
         void AddServer(ServerProfile  server);
         void InitUpload();
