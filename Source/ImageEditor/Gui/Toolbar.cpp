@@ -31,15 +31,15 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
     memset(&buttonsRect_, 0, sizeof(buttonsRect_));
     font_ = 0;
     textRenderingHint_ = Gdiplus::TextRenderingHintAntiAlias;
+    oldSelectedBm_ = nullptr;
 }
 
 Toolbar::~Toolbar()
 {
     delete font_;
     delete dropDownIcon_;
-    /*for ( int i =0 ; i < buttons_.size(); i++ ) {
-        delete buttons_[i].icon;
-    }*/
+    backBufferDc_.SelectBitmap(oldSelectedBm_);
+    backBuffer_.DeleteObject();
 }
 
 bool Toolbar::Create(HWND parent, bool child )
@@ -144,7 +144,7 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
     CDC hdc = GetDC();
     dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
-
+    backBufferDc_.CreateCompatibleDC(hdc);
 
     systemFont_ = GuiTools::GetSystemDialogFont();
     LOGFONT logFont;
@@ -213,16 +213,15 @@ LRESULT Toolbar::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
     using namespace Gdiplus;
-    CPaintDC dc(m_hWnd);
-    RECT clientRect;
+    CDC &dc = backBufferDc_;
+   
+    CRect clientRect;
     bHandled = true;
     GetClientRect(&clientRect);
     Gdiplus::Graphics gr(dc);
     gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
     gr.SetPageUnit(Gdiplus::UnitPixel);
-    
-    //*gr.SetPixelOffsetMode(PixelOffsetModeHalf);
-    //dc.FillSolidRect(&clientRect, RGB(255,0,0));
+
     Rect rect( 0, 0, clientRect.right, clientRect.bottom);
     SolidBrush br1(transparentColor_);
     gr.FillRectangle(&br1, rect);
@@ -246,14 +245,10 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
     
     //Gdiplus::SolidBrush br(Color(200,2,146,209));
 
-
     gr.SetSmoothingMode(GetStyle()&WS_CHILD ? SmoothingModeAntiAlias : SmoothingModeDefault);
     DrawRoundedRectangle(&gr,rect,7,&p, &br);
 
-    
-
     gr.SetSmoothingMode(SmoothingModeAntiAlias);
-
 
     //gr.FillRectangle(&br,rect);
     int x = itemMargin_;
@@ -276,7 +271,8 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
         gr.FillRectangle(&br, Rect(buttonsRect_.right-1, buttonsRect_.bottom-1, 1,1)); 
     }
 
-    //gr.
+    CPaintDC realDc(m_hWnd);
+    realDc.BitBlt(0, 0, clientRect.Width(), clientRect.Height(), dc, 0, 0, SRCCOPY);
 
     return 0;
 }
@@ -445,9 +441,9 @@ LRESULT Toolbar::OnRButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
     return 0;
 }
 
-LRESULT Toolbar::OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT Toolbar::OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-    return 0;
+    return 1; // avoid flicker
 }
 
 LRESULT Toolbar::OnNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -557,15 +553,22 @@ int Toolbar::AutoSize()
         roundRadiusSlider_.ClientToScreen(&radiusSliderRect);
         ScreenToClient(&radiusSliderRect);
         roundRadiusLabel_.SetWindowPos(0, radiusSliderRect.right, buttonsRect_.bottom + static_cast<int>(3 * dpiScaleY_), 0, 0, SWP_NOSIZE);
-
-
     }
 
     for (size_t i = 0; i < buttons_.size(); i++) {
         CreateToolTipForItem(i);
     }
-    //x += itemMargin_ * 2;
-    
+
+    CRect clientRect;
+    GetClientRect(&clientRect);
+    CWindowDC dc(m_hWnd);
+    if (backBuffer_.m_hBitmap) {
+        backBufferDc_.SelectBitmap(oldSelectedBm_);
+        backBuffer_.DeleteObject();
+    }
+
+    backBuffer_.CreateCompatibleBitmap(dc, clientRect.Width(), clientRect.Height());
+    oldSelectedBm_ = backBufferDc_.SelectBitmap(backBuffer_);
     return 1;
 }
 

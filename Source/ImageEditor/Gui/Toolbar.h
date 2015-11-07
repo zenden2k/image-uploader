@@ -138,6 +138,9 @@ protected:
     int subpanelLeftOffset_;
     Gdiplus::Color  subpanelColor_;
     CBrush subpanelBrush_;
+    CBitmap backBuffer_;
+    CDC backBufferDc_;
+    HBITMAP oldSelectedBm_;
     Gdiplus::TextRenderingHint textRenderingHint_;
     void createHintForSliders(HWND slider, CString text);
 };
