@@ -315,6 +315,11 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
     return 0;
 }
 
+LRESULT CFloatingWindow::OnShowLastUploadResults(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    showLastUploadedCode();
+    return 0;
+}
+
 LRESULT CFloatingWindow::OnWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     if (m_PrevActiveWindow)
@@ -440,6 +445,9 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_SHOWAPPWINDOW, TR("Show program's window"));
         MyInsertMenu(TrayMenu, i++, IDM_OPENSCREENSHOTSFOLDER, TR("Open screenshots folder"));
+        if (lastUploadedItem_) {
+            MyInsertMenu(TrayMenu, i++, IDM_SHOWLASTUPLOADRESULTS, TR("Show results of last upload"));
+        }
         MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_SETTINGS, TR("Settings") + CString(_T("...")));
         MyInsertMenu(TrayMenu, i++, 0, 0);
