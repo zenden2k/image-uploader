@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<UpdatePackageSource Name="iu_core" DisplayName="Image Uploader 1.3.2-alpha.4474" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%&amp;os_name=OS_NAME&amp;os_ver=OS_VER&amp;cpu_f=CPU_FEATURES"  CoreUpdate="1" >
+<UpdatePackageSource Name="iu_core" DisplayName="Image Uploader 1.3.2-alpha.4483" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%&amp;os_name=OS_NAME&amp;os_ver=OS_VER&amp;cpu_f=CPU_FEATURES"  CoreUpdate="1" >
 	<Entries>
 		<Entry Name="Image Uploader.exe" SaveToFolder="%apppath%/" Action="add"/>
 		<Entry Name="ExplorerIntegration*.dll" SaveToFolder="%apppath%/" Action="add"/>
@@ -21,9 +21,23 @@
 		<Entry Name="Data/templates.xml" SaveToFolder="%datapath%/templates.xml" Action="add"/>
 	</Entries>
 <Info>
-[+] Added animation of tray icon
-[+] Copy image in data:URL format
-[f] Fixed crash with environment variable (containg percent symbol) in path to external editor
-[f] Fixed wrong icon for "Log" and "Options button" in uploaddlg
+[+] Added Win7 jumplist
+[c] Allow editing of default thumbnail templates by making a copy
+[+] Copy image in data:URL format, closes 
+[+] Added "Clear History" button
+[+] Added "Show screenshot folder" menu item
+[f] Fixed deleting of an account
+[+] Show file count in file list
+[f] Fixed creation of new folder in multithreaded mode
+[+] Added Signup link to login dialog;
+[f] Fixed album's link in results panel;
+[f] Show file size limits in SizeExceed dialog
+[f] ImageEditor: fixed crash in Blur element
+[f] Fixed Installer: "install ffmpeg libs" checkbox is disabled under Wine
+[c] ImageEditor: close window on copy to clipboard in fullscreen mode
+[+] Show results of last upload (tray icon menu)
+[c] ImageEditor: toolbars double-buffering
+[f] Custom output code templates (markdown), fix empty imageUrl if no direct url available
+[+] Copy results to the clipboard in HTML format (for WYSYWYG editors)
 </Info>
 </UpdatePackageSource>

@@ -22,6 +22,24 @@
 [c] Language files are now in UTF-8 encoding
 [c] Use winssl instead of openssl
 
+[+] Added Win7 jumplist
+[c] Allow editing of default thumbnail templates by making a copy
+[+] Copy image in data:URL format, closes 
+[+] Added "Clear History" button
+[+] Added "Show screenshot folder" menu item
+[f] Fixed deleting of an account
+[+] Show file count in file list
+[f] Fixed creation of new folder in multithreaded mode
+[+] Added Signup link to login dialog;
+[f] Fixed album's link in results panel;
+[f] Show file size limits in SizeExceed dialog
+[f] ImageEditor: fixed crash in Blur element
+[f] Fixed Installer: "install ffmpeg libs" checkbox is disabled under Wine
+[c] ImageEditor: close window on copy to clipboard in fullscreen mode
+[+] Show results of last upload (tray icon menu)
+[c] ImageEditor: toolbars double-buffering
+[f] Custom output code templates (markdown), fix empty imageUrl if no direct url available
+[+] Copy results to the clipboard in HTML format (for WYSYWYG editors)
 
 [c] MediaInfo: changed duration display style
 [+] Multiselection in log window

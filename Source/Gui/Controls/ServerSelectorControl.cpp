@@ -224,13 +224,7 @@ void CServerSelectorControl::serverChanged() {
             if ( !uploadEngineData ) {
                 return ;
             }
-
-        
-            //std::map<CString,ServerSettingsStruct> serverProfiles;
-            //serverProfiles[serverNameW]= Settings.ServersSettings[serverName];
-        
-        //    ShowVar((int)Settings.ServersSettings[serverName].size());
-            
+   
             if ( Settings.ServersSettings[serverName].size() ) {
 
 
@@ -254,9 +248,9 @@ void CServerSelectorControl::serverChanged() {
                 
             }
         }
-
-    
-        
+ 
+    } else {
+        serverProfile_ = ServerProfile();
     }
     previousSelectedServerIndex = serverComboElementIndex;
     notifyChange();
