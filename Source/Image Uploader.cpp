@@ -39,7 +39,7 @@
 #include "Core/AppParams.h"
 
 #ifndef NDEBUG
-#include <vld.h>
+//#include <vld.h>
 #endif
 #include "Func/GdiPlusInitializer.h"
 CAppModule _Module;

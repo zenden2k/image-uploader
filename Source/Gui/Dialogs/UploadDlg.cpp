@@ -34,7 +34,8 @@
 #include "Core/CoreFunctions.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Func/MediaInfoHelper.h"
-#include <Func/IuCommonFunctions.h>
+#include "Func/IuCommonFunctions.h"
+#include "Core/AppParams.h"
 
 // CUploadDlg
 CUploadDlg::CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager) : resultsWindow_(new CResultsWindow(dlg, urlList_, true))
@@ -90,7 +91,8 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         if (vg && lstrlen(vg->m_szFileName))
             IsLastVideo = true;
     }
-    resultsWindow_->EnableMediaInfo(IsLastVideo);
+
+	resultsWindow_->EnableMediaInfo(IsLastVideo);
 
     SetDlgItemInt(IDC_THUMBSPERLINE, 4);
     SendDlgItemMessage(IDC_THUMBPERLINESPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );

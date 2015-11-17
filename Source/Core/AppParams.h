@@ -7,6 +7,7 @@
 class AppParams: public Singleton<AppParams>
 {
     public:
+		AppParams();
         std::string dataDirectory();
         void setDataDirectory(const std::string& directory);
         std::string settingsDirectory();

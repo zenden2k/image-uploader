@@ -1,5 +1,8 @@
 #include "AppParams.h"
 
+AppParams::AppParams() {
+}
+
 std::string AppParams::dataDirectory()
 {
     return dataDirectory_;

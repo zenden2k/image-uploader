@@ -193,9 +193,7 @@ void CQuickSetupDlg::doAuthCheckboxChanged() {
 }
 
 void CQuickSetupDlg::translateUI() {
-    TRC(IDC_FTPSETTINGSBUTTON, "FTP settings");
     TRC(IDOK, "Continue");
-    TRC(IDCANCEL, "Cancel");
     TRC(IDC_LOGINLABEL, "Login:");
     TRC(IDC_PASSWORDLABEL, "Password:");
     TRC(IDC_SERVERLABEL, "Choose server for uploading images");

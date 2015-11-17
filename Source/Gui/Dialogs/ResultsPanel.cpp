@@ -32,6 +32,7 @@
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
 #include "Gui/Dialogs/WizardDlg.h"
+#include "Func/MediaInfoHelper.h"
 
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>  & urlList, bool openedFromHistory) :WizardDlg(dlg), UrlList(urlList)
@@ -147,9 +148,11 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     Toolbar.AddButton(IDC_OPTIONSMENU, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Options"), 0);
     Toolbar.AddButton(IDC_PREVIEWBUTTON, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 4, TR("Preview"), 0);
     
-    
-    if(!IsLastVideo) 
-        Toolbar.HideButton(IDC_MEDIAFILEINFO);
+	bool isMediaInfoAvailable = MediaInfoHelper::IsMediaInfoAvailable();
+
+	if (!IsLastVideo || !isMediaInfoAvailable) {
+		Toolbar.HideButton(IDC_MEDIAFILEINFO);
+	}
         
     Toolbar.AutoSize();
     Toolbar.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);

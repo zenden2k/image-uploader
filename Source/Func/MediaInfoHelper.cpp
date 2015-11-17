@@ -87,7 +87,7 @@ bool FindMediaInfoDllPath() {
 }
 
 bool IsMediaInfoAvailable() {
-    return *MediaInfoDllPath != _T('0');
+    return *MediaInfoDllPath != _T('\0');
 }
 
 bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)

@@ -683,13 +683,17 @@
 #define ID_Menu32805                    32805
 #define ID__DATA                        32806
 #define ID__DATA32807                   32807
+#define ID_0_                           32808
+#define IDM_COPYFILEPATH                32809
+#define ID_0_EXTRACTFRAMES              32810
+#define IDM_EXTRACTFRAMES               32811
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        308
-#define _APS_NEXT_COMMAND_VALUE         32808
+#define _APS_NEXT_COMMAND_VALUE         32812
 #define _APS_NEXT_CONTROL_VALUE         1317
 #define _APS_NEXT_SYMED_VALUE           128
 #endif

@@ -1349,9 +1349,11 @@ BEGIN
         MENUITEM "Просмотр",                    IDM_VIEW
         MENUITEM "Edit",                        IDM_EDIT
         MENUITEM "#Edit in external editor",    IDM_EDITINEXTERNALEDITOR
+        MENUITEM "Extract frames",              IDM_EXTRACTFRAMES
         MENUITEM "Open in folder",              IDM_OPENINFOLDER
         MENUITEM "Save as...",                  IDM_SAVEAS
         MENUITEM "Копировать",                  IDM_COPYFILETOCLIPBOARD
+        MENUITEM "#Copy full path",             IDM_COPYFILEPATH
         MENUITEM "Удалить\tDel",                IDM_DELETE
         MENUITEM "Свойства",                    IDC_PROPERTIES
     END

@@ -218,6 +218,8 @@ public:
     // end of functions
     bool executeFunc(CString funcName);
 
+	bool importVideoFile(const CString& fileName, int prevPage = 0);
+
     bool HandleDropFiledescriptors(IDataObject *pDataObj);
     bool HandleDropHDROP(IDataObject *pDataObj);
     bool HandleDropBitmap(IDataObject *pDataObj);

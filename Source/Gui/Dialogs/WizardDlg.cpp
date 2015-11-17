@@ -58,6 +58,7 @@
 #include "Func/MediaInfoHelper.h"
 #include "Core/Utils/DesktopUtils.h"
 #include "Gui/Win7JumpList.h"
+#include "Core/AppParams.h"
 
 using namespace Gdiplus;
 namespace
@@ -258,16 +259,20 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	Settings.fixInvalidServers();
     if ( isFirstRun ) {
         CQuickSetupDlg quickSetupDialog;
-        quickSetupDialog.DoModal(m_hWnd);
+		if (quickSetupDialog.DoModal(m_hWnd) != IDOK){
+			*DlgCreationResult = 2;
+			return 0;
+		}
     }
 
     ServiceLocator::instance()->historyManager()->setHistoryDirectory(Settings.SettingsFolder + "\\History\\");
     sessionImageServer_ = Settings.imageServer;
     sessionFileServer_ = Settings.fileServer;
 
-    if(!*MediaInfoDllPath)
-        ServiceLocator::instance()->logger()->write(logWarning, APPNAME, TR("MediaInfo.dll Not found! \r\nGetting technical information of media files will not be accessible."));
-    if(!CmdLine.IsOption(_T("tray")))
+	if (!*MediaInfoDllPath) {
+		ServiceLocator::instance()->logger()->write(logWarning, APPNAME, TR("MediaInfo.dll Not found! \r\nGetting technical information of media files will not be accessible."));
+	} 
+	if(!CmdLine.IsOption(_T("tray")))
         TRC(IDCANCEL, "Exit");
     else 
         TRC(IDCANCEL, "Hide");
@@ -1332,6 +1337,14 @@ bool CWizardDlg::executeFunc(CString funcBody)
     return false;
 }
 
+bool CWizardDlg::importVideoFile(const CString& fileName, int prevPage) {
+	CreatePage(1);
+	LastVideoFile = fileName;
+	((CVideoGrabberPage*)Pages[1])->SetFileName(fileName); // C-style conversion .. 
+	ShowPage(1, prevPage, (Pages[2]) ? 2 : 3);
+	return true;
+}
+
 bool CWizardDlg::funcImportVideo()
 {
     TCHAR Buf[MAX_PATH*4];
@@ -1348,10 +1361,7 @@ bool CWizardDlg::funcImportVideo()
     if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return 0;
     WinUtils::ExtractFilePath(fd.m_szFileName, Buffer); 
     Settings.VideoFolder = Buffer;
-    CreatePage(1);
-    LastVideoFile = fd.m_szFileName;
-    ((CVideoGrabberPage*)Pages[1])->SetFileName(fd.m_szFileName); // C-style conversion .. 
-    ShowPage(1,0,(Pages[2])?2:3);
+	importVideoFile(fd.m_szFileName);
     ShowWindow(SW_SHOW);
         m_bShowWindow = true;
     return true;

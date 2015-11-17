@@ -173,14 +173,23 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         CMenu sub = menu.GetSubMenu(0);
         sub.SetMenuDefaultItem(0, true);
 
-        bool bIsImageFile = IuCommonFunctions::IsImage( FileList[hti.iItem].FileName);
+		CString fileName = FileList[hti.iItem].FileName;
+		bool bIsImageFile = IuCommonFunctions::IsImage(fileName);
+		bool isVideoFile = IsVideoFile(fileName);
+
         if(!bIsImageFile){
             sub.DeleteMenu(IDM_VIEW, MF_BYCOMMAND );
             sub.DeleteMenu(IDM_EDIT, MF_BYCOMMAND );
+			sub.DeleteMenu(IDM_EDITINEXTERNALEDITOR, MF_BYCOMMAND);
         }
+
+		if (!isVideoFile){
+			sub.DeleteMenu(IDM_EXTRACTFRAMES, MF_BYCOMMAND);
+		}
 
         mi.dwTypeData = const_cast<LPWSTR>(TR("View"));
         sub.SetMenuItemInfo(IDM_VIEW, false, &mi);
+
 
         mi.dwTypeData = const_cast<LPWSTR>(TR("Open in folder"));
         sub.SetMenuItemInfo(IDM_OPENINFOLDER, false, &mi);
@@ -192,6 +201,10 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         lstrcpy(buf, menuItemTitle);
         mi.dwTypeData  = buf;
         sub.SetMenuItemInfo(IDM_COPYFILETOCLIPBOARD, false, &mi);
+
+		mi.dwTypeData = const_cast<LPWSTR>(TR_CONST("Copy full path"));
+		sub.SetMenuItemInfo(IDM_COPYFILEPATH, false, &mi);
+
         mi.dwTypeData = const_cast<LPWSTR>(TR("Remove"));
         sub.SetMenuItemInfo(IDM_DELETE, false, &mi);
         mi.dwTypeData = const_cast<LPWSTR>(TR("Properties"));
@@ -582,6 +595,25 @@ LRESULT CMainDlg::OnCopyFileAsDataUriHtml(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     return 0;
 }
 
+LRESULT CMainDlg::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CString fileName = getSelectedFileName();
+	if (!fileName.IsEmpty()) {
+		if (!WinUtils::CopyTextToClipboard(fileName)) {
+			MessageBox(_T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
+		}
+	}
+	return 0;
+}
+
+LRESULT CMainDlg::OnExtractFramesFromSelectedFile(WORD, WORD, HWND, BOOL&) {
+	CString fileName = getSelectedFileName();
+	if (!fileName.IsEmpty()) {
+		WizardDlg->importVideoFile(fileName, 2);
+	}
+	return 0;
+}
+
 LRESULT CMainDlg::OnTimer(UINT, WPARAM wParam, LPARAM, BOOL&) {
     if (wParam == kStatusTimer && listChanged_) {
         UpdateStatusLabel();
@@ -590,7 +622,6 @@ LRESULT CMainDlg::OnTimer(UINT, WPARAM wParam, LPARAM, BOOL&) {
 }
 
 void CMainDlg::UpdateStatusLabel() {
-    int nCurItem = -1;
     int selectedItemsCount = ThumbsView.GetSelectedCount();
     int totalCount = ThumbsView.GetItemCount();
     std::string statusText;
