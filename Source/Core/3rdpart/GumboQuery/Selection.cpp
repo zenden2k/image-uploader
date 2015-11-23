@@ -32,7 +32,7 @@ CSelection::CSelection(std::vector<GumboNode*> aNodes)
 }
 
 std::string CSelection::attribute(std::string key) {
-    return nodeAt(0).text();
+    return nodeAt(0).attribute(key);
 }
 
 std::string CSelection::text() {

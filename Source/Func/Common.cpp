@@ -227,10 +227,10 @@ DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
 
 CString GetUniqFileName(const CString& filePath)
 {
-    TCHAR path[256];
     if (!WinUtils::FileExists(filePath))
         return filePath;
-    ExtractFilePath(filePath, path);
+    CString path = U2W(IuCoreUtils::ExtractFilePath(W2U(filePath)));
+
     CString name;
     name = WinUtils::GetOnlyFileName(filePath);
     CString extension = GetFileExt(filePath);

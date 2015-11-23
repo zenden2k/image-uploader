@@ -176,8 +176,11 @@ int NetworkClient::private_writer(char *data, size_t size, size_t nmemb)
     if(!m_OutFileName.empty())
     {
         if(!m_hOutFile)
-            if((m_hOutFile = IuCoreUtils::fopen_utf8(m_OutFileName.c_str(), "wb"))==0)
-                return 0;
+            if ((m_hOutFile = IuCoreUtils::fopen_utf8(m_OutFileName.c_str(), "wb")) == 0) {
+                LOG(ERROR) << "Unable to create output file:" << std::endl << m_OutFileName;
+                throw NetworkClient::AbortedException("Unable to create output file");
+            }
+               
         fwrite(data, size,nmemb, m_hOutFile);
     }
     else

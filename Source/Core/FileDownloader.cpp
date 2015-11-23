@@ -151,14 +151,17 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
 
         std::string ext = IuCoreUtils::ExtractFileExt(url);
         std::string fileName = IuCoreUtils::ExtractFileNameFromUrl(url);
-        CString wFileName =
-            GetUniqFileName(IuCommonFunctions::IUTempFolder + Utf8ToWstring(fileName.c_str()).c_str());
+        CString wFileName = GetUniqFileName(IuCommonFunctions::IUTempFolder + Utf8ToWstring(fileName.c_str()).c_str());
         std::string filePath = WCstringToUtf8(wFileName);
 
         // Creating file
         FILE* f = _tfopen(wFileName, L"wb");
-        if (f)
+        if (f) {
             fclose(f);
+        } else {
+            LOG(ERROR) << "Unable to create file:" << std::endl << wFileName;
+            return false;
+        }
         item.fileName = filePath;
         result = true;
     }
