@@ -158,33 +158,61 @@ RECT MovableElement::getPaintBoundingRect()
     return res;
 }
 
-void MovableElement::setX(int x)
-{
+void MovableElement::setPos(int x, int y) {
     int width = getWidth();
+    int height = getHeight();
     int canvasWidth = canvas_->getWidth();
-    if ( x <= 0 ) {
+    int canvasHeight = canvas_->getHeigth();
+   
+
+    if (x <= 0) {
         x = 0;
-    } else if ( x + width  >  canvasWidth) {
+    }
+    else if (x + width  >  canvasWidth) {
         x = canvasWidth - width;
     }
-    
-    getMinPoint(axisX)->x = x;
-    resize(width, getHeight());
-}
-
-void MovableElement::setY(int y)
-{
-    int canvasHeight = canvas_->getHeigth();
-    int height = getHeight();
-
-    if( y < 0 ) {
+    if (y < 0) {
         y = 0;
-    } else if ( y + height  > canvasHeight ) {
+    }
+    else if (y + height  > canvasHeight) {
         y = canvasHeight - height;
     }
-    
+
+    getMinPoint(axisX)->x = x;
     getMinPoint(axisY)->y = y;
-    resize(getWidth(), height );
+    width = getWidth();
+    height = getHeight();
+    resize(width, height);
+}
+
+bool MovableElement::move(int offsetX, int offsetY) {
+    int canvasWidth = canvas_->getWidth();
+    int canvasHeight = canvas_->getHeigth();
+    int kHalfGripSize = kGripSize / 2;
+    int x = getX();
+    int y = getY();
+    int right = x + getWidth();
+    int bottom = y + getHeight();
+    int newX = x + offsetX;
+    int newY = y + offsetY;
+    int newRight = right + offsetX;
+    int newBottom = bottom + offsetY;
+    
+    if ((newX < 0 || newX >= canvasWidth) && (newRight < 0 || newRight >= canvasWidth)) {
+        offsetX = 0;
+    } 
+    if ((newY < 0 || newY >= canvasHeight) && (newBottom < 0 || newBottom >= canvasHeight)) {
+        offsetY = 0;
+    }
+    
+    if (offsetX == 0 && offsetY == 0) {
+        return false;
+    }
+    startPoint_.x += offsetX;
+    endPoint_.x += offsetX;
+    startPoint_.y += offsetY;
+    endPoint_.y += offsetY;
+    return true;
 }
 
 bool MovableElement::isItemAtPos(int x, int y)

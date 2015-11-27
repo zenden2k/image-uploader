@@ -18,7 +18,7 @@ class ColorsDelegate;
                                                                                                
 class ConfigurationProvider;
 
-class ImageEditorWindow : public CWindowImpl<ImageEditorWindow>
+class ImageEditorWindow : public CWindowImpl<ImageEditorWindow>, CMessageFilter
 {
 public:
     DECLARE_WND_CLASS(_T("ImageEditorWindow"))
@@ -27,7 +27,9 @@ public:
         ID_COPYBITMAPTOCLIBOARDASDATAURIHTML,
         ID_PEN = 1600, 
         ID_BRUSH, ID_MARKER,ID_BLUR, ID_BLURRINGRECTANGLE, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_ROUNDEDRECTANGLE, ID_ELLIPSE,
-        ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_MOVE};
+        ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_MOVE
+    
+    };
 
     enum DrawingToolHotkey {kMoveKey = 'V', kBrushKey = 'B', kTextKey = 'T', kRectangleKey = 'U', kColorPickerKey = 'I', kCropKey = 'C', // photoshop keys
         kMarkerKey = 'H', kBlurringRectangleKey = 'R', kArrowKey = 'A', kLineKey = 'L', kFilledRectangle = 'G'
@@ -173,6 +175,7 @@ public:
         std::shared_ptr<Gdiplus::Bitmap> resultingBitmap_;
         ConfigurationProvider* configurationProvider_; 
         TextParamsWindow textParamsWindow_;
+        HACCEL accelerators_;
         void createToolbars();
         void OnCropChanged(int x, int y, int w, int h);
         void OnCropFinished(int x, int y, int w, int h);
@@ -194,6 +197,7 @@ public:
         void OnSaveAs();
         void saveSettings();
         bool CopyBitmapToClipboardAndClose(ClipboardFormat format = ClipboardFormat::None);
+        BOOL PreTranslateMessage(MSG* pMsg) override;
 };
 
 class ConfigurationProvider {

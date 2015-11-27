@@ -40,9 +40,8 @@ class MovableElement: public DrawingElement {
         int getX();
         int getY();
         virtual RECT getPaintBoundingRect();
-
-        void setX(int  x);
-        void setY(int y);
+        void setPos(int  x, int y);
+        bool move(int  offsetX, int offsetY);
         virtual bool isItemAtPos(int x, int y);
 
         virtual void resize(int width, int height);

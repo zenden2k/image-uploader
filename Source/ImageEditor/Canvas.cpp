@@ -761,6 +761,8 @@ void Canvas::setCursor(CursorType cursorType)
 
 void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
 {
+    DWORD start = GetTickCount();
+    LOG(INFO) << " Canvas::renderInBuffer() " << GetTickCount();
     using namespace Gdiplus;
     currentRenderingRect_ = rc;
     if (!fullRender_ && !forExport) {
@@ -842,6 +844,9 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
     canvasChanged_ = false;
     fullRender_ = false;
     updatedRect_ = Rect();
+    DWORD end = GetTickCount();
+
+    LOG(WARNING) << "Render time: " << (end - start);
     //delete bufferedGr_;
 }
 

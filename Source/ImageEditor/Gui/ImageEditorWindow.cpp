@@ -322,6 +322,11 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 
     SetIcon(icon_, TRUE);
     SetIcon(iconSmall_, FALSE);
+    ACCEL accels[1] = {
+        { FCONTROL, 'Z', ID_UNDO }
+    };
+
+    accelerators_ = CreateAcceleratorTable(accels, ARRAY_SIZE(accels));
 
     //RECT rc;
     GetClientRect(&rc);
@@ -398,6 +403,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
     }
 
     CMessageLoop loop;
+    loop.AddMessageFilter(this);
     loop.Run();
     saveSettings();
     if ( parent ) {
@@ -537,6 +543,7 @@ LRESULT ImageEditorWindow::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 
 LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    LOG(INFO) << " ImageEditorWindow::OnKeyUp() " << GetTickCount();
     std::map<DrawingToolHotkey, Canvas::DrawingToolType>::iterator it;
      HKL englishLayout = LoadKeyboardLayout(_T("00000409"),0);
      if ( wParam == VK_ESCAPE ) {
@@ -573,7 +580,7 @@ LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
      } else if ( wParam == 'D' && ( !!( ::GetKeyState(VK_LCONTROL) & 0x8000 ) ||  ::GetKeyState(VK_RCONTROL) & 0x8000 ) ) {
          canvas_->unselectAllElements();
          canvas_->updateView();
-     } else if ( wParam == 'S' && ( !!( ::GetKeyState(VK_LCONTROL) & 0x8000 ) ||  ::GetKeyState(VK_RCONTROL) & 0x8000 ) ) {
+     } else if ( wParam == 'S' && ( !!( ::GetAsyncKeyState(VK_LCONTROL) < 0 ) ||  ::GetAsyncKeyState(VK_RCONTROL) < 0) ) {
          OnClickedSave(BN_CLICKED, ID_SAVE, m_hWnd, bHandled);
      }else if ( wParam == VK_DELETE ) {
          canvas_->deleteSelectedElements();
@@ -1107,7 +1114,14 @@ bool ImageEditorWindow::CopyBitmapToClipboardAndClose(ClipboardFormat format) {
     return res;
 }
 
-LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+BOOL ImageEditorWindow::PreTranslateMessage(MSG* pMsg) {
+    if (TranslateAccelerator(m_hWnd, accelerators_, pMsg)) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+    LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     HWND hwndSender = reinterpret_cast<HWND>(lParam);
     if ( hwndSender == horizontalToolbar_.penSizeSlider_.m_hWnd  ) {

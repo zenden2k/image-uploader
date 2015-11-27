@@ -209,6 +209,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
         } else if ( CurrentParam == "/debuglog") {
             FLAGS_logtostderr = false;
             FLAGS_alsologtostderr = true;
+            LogWindow.Show();
         }
     }
 
