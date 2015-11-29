@@ -14,12 +14,17 @@
 
 namespace ImageEditor {
 
+class InputBoxControlCallback {
+public:
+    virtual POINT GetScrollOffset() = 0;
+    ~InputBoxControlCallback() {}
+};
 class InputBoxControl :
     public CWindowImpl<InputBoxControl, CRichEditCtrl,CControlWinTraits>, public InputBox
 {
     public:
         typedef CWindowImpl<InputBoxControl, CRichEditCtrl,CControlWinTraits> Base;
-        InputBoxControl();
+        InputBoxControl(Canvas* canvas);
         ~InputBoxControl();
         DECLARE_WND_SUPERCLASS(_T("CInputBoxControl"), CRichEditCtrl::GetWndClassName())
 
@@ -83,6 +88,7 @@ protected:
     static DWORD CALLBACK EditStreamOutCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb);
     static DWORD CALLBACK EditStreamInCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb);
     bool contextMenuOpened_;
+    Canvas* canvas_;
 
 
 };

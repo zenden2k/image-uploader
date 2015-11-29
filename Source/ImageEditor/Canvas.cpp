@@ -742,6 +742,10 @@ void Canvas::updateView( RECT boundingRect ) {
 }
 
 
+POINT Canvas::GetScrollOffset() const {
+    return scrollOffset_;
+}
+
 void Canvas::createDoubleBuffer() {
 //    delete buffer_;
     delete bufferedGr_;
@@ -1051,7 +1055,7 @@ bool Canvas::undo() {
 }
 
 InputBox* Canvas::getInputBox( const RECT& rect ) {
-    inputBox_ = new InputBoxControl();
+    inputBox_ = new InputBoxControl(this);
     RECT rc = rect;
     rc.left++;
     rc.top++;

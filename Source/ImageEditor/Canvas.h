@@ -145,7 +145,8 @@ class Canvas {
         friend class BrushTool;
         friend class MoveAndResizeTool;
         friend class CropTool;
-    private:
+        POINT GetScrollOffset() const;
+private:
         void init();
         
         //void updateView( const CRgn& region );

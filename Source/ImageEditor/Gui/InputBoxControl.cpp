@@ -22,10 +22,11 @@
 #include "Core/Images/Utils.h"
 #include "Gui/GuiTools.h"
 #include "Core/Logging.h"
+#include "ImageEditor/Canvas.h"
 
 namespace ImageEditor {
 // CLogListBox
-InputBoxControl::InputBoxControl() {
+InputBoxControl::InputBoxControl(Canvas* canvas) : canvas_(canvas) {
     contextMenuOpened_ = false;
 }
 
@@ -70,7 +71,8 @@ void InputBoxControl::show(bool s)
 
 void InputBoxControl::resize(int x, int y, int w,int h, std::vector<MovableElement::Grip> grips)
 {
-    SetWindowPos(/*HWND_TOP*/0,x,y,w,h, 0);
+    POINT scrollOffset = canvas_->GetScrollOffset();
+    SetWindowPos(/*HWND_TOP*/0, x - scrollOffset.x, y - scrollOffset.y, w, h, 0);
     /*CRgn rgn;
     rgn.CreateRectRgn(0,0,w,h);
     for ( int i = 0; i < grips.size(); i++ ) {
