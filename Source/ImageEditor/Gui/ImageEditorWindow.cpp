@@ -322,8 +322,10 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 
     SetIcon(icon_, TRUE);
     SetIcon(iconSmall_, FALSE);
-    ACCEL accels[1] = {
-        { FCONTROL, 'Z', ID_UNDO }
+    ACCEL accels[] = {
+        { FVIRTKEY|FCONTROL, 'Z', ID_UNDO },
+        { FVIRTKEY | FCONTROL, 'D', ID_UNSELECTALL },
+        { FVIRTKEY | FCONTROL, 'S', ID_SAVE }
     };
 
     accelerators_ = CreateAcceleratorTable(accels, ARRAY_SIZE(accels));
@@ -543,7 +545,6 @@ LRESULT ImageEditorWindow::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 
 LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    LOG(INFO) << " ImageEditorWindow::OnKeyUp() " << GetTickCount();
     std::map<DrawingToolHotkey, Canvas::DrawingToolType>::iterator it;
      HKL englishLayout = LoadKeyboardLayout(_T("00000409"),0);
      if ( wParam == VK_ESCAPE ) {
@@ -575,14 +576,7 @@ LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
         && !(GetKeyState(VK_MENU) & 0x8000) ) {
          canvas_->setDrawingToolType(it->second);
          updateToolbarDrawingTool(it->second);
-     } else if ( wParam == 'Z' && ( !!( ::GetKeyState(VK_LCONTROL) & 0x8000 ) ||  ::GetKeyState(VK_RCONTROL) & 0x8000 ) ) {
-         canvas_->undo();
-     } else if ( wParam == 'D' && ( !!( ::GetKeyState(VK_LCONTROL) & 0x8000 ) ||  ::GetKeyState(VK_RCONTROL) & 0x8000 ) ) {
-         canvas_->unselectAllElements();
-         canvas_->updateView();
-     } else if ( wParam == 'S' && ( !!( ::GetAsyncKeyState(VK_LCONTROL) < 0 ) ||  ::GetAsyncKeyState(VK_RCONTROL) < 0) ) {
-         OnClickedSave(BN_CLICKED, ID_SAVE, m_hWnd, bHandled);
-     }else if ( wParam == VK_DELETE ) {
+     } else if ( wParam == VK_DELETE ) {
          canvas_->deleteSelectedElements();
      } 
     return 0;
@@ -1188,4 +1182,9 @@ LRESULT ImageEditorWindow::OnTextParamWindowFontChanged(UINT /*uMsg*/, WPARAM /*
     return 0;
 }
 
+LRESULT ImageEditorWindow::OnUnselectAll(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    canvas_->unselectAllElements();
+    canvas_->updateView();
+    return 0;
+}
 }

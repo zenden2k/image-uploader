@@ -32,40 +32,24 @@ BOOL CImageEditorView::PreTranslateMessage(MSG* /*pMsg*/) {
 }
 
 LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-    //return 0;
     CPaintDC dc(m_hWnd);
-    /*CRgn rgn;
-    rgn.CreateRectRgn( 0, 0, 0, 0 );
-    /*GetClipRgn( dc, rgn);
-    RECT rct;
-    rgn.GetRgnBox( &rct );*/
     RECT clientRect;
     GetClientRect(&clientRect);
     SIZE size = {clientRect.right, clientRect.bottom};
-    //Gdiplus::Graphics gr(dc);
+
     POINT pt;
     GetScrollOffset(pt);
     if ( canvas_ ) {
         RECT updateRect = dc.m_ps.rcPaint;
-        //IntersectRect(&updateRect, &updateRect, &canvasRect);
-        
-        /*updateRect.left += pt.x;
-        updateRect.top += pt.y;
-        updateRect.bottom += pt.y;
-        updateRect.right += pt.x;*/
-//        canvas_->render( &gr, updateRect, pt,  size);
         canvas_->render( dc, updateRect, pt,  size);
     }
     
-
-
     int rightMargin = canvas_->getWidth() - pt.x;
     int bottomMargin = canvas_->getHeigth()-pt.y;
     RECT rightRect = {rightMargin, 0, clientRect.right,bottomMargin};
     dc.FillRect(&rightRect, backgroundBrush_);
     RECT bottomRect = {0, bottomMargin, clientRect.right, clientRect.bottom};
     dc.FillRect(&bottomRect, backgroundBrush_);
-    //horizontalToolbar_.Invalidate(TRUE);
 
     return 0;
 }
@@ -90,7 +74,7 @@ void CImageEditorView::setCanvas(ImageEditor::Canvas *canvas) {
 
 LRESULT CImageEditorView::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
     int cx = GET_X_LPARAM(lParam); 
-    int cy =  GET_Y_LPARAM(lParam);
+    int cy = GET_Y_LPARAM(lParam);
     POINT ptScroll;
     GetScrollOffset(ptScroll);
     cx += ptScroll.x;

@@ -233,6 +233,7 @@ CString GetUniqFileName(const CString& filePath)
 
     CString name;
     name = WinUtils::GetOnlyFileName(filePath);
+
     CString extension = GetFileExt(filePath);
     CString result;
     for (int i = 2;; i++)

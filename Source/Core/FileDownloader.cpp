@@ -19,7 +19,9 @@
  */
 
 #include "Core/FileDownloader.h"
+
 #include <algorithm>
+#include <errno.h>
 
 #include "Func/Common.h"
 #include "Func/IuCommonFunctions.h"
@@ -44,14 +46,13 @@ CFileDownloader::~CFileDownloader()
 void CFileDownloader::addFile(const std::string& url, void* id, const std::string& referer) {
     if (stopSignal_)
         return;  // Cannot add file to queue while stopping process
-    mutex_.lock();
+    std::lock_guard<std::mutex> guard(mutex_);
 
     DownloadFileListItem newItem;
     newItem.url = url;
     newItem.id = reinterpret_cast <void*>(id);
     newItem.referer = referer;
     fileList_.push_back(newItem);
-    mutex_.unlock();
 }
 
 void CFileDownloader::setThreadCount(int n)
@@ -140,7 +141,8 @@ void CFileDownloader::memberThreadFunc()
 bool CFileDownloader::getNextJob(DownloadFileListItem& item)
 {
     bool result = false;
-    mutex_.lock();
+    std::lock_guard<std::mutex> guard(mutex_);
+
     if (!fileList_.empty() && !stopSignal_)
     {
         item = *fileList_.begin();
@@ -151,7 +153,15 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
 
         std::string ext = IuCoreUtils::ExtractFileExt(url);
         std::string fileName = IuCoreUtils::ExtractFileNameFromUrl(url);
-        CString wFileName = GetUniqFileName(IuCommonFunctions::IUTempFolder + Utf8ToWstring(fileName.c_str()).c_str());
+
+        if (fileName.length() > 30) {
+            fileName = fileName.substr(0, 30);
+        }
+        CString possiblePath = IuCommonFunctions::IUTempFolder + Utf8ToWstring(fileName.c_str()).c_str();
+        if (possiblePath.GetLength() > MAX_PATH - 4) {
+            possiblePath = possiblePath.Left(MAX_PATH - 4);
+        }
+        CString wFileName = GetUniqFileName(possiblePath);
         std::string filePath = WCstringToUtf8(wFileName);
 
         // Creating file
@@ -159,14 +169,14 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
         if (f) {
             fclose(f);
         } else {
-            LOG(ERROR) << "Unable to create file:" << std::endl << wFileName;
+            LOG(ERROR) << "Unable to create file:" << std::endl << wFileName << std::endl
+                << "Error: " << strerror(errno);
             return false;
         }
         item.fileName = filePath;
         result = true;
     }
 
-    mutex_.unlock();
     return result;
 }
 

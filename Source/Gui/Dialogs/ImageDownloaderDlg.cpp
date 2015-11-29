@@ -30,6 +30,7 @@
 #include "Core/CoreFunctions.h"
 #include "Func/WebUtils.h"
 #include <Func/IuCommonFunctions.h>
+#include "Core/Utils/StringUtils.h"
 
 // CImageDownloaderDlg
 CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg,const CString &initialBuffer)
@@ -180,6 +181,9 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloade
         ais.show =true;
         ais.RealFileName = Utf8ToWstring(it.fileName).c_str();
         ais.VirtualFileName =  Utf8ToWstring(it.displayName).c_str();
+        if (ais.VirtualFileName.IsEmpty()) {
+            ais.VirtualFileName = WinUtils::myExtractFileName(ais.RealFileName);
+        }
         bool add = true;
         if(!IuCommonFunctions::IsImage(ais.RealFileName))
         {
@@ -238,7 +242,11 @@ bool CImageDownloaderDlg::BeginDownloading()
     m_nFileDownloaded = 0;
     for(size_t i=0; i<tokens.size(); i++)
     {
-        m_FileDownloader.addFile(nm_trimStr(tokens[i]), reinterpret_cast<void*>(i));
+        const std::string& token = tokens[i];
+        if (token.empty() || IuStringUtils::Trim(token).empty()) {
+            continue;
+        }
+        m_FileDownloader.addFile(nm_trimStr(token), reinterpret_cast<void*>(i));
         m_nFilesCount++;
     }
     if(m_nFilesCount)
