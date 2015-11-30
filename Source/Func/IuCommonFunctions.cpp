@@ -137,10 +137,17 @@ CString FindDataFolder()
     {
         CRegistry Reg;
         Reg.SetRootKey(HKEY_LOCAL_MACHINE);
-        if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false))
+        // Unable to use wow64 flag because of Registry Virtualization enabled in the explorer.exe process
+        CString keyStr =
+#ifdef _WIN64
+            _T("Software\\Wow6432Node\\Zenden.ws\\Image Uploader");
+#else
+            _T("Software\\Zenden.ws\\Image Uploader");
+#endif
+            
+        if (Reg.SetKey(keyStr, false))
         {
             CString dir = Reg.ReadString(_T("DataPath"));
-
             if (!dir.IsEmpty() && WinUtils::IsDirectory(dir))
             {
                 DataFolder = dir;
