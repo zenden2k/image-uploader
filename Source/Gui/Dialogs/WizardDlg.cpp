@@ -1861,8 +1861,9 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
             {
                 CDC dc = GetDC();
                 if ( CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) { // remove alpha if saving format is JPEG
-                    if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD) {
-                        floatWnd.ShowBaloonTip(TR("Screenshot was saved to clipboard."),_T("Image Uploader"), 12000);
+                    if (m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD 
+                        && dialogResult == ImageEditorWindow::drCancel) {
+                        floatWnd.ShowScreenshotCopiedToClipboardMessage();
                         Result = false;
                     }
                 }
