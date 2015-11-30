@@ -545,8 +545,8 @@ LRESULT ImageEditorWindow::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 
 LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    std::map<DrawingToolHotkey, Canvas::DrawingToolType>::iterator it;
-     HKL englishLayout = LoadKeyboardLayout(_T("00000409"),0);
+     std::map<DrawingToolHotkey, Canvas::DrawingToolType>::iterator it;
+     //HKL englishLayout = LoadKeyboardLayout(_T("00000409"),0);
      if ( wParam == VK_ESCAPE ) {
         EndDialog(drCancel);
         return 0;
@@ -558,13 +558,15 @@ LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
              DialogResult dr = showUploadButton_ ? drUpload : drAddToWizard;
              EndDialog(dr);
          }
-     } else if ( wParam == VkKeyScanEx(']',englishLayout) ) {
+     }
+     else if (wParam == VK_OEM_6) { // ']'
          canvas_->beginPenSizeChanging();
          canvas_->setPenSize(canvas_->getPenSize()+1);
          horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
          updatePixelLabels();
          m_view.SendMessage(WM_SETCURSOR, (LPARAM)m_view.m_hWnd, 0);
-     } else if ( wParam == VkKeyScanEx('[', englishLayout) ) {
+     }
+     else if (wParam == VK_OEM_4 ) { //'['
          canvas_->beginPenSizeChanging();
          canvas_->setPenSize(canvas_->getPenSize()-1);
          horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
