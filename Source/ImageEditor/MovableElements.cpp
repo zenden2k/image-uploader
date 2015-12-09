@@ -383,7 +383,36 @@ ImageEditor::ElementType Crop::getType() const
     return etCrop;
 }
 
-CropOverlay::CropOverlay(Canvas* canvas, int startX, int startY, int endX,int endY):MovableElement(canvas)
+void Crop::setPos(int x, int y) {
+    return MovableElement::setPos(x, y);
+}
+
+bool Crop::move(int offsetX, int offsetY) {
+    int canvasWidth = canvas_->getWidth();
+    int canvasHeight = canvas_->getHeigth();
+    int x = getX();
+    int y = getY();
+    int right = x + getWidth();
+    int bottom = y + getHeight();
+    int newX = x + offsetX;
+    int newY = y + offsetY;
+    int newRight = right + offsetX;
+    int newBottom = bottom + offsetY;
+
+    if (newX < 0 || newX >= canvasWidth || newRight < 0 || newRight >= canvasWidth) {
+         offsetX = 0;
+     }
+     if (newY < 0 || newY >= canvasHeight || newBottom < 0 || newBottom >= canvasHeight) {
+         offsetY = 0;
+     }
+
+     if (offsetX == 0 && offsetY == 0) {
+         return false;
+     }
+     return MovableElement::move(offsetX, offsetY);
+ }
+
+ CropOverlay::CropOverlay(Canvas* canvas, int startX, int startY, int endX,int endY):MovableElement(canvas)
 {
     startPoint_.x = startX;
     startPoint_.y = startY;
