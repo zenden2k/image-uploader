@@ -184,10 +184,11 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
                     elY = y;
             }
             
+
+            currentElement_->setPos(elX, elY);
             if (draggedBoundary_.bt != btNone) {
                 currentElement_->resize(elWidth, elHeight);
             }
-            currentElement_->setPos(elX, elY);
         }
         
         if ( currentElement_ && currentElement_->getType() == etCrop && canvas_->onCropChanged ) {

@@ -412,7 +412,17 @@ bool Crop::move(int offsetX, int offsetY) {
      return MovableElement::move(offsetX, offsetY);
  }
 
- CropOverlay::CropOverlay(Canvas* canvas, int startX, int startY, int endX,int endY):MovableElement(canvas)
+void Crop::resize(int width, int height) {
+    int canvasWidth = canvas_->getWidth();
+    int canvasHeight = canvas_->getHeigth();
+    int x = getX();
+    int y = getY();
+    width = (std::min)(width, canvasWidth - x);
+    height = (std::min)(height, canvasHeight - y);
+    return MovableElement::resize(width, height);
+}
+
+CropOverlay::CropOverlay(Canvas* canvas, int startX, int startY, int endX,int endY):MovableElement(canvas)
 {
     startPoint_.x = startX;
     startPoint_.y = startY;

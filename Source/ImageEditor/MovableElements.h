@@ -58,7 +58,7 @@ public:
     virtual ElementType getType() const;
     virtual void setPos(int  x, int y) override;
     virtual bool move(int  offsetX, int offsetY) override;
-
+    virtual void resize(int width, int height) override;
 };
 
 class CropOverlay: public MovableElement {
