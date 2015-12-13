@@ -32,12 +32,10 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>	
-	<Server Name="keep4u.ru"  Authorize="1" MaxFileSize="10000000" Debug="0">
+	<Server Name="keep4u.ru"  Authorize="1" MaxFileSize="10000000" Debug="0" Plugin="keep4u">
 		<Actions>
-			<Action Type="login" Url="http://keep4u.ru/login.php" PostParams="login=$(_LOGIN);mem=on;password=$(_PASSWORD);ok=Войти" OnlyOnce="1" RegExp='(.*?)'/>
-			<Action Type="upload" Url="http://keep4u.ru/upld?X-Progress-ID=0a06fcb20fdbfad30d733e69$(_THREADID)$(_RAND16BITS)" PostParams="pfile[]=%filename%;disable_effects=On;preview=yes;preview_size=$(_THUMBWIDTH);sbmt=;code=3;preview_title=yes;preview_title_set=size;" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:0;Thumb:2"/>
 		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
 	<Server Name="imgur.com" MaxFileSize="10485760"  Authorize="0" Debug="0" MaxThreads="1">
 		<Actions>
@@ -275,17 +273,17 @@
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
 	<!-- Thanks to Alex_Qwerty -->
-	<Server Name="embedupload.com" FileHost="1" MaxFileSize="838870800"> 
+	<Server Name="embedupload.com" FileHost="1" MaxFileSize="3299985472" Debug="0"> 
         <Actions> 
             <Action Type="get" Url="http://embedupload.com/" 
-                RegExp="urlPlUplod_httpHostPathToUpload\s*=\s*'([^']+)" 
+                RegExp='upload_url: "([^"]+)"' 
                 AssignVars="UploadPath:0" 
                 OnlyOnce="0" 
             /> 
             <Action 
                 Type="upload" 
                 Url="$(UploadPath)" 
-                PostParams="name=$(_FILENAME);Fichier=1;Filerio=1;Turbobit=1;Shareonline=1;Hugefiles=1;Zippyshare=1;Cloudyvideos=1;Sendmyway=1;Solidfiles=1;site=http://;do=upload;email=;file_1=%filename%;"
+                PostParams="name=$(_FILENAME);Fichier=1;Filerio=1;Turbobit=1;Shareonline=1;Hugefiles=1;Zippyshare=1;Cloudyvideos=1;Sendmyway=1;Solidfiles=1;site=http://;do=upload;email=;file_1=%filename%;" 
                 RegExp="^(\w+)$" 
                 AssignVars="DownloadID:0;" 
             /> 
@@ -326,7 +324,7 @@
         </Actions> 
         <Result DownloadUrlTemplate="http://www.mirrorupload.net/file/$(ID)/$(Name)" /> 
     </Server>
-	<Server Name="multiupload.biz" FileHost="1" Debug="0">
+	<!--<Server Name="multiupload.biz" FileHost="1" Debug="0">
 		<Actions>
 			<Action Type="get" Url="http://multiupload.biz/" RegExp="(http:\/\/(([\w.-]+)[:\d]*)\/cgi-bin\/+upload\.cgi\?upload_id=(\d+))" AssignVars="Url:0;HostPort:1;Host:2;ID:3" OnlyOnce="0" />
 			<Action	Type="upload" Url="$(Url)"
@@ -335,7 +333,7 @@
 			<Action Type="get" Url="http://$(HostPort)/tmp/$(ID).json" RegExp="code: '(\w+)', filename: &quot;([^&quot;]+)" AssignVars="Code:0;Name:1;"	/>
 		</Actions>
 		<Result DownloadUrlTemplate="http://$(Host)/$(Code)/$(Name)" />
-	</Server>
+	</Server>-->
 	<Server Name="directmirror.com" FileHost="1" MaxFileSize="536870912" Debug="0">
 		<Actions>
 			<Action Type="get" Url="http://directmirror.com/" RegExp="(http:\/\/(([\w.-]+)[:\d]*)\/cgi-bin\/+upload\.cgi\?upload_id=(\d+))" AssignVars="Url:0;HostPort:1;Host:2;ID:3" OnlyOnce="0" />
@@ -356,16 +354,28 @@
 		</Actions>
 		<Result DownloadUrlTemplate="http://$(Host)/$(Code)" />
 	</Server>
-	<Server Name="uploadmagnet.com" FileHost="1" Debug="0">
-		<Actions>
-			<Action Type="get" Url="http://www.uploadmagnet.com/" RegExp="(http:\/\/(([\w.-]+)[:\d]*)\/cgi-bin\/+upload\.cgi\?upload_id=(\d+))" AssignVars="Url:0;HostPort:1;Host:2;ID:3" OnlyOnce="0" />
-			<Action	Type="upload" Url="$(Url)"
-				PostParams="u_hash=;remote=0;upload_id=$(ID);files=1;file0=%filename%;description1=;file1=;submit_btn=%20Start%20Upload%20;site=1066;site=1061;site=1060;site=1011;site=1000;site=1016;site=1004;site=1050;site=1059;site=1065"
-			/>
-			<Action Type="get" Url="http://$(HostPort)/tmp/$(ID).json" RegExp="code: '(\w+)', filename: &quot;([^&quot;]+)" AssignVars="Code:0;Name:1;"	/>
-		</Actions>
-		<Result DownloadUrlTemplate="http://$(Host)/$(Code)/$(Name)" />
-	</Server>
+	 <Server Name="uploadmagnet.com" FileHost="1" Debug="0"> 
+        <Actions> 
+            <Action Type="get" Url="http://www.uploadmagnet.com/" RegExp="(http:\/\/(([\w.-]+)[:\d]*)\/cgi-bin\/+upload\.cgi\?upload_id=(\d+))" AssignVars="Url:0;HostPort:1;Host:2;ID:3" OnlyOnce="0" /> 
+            <Action    Type="upload" Url="$(Url)" 
+                PostParams="u_hash=;remote=0;upload_id=$(ID);files=1;file0=%filename%;description1=;file1=;submit_btn=%20Start%20Upload%20;site=1037;site=1011;site=1000;site=1035;site=1016;site=1004;site=1074;site=1030;site=1065;site=1075" 
+            /> 
+            <Action Type="get" Url="http://$(HostPort)/tmp/$(ID).json" RegExp="code: '(\w+)', filename: &quot;([^&quot;]+)" AssignVars="Code:0;Name:1;"    /> 
+        </Actions> 
+        <Result DownloadUrlTemplate="http://www.uploadmagnet.com/$(Code)/$(Name)" /> 
+    </Server> 
+ 
+    <Server Name="calabox.com" FileHost="1" Debug="0"> 
+        <Actions> 
+            <Action Type="post" Url="http://calabox.com/ubr_link_upload.php?rnd_id=$(_THREADID)$(_RAND16BITS)" RegExp="startUpload\(&quot;([^&quot;]+)" AssignVars="ID:0" /> 
+            <Action    Type="upload" Url="http://calabox.com/cgi/ubr_upload.pl?upload_id=$(ID)" 
+                PostParams="upfile_0=%filename%;serverupload=on;filerio=on;killerleaks=on;filesisland=on;downfilesnet=on;brupload=on;indishare=on;basicupload=on;limefile=on;uploadrocket=on;clicknupload=on;modsbase=on;dateiload=on;ziifile=on;ipithos=on;speedshare=on;uplodir=on;"
+                RegExp="name=&quot;forum_code&quot;.*?value=&quot;([^&quot;]+)" AssignVars="Url:0" 
+            /> 
+        </Actions> 
+        <Result DownloadUrlTemplate="$(Url)" /> 
+    </Server> 
+ 
 	<Server Name="multimirrorupload.com" FileHost="1" Debug="0">
 		<Actions>
 			<Action Type="get" Url="http://multimirrorupload.com/" RegExp="(http:\/\/(([\w.-]+)[:\d]*)\/cgi-bin\/+upload\.cgi\?upload_id=(\d+))" AssignVars="Url:0;HostPort:1;Host:2;ID:3" OnlyOnce="0" />
@@ -541,9 +551,9 @@
 	</Server>
 	<Server Name="picplus.ru" MaxFileSize="5242880">
 		<Actions>
-			<Action Type="upload" Url="http://picplus.ru/upload.php" PostParams="userfile1=%filename%;thumb_size=$(_THUMBWIDTH);check_orent=h;texttype=dimensions;text=;" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
+			<Action Type="upload" Url="http://picplus.ru/upload.php" PostParams="userfile1=%filename%;thumb_size=$(_THUMBWIDTH);check_orent=h;texttype=dimensions;text=;" RegExp="\[img\](.*?)\[([\s\S]*?)\[url=(.*?)\]\[img\](.*?)\[" AssignVars="Image:0;DownloadUrl:2;Thumb:3;"/>
 		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(DownloadUrl)"/>
 	</Server>
 	<Server Name="pixic.ru">
 		<Actions>
@@ -585,15 +595,17 @@
         </Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
+      <Server Name="imgice.ru" Debug="0" MaxThreads="1" OnlyOnce="1">
+		<Actions>
+			<Action Type="get" Url="http://imgice.ru/" RegExp="session_id = &quot;(.+?)&quot;" AssignVars="SID:0;"/>
+			<Action Type="upload" Url="http://imgice.ru/upload.php" PostParams="Filename=$(_FILENAME);sID=$(SID);doShort=false;ImageUp=%filename%;" RegExp="image_id_public&quot;:&quot;(.+?)&quot;" AssignVars="Id:0"/>
+            <Action Type="get" Url="http://imgice.ru/image/$(Id)" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:2;Image:0;"/>
+        </Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="http://imgice.ru/$(Id)"/>
+	</Server>
     <Server Name="picvid.ru">
         <Actions>
             <Action Type="upload" Url="http://www.picvid.ru/" PostParams="action=upload;local_uploadfile[]=%filename%;web_uploadfile=;thumb=true;thumb_width=170;thumb_height=;texttype=dimensions;" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
-        </Actions>
-        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
-    </Server>
-    <Server Name="boompic.ru">
-        <Actions>
-            <Action Type="upload" Url="http://boompic.ru/" PostParams="action=upload;width=screenshot 2015-03-09 001_en.png;local_uploadfile[]=%filename%;web_uploadfile=;thumb=true;thumb_width=180;thumb_height=;texttype=dimensions;" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
         </Actions>
         <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
     </Server>
