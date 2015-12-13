@@ -252,11 +252,6 @@
 		</Actions>
 		<Result DirectUrlTemplate="stub" />
 	</Server>
-    <Server Name="pimpandhost.com" Authorize="0" Debug="0" Type="image" MaxFileSize="5242880" Plugin="pimpandhost" >
-		<Actions>
-		</Actions>
-		<Result DirectUrlTemplate="stub" />
-	</Server>
 	<Server Name="datafilehost.com" FileHost="1">
 	<Actions>
 		<Action Type="upload" Url="http://www.datafilehost.com/upload.php" PostParams="MAX_FILE_SIZE=158334976;upfile=%filename%;" RegExp="name='download' size='\d+' value='(.+?)' " AssignVars="File:0;"/>

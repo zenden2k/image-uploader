@@ -236,14 +236,29 @@ function internal_parseAlbumList(data,list,parentid)
 
 function internal_loadAlbumList(list)
 {
-	
-	nm.addQueryHeader("Authorization", getAuthorizationString());
-	nm.addQueryHeader("Expect", "");
-	nm.addQueryHeader("Connection", "close");
+    try {
+        nm.enableResponseCodeChecking(false);
+    } catch (ex) {
+    }
+	for (local i = 0; i < 3; i++) {
+        nm.addQueryHeader("Authorization", getAuthorizationString());
+        nm.addQueryHeader("Expect", "");
+        nm.addQueryHeader("Connection", "close");
 
-	nm.setUrl("http://api-fotki.yandex.ru/api/users/"+login+"/albums/");
+        nm.setUrl("http://api-fotki.yandex.ru/api/users/"+login+"/albums/");
 
-	nm.doGet("");
+        nm.doGet("");
+    
+        if (nm.responseCode() == 401) {
+              // Invalid token
+            ServerParams.setParam("token", ""); // clear token
+            if(!DoLogin()) {
+                return 0;
+            }
+        } else {
+            break;
+        }
+    }
 	
 	internal_parseAlbumList(nm.responseBody(), list,"");
 }
@@ -300,35 +315,48 @@ function  UploadFile(FileName, options)
 		if(!DoLogin())
 			return 0;
 	}
-
-	nm.addQueryHeader("Authorization",getAuthorizationString());
-  
-	local url="";
-	local albumStr = options.getFolderID();
-	
-	if(albumStr!="")
-		url = "http://api-fotki.yandex.ru/api/users/"+login+"/album/"+albumStr+"/photos/";
-	else
-		url = "http://api-fotki.yandex.ru/api/users/"+login+"/photos/";
-	
-	nm.setUrl(url);
-	
-	local ServerFileName = options.getServerFileName();
-	if(ServerFileName=="") 
-	   ServerFileName = ExtractFileName(FileName);
-	local 	encodedFname = nm.urlEncode(ServerFileName);
-	nm.addQueryHeader("Slug",encodedFname);
-	nm.addQueryHeader("Connection", "close");
-	nm.addQueryHeader("Content-Type", GetFileMimeType( FileName ) );
-	nm.addQueryHeader("Expect", "");
-	
-	nm.doUpload(FileName, "");
-	
-	if(nm.responseCode() != 201) 
-	{
-		print(nm.responseBody());
-		return 0;
-	}
+    try {
+        nm.enableResponseCodeChecking(false);
+    } catch (ex) {
+    }
+    
+    for ( local i = 0; i < 3; i++) {
+        nm.addQueryHeader("Authorization",getAuthorizationString());
+      
+        local url="";
+        local albumStr = options.getFolderID();
+        
+        if(albumStr!="")
+            url = "http://api-fotki.yandex.ru/api/users/"+login+"/album/"+albumStr+"/photos/";
+        else
+            url = "http://api-fotki.yandex.ru/api/users/"+login+"/photos/";
+        
+        nm.setUrl(url);
+        
+        local ServerFileName = options.getServerFileName();
+        if(ServerFileName=="") 
+           ServerFileName = ExtractFileName(FileName);
+        local 	encodedFname = nm.urlEncode(ServerFileName);
+        nm.addQueryHeader("Slug",encodedFname);
+        nm.addQueryHeader("Connection", "close");
+        nm.addQueryHeader("Content-Type", GetFileMimeType( FileName ) );
+        nm.addQueryHeader("Expect", "");
+        
+        nm.doUpload(FileName, "");
+        
+        if(nm.responseCode() == 401) {
+            // Invalid token
+            ServerParams.setParam("token", ""); // clear token
+            if(!DoLogin()) {
+                return 0;
+            }
+        } else if(nm.responseCode() != 201) {
+            print(nm.responseBody());
+            return 0;
+        } else {
+            break;
+        }
+    }
 	
 	local data = nm.responseBody();
 	local directUrl="";
