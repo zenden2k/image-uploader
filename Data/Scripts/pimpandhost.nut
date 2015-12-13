@@ -28,8 +28,6 @@ function UploadFile(FileName, options) {
                 nm.doGet(t.url);
                 if (nm.responseCode() == 200) {
                     local doc = Document(nm.responseBody());
-                    WriteLog("warning", "Length=" + doc.find("#image").length());
-                    WriteLog("warning", "Length=" + doc.find("#image").at(0).attr("src"));
                     options.setDirectUrl(doc.find("#image").at(0).attr("src"));
                 }
             }
