@@ -277,6 +277,7 @@ NetworkClient::NetworkClient(void)
 
     //We want the referrer field set automatically when following locations
     curl_easy_setopt(curl_handle, CURLOPT_AUTOREFERER, 1L); 
+    curl_easy_setopt(curl_handle, CURLOPT_MAXREDIRS, 8L);
     curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 32768L);
     curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 0L);
     

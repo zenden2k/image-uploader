@@ -306,7 +306,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
         DWORD windowStyle = WS_POPUP|WS_CLIPCHILDREN;
         SetWindowLong(GWL_STYLE, windowStyle);
         HWND insertAfter = nullptr;
-#ifndef NDEBUG
+#ifndef _DEBUG
         SetWindowLong(GWL_EXSTYLE, WS_EX_TOPMOST);
         insertAfter = HWND_TOPMOST;
 #endif
