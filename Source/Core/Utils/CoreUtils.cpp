@@ -477,7 +477,7 @@ int64_t getFileSize(std::string utf8Filename)
 {
 #ifdef _WIN32
    #ifdef _MSC_VER
-      _stat64 stats;
+	struct _stat64  stats;
    #else
       _stati64 stats;
    #endif
