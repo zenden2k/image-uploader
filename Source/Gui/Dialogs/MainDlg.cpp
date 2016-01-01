@@ -27,12 +27,15 @@
 #include "Func/WinUtils.h"
 #include "Func/Myutils.h"
 #include "Gui/GuiTools.h"
+#include "Core/Utils/DesktopUtils.h"
 #include "ImageEditor/Gui/ImageEditorWindow.h"
 #include "Func/ImageEditorConfigurationProvider.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Func/IuCommonFunctions.h"
+#include "3rdpart/ShellPidl.h"
 #include <boost/format.hpp>
+#include <shlobj.h>
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -190,6 +193,8 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         mi.dwTypeData = const_cast<LPWSTR>(TR("View"));
         sub.SetMenuItemInfo(IDM_VIEW, false, &mi);
 
+        mi.dwTypeData = const_cast<LPWSTR>(TR("Show in default viewer"));
+        sub.SetMenuItemInfo(IDM_OPENINDEFAULTVIEWER, false, &mi);
 
         mi.dwTypeData = const_cast<LPWSTR>(TR("Open in folder"));
         sub.SetMenuItemInfo(IDM_OPENINFOLDER, false, &mi);
@@ -353,28 +358,51 @@ bool CMainDlg::OnHide()
     return false;
 }
 
+BOOL CMainDlg::FileProp(){
+    CComPtr<IShellFolder> desktop; // namespace root for parsing the path
+    HRESULT hr = SHGetDesktopFolder(&desktop);
+   
+    if (!SUCCEEDED(hr)) {
+        return false;
+    }
 
-// Системный диалог свойств файла
-BOOL CMainDlg::FileProp()
-{
-    LV_ITEM lvItem;
-    int nCurItem;
-    SHELLEXECUTEINFO ShInfo;
+    int nCurItem = -1;
 
-    if ((nCurItem = ThumbsView.GetNextItem(-1, LVNI_ALL|LVNI_SELECTED))<0)
-        return FALSE;
+    std::vector<LPITEMIDLIST> list;
+    while ((nCurItem = ThumbsView.GetNextItem(nCurItem, LVNI_ALL | LVNI_SELECTED)) >= 0) {
+        LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
+        if (!FileName) {
+            continue;
+        }
+       
+        PIDLIST_RELATIVE newPIdL;
+        hr = desktop->ParseDisplayName(m_hWnd, 0, const_cast<LPWSTR>(FileName), 0, &newPIdL, 0);
+        if (SUCCEEDED(hr)) {
+            list.push_back(newPIdL);
+            /*
+            CComPtr<IShellFolder> folder;
+            if (SUCCEEDED(mycomputer->BindToObject(folderPidl, 0, IID_IShellFolder, (void**)&folder))) {
+                //ILAppend()
+                PIDLIST_RELATIVE newPIdL = NULL;
+                ULONG dwAttributes = SFGAO_FILESYSTEM | SHCIDS_ALLFIELDS | SFGAO_HASPROPSHEET;
+                ULONG eaten = 0;
+                CString onlyFileName = WinUtils::myExtractFileName(FileName);
+                hr = folder->ParseDisplayName(m_hWnd, 0, (LPWSTR)(LPCTSTR)onlyFileName, 0, &newPIdL,0);
+                if (SUCCEEDED(hr)) {
+                    
 
-    ZeroMemory(&lvItem, sizeof(LV_ITEM));
+                }
+            }*/
+        }
+    }
 
-    LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
-    ZeroMemory(&ShInfo, sizeof(SHELLEXECUTEINFO));
-    ShInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-    ShInfo.nShow = SW_SHOW;
-    ShInfo.fMask = SEE_MASK_INVOKEIDLIST | SEE_MASK_IDLIST;
-    ShInfo.hwnd = m_hWnd;
-    ShInfo.lpVerb = TEXT("properties");
-    ShInfo.lpFile = FileName;
-    ShellExecuteEx(&ShInfo);
+    if (!list.empty()) {
+        CShellPidl::MultiFileProperties(m_hWnd, desktop, const_cast<LPCITEMIDLIST*>(&list[0]), list.size());
+
+        for (auto& pidl : list) {
+            SHFree(pidl);
+        }
+    }
     return TRUE;
 }
 
@@ -484,6 +512,15 @@ LRESULT CMainDlg::OnOpenInFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     ShellExecuteW(NULL, NULL, L"explorer.exe", CString(_T("/select, \"")) + FileName+_T("\""), NULL, SW_SHOWNORMAL);
     return 0;
 }
+
+LRESULT CMainDlg::OnOpenInDefaultViewer(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    CString fileName = getSelectedFileName();
+    if (!fileName.IsEmpty()) {
+        DesktopUtils::ShellOpenUrl(W2U(fileName));
+    }
+    return 0;
+}
+
 LRESULT CMainDlg::OnAddFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     WizardDlg->executeFunc(_T("addfiles"));
@@ -597,9 +634,22 @@ LRESULT CMainDlg::OnCopyFileAsDataUriHtml(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT CMainDlg::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CString fileName = getSelectedFileName();
-	if (!fileName.IsEmpty()) {
-		if (!WinUtils::CopyTextToClipboard(fileName)) {
+    int nCurItem = -1;
+    CString result; 
+    while ((nCurItem = ThumbsView.GetNextItem(nCurItem, LVNI_ALL | LVNI_SELECTED)) >= 0) {
+        LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
+        if (!FileName) {
+            continue;
+        }
+        if (!result.IsEmpty()) {
+            result += _T("\r\n");
+        }
+        result += FileName;
+
+    }
+
+    if (!result.IsEmpty()) {
+        if (!WinUtils::CopyTextToClipboard(result)) {
 			MessageBox(_T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
 		}
 	}

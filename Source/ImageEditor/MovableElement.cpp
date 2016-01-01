@@ -188,7 +188,6 @@ void MovableElement::setPos(int x, int y) {
 bool MovableElement::move(int offsetX, int offsetY) {
     int canvasWidth = canvas_->getWidth();
     int canvasHeight = canvas_->getHeigth();
-    int kHalfGripSize = kGripSize / 2;
     int x = getX();
     int y = getY();
     int right = x + getWidth();

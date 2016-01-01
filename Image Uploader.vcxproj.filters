@@ -846,6 +846,9 @@
     <ClInclude Include="Source\Gui\HwndScopedWrapper.h">
       <Filter>Source Files\Gui</Filter>
     </ClInclude>
+    <ClInclude Include="Source\3rdpart\ShellPidl.h">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1865,6 +1868,9 @@
     </ClCompile>
     <ClCompile Include="Source\Gui\Win7JumpList.cpp">
       <Filter>Source Files\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\3rdpart\ShellPidl.cpp">
+      <Filter>Source Files\3rdpart</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

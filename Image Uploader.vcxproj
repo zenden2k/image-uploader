@@ -619,6 +619,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\3rdpart\ShellPidl.h" />
     <ClInclude Include="Source\Core\3rdpart\GumboQuery\GQDocument.h" />
     <ClInclude Include="Source\Core\3rdpart\GumboQuery\Node.h" />
     <ClInclude Include="Source\Core\3rdpart\GumboQuery\Object.h" />
@@ -989,6 +990,7 @@
     <ResourceCompile Include="Source\Image Uploader.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\3rdpart\ShellPidl.cpp" />
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\GQDocument.cpp" />
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\GQ_Parser.cpp" />
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\Node.cpp" />

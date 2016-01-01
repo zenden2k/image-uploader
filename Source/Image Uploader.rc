@@ -1347,6 +1347,7 @@ BEGIN
     POPUP "0"
     BEGIN
         MENUITEM "Просмотр",                    IDM_VIEW
+        MENUITEM "#IDM_OPENINDEFAULTVIEWER",    IDM_OPENINDEFAULTVIEWER
         MENUITEM "Edit",                        IDM_EDIT
         MENUITEM "#Edit in external editor",    IDM_EDITINEXTERNALEDITOR
         MENUITEM "Extract frames",              IDM_EXTRACTFRAMES

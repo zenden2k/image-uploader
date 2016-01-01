@@ -180,6 +180,8 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     MediaInfoHelper::FindMediaInfoDllPath();
     SetWindowText(APPNAME);
 
+    aboutButtonToolTip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_ABOUT), TR("Help"));
+
     Lang.SetDirectory(WinUtils::GetAppFolder() + "Lang\\");
     bool isFirstRun =  Settings.Language.IsEmpty() || FALSE;
     for(size_t i=0; i<CmdLine.GetCount(); i++)
