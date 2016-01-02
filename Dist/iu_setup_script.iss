@@ -5,7 +5,7 @@
 #expr Exec(SourcePath + "signcode.bat")
 #define MyAppName "Image Uploader"
 #define MyAppVersion _APP_VER
-#define MyAppPublisher "zenden.ws"
+#define MyAppPublisher "Sergey Svistunov"
 #define MyAppURL "http://zenden.ws/imageuploader"
 #define MyAppExeName "Image Uploader.exe"
 ;#include ReadReg(HKEY_LOCAL_MACHINE,'Software\Sherlock Software\InnoTools\Downloader','ScriptPath','')

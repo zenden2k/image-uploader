@@ -37,6 +37,9 @@
 #include <boost/format.hpp>
 #include <shlobj.h>
 
+CMainDlg::CMainDlg() {
+}
+
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     listChanged_ = false;
@@ -498,18 +501,56 @@ DWORD CMainDlg::Run()
     return 0;
 }
 
+// Executing Windows Explorer; file will be highlighted
 LRESULT CMainDlg::OnOpenInFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    int nCurItem;
+    int nCurItem = -1;
+    PIDLIST_ABSOLUTE folderPidl = nullptr;
 
-    if ((nCurItem = ThumbsView.GetNextItem(-1, LVNI_ALL|LVNI_SELECTED))<0)
-            return FALSE;
+    CComPtr<IShellFolder> desktop; // namespace root for parsing the path
+    HRESULT hr = SHGetDesktopFolder(&desktop);
+
+    if (!SUCCEEDED(hr)) {
+        return 0;
+    }
+
+    std::vector<LPCITEMIDLIST> list;
+    while ((nCurItem = ThumbsView.GetNextItem(nCurItem, LVNI_ALL | LVNI_SELECTED)) >= 0) {
+        LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
+        if (!FileName) {
+            continue;
+        }
+
+        PIDLIST_RELATIVE newPIdL;
+        hr = desktop->ParseDisplayName(m_hWnd, nullptr, const_cast<LPWSTR>(FileName), nullptr, &newPIdL, nullptr);
+        if (SUCCEEDED(hr)) {
+            LPCITEMIDLIST relativePidl = nullptr;
+            CComPtr<IShellFolder> folder;
+
+            hr = SHBindToParent(newPIdL, IID_IShellFolder, reinterpret_cast<void**>(&folder), &relativePidl);
+            if (SUCCEEDED(hr)) {
+                list.push_back(relativePidl);
+                if (!folderPidl) {
+                    CComQIPtr<IPersistFolder2> persistFolder(folder);
+                    if (persistFolder) {
+                        persistFolder->GetCurFolder(&folderPidl);
+                    }
+                }
+            }
+        }
+    }
+    if (!list.empty() && folderPidl != nullptr) {
+        // Will be opened the parent folder of the first file.
+        // Files laying in another folders will be ignored.
+        hr = SHOpenFolderAndSelectItems(folderPidl, list.size(), &list[0], 0);
+        if (!SUCCEEDED(hr)) {
+            LOG(ERROR) << "Unable to open folder in shell, error code=" << hr;
+        }
+        for (auto& pidl : list) {
+            SHFree(const_cast<LPITEMIDLIST>(pidl));
+        }
+    }
     
-    LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
-    if(!FileName) return FALSE;
-    
-    // Executing Windows Explorer; file will be highlighted
-    ShellExecuteW(NULL, NULL, L"explorer.exe", CString(_T("/select, \"")) + FileName+_T("\""), NULL, SW_SHOWNORMAL);
     return 0;
 }
 
