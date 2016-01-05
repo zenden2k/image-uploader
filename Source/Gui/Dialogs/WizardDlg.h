@@ -38,6 +38,7 @@
 #include "Core/TaskDispatcher.h"
 #include "FolderAddDlg.h"
 #include "Gui/HwndScopedWrapper.h"
+#include "Gui/Controls/IconButton.h"
 
 #define ID_PASTE 9888
 #define ID_HOTKEY_BASE 10000
@@ -45,6 +46,7 @@
 #define WM_MY_SHOWPAGE WM_USER + 223
 #define WM_MY_EXIT WM_USER + 224
 #define WM_TASKDISPATCHERMSG WM_USER + 225
+
 
 
 // CWizardDlg
@@ -194,6 +196,8 @@ public:
     ScriptsManager* scriptsManager_;
 	std::unique_ptr<Win7JumpList> win7JumpList_;
     HwndScopedWrapper aboutButtonToolTip_;
+    CIconButton helpButton_;
+    CIcon helpButtonIcon_;
     long m_lRef;
     bool QuickUploadMarker;
     CString LastVideoFile;

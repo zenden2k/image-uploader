@@ -180,7 +180,16 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     MediaInfoHelper::FindMediaInfoDllPath();
     SetWindowText(APPNAME);
 
-    aboutButtonToolTip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_ABOUT), TR("Help"));
+    CDC hdc = GetDC();
+    float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
+    float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+
+    aboutButtonToolTip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_HELPBUTTON), TR("Help"));
+
+    helpButtonIcon_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICON_HELP_DROPDOWN), IMAGE_ICON, 16 * dpiScaleX, 16 * dpiScaleY, 0));
+    SendDlgItemMessage(IDC_HELPBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)helpButtonIcon_);
+    helpButton_.SubclassWindow(GetDlgItem(IDC_HELPBUTTON));
+
 
     Lang.SetDirectory(WinUtils::GetAppFolder() + "Lang\\");
     bool isFirstRun =  Settings.Language.IsEmpty() || FALSE;

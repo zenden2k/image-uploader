@@ -33,7 +33,7 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
             MESSAGE_HANDLER( WM_CONTEXTMENU, OnContextMenu )
             MESSAGE_HANDLER( WM_SETCURSOR, OnSetCursor )
             MESSAGE_HANDLER( WM_KEYDOWN, OnKeyDown )
-            MESSAGE_HANDLER( WM_KEYDOWN, OnKeyUp )
+            MESSAGE_HANDLER( WM_KEYUP, OnKeyUp )
             //MESSAGE_HANDLER( WM_SIZE, OnSize )
             REFLECT_NOTIFICATIONS()
             CHAIN_MSG_MAP(TBase);

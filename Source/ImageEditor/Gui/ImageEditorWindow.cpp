@@ -587,7 +587,7 @@ LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 LRESULT ImageEditorWindow::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     HKL englishLayout = LoadKeyboardLayout(_T("00000409"),0);
-    if ( wParam == VkKeyScanEx('[', englishLayout) ||  wParam == VkKeyScanEx(']', englishLayout) ) {
+    if (wParam == VK_OEM_4 || wParam == VK_OEM_6) {
         canvas_->endPenSizeChanging(canvas_->getPenSize());
     } else {
         m_view.SendMessage(uMsg, wParam, lParam);    

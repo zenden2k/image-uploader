@@ -149,6 +149,8 @@ public:
     }
 };
 
+typedef std::map <std::string, std::map <std::string, ServerSettingsStruct>> ServerSettingsMap;
+
 class CUploadEngineData
 {
     public:

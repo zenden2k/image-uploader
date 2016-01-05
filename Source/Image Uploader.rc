@@ -172,7 +172,7 @@ BEGIN
     PUSHBUTTON      "< Назад",IDC_PREV,159,273,65,15
     DEFPUSHBUTTON   "Далее >",IDC_NEXT,235,273,62,15
     PUSHBUTTON      "EXIT",IDCANCEL,323,273,57,15
-    PUSHBUTTON      "?",IDC_HELPBUTTON,6,273,20,15
+    PUSHBUTTON      "?",IDC_HELPBUTTON,6,273,20,15,BS_ICON
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,269,423,1
 END
 
@@ -1420,6 +1420,7 @@ IDI_ICONITALIC          ICON                    "res\\ImageEditor\\icon_italic.i
 IDI_ICONUNDERLINE       ICON                    "res\\ImageEditor\\icon_underline.ico"
 IDI_ICON_MAIN_OLD       ICON                    "res\\icon_main_old.ico"
 IDI_ICONTRAYACTIVE      ICON                    "res\\icon_main_active.ico"
+IDI_ICON_HELP_DROPDOWN  ICON                    "res\\icon_help_dropdown_big.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

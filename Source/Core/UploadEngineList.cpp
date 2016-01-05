@@ -40,7 +40,7 @@ CUploadEngineList::CUploadEngineList()
     m_ActionNumOfRetries = 2;
 }
 
-bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::string, std::map <std::string, ServerSettingsStruct>>& serversSettings)
+bool CUploadEngineList::LoadFromFile(const std::string& filename, ServerSettingsMap& serversSettings)
 {
     SimpleXml xml;
     if(!xml.LoadFromFile(filename))
@@ -193,6 +193,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename,std::map <std::
 
                 UA.Type = actionNode.Attribute("Type");
                 UA.Url = actionNode.Attribute("Url");
+                UA.Referer = actionNode.Attribute("Referer");
 
                 UA.PostParams = actionNode.Attribute("PostParams");
                 UA.CustomHeaders = actionNode.Attribute("CustomHeaders");

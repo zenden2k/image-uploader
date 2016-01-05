@@ -143,6 +143,7 @@
     <ClCompile Include="..\Core\Settings\EncodedPassword.cpp" />
     <ClCompile Include="..\Core\TempFileDeleter.cpp" />
     <ClCompile Include="..\Core\ThreadSync.cpp" />
+    <ClCompile Include="..\Core\UploadEngineList.cpp" />
     <ClCompile Include="..\Core\Upload\ConsoleUploadErrorHandler.cpp" />
     <ClCompile Include="..\Core\Upload\DefaultUploadEngine.cpp" />
     <ClCompile Include="..\Core\Upload\FileQueueUploader.cpp" />
@@ -154,6 +155,7 @@
     <ClCompile Include="..\Core\Upload\ScriptUploadEngine.cpp" />
     <ClCompile Include="..\Core\Upload\ServerProfile.cpp" />
     <ClCompile Include="..\Core\Upload\ServerSync.cpp" />
+    <ClCompile Include="..\Core\Upload\Tests\UploadEngineListTest.cpp" />
     <ClCompile Include="..\Core\Upload\UploadEngine.cpp" />
     <ClCompile Include="..\Core\Upload\UploadEngineManager.cpp" />
     <ClCompile Include="..\Core\Upload\Uploader.cpp" />

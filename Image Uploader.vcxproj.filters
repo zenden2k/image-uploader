@@ -1187,6 +1187,12 @@
     <Image Include="Source\res\icon_main_active.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\icon_help_dropdown_big.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_help_dropdown_big.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\res\ImageEditor\colorpicker.cur">

@@ -82,6 +82,9 @@
     <Filter Include="Source\ImageEditor\Helpers\Tests">
       <UniqueIdentifier>{ba606d34-5604-41f0-8ced-bf21a2a5e11c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Core\Upload\Tests">
+      <UniqueIdentifier>{b97b93df-fefb-4940-9540-2e4933a77612}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tests.cpp">
@@ -338,6 +341,12 @@
     </ClCompile>
     <ClCompile Include="..\ImageEditor\Helpers\FontEnumerator.cpp">
       <Filter>Source\ImageEditor\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\Tests\UploadEngineListTest.cpp">
+      <Filter>Source\Core\Upload\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\UploadEngineList.cpp">
+      <Filter>Source\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
