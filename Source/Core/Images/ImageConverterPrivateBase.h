@@ -6,6 +6,7 @@
 #include "Core/Utils/CoreTypes.h"
 #include "ImageConverter.h"
 #include <string>
+#include <map>
 
 class ImageConverterPrivateBase {
 public:

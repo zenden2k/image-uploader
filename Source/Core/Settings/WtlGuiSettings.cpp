@@ -48,7 +48,7 @@ limitations under the License.
 #define SETTINGS_FILE_NAME _T("settings.xml")
 
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL) && !defined(IU_IMAGEEDITOR)
-#include <Core/ServiceLocator.h>
+#include "Core/ServiceLocator.h"
 
 
 COLORREF WtlGuiSettings::DefaultLinkColor = RGB(0x0C, 0x32, 0x50);

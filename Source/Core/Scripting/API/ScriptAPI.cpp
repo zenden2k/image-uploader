@@ -42,7 +42,7 @@
 #ifndef _WIN32
 #include <unistd.h>
 #endif
-#include <Core/3rdpart/tinyxml.h>
+#include "Core/3rdpart/tinyxml.h"
 
 namespace ScriptAPI {;
 

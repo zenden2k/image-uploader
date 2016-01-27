@@ -849,6 +849,9 @@
     <ClInclude Include="Source\3rdpart\ShellPidl.h">
       <Filter>Source Files\3rdpart</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\Network\INetworkClient.h">
+      <Filter>Source Files\Core\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">

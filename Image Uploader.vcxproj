@@ -639,6 +639,7 @@
     <ClInclude Include="Source\Core\Logging\Logger.h" />
     <ClInclude Include="Source\Core\Logging\MyLogSink.h" />
     <ClInclude Include="Source\Core\Network\CurlShare.h" />
+    <ClInclude Include="Source\Core\Network\INetworkClient.h" />
     <ClInclude Include="Source\Core\Object.h" />
     <ClInclude Include="Source\Core\Scripting\API\COMUtils.h" />
     <ClInclude Include="Source\Core\Scripting\API\Functions.h" />

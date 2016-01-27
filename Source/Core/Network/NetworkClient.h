@@ -21,13 +21,11 @@
 #ifndef _NETWORK_MANAGER_H_
 #define _NETWORK_MANAGER_H_
 
-
-
+#include "INetworkClient.h"
 #include <string>
 #include <vector>
 
 #include <curl/curl.h>
-//#include <curl/types.h>
 #include <mutex>
 #include "Core/3rdpart/fastdelegate.h"
 
@@ -43,7 +41,7 @@ void nm_splitString(const std::string& str, const std::string& delimiters, std::
 
 Note: After each completed request, most of the options are set to default values.
 */
-class NetworkClient
+class NetworkClient: public INetworkClient
 {
     public:
         /*! @cond PRIVATE */
@@ -55,8 +53,8 @@ class NetworkClient
         /*! @endcond */
         NetworkClient(void);
         ~NetworkClient(void);
-        void addQueryParam(const std::string& name, const std::string& value);
-        void addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName = "", const std::string& contentType = "");
+        void addQueryParam(const std::string& name, const std::string& value) override;
+        void addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName = "", const std::string& contentType = "") override;
         /**
         Example:
         @include networkclient_header.nut

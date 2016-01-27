@@ -1,14 +1,14 @@
 ﻿#include "ImageConverterPrivateBase.h"
 
-#include <Core/Utils/CoreUtils.h>
-#include <Core/3rdpart/pcreplusplus.h>
-#include <Core/Utils/StringUtils.h>
-#include <Core/3rdpart/parser.h>
+#include "Core/Utils/CoreUtils.h"
+#include "Core/3rdpart/pcreplusplus.h"
+#include "Core/Utils/StringUtils.h"
+#include "Core/3rdpart/parser.h"
 
 ImageConverterPrivateBase::ImageConverterPrivateBase()
 {
     generateThumb_ = false;
-    thumbnailTemplate_ = 0;
+    thumbnailTemplate_ = nullptr;
     processingEnabled_ = true;
 }
 

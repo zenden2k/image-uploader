@@ -37,7 +37,7 @@
 #include "Func/WinUtils.h"
 #include "COMUtils.h"
 #include "Core/3rdpart/pcreplusplus.h"
-#include <Core/ServiceLocator.h>
+#include "Core/ServiceLocator.h"
 
 namespace ScriptAPI {
 class CWebBrowser;

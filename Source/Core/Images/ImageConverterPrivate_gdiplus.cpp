@@ -12,7 +12,7 @@
 #ifndef MYRGB
     #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 #endif
-#include <Core/Video/GdiPlusImage.h>
+#include "Core/Video/GdiPlusImage.h"
 
 bool ImageConverterPrivate::Convert(const std::string& sourceFile)
 {

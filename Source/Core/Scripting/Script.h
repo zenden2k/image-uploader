@@ -4,8 +4,9 @@
 #include "Squirrelnc.h"
 
 #pragma once
+#include <string>
 #include <thread>
-#include <Core/ThreadSync.h>
+#include "Core/ThreadSync.h"
 
 class ServerSync;
 class NetworkClient;

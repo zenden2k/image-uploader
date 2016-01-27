@@ -20,16 +20,14 @@
 #include "ImageDownloaderDlg.h"
 
 #include "Core/CommonDefs.h"
-#include "Func/Common.h"
 #include "Core/3rdpart/pcreplusplus.h"
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
-#include "Func/myutils.h"
 #include "Core/ServiceLocator.h"
 #include "Core/CoreFunctions.h"
 #include "Func/WebUtils.h"
-#include <Func/IuCommonFunctions.h>
+#include "Func/IuCommonFunctions.h"
 #include "Core/Utils/StringUtils.h"
 
 // CImageDownloaderDlg
@@ -39,6 +37,7 @@ CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg,const CString &in
     m_InitialBuffer = initialBuffer;
     fRemoveClipboardFormatListener_ = NULL;
     PrevClipboardViewer = NULL;
+    m_FileDownloader.setThreadCount(1);
 }
 
 CImageDownloaderDlg::~CImageDownloaderDlg()
@@ -84,7 +83,6 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
                 SetDlgItemText(IDC_FILEINFOEDIT, text);
             }
         }
-
     }
     ::SetFocus(GetDlgItem(IDC_FILEINFOEDIT));
     return 1; 

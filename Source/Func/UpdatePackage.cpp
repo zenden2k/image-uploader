@@ -38,8 +38,8 @@
 #define TR(str) _T(str)
 
 #endif
-#include <Core/ServiceLocator.h>
-#include <Core/CoreFunctions.h>
+#include "Core/ServiceLocator.h"
+#include "Core/CoreFunctions.h""
 
 BOOL CreateFolder(LPCTSTR szFolder)
 {

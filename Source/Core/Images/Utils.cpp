@@ -32,7 +32,7 @@
 #include "Gui/Dialogs/LogWindow.h"
 #include <cmath>
 #include <stdint.h>
-#include <Core/ServiceLocator.h>
+#include "Core/ServiceLocator.h"
 #include <Func/Library.h>
 #include <libbase64.h>
 #include <boost/format.hpp>

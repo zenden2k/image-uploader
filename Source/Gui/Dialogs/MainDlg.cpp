@@ -205,6 +205,10 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         mi.dwTypeData = const_cast<LPWSTR>(TR("Save as..."));
         sub.SetMenuItemInfo(IDM_SAVEAS, false, &mi); 
 
+        mi.dwTypeData = const_cast<LPWSTR>(TR("Extract frames"));
+        sub.SetMenuItemInfo(IDM_EXTRACTFRAMES, false, &mi);
+        
+
         CString menuItemTitle = ( isImage ?  TR("Copy image") : TR("Copy") ) + CString(_T("\tCtrl+C"));
         lstrcpy(buf, menuItemTitle);
         mi.dwTypeData  = buf;
