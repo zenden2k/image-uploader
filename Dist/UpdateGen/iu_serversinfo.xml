@@ -9,8 +9,6 @@
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
 <Info>
-[+] imagebam.com
-[f] fotosklad.org.ua (keep original image size)
-[-] pikucha.ru
+[+] imghost.pro
 </Info>
 </UpdatePackageSource>
