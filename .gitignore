@@ -6,3 +6,7 @@ Build
 Dist/output/
 Dist/portable/
 Data/Snapshots
+Sandbox/
+ipch/
+*.obj
+*.aps
