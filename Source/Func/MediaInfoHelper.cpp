@@ -24,6 +24,7 @@
 #include "Core/3rdpart/MediaInfoDLL.h"
 #include "LangClass.h"
 #include "WinUtils.h"
+#include <boost/lexical_cast.hpp>
 
 namespace MediaInfoHelper {
 
@@ -50,13 +51,13 @@ std::string timestampToStr(int64_t duration, int64_t units) {
     int hours, mins, secs, us;
     secs = static_cast<int>(duration / units);
     us = static_cast<int>(duration % units);
-    mins = secs / 60;
-    secs %= 60;
-    hours = mins / 60;
-    mins %= 60;
-    char buffer[100];
-    sprintf(buffer, "%02d:%02d:%02d", hours, mins, secs/*, (int)((100 * us) / units)*/);
-    return buffer;
+mins = secs / 60;
+secs %= 60;
+hours = mins / 60;
+mins %= 60;
+char buffer[100];
+sprintf(buffer, "%02d:%02d:%02d", hours, mins, secs/*, (int)((100 * us) / units)*/);
+return buffer;
 }
 
 bool FindMediaInfoDllPath() {
@@ -66,8 +67,7 @@ bool FindMediaInfoDllPath() {
     if (WinUtils::FileExists(MediaDll)) {
         lstrcpy(MediaInfoDllPath, MediaDll);
         return true;
-    }
-    else {
+    } else {
         TCHAR Buffer[MAX_PATH];
         HKEY ExtKey;
         Buffer[0] = 0;
@@ -125,6 +125,7 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
         Duration = MI.Get(Stream_General, 0, _T("Duration/String"), Info_Text, Info_Name);
     }
 
+
     AddStr(Result, Duration, CString(_T("\r\n")), CString(TR("Duration: ")));
 
     if (count + VideoCount > 1) // if file contains more than one audio/video stream 
@@ -140,6 +141,22 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
         CString VideoTotal = TR("Video: ");
         VideoFormat = VIDEO("Format");
         VideoVersion = VIDEO("Format_Version");
+
+        CString width = VIDEO("Width");
+        CString height = VIDEO("Height");
+
+        CString aspectRatio = MI.Get(Stream_Video, 0, _T("DisplayAspectRatio"), Info_Text, Info_Name);
+        try {
+            double fAspectRatio = boost::lexical_cast<double>(LPCTSTR(aspectRatio));
+            int iWidth = boost::lexical_cast<int>(LPCTSTR(width));
+            int iHeight = boost::lexical_cast<int>(LPCTSTR(height));
+            double physicalAspect = iWidth / static_cast<double>(iHeight);
+            if (physicalAspect != fAspectRatio) {
+                LOG(WARNING) << "physicalAspect " << physicalAspect << " != " << fAspectRatio;
+            }
+        } catch ( const boost::bad_lexical_cast& ex ) {
+            LOG(WARNING) << ex.what();
+        }
 
         AddStr(VideoTotal, VideoFormat);
         replace(VideoVersion, CString(_T("Version ")), CString(_T("")));

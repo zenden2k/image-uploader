@@ -964,10 +964,10 @@ LRESULT ImageEditorWindow::OnClickedClose(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 {
     DialogResult dr = drCancel;
     if ( askBeforeClose_ && canvas_->isDocumentModified() ) {
-        int msgBoxResult = MessageBox(TR("Save changes?"),APPNAME, MB_YESNOCANCEL|MB_ICONQUESTION);
+        int msgBoxResult = MessageBox(TR("Save changes?"), APPNAME, MB_YESNOCANCEL|MB_ICONQUESTION);
         if ( msgBoxResult == IDYES ) {
             dr = outFileName_.IsEmpty() ? drCancel : drSave;
-            OnClickedSave(NM_CLICK, ID_SAVE, 0, bHandled);
+            OnClickedSave(NM_CLICK, ID_SAVE, nullptr, bHandled);
         } else if ( msgBoxResult == IDCANCEL ) {
             return 0;
         }

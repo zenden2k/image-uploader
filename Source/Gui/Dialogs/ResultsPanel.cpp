@@ -129,10 +129,10 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
     RECT rc = {0,0,100,24};
     GetClientRect(&rc);
-    rc.top = rc.bottom - dpiScaleY_ * 28;
-    rc.bottom -= dpiScaleY_ * 4;
-    rc.left = dpiScaleX_ * 8;
-    rc.right -= dpiScaleX_ * 8;
+    rc.top = static_cast<LONG>(rc.bottom - dpiScaleY_ * 28);
+    rc.bottom -= static_cast<LONG>(dpiScaleY_ * 4);
+    rc.left = static_cast<LONG>(dpiScaleX_ * 8);
+    rc.right -= static_cast<LONG>(dpiScaleX_ * 8);
     Toolbar.Create(m_hWnd,rc,_T(""), WS_CHILD|WS_CHILD | TBSTYLE_LIST |TBSTYLE_CUSTOMERASE|TBSTYLE_FLAT| CCS_NORESIZE/*|*/|CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
     //TabBackgroundFix(Toolbar.m_hWnd);
     

@@ -186,7 +186,8 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
     aboutButtonToolTip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_HELPBUTTON), TR("Help"));
 
-    helpButtonIcon_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICON_HELP_DROPDOWN), IMAGE_ICON, 16 * dpiScaleX, 16 * dpiScaleY, 0));
+    helpButtonIcon_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICON_HELP_DROPDOWN), IMAGE_ICON, static_cast<int>(16 * dpiScaleX), 
+        static_cast<int>(16 * dpiScaleY), 0));
     SendDlgItemMessage(IDC_HELPBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)helpButtonIcon_);
     helpButton_.SubclassWindow(GetDlgItem(IDC_HELPBUTTON));
 

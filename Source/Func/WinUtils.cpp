@@ -914,6 +914,8 @@ const CString StringSection(const CString& str,TCHAR sep, int index) {
     return result;
 }
 
+// Show file properties dialog for single file
+// For multiple files, see SHMultiFileProperties function
 bool ShowFilePropertiesDialog(HWND hWnd, const CString& fileName) {
 
     SHELLEXECUTEINFO ShInfo;

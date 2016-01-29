@@ -85,6 +85,9 @@
     <Filter Include="Source\Core\Upload\Tests">
       <UniqueIdentifier>{b97b93df-fefb-4940-9540-2e4933a77612}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Core\Network\Tests">
+      <UniqueIdentifier>{29ec217b-a164-4b69-abec-99ff13b4e2c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tests.cpp">
@@ -364,6 +367,9 @@
     </ClInclude>
     <ClInclude Include="..\3rdpart\Registry.h">
       <Filter>Source\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Network\Tests\NetworkClientMock.h">
+      <Filter>Source\Core\Network\Tests</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

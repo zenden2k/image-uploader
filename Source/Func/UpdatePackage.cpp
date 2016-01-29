@@ -32,14 +32,13 @@
 #include "IuCommonFunctions.h"
 #include "Core/Utils/SystemUtils.h"
 #include "Core/CommonDefs.h"
+#include "Core/ServiceLocator.h"
+#include "Core/CoreFunctions.h"
 
 #ifdef IU_CLI
-#undef TR
-#define TR(str) _T(str)
-
+    #undef TR
+    #define TR(str) _T(str)
 #endif
-#include "Core/ServiceLocator.h"
-#include "Core/CoreFunctions.h""
 
 BOOL CreateFolder(LPCTSTR szFolder)
 {

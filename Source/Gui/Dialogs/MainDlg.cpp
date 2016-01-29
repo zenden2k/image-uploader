@@ -42,6 +42,11 @@ CMainDlg::CMainDlg() {
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    // register object for message filtering and idle updates
+    CMessageLoop* pLoop = _Module.GetMessageLoop();
+    ATLASSERT(pLoop != NULL);
+    pLoop->AddMessageFilter(this);
+
     listChanged_ = false;
     callbackLastCallType_ = false;
     SetTimer(kStatusTimer, 500);
@@ -69,6 +74,12 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     });
     UpdateStatusLabel();
 
+    ACCEL Accels[1];
+    Accels[0].fVirt = FCONTROL | FSHIFT | FVIRTKEY;
+    Accels[0].key = VkKeyScan('c');;
+    Accels[0].cmd = IDM_COPYFILEPATH;
+    hotkeys_ = CreateAcceleratorTable(Accels, ARRAY_SIZE(Accels));
+
     WaitThreadStop.Create();
     WaitThreadStop.ResetEvent();
     return TRUE;
@@ -76,8 +87,8 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 LRESULT CMainDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    DestroyAcceleratorTable(hotkeys_);
     WaitThreadStop.Close();
-
     return 0;
 }
 
@@ -214,7 +225,8 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         mi.dwTypeData  = buf;
         sub.SetMenuItemInfo(IDM_COPYFILETOCLIPBOARD, false, &mi);
 
-		mi.dwTypeData = const_cast<LPWSTR>(TR_CONST("Copy full path"));
+        CString label = TR("Copy full path") + CString(_T("\tCtrl+Shift+C"));
+        mi.dwTypeData = const_cast<LPWSTR>((LPCTSTR)label);
 		sub.SetMenuItemInfo(IDM_COPYFILEPATH, false, &mi);
 
         mi.dwTypeData = const_cast<LPWSTR>(TR("Remove"));
@@ -449,8 +461,17 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     Sei.lpFile = EditorLine.ModuleName();
     Sei.lpParameters = EditorLine.OnlyParams();
     Sei.nShow = SW_SHOW;
-    
-    if (!ShellExecuteEx(&Sei)) {
+
+    SHELLEXECUTEINFO TempInfo = { 0 };
+    TCHAR filePath[1024];
+    WinUtils::ExtractFilePath(FileName, filePath);
+    TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+    TempInfo.hwnd = m_hWnd;
+    TempInfo.lpVerb = _T("open");
+    TempInfo.lpFile = FileName;
+    TempInfo.lpDirectory = filePath;
+    TempInfo.nShow = SW_NORMAL;
+    if (!::ShellExecuteEx(&TempInfo)) {
         LOG(ERROR) << "Opening external editor failed." << std::endl << "Reason: " << WinUtils::ErrorCodeToString(GetLastError());
         return 0;
     }
@@ -570,6 +591,13 @@ LRESULT CMainDlg::OnAddFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     WizardDlg->executeFunc(_T("addfiles"));
     return 0;
+}
+
+BOOL CMainDlg::PreTranslateMessage(MSG* pMsg) {
+    if (hotkeys_ && TranslateAccelerator(m_hWnd, hotkeys_, pMsg)) {
+        return TRUE;
+    }
+    return FALSE;
 }
 
 CString CMainDlg::getSelectedFileName() {

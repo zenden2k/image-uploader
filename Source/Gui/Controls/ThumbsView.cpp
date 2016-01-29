@@ -206,7 +206,7 @@ bool CThumbsView::SimpleDelete(int ItemIndex, bool DeleteThumb)
     if(DeleteThumb) 
         ImageList.Remove(ItemIndex + 1);
 
-    ThumbsViewItem *TVI = (ThumbsViewItem *)GetItemData(ItemIndex);
+    ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(ItemIndex));
     SetItemData(ItemIndex, 0);
     if(TVI) delete TVI;
 
@@ -215,7 +215,7 @@ bool CThumbsView::SimpleDelete(int ItemIndex, bool DeleteThumb)
 
 LPCTSTR CThumbsView::GetFileName(int ItemIndex)
 {
-    ThumbsViewItem *TVI = (ThumbsViewItem *)GetItemData(ItemIndex);
+    ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(ItemIndex));
     if(!TVI){return _T("");} 
     return TVI->FileName;
 }
@@ -253,14 +253,14 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
     {
         return false;
     }
-    Bitmap *ImgBuffer=NULL;
-    Image *bm=NULL;
+    Bitmap *ImgBuffer=nullptr;
+    Image *bm = nullptr;
     CString filename;
     if(ItemID>=0) 
     {
         filename  = GetFileName(ItemID);
     }
-    int width, height, imgwidth = 0, imgheight = 0, newwidth, newheight;
+    int width, height, imgwidth = 0, imgheight = 0, newwidth=0, newheight=0;
     width = THUMBNAIL_WIDTH/*rc.right-2*/;
     height = THUMBNAIL_HEIGHT/*rc.bottom-16*/;
     int thumbwidth = THUMBNAIL_WIDTH;

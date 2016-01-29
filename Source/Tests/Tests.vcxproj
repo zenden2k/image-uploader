@@ -193,6 +193,7 @@
     <ClInclude Include="..\3rdpart\Registry.h" />
     <ClInclude Include="..\Core\3rdpart\tinystr.h" />
     <ClInclude Include="..\Core\3rdpart\tinyxml.h" />
+    <ClInclude Include="..\Core\Network\Tests\NetworkClientMock.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>

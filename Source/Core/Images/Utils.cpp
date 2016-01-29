@@ -305,11 +305,17 @@ void boxBlurH_4 (DummyBitmap& scl, DummyBitmap& tcl, int w, int h, int r) {
         int fv = scl[ti], lv = scl[ti+w-1], val = (r+1)*fv;
         for(int j=0; j<r; j++) val += scl[ti+j];
         for(int j=0  ; j<=r ; j++) { 
-            val += scl[ri++] - fv       ;   
+            val += scl[ri++] - fv;   
             tcl[ti++] = static_cast<uint8_t>(round(val*iarr)); 
         }
-        for(int j=r+1; j<w-r; j++) { val += scl[ri++] - scl[li++];   tcl[ti++] = round(val*iarr); }
-        for(int j=w-r; j<w  ; j++) { val += lv        - scl[li++];   tcl[ti++] = round(val*iarr); }
+        for(int j=r+1; j<w-r; j++) {
+            val += scl[ri++] - scl[li++];   
+            tcl[ti++] = static_cast<uint8_t>(round(val*iarr));
+        }
+        for(int j=w-r; j<w  ; j++) {
+            val += lv        - scl[li++];   
+            tcl[ti++] = static_cast<uint8_t>(round(val*iarr));
+        }
     }
 }
 void boxBlurT_4 (DummyBitmap&  scl, DummyBitmap&  tcl, int w, int h, int r) {
@@ -320,11 +326,20 @@ void boxBlurT_4 (DummyBitmap&  scl, DummyBitmap&  tcl, int w, int h, int r) {
         for(int j=0; j<r; j++) val += scl[ti+j*w];
         for(int j=0  ; j<=r ; j++) { 
             val += scl[ri] - fv     ;  
-            tcl[ti] = round(val*iarr);  
+            tcl[ti] = static_cast<uint8_t>(round(val*iarr));
             ri+=w; 
             ti+=w; }
-        for(int j=r+1; j<h-r; j++) { val += scl[ri] - scl[li];  tcl[ti] = round(val*iarr);  li+=w; ri+=w; ti+=w; }
-        for(int j=h-r; j<h  ; j++) { val += lv      - scl[li];  tcl[ti] = round(val*iarr);  li+=w; ti+=w; }
+        for(int j=r+1; j<h-r; j++) {
+            val += scl[ri] - scl[li];  
+            tcl[ti] = static_cast<uint8_t>(round(val*iarr));
+            li+=w; ri+=w; ti+=w;
+        }
+        for(int j=h-r; j<h  ; j++) {
+            val += lv      - scl[li];  
+            tcl[ti] = static_cast<uint8_t>(round(val*iarr));
+            li+=w; 
+            ti+=w;
+        }
     }
 }
 
@@ -359,7 +374,7 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
     if (bm->LockBits(& rc, ImageLockModeRead|ImageLockModeWrite, PixelFormat32bppARGB, & dataSource) == Ok)
     {
         uint8_t * source = reinterpret_cast<uint8_t *>(dataSource.Scan0);
-        assert(h == dataSource.Height);
+        assert(static_cast<UINT>(h) == dataSource.Height);
         UINT stride;
         if (dataSource.Stride > 0) { stride = dataSource.Stride;
         } else {

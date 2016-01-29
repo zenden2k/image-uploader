@@ -18,8 +18,8 @@
 
 */
 
-#ifndef _NETWORK_MANAGER_H_
-#define _NETWORK_MANAGER_H_
+#ifndef _NETWORK_CLIENT_H_
+#define _NETWORK_CLIENT_H_
 
 #include "INetworkClient.h"
 #include <string>
@@ -59,20 +59,20 @@ class NetworkClient: public INetworkClient
         Example:
         @include networkclient_header.nut
         */
-        void addQueryHeader(const std::string& name, const std::string& value);
-        void setUrl(const std::string& url);
+        void addQueryHeader(const std::string& name, const std::string& value) override;
+        void setUrl(const std::string& url) override;
         /**
         Example 1
         @include networkclient_post.nut
         Example 2
         @include networkclient_post_raw.nut
         */
-        bool doPost(const std::string& data="");
+        bool doPost(const std::string& data = "") override;
         /**
         Example
         @include networkclient_upload.nut
         */
-        bool doUploadMultipartData();
+        bool doUploadMultipartData() override;
 
         /**
         Example 1
@@ -80,7 +80,7 @@ class NetworkClient: public INetworkClient
         Example 2
         @include networkclient_ftp.nut
         */
-        bool doUpload(const std::string& fileName,const std::string &data);
+        bool doUpload(const std::string& fileName, const std::string &data) override;
 
         /**
         Example 1
@@ -88,33 +88,33 @@ class NetworkClient: public INetworkClient
         Example 2 
         @include networkclient_get_file.nut
         */
-        bool doGet(const std::string &url="");
-        const std::string responseBody();
-        int responseCode();
-        const std::string errorString();
-        void setUserAgent(const std::string& userAgentStr);
-        const std::string responseHeaderText();
-        const std::string responseHeaderByName(const std::string& name);
-        std::string responseHeaderByIndex(const int index, std::string& name);
-        int responseHeaderCount();
+        bool doGet(const std::string &url = "") override;
+        const std::string responseBody() override;
+        int responseCode() override;
+        const std::string errorString() override;
+        void setUserAgent(const std::string& userAgentStr) override;
+        const std::string responseHeaderText() override;
+        const std::string responseHeaderByName(const std::string& name) override;
+        std::string responseHeaderByIndex(const int index, std::string& name) override;
+        int responseHeaderCount() override;
         /*! @cond PRIVATE */
         void setProgressCallback(const ProgressCallback& func);
         /*! @endcond */
         const std::string urlEncode(const std::string& str);
-        const std::string getCurlResultString();
-        void setCurlOption(int option, const std::string &value);
-        void setCurlOptionInt(int option, long value);
-        const std::string getCurlInfoString(int option);
-        int getCurlInfoInt(int option);
-        double getCurlInfoDouble(int option);
-        void setMethod(const std::string &str);
+        const std::string getCurlResultString() override;
+        void setCurlOption(int option, const std::string &value) override;
+        void setCurlOptionInt(int option, long value) override;
+        const std::string getCurlInfoString(int option) override;
+        int getCurlInfoInt(int option) override;
+        double getCurlInfoDouble(int option) override;
+        void setMethod(const std::string &str) override;
         /*! @cond PRIVATE */
-        void setProxy(const std::string &host, int port = 0 , int type = 0);
-        void setProxyUserPassword(const std::string &username, const std::string password);
-        void clearProxy();
+        void setProxy(const std::string &host, int port = 0, int type = 0) override;
+        void setProxyUserPassword(const std::string &username, const std::string password) override;
+        void clearProxy() override;
         /*! @endcond */
-        void setReferer(const std::string &str);
-        void setOutputFile(const std::string &str);
+        void setReferer(const std::string &str) override;
+        void setOutputFile(const std::string &str) override;
         /*! @cond PRIVATE */
         void setUploadBufferSize(const int size);
         /*! @endcond */
@@ -122,24 +122,24 @@ class NetworkClient: public INetworkClient
         Set the byte offset of current chunk, relative to the beginning of the full file.
         @since 1.3.0
         */
-        void setChunkOffset(double offset);
+        void setChunkOffset(double offset) override;
 
         /**
         Sets size of current chunk.
         @since 1.3.0
         */
-        void setChunkSize(double size);
+        void setChunkSize(double size) override;
         /*! @cond PRIVATE */
         void setTreatErrorsAsWarnings(bool treat);
         /*! @endcond */
-        int getCurlResult();
+        int getCurlResult() override;
         /*! @cond PRIVATE */
-        CURL* getCurlHandle();
-        void setCurlShare(CurlShare* share);
-        void setTimeout(uint32_t timeout);
-        void setConnectionTimeout(uint32_t connection_timeout);
+        CURL* getCurlHandle() override;
+        void setCurlShare(CurlShare* share) override;
+        void setTimeout(uint32_t timeout) override;
+        void setConnectionTimeout(uint32_t connection_timeout) override;
         /*! @endcond */
-        void enableResponseCodeChecking(bool enable);
+        void enableResponseCodeChecking(bool enable) override;
 
         class AbortedException : public std::runtime_error {
         public:
