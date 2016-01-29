@@ -1350,6 +1350,7 @@ BEGIN
         MENUITEM "#IDM_OPENINDEFAULTVIEWER",    IDM_OPENINDEFAULTVIEWER
         MENUITEM "Edit",                        IDM_EDIT
         MENUITEM "#Edit in external editor",    IDM_EDITINEXTERNALEDITOR
+        MENUITEM "#Print",                      IDM_PRINT
         MENUITEM "Extract frames",              IDM_EXTRACTFRAMES
         MENUITEM "Open in folder",              IDM_OPENINFOLDER
         MENUITEM "Save as...",                  IDM_SAVEAS

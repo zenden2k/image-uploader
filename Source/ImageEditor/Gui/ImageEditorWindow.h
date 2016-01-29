@@ -24,7 +24,7 @@ public:
     DECLARE_WND_CLASS(_T("ImageEditorWindow"))
     enum {
         ID_UNDO = 1000, ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE, ID_SAVE, ID_SAVEAS, ID_COPYBITMAPTOCLIBOARD, ID_COPYBITMAPTOCLIBOARDASDATAURI,
-        ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, ID_UNSELECTALL, ID_INCREASEPENSIZE, ID_DECREASEPENSIZE,
+        ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, ID_UNSELECTALL, ID_INCREASEPENSIZE, ID_DECREASEPENSIZE, ID_PRINTIMAGE,
         ID_PEN = 1600, 
         ID_BRUSH, ID_MARKER,ID_BLUR, ID_BLURRINGRECTANGLE, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_ROUNDEDRECTANGLE, ID_ELLIPSE,
         ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_MOVE
@@ -50,7 +50,7 @@ public:
     enum { kCanvasMargin = 4 , kToolbarOffset = 6}; // margin between toolbars and canvas in windowed mode
 
     enum DialogResult{
-        drCancel, drAddToWizard, drUpload, drShare, drSave, drCopiedToClipboard
+        drCancel, drAddToWizard, drUpload, drShare, drSave, drCopiedToClipboard, drPrintRequested
     };
     enum class ClipboardFormat{ None, Bitmap, DataUri, DataUriHtml };
     enum WindowDisplayMode {
@@ -103,6 +103,7 @@ public:
         COMMAND_ID_HANDLER(ID_COPYBITMAPTOCLIBOARDASDATAURI, OnClickedCopyToClipboardAsDataUri)
         COMMAND_ID_HANDLER(ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, OnClickedCopyToClipboardAsDataUriHtml)
         COMMAND_ID_HANDLER(ID_UNSELECTALL, OnUnselectAll)
+        COMMAND_ID_HANDLER(ID_PRINTIMAGE, OnPrintImage)
         MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
         
         REFLECT_NOTIFICATIONS()
@@ -146,6 +147,7 @@ public:
         LRESULT OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
         LRESULT OnTextParamWindowFontChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnUnselectAll(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnPrintImage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
         Toolbar horizontalToolbar_;
         Toolbar verticalToolbar_;
@@ -199,6 +201,7 @@ public:
         void saveSettings();
         bool CopyBitmapToClipboardAndClose(ClipboardFormat format = ClipboardFormat::None);
         BOOL PreTranslateMessage(MSG* pMsg) override;
+        void OnClickedSave();
 };
 
 class ConfigurationProvider {

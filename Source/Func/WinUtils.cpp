@@ -1154,6 +1154,20 @@ void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective) {
 
 }
 
+bool DisplaySystemPrintDialogForImage(const wchar_t* fileName, HWND hwnd) {
+    TCHAR fileDir[1024];
+    ExtractFilePath(fileName, fileDir);
+    HINSTANCE hinst = ShellExecute(hwnd, _T("print"), fileName, 0, fileDir, SW_SHOWNORMAL);
+
+    if (reinterpret_cast<int>(hinst) <= 32) {
+        TCHAR buffer[256];
+        wsprintf(buffer, _T("ShellExecute failed. Error code=%d"), reinterpret_cast<int>(hinst));
+        return false;
+    }
+
+    return true;
+}
+
 void TimerWait(int Delay)
 {
     HANDLE hTimer = CreateWaitableTimer(0, TRUE, 0);

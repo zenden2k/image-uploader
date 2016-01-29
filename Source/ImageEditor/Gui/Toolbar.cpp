@@ -118,7 +118,7 @@ void Toolbar::clickButton(int index)
 
         // Uncheck all other buttons with same group id
         for (size_t i = 0; i < buttons_.size(); i++) {
-            if ( i != index && buttons_[i].group == item.group && buttons_[i].checkable && buttons_[i].isChecked ) {
+            if ( i != static_cast<size_t>(index) && buttons_[i].group == item.group && buttons_[i].checkable && buttons_[i].isChecked ) {
                 buttons_[i].isChecked  = false;
                 buttons_[i].state = isNormal;
                 InvalidateRect(&buttons_[i].rect, FALSE);

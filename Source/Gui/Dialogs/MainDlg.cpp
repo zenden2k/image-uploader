@@ -197,6 +197,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         if(!bIsImageFile){
             sub.DeleteMenu(IDM_VIEW, MF_BYCOMMAND );
             sub.DeleteMenu(IDM_EDIT, MF_BYCOMMAND );
+            sub.DeleteMenu(IDM_PRINT, MF_BYCOMMAND );
 			sub.DeleteMenu(IDM_EDITINEXTERNALEDITOR, MF_BYCOMMAND);
         }
 
@@ -210,6 +211,10 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         mi.dwTypeData = const_cast<LPWSTR>(TR("Show in default viewer"));
         sub.SetMenuItemInfo(IDM_OPENINDEFAULTVIEWER, false, &mi);
 
+        if (bIsImageFile) {
+            mi.dwTypeData = const_cast<LPWSTR>(TR("Print selected..."));
+            sub.SetMenuItemInfo(IDM_PRINT, false, &mi);
+        }
         mi.dwTypeData = const_cast<LPWSTR>(TR("Open in folder"));
         sub.SetMenuItemInfo(IDM_OPENINFOLDER, false, &mi);
 
@@ -462,16 +467,7 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     Sei.lpParameters = EditorLine.OnlyParams();
     Sei.nShow = SW_SHOW;
 
-    SHELLEXECUTEINFO TempInfo = { 0 };
-    TCHAR filePath[1024];
-    WinUtils::ExtractFilePath(FileName, filePath);
-    TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
-    TempInfo.hwnd = m_hWnd;
-    TempInfo.lpVerb = _T("open");
-    TempInfo.lpFile = FileName;
-    TempInfo.lpDirectory = filePath;
-    TempInfo.nShow = SW_NORMAL;
-    if (!::ShellExecuteEx(&TempInfo)) {
+    if (!::ShellExecuteEx(&Sei)) {
         LOG(ERROR) << "Opening external editor failed." << std::endl << "Reason: " << WinUtils::ErrorCodeToString(GetLastError());
         return 0;
     }
@@ -582,7 +578,20 @@ LRESULT CMainDlg::OnOpenInFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 LRESULT CMainDlg::OnOpenInDefaultViewer(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     CString fileName = getSelectedFileName();
     if (!fileName.IsEmpty()) {
-        DesktopUtils::ShellOpenUrl(W2U(fileName));
+        SHELLEXECUTEINFO TempInfo = { 0 };
+        TCHAR filePath[1024];
+        WinUtils::ExtractFilePath(fileName, filePath);
+        TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+        TempInfo.hwnd = m_hWnd;
+        TempInfo.lpVerb = _T("open");
+        TempInfo.lpFile = fileName;
+        TempInfo.lpDirectory = filePath;
+        TempInfo.nShow = SW_NORMAL;
+
+        if (!::ShellExecuteEx(&TempInfo)) {
+            LOG(ERROR) << "Opening external editor failed." << std::endl << "Reason: " << WinUtils::ErrorCodeToString(GetLastError());
+            return 0;
+        }
     }
     return 0;
 }
@@ -612,6 +621,20 @@ CString CMainDlg::getSelectedFileName() {
     }
 
     return FileName;
+}
+
+int CMainDlg::getSelectedFiles(std::vector<CString>& selectedFiles) {
+    int nCurItem = -1;
+
+    while ((nCurItem = ThumbsView.GetNextItem(nCurItem, LVNI_ALL | LVNI_SELECTED)) >= 0) {
+        LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
+        if (!FileName) {
+            continue;
+        }
+        selectedFiles.push_back(FileName);
+
+    }
+    return selectedFiles.size();
 }
 
 LRESULT CMainDlg::OnCopyFileToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -755,4 +778,79 @@ void CMainDlg::UpdateStatusLabel() {
     }
     SetDlgItemText(IDC_STATUSLABEL, U2W(statusText));
     listChanged_ = false;
+}
+
+void CMainDlg::ArgvQuote(const std::wstring& Argument, std::wstring& CommandLine, bool Force){
+    if (Force == false &&
+        Argument.empty() == false &&
+        Argument.find_first_of(L" \t\n\v\"") == Argument.npos) {
+        CommandLine.append(Argument);
+    } else {
+        CommandLine.push_back(L'"');
+
+        for (auto It = Argument.begin();; ++It) {
+            unsigned NumberBackslashes = 0;
+
+            while (It != Argument.end() && *It == L'\\') {
+                ++It;
+                ++NumberBackslashes;
+            }
+
+            if (It == Argument.end()) {
+                // Escape all backslashes, but let the terminating
+                // double quotation mark we add below be interpreted
+                // as a metacharacter.
+                CommandLine.append(NumberBackslashes * 2, L'\\');
+                break;
+            } else if (*It == L'"') {
+                //
+                // Escape all backslashes and the following
+                // double quotation mark.
+                //
+                CommandLine.append(NumberBackslashes * 2 + 1, L'\\');
+                CommandLine.push_back(*It);
+            } else {
+                //
+                // Backslashes aren't special here.
+                //
+                CommandLine.append(NumberBackslashes, L'\\');
+                CommandLine.push_back(*It);
+            }
+        }
+
+        CommandLine.push_back(L'"');
+    }
+    CommandLine.push_back(L' ');
+}
+
+LRESULT CMainDlg::OnPrintImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    std::vector<CString> selectedFiles;
+    if (getSelectedFiles(selectedFiles)) {
+        CString fileName = selectedFiles[0];
+        bool isImageFile = IuCommonFunctions::IsImage(fileName);
+        if (isImageFile) {
+            WinUtils::DisplaySystemPrintDialogForImage(fileName, m_hWnd);
+        }
+        /*std::wstring cmdLine;
+        /*SHELLEXECUTEINFO TempInfo = { 0 };
+        TCHAR filePath[1024];
+        WinUtils::ExtractFilePath(selectedFiles[0], filePath);
+        /*TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+        TempInfo.hwnd = m_hWnd;
+        TempInfo.lpVerb = _T("open");
+      
+        TempInfo.lpDirectory = filePath;
+        TempInfo.nShow = SW_NORMAL;
+        
+        for (const auto& file : selectedFiles) {
+            ArgvQuote(static_cast<LPCTSTR>(file), cmdLine, true);
+        }
+        HINSTANCE hinst = ShellExecute(m_hWnd, _T("print"), selectedFiles[0], /*cmdLine.c_str()*0, filePath, SW_SHOWNORMAL);
+        
+        if (reinterpret_cast<int>(hinst) <= 32) {
+            TCHAR buffer[256];
+            wsprintf(buffer, _T("ShellExecute failed. Error code=%d"), reinterpret_cast<int>(hinst));
+        }*/
+    }
+    return 0;
 }

@@ -137,8 +137,13 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat)
             canvas_->updateView();
             return true;
         } else {
-            return true;
-            //LOG(ERROR) << "ImageEditorWindow::saveDocument:  outFileName is empty";
+            CString outFileName;
+            if (MySaveImage(resultingBitmap_.get(), "screeenshot001.png", outFileName, 0, 95)) {
+                outFileName_ = outFileName;
+                canvas_->updateView();
+                return true;
+            }
+            return false;
         }
     } else if (clipboardFormat  == ClipboardFormat::Bitmap ) {
         CDC dc = GetDC();
@@ -720,6 +725,7 @@ void ImageEditorWindow::createToolbars()
     //horizontalToolbar_.addButton(Toolbar::Item(TR("Share"),0,ID_SHARE, CString(),Toolbar::itComboButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Save"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, CString(_T("(Ctrl+S)")),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Copy to clipboard"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, CString(), Toolbar::itComboButton));
+    horizontalToolbar_.addButton(Toolbar::Item(TR("Print...."), std::shared_ptr<Gdiplus::Bitmap>(), ID_PRINTIMAGE, CString(), Toolbar::itButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Close"),std::shared_ptr<Gdiplus::Bitmap> () ,ID_CLOSE, CString(_T("(Esc)"))));
     horizontalToolbar_.AutoSize();
     if ( displayMode_ != wdmFullscreen ) {
@@ -967,7 +973,7 @@ LRESULT ImageEditorWindow::OnClickedClose(WORD /*wNotifyCode*/, WORD /*wID*/, HW
         int msgBoxResult = MessageBox(TR("Save changes?"), APPNAME, MB_YESNOCANCEL|MB_ICONQUESTION);
         if ( msgBoxResult == IDYES ) {
             dr = outFileName_.IsEmpty() ? drCancel : drSave;
-            OnClickedSave(NM_CLICK, ID_SAVE, nullptr, bHandled);
+            OnClickedSave();
         } else if ( msgBoxResult == IDCANCEL ) {
             return 0;
         }
@@ -1002,16 +1008,7 @@ LRESULT ImageEditorWindow::OnClickedShare(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT ImageEditorWindow::OnClickedSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    if (GetFocus() != m_view.m_hWnd)
-    {
-        ::SetFocus(m_view.m_hWnd);
-    }
-    if ( !sourceFileName_.IsEmpty() ) {
-        outFileName_ = sourceFileName_;
-        saveDocument();
-    } else {
-        OnSaveAs();
-    }
+    OnClickedSave();
     return 0;
 }
 
@@ -1036,6 +1033,20 @@ LRESULT ImageEditorWindow::OnClickedCopyToClipboardAsDataUri(WORD, WORD, HWND, B
 LRESULT ImageEditorWindow::OnClickedCopyToClipboardAsDataUriHtml(WORD, WORD, HWND, BOOL&) {
     CopyBitmapToClipboardAndClose(ClipboardFormat::DataUriHtml);
     return 0;
+}
+
+LRESULT ImageEditorWindow::OnPrintImage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    if (GetFocus() != m_view.m_hWnd) {
+        ::SetFocus(m_view.m_hWnd);
+    }
+    bool res = saveDocument(); // Save screenshot in default format
+    if (res) {
+        WinUtils::DisplaySystemPrintDialogForImage(outFileName_, m_hWnd);
+        if (displayMode_ == wdmFullscreen &&  !(GetKeyState(VK_SHIFT) & 0x8000)) {
+            EndDialog(drPrintRequested);
+        }
+    }
+    return res;
 }
 
 bool ImageEditorWindow::createTooltip() {
@@ -1114,7 +1125,19 @@ BOOL ImageEditorWindow::PreTranslateMessage(MSG* pMsg) {
     return FALSE;
 }
 
-    LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+void ImageEditorWindow::OnClickedSave() {
+    if (GetFocus() != m_view.m_hWnd) {
+        ::SetFocus(m_view.m_hWnd);
+    }
+    if (!sourceFileName_.IsEmpty()) {
+        outFileName_ = sourceFileName_;
+        saveDocument();
+    } else {
+        OnSaveAs();
+    }
+}
+
+LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     HWND hwndSender = reinterpret_cast<HWND>(lParam);
     if ( hwndSender == horizontalToolbar_.penSizeSlider_.m_hWnd  ) {

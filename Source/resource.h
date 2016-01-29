@@ -690,13 +690,15 @@
 #define IDM_EXTRACTFRAMES               32811
 #define ID_Menu32812                    32812
 #define IDM_OPENINDEFAULTVIEWER         32813
+#define ID_0_32814                      32814
+#define IDM_PRINT                       32815
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        309
-#define _APS_NEXT_COMMAND_VALUE         32814
+#define _APS_NEXT_COMMAND_VALUE         32816
 #define _APS_NEXT_CONTROL_VALUE         1317
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
