@@ -8,15 +8,6 @@ bool CResultsListView::AttachToDlgItem(HWND parent, UINT dlgID) {
     HWND hWnd = ::GetDlgItem(parent,dlgID);
     return SubclassWindow(hWnd)!=FALSE;
 }
-/*
-LRESULT CResultsListView::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-    WPARAM vk = wParam;
-    if ( vk == _T('A') && GetKeyState(VK_CONTROL) & 0x80 ) { // Ctrl + A 
-        SendMessage(EM_SETSEL, 0, -1);
-    }
-    bHandled = false;
-    return 0;
-}*/
 
 LRESULT CResultsListView::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {

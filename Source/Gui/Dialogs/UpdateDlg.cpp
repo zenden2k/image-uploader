@@ -67,7 +67,7 @@ LRESULT CUpdateDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     DlgResize_Init();
     m_UpdateEvent.Create();
     SetWindowText(TR("Image Uploader Updates"));
-    m_listView.m_hWnd = GetDlgItem(IDC_UPDATELISTVIEW);
+    m_listView.AttachToDlgItem(m_hWnd, IDC_UPDATELISTVIEW);
     m_listView.AddColumn(TR("Component name"), 0);
     m_listView.AddColumn( TR("Status"), 1);
 

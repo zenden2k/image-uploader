@@ -27,6 +27,7 @@
 #include "resource.h"       // main symbols
 #include "Func/UpdatePackage.h"
 #include "3rdpart/thread.h"
+#include "Gui/Controls/ResultsListView.h"
 
 class CUpdateDlg : 
     public CDialogImpl<CUpdateDlg>,
@@ -81,7 +82,7 @@ class CUpdateDlg :
     void Abort();
     void updateStatus(int packageIndex, const CString& status);
 
-    CListViewCtrl m_listView;
+    CResultsListView m_listView;
     bool m_bUpdateFinished;
     CUpdateDlgCallback* m_UpdateCallback;
     int m_bClose;
