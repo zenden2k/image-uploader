@@ -425,16 +425,16 @@ function DoLogin() {
 
 function  UploadFile(FileName, options)
 {
-	if(token == "")
-		{
-			if(!DoLogin())
-				return 0;
-		}
+	if(token == "") {
+        if(!DoLogin())
+		return 0;
+	}
+    
 	local ansiFileName = ExtractFileName(FileName);
+    
 	try {
 		local task = options.getTask();
-		ansiFileName = task.getDisplayName();
-		print(ansiFileName);
+		ansiFileName = task.getDisplayName(); // ensure that this field is filled up correctly
 	} catch ( ex ) {
 		
 	}
@@ -461,6 +461,14 @@ function  UploadFile(FileName, options)
 			nm.enableResponseCodeChecking(false);
 		} catch ( ex ) {} 
 		nm.doGet(url);
+        
+        if ( nm.responseCode() == 401) { // not authorized
+            ServerParams.setParam("token", "");
+            if (!DoLogin()) { // obtain token again
+				return 0;
+            }
+        }
+        
 		while ( nm.responseCode() == 409 ) {
 			local ext = GetFileExtension(ansiFileName);
 			local suffix = i.tostring();
@@ -599,8 +607,7 @@ function  UploadFile(FileName, options)
 		"</set>"     + 
 		"</propertyupdate>";
 	nm.doUpload("", data);
-	checkResponseCode();
-	//print(nm.responseBody());			
+	checkResponseCode();		
 	local data = nm.responseBody();
 	
 	local viewUrl = regex_simple(data,"<public_url xmlns=\"urn:yandex:disk:meta\">(.+)</public_url>",0);
