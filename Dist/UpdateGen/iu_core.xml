@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<UpdatePackageSource Name="iu_core" DisplayName="Image Uploader 1.3.2-alpha.4497" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%&amp;os_name=OS_NAME&amp;os_ver=OS_VER&amp;cpu_f=CPU_FEATURES"  CoreUpdate="1" >
+<UpdatePackageSource Name="iu_core" DisplayName="Image Uploader 1.3.2-alpha.4499" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%&amp;os_name=OS_NAME&amp;os_ver=OS_VER&amp;cpu_f=CPU_FEATURES"  CoreUpdate="1" >
 	<Entries>
 		<Entry Name="Image Uploader.exe" SaveToFolder="%apppath%/" Action="add"/>
 		<Entry Name="ExplorerIntegration*.dll" SaveToFolder="%apppath%/" Action="add"/>
@@ -21,11 +21,8 @@
 		<Entry Name="Data/templates.xml" SaveToFolder="%datapath%/templates.xml" Action="add"/>
 	</Entries>
 <Info>
-[+] Added "Open in default viewer" menu item; 
-[c] Show properties of multiple files; 
-[c] Update language files; 
-[c] Execute Explorer and select multiple files from MainDlg
-[+] Added help button icon; 
-[f] Fixed undo history for pen size;
+[+] Print Screenshot (via system photo print dialog)
+[+]  Copy full file path on "Ctrl+Shift+C"
+[c] ImageDownloader: single threaded only (preserve order)
 </Info>
 </UpdatePackageSource>

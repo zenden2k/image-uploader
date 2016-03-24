@@ -173,15 +173,11 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 int CUploadDlg::ThreadTerminated(void)
 {
     WizardDlg->QuickUploadMarker = false;
-    //TCHAR szBuffer[MAX_PATH];
 
-    //TotalUploadProgress(MainDlg->FileList.GetCount(), MainDlg->FileList.GetCount());
     #if  WINVER    >= 0x0601
         if(ptl)
             ptl->SetProgressState(GetParent(), TBPF_NOPROGRESS);
     #endif
-    //wsprintf(szBuffer,_T("%d %%"),100);
-    //SetDlgItemText(IDC_COMMONPERCENTS,szBuffer);
 
     SetNextCaption(TR("Finish >"));
     backgroundThreadStarted_ = false;
