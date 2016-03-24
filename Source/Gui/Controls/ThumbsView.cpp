@@ -37,7 +37,7 @@
 bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
 
 // CThumbsView
-CThumbsView::CThumbsView()
+CThumbsView::CThumbsView() :deletePhysicalFiles_(false)
 {
     maxwidth = 0;
     maxheight = 0;
@@ -207,6 +207,11 @@ bool CThumbsView::SimpleDelete(int ItemIndex, bool DeleteThumb)
         ImageList.Remove(ItemIndex + 1);
 
     ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(ItemIndex));
+
+    if (deletePhysicalFiles_ && !TVI->FileName.IsEmpty()) {
+        DeleteFile(TVI->FileName); // delete file from disk (enabled only on videograbber page)
+    }
+
     SetItemData(ItemIndex, 0);
     if(TVI) delete TVI;
 
@@ -466,7 +471,7 @@ DWORD CThumbsView::Run()
 
     for(i=0; i<GetItemCount(); i++) // FIX THIS 
     {
-        ThumbsViewItem *TVI =(ThumbsViewItem *) GetItemData(i);
+        ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(i));
         if(ShouldStop()) goto finish;
         if(GetImageIndex(i) < 1 || (m_NeedUpdate && TVI &&  TVI->ThumbOutDate))
         {
@@ -478,7 +483,7 @@ DWORD CThumbsView::Run()
 
     for(i=item; i<GetItemCount(); i++) // FIX THIS 
     {
-        ThumbsViewItem *TVI =(ThumbsViewItem *) GetItemData(i);
+        ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(i));
         LockImagelist();
         if(!TVI) break;
         if(ShouldStop()) break;
@@ -609,6 +614,10 @@ LRESULT CThumbsView::OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
     ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem*>(pNotificationInfo->lParam);
     delete TVI;
     return 0;
+}
+
+void CThumbsView::SetDeletePhysicalFiles(bool doDelete) {
+    deletePhysicalFiles_ = doDelete;
 }
 
 void CThumbsView::NotifyItemCountChanged(bool selected) {  

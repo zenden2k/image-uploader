@@ -337,16 +337,6 @@
 		</Actions>
 		<Result DownloadUrlTemplate="http://$(Host)/$(Code)/$(Name)" />
 	</Server>-->
-	<Server Name="directmirror.com" FileHost="1" MaxFileSize="536870912" Debug="0">
-		<Actions>
-			<Action Type="get" Url="http://directmirror.com/" RegExp="(http:\/\/(([\w.-]+)[:\d]*)\/cgi-bin\/+upload\.cgi\?upload_id=(\d+))" AssignVars="Url:0;HostPort:1;Host:2;ID:3" OnlyOnce="0" />
-			<Action	Type="upload" Url="$(Url)"
-				PostParams="u_hash=;remote=0;upload_id=$(ID);files=1;file0=%filename%;description1=;submit_btn=%20Start%20Upload%20;links=;site=1052;site=1067;site=1014;site=1016;site=1051;site=1042;site=1038;site=1000;site=1050;site=1011;"
-			/>
-			<Action Type="get" Url="http://$(HostPort)/tmp/$(ID).json" RegExp="code: '(\w+)', filename: &quot;([^&quot;]+)" AssignVars="Code:0;Name:1;"	/>
-		</Actions>
-		<Result DownloadUrlTemplate="http://$(Host)/$(Code)/$(Name)" />
-	</Server>
 	<Server Name="multi.hotshare.biz" FileHost="1" Debug="0">
 		<Actions>
 			<Action Type="get" Url="http://multi.hotshare.biz/" RegExp="(http:\/\/(([\w.-]+)[:\d]*)\/cgi-bin\/+upload\.cgi\?upload_id=(\d+))" AssignVars="Url:0;HostPort:1;Host:2;ID:3" OnlyOnce="0" />

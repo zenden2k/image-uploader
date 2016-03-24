@@ -46,6 +46,7 @@ CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
     videoGrabber_ = 0;
     uploadEngineManager_ = uploadEngineManager;
     engineComboToolTip_ = nullptr;
+    ThumbsView.SetDeletePhysicalFiles(true);
 }
 
 CVideoGrabberPage::~CVideoGrabberPage()

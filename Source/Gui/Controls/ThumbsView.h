@@ -94,9 +94,11 @@ public:
     void SelectLastItem();
     bool CopySelectedItemsToClipboard();
     LRESULT OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    void SetDeletePhysicalFiles(bool doDelete);
 protected:
     ItemCountChangedCallback callback_;
     DWORD callbackLastCallTime_;
+    bool deletePhysicalFiles_;
     void NotifyItemCountChanged(bool selected = true);
 };
 
