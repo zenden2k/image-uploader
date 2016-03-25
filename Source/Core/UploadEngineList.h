@@ -30,7 +30,7 @@ class CUploadEngineList: public CUploadEngineList_Base
 {
 	public:
 		CUploadEngineList();
-		bool LoadFromFile(const std::string& filename,std::map <std::string, std::map <std::string, ServerSettingsStruct>>&);
+		bool LoadFromFile(const std::string& filename,std::map <std::string, std::map <std::string, ServerSettingsStruct> >&);
 		void setNumOfRetries(int Engine, int Action);
 		bool addServer(const CUploadEngineData& data);
 	protected:

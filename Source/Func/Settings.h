@@ -47,7 +47,7 @@ struct UploadProfileStruct
 	int ServerID, QuickServerID;
 };
 
-typedef std::map <std::string, std::map <std::string, ServerSettingsStruct>> ServerSettingsMap;
+typedef std::map <std::string, std::map <std::string, ServerSettingsStruct> > ServerSettingsMap;
 
 #if !defined(IU_CLI) && !defined(IU_IMAGEEDITOR)
 

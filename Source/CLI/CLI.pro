@@ -209,3 +209,4 @@ release:RCC_DIR = $$OUTDIR/release/temp
 release:UI_DIR = $$OUTDIR/release/temp
 
 TARGET = imgupload
+CONFIG += c++11
