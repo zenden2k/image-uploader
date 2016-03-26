@@ -151,17 +151,40 @@ function  UploadFile(FileName, options)
 	local data = "";
 	nm.doUploadMultipartData();
 	data = nm.responseBody();
+    
 	if(data == "")
 	{
-		print ("Empty response");
+		print ("radikal.ru: Empty response");
 		return 0;
 	}
-	local directUrl = regex_simple(data, "<ImgUrl>(.+)<", 0);
-	local thumbUrl = regex_simple(data, "<ImgPreviewUrl>(.+)<", 0);
-	//local viewUrl = regex_simple(data, "url\":\"(.+)\"", 0);
+    local xml = SimpleXml();
+    xml.LoadFromString(data);
+    local root = xml.GetRoot("OperationResult", false);
+    
+    if (!root.IsNull()) {
+        local res = root.GetChild("Result", false);
+        local errNode = root.GetChild("Err", false);
+        if (!errNode.IsNull()) {
+            local msgNode = errNode.GetChild("Msg", false);
+            if (!msgNode.IsNull()) {
+                local errMsg = msgNode.Text();
+                _WriteLog("error", "radikal.ru: " + errMsg);
+                return 0;
+            }
+        }
+            
+        if (!res.IsNull()) {
+            local imgUrlNode = res.GetChild("ImgUrl", false);
+            local thumbUrlNode = res.GetChild("ImgPreviewUrl", false);
+            
+            local directUrl = imgUrlNode.Text();
+            local thumbUrl = thumbUrlNode.Text();
 
-	options.setDirectUrl(directUrl);
-	//options.setViewUrl(viewUrl);
-	options.setThumbUrl(thumbUrl);	
-	return 1;
+            options.setDirectUrl(directUrl);
+            options.setThumbUrl(thumbUrl);	
+            return 1;
+        }
+    }
+	
+	return 0;
 }
