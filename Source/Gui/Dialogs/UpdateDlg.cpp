@@ -236,8 +236,11 @@ void CUpdateDlg::updateStatus(int packageIndex, const CString& status)
     m_listView.SetItemText(packageIndex, 1, status);
 }
 
-bool CUpdateDlg::ShowModal(HWND parent)
+bool CUpdateDlg::ShowModal(HWND parent, bool forceCheck)
 {
+    if (forceCheck) {
+        m_Checked = false;
+    }
     m_Modal = true;
     Settings.LastUpdateTime = static_cast<int>(time(0));
     if (!m_hWnd)
@@ -249,7 +252,7 @@ bool CUpdateDlg::ShowModal(HWND parent)
     ShowWindow(SW_SHOW);
     ::EnableWindow(GetParent(), false);
 
-    if (!m_Checked && !IsRunning())
+    if (!m_Checked  && !IsRunning())
     {
         Start();
     }

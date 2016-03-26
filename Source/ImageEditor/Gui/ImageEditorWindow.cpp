@@ -30,6 +30,12 @@ ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bo
 
 ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider ):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
 {
+    if (!imageFileName.IsEmpty()) {
+        CString ext = WinUtils::GetFileExt(imageFileName);
+        if (ext == "webp") {
+            ::MessageBox(nullptr, _T("Webp format is not supported by image editor"), TR("Image Editor"), MB_ICONERROR);
+        }
+    }
     currentDoc_ = new ImageEditor::Document(imageFileName);
     sourceFileName_ = imageFileName;
     configurationProvider_ = configurationProvider;
@@ -264,51 +270,51 @@ void ImageEditorWindow::setAskBeforeClose(bool ask)
 
 ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDisplayMode mode)
 {
-    if ( currentDoc_->isNull() ) {
+    if (currentDoc_->isNull()) {
         ::MessageBox(0, _T("Invalid image file."), APPNAME, MB_ICONERROR);
         return drCancel;
     }
     int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-    int screenHeight =  GetSystemMetrics(SM_CYSCREEN);
-//    displayMode_ = wdmWindowed;
-    
+    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+    //    displayMode_ = wdmWindowed;
+
     CRect displayBounds;
     GuiTools::GetScreenBounds(displayBounds);
 
-    
+
     CDC hdc = ::GetDC(0);
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
-    int desiredClientWidth = currentDoc_->getWidth()  + static_cast<int>(50 * dpiScaleX); // with toolbars
+    int desiredClientWidth = currentDoc_->getWidth() + static_cast<int>(50 * dpiScaleX); // with toolbars
     int desiredClientHeight = currentDoc_->getHeight() + static_cast<int>(50 * dpiScaleX);
     CRect rc(rcDefault);
-    DWORD initialWindowStyle =  WS_OVERLAPPED | WS_POPUP | WS_CAPTION |  WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | 
-        WS_MINIMIZEBOX|WS_CLIPCHILDREN;
-    if ( Create(0, rc, _T("Image Editor"), initialWindowStyle, 0) == NULL ) {
+    DWORD initialWindowStyle = WS_OVERLAPPED | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX |
+        WS_MINIMIZEBOX | WS_CLIPCHILDREN;
+    if (Create(0, rc, _T("Image Editor"), initialWindowStyle, 0) == NULL) {
         LOG(ERROR) << "Main window creation failed!\n";
         return drCancel;
     }
 
-    if ( mode == wdmAuto ) {
+    if (mode == wdmAuto) {
         RECT clientRect;
         RECT windowRect;
         GetClientRect(&clientRect);
         GetWindowRect(&windowRect);
-        int paddingX = windowRect.right -  windowRect.left - clientRect.right;
-        int paddingY = windowRect.bottom -  windowRect.top - clientRect.bottom;
-    
-        if (  desiredClientWidth + paddingX >= screenWidth &&   currentDoc_->getWidth()  <= displayBounds.Width()
-            &&  desiredClientHeight + paddingY >= screenHeight &&   currentDoc_->getHeight()  <= displayBounds.Height() ) {
+        int paddingX = windowRect.right - windowRect.left - clientRect.right;
+        int paddingY = windowRect.bottom - windowRect.top - clientRect.bottom;
+
+        if (desiredClientWidth + paddingX >= screenWidth &&   currentDoc_->getWidth() <= displayBounds.Width()
+            && desiredClientHeight + paddingY >= screenHeight &&   currentDoc_->getHeight() <= displayBounds.Height()) {
             mode = wdmFullscreen;
         } else {
             mode = wdmWindowed;
         }
     }
     displayMode_ = mode;
-    
-    if ( displayMode_ == wdmFullscreen  ) {
+
+    if (displayMode_ == wdmFullscreen) {
         //windowStyle = GetStyle();
-        DWORD windowStyle = WS_POPUP|WS_CLIPCHILDREN;
+        DWORD windowStyle = WS_POPUP | WS_CLIPCHILDREN;
         SetWindowLong(GWL_STYLE, windowStyle);
         HWND insertAfter = nullptr;
 #ifndef _DEBUG
@@ -318,7 +324,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
         SetWindowPos(insertAfter, displayBounds.left, displayBounds.top, displayBounds.right - displayBounds.left, displayBounds.bottom - displayBounds.top, 0);
     }
 
-    if ( displayMode_ == wdmWindowed ) {
+    if (displayMode_ == wdmWindowed) {
         CenterWindow();
     }
 
@@ -328,7 +334,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
     SetIcon(icon_, TRUE);
     SetIcon(iconSmall_, FALSE);
     ACCEL accels[] = {
-        { FVIRTKEY|FCONTROL, 'Z', ID_UNDO },
+        { FVIRTKEY | FCONTROL, 'Z', ID_UNDO },
         { FVIRTKEY | FCONTROL, 'D', ID_UNSELECTALL },
         { FVIRTKEY | FCONTROL, 'S', ID_SAVE }
     };
@@ -337,14 +343,14 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
 
     //RECT rc;
     GetClientRect(&rc);
-    /*HWND m_hWndClient = */m_view.Create(m_hWnd, rc, _T("ImageEditor_Canvas"), WS_CHILD | WS_VISIBLE /*| WS_CLIPSIBLINGS | WS_CLIPCHILDREN*/, 0 );
+    /*HWND m_hWndClient = */m_view.Create(m_hWnd, rc, _T("ImageEditor_Canvas"), WS_CHILD | WS_VISIBLE /*| WS_CLIPSIBLINGS | WS_CLIPCHILDREN*/, 0);
 
-    canvas_ = new ImageEditor::Canvas( m_view );
-    canvas_->setSize( currentDoc_->getWidth(), currentDoc_->getHeight());
-    canvas_->setDocument( currentDoc_ );
+    canvas_ = new ImageEditor::Canvas(m_view);
+    canvas_->setSize(currentDoc_->getWidth(), currentDoc_->getHeight());
+    canvas_->setDocument(currentDoc_);
     textParamsWindow_.Create(m_hWnd);
 
-    if ( configurationProvider_ ) {
+    if (configurationProvider_) {
         canvas_->setPenSize(configurationProvider_->penSize());
         canvas_->setForegroundColor(configurationProvider_->foregroundColor());
         canvas_->setBackgroundColor(configurationProvider_->backgroundColor());
@@ -353,18 +359,18 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
         allowAltTab_ = configurationProvider_->allowAltTab();
         textParamsWindow_.setFont(configurationProvider_->font());
     }
-    m_view.setCanvas( canvas_ );
+    m_view.setCanvas(canvas_);
     createToolbars();
     RECT horToolbarRect;
     RECT vertToolbarRect;
     horizontalToolbar_.GetClientRect(&horToolbarRect);
     verticalToolbar_.GetClientRect(&vertToolbarRect);
-    rc.left =  displayMode_ == wdmWindowed ? vertToolbarRect.right + kCanvasMargin : 0;
-    rc.top =  displayMode_ == wdmWindowed ? horToolbarRect.bottom + kCanvasMargin  : 0;
+    rc.left = displayMode_ == wdmWindowed ? vertToolbarRect.right + kCanvasMargin : 0;
+    rc.top = displayMode_ == wdmWindowed ? horToolbarRect.bottom + kCanvasMargin : 0;
 
-    if ( displayMode_ == wdmWindowed ) {
-        horizontalToolbar_.SetWindowPos(0, rc.left, 0,0,0, SWP_NOSIZE);
-        verticalToolbar_.SetWindowPos(0, 0, rc.top, 0,0, SWP_NOSIZE);
+    if (displayMode_ == wdmWindowed) {
+        horizontalToolbar_.SetWindowPos(0, rc.left, 0, 0, 0, SWP_NOSIZE);
+        verticalToolbar_.SetWindowPos(0, 0, rc.top, 0, 0, SWP_NOSIZE);
     }
 
     m_view.SetWindowPos(0, &rc, SWP_NOSIZE);
@@ -377,21 +383,21 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
     canvas_->onTextEditStarted.bind(this, &ImageEditorWindow::OnTextEditStarted);
     canvas_->onTextEditFinished.bind(this, &ImageEditorWindow::OnTextEditFinished);
     canvas_->onSelectionChanged.bind(this, &ImageEditorWindow::OnSelectionChanged);
-    if ( displayMode_ != wdmWindowed ) {    
+    if (displayMode_ != wdmWindowed) {
         canvas_->onCropFinished.bind(this, &ImageEditorWindow::OnCropFinished);
     }
 
-    if ( initialDrawingTool_ != Canvas::dtCrop ) {
+    if (initialDrawingTool_ != Canvas::dtCrop) {
         verticalToolbar_.ShowWindow(SW_SHOW);
         horizontalToolbar_.ShowWindow(SW_SHOW);
     }
-    
+
     updatePixelLabels();
 
     canvas_->setDrawingToolType(initialDrawingTool_);
     updateToolbarDrawingTool(initialDrawingTool_);
-    if ( displayMode_ == wdmWindowed ) {
-        CRect newClientRect(0,0,desiredClientWidth,desiredClientHeight);
+    if (displayMode_ == wdmWindowed) {
+        CRect newClientRect(0, 0, desiredClientWidth, desiredClientHeight);
         AdjustWindowRect(newClientRect, GetStyle(), false);
         int newWidth = max(static_cast<LONG>(500 * dpiScaleX), newClientRect.right - newClientRect.left);
         int newHeight = max(static_cast<LONG>(500 * dpiScaleY), newClientRect.bottom - newClientRect.top);
@@ -399,6 +405,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
         CenterWindow(parent);
     }
     canvas_->updateView();
+
     //displayMode_ = wdmWindowed;
     ShowWindow(SW_SHOW);
     SetForegroundWindow(m_hWnd);

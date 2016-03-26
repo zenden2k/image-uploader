@@ -27,7 +27,7 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
         subpanelColor_.SetFromCOLORREF(GetSysColor(COLOR_BTNFACE));
     }
     
-        subpanelBrush_.CreateSolidBrush(subpanelColor_.ToCOLORREF());
+    subpanelBrush_.CreateSolidBrush(subpanelColor_.ToCOLORREF());
     memset(&buttonsRect_, 0, sizeof(buttonsRect_));
     font_ = 0;
     textRenderingHint_ = Gdiplus::TextRenderingHintAntiAlias;
@@ -38,8 +38,12 @@ Toolbar::~Toolbar()
 {
     delete font_;
     delete dropDownIcon_;
-    backBufferDc_.SelectBitmap(oldSelectedBm_);
-    backBuffer_.DeleteObject();
+    if (!backBufferDc_.IsNull()) {
+        backBufferDc_.SelectBitmap(oldSelectedBm_);
+    }
+    if (!backBuffer_.IsNull()) {
+        backBuffer_.DeleteObject();
+    }
 }
 
 bool Toolbar::Create(HWND parent, bool child )

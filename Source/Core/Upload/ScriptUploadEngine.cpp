@@ -54,7 +54,7 @@ void CScriptUploadEngine::PrintCallback(const std::string& output)
         taskName = "Task=" + currentTask_->toString() + ", ";
     }
     std::thread::id threadId = std::this_thread::get_id();
-    Log(ErrorInfo::mtWarning, name_ + ".nut [" + taskName + "ThreadId=" + IuCoreUtils::ThreadIdToString(threadId) + "]\r\n");
+    Log(ErrorInfo::mtWarning, name_ + ".nut [" + taskName + "ThreadId=" + IuCoreUtils::ThreadIdToString(threadId) + "]\r\n" + output);
 }
 
 int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams& params)

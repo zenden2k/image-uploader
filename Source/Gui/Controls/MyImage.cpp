@@ -100,7 +100,7 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
     BackBufferHeight = rc.bottom;
     /*ShowVar(BackBufferWidth);
     ShowVar(BackBufferHeight);*/
-    float width, height, imgwidth, imgheight, newwidth, newheight;
+    float width, height, imgwidth, imgheight, newwidth = 0, newheight=0;
     width = static_cast<float>(rc.right);
     height = static_cast<float>(rc.bottom);
 
@@ -125,9 +125,8 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
         bm = img;
     else
     if (FileName)
-        bm = new Image(FileName);
-    else
-    if (ResourceID)
+        bm = LoadImageFromFileExtended(FileName);
+    else if (ResourceID)
     {
         if (!Bmp)
         {

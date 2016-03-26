@@ -117,14 +117,21 @@ std::string GetFileMimeType(const std::string fileName)
 
     if ( NOERROR != _Win32_FindMimeFromData(NULL, NULL, byBuff, nRead, NULL, 0, &szMimeW, 0) )
     {
+        
         return DefaultMimeType;
     }
 
     std::string result = WstringToUtf8(szMimeW);
+    
     if(result == "image/x-png")
         result = "image/png";
     else if(result == "image/pjpeg")
         result = "image/jpeg";
+    else if (result == "application/octet-stream") {
+        if (byBuff[0] == 'R' && byBuff[1] == 'I' &&byBuff[2] == 'F' &&byBuff[3] == 'F') {
+            return "image/webp";
+        }
+    }
     FreeLibrary(urlMonDll);
     //delete szMimeW;
     return result;

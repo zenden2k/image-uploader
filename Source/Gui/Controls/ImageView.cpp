@@ -20,6 +20,7 @@
 
 #include "atlheaders.h"
 #include "ImageView.h"
+#include "Core/Images/Utils.h"
 
 // CImageView
 CImageView::CImageView()
@@ -50,45 +51,41 @@ LRESULT CImageView::OnKillFocus(HWND hwndNewFocus)
     return ShowWindow(SW_HIDE);
 }
 
-bool CImageView::ViewImage(LPCTSTR FileName,HWND Parent)
-{
-    Gdiplus::Image img(FileName);
+bool CImageView::ViewImage(LPCTSTR FileName,HWND Parent){
+    std::unique_ptr<Gdiplus::Bitmap> img(LoadImageFromFileExtended(FileName));
     
-    float width = static_cast<float>(GetSystemMetrics(SM_CXSCREEN)-12);
-    float height = static_cast<float>(GetSystemMetrics(SM_CYSCREEN)-50);
-    float imgwidth = static_cast<float>(img.GetWidth());
-    float imgheight = static_cast<float>(img.GetHeight());
-    float newheight, newwidth;
-    newwidth = imgwidth;
-    newheight = imgheight;
-    
-    if(newwidth>width || newheight>height)
-    {
-        float k1 = imgwidth/imgheight;
-        float k2 = width/height;
-        if(k1 >= k2) 
-        {
-            newwidth = width;
-            newheight = newwidth/imgwidth*imgheight;
-        }
-        else
-        {
-            newheight = height;
-            newwidth = (newheight/imgheight)*imgwidth;
-        }
-    }
-    
-    int realwidth = static_cast<int>(newwidth + 2);
-    int realheight = static_cast<int>(newheight + 2);
+    if (img) {
+        float width = static_cast<float>(GetSystemMetrics(SM_CXSCREEN) - 12);
+        float height = static_cast<float>(GetSystemMetrics(SM_CYSCREEN) - 50);
+        float imgwidth = static_cast<float>(img->GetWidth());
+        float imgheight = static_cast<float>(img->GetHeight());
+        float newheight, newwidth;
+        newwidth = imgwidth;
+        newheight = imgheight;
 
-    if(realwidth<200) realwidth = 200;
-    if(realheight<180) realheight = 180;
-    ShowWindow(SW_HIDE);
-    if(realwidth && realheight)
-    {
-        MoveWindow(0, 0, realwidth, realheight);
-        Img.MoveWindow(0, 0, realwidth, realheight);
-        Img.LoadImage(FileName, &img);
+        if (newwidth > width || newheight > height) {
+            float k1 = imgwidth / imgheight;
+            float k2 = width / height;
+            if (k1 >= k2) {
+                newwidth = width;
+                newheight = newwidth / imgwidth*imgheight;
+            } else {
+                newheight = height;
+                newwidth = (newheight / imgheight)*imgwidth;
+            }
+        }
+
+        int realwidth = static_cast<int>(newwidth + 2);
+        int realheight = static_cast<int>(newheight + 2);
+
+        if (realwidth < 200) realwidth = 200;
+        if (realheight < 180) realheight = 180;
+        ShowWindow(SW_HIDE);
+        if (realwidth && realheight) {
+            MoveWindow(0, 0, realwidth, realheight);
+            Img.MoveWindow(0, 0, realwidth, realheight);
+            Img.LoadImage(FileName, img.get());
+        }
     }
     CenterWindow(Parent);
     ShowWindow(SW_SHOW);

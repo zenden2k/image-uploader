@@ -3,6 +3,7 @@
 #include "Func/MyUtils.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Utils/CoreUtils.h"
+#include "Core/Images/Utils.h"
 #include "Core/CommonDefs.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
@@ -21,11 +22,16 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
     double width, height, imgwidth, imgheight, newwidth, newheight;
     CString sourceFileW = U2W(sourceFile);
     CString imageFile = sourceFileW;
-    Bitmap bm(sourceFileW);
-    Bitmap* thumbSource = &bm;
+    std::unique_ptr<Bitmap> bm(LoadImageFromFileExtended(sourceFileW));
+
+    if (!bm) {
+        LOG(ERROR) << "ImageConverter: unable to load source file " << sourceFileW;
+    }
+
+    Bitmap* thumbSource = bm.get();
     std::auto_ptr<Bitmap> BackBuffer;
-    imgwidth = float(bm.GetWidth());
-    imgheight = float(bm.GetHeight());
+    imgwidth = float(bm->GetWidth());
+    imgheight = float(bm->GetHeight());
     double NewWidth = atof(m_imageConvertingParams.strNewWidth.c_str());
     double NewHeight = atof(m_imageConvertingParams.strNewHeight.c_str());
     if (IuStringUtils::Tail(m_imageConvertingParams.strNewWidth, 1) == "%") {
@@ -59,10 +65,10 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
         UINT propertyItemsCount = 0;
         PropertyItem* pPropBuffer = NULL;
         if (m_imageConvertingParams.PreserveExifInformation) {
-            bm.GetPropertySize(&propertyItemsSize, &propertyItemsCount);
+            bm->GetPropertySize(&propertyItemsSize, &propertyItemsCount);
             if (propertyItemsSize) {
                 pPropBuffer = reinterpret_cast<PropertyItem*>(malloc(propertyItemsSize));
-                bm.GetAllPropertyItems(propertyItemsSize, propertyItemsCount, pPropBuffer);
+                bm->GetAllPropertyItems(propertyItemsSize, propertyItemsCount, pPropBuffer);
             }
         }
         if (m_imageConvertingParams.ResizeMode == ImageConvertingParams::irmFit)
@@ -119,14 +125,14 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
             ImageConvertingParams::irmStretch)
         {
             if ((!width && !height) || ((int)newwidth == (int)imgwidth && (int)newheight == (int)imgheight))
-                gr.DrawImage(/*backBuffer*/ &bm, (int)0, (int)0, (int)newwidth, (int)newheight);
+                gr.DrawImage(/*backBuffer*/ bm.get(), (int)0, (int)0, (int)newwidth, (int)newheight);
             else
-                gr.DrawImage(&bm,
+                gr.DrawImage(bm.get(),
                 RectF(0.0, 0.0, float(newwidth), float(newheight)),
                 0,
                 0,
-                float(bm.GetWidth()),
-                float(bm.GetHeight()),
+                float(bm->GetWidth()),
+                float(bm->GetHeight()),
                 UnitPixel,
                 &attr);
             // gr.DrawImage(/*backBuffer*/&bm, (int)-1, (int)-1, (int)newwidth+2,(int)newheight+2);
@@ -160,7 +166,7 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
                 sourceRect.right = int(sourceRect.right / k);
                 sourceRect.bottom = int(sourceRect.bottom / k);
                 // = sourceRect.MulDiv(1, k);
-                gr.DrawImage(&bm,
+                gr.DrawImage(bm.get(),
                     RectF(float(croppedRect.left), float(croppedRect.top), float(croppedRect.Width()),
                     float(croppedRect.Height()))
                     , float(sourceRect.left), float(sourceRect.top), float(sourceRect.Width()),

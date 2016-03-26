@@ -37,6 +37,7 @@
 #include <libbase64.h>
 #include <boost/format.hpp>
 #include <cassert>
+#include <webp/decode.h>
 
 using namespace Gdiplus;
 
@@ -432,17 +433,18 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
 
 Gdiplus::Bitmap* LoadImageFromFileWithoutLocking(const WCHAR* fileName) {
     using namespace Gdiplus;
-    Bitmap src( fileName );
-    if ( src.GetLastStatus() != Ok ) {
+
+    std::unique_ptr<Bitmap> src(LoadImageFromFileExtended(fileName));
+    if ( !src || src->GetLastStatus() != Ok ) {
         return 0;
     }
-    Bitmap *dst = new Bitmap(src.GetWidth(), src.GetHeight(), PixelFormat32bppARGB);
+    Bitmap *dst = new Bitmap(src->GetWidth(), src->GetHeight(), PixelFormat32bppARGB);
 
     BitmapData srcData;
     BitmapData dstData;
-    Rect rc(0, 0, src.GetWidth(), src.GetHeight());
+    Rect rc(0, 0, src->GetWidth(), src->GetHeight());
 
-    if (src.LockBits(& rc, ImageLockModeRead, PixelFormat32bppARGB, & srcData) == Ok)
+    if (src->LockBits(& rc, ImageLockModeRead, PixelFormat32bppARGB, & srcData) == Ok)
     {
         if ( dst->LockBits(& rc, ImageLockModeWrite, PixelFormat32bppARGB, & dstData) == Ok ) {
             uint8_t * srcBits = reinterpret_cast<uint8_t *>(srcData.Scan0);
@@ -453,11 +455,11 @@ Gdiplus::Bitmap* LoadImageFromFileWithoutLocking(const WCHAR* fileName) {
             } else {
                 stride = - srcData.Stride;
             }
-            memcpy(dstBits, srcBits, src.GetHeight() * stride);
+            memcpy(dstBits, srcBits, src->GetHeight() * stride);
 
             dst->UnlockBits(&dstData);
         }
-        src.UnlockBits(&srcData);
+        src->UnlockBits(&srcData);
     }
     return dst;
 }
@@ -771,6 +773,124 @@ std::vector<PROPID> props;
 props.resize(propertyCount);
 bm->GetPropertyIdList(propertyCount, &props[0]);*/
 
+// Allocates storage for entire file 'file_name' and returns contents and size
+bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data_size) {
+    int ok;
+    uint8_t* file_data;
+    size_t file_size;
+    FILE* in;
+
+    if (data == nullptr || data_size == nullptr) return 0;
+    *data = nullptr;
+    *data_size = 0;
+
+    in = _wfopen(file_name, L"rb");
+    if (in == nullptr) {
+        LOG(ERROR) << "cannot open input file " << file_name;
+        return false;
+    }
+    fseek(in, 0, SEEK_END);
+    file_size = ftell(in);
+    fseek(in, 0, SEEK_SET);
+    file_data = new uint8_t[file_size];
+    if (file_data == nullptr) return 0;
+    ok = (fread(file_data, file_size, 1, in) == 1);
+    fclose(in);
+
+    if (!ok) {
+        LOG(ERROR) << boost::format("Could not read %d bytes of data from file ") % file_size << file_name;
+        free(file_data);
+        return false;
+    }
+    *data = file_data;
+    *data_size = file_size;
+    return true;
+}
+
+struct WebPPic {
+    int width;
+    int height; 
+    uint8_t* rgba;
+};
+
+bool ReadWebP(const uint8_t* const data, size_t data_size, WebPPic* pic) {
+    VP8StatusCode status = VP8_STATUS_OK;
+    WebPDecoderConfig config;
+    WebPDecBuffer* const output_buffer = &config.output;
+    WebPBitstreamFeatures* const bitstream = &config.input;
+
+    if (!WebPInitDecoderConfig(&config)) {
+        LOG(ERROR) << "Library version mismatch!\n";
+        return false;
+    }
+
+    status = WebPGetFeatures(data, data_size, bitstream);
+    if (status != VP8_STATUS_OK) {
+        LOG(WARNING) << "Error loading input webp data, status code=" << status;
+        return false;
+    }
+
+    //output_buffer->colorspace = has_alpha ? MODE_RGBA : MODE_RGB;
+
+    pic->rgba = WebPDecodeRGBA(data, data_size, &pic->width, &pic->height);
+
+    if (!pic->rgba) {
+        return false;
+    }
+    /*if (status == VP8_STATUS_OK) {
+          /*pic->rgba = output_buffer->u.RGBA.rgba;
+          pic->stride = output_buffer->u.RGBA.stride;
+          pic->width = output_buffer->width;
+          pic->height = output_buffer->height;*/
+
+
+    /*ok = has_alpha ? WebPPictureImportRGBA(pic, rgba, stride)
+              : WebPPictureImportRGB(pic, rgba, stride);*
+      }*/
+
+
+    WebPFreeDecBuffer(output_buffer);
+    return true;
+}
+
+Bitmap* LoadImageFromFileExtended(const CString& fileName) {
+    Bitmap* bm = nullptr;
+    CString ext = WinUtils::GetFileExt(fileName);
+    if (ext.MakeLower() == "webp") {
+
+        uint8_t* data = nullptr;
+        size_t dataSize = 0;
+        if (!ExUtilReadFile(fileName, &data, &dataSize)) {
+            return nullptr;
+        }
+        WebPPic pic;
+        memset(&pic, 0, sizeof(pic));
+        if (!ReadWebP(data, dataSize, &pic)) {
+            return nullptr;
+        }
+        bm = new Bitmap(pic.width, pic.height, PixelFormat32bppARGB);
+
+        BitmapData dstData;
+        Rect rc(0, 0, pic.width, pic.height);
+
+        if (bm->LockBits(&rc, ImageLockModeWrite, PixelFormat32bppARGB, &dstData) == Ok) {
+            uint8_t* dstBits = reinterpret_cast<uint8_t *>(dstData.Scan0);
+            memcpy(dstBits, pic.rgba, pic.height * pic.width * 4);
+
+            bm->UnlockBits(&dstData);
+        }
+        delete[] data;
+        
+    } else {
+        bm = new Gdiplus::Bitmap(fileName);
+    }
+    if (bm && bm->GetLastStatus() != Gdiplus::Ok) {
+        delete bm;
+        return nullptr;
+    }
+    return bm;
+}
+
 PropertyItem* GetPropertyItemFromImage(Gdiplus::Image* bm, PROPID propId) {
     UINT itemSize = bm->GetPropertyItemSize(propId);
     if (!itemSize) {
@@ -986,11 +1106,15 @@ Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus
 
 Gdiplus::Bitmap* GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize) {
     using namespace Gdiplus;
-    Image bm(filename);
-    if (bm.GetLastStatus() != Ok) {
-        return 0;
+    Bitmap* bm = LoadImageFromFileExtended(filename);
+    if (!bm) {
+        return nullptr;
     }
-    return GetThumbnail(&bm, width, height, realSize);
+    //Image bm(filename);
+    if (bm->GetLastStatus() != Ok) {
+        return nullptr;
+    }
+    return GetThumbnail(bm, width, height, realSize);
 }
 
 Gdiplus::Size AdaptProportionalSize(const Gdiplus::Size& szMax, const Gdiplus::Size& szReal)

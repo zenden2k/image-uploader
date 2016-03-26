@@ -78,7 +78,7 @@ class CUpdateDlg :
     bool m_Modal;
     void CheckUpdates();
     void DoUpdates();
-    bool ShowModal(HWND parent);
+    bool ShowModal(HWND parent, bool forceCheck = false);
     void Abort();
     void updateStatus(int packageIndex, const CString& status);
 

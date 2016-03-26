@@ -203,7 +203,7 @@ bool IsImage(LPCTSTR szFileName)
 {
     LPCTSTR szExt = WinUtils::GetFileExt(szFileName);
     if (lstrlen(szExt)<1) return false;
-    return WinUtils::IsStrInList(szExt, _T("jpg\0jpeg\0png\0bmp\0gif\0tif\0tiff\0\0"));
+    return WinUtils::IsStrInList(szExt, _T("jpg\0jpeg\0png\0bmp\0gif\0tif\0tiff\0webp\0\0"));
 }
 
 };

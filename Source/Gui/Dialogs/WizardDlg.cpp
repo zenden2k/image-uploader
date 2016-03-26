@@ -1218,13 +1218,13 @@ LRESULT CWizardDlg::OnTaskDispatcherMsg(UINT, WPARAM wParam, LPARAM, BOOL&) {
 bool CWizardDlg::funcAddImages(bool AnyFiles)
 {
     TCHAR Buf[MAX_PATH * 4];
-    if(AnyFiles)
-        GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 1, TR("Any file"),
-                                      _T("*.*"));
+    if (AnyFiles)
+        GuiTools::SelectDialogFilter(Buf, sizeof(Buf) / sizeof(TCHAR), 1, TR("Any file"),
+        _T("*.*"));
     else
-    GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 2, 
-                                   CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"),
-                                   _T("*.jpg;*.jpeg;*.gif;*.png;*.bmp;*.tiff"), TR("Any file"),
+        GuiTools::SelectDialogFilter(Buf, sizeof(Buf) / sizeof(TCHAR), 2,
+        CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"),
+           _T("*.jpg;*.jpeg;*.gif;*.png;*.bmp;*.tiff;*.webp"), TR("Any file"),
                                    _T("*.*"));
 
     int nCount = 0;  
@@ -1721,7 +1721,7 @@ void CWizardDlg::UpdateAvailabilityChanged(bool Available)
 LRESULT CWizardDlg::OnUpdateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {    
     CreateUpdateDlg();
-    updateDlg->ShowModal(m_hWnd);
+    updateDlg->ShowModal(m_hWnd, true);
     return 0;
 }
 

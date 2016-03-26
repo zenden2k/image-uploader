@@ -14,6 +14,6 @@ popd
 popd
 
 call create_portable.bat
-call create_installer.bat
+call create_installer_no_sign.bat
 call upload_to_bintray.bat
 

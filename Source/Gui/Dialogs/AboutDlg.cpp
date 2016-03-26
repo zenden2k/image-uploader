@@ -97,6 +97,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(L"gumbo parser") +"\thttps://github.com/google/gumbo-parser\r\n";
     memoText += CString(L"gumbo-query") +"\thttps://github.com/lazytiger/gumbo-query\r\n";
     memoText += CString(L"glog") +"\t\thttps://github.com/google/glog\r\n";
+    memoText += CString(L"libwebp") +"\t\thttps://github.com/webmproject/libwebp\r\n";
 
 
     memoText += CString(L"minizip") +"\t\thttp://www.winimage.com/zLibDll/minizip.html\r\n";

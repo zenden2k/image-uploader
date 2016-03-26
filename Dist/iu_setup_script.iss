@@ -39,7 +39,7 @@ OutputBaseFilename=image-uploader-{#_APP_VER}-build-{#BUILD}-setup
 #endif
 Compression=lzma/max 
 SolidCompression=yes
-SignTool=zenden2k
+;SignTool=zenden2k
 CloseApplications=yes
 CloseApplicationsFilter=*.exe
 

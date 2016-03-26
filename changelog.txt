@@ -11,6 +11,7 @@
 [+] Display url shortening option before upload
 [+] Added animation of tray icon
 [+] Copy image in data:URL format
+[+] Added support for .webp format
 [f] Fixed wrong icon for "Log" and "Options button" in uploaddlg
 [c] Scripting API changes: added Process class, new functions
 [f] Fixed keyboard not working in file list

@@ -29,6 +29,7 @@
 #include "Func/WinUtils.h"
 #include "Core/LocalFileCache.h"
 #include "Core/CoreFunctions.h"
+#include "Core/Images/Utils.h"
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl()
@@ -510,7 +511,10 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
     bool error = false;
     if(IuCommonFunctions::IsImage(filename))
     {
-        bm=new Image(filename);
+        bm = LoadImageFromFileExtended(filename);
+        if (!bm) {
+            return false;
+        }
     }
 
     int width,height,imgwidth,imgheight,newwidth,newheight;

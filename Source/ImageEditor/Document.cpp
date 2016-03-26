@@ -28,6 +28,7 @@
 
 namespace ImageEditor {
     using namespace Gdiplus;
+
 Document::Document(int width, int height) {
     hasTransparentPixels_ = false;
     currentImage_.reset(new Gdiplus::Bitmap( width, height, PixelFormat32bppARGB ));
@@ -57,6 +58,7 @@ Document::~Document()
 }
 
 void Document::init() {
+    currentCanvas_ = nullptr;
     drawStarted_ = false;
     originalImage_ = NULL;
     if ( currentImage_ ) {

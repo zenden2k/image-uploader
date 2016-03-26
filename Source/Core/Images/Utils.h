@@ -41,4 +41,7 @@ Size AdaptProportionalSize(const Size& szMax, const Size& szReal);
 Bitmap* BitmapFromMemory(unsigned char* data, unsigned size);
 bool CopyBitmapToClipboardInDataUriFormat(Bitmap* bm, int Format, int Quality, bool html = false);
 bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int Quality, bool html);
+
+// Load image from file with webp support
+Bitmap* LoadImageFromFileExtended(const CString& fileName);
 #endif
