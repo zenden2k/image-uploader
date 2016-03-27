@@ -991,17 +991,30 @@ LRESULT ImageEditorWindow::OnClickedClose(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT ImageEditorWindow::OnClickedAddToWizard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    if ( saveDocument() ) {
-        EndDialog(drAddToWizard);
+    resultingBitmap_ = canvas_->getBitmapForExport();
+    canvas_->setDocumentModified(false);
+
+    if (!resultingBitmap_) {
+        LOG(ERROR) << "canvas_->getBitmapForExport() returned NULL";
+        return 0;
     }
+
+    EndDialog(drAddToWizard);
+    
     return 0;
 }
 
 LRESULT ImageEditorWindow::OnClickedUpload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    if ( saveDocument() ) {
-        EndDialog(drUpload);
+    resultingBitmap_ = canvas_->getBitmapForExport();
+    canvas_->setDocumentModified(false);
+
+    if (!resultingBitmap_) {
+        LOG(ERROR) << "canvas_->getBitmapForExport() returned NULL";
+        return 0;
     }
+
+    EndDialog(drUpload);
     return 0;
 }
 

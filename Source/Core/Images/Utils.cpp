@@ -1106,7 +1106,7 @@ Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus
 
 Gdiplus::Bitmap* GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize) {
     using namespace Gdiplus;
-    Bitmap* bm = LoadImageFromFileExtended(filename);
+    std::unique_ptr<Bitmap> bm (LoadImageFromFileExtended(filename));
     if (!bm) {
         return nullptr;
     }
@@ -1114,7 +1114,7 @@ Gdiplus::Bitmap* GetThumbnail(const CString& filename, int width, int height, Gd
     if (bm->GetLastStatus() != Ok) {
         return nullptr;
     }
-    return GetThumbnail(bm, width, height, realSize);
+    return GetThumbnail(bm.get(), width, height, realSize);
 }
 
 Gdiplus::Size AdaptProportionalSize(const Gdiplus::Size& szMax, const Gdiplus::Size& szReal)
