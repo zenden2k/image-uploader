@@ -1154,18 +1154,48 @@ void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective) {
 
 }
 
-bool DisplaySystemPrintDialogForImage(const wchar_t* fileName, HWND hwnd) {
-    TCHAR fileDir[1024];
-    ExtractFilePath(fileName, fileDir);
-    HINSTANCE hinst = ShellExecute(hwnd, _T("print"), fileName, 0, fileDir, SW_SHOWNORMAL);
+bool DisplaySystemPrintDialogForImage(const std::vector<CString>& files, HWND hwnd) {
+    static const CLSID CLSID_PrintPhotosDropTarget ={ 0x60fd46de, 0xf830, 0x4894, { 0xa6, 0x28, 0x6f, 0xa8, 0x1b, 0xc0, 0x19, 0x0d } };
 
-    if (reinterpret_cast<int>(hinst) <= 32) {
-        TCHAR buffer[256];
-        wsprintf(buffer, _T("ShellExecute failed. Error code=%d"), reinterpret_cast<int>(hinst));
+    CComPtr<IShellFolder> desktop; // namespace root for parsing the path
+    HRESULT hr = SHGetDesktopFolder(&desktop);
+    if (!SUCCEEDED(hr)) {
         return false;
     }
 
-    return true;
+    CComPtr<IShellItem> psi;
+    CComPtr<IDataObject> pDataObject;
+
+    std::vector<LPITEMIDLIST> list;
+
+    for (const auto& fileName : files) {
+        PIDLIST_RELATIVE newPIdL;
+        hr = desktop->ParseDisplayName(hwnd, nullptr, const_cast<LPWSTR>(static_cast<LPCTSTR>(fileName)), nullptr, &newPIdL, nullptr);
+        if (SUCCEEDED(hr)) {
+            list.push_back(newPIdL);
+        }
+    }
+   
+    if (!list.empty()) {
+        hr = desktop->GetUIObjectOf(hwnd, list.size(), const_cast<LPCITEMIDLIST*>(&list[0]), IID_IDataObject, 0, reinterpret_cast<void**>(&pDataObject));
+        if (SUCCEEDED(hr)) {
+            // Create the Photo Printing Wizard drop target.
+            CComPtr<IDropTarget> spDropTarget;
+
+            hr = CoCreateInstance(CLSID_PrintPhotosDropTarget, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&spDropTarget));
+            if (SUCCEEDED(hr)) {
+                // Drop the data object onto the drop target.
+                POINTL pt = { 0 };
+                DWORD dwEffect = DROPEFFECT_LINK | DROPEFFECT_MOVE | DROPEFFECT_COPY;
+
+                spDropTarget->DragEnter(pDataObject, MK_LBUTTON, pt, &dwEffect);
+
+                spDropTarget->Drop(pDataObject, MK_LBUTTON, pt, &dwEffect);
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 void TimerWait(int Delay)

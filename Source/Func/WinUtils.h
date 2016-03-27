@@ -112,7 +112,7 @@ namespace WinUtils {
     void ArgvQuote(const std::wstring& Argument, std::wstring& CommandLine, bool Force);
     bool GetProxyInfo(CString& proxy_address, CString& proxy_bypass);
     std::string TextToClipboardHtmlFormat(const char* html, int length, const std::string& base_url = std::string());
-    bool DisplaySystemPrintDialogForImage(const wchar_t* fileName, HWND hwnd = NULL);
+    bool DisplaySystemPrintDialogForImage(const std::vector<CString>& files, HWND hwnd = NULL);
 //#endif
 };
 

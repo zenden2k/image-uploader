@@ -732,7 +732,7 @@ void ImageEditorWindow::createToolbars()
     //horizontalToolbar_.addButton(Toolbar::Item(TR("Share"),0,ID_SHARE, CString(),Toolbar::itComboButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Save"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, CString(_T("(Ctrl+S)")),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Copy to clipboard"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, CString(), Toolbar::itComboButton));
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Print...."), std::shared_ptr<Gdiplus::Bitmap>(), ID_PRINTIMAGE, CString(), Toolbar::itButton));
+    horizontalToolbar_.addButton(Toolbar::Item(TR("Print..."), std::shared_ptr<Gdiplus::Bitmap>(), ID_PRINTIMAGE, CString(), Toolbar::itButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Close"),std::shared_ptr<Gdiplus::Bitmap> () ,ID_CLOSE, CString(_T("(Esc)"))));
     horizontalToolbar_.AutoSize();
     if ( displayMode_ != wdmFullscreen ) {
@@ -1048,7 +1048,8 @@ LRESULT ImageEditorWindow::OnPrintImage(WORD wNotifyCode, WORD wID, HWND hWndCtl
     }
     bool res = saveDocument(); // Save screenshot in default format
     if (res) {
-        WinUtils::DisplaySystemPrintDialogForImage(outFileName_, m_hWnd);
+        std::vector<CString> files = { outFileName_ };
+        WinUtils::DisplaySystemPrintDialogForImage(files, m_hWnd);
         if (displayMode_ == wdmFullscreen &&  !(GetKeyState(VK_SHIFT) & 0x8000)) {
             EndDialog(drPrintRequested);
         }

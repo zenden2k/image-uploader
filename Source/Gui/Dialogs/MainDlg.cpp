@@ -212,7 +212,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         sub.SetMenuItemInfo(IDM_OPENINDEFAULTVIEWER, false, &mi);
 
         if (bIsImageFile) {
-            mi.dwTypeData = const_cast<LPWSTR>(TR("Print selected..."));
+            mi.dwTypeData = const_cast<LPWSTR>(TR("Print..."));
             sub.SetMenuItemInfo(IDM_PRINT, false, &mi);
         }
         mi.dwTypeData = const_cast<LPWSTR>(TR("Open in folder"));
@@ -589,7 +589,11 @@ LRESULT CMainDlg::OnOpenInDefaultViewer(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
         TempInfo.nShow = SW_NORMAL;
 
         if (!::ShellExecuteEx(&TempInfo)) {
-            LOG(ERROR) << "Opening external editor failed." << std::endl << "Reason: " << WinUtils::ErrorCodeToString(GetLastError());
+            DWORD lastError = GetLastError();
+            if (lastError != ERROR_CANCELLED) { // The operation was canceled by the user.
+                LOG(ERROR) << "Opening default application failed." << std::endl << "Reason: " << WinUtils::ErrorCodeToString(lastError);
+            }
+                    
             return 0;
         }
     }
@@ -829,7 +833,7 @@ LRESULT CMainDlg::OnPrintImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
         CString fileName = selectedFiles[0];
         bool isImageFile = IuCommonFunctions::IsImage(fileName);
         if (isImageFile) {
-            WinUtils::DisplaySystemPrintDialogForImage(fileName, m_hWnd);
+            WinUtils::DisplaySystemPrintDialogForImage(selectedFiles, m_hWnd);
         }
         /*std::wstring cmdLine;
         /*SHELLEXECUTEINFO TempInfo = { 0 };

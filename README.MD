@@ -80,6 +80,8 @@ jsoncpp         https://github.com/open-source-parsers/jsoncpp
 
 glog            https://github.com/google/glog
 
+libwebp         https://github.com/webmproject/libwebp
+
 If you want to compile strmbase.lib by yourself you will need:
 
 DirectX 8 SDK
