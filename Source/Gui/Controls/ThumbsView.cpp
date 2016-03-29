@@ -208,7 +208,7 @@ bool CThumbsView::SimpleDelete(int ItemIndex, bool DeleteThumb, bool deleteFile)
 
     ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(ItemIndex));
 
-    if (deletePhysicalFiles_ /*&& deleteFile*/ && !TVI->FileName.IsEmpty()) {
+    if (deletePhysicalFiles_ && deleteFile && !TVI->FileName.IsEmpty()) {
         DeleteFile(TVI->FileName); // delete file from disk (enabled only on videograbber page)
     }
 
