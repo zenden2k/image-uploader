@@ -26,6 +26,7 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
 
     if (!bm) {
         LOG(ERROR) << "ImageConverter: unable to load source file " << sourceFileW;
+        return false;
     }
 
     Bitmap* thumbSource = bm.get();

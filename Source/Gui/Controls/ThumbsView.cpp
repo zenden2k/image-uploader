@@ -100,7 +100,7 @@ bool CThumbsView::MyDeleteItem(int ItemIndex)
 {
     if( ItemIndex < 0 || ItemIndex > GetItemCount()-1) return false;
 
-    SimpleDelete(ItemIndex); // Удаляем превьюшку из Imagelist
+    SimpleDelete(ItemIndex, true, deletePhysicalFiles_); // Удаляем превьюшку из Imagelist
     DeleteItem(ItemIndex);    // Удаляем непостредственно из контрола
 
     Arrange(LVA_ALIGNTOP);
@@ -158,7 +158,7 @@ int CThumbsView::DeleteSelected(void)
     {
         nItem = GetNextItem(nItem-1,LVNI_SELECTED    );
         if(nItem == -1) break;
-        SimpleDelete(nItem);
+        SimpleDelete(nItem, true, deletePhysicalFiles_);
         DeleteItem(nItem);
     }
     while(nItem!=-1);
@@ -201,14 +201,14 @@ void CThumbsView::MyDeleteAllItems()
 
 }
 
-bool CThumbsView::SimpleDelete(int ItemIndex, bool DeleteThumb)
+bool CThumbsView::SimpleDelete(int ItemIndex, bool DeleteThumb, bool deleteFile)
 {
     if(DeleteThumb) 
         ImageList.Remove(ItemIndex + 1);
 
     ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(ItemIndex));
 
-    if (deletePhysicalFiles_ && !TVI->FileName.IsEmpty()) {
+    if (deletePhysicalFiles_ /*&& deleteFile*/ && !TVI->FileName.IsEmpty()) {
         DeleteFile(TVI->FileName); // delete file from disk (enabled only on videograbber page)
     }
 

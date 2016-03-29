@@ -75,7 +75,7 @@ public:
     int DeleteSelected();
     void UpdateImageIndexes(int StartIndex = 0);
     void MyDeleteAllItems();
-    bool SimpleDelete(int ItemIndex, bool DeleteThumb = true);
+    bool SimpleDelete(int ItemIndex, bool DeleteThumb = true, bool deleteFile = false);
     LPCTSTR GetFileName(int ItemIndex);
     LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);
     bool LoadThumbnail(int ItemID, Gdiplus::Image *Img=NULL);

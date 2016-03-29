@@ -170,16 +170,16 @@ LRESULT CUploadSettingsPage::OnBnClickedBrowseScriptButton(WORD /*wNotifyCode*/,
 {
     TCHAR Buf[MAX_PATH * 4];
     GuiTools::SelectDialogFilter(Buf, sizeof(Buf) / sizeof(TCHAR), 2,
-        CString(_(".nut")),
+        CString(_("Squirrel 3 script (.nut)")),
         _T("*.nut;"),
         TR("All files"),
         _T("*.*"));
 
-    CFileDialog fd(true, 0, 0, 4 | 2, Buf, m_hWnd);
-   /* CString s;
-    s = WinUtils::GetAppFolder();
-    fd.m_ofn.lpstrInitialDir = s;*/
-    if (fd.DoModal() != IDOK || !fd.m_szFileName[0]) return 0;
+    CFileDialog fd(true, nullptr, nullptr, 4 | 2, Buf, m_hWnd);
+
+    if (fd.DoModal() != IDOK || !fd.m_szFileName[0]) {
+        return 0;
+    }
 
     SetDlgItemText(IDC_SCRIPTFILENAMEEDIT, fd.m_szFileName);
 
