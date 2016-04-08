@@ -272,7 +272,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     DEFPUSHBUTTON   "&OK",IDOK,216,255,52,15
     LTEXT           "build 1234\nUsing curl",IDC_IMAGEUPLOADERLABEL,158,25,68,9
-    CTEXT           "© 2007-2015.  All rights reserved.",IDC_STATIC,90,48,131,11
+    CTEXT           "© 2007-2016.  All rights reserved.",IDC_STATIC,90,48,131,11
     CONTROL         "",IDC_STATICLOGO,"Static",SS_BITMAP,37,17,15,13
     CTEXT           "Image Uploader",IDC_IMAGEUPLOADERLABEL2,80,14,148,12
     RTEXT           "VERSION",IDC_CURLINFOLABEL,80,25,65,9
