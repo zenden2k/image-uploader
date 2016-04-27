@@ -12,7 +12,7 @@ Free program for Windows that allows you to upload images, screenshots, or any o
 [Image Uploader 1.3.2 beta](https://bintray.com/artifact/download/zenden/zenden-image-uploader/image-uploader-1.3.2-alpha-build-4510-setup.exe)
 
 
-[Image Uploader 1.3.2 beta portable](https://bintray.com/artifact/download/zenden/zenden-image-uploader/image-uploader-1.3.2-alpha-build-4510-setup.exe)
+[Image Uploader 1.3.2 beta portable](https://bintray.com/artifact/download/zenden/zenden-image-uploader/image-uploader-1.3.2-alpha-build-4510-portable.7z)
 
 
 Supported operating systems: Windows 8.1/7/Vista/XP/2000 (also server versions)
