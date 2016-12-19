@@ -603,4 +603,9 @@
         </Actions>
         <Result ImageUrlTemplate="http://i.cubeupload.com/$(Id)" ThumbUrlTemplate="http://i.cubeupload.com/t/$(Id)"/>
     </Server>
+	<Server Name="picabox.ru" Authorize="0" FileHost="0" Debug="0" Plugin="picabox">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub"/>
+	</Server>
 </Servers>
