@@ -1,6 +1,9 @@
 #Image Uploader
 Free program for Windows that allows you to upload images, screenshots, or any other files to over 30 different file hosting services. 
 
+DOWNLOADS ARE AVALIABE IN [RELEASES](https://github.com/arhangelsoft/image-uploader/releases)
+СКАЧАТЬ ПОСЛЕДНИЕ ВЕРСИИ МОЖНО [ПО ССЫЛКЕ](https://github.com/arhangelsoft/image-uploader/releases)
+
 ![Image Uploader main window](https://lh3.googleusercontent.com/-Cn0FbMwNmME/VXvtHdBlKgI/AAAAAAAAF0A/r7soROnyqrg/s0/clipboard_5956_12792.png)
 
 ![screenshot 2015-11-14 002.png](https://lh3.googleusercontent.com/-hZRUh-39ROU/VkrluD32XdI/AAAAAAAAGd8/dJQbKTHiVlk/s0/screenshot%2525202015-11-17%252520001.png)
