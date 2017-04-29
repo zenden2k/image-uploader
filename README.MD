@@ -8,17 +8,11 @@ DOWNLOADS ARE AVALIABE IN [RELEASES](https://github.com/arhangelsoft/image-uploa
 
 ![screenshot 2015-11-14 002.png](https://lh3.googleusercontent.com/-hZRUh-39ROU/VkrluD32XdI/AAAAAAAAGd8/dJQbKTHiVlk/s0/screenshot%2525202015-11-17%252520001.png)
 
-[![Download Image Uploader 1.3.1](https://lh4.googleusercontent.com/-D6wvBfMHonw/VQHgBb9ZFzI/AAAAAAAAD1s/Hq1uUei_C-s/s0/download-button-en.png)](https://bintray.com/artifact/download/zenden/zenden-image-uploader/image-uploader-1.3.1-build-4318-upd-setup.exe)
-
-[Image Uploader 1.3.1 portable](https://bintray.com/artifact/download/zenden/zenden-image-uploader/image-uploader-1.3.1-build-4318-upd-portable.7z)
-
-[Image Uploader 1.3.2 beta](https://bintray.com/artifact/download/zenden/zenden-image-uploader/image-uploader-1.3.2-alpha-build-4510-setup.exe)
+[![Download Image Uploader 1.3.1](https://lh4.googleusercontent.com/-D6wvBfMHonw/VQHgBb9ZFzI/AAAAAAAAD1s/Hq1uUei_C-s/s0/download-button-en.png)](https://github.com/arhangelsoft/image-uploader/releases)
 
 
-[Image Uploader 1.3.2 beta portable](https://bintray.com/artifact/download/zenden/zenden-image-uploader/image-uploader-1.3.2-alpha-build-4510-portable.7z)
 
-
-Supported operating systems: Windows 8.1/7/Vista/XP/2000 (also server versions)
+Supported operating systems: Windows 10/8.1/7/Vista/XP/2000 (also server versions)
 
 ##Main Features
 
