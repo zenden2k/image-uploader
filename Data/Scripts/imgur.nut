@@ -3,16 +3,19 @@
 	Author: Alexamder Mikhnevich aka @arhangelsoft at github.com
 	
 	Requsits:
-		imgur.com user login: g1680003
-		imgur.com user mail: g1680003@mvrht.com
-		imgur.com user password: g1680003mvrhtcom
+		imgur.com user login: j3uoxsn0spd
+		imgur.com user mail: j3uoxsn0.spd@20mail.eu
+		imgur.com user password: j3uoxsn0spd20maileu
+		
+		client id: 74bbb480ed31539
+		secret: 64e240cbe6e74744aad769b85636d43239ff3a28
 	
 */
 
 function  UploadFile(FileName, options)
 {	
     nm.setUrl("https://api.imgur.com/3/image");
-	nm.addQueryHeader("Authorization","Client-ID 41b31959cfe4d8d");
+	nm.addQueryHeader("Authorization","Client-ID 74bbb480ed31539");
     nm.addQueryParamFile("image", FileName, ExtractFileName(FileName),"");
     nm.doUploadMultipartData();
 	if (nm.responseCode() == 200) {
