@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<UpdatePackageSource Name="iu_core" DisplayName="Image Uploader 1.3.2-alpha.4499" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%&amp;os_name=OS_NAME&amp;os_ver=OS_VER&amp;cpu_f=CPU_FEATURES"  CoreUpdate="1" >
+<UpdatePackageSource Name="iu_core" DisplayName="Image Uploader 1.3.2-alpha.4510" DownloadPath="http://dl.bintray.com/zenden/zenden-image-uploader/" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%&amp;os_name=OS_NAME&amp;os_ver=OS_VER&amp;cpu_f=CPU_FEATURES"  CoreUpdate="1" >
 	<Entries>
 		<Entry Name="Image Uploader.exe" SaveToFolder="%apppath%/" Action="add"/>
 		<Entry Name="ExplorerIntegration*.dll" SaveToFolder="%apppath%/" Action="add"/>
@@ -21,8 +21,9 @@
 		<Entry Name="Data/templates.xml" SaveToFolder="%datapath%/templates.xml" Action="add"/>
 	</Entries>
 <Info>
-[+] Print Screenshot (via system photo print dialog)
-[+]  Copy full file path on "Ctrl+Shift+C"
-[c] ImageDownloader: single threaded only (preserve order)
+[f] fixed opening Photo Printing Wizard dialog on Windows XP, Windows 10
+[f] fixed double saving of screenshot after closing image editor
+[f] fixed memory leaks when loading thumbnails thumbnail loader
+[f] fixed deleting captured video frames from disk
 </Info>
 </UpdatePackageSource>

@@ -270,7 +270,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     return 0;
 }
 
-bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, Gdiplus::Image *Img)
+bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, bool ensureVisible, Gdiplus::Image *Img)
 {
     CFileListItem fl; //internal list item
     
@@ -296,7 +296,7 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, G
     Buf = WinUtils::GetOnlyFileName(FileName );
     else Buf = myExtractFileName(FileName);
     if(FileName) 
-        ThumbsView.AddImage(fl.FileName, fl.VirtualFileName, Img);
+        ThumbsView.AddImage(fl.FileName, fl.VirtualFileName, ensureVisible, Img);
         
     EnableNext(FileList.GetCount()>0);
     listChanged_ = true;

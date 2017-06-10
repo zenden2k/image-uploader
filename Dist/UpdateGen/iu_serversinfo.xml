@@ -9,8 +9,7 @@
 		<Entry Name="Data/Favicons/*.ico" SaveToFolder="%datapath%/Favicons/" Action="add"/>
 	</Entries>
 <Info>
-[+] calabox.com
-[+] uploadmagnet.com
-[f] keep4u.ru ?
+[f] radikall.org
+[f] savephoto.ru
 </Info>
 </UpdatePackageSource>

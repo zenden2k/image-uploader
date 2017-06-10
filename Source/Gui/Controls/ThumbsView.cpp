@@ -62,7 +62,7 @@ void CThumbsView::Init(bool Extended)
     SendMessage(LVM_SETICONSPACING, 0, MAKELONG(THUMBNAIL_WIDTH+5, THUMBNAIL_HEIGHT+25+(ExtendedView?20:0)));
 }
 
-int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, Gdiplus::Image* Img)
+int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, Gdiplus::Image* Img)
 {
     if( !FileName ) return 0;
 
@@ -91,6 +91,10 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, Gdiplus::Image* Img)
 
     // Упорядочиваем картинки
     Arrange(LVA_ALIGNTOP);
+     
+    if (ensureVisible) {
+        EnsureVisible(n, FALSE);
+    }
 
     RedrawItems(n, n);
     return 0;

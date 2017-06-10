@@ -152,7 +152,7 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
             int iHeight = boost::lexical_cast<int>(LPCTSTR(height));
             double physicalAspect = iWidth / static_cast<double>(iHeight);
             if (physicalAspect != fAspectRatio) {
-                LOG(WARNING) << "physicalAspect " << physicalAspect << " != " << fAspectRatio;
+                //LOG(WARNING) << "physicalAspect " << physicalAspect << " != " << fAspectRatio;
             }
         } catch ( const boost::bad_lexical_cast& ex ) {
             LOG(WARNING) << ex.what();

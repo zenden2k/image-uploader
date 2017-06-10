@@ -186,7 +186,7 @@ bool createDirectory(const std::string& path_,unsigned int mode)
             return false;
         }
         free(szPath);
-
+        
         if (!::CreateDirectory(wstrFolder.c_str(), NULL)) {
             //LOG(WARNING) << wstrFolder;
             return false;

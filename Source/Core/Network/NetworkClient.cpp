@@ -551,7 +551,11 @@ void NetworkClient::private_checkResponse()
     }
     int code = responseCode();
     if ( ( !code || (code>= 400 && code<=499)) && errorString() != "Callback aborted" ) {
-        (treatErrorsAsWarnings_ ? LOG(WARNING) : LOG(ERROR) ) << "Request to the URL '"<<m_url<<"' failed. \r\nResponse code: "<<code<<"\r\n"<<errorString()<<"\r\n"<<internalBuffer;
+        (treatErrorsAsWarnings_ ? LOG(WARNING) : LOG(ERROR)) << "Request to the URL '" << m_url << "' failed. \r\n";
+        if (code) {
+            (treatErrorsAsWarnings_ ? LOG(WARNING) : LOG(ERROR)) << "Response code: " << code << "\r\n"; 
+        }
+        (treatErrorsAsWarnings_ ? LOG(WARNING) : LOG(ERROR)) << errorString() << "\r\n" << internalBuffer;
     }
 }
 

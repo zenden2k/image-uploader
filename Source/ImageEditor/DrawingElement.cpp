@@ -211,7 +211,7 @@ AffectedSegments& AffectedSegments::operator+= ( const AffectedSegments& segment
 }
 
 void AffectedSegments::clear() {
-    segments_.clear();
+    segments_.clear(); 
 }
 
 }

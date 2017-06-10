@@ -200,14 +200,13 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
     TRC(IDC_STOP, "Stop");
 
     NumOfFrames = GetDlgItemInt(IDC_NUMOFFRAMESEDIT);
-    if (!NumOfFrames)
+    if (NumOfFrames < 1)
         NumOfFrames = 5;
     SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETPOS, 0);
     
     SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETRANGE, 0, MAKELPARAM(0, NumOfFrames*10));
     CanceledByUser = false;
 
-    
     openInFolderLink_.ShowWindow(SW_HIDE);
 
     if ( originalGrabInfoLabelWidth_ ) {
@@ -225,7 +224,7 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
 DWORD CVideoGrabberPage::Run()
 {
     snapshotsFolder.Empty();
-
+    openInFolderLink_.SetToolTipText(_T(""));
     CString fileName = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
     if ( fileName.IsEmpty() ) {
         return 0;
@@ -272,11 +271,15 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
             if ( !IuCoreUtils::DirectoryExists(snapshotsFolderUtf8) ) {
                 if ( !IuCoreUtils::createDirectory(snapshotsFolderUtf8) ) {
                     CString logMessage;
-                    logMessage.Format(_T("Could not create folder '%s'."), (LPCTSTR)snapshotsFolder);
+                    CString lastError = WinUtils::GetLastErrorAsString();
+                    logMessage.Format(_T("Could not create folder '%s'.\r\n%s"), (LPCTSTR)snapshotsFolder, (LPCTSTR)lastError);
                     ServiceLocator::instance()->logger()->write(logError, _T("Video Grabber"), logMessage);
                     snapshotsFolder = IuCommonFunctions::IUTempFolder;
                 }
             }
+        }
+        if (snapshotsFolder.IsEmpty()) {
+            snapshotsFolder = IuCommonFunctions::IUTempFolder;
         }
         ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this] { openInFolderLink_.SetToolTipText(snapshotsFolder); });
     }
@@ -294,7 +297,7 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
     CString fileNameNoExt = Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(fullOutFileName)));*/
     
     MySaveImage(bm, outFilename, fileNameBuffer, 1, 100, !wOutDir.IsEmpty() ? static_cast<LPCTSTR>(wOutDir) : NULL);
-    ThumbsView.AddImage(fileNameBuffer, title, bm);
+    ThumbsView.AddImage(fileNameBuffer, title, false, bm);
     grabbedFramesCount++;
     return true;
 }
@@ -533,6 +536,7 @@ bool CVideoGrabberPage::OnShow()
     SetNextCaption(TR("Grab"));
     fileEdit_.SetWindowText(m_szFileName);
     ::ShowWindow(GetDlgItem(IDC_FILEINFOBUTTON), (*MediaInfoDllPath) ? SW_SHOW : SW_HIDE);
+    GrabInfo(_T(""));
     EnableNext(true);
     ShowPrev();
     ShowNext();

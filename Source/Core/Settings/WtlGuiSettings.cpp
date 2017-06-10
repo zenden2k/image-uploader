@@ -313,7 +313,7 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
     VideoSettings.UseAviInfo = TRUE;
     VideoSettings.ShowMediaInfo = TRUE;
     VideoSettings.TextColor = RGB(0, 0, 0);
-    VideoSettings.SnapshotsFolder = IuCoreUtils::Utf8ToWstring(Settings.SettingsFolder).c_str() + CString(_T("Snapshots"));
+    VideoSettings.SnapshotsFolder = /*IuCoreUtils::Utf8ToWstring(Settings.SettingsFolder).c_str() + CString(_T("Snapshots"))*/_T("");
     VideoSettings.SnapshotFileTemplate = _T("%f%_%cx%_%cy%_%uid%\\grab_%i%.png");
 
     VideoSettings.Engine = IsFFmpegAvailable() ? VideoEngineAuto : VideoEngineDirectshow;

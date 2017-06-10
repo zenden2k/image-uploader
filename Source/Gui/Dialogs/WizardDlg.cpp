@@ -338,7 +338,7 @@ bool CWizardDlg::ParseCmdLine()
             CMediaInfoDlg dlg;
             dlg.ShowInfo(VideoFileName);
             PostQuitMessage(0);
-            return 0;
+            return true;
         }
     }
 
@@ -1125,7 +1125,7 @@ void CWizardDlg::PasteBitmap(HBITMAP Bmp)
 
         CreatePage(2);
         CMainDlg* MainDlg = (CMainDlg*) Pages[2];
-        MainDlg->AddToFileList( buf2);
+        MainDlg->AddToFileList( buf2, L"", true);
         MainDlg->ThumbsView.LoadThumbnails();
         ShowPage(2);
     }
@@ -1182,7 +1182,7 @@ void CMyFolderDialog::OnInitialized()
 //  Overloaded WinProc function for BrowseForFolders dialog
 BOOL CALLBACK CMyFolderDialog::DialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    CMyFolderDialog *th = (CMyFolderDialog *) GetProp(hwndDlg, PROP_OBJECT_PTR);
+    CMyFolderDialog *th = reinterpret_cast<CMyFolderDialog *>(GetProp(hwndDlg, PROP_OBJECT_PTR));
     if(!th) return FALSE;
 
     if(uMsg == WM_COMMAND && HIWORD(wParam)== BN_CLICKED && ((HWND) lParam)== th->SubdirsCheckbox)

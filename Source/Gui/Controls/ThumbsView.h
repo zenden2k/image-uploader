@@ -70,7 +70,7 @@ public:
     LRESULT OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     int maxwidth,maxheight;
     void Init(bool Extended=false);
-    int AddImage(LPCTSTR FileName, LPCTSTR Title, Gdiplus::Image* Img=NULL);
+    int AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible =false, Gdiplus::Image* Img=NULL);
     bool MyDeleteItem(int ItemIndex);
     int DeleteSelected();
     void UpdateImageIndexes(int StartIndex = 0);
