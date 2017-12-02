@@ -378,33 +378,37 @@ template<class T,class V> void setObjValues(T key, Json::ValueIterator it, V &ob
     Sqrat::Array newArr;
     Sqrat::Table newObj;
 
-    switch(it->type()) {
+    try {
+        switch (it->type()) {
         case nullValue:
-            obj.SetValue(key,Sqrat::Object());
+            obj.SetValue(key, Sqrat::Object());
             break;
         case intValue:      ///< signed integer value
-            obj.SetValue(key, static_cast<SQInteger>(it->asInt()));
+            obj.SetValue(key, static_cast<SQInteger>(it->asInt64()));
             break;
         case uintValue:     ///< unsigned integer value
-            obj.SetValue(key, static_cast<SQInteger>(it->asInt()));
+            obj.SetValue(key, static_cast<SQInteger>(it->asInt64()));
             break;
         case realValue:
             obj.SetValue(key, it->asFloat());
             break;    ///< double value
         case stringValue:   ///< UTF-8 string value
             obj.SetValue(key, it->asString().data());
-            break;   
+            break;
         case booleanValue:  ///< bool value
             obj.SetValue(key, it->asBool());
-            break;   
+            break;
         case arrayValue:    ///< array value (ordered list)
-            parseJSONObj(*it,newArr);
+            parseJSONObj(*it, newArr);
             obj.SetValue(key, newArr);
-            break;   
+            break;
         case objectValue:
-            parseJSONObj(*it,newObj);
+            parseJSONObj(*it, newObj);
             obj.SetValue(key, newObj);
-            break;   
+            break;
+        }
+    } catch (std::logic_error & ex) {
+        LOG(WARNING) << "setObjValue()" << std::endl << ex.what();
     }
 }
 
