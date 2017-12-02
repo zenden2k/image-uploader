@@ -222,6 +222,8 @@ public:
      UploadType uploadType_;
      CWizardDlg* wizardDlg_;
     std::function<void()> balloonClickFunction_;
+    protected:
+    CString ShowHotkey(CString funcName, CString menuItemText);
 };
 extern CFloatingWindow floatWnd;
 void CreateFloatWindow();

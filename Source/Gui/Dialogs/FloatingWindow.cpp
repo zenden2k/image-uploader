@@ -381,10 +381,11 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 
     if (!m_bIsUploading)
     {
+
         // Inserting menu items
         int i = 0;
-        MyInsertMenu(TrayMenu, i++, IDM_UPLOADFILES, TR("Upload files") + CString(_T("...")));
-        MyInsertMenu(TrayMenu, i++, IDM_ADDFOLDERS, TR("Upload folder") + CString(_T("...")));
+        MyInsertMenu(TrayMenu, i++, IDM_UPLOADFILES, ShowHotkey("addimages", TR("Upload files") + CString(_T("..."))));
+        MyInsertMenu(TrayMenu, i++, IDM_ADDFOLDERS, ShowHotkey("addfolder", TR("Upload folder") + CString(_T("..."))));
         MyInsertMenu(TrayMenu, i++, 0, 0);
         bool IsClipboard = false;
 
@@ -395,17 +396,17 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         }
         if (IsClipboard)
         {
-            MyInsertMenu(TrayMenu, i++, IDM_PASTEFROMCLIPBOARD, TR("Paste"));
+            MyInsertMenu(TrayMenu, i++, IDM_PASTEFROMCLIPBOARD, ShowHotkey("paste", TR("Paste")));
             MyInsertMenu(TrayMenu, i++, 0, 0);
         }
-        MyInsertMenu(TrayMenu, i++, IDM_IMPORTVIDEO, TR("Import Video File"));
+        MyInsertMenu(TrayMenu, i++, IDM_IMPORTVIDEO, ShowHotkey("importvideo", TR("Import Video File")));
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        MyInsertMenu(TrayMenu, i++, IDM_SCREENSHOTDLG, TR("Screenshot") + CString(_T("...")));
-        MyInsertMenu(TrayMenu, i++, IDM_REGIONSCREENSHOT, TR("Capture Selected Area"));
-        MyInsertMenu(TrayMenu, i++, IDM_FULLSCREENSHOT, TR("Capture the Entire Screen"));
-        MyInsertMenu(TrayMenu, i++, IDM_WINDOWSCREENSHOT, TR("Capture the Active Window"));
-        MyInsertMenu(TrayMenu, i++, IDM_WINDOWHANDLESCREENSHOT, TR("Capture Selected Object"));
-        MyInsertMenu(TrayMenu, i++, IDM_FREEFORMSCREENSHOT, TR("Freehand Capture"));
+        MyInsertMenu(TrayMenu, i++, IDM_SCREENSHOTDLG, ShowHotkey("screenshotdlg", TR("Screenshot") + CString(_T("..."))));
+        MyInsertMenu(TrayMenu, i++, IDM_REGIONSCREENSHOT, ShowHotkey("regionscreenshot", TR("Capture Selected Area")));
+        MyInsertMenu(TrayMenu, i++, IDM_FULLSCREENSHOT, ShowHotkey("fullscreenshot", TR("Capture the Entire Screen")));
+        MyInsertMenu(TrayMenu, i++, IDM_WINDOWSCREENSHOT, ShowHotkey("windowscreenshot", TR("Capture the Active Window")));
+        MyInsertMenu(TrayMenu, i++, IDM_WINDOWHANDLESCREENSHOT, ShowHotkey("windowhandlescreenshot", TR("Capture Selected Object")));
+        MyInsertMenu(TrayMenu, i++, IDM_FREEFORMSCREENSHOT, ShowHotkey("freeformscreenshot", TR("Freehand Capture")));
 
         CMenu SubMenu;
         SubMenu.CreatePopupMenu();
@@ -441,15 +442,15 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 
         SubMenu.Detach();
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        MyInsertMenu(TrayMenu, i++, IDM_SHORTENURL, TR("Shorten a link"));
+        MyInsertMenu(TrayMenu, i++, IDM_SHORTENURL, ShowHotkey("shortenurl",TR("Shorten a link")));
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        MyInsertMenu(TrayMenu, i++, IDM_SHOWAPPWINDOW, TR("Show program's window"));
-        MyInsertMenu(TrayMenu, i++, IDM_OPENSCREENSHOTSFOLDER, TR("Open screenshots folder"));
+        MyInsertMenu(TrayMenu, i++, IDM_SHOWAPPWINDOW, ShowHotkey("showmainwindow", TR("Show program's window")));
+        MyInsertMenu(TrayMenu, i++, IDM_OPENSCREENSHOTSFOLDER, ShowHotkey("open_screenshot_folder", TR("Open screenshots folder")));
         if (lastUploadedItem_) {
             MyInsertMenu(TrayMenu, i++, IDM_SHOWLASTUPLOADRESULTS, TR("Show results of last upload"));
         }
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        MyInsertMenu(TrayMenu, i++, IDM_SETTINGS, TR("Settings") + CString(_T("...")));
+        MyInsertMenu(TrayMenu, i++, IDM_SETTINGS, ShowHotkey("settings",TR("Settings") + CString(_T("..."))));
         MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_EXIT, TR("Exit"));
         if (Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId)
@@ -828,4 +829,18 @@ void CFloatingWindow::ShowScreenshotCopiedToClipboardMessage() {
     CString statusText = TR("Screenshot was saved to clipboard.");
     ShowBaloonTip(statusText, APPNAME, 17000);
     setStatusText(statusText, kStatusHideTimeout);
+}
+
+CString CFloatingWindow::ShowHotkey(CString funcName, CString menuItemText) {
+    int cur = Settings.Hotkeys.getFuncIndex(funcName);
+    if (cur<0) {
+        return menuItemText;
+    };
+
+    CHotkeyItem item = Settings.Hotkeys[cur];
+    CString hotkeyStr = item.globalKey.toString();
+    if (hotkeyStr.IsEmpty()) {
+        return menuItemText;
+    }
+    return menuItemText + _T("\t") + hotkeyStr;
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1449989061.dat" TimeStamp="1449989061" Date="13.12.2015 07:44:21" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%&amp;os_name=OS_NAME&amp;os_ver=OS_VER&amp;cpu_f=CPU_FEATURES" CoreUpdate="0" DisplayName="Servers update" Hash="e14324e3a374300d585320abd5a83cea">
+<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden.ws/updates/iu_serversinfo_1458145079.dat" TimeStamp="1458145079" Date="16.03.2016 17:17:59" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%&amp;os_name=OS_NAME&amp;os_ver=OS_VER&amp;cpu_f=CPU_FEATURES" CoreUpdate="0" DisplayName="Servers update" Hash="c997dad2cd84a5cb50e221293bf1dd63">
   <Info>[+] calabox.com
 [+] uploadmagnet.com
 [f] keep4u.ru ?</Info>
