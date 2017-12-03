@@ -286,7 +286,7 @@ bool CUpdateManager::internal_load_update(CString name)
         return false;
     }
    
-    if(nm.responseCode() != 200)
+    if (nm.responseCode() != 200 || nm.responseHeaderByName("Content-Type") != "text/xml")
     {
         ServiceLocator::instance()->logger()->write(logWarning, _T("Update Engine"), _T("Невозможно загрузить информацию о пакете обновления ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm.responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm.errorString()).c_str(), CString("URL=") + url);
         return false;
