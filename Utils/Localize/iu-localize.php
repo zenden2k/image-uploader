@@ -191,7 +191,7 @@
     }
 
  parse_dir( $dir );
-print "<p><b>Total: $i source files parsed</b>";
+print "<p><b>All source files parsed</b>";
 
 
 

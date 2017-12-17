@@ -294,12 +294,11 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
     RememberFileServer = true;
 
     ShowUploadErrorDialog = true;
-   
+    AutomaticallyCheckUpdates = true;
 
     ImageEditorPath = _T("mspaint.exe \"%1\"");
     AutoCopyToClipboard = false;
     AutoShowLog = true;
-
 
     //    StringToFont(_T("Tahoma,7,b,204"), &ThumbSettings.ThumbFont);
     StringToFont(_T("Tahoma,8,,204"), &VideoSettings.Font);
@@ -761,6 +760,7 @@ void WtlGuiSettings::BindToManager() {
     upload.n_bind(ScriptFileName);
     upload.n_bind(ExecuteScript);
     upload.n_bind(DeveloperMode);
+    upload.n_bind(AutomaticallyCheckUpdates);
 
     imageServer.bind(upload["Server"]);
     fileServer.bind(upload["FileServer"]);

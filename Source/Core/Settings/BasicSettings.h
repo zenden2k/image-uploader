@@ -43,6 +43,7 @@ public:
     std::string ScriptFileName;
     bool ExecuteScript;
     bool DeveloperMode;
+
     int MaxThreads;
     bool AutoShowLog;
 

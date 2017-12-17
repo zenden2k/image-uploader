@@ -164,6 +164,7 @@ f2b61cd1 = Images editor:
 04d1c1f4 = Ask confirmation on exit
 0ef48595 = Add video files to the list after Drag'n'Drop
 fbbb0caa = Developer mode
+96e1f325 = Automatically check for updates
 c4118918 = Upload History
 7b1b9ba5 = Open in Web Browser
 7cdf24bb = Copy URL
@@ -532,8 +533,8 @@ a90f88fa = History
 4410bd70 = Advice:
 f2f77e96 = Just drag-n-drop your files on Image Uploader's window and it will process them.
 c260cbfc = Welcome to pictures Publishing Wizard, that will help you to upload your images, photos, video frames on Internet!
-27eb6c03 = Help
 077efcaa = Enable integration in Explorer's context menu?
+27eb6c03 = Help
 e67c195b = Couldn't load servers list file "servers.xml"!\n\nThe reason is:  %s\n\nDo you wish to continue?
 5784e81d = MediaInfo.dll Not found! \nGetting technical information of media files will not be accessible.
 7f6216d0 = Profile "%s" not found.

@@ -20,8 +20,6 @@
 
 #include "GeneralSettings.h"
 
-#include <uxtheme.h>
-#include "Func/common.h"
 #include "Core/Settings.h"
 #include "LogWindow.h"
 #include "Gui/GuiTools.h"
@@ -73,6 +71,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     TRC(IDC_CONFIRMONEXIT, "Ask confirmation on exit");
     TRC(IDC_DROPVIDEOFILESTOTHELIST, "Add video files to the list after Drag'n'Drop");
     TRC(IDC_DEVELOPERMODE, "Developer mode");
+    TRC(IDC_CHECKUPDATES, "Automatically check for updates");
     SetDlgItemText(IDC_IMAGEEDITORPATH, Settings.ImageEditorPath);
     
 
@@ -100,6 +99,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     SendDlgItemMessage(IDC_AUTOSHOWLOG, BM_SETCHECK, Settings.AutoShowLog);
     GuiTools::SetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST, Settings.DropVideoFilesToTheList);
     GuiTools::SetCheck(m_hWnd, IDC_DEVELOPERMODE, Settings.DeveloperMode);
+    GuiTools::SetCheck(m_hWnd, IDC_CHECKUPDATES, Settings.AutomaticallyCheckUpdates);
     return 1;  // Let the system set the focus
 }
 
@@ -142,6 +142,7 @@ bool CGeneralSettings::Apply()
     Settings.ConfirmOnExit = SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_GETCHECK)==BST_CHECKED;
     Settings.DropVideoFilesToTheList = GuiTools::GetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST);
     GuiTools::GetCheck(m_hWnd, IDC_DEVELOPERMODE, Settings.DeveloperMode);
+    GuiTools::GetCheck(m_hWnd, IDC_CHECKUPDATES, Settings.AutomaticallyCheckUpdates);
     
     return true;
 }

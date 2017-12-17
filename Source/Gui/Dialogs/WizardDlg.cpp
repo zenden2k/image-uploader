@@ -312,7 +312,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     }
     else
     {
-        if(time(0) - Settings.LastUpdateTime > 3600*24*3 /* 3 days */)
+        if(Settings.AutomaticallyCheckUpdates && (time(0) - Settings.LastUpdateTime > 3600*24*3 /* 3 days */))
         {
             CreateUpdateDlg();
             updateDlg->Create(m_hWnd);
@@ -1238,7 +1238,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
         DWORD dwFlags = 0;
 
         // Create the file-save dialog COM object.
-        HRESULT hr = pDlg.CoCreateInstance(__uuidof(FileOpenDialog));
+        HRESULT hr = pDlg.CoCreateInstance(CLSID_FileOpenDialog);
 
         if (FAILED(hr))
             return false;
@@ -1276,7 +1276,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
         //pDlg->SetDefaultExtension(L"txt");
 
         pDlg->GetOptions(&dwFlags);
-        pDlg->SetOptions(dwFlags | FOS_ALLOWMULTISELECT);
+        pDlg->SetOptions(dwFlags | FOS_ALLOWMULTISELECT | FOS_FILEMUSTEXIST);
         // Create the file-open dialog COM object.
         hr = pDlg->Show(m_hWnd);
 
@@ -1488,11 +1488,11 @@ bool CWizardDlg::funcImportVideo()
         TR("All files"),
         _T("*.*"));
 
-    CFileDialog fd(true,0,0,4|2,Buf,m_hWnd);
+    CFileDialog fd(true, 0, 0, 4 | 2 | OFN_FILEMUSTEXIST, Buf, m_hWnd);
     
     TCHAR Buffer[1000];
     fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
-    if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return 0;
+    if (fd.DoModal() != IDOK || !fd.m_szFileName[0] || !WinUtils::FileExists(fd.m_szFileName)) return 0;
     WinUtils::ExtractFilePath(fd.m_szFileName, Buffer); 
     Settings.VideoFolder = Buffer;
 	importVideoFile(fd.m_szFileName);
@@ -1756,7 +1756,7 @@ bool CWizardDlg::funcMediaInfo()
         TR("All files"),
         _T("*.*"));
 
-    CFileDialog fd(true,0,0,4|2,Buf,m_hWnd);
+    CFileDialog fd(true, 0, 0, 4 | 2 | OFN_FILEMUSTEXIST, Buf, m_hWnd);
     fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
 
     if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return 0;

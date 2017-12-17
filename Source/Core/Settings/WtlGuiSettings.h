@@ -107,6 +107,7 @@ public:
     bool ExplorerVideoContextMenu;
     bool DropVideoFilesToTheList;
     bool ConfirmOnExit;
+    bool AutomaticallyCheckUpdates;
 
     bool AutoCopyToClipboard;
     bool WatchClipboard;
