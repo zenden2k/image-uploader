@@ -364,6 +364,7 @@ void CScriptUploadEngine::setNetworkClient(NetworkClient* nm)
         nm->setUserAgent(m_UploadData->UserAgent);
     }
     nm->setCurlShare(sync_->getCurlShare());
+    nm->setErrorLogId("[" + name_ + ".nut]");
     vm_.GetRootTable().SetInstance("nm", nm);
     //BindVariable(m_Object, nm, "nm");
 }

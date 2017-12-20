@@ -34,7 +34,6 @@
 #include "Gui/Dialogs/UpdateDlg.h"
 #include "Core/Settings.h"
 #include "Core/ProgramWindow.h"
-#include "Core/WebServer/WebServer.h"
 #include "Core/TaskDispatcher.h"
 #include "FolderAddDlg.h"
 #include "Gui/HwndScopedWrapper.h"
@@ -100,7 +99,6 @@ public:
     virtual BOOL PreTranslateMessage(MSG* pMsg);
     virtual BOOL OnIdle();
     CString m_bCurrentFunc;
-    WebServer webServer_;
     BEGIN_UPDATE_UI_MAP(CWizardDlg)
     END_UPDATE_UI_MAP()
 

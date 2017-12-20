@@ -118,7 +118,7 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     list.AddIcon(saveIcon);
     list.AddIcon(deleteIcon);
     m_ProfileEditToolbar.SetImageList(list);
-    m_ProfileEditToolbar.AddButton(IDC_NEWPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 0, TR("New Profile"), 0);
+    m_ProfileEditToolbar.AddButton(IDC_NEWPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 0, TR("Create Profile"), 0);
     m_ProfileEditToolbar.AddButton(IDC_SAVEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Save Profile"), 0);
     m_ProfileEditToolbar.AddButton(IDC_DELETEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Delete Profile"), 0);
 
@@ -359,7 +359,7 @@ LRESULT CLogoSettings::OnProfileEditedNotification(int idCtrl, LPNMHDR pnmh, BOO
 
 LRESULT CLogoSettings::OnNewProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    CString name = TR("New Profile");
+    CString name = TR("New profile");
     CString generatedName = name;
     int i = 1;
     while(ñonvert_profiles_.count(generatedName) > 0)

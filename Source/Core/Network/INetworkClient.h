@@ -74,6 +74,7 @@ class INetworkClient {
         virtual void setTimeout(uint32_t timeout) = 0;
         virtual void setConnectionTimeout(uint32_t connection_timeout) = 0;
         virtual void enableResponseCodeChecking(bool enable) = 0;
+        virtual void setErrorLogId(const std::string &str) = 0;
 };
 
 #endif

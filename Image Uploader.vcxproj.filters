@@ -97,9 +97,6 @@
     <Filter Include="Source Files\ImageEditor\DrawingTools">
       <UniqueIdentifier>{c032cdc2-e181-4f34-851e-3bcc711e5018}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Core\WebServer">
-      <UniqueIdentifier>{e16c3e3e-08e7-41f1-82ee-a6c84341b8ab}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\3rdpart\Func">
       <UniqueIdentifier>{ba6120b1-ddf4-46f8-95a4-4c93dda6b03c}</UniqueIdentifier>
     </Filter>
@@ -821,12 +818,6 @@
     </ClInclude>
     <ClInclude Include="Source\Func\GdiPlusInitializer.h">
       <Filter>Source Files\3rdpart\Func</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Core\WebServer\WebServer.h">
-      <Filter>Source Files\Core\WebServer</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Core\WebServer\CivetServer.h">
-      <Filter>Source Files\Core\WebServer</Filter>
     </ClInclude>
     <ClInclude Include="Source\ImageEditor\Helpers\FontEnumerator.h">
       <Filter>Source Files\ImageEditor\Helpers</Filter>
@@ -1859,12 +1850,6 @@
     </ClCompile>
     <ClCompile Include="Source\Func\GdiPlusInitializer.cpp">
       <Filter>Source Files\3rdpart\Func</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\WebServer\CivetServer.cpp">
-      <Filter>Source Files\Core\WebServer</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\WebServer\WebServer.cpp">
-      <Filter>Source Files\Core\WebServer</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImageEditor\Helpers\FontEnumerator.cpp">
       <Filter>Source Files\ImageEditor\Helpers</Filter>

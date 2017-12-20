@@ -140,7 +140,7 @@ class NetworkClient: public INetworkClient
         void setConnectionTimeout(uint32_t connection_timeout) override;
         /*! @endcond */
         void enableResponseCodeChecking(bool enable) override;
-
+        void setErrorLogId(const std::string &str) override;
         class AbortedException : public std::runtime_error {
         public:
             AbortedException(const std::string& msg) : std::runtime_error(msg) {}
@@ -213,6 +213,7 @@ class NetworkClient: public INetworkClient
         std::string internalBuffer;
         std::string m_headerBuffer;
         std::string m_userAgent;
+        std::string errorLogIdString_;
         char m_errorBuffer[CURL_ERROR_SIZE];
         std::string m_method;
         struct curl_slist * chunk_;
