@@ -36,6 +36,7 @@
 #include "Func/MediaInfoHelper.h"
 #include "Func/IuCommonFunctions.h"
 #include "Core/AppParams.h"
+#include <Core/ServiceLocator.h>
 
 // CUploadDlg
 CUploadDlg::CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager) : resultsWindow_(new CResultsWindow(dlg, urlList_, true))
@@ -122,7 +123,7 @@ bool CUploadDlg::startUpload() {
     SetDlgItemText(IDC_COMMONPERCENTS, _T("0%"));
 
     TotalUploadProgress(0, n);
-
+    SetTimer(kProgressTimer, 1000);
     uploadListView_.DeleteAllItems();
 
     urlList_.clear();
@@ -166,6 +167,8 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
         EnableNext(true);
         isEnableNextButtonTimerRunning_ = false;
         KillTimer(kEnableNextButtonTimer);
+    } else if (wParam == kProgressTimer) {
+        updateTotalProgress();
     }
     return 0;
 }
@@ -178,7 +181,7 @@ int CUploadDlg::ThreadTerminated(void)
         if(ptl)
             ptl->SetProgressState(GetParent(), TBPF_NOPROGRESS);
     #endif
-
+    KillTimer(kProgressTimer);
     SetNextCaption(TR("Finish >"));
     backgroundThreadStarted_ = false;
     EnablePrev();
@@ -385,6 +388,24 @@ void CUploadDlg::createToolbar()
     toolbar_.ShowWindow(SW_SHOW);
 }
 
+void CUploadDlg::updateTotalProgress() {
+    int n = uploadSession_->taskCount();
+    int totalPercent = 0;
+    for (int i = 0; i < n; i++) {
+        std::shared_ptr<UploadTask> task = uploadSession_->getTask(i);
+        if (task->isRunning()) {
+            int percent = 0;
+            UploadProgress* progress = task->progress();
+            if (progress->totalUpload) {
+                percent = static_cast<int>(100 * ((float)progress->uploaded) / progress->totalUpload);
+                totalPercent += percent;
+            }
+        }
+    }
+    TotalUploadProgress(uploadSession_->finishedTaskCount(UploadTask::StatusFinished), uploadSession_->taskCount(),
+        static_cast<int>(((float)totalPercent) / 100 * 50));
+}
+
 LRESULT CUploadDlg::OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     LogWindow.Show();
     return 0;
@@ -449,7 +470,6 @@ void CUploadDlg::onTaskUploadProgress(UploadTask* task)
     }
     FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
     if (fileTask) {
-        
         TCHAR ProgressBuffer[256] = _T("");
         bool isThumb = task->role() == UploadTask::ThumbRole;
         int percent = 0;
@@ -488,7 +508,9 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         item.ThumbUrl = Utf8ToWCstring(uploadResult->thumbUrl);
         urlList_[fps->tableRow] = item;
         //uploadListView_.SetItemText(fps->tableRow, 1, _T("Готово"));
-        TotalUploadProgress(uploadSession_->finishedTaskCount(UploadTask::StatusFinished), uploadSession_->taskCount(), 0);
+        ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this] { updateTotalProgress(); });
+        
+        //TotalUploadProgress(uploadSession_->finishedTaskCount(UploadTask::StatusFinished), uploadSession_->taskCount(), 0);
     }
     else if (fileTask->role() == UploadTask::ThumbRole) {
          FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(task->parentTask()->userData());

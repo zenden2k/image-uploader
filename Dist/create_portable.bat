@@ -53,6 +53,7 @@ Copy "..\Build\release\av*.dll" %temp_dir%\
 Copy "..\Build\release\sw*.dll" %temp_dir%\
 Copy "Dll\gdiplus.dll" %temp_dir%\
 del "%temp_dir%\Lang\default.lng"
+del "%temp_dir%\Data\Scripts\test.nut"
 rem signtool sign  /t http://timestamp.digicert.com /f "d:\Backups\ImageUploader\3315593d7023a0aeb48042349dc4fd40.pem" "%temp_dir%\Image Uploader.exe" "%temp_dir%\ExplorerIntegration.dll" "%temp_dir%\ExplorerIntegration64.dll"
 
 cd %temp_dir%

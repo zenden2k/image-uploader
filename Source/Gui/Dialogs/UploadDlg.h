@@ -44,7 +44,8 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         enum { IDD = IDD_UPLOADDLG };
         enum {
             IDC_UPLOADPROCESSTAB = WM_USER + 100, IDC_UPLOADRESULTSTAB = IDC_UPLOADPROCESSTAB + 1,
-            kEnableNextButtonTimer = 5
+            kEnableNextButtonTimer = 5,
+            kProgressTimer = 6
         };
         
          BEGIN_MSG_MAP(CUploadDlg)
@@ -94,6 +95,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         void onChildTaskAdded(UploadTask* child);
         void backgroundThreadStarted();
         void createToolbar();
+        void updateTotalProgress();
         int currentTab_;
         CResultsListView uploadListView_;
         bool isEnableNextButtonTimerRunning_;
