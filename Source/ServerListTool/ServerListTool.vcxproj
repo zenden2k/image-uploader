@@ -184,7 +184,7 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>minizip.lib;zlibd.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;Oleacc.lib;gumbo.lib;jsoncpp.lib;libglog_static.lib;Winhttp.lib;base64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>minizip.lib;zlibd.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;Oleacc.lib;gumbo.lib;jsoncpp.lib;libglog_static.lib;Winhttp.lib;base64.lib;libwebpdecoder.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Debug;$(SolutionDir)Contrib\Lib\;$(SolutionDir)\Contrib\Source\boost\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libcmt.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -263,7 +263,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\Include\DX;$(SolutionDir)\Include\BaseClasses;$(SolutionDir)\Include\WTL;$(SolutionDir)\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;libglog_static.lib;jsoncpp.lib;Oleacc.lib;gumbo.lib;base64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>minizip.lib;zlib.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;libglog_static.lib;jsoncpp.lib;Oleacc.lib;gumbo.lib;base64.lib;Winhttp.lib;libwebpdecoder.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Release;$(SolutionDir)\Contrib\Lib\;$(SolutionDir)\Contrib\Source\boost\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>

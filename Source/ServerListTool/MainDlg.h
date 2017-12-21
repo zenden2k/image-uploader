@@ -127,6 +127,7 @@ public:
     LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     bool OnNeedStop();
     void processFinished();
+    void checkShortUrl(UploadTask* task);
     UploadEngineManager *uploadEngineManager_;
     UploadManager* uploadManager_;
     CMyEngineList* engineList_;
