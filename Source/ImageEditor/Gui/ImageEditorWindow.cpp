@@ -1151,8 +1151,13 @@ void ImageEditorWindow::OnClickedSave() {
         ::SetFocus(m_view.m_hWnd);
     }
     if (!sourceFileName_.IsEmpty()) {
-        outFileName_ = sourceFileName_;
-        saveDocument();
+        CString ext = WinUtils::GetFileExt(sourceFileName_);
+        if (ext.MakeLower() == "webp") {
+            OnSaveAs();
+        } else {
+            outFileName_ = sourceFileName_;
+            saveDocument();
+        }
     } else {
         OnSaveAs();
     }

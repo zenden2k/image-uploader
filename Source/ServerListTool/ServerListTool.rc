@@ -106,7 +106,7 @@ CAPTION "About"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,92,126,50,14
-    CTEXT           "ServerListChecker v.1.0.1\n\nfor Image Uploader  v1.3.2\n\n(c) 2010-2015 Sergey Svistunov",IDC_STATIC,29,42,78,73
+    CTEXT           "ServerListChecker v.1.0.2\n\nfor Image Uploader  v1.3.2\n\n(c) 2010-2017 Sergey Svistunov",IDC_STATIC,29,42,78,73
     ICON            IDR_MAINFRAME,IDC_STATIC,55,18,20,20
     GROUPBOX        "",IDC_STATIC,7,7,133,116
 END

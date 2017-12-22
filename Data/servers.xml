@@ -300,34 +300,6 @@
 	<!--
 		Since 1.3.x release server declaration for "urlshortening" server node must be "Server2",
 	-->
-	<Server2 Name="6url.ru" Authorize="0" Debug="0" Type="urlshortening" >
-		<Actions>
-			<Action 
-				Type="get"
-				Url="http://6url.ru/?api=$(_ORIGINALURL|urlencode)"
-				RegExp='(.+)'
-				AssignVars="surl:0"
-			/>
-		</Actions>
-		<Result DirectUrlTemplate="$(surl)" />
-	</Server2>
-	<Server2 Name="yahs.ru" Authorize="0" Type="urlshortening" Plugin="yahsru" >
-		<Actions>
-		</Actions>
-		<Result DirectUrlTemplate="stub" />
-	</Server2>
-	<Server2 Name="udi.by" Authorize="0" Type="urlshortening" >
-		<Actions>
-			<Action 
-				Type="post"
-				Url="http://udi.by/newlink.php"
-				PostParams="url=$(_ORIGINALURL);email=;mode=0"
-				RegExp='(.+)'
-				AssignVars="surl:0"
-			/>
-		</Actions>
-		<Result DirectUrlTemplate="http://udi.by/$(surl)" />
-	</Server2>
 	<Server2 Name="u.to" Authorize="0" Type="urlshortening">
 		<Actions>
 			<Action 
@@ -345,36 +317,11 @@
 			<Action 
 				Type="get"
 				Url="http://tinyurl.com/create.php?source=indexpage&amp;url=$(_ORIGINALURL|urlencode)&amp;submit=Make+TinyURL&amp;alias="
-				RegExp='window.clipboardData.setData\(.Text.,.(.+).\);'
+				RegExp='https:\/\/preview\.tinyurl\.com\/(\w+)'
 				AssignVars="surl:0"
 			/>
 		</Actions>
-		<Result DirectUrlTemplate="$(surl)" />
-	</Server2>
-	<Server2 Name="link.ac" Authorize="0" Type="urlshortening" >
-		<Actions>
-			<Action 
-				Type="post"
-				Url="link.ac"
-				PostParams="qmode=cutlink;needurl=undefined;url=$(_ORIGINALURL)"
-				RegExp='clipmain1\.setText\("(.+)"\)'
-				AssignVars="surl:0"
-			/>
-		</Actions>
-		<Result DirectUrlTemplate="$(surl)" />
-	</Server2>
-	<Server2 Name="8b.kz" Authorize="0" Type="urlshortening" >
-		<Actions>
-			<Action 
-				Type="post"
-				Url="http://8b.kz/ajax/new_url"
-				PostParams="custom=;url=$(_ORIGINALURL|urlencode)"
-				Referer="http://8b.kz/"
-				RegExp='"key":"((\\"|[^"])*)"'
-				AssignVars="surl:0"
-			/>
-		</Actions>
-		<Result DirectUrlTemplate="http://8b.kz/$(surl)" />
+		<Result DirectUrlTemplate="https://tinyurl.com/$(surl)" />
 	</Server2>
 	<Server2 Name="clck.ru" Debug="0" Type="urlshortening">
 		<Actions>
@@ -387,11 +334,6 @@
 			<Action Type="post" Url="http://is.gd/create.php?format=simple&amp;url=$(_ORIGINALURL|urlencode)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
 		</Actions>
 		<Result DirectUrlTemplate="$(ShortUrl)" />
-	</Server2>
-	<Server2 Name="g.ua" Debug="0" Type="urlshortening" Plugin="g.ua">
-		<Actions>
-		</Actions>
-		<Result DirectUrlTemplate="stub" />
 	</Server2>
 	<Server2 Name="goo.gl" Debug="0" Type="urlshortening" Plugin="googl">
 		<Actions>
