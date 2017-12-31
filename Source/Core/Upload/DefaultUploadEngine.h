@@ -25,11 +25,11 @@
 #include <string>
 #include "CommonTypes.h"
 #include "UploadEngine.h"
-
+#include "Core/Network/NetworkClient.h"
 class FileUploadTask;
 class UrlShorteningTask;
 
-class CDefaultUploadEngine: public CAbstractUploadEngine
+class CDefaultUploadEngine: public CAbstractUploadEngine, public NetworkClient::Logger
 {
     public:
         CDefaultUploadEngine(ServerSync* serverSync);
@@ -65,6 +65,7 @@ class CDefaultUploadEngine: public CAbstractUploadEngine
         std::map<size_t, bool> m_PerformedActions;
     private:
         DISALLOW_COPY_AND_ASSIGN(CDefaultUploadEngine);
+        virtual void logNetworkError(bool error, const std::string & msg) override;
 };
 
 #endif

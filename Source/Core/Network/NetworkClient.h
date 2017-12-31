@@ -146,7 +146,13 @@ class NetworkClient: public INetworkClient
             AbortedException(const std::string& msg) : std::runtime_error(msg) {}
             AbortedException(const AbortedException& ex) : std::runtime_error(ex) {}
         };
+        class Logger {
+        public:
+            virtual void logNetworkError(bool error, const std::string & msg)=0;
+            virtual ~Logger(){}
+        };
 
+        void setLogger(Logger* logger);
     private:
         //DISALLOW_COPY_AND_ASSIGN(NetworkClient);
         enum CallBackFuncType{funcTypeBody,funcTypeHeader};
@@ -222,6 +228,7 @@ class NetworkClient: public INetworkClient
         int64_t chunkSize_;
         bool treatErrorsAsWarnings_;
         CurlShare* curlShare_;
+        Logger * logger_;
         static std::mutex _mutex;
         static bool _curl_init;
 //        static bool _is_openssl;

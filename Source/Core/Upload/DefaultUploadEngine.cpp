@@ -129,6 +129,7 @@ void CDefaultUploadEngine::prepareUpload() {
     m_Vars["_THUMBWIDTH"] = IuCoreUtils::toString(m_ThumbnailWidth);
     m_Vars["_THREADID"] = IuCoreUtils::ThreadIdToString(currentThreadId);
     m_NetworkClient->enableResponseCodeChecking(false);
+    m_NetworkClient->setLogger(this);
 }
 
 bool CDefaultUploadEngine::executeActions() {
@@ -176,6 +177,10 @@ bool CDefaultUploadEngine::executeActions() {
         }
     }
     return true;
+}
+
+void CDefaultUploadEngine::logNetworkError(bool error, const std::string& msg) {
+    UploadError(error, msg, nullptr);
 }
 
 bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)

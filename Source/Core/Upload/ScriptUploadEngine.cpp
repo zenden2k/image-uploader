@@ -171,6 +171,11 @@ bool CScriptUploadEngine::postLoad()
     return 0;
 }
 
+void CScriptUploadEngine::logNetworkError(bool error, const std::string& msg) {
+    std::thread::id threadId = std::this_thread::get_id();
+    Log(error ? (ErrorInfo::mtError) : (ErrorInfo::mtWarning), name_ + ".nut [" + "ThreadId=" + IuCoreUtils::ThreadIdToString(threadId) + "]\r\n" +msg);
+}
+
 int CScriptUploadEngine::getAccessTypeList(std::vector<std::string>& list)
 {
     using namespace Sqrat;
@@ -364,7 +369,8 @@ void CScriptUploadEngine::setNetworkClient(NetworkClient* nm)
         nm->setUserAgent(m_UploadData->UserAgent);
     }
     nm->setCurlShare(sync_->getCurlShare());
-    nm->setErrorLogId("[" + name_ + ".nut]");
+    //nm->setErrorLogId("[" + name_ + ".nut]");
+    nm->setLogger(this);
     vm_.GetRootTable().SetInstance("nm", nm);
     //BindVariable(m_Object, nm, "nm");
 }
@@ -423,5 +429,10 @@ void CScriptUploadEngine::Log(ErrorInfo::MessageType mt, const std::string& erro
     ei.errorType = etUserError;
     ei.error = error;
     ei.sender = "CScriptUploadEngine";
+    ei.ServerName = m_UploadData->Name;
+    if (currentTask_) {
+        ei.FileName = currentTask_->toString();
+    }
+    
     ErrorMessage(ei);
 }

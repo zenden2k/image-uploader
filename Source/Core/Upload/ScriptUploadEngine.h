@@ -31,9 +31,11 @@
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Upload/FolderList.h"
 #include "Core/Scripting/Script.h"
+#include "Core/Network/NetworkClient.h"
 
 class CScriptUploadEngine : public CAbstractUploadEngine, 
-                            public Script
+                            public Script,
+                            public NetworkClient::Logger
 {
     public:
         int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) override;
@@ -64,6 +66,7 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
         virtual void PrintCallback(const std::string& output) override;
         bool preLoad() override;
         bool postLoad() override;
+        virtual void logNetworkError(bool error, const std::string & msg) override;
         CFolderList folderList_;
         std::string name_;
         bool needStop();

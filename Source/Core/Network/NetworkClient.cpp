@@ -240,8 +240,9 @@ NetworkClient::NetworkClient(void)
     m_headerFuncData.nmanager = this;
     m_nUploadDataOffset = 0;
     treatErrorsAsWarnings_ = false;
+    logger_ = nullptr;
     curl_easy_setopt(curl_handle, CURLOPT_COOKIELIST, "");
-    setUserAgent("Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
+    setUserAgent("Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36");
 
     curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, private_static_writer);
     curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &m_bodyFuncData);    
@@ -551,11 +552,21 @@ void NetworkClient::private_checkResponse()
     }
     int code = responseCode();
     if ( ( !code || (code>= 400 && code<=499)) && errorString() != "Callback aborted" ) {
-        (treatErrorsAsWarnings_ ? LOG(WARNING) : LOG(ERROR)) << errorLogIdString_+"\r\nRequest to the URL '" << m_url << "' failed. \r\n";
-        if (code) {
-            (treatErrorsAsWarnings_ ? LOG(WARNING) : LOG(ERROR)) << errorLogIdString_ <<"\r\nResponse code: " << code << "\r\n";
+        std::string errorDescr;
+        if (!errorLogIdString_.empty()) {
+            errorDescr = errorLogIdString_ + "\r\n";
         }
-        (treatErrorsAsWarnings_ ? LOG(WARNING) : LOG(ERROR)) << errorLogIdString_  << "\r\n"<<errorString() << "\r\n" << internalBuffer;
+        errorDescr += "Request to the URL '" + m_url + "' failed. \r\n";
+        
+        if (code) {
+            errorDescr += "Response code: " + IuCoreUtils::toString(code) + "\r\n";
+        }
+        errorDescr += errorString() +"\r\n" + internalBuffer;
+        if (logger_) {
+            logger_->logNetworkError(!treatErrorsAsWarnings_, errorDescr);
+        } else {
+            (treatErrorsAsWarnings_ ? LOG(WARNING) : LOG(ERROR)) << errorDescr;
+        }
     }
 }
 
@@ -896,6 +907,10 @@ void NetworkClient::enableResponseCodeChecking(bool enable)
 
 void NetworkClient::setErrorLogId(const std::string& str) {
     errorLogIdString_ = str;
+}
+
+void NetworkClient::setLogger(Logger* logger) {
+    logger_ = logger;
 }
 
 void NetworkClient::setCurlOption(int option, const std::string &value) {
