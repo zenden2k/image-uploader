@@ -110,6 +110,7 @@
 #define IDI_ICONDOWN                    271
 #define IDD_CLEARHISTORYDLG             271
 #define IDB_PNG2                        272
+#define IDD_SEARCHBYIMAGEDLG            272
 #define IDB_PNG3                        273
 #define IDB_DROPDOWNICONPNG             273
 #define IDB_TOO                         274
@@ -693,13 +694,16 @@
 #define IDM_OPENINDEFAULTVIEWER         32813
 #define ID_0_32814                      32814
 #define IDM_PRINT                       32815
+#define ID_Menu32816                    32816
+#define ID_SEARCHBYIMGITEM              32817
+#define IDM_SEARCHBYIMGITEM             32818
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        309
-#define _APS_NEXT_COMMAND_VALUE         32816
+#define _APS_NEXT_COMMAND_VALUE         32819
 #define _APS_NEXT_CONTROL_VALUE         1317
 #define _APS_NEXT_SYMED_VALUE           128
 #endif

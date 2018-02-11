@@ -63,6 +63,7 @@ namespace IuCoreUtils
     std::string ConvertToUtf8(const std::string &text, const std::string codePage);
     bool ReadUtf8TextFile(std::string utf8Filename, std::string& data);
     bool PutFileContents(const std::string& utf8Filename, const std::string& content);
+    const std::string GetFileContents(const std::string& filename);
 
     // getFileSize retrieves the size of the specified file, in bytes.
     // It supports large files; filename must be utf8 encoded

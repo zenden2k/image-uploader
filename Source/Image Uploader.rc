@@ -952,6 +952,16 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,207,59,50,14
 END
 
+IDD_SEARCHBYIMAGEDLG DIALOGEX 0, 0, 226, 79
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Search by image"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    PUSHBUTTON      "Cancel",IDCANCEL,170,59,50,15
+    LTEXT           "...",IDC_TEXT,8,27,212,30
+    LTEXT           "Static",IDC_ANIMATIONSTATIC,193,3,27,21
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1334,6 +1344,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 73
     END
+
+    IDD_SEARCHBYIMAGEDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 220
+        TOPMARGIN, 6
+        BOTTOMMARGIN, 74
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -1357,6 +1375,7 @@ BEGIN
         MENUITEM "Save as...",                  IDM_SAVEAS
         MENUITEM "Копировать",                  IDM_COPYFILETOCLIPBOARD
         MENUITEM "#Copy full path",             IDM_COPYFILEPATH
+        MENUITEM "#Search by image",            IDM_SEARCHBYIMGITEM
         MENUITEM "Удалить\tDel",                IDM_DELETE
         MENUITEM "Свойства",                    IDC_PROPERTIES
     END

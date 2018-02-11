@@ -175,6 +175,7 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
         RECT pixelLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
         pixelLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD|WS_VISIBLE);
         pixelLabel_.SetFont(systemFont_);
+        //createHintForSliders(pixelLabel_.m_hWnd, TR("Line thickness"));
 
         RECT radiusSliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_ ) };
         roundRadiusSlider_.Create(m_hWnd, radiusSliderRect, 0, WS_CHILD|TBS_NOTICKS);
@@ -182,6 +183,7 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
         //RECT radiusLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
         roundRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD);
         roundRadiusLabel_.SetFont(systemFont_);
+        //createHintForSliders(roundRadiusLabel_.m_hWnd, TR("Rounding radius"));
     }
     return 0;
 }

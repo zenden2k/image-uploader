@@ -129,6 +129,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     m_bShouldStop = false;
     if (onConfigureNetworkClient)
         onConfigureNetworkClient(this, &m_NetworkClient);
+    m_NetworkClient.setLogger(nullptr);
     m_CurrentEngine->setNetworkClient(&m_NetworkClient);
     m_CurrentEngine->onDebugMessage.bind(this, &CUploader::DebugMessage);
     m_CurrentEngine->onNeedStop.bind(this, &CUploader::needStop);

@@ -55,9 +55,6 @@
     <Filter Include="Source Files\Gui">
       <UniqueIdentifier>{cd72d85c-0d00-46a3-be10-e6586dc6952f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Gui\Dialogs">
-      <UniqueIdentifier>{d9333f8a-6e39-4757-ba4d-18456eeda193}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Gui\Controls">
       <UniqueIdentifier>{4db79d77-cd93-46bb-b6f9-ceca4546d2ba}</UniqueIdentifier>
     </Filter>
@@ -102,6 +99,9 @@
     </Filter>
     <Filter Include="Source Files\ImageEditor\Helpers">
       <UniqueIdentifier>{5d8a63bc-8565-4e70-8a93-e5eb3ab311a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gui\Dialogs">
+      <UniqueIdentifier>{d9333f8a-6e39-4757-ba4d-18456eeda193}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -842,6 +842,12 @@
     </ClInclude>
     <ClInclude Include="Source\Core\Network\INetworkClient.h">
       <Filter>Source Files\Core\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\SearchByImageDlg.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\SearchByImage.h">
+      <Filter>Source Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1865,6 +1871,12 @@
     </ClCompile>
     <ClCompile Include="Source\3rdpart\ShellPidl.cpp">
       <Filter>Source Files\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\SearchByImageDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\SearchByImage.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

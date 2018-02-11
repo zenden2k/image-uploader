@@ -32,6 +32,7 @@
 #include "Func/ImageEditorConfigurationProvider.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 #include "Gui/Dialogs/WizardDlg.h"
+#include "Gui/Dialogs/SearchByImageDlg.h"
 #include "Func/IuCommonFunctions.h"
 #include "3rdpart/ShellPidl.h"
 #include <boost/format.hpp>
@@ -199,6 +200,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
             sub.DeleteMenu(IDM_EDIT, MF_BYCOMMAND );
             sub.DeleteMenu(IDM_PRINT, MF_BYCOMMAND );
 			sub.DeleteMenu(IDM_EDITINEXTERNALEDITOR, MF_BYCOMMAND);
+            sub.DeleteMenu(IDM_SEARCHBYIMGITEM, MF_BYCOMMAND);
         }
 
 		if (!isVideoFile){
@@ -263,6 +265,9 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
             miiNew.hSubMenu = subMenu.Detach();   // Detach() to keep the pop-up menu alive
             miiNew.dwTypeData = TR_CONST("Copy &as...");
             sub.InsertMenuItem(IDM_DELETE, false, &miiNew);
+
+            mi.dwTypeData = const_cast<LPWSTR>(TR("Search by image"));
+            sub.SetMenuItemInfo(IDM_SEARCHBYIMGITEM, false, &mi);
         }
 
         sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
@@ -754,6 +759,15 @@ LRESULT CMainDlg::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 		}
 	}
 	return 0;
+}
+
+LRESULT CMainDlg::OnSearchByImage(WORD, WORD, HWND, BOOL&) {
+    CString fileName = getSelectedFileName();
+    if (!fileName.IsEmpty()) {
+        CSearchByImageDlg dlg(fileName);
+        dlg.DoModal(m_hWnd);
+    }
+    return 0;
 }
 
 LRESULT CMainDlg::OnExtractFramesFromSelectedFile(WORD, WORD, HWND, BOOL&) {

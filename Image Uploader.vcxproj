@@ -660,6 +660,7 @@
     <ClInclude Include="Source\Core\Scripting\ScriptsManager.h" />
     <ClInclude Include="Source\Core\Scripting\Squirrelnc.h" />
     <ClInclude Include="Source\Core\Scripting\UploadFilterScript.h" />
+    <ClInclude Include="Source\Core\SearchByImage.h" />
     <ClInclude Include="Source\Core\ServiceLocator.h" />
     <ClInclude Include="Source\Core\Settings.h" />
     <ClInclude Include="Source\Core\Settings\BasicSettings.h" />
@@ -701,6 +702,7 @@
     <ClInclude Include="Source\Gui\Controls\ResultsListView.h" />
     <ClInclude Include="Source\Gui\Dialogs\ClearHistoryDlg.h" />
     <ClInclude Include="Source\Gui\Dialogs\FolderAddDlg.h" />
+    <ClInclude Include="Source\Gui\Dialogs\SearchByImageDlg.h" />
     <ClInclude Include="Source\Gui\Dialogs\VideoGrabberPage.h" />
     <ClInclude Include="Source\Gui\HwndScopedWrapper.h" />
     <ClInclude Include="Source\Gui\Win7JumpList.h" />
@@ -1028,6 +1030,7 @@
     <ClCompile Include="Source\Core\Scripting\Script.cpp" />
     <ClCompile Include="Source\Core\Scripting\ScriptsManager.cpp" />
     <ClCompile Include="Source\Core\Scripting\UploadFilterScript.cpp" />
+    <ClCompile Include="Source\Core\SearchByImage.cpp" />
     <ClCompile Include="Source\Core\ServiceLocator.cpp" />
     <ClCompile Include="Source\Core\Settings\BasicSettings.cpp" />
     <ClCompile Include="Source\Core\Settings\CliSettings.cpp" />
@@ -1060,6 +1063,7 @@
     <ClCompile Include="Source\Gui\Controls\ResultsListView.cpp" />
     <ClCompile Include="Source\Gui\Dialogs\ClearHistoryDlg.cpp" />
     <ClCompile Include="Source\Gui\Dialogs\FolderAddDlg.cpp" />
+    <ClCompile Include="Source\Gui\Dialogs\SearchByImageDlg.cpp" />
     <ClCompile Include="Source\Gui\Win7JumpList.cpp" />
     <ClCompile Include="Source\Image Uploader.cpp">
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
