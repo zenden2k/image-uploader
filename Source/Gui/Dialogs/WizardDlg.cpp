@@ -1092,9 +1092,23 @@ LRESULT CWizardDlg::OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHan
 
 LRESULT CWizardDlg::OnDocumentation(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    HINSTANCE hinst = ShellExecute(0, L"open", WinUtils::GetAppFolder() + "Docs\\index.html", 0, WinUtils::GetAppFolder() + "Docs\\", SW_SHOWNORMAL);
-    if (reinterpret_cast<int>(hinst) <= 32) {
-        LOG(ERROR) << "ShellExecute failed. Error code=" << reinterpret_cast<int>(hinst);
+    SHELLEXECUTEINFO ShInfo;
+    CString fileName = WinUtils::GetAppFolder() + "Docs\\index.html";
+    CString directory = WinUtils::GetAppFolder() + "Docs\\";
+    ZeroMemory(&ShInfo, sizeof(SHELLEXECUTEINFO));
+    ShInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+    ShInfo.nShow = SW_SHOWNORMAL;
+    ShInfo.fMask = SEE_MASK_DEFAULT;
+    ShInfo.hwnd = m_hWnd;
+    ShInfo.lpVerb = TEXT("open");
+    ShInfo.lpFile = fileName;
+    ShInfo.lpDirectory = directory;
+
+    if (ShellExecuteEx(&ShInfo)==FALSE) {
+        DWORD error = GetLastError();
+        if (error != ERROR_CANCELLED) {
+            LOG(ERROR) << "ShellExecute failed. " << WinUtils::FormatWindowsErrorMessage(error);
+        }
         return 0;
     }
     return 0;

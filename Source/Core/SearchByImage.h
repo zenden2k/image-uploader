@@ -2,8 +2,6 @@
 #define FUNC_SEARCHBYIMAGE_H
 
 #include <string>
-#include <map>
-#include <mutex>
 #include <atomic>
 #include <Core/3rdpart/FastDelegate.h>
 

@@ -1,13 +1,9 @@
 #include "SearchByImage.h"
 
-#include <mutex>
 #include <thread>
-#include <boost/filesystem.hpp>
-#include <chrono>
 #include <Core/Network/NetworkClient.h>
 #include "CoreFunctions.h"
 #include "Utils/CryptoUtils.h"
-#include "Core/Utils/StringUtils.h"
 #include "Core/Utils/DesktopUtils.h"
 
 SearchByImage::SearchByImage(const std::string& fileName) {
@@ -74,11 +70,10 @@ void SearchByImage::run() {
             finish(false, "Unable to launch default web browser.");
             return;
         }
-    } catch (NetworkClient::AbortedException& ex){
+    } catch (NetworkClient::AbortedException&){
         finish(false, "Aborted by user.");
         return;
     }
-    //std::this_thread::sleep_for(std::chrono::seconds(2));
     
     finish(true);
 }
@@ -92,7 +87,12 @@ void SearchByImage::finish(bool success, const std::string& msg) {
 
 std::string SearchByImage::base64EncodeCompat(const std::string& file) {
     std::string res = IuCoreUtils::CryptoUtils::Base64Encode(IuCoreUtils::GetFileContents(file));
-    res = IuStringUtils::Replace(res, "+", "-");
-    res = IuStringUtils::Replace(res, "/", "_");
+    for (unsigned int i = 0; i < res.length(); i++) {
+        if (res[i] == '+') {
+            res[i] = '-';
+        } else if (res[i] == '/') {
+            res[i] = '_';
+        }
+    }
     return res;
 }

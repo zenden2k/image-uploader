@@ -272,10 +272,10 @@ NetworkClient::NetworkClient(void)
         curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 1L);
         curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 2L);
     }
-   
-    //curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L); 
-    //curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0L);
-
+#ifdef _DEBUG   
+    curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L); 
+    curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0L);
+#endif
     //We want the referrer field set automatically when following locations
     curl_easy_setopt(curl_handle, CURLOPT_AUTOREFERER, 1L); 
     curl_easy_setopt(curl_handle, CURLOPT_MAXREDIRS, 8L);
@@ -341,8 +341,8 @@ bool NetworkClient::doUploadMultipartData()
     private_initTransfer();
     std::vector<FILE *> openedFiles;
 
-    struct curl_httppost *formpost=NULL;
-    struct curl_httppost *lastptr=NULL;
+    struct curl_httppost *formpost=nullptr;
+    struct curl_httppost *lastptr=nullptr;
 
     {
         std::vector<QueryParam>::iterator it, end = m_QueryParams.end();
@@ -486,7 +486,7 @@ bool NetworkClient::doPost(const std::string& data)
     std::string postData;
     std::vector<QueryParam>::iterator it, end = m_QueryParams.end();
 
-        for(it=m_QueryParams.begin(); it!=end; it++)
+        for(it=m_QueryParams.begin(); it!=end; ++it)
         {
             if(!it->isFile)
             {

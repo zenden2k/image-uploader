@@ -480,6 +480,8 @@ CString FormatWindowsErrorMessage(int idCode)
     return res;
 }
 
+//CString ShellExecuteErrorStrring
+
 bool FileExists(LPCTSTR FileName)
 {
     return (FileName && GetFileAttributes(FileName)!=-1);

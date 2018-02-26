@@ -207,13 +207,29 @@ function internal_loadAlbumList(list)
 		if(!DoLogin())
 			return 0;
 	}
-	
+    
+
 	if ( useRestApi() ) {
+        nm.addQueryHeader("Authorization",getAuthorizationString());
+        nm.addQueryHeader("Accept", "application/json");
+        nm.enableResponseCodeChecking(false);
+        nm.doGet("https://cloud-api.yandex.net:443/v1/disk");// test request
+        
+        local code = nm.responseCode();
+        if (code==401){
+            ServerParams.setParam("token","");
+            if(!DoLogin()){
+                return 0;
+            }
+        }
+    
 		local url = "https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F&limit=100";
 		nm.addQueryHeader("Authorization",getAuthorizationString());
 		nm.addQueryHeader("Accept", "application/json");
 		nm.doGet(url);
-		if ( nm.responseCode() == 200 ) {
+        code = nm.responseCode();
+        
+        if( code == 200 ) {
 			local folder = CFolderItem();
 			folder.setId("/");
 			folder.setTitle("/ (root)");
@@ -467,6 +483,10 @@ function  UploadFile(FileName, options)
             if (!DoLogin()) { // obtain token again
 				return 0;
             }
+            //try again
+            nm.addQueryHeader("Accept", "application/json");
+		    nm.addQueryHeader("Authorization",getAuthorizationString());
+            nm.doGet(url);
         }
         
 		while ( nm.responseCode() == 409 ) {
