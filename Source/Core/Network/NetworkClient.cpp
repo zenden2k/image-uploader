@@ -272,10 +272,10 @@ NetworkClient::NetworkClient(void)
         curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 1L);
         curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 2L);
     }
-#ifdef _DEBUG   
+/*#ifdef _DEBUG   
     curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L); 
     curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0L);
-#endif
+#endif*/
     //We want the referrer field set automatically when following locations
     curl_easy_setopt(curl_handle, CURLOPT_AUTOREFERER, 1L); 
     curl_easy_setopt(curl_handle, CURLOPT_MAXREDIRS, 8L);
@@ -529,6 +529,10 @@ void NetworkClient::private_initTransfer()
     private_cleanup_before();
     curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, m_userAgent.c_str());
 
+#if defined(_WIN32) && !defined(USE_OPENSSL)
+    // See https://github.com/curl/curl/issues/264
+    curl_easy_setopt(curl_handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
+#endif
     std::vector<CustomHeaderItem>::iterator it, end = m_QueryHeaders.end();
     chunk_ = NULL; 
 

@@ -217,7 +217,7 @@ bool SaveImage(Image* img, const CString& filename, SaveImageFormat format, int 
         if (result == Gdiplus::Win32Error) {
             LOG(ERROR) << _T("Could not save image at path \r\n") + filename << "\r\n" << WinUtils::GetLastErrorAsString();
         } else {
-            LOG(ERROR) << _T("Could not save image at path \r\n") + filename << "\r\nGdiPlus error:" << static_cast<int>(result);
+            LOG(ERROR) << _T("Could not save image at path \r\n") + filename << "\r\nGdiPlus error:" << GdiplusStatusToString(result);
         }
         return false;
     }
@@ -436,7 +436,7 @@ Gdiplus::Bitmap* LoadImageFromFileWithoutLocking(const WCHAR* fileName) {
 
     std::unique_ptr<Bitmap> src(LoadImageFromFileExtended(fileName));
     if ( !src || src->GetLastStatus() != Ok ) {
-        return 0;
+        return nullptr;
     }
     Bitmap *dst = new Bitmap(src->GetWidth(), src->GetHeight(), PixelFormat32bppARGB);
 
@@ -697,6 +697,34 @@ bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int F
     return res;
 }
 
+CString GdiplusStatusToString(Gdiplus::Status statusID) {
+    switch (statusID) {
+
+    case Gdiplus::Ok: return "Ok"; break;
+    case Gdiplus::GenericError: return "GenericError"; break;
+    case Gdiplus::InvalidParameter: return "InvalidParameter"; break;
+    case Gdiplus::OutOfMemory: return "OutOfMemory"; break;
+    case Gdiplus::ObjectBusy: return "ObjectBusy"; break;
+    case Gdiplus::InsufficientBuffer: return "InsufficientBuffer"; break;
+    case Gdiplus::NotImplemented: return "NotImplemented"; break;
+    case Gdiplus::Win32Error: return "Win32Error"; break;
+    case Gdiplus::Aborted: return "Aborted"; break;
+    case Gdiplus::FileNotFound: return "FileNotFound"; break;
+    case Gdiplus::ValueOverflow: return "ValueOverflow"; break;
+    case Gdiplus::AccessDenied: return "AccessDenied"; break;
+    case Gdiplus::UnknownImageFormat: return "UnknownImageFormat"; break;
+    case Gdiplus::FontFamilyNotFound: return "FontFamilyNotFound"; break;
+    case Gdiplus::FontStyleNotFound: return "FontStyleNotFound"; break;
+    case Gdiplus::NotTrueTypeFont: return "NotTrueTypeFont"; break;
+    case Gdiplus::UnsupportedGdiplusVersion: return "UnsupportedGdiplusVersion"; break;
+    case Gdiplus::GdiplusNotInitialized: return "GdiplusNotInitialized"; break;
+    case Gdiplus::PropertyNotFound: return "PropertyNotFound"; break;
+    case Gdiplus::PropertyNotSupported: return "PropertyNotSupported"; break;
+    //case Gdiplus::ProfileNotFound: return "ProfileNotFound"; break;
+    default: return "Status Type Not Found."; break;
+
+    };
+}
 bool SaveImageToFile(Gdiplus::Image* img, const CString& fileName, IStream* stream, int Format, int Quality, CString* mimeType) {
     std::unique_ptr<Bitmap> quantizedImage;
     
@@ -739,7 +767,12 @@ bool SaveImageToFile(Gdiplus::Image* img, const CString& fileName, IStream* stre
     
 
     if (result != Ok) {
-        ServiceLocator::instance()->logger()->write(logError, _T("Image Converter"), _T("Could not save image at path \r\n") + fileName + L"\r\nGdiplus status=" + WinUtils::IntToStr(result));
+        int lastError = GetLastError();
+        CString error = GdiplusStatusToString(result);
+        if (result == Gdiplus::Win32Error) {
+            error += L"\r\n" + WinUtils::FormatWindowsErrorMessage(lastError) + L"";
+        }
+        ServiceLocator::instance()->logger()->write(logError, _T("Image Converter"), _T("Could not save image at path \r\n") + fileName + L"\r\nGdiplus status=" + error);
         return false;
     }
 
@@ -884,7 +917,16 @@ Bitmap* LoadImageFromFileExtended(const CString& fileName) {
     } else {
         bm = new Gdiplus::Bitmap(fileName);
     }
-    if (bm && bm->GetLastStatus() != Gdiplus::Ok) {
+    Gdiplus::Status status = bm->GetLastStatus();
+    if (bm && status != Gdiplus::Ok) {
+        int lastError = GetLastError();        
+        
+        CString error = GdiplusStatusToString(status);
+
+        if (status == Gdiplus::Win32Error) {
+            error += L"\r\n" + WinUtils::FormatWindowsErrorMessage(lastError);
+        }
+        ServiceLocator::instance()->logger()->write(logWarning, TR("Image Loader"), TR("Cannot load image.")+CString(L"\r\n")+error, CString(TR("File:")) + _T(" ")+fileName);
         delete bm;
         return nullptr;
     }

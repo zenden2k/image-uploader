@@ -44,4 +44,5 @@ bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int
 
 // Load image from file with webp support
 Bitmap* LoadImageFromFileExtended(const CString& fileName);
+CString GdiplusStatusToString(Gdiplus::Status statusID);
 #endif

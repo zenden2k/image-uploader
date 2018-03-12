@@ -86,10 +86,11 @@ bool CImageView::ViewImage(LPCTSTR FileName,HWND Parent){
             Img.MoveWindow(0, 0, realwidth, realheight);
             Img.LoadImage(FileName, img.get());
         }
-    }
-    CenterWindow(Parent);
-    ShowWindow(SW_SHOW);
-    SetForegroundWindow(m_hWnd);
+        CenterWindow(Parent);
+        ShowWindow(SW_SHOW);
+        SetForegroundWindow(m_hWnd);
+    } 
+    
     return false;
 }
 

@@ -195,7 +195,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		bool bIsImageFile = IuCommonFunctions::IsImage(fileName);
 		bool isVideoFile = IsVideoFile(fileName);
 
-        if(!bIsImageFile){
+        if(!bIsImageFile || singleSelectedItem.IsEmpty()){
             sub.DeleteMenu(IDM_VIEW, MF_BYCOMMAND );
             sub.DeleteMenu(IDM_EDIT, MF_BYCOMMAND );
             sub.DeleteMenu(IDM_PRINT, MF_BYCOMMAND );
@@ -272,6 +272,11 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
         sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
     }
+    return 0;
+}
+
+LRESULT CMainDlg::OnEnableDropTarget(UINT, WPARAM wParam, LPARAM lParam, BOOL&) {
+    SendMessage(GetParent(), MYWM_ENABLEDROPTARGET, wParam, lParam);
     return 0;
 }
 

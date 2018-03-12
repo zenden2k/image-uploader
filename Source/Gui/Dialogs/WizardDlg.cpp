@@ -1125,6 +1125,11 @@ LRESULT CWizardDlg::OnOpenScreenshotFolderClicked(WORD wNotifyCode, WORD wID, HW
     return 0;
 }
 
+LRESULT CWizardDlg::OnEnableDropTarget(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    DragndropEnabled = !!wParam;
+    return 0;
+}
+
 void CWizardDlg::PasteBitmap(HBITMAP Bmp)
 {
     if (CurPage != 0 && CurPage != 2 && CurPage != -1) return;

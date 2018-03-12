@@ -69,8 +69,9 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     }
     outputEditControl_.AttachToDlgItem(m_hWnd, IDC_RESULTSEDIT);
 
-    //CUploadEngineData *uploadEngine = _EngineList->byIndex( serverId_ );
-    std::string selectedServerName = Settings.urlShorteningServer.uploadEngineData()->Name;
+    CUploadEngineData *uploadEngine = Settings.urlShorteningServer.uploadEngineData();
+
+    std::string selectedServerName = uploadEngine ? uploadEngine->Name : std::string();
     int selectedIndex = 0;
 
     for( int i = 0; i < engineList_->count(); i++) {    

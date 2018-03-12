@@ -25,6 +25,7 @@
 #include "atlheaders.h"
 #include "3rdpart/thread.h"
 #include "Gui/Controls/ImageView.h"
+#include "Gui/CommonDefines.h"
 
 // CThumbsView
 
@@ -33,6 +34,7 @@ struct ThumbsViewItem
     CString FileName;
     BOOL ThumbOutDate;
 };
+
 
 
 class CThumbsView :

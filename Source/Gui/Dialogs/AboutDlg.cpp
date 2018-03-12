@@ -51,6 +51,12 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     m_ReportBugLink.SetLabel(TR("Found a bug? Send it to the author"));
     m_ReportBugLink.SetHyperLink(_T("https://github.com/zenden2k/image-uploader/issues"));
 
+    m_EmailLink.SubclassWindow(GetDlgItem(IDC_AUTHORNAMELABEL));
+    m_EmailLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
+    m_EmailLink.SetLabel((Lang.GetLanguageName() == _T("Russian") ? U2W("\xD0\xA1\xD0\xB5\xD1\x80\xD0\xB3\xD0\xB5\xD0\xB9\x20\xD0\xA1\xD0\xB2\xD0\xB8\xD1\x81\xD1\x82\xD1\x83\xD0\xBD\xD0\xBE\xD0\xB2")
+        : _T("Sergey Svistunov")) + CString(_T(" (serjook@gmail.com)")));
+    m_EmailLink.SetHyperLink(_T("mailto:serjook@gmail.com"));
+
     m_Documentation.SubclassWindow(GetDlgItem(IDC_DOCUMENTATION));
     m_Documentation.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
     m_Documentation.SetLabel(TR("Documentation"));
@@ -133,8 +139,6 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     boostVersion.Replace(L'_', L'.');
     memoText += boostVersion  + L"\r\n\r\n";
 
-    SetDlgItemText(IDC_AUTHORNAMELABEL, (Lang.GetLanguageName() == _T("Russian") ? U2W("\xD0\xA1\xD0\xB5\xD1\x80\xD0\xB3\xD0\xB5\xD0\xB9\x20\xD0\xA1\xD0\xB2\xD0\xB8\xD1\x81\xD1\x82\xD1\x83\xD0\xBD\xD0\xBE\xD0\xB2")
-        : _T("Sergey Svistunov")) + CString(_T(" (serjook@gmail.com)")));
     /*if ( Settings.IsFFmpegAvailable() ) { // Can't determine actual ffmpeg version
         memoText += TR("FFmpeg version:")+ CString("\r\n");
         memoText += FFMPEG_VERSION + CString("\r\n");

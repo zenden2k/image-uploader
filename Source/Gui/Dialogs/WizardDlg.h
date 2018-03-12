@@ -38,6 +38,7 @@
 #include "FolderAddDlg.h"
 #include "Gui/HwndScopedWrapper.h"
 #include "Gui/Controls/IconButton.h"
+#include "Gui/CommonDefines.h"
 
 #define ID_PASTE 9888
 #define ID_HOTKEY_BASE 10000
@@ -112,6 +113,7 @@ public:
         MESSAGE_HANDLER(WM_MY_SHOWPAGE, OnWmShowPage)
         MESSAGE_HANDLER(WM_MY_EXIT, OnWmMyExit)
         MESSAGE_HANDLER(WM_TASKDISPATCHERMSG, OnTaskDispatcherMsg)
+        MESSAGE_HANDLER(MYWM_ENABLEDROPTARGET, OnEnableDropTarget)
         
         MESSAGE_HANDLER(WM_ENABLE,OnEnable)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
@@ -149,6 +151,7 @@ public:
     LRESULT OnDocumentation(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnShowLog(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnOpenScreenshotFolderClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnEnableDropTarget(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     void CloseDialog(int nVal);
     bool DragndropEnabled;
     int CurPage;
