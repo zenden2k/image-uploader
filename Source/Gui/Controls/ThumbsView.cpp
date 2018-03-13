@@ -546,10 +546,14 @@ LRESULT CThumbsView::OnLvnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandl
         pDataObject->AddFile(GetFileName(nItem));
     }
     while(nItem!=-1);
+
+    //Disable drag-n-drop to parent window
     SendMessage(GetParent(), MYWM_ENABLEDROPTARGET, 0, 0);
+
     /*DWORD dwResult = */::DoDragDrop(pDataObject, pDropSource, DROPEFFECT_COPY, &dwEffect);
     pDropSource->Release();
     pDataObject->Release();
+
     SendMessage(GetParent(), MYWM_ENABLEDROPTARGET, 1, 0);
     return 0;
 }

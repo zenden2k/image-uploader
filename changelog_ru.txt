@@ -1,6 +1,58 @@
 ﻿# Image Uploader changelog 
 #
-# http://zenden.ws/imageuploader
+# http://zenden2k.atwebpages.com/imageuploader
+
+1.3.2.4541
+[+] Поиск по изображению в google (в контекстном меню списка файлов)
+[f] Отключено перетаскивание файлов в свое собственное окно
+
+
+1.3.1.4526
+[+] Отображение горячих клавиш в контекстном меню значка в трее
+[f] Исправлена загрузка на dropbox
+[f] Исправлено отображение прогресса на панели задач
+[f] Удалены неработающие сокращатели ссылок
+
+1.3.2.xxxx
+
+[+] Многопоточная загрузка на сервер
+[+] Выполнение пользовательского скрипта для каждого файла
+[+] Добавлены поля CustomHeaders и UserAgent в servers.xml
+[+] Опция сокращения ссылок
+[+] Анимация значка в трее
+[+] Копировать изображение в формате data:URL
+[+] Пооддержка формата .webp
+[f] Исправлена неправильная иконка у "Лог" and "Опции"
+[c] Изменения в Scripting API: добавлен класс Process, новые функции
+[f] Исправлена неработающая клавиатура в списке файлов
+[f] Редактор изображений: исправлена проблема с обрезающим прямоугольником, выходящим за границы
+[f] Редактор изображений: Исправлено рисование маркером толщиной 1px
+[c] Обновлена главная иконка
+[c] Языковые файлы теперь в UTF-8 кодировке
+[c] Использование winssl вместо openssl
+
+[+] Добавлен список быстрого  доступа для Win7
+[c] Разрешено редактирование стандартных миниатюр путем копирования
+[+] Добавлена кнопка "Очистить историю"
+[+] Добавлен пункт меню "Показать папку со снимками"
+[f] Исправлено удаление аккаунта
+[+] Отображение кол-ва файлов в списке
+[f] Fixed creation of new folder in multithreaded mode
+[+] Added Signup link to login dialog;
+[f] Fixed album's link in results panel;
+[f] Show file size limits in SizeExceed dialog
+[f] ImageEditor: fixed crash in Blur element
+[f] Fixed Installer: "install ffmpeg libs" checkbox is disabled under Wine
+[c] ImageEditor: close window on copy to clipboard in fullscreen mode
+[+] Show results of last upload (tray icon menu)
+[c] ImageEditor: toolbars double-buffering
+[f] Custom output code templates (markdown), fix empty imageUrl if no direct url available
+[+] Copy results to the clipboard in HTML format (for WYSYWYG editors)
+
+[c] MediaInfo: changed duration display style
+[+] Multiselection in log window
+[-] Removed old icon
+[+] Added support for "//example.com" links in re-uploader
 
 1.3.1.4318
 [f] Исправлен аплод видео файлов из контекстного меню Проводника (пользовательские элементы меню)
