@@ -28,6 +28,7 @@
 #include <libavutil/ffversion.h>
 #include <boost/config.hpp>
 #include <boost/version.hpp>
+#include <webp/decode.h>
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -138,7 +139,11 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     CString boostVersion = CString(BOOST_LIB_VERSION);
     boostVersion.Replace(L'_', L'.');
     memoText += boostVersion  + L"\r\n\r\n";
+    int webpVersion = WebPGetDecoderVersion();
+    CString webpVersionStr;
+    webpVersionStr.Format(_T("%u.%u.%u"), (webpVersion >> 16) & 0xff, (webpVersion >> 8) & 0xff, webpVersion & 0xff);
 
+    memoText += CString(L"Webp: v") + webpVersionStr + L"\r\n\r\n";
     /*if ( Settings.IsFFmpegAvailable() ) { // Can't determine actual ffmpeg version
         memoText += TR("FFmpeg version:")+ CString("\r\n");
         memoText += FFMPEG_VERSION + CString("\r\n");
