@@ -100,6 +100,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename, ServerSettings
             UE.RegistrationUrl = cur.Attribute("RegistrationUrl");
             UE.UserAgent = cur.Attribute("UserAgent");
             UE.PluginName = cur.Attribute("Plugin");
+            UE.Engine = cur.Attribute("Engine");
             std::string MaxThreadsStr = cur.Attribute("MaxThreads");
             UE.MaxThreads = atoi(MaxThreadsStr.c_str());
             

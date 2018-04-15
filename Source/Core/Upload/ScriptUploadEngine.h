@@ -32,8 +32,9 @@
 #include "Core/Upload/FolderList.h"
 #include "Core/Scripting/Script.h"
 #include "Core/Network/NetworkClient.h"
+#include "AdvancedUploadEngine.h"
 
-class CScriptUploadEngine : public CAbstractUploadEngine, 
+class CScriptUploadEngine : public CAdvancedUploadEngine, 
                             public Script,
                             public NetworkClient::Logger
 {
@@ -43,21 +44,19 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
         ~CScriptUploadEngine();
         void setNetworkClient(NetworkClient* nm) override;
         //bool load(std::string fileName, ServerSettingsStruct& params);
-        int getFolderList(CFolderList &FolderList);
-        int createFolder(const CFolderItem &parent, CFolderItem &folder);
-        int modifyFolder(CFolderItem &folder);
-        int getAccessTypeList(std::vector<std::string> &list);
-        int getServerParamList(std::map<std::string, std::string> &list);
-        int doLogin();
+        virtual int getFolderList(CFolderList &FolderList) override;
+        virtual int createFolder(const CFolderItem &parent, CFolderItem &folder) override;
+        virtual int modifyFolder(CFolderItem &folder) override;
+        virtual int getAccessTypeList(std::vector<std::string> &list) override;
+        virtual int getServerParamList(std::map<std::string, std::string> &list) override;
+        virtual int doLogin() override;
 
-        bool supportsSettings();
+        virtual bool supportsSettings() override;
         /**
         Beforehand authorization - obtain access token only once then use it for all requests (before upload)
         **/
-        bool supportsBeforehandAuthorization();
+        virtual bool supportsBeforehandAuthorization() override;
         std::string name();
-        
-        int RetryLimit() override;
 
         // FIXME: not working
         virtual void stop() override;         
@@ -78,7 +77,4 @@ class CScriptUploadEngine : public CAbstractUploadEngine,
         int m_nThumbWidth;
         DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
 };
-
-
-
 #endif

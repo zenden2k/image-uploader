@@ -166,6 +166,7 @@ CAbstractUploadEngine::CAbstractUploadEngine(ServerSync* serverSync)
     m_bShouldStop = 0;
     m_NetworkClient = 0;
     m_UploadData = 0;
+    currUploader_ = nullptr;
     serverSync_ = serverSync;
 }
 
@@ -182,6 +183,14 @@ CUploadEngineData* CAbstractUploadEngine::getUploadData() const
 void CAbstractUploadEngine::setServerSync(ServerSync* sync)
 {
     serverSync_ = sync;
+}
+
+void CAbstractUploadEngine::setCurrentUploader(CUploader* uploader) {
+    currUploader_ = uploader;
+}
+
+CUploader* CAbstractUploadEngine::currentUploader() {
+    return currUploader_;
 }
 
 void CAbstractUploadEngine::stop()

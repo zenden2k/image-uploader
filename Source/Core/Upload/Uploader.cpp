@@ -130,11 +130,13 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     if (onConfigureNetworkClient)
         onConfigureNetworkClient(this, &m_NetworkClient);
     m_NetworkClient.setLogger(nullptr);
+
     m_CurrentEngine->setNetworkClient(&m_NetworkClient);
     m_CurrentEngine->onDebugMessage.bind(this, &CUploader::DebugMessage);
     m_CurrentEngine->onNeedStop.bind(this, &CUploader::needStop);
     m_CurrentEngine->onStatusChanged.bind(this, &CUploader::SetStatus);
     m_CurrentEngine->onErrorMessage.bind(this, &CUploader::ErrorMessage);
+    m_CurrentEngine->setCurrentUploader(this);
 
     m_CurrentEngine->setThumbnailWidth(m_nThumbWidth);
     task->setCurrentUploadEngine(m_CurrentEngine);

@@ -34,7 +34,7 @@
 
 
 CScriptUploadEngine::CScriptUploadEngine(std::string fileName, ServerSync* serverSync, ServerSettingsStruct* settings) : 
-                                                                                CAbstractUploadEngine(serverSync), Script(fileName, serverSync,false)
+                                            CAdvancedUploadEngine(serverSync, settings), Script(fileName, serverSync, false)
 {
     setServerSettings(settings);
     name_ = IuCoreUtils::ExtractFileNameNoExt(fileName);
@@ -408,11 +408,6 @@ bool CScriptUploadEngine::supportsBeforehandAuthorization()
     }
     FlushSquirrelOutput();
     return true;
-}
-
-int CScriptUploadEngine::RetryLimit()
-{
-    return m_UploadData->RetryLimit;
 }
 
 void CScriptUploadEngine::stop()

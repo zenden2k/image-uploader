@@ -28,7 +28,7 @@ public:
     StatusType statusType;
     int64_t uploaded;
     int64_t totalUpload;
-    int64_t lastUpdateTime;
+    uint64_t lastUpdateTime;
     bool isUploading;
     std::string speed;
     std::deque<UploadProgressTimeInfo> timeBytes;
@@ -108,6 +108,7 @@ class UploadTask {
         void addTempFile(const std::string& fileName);
         void deletePostponedChilds();
         bool schedulePostponedChilds();
+        void uploadProgress(InfoProgress progress);
         friend class CUploader;
 
     protected:
@@ -125,7 +126,6 @@ class UploadTask {
         void* userData_;
         void init();
         void childTaskFinished(UploadTask* child);
-        void uploadProgress(InfoProgress progress);
         void taskFinished();
         void statusChanged();
         void setCurrentUploadEngine(CAbstractUploadEngine* currentUploadEngine);

@@ -337,7 +337,7 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
 
     TrayIconSettings.RightClickCommand = 1; // context menu
     TrayIconSettings.MiddleClickCommand = 7; // region screenshot
-    TrayIconSettings.DontLaunchCopy = false;
+    TrayIconSettings.DontLaunchCopy = true;
     TrayIconSettings.TrayScreenshotAction = TRAY_SCREENSHOT_OPENINEDITOR;
 
     ImageEditorSettings.BackgroundColor = Gdiplus::Color(255, 255, 255);

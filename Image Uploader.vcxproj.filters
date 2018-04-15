@@ -849,6 +849,12 @@
     <ClInclude Include="Source\Core\SearchByImage.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\Upload\AdvancedUploadEngine.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\MegaNzUploadEngine.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1877,6 +1883,12 @@
     </ClCompile>
     <ClCompile Include="Source\Core\SearchByImage.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\AdvancedUploadEngine.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\MegaNzUploadEngine.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

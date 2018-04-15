@@ -75,12 +75,12 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     CoreFunctions::ConfigureProxy(&m_NetworkClient);
    
     m_FolderOperationType = foGetFolders;
-    CScriptUploadEngine *uploadScript;
-    uploadScript = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+    CAdvancedUploadEngine *uploadScript=nullptr;
+    uploadScript = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
 
     if (!uploadScript)
     {
-        SetDlgItemText(IDC_FOLDERLISTLABEL, TR("An error occured while loading squirrel script."));
+        SetDlgItemText(IDC_FOLDERLISTLABEL, TR("An error occured while loading script."));
         return 0;
     }
     CString title;
@@ -133,7 +133,7 @@ LRESULT CServerFolderSelect::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 
 DWORD CServerFolderSelect::Run()
 {
-    CScriptUploadEngine * script = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+    CAdvancedUploadEngine * script = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
 
     if (!script)
         return 0;

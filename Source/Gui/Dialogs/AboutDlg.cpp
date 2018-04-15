@@ -63,7 +63,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     m_Documentation.SetLabel(TR("Documentation"));
 
     CString memoText;
-    memoText += TR("Settings file path:") + CString(_T("\r\n"))+ Settings.getSettingsFileName() + _T("\r\n\r\n");
+    
+    memoText += TR("Settings file path:") + CString(_T("\r\n"))+ Settings.getSettingsFileName() + _T("\r\n");
+    memoText += CString(L"Build date: ") + CString(TIME) + _T("\r\n\r\n");
     memoText += TR("Thanks to:") + CString("\r\n\r\n");
     memoText += TR("Contributors:") + CString("\r\n");
     memoText += L"arhangelsoft\thttps://github.com/arhangelsoft\r\nTahir Yilmaz\thttps://github.com/thrylmz\r\nAlex_Qwerty\r\n\r\n";
@@ -124,13 +126,16 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(L"GDI+ helper") +"\thttp://www.codeproject.com/Articles/4969/GDI-and-MFC-memory-leak-detection\r\n";
     memoText += CString(L"xbbcode") +"\t\thttps://github.com/patorjk/Extendible-BBCode-Parser\r\n";
     memoText += CString(L"entities.c") + "\t\thttps://bitbucket.org/cggaertner/cstuff/\r\n";
-   
+    memoText += CString(L"Mega SDK") + "\thttps://github.com/meganz/sdk\r\n";
+    memoText += CString(L"Crypto++") + "\t\thttps://www.cryptopp.com/\r\n";
+    memoText += CString(L"c-ares") + "\t\thttps://c-ares.haxx.se/\r\n";
+    memoText += CString(L"libuv") + "\t\thttps://github.com/libuv/libuv\r\n";
+            
     memoText += CString(_T("Resources:\r\n")) +
         _T("famfamfam icons\thttp://www.famfamfam.com/lab/icons/\r\n\r\n");
 
-    memoText +=  CString(L"Built with: \r\n") + CString(BOOST_COMPILER) +  _T("\r\n");;
+    memoText +=  CString(L"Built with: \r\n") + CString(BOOST_COMPILER) +  _T("\r\n");
     memoText +=  CString(L"Target platform: ") + BOOST_PLATFORM + _T(" (") + WinUtils::IntToStr(sizeof(void*) * CHAR_BIT) + _T(" bit)\r\n");
-    memoText +=  CString(L"Date: ") + CString(TIME) +  _T("\r\n\r\n");
     memoText += TR("Libcurl version:")+ CString("\r\n");
     memoText +=  IuCoreUtils::Utf8ToWstring( curl_version()).c_str() + CString("\r\n\r\n");
     CString versionLabel;

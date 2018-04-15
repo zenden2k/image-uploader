@@ -401,4 +401,9 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>
 	</Server>
+	<Server Name="mega.nz" Authorize="2" Engine="MegaNz" FileHost="1" SupportsFolders="1" RegistrationUrl="http://mega.nz" MaxThreads="1">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
 </Servers>

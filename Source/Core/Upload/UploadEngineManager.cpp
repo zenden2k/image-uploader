@@ -28,6 +28,7 @@ limitations under the License.
 #include "ServerSync.h"
 #include "Core/Settings.h"
 #include "Core/Upload/UploadErrorHandler.h"
+#include "MegaNzUploadEngine.h"
 
 UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList, IUploadErrorHandler* uploadErrorHandler)
 {
@@ -91,7 +92,11 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
         if (!m_prevUpEngine)*/
         delete plugin;
         ServerSync* serverSync = getServerSync(serverProfile);
-        result = new CDefaultUploadEngine(serverSync);
+        if (ue->Engine == "MegaNz") {
+            result = new CMegaNzUploadEngine(serverSync, &serverProfile.serverSettings());
+        } else {
+            result = new CDefaultUploadEngine(serverSync);
+        }
         result->setServerSettings(&serverProfile.serverSettings());
         result->setUploadData(ue);
         result->onErrorMessage.bind(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);

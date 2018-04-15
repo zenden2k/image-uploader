@@ -7,6 +7,18 @@ nmake /f Makefile.vc mode=static VC=9 WITH_SSL=static WITH_ZLIB=static DEBUG=no 
 
 nmake /f Makefile.vc mode=static VC=9 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no
 
+
+nmake /E CC="cl /D_USING_V120_SDK71_ /D_WIN32_WINNT=0x0501" /f Makefile.vc mode=static VC=12 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no RTLIBCFG=static
+
+\lib\config-win32.h
+
+
+#undef WINVER
+#define WINVER 0x0501
+#undef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501
+
+
 Patch http.c !
 
 find:

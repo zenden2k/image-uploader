@@ -175,6 +175,7 @@ class CUploadEngineData
         std::vector<UploadAction> Actions;
         std::string LoginLabel;
         std::string UserAgent;
+        std::string Engine;
         int RetryLimit;
         int NumOfTries;
         int MaxThreads;
@@ -302,6 +303,8 @@ class CAbstractUploadEngine
         virtual void setNetworkClient(NetworkClient* nm);
         void setUploadData(CUploadEngineData* data);
         void setServerSync(ServerSync* sync);
+        void setCurrentUploader(CUploader *uploader);
+        CUploader * currentUploader();
         virtual void stop();
         ServerSync* serverSync() const;
         CUploadEngineData* getUploadData() const;
@@ -317,6 +320,7 @@ class CAbstractUploadEngine
         bool m_bShouldStop;
         NetworkClient * m_NetworkClient;
         CUploadEngineData * m_UploadData;
+        CUploader * currUploader_;
         ServerSettingsStruct* m_ServersSettings;
         std::shared_ptr<UploadTask> currentTask_;
         ServerSync* serverSync_;

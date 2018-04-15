@@ -531,7 +531,7 @@ void NetworkClient::private_initTransfer()
 
 #if defined(_WIN32) && !defined(USE_OPENSSL)
     // See https://github.com/curl/curl/issues/264
-//    curl_easy_setopt(curl_handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
+    curl_easy_setopt(curl_handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
 #endif
     std::vector<CustomHeaderItem>::iterator it, end = m_QueryHeaders.end();
     chunk_ = NULL; 

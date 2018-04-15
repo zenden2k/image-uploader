@@ -82,8 +82,22 @@ glog            https://github.com/google/glog
 
 libwebp         https://github.com/webmproject/libwebp
 
+Libraries for Mega.nz support:
+
+Mega SDK        https://github.com/meganz/sdk
+
+Crypto++        https://www.cryptopp.com/
+
+c-ares          https://c-ares.haxx.se/
+
+libuv           https://github.com/libuv/libuv
+
+
 If you want to compile strmbase.lib by yourself you will need:
 
 DirectX 8 SDK
 
 DirectShow BaseClasses
+
+
+

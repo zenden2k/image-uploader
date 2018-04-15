@@ -37,6 +37,7 @@
 #define ID_OPENINBROWSER 10002
 #define ID_CREATENESTEDFOLDER 10003
 #include <atomic>
+#include <Core/Upload/AdvancedUploadEngine.h>
 
 class UploadEngineManager;
 class ServerProfile;
@@ -92,7 +93,7 @@ protected:
         foGetFolders = 0, foCreateFolder, foModifyFolder 
     };
     CPictureExWnd m_wndAnimation;
-    CScriptUploadEngine *runningScript_;
+    CAdvancedUploadEngine *runningScript_;
     std::mutex runningScriptMutex_;
     UploadEngineManager * uploadEngineManager_;
     CUploadEngineData *m_UploadEngine;
