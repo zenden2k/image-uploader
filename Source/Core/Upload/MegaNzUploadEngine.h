@@ -67,7 +67,8 @@ class CMegaNzUploadEngine : public CAdvancedUploadEngine
         std::unique_ptr<mega::MegaProxy> proxy_;
         std::shared_ptr<FileUploadTask> fileTask_;
         std::atomic<bool> loginFinished_, loginSuccess_,
-            fetchNodesFinished_, fetchNodesSuccess_, uploadFinished_, uploadSuccess_, exportFinished_, exportSuccess_;
+            fetchNodesFinished_, fetchNodesSuccess_, uploadFinished_, uploadSuccess_, exportFinished_, exportSuccess_,
+            createFolderFinished_, createFolderSuccess_,renameFolderFinished_, renameFolderSuccess_;
         std::string publicLink_;
         bool ensureNodesFetched();
 

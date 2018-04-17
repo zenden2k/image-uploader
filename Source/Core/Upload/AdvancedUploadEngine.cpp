@@ -64,7 +64,9 @@ void CAdvancedUploadEngine::Log(ErrorInfo::MessageType mt, const std::string& er
     ei.errorType = etUserError;
     ei.error = error;
     ei.sender = "CAdvancedUploadEngine";
-    ei.ServerName = m_UploadData->Name;
+    if (m_UploadData) {
+        ei.ServerName = m_UploadData->Name;
+    }
     if (currentTask_) {
         ei.FileName = currentTask_->toString();
     }

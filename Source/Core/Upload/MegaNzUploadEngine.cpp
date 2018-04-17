@@ -156,10 +156,66 @@ int CMegaNzUploadEngine::getFolderList(CFolderList& FolderList) {
 }
 
 int CMegaNzUploadEngine::createFolder(const CFolderItem& parent, CFolderItem& folder) {
+    if (!loginFinished_) {
+        if (!doLogin()) {
+            return 0;
+        }
+    }
+
+    if (needStop()) {
+        return 0;
+    }
+
+    createFolderSuccess_ = false;
+    createFolderFinished_ = false;
+    if (ensureNodesFetched()) {
+        std::unique_ptr<MegaNode> parentNode;
+        if (parent.getId().empty()) {
+            parentNode.reset(megaApi_->getRootNode());
+        } else {
+            parentNode.reset(megaApi_->getNodeByPath(parent.getId().c_str()));
+        }
+       
+        if (!parentNode || !parentNode->isFolder()) {
+            Log(ErrorInfo::mtError, "Unable to find parent folder");
+            return 0;
+        }
+        megaApi_->createFolder(folder.getTitle().c_str(), parentNode.get());
+        while (!createFolderFinished_ && !needStop()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        return createFolderSuccess_ ? 1 : 0;
+    }
     return 0;
 }
 
 int CMegaNzUploadEngine::modifyFolder(CFolderItem& folder) {
+    if (!loginFinished_) {
+        if (!doLogin()) {
+            return 0;
+        }
+    }
+
+    if (needStop()) {
+        return 0;
+    }
+
+    renameFolderFinished_ = false;
+    renameFolderSuccess_ = false;
+    if (ensureNodesFetched()) {
+        std::unique_ptr<MegaNode> node(megaApi_->getNodeByPath(folder.getId().c_str()));
+        
+        if (!node || !node->isFolder()) {
+            Log(ErrorInfo::mtError, "Unable to find folder '"+folder.getId()+"'");
+            return 0;
+        }
+        megaApi_->renameNode(node.get(), folder.getTitle().c_str());
+        while (!renameFolderFinished_ && !needStop()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        return renameFolderSuccess_ ? 1 : 0;
+    }
+
     return 0;
 }
 
@@ -278,6 +334,8 @@ void MyListener::onRequestFinish(MegaApi* api, MegaRequest *request, MegaError* 
     {
         if (e->getErrorCode() == MegaError::API_OK) {
             engine_->fetchNodesSuccess_ = true;
+        } else {
+            engine_->Log(ErrorInfo::mtError, "Unable to fetch remote filesystem: " + std::string(e->getErrorString()));
         }
         engine_->fetchNodesFinished_ = true;
 
@@ -287,7 +345,7 @@ void MyListener::onRequestFinish(MegaApi* api, MegaRequest *request, MegaError* 
     {
         if (e->getErrorCode() == MegaError::API_OK) {
             MegaHandle handle = request->getNodeHandle();
-            MegaNode* node = api->getNodeByHandle(handle);
+            std::unique_ptr<MegaNode> node(api->getNodeByHandle(handle));
             char* link = node->getPublicLink();
             if (link) {
                 engine_->publicLink_ = link;
@@ -299,6 +357,31 @@ void MyListener::onRequestFinish(MegaApi* api, MegaRequest *request, MegaError* 
         engine_->exportFinished_ = true;
         break;
     }
+    case MegaRequest::TYPE_CREATE_FOLDER:
+    {
+        if (e->getErrorCode() == MegaError::API_OK) {
+            engine_->createFolderSuccess_ = true;
+            MegaHandle handle = request->getNodeHandle();
+            std::unique_ptr<MegaNode> node(api->getNodeByHandle(handle));
+            if (node) {
+                engine_->createFolderSuccess_ = true;
+            }
+        } else {
+            engine_->Log(ErrorInfo::mtError, "Unable to create folder: " + std::string(e->getErrorString()));
+        }
+        engine_->createFolderFinished_ = true;
+    }
+    break;
+    case MegaRequest::TYPE_RENAME:
+    {
+        if (e->getErrorCode() == MegaError::API_OK) {
+            engine_->renameFolderSuccess_ = true;
+        } else {
+            engine_->Log(ErrorInfo::mtError, "Unable to rename folder: " + std::string(e->getErrorString()));
+        }
+        engine_->renameFolderFinished_ = true;
+    }
+    break;
     default:
         break;
     }
@@ -357,7 +440,7 @@ void MyListener::onTransferUpdate(MegaApi *api, MegaTransfer *transfer)
 
 void MyListener::onTransferTemporaryError(MegaApi *api, MegaTransfer *transfer, MegaError* error)
 {
-    std::cout << "***** Temporary error in transfer: " << error->getErrorString() << std::endl;
+    //std::cout << "***** Temporary error in transfer: " << error->getErrorString() << std::endl;
 }
 
 void MyListener::onUsersUpdate(MegaApi* api, MegaUserList *users)

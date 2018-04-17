@@ -84,11 +84,10 @@
 		</Actions>
 		<Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" />
 	</Server>
-	<Server Name="fastpic.ru" MaxFileSize="5000000" Debug="0">
+	<Server Name="fastpic.ru" MaxFileSize="5000000" Debug="0" Plugin="fastpic">
 		<Actions>
-				<Action Type="upload" Url="http://fastpic.ru/upload?api=1" PostParams="method=file;file1=%filename%;check_thumb=size;uploading=1;orig_rotate=0;thumb_size=$(_THUMBWIDTH)" RegExp='&lt;imagepath&gt;(.*?)&lt;\/imagepath&gt;([\s\S]*?)&lt;thumbpath&gt;(.*?)&lt;\/thumbpath&gt;' AssignVars="Image:0;Thumb:2"/>
 		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
 	<Server Name="multi-up.com" FileHost="1">
 		<Actions>
@@ -401,7 +400,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>
 	</Server>
-	<Server Name="mega.nz" Authorize="2" Engine="MegaNz" FileHost="1" SupportsFolders="1" RegistrationUrl="http://mega.nz" MaxThreads="1">
+	<Server Name="mega.nz" Authorize="2" Engine="MegaNz" FileHost="1" SupportsFolders="1" RegistrationUrl="https://mega.nz/register" MaxThreads="1">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
