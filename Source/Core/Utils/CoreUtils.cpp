@@ -253,6 +253,17 @@ std::string ExtractFileNameFromUrl(const std::string fileName)
     return ExtractFileName(fileName);
 }
 
+std::string incrementFileName(const std::string& originalFileName, int counter) {
+    std::string ext = ExtractFileExt(originalFileName);
+    std::string name = ExtractFileNameNoExt(originalFileName);
+    name += "(" + toString(counter) + ")";
+    if (!ext.empty()) {
+        name += "." + ext;
+    }
+    return name;
+}
+
+
 std::string toString(int value)
 {
     char buffer[256];

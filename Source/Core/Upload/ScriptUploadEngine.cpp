@@ -413,7 +413,7 @@ bool CScriptUploadEngine::supportsBeforehandAuthorization()
 void CScriptUploadEngine::stop()
 {
     ScriptAPI::StopAssociatedBrowsers(vm_);
-    CAbstractUploadEngine::stop();
+    CAdvancedUploadEngine::stop();
 }
 
 void CScriptUploadEngine::Log(ErrorInfo::MessageType mt, const std::string& error)

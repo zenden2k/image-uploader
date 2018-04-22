@@ -23,12 +23,12 @@
 #include "Core/Upload/ServerSync.h"
 #include "Uploader.h"
 #include "Core/Settings.h"
+#include "FileUploadTask.h"
 #include <chrono>
 #include <thread>
 
 #define APP_KEY "0dxDFKqD"
 #define USER_AGENT "Zenden2k Image Uploader"
-#include "FileUploadTask.h"
 
 using namespace mega;
 
@@ -256,7 +256,7 @@ int CMegaNzUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
 
     if (ensureNodesFetched()) {
         publicLink_.clear();
-        fileTask_ = std::dynamic_pointer_cast<FileUploadTask>(task);
+        fileTask_ = std::dynamic_pointer_cast<FileUploadTask>(task); 
         std::unique_ptr<MegaNode> root;
         std::string folderId = fileTask_->serverProfile().folderId();
         if (folderId.empty()) {
@@ -268,10 +268,20 @@ int CMegaNzUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
                 return 0;
             }
         }
-        
+       
+        std::string origFileName = IuCoreUtils::ExtractFileName(fileTask_->getFileName());
+        std::string newFileName = origFileName;
+        std::unique_ptr<MegaNode> node(megaApi_->getChildNode(root.get(), origFileName.c_str()));
+        int i = 2;
+        while (node) {
+            newFileName = IuCoreUtils::incrementFileName(origFileName, i++);
+            node.reset(megaApi_->getChildNode(root.get(), newFileName.c_str()));
+        } 
+
         uploadFinished_ = false;
         uploadSuccess_ = false;
-        megaApi_->startUpload(fileTask_->getFileName().c_str(), root.get());
+
+        megaApi_->startUpload(fileTask_->getFileName().c_str(), root.get(),newFileName.c_str());
         while (!uploadFinished_ && !needStop()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
@@ -395,7 +405,7 @@ void MyListener::onRequestUpdate(MegaApi*api, MegaRequest *request)
 
 void MyListener::onRequestTemporaryError(MegaApi *api, MegaRequest *request, MegaError* error)
 {
-    //std::cout << "***** Temporary error in request: " << error->getErrorString() << std::endl;
+    engine_->Log(ErrorInfo::mtWarning, "Mega.nz request error: " + std::string(error->getErrorString()));
 }
 
 void MyListener::onTransferFinish(MegaApi* api, MegaTransfer *transfer, MegaError* error)

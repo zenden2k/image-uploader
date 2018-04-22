@@ -195,6 +195,7 @@ CUploader* CAbstractUploadEngine::currentUploader() {
 
 void CAbstractUploadEngine::stop()
 {
+    m_bShouldStop = true;
     //serverSync_->stop();
 }
 

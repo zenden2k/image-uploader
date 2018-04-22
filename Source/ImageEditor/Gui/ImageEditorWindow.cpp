@@ -42,6 +42,11 @@ ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvide
     askBeforeClose_ = true;
     allowAltTab_ = false;
     suggestedFileName_ = myExtractFileName(sourceFileName_);
+    CString fileExt = GetFileExt(suggestedFileName_);
+    fileExt.MakeLower();
+    if (fileExt != _T("png") && fileExt != _T("jpg") && fileExt != _T("jpeg")) {
+        suggestedFileName_ = WinUtils::GetOnlyFileName(suggestedFileName_) + _T(".png");
+    }
     init();
 }
 

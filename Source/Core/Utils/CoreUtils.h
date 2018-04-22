@@ -50,6 +50,7 @@ namespace IuCoreUtils
     std::string ExtractFileExt(const std::string fileName);
     const std::string ExtractFileNameNoExt(const std::string& fileName);
     std::string ExtractFileNameFromUrl(const std::string fileName);
+    std::string incrementFileName(const std::string& originalFileName, int counter);
     std::string toString(int value);
     std::string toString(unsigned int value);
     std::string toString(double value, int precision);
