@@ -23,7 +23,7 @@ limitations under the License.
 
 #include "atlheaders.h"
 #include "Func/WinUtils.h"
-#include <Func/Library.h>
+#include "Func/Library.h"
 
 typedef HRESULT(__stdcall *SHCreateItemFromParsingNameFunc)(PCWSTR, IBindCtx *, REFIID, void**);
 

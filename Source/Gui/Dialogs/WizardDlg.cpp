@@ -54,11 +54,13 @@
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/Scripting/ScriptsManager.h"
 #include "Func/myutils.h"
+#include "Func/Library.h"
 #include "Core/ServiceLocator.h"
 #include "Func/MediaInfoHelper.h"
 #include "Core/Utils/DesktopUtils.h"
 #include "Gui/Win7JumpList.h"
 #include "Core/AppParams.h"
+#include "Gui/Components/MyFileDialog.h"
 
 using namespace Gdiplus;
 namespace
@@ -1267,17 +1269,15 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
         CComPtr<IShellItem> psiFolder;
         LPWSTR wszPath = NULL;
 
-        static HMODULE DllModule = LoadLibrary(_T("Shell32.dll"));
+        Library DllModule(_T("Shell32.dll"));
         if (DllModule) {
-            SHGetKnownFolderPath_func SHGetKnownFolderPathFunc = reinterpret_cast<SHGetKnownFolderPath_func>(GetProcAddress(
-                DllModule, "SHGetKnownFolderPath"));
+            SHGetKnownFolderPath_func SHGetKnownFolderPathFunc = DllModule.GetProcAddress<SHGetKnownFolderPath_func>("SHGetKnownFolderPath");
             if (SHGetKnownFolderPathFunc) {
                 hr = SHGetKnownFolderPathFunc(FOLDERID_Pictures, KF_FLAG_CREATE,
                     NULL, &wszPath);
 
                 if (SUCCEEDED(hr)) {
-                    SHCreateItemFromParsingName_func SHCreateItemFromParsingNameFunc = reinterpret_cast<SHCreateItemFromParsingName_func>(GetProcAddress(
-                        DllModule, "SHCreateItemFromParsingName"));
+                    SHCreateItemFromParsingName_func SHCreateItemFromParsingNameFunc = DllModule.GetProcAddress<SHCreateItemFromParsingName_func>("SHCreateItemFromParsingName");
                     //Settings.ImagesFolder
                     hr = SHCreateItemFromParsingNameFunc(wszPath, NULL, IID_PPV_ARGS(&psiFolder));
 
@@ -1404,10 +1404,10 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
         ShowPage(2, 0, 3);
         ((CMainDlg*)Pages[2])->UpdateStatusLabel();
 
-        if (CurPage == 2)
-            ((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
-        ShowWindow(SW_SHOW);
-        m_bShowWindow = true;
+if (CurPage == 2)
+((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
+ShowWindow(SW_SHOW);
+m_bShowWindow = true;
     }
     return true;
 }
@@ -1416,69 +1416,65 @@ bool CWizardDlg::executeFunc(CString funcBody)
 {
     bool LaunchCopy = false;
 
-    if(CurPage == 4) LaunchCopy = true;
-    if(CurPage == 1) LaunchCopy = true;
-    if(CurPage == 3) ShowPage(2);
+    if (CurPage == 4) LaunchCopy = true;
+    if (CurPage == 1) LaunchCopy = true;
+    if (CurPage == 3) ShowPage(2);
 
-    if(!IsWindowEnabled())LaunchCopy= true; 
+    if (!IsWindowEnabled())LaunchCopy = true;
 
-    CString funcName = StringSection(funcBody,  _T(','), 0 );
+    CString funcName = StringSection(funcBody, _T(','), 0);
     CString funcParam1 = StringSection(funcBody, _T(','), 1);
 
-    if(!funcParam1.IsEmpty())
-    {
-            m_bScreenshotFromTray = _ttoi(funcParam1);
+    if (!funcParam1.IsEmpty()) {
+        m_bScreenshotFromTray = _ttoi(funcParam1);
     }
-    if(LaunchCopy)
-    {
-        if(Settings.TrayIconSettings.DontLaunchCopy)
-        {    
-             if(IsWindowVisible() && IsWindowEnabled())
+    if (LaunchCopy) {
+        if (Settings.TrayIconSettings.DontLaunchCopy) {
+            if (IsWindowVisible() && IsWindowEnabled())
                 SetForegroundWindow(m_hWnd);
-            else if(!IsWindowEnabled()) SetActiveWindow();
+            else if (!IsWindowEnabled()) SetActiveWindow();
             FlashWindow(true);
-        }
-        else
-            IULaunchCopy(_T("/func=")+funcBody,CAtlArray<CString>());
+        } else
+            IULaunchCopy(_T("/func=") + funcBody, CAtlArray<CString>());
         return false;
     }
-    if(funcName == _T("addimages"))
+    if (funcName == _T("addimages"))
         return funcAddImages();
     /*else if(funcName == _T("addfiles"))
         return funcAddImages(true);*/
-    if(funcName == _T("addfiles"))
+    if (funcName == _T("addfiles"))
         return funcAddFiles();
-    else if(funcName == _T("importvideo"))
+    else if (funcName == _T("importvideo"))
         return funcImportVideo();
-    else if(funcName == _T("screenshotdlg"))
+    else if (funcName == _T("screenshotdlg"))
         return funcScreenshotDlg();
-    else if(funcName == _T("regionscreenshot"))
+    else if (funcName == _T("regionscreenshot"))
         return funcRegionScreenshot();
-    else if(funcName == _T("regionscreenshot_dontshow"))
+    else if (funcName == _T("regionscreenshot_dontshow"))
         return funcRegionScreenshot(false);
-    else if(funcName == _T("fullscreenshot"))
+    else if (funcName == _T("fullscreenshot"))
         return funcFullScreenshot();
-    else if(funcName == _T("windowhandlescreenshot"))
+    else if (funcName == _T("windowhandlescreenshot"))
         return funcWindowHandleScreenshot();
-    else if(funcName == _T("freeformscreenshot"))
-            return funcFreeformScreenshot();
-    else if(funcName == _T("downloadimages"))
+    else if (funcName == _T("freeformscreenshot"))
+        return funcFreeformScreenshot();
+    else if (funcName == _T("downloadimages"))
         return funcDownloadImages();
-    else if(funcName == _T("windowscreenshot"))
+    else if (funcName == _T("windowscreenshot"))
         return funcWindowScreenshot();
-    else if(funcName == _T("windowscreenshot_delayed"))
+    else if (funcName == _T("windowscreenshot_delayed"))
         return funcWindowScreenshot(true);
-    else if(funcName == _T("addfolder"))
+    else if (funcName == _T("addfolder"))
         return funcAddFolder();
-    else if(funcName == _T("paste"))
+    else if (funcName == _T("paste"))
         return funcPaste();
-    else if(funcName == _T("settings"))
+    else if (funcName == _T("settings"))
         return funcSettings();
-    else if(funcName == _T("reuploadimages"))
+    else if (funcName == _T("reuploadimages"))
         return funcReuploadImages();
-    else if(funcName == _T("shortenurl"))
+    else if (funcName == _T("shortenurl"))
         return funcShortenUrl();
-    else if(funcName == _T("mediainfo"))
+    else if (funcName == _T("mediainfo"))
         return funcMediaInfo();
     else if (funcName == _T("fromclipboard"))
         return funcFromClipboard();
@@ -1491,30 +1487,35 @@ bool CWizardDlg::executeFunc(CString funcBody)
 }
 
 bool CWizardDlg::importVideoFile(const CString& fileName, int prevPage) {
-	CreatePage(1);
-	LastVideoFile = fileName;
-	((CVideoGrabberPage*)Pages[1])->SetFileName(fileName); // C-style conversion .. 
-	ShowPage(1, prevPage, (Pages[2]) ? 2 : 3);
-	return true;
+    CreatePage(1);
+    LastVideoFile = fileName;
+    ((CVideoGrabberPage*)Pages[1])->SetFileName(fileName); // C-style conversion .. 
+    ShowPage(1, prevPage, (Pages[2]) ? 2 : 3);
+    return true;
 }
 
 bool CWizardDlg::funcImportVideo()
 {
-    TCHAR Buf[MAX_PATH*4];
-    GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
-            CString(TR("Video files"))+ _T(" (avi, mpg, vob, wmv ...)"),
-            Settings.prepareVideoDialogFilters(),
-        TR("All files"),
-        _T("*.*"));
+    CString fileName;
 
-    CFileDialog fd(true, 0, 0, 4 | 2 | OFN_FILEMUSTEXIST, Buf, m_hWnd);
+    MyFileDialogFactory factory;
+    IMyFileDialog::FileFilterArray filters = {
+        {CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), Settings.prepareVideoDialogFilters(),},
+        {TR("All files"), _T("*.*")}
+    };
+
+    std::shared_ptr<IMyFileDialog> dlg = factory.createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose video file"), filters, false);
+    if (dlg->DoModal(m_hWnd) != IDOK) {
+        return 0;
+    }
+    fileName = dlg->getFile();
+    Settings.VideoFolder = dlg->getFolderPath();
+
     
-    TCHAR Buffer[1000];
-    fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
-    if (fd.DoModal() != IDOK || !fd.m_szFileName[0] || !WinUtils::FileExists(fd.m_szFileName)) return 0;
-    WinUtils::ExtractFilePath(fd.m_szFileName, Buffer); 
-    Settings.VideoFolder = Buffer;
-	importVideoFile(fd.m_szFileName);
+    if (!WinUtils::FileExists(fileName)) {
+        return 0;
+    }
+	importVideoFile(fileName);
     ShowWindow(SW_SHOW);
         m_bShowWindow = true;
     return true;
@@ -1790,7 +1791,39 @@ bool CWizardDlg::funcMediaInfo()
 
 bool CWizardDlg::funcAddFiles()
 {
-    TCHAR Buf[MAX_PATH*4];
+    MyFileDialogFactory factory;
+    IMyFileDialog::FileFilterArray filters = { { TR("Any file"), _T("*.*") } };
+    std::shared_ptr<IMyFileDialog> fileDialog(factory.createFileDialog(m_hWnd, Settings.ImagesFolder, TR("Choose files"), filters, true));
+
+    if (fileDialog->DoModal(m_hWnd) != IDOK) {
+        return 0;
+    }
+    std::vector<CString> files;
+    fileDialog->getFiles(files);
+
+    if (!files.empty()) {
+        CreatePage(2);
+        CMainDlg* mainDlg = (CMainDlg*)Pages[2];
+        int nCount = 0;
+        for (const auto& fileName : files) {
+            if (mainDlg->AddToFileList(fileName)) {
+                nCount++;
+            }
+        }
+
+        Settings.ImagesFolder = fileDialog->getFolderPath();
+        if (nCount) {
+            ShowPage(2, 0, 3);
+        }
+        mainDlg->UpdateStatusLabel();
+
+        if (CurPage == 2) {
+            mainDlg->ThumbsView.LoadThumbnails();
+        }
+        ShowWindow(SW_SHOW);
+        m_bShowWindow = true;
+    }
+    /*TCHAR Buf[MAX_PATH*4];
     GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),1, TR("Any file"), _T("*.*"));
 
     int nCount=0;
@@ -1826,14 +1859,8 @@ bool CWizardDlg::funcAddFiles()
     
     fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
     Settings.ImagesFolder = Buffer;
-    if(nCount)
-        ShowPage(2, 0, 3);
-    ((CMainDlg*)Pages[2])->UpdateStatusLabel();
-
-    if(CurPage == 2)
-        ((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
-    ShowWindow(SW_SHOW);
-    m_bShowWindow = true;
+    */
+    
     return true;
 }
 

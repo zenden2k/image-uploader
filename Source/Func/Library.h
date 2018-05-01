@@ -39,6 +39,10 @@ public:
             }
         }
     }
+    operator bool() const {
+        return dll_ != nullptr;
+    }
+
     template<class T> T GetProcAddress(const char* func) {
         if (!EnsureLoaded()) {
             return nullptr;

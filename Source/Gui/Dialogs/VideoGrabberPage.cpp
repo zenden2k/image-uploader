@@ -37,6 +37,7 @@
 #include "Core/Images/Utils.h"
 #include "Core/ServiceLocator.h"
 #include "Gui/Dialogs/WizardDlg.h"
+#include "Gui/Components/MyFileDialog.h"
 
 CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
 {
@@ -479,19 +480,19 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
 
 LRESULT CVideoGrabberPage::OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    TCHAR Buf[MAX_PATH*4];
-    GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
-        CString(TR("Video files"))+ _T(" (avi, mpg, vob, wmv, mkv ...)"),
-        Settings.prepareVideoDialogFilters(),
-        TR("All files"),
-        _T("*.*"));
+    MyFileDialogFactory factory;
+    IMyFileDialog::FileFilterArray filters = {
+        { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), Settings.prepareVideoDialogFilters(), },
+        { TR("All files"), _T("*.*") }
+    };
 
-    CFileDialog fd(true,0,0,4|2,Buf,m_hWnd);
-
-    if (fd.DoModal() != IDOK || !fd.m_szFileName[0])
+    std::shared_ptr<IMyFileDialog> dlg = factory.createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose video file"), filters, false);
+    if (dlg->DoModal(m_hWnd) != IDOK) {
         return 0;
+    }
 
-    fileEdit_.SetWindowText(fd.m_szFileName);
+    fileEdit_.SetWindowText(dlg->getFile());
+    Settings.VideoFolder = dlg->getFolderPath();
 
     return 0;
 }
