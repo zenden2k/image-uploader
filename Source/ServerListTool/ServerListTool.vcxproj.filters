@@ -378,6 +378,12 @@
     <ClCompile Include="..\Func\CmdLine.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
+    <ClCompile Include="..\Core\Upload\AdvancedUploadEngine.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Upload\MegaNzUploadEngine.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Core\Video\VideoUtils.h">
@@ -433,6 +439,12 @@
     </ClInclude>
     <ClInclude Include="..\Core\Utils\utils_win.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Upload\AdvancedUploadEngine.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Upload\MegaNzUploadEngine.h">
+      <Filter>Source Files\Core\Upload</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

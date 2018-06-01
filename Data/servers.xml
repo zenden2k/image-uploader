@@ -194,11 +194,6 @@
 		</Actions>
 	<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<Server Name="pixhost.org" Authorize="0" Debug="0" Type="image" MaxFileSize="10485760" Plugin="pixhostorg" >
-		<Actions>
-		</Actions>
-		<Result DirectUrlTemplate="stub" />
-	</Server>
 	<Server Name="datafilehost.com" FileHost="1">
 	<Actions>
 		<Action Type="upload" Url="http://www.datafilehost.com/upload.php" PostParams="MAX_FILE_SIZE=158334976;upfile=%filename%;" RegExp="name='download' size='\d+' value='(.+?)' " AssignVars="File:0;"/>
@@ -267,17 +262,6 @@
 		</Actions>
 		<Result DownloadUrlTemplate="http://$(Host)/$(Code)" />
 	</Server>--> 
-    <Server Name="sharenxs.com" Debug="0"> 
-        <Actions> 
-            <Action Type="get" Url="http://sharenxs.com/" RegExp="'directory': '([^']+)'" AssignVars="Dir:0" OnlyOnce="0" /> 
-            <Action Type="upload" Url="http://sharenxs.com/upload" 
-                PostParams="directory=$(Dir);safe=0;gallery=;qquuid=$(_THREADID)$(_RAND16BITS);qqfile=%filename%" 
-                RegExp="&quot;photo_link&quot;:&quot;\\\/photos\\\/(\w+)\\\/(\w+)\\\/(\w+)\\\/(\w+)\\\/([^&quot;]+)&quot;" 
-                AssignVars="Y:0;M:1;D:2;ID:3;Name:4" 
-            /> 
-        </Actions> 
-        <Result ImageUrlTemplate="http://sharenxs.com/photos/$(Y)/$(M)/$(D)/$(ID)/$(Name)" ThumbUrlTemplate="http://sharenxs.com/photos/$(Y)/$(M)/$(D)/$(ID)/smnxs-$(Name)"/> 
-    </Server>
 	 <Server Name="multiup.org" FileHost="1" MaxFileSize="2147483647"> 
         <Actions> 
             <Action Type="get" Url="http://www.multiup.org/api/get-fastest-server" 
@@ -330,7 +314,7 @@
 	</Server2>
 	<Server2 Name="is.gd" Debug="0" Type="urlshortening">
 		<Actions>
-			<Action Type="post" Url="http://is.gd/create.php?format=simple&amp;url=$(_ORIGINALURL|urlencode)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
+			<Action Type="post" Url="https://is.gd/create.php?format=simple&amp;url=$(_ORIGINALURL|urlencode)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
 		</Actions>
 		<Result DirectUrlTemplate="$(ShortUrl)" />
 	</Server2>
@@ -363,12 +347,12 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(DownloadUrl)"/>
 	</Server>
-	<Server Name="pixic.ru">
+	<!--<Server Name="pixic.ru">
 		<Actions>
 			<Action Type="upload" Url="http://www.pixic.ru/" PostParams="submit=Загрузить;files=;file1=%filename%;orig_resize=500;res_select=500;orig_rotate=0;jpeg_quality=75;check_thumb=size;thumb_text=Увеличить;thumb_size=170;send=1;" RegExp="\[IMG\]([\s\S]*?)\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Image:1;Thumb:3;"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
-	</Server>
+	</Server>-->
 	<Server Name="ovrload.ru" FileHost="1" Type="file" Types="image,file">
 		<Actions>
 			<Action Type="upload" Url="https://ovrload.ru/" PostParams="clipboard=;fileframe=true;file=%filename%;" RegExp="&quot;(https:\/\/ovrload\.ru:443\/.*?)&quot;" AssignVars="File:0;"/>
@@ -389,11 +373,12 @@
         </Actions>
         <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
     </Server>
-    <Server Name="cubeupload.com">
+    <Server Name="cubeupload.com" Authorize="2" MaxFileSize="5000000">
         <Actions>
+            <Action Type="login" Url="https://cubeupload.com/login" PostParams="cube_username=$(_LOGIN);cube_password=$(_PASSWORD);login=Login" OnlyOnce="1"/>
             <Action Type="upload" Url="https://cubeupload.com/upload_json.php" PostParams="name=$(FILENAME);userHash=false;userID=false;fileinput[0]=%filename%;" RegExp="&quot;file_name&quot;:&quot;(.+?)&quot;" AssignVars="Id:0"/>
         </Actions>
-        <Result ImageUrlTemplate="http://i.cubeupload.com/$(Id)" ThumbUrlTemplate="http://i.cubeupload.com/t/$(Id)"/>
+        <Result ImageUrlTemplate="http://u.cubeupload.com/$(_LOGIN)/$(Id)" ThumbUrlTemplate="http://u.cubeupload.com/$(_LOGIN)/t/$(Id)"/>
     </Server>
 	<Server Name="picabox.ru" Authorize="0" FileHost="0" Debug="0" Plugin="picabox">
 		<Actions>
