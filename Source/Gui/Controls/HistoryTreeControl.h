@@ -24,6 +24,11 @@ struct HistoryTreeItem
     std::string thumbnailSource;
 };
 
+class CHistoryTreeControlCallback {
+public:
+    virtual void OnItemDblClick(TreeItem* item) = 0;
+    virtual ~CHistoryTreeControlCallback(){}
+};
 class CHistoryTreeControl :
     public CCustomTreeControlImpl<CHistoryTreeControl>,
     public CThemeImpl <CHistoryTreeControl>,
@@ -49,10 +54,10 @@ class CHistoryTreeControl :
         DWORD OnItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
         DWORD OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
         bool LoadThumbnail(HistoryTreeItem* ItemID);
-
-    public:
+        virtual LRESULT OnDblClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) override;
         fastdelegate::FastDelegate0<> onThreadsFinished;
         fastdelegate::FastDelegate0<> onThreadsStarted;
+        fastdelegate::FastDelegate1<TreeItem*> onItemDblClick;
         void setDownloadingEnabled(bool enabled);
         int NotifyParent(int nItem);
         bool m_bIsRunning;
@@ -73,6 +78,7 @@ class CHistoryTreeControl :
         void abortLoadingThreads();
         LRESULT ReflectContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         void ResetContent();
+
 
     private:
         HistoryItem* getItemData(TreeItem* res);

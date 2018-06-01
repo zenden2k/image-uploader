@@ -855,6 +855,15 @@
     <ClInclude Include="Source\Core\Upload\MegaNzUploadEngine.h">
       <Filter>Source Files\Core\Upload</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Gui\Components\NewStyleFileDialog.h">
+      <Filter>Source Files\Gui\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Components\MyFileDialog.h">
+      <Filter>Source Files\Gui\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Components\OldStyleFileDialog.h">
+      <Filter>Source Files\Gui\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1889,6 +1898,15 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Upload\MegaNzUploadEngine.cpp">
       <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Components\NewStyleFileDialog.cpp">
+      <Filter>Source Files\Gui\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Components\MyFileDialog.cpp">
+      <Filter>Source Files\Gui\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Components\OldStyleFileDialog.cpp">
+      <Filter>Source Files\Gui\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

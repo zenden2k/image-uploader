@@ -929,6 +929,50 @@ bool ReadWebP(const uint8_t* const data, size_t data_size, WebPPic* pic) {
     return true;
 }
 
+short GetImageOrientation(Image* img) {
+    UINT totalBufferSize = 0, numProperties;
+    short orient = 0;
+    img->GetPropertySize(&totalBufferSize, &numProperties);
+
+    if (totalBufferSize) {
+        PropertyItem* all_items = (PropertyItem*)malloc(totalBufferSize);
+        img->GetAllPropertyItems(totalBufferSize, numProperties, all_items);
+
+        for (UINT j = 0; j < numProperties; ++j) {
+            if (all_items[j].id == 0x0112) {
+                
+                memcpy(&orient, all_items[j].value, sizeof(orient));
+
+                
+                break; // only orientation
+            }
+        }
+        free(all_items);
+    }
+    return orient;
+}
+
+bool RotateAccordingToOrientation(short orient, Image* img, bool removeTag) {
+    if (orient == 2) {
+        img->RotateFlip(RotateNoneFlipX);
+    } else if (orient == 3) {
+        img->RotateFlip(Rotate180FlipNone);
+    } else if (orient == 4) {
+        img->RotateFlip(RotateNoneFlipY);
+    } else if (orient == 5) {
+        img->RotateFlip(Rotate90FlipX);
+    } else if (orient == 6) {
+        img->RotateFlip(Rotate270FlipXY);
+    } else if (orient == 7) {
+        img->RotateFlip(Rotate270FlipX);
+    } else if (orient == 8) {
+        img->RotateFlip(Rotate90FlipXY);
+    }
+    // This EXIF data is now invalid and should be removed.
+    //img->RemovePropertyItem(PropertyTagOrientation);
+    return false;
+}
+
 Bitmap* LoadImageFromFileExtended(const CString& fileName) {
     Bitmap* bm = nullptr;
     CString ext = WinUtils::GetFileExt(fileName);
@@ -962,23 +1006,28 @@ Bitmap* LoadImageFromFileExtended(const CString& fileName) {
         } else {
             WebPFree(pic.rgba);
         }
-        
+
     } else {
         bm = new Gdiplus::Bitmap(fileName);
+
+
     }
     Gdiplus::Status status = bm->GetLastStatus();
     if (bm && status != Gdiplus::Ok) {
-        int lastError = GetLastError();        
-        
+        int lastError = GetLastError();
+
         CString error = GdiplusStatusToString(status);
 
         if (status == Gdiplus::Win32Error) {
             error += L"\r\n" + WinUtils::FormatWindowsErrorMessage(lastError);
         }
-        ServiceLocator::instance()->logger()->write(logWarning, TR("Image Loader"), TR("Cannot load image.")+CString(L"\r\n")+error, CString(TR("File:")) + _T(" ")+fileName);
+        ServiceLocator::instance()->logger()->write(logWarning, TR("Image Loader"), TR("Cannot load image.") + CString(L"\r\n") + error, CString(TR("File:")) + _T(" ") + fileName);
         delete bm;
         return nullptr;
     }
+
+    short orient = GetImageOrientation(bm); 
+    RotateAccordingToOrientation(orient, bm, true);
     return bm;
 }
 
@@ -1093,6 +1142,12 @@ Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus
         enum ThumbCompression { ThumbCompressionJPEG, ThumbCompressionRGB, ThumbCompressionYCbCr, ThumbCompressionUnknown }
             compression = ThumbCompressionJPEG;
 
+        short orient = 0;
+        PropertyItem* orientationItem = GetPropertyItemFromImage(bm, PropertyTagOrientation);
+        if (orientationItem) {
+            memcpy(&orient, orientationItem->value, sizeof(orient));
+            free(orientationItem);
+        }
         PropertyItem* thumbnailFormatItem = GetPropertyItemFromImage(bm, PropertyTagThumbnailFormat);
         if (thumbnailFormatItem) {
             UINT format = VoidToInt(thumbnailFormatItem->value, thumbnailFormatItem->length);
@@ -1133,8 +1188,11 @@ Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus
             if (thumbDataItem) {
                 if (compression == ThumbCompressionJPEG) {
                     Bitmap* src = BitmapFromMemory(reinterpret_cast<BYTE*>(thumbDataItem->value), thumbDataItem->length);
-                   
                     if (src) {
+                        RotateAccordingToOrientation(orient, src);
+
+//                        int ww = src->GetWidth();
+//                        int hh = src->GetHeight();
                         gr.DrawImage(src, 0, 0, sz.Width, sz.Height);
                         delete src;
                         free(thumbDataItem);

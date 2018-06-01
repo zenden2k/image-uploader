@@ -114,6 +114,7 @@ class CUpdateManager: public CUpdateStatusCallback
         bool DoUpdates();
         const CString ErrorString();
         CString generateReport();
+        CString generateReportNoUpdates() const;
         CString generateUpdateMessage();
         void Clear();
         bool AreUpdatesAvailable();
@@ -136,6 +137,7 @@ class CUpdateManager: public CUpdateStatusCallback
         int m_nSuccessPackageUpdates;
         std::atomic<bool> m_stop;
         int m_nCoreUpdates;
+        std::vector<CUpdateInfo> m_localUpdateInfo;
     private:
         DISALLOW_COPY_AND_ASSIGN(CUpdateManager);
 };

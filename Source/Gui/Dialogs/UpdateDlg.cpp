@@ -187,7 +187,9 @@ void CUpdateDlg::CheckUpdates()
     else
     {
         TRC(IDCANCEL, "Close");
-        SetDlgItemText(IDC_UPDATEINFO, TR("There are no updates available."));
+        CString text = TR("There are no updates available.");
+        //text += _T("\r\n\r\n") + m_UpdateManager.generateReportNoUpdates();
+        SetDlgItemText(IDC_UPDATEINFO, text);
     }
 }
 

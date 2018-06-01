@@ -54,6 +54,7 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     m_treeView.SubclassWindow(GetDlgItem(IDC_HISTORYTREE));
     m_treeView.onThreadsFinished.bind(this, &CHistoryWindow::threadsFinished);
     m_treeView.onThreadsStarted.bind(this, &CHistoryWindow::threadsStarted);
+    m_treeView.onItemDblClick.bind(this, &CHistoryWindow::onItemDblClick);
     TRC(IDCANCEL, "Close");
     TRC(IDC_SESSIONSCOUNTDESCR, "Session total:");
     TRC(IDC_FILESCOUNTDESCR, "Files total:");
@@ -254,9 +255,7 @@ LRESULT CHistoryWindow::OnOpenInBrowser(WORD wNotifyCode, WORD wID, HWND hWndCtl
 {
     TreeItem* item = m_treeView.selectedItem();
     if(!item) return 0;
-    HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
-    std::string url = historyItem->directUrl.length()?historyItem->directUrl:historyItem->viewUrl;
-    ShellExecute(NULL, _T("open"), Utf8ToWCstring(url), NULL, NULL, SW_SHOWNORMAL);
+    OpenInBrowser(item);
     return 0;
 }
 
@@ -382,6 +381,12 @@ void CHistoryWindow::SelectedMonthChanged() {
     m_treeView.SetFocus();
 }
 
+void CHistoryWindow::OpenInBrowser(TreeItem* item) {
+    HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
+    std::string url = historyItem->directUrl.length() ? historyItem->directUrl : historyItem->viewUrl;
+    ShellExecute(NULL, _T("open"), Utf8ToWCstring(url), NULL, NULL, SW_SHOWNORMAL);
+}
+
 void CHistoryWindow::threadsFinished()
 {
     m_wndAnimation.ShowWindow(SW_HIDE);
@@ -436,4 +441,11 @@ LRESULT CHistoryWindow::OnBnClickedClearHistoryBtn(WORD /*wNotifyCode*/, WORD /*
         }
     }
     return 0;
+}
+
+void CHistoryWindow::onItemDblClick(TreeItem* item) {
+    bool isSessionItem = item->level() == 0;
+    if (!isSessionItem) {
+        OpenInBrowser(item);
+    }
 }

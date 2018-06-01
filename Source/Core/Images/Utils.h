@@ -46,4 +46,6 @@ bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int
 Bitmap* LoadImageFromFileExtended(const CString& fileName);
 CString GdiplusStatusToString(Gdiplus::Status statusID);
 bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data_size);
+short GetImageOrientation(Image* img);
+bool RotateAccordingToOrientation(short orient, Image* img, bool removeTag = false);
 #endif

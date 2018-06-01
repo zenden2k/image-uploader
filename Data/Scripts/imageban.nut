@@ -39,7 +39,7 @@ function getThumbnailWidth() {
 }
 
 function anonymousUpload(FileName, options) {
-	nm.setUrl("http://imageban.ru/up");
+	nm.setUrl("https://imageban.ru/up");
 	nm.addQueryHeader("User-Agent", "Shockwave Flash");
 	nm.addQueryParam("Filename", ExtractFileName(FileName));
 	nm.addQueryParam("albmenu", "0");

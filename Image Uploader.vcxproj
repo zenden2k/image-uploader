@@ -699,7 +699,10 @@
     <ClInclude Include="Source\Func\GdiPlusInitializer.h" />
     <ClInclude Include="Source\Func\Library.h" />
     <ClInclude Include="Source\Func\WtlScriptDialogProvider.h" />
+    <ClInclude Include="Source\Gui\Components\MyFileDialog.h" />
+    <ClInclude Include="Source\Gui\Components\NewStyleFileDialog.h" />
     <ClInclude Include="Source\Gui\Components\NewStyleFolderDialog.h" />
+    <ClInclude Include="Source\Gui\Components\OldStyleFileDialog.h" />
     <ClInclude Include="Source\Gui\Controls\ImageView.h" />
     <ClInclude Include="Source\Gui\Controls\ResultsListView.h" />
     <ClInclude Include="Source\Gui\Dialogs\ClearHistoryDlg.h" />
@@ -1063,6 +1066,9 @@
     <ClCompile Include="Source\Func\GdiPlusInitializer.cpp" />
     <ClCompile Include="Source\Func\MediaInfoHelper.cpp" />
     <ClCompile Include="Source\Func\WtlScriptDialogProvider.cpp" />
+    <ClCompile Include="Source\Gui\Components\MyFileDialog.cpp" />
+    <ClCompile Include="Source\Gui\Components\NewStyleFileDialog.cpp" />
+    <ClCompile Include="Source\Gui\Components\OldStyleFileDialog.cpp" />
     <ClCompile Include="Source\Gui\Controls\ImageView.cpp" />
     <ClCompile Include="Source\Gui\Controls\ResultsListView.cpp" />
     <ClCompile Include="Source\Gui\Dialogs\ClearHistoryDlg.cpp" />

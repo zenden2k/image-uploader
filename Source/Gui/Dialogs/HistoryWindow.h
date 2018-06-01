@@ -98,12 +98,14 @@ class CHistoryWindow : public CDialogImpl <CHistoryWindow>,
         CString m_delayedFileName;
         void threadsStarted();
         void threadsFinished();
+        void onItemDblClick(TreeItem* item);
         std::vector<CString> m_HistoryFiles;
         bool delayed_closing_;
         CString historyFolder;
         CWizardDlg* wizardDlg_;
         void LoadHistoryFile(CString fileName);
         void SelectedMonthChanged();
+        void OpenInBrowser(TreeItem* item);
         CPictureExWnd m_wndAnimation;
         // Context menu callbacks
         LRESULT OnOpenInBrowser(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);

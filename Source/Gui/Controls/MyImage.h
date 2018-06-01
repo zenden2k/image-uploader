@@ -38,19 +38,19 @@ public:
         MESSAGE_HANDLER(WM_PAINT, OnPaint)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBkg)
+        MESSAGE_HANDLER( WM_KEYDOWN, OnKeyDown)
         MSG_WM_LBUTTONDOWN(OnLButtonDown)
         MSG_WM_RBUTTONDOWN(OnLButtonDown)
         MSG_WM_MBUTTONUP(OnLButtonDown)
-        MSG_WM_KEYDOWN(OnKeyDown)
     END_MSG_MAP()
     
     LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     Gdiplus::Bitmap *bm_;
     bool IsImage;
     bool HideParent; // —пециально дл€ всплывающего окна просмотра
-    LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);

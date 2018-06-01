@@ -38,7 +38,7 @@ struct ThumbsViewItem
 
 
 class CThumbsView :
-    public CWindowImpl<CThumbsView, CListViewCtrl>,public CThreadImpl<CThumbsView>
+    public CWindowImpl<CThumbsView, CListViewCtrl>, public CThreadImpl<CThumbsView>, public CImageViewCallback
 {
 public:
     
@@ -97,6 +97,8 @@ public:
     bool CopySelectedItemsToClipboard();
     LRESULT OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     void SetDeletePhysicalFiles(bool doDelete);
+    CImageViewItem getNextImgViewItem(CImageViewItem currentItem) override;
+    CImageViewItem getPrevImgViewItem(CImageViewItem currentItem) override;
 protected:
     ItemCountChangedCallback callback_;
     DWORD callbackLastCallTime_;

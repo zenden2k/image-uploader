@@ -238,9 +238,8 @@ LRESULT CMyImage::OnLButtonDown(UINT Flags, CPoint Pt)
     return 0;
 }
 
-LRESULT CMyImage::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
-{
-    if (HideParent)
-        ::ShowWindow(GetParent(), SW_HIDE);
-    return 0;
+LRESULT CMyImage::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&) {
+    return SendMessage(GetParent(), uMsg, wParam, lParam);
 }
+
+

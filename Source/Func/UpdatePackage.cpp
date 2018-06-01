@@ -28,7 +28,6 @@
 #include "Func/Common.h"
 #include "Core/Utils/CryptoUtils.h"
 #include "WinUtils.h"
-#include <iostream>
 #include "IuCommonFunctions.h"
 #include "Core/Utils/SystemUtils.h"
 #include "Core/CommonDefs.h"
@@ -229,6 +228,7 @@ bool CUpdateManager::CheckUpdates()
 
     bool Result = true;
 
+    m_localUpdateInfo.clear();
     if (fileList.size() == 0) {
         m_ErrorStr = "No update files found in folder '" + IuCommonFunctions::GetDataFolder() + _T("Update\\'");
         return false;
@@ -267,6 +267,7 @@ bool CUpdateManager::internal_load_update(CString name)
         return false;
     }
 
+    m_localUpdateInfo.push_back(localPackage);
     CUpdateInfo remotePackage;
     NetworkClient nm;
     nm.setTreatErrorsAsWarnings(true);
@@ -550,6 +551,19 @@ CString CUpdateManager::generateReport()
         text += _T(" * ")+m_updateList[i].displayName()+_T("  ")+date+_T("\r\n\r\n");
         text += m_updateList[i].readableText();
         text += _T("\r\n");        
+    }
+    return text;
+}
+
+CString CUpdateManager::generateReportNoUpdates() const {
+    CString text = _T("Components:\r\n\r\n") ;
+
+    for (const auto& item : m_localUpdateInfo) {
+        time_t t = item.timeStamp();
+        tm * timeinfo = localtime(&t);
+        CString date;
+        date.Format(_T("%02d.%02d.%04d"), timeinfo->tm_mday, timeinfo->tm_mon + 1, 1900 + timeinfo->tm_year);
+        text += item.displayName() + _T("  (") + date + _T(")\r\n");
     }
     return text;
 }

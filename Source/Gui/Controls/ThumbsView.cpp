@@ -525,7 +525,11 @@ void CThumbsView::ViewSelectedImage()
     LPCTSTR FileName = GetFileName(nCurItem);
 
     if(!FileName || !IuCommonFunctions::IsImage(FileName)) return;
-    ImageView.ViewImage(FileName);
+    CImageViewItem imgViewItem;
+    imgViewItem.index = nCurItem;
+    imgViewItem.fileName = FileName;
+    ImageView.ViewImage(imgViewItem);
+    ImageView.setCallback(this);
 }
 
 LRESULT CThumbsView::OnLvnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
@@ -533,35 +537,33 @@ LRESULT CThumbsView::OnLvnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandl
     if(GetItemCount() < 1) return 0;
 
     //NM_LISTVIEW *pnmv = (NM_LISTVIEW FAR *) pnmh;  
-    DWORD dwEffect=0;
+DWORD dwEffect = 0;
 
-    CMyDropSource *pDropSource = new CMyDropSource();
-    CMyDataObject *pDataObject = new CMyDataObject();
+CMyDropSource *pDropSource = new CMyDropSource();
+CMyDataObject *pDataObject = new CMyDataObject();
 
-    int nItem=-1;
-    do
-    {
-        nItem = GetNextItem(nItem,LVNI_SELECTED    );
-        if(nItem == -1) break;
-        pDataObject->AddFile(GetFileName(nItem));
-    }
-    while(nItem!=-1);
+int nItem = -1;
+do {
+    nItem = GetNextItem(nItem, LVNI_SELECTED);
+    if (nItem == -1) break;
+    pDataObject->AddFile(GetFileName(nItem));
+} while (nItem != -1);
 
-    //Disable drag-n-drop to parent window
-    SendMessage(GetParent(), MYWM_ENABLEDROPTARGET, 0, 0);
+//Disable drag-n-drop to parent window
+SendMessage(GetParent(), MYWM_ENABLEDROPTARGET, 0, 0);
 
-    /*DWORD dwResult = */::DoDragDrop(pDataObject, pDropSource, DROPEFFECT_COPY, &dwEffect);
-    pDropSource->Release();
-    pDataObject->Release();
+/*DWORD dwResult = */::DoDragDrop(pDataObject, pDropSource, DROPEFFECT_COPY, &dwEffect);
+pDropSource->Release();
+pDataObject->Release();
 
-    SendMessage(GetParent(), MYWM_ENABLEDROPTARGET, 1, 0);
-    return 0;
+SendMessage(GetParent(), MYWM_ENABLEDROPTARGET, 1, 0);
+return 0;
 }
 
 LRESULT CThumbsView::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     int count = GetItemCount();
-    for ( int i =0; i < count; i++ ) {
+    for (int i = 0; i < count; i++) {
         ThumbsViewItem *tvi = reinterpret_cast<ThumbsViewItem *>(GetItemData(i));
         delete tvi;
     }
@@ -571,14 +573,14 @@ LRESULT CThumbsView::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 void CThumbsView::OutDateThumb(int nIndex)
 {
     ThumbsViewItem *TVI = (ThumbsViewItem *)GetItemData(nIndex);
-    if(!TVI) return;
-    TVI->ThumbOutDate=TRUE;
+    if (!TVI) return;
+    TVI->ThumbOutDate = TRUE;
 }
 
 void CThumbsView::UpdateOutdated()
 {
     m_NeedUpdate = true;
-    if(!IsRunning()) LoadThumbnails();
+    if (!IsRunning()) LoadThumbnails();
 }
 
 void CThumbsView::LockImagelist(bool bLock)
@@ -589,10 +591,9 @@ void CThumbsView::LockImagelist(bool bLock)
 }
 
 bool CThumbsView::StopAndWait()
-{    
+{
     bool IsRun = IsRunning();
-    if(IsRun)
-    {
+    if (IsRun) {
         SignalStop();
         MsgWaitForSingleObject(m_hThread, INFINITE);
         ATLTRACE(_T("StopAndWait() finished!!!\r\n"));
@@ -603,22 +604,20 @@ bool CThumbsView::StopAndWait()
 void CThumbsView::SelectLastItem()
 {
     int nItem = -1;
-    do
-    {
+    do {
         nItem = GetNextItem(nItem, LVNI_SELECTED);
-        if(nItem == -1) break;
-        SetItemState(nItem, 0, LVIS_SELECTED    );
-    }
-    while(nItem != -1);
-    SetItemState(GetItemCount() - 1, LVIS_SELECTED, LVIS_SELECTED    );
-    EnsureVisible( GetItemCount() - 1, FALSE);
+        if (nItem == -1) break;
+        SetItemState(nItem, 0, LVIS_SELECTED);
+    } while (nItem != -1);
+    SetItemState(GetItemCount() - 1, LVIS_SELECTED, LVIS_SELECTED);
+    EnsureVisible(GetItemCount() - 1, FALSE);
 
 }
 
 LRESULT CThumbsView::OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
     LPNMLISTVIEW pNotificationInfo = reinterpret_cast<LPNMLISTVIEW>(pnmh);
-    if(pNotificationInfo->iItem == -1) return FALSE;
+    if (pNotificationInfo->iItem == -1) return FALSE;
     ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem*>(pNotificationInfo->lParam);
     delete TVI;
     return 0;
@@ -626,6 +625,57 @@ LRESULT CThumbsView::OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 
 void CThumbsView::SetDeletePhysicalFiles(bool doDelete) {
     deletePhysicalFiles_ = doDelete;
+}
+
+CImageViewItem CThumbsView::getNextImgViewItem(CImageViewItem currentItem) {
+    CImageViewItem result;
+    result.index = -1;
+
+    int index; 
+    for (index = currentItem.index + 1; index < GetItemCount(); index++) {
+        LPCTSTR FileName = GetFileName(index);
+        if (FileName && IuCommonFunctions::IsImage(FileName)){
+            result.index = index;
+            result.fileName = FileName;
+            return result;
+        }
+    }
+
+    for (index = 0; index <= currentItem.index, index < GetItemCount(); index++) {
+        LPCTSTR FileName = GetFileName(index);
+        if (FileName && IuCommonFunctions::IsImage(FileName)) {
+            result.index = index;
+            result.fileName = FileName;
+            return result;
+        }
+    }
+    return result;
+}
+
+CImageViewItem CThumbsView::getPrevImgViewItem(CImageViewItem currentItem) {
+    CImageViewItem result;
+    result.index = -1;
+
+    int index;
+    for (index = currentItem.index - 1; index >=0; index--) {
+        LPCTSTR FileName = GetFileName(index);
+        if (FileName && IuCommonFunctions::IsImage(FileName)) {
+            result.index = index;
+            result.fileName = FileName;
+            return result;
+        }
+    }
+
+    for (index = GetItemCount() - 1; index >= currentItem.index, index >= 0; index--) {
+        LPCTSTR FileName = GetFileName(index);
+        if (FileName && IuCommonFunctions::IsImage(FileName)) {
+            result.index = index;
+            result.fileName = FileName;
+            return result;
+        }
+    }
+
+    return result;
 }
 
 void CThumbsView::NotifyItemCountChanged(bool selected) {  

@@ -476,7 +476,6 @@ void CHistoryTreeControl::DrawTreeItem(HDC dc, RECT rc, UINT itemState,  TreeIte
     }
 }
 
-
 void CHistoryTreeControl::TreeItemSize( TreeItem *item, SIZE *sz)
 {
     int height = CalcItemHeight(item);
@@ -628,6 +627,18 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
     delete bm;
     delete ImgBuffer;
     return !error;
+}
+
+LRESULT CHistoryTreeControl::OnDblClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    int idx = GetCurSel();
+    if (idx != -1) {
+        TreeItem* prop = GetItem(idx);
+        ATLASSERT(prop);
+        if (onItemDblClick) {
+            onItemDblClick(prop);
+        }
+    }
+    return CCustomTreeControlImpl<CHistoryTreeControl>::OnDblClick(uMsg, wParam, lParam, bHandled);
 }
 
 HBITMAP CHistoryTreeControl::GetItemThumbnail(HistoryTreeItem* item)
