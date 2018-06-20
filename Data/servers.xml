@@ -205,12 +205,6 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-    <Server Name="imghost.pro">
-        <Actions>
-            <Action Type="upload" Url="http://up.imghost.pro/upload.php?api=1" PostParams="method=file;upl=%filename%;thumb_size=$(_THUMBWIDTH)" RegExp='&lt;imagepath&gt;(.*?)&lt;\/imagepath&gt;([\s\S]*?)&lt;thumbpath&gt;(.*?)&lt;\/thumbpath&gt;' AssignVars="Image:0;Thumb:2;"/>
-        </Actions>
-        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
-    </Server>
 	<!-- Thanks to Alex_Qwerty -->
 	<Server Name="embedupload.com" FileHost="1" MaxFileSize="3299985472" Debug="0"> 
         <Actions> 
