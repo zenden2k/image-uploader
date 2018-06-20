@@ -1,4 +1,4 @@
-#Image Uploader
+# Image Uploader
 Free program for Windows that allows you to upload images, screenshots, or any other files to over 30 different file hosting services. 
 
 ![Image Uploader main window](https://lh3.googleusercontent.com/-Cn0FbMwNmME/VXvtHdBlKgI/AAAAAAAAF0A/r7soROnyqrg/s0/clipboard_5956_12792.png)
@@ -7,22 +7,22 @@ Free program for Windows that allows you to upload images, screenshots, or any o
 
 Supported operating systems: Windows 10/8/7/Vista/XP SP2+ (also server versions starting with Windows Server 2003 SP1)
 
-##Main Features
+## Main Features
 
-###Uploading files to image hostings and file hostings
+### Uploading files to image hostings and file hostings
 It can upload to more than [20 image hostings sites](http://zenden.ws/imageuploader_servers). After uploading, Image Uploader generates HTML code or BBCode for forums.
 
 It is also possible to specify your own output format template.
 
-###Grabbing Frames from a Video Clip
+### Grabbing Frames from a Video Clip
 Image Uploader can grab frames from various types of video formats, e.g. AVI, MPG, VOB, WMV, MKV (it depends on DirectShow codecs you have installed on your system). It is recommended to install K-lite Codec Pack.
 
-###Screen capturing
+### Screen capturing
 Image Uploader can do screenshots of entire screen or selected screen region.
 
 Image Uploader is available in the following languages: English, Russian, Swedish, Romanian, Turkish, Serbian, Hrvatski, Farsi
 
-##Console Utility
+## Console Utility
 
 ![Image Uploader Console Utility running on Ubuntu](https://lh4.googleusercontent.com/-cNDZG8GzVA4/VSwRWt6NyBI/AAAAAAAAEGU/y2TJbwUWhfQ/s0/Terminal_001.png)
 
@@ -30,7 +30,7 @@ Available options:
 
 http://zenden.ws/imageuploader-cli
 
-##Building from source
+## Building from source
 
 You need Microsoft Visual Studio 2013 to build Image Uploader. 
 Installing Visual Studio 2013 Update 4 is strongly recommended (older versions corrupt .rc files after editing)
