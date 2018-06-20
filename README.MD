@@ -1,5 +1,6 @@
 # Image Uploader
 Free program for Windows that allows you to upload images, screenshots, or any other files to over 30 different file hosting services. 
+Official website: http://zenden2k.atwebpages.com/imageuploader
 
 ![Image Uploader main window](https://lh3.googleusercontent.com/-Cn0FbMwNmME/VXvtHdBlKgI/AAAAAAAAF0A/r7soROnyqrg/s0/clipboard_5956_12792.png)
 
@@ -10,7 +11,7 @@ Supported operating systems: Windows 10/8/7/Vista/XP SP2+ (also server versions 
 ## Main Features
 
 ### Uploading files to image hostings and file hostings
-It can upload to more than [20 image hostings sites](http://zenden.ws/imageuploader_servers). After uploading, Image Uploader generates HTML code or BBCode for forums.
+It can upload to more than [20 image hostings sites](http://zenden2k.atwebpages.com/imageuploader_servers). After uploading, Image Uploader generates HTML code or BBCode for forums.
 
 It is also possible to specify your own output format template.
 
@@ -28,7 +29,7 @@ Image Uploader is available in the following languages: English, Russian, Swedis
 
 Available options:
 
-http://zenden.ws/imageuploader-cli
+http://zenden2k.atwebpages.com/imageuploader-cli
 
 ## Building from source
 
