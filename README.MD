@@ -4,7 +4,7 @@ Official website: http://zenden2k.atwebpages.com/imageuploader
 
 ![Image Uploader main window](https://lh3.googleusercontent.com/-Cn0FbMwNmME/VXvtHdBlKgI/AAAAAAAAF0A/r7soROnyqrg/s0/clipboard_5956_12792.png)
 
-[![Download Image Uploader](https://lh4.googleusercontent.com/-D6wvBfMHonw/VQHgBb9ZFzI/AAAAAAAAD1s/Hq1uUei_C-s/s0/download-button-en.png)](http://zenden.ws/imageuploader_downloads)
+[![Download Image Uploader](https://lh4.googleusercontent.com/-D6wvBfMHonw/VQHgBb9ZFzI/AAAAAAAAD1s/Hq1uUei_C-s/s0/download-button-en.png)](http://zenden2k.atwebpages.com/imageuploader_downloads)
 
 Supported operating systems: Windows 10/8/7/Vista/XP SP2+ (also server versions starting with Windows Server 2003 SP1)
 
