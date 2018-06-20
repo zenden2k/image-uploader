@@ -214,16 +214,53 @@ void WtlGuiSettings::FindDataFolder()
 #endif
 
 void WtlGuiSettings::fixInvalidServers() {
+    std::string defaultImageServer = "directupload.net";
+    std::string defaultImageServerProfileName = "";
+
+    CUploadEngineData * defaultImageUED = engineList_->byName(defaultImageServer);
+    if (!defaultImageUED) {
+        defaultImageUED = engineList_->firstEngineOfType(CUploadEngineData::TypeImageServer);
+        if (!defaultImageUED) {
+            LOG(ERROR) << "Unable to find any image servers in the servers list";
+        } else {
+            defaultImageServer = defaultImageUED->Name;
+        }
+    }
+
     CUploadEngineData* ue = imageServer.uploadEngineData();
     if (!ue) {
-        imageServer.setServerName("directupload.net");
-        imageServer.setProfileName("");
+        imageServer.setServerName(defaultImageServer);
+        imageServer.setProfileName(defaultImageServerProfileName);
+    }
+
+    ue = contextMenuServer.uploadEngineData();
+    if (!ue) {
+        contextMenuServer.setServerName(defaultImageServer);
+        contextMenuServer.setProfileName(defaultImageServerProfileName);
+    }
+
+    ue = quickScreenshotServer.uploadEngineData();
+    if (!ue) {
+        quickScreenshotServer.setServerName(defaultImageServer);
+        quickScreenshotServer.setProfileName(defaultImageServerProfileName);
     }
 
     ue = fileServer.uploadEngineData();
     if (!ue) {
-        fileServer.setServerName("zippyshare.net");
-        fileServer.setProfileName("");
+        std::string defaultServerName = "zippyshare.net";
+        CUploadEngineData * uploadEngineData = engineList_->byName(defaultServerName);
+        if (uploadEngineData) {
+            fileServer.setServerName(defaultServerName);
+            fileServer.setProfileName("");
+        } else {
+            uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeFileServer);
+            if (uploadEngineData) {
+                fileServer.setServerName(uploadEngineData->Name);
+                fileServer.setProfileName("");
+            } else {
+                LOG(ERROR) << "Unable to find any file servers in the server list";
+            }
+        }
     }
 
     if (urlShorteningServer.serverName().empty()) {
@@ -235,6 +272,8 @@ void WtlGuiSettings::fixInvalidServers() {
             uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeUrlShorteningServer);
             if (uploadEngineData) {
                 urlShorteningServer.setServerName(uploadEngineData->Name);
+            } else {
+                LOG(ERROR) << "Unable to find any URL shortening servers in the server list";
             }
         }
     }

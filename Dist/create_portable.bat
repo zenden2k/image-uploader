@@ -27,7 +27,6 @@ mkdir %temp_dir%\Data\Utils
 
 call signcode.bat
 Copy "..\Build\release optimized\Image Uploader.exe" %temp_dir%\
-rem Copy "..\Build\release optimized\curl-ca-bundle.crt" %temp_dir%\
 Copy "..\Lang\*.lng" %temp_dir%\Lang\
 Copy "..\Lang\English.lng.src" %temp_dir%\Lang\
 Copy "..\Build\release optimized\Modules\*" %temp_dir%\Modules\
@@ -58,6 +57,14 @@ rem signtool sign  /t http://timestamp.digicert.com /f "d:\Backups\ImageUploader
 
 cd %temp_dir%
 %zipcmd% a -mx9 ..\..\output\image-uploader-%_APP_VER%-build-%BUILD%-portable.7z "*"
+cd ..\..\
+
+del "%temp_dir%\Image Uploader.exe"
+Copy "..\Build\release openssl\Image Uploader.exe" %temp_dir%\
+Copy "..\Build\release openssl\curl-ca-bundle.crt" %temp_dir%\
+
+cd %temp_dir%
+%zipcmd% a -mx9 ..\..\output\image-uploader-%_APP_VER%-build-%BUILD%-openssl-portable.7z "*"
 cd ..\..\
 
 rem rmdir /q /s  %temp_dir%

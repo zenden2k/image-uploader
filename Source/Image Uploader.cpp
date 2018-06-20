@@ -16,7 +16,7 @@
      limitations under the License.
 */
 
- 
+  
 #include "atlheaders.h"
 #include <shellapi.h> 
 #include "Gui/Dialogs/LogWindow.h"
