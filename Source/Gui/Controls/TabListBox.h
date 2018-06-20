@@ -7,26 +7,26 @@
 #pragma once
 
 // CTabListBox
-
+// This class is used in SettingsDlg
 // LISTBOX control should have  LBS_HASSTRINGS style and LBS_OWNERDRAWVARIABLE style
 class CTabListBox :
-	public CWindowImpl<CTabListBox, CListBox>
+    public CWindowImpl<CTabListBox, CListBox>
 {
 public:
-	CTabListBox();
-	~CTabListBox();
-	DECLARE_WND_SUPERCLASS(_T("CTabListBox"), CListBox::GetWndClassName())
-	
+    CTabListBox();
+    ~CTabListBox();
+    DECLARE_WND_SUPERCLASS(_T("CTabListBox"), CListBox::GetWndClassName())
+    
     BEGIN_MSG_MAP(CTabListBox)
-		MESSAGE_HANDLER(OCM_DRAWITEM, OnDrawitem)
-		MESSAGE_HANDLER(OCM_MEASUREITEM, OnMeasureItem)
+        MESSAGE_HANDLER(OCM_DRAWITEM, OnDrawitem)
+        MESSAGE_HANDLER(OCM_MEASUREITEM, OnMeasureItem)
     END_MSG_MAP()
 
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	 LRESULT OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+     LRESULT OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);  
 };
 

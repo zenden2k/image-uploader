@@ -30,43 +30,43 @@
 
 struct TrayItem
 {
-	CString text;
-	DWORD commandId;
+    CString text;
+    DWORD commandId;
 };
 
 class CTrayActions: public CAtlArray<TrayItem>
 {
-	public:
-	CTrayActions();
-	void AddTrayAction(CString text, DWORD id)
-	{
-		TrayItem item;
-		item.text = text;
-		item.commandId = id;
-		Add(item);
-	}
+    public:
+    CTrayActions();
+    void AddTrayAction(CString text, DWORD id)
+    {
+        TrayItem item;
+        item.text = text;
+        item.commandId = id;
+        Add(item);
+    }
 };
 
 
 class CTraySettingsPage : 
-	public CDialogImpl<CTraySettingsPage>, public CSettingsPage	
+    public CDialogImpl<CTraySettingsPage>, public CSettingsPage    
 {
 public:
-	CTraySettingsPage();
-	~CTraySettingsPage();
-	enum { IDD = IDD_TRAYSETTINGSPAGE};
+    CTraySettingsPage();
+    ~CTraySettingsPage();
+    enum { IDD = IDD_TRAYSETTINGSPAGE};
 
     BEGIN_MSG_MAP(CTraySettingsPage)
-		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-		COMMAND_HANDLER_EX(IDC_SHOWTRAYICON, BN_CLICKED, OnShowTrayIconBnClicked)
+        MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+        COMMAND_HANDLER_EX(IDC_SHOWTRAYICON, BN_CLICKED, OnShowTrayIconBnClicked)
     END_MSG_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	bool Apply();
-	LRESULT OnShowTrayIconBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+    LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    bool Apply();
+    LRESULT OnShowTrayIconBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 };
 
 

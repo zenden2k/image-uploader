@@ -28,18 +28,20 @@
 
 namespace IuCoreUtils {
 
-class CryptoUtils {
-	public:
-		static const std::string CalcMD5Hash(const void* data, size_t size);
-		static const std::string CalcMD5HashFromString(const std::string &data);
-		static const std::string CalcMD5HashFromFile(const std::string& filename);
+namespace CryptoUtils {
+    const std::string CalcMD5Hash(const void* data, size_t size);
+    const std::string CalcMD5HashFromString(const std::string &data);
+    const std::string CalcMD5HashFromFile(const std::string& filename);
 
-		static const std::string CalcSHA1Hash(const void* data, size_t size);
-		static const std::string CalcSHA1HashFromString(const std::string& data);
-		static const std::string CalcSHA1HashFromFile(const std::string& filename);
+    const std::string CalcSHA1Hash(const void* data, size_t size);
+    const std::string CalcSHA1HashFromString(const std::string& data);
+    const std::string CalcSHA1HashFromFile(const std::string& filename);
 
-		static const std::string CalcHMACSHA1Hash(const std::string& key, const void* data, size_t size, bool base64);
-		static const std::string CalcHMACSHA1HashFromString(const std::string& key, const std::string& data, bool base64);
+    const std::string CalcHMACSHA1Hash(const std::string& key, const void* data, size_t size, bool base64);
+    const std::string CalcHMACSHA1HashFromString(const std::string& key, const std::string& data, bool base64);
+    std::string Base64Encode(const std::string& data);
+    std::string Base64Decode(const std::string& data);
+
 };
 
 };

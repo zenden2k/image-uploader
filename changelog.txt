@@ -1,6 +1,62 @@
 ﻿# Image Uploader changelog 
 #
-# http://zenden.ws/imageuploader
+# hthttp://zenden2k.atwebpages.com/imageuploader
+
+1.3.2.4563
+[f] Fixed uploading to cubeupload.com
+[f] Fixed incorrect processing of images with EXIF orientation tag
+[f] Fixed uploading to imageban.ru
+[c] Use new styled file dialog for choosing video file
+[c] Double-click on history item now opens URL in browser
+
+1.3.2.4551
+[+] Added mega.nz cloud provider support
+
+1.3.2.xxxx
+
+[+] Parallel uploads
+[+] Run user's script for each file
+[+] Added edit, delete items to history window context menu
+[+] Added CustomHeaders and UserAgent options to servers.xml
+[+] Display url shortening option before upload
+[+] Added animation of tray icon
+[+] Copy image in data:URL format
+[+] Added support for .webp format
+[f] Fixed wrong icon for "Log" and "Options button" in uploaddlg
+[c] Scripting API changes: added Process class, new functions
+[f] Fixed keyboard not working in file list
+
+[f] ImageEditor: Fixed crop rectangle out of boundaries issue
+
+[f] ImageEditor: Fixed marker 1px pen issue
+[c] Updated icon
+[c] Language files are now in UTF-8 encoding
+[c] Use winssl instead of openssl
+
+[+] Added Win7 jumplist
+[c] Allow editing of default thumbnail templates by making a copy
+[+] Copy image in data:URL format, closes 
+[+] Added "Clear History" button
+[+] Added "Show screenshot folder" menu item
+[f] Fixed deleting of an account
+[+] Show file count in file list
+[f] Fixed creation of new folder in multithreaded mode
+[+] Added Signup link to login dialog;
+[f] Fixed album's link in results panel;
+[f] Show file size limits in SizeExceed dialog
+[f] ImageEditor: fixed crash in Blur element
+[f] Fixed Installer: "install ffmpeg libs" checkbox is disabled under Wine
+[c] ImageEditor: close window on copy to clipboard in fullscreen mode
+[+] Show results of last upload (tray icon menu)
+[c] ImageEditor: toolbars double-buffering
+[f] Custom output code templates (markdown), fix empty imageUrl if no direct url available
+[+] Copy results to the clipboard in HTML format (for WYSYWYG editors)
+
+[c] MediaInfo: changed duration display style
+[+] Multiselection in log window
+[-] Removed old icon
+[+] Added support for "//example.com" links in re-uploader
+
 
 1.3.1.4318
 [f] Fixed uploading video files from Explorer's context menu (custom menu entries)

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_ffmpeg" DownloadUrl="http://dl.bintray.com/zenden/zenden-image-uploader/iu_ffmpeg_1426150796.zip" TimeStamp="1426150796" UpdateUrl="http://zenden.ws/updates/update.php?package=%name%&amp;ver=%appver%" CoreUpdate="1" DisplayName="FFmpeg libraries" Hash="6f86340d77dbe0da5986852699e47b9a">
+<UpdateInfo Name="iu_ffmpeg" DownloadUrl="http://dl.bintray.com/zenden/zenden-image-uploader/iu_ffmpeg_1426150796.zip" TimeStamp="1426150796" UpdateUrl="http://zenden2k.atwebpages.com/updates/update.php?package=%name%&amp;ver=%appver%&amp;os_name=OS_NAME&amp;os_ver=OS_VER&amp;cpu_f=CPU_FEATURES" CoreUpdate="1" DisplayName="FFmpeg libraries" Hash="6f86340d77dbe0da5986852699e47b9a">
   <Info>
 New FFmpeg version 2.6
 </Info>

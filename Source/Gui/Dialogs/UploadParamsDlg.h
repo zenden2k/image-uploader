@@ -25,58 +25,57 @@
 #include "resource.h"       // main symbols
 #include "Core/Upload/UploadEngine.h"
 #include "3rdpart/ColorButton.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 
 // CUploadParamsDlg
 
-class CUploadParamsDlg : public CDialogImpl<CUploadParamsDlg>	
+class CUploadParamsDlg : public CDialogImpl<CUploadParamsDlg>    
 {
-	public:
-		int ServerId;
-		CUploadParamsDlg(ServerProfile& serverProfile, bool defaultServer = false);
-		~CUploadParamsDlg();
-		enum { IDD = IDD_UPLOADPARAMSDLG };
-		ImageUploadParams imageUploadParams();
-	protected:
-		BEGIN_MSG_MAP(CUploadParamsDlg)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-			COMMAND_HANDLER(IDC_CREATETHUMBNAILS, BN_CLICKED, OnClickedCreateThumbnailsCheckbox)
-			COMMAND_HANDLER(IDC_DEFAULTSETTINGSCHECKBOX, BN_CLICKED, OnClickedDefaultSettingsCheckbox)
-			COMMAND_HANDLER(IDC_DEFAULTTHUMBSETTINGSCHECKBOX, BN_CLICKED, OnClickedDefaultThumbSettingsCheckbox)
-			COMMAND_HANDLER(IDC_THUMBTEXTCHECKBOX, BN_CLICKED, OnClickedThumbTextCheckbox)
-			COMMAND_HANDLER(IDC_USESERVERTHUMBNAILS, BN_CLICKED, OnClickedUseServerThumbnailsCheckbox)
-			COMMAND_HANDLER(IDC_PROCESSIMAGESCHECKBOX, BN_CLICKED, OnClickedProcessImagesCheckbox)
-			REFLECT_NOTIFICATIONS()
-		END_MSG_MAP()
-		// Handler prototypes:
-		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedCreateThumbnailsCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedProcessImagesCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedDefaultSettingsCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedDefaultThumbSettingsCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedThumbTextCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedUseServerThumbnailsCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    public:
+        int ServerId;
+        CUploadParamsDlg(ServerProfile& serverProfile, bool showImageProcessingParams = true, bool defaultServer = false);
+        ~CUploadParamsDlg();
+        enum { IDD = IDD_UPLOADPARAMSDLG };
+        ImageUploadParams imageUploadParams();
+    protected:
+        BEGIN_MSG_MAP(CUploadParamsDlg)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
+            COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+            COMMAND_HANDLER(IDC_CREATETHUMBNAILS, BN_CLICKED, OnClickedCreateThumbnailsCheckbox)
+            COMMAND_HANDLER(IDC_DEFAULTSETTINGSCHECKBOX, BN_CLICKED, OnClickedDefaultSettingsCheckbox)
+            COMMAND_HANDLER(IDC_DEFAULTTHUMBSETTINGSCHECKBOX, BN_CLICKED, OnClickedDefaultThumbSettingsCheckbox)
+            COMMAND_HANDLER(IDC_THUMBTEXTCHECKBOX, BN_CLICKED, OnClickedThumbTextCheckbox)
+            COMMAND_HANDLER(IDC_USESERVERTHUMBNAILS, BN_CLICKED, OnClickedUseServerThumbnailsCheckbox)
+            COMMAND_HANDLER(IDC_PROCESSIMAGESCHECKBOX, BN_CLICKED, OnClickedProcessImagesCheckbox)
+            REFLECT_NOTIFICATIONS()
+        END_MSG_MAP()
+        // Handler prototypes:
+        //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedCreateThumbnailsCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedProcessImagesCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedDefaultSettingsCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedDefaultThumbSettingsCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedThumbTextCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedUseServerThumbnailsCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
-		
-		
-		void createThumbnailsCheckboxChanged();
-		void processImagesChanged();
-		void defaultSettingsCheckboxChanged();
-		void defaultThumbSettingsCheckboxChanged();
-		void thumbTextCheckboxChanged();
-		void useServerThumbnailsChanged();
-		CUploadEngineData *m_UploadEngine;
-		CColorButton ThumbBackground_;
-		ImageUploadParams params_;
-		ServerProfile&  serverProfile_;
-		bool defaultServer_;
+        void createThumbnailsCheckboxChanged();
+        void processImagesChanged();
+        void defaultSettingsCheckboxChanged();
+        void defaultThumbSettingsCheckboxChanged();
+        void thumbTextCheckboxChanged();
+        void useServerThumbnailsChanged();
+        CUploadEngineData *m_UploadEngine;
+        CColorButton ThumbBackground_;
+        ImageUploadParams params_;
+        ServerProfile&  serverProfile_;
+        bool defaultServer_;
+        bool showImageProcessingParams_;
 };
 
 #endif // LOGINDLG_H

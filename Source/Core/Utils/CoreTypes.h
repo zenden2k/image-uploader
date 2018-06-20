@@ -4,15 +4,16 @@
 #include <string>
 #define __STDC_CONSTANT_MACROS
 #include <stdint.h>
+// Since Visual Studio 2012 stdint.h is included
 //#include "Core/3rdpart/pstdint.h"
 #include <memory>
-#include <Core/Logging.h>
-typedef std::string Utf8String;
+#include "Core/Logging.h"
+/*
 #if _MSC_VER  && (_MSC_VER < 1800)
-namespace std_tr = std::tr1;
+namespace std:: = std::tr1;
 #else
-namespace std_tr = std;
-#endif
+namespace std:: = std;
+#endif*/
 
 /*#ifdef _MSC_VER
    typedef __int64 int64_t;
@@ -25,8 +26,8 @@ namespace std_tr = std;
 // A macro to disallow the copy constructor and operator= functions
 // This should be used in the private: declarations for a class
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \
-	TypeName(const TypeName&);               \
-	void operator=(const TypeName&)
+    TypeName(const TypeName&) = delete;               \
+    void operator=(const TypeName&) =delete
 
 
 // The ARRAY_SIZE(arr) macro returns the # of elements in an array arr.
@@ -58,22 +59,23 @@ char (&ArraySizeHelper(const T (&array)[N]))[N];
 
 template <class T> struct EnumWrapper
 {
-	T value_;
-	operator T&()
-	{
-		return value_;
-	}
+    T value_;
+    operator T&() {
+        return value_;
+    }
 
-	T& operator =(const T& value)
-	{
-		value_ = value;
-		return *this;
-	}
+    T& operator =(const T& value) {
+        value_ = value;
+        return *this;
+    }
 
-	bool operator==(const T value)
-	{
-		return value_ == value;
-	}
+    bool operator==(const T value) {
+        return value_ == value;
+    }
+
+    int toInt() const {
+        return static_cast<int>(value_);
+    }
 };
 
 // std::shared_ptr release() implementation
@@ -82,18 +84,41 @@ template <class T> struct EnumWrapper
 template <typename T>
 class release_deleter{
 public:
-	release_deleter() : released_(new bool(false)){}
-	void release() {*released_ = true;}
-	void reset_released() { *released_ = false;}
-	void operator()(T* ptr){
-		if(!*released_)  {
-			delete ptr;
-		}
-			
-	}
+    release_deleter() : released_(new bool(false)){}
+    void release() {*released_ = true;}
+    void reset_released() { *released_ = false;}
+    void operator()(T* ptr){
+        if(!*released_)  {
+            delete ptr;
+        }
+            
+    }
 
 private:
-	//DISALLOW_COPY_AND_ASSIGN(release_deleter<T>);
-	std_tr::shared_ptr<bool> released_;
+    //DISALLOW_COPY_AND_ASSIGN(release_deleter<T>);
+    std::shared_ptr<bool> released_;
 };
+
+#ifndef Q_DECLARE_PRIVATE
+    #define Q_DECLARE_PRIVATE(Class) \
+        inline Class##Private* d_func() { return reinterpret_cast<Class##Private *>(d_ptr); } \
+        inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(d_ptr); } \
+        friend class Class##Private;
+    #define Q_D(Class) Class##Private * const d = d_func()
+
+#define Q_DECLARE_PUBLIC(Class)                  \
+  inline Class* q_func() { return static_cast<Class *>(q_ptr); } \
+  inline const Class* q_func() const { return static_cast<const Class *>(q_ptr); } \
+  friend class Class;
+
+#define Q_Q(Class) Class * const q = q_func()
+#endif
+
+#define Q_DECLARE_PRIVATE_PTR(Class) \
+        inline Class##Private* d_func() { return reinterpret_cast<Class##Private *>(d_ptr.get()); } \
+        inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(d_ptr.get()); } \
+        friend class Class##Private;
+#define Q_D(Class) Class##Private * const d = d_func()
+
+
 #endif

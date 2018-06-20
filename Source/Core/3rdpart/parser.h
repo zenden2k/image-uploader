@@ -2,6 +2,7 @@
 // Этот файл содержит описание класса TParser,
 // осуществляющего разбор заданного математического выражения.
 // Written by Chaos Master, 11th of Febrary, 2000.
+// 2015 - Sergey Svistunov
 
 #if !defined(__SOLVER_H)
 #define __SOLVER_H
@@ -9,11 +10,6 @@
 // Includes
 #include <string.h>
 #include <vector>
-using namespace std;
-
-// Defines
-#define MAX_EXPR_LEN   255
-#define MAX_TOKEN_LEN  80
 
 struct TParserNode
 {
@@ -25,13 +21,15 @@ struct TParserNode
       { value = _value; left = _left; right = _right; }
 };
 
-struct TError
-{
-   char *error;
-   int pos;
-
-   TError() {};
-   TError(char *_error, int _pos) { error=_error; pos=_pos; }
+class TParserError : public std::runtime_error {
+public:
+    TParserError(const std::string& msg, int pos = -1) : std::runtime_error(msg), pos_(pos) {}
+    TParserError(const TParserError& ex) : std::runtime_error(ex), pos_(ex.pos_) {}
+    int pos() {
+        return pos_;
+    }
+protected:
+    int pos_;
 };
 
 class TParser
@@ -39,6 +37,7 @@ class TParser
   private:
    TParserNode *root;
    char *expr;
+   enum { MAX_EXPR_LEN =  255, MAX_TOKEN_LEN  = 80};
    char curToken[MAX_TOKEN_LEN];
    enum { PARSER_PLUS, PARSER_MINUS, PARSER_MULTIPLY, PARSER_DIVIDE, PARSER_PERCENT, PARSER_POWER,
           PARSER_SIN, PARSER_COS, PARSER_TG, PARSER_CTG, PARSER_ARCSIN, PARSER_ARCCOS, PARSER_ARCTG, PARSER_ARCCTG, PARSER_SH, PARSER_CH, PARSER_TH, PARSER_CTH,
@@ -48,9 +47,7 @@ class TParser
    const double *x;
    double result;
 
-   vector<TParserNode *> history;
-
-  private:
+   std::vector<TParserNode *> history;
    TParserNode *CreateNode(double _value=0.0, TParserNode *_left=NULL, TParserNode *_right=NULL);
 
    TParserNode *Expr(void);

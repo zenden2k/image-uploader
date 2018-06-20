@@ -20,27 +20,31 @@ mkdir %temp_dir%\Data\Favicons
 mkdir %temp_dir%\Data\Scripts
 mkdir %temp_dir%\Data\Scripts\Lang
 mkdir %temp_dir%\Data\Scripts\Utils
+mkdir %temp_dir%\Data\Scripts\UploadFilters
 mkdir %temp_dir%\Data\Servers
 mkdir %temp_dir%\Data\Update
+mkdir %temp_dir%\Data\Utils
 
 call signcode.bat
 Copy "..\Build\release optimized\Image Uploader.exe" %temp_dir%\
-Copy "..\Build\release optimized\curl-ca-bundle.crt" %temp_dir%\
-Copy "..\Source\res\new-icon.ico" %temp_dir%\
 Copy "..\Lang\*.lng" %temp_dir%\Lang\
+Copy "..\Lang\English.lng.src" %temp_dir%\Lang\
 Copy "..\Build\release optimized\Modules\*" %temp_dir%\Modules\
 xcopy "..\Docs" %temp_dir%\Docs\ /s /e /y /i
 Copy "..\Data\servers.xml" %temp_dir%\Data\
+Copy "..\Data\servers.xsd" %temp_dir%\Data\
 Copy "..\Data\templates.xml" %temp_dir%\Data\
 Copy "..\Data\template.txt" %temp_dir%\Data\
 Copy "..\Data\Favicons\*.ico" %temp_dir%\Data\Favicons\
 Copy "..\Data\Scripts\*.nut" %temp_dir%\Data\Scripts\
 Copy "..\Data\Scripts\Lang\*.json" %temp_dir%\Data\Scripts\Lang\
-Copy "..\Data\Scripts\Utils\*.json" %temp_dir%\Data\Scripts\Utils\
+Copy "..\Data\Scripts\Utils\*.nut" %temp_dir%\Data\Scripts\Utils\
+Copy "..\Data\Scripts\UploadFilters\*.nut" %temp_dir%\Data\Scripts\UploadFilters\
 Copy "..\Data\Update\iu_core.xml" %temp_dir%\Data\Update\
 Copy "..\Data\Update\iu_serversinfo.xml" %temp_dir%\Data\Update\
 Copy "..\Data\Update\iu_ffmpeg.xml" %temp_dir%\Data\Update\
 Copy "..\Data\Thumbnails\*.*" %temp_dir%\Data\Thumbnails\
+Copy "..\Data\Utils\*" %temp_dir%\Data\Utils\
 rem Copy "..\Data\Servers\*.xml" %temp_dir%\Data\Servers\
 Copy "..\Build\release optimized\ExplorerIntegration.dll" %temp_dir%\
 Copy "..\Build\release optimized\ExplorerIntegration64.dll" %temp_dir%\
@@ -48,10 +52,19 @@ Copy "..\Build\release\av*.dll" %temp_dir%\
 Copy "..\Build\release\sw*.dll" %temp_dir%\
 Copy "Dll\gdiplus.dll" %temp_dir%\
 del "%temp_dir%\Lang\default.lng"
+del "%temp_dir%\Data\Scripts\test.nut"
 rem signtool sign  /t http://timestamp.digicert.com /f "d:\Backups\ImageUploader\3315593d7023a0aeb48042349dc4fd40.pem" "%temp_dir%\Image Uploader.exe" "%temp_dir%\ExplorerIntegration.dll" "%temp_dir%\ExplorerIntegration64.dll"
 
 cd %temp_dir%
 %zipcmd% a -mx9 ..\..\output\image-uploader-%_APP_VER%-build-%BUILD%-portable.7z "*"
+cd ..\..\
+
+del "%temp_dir%\Image Uploader.exe"
+Copy "..\Build\release openssl\Image Uploader.exe" %temp_dir%\
+Copy "..\Build\release openssl\curl-ca-bundle.crt" %temp_dir%\
+
+cd %temp_dir%
+%zipcmd% a -mx9 ..\..\output\image-uploader-%_APP_VER%-build-%BUILD%-openssl-portable.7z "*"
 cd ..\..\
 
 rem rmdir /q /s  %temp_dir%

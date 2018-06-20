@@ -24,35 +24,39 @@
 #include "atlheaders.h"
 #include <atlcoll.h>
 #include <ctime>
-#include "PluginLoader.h"
 #include "MyEngineList.h"
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 
-class CPluginManager;
+class UploadEngineManager;
 class CCmdLine;
 
 struct CUrlListItem
 {
-	bool IsImage, IsThumb;
-	CString FileName;
-	CString ImageUrl;
-	CString ImageUrlShortened;
-	CString ThumbUrl;
-	CString ThumbUrlShortened;
-	CString DownloadUrl;
-	CString DownloadUrlShortened;
+    bool IsImage, IsThumb;
+    CString FileName;
+    CString ImageUrl;
+    CString ImageUrlShortened;
+    CString ThumbUrl;
+    CString ThumbUrlShortened;
+    CString DownloadUrl;
+    CString DownloadUrlShortened;
 
-	CString getDownloadUrl(bool shortened = false) {
-		return (shortened && !DownloadUrlShortened.IsEmpty()) ? DownloadUrlShortened : DownloadUrl; 
-	}
+    CString getDownloadUrl(bool shortened = false) {
+        return (shortened && !DownloadUrlShortened.IsEmpty()) ? DownloadUrlShortened : DownloadUrl; 
+    }
 
-	CString getImageUrl(bool shortened = false) {
-		return (shortened && !ImageUrlShortened.IsEmpty()) ? ImageUrlShortened : ImageUrl; 
-	}
+    CString getImageUrl(bool shortened = false) {
+        return (shortened && !ImageUrlShortened.IsEmpty()) ? ImageUrlShortened : ImageUrl; 
+    }
 
-	CString getThumbUrl(bool shortened = false) {
-		return (shortened && !ThumbUrlShortened.IsEmpty()) ? ThumbUrlShortened : ThumbUrl; 
-	}
+    CString getThumbUrl(bool shortened = false) {
+        return (shortened && !ThumbUrlShortened.IsEmpty()) ? ThumbUrlShortened : ThumbUrl; 
+    }
+
+    bool isNull()
+    {
+        return ImageUrl.IsEmpty() && DownloadUrl.IsEmpty();
+    }
 
 };
 
@@ -62,53 +66,43 @@ bool IULaunchCopy();
 extern CCmdLine CmdLine;
 
 bool __fastcall CreateShortCut( 
-							 LPCWSTR pwzShortCutFileName, 
-							   LPCTSTR pszPathAndFileName, 
-							   LPCTSTR pszWorkingDirectory, 
-							   LPCTSTR pszArguments, 
-							   WORD wHotKey, 
-							   int iCmdShow, 
-							   LPCTSTR pszIconFileName, 
-							   int iIconIndex) ;
+                             LPCWSTR pwzShortCutFileName, 
+                               LPCTSTR pszPathAndFileName, 
+                               LPCTSTR pszWorkingDirectory, 
+                               LPCTSTR pszArguments, 
+                               WORD wHotKey, 
+                               int iCmdShow, 
+                               LPCTSTR pszIconFileName, 
+                               int iIconIndex) ;
 #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 
-bool IULaunchCopy(CString params, CAtlArray<CString> &files);
-
-extern CPluginManager iuPluginManager;
-
-void IU_ConfigureProxy(NetworkClient& nm);
+bool IULaunchCopy(CString params, const CAtlArray<CString> &files);
 
 const CString IU_GetVersion();
-#define IU_NEWFOLDERMARK ("_iu_create_folder_")
 void DeleteDir2(LPCTSTR Dir);
 bool BytesToString(__int64 nBytes, LPTSTR szBuffer,int nBufSize);
 bool IULaunchCopy(CString additionalParams=_T(""));
 
 inline COLORREF RGB2COLORREF(unsigned int color)
 {
-	return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
+    return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
 }
 
 inline unsigned int COLORREF2RGB( COLORREF color)
 {
-	return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
+    return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
 }
 void IU_RunElevated(CString params);
 HRESULT IsElevated( __out_opt BOOL * pbElevated );
 #define randomize() (srand((unsigned)time(NULL)))
 #define random(x) (rand() % x)
-bool IU_CopyTextToClipboard(CString text);
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
 
-CString GenerateFileName(const CString &templateStr, int index,const CPoint size, const CString& originalName=_T(""));
+
 CString GetUniqFileName(const CString &filePath);
-bool IU_GetClipboardText(CString &text);
 extern CMyEngineList *_EngineList;
 
-BOOL IU_CreateFolder(LPCTSTR szFolder);
-BOOL IU_CreateFilePath(LPCTSTR szFilePath);
 HICON GetAssociatedIcon (LPCTSTR filename, bool Small);
-BOOL IsWinXP();
 int ScreenBPP();
 BOOL Is32BPP();
 CString GetSystemSpecialPath(int csidl);
@@ -117,8 +111,8 @@ const CString GetCommonApplicationDataPath();
 HRESULT IsElevated( __out_opt BOOL * pbElevated );
 // Function that gets path to SendTo folder
 CString GetSendToPath() ;
-void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ");
-void EncodeString(LPCTSTR szSource, CString &Result,LPSTR code="{DAb[]=_T('')+b/16;H3N SHJ");
+void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')+b/16;H3N SHJ");
+void EncodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')+b/16;H3N SHJ");
 CString IU_md5_file(const CString& filename);
 
 typedef CAtlArray<CString> CStringList;

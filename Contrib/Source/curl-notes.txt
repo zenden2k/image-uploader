@@ -1,6 +1,22 @@
 cd winbuild
+nmake /f Makefile.vc mode=static VC=12 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no RTLIBCFG=static
+ nmake /f Makefile.vc mode=static VC=12 WITH_SSL=static WITH_ZLIB=static DEBUG=yes ENABLE_IDN=no RTLIBCFG=static
+
 nmake /f Makefile.vc mode=static VC=9 WITH_SSL=static WITH_ZLIB=static DEBUG=no ENABLE_IDN=no
 #nmake /f Makefile.vc mode=static VC=9 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no
+
+nmake /f Makefile.vc mode=static VC=9 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no
+
+
+nmake /E CC="cl /D_USING_V120_SDK71_ /D_WIN32_WINNT=0x0501" /f Makefile.vc mode=static VC=12 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no RTLIBCFG=static
+
+\lib\config-win32.h
+
+
+#undef WINVER
+#define WINVER 0x0501
+#undef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501
 
 
 Patch http.c !
@@ -10,3 +26,66 @@ find:
 
 replace with:
   if(*ptr && ISSPACE(*ptr)) 
+
+
+Possible patch for formdata.c (not working)
+
+#if defined(_WIN32) && !defined(__MINGW32CE__)
+#include <windows.h>
+#include <share.h>
+#include <errno.h>
+#endif 
+
+#if defined(_WIN32) && !defined(__MINGW32CE__)
+
+
+int utf8towchar(const char *filename_utf8, wchar_t **filename_w)
+{
+    int num_chars;
+    num_chars = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filename_utf8, -1, NULL, 0);
+    if (num_chars <= 0) {
+        *filename_w = NULL;
+        return 0;
+    }
+    *filename_w = (wchar_t *)malloc(num_chars * sizeof(wchar_t));
+    if (!*filename_w) {
+        errno = ENOMEM;
+        return -1;
+    }
+    MultiByteToWideChar(CP_UTF8, 0, filename_utf8, -1, *filename_w, num_chars);
+    return 0;
+}
+
+FILE* win32_open(const char *filename_utf8, const char * mode)
+{
+    FILE *f;
+    wchar_t *filename_w;
+    wchar_t *mode_w;
+    /* convert UTF-8 to wide chars */
+    if (utf8towchar(filename_utf8, &filename_w))
+        return 0;
+
+    if (!filename_w)
+        goto fallback;
+
+    if (utf8towchar(mode, &mode_w))
+        return 0;
+
+    if (!mode_w) {
+        free(filename_w);
+        goto fallback;
+    }
+
+    f = _wfopen(filename_w, mode_w);
+    free(filename_w);
+    free(mode_w);
+
+    if (f)
+        return f;
+
+fallback:
+    /* filename may be in CP_ACP */
+    return fopen(filename_utf8, mode);
+}
+#define fopen win32_open
+#endif  

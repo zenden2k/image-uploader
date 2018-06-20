@@ -20,49 +20,48 @@
 
 #include "MyDataObject.h"
 
-
 CMyDataObject::CMyDataObject()
 {
-	// Reference count must ALWAYS start at 1.
-	m_lRefCount = 1;
-	TotalLength = 0;
-	ZeroMemory(&m_FormatEtc, sizeof(m_FormatEtc));
-	m_FormatEtc.cfFormat = CF_HDROP;
-	m_FormatEtc.dwAspect = DVASPECT_CONTENT;
-	m_FormatEtc.lindex = 0;
-	m_FormatEtc.ptd = NULL;
-	m_FormatEtc.tymed = TYMED_HGLOBAL;
+    // Reference count must ALWAYS start at 1.
+    m_lRefCount = 1;
+    TotalLength = 0;
+    ZeroMemory(&m_FormatEtc, sizeof(m_FormatEtc));
+    m_FormatEtc.cfFormat = CF_HDROP;
+    m_FormatEtc.dwAspect = DVASPECT_CONTENT;
+    m_FormatEtc.lindex = 0;
+    m_FormatEtc.ptd = NULL;
+    m_FormatEtc.tymed = TYMED_HGLOBAL;
 
-	ZeroMemory(&m_StgMedium, sizeof(m_StgMedium));
-	m_StgMedium.tymed = TYMED_HGLOBAL;
+    ZeroMemory(&m_StgMedium, sizeof(m_StgMedium));
+    m_StgMedium.tymed = TYMED_HGLOBAL;
 }
 
 CMyDataObject::~CMyDataObject()
 {
-	ReleaseStgMedium(&m_StgMedium);
+    ReleaseStgMedium(&m_StgMedium);
 }
 
 void CMyDataObject::Reset()
 {
-	m_FileItems.RemoveAll();
+    m_FileItems.RemoveAll();
 }
 
 void CMyDataObject::AddFile(LPCTSTR FileName)
 {
-	if(!FileName) return;
-	m_FileItems.Add(CString(FileName));
-	TotalLength += lstrlen(FileName)+1;
+    if(!FileName) return;
+    m_FileItems.Add(CString(FileName));
+    TotalLength += lstrlen(FileName)+1;
 }
 
 
 bool CMyDataObject::IsFormatSupported(FORMATETC *pFormatEtc)
 {
-	if (m_FormatEtc.cfFormat == pFormatEtc->cfFormat &&
-		m_FormatEtc.dwAspect == pFormatEtc->dwAspect &&
-		m_FormatEtc.tymed & pFormatEtc->tymed)
-		return true;
-	
-	return false;
+    if (m_FormatEtc.cfFormat == pFormatEtc->cfFormat &&
+        m_FormatEtc.dwAspect == pFormatEtc->dwAspect &&
+        m_FormatEtc.tymed & pFormatEtc->tymed)
+        return true;
+    
+    return false;
 }
 
 HRESULT __stdcall CMyDataObject::QueryInterface(REFIID iid, void **ppvObject)
@@ -90,46 +89,46 @@ ULONG __stdcall CMyDataObject::AddRef()
 ULONG __stdcall CMyDataObject::Release()
 {
     // Decrement object reference count.
-	LONG lCount = InterlockedDecrement(&m_lRefCount);
-		
-	if (lCount == 0)
-	{
-		delete this;
-		return 0;
-	}
-	else
-	{
-		return lCount;
-	}
+    LONG lCount = InterlockedDecrement(&m_lRefCount);
+        
+    if (lCount == 0)
+    {
+        delete this;
+        return 0;
+    }
+    else
+    {
+        return lCount;
+    }
 }
 
 HRESULT __stdcall CMyDataObject::GetData(FORMATETC *pFormatEtc, STGMEDIUM *pStgMedium)
 {
-	if (!IsFormatSupported(pFormatEtc))
-		return DV_E_FORMATETC;
+    if (!IsFormatSupported(pFormatEtc))
+        return DV_E_FORMATETC;
 
-	// Copy the storage medium data.
-	pStgMedium->tymed = m_StgMedium.tymed;
-	pStgMedium->pUnkForRelease = 0;
-	pStgMedium->hGlobal = 
-		GlobalAlloc(GMEM_SHARE,sizeof(DROPFILES)+(TotalLength+1)*sizeof(TCHAR) );
-	
-	// Формирование структуры DROPFILES для драгндропа файлов
-	DROPFILES *DP = (LPDROPFILES) GlobalLock(pStgMedium->hGlobal);
-	ZeroMemory(DP, sizeof(DROPFILES));
-	DP->fWide = TRUE;
-	DP->pFiles = sizeof(DROPFILES);
+    // Copy the storage medium data.
+    pStgMedium->tymed = m_StgMedium.tymed;
+    pStgMedium->pUnkForRelease = 0;
+    pStgMedium->hGlobal = 
+        GlobalAlloc(GMEM_SHARE,sizeof(DROPFILES)+(TotalLength+1)*sizeof(TCHAR) );
+    
+    // Формирование структуры DROPFILES для драгндропа файлов
+    DROPFILES *DP = reinterpret_cast<LPDROPFILES>(GlobalLock(pStgMedium->hGlobal));
+    ZeroMemory(DP, sizeof(DROPFILES));
+    DP->fWide = TRUE;
+    DP->pFiles = sizeof(DROPFILES);
 
-	LPTSTR Files = (LPTSTR)((PBYTE)DP+ DP->pFiles);
-	for(size_t i =0; i<m_FileItems.GetCount(); i++)
-	{
-		lstrcpy(Files, m_FileItems[i]);
-		Files += m_FileItems[i].GetLength()+1;
-	}
-	*Files=0;
-	
-	GlobalUnlock(DP);
-	return S_OK;
+    LPTSTR Files = (LPTSTR)((PBYTE)DP+ DP->pFiles);
+    for(size_t i =0; i<m_FileItems.GetCount(); i++)
+    {
+        lstrcpy(Files, m_FileItems[i]);
+        Files += m_FileItems[i].GetLength()+1;
+    }
+    *Files=0;
+    
+    GlobalUnlock(DP);
+    return S_OK;
 }
 
 HRESULT CMyDataObject::GetDataHere(FORMATETC *pFormatEtc, STGMEDIUM *pMedium)
@@ -139,37 +138,37 @@ HRESULT CMyDataObject::GetDataHere(FORMATETC *pFormatEtc, STGMEDIUM *pMedium)
 
 HRESULT __stdcall CMyDataObject::QueryGetData(FORMATETC *pFormatEtc)
 {
-	return IsFormatSupported(pFormatEtc) ? S_OK : DV_E_FORMATETC;
+    return IsFormatSupported(pFormatEtc) ? S_OK : DV_E_FORMATETC;
 }
 
 HRESULT CMyDataObject::GetCanonicalFormatEtc(FORMATETC *pFormatEct, FORMATETC *pFormatEtcOut)
 {
-	// MUST be set to NULL.
+    // MUST be set to NULL.
     pFormatEtcOut->ptd = NULL;
-	 return E_NOTIMPL;
+     return E_NOTIMPL;
 }
 
 HRESULT __stdcall CMyDataObject::SetData(FORMATETC *pFormatEtc, STGMEDIUM *pMedium, BOOL fRelease)
 {
-	return E_NOTIMPL;
+    return E_NOTIMPL;
 }
 
 HRESULT __stdcall CMyDataObject::EnumFormatEtc(DWORD dwDirection, IEnumFORMATETC **ppEnumFormatEtc)
 {
-	if (dwDirection == DATADIR_GET)
-	{
-		// Windows 2000 and newer only.
-		return SHCreateStdEnumFmtEtc(1, &m_FormatEtc, ppEnumFormatEtc);
-		//return CreateEnumFmtEtc(1,&m_FormatEtc,ppEnumFormatEtc);
-	}
-	else
-	{
-		return E_NOTIMPL;
-	}
+    if (dwDirection == DATADIR_GET)
+    {
+        // Windows 2000 and newer only.
+        return SHCreateStdEnumFmtEtc(1, &m_FormatEtc, ppEnumFormatEtc);
+        //return CreateEnumFmtEtc(1,&m_FormatEtc,ppEnumFormatEtc);
+    }
+    else
+    {
+        return E_NOTIMPL;
+    }
 }
 
 HRESULT CMyDataObject::DAdvise(FORMATETC *pFormatEtc, DWORD advf, IAdviseSink *pAdvSink, 
-	DWORD *pdwConnection)
+    DWORD *pdwConnection)
 {
     return OLE_E_ADVISENOTSUPPORTED;
 }

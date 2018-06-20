@@ -24,7 +24,6 @@
 #pragma once
 
 #include "atlheaders.h"
-#include <atlframe.h>
 #include "resource.h"       // main symbols
 #include "3rdpart/ColorButton.h"
 #include "Core/Images/Thumbnail.h"
@@ -32,35 +31,35 @@
 // CInputDialog
 
 class CInputDialog :
-	public CDialogImpl<CInputDialog>
+    public CDialogImpl<CInputDialog>
 {
-	public:
-		CInputDialog(const CString& title, const CString& descr, const CString& defaultValue = _T(""), const CString& image = _T(""));
-		~CInputDialog();
-		enum { IDD = IDD_INPUTDIALOG };
+    public:
+        CInputDialog(const CString& title, const CString& descr, const CString& defaultValue = _T(""), const CString& image = _T(""));
+        ~CInputDialog();
+        enum { IDD = IDD_INPUTDIALOG };
 
-		BEGIN_MSG_MAP(CInputDialog)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-		END_MSG_MAP()
+        BEGIN_MSG_MAP(CInputDialog)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
+            COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+        END_MSG_MAP()
 
-	public:
-		CString getValue() const;
+    public:
+        CString getValue() const;
 
-	protected:
-		// Handler prototypes:
-		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		CString title_;
-		CString description_;
-		CString value_;
-		CString image_;
-		CMyImage imgControl;
+    protected:
+        // Handler prototypes:
+        //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        CString title_;
+        CString description_;
+        CString value_;
+        CString image_;
+        CMyImage imgControl;
 };
 
 #endif // INPUTDIALOG_H

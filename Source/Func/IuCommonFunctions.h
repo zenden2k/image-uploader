@@ -4,20 +4,22 @@
 #include "atlheaders.h"
 
 namespace IuCommonFunctions {
-	const CString GetDataFolder();
+    const CString GetDataFolder();
 
-	const CString GetVersion();
+    const CString GetVersion();
 
-	BOOL CreateTempFolder();
-	void ClearTempFolder(LPCTSTR folder);
+    BOOL CreateTempFolder();
+    void ClearTempFolder(LPCTSTR folder);
 
-	int GetNextImgFile(LPCTSTR folder, LPTSTR szBuffer, int nLength);
+    int GetNextImgFile(LPCTSTR folder, LPTSTR szBuffer, int nLength);
+    CString GenerateFileName(const CString &templateStr, int index, const CPoint size, const CString& originalName = _T(""));
+    bool IsImage(LPCTSTR szFileName);
 
-	CString FindDataFolder();
+    CString FindDataFolder();
 
 
-	extern CString IUTempFolder;
+    extern CString IUTempFolder;
 
-	extern CString IUCommonTempFolder;
+    extern CString IUCommonTempFolder;
 };
 #endif

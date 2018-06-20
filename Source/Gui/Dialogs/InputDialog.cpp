@@ -20,19 +20,19 @@
 
 #include "InputDialog.h"
 
-#include <3rdpart/GdiplusH.h>
-#include "Func/Settings.h"
+#include "3rdpart/GdiplusH.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 
 // CInputDialog
 CInputDialog::CInputDialog(const CString& title, const CString& descr, const CString& defaultValue,
                            const CString& image)
 {
-	title_ = title;
-	;
-	description_ = descr;
-	value_ = defaultValue;
-	image_ = image;
+    title_ = title;
+    ;
+    description_ = descr;
+    value_ = defaultValue;
+    image_ = image;
 }
 
 CInputDialog::~CInputDialog()
@@ -41,54 +41,54 @@ CInputDialog::~CInputDialog()
 
 void OffsetControl(HWND control, int offset)
 {
-	RECT rc;
+    RECT rc;
 
-	GetWindowRect(control, &rc);
-	MapWindowPoints(0, GetParent(control), (LPPOINT)&rc, 2);
-	SetWindowPos(control, 0, rc.left, rc.top + offset, 0, 0, SWP_NOSIZE);
+    GetWindowRect(control, &rc);
+    MapWindowPoints(0, GetParent(control), reinterpret_cast<LPPOINT>(&rc), 2);
+    SetWindowPos(control, 0, rc.left, rc.top + offset, 0, 0, SWP_NOSIZE);
 }
 
 LRESULT CInputDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	SetWindowText(title_);
-	SetDlgItemText(IDC_DESCRIPTIONLABEL, description_);
-	SetDlgItemText(IDC_VALUEEDIT, value_);
-	TRC(IDCANCEL, "Отмена");
-	TRC(IDOK, "OK");
+    SetWindowText(title_);
+    SetDlgItemText(IDC_DESCRIPTIONLABEL, description_);
+    SetDlgItemText(IDC_VALUEEDIT, value_);
+    TRC(IDCANCEL, "Cancel");
+    TRC(IDOK, "OK");
 
-	imgControl.SubclassWindow(GetDlgItem(IDC_IMAGE));
+    imgControl.SubclassWindow(GetDlgItem(IDC_IMAGE));
 
-	if (!image_.IsEmpty())
-	{
-		Gdiplus::Image img(image_);
-		int imgHeight = img.GetHeight() + 5;
-		RECT rc;
-		GetWindowRect(&rc);
-		imgControl.SetWindowPos(0, 0, 0, img.GetWidth() + 2, imgHeight + 2, SWP_NOMOVE);
-		imgControl.LoadImage(image_);
-		SetWindowPos(0, 0, 0, rc.right - rc.left, rc.bottom - rc.top + imgHeight, SWP_NOMOVE);
-		OffsetControl(GetDlgItem(IDC_VALUEEDIT), imgHeight );
-		OffsetControl(GetDlgItem(IDCANCEL), imgHeight );
-		OffsetControl(GetDlgItem(IDOK), imgHeight );
-	}
-	CenterWindow(GetParent());
-	return 0;  // Let the system set the focus
+    if (!image_.IsEmpty())
+    {
+        Gdiplus::Image img(image_);
+        int imgHeight = img.GetHeight() + 5;
+        RECT rc;
+        GetWindowRect(&rc);
+        imgControl.SetWindowPos(0, 0, 0, img.GetWidth() + 2, imgHeight + 2, SWP_NOMOVE);
+        imgControl.LoadImage(image_);
+        SetWindowPos(0, 0, 0, rc.right - rc.left, rc.bottom - rc.top + imgHeight, SWP_NOMOVE);
+        OffsetControl(GetDlgItem(IDC_VALUEEDIT), imgHeight );
+        OffsetControl(GetDlgItem(IDCANCEL), imgHeight );
+        OffsetControl(GetDlgItem(IDOK), imgHeight );
+    }
+    CenterWindow(GetParent());
+    return 0;  // Let the system set the focus
 }
 
 LRESULT CInputDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	value_ = GuiTools::GetWindowText(GetDlgItem(IDC_VALUEEDIT));
-	EndDialog(wID);
-	return 0;
+    value_ = GuiTools::GetWindowText(GetDlgItem(IDC_VALUEEDIT));
+    EndDialog(wID);
+    return 0;
 }
 
 LRESULT CInputDialog::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	EndDialog(wID);
-	return 0;
+    EndDialog(wID);
+    return 0;
 }
 
 CString CInputDialog::getValue() const
 {
-	return value_;
+    return value_;
 }

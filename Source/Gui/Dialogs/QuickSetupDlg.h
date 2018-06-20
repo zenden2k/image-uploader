@@ -1,21 +1,21 @@
 /*
-    Image Uploader - program for uploading images/files to Internet
-    Copyright (C) 2007-2011 ZendeN <zenden2k@gmail.com>
-	 
-    HomePage:    http://zenden.ws/imageuploader
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Image Uploader -  free application for uploading images/files to the Internet
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+    Copyright 2007-2015 Sergey Svistunov (zenden2k@gmail.com)
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
 */
 
 #ifndef QuickSetupDlg_H
@@ -45,7 +45,6 @@ class CQuickSetupDlg : public CDialogImpl<CQuickSetupDlg>
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 			COMMAND_HANDLER(IDC_DOAUTHCHECKBOX, BN_CLICKED, OnClickedDoAuthCheckbox)
 			COMMAND_HANDLER(IDC_SERVERCOMBOBOX, CBN_SELCHANGE, OnServerComboSelChange)
-			COMMAND_HANDLER(IDC_FTPSETTINGSBUTTON, BN_CLICKED, OnClickedFtpSettings)
 		END_MSG_MAP()
 
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -54,7 +53,6 @@ class CQuickSetupDlg : public CDialogImpl<CQuickSetupDlg>
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnClickedDoAuthCheckbox(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		LRESULT OnServerComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedFtpSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
 	private:
 		CMyImage LogoImage;
@@ -62,10 +60,10 @@ class CQuickSetupDlg : public CDialogImpl<CQuickSetupDlg>
 		CIcon hIcon;
 		CIcon hIconSmall;
 		void doAuthCheckboxChanged();
+        void translateUI();
 		CComboBoxEx serverComboBox_;
 		CImageList comboBoxImageList_;
 		void showAuthorizationControls(bool show);
-		void showFtpButton(bool show);
 		void serverChanged();
 };
 

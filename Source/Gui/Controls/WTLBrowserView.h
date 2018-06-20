@@ -10,46 +10,46 @@
 #endif // _MSC_VER >= 1000
 
 #include "Browser.h"
-#include <Core/3rdpart/FastDelegate.h>
+#include "Core/3rdpart/FastDelegate.h"
 
 class CWTLBrowserView : public CWindowImpl<CWTLBrowserView, CAxWindow>, public CWebBrowser2<CWTLBrowserView>
 {
 public:
-	CWTLBrowserView() : m_bSecured(FALSE)
-	{
-	}
-	
-	DECLARE_WND_SUPERCLASS(NULL, CAxWindow::GetWndClassName())
+    CWTLBrowserView() : m_bSecured(FALSE)
+    {
+    }
+    
+    DECLARE_WND_SUPERCLASS(NULL, CAxWindow::GetWndClassName())
 
-	BOOL PreTranslateMessage(MSG* pMsg);
+    BOOL PreTranslateMessage(MSG* pMsg);
 
-	BEGIN_MSG_MAP(CWTLBrowserView)
-		CHAIN_MSG_MAP(CWebBrowser2<CWTLBrowserView>)
-	END_MSG_MAP()
+    BEGIN_MSG_MAP(CWTLBrowserView)
+        CHAIN_MSG_MAP(CWebBrowser2<CWTLBrowserView>)
+    END_MSG_MAP()
 
 // Handler prototypes (uncomment arguments if needed):
-//	LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-//	LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-//	LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
+//    LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+//    LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+//    LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
 
-	void OnStatusTextChange(const String& szText);
-	void OnProgressChange(long nProgress, long nProgressMax);
-	void OnSetSecureLockIcon(long nSecureLockIcon);
-	void OnNavigateComplete2(IDispatch* pDisp, const CString& szURL);
-	BOOL OnNavigateError(IDispatch* pDisp, const String& szURL, const String& szTargetFrameName, LONG nStatusCode);
-	void OnPropertyChange(const String& szProperty);
-	void OnDocumentComplete(IDispatch* pDisp, const String& szURL);
+    void OnStatusTextChange(const String& szText);
+    void OnProgressChange(long nProgress, long nProgressMax);
+    void OnSetSecureLockIcon(long nSecureLockIcon);
+    void OnNavigateComplete2(IDispatch* pDisp, const CString& szURL);
+    BOOL OnNavigateError(IDispatch* pDisp, const String& szURL, const String& szTargetFrameName, LONG nStatusCode);
+    void OnPropertyChange(const String& szProperty);
+    void OnDocumentComplete(IDispatch* pDisp, const String& szURL);
 
-	BOOL IsSecured() const
-	{
-		return m_bSecured;
-	}
+    BOOL IsSecured() const
+    {
+        return m_bSecured;
+    }
 
-	fastdelegate::FastDelegate1<const CString&> onNavigateComplete2;
-	fastdelegate::FastDelegate1<const CString&> onDocumentComplete;
-	fastdelegate::FastDelegate2<const CString&, LONG, bool> onNavigateError;
+    fastdelegate::FastDelegate1<const CString&> onNavigateComplete2;
+    fastdelegate::FastDelegate1<const CString&> onDocumentComplete;
+    fastdelegate::FastDelegate2<const CString&, LONG, bool> onNavigateError;
 protected:
-	BOOL m_bSecured;
+    BOOL m_bSecured;
 };
 
 

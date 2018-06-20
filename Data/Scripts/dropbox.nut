@@ -2,11 +2,42 @@
 appSecret <- "wloizpn331cc8zd";
 accessType <- "app_folder";
 
+redirectUri <- "https://oauth.vk.com/blank.html";
+redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.com\\/blank\\.html";
+
 authStep1Url <- "https://api.dropbox.com/1/oauth/request_token";
 authStep2Url <- "https://api.dropbox.com/1/oauth/access_token";
 
-oauth_token_secret <- "";
-oauth_token <- "";
+token <- "";
+accountId <- "";
+
+regMatchOffset <- 0;
+
+try {
+	local ver = GetAppVersion();
+	if ( ver.Build > 4422 ) {
+		regMatchOffset = 1;
+	}
+} catch ( ex ) {
+}
+
+function BeginLogin() {
+	try {
+		return Sync.beginAuth();
+	}
+	catch ( ex ) {
+	}
+	return true;
+}
+
+function EndLogin() {
+	try {
+		return Sync.endAuth();
+	} catch ( ex ) {
+		
+	}
+	return true;
+}
 
 function tr(key, text) {
 	try {
@@ -28,30 +59,6 @@ function regex_simple(data,regStr,start)
 		return resultStr;
 }
 
-function getTimeStamp() {
-	local days = ["Sun","Mon","Tue","Wed","Thu", "Fri", "Sat"];
-	local months = ["Jan","Feb","Mar","Apr","May","Jun","Jul", "Aug","Sep","Oct", "Nov","Dec"];
-	local dt = date(time(),'u');
-	local res = format("%s, %d %s %d %02d:%02d:%02d +0000",days[dt.wday],dt.day,months[dt.month],dt.year,dt.hour,dt.min,dt.sec );
-	//print(res);
-	return res;
-}
-
-function generateNonce() {
-	local res = "";
-	res += format("%d%d%d", random(2000), random(2000), random(2000));
-	return res;
-}
-
-function custom_compare(item1,item2){
-	local a = item1.a+"="+item1.b;
-	local b = item2.a+"="+item2.b;
-	if(a>b) return 1;
-	else if(a<b) return -1;
-	return 0;
-}
-
-
 function _WriteLog(type,message) {
 	try {
 		WriteLog(type, message);
@@ -60,54 +67,47 @@ function _WriteLog(type,message) {
 	}
 }
 
-function signRequest(url, token,tokenSecret) {
-	local params=[	{a="oauth_consumer_key", b=appKey},
-					{a="oauth_signature_method", b="PLAINTEXT"},
-					{a="oauth_timestamp", b=getTimeStamp()},
-					{a="oauth_version", b="1.0"},
-					{a="oauth_nonce", b=generateNonce() }
-			  ];
-	if ( token != "" ) {
-		params.append({a="oauth_token",b=token});
-	}	
-	params.sort(custom_compare);
-
-	local normalizedRequest = "POST";
-	local tableLen = params.len();
-	for ( local i=0; i< tableLen; i++ ) {
-		params[i].b = nm.urlEncode(params[i].b);
-		normalizedRequest += "&" + params[i].a + "=" + params[i].b;
-		
-	}
-	//print("\r\n"+normalizedRequest);
-	local oauth_signature = /*sha1(normalizedRequest)*/appSecret + "&" + tokenSecret;
-	params.append({a="oauth_signature",b=oauth_signature});
-	params.sort(custom_compare);
+function signRequest(url, token) {
+	nm.addQueryHeader("Authorization", "Bearer " + token);
 	
-	local getStr="";
-	local authorizationString = "OAuth ";
-	for ( local i=0; i< params.len(); i++ ) {
-		if ( i!=0) {
-			authorizationString += ",";
-			 getStr += "&";
-		}
-		authorizationString += params[i].a + "=\"" + params[i].b +"\"";
-		getStr += params[i].a + "="+params[i].b;
-	}
-	
-	//print("\r\n"+oauth_signature);
-	//print("\r\n"+authorizationString);
-	
-	local sign = "POST";
-	sign += "&" + authStep1Url;
-	nm.addQueryHeader("Authorization", authorizationString);
-	
-	return getStr;
+	return url;
 }
 
-function sendOauthRequest(url, token,tokenSecret) {
+function OnUrlChangedCallback(data) {
+	local reg = CRegExp("^" +redirectUrlEscaped, "");
+	if ( reg.match(data.url) ) {
+        //DebugMessage(data.url, true);
+		local br = data.browser;
+		local regError = CRegExp("error=([^&]+)", "");
+		if ( regError.match(data.url) ) {
+			WriteLog("warning", regError.getMatch(regMatchOffset+0));
+		} else {
+			local regToken = CRegExp("access_token=([^&]+)", "");
+			if ( regToken.match(data.url) ) {
+				token = regToken.getMatch(regMatchOffset+0);
+			}
+			
+			local regAccountId = CRegExp("account_id=([^&]+)", "");
+			if ( regAccountId.match(data.url) ) {
+				accountId = regAccountId.getMatch(regMatchOffset+0);
+			}
+            
+            local tokenType ="";
+            local regTokenTypeId = CRegExp("token_type=([^&]+)", "");
+			if ( regTokenTypeId.match(data.url) ) {
+				tokenType = regTokenTypeId.getMatch(regMatchOffset+0);
+			}
+			ServerParams.setParam("prevLogin", ServerParams.getParam("Login"));
+			ServerParams.setParam("token", token);
+			ServerParams.setParam("accountId", accountId);	
+			ServerParams.setParam("tokenTime", time().tostring());	
+		}
+		br.close();
+	}
+}
+function sendOauthRequest(url, token) {
 	nm.setUrl(url);
-	signRequest(url, token,tokenSecret);
+	signRequest(url, token);
 	nm.doPost("" );
 	return 0;
 }
@@ -119,74 +119,57 @@ function openUrl(url) {
 	system("start "+ reg_replace(url,"&","^&") );
 }
 
-function DoLogin() {
-	oauth_token_secret = ServerParams.getParam("oauth_token_secret");
-	oauth_token = ServerParams.getParam("oauth_token");
+function _DoLogin() {
+	token = ServerParams.getParam("token");
 	
-	if ( oauth_token_secret != ""  &&  oauth_token != ""){
+	if ( token != ""){
 		return 1;
 	}
-	local email = ServerParams.getParam("Login");
-	local pass =  ServerParams.getParam("Password");
+    
+    local browser = CWebBrowser();
+	browser.setTitle(tr("dropbox.browser.title", "Dropbox authorization"));
+	browser.setOnUrlChangedCallback(OnUrlChangedCallback, null);
 	
-	sendOauthRequest(authStep1Url, "", "");
+	local url = "https://www.dropbox.com/oauth2/authorize?" + 
+			"client_id=" + appKey  + 
+			"&response_type=token" +
+			"&redirect_uri=" + nm.urlEncode(redirectUri);
+
+	browser.navigateToUrl(url);
+	browser.showModal();
 	
-	local data =  nm.responseBody();
-	local temp_oauth_token_secret = regex_simple(data, "oauth_token_secret=([^&]+)", 0);
-	local temp_oauth_token = regex_simple(data, "oauth_token=([^&]+)", 0);
-	
-	openUrl("https://www.dropbox.com/1/oauth/authorize?oauth_token=" + temp_oauth_token);
-	
-	msgBox(tr("dropbox.please_allow","Please allow Image Uploader to connect with your Dropbox (in web browser) and then press OK."));
-	
-	sendOauthRequest(authStep2Url, temp_oauth_token, temp_oauth_token_secret);
-	data =  nm.responseBody();
-	oauth_token_secret = regex_simple(data, "oauth_token_secret=([^&]+)", 0);
-	oauth_token = regex_simple(data, "oauth_token=([^&]+)", 0);
-	
-	if ( oauth_token_secret != "" && oauth_token != "" ) {
-		ServerParams.setParam("oauth_token_secret", oauth_token_secret);
-		ServerParams.setParam("oauth_token", oauth_token);
-		
-		/*local url = "https://api.dropbox.com/1/account/info";
-		signRequest(url, oauth_token,oauth_token_secret);
-		nm.doGet(url);
-		data =  nm.responseBody();
-		local displayName = regex_simple(data, "display_name\": \"(.+)\",", 0);
-		ServerParams.setParam("Login", displayName);
-		*/
+    if ( token != ""){
+        /*local url = "https://api.dropboxapi.com/2/users/get_current_account";
+        nm.addQueryHeader("Content-Type","")
+        sendOauthRequest(url, token);
+        WriteLog("warning", nm.responseBody() );*/
 		return 1;
 	}
+    
 	return 0;
 }
 
+function DoLogin() {
+	if (!BeginLogin() ) {
+		return false;
+	}
+	local res = _DoLogin();
+	
+	EndLogin();
+	return res;
+}
+
 function isAuthorized() {
-	if ( oauth_token_secret != "" && oauth_token != "" ) {
+	if ( token != "" ) {
 		return true;
 	}
 	return false;
-}
-
-function msgBox(text) {
-	try {
-		DebugMessage(text, false);
-		return true;
-	}catch(ex) {
-	}
-	local tempScript = "%temp%\\imguploader_msgbox.vbs";
-	system("echo Set objArgs = WScript.Arguments : messageText = objArgs(0) : MsgBox messageText > \"" + tempScript + "\"");
-	system("cscript \"" + tempScript + "\" \"" + text + "\"");
-	system("del /f /q \"" + tempScript + "\"");
-	
-	
-	return true;
 }
 
 function min(a,b) {
 	return a < b ? a : b;
 }
 function  UploadFile(FileName, options) {		
-
 	if (!DoLogin() ) {
 		return 0;
 	}
@@ -198,7 +181,7 @@ function  UploadFile(FileName, options) {
 	local chunkSize = (50*1024*1024).tofloat();
 	local fileSize = 0;
 	try { 
-		GetFileSize(FileName);
+		fileSize=GetFileSize(FileName);
 	} catch ( ex ) {
 		
 	}
@@ -207,11 +190,15 @@ function  UploadFile(FileName, options) {
 		_WriteLog("error","fileSize < 0 ");
 		return 0;
 	}
-	local path = "sandbox/" + userPath + ExtractFileName(FileName);
+	local path = "/"+ userPath;
+    local remotePath =path+ExtractFileName(FileName);
+    local fileId="";
 	if ( fileSize > 150000000 ) {
 		local chunkCount = ceil(fileSize / chunkSize);
-		local upload_id = null;
+		local session = null;
 		local offset = 0;
+        
+        local session="";
 		for(local i = 0; i < chunkCount; i++ ) {
 			for ( local j =0; j < 2; j++ ) {
 				try {
@@ -220,18 +207,33 @@ function  UploadFile(FileName, options) {
 					_WriteLog("error", "Your Image Uploader version does not support chunked uploads for big files. \r\nPlease update to the latest version");
 					return 0;
 				}
-				
+				if( session==""){
+                    url = "https://content.dropboxapi.com/2/files/upload_session/start" ;
+                    signRequest(url, token);
+                    local arg ={
+                        close=false
+                    };
+                    local json = reg_replace(ToJSON(arg),"\n","");
+                    nm.addQueryHeader("Dropbox-API-Arg", json);
+                } else{
+                    url = "https://content.dropboxapi.com/2/files/upload_session/append_v2" ;
+                    signRequest(url, token);
+                    local arg ={
+                        cursor={
+                            session_id=session,
+                            offset=offset
+                        },
+                        close=false
+                    };
+                    local json = reg_replace(ToJSON(arg),"\n","");
+                    nm.addQueryHeader("Dropbox-API-Arg", json);
+                }
 				local chunkSize = min(chunkSize,fileSize.tofloat()-offset);
 				nm.setChunkSize(chunkSize);
-				url = "https://api-content.dropbox.com/1/chunked_upload?overwrite=false&offset="+offset ;
-				if ( upload_id ) {
-					url += "&upload_id="+nm.urlEncode(upload_id);
-				}
-				signRequest(url, oauth_token,oauth_token_secret);
+                nm.addQueryHeader("Content-Type", "application/octet-stream");
 				nm.setUrl(url);
-				
-				nm.setMethod("PUT");
 				nm.doUpload(FileName,"");
+                
 				if ( nm.responseCode() != 200 ) {
 					_WriteLog("warning","Chunk upload failed, offset="+offset+", size="+chunkSize+(j< 1? "Trying again..." : ""));
 					if ( nm.responseCode() == 403 ) {
@@ -240,62 +242,98 @@ function  UploadFile(FileName, options) {
 					}
 				} else {
 					local t = ParseJSON(nm.responseBody());
-					offset = t.offset;
-					upload_id = t.upload_id;
+					if(session==""){
+                        session = t.session_id;
+                    }else{
+                        
+                    }
+                    offset += chunkSize;
+                    
 					break;
 				}
 			}
 			//return 0;
 		}
-		if ( !upload_id ) {
+		if ( session=="" ) {
 			_WriteLog("error","Upload failed");
 			return 0;
 		}
-		url = "https://api-content.dropbox.com/1/commit_chunked_upload/auto/" + path;
+		url = "https://content.dropboxapi.com/2/files/upload_session/finish";
 		
 		nm.setUrl(url);
-		signRequest(url, oauth_token,oauth_token_secret);
+        local arg ={
+            cursor={
+                session_id=session,
+                offset=offset
+            },
+            commit={
+                path=remotePath,
+                mode="add",
+                autorename=true,
+                mute=false
+            }
+        };
+        local json = reg_replace(ToJSON(arg),"\n","");
+        nm.addQueryHeader("Dropbox-API-Arg", json);
+        nm.addQueryHeader("Content-Type", "application/octet-stream");
+		signRequest(url, token);
 		nm.setMethod("POST");
-		nm.doPost("upload_id="+upload_id);
-		//WriteLog("error",nm.responseBody());
+		nm.doPost("");
+
 		if ( nm.responseCode() != 200 ) {
-			_WriteLog("error",nm.responseCode().tostring());
+            return 0;
+			//_WriteLog("error",nm.responseCode().tostring());
 		}
+        local data = ParseJSON(nm.responseBody());
 
 	} else {
-		url = "https://api-content.dropbox.com/1/files/" + path ;
-		local getParams = signRequest(url, oauth_token,oauth_token_secret);
-
+		url = "https://content.dropboxapi.com/2/files/upload" ;
+		signRequest(url, token);
+        local arg ={
+            path=remotePath,
+            mode="add",
+            autorename=true,
+            mute=false
+        };
+        nm.addQueryHeader("Content-Type", "application/octet-stream");
+        local json = reg_replace(ToJSON(arg),"\n","");
+        nm.addQueryHeader("Dropbox-API-Arg", json);
 		nm.setUrl(url);
-		nm.addQueryParamFile("file",FileName, ExtractFileName(FileName),"");
-		nm.addQueryParam("overwrite", "false");
-		nm.doUploadMultipartData();
+		nm.doUpload(FileName,"");
 	}
 
-	local data = nm.responseBody();
+    local data = ParseJSON(nm.responseBody());
+    if(nm.responseCode()!=200){
+        _WriteLog("error",nm.responseBody());
+        return 0;
+    }
 
-	path = regex_simple(data, "path\": \"(.+)\",", 0);
-	path = unescape_json_string(path);
-	local thumbExists = regex_simple(data, "thumb_exists\": \"(.+)\",", 0);
-	
-	url = "https://api.dropbox.com/1/shares/sandbox" +path;
-	signRequest(url, oauth_token,oauth_token_secret);
+    fileId = data.id;
+    
+    url = "https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings" ;
+	signRequest(url, token);
+    local arg ={
+            path=remotePath,
+            settings={
+                requested_visibility="public"
+            }
+    };
+    local json = reg_replace(ToJSON(arg),"\n","");
+    //_WriteLog("error",json);
+    nm.addQueryHeader("Content-Type","application/json")
 	nm.setUrl(url);
-	nm.doPost("");
-	local data =  nm.responseBody();
-
-	local viewUrl = unescape_json_string(regex_simple(data, "url\": \"(.+)\",", 0));
-	options.setViewUrl(viewUrl );
-
-	url = "https://api.dropbox.com/1/media/sandbox" + path;
-	signRequest(url, oauth_token,oauth_token_secret);
-	nm.setUrl(url);
-	nm.doPost("");
+	nm.doUpload("",json);
+        
+    if(nm.responseCode()!=200){
+        _WriteLog("error",nm.responseBody());
+        return 0;
+    } 
+    
+    data = ParseJSON(nm.responseBody());
+    local viewUrl =data.url;
+	options.setViewUrl( viewUrl);
 	
-	local directUrl = regex_simple(nm.responseBody(), "url\": \"(.+)\",", 0);
-	//options.setDirectUrl(directUrl );
-	
-	if ( url != "" ) {
+	if ( viewUrl != "" ) {
 		return 1;
 	}
  	
@@ -373,8 +411,7 @@ function GetServerParamList()
 {
 	local a =
 	{
-		oauth_token_secret = "oauth_token_secret"
-		oauth_token = "oauth_token"
+        token = "token"
 		UploadPath = "Upload Path"
 	}
 	return a;

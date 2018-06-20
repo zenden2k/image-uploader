@@ -26,9 +26,9 @@
 #include "../3rdpart/Registry.h"
 #include "../Func/LangClass.h"
 #include <shlobj.h>
-#include <Core/Video/VideoUtils.h>
-#include <Func/IuCommonFunctions.h>
-
+#include "Core/Video/VideoUtils.h"
+#include "Func/IuCommonFunctions.h"
+#include "Func/WinUtils.h"
 HINSTANCE hDllInstance;
 
 CString GetStartMenuPath() 
@@ -36,7 +36,6 @@ CString GetStartMenuPath()
 	CString result;
 	LPITEMIDLIST pidl;
 	TCHAR        szSendtoPath [MAX_PATH];
-	HANDLE       hFile;
 	LPMALLOC     pMalloc;
 
 	if(SUCCEEDED( SHGetSpecialFolderLocation ( NULL, CSIDL_STARTMENU, &pidl )))
@@ -76,11 +75,11 @@ bool IsMediaInfoInstalled()
    RegQueryValueEx(ExtKey,	 _T("installdir"), 0, &Type, (LPBYTE)&ClassName, &BufSize);
 	RegCloseKey(ExtKey);
 	CString MediaDll = GetDllFolder()+_T("\\Modules\\MediaInfo.dll");
-	if(FileExists( MediaDll)) MediaInfoDllPath  = MediaDll;
+	if(WinUtils::FileExists( MediaDll)) MediaInfoDllPath  = MediaDll;
 	else
 	{
 		CString MediaDll2 =CString(ClassName)+_T("\\Tools\\MediaInfo.dll");
-		if(FileExists( MediaDll2)) MediaInfoDllPath = MediaDll2;
+		if(WinUtils::FileExists( MediaDll2)) MediaInfoDllPath = MediaDll2;
 	}
 	return !MediaInfoDllPath.IsEmpty();
 }
@@ -91,7 +90,7 @@ bool AreOnlyImages(CAtlArray<CString> & files)
 
 	for(int i=0; i<files.GetCount();i++)
 	{
-		if(!IsImage(files[i])) return false;
+		if(!IuCommonFunctions::IsImage(files[i])) return false;
 	}
 	return true;
 }
@@ -103,9 +102,9 @@ bool CIShellContextMenu::MyInsertMenu(HMENU hMenu, int pos, UINT id, int nIntern
 	MenuItem.cbSize = sizeof(MenuItem);
 	MenuItem.fType = MFT_STRING;
 	if ( ico ) {
-		MenuItem.hbmpItem = IsVista() ? m_IconBitmapUtils.HIconToBitmapPARGB32(ico): HBMMENU_CALLBACK;
+		MenuItem.hbmpItem = WinUtils::IsVista() ? m_IconBitmapUtils.HIconToBitmapPARGB32(ico): HBMMENU_CALLBACK;
 	} else {
-		MenuItem.hbmpItem = IsVista() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, resid): HBMMENU_CALLBACK;
+		MenuItem.hbmpItem = WinUtils::IsVista() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, resid): HBMMENU_CALLBACK;
 	}
 	
 	MenuItem.fMask = MIIM_FTYPE | MIIM_ID | (UseBitmaps?MIIM_BITMAP:0)  | MIIM_STRING;
@@ -170,7 +169,6 @@ STDMETHODIMP CIShellContextMenu::HandleMenuMsg2(UINT uMsg, WPARAM wParam, LPARAM
 		break;
 	case WM_DRAWITEM:
 		{
-			LPCTSTR resource;
 			HICON hIcon=0;
 			DRAWITEMSTRUCT* lpdis = reinterpret_cast<DRAWITEMSTRUCT*>(lParam);
 			if ((lpdis==NULL)||(lpdis->CtlType != ODT_MENU))
@@ -228,12 +226,12 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 	bool ExplorerVideoContextMenu= true;
 	CRegistry Reg;
 	Reg.SetRootKey(HKEY_CURRENT_USER);
-	if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
+	if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false))
 	{
-		ExplorerCascadedMenu = Reg.ReadBool("ExplorerCascadedMenu", true);
+		ExplorerCascadedMenu = Reg.ReadBool(_T("ExplorerCascadedMenu"), true);
 	//	ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
-		ExplorerVideoContextMenu = Reg.ReadBool("ExplorerVideoContextMenu", true);
-		CString lang = Reg.ReadString("Language");
+		ExplorerVideoContextMenu = Reg.ReadBool(_T("ExplorerVideoContextMenu"), true);
+		CString lang = Reg.ReadString(_T("Language"));
 		//MessageBox(0, lang,0,0);
 		if(lang != Lang.GetLanguageName())
 		{
@@ -244,12 +242,12 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		else 
 		{	
 			Reg.SetWOW64Flag(KEY_WOW64_32KEY);
-			if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false))
+			if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false))
 			{
-				ExplorerCascadedMenu = Reg.ReadBool("ExplorerCascadedMenu");
+				ExplorerCascadedMenu = Reg.ReadBool(_T("ExplorerCascadedMenu"));
 			//	ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
-				ExplorerVideoContextMenu = Reg.ReadBool("ExplorerVideoContextMenu");
-				CString lang = Reg.ReadString("Language");
+				ExplorerVideoContextMenu = Reg.ReadBool(_T("ExplorerVideoContextMenu"));
+				CString lang = Reg.ReadString(_T("Language"));
 				//MessageBox(0, lang,0,0);
 				if(lang != Lang.GetLanguageName())
 				{
@@ -279,18 +277,18 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		MyInsertMenuSeparator(PopupMenu, subIndex++, 0);
 	}
 	if(AreOnlyImages(m_FileList))
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES, TR("Загрузить изображения"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES, TR("Upload images"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
 	else
 	{
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADFILES, TR("Загрузить файлы"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES,TR("Загрузить только изображения"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADFILES, TR("Upload files"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES,TR("Upload images only"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
 	}
 	bool separatorInserted = false;
 
 	CRegistry Reg2;
 	Reg2.SetRootKey( HKEY_CURRENT_USER );
 	std::vector<CString> keyNames;
-	CString keyPath = "Software\\Zenden.ws\\Image Uploader\\ContextMenuItems";
+	CString keyPath = _T("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems");
 	Reg2.GetChildKeysNames(keyPath,keyNames);
 	int w = GetSystemMetrics(SM_CXSMICON);
 	int h = GetSystemMetrics(SM_CYSMICON);
@@ -302,8 +300,8 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 					MyInsertMenuSeparator(PopupMenu, subIndex++, 0);
 					separatorInserted = true;
 			}
-				CString title = Reg2.ReadString("Name");
-				CString iconFileName = Reg2.ReadString("Icon");
+				CString title = Reg2.ReadString(_T("Name"));
+				CString iconFileName = Reg2.ReadString(_T("Icon"));
 				CIcon ico;
 				if ( !iconFileName.IsEmpty() ) {
 					ico = (HICON)LoadImage(0,dataFolder +L"\\Favicons\\"+iconFileName,IMAGE_ICON	,w,h,LR_LOADFROMFILE);
@@ -315,9 +313,9 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 
 	if(ExplorerVideoContextMenu&&  m_FileList.GetCount()==1 &&IsVideoFile( m_FileList[0]))
 	{
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO,  TR("Импорт видео"),idCmdFirst,CString(),UseBitmaps,0,ExplorerCascadedMenu?0:IDI_ICONMOVIE);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO,  TR("Import Video File"),idCmdFirst,CString(),UseBitmaps,0,ExplorerCascadedMenu?0:IDI_ICONMOVIE);
 		if(m_bMediaInfoInstalled)
-			MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_MEDIAINFO, TR("Информация о файле"),idCmdFirst,CString(),UseBitmaps,0 ,ExplorerCascadedMenu?0:IDI_ICONINFO);
+			MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_MEDIAINFO, TR("Information about file"),idCmdFirst,CString(),UseBitmaps,0 ,ExplorerCascadedMenu?0:IDI_ICONINFO);
 	}
 	if ( !ExplorerCascadedMenu ) {
 		MyInsertMenuSeparator(PopupMenu, subIndex++, 0);
@@ -341,7 +339,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		InternalMenuItem.text = MenuItem.dwTypeData;
 		
 		InternalMenuItem.icon= IDI_ICONMAIN;
-		MenuItem.hbmpItem = IsVista() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, IDI_ICONMAIN): HBMMENU_CALLBACK;
+		MenuItem.hbmpItem = WinUtils::IsVista() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, IDI_ICONMAIN): HBMMENU_CALLBACK;
 		
 		InternalMenuItem.id = MenuItem.wID;
 		if(InsertMenuItem(hmenu, indexMenu, true, &MenuItem))
@@ -349,7 +347,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 			
 	}
 
-	if (IsVista())
+	if (WinUtils::IsVista())
 	{
 		MENUINFO MenuInfo;
 
@@ -378,7 +376,7 @@ bool IULaunchCopy(CAtlArray<CString> & CmdLine,const CString params=_T(""))
 	for(int i=0;i <CmdLine.GetCount(); i++)
 		{
 			if(!lstrcmpi(CmdLine[i], _T("-Embedding"))) continue;
-			TempCmdLine = TempCmdLine + " \"" + CmdLine[i] + "\""; 
+			TempCmdLine = TempCmdLine + _T(" \"") + CmdLine[i] + _T("\""); 
 		}
 
     // Start the child process.
@@ -395,8 +393,8 @@ bool IULaunchCopy(CAtlArray<CString> & CmdLine,const CString params=_T(""))
         &pi )                   // Pointer to PROCESS_INFORMATION structure.
 		) {
 			CString errorMessage;
-			errorMessage.Format(TR("Не удалось запустить процесс '%s'"),(LPCTSTR)TempCmdLine);
-		MessageBox(0, errorMessage, TR("Ошибка"),0);
+			errorMessage.Format(TR("Unable to start process '%s'"),(LPCTSTR)TempCmdLine);
+		MessageBox(0, errorMessage, TR("Error"),0);
         return false;
 	}
 

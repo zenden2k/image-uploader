@@ -1,11 +1,14 @@
 #include "WinUtils.h"
-#include <Core/Utils/CoreUtils.h>
+
+#include "Core/Utils/CoreUtils.h"
 #include <sstream>
-#include <Core/Utils/StringUtils.h>
-#include <Func/MyUtils.h>
-#include <3rdpart/GdiplusH.h>
+#include "Core/Utils/StringUtils.h"
+#include "3rdpart/GdiplusH.h"
 #include <Aclapi.h>
 #include "3rdpart/Registry.h"
+#include <TlHelp32.h>
+#include <Winhttp.h>
+#include <boost/format.hpp>
 
 namespace WinUtils {
 
@@ -14,105 +17,233 @@ typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
 
 bool IsWinXP()
 {
-	// Проверка операционной системы
-	DWORD dwVersion = GetVersion();
+    // Проверка операционной системы
+    DWORD dwVersion = GetVersion();
 
-	// Get major and minor version numbers of Windows
-	DWORD dwWindowsMajorVersion = (DWORD)(LOBYTE(LOWORD(dwVersion)));
-	DWORD dwWindowsMinorVersion = (DWORD)(HIBYTE(LOWORD(dwVersion)));
+    // Get major and minor version numbers of Windows
+    DWORD dwWindowsMajorVersion = (DWORD)(LOBYTE(LOWORD(dwVersion)));
+    DWORD dwWindowsMinorVersion = (DWORD)(HIBYTE(LOWORD(dwVersion)));
 
-	// Check for Windows XP
-	if ((dwVersion < 0x80000000) &&                 // The OS is a NT family
-		(dwWindowsMajorVersion >= 5) &&
-		(dwWindowsMinorVersion >= 1))         // Windows NT 5.1 is an Windows XP version
-		return TRUE;
+    // Check for Windows XP
+    if ((dwVersion < 0x80000000) &&                 // The OS is a NT family
+        (dwWindowsMajorVersion >= 5) &&
+        (dwWindowsMinorVersion >= 1))         // Windows NT 5.1 is an Windows XP version
+        return TRUE;
 
-	return FALSE;
+    return FALSE;
 }
 
 bool IsWinXPOrLater()
 {
-	// Проверка операционной системы
-	DWORD dwVersion = GetVersion();
+    // Проверка операционной системы
+    DWORD dwVersion = GetVersion();
 
-	// Get major and minor version numbers of Windows
-	DWORD dwWindowsMajorVersion = (DWORD)(LOBYTE(LOWORD(dwVersion)));
-	DWORD dwWindowsMinorVersion = (DWORD)(HIBYTE(LOWORD(dwVersion)));
+    // Get major and minor version numbers of Windows
+    DWORD dwWindowsMajorVersion = (DWORD)(LOBYTE(LOWORD(dwVersion)));
+    DWORD dwWindowsMinorVersion = (DWORD)(HIBYTE(LOWORD(dwVersion)));
 
-	// Check for Windows XP
-	if ((dwVersion < 0x80000000) &&                 // The OS is a NT family
-		(dwWindowsMajorVersion > 5) ||
-		(dwWindowsMajorVersion == 5 && dwWindowsMinorVersion >= 1))         // Windows NT 5.1 is an Windows XP version
-		return TRUE;
+    // Check for Windows XP
+    if ((dwVersion < 0x80000000) &&                 // The OS is a NT family
+        (dwWindowsMajorVersion > 5) ||
+        (dwWindowsMajorVersion == 5 && dwWindowsMinorVersion >= 1))         // Windows NT 5.1 is an Windows XP version
+        return TRUE;
 
-	return FALSE;
+    return FALSE;
 }
 
 // Function that gets path to SendTo folder
 CString GetSendToPath() {
-	return GetSystemSpecialPath(CSIDL_SENDTO);
+    return GetSystemSpecialPath(CSIDL_SENDTO);
 }
 
 CString GetApplicationDataPath()
 {
-	return GetSystemSpecialPath(CSIDL_APPDATA);
+    return GetSystemSpecialPath(CSIDL_APPDATA);
 }
 
 CString GetCommonApplicationDataPath()
 {
-	return GetSystemSpecialPath(CSIDL_COMMON_APPDATA);
+    return GetSystemSpecialPath(CSIDL_COMMON_APPDATA);
 }
 
-bool GetClipboardText(CString& text)
-{
-	if (OpenClipboard(NULL))
-	{
-		HGLOBAL hglb = GetClipboardData(CF_UNICODETEXT);
-		LPCWSTR lpstr = (LPCWSTR)GlobalLock(hglb);
-		text = lpstr;
-		GlobalUnlock(hglb);
-		CloseClipboard();
-		return true;
-	}
-	return false;
+CString MyGetWindowText(HWND wnd) {
+    int len = GetWindowTextLength(wnd);
+    CString buf;
+    GetWindowText(wnd, buf.GetBuffer(len + 1), len + 1);
+    buf.ReleaseBuffer(-1);
+    return buf;
 }
 
-bool CopyTextToClipboard(CString text)
+bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
 {
-	LPTSTR lptstrCopy;
-	HGLOBAL hglbCopy;
-	int cch = text.GetLength();
-	if (!OpenClipboard( NULL))
-		return FALSE;
-	EmptyClipboard();
-	hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (cch + 1) * sizeof(TCHAR));
-	if (hglbCopy == NULL)
-	{
-		CloseClipboard();
-		return FALSE;
-	}
-	lptstrCopy = (LPTSTR) GlobalLock(hglbCopy);
-	memcpy(lptstrCopy, (LPCTSTR)text, text.GetLength() * sizeof(TCHAR));
-	lptstrCopy[cch] = (TCHAR) 0;
-	GlobalUnlock(hglbCopy);
-	SetClipboardData(CF_UNICODETEXT, hglbCopy);
-	CloseClipboard();
-	return true;
+    for (int i = 0; i < 4; i++) {
+        if (OpenClipboard(hwnd)) {
+            HGLOBAL hglb = GetClipboardData(CF_UNICODETEXT);
+            if (!hglb) {
+                if (OpenClipboard(hwnd)) {
+                    hglb = GetClipboardData(CF_TEXT);
+                }
+               
+                if (!hglb) {
+                    if (raiseError) {
+                        LOG(ERROR) << "GetClipboardData call failed. ErrorCode=" << ::GetLastError();
+                        //CloseClipboard();
+                    }
+                } else {
+                    LPCSTR lpstr = reinterpret_cast<LPCSTR>(GlobalLock(hglb));
+                    text = lpstr;
+                    GlobalUnlock(hglb);
+                    CloseClipboard();
+                    return true;
+                }
+                CloseClipboard();
+                return false;
+            }
+            LPCWSTR lpstr = reinterpret_cast<LPCWSTR>(GlobalLock(hglb));
+            text = lpstr;
+            GlobalUnlock(hglb);
+            CloseClipboard();
+            return true;
+        }
+        Sleep(50); // Clipboard may be owned by another application, wait and try again
+    }
+   
+    if ( raiseError ) {
+        DWORD lastError = ::GetLastError();
+        CString message;
+        HWND clipboardOwner = GetClipboardOwner();
+        if ( clipboardOwner ) {
+            CString windowTitle = MyGetWindowText(clipboardOwner);
+            TCHAR windowClassName[256] = _T("");
+            GetClassName(clipboardOwner, windowClassName, 255);
+            DWORD proccessId;
+            GetWindowThreadProcessId(clipboardOwner, &proccessId);
+            message += _T("\r\n");
+            message += _T("Clipboard is owned by window:\r\n");
+            message += _T("Title: '") + windowTitle + _T("'\r\n");
+            message += _T("Class: '") + CString(windowClassName) + _T("'\r\n");
+            message += _T("Process: '") + WinUtils::GetProcessName(proccessId) + _T("' (PID=") + IntToStr(proccessId) + _T(")\r\n");
+        }
+        LOG(ERROR) << "OpenClipboard call failed. ErrorCode=" << lastError << message;
+    }
+    return false;
+}
+
+bool CopyTextToClipboard(const CString& text)
+{
+    LPTSTR lptstrCopy;
+    HGLOBAL hglbCopy;
+    int cch = text.GetLength();
+    if (!OpenClipboard( NULL))
+        return FALSE;
+    EmptyClipboard();
+    hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (cch + 1) * sizeof(TCHAR));
+    if (hglbCopy == NULL)
+    {
+        CloseClipboard();
+        return FALSE;
+    }
+    lptstrCopy = reinterpret_cast<LPTSTR>(GlobalLock(hglbCopy));
+    memcpy(lptstrCopy, static_cast<LPCTSTR>(text), text.GetLength() * sizeof(TCHAR));
+    lptstrCopy[cch] = 0;
+    GlobalUnlock(hglbCopy);
+    SetClipboardData(CF_UNICODETEXT, hglbCopy);
+    CloseClipboard();
+    return true;
+}
+
+bool CopyHtmlToClipboard(const CString& text, bool emptyClipboard)
+{
+    LPSTR lptstrCopy;
+    HGLOBAL hglbCopy;
+   
+    if (!OpenClipboard(NULL))
+        return FALSE;
+    if (emptyClipboard) {
+        EmptyClipboard();
+    }
+    std::string textUtf8 = W2U(text);
+    std::string html = TextToClipboardHtmlFormat(textUtf8.c_str(), textUtf8.length());
+    unsigned htmlClipboardFormatId = RegisterClipboardFormat(_T("HTML Format"));
+    int cch = html.size();
+    hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (cch + 1) );
+    if (hglbCopy == NULL) {
+        CloseClipboard();
+        return FALSE;
+    }
+    lptstrCopy = reinterpret_cast<LPSTR>(GlobalLock(hglbCopy));
+    memcpy(lptstrCopy, html.c_str(), cch);
+    lptstrCopy[cch] = 0;
+    GlobalUnlock(hglbCopy);
+    SetClipboardData(htmlClipboardFormatId, hglbCopy);
+    CloseClipboard();
+    return true;
+}
+
+std::string TextToClipboardHtmlFormat(const char* html, int length, const std::string& base_url) {
+    // chromium//src/ui/base/clipboard/clipboard_util_win.cc
+#define MAX_DIGITS 10
+#define MAKE_NUMBER_FORMAT_1(digits) MAKE_NUMBER_FORMAT_2(digits)
+#define MAKE_NUMBER_FORMAT_2(digits) "%0" #digits "u"
+#define NUMBER_FORMAT MAKE_NUMBER_FORMAT_1(MAX_DIGITS)
+
+    static const char* header = "Version:0.9\r\n"
+        "StartHTML:" NUMBER_FORMAT "\r\n"
+        "EndHTML:" NUMBER_FORMAT "\r\n"
+        "StartFragment:" NUMBER_FORMAT "\r\n"
+        "EndFragment:" NUMBER_FORMAT "\r\n";
+    static const char* source_url_prefix = "SourceURL:";
+
+    static const char* start_markup =
+        "<html>\r\n<body>\r\n<!--StartFragment-->";
+    static const char* end_markup =
+        "<!--EndFragment-->\r\n</body>\r\n</html>";
+
+    // Calculate offsets
+    size_t start_html_offset = strlen(header) - strlen(NUMBER_FORMAT) * 4 +
+        MAX_DIGITS * 4;
+    if (!base_url.empty()) {
+        start_html_offset += strlen(source_url_prefix) +
+            base_url.length() + 2;  // Add 2 for \r\n.
+    }
+    size_t start_fragment_offset = start_html_offset + strlen(start_markup);
+    size_t end_fragment_offset = start_fragment_offset + length;
+    size_t end_html_offset = end_fragment_offset + strlen(end_markup);
+
+    std::string result = str(boost::format(header) %
+        start_html_offset %
+        end_html_offset %
+        start_fragment_offset %
+        end_fragment_offset);
+    if (!base_url.empty()) {
+        result.append(source_url_prefix);
+        result.append(base_url);
+        result.append("\r\n");
+    }
+    result.append(start_markup);
+    result.append(html, length);
+    result.append(end_markup);
+
+#undef MAX_DIGITS
+#undef MAKE_NUMBER_FORMAT_1
+#undef MAKE_NUMBER_FORMAT_2
+#undef NUMBER_FORMAT
+    return result;
 }
 
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
 {
-	while ((MsgWaitForMultipleObjects(1, &pHandle, FALSE, dwMilliseconds,
-		/*QS_ALLEVENTS*/ QS_SENDMESSAGE)) != WAIT_OBJECT_0)
-	{
-		MSG msg;
-		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-	}
-	return 1;
+    while ((MsgWaitForMultipleObjects(1, &pHandle, FALSE, dwMilliseconds,
+        /*QS_ALLEVENTS*/ QS_SENDMESSAGE)) != WAIT_OBJECT_0)
+    {
+        MSG msg;
+        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+    }
+    return 1;
 }
 
 
@@ -129,287 +260,314 @@ DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
 //  pszIconFileName     - путь и имя файла, содержащего иконку, например, "C:\\Windows\\NotePad.Exe"
 //  int iIconIndex      - индекс иконки в файле, нумеруется с 0
 bool CreateShortCut(
-										 LPCWSTR pwzShortCutFileName,
-										 LPCTSTR pszPathAndFileName,
-										 LPCTSTR pszWorkingDirectory,
-										 LPCTSTR pszArguments,
-										 WORD wHotKey,
-										 int iCmdShow,
-										 LPCTSTR pszIconFileName,
-										 int iIconIndex)
+                                         LPCWSTR pwzShortCutFileName,
+                                         LPCTSTR pszPathAndFileName,
+                                         LPCTSTR pszWorkingDirectory,
+                                         LPCTSTR pszArguments,
+                                         WORD wHotKey,
+                                         int iCmdShow,
+                                         LPCTSTR pszIconFileName,
+                                         int iIconIndex)
 {
-	IShellLink* pSL;
-	IPersistFile* pPF;
-	HRESULT hRes;
-	CoInitialize(NULL);
-	// return false;
-	// Получение экземпляра компонента "Ярлык"
-	hRes = CoCreateInstance(CLSID_ShellLink, 0,  CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID*)&pSL);
+    IShellLink* pSL;
+    IPersistFile* pPF;
+    HRESULT hRes;
+    CoInitialize(NULL);
+    // return false;
+    // Получение экземпляра компонента "Ярлык"
+    hRes = CoCreateInstance(CLSID_ShellLink, 0,  CLSCTX_INPROC_SERVER, IID_IShellLink, reinterpret_cast<LPVOID*>(&pSL));
 
-	if ( SUCCEEDED(hRes) )
-	{
-		hRes = pSL->SetPath(pszPathAndFileName);
-		if ( SUCCEEDED(hRes) )
-		{
-			hRes = pSL->SetArguments(pszArguments);
-			// if( SUCCEEDED(hRes) )
-			{
-				hRes = pSL->SetWorkingDirectory(pszWorkingDirectory);
-				if ( SUCCEEDED(hRes) )
-				{
-					hRes = pSL->SetIconLocation(pszIconFileName, iIconIndex);
-					if ( SUCCEEDED(hRes) )
-					{
-						//	hRes = pSL->SetHotkey(wHotKey);
-						//	if( SUCCEEDED(hRes) )
-						{
-							hRes = pSL->SetShowCmd(iCmdShow);
-							if ( SUCCEEDED(hRes) )
-							{
-								// Получение компонента хранилища параметров
-								hRes = pSL->QueryInterface(IID_IPersistFile, (LPVOID*)&pPF);
-								if ( SUCCEEDED(hRes) )
-								{
-									// Сохранение созданного ярлыка
-									hRes = pPF->Save(pwzShortCutFileName, TRUE);
-									pPF->Release();
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		pSL->Release();
-	}
-	return SUCCEEDED(hRes);
+    if ( SUCCEEDED(hRes) )
+    {
+        hRes = pSL->SetPath(pszPathAndFileName);
+        if ( SUCCEEDED(hRes) )
+        {
+            hRes = pSL->SetArguments(pszArguments);
+            // if( SUCCEEDED(hRes) )
+            {
+                hRes = pSL->SetWorkingDirectory(pszWorkingDirectory);
+                if ( SUCCEEDED(hRes) )
+                {
+                    hRes = pSL->SetIconLocation(pszIconFileName, iIconIndex);
+                    if ( SUCCEEDED(hRes) )
+                    {
+                        //    hRes = pSL->SetHotkey(wHotKey);
+                        //    if( SUCCEEDED(hRes) )
+                        {
+                            hRes = pSL->SetShowCmd(iCmdShow);
+                            if ( SUCCEEDED(hRes) )
+                            {
+                                // Получение компонента хранилища параметров
+                                hRes = pSL->QueryInterface(IID_IPersistFile, reinterpret_cast<LPVOID*>(&pPF));
+                                if ( SUCCEEDED(hRes) )
+                                {
+                                    // Сохранение созданного ярлыка
+                                    hRes = pPF->Save(pwzShortCutFileName, TRUE);
+                                    pPF->Release();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        pSL->Release();
+    }
+    return SUCCEEDED(hRes);
 }
 
 bool CreateFolder(LPCTSTR szFolder)
 {
-	if (!szFolder || !lstrlen(szFolder))
-		return FALSE;
+    if (!szFolder || !lstrlen(szFolder))
+        return FALSE;
 
-	DWORD dwAttrib = GetFileAttributes(szFolder);
+    DWORD dwAttrib = GetFileAttributes(szFolder);
 
-	// already exists ?
-	if (dwAttrib != 0xffffffff)
-		return ((dwAttrib & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY);
+    // already exists ?
+    if (dwAttrib != 0xffffffff)
+        return ((dwAttrib & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY);
 
-	// recursively create from the top down
-	TCHAR* szPath = _tcsdup(szFolder);
-	TCHAR* p = _tcsrchr(szPath, '\\');
+    // recursively create from the top down
+    TCHAR* szPath = _tcsdup(szFolder);
+    TCHAR* p = _tcsrchr(szPath, '\\');
 
-	if (p)
-	{
-		// The parent is a dir, not a drive
-		*p = '\0';
+    if (p)
+    {
+        // The parent is a dir, not a drive
+        *p = '\0';
 
-		// if can't create parent
-		if (!CreateFolder(szPath))
-		{
-			free(szPath);
-			return FALSE;
-		}
-		free(szPath);
+        // if can't create parent
+        if (!CreateFolder(szPath))
+        {
+            free(szPath);
+            return FALSE;
+        }
+        free(szPath);
 
-		if (!::CreateDirectory(szFolder, NULL))
-			return FALSE;
-	}
+        if (!::CreateDirectory(szFolder, NULL))
+            return FALSE;
+    }
 
-	return TRUE;
+    return TRUE;
 }
 
 bool CreateFilePath(LPCTSTR szFilePath)
 {
-	TCHAR* szPath = _tcsdup(szFilePath);
-	TCHAR* p = _tcsrchr(szPath, '\\');
+    TCHAR* szPath = _tcsdup(szFilePath);
+    TCHAR* p = _tcsrchr(szPath, '\\');
 
-	BOOL bRes = FALSE;
+    BOOL bRes = FALSE;
 
-	if (p)
-	{
-		*p = '\0';
+    if (p)
+    {
+        *p = '\0';
 
-		bRes = CreateFolder(szPath);
-	}
+        bRes = CreateFolder(szPath);
+    }
 
-	free(szPath);
+    free(szPath);
 
-	return bRes;
+    return bRes!=FALSE;
 }
 
 HICON GetAssociatedIcon (LPCTSTR filename, bool Small)
 {
-	SHFILEINFO Info;
-	DWORD Flags;
+    SHFILEINFO Info;
+    DWORD Flags;
 
-	if (Small)
-		Flags = SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES;
-	else
-		Flags = SHGFI_ICON | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES | SHGFI_ADDOVERLAYS;
-	SHGetFileInfo (filename, FILE_ATTRIBUTE_NORMAL, &Info, sizeof(Info), Flags);
-	return Info.hIcon;
+    if (Small)
+        Flags = SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES;
+    else
+        Flags = SHGFI_ICON | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES | SHGFI_ADDOVERLAYS;
+    SHGetFileInfo (filename, FILE_ATTRIBUTE_NORMAL, &Info, sizeof(Info), Flags);
+    return Info.hIcon;
 }
 
 bool IsDirectory(LPCTSTR szFileName)
 {
-	DWORD res = GetFileAttributes(szFileName);
-	return (res&FILE_ATTRIBUTE_DIRECTORY) && (res != -1);	
+    DWORD res = GetFileAttributes(szFileName);
+    return (res&FILE_ATTRIBUTE_DIRECTORY) && (res != -1);    
 }
 
 bool IsVista() {
-	OSVERSIONINFO osver;
-	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
+    static int isVista = -1;
+    if (isVista == -1)
+    {
+        OSVERSIONINFO osver;
+        osver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
-	if ( ::GetVersionEx( &osver ) && 
-		osver.dwPlatformId == VER_PLATFORM_WIN32_NT && 
-		(osver.dwMajorVersion >= 6 ) )
-		return TRUE;
-
-	return FALSE;
+        isVista = (::GetVersionEx(&osver) &&
+            osver.dwPlatformId == VER_PLATFORM_WIN32_NT &&
+            (osver.dwMajorVersion >= 6));
+    }
+    return isVista != FALSE;
 }
 
 bool IsWindows8orLater() {
-	OSVERSIONINFO osver;
-	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
+    OSVERSIONINFO osver;
+    osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
 
-	if ( ::GetVersionEx( &osver ) && 
-		osver.dwPlatformId == VER_PLATFORM_WIN32_NT && 
-		( (osver.dwMajorVersion > 6 ) || (osver.dwMajorVersion == 6 && osver.dwMinorVersion >=2)) ) {
-		return TRUE;
-	}
+    if ( ::GetVersionEx( &osver ) && 
+        osver.dwPlatformId == VER_PLATFORM_WIN32_NT && 
+        ( (osver.dwMajorVersion > 6 ) || (osver.dwMajorVersion == 6 && osver.dwMinorVersion >=2)) ) {
+        return TRUE;
+    }
 
-	return FALSE;
+    return FALSE;
 }
 
 bool IsWine()
 {
-	HMODULE hDll = LoadLibrary(_T("ntdll.dll"));
+    HMODULE hDll = LoadLibrary(_T("ntdll.dll"));
 
-	if (hDll)
-	{
-		return GetProcAddress(hDll, "wine_get_version") != 0;
-	}
-	return false;
+    if (hDll)
+    {
+        bool res =  GetProcAddress(hDll, "wine_get_version") != 0;
+        FreeLibrary(hDll);
+        return res;
+    }
+    return false;
 }
 
 bool IsWindows64Bit()
 {
-	SYSTEM_INFO si;
-	PGNSI pGNSI;
-	ZeroMemory(&si, sizeof(SYSTEM_INFO));
-	// Call GetNativeSystemInfo if supported or GetSystemInfo otherwise.
-	pGNSI = (PGNSI) GetProcAddress(GetModuleHandle(_T("kernel32.dll")), 
-		"GetNativeSystemInfo");
-	if(NULL != pGNSI)
-		pGNSI(&si);
-	else GetSystemInfo(&si);
-	return si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;	
+    SYSTEM_INFO si;
+    PGNSI pGNSI;
+    ZeroMemory(&si, sizeof(SYSTEM_INFO));
+    // Call GetNativeSystemInfo if supported or GetSystemInfo otherwise.
+    pGNSI = reinterpret_cast<PGNSI>(GetProcAddress(GetModuleHandle(_T("kernel32.dll")), "GetNativeSystemInfo"));
+    if (NULL != pGNSI) {
+        pGNSI(&si);
+    } else {
+        GetSystemInfo(&si);
+    }
+    return si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;    
 }
-
 
 CString GetSystemSpecialPath(int csidl)
 {
-	CString result;
-	LPITEMIDLIST pidl;
-	TCHAR szSendtoPath [MAX_PATH];
-	LPMALLOC pMalloc;	
+    CString result;
+    LPITEMIDLIST pidl;
+    TCHAR szSendtoPath [MAX_PATH];
+    LPMALLOC pMalloc;    
 
-	if (SUCCEEDED( SHGetSpecialFolderLocation ( NULL, csidl, &pidl )))
-	{
-		if (SHGetPathFromIDList(pidl, szSendtoPath))
-		{
-			result = szSendtoPath;
-		}
+    if (SUCCEEDED( SHGetSpecialFolderLocation ( NULL, csidl, &pidl )))
+    {
+        if (SHGetPathFromIDList(pidl, szSendtoPath))
+        {
+            result = szSendtoPath;
+        }
 
-		if (SUCCEEDED(SHGetMalloc(&pMalloc)))
-		{
-			pMalloc->Free ( pidl );
-			pMalloc->Release();
-		}
-	}
-	if (result.Right(1) != _T("\\"))
-		result += _T("\\");
-	return result;
+        if (SUCCEEDED(SHGetMalloc(&pMalloc)))
+        {
+            pMalloc->Free ( pidl );
+            pMalloc->Release();
+        }
+    }
+    if (result.Right(1) != _T("\\"))
+        result += _T("\\");
+    return result;
 }
-
 
 CString FormatWindowsErrorMessage(int idCode)
 {
-	LPVOID lpMsgBuf;
-	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,NULL,
-		idCode, 0, (LPTSTR) &lpMsgBuf, 0, NULL);
-	CString res = (LPCTSTR)lpMsgBuf;
-	// Free the buffer.
-	LocalFree( lpMsgBuf );
-	return res;
+    LPVOID lpMsgBuf;
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,NULL,
+        idCode, 0, reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, NULL);
+    CString res = reinterpret_cast<LPCTSTR>(lpMsgBuf);
+    // Free the buffer.
+    LocalFree( lpMsgBuf );
+    return res;
 }
 
+//CString ShellExecuteErrorStrring
 
 bool FileExists(LPCTSTR FileName)
 {
-	if(!FileName || GetFileAttributes(FileName)==-1) return FALSE;
-	return TRUE;
+    return (FileName && GetFileAttributes(FileName)!=-1);
 }
 
 const CString TrimString(const CString& source, int nMaxLen)
 {
-	int nLen = source.GetLength();
-	if(nLen <= nMaxLen) return source;
+    int nLen = source.GetLength();
+    if(nLen <= nMaxLen) return source;
 
-	int PartSize = (nMaxLen-3) / 2;
-	return source.Left(PartSize)+_T("...")+source.Right(PartSize);
+    int PartSize = (nMaxLen-3) / 2;
+    return source.Left(PartSize)+_T("...")+source.Right(PartSize);
 }
 
 CString GetAppFolder()
 {
-	TCHAR szFileName[1024], szPath[1024];
-	HINSTANCE inst;
-#if !defined(IU_SHELLEXT) && !defined(IU_CLI)
-	inst =  _Module.GetModuleInstance();
+    CString szFileName;
+    CString szPath;
+    HINSTANCE inst;
+#if defined(IU_WTL)
+    inst =  _Module.GetModuleInstance();
 #elif defined(IU_SHELLEXT)
-	inst = hDllInstance;
+    inst = hDllInstance;
 #else
-	inst = GetModuleHandle(0);
+    inst = GetModuleHandle(0);
 #endif
-	GetModuleFileName(inst, szFileName, 1023);
-	ExtractFilePath(szFileName, szPath);
-	return szPath;
+    szFileName = GetModuleFullName(inst);
+    ExtractFilePath(szFileName, szPath.GetBuffer(szFileName.GetLength() + 1));
+    szPath.ReleaseBuffer();
+    return szPath;
+}
+
+CString GetModuleFullName(HMODULE module) {
+    std::unique_ptr<TCHAR[]> buf;
+    DWORD  bufLen = MAX_PATH;
+    DWORD  retLen; 
+    CString res;
+
+    while (32768 >= bufLen) {
+        buf.reset(new TCHAR[bufLen]);
+
+        if ((retLen = GetModuleFileName(module, buf.get(), bufLen)) == 0) {
+            /* GetModuleFileName failed */
+            break;
+        } else if (bufLen > retLen) {
+            /* Success */
+            res = buf.get();
+            break;
+        }
+
+        bufLen *= 2;
+    }
+
+    return res;
 }
 
 CString GetAppFileName() {
-	TCHAR szFileName[1024];
-	GetModuleFileName(0, szFileName, 1023);
-	return szFileName;
+    return GetModuleFullName(nullptr);
 }
 
 LPTSTR ExtractFilePath(LPCTSTR FileName, LPTSTR buf)
 {  
-	int i, len = lstrlen(FileName);
-	for(i=len; i>=0; i--)
-	{
-		if(FileName[i] == _T('\\'))
-			break;
-	}
-	lstrcpyn(buf, FileName, i+2);
-	return buf;
+    int i, len = lstrlen(FileName);
+    for(i=len; i>=0; i--)
+    {
+        if(FileName[i] == _T('\\'))
+            break;
+    }
+    lstrcpyn(buf, FileName, i+2);
+    return buf;
 }
 
 //  Function doesn't allocate new string, it returns  pointer
 //        to a part of source string
 CString myExtractFileName(const CString & FileName)
 {  
-	CString temp = FileName;
-	int Qpos = temp.ReverseFind('?');
-	if(Qpos>=0) temp = temp.Left(Qpos);
-	int i,len = lstrlen(temp);
-	for(i=len-1; i>=0; i--)
-	{
-		if(temp[i] == _T('\\') || temp[i]==_T('/'))
-			break;
-	}
-	return temp.Right(len-i-1);
+    CString temp = FileName;
+    int Qpos = temp.ReverseFind('?');
+    if(Qpos>=0) temp = temp.Left(Qpos);
+    int i,len = lstrlen(temp);
+    for(i=len-1; i>=0; i--)
+    {
+        if(temp[i] == _T('\\') || temp[i]==_T('/'))
+            break;
+    }
+    return temp.Right(len-i-1);
 
 }
 
@@ -417,585 +575,812 @@ CString myExtractFileName(const CString & FileName)
 //        to a part of source string
 LPCTSTR GetFileExt(LPCTSTR szFileName)
 {
-	if(!szFileName) return 0;
-	int nLen = lstrlen(szFileName);
+    if(!szFileName) return 0;
+    int nLen = lstrlen(szFileName);
 
-	LPCTSTR szReturn = szFileName+nLen;
-	for( int i=nLen-1; i>=0; i-- )
-	{
-		if(szFileName[i] == '.')
-		{
-			szReturn = szFileName + i + 1;
-			break;
-		}
-		else if(szFileName[i] == '\\' || szFileName[i] == '/') break;
-	}
-	return szReturn;
+    LPCTSTR szReturn = szFileName+nLen;
+    for( int i=nLen-1; i>=0; i-- )
+    {
+        if(szFileName[i] == '.')
+        {
+            szReturn = szFileName + i + 1;
+            break;
+        }
+        else if(szFileName[i] == '\\' || szFileName[i] == '/') break;
+    }
+    return szReturn;
 }
 
 bool IsStrInList(LPCTSTR szExt,LPCTSTR szList)
 {
-	if(!szList || !szExt) return false;
+    if(!szList || !szExt) return false;
 
-	while ((*szList)!=0)
-	{
-		if(lstrcmpi(szExt,szList)==0) return true;
-		szList += lstrlen(szList)+1;
-	}
-	return false;
+    while ((*szList)!=0)
+    {
+        if(lstrcmpi(szExt,szList)==0) return true;
+        szList += lstrlen(szList)+1;
+    }
+    return false;
 }
 
 CString GetOnlyFileName(const CString& szFilename) {
-	CString tempName = myExtractFileName(szFilename);
-	int dotPos = tempName.ReverseFind(_T('.'));
-	if(dotPos != -1) {
-		tempName=tempName.Left(dotPos);
-	}
+    CString tempName = myExtractFileName(szFilename);
+    int dotPos = tempName.ReverseFind(_T('.'));
+    if(dotPos != -1) {
+        tempName=tempName.Left(dotPos);
+    }
 
-	return tempName;
+    return tempName;
 }
 
 CString IntToStr(int n)
 {
-	CString Result;
-	Result.Format(_T("%d"), n);
-	return Result;
+    CString Result;
+    Result.Format(_T("%d"), n);
+    return Result;
 }
 
 // Преобразование размера файла в строку
 bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize)
 {
-	std::string res = IuCoreUtils::fileSizeToString(nBytes);
-	lstrcpyn(szBuffer, IuCoreUtils::Utf8ToWstring(res).c_str(), nBufSize);
-	return TRUE;
+    std::string res = IuCoreUtils::fileSizeToString(nBytes);
+    lstrcpyn(szBuffer, IuCoreUtils::Utf8ToWstring(res).c_str(), nBufSize);
+    return TRUE;
 }
 
 
 bool IsElevated() 
 {
-	BOOL pbElevated = false;
-	ATLASSERT( IsVista() );
+    BOOL pbElevated = false;
+    ATLASSERT( IsVista() );
 
-	HRESULT hResult = E_FAIL; // assume an error occured
-	HANDLE hToken  = NULL;
+    HRESULT hResult = E_FAIL; // assume an error occured
+    HANDLE hToken  = NULL;
 
-	if ( !::OpenProcessToken(
-		::GetCurrentProcess(),
-		TOKEN_QUERY,
-		&hToken ) )
-	{
-		ATLASSERT( FALSE );
-		return hResult;
-	}
+    if ( !::OpenProcessToken(
+        ::GetCurrentProcess(),
+        TOKEN_QUERY,
+        &hToken ) )
+    {
+        ATLASSERT( FALSE );
+        return hResult!=0;
+    }
 
-	TOKEN_ELEVATION te = { 0 };
-	DWORD dwReturnLength = 0;
+    TOKEN_ELEVATION te = { 0 };
+    DWORD dwReturnLength = 0;
 
-	if ( !::GetTokenInformation(
-		hToken,
-		(TOKEN_INFORMATION_CLASS) TokenElevation,
-		&te,
-		sizeof(te),
-		&dwReturnLength ) )
-	{
-		ATLASSERT( FALSE );
-	}
-	else
-	{
-		ATLASSERT( dwReturnLength == sizeof(te) );
+    if ( !::GetTokenInformation(
+        hToken,
+        static_cast<TOKEN_INFORMATION_CLASS>(TokenElevation),
+        &te,
+        sizeof(te),
+        &dwReturnLength ) )
+    {
+        ATLASSERT( FALSE );
+    }
+    else
+    {
+        ATLASSERT( dwReturnLength == sizeof(te) );
 
-		hResult = te.TokenIsElevated ? S_OK : S_FALSE;
+        hResult = te.TokenIsElevated ? S_OK : S_FALSE;
 
-		//if ( pbElevated)
-			pbElevated = (te.TokenIsElevated != 0);
-	}
+        //if ( pbElevated)
+            pbElevated = (te.TokenIsElevated != 0);
+    }
 
-	::CloseHandle( hToken );
+    ::CloseHandle( hToken );
 
-	return pbElevated;
+    return pbElevated!=FALSE;
 }
 
 
 void DeleteDir2(LPCTSTR Dir)
 {
-	if (!Dir)
-		return;
-	TCHAR szBuffer[MAX_PATH];
-	lstrcpyn(szBuffer, Dir, MAX_PATH);
-	int nLen = lstrlen(szBuffer) - 1;
-	if (nLen >= 0 && szBuffer[nLen] == _T('\\'))
-		szBuffer[nLen] = 0;
+    if (!Dir)
+        return;
+    TCHAR szBuffer[MAX_PATH];
+    lstrcpyn(szBuffer, Dir, MAX_PATH);
+    int nLen = lstrlen(szBuffer) - 1;
+    if (nLen >= 0 && szBuffer[nLen] == _T('\\'))
+        szBuffer[nLen] = 0;
 
-	SHFILEOPSTRUCT FileOp;
-	ZeroMemory(&FileOp, sizeof(FileOp));
-	FileOp.hwnd = NULL;
-	FileOp.wFunc = FO_DELETE;
-	FileOp.pFrom = szBuffer;
-	FileOp.fFlags = FOF_NOCONFIRMATION | FOF_SILENT | FOF_NOERRORUI;
-	SHFileOperation(&FileOp);
+    SHFILEOPSTRUCT FileOp;
+    ZeroMemory(&FileOp, sizeof(FileOp));
+    FileOp.hwnd = NULL;
+    FileOp.wFunc = FO_DELETE;
+    FileOp.pFrom = szBuffer;
+    FileOp.fFlags = FOF_NOCONFIRMATION | FOF_SILENT | FOF_NOERRORUI;
+    SHFileOperation(&FileOp);
 }
 
 CString GetUniqFileName(const CString& filePath)
 {
-	TCHAR path[256];
-	if (!WinUtils::FileExists(filePath))
-		return filePath;
-	WinUtils::ExtractFilePath(filePath, path);
-	CString name;
-	name = WinUtils::GetOnlyFileName(filePath);
-	CString extension = WinUtils::GetFileExt(filePath);
-	CString result;
-	for (int i = 2;; i++)
-	{
-		result = path + name + WinUtils::IntToStr(i) + (extension.IsEmpty() ? _T("") : _T(".") + extension);
-		if (!WinUtils::FileExists(result))
-			break;
-	}
-	return result;
+    TCHAR path[256];
+    if (!WinUtils::FileExists(filePath))
+        return filePath;
+    WinUtils::ExtractFilePath(filePath, path);
+    CString name;
+    name = WinUtils::GetOnlyFileName(filePath);
+    CString extension = WinUtils::GetFileExt(filePath);
+    CString result;
+    for (int i = 2;; i++)
+    {
+        result = path + name + WinUtils::IntToStr(i) + (extension.IsEmpty() ? _T("") : _T(".") + extension);
+        if (!WinUtils::FileExists(result))
+            break;
+    }
+    return result;
 }
 
-
-int GetFolderFileList(std::vector<CString>& list, CString folder, CString mask)
+size_t GetFolderFileList(std::vector<CString>& list, CString folder, CString mask)
 {
-	WIN32_FIND_DATA wfd;
-	ZeroMemory(&wfd, sizeof(wfd));
-	HANDLE findfile = 0;
-	TCHAR szNameBuffer[MAX_PATH];
+    WIN32_FIND_DATA wfd;
+    ZeroMemory(&wfd, sizeof(wfd));
+    HANDLE findfile = 0;
+    TCHAR szNameBuffer[MAX_PATH];
 
-	for (;; )
-	{
-		if (!findfile)
-		{
-			findfile = FindFirstFile(folder + _T("\\") + mask, &wfd);
-			if (!findfile)
-				break;
-			;
-		}
-		else
-		{
-			if (!FindNextFile(findfile, &wfd))
-				break;
-		}
-		if (lstrlen(wfd.cFileName) < 1)
-			break;
-		lstrcpyn(szNameBuffer, wfd.cFileName, 254);
-		list.push_back(szNameBuffer);
-	}
-	// return TRUE;
+    for (;; )
+    {
+        if (!findfile)
+        {
+            findfile = FindFirstFile(folder + _T("\\") + mask, &wfd);
+            if (!findfile)
+                break;
+            ;
+        }
+        else
+        {
+            if (!FindNextFile(findfile, &wfd))
+                break;
+        }
+        if (lstrlen(wfd.cFileName) < 1)
+            break;
+        lstrcpyn(szNameBuffer, wfd.cFileName, 254);
+        list.push_back(szNameBuffer);
+    }
+    // return TRUE;
 
-	// error:
-	if (findfile)
-		FindClose(findfile);
-	return list.size();
-	// return FALSE;
+    // error:
+    if (findfile)
+        FindClose(findfile);
+    return list.size();
+    // return FALSE;
 }
 
 bool FontToString(const LOGFONT * lFont, CString &Result)
 {
-	TCHAR  szBuffer[1024];
-	if( !lFont  ) return false;
+    TCHAR  szBuffer[1024];
+    if( !lFont  ) return false;
 
-	int nPixelsPerInch;
-	int nFontSize;
-	//HDC hScreenDC;
-	bool bBold = false;
-	bool bItalic = false;
-	bool bUnderline = false;
-	bool bStrikeOut = false;
-	TCHAR szBold[2][2]={_T("\0"),_T("b")};
-	TCHAR szItalic[2][2]={_T("\0"),_T("i")};
-	TCHAR szUnderline[2][2]={_T("\0"),_T("u")};
-	TCHAR szStrikeOut[2][2]={_T("\0"),_T("s")};
+    int nPixelsPerInch;
+    int nFontSize;
+    //HDC hScreenDC;
+    bool bBold = false;
+    bool bItalic = false;
+    bool bUnderline = false;
+    bool bStrikeOut = false;
+    TCHAR szBold[2][2]={_T("\0"),_T("b")};
+    TCHAR szItalic[2][2]={_T("\0"),_T("i")};
+    TCHAR szUnderline[2][2]={_T("\0"),_T("u")};
+    TCHAR szStrikeOut[2][2]={_T("\0"),_T("s")};
 
-	//hScreenDC = ::GetDC( NULL );
+    //hScreenDC = ::GetDC( NULL );
 
-	//if( !hScreenDC ) return false;
-	HDC dc = ::GetDC(0);
-	nPixelsPerInch = GetDeviceCaps(dc , LOGPIXELSY );
-	ReleaseDC(0, dc);
+    //if( !hScreenDC ) return false;
+    HDC dc = ::GetDC(0);
+    nPixelsPerInch = GetDeviceCaps(dc , LOGPIXELSY );
+    ReleaseDC(0, dc);
 
-	if( nPixelsPerInch <= 0 ) return false;
+    if( nPixelsPerInch <= 0 ) return false;
 
-	nFontSize = - MulDiv( lFont->lfHeight, 72, nPixelsPerInch );
+    nFontSize = - MulDiv( lFont->lfHeight, 72, nPixelsPerInch );
 
-	if(lFont->lfWeight >= FW_BOLD) bBold = true;
+    if(lFont->lfWeight >= FW_BOLD) bBold = true;
 
-	if(lFont->lfUnderline == (char)true) bUnderline = true;
-	if(lFont->lfItalic) bItalic = true;
-	if(lFont->lfStrikeOut == (char)true) bStrikeOut = true;
+    if(lFont->lfUnderline == (char)true) bUnderline = true;
+    if(lFont->lfItalic) bItalic = true;
+    if(lFont->lfStrikeOut == (char)true) bStrikeOut = true;
 
-	wsprintf(szBuffer,_T("%s, %d, %s%s%s%s, %d"),lFont->lfFaceName,nFontSize,
-		szBold[bBold],szItalic[bItalic],szUnderline[bUnderline],szStrikeOut[bStrikeOut],(int)lFont->lfCharSet);
-	Result = szBuffer;
-	return true;
+    wsprintf(szBuffer,_T("%s, %d, %s%s%s%s, %d"),lFont->lfFaceName,nFontSize,
+        szBold[bBold],szItalic[bItalic],szUnderline[bUnderline],szStrikeOut[bStrikeOut],(int)lFont->lfCharSet);
+    Result = szBuffer;
+    return true;
 }
 
 bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont)
 {
-	TCHAR szFontName[LF_FACESIZE] = _T("Ms Sans Serif");
+    TCHAR szFontName[LF_FACESIZE] = _T("Ms Sans Serif");
 
-	TCHAR szFontSize[MAX_PATH];
-	TCHAR szFormat[MAX_PATH];
-	TCHAR szCharset[MAX_PATH];
-	bool bBold=false;
-	bool bItalic=false;
-	bool bUnderline=false;
-	bool bStrikeOut=false;
-	int nFontSize=10;
-	int nCharSet=ANSI_CHARSET;
+    TCHAR szFontSize[MAX_PATH];
+    TCHAR szFormat[MAX_PATH];
+    TCHAR szCharset[MAX_PATH];
+    bool bBold=false;
+    bool bItalic=false;
+    bool bUnderline=false;
+    bool bStrikeOut=false;
+    int nFontSize=10;
+    int nCharSet=ANSI_CHARSET;
 
-	ExtractStrFromList(szBuffer,0,szFontName,sizeof(szFontName)/sizeof(TCHAR));
-	if(ExtractStrFromList(szBuffer,1,szFontSize,sizeof(szFontSize)/sizeof(TCHAR)))
-	{
-		_stscanf(szFontSize,_T("%d"),&nFontSize);
-	}
+    ExtractStrFromList(szBuffer,0,szFontName,sizeof(szFontName)/sizeof(TCHAR));
+    if(ExtractStrFromList(szBuffer,1,szFontSize,sizeof(szFontSize)/sizeof(TCHAR)))
+    {
+        _stscanf(szFontSize,_T("%d"),&nFontSize);
+    }
 
-	ExtractStrFromList(szBuffer,2,szFormat,sizeof(szFontSize)/sizeof(TCHAR));
+    ExtractStrFromList(szBuffer,2,szFormat,sizeof(szFontSize)/sizeof(TCHAR));
 
-	if(_tcschr(szFormat, 'b')) bBold=true;
-	if(_tcschr(szFormat, 'u')) bUnderline=true;
-	if(_tcschr(szFormat, 'i')) bItalic=true;
-	if(_tcschr(szFormat, 's')) bStrikeOut=true;
+    if(_tcschr(szFormat, 'b')) bBold=true;
+    if(_tcschr(szFormat, 'u')) bUnderline=true;
+    if(_tcschr(szFormat, 'i')) bItalic=true;
+    if(_tcschr(szFormat, 's')) bStrikeOut=true;
 
-	if( ExtractStrFromList(szBuffer,3,szCharset,sizeof(szCharset)/sizeof(TCHAR)))
-	{
-		_stscanf(szCharset,_T("%d"),&nCharSet);
-	}
+    if( ExtractStrFromList(szBuffer,3,szCharset,sizeof(szCharset)/sizeof(TCHAR)))
+    {
+        _stscanf(szCharset,_T("%d"),&nCharSet);
+    }
 
-	ZeroMemory(lFont,sizeof(LOGFONT));
+    ZeroMemory(lFont,sizeof(LOGFONT));
+    lstrcpy(lFont->lfFaceName,szFontName);
+    HDC dc = ::GetDC(0);
+    lFont->lfHeight = -MulDiv(nFontSize, GetDeviceCaps(dc , LOGPIXELSY), 72);
+    ReleaseDC(0, dc);
 
+    lFont->lfItalic=bItalic;
+    lFont->lfStrikeOut=bStrikeOut;
+    lFont->lfWeight=bBold?FW_BOLD:FW_NORMAL;
+    lFont->lfUnderline=bUnderline;
+    lFont->lfCharSet=static_cast<BYTE>(nCharSet);
 
-	lstrcpy(lFont->lfFaceName,szFontName);
-	HDC dc = ::GetDC(0);
-	lFont->lfHeight = -MulDiv(nFontSize, GetDeviceCaps(dc , LOGPIXELSY), 72);
-	ReleaseDC(0, dc);
-
-	lFont->lfItalic=bItalic;
-	lFont->lfStrikeOut=bStrikeOut;
-	lFont->lfWeight=bBold?FW_BOLD:FW_NORMAL;
-	lFont->lfUnderline=bUnderline;
-	lFont->lfCharSet=nCharSet;
-
-	return true;
+    return true;
 }
 
-
 bool ExtractStrFromList(
-								LPCTSTR szString /* Source string */,
-								int nIndex, /* Zero based item index */
-								LPTSTR szBuffer /* Destination buffer */,
-								LONG nSize, /* Length in characters of destionation buffer */
-								LPCTSTR szDefString,
-								TCHAR cSeparator /* Character to be separator in list */)
+                                LPCTSTR szString /* Source string */,
+                                int nIndex, /* Zero based item index */
+                                LPTSTR szBuffer /* Destination buffer */,
+                                LONG nSize, /* Length in characters of destionation buffer */
+                                LPCTSTR szDefString,
+                                TCHAR cSeparator /* Character to be separator in list */)
 {
-	int nStringLen = 0;
-	LPCTSTR szSeparator,szPrevSep;
+    int nStringLen = 0;
+    LPCTSTR szSeparator,szPrevSep;
 
-	szSeparator=szPrevSep=0;
+    szSeparator=szPrevSep=0;
 
-	int i;
-	int nStart,nLen,nNumOfItems;
-	nStart=nLen=-1;
-	nNumOfItems=1;
+    int i;
+    int nStart,nLen,nNumOfItems;
+    nStart=nLen=-1;
+    nNumOfItems=1;
 
-	if(!szString || !szBuffer) return false;
+    if(!szString || !szBuffer) return false;
 
-	nStringLen = lstrlen(szString);
+    nStringLen = lstrlen(szString);
 
-	if(nStringLen<=0) goto lbl_copydef;
+    if(nStringLen<=0) goto lbl_copydef;
 
-	while(*szString==_T(' ')) szBuffer++;
+    while(*szString==_T(' ')) szBuffer++;
 
-	if(nStringLen<=0) goto lbl_copydef;
+    if(nStringLen<=0) goto lbl_copydef;
 
-	szPrevSep=szString;
+    szPrevSep=szString;
 
-	nStart=0;
-	nLen=0;
+    nStart=0;
+    nLen=0;
 
-	for(i=0;i<nStringLen+1;i++)
-	{
-		if(szString[i]==0)
-		{
-			if(nIndex<nNumOfItems)
-				nLen=i-nStart;
-			break;
-		}
+    for(i=0;i<nStringLen+1;i++)
+    {
+        if(szString[i]==0)
+        {
+            if(nIndex<nNumOfItems)
+                nLen=i-nStart;
+            break;
+        }
 
-		else if(szString[i]==cSeparator)
-		{
-			nNumOfItems++;
-			if( nNumOfItems-1 == nIndex)
-			{
-				nStart=i+1;
+        else if(szString[i]==cSeparator)
+        {
+            nNumOfItems++;
+            if( nNumOfItems-1 == nIndex)
+            {
+                nStart=i+1;
 
-			}
-			else if( nNumOfItems-2 == nIndex)
-			{
-				nLen=i-nStart;
-				break;
+            }
+            else if( nNumOfItems-2 == nIndex)
+            {
+                nLen=i-nStart;
+                break;
 
-			}
-		}
-	}
+            }
+        }
+    }
 
-	if(nLen>nSize-1) nLen = nSize-1;
+    if(nLen>nSize-1) nLen = nSize-1;
 
-	if(nLen<=0) goto lbl_copydef;
+    if(nLen<=0) goto lbl_copydef;
 
-	lstrcpyn(szBuffer, szString + nStart, nLen+1);
+    lstrcpyn(szBuffer, szString + nStart, nLen+1);
 
-	goto lbl_allok;
+    goto lbl_allok;
 
 lbl_copydef:
-	if(szDefString) lstrcpy(szBuffer, szDefString);
-	return false;
+    if(szDefString) lstrcpy(szBuffer, szDefString);
+    return false;
 
 lbl_allok:
-	return true;
+    return true;
 }
 
 const CString StringSection(const CString& str,TCHAR sep, int index) {
-	CString result;
-	ExtractStrFromList(str, index, result.GetBuffer(256),256,_T(""),sep);
-	result.ReleaseBuffer();
-	return result;
+    CString result;
+    ExtractStrFromList(str, index, result.GetBuffer(256),256,_T(""),sep);
+    result.ReleaseBuffer();
+    return result;
 }
 
+// Show file properties dialog for single file
+// For multiple files, see SHMultiFileProperties function
 bool ShowFilePropertiesDialog(HWND hWnd, const CString& fileName) {
 
-	SHELLEXECUTEINFO ShInfo;
-	ZeroMemory(&ShInfo, sizeof(SHELLEXECUTEINFO));
-	ShInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	ShInfo.nShow  = SW_SHOW;
-	ShInfo.fMask  = SEE_MASK_INVOKEIDLIST | SEE_MASK_IDLIST;
-	ShInfo.hwnd   = hWnd;
-	ShInfo.lpVerb = TEXT("properties");
-	ShInfo.lpFile = fileName;
-	return ShellExecuteEx(&ShInfo) != FALSE;
+    SHELLEXECUTEINFO ShInfo;
+    ZeroMemory(&ShInfo, sizeof(SHELLEXECUTEINFO));
+    ShInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+    ShInfo.nShow  = SW_SHOW;
+    ShInfo.fMask  = SEE_MASK_INVOKEIDLIST | SEE_MASK_IDLIST;
+    ShInfo.hwnd   = hWnd;
+    ShInfo.lpVerb = TEXT("properties");
+    ShInfo.lpFile = fileName;
+    return ShellExecuteEx(&ShInfo) != FALSE;
 }
 
 bool GetClipboardHtml(CString& text, CString& outSourceUrl) {
-	UINT clipboardFormat = RegisterClipboardFormat(_T("HTML Format"));
-	if ( OpenClipboard(NULL) ) {
-		HGLOBAL hglb = GetClipboardData(clipboardFormat);
-		LPCSTR lpstr = (LPCSTR)GlobalLock(hglb);
-		std::string ansiString = (LPCSTR)lpstr;
+    UINT clipboardFormat = RegisterClipboardFormat(_T("HTML Format"));
+    if ( OpenClipboard(NULL) ) {
+        HGLOBAL hglb = GetClipboardData(clipboardFormat);
+        LPCSTR lpstr = reinterpret_cast<LPCSTR>(GlobalLock(hglb));
+        std::string ansiString = lpstr;
 
-		std::istringstream f(ansiString);
-		std::string line;    
-		int startFragment = -1;
-		int endFragment = -1;
-		std::string sourceUrl;
-		bool result = false;
+        std::istringstream f(ansiString);
+        std::string line;    
+        int startFragment = -1;
+        int endFragment = -1;
+        std::string sourceUrl;
+        bool result = false;
 
-		while (std::getline(f, line)) {
-			std::vector<std::string> tokens;
-			IuStringUtils::Split(line, ":", tokens, 2);
-			if ( tokens.size() == 2) {
-				if ( tokens[0] == "StartFragment") {
-					startFragment = atoi(tokens[1].c_str());
-				} else if ( tokens[0] == "EndFragment" ) {
-					endFragment = atoi(tokens[1].c_str());
-				} else if ( tokens[0] == "SourceURL" ) {
-					sourceUrl = tokens[1];
-				}
-			} else {
-				break;
-			}
-		}
-		if ( startFragment != -1 && endFragment != -1 ) {
-			text = IuCoreUtils::Utf8ToWstring( ansiString.substr(startFragment, endFragment - startFragment) ).c_str();
-			outSourceUrl = IuCoreUtils::Utf8ToWstring(sourceUrl).c_str();
-			result = true;
-		}
-		
-		GlobalUnlock(hglb);
-		CloseClipboard();
+        while (std::getline(f, line)) {
+            std::vector<std::string> tokens;
+            IuStringUtils::Split(line, ":", tokens, 2);
+            if ( tokens.size() == 2) {
+                if ( tokens[0] == "StartFragment") {
+                    startFragment = atoi(tokens[1].c_str());
+                } else if ( tokens[0] == "EndFragment" ) {
+                    endFragment = atoi(tokens[1].c_str());
+                } else if ( tokens[0] == "SourceURL" ) {
+                    sourceUrl = tokens[1];
+                }
+            } else {
+                break;
+            }
+        }
+        if ( startFragment != -1 && endFragment != -1 ) {
+            text = IuCoreUtils::Utf8ToWstring( ansiString.substr(startFragment, endFragment - startFragment) ).c_str();
+            outSourceUrl = IuCoreUtils::Utf8ToWstring(sourceUrl).c_str();
+            result = true;
+        }
+        
+        GlobalUnlock(hglb);
+        CloseClipboard();
 
-		return result;
-	}
+        return result;
+    }
 
-	return false;
+    return false;
 }
 
 float GetMonitorScaleFactor()
 {
-	float res = 1.0;
-	/*MONITORINFOEX LogicalMonitorInfo;
-	LogicalMonitorInfo.cbSize = sizeof(MONITORINFOEX);       
-	GetMonitorInfo(hMonitor, &LogicalMonitorInfo);
-	int LogicalMonitorWidth = LogicalMonitorInfo.rcMonitor.right – LogicalMonitorInfo.rcMonitor.left;
-	int LogicalDesktopWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-	typedef LONG (WINAPI * QueryDisplayConfig_FuncType)(UINT32,UINT32 *,DISPLAYCONFIG_PATH_INFO *,UINT32 *);
-	typedef LONG (WINAPI * GetDisplayConfigBufferSizes_FuncType) (UINT32, UINT32*,UINT32 *);
+    float res = 1.0;
+    /*MONITORINFOEX LogicalMonitorInfo;
+    LogicalMonitorInfo.cbSize = sizeof(MONITORINFOEX);       
+    GetMonitorInfo(hMonitor, &LogicalMonitorInfo);
+    int LogicalMonitorWidth = LogicalMonitorInfo.rcMonitor.right – LogicalMonitorInfo.rcMonitor.left;
+    int LogicalDesktopWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+    typedef LONG (WINAPI * QueryDisplayConfig_FuncType)(UINT32,UINT32 *,DISPLAYCONFIG_PATH_INFO *,UINT32 *);
+    typedef LONG (WINAPI * GetDisplayConfigBufferSizes_FuncType) (UINT32, UINT32*,UINT32 *);
 
-	HMODULE lib = LoadLibrary(_T("user32.dll"));
-	QueryDisplayConfig_FuncType QueryDisplayConfigFunc = GetProcAddress(lib, _T("QueryDisplayConfig"));
-	GetDisplayConfigBufferSizes_FuncType GetDisplayConfigBufferSizeFunc =  GetProcAddress(lib, _T("GetDisplayConfigBufferSize"));
-	if ( QueryDisplayConfigFunc && GetDisplayConfigBufferSizeFunc ) {
-		UINT32 NumPathArrayElements = 0;
-		UINT32 NumModeInfoArrayElements = 0;
-		if ( GetDisplayConfigBufferSizeFunc(QDC_DATABASE_CURRENT, &NumPathArrayElements, &NumModeInfoArrayElements) != ERROR_SUCCESS ) {
-			return res;
-		}
-		if ( !NumModeInfoArrayElements ) {
-			return res;
-		}
-		DISPLAYCONFIG_TOPOLOGY_ID CurrentTopologyId = DISPLAYCONFIG_TOPOLOGY_INTERNAL;
-		DISPLAYCONFIG_PATH_INFO* PathInfoArray = new DISPLAYCONFIG_PATH_INFO[NumPathArrayElements];
-		memset(PathInfoArray, 0, sizeof(DISPLAYCONFIG_PATH_INFO) * NumPathArrayElements);
-		DISPLAYCONFIG_MODE_INFO* ModeInfoArray = new DISPLAYCONFIG_PATH_INFO[NumModeInfoArrayElements];
-		memset(ModeInfoArray, 0, sizeof(DISPLAYCONFIG_PATH_INFO) * NumModeInfoArrayElements);
+    HMODULE lib = LoadLibrary(_T("user32.dll"));
+    QueryDisplayConfig_FuncType QueryDisplayConfigFunc = GetProcAddress(lib, _T("QueryDisplayConfig"));
+    GetDisplayConfigBufferSizes_FuncType GetDisplayConfigBufferSizeFunc =  GetProcAddress(lib, _T("GetDisplayConfigBufferSize"));
+    if ( QueryDisplayConfigFunc && GetDisplayConfigBufferSizeFunc ) {
+        UINT32 NumPathArrayElements = 0;
+        UINT32 NumModeInfoArrayElements = 0;
+        if ( GetDisplayConfigBufferSizeFunc(QDC_DATABASE_CURRENT, &NumPathArrayElements, &NumModeInfoArrayElements) != ERROR_SUCCESS ) {
+            return res;
+        }
+        if ( !NumModeInfoArrayElements ) {
+            return res;
+        }
+        DISPLAYCONFIG_TOPOLOGY_ID CurrentTopologyId = DISPLAYCONFIG_TOPOLOGY_INTERNAL;
+        DISPLAYCONFIG_PATH_INFO* PathInfoArray = new DISPLAYCONFIG_PATH_INFO[NumPathArrayElements];
+        memset(PathInfoArray, 0, sizeof(DISPLAYCONFIG_PATH_INFO) * NumPathArrayElements);
+        DISPLAYCONFIG_MODE_INFO* ModeInfoArray = new DISPLAYCONFIG_PATH_INFO[NumModeInfoArrayElements];
+        memset(ModeInfoArray, 0, sizeof(DISPLAYCONFIG_PATH_INFO) * NumModeInfoArrayElements);
 
-		if ( QueryDisplayConfigFunc(QDC_DATABASE_CURRENT, &NumPathArrayElements, PathInfoArray, NumModeInfoArrayElements, ModeInfoArray, &CurrentTopologyId) != ERROR_SUCCESS ) {
-			return res;
-		}
+        if ( QueryDisplayConfigFunc(QDC_DATABASE_CURRENT, &NumPathArrayElements, PathInfoArray, NumModeInfoArrayElements, ModeInfoArray, &CurrentTopologyId) != ERROR_SUCCESS ) {
+            return res;
+        }
 
-		res = (LogicalMonitorWidth / LogicalDesktopWidth) / ModeInfoArray[0].sourceMode.width
+        res = (LogicalMonitorWidth / LogicalDesktopWidth) / ModeInfoArray[0].sourceMode.width
 
-	}*/
-	return res;
+    }*/
+    return res;
 }
 
 CString GetLastErrorAsString()
 {
-	//Get the error message, if any.
-	DWORD errorMessageID = ::GetLastError();
-	if(errorMessageID == 0)
-		return "No error message has been recorded";
+    //Get the error message, if any.
+    DWORD errorMessageID = ::GetLastError();
+    if(errorMessageID == 0)
+        return _T("No error message has been recorded");
 
-	LPTSTR messageBuffer = 0;
-	size_t size = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&messageBuffer, 0, NULL);
+    LPTSTR messageBuffer = 0;
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&messageBuffer, 0, NULL);
 
-	CString res = messageBuffer;
+    CString res = messageBuffer;
 
-	//Free the buffer.
-	LocalFree(messageBuffer);
+    //Free the buffer.
+    LocalFree(messageBuffer);
 
-	return res;
+    return res;
 }
 
 
 BOOL MakeDirectoryWritable(LPCTSTR lpPath) {
-	HANDLE hDir = CreateFile(lpPath,READ_CONTROL|WRITE_DAC,0,NULL,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS,NULL);
-	if(hDir == INVALID_HANDLE_VALUE)
-		return FALSE; 
+    HANDLE hDir = CreateFile(lpPath,READ_CONTROL|WRITE_DAC,0,NULL,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS,NULL);
+    if(hDir == INVALID_HANDLE_VALUE)
+        return FALSE; 
 
-	ACL* pOldDACL;
-	SECURITY_DESCRIPTOR* pSD = NULL;
-	GetSecurityInfo(hDir, SE_FILE_OBJECT , DACL_SECURITY_INFORMATION,NULL, NULL, &pOldDACL, NULL, (void**)&pSD);
+    ACL* pOldDACL;
+    SECURITY_DESCRIPTOR* pSD = NULL;
+    GetSecurityInfo(hDir, SE_FILE_OBJECT , DACL_SECURITY_INFORMATION,NULL, NULL, &pOldDACL, NULL, (void**)&pSD);
 
-	PSID pSid = NULL;
-	SID_IDENTIFIER_AUTHORITY authNt = SECURITY_NT_AUTHORITY;
-	AllocateAndInitializeSid(&authNt,2,SECURITY_BUILTIN_DOMAIN_RID,DOMAIN_ALIAS_RID_USERS,0,0,0,0,0,0,&pSid);
+    PSID pSid = NULL;
+    SID_IDENTIFIER_AUTHORITY authNt = SECURITY_NT_AUTHORITY;
+    AllocateAndInitializeSid(&authNt,2,SECURITY_BUILTIN_DOMAIN_RID,DOMAIN_ALIAS_RID_USERS,0,0,0,0,0,0,&pSid);
 
-	EXPLICIT_ACCESS ea={0};
-	ea.grfAccessMode = GRANT_ACCESS;
-	ea.grfAccessPermissions = GENERIC_ALL;
-	ea.grfInheritance = CONTAINER_INHERIT_ACE|OBJECT_INHERIT_ACE;
-	ea.Trustee.TrusteeType = TRUSTEE_IS_GROUP;
-	ea.Trustee.TrusteeForm = TRUSTEE_IS_SID;
-	ea.Trustee.ptstrName = (LPTSTR)pSid;
+    EXPLICIT_ACCESS ea={0};
+    ea.grfAccessMode = GRANT_ACCESS;
+    ea.grfAccessPermissions = GENERIC_ALL;
+    ea.grfInheritance = CONTAINER_INHERIT_ACE|OBJECT_INHERIT_ACE;
+    ea.Trustee.TrusteeType = TRUSTEE_IS_GROUP;
+    ea.Trustee.TrusteeForm = TRUSTEE_IS_SID;
+    ea.Trustee.ptstrName = (LPTSTR)pSid;
 
-	ACL* pNewDACL = 0;
-	DWORD err = SetEntriesInAcl(1,&ea,pOldDACL,&pNewDACL);
+    ACL* pNewDACL = 0;
+    /*DWORD err = */SetEntriesInAcl(1,&ea,pOldDACL,&pNewDACL);
 
-	if(pNewDACL)
-		SetSecurityInfo(hDir,SE_FILE_OBJECT,DACL_SECURITY_INFORMATION,NULL, NULL, pNewDACL, NULL);
+    if(pNewDACL)
+        SetSecurityInfo(hDir,SE_FILE_OBJECT,DACL_SECURITY_INFORMATION,NULL, NULL, pNewDACL, NULL);
 
-	FreeSid(pSid);
-	LocalFree(pNewDACL);
-	LocalFree(pSD);
-	LocalFree(pOldDACL);
-	CloseHandle(hDir);
-	return TRUE;
+    FreeSid(pSid);
+    LocalFree(pNewDACL);
+    LocalFree(pSD);
+    LocalFree(pOldDACL);
+    CloseHandle(hDir);
+    return TRUE;
+}
+
+
+bool IsProcessRunning(DWORD pid) {
+    HANDLE process = OpenProcess(SYNCHRONIZE, FALSE, pid);
+    if (!process) {
+        return false;
+    }
+
+    CloseHandle(process);
+    return true;
 }
 
 int GetInternetExplorerMajorVersion()
 {
-	CRegistry Reg;
-	Reg.SetRootKey( HKEY_LOCAL_MACHINE );
-	if ( Reg.SetKey( "Software\\Microsoft\\Internet Explorer" , FALSE ) ) {
-		CString version = Reg.ReadString("svcVersion");
+    CRegistry Reg;
+    Reg.SetRootKey( HKEY_LOCAL_MACHINE );
+    if ( Reg.SetKey( _T("Software\\Microsoft\\Internet Explorer") , FALSE ) ) {
+        CString version = Reg.ReadString(_T("svcVersion"));
         if ( version.IsEmpty() ) {
-            version = Reg.ReadString("Version");
+            version = Reg.ReadString(_T("Version"));
         }
-		int dotPos = version.Find(L'.');
-		if ( dotPos != -1 ) {
-			return StrToInt(version.Left(dotPos));
-		}
-	}
-	return 7;
+        int dotPos = version.Find(L'.');
+        if ( dotPos != -1 ) {
+            return StrToInt(version.Left(dotPos));
+        }
+    }
+    return 7;
 }
 
-
-
 TCHAR* GetBrowserKey() {
-	//32bit OS
-	//\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION
-	//32bit app on 64bit OS
-	//\SOFTWARE\Wow6432Node\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_BROWSER_EMULATION
+    //32bit OS
+    //\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION
+    //32bit app on 64bit OS
+    //\SOFTWARE\Wow6432Node\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_BROWSER_EMULATION
 
-	/*if ( sizeof(void*) == 4 && IsWindows64Bit() ) {
-		return _T("SOFTWARE\\Wow6432Node\\Microsoft\\Internet Explorer\\MAIN\\FeatureControl\\FEATURE_BROWSER_EMULATION");
-	}*/
-	return _T("SOFTWARE\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION");
+    /*if ( sizeof(void*) == 4 && IsWindows64Bit() ) {
+        return _T("SOFTWARE\\Wow6432Node\\Microsoft\\Internet Explorer\\MAIN\\FeatureControl\\FEATURE_BROWSER_EMULATION");
+    }*/
+    return _T("SOFTWARE\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION");
 }
 
 void RemoveBrowserKey(){
-	CRegistry Reg;
-	Reg.SetRootKey( HKEY_CURRENT_USER );
-	if ( Reg.SetKey( GetBrowserKey(), false ) ) {
-		Reg.DeleteKey(myExtractFileName(GetAppFileName()));
-	}
+    CRegistry Reg;
+    Reg.SetRootKey( HKEY_CURRENT_USER );
+    if ( Reg.SetKey( GetBrowserKey(), false ) ) {
+        Reg.DeleteKey(myExtractFileName(GetAppFileName()));
+    }
 
 }
 
 void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective) {
-	// Thank to https://www.daniweb.com/software-development/vbnet/code/442963/make-the-webbrowser-control-give-you-the-installed-ie-version-rendering
+    // Thank to https://www.daniweb.com/software-development/vbnet/code/442963/make-the-webbrowser-control-give-you-the-installed-ie-version-rendering
 
-	int value = 0;
-	int majorVersion = GetInternetExplorerMajorVersion();
-	//Value reference: http://msdn.microsoft.com/en-us/library/ee330730%28v=VS.85%29.aspx
-	//IDOC Reference:  http://msdn.microsoft.com/en-us/library/ms535242%28v=vs.85%29.aspx
-	//majorVersion = 7;
-	switch (majorVersion) {
-		case 8:
-			value = IgnoreIDocDirective ? 8888 : 8000;
-			break;
-		case 9:
-			value = IgnoreIDocDirective ? 9999 : 9000;
-			break;
-		case 10:
-			value = IgnoreIDocDirective ? 10001 : 10000;
-			break;
-		case 11:
-			value = IgnoreIDocDirective ? 11001 :  11000;
-			break;
-		default:
-			return;
-		
-	}
+    int value = 0;
+    int majorVersion = GetInternetExplorerMajorVersion();
+    //Value reference: http://msdn.microsoft.com/en-us/library/ee330730%28v=VS.85%29.aspx
+    //IDOC Reference:  http://msdn.microsoft.com/en-us/library/ms535242%28v=vs.85%29.aspx
+    //majorVersion = 7;
+    if (majorVersion <= 11) {
+        switch (majorVersion) {
+        case 8:
+            value = IgnoreIDocDirective ? 8888 : 8000;
+            break;
+        case 9:
+            value = IgnoreIDocDirective ? 9999 : 9000;
+            break;
+        case 10:
+            value = IgnoreIDocDirective ? 10001 : 10000;
+            break;
+        case 11:
+            value = IgnoreIDocDirective ? 11001 : 11000;
+            break;
+        default:
+            return;
 
-	CRegistry Reg;
-	Reg.SetRootKey( HKEY_CURRENT_USER );
-	if ( Reg.SetKey( GetBrowserKey(), true ) ) {
-		Reg.WriteDword(myExtractFileName(GetAppFileName()), value);
-	}	
+        }
+    } else {
+        value = IgnoreIDocDirective ? 11001 : 11000;
+    }
 
+    CRegistry Reg;
+    Reg.SetRootKey( HKEY_CURRENT_USER );
+    if ( Reg.SetKey( GetBrowserKey(), true ) ) {
+        Reg.WriteDword(myExtractFileName(GetAppFileName()), value);
+    }    
+
+}
+
+bool DisplaySystemPrintDialogForImage(const std::vector<CString>& files, HWND hwnd) {
+    static const CLSID CLSID_PrintPhotosDropTarget ={ 0x60fd46de, 0xf830, 0x4894, { 0xa6, 0x28, 0x6f, 0xa8, 0x1b, 0xc0, 0x19, 0x0d } };
+
+    CComPtr<IShellFolder> desktop; // namespace root for parsing the path
+    HRESULT hr = SHGetDesktopFolder(&desktop);
+    if (!SUCCEEDED(hr)) {
+        return false;
+    }
+
+    CComPtr<IShellItem> psi;
+    CComPtr<IDataObject> pDataObject;
+
+    std::vector<LPITEMIDLIST> list;
+
+    for (const auto& fileName : files) {
+        PIDLIST_RELATIVE newPIdL;
+        hr = desktop->ParseDisplayName(hwnd, nullptr, const_cast<LPWSTR>(static_cast<LPCTSTR>(fileName)), nullptr, &newPIdL, nullptr);
+        if (SUCCEEDED(hr)) {
+            list.push_back(newPIdL);
+        }
+    }
+   
+    if (!list.empty()) {
+        hr = desktop->GetUIObjectOf(hwnd, list.size(), const_cast<LPCITEMIDLIST*>(&list[0]), IID_IDataObject, 0, reinterpret_cast<void**>(&pDataObject));
+        if (SUCCEEDED(hr)) {
+            // Create the Photo Printing Wizard drop target.
+            CComPtr<IDropTarget> spDropTarget;
+
+            hr = CoCreateInstance(CLSID_PrintPhotosDropTarget, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&spDropTarget));
+            if (SUCCEEDED(hr)) {
+                // Drop the data object onto the drop target.
+                POINTL pt = { 0 };
+                DWORD dwEffect = DROPEFFECT_LINK | DROPEFFECT_MOVE | DROPEFFECT_COPY;
+
+                spDropTarget->DragEnter(pDataObject, MK_LBUTTON, pt, &dwEffect);
+
+                spDropTarget->Drop(pDataObject, MK_LBUTTON, pt, &dwEffect);
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 void TimerWait(int Delay)
 {
-	HANDLE hTimer = CreateWaitableTimer(0, TRUE, 0);
-	LARGE_INTEGER interval;
-	interval.QuadPart = -Delay * 10000;
-	SetWaitableTimer(hTimer, &interval, 0, 0, 0, 0);
-	MsgWaitForSingleObject(hTimer, INFINITE);
-	CloseHandle(hTimer);
+    HANDLE hTimer = CreateWaitableTimer(0, TRUE, 0);
+    LARGE_INTEGER interval;
+    interval.QuadPart = -Delay * 10000;
+    SetWaitableTimer(hTimer, &interval, 0, 0, 0, 0);
+    MsgWaitForSingleObject(hTimer, INFINITE);
+    CloseHandle(hTimer);
 }
 
+CString ConvertRelativePathToAbsolute(const CString& fileName)
+{
+    TCHAR result[MAX_PATH+1];
+    if (!GetFullPathName(fileName, MAX_PATH, result, 0))
+    {
+        return fileName;
+    }
+    return result;
+}
+
+std::wstring strtows(const std::string &str, UINT codePage)
+{
+    std::wstring ws;
+    int n = MultiByteToWideChar(codePage, 0, str.c_str(), str.size() + 1, /*dst*/NULL, 0);
+    if (n)
+    {
+        ws.resize(n - 1);
+        if (MultiByteToWideChar(codePage, 0, str.c_str(), str.size() + 1, /*dst*/&ws[0], n) == 0)
+            ws.clear();
+    }
+    return ws;
+}
+std::string wstostr(const std::wstring &ws, UINT codePage)
+{
+    std::string str;
+    int n = WideCharToMultiByte(codePage, 0, ws.c_str(), ws.size() + 1, /*dst*/NULL, 0, /*defchr*/0, NULL);
+    if (n)
+    {
+        str.resize(n - 1);
+        if (WideCharToMultiByte(codePage, 0, ws.c_str(), ws.size() + 1, /*dst*/&str[0], n, /*defchr*/0, NULL) == 0)
+            str.clear();
+    }
+    return str;
+}
+
+const std::string AnsiToUtf8(const std::string &str, int codepage)
+{
+
+    return wstostr(strtows(str, codepage), CP_UTF8);
+}
+
+const std::string Utf8ToAnsi(const std::string &str, int codepage)
+{
+
+    return wstostr(strtows(str, CP_UTF8), codepage);
+}
+
+CString GetProcessName(DWORD pid)
+{
+    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnapshot) {
+        PROCESSENTRY32 pe32;
+        pe32.dwSize = sizeof(PROCESSENTRY32);
+        if (Process32First(hSnapshot, &pe32)) {
+            do {
+                if (pe32.th32ProcessID == pid) {
+                    CloseHandle(hSnapshot);
+                    return pe32.szExeFile;
+                }
+                
+            }
+            while (Process32Next(hSnapshot, &pe32));
+        }
+        CloseHandle(hSnapshot);
+    }
+    return CString();
+}
+
+std::string chcp(const std::string &str, UINT codePageSrc, UINT codePageDst)
+{
+    return wstostr(strtows(str, codePageSrc), codePageDst);
+}
+
+CString ErrorCodeToString(DWORD idCode)
+{
+    LPVOID lpMsgBuf;
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL,
+        idCode, 0, reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, NULL);
+    CString res = reinterpret_cast<LPCTSTR>(lpMsgBuf);
+    // Free the buffer.
+    LocalFree(lpMsgBuf);
+    return res;
+}
+
+CString ExpandEnvironmentStrings(const CString& s)
+{
+    DWORD len = ::ExpandEnvironmentStrings(s, NULL, 0);
+    if (len == 0)
+        return s;
+
+    std::unique_ptr<TCHAR[]> buf(new TCHAR[len + 1]);
+    if (::ExpandEnvironmentStrings(s, buf.get(), len) == 0)
+        return s;
+
+    return buf.get();
+}
+
+void ArgvQuote(const std::wstring& Argument, std::wstring& CommandLine, bool Force){
+    if (Force == false &&
+        Argument.empty() == false &&
+        Argument.find_first_of(L" \t\n\v\"") == Argument.npos) {
+        CommandLine.append(Argument);
+    } else {
+        CommandLine.push_back(L'"');
+
+        for (auto It = Argument.begin();; ++It) {
+            unsigned NumberBackslashes = 0;
+
+            while (It != Argument.end() && *It == L'\\') {
+                ++It;
+                ++NumberBackslashes;
+            }
+
+            if (It == Argument.end()) {
+                // Escape all backslashes, but let the terminating
+                // double quotation mark we add below be interpreted
+                // as a metacharacter.
+                CommandLine.append(NumberBackslashes * 2, L'\\');
+                break;
+            } else if (*It == L'"') {
+                //
+                // Escape all backslashes and the following
+                // double quotation mark.
+                //
+                CommandLine.append(NumberBackslashes * 2 + 1, L'\\');
+                CommandLine.push_back(*It);
+            } else {
+                //
+                // Backslashes aren't special here.
+                //
+                CommandLine.append(NumberBackslashes, L'\\');
+                CommandLine.push_back(*It);
+            }
+        }
+
+        CommandLine.push_back(L'"');
+    }
+   
+}
+
+bool GetProxyInfo(CString& proxy_address, CString& proxy_bypass)
+{
+    proxy_address.Empty();
+    proxy_bypass.Empty();
+
+    WINHTTP_CURRENT_USER_IE_PROXY_CONFIG proxy_info;
+    if (FALSE == WinHttpGetIEProxyConfigForCurrentUser(&proxy_info))
+        return false;
+
+    if (proxy_info.lpszProxy)
+        proxy_address = proxy_info.lpszProxy;
+
+    if (proxy_info.lpszProxyBypass)
+        proxy_bypass = proxy_info.lpszProxyBypass;
+
+    if (proxy_info.lpszProxy) {
+        GlobalFree(proxy_info.lpszProxy);
+    }
+    if (proxy_info.lpszProxyBypass) {
+        GlobalFree(proxy_info.lpszProxyBypass);
+    }
+    if (proxy_info.lpszAutoConfigUrl) {
+        GlobalFree(proxy_info.lpszAutoConfigUrl);
+    }
+    return !proxy_address.IsEmpty();
+}
 
 };
+
+const std::wstring Utf8ToWstring(const std::string &str)
+{
+    return WinUtils::strtows(str, CP_UTF8);
+}
+

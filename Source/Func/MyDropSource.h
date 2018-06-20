@@ -27,18 +27,18 @@
 class CMyDropSource : public IDropSource
 {
 private:
-	long m_lRefCount;
+    long m_lRefCount;
 
 public:
-	CMyDropSource();
-	~CMyDropSource();
+    CMyDropSource();
+    ~CMyDropSource();
 
-	// IUnknown members.
+    // IUnknown members.
     HRESULT __stdcall QueryInterface(REFIID iid,void ** ppvObject);
     ULONG __stdcall AddRef();
     ULONG __stdcall Release();
 
-	// IDropSource members.
+    // IDropSource members.
     HRESULT __stdcall QueryContinueDrag(BOOL fEscapePressed,DWORD grfKeyState);
     HRESULT __stdcall GiveFeedback(DWORD dwEffect);
 };

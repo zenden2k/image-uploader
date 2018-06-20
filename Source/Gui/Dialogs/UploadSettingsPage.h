@@ -29,42 +29,47 @@
 #include "Gui/Controls/MyImage.h"
 #include "settingspage.h"
 #include "Gui/WizardCommon.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 // CUploadSettingsPage
 
 class CUploadSettingsPage : 
-	public CDialogImpl<CUploadSettingsPage>, public CSettingsPage,
-		public CWinDataExchange <CUploadSettingsPage >
+    public CDialogImpl<CUploadSettingsPage>, public CSettingsPage,
+        public CWinDataExchange <CUploadSettingsPage >
 {
 public:
-	CUploadSettingsPage();
+    CUploadSettingsPage();
 virtual ~CUploadSettingsPage();
-	enum { IDD = IDD_UPLOADSETTINGSPAGE };
+    enum { IDD = IDD_UPLOADSETTINGSPAGE };
 
     BEGIN_MSG_MAP(CUploadSettingsPage)
-		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-		COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-		COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-		COMMAND_HANDLER(IDC_USEPROXYSERVER, BN_CLICKED, OnClickedUseProxy)
-		COMMAND_HANDLER(IDC_NEEDSAUTH, BN_CLICKED, OnClickedUseProxyAuth)
-	END_MSG_MAP()
-		
-	BEGIN_DDX_MAP(CScreenshotDlg)
-		DDX_INT(IDC_FILERETRYLIMIT, Settings.FileRetryLimit)
-		DDX_INT(IDC_ACTIONRETRYLIMIT, Settings.ActionRetryLimit)
-		DDX_CHECK(IDC_IGNOREERRORS,Settings.ShowUploadErrorDialog)
+        MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+        COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
+        COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+        COMMAND_HANDLER(IDC_USEPROXYSERVER, BN_CLICKED, OnClickedUseProxy)
+        COMMAND_HANDLER(IDC_NEEDSAUTH, BN_CLICKED, OnClickedUseProxyAuth)
+        COMMAND_HANDLER(IDC_BROWSESCRIPTBUTTON, BN_CLICKED, OnBnClickedBrowseScriptButton)
+    END_MSG_MAP()
+        
+    BEGIN_DDX_MAP(CScreenshotDlg)
+        DDX_CONTROL_HANDLE(IDC_SERVERTYPECOMBO, serverTypeCombo_)
+        DDX_INT(IDC_FILERETRYLIMIT, Settings.FileRetryLimit)
+        DDX_INT(IDC_ACTIONRETRYLIMIT, Settings.ActionRetryLimit)
+        DDX_CHECK(IDC_IGNOREERRORS,Settings.ShowUploadErrorDialog)
     END_DDX_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT OnClickedUseProxy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnClickedUseProxyAuth(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	virtual bool Apply();
-	void TranslateUI();
+    LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnClickedUseProxy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnClickedUseProxyAuth(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    virtual bool Apply();
+    void TranslateUI();
+    LRESULT OnBnClickedBrowseScriptButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+protected:
+    CComboBox serverTypeCombo_;
 };
 
 #endif // IU_GUI_DIALOGS_UPLOADSETTINGSPAGE_H

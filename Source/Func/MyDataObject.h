@@ -26,35 +26,35 @@
 
 class CMyDataObject : public IDataObject
 {
-	public:
-		CMyDataObject();
-		~CMyDataObject();
+    public:
+        CMyDataObject();
+        ~CMyDataObject();
 
-		void Reset();
-		void AddFile(LPCTSTR FileName);
+        void Reset();
+        void AddFile(LPCTSTR FileName);
 
-		// IUnknown members.
-		 HRESULT __stdcall QueryInterface(REFIID iid,void **ppvObject);
-		 ULONG __stdcall AddRef();
-		 ULONG __stdcall Release();
-	        
-		 // IDataObject members.
-		 HRESULT __stdcall GetData(FORMATETC *pFormatEtc,STGMEDIUM *pmedium);
-		 HRESULT __stdcall GetDataHere(FORMATETC *pFormatEtc,STGMEDIUM *pmedium);
-		 HRESULT __stdcall QueryGetData(FORMATETC *pFormatEtc);
-		 HRESULT __stdcall GetCanonicalFormatEtc(FORMATETC *pFormatEct,FORMATETC *pFormatEtcOut);
-		 HRESULT __stdcall SetData(FORMATETC *pFormatEtc,STGMEDIUM *pMedium,BOOL fRelease);
-		 HRESULT __stdcall EnumFormatEtc(DWORD dwDirection, IEnumFORMATETC **ppEnumFormatEtc);
-		 HRESULT __stdcall DAdvise(FORMATETC *pFormatEtc,DWORD advf,IAdviseSink *,DWORD *);
-		 HRESULT __stdcall DUnadvise(DWORD dwConnection);
-		 HRESULT __stdcall EnumDAdvise(IEnumSTATDATA **ppEnumAdvise);
-	private:
-		long m_lRefCount;
-		FORMATETC m_FormatEtc;
-		STGMEDIUM m_StgMedium;
-		int TotalLength;
-		CAtlArray<CString> m_FileItems;
-		bool IsFormatSupported(FORMATETC *pFormatEtc);
+        // IUnknown members.
+         HRESULT __stdcall QueryInterface(REFIID iid,void **ppvObject);
+         ULONG __stdcall AddRef();
+         ULONG __stdcall Release();
+            
+         // IDataObject members.
+         HRESULT __stdcall GetData(FORMATETC *pFormatEtc,STGMEDIUM *pmedium);
+         HRESULT __stdcall GetDataHere(FORMATETC *pFormatEtc,STGMEDIUM *pmedium);
+         HRESULT __stdcall QueryGetData(FORMATETC *pFormatEtc);
+         HRESULT __stdcall GetCanonicalFormatEtc(FORMATETC *pFormatEct,FORMATETC *pFormatEtcOut);
+         HRESULT __stdcall SetData(FORMATETC *pFormatEtc,STGMEDIUM *pMedium,BOOL fRelease);
+         HRESULT __stdcall EnumFormatEtc(DWORD dwDirection, IEnumFORMATETC **ppEnumFormatEtc);
+         HRESULT __stdcall DAdvise(FORMATETC *pFormatEtc,DWORD advf,IAdviseSink *,DWORD *);
+         HRESULT __stdcall DUnadvise(DWORD dwConnection);
+         HRESULT __stdcall EnumDAdvise(IEnumSTATDATA **ppEnumAdvise);
+    private:
+        long m_lRefCount;
+        FORMATETC m_FormatEtc;
+        STGMEDIUM m_StgMedium;
+        int TotalLength;
+        CAtlArray<CString> m_FileItems;
+        bool IsFormatSupported(FORMATETC *pFormatEtc);
 };
 
 #endif // MYDATAOBJECT_H

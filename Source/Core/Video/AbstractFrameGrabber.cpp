@@ -5,7 +5,7 @@ AbstractFrameGrabber::~AbstractFrameGrabber()
 
 }
 
-Utf8String AbstractFrameGrabber::error() {
+std::string AbstractFrameGrabber::error() {
     return error_;
 }
 

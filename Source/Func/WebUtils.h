@@ -4,7 +4,7 @@
 #include "atlheaders.h"
 
 namespace WebUtils {
-	bool DoesTextLookLikeUrl(CString& text);
+    bool DoesTextLookLikeUrl(CString& text);
 }
 
 #endif

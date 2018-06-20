@@ -26,53 +26,55 @@
 #include "Func/common.h"
 #include "3rdpart/PropertyList.h"
 #include "Core/Upload/UploadEngine.h"
-#include <Func/Settings.h>
+#include "Core/Settings.h"
+#include "Core/Upload/ScriptUploadEngine.h"
 class ServerProfile;
 class CServerParamsDlg : 
-	public CDialogImpl<CServerParamsDlg>,
-	public CDialogResize<CServerParamsDlg>	
+    public CDialogImpl<CServerParamsDlg>,
+    public CDialogResize<CServerParamsDlg>    
 {
-	public:
-		CServerParamsDlg(ServerProfile  serverProfile, bool focusOnLoginEdit = false);
-		~CServerParamsDlg();
-		enum { IDD = IDD_SERVERPARAMSDLG };
+    public:
+        CServerParamsDlg(ServerProfile  serverProfile, UploadEngineManager * uploadEngineManager, bool focusOnLoginEdit = false);
+        ~CServerParamsDlg();
+        enum { IDD = IDD_SERVERPARAMSDLG };
 
-		BEGIN_MSG_MAP(CServerParamsDlg)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-			COMMAND_HANDLER(IDC_DOAUTH, BN_CLICKED, OnClickedDoAuth)
-			COMMAND_HANDLER(IDC_BROWSESERVERFOLDERS, BN_CLICKED, OnBrowseServerFolders)
-			COMMAND_HANDLER(IDC_LOGINEDIT, EN_CHANGE, OnLoginEditChange)
-			CHAIN_MSG_MAP(CDialogResize<CServerParamsDlg>)
-			REFLECT_NOTIFICATIONS()
-		END_MSG_MAP()
+        BEGIN_MSG_MAP(CServerParamsDlg)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
+            COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+            COMMAND_HANDLER(IDC_DOAUTH, BN_CLICKED, OnClickedDoAuth)
+            COMMAND_HANDLER(IDC_BROWSESERVERFOLDERS, BN_CLICKED, OnBrowseServerFolders)
+            COMMAND_HANDLER(IDC_LOGINEDIT, EN_CHANGE, OnLoginEditChange)
+            CHAIN_MSG_MAP(CDialogResize<CServerParamsDlg>)
+            REFLECT_NOTIFICATIONS()
+        END_MSG_MAP()
 
-		BEGIN_DLGRESIZE_MAP(CServerParamsDlg)
-			DLGRESIZE_CONTROL(IDC_PARAMLIST, DLSZ_SIZE_X|DLSZ_SIZE_Y)
-			DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X| DLSZ_MOVE_Y)
-			DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X|DLSZ_MOVE_Y)
-		END_DLGRESIZE_MAP()
-		 // Handler prototypes:
-		 //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		 //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		 //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedDoAuth(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		ServerProfile serverProfile();
-	protected:
-		CPropertyListCtrl m_wndParamList;
-		std::map<std::string,std::string> m_paramNameList;
-		CUploadEngineData *m_ue;
-		bool focusOnLoginControl_;
-		CScriptUploadEngine *m_pluginLoader;
-		CString oldLogin_;
-		ServerProfile  serverProfile_;
-		void doAuthChanged();
+        BEGIN_DLGRESIZE_MAP(CServerParamsDlg)
+            DLGRESIZE_CONTROL(IDC_PARAMLIST, DLSZ_SIZE_X|DLSZ_SIZE_Y)
+            DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X| DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X|DLSZ_MOVE_Y)
+        END_DLGRESIZE_MAP()
+         // Handler prototypes:
+         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedDoAuth(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        ServerProfile serverProfile();
+    protected:
+        CPropertyListCtrl m_wndParamList;
+        std::map<std::string,std::string> m_paramNameList;
+        CUploadEngineData *m_ue;
+        bool focusOnLoginControl_;
+        CScriptUploadEngine *m_pluginLoader;
+        CString oldLogin_;
+        ServerProfile  serverProfile_;
+        UploadEngineManager * uploadEngineManager_;
+        void doAuthChanged();
 
 
 

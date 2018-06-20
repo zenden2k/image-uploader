@@ -4,13 +4,14 @@
 //
 
 #pragma once
-
+#ifndef IU_SERVERLISTTOOL
 #define IU_SERVERLISTTOOL
+#endif
 // Change these values to use different versions
-#define WINVER		0x0601
-#define _WIN32_WINNT	0x0600
-#define _WIN32_IE	0x0603
-#define _RICHEDIT_VER	0x0200
+#define WINVER        0x0601
+#define _WIN32_WINNT    0x0600
+#define _WIN32_IE    0x0603
+#define _RICHEDIT_VER    0x0200
 
 # if defined(_MSC_VER)
 # ifndef _CRT_SECURE_NO_DEPRECATE

@@ -14,6 +14,7 @@
         <!-- закрашиваем на маске области, в которых уменьшенное изображение не должно выводиться-->
         <Operation Type="blt" Destination="mask" Rect="0;0;6;6" SourceRect="8;12;6;6" />
         <Operation Type="blt" Destination="mask" Rect="$(Width)-7;0;7;6" SourceRect="19;12;7;6" />
+		<!-- комментарии немного перепутаны!!! -->
         <Operation Type="blt" Rect="0;0; 6;12" SourceRect="0;0; 6;12" />
         <!-- верхний левый угол -->
         <Operation Type="blt" Rect="0;12; 2;$(Height)-17-12" SourceRect="0;12; 2;111-12-17" />

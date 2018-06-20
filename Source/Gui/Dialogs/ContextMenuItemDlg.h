@@ -24,45 +24,48 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Core/Upload/UploadEngine.h"
-#include <Gui/Controls/ServerSelectorControl.h>
+#include "Gui/Controls/ServerSelectorControl.h"
+#include <memory>
+
 class ServerProfile;
 class CServerSelectorControl;
 // CContextMenuItemDlg
 
-
-class CContextMenuItemDlg : public CDialogImpl<CContextMenuItemDlg>	
+class UploadEngineManager;
+class CContextMenuItemDlg : public CDialogImpl<CContextMenuItemDlg>    
 {
-	public:
-		int ServerId;
-		CContextMenuItemDlg();
-		~CContextMenuItemDlg();
-		enum { IDD = IDD_CONTEXTMENUITEMDLG };
-	protected:
-		BEGIN_MSG_MAP(CContextMenuItemDlg)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-			MESSAGE_HANDLER(WM_SERVERSELECTCONTROL_CHANGE, OnServerSelectControlChanged)
-			COMMAND_HANDLER(IDC_MENUITEMTITLEEDIT, EN_CHANGE, OnMenuItemTitleEditChange);
-			
-		END_MSG_MAP()
-		// Handler prototypes:
-		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnServerSelectControlChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnMenuItemTitleEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		ServerProfile serverProfile();
-		CString menuItemTitle();
+    public:
+        int ServerId;
+        CContextMenuItemDlg(UploadEngineManager * uploadEngineManager);
+        ~CContextMenuItemDlg();
+        enum { IDD = IDD_CONTEXTMENUITEMDLG };
+    protected:
+        BEGIN_MSG_MAP(CContextMenuItemDlg)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
+            COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+            MESSAGE_HANDLER(WM_SERVERSELECTCONTROL_CHANGE, OnServerSelectControlChanged)
+            COMMAND_HANDLER(IDC_MENUITEMTITLEEDIT, EN_CHANGE, OnMenuItemTitleEditChange);
+            
+        END_MSG_MAP()
+        // Handler prototypes:
+        //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnServerSelectControlChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnMenuItemTitleEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        ServerProfile serverProfile();
+        CString menuItemTitle();
 protected:
-	CServerSelectorControl *imageServerSelector_;
-	ServerProfile serverProfile_;
-	bool titleEdited_;
-	CString title_;
-	void generateTitle();
+    std::unique_ptr<CServerSelectorControl> imageServerSelector_;
+    ServerProfile serverProfile_;
+    bool titleEdited_;
+    CString title_;
+    UploadEngineManager * uploadEngineManager_;
+    void generateTitle();
 };
 
 #endif // ContextMenuItemDlg_H

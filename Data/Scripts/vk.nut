@@ -1,4 +1,3 @@
-
 clientId <- "4851603";
 redirectUri <- "https://oauth.vk.com/blank.html";
 redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.com\\/blank\\.html";
@@ -7,6 +6,34 @@ token <- "";
 expiresIn <- 0;
 userId <- "";
 testMode <- "1"; // not used
+
+regMatchOffset <- 0;
+try {
+	local ver = GetAppVersion();
+	if ( ver.Build > 4422 ) {
+		regMatchOffset = 1;
+	}
+} catch ( ex ) {
+}
+
+
+function BeginLogin() {
+	try {
+		return Sync.beginAuth();
+	}
+	catch ( ex ) {
+	}
+	return true;
+}
+
+function EndLogin() {
+	try {
+		return Sync.endAuth();
+	} catch ( ex ) {
+		
+	}
+	return true;
+}
 
 function StringPrivacyToAccessType(s) {
 	if ( s == "nobody" ) {
@@ -26,21 +53,21 @@ function OnUrlChangedCallback(data) {
 		//DebugMessage(br.getDocumentBody(), true);
 		local regError = CRegExp("error=([^&]+)", "");
 		if ( regError.match(data.url) ) {
-			WriteLog("warning", regError.getMatch(0));
+			WriteLog("warning", regError.getMatch(regMatchOffset+0));
 		} else {
 			local regToken = CRegExp("access_token=([^&]+)", "");
 			if ( regToken.match(data.url) ) {
-				token = regToken.getMatch(0);
+				token = regToken.getMatch(regMatchOffset+0);
 			}
 			
 			local regExpires = CRegExp("expires_in=([^&]+)", "");
 			if ( regExpires.match(data.url) ) {
-				expiresIn = regExpires.getMatch(0);
+				expiresIn = regExpires.getMatch(regMatchOffset+0);
 			}
 			
 			local regUserId = CRegExp("user_id=([^&]+)", "");
 			if ( regUserId.match(data.url) ) {
-				userId = regUserId.getMatch(0);
+				userId = regUserId.getMatch(regMatchOffset+0);
 			}
 			
 			ServerParams.setParam("prevLogin", ServerParams.getParam("Login"));
@@ -68,10 +95,11 @@ function checkResponse(json) {
 	return 1;
 }
 
-function DoLogin() {
+function _DoLogin() {
 	token = ServerParams.getParam("token");
 	userId = ServerParams.getParam("userId");
 	local login = ServerParams.getParam("Login");
+	
 	if ( token != "" && ServerParams.getParam("prevLogin") == login ) {
 		local tokenTime  = 0;
 		local expiresIn = 0;
@@ -107,6 +135,16 @@ function DoLogin() {
 	browser.navigateToUrl(url);
 	browser.showModal();
 	return token != "" ? 1: 0;
+}
+
+function DoLogin() {
+	if (!BeginLogin() ) {
+		return false;
+	}
+	local res = _DoLogin();
+	
+	EndLogin();
+	return res;
 }
 
 function GetFolderList(list)
@@ -261,7 +299,7 @@ function  UploadFile(FileName, options)
 		
 	local uploadUrl = t.response.upload_url;
 	
-	nm.addQueryParamFile("file1", FileName, ExtractFileName(FileName),"");
+	nm.addQueryParamFile("file1", FileName, ExtractFileName(FileName),GetFileMimeType(FileName));
 	nm.setUrl(uploadUrl);
 	nm.doUploadMultipartData();
 	if ( nm.responseCode() >= 200 && nm.responseCode() <= 299 ) {
@@ -320,5 +358,5 @@ function GetFolderAccessTypeList()
 		tr("vk.privacy.friends_and_friends_of_friends", "Friends and friends of friends"),
 		tr("vk.privacy.just_me", "Just me" )
 	];
-	return a;
+
 }

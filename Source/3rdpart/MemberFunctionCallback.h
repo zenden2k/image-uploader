@@ -6,23 +6,20 @@ Source: http://p-nand-q.com/programming/cplusplus/using_member_functions_with_c_
 */
 #pragma once
 #include <windows.h>
-class CWebViewWindow;
-typedef CWebViewWindow ClassWithCallback;
+#include "Core/3rdpart/fastdelegate.h"
+
 typedef LRESULT (CALLBACK *LPFN_CBTHookCallback)(int nCode, WPARAM wParam, LPARAM lParam);
-typedef LRESULT (ClassWithCallback::*LPFN_CBTHookMemberFunctionCallback)(int nCode, WPARAM wParam, LPARAM lParam);
 
 class CBTHookCallbackBase;
 enum { kMaxCallbacks = 5};
 extern  CBTHookCallbackBase* AvailableCallbackSlots[kMaxCallbacks];
-
+typedef fastdelegate::FastDelegate3<int, WPARAM, LPARAM, LRESULT> HookCallback;
 // this object holds the state for a C++ member function callback in memory
 class CBTHookCallbackBase
 {
 public:
     // input: pointer to a unique C callback. 
-    CBTHookCallbackBase(LPFN_CBTHookCallback pCCallback)
-        :	m_pClass( NULL ),
-        m_pMethod( NULL ),
+    CBTHookCallbackBase(LPFN_CBTHookCallback pCCallback):
         m_pCCallback( pCCallback )
     {
     }
@@ -30,30 +27,28 @@ public:
     // when done, remove allocation of the callback
     void Free()
     {
-        m_pClass = NULL;
+        m_pMethod = NULL;
         // not clearing m_pMethod: it won't be used, since m_pClass is NULL and so this entry is marked as free
     }
 
     // when free, allocate this callback
-    LPFN_CBTHookCallback Reserve(ClassWithCallback* instance, LPFN_CBTHookMemberFunctionCallback method)
+    LPFN_CBTHookCallback Reserve(const HookCallback& method)
     {
-        if( m_pClass )
+        if (m_pMethod)
             return NULL;
 
-        m_pClass = instance;
         m_pMethod = method;
         return m_pCCallback;
     }
 
 protected:
     static LRESULT StaticInvoke(int context, int a, WPARAM b, LPARAM c) {
-        return ((AvailableCallbackSlots[context]->m_pClass)->*(AvailableCallbackSlots[context]->m_pMethod))(a, b,c);
+        return AvailableCallbackSlots[context]->m_pMethod(a, b,c);
     }
 
 private:
     LPFN_CBTHookCallback m_pCCallback;
-    ClassWithCallback* m_pClass;
-    LPFN_CBTHookMemberFunctionCallback m_pMethod;
+    HookCallback m_pMethod;
 };
 
 
@@ -61,7 +56,7 @@ template <int context> class DynamicCBTHookCallback : public CBTHookCallbackBase
 {
 public:
     DynamicCBTHookCallback()
-        :	CBTHookCallbackBase(&DynamicCBTHookCallback<context>::GeneratedStaticFunction)
+        :    CBTHookCallbackBase(&DynamicCBTHookCallback<context>::GeneratedStaticFunction)
     {
     }
 
@@ -69,6 +64,7 @@ private:
     static LRESULT CALLBACK GeneratedStaticFunction(int a, WPARAM b, LPARAM c)
     {
         int ab = context;
+        ab;
         return StaticInvoke(context, a, b,c);
     }
 };
@@ -76,7 +72,7 @@ private:
 class CBTHookMemberFunctionCallback
 {
 public:
-    CBTHookMemberFunctionCallback(ClassWithCallback* instance, LPFN_CBTHookMemberFunctionCallback method);
+    CBTHookMemberFunctionCallback(const HookCallback& method);
     ~CBTHookMemberFunctionCallback();
 
 public:
@@ -98,7 +94,5 @@ private:
     CBTHookMemberFunctionCallback( const CBTHookMemberFunctionCallback& os );
     CBTHookMemberFunctionCallback& operator=( const CBTHookMemberFunctionCallback& os );
 };
-
-
 
 #endif

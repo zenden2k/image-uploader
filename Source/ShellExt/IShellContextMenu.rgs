@@ -1,17 +1,17 @@
 HKCR
 {
-	ExplorerIntegration.IShellContextMenu.1 = s 'IShellContextMenu Class'
+	ExplorerIntegration.IShellContextMenu.1 = s 'Image Uploader shell extension'
 	{
 		CLSID = s '{7CA585C4-DF37-4712-9FC7-D64BFEF801F9}'
 	}
-	ExplorerIntegration.IShellContextMenu = s 'IShellContextMenu Class'
+	ExplorerIntegration.IShellContextMenu = s 'Image Uploader shell extension'
 	{
 		CLSID = s '{7CA585C4-DF37-4712-9FC7-D64BFEF801F9}'
 		CurVer = s 'ExplorerIntegration.IShellContextMenu.1'
 	}
 	NoRemove CLSID
 	{
-		ForceRemove {7CA585C4-DF37-4712-9FC7-D64BFEF801F9} = s 'IShellContextMenu Class'
+		ForceRemove {7CA585C4-DF37-4712-9FC7-D64BFEF801F9} = s 'Image Uploader shell extension'
 		{
 			ProgID = s 'ExplorerIntegration.IShellContextMenu.1'
 			VersionIndependentProgID = s 'ExplorerIntegration.IShellContextMenu'

@@ -1,6 +1,6 @@
 #ifndef VectorElementTool_h__
 #define VectorElementTool_h__
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
 #include <stdint.h>
@@ -8,13 +8,13 @@
 
 namespace ImageEditor {
 
-	class Canvas;
+    class Canvas;
 
 class VectorElementTool: public MoveAndResizeTool {
 public:
-	VectorElementTool( Canvas* canvas, ElementType type );
+    VectorElementTool( Canvas* canvas, ElementType type );
 
-	virtual CursorType getCursor(int x, int y);
+    virtual CursorType getCursor(int x, int y);
 };
 
 

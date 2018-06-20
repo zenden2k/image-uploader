@@ -18,28 +18,24 @@
 //
 
 #pragma once
-#include <atlapp.h>
-#include <atlbase.h>
-#include <atlmisc.h>
-#include <atlcrack.h>
-#include <atlctrls.h>
-#include <atltheme.h>
+
+#include "atlheaders.h"
 
 class CIconButton : public CWindowImpl<CIconButton>, 
    public CThemeImpl <CIconButton>//, 
     //public CCustomDraw< CIconButton >
 {
-	public:
-		CIconButton();
-		virtual ~CIconButton();
-		BEGIN_MSG_MAP(CIconButton)  
-			REFLECTED_NOTIFY_CODE_HANDLER(NM_CUSTOMDRAW, OnCustomDraw)
-		END_MSG_MAP()      
+    public:
+        CIconButton();
+        virtual ~CIconButton();
+        BEGIN_MSG_MAP(CIconButton)  
+            REFLECTED_NOTIFY_CODE_HANDLER(NM_CUSTOMDRAW, OnCustomDraw)
+        END_MSG_MAP()      
 
-		DECLARE_WND_SUPERCLASS(_T("WTL_CIconButton"), GetWndClassName())
-		LRESULT OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	private:
-		void draw_bitmap (HDC hDC, const CRect& Rect, DWORD style);
-		void draw_icon (HDC hDC, const CRect& Rect, DWORD style);
+        DECLARE_WND_SUPERCLASS(_T("WTL_CIconButton"), GetWndClassName())
+        LRESULT OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    private:
+        void draw_bitmap (HDC hDC, const CRect& Rect, DWORD style);
+        void draw_icon (HDC hDC, const CRect& Rect, DWORD style);
 };
 

@@ -28,19 +28,22 @@
 
 namespace IuStringUtils
 {
-	std::string Trim(const std::string& str);
-	Utf8String Replace(const Utf8String& text, const Utf8String& s, const Utf8String& d);
-	void Split(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount);
-	
-	// Current version of toLower works only with ASCII strings
-	std::string toLower(const std::string& str);
+    std::string Trim(const std::string& str);
+    std::string Replace(const std::string& text, const std::string& s, const std::string& d);
+    void Split(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount);
+    std::string Join(const std::vector<std::string>& strings, const std::string& delim);
+    std::string Tail(std::string const& source, size_t const length); 
 
-	//  The stricmp() function compares the two strings s1 and s2, 
-	//  ignoring the case of the characters. It returns an integer less than, 
-	//	 equal to, or greater than zero if s1 is found, respectively, to be less than, 
-	//	 to match, or be greater than s2.
-	int stricmp(const char *s1, const char *s2);
-	std::string ConvertUnixLineEndingsToWindows(const std::string& text);
+    // Current version of toLower works only with ASCII strings
+    std::string toLower(const std::string& str);
+
+    //  The stricmp() function compares the two strings s1 and s2, 
+    //  ignoring the case of the characters. It returns an integer less than, 
+    //     equal to, or greater than zero if s1 is found, respectively, to be less than, 
+    //     to match, or be greater than s2.
+    int stricmp(const char *s1, const char *s2);
+    std::string ConvertUnixLineEndingsToWindows(const std::string& text);
+    size_t LengthOfUtf8String(const std::string &utf8_string);
 };
 
 #endif

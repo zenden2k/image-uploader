@@ -18,123 +18,124 @@
 
 */
 
-
 #include "ContextMenuItemDlg.h"
+
 #include "wizarddlg.h"
 #include "Func/Common.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
-#include <Gui/Controls/ServerSelectorControl.h>
+#include "Gui/Controls/ServerSelectorControl.h"
+#include "Func/WinUtils.h"
 
-// CContextMenuItemDlg
-CContextMenuItemDlg::CContextMenuItemDlg()
+CContextMenuItemDlg::CContextMenuItemDlg(UploadEngineManager * uploadEngineManager)
 {
-	titleEdited_ = false;
+    titleEdited_ = false;
+    uploadEngineManager_ = uploadEngineManager;
 }
 
 CContextMenuItemDlg::~CContextMenuItemDlg()
 {
-	
+    
 }
 
 LRESULT CContextMenuItemDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	CenterWindow(GetParent());
+    CenterWindow(GetParent());
 
-	RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
-	imageServerSelector_ = new CServerSelectorControl(true);
-	imageServerSelector_->Create(m_hWnd, serverSelectorRect);
-	imageServerSelector_->setTitle(TR("Выберите сервер"));
-	imageServerSelector_->ShowWindow( SW_SHOW );
-	imageServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
-	imageServerSelector_->setServerProfile(Settings.imageServer);
+    RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
+    imageServerSelector_.reset(new CServerSelectorControl(uploadEngineManager_, false));
+    imageServerSelector_->Create(m_hWnd, serverSelectorRect);
+    imageServerSelector_->setTitle(TR("Choose server"));
+    imageServerSelector_->ShowWindow( SW_SHOW );
+    imageServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
+    imageServerSelector_->setServerProfile(Settings.imageServer);
 
-	SetWindowText(TR("Добавить пункт меню"));
-	TRC(IDC_MENUITEMLABEL, "Название:");
+    SetWindowText(TR("Add Menu Item"));
+    TRC(IDC_MENUITEMLABEL, "Name:");
 
-	TRC(IDCANCEL, "Отмена");
-	generateTitle();
-	
-	::SetFocus(GetDlgItem(IDC_MENUITEMTITLEEDIT));
-	return 0;  
+    TRC(IDCANCEL, "Cancel");
+    generateTitle();
+    
+    ::SetFocus(GetDlgItem(IDC_MENUITEMTITLEEDIT));
+    return 0;  
 }
 
 LRESULT CContextMenuItemDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{	
-	title_ = GuiTools::GetDlgItemText(m_hWnd, IDC_MENUITEMTITLEEDIT);
-	if ( title_.IsEmpty() ) {
-		MessageBox(TR("Название не может быть пустым"),TR("Ошибка"), MB_ICONERROR);
-		return 0;
-	}
-	serverProfile_ = imageServerSelector_->serverProfile();
-	if ( serverProfile_.isNull() ) {
-		MessageBox(TR("Вы не выбрали сервер"),TR("Ошибка"), MB_ICONERROR);
-		return 0;
-	}
+{    
+    title_ = GuiTools::GetDlgItemText(m_hWnd, IDC_MENUITEMTITLEEDIT);
+    if ( title_.IsEmpty() ) {
+        MessageBox(TR("Name cannot be empty"),TR("Error"), MB_ICONERROR);
+        return 0;
+    }
+    serverProfile_ = imageServerSelector_->serverProfile();
+    if ( serverProfile_.isNull() ) {
+        MessageBox(TR("You have not selected server"),TR("Error"), MB_ICONERROR);
+        return 0;
+    }
 
-	if ( !imageServerSelector_->isAccountChosen() ) {
-		CString message;
-		message.Format(TR("Вы не выбрали аккаунт для сервера \"%s\""), (LPCTSTR)imageServerSelector_->serverProfile().serverName());
-		MessageBox(message, TR("Ошибка"));
-		return 0;
-	}
+    if ( !imageServerSelector_->isAccountChosen() ) {
+        CString message;
+        message.Format(TR("You have not selected account for server \"%s\""), U2W(imageServerSelector_->serverProfile().serverName()));
+        MessageBox(message, TR("Error"), MB_ICONERROR);
+        return 0;
+    }
 
-	EndDialog(wID);
-	return 0;
+    EndDialog(wID);
+    return 0;
 }
 
 LRESULT CContextMenuItemDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	EndDialog(wID);
-	return 0;
+    EndDialog(wID);
+    return 0;
 }
 
 LRESULT CContextMenuItemDlg::OnServerSelectControlChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	generateTitle();
-	return 0;
+    generateTitle();
+    return 0;
 }
 
 LRESULT CContextMenuItemDlg::OnMenuItemTitleEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	if ( GetFocus() == hWndCtl ) {
-		titleEdited_ = !GuiTools::GetWindowText(hWndCtl).IsEmpty();
-	}
-	return 0;
+    if ( GetFocus() == hWndCtl ) {
+        titleEdited_ = !GuiTools::GetWindowText(hWndCtl).IsEmpty();
+    }
+    return 0;
 }
 
 ServerProfile CContextMenuItemDlg::serverProfile()
 {
-	return serverProfile_;
+    return serverProfile_;
 }
 
 CString CContextMenuItemDlg::menuItemTitle()
 {
-	return title_;
+    return title_;
 }
 
 void CContextMenuItemDlg::generateTitle()
 {
-	if ( !titleEdited_ ) {	
-		ServerProfile sp = imageServerSelector_->serverProfile();
-		CString title;
-		title.Format(TR("Загрузить на %s"), (LPCTSTR)sp.serverName());
-		CString additional;
-		if ( !sp.profileName().IsEmpty()) {
-			additional+= sp.profileName();
-		}
-		if ( !sp.folderId().empty() && !sp.folderTitle().empty() ) {
-			if ( !additional.IsEmpty() ) {
-				additional += _T(", ");
-			}
-			CString temp;
-			temp.Format(TR("папка \"%s\""), (LPCTSTR) Utf8ToWCstring(sp.folderTitle()) );
-			additional+= temp;
-		}
-		if ( !additional.IsEmpty() ) {
-			title += _T(" (") + additional + _T(")");
-		}
+    if ( !titleEdited_ ) {    
+        ServerProfile sp = imageServerSelector_->serverProfile();
+        CString title;
+        title.Format(TR("Upload to %s"), U2W(sp.serverName()));
+        CString additional;
+        if ( !sp.profileName().empty()) {
+            additional += Utf8ToWCstring(sp.profileName());
+        }
+        if ( !sp.folderId().empty() && !sp.folderTitle().empty() ) {
+            if ( !additional.IsEmpty() ) {
+                additional += _T(", ");
+            }
+            CString temp;
+            temp.Format(TR("folder \"%s\""), static_cast<LPCTSTR>(Utf8ToWCstring(sp.folderTitle())) );
+            additional+= temp;
+        }
+        if ( !additional.IsEmpty() ) {
+            title += _T(" (") + additional + _T(")");
+        }
 
-		SetDlgItemText(IDC_MENUITEMTITLEEDIT, title);
-	}
+        SetDlgItemText(IDC_MENUITEMTITLEEDIT, title);
+    }
 }

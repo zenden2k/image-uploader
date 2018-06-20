@@ -1,9 +1,9 @@
 Package: zenden-image-uploader-cli
-Version: 0.2.4
+Version: 0.2.6
 Section: misc
 Architecture: YOUR_ARCHITECTURE
 Installed-Size: 1400
 Maintainer: zenden <zenden2k@gmail.com>
 Description: Zenden Image Uploader CLI
   Console utility that allows you to upload files to image/file hosting servers without necessity to visit their websites.
-Depends: libcurl3,libpcre3,libssl1.0.0, libgoogle-glog0v5
+Depends: libcurl3,libpcre3,libssl1.0.0,libgoogle-glog0,libboost-filesystem1.54.0,libboost-system1.54.0

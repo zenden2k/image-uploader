@@ -27,44 +27,44 @@
 #include <string>
 #include <vector>
 
-struct CFolderItem;
+class CFolderItem;
 
 class CNewFolderDlg : 
-	public CDialogImpl<CNewFolderDlg>,
-	public CDialogResize<CNewFolderDlg>	
+    public CDialogImpl<CNewFolderDlg>,
+    public CDialogResize<CNewFolderDlg>    
 {
-	public:
-		CNewFolderDlg(CFolderItem &folder, bool CreateNewFolder, std::vector<std::string>& accessTypeList);
-		~CNewFolderDlg();
-		enum { IDD = IDD_NEWFOLDERDLG };
-	protected:
-		 BEGIN_MSG_MAP(CNewFolderDlg)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			  COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-			  COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-			CHAIN_MSG_MAP(CDialogResize<CNewFolderDlg>)
-		 END_MSG_MAP()
-	
-		BEGIN_DLGRESIZE_MAP(CNewFolderDlg)
-			DLGRESIZE_CONTROL(IDC_FOLDERTITLEEDIT, DLSZ_SIZE_X)
-			DLGRESIZE_CONTROL(IDC_FOLDERDESCREDIT, DLSZ_SIZE_X|DLSZ_SIZE_Y)
-			DLGRESIZE_CONTROL(IDC_ACCESSTYPECOMBO,  DLSZ_SIZE_X | DLSZ_MOVE_Y)
-			DLGRESIZE_CONTROL(IDC_ACCESSTYPELABEL,  DLSZ_MOVE_Y)
-			DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X| DLSZ_MOVE_Y)
-			DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X|DLSZ_MOVE_Y)
-		END_DLGRESIZE_MAP()
-		 // Handler prototypes:
-		 //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		 //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		 //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		CString m_sTitle;
-		bool m_bCreateNewFolder;
-		CString m_sDescription;
-		CFolderItem &m_folder;
-		std::vector<std::string> m_accessTypeList;
+    public:
+        CNewFolderDlg(CFolderItem &folder, bool CreateNewFolder, std::vector<std::string>& accessTypeList);
+        ~CNewFolderDlg();
+        enum { IDD = IDD_NEWFOLDERDLG };
+    protected:
+         BEGIN_MSG_MAP(CNewFolderDlg)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+              COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
+              COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+            CHAIN_MSG_MAP(CDialogResize<CNewFolderDlg>)
+         END_MSG_MAP()
+    
+        BEGIN_DLGRESIZE_MAP(CNewFolderDlg)
+            DLGRESIZE_CONTROL(IDC_FOLDERTITLEEDIT, DLSZ_SIZE_X)
+            DLGRESIZE_CONTROL(IDC_FOLDERDESCREDIT, DLSZ_SIZE_X|DLSZ_SIZE_Y)
+            DLGRESIZE_CONTROL(IDC_ACCESSTYPECOMBO,  DLSZ_SIZE_X | DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_ACCESSTYPELABEL,  DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X| DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X|DLSZ_MOVE_Y)
+        END_DLGRESIZE_MAP()
+         // Handler prototypes:
+         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        CString m_sTitle;
+        bool m_bCreateNewFolder;
+        CString m_sDescription;
+        CFolderItem &m_folder;
+        std::vector<std::string> m_accessTypeList;
 };
 
 #endif // NEWFOLDERDLG_H

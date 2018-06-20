@@ -1,6 +1,6 @@
 #include "AbstractVideoFrame.h"
 #include "AbstractImage.h"
-#include <Core/logging.h>
+#include "Core/logging.h"
 
 AbstractVideoFrame::AbstractVideoFrame() {
 }
@@ -22,6 +22,6 @@ int64_t AbstractVideoFrame::getTime() const {
 }
 
 AbstractImage*  AbstractVideoFrame::toImage() const {
-	LOG(ERROR) << "toImage not implemented";
+    LOG(ERROR) << "toImage not implemented";
     return NULL;
 }

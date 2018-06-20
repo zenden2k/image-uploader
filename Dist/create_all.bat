@@ -1,4 +1,4 @@
 call create_portable.bat
-call create_installers.bat
-call create_cli.bat
+call create_installer.bat
+rem call create_cli.bat
 

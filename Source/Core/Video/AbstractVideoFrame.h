@@ -1,7 +1,7 @@
 #ifndef ABSTRACTVIDEOFRAME_H
 #define ABSTRACTVIDEOFRAME_H
 
-#include <Core/Utils/CoreTypes.h>
+#include "Core/Utils/CoreTypes.h"
 #include "AbstractImage.h"
 
 class AbstractVideoFrame
@@ -9,7 +9,7 @@ class AbstractVideoFrame
 public:
     AbstractVideoFrame();
     virtual ~AbstractVideoFrame();
-    virtual bool saveToFile(const Utf8String& fileName) const = 0;
+    virtual bool saveToFile(const std::string& fileName) const = 0;
     virtual int getWidth() const;
     virtual int getHeight() const;
     int64_t getTime() const;

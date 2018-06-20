@@ -1,1 +1,1 @@
-*.ncb;*.pdb;*.ilk;*.user;*.exe;*.obj;*.dll;*.o;*.d;*.sdf;
+*.ncb;*.pdb;*.ilk;*.user;*.exe;*.obj;*.dll;*.o;*.d;*.sdf;*.pch;

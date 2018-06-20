@@ -24,71 +24,57 @@
 #include <vector>
 #include <string>
 
-#include "../Squirrelnc.h"
+#include "Core/Scripting/Squirrelnc.h"
 
 #include "CommonTypes.h"
 #include "UploadEngine.h"
 #include "Core/Utils/CoreTypes.h"
+#include "Core/Upload/FolderList.h"
+#include "Core/Scripting/Script.h"
+#include "Core/Network/NetworkClient.h"
+#include "AdvancedUploadEngine.h"
 
-extern const Utf8String IuNewFolderMark;
-class CFolderList
+class CScriptUploadEngine : public CAdvancedUploadEngine, 
+                            public Script,
+                            public NetworkClient::Logger
 {
-	public:
-		std::vector<CFolderItem> m_folderItems;
-		void Clear() {m_folderItems.clear();}
-		const int GetCount() { return m_folderItems.size();}
-		CFolderItem& operator [] (int index) {  return m_folderItems[index]; }
-		void AddFolder(const std::string& title, const std::string& summary, const std::string& id, const std::string& parentid, int accessType);
-		void AddFolderItem(const CFolderItem& item);
+    public:
+        int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) override;
+        CScriptUploadEngine(std::string pluginName, ServerSync* serverSync, ServerSettingsStruct* settings);
+        ~CScriptUploadEngine();
+        void setNetworkClient(NetworkClient* nm) override;
+        //bool load(std::string fileName, ServerSettingsStruct& params);
+        virtual int getFolderList(CFolderList &FolderList) override;
+        virtual int createFolder(const CFolderItem &parent, CFolderItem &folder) override;
+        virtual int modifyFolder(CFolderItem &folder) override;
+        virtual int getAccessTypeList(std::vector<std::string> &list) override;
+        virtual int getServerParamList(std::map<std::string, std::string> &list) override;
+        virtual int doLogin() override;
+
+        virtual bool supportsSettings() override;
+        /**
+        Beforehand authorization - obtain access token only once then use it for all requests (before upload)
+        **/
+        virtual bool supportsBeforehandAuthorization() override;
+        std::string name();
+
+        // FIXME: not working
+        virtual void stop() override;         
+    protected:
+        void Log(ErrorInfo::MessageType mt, const std::string& error);
+        virtual void PrintCallback(const std::string& output) override;
+        bool preLoad() override;
+        bool postLoad() override;
+        virtual void logNetworkError(bool error, const std::string & msg) override;
+        CFolderList folderList_;
+        std::string name_;
+        bool needStop();
+        std::string m_ErrorReason;
+        std::string m_FileName;
+        std::string m_displayFileName;
+        LoginInfo li;
+        int m_CurrentActionIndex;
+        int m_nThumbWidth;
+        DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
 };
-
-class CScriptUploadEngine: public CAbstractUploadEngine
-{
-	public:
-		int doUpload(UploadTask* task, CIUUploadParams &params);
-	protected:
-		bool needStop();
-		Utf8String m_ErrorReason;
-		Utf8String m_FileName;
-		Utf8String m_displayFileName;
-		LoginInfo li;
-		int m_CurrentActionIndex;
-		int m_nThumbWidth;
-	
-	public:
-		CScriptUploadEngine(Utf8String pluginName);
-		~CScriptUploadEngine();
-		static void InitScriptEngine();
-		static void DestroyScriptEngine();
-		void FlushSquirrelOutput();
-		void setNetworkClient(NetworkClient* nm);
-		bool load(Utf8String fileName, ServerSettingsStruct& params);
-		int getFolderList(CFolderList &FolderList);
-		int  createFolder(CFolderItem &parent, CFolderItem &folder);
-		int  modifyFolder(CFolderItem &folder);
-		int getAccessTypeList(std::vector<Utf8String> &list);
-		int getServerParamList(std::map<Utf8String, Utf8String> &list);
-		int doLogin();
-		bool isLoaded();
-		bool supportsSettings();
-		bool supportsBeforehandAuthorization();
-		Utf8String name();
-		time_t getCreationTime();
-		int RetryLimit();
-		
-		SquirrelObject m_Object; 		
-	protected:
-		void Log(ErrorInfo::MessageType mt, const std::string& error);
-		CFolderList m_FolderList;
-		Utf8String m_sName;
-		SquirrelObject m_SquirrelScript;
-		time_t m_CreationTime;
-		bool m_bIsPluginLoaded;
-		DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
-};
-
-// You must implement this function
-const std::string Impl_AskUserCaptcha(NetworkClient *nm, const std::string& url);
-const std::string Impl_InputDialog(const std::string& text, const std::string& defaultValue);
-
 #endif

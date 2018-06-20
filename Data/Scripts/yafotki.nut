@@ -3,6 +3,41 @@ tokenType <- "";
 login <- "";
 enableOAuth <- true;
 
+function BeginLogin() {
+	try {
+		return Sync.beginAuth();
+	}
+	catch ( ex ) {
+	}
+	return true;
+}
+
+function EndLogin() {
+	try {
+		return Sync.endAuth();
+	} catch ( ex ) {
+		
+	}
+	return true;
+}
+
+function SetAuthPerformed(res) {
+	try {
+		Sync.setAuthPerformed(res);
+	}
+	catch ( ex ) {
+	}
+}
+
+function IsAuthPerformed() {
+	try {
+		return Sync.isAuthPerformed();
+	}
+	catch ( ex ) {
+	}
+	return false;
+}
+
 function tr(key, text) {
 	try {
 		return Translate(key, text);
@@ -97,10 +132,7 @@ function getAuthorizationString() {
 	return "FimpToken realm=\"fotki.yandex.ru\", token=\""+token+"\"";
 }
 
-
-
-
-function DoLogin() 
+function _DoLogin() 
 { 
 	if ( enableOAuth ) {
 		token = ServerParams.getParam("token");
@@ -125,6 +157,7 @@ function DoLogin()
 			nm.addQueryParam("client_secret", "fed316382d3e4bcda82903382a8d00c0");
 			nm.doPost("");
 			if ( !checkResponse() ) {
+				SetAuthPerformed(false);
 				return 0;
 			}
 				
@@ -143,6 +176,7 @@ function DoLogin()
 					nm.doGet("http://api-fotki.yandex.ru/api/me/");
 						
 					if ( !checkResponse() ) {
+						SetAuthPerformed(false);
 						return 0;
 					}
 					
@@ -151,10 +185,11 @@ function DoLogin()
 					ServerParams.setParam("OAuthLogin", login);
 				} 
 		
-			
+				SetAuthPerformed(true);
 				return 1;
 			} else {
 				print("Unable to get OAuth token!");
+				SetAuthPerformed(false);
 				return 0;
 			}
 		}
@@ -167,6 +202,7 @@ function DoLogin()
 	if(login == "" || pass=="")
 	{
 		print("E-mail and password should not be empty!");
+		SetAuthPerformed(false);
 		return 0;
 	}
 	nm.addQueryHeader("Expect","");
@@ -197,11 +233,23 @@ function DoLogin()
 	if(token == "")
 	{
 		print("Authentication failed for username '"+login +"'");
+		SetAuthPerformed(false);
 		return 0;
 	}
 	ServerParams.setParam("tokenType", "");
+	SetAuthPerformed(true);
 	return 1; //Success login
 } 
+
+function DoLogin() {
+	if (!BeginLogin() ) {
+		return false;
+	}
+	local res = _DoLogin();
+	
+	EndLogin();
+	return res;
+}
 
 function internal_parseAlbumList(data,list,parentid)
 {
@@ -382,8 +430,7 @@ function GetFolderAccessTypeList()
 
 function GetServerParamList()
 {
-	return 
-	{
+	return { // '{' should be on the same line!!!
 		token = "token",
 		tokenType = "TokenType",
 		OAuthLogin = "OAuthLogin",

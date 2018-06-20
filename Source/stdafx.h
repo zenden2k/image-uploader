@@ -23,13 +23,18 @@
 //
 
 #pragma once
+#ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
+#endif
 #pragma warning(disable:4996)
+#pragma warning( disable: 4100 ) // unreferenced formal parameter
+
 #include "atlheaders.h"
-#include <3rdpart/GdiPlusH.h>
+#include "3rdpart/GdiPlusH.h"
 #include <string>
 #include <vector>
 #include <map>
+#include <boost/preprocessor.hpp>
 
 #if defined _M_IX86
   #pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")

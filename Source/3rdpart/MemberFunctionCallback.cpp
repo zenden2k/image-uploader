@@ -1,4 +1,6 @@
 #include "MemberFunctionCallback.h"
+#include <mutex>
+#include "Core/Logging.h"
 
 CBTHookCallbackBase* AvailableCallbackSlots[kMaxCallbacks] = {
     new DynamicCBTHookCallback<0x00>(),
@@ -18,23 +20,40 @@ CBTHookCallbackBase* AvailableCallbackSlots[kMaxCallbacks] = {
     new DynamicCBTHookCallback<0x0E>(),
     new DynamicCBTHookCallback<0x0F>(),*/
 };
+std::mutex AvailableCallbackSlotsMutex;
 
+struct Dummy {
 
-CBTHookMemberFunctionCallback::CBTHookMemberFunctionCallback(CWebViewWindow* instance, LPFN_CBTHookMemberFunctionCallback method)
+    ~Dummy()
+    {
+        for (auto it : AvailableCallbackSlots)
+        {
+            delete it;
+        }
+    }
+};
+Dummy dummyObject;
+
+CBTHookMemberFunctionCallback::CBTHookMemberFunctionCallback(const HookCallback& method)
 {
+    std::lock_guard<std::mutex> lock(AvailableCallbackSlotsMutex);
     int imax = sizeof(AvailableCallbackSlots)/sizeof(AvailableCallbackSlots[0]);
     for( m_nAllocIndex = 0; m_nAllocIndex < imax; ++m_nAllocIndex )
     {
-        m_cbCallback = AvailableCallbackSlots[m_nAllocIndex]->Reserve(instance, method);
-        if( m_cbCallback != NULL )
-            break;
+        m_cbCallback = AvailableCallbackSlots[m_nAllocIndex]->Reserve( method);
+        if (m_cbCallback != NULL)
+        {
+            return;
+        }
     }
+    LOG(ERROR) << "Cannot create member function callback";
 }
 
 CBTHookMemberFunctionCallback::~CBTHookMemberFunctionCallback()
 {
     if( IsValid() )
     {
+        std::lock_guard<std::mutex> lock(AvailableCallbackSlotsMutex);
         AvailableCallbackSlots[m_nAllocIndex]->Free();
     }
 }

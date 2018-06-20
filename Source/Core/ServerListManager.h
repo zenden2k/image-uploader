@@ -3,28 +3,28 @@
 
 #include <string>
 #include <map>
-#include <Core/Upload/UploadEngine.h>
-#include <Func/Settings.h>
-class CUploadEngineList;
+#include "Core/Utils/CoreTypes.h"
+#include "Core/Settings.h"
 
+class CUploadEngineList;
 
 class ServerListManager
 {
 public:
-	ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings);
-	~ServerListManager(void);
-	bool addFtpServer(const std::string &name, const std::string &serverName, const std::string &login, const std::string &password,
-		const std::string &remoteDirectory, const std::string &downloadUrl);
-	bool addDirectoryAsServer(const std::string &name, const std::string &directory, const std::string &downloadUrl, bool convertUncPath);
-	std::string errorMessage() const;
-	std::string createdServerName() const;
+    ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings);
+    ~ServerListManager(void);
+    bool addFtpServer(const std::string &name, const std::string &serverName, const std::string &login, const std::string &password,
+        const std::string &remoteDirectory, const std::string &downloadUrl);
+    bool addDirectoryAsServer(const std::string &name, const std::string &directory, const std::string &downloadUrl, bool convertUncPath);
+    std::string errorMessage() const;
+    std::string createdServerName() const;
 protected:
-	CUploadEngineList * uploadEngineList_;
-	std::string serversDirectory_;
-	ServerSettingsMap& serversSettings_;
-	std::string errorMessage_;
-	std::string createdServerName_;
-
+    DISALLOW_COPY_AND_ASSIGN(ServerListManager);
+    CUploadEngineList * uploadEngineList_;
+    std::string serversDirectory_;
+    ServerSettingsMap& serversSettings_;
+    std::string errorMessage_;
+    std::string createdServerName_;
 };
 
 #endif

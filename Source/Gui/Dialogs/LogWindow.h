@@ -28,72 +28,68 @@
 #include <atlddx.h>
 #include <atlframe.h>
 #include "Core/Upload/CommonTypes.h"
-
-#define MYWM_WRITELOG WM_USER + 100
+#include "Core/Logging/Logger.h"
 
 // CLogWindow
 
 class CLogWindow : public CDialogImpl <CLogWindow>,
-	public CDialogResize <CLogWindow>,
-	public CWinDataExchange <CLogWindow>,
-	public CMessageFilter
+    public CDialogResize <CLogWindow>,
+    public CWinDataExchange <CLogWindow>,
+    public CMessageFilter
 {
-	public:
-		struct CLogWndMsg
-		{
-			LogMsgType MsgType;
-			CString Sender;
-			CString Msg;
-			CString Info;
-		};
+    public:
+        struct CLogWndMsg
+        {
+            LogMsgType MsgType;
+            CString Sender;
+            CString Msg;
+            CString Info;
+        };
 
-	public:
-		CLogWindow();
-		~CLogWindow();
-		enum { IDD = IDD_LOGWINDOW };
-		enum { IDC_CLEARLIST = 12000, IDC_COPYTEXTTOCLIPBOARD};
-		virtual BOOL PreTranslateMessage(MSG* pMsg);
+    public:
+        CLogWindow();
+        ~CLogWindow();
+        enum { IDD = IDD_LOGWINDOW };
+        enum { IDC_CLEARLIST = 12000, IDC_COPYTEXTTOCLIPBOARD, MYWM_WRITELOG = WM_USER + 100 };
+        virtual BOOL PreTranslateMessage(MSG* pMsg) override;
 
-		BEGIN_MSG_MAP(CLogWindow)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-			COMMAND_ID_HANDLER(IDC_COPYTEXTTOCLIPBOARD, OnCopyToClipboard)
-			MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
-			MESSAGE_HANDLER(MYWM_WRITELOG, OnWmWriteLog)
-			COMMAND_ID_HANDLER(IDC_CLEARLIST, OnClearList)
-			CHAIN_MSG_MAP(CDialogResize<CLogWindow>)
-			REFLECT_NOTIFICATIONS()
-		END_MSG_MAP()
+        BEGIN_MSG_MAP(CLogWindow)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+            COMMAND_ID_HANDLER(IDC_COPYTEXTTOCLIPBOARD, OnCopyToClipboard)
+            MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
+            MESSAGE_HANDLER(MYWM_WRITELOG, OnWmWriteLog)
+            COMMAND_ID_HANDLER(IDC_CLEARLIST, OnClearList)
+            COMMAND_HANDLER(IDC_CLEARLOGBUTTON, BN_CLICKED, OnBnClickedClearLogButtonClicked)
+            CHAIN_MSG_MAP(CDialogResize<CLogWindow>)
+            REFLECT_NOTIFICATIONS() 
+        END_MSG_MAP()
 
-		BEGIN_DLGRESIZE_MAP(CLogWindow)
-			DLGRESIZE_CONTROL(IDC_MSGLIST, DLSZ_SIZE_X | DLSZ_SIZE_Y)
-			DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X | DLSZ_MOVE_Y)
-		END_DLGRESIZE_MAP()
+        BEGIN_DLGRESIZE_MAP(CLogWindow)
+            DLGRESIZE_CONTROL(IDC_MSGLIST, DLSZ_SIZE_X | DLSZ_SIZE_Y)
+            DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X | DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_CLEARLOGBUTTON, DLSZ_MOVE_Y)
+        END_DLGRESIZE_MAP()
 
-		// Handler prototypes:
-		//  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		//  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		void WriteLog(LogMsgType MsgType, const CString& Sender, const CString& Msg, const CString& Info = CString() );
-		CLogListBox MsgList;
-		void Show();
-		LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL & /*bHandled*/);
-		LRESULT OnClearList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
-		LRESULT OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
-		void TranslateUI();
+        // Handler prototypes:
+        //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        CLogListBox MsgList;
+        void Show();
+        LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL & /*bHandled*/);
+        LRESULT OnClearList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
+        LRESULT OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
+        void TranslateUI();
+        LRESULT OnBnClickedClearLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        static void WriteLog(LogMsgType MsgType, const CString& Sender, const CString&  Msg, const CString&  Info = CString());
+protected:
+    void WriteLogImpl(LogMsgType MsgType, const CString& Sender, const CString& Msg, const CString& Info = CString());
 };
 
 extern CLogWindow LogWindow;
-
-void WriteLog(LogMsgType MsgType, const CString& Sender,  const CString&  Msg,  const CString&  Info = CString());
-
-namespace DefaultErrorHandling {
-void ErrorMessage(ErrorInfo);
-void DebugMessage(const std::string&, bool);
-
-};
 
 #endif // LOGWINDOW_H

@@ -19,12 +19,11 @@
 */
 
 #include "Thumbnail.h"
+
 #include <stdlib.h>
-#include <string.h>
 
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/SimpleXml.h"
-#include "Core/3rdpart/parser.h"
 #include "Core/Utils/StringUtils.h"
 
 Thumbnail::Thumbnail()
@@ -37,150 +36,150 @@ Thumbnail::~Thumbnail()
 
 bool Thumbnail::LoadFromFile(const std::string& filename)
 {
-	SimpleXml xml;
-	if (!xml.LoadFromFile(filename))
-		return false;
-	SimpleXmlNode root = xml.getRoot("Thumbnail", false);
-	if (root.IsNull())
-		return false;
-	data_.sprite_source_file = root["Definitions"]["Sprite"].Attribute("Source");
+    SimpleXml xml;
+    if (!xml.LoadFromFile(filename))
+        return false;
+    SimpleXmlNode root = xml.getRoot("Thumbnail", false);
+    if (root.IsNull())
+        return false;
+    data_.sprite_source_file = root["Definitions"]["Sprite"].Attribute("Source");
 
-	if (!data_.sprite_source_file.empty() && IuCoreUtils::ExtractFilePath(data_.sprite_source_file).empty())
-	{
-		data_.sprite_source_file = IuCoreUtils::ExtractFilePath(filename) + "/" + data_.sprite_source_file;
-	}
-	SimpleXmlNode colorsNode = root["Definitions"]["Params"];
-	std::vector<SimpleXmlNode> colorNodes;
-	colorsNode.GetChilds("Param", colorNodes);
-	for (size_t i = 0; i < colorNodes.size(); i++)
-	{
-		std::string colorName;
-		colorName = colorNodes[i].Attribute("Name");
-		data_.colors_[colorName] =  colorNodes[i].Attribute("Value");
-	}
-	SimpleXmlNode drawingNode = root["Drawing"];
-	if (!drawingNode.IsNull())
-	{
-		data_.width_addition = drawingNode.Attribute("AddWidth");
-		data_.height_addition = drawingNode.Attribute("AddHeight");
-		std::vector<SimpleXmlNode> drawOperations;
-		drawingNode.GetChilds("Operation", drawOperations);
-		for (size_t i = 0; i < drawOperations.size(); i++)
-		{
-			ThumbnailDrawOperation op;
-			op.brush = drawOperations[i].Attribute("Brush");
-			op.rect = drawOperations[i].Attribute("Rect");
-			op.source = drawOperations[i].Attribute("Source");
-			op.destination = drawOperations[i].Attribute("Destination");
-			op.source_rect = drawOperations[i].Attribute("SourceRect");
-			op.type = drawOperations[i].Attribute("Type");
-			op.pen = drawOperations[i].Attribute("Pen");
-			op.condition = drawOperations[i].Attribute("Condition");
-			op.text_colors = drawOperations[i].Attribute("TextColors");
-			data_.drawing_operations_.push_back(op);
-		}
-	}
-	file_name_ = filename;
-	return true;
+    if (!data_.sprite_source_file.empty() && IuCoreUtils::ExtractFilePath(data_.sprite_source_file).empty())
+    {
+        data_.sprite_source_file = IuCoreUtils::ExtractFilePath(filename) + "/" + data_.sprite_source_file;
+    }
+    SimpleXmlNode colorsNode = root["Definitions"]["Params"];
+    std::vector<SimpleXmlNode> colorNodes;
+    colorsNode.GetChilds("Param", colorNodes);
+    for (size_t i = 0; i < colorNodes.size(); i++)
+    {
+        std::string colorName;
+        colorName = colorNodes[i].Attribute("Name");
+        data_.colors_[colorName] =  colorNodes[i].Attribute("Value");
+    }
+    SimpleXmlNode drawingNode = root["Drawing"];
+    if (!drawingNode.IsNull())
+    {
+        data_.width_addition = drawingNode.Attribute("AddWidth");
+        data_.height_addition = drawingNode.Attribute("AddHeight");
+        std::vector<SimpleXmlNode> drawOperations;
+        drawingNode.GetChilds("Operation", drawOperations);
+        for (size_t i = 0; i < drawOperations.size(); i++)
+        {
+            ThumbnailDrawOperation op;
+            op.brush = drawOperations[i].Attribute("Brush");
+            op.rect = drawOperations[i].Attribute("Rect");
+            op.source = drawOperations[i].Attribute("Source");
+            op.destination = drawOperations[i].Attribute("Destination");
+            op.source_rect = drawOperations[i].Attribute("SourceRect");
+            op.type = drawOperations[i].Attribute("Type");
+            op.pen = drawOperations[i].Attribute("Pen");
+            op.condition = drawOperations[i].Attribute("Condition");
+            op.text_colors = drawOperations[i].Attribute("TextColors");
+            data_.drawing_operations_.push_back(op);
+        }
+    }
+    file_name_ = filename;
+    return true;
 }
 
 void Thumbnail::CreateNew()
 {
-	data_.colors_["FrameColor"] = "#004A6F";
-	data_.colors_["StrokeColor"] = "0";
-	data_.colors_["GradientColor1"] = "0";
-	data_.colors_["GradientColor2"] = "0";
-	data_.colors_["TextColor"] = "0";
+    data_.colors_["FrameColor"] = "#004A6F";
+    data_.colors_["StrokeColor"] = "0";
+    data_.colors_["GradientColor1"] = "0";
+    data_.colors_["GradientColor2"] = "0";
+    data_.colors_["TextColor"] = "0";
 }
 
 bool Thumbnail::SaveToFile(const std::string& filename)
 {
-	SimpleXml xml;
-	std::string fileToSave = filename;
-	if (filename.empty())
-	{
-		fileToSave = file_name_;
-	}
-	xml.LoadFromFile(fileToSave);
-	SimpleXmlNode root = xml.getRoot("Thumbnail", false);
-	if (root.IsNull())
-		return false;
-	if ( !data_.sprite_source_file.empty() ) {
-		root.GetChild("Definitions").GetChild("Sprite").SetAttribute("Source", IuCoreUtils::ExtractFileName(data_.sprite_source_file));
-	}
-	SimpleXmlNode colorsNode = root.GetChild("Definitions").GetChild("Params");
-	colorsNode.DeleteChilds();
-	for (std::map<std::string, std::string>::iterator it = data_.colors_.begin(); it != data_.colors_.end(); ++it)
-	{
-		SimpleXmlNode colorNode = colorsNode.CreateChild("Param");
-		colorNode.SetAttribute("Name", it->first);
-		colorNode.SetAttribute("Value", it->second);
-	}
-	xml.SaveToFile(fileToSave);
-	return true;
+    SimpleXml xml;
+    std::string fileToSave = filename;
+    if (filename.empty())
+    {
+        fileToSave = file_name_;
+    }
+    xml.LoadFromFile(fileToSave);
+    SimpleXmlNode root = xml.getRoot("Thumbnail", false);
+    if (root.IsNull())
+        return false;
+    if ( !data_.sprite_source_file.empty() ) {
+        root.GetChild("Definitions").GetChild("Sprite").SetAttribute("Source", IuCoreUtils::ExtractFileName(data_.sprite_source_file));
+    }
+    SimpleXmlNode colorsNode = root.GetChild("Definitions").GetChild("Params");
+    colorsNode.DeleteChilds();
+    for (std::map<std::string, std::string>::iterator it = data_.colors_.begin(); it != data_.colors_.end(); ++it)
+    {
+        SimpleXmlNode colorNode = colorsNode.CreateChild("Param");
+        colorNode.SetAttribute("Name", it->first);
+        colorNode.SetAttribute("Value", it->second);
+    }
+    xml.SaveToFile(fileToSave);
+    return true;
 }
 
 std::string Thumbnail::getSpriteFileName() const
 {
-	return data_.sprite_source_file;
+    return data_.sprite_source_file;
 }
 
 std::string Thumbnail::getWidthAddition() const
 {
-	return data_.width_addition;
+    return data_.width_addition;
 }
 
 std::string Thumbnail::getHeightAddition() const
 {
-	return data_.height_addition;
+    return data_.height_addition;
 }
 
 void Thumbnail::setSpriteFileName(const std::string& name)
 {
-	data_.sprite_source_file = name;
+    data_.sprite_source_file = name;
 }
 
 const Thumbnail::ThumbnailData* Thumbnail::getData() const
 {
-	return &data_;
+    return &data_;
 }
 
 unsigned int Thumbnail::getColor(const std::string& name)
 {
-	std::string res = data_.colors_[name];
-	res = IuStringUtils::Replace(res, "#", "0x");
-	return strtoul(res.c_str(), 0, 0);
+    std::string res = data_.colors_[name];
+    res = IuStringUtils::Replace(res, "#", "0x");
+    return strtoul(res.c_str(), 0, 0);
 }
 
 unsigned int Thumbnail::getParam(const std::string& name)
 {
-	std::string res = data_.colors_[name];
-	return atoi(res.c_str());
+    std::string res = data_.colors_[name];
+    return atoi(res.c_str());
 }
 
 void Thumbnail::setColor(const std::string& name, unsigned int value)
 {
-	char buf[20];
-	sprintf(buf, "#%06x", value);
-	data_.colors_[name] = buf;
+    char buf[20];
+    sprintf(buf, "#%06x", value);
+    data_.colors_[name] = buf;
 }
 
 void Thumbnail::setParam(const std::string& name, unsigned int value)
 {
-	data_.colors_[name] = IuCoreUtils::toString(value);
+    data_.colors_[name] = IuCoreUtils::toString(value);
 }
 
 void Thumbnail::setParamString(const std::string& name, const std::string& value)
 {
-	data_.colors_[name] = value;
+    data_.colors_[name] = value;
 }
 
 std::string Thumbnail::getParamString(const std::string& name)
 {
-	return data_.colors_[name];
+    return data_.colors_[name];
 }
 
 bool Thumbnail::existsParam(const std::string& name) const
 {
-	return data_.colors_.count(name) > 0;
+    return data_.colors_.count(name) > 0;
 }

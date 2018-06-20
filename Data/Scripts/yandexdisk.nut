@@ -15,6 +15,24 @@ login <- "";
 enableOAuth <- true;
 baseUrl <-"https://cloud-api.yandex.net/v1/disk/resources/";
 
+function BeginLogin() {
+	try {
+		return Sync.beginAuth();
+	}
+	catch ( ex ) {
+	}
+	return true;
+}
+
+function EndLogin() {
+	try {
+		return Sync.endAuth();
+	} catch ( ex ) {
+		
+	}
+	return true;
+}
+
 function base64Encode(input) {
 	local keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
     local output = "";
@@ -189,13 +207,29 @@ function internal_loadAlbumList(list)
 		if(!DoLogin())
 			return 0;
 	}
-	
+    
+
 	if ( useRestApi() ) {
+        nm.addQueryHeader("Authorization",getAuthorizationString());
+        nm.addQueryHeader("Accept", "application/json");
+        nm.enableResponseCodeChecking(false);
+        nm.doGet("https://cloud-api.yandex.net:443/v1/disk");// test request
+        
+        local code = nm.responseCode();
+        if (code==401){
+            ServerParams.setParam("token","");
+            if(!DoLogin()){
+                return 0;
+            }
+        }
+    
 		local url = "https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F&limit=100";
 		nm.addQueryHeader("Authorization",getAuthorizationString());
 		nm.addQueryHeader("Accept", "application/json");
 		nm.doGet(url);
-		if ( nm.responseCode() == 200 ) {
+        code = nm.responseCode();
+        
+        if( code == 200 ) {
 			local folder = CFolderItem();
 			folder.setId("/");
 			folder.setTitle("/ (root)");
@@ -334,7 +368,7 @@ function openUrl(url) {
 }
 
 
-function DoLogin() 
+function _DoLogin() 
 { 
 	if ( enableOAuth ) {
 		token = ServerParams.getParam("token");
@@ -395,14 +429,31 @@ function DoLogin()
 	return 0; //Success login
 } 
 
+function DoLogin() {
+	if (!BeginLogin() ) {
+		return false;
+	}
+	local res = _DoLogin();
+	
+	EndLogin();
+	return res;
+}
+
 function  UploadFile(FileName, options)
 {
-	if(token == "")
-		{
-			if(!DoLogin())
-				return 0;
-		}
+	if(token == "") {
+        if(!DoLogin())
+		return 0;
+	}
+    
 	local ansiFileName = ExtractFileName(FileName);
+    
+	try {
+		local task = options.getTask();
+		ansiFileName = task.getDisplayName(); // ensure that this field is filled up correctly
+	} catch ( ex ) {
+		
+	}
 	//ansiFileName = reg_replace(ansiFileName, " ","_");
 	
 
@@ -426,6 +477,18 @@ function  UploadFile(FileName, options)
 			nm.enableResponseCodeChecking(false);
 		} catch ( ex ) {} 
 		nm.doGet(url);
+        
+        if ( nm.responseCode() == 401) { // not authorized
+            ServerParams.setParam("token", "");
+            if (!DoLogin()) { // obtain token again
+				return 0;
+            }
+            //try again
+            nm.addQueryHeader("Accept", "application/json");
+		    nm.addQueryHeader("Authorization",getAuthorizationString());
+            nm.doGet(url);
+        }
+        
 		while ( nm.responseCode() == 409 ) {
 			local ext = GetFileExtension(ansiFileName);
 			local suffix = i.tostring();
@@ -487,7 +550,7 @@ function  UploadFile(FileName, options)
 			nm.addQueryHeader("Transfer-Encoding", "");
 			nm.addQueryHeader("Authorization",getAuthorizationString());
 			nm.setMethod("PUT");
-			nm.doGet("","");
+			nm.doGet("");
 			//nm.doPost("test1");
 			//_WriteLog("error", nm.responseCode().tostring());
 			//_WriteLog("error", nm.responseBody());
@@ -564,15 +627,13 @@ function  UploadFile(FileName, options)
 		"</set>"     + 
 		"</propertyupdate>";
 	nm.doUpload("", data);
-	checkResponseCode();
-	//print(nm.responseBody());			
+	checkResponseCode();		
 	local data = nm.responseBody();
 	
 	local viewUrl = regex_simple(data,"<public_url xmlns=\"urn:yandex:disk:meta\">(.+)</public_url>",0);
 	
 	options.setViewUrl(viewUrl);
 	} catch ( ex ) {
-		//msgBox(ex.tostring());
 		_WriteLog("error", "Exception:" + ex.tostring());
 		return 0;
 	}
@@ -586,16 +647,14 @@ function GetFolderAccessTypeList()
 	return a;
 }
 
-/*function GetServerParamList()
+function GetServerParamList()
 {
-	return 
-	{
+    return { // '{' should be on the same line
 		useWebdav = "Use WebDav",
 		token = "Token",
 		enableOAuth ="enableOAuth",
 		tokenType = "tokenType",
 		PrevLogin = "PrevLogin",
 		OAuthLogin = "OAuthLogin"
-		
 	};
-}*/
+}

@@ -1,0 +1,30 @@
+﻿#ifndef IU_CORE_UPLOAD_THREADSYNCPRIVATE_H
+#define IU_CORE_UPLOAD_THREADSYNCPRIVATE_H
+
+#pragma once
+#include <mutex>
+#include <memory>
+#include <string>
+#include <map>
+#include "Network/CurlShare.h"
+#include <atomic>
+
+class ThreadSyncPrivate
+{
+public:
+	std::map<std::string, std::string> data_;
+	std::mutex dataMutex_;
+    CurlShare curlShare_;
+    std::atomic<int> threadCount_;
+
+    ThreadSyncPrivate()
+    {
+        threadCount_ = 0;
+    }
+     virtual ~ThreadSyncPrivate()
+    {
+        
+    }
+};
+
+#endif

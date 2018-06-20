@@ -39,7 +39,7 @@ function getThumbnailWidth() {
 }
 
 function anonymousUpload(FileName, options) {
-	nm.setUrl("http://imageban.ru/up");
+	nm.setUrl("https://imageban.ru/up");
 	nm.addQueryHeader("User-Agent", "Shockwave Flash");
 	nm.addQueryParam("Filename", ExtractFileName(FileName));
 	nm.addQueryParam("albmenu", "0");
@@ -47,8 +47,8 @@ function anonymousUpload(FileName, options) {
 	nm.addQueryParam("rsize", "0");
 	nm.addQueryParam("inf", "1");
 	nm.addQueryParam("prew", getThumbnailWidth());
-	nm.addQueryParam("ptext", "‘¢Ê¨®ÓÅßÌ≥º");
-	nm.addQueryParam("rand", format("%d",random(22222)));
+	nm.addQueryParam("ptext", "");
+	nm.addQueryParam("rand", format("%d",random()%22222));
 	nm.addQueryParam("ttl", "0");
 	nm.addQueryParamFile("Filedata",FileName, ExtractFileName(FileName),"");
 	nm.addQueryParam("Upload", "Submit Query");

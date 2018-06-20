@@ -1,7 +1,7 @@
 #ifndef SelectionTool_h__
 #define SelectionTool_h__
 
-#include <3rdpart/GdiplusH.h>
+#include "3rdpart/GdiplusH.h"
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
 #include <stdint.h>
@@ -12,7 +12,7 @@ class Canvas;
 
 class SelectionTool : public MoveAndResizeTool {
 public:
-	SelectionTool( Canvas* canvas );
+    SelectionTool( Canvas* canvas );
 };
 
 }

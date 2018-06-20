@@ -5,9 +5,9 @@
 
 // Includes
 
-#include <math.h>
+#include <cmath>
 #include "parser.h"
-
+using namespace std;
 // Defines
 // operations...
 #define OP_PLUS          0
@@ -82,7 +82,7 @@ void TParser::SendError(int errNum)
          break;
    }
 
-   TError error(errs[errNum], pos-len);
+   TParserError error(errs[errNum], pos-len);
 
    for(size_t i=0; i<history.size(); i++)
       delete history[i];
@@ -128,7 +128,9 @@ bool TParser::GetToken(void)
    else if(IsLetter())
    {
       int i=0;
-      while(IsLetter()) curToken[i++] = expr[pos++];
+      while (IsLetter() && pos < MAX_TOKEN_LEN) {
+          curToken[i++] = expr[pos++];
+      }
       curToken[i] = '\0';
 
       int len = strlen(curToken);
@@ -160,11 +162,15 @@ bool TParser::GetToken(void)
    else if(IsDigit() || IsPoint())
    {
       int i=0;
-      while(IsDigit()) curToken[i++] = expr[pos++];
+      while (IsDigit() && i < MAX_TOKEN_LEN) {
+          curToken[i++] = expr[pos++];
+      }
       if(IsPoint())
       {
          curToken[i++] = expr[pos++];
-         while(IsDigit()) curToken[i++] = expr[pos++];
+         while (IsDigit() && i < MAX_TOKEN_LEN) {
+             curToken[i++] = expr[pos++];
+         }
       }
       curToken[i] = '\0';
       typToken = PARSER_NUMBER;
@@ -311,7 +317,7 @@ TParserNode *TParser::Expr4(void)
 
 TParserNode *TParser::Expr5(void)
 {
-   TParserNode *temp;
+   TParserNode *temp = 0;
    
    switch(typToken)
    {

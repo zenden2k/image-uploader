@@ -1,8 +1,11 @@
 #pragma once
+
 #include "../atlheaders.h"
 #include <atlcrack.h>
 #include <atlmisc.h>
 #define WM_KEY                      (WM_USER + 444)
+#include "MemberFunctionCallback.h"
+
 // CWinHotkeyCtrl
 
 class CWinHotkeyCtrl : public CWindowImpl<CWinHotkeyCtrl, CEdit,CControlWinTraits>
@@ -39,7 +42,7 @@ private:
 	DWORD m_fModSet;
 	DWORD m_fModRel;
 	BOOL m_fIsPressed;
-
+    CBTHookMemberFunctionCallback m_callback;
 private:
 	BOOL InstallKbHook();
 	BOOL UninstallKbHook();
@@ -47,7 +50,7 @@ private:
 #if _WIN32_WINNT < 0x500
 	static LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
 #else // _WIN32_WINNT >= 0x500
-	static LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
+	/*static */LRESULT /*CALLBACK*/ LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
 #endif // _WIN32_WINNT >= 0x500
 
 	LRESULT OnKey(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

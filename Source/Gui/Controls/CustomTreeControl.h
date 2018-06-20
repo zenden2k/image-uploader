@@ -57,81 +57,81 @@ class TreeItem;
 class TreeItemCallback
 {
 public:
-	virtual void OnTreeItemDelete(TreeItem* item) = 0;
+    virtual void OnTreeItemDelete(TreeItem* item) = 0;
 };
 
 class TreeItem
 {
-	public:
-		TreeItem(int level)
-		{
-			nLevel = level;
-			m_isExpanded = false;
-			m_callback = 0;
-		}
-		virtual ~TreeItem()
-		{
-			if(m_callback) m_callback->OnTreeItemDelete(this);
-			for(size_t i=0; i<m_subItems.size(); i++)
-			{
-				delete m_subItems[i];
-			}
-		}
-		void AddItem(TreeItem* it)
-		{
-			m_subItems.push_back(it);
-		}
-		bool HasItems()
-		{
-			return m_subItems.size()!=0;
-		}
-		void setCallback(TreeItemCallback* c)
-		{
-			m_callback = c;
-		}
-		bool IsExpanded()
-		{
-			return m_isExpanded;
-		}
-		int level()
-		{
-			return nLevel;
-		}
-		int ItemCount()
-		{
-			return m_subItems.size();
-		}
-		TreeItem* item(int index)
-		{
-			return m_subItems[index];
-		}
-		void SetText(const CString text)
-		{
-			m_Text = text;
-		}
-		CString text()
-		{
-			return  m_Text;
-		}
-		void setExpanded(bool exp)
-		{
-			m_isExpanded = exp;
-		}
-		void setUserData(void * data)
-		{
-			m_userData = data;
-		}
-		void* userData()
-		{
-			return m_userData;
-		}
-	protected:
-		int nLevel;
-		std::vector<TreeItem*> m_subItems;
-		bool m_isExpanded;
-		CString m_Text;
-		void * m_userData;
-		TreeItemCallback* m_callback;
+    public:
+        TreeItem(int level)
+        {
+            nLevel = level;
+            m_isExpanded = false;
+            m_callback = 0;
+        }
+        virtual ~TreeItem()
+        {
+            if(m_callback) m_callback->OnTreeItemDelete(this);
+            for(size_t i=0; i<m_subItems.size(); i++)
+            {
+                delete m_subItems[i];
+            }
+        }
+        void AddItem(TreeItem* it)
+        {
+            m_subItems.push_back(it);
+        }
+        bool HasItems()
+        {
+            return m_subItems.size()!=0;
+        }
+        void setCallback(TreeItemCallback* c)
+        {
+            m_callback = c;
+        }
+        bool IsExpanded()
+        {
+            return m_isExpanded;
+        }
+        int level()
+        {
+            return nLevel;
+        }
+        int ItemCount()
+        {
+            return m_subItems.size();
+        }
+        TreeItem* item(int index)
+        {
+            return m_subItems[index];
+        }
+        void SetText(const CString text)
+        {
+            m_Text = text;
+        }
+        CString text()
+        {
+            return  m_Text;
+        }
+        void setExpanded(bool exp)
+        {
+            m_isExpanded = exp;
+        }
+        void setUserData(void * data)
+        {
+            m_userData = data;
+        }
+        void* userData()
+        {
+            return m_userData;
+        }
+    protected:
+        int nLevel;
+        std::vector<TreeItem*> m_subItems;
+        bool m_isExpanded;
+        CString m_Text;
+        void * m_userData;
+        TreeItemCallback* m_callback;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -158,19 +158,19 @@ public:
       //m_iPrevious(0),
       //m_iPrevXGhostBar(0)
    {
-	   m_memDC =0;
-		m_memBM =0;
-		enableEraseBkgnd = false;
-	
+       m_memDC =0;
+        m_memBM =0;
+        enableEraseBkgnd = false;
+    
     m_doubleBufferSize.cx=0;
-	 m_doubleBufferSize.cy=0  ;
+     m_doubleBufferSize.cy=0  ;
    }
 
-	  virtual ~CCustomTreeControlImpl()	
-	  {
-		  if(m_memBM) DeleteObject(m_memBM);
-		if(m_memDC)DeleteDC(m_memDC);
-	  }
+      virtual ~CCustomTreeControlImpl()    
+      {
+          if(m_memBM) DeleteObject(m_memBM);
+        if(m_memDC)DeleteDC(m_memDC);
+      }
 
    BOOL SubclassWindow(HWND hWnd)
    {
@@ -210,12 +210,12 @@ public:
    TreeItem*  AddItem(CString name, void *userData = 0)
    {
       ATLASSERT(::IsWindow(m_hWnd));
-	    TreeItem* item = new TreeItem(0);
-		item->setUserData(userData);
+        TreeItem* item = new TreeItem(0);
+        item->setUserData(userData);
       int nItem = TBase::AddString((LPCTSTR)item);
       if( nItem == LB_ERR ) return NULL;
-	
-	  item->SetText(name);
+    
+      item->SetText(name);
     //  TBase::SetItemData(nItem, (DWORD_PTR) item);
       return item;
    }
@@ -223,30 +223,30 @@ public:
   /* TreeItem*  AddItem(CString name)
    {
       ATLASSERT(::IsWindow(m_hWnd));
-	    TreeItem* item = new TreeItem(0);
+        TreeItem* item = new TreeItem(0);
       int nItem = 0;//TBase::AddString((LPCTSTR)item);
       if( nItem == LB_ERR ) return NULL;
-	
-	  item->SetText(name);
+    
+      item->SetText(name);
       //TBase::SetItemData(nItem, (DWORD_PTR) item);
       return item;
    }*/
 
-	TreeItem*  AddSubItem(CString name, TreeItem* parent, void *userData, bool autoExpand = true)
-	{
-		ATLASSERT(::IsWindow(m_hWnd));
-		// int nItem = TBase::AddString(name);
-		// if( nItem == LB_ERR ) return NULL;
-		 TreeItem* item = new TreeItem(parent->level()+1);
-		 item->setUserData(userData);
-		item->SetText(name);
-		parent->AddItem(item);
-		if(autoExpand)
-		{
-			int nItem = TBase::AddString( (LPCTSTR)item);
-			parent->setExpanded(true);
-		}
-		return item;
+    TreeItem*  AddSubItem(CString name, TreeItem* parent, void *userData, bool autoExpand = true)
+    {
+        ATLASSERT(::IsWindow(m_hWnd));
+        // int nItem = TBase::AddString(name);
+        // if( nItem == LB_ERR ) return NULL;
+         TreeItem* item = new TreeItem(parent->level()+1);
+         item->setUserData(userData);
+        item->SetText(name);
+        parent->AddItem(item);
+        if(autoExpand)
+        {
+            /*int nItem =*/ TBase::AddString( (LPCTSTR)item);
+            parent->setExpanded(true);
+        }
+        return item;
    }
 
    int FindVisibleItemIndex(TreeItem* item) 
@@ -262,59 +262,59 @@ public:
 
    bool ExpandItem(int index)
    {
-	   //Beep(1000,200);
-	   TreeItem * item = GetItem(index);
-	   if(!item) return false;
-	   if(!item->HasItems() || item->IsExpanded()) return false;
+       //Beep(1000,200);
+       TreeItem * item = GetItem(index);
+       if(!item) return false;
+       if(!item->HasItems() || item->IsExpanded()) return false;
 
-	   //SetRedraw(false);
-	   for(int i=0; i< item->ItemCount(); i++)
-	   {
-		   
-		   int insertedIndex =  TBase::InsertString(++index, (LPCTSTR)item->item(i));
-		   //TBase::SetItemData(insertedIndex, (DWORD_PTR) item->item(i));
-	   }
-	   item->setExpanded(true);
-	   //SetRedraw(true);
-	   //Invalidate();
-	   return true;
+       //SetRedraw(false);
+       for(int i=0; i< item->ItemCount(); i++)
+       {
+           
+           /*int insertedIndex =  */TBase::InsertString(++index, (LPCTSTR)item->item(i));
+           //TBase::SetItemData(insertedIndex, (DWORD_PTR) item->item(i));
+       }
+       item->setExpanded(true);
+       //SetRedraw(true);
+       //Invalidate();
+       return true;
    }
 
    BOOL ExpandItem(TreeItem * item)
    {
-	   int index = FindVisibleItemIndex(item);
-	   if(index == -1) return FALSE;
-	   ExpandItem(index);
+       int index = FindVisibleItemIndex(item);
+       if(index == -1) return FALSE;
+       ExpandItem(index);
       return TRUE;
    }
 
    bool ToggleItem(TreeItem * item)
    {
-	   if(!item->HasItems()) return false;
-		if(item->IsExpanded())
-			return CollapseItem(FindVisibleItemIndex(item))!=0;
-		else 
-			return ExpandItem(FindVisibleItemIndex(item))!=0;
+       if(!item->HasItems()) return false;
+        if(item->IsExpanded())
+            return CollapseItem(FindVisibleItemIndex(item))!=0;
+        else 
+            return ExpandItem(FindVisibleItemIndex(item))!=0;
    }
    BOOL CollapseItem(int index)
    {
-	   TreeItem * item = GetItem(index);
-	   if(!item) return false;
-	   if(!item->HasItems() || !item->IsExpanded()) return false;
+       TreeItem * item = GetItem(index);
+       if(!item) return false;
+       if(!item->HasItems() || !item->IsExpanded()) return false;
 
-		SetRedraw(false);
+        SetRedraw(false);
       index++;
       while(index < GetCount()) 
-		{
-			TreeItem* itemToHide = GetItem(index);
-			if( itemToHide->level() < item->level()+1) break;
-			TBase::SetItemData(index, 0L); // Clear data now, so WM_DELETEITEM doesn't delete
+        {
+            TreeItem* itemToHide = GetItem(index);
+            if( itemToHide->level() < item->level()+1) break;
+            TBase::SetItemData(index, 0L); // Clear data now, so WM_DELETEITEM doesn't delete
                                     // the IProperty in the DeleteString() call below
          TBase::DeleteString(index);
          //m_arrItems.Add(prop);
       }
-		item->setExpanded(false);
-		SetRedraw(true);
+        item->setExpanded(false);
+        SetRedraw(true);
       Invalidate();
       return TRUE;
    }
@@ -368,13 +368,13 @@ public:
       MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
       MESSAGE_HANDLER(WM_CHAR, OnChar)
       MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown)
-		MESSAGE_HANDLER(WM_RBUTTONDOWN, OnRButtonDown)
-		MESSAGE_HANDLER(WM_RBUTTONUP, OnRButtonUp)
-		MESSAGE_HANDLER(WM_PAINT, OnPaint)
-	///	MESSAGE_HANDLER(WM_VSCROLL, OnVScroll)
-	//	MESSAGE_HANDLER(WM_MOUSEWHEEL, OnVScroll)
-		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
-		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnDblClick)
+        MESSAGE_HANDLER(WM_RBUTTONDOWN, OnRButtonDown)
+        MESSAGE_HANDLER(WM_RBUTTONUP, OnRButtonUp)
+        MESSAGE_HANDLER(WM_PAINT, OnPaint)
+    ///    MESSAGE_HANDLER(WM_VSCROLL, OnVScroll)
+    //    MESSAGE_HANDLER(WM_MOUSEWHEEL, OnVScroll)
+        MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
+        MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnDblClick)
       MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
       CHAIN_MSG_MAP_ALT( COwnerDraw<T>, 1 )
       DEFAULT_REFLECTION_HANDLER()
@@ -383,28 +383,28 @@ public:
    HDC m_memDC;
    HBITMAP m_memBM;
    SIZE m_doubleBufferSize;
-	bool enableEraseBkgnd;
+    bool enableEraseBkgnd;
    void CreateDoubleBuffer()
    {
-		RECT rc;
-		GetClientRect( &rc); 
-		if(m_doubleBufferSize.cx >=rc.right && m_doubleBufferSize.cy >=rc.bottom)
-		{
-			if(m_doubleBufferSize.cx - rc.right<100 && m_doubleBufferSize.cy - rc.bottom< 100)
-			return;
-		}
+        RECT rc;
+        GetClientRect( &rc); 
+        if(m_doubleBufferSize.cx >=rc.right && m_doubleBufferSize.cy >=rc.bottom)
+        {
+            if(m_doubleBufferSize.cx - rc.right<100 && m_doubleBufferSize.cy - rc.bottom< 100)
+            return;
+        }
 
-		if(m_memBM) DeleteObject(m_memBM);
-		if(m_memDC)DeleteDC(m_memDC);
-		HDC dc=GetDC();
-		m_memDC = CreateCompatibleDC( dc );
-		rc.right+=100;
-		rc.bottom+=100;
-		m_memBM = CreateCompatibleBitmap( dc, rc.right, rc.bottom);
-		m_doubleBufferSize.cx= rc.right;
-		m_doubleBufferSize.cy = rc.bottom;
-		
-		ReleaseDC(dc);
+        if(m_memBM) DeleteObject(m_memBM);
+        if(m_memDC)DeleteDC(m_memDC);
+        HDC dc=GetDC();
+        m_memDC = CreateCompatibleDC( dc );
+        rc.right+=100;
+        rc.bottom+=100;
+        m_memBM = CreateCompatibleBitmap( dc, rc.right, rc.bottom);
+        m_doubleBufferSize.cx= rc.right;
+        m_doubleBufferSize.cy = rc.bottom;
+        
+        ReleaseDC(dc);
    }
 
    LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -414,67 +414,67 @@ public:
       return lRes;
    }
 
-	
+    
    LRESULT OnVScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
    {
-		SetRedraw(false);
-		LRESULT lRes = DefWindowProc(uMsg, wParam, lParam);
-		SetRedraw(true);
-		Invalidate();
-		bHandled = true;
+        SetRedraw(false);
+        LRESULT lRes = DefWindowProc(uMsg, wParam, lParam);
+        SetRedraw(true);
+        Invalidate();
+        bHandled = true;
       return lRes;
-	}
+    }
 
    LRESULT OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
    {
-		if(enableEraseBkgnd)
-		{
-			RECT rc;
-			GetClientRect(&rc); 
-			HDC dc = (HDC) wParam;
-			CBrush br;
-			br.CreateSolidBrush(RGB(255,255,255));
-			HGDIOBJ oldBrush = SelectObject(dc, br);
-			PatBlt(dc,rc.left, rc.top,rc.right-rc.left, rc.bottom - rc.top, PATCOPY);
-			SelectObject(dc, oldBrush);
-		}
-		OnPaint(0,0,0,bHandled);
-		bHandled = true;
-	   return 1;
-	}
+        if(enableEraseBkgnd)
+        {
+            RECT rc;
+            GetClientRect(&rc); 
+            HDC dc = (HDC) wParam;
+            CBrush br;
+            br.CreateSolidBrush(RGB(255,255,255));
+            HGDIOBJ oldBrush = SelectObject(dc, br);
+            PatBlt(dc,rc.left, rc.top,rc.right-rc.left, rc.bottom - rc.top, PATCOPY);
+            SelectObject(dc, oldBrush);
+        }
+        OnPaint(0,0,0,bHandled);
+        bHandled = true;
+       return 1;
+    }
    
    LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
    {
-		RECT rc;
-		GetClientRect( &rc); 
-		PAINTSTRUCT ps;
-		CDC dc = BeginPaint ( &ps); 
-		RECT paintRect = ps.rcPaint;
+        RECT rc;
+        GetClientRect( &rc); 
+        PAINTSTRUCT ps;
+        CDC dc = BeginPaint ( &ps); 
+        RECT paintRect = ps.rcPaint;
             CreateDoubleBuffer();
-			HGDIOBJ oldObj = SelectObject(m_memDC, m_memBM);
-			  
-			CBrush br;
-			br.CreateSolidBrush(RGB(255,255,255));
-			HGDIOBJ oldBrush = SelectObject(m_memDC, br);
-		//	PatBlt(m_memDC,paintRect.left,paintRect.top,paintRect.right-paintRect.left, paintRect.bottom-paintRect.top, PATCOPY);
-		
-		PatBlt(m_memDC,0,0,m_doubleBufferSize.cx, m_doubleBufferSize.cy, PATCOPY);
-		SelectObject(m_memDC, oldBrush);
-		HRGN rgn = CreateRectRgnIndirect(&paintRect);
-			SelectClipRgn(  m_memDC,  rgn); 
-	
+            HGDIOBJ oldObj = SelectObject(m_memDC, m_memBM);
+              
+            CBrush br;
+            br.CreateSolidBrush(RGB(255,255,255));
+            HGDIOBJ oldBrush = SelectObject(m_memDC, br);
+        //    PatBlt(m_memDC,paintRect.left,paintRect.top,paintRect.right-paintRect.left, paintRect.bottom-paintRect.top, PATCOPY);
+        
+        PatBlt(m_memDC,0,0,m_doubleBufferSize.cx, m_doubleBufferSize.cy, PATCOPY);
+        SelectObject(m_memDC, oldBrush);
+        HRGN rgn = CreateRectRgnIndirect(&paintRect);
+            SelectClipRgn(  m_memDC,  rgn); 
+    
          //PatBlt(memDC,t2,t1+t2,RC1.right-RC1.left, RC1.bottom-RC1.top, PATCOPY); 
             //----------- 
            enableEraseBkgnd = true;
-			SendMessage( WM_PRINT, (WPARAM)m_memDC, (LPARAM)(PRF_CLIENT|PRF_CHILDREN|PRF_CHECKVISIBLE/*|PRF_ERASEBKGND*/|PRF_OWNED)); 
+            SendMessage( WM_PRINT, (WPARAM)m_memDC, (LPARAM)(PRF_CLIENT|PRF_CHILDREN|PRF_CHECKVISIBLE/*|PRF_ERASEBKGND*/|PRF_OWNED)); 
           enableEraseBkgnd = false;
-			//----- 
-			SelectClipRgn(  m_memDC,  0); 
-				//BitBlt(dc, paintRect.left, paintRect.top, paintRect.right-paintRect.left, paintRect.bottom-paintRect.top, m_memDC,paintRect.left, paintRect.top, SRCCOPY); 
+            //----- 
+            SelectClipRgn(  m_memDC,  0); 
+                //BitBlt(dc, paintRect.left, paintRect.top, paintRect.right-paintRect.left, paintRect.bottom-paintRect.top, m_memDC,paintRect.left, paintRect.top, SRCCOPY); 
        BitBlt(dc, 0, 0, rc.right-rc.left, rc.bottom-rc.top, m_memDC,0,0, SRCCOPY); 
         SelectObject(m_memDC, oldObj);
-		DeleteObject(rgn);
-		EndPaint (&ps);
+        DeleteObject(rgn);
+        EndPaint (&ps);
  bHandled = true;
       return 0;
    }
@@ -489,9 +489,9 @@ public:
       return 0;
    }
 
-	TreeItem * GetItem(int index)
+    TreeItem * GetItem(int index)
    {
-	   return  reinterpret_cast<TreeItem*>(TBase::GetItemData(index));
+       return  reinterpret_cast<TreeItem*>(TBase::GetItemData(index));
    }
 
    LRESULT OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -503,7 +503,7 @@ public:
    LRESULT OnRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
    {
       LRESULT lRes = DefWindowProc(WM_LBUTTONUP, wParam, lParam);
-		DefWindowProc(WM_RBUTTONUP, wParam, lParam);
+        DefWindowProc(WM_RBUTTONUP, wParam, lParam);
       return lRes;
    }
 
@@ -530,28 +530,28 @@ public:
       // Kill the nasty BEEP sound!
       if( wParam == _T(' ') ) return 0;
 
-	  if(wParam == _T('+'))
-	  {
-		int idx = GetCurSel();
-		if( idx != -1 ) 
-		  {
-			  TreeItem * it = GetItem(idx); 
-	       
-					ExpandItem(it);
-					
-		  }
-	  }
-	  else if(wParam == _T('-'))
-	  {
-		int idx = GetCurSel();
-		if( idx != -1 ) 
-		{
-			  TreeItem * it = GetItem(idx); 
-	       
-			  CollapseItem(idx);
-					
-		  }
-	  }
+      if(wParam == _T('+'))
+      {
+        int idx = GetCurSel();
+        if( idx != -1 ) 
+          {
+              TreeItem * it = GetItem(idx); 
+           
+                    ExpandItem(it);
+                    
+          }
+      }
+      else if(wParam == _T('-'))
+      {
+        int idx = GetCurSel();
+        if( idx != -1 ) 
+        {
+              /*TreeItem * it = */GetItem(idx); 
+           
+              CollapseItem(idx);
+                    
+          }
+      }
       bHandled = FALSE;
       return 0;
    }
@@ -569,23 +569,23 @@ public:
 //      int iIndent = CATEGORY_INDENT;
      // if( (m_dwExtStyle & PLS_EX_NOCOLUMNRESIZE) == 0 &&
       //    GET_X_LPARAM(lParam) == m_iMiddle + iIndent ) 
-      {
-        int m_iPrevious = GET_X_LPARAM(lParam);
-      }
+      //{
+       // int m_iPrevious = GET_X_LPARAM(lParam);
+     // }
 
       int idx = GetCurSel();
       if( idx != -1 ) {
-		  TreeItem * it = GetItem(idx); 
+          TreeItem * it = GetItem(idx); 
          //IProperty* prop = reinterpret_cast<IProperty*>(TBase::GetItemData(idx));
         // ATLASSERT(prop);
          // Ask owner first
          //NMPROPERTYITEM nmh = { m_hWnd, GetDlgCtrlID(), PIN_CLICK, prop };
          //if( ::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM) &nmh) == 0 ) 
-		 {
+         {
             // Translate into action
             if(GET_X_LPARAM(lParam) < CATEGORY_INDENT ) {
-				ToggleItem(it);
-				//prop->Activate(PACT_EXPAND, 0);
+                ToggleItem(it);
+                //prop->Activate(PACT_EXPAND, 0);
             }
            /* else {
                if( prop->IsEnabled() ) prop->Activate(PACT_CLICK, lParam);
@@ -595,14 +595,14 @@ public:
       return lRes;
    }
 
-   LRESULT OnDblClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+   virtual LRESULT OnDblClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
    {
       LRESULT lRes = DefWindowProc(uMsg, wParam, lParam);
       int idx = GetCurSel();
       if( idx != -1 ) {
          TreeItem* prop = GetItem(idx);
          ATLASSERT(prop);
-		 ToggleItem(prop);
+         ToggleItem(prop);
          // Ask owner first
          {
             // Send DblClick action
@@ -636,7 +636,7 @@ public:
      // m_di.TextFont = m_TextFont.CreateFontIndirect(&lf);
 //      SetFont(m_di.TextFont);
      /* if( (m_dwExtStyle & PLS_EX_XPLOOK) == 0 ) 
-		  lf.lfWeight += FW_BOLD;*/
+          lf.lfWeight += FW_BOLD;*/
       //m_di.CategoryFont = m_CategoryFont.CreateFontIndirect(&lf);
       // Text metrics
       CClientDC dc(m_hWnd);
@@ -681,23 +681,23 @@ public:
    void DeleteItem(LPDELETEITEMSTRUCT lpDIS)
    {
       if( lpDIS->itemData != 0 ) 
-	  {
-			TreeItem* item = reinterpret_cast<TreeItem*>(lpDIS->itemData);
-			if(item->level() == 0)
-			delete item;
-	  }
+      {
+            TreeItem* item = reinterpret_cast<TreeItem*>(lpDIS->itemData);
+            if(item->level() == 0)
+            delete item;
+      }
    }
 
    void MeasureItem(LPMEASUREITEMSTRUCT lpMIS)
    { 
-	   SIZE sz = {0,0};
-	   TreeItemSize(reinterpret_cast<TreeItem*>(lpMIS->itemData), &sz);
-		lpMIS->itemHeight = sz.cy;
+       SIZE sz = {0,0};
+       TreeItemSize(reinterpret_cast<TreeItem*>(lpMIS->itemData), &sz);
+        lpMIS->itemHeight = sz.cy;
    }
 
    void DrawName(CString name, HDC ddc , DWORD state, RECT rc)
    {
-	   CDCHandle dc(ddc);
+       CDCHandle dc(ddc);
       COLORREF clrBack, clrFront;
      /* if( (state & ODS_DISABLED) != 0 ) {
          clrFront = di.clrDisabled;
@@ -706,7 +706,7 @@ public:
       else */if( (state & ODS_SELECTED) != 0 ) {
          /*clrFront = di.clrSelText;
          clrBack = di.clrSelBack;*/
-		  clrFront =RGB(255,255,255);
+          clrFront =RGB(255,255,255);
          clrBack =  RGB(0, 0, 200);
       }
       else {
@@ -729,7 +729,7 @@ public:
       CDCHandle dc(lpDIS->hDC);
       RECT rc = lpDIS->rcItem;
 
-	  TreeItem * item = reinterpret_cast<TreeItem*>(lpDIS->itemData);
+      TreeItem * item = reinterpret_cast<TreeItem*>(lpDIS->itemData);
      // IProperty* prop = reinterpret_cast<IProperty*>(lpDIS->itemData);
 //      ATLASSERT(prop);
       //BYTE kind = prop->GetKind();
@@ -750,7 +750,7 @@ public:
 
       // If this control is painted with categories
 //      if( (m_dwExtStyle & PLS_EX_CATEGORIZED) != 0 )
-	  
+      
          // We paint a nice border in the gap with the plus/minus signs
 //         HPEN hOldPen = dc.SelectPen(di.Border);
          /*dc.MoveTo(rc.left + CATEGORY_INDENT - 1, rc.top);
@@ -761,7 +761,7 @@ public:
          }*/
          // Paint plus/minus sign if it's actually a category item
 #if 0
-		  if( item->HasItems() ) {
+          if( item->HasItems() ) {
 //            dc.SelectFont(di.CategoryFont);
 //            CCategoryProperty* pCategory = static_cast<CCategoryProperty*>(prop);
             POINT ptMiddle = { rc.left + (CATEGORY_INDENT / 2), rc.top + ((rc.bottom - rc.top) / 2) };
@@ -771,7 +771,7 @@ public:
             dc.Rectangle(&rcSymbol);
             dc.SelectBrush(hOldBrush);
             if( !item->IsExpanded() ) 
-			{
+            {
                dc.MoveTo(ptMiddle.x, ptMiddle.y - 2);
                dc.LineTo(ptMiddle.x, ptMiddle.y + 3);
             }
@@ -784,17 +784,17 @@ public:
 #endif
       // Calculate rectangles for the two sides
       RECT rcName = rc;
-      RECT rcValue = rc;
+     // RECT rcValue = rc;
       // Special handling of XP-like categories
 /*      if( kind == PROPKIND_CATEGORY /*&& (m_dwExtStyle & PLS_EX_XPLOOK) != 0 *) {
          rcName.right = rcValue.left = rc.right;
       }*/
 //
-	 // ExtTextOut(dc, rcName.left, rcName.top, 0, &rcName, item->text(), item->text().GetLength(),0);
+     // ExtTextOut(dc, rcName.left, rcName.top, 0, &rcName, item->text(), item->text().GetLength(),0);
       // Draw name
 //      di.rcItem = rcName;
-	  rcName.left+= CATEGORY_INDENT * item->level();
-	DrawTreeItem(dc, rcName, lpDIS->itemState, item);
+      rcName.left+= CATEGORY_INDENT * item->level();
+    DrawTreeItem(dc, rcName, lpDIS->itemState, item);
            
       // Paint borders
     //  HPEN hOldPen = dc.SelectPen(di.Border);
@@ -803,12 +803,12 @@ public:
    }
    virtual void DrawTreeItem(HDC dc, RECT rc, UINT itemState,  TreeItem *item)
    {
-	    DrawName(item->text(), dc, itemState, rc);
+        DrawName(item->text(), dc, itemState, rc);
    }
 
    virtual void TreeItemSize( TreeItem *item, SIZE *sz)
    {
-	     sz->cy = 20+ 3;
+         sz->cy = 20+ 3;
    }
 };
 

@@ -25,34 +25,56 @@
 #include <atlcrack.h>
 // CImageView
 
-class CImageView : 
-	public CDialogImpl<CImageView>	
-{
-	public:
-		CImageView();
-		~CImageView();
-		enum { IDD = IDD_IMAGEVIEW };
+struct CImageViewItem {
+    CImageViewItem() {
+        index = -1;
+    }
+    CString fileName;
+    int index;
+};
+class CImageViewCallback {
+public:
+    virtual CImageViewItem getNextImgViewItem(CImageViewItem currentItem)=0;
+    virtual CImageViewItem getPrevImgViewItem(CImageViewItem currentItem)=0;
 
-		 BEGIN_MSG_MAP(CImageView)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			MSG_WM_KILLFOCUS(OnKillFocus)
-			MSG_WM_ACTIVATE(OnActivate)
-			MSG_WM_KEYDOWN(OnKeyDown)
-			  COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-			  COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedOK)
-		 END_MSG_MAP()
-		 // Handler prototypes:
-		 //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		 //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		 //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		CMyImage Img;
-		LRESULT OnKillFocus(HWND hwndNewFocus);
-		LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);
-	public:
-		bool ViewImage(LPCTSTR FileName, HWND Parent=NULL);
-		LRESULT OnActivate(UINT state, BOOL fMinimized, HWND hwndActDeact);
+    virtual ~CImageViewCallback() { };
+};
+class CImageView : 
+    public CDialogImpl<CImageView>    
+{
+    public:
+        CImageView();
+        ~CImageView();
+        enum { IDD = IDD_IMAGEVIEW, kDblClickTimer = 1 };
+
+         BEGIN_MSG_MAP(CImageView)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            MESSAGE_HANDLER(WM_TIMER, OnTimer)
+            MSG_WM_KILLFOCUS(OnKillFocus)
+            MSG_WM_ACTIVATE(OnActivate)
+            MSG_WM_KEYDOWN(OnKeyDown)
+              COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
+              COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedOK)
+         END_MSG_MAP()
+         // Handler prototypes:
+         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        CMyImage Img;
+        LRESULT OnKillFocus(HWND hwndNewFocus);
+        LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);
+        void setCallback(CImageViewCallback* callback);
+    public:
+        bool ViewImage(const CImageViewItem&, HWND Parent = NULL);
+        LRESULT OnActivate(UINT state, BOOL fMinimized, HWND hwndActDeact);
+        void MyCenterWindow(HWND hWndCenter, int width, int height);
+protected:
+    CImageViewCallback* callback_;
+    CImageViewItem currentItem_;
+    HWND currentParent_;
 };
 
 

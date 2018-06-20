@@ -5,7 +5,7 @@
 #expr Exec(SourcePath + "signcode.bat")
 #define MyAppName "Image Uploader"
 #define MyAppVersion _APP_VER
-#define MyAppPublisher "zenden.ws"
+#define MyAppPublisher "Sergey Svistunov"
 #define MyAppURL "http://zenden.ws/imageuploader"
 #define MyAppExeName "Image Uploader.exe"
 ;#include ReadReg(HKEY_LOCAL_MACHINE,'Software\Sherlock Software\InnoTools\Downloader','ScriptPath','')
@@ -39,8 +39,9 @@ OutputBaseFilename=image-uploader-{#_APP_VER}-build-{#BUILD}-setup
 #endif
 Compression=lzma/max 
 SolidCompression=yes
-SignTool=zenden2k
-CloseApplications=no
+;SignTool=zenden2k
+CloseApplications=yes
+CloseApplicationsFilter=*.exe
 
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
@@ -52,13 +53,12 @@ Name: "sr"; MessagesFile: "Languages\SerbianCyrillic.isl"
 Name: "sv"; MessagesFile: "Languages\Swedish.isl"
 Name: "tr"; MessagesFile: "Languages\Turkish.isl"
 Name: "ko"; MessagesFile: "Languages\Korean.isl"
+Name: "hu"; MessagesFile: "Languages\Hungarian.isl"
 Name: "uk"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 [CustomMessages]
 InstallFFmpeg=Install FFmpeg library (better video formats support)
-NewIcon=Use new icon
 Additional=Additional
 ru.InstallFFmpeg=Установить библиотеку FFmpeg для лучшей поддержки форматов видео
-ru.NewIcon=Использовать новый значок
 ru.Additional=Дополнительно
 [Registry]
 Root: HKLM; Subkey: "Software\Zenden.ws\Image Uploader"; ValueType: string; ValueName: "DataPath"; ValueData: "{code:GetDataFolder}\Image Uploader\"; 
@@ -68,8 +68,7 @@ Root: HKLM; Subkey: "Software\Zenden.ws\Image Uploader"; ValueType: string; Valu
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:Additional}"; Flags: unchecked
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:Additional}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
-Name: "installffmpeg"; Description: "{cm:InstallFFmpeg}"; GroupDescription: "{cm:Additional}"; Flags: unchecked
-Name: "newicon"; Description: "{cm:NewIcon}"; GroupDescription: "{cm:Additional}"; Flags: unchecked
+Name: "installffmpeg"; Description: "{cm:InstallFFmpeg}"; GroupDescription: "{cm:Additional}"; Flags: unchecked 
 ;Name: common; Description: All users; GroupDescription: Install for:; Flags: exclusive
 ;Name: installuser; Description: The current user only; GroupDescription: Install for:; Flags: exclusive unchecked
 [Dirs]
@@ -81,12 +80,13 @@ Name: "{code:GetDataFolder}\Image Uploader\Favicons"; Permissions: users-modify
 Name: "{code:GetDataFolder}\Image Uploader\Update"; Permissions: users-modify
 [Files]
 Source: "..\Build\release optimized\Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\Build\release optimized\curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\Source\res\new-icon.ico"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "..\Build\release optimized\curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lang\*.lng"; Excludes: "default.*"; DestDir: "{app}\Lang"; Flags: ignoreversion
+Source: "..\Lang\English.lng.src"; DestDir: "{app}\Lang"; Flags: ignoreversion
 Source: "..\Build\release optimized\Modules\*"; DestDir: "{app}\Modules"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Docs\*"; DestDir: "{app}\Docs"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Data\servers.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
+Source: "..\Data\servers.xsd"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
 Source: "..\Data\template.txt"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
 Source: "..\Data\templates.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
 Source: "..\Data\Favicons\*.ico"; DestDir: "{code:GetDataFolder}\Image Uploader\Favicons"; Flags: ignoreversion
@@ -96,31 +96,29 @@ Source: "..\Data\Update\iu_core.xml"; DestDir: "{code:GetDataFolder}\Image Uploa
 Source: "..\Data\Update\iu_serversinfo.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
 Source: "..\Data\Update\iu_ffmpeg.xml"; DestDir: "{tmp}\"; Flags: ignoreversion
 Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Flags: ignoreversion
-Source: "icon_compare.bmp"; DestDir: "{tmp}\"; Flags: ignoreversion
+Source: "..\Data\Utils\*"; DestDir: "{code:GetDataFolder}\Image Uploader\Utils"; Flags: ignoreversion
 
 Source: "unzip.exe"; DestDir: "{tmp}"; Flags: ignoreversion
 ;Flags: deleteafterinstall
 ;Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
-
+Source: "{app}\ExplorerIntegration64.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration64.dll.old"; Flags: external skipifsourcedoesntexist
+Source: "{app}\ExplorerIntegration.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration.dll.old"; Flags: external skipifsourcedoesntexist
+Source: "..\Build\release optimized\ExplorerIntegration.dll";DestDir: "{app}";
 Source: "..\Build\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}";
 
 #ifdef FFMPEG
 Source: "..\Build\release\av*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Build\release\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion
 #endif
-Source: "..\Build\release optimized\ExplorerIntegration.dll";DestDir: "{app}";
+
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}";
-;Using old icon
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: not NewIcon;
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon and (not NewIcon);
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon and (not NewIcon);
-;Using new icon    IconIndex:35;
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFileName: "{app}\new-icon.ico";  Tasks: NewIcon;
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFileName: "{app}\new-icon.ico"; Tasks: desktopicon and NewIcon;
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFileName: "{app}\new-icon.ico";  Tasks: quicklaunchicon and NewIcon;
+
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}";
+Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon;
+Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon;
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Parameters: "/afterinstall /language={language} {code:GetAdditionalRunParameters}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall skipifsilent
 
@@ -130,6 +128,7 @@ Filename: "{app}\image uploader.exe"; Parameters: "/uninstall"; Flags: runascurr
 [UninstallDelete]
 Type: files; Name: "{app}\av*.dll"
 Type: files; Name: "{app}\sw*.dll"
+Type: files; Name: "{app}\*.old"
 Type: files; Name: "{code:GetDataFolder}\Image Uploader\Update\*.xml"
 Type: files; Name: "{code:GetDataFolder}\Image Uploader\Favicons\*"
 Type: files; Name: "{code:GetDataFolder}\Image Uploader\Scripts\*"
@@ -143,17 +142,11 @@ end;
 
 function GetIconFileName(Param: String): String;
 begin
-  if IsTaskSelected('newicon') then 
-    Result := ExpandConstant('{app}') + '\new-icon.ico'
-  else
     Result := ExpandConstant('{app}') + '\Image Uploader.exe'; 
 end;
 
 function GetAdditionalRunParameters(Param: String): String;
 begin
-  if IsTaskSelected('newicon') then 
-    Result := '/usenewicon'
-  else
     Result := '';
 end;
 
@@ -174,27 +167,9 @@ procedure  InitializeWizard;
   WelcomePage: TWizardPage; 
    BtnPanel: TPanel; 
 begin
-      ITD_Init;
+     ITD_Init;
      ITD_SetOption('UI_AllowContinue','1');
-       ITD_DownloadAfter(wpReady);
-         ExtractTemporaryFile('icon_compare.bmp')
-    if not IsWine then begin   
-
-      BtnImage:=TBitmapImage.Create(WelcomePage)
-      with BtnImage do begin
-        AutoSize:=True;
-       // Enabled:=False;
-        Bitmap.LoadFromFile(ExpandConstant('{tmp}')+'\icon_compare.bmp');
-        Top := ScaleY(120);
-        Width:= 202;
-        Height:= 71;
-        Parent:=WizardForm.TasksList;
-      end
-   end
-  
-     
-  
-  
+     ITD_DownloadAfter(wpReady);
 end;
 
 function PrepareToInstall(var NeedsRestart: Boolean): String;
@@ -232,9 +207,6 @@ begin
 
 
 end;
-  if (CurPageId = wpSelectTasks) and IsWine then begin
-       WizardForm.TasksList.ItemEnabled[WizardForm.TasksList.Items.Count-1] := false; // disable alternative icon on wine
-  end;
 end;
 
 

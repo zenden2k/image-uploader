@@ -49,7 +49,7 @@ protected:
 public:
    CProperty(LPCTSTR pstrName, LPARAM lParam) : m_fEnabled(true), m_lParam(lParam), m_hWndOwner(NULL)
    {
-      ATLASSERT(!::IsBadStringPtr(pstrName,-1));
+      ATLASSERT(!::IsBadStringPtr(pstrName, static_cast<UINT_PTR>(-1)));
       ATLTRY( m_pszName = new TCHAR[ (::lstrlen(pstrName) * sizeof(TCHAR)) + 1 ] );
       ATLASSERT(m_pszName);
       ::lstrcpy(m_pszName, pstrName);
@@ -74,7 +74,7 @@ public:
 
    virtual void SetEnabled(BOOL bEnable)
    {
-      m_fEnabled = (bEnable == TRUE);
+      m_fEnabled = (bEnable != FALSE);
    }
 
    virtual BOOL IsEnabled() const
@@ -781,7 +781,7 @@ public:
 
    void AddListItem(LPCTSTR pstrText)
    {
-      ATLASSERT(!::IsBadStringPtr(pstrText,-1));
+      ATLASSERT(!::IsBadStringPtr(pstrText, static_cast<UINT_PTR>(-1)));
       CComBSTR bstr(pstrText);
       m_arrList.Add(bstr);
       if( m_val.lVal < 0L ) m_val = 0L;

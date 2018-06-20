@@ -27,7 +27,7 @@
 // CStatusDlg
 CStatusDlg::CStatusDlg()
 {
-		
+        
 }
 
 CStatusDlg::~CStatusDlg()
@@ -36,59 +36,59 @@ CStatusDlg::~CStatusDlg()
 
 LRESULT CStatusDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	CenterWindow(GetParent());
-	m_bNeedStop = false;
-	SetTimer(1, 500);
-	TRC(IDCANCEL, "Остановить");
-	GuiTools::MakeLabelBold(GetDlgItem(IDC_TITLE));
-	return 1;  // Let the system set the focus
+    CenterWindow(GetParent());
+    m_bNeedStop = false;
+    SetTimer(1, 500);
+    TRC(IDCANCEL, "Stop");
+    GuiTools::MakeLabelBold(GetDlgItem(IDC_TITLE));
+    return 1;  // Let the system set the focus
 }
 
 LRESULT CStatusDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	Section2.Lock();
-	m_bNeedStop = true;
-	Section2.Unlock();
-	KillTimer(1);
-	
-	return 0;
+    Section2.Lock();
+    m_bNeedStop = true;
+    Section2.Unlock();
+    KillTimer(1);
+    
+    return 0;
 }
 
 void CStatusDlg::SetInfo(const CString& Title, const CString& Text)
 {
-	CriticalSection.Lock();
-	m_Title=Title;
-	m_Text = Text;
-	CriticalSection.Unlock();
+    CriticalSection.Lock();
+    m_Title=Title;
+    m_Text = Text;
+    CriticalSection.Unlock();
 }
 
 LRESULT CStatusDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	if(!IsWindowVisible() && !m_bNeedStop)
-		ShowWindow(SW_SHOW);
-	SetDlgItemText(IDC_TITLE, m_Title);
-	SetDlgItemText(IDC_TEXT, m_Text);
-	return 0;
+    if(!IsWindowVisible() && !m_bNeedStop)
+        ShowWindow(SW_SHOW);
+    SetDlgItemText(IDC_TITLE, m_Title);
+    SetDlgItemText(IDC_TEXT, m_Text);
+    return 0;
 }
 
 void CStatusDlg::SetWindowTitle(const CString& WindowTitle)
 {
-	CriticalSection.Lock();
-	SetWindowText(WindowTitle);
-	CriticalSection.Unlock();
+    CriticalSection.Lock();
+    SetWindowText(WindowTitle);
+    CriticalSection.Unlock();
 }
 
 bool CStatusDlg::NeedStop()
 {
-	Section2.Lock();
-	bool res = m_bNeedStop;
-	Section2.Unlock();
-	return res;
+    Section2.Lock();
+    bool res = m_bNeedStop;
+    Section2.Unlock();
+    return res;
 }
 
 void CStatusDlg::Hide()
 {
-	KillTimer(1);
-	ShowWindow(SW_HIDE);
-	m_bNeedStop = false;
+    KillTimer(1);
+    ShowWindow(SW_HIDE);
+    m_bNeedStop = false;
 }

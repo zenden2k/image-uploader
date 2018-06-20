@@ -1,54 +1,115 @@
 // ServerListTool.cpp : main source file for ServerListTool.exe
 //
 
-#include "resource.h"
 #include "MainDlg.h"
-#include <3rdpart/GdiPlusH.h>
+#include "atlheaders.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Func/Common.h"
-#include <Func/IuCommonFunctions.h>
-#include <Core/Logging.h>
-#include <Func/MyLogSink.h>
-#include <Func/WinUtils.h>
+#include "Func/IuCommonFunctions.h"
+#include "Core/Logging.h"
+#include "Core/Logging/MyLogSink.h"
+#include "Func/WinUtils.h"
+#include <Func/DefaultLogger.h>
+#include <Func/DefaultUploadErrorHandler.h>
+#include <Gui/Dialogs/LogWindow.h>
+#include <Core/ServiceLocator.h>
+#include <Func/WtlScriptDialogProvider.h>
+#include <boost/locale/generator.hpp>
+#include <boost/filesystem/path.hpp>
+#include "Core/AppParams.h"
+#include "Core/Scripting/ScriptsManager.h"
+#include "Core/Settings.h"
+#include "Core/Upload/UploadManager.h"
+#include "Core/Upload/UploadEngineManager.h"
+
 CAppModule _Module;
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*lpstrCmdLine*/, int /*nCmdShow*/)
 {
-	FLAGS_logtostderr = true;
-	//google::SetLogDestination(google::GLOG_INFO,"d:/" );
+    // Create and install global locale
+    std::locale::global(boost::locale::generator().generate(""));
+    // Make boost.filesystem use it
+    boost::filesystem::path::imbue(std::locale());
+    //BOOL res = SetProcessDefaultLayout(LAYOUT_RTL);
 
-	google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
-	MyLogSink logSink;
-	google::AddLogSink(&logSink);
+#if defined(_WIN32) && !defined(NDEBUG)
+    // These global strings in GLOG are initially reserved with a small
+    // amount of storage space (16 bytes). Resizing the string larger than its
+    // initial size, after the _CrtMemCheckpoint call, can be reported as
+    // a memory leak.
+    // So for 'debug builds', where memory leak checking is performed,
+    // reserve a large enough space so the string will not be resized later.
+    // For these variables, _MAX_PATH should be fine.
+    FLAGS_log_dir.reserve(_MAX_PATH);  // comment out this line to trigger false memory leak
+    FLAGS_log_link.reserve(_MAX_PATH);
 
-	HRESULT hRes = ::CoInitialize(NULL);
-	// If you are running on NT 4.0 or higher you can use the following call instead to
-	// make the EXE free threaded. This means that calls come in on a random RPC thread.
-	//	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	ATLASSERT(SUCCEEDED(hRes));
+    // Enable memory dump from within VS.
+#endif
+    FLAGS_logtostderr = false;
+    FLAGS_alsologtostderr = true;
+    //google::SetLogDestination(google::GLOG_INFO,"d:/" );
+    DefaultLogger defaultLogger;
+    DefaultUploadErrorHandler uploadErrorHandler(&defaultLogger);
 
-	// this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
-	::DefWindowProc(NULL, 0, 0, 0L);
+    google::InitGoogleLogging(W2U(WinUtils::GetAppFileName()).c_str());
+    LogWindow.Create(0);
+    ServiceLocator* serviceLocator = ServiceLocator::instance();
+    serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
+    serviceLocator->setLogger(&defaultLogger);
+    MyLogSink logSink(&defaultLogger);
+    google::AddLogSink(&logSink);
+    WtlScriptDialogProvider dialogProvider;
+    serviceLocator->setDialogProvider(&dialogProvider);
+    serviceLocator->setTranslator(&Lang);
+    CMyEngineList engineList;
+    _EngineList = &engineList;
+    CString serversFileName = WinUtils::GetAppFolder() + "Data/" + _T("servers.xml");
+    if (!engineList.loadFromFile(serversFileName)) {
+        MessageBox(0, _T("Cannot load server list!"), 0, 0);
+        return false;
+    }
 
-	AtlInitCommonControls(ICC_BAR_CLASSES);   // add flags to support other controls
+    Settings.LoadSettings(W2U(WinUtils::GetAppFolder())+ "Data/", "settings.xml");
+   
+    Settings.setEngineList(_EngineList);
+    ServiceLocator::instance()->setEngineList(_EngineList);
+    ScriptsManager scriptsManager;
+    UploadEngineManager uploadEngineManager(_EngineList, &uploadErrorHandler);
+    uploadEngineManager.setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
+    UploadManager uploadManager(&uploadEngineManager, _EngineList, &scriptsManager, &uploadErrorHandler);
 
-	hRes = _Module.Init(NULL, hInstance);
-	ATLASSERT(SUCCEEDED(hRes));
+    IuCommonFunctions::CreateTempFolder();
 
-	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+    AppParams::instance()->setTempDirectory(W2U(IuCommonFunctions::IUTempFolder));
 
-	ULONG_PTR gdiplusToken;
-	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+    HRESULT hRes = ::CoInitialize(NULL);
+    // If you are running on NT 4.0 or higher you can use the following call instead to
+    // make the EXE free threaded. This means that calls come in on a random RPC thread.
+    //    HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
+    ATLASSERT(SUCCEEDED(hRes));
 
-	int nRet = 0;
-	// BLOCK: Run application
-	{
-		CMainDlg dlgMain;
-		nRet = dlgMain.DoModal();
-	}
+    // this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
+    ::DefWindowProc(NULL, 0, 0, 0L);
 
-	_Module.Term();
-	SquirrelVM::Shutdown();
-	::CoUninitialize();
-	IuCommonFunctions::ClearTempFolder(IuCommonFunctions::IUTempFolder);
-	return nRet;
+    AtlInitCommonControls(ICC_BAR_CLASSES);   // add flags to support other controls
+
+    hRes = _Module.Init(NULL, hInstance);
+    ATLASSERT(SUCCEEDED(hRes));
+
+    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+
+    ULONG_PTR gdiplusToken;
+    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
+    int nRet = 0;
+    // BLOCK: Run application
+    {
+        CMainDlg dlgMain(&uploadEngineManager, &uploadManager, &engineList);
+        nRet = dlgMain.DoModal(0);
+    }
+
+    _Module.Term();
+    ::CoUninitialize();
+    IuCommonFunctions::ClearTempFolder(IuCommonFunctions::IUTempFolder);
+    return nRet;
 }

@@ -180,8 +180,8 @@ string Pcre::replace(const string& piece, const string& with) {
        * to eat redundant parenteses, e.g. "((((1))))" returns the same
        * result as "((1))".
        */
-      _expression = "(" + _expression;
-      _expression=_expression + ")"; 
+        _expression = "(" + _expression;
+        _expression=_expression + ")"; 
     }
 
     _have_paren = true;
@@ -204,11 +204,11 @@ string Pcre::replace(const string& piece, const string& with) {
       use_with = _replace_vars(with);
 
       if(matched() && matches() >= 1) {
-	__pcredebug << "matches: " << matches() << endl;
-	int len = get_match_end() - get_match_start() + 1;
-	Replaced.replace(get_match_start(0), len, use_with);
-	bReplaced  = true;
-	iReplaced = 0;
+    __pcredebug << "matches: " << matches() << endl;
+    int len = get_match_end() - get_match_start() + 1;
+    Replaced.replace(get_match_start(0), len, use_with);
+    bReplaced  = true;
+    iReplaced = 0;
       }
     }
     else {
@@ -218,20 +218,20 @@ string Pcre::replace(const string& piece, const string& with) {
       // so let's initialize it first
       int match_pos = 0;
       while( search( Replaced, match_pos ) ) {
-	int len = 0;
+    int len = 0;
                                 
-	// here we need to resolve the vars certainly for every hit.
-	// could be different content sometimes!
-	use_with = _replace_vars(with);
+    // here we need to resolve the vars certainly for every hit.
+    // could be different content sometimes!
+    use_with = _replace_vars(with);
                                 
-	len = get_match_end() - get_match_start() + 1;
-	Replaced.replace(get_match_start(0), len, use_with);
+    len = get_match_end() - get_match_start() + 1;
+    Replaced.replace(get_match_start(0), len, use_with);
                                 
-	//# Next run should begin after the last char of the stuff we put in the text
-	match_pos = ( use_with.length() - len ) + get_match_end() + 1;
+    //# Next run should begin after the last char of the stuff we put in the text
+    match_pos = ( use_with.length() - len ) + get_match_end() + 1;
 
-	bReplaced  = true;
-	++iReplaced;
+    bReplaced  = true;
+    ++iReplaced;
       }
     }
   }
@@ -256,11 +256,11 @@ string Pcre::_replace_vars(const string& piece) {
   while ( dollar.search( with ) ) {
     // let's do some conversion first
     __pcredebug << "Pcre::dollar matched: " << piece << ". Match(0): " << dollar.get_match(0) << endl;
-    int iBracketIndex = atoi( dollar.get_match(0).data() );
-    string sBracketContent = get_match(iBracketIndex);
+    int iBracketIndex = atoi( dollar.get_match(1).data() );
+    string sBracketContent = get_match(iBracketIndex+1);
     
     // now we can splitt the stuff
-    string sSubSplit = "\\$" + dollar.get_match(0);
+    string sSubSplit = "\\$" + dollar.get_match(1);
     Pcre subsplit(sSubSplit);
                 
     // normally 2 (or more) parts, the one in front of and the other one after "$1"
@@ -269,9 +269,9 @@ string Pcre::_replace_vars(const string& piece) {
                 
     for(size_t pos=0; pos < splitted.size(); pos++) {
       if( pos == ( splitted.size() - 1 ) ) 
-	Replaced += splitted[pos];
+    Replaced += splitted[pos];
       else 
-	Replaced += splitted[pos] + sBracketContent;
+    Replaced += splitted[pos] + sBracketContent;
     }
     with = Replaced; // well, one part is done
   }
@@ -289,7 +289,7 @@ string Pcre::_replace_vars(const string& piece) {
  */
 void Pcre::Compile(int flags) {
   p_pcre       = pcre_compile((char *)_expression.c_str(), flags,
-			      (const char **)(&err_str), &erroffset, tables);
+                  (const char **)(&err_str), &erroffset, tables);
 
   if(p_pcre == NULL) {
     /* umh, that's odd, the parser should not fail at all */
@@ -358,16 +358,16 @@ bool Pcre::dosearch(const string& stuff, int OffSet){
     resultset = new vector<string>;
     const char **stringlist;
     did_match = true;
-    num_matches = num - 1;
+    num_matches = num /*- 1*/;
 
     __pcredebug << " - match with " << num_matches << " substrings" << endl;
 
     int res = pcre_get_substring_list((char *)stuff.c_str(), sub_vec, num, &stringlist);
     if(res == 0) {
       __pcredebug << "Pcre::dosearch(): matched substrings: " << endl;
-      for(int i=1; i<num; i++) {
-	__pcredebug << " " << string(stringlist[i]) << endl;
-	resultset->push_back(stringlist[i]);
+      for(int i=0; i<num; i++) {
+    __pcredebug << " " << string(stringlist[i]) << endl;
+    resultset->push_back(stringlist[i]);
       }
       pcre_free_substring_list(stringlist);
     }
@@ -394,7 +394,7 @@ vector<string> Pcre::_split(const string& piece, int limit, int start_offset, in
     if(case_t) {
       z = toupper(_expression[0]);
       for(size_t pos=0; pos < piece.length(); pos++) {
-	_piece += (char)toupper(piece[pos]);
+    _piece += (char)toupper(piece[pos]);
       }
     }
     else {
@@ -403,11 +403,11 @@ vector<string> Pcre::_split(const string& piece, int limit, int start_offset, in
     }
     for(size_t pos=0; pos<piece.length(); pos++) {
       if(_piece[pos] == z) {
-	Splitted.push_back(buffer);
-	buffer = "";
+    Splitted.push_back(buffer);
+    buffer = "";
       }
       else {
-	buffer += piece[pos];
+    buffer += piece[pos];
       }
     }
     if(buffer != "") {
@@ -433,35 +433,35 @@ vector<string> Pcre::_split(const string& piece, int limit, int start_offset, in
     int num_pieces=0, pos=0, piece_end = 0, piece_start = 0;
     for(;;) {
       if(search(piece, pos) == true) {
-	if(matches() > 0) {
-	  piece_end   = get_match_start(0) - 1;
-	  piece_start = pos;
-	  pos = piece_end + 1 + get_match_length(0);
-	  string junk(piece, piece_start, (piece_end - piece_start)+1);
-	  num_pieces++;
-	  if( (limit != 0 && num_pieces < limit) || limit == 0) {
-	    if( (start_offset != 0 && num_pieces >= start_offset) || start_offset == 0) {
-	      if( (end_offset != 0 && num_pieces <= end_offset) || end_offset == 0) {
-		/* we are within the allowed range, so just add the grab */
-		Splitted.push_back(junk);
-	      }
-	    }
-	  }
-	}
+    if(matches() > 0) {
+      piece_end   = get_match_start(0) - 1;
+      piece_start = pos;
+      pos = piece_end + 1 + get_match_length(0);
+      string junk(piece, piece_start, (piece_end - piece_start)+1);
+      num_pieces++;
+      if( (limit != 0 && num_pieces < limit) || limit == 0) {
+        if( (start_offset != 0 && num_pieces >= start_offset) || start_offset == 0) {
+          if( (end_offset != 0 && num_pieces <= end_offset) || end_offset == 0) {
+        /* we are within the allowed range, so just add the grab */
+        Splitted.push_back(junk);
+          }
+        }
+      }
+    }
       }
       else {
-	/* the rest of the string, there are no more delimiters */
-	string junk(piece, pos, (piece.length() - pos));
-	num_pieces++;
-	if( (limit != 0 && num_pieces < limit) || limit == 0) {
-	  if( (start_offset != 0 && num_pieces >= start_offset) || start_offset == 0) {
-	    if( (end_offset != 0 && num_pieces <= end_offset) || end_offset == 0) {
-	      /* we are within the allowed range, so just add the grab */
-	      Splitted.push_back(junk);
-	    }
-	  }
-	}
-	break;
+    /* the rest of the string, there are no more delimiters */
+    string junk(piece, pos, (piece.length() - pos));
+    num_pieces++;
+    if( (limit != 0 && num_pieces < limit) || limit == 0) {
+      if( (start_offset != 0 && num_pieces >= start_offset) || start_offset == 0) {
+        if( (end_offset != 0 && num_pieces <= end_offset) || end_offset == 0) {
+          /* we are within the allowed range, so just add the grab */
+          Splitted.push_back(junk);
+        }
+      }
+    }
+    break;
       }
     } // for()
   } // if(_expression.length()
@@ -518,9 +518,9 @@ Pcre::Pcre(const string& expression, const string& flags) {
     case 's': FLAG |= PCRE_DOTALL;                     break;
     case 'x': FLAG |= PCRE_EXTENDED;                   break;
 #ifdef PCRE_UCP
-	case 'u': FLAG |= PCRE_UTF8|PCRE_UCP;						break;
+    case 'u': FLAG |= PCRE_UTF8|PCRE_UCP;                        break;
 #else 
-	case 'u': FLAG |= PCRE_UTF8;						break;
+    case 'u': FLAG |= PCRE_UTF8;                        break;
 #endif
     case 'g':                         global_t = true; break;
     }

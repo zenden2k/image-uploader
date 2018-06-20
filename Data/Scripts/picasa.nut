@@ -1,5 +1,22 @@
 ﻿login <- ""; 
 
+function BeginLogin() {
+	try {
+		return Sync.beginAuth();
+	}
+	catch ( ex ) {
+	}
+	return false;
+}
+
+function EndLogin() {
+	try {
+		return Sync.endAuth();
+	} catch ( ex ) {
+		
+	}
+	return false;
+}
 
 function regex_simple(data,regStr,start)
 {
@@ -64,7 +81,7 @@ function getAuthorizationString() {
 	return tokenType + " " + token ;
 }
 
-function DoLogin() 
+function _DoLogin() 
 { 
 	local login = ServerParams.getParam("Login");
 	local scope = "https://picasaweb.google.com/data/";
@@ -119,7 +136,9 @@ function DoLogin()
 					tokenType = "";
 					return 0;
 				}
-			}
+			} else {
+                //return 0; <-- need to check this
+            }
 		} else {
 			return 1;
 		}
@@ -128,7 +147,7 @@ function DoLogin()
 	local url = "https://accounts.google.com/o/oauth2/auth?scope="+ nm.urlEncode(scope) +"&redirect_uri="+redirectUrl+"&response_type=code&"+ "client_id="+clientId;
 	openUrl(url);
 	
-	local confirmCode = inputBox("You need to need to sign in to your Google Picasa Web Albums account in web browser which just have opened and then copy confirmation code into the text field below. Please enter confirmation code:", "Image Uploader - Enter confirmation code");
+	local confirmCode = inputBox("You need to need to sign in to your Google Picasa Web Albums account in web browser which just have opened and then copy confirmation code into the text field below. Please enter the confirmation code:", "Image Uploader - Enter confirmation code");
 	
 	if ( confirmCode == "" ) {
 		print("Cannot authenticate without confirm code");
@@ -165,6 +184,16 @@ function DoLogin()
 	}
 	return 0;		
 } 
+
+function DoLogin() {
+	if (!BeginLogin() ) {
+		return false;
+	}
+	local res = _DoLogin();
+	
+	EndLogin();
+	return res;
+}
 
 function internal_parseAlbumList(data,list)
 {

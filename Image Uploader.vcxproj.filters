@@ -1,0 +1,1915 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Gui">
+      <UniqueIdentifier>{225a2d2e-bb51-4b70-a735-fcc059431520}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Gui\Dialogs">
+      <UniqueIdentifier>{8027b407-0e62-4a4b-bf69-41f7eb8eade9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Gui\Controls">
+      <UniqueIdentifier>{361a6c03-95e1-4c3c-ba7b-e95139cd6d23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Func">
+      <UniqueIdentifier>{176e1608-ad93-4818-96ef-32f6fa2dcce0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\3rdpart">
+      <UniqueIdentifier>{88369759-f951-4b59-ac2f-5e0aa3c204dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{13f3e748-7051-4a2e-afcd-769534495e48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Upload">
+      <UniqueIdentifier>{99071677-aa49-4afa-9e12-cc0bd3ad5686}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Network">
+      <UniqueIdentifier>{1f6eccce-83d3-41a0-a95a-e576a0461347}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Utils">
+      <UniqueIdentifier>{2365b068-075a-437e-b558-5ed4b726f814}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Images">
+      <UniqueIdentifier>{5ec00070-4a30-4881-b36b-1150663c4ba3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\3rdpart">
+      <UniqueIdentifier>{420271cc-d3cb-4af9-a480-3542d071bb04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\3rdpart\utf8">
+      <UniqueIdentifier>{343ce578-fe43-4e53-a0e7-17f3b16a75c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Video">
+      <UniqueIdentifier>{aaa18a2b-59e3-4b0c-9119-f7c4d3ef7046}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gui">
+      <UniqueIdentifier>{cd72d85c-0d00-46a3-be10-e6586dc6952f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gui\Controls">
+      <UniqueIdentifier>{4db79d77-cd93-46bb-b6f9-ceca4546d2ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Upload\Filters">
+      <UniqueIdentifier>{0a071e63-e048-429b-94f8-3023eaf3f3a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Scripting">
+      <UniqueIdentifier>{f7530024-d76d-4296-82b3-694fbe5bffcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Scripting\API">
+      <UniqueIdentifier>{1755a0c6-d9e3-49c5-b4bb-cfad5f183e83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gui\Components">
+      <UniqueIdentifier>{7deab3a3-a633-4576-b949-399c8b1b9fe2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Settings">
+      <UniqueIdentifier>{32cca66b-e1a6-4772-9371-37112cd13f97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Logging">
+      <UniqueIdentifier>{26e9922b-3105-48a7-bcf2-48f77455746d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\i18n">
+      <UniqueIdentifier>{5014a579-3d18-45d3-b174-50e54e7676ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Scripting\API\GumboBindings">
+      <UniqueIdentifier>{7e0fa242-a1be-43a1-9a76-7289ac9a20c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\3rdpart\GumboQuery">
+      <UniqueIdentifier>{174e6ece-c0ce-4b02-94d7-19a43aef2156}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ImageEditor">
+      <UniqueIdentifier>{5aba9f79-9f62-48a6-b822-f504f4fb38e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ImageEditor\Gui">
+      <UniqueIdentifier>{4f779f8f-d493-4333-b723-0717cccc7baf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ImageEditor\DrawingTools">
+      <UniqueIdentifier>{c032cdc2-e181-4f34-851e-3bcc711e5018}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\3rdpart\Func">
+      <UniqueIdentifier>{ba6120b1-ddf4-46f8-95a4-4c93dda6b03c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ImageEditor\Helpers">
+      <UniqueIdentifier>{5d8a63bc-8565-4e70-8a93-e5eb3ab311a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gui\Dialogs">
+      <UniqueIdentifier>{d9333f8a-6e39-4757-ba4d-18456eeda193}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\versioninfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\WizardCommon.h">
+      <Filter>Header Files\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\AboutDlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\AddFtpServerDialog.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\ConvertPresetDlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\FloatingWindow.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\GeneralSettings.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\HotkeyEditor.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\HotkeySettings.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\ImageDownloaderDlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\LangSelect.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\LoginDlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\LogoSettings.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\LogWindow.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\MainDlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\MediaInfoDlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\NewFolderDlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\RegionSelect.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\ResultsPanel.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\ResultsWindow.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\ScreenshotDlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\ScreenshotSettingsPage.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\ServerFolderSelect.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\ServerParamsDlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\ServerSelectDlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\SettingsDlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\SettingsPage.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\SizeExceed.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\statusdlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\TextViewDlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\TraySettings.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\UpdateDlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\UploadDlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\UploadSettings.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\UploadSettingsPage.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\VideoGrabber.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\VideoGrabberParams.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\WelcomeDlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\WizardDlg.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\CustomTreeControl.h">
+      <Filter>Header Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\DialogIndirect.h">
+      <Filter>Header Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\HistoryTreeView.h">
+      <Filter>Header Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\hyperlink.h">
+      <Filter>Header Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\HyperLinkControl.h">
+      <Filter>Header Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\LogListBox.h">
+      <Filter>Header Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\MyImage.h">
+      <Filter>Header Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\TabListBox.h">
+      <Filter>Header Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\ThumbsView.h">
+      <Filter>Header Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\Common.h">
+      <Filter>Header Files\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\HistoryManager.h">
+      <Filter>Header Files\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\LangClass.h">
+      <Filter>Header Files\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\MyUtils.h">
+      <Filter>Header Files\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\Settings.h">
+      <Filter>Header Files\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\UpdatePackage.h">
+      <Filter>Header Files\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\atlheaders.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\stdafx.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\3rdpart\MemberFunctionCallback.h">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\3rdpart\QColorQuantizer.h">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\3rdpart\vkCodes.h">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\AppParams.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\FileDownloader.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\OutputCodeGenerator.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\ScreenCapture.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\ServerListManager.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\SettingsManager.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\UploadEngineList.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\CommonTypes.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\DefaultUploadEngine.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\FileQueueUploader.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\FileUploadTask.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\FolderList.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\ScriptUploadEngine.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\UploadEngine.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\Uploader.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\UploadTask.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\UrlShorteningTask.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Network\NetworkClient.h">
+      <Filter>Source Files\Core\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utils\CoreTypes.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utils\CoreUtils.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utils\CryptoUtils.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utils\GlobalMutex.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utils\SimpleXml.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utils\Singleton.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utils\StringUtils.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utils\utils_unix.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utils\utils_win.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Images\ImageConverter.h">
+      <Filter>Source Files\Core\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Images\Thumbnail.h">
+      <Filter>Source Files\Core\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Images\Utils.h">
+      <Filter>Source Files\Core\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\dxerr.h">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\utf8\checked.h">
+      <Filter>Source Files\Core\3rdpart\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\utf8\core.h">
+      <Filter>Source Files\Core\3rdpart\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\utf8\unchecked.h">
+      <Filter>Source Files\Core\3rdpart\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Video\AbstractFrameGrabber.h">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Video\AbstractImage.h">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Video\AbstractVideoFrame.h">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Video\AvcodecFrameGrabber.h">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Video\DirectshowFrameGrabber.h">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Video\DirectShowUtil.h">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Video\GdiPlusImage.h">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Video\VideoGrabber.h">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Video\VideoUtils.h">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\GuiTools.h">
+      <Filter>Source Files\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\IconBitmapUtils.h">
+      <Filter>Source Files\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\AddDirectoryServerDIalog.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\ContextMenuItemDlg.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\DefaultServersSettings.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\HistoryWindow.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\ImageReuploaderDlg.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\InputDialog.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\IntegrationSettings.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\ShortenUrlDlg.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\ThumbEditor.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\ThumbSettingsPage.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\UploadParamsDlg.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\WebViewWindow.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\Browser.h">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\CustomEditControl.h">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\HistoryTreeControl.h">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\IconButton.h">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\PercentEdit.h">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\PictureExWnd.h">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\ServerSelectorControl.h">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\WTLBrowserView.h">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\ImageEditorConfigurationProvider.h">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\IuCommonFunctions.h">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\MyDataObject.h">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\MyDropSource.h">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\MyEngineList.h">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\SystemUtils.h">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\WebUtils.h">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\WinUtils.h">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\BasicTypes.h">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\Canvas.h">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\Document.h">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\DrawingElement.h">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\DrawingTool.h">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\InputBox.h">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\MovableElement.h">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\MovableElements.h">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\Region.h">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\resource.h">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\Gui\ColorsDelegate.h">
+      <Filter>Source Files\ImageEditor\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\Gui\ImageEditorView.h">
+      <Filter>Source Files\ImageEditor\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\Gui\ImageEditorWindow.h">
+      <Filter>Source Files\ImageEditor\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\Gui\InputBoxControl.h">
+      <Filter>Source Files\ImageEditor\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\Gui\TextParamsWindow.h">
+      <Filter>Source Files\ImageEditor\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\Gui\Toolbar.h">
+      <Filter>Source Files\ImageEditor\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\DrawingTools\AbstractDrawingTool.h">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\DrawingTools\BlurTool.h">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\DrawingTools\BrushTool.h">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\DrawingTools\ColorPickerTool.h">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\DrawingTools\CropTool.h">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\DrawingTools\MarkerTool.h">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\DrawingTools\MoveAndResizeTool.h">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\DrawingTools\PenTool.h">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\DrawingTools\SelectionTool.h">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\DrawingTools\TextTool.h">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\DrawingTools\VectorElementTool.h">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\UploadFilter.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\FileQueueUploaderPrivate.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\UploadResult.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\UploadSession.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\ServerProfile.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\UploadEngineManager.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\Filters\ImageConverterFilter.h">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\Filters\UrlShorteningFilter.h">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\UploadManager.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\CommonDefs.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\ServerSync.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\TempFileDeleter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\ResultsListView.h">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utils\EnumUtils.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\API\COMUtils.h">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\API\Functions.h">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\API\HtmlDocument.h">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\API\HtmlDocumentPrivate_win.h">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\API\HtmlElement.h">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\API\HtmlElementPrivate_win.h">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\API\Process.h">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\API\RegularExpression.h">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\API\ScriptAPI.h">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\API\UploadTaskWrappers.h">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\API\WebBrowser.h">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\API\WebBrowserPrivate_win.h">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\API\WebBrowserPrivateBase.h">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\Squirrelnc.h">
+      <Filter>Source Files\Core\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\ScriptsManager.h">
+      <Filter>Source Files\Core\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\Script.h">
+      <Filter>Source Files\Core\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\ThreadSync.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\Filters\UserFilter.h">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\UploadFilterScript.h">
+      <Filter>Source Files\Core\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Images\ImageConverterPrivateBase.h">
+      <Filter>Source Files\Core\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Images\ImageConverterPrivate_gdiplus.h">
+      <Filter>Source Files\Core\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Network\CurlShare.h">
+      <Filter>Source Files\Core\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\VideoGrabberPage.h">
+      <Filter>Header Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\htmlentities.h">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utils\TextUtils.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Components\NewStyleFolderDialog.h">
+      <Filter>Source Files\Gui\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Settings\BasicSettings.h">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Settings\CliSettings.h">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Settings\CommonGuiSettings.h">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Settings\QtGuiSettings.h">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Settings\WtlGuiSettings.h">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Settings.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Settings\EncodedPassword.h">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Settings\StringConvert.h">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\ServiceLocator.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\HistoryManager.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\LocalFileCache.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\UploadErrorHandler.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\DefaultUploadErrorHandler.h">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\ConsoleUploadErrorHandler.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Logging\Logger.h">
+      <Filter>Source Files\Core\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\DefaultLogger.h">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\DialogProvider.h">
+      <Filter>Source Files\Core\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\WtlScriptDialogProvider.h">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utils\DesktopUtils.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\CoreFunctions.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\i18n\Translator.h">
+      <Filter>Source Files\Core\i18n</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Logging.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\Filters\SizeExceedFilter.h">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Object.h">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Parser.h">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\QueryUtil.h">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Selection.h">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Selector.h">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\Node.h">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Scripting\API\GumboBingings\GumboDocument.h">
+      <Filter>Source Files\Core\Scripting\API\GumboBindings</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\3rdpart\GumboQuery\GQDocument.h">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Object.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utils\SystemUtils.h">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Logging\MyLogSink.h">
+      <Filter>Source Files\Core\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\ImageView.h">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\CmdLine.h">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\Library.h">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Func\GdiPlusInitializer.h">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageEditor\Helpers\FontEnumerator.h">
+      <Filter>Source Files\ImageEditor\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\ClearHistoryDlg.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\TaskDispatcher.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\FolderAddDlg.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Win7JumpList.h">
+      <Filter>Source Files\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\HwndScopedWrapper.h">
+      <Filter>Source Files\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\3rdpart\ShellPidl.h">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Network\INetworkClient.h">
+      <Filter>Source Files\Core\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Dialogs\SearchByImageDlg.h">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\SearchByImage.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\AdvancedUploadEngine.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Upload\MegaNzUploadEngine.h">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Components\NewStyleFileDialog.h">
+      <Filter>Source Files\Gui\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Components\MyFileDialog.h">
+      <Filter>Source Files\Gui\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\Components\OldStyleFileDialog.h">
+      <Filter>Source Files\Gui\Components</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Source\res\addition.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\shadows\bottomLeftShadow.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\shadows\bottomRightShadow.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\shadows\bottomShadow.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\Error.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\grabmovie.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-add.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-addfolder.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-clipboard.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-close.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-folder.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-freeform.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-info.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-link.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon-link.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon-link.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-link.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-region.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-reload.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon-reload.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-settings.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-settings2.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-user.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon-user.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-web.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-window.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon-windows.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon4.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon8.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ImageEditor\icon_add.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_add.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_additem.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon_additem.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_additional.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_bold.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ImageEditor\icon_bold.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_clipboard.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ImageEditor\icon_clipboard.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_delete.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon_deleteitem.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_deleteitem.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_down.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon_down.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_dropdown.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_dropdown_png.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_edit.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_folder2.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon_folder2.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon_folder2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_folder2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_history.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ImageEditor\icon_italic.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_italic.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_main.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_main.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon_main_new.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_main_new.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_save.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_save.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ImageEditor\icon_save.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_arrow.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_bluring_rectangle.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_brush.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_color_picker.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_crop.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_ellipse.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_filled_ellipse.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_filled_rectangle.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_filled_rounded_rectangle.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_line.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_marker.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ImageEditor\icon_tool_marker.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_move.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_pencil.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_rectangle.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_rounded_rectangle.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_selection.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_tool_text.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ImageEditor\icon_underline.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_underline.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_undo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon_up.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_up.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ImageEditor\icon_upload.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\ImageEditor\icon_upload.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_whitepage.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\images.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\imageuploader_wizard.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\imageuploader_wizard.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\shadows\leftShadow.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\new_icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\new_icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\shadows\png2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\shadows\rightShadow.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\screen.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\server.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\server_8bit.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\toolbar11.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\toolbar22.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\shadows\topLeftShadow.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\shadows\topLeftShadowSquare.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\shadows\topRightShadow.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\shadows\topRightShadowSquare.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\shadows\topShadow.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\TrackToolBar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\Warning.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\new-icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\new-icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon_main_old.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_main_old.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon_main_active.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_main_active.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon_help_dropdown_big.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Source\res\icon_help_dropdown_big.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Source\res\ImageEditor\colorpicker.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Source\res\SendToShlExt.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Source\res\progress.gif_" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Source\Image Uploader.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Image Uploader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\3rdpart\ColorButton.cpp">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\3rdpart\MemberFunctionCallback.cpp">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\3rdpart\QColorQuantizer.cpp">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\3rdpart\Registry.cpp">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\3rdpart\Unzipper.cpp">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\3rdpart\vkCodes.cpp">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\3rdpart\WinHotkeyCtrl.cpp">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\AppParams.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\FileDownloader.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\ScreenCapture.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\ServerListManager.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\SettingsManager.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\UploadEngineList.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\DefaultUploadEngine.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\FileQueueUploader.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\FileUploadTask.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\FolderList.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\ScriptUploadEngine.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\UploadEngine.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\Uploader.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\UploadTask.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\UrlShorteningTask.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Network\NetworkClient.cpp">
+      <Filter>Source Files\Core\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Utils\CoreUtils.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Utils\CryptoUtils.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Utils\GlobalMutex.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Utils\SimpleXml.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Utils\StringUtils.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Images\ImageConverter.cpp">
+      <Filter>Source Files\Core\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Images\Thumbnail.cpp">
+      <Filter>Source Files\Core\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Images\Utils.cpp">
+      <Filter>Source Files\Core\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\base64.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\CodePages.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\dxerr.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\parser.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\pcreplusplus.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\tinystr.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\tinyxml.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\tinyxmlerror.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\tinyxmlparser.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Video\AbstractFrameGrabber.cpp">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Video\AbstractImage.cpp">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Video\AbstractVideoFrame.cpp">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Video\AvcodecFrameGrabber.cpp">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Video\DirectshowFrameGrabber.cpp">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Video\DirectShowUtil.cpp">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Video\GdiPlusImage.cpp">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Video\VideoGrabber.cpp">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Video\VideoUtils.cpp">
+      <Filter>Source Files\Core\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\GuiTools.cpp">
+      <Filter>Source Files\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\IconBitmapUtils.cpp">
+      <Filter>Source Files\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\WizardCommon.cpp">
+      <Filter>Source Files\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\AboutDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\AddDirectoryServerDialog.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\AddFtpServerDialog.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\ContextMenuItemDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\ConvertPresetDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\DefaultServersSettings.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\FloatingWindow.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\GeneralSettings.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\HistoryWindow.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\HotkeyEditor.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\HotkeySettings.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\ImageDownloaderDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\ImageReuploaderDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\InputDialog.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\IntegrationSettings.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\LangSelect.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\LoginDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\LogoSettings.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\LogWindow.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\MainDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\MediaInfoDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\NewFolderDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\QuickSetupDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\RegionSelect.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\ResultsPanel.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\ResultsWindow.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\ScreenshotDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\ScreenshotSettingsPage.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\ServerFolderSelect.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\ServerParamsDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\SettingsDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\settingspage.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\ShortenUrlDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\SizeExceed.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\StatusDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\TextViewDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\ThumbEditor.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\ThumbSettingsPage.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\TraySettings.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\UpdateDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\UploadDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\UploadParamsDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\UploadSettings.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\UploadSettingsPage.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\VideoGrabberPage.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\VideoGrabberParams.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\WebViewWindow.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\WelcomeDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\WizardDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\CustomEditControl.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\HistoryTreeControl.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\HistoryTreeView.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\HyperLinkControl.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\IconButton.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\LogListBox.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\MyImage.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\PercentEdit.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\PictureExWnd.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\ServerSelectorControl.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\TabListBox.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\ThumbsView.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\WTLBrowserView.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\Common.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\ImageEditorConfigurationProvider.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\IuCommonFunctions.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\LangClass.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\MyDataObject.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\MyDropSource.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\MyEngineList.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\MyUtils.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\SystemUtils.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\UpdatePackage.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\WebUtils.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\WinUtils.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\Canvas.cpp">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\Document.cpp">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\DrawingElement.cpp">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\DrawingTool.cpp">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\MovableElement.cpp">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\MovableElements.cpp">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\Region.cpp">
+      <Filter>Source Files\ImageEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\Gui\ColorsDelegate.cpp">
+      <Filter>Source Files\ImageEditor\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\Gui\ImageEditorView.cpp">
+      <Filter>Source Files\ImageEditor\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\Gui\ImageEditorWindow.cpp">
+      <Filter>Source Files\ImageEditor\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\Gui\InputBoxControl.cpp">
+      <Filter>Source Files\ImageEditor\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\Gui\TextParamsWindow.cpp">
+      <Filter>Source Files\ImageEditor\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\Gui\Toolbar.cpp">
+      <Filter>Source Files\ImageEditor\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\DrawingTools\AbstractDrawingTool.cpp">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\DrawingTools\BlurTool.cpp">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\DrawingTools\BrushTool.cpp">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\DrawingTools\ColorPickerTool.cpp">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\DrawingTools\CropTool.cpp">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\DrawingTools\MarkerTool.cpp">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\DrawingTools\MoveAndResizeTool.cpp">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\DrawingTools\PenTool.cpp">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\DrawingTools\SelectionTool.cpp">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\DrawingTools\TextTool.cpp">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\DrawingTools\VectorElementTool.cpp">
+      <Filter>Source Files\ImageEditor\DrawingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\FileQueueUploaderPrivate.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\UploadSession.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\ServerProfile.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\UploadEngineManager.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\Filters\ImageConverterFilter.cpp">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\Filters\UrlShorteningFilter.cpp">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\UploadManager.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\ServerSync.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\ResultsListView.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\API\COMUtils.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\API\Functions.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\API\HtmlDocument.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\API\HtmlDocumentPrivate_win.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\API\HtmlElement.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\API\HtmlElementPrivate_win.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\API\Process.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\API\RegularExpression.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\API\ScriptAPI.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\API\UploadTaskWrappers.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\API\WebBrowser.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\API\WebBrowserPrivate_win.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\API\WebBrowserPrivateBase.cpp">
+      <Filter>Source Files\Core\Scripting\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\ScriptsManager.cpp">
+      <Filter>Source Files\Core\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\Script.cpp">
+      <Filter>Source Files\Core\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\ThreadSync.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\Filters\UserFilter.cpp">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\UploadFilterScript.cpp">
+      <Filter>Source Files\Core\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Images\ImageConverterPrivateBase.cpp">
+      <Filter>Source Files\Core\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Images\ImageConverterPrivate_gdiplus.cpp">
+      <Filter>Source Files\Core\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Network\CurlShare.cpp">
+      <Filter>Source Files\Core\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\htmlentities.cpp">
+      <Filter>Source Files\Core\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Utils\TextUtils.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Settings\BasicSettings.cpp">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Settings\CliSettings.cpp">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Settings\CommonGuiSettings.cpp">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Settings\WtlGuiSettings.cpp">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Settings\EncodedPassword.cpp">
+      <Filter>Source Files\Core\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\ServiceLocator.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\HistoryManager.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\LocalFileCache.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\DefaultUploadErrorHandler.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\ConsoleUploadErrorHandler.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\DefaultLogger.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\WtlScriptDialogProvider.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Utils\DesktopUtils.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\CoreFunctions.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Logging.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\Filters\SizeExceedFilter.cpp">
+      <Filter>Source Files\Core\Upload\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Object.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\QueryUtil.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Selection.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Selector.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\Node.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scripting\API\GumboBingings\GumboDocument.cpp">
+      <Filter>Source Files\Core\Scripting\API\GumboBindings</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\GQDocument.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\TempFileDeleter.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Object.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Utils\SystemUtils.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Logging\MyLogSink.cpp">
+      <Filter>Source Files\Core\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\3rdpart\GumboQuery\GQ_Parser.cpp">
+      <Filter>Source Files\Core\3rdpart\GumboQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\ImageView.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\MediaInfoHelper.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\CmdLine.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Func\GdiPlusInitializer.cpp">
+      <Filter>Source Files\3rdpart\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageEditor\Helpers\FontEnumerator.cpp">
+      <Filter>Source Files\ImageEditor\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\ClearHistoryDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\FolderAddDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Win7JumpList.cpp">
+      <Filter>Source Files\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\3rdpart\ShellPidl.cpp">
+      <Filter>Source Files\3rdpart</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Dialogs\SearchByImageDlg.cpp">
+      <Filter>Source Files\Gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\SearchByImage.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\AdvancedUploadEngine.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Upload\MegaNzUploadEngine.cpp">
+      <Filter>Source Files\Core\Upload</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Components\NewStyleFileDialog.cpp">
+      <Filter>Source Files\Gui\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Components\MyFileDialog.cpp">
+      <Filter>Source Files\Gui\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Components\OldStyleFileDialog.cpp">
+      <Filter>Source Files\Gui\Components</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="Source\res\image uploader.exe.manifest" />
+  </ItemGroup>
+</Project>

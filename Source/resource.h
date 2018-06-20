@@ -108,7 +108,9 @@
 #define IDD_TEXTPARAMSWINDOW            270
 #define IDI_ICON7                       271
 #define IDI_ICONDOWN                    271
+#define IDD_CLEARHISTORYDLG             271
 #define IDB_PNG2                        272
+#define IDD_SEARCHBYIMAGEDLG            272
 #define IDB_PNG3                        273
 #define IDB_DROPDOWNICONPNG             273
 #define IDB_TOO                         274
@@ -146,6 +148,10 @@
 #define IDB_PNG9                        302
 #define IDR_ICONMAINNEW                 302
 #define IDB_ICONCLIPBOARDPNG            303
+#define IDI_ICON8                       305
+#define IDI_ICON_MAIN_OLD               305
+#define IDI_ICONTRAYACTIVE              307
+#define IDI_ICON_HELP_DROPDOWN          308
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -159,6 +165,7 @@
 #define IDC_UPDATELISTVIEW              1002
 #define IDC_CONTEXTMENUITEMS            1002
 #define IDC_CONTEXTMENUITEMSLIST        1002
+#define IDC_UPLOADTABLE                 1002
 #define IDC_KEEPASIS                    1003
 #define IDC_KEEPPROPORTIONS             1004
 #define IDC_IMAGEWIDTH                  1005
@@ -204,6 +211,7 @@
 #define IDC_STARTUPLOADINGFROMSHELL     1027
 #define IDC_MIDDLEBUTTONCLICKCOMBO      1027
 #define IDC_USEOLDREGIONSCREENSHOTMETHOD 1027
+#define IDC_CHECKUPDATES                1027
 #define IDC_ADDFILESIZE                 1028
 #define IDC_RIGHTBUTTONCLICKCOMBO       1028
 #define IDC_SAVEPROPORTIONS2            1028
@@ -277,6 +285,7 @@
 #define IDC_MULTIPLEFILES               1043
 #define IDC_SOURCECODERADIO             1043
 #define IDC_PASSWORDEDITBOX             1043
+#define IDC_ALLTIMERADIO                1043
 #define IDC_RADIO2                      1044
 #define IDC_SAVEASONE                   1044
 #define IDC_HEIGHTRADIO                 1044
@@ -453,6 +462,7 @@
 #define IDC_CHECK3                      1185
 #define IDC_CASCADEDCONTEXTMENU         1185
 #define IDC_ADDSHADOW                   1185
+#define IDC_DEVELOPERMODE               1185
 #define IDC_LEFTBUTTONDOUBLECLICKLABEL  1186
 #define IDC_LEFTBUTTONCLICKLABEL        1187
 #define IDC_MIDDLEBUTTONCLICKLABEL      1188
@@ -489,7 +499,10 @@
 #define IDC_UPLOADBUFFERLABEL           1224
 #define IDC_UPLOADBUFFERSIZEEDIT        1225
 #define IDC_IMAGEDOWNLOADERTIP          1226
+#define IDC_THREADSCOUNTLABEL           1226
+#define IDC_MAXTHREADSLABEL             1226
 #define IDC_SCREENSHOTSAVINGPARAMS      1227
+#define IDC_MAXTHREADSEDIT              1227
 #define IDC_ALWAYSCOPYTOCLIPBOARD       1228
 #define IDC_RESULTSPLACEHOLDER          1229
 #define IDC_COLORSGROUP                 1230
@@ -514,6 +527,8 @@
 #define IDC_RESIZEPRESETSBUTTON         1255
 #define IDC_EDITPROFILE                 1256
 #define IDC_PROFILETOOBLARPLACEBUTTON   1257
+#define IDC_RESIZEPRESETSBUTTON2        1257
+#define IDC_SHORTENINGURLSERVERBUTTON   1257
 #define IDC_RESIZEMODECOMBO             1258
 #define IDC_SMARTCONVERTING             1259
 #define IDC_PROFILECOMBO                1260
@@ -521,6 +536,9 @@
 #define IDC_BUTTON1                     1263
 #define IDC_THUMBBACKGROUND             1263
 #define IDC_ADDITEM                     1263
+#define IDC_BROWSESCRIPTBUTTON          1263
+#define IDC_CLEARLOGBUTTON              1263
+#define IDC_CLEARHISTORYBTN             1263
 #define IDC_THUMBBACKGROUNDLABEL        1264
 #define IDC_DELETEITEM                  1264
 #define IDC_GOOGLECODELINK              1265
@@ -541,6 +559,8 @@
 #define IDC_REMEMBERIMAGESERVERSETTINGS 1272
 #define IDC_OPENSCREENSHOTINEDITORCHECKBOX 1272
 #define IDC_DROPVIDEOFILESTOTHELIST     1272
+#define IDC_SHORTENLINKSCHECKBOX        1272
+#define IDC_EXECUTESCRIPTCHECKBOX       1272
 #define IDC_VIDEOENGINECOMBO            1273
 #define IDC_CHECK5                      1273
 #define IDC_REMEMBERFILESERVERSETTINGS  1273
@@ -589,6 +609,8 @@
 #define IDC_EXPLORERINTEGRATION         1305
 #define IDC_URLSHORTENERPLACEHOLDER     1305
 #define IDC_PARAMETERSLABEL             1305
+#define IDC_DOLOGINLABEL2               1305
+#define IDC_SIGNUPLINK                  1305
 #define IDC_ACCOUNTINFO                 1306
 #define IDC_AUTHORLABEL                 1306
 #define IDC_EDIT                        1307
@@ -600,11 +622,18 @@
 #define IDC_FOLDERICON                  1310
 #define IDC_SAVE                        1310
 #define IDC_FOLDERLABEL                 1311
+#define IDC_SCRIPTFILENAMEEDIT          1311
 #define IDC_IMAGEPROCESSINGPARAMS       1312
+#define IDC_SAVESTATUSLABEL             1312
 #define IDC_SETTINGSBUTTONPLACEHOLDER   1313
+#define IDC_SERVERPLACEHOLDER           1313
 #define IDC_SETTINGSBUTTONPLACEHOLDER2  1314
+#define IDC_AUTHORNAMELABEL             1314
 #define IDC_DEFAULTSETTINGSCHECKBOX     1315
+#define IDC_RADIO3                      1315
+#define IDC_CURRENTMONTHRADIO           1315
 #define IDC_PROCESSIMAGESCHECKBOX       1316
+#define IDC_STATUSLABEL                 1316
 #define IDC_DEFAULTTHUMBSETTINGSCHECKBOX 1317
 #define IDC_THUMBTEMPLATECOMBOLABEL     1318
 #define IDC_THUMBTEMPLATECOMBO          1319
@@ -654,14 +683,28 @@
 #define ID_0_SAVEAS                     32802
 #define ID_0_EDITINEXTERNALEDITOR       32803
 #define IDM_EDITINEXTERNALEDITOR        32804
+#define ID_Menu32805                    32805
+#define ID__DATA                        32806
+#define ID__DATA32807                   32807
+#define ID_0_                           32808
+#define IDM_COPYFILEPATH                32809
+#define ID_0_EXTRACTFRAMES              32810
+#define IDM_EXTRACTFRAMES               32811
+#define ID_Menu32812                    32812
+#define IDM_OPENINDEFAULTVIEWER         32813
+#define ID_0_32814                      32814
+#define IDM_PRINT                       32815
+#define ID_Menu32816                    32816
+#define ID_SEARCHBYIMGITEM              32817
+#define IDM_SEARCHBYIMGITEM             32818
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        304
-#define _APS_NEXT_COMMAND_VALUE         32805
-#define _APS_NEXT_CONTROL_VALUE         1311
+#define _APS_NEXT_RESOURCE_VALUE        309
+#define _APS_NEXT_COMMAND_VALUE         32819
+#define _APS_NEXT_CONTROL_VALUE         1317
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

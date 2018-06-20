@@ -6,11 +6,21 @@
 #define UNICODE
 #define _UNICODE
 #endif
+//#define _WTL_USE_CSTRING
+#ifndef _WTL_NO_CSTRING
+#define _WTL_NO_CSTRING
+#endif
+#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 //#include <winsock2.h>
 #include <windows.h>
 #include <tchar.h>
 #include <ShellAPI.h>
+#include <atlstr.h>
 #include <atlbase.h>
 #include <atlapp.h>
 #include <atlwin.h>
@@ -25,6 +35,7 @@
 #include <atlcrack.h>
 #include "atlctrlx.h"
 #include "Func/LangClass.h"
+#include "Core/CommonDefs.h"
 
 typedef CAtlArray<CString> CStringList;
 #ifndef IU_SHELLEXT

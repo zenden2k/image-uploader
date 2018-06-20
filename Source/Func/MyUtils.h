@@ -26,25 +26,16 @@
 #include <stdlib.h>
 
 #include <string>
-#define APPNAME _T("Image Uploader")
+
 //#define VIDEO_DIALOG_FORMATS _T("Video files (avi, mpg, vob, wmv, flv, etc)\0*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;\0All files\0*.*\0\0")
-#define VIDEO_FORMATS _T("avi\0mpg\0mpeg\0vob\0divx\0flv\0wmv\0asf\0mkv\0mov\0ts\0mp2\0mp4\0")_T("3gp\0rm\0mpeg2ts\0\0")
+#define VIDEO_FORMATS _T("avi\0mpg\0mpeg\0vob\0divx\0flv\0wmv\0asf\0mkv\0mov\0ts\0mp2\0mp4\0") _T("3gp\0rm\0mpeg2ts\0\0")
 #define IMAGE_DIALOG_FORMATS _T("Image files (JPEG, GIF, PNG, etc)\0*.jpg;*.gif;*.png;*.bmp;*.tiff\0All files\0*.*\0\0")
 
 #ifndef IU_SHELLEXT
 const CString StringSection(const CString& str,TCHAR sep, int index);
-std::wstring strtows(const std::string &str, UINT codePage);
-std::string wstostr(const std::wstring &ws, UINT codePage);
-#define WstrToUtf8(str) IuCoreUtils::WstringToUtf8(str)
-//wstostr(str, CP_UTF8)
-#define WCstringToUtf8(str) wstostr(((LPCTSTR)(str)), CP_UTF8)
-const std::wstring Utf8ToWstring(const std::string &str);
-#define Utf8ToWCstring(str) CString(Utf8ToWstring(str).c_str())
-const std::string AnsiToUtf8(const std::string &str, int codepage);
-const std::string Utf8ToAnsi(const std::string &str, int codepage);
 #endif
 
-#define xor(a,b) ((a || b) && !(a && b))	
+#define xor(a,b) ((a || b) && !(a && b))    
 
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
 
@@ -68,43 +59,33 @@ int GetFontSizeInTwips(int nFontSize);
 const CString myExtractFileName(const CString & FileName);
 
 LPCTSTR GetFileExt(LPCTSTR szFileName);
-bool IsImage(LPCTSTR szFileName);
-bool IsVideoFile(LPCTSTR szFileName);
 
-const CString GetOnlyFileName(const CString& szFilename);
+bool IsVideoFile(LPCTSTR szFileName);
 bool ReadSetting(LPTSTR szSettingName,int* Value,int DefaultValue,LPTSTR szString=NULL,LPTSTR szDefString=NULL);
 int GetSavingFormat(LPCTSTR szFileName);
-bool IsStrInList(LPCTSTR szExt,LPCTSTR szList);
 int MyGetFileSize(LPCTSTR FileName);
 
 LPTSTR fgetline(LPTSTR buf,int num,FILE *f);
-BOOL FileExists(LPCTSTR FileName);
 const CString TrimString(const CString& source, int nMaxLen);
 
-bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
-
 LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int nBufferSize);
-CString IntToStr(int n);
-
-
-CString DisplayError(int idCode);
 
 HFONT MakeFontUnderLine(HFONT font);
 HFONT MakeFontBold(HFONT font);
 LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern);
 
 //#ifdef DEBUG
-	void ShowX(LPCTSTR str,int line,int n);
+    void ShowX(LPCTSTR str,int line,int n);
 
-	void ShowX(LPCTSTR str,int line,float n);
-	void ShowX(LPCTSTR str,int line,LPCTSTR n);
-	#define ShowVar(n) ShowX(_T(#n),__LINE__,n)
+    void ShowX(LPCTSTR str,int line,float n);
+    void ShowX(LPCTSTR str,int line,LPCTSTR n);
+    #define ShowVar(n) ShowX(_T(#n),__LINE__,n)
 //#endif
 #ifndef IU_SHELLEXT
 
 
-#define PROP_OBJECT_PTR			MAKEINTATOM(ga.atom)
-#define PROP_ORIGINAL_PROC		MAKEINTATOM(ga.atom)
+#define PROP_OBJECT_PTR            MAKEINTATOM(ga.atom)
+#define PROP_ORIGINAL_PROC        MAKEINTATOM(ga.atom)
 
 /*
  * typedefs
@@ -112,13 +93,13 @@ LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern);
 class CGlobalAtom
 {
 public:
-	CGlobalAtom(void)
-	{ atom = GlobalAddAtom(TEXT("_Hyperlink_Object_Pointer_")
-	         TEXT("\\{AFEED740-CC6D-47c5-831D-9848FD916EEF}")); }
-	~CGlobalAtom(void)
-	{ DeleteAtom(atom); }
+    CGlobalAtom(void)
+    { atom = GlobalAddAtom(TEXT("_Hyperlink_Object_Pointer_")
+             TEXT("\\{AFEED740-CC6D-47c5-831D-9848FD916EEF}")); }
+    ~CGlobalAtom(void)
+    { DeleteAtom(atom); }
 
-	ATOM atom;
+    ATOM atom;
 };
 
 /*
@@ -128,8 +109,5 @@ static CGlobalAtom ga;
 #endif
 #endif
 
-bool IsDirectory(LPCTSTR szFileName);
-bool IsVista();
 
-FILE * fopen_utf8(const char * filename, const char * mode);
 bool CheckFileName(const CString& fileName);

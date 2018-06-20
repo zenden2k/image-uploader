@@ -20,134 +20,136 @@
 
 #include "GeneralSettings.h"
 
-#include <uxtheme.h>
-#include "Func/common.h"
-#include "Func/Settings.h"
+#include "Core/Settings.h"
 #include "LogWindow.h"
 #include "Gui/GuiTools.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
 // CGeneralSettings
 CGeneralSettings::CGeneralSettings()
 {
-	findfile = NULL;
+    findfile = NULL;
 }
 
 CGeneralSettings::~CGeneralSettings()
 {
 
 }
-	
+    
 int CGeneralSettings::GetNextLngFile(LPTSTR szBuffer, int nLength)
 {
-	*wfd.cFileName = 0;
-	
-	if(!findfile)
-	{
-		findfile = FindFirstFile(WinUtils::GetAppFolder() + "Lang\\*.lng", &wfd);
-		if(!findfile) goto error;
-	}
-	else if(!FindNextFile(findfile,&wfd)) goto error;
-	
-	int nLen = lstrlen(wfd.cFileName);
+    *wfd.cFileName = 0;
+    
+    if(!findfile)
+    {
+        findfile = FindFirstFile(WinUtils::GetAppFolder() + "Lang\\*.lng", &wfd);
+        if(!findfile) goto error;
+    }
+    else if(!FindNextFile(findfile,&wfd)) goto error;
+    
+    int nLen = lstrlen(wfd.cFileName);
 
-	if(!nLen) goto error;
+    if(!nLen) goto error;
 
-	lstrcpyn(szBuffer, wfd.cFileName, min(nLength, nLen+1));
+    lstrcpyn(szBuffer, wfd.cFileName, min(nLength, nLen+1));
 
-	return TRUE;
+    return TRUE;
 
-	error:  // File not found
-		if(findfile) FindClose(findfile);
-		return FALSE;
+    error:  // File not found
+        if(findfile) FindClose(findfile);
+        return FALSE;
 }
 
 LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	
-	// Translating controls
-	TRC(IDOK, "OK");
-	TRC(IDCANCEL, "Отмена");
-	TRC(IDC_CHANGESWILLBE, "Внимание: чтобы изменения в языке вступили в силу, программу необходимо перезапустить.");
-	TRC(IDC_LANGUAGELABEL, "Язык интерфейса:");
-	TRC(IDC_VIEWLOG, "Показать лог");
-	TRC(IDC_LOGGROUP, "Контроль ошибок");
-	TRC(IDC_IMAGEEDITLABEL, "Графический редактор:");
-	TRC(IDC_AUTOSHOWLOG, "Автоматически показывать окно лога в случае ошибок");
-	TRC(IDC_CONFIRMONEXIT, "Спрашивать подтверждение при выходе");
-	TRC(IDC_DROPVIDEOFILESTOTHELIST, "Добавлять видеофайлы в список после перетаскивания");
-	
-	SetDlgItemText(IDC_IMAGEEDITORPATH, Settings.ImageEditorPath);
-	
+    // Translating controls
+    TRC(IDC_CHANGESWILLBE, "Please note that program needs to be restarted for new language settings to take affect.");
+    TRC(IDC_LANGUAGELABEL, "Interface language:");
+    TRC(IDC_VIEWLOG, "Show Error Log");
+    TRC(IDC_LOGGROUP, "Error control");
+    TRC(IDC_IMAGEEDITLABEL, "Images editor:");
+    TRC(IDC_AUTOSHOWLOG, "Show automatically log window in case of error");
+    TRC(IDC_CONFIRMONEXIT, "Ask confirmation on exit");
+    TRC(IDC_DROPVIDEOFILESTOTHELIST, "Add video files to the list after Drag'n'Drop");
+    TRC(IDC_DEVELOPERMODE, "Developer mode");
+    TRC(IDC_CHECKUPDATES, "Automatically check for updates");
+    SetDlgItemText(IDC_IMAGEEDITORPATH, Settings.ImageEditorPath);
+    
 
-	TCHAR buf[MAX_PATH];
-	CString buf2;
+    TCHAR buf[MAX_PATH];
+    CString buf2;
 
-	SendDlgItemMessage(IDC_LANGLIST,CB_ADDSTRING,0,(WPARAM)_T("Русский"));
+    SendDlgItemMessage(IDC_LANGLIST,CB_ADDSTRING,0,(WPARAM)_T("English"));
 
-	while(GetNextLngFile(buf, sizeof(buf)/sizeof(TCHAR)))
-	{
-		if(lstrlen(buf) == 0 || lstrcmpi(GetFileExt(buf), _T("lng"))) continue;
-		buf2 = GetOnlyFileName(buf );
-		SendDlgItemMessage(IDC_LANGLIST,CB_ADDSTRING,0,(WPARAM)(LPCTSTR)buf2);
-	}
+    while(GetNextLngFile(buf, sizeof(buf)/sizeof(TCHAR)))
+    {
+        if(lstrlen(buf) == 0 || lstrcmpi(WinUtils::GetFileExt(buf), _T("lng"))) continue;
+        buf2 = WinUtils::GetOnlyFileName(buf );
+        if (buf2 == _T("English")) {
+            continue;
+        }
+        SendDlgItemMessage(IDC_LANGLIST,CB_ADDSTRING,0,(WPARAM)(LPCTSTR)buf2);
+    }
 
-	int Index = SendDlgItemMessage(IDC_LANGLIST,CB_FINDSTRING, 0, (WPARAM)(LPCTSTR)Settings.Language);
-	if(Index==-1) Index=0;
-	SendDlgItemMessage(IDC_LANGLIST,CB_SETCURSEL,Index);
+    int Index = SendDlgItemMessage(IDC_LANGLIST,CB_FINDSTRING, 0, (WPARAM)(LPCTSTR)Settings.Language);
+    if(Index==-1) Index=0;
+    SendDlgItemMessage(IDC_LANGLIST,CB_SETCURSEL,Index);
 
-	
-	SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_SETCHECK, Settings.ConfirmOnExit);
-	SendDlgItemMessage(IDC_AUTOSHOWLOG, BM_SETCHECK, Settings.AutoShowLog);
-	GuiTools::SetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST, Settings.DropVideoFilesToTheList);
-	
-	return 1;  // Let the system set the focus
+    
+    SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_SETCHECK, Settings.ConfirmOnExit);
+    SendDlgItemMessage(IDC_AUTOSHOWLOG, BM_SETCHECK, Settings.AutoShowLog);
+    GuiTools::SetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST, Settings.DropVideoFilesToTheList);
+    GuiTools::SetCheck(m_hWnd, IDC_DEVELOPERMODE, Settings.DeveloperMode);
+    GuiTools::SetCheck(m_hWnd, IDC_CHECKUPDATES, Settings.AutomaticallyCheckUpdates);
+    return 1;  // Let the system set the focus
 }
 
 LRESULT CGeneralSettings::OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	TCHAR Buf[MAX_PATH*4];
-	GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
-		CString(TR("Исполняемые файлы")),
-		_T("*.exe;*.com;*.bat;*.cmd;"),
-		TR("Все файлы"),
-		_T("*.*"));
+    TCHAR Buf[MAX_PATH*4];
+    GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
+        CString(TR("Executables")),
+        _T("*.exe;*.com;*.bat;*.cmd;"),
+        TR("All files"),
+        _T("*.*"));
 
-	CFileDialog fd(true, 0, 0, 4|2, Buf, m_hWnd);
-	CString s;
-	s = WinUtils::GetAppFolder();
-	fd.m_ofn.lpstrInitialDir = s;
-	if ( fd.DoModal() != IDOK || !fd.m_szFileName[0] ) return 0;
+    CFileDialog fd(true, 0, 0, 4|2, Buf, m_hWnd);
+    CString s;
+    s = WinUtils::GetAppFolder();
+    fd.m_ofn.lpstrInitialDir = s;
+    if ( fd.DoModal() != IDOK || !fd.m_szFileName[0] ) return 0;
 
-	CString FileName = CString(_T("\""))+ fd.m_szFileName + CString(_T("\""));
-	FileName += _T(" \"%1\"");
+    CString FileName = CString(_T("\""))+ fd.m_szFileName + CString(_T("\""));
+    FileName += _T(" \"%1\"");
 
-	SetDlgItemText(IDC_IMAGEEDITORPATH, FileName);
-	return 0;
+    SetDlgItemText(IDC_IMAGEEDITORPATH, FileName);
+    return 0;
 }
 
-	
+    
 bool CGeneralSettings::Apply()
 {
-	int Index = SendDlgItemMessage(IDC_LANGLIST, CB_GETCURSEL);
-	if(Index < 0) return 0;
-	
-	TCHAR szBuf[256];
-	SendDlgItemMessage(IDC_LANGLIST, CB_GETLBTEXT, Index, (WPARAM)szBuf);
-	Settings.Language = szBuf;
+    int Index = SendDlgItemMessage(IDC_LANGLIST, CB_GETCURSEL);
+    if(Index < 0) return 0;
+    
+    TCHAR szBuf[256];
+    SendDlgItemMessage(IDC_LANGLIST, CB_GETLBTEXT, Index, (WPARAM)szBuf);
+    Settings.Language = szBuf;
 
-	GetDlgItemText(IDC_IMAGEEDITORPATH, szBuf, 256);
-	Settings.ImageEditorPath = szBuf;
-	
-	Settings.AutoShowLog = SendDlgItemMessage(IDC_AUTOSHOWLOG,  BM_GETCHECK )==BST_CHECKED;
-	Settings.ConfirmOnExit = SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_GETCHECK)==BST_CHECKED;
-	Settings.DropVideoFilesToTheList = GuiTools::GetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST);
-	
-	return true;
+    GetDlgItemText(IDC_IMAGEEDITORPATH, szBuf, 256);
+    Settings.ImageEditorPath = szBuf;
+    
+    Settings.AutoShowLog = SendDlgItemMessage(IDC_AUTOSHOWLOG,  BM_GETCHECK )==BST_CHECKED;
+    Settings.ConfirmOnExit = SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_GETCHECK)==BST_CHECKED;
+    Settings.DropVideoFilesToTheList = GuiTools::GetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST);
+    GuiTools::GetCheck(m_hWnd, IDC_DEVELOPERMODE, Settings.DeveloperMode);
+    GuiTools::GetCheck(m_hWnd, IDC_CHECKUPDATES, Settings.AutomaticallyCheckUpdates);
+    
+    return true;
 }
 
 
 LRESULT CGeneralSettings::OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	LogWindow.Show();
-	return 0;
+    LogWindow.Show();
+    return 0;
 }

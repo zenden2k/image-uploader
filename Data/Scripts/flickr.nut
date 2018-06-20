@@ -8,6 +8,24 @@ authStep2Url <- "https://www.flickr.com/services/oauth/access_token";
 oauth_token_secret <- "";
 oauth_token <- "";
 
+function BeginLogin() {
+	try {
+		return Sync.beginAuth();
+	}
+	catch ( ex ) {
+	}
+	return true;
+}
+
+function EndLogin() {
+	try {
+		return Sync.endAuth();
+	} catch ( ex ) {
+		
+	}
+	return true;
+}
+
 function regex_simple(data,regStr,start)
 {
 	local ex = regexp(regStr);
@@ -21,7 +39,7 @@ function regex_simple(data,regStr,start)
 
 function generateNonce() {
 	local res = "";
-	res += format("%d%d%d", random(2000), random(2000), random(2000));
+	res += format("%d%d%d", random()%2000, random()%2000, random()%2000);
 	return res;
 }
 
@@ -164,7 +182,7 @@ function sendOauthRequest(method, url, params, token,tokenSecret) {
 	}
 	return 0;
 }
-function DoLogin() {
+function _DoLogin() {
 	oauth_token_secret = ServerParams.getParam("oauth_token_secret");
 	oauth_token = ServerParams.getParam("oauth_token");
 	
@@ -220,6 +238,15 @@ function DoLogin() {
 	return 0;
 }
 
+function DoLogin() {
+	if (!BeginLogin() ) {
+		return false;
+	}
+	local res = _DoLogin();
+	
+	EndLogin();
+	return res;
+}
 function isAuthorized() {
 	if ( oauth_token_secret != "" && oauth_token != "" ) {
 		return true;

@@ -1,95 +1,85 @@
-fileName <- "";
-siteRegexp <- CRegExp("http://imgbox.com/", "i");
-//afterUploadRegexp <- CRegExp("index\\.sema?.*sa=kod", "");
+baseUrl <- "https://imgbox.com";
 
-opt <- null;
-uploadResult <- 0;
-
-function OnLoadFinished(data) {
-	local doc = data.browser.document();
-	local rootEl = doc.rootElement();
-	/*if ( afterUploadRegexp.match(data.url) ) {
-		return;
-	} else*/ if ( siteRegexp.match(data.url ) ) {
-		local text = rootEl.getInnerText();
-		if ( text.find("Links Only",0) != null ) {
-			local bbcode = doc.getElementById("code-bb-thumb").getInnerText();
-			if ( !bbcode ) {
-				data.browser.close();
-			}
-			local reg = CRegExp("\\[url=(.+?)\\]\\[img\\](.*?)\\[\\/img\\]", "i");
-			if ( reg.match(bbcode) ) {
-				opt.setThumbUrl(reg.getMatch(1));
-				opt.setViewUrl(reg.getMatch(0));
-				data.browser.runJavaScript("tc('f');");
-				bbcode = doc.getElementById("code-bb-full").getInnerText();
-				local reg2 = CRegExp("\\[url=(.+?)\\]\\[img\\](.*?)\\[\\/img\\]", "i");
-				if ( reg2.match(bbcode) ) {
-					opt.setDirectUrl(reg2.getMatch(1));
-				}
-				uploadResult = 1;
-				data.browser.close();
-			}
-		} else {
-			local form = doc.getElementById("upload-form");
-			if ( !form.isNull() ) {
-				local formElements = form.getFormElements();
-				local fileInputSet = false;
-				for ( local i = 0; i < formElements.len(); i++ ) {
-					local name = formElements[i].getAttribute("name");
-					local type = formElements[i].getAttribute("type");
-					if ( type == "file" && !fileInputSet ) {
-						formElements[i].setValue(fileName);
-						fileInputSet = true;
-					}
-				}
-			} else {
-				//data.browser.close();
-			}
+function getRequiredData() {
+	nm.doGet(baseUrl);
+	local ret = {cookie="",token=""};
+	local sBody = nm.responseBody();
+	if (nm.responseCode() == 200) {
+		local sCookie = nm.responseHeaderByName("Set-Cookie");
+		ret["cookie"] = sCookie;
+		local re = CRegExp("content=\"(.+)\" name=\"csrf-token\"", "gim");
+		if (re.search(sBody)) {
+			local s = re.getMatch(1);
+			ret["token"] = s;
 		}	
 	}
-
+	return ret;
 }
 
-
-
-function OnFileInputFilledCallback(data) {
-	local doc = data.browser.document();
-	data.browser.runJavaScript( 
-	    "$('#dropdown-content-type').val(1);" // family same content
-        "$('#thumbnail-option').val('200c');"  // 200x200 
-	    "$('#gallery-option').val('3');"  // do not create new gallery
-	);
-	local submitBtn = doc.getElementById("fake-submit-button");
-	if ( submitBtn.isNull() ) {
-		data.browser.close();
-		return;
+function UploadFile(FileName, options) {
+	local reqData = getRequiredData();
+	local sImgboxCookie = reqData["cookie"];
+	local sCSRFToken = reqData["token"];
+	if (sImgboxCookie == "" || sCSRFToken == "") {
+		WriteLog("error", "Can not obtain cookie and token valuest, required by uploading process.");
+		return -1; //error, no cookie, no token :(
 	}
-	submitBtn.click();
-}
-
-function OnNavigateErrorCallback(data) {
-	data.browser.close();
-}
-
-function  UploadFile(FileName, options)
-{
-	uploadResult = 0;
-	opt = options;
-	fileName = FileName;
-	local webBrowser = CWebBrowser();
-	if ( webBrowser.getMajorVersion() < 8 ) {
-		WriteLog("error", "You need to install Internet Explorer 8 or later to upload to this server.");
-		return -1;
+	nm.setUrl(baseUrl+"/ajax/token/generate");
+	nm.addQueryHeader("X-CSRF-Token", sCSRFToken);
+	nm.addQueryHeader("Cookie", "request_method=GET; "+sImgboxCookie);
+	nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
+	nm.addQueryHeader("Host", "imgbox.com");
+	nm.addQueryHeader("Referer", "https://imgbox.com/");
+	nm.doPost("");
+	local sBody = nm.responseBody();
+	if (nm.responseCode() != 200) {
+		WriteLog("warning", "Server response code is "+nm.responseCode()+" at \"generate\" stage.");
+		return 0; //try again later
 	}
-	webBrowser.setSilent(true);
-	webBrowser.addTrustedSite("http://imgbox.com");
-	webBrowser.navigateToUrl("http://imgbox.com");
-	webBrowser.setOnLoadFinishedCallback(OnLoadFinished, null);
-	webBrowser.setOnFileInputFilledCallback(OnFileInputFilledCallback, null);
-	webBrowser.setOnNavigateErrorCallback(OnNavigateErrorCallback, null);
-
-	webBrowser.exec();
-	//webBrowser.showModal();
-	return uploadResult;
+	local json = ParseJSON(sBody);
+	if (json == null) {
+		WriteLog("error", "json cant be decoded at \"generate\" stage.");
+		return -1; //internal json parser fail
+	}
+	if (json.ok) {
+		local sTokenId = json.token_id;
+		local sTokenSecret = json.token_secret;
+		nm.setUrl(baseUrl+"/upload/process");
+		nm.addQueryHeader("X-CSRF-Token", sCSRFToken);
+		nm.addQueryHeader("Cookie", "request_method=POST; "+sImgboxCookie);
+		nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
+		nm.addQueryHeader("Host", "imgbox.com");
+		nm.addQueryHeader("Referer", "https://imgbox.com/");
+		
+		
+		nm.addQueryParam("token_id", sTokenId);
+		nm.addQueryParam("token_secret", sTokenSecret);
+		nm.addQueryParam("content_type", "1");
+		nm.addQueryParam("thumbnail_size", "200c");
+		nm.addQueryParam("gallery_id", "null");
+		nm.addQueryParam("gallery_secret", "null");
+		nm.addQueryParam("comments_enabled", "0");
+		
+		nm.addQueryParamFile("files[]", FileName, ExtractFileName(FileName),"");
+		nm.doUploadMultipartData();
+		if (nm.responseCode() != 200) {
+			WriteLog("warning", "Server response code is "+nm.responseCode()+" at \"upload\" stage.");
+			return 0; //try again later
+		}
+		
+		local sBody = nm.responseBody();
+		json = ParseJSON(sBody);
+		if (json == null) {
+			WriteLog("error", "json cant be decoded at \"upload\" stage.");
+			return -1; //internal json parser fail
+		}
+		local sView = json.files[0].original_url;
+		local sDirect = json.files[0].original_url;
+		local sTrumb = json.files[0].thumbnail_url;
+		
+		options.setThumbUrl(sTrumb);
+		options.setViewUrl(sView);
+		options.setDirectUrl(sDirect);
+		return 1;	
+	}	
 }

@@ -19,18 +19,23 @@
 */
 
 #include "SizeExceed.h"
-#include "atlheaders.h"
+
 #include "Func/common.h"
 #include "Core/Upload/UploadEngine.h"
-#include "Func/Settings.h"
-#include "Core/ScreenCapture.h"
+#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
+#include "Func/myutils.h"
+#include "Func/WinUtils.h"
+#include "Core/Upload/FileUploadTask.h"
+#include <Func/IuCommonFunctions.h>
 
 // CSizeExceed
-CSizeExceed::CSizeExceed(LPCTSTR szFileName, FullUploadProfile &iss, CMyEngineList * EngineList)
-: m_UploadProfile(iss), m_EngineList(EngineList), m_ImageSettings(iss.convert_profile)
+CSizeExceed::CSizeExceed(FileUploadTask * fileTask, CUploadEngineList * EngineList, UploadEngineManager* uploadEngineManager):
+        m_EngineList(EngineList)
 {
-	m_szFileName = szFileName;
+    fileTask_ = fileTask;
+    m_szFileName = U2W(fileTask->getFileName());
+    uploadEngineManager_ = uploadEngineManager;
 }
 
 CSizeExceed::~CSizeExceed()
@@ -39,145 +44,95 @@ CSizeExceed::~CSizeExceed()
 
 void CSizeExceed::Translate()
 {
-	TRC(IDC_WHATTODO, "Измените настройки изображения или выберите другой сервер, чтобы изображение могло быть загружено.");
-	TRC(IDC_IMAGESETTINGS, "Параметры изображения");
-	TRC(IDC_FORMATLABEL, "Формат:");
-	TRC(IDC_QUALITYLABEL, "Качество:");
-	TRC(IDC_RESIZEBYWIDTH, "Изменение ширины:");
-	TRC(IDC_SAVEPROPORTIONS, "Сохранять пропорции");
-	TRC(IDC_XLABEL, "и/или высоты:");
-	TRC(IDOK, "OK");
-	TRC(IDC_FORALL, "Для всех");
-	TRC(IDCANCEL, "Игнорировать");
-	TRC(IDC_SELECTSERVERLABEL, "Сервер для загрузки изображений:");
-	TRC(IDC_KEEPASIS, "Оставить без изменения");
-	SetWindowText(TR("Превышение размера"));
+    TRC(IDC_WHATTODO, "Change image processing settings or choose another server, so your image can be uploaded.");
+
+    TRC(IDOK, "OK");
+    TRC(IDC_FORALL, "To all");
+    TRC(IDCANCEL, "Ignore");
+    SetWindowText(TR("File size exceeding"));
 }
 
 LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	RECT rc = {12, 30, 162, 144};
-	img.Create(m_hWnd, rc);
-	img.LoadImage(m_szFileName);
+    RECT rc = {12, 30, 162, 144};
+    img.Create(m_hWnd, rc);
+    bool isImage = fileTask_->isImage() && IuCommonFunctions::IsImage(m_szFileName);
+    if (isImage) {
+        img.LoadImage(m_szFileName);
+    }
+    
+    CenterWindow(GetParent());
 
-	CenterWindow(GetParent());
-	for(int i=0; i<m_EngineList->count(); i++)
-	{	
-		CUploadEngineData * ue = m_EngineList->byIndex(i);
-		if ( ue->Type != CUploadEngineData::TypeImageServer && ue->Type != CUploadEngineData::TypeFileServer ) {
-			continue;
-		}
-		TCHAR buf[300]=_T(" ");
-		TCHAR buf2[50];
-		NewBytesToString(ue->MaxFileSize, buf2, 25);
-		wsprintf(buf, ue->MaxFileSize?_T(" %s   (%s)"):_T(" %s"), (LPCTSTR)Utf8ToWstring(ue->Name).c_str(),(LPCTSTR)buf2);
-		SendDlgItemMessage(IDC_SERVERLIST, CB_ADDSTRING, 0, (LPARAM)buf);
-	}
+    RECT serverSelectorRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_SERVERPLACEHOLDER);
+    imageServerSelector_.reset(new CServerSelectorControl(uploadEngineManager_, true));
+    imageServerSelector_->Create(m_hWnd, serverSelectorRect);
+    imageServerSelector_->setTitle(fileTask_->isImage() ? TR("Server for uploading images") : TR("Server for other file types"));
+    if (!fileTask_->isImage()) {
+        imageServerSelector_->setServersMask(CServerSelectorControl::smFileServers);
+    }
+    
+    imageServerSelector_->ShowWindow(SW_SHOW);
+    imageServerSelector_->SetWindowPos(0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, 
+                                        serverSelectorRect.bottom - serverSelectorRect.top, 0);
+    imageServerSelector_->setServerProfile(Settings.imageServer);
+    
+    CString serverName = U2W(fileTask_->serverProfile().serverName());
 
-	// Добавляем нужные форматы изображения(JPEG, PNG) в выпадающий список
-	SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)TR("Авто"));
-	SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("JPEG"));
-	SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("PNG"));
-	SendDlgItemMessage(IDC_FORMATLIST,CB_ADDSTRING,0,(LPARAM)_T("GIF"));
-	SendDlgItemMessage(IDC_QUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
-	
-	CString serverName= m_UploadProfile.upload_profile.serverName();
+    GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEEXCEEDNAME));
+    
+    int f = MyGetFileSize(m_szFileName);
+    WCHAR buf2[25];
+    WinUtils::NewBytesToString(f, buf2, 25);
 
-	int ServerID =  	_EngineList->GetUploadEngineIndex(serverName);
-	
-	SendDlgItemMessage(IDC_SERVERLIST,CB_SETCURSEL,ServerID);
+    CString name;
+    CString params; 
+    if (isImage) {
+        params.Format(_T(" %s (%dx%d, %s)"), static_cast<LPCTSTR>(myExtractFileName(m_szFileName)), img.ImageWidth, img.ImageHeight, static_cast<LPCTSTR>(buf2));
+    } else {
+        params.Format(_T(" %s (%s)"), static_cast<LPCTSTR>(myExtractFileName(m_szFileName)), static_cast<LPCTSTR>(buf2));
+    }
+   
+    name = TR("File") + params;
 
-	GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEEXCEEDNAME));
-	
-	int f = MyGetFileSize(m_szFileName);
-	WCHAR buf2[25];
-	NewBytesToString(f, buf2, 25);
+    SetDlgItemText(IDC_FILEEXCEEDNAME, name);
+    WinUtils::NewBytesToString(m_EngineList->byName(fileTask_->serverProfile().serverName())->MaxFileSize, buf2, 25);
 
-	TCHAR szBuf[1000];
-	wsprintf(szBuf,CString(TR("Файл"))+ _T(" %s (%dx%d, %s)"),(LPCTSTR)myExtractFileName(m_szFileName),(int)img.ImageWidth,(int)img.ImageHeight, (LPCTSTR)buf2 );
+    TCHAR szBuf[1000];
+    wsprintf(szBuf, TR("File exceeds filesize limit of \"%s\" server (%s)."),
+        static_cast<LPCTSTR>(U2W(fileTask_->serverProfile().serverName())), buf2);
+    SetDlgItemText(IDC_FILEEXCEEDSIZE2, szBuf);
+    Translate();
 
-	SetDlgItemText(IDC_FILEEXCEEDNAME, szBuf);
-	NewBytesToString(m_EngineList->byName( m_UploadProfile.upload_profile.serverName())->MaxFileSize, buf2, 25);
-
-	wsprintf(szBuf, TR("Файл превышает максимальный размер, допустимый для загрузки на сервер %s (%s)."),
-		Utf8ToWstring(m_EngineList->byIndex(ServerID)->Name).c_str(), buf2);
-	SetDlgItemText(IDC_FILEEXCEEDSIZE2, szBuf);
-	Translate();
-	DisplayParams();
-
-	return 1;  // Let the system set the focus
+    return 1;  // Let the system set the focus
 }
 
 LRESULT CSizeExceed::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	GetParams();
-	EndDialog(wID);
-	return 0;
+    std::string serverName = imageServerSelector_->serverProfile().serverName();
+    if (serverName.empty()) {
+        MessageBox(TR("You have not selected server!"), TR("Error"), MB_ICONERROR);
+        return 0;
+    } else if (!imageServerSelector_->isAccountChosen()) {
+        CString message;
+        message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(imageServerSelector_->serverProfile().serverName()).c_str());
+        MessageBox(message, TR("Error"), MB_ICONERROR);
+        return 0;
+    }
+
+    fileTask_->setServerProfile(imageServerSelector_->serverProfile());
+    EndDialog(wID);
+    return 0;
 }
 
 LRESULT CSizeExceed::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	EndDialog(wID);
-	return 0;
-}
-
-void CSizeExceed::DisplayParams(void)
-{
-    
-   SendDlgItemMessage(IDC_KEEPASIS, BM_SETCHECK, !m_UploadProfile.upload_profile.getImageUploadParams().ProcessImages);
-	
-
-		SetDlgItemText(IDC_IMAGEWIDTH, m_ImageSettings.strNewWidth);
-
-	
-		SetDlgItemText(IDC_IMAGEHEIGHT,m_ImageSettings.strNewHeight);
-
-	if(m_ImageSettings.Quality)
-		SetDlgItemInt(IDC_QUALITYEDIT,m_ImageSettings.Quality);
-	else
-		SetDlgItemText(IDC_QUALITYEDIT,_T(""));
-		
-	SendDlgItemMessage(IDC_SAVEPROPORTIONS,BM_SETCHECK,m_ImageSettings.SaveProportions);
-	SendDlgItemMessage(IDC_FORMATLIST,CB_SETCURSEL, m_ImageSettings.Format);
-
-	CString serverName= m_UploadProfile.upload_profile.serverName();
-
-	int ServerID =  	_EngineList->GetUploadEngineIndex(serverName);
-		
-	SendDlgItemMessage(IDC_SERVERLIST,CB_SETCURSEL, ServerID);
-	BOOL temp;
-	OnBnClickedKeepasis(0,0, 0, temp);
-}
-
-void CSizeExceed::GetParams()
-{
-	ImageUploadParams iup =  m_UploadProfile.upload_profile.getImageUploadParams();
-	iup.ProcessImages = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) != BST_CHECKED;
-	m_ImageSettings.strNewWidth= GuiTools::GetWindowText(GetDlgItem(IDC_IMAGEWIDTH));
-   m_ImageSettings.strNewHeight = GuiTools::GetWindowText(GetDlgItem(IDC_IMAGEHEIGHT));
-	m_ImageSettings.SaveProportions = IS_CHECKED(IDC_SAVEPROPORTIONS);
-	m_ImageSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
-	m_ImageSettings.Format = SendDlgItemMessage(IDC_FORMATLIST, CB_GETCURSEL);
-	int serverId = SendDlgItemMessage(IDC_SERVERLIST, CB_GETCURSEL, 0, 0);;
-	CUploadEngineData* ued = _EngineList->byIndex(serverId);
-	m_UploadProfile.upload_profile.setServerName(ued ? Utf8ToWCstring(ued->Name) : _T(""));
+    EndDialog(wID);
+    return 0;
 }
 
 LRESULT CSizeExceed::OnBnClickedForall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	GetParams();
-	EndDialog(3);
-	return 0;
-}
-
-LRESULT CSizeExceed::OnBnClickedKeepasis(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	BOOL checked = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0, 0);
-
-	for(int id=1004; id<1017; id++)
-		::EnableWindow(GetDlgItem(id), !checked);
-		
-	::EnableWindow(GetDlgItem(IDC_SAVEPROPORTIONS), !checked);
-
-	return 0;
+    fileTask_->setServerProfile(imageServerSelector_->serverProfile());
+    EndDialog(3);
+    return 0;
 }
