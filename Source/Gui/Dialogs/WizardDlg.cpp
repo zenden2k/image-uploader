@@ -1765,27 +1765,30 @@ bool CWizardDlg::funcDownloadImages()
 
 bool CWizardDlg::funcMediaInfo()
 {
-    TCHAR Buf[MAX_PATH*4]; //String buffer which will contain filter for CFileDialog
-    GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),3, 
-            CString(TR("Video files"))+ _T(" (avi, mpg, vob, wmv ...)"),
-        /*_T("*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;*.rm;")*/
-        Settings.prepareVideoDialogFilters(),
-        CString(TR("Audio files"))+ _T(" (mp3, wma, wav ...)"),
-        _T("*.mp3;*.wav;*.wma;*.mid;*.asx"),
-        
-        TR("All files"),
-        _T("*.*"));
+    MyFileDialogFactory factory;
+    IMyFileDialog::FileFilterArray filters = {
+        { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), Settings.prepareVideoDialogFilters(), },
+        { CString(TR("Audio files")) + _T(" (mp3, wma, wav ...)"), _T("*.mp3;*.wav;*.wma;*.mid;*.asx") },
+        { TR("All files"), _T("*.*") }
+    };
 
-    CFileDialog fd(true, 0, 0, 4 | 2 | OFN_FILEMUSTEXIST, Buf, m_hWnd);
-    fd.m_ofn.lpstrInitialDir = Settings.VideoFolder;
+    std::shared_ptr<IMyFileDialog> fileDlg = factory.createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose media file"), filters, false);
+    
+    if (fileDlg->DoModal(m_hWnd) != IDOK) {
+        return false;
+    }
 
-    if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return 0;
+    CString fileName = fileDlg->getFile();
+
+    if (fileName.IsEmpty() || !WinUtils::FileExists(fileName)) {
+        return false;
+    }
     TCHAR Buffer[512];
-    WinUtils::ExtractFilePath(fd.m_szFileName, Buffer);
+    WinUtils::ExtractFilePath(fileName, Buffer);
     Settings.VideoFolder = Buffer;
     CMediaInfoDlg dlg;
-    LastVideoFile = fd.m_szFileName;
-    dlg.ShowInfo(fd.m_szFileName);
+    LastVideoFile = fileName;
+    dlg.ShowInfo(fileName);
     return true;
 }
 

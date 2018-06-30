@@ -62,7 +62,12 @@ extern CLang Lang;
 #endif
 
 // Begin: translation macros
+#ifdef IU_TESTS
+#define TR(str) _T(str)
+#else
 #define TR(str) Lang.GetString(_T(str))
+#endif
+
 #ifdef NDEBUG
 #define TRC(c, str) SetDlgItemText(c, Lang.GetString(_T(str)))
 #else

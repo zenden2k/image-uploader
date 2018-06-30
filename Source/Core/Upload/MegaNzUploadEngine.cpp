@@ -138,15 +138,9 @@ int CMegaNzUploadEngine::getFolderList(CFolderList& FolderList) {
 
         for (int i = 0; i < list->size(); i++) {
             MegaNode *node = list->get(i);
-            if (node->isFile())
-                std::cout << "*****   File:   ";
-            else {
+            if (node->isFolder()) {
                 FolderList.AddFolder(node->getName(), "", std::string("/")+node->getName(), "/", 0);
             }
-
-
-            std::cout << node->getName() << std::endl;
-
         }
         delete list;
         delete root;

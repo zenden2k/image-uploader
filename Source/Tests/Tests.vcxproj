@@ -54,7 +54,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Source\boost\;$(SolutionDir)\Contrib\Include\gumbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;GOOGLE_GLOG_DLL_DECL=;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;PCRE_STATIC;_WTL_NO_CSTRING;CURL_STATICLIB;IU_NOWEBBROWSER;IU_TESTS;TIXML_USE_STL;SQTEST_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;GOOGLE_GLOG_DLL_DECL=;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;PCRE_STATIC;_WTL_NO_CSTRING;CURL_STATICLIB;IU_NOWEBBROWSER;IU_TESTS;TIXML_USE_STL;SQTEST_STATIC;ENABLE_SYNC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -65,7 +65,7 @@
       <AdditionalOptions>/MP$(NUMBER_OF_PROCESSORS) %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>gtestd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;zlibd.lib;minizip.lib;gdiplus.lib;strmbasd.lib;libcurl.lib;Ws2_32.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;dwmapi.lib;squirrel.lib;sqstdlib.lib;libeay32.lib;pcre.lib;wininet.lib;winmm.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;gumbo.lib;sqtest.lib;Winhttp.lib;base64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gtestd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;zlibd.lib;minizip.lib;gdiplus.lib;strmbasd.lib;libcurl.lib;Ws2_32.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;dwmapi.lib;squirrel.lib;sqstdlib.lib;libeay32.lib;pcre.lib;wininet.lib;winmm.lib;jsoncpp.lib;IPHLPAPI.lib;Secur32.lib;Netapi32.lib;libglog_static.lib;Oleacc.lib;gumbo.lib;sqtest.lib;Winhttp.lib;base64.lib;libwebpdecoder.lib;libwebpdemux.lib;mega.lib;cryptopp.lib;cares.lib;ssleay32.lib;libuv.lib;Userenv.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Debug;$(SolutionDir)Contrib\Lib\;$(SolutionDir)\Contrib\Source\boost\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
@@ -144,6 +144,7 @@
     <ClCompile Include="..\Core\TempFileDeleter.cpp" />
     <ClCompile Include="..\Core\ThreadSync.cpp" />
     <ClCompile Include="..\Core\UploadEngineList.cpp" />
+    <ClCompile Include="..\Core\Upload\AdvancedUploadEngine.cpp" />
     <ClCompile Include="..\Core\Upload\ConsoleUploadErrorHandler.cpp" />
     <ClCompile Include="..\Core\Upload\DefaultUploadEngine.cpp" />
     <ClCompile Include="..\Core\Upload\FileQueueUploader.cpp" />
@@ -152,6 +153,7 @@
     <ClCompile Include="..\Core\Upload\Filters\UrlShorteningFilter.cpp" />
     <ClCompile Include="..\Core\Upload\Filters\UserFilter.cpp" />
     <ClCompile Include="..\Core\Upload\FolderList.cpp" />
+    <ClCompile Include="..\Core\Upload\MegaNzUploadEngine.cpp" />
     <ClCompile Include="..\Core\Upload\ScriptUploadEngine.cpp" />
     <ClCompile Include="..\Core\Upload\ServerProfile.cpp" />
     <ClCompile Include="..\Core\Upload\ServerSync.cpp" />
@@ -194,6 +196,8 @@
     <ClInclude Include="..\Core\3rdpart\tinystr.h" />
     <ClInclude Include="..\Core\3rdpart\tinyxml.h" />
     <ClInclude Include="..\Core\Network\Tests\NetworkClientMock.h" />
+    <ClInclude Include="..\Core\Upload\AdvancedUploadEngine.h" />
+    <ClInclude Include="..\Core\Upload\MegaNzUploadEngine.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
