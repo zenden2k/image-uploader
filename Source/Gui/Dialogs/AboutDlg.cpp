@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2015 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -55,8 +55,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     m_EmailLink.SubclassWindow(GetDlgItem(IDC_AUTHORNAMELABEL));
     m_EmailLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
     m_EmailLink.SetLabel((Lang.GetLanguageName() == _T("Russian") ? U2W("\xD0\xA1\xD0\xB5\xD1\x80\xD0\xB3\xD0\xB5\xD0\xB9\x20\xD0\xA1\xD0\xB2\xD0\xB8\xD1\x81\xD1\x82\xD1\x83\xD0\xBD\xD0\xBE\xD0\xB2")
-        : _T("Sergey Svistunov")) + CString(_T(" (serjook@gmail.com)")));
-    m_EmailLink.SetHyperLink(_T("mailto:serjook@gmail.com"));
+        : _T("Sergey Svistunov")) + CString(_T(" (zenden2k@yandex.ru)")));
+    m_EmailLink.SetHyperLink(_T("mailto:zenden2k@yandex.ru"));
 
     m_Documentation.SubclassWindow(GetDlgItem(IDC_DOCUMENTATION));
     m_Documentation.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
