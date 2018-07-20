@@ -114,12 +114,12 @@
 		</Actions>
 		<Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="http://twitpic.com/show/thumb/$(ImageID)"/>
 	</Server>
-	<Server Name="imagevenue.com" Authorize="0">
+	<Server Name="imagevenue.com" Authorize="0" MaxFileSize="3145728" Debug="0">
 		<Actions>
 			<!--<Action Type="login" Url="http://users.imagevenue.com/process_logon.php" PostParams="user=$(_LOGIN);password=$(_PASSWORD);action=1"/>-->
-			<Action Type="upload" Url="http://imagevenue.com/upload.php" PostParams="userfile[]=%filename%;imgcontent=notsafe;MAX_FILE_SIZE=;action=1;img_resize=;" RegExp="&quot;http:\/\/(.*?)\.imagevenue\.com\/img\.php\?image=(.*?)&quot;([\s\S]*?)\[IMG\](.*?)\[\/IMG\]" AssignVars="ServID:0;Image:1;Thumb:3;"/>
+			<Action Type="upload" Url="http://imagevenue.com/upload.php" PostParams="userfile[]=%filename%;imgcontent=safe;MAX_FILE_SIZE=;action=1;img_resize=;" RegExp="\[URL=(.*?)\]\[IMG\](.*?)\[\/IMG\]" AssignVars="Image:0;Thumb:1;"/>
         </Actions>
-        <Result DownloadUrlTemplate="http://$(ServID).imagevenue.com/img.php?image=$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+        <Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
      </Server>
 	<!--<Server Name="pix.am"  Authorize="1" Debug="0">
 		<Actions>
@@ -386,6 +386,17 @@
 		<Result ImageUrlTemplate="stub"/>
 	</Server>
 	<Server Name="mega.nz" Authorize="2" Engine="MegaNz" FileHost="1" SupportsFolders="1" RegistrationUrl="https://mega.nz/register" MaxThreads="1">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
+    <Server Name="photoland.io" Authorize="0" Type="image" Plugin="photoland">
+		<Actions>
+		</Actions>
+        <!-- API не загружает в аккаунт -->
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
+    <Server Name="2i.cz" Authorize="0" Type="image" Plugin="2i">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>

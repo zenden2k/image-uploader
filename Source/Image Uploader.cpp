@@ -17,8 +17,7 @@
 */
 
   
-#include "atlheaders.h"
-#include <shellapi.h> 
+#include "atlheaders.h" 
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/wizarddlg.h"
 #include "Gui/Dialogs/floatingwindow.h"
@@ -31,7 +30,6 @@
 #include "Core/Upload/ScriptUploadEngine.h"
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
-
 #include "Core/ServiceLocator.h"
 #include "Func/DefaultUploadErrorHandler.h"
 #include "Func/DefaultLogger.h"
