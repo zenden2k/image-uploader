@@ -24,6 +24,7 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/CryptoUtils.h"
 
+#include <algorithm>
 #include <time.h>
 #include <sstream>
 #include "Utils/GlobalMutex.h"
@@ -96,11 +97,17 @@ void CHistorySession::loadFromXml(SimpleXmlNode& sessionNode)
         ht.deleteUrl = allEntries[i].Attribute("DeleteUrl");
         ht.displayName = allEntries[i].Attribute("DisplayName");
         ht.uploadFileSize = allEntries[i].AttributeInt64("UploadFileSize");
+        std::string sortIndex = allEntries[i].Attribute("Index");
+        ht.sortIndex = sortIndex.empty() ? i : std::stoi(sortIndex);
         if ( ht.uploadFileSize > 1000000000000 || ht.uploadFileSize < 0 ){
              ht.uploadFileSize  = 0;
         }
         m_entries.push_back(ht);
     }
+
+    std::sort(m_entries.begin(), m_entries.end(), [](const HistoryItem& lhs, const HistoryItem& rhs) {
+        return lhs.sortIndex < rhs.sortIndex;
+    });
 }
 
 int CHistorySession::entriesCount() const
@@ -167,12 +174,17 @@ bool CHistorySession::addItem(const HistoryItem &ht)
     entry.SetAttribute("TimeStamp", int(t));
     entry.SetAttribute("LocalFilePath", ht.localFilePath);
     entry.SetAttribute("ServerName", ht.serverName);
+    if (!ht.directUrlShortened.empty())
+        entry.SetAttribute("DirectUrlShortened", ht.directUrlShortened);
     if (!ht.directUrl.empty())
         entry.SetAttribute("DirectUrl", ht.directUrl);
+
     if(! ht.thumbUrl.empty())
         entry.SetAttribute("ThumbUrl", ht.thumbUrl);
     if(! ht.viewUrl.empty())
         entry.SetAttribute("ViewUrl", ht.viewUrl);
+    if (!ht.viewUrlShortened.empty())
+        entry.SetAttribute("ViewUrlShortened", ht.viewUrlShortened);
     entry.SetAttribute("UploadFileSize", ht.uploadFileSize);
 
     if (!ht.editUrl.empty())
@@ -182,6 +194,7 @@ bool CHistorySession::addItem(const HistoryItem &ht)
         entry.SetAttribute("DeleteUrl", ht.deleteUrl);
     if (!ht.displayName.empty())
         entry.SetAttribute("DisplayName", ht.displayName);
+    entry.SetAttributeInt("Index", ht.sortIndex);
 
     std::string dir = IuCoreUtils::ExtractFilePath(fileName);
     if(!IuCoreUtils::DirectoryExists(dir))

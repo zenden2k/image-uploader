@@ -159,12 +159,12 @@ void CResultsWindow::InitUpload()
 
 void CResultsWindow::Lock()
 {
-    ResultsPanel->UrlListCS.Lock();
+    ResultsPanel->UrlListCS.lock();
 }
 
 void CResultsWindow::Unlock()
 {
-    ResultsPanel->UrlListCS.Unlock();
+    ResultsPanel->UrlListCS.unlock();
 }
 
 void CResultsWindow::setUrlList(CAtlArray<CUrlListItem>  * urlList)

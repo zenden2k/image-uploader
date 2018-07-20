@@ -42,6 +42,7 @@ struct HistoryItem
     std::string serverName;
     time_t timeStamp;
     int64_t uploadFileSize;
+    int sortIndex;
     HistoryItem() {
         timeStamp = 0;
         uploadFileSize = 0;

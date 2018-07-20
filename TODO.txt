@@ -11,4 +11,3 @@ TODO before 1.3.2 release:
 
 - [LOW] Fix memory leaks in gumbo-query (when exception is thrown, e.g. invalid selector)
 - [LOW] Интересный баг: стандартный просмотрщик изображений не умеет листать картинки в temp папке. WTF ??
-- [LOW] Вместо окна печати в Windows XP открывается просмотрщик изображений

@@ -8,20 +8,22 @@ function UploadFile(FileName, options) {
     nm.addQueryParamFile("source", FileName, name, mime);
 	nm.doUploadMultipartData();
     
-	local sJSON = nm.responseBody();
-	local t = ParseJSON(sJSON);
-	if (t != null) {
-        if (t.status_code == 200){
-            options.setViewUrl(t.image.url_viewer );
-            options.setThumbUrl(t.image.thumb.url);
-            options.setDirectUrl(t.image.url);
-            return 1;
-        } else {
-            if(t.error!=null) {
-                WriteLog("error", "2i.cz: " + t.error.message);
+    if (nm.responseCode() > 0) {
+        local sJSON = nm.responseBody();
+        local t = ParseJSON(sJSON);
+        if (t != null) {
+            if (t.status_code == 200){
+                options.setViewUrl(t.image.url_viewer );
+                options.setThumbUrl(t.image.thumb.url);
+                options.setDirectUrl(t.image.url);
+                return 1;
+            } else {
+                if(t.error!=null) {
+                    WriteLog("error", "2i.cz: " + t.error.message);
+                }
             }
         }
-	} 
+    }        
     
     return 0;
 }

@@ -106,7 +106,7 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
     hi.editUrl = uploadResult->editUrl;
     hi.deleteUrl = uploadResult->deleteUrl;
     hi.displayName = fileTask->getDisplayName();
-
+    hi.sortIndex = fileTask->index();
     hi.uploadFileSize = fileTask->getDataLength();
     if (!hi.directUrl.empty())
     {

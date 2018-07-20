@@ -146,6 +146,7 @@ bool CUploadDlg::startUpload() {
         std::shared_ptr<FileUploadTask> task(new FileUploadTask(fileNameA, displayName));
         task->OnUploadProgress.bind(this, &CUploadDlg::onTaskUploadProgress);
         task->setUserData(fps);
+        task->setIndex(i);
         task->setIsImage(isImage);
         task->OnStatusChanged.bind(this, &CUploadDlg::OnUploaderStatusChanged);
         task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CUploadDlg::onTaskFinished));

@@ -76,6 +76,8 @@ class UploadTask {
         int pendingTasksCount(UploadTaskAcceptor* acceptor);
         void addChildTask(std::shared_ptr<UploadTask> child);
         int childCount();
+        int index() const;
+        void setIndex(int index); // sort index
         UploadResult* uploadResult();
         UploadProgress* progress();
         void addTaskFinishedCallback(const TaskFinishedCallback& callback);
@@ -139,6 +141,7 @@ class UploadTask {
         bool uploadSuccess_;
         Status status_;
         TempFileDeleter* tempFileDeleter_;
+        int index_;
 };    
 
 #endif

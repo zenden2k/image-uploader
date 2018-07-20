@@ -29,6 +29,7 @@ void UploadTask::init()
     currentUploadEngine_ = 0;
     tempFileDeleter_ = 0;
     uploadSuccess_ = false;
+    index_ = 0;
 }
 
 void UploadTask::childTaskFinished(UploadTask* child)
@@ -180,6 +181,14 @@ int UploadTask::childCount()
 {
     std::lock_guard<std::recursive_mutex> guard(tasksMutex_);
     return childTasks_.size();
+}
+
+int UploadTask::index() const {
+    return index_;
+}
+
+void UploadTask::setIndex(int index) {
+    index_ = index;
 }
 
 UploadResult* UploadTask::uploadResult()

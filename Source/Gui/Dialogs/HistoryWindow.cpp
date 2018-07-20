@@ -273,8 +273,11 @@ CUrlListItem fromHistoryItem(const HistoryItem& historyItem)
 {
     CUrlListItem it;
     it.ImageUrl = Utf8ToWstring(historyItem.directUrl).c_str();
+    it.ImageUrlShortened = Utf8ToWstring(historyItem.directUrlShortened).c_str();
     it.ThumbUrl =  Utf8ToWstring(historyItem.thumbUrl).c_str();
     it.DownloadUrl = Utf8ToWstring(historyItem.viewUrl).c_str();
+    it.DownloadUrlShortened = Utf8ToWstring(historyItem.viewUrlShortened).c_str();
+    it.FileName = Utf8ToWstring(historyItem.displayName).c_str();
     return it;
 }
 

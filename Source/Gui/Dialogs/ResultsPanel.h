@@ -27,6 +27,8 @@
 #include "Gui/WizardCommon.h"
 #include "3rdpart/thread.h"
 
+#include <mutex>
+
 #define IDC_OPTIONSMENU 10002
 #define IDC_USEDIRECTLINKS 10003
 #define IDC_SHORTENURLITEM 10004
@@ -75,6 +77,8 @@ class CResultsPanel :
 
     fastdelegate::FastDelegate1<bool> OnShortenUrlChanged;
     enum TabPage { kBbCode = 0, kHtml, kPlainText };
+    enum CodeType { ctTableOfThumbnails = 0, ctClickableThumbnails, ctImages, ctLinks };
+
 
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -90,6 +94,7 @@ class CResultsPanel :
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
     CToolBarCtrl Toolbar;
+    CComboBox codeTypeComboBox;
     void SetPage(TabPage Index);
     void setEngineList(CMyEngineList* EngineList);
     std::vector<CUrlListItem>  &UrlList;
@@ -108,6 +113,8 @@ class CResultsPanel :
     LRESULT OnShortenUrlClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     
     int GetCodeType();
+    void GenerateBBCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
+    void GenerateHTMLCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
     void UpdateOutput();
     void SetCodeType(int Index);
     void Clear();
@@ -120,7 +127,7 @@ class CResultsPanel :
     std::map<CString, CString> m_Vars;
     std::vector<ServerProfile> m_Servers;
     CString ReplaceVars(const CString& Text);
-    CAutoCriticalSection UrlListCS;
+    std::mutex UrlListCS;
     int m_nImgServer, m_nFileServer;
     void AddServer(ServerProfile server);
     RECT rectNeeded;
