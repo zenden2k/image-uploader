@@ -1023,6 +1023,8 @@ CScreenCaptureEngine::CScreenCaptureEngine()
     m_captureDelay = 0;
     capturedBitmapReleased_ = false;
     m_source = 0;
+    monitorMode_ = kAllMonitors;
+    monitor_ = NULL;
 }
 
 CScreenCaptureEngine::~CScreenCaptureEngine()
@@ -1034,17 +1036,36 @@ bool CScreenCaptureEngine::captureScreen()
 {
     CRect screenBounds;
     GetScreenBounds(screenBounds);
-    screenBounds.OffsetRect(-screenBounds.left, -screenBounds.top);
-    // int screenWidth = GetScreenWidth();//GetSystemMetrics(SM_CXSCREEN);
-    // int screenHeight = GetScreenWidth();//GetSystemMetrics(SM_CYSCREEN);
-    CRectRegion capturingRegion(screenBounds.left, screenBounds.top, screenBounds.right - screenBounds.left,
-                                screenBounds.bottom - screenBounds.top);
+   
+    CRect captureRect;
+
+    if (monitorMode_ != kAllMonitors) {
+        MONITORINFO mi;
+        memset(&mi, 0, sizeof(mi));
+        mi.cbSize = sizeof(mi);
+        if (!GetMonitorInfo(monitor_, &mi)) {
+            LOG(ERROR) << "Unable get info about monitor";
+            return false;
+        }
+        captureRect = mi.rcMonitor;
+        captureRect.OffsetRect(-screenBounds.left, -screenBounds.top);
+    } else {
+        captureRect = screenBounds;
+        captureRect.OffsetRect(-screenBounds.left, -screenBounds.top);
+    }
+
+    CRectRegion capturingRegion(captureRect.left, captureRect.top, captureRect.Width(), captureRect.Height());
     return captureRegion(&capturingRegion);
 }
 
 void CScreenCaptureEngine::setDelay(int msec)
 {
     m_captureDelay = msec;
+}
+
+void CScreenCaptureEngine::setMonitorMode(MonitorMode monitorMode, HMONITOR monitor) {
+    monitorMode_ = monitorMode;
+    monitor_ = monitor;
 }
 
 std::shared_ptr<Gdiplus::Bitmap> CScreenCaptureEngine::capturedBitmap()

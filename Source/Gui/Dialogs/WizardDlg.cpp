@@ -61,6 +61,7 @@
 #include "Gui/Win7JumpList.h"
 #include "Core/AppParams.h"
 #include "Gui/Components/MyFileDialog.h"
+#include <Core/ScreenCapture/Utils.h>
 
 using namespace Gdiplus;
 namespace
@@ -355,7 +356,7 @@ bool CWizardDlg::ParseCmdLine()
             ImageEditor::ImageEditorWindow imageEditor(imageFileName, &configProvider);
             imageEditor.showUploadButton(false);
             m_bShowWindow=false;
-            ImageEditorWindow::DialogResult dr = imageEditor.DoModal(m_hWnd, ImageEditorWindow::wdmAuto);
+            ImageEditorWindow::DialogResult dr = imageEditor.DoModal(m_hWnd, nullptr, ImageEditorWindow::wdmWindowed);
             if (dr == ImageEditorWindow::drCancel) {
                 PostQuitMessage(0);    
             } else if (dr != ImageEditorWindow::drCopiedToClipboard){
@@ -1929,6 +1930,22 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
     int WindowHidingDelay = (needToShow||m_bScreenshotFromTray==2)? Settings.ScreenshotSettings.WindowHidingDelay: 0;
     
     engine.setDelay(WindowHidingDelay);
+    MonitorMode monitorMode = static_cast<MonitorMode>(Settings.ScreenshotSettings.MonitorMode);
+    HMONITOR monitor = nullptr;
+    if (monitorMode == kCurrentMonitor) {
+        monitor = ::MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
+    } else if (monitorMode >= 0) {
+        MonitorEnumerator enumerator;
+        if (!enumerator.DoEnumDisplayMonitors(nullptr, nullptr)) {
+            return false;
+        }
+        MonitorEnumerator::MonitorInfo* monitorInfo = enumerator.getByIndex(monitorMode);
+        if (!monitorInfo) {
+            LOG(WARNING) << "Unable to find monitor #" << monitorMode;
+        }
+        monitor = monitorInfo->monitor;
+    }
+    engine.setMonitorMode(monitorMode, monitor);
     if(mode == cmFullScreen)
     {
         engine.setDelay(WindowHidingDelay + Settings.ScreenshotSettings.Delay*1000);
@@ -2011,7 +2028,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
             imageEditor.setServerName(Utf8ToWCstring(Settings.quickScreenshotServer.serverName()));
         }
         imageEditor.setSuggestedFileName(suggestingFileName);
-        dialogResult = imageEditor.DoModal(m_hWnd, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen ) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
+        dialogResult = imageEditor.DoModal(m_hWnd, monitor, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
         if ( dialogResult == ImageEditorWindow::drAddToWizard || dialogResult == ImageEditorWindow::drUpload ) {
             result = imageEditor.getResultingBitmap();
         } else {

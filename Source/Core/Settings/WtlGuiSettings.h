@@ -53,6 +53,7 @@ struct ScreenshotSettingsStruct {
     bool RemoveBackground;
     bool OpenInEditor; // only from screenshot dlg
     bool UseOldRegionScreenshotMethod;
+    int MonitorMode;
 };
 
 inline std::string myToString(const CHotkeyList& value) {

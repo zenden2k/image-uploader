@@ -194,8 +194,8 @@ LRESULT CImageEditorView::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
     }
     else
     {
-        ScreenPoint.x = LOWORD(lParam); 
-        ScreenPoint.y = HIWORD(lParam); 
+        ScreenPoint.x = GET_X_LPARAM(lParam); 
+        ScreenPoint.y = GET_Y_LPARAM(lParam); 
         ClientPoint = ScreenPoint;
         ::ScreenToClient(hwnd, &ClientPoint);
     }*/

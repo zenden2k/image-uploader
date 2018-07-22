@@ -49,12 +49,20 @@ Toolbar::~Toolbar()
 bool Toolbar::Create(HWND parent, bool child )
 {
     RECT rc = {0, 0, 1,1};
+
     if ( orientation_ == orHorizontal ) {
         rc.left = 60;
         rc.right = 70;
     } else {
         rc.top = 60;
         rc.bottom = 70;
+    }
+
+    // Move toolbars to the top left corner of parent window in fullscreen mode
+    if (!child) {
+        CRect parentRect;
+        ::GetWindowRect(parent, parentRect);
+        OffsetRect(&rc, parentRect.left, parentRect.top);
     }
     HWND wnd = TParent::Create(parent, rc, _T("test"), ( child ? WS_CHILD :WS_POPUP|WS_CLIPCHILDREN) ,child?0:( WS_EX_LAYERED|  WS_EX_NOACTIVATE|WS_EX_TOOLWINDOW) /*|WS_EX_TOOLWINDOW*/);
     if ( !wnd ) {

@@ -528,7 +528,8 @@ void CThumbsView::ViewSelectedImage()
     CImageViewItem imgViewItem;
     imgViewItem.index = nCurItem;
     imgViewItem.fileName = FileName;
-    ImageView.ViewImage(imgViewItem);
+    HWND wizardDlg = ::GetParent(GetParent());
+    ImageView.ViewImage(imgViewItem, wizardDlg);
     ImageView.setCallback(this);
 }
 

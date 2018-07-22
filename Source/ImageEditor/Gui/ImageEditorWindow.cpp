@@ -273,14 +273,14 @@ void ImageEditorWindow::setAskBeforeClose(bool ask)
     askBeforeClose_ = ask;
 }
 
-ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDisplayMode mode)
+ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR screenshotsMonitor, WindowDisplayMode mode)
 {
     if (currentDoc_->isNull()) {
         ::MessageBox(0, _T("Invalid image file."), APPNAME, MB_ICONERROR);
         return drCancel;
     }
-    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+    //int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    //int screenHeight = GetSystemMetrics(SM_CYSCREEN);
     //    displayMode_ = wdmWindowed;
 
     CRect displayBounds;
@@ -290,26 +290,45 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
     CDC hdc = ::GetDC(0);
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
-    int desiredClientWidth = currentDoc_->getWidth() + static_cast<int>(50 * dpiScaleX); // with toolbars
-    int desiredClientHeight = currentDoc_->getHeight() + static_cast<int>(50 * dpiScaleX);
+    int scrollbarWidth = GetSystemMetrics(SM_CXVSCROLL);
+    int scrollbarHeight = GetSystemMetrics(SM_CYVSCROLL);
+    int desiredClientWidth = currentDoc_->getWidth() + static_cast<int>(40 * dpiScaleX) + kCanvasMargin + scrollbarWidth; // with toolbars
+    int desiredClientHeight = currentDoc_->getHeight() + static_cast<int>(60 * dpiScaleY) + kCanvasMargin + scrollbarHeight;
     CRect rc(rcDefault);
     DWORD initialWindowStyle = WS_OVERLAPPED | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX |
         WS_MINIMIZEBOX | WS_CLIPCHILDREN;
-    if (Create(0, rc, _T("Image Editor"), initialWindowStyle, 0) == NULL) {
+    if (Create(parent, rc, _T("Image Editor"), initialWindowStyle, 0) == NULL) {
         LOG(ERROR) << "Main window creation failed!\n";
         return drCancel;
     }
 
-    if (mode == wdmAuto) {
-        RECT clientRect;
-        RECT windowRect;
-        GetClientRect(&clientRect);
-        GetWindowRect(&windowRect);
-        int paddingX = windowRect.right - windowRect.left - clientRect.right;
-        int paddingY = windowRect.bottom - windowRect.top - clientRect.bottom;
+    CRect workArea;
+    MONITORINFO mi;
+    mi.cbSize = sizeof(mi);
+    ::GetMonitorInfo(::MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
+    workArea = mi.rcWork;
 
-        if (desiredClientWidth + paddingX >= screenWidth &&   currentDoc_->getWidth() <= displayBounds.Width()
-            && desiredClientHeight + paddingY >= screenHeight &&   currentDoc_->getHeight() <= displayBounds.Height()) {
+    CRect screenshotMonitorBounds;
+    if (screenshotsMonitor) {
+        memset(&mi, 0, sizeof(mi));
+        mi.cbSize = sizeof(mi);
+        if (!GetMonitorInfo(screenshotsMonitor, &mi)) {
+            LOG(ERROR) << "Error getting information about monitor";
+        }
+        screenshotMonitorBounds = mi.rcMonitor;
+    }
+
+    if (mode == wdmAuto) {
+        /*CRect newClientRect(0, 0, desiredClientWidth, desiredClientHeight);
+        AdjustWindowRect(newClientRect, GetStyle(), false);*/
+
+        /*LOG(ERROR) << "NewClienRect ajusted =" << newClientRect.Width() << "x" << newClientRect.Height() << std::endl
+            
+            << " displayBounds = " << displayBounds.Width() << "x" << displayBounds.Height() << std::endl
+            << " currentDoc = " << currentDoc_->getWidth() << "x" << currentDoc_->getHeight();*/
+
+        // newClientRect.Width() >= workArea.Width()  || newClientRect.Height()  >= workArea.Height()
+        if ( currentDoc_->getWidth() == displayBounds.Width() &&  currentDoc_->getHeight() == displayBounds.Height()) {
             mode = wdmFullscreen;
         } else {
             mode = wdmWindowed;
@@ -326,7 +345,11 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
         SetWindowLong(GWL_EXSTYLE, WS_EX_TOPMOST);
         insertAfter = HWND_TOPMOST;
 #endif
-        SetWindowPos(insertAfter, displayBounds.left, displayBounds.top, displayBounds.right - displayBounds.left, displayBounds.bottom - displayBounds.top, 0);
+        if (screenshotsMonitor) {
+            SetWindowPos(insertAfter, screenshotMonitorBounds.left, screenshotMonitorBounds.top, screenshotMonitorBounds.right - screenshotMonitorBounds.left, screenshotMonitorBounds.bottom - screenshotMonitorBounds.top, 0);
+        } else {
+            SetWindowPos(insertAfter, displayBounds.left, displayBounds.top, displayBounds.right - displayBounds.left, displayBounds.bottom - displayBounds.top, 0);
+        }
     }
 
     if (displayMode_ == wdmWindowed) {
@@ -402,15 +425,23 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, WindowDi
     canvas_->setDrawingToolType(initialDrawingTool_);
     updateToolbarDrawingTool(initialDrawingTool_);
     if (displayMode_ == wdmWindowed) {
+        MONITORINFO mi;
+        mi.cbSize = sizeof(mi);
+        ::GetMonitorInfo(::MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
+        workArea = mi.rcWork;
         CRect newClientRect(0, 0, desiredClientWidth, desiredClientHeight);
         AdjustWindowRect(newClientRect, GetStyle(), false);
         int newWidth = max(static_cast<LONG>(500 * dpiScaleX), newClientRect.right - newClientRect.left);
         int newHeight = max(static_cast<LONG>(500 * dpiScaleY), newClientRect.bottom - newClientRect.top);
-        ResizeClient(newWidth, newHeight);
+        newWidth = std::min(newWidth, workArea.Width()-4);
+        newHeight= std::min(newHeight, workArea.Height()-4);
+
+        SetWindowPos(0, 0, 0, newWidth, newHeight, SWP_NOMOVE | SWP_NOZORDER);
+        //ResizeClient(newWidth, newHeight);
         CenterWindow(parent);
     }
     canvas_->updateView();
-
+    m_view.SetFocus();
     //displayMode_ = wdmWindowed;
     ShowWindow(SW_SHOW);
     SetForegroundWindow(m_hWnd);
@@ -745,7 +776,7 @@ void ImageEditorWindow::createToolbars()
     }
 
     if ( !verticalToolbar_.Create(m_hWnd, displayMode_ == wdmWindowed) ) {
-        LOG(ERROR) << "Failed to create horizontal toolbar";
+        LOG(ERROR) << "Failed to create vertical toolbar";
 
     }
     /* enum DrawingToolHotkey {kMoveKey = 'V', kBrushKey = 'B', kTextKey = 'T', kRectangleKey = 'U', kColorPickerKey = 'I', kCropKey = 'C', // photoshop keys

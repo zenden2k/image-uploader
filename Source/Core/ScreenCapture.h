@@ -25,11 +25,11 @@
 #include "Core/Utils/CoreTypes.h"
 #include "atlheaders.h"
 #include "3rdpart/GdiplusH.h"
-#include "Core/Utils/CoreTypes.h"
 
 HRGN GetWindowVisibleRegion(HWND wnd);
 
 enum CaptureMode {cmFullScreen, cmActiveWindow, cmRectangles, cmFreeform, cmWindowHandles };
+enum MonitorMode { kCurrentMonitor = -2, kAllMonitors = -1, kSelectedMonitor = 0 };
 
 class CScreenshotRegion
 {
@@ -134,6 +134,7 @@ class CScreenCaptureEngine
         void setSource(HBITMAP src);
         bool captureRegion(CScreenshotRegion* region);
         void setDelay(int msec);
+        void setMonitorMode(MonitorMode monitorMode, HMONITOR monitor = NULL);
         std::shared_ptr<Gdiplus::Bitmap> capturedBitmap();
         Gdiplus::Bitmap* releaseCapturedBitmap();
 
@@ -143,6 +144,8 @@ class CScreenCaptureEngine
         release_deleter<Gdiplus::Bitmap> capturedBitmapDeleter_;
         /*static */bool capturedBitmapReleased_;
         HBITMAP m_source;
+        MonitorMode monitorMode_;
+        HMONITOR monitor_;
         /*static*/ void capturedBitmapDeleteFunction(Gdiplus::Bitmap* bm);
 private:
     DISALLOW_COPY_AND_ASSIGN(CScreenCaptureEngine);

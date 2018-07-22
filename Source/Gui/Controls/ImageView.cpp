@@ -131,11 +131,11 @@ void CImageView::MyCenterWindow(HWND hWndCenter, int width, int height) {
     HWND hWndParent;
     if (!(dwStyle & WS_CHILD)) {
         // don't center against invisible or minimized windows
-        if (hWndCenter != NULL) {
+        /*if (hWndCenter != NULL) {
             DWORD dwStyleCenter = ::GetWindowLong(hWndCenter, GWL_STYLE);
             if (!(dwStyleCenter & WS_VISIBLE) || (dwStyleCenter & WS_MINIMIZE))
                 hWndCenter = NULL;
-        }
+        }*/
 
         // center within screen coordinates
         HMONITOR hMonitor = NULL;
@@ -147,14 +147,14 @@ void CImageView::MyCenterWindow(HWND hWndCenter, int width, int height) {
 
         MONITORINFO minfo;
         minfo.cbSize = sizeof(MONITORINFO);
-        BOOL bResult = ::GetMonitorInfo(hMonitor, &minfo);
+        ::GetMonitorInfo(hMonitor, &minfo);
 
         rcArea = minfo.rcWork;
 
-        if (hWndCenter == NULL)
+        //if (hWndCenter == NULL)
             rcCenter = rcArea;
-        else
-            ::GetWindowRect(hWndCenter, &rcCenter);
+        /*else
+            ::GetWindowRect(hWndCenter, &rcCenter);*/
     } else {
         // center within parent client coordinates
         hWndParent = ::GetParent(m_hWnd);

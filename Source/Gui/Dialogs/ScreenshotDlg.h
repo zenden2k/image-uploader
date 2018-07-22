@@ -79,9 +79,12 @@ class CScreenshotDlg :
         LRESULT OnClickedActiveWindowCapture(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnBnClickedRegionselect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         
+        static BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData);
+
         CBrush m_WhiteBr;
         CHyperLinkControl CommandBox;
         CaptureMode m_CaptureMode;
+        CComboBox m_monitorCombobox;
 };
 
 #endif // SCREENSHOTDLG_H

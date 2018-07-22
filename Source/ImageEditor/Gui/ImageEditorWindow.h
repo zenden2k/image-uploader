@@ -70,7 +70,7 @@ public:
     void setServerName(const CString & serverName);
     void setAskBeforeClose(bool ask);
 
-    DialogResult DoModal(HWND parent, WindowDisplayMode mode = wdmAuto);
+    DialogResult DoModal(HWND parent, HMONITOR screenshotsMonitor, WindowDisplayMode mode = wdmAuto);
 
     BEGIN_MSG_MAP(ImageEditorWindow)
         MESSAGE_HANDLER(WM_CREATE, OnCreate)

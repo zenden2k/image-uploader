@@ -370,6 +370,7 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
     ScreenshotSettings.RemoveBackground = false;
     ScreenshotSettings.OpenInEditor = true;
     ScreenshotSettings.UseOldRegionScreenshotMethod = false;
+    ScreenshotSettings.MonitorMode = -1/*kAllMonitors*/;
 
     TrayIconSettings.LeftClickCommand = 0; // without action
     TrayIconSettings.LeftDoubleClickCommand = 12;
@@ -721,6 +722,7 @@ void WtlGuiSettings::BindToManager() {
     screenshot.nm_bind(ScreenshotSettings, WindowHidingDelay);
     screenshot.nm_bind(ScreenshotSettings, OpenInEditor);
     screenshot.nm_bind(ScreenshotSettings, UseOldRegionScreenshotMethod);
+    screenshot.nm_bind(ScreenshotSettings, MonitorMode);
 
     SettingsNode& imageEditor = mgr_["ImageEditor"];
     imageEditor.nm_bind(ImageEditorSettings, ForegroundColor);

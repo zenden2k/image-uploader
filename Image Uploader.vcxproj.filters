@@ -103,6 +103,9 @@
     <Filter Include="Source Files\Gui\Dialogs">
       <UniqueIdentifier>{d9333f8a-6e39-4757-ba4d-18456eeda193}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core\ScreenCapture">
+      <UniqueIdentifier>{42e832e3-d48e-4cd5-9fa9-26539a30eec3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\resource.h">
@@ -863,6 +866,9 @@
     </ClInclude>
     <ClInclude Include="Source\Gui\Components\OldStyleFileDialog.h">
       <Filter>Source Files\Gui\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\ScreenCapture\Utils.h">
+      <Filter>Source Files\Core\ScreenCapture</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1907,6 +1913,9 @@
     </ClCompile>
     <ClCompile Include="Source\Gui\Components\OldStyleFileDialog.cpp">
       <Filter>Source Files\Gui\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\ScreenCapture\Utils.cpp">
+      <Filter>Source Files\Core\ScreenCapture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

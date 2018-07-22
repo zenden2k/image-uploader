@@ -23,6 +23,7 @@
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Func/MyUtils.h"
+#include "Core/ScreenCapture/Utils.h"
 
 // CScreenshotDlg
 CScreenshotDlg::CScreenshotDlg()
@@ -69,6 +70,56 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     SetDlgItemInt(IDC_DELAYEDIT, Settings.ScreenshotSettings.Delay);
     SendDlgItemMessage(IDC_DELAYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)30, (short)0) );
 
+    m_monitorCombobox.m_hWnd = GetDlgItem(IDC_MONITORSCOMBOBOX);
+    int itemIndex = -1;
+    int selectedIndex = 0;
+    
+    itemIndex = m_monitorCombobox.AddString(TR("Current monitor"));
+
+    if (itemIndex >= 0) {
+        m_monitorCombobox.SetItemData(itemIndex, static_cast<DWORD_PTR>(kCurrentMonitor));
+        if (Settings.ScreenshotSettings.MonitorMode == kCurrentMonitor) {
+            selectedIndex = itemIndex;
+        }
+    }
+
+    itemIndex =  m_monitorCombobox.AddString(TR("All monitors"));
+
+    if (itemIndex >= 0) {
+        m_monitorCombobox.SetItemData(itemIndex, static_cast<DWORD_PTR>(kAllMonitors));
+        if (Settings.ScreenshotSettings.MonitorMode == kAllMonitors) {
+            selectedIndex = itemIndex;
+        }
+    }
+
+
+    MonitorEnumerator enumerator;
+    int i = 0;
+
+    if (enumerator.DoEnumDisplayMonitors(0, 0)) {
+        
+        for (const MonitorEnumerator::MonitorInfo& monitor : enumerator) {
+            CString itemTitle;
+            itemTitle.Format(_T("%s %d (%dx%d)"), TR("Monitor"), i + 1, monitor.rect.Width(), monitor.rect.Height());
+            //
+            itemIndex = m_monitorCombobox.AddString(itemTitle);
+            if (itemIndex >= 0) {
+                m_monitorCombobox.SetItemData(itemIndex, static_cast<DWORD_PTR>(kSelectedMonitor + i));
+                if (Settings.ScreenshotSettings.MonitorMode == kSelectedMonitor + i) {
+                    selectedIndex = itemIndex;
+                }
+            }
+            i++;
+        }
+    }
+
+    m_monitorCombobox.SetCurSel(selectedIndex);
+
+    // Monitor count less than 2
+    if (i < 2) {
+        m_monitorCombobox.EnableWindow(FALSE);
+    }
+    
     return 0; 
 }
 
@@ -127,5 +178,18 @@ LRESULT CScreenshotDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 {
     Settings.ScreenshotSettings.OpenInEditor = GuiTools::GetCheck(m_hWnd, IDC_OPENSCREENSHOTINEDITORCHECKBOX);
     Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
+
+    int itemIndex = m_monitorCombobox.GetCurSel();
+    if (itemIndex >= 0) {
+        MonitorMode monitorMode = static_cast<MonitorMode>(m_monitorCombobox.GetItemData(itemIndex));
+        Settings.ScreenshotSettings.MonitorMode = static_cast<int>(monitorMode);
+    }
+    
     return 0;
+}
+
+BOOL CALLBACK CScreenshotDlg::MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+{
+    
+    return TRUE;
 }
