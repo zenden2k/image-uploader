@@ -1942,8 +1942,9 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
         MonitorEnumerator::MonitorInfo* monitorInfo = enumerator.getByIndex(monitorMode);
         if (!monitorInfo) {
             LOG(WARNING) << "Unable to find monitor #" << monitorMode;
+        } else {
+            monitor = monitorInfo->monitor;
         }
-        monitor = monitorInfo->monitor;
     }
     engine.setMonitorMode(monitorMode, monitor);
     if(mode == cmFullScreen)
