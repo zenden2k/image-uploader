@@ -35,7 +35,7 @@ function UploadFile(FileName, options) {
             nm.addQueryParamFile("file", FileName, file_name, "");
             nm.addQueryParam("commit", "Отправить");
             nm.doUploadMultipartData();
-            options.setDirectUrl(file_url);
+            options.setViewUrl(file_url);
             return 1;
         } else {
             return 0;

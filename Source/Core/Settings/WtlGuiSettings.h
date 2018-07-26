@@ -28,6 +28,7 @@ struct ImageEditorSettingsStruct {
     int RoundingRadius;
     LOGFONT Font;
     bool AllowAltTab;
+    bool AllowEditingInFullscreen;
 };
 
 struct TrayIconSettingsStruct {

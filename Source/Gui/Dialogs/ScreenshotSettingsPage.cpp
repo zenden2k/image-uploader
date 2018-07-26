@@ -60,6 +60,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     TRC(IDC_REMOVEBACKGROUND, "Clear window's background");
     TRC(IDC_AEROONLY, "Aero only (Windows Vista or later)");
     TRC(IDC_USEOLDREGIONSCREENSHOTMETHOD, "Use old method of rectangular area selection");
+    TRC(IDC_ALLOWFULLSCREENEDITORCHECK, "Allow editing images in fullscreen mode");
     
     SetDlgItemText(IDC_SCREENSHOTFILENAMEEDIT, Settings.ScreenshotSettings.FilenameTemplate);
 
@@ -92,6 +93,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     SetDlgItemInt(IDC_WINDOWHIDINGDELAY, Settings.ScreenshotSettings.WindowHidingDelay);
     SendDlgItemMessage(IDC_FORMATLIST, CB_SETCURSEL, Format, 0);
     GuiTools::SetCheck(m_hWnd, IDC_ALLOWALTTABINIMAGEEDITOR, Settings.ImageEditorSettings.AllowAltTab);
+    GuiTools::SetCheck(m_hWnd, IDC_ALLOWFULLSCREENEDITORCHECK, Settings.ImageEditorSettings.AllowEditingInFullscreen);
     bool isVista = WinUtils::IsVista();
     ::EnableWindow(GetDlgItem(IDC_AEROONLY), isVista);
     ::EnableWindow(GetDlgItem(IDC_REMOVECORNERS), isVista);
@@ -130,6 +132,7 @@ bool CScreenshotSettingsPagePage::Apply()
     Settings.ScreenshotSettings.RemoveBackground = SendDlgItemMessage(IDC_REMOVEBACKGROUND, BM_GETCHECK)!=0;
     Settings.ScreenshotSettings.UseOldRegionScreenshotMethod = GuiTools::GetCheck(m_hWnd, IDC_USEOLDREGIONSCREENSHOTMETHOD );
     Settings.ImageEditorSettings.AllowAltTab = GuiTools::GetCheck(m_hWnd, IDC_ALLOWALTTABINIMAGEEDITOR);
+    Settings.ImageEditorSettings.AllowEditingInFullscreen = GuiTools::GetCheck(m_hWnd, IDC_ALLOWFULLSCREENEDITORCHECK);
 
     return true;
 }

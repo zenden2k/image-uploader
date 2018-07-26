@@ -335,7 +335,8 @@ LRESULT CMainDlg::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
     imageEditor.showUploadButton(false);
     imageEditor.showAddToWizardButton(false);
     
-    /*ImageEditorWindow::DialogResult dr = */imageEditor.DoModal(WizardDlg->m_hWnd, nullptr, ImageEditorWindow::wdmWindowed);
+    /*ImageEditorWindow::DialogResult dr = */
+    imageEditor.DoModal(WizardDlg->m_hWnd, nullptr, Settings.ImageEditorSettings.AllowEditingInFullscreen ? ImageEditorWindow::wdmAuto :ImageEditorWindow::wdmWindowed);
     
     ThumbsView.OutDateThumb(nCurItem);
     ThumbsView.UpdateOutdated();

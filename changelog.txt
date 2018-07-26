@@ -1,6 +1,17 @@
 ﻿# Image Uploader changelog 
 #
-# hthttp://zenden2k.atwebpages.com/imageuploader
+# http://zenden2k.atwebpages.com/imageuploader
+
+1.3.2.4576
+[+] Added image hostings: photoland.io, 2i.cz
+[+] Added vk.cc URL shortener
+[+] Added monitor selection to screenshooting tool
+[f] Fixed upload to imagevenue.com, mirrorcreator.com
+[f] Fixed wrong positioning of image viewer on multiple monitors
+[f] Fixed wrong image editor's window size on multiple monitors
+[f] Image editor now is opening in windowed mode by default 
+[f] Fixed displaying of context menus on multiple monitors
+[f] Preserve file order in history
 
 1.3.2.4563
 [f] Fixed uploading to cubeupload.com

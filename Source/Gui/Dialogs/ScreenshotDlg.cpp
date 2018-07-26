@@ -116,7 +116,7 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     // Monitor count less than 2
     if (i < 2) {
         m_monitorCombobox.EnableWindow(FALSE);
-        m_monitorCombobox.SetCurSel(0);
+        m_monitorCombobox.SetCurSel(1);
     } else {
         m_monitorCombobox.SetCurSel(selectedIndex);
     }

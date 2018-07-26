@@ -385,6 +385,7 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
     ImageEditorSettings.PenSize = 12;
     ImageEditorSettings.RoundingRadius = ImageEditorSettings.PenSize;
     ImageEditorSettings.AllowAltTab = false;
+    ImageEditorSettings.AllowEditingInFullscreen = false;
     StringToFont(_T("Arial,12,b,204"), &ImageEditorSettings.Font);
 
     ImageReuploaderSettings.PasteHtmlOnCtrlV = true;
@@ -731,6 +732,7 @@ void WtlGuiSettings::BindToManager() {
     imageEditor.nm_bind(ImageEditorSettings, RoundingRadius);
     imageEditor.nm_bind(ImageEditorSettings, Font);
     imageEditor.nm_bind(ImageEditorSettings, AllowAltTab);
+    screenshot.nm_bind(ImageEditorSettings, AllowEditingInFullscreen);
     SettingsNode& image = mgr_["Image"];
     image["CurrentProfile"].bind(CurrentConvertProfileName);
     image.nm_bind(UploadProfile, KeepAsIs);

@@ -59,13 +59,13 @@ function  UploadFile(FileName, options)
 	local fid = format("%c%c%c%c%c%c", rand()%26+'A', rand()%26+'A', rand()%26+'A', rand()%26+'A', rand()%26+'A', rand()%26+'A');
 	local fsize = GetFileSize(FileName);
 	local fn = ExtractFileName(FileName);
-	local url = "http://www.mirrorcreator.com/fnvalidator.php?fn=" + fn + "%20(" + fsize + ");&fid=" + fid + ";"
+	local url = "https://www.mirrored.to/fnvalidator.php?fn=" + fn + "%20(" + fsize + ");&fid=" + fid + ";"
 	nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
 	nm.doGet(url);
 
 	local fnv = nm.responseBody();
 
-	nm.setUrl("http://www.mirrorcreator.com/uploadify/uploadify.php");
+	nm.setUrl("https://www.mirrored.to/uploadify/uploadify.php");
 	nm.addQueryHeader("X-Requested-With", "");
 	nm.addQueryHeader("User-Agent", "Shockwave Flash");
 	nm.addQueryParam("Filename", fn);
@@ -73,18 +73,26 @@ function  UploadFile(FileName, options)
 	nm.addQueryParamFile("Filedata", FileName,fn, "");
 	nm.addQueryParam("Upload","Submit Query");
 	nm.doUploadMultipartData();
-	local data = nm.responseBody();
+	
+    if (nm.responseCode()==200){
+        local data = nm.responseBody();
+        local fn2 = regex_simple(data, "\"fileName\":\\s*\"([^\"]+)\"", 0);
+        local pd = base64Encode( fn2 + "#0#"+fsize+";0;@e@#H#solidfiles;sendmyway;rghost;gett;turbobit;sharebeast;hugefiles;uptobox;filesfm;datafilehost;uppit;userscloud;#P##SC#" );
+        nm.addQueryHeader("User-Agent", "");
+        nm.doGet("https://www.mirrored.to/process.php?data=" + pd);
+        if (nm.responseCode() == 200) {
+            local data2 = nm.responseBody();
 
-	local fn2 = regex_simple(data, "\"fileName\":\\s*\"([^\"]+)\"", 0);
-	local pd = base64Encode( fn2 + "#0#"+fsize+";0;@e@#H#solidfiles;sendmyway;rghost;gett;turbobit;sharebeast;hugefiles;uptobox;filesfm;datafilehost;uppit;userscloud;#P##SC#" );
-	nm.addQueryHeader("User-Agent", "");
-	nm.doGet("http://www.mirrorcreator.com/process.php?data=" + pd);
-	local data2 = nm.responseBody();
+            url = regex_simple(data2, "(https://mir.cr/[0-9A-Z]+)", 0);
+            //url = regex_simple(data2, "\"(http://www.mirrorcreator.com/files/[^\"]+)\"", 0);
 
-	url = regex_simple(data2, "(http://mir.cr/[0-9A-Z]+)", 0);
-	//url = regex_simple(data2, "\"(http://www.mirrorcreator.com/files/[^\"]+)\"", 0);
+            if (url!="") {
+                options.setViewUrl(url);
+                return 1;
+            } 
+        }
 
-	options.setViewUrl(url);
+    }
 
-	return 1;
+	return 0;
 }

@@ -36,6 +36,7 @@
 #include "Core/Upload/FileUploadTask.h"
 #include "Func/myutils.h"
 #include "Gui/Dialogs/WizardDlg.h"
+#include <Core/ScreenCapture/Utils.h>
 
 // FloatingWindow
 CFloatingWindow::CFloatingWindow()
@@ -408,6 +409,38 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         MyInsertMenu(TrayMenu, i++, IDM_WINDOWHANDLESCREENSHOT, ShowHotkey("windowhandlescreenshot", TR("Capture Selected Object")));
         MyInsertMenu(TrayMenu, i++, IDM_FREEFORMSCREENSHOT, ShowHotkey("freeformscreenshot", TR("Freehand Capture")));
 
+        MonitorEnumerator enumerator;
+
+        if (enumerator.DoEnumDisplayMonitors(0, 0) && enumerator.getCount() > 1) {
+            CMenu MonitorsSubMenu;
+            MonitorsSubMenu.CreatePopupMenu();
+            MonitorsSubMenu.InsertMenu(0, MFT_STRING | MFT_RADIOCHECK | (Settings.ScreenshotSettings.MonitorMode == kAllMonitors ? MFS_CHECKED : 0),
+                IDM_MONITOR_ALLMONITORS, TR("All monitors"));
+            MonitorsSubMenu.InsertMenu(1, MFT_STRING | MFT_RADIOCHECK | (Settings.ScreenshotSettings.MonitorMode == kCurrentMonitor ? MFS_CHECKED : 0),
+                IDM_MONITOR_CURRENTMONITOR, TR("Current monitor"));
+            int j = 0;
+            for (const MonitorEnumerator::MonitorInfo& monitor : enumerator) {
+                CString itemTitle;
+                itemTitle.Format(_T("%s %d (%dx%d)"), TR("Monitor"), j + 1, monitor.rect.Width(), monitor.rect.Height());
+                bool isSelected = Settings.ScreenshotSettings.MonitorMode == kSelectedMonitor + j;
+                MonitorsSubMenu.InsertMenu(j + 2, MFT_STRING | MFT_RADIOCHECK | (isSelected ? MFS_CHECKED : 0),
+                    IDM_MONITOR_SELECTEDMONITOR_FIRST + j, itemTitle);
+                j++;
+                if (j >= IDM_MONITOR_SELECTEDMONITOR_LAST - IDM_MONITOR_SELECTEDMONITOR_FIRST) {
+                    break;
+                }
+            }
+            MENUITEMINFO monitorMenuItem;
+            monitorMenuItem.cbSize = sizeof(monitorMenuItem);
+            monitorMenuItem.fMask = MIIM_TYPE | MIIM_ID | MIIM_SUBMENU;
+            monitorMenuItem.fType = MFT_STRING;
+            monitorMenuItem.hSubMenu = MonitorsSubMenu;
+            monitorMenuItem.wID = 10001;
+            monitorMenuItem.dwTypeData = TR_CONST("Choose monitor");
+            TrayMenu.InsertMenuItem(i++, true, &monitorMenuItem);
+            MonitorsSubMenu.Detach();
+        }
+
         CMenu SubMenu;
         SubMenu.CreatePopupMenu();
         SubMenu.InsertMenu(
@@ -607,6 +640,22 @@ LRESULT CFloatingWindow::OnMediaInfo(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 LRESULT CFloatingWindow::OnTaskbarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     InstallIcon(APPNAME, m_hIconSmall, 0);
+    return 0;
+}
+
+LRESULT CFloatingWindow::OnMonitorAllMonitors(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    Settings.ScreenshotSettings.MonitorMode = kAllMonitors;
+    return 0;
+}
+
+LRESULT CFloatingWindow::OnMonitorCurrentMonitor(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    Settings.ScreenshotSettings.MonitorMode = kCurrentMonitor;
+    return 0;
+}
+
+LRESULT CFloatingWindow::OnMonitorSelectedMonitor(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    int monitorIndex = wID - IDM_MONITOR_SELECTEDMONITOR_FIRST;
+    Settings.ScreenshotSettings.MonitorMode = kSelectedMonitor + monitorIndex;
     return 0;
 }
 

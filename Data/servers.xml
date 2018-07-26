@@ -117,7 +117,7 @@
 	<Server Name="imagevenue.com" Authorize="0" MaxFileSize="3145728" Debug="0">
 		<Actions>
 			<!--<Action Type="login" Url="http://users.imagevenue.com/process_logon.php" PostParams="user=$(_LOGIN);password=$(_PASSWORD);action=1"/>-->
-			<Action Type="upload" Url="http://imagevenue.com/upload.php" PostParams="userfile[]=%filename%;imgcontent=safe;MAX_FILE_SIZE=;action=1;img_resize=;" RegExp="\[URL=(.*?)\]\[IMG\](.*?)\[\/IMG\]" AssignVars="Image:0;Thumb:1;"/>
+			<Action Type="upload" Url="http://www.imagevenue.com/upload.php" PostParams="userfile[]=%filename%;imgcontent=safe;MAX_FILE_SIZE=;action=1;img_resize=;" RegExp="\[URL=(.*?)\]\[IMG\](.*?)\[\/IMG\]" AssignVars="Image:0;Thumb:1;"/>
         </Actions>
         <Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
      </Server>
@@ -326,6 +326,9 @@
 	<Server2 Name="5cm.ru" Type="image" Plugin="5cm"  >
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" ViewUrlTemplate="stub"/>
 	</Server2>
+	<Server3 Name="vk.cc" Authorize="0" Type="urlshortening" Plugin="vk.cc" NeedPassword="0" >
+		<Result DirectUrlTemplate="stub"/>
+	</Server3>
 	<Server3 Name="vk.com" Authorize="2" Type="image" Plugin="vk" MinVersion="1.3.1.4270" SupportsFolders="1" NeedPassword="0" >
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" ViewUrlTemplate="stub"/>
 	</Server3>
@@ -347,18 +350,12 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(DownloadUrl)"/>
 	</Server>
-	<!--<Server Name="pixic.ru">
-		<Actions>
-			<Action Type="upload" Url="http://www.pixic.ru/" PostParams="submit=Загрузить;files=;file1=%filename%;orig_resize=500;res_select=500;orig_rotate=0;jpeg_quality=75;check_thumb=size;thumb_text=Увеличить;thumb_size=170;send=1;" RegExp="\[IMG\]([\s\S]*?)\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Image:1;Thumb:3;"/>
-		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
-	</Server>-->
-	<Server Name="ovrload.ru" FileHost="1" Type="file" Types="image,file">
+	<!--<Server Name="ovrload.ru" FileHost="1" Type="file" Types="image,file">
 		<Actions>
 			<Action Type="upload" Url="https://ovrload.ru/" PostParams="clipboard=;fileframe=true;file=%filename%;" RegExp="&quot;(https:\/\/ovrload\.ru:443\/.*?)&quot;" AssignVars="File:0;"/>
 		</Actions>
 	<Result ImageUrlTemplate="$(File)" />
-	</Server>
+	</Server>-->
     <Server Name="imagebam.com">
         <Actions>
             <Action Type="upload" Url="http://www.imagebam.com/sys/upload/save" PostParams="file[]=%filename%;content_type=1;thumb_size=180;thumb_aspect_ratio=resize;thumb_file_type=jpg;" RegExp="\[URL=(.*?)\]([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Image:0;Thumb:2;">

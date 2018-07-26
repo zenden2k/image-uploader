@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 #include "../Source/VersionInfo.h"
 
-#expr Exec(SourcePath + "signcode.bat")
+;#expr Exec(SourcePath + "signcode.bat")
 #define MyAppName "Image Uploader"
 #define MyAppVersion _APP_VER
 #define MyAppPublisher "Sergey Svistunov"
