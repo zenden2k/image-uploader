@@ -300,8 +300,8 @@ HCURSOR CImageEditorView::getCachedCursor(CursorType cursorType)
 }
 HICON CImageEditorView::createBrushCursor(int size)
 {
-    if ( size == 1) {
-        return createBrushCursor(2);
+    if ( size < 3) {
+        size = 3;
     }
     using namespace Gdiplus;
     size+=1;
@@ -309,8 +309,13 @@ HICON CImageEditorView::createBrushCursor(int size)
     Graphics gr(&bm);
     gr.SetSmoothingMode(SmoothingModeAntiAlias);
     //gr.SetPixelOffsetMode(PixelOffsetModeHalf);
-    Pen pen(Color(0,0,0));
-    gr.DrawEllipse(&pen,1,1,size-2,size-2);
+
+    Pen pen2(Color(100, 100, 100), 3.0f);
+    gr.DrawEllipse(&pen2, 1, 1, size - 3, size - 3);
+
+    Pen pen(Color(255, 255, 255), 1.0f);
+    gr.DrawEllipse(&pen,1,1,size-3,size-3);
+    
     HICON res;
     bm.GetHICON(&res);
     return res;

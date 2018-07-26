@@ -746,6 +746,10 @@ void CFloatingWindow::showLastUploadedCode() {
         it.ThumbUrl = Utf8ToWstring(uploadResult->thumbUrl).c_str();
         it.DownloadUrl = Utf8ToWstring(uploadResult->downloadUrl).c_str();
         it.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
+        FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(lastUploadedItem_);
+        if (fileTask) {
+            it.FileName = U2W(fileTask->getDisplayName());
+        }
         items.push_back(it);
         if (it.ImageUrl.IsEmpty() && it.DownloadUrl.IsEmpty())
             return ;
