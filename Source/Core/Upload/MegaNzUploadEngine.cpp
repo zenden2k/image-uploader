@@ -101,19 +101,27 @@ CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsS
     listener_ = new MyListener(this);
     megaApi_->addListener(listener_);
     proxy_.reset(new MegaProxy());
-    if (Settings.ConnectionSettings.UseProxy) {
+
+    if (Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kUserProxy) {
         if (Settings.ConnectionSettings.ProxyType != 0) {
             Log(ErrorInfo::mtError, "This proxy type is not supported by Mega.Nz engine.");
-        } else {
+        }
+        else {
             proxy_->setProxyType(MegaProxy::PROXY_CUSTOM);
             proxy_->setProxyURL((std::string("http://") + Settings.ConnectionSettings.ServerAddress + ":" + IuCoreUtils::toString(Settings.ConnectionSettings.ProxyPort) + "/").c_str());
             if (Settings.ConnectionSettings.NeedsAuth) {
                 proxy_->setCredentials(Settings.ConnectionSettings.ProxyUser.c_str(), std::string(Settings.ConnectionSettings.ProxyPassword).c_str());
             }
-            megaApi_->setProxySettings(proxy_.get());
         }
-    } else {
+    }
+    else if (Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kSystemProxy) {
+        proxy_.reset(megaApi_->getAutoProxySettings());
+    }
+    else {
         proxy_->setProxyType(MegaProxy::PROXY_NONE);
+    }
+    if (proxy_) {
+        megaApi_->setProxySettings(proxy_.get());
     }
 }
 

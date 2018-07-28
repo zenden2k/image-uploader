@@ -9,5 +9,5 @@ TODO before 1.3.2 release:
 - Convert korean.lng and farsi.lng!
 - Add Markdown tab to ResultsPanel
 - Generate thumbnails when uploading to mega.nz 
-
+- Proxy provided by DefaultProxyProvider not being changed on redirects
 - [LOW] Fix memory leaks in gumbo-query (when exception is thrown, e.g. invalid selector)

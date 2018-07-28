@@ -152,7 +152,16 @@ class NetworkClient: public INetworkClient
             virtual ~Logger(){}
         };
 
+        class ProxyProvider {
+        public:
+            virtual bool provideProxyForUrl(NetworkClient* client, const std::string& url) = 0;
+            virtual ~ProxyProvider(){};
+        };
+
         void setLogger(Logger* logger);
+
+        // provider is deleted in NetworkClient destructor
+        void setProxyProvider(ProxyProvider* provider);
     private:
         //DISALLOW_COPY_AND_ASSIGN(NetworkClient);
         enum CallBackFuncType{funcTypeBody,funcTypeHeader};
@@ -229,6 +238,7 @@ class NetworkClient: public INetworkClient
         bool treatErrorsAsWarnings_;
         CurlShare* curlShare_;
         Logger * logger_;
+        ProxyProvider* proxyProvider_;
         static std::mutex _mutex;
         static bool _curl_init;
 //        static bool _is_openssl;

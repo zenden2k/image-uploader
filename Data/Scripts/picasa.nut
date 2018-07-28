@@ -137,7 +137,7 @@ function _DoLogin()
 					return 0;
 				}
 			} else {
-                //return 0; <-- need to check this
+                return 0; //<-- need to check this
             }
 		} else {
 			return 1;
@@ -174,7 +174,7 @@ function _DoLogin()
 		ServerParams.setParam("expiresIn", regex_simple(data, "expires_in\": (\\d+)", 0));
 		ServerParams.setParam("refreshToken", regex_simple(data, "refresh_token\": \"(.+)\"", 0));
 		tokenType = regex_simple(data, "token_type\": \"(.+)\"", 0);
-		//p;
+		
 		ServerParams.setParam("tokenType", tokenType);
 		ServerParams.setParam("prevLogin", login);
 		ServerParams.setParam("tokenTime", ""+timestamp);

@@ -286,6 +286,7 @@
 #define IDC_SOURCECODERADIO             1043
 #define IDC_PASSWORDEDITBOX             1043
 #define IDC_ALLTIMERADIO                1043
+#define IDC_NOPROXY                     1043
 #define IDC_RADIO2                      1044
 #define IDC_SAVEASONE                   1044
 #define IDC_HEIGHTRADIO                 1044
@@ -293,6 +294,7 @@
 #define IDC_SCREENSHOTFILENAMEEDIT2     1044
 #define IDC_SNAPSHOTFILENAMEEDIT        1044
 #define IDC_REMOTEDIRECTORYEDIT         1044
+#define IDC_USESYSTEMPROXY              1044
 #define IDC_EDIT2                       1045
 #define IDC_TRANSPARENCY                1045
 #define IDC_QUALITY                     1045
@@ -303,6 +305,7 @@
 #define IDC_CONNECTIONNAMEEDIT6         1045
 #define IDC_DOWNLOADURLEDIT             1045
 #define IDC_GRABINFOLABEL               1046
+#define IDC_RADIO4                      1046
 #define IDC_BUTTON3                     1047
 #define IDC_GRABBERPARAMS               1047
 #define IDC_SELECTCOLOR                 1047
@@ -539,6 +542,7 @@
 #define IDC_BROWSESCRIPTBUTTON          1263
 #define IDC_CLEARLOGBUTTON              1263
 #define IDC_CLEARHISTORYBTN             1263
+#define IDC_AUTHORIZEBUTTON             1263
 #define IDC_THUMBBACKGROUNDLABEL        1264
 #define IDC_DELETEITEM                  1264
 #define IDC_GOOGLECODELINK              1265

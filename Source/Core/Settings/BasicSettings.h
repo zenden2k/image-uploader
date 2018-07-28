@@ -11,8 +11,8 @@
 typedef std::map <std::string, std::map <std::string, ServerSettingsStruct>> ServerSettingsMap;
 
 struct ConnectionSettingsStruct {
-    bool UseProxy;
-    bool SystemProxy;
+    enum UseProxyEnum { kNoProxy = 0, kUserProxy, kSystemProxy };
+    int UseProxy;
     std::string ServerAddress;
     int ProxyPort;
     bool NeedsAuth;

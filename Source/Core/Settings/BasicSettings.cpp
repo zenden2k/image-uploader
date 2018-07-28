@@ -32,8 +32,8 @@ BasicSettings::BasicSettings()
     loadFromRegistry_ = false;
     MaxThreads = 3;
 
-    ConnectionSettings.UseProxy = false;
-    ConnectionSettings.SystemProxy = false;
+    ConnectionSettings.UseProxy = ConnectionSettingsStruct::kNoProxy;
+
     ConnectionSettings.ProxyPort = 0;
     ConnectionSettings.NeedsAuth = false;
     ConnectionSettings.ProxyType = 0;

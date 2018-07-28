@@ -60,7 +60,6 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     TRC(IDC_LOGINLABEL, "Login:");
     TRC(IDC_PASSWORDLABEL, "Password:");
     TRC(IDC_DOAUTH, "Authorize");
-    TRC(IDC_DOLOGINLABEL, "Sign in...");
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_DELETEACCOUNTLABEL, "Delete account");
 
@@ -73,12 +72,10 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
         wndAnimation_.ShowWindow(SW_HIDE);
     }
 
-    doLoginLabel_.SubclassWindow(GetDlgItem(IDC_DOLOGINLABEL));
-    doLoginLabel_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
-    doLoginLabel_.SetLabel(TR("Sign in..."));
-    doLoginLabel_.m_clrLink = CSettings::DefaultLinkColor;
-    doLoginLabel_.ShowWindow(serverSupportsBeforehandAuthorization_?SW_SHOW:SW_HIDE);
-
+    loginButton_.m_hWnd = GetDlgItem(IDC_AUTHORIZEBUTTON);
+    loginButton_.SetWindowText(TR("Sign in..."));
+    loginButton_.ShowWindow(serverSupportsBeforehandAuthorization_ ? SW_SHOW : SW_HIDE);
+    
     if (!m_UploadEngine->RegistrationUrl.empty()) {
         signupLink_.SubclassWindow(GetDlgItem(IDC_SIGNUPLINK));
         signupLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
@@ -155,7 +152,7 @@ LRESULT CLoginDlg::OnDoLoginClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 LRESULT CLoginDlg::OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     CString text = GuiTools::GetWindowText(hWndCtl);
-    doLoginLabel_.ShowWindow( serverSupportsBeforehandAuthorization_ && !text.IsEmpty() ? SW_SHOW : SW_HIDE);
+    loginButton_.ShowWindow(serverSupportsBeforehandAuthorization_ && !text.IsEmpty() ? SW_SHOW : SW_HIDE);
     return 0;
 }
 
@@ -206,7 +203,7 @@ DWORD CLoginDlg::Run()
             
             return 0;
         } else {
-            doLoginLabel_.SetLabel( TR("Could not authenticate. Please try again."));
+            loginButton_.SetWindowText(TR("Could not authenticate. Please try again."));
         }
         
     }
@@ -258,6 +255,6 @@ void CLoginDlg::enableControls(bool enable)
     GuiTools::EnableDialogItem(m_hWnd, IDC_PASSWORDEDIT, enable&&m_UploadEngine->NeedPassword);
     GuiTools::EnableDialogItem(m_hWnd, IDOK, enable);
     GuiTools::EnableDialogItem(m_hWnd, IDCANCEL, enable);
-    doLoginLabel_.EnableWindow(enable);
+    loginButton_.EnableWindow(enable);
     deleteAccountLabel_.ShowWindow(enable?SW_SHOW : SW_HIDE);
 }

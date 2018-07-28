@@ -38,7 +38,9 @@ CUploadSettingsPage::~CUploadSettingsPage()
 void CUploadSettingsPage::TranslateUI()
 {
     TRC(IDC_CONNECTIONSETTINGS, "Connection settings");
-    TRC(IDC_USEPROXYSERVER, "Use proxy server");
+    TRC(IDC_USEPROXYSERVER, "Use provided proxy");
+    TRC(IDC_USESYSTEMPROXY, "Use system proxy settings");
+    TRC(IDC_NOPROXY, "No proxy (direct connection)");
     TRC(IDC_ADDRESSLABEL, "Address:");
     TRC(IDC_PORTLABEL, "Port:");
     TRC(IDC_SERVERTYPE, "Proxy type:");
@@ -76,7 +78,11 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     SendDlgItemMessage(IDC_NEEDSAUTH, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.NeedsAuth);
     SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_SETCHECK, (WPARAM) Settings.AutoCopyToClipboard);
     
-    SendDlgItemMessage(IDC_USEPROXYSERVER, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.UseProxy);
+
+    SendDlgItemMessage(IDC_USEPROXYSERVER, BM_SETCHECK, (WPARAM)(Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kUserProxy)?TRUE:FALSE);
+    SendDlgItemMessage(IDC_USESYSTEMPROXY, BM_SETCHECK, (WPARAM)(Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kSystemProxy)?TRUE:FALSE);
+    SendDlgItemMessage(IDC_NOPROXY, BM_SETCHECK, (WPARAM)(Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kNoProxy)?TRUE:FALSE);
+
     SetDlgItemText(IDC_PROXYLOGINEDIT, U2W(Settings.ConnectionSettings.ProxyUser));
     SetDlgItemText(IDC_PROXYPASSWORDEDIT, (CString)Settings.ConnectionSettings.ProxyPassword);
     SetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT,Settings.UploadBufferSize/1024);
@@ -109,13 +115,7 @@ LRESULT CUploadSettingsPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 
 LRESULT CUploadSettingsPage::OnClickedUseProxy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& bHandled)
 {
-    bool Checked = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK)!=0;
-    GuiTools::EnableNextN(GetDlgItem(wID),Checked? 8: 11, Checked);
-
-    if(Checked)
-        OnClickedUseProxyAuth(BN_CLICKED, IDC_NEEDSAUTH, 0, bHandled);
-
-    //::EnableWindow(GetDlgItem(IDC_ADDRESSEDIT), Checked);
+    proxyRadioChanged();
     return 0;
 }
     
@@ -126,10 +126,27 @@ LRESULT CUploadSettingsPage::OnClickedUseProxyAuth(WORD /*wNotifyCode*/, WORD wI
     return 0;
 }
 
+LRESULT CUploadSettingsPage::OnClickedNoProxy(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    proxyRadioChanged();
+    return 0;
+}
+
+LRESULT CUploadSettingsPage::OnClickedUseSystemProxy(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    proxyRadioChanged();
+    return 0;
+}
+
 bool CUploadSettingsPage::Apply()
 {
     DoDataExchange(TRUE);
-    Settings.ConnectionSettings.UseProxy = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK)!=0;
+    if (SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK) != 0) {
+        Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kUserProxy;
+    } else if (SendDlgItemMessage(IDC_USESYSTEMPROXY, BM_GETCHECK) != 0) {
+        Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kSystemProxy;
+    } else {
+        Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kNoProxy;
+    }
+    
     Settings.ConnectionSettings.NeedsAuth = SendDlgItemMessage(IDC_NEEDSAUTH, BM_GETCHECK)!=0;
     Settings.AutoCopyToClipboard = SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_GETCHECK)!=0;
     TCHAR Buffer[128];
@@ -184,4 +201,15 @@ LRESULT CUploadSettingsPage::OnBnClickedBrowseScriptButton(WORD /*wNotifyCode*/,
     SetDlgItemText(IDC_SCRIPTFILENAMEEDIT, fd.m_szFileName);
 
     return 0;
+}
+
+void CUploadSettingsPage::proxyRadioChanged() {
+    bool Checked = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK) != 0;
+    GuiTools::EnableNextN(GetDlgItem(IDC_USEPROXYSERVER), Checked ? 8 : 11, Checked);
+
+    BOOL bHandled = false;
+    if (Checked)
+        OnClickedUseProxyAuth(BN_CLICKED, IDC_NEEDSAUTH, 0, bHandled);
+
+    //::EnableWindow(GetDlgItem(IDC_ADDRESSEDIT), Checked);
 }

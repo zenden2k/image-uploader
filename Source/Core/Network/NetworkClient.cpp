@@ -241,6 +241,7 @@ NetworkClient::NetworkClient(void)
     m_nUploadDataOffset = 0;
     treatErrorsAsWarnings_ = false;
     logger_ = nullptr;
+    proxyProvider_ = nullptr;
     curl_easy_setopt(curl_handle, CURLOPT_COOKIELIST, "");
     setUserAgent("Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36");
 
@@ -299,6 +300,8 @@ NetworkClient::~NetworkClient(void)
 #ifdef USE_OPENSSL
     ERR_remove_thread_state(0);
 #endif
+    delete proxyProvider_;
+    proxyProvider_ = nullptr;
 }
 
 void NetworkClient::addQueryParam(const std::string& name, const std::string& value)
@@ -547,6 +550,9 @@ void NetworkClient::private_initTransfer()
     }
 
     curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, chunk_);
+    if (proxyProvider_) {
+        proxyProvider_->provideProxyForUrl(this, m_url);
+    }
 }
 
 void NetworkClient::private_checkResponse()
@@ -915,6 +921,10 @@ void NetworkClient::setErrorLogId(const std::string& str) {
 
 void NetworkClient::setLogger(Logger* logger) {
     logger_ = logger;
+}
+
+void NetworkClient::setProxyProvider(ProxyProvider* provider) {
+    proxyProvider_ = provider;
 }
 
 void NetworkClient::setCurlOption(int option, const std::string &value) {

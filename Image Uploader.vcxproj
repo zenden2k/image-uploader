@@ -217,7 +217,7 @@
     <ClCompile>
       <AdditionalOptions>/MP$(NUMBER_OF_PROCESSORS) %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Source\boost\;$(SolutionDir)\Contrib\Include\gumbo;$(SolutionDir)\Contrib\Include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Source\boost;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Include\gumbo;$(SolutionDir)\Contrib\Include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX;NOMINMAX;WIN32_LEAN_AND_MEAN;_WTL_NO_CSTRING;TIXML_USE_STL;PCRE_STATIC;CURL_STATICLIB;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100;SCRAT_USE_EXCEPTIONS;_CRT_SECURE_NO_WARNINGS;IU_GUI;IU_WTL;IU_WTL_APP;ENABLE_SYNC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -702,6 +702,7 @@
     <ClInclude Include="Source\Core\3rdpart\htmlentities.h" />
     <ClInclude Include="Source\Core\CommonDefs.h" />
     <ClInclude Include="Source\Core\CoreFunctions.h" />
+    <ClInclude Include="Source\Core\DefaultProxyProvider.h" />
     <ClInclude Include="Source\Core\HistoryManager.h" />
     <ClInclude Include="Source\Core\i18n\Translator.h" />
     <ClInclude Include="Source\Core\Images\ImageConverterPrivateBase.h" />
@@ -1081,6 +1082,7 @@
     <ClCompile Include="Source\Core\3rdpart\GumboQuery\Selector.cpp" />
     <ClCompile Include="Source\Core\3rdpart\htmlentities.cpp" />
     <ClCompile Include="Source\Core\CoreFunctions.cpp" />
+    <ClCompile Include="Source\Core\DefaultProxyProvider.cpp" />
     <ClCompile Include="Source\Core\HistoryManager.cpp" />
     <ClCompile Include="Source\Core\Images\ImageConverterPrivateBase.cpp" />
     <ClCompile Include="Source\Core\Images\ImageConverterPrivate_gdiplus.cpp" />

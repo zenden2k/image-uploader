@@ -48,7 +48,7 @@ class CLoginDlg : public CDialogImpl<CLoginDlg>    , public CThreadImpl<CLoginDl
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             COMMAND_HANDLER(IDC_USEIECOOKIES, BN_CLICKED, OnClickedUseIeCookies)
             COMMAND_ID_HANDLER(IDC_DELETEACCOUNTLABEL, OnDeleteAccountClicked)
-            COMMAND_ID_HANDLER(IDC_DOLOGINLABEL, OnDoLoginClicked)    
+            COMMAND_ID_HANDLER(IDC_AUTHORIZEBUTTON, OnDoLoginClicked)
             COMMAND_HANDLER(IDC_LOGINEDIT, EN_CHANGE, OnLoginEditChange);
         END_MSG_MAP()
         // Handler prototypes:
@@ -70,9 +70,9 @@ class CLoginDlg : public CDialogImpl<CLoginDlg>    , public CThreadImpl<CLoginDl
 protected:
     ServerProfile& serverProfile_;
     CHyperLink deleteAccountLabel_;
-    CHyperLink doLoginLabel_;
     CHyperLink signupLink_;
     CString accountName_;
+    CButton loginButton_;
     bool createNew_;
     bool ignoreExistingAccount_;
     bool serverSupportsBeforehandAuthorization_;

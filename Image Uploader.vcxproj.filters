@@ -870,6 +870,9 @@
     <ClInclude Include="Source\Core\ScreenCapture\Utils.h">
       <Filter>Source Files\Core\ScreenCapture</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\DefaultProxyProvider.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1916,6 +1919,9 @@
     </ClCompile>
     <ClCompile Include="Source\Core\ScreenCapture\Utils.cpp">
       <Filter>Source Files\Core\ScreenCapture</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\DefaultProxyProvider.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
