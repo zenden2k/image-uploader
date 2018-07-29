@@ -3,12 +3,16 @@
 #include "Core/Settings.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/3rdpart/UriParser.h"
+#include "Func/WinUtils.h"
+#include <algorithm>
 #include <Winhttp.h>
-#include <iostream>
+
 
 #ifndef WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY
     #define WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY 4
 #endif
+
+
 
 DefaultProxyProvider::DefaultProxyProvider() {
     hInternet_ = nullptr;  
@@ -38,7 +42,6 @@ bool DefaultProxyProvider::provideProxyForUrl(NetworkClient* client, const std::
     WINHTTP_PROXY_INFO proxyInfo;
 
     memset(&autoProxyOptions, 0, sizeof(autoProxyOptions));
-    memset(&myProxyConfig_, 0, sizeof(myProxyConfig_));
     memset(&proxyInfo, 0, sizeof(proxyInfo));
 
     if (obtainProxyConfig()) {
@@ -195,7 +198,11 @@ std::string DefaultProxyProvider::extractProxyForUrlFromList(const std::string& 
 }
 
 bool DefaultProxyProvider::obtainProxyConfig() {
-    if (!configObtained_ && !WinHttpGetIEProxyConfigForCurrentUser(&myProxyConfig_)) {
+    if (configObtained_) {
+        return true;
+    }
+    memset(&myProxyConfig_, 0, sizeof(myProxyConfig_));
+    if (!WinHttpGetIEProxyConfigForCurrentUser(&myProxyConfig_)) {
         DWORD Err = GetLastError();
         LOG(ERROR) << "WinHttpGetIEProxyConfigForCurrentUser failed. " << std::endl << WinUtils::ErrorCodeToString(Err);
         return false;

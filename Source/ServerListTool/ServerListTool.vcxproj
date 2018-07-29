@@ -184,7 +184,7 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>minizip.lib;zlibd.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;Oleacc.lib;gumbo.lib;jsoncpp.lib;libglog_static.lib;Winhttp.lib;base64.lib;libwebpdecoder.lib;libwebpdemux.lib;mega.lib;cryptopp.lib;cares.lib;libuv.lib;Userenv.lib;Psapi.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>minizip.lib;zlibd.lib;ws2_32.lib;Wldap32.lib;ssleay32.lib;libeay32.lib;gdiplus.lib;dwmapi.lib;pcre.lib;libcurl.lib;squirrel.lib;sqstdlib.lib;Oleacc.lib;gumbo.lib;jsoncpp.lib;libglog_static.lib;Winhttp.lib;base64.lib;libwebpdecoder.lib;libwebpdemux.lib;mega.lib;cryptopp.lib;cares.lib;libuv.lib;Userenv.lib;Psapi.lib;Iphlpapi.lib;uriparser.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\Contrib\Lib\Debug;$(SolutionDir)Contrib\Lib\;$(SolutionDir)\Contrib\Source\boost\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libcmt.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -467,6 +467,7 @@
     <ClCompile Include="..\Core\3rdpart\tinyxmlerror.cpp" />
     <ClCompile Include="..\Core\3rdpart\tinyxmlparser.cpp" />
     <ClCompile Include="..\Core\CoreFunctions.cpp" />
+    <ClCompile Include="..\Core\DefaultProxyProvider.cpp" />
     <ClCompile Include="..\Core\FileDownloader.cpp" />
     <ClCompile Include="..\Core\HistoryManager.cpp" />
     <ClCompile Include="..\Core\LocalFileCache.cpp" />

@@ -22,7 +22,7 @@
 #include "Core/Upload/UploadSession.h"
 #include "Core/Upload/UploadManager.h"
 
-const CString MyBytesToString(__int64 nBytes )
+CString MyBytesToString(__int64 nBytes )
 {
     return IuCoreUtils::fileSizeToString(nBytes).c_str();
 }
@@ -114,6 +114,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     SetDlgItemText(IDC_TOOLFILEEDIT, testFileName);
     SetDlgItemText(IDC_TESTURLEDIT, testURL);
     Settings.LoadSettings("", "");
+    Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kSystemProxy;
     //iuPluginManager.setScriptsDirectory(WstrToUtf8((LPCTSTR)(WinUtils::GetAppFolder() + "Data/Scripts/")));
 
 
@@ -448,15 +449,24 @@ void CMainDlg::processFinished() {
 
 void CMainDlg::checkShortUrl(UploadTask* task) {
     NetworkClient client;
+    CoreFunctions::ConfigureProxy(&client);
     UrlShorteningTask* urlTask = dynamic_cast<UrlShorteningTask*>(task);
     UploadTaskUserData* userData = reinterpret_cast<UploadTaskUserData*>(task->userData());
     client.setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
-    client.doGet(task->uploadResult()->directUrl);
-    int responseCode = client.responseCode();
+    
     bool ok = false;
-    if (responseCode == 302 || responseCode == 301) {
-        std::string targetUrl = client.responseHeaderByName("Location");
-        if (targetUrl == urlTask->getUrl()) {
+    std::string targetUrl = task->uploadResult()->directUrl;
+    if (!targetUrl.empty()) {
+        int responseCode = 0;
+        do {
+            client.setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
+            client.doGet(targetUrl);
+            responseCode = client.responseCode();
+            targetUrl = client.responseHeaderByName("Location");
+            
+        } while (!targetUrl.empty() && (responseCode == 302 || responseCode == 301) && targetUrl != urlTask->getUrl());
+
+        if (!targetUrl.empty() && targetUrl == urlTask->getUrl()) {
             m_ListView.SetItemText(userData->rowIndex, 3, _T("Good link"));
             ok = true;
         }

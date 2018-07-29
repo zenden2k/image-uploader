@@ -384,6 +384,9 @@
     <ClCompile Include="..\Core\Upload\MegaNzUploadEngine.cpp">
       <Filter>Source Files\Core\Upload</Filter>
     </ClCompile>
+    <ClCompile Include="..\Core\DefaultProxyProvider.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Core\Video\VideoUtils.h">
