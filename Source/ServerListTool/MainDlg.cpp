@@ -60,7 +60,7 @@ CMainDlg::CMainDlg(UploadEngineManager* uploadEngineManager, UploadManager* uplo
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     m_bIsRunning = false;
-    
+    contextMenuItemId = -1;
     CenterWindow(); // center the dialog on the screen
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
 
@@ -96,7 +96,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     
 
     CString testFileName = WinUtils::GetAppFolder() + "testfile.jpg";
-    CString testURL = "https://github.com/zenden2k/image-uploader/issues/91";
+    CString testURL = "https://github.com/zenden2k/image-uploader/issues";
     if(xml.LoadFromFile( WCstringToUtf8((WinUtils::GetAppFolder() + "servertool.xml"))))
     {
         SimpleXmlNode root = xml.getRoot("ServerListTool");
@@ -135,6 +135,49 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     return TRUE;
 }
 
+LRESULT  CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+    HWND hwnd = reinterpret_cast<HWND>(wParam);
+    POINT ClientPoint, ScreenPoint;
+    if (hwnd != GetDlgItem(IDC_TOOLSERVERLIST)) return 0;
+
+    if (lParam == -1) {
+        ClientPoint.x = 0;
+        ClientPoint.y = 0;
+        ScreenPoint = ClientPoint;
+        ::ClientToScreen(hwnd, &ScreenPoint);
+    } else {
+        ScreenPoint.x = GET_X_LPARAM(lParam);
+        ScreenPoint.y = GET_Y_LPARAM(lParam);
+        ClientPoint = ScreenPoint;
+        ::ScreenToClient(hwnd, &ClientPoint);
+    }
+    LV_HITTESTINFO hti;
+    memset(&hti, 0, sizeof(hti));
+    hti.pt = ClientPoint;
+    m_ListView.HitTest(&hti);
+
+    if (hti.iItem >= 0) {
+        auto it = m_CheckedServersMap.find(hti.iItem);
+        if (it != m_CheckedServersMap.end()) {
+            CMenu menu;
+            menu.CreatePopupMenu();
+            menu.AppendMenu(MF_STRING, ID_COPYDIRECTURL, _T("Copy direct url"));
+            menu.EnableMenuItem(ID_COPYDIRECTURL, it->second.directUrl.IsEmpty() ? MF_DISABLED : MF_ENABLED);
+
+            menu.AppendMenu(MF_STRING, ID_COPYTHUMBURL, _T("Copy thumb url"));
+            menu.EnableMenuItem(ID_COPYTHUMBURL, it->second.thumbUrl.IsEmpty() ? MF_DISABLED : MF_ENABLED);
+
+            menu.AppendMenu(MF_STRING, ID_COPYVIEWURL, _T("Copy view url"));
+            menu.EnableMenuItem(ID_COPYVIEWURL, it->second.viewurl.IsEmpty() ? MF_DISABLED : MF_ENABLED);
+
+            contextMenuItemId = hti.iItem;
+            menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
+        }
+    }
+
+    return 0;
+}
+
 LRESULT CMainDlg::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     CSimpleDialog<IDD_ABOUTBOX, TRUE> dlg;
@@ -152,7 +195,6 @@ LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /
     m_ListView.DeleteAllItems();
     for (int i = 0; i < engineList_->count(); i++) {
         ServerData sd;
-        ZeroMemory(&sd, sizeof(sd));
         m_CheckedServersMap[i] = sd;
         m_ListView.AddItem(i, 0, WinUtils::IntToStr(i));
         CString name = Utf8ToWstring(engineList_->byIndex(i)->Name).c_str();
@@ -297,21 +339,22 @@ bool CMainDlg::OnFileFinished(bool ok, int statusCode, CFileDownloader::Download
     int columnIndex=-1;
     
     columnIndex = 3 +fileId;
-    m_CheckedServersMap[serverId].filesChecked++;
-    m_CheckedServersMap[serverId].fileToCheck--;
+    ServerData& serverData = m_CheckedServersMap[serverId];
+    serverData.filesChecked++;
+    serverData.fileToCheck--;
     CString fileName = Utf8ToWstring(it.fileName).c_str();
-    
+
     if(!ok)
     {
-        m_CheckedServersMap[serverId].stars[fileId] = 0;
-        m_ListView.SetItemText(serverId,columnIndex, _T("Cannot download file"));
+        serverData.stars[fileId] = 0;
+        serverData.setLinkInfo(fileId, _T("Cannot download file"));
     }
     if(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(W2U(fileName))== W2U(m_srcFileHash))
     {
         if(fileId == 0)
-        m_CheckedServersMap[serverId].stars[fileId] = 5;
-        else m_CheckedServersMap[serverId].stars[fileId] = 4;
-        m_ListView.SetItemText(serverId,columnIndex, _T("Identical file"));
+            serverData.stars[fileId] = 5;
+        else serverData.stars[fileId] = 4;
+        serverData.setLinkInfo(fileId, _T("Identical file"));
     }
     else
     {
@@ -319,61 +362,80 @@ bool CMainDlg::OnFileFinished(bool ok, int statusCode, CFileDownloader::Download
 
         CString report =IU_GetFileInfo(fileName, &mfi);
         
-      CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8((fileName))));
-        if(fileId<2)
+        CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8((fileName))));
+        if(fileId<2) // is thumb or image
         {
             if(mimeType.Find(_T("image/"))>=0) 
             {
                     if(fileId ==0 && (mfi.width!=m_sourceFileInfo.width || mfi.height!=m_sourceFileInfo.height))
-                        m_CheckedServersMap[serverId].stars[fileId]=0;
+                        serverData.stars[fileId] = 0;
                     else
-                m_CheckedServersMap[serverId].stars[fileId] = fileId==0?4:5;
+                        serverData.stars[fileId] = fileId == 0 ? 4 : 5;
             }
-            else m_CheckedServersMap[serverId].stars[fileId] = 0;
-        } else m_CheckedServersMap[serverId].stars[fileId] = 5;
+            else serverData.stars[fileId] = 0;
+        } else serverData.stars[fileId] = 5;
 
-        m_ListView.SetItemText(serverId,columnIndex, report);
+        serverData.setLinkInfo(fileId, report);
     }
-    if(m_CheckedServersMap[serverId].fileToCheck==0)
+    if (serverData.fileToCheck == 0) {
+        serverData.finished = true;
+    }
     MarkServer(serverId);
     return 0;
 }
 
 void CMainDlg::MarkServer(int id)
 {
-    int sum = m_CheckedServersMap[id].stars[0]+m_CheckedServersMap[id].stars[1]+m_CheckedServersMap[id].stars[2];
-    int mark=0;
-    int count = m_CheckedServersMap[id].filesChecked;
-    if(count) mark = sum/count;
+    ServerData& serverData = m_CheckedServersMap[id];
+    if (serverData.finished) {
+        int sum = serverData.stars[0] + serverData.stars[1] + serverData.stars[2];
+        int mark = 0;
+        int count = serverData.filesChecked;
+        if (count) mark = sum / count;
+
+        CString timeLabel;
+        int endTime = serverData.timeElapsed;
+        timeLabel.Format(_T("%02d:%02d"), (int)(endTime / 60000), (int)(endTime / 1000 % 60));
+        m_ListView.SetItemText(id, 2, timeLabel);
+
+        CString strMark;
+        if (mark == 5) {
+            strMark = _T("EXCELLENT");
+            serverData.color = RGB(0, 255, 50);
+
+        } else if (mark >= 4) {
+            strMark = _T("OK");
+            serverData.color = RGB(145, 213, 0);
+            //m_ListView.SetItemText(id*2,2,CString());
+        } else {
+            strMark = _T("FAILED");
+            serverData.color = RGB(198, 0, 0);
+            //m_CheckedServersMap[id].failed = true;
+        }
+
+        m_ListView.SetItemText(id, 2, strMark);
+        m_ListView.SetItemText(id, 6, timeLabel);
+        m_ListView.RedrawItems(id, id);
+    }
+
+    CString directUrlCellText = serverData.directUrl;
+    if (!serverData.directUrlInfo.IsEmpty()) {
+        directUrlCellText = serverData.directUrlInfo + _T(" [") + directUrlCellText + _T("]");
+    } 
+
+    CString thumbUrlCellText = serverData.thumbUrl;
+    if (!serverData.thumbUrl.IsEmpty()) {
+        thumbUrlCellText = serverData.thumbUrlInfo + _T(" [") + thumbUrlCellText + _T("]");
+    }
+
+    CString viewUrlCellText = serverData.viewurl;
+    if (!serverData.viewurlInfo.IsEmpty()) {
+        viewUrlCellText = serverData.viewurlInfo + _T(" [") + viewUrlCellText + _T("]");
+    }
     
-    CString timeLabel;
-    int endTime = m_CheckedServersMap[id].timeElapsed;
-    timeLabel.Format(_T("%02d:%02d"),(int)(endTime/60000),(int)( endTime/1000%60) );
-    m_ListView.SetItemText(id,2,timeLabel);
-
-    CString strMark;
-    if(mark == 5)
-    {
-        strMark = _T("EXCELLENT");
-        m_CheckedServersMap[id].color = RGB(0,255,50);
-        
-    }
-    else if (mark >= 4 )
-    {
-        strMark = _T("OK");
-        m_CheckedServersMap[id].color = RGB(145,213,0);
-        //m_ListView.SetItemText(id*2,2,CString());
-    }
-    else 
-    {
-        strMark = _T("FAILED");
-        m_CheckedServersMap[id].color = RGB(198,0,0);
-        //m_CheckedServersMap[id].failed = true;
-    }
-
-    m_ListView.SetItemText(id,2,strMark );
-    m_ListView.SetItemText(id,6,timeLabel);
-    m_ListView.RedrawItems(id,id);
+    m_ListView.SetItemText(id, 3, directUrlCellText);
+    m_ListView.SetItemText(id, 4, thumbUrlCellText);
+    m_ListView.SetItemText(id, 5, viewUrlCellText);
     
 }
 
@@ -456,6 +518,7 @@ void CMainDlg::checkShortUrl(UploadTask* task) {
     
     bool ok = false;
     std::string targetUrl = task->uploadResult()->directUrl;
+    int i = 0; //counter for limiting max redirects
     if (!targetUrl.empty()) {
         int responseCode = 0;
         do {
@@ -463,8 +526,8 @@ void CMainDlg::checkShortUrl(UploadTask* task) {
             client.doGet(targetUrl);
             responseCode = client.responseCode();
             targetUrl = client.responseHeaderByName("Location");
-            
-        } while (!targetUrl.empty() && (responseCode == 302 || responseCode == 301) && targetUrl != urlTask->getUrl());
+            i++;
+        } while (i < 6 && !targetUrl.empty() && (responseCode == 302 || responseCode == 301) && targetUrl != urlTask->getUrl());
 
         if (!targetUrl.empty() && targetUrl == urlTask->getUrl()) {
             m_ListView.SetItemText(userData->rowIndex, 3, _T("Good link"));
@@ -474,6 +537,7 @@ void CMainDlg::checkShortUrl(UploadTask* task) {
 
     m_CheckedServersMap[userData->rowIndex].filesChecked++;
     m_CheckedServersMap[userData->rowIndex].stars[0] = ok?5:0;
+    m_CheckedServersMap[userData->rowIndex].finished = true;
     MarkServer(userData->rowIndex);
 
 }
@@ -522,14 +586,15 @@ void CMainDlg::onTaskFinished(UploadTask* task, bool ok) {
             int nFilesToCheck = 0;
             if (!imgUrl.IsEmpty()) {
                 m_FileDownloader.addFile(result->getDirectUrl(), reinterpret_cast<void*>(i * 10));
-                nFilesToCheck++;
-                m_ListView.SetItemText(i, 3, imgUrl);
+                nFilesToCheck++; 
+                m_CheckedServersMap[i].directUrl = imgUrl;
+                //m_ListView.SetItemText(i, 3, imgUrl);
 
             } else {
                 if (!ue->ImageUrlTemplate.empty()) {
-                    if (!ue->UsingPlugin)
-                        m_CheckedServersMap[i].filesChecked++;
-                    m_ListView.SetItemText(i, 3, _T("<empty>"));
+                    /*if (!ue->UsingPlugin)
+                        m_CheckedServersMap[i].filesChecked++;*/
+                    m_CheckedServersMap[i].directUrlInfo = _T("<empty>");
                 }
             }
 
@@ -537,26 +602,27 @@ void CMainDlg::onTaskFinished(UploadTask* task, bool ok) {
 
                 nFilesToCheck++;
                 m_FileDownloader.addFile(result->getThumbUrl(), reinterpret_cast<void*>(i * 10 + 1));
-                m_ListView.SetItemText(i, 4, thumbUrl);
+
+                m_CheckedServersMap[i].thumbUrl = thumbUrl;
             } else {
 
                 if (!ue->ThumbUrlTemplate.empty()) {
-                    if (!ue->UsingPlugin)
-                        m_CheckedServersMap[i].filesChecked++;
-                    m_ListView.SetItemText(i, 4, _T("<empty>"));
+                    /*if (!ue->UsingPlugin)
+                        m_CheckedServersMap[i].filesChecked++;*/
+                    m_CheckedServersMap[i].thumbUrlInfo = _T("<empty>");
                 }
             }
 
             if (!viewUrl.IsEmpty()) {
                 nFilesToCheck++;
                 m_FileDownloader.addFile(result->getDownloadUrl(), reinterpret_cast<void*>(i * 10 + 2));
-                m_ListView.SetItemText(i, 5, viewUrl);
+                m_CheckedServersMap[i].viewurl = viewUrl;
             } else {
 
                 if (!ue->DownloadUrlTemplate.empty()) {
-                    if (!ue->UsingPlugin)
-                        m_CheckedServersMap[i].filesChecked++;
-                    m_ListView.SetItemText(i, 5, _T("<empty>"));
+                    /*if (!ue->UsingPlugin)
+                        m_CheckedServersMap[i].filesChecked++;*/
+                    m_CheckedServersMap[i].viewurlInfo = _T("<empty>");
                 }
 
             }
@@ -564,28 +630,32 @@ void CMainDlg::onTaskFinished(UploadTask* task, bool ok) {
             m_FileDownloader.start();
             if (nFilesToCheck)
                 m_ListView.SetItemText(i, 2, CString(_T("Checking links")));
-            else
-                MarkServer(i);
+            else {
+                m_CheckedServersMap[i].finished = true;
+                //MarkServer(i);
+            }
         } else if (task->type() == UploadTask::TypeUrl) {
             CString shortURL = Utf8ToWstring(result->getDirectUrl()).c_str();
             if (!shortURL.IsEmpty()) {
-                m_ListView.SetItemText(i, 3, shortURL);
+                m_CheckedServersMap[i].directUrl = shortURL;
                 m_ListView.SetItemText(i, 2, CString(_T("Checking short link")));
                 checkShortUrl(task);
             } else {
-                m_ListView.SetItemText(i, 3, _T("<empty>"));
+                m_CheckedServersMap[i].finished = true;
+                m_CheckedServersMap[i].directUrlInfo = _T("<empty>");
             }
         }
         
         
     } else {
-        MarkServer(i);
+        m_CheckedServersMap[i].finished = true;
     }
+    MarkServer(i);
 }
 
 void CMainDlg::onSessionFinished(UploadSession* session) {
     processFinished();
-    LOG(WARNING) << "Uploader has finished";
+    LOG(INFO) << "Uploader has finished";
 }
 
 LRESULT CMainDlg::OnErrorLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -604,6 +674,32 @@ LRESULT CMainDlg::OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
     return 0;
 }
 
+LRESULT CMainDlg::OnCopyDirectUrl(WORD, WORD, HWND, BOOL&) {
+    auto it = m_CheckedServersMap.find(contextMenuItemId);
+    if (it != m_CheckedServersMap.end() && !it->second.directUrl.IsEmpty()) {
+        WinUtils::CopyTextToClipboard(it->second.directUrl); 
+    }
+            
+    return 0;
+}
+
+LRESULT CMainDlg::OnCopyThumbUrl(WORD, WORD, HWND, BOOL&) {
+    auto it = m_CheckedServersMap.find(contextMenuItemId);
+    if (it != m_CheckedServersMap.end() && !it->second.thumbUrl.IsEmpty()) {
+        WinUtils::CopyTextToClipboard(it->second.thumbUrl);
+    }
+
+    return 0;
+}
+
+LRESULT CMainDlg::OnCopyViewUrl(WORD, WORD, HWND, BOOL&) {
+    auto it = m_CheckedServersMap.find(contextMenuItemId);
+    if (it != m_CheckedServersMap.end() && !it->second.viewurl.IsEmpty()) {
+        WinUtils::CopyTextToClipboard(it->second.viewurl);
+    }
+
+    return 0;
+}
 
 LRESULT CMainDlg::OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {

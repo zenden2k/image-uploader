@@ -322,16 +322,44 @@ function  UploadFile(FileName, options) {
     //_WriteLog("error",json);
     nm.addQueryHeader("Content-Type","application/json")
 	nm.setUrl(url);
+    nm.enableResponseCodeChecking(false);
 	nm.doUpload("",json);
-        
-    if(nm.responseCode()!=200){
-        _WriteLog("error",nm.responseBody());
-        return 0;
-    } 
     
-    data = ParseJSON(nm.responseBody());
-    local viewUrl =data.url;
-	options.setViewUrl( viewUrl);
+    local viewUrl = "";
+    
+    if(nm.responseCode()!=200){ 
+        if (nm.responseCode() == 409) { // Shared link already exists
+            data = ParseJSON(nm.responseBody());
+            url = "https://api.dropboxapi.com/2/sharing/list_shared_links" ;
+            signRequest(url, token);
+            local arg ={
+                    path=remotePath,
+                    direct_only=true
+            };
+            local json = reg_replace(ToJSON(arg),"\n","");
+            nm.addQueryHeader("Content-Type","application/json")
+            nm.setUrl(url);
+            nm.doUpload("",json);
+            if (nm.responseCode() == 200) {
+                data = ParseJSON(nm.responseBody());
+                if ("links" in data && data.links.len() > 0){
+                    viewUrl = data.links[0].url;
+                    options.setViewUrl( viewUrl );
+                }
+            } else {
+                _WriteLog("error",nm.responseBody());
+                return 0;
+            }
+        } else {
+             _WriteLog("error",nm.responseBody());
+            return 0;
+        }
+       
+    } else {
+        data = ParseJSON(nm.responseBody());
+        viewUrl =data.url;
+        options.setViewUrl( viewUrl);
+    }
 	
 	if ( viewUrl != "" ) {
 		return 1;
