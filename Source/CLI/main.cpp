@@ -396,7 +396,7 @@ void OnUploadSessionFinished(UploadSession* session) {
 }
 
 void UploadTaskProgress(UploadTask* task) {
-    std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOuputMutex());
+    std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
     UploadProgress* progress = task->progress();
     TaskUserData *userData = reinterpret_cast<TaskUserData*>(task->userData());
 
@@ -439,7 +439,7 @@ void UploadTaskProgress(UploadTask* task) {
 }
 
 void OnUploadTaskStatusChanged(UploadTask* task) {
-    std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOuputMutex());
+    std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
     UploadProgress* progress = task->progress();
     TaskUserData *userData = reinterpret_cast<TaskUserData*>(task->userData());
     ConsoleUtils::instance()->SetCursorPos(55, 2 + userData->index);
@@ -634,7 +634,7 @@ int main(int argc, char *argv[]){
     std::string appDirectory = IuCoreUtils::ExtractFilePath(argv[0]);
     std::string settingsFolder;
     setlocale(LC_ALL, "");
-    signal(SIGINT, SignalHandler);
+    //signal(SIGINT, SignalHandler);
 #ifdef _WIN32
     //SetConsoleCtrlHandler ();
     //SetConsoleTitle(_T("imgupload");

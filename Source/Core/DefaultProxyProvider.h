@@ -1,8 +1,10 @@
 #ifndef IU_CORE_DEFAULTPROXYPROVIDER_H
 #define IU_CORE_DEFAULTPROXYPROVIDER_H
 
+#include "atlheaders.h"
 #include "Core/Network/NetworkClient.h"
 #include <Winhttp.h>
+
 
 class DefaultProxyProvider : public NetworkClient::ProxyProvider {
 public:

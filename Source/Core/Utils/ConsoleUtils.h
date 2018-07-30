@@ -1,8 +1,9 @@
-#ifndef CONSOLEUTILS_H
-#define CONSOLEUTILS_H
+#ifndef IU_CORE_UTILS_CONSOLEUTILS_H
+#define IU_CORE_UTILS_CONSOLEUTILS_H
 
-#include "Core/Utils/Singleton.h"
+#include "Singleton.h"
 #include <mutex>
+
 
 class ConsoleUtils: public Singleton<ConsoleUtils> {
 public:

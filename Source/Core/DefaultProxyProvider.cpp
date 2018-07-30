@@ -1,5 +1,6 @@
 #include "DefaultProxyProvider.h"
 
+#include "atlheaders.h"
 #include "Core/Settings.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/3rdpart/UriParser.h"
