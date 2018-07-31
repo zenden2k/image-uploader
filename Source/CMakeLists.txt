@@ -7,7 +7,7 @@ project(ImageUploader)
 
 #SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE,5.01")
 if(MSVC)
-    add_definitions(-DUNICODE -D_UNICODE -D_CRT_SECURE_NO_WARNINGS)
+    add_definitions(-DUNICODE -D_UNICODE -D_CRT_SECURE_NO_WARNINGS -DWIN32_LEAN_AND_MEAN)
     add_definitions(-D_WIN32_IE=0x0603 -DWINVER=0x0601 -D_WIN32_WINNT=0x0601)
 endif(MSVC)
 
@@ -19,6 +19,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 
 add_subdirectory(Core)	
 add_subdirectory(CLI)	
+add_subdirectory(Tests)	
 
 #target_link_libraries(ImageUploader iuCore)
 

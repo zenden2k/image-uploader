@@ -61,7 +61,10 @@ int _tmain(int argc, _TCHAR* argvW[]) {
 int main(int argc, char *argv[]){
 #endif
     if (argc < 2) {
-        fprintf(stderr, "Test scripts directory is not provided as command line argument.");
+        fprintf(stderr, "Test scripts directory is not provided as command line argument.\r\n");
+#ifdef _WIN32
+        freeArgv(argc, argv);
+#endif
         return 1;
     }
     std::string rootDir = argv[1];

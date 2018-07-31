@@ -126,6 +126,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(L"GDI+ helper") +"\thttp://www.codeproject.com/Articles/4969/GDI-and-MFC-memory-leak-detection\r\n";
     memoText += CString(L"xbbcode") +"\t\thttps://github.com/patorjk/Extendible-BBCode-Parser\r\n";
     memoText += CString(L"entities.c") + "\t\thttps://bitbucket.org/cggaertner/cstuff/\r\n";
+    memoText += CString(L"base64") + "\t\thttps://github.com/aklomp/base64/\r\n";
     memoText += CString(L"Mega SDK") + "\thttps://github.com/meganz/sdk\r\n";
     memoText += CString(L"Crypto++") + "\t\thttps://www.cryptopp.com/\r\n";
     memoText += CString(L"c-ares") + "\t\thttps://c-ares.haxx.se/\r\n";

@@ -32,6 +32,10 @@ UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, CUploadEn
     OnConfigureNetworkClient.bind(this, &UploadManager::configureNetwork);
 }
 
+UploadManager::~UploadManager() {
+    Settings.removeChangeCallback(BasicSettings::ChangeCallback(this, &UploadManager::settingsChanged));
+}
+
 bool UploadManager::shortenLinksInSession(std::shared_ptr<UploadSession> session)
 {
     int taskCount = session->taskCount();

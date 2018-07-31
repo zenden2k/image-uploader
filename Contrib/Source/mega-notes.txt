@@ -1,0 +1,3 @@
+Необходимо собрать 2 версии release:
+c дефайном USE_OPENSSL и без
+(mega_openssl.lib и mega.lib)

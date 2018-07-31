@@ -201,6 +201,17 @@ void BasicSettings::addChangeCallback(const ChangeCallback& callback)
     changeCallbacks_.push_back(callback);
 }
 
+void BasicSettings::removeChangeCallback(const ChangeCallback& callback) {
+    // This doesn't keep the sinks in order, but who cares?
+    for (int i = changeCallbacks_.size() - 1; i >= 0; i--) {
+        if (changeCallbacks_[i] == callback) {
+            changeCallbacks_[i] = changeCallbacks_[changeCallbacks_.size() - 1];
+            changeCallbacks_.pop_back();
+            break;
+        }
+    }
+}
+
 ServerSettingsStruct* BasicSettings::getServerSettings(const ServerProfile& profile)
 {
     std::lock_guard<std::mutex> lock(serverSettingsMutex_);

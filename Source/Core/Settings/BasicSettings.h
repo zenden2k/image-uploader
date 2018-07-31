@@ -34,6 +34,7 @@ public:
     unsigned int LastUpdateTime;
 
     void addChangeCallback(const ChangeCallback& callback);
+    void removeChangeCallback(const ChangeCallback& callback);
 
     // Fields
     int FileRetryLimit;

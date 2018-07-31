@@ -10,3 +10,4 @@ Sandbox/
 ipch/
 *.obj
 *.aps
+Lang/*.new

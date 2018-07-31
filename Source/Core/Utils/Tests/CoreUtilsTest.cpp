@@ -10,6 +10,9 @@
 #include <inttypes.h>
 #include <gtest/gtest.h>
 #include "Core/Utils/CoreUtils.h"
+#ifdef _WIN32
+#include <WinSock.h>
+#endif
 
 class CoreUtilsTest : public ::testing::Test {
 };

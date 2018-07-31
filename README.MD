@@ -81,6 +81,8 @@ glog            https://github.com/google/glog
 
 libwebp         https://github.com/webmproject/libwebp
 
+base64          https://github.com/aklomp/base64
+
 Libraries for Mega.nz support:
 
 Mega SDK        https://github.com/meganz/sdk

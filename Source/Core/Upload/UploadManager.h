@@ -17,6 +17,7 @@ class UploadManager : public CFileQueueUploader
 {
 public:
     UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler);
+    ~UploadManager();
     bool shortenLinksInSession(std::shared_ptr<UploadSession> session);
 protected:
 #ifdef IU_WTL_APP

@@ -62,7 +62,7 @@
 #endif
 #include "versioninfo.h"
 
-#define IU_CLI_VER "0.2.6"
+#define IU_CLI_VER "0.2.7"
 
 #ifdef _WIN32
 CAppModule _Module;
@@ -84,12 +84,12 @@ std::string proxyUser;
 std::string proxyPassword;
 
 CUploadEngineList list;
-std::unique_ptr<UploadEngineManager> uploadEngineManager;
-std::unique_ptr<UploadManager> uploadManager;
+
+
 
 ZOutputCodeGenerator::CodeType codeType = ZOutputCodeGenerator::ctClickableThumbnails;
 ZOutputCodeGenerator::CodeLang codeLang = ZOutputCodeGenerator::clPlain;
-bool autoUpdate = true;
+bool autoUpdate = false;
 std::shared_ptr<UploadSession> session;
 
 std::mutex finishSignalMutex;
@@ -109,7 +109,7 @@ void SignalHandler (int param) {
 }
 
 void PrintWelcomeMessage() {
-    std::cerr << "imgupload v" << IU_CLI_VER << " (based on IU v" << _APP_VER << " build " << BUILD << ")" << std::endl;
+    std::cerr << "imgupload v" << IU_CLI_VER << " (based on the same code as IU v" << _APP_VER << " build " << BUILD << ")" << std::endl;
 }
 
 class Translator: public ITranslator{
@@ -330,7 +330,7 @@ bool parseCommandLine(int argc, char *argv[])
 #endif
 
         std::string fileName =
-        #ifndef _WIN32
+#ifndef _WIN32
                 IuCoreUtils::SystemLocaleToUtf8(argv[i]);
 #else
                 argv[i];
@@ -381,18 +381,13 @@ void OnUploadSessionFinished(UploadSession* session) {
     ZOutputCodeGenerator generator;
     generator.setLang(codeLang);
     generator.setType(codeType);
-    ConsoleUtils::instance()->SetCursorPos(0, taskCount + 2);
+    //ConsoleUtils::instance()->SetCursorPos(0, taskCount + 2);
     if ( !uploadedList.empty() ) {
         std::cerr<<std::endl<<"Result:"<<std::endl;
         std::cout<<generator.generate(uploadedList);
         std::cerr<<std::endl;
     }
-    {
-        std::lock_guard<std::mutex> lk(finishSignalMutex);
-        finished = true;
-    }
-
-    finishSignal.notify_one();
+    
 }
 
 void UploadTaskProgress(UploadTask* task) {
@@ -408,11 +403,11 @@ void UploadTaskProgress(UploadTask* task) {
         return;
     }
     lastProgressTime = ms;
-    int totaldotz=25;
+    int totaldotz=30;
     if(progress->totalUpload == 0)
         return;
 
-    ConsoleUtils::instance()->SetCursorPos(0, 2 + userData->index);
+    //ConsoleUtils::instance()->SetCursorPos(0, 2 + userData->index);
     double fractiondownloaded = static_cast<double>(progress->uploaded) / progress->totalUpload;
     if(fractiondownloaded > 100)
         fractiondownloaded = 0;
@@ -434,7 +429,7 @@ void UploadTaskProgress(UploadTask* task) {
     fprintf(stderr,"]");
     fprintf(stderr," %s/%s", IuCoreUtils::fileSizeToString(progress->uploaded).c_str(),
             IuCoreUtils::fileSizeToString(progress->totalUpload).c_str());
-    //fprintf(stderr,"\r");
+    fprintf(stderr,"\r");
     fflush(stderr);
 }
 
@@ -442,33 +437,41 @@ void OnUploadTaskStatusChanged(UploadTask* task) {
     std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
     UploadProgress* progress = task->progress();
     TaskUserData *userData = reinterpret_cast<TaskUserData*>(task->userData());
-    ConsoleUtils::instance()->SetCursorPos(55, 2 + userData->index);
+    //ConsoleUtils::instance()->SetCursorPos(55, 2 + userData->index);
     fprintf(stderr, progress->statusText.c_str());
 }
 
+void OnQueueFinished(CFileQueueUploader*) {
+    {
+        // LOG(ERROR) << "Sending finish signal" << std::endl;
+        std::lock_guard<std::mutex> lk(finishSignalMutex);
+        finished = true;
+    }
+
+    finishSignal.notify_one();
+}
 int func() {
 	int res = 0;
-    ConsoleLogger defaultLogger;
     ConsoleUploadErrorHandler uploadErrorHandler;
-
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
-    serviceLocator->setLogger(&defaultLogger);
-    MyLogSink logSink(&defaultLogger);
-    google::AddLogSink(&logSink);
+
     ConsoleScriptDialogProvider dialogProvider;
+
     serviceLocator->setDialogProvider(&dialogProvider);
     serviceLocator->setTranslator(&translator);
 
     Settings.setEngineList(&list);
     ServiceLocator::instance()->setEngineList(&list);
     ScriptsManager scriptsManager;
+    std::unique_ptr<UploadEngineManager> uploadEngineManager;
     uploadEngineManager.reset( new UploadEngineManager(&list, &uploadErrorHandler));
 #ifdef _WIN32
     uploadEngineManager->setScriptsDirectory(IuCoreUtils::WstringToUtf8((LPCTSTR)(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\"))));
 #endif
+    std::unique_ptr<UploadManager> uploadManager;
     uploadManager.reset( new UploadManager(uploadEngineManager.get(), &list, &scriptsManager, &uploadErrorHandler));
-
+    uploadManager->setMaxThreadCount(1);
     if ( !proxy.empty()) {
         Settings.ConnectionSettings.UseProxy = true;
         Settings.ConnectionSettings.ServerAddress= proxy;
@@ -505,7 +508,6 @@ int func() {
 
     ServerSettingsStruct& s = Settings.ServersSettings[uploadEngineData->Name][login];
 
-    //printf("Login: %s", login.c_str());
     s.authData.Password = password;
     s.authData.Login = login;
     if(!login.empty()) {
@@ -535,15 +537,18 @@ int func() {
         session->addTask(task);
     }
     session->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(OnUploadSessionFinished));
-    ConsoleUtils::instance()->InitScreen();
-    ConsoleUtils::instance()->Clear();
-    PrintWelcomeMessage();
+    //ConsoleUtils::instance()->InitScreen();
+    //ConsoleUtils::instance()->Clear();
+    //PrintWelcomeMessage();
     uploadManager->addSession(session);
+    uploadManager->OnQueueFinished.bind(OnQueueFinished);
     uploadManager->start();
 
     // Wait until upload session is finished
     std::unique_lock<std::mutex> lk(finishSignalMutex);
-    finishSignal.wait(lk, [] {return finished;});
+    while (!finished) {
+        finishSignal.wait(lk/*, [] {return finished;}*/);
+    }
 	return res;	
 }
 
@@ -630,6 +635,15 @@ int _tmain(int argc, _TCHAR* argvW[]) {
 int main(int argc, char *argv[]){
 #endif
     google::InitGoogleLogging(argv[0]);
+
+    ConsoleLogger defaultLogger;
+    
+    ServiceLocator* serviceLocator = ServiceLocator::instance();
+  
+    serviceLocator->setLogger(&defaultLogger);
+    MyLogSink logSink(&defaultLogger);
+    google::AddLogSink(&logSink);
+
     int res  = 0;
     std::string appDirectory = IuCoreUtils::ExtractFilePath(argv[0]);
     std::string settingsFolder;
