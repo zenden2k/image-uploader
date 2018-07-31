@@ -24,6 +24,7 @@
 #include "Uploader.h"
 #include "Core/Settings.h"
 #include "FileUploadTask.h"
+#include "Core/CommonDefs.h"
 #include <chrono>
 #include <thread>
 

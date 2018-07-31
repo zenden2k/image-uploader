@@ -110,7 +110,7 @@ bool Script::load(std::string fileName)
     using namespace Sqrat;
     if (!IuCoreUtils::FileExists(fileName))
     {
-        LOG(ERROR) << "Script file doesn't exist " << fileName;
+        LOG(ERROR) << "Script file doesn't exist: " << fileName;
         return false;
     }
        

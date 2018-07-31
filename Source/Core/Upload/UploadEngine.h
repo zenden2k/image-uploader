@@ -289,6 +289,7 @@ private:
 };
 
 class UploadTask;
+class CUploader;
 
 class CAbstractUploadEngine
 {

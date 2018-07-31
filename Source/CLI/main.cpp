@@ -466,9 +466,8 @@ int func() {
     ScriptsManager scriptsManager;
     std::unique_ptr<UploadEngineManager> uploadEngineManager;
     uploadEngineManager.reset( new UploadEngineManager(&list, &uploadErrorHandler));
-#ifdef _WIN32
-    uploadEngineManager->setScriptsDirectory(IuCoreUtils::WstringToUtf8((LPCTSTR)(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\"))));
-#endif
+    std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
+    uploadEngineManager->setScriptsDirectory(scriptsDirectory);
     std::unique_ptr<UploadManager> uploadManager;
     uploadManager.reset( new UploadManager(uploadEngineManager.get(), &list, &scriptsManager, &uploadErrorHandler));
     uploadManager->setMaxThreadCount(1);

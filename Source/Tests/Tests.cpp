@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
-
-#include <vld.h>
+#ifdef _MSC_VER
+    #include <vld.h> //Check for memory leaks
+#endif
 #define _SQ64
 #include "Core/Scripting/Squirrelnc.h"
 #include <sqtest/sqtest.h>

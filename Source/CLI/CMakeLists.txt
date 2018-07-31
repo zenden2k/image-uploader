@@ -21,6 +21,8 @@ add_definitions(-DCURL_STATICLIB -DPCRE_STATIC -DTIXML_USE_STL -DIU_CLI -DGOOGLE
 
 if(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include)
+else()
+    include_directories(${Boost_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
 endif()
 
 if (MSVC)
@@ -36,13 +38,12 @@ add_executable(CLI
 
 set_target_properties( CLI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/CLI/)
 
-set(LIBS_LIST libiucore squirrel sqstdlib jsoncpp pcre gumbo mega uriparser cryptopp cares libuv)
-
+set(LIBS_LIST libiucore squirrel sqstdlib jsoncpp pcre gumbo mega uriparser cryptopp cares )
 
 if(WIN32)
-    list(APPEND LIBS_LIST libcurl libeay32 ssleay32 Oleacc libglog_static minizip Userenv Psapi Iphlpapi Winhttp)
+    list(APPEND LIBS_LIST libcurl libeay32 ssleay32 Oleacc libglog_static minizip Userenv Psapi Iphlpapi Winhttp libuv)
 else()
-    list(APPEND LIBS_LIST curl ssl crypto glog pthread boost_filesystem boost_system ncurses)
+    list(APPEND LIBS_LIST curl ssl crypto glog pthread uv rt sqlite3 ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES})
 endif()
 
 target_link_libraries(CLI ${LIBS_LIST})

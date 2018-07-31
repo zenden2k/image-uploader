@@ -10,7 +10,7 @@ std::string AppParams::dataDirectory()
 
 void AppParams::setDataDirectory(const std::string& directory)
 {
-    settingsDirectory_ = directory;
+    dataDirectory_ = directory;
 }
 
 std::string AppParams::settingsDirectory()

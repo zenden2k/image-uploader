@@ -1,3 +1,11 @@
-Необходимо собрать 2 версии release:
+﻿Необходимо собрать 2 версии release:
 c дефайном USE_OPENSSL и без
 (mega_openssl.lib и mega.lib)
+
+
+Building on Ubuntu:
+sh autogen.sh
+./configure --without-sqlite --without-freeimage  --enable-static
+make
+sudo make install
+
