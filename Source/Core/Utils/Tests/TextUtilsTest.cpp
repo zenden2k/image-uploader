@@ -162,7 +162,7 @@ TEST_F(TextUtilsTest, AllCodes)
     TestEscape("yen", 0xa5, "\xc2\xa5");
     TestEscape("yuml", 0xff, "\xc3\xbf");
 }
-
+/*
 TEST_F(TextUtilsTest, BbCodeToHtml) {
     EXPECT_EQ("<img src=\"http://example.com/img.png\" style=\"border:0\">", BbCodeToHtml("[img]http://example.com/img.png[/img]"));
     EXPECT_EQ("<a href=\"http://google.com\" target=\"_blank\"><img src=\"http://example.com/img.png\" style=\"border:0\"></a>", 
@@ -173,4 +173,4 @@ TEST_F(TextUtilsTest, BbCodeToHtml) {
     EXPECT_EQ("", BbCodeToHtml(""));
     EXPECT_EQ("<br/><br/>", BbCodeToHtml("\r\n\r\n"));
     EXPECT_EQ("<br/><br/>", BbCodeToHtml("\n\r\n"));
-}
+}*/

@@ -1,4 +1,4 @@
-AppVersion="0.2.4"
+AppVersion="0.2.7"
 
 # Get the machine Architecture
 Architecture=$(uname -m)
@@ -16,22 +16,28 @@ esac
 
 echo "Detected Architecture : $Architecture"
 
-cp imgupload/DEBIAN/control_ imgupload/DEBIAN/control
-mkdir ./imgupload/usr/bin/
-sed -i "s/YOUR_ARCHITECTURE/$Architecture/g" imgupload/DEBIAN/control
-mkdir -p ./imgupload/usr/share/imgupload/
-mkdir -p ./imgupload/usr/share/imgupload/Scripts/
+mkdir -p ~/imgupload/DEBIAN
+cp control_ ~/imgupload/DEBIAN/control
+cp dirs ~/imgupload/DEBIAN/dirs
+mkdir -p ~/imgupload/usr/bin
+sed -i "s/YOUR_ARCHITECTURE/$Architecture/g" ~/imgupload/DEBIAN/control
+mkdir -p ~/imgupload/usr/share/imgupload/
+mkdir -p ~/imgupload/usr/share/imgupload/Scripts/
 #rm ./imgupload/usr/share/imgupload/Scripts/*
 #mkdir -p ./imgupload/usr/share/imgupload/Update/
 #set -e
-cp ../../Build/CLI/linux/${Architecture}/release/executable/imgupload ./imgupload/usr/bin/
-cp ../../Data/servers.xml ./imgupload/usr/share/imgupload/servers.xml
-cp ../../Data/Scripts/*.nut ./imgupload/usr/share/imgupload/Scripts/
+objcopy --strip-debug --strip-unneeded ../../Build-Linux-Release-${Architecture}/CLI/CLI ~/imgupload/usr/bin/imgupload
+cp ../../Data/servers.xml ~/imgupload/usr/share/imgupload/servers.xml
+cp ../../Data/Scripts/*.nut ~/imgupload/usr/share/imgupload/Scripts/
 #cp ../../Data/Update/iu_serversinfo.xml ./imgupload/usr/share/imgupload/Update/iu_serversinfo.xml
 
-if [ ! -f ./imgupload/usr/bin/imgupload ]; then
+if [ ! -f ~/imgupload/usr/bin/imgupload ]; then
     echo "Executable not found!"
     exit
 fi
 
-fakeroot dpkg-deb --build imgupload/ "imgupload_${AppVersion}_${Architecture}.deb"
+chmod -R 0755 ~/imgupload/
+chmod -x ~/imgupload/usr/share/imgupload/Scripts/*.nut
+chmod -x ~/imgupload/usr/share/imgupload/servers.xml
+
+fakeroot dpkg-deb --build ~/imgupload/ "imgupload_${AppVersion}_${Architecture}.deb"

@@ -1,20 +1,3 @@
-include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/)
-
-include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/pcre/)
-include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/squirrel/)
-include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/sqplus/)
-include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/gumbo/)
-
-if(WIN32)
-    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/Libs/)
-    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/WTL/)
-    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Source/boost/)
-endif()
-
-include_directories(${CMAKE_SOURCE_DIR}/)
-
-add_definitions(-DCURL_STATICLIB -DPCRE_STATIC -DTIXML_USE_STL -DIU_CLI -DGOOGLE_GLOG_DLL_DECL= -DENABLE_SYNC -DSCRAT_USE_EXCEPTIONS)
-
 if (MSVC)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")

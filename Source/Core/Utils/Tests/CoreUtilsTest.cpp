@@ -141,7 +141,7 @@ TEST_F(CoreUtilsTest, Utf8ToWstring)
 TEST_F(CoreUtilsTest, getFileSize)
 {
     int64_t size = IuCoreUtils::getFileSize("not_existing_file22342343");
-    EXPECT_EQ(size, 0);
+    EXPECT_EQ(size, -1);
     size = IuCoreUtils::getFileSize(constSizeFileName);
     EXPECT_EQ(size, contSizeFileSize);
 }
@@ -157,6 +157,7 @@ TEST_F(CoreUtilsTest, copyFile)
     EXPECT_EQ(size, contSizeFileSize);
 }
 
+#ifdef _WIN32
 TEST_F(CoreUtilsTest, gettimeofday)
 {
     struct timeval tp;
@@ -166,6 +167,7 @@ TEST_F(CoreUtilsTest, gettimeofday)
     int64_t curTime2 = tp.tv_sec * 1000 + tp.tv_usec / 1000;
     EXPECT_GE(curTime2, curTime2);
 }
+#endif
 
 TEST_F(CoreUtilsTest, ReadUtf8TextFile)
 {

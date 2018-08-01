@@ -33,6 +33,7 @@
 
 using namespace mega;
 
+#ifdef _WIN32
 class MyGfxProcessor : public mega::MegaGfxProcessor {
 public:
     virtual bool readBitmap(const char* path) override;
@@ -71,6 +72,7 @@ void MyGfxProcessor::freeBitmap() {
 MyGfxProcessor::~MyGfxProcessor() {
 }
 
+#endif
 class MyListener : public mega::MegaListener {
 public:
     explicit MyListener(CMegaNzUploadEngine* engine) {
@@ -96,8 +98,12 @@ CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsS
 {
     setServerSettings(settings);
     folderList_ = nullptr;
+#ifdef _WIN32
     proc_ = new MyGfxProcessor();
     megaApi_=new MegaApi(APP_KEY, proc_, (const char *)NULL, USER_AGENT);
+#else 
+    megaApi_ = new MegaApi(APP_KEY, (const char *)NULL, USER_AGENT);
+#endif
     megaApi_->setLogLevel(MegaApi::LOG_LEVEL_INFO);
     listener_ = new MyListener(this);
     megaApi_->addListener(listener_);
@@ -130,7 +136,9 @@ CMegaNzUploadEngine::~CMegaNzUploadEngine()
 {
     megaApi_->removeListener(listener_);
     delete megaApi_;
+#ifdef _WIN32
     delete proc_;
+#endif
 }
 
 int CMegaNzUploadEngine::getFolderList(CFolderList& FolderList) {
@@ -362,7 +370,7 @@ void MyListener::onRequestFinish(MegaApi* api, MegaRequest *request, MegaError* 
             char* link = node->getPublicLink();
             if (link) {
                 engine_->publicLink_ = link;
-                std::cout << "***** Public link " << link;
+                //std::cout << "***** Public link " << link;
                 engine_->exportSuccess_ = true;
                 delete[] link;
             }
@@ -462,7 +470,7 @@ void MyListener::onUsersUpdate(MegaApi* api, MegaUserList *users)
         //Full account reload
         return;
     }
-    std::cout << "***** There are " << users->size() << " new or updated users in your account" << std::endl;
+    //std::cout << "***** There are " << users->size() << " new or updated users in your account" << std::endl;
 }
 
 void MyListener::onNodesUpdate(MegaApi* api, MegaNodeList *nodes)
@@ -472,5 +480,5 @@ void MyListener::onNodesUpdate(MegaApi* api, MegaNodeList *nodes)
         return;
     }
 
-    std::cout << "***** There are " << nodes->size() << " new or updated node/s in your account" << std::endl;
+    //std::cout << "***** There are " << nodes->size() << " new or updated node/s in your account" << std::endl;
 }

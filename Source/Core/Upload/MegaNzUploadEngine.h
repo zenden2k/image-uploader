@@ -21,6 +21,7 @@
 #ifndef _IU_MEGANZ_UPLOAD_ENGINE_H
 #define _IU_MEGANZ_UPLOAD_ENGINE_H
 
+
 #include <vector>
 #include <string>
 
@@ -61,7 +62,9 @@ class CMegaNzUploadEngine : public CAdvancedUploadEngine
         
 
         mega::MegaApi* megaApi_;
+#ifdef _WIN32
         MyGfxProcessor* proc_;
+#endif
         MyListener* listener_;
         CFolderList* folderList_;
         std::unique_ptr<mega::MegaProxy> proxy_;

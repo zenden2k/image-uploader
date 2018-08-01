@@ -1,0 +1,120 @@
+﻿Building on Windows:
+
+You need Microsoft Visual Studio 2013 to build Image Uploader. 
+Installing Visual Studio 2013 Update 4 is strongly recommended (older versions corrupt .rc files after editing)
+If you are using a newer MSVC version, you may experience some compilation errors, which can be solved easily (if you fix these errors, please provide a patch or pull request). 
+But also you need to recompile 3rd-party 
+libraries (boost, glog, jsoncpp, etc) against your compiler version (so I recommend to use Microsoft Visual Studio 2013 Update 4 to avoid all these issues).
+
+You can download ALL necessary libraries and headers (precompiled for MSVC 2013) by following link:
+
+mirror1 https://drive.google.com/file/d/1jJM9NLEPfdPLCjh_dOTx1O9S7bonjsr2/view?usp=drivesdk
+
+Image Uploader is using the following libraries:
+
+WTL             http://sourceforge.net/projects/wtl/
+
+libcurl         http://curl.haxx.se/libcurl/ (patched version)
+
+openssl         https://www.openssl.org
+
+zlib            http://www.zlib.net
+
+Boost           http://www.boost.org (patched version)
+
+pcre            http://www.pcre.org
+
+pcre++          http://www.daemon.de/PCRE (patched version)
+
+squirrel        http://squirrel-lang.org (patched version)
+
+sqrat		    http://scrat.sourceforge.net (patched version)
+
+ffmpeg          https://www.ffmpeg.org
+
+Boost.Process   https://github.com/zenden2k/boost-process-utf8 (patched version with utf-8 support)
+
+tinyxml         http://sourceforge.net/projects/tinyxml/
+
+gumbo           https://github.com/google/gumbo-parser
+
+gumbo-query     https://github.com/lazytiger/gumbo-query
+
+minizip         http://www.winimage.com/zLibDll/minizip.html
+
+jsoncpp         https://github.com/open-source-parsers/jsoncpp
+
+glog            https://github.com/google/glog
+
+libwebp         https://github.com/webmproject/libwebp
+
+base64          https://github.com/aklomp/base64
+
+Libraries for Mega.nz support:
+
+Mega SDK        https://github.com/meganz/sdk
+
+Crypto++        https://www.cryptopp.com/
+
+c-ares          https://c-ares.haxx.se/
+
+libuv           https://github.com/libuv/libuv
+
+
+If you want to compile strmbase.lib by yourself you will need:
+
+DirectX 8 SDK
+
+DirectShow BaseClasses
+
+--------------------------------------------------------------------------
+Building on Ubuntu:
+
+Before compiling IU install the following packages:
+#cmake-extras
+cmake
+cmake-qt-gui
+autoconf
+automake
+libtool-bin
+libgtest-dev
+libgoogle-glog-dev
+libboost-dev
+libboost-filesystem-dev
+libboost-system-dev
+libboost-locale-dev
+libboost-thread-dev
+libssl-dev
+libpcre3-dev
+libgumbo-dev
+libc-ares-dev
+libuv1-dev
+libcrypto++-dev
+libjsoncpp-dev
+liburiparser-dev
+libicu-dev
+mega:
+libsqlite3-dev 
+libreadline-dev 
+libfreeimage-dev
+
+building gtest:
+cd /usr/src/gtest
+sudo cmake .
+sudo make
+sudo mv libg* /usr/lib/
+
+debian package dependencies:
+libpcre3
+libgumbo1
+libcrypto++9v5
+libjsoncpp1
+libcurl3
+libssl1.0.0
+libgoogle-glog0
+
+-- For mega:
+libc-ares2
+libuv1
+libsqlite3-0
+libfreeimage3

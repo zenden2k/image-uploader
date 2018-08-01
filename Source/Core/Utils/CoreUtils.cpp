@@ -513,6 +513,7 @@ int64_t getFileSize(std::string utf8Filename)
       _stati64 stats;
    #endif
       memset(&stats, 0, sizeof(stats));
+      stats.st_size = -1;
    _wstati64(Utf8ToWstring(utf8Filename).c_str(), &stats);
 #else
    struct stat64 stats;

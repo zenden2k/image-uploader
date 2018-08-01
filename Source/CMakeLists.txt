@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.1)
 #set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
    
 set (CMAKE_CXX_STANDARD 11)
-   
+set(CMAKE_SKIP_RPATH 1)   
 project(ImageUploader)	
 
 #SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE,5.01")
@@ -13,8 +13,7 @@ if (WIN32)
 endif()
 
 if(MSVC)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    add_definitions(-D_WIN32_IE=0x0603 -DWINVER=0x0601 -D_WIN32_WINNT=0x0601)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_WIN32_IE=0x0603 -DWINVER=0x0601 -D_WIN32_WINNT=0x0601 -D_ATL_XP_TARGETING)
 endif(MSVC)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
@@ -25,16 +24,53 @@ set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 
 if (NOT WIN32) 
-    find_package(Boost COMPONENTS filesystem system REQUIRED)
+    find_package(Boost COMPONENTS filesystem system locale thread REQUIRED)
     find_package(OpenSSL REQUIRED)
     message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
     message("OpenSSL libraries: ${OPENSSL_LIBRARIES}")
+    add_definitions(-DUSE_OPENSSL -DUSE_FREEIMAGE)
+    find_package(jsoncpp REQUIRED)
+    if(jsoncpp_FOUND)
+         message("jsoncpp found")
+         set(LIBJSONCPP_INCLUDE_DIR $<TARGET_PROPERTY:jsoncpp_lib_static,INTERFACE_INCLUDE_DIRECTORIES>)
+    endif()
+endif()
+
+include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include)
+include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/squirrel/)
+include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/sqplus/)
+include_directories(${CMAKE_SOURCE_DIR}/)
+
+if(WIN32)
+    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/Libs/)
+    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Source/boost/)
+    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/WTL/)
+    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/gumbo/)
+    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/pcre/)
+endif()
+
+
+link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+
+add_definitions(-DCURL_STATICLIB -DPCRE_STATIC -DTIXML_USE_STL -DGOOGLE_GLOG_DLL_DECL= -DENABLE_SYNC -DSCRAT_USE_EXCEPTIONS -DIU_CLI)
+
+if(WIN32)
+    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include)
+    link_directories(${CMAKE_SOURCE_DIR}/../Contrib/Lib/ ${CMAKE_SOURCE_DIR}/../Contrib/Source/boost/stage/lib/)
+else()
+    include_directories(${Boost_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${LIBJSONCPP_INCLUDE_DIR})
+endif()
+
+# libiucore depends on these libraries
+set(COMMON_LIBS_LIST squirrel sqstdlib pcre gumbo mega uriparser cryptopp cares)
+
+if(WIN32)
+    list(APPEND COMMON_LIBS_LIST libcurl libeay32 ssleay32 Oleacc libglog_static minizip Userenv Psapi Iphlpapi Winhttp libuv jsoncpp)
+else()
+    list(APPEND COMMON_LIBS_LIST jsoncpp_lib_static curl ssl crypto glog pthread uv rt sqlite3 freeimage ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES})
 endif()
 
 add_subdirectory(Core)	
 add_subdirectory(CLI)	
 add_subdirectory(Tests)	
-
-#target_link_libraries(ImageUploader iuCore)
-
-#target_link_libraries(main foo)	
+	

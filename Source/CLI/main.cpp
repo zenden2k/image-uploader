@@ -15,7 +15,7 @@
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
-
+    
 */
 
 #include <math.h>
@@ -439,6 +439,7 @@ void OnUploadTaskStatusChanged(UploadTask* task) {
     TaskUserData *userData = reinterpret_cast<TaskUserData*>(task->userData());
     //ConsoleUtils::instance()->SetCursorPos(55, 2 + userData->index);
     fprintf(stderr, progress->statusText.c_str());
+    fprintf(stderr, "\r");
 }
 
 void OnQueueFinished(CFileQueueUploader*) {
@@ -613,7 +614,7 @@ void DoUpdates(bool force) {
 char ** convertArgv(int argc, _TCHAR* argvW[]) {
 	char ** result = new char *[argc];
 	for ( int i = 0; i < argc; i++) {
-		std::string unicodeString = IuCoreUtils::WstringToUtf8(argvW[i]).c_str();
+		std::string unicodeString = IuCoreUtils::WstringToUtf8(argvW[i]);
 		char *buffer = new char[unicodeString.length()+1];
 		strcpy(buffer, unicodeString.c_str());
 		result[i] = buffer;

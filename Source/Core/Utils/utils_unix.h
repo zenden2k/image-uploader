@@ -91,7 +91,7 @@ std::string GetFileMimeType(const std::string name)
 bool copyFile(const std::string& from, const std::string & to, bool overwrite)
 {
     const int BUFSIZE = 64 * 1024;
-    char buf[BUFSIZ];
+    char buf[BUFSIZE];
     size_t size;
 
     FILE* source = fopen_utf8(from.c_str(), "rb");

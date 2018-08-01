@@ -1,11 +1,14 @@
-﻿Необходимо собрать 2 версии release:
+﻿Сборка на Windows:
+Необходимо собрать 2 версии release:
 c дефайном USE_OPENSSL и без
 (mega_openssl.lib и mega.lib)
 
+Библиотека mega должна быть собрана с выключенной опцией ENABLE_CHAT
+и с включенной опцией ENABLE_SYNC, несоответствие настроек вызовет падение
 
 Building on Ubuntu:
 sh autogen.sh
-./configure --without-sqlite --without-freeimage  --enable-static
+./configure --without-sqlite --without-freeimage  --enable-static --disable-chat --disable-examples --disable-debug CPPFLAGS=-DNDEBUG
+./configure --without-sqlite --with-freeimage  --enable-static --disable-chat --disable-examples --disable-debug CPPFLAGS=-DNDEBUG
 make
-sudo make install
-
+sudo make install-strip
