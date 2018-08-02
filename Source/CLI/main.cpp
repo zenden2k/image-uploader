@@ -62,7 +62,7 @@
 #endif
 #include "versioninfo.h"
 
-#define IU_CLI_VER "0.2.7"
+#define IU_CLI_VER "0.2.6"
 
 #ifdef _WIN32
 CAppModule _Module;
@@ -472,6 +472,7 @@ int func() {
     std::unique_ptr<UploadManager> uploadManager;
     uploadManager.reset( new UploadManager(uploadEngineManager.get(), &list, &scriptsManager, &uploadErrorHandler));
     uploadManager->setMaxThreadCount(1);
+    uploadManager->setEnableHistory(false);
     if ( !proxy.empty()) {
         Settings.ConnectionSettings.UseProxy = true;
         Settings.ConnectionSettings.ServerAddress= proxy;

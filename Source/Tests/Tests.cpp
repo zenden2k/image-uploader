@@ -2,7 +2,7 @@
 #ifdef _MSC_VER
     #include <vld.h> //Check for memory leaks
 #endif
-#define _SQ64
+
 #include "Core/Scripting/Squirrelnc.h"
 #include <sqtest/sqtest.h>
 #include "Core/Scripting/API/ScriptAPI.h"
@@ -40,7 +40,7 @@ void errorHandler(HSQUIRRELVM vm, const SQChar *s, ...)
 char ** convertArgv(int argc, _TCHAR* argvW[]) {
     char ** result = new char *[argc];
     for (int i = 0; i < argc; i++) {
-        std::string unicodeString = IuCoreUtils::WstringToUtf8(argvW[i]).c_str();
+        std::string unicodeString = IuCoreUtils::WstringToUtf8(argvW[i]);
         char *buffer = new char[unicodeString.length() + 1];
         strcpy(buffer, unicodeString.c_str());
         result[i] = buffer;

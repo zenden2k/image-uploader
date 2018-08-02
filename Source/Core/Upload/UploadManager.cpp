@@ -26,7 +26,7 @@ UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, CUploadEn
     addUploadFilter(&sizeExceedFilter_);
 #endif
     addUploadFilter(&urlShorteningFilter);
-
+    enableHistory_ = true;
     setMaxThreadCount(Settings.MaxThreads);
     Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &UploadManager::settingsChanged));
     OnConfigureNetworkClient.bind(this, &UploadManager::configureNetwork);
@@ -54,6 +54,10 @@ bool UploadManager::shortenLinksInSession(std::shared_ptr<UploadSession> session
     return res;
 }
 
+void UploadManager::setEnableHistory(bool enable) {
+    enableHistory_ = enable;
+}
+
 void UploadManager::configureNetwork(CFileQueueUploader* uploader, NetworkClient* networkClient)
 {
     CoreFunctions::ConfigureProxy(networkClient);
@@ -73,12 +77,15 @@ void UploadManager::onSessionFinished(UploadSession* uploadSession)
 void UploadManager::onTaskFinished(UploadTask* task, bool ok)
 {
     UploadSession* uploadSession = task->session();
-    CHistoryManager * mgr = ServiceLocator::instance()->historyManager();
-    std::lock_guard<std::mutex> lock(uploadSession->historySessionMutex_);
-    std::shared_ptr<CHistorySession> session = uploadSession->historySession_;
-    if (!session) {
-        session = mgr->newSession();
-        uploadSession->historySession_ = session;
+    std::shared_ptr<CHistorySession> session;
+    if (enableHistory_) {
+        CHistoryManager * mgr = ServiceLocator::instance()->historyManager();
+        std::lock_guard<std::mutex> lock(uploadSession->historySessionMutex_);
+        session = uploadSession->historySession_;
+        if (!session) {
+            session = mgr->newSession();
+            uploadSession->historySession_ = session;
+        }
     }
 
     FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
@@ -96,27 +103,28 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
     {
         return ;
     }
-
+    
 #ifndef IU_SERVERLISTTOOL
-    HistoryItem hi;
-    hi.localFilePath = fileTask->originalFileName();
-    hi.serverName = fileTask->serverProfile().serverName();
-    UploadResult* uploadResult = fileTask->uploadResult();
-    hi.directUrl = uploadResult->directUrl;
-    hi.directUrlShortened = uploadResult->directUrlShortened;
-    hi.thumbUrl = uploadResult->thumbUrl;
-    hi.viewUrl = uploadResult->downloadUrl;
-    hi.viewUrlShortened = uploadResult->downloadUrlShortened;
-    hi.editUrl = uploadResult->editUrl;
-    hi.deleteUrl = uploadResult->deleteUrl;
-    hi.displayName = fileTask->getDisplayName();
-    hi.sortIndex = fileTask->index();
-    hi.uploadFileSize = fileTask->getDataLength();
-    if (!hi.directUrl.empty())
-    {
-        LocalFileCache::instance()->addFile(hi.directUrl, hi.localFilePath);
+    if (enableHistory_) {
+        HistoryItem hi;
+        hi.localFilePath = fileTask->originalFileName();
+        hi.serverName = fileTask->serverProfile().serverName();
+        UploadResult* uploadResult = fileTask->uploadResult();
+        hi.directUrl = uploadResult->directUrl;
+        hi.directUrlShortened = uploadResult->directUrlShortened;
+        hi.thumbUrl = uploadResult->thumbUrl;
+        hi.viewUrl = uploadResult->downloadUrl;
+        hi.viewUrlShortened = uploadResult->downloadUrlShortened;
+        hi.editUrl = uploadResult->editUrl;
+        hi.deleteUrl = uploadResult->deleteUrl;
+        hi.displayName = fileTask->getDisplayName();
+        hi.sortIndex = fileTask->index();
+        hi.uploadFileSize = fileTask->getDataLength();
+        if (!hi.directUrl.empty()) {
+            LocalFileCache::instance()->addFile(hi.directUrl, hi.localFilePath);
+        }
+        session->addItem(hi);
     }
-    session->addItem(hi);
 #endif
 }
 

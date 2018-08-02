@@ -6,7 +6,7 @@
 #include "Core/3rdpart/htmlentities.h"
 #include <stdio.h>
 #include <boost/lexical_cast.hpp>
-#include <codecvt>
+//#include <codecvt>
 
 namespace IuTextUtils
 {

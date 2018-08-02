@@ -19,6 +19,7 @@ public:
     UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler);
     ~UploadManager();
     bool shortenLinksInSession(std::shared_ptr<UploadSession> session);
+    void setEnableHistory(bool enable);
 protected:
 #ifdef IU_WTL_APP
     ImageConverterFilter imageConverterFilter;
@@ -27,6 +28,7 @@ protected:
     UrlShorteningFilter urlShorteningFilter;
     UserFilter userFilter;
     UploadEngineManager* uploadEngineManager_;
+    bool enableHistory_;
 
     void configureNetwork(CFileQueueUploader* uploader, NetworkClient* networkClient);
     void sessionAdded(UploadSession* session) override;

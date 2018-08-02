@@ -1,4 +1,4 @@
-AppVersion="0.2.7"
+AppVersion="0.2.6"
 
 # Get the machine Architecture
 Architecture=$(uname -m)
@@ -26,7 +26,7 @@ mkdir -p ~/imgupload/usr/share/imgupload/Scripts/
 #rm ./imgupload/usr/share/imgupload/Scripts/*
 #mkdir -p ./imgupload/usr/share/imgupload/Update/
 #set -e
-objcopy --strip-debug --strip-unneeded ../../Build-Linux-Release-${Architecture}/CLI/CLI ~/imgupload/usr/bin/imgupload
+objcopy --strip-debug --strip-unneeded ../../Build/Linux-Release-${Architecture}/CLI/CLI ~/imgupload/usr/bin/imgupload
 cp ../../Data/servers.xml ~/imgupload/usr/share/imgupload/servers.xml
 cp ../../Data/Scripts/*.nut ~/imgupload/usr/share/imgupload/Scripts/
 #cp ../../Data/Update/iu_serversinfo.xml ./imgupload/usr/share/imgupload/Update/iu_serversinfo.xml
