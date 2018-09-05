@@ -82,10 +82,10 @@ int proxyType; /* CURLPROXY_HTTP, CURLPROXY_SOCKS4, CURLPROXY_SOCKS4A,
 			   CURLPROXY_SOCKS5, CURLPROXY_SOCKS5_HOSTNAME */
 std::string proxyUser;
 std::string proxyPassword;
-
+#ifdef _WIN32
+bool useSystemProxy = false;
+#endif
 CUploadEngineList list;
-
-
 
 ZOutputCodeGenerator::CodeType codeType = ZOutputCodeGenerator::ctClickableThumbnails;
 ZOutputCodeGenerator::CodeLang codeLang = ZOutputCodeGenerator::clPlain;
@@ -157,7 +157,8 @@ void PrintHelp() {
    std::cerr<<" -pu <username> Proxy username"<<std::endl;
    std::cerr<<" -pp <password> Proxy password"<<std::endl;
 #ifdef _WIN32
-    std::cerr<<" --disable-update Disable auto-updating servers.xml"<<std::endl;
+    std::cerr << " -ps Use system proxy settings (this option supported only on Windows)" << std::endl;
+    //std::cerr<<" --disable-update Disable auto-updating servers.xml"<<std::endl;
 	std::cerr<<std::endl<<" -up   Update servers.xml\r\n"
 		<<"     the 'Data' directory must be writable, otherwise update will fail"
 		<<std::endl;
@@ -314,6 +315,11 @@ bool parseCommandLine(int argc, char *argv[])
             continue;
         }
 #ifdef _WIN32
+        else if (!IuStringUtils::stricmp(opt, "-ps")) {
+            useSystemProxy = true;
+            i++;
+            continue;
+        }
         else if(!IuStringUtils::stricmp(opt, "-up"))
         {
             DoUpdates(true);
@@ -473,8 +479,11 @@ int func() {
     uploadManager.reset( new UploadManager(uploadEngineManager.get(), &list, &scriptsManager, &uploadErrorHandler));
     uploadManager->setMaxThreadCount(1);
     uploadManager->setEnableHistory(false);
-    if ( !proxy.empty()) {
-        Settings.ConnectionSettings.UseProxy = true;
+
+    if (useSystemProxy) {
+        Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kSystemProxy;
+    } else if ( !proxy.empty()) {
+        Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kUserProxy;
         Settings.ConnectionSettings.ServerAddress= proxy;
         Settings.ConnectionSettings.ProxyPort = proxyPort;
 

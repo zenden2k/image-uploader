@@ -1296,7 +1296,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
         //pDlg->SetDefaultExtension(L"txt");
 
         pDlg->GetOptions(&dwFlags);
-        pDlg->SetOptions(dwFlags | FOS_ALLOWMULTISELECT | FOS_FILEMUSTEXIST);
+        pDlg->SetOptions(dwFlags | FOS_ALLOWMULTISELECT | FOS_FILEMUSTEXIST | FOS_FORCEFILESYSTEM);
         // Create the file-open dialog COM object.
         hr = pDlg->Show(m_hWnd);
 
@@ -1334,7 +1334,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
                                     nCount++;
                                 }
                                 CoTaskMemFree(pwsz);
-                            }
+                            } 
                         }
                     }
                 }

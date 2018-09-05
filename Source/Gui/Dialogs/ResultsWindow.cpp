@@ -167,6 +167,10 @@ void CResultsWindow::Unlock()
     ResultsPanel->UrlListCS.unlock();
 }
 
+bool CResultsWindow::copyResultsToClipboard() {
+    return ResultsPanel->copyResultsToClipboard();
+}
+
 void CResultsWindow::setUrlList(CAtlArray<CUrlListItem>  * urlList)
 {
     ResultsPanel->setUrlList(urlList);

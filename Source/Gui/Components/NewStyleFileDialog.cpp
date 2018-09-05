@@ -53,7 +53,7 @@ CNewStyleFileDialog::CNewStyleFileDialog(HWND parent, const CString& initialFold
     if (multiselect) {
         dwFlags |= FOS_ALLOWMULTISELECT;
     }
-    dwFlags |= FOS_FILEMUSTEXIST;
+    dwFlags |= FOS_FILEMUSTEXIST | FOS_FORCEFILESYSTEM;
     newStyleDialog_->SetOptions(dwFlags);
 }
 

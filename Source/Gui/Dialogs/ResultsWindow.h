@@ -56,6 +56,7 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
         void setOnShortenUrlChanged(fastdelegate::FastDelegate1<bool> fd); 
         void setShortenUrls(bool shorten);
         void setUrlList(CAtlArray<CUrlListItem>  * urlList);
+        bool copyResultsToClipboard();
         enum { IDD = IDD_RESULTSWINDOW };
 
     private:

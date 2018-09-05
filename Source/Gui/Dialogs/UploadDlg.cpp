@@ -36,7 +36,7 @@
 #include "Func/MediaInfoHelper.h"
 #include "Func/IuCommonFunctions.h"
 #include "Core/AppParams.h"
-#include <Core/ServiceLocator.h>
+#include "Core/ServiceLocator.h"
 
 // CUploadDlg
 CUploadDlg::CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager) : resultsWindow_(new CResultsWindow(dlg, urlList_, true))
@@ -272,16 +272,6 @@ bool CUploadDlg::OnHide()
     return true; 
 }
 
-int GetWindowLeft(HWND Wnd)
-{
-    RECT WindowRect = {0,0,0,0};
-
-    GetWindowRect(Wnd,&WindowRect);
-    HWND Parent = GetParent(Wnd);
-    ScreenToClient(Parent, reinterpret_cast<LPPOINT>(&WindowRect));
-    return WindowRect.left;
-}
-
 void CUploadDlg::GenerateOutput()
 {
     resultsWindow_->UpdateOutput();
@@ -458,6 +448,9 @@ void CUploadDlg::onSessionFinished(UploadSession* session)
     SetDlgItemText(IDC_COMMONPROGRESS2, progressLabelText);
     ThreadTerminated();
     if (successFileCount == totalFileCount) {
+        if (Settings.AutoCopyToClipboard) {
+            resultsWindow_->copyResultsToClipboard();
+        }
         showUploadResultsTab();
     }
 }

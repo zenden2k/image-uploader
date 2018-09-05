@@ -219,6 +219,12 @@ void CResultsPanel::HTML_Link(CString &Buffer, CUrlListItem &item)
     Buffer += _T("</a>");
 }
 
+bool CResultsPanel::copyResultsToClipboard() {
+    BOOL temp;
+    OnBnClickedCopyall(0, 0, 0, temp);
+    return true;
+}
+
 const CString CResultsPanel::GenerateOutput()
 {
     CString Buffer;

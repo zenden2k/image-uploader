@@ -138,6 +138,7 @@ class CResultsPanel :
     LRESULT OnResulttoolbarNMCustomDraw(LPNMHDR pnmh);
     void BBCode_Link(CString &Buffer, CUrlListItem &item);
     void HTML_Link(CString &Buffer, CUrlListItem &item);
+    bool copyResultsToClipboard();
 };
 
 
