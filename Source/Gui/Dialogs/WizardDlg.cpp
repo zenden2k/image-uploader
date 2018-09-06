@@ -1271,7 +1271,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
         LPWSTR wszPath = NULL;
 
         Library DllModule(_T("Shell32.dll"));
-        if (DllModule) {
+        if (Settings.ImagesFolder.IsEmpty()) {
             SHGetKnownFolderPath_func SHGetKnownFolderPathFunc = DllModule.GetProcAddress<SHGetKnownFolderPath_func>("SHGetKnownFolderPath");
             if (SHGetKnownFolderPathFunc) {
                 hr = SHGetKnownFolderPathFunc(FOLDERID_Pictures, KF_FLAG_CREATE,
@@ -1279,7 +1279,6 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 
                 if (SUCCEEDED(hr)) {
                     SHCreateItemFromParsingName_func SHCreateItemFromParsingNameFunc = DllModule.GetProcAddress<SHCreateItemFromParsingName_func>("SHCreateItemFromParsingName");
-                    //Settings.ImagesFolder
                     hr = SHCreateItemFromParsingNameFunc(wszPath, NULL, IID_PPV_ARGS(&psiFolder));
 
                     if (SUCCEEDED(hr))
@@ -1287,6 +1286,13 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 
                     CoTaskMemFree(wszPath);
                 }
+            }
+        } else {
+            SHCreateItemFromParsingName_func SHCreateItemFromParsingNameFunc = DllModule.GetProcAddress<SHCreateItemFromParsingName_func>("SHCreateItemFromParsingName");
+            hr = SHCreateItemFromParsingNameFunc(Settings.ImagesFolder, NULL, IID_PPV_ARGS(&psiFolder));
+
+            if (SUCCEEDED(hr)) {
+                pDlg->SetDefaultFolder(psiFolder);
             }
         }
         
@@ -1405,10 +1411,10 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
         ShowPage(2, 0, 3);
         ((CMainDlg*)Pages[2])->UpdateStatusLabel();
 
-if (CurPage == 2)
-((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
-ShowWindow(SW_SHOW);
-m_bShowWindow = true;
+        if (CurPage == 2)
+        ((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
+        ShowWindow(SW_SHOW);
+        m_bShowWindow = true;
     }
     return true;
 }
@@ -1497,8 +1503,6 @@ bool CWizardDlg::importVideoFile(const CString& fileName, int prevPage) {
 
 bool CWizardDlg::funcImportVideo()
 {
-    CString fileName;
-
     MyFileDialogFactory factory;
     IMyFileDialog::FileFilterArray filters = {
         {CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), Settings.prepareVideoDialogFilters(),},
@@ -1509,16 +1513,15 @@ bool CWizardDlg::funcImportVideo()
     if (dlg->DoModal(m_hWnd) != IDOK) {
         return 0;
     }
-    fileName = dlg->getFile();
+    CString fileName = dlg->getFile();
     Settings.VideoFolder = dlg->getFolderPath();
 
-    
     if (!WinUtils::FileExists(fileName)) {
         return 0;
     }
 	importVideoFile(fileName);
     ShowWindow(SW_SHOW);
-        m_bShowWindow = true;
+    m_bShowWindow = true;
     return true;
 }
 

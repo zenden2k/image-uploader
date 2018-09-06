@@ -29,6 +29,7 @@
 #else
 #define TR(a) _T(a)
 #endif
+#include <Func/Library.h>
 
 namespace GuiTools
 {
@@ -566,20 +567,30 @@ HICON LoadSmallIcon(int resourceId) {
         IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR));
 }
 
-HICON LoadBigIcon(int resourceId, int maxAvailableSize) {
+typedef HRESULT(WINAPI *LoadIconWithScaleDownFuncType)(HINSTANCE hinst, PCWSTR pszName, int cx, int cy, _Out_ HICON *phico);
+
+HICON LoadBigIcon(int resourceId) {
     int iconWidth =  ::GetSystemMetrics(SM_CXICON);
     int iconHeight =  ::GetSystemMetrics(SM_CYICON);
 
-    if ( iconWidth > 32 ) {
+    /*if ( iconWidth > 32 ) {
         iconWidth = 48;
     } 
 
     if ( iconHeight > 32 ) {
         iconHeight = 48;
-    } 
+    } */
 
-    return reinterpret_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), 
-        IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR));
+    if (WinUtils::IsVista()) {
+        Library dllModule(_T("comctl32.dll"));
+        LoadIconWithScaleDownFuncType LoadIconWithScaleDownFunc = dllModule.GetProcAddress<LoadIconWithScaleDownFuncType>("LoadIconWithScaleDown");
+        if (LoadIconWithScaleDownFunc) {
+            HICON result = nullptr;
+            LoadIconWithScaleDownFunc(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), iconWidth, iconHeight, &result);
+            return result;
+        }
+    } 
+    return reinterpret_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR));
 }
 
 };

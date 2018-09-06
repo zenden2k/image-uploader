@@ -286,7 +286,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
     RECT rc;
     GetClientRect(&rc);
 
-    HyperLinkControlItem item;
+    
     CRect r(rc);
     CBrush br;
     //br.CreateSolidBrush(RGB(0,0,0));
@@ -297,8 +297,11 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
     for(size_t i=0; i<Items.GetCount(); i++)
     {
-        if(!Items[i].Visible) continue;
-        item = Items[i];
+        const HyperLinkControlItem& item = Items[i];
+        if (!item.Visible) {
+            continue;
+        }
+
         dc.SetTextColor(RGB(0,0,0));
 
         if(*(item.szTip)) // If we draw "big" item (with tip)
@@ -340,6 +343,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
             dc.SetBkMode(TRANSPARENT);
             if(m_bHyperLinks){
+                //dc.DrawIconEx(item.ItemRect.left, item.ItemRect.top + 2, item.hIcon, 48, 48);
                 dc.DrawIcon(item.ItemRect.left+1,item.ItemRect.top+2,item.hIcon);
             }
             else dc.DrawIcon(item.ItemRect.left+15,item.ItemRect.top+2,item.hIcon);

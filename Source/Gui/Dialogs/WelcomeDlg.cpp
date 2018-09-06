@@ -77,7 +77,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     if(lstrlen(MediaInfoDllPath))
         ListBox.AddString(TR("View Media File Information"), 0, IDC_MEDIAFILEINFO, reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONINFO), IMAGE_ICON, 16,16,0)));
 
-    ListBox.AddString(TR("Program Settings"), TR("a tool for advanced users"), IDC_SETTINGS, GuiTools::LoadBigIcon(IDI_ICONSETTINGS, 128));
+    ListBox.AddString(TR("Program Settings"), TR("a tool for advanced users"), IDC_SETTINGS, GuiTools::LoadBigIcon(IDI_ICONSETTINGS));
     ListBox.AddString(TR("History"), 0, ID_VIEWHISTORY,LOADICO(IDI_ICONHISTORY));
     
     HFONT font = GetFont();

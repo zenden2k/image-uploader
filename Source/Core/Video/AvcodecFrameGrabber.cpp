@@ -146,7 +146,6 @@ public:
         // Open video file
         if(avformat_open_input(&pFormatCtx, fileName.c_str(), NULL, 0)!=0) {
             LOG(ERROR) << "Cannot open input file (avformat_open_input failed)";
-            //m_error.sprintf("Couldn't open file \"%s\"\r\n",(const char*)fname.toLocal8Bit());
             return false; // Couldn't open file
         }
 
@@ -340,7 +339,7 @@ public:
             avformat_close_input (&pFormatCtx);    
         }
     }
-    void write_frame_to_file(AVFrame* frame, int width, int height, int iframe)
+    /*void write_frame_to_file(AVFrame* frame, int width, int height, int iframe)
     {
         //int i = AV_PIX_FMT_YUV420P;
         FILE* outfile;
@@ -368,11 +367,10 @@ public:
         for (y = 0; y < height; ++y) {
             fwrite(frame->data[0]+y*frame->linesize[2], 1, frame->linesize[2],outfile);
 
-        }*/
+        }*
 
         // Close file
         fclose(outfile);
-        printf("file is closed\n");
     }
 
     void saveFramePPM(AVFrame *frame, int width, int height, int iFrame)
@@ -396,7 +394,7 @@ public:
 
         // Close file
         fclose(pFile);
-    }
+    }*/
 
 
 

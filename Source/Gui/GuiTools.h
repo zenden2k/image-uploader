@@ -83,6 +83,6 @@ namespace GuiTools
     CHARFORMAT LogFontToCharFormat(const LOGFONT & lf);
     LOGFONT CharFormatToLogFont(const CHARFORMAT & cf);
     HICON LoadSmallIcon(int resourceId);
-    HICON LoadBigIcon(int resourceId, int maxAvailableSize = 48);
+    HICON LoadBigIcon(int resourceId);
 };
 #endif
