@@ -29,6 +29,10 @@ CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,std::vector<CUrlListItem>  
     m_WizardDlg = wizardDlg;
     ResultsPanel = new CResultsPanel(wizardDlg, urlList, !ChildWindow);
     m_childWindow = ChildWindow;
+    tabPageToCodeLang[0] = CResultsPanel::kBbCode;
+    tabPageToCodeLang[1] = CResultsPanel::kHtml;
+    tabPageToCodeLang[2] = CResultsPanel::kMarkdown;
+    tabPageToCodeLang[3] = CResultsPanel::kPlainText;
 }
 
 
@@ -63,28 +67,23 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     SetWindowText(TR("Upload results"));
     
     TRC(IDCANCEL, "Close");
+    resultsTabCtrl_.m_hWnd = GetDlgItem(IDC_RESULTSTAB);
     
-    TC_ITEM item;
-    item.pszText = const_cast<LPWSTR>(TR("Forum code (BBCode)")); 
-    item.mask = TCIF_TEXT;
-    TabCtrl_InsertItem(GetDlgItem(IDC_RESULTSTAB), 0, &item);
-    item.pszText = const_cast<LPWSTR>(TR("HTML code"));
-    item.mask = TCIF_TEXT;
-    TabCtrl_InsertItem(GetDlgItem(IDC_RESULTSTAB), 1, &item);
-    item.pszText = const_cast<LPWSTR>(TR("Links (URL)"));
-    item.mask = TCIF_TEXT;
-    TabCtrl_InsertItem(GetDlgItem(IDC_RESULTSTAB), 2, &item);
-
-    TabCtrl_SetCurSel(GetDlgItem(IDC_RESULTSTAB), Settings.CodeLang);
+    resultsTabCtrl_.InsertItem(0, TR("Forum code (BBCode)"));
+    resultsTabCtrl_.InsertItem(1, TR("HTML code"));
+    resultsTabCtrl_.InsertItem(2, TR("Markdown"));
+    resultsTabCtrl_.InsertItem(3, TR("Links (URL)"));
+    resultsTabCtrl_.SetCurSel(Settings.CodeLang);
 
     // Creating panel with results
     WINDOWPLACEMENT wp;
-    ::GetWindowPlacement(GetDlgItem(IDC_RESULTSTAB), &wp);
-    TabCtrl_AdjustRect(GetDlgItem(IDC_RESULTSTAB),FALSE, &wp.rcNormalPosition);     
+    resultsTabCtrl_.GetWindowPlacement(&wp);
+    resultsTabCtrl_.AdjustRect(FALSE, &wp.rcNormalPosition);
+    
     RECT rc =  { wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left+wp.rcNormalPosition.right,  -wp.rcNormalPosition.top+wp.rcNormalPosition.bottom };
     ResultsPanel->rectNeeded = rc;
-    ::MapWindowPoints(0, m_hWnd, (LPPOINT)&rc, 2);
-     ResultsPanel->setEngineList(_EngineList);
+    ::MapWindowPoints(nullptr, m_hWnd, reinterpret_cast<LPPOINT>(&rc), 2);
+    ResultsPanel->setEngineList(_EngineList);
     ResultsPanel->Create(m_hWnd,rc);
 
     ResultsPanel->GetClientRect(&rc);
@@ -139,13 +138,19 @@ void CResultsWindow::EnableMediaInfo(bool Enable)
 
 void CResultsWindow::SetPage(CResultsPanel::TabPage Index)
 {
-    TabCtrl_SetCurSel(GetDlgItem(IDC_RESULTSTAB), Index);
-    ResultsPanel->SetPage(Index);
+    auto it = std::find_if(tabPageToCodeLang.begin(), tabPageToCodeLang.end(), [&](const std::pair<int,int>& v) {return v.second == Index; });
+
+    if (it != tabPageToCodeLang.end()) {
+        resultsTabCtrl_.SetCurSel(it->first);
+        ResultsPanel->SetPage(Index);
+    }
 }
 
 int CResultsWindow::GetPage()
 {
-    return TabCtrl_GetCurSel(GetDlgItem(IDC_RESULTSTAB));
+    int curTab = resultsTabCtrl_.GetCurSel();
+    auto it = tabPageToCodeLang.find(curTab);
+    return it != tabPageToCodeLang.end()? it->second : 0;
 }
 void CResultsWindow::AddServer(ServerProfile server)
 {
@@ -178,8 +183,7 @@ void CResultsWindow::setUrlList(CAtlArray<CUrlListItem>  * urlList)
 
 LRESULT CResultsWindow::OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
-    int Index = TabCtrl_GetCurSel(GetDlgItem(idCtrl));
-    ResultsPanel->SetPage(static_cast<CResultsPanel::TabPage>(Index));
+    ResultsPanel->SetPage(static_cast<CResultsPanel::TabPage>(GetPage()));
     return 0;
 }
 

@@ -18,10 +18,10 @@
                 %appdata%\Image Uploader\user_templates.xml    (если вы использовали инсталлятор)
     --> 
 <Templates>
-	<Template Name="Markdown">
+	<!--<Template Name="Markdown">
         <Text>$(Items)</Text>
         <Items LineStart="" LineEnd="" LineSep=" \n\n" ItemSep="\n">![$(FileName)]($(ImageUrl))</Items>
-	</Template>
+	</Template>-->
 	<!--<Template Name="Markdown (with thumbnails)">
         <Text>$(Items)</Text>
         <Items LineStart="" LineEnd="" LineSep=" \n\n" ItemSep="\n">![![$(FileName)]($(ImageUrl)]($(ThumbUrl))</Items>

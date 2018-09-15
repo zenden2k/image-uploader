@@ -109,8 +109,12 @@ void CHotkeySettingsPage::EditHotkey(int index)
 LRESULT CHotkeySettingsPage::OnEditHotkeyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     int index = m_HotkeyList.GetSelectedIndex();
-    if(index>=0)
+    if (index < 0) {
+        MessageBox(TR("First you have to select an item in the list."), APPNAME);
+    } else {
         EditHotkey(index);
+    }
+        
     return 0;
 }
 

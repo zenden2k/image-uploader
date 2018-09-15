@@ -215,7 +215,7 @@ void CLogoSettings::ShowParams(const ImageConvertingParams& params) {
     m_CatchChanges = false;
     SetDlgItemText(IDC_LOGOEDIT, U2W(params.LogoFileName));
 
-    if (!params.LogoFileName.empty())
+    if (!params.LogoFileName.empty() && WinUtils::FileExists(U2W(params.LogoFileName)))
         img.LoadImage(U2W(params.LogoFileName));
 
     SetDlgItemText(IDC_EDITYOURTEXT,U2W(params.Text));

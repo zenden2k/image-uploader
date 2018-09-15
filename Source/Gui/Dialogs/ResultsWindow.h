@@ -80,6 +80,8 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
         LRESULT OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         CResultsPanel *ResultsPanel;
         bool m_childWindow;
+        CTabCtrl resultsTabCtrl_;
+        std::map<int, int> tabPageToCodeLang;
 };
 
 #endif // IU_GUI_RESULTSWINDOW_H

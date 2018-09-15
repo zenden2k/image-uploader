@@ -185,7 +185,10 @@ void CResultsPanel::SetPage(TabPage Index)
     ::EnableWindow(GetDlgItem(IDC_THUMBSPERLINE), Index != kPlainText);
     ::EnableWindow(GetDlgItem(IDC_THUMBPERLINESPIN), Index != kPlainText);
     
+    bool enablePreview = Index != kMarkdown;
+    Toolbar.EnableButton(IDC_PREVIEWBUTTON, enablePreview);
     m_Page = Index;
+
 
     UpdateOutput();
     BOOL temp;
@@ -219,6 +222,18 @@ void CResultsPanel::HTML_Link(CString &Buffer, CUrlListItem &item)
     Buffer += _T("</a>");
 }
 
+void CResultsPanel::Markdown_Link(CString &Buffer, CUrlListItem &item)
+{
+    Buffer += _T("[");
+    Buffer += WinUtils::myExtractFileName(item.FileName);
+    Buffer += _T("](");
+    if (*item.getImageUrl(shortenUrl_) && (Settings.UseDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
+        Buffer += item.getImageUrl(shortenUrl_);
+    else
+        Buffer += item.getDownloadUrl(shortenUrl_);
+    Buffer += _T(")");
+}
+
 bool CResultsPanel::copyResultsToClipboard() {
     BOOL temp;
     OnBnClickedCopyall(0, 0, 0, temp);
@@ -243,7 +258,7 @@ const CString CResultsPanel::GenerateOutput()
     bool preferDirectLinks = Settings.UseDirectLinks;
     //Toolbar.IsButtonChecked(IDC_USETEMPLATE); //IsChecked(IDC_USETEMPLATE);
     Settings.UseTxtTemplate = UseTemplate;
-    if (UseTemplate && TemplateHead && m_Page != 2) {
+    if (UseTemplate && TemplateHead && m_Page != kPlainText) {
         Buffer += TemplateHead;
     }
 
@@ -297,6 +312,8 @@ const CString CResultsPanel::GenerateOutput()
         GenerateBBCode(Buffer, codeType, p, preferDirectLinks);
     } else if (m_Page == kHtml) {
         GenerateHTMLCode(Buffer, codeType, p, preferDirectLinks);
+    } else if (m_Page == kMarkdown) {
+        GenerateMarkdownCode(Buffer, codeType, p, preferDirectLinks);
     } else if (m_Page == kPlainText) {
         // Plaintext, just links
         for (int i = 0; i < n; i++) {
@@ -313,7 +330,7 @@ const CString CResultsPanel::GenerateOutput()
         }
     }
 
-    if(UseTemplate && TemplateFoot && m_Page!=2)
+    if(UseTemplate && TemplateFoot && m_Page!=kPlainText)
         Buffer+=TemplateFoot;
 
     return Buffer;
@@ -443,6 +460,72 @@ void CResultsPanel::GenerateHTMLCode(CString& Buffer, CodeType codeType, int p /
         }
     }
 }
+
+void CResultsPanel::GenerateMarkdownCode(CString& Buffer, CodeType codeType, int p /*thumbsPerLine*/, bool preferDirectLinks) {
+    int n = UrlList.size();
+    // Lang:Markdown, Type: "Table of clickable thumbnails" or "Clickable thumbnails"
+    if (codeType == ctTableOfThumbnails || codeType == ctClickableThumbnails) {
+        for (int i = 0; i < n; i++) {
+            CUrlListItem& item = UrlList[i];
+            if (item.isNull()) {
+                continue;
+            }
+
+            CString linkUrl, linkText;
+            if (*item.getImageUrl(shortenUrl_) && (preferDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
+                linkUrl = item.getImageUrl(shortenUrl_);
+            else
+                linkUrl = item.getDownloadUrl(shortenUrl_);
+
+            if (!item.getThumbUrl(shortenUrl_).IsEmpty()) {
+                linkText = _T("![](");
+                linkText += item.getThumbUrl(shortenUrl_);
+                linkText += _T(")");
+            } else {
+                linkText = WinUtils::myExtractFileName(item.FileName);
+            }
+            CString line;
+            line.Format(_T("[%s](%s)"), static_cast<LPCTSTR>(linkText), static_cast<LPCTSTR>(linkUrl));
+            Buffer += line;
+
+            if (codeType == ctTableOfThumbnails && ((i + 1) % p))
+                Buffer += _T("  ");
+            if (!((i + 1) % p) && codeType == 0 || codeType == 1)
+                Buffer += _T("\r\n\r\n");
+        }
+    }
+
+    // Lang: Markdown, Type: Full-sized images
+    if (codeType == ctImages) {
+        for (int i = 0; i < n; i++) {
+            CUrlListItem& item = UrlList[i];
+            if (item.isNull()) {
+                continue;
+            }
+            if (*item.getImageUrl(shortenUrl_) && (preferDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty())) {
+                Buffer += _T("![");
+                Buffer += WinUtils::myExtractFileName(item.FileName);
+                Buffer += _T("](");
+                Buffer += item.getImageUrl(shortenUrl_);
+                Buffer += _T(")");
+            } else Markdown_Link(Buffer, item);
+            Buffer += _T("\r\n\r\n");
+        }
+    }
+
+    // Lang: Markdown, Type: Links to Images/Files
+    if (codeType == ctLinks) {
+        for (int i = 0; i < n; i++) {
+            if (UrlList[i].isNull()) {
+                continue;
+            }
+            Markdown_Link(Buffer, UrlList[i]);
+
+            Buffer += _T("\r\n");
+        }
+    }
+}
+
 
 void CResultsPanel::UpdateOutput()
 {

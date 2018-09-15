@@ -25,7 +25,6 @@
 #include "Func/common.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/WizardCommon.h"
-#include "3rdpart/thread.h"
 
 #include <mutex>
 
@@ -75,7 +74,7 @@ class CResultsPanel :
         END_MSG_MAP()
 
     fastdelegate::FastDelegate1<bool> OnShortenUrlChanged;
-    enum TabPage { kBbCode = 0, kHtml, kPlainText };
+    enum TabPage { kBbCode = 0, kHtml, kPlainText, kMarkdown };
     enum CodeType { ctTableOfThumbnails = 0, ctClickableThumbnails, ctImages, ctLinks };
 
 
@@ -113,6 +112,7 @@ class CResultsPanel :
     int GetCodeType();
     void GenerateBBCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
     void GenerateHTMLCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
+    void GenerateMarkdownCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
     void UpdateOutput();
     void SetCodeType(int Index);
     void Clear();
@@ -135,6 +135,7 @@ class CResultsPanel :
     void setUrlList(CAtlArray<CUrlListItem>  * urlList);
     LRESULT OnResulttoolbarNMCustomDraw(LPNMHDR pnmh);
     void BBCode_Link(CString &Buffer, CUrlListItem &item);
+    void Markdown_Link(CString &Buffer, CUrlListItem &item);
     void HTML_Link(CString &Buffer, CUrlListItem &item);
     bool copyResultsToClipboard();
 };
