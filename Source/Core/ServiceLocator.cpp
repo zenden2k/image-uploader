@@ -3,6 +3,8 @@
 #include "Core/LocalFileCache.h"
 #include "Core/HistoryManager.h"
 
+class UploadManager;
+
 class ServiceLocatorPrivate{
 public:
     ServiceLocatorPrivate() {
@@ -12,6 +14,7 @@ public:
         logger_ = nullptr;
         dialogProvider_ = nullptr;
         translator_ = nullptr;
+        uploadManager_ = nullptr;
     }
     CUploadEngineList_Base* engineList_;
     CHistoryManager historyManager;
@@ -21,6 +24,7 @@ public:
     IDialogProvider* dialogProvider_;
     ITranslator* translator_;
     ITaskDispatcher* dispatcher_;
+    UploadManager* uploadManager_;
 };
 
 ServiceLocator::ServiceLocator() : d_ptr(new ServiceLocatorPrivate()){
@@ -88,4 +92,13 @@ void ServiceLocator::setTaskDispatcher(ITaskDispatcher* dispatcher) {
 
 void ServiceLocator::setProgramWindow(IProgramWindow* window) {
     d_ptr->programWindow_ = window;
+}
+
+
+UploadManager* ServiceLocator::uploadManager() {
+    return d_ptr->uploadManager_;
+}
+
+void ServiceLocator::setUploadManager(UploadManager* manager) {
+    d_ptr->uploadManager_ = manager;
 }

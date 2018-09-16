@@ -7,6 +7,7 @@
 #include "ProgramWindow.h"
 #include "Core/Logging/Logger.h"
 
+class UploadManager;
 class IDialogProvider;
 class IUploadErrorHandler;
 class CUploadEngineList_Base;
@@ -35,6 +36,9 @@ public:
     void setTranslator(ITranslator* transl);
     ITaskDispatcher* taskDispatcher();
     void setTaskDispatcher(ITaskDispatcher* dispatcher);
+    UploadManager* uploadManager();
+    void setUploadManager(UploadManager* manager);
+
 protected:
     std::shared_ptr<ServiceLocatorPrivate> d_ptr; // unique_ptr won't compile with incomplete type
 };

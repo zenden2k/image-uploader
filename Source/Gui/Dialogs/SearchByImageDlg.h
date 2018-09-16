@@ -23,8 +23,8 @@
 #pragma once
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include <Gui/Controls/PictureExWnd.h>
-
+#include "Core/SearchByImage.h"
+#include "Gui/Controls/PictureExWnd.h"
 
 // CSearchByImageDlg
 class SearchByImage;
@@ -33,7 +33,7 @@ class CSearchByImageDlg :
     public CDialogImpl<CSearchByImageDlg>
 {
     public:
-        explicit CSearchByImageDlg(CString fileName);
+        explicit CSearchByImageDlg(SearchByImage::SearchEngine searchEngine, CString fileName);
         ~CSearchByImageDlg();
         enum { IDD = IDD_SEARCHBYIMAGEDLG};
 
@@ -53,6 +53,7 @@ private:
     std::unique_ptr<SearchByImage> seeker_;
     bool cancelPressed_;
     CPictureExWnd wndAnimation_;
+    SearchByImage::SearchEngine searchEngine_;
     void onSeekerFinished(bool success, const std::string& msg);
 };
 

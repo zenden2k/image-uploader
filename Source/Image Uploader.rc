@@ -1381,7 +1381,8 @@ BEGIN
         MENUITEM "Save as...",                  IDM_SAVEAS
         MENUITEM "Копировать",                  IDM_COPYFILETOCLIPBOARD
         MENUITEM "#Copy full path",             IDM_COPYFILEPATH
-        MENUITEM "#Search by image",            IDM_SEARCHBYIMGITEM
+        MENUITEM "#Search by image (Google)",   IDM_SEARCHBYIMGITEM
+        MENUITEM "#Search by image (Yandex)",   IDM_SEARCHBYIMGYANDEX
         MENUITEM "Удалить\tDel",                IDM_DELETE
         MENUITEM "Свойства",                    IDC_PROPERTIES
     END

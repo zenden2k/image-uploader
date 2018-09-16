@@ -100,6 +100,7 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
     IUploadErrorHandler* uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
     uploadEngineManager_ = new UploadEngineManager(&m_EngineList, uploadErrorHandler);
     uploadManager_ = new UploadManager(uploadEngineManager_, &m_EngineList, scriptsManager_, uploadErrorHandler);
+    ServiceLocator::instance()->setUploadManager(uploadManager_);
     floatWnd.setUploadManager(uploadManager_);
     floatWnd.setUploadEngineManager(uploadEngineManager_);
     Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &CWizardDlg::settingsChanged));

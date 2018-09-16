@@ -735,6 +735,8 @@
     <ClInclude Include="Source\Core\Scripting\Squirrelnc.h" />
     <ClInclude Include="Source\Core\Scripting\UploadFilterScript.h" />
     <ClInclude Include="Source\Core\SearchByImage.h" />
+    <ClInclude Include="Source\Core\SearchGoogleImages.h" />
+    <ClInclude Include="Source\Core\SearchYandexImages.h" />
     <ClInclude Include="Source\Core\ServiceLocator.h" />
     <ClInclude Include="Source\Core\Settings.h" />
     <ClInclude Include="Source\Core\Settings\BasicSettings.h" />
@@ -1112,6 +1114,8 @@
     <ClCompile Include="Source\Core\Scripting\ScriptsManager.cpp" />
     <ClCompile Include="Source\Core\Scripting\UploadFilterScript.cpp" />
     <ClCompile Include="Source\Core\SearchByImage.cpp" />
+    <ClCompile Include="Source\Core\SearchGoogleImages.cpp" />
+    <ClCompile Include="Source\Core\SearchYandexImages.cpp" />
     <ClCompile Include="Source\Core\ServiceLocator.cpp" />
     <ClCompile Include="Source\Core\Settings\BasicSettings.cpp" />
     <ClCompile Include="Source\Core\Settings\CliSettings.cpp" />

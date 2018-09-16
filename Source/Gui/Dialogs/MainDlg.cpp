@@ -34,6 +34,7 @@
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Gui/Dialogs/SearchByImageDlg.h"
 #include "Func/IuCommonFunctions.h"
+#include "Core/SearchByImage.h"
 #include "3rdpart/ShellPidl.h"
 #include <boost/format.hpp>
 #include <shlobj.h>
@@ -201,6 +202,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
             sub.DeleteMenu(IDM_PRINT, MF_BYCOMMAND );
 			sub.DeleteMenu(IDM_EDITINEXTERNALEDITOR, MF_BYCOMMAND);
             sub.DeleteMenu(IDM_SEARCHBYIMGITEM, MF_BYCOMMAND);
+            sub.DeleteMenu(IDM_SEARCHBYIMGYANDEX, MF_BYCOMMAND);
         }
 
 		if (!isVideoFile){
@@ -264,10 +266,16 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
             miiNew.fMask = MIIM_SUBMENU | MIIM_STRING;
             miiNew.hSubMenu = subMenu.Detach();   // Detach() to keep the pop-up menu alive
             miiNew.dwTypeData = TR_CONST("Copy &as...");
-            sub.InsertMenuItem(IDM_DELETE, false, &miiNew);
+            sub.InsertMenuItem(IDM_SEARCHBYIMGITEM, false, &miiNew);
 
-            mi.dwTypeData = const_cast<LPWSTR>(TR("Search by image"));
+            CString itemText;
+            itemText.Format(TR("Search by image (%s)"), _T("Google"));
+            mi.dwTypeData = const_cast<LPWSTR>(itemText.GetString());
             sub.SetMenuItemInfo(IDM_SEARCHBYIMGITEM, false, &mi);
+
+            itemText.Format(TR("Search by image (%s)"), _T("Yandex"));
+            mi.dwTypeData = const_cast<LPWSTR>(itemText.GetString());
+            sub.SetMenuItemInfo(IDM_SEARCHBYIMGYANDEX, false, &mi);
         }
 
         sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
@@ -767,14 +775,19 @@ LRESULT CMainDlg::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	return 0;
 }
 
-LRESULT CMainDlg::OnSearchByImage(WORD, WORD, HWND, BOOL&) {
+LRESULT CMainDlg::OnSearchByImage(WORD, WORD wID, HWND, BOOL&) {
+    SearchByImage::SearchEngine se = SearchByImage::seGoogle;
+    if (wID == IDM_SEARCHBYIMGYANDEX) {
+        se = SearchByImage::seYandex;
+    }
     CString fileName = getSelectedFileName();
     if (!fileName.IsEmpty()) {
-        CSearchByImageDlg dlg(fileName);
+        CSearchByImageDlg dlg(se, fileName);
         dlg.DoModal(m_hWnd);
     }
     return 0;
 }
+
 
 LRESULT CMainDlg::OnExtractFramesFromSelectedFile(WORD, WORD, HWND, BOOL&) {
 	CString fileName = getSelectedFileName();

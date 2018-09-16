@@ -28,9 +28,10 @@
 
 // CSearchByImageDlg
 
-CSearchByImageDlg::CSearchByImageDlg(CString fileName) {
+CSearchByImageDlg::CSearchByImageDlg(SearchByImage::SearchEngine searchEngine, CString fileName) {
     fileName_ = fileName;
     cancelPressed_ = false;
+    searchEngine_ = searchEngine;
 }
 
 CSearchByImageDlg::~CSearchByImageDlg()
@@ -52,7 +53,7 @@ LRESULT CSearchByImageDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
         //wndAnimation_.ShowWindow(SW_HIDE);
     }
 
-    seeker_.reset(new SearchByImage(WCstringToUtf8(fileName_)));
+    seeker_ = SearchByImage::createSearchEngine(searchEngine_, W2U(fileName_));
     seeker_->setOnFinished(SearchByImage::FinishedDelegate(this, &CSearchByImageDlg::onSeekerFinished));
     SetDlgItemText(IDC_TEXT, TR("Uploading image..."));
     seeker_->start();

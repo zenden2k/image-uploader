@@ -8,13 +8,14 @@
 class NetworkClient;
 
 class SearchByImage  {
-
     public:
+        enum SearchEngine { seGoogle, seYandex};
         explicit SearchByImage(const std::string& fileName);
+        virtual ~SearchByImage();
         void start();
         void stop();
         bool isRunning() const;
-
+        static std::unique_ptr<SearchByImage> createSearchEngine(SearchEngine se, const std::string& fileName);
         typedef fastdelegate::FastDelegate2<bool, const std::string&> FinishedDelegate;
         void setOnFinished(FinishedDelegate&& fd);
 protected:
@@ -22,10 +23,9 @@ protected:
     std::atomic<bool> isRunning_;
     std::atomic<bool> stopSignal_;
     FinishedDelegate onFinished_;
-    void run();
+    virtual void run() = 0;
     void finish(bool success, const std::string &msg = std::string());
     int progressCallback(NetworkClient *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
-    static std::string base64EncodeCompat(const std::string& file);
 };
 
 #endif

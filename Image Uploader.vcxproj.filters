@@ -873,6 +873,12 @@
     <ClInclude Include="Source\Core\DefaultProxyProvider.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\SearchGoogleImages.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\SearchYandexImages.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1921,6 +1927,12 @@
       <Filter>Source Files\Core\ScreenCapture</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\DefaultProxyProvider.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\SearchGoogleImages.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\SearchYandexImages.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
