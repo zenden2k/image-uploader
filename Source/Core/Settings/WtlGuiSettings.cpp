@@ -49,6 +49,7 @@ limitations under the License.
 
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL) && !defined(IU_IMAGEEDITOR)
 #include "Core/ServiceLocator.h"
+#include <Core/SearchByImage.h>
 
 
 COLORREF WtlGuiSettings::DefaultLinkColor = RGB(0x0C, 0x32, 0x50);
@@ -386,6 +387,7 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
     ImageEditorSettings.RoundingRadius = ImageEditorSettings.PenSize;
     ImageEditorSettings.AllowAltTab = false;
     ImageEditorSettings.AllowEditingInFullscreen = false;
+    ImageEditorSettings.SearchEngine = SearchByImage::seGoogle;
     StringToFont(_T("Arial,12,b,204"), &ImageEditorSettings.Font);
 
     ImageReuploaderSettings.PasteHtmlOnCtrlV = true;
@@ -733,6 +735,7 @@ void WtlGuiSettings::BindToManager() {
     imageEditor.nm_bind(ImageEditorSettings, Font);
     imageEditor.nm_bind(ImageEditorSettings, AllowAltTab);
     screenshot.nm_bind(ImageEditorSettings, AllowEditingInFullscreen);
+    screenshot.nm_bind(ImageEditorSettings, SearchEngine);
     SettingsNode& image = mgr_["Image"];
     image["CurrentProfile"].bind(CurrentConvertProfileName);
     image.nm_bind(UploadProfile, KeepAsIs);

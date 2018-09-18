@@ -13,6 +13,7 @@ class SearchYandexImages: public SearchByImage  {
 
     public:
         explicit SearchYandexImages(const std::string& fileName);
+        void stop() override;
 protected:
     void run() override;
     void onFileFinished(UploadTask*  task, bool ok);
@@ -22,6 +23,7 @@ protected:
     std::string uploadErrorMessage_;
     std::string uploadedImageUrl_;
     bool uploadFinished_;
+    std::shared_ptr<UploadTask> currentUploadTask_;
 };
 
 #endif

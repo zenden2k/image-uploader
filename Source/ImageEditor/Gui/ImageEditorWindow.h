@@ -9,7 +9,7 @@
 #include "TextParamsWindow.h"
 #include "Core/Utils/CoreTypes.h"
 #include "3rdpart/GdiplusH.h"
-
+#include "Core/SearchByImage.h"
 #pragma once
 
 namespace ImageEditor {
@@ -24,7 +24,8 @@ public:
     DECLARE_WND_CLASS(_T("ImageEditorWindow"))
     enum {
         ID_UNDO = 1000, ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE, ID_SAVE, ID_SAVEAS, ID_COPYBITMAPTOCLIBOARD, ID_COPYBITMAPTOCLIBOARDASDATAURI,
-        ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, ID_UNSELECTALL, ID_INCREASEPENSIZE, ID_DECREASEPENSIZE, ID_PRINTIMAGE,
+        ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, ID_UNSELECTALL, ID_INCREASEPENSIZE, ID_DECREASEPENSIZE, ID_PRINTIMAGE, ID_SEARCHBYIMAGE, ID_SEARCHBYIMAGEINGOOGLE,
+        ID_SEARCHBYIMAGEINYANDEX,
         ID_PEN = 1600, 
         ID_BRUSH, ID_MARKER,ID_BLUR, ID_BLURRINGRECTANGLE, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_ROUNDEDRECTANGLE, ID_ELLIPSE,
         ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_MOVE
@@ -50,7 +51,7 @@ public:
     enum { kCanvasMargin = 4 , kToolbarOffset = 6}; // margin between toolbars and canvas in windowed mode
 
     enum DialogResult{
-        drCancel, drAddToWizard, drUpload, drShare, drSave, drCopiedToClipboard, drPrintRequested
+        drCancel, drAddToWizard, drUpload, drShare, drSave, drCopiedToClipboard, drPrintRequested, drSearch
     };
     enum class ClipboardFormat{ None, Bitmap, DataUri, DataUriHtml };
     enum WindowDisplayMode {
@@ -104,6 +105,9 @@ public:
         COMMAND_ID_HANDLER(ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, OnClickedCopyToClipboardAsDataUriHtml)
         COMMAND_ID_HANDLER(ID_UNSELECTALL, OnUnselectAll)
         COMMAND_ID_HANDLER(ID_PRINTIMAGE, OnPrintImage)
+        COMMAND_ID_HANDLER(ID_SEARCHBYIMAGE, OnSearchByImage)
+        COMMAND_ID_HANDLER(ID_SEARCHBYIMAGEINGOOGLE, OnSearchByImage)
+        COMMAND_ID_HANDLER(ID_SEARCHBYIMAGEINYANDEX, OnSearchByImage)
         MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
         
         REFLECT_NOTIFICATIONS()
@@ -148,6 +152,7 @@ public:
         LRESULT OnTextParamWindowFontChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnUnselectAll(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnPrintImage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnSearchByImage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
         Toolbar horizontalToolbar_;
         Toolbar verticalToolbar_;
@@ -175,6 +180,7 @@ public:
         HWND cropToolTip_;
         int imageQuality_;
         bool allowAltTab_;
+        SearchByImage::SearchEngine searchEngine_;
         std::shared_ptr<Gdiplus::Bitmap> resultingBitmap_;
         ConfigurationProvider* configurationProvider_; 
         TextParamsWindow textParamsWindow_;
@@ -187,10 +193,12 @@ public:
         void OnTextEditFinished(ImageEditor::TextElement * textElement);
         void OnSelectionChanged();
         void updateRoundingRadiusSlider();
+        void updateSearchButton();
         std::shared_ptr<Gdiplus::Bitmap>  loadToolbarIcon(int resource);
         void EndDialog(DialogResult dr);
         void init();
         bool saveDocument(ClipboardFormat clipboardFormat = ClipboardFormat::None);
+        CString saveToTempFile();
         void updateToolbarDrawingTool(Canvas::DrawingToolType dt);
         void OnForegroundColorChanged(Gdiplus::Color color);
         void OnBackgroundColorChanged(Gdiplus::Color color);
@@ -224,6 +232,12 @@ public:
     bool allowAltTab() const  {  return allowAltTab_; } 
     void setFont(LOGFONT font) { font_ = font; }
     LOGFONT font() const { return font_; }
+    void setSearchEngine(SearchByImage::SearchEngine se) {
+        searchEngine_ = se;
+    }
+    SearchByImage::SearchEngine searchEngine() const {
+        return searchEngine_;
+    }
 protected:
     Gdiplus::Color foregroundColor_;
     Gdiplus::Color backgroundColor_;
@@ -231,6 +245,7 @@ protected:
     int roundingRadius_;
     LOGFONT font_;
     bool allowAltTab_;
+    SearchByImage::SearchEngine searchEngine_;
 };
 
 }

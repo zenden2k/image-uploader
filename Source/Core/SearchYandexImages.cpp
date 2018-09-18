@@ -15,6 +15,11 @@ SearchYandexImages::SearchYandexImages(const std::string& fileName) :SearchByIma
     uploadOk_ = false;
 }
 
+void SearchYandexImages::stop() {
+    SearchByImage::stop();
+    currentUploadTask_->stop();
+}
+
 /*void SearchYandexImages::run() {
     NetworkClient nc;
     CoreFunctions::ConfigureProxy(&nc);
@@ -66,13 +71,19 @@ void SearchYandexImages::run() {
     task->setServerProfile(Settings.quickScreenshotServer);
     task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &SearchYandexImages::onFileFinished));
 
-    uploadManager->addTask(std::shared_ptr<UploadTask>(task));
+    currentUploadTask_.reset(task);
+    uploadManager->addTask(currentUploadTask_);
     uploadManager->start();
 
     // Wait until upload session is finished
     std::unique_lock<std::mutex> lk(uploadFinishSignalMutex_);
     while (!uploadFinished_) {
         uploadFinishSignal_.wait(lk);
+    }
+
+    if (stopSignal_) {
+        finish(false, "Aborted by user.");
+        return;
     }
 
     if (uploadOk_) {

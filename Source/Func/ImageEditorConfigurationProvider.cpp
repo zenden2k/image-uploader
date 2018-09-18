@@ -10,6 +10,7 @@ ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
     font_ =  Settings.ImageEditorSettings.Font;
     roundingRadius_ = Settings.ImageEditorSettings.RoundingRadius;
     allowAltTab_ = Settings.ImageEditorSettings.AllowAltTab;
+    searchEngine_ = static_cast<SearchByImage::SearchEngine>(Settings.ImageEditorSettings.SearchEngine);
 }
 
 void ImageEditorConfigurationProvider::saveConfiguration()
@@ -20,5 +21,6 @@ void ImageEditorConfigurationProvider::saveConfiguration()
     Settings.ImageEditorSettings.Font = font_;
     Settings.ImageEditorSettings.RoundingRadius = roundingRadius_;
     Settings.ImageEditorSettings.AllowAltTab = allowAltTab_;
+    Settings.ImageEditorSettings.SearchEngine = searchEngine_;
 }
 

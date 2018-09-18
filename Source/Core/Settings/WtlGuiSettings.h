@@ -29,6 +29,7 @@ struct ImageEditorSettingsStruct {
     LOGFONT Font;
     bool AllowAltTab;
     bool AllowEditingInFullscreen;
+    int SearchEngine;
 };
 
 struct TrayIconSettingsStruct {

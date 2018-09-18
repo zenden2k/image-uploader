@@ -57,3 +57,12 @@ std::unique_ptr<SearchByImage> SearchByImage::createSearchEngine(SearchEngine se
     }
     return nullptr;
 }
+
+std::string SearchByImage::getSearchEngineDisplayName(SearchEngine se) {
+    if (se == seGoogle) {
+        return "Google";
+    } else if (se == seYandex) {
+        return "Yandex";
+    }
+    return std::string();
+}

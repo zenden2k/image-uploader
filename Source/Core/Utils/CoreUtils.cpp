@@ -343,7 +343,7 @@ bool PutFileContents(const std::string& utf8Filename, const std::string& content
 const std::string GetFileContents(const std::string& filename) {
     std::string data;
     FILE *stream = IuCoreUtils::fopen_utf8(filename.c_str(), "rb");
-    if (!stream) return false;
+    if (!stream) return std::string();
     int size = static_cast<int>(IuCoreUtils::getFileSize(filename));
 
     try {

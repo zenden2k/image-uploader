@@ -13,9 +13,10 @@ class SearchByImage  {
         explicit SearchByImage(const std::string& fileName);
         virtual ~SearchByImage();
         void start();
-        void stop();
+        virtual void stop();
         bool isRunning() const;
         static std::unique_ptr<SearchByImage> createSearchEngine(SearchEngine se, const std::string& fileName);
+        static std::string getSearchEngineDisplayName(SearchEngine se);
         typedef fastdelegate::FastDelegate2<bool, const std::string&> FinishedDelegate;
         void setOnFinished(FinishedDelegate&& fd);
 protected:

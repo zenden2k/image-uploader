@@ -15,6 +15,7 @@
 #include "Func/WinUtils.h"
 #include "Func/MyUtils.h"
 #include "ImageEditor/MovableElements.h"
+#include "Gui/Dialogs/SearchByImageDlg.h"
 
 namespace ImageEditor {
     
@@ -61,6 +62,7 @@ void ImageEditorWindow::init()
     prevRoundingRadius_ = 0;
     colorsDelegate_ = 0;
     imageQuality_ = 85;
+    searchEngine_ = SearchByImage::seGoogle;
     currentDrawingTool_ = Canvas::dtNone;
     initialDrawingTool_ = Canvas::dtBrush;
     menuItems_[ID_PEN]             = Canvas::dtPen; 
@@ -165,6 +167,15 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat)
         return true;
     }
     return false;
+}
+
+CString ImageEditorWindow::saveToTempFile() {
+    std::shared_ptr<Gdiplus::Bitmap> bitmap = canvas_->getBitmapForExport();
+    CString result;
+    if (MySaveImage(bitmap.get(), "image.png", result, 1, 95)) {
+        return result;
+    }
+    return CString();
 }
 
 void ImageEditorWindow::updateToolbarDrawingTool(Canvas::DrawingToolType dt)
@@ -297,7 +308,8 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     CRect rc(rcDefault);
     DWORD initialWindowStyle = WS_OVERLAPPED | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX |
         WS_MINIMIZEBOX | WS_CLIPCHILDREN;
-    if (Create(parent, rc, _T("Image Editor"), initialWindowStyle, 0) == NULL) {
+    // Parent window should be null here!
+    if (Create(nullptr, rc, _T("Image Editor"), initialWindowStyle, 0) == NULL) {
         LOG(ERROR) << "Main window creation failed!\n";
         return drCancel;
     }
@@ -386,6 +398,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         canvas_->setRoundingRadius(configurationProvider_->roundingRadius());
         allowAltTab_ = configurationProvider_->allowAltTab();
         textParamsWindow_.setFont(configurationProvider_->font());
+        searchEngine_ = configurationProvider_->searchEngine();
     }
     m_view.setCanvas(canvas_);
     createToolbars();
@@ -715,6 +728,22 @@ LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARA
         excludeArea.rcExclude = rc;
         rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
     }
+    else if (item->command == ID_SEARCHBYIMAGE) {
+        CMenu rectangleMenu;
+        RECT rc = item->rect;
+        horizontalToolbar_.ClientToScreen(&rc);
+        rectangleMenu.CreatePopupMenu();
+        CString itemText;
+        itemText.Format(TR("Search by image (%s)"), _T("Google"));
+        rectangleMenu.AppendMenu(MF_STRING, ID_SEARCHBYIMAGEINGOOGLE, itemText);
+        itemText.Format(TR("Search by image (%s)"), _T("Yandex"));
+        rectangleMenu.AppendMenu(MF_STRING, ID_SEARCHBYIMAGEINYANDEX, itemText);
+        TPMPARAMS excludeArea;
+        ZeroMemory(&excludeArea, sizeof(excludeArea));
+        excludeArea.cbSize = sizeof(excludeArea);
+        excludeArea.rcExclude = rc;
+        rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
+    }
     return 0;
 }
 
@@ -768,6 +797,13 @@ void ImageEditorWindow::createToolbars()
     //horizontalToolbar_.addButton(Toolbar::Item(TR("Share"),0,ID_SHARE, CString(),Toolbar::itComboButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Save"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, CString(_T("(Ctrl+S)")),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Copy to clipboard"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, CString(), Toolbar::itComboButton));
+    
+    CString itemText;
+    CString searchEngineName = U2W(SearchByImage::getSearchEngineDisplayName(searchEngine_));
+    itemText.Format(TR("Search on %s"), searchEngineName.GetString());
+
+    horizontalToolbar_.addButton(Toolbar::Item(itemText, std::shared_ptr<Gdiplus::Bitmap>(), ID_SEARCHBYIMAGE, CString(), Toolbar::itComboButton));
+    
     horizontalToolbar_.addButton(Toolbar::Item(TR("Print..."), std::shared_ptr<Gdiplus::Bitmap>(), ID_PRINTIMAGE, CString(), Toolbar::itButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Close"),std::shared_ptr<Gdiplus::Bitmap> () ,ID_CLOSE, CString(_T("(Esc)"))));
     horizontalToolbar_.AutoSize();
@@ -973,6 +1009,18 @@ void ImageEditorWindow::updateRoundingRadiusSlider()
     horizontalToolbar_.roundRadiusSlider_.ShowWindow( showRoundingRadiusSlider ? SW_SHOW: SW_HIDE );
 }
 
+void ImageEditorWindow::updateSearchButton() {
+    int buttonIndex = horizontalToolbar_.getItemIndexByCommand(ID_SEARCHBYIMAGE);
+    if (buttonIndex != -1) {
+        Toolbar::Item* item = horizontalToolbar_.getItem(buttonIndex);
+        CString searchEngineName = U2W(SearchByImage::getSearchEngineDisplayName(searchEngine_));
+        item->title.Format(TR("Search on %s"), searchEngineName.GetString());
+        horizontalToolbar_.AutoSize();
+        //horizontalToolbar_.Invalidate(FALSE);
+    }
+
+}
+
 std::shared_ptr<Gdiplus::Bitmap>  ImageEditorWindow::loadToolbarIcon(int resource)
 {
     return std::shared_ptr<Gdiplus::Bitmap>(BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource),_T("PNG")) );
@@ -1106,6 +1154,32 @@ LRESULT ImageEditorWindow::OnPrintImage(WORD wNotifyCode, WORD wID, HWND hWndCtl
     return res;
 }
 
+LRESULT ImageEditorWindow::OnSearchByImage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    if (wID == ID_SEARCHBYIMAGEINGOOGLE) {
+        searchEngine_ = SearchByImage::seGoogle;
+    } else if (wID == ID_SEARCHBYIMAGEINYANDEX) {
+        searchEngine_ = SearchByImage::seYandex;
+    }
+    bool shiftPressed = (GetKeyState(VK_SHIFT) & 0x8000)!=0;
+    updateSearchButton();
+    CString fileName = saveToTempFile();
+    if (fileName.IsEmpty()) {
+        LOG(ERROR) << "Unable to create temporary file";
+        return 0;
+    }
+    horizontalToolbar_.EnableWindow(FALSE);
+    verticalToolbar_.EnableWindow(FALSE);
+    CSearchByImageDlg dlg(searchEngine_, fileName);
+    if (dlg.DoModal(m_hWnd) == IDOK) {
+        if (displayMode_ == wdmFullscreen &&  !shiftPressed) {
+            EndDialog(drSearch);
+        }
+    }
+    horizontalToolbar_.EnableWindow(TRUE);
+    verticalToolbar_.EnableWindow(TRUE);
+    return 0;
+}
+
 bool ImageEditorWindow::createTooltip() {
     // Create a tooltip.
     cropToolTip_ = ::CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL, 
@@ -1160,6 +1234,7 @@ void ImageEditorWindow::saveSettings()
         configurationProvider_->setBackgroundColor(canvas_->getBackgroundColor());
         configurationProvider_->setFont(canvas_->getFont());
         configurationProvider_->setRoundingRadius(canvas_->getRoundingRadius());
+        configurationProvider_->setSearchEngine(searchEngine_);
         configurationProvider_->saveConfiguration();
     }
 }
