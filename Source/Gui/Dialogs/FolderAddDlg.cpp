@@ -98,10 +98,10 @@ DWORD CFolderAdd::Run()
     else {
         if (m_pWizardDlg->QuickUploadMarker) {
 
-            m_pWizardDlg->ShowPage(4);
+            m_pWizardDlg->ShowPage(CWizardDlg::wpUploadPage);
         } else {
 
-            m_pWizardDlg->ShowPage(2);
+            m_pWizardDlg->ShowPage(CWizardDlg::wpMainPage);
 
             ((CMainDlg*)m_pWizardDlg->Pages[2])->ThumbsView.LoadThumbnails();
         }

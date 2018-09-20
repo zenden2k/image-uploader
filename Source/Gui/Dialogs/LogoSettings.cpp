@@ -25,6 +25,7 @@
 #include "InputDialog.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
+#include <Gui/Components/MyFileDialog.h>
 
 // CLogoSettings
 CLogoSettings::CLogoSettings()
@@ -141,25 +142,28 @@ LRESULT CLogoSettings::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 
 LRESULT CLogoSettings::OnBnClickedLogobrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    TCHAR Buf[MAX_PATH*4];
-    GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
-        CString(TR("Images"))+ _T(" (jpeg, bmp, png, gif ...)"),
-        _T("*.jpg;*.gif;*.png;*.bmp;*.tiff"),
-        TR("All files"),
-        _T("*.*"));
+    IMyFileDialog::FileFilterArray filters = {
+        { CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"), _T("*.jpg;*.gif;*.png;*.bmp;*.tiff"), },
+        { TR("All files"), _T("*.*") }
+    };
 
-    CFileDialog fd(true, 0, 0, 4|2, Buf, m_hWnd);
-    
-    CString s;
-    s = WinUtils::GetAppFolder();
-    fd.m_ofn.lpstrInitialDir = s;
-    if ( fd.DoModal() != IDOK || !fd.m_szFileName ) return 0;
+    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, WinUtils::GetAppFolder(), CString(), filters, false);
+    //CString initialFileName = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGOEDIT);
 
-    LPTSTR FileName = fd.m_szFileName;
-    SetDlgItemText(IDC_LOGOEDIT, FileName);
-    img.LoadImage(FileName);
+    if (dlg->DoModal(m_hWnd) != IDOK) {
+        return 0;
+    }
+
+    CString fileName = dlg->getFile();
+
+    if (fileName.IsEmpty()) {
+        return 0;
+    }
+
+    SetDlgItemText(IDC_LOGOEDIT, fileName);
+    img.LoadImage(fileName);
     img.Invalidate();
-   ProfileChanged();
+    ProfileChanged();
     return 0;
 }
 

@@ -36,6 +36,10 @@ CNewStyleFileDialog::CNewStyleFileDialog(HWND parent, const CString& initialFold
 
     delete fileTypes;
 
+    if (!title.IsEmpty()) {
+        newStyleDialog_->SetTitle(title);
+    }
+
     CComPtr<IShellItem> psiFolder;
 
     Library DllModule(_T("Shell32.dll"));
@@ -97,6 +101,10 @@ void CNewStyleFileDialog::setTitle(LPCWSTR title) {
 
 void CNewStyleFileDialog::setDefaultExtension(LPCTSTR extension) {
     newStyleDialog_->SetDefaultExtension(extension);
+}
+
+void CNewStyleFileDialog::setFileName(LPCWSTR fileName) {
+    newStyleDialog_->SetFileName(fileName);
 }
 
 void CNewStyleFileDialog::getFiles(std::vector<CString>& arr) {

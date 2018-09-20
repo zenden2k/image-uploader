@@ -14,7 +14,9 @@ public:
     CString getFolderPath() override;
     void setTitle(LPCWSTR title) override;
     void setDefaultExtension(LPCTSTR extension) override;
+    void setFileName(LPCWSTR fileName) override;
     void getFiles(std::vector<CString>& arr) override; 
+
 protected:
     bool isVista_;
     Library shellDll_;

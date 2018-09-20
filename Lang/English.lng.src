@@ -141,7 +141,7 @@ aa3a3a0e = Open in Wizard
 eb10684a = Open screenshots folder
 0c087625 = Show results of last upload
 dabc7584 = Stop uploading
-1e7c068c = Cannot register global hotkey:\n%s.\n Maybe it is being used by another process.
+7dea48e0 = Cannot register global hotkey:\n%s.\n Maybe it is being used by another process.
 1ef7e4b4 = File "%s" is beeing uploaded to server %s..
 cf8b0d37 = Uploading screenshot
 73da5d18 = Could not upload screenshot :(
@@ -371,7 +371,7 @@ d229c2f5 = Filename format:
 262ed0db = Always copy captured image to clipboard
 8c709b12 = Saving parameters
 e1e46984 = Bring window to foreground when selected by mouse
-89f480a1 = %y - year, %m - month, %d - day\n%h - hour, %n - minute, %s - seconds\n %i - image index,\n%width% - width of image,  %height% - height of image
+5353ec8f = %y - year, %m - month, %d - day\n%h - hour, %n - minute, %s - seconds\n %i - image index,\n%width% - width of image,  %height% - height of image
 69b9327d = Capture with shadow
 ff51cf52 = Allow Alt+Tab in fullscreen editor
 7b58e9e8 = Clear window's background
@@ -477,7 +477,7 @@ ae7a329f = This means that the thumbnail will be created by site, not the progra
 3a794881 = Edit Profile
 e8f64d73 = Choose server...
 93f5d861 = Choose folder...
-db85b00c = Upload to server '%s' is impossible without account.\nYou should sign Up on this server and specify your account details in program settings.
+86a0989f = Upload to server '%s' is impossible without account.\nYou should sign Up on this server and specify your account details in program settings.
 df1929f7 = Please specify authentication settings for '%s' server!
 b9654af6 = &Upload
 b43f8478 = File "Data\Thumb.png" not found!
@@ -533,7 +533,7 @@ fb3adf17 = Horizontal interval:
 528aeace = Vertical interval:
 5f047e4b = Frames layout
 6e8c8854 = Display video file information on resulting picture
-f32df412 = %f% - name of videofile without extension, \n%fe% -  name of videofile, \n%ext% - extension, \n%y% - year, %m% - month, %d% - day\n%h% - hour, %n% - minute, %s% - second\n %i% - file counter,\n%cx% - width,  %cy% - height
+a7ddcff0 = %f% - name of videofile without extension, \n%fe% -  name of videofile, \n%ext% - extension, \n%y% - year, %m% - month, %d% - day\n%h% - hour, %n% - minute, %s% - second\n %i% - file counter,\n%cx% - width,  %cy% - height
 e5ce3d08 = Folder for snapshots:
 a403be0d = JPEG, PNG, GIF, BMP or any other file
 7e2b58a3 = Add Files...
@@ -551,14 +551,14 @@ f2f77e96 = Just drag-n-drop your files on Image Uploader's window and it will pr
 c260cbfc = Welcome to pictures Publishing Wizard, that will help you to upload your images, photos, video frames on Internet!
 077efcaa = Enable integration in Explorer's context menu?
 27eb6c03 = Help
-e67c195b = Couldn't load servers list file "servers.xml"!\n\nThe reason is:  %s\n\nDo you wish to continue?
-5784e81d = MediaInfo.dll Not found! \nGetting technical information of media files will not be accessible.
+8ada2953 = Couldn't load servers list file "servers.xml"!\n\nThe reason is:  %s\n\nDo you wish to continue?
+58a48546 = MediaInfo.dll Not found! \nGetting technical information of media files will not be accessible.
 7f6216d0 = Profile "%s" not found.
 98440497 = %s - Updates available
 b5363619 = Images settings and choosing server
 b107c545 = Uploading file on server
 98204ade = Could not save settings file. See error log for details.
-6437e6b4 = Would you like to grab frames from this video?\n(otherwise file just  will be added to list)
+28ba5cb1 = Would you like to grab frames from this video?\n(otherwise file just  will be added to list)
 f1a28e09 = Including subdirectories
 3b698f08 = Any file
 6685c6d4 = Are you sure to quit?
@@ -584,6 +584,7 @@ be2c5569 = Save as
 9092168a = Add to the list
 c7e5a3d7 = Share
 2d2173a8 = Save
+e41fd422 = Search on %s
 e36a4193 = Move
 4184bc2c = Selection
 07536300 = Crop

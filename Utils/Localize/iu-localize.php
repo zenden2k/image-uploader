@@ -67,6 +67,7 @@
         }*/
 
         $item_u = mb_convert_encoding( $str, "UTF-16LE", "UTF-8" );
+        $str = str_ireplace( "\r\n", "\\n", $str );
         $str = str_ireplace( "\n", "\\n", $str );
         $hashes[dump_dword( myhash( $item_u ) )] = $str;
 
@@ -131,7 +132,7 @@
 
         foreach ( $hashes as $ki => $it )
         {
-            $value = $english_strings[$ki];
+            $value = isset($english_strings[$ki])?$english_strings[$ki]:"";
             if ( $value == "" ) {
                 $value = $it;
             }

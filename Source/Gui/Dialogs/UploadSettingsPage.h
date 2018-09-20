@@ -50,6 +50,7 @@ virtual ~CUploadSettingsPage();
         COMMAND_HANDLER(IDC_BROWSESCRIPTBUTTON, BN_CLICKED, OnBnClickedBrowseScriptButton)
         COMMAND_HANDLER(IDC_NOPROXY, BN_CLICKED, OnClickedNoProxy)
         COMMAND_HANDLER(IDC_USESYSTEMPROXY, BN_CLICKED, OnClickedUseSystemProxy)
+        COMMAND_HANDLER(IDC_EXECUTESCRIPTCHECKBOX, BN_CLICKED, OnExecuteScriptCheckboxClicked)
     END_MSG_MAP()
         
     BEGIN_DDX_MAP(CScreenshotDlg)
@@ -69,10 +70,12 @@ virtual ~CUploadSettingsPage();
     LRESULT OnClickedUseProxyAuth(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnClickedNoProxy(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnClickedUseSystemProxy(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnExecuteScriptCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     virtual bool Apply();
     void TranslateUI();
     LRESULT OnBnClickedBrowseScriptButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     void proxyRadioChanged();
+    void executeScriptCheckboxChanged();
 protected:
     CComboBox serverTypeCombo_;
 };

@@ -496,6 +496,14 @@ const CString TrimString(const CString& source, int nMaxLen)
     return source.Left(PartSize)+_T("...")+source.Right(PartSize);
 }
 
+const CString TrimStringEnd(const CString& source, int nMaxLen) {
+    int nLen = source.GetLength();
+    if (nLen <= nMaxLen) return source;
+
+    int PartSize = nMaxLen - 3;
+    return source.Left(PartSize) + _T("...");
+}
+
 CString GetAppFolder()
 {
     CString szFileName;

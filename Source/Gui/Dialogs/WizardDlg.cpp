@@ -303,8 +303,8 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     RegisterLocalHotkeys();
     if(ParseCmdLine()) return 0;
  
-    CreatePage(0); 
-    ShowPage(0);
+    CreatePage(wpWelcomePage); 
+    ShowPage(wpWelcomePage);
     ::SetFocus(Pages[0]->PageWnd);
 	//win7JumpList_->CreateJumpList();
     //webServer_.start();
@@ -426,7 +426,7 @@ bool CWizardDlg::ParseCmdLine()
 	{
 		if(IsVideoFile(FileName) && !CmdLine.IsOption(_T("upload")) && !CmdLine.IsOption(_T("quick")))
 		{
-			ShowPage(1, CurPage, (Pages[2])?2:3);
+			ShowPage(wpVideoGrabberPage, CurPage, (Pages[2])?2:3);
 			CVideoGrabberPage* dlg = (CVideoGrabberPage*) Pages[1];
 			dlg->SetFileName(FileName);			
 			return true;
@@ -455,7 +455,7 @@ LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
         ShowWindow(SW_HIDE);
         if(Pages[2] && CurPage == 4)
             ((CMainDlg*)Pages[2])->ThumbsView.MyDeleteAllItems();
-        ShowPage(0); 
+        ShowPage(wpWelcomePage); 
     }
     else
         CloseWizard();
@@ -537,13 +537,13 @@ void CWizardDlg::CloseDialog(int nVal)
     ::PostQuitMessage(nVal);
 }
 
-bool CWizardDlg::ShowPage(int idPage,int prev,int next)
+bool CWizardDlg::ShowPage(WizardPageId idPage, int prev, int next)
 {
     if(idPage == CurPage) return true;
 
     if(GetCurrentThreadId()!=GetWindowThreadProcessId(m_hWnd, NULL))
     {
-        return SendMessage(WM_MY_SHOWPAGE, (WPARAM)idPage)!=FALSE;
+        return SendMessage(WM_MY_SHOWPAGE, (WPARAM)(int)idPage)!=FALSE;
     }
    
     if (CurPage >= 0) {
@@ -590,7 +590,7 @@ LRESULT CWizardDlg::OnPrevBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         if(PrevPage<0 || PrevPage==1)  PrevPage = 0;
     }    
 
-    ShowPage(PrevPage);
+    ShowPage(static_cast<WizardPageId>(PrevPage));
     PrevPage=-1;
     return 0;
 }
@@ -605,12 +605,12 @@ LRESULT CWizardDlg::OnNextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         if(NextPage>4 ) NextPage=0;
         if(NextPage==1) NextPage=2;
     }    
-    ShowPage(NextPage);
+    ShowPage(static_cast<WizardPageId>(NextPage));
     NextPage = -1;
     return 0;
 }
 
-bool CWizardDlg::CreatePage(int PageID)
+bool CWizardDlg::CreatePage(WizardPageId PageID)
 {
     RECT rc = {3,3,636,500};
     RECT rc2 = {3,100,636,500};
@@ -795,7 +795,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
                 if(Settings.DropVideoFilesToTheList || MessageBox(TR("Would you like to grab frames from this video?\r\n(otherwise file just  will be added to list)"),APPNAME,MB_YESNO)==IDNO)
                     goto filehost;
             }
-            ShowPage(1, CurPage, (Pages[2])?2:3);
+            ShowPage(wpVideoGrabberPage, CurPage, (Pages[2])?2:3);
             CVideoGrabberPage* dlg = (CVideoGrabberPage*) Pages[1];
             dlg->SetFileName(szBuffer);
             
@@ -811,9 +811,9 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
     }
     if(!Paths.IsEmpty())
     {
-        CreatePage(2);
+        CreatePage(wpMainPage);
         FolderAdd.Do(Paths, false, true);
-        ShowPage(2);
+        ShowPage(wpMainPage);
         if(MainDlg) MainDlg->ThumbsView.LoadThumbnails();
     }
     
@@ -995,7 +995,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
                         {
                             if(IsVideoFile(OutFileName))
                             {
-                                ShowPage(1, CurPage, (Pages[2])? 2 : 3);
+                                ShowPage(wpVideoGrabberPage, CurPage, (Pages[2])? 2 : 3);
                                 CVideoGrabberPage* dlg = (CVideoGrabberPage*) Pages[1];
                                 dlg->SetFileName(OutFileName);
                                 break;
@@ -1014,10 +1014,10 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
                 
                 if(!Paths.IsEmpty())
                 {
-                    CreatePage(2);
+                    CreatePage(wpMainPage);
                     //QuickUploadMarker = (Settings.QuickUpload && !CmdLine.IsOption(_T("noquick"))) || (CmdLine.IsOption(_T("quick")));
                     FolderAdd.Do(Paths, /*CmdLine.IsOption(_T("imagesonly"))*/false, true);
-                    ShowPage(2);
+                    ShowPage(wpMainPage);
                     return true;
                 }
             }
@@ -1146,11 +1146,11 @@ void CWizardDlg::PasteBitmap(HBITMAP Bmp)
     {
         MySaveImage(&bm,_T("clipboard"),buf2,1,100);
 
-        CreatePage(2);
+        CreatePage(wpMainPage);
         CMainDlg* MainDlg = (CMainDlg*) Pages[2];
         MainDlg->AddToFileList( buf2, L"", true);
         MainDlg->ThumbsView.LoadThumbnails();
-        ShowPage(2);
+        ShowPage(wpMainPage);
     }
 }
 
@@ -1168,13 +1168,13 @@ void CWizardDlg::AddFolder(LPCTSTR szFolder, bool SubDirs )
 
 bool CWizardDlg::AddImage(const CString &FileName, const CString &VirtualFileName, bool Show)
 {
-    CreatePage(2);
+    CreatePage(wpMainPage);
     CMainDlg* MainDlg = (CMainDlg*) Pages[2];
     if(!MainDlg) return false;
     MainDlg->AddToFileList(FileName, VirtualFileName);
     if(Show){
         MainDlg->ThumbsView.LoadThumbnails();
-        ShowPage(2);
+        ShowPage(wpMainPage);
     }
     return true;
 }
@@ -1223,7 +1223,7 @@ BOOL CALLBACK CMyFolderDialog::DialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam
 LRESULT CWizardDlg::OnWmShowPage(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     int PageIndex = wParam;
-    ShowPage(PageIndex);
+    ShowPage(static_cast<WizardPageId>(PageIndex));
     return 0;
 }
 
@@ -1336,7 +1336,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
                             hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
 
                             if (SUCCEEDED(hr)) {
-                                CreatePage(2);
+                                CreatePage(wpMainPage);
                                 if (((CMainDlg*)Pages[2])->AddToFileList(pwsz)) {
                                     nCount++;
                                 }
@@ -1384,7 +1384,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
         LPCTSTR FileName = 0;
         fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
 
-        CreatePage(2);
+        CreatePage(wpMainPage);
         do
         {
 
@@ -1409,7 +1409,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
     }
     
     if (nCount) {
-        ShowPage(2, 0, 3);
+        ShowPage(wpMainPage, 0, 3);
         ((CMainDlg*)Pages[2])->UpdateStatusLabel();
 
         if (CurPage == 2)
@@ -1426,7 +1426,7 @@ bool CWizardDlg::executeFunc(CString funcBody)
 
     if (CurPage == 4) LaunchCopy = true;
     if (CurPage == 1) LaunchCopy = true;
-    if (CurPage == 3) ShowPage(2);
+    if (CurPage == 3) ShowPage(wpMainPage);
 
     if (!IsWindowEnabled())LaunchCopy = true;
 
@@ -1495,22 +1495,21 @@ bool CWizardDlg::executeFunc(CString funcBody)
 }
 
 bool CWizardDlg::importVideoFile(const CString& fileName, int prevPage) {
-    CreatePage(1);
+    CreatePage(wpVideoGrabberPage);
     LastVideoFile = fileName;
     ((CVideoGrabberPage*)Pages[1])->SetFileName(fileName); // C-style conversion .. 
-    ShowPage(1, prevPage, (Pages[2]) ? 2 : 3);
+    ShowPage(wpVideoGrabberPage, prevPage, (Pages[2]) ? 2 : 3);
     return true;
 }
 
 bool CWizardDlg::funcImportVideo()
 {
-    MyFileDialogFactory factory;
     IMyFileDialog::FileFilterArray filters = {
         {CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), Settings.prepareVideoDialogFilters(),},
         {TR("All files"), _T("*.*")}
     };
 
-    std::shared_ptr<IMyFileDialog> dlg = factory.createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose video file"), filters, false);
+    std::shared_ptr<IMyFileDialog> dlg = MyFileDialogFactory::createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose video file"), filters, false);
     if (dlg->DoModal(m_hWnd) != IDOK) {
         return 0;
     }
@@ -1575,11 +1574,11 @@ void CWizardDlg::OnScreenshotSaving(LPTSTR FileName, Bitmap* Bm)
 {
     if(FileName && lstrlen(FileName))
     {
-        CreatePage(2);
+        CreatePage(wpMainPage);
         ((CMainDlg*)Pages[2])->AddToFileList(FileName);
         if(CurPage == 2)
         ((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
-        ShowPage(2,0,3);
+        ShowPage(wpMainPage,0,3);
     }
 }
 
@@ -1722,7 +1721,7 @@ bool CWizardDlg::RegisterLocalHotkeys()
 
 LRESULT CWizardDlg::OnLocalHotkey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    if(CurPage==3) ShowPage(2);
+    if(CurPage==3) ShowPage(wpMainPage);
     if(!IsWindowEnabled() || (CurPage!=0 && CurPage!=2))
         return 0;
     int hotkeyId = wID-ID_HOTKEY_BASE;
@@ -1770,14 +1769,13 @@ bool CWizardDlg::funcDownloadImages()
 
 bool CWizardDlg::funcMediaInfo()
 {
-    MyFileDialogFactory factory;
     IMyFileDialog::FileFilterArray filters = {
         { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), Settings.prepareVideoDialogFilters(), },
         { CString(TR("Audio files")) + _T(" (mp3, wma, wav ...)"), _T("*.mp3;*.wav;*.wma;*.mid;*.asx") },
         { TR("All files"), _T("*.*") }
     };
 
-    std::shared_ptr<IMyFileDialog> fileDlg = factory.createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose media file"), filters, false);
+    std::shared_ptr<IMyFileDialog> fileDlg = MyFileDialogFactory::createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose media file"), filters, false);
     
     if (fileDlg->DoModal(m_hWnd) != IDOK) {
         return false;
@@ -1799,9 +1797,8 @@ bool CWizardDlg::funcMediaInfo()
 
 bool CWizardDlg::funcAddFiles()
 {
-    MyFileDialogFactory factory;
     IMyFileDialog::FileFilterArray filters = { { TR("Any file"), _T("*.*") } };
-    std::shared_ptr<IMyFileDialog> fileDialog(factory.createFileDialog(m_hWnd, Settings.ImagesFolder, TR("Choose files"), filters, true));
+    std::shared_ptr<IMyFileDialog> fileDialog(MyFileDialogFactory::createFileDialog(m_hWnd, Settings.ImagesFolder, TR("Choose files"), filters, true));
 
     if (fileDialog->DoModal(m_hWnd) != IDOK) {
         return 0;
@@ -1810,7 +1807,7 @@ bool CWizardDlg::funcAddFiles()
     fileDialog->getFiles(files);
 
     if (!files.empty()) {
-        CreatePage(2);
+        CreatePage(wpMainPage);
         CMainDlg* mainDlg = (CMainDlg*)Pages[2];
         int nCount = 0;
         for (const auto& fileName : files) {
@@ -1821,7 +1818,7 @@ bool CWizardDlg::funcAddFiles()
 
         Settings.ImagesFolder = fileDialog->getFolderPath();
         if (nCount) {
-            ShowPage(2, 0, 3);
+            ShowPage(wpMainPage, 0, 3);
         }
         mainDlg->UpdateStatusLabel();
 
@@ -2075,12 +2072,13 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
             }
             if(!m_bScreenshotFromTray || dialogResult == ImageEditorWindow::drAddToWizard || (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD || Settings.TrayIconSettings.TrayScreenshotAction== TRAY_SCREENSHOT_SHOWWIZARD))
             {
-                CreatePage(2); 
-                ((CMainDlg*)Pages[2])->AddToFileList(buf);
-                ((CMainDlg*)Pages[2])->ThumbsView.EnsureVisible(((CMainDlg*)Pages[2])->ThumbsView.GetItemCount()-1,true);
-                ((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
-                ((CMainDlg*)Pages[2])->ThumbsView.SetFocus();
-                ShowPage(2,0,3);
+                CreatePage(wpMainPage);
+                CMainDlg* mainDlg = (CMainDlg*)Pages[2];
+                mainDlg->AddToFileList(buf);
+                mainDlg->ThumbsView.EnsureVisible(((CMainDlg*)Pages[2])->ThumbsView.GetItemCount() - 1, true);
+                mainDlg->ThumbsView.LoadThumbnails();
+                mainDlg->ThumbsView.SetFocus();
+                ShowPage(wpMainPage,0,3);
             }
             else if(m_bScreenshotFromTray && (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD || dialogResult == ImageEditorWindow::drUpload))
             {
@@ -2167,7 +2165,7 @@ bool CWizardDlg::funcOpenScreenshotFolder() {
 bool CWizardDlg::funcFromClipboard() {
     if (pasteFromClipboard()) {
         ShowWindow(SW_SHOW);
-        ShowPage(2, 0, 3);
+        ShowPage(wpMainPage, 0, 3);
         m_bShowWindow = true;
         return true;
     }

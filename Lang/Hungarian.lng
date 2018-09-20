@@ -1,4 +1,4 @@
-# This generated file is Image Uploader's language file. It must be saved in UTF-8 encoding. 777011a3 = LaMoLa  ha5dw@hotmail.com
+# This generated file is Image Uploader's language file. It must be saved in UTF-8 encoding. 777011a3 = translator's name (and optional e-mail, website)
 9e633393 = Ürítés
 8c7b45f3 = Beállítások
 99bc0cca = Képek feltöltése
@@ -136,9 +136,6 @@ aa3a3a0e = Megnyitás a varázslóval
 eb10684a = Tároló mappa megnyitása...
 0c087625 = Utolsó feltöltési eredmények megjelenítése
 dabc7584 = Feltöltés leállítása
-1e7c068c = Globális gyorsbillentyű nem regisztrálható:
-\n%s.
-\n Talán egy másik folyamat használja.
 1ef7e4b4 = A "%s" fájl fel lett töltve, a %s szerverre...
 cf8b0d37 = Képernyőfelvétel feltöltése
 73da5d18 = Nem sikerült feltölteni a képernyőfelvételt :(
@@ -365,10 +362,6 @@ d229c2f5 = Fájlnév formátum:
 262ed0db = Mindig másolja a rögzített képet a vágólapra
 8c709b12 = Paraméterek mentése
 e1e46984 = Húzza az ablakot az előtérbe, ha az egérrel van kijelölve
-89f480a1 = %y - év, %m - hónap, %d - nap
-\n%h - óra, %n - perc, %s - np.
-\n %i - kép index,
-\n%width% - kép szélessége,  %height% - kép magassága
 69b9327d = Rögzítés árnyékkal
 ff51cf52 = Alt+Tab engedélyezése a teljes képernyős szerkesztőben
 7b58e9e8 = Törölje az ablak hátterét
@@ -376,7 +369,6 @@ ff51cf52 = Alt+Tab engedélyezése a teljes képernyős szerkesztőben
 4ea916ba = Használja a régi négyszögletes területkiválasztási módszert
 503ad8ab = Kép feltöltésee...
 59bb7458 = Mappalista
-745cae02 = Hiba történt a squirrel parancsfájl betöltésekor.
 830dfb6d = Mappalista a %s kiszolgálón a '%s' fiókhoz:
 cae32dfb = Beágyazott mappa létrehozása
 7f31a180 = Mappa létrehozása
@@ -472,8 +464,6 @@ ae7a329f = Ez azt jelenti, hogy a miniatűr jön létre a helyszínen, nem pedig
 3a794881 = Profil szerkesztése
 e8f64d73 = Szerver kiválasztása...
 93f5d861 = Mappa kiválasztása...
-db85b00c = A '%s' szerverre való feltöltéshez, fiók megléte szükséges.
-\nFel kell iratkozni a szerverre megadni az adatait és a program beállításait.
 df1929f7 = Adja meg a hitelesítési beállításokat a '%s' szervernek!
 b9654af6 = &Feltöltés
 b43f8478 = A "Data\Thumb.png" fájl nem található!
@@ -493,7 +483,6 @@ f8ab5bfb =Miniatűr szélessége:
 cbcea249 = Szerver más fájlformátumok tárolására
 16d4c139 = A %s fájl nem létezik
 2e392c44 = Kapcsolat beállítása
-349afd3d = Proxy szerver használat
 18b4643d = Cím:
 db348127 = Port:
 d6804a68 = Proxy Típus:
@@ -526,13 +515,6 @@ fb3adf17 = Vízszintes cella:
 528aeace = Függőleges cella:
 5f047e4b = Keretek elrendezése
 6e8c8854 = A képen megjelenő videofájl információinak megjelenítése
-f32df412 = %f% - videófájl neve kiterjesztés nélkül, 
-\n%fe% -  Videófájl neve, 
-\n%ext% - Kiterjesztése, 
-\n%y% - Év, %m% - Hó, %d% - Nap
-\n%h% - Óra, %n% - Perc, %s% - mp.
-\n %i% - fájlszámláló,
-\n%cx% - szélesség,  %cy% - magasság
 e5ce3d08 = Pillanatfelvételek mappája:
 a403be0d = JPEG, PNG, GIF, BMP vagy bármely más fájl
 7e2b58a3 = Fájlok hozzáadása...
@@ -550,20 +532,11 @@ f2f77e96 = <- Húzza át ide balra, a Képfeltöltő ablakba a fájlokat, feldol
 c260cbfc = Üdvözli a Képmegosztó Varázsló, amely segíti feltölteni  fényképeit, videóit az Internetre!
 077efcaa = Engedélyezi az integrációt az Explorer helyi menüjébe?
 27eb6c03 = Súgó
-e67c195b = Nem lehet betölteni a "servers.xml"-t, a kiszolgálók listáját!
-\n
-\nEnnek oka:  %s
-\n
-\nFolytatja?
-5784e81d = MediaInfo.dll nem található! 
-\nA médiafájlok adatai nem lesz elérhető.
 7f6216d0 = "%s" profil nem található.
 98440497 = %s - Frissítés érhető el
 b5363619 = A képek beállításai és a szerver kiválasztása
 b107c545 = Fájl feltöltése a szerverre
 98204ade = A beállítási fájl mentése nem sikerült. Lásd a hibajelentést a részletekért.
-6437e6b4 = Ki akar emelni képkockákat ebből a videóból?
-\n(egyébként a fájl csak a listához lesz adva)
 f1a28e09 = Almappákkal együtt.
 3b698f08 = Bármely fájl
 6685c6d4 = Valóban kilép?
@@ -608,3 +581,28 @@ f4c7c2fe = Újból
 c23527e5 = Kerekítés sugara
 686e1e97 = Csak képeket töltsön fel
 a6c2ab81 = Nem sikerült elindítani a '%s' folyamatot 
+e94688fb = Image Loader
+93341a7d = Cannot load image.
+557dc1df = All monitors
+1a025b4b = Current monitor
+068f0dc1 = Monitor
+13328b8e = Cannot register global hotkey:\n%s.\n Maybe it is being used by another process.
+6d08baac = Choose monitor
+83f0afc3 = First you have to select an item in the list.
+b93a6740 = Search by image (%s)
+d4af113d = Markdown
+c1e57abf = %y - év, %m - hónap, %d - nap\n%h - óra, %n - perc, %s - np.\n %i - kép index,\n%width% - kép szélessége,  %height% - kép magassága
+1c875c9b = Allow editing images in fullscreen mode
+29f5b904 = An error occured while loading script.
+636e7081 = A '%s' szerverre való feltöltéshez, fiók megléte szükséges.\nFel kell iratkozni a szerverre megadni az adatait és a program beállításait.
+0cfd2d64 = Use provided proxy
+fdfa8afe = Use system proxy settings
+91a1af5e = No proxy (direct connection)
+7decda15 = Choose video file
+3d06a25b = %f% - videófájl neve kiterjesztés nélkül, \n%fe% -  Videófájl neve, \n%ext% - Kiterjesztése, \n%y% - Év, %m% - Hó, %d% - Nap\n%h% - Óra, %n% - Perc, %s% - mp.\n %i% - fájlszámláló,\n%cx% - szélesség,  %cy% - magasság
+c874a987 = Nem lehet betölteni a "servers.xml"-t, a kiszolgálók listáját!\n\nEnnek oka:  %s\n\nFolytatja?
+5eb17fc6 = MediaInfo.dll nem található! \nA médiafájlok adatai nem lesz elérhető.
+5cd1818c = Would you like to grab frames from this video?\n(otherwise file just  will be added to list)
+872c1450 = Choose media file
+c1ad90ff = Choose files
+e41fd422 = Search on %s

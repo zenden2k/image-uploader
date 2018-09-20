@@ -786,17 +786,18 @@ void ImageEditorWindow::createToolbars()
         horizontalToolbar_.addButton(Toolbar::Item(CString(TR("Add to the list")), loadToolbarIcon(IDB_ICONADDPNG),ID_ADDTOWIZARD, buttonHint));
     }
     if ( showUploadButton_ ) {
-        CString uploadButtonText;
+        CString fullUploadButtonText, uploadButtonText;
         if ( serverName_.IsEmpty() ) {
-            uploadButtonText = TR("Upload to Web");
+            fullUploadButtonText = uploadButtonText = TR("Upload to Web");
         } else {
-            uploadButtonText.Format(TR("Upload to %s"), serverName_);
+            fullUploadButtonText.Format(TR("Upload to %s"), serverName_);
+            uploadButtonText = WinUtils::TrimStringEnd(fullUploadButtonText, 35);
         }
-        horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG),ID_UPLOAD, _T(" (Enter)"), Toolbar::itButton));
+        horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG), ID_UPLOAD, fullUploadButtonText + _T(" (Enter)"), Toolbar::itButton));
     }
     //horizontalToolbar_.addButton(Toolbar::Item(TR("Share"),0,ID_SHARE, CString(),Toolbar::itComboButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Save"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, CString(_T("(Ctrl+S)")),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Copy to clipboard"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, CString(), Toolbar::itComboButton));
+    horizontalToolbar_.addButton(Toolbar::Item(TR("Copy"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, TR("Copy to clipboard"), Toolbar::itComboButton));
     
     CString itemText;
     CString searchEngineName = U2W(SearchByImage::getSearchEngineDisplayName(searchEngine_));

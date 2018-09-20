@@ -24,6 +24,8 @@
 #include "LogWindow.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
+#include "Gui/Components/MyFileDialog.h"
+
 // CGeneralSettings
 CGeneralSettings::CGeneralSettings()
 {
@@ -105,23 +107,25 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 LRESULT CGeneralSettings::OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    TCHAR Buf[MAX_PATH*4];
-    GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2, 
-        CString(TR("Executables")),
-        _T("*.exe;*.com;*.bat;*.cmd;"),
-        TR("All files"),
-        _T("*.*"));
+    IMyFileDialog::FileFilterArray filters = {
+        { CString(TR("Executables")), _T("*.exe;*.com;*.bat;*.cmd;"), },
+        { TR("All files"), _T("*.*") }
+    };
 
-    CFileDialog fd(true, 0, 0, 4|2, Buf, m_hWnd);
-    CString s;
-    s = WinUtils::GetAppFolder();
-    fd.m_ofn.lpstrInitialDir = s;
-    if ( fd.DoModal() != IDOK || !fd.m_szFileName[0] ) return 0;
+    std::shared_ptr<IMyFileDialog> dlg = MyFileDialogFactory::createFileDialog(m_hWnd, WinUtils::GetAppFolder(), TR("Choose program"), filters, false);
+    if (dlg->DoModal(m_hWnd) != IDOK) {
+        return 0;
+    }
 
-    CString FileName = CString(_T("\""))+ fd.m_szFileName + CString(_T("\""));
-    FileName += _T(" \"%1\"");
+    CString fileName = dlg->getFile();
+    if (fileName.IsEmpty()) {
+        return 0;
+    }
 
-    SetDlgItemText(IDC_IMAGEEDITORPATH, FileName);
+    CString cmdLine = CString(_T("\"")) + fileName + CString(_T("\""));
+    cmdLine += _T(" \"%1\"");
+
+    SetDlgItemText(IDC_IMAGEEDITORPATH, cmdLine);
     return 0;
 }
 

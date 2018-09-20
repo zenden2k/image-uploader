@@ -23,7 +23,8 @@
 #include "Core/CommonDefs.h"
 #include "wizarddlg.h"
 #include "Gui/GuiTools.h"
-#include <Func/WinUtils.h>
+#include "Func/WinUtils.h"
+#include "Gui/Components/MyFileDialog.h"
 
 // CUploadSettingsPage
 CUploadSettingsPage::CUploadSettingsPage()
@@ -96,6 +97,7 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     // Уведомление элементов
     OnClickedUseProxy(BN_CLICKED, IDC_USEPROXYSERVER, 0, temp);
     GuiTools::SetCheck(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX, Settings.ExecuteScript);
+    executeScriptCheckboxChanged();
     SetDlgItemText(IDC_SCRIPTFILENAMEEDIT, IuCoreUtils::Utf8ToWstring(Settings.ScriptFileName).c_str());
 
     return 1;  // Let the system set the focus
@@ -133,6 +135,11 @@ LRESULT CUploadSettingsPage::OnClickedNoProxy(WORD wNotifyCode, WORD wID, HWND h
 
 LRESULT CUploadSettingsPage::OnClickedUseSystemProxy(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     proxyRadioChanged();
+    return 0;
+}
+
+LRESULT CUploadSettingsPage::OnExecuteScriptCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    executeScriptCheckboxChanged();
     return 0;
 }
 
@@ -185,20 +192,24 @@ bool CUploadSettingsPage::Apply()
 
 LRESULT CUploadSettingsPage::OnBnClickedBrowseScriptButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    TCHAR Buf[MAX_PATH * 4];
-    GuiTools::SelectDialogFilter(Buf, sizeof(Buf) / sizeof(TCHAR), 2,
-        CString(_("Squirrel 3 script (.nut)")),
-        _T("*.nut;"),
-        TR("All files"),
-        _T("*.*"));
+    IMyFileDialog::FileFilterArray filters = {
+        { CString(_("Squirrel 3 script (.nut)")), _T("*.nut;"), },
+        { TR("All files"), _T("*.*") }
+    };
 
-    CFileDialog fd(true, nullptr, nullptr, 4 | 2, Buf, m_hWnd);
+    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, WinUtils::GetAppFolder(), CString(), filters, false);
 
-    if (fd.DoModal() != IDOK || !fd.m_szFileName[0]) {
+    if (dlg->DoModal(m_hWnd) != IDOK) {
         return 0;
     }
 
-    SetDlgItemText(IDC_SCRIPTFILENAMEEDIT, fd.m_szFileName);
+    CString fileName = dlg->getFile();
+
+    if (fileName.IsEmpty()) {
+        return 0;
+    }
+
+    SetDlgItemText(IDC_SCRIPTFILENAMEEDIT, fileName);
 
     return 0;
 }
@@ -212,4 +223,9 @@ void CUploadSettingsPage::proxyRadioChanged() {
         OnClickedUseProxyAuth(BN_CLICKED, IDC_NEEDSAUTH, 0, bHandled);
 
     //::EnableWindow(GetDlgItem(IDC_ADDRESSEDIT), Checked);
+}
+
+void CUploadSettingsPage::executeScriptCheckboxChanged() {
+    bool Checked = SendDlgItemMessage(IDC_EXECUTESCRIPTCHECKBOX, BM_GETCHECK) != 0;
+    GuiTools::EnableNextN(GetDlgItem(IDC_EXECUTESCRIPTCHECKBOX), 2, Checked);
 }

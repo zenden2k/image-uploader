@@ -70,7 +70,7 @@ class CServerParamsDlg :
         std::map<std::string,std::string> m_paramNameList;
         CUploadEngineData *m_ue;
         bool focusOnLoginControl_;
-        CScriptUploadEngine *m_pluginLoader;
+        CAdvancedUploadEngine *m_pluginLoader;
         CString oldLogin_;
         ServerProfile  serverProfile_;
         UploadEngineManager * uploadEngineManager_;

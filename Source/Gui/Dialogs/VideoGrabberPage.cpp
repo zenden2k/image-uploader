@@ -480,13 +480,12 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
 
 LRESULT CVideoGrabberPage::OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    MyFileDialogFactory factory;
     IMyFileDialog::FileFilterArray filters = {
         { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), Settings.prepareVideoDialogFilters(), },
         { TR("All files"), _T("*.*") }
     };
 
-    std::shared_ptr<IMyFileDialog> dlg = factory.createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose video file"), filters, false);
+    std::shared_ptr<IMyFileDialog> dlg = MyFileDialogFactory::createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose video file"), filters, false);
     if (dlg->DoModal(m_hWnd) != IDOK) {
         return 0;
     }
@@ -589,7 +588,7 @@ bool CVideoGrabberPage::OnNext()
     }
     LPCTSTR filename;
 
-    WizardDlg->CreatePage(2);
+    WizardDlg->CreatePage(CWizardDlg::wpMainPage);
     CMainDlg* mainDlg = (CMainDlg*)WizardDlg->Pages[2];
 
     BOOL check = SendDlgItemMessage(IDC_MULTIPLEFILES, BM_GETCHECK);

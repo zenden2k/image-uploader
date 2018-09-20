@@ -64,7 +64,7 @@ bool Toolbar::Create(HWND parent, bool child )
         ::GetWindowRect(parent, parentRect);
         OffsetRect(&rc, parentRect.left, parentRect.top);
     }
-    HWND wnd = TParent::Create(parent, rc, _T("test"), ( child ? WS_CHILD :WS_POPUP|WS_CLIPCHILDREN) ,child?0:( WS_EX_LAYERED|  WS_EX_NOACTIVATE|WS_EX_TOOLWINDOW) /*|WS_EX_TOOLWINDOW*/);
+    HWND wnd = TParent::Create(parent, rc, _T("test"), (child ? WS_CHILD : WS_POPUP | WS_CLIPCHILDREN), child ? 0 : (WS_EX_LAYERED | WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW | WS_EX_TOPMOST) /*|WS_EX_TOOLWINDOW*/);
     if ( !wnd ) {
         LOG(ERROR) << WinUtils::GetLastErrorAsString();
         return false;

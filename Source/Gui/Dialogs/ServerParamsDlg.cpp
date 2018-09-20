@@ -52,34 +52,34 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     DlgResize_Init();
     CString WindowTitle;
     CString serverName = Utf8ToWCstring(m_ue->Name);
-    WindowTitle.Format(TR("%s server settings"),(LPCTSTR)serverName);
+    WindowTitle.Format(TR("%s server settings"), (LPCTSTR)serverName);
     SetWindowText(WindowTitle);
     GuiTools::ShowDialogItem(m_hWnd, IDC_BROWSESERVERFOLDERS, m_ue->SupportsFolders);
     GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERLABEL, m_ue->SupportsFolders);
     GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERNAMELABEL, m_ue->SupportsFolders);
     ::EnableWindow(GetDlgItem(IDC_BROWSESERVERFOLDERS), m_ue->SupportsFolders);
-    GuiTools::ShowDialogItem(m_hWnd, IDC_DOAUTH, m_ue->NeedAuthorization == CUploadEngineData::naAvailable );
+    GuiTools::ShowDialogItem(m_hWnd, IDC_DOAUTH, m_ue->NeedAuthorization == CUploadEngineData::naAvailable);
 
-    GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERLABEL, m_ue->SupportsFolders );
-    GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERNAMELABEL, m_ue->SupportsFolders );
-    GuiTools::ShowDialogItem(m_hWnd, IDC_BROWSESERVERFOLDERS, m_ue->SupportsFolders );
-    GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERICON, m_ue->SupportsFolders );
+    GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERLABEL, m_ue->SupportsFolders);
+    GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERNAMELABEL, m_ue->SupportsFolders);
+    GuiTools::ShowDialogItem(m_hWnd, IDC_BROWSESERVERFOLDERS, m_ue->SupportsFolders);
+    GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERICON, m_ue->SupportsFolders);
 
-    
+
     ServerSettingsStruct &serverSettings = serverProfile_.serverSettings();
     LoginInfo li = serverSettings.authData;
     SetDlgItemText(IDC_LOGINEDIT, Utf8ToWCstring(li.Login));
-    oldLogin_ =  Utf8ToWCstring(li.Login);
+    oldLogin_ = Utf8ToWCstring(li.Login);
     SetDlgItemText(IDC_PASSWORDEDIT, Utf8ToWCstring(li.Password));
 
 
     SendDlgItemMessage(IDC_DOAUTH, BM_SETCHECK, (li.DoAuth ? BST_CHECKED : BST_UNCHECKED));
     doAuthChanged();
     int result = 1;
-    if ( focusOnLoginControl_ && m_ue->NeedAuthorization ) {
+    if (focusOnLoginControl_ && m_ue->NeedAuthorization) {
         GuiTools::SetCheck(m_hWnd, IDC_DOAUTH, true);
         doAuthChanged();
-        ::SetFocus(GetDlgItem(IDC_LOGINEDIT) );
+        ::SetFocus(GetDlgItem(IDC_LOGINEDIT));
         SendDlgItemMessage(IDC_LOGINEDIT, EM_SETSEL, 0, -1);
         result = 0;
     }
@@ -89,19 +89,16 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     m_wndParamList.SubclassWindow(GetDlgItem(IDC_PARAMLIST));
     m_wndParamList.SetExtendedListStyle(PLS_EX_SHOWSELALWAYS | PLS_EX_SINGLECLICKEDIT);
 
-    m_pluginLoader = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
-    if(!m_pluginLoader)
-    {
-        return 0;
-    }
-    m_pluginLoader->getServerParamList(m_paramNameList);
+    m_pluginLoader = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+    if (m_pluginLoader) {
+        m_pluginLoader->getServerParamList(m_paramNameList);
 
-    std::map<std::string,std::string>::iterator it;
-    for( it = m_paramNameList.begin(); it!= m_paramNameList.end(); ++it)
-    {
-        CString name = it->first.c_str();
-        CString humanName = it->second.c_str();
-        m_wndParamList.AddItem( PropCreateSimple(humanName, Utf8ToWCstring(serverSettings.params[WCstringToUtf8(name)])) );
+        std::map<std::string, std::string>::iterator it;
+        for (it = m_paramNameList.begin(); it != m_paramNameList.end(); ++it) {
+           CString name = it->first.c_str();
+            CString humanName = it->second.c_str();
+           m_wndParamList.AddItem(PropCreateSimple(humanName, Utf8ToWCstring(serverSettings.params[WCstringToUtf8(name)])));
+        }
     }
     CString folderTitle = Utf8ToWCstring( serverProfile_.folderTitle()) ;
 

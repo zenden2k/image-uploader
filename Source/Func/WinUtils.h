@@ -55,6 +55,7 @@ namespace WinUtils {
     CString GetOnlyFileName(const CString& szFilename);
     bool FileExists(LPCTSTR FileName);
     const CString TrimString(const CString& source, int nMaxLen);
+    const CString TrimStringEnd(const CString& source, int nMaxLen);
     bool IsStrInList(LPCTSTR szExt,LPCTSTR szList);
     bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
     bool ShowFilePropertiesDialog(HWND hWnd, const CString& fileName);

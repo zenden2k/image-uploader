@@ -154,9 +154,10 @@ public:
     LRESULT OnEnableDropTarget(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     void CloseDialog(int nVal);
     bool DragndropEnabled;
+    enum WizardPageId { wpWelcomePage = 0, wpVideoGrabberPage = 1, wpMainPage = 2, wpUploadSettingsPage = 3, wpUploadPage = 4 };
     int CurPage;
     int PrevPage,NextPage;
-    bool CreatePage(int PageID);
+    bool CreatePage(WizardPageId PageID);
     CWizardPage* Pages[5];
     int screenshotIndex; 
     void setSessionImageServer(ServerProfile server);
@@ -174,7 +175,7 @@ protected:
     void settingsChanged(BasicSettings* settings);
     bool pasteFromClipboard();
 public:
-    bool ShowPage(int idPage,int prev=-1,int next=-1);
+    bool ShowPage(WizardPageId idPage, int prev = -1, int next = -1);
     bool AddImage(const CString &FileName, const CString &VirtualFileName, bool Show=true);
     LRESULT OnPrevBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnNextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);

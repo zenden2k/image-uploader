@@ -10,6 +10,9 @@ IMyFileDialog::~IMyFileDialog() {
 void IMyFileDialog::setTitle(LPCWSTR title) {
 }
 
+void IMyFileDialog::setFileName(LPCWSTR fileName) {
+}
+
 void IMyFileDialog::setDefaultExtension(LPCTSTR extension) {
 } 
 
@@ -23,8 +26,6 @@ CString IMyFileDialog::getFile() {
     return arr.empty() ? CString() : arr[0];
 }
 
-MyFileDialogFactory::MyFileDialogFactory() {
-}
 
 std::shared_ptr<IMyFileDialog> MyFileDialogFactory::createFileDialog(HWND parent, const CString& initialFolder, const CString& title, const IMyFileDialog::FileFilterArray& filters, bool multiselect) {
     if (WinUtils::IsVista()) {
