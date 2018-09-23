@@ -81,7 +81,7 @@ class CommonGuiSettings : public BasicSettings {
         int ThumbsPerLine;
         TCHAR m_szLang[64];
         VideoSettingsStruct VideoSettings;
-        ServerProfile imageServer, fileServer, quickScreenshotServer, contextMenuServer, urlShorteningServer;
+        ServerProfile imageServer, fileServer, quickScreenshotServer, contextMenuServer, urlShorteningServer, temporaryServer;
         HistorySettingsStruct HistorySettings;
 
         int CodeLang;

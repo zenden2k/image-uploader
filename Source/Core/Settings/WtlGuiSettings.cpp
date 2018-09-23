@@ -246,6 +246,12 @@ void WtlGuiSettings::fixInvalidServers() {
         quickScreenshotServer.setProfileName(defaultImageServerProfileName);
     }
 
+    ue = temporaryServer.uploadEngineData();
+    if (!ue) {
+        temporaryServer.setServerName(defaultImageServer);
+        temporaryServer.setProfileName(defaultImageServerProfileName);
+    }
+
     ue = fileServer.uploadEngineData();
     if (!ue) {
         std::string defaultServerName = "zippyshare.net";
@@ -427,6 +433,14 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
         }
 
     }
+    SimpleXmlNode searchEngineNode = settingsNode.GetChild("ImageEditor").GetChild("SearchEngine");
+    if (!searchEngineNode.IsNull()) {
+        std::string searchEngineName = searchEngineNode.Text();
+        if (!searchEngineName.empty()) {
+            ImageEditorSettings.SearchEngine = SearchByImage::searchEngineTypeFromString(searchEngineName);
+        }
+    }
+
     LoadConvertProfiles(settingsNode.GetChild("Image").GetChild("Profiles"));
     LoadServerProfiles(settingsNode.GetChild("Uploading").GetChild("ServerProfiles"));
 #endif
@@ -451,6 +465,11 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
     if (!urlShorteningServer.profileName().empty() && ServersSettings[urlShorteningServer.serverName()].find(urlShorteningServer.profileName()) == ServersSettings[urlShorteningServer.serverName()].end()) {
         urlShorteningServer.setProfileName("");
     }
+
+    if (!temporaryServer.profileName().empty() && ServersSettings[temporaryServer.serverName()].find(temporaryServer.profileName()) == ServersSettings[temporaryServer.serverName()].end()) {
+        temporaryServer.setProfileName("");
+    }
+
     if (UploadBufferSize == 65536) {
         UploadBufferSize = 1024 * 1024;
     }
@@ -610,6 +629,9 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
 {
     CommonGuiSettings::PostSaveSettings(xml);
 #if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
+    SimpleXmlNode searchEngineNode = xml.getRoot("ImageUploader").GetChild("Settings").GetChild("ImageEditor").GetChild("SearchEngine");
+    searchEngineNode.SetText(SearchByImage::searchEngineTypeToString(ImageEditorSettings.SearchEngine));
+
     SaveConvertProfiles(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("Image").GetChild("Profiles"));
     SaveServerProfiles(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("Uploading").GetChild("ServerProfiles"));
 #endif
@@ -735,7 +757,7 @@ void WtlGuiSettings::BindToManager() {
     imageEditor.nm_bind(ImageEditorSettings, Font);
     imageEditor.nm_bind(ImageEditorSettings, AllowAltTab);
     screenshot.nm_bind(ImageEditorSettings, AllowEditingInFullscreen);
-    screenshot.nm_bind(ImageEditorSettings, SearchEngine);
+    //screenshot.nm_bind(ImageEditorSettings, SearchEngine);
     SettingsNode& image = mgr_["Image"];
     image["CurrentProfile"].bind(CurrentConvertProfileName);
     image.nm_bind(UploadProfile, KeepAsIs);
@@ -813,6 +835,7 @@ void WtlGuiSettings::BindToManager() {
     quickScreenshotServer.bind(upload["QuickScreenshotServer"]);
     contextMenuServer.bind(upload["ContextMenuServer"]);
     urlShorteningServer.bind(upload["UrlShorteningServer"]);
+    temporaryServer.bind(upload["TemporaryServer"]);
 
     ConvertProfiles["Default"] = ImageConvertingParams();
     CurrentConvertProfileName = "Default";

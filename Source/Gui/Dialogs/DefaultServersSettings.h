@@ -25,7 +25,6 @@
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include "Gui/Controls/MyImage.h"
 #include "Gui/Dialogs/settingspage.h"
 #include "Gui/COntrols/ServerSelectorControl.h"
 class CServerSelectorControl;
@@ -58,6 +57,7 @@ protected:
     CServerSelectorControl *trayServerSelector_;
     CServerSelectorControl *contextMenuServerSelector_;
     CServerSelectorControl *urlShortenerServerSelector_;
+    CServerSelectorControl *temporaryServerSelector_;
     UploadEngineManager* uploadEngineManager_;
 
 };

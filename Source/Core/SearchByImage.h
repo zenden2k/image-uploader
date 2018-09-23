@@ -17,6 +17,8 @@ class SearchByImage  {
         bool isRunning() const;
         static std::unique_ptr<SearchByImage> createSearchEngine(SearchEngine se, const std::string& fileName);
         static std::string getSearchEngineDisplayName(SearchEngine se);
+        static std::string searchEngineTypeToString(SearchEngine se);
+        static SearchEngine searchEngineTypeFromString(const std::string& name); 
         typedef fastdelegate::FastDelegate2<bool, const std::string&> FinishedDelegate;
         void setOnFinished(FinishedDelegate&& fd);
 protected:

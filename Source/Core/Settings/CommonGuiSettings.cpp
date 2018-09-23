@@ -34,6 +34,7 @@ CommonGuiSettings::CommonGuiSettings() : BasicSettings()
     ShowTrayIcon_changed = false;
     MaxThreads = 3;
     DeveloperMode = false;
+    temporaryServer.UseDefaultSettings = false;
 }
 
 CommonGuiSettings::~CommonGuiSettings() {

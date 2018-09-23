@@ -9,6 +9,7 @@
 #include "Func/Common.h"
 #include "Func/WinUtils.h"
 #include "Gui/Dialogs/HotkeySettings.h"
+#include "Core/SearchByImage.h"
 
 #define TRAY_SCREENSHOT_UPLOAD 0
 #define TRAY_SCREENSHOT_CLIPBOARD 1
@@ -29,7 +30,7 @@ struct ImageEditorSettingsStruct {
     LOGFONT Font;
     bool AllowAltTab;
     bool AllowEditingInFullscreen;
-    int SearchEngine;
+    SearchByImage::SearchEngine SearchEngine;
 };
 
 struct TrayIconSettingsStruct {

@@ -619,6 +619,8 @@
 #define IDC_SIGNUPLINK                  1305
 #define IDC_ACCOUNTINFO                 1306
 #define IDC_AUTHORLABEL                 1306
+#define IDC_URLSHORTENERPLACEHOLDER2    1306
+#define IDC_TEMPORARYSERVERPLACEHOLDER  1306
 #define IDC_EDIT                        1307
 #define IDC_WEBSITELABEL                1307
 #define IDC_SERVERGROUPBOX              1308

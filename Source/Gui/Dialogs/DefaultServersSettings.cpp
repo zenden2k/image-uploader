@@ -23,10 +23,9 @@
 #include "Func/common.h"
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
-#include "Func/WinUtils.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "WizardDlg.h"
-#include <Core/ServiceLocator.h>
+#include "Core/ServiceLocator.h"
 
 // CDefaultServersSettings
 CDefaultServersSettings::CDefaultServersSettings(UploadEngineManager* uploadEngineManager)
@@ -36,6 +35,7 @@ CDefaultServersSettings::CDefaultServersSettings(UploadEngineManager* uploadEngi
     trayServerSelector_ = 0;
     contextMenuServerSelector_ = 0;
     urlShortenerServerSelector_ = 0;
+    temporaryServerSelector_ = 0;
     uploadEngineManager_ = uploadEngineManager;
 }
 
@@ -46,6 +46,7 @@ CDefaultServersSettings::~CDefaultServersSettings()
     delete trayServerSelector_;
     delete contextMenuServerSelector_;
     delete urlShortenerServerSelector_;
+    delete temporaryServerSelector_;
 }
 
 LRESULT CDefaultServersSettings::OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -54,6 +55,7 @@ LRESULT CDefaultServersSettings::OnServerListChanged(UINT uMsg, WPARAM wParam, L
     fileServerSelector_->updateServerList();
     trayServerSelector_->updateServerList();
     contextMenuServerSelector_->updateServerList();
+    temporaryServerSelector_->updateServerList();
     return 0;
 }
 
@@ -116,6 +118,17 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     urlShortenerServerSelector_->setServerProfile(Settings.urlShorteningServer);
     urlShortenerServerSelector_->setTitle(TR("URL shortening server"));
     
+    // Intermediate server for storing temporary images
+    serverSelectorRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_TEMPORARYSERVERPLACEHOLDER);
+    temporaryServerSelector_ = new CServerSelectorControl(uploadEngineManager_);
+    //trayServerSelector_->setShowDefaultServerItem(true);
+    temporaryServerSelector_->Create(m_hWnd, serverSelectorRect);
+    temporaryServerSelector_->ShowWindow(SW_SHOW);
+    temporaryServerSelector_->SetWindowPos(0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
+
+    temporaryServerSelector_->setServerProfile(Settings.temporaryServer);
+    temporaryServerSelector_->setTitle(TR("Server for temporary images"));
+
     GuiTools::SetCheck(m_hWnd, IDC_REMEMBERIMAGESERVERSETTINGS, Settings.RememberImageServer);
     GuiTools::SetCheck(m_hWnd, IDC_REMEMBERFILESERVERSETTINGS, Settings.RememberFileServer);
 
@@ -124,7 +137,8 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
  
 bool CDefaultServersSettings::Apply()
 {
-    CServerSelectorControl* controls[] = { fileServerSelector_, imageServerSelector_, trayServerSelector_, contextMenuServerSelector_, urlShortenerServerSelector_ };
+    CServerSelectorControl* controls[] = { fileServerSelector_, imageServerSelector_, trayServerSelector_, 
+        contextMenuServerSelector_, urlShortenerServerSelector_, temporaryServerSelector_ };
     for(int i = 0; i< ARRAY_SIZE(controls); i++ ) {
         if ( !controls[i]->serverProfile().serverName().empty() && !controls[i]->isAccountChosen() ) {
             CString message;
@@ -138,6 +152,7 @@ bool CDefaultServersSettings::Apply()
     Settings.quickScreenshotServer = trayServerSelector_->serverProfile();
     Settings.contextMenuServer = contextMenuServerSelector_->serverProfile();
     Settings.urlShorteningServer = urlShortenerServerSelector_->serverProfile();
+    Settings.temporaryServer = temporaryServerSelector_->serverProfile();
     Settings.RememberImageServer = GuiTools::GetCheck(m_hWnd, IDC_REMEMBERIMAGESERVERSETTINGS);
     Settings.RememberFileServer = GuiTools::GetCheck(m_hWnd, IDC_REMEMBERFILESERVERSETTINGS);
     ServiceLocator::instance()->programWindow()->setServersChanged(true);

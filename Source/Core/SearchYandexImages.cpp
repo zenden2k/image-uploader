@@ -68,7 +68,7 @@ void SearchYandexImages::run() {
     FileUploadTask *  task(new FileUploadTask(fileName_, IuCoreUtils::ExtractFileName(fileName_)));
     task->setIsImage(true);
     //std::shared_ptr<UploadSession> uploadSession(new UploadSession());
-    task->setServerProfile(Settings.quickScreenshotServer);
+    task->setServerProfile(Settings.temporaryServer);
     task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &SearchYandexImages::onFileFinished));
 
     currentUploadTask_.reset(task);

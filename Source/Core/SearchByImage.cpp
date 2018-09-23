@@ -66,3 +66,19 @@ std::string SearchByImage::getSearchEngineDisplayName(SearchEngine se) {
     }
     return std::string();
 }
+
+std::string SearchByImage::searchEngineTypeToString(SearchEngine se) {
+    if (se == seGoogle) {
+        return "google";
+    } else if (se == seYandex) {
+        return "yandex";
+    }
+    return std::string();
+}
+
+SearchByImage::SearchEngine SearchByImage::searchEngineTypeFromString(const std::string& name) {
+    if (name == "yandex") {
+        return seYandex;
+    }
+    return seGoogle;
+}
