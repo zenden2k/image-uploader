@@ -376,7 +376,10 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     ACCEL accels[] = {
         { FVIRTKEY | FCONTROL, 'Z', ID_UNDO },
         { FVIRTKEY | FCONTROL, 'D', ID_UNSELECTALL },
-        { FVIRTKEY | FCONTROL, 'S', ID_SAVE }
+        { FVIRTKEY | FCONTROL, 'S', ID_SAVE },
+        { FVIRTKEY | FCONTROL, 'C', ID_COPYBITMAPTOCLIBOARD },
+        { FVIRTKEY | FCONTROL, 'F', ID_SEARCHBYIMAGE },
+        { FVIRTKEY | FCONTROL, 'P', ID_PRINTIMAGE },
     };
 
     accelerators_ = CreateAcceleratorTable(accels, ARRAY_SIZE(accels));
@@ -797,15 +800,15 @@ void ImageEditorWindow::createToolbars()
     }
     //horizontalToolbar_.addButton(Toolbar::Item(TR("Share"),0,ID_SHARE, CString(),Toolbar::itComboButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Save"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, CString(_T("(Ctrl+S)")),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Copy"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, TR("Copy to clipboard"), Toolbar::itComboButton));
+    horizontalToolbar_.addButton(Toolbar::Item(TR("Copy"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, CString(TR("Copy to clipboard"))+_T(" (Ctrl+C)"), Toolbar::itComboButton));
     
     CString itemText;
     CString searchEngineName = U2W(SearchByImage::getSearchEngineDisplayName(searchEngine_));
     itemText.Format(TR("Search on %s"), searchEngineName.GetString());
 
-    horizontalToolbar_.addButton(Toolbar::Item(itemText, std::shared_ptr<Gdiplus::Bitmap>(), ID_SEARCHBYIMAGE, CString(), Toolbar::itComboButton));
+    horizontalToolbar_.addButton(Toolbar::Item(itemText, std::shared_ptr<Gdiplus::Bitmap>(), ID_SEARCHBYIMAGE, CString(_T("(Ctrl+F)")), Toolbar::itComboButton));
     
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Print..."), std::shared_ptr<Gdiplus::Bitmap>(), ID_PRINTIMAGE, CString(), Toolbar::itButton));
+    horizontalToolbar_.addButton(Toolbar::Item(TR("Print..."), std::shared_ptr<Gdiplus::Bitmap>(), ID_PRINTIMAGE, CString(_T("(Ctrl+P)")), Toolbar::itButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Close"),std::shared_ptr<Gdiplus::Bitmap> () ,ID_CLOSE, CString(_T("(Esc)"))));
     horizontalToolbar_.AutoSize();
     if ( displayMode_ != wdmFullscreen ) {

@@ -43,11 +43,8 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-	<Server Name="Imageshack.us" Authorize="2" MaxFileSize="5000000" Debug="0" Plugin="imageshack">
+	<Server Name="Imageshack.us" Authorize="2" MaxFileSize="26214400" Debug="0" Plugin="imageshack" SupportsFolders="1">
 		<Actions>
-			<Action Type="login" Url="https://api.imageshack.com/v2/user/login" PostParams="user=$(_LOGIN);password=$(_PASSWORD);api_key=BXT1Z35V8f6ee0522939d8d7852dbe67b1eb9595" RegExp="auth_token&quot;:&quot;([\s\S]*?)&quot;" OnlyOnce="1" AssignVars="token:0"/>
-			
-			<Action Type="upload" Url="https://api.imageshack.com/v2/images" PostParams="file=%filename%;api_key=BXT1Z35V8f6ee0522939d8d7852dbe67b1eb9595;auth_token=$(token)" RegExp='&lt;image_link&gt;(.*?)&lt;([\s\S]*?)&lt;thumb_bb&gt;.*?\[IMG\](.+?)\[([\s\S]*?)&lt;is_link&gt;(.*?)&lt;' AssignVars="Image:0;Thumb:2;View:4"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)"/>
 	</Server>
@@ -62,9 +59,6 @@
 			<Action Type="upload" Url="http://www.directupload.net/index.php?mode=upload" PostParams="bilddatei=%filename%;image_link=Die Bild-URL bitte hier einfügen;image_comment=;image_tags=;image_mail=" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
-	</Server>
-	<Server Name="Yandex.Fotki" Debug="0"  NeedPassword="0" Authorize="2" Plugin="yafotki" SupportsFolders="1" RegistrationUrl="http://fotki.yandex.ru">
-	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
 	<Server Name="Yandex.Disk" Debug="0"  NeedPassword="0" Authorize="2" Plugin="yandexdisk" FileHost="1" SupportsFolders="1" RegistrationUrl="http://disk.yandex.ru">
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
@@ -108,12 +102,6 @@
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>
-	</Server>
-	<Server Name="twitpic.com" Authorize="2">
-		<Actions>
-			<Action Type="upload" Url="http://twitpic.com/api/upload" PostParams="media=%filename%;username=$(_LOGIN);password=$(_PASSWORD)" RegExp="&lt;mediaid&gt;(.*?)&lt;\/mediaid&gt;([\s\S]*?)&lt;mediaurl&gt;(.*?)&lt;\/mediaurl&gt;" AssignVars="ImageID:0;Image:2;"/>
-		</Actions>
-		<Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="http://twitpic.com/show/thumb/$(ImageID)"/>
 	</Server>
 	<Server Name="imagevenue.com" Authorize="0" MaxFileSize="3145728" Debug="0">
 		<Actions>
@@ -288,7 +276,7 @@
 		<Actions>
 			<Action 
 				Type="post"
-				Url="http://u.to"
+				Url="https://u.to"
 				PostParams="url=$(_ORIGINALURL);a=add"
 				RegExp="\('#shurlout'\)\.val\('(.+)'\)\.show"
 				AssignVars="surl:0"
@@ -394,9 +382,9 @@
         <!-- API не загружает в аккаунт -->
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-    <Server Name="2i.cz" Authorize="0" Type="image" Plugin="2i">
+    <!--<Server Name="2i.cz" Authorize="0" Type="image" Plugin="2i">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>
+	</Server>-->
 </Servers>

@@ -71,7 +71,7 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     
     resultsTabCtrl_.InsertItem(0, TR("Forum code (BBCode)"));
     resultsTabCtrl_.InsertItem(1, TR("HTML code"));
-    resultsTabCtrl_.InsertItem(2, TR("Markdown"));
+    resultsTabCtrl_.InsertItem(2, _T("Markdown"));
     resultsTabCtrl_.InsertItem(3, TR("Links (URL)"));
     resultsTabCtrl_.SetCurSel(Settings.CodeLang);
 

@@ -605,5 +605,6 @@ fdfa8afe = Use system proxy settings
 91a1af5e = No proxy (direct connection)
 83f0afc3 = First you have to select an item in the list.
 b93a6740 = Search by image (%s)
-d4af113d = Markdown
 e41fd422 = Search on %s
+6bad3e53 = Server for temporary images
+513d42da = Choose program

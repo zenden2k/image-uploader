@@ -12,13 +12,13 @@ function UploadFile(FileName, options) {
         local sJSON = nm.responseBody();
         local t = ParseJSON(sJSON);
         if (t != null) {
-            if (t.status_code == 200){
+            if ("status_code" in t && t.status_code == 200){
                 options.setViewUrl(t.image.url_viewer );
                 options.setThumbUrl(t.image.thumb.url);
                 options.setDirectUrl(t.image.url);
                 return 1;
             } else {
-                if(t.error!=null) {
+                if("error" in t && t.error!=null) {
                     WriteLog("error", "2i.cz: " + t.error.message);
                 }
             }
