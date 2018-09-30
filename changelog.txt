@@ -7,6 +7,7 @@
 [+] Added "Markdown" tab to results panel
 [+] Added "Search by image in Yandex" and an option to choose intermediate server
 [+] Added search button to Image Editor
+[+] Now you can create and choose albums on Imageshack.com
 [f] Fixed Dropbox
 [f] Fixed auto-copying results to clipboard
 [f] Added high-quality icons for Settings and Import Video
