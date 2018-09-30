@@ -2,6 +2,18 @@
 #
 # http://zenden2k.atwebpages.com/imageuploader
 
+1.3.2.4615 beta
+[+] Added option to use system proxy
+[+] Added "Markdown" tab to results panel
+[+] Added "Search by image in Yandex" and an option to choose intermediate server
+[+] Added search button to Image Editor
+[f] Fixed Dropbox
+[f] Fixed auto-copying results to clipboard
+[f] Added high-quality icons for Settings and Import Video
+[-] Removed extra 'Log' button from Results Panel;
+[-] Removed dead hostings
+[f] Small fixes
+
 1.3.2.4576
 [+] Added image hostings: photoland.io, 2i.cz
 [+] Added vk.cc URL shortener
