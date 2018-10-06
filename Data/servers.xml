@@ -330,6 +330,9 @@
 	<Server3 Name="imgbox.com"  Type="image"  Authorize="0" Plugin="imgbox" >
 	<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" ViewUrlTemplate="stub"/>
 	</Server3>
+    <Server3 Name="geekpic.net" Plugin="geekpic" MinVersion="1.3.2.4462">
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" ViewUrlTemplate="stub"/>
+	</Server3>
 	<Server Name="mirrorcreator.com" Plugin="mirrorcreator.com" FileHost="1" MaxFileSize="419430400">
 		<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
