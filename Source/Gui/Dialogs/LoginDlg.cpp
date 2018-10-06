@@ -55,9 +55,10 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     CenterWindow(GetParent());
 
     LoginInfo li = serverProfile_.serverSettings().authData;
-
+    auto uploadEngineData = serverProfile_.uploadEngineData();
     SetWindowText(TR("Autorization parameters"));
-    TRC(IDC_LOGINLABEL, "Login:");
+    CString loginLabelText = uploadEngineData->LoginLabel.empty() ? CString(TR("Login:")) : CString(U2W(uploadEngineData->LoginLabel)) + _T(":");
+    SetDlgItemText(IDC_LOGINLABEL, loginLabelText);
     TRC(IDC_PASSWORDLABEL, "Password:");
     TRC(IDC_DOAUTH, "Authorize");
     TRC(IDCANCEL, "Cancel");

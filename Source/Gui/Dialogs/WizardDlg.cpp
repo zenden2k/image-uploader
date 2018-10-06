@@ -2143,7 +2143,7 @@ bool CWizardDlg::funcReuploadImages() {
 }
 
 bool CWizardDlg::funcShortenUrl() {
-    CShortenUrlDlg dlg(this, &m_EngineList, uploadManager_, CString());
+    CShortenUrlDlg dlg(this, uploadManager_, uploadEngineManager_, CString());
     dlg.DoModal();
     return false;
 }

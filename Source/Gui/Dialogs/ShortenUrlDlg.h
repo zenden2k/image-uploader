@@ -11,6 +11,7 @@
 #include "Core/Upload/FileQueueUploader.h"
 #include "Gui/Controls/PictureExWnd.h"
 #include "Gui/Controls/CustomEditControl.h"
+#include "Gui/Controls/ServerSelectorControl.h"
 
 // CShortenUrlDlg
 class CShortenUrlDlg:    public CDialogImpl <CShortenUrlDlg>,
@@ -18,7 +19,7 @@ class CShortenUrlDlg:    public CDialogImpl <CShortenUrlDlg>,
 {
     public:
         enum { IDD = IDD_SHORTENURL };
-        CShortenUrlDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager* uploadManager, const CString &initialBuffer);
+        CShortenUrlDlg(CWizardDlg *wizardDlg, UploadManager* uploadManager, UploadEngineManager* uploadEngineManager, const CString &initialBuffer);
         ~CShortenUrlDlg();
         
     protected:    
@@ -71,13 +72,13 @@ class CShortenUrlDlg:    public CDialogImpl <CShortenUrlDlg>,
         CString m_InitialBuffer;
         CWizardDlg *m_WizardDlg;
         UploadManager* uploadManager_;
-        CMyEngineList *engineList_;
-        int serverId_;
         CPictureExWnd wndAnimation_;
         std::vector<CUploadEngineData*> servers_;
         CCustomEditControl outputEditControl_;
         CBrush backgroundBrush_;
         CBrush greenBrush_;
+        UploadEngineManager* uploadEngineManager_;
+        std::unique_ptr<CServerSelectorControl> urlShortenerServerSelector_;
         std::vector<std::shared_ptr<CUploadEngineData>> uploadEngineDataVector;
 };
 

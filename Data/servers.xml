@@ -318,6 +318,9 @@
 	<Server3 Name="vk.cc" Authorize="0" Type="urlshortening" Plugin="vk.cc" NeedPassword="0" >
 		<Result DirectUrlTemplate="stub"/>
 	</Server3>
+    <Server3 Name="link.ac" Authorize="1" Type="urlshortening" Plugin="link.ac" NeedPassword="0" LoginLabel="API key">
+		<Result DirectUrlTemplate="stub"/>
+	</Server3>
 	<Server3 Name="vk.com" Authorize="2" Type="image" Plugin="vk" MinVersion="1.3.1.4270" SupportsFolders="1" NeedPassword="0" >
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" ViewUrlTemplate="stub"/>
 	</Server3>

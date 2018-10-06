@@ -68,7 +68,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename, ServerSettings
         UE.NeedAuthorization = cur.AttributeInt("Authorize");
         std::string needPassword = cur.Attribute("NeedPassword");
         UE.NeedPassword = needPassword.empty() ? true : (IuCoreUtils::stringToInt64(needPassword)!=0);
-        
+        UE.LoginLabel = cur.Attribute("LoginLabel");
         std::string RetryLimit = cur.Attribute("RetryLimit");
         if(RetryLimit.empty())
         {

@@ -124,10 +124,13 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     if (plugin && (time(0)- plugin->getCreationTime() <(Settings.DeveloperMode ? 3000 : 1000 * 60 * 5)))
         UseExisting = true;
 
-    if (plugin && UseExisting && plugin->name() == pluginName && plugin->serverSettings()->authData.Login == params.authData.Login) {
-        plugin->onErrorMessage.bind(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
-        plugin->switchToThisVM();
-        return plugin;
+    if (plugin) {
+        ServerSettingsStruct* serverSettings = plugin->serverSettings();
+        if (UseExisting && plugin->name() == pluginName && serverSettings->authData.Login == params.authData.Login) {
+            plugin->onErrorMessage.bind(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
+            plugin->switchToThisVM();
+            return plugin;
+        }
     }
 
     if (plugin) {

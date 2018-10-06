@@ -29,17 +29,17 @@
 #include "Func/WebUtils.h"
 #include "Core/Upload/UploadManager.h"
 #include "Core/CoreFunctions.h"
-#include <Core/ServiceLocator.h>
+#include "Core/ServiceLocator.h"
+#include "Gui/Controls/ServerSelectorControl.h"
 
 // CShortenUrlDlg
-CShortenUrlDlg::CShortenUrlDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager* uploadManager, const CString &initialBuffer)
+CShortenUrlDlg::CShortenUrlDlg(CWizardDlg *wizardDlg, UploadManager* uploadManager, UploadEngineManager* uploadEngineManager, const CString &initialBuffer)
 {
     m_WizardDlg = wizardDlg;
     m_InitialBuffer = initialBuffer;
-    engineList_ = engineList;
-    serverId_ = engineList_->getUploadEngineIndex(_T("Local Shorten server"));
     backgroundBrush_.CreateSysColorBrush(COLOR_BTNFACE);
     uploadManager_ = uploadManager;
+    uploadEngineManager_ = uploadEngineManager;
 }
 
 
@@ -70,27 +70,17 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     }
     outputEditControl_.AttachToDlgItem(m_hWnd, IDC_RESULTSEDIT);
 
-    CUploadEngineData *uploadEngine = Settings.urlShorteningServer.uploadEngineData();
+    CRect serverSelectorRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_SHORTENINGSERVERPLACEHOLDER);
 
-    std::string selectedServerName = uploadEngine ? uploadEngine->Name : std::string();
-    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
-    int selectedIndex = 0;
-
-    for( int i = 0; i < engineList_->count(); i++) {    
-        CUploadEngineData * ue = myEngineList->byIndex(i);
-        
-        /*char *serverName = new char[ue->Name.length() + 1];
-        lstrcpyA( serverName, ue->Name.c_str() );*/
-        if ( ue->hasType(CUploadEngineData::TypeUrlShorteningServer) ) {
-            int itemIndex = SendDlgItemMessage(IDC_SERVERCOMBOBOX, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(static_cast<LPCTSTR>(U2W( ue->Name ))));
-            if ( ue->Name == selectedServerName ){
-                selectedIndex = itemIndex;
-            }
-            servers_.push_back(ue);
-        }
-    }
-
-    SendDlgItemMessage(IDC_SERVERCOMBOBOX, CB_SETCURSEL, selectedIndex, 0);
+    urlShortenerServerSelector_.reset(new CServerSelectorControl(uploadEngineManager_));
+    urlShortenerServerSelector_->setServersMask(CServerSelectorControl::smUrlShorteners);
+    urlShortenerServerSelector_->setShowImageProcessingParams(false);
+    urlShortenerServerSelector_->setShowParamsLink(false);
+    urlShortenerServerSelector_->Create(m_hWnd, serverSelectorRect);
+    urlShortenerServerSelector_->ShowWindow(SW_SHOW);
+    urlShortenerServerSelector_->SetWindowPos(0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
+    urlShortenerServerSelector_->setServerProfile(Settings.urlShorteningServer);
+    urlShortenerServerSelector_->setTitle(TR("URL shortening server"));
 
     if(!m_InitialBuffer.IsEmpty())
     {
@@ -169,18 +159,10 @@ LRESULT CShortenUrlDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 }
 
 bool CShortenUrlDlg::StartProcess() {
-    int selectedIndex = SendDlgItemMessage(IDC_SERVERCOMBOBOX, CB_GETCURSEL, 0, 0);
-    if ( selectedIndex < 0 ) {
+    ServerProfile profile = urlShortenerServerSelector_->serverProfile();
+    if (profile.isNull()) {
         return false;
     }
-    TCHAR serverName[256] = _T("");
-    SendDlgItemMessage(IDC_SERVERCOMBOBOX, CB_GETLBTEXT, selectedIndex, reinterpret_cast<WPARAM>(serverName));
-    CUploadEngineData* ue = engineList_->byName(serverName);
-    if (!ue) {
-        LOG(ERROR) << "CUploadEngineData* ue cannot be NULL";
-        return false;
-    }
-    ServerProfile profile(ue->Name);
     profile.setShortenLinks(false);
     ::ShowWindow(GetDlgItem(IDC_RESULTSLABEL), SW_SHOW);
     GuiTools::EnableDialogItem(m_hWnd, IDOK, false);
@@ -221,11 +203,7 @@ void CShortenUrlDlg::ProcessFinished() {
 }
 
 void CShortenUrlDlg::OnClose() {
-    int selectedIndex = SendDlgItemMessage(IDC_SERVERCOMBOBOX, CB_GETCURSEL, 0, 0);
-    if ( selectedIndex >= 0 ) {
-        CUploadEngineData *ue = servers_[selectedIndex];
-        Settings.urlShorteningServer.setServerName(ue->Name);
-    }
+    Settings.urlShorteningServer = urlShortenerServerSelector_->serverProfile();
 }
 
 bool CShortenUrlDlg::ParseBuffer(const CString& text) {
