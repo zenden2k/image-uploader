@@ -224,7 +224,7 @@ DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
     }
     return 1;
 }
-
+/*
 CString GetUniqFileName(const CString& filePath)
 {
     if (!WinUtils::FileExists(filePath))
@@ -243,7 +243,7 @@ CString GetUniqFileName(const CString& filePath)
             break;
     }
     return result;
-}
+}*/
 
 BOOL IU_CreateFolder(LPCTSTR szFolder)
 {
@@ -280,7 +280,7 @@ BOOL IU_CreateFolder(LPCTSTR szFolder)
     return TRUE;
 }
 
-CMyEngineList* _EngineList;
+//CMyEngineList* _EngineList;
 
 void DecodeString(LPCTSTR szSource, CString& Result, LPSTR code)
 {

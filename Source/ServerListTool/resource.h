@@ -24,7 +24,6 @@
 #define IDC_ERRORLOGBUTTON              1011
 #define IDC_BUTTONSKIPALL               1012
 #define IDC_BUILDINFO                   1012
-#define IDC_CLEARLOGBUTTON              1013
 #define IDC_CHECKURLSHORTENERS          1013
 #define IDC_BUTTON2                     1014
 #define IDC_STOPBUTTON                  1014
@@ -32,7 +31,9 @@
 #define IDC_TESTURLEDIT                 1015
 #define IDC_DESCRIPTIONLABEL            1253
 #define IDC_VALUEEDIT                   1254
+#define IDC_CLEARLOGBUTTON              1263
 #define IDC_IMAGE                       1271
+
 
 // Next default values for new objects
 // 

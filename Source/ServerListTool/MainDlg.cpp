@@ -22,7 +22,7 @@
 #include "Core/Upload/UploadSession.h"
 #include "Core/Upload/UploadManager.h"
 
-CString MyBytesToString(__int64 nBytes )
+CString MyBytesToString(int64_t nBytes)
 {
     return IuCoreUtils::fileSizeToString(nBytes).c_str();
 }
@@ -30,7 +30,7 @@ CString MyBytesToString(__int64 nBytes )
 CString IU_GetFileInfo(CString fileName,MyFileInfo* mfi=0)
 {
     CString result;
-    int fileSize = MyGetFileSize(fileName);
+    int fileSize = IuCoreUtils::getFileSize(W2U(fileName));
     result =  MyBytesToString(fileSize)+_T("(")+WinUtils::IntToStr(fileSize)+_T(" bytes);");
     CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8(fileName)));
     result+=mimeType+_T(";");
@@ -301,7 +301,7 @@ DWORD CMainDlg::Run() {
         serverProfile.setProfileName(ss.authData.Login);
         std::shared_ptr<UploadTask>  task;
         if (ue->hasType(CUploadEngineData::TypeImageServer) || ue->hasType(CUploadEngineData::TypeFileServer)) {
-            task.reset(new FileUploadTask(WCstringToUtf8(fileName), WCstringToUtf8(myExtractFileName(fileName))));
+            task.reset(new FileUploadTask(WCstringToUtf8(fileName), WCstringToUtf8(WinUtils::myExtractFileName(fileName))));
             
         } else if (ue->hasType(CUploadEngineData::TypeUrlShorteningServer)) {
             task.reset(new UrlShorteningTask(WCstringToUtf8(url)));

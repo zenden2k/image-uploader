@@ -27,6 +27,7 @@
 #include "ContextMenuItemDlg.h"
 #include "3rdpart/Registry.h"
 #include "Core/Utils/CryptoUtils.h"
+#include <Core/ServiceLocator.h>
 
 // CIntegrationSettings
 CIntegrationSettings::CIntegrationSettings(UploadEngineManager *uploadEngineManager)
@@ -140,7 +141,7 @@ bool CIntegrationSettings::Apply()
     Settings.SendToContextMenu_changed ^= Settings.SendToContextMenu;
 
     Settings.QuickUpload = SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_GETCHECK)==BST_CHECKED;
-    
+    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     if ( menuItemsChanged_ ) {
         int menuItemCount = menuItemsListBox_.GetCount();
         CRegistry Reg;
@@ -172,7 +173,7 @@ bool CIntegrationSettings::Apply()
                         Reg2.WriteString( "FolderId", Utf8ToWCstring(lid->serverProfile.folderId() ) );
                         Reg2.WriteString( "FolderTitle", Utf8ToWCstring(lid->serverProfile.folderTitle()) );
                         Reg2.WriteString( "FolderUrl", Utf8ToWCstring(lid->serverProfile.folderUrl()) );
-                        CString icon = _EngineList->getIconNameForServer(lid->serverProfile.serverName());
+                        CString icon = myEngineList->getIconNameForServer(lid->serverProfile.serverName());
                         CUploadEngineData * ued = lid->serverProfile.uploadEngineData();
                         if ( ued ) {
                             Reg2.WriteDword( "ServerTypeMask", static_cast<DWORD>(ued->TypeMask) );

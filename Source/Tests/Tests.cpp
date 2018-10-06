@@ -15,6 +15,9 @@
 #include "Core/ServiceLocator.h"
 #include <vector>
 #include <memory>
+#ifdef _WIN32
+#include "atlheaders.h"
+#endif
 
 void printHandler(HSQUIRRELVM vm, const SQChar *s, ...)
 {
@@ -36,6 +39,9 @@ void errorHandler(HSQUIRRELVM vm, const SQChar *s, ...)
     (void)vm;
 }
 #ifdef _WIN32
+
+CAppModule _Module;
+
 // Convert UNICODE (UCS-2) command line arguments to utf-8
 char ** convertArgv(int argc, _TCHAR* argvW[]) {
     char ** result = new char *[argc];

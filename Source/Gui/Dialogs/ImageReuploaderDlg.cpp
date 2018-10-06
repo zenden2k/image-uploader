@@ -105,8 +105,8 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     if ( IsClipboardFormatAvailable(htmlClipboardFormatId) || IsClipboardFormatAvailable(CF_TEXT ) ) {
         sourceTextEditControl.SendMessage(WM_PASTE);
     } 
-
-    m_serverId = _EngineList->getUploadEngineIndex(Utf8ToWCstring(serverProfile_.serverName()));
+    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
+    m_serverId = myEngineList->getUploadEngineIndex(Utf8ToWCstring(serverProfile_.serverName()));
 
     if(m_serverId == -1) {
         m_serverId = m_EngineList->getRandomImageServer();

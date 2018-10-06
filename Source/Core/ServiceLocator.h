@@ -16,6 +16,7 @@ class CHistoryManager;
 class ServiceLocatorPrivate;
 class ITranslator;
 class ITaskDispatcher;
+class CMyEngineList;
 
 class ServiceLocator : public Singleton<ServiceLocator> {
 public:
@@ -38,6 +39,8 @@ public:
     void setTaskDispatcher(ITaskDispatcher* dispatcher);
     UploadManager* uploadManager();
     void setUploadManager(UploadManager* manager);
+    void setMyEngineList(CMyEngineList* list);
+    CMyEngineList* myEngineList() const;
 
 protected:
     std::shared_ptr<ServiceLocatorPrivate> d_ptr; // unique_ptr won't compile with incomplete type

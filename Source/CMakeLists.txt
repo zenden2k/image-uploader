@@ -93,5 +93,8 @@ endif()
 
 add_subdirectory(Core)	
 add_subdirectory(CLI)	
+if(WIN32)
+    add_subdirectory(ServerListTool)
+endif()
 add_subdirectory(Tests)	
 	

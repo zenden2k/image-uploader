@@ -161,7 +161,7 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
         if (possiblePath.GetLength() > MAX_PATH - 4) {
             possiblePath = possiblePath.Left(MAX_PATH - 4);
         }
-        CString wFileName = GetUniqFileName(possiblePath);
+        CString wFileName = WinUtils::GetUniqFileName(possiblePath);
         std::string filePath = WCstringToUtf8(wFileName);
 
         // Creating file

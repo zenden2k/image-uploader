@@ -37,6 +37,7 @@
 #include <Gui/Controls/ServerSelectorControl.h>
 #include "Gui/Dialogs/WizardDlg.h"
 #include "LoginDlg.h"
+#include "Core/ServiceLocator.h"
 
 CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager * uploadEngineManager) :convert_profiles_(Settings.ConvertProfiles)
 {
@@ -609,6 +610,7 @@ LRESULT CUploadSettings::OnFileServerSelect(WORD /*wNotifyCode*/, WORD wID, HWND
     
 LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
+    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     NMTOOLBAR* pnmtb = reinterpret_cast<NMTOOLBAR *>(pnmh);
 
     bool ImageServer = (idCtrl == IDC_IMAGETOOLBAR);
@@ -754,8 +756,8 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         sub.InsertMenuItem(menuItemCount++, true, &mi);    
 
         sub.SetMenuDefaultItem(ImageServer ? 
-            (IDC_IMAGESERVER_FIRST_ID + _EngineList->getUploadEngineIndex(Utf8ToWCstring(sessionImageServer_.serverName()))) :
-            (IDC_FILESERVER_FIRST_ID+_EngineList->getUploadEngineIndex(Utf8ToWCstring(sessionFileServer_.serverName()))),FALSE);
+            (IDC_IMAGESERVER_FIRST_ID + myEngineList->getUploadEngineIndex(Utf8ToWCstring(sessionImageServer_.serverName()))) :
+            (IDC_FILESERVER_FIRST_ID + myEngineList->getUploadEngineIndex(Utf8ToWCstring(sessionFileServer_.serverName()))), FALSE);
     }
     else
     {
@@ -1128,7 +1130,8 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
 
  void CUploadSettings::selectServer(ServerProfile& sp, int serverIndex)
  {
-     sp.setServerName(_EngineList->byIndex(serverIndex)->Name);
+     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
+     sp.setServerName(myEngineList->byIndex(serverIndex)->Name);
      std::map <std::string, ServerSettingsStruct>& serverSettings = Settings.ServersSettings[sp.serverName()];
      std::map <std::string, ServerSettingsStruct>::iterator firstAccount = serverSettings.begin();
      if ( firstAccount != serverSettings.end() ) {

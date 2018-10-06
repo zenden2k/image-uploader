@@ -22,7 +22,6 @@
 #define IU_CORE_FILEDOWNLOADER_H
 
 #include "atlheaders.h"
-#include "3rdpart/thread.h"
 #include "Core/3rdpart/FastDelegate.h"
 #include "Core/Network/NetworkClient.h"
 #include "Core/Utils/CoreTypes.h"

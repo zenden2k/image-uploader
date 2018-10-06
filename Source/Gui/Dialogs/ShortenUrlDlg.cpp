@@ -29,6 +29,7 @@
 #include "Func/WebUtils.h"
 #include "Core/Upload/UploadManager.h"
 #include "Core/CoreFunctions.h"
+#include <Core/ServiceLocator.h>
 
 // CShortenUrlDlg
 CShortenUrlDlg::CShortenUrlDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager* uploadManager, const CString &initialBuffer)
@@ -72,10 +73,11 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     CUploadEngineData *uploadEngine = Settings.urlShorteningServer.uploadEngineData();
 
     std::string selectedServerName = uploadEngine ? uploadEngine->Name : std::string();
+    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     int selectedIndex = 0;
 
     for( int i = 0; i < engineList_->count(); i++) {    
-        CUploadEngineData * ue = _EngineList->byIndex( i ); 
+        CUploadEngineData * ue = myEngineList->byIndex(i);
         
         /*char *serverName = new char[ue->Name.length() + 1];
         lstrcpyA( serverName, ue->Name.c_str() );*/

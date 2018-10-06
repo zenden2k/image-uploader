@@ -90,10 +90,10 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
     m_bShowAfter = true;
     m_bHandleCmdLineFunc = false;
     updateDlg = 0;
-    _EngineList = &m_EngineList;
-    Settings.setEngineList(_EngineList);
+    Settings.setEngineList(&m_EngineList);
     m_bScreenshotFromTray = false;
     ServiceLocator::instance()->setEngineList(&m_EngineList);
+    ServiceLocator::instance()->setMyEngineList(&m_EngineList);
     ServiceLocator::instance()->setTaskDispatcher(this);
     serversChanged_ = false;
     scriptsManager_ = new ScriptsManager();
@@ -2137,13 +2137,13 @@ bool CWizardDlg::IsClipboardDataAvailable()
 }
 
 bool CWizardDlg::funcReuploadImages() {
-    CImageReuploaderDlg dlg(this, _EngineList, uploadManager_, uploadEngineManager_, CString());
+    CImageReuploaderDlg dlg(this, &m_EngineList, uploadManager_, uploadEngineManager_, CString());
     dlg.DoModal(m_hWnd);
     return false;
 }
 
 bool CWizardDlg::funcShortenUrl() {
-    CShortenUrlDlg dlg(this,_EngineList, uploadManager_, CString());
+    CShortenUrlDlg dlg(this, &m_EngineList, uploadManager_, CString());
     dlg.DoModal();
     return false;
 }

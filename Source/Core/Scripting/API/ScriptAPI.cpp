@@ -23,7 +23,8 @@
 #include "RegularExpression.h"
 #include "Process.h"
 #include "GumboBingings/GumboDocument.h"
-#if defined(IU_WTL) && !defined(IU_NOWEBBROWSER)
+#ifdef _WIN32
+//#if defined(IU_WTL) && !defined(IU_NOWEBBROWSER)
 #include "WebBrowser.h"
 #include "HtmlDocument.h"
 #include "HtmlElement.h"
@@ -259,7 +260,8 @@ void RegisterClasses(Sqrat::SqratVM& vm) {
     RegisterSimpleXmlClass(vm);
     RegisterGumboClasses(vm);
 
-#if defined(IU_WTL) && !defined(IU_NOWEBBROWSER)
+//#if defined(IU_WTL) && !defined(IU_NOWEBBROWSER)
+#ifdef _WIN32
     RegisterWebBrowserClass(vm);
     RegisterHtmlDocumentClass(vm);
     RegisterHtmlElementClass(vm);

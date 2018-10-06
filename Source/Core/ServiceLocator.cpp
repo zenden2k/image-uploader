@@ -15,6 +15,7 @@ public:
         dialogProvider_ = nullptr;
         translator_ = nullptr;
         uploadManager_ = nullptr;
+        myEngineList_ = nullptr;
     }
     CUploadEngineList_Base* engineList_;
     CHistoryManager historyManager;
@@ -25,6 +26,7 @@ public:
     ITranslator* translator_;
     ITaskDispatcher* dispatcher_;
     UploadManager* uploadManager_;
+    CMyEngineList* myEngineList_;
 };
 
 ServiceLocator::ServiceLocator() : d_ptr(new ServiceLocatorPrivate()){
@@ -101,4 +103,12 @@ UploadManager* ServiceLocator::uploadManager() {
 
 void ServiceLocator::setUploadManager(UploadManager* manager) {
     d_ptr->uploadManager_ = manager;
+}
+
+void ServiceLocator::setMyEngineList(CMyEngineList* list) {
+    d_ptr->myEngineList_ = list;
+}
+
+CMyEngineList* ServiceLocator::myEngineList() const {
+    return d_ptr->myEngineList_;
 }

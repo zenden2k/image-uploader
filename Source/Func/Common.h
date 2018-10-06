@@ -99,8 +99,8 @@ HRESULT IsElevated( __out_opt BOOL * pbElevated );
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
 
 
-CString GetUniqFileName(const CString &filePath);
-extern CMyEngineList *_EngineList;
+//CString GetUniqFileName(const CString &filePath);
+//extern CMyEngineList *_EngineList;
 
 HICON GetAssociatedIcon (LPCTSTR filename, bool Small);
 int ScreenBPP();

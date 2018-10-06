@@ -26,6 +26,7 @@
 #include "Func/WinUtils.h"
 #include "Core/Settings.h"
 #include "Gui/Dialogs/ServerParamsDlg.h"
+#include "Core/ServiceLocator.h"
 
 CQuickSetupDlg::CQuickSetupDlg() {
 }
@@ -81,15 +82,15 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     //serverComboBox_.AddItem( _T("<") + CString(TR("Random server")) + _T(">"), -1, -1, 0, static_cast<LPARAM>( -1 ) );
 
     int selectedIndex = 0;
-
+    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     //CUploadEngineData *uploadEngine = _EngineList->byIndex( Settings.getServerID() );
     std::string selectedServerName = "directupload.net" ;
-    for( int i = 0; i < _EngineList->count(); i++) {    
-        CUploadEngineData * ue = _EngineList->byIndex( i ); 
+    for (int i = 0; i < myEngineList->count(); i++) {
+        CUploadEngineData * ue = myEngineList->byIndex(i);
         if (!ue->hasType(CUploadEngineData::TypeImageServer) && !ue->hasType(CUploadEngineData::TypeFileServer)) {
             continue;
         }
-        HICON hImageIcon = _EngineList->getIconForServer(ue->Name);
+        HICON hImageIcon = myEngineList->getIconForServer(ue->Name);
         int nImageIndex = -1;
         if ( hImageIcon) {
             nImageIndex = comboBoxImageList_.AddIcon( hImageIcon);
@@ -124,11 +125,11 @@ LRESULT CQuickSetupDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
 LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
 
-
+    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     int serverComboElementIndex = serverComboBox_.GetCurSel();
     if ( serverComboElementIndex > 0 ) {
         std::string serverNameA = reinterpret_cast<char*>(serverComboBox_.GetItemData(serverComboElementIndex));
-        CUploadEngineData * uploadEngineData =( (CUploadEngineList *)_EngineList)->byName( serverNameA );
+        CUploadEngineData * uploadEngineData = ((CUploadEngineList *)myEngineList)->byName(serverNameA);
         Settings.imageServer.setServerName(uploadEngineData->Name) ;
         bool needAuth = GuiTools::GetCheck( m_hWnd, IDC_DOAUTHCHECKBOX );
         if ( needAuth ) {
@@ -217,10 +218,11 @@ LRESULT CQuickSetupDlg::OnServerComboSelChange(WORD wNotifyCode, WORD wID, HWND 
 }
 
 void  CQuickSetupDlg::serverChanged() {
+    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     int serverComboElementIndex = serverComboBox_.GetCurSel();
     if ( serverComboElementIndex > 0 ) {
         std::string serverNameA = reinterpret_cast<char*>(serverComboBox_.GetItemData(serverComboElementIndex));
-        CUploadEngineData * uploadEngineData =( (CUploadEngineList *)_EngineList)->byName( serverNameA );
+        CUploadEngineData * uploadEngineData = ((CUploadEngineList *)myEngineList)->byName(serverNameA);
         if ( !uploadEngineData ) {
             return ;
         }

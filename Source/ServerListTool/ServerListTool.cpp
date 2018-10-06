@@ -4,7 +4,6 @@
 #include "MainDlg.h"
 #include "atlheaders.h"
 #include "3rdpart/GdiPlusH.h"
-#include "Func/Common.h"
 #include "Func/IuCommonFunctions.h"
 #include "Core/Logging.h"
 #include "Core/Logging/MyLogSink.h"
@@ -23,6 +22,17 @@
 #include "Core/Upload/UploadEngineManager.h"
 
 CAppModule _Module;
+
+#if defined _M_IX86
+#pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#elif defined _M_IA64
+#pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='ia64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#elif defined _M_X64
+#pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#else
+#pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#endif
+
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*lpstrCmdLine*/, int /*nCmdShow*/)
 {
@@ -62,7 +72,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     serviceLocator->setDialogProvider(&dialogProvider);
     serviceLocator->setTranslator(&Lang);
     CMyEngineList engineList;
-    _EngineList = &engineList;
+    serviceLocator->setMyEngineList(&engineList);
+    serviceLocator->setEngineList(&engineList);
     CString serversFileName = WinUtils::GetAppFolder() + "Data/" + _T("servers.xml");
     if (!engineList.loadFromFile(serversFileName)) {
         MessageBox(0, _T("Cannot load server list!"), 0, 0);
@@ -71,12 +82,12 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
 
     Settings.LoadSettings(W2U(WinUtils::GetAppFolder())+ "Data/", "settings.xml");
    
-    Settings.setEngineList(_EngineList);
-    ServiceLocator::instance()->setEngineList(_EngineList);
+    Settings.setEngineList(&engineList);
+
     ScriptsManager scriptsManager;
-    UploadEngineManager uploadEngineManager(_EngineList, &uploadErrorHandler);
+    UploadEngineManager uploadEngineManager(&engineList, &uploadErrorHandler);
     uploadEngineManager.setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
-    UploadManager uploadManager(&uploadEngineManager, _EngineList, &scriptsManager, &uploadErrorHandler);
+    UploadManager uploadManager(&uploadEngineManager, &engineList, &scriptsManager, &uploadErrorHandler);
 
     IuCommonFunctions::CreateTempFolder();
 

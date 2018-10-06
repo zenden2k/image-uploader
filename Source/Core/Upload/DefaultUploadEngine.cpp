@@ -37,12 +37,18 @@ int CDefaultUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParam
     fatalError_ = false;
     int res = 0;
     currentTask_ = task;
-    if ( task->type() == UploadTask::TypeFile ) {
-        res = doUploadFile(std::dynamic_pointer_cast<FileUploadTask>(task), params);
-    } else if ( task->type() == UploadTask::TypeUrl  ) {
-        res = doUploadUrl(std::dynamic_pointer_cast<UrlShorteningTask>(task), params);
-    } else {
-        UploadError( ErrorInfo::mtError, "Upload task of type '" + task->toString() + "' is not supported", 0, false );
+    try {
+
+        if (task->type() == UploadTask::TypeFile) {
+            res = doUploadFile(std::dynamic_pointer_cast<FileUploadTask>(task), params);
+        } else if (task->type() == UploadTask::TypeUrl) {
+            res = doUploadUrl(std::dynamic_pointer_cast<UrlShorteningTask>(task), params);
+        } else {
+            UploadError(ErrorInfo::mtError, "Upload task of type '" + task->toString() + "' is not supported", 0, false);
+        }
+    } catch(std::exception& ex) {
+        UploadError(ErrorInfo::mtError, ex.what(), 0, false);
+        res = false;
     }
     if (!res && fatalError_)
     {

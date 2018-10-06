@@ -23,6 +23,8 @@
 #include "Func/Common.h"
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
+#include "Core/ServiceLocator.h"
+
 // CResultsWindow
 CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,std::vector<CUrlListItem>  & urlList,bool ChildWindow)
 {
@@ -83,7 +85,8 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     RECT rc =  { wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left+wp.rcNormalPosition.right,  -wp.rcNormalPosition.top+wp.rcNormalPosition.bottom };
     ResultsPanel->rectNeeded = rc;
     ::MapWindowPoints(nullptr, m_hWnd, reinterpret_cast<LPPOINT>(&rc), 2);
-    ResultsPanel->setEngineList(_EngineList);
+    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
+    ResultsPanel->setEngineList(myEngineList);
     ResultsPanel->Create(m_hWnd,rc);
 
     ResultsPanel->GetClientRect(&rc);

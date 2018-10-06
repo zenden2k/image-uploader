@@ -82,9 +82,9 @@ int proxyType; /* CURLPROXY_HTTP, CURLPROXY_SOCKS4, CURLPROXY_SOCKS4A,
 			   CURLPROXY_SOCKS5, CURLPROXY_SOCKS5_HOSTNAME */
 std::string proxyUser;
 std::string proxyPassword;
-#ifdef _WIN32
+
 bool useSystemProxy = false;
-#endif
+
 CUploadEngineList list;
 
 ZOutputCodeGenerator::CodeType codeType = ZOutputCodeGenerator::ctClickableThumbnails;

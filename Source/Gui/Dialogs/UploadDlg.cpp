@@ -42,7 +42,7 @@
 CUploadDlg::CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager) : resultsWindow_(new CResultsWindow(dlg, urlList_, true))
 {
     MainDlg = nullptr;
-    engineList_ = _EngineList;
+    engineList_ = ServiceLocator::instance()->myEngineList();;
     backgroundThreadStarted_ = false;
     isEnableNextButtonTimerRunning_ = false;
     uploadManager_ = uploadManager;

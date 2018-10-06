@@ -207,7 +207,7 @@ CString CLang::getLanguageFileNameForLocale(const CString& locale)
         if (!f) {
             continue;
         }
-        fseek(f, 2, 0); // skipping BOM
+        fseek(f, 2, SEEK_SET); // skipping BOM
         TCHAR buffer[1024];
 
         while (!feof(f))

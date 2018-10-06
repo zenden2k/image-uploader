@@ -31,6 +31,7 @@
 #include "Gui/Dialogs/AddFtpServerDialog.h"
 #include "Gui/Dialogs/AddDirectoryServerDialog.h"
 #include "Core/Logging.h"
+#include "Core/ServiceLocator.h"
 
 const char CServerSelectorControl::kAddFtpServer[]=("<add_ftp_server>");
 const char CServerSelectorControl::kAddDirectoryAsServer[]=("<add_directory_as_server>");
@@ -188,12 +189,13 @@ void CServerSelectorControl::serverChanged() {
         serverComboBox_.SetCurSel(serverComboElementIndex);
         lpstrServerName = reinterpret_cast<char*>( serverComboBox_.GetItemData(serverComboElementIndex) );
     }
+    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     if ( serverComboElementIndex > 0 && lpstrServerName ) {
         std::string serverName = lpstrServerName;
         CString serverNameW = Utf8ToWCstring( serverName );
         serverProfile_.setServerName(serverName);
         if ( serverName == kAddFtpServer ) {
-            CAddFtpServerDialog dlg(_EngineList);
+            CAddFtpServerDialog dlg(myEngineList);
             if ( dlg.DoModal(m_hWnd) == IDOK ) {
                 serverProfile_ = ServerProfile();
                 serverProfile_.setServerName(WCstringToUtf8(dlg.createdServerName()));
@@ -207,7 +209,7 @@ void CServerSelectorControl::serverChanged() {
                 return;
             }
         } else if (serverName == kAddDirectoryAsServer  ) {
-            CAddDirectoryServerDialog dlg(_EngineList);
+            CAddDirectoryServerDialog dlg(myEngineList);
             if ( dlg.DoModal(m_hWnd) == IDOK ) {
                 serverProfile_ = ServerProfile();
                 serverProfile_.setServerName(WCstringToUtf8(dlg.createdServerName()));
@@ -220,7 +222,7 @@ void CServerSelectorControl::serverChanged() {
                 return;
             }
         } else if ( serverName != CMyEngineList::DefaultServer && serverName != CMyEngineList::RandomServer ) {
-            uploadEngineData = _EngineList->byName( serverNameW );
+            uploadEngineData = myEngineList->byName(serverNameW);
             if ( !uploadEngineData ) {
                 return ;
             }
@@ -275,8 +277,8 @@ void CServerSelectorControl::updateInfoLabel() {
     }
     //GuiTools::ShowDialogItem(m_hWnd, IDC_ACCOUNTINFO, showServerParams);
 //    GuiTools::ShowDialogItem(m_hWnd, IDC_EDIT, showServerParams);
-
-    CUploadEngineData* uploadEngineData = _EngineList->byName(Utf8ToWCstring( serverName ));
+    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
+    CUploadEngineData* uploadEngineData = myEngineList->byName(Utf8ToWCstring(serverName));
     if ( ! uploadEngineData ) {
         return;
     }
@@ -362,7 +364,7 @@ void CServerSelectorControl::updateServerList()
     comboBoxImageList_.Destroy();
     comboBoxImageList_.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
     
-
+    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     if ( showDefaultServerItem_ ) {
         serverComboBox_.AddItem(TR("By default"), -1, -1, 0, reinterpret_cast<LPARAM>( strdup("default") ));
     }
@@ -385,8 +387,8 @@ void CServerSelectorControl::updateServerList()
         if ( addedItems && currentLoopMask ) {
             serverComboBox_.AddItem(line, -1, -1, 0,  0 );
         }
-        for( int i = 0; i < _EngineList->count(); i++) {    
-            CUploadEngineData * ue = _EngineList->byIndex( i ); 
+        for (int i = 0; i < myEngineList->count(); i++) {
+            CUploadEngineData * ue = myEngineList->byIndex(i);
 
             if (serversMask_ != smUrlShorteners && !ue->hasType(CUploadEngineData::TypeFileServer) && !ue->hasType(CUploadEngineData::TypeImageServer)) {
                 continue;
@@ -401,7 +403,7 @@ void CServerSelectorControl::updateServerList()
             if ( !ue->hasType(CUploadEngineData::TypeUrlShorteningServer) && (currentLoopMask & smUrlShorteners) ) {
                 continue;
             }
-            HICON hImageIcon = _EngineList->getIconForServer(ue->Name);
+            HICON hImageIcon = myEngineList->getIconForServer(ue->Name);
             int nImageIndex = -1;
             if ( hImageIcon ) {
                 nImageIndex = comboBoxImageList_.AddIcon( hImageIcon);
