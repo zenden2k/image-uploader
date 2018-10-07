@@ -59,7 +59,8 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     SetWindowText(TR("Autorization parameters"));
     CString loginLabelText = uploadEngineData->LoginLabel.empty() ? CString(TR("Login:")) : CString(U2W(uploadEngineData->LoginLabel)) + _T(":");
     SetDlgItemText(IDC_LOGINLABEL, loginLabelText);
-    TRC(IDC_PASSWORDLABEL, "Password:");
+    CString passwordLabelText = uploadEngineData->PasswordLabel.empty() ? CString(TR("Password:")) : CString(U2W(uploadEngineData->PasswordLabel)) + _T(":");
+    SetDlgItemText(IDC_PASSWORDLABEL, passwordLabelText);
     TRC(IDC_DOAUTH, "Authorize");
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_DELETEACCOUNTLABEL, "Delete account");

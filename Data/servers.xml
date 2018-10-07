@@ -93,7 +93,7 @@
 	<Server Name="sendspace.com" FileHost="1" Debug="0"  Authorize="1" Plugin="sendspace" SupportsFolders="1" MaxFileSize="300000000">
 		<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-	<Server Name="rgho.st" Authorize="1" FileHost="1" Debug="0" Plugin="rghost">
+	<Server Name="rgho.st" Authorize="1" FileHost="1" Debug="0" Plugin="rghost" PasswordLabel="API key">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>

@@ -236,7 +236,9 @@ void  CQuickSetupDlg::serverChanged() {
         SendDlgItemMessage( IDC_DOAUTHCHECKBOX, BM_SETCHECK, forceAuthorization? BST_CHECKED : BST_UNCHECKED );
         CString loginLabelText = uploadEngineData->LoginLabel.empty()? CString(TR("Login:")) : CString(Utf8ToWCstring( uploadEngineData->LoginLabel )) + _T(":");
         SetDlgItemText( IDC_LOGINLABEL, loginLabelText );
-        
+        CString passwordLabelText = uploadEngineData->PasswordLabel.empty() ? CString(TR("Password:")) : CString(Utf8ToWCstring(uploadEngineData->PasswordLabel)) + _T(":");
+        SetDlgItemText(IDC_PASSWORDLABEL, passwordLabelText);
+
         doAuthCheckboxChanged();
         bool isDoAuthChecked = SendDlgItemMessage(IDC_DOAUTHCHECKBOX, BM_GETCHECK) == BST_CHECKED;
         ::EnableWindow( GetDlgItem( IDC_PASSWORDEDIT),isDoAuthChecked && uploadEngineData->NeedPassword);

@@ -96,8 +96,9 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
             return 0;
     }
     if(DlgCreationResult != 0) {
-            dlgMain.m_hWnd = 0;
-            return 0;
+        dlgMain.DestroyWindow();
+        dlgMain.m_hWnd = 0;
+        return 0;
     }
     
     if(bCreateFloatingWindow) {

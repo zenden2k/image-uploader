@@ -173,7 +173,7 @@ class CUploadEngineData
         std::string CodedPassword;
         std::string ThumbUrlTemplate, ImageUrlTemplate, DownloadUrlTemplate, DeleteUrlTemplate, EditUrlTemplate;
         std::vector<UploadAction> Actions;
-        std::string LoginLabel;
+        std::string LoginLabel, PasswordLabel;
         std::string UserAgent;
         std::string Engine;
         int RetryLimit;
