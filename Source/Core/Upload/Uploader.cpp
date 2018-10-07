@@ -140,6 +140,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     task->setCurrentUploadEngine(m_CurrentEngine);
 
     UploadParams uparams;
+#ifdef IU_WTL
     ImageUploadParams imageUploadParams = task->serverProfile().getImageUploadParams();
     ThumbCreatingParams& tcParams = imageUploadParams.getThumbRef();
     if (tcParams.Size) {
@@ -149,6 +150,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
             uparams.thumbHeight = tcParams.Size;
         }
     }
+#endif
     /*if (task->type() == UploadTask::TypeFile) {
         FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());
     }*/
