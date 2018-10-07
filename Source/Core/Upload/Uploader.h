@@ -36,7 +36,6 @@ class CUploader
         bool setUploadEngine(CAbstractUploadEngine* UploadEngine);
         CAbstractUploadEngine * getUploadEngine();
         
-        void setThumbnailWidth(int width);
         bool UploadFile(const std::string & FileName, const std::string displayFileName);
         bool Upload(std::shared_ptr<UploadTask> task);
         void stop();
@@ -59,7 +58,6 @@ class CUploader
         int pluginProgressFunc(NetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow);
 
         bool m_bShouldStop;
-        int m_nThumbWidth;
         StatusType m_CurrentStatus;
         std::string m_FileName;
         std::string m_displayFileName;

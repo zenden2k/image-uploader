@@ -28,7 +28,6 @@ CUploader::CUploader(void)
 {
     srand((unsigned int)time(0));
     m_bShouldStop = false;
-    m_nThumbWidth = 160;
     m_CurrentStatus = stNone;
     m_CurrentEngine = NULL;
     m_PrInfo.IsUploading = false;
@@ -138,11 +137,18 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     m_CurrentEngine->onErrorMessage.bind(this, &CUploader::ErrorMessage);
     m_CurrentEngine->setCurrentUploader(this);
 
-    m_CurrentEngine->setThumbnailWidth(m_nThumbWidth);
     task->setCurrentUploadEngine(m_CurrentEngine);
 
     UploadParams uparams;
-    uparams.thumbWidth = m_nThumbWidth;
+    ImageUploadParams imageUploadParams = task->serverProfile().getImageUploadParams();
+    ThumbCreatingParams& tcParams = imageUploadParams.getThumbRef();
+    if (tcParams.Size) {
+        if (tcParams.ResizeMode != ThumbCreatingParams::trByHeight) {
+            uparams.thumbWidth = tcParams.Size;
+        } else {
+            uparams.thumbHeight = tcParams.Size;
+        }
+    }
     /*if (task->type() == UploadTask::TypeFile) {
         FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());
     }*/
@@ -228,12 +234,6 @@ CAbstractUploadEngine* CUploader::getUploadEngine()
 {
     return m_CurrentEngine;
 }
-
-void CUploader::setThumbnailWidth(int width)
-{
-    m_nThumbWidth = width;
-}
-
 
 void CUploader::stop()
 {

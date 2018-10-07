@@ -50,7 +50,7 @@ class CDefaultUploadEngine: public CAbstractUploadEngine, public NetworkClient::
         void UploadError(bool error, const std::string errorStr, UploadAction* m_CurrentAction, bool writeToBuffer = true);
         bool doUploadFile(std::shared_ptr<FileUploadTask> task, UploadParams& params);
         bool doUploadUrl(std::shared_ptr<UrlShorteningTask> task, UploadParams& params);
-        void prepareUpload();
+        void prepareUpload(UploadParams& params);
         bool executeActions();
 
         std::string m_ErrorReason;

@@ -30,7 +30,7 @@ CString MyBytesToString(int64_t nBytes)
 CString IU_GetFileInfo(CString fileName,MyFileInfo* mfi=0)
 {
     CString result;
-    int fileSize = IuCoreUtils::getFileSize(W2U(fileName));
+    int fileSize = static_cast<int>(IuCoreUtils::getFileSize(W2U(fileName)));
     result =  MyBytesToString(fileSize)+_T("(")+WinUtils::IntToStr(fileSize)+_T(" bytes);");
     CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8(fileName)));
     result+=mimeType+_T(";");
@@ -189,7 +189,7 @@ LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /
 {
     CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
     if (!WinUtils::FileExists(fileName)) {
-        LOG(ERROR) << "File not found " << fileName;
+        MessageBox(CString(_T("Test file not found.")) +_T("\r\n") +  fileName, APPNAME, MB_ICONERROR);
         return 0;
     }
     m_ListView.DeleteAllItems();

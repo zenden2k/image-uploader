@@ -355,7 +355,7 @@ void UploadTask::uploadProgress(InfoProgress progress)
 
     struct timeval tp;
     gettimeofday(&tp, NULL);
-    uint64_t curTime = uint64_t(tp.tv_sec) * 1000 + tp.tv_usec / 1000.0;
+    uint64_t curTime = static_cast<uint64_t>(uint64_t(tp.tv_sec) * 1000 + tp.tv_usec / 1000.0);
     if (curTime - progress_.lastUpdateTime > 250 || progress.Uploaded == progress.Total) {
         int64_t Current = progress.Uploaded;
 

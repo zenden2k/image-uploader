@@ -72,7 +72,7 @@ bool CDefaultUploadEngine::doUploadFile(std::shared_ptr<FileUploadTask> task, Up
     m_FileName = fileName;
     m_displayFileName = displayName;
 
-    prepareUpload();
+    prepareUpload(params);
     std::string FileExt = IuCoreUtils::ExtractFileExt(displayName);
     m_Vars["_FILENAME"] = IuCoreUtils::ExtractFileName(displayName);
     std::string OnlyFname;
@@ -98,7 +98,7 @@ bool CDefaultUploadEngine::doUploadFile(std::shared_ptr<FileUploadTask> task, Up
 }
 
 bool  CDefaultUploadEngine::doUploadUrl(std::shared_ptr<UrlShorteningTask> task, UploadParams& params) {
-    prepareUpload();
+    prepareUpload(params);
     m_Vars["_ORIGINALURL"] = task->getUrl();
     bool actionsExecuteResult = executeActions();
     if ( !actionsExecuteResult ) {
@@ -118,7 +118,7 @@ bool  CDefaultUploadEngine::doUploadUrl(std::shared_ptr<UrlShorteningTask> task,
     return true;
 }
 
-void CDefaultUploadEngine::prepareUpload() {
+void CDefaultUploadEngine::prepareUpload(UploadParams& params) {
     m_Vars.clear();
     if ( m_UploadData->NeedAuthorization ) {
         li = m_ServersSettings->authData;
@@ -132,7 +132,8 @@ void CDefaultUploadEngine::prepareUpload() {
     sprintf(nStr, "%05d", n);
     std::thread::id currentThreadId = std::this_thread::get_id();
     m_Vars["_RAND16BITS"] = nStr;
-    m_Vars["_THUMBWIDTH"] = IuCoreUtils::toString(m_ThumbnailWidth);
+    m_Vars["_THUMBWIDTH"] = IuCoreUtils::toString(params.thumbWidth);
+    m_Vars["_THUMBHEIGHT"] = IuCoreUtils::toString(params.thumbHeight);
     m_Vars["_THREADID"] = IuCoreUtils::ThreadIdToString(currentThreadId);
     m_NetworkClient->enableResponseCodeChecking(false);
     m_NetworkClient->setLogger(this);
@@ -468,51 +469,43 @@ bool CDefaultUploadEngine::ReadServerResponse(UploadAction& Action)
 void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
 {
     std::string Txt = Action.PostParams;
-    int len = Txt.length();
-    if (len)
-    {
-        if (Txt[len - 1] != ';')
-        {
-            Txt += ";";
-        }
-    }
-
     std::string _Post = "Post Request to URL: " + Action.Url + "\r\n";
 
-    pcrepp::Pcre reg("(.*?)=(.*?[^\\x5c]{0,1});", "imc");
-
+    //pcrepp::Pcre reg("(.*?)=(.*?[^\\x5c]{0,1});", "imc");
+    
+    pcrepp::Pcre reg2("\\\\;(*SKIP)(*FAIL)|;", "imcs");
     std::string str = Txt;
-
-    size_t pos = 0;
-    while (pos < str.length()) {
-        if ( reg.search(str, pos)) {
-            std::string VarName = reg[1];
-            std::string VarValue = reg[2];
-            pos = reg.get_match_end() + 1;
-
-            if (!VarName.length())
-                continue;
-
-            std::string NewValue = VarValue;
-            NewValue = IuCoreUtils::StrReplace(NewValue, "\\;", ";");
-
-            std::string NewName = VarName;
-
-            NewName = ReplaceVars(NewName);
-            std::string vv = NewName;
-
-            if (NewValue == "%filename%") {
-                _Post += NewName + " = ** FILE CONTENTS ** \r\n";
-                m_NetworkClient->addQueryParamFile(NewName, m_FileName, IuCoreUtils::ExtractFileName(m_displayFileName),
-                    IuCoreUtils::GetFileMimeType(m_FileName));
-            } else {
-                NewValue = ReplaceVars(NewValue);
-                _Post += NewName + " = " + NewValue + "\r\n";
-                m_NetworkClient->addQueryParam(NewName, NewValue);
-            }
+    auto strings = reg2.split(str);
+    pcrepp::Pcre reg3("\\\\=(*SKIP)(*FAIL)|=", "imcs");
+   
+    for (const auto& item : strings) {
+        auto tokens = reg3.split(item);
+        if (tokens.size() < 2) {
+            continue;
         }
-        else
-            break;
+        std::string VarName = tokens[0];
+        std::string VarValue = tokens[1];
+
+        if (!VarName.length())
+            continue;
+
+        std::string NewValue = VarValue;
+        NewValue = IuCoreUtils::StrReplace(NewValue, "\\;", ";");
+
+        std::string NewName = VarName;
+
+        NewName = ReplaceVars(NewName);
+        std::string vv = NewName;
+
+        if (NewValue == "%filename%") {
+            _Post += NewName + " = ** FILE CONTENTS ** \r\n";
+            m_NetworkClient->addQueryParamFile(NewName, m_FileName, IuCoreUtils::ExtractFileName(m_displayFileName),
+                IuCoreUtils::GetFileMimeType(m_FileName));
+        } else {
+            NewValue = ReplaceVars(NewValue);
+            _Post += NewName + " = " + NewValue + "\r\n";
+            m_NetworkClient->addQueryParam(NewName, NewValue);
+        }
     }
 
     if (m_UploadData->Debug)

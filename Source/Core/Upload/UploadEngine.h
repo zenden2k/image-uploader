@@ -206,6 +206,12 @@ public:
     std::string ServerFileName;
     std::string temp_;
     ScriptAPI::UploadTaskWrapper task_;
+
+    UploadParams() {
+        apiVersion = 0;
+        thumbWidth = 0;
+        thumbHeight = 0;
+    }
     /*! @endcond */
 
     const std::string getParam(const std::string& name)
@@ -296,7 +302,6 @@ class CAbstractUploadEngine
     public:
         CAbstractUploadEngine(ServerSync* serverSync);
         virtual ~CAbstractUploadEngine();
-        void setThumbnailWidth(int width);
         virtual int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) = 0;
         void setServerSettings(ServerSettingsStruct* settings);
         ServerSettingsStruct * serverSettings();
@@ -325,7 +330,6 @@ class CAbstractUploadEngine
         ServerSettingsStruct* m_ServersSettings;
         std::shared_ptr<UploadTask> currentTask_;
         ServerSync* serverSync_;
-        int m_ThumbnailWidth;
         bool DebugMessage(const std::string& message, bool isServerResponseBody = false);
         bool ErrorMessage(ErrorInfo);
         bool needStop();

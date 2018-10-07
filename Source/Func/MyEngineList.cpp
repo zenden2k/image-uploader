@@ -24,12 +24,19 @@
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
 
+
 char CMyEngineList::DefaultServer[] = "default";
 
 char CMyEngineList::RandomServer[]  = "random";
 
-CMyEngineList::CMyEngineList()
+
+CMyEngineList::CMyEngineList() :dllModule_(_T("comctl32.dll"))
 {
+    if (WinUtils::IsVista()) {
+        LoadIconWithScaleDownFunc_ = dllModule_.GetProcAddress<LoadIconWithScaleDownFuncType>("LoadIconWithScaleDown");
+    } else {
+        LoadIconWithScaleDownFunc_ = nullptr;
+    }
 }
 
 CMyEngineList::~CMyEngineList()
@@ -64,6 +71,8 @@ bool CMyEngineList::loadFromFile(const CString& filename)
     return CUploadEngineList::LoadFromFile(WCstringToUtf8(filename),Settings.ServersSettings);
 }
 
+
+
 HICON CMyEngineList::getIconForServer(const std::string& name) {
     std::map<std::string, HICON>::iterator iconIt = serverIcons_.find(name);
     if ( iconIt != serverIcons_.end() )
@@ -79,7 +88,16 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
     }
 
     if (!icon ) {
-        icon = reinterpret_cast<HICON>(LoadImage(0, iconFileName, IMAGE_ICON, 16, 16, LR_LOADFROMFILE));
+        int w = GetSystemMetrics(SM_CXSMICON);
+        int h = GetSystemMetrics(SM_CYSMICON);
+        if (LoadIconWithScaleDownFunc_) {
+            LoadIconWithScaleDownFunc_(nullptr, iconFileName, w, h, &icon);
+        }
+
+        if (!icon) {
+            icon = reinterpret_cast<HICON>(LoadImage(0, iconFileName, IMAGE_ICON, w, h, LR_LOADFROMFILE));
+        }
+        
     }
     
     if ( !icon ) {

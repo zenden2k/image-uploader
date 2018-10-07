@@ -22,6 +22,7 @@
 #define IU_FUNC_MY_ENGINE_LIST_H
 
 #include "atlheaders.h"
+#include "Library.h"
 
 #include "Core/UploadEngineList.h"
 
@@ -41,5 +42,10 @@ class CMyEngineList: public CUploadEngineList
     private:
         std::map<std::string, HICON> serverIcons_;
         CString m_ErrorStr;
+        typedef HRESULT(WINAPI *LoadIconWithScaleDownFuncType)(HINSTANCE hinst, PCWSTR pszName, int cx, int cy, _Out_ HICON *phico);
+
+        LoadIconWithScaleDownFuncType LoadIconWithScaleDownFunc_;
+        Library dllModule_;
+
 };
 #endif

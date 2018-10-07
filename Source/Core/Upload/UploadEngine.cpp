@@ -170,10 +170,6 @@ CAbstractUploadEngine::CAbstractUploadEngine(ServerSync* serverSync)
     serverSync_ = serverSync;
 }
 
-void CAbstractUploadEngine::setThumbnailWidth(int width)
-{
-    m_ThumbnailWidth = width;
-}
 
 CUploadEngineData* CAbstractUploadEngine::getUploadData() const
 {

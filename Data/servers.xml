@@ -110,6 +110,12 @@
         </Actions>
         <Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
      </Server>
+     <Server Name="picimage.net" Authorize="0" MaxFileSize="3145728" Debug="0">
+		<Actions>
+			<Action Type="upload" Url="http://picimage.net/upload.php?0.$(_RAND16BITS)" PostParams="Filename=$(_FILENAME);http_import=0;thumbSize=$(_THUMBWIDTH);path_id=1;fileext=*.jpg\;*.gif\;*.png\;*.jpeg\;*.JPG\;*.GIF\;*.PNG\;*.JPEG;remote_upload=0;png_convert=0;rotateTo=0;fromjQuery=0;quality=85;safeResize=1;folder=/;image_file=%filename%;Upload=Submit Query" RegExp="\[url=(.*?)\]\[img\](.*?)\[\/img\]([\s\S]*?)\[img\](.*?)\[\/img\]" AssignVars="ViewUrl:0;Thumb:1;Image:3"/>
+        </Actions>
+        <Result ImageUrlTemplate="$(Image)" DownloadUrlTemplate="$(ViewUrl)" ThumbUrlTemplate="$(Thumb)"/>
+     </Server>
 	<!--<Server Name="pix.am"  Authorize="1" Debug="0">
 		<Actions>
 			<Action Type="login" Url="http://pix.am/api/auth/" PostParams="email=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="1" RegExp='user_id&quot;: (\d*), &quot;user_hash&quot;: &quot;(.*?)&quot;' AssignVars="_UserId:0;_UserHash:1"/>

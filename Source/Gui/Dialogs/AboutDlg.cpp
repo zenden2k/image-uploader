@@ -64,8 +64,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
     CString memoText;
     
-    memoText += TR("Settings file path:") + CString(_T("\r\n"))+ Settings.getSettingsFileName() + _T("\r\n");
-    memoText += CString(L"Build date: ") + CString(TIME) + _T("\r\n\r\n");
+    memoText += TR("Settings file path:") + CString(_T("\r\n"))+ Settings.getSettingsFileName() + _T("\r\n\r\n");
     memoText += TR("Thanks to:") + CString("\r\n\r\n");
     memoText += TR("Contributors:") + CString("\r\n");
     memoText += L"arhangelsoft\thttps://github.com/arhangelsoft\r\nTahir Yilmaz\thttps://github.com/thrylmz\r\nAlex_Qwerty\r\n\r\n";
@@ -134,7 +133,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
             
     memoText += CString(_T("Resources:\r\n")) +
         _T("famfamfam icons\thttp://www.famfamfam.com/lab/icons/\r\n\r\n");
-
+    memoText += CString(L"Build date: ") + CString(TIME) + _T("\r\n");
     memoText +=  CString(L"Built with: \r\n") + CString(BOOST_COMPILER) +  _T("\r\n");
     memoText +=  CString(L"Target platform: ") + BOOST_PLATFORM + _T(" (") + WinUtils::IntToStr(sizeof(void*) * CHAR_BIT) + _T(" bit)\r\n");
     memoText += TR("Libcurl version:")+ CString("\r\n");
@@ -157,10 +156,14 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
     SetDlgItemText(IDC_MEMO, memoText);
 
-    CString buildInfo = CString("Build ") + _T(BUILD) + _T(" (") + _T(TIME) + _T(")") +
-       _T("\r\n");
+    CString buildInfo = CString("Build ") + _T(BUILD);
+#ifdef USE_OPENSSL
+    buildInfo += _T(" (with OpenSSL) ");
+#endif
+    buildInfo  +=  CString(_T("\r\n(")) + _T(TIME) + _T(")");
 
     CString text = CString(TR("v")) + _APP_VER;
+
     SetDlgItemText(IDC_CURLINFOLABEL, text);
     SetDlgItemText(IDC_IMAGEUPLOADERLABEL, buildInfo);
     CenterWindow(GetParent());
