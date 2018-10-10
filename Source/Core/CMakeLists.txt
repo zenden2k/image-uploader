@@ -97,6 +97,7 @@ if(WIN32)
         ../Func/WinUtils.cpp
         3rdpart/CodePages.cpp
         ../Gui/GuiTools.cpp
+        Images/Utils.cpp
     )
 endif()
 

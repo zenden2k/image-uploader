@@ -1021,7 +1021,7 @@ Bitmap* LoadImageFromFileExtended(const CString& fileName) {
         if (status == Gdiplus::Win32Error) {
             error += L"\r\n" + WinUtils::FormatWindowsErrorMessage(lastError);
         }
-        ServiceLocator::instance()->logger()->write(logWarning, TR("Image Loader"), TR("Cannot load image.") + CString(L"\r\n") + error, CString(TR("File:")) + _T(" ") + fileName);
+        ServiceLocator::instance()->logger()->write(logWarning, _T("Image Loader"), _T("Cannot load image.") + CString(L"\r\n") + error, CString(_T("File:")) + _T(" ") + fileName);
         delete bm;
         return nullptr;
     }
@@ -1526,4 +1526,15 @@ bool CopyBitmapToClipboardInDataUriFormat(Bitmap* bm, int Format, int Quality, b
     }
     return res;
 
+}
+
+
+ImageInfo GetImageInfo(const wchar_t* fileName) {
+    std::unique_ptr<Bitmap> bm(LoadImageFromFileExtended(fileName));
+    ImageInfo res;
+    if (bm) {
+        res.width = bm->GetWidth();
+        res.height = bm->GetHeight();
+    }
+    return res;
 }

@@ -176,3 +176,12 @@ TEST_F(UtilsTest, CopyBitmapToClipboardInDataUriFormat) {
     std::string md52 = IuCoreUtils::CryptoUtils::CalcMD5HashFromString(clipboardTextA2);
     EXPECT_EQ("88d4f8b907c9b4d596a920419ccdd6f4", md52);
 }
+
+TEST_F(UtilsTest, GetImageInfo) {
+    ImageInfo ii = GetImageInfo(U2W("TestData/file_with_const_size.png"));
+    EXPECT_EQ(251, ii.width);
+    EXPECT_EQ(366, ii.height);
+    ImageInfo ii2 = GetImageInfo(U2W("TestData/notexistingfile57345345.png"));
+    EXPECT_EQ(0, ii2.width);
+    EXPECT_EQ(0, ii2.height);
+}

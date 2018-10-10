@@ -35,6 +35,7 @@
 #endif
         #include "Func/WinUtils.h"
     #endif
+#include "Core/Images/Utils.h"
 #endif
 
 #include "Core/Scripting/DialogProvider.h"
@@ -575,6 +576,19 @@ const std::string GetFileExtension(const std::string& path)
     return res;
 }
 
+Sqrat::Table GetImageInfo(const std::string& fileName) {
+    Sqrat::Table obj(GetCurrentThreadVM().GetVM());
+    int width = 0, height = 0;
+#ifdef _WIN32    
+    ImageInfo ii = ::GetImageInfo(U2W(fileName));
+    width = ii.width;
+    height = ii.height;
+#endif
+    obj.SetValue("Width", width);
+    obj.SetValue("Height", height);
+    return obj;
+}
+
 /*
 void DebugMessage(const std::string& message, bool isServerResponseBody)
 {
@@ -630,6 +644,7 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
 
         .Func("GetFileSize", ScriptGetFileSize)    
         .Func("GetFileSizeDouble", ScriptGetFileSize)
+        .Func("GetImageInfo", GetImageInfo)
         .Func("WriteLog", WriteLog)    
         .Func("GetCurrentScriptFileName", GetCurrentScriptFileName)
         .Func("GetCurrentThreadId", GetCurrentThreadId)

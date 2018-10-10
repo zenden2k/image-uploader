@@ -9,6 +9,14 @@
 enum SaveImageFormat {
     sifJPEG,sifPNG,sifGIF, sifDetectByExtension
 };
+
+struct ImageInfo {
+    int width, height;
+    ImageInfo() {
+        width = 0;
+        height = 0;
+    }
+};
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 
 Gdiplus::Bitmap* BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szResType);
@@ -48,4 +56,6 @@ CString GdiplusStatusToString(Gdiplus::Status statusID);
 bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data_size);
 short GetImageOrientation(Image* img);
 bool RotateAccordingToOrientation(short orient, Image* img, bool removeTag = false);
+ImageInfo GetImageInfo(const wchar_t* fileName);
+
 #endif

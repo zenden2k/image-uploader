@@ -200,6 +200,11 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
+    <Server Name="prntscr.com" Authorize="0" Type="image" Plugin="prntscr">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
 	<!-- Thanks to Alex_Qwerty -->
 	<Server Name="embedupload.com" FileHost="1" MaxFileSize="3299985472" Debug="0"> 
         <Actions> 
