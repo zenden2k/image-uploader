@@ -1,5 +1,22 @@
+function uuidv4() {
+    local pattern = "{xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx}";
+    local result = "";
+    for(local i=0; i< pattern.len(); i++){
+        if (pattern[i]=='x' || pattern[i]=='y'){
+            local r = rand()%16;
+            local v = (pattern[i] == 'x') ? r : (r & 0x3 | 0x8);
+            result+= format("%X", v);
+        }
+        else{
+            result += pattern.slice(i,i+1);
+        }
+    }
+  return result;
+}
 
 function UploadFile(FileName, options) {
+    srand(time());
+    local uuid = uuidv4();
     local name = ExtractFileName(FileName);
     local mime = GetFileMimeType(name);
     local tm = time().tostring();
@@ -37,7 +54,7 @@ function UploadFile(FileName, options) {
                     img_url = directUrl,
                     thumb_url = thumb,
                     delete_hash = "",
-                    app_id = "{236D39BE-786B-4FEB-919D-F0CF797C153E}",
+                    app_id = uuid,
                     width = imageInfo.Width,
                     height = imageInfo.Height,
                     dpr  = 1.0

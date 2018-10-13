@@ -3,6 +3,8 @@
 #include "Func/WinUtils.h"
 #include "NewStyleFileDialog.h"
 #include "OldStyleFileDialog.h"
+#include "NewStyleFileSaveDialog.h"
+#include <cassert>
 
 IMyFileDialog::~IMyFileDialog() {
 }
@@ -20,6 +22,9 @@ CString IMyFileDialog::getFolderPath() {
     return CString();
 }
 
+void IMyFileDialog::setFileTypeIndex(UINT iFileType) {
+}
+
 CString IMyFileDialog::getFile() {
     std::vector<CString> arr;
     getFiles(arr);
@@ -27,10 +32,17 @@ CString IMyFileDialog::getFile() {
 }
 
 
-std::shared_ptr<IMyFileDialog> MyFileDialogFactory::createFileDialog(HWND parent, const CString& initialFolder, const CString& title, const IMyFileDialog::FileFilterArray& filters, bool multiselect) {
+std::shared_ptr<IMyFileDialog> MyFileDialogFactory::createFileDialog(HWND parent, const CString& initialFolder, const CString& title, const IMyFileDialog::FileFilterArray& filters, bool multiselect, bool openDialog) {
+    if (multiselect) {
+        assert(openDialog==true);
+    }
     if (WinUtils::IsVista()) {
-        return std::shared_ptr<IMyFileDialog>(new CNewStyleFileDialog(parent, initialFolder, title, filters, multiselect));
+        if (openDialog) {
+            return std::shared_ptr<IMyFileDialog>(new CNewStyleFileDialog(parent, initialFolder, title, filters, multiselect, openDialog));
+        } else {
+            return std::shared_ptr<IMyFileDialog>(new CNewStyleFileSaveDialog(parent, initialFolder, title, filters));
+        }
     } else {
-        return std::shared_ptr<IMyFileDialog>(new COldStyleFileDialog(parent, initialFolder, title, filters, multiselect));
+        return std::shared_ptr<IMyFileDialog>(new COldStyleFileDialog(parent, initialFolder, title, filters, multiselect, openDialog));
     }
 }

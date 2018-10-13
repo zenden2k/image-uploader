@@ -28,45 +28,26 @@ limitations under the License.
 
 class Library {
 public:
-    Library(const wchar_t* libraryName) : libraryName_(libraryName), dll_(NULL) {
-        libraryName_ = libraryName;
+    Library(const wchar_t* libraryName) :  dll_(::LoadLibraryW(libraryName)) {
     }
     ~Library() {
         if (dll_) {
-            std::lock_guard<std::mutex> guard(mutex_);
-            if (dll_) {
-                FreeLibrary(dll_);
-            }
+            FreeLibrary(dll_);
         }
     }
     operator bool() const {
         return dll_ != nullptr;
     }
 
-    template<class T> T GetProcAddress(const char* func) {
-        if (!EnsureLoaded()) {
+    template<typename T> T GetProcAddress(const char* func) {
+        if (!dll_) {
             return nullptr;
         }
         return reinterpret_cast<T>(::GetProcAddress(dll_, func));
     }
 private:
-    std::wstring libraryName_;
-    std::mutex mutex_;
     HMODULE dll_; 
-    bool isLoaded_;
-
-    bool EnsureLoaded() {
-        if (!dll_) {
-            std::lock_guard<std::mutex> guard(mutex_);
-            if (!dll_) {
-                dll_ = ::LoadLibraryW(libraryName_.c_str());
-                if (!dll_) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+    DISALLOW_COPY_AND_ASSIGN(Library);
 };
 
 #endif

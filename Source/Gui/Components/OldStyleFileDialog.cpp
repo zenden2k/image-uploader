@@ -2,14 +2,14 @@
 
 #include "Func/WinUtils.h"
 
-COldStyleFileDialog::COldStyleFileDialog(HWND parent, const CString& initialFolder, const CString& title, const FileFilterArray& filters, bool multiselect ) {
+COldStyleFileDialog::COldStyleFileDialog(HWND parent, const CString& initialFolder, const CString& title, const FileFilterArray& filters, bool multiselect, bool openDialog) {
     filterStr_.reset(GenerateDialogFilter(filters));
 
     if (multiselect) {
         multiDlg_.reset(new CMultiFileDialog(0, 0, OFN_HIDEREADONLY, filterStr_.get(), parent));
         multiDlg_->m_ofn.lpstrInitialDir = initialFolder;
     } else {
-        dlg_.reset(new CFileDialog(true, 0, 0, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST, filterStr_.get(), parent));
+        dlg_.reset(new CFileDialog(openDialog, 0, 0, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST, filterStr_.get(), parent));
         dlg_->m_ofn.lpstrInitialDir = initialFolder;
     }
 }
@@ -58,6 +58,28 @@ void COldStyleFileDialog::getFiles(std::vector<CString>& arr) {
         if (dlg_->m_szFileName[0]) {
             arr.push_back(dlg_->m_szFileName);
         }
+    }
+}
+
+void COldStyleFileDialog::setDefaultExtension(LPCTSTR extension) {
+    if (multiDlg_) {
+        multiDlg_->m_ofn.lpstrDefExt = extension;
+    } else {
+        dlg_->m_ofn.lpstrDefExt = extension;
+    }
+}
+
+void COldStyleFileDialog::setFileTypeIndex(UINT iFileType) {
+    if (multiDlg_) {
+        multiDlg_->m_ofn.nFilterIndex = iFileType;
+    } else {
+        dlg_->m_ofn.nFilterIndex = iFileType;
+    }
+}
+
+void COldStyleFileDialog::setFileName(LPCWSTR fileName) {
+    if (!multiDlg_) {
+        lstrcpyn(dlg_->m_szFileName, fileName, MAX_PATH-1);
     }
 }
 

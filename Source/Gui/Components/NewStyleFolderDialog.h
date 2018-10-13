@@ -30,7 +30,7 @@ typedef HRESULT(__stdcall *SHCreateItemFromParsingNameFunc)(PCWSTR, IBindCtx *, 
 class CNewStyleFolderDialog {
 public:
     
-    CNewStyleFolderDialog(HWND parent, const CString& initialFolder, const CString& title, bool onlyFsDirs = true) : shellDll_(L"shell32.dll")
+    CNewStyleFolderDialog(HWND parent, const CString& initialFolder, const CString& title, bool onlyFsDirs = true) 
     {
         isVista_ = WinUtils::IsVista();
  
@@ -83,7 +83,7 @@ protected:
     CFolderDialog* oldStyleDialog_;
     CShellFileOpenDialog* newStyleDialog_;
     bool isVista_;
-    Library shellDll_;
+    Library shellDll_{ L"shell32.dll" };
 
 };
 #endif

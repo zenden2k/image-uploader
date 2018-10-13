@@ -879,6 +879,9 @@
     <ClInclude Include="Source\Core\SearchYandexImages.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Gui\Components\NewStyleFileSaveDialog.h">
+      <Filter>Source Files\Gui\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1934,6 +1937,9 @@
     </ClCompile>
     <ClCompile Include="Source\Core\SearchYandexImages.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Components\NewStyleFileSaveDialog.cpp">
+      <Filter>Source Files\Gui\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

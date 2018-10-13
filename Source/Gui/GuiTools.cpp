@@ -570,16 +570,8 @@ HICON LoadSmallIcon(int resourceId) {
 typedef HRESULT(WINAPI *LoadIconWithScaleDownFuncType)(HINSTANCE hinst, PCWSTR pszName, int cx, int cy, _Out_ HICON *phico);
 
 HICON LoadBigIcon(int resourceId) {
-    int iconWidth =  ::GetSystemMetrics(SM_CXICON);
-    int iconHeight =  ::GetSystemMetrics(SM_CYICON);
-
-    /*if ( iconWidth > 32 ) {
-        iconWidth = 48;
-    } 
-
-    if ( iconHeight > 32 ) {
-        iconHeight = 48;
-    } */
+    int iconWidth = ::GetSystemMetrics(SM_CXICON);
+    int iconHeight = ::GetSystemMetrics(SM_CYICON);
 
     if (WinUtils::IsVista()) {
         Library dllModule(_T("comctl32.dll"));

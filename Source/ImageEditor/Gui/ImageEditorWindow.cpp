@@ -16,6 +16,7 @@
 #include "Func/MyUtils.h"
 #include "ImageEditor/MovableElements.h"
 #include "Gui/Dialogs/SearchByImageDlg.h"
+#include "Gui/Components/MyFileDialog.h"
 
 namespace ImageEditor {
     
@@ -1217,16 +1218,24 @@ void ImageEditorWindow::updatePixelLabels()
 }
 
 void ImageEditorWindow::OnSaveAs()
-{
-    TCHAR Buf[MAX_PATH*4];
-    GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR), 2,
-        _T("PNG"), CString(_T("*.png")),
-        _T("JPEG"), CString(_T("*.jpg;*.jpeg")),
-        TR("All files"),_T("*.*"));
-    CFileDialog fd(false, GetFileExt(suggestedFileName_), suggestedFileName_ ,OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,Buf,m_hWnd);
-    if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return;
+{    
+    IMyFileDialog::FileFilterArray filters = {
+        { _T("PNG"), CString(_T("*.png")) },
+        { _T("JPEG"), CString(_T("*.jpg;*.jpeg")) },
+        { TR("All files"), _T("*.*") }
+    };
 
-    outFileName_ = fd.m_szFileName;
+    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, CString(), CString(), filters, false, false);
+    dlg->setFileName(suggestedFileName_);
+    CString ext = GetFileExt(suggestedFileName_);
+    ext.MakeLower();
+    dlg->setDefaultExtension(ext);
+    dlg->setFileTypeIndex(ext == "jpg" ? 2 : 1);
+
+    if (dlg->DoModal(m_hWnd) != IDOK) {
+        return;
+    }
+    outFileName_ = dlg->getFile();
     saveDocument();
 }
 

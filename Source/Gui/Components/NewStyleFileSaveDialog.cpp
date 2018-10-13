@@ -1,4 +1,4 @@
-#include "NewStyleFileDialog.h"
+#include "NewStyleFileSaveDialog.h"
 
 typedef HRESULT(STDAPICALLTYPE *SHGetKnownFolderPath_func)(_In_ REFKNOWNFOLDERID rfid,
     _In_ DWORD /* KNOWN_FOLDER_FLAG */ dwFlags,
@@ -9,7 +9,7 @@ typedef HRESULT(STDAPICALLTYPE *SHGetKnownFolderPath_func)(_In_ REFKNOWNFOLDERID
 typedef HRESULT(STDAPICALLTYPE *SHCreateItemFromParsingName_func)(_In_ PCWSTR pszPath, _In_opt_ IBindCtx *pbc, _In_ REFIID riid, _Outptr_ void **ppv);
 
 
-CNewStyleFileDialog::CNewStyleFileDialog(HWND parent, const CString& initialFolder, const CString& title, const FileFilterArray& filters, bool multiselect, bool openDialog){
+CNewStyleFileSaveDialog::CNewStyleFileSaveDialog(HWND parent, const CString& initialFolder, const CString& title, const FileFilterArray& filters){
     COMDLG_FILTERSPEC* fileTypes = nullptr;
     
     if (!filters.empty()) {
@@ -23,7 +23,7 @@ CNewStyleFileDialog::CNewStyleFileDialog(HWND parent, const CString& initialFold
     DWORD dwFlags = 0;
 
     // Create the file-save dialog COM object.
-    HRESULT hr = newStyleDialog_.CoCreateInstance(CLSID_FileOpenDialog);
+    HRESULT hr = newStyleDialog_.CoCreateInstance(CLSID_FileSaveDialog);
 
     if (FAILED(hr))
         return;
@@ -50,18 +50,15 @@ CNewStyleFileDialog::CNewStyleFileDialog(HWND parent, const CString& initialFold
 
     newStyleDialog_->GetOptions(&dwFlags);
 
-    if (multiselect) {
-        dwFlags |= FOS_ALLOWMULTISELECT;
-    }
-    dwFlags |= FOS_FILEMUSTEXIST | FOS_FORCEFILESYSTEM;
+    dwFlags |= FOS_FILEMUSTEXIST | FOS_FORCEFILESYSTEM | FOS_OVERWRITEPROMPT;
     newStyleDialog_->SetOptions(dwFlags);
 }
 
 
-CNewStyleFileDialog::~CNewStyleFileDialog() {
+CNewStyleFileSaveDialog::~CNewStyleFileSaveDialog() {
 }
 
-INT_PTR CNewStyleFileDialog::DoModal(HWND hWndParent) {
+INT_PTR CNewStyleFileSaveDialog::DoModal(HWND hWndParent) {
     HRESULT hr = newStyleDialog_->Show(hWndParent);
 
     // If the user chose any files, loop thru the array of files.
@@ -71,7 +68,7 @@ INT_PTR CNewStyleFileDialog::DoModal(HWND hWndParent) {
     return IDCANCEL;
 }
 
-CString CNewStyleFileDialog::getFolderPath() {
+CString CNewStyleFileSaveDialog::getFolderPath() {
     CString result;
     if (isVista_) {
         CComPtr<IShellItem> pFolderItem;
@@ -92,54 +89,40 @@ CString CNewStyleFileDialog::getFolderPath() {
 }
 
 
-void CNewStyleFileDialog::setTitle(LPCWSTR title) {
+void CNewStyleFileSaveDialog::setTitle(LPCWSTR title) {
     newStyleDialog_->SetTitle(title);
 }
 
-void CNewStyleFileDialog::setDefaultExtension(LPCTSTR extension) {
+void CNewStyleFileSaveDialog::setDefaultExtension(LPCTSTR extension) {
     newStyleDialog_->SetDefaultExtension(extension);
 }
 
-void CNewStyleFileDialog::setFileName(LPCWSTR fileName) {
+void CNewStyleFileSaveDialog::setFileName(LPCWSTR fileName) {
     newStyleDialog_->SetFileName(fileName);
 }
 
-void CNewStyleFileDialog::getFiles(std::vector<CString>& arr) {
+
+
+void CNewStyleFileSaveDialog::getFiles(std::vector<CString>& arr) {
     HRESULT hr;
     // If the user chose any files, loop thru the array of files.
 
-    CComPtr<IShellItemArray> pItemArray;
+    CComPtr<IShellItem> pItem;
 
-    hr = newStyleDialog_->GetResults(&pItemArray);
+    hr = newStyleDialog_->GetResult(&pItem);
 
     if (SUCCEEDED(hr)) {
-        DWORD cSelItems;
-
-        // Get the number of selected files.
-        hr = pItemArray->GetCount(&cSelItems);
+        LPOLESTR pwsz = NULL;
+        // Get its file system path.
+        hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
 
         if (SUCCEEDED(hr)) {
-            if (!cSelItems) {
-                return;
-            }
-            for (DWORD j = 0; j < cSelItems; j++) {
-                CComPtr<IShellItem> pItem;
-
-                // Get an IShellItem interface on the next file.
-                hr = pItemArray->GetItemAt(j, &pItem);
-
-                if (SUCCEEDED(hr)) {
-                    LPOLESTR pwsz = NULL;
-
-                    // Get its file system path.
-                    hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
-
-                    if (SUCCEEDED(hr)) {
-                        arr.push_back(pwsz);
-                        CoTaskMemFree(pwsz);
-                    }
-                }
-            }
+            arr.push_back(pwsz);
+            CoTaskMemFree(pwsz);
         }
     }
+}
+
+void CNewStyleFileSaveDialog::setFileTypeIndex(UINT iFileType) {
+    newStyleDialog_->SetFileTypeIndex(iFileType);
 }

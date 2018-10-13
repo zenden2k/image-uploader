@@ -1,14 +1,14 @@
-#ifndef IU_GUI_NEWSTYLEFILEDIALOG_H
-#define IU_GUI_NEWSTYLEFILEDIALOG_H
+#ifndef IU_GUI_NEWSTYLEFILESAVEDIALOG_H
+#define IU_GUI_NEWSTYLEFILESAVEDIALOG_H
 
 #include "atlheaders.h"
 #include "MyFileDialog.h"
 #include "Func/Library.h"
 
-class CNewStyleFileDialog: public IMyFileDialog {
+class CNewStyleFileSaveDialog: public IMyFileDialog {
 public:
-    CNewStyleFileDialog(HWND parent, const CString& initialFolder, const CString& title, const FileFilterArray& filters, bool multiselect = false, bool openDialog=true);
-    ~CNewStyleFileDialog();
+    CNewStyleFileSaveDialog(HWND parent, const CString& initialFolder, const CString& title, const FileFilterArray& filters);
+    ~CNewStyleFileSaveDialog();
     INT_PTR DoModal(HWND hWndParent) override;
 
     CString getFolderPath() override;
@@ -16,12 +16,14 @@ public:
     void setDefaultExtension(LPCTSTR extension) override;
     void setFileName(LPCWSTR fileName) override;
     void getFiles(std::vector<CString>& arr) override; 
+    void setFileTypeIndex(UINT iFileType) override;
 
 protected:
     bool isVista_;
     Library shellDll_{ L"shell32.dll" };
-    CComPtr<IFileOpenDialog> newStyleDialog_;
+    CComPtr<IFileSaveDialog> newStyleDialog_;
 private:
-    DISALLOW_COPY_AND_ASSIGN(CNewStyleFileDialog);
+    DISALLOW_COPY_AND_ASSIGN(CNewStyleFileSaveDialog);
+
 };
 #endif

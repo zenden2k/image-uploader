@@ -38,6 +38,7 @@
 #include "3rdpart/ShellPidl.h"
 #include <boost/format.hpp>
 #include <shlobj.h>
+#include <Gui/Components/MyFileDialog.h>
 
 CMainDlg::CMainDlg() {
 }
@@ -701,16 +702,24 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
     }
 
     if ( selectedFiles.size() == 1 ) {
-        TCHAR Buf[MAX_PATH*4];
         CString FileName = selectedFiles[0];
         CString fileExt = WinUtils::GetFileExt(FileName);
-        GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),2,
-            TR("Files")+CString(" *.")+fileExt, CString(_T("*."))+fileExt,
-            TR("All files"),_T("*.*"));
-        CFileDialog fd(false, fileExt, FileName,OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,Buf,m_hWnd);
-        if(fd.DoModal()!=IDOK || !fd.m_szFileName[0]) return 0;
+        IMyFileDialog::FileFilterArray filters = {
+            { TR("Files") + CString(" *.") + fileExt, CString(_T("*.")) + fileExt },
+            { TR("All files"), _T("*.*") }
+        };
 
-        if (!CopyFile(FileName, fd.m_szFileName, false)) {
+        auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, CString(), CString(), filters, false, false);
+        dlg->setFileName(WinUtils::GetOnlyFileName(FileName));
+        fileExt.MakeLower();
+        dlg->setDefaultExtension(fileExt);
+        dlg->setFileTypeIndex(1);
+
+        if (dlg->DoModal(m_hWnd) != IDOK) {
+            return 0;
+        }
+
+        if (!CopyFile(FileName, dlg->getFile(), false)) {
             MessageBox(TR("Cannot copy file: ")+WinUtils::GetLastErrorAsString(), APPNAME, MB_ICONERROR);
         }
     } else {
