@@ -77,22 +77,14 @@ const std::string GetAppLanguageFile()
 
 Sqrat::Table GetAppVersion() {
     Sqrat::Table res(GetCurrentThreadVM().GetVM());
-    std::string ver = _APP_VER;
-    std::vector<std::string> tokens;
-    IuStringUtils::Split(ver,".", tokens, 3);
-    if ( tokens.size() >=3 ) {
-        res.SetValue("Major", (SQInteger)IuCoreUtils::stringToInt64(tokens[0]));
-        res.SetValue("Minor", (SQInteger)IuCoreUtils::stringToInt64(tokens[1]));
-        res.SetValue("Release", (SQInteger)IuCoreUtils::stringToInt64(tokens[2]));
-        res.SetValue("Build", (SQInteger)IuCoreUtils::stringToInt64(BUILD));
-        bool isGui = 
-#ifndef IU_CLI
-            true;
-#else 
-            false;
-#endif
-        res.SetValue("Gui",isGui);
+    auto version = AppParams::instance()->GetAppVersion();
+    if (version) {
+        res.SetValue("Major", static_cast<SQInteger>(version->Major));
+        res.SetValue("Minor", static_cast<SQInteger>(version->Minor));
+        res.SetValue("Release", static_cast<SQInteger>(version->Release));
+        res.SetValue("Build", static_cast<SQInteger>(version->Build));
     }
+    res.SetValue("Gui", AppParams::instance()->isGui());
     return res;
 }
 
@@ -243,10 +235,6 @@ void sleep(int msec) {
     ::sleep(ceil(msec/1000.0));
 #endif
 }
-
-/*bool ShowText(const std::string& data) {
-    return DebugMessage( data, true );
-}*/
 
 const std::string JsonEscapeString( const std::string& src) {
     return Json::valueToQuotedString(src.data());

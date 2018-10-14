@@ -86,7 +86,7 @@ endif()
 set(COMMON_LIBS_LIST squirrel sqstdlib pcre gumbo mega uriparser cryptopp cares jsoncpp)
 
 if(WIN32)
-    list(APPEND COMMON_LIBS_LIST libcurl libeay32 ssleay32 Oleacc libglog_static minizip Userenv Psapi Iphlpapi Winhttp libuv)
+    list(APPEND COMMON_LIBS_LIST libcurl libeay32 ssleay32 Oleacc libglog_static minizip Userenv Psapi Iphlpapi Winhttp libuv base64 libwebpdecoder libwebpdemux)
 else()
     list(APPEND COMMON_LIBS_LIST curl ssl crypto glog pthread uv rt sqlite3 freeimage gflags ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES})
 endif()

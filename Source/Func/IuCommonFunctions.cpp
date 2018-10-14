@@ -3,11 +3,11 @@
 #ifndef IU_SHELLEXT
 #include "Core/Settings.h"
 #endif
-#include "versioninfo.h"
 #include "WinUtils.h"
 #include "Core/Utils/CoreUtils.h"
 #include "3rdpart/Registry.h"
 #include "Core/Utils/CryptoUtils.h"
+#include <Core/AppParams.h>
 
 namespace IuCommonFunctions {
      CString IUTempFolder;
@@ -32,7 +32,9 @@ const CString GetDataFolder()
 #endif
 const CString GetVersion()
 {
-    return CString(_APP_VER)+_T(".") + _T(BUILD);
+    auto ver = AppParams::instance()->GetAppVersion();
+
+    return CString(ver->FullVersion.c_str()) + _T(".") + std::to_string(ver->Build).c_str();
 }
 
 BOOL CreateTempFolder()

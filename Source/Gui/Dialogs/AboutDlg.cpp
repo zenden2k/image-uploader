@@ -20,7 +20,6 @@
 
 #include "AboutDlg.h"
 
-#include "versioninfo.h"
 #include <curl/curl.h>
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
@@ -29,6 +28,7 @@
 #include <boost/config.hpp>
 #include <boost/version.hpp>
 #include <webp/decode.h>
+#include "Core/AppParams.h"
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -61,6 +61,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     m_Documentation.SubclassWindow(GetDlgItem(IDC_DOCUMENTATION));
     m_Documentation.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
     m_Documentation.SetLabel(TR("Documentation"));
+
+    auto ver = AppParams::instance()->GetAppVersion();
 
     CString memoText;
     
@@ -133,7 +135,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
             
     memoText += CString(_T("Resources:\r\n")) +
         _T("famfamfam icons\thttp://www.famfamfam.com/lab/icons/\r\n\r\n");
-    memoText += CString(L"Build date: ") + CString(TIME) + _T("\r\n");
+    memoText += CString(L"Build date: ") + CString(ver->BuildDate.c_str()) + _T("\r\n");
     memoText +=  CString(L"Built with: \r\n") + CString(BOOST_COMPILER) +  _T("\r\n");
     memoText +=  CString(L"Target platform: ") + BOOST_PLATFORM + _T(" (") + WinUtils::IntToStr(sizeof(void*) * CHAR_BIT) + _T(" bit)\r\n");
     memoText += TR("Libcurl version:")+ CString("\r\n");
@@ -155,14 +157,15 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     }*/
 
     SetDlgItemText(IDC_MEMO, memoText);
-
-    CString buildInfo = CString("Build ") + _T(BUILD);
+   
+    CString buildInfo;
+    buildInfo.Format(_T("Build %d"), ver->Build);
 #ifdef USE_OPENSSL
     buildInfo += _T(" (with OpenSSL) ");
 #endif
-    buildInfo  +=  CString(_T("\r\n(")) + _T(TIME) + _T(")");
+    buildInfo  +=  CString(_T("\r\n(")) + ver->BuildDate.c_str() + _T(")");
 
-    CString text = CString(TR("v")) + _APP_VER;
+    CString text = CString(TR("v")) + ver->FullVersion.c_str();
 
     SetDlgItemText(IDC_CURLINFOLABEL, text);
     SetDlgItemText(IDC_IMAGEUPLOADERLABEL, buildInfo);

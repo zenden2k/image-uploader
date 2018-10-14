@@ -27,7 +27,7 @@
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Logging.h"
-#include "versioninfo.h"
+#include "AppParams.h"
 
 bool compareEngines(const CUploadEngineData& elem1, const CUploadEngineData& elem2)
 {
@@ -53,12 +53,14 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename, ServerSettings
     root.GetChilds("Server2", childs);
     root.GetChilds("Server3", childs);
 
-    std::string ver = _APP_VER;
+    auto versionInfo = AppParams::instance()->GetAppVersion();
+
+    std::string ver = versionInfo->FullVersion;
     std::vector<std::string> tokens;
     IuStringUtils::Split(ver,".", tokens, 3);
-    int majorVersion = (int)IuCoreUtils::stringToInt64(tokens[0]);
-    int minorVersion = (int)IuCoreUtils::stringToInt64(tokens[1]+tokens[2]);
-    int build = (int)IuCoreUtils::stringToInt64(BUILD);
+    int majorVersion = std::stoi(tokens[0]);
+    int minorVersion = std::stoi(tokens[1]+tokens[2]);
+    int build = versionInfo->Build;
 
     for(size_t i=0; i<childs.size(); i++)
     {

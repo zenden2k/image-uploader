@@ -98,6 +98,7 @@ if(WIN32)
         3rdpart/CodePages.cpp
         ../Gui/GuiTools.cpp
         Images/Utils.cpp
+        ../3rdpart/QColorQuantizer.cpp
     )
 endif()
 

@@ -681,7 +681,7 @@ int main(int argc, char *argv[]){
     AppParams* params = AppParams::instance();
     params->setDataDirectory(dataFolder);
     params->setSettingsDirectory(settingsFolder);
-
+    params->setIsGui(false);
 #ifdef _WIN32
     TCHAR ShortPath[1024];
     GetTempPath(ARRAY_SIZE(ShortPath), ShortPath);
