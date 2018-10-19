@@ -5,7 +5,7 @@
 #include "Gui/GuiTools.h"
 #include "Core/ServerListManager.h"
 #include "Core/Settings.h"
-#include "Func//IuCommonFunctions.h"
+#include "Func/IuCommonFunctions.h"
 
 // CAddFtpServerDialog
 CAddFtpServerDialog::CAddFtpServerDialog(CUploadEngineList* uploadEngineList)

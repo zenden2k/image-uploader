@@ -174,6 +174,7 @@ DWORD CLoginDlg::Run()
         if ( !ignoreExistingAccount_ && createNew_ && Settings.ServersSettings[serverNameA].find(li.Login ) != Settings.ServersSettings[serverNameA].end() ) {
             MessageBox(TR("Account with such name already exists."),TR("Error"), MB_ICONERROR);
             OnProcessFinished();
+            return 0;
         }
 
         ignoreExistingAccount_ = true;
@@ -215,6 +216,7 @@ DWORD CLoginDlg::Run()
 
 void CLoginDlg::OnProcessFinished()
 {
+    uploadEngineManager_->clearThreadData();
     enableControls(true);
 }
 
@@ -258,5 +260,5 @@ void CLoginDlg::enableControls(bool enable)
     GuiTools::EnableDialogItem(m_hWnd, IDOK, enable);
     GuiTools::EnableDialogItem(m_hWnd, IDCANCEL, enable);
     loginButton_.EnableWindow(enable);
-    deleteAccountLabel_.ShowWindow(enable?SW_SHOW : SW_HIDE);
+    deleteAccountLabel_.EnableWindow(enable);
 }

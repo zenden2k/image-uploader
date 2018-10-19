@@ -17,6 +17,7 @@ CWebViewWindow::CWebViewWindow() : subclassWindow_(this), callback_(HookCallback
     fileFieldSuccess_ = false;
     messageLoopIsRunning_ = false;
     activeWindowBeforeFill_ = 0;
+    urlmonDll_ = nullptr;
     //dialogHook_ = 0;
 }
 CWebViewWindow::~CWebViewWindow() {
@@ -29,6 +30,7 @@ CWebViewWindow::~CWebViewWindow() {
     if ( hook_ ) {
         UnhookWindowsHookEx(hook_);
     }
+
     //instance = 0;
     //delete dialogHook_;
 }

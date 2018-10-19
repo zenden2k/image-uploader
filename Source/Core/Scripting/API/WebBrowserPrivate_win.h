@@ -48,6 +48,7 @@ using namespace Sqrat;
 class WebBrowserPrivate : public WebBrowserPrivateBase {
 public:
     WebBrowserPrivate(CWebBrowser * browser ) {
+        owningThread_ = std::this_thread::get_id();
         browser_ = browser;
         webViewWindow_.view_.onNavigateComplete2.bind(this, &WebBrowserPrivate::OnPageLoaded);
         webViewWindow_.view_.onNavigateError.bind(this, &WebBrowserPrivate::OnNavigateError);
@@ -62,6 +63,8 @@ public:
     }
 
     ~WebBrowserPrivate() {
+        assert(owningThread_ == std::this_thread::get_id()); 
+        // WTF? WebViewWindow should be destroyed in the same thread it was created
         if ( IsWindow(webViewWindow_.m_hWnd) ) {
             webViewWindow_.destroyFromAnotherThread();
         }
@@ -249,6 +252,7 @@ protected:
     bool initialSilent_;
     int initialWidth_;
     int initialHeight_;
+    std::thread::id owningThread_;
 
     void create(HWND parent = 0 ) {
         if ( webViewWindow_.m_hWnd) {

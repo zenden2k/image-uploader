@@ -21,18 +21,11 @@
 #include "UploadEngineList.h"
 
 #include <algorithm>
-#include <iostream>
 #include <vector>
-#include "Core/Upload/DefaultUploadEngine.h"
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Logging.h"
 #include "AppParams.h"
-
-bool compareEngines(const CUploadEngineData& elem1, const CUploadEngineData& elem2)
-{
-    return IuStringUtils::stricmp(elem1.Name.c_str(), elem2.Name.c_str()) < 0;
-}
 
 CUploadEngineList::CUploadEngineList()
 {
