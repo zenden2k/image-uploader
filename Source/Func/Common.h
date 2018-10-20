@@ -23,9 +23,6 @@
 
 #include "atlheaders.h"
 #include <atlcoll.h>
-#include <ctime>
-#include "MyEngineList.h"
-#include "3rdpart/GdiplusH.h"
 
 class UploadEngineManager;
 class CCmdLine;
@@ -65,15 +62,8 @@ bool IULaunchCopy();
 
 extern CCmdLine CmdLine;
 
-bool __fastcall CreateShortCut( 
-                             LPCWSTR pwzShortCutFileName, 
-                               LPCTSTR pszPathAndFileName, 
-                               LPCTSTR pszWorkingDirectory, 
-                               LPCTSTR pszArguments, 
-                               WORD wHotKey, 
-                               int iCmdShow, 
-                               LPCTSTR pszIconFileName, 
-                               int iIconIndex) ;
+bool CreateShortCut(LPCWSTR pwzShortCutFileName, LPCTSTR pszPathAndFileName, LPCTSTR pszWorkingDirectory, LPCTSTR pszArguments, 
+                               WORD wHotKey, int iCmdShow, LPCTSTR pszIconFileName, int iIconIndex) ;
 #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 
 bool IULaunchCopy(CString params, const CAtlArray<CString> &files);
@@ -94,14 +84,7 @@ inline unsigned int COLORREF2RGB( COLORREF color)
 }
 void IU_RunElevated(CString params);
 HRESULT IsElevated( __out_opt BOOL * pbElevated );
-#define randomize() (srand((unsigned)time(NULL)))
-#define random(x) (rand() % x)
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
-
-
-//CString GetUniqFileName(const CString &filePath);
-//extern CMyEngineList *_EngineList;
-
 HICON GetAssociatedIcon (LPCTSTR filename, bool Small);
 int ScreenBPP();
 BOOL Is32BPP();

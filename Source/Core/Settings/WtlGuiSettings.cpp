@@ -1072,6 +1072,7 @@ void WtlGuiSettings::EnableAutostartup(bool enable) {
         lRet = RegOpenKeyEx(HKEY_CURRENT_USER, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"), 0, KEY_WRITE,
             &hKey);
         RegDeleteValue(hKey, _T("ImageUploader"));
+        RegCloseKey(hKey);
     }
 }
 

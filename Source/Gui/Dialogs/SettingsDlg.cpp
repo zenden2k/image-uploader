@@ -53,7 +53,7 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     //SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYOUTRTL);  // test :))
     // center the dialog on the screen
     CenterWindow();
-    GuiTools::MakeLabelBold(GetDlgItem(IDC_SAVESTATUSLABEL));
+    saveStatusLabel_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_SAVESTATUSLABEL));
 
     HWND parent = GetParent();
     if(!parent || !::IsWindowVisible(parent))

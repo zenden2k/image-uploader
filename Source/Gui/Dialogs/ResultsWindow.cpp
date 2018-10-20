@@ -35,12 +35,16 @@ CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,std::vector<CUrlListItem>  
     tabPageToCodeLang[1] = CResultsPanel::kHtml;
     tabPageToCodeLang[2] = CResultsPanel::kMarkdown;
     tabPageToCodeLang[3] = CResultsPanel::kPlainText;
+    hMyDlgTemplate_ = nullptr;
 }
 
 
 CResultsWindow::~CResultsWindow()
 {
     delete ResultsPanel;
+    if (hMyDlgTemplate_) {
+        GlobalFree(hMyDlgTemplate_);
+    }
 }
 
 void CResultsWindow::setOnShortenUrlChanged(fastdelegate::FastDelegate1<bool> fd) {
@@ -60,9 +64,9 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     {
         CenterWindow(GetParent());
         HICON hIcon = GuiTools::LoadBigIcon(IDR_MAINFRAME);
-        HICON hIconSmall = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
+        iconSmall_ = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
         SetIcon(hIcon, TRUE);
-        SetIcon(hIconSmall, FALSE);
+        SetIcon(iconSmall_, FALSE);
     }
 
     ::SetFocus(GetDlgItem(IDOK));
@@ -197,8 +201,8 @@ DLGTEMPLATE* CResultsWindow::GetTemplate()
     DLGTEMPLATE* dit=(DLGTEMPLATE*)LockResource( LoadResource(hInst, res));
     
     size_t sizeDlg = ::SizeofResource(hInst, res);
-    HGLOBAL hMyDlgTemplate = ::GlobalAlloc(GPTR, sizeDlg);
-    DLGTEMPLATEEX *pMyDlgTemplate = (DLGTEMPLATEEX *)::GlobalLock(hMyDlgTemplate);
+    hMyDlgTemplate_ = ::GlobalAlloc(GPTR, sizeDlg);
+    DLGTEMPLATEEX *pMyDlgTemplate = (DLGTEMPLATEEX *)::GlobalLock(hMyDlgTemplate_);
     ::memcpy(pMyDlgTemplate, dit, sizeDlg);
 
     if(m_childWindow)

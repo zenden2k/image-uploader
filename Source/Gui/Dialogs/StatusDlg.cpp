@@ -40,7 +40,7 @@ LRESULT CStatusDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     m_bNeedStop = false;
     SetTimer(1, 500);
     TRC(IDCANCEL, "Stop");
-    GuiTools::MakeLabelBold(GetDlgItem(IDC_TITLE));
+    titleFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_TITLE));
     return 1;  // Let the system set the focus
 }
 

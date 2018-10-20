@@ -891,7 +891,6 @@ LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND h
     } else {
         CString outputTempFileName = IuCommonFunctions::IUTempFolder  + "preview.html";
         CString code = GenerateOutput();
-        //ShowVar(m_Page);
         /*if ( m_Page == 0) {
             code = Utf8ToWCstring(IuTextUtils::BbCodeToHtml(WCstringToUtf8(code)));
         } */

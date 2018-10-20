@@ -91,6 +91,7 @@ class CHotkeySettingsPage :
 
         CListViewCtrl m_HotkeyList;
         CHotkeyList hotkeyList;
+        CFont attentionLabelFont_;
 };
 
 #endif // HOTKEYSETTINGS_H

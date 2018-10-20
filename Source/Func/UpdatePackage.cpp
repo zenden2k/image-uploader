@@ -371,7 +371,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 CUpdatePackage::CUpdatePackage()
 {
     m_statusCallback = 0;
-    randomize();
+    srand(static_cast<unsigned int>(time(nullptr)));
     m_nUpdatedFiles = 0;
     m_nTotalFiles = 0;
     m_CoreUpdate = false;
@@ -466,7 +466,7 @@ bool CUpdatePackage::doUpdate()
 
             }
         }
-        CString renameTo = copyTo + _T(".")+IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(random(10000))).c_str()+ _T(".old");
+        CString renameTo = copyTo + _T(".")+IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(rand()%10000)).c_str()+ _T(".old");
 
         CString buffer = U2W(IuCoreUtils::ExtractFilePath(W2U(copyTo)));
         std::vector<std::string> tokens;

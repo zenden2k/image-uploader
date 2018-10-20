@@ -62,14 +62,14 @@ void SetCheck(HWND dlg, int id, bool check) {
     ::SendDlgItemMessage(dlg, id,BM_SETCHECK, check, 0);
 }
 
-void MakeLabelBold(HWND Label) {
+HFONT MakeLabelBold(HWND Label) {
     HFONT Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT, 0, 0));
 
-    if (!Font) return;
+    if (!Font) return nullptr;
 
     LOGFONT alf;
 
-    if (!(::GetObject(Font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT))) return;
+    if (!(::GetObject(Font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT))) return nullptr;
 
     alf.lfWeight = FW_BOLD;
 
@@ -77,21 +77,23 @@ void MakeLabelBold(HWND Label) {
     SendMessage(Label,WM_SETFONT, reinterpret_cast<WPARAM>(NewFont), MAKELPARAM(false, 0));
     CWindowDC dc(0);
     alf.lfHeight = -MulDiv(13, GetDeviceCaps(dc, LOGPIXELSY), 72);
+    return NewFont;
 }
 
-void MakeLabelItalic(HWND Label) {
+HFONT MakeLabelItalic(HWND Label) {
     HFONT Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT, 0, 0));
 
-    if (!Font) return;
+    if (!Font) return nullptr;
 
     LOGFONT alf;
 
-    if (!(::GetObject(Font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT))) return;
+    if (!(::GetObject(Font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT))) return nullptr;
 
     alf.lfItalic = 1;
 
     HFONT NewFont = CreateFontIndirect(&alf);
     SendMessage(Label,WM_SETFONT, reinterpret_cast<WPARAM>(NewFont),MAKELPARAM(false, 0));
+    return NewFont;
 }
 
 void EnableNextN(HWND Control, int n, bool Enable) {

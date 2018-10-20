@@ -84,6 +84,7 @@ class CSettingsDlg : public CDialogImpl<CSettingsDlg>
 protected:
     UploadEngineManager* uploadEngineManager_;
     CBrush backgroundBrush_;
+    CFont saveStatusLabel_;
 };
 
 #endif // SETTINGSDLG_H

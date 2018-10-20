@@ -21,6 +21,7 @@
 #include "myutils.h"
 
 #include "atlheaders.h"
+#include <string>
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Video/VideoUtils.h"
@@ -29,16 +30,20 @@
 typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
 typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
 
-#define STRING MAX_PATH
-
 int GetFontSize(int nFontHeight)
 {
-    return - MulDiv( nFontHeight, 72, GetDeviceCaps(::GetDC(0), LOGPIXELSY));
+    HDC dc = ::GetDC(nullptr);
+    int res =  -MulDiv(nFontHeight, 72, GetDeviceCaps(dc, LOGPIXELSY));
+    ReleaseDC(nullptr, dc);
+    return res;
 }
 
 int GetFontHeight(int nFontSize)
 {
-    return - MulDiv(nFontSize, GetDeviceCaps(::GetDC(0), LOGPIXELSY), 72);
+    HDC dc = ::GetDC(nullptr);
+    int res = -MulDiv(nFontSize, GetDeviceCaps(::GetDC(0), LOGPIXELSY), 72);
+    ReleaseDC(nullptr, dc);
+    return res;
 }
 
 int GetFontSizeInTwips(int nFontSize)
@@ -173,9 +178,9 @@ bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont)
 {
     TCHAR szFontName[LF_FACESIZE] = _T("Ms Sans Serif");
 
-    TCHAR szFontSize[STRING];
-    TCHAR szFormat[STRING];
-    TCHAR szCharset[STRING];
+    TCHAR szFontSize[MAX_PATH];
+    TCHAR szFormat[MAX_PATH];
+    TCHAR szCharset[MAX_PATH];
     bool bBold=false;
     bool bItalic=false;
     bool bUnderline=false;
@@ -230,8 +235,6 @@ LPTSTR ExtractFilePath(LPCTSTR FileName, LPTSTR buf)
     return buf;
 }
 
-//  Function doesn't allocate new string, it returns  pointer
-//        to a part of source string
 const CString myExtractFileName(const CString & FileName)
 {  
     CString temp = FileName;
@@ -246,8 +249,6 @@ const CString myExtractFileName(const CString & FileName)
     return temp.Right(len-i-1);
     
 }
-
-
 
 //  Function doesn't allocate new string, it returns  pointer
 //        to a part of source string
@@ -283,52 +284,6 @@ bool IsVideoFile(LPCTSTR szFileName)
 
 }
 
-
-
-/*bool ReadSetting(LPTSTR szSettingName,int* Value,int DefaultValue,LPTSTR szString,LPTSTR szDefString)
-{
-    TCHAR szFileName[256],szPath[256];
-    GetModuleFileName(0,szFileName,1023);
-   ExtractFilePath(szFileName,szPath);
-   wsprintf(szFileName,_T("%simgupload.ini"),szPath);
-
-
-
-    TCHAR szBuffer1[128],szBuffer2[128];
-    lstrcpy(szBuffer2,GetFileExt(szSettingName));
-    GetOnlyFileName(szSettingName,szBuffer1);
-    if(!szString)
-    *Value = GetPrivateProfileInt(szBuffer1,szBuffer2, DefaultValue, szFileName);
-    else
-     GetPrivateProfileString(szBuffer1,szBuffer2, szDefString,szString,256, szFileName);
-    
-    return true;
-}
-
-bool WriteSetting(LPCTSTR szSettingName,int Value,LPCTSTR szString)
-{
-    TCHAR szFileName[256],szPath[256];
-    GetModuleFileName(0,szFileName,1023);
-   ExtractFilePath(szFileName,szPath);
-   wsprintf(szFileName,_T("%simgupload.ini"),szPath);
-
-    TCHAR szBuffer1[128],szBuffer2[128];
-    TCHAR szBuffer3[256];
-    
-    lstrcpy(szBuffer2,GetFileExt(szSettingName));
-    GetOnlyFileName(szSettingName,szBuffer1);
-    if(!szString)
-    {
-        wsprintf(szBuffer3,_T("%d"),Value);
-        WritePrivateProfileString(szBuffer1,szBuffer2, szBuffer3, szFileName);
-    }
-    else
-        
-    WritePrivateProfileString(szBuffer1,szBuffer2, szString, szFileName);
-    
-    return true;
-}
-*/
 int GetSavingFormat(LPCTSTR szFileName)
 {
     if(!szFileName) return -1;
@@ -456,27 +411,6 @@ LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern)
 
     return szString;
 }
-#if 1
-void ShowX(LPCTSTR str,int line,int n)
-{
-    TCHAR buf[MAX_PATH];
-    wsprintf(buf,_T("Str %d : %s = %d"),line,str,n);
-    ::MessageBox(0,buf,0,0);
-}
-void ShowX(LPCTSTR str,int line,float n)
-{
-    TCHAR buf[MAX_PATH];
-    wsprintf(buf,_T("Str %d : %s = %f"),line,str,n);
-    ::MessageBox(0,buf,0,0);
-}
-
-void ShowX(LPCTSTR str,int line,LPCTSTR n)
-{
-    TCHAR buf[MAX_PATH];
-    wsprintf(buf,_T("Str %d : %s = %s"),line,str,n);
-    ::MessageBox(0,buf,0,0);
-}
-#endif
 
 bool CheckFileName(const CString& fileName)
 {

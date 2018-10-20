@@ -646,7 +646,7 @@ CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateS
     CString fileName = Utf8ToWCstring(IuCoreUtils::ExtractFileName(originalNameUtf8));
     CString fileNameNoExt = Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt(originalNameUtf8));
     indexStr.Format(_T("%03d"), index);
-    CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(WCstringToUtf8(WinUtils::IntToStr(GetTickCount() + random(100))))).c_str();
+    CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(WCstringToUtf8(WinUtils::IntToStr(GetTickCount() + rand()%100)))).c_str();
     CString uid = md5.Mid(5,6);
     result.Replace(_T("%md5%"), md5);
     result.Replace(_T("%uid%"), uid);

@@ -32,6 +32,7 @@
 #include "Core/Upload/FileQueueUploader.h"
 #include "Core/Settings.h"
 #include "Gui/Controls/ResultsListView.h"
+#include "Func/MyEngineList.h"
 
 class UploadManager;
 

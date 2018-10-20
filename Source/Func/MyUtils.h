@@ -23,9 +23,6 @@
 
 #include <atlheaders.h>
 #include <tchar.h>
-#include <stdlib.h>
-
-#include <string>
 
 //#define VIDEO_DIALOG_FORMATS _T("Video files (avi, mpg, vob, wmv, flv, etc)\0*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;\0All files\0*.*\0\0")
 #define VIDEO_FORMATS _T("avi\0mpg\0mpeg\0vob\0divx\0flv\0wmv\0asf\0mkv\0mov\0ts\0mp2\0mp4\0") _T("3gp\0rm\0mpeg2ts\0\0")
@@ -61,7 +58,6 @@ const CString myExtractFileName(const CString & FileName);
 LPCTSTR GetFileExt(LPCTSTR szFileName);
 
 bool IsVideoFile(LPCTSTR szFileName);
-bool ReadSetting(LPTSTR szSettingName,int* Value,int DefaultValue,LPTSTR szString=NULL,LPTSTR szDefString=NULL);
 int GetSavingFormat(LPCTSTR szFileName);
 int MyGetFileSize(LPCTSTR FileName);
 
@@ -74,13 +70,6 @@ HFONT MakeFontUnderLine(HFONT font);
 HFONT MakeFontBold(HFONT font);
 LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern);
 
-//#ifdef DEBUG
-    void ShowX(LPCTSTR str,int line,int n);
-
-    void ShowX(LPCTSTR str,int line,float n);
-    void ShowX(LPCTSTR str,int line,LPCTSTR n);
-    #define ShowVar(n) ShowX(_T(#n),__LINE__,n)
-//#endif
 #ifndef IU_SHELLEXT
 
 

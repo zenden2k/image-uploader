@@ -82,6 +82,8 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
         bool m_childWindow;
         CTabCtrl resultsTabCtrl_;
         std::map<int, int> tabPageToCodeLang;
+        CIcon iconSmall_;
+        HGLOBAL hMyDlgTemplate_;
 };
 
 #endif // IU_GUI_RESULTSWINDOW_H

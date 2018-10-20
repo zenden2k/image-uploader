@@ -25,7 +25,7 @@
 #include "Func/common.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/WizardCommon.h"
-
+#include "Func/MyEngineList.h"
 #include <mutex>
 
 #define IDC_OPTIONSMENU 10002
@@ -38,6 +38,7 @@
 
 
 #define IDC_RESULTSTOOLBAR 5000
+
 class CResultsPanel;
 
 // CResultsPanel

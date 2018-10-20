@@ -152,6 +152,10 @@ CWizardDlg::~CWizardDlg()
     delete uploadManager_;
     delete uploadEngineManager_;
     delete scriptsManager_;
+    if (hLocalHotkeys) {
+        DestroyAcceleratorTable(hLocalHotkeys);
+        hLocalHotkeys = nullptr; 
+    }
 
 }
 
@@ -293,12 +297,6 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         TRC(IDCANCEL, "Hide");
     //TRC(IDC_UPDATESLABEL, "Check for Updates");
     TRC(IDC_PREV, "< Back");
-
-    ACCEL accel;
-    accel.cmd = ID_PASTE;
-    accel.fVirt = FCONTROL|FVIRTKEY;
-    accel.key =  VkKeyScan('v') ;
-    hAccel = CreateAcceleratorTable(&accel, 1);
 
     RegisterLocalHotkeys();
     if(ParseCmdLine()) return 0;

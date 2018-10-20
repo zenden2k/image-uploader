@@ -42,7 +42,7 @@ LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     m_HotkeyList.m_hWnd = GetDlgItem(IDC_HOTKEYLIST);
     TRC(IDC_EDITHOTKEY, "Edit hotkey...");
     TRC(IDC_ATTENTION, "Attention! Global hotkeys are active only when tray icon is shown.");
-    GuiTools::MakeLabelBold(GetDlgItem(IDC_ATTENTION));
+    attentionLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_ATTENTION));
     m_HotkeyList.AddColumn(TR("Action"),0);
     m_HotkeyList.AddColumn(TR("Local"),1);
     m_HotkeyList.AddColumn(TR("Global"),2);

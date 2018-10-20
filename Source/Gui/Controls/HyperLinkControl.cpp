@@ -425,6 +425,15 @@ BOOL CHyperLinkControl::OnSetCursor(CWindow/* wnd*/, UINT/* nHitTest*/, UINT/* m
     return TRUE;
 }
 
+LRESULT CHyperLinkControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    for (size_t i = 0; i < Items.GetCount(); i++) {
+        if (Items[i].hIcon) {
+            DestroyIcon(Items[i].hIcon);
+        }
+    }
+    return 0;
+}
+
 int CHyperLinkControl::ScaleX(int x) 
 {  
     return MulDiv(x, dpiX, 96); 

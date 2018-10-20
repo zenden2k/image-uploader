@@ -32,11 +32,7 @@
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    GuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
-
-    //HFONT Font = reinterpret_cast<HFONT>(SendDlgItemMessage(IDC_IMAGEUPLOADERLABEL, WM_GETFONT,0,0));  
-    //SendDlgItemMessage(IDC_IMAGEUPLOADERLABEL, WM_SETFONT, (LPARAM)GuiTools::MakeFontSmaller(Font), 0);
-
+    thanksToLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
     LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
     LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE );
     LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));

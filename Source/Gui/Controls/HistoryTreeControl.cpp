@@ -45,6 +45,19 @@ CHistoryTreeControl::CHistoryTreeControl()
 CHistoryTreeControl::~CHistoryTreeControl()
 {
     CWindow::Detach();
+    for (const auto& it : m_serverIconCache) {
+        if (it.second) {
+            DestroyIcon(it.second); 
+        }
+    }
+    for (const auto& it : m_fileIconCache) {
+        if (it.second) {
+            DestroyIcon(it.second);
+        }
+    }
+    if (m_FileDownloader) {
+        delete m_FileDownloader;
+    }
 }
 
 void CHistoryTreeControl::Init()
@@ -142,10 +155,11 @@ HistoryItem* CHistoryTreeControl::getItemData(TreeItem* res)
 
 HICON CHistoryTreeControl::getIconForExtension(const CString& ext)
 {
-    if(m_fileIconCache[ext] != 0)
-    {
-        return m_fileIconCache[ext];
+    auto it = m_fileIconCache.find(ext);
+    if (it != m_fileIconCache.end()) {
+        return it->second;
     }
+
     HICON res = GetAssociatedIcon(ext, false);
     if(!res) return 0;
     m_fileIconCache[ext]=res;
@@ -424,8 +438,10 @@ HICON CHistoryTreeControl::getIconForServer(const CString& serverName)
 {
     HICON ico = 0;
     
-    if(m_serverIconCache[serverName]!=0)
-        return m_serverIconCache[serverName];
+    auto it = m_serverIconCache.find(serverName);
+    if (it != m_serverIconCache.end()) {
+        return it->second;
+    } 
     else
         ico = reinterpret_cast<HICON>(LoadImage(0,IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+serverName+_T(".ico"), IMAGE_ICON, 16, 16, LR_LOADFROMFILE));
     m_serverIconCache[serverName] = ico;

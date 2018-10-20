@@ -49,6 +49,7 @@ public:
     BEGIN_MSG_MAP(CHyperLinkControl)
         MESSAGE_HANDLER(WM_PAINT, OnPaint)
         MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkg)
+        MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         MSG_WM_MOUSEMOVE(OnMouseMove)
         MSG_WM_MOUSELEAVE(OnMouseLeave)
         MSG_WM_KILLFOCUS(OnKillFocus)
@@ -73,6 +74,7 @@ public:
     LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     BOOL OnSetCursor(CWindow wnd, UINT nHitTest, UINT message);
+    LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     void Init(COLORREF BkColor=RGB(255,255,255));
     int ScaleX(int x);
     int ScaleY(int y);

@@ -125,6 +125,8 @@ private:
     bool isChildWindow_;
     bool showFileSizeLimits_;
     CString title_;
+    CFont serverGroupboxFont_;
+    HGLOBAL hMyDlgTemplate_;
 
 };
 

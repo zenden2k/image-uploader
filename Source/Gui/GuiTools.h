@@ -33,7 +33,7 @@ namespace GuiTools
     void GetCheck(HWND dlg, int id, bool& check);
     bool GetCheck(HWND dlg, int id);
     void SetCheck(HWND dlg, int id, bool check);
-    void MakeLabelBold(HWND Label);
+    HFONT MakeLabelBold(HWND Label);
     void EnableNextN(HWND Control, int n, bool Enable);
     bool InsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm = 0);
     void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, bool Horizontal);
@@ -54,7 +54,7 @@ namespace GuiTools
     HFONT MakeFontUnderLine(HFONT font);
     HFONT MakeFontBold(HFONT font);
     HFONT MakeFontSmaller(HFONT font);
-    void MakeLabelItalic(HWND Label);
+    HFONT MakeLabelItalic(HWND Label);
 
     int GetFontSize(int nFontHeight);
     int GetFontHeight(int nFontSize);

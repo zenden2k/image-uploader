@@ -98,8 +98,7 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
 
     BackBufferWidth = rc.right;
     BackBufferHeight = rc.bottom;
-    /*ShowVar(BackBufferWidth);
-    ShowVar(BackBufferHeight);*/
+
     float width, height, imgwidth, imgheight, newwidth = 0, newheight=0;
     width = static_cast<float>(rc.right);
     height = static_cast<float>(rc.bottom);

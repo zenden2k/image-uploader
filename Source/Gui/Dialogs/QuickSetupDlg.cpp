@@ -27,6 +27,7 @@
 #include "Core/Settings.h"
 #include "Gui/Dialogs/ServerParamsDlg.h"
 #include "Core/ServiceLocator.h"
+#include "Func/MyEngineList.h"
 
 CQuickSetupDlg::CQuickSetupDlg() {
 }

@@ -49,11 +49,15 @@ CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngine
         uploadEngineManager_ = uploadEngineManager;
         isChildWindow_ = isChildWindow;
         showFileSizeLimits_ = false;
+        hMyDlgTemplate_ = nullptr;
 }
 
 CServerSelectorControl::~CServerSelectorControl()
 {
     delete iconBitmapUtils_;
+    if (hMyDlgTemplate_) {
+        GlobalFree(hMyDlgTemplate_);
+    }
 }
 
 void CServerSelectorControl::TranslateUI() {
@@ -77,7 +81,7 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 
     createSettingsButton();
     setTitle(title_);
-    GuiTools::MakeLabelBold( GetDlgItem( IDC_SERVERGROUPBOX) );
+    serverGroupboxFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_SERVERGROUPBOX));
     CIcon deleteIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONDELETE));
     serverComboBox_.Attach( GetDlgItem( IDC_SERVERCOMBOBOX ) );
 
@@ -454,7 +458,6 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
         bool addedSeparator = false;
 
         int i = 0;
-        //ShowVar((int)serverUsers.size() );
         if (serverUsers.size() && !serverProfile_.profileName().empty()) {
             mi.wID = IDC_LOGINMENUITEM;
             mi.dwTypeData = const_cast<LPWSTR>(TR("Change account settings"));
@@ -832,8 +835,8 @@ DLGTEMPLATE* CServerSelectorControl::GetTemplate()
     DLGTEMPLATE* dit = reinterpret_cast<DLGTEMPLATE*>(LockResource(LoadResource(hInst, res)));
 
     unsigned long sizeDlg = ::SizeofResource(hInst, res);
-    HGLOBAL hMyDlgTemplate = ::GlobalAlloc(GPTR, sizeDlg);
-    DLGTEMPLATEEX *pMyDlgTemplate = reinterpret_cast<DLGTEMPLATEEX *>(::GlobalLock(hMyDlgTemplate));
+    hMyDlgTemplate_ = ::GlobalAlloc(GPTR, sizeDlg);
+    DLGTEMPLATEEX *pMyDlgTemplate = reinterpret_cast<DLGTEMPLATEEX *>(::GlobalLock(hMyDlgTemplate_));
     ::memcpy(pMyDlgTemplate, dit, sizeDlg);
 
     if (isChildWindow_)

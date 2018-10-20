@@ -235,7 +235,6 @@ public:
     CUpdateDlg *updateDlg;
     bool CanShowWindow() override;
     void UpdateAvailabilityChanged(bool Available) override;
-    HACCEL hAccel;
     //CSpecialHyperLink m_UpdateLink;
     HACCEL hLocalHotkeys;
     //    IUnknown methods

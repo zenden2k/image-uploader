@@ -53,6 +53,8 @@ class CStatusDlg :
         void SetWindowTitle(const CString& WindowTitle);
         bool NeedStop();
         void Hide();
+protected:
+    CFont titleFont_;
 };
 
 #endif // STATUSDLG_H

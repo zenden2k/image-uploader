@@ -509,7 +509,6 @@ void CHistoryTreeView::DrawSubItem(HTREEITEM item, HDC hdc, DWORD itemState, REC
     DrawText(dc.m_hDC, text, text.GetLength(), &calcRect, DT_CALCRECT);
     // ExtTextOutW(dc.m_hDC,  thumbRect.right  + 4, rc.top, ETO_CLIPPED, &rc, text, text.GetLength(), 0);
     int filenameHeight = calcRect.Height();
-    // ShowVar(filenameHeight);
     DrawText(dc.m_hDC, text, text.GetLength(), &calcRect, DT_LEFT);
 
     CRect urlRect = invRC;

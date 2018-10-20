@@ -28,6 +28,7 @@
 #include "Func/WinUtils.h"
 #include "Core/Upload/FileUploadTask.h"
 #include <Func/IuCommonFunctions.h>
+#include "Func/MyEngineList.h"
 
 // CSizeExceed
 CSizeExceed::CSizeExceed(FileUploadTask * fileTask, CUploadEngineList * EngineList, UploadEngineManager* uploadEngineManager):

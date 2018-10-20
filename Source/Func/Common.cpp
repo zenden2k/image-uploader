@@ -89,7 +89,7 @@ bool IULaunchCopy(CString additionalParams)
 //  iCmdShow            - начальный вид, например, SW_SHOWNORMAL
 //  pszIconFileName     - путь и имя файла, содержащего иконку, например, "C:\\Windows\\NotePad.Exe"
 //  int iIconIndex      - индекс иконки в файле, нумеруется с 0
-bool __fastcall CreateShortCut(
+bool CreateShortCut(
    LPCWSTR pwzShortCutFileName,
    LPCTSTR pszPathAndFileName,
    LPCTSTR pszWorkingDirectory,

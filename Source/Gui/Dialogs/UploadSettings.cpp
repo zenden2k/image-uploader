@@ -770,7 +770,6 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             /*if(!plug) return TBDDRET_TREATPRESSED;*/
 
             int i =0;
-            //ShowVar((int)serverUsers.size() );
             if ( serverUsers.size() && !serverProfile.profileName().empty() ) {
                 mi.wID = IDC_LOGINTOOLBUTTON + static_cast<int>(ImageServer);
                 mi.dwTypeData = TR_CONST("Change account settings");
