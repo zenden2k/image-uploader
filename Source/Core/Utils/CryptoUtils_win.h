@@ -121,6 +121,7 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType)
     if (!CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_AES, CRYPT_VERIFYCONTEXT)) {
         dwStatus = GetLastError();
         LOG(ERROR) << "CryptAcquireContext failed: " << dwStatus;
+        CloseHandle(hFile);
         return std::string();
     }
 
@@ -136,6 +137,7 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType)
         dwStatus = GetLastError();
         LOG(ERROR) << "CryptCreateHash failed: " << dwStatus;
         CryptReleaseContext(hProv, 0);
+        CloseHandle(hFile);
         return std::string();
     }
 
@@ -164,6 +166,7 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType)
         LOG(ERROR) << "CryptGetHashParam failed: " << dwStatus;
         CryptDestroyHash(hHash);
         CryptReleaseContext(hProv, 0);
+        CloseHandle(hFile);
         return std::string();
     }
 
@@ -173,6 +176,7 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType)
         LOG(ERROR) << "CryptGetHashParam failed: " << dwStatus;
         CryptDestroyHash(hHash);
         CryptReleaseContext(hProv, 0);
+        CloseHandle(hFile);
         return std::string();
     }
 
@@ -186,6 +190,7 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType)
 
     CryptDestroyHash(hHash);
     CryptReleaseContext(hProv, 0);
+    CloseHandle(hFile);
     return oss.str();
 }
 

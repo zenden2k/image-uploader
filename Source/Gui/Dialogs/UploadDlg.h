@@ -117,6 +117,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         #endif
         UploadManager* uploadManager_;
         CToolBarCtrl toolbar_;
+        CFont commonProgressLabelFont_, commonPercentLabelFont_;
 };
 
 

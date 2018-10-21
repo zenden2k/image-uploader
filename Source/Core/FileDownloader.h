@@ -25,12 +25,10 @@
 #include "Core/3rdpart/FastDelegate.h"
 #include "Core/Network/NetworkClient.h"
 #include "Core/Utils/CoreTypes.h"
-#include <memory>
 #include <mutex>
 #include <atomic>
 #include <thread>
 
-class Object;
 class CFileDownloader
 {
     public:

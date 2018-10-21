@@ -1,5 +1,5 @@
-#ifndef IU_ENUMUTILS_H
-#define IU_ENUMUTILS_H
+#ifndef IU_CORE_UTILS_ENUMUTILS_H
+#define IU_CORE_UTILS_ENUMUTILS_H
 
 #pragma once
 

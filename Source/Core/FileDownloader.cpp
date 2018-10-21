@@ -20,10 +20,9 @@
 
 #include "Core/FileDownloader.h"
 
-#include <algorithm>
 #include <errno.h>
+#include <algorithm>
 
-#include "Func/Common.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
 
@@ -64,7 +63,7 @@ bool CFileDownloader::start() {
     stopSignal_ = false;
     std::lock_guard<std::mutex> guard(mutex_);
 
-    size_t numThreads = min(maxThreads_ - runningThreads_, int(fileList_.size()));
+    size_t numThreads = std::min(maxThreads_ - runningThreads_, int(fileList_.size()));
     for (size_t i = 0; i < numThreads; i++) {
         runningThreads_++;
         isRunning_ = true;

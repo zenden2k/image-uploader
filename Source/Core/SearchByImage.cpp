@@ -1,11 +1,10 @@
 #include "SearchByImage.h"
 
+#include <thread>
+
+#include "Core/Network/NetworkClient.h"
 #include "SearchGoogleImages.h"
 #include "SearchYandexImages.h"
-
-#include <thread>
-#include <Core/Network/NetworkClient.h>
-
 
 SearchByImage::SearchByImage(const std::string& fileName) {
     fileName_ = fileName;

@@ -58,7 +58,7 @@ CString GetDllFolder()
 {
 	TCHAR szFileName[256],szPath[256];
 	GetModuleFileName(hDllInstance, szFileName, 1023);
-	ExtractFilePath(szFileName, szPath);
+	WinUtils::ExtractFilePath(szFileName, szPath);
 	return szPath;
 }
 
@@ -102,9 +102,9 @@ bool CIShellContextMenu::MyInsertMenu(HMENU hMenu, int pos, UINT id, int nIntern
 	MenuItem.cbSize = sizeof(MenuItem);
 	MenuItem.fType = MFT_STRING;
 	if ( ico ) {
-		MenuItem.hbmpItem = WinUtils::IsVista() ? m_IconBitmapUtils.HIconToBitmapPARGB32(ico): HBMMENU_CALLBACK;
+		MenuItem.hbmpItem = WinUtils::IsVistaOrLater() ? m_IconBitmapUtils.HIconToBitmapPARGB32(ico): HBMMENU_CALLBACK;
 	} else {
-		MenuItem.hbmpItem = WinUtils::IsVista() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, resid): HBMMENU_CALLBACK;
+        MenuItem.hbmpItem = WinUtils::IsVistaOrLater() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, resid) : HBMMENU_CALLBACK;
 	}
 	
 	MenuItem.fMask = MIIM_FTYPE | MIIM_ID | (UseBitmaps?MIIM_BITMAP:0)  | MIIM_STRING;
@@ -339,7 +339,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		InternalMenuItem.text = MenuItem.dwTypeData;
 		
 		InternalMenuItem.icon= IDI_ICONMAIN;
-		MenuItem.hbmpItem = WinUtils::IsVista() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, IDI_ICONMAIN): HBMMENU_CALLBACK;
+		MenuItem.hbmpItem = WinUtils::IsVistaOrLater() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, IDI_ICONMAIN): HBMMENU_CALLBACK;
 		
 		InternalMenuItem.id = MenuItem.wID;
 		if(InsertMenuItem(hmenu, indexMenu, true, &MenuItem))
@@ -347,7 +347,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 			
 	}
 
-	if (WinUtils::IsVista())
+	if (WinUtils::IsVistaOrLater())
 	{
 		MENUINFO MenuInfo;
 

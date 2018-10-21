@@ -8,6 +8,33 @@
 
 class CWizardDlg;
 class CSettingsDlg;
+
+
+class ValidationException : public std::runtime_error {
+public:
+    struct ValidationError {
+        CString Message;
+        HWND Control;
+
+        ValidationError() {
+            Control = nullptr;
+        }
+        ValidationError(CString message, HWND control) {
+            Message = message; 
+            Control = control;
+        }
+    };
+    ValidationException(CString Message, HWND Control = nullptr) : std::runtime_error("Form validation error") {
+        errors_.push_back(ValidationError(Message, Control));
+    }
+    ValidationException(std::vector<ValidationError> errors) : std::runtime_error("Form validation error") {
+        errors_ = errors;
+    }
+    ValidationException(const ValidationException& ex) : std::runtime_error(ex), errors_(ex.errors_) {}
+
+    std::vector<ValidationError> errors_;
+};
+
 class CSettingsPage
 {
     public:

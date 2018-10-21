@@ -92,7 +92,7 @@ LRESULT CUpdateDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& 
         CString pid = WinUtils::IntToStr(GetCurrentProcessId());
 
         BOOL elev = false;
-        bool isVista = WinUtils::IsVista();
+        bool isVista = WinUtils::IsVistaOrLater();
         if (isVista)
             IsElevated(&elev);
         bool CanWrite = WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"));

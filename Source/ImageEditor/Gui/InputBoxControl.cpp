@@ -38,8 +38,9 @@ LRESULT InputBoxControl::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& 
 {
     bHandled = false;
     SetEventMask(ENM_CHANGE|ENM_REQUESTRESIZE|ENM_SELCHANGE );
-    
-    SetFont(GuiTools::MakeFontBigger(GuiTools::GetSystemDialogFont()));
+    CFont systemDialogFont = GuiTools::GetSystemDialogFont();
+    biggerFont_ = GuiTools::MakeFontBigger(systemDialogFont);
+    SetFont(biggerFont_);
     //SetWindowLong(GWL_ID, (LONG)m_hWnd);
     return 0;
 }

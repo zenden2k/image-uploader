@@ -1,8 +1,9 @@
 #ifndef FUNC_SEARCHGOOGLEIMAGES_H
 #define FUNC_SEARCHGOOGLEIMAGES_H
 
-#include "SearchByImage.h"
 #include <string>
+
+#include "SearchByImage.h"
 
 class NetworkClient;
 

@@ -174,6 +174,8 @@ public:
     UploadManager* uploadManager_;
     CMyEngineList* engineList_;
     std::shared_ptr<UploadSession> uploadSession_;
+    std::vector<std::unique_ptr<UploadTaskUserData>> uploadTaskUserDatas_;
     SimpleXml xml;
+    CIcon icon_, iconSmall_;
     LRESULT OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 };

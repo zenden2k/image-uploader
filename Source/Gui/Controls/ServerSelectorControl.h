@@ -82,6 +82,7 @@ virtual ~CServerSelectorControl();
     LRESULT OnUserNameMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     void TranslateUI();
     void setTitle(CString title);
+    CString getTitle() const;
     void setServerProfile(ServerProfile serverProfile);
     void setShowDefaultServerItem(bool show);
     void setServersMask(int mask);

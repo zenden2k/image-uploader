@@ -206,6 +206,7 @@ protected:
     std::map<int, HICON> serverMenuIcons_;
     HWND useServerThumbnailsTooltip_;
     UploadEngineManager * uploadEngineManager_;
+    CIcon iconEdit_, iconDropdown_;
 
 public:
     

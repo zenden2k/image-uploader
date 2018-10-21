@@ -295,11 +295,17 @@ HFONT MakeFontBigger(HFONT font) {
     return NewFont;
 }
 int GetFontSize(int nFontHeight) {
-    return - MulDiv( nFontHeight, 72, GetDeviceCaps(::GetDC(0), LOGPIXELSY));
+    HDC dc = ::GetDC(nullptr);
+    int res =  - MulDiv( nFontHeight, 72, GetDeviceCaps(dc, LOGPIXELSY));
+    ReleaseDC(nullptr, dc);
+    return res;
 }
 
 int GetFontHeight(int nFontSize) {
-    return - MulDiv(nFontSize, GetDeviceCaps(::GetDC(0), LOGPIXELSY), 72);
+    HDC dc = ::GetDC(nullptr);
+    int res =  - MulDiv(nFontSize, GetDeviceCaps(dc, LOGPIXELSY), 72);
+    ReleaseDC(nullptr, dc);
+    return res;
 }
 
 HFONT GetSystemDialogFont()
@@ -307,7 +313,7 @@ HFONT GetSystemDialogFont()
     NONCLIENTMETRICS ncm;
     ncm.cbSize = sizeof(NONCLIENTMETRICS);
 #if (WINVER >= 0x0600)
-    if ( !WinUtils::IsVista() ) {
+    if ( !WinUtils::IsVistaOrLater() ) {
         ncm.cbSize = sizeof(NONCLIENTMETRICS) - sizeof(int);
     }
 #endif
@@ -575,7 +581,7 @@ HICON LoadBigIcon(int resourceId) {
     int iconWidth = ::GetSystemMetrics(SM_CXICON);
     int iconHeight = ::GetSystemMetrics(SM_CYICON);
 
-    if (WinUtils::IsVista()) {
+    if (WinUtils::IsVistaOrLater()) {
         Library dllModule(_T("comctl32.dll"));
         LoadIconWithScaleDownFuncType LoadIconWithScaleDownFunc = dllModule.GetProcAddress<LoadIconWithScaleDownFuncType>("LoadIconWithScaleDown");
         if (LoadIconWithScaleDownFunc) {

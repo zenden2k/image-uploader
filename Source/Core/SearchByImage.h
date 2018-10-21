@@ -1,5 +1,5 @@
-#ifndef FUNC_SEARCHBYIMAGE_H
-#define FUNC_SEARCHBYIMAGE_H
+#ifndef CORE_SEARCHBYIMAGE_H
+#define CORE_SEARCHBYIMAGE_H
 
 #include <string>
 #include <atomic>

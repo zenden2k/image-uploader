@@ -20,15 +20,16 @@
 
 #include "HistoryManager.h"
 
+#include <time.h>
+#include <algorithm>
+#include <sstream>
+
+#include <boost/filesystem.hpp>
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/CryptoUtils.h"
-
-#include <algorithm>
-#include <time.h>
-#include <sstream>
 #include "Utils/GlobalMutex.h"
-#include <boost/filesystem.hpp>
+
 #include <Core/3rdpart/pcreplusplus.h>
 
 class CHistoryReader_impl

@@ -94,7 +94,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     SendDlgItemMessage(IDC_FORMATLIST, CB_SETCURSEL, Format, 0);
     GuiTools::SetCheck(m_hWnd, IDC_ALLOWALTTABINIMAGEEDITOR, Settings.ImageEditorSettings.AllowAltTab);
     GuiTools::SetCheck(m_hWnd, IDC_ALLOWFULLSCREENEDITORCHECK, Settings.ImageEditorSettings.AllowEditingInFullscreen);
-    bool isVista = WinUtils::IsVista();
+    bool isVista = WinUtils::IsVistaOrLater();
     ::EnableWindow(GetDlgItem(IDC_AEROONLY), isVista);
     ::EnableWindow(GetDlgItem(IDC_REMOVECORNERS), isVista);
     ::EnableWindow(GetDlgItem(IDC_ADDSHADOW), isVista);

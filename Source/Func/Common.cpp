@@ -23,15 +23,9 @@
 #include "atlheaders.h"
 #include "Func/CmdLine.h"
 #include "Func/MyUtils.h"
-#include "Core/Utils/CryptoUtils.h"
 #include "Func/WinUtils.h"
 
 CString IUCommonTempFolder;
-
-CString IU_md5_file(const CString& filename)
-{
-    return U2W(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(W2U(filename)));
-}
 
 bool IULaunchCopy(CString additionalParams)
 {
@@ -76,75 +70,6 @@ bool IULaunchCopy(CString additionalParams)
 }
 
 #define HOTKEY(modifier, key) ((((modifier) & 0xff) << 8) | ((key) & 0xff))
-
-// Создание ярлыка
-// Входные параметры:
-//  pwzShortCutFileName - путь и имя ярлыка, например, "C:\\Блокнот.lnk"
-//  Если не указан путь, ярлык будет создан в папке, указанной в следующем параметре.
-//  Прим.: Windows сама НЕ добавляет к имени расширение .lnk
-//  pszPathAndFileName  - путь и имя exe-файла, например, "C:\\Windows\\NotePad.Exe"
-//  pszWorkingDirectory - рабочий каталог, например, "C:\\Windows"
-//  pszArguments        - аргументы командной строки, например, "C:\\Doc\\Text.Txt"
-//  wHotKey             - горячая клавиша, например, для Ctrl+Alt+A     HOTKEY(HOTKEYF_ALT|HOTKEYF_CONTROL,'A')
-//  iCmdShow            - начальный вид, например, SW_SHOWNORMAL
-//  pszIconFileName     - путь и имя файла, содержащего иконку, например, "C:\\Windows\\NotePad.Exe"
-//  int iIconIndex      - индекс иконки в файле, нумеруется с 0
-bool CreateShortCut(
-   LPCWSTR pwzShortCutFileName,
-   LPCTSTR pszPathAndFileName,
-   LPCTSTR pszWorkingDirectory,
-   LPCTSTR pszArguments,
-   WORD wHotKey,
-   int iCmdShow,
-   LPCTSTR pszIconFileName,
-   int iIconIndex)
-{
-    IShellLink* pSL;
-    IPersistFile* pPF;
-    HRESULT hRes;
-    CoInitialize(NULL);
-    // return false;
-    // Получение экземпляра компонента "Ярлык"
-    hRes = CoCreateInstance(CLSID_ShellLink, 0,  CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID*)&pSL);
-
-    if ( SUCCEEDED(hRes) )
-    {
-        hRes = pSL->SetPath(pszPathAndFileName);
-        if ( SUCCEEDED(hRes) )
-        {
-            hRes = pSL->SetArguments(pszArguments);
-            // if( SUCCEEDED(hRes) )
-            {
-                hRes = pSL->SetWorkingDirectory(pszWorkingDirectory);
-                if ( SUCCEEDED(hRes) )
-                {
-                    hRes = pSL->SetIconLocation(pszIconFileName, iIconIndex);
-                    if ( SUCCEEDED(hRes) )
-                    {
-                        //    hRes = pSL->SetHotkey(wHotKey);
-                        //    if( SUCCEEDED(hRes) )
-                        {
-                            hRes = pSL->SetShowCmd(iCmdShow);
-                            if ( SUCCEEDED(hRes) )
-                            {
-                                // Получение компонента хранилища параметров
-                                hRes = pSL->QueryInterface(IID_IPersistFile, (LPVOID*)&pPF);
-                                if ( SUCCEEDED(hRes) )
-                                {
-                                    // Сохранение созданного ярлыка
-                                    hRes = pPF->Save(pwzShortCutFileName, TRUE);
-                                    pPF->Release();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        pSL->Release();
-    }
-    return SUCCEEDED(hRes);
-}
 
 bool IULaunchCopy(CString params, const CAtlArray<CString>& files)
 {
@@ -198,7 +123,7 @@ void IU_RunElevated(CString params)
     TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
     TempInfo.fMask = 0;
     TempInfo.hwnd = NULL;
-    if (WinUtils::IsVista())
+    if (WinUtils::IsVistaOrLater())
         TempInfo.lpVerb = _T("runas");
     else
         TempInfo.lpVerb = _T("open");
@@ -383,41 +308,6 @@ int ScreenBPP()
 BOOL Is32BPP()
 {
     return (WinUtils::IsWinXP() & (ScreenBPP() >= 32));
-}
-
-CString GetSystemSpecialPath(int csidl)
-{
-    CString result;
-    LPITEMIDLIST pidl;
-    TCHAR szSendtoPath [MAX_PATH];
-    LPMALLOC pMalloc;
-
-    if (SUCCEEDED( SHGetSpecialFolderLocation ( NULL, csidl, &pidl )))
-    {
-        if (SHGetPathFromIDList(pidl, szSendtoPath))
-        {
-            result = szSendtoPath;
-        }
-
-        if (SUCCEEDED(SHGetMalloc(&pMalloc)))
-        {
-            pMalloc->Free ( pidl );
-            pMalloc->Release();
-        }
-    }
-    if (result.Right(1) != _T("\\"))
-        result += _T("\\");
-    return result;
-}
-
-const CString GetApplicationDataPath()
-{
-    return GetSystemSpecialPath(CSIDL_APPDATA);
-}
-
-const CString GetCommonApplicationDataPath()
-{
-    return GetSystemSpecialPath(CSIDL_COMMON_APPDATA);
 }
 
 HRESULT IsElevated( __out_opt BOOL* pbElevated )  // = NULL )

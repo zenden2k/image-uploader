@@ -37,9 +37,6 @@ const CString StringSection(const CString& str,TCHAR sep, int index);
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
 
 
-int GetFontSize(int nFontHeight);
-int GetFontHeight(int nFontSize);
-
 bool ExtractStrFromList(
             LPCTSTR szString /* Source string */,
             int nIndex, /* Zero based item index */
@@ -51,18 +48,16 @@ bool ExtractStrFromList(
 
 bool FontToString(LOGFONT const * lFont, CString &Result);
 bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont);
-LPTSTR ExtractFilePath(LPCTSTR FileName,LPTSTR buf);
 int GetFontSizeInTwips(int nFontSize);
-const CString myExtractFileName(const CString & FileName);
+CString myExtractFileName(const CString & FileName);
 
 LPCTSTR GetFileExt(LPCTSTR szFileName);
 
 bool IsVideoFile(LPCTSTR szFileName);
 int GetSavingFormat(LPCTSTR szFileName);
-int MyGetFileSize(LPCTSTR FileName);
 
 LPTSTR fgetline(LPTSTR buf,int num,FILE *f);
-const CString TrimString(const CString& source, int nMaxLen);
+CString TrimString(const CString& source, int nMaxLen);
 
 LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int nBufferSize);
 

@@ -43,7 +43,7 @@ CScriptUploadEngine::CScriptUploadEngine(std::string fileName, ServerSync* serve
 
 CScriptUploadEngine::~CScriptUploadEngine()
 {
-    delete m_SquirrelScript;
+
 }
 
 void CScriptUploadEngine::PrintCallback(const std::string& output)

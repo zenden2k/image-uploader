@@ -24,7 +24,7 @@
 #include "Gui/GuiTools.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 
-#define CheckBounds(n, a, b, d) {if ((n < a) || (n > b)) n = d; }
+//#define CheckBounds(n, a, b, d) {if ((n < a) || (n > b)) n = d; }
 
 // CVideoGrabberParams
 CVideoGrabberParams::CVideoGrabberParams()
@@ -73,7 +73,18 @@ LRESULT CVideoGrabberParams::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 bool CVideoGrabberParams::Apply()
 {
-    Settings.VideoSettings.Columns = GetDlgItemInt(IDC_COLUMNSEDIT);
+    int columns = GetDlgItemInt(IDC_COLUMNSEDIT);
+    if (columns <= 0) {
+        CString fieldName = GuiTools::GetDlgItemText(m_hWnd, IDC_COLUMNSEDITLABEL);
+        CString message;
+        message.Format(TR("Error in the field '%s': value should be greater than zero"), fieldName);
+        throw ValidationException(message, GetDlgItem(IDC_COLUMNSEDIT));
+    }
+    CheckBounds(IDC_TILEWIDTH, 10, 1024, IDC_PREVIEWWIDTHLABEL);
+    CheckBounds(IDC_GAPWIDTH, 0, 200, IDC_INTERVALHORLABEL);
+    CheckBounds(IDC_GAPHEIGHT, 0, 200, IDC_INTERVALVERTLABEL);
+
+    Settings.VideoSettings.Columns = columns;
     Settings.VideoSettings.TileWidth = GetDlgItemInt(IDC_TILEWIDTH);
     Settings.VideoSettings.GapWidth = GetDlgItemInt(IDC_GAPWIDTH);
     Settings.VideoSettings.GapHeight = GetDlgItemInt(IDC_GAPHEIGHT);
@@ -83,9 +94,7 @@ bool CVideoGrabberParams::Apply()
     Settings.VideoSettings.SnapshotsFolder = GuiTools::GetDlgItemText(m_hWnd, IDC_VIDEOSNAPSHOTSFOLDEREDIT);
     Settings.VideoSettings.SnapshotFileTemplate = GuiTools::GetDlgItemText(m_hWnd, IDC_SNAPSHOTFILENAMEEDIT);
 
-    CheckBounds(Settings.VideoSettings.TileWidth, 10, 1024, 200);
-    CheckBounds(Settings.VideoSettings.GapWidth, 0, 200, 2);
-    CheckBounds(Settings.VideoSettings.GapHeight, 0, 200, 2);
+  
     Settings.VideoSettings.TextColor = Color1.GetColor();
 
     return true;
@@ -116,4 +125,14 @@ LRESULT CVideoGrabberParams::OnVideoSnapshotsFolderButtonClicked(WORD wNotifyCod
         return true;
     }
     return 0;
+}
+
+void CVideoGrabberParams::CheckBounds(int controlId, int minValue, int maxValue, int labelId) {
+    int value = GetDlgItemInt(controlId);
+    if (value < minValue || value > maxValue) {
+        CString fieldName = labelId !=-1 ? GuiTools::GetDlgItemText(m_hWnd, labelId) : _T("Unknown field");
+        CString message;
+        message.Format(TR("Error in the field '%s': value should be between %d and %d."), fieldName, minValue, maxValue);
+        throw ValidationException(message, GetDlgItem(controlId));
+    }
 }

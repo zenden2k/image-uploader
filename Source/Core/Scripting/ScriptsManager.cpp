@@ -30,6 +30,10 @@ ScriptsManager::ScriptsManager()
 ScriptsManager::~ScriptsManager()
 {
     unloadScripts();
+    for (auto& it : serverSyncs_) {
+        delete it.second;
+    }
+    serverSyncs_.clear();
 }
 
 Script* ScriptsManager::getScript(std::string& fileName, ScriptType type)

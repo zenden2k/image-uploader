@@ -28,6 +28,7 @@
 #include "../Func/LangClass.h"
 #include "../Func/MyUtils.h"
 #include "../3rdpart/Registry.h"
+#include "../Func/WinUtils.h"
 
 class CExplorerIntegrationModule : public CAtlDllModuleT< CExplorerIntegrationModule >
 {
@@ -57,7 +58,7 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRes
             OleInitialize(NULL);
             TCHAR szFileName[256], szPath[256];
             GetModuleFileName(hInstance, szFileName, 1023);
-            ExtractFilePath(szFileName, szPath);
+            WinUtils::ExtractFilePath(szFileName, szPath);
             Lang.SetDirectory(CString(szPath) + _T("Lang\\"));
 
             CRegistry Reg;

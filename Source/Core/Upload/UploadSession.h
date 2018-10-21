@@ -3,9 +3,7 @@
 
 #pragma once
 #include "UploadTask.h"
-#include "Core/Utils/CoreUtils.h"
 #include <atomic>
-#include <unordered_map>
 
 class CHistorySession;
 class UploadSession
@@ -35,10 +33,9 @@ class UploadSession
         void clearErrorsForServer(const std::string& serverName, const std::string& profileName);
         friend class UploadTask;
         friend class UploadManager;
-        friend class HistoryUploadFilter;
     protected:
         std::vector<std::shared_ptr<UploadTask>> tasks_;
-        bool isFinished_;
+        bool finishedSignalSent_;
         bool isStopped_;
         std::atomic<int> finishedCount_;
         void taskFinished(UploadTask* task);
@@ -52,6 +49,7 @@ class UploadSession
         std::map<std::pair<std::string, std::string>, bool> serverFatalErrors_;
         std::mutex serverFatalErrorsMutex_;
         std::mutex historySessionMutex_;
+        std::mutex finishMutex_;
         std::atomic<bool> stopSignal_;
 private:
     DISALLOW_COPY_AND_ASSIGN(UploadSession);

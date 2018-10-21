@@ -135,7 +135,7 @@ void RegisterShellExtension(bool Register) {
     TempInfo.hwnd = NULL;
     BOOL b = FALSE;
     IsElevated(&b);
-    if (WinUtils::IsVista() && !b) {
+    if (WinUtils::IsVistaOrLater() && !b) {
         TempInfo.lpVerb = _T("runas");
     } else {
         TempInfo.lpVerb = _T("open");
@@ -167,7 +167,7 @@ void WtlGuiSettings::FindDataFolder()
         return;
     }
 
-    SettingsFolder = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(GetApplicationDataPath() + _T("Image Uploader\\")));
+    SettingsFolder = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(WinUtils::GetApplicationDataPath() + _T("Image Uploader\\")));
 
     params->setSettingsDirectory(IuStringUtils::Replace(SettingsFolder, "\\", "/"));
 #if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
@@ -200,14 +200,14 @@ void WtlGuiSettings::FindDataFolder()
         }
     }
 
-    if (WinUtils::FileExists(GetCommonApplicationDataPath() + SETTINGS_FILE_NAME)) {
-        DataFolder = GetCommonApplicationDataPath() + _T("Image Uploader\\");
+    if (WinUtils::FileExists(WinUtils::GetCommonApplicationDataPath() + SETTINGS_FILE_NAME)) {
+        DataFolder = WinUtils::GetCommonApplicationDataPath() + _T("Image Uploader\\");
         params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
     } else
 #endif
 
     {
-        DataFolder = GetApplicationDataPath() + _T("Image Uploader\\");
+        DataFolder = WinUtils::GetApplicationDataPath() + _T("Image Uploader\\");
         params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
     }
 }
@@ -665,7 +665,7 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     if (SendToContextMenu_changed || ExplorerContextMenu_changed) {
         AutoStartup_changed = false;
         BOOL b;
-        if (WinUtils::IsVista() && IsElevated(&b) != S_OK) {
+        if (WinUtils::IsVistaOrLater() && IsElevated(&b) != S_OK) {
             // Start new elevated process 
             ApplyRegistrySettings();
         } else {
@@ -871,7 +871,7 @@ void WtlGuiSettings::ApplyRegSettingsRightNow()
             if (WinUtils::FileExists(ShortcutName))
                 DeleteFile(ShortcutName);
 
-            CreateShortCut(ShortcutName, CmdLine.ModuleName(), WinUtils::GetAppFolder(), _T(
+            WinUtils::CreateShortCut(ShortcutName, CmdLine.ModuleName(), WinUtils::GetAppFolder(), _T(
                 " /fromcontextmenu /upload"), 0, SW_SHOW, CmdLine.ModuleName(), 0);
         } else {
             DeleteFile(ShortcutName);
@@ -1019,7 +1019,7 @@ void WtlGuiSettings::BindConvertProfile(SettingsNode& image, ImageConvertingPara
 #if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
 void WtlGuiSettings::Uninstall() {
     BOOL b;
-    if (WinUtils::IsVista() && IsElevated(&b) != S_OK) {
+    if (WinUtils::IsVistaOrLater() && IsElevated(&b) != S_OK) {
         RunIuElevated("/uninstall");
         return;
     }

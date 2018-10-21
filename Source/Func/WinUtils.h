@@ -19,7 +19,7 @@ namespace WinUtils {
     bool IsWinXP();
     bool IsWinXPOrLater();
     bool IsDirectory(LPCTSTR szFileName);
-    bool IsVista();
+    bool IsVistaOrLater();
     bool IsWindows64Bit();
     bool IsWindows8orLater();
     bool IsWine();
@@ -34,16 +34,8 @@ namespace WinUtils {
     bool GetClipboardHtml(CString& text, CString& outSourceUrl);
     DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
 
-    bool CreateShortCut( 
-        LPCWSTR pwzShortCutFileName, 
-        LPCTSTR pszPathAndFileName, 
-        LPCTSTR pszWorkingDirectory, 
-        LPCTSTR pszArguments, 
-        WORD wHotKey, 
-        int iCmdShow, 
-        LPCTSTR pszIconFileName, 
-        int iIconIndex) ;
-
+    bool CreateShortCut(LPCWSTR pwzShortCutFileName, LPCTSTR pszPathAndFileName, LPCTSTR pszWorkingDirectory, LPCTSTR pszArguments, 
+                        WORD wHotKey, int iCmdShow, LPCTSTR pszIconFileName, int iIconIndex);
     bool CreateFolder(LPCTSTR szFolder);
     bool CreateFilePath(LPCTSTR szFilePath);
     HICON GetAssociatedIcon (LPCTSTR filename, bool Small);
@@ -54,8 +46,8 @@ namespace WinUtils {
     LPCTSTR GetFileExt(LPCTSTR szFileName);
     CString GetOnlyFileName(const CString& szFilename);
     bool FileExists(LPCTSTR FileName);
-    const CString TrimString(const CString& source, int nMaxLen);
-    const CString TrimStringEnd(const CString& source, int nMaxLen);
+    CString TrimString(const CString& source, int nMaxLen);
+    CString TrimStringEnd(const CString& source, int nMaxLen);
     bool IsStrInList(LPCTSTR szExt,LPCTSTR szList);
     bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
     bool ShowFilePropertiesDialog(HWND hWnd, const CString& fileName);

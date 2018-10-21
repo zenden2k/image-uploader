@@ -140,10 +140,15 @@ bool CDefaultServersSettings::Apply()
     CServerSelectorControl* controls[] = { fileServerSelector_, imageServerSelector_, trayServerSelector_, 
         contextMenuServerSelector_, urlShortenerServerSelector_, temporaryServerSelector_ };
     for(int i = 0; i< ARRAY_SIZE(controls); i++ ) {
-        if ( !controls[i]->serverProfile().serverName().empty() && !controls[i]->isAccountChosen() ) {
+        if (controls[i]->serverProfile().serverName().empty()) {
+            CString message;
+            message.Format(TR("You have not selected \"%s\""), controls[i]->getTitle());
+            MessageBox(message, TR("Error"), MB_ICONERROR);
+            return 0;
+        } else if ( !controls[i]->isAccountChosen() ) {
             CString message;
             message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(controls[i]->serverProfile().serverName()).c_str());
-            MessageBox(message, TR("Error"));
+            MessageBox(message, TR("Error"), MB_ICONERROR);
             return 0;
         }
     }

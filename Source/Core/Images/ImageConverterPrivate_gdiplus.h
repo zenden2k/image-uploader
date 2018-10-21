@@ -1,10 +1,11 @@
 ﻿#pragma once
 
+#include <string>
+
 #include "atlheaders.h"
 #include "3rdpart/GdiplusH.h"
 #include "ImageConverterPrivateBase.h"
 #include "Core/Video/AbstractImage.h"
-#include <string>
 
 class ImageConverterPrivate: public ImageConverterPrivateBase {
 public:

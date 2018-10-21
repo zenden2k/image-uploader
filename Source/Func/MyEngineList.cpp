@@ -32,7 +32,7 @@ char CMyEngineList::RandomServer[]  = "random";
 
 CMyEngineList::CMyEngineList() :dllModule_(_T("comctl32.dll"))
 {
-    if (WinUtils::IsVista()) {
+    if (WinUtils::IsVistaOrLater()) {
         LoadIconWithScaleDownFunc_ = dllModule_.GetProcAddress<LoadIconWithScaleDownFuncType>("LoadIconWithScaleDown");
     } else {
         LoadIconWithScaleDownFunc_ = nullptr;

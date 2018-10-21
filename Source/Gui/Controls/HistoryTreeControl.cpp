@@ -617,9 +617,9 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
             Font font(L"Tahoma", 8, FontStyleRegular );
             LPCTSTR Filename = filename;
             WCHAR Buffer[256];
-            int f = MyGetFileSize(filename);
+            int64_t fileSize = IuCoreUtils::getFileSize(W2U(filename));
             WCHAR buf2[25];
-            WinUtils::NewBytesToString(f, buf2, 25);
+            WinUtils::NewBytesToString(fileSize, buf2, 25);
             WCHAR FileExt[25];
             lstrcpy(FileExt, GetFileExt(Filename));
             if(!lstrcmpi(FileExt, _T("jpg"))) 

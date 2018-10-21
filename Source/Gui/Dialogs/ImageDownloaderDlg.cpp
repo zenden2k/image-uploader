@@ -49,7 +49,7 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 {
     CenterWindow(GetParent());
 
-    isVistaOrLater_ = WinUtils::IsVista();
+    isVistaOrLater_ = WinUtils::IsVistaOrLater();
 
     if (isVistaOrLater_)
     {

@@ -1,10 +1,11 @@
 #ifndef FUNC_SEARCHYANDEXIMAGES_H
 #define FUNC_SEARCHYANDEXIMAGES_H
 
-#include "SearchByImage.h"
 #include <string>
 #include <condition_variable>
 #include <mutex>
+
+#include "SearchByImage.h"
 
 class UploadTask;
 class NetworkClient;

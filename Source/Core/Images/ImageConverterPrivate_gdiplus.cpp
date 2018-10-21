@@ -1,5 +1,7 @@
 ﻿#include "ImageConverterPrivate_gdiplus.h"
 
+#include <assert.h>
+
 #include "Func/MyUtils.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Utils/CoreUtils.h"
@@ -8,7 +10,7 @@
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
 #include "Utils.h"
-#include <assert.h>
+
 
 #ifndef MYRGB
     #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))

@@ -115,6 +115,10 @@ void CServerSelectorControl::setTitle(CString title) {
     title_ = title;
 }
 
+CString CServerSelectorControl::getTitle() const {
+    return title_;
+}
+
 void CServerSelectorControl::setServerProfile(ServerProfile serverProfile) {
     serverProfile_ = serverProfile;
 
@@ -495,7 +499,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
 
                 mi.dwTypeData = (LPWSTR)(LPCTSTR)login;
 
-                mi.hbmpItem = WinUtils::IsVista() ? iconBitmapUtils_->HIconToBitmapPARGB32(userIcon) : HBMMENU_CALLBACK;
+                mi.hbmpItem = WinUtils::IsVistaOrLater() ? iconBitmapUtils_->HIconToBitmapPARGB32(userIcon) : HBMMENU_CALLBACK;
                 if (mi.hbmpItem) {
                     mi.fMask |= MIIM_BITMAP;
                 }

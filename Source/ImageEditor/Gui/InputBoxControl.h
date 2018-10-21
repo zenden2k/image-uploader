@@ -89,6 +89,7 @@ protected:
     static DWORD CALLBACK EditStreamInCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb);
     bool contextMenuOpened_;
     Canvas* canvas_;
+    CFont biggerFont_;
 
 
 };

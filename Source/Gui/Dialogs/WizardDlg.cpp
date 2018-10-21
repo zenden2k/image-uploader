@@ -1246,7 +1246,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 {
     int nCount = 0;
 
-    if (WinUtils::IsVista()) {//vista or later
+    if (WinUtils::IsVistaOrLater()) {//vista or later
         
         CComPtr<IFileOpenDialog> pDlg;
         TCHAR filterBuffer[256];

@@ -103,7 +103,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     ShowNext(false);
     ShowPrev(false);    
 
-    if (WinUtils::IsVista()) {
+    if (WinUtils::IsVistaOrLater()) {
         HMODULE module = GetModuleHandle(_T("user32.dll"));
         AddClipboardFormatListenerFunc fAddClipboardFormatListener = reinterpret_cast<AddClipboardFormatListenerFunc>(GetProcAddress(module, "AddClipboardFormatListener"));
         fAddClipboardFormatListener(m_hWnd);

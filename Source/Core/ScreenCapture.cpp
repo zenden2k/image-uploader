@@ -20,8 +20,10 @@
 
 #include "Core/ScreenCapture.h"
 
+#include <assert.h>
 #include <cmath>
 #include <deque>
+
 #include <Dwmapi.h>
 #include "atlheaders.h"
 #include "Func/common.h"
@@ -30,7 +32,6 @@
 #include "resource.h"
 #include "Core/Images/Utils.h"
 #include "Core/Logging.h"
-#include <assert.h>
 
 typedef HRESULT (WINAPI * DwmGetWindowAttribute_Func)(HWND, DWORD, PVOID, DWORD);
 typedef HRESULT (WINAPI * DwmIsCompositionEnabled_Func)(BOOL*);
@@ -67,7 +68,7 @@ void ActivateWindowRepeat(HWND handle, int count)
 
 BOOL MyGetWindowRect(HWND hWnd, RECT* res, bool MaximizedFix = true)
 {
-    if (!WinUtils::IsVista())
+    if (!WinUtils::IsVistaOrLater())
     {
         return GetWindowRect(hWnd, res);
     }
@@ -965,7 +966,7 @@ bool CWindowHandlesRegion::GetImage(HDC src, Bitmap** res)
     GetScreenBounds(scr);
     m_ScreenRegion.OffsetRgn(-scr.left, -scr.top);
     Bitmap* resultBm = 0;
-    if (m_bFromScreen && parentIsInList /*&& GetParent(topWindow)==HWND_DESKTOP */ &&  WinUtils::IsVista() &&
+    if (m_bFromScreen && parentIsInList /*&& GetParent(topWindow)==HWND_DESKTOP */ &&  WinUtils::IsVistaOrLater() &&
         IsCompositionActive() && topWindow && !(GetWindowLong(topWindow, GWL_STYLE) & WS_CHILD)
         && (m_ClearBackground || m_RemoveCorners || m_PreserveShadow))
     {

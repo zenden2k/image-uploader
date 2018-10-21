@@ -98,8 +98,8 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     SetDlgItemInt(IDC_THUMBSPERLINE, 4);
     SendDlgItemMessage(IDC_THUMBPERLINESPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
     
-    GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPROGRESS));
-    GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPERCENTS));
+    commonProgressLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPROGRESS));
+    commonPercentLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPERCENTS));
     PageWnd = m_hWnd;
     resultsWindow_->SetPage(static_cast<CResultsPanel::TabPage>(Settings.CodeLang));
     resultsWindow_->SetCodeType(Settings.CodeType);

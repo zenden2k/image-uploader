@@ -5,7 +5,6 @@
 
 #include "atlheaders.h"
 #include <ShObjIdl.h>
-#include <boost/smart_ptr/shared_ptr.hpp>
 
 class CShellPidl {
 public:

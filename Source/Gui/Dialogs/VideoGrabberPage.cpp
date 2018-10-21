@@ -417,6 +417,9 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
 
     int n = ThumbsView.GetItemCount();
     int ncols = min(Settings.VideoSettings.Columns, n);
+    if (ncols <= 0) {
+        ncols = 1;
+    }
     int nstrings = n / ncols + ((n % ncols) ? 1 : 0);
     int maxwidth = ThumbsView.maxwidth;
     int maxheight = ThumbsView.maxheight;

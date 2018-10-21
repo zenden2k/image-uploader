@@ -30,22 +30,6 @@
 typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
 typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
 
-int GetFontSize(int nFontHeight)
-{
-    HDC dc = ::GetDC(nullptr);
-    int res =  -MulDiv(nFontHeight, 72, GetDeviceCaps(dc, LOGPIXELSY));
-    ReleaseDC(nullptr, dc);
-    return res;
-}
-
-int GetFontHeight(int nFontSize)
-{
-    HDC dc = ::GetDC(nullptr);
-    int res = -MulDiv(nFontSize, GetDeviceCaps(::GetDC(0), LOGPIXELSY), 72);
-    ReleaseDC(nullptr, dc);
-    return res;
-}
-
 int GetFontSizeInTwips(int nFontSize)
 {
    return MulDiv(nFontSize, 1440, 72);
@@ -223,19 +207,7 @@ bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont)
     return true;
 }
 
-LPTSTR ExtractFilePath(LPCTSTR FileName, LPTSTR buf)
-{  
-    int i, len = lstrlen(FileName);
-    for(i=len-1; i>=0; i--)
-    {
-        if(FileName[i] == _T('\\'))
-            break;
-    }
-    lstrcpyn(buf, FileName, i+2);
-    return buf;
-}
-
-const CString myExtractFileName(const CString & FileName)
+CString myExtractFileName(const CString & FileName)
 {  
     CString temp = FileName;
     int Qpos = temp.ReverseFind('?');
@@ -270,8 +242,6 @@ LPCTSTR GetFileExt(LPCTSTR szFileName)
     return szReturn;
 }
 
-                                                             
-
 bool IsVideoFile(LPCTSTR szFileName)
 {
     std::string ext = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt(IuCoreUtils::WstringToUtf8(szFileName)) );
@@ -281,7 +251,6 @@ bool IsVideoFile(LPCTSTR szFileName)
     } else {
     return false;
     }
-
 }
 
 int GetSavingFormat(LPCTSTR szFileName)
@@ -297,14 +266,14 @@ int GetSavingFormat(LPCTSTR szFileName)
     else return 0;
 }
 
-int MyGetFileSize(LPCTSTR FileName)
+/*int MyGetFileSize(LPCTSTR FileName)
 {
-    HANDLE hFile = CreateFile(FileName, /*GENERIC_READ*/0, 0, 0, OPEN_EXISTING, 0, 0);
-   if(!hFile) return -1;
+    HANDLE hFile = CreateFile(FileName, /*GENERIC_READ 0, 0, 0, OPEN_EXISTING, 0, 0);
+    if(!hFile) return -1;
     int fSize = GetFileSize (hFile, NULL); 
     CloseHandle(hFile);
     return fSize;
-}
+}*/
 
 
 LPTSTR fgetline(LPTSTR buf,int num,FILE *f)
@@ -323,7 +292,7 @@ LPTSTR fgetline(LPTSTR buf,int num,FILE *f)
     return Result;
 }
 
-const CString TrimString(const CString& source, int nMaxLen)
+CString TrimString(const CString& source, int nMaxLen)
 {
     int nLen = source.GetLength();
     if(nLen <= nMaxLen) return source;
@@ -334,7 +303,7 @@ const CString TrimString(const CString& source, int nMaxLen)
 
 LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int nBufferSize)
 {
-    size_t nLen=0;
+    int nLen=0;
     if(!szString || !szPattern ||!szBuffer || nBufferSize<0) return 0;
 
     LPCTSTR szStart = (LPTSTR) _tcsstr(szString, szPattern);

@@ -304,9 +304,6 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, b
     fl.VirtualFileName = myExtractFileName(FileName);
     else
     fl.VirtualFileName = virtualFileName;
-    
-    int FileSize = MyGetFileSize(FileName);
-    if(FileSize<-1) FileSize = 0;
 
     FileList.Add(fl);
 
@@ -472,7 +469,7 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     EditorCmdLine = WinUtils::ExpandEnvironmentStrings(EditorCmd);
     
     TCHAR FilePathBuffer[256];
-    ExtractFilePath(FileName, FilePathBuffer);
+    WinUtils::ExtractFilePath(FileName, FilePathBuffer);
 
     CCmdLine EditorLine(EditorCmdLine);
 

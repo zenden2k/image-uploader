@@ -1,14 +1,15 @@
 #include "WinUtils.h"
 
-#include "Core/Utils/CoreUtils.h"
 #include <sstream>
-#include "Core/Utils/StringUtils.h"
-#include "3rdpart/GdiplusH.h"
+
 #include <Aclapi.h>
-#include "3rdpart/Registry.h"
 #include <TlHelp32.h>
 #include <Winhttp.h>
 #include <boost/format.hpp>
+#include "3rdpart/GdiplusH.h"
+#include "3rdpart/Registry.h"
+#include "Core/Utils/CoreUtils.h"
+#include "Core/Utils/StringUtils.h"
 
 namespace WinUtils {
 
@@ -389,7 +390,7 @@ bool IsDirectory(LPCTSTR szFileName)
     return (res&FILE_ATTRIBUTE_DIRECTORY) && (res != -1);    
 }
 
-bool IsVista() {
+bool IsVistaOrLater() {
     static int isVista = -1;
     if (isVista == -1)
     {
@@ -487,7 +488,7 @@ bool FileExists(LPCTSTR FileName)
     return (FileName && GetFileAttributes(FileName)!=-1);
 }
 
-const CString TrimString(const CString& source, int nMaxLen)
+CString TrimString(const CString& source, int nMaxLen)
 {
     int nLen = source.GetLength();
     if(nLen <= nMaxLen) return source;
@@ -496,7 +497,7 @@ const CString TrimString(const CString& source, int nMaxLen)
     return source.Left(PartSize)+_T("...")+source.Right(PartSize);
 }
 
-const CString TrimStringEnd(const CString& source, int nMaxLen) {
+CString TrimStringEnd(const CString& source, int nMaxLen) {
     int nLen = source.GetLength();
     if (nLen <= nMaxLen) return source;
 
@@ -555,7 +556,7 @@ LPTSTR ExtractFilePath(LPCTSTR FileName, LPTSTR buf)
     int i, len = lstrlen(FileName);
     for(i=len; i>=0; i--)
     {
-        if(FileName[i] == _T('\\'))
+        if (FileName[i] == _T('\\') || FileName[i] == _T('/'))
             break;
     }
     lstrcpyn(buf, FileName, i+2);
@@ -640,7 +641,7 @@ bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize)
 bool IsElevated() 
 {
     BOOL pbElevated = false;
-    ATLASSERT( IsVista() );
+    ATLASSERT( IsVistaOrLater() );
 
     HRESULT hResult = E_FAIL; // assume an error occured
     HANDLE hToken  = NULL;

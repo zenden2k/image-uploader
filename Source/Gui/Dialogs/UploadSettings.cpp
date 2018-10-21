@@ -110,15 +110,15 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         m_PlaceSelectorImageList.Add(hBitmap,RGB(255,0,255));
     }
     ::ReleaseDC(HWND_DESKTOP, dc) ;
-    HICON ico = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16, 16, 0));
-    SendDlgItemMessage(IDC_RESIZEPRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
+    iconDropdown_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16, 16, 0));
+    SendDlgItemMessage(IDC_RESIZEPRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)iconDropdown_);
     m_ResizePresetIconButton.SubclassWindow(GetDlgItem(IDC_RESIZEPRESETSBUTTON));
 
-    SendDlgItemMessage(IDC_SHORTENINGURLSERVERBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)ico);
+    SendDlgItemMessage(IDC_SHORTENINGURLSERVERBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)iconDropdown_);
     m_ShorteningServerButton.SubclassWindow(GetDlgItem(IDC_SHORTENINGURLSERVERBUTTON));
 
 
-    ico = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONEDIT), IMAGE_ICON, 16, 16, 0));
+    iconEdit_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONEDIT), IMAGE_ICON, 16, 16, 0));
     RECT profileRect;
     ::GetWindowRect(GetDlgItem(IDC_EDITPROFILE), &profileRect);
     ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&profileRect), 2);
@@ -130,7 +130,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 
     CImageList list;
     list.Create(16, 16,ILC_COLOR32 | ILC_MASK, 0, 6);
-    list.AddIcon(ico);
+    list.AddIcon(iconEdit_);
     m_ProfileEditToolbar.SetImageList(list);
     m_ProfileEditToolbar.AddButton(IDC_EDITPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Edit Profile"), 0);
 
@@ -651,13 +651,13 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 mi.dwTypeData  = (LPWSTR)(LPCTSTR) name;
                 HICON hImageIcon = m_EngineList->getIconForServer(ued->Name);
                 HBITMAP bm = 0;
-                if (WinUtils::IsVista() ) {
+                if (WinUtils::IsVistaOrLater() ) {
                     bm = iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon);
                     bitmaps.push_back(bm);
                 }
 
-                mi.hbmpItem =  WinUtils::IsVista() ? bm: HBMMENU_CALLBACK;
-                if (! WinUtils::IsVista() ) {
+                mi.hbmpItem =  WinUtils::IsVistaOrLater() ? bm: HBMMENU_CALLBACK;
+                if (! WinUtils::IsVistaOrLater() ) {
                     serverMenuIcons_[mi.wID] = hImageIcon;
                 }
                 if ( mi.hbmpItem ) {
@@ -695,16 +695,16 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             CString name  = Utf8ToWCstring(ued->Name); 
             mi.dwTypeData  = (LPWSTR)(LPCTSTR)name;
             HICON hImageIcon = m_EngineList->getIconForServer(ued->Name);
-            if (! WinUtils::IsVista() ) {
+            if (! WinUtils::IsVistaOrLater() ) {
                 serverMenuIcons_[mi.wID] = hImageIcon;
             }
             HBITMAP bm = 0;
-            if (WinUtils::IsVista() ) {
+            if (WinUtils::IsVistaOrLater() ) {
                 bm = iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon);
                 bitmaps.push_back(bm);
             }
           
-            mi.hbmpItem =  WinUtils::IsVista() ? bm: HBMMENU_CALLBACK;
+            mi.hbmpItem =  WinUtils::IsVistaOrLater() ? bm: HBMMENU_CALLBACK;
             if ( mi.hbmpItem ) {
                 mi.fMask |= MIIM_BITMAP;
             }
@@ -812,12 +812,12 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 
                     mi.dwTypeData  = (LPWSTR)(LPCTSTR)login;
                     HBITMAP bm = 0;
-                    if (WinUtils::IsVista() ) {
+                    if (WinUtils::IsVistaOrLater() ) {
                         bm = iconBitmapUtils_->HIconToBitmapPARGB32(userIcon);
                         bitmaps.push_back(bm);
                     }
 
-                    mi.hbmpItem =  WinUtils::IsVista() ? bm: HBMMENU_CALLBACK;
+                    mi.hbmpItem =  WinUtils::IsVistaOrLater() ? bm: HBMMENU_CALLBACK;
                     if ( mi.hbmpItem ) {
                         mi.fMask |= MIIM_BITMAP;
                     }

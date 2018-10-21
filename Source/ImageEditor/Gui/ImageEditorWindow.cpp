@@ -481,6 +481,8 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         ::SetActiveWindow(parent);
     }
     DestroyWindow();
+    DestroyAcceleratorTable(accelerators_);
+    accelerators_ = nullptr;
     if ( dialogResult_ == drCancel  ) {
 //        delete resultingBitmap_;
         //resultingBitmap_ = 0;

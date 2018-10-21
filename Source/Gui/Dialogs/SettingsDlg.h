@@ -34,7 +34,7 @@
 #include "Gui/Controls/tablistbox.h"
 // CSettingsDlg
 
-const int SettingsPageCount = 10;
+//const int SettingsPageCount = 10;
 
 class CSettingsDlg : public CDialogImpl<CSettingsDlg>
 {
@@ -42,7 +42,7 @@ class CSettingsDlg : public CDialogImpl<CSettingsDlg>
         CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager);
         ~CSettingsDlg();
         enum { IDD = IDD_SETTINGSDLG };
-        enum { kStatusLabelTimer = 1 };
+        enum { kStatusLabelTimer = 1, SettingsPageCount = 10 };
         enum SettingsPage { spGeneral, spServers, spImages, spThumbnails, spScreenshot,
         spVideo, spUploading, spIntegration, spTrayIcon, spHotkeys};
     protected:

@@ -30,11 +30,11 @@ const CString GetDataFolder()
 }
 
 #endif
-const CString GetVersion()
+CString GetVersion()
 {
     auto ver = AppParams::instance()->GetAppVersion();
 
-    return CString(ver->FullVersion.c_str()) + _T(".") + std::to_string(ver->Build).c_str();
+    return CString(ver->FullVersion.c_str()) + _T(".") + CString(std::to_string(ver->Build).c_str());
 }
 
 BOOL CreateTempFolder()

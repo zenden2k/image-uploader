@@ -93,5 +93,6 @@ class TextParamsWindow : public CDialogImpl<TextParamsWindow>
         CImageList toolbarImageList_;
         void NotifyParent(DWORD changeMask);
         std::vector<LOGFONT> fonts_;
+        CIcon iconBold_, iconItalic_, iconUnderline_;
         friend class CustomEdit;
 };

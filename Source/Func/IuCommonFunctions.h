@@ -6,7 +6,7 @@
 namespace IuCommonFunctions {
     const CString GetDataFolder();
 
-    const CString GetVersion();
+    CString GetVersion();
 
     BOOL CreateTempFolder();
     void ClearTempFolder(LPCTSTR folder);

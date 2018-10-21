@@ -42,6 +42,7 @@ Script::Script(const std::string& fileName, ThreadSync* serverSync, bool doLoad)
 Script::~Script()
 {
     ScriptAPI::ClearVmData(vm_);
+    delete m_SquirrelScript;
 }
 
 void CompilerErrorHandler(HSQUIRRELVM vm, const SQChar * desc, const SQChar * source, SQInteger line, SQInteger column) {

@@ -92,15 +92,25 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT CSettingsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    for(int i=0; i<SettingsPageCount; i++)
-    {
-        if(Pages[i] && !Pages[i]->Apply()) 
-        {
+    for (int i = 0; i < SettingsPageCount; i++) {
+        try {
+            if (Pages[i] && !Pages[i]->Apply()) {
+                ShowPage(i);
+                return 0;
+            }
+        } catch (ValidationException& ex) {
             ShowPage(i);
-            return 0;
-        }// If some tab cannot apply changes - do not close dialog
-    }
+            if (ex.errors_.size()) {
+                MessageBox(ex.errors_[0].Message, TR("Error"), MB_ICONERROR);
+                if (ex.errors_[0].Control) {
+                    ::SetFocus(ex.errors_[0].Control);
+                }
+            }
 
+            return 0;
+            // If some tab cannot apply changes - do not close dialog
+        }
+    }
     Settings.SaveSettings();
     EndDialog(wID);
     return 0;
@@ -156,13 +166,25 @@ bool CSettingsDlg::ShowPage(int idPage)
 
 LRESULT CSettingsDlg::OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    for(int i=0; i<SettingsPageCount; i++)
-        if(Pages[i] && !Pages[i]->Apply()) 
-        {
+    for (int i = 0; i < SettingsPageCount; i++) {
+        try {
+            if (Pages[i] && !Pages[i]->Apply()) {
+                ShowPage(i);
+                return 0;
+            }
+        } catch (ValidationException& ex) {
             ShowPage(i);
-            return 0;
-        }
+            if (ex.errors_.size()) {
+                MessageBox(ex.errors_[0].Message, TR("Error"), MB_ICONERROR);
+                if (ex.errors_[0].Control) {
+                    ::SetFocus(ex.errors_[0].Control);
+                }
+            }
 
+            return 0;
+            // If some tab cannot apply changes - do not close dialog
+        }
+    }
     GuiTools::ShowDialogItem(m_hWnd, IDC_SAVESTATUSLABEL, true);
     SetTimer(kStatusLabelTimer, 3000);
     Settings.SaveSettings();

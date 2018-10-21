@@ -1,19 +1,17 @@
 #include "DefaultProxyProvider.h"
 
+#include <algorithm>
+
+#include <Winhttp.h>
 #include "atlheaders.h"
 #include "Core/Settings.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/3rdpart/UriParser.h"
 #include "Func/WinUtils.h"
-#include <algorithm>
-#include <Winhttp.h>
-
 
 #ifndef WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY
     #define WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY 4
 #endif
-
-
 
 DefaultProxyProvider::DefaultProxyProvider() {
     hInternet_ = nullptr;  

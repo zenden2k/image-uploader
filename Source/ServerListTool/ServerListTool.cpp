@@ -122,5 +122,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     _Module.Term();
     ::CoUninitialize();
     IuCommonFunctions::ClearTempFolder(IuCommonFunctions::IUTempFolder);
+    google::ShutdownGoogleLogging();
+    LogWindow.DestroyWindow();
     return nRet;
 }

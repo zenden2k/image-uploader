@@ -5,7 +5,7 @@
 
 UploadSession::UploadSession()
 {
-    isFinished_ = false;
+    finishedSignalSent_ = false;
     stopSignal_ = true;
     finishedCount_ = 0;
 }
@@ -209,12 +209,12 @@ std::shared_ptr<UploadTask> UploadSession::getTask(int index)
 void UploadSession::taskFinished(UploadTask* task)
 {
     finishedCount_++;
-    if (isFinished())
-    {
-        for (size_t i = 0; i < sessionFinishedCallbacks_.size(); i++)
-        {
-            sessionFinishedCallbacks_[i](this);
+    std::lock_guard<std::mutex> lock(finishMutex_);
+    if (!finishedSignalSent_ && isFinished()) {
+        for (const auto& it : sessionFinishedCallbacks_) {
+            it(this);
         }
+        finishedSignalSent_ = true;
     }
 }
 

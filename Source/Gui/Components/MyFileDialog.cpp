@@ -36,7 +36,7 @@ std::shared_ptr<IMyFileDialog> MyFileDialogFactory::createFileDialog(HWND parent
     if (multiselect) {
         assert(openDialog==true);
     }
-    if (WinUtils::IsVista()) {
+    if (WinUtils::IsVistaOrLater()) {
         if (openDialog) {
             return std::shared_ptr<IMyFileDialog>(new CNewStyleFileDialog(parent, initialFolder, title, filters, multiselect, openDialog));
         } else {

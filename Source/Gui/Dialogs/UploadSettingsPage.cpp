@@ -145,6 +145,9 @@ LRESULT CUploadSettingsPage::OnExecuteScriptCheckboxClicked(WORD wNotifyCode, WO
 
 bool CUploadSettingsPage::Apply()
 {
+    CheckBounds(IDC_FILERETRYLIMIT, 1, 10, IDC_RETRIES1LABEL);
+    CheckBounds(IDC_ACTIONRETRYLIMIT, 1, 10, IDC_RETRIES2LABEL);
+
     DoDataExchange(TRUE);
     if (SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK) != 0) {
         Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kUserProxy;
@@ -169,8 +172,9 @@ bool CUploadSettingsPage::Apply()
     Settings.ConnectionSettings.ProxyType = SendDlgItemMessage(IDC_SERVERTYPECOMBO, CB_GETCURSEL);
     Settings.UploadBufferSize = GetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT)*1024;
     if(!Settings.UploadBufferSize) Settings.UploadBufferSize = 65536;
+    CheckBounds(IDC_MAXTHREADSEDIT, 1, 20, IDC_MAXTHREADSLABEL);
     Settings.MaxThreads = GetDlgItemInt(IDC_MAXTHREADSEDIT);
-    if (Settings.MaxThreads < 0 || Settings.MaxThreads > 50 )
+    if (Settings.MaxThreads <= 0 || Settings.MaxThreads > 50 )
     {
         Settings.MaxThreads = 3;
     }
@@ -178,12 +182,12 @@ bool CUploadSettingsPage::Apply()
     GuiTools::GetCheck(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX, Settings.ExecuteScript);
     CString scriptFile = GuiTools::GetDlgItemText(m_hWnd, IDC_SCRIPTFILENAMEEDIT);
 
-    if (Settings.ExecuteScript && !WinUtils::FileExists(scriptFile))
-    {
-        CString message;
-        message.Format(TR("File %s doesn't exist"), scriptFile);
-        MessageBox(message, APPNAME);
-        return false;
+    if (Settings.ExecuteScript && !WinUtils::FileExists(scriptFile)){
+        CString message1, message2;
+        CString fieldTitle = GuiTools::GetDlgItemText(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX);
+        message1.Format(TR("Error in the field '%s':\r\n"), fieldTitle);
+        message2.Format(TR("File %s doesn't exist"), scriptFile);
+        throw ValidationException(message1+message2, GetDlgItem(IDC_SCRIPTFILENAMEEDIT));
     }
     Settings.ScriptFileName = W2U(scriptFile);
 
@@ -228,4 +232,15 @@ void CUploadSettingsPage::proxyRadioChanged() {
 void CUploadSettingsPage::executeScriptCheckboxChanged() {
     bool Checked = SendDlgItemMessage(IDC_EXECUTESCRIPTCHECKBOX, BM_GETCHECK) != 0;
     GuiTools::EnableNextN(GetDlgItem(IDC_EXECUTESCRIPTCHECKBOX), 2, Checked);
+}
+
+
+void CUploadSettingsPage::CheckBounds(int controlId, int minValue, int maxValue, int labelId) {
+    int value = GetDlgItemInt(controlId);
+    if (value < minValue || value > maxValue) {
+        CString fieldName = labelId != -1 ? GuiTools::GetDlgItemText(m_hWnd, labelId) : _T("Unknown field");
+        CString message;
+        message.Format(TR("Error in the field '%s': value should be between %d and %d."), fieldName, minValue, maxValue);
+        throw ValidationException(message, GetDlgItem(controlId));
+    }
 }

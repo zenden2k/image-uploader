@@ -51,12 +51,14 @@ public:
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //CSavingOptions *so;
-    bool Apply();
+    bool Apply() override;
     LOGFONT m_Font;
     CColorButton Color1;
     LRESULT OnMediaInfoFontClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnShowMediaInfoTextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnVideoSnapshotsFolderButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+protected:
+    void CheckBounds(int controlId, int minValue, int maxValue, int labelId = -1);
 };
 
 

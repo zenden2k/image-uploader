@@ -66,12 +66,12 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
     IuCommonFunctions::CreateTempFolder();
     // set icons
-    HICON hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
+    icon_ = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
         IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
-    SetIcon(hIcon, TRUE);
-    HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
+    SetIcon(icon_, TRUE);
+    iconSmall_ = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
         IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
-    SetIcon(hIconSmall, FALSE);
+    SetIcon(iconSmall_, FALSE);
     m_ListView = GetDlgItem(IDC_TOOLSERVERLIST);
 
     //LogWindow.Create(0);
@@ -314,6 +314,7 @@ DWORD CMainDlg::Run() {
         userData->rowIndex = i;
 
         task->setUserData(userData);
+        uploadTaskUserDatas_.push_back(std::unique_ptr<UploadTaskUserData>(userData));
         uploadSession_->addTask(task);
         taskCount++;
 

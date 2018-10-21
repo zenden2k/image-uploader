@@ -62,8 +62,6 @@ bool IULaunchCopy();
 
 extern CCmdLine CmdLine;
 
-bool CreateShortCut(LPCWSTR pwzShortCutFileName, LPCTSTR pszPathAndFileName, LPCTSTR pszWorkingDirectory, LPCTSTR pszArguments, 
-                               WORD wHotKey, int iCmdShow, LPCTSTR pszIconFileName, int iIconIndex) ;
 #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 
 bool IULaunchCopy(CString params, const CAtlArray<CString> &files);
@@ -88,15 +86,11 @@ DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
 HICON GetAssociatedIcon (LPCTSTR filename, bool Small);
 int ScreenBPP();
 BOOL Is32BPP();
-CString GetSystemSpecialPath(int csidl);
-const CString GetApplicationDataPath();
-const CString GetCommonApplicationDataPath();
 HRESULT IsElevated( __out_opt BOOL * pbElevated );
 // Function that gets path to SendTo folder
 CString GetSendToPath() ;
 void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')+b/16;H3N SHJ");
 void EncodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')+b/16;H3N SHJ");
-CString IU_md5_file(const CString& filename);
 
 typedef CAtlArray<CString> CStringList;
 #endif

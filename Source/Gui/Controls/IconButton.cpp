@@ -241,7 +241,7 @@ LRESULT CIconButton::OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
        LPNMCUSTOMDRAW pCustomDraw = (LPNMCUSTOMDRAW)pnmh;
     DWORD style = GetStyle ();
-    if ((style & (BS_BITMAP | BS_ICON)) == 0 || !IsAppThemed () || !IsThemeActive () || WinUtils::IsVista())
+    if ((style & (BS_BITMAP | BS_ICON)) == 0 || !IsAppThemed () || !IsThemeActive () || WinUtils::IsVistaOrLater())
     {
         // not icon or bitmap button, or themes not active - draw normally
         return  CDRF_DODEFAULT;

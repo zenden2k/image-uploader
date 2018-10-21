@@ -46,6 +46,7 @@ class UploadTaskAcceptor
 {
 public:
     virtual bool canAcceptUploadTask(UploadTask* task) = 0;
+    virtual ~UploadTaskAcceptor(){}
 };
 
 class UploadTask {

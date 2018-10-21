@@ -81,9 +81,9 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
     GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEEXCEEDNAME));
     
-    int f = MyGetFileSize(m_szFileName);
+    int64_t fileSize = IuCoreUtils::getFileSize(W2U(m_szFileName));
     WCHAR buf2[25];
-    WinUtils::NewBytesToString(f, buf2, 25);
+    WinUtils::NewBytesToString(fileSize, buf2, 25);
 
     CString name;
     CString params; 

@@ -32,7 +32,7 @@ public:
     
     CNewStyleFolderDialog(HWND parent, const CString& initialFolder, const CString& title, bool onlyFsDirs = true) 
     {
-        isVista_ = WinUtils::IsVista();
+        isVista_ = WinUtils::IsVistaOrLater();
  
         if (!isVista_ )
         {

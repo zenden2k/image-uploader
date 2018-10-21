@@ -1,11 +1,12 @@
 #include "TextUtils.h"
 
+#include <stdio.h>
+
 #include "Core/3rdpart/pcreplusplus.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/3rdpart/htmlentities.h"
-#include <stdio.h>
-#include <boost/lexical_cast.hpp>
+
 //#include <codecvt>
 
 namespace IuTextUtils

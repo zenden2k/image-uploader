@@ -1065,7 +1065,7 @@ Library shlwapiLib(L"Shlwapi.dll");
 CComPtr<IStream>  CreateMemStream(const BYTE* pInit, UINT cbInit) {
     CComPtr<IStream> res;
     if (!SHCreateMemStreamFunc) {
-        SHCreateMemStreamFunc = shlwapiLib.GetProcAddress<SHCreateMemStreamFuncType>(WinUtils::IsVista() ? "SHCreateMemStream" : MAKEINTRESOURCEA(12));
+        SHCreateMemStreamFunc = shlwapiLib.GetProcAddress<SHCreateMemStreamFuncType>(WinUtils::IsVistaOrLater() ? "SHCreateMemStream" : MAKEINTRESOURCEA(12));
         if (!SHCreateMemStreamFunc) {
             return res;
         }
@@ -1075,7 +1075,7 @@ CComPtr<IStream>  CreateMemStream(const BYTE* pInit, UINT cbInit) {
 }
 
 Gdiplus::Bitmap* BitmapFromMemory(BYTE* data, size_t imageSize) {
-    if (WinUtils::IsVista()) {
+    if (WinUtils::IsVistaOrLater()) {
         if (!SHCreateMemStreamFunc) {
             SHCreateMemStreamFunc = shlwapiLib.GetProcAddress<SHCreateMemStreamFuncType>("SHCreateMemStream");
             if (!SHCreateMemStreamFunc) {

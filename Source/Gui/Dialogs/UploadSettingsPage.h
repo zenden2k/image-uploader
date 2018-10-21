@@ -78,6 +78,7 @@ virtual ~CUploadSettingsPage();
     void executeScriptCheckboxChanged();
 protected:
     CComboBox serverTypeCombo_;
+    void CheckBounds(int controlId, int minValue, int maxValue, int labelId = -1);
 };
 
 #endif // IU_GUI_DIALOGS_UPLOADSETTINGSPAGE_H

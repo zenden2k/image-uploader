@@ -713,7 +713,6 @@
     <ClInclude Include="Source\Core\Logging\MyLogSink.h" />
     <ClInclude Include="Source\Core\Network\CurlShare.h" />
     <ClInclude Include="Source\Core\Network\INetworkClient.h" />
-    <ClInclude Include="Source\Core\Object.h" />
     <ClInclude Include="Source\Core\ScreenCapture\Utils.h" />
     <ClInclude Include="Source\Core\Scripting\API\COMUtils.h" />
     <ClInclude Include="Source\Core\Scripting\API\Functions.h" />
@@ -1093,7 +1092,6 @@
     <ClCompile Include="Source\Core\Logging.cpp" />
     <ClCompile Include="Source\Core\Logging\MyLogSink.cpp" />
     <ClCompile Include="Source\Core\Network\CurlShare.cpp" />
-    <ClCompile Include="Source\Core\Object.cpp" />
     <ClCompile Include="Source\Core\ScreenCapture\Utils.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\COMUtils.cpp" />
     <ClCompile Include="Source\Core\Scripting\API\Functions.cpp" />

@@ -24,7 +24,7 @@
 IconBitmapUtils::IconBitmapUtils()
     : hUxTheme(NULL)
 {
-    if (WinUtils::IsVista())
+    if (WinUtils::IsVistaOrLater())
     {
         hUxTheme = LoadLibrary(_T("UXTHEME.DLL"));
 

@@ -1,4 +1,5 @@
 #include "UploadTask.h"
+
 #include "UploadSession.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include <boost/format.hpp>
@@ -9,7 +10,7 @@
 UploadTask::UploadTask()
 {
     init();
-    parentTask_ = 0;
+    parentTask_ = nullptr;
 }
 
 UploadTask::UploadTask(UploadTask* parentTask)
@@ -21,13 +22,13 @@ UploadTask::UploadTask(UploadTask* parentTask)
 void UploadTask::init()
 {
     status_ = StatusInQueue;
-    userData_ = NULL;
-    session_ = 0;
+    userData_ = nullptr;
+    session_ = nullptr;
     role_ = DefaultRole;
     shorteningStarted_ = false;
     stopSignal_ = false;
-    currentUploadEngine_ = 0;
-    tempFileDeleter_ = 0;
+    currentUploadEngine_ = nullptr;
+    tempFileDeleter_ = nullptr;
     uploadSuccess_ = false;
     index_ = 0;
 }
@@ -330,6 +331,12 @@ void UploadTask::setStatus(Status status)
         case StatusInQueue:
             progress_.statusText = "In queue";
             break;
+        case StatusPostponed:
+            progress_.statusText = "Postponed";
+            break;
+                
+        default:
+            progress_.statusText = "Unknown status";
             
     }
     statusChanged();
@@ -343,7 +350,6 @@ void UploadTask::setStatusText(const std::string& text)
 
 UploadTask::Status UploadTask::status() const
 {
-
     return status_;
 }
 
