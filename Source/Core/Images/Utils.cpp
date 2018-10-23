@@ -826,14 +826,20 @@ bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data
     fseek(in, 0, SEEK_END);
     file_size = ftell(in);
     fseek(in, 0, SEEK_SET);
-    file_data = new uint8_t[file_size];
+    try {
+        file_data = new uint8_t[file_size];
+    } catch (std::exception &) {
+        LOG(ERROR) << "Unable to allocate " << file_size << " bytes";
+        fclose(in);
+        return 0;
+    }
     if (file_data == nullptr) return 0;
-    ok = (fread(file_data, file_size, 1, in) == 1);
+    ok = (fread(file_data, 1, file_size, in) == file_size);
     fclose(in);
 
     if (!ok) {
         LOG(ERROR) << boost::format("Could not read %d bytes of data from file ") % file_size << file_name;
-        free(file_data);
+        delete[] file_data;
         return false;
     }
     *data = file_data;

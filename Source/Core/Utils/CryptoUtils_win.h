@@ -317,7 +317,7 @@ Exit:
 
 const std::string CryptoUtils::CalcMD5Hash(const void* data, size_t size)
 {
-    return GetHashText(data, size, HashSha1);
+    return GetHashText(data, size, HashMd5);
 }
 
 const std::string CryptoUtils::CalcMD5HashFromString(const std::string& data)

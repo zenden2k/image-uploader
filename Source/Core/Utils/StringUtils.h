@@ -21,7 +21,6 @@
 #ifndef IU_CORE_UTILS_STRINGUTILS_H
 #define IU_CORE_UTILS_STRINGUTILS_H
 
-#include <cstdio>
 #include <string>
 #include <vector>
 #include "CoreTypes.h"

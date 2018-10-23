@@ -185,6 +185,7 @@ public:
         ConfigurationProvider* configurationProvider_; 
         TextParamsWindow textParamsWindow_;
         HACCEL accelerators_;
+        HMODULE richeditLib_;
         void createToolbars();
         void OnCropChanged(int x, int y, int w, int h);
         void OnCropFinished(int x, int y, int w, int h);

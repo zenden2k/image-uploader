@@ -73,8 +73,6 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         std::string m_FileName;
         std::string m_displayFileName;
         LoginInfo li;
-        int m_CurrentActionIndex;
-        int m_nThumbWidth;
         DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
 };
 #endif

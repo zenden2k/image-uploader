@@ -13,7 +13,7 @@ size_t MonitorEnumerator::getCount() const {
 }
 
 MonitorEnumerator::MonitorInfo* MonitorEnumerator::getByIndex(size_t index) {
-    if (index >= 0 && index < monitors_.size()) {
+    if (index < monitors_.size()) {
         return &monitors_[index];
     } else {
         return nullptr;

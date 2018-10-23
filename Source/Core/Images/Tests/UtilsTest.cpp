@@ -185,3 +185,28 @@ TEST_F(UtilsTest, GetImageInfo) {
     EXPECT_EQ(0, ii2.width);
     EXPECT_EQ(0, ii2.height);
 }
+
+TEST_F(UtilsTest, ExUtilReadFile) {
+    const char* fileName = "TestData/file_with_const_size.png";
+    uint8_t* data;
+    size_t size;
+    EXPECT_TRUE(ExUtilReadFile(U2W(fileName), &data, &size));
+    EXPECT_EQ(14830, size);
+    std::string hash = IuCoreUtils::CryptoUtils::CalcMD5Hash(data, size);
+    EXPECT_EQ("ebbd98fc18bce0e9dd774f836b5c3bf8", hash);
+
+    delete[] data;
+    data = nullptr; 
+    size = 0;
+    EXPECT_FALSE(ExUtilReadFile(L"TestData/notexistingfile5734533345.png", &data, &size));
+    EXPECT_EQ(nullptr, data);
+    EXPECT_EQ(0, size);
+
+    data = nullptr;
+    size = 0;
+
+    EXPECT_TRUE(ExUtilReadFile(L"TestData/file_with_zero_size.dat", &data, &size));
+    EXPECT_EQ(0, size);
+    EXPECT_TRUE(data != nullptr);
+    delete[] data;
+}

@@ -31,7 +31,10 @@ public:
         errors_ = errors;
     }
     ValidationException(const ValidationException& ex) : std::runtime_error(ex), errors_(ex.errors_) {}
-
+    ValidationException& operator=(const ValidationException& ex) {
+        this->errors_ = ex.errors_;
+        return *this;
+    }
     std::vector<ValidationError> errors_;
 };
 

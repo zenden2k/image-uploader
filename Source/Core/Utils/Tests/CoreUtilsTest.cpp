@@ -13,6 +13,7 @@
 #ifdef _WIN32
 #include <WinSock.h>
 #endif
+#include "Core/Utils/CryptoUtils.h"
 
 class CoreUtilsTest : public ::testing::Test {
 };
@@ -177,4 +178,12 @@ TEST_F(CoreUtilsTest, ReadUtf8TextFile)
     //EXPECT_EQ(size, );
 }
 
+TEST_F(CoreUtilsTest, GetFileContents)
+{
+    std::string data = GetFileContents(constSizeFileName);
+    EXPECT_EQ(contSizeFileSize, data.size());
+    std::string hash = IuCoreUtils::CryptoUtils::CalcMD5Hash(&data[0], data.size());
+    EXPECT_EQ("ebbd98fc18bce0e9dd774f836b5c3bf8", hash);
 
+    std::string data2 = GetFileContents("j:\\Video\\Movies\\Sem'janin.2000.HDRip.avi");
+}

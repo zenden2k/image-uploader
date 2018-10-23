@@ -349,7 +349,7 @@ const std::string GetFileContents(const std::string& filename) {
     try {
         data.resize(size);
     } catch (std::exception& ex) {
-        LOG(ERROR) << ex.what();
+        LOG(ERROR) << "Unable to allocate " << size << " bytes:" << ex.what();
         fclose(stream);
         return std::string();
     }

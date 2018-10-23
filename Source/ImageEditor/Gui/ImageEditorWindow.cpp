@@ -494,7 +494,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
 LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     SetWindowText(TR("Image Editor"));
-    LoadLibrary(CRichEditCtrl::GetLibraryName());
+    richeditLib_ = LoadLibrary(CRichEditCtrl::GetLibraryName());
 
 
     return 0;
@@ -503,7 +503,7 @@ LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 LRESULT ImageEditorWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
     // unregister message filtering and idle updates
-
+    FreeLibrary(richeditLib_);
 
     bHandled = FALSE;
     return 1;

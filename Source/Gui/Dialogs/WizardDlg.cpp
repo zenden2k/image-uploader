@@ -1484,8 +1484,6 @@ bool CWizardDlg::executeFunc(CString funcBody)
         return funcMediaInfo();
     else if (funcName == _T("fromclipboard"))
         return funcFromClipboard();
-    else if (funcName == _T("mediainfo"))
-        return funcMediaInfo();
     else if (funcName == _T("open_screenshot_folder"))
         return funcOpenScreenshotFolder();
 
@@ -1559,7 +1557,7 @@ void CWizardDlg::OnScreenshotFinished(int Result)
             ((CMainDlg*)Pages[2])->ThumbsView.SelectLastItem();
         }
     }
-    else if (!Result && m_bHandleCmdLineFunc)
+    else if (m_bHandleCmdLineFunc)
     {
         
         PostQuitMessage(0);
