@@ -53,12 +53,14 @@ class CUpdateDlg :
             MESSAGE_HANDLER(WM_TIMER, OnTimer)
             COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+            COMMAND_HANDLER(IDC_DOWNLOADBUTTON, BN_CLICKED, OnDownloadButtonClicked)
             CHAIN_MSG_MAP(CDialogResize<CUpdateDlg>)
         END_MSG_MAP()
 
         BEGIN_DLGRESIZE_MAP(CUpdateDlg)
             DLGRESIZE_CONTROL(IDC_UPDATELISTVIEW, DLSZ_SIZE_X|DLSZ_SIZE_Y)
             DLGRESIZE_CONTROL(IDC_UPDATEINFO,  DLSZ_SIZE_X | DLSZ_SIZE_Y)
+            DLGRESIZE_CONTROL(IDC_MANUALUPDATEINFO,  DLSZ_SIZE_X )
             DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X| DLSZ_MOVE_Y)
             DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X|DLSZ_MOVE_Y)
         END_DLGRESIZE_MAP()
@@ -69,6 +71,7 @@ class CUpdateDlg :
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnDownloadButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     
     void setUpdateCallback(CUpdateDlgCallback* callback);

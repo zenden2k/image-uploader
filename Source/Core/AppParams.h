@@ -14,11 +14,13 @@ class AppParams: public Singleton<AppParams>
             unsigned int Build;
             std::string FullVersion;
             std::string BuildDate;
+            bool CurlWithOpenSSL;
             AppVersionInfo() {
                 Major = 0;
                 Minor = 0;
                 Release = 0;
                 Build = 0;
+                CurlWithOpenSSL = false;
             }
         };
 		AppParams();

@@ -417,7 +417,7 @@ void CResultsPanel::GenerateHTMLCode(CString& Buffer, CodeType codeType, int p /
             if (!item.getThumbUrl(shortenUrl_).IsEmpty()) {
                 Buffer += _T("<img src=\"");
                 Buffer += item.getThumbUrl(shortenUrl_);
-                Buffer += _T("\" border=0>");
+                Buffer += _T("\" alt=\"\">");
             } else
                 Buffer += WinUtils::myExtractFileName(item.FileName);
             Buffer += _T("</a>");
@@ -439,7 +439,7 @@ void CResultsPanel::GenerateHTMLCode(CString& Buffer, CodeType codeType, int p /
             if (!item.getImageUrl(shortenUrl_).IsEmpty() && (preferDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty())) {
                 Buffer += _T("<img src=\"");
                 Buffer += item.getImageUrl(shortenUrl_);
-                Buffer += _T("\" border=0>");
+                Buffer += _T("\" alt=\"\">");
             } else {
                 HTML_Link(Buffer, UrlList[i]);
             }

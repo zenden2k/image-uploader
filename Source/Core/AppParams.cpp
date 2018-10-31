@@ -15,7 +15,9 @@ AppParams::AppParams() {
     }
     versionInfo_.Build = std::stoi(BUILD);
     versionInfo_.BuildDate = TIME;
-
+#ifdef USE_OPENSSL
+    versionInfo_.CurlWithOpenSSL = true;
+#endif
 }
 
 std::string AppParams::dataDirectory()

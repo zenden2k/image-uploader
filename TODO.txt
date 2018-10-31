@@ -3,7 +3,6 @@ TODO before 1.3.2 release:
 - Syncronize performed actions in DefaultUploadEngine (<Action OnlyOnce="1">)
 - SizeExceed dialog, "For all" button is not working
 - Write unit tests for Scripting API (see examples in sqrat)
-- ReuploadDlg session->addTask usage is not thread safe and may crash!
 - Reload server list after update
 - [HIGH] Preserve photo order for some servers (like Picasa)
 - Convert korean.lng and farsi.lng!

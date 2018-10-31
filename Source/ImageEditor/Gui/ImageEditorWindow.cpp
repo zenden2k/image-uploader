@@ -299,7 +299,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     GuiTools::GetScreenBounds(displayBounds);
 
 
-    CDC hdc = ::GetDC(0);
+    CWindowDC hdc(nullptr);
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
     int scrollbarWidth = GetSystemMetrics(SM_CXVSCROLL);
@@ -661,12 +661,10 @@ LRESULT ImageEditorWindow::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT ImageEditorWindow::OnActivateApp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    if ( !allowAltTab_ ) {
-        return 0;
-    }
-    if ( displayMode_ == wdmFullscreen ) {
+    if (allowAltTab_ && displayMode_ == wdmFullscreen) {
         if ( !wParam ) { // if the window is being deactivated
-            SetWindowLong(GWL_EXSTYLE, 0);
+            LONG exStyle = GetWindowLong(GWL_EXSTYLE);
+            SetWindowLong(GWL_EXSTYLE, exStyle & ~(WS_EX_TOPMOST));
             SetWindowPos(HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
             SetWindowPos(HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
             HWND foregroundWindow = GetForegroundWindow();
@@ -675,7 +673,8 @@ LRESULT ImageEditorWindow::OnActivateApp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*
             }
         } else {
             SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
-            SetWindowLong(GWL_EXSTYLE, WS_EX_TOPMOST);
+            LONG exStyle = GetWindowLong(GWL_EXSTYLE);
+            SetWindowLong(GWL_EXSTYLE, exStyle | WS_EX_TOPMOST);
         }
     }
     return 0;

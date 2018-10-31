@@ -277,6 +277,8 @@
 #define IDC_FILEINFOEDIT2               1041
 #define IDC_INPUTEDIT                   1041
 #define IDC_SERVEREDIT                  1041
+#define IDC_UPDATEINFO2                 1041
+#define IDC_MANUALUPDATEINFO            1041
 #define IDC_DONE                        1042
 #define IDC_LOGINBUTTON2                1042
 #define IDC_VIDEOSNAPSHOTSFOLDEREDIT    1042
@@ -543,6 +545,7 @@
 #define IDC_CLEARLOGBUTTON              1263
 #define IDC_CLEARHISTORYBTN             1263
 #define IDC_AUTHORIZEBUTTON             1263
+#define IDC_DOWNLOADBUTTON              1263
 #define IDC_THUMBBACKGROUNDLABEL        1264
 #define IDC_DELETEITEM                  1264
 #define IDC_GOOGLECODELINK              1265

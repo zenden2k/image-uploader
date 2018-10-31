@@ -349,7 +349,7 @@ function  UploadFile(FileName, options)
 
 		local ServerFileName = options.getServerFileName();
 		if(ServerFileName=="") ServerFileName = ExtractFileName(FileName);
-		local 	encodedFname = nm.urlEncode(ServerFileName);
+		local 	encodedFname = /*nm.urlEncode*/reg_replace(ServerFileName, " ", "_");
 		nm.addQueryHeader("Slug",encodedFname);
 		nm.addQueryHeader("Expect","");
 		nm.addQueryHeader("Content-Type",GetFileMimeType(FileName));

@@ -25,6 +25,7 @@
 
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
+#include "Core/3rdpart/UriParser.h"
 
 // TODO:
 // 2. remove dependency from non-core headers ( "Common.h")
@@ -150,12 +151,17 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
         url = item.url;
         fileList_.erase(fileList_.begin());
 
-        std::string ext = IuCoreUtils::ExtractFileExt(url);
-        std::string fileName = IuCoreUtils::ExtractFileNameFromUrl(url);
+        uriparser::Uri uri(url);
+        std::string path = uri.path();
+        NetworkClient nc;
+        std::string fileName = nc.urlDecode(IuCoreUtils::ExtractFileName(path));
+        std::string ext = IuCoreUtils::ExtractFileExt(fileName);
 
         if (fileName.length() > 30) {
             fileName = fileName.substr(0, 30);
         }
+
+        
         CString possiblePath = IuCommonFunctions::IUTempFolder + Utf8ToWstring(fileName.c_str()).c_str();
         if (possiblePath.GetLength() > MAX_PATH - 4) {
             possiblePath = possiblePath.Left(MAX_PATH - 4);

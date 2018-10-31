@@ -38,6 +38,9 @@
     #undef TR
     #define TR(str) _T(str)
 #endif
+#include <json/value.h>
+#include <Core/AppParams.h>
+#include <json/writer.h>
 
 BOOL CreateFolder(LPCTSTR szFolder)
 {
@@ -132,11 +135,13 @@ bool CUpdateInfo::Parse( SimpleXml &xml)
     m_PackageName = IuCoreUtils::Utf8ToWstring(root.Attribute("Name")).c_str();
     m_UpdateUrl = IuCoreUtils::Utf8ToWstring(root.Attribute("UpdateUrl")).c_str();
     m_DownloadUrl = IuCoreUtils::Utf8ToWstring(root.Attribute("DownloadUrl")).c_str();
+    m_DownloadPage = IuCoreUtils::Utf8ToWstring(root.Attribute("DownloadPage")).c_str();
+    m_ManualUpdate = root.AttributeInt("ManualUpdate")!=0;
     m_Hash = IuCoreUtils::Utf8ToWstring(root.Attribute("Hash")).c_str();
     m_TimeStamp = root.AttributeInt("TimeStamp");
     m_DisplayName = IuCoreUtils::Utf8ToWstring(root.Attribute("DisplayName")).c_str();
         
-    if(m_PackageName.IsEmpty() || m_UpdateUrl.IsEmpty() || m_DownloadUrl.IsEmpty() || m_Hash.IsEmpty()  || !m_TimeStamp)
+    if (m_PackageName.IsEmpty() || m_UpdateUrl.IsEmpty() || (m_DownloadUrl.IsEmpty() && m_DownloadPage.IsEmpty()) || m_Hash.IsEmpty() || !m_TimeStamp)
         return false;
     int core = 0;
     core = root.AttributeInt("CoreUpdate");
@@ -174,6 +179,10 @@ bool CUpdateInfo::operator< (const CUpdateInfo& p)
     return m_TimeStamp < p.m_TimeStamp;
 }
 
+bool CUpdateInfo::isManualUpdate() const {
+    return m_ManualUpdate;
+}
+
 bool CUpdateInfo::isCoreUpdate() const
 {
     return m_CoreUpdate;
@@ -187,6 +196,10 @@ CString CUpdateInfo::displayName() const
 CString CUpdateInfo::downloadUrl() const
 {
     return m_DownloadUrl;
+}
+
+CString CUpdateInfo::downloadPage() const {
+    return m_DownloadPage;
 }
 
 CString CUpdateInfo::fileName() const
@@ -234,12 +247,16 @@ bool CUpdateManager::CheckUpdates()
         return false;
     }
 
+    int failed = 0;
     for (size_t i = 0; i < fileList.size(); i++) {
         CString fileName = IuCommonFunctions::GetDataFolder() + _T("Update\\") + fileList[i];
         if (!internal_load_update(fileName))
-            Result = false;
+            failed++;
     }
 
+    if (failed == fileList.size()) {
+        return false;
+    }
     return Result;
 }
 
@@ -250,10 +267,14 @@ const CString CUpdateManager::ErrorString()
 
 bool CUpdateManager::DoUpdates()
 {
+    nCurrentIndex = 0;
     for (size_t i = 0; i < m_updateList.size(); i++) {
-        nCurrentIndex = i;
+        if (m_updateList[i].isManualUpdate()) {
+            continue;
+        }
         if (m_stop) return 0;
         internal_do_update(m_updateList[i]);
+        nCurrentIndex++;
     }
     return true;
 }
@@ -276,13 +297,44 @@ bool CUpdateManager::internal_load_update(CString name)
     CoreFunctions::ConfigureProxy(&nm);
 
     CString url = localPackage.updateUrl();
-    url.Replace(_T("%appver%"), IuCommonFunctions::GetVersion());
-    url.Replace(_T("%name%"), localPackage.packageName());
-    url.Replace(_T("OS_NAME"), U2W(nm.urlEncode(IuCoreUtils::GetOsName())));
-    url.Replace(_T("OS_VER"), U2W(nm.urlEncode(IuCoreUtils::GetOsVersion())));
-    url.Replace(_T("CPU_FEATURES"), U2W(nm.urlEncode(IuCoreUtils::GetCpuFeatures())));
+    Json::Value request;
+   
+    const AppParams::AppVersionInfo* ver = AppParams::instance()->GetAppVersion();
+    Json::Value version;
+    version["FullString"] = ver->FullVersion;
+    version["Minor"] = ver->Minor;
+    version["Major"] = ver->Major;
+    version["Build"] = ver->Build;
+    version["Release"] = ver->Release;
+    version["BuildDate"] = ver->BuildDate;
+    version["CurlWithOpenSSL"] = ver->CurlWithOpenSSL;
+    version["Is64Bit"] = sizeof(void*) == 8;
+    request["AppVersion"] = version;
+
+    Json::Value environment;
+    Json::Value OS;
+    OS["Name"] = IuCoreUtils::GetOsName();
+    OS["Version"] = IuCoreUtils::GetOsVersion();
+    OS["Is64Bit"] = IuCoreUtils::IsOs64Bit();
+    environment["OS"] = OS;
+    environment["CPUFeatures"] = IuCoreUtils::GetCpuFeatures();
+    request["Environment"] = environment;
+    
+    Json::Value package;
+    package["Name"] = W2U(localPackage.packageName());
+
+    request["Package"] = package;
+    nm.addQueryHeader("Content-Type", "application/json");
+
+    Json::StreamWriterBuilder builder;
+    builder["commentStyle"] = "None";
+    builder["indentation"] = "   ";  
+
+    std::string jsonString = Json::writeString(builder, request);
+    nm.setUserAgent("Image Uploader " + ver->FullVersion);
     try {
-        nm.doGet(W2U(url));
+        nm.setUrl(W2U(url));
+        nm.doPost(jsonString);
     } catch ( NetworkClient::AbortedException&) {
         return false;
     }
@@ -304,12 +356,26 @@ bool CUpdateManager::internal_load_update(CString name)
 
     m_updateList.push_back(remotePackage);
     if(remotePackage.isCoreUpdate()) m_nCoreUpdates++;    
+    if (remotePackage.isManualUpdate()) {
+        m_nManualUpdates++;
+    }
+    else {
+        m_nAutoUpdates++;
+    }
     return true;
 }
 
 bool CUpdateManager::AreCoreUpdates()
 {
     return m_nCoreUpdates!=0;
+}
+
+bool CUpdateManager::AreManualUpdates() {
+    return m_nManualUpdates != 0;
+}
+
+bool CUpdateManager::AreAutoUpdates() {
+    return m_nAutoUpdates != 0;
 }
 
 bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
@@ -531,26 +597,32 @@ CUpdateManager::CUpdateManager()
 {
     m_statusCallback= 0;
     m_nCoreUpdates = 0;
+    m_nManualUpdates = 0;
     nCurrentIndex = 0;
+    m_nAutoUpdates = 0;
     
     m_nSuccessPackageUpdates = 0;
     m_stop = false;
     nm_.setProgressCallback(NetworkClient::ProgressCallback(this, &CUpdateManager::progressCallback));
 }
 
-CString CUpdateManager::generateReport()
+CString CUpdateManager::generateReport(bool manualUpdates)
 {
     CString text;
-    
+    int count = 0;
     for(size_t i=0; i<m_updateList.size(); i++)
     {
+        if (m_updateList[i].isManualUpdate() != manualUpdates) {
+            continue;
+        }
         time_t t = m_updateList[i].timeStamp();
         tm * timeinfo = localtime ( &t );
         CString date;
         date.Format(_T("[%02d.%02d.%04d]"), timeinfo->tm_mday, timeinfo->tm_mon+1, 1900+timeinfo->tm_year);
         text += _T(" * ")+m_updateList[i].displayName()+_T("  ")+date+_T("\r\n\r\n");
         text += m_updateList[i].readableText();
-        text += _T("\r\n");        
+        text += _T("\r\n");    
+        count++;
     }
     return text;
 }
@@ -623,6 +695,8 @@ void CUpdateManager::Clear()
 {
     m_updateList.clear();
     m_nCoreUpdates = 0;
+    m_nAutoUpdates = 0;
+    m_nManualUpdates = 0;
     m_nSuccessPackageUpdates = 0;
     m_stop = false;
 }

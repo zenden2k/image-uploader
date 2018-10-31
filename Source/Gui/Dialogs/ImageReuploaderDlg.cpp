@@ -18,6 +18,11 @@
 
 */
 #include "ImageReuploaderDlg.h"
+
+#include <algorithm>
+#include <set>
+
+#include <Wininet.h>
 #include "atlheaders.h"
 #include "Func/Common.h"
 #include "Core/3rdpart/pcreplusplus.h"
@@ -27,10 +32,6 @@
 #include "Core/Utils/StringUtils.h"
 #include "Core/Upload/FileQueueUploader.h"
 #include "Func/WinUtils.h"
-#include "Func/Myutils.h"
-#include <Wininet.h>
-#include <algorithm>
-#include <set>
 #include "Gui/Controls/CustomEditControl.h"
 #include "Core/LocalFileCache.h"
 #include "Core/ServiceLocator.h"
@@ -373,7 +374,7 @@ bool CImageReuploaderDlg::ExtractLinks(std::string text, std::vector<std::string
                 url = reg[1];
             }
             std::string fileExt = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt(url) );
-            if ( fileExt == "png" || fileExt == "jpg" || fileExt == "gif" || fileExt == "jpeg" || fileExt == "bmp" ) { 
+            if (fileExt == "png" || fileExt == "jpg" || fileExt == "gif" || fileExt == "jpeg" || fileExt == "bmp" || fileExt == "webp") {
                 Match match;
                 match.start = reg.get_match_start(0);
                 match.length = reg.get_match_end(0) - match.start + 1;

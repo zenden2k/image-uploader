@@ -78,6 +78,7 @@ LRESULT CUpdateDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     ::ShowWindow(GetDlgItem(IDOK), SW_HIDE);
 
     TRC(IDCANCEL, "Cancel");
+    TRC(IDC_DOWNLOADBUTTON, "Open download page");
    
     if (!m_Modal)
         Start();  // Beginning update process
@@ -88,38 +89,35 @@ LRESULT CUpdateDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& 
 {
     if (!m_bUpdateFinished)
     {
-        // Begin Update Process
-        CString pid = WinUtils::IntToStr(GetCurrentProcessId());
+// Begin Update Process
+CString pid = WinUtils::IntToStr(GetCurrentProcessId());
 
-        BOOL elev = false;
-        bool isVista = WinUtils::IsVistaOrLater();
-        if (isVista)
-            IsElevated(&elev);
-        bool CanWrite = WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"));
+BOOL elev = false;
+bool isVista = WinUtils::IsVistaOrLater();
+if (isVista)
+IsElevated(&elev);
+bool CanWrite = WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"));
 
-        bool NeedElevation = m_UpdateManager.AreCoreUpdates() && isVista && !elev && !CmdLine.IsOption(_T("update"));
-        NeedElevation |= isVista && !elev && !CanWrite;
-        //    && !CanWriteToFolder(IU_GetDataFolder());
-        if (NeedElevation)
-        {
-            IU_RunElevated(CString(_T("/update ")) + _T("/waitforpid=") + pid);
-            m_bClose = 2;
+bool NeedElevation = m_UpdateManager.AreCoreUpdates() && isVista && !elev && !CmdLine.IsOption(_T("update"));
+NeedElevation |= isVista && !elev && !CanWrite;
+//    && !CanWriteToFolder(IU_GetDataFolder());
+if (NeedElevation) {
+    IU_RunElevated(CString(_T("/update ")) + _T("/waitforpid=") + pid);
+    m_bClose = 2;
 
-            return 0;
-        }
-        Start();
-    }
+    return 0;
+}
+Start();
+    } else {
+    // Closing and reexecuting image uploader
+    CString pid = WinUtils::IntToStr(GetCurrentProcessId());
+    if (!CmdLine.IsOption(_T("update")))
+        IULaunchCopy(_T("/afterupdate /waitforpid=") + pid);  // executing new IU copy with the same command line params
     else
-    {
-        // Closing and reexecuting image uploader
-        CString pid = WinUtils::IntToStr(GetCurrentProcessId());
-        if (!CmdLine.IsOption(_T("update")))
-            IULaunchCopy(_T("/afterupdate /waitforpid=") + pid);  // executing new IU copy with the same command line params
-        else
-            IULaunchCopy(_T("/afterupdate /waitforpid=") + pid, CAtlArray<CString>());
+        IULaunchCopy(_T("/afterupdate /waitforpid=") + pid, CAtlArray<CString>());
 
-        m_bClose = 2;
-        return 0;
+    m_bClose = 2;
+    return 0;
     }
 
     return 0;
@@ -127,13 +125,25 @@ LRESULT CUpdateDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& 
 
 LRESULT CUpdateDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    if (IsRunning())
-    {
+    if (IsRunning()) {
         m_UpdateManager.stop();
-    }
-    else
-    {
+    } else {
         m_bClose = true; // Closing "modal" dialog
+    }
+    return 0;
+}
+
+LRESULT CUpdateDlg::OnDownloadButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    for (const auto& upd : m_UpdateManager.m_updateList) {
+        if (upd.isManualUpdate() && !upd.downloadPage().IsEmpty()) {
+           
+            /*if (MessageBox(message, APPNAME, MB_ICONINFORMATION | MB_YESNO) == IDYES)*/ {
+                HINSTANCE hinst = ShellExecute(0, L"open", upd.downloadPage(), NULL, NULL, SW_SHOWNORMAL);
+                if (reinterpret_cast<int>(hinst) <= 32) {
+                    LOG(ERROR) << "ShellExecute failed. Error code=" << reinterpret_cast<int>(hinst);
+                }
+            }
+        }
     }
     return 0;
 }
@@ -145,8 +155,7 @@ void CUpdateDlg::CheckUpdates()
     m_Checked = true;
 
     SetDlgItemText(IDC_UPDATEINFO, TR("Checking for updates..."));
-    if (!m_UpdateManager.CheckUpdates())
-    {
+    if (!m_UpdateManager.CheckUpdates()) {
         TRC(IDCANCEL, "Close");
         m_Checked = false;
         CString errorStr = TR("An error occured while receiving update information from server.");
@@ -157,20 +166,28 @@ void CUpdateDlg::CheckUpdates()
     }
 
     Settings.LastUpdateTime = static_cast<int>(time(0));
-    if (m_UpdateManager.AreUpdatesAvailable())
-    {
-        if ( !m_UpdateManager.AreCoreUpdates() && !IsWindowVisible() ) {
+    if (m_UpdateManager.AreManualUpdates()) {
+        CString text2 = m_UpdateManager.generateReport(true);
+        CString message = TR("A new version is available:");
+        SetDlgItemText(IDC_MANUALUPDATEINFO, message + _T("\r\n") + text2);
+        ::ShowWindow(GetDlgItem(IDC_DOWNLOADBUTTON), SW_SHOW);
+    }
+    else {
+        SetDlgItemText(IDC_MANUALUPDATEINFO, TR("You are using the latest Image Uploader version."));
+    }
+
+    if (m_UpdateManager.AreAutoUpdates()) {
+        if (!m_UpdateManager.AreCoreUpdates() && !IsWindowVisible()) {
             DoUpdates();
             return;
         }
-        if (CmdLine.IsOption(_T("update")))
-        {
+        if (CmdLine.IsOption(_T("update"))) {
             DoUpdates();
             return;
         }
 
         ::ShowWindow(GetDlgItem(IDOK), SW_SHOW);
-        TRC(IDOK, "Update");
+        TRC(IDOK, "Update components");
         if (m_UpdateCallback)
             m_UpdateCallback->UpdateAvailabilityChanged(true);
 
@@ -178,19 +195,17 @@ void CUpdateDlg::CheckUpdates()
             return;
 
         if (!IsWindowVisible())
-            SetTimer(2, 2000, 0);
+            SetTimer(2, 2000, 0); // Show update dialog after 2 seconds
 
         CString text = m_UpdateManager.generateReport();
         SetDlgItemText(IDC_UPDATEINFO, text);
-        return;
     }
-    else
-    {
+    else {
         TRC(IDCANCEL, "Close");
-        CString text = TR("There are no updates available.");
-        //text += _T("\r\n\r\n") + m_UpdateManager.generateReportNoUpdates();
+        CString text = TR("No updates for Image Uploader's components are available");
         SetDlgItemText(IDC_UPDATEINFO, text);
     }
+
 }
 
 void CUpdateDlg::DoUpdates()
@@ -201,6 +216,9 @@ void CUpdateDlg::DoUpdates()
 
     for (size_t i = 0; i < m_UpdateManager.m_updateList.size(); i++)
     {
+        if (m_UpdateManager.m_updateList[i].isManualUpdate()) {
+            continue;
+        }
         m_listView.AddItem(i, 0, m_UpdateManager.m_updateList[i].displayName());
         m_listView.AddItem(i, 1, TR("Queued"));
     }

@@ -101,6 +101,11 @@ class NetworkClient: public INetworkClient
         void setProgressCallback(const ProgressCallback& func);
         /*! @endcond */
         const std::string urlEncode(const std::string& str);
+
+        /**
+        @since 1.3.2
+        */
+        const std::string urlDecode(const std::string& str);
         const std::string getCurlResultString() override;
         void setCurlOption(int option, const std::string &value) override;
         void setCurlOptionInt(int option, long value) override;

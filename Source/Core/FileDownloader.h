@@ -22,12 +22,15 @@
 #define IU_CORE_FILEDOWNLOADER_H
 
 #include "atlheaders.h"
-#include "Core/3rdpart/FastDelegate.h"
-#include "Core/Network/NetworkClient.h"
-#include "Core/Utils/CoreTypes.h"
+
 #include <mutex>
 #include <atomic>
 #include <thread>
+
+#include "Core/3rdpart/FastDelegate.h"
+#include "Core/Network/NetworkClient.h"
+#include "Core/Utils/CoreTypes.h"
+
 
 class CFileDownloader
 {

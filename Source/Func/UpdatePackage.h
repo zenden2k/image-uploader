@@ -54,8 +54,10 @@ class CUpdateInfo
         bool    operator<(const CUpdateInfo& p);
 
         bool isCoreUpdate() const;
+        bool isManualUpdate() const;
         CString displayName() const;
         CString downloadUrl() const;
+        CString downloadPage() const;
         CString fileName() const;
         CString packageName() const;
         CString readableText() const;
@@ -65,9 +67,10 @@ class CUpdateInfo
         void setFileName(const CString & name);
     protected:
         CString m_ReadableText;
-        CString m_PackageName, m_DownloadUrl, m_UpdateUrl, m_Hash;
+        CString m_PackageName, m_DownloadUrl, m_UpdateUrl, m_Hash, m_DownloadPage;
         CString m_FileName;
         bool m_CoreUpdate;
+        bool m_ManualUpdate;
         int m_TimeStamp;
         CString m_DisplayName;
         CString m_Buffer;
@@ -113,12 +116,14 @@ class CUpdateManager: public CUpdateStatusCallback
         bool CheckUpdates();
         bool DoUpdates();
         const CString ErrorString();
-        CString generateReport();
+        CString generateReport(bool manualUpdates = false);
         CString generateReportNoUpdates() const;
         CString generateUpdateMessage();
         void Clear();
         bool AreUpdatesAvailable();
         bool AreCoreUpdates();
+        bool AreManualUpdates();
+        bool AreAutoUpdates();
         void setUpdateStatusCallback(CUpdateStatusCallback * callback);
         int successPackageUpdatesCount() const;
         void stop();
@@ -137,6 +142,8 @@ class CUpdateManager: public CUpdateStatusCallback
         int m_nSuccessPackageUpdates;
         std::atomic<bool> m_stop;
         int m_nCoreUpdates;
+        int m_nManualUpdates;
+        int m_nAutoUpdates;
         std::vector<CUpdateInfo> m_localUpdateInfo;
     private:
         DISALLOW_COPY_AND_ASSIGN(CUpdateManager);

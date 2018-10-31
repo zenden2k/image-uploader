@@ -96,6 +96,7 @@ void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
         Func("addQueryParamFile", &NetworkClient::addQueryParamFile).
         Func("responseHeaderCount", &NetworkClient::responseHeaderCount).
         Func("urlEncode", &NetworkClient::urlEncode).
+        Func("urlDecode", &NetworkClient::urlDecode).
         Func("errorString", &NetworkClient::errorString).
         Func("doUpload", &NetworkClient::doUpload).
         Func("setMethod", &NetworkClient::setMethod).

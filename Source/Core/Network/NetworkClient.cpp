@@ -517,6 +517,15 @@ const std::string NetworkClient::urlEncode(const std::string& str)
     curl_free(encoded);
     return res;
 }
+
+const std::string NetworkClient::urlDecode(const std::string& str) {
+    char * decoded = curl_easy_unescape(curl_handle, str.c_str(), str.length(), nullptr);
+    std::string res = decoded;
+    res += "";
+    curl_free(decoded);
+    return res;
+}
+
 const std::string NetworkClient::errorString()
 {
     return m_errorBuffer;
@@ -566,7 +575,7 @@ void NetworkClient::private_checkResponse()
         if (!errorLogIdString_.empty()) {
             errorDescr = errorLogIdString_ + "\r\n";
         }
-        errorDescr += "Request to the URL '" + m_url + "' failed. \r\n";
+        errorDescr += "Request failed, URL: '" + m_url + "'. \r\n";
         
         if (code) {
             errorDescr += "Response code: " + IuCoreUtils::toString(code) + "\r\n";
