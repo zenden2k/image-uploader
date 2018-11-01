@@ -22,10 +22,11 @@
 
 #include <time.h>
 #include "atlheaders.h"
+#include <json/value.h>
+#include <json/writer.h>
 #include "3rdpart/unzipper.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Core/Utils/StringUtils.h"
-#include "Func/Common.h"
 #include "Core/Utils/CryptoUtils.h"
 #include "WinUtils.h"
 #include "IuCommonFunctions.h"
@@ -33,14 +34,12 @@
 #include "Core/CommonDefs.h"
 #include "Core/ServiceLocator.h"
 #include "Core/CoreFunctions.h"
+#include "Core/AppParams.h"
 
 #ifdef IU_CLI
     #undef TR
     #define TR(str) _T(str)
 #endif
-#include <json/value.h>
-#include <Core/AppParams.h>
-#include <json/writer.h>
 
 BOOL CreateFolder(LPCTSTR szFolder)
 {
@@ -99,18 +98,17 @@ bool CUpdateInfo::SaveToFile(const CString& filename)
     FILE *f = _wfopen(filename, _T("wb"));
     if(!f) return false;
     
-    std::string outbuf = W2U(m_Buffer);
-    fwrite(outbuf.c_str(), 1, outbuf.size(), f);
+    fwrite(m_Buffer.c_str(), 1, m_Buffer.size(), f);
     fclose(f);
     return false;
 }
 
-bool CUpdateInfo::LoadUpdateFromBuffer(const CString& buffer)
+bool CUpdateInfo::LoadUpdateFromBuffer(const std::string& buffer)
 {
     SimpleXml m_xml;
-    if(!m_xml.LoadFromString(W2U(buffer)))
+    if(!m_xml.LoadFromString(buffer))
     {
-        ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), CString(_T("Failed to load update file \r\n")) + _T("\r\nServer answer:\r\n") + buffer);
+        ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), CString(_T("Failed to load update file \r\n")) + _T("\r\nServer answer:\r\n") + U2W(buffer));
         return false;
     }
     m_Buffer = buffer;
@@ -141,8 +139,18 @@ bool CUpdateInfo::Parse( SimpleXml &xml)
     m_TimeStamp = root.AttributeInt("TimeStamp");
     m_DisplayName = IuCoreUtils::Utf8ToWstring(root.Attribute("DisplayName")).c_str();
         
-    if (m_PackageName.IsEmpty() || m_UpdateUrl.IsEmpty() || (m_DownloadUrl.IsEmpty() && m_DownloadPage.IsEmpty()) || m_Hash.IsEmpty() || !m_TimeStamp)
+    if (m_PackageName.IsEmpty() || m_UpdateUrl.IsEmpty() || !m_TimeStamp)
         return false;
+
+    if (!m_ManualUpdate) {
+        if (m_DownloadUrl.IsEmpty() || m_Hash.IsEmpty()) {
+            return false;
+        }
+    } else {
+        if (m_DownloadPage.IsEmpty()) {
+            return false;
+        }
+    }
     int core = 0;
     core = root.AttributeInt("CoreUpdate");
     m_CoreUpdate = core!=0;
@@ -169,7 +177,7 @@ bool CUpdateInfo::CheckUpdates()
     return true;
 }
 
-const CString CUpdateInfo::getHash()
+CString CUpdateInfo::getHash() const
 {
     return m_Hash;
 }
@@ -247,7 +255,7 @@ bool CUpdateManager::CheckUpdates()
         return false;
     }
 
-    int failed = 0;
+    size_t failed = 0;
     for (size_t i = 0; i < fileList.size(); i++) {
         CString fileName = IuCommonFunctions::GetDataFolder() + _T("Update\\") + fileList[i];
         if (!internal_load_update(fileName))
@@ -260,7 +268,7 @@ bool CUpdateManager::CheckUpdates()
     return Result;
 }
 
-const CString CUpdateManager::ErrorString()
+CString CUpdateManager::ErrorString() const
 {
     return m_ErrorStr;
 }
@@ -269,12 +277,11 @@ bool CUpdateManager::DoUpdates()
 {
     nCurrentIndex = 0;
     for (size_t i = 0; i < m_updateList.size(); i++) {
-        if (m_updateList[i].isManualUpdate()) {
-            continue;
+        if (m_stop) {
+            return false;
         }
-        if (m_stop) return 0;
+        nCurrentIndex = i;
         internal_do_update(m_updateList[i]);
-        nCurrentIndex++;
     }
     return true;
 }
@@ -309,6 +316,11 @@ bool CUpdateManager::internal_load_update(CString name)
     version["BuildDate"] = ver->BuildDate;
     version["CurlWithOpenSSL"] = ver->CurlWithOpenSSL;
     version["Is64Bit"] = sizeof(void*) == 8;
+    ITranslator* translator = ServiceLocator::instance()->translator();
+    if (translator != nullptr) {
+        version["Language"] = translator->getCurrentLanguage();
+        version["Locale"] = translator->getCurrentLocale();
+    }
     request["AppVersion"] = version;
 
     Json::Value environment;
@@ -322,6 +334,7 @@ bool CUpdateManager::internal_load_update(CString name)
     
     Json::Value package;
     package["Name"] = W2U(localPackage.packageName());
+    package["LocalTimestamp"] = localPackage.timeStamp();
 
     request["Package"] = package;
     nm.addQueryHeader("Content-Type", "application/json");
@@ -345,37 +358,42 @@ bool CUpdateManager::internal_load_update(CString name)
         return false;
     }
 
-    std::wstring res = IuCoreUtils::Utf8ToWstring( nm.responseBody());
-    if(!remotePackage.LoadUpdateFromBuffer(res.c_str()))
+    if (!remotePackage.LoadUpdateFromBuffer(nm.responseBody()))
     {
         return false;
     }
 
-    if(!localPackage.CanUpdate(remotePackage )) return true;
+    if (!localPackage.CanUpdate(remotePackage)) {
+        return true;
+    }
     remotePackage.setFileName(localPackage.fileName());
 
-    m_updateList.push_back(remotePackage);
-    if(remotePackage.isCoreUpdate()) m_nCoreUpdates++;    
     if (remotePackage.isManualUpdate()) {
-        m_nManualUpdates++;
+        m_manualUpdatesList.push_back(remotePackage);
     }
     else {
-        m_nAutoUpdates++;
+        if (remotePackage.isCoreUpdate()) {
+            m_nCoreUpdates++;
+        }
+
+        m_updateList.push_back(remotePackage);
     }
+   
+   
     return true;
 }
 
 bool CUpdateManager::AreCoreUpdates()
 {
-    return m_nCoreUpdates!=0;
+    return m_nCoreUpdates != 0;
 }
 
 bool CUpdateManager::AreManualUpdates() {
-    return m_nManualUpdates != 0;
+    return m_manualUpdatesList.size() != 0;
 }
 
 bool CUpdateManager::AreAutoUpdates() {
-    return m_nAutoUpdates != 0;
+    return m_updateList.size() != 0;
 }
 
 bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
@@ -402,7 +420,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
     hash.MakeLower();
     if( hash != IuCoreUtils::Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))).c_str() || ui.getHash().IsEmpty())
     {
-        updateStatus(0, CString(TR("MD5 check of the update package failed "))+IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)filename)).c_str());
+        updateStatus(nCurrentIndex, CString(TR("MD5 check of the update package failed ")) + IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)filename)).c_str());
         return 0;
     }
 
@@ -410,7 +428,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
     CString unzipFolder = IuCommonFunctions::IUTempFolder + ui.packageName();
     if(!unzipper.UnzipTo(unzipFolder))
     {
-        updateStatus(0, TR("Unable to unpack archive ")+ filename);
+        updateStatus(nCurrentIndex, TR("Unable to unpack archive ") + filename);
         return 0;
     }
 
@@ -436,7 +454,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 
 CUpdatePackage::CUpdatePackage()
 {
-    m_statusCallback = 0;
+    m_statusCallback = nullptr;
     srand(static_cast<unsigned int>(time(nullptr)));
     m_nUpdatedFiles = 0;
     m_nTotalFiles = 0;
@@ -539,14 +557,10 @@ bool CUpdatePackage::doUpdate()
         IuStringUtils::Split(ue.flags, ",", tokens, -1);
         bool skipFile = false;
         bool isWin64Os = WinUtils::IsWindows64Bit();
-        for(size_t i=0; i<tokens.size(); i++)
-        {
-            if(tokens[i] == "os_win64bit")
-            {
+        for(const auto& token: tokens) {
+            if (token == "os_win64bit") {
                 skipFile = !isWin64Os;
-            }
-            else if(tokens[i] == "os_win32bit")
-            {
+            } else if (token == "os_win32bit") {
                 skipFile = isWin64Os;
             }
         }
@@ -595,11 +609,9 @@ void CUpdatePackage::setStatusText(const CString& text)
 
 CUpdateManager::CUpdateManager()
 {
-    m_statusCallback= 0;
+    m_statusCallback = nullptr;
     m_nCoreUpdates = 0;
-    m_nManualUpdates = 0;
     nCurrentIndex = 0;
-    m_nAutoUpdates = 0;
     
     m_nSuccessPackageUpdates = 0;
     m_stop = false;
@@ -609,33 +621,16 @@ CUpdateManager::CUpdateManager()
 CString CUpdateManager::generateReport(bool manualUpdates)
 {
     CString text;
-    int count = 0;
-    for(size_t i=0; i<m_updateList.size(); i++)
-    {
-        if (m_updateList[i].isManualUpdate() != manualUpdates) {
-            continue;
-        }
-        time_t t = m_updateList[i].timeStamp();
+    std::vector<CUpdateInfo>& list = manualUpdates ? m_manualUpdatesList : m_updateList;
+
+    for(const auto& item: list) {
+        time_t t = item.timeStamp();
         tm * timeinfo = localtime ( &t );
         CString date;
         date.Format(_T("[%02d.%02d.%04d]"), timeinfo->tm_mday, timeinfo->tm_mon+1, 1900+timeinfo->tm_year);
-        text += _T(" * ")+m_updateList[i].displayName()+_T("  ")+date+_T("\r\n\r\n");
-        text += m_updateList[i].readableText();
+        text += _T(" * ") + item.displayName() + _T("  ") + date + _T("\r\n\r\n");
+        text += item.readableText();
         text += _T("\r\n");    
-        count++;
-    }
-    return text;
-}
-
-CString CUpdateManager::generateReportNoUpdates() const {
-    CString text = _T("Components:\r\n\r\n") ;
-
-    for (const auto& item : m_localUpdateInfo) {
-        time_t t = item.timeStamp();
-        tm * timeinfo = localtime(&t);
-        CString date;
-        date.Format(_T("%02d.%02d.%04d"), timeinfo->tm_mday, timeinfo->tm_mon + 1, 1900 + timeinfo->tm_year);
-        text += item.displayName() + _T("  (") + date + _T(")\r\n");
     }
     return text;
 }
@@ -686,7 +681,7 @@ int CUpdateManager::progressCallback(NetworkClient *clientp, double dltotal, dou
     percent = int((dlnow/ dltotal) * 100);
     if(percent > 100) percent = 0;
     text.Format(TR("Downloaded %s of %s (%d %%)"), static_cast<LPCTSTR>(buf1), static_cast<LPCTSTR>(buf2), percent);
-    um->updateStatus(0, text);
+    um->updateStatus(nCurrentIndex, text);
     if(um->m_stop) return -1;
     return 0;
 }
@@ -694,9 +689,8 @@ int CUpdateManager::progressCallback(NetworkClient *clientp, double dltotal, dou
 void CUpdateManager::Clear()
 {
     m_updateList.clear();
+    m_manualUpdatesList.clear();
     m_nCoreUpdates = 0;
-    m_nAutoUpdates = 0;
-    m_nManualUpdates = 0;
     m_nSuccessPackageUpdates = 0;
     m_stop = false;
 }

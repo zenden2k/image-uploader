@@ -24,11 +24,13 @@
 #pragma once
 
 #include <string>
+#include <atomic>
+
 #include "atlheaders.h"
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Network/NetworkClient.h"
 #include "Core/Utils/SimpleXml.h"
-#include <atomic>
+
 
 struct CUpdateItem
 {
@@ -44,12 +46,12 @@ class CUpdateInfo
     public:
         CUpdateInfo();
         bool LoadUpdateFromFile(const CString& filename);
-        bool LoadUpdateFromBuffer(const CString& buffer);
+        bool LoadUpdateFromBuffer(const std::string& buffer);
         bool DoUpdate(const CUpdateInfo& newPackage);
         bool SaveToFile(const CString& filename);
         bool Parse(SimpleXml& xml);    
         bool CheckUpdates();
-        const CString getHash();
+        CString getHash() const;
         bool CanUpdate(const CUpdateInfo& newInfo);
         bool    operator<(const CUpdateInfo& p);
 
@@ -73,7 +75,7 @@ class CUpdateInfo
         bool m_ManualUpdate;
         int m_TimeStamp;
         CString m_DisplayName;
-        CString m_Buffer;
+        std::string m_Buffer;
 };
 
 class CUpdateStatusCallback
@@ -115,9 +117,8 @@ class CUpdateManager: public CUpdateStatusCallback
         CUpdateManager();
         bool CheckUpdates();
         bool DoUpdates();
-        const CString ErrorString();
+        CString ErrorString() const;
         CString generateReport(bool manualUpdates = false);
-        CString generateReportNoUpdates() const;
         CString generateUpdateMessage();
         void Clear();
         bool AreUpdatesAvailable();
@@ -128,9 +129,10 @@ class CUpdateManager: public CUpdateStatusCallback
         int successPackageUpdatesCount() const;
         void stop();
         std::vector<CUpdateInfo> m_updateList;
+        std::vector<CUpdateInfo> m_manualUpdatesList;
     protected:
         int progressCallback(NetworkClient *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
-        void updateStatus(int packageIndex, const CString& status);
+        void updateStatus(int packageIndex, const CString& status) override;
         bool internal_load_update(CString name);
         bool internal_do_update(CUpdateInfo& ui);
 
@@ -142,8 +144,6 @@ class CUpdateManager: public CUpdateStatusCallback
         int m_nSuccessPackageUpdates;
         std::atomic<bool> m_stop;
         int m_nCoreUpdates;
-        int m_nManualUpdates;
-        int m_nAutoUpdates;
         std::vector<CUpdateInfo> m_localUpdateInfo;
     private:
         DISALLOW_COPY_AND_ASSIGN(CUpdateManager);
