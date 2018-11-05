@@ -44,9 +44,10 @@ CAppModule _Module;
 
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
-    IuCommonFunctions::CreateTempFolder();
+    CString commonTempFolder, tempFolder;
+    IuCommonFunctions::CreateTempFolder(commonTempFolder, tempFolder);
     
-    AppParams::instance()->setTempDirectory(W2U(IuCommonFunctions::IUTempFolder));
+    AppParams::instance()->setTempDirectory(W2U(tempFolder));
     std::vector<CString> fileList;
     WinUtils::GetFolderFileList( fileList, WinUtils::GetAppFolder() + _T("\\"), _T("*.old") );
     for ( const auto& file : fileList ) {
@@ -118,20 +119,20 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
     _Module.RemoveMessageLoop();
 
     // Remove temporary files
-    IuCommonFunctions::ClearTempFolder( IuCommonFunctions::IUTempFolder ); 
+    IuCommonFunctions::ClearTempFolder( tempFolder ); 
     std::vector<CString> folders;
-    WinUtils::GetFolderFileList( folders, IuCommonFunctions::IUCommonTempFolder, "iu_temp_*" );
+    WinUtils::GetFolderFileList( folders, commonTempFolder, "iu_temp_*" );
     for ( const auto& folder : folders) {
         // Extract Proccess ID from temp folder name
         CString pidStr = folder;
         pidStr.Replace( _T("iu_temp_"), _T("") );
         unsigned long pid =  wcstoul( pidStr, 0, 16 ) ^  0xa1234568;
         if ( pid && !WinUtils::IsProcessRunning( pid ) )
-            IuCommonFunctions::ClearTempFolder(IuCommonFunctions::IUCommonTempFolder + _T("\\") + folder);
+            IuCommonFunctions::ClearTempFolder(commonTempFolder + _T("\\") + folder);
     }
     
     // deletes empty temp directory
-    RemoveDirectory( IuCommonFunctions::IUCommonTempFolder );
+    RemoveDirectory( commonTempFolder );
     LogWindow.DestroyWindow();
     return nRet;
 }

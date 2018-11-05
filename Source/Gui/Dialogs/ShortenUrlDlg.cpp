@@ -29,7 +29,6 @@
 #include "Func/WebUtils.h"
 #include "Core/Upload/UploadManager.h"
 #include "Core/CoreFunctions.h"
-#include "Core/ServiceLocator.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 
 // CShortenUrlDlg
@@ -50,7 +49,7 @@ CShortenUrlDlg::~CShortenUrlDlg()
 LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     CenterWindow(GetParent());
-    PrevClipboardViewer = SetClipboardViewer();
+    //PrevClipboardViewer = SetClipboardViewer();
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
  
     ::SetFocus(GetDlgItem(IDOK));
@@ -127,19 +126,13 @@ LRESULT CShortenUrlDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl
         uploadManager_->stop();
         return 0;
     }
-    /*if(m_FileDownloader.IsRunning()) 
-        m_FileDownloader.stop();
-    else
-    {
-        Settings.WatchClipboard = SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_GETCHECK) != 0;
-        EndDialog(wID);
-    }*/
+
     OnClose();
     EndDialog(wID);
     return 0;
 }
 
-LRESULT CShortenUrlDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+/*LRESULT CShortenUrlDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     HWND hwndRemove = reinterpret_cast<HWND>(wParam);  // handle of window being removed 
     HWND hwndNext = reinterpret_cast<HWND>(lParam);
@@ -153,7 +146,7 @@ void CShortenUrlDlg::OnDrawClipboard()
 {
     bool IsClipboard = IsClipboardFormatAvailable(CF_TEXT)!=0;
 
-    if(IsClipboard && SendDlgItemMessage(IDC_WATCHCLIPBOARD,BM_GETCHECK)==BST_CHECKED && !m_FileDownloader.isRunning()    )
+    if(IsClipboard && SendDlgItemMessage(IDC_WATCHCLIPBOARD,BM_GETCHECK)==BST_CHECKED  )
     {
         CString str;
         WinUtils::GetClipboardText(str);
@@ -163,10 +156,11 @@ void CShortenUrlDlg::OnDrawClipboard()
     //Sending WM_DRAWCLIPBOARD msg to the next window in the chain
     if(PrevClipboardViewer) ::SendMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0); 
 }
+*/
 
 LRESULT CShortenUrlDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    ChangeClipboardChain(PrevClipboardViewer);
+    //ChangeClipboardChain(PrevClipboardViewer);
     return 0;
 }
 

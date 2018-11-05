@@ -27,8 +27,8 @@ class CShortenUrlDlg:    public CDialogImpl <CShortenUrlDlg>,
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-            MSG_WM_DRAWCLIPBOARD(OnDrawClipboard)
-            MESSAGE_HANDLER(WM_CHANGECBCHAIN, OnChangeCbChain)
+            //MSG_WM_DRAWCLIPBOARD(OnDrawClipboard)
+            //MESSAGE_HANDLER(WM_CHANGECBCHAIN, OnChangeCbChain)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
             MSG_WM_CTLCOLORSTATIC(OnCtlColorMsgDlg)
             CHAIN_MSG_MAP(CDialogResize<CShortenUrlDlg>)
@@ -47,13 +47,13 @@ class CShortenUrlDlg:    public CDialogImpl <CShortenUrlDlg>,
             //DLGRESIZE_CONTROL(IDC_IMAGEDOWNLOADERTIP, DLSZ_SIZE_X)
         END_DLGRESIZE_MAP()
         
-        HWND PrevClipboardViewer;
+        //HWND PrevClipboardViewer;
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-        LRESULT OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        void OnDrawClipboard();
+        //LRESULT OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        //void OnDrawClipboard();
         LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -68,7 +68,6 @@ class CShortenUrlDlg:    public CDialogImpl <CShortenUrlDlg>,
         bool StartProcess();
         void ProcessFinished();
 
-        CFileDownloader m_FileDownloader;
         CString m_InitialBuffer;
         CWizardDlg *m_WizardDlg;
         UploadManager* uploadManager_;

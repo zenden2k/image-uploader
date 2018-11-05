@@ -343,13 +343,11 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
         SetStatus(stUserDescription, Action.Description);
     else
     {
-        if (Action.Type == "upload")
+        if (Action.Type == "upload") {
             SetStatus(stUploading);
-        else
-        if (Action.Type == "login" && (m_UploadData->NeedAuthorization && li.DoAuth))
+        } else if (Action.Type == "login" && (m_UploadData->NeedAuthorization && li.DoAuth)) {
             SetStatus(stAuthorization);
-        else
-        {
+        } else {
             SetStatus(stPerformingAction);
         }
     }

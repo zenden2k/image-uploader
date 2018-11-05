@@ -2,6 +2,7 @@
 
 #include "versioninfo.h"
 #include "Core/Utils/StringUtils.h"
+#include "Core/Utils/CoreUtils.h"
 
 AppParams::AppParams() {
     isGui_ = true;
@@ -69,4 +70,10 @@ void AppParams::setIsGui(bool isGui) {
 bool AppParams::isGui() const {
     return isGui_;
 }
+
+#ifdef _WIN32
+CString AppParams::tempDirectoryW() const {
+    return IuCoreUtils::Utf8ToWstring(tempDirectory_).c_str();
+}
+#endif
 

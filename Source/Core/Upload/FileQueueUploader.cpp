@@ -18,16 +18,15 @@
 
  */
 
+
 #include "FileQueueUploader.h"
-#include <algorithm>
+
 #include "Core/Upload/UploadTask.h"
-#include "Core/Upload/FileUploadTask.h"
 
-
-#ifndef IU_CLI
+/*#ifndef IU_CLI
     #include "Gui/Dialogs/LogWindow.h"
-#endif
-#include "Core/Upload/Uploader.h"
+#endif*/
+//#include "Core/Upload/Uploader.h"
 
 #include "FileQueueUploaderPrivate.h"
 /* public CFileQueueUploader class */

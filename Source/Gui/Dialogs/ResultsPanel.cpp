@@ -32,6 +32,7 @@
 #include "Core/ServiceLocator.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Func/MediaInfoHelper.h"
+#include "Core/AppParams.h"
 
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>  & urlList, bool openedFromHistory) :WizardDlg(dlg), UrlList(urlList)
@@ -889,7 +890,7 @@ LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND h
             url = this->UrlList[0].getDownloadUrl();
         }
     } else {
-        CString outputTempFileName = IuCommonFunctions::IUTempFolder  + "preview.html";
+        CString outputTempFileName = AppParams::instance()->tempDirectoryW()  + "preview.html";
         CString code = GenerateOutput();
         /*if ( m_Page == 0) {
             code = Utf8ToWCstring(IuTextUtils::BbCodeToHtml(WCstringToUtf8(code)));

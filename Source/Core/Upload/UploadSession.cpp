@@ -1,7 +1,6 @@
 ﻿#include "UploadSession.h"
 
 #include "UploadTask.h"
-#include <algorithm>
 
 UploadSession::UploadSession()
 {
@@ -208,7 +207,7 @@ std::shared_ptr<UploadTask> UploadSession::getTask(int index)
 
 void UploadSession::taskFinished(UploadTask* task)
 {
-    finishedCount_++;
+    ++finishedCount_;
     std::lock_guard<std::mutex> lock(finishMutex_);
     if (!finishedSignalSent_ && isFinished()) {
         for (const auto& it : sessionFinishedCallbacks_) {
@@ -220,6 +219,7 @@ void UploadSession::taskFinished(UploadTask* task)
 
 void UploadSession::childTaskAdded(UploadTask* task)
 {
+    finishedSignalSent_ = false;
     notifyTaskAdded(task);
 }
 

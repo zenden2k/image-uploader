@@ -40,12 +40,13 @@
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/CoreFunctions.h"
 #include "Core/3rdpart/UriParser.h"
+#include "Core/AppParams.h"
 
 const TCHAR CImageReuploaderDlg::LogTitle[] = _T("Image Reuploader");
 
 // CImageReuploaderDlg
 CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager *  uploadManager,
-    UploadEngineManager *uploadEngineManager, const CString &initialBuffer)
+    UploadEngineManager *uploadEngineManager, const CString &initialBuffer) :m_FileDownloader(AppParams::instance()->tempDirectory())
 {
     m_WizardDlg = wizardDlg;
     m_InitialBuffer = initialBuffer;

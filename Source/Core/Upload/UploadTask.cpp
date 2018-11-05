@@ -404,7 +404,7 @@ int UploadTask::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<Upload
         return 0;
     }
     int count = 0;
-    for (auto it = childTasks_.begin(); it != childTasks_.end(); it++)
+    for (auto it = childTasks_.begin(); it != childTasks_.end(); ++it)
     {
         if (it->get()->status()== StatusInQueue )
         {
@@ -456,7 +456,7 @@ std::string UploadTask::UploaderStatusToString(StatusType status, int actionInde
         result = TR("Autorization on server...");
         break;
     case stPerformingAction:
-        result = str(boost::format(TR("Doing action #%d..."))% actionIndex);
+        result = str(boost::format(TR("Performing action #%d..."))% actionIndex);
         break;
     case stUserDescription:
         result = param;

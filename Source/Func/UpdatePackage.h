@@ -114,7 +114,7 @@ class CUpdatePackage
 class CUpdateManager: public CUpdateStatusCallback
 {
     public:
-        CUpdateManager();
+        explicit CUpdateManager(const CString& tempDirectory);
         bool CheckUpdates();
         bool DoUpdates();
         CString ErrorString() const;
@@ -137,6 +137,7 @@ class CUpdateManager: public CUpdateStatusCallback
         bool internal_do_update(CUpdateInfo& ui);
 
         CString m_ErrorStr;
+        CString m_TempDirectory;
         int nCurrentIndex;
         CUpdateStatusCallback *m_statusCallback;
         

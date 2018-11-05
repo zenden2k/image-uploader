@@ -890,14 +890,14 @@ STDMETHODIMP CWizardDlg::DragLeave( void)
 CString MakeTempFileName(const CString& FileName)
 {
     CString FileNameBuf;
-    FileNameBuf = IuCommonFunctions::IUTempFolder + FileName;
+    FileNameBuf = AppParams::instance()->tempDirectoryW() + FileName;
 
    if(WinUtils::FileExists(FileNameBuf))
     {
         CString OnlyName;
         OnlyName = WinUtils::GetOnlyFileName(FileName);
         CString Ext = WinUtils::GetFileExt(FileName);
-        FileNameBuf = IuCommonFunctions::IUTempFolder + OnlyName + _T("_")+ WinUtils::IntToStr(GetTickCount()^33333) + (Ext? _T("."):_T("")) + Ext;
+        FileNameBuf = AppParams::instance()->tempDirectoryW() + OnlyName + _T("_") + WinUtils::IntToStr(GetTickCount() ^ 33333) + (Ext ? _T(".") : _T("")) + Ext;
     }
     return FileNameBuf;
 }
@@ -2148,7 +2148,7 @@ bool CWizardDlg::funcOpenScreenshotFolder() {
     CString screenshotFolder = Settings.ScreenshotSettings.Folder;
 
     if (screenshotFolder.IsEmpty()) {
-        screenshotFolder = IuCommonFunctions::IUTempFolder;
+        screenshotFolder = AppParams::instance()->tempDirectoryW();
     }
 
     if (!screenshotFolder.IsEmpty()) {

@@ -10,9 +10,9 @@
 #include <Core/AppParams.h>
 
 namespace IuCommonFunctions {
-     CString IUTempFolder;
+     //CString IUTempFolder;
 
-     CString IUCommonTempFolder;
+     //CString IUCommonTempFolder;
 
 #ifndef IU_SHELLEXT
 const CString GetDataFolder()
@@ -37,7 +37,7 @@ CString GetVersion()
     return CString(ver->FullVersion.c_str()) + _T(".") + CString(std::to_string(ver->Build).c_str());
 }
 
-BOOL CreateTempFolder()
+BOOL CreateTempFolder(CString& IUCommonTempFolder, CString& IUTempFolder)
 {
     TCHAR ShortPath[1024];
     GetTempPath(ARRAY_SIZE(ShortPath), ShortPath);

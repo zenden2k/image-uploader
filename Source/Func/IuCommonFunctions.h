@@ -8,7 +8,7 @@ namespace IuCommonFunctions {
 
     CString GetVersion();
 
-    BOOL CreateTempFolder();
+    BOOL CreateTempFolder(CString& IUCommonTempFolder, CString& IUTempFolder);
     void ClearTempFolder(LPCTSTR folder);
 
     int GetNextImgFile(LPCTSTR folder, LPTSTR szBuffer, int nLength);
@@ -18,8 +18,8 @@ namespace IuCommonFunctions {
     CString FindDataFolder();
 
 
-    extern CString IUTempFolder;
-
-    extern CString IUCommonTempFolder;
+    //extern CString IUTempFolder;
+    
+    //extern CString IUCommonTempFolder;
 };
 #endif

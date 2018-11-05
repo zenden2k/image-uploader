@@ -30,12 +30,13 @@
 // TODO:
 // 2. remove dependency from non-core headers ( "Common.h")
 // 3. Use pimpl
-CFileDownloader::CFileDownloader()
+CFileDownloader::CFileDownloader(const std::string& tempDirectory)
 {
     maxThreads_ = 3;
     stopSignal_ = false;
     isRunning_ = false;
     runningThreads_ = 0;
+    tempDirectory_ = tempDirectory;
 }
 
 CFileDownloader::~CFileDownloader()
@@ -162,7 +163,7 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
         }
 
         
-        CString possiblePath = IuCommonFunctions::IUTempFolder + Utf8ToWstring(fileName.c_str()).c_str();
+        CString possiblePath = U2W(tempDirectory_) + Utf8ToWstring(fileName.c_str()).c_str();
         if (possiblePath.GetLength() > MAX_PATH - 4) {
             possiblePath = possiblePath.Left(MAX_PATH - 4);
         }

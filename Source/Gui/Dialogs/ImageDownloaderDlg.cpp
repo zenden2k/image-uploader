@@ -29,9 +29,10 @@
 #include "Func/WebUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Core/Utils/StringUtils.h"
+#include "Core/AppParams.h"
 
 // CImageDownloaderDlg
-CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg,const CString &initialBuffer)
+CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &initialBuffer) :m_FileDownloader(AppParams::instance()->tempDirectory())
 {
     m_WizardDlg = wizardDlg;
     m_InitialBuffer = initialBuffer;

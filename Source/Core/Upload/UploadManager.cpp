@@ -8,7 +8,7 @@
 #include "Core/Scripting/ScriptsManager.h"
 #include "Core/Settings.h"
 #include "UploadEngineManager.h"
-#include <Core/CoreFunctions.h>
+#include "Core/CoreFunctions.h"
 
 UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler) :
                 CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler),

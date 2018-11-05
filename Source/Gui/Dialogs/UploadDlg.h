@@ -82,8 +82,6 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         // Then this album will appear in dropdown list "Options"
         void OnFolderUsed(UploadTask* task);
         void onShortenUrlChanged(bool shortenUrl);
-        virtual bool OnFileFinished(std::shared_ptr<UploadTask> task, bool ok);
-        virtual bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);
     protected:
         LRESULT OnUploadProcessButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnUploadResultsButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -91,6 +89,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         void showUploadResultsTab();
         void showUploadProgressTab();
         void onSessionFinished(UploadSession* session);
+        void onSessionFinished_UiThread(UploadSession* session);
         void onTaskUploadProgress(UploadTask* task);
         void onTaskFinished(UploadTask* task, bool ok);
         void onChildTaskAdded(UploadTask* child);

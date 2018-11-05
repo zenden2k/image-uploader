@@ -2,16 +2,17 @@
 #define CORE_UPLOAD_UPLOADTASK_H
 
 #include <string>
+#include <mutex>
+#include <deque>
+
 #include "Core/Utils/CoreTypes.h"
 #include "UploadResult.h"
 #include "Core/3rdpart/FastDelegate.h"
-#include "Core/Network/NetworkClient.h"
 #include "Core/Utils/EnumUtils.h"
 #include "ServerProfile.h"
 #include "Core/TempFileDeleter.h"
 #include "CommonTypes.h"
-#include <mutex>
-#include <deque>
+
 
 class CAbstractUploadEngine;
 class UploadTask;
@@ -39,6 +40,7 @@ public:
         totalUpload = 0;
         lastUpdateTime = 0;
         isUploading = false;
+        statusType = stNone;
     }
 };
 

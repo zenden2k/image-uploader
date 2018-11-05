@@ -44,7 +44,7 @@ class CFileDownloader
             void* id; // pointer to user data
         };
 
-        CFileDownloader();
+        CFileDownloader(const std::string& tempDirectory);
         virtual ~CFileDownloader();
         void addFile(const std::string& url,void* userData, const std::string& referer = std::string());
         bool start();
@@ -59,6 +59,7 @@ class CFileDownloader
     protected:
         CString errorStr_;
         std::mutex mutex_;
+        std::string tempDirectory_;
         std::vector<DownloadFileListItem> fileList_;
         int maxThreads_;
         int runningThreads_;

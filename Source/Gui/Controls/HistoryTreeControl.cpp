@@ -30,6 +30,7 @@
 #include "Core/LocalFileCache.h"
 #include "Core/CoreFunctions.h"
 #include "Core/Images/Utils.h"
+#include <Core/AppParams.h>
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl()
@@ -70,7 +71,7 @@ void CHistoryTreeControl::CreateDownloader()
     //m_FileDownloader = 0;
     if(!m_FileDownloader)
     {
-        m_FileDownloader = new CFileDownloader();
+        m_FileDownloader = new CFileDownloader(AppParams::instance()->tempDirectory());
         m_FileDownloader->onConfigureNetworkClient.bind(this, &CHistoryTreeControl::OnConfigureNetworkClient);
         m_FileDownloader->onFileFinished.bind(this, &CHistoryTreeControl::OnFileFinished);
         m_FileDownloader->onQueueFinished.bind(this, &CHistoryTreeControl::QueueFinishedEvent);

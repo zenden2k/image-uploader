@@ -33,11 +33,11 @@
 #include "Core/Utils/CryptoUtils.h"
 #include "Core/Logging.h"
 #include "Core/Utils/StringUtils.h"
-#include "Func/IuCommonFunctions.h"
 #include "Core/Images/Utils.h"
 #include "Core/ServiceLocator.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Gui/Components/MyFileDialog.h"
+#include "Core/AppParams.h"
 
 CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
 {
@@ -275,12 +275,12 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
                     CString lastError = WinUtils::GetLastErrorAsString();
                     logMessage.Format(_T("Could not create folder '%s'.\r\n%s"), (LPCTSTR)snapshotsFolder, (LPCTSTR)lastError);
                     ServiceLocator::instance()->logger()->write(logError, _T("Video Grabber"), logMessage);
-                    snapshotsFolder = IuCommonFunctions::IUTempFolder;
+                    snapshotsFolder = AppParams::instance()->tempDirectoryW();
                 }
             }
         }
         if (snapshotsFolder.IsEmpty()) {
-            snapshotsFolder = IuCommonFunctions::IUTempFolder;
+            snapshotsFolder = AppParams::instance()->tempDirectoryW();
         }
         ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this] { openInFolderLink_.SetToolTipText(snapshotsFolder); });
     }

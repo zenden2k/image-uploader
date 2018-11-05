@@ -27,16 +27,15 @@
 #include "Gui/GuiTools.h"
 #include "Core/3rdpart/FastDelegate.h"
 #include "Core/Upload/FileQueueUploader.h"
-#include "Func/MyUtils.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Upload/UploadManager.h"
 #include "Func/WinUtils.h"
-#include "Core/CoreFunctions.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Func/MediaInfoHelper.h"
 #include "Func/IuCommonFunctions.h"
 #include "Core/AppParams.h"
 #include "Core/ServiceLocator.h"
+#include "Core/Upload/UrlShorteningTask.h"
 
 // CUploadDlg
 CUploadDlg::CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager) : resultsWindow_(new CResultsWindow(dlg, urlList_, true))
@@ -309,13 +308,27 @@ void CUploadDlg::OnUploaderStatusChanged(UploadTask* task)
     {
         return;
     }
+    
     FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
     if (fileTask) {
         CString statusText = IuCoreUtils::Utf8ToWstring(progress->statusText).c_str();
 
         bool isThumb = task->role() == UploadTask::ThumbRole;
         int columnIndex = isThumb ? 2 : 1;
-        uploadListView_.SetItemText(fps->tableRow, columnIndex, statusText);
+        ServiceLocator::instance()->taskDispatcher()->runInGuiThread([&] {
+            uploadListView_.SetItemText(fps->tableRow, columnIndex, statusText);
+        });
+    }
+
+    UrlShorteningTask* urlTask = dynamic_cast<UrlShorteningTask*>(task);
+    if (urlTask ) {
+        UploadTask* parentTask = urlTask->parentTask();
+        
+        if (urlTask->isFinished() && parentTask && parentTask->isFinished()) {
+            CString statusText = U2W(parentTask->progress()->statusText);
+            uploadListView_.SetItemText(fps->tableRow, 1, statusText);
+        }
+        
     }
 }
 
@@ -331,17 +344,6 @@ void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
     } else {
         GenerateOutput();
     }
-}
-
-bool CUploadDlg::OnFileFinished(std::shared_ptr<UploadTask> task, bool ok) {
-    GenerateOutput();
-
-    return false;
-}
-
-bool CUploadDlg::OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm) {
-    CoreFunctions::ConfigureProxy(nm);
-    return true;
 }
 
 void CUploadDlg::createToolbar()
@@ -427,8 +429,16 @@ void CUploadDlg::showUploadProgressTab() {
     resultsWindow_->ShowWindow(SW_HIDE);
 }
 
+// This callback is being executed in worker thread
 void CUploadDlg::onSessionFinished(UploadSession* session)
 {
+    ServiceLocator::instance()->taskDispatcher()->runInGuiThread([&] {
+        onSessionFinished_UiThread(session);
+    });
+}
+
+// This function is being executed in UI thread
+void CUploadDlg::onSessionFinished_UiThread(UploadSession* session) {
     int successFileCount = session->finishedTaskCount(UploadTask::StatusFinished);
     int failedFileCount = session->finishedTaskCount(UploadTask::StatusFailure);
     int totalFileCount = session->taskCount();
@@ -455,6 +465,7 @@ void CUploadDlg::onSessionFinished(UploadSession* session)
     }
 }
 
+// This callback is being executed in worker thread
 void CUploadDlg::onTaskUploadProgress(UploadTask* task)
 {
     FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(task->role() == UploadTask::DefaultRole ? task->userData() : task->parentTask()->userData());
@@ -475,10 +486,14 @@ void CUploadDlg::onTaskUploadProgress(UploadTask* task)
         _stprintf(ProgressBuffer, TR("%s of %s (%d%%) %s"), (LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->uploaded)),
             (LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->totalUpload)), percent, (LPCTSTR)uploadSpeed);
         int columnIndex = isThumb ? 2 : 1;
-        uploadListView_.SetItemText(fps->tableRow, columnIndex, ProgressBuffer);
+        ServiceLocator::instance()->taskDispatcher()->runInGuiThread([&] {  
+            uploadListView_.SetItemText(fps->tableRow, columnIndex, ProgressBuffer); 
+        });
+       
     }
 }
 
+// This callback is being executed in worker thread
 void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
 {
     FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
@@ -486,6 +501,7 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
     {
         return;
     }
+    auto taskDispatcher = ServiceLocator::instance()->taskDispatcher();
     if (fileTask->role() == UploadTask::DefaultRole) {
         FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(task->userData());
         if (!fps)
@@ -502,7 +518,9 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         item.ThumbUrl = Utf8ToWCstring(uploadResult->thumbUrl);
         urlList_[fps->tableRow] = item;
         //uploadListView_.SetItemText(fps->tableRow, 1, _T("Готово"));
-        ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this] { updateTotalProgress(); });
+        taskDispatcher->runInGuiThread([this] { 
+            updateTotalProgress(); 
+        });
         
         //TotalUploadProgress(uploadSession_->finishedTaskCount(UploadTask::StatusFinished), uploadSession_->taskCount(), 0);
     }
@@ -512,7 +530,10 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
          {
              return;
          }
-         uploadListView_.SetItemText(fps->tableRow, 2, _T("Готово"));
+         taskDispatcher->runInGuiThread([&]{
+             uploadListView_.SetItemText(fps->tableRow, 2, _T("Готово"));
+         });
+         
      }
         
     GenerateOutput();    
@@ -520,16 +541,21 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
 
 void CUploadDlg::onChildTaskAdded(UploadTask* child)
 {
+    auto dispatcher = ServiceLocator::instance()->taskDispatcher();
     if (!backgroundThreadStarted_)
     {
-        backgroundThreadStarted();
+        dispatcher->runInGuiThread([&] {
+            backgroundThreadStarted();
+        });
     }
     if (child->role() == UploadTask::UrlShorteningRole)
     {
         FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(child->parentTask()->userData());
         if (fps)
         {
-            uploadListView_.SetItemText(fps->tableRow, 1, _T("Сокращение ссылки..."));
+            dispatcher->runInGuiThread([&] {
+                uploadListView_.SetItemText(fps->tableRow, 1, _T("Сокращение ссылки..."));
+            });
         }
     }
     child->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CUploadDlg::onTaskFinished));

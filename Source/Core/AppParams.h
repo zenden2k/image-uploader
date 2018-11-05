@@ -4,6 +4,10 @@
 #include "Core/Utils/Singleton.h"
 #include <string>
 
+#ifdef _WIN32
+#include "atlheaders.h"
+#endif
+
 class AppParams: public Singleton<AppParams>
 {
     public:
@@ -32,6 +36,9 @@ class AppParams: public Singleton<AppParams>
         void setLanguageFile(const std::string& languageFile);
         void setTempDirectory(const std::string& directory);
         std::string tempDirectory() const;
+#ifdef _WIN32
+        CString tempDirectoryW() const;
+#endif
         AppVersionInfo const* GetAppVersion() const;
         void setIsGui(bool isGui);
         bool isGui() const;

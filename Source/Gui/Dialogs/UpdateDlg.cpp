@@ -25,6 +25,7 @@
 #include "Func/CmdLine.h"
 #include "Core/Settings.h"
 #include "Func/WinUtils.h"
+#include "Core/AppParams.h"
 
 // CUpdateDlg
 
@@ -40,7 +41,7 @@ bool CanWriteToFolder(const CString& folder)
     return true;
 }
 
-CUpdateDlg::CUpdateDlg()
+CUpdateDlg::CUpdateDlg() :m_UpdateManager(AppParams::instance()->tempDirectoryW())
 {
     m_UpdateCallback = NULL;
     m_Checked = false;

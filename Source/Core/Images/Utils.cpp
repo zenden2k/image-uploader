@@ -20,25 +20,25 @@
 
 #include "Utils.h"
 
+#include <stdint.h>
+#include <cmath>
+#include <cassert>
+
+#include <boost/format.hpp>
+#include <libbase64.h>
+#include <webp/decode.h>
+#include <webp/demux.h>
 #include "3rdpart/GdiplusH.h"
 #include "Core/Logging.h"
 #include "Func/WinUtils.h"
 #include "3rdpart/QColorQuantizer.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Utils/CoreUtils.h"
-#include "Func/MyUtils.h"
 #include "Func/IuCommonFunctions.h"
-#include "Func/Common.h"
 #include "Gui/Dialogs/LogWindow.h"
-#include <cmath>
-#include <stdint.h>
 #include "Core/ServiceLocator.h"
-#include <Func/Library.h>
-#include <libbase64.h>
-#include <boost/format.hpp>
-#include <cassert>
-#include <webp/decode.h>
-#include <webp/demux.h>
+#include "Func/Library.h"
+#include "Core/AppParams.h"
 
 using namespace Gdiplus;
 
@@ -688,7 +688,7 @@ bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int F
     if (userFolder.Right(1) != _T('\\'))
         userFolder += _T('\\');
     wsprintf(szBuffer2, _T(
-        "%s%s.%s"), static_cast<LPCTSTR>(Folder ? userFolder : IuCommonFunctions::IUTempFolder), static_cast<LPCTSTR>(szNameBuffer),
+        "%s%s.%s"), static_cast<LPCTSTR>(Folder ? userFolder : AppParams::instance()->tempDirectoryW()), static_cast<LPCTSTR>(szNameBuffer),
         /*(int)GetTickCount(),*/ szImgTypes[Format]);
     CString resultFilename = WinUtils::GetUniqFileName(szBuffer2);
     WinUtils::CreateFilePath(resultFilename);

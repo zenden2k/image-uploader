@@ -5,10 +5,11 @@
 #include "WinUtils.h"
 #include "IuCommonFunctions.h"
 #include "Core/Network/NetworkClient.h"
+#include <Core/AppParams.h>
 
 std::string WtlScriptDialogProvider::askUserCaptcha(NetworkClient* nm, const std::string& url) {   
     std::lock_guard<std::mutex> guard(dialogMutex_);
-    CString wFileName = WinUtils::GetUniqFileName(IuCommonFunctions::IUTempFolder + Utf8ToWstring("captcha").c_str());
+    CString wFileName = WinUtils::GetUniqFileName(AppParams::instance()->tempDirectoryW() + Utf8ToWstring("captcha").c_str());
 
     nm->setOutputFile(W2U(wFileName));
     if (!nm->doGet(url))

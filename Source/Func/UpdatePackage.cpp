@@ -398,7 +398,7 @@ bool CUpdateManager::AreAutoUpdates() {
 
 bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 {
-    CString filename = IuCommonFunctions::IUTempFolder + ui.packageName() +_T(".zip");
+    CString filename = m_TempDirectory + ui.packageName() +_T(".zip");
     std::string filenamea = W2U(filename);
     CoreFunctions::ConfigureProxy(&nm_);
     nm_.setOutputFile( filenamea);
@@ -425,7 +425,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
     }
 
     CUnzipper unzipper(filename);
-    CString unzipFolder = IuCommonFunctions::IUTempFolder + ui.packageName();
+    CString unzipFolder = m_TempDirectory + ui.packageName();
     if(!unzipper.UnzipTo(unzipFolder))
     {
         updateStatus(nCurrentIndex, TR("Unable to unpack archive ") + filename);
@@ -607,7 +607,7 @@ void CUpdatePackage::setStatusText(const CString& text)
         m_statusCallback->updateStatus(0, text);
 }
 
-CUpdateManager::CUpdateManager()
+CUpdateManager::CUpdateManager(const CString& tempDirectory)
 {
     m_statusCallback = nullptr;
     m_nCoreUpdates = 0;
@@ -616,6 +616,7 @@ CUpdateManager::CUpdateManager()
     m_nSuccessPackageUpdates = 0;
     m_stop = false;
     nm_.setProgressCallback(NetworkClient::ProgressCallback(this, &CUpdateManager::progressCallback));
+    m_TempDirectory = tempDirectory;
 }
 
 CString CUpdateManager::generateReport(bool manualUpdates)
