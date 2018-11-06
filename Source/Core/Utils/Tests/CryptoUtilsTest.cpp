@@ -1,11 +1,16 @@
 ﻿#include <gtest/gtest.h>
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/CryptoUtils.h"
-
-#define constSizeFileName "TestData/file_with_const_size.png"
+#include "Tests/TestHelpers.h"
 
 class CryptoUtilsTest : public ::testing::Test {
+public:
 
+    CryptoUtilsTest() : constSizeFileName(TestHelpers::resolvePath("file_with_const_size.png")) {
+
+    }
+protected:
+    const std::string constSizeFileName;
 };
 
 using namespace IuCoreUtils::CryptoUtils;

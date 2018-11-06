@@ -8,6 +8,7 @@ endif()
 
 set(SRC_LIST 
     Tests.cpp
+    TestHelpers.cpp
    ../Core/Utils/Tests/CoreUtilsTest.cpp
    ../Core/Utils/Tests/CryptoUtilsTest.cpp
    ../Core/Utils/Tests/StringUtilsTest.cpp

@@ -86,7 +86,6 @@ DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
 HICON GetAssociatedIcon (LPCTSTR filename, bool Small);
 int ScreenBPP();
 BOOL Is32BPP();
-HRESULT IsElevated( __out_opt BOOL * pbElevated );
 // Function that gets path to SendTo folder
 CString GetSendToPath() ;
 void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')+b/16;H3N SHJ");

@@ -218,7 +218,7 @@
       <AdditionalOptions>/MP$(NUMBER_OF_PROCESSORS) %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Source\boost;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Include\gumbo;$(SolutionDir)\Contrib\Include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX;NOMINMAX;WIN32_LEAN_AND_MEAN;_WTL_NO_CSTRING;_ATL_NO_OLD_NAMES;TIXML_USE_STL;PCRE_STATIC;CURL_STATICLIB;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100;SCRAT_USE_EXCEPTIONS;_CRT_SECURE_NO_WARNINGS;IU_GUI;IU_WTL;IU_WTL_APP;ENABLE_SYNC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_INC_WINDOWSX;NOMINMAX;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_WTL_NO_CSTRING;_ATL_NO_OLD_NAMES;TIXML_USE_STL;PCRE_STATIC;CURL_STATICLIB;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100;SCRAT_USE_EXCEPTIONS;IU_GUI;IU_WTL;IU_WTL_APP;ENABLE_SYNC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -488,7 +488,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Source\boost\;$(SolutionDir)\Contrib\Include\gumbo;$(SolutionDir)\Contrib\Include\win32\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;NOMINMAX;WIN32_LEAN_AND_MEAN;_WTL_NO_CSTRING;_ATL_NO_OLD_NAMES;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100;SCRAT_USE_EXCEPTIONS;IU_GUI;IU_WTL;IU_WTL_APP;ENABLE_SYNC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;NOMINMAX;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_WTL_NO_CSTRING;_ATL_NO_OLD_NAMES;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100;SCRAT_USE_EXCEPTIONS;IU_GUI;IU_WTL;IU_WTL_APP;ENABLE_SYNC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -547,7 +547,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\Contrib\Include\DX;$(SolutionDir)\Contrib\Include\BaseClasses;$(SolutionDir)\Contrib\Include\WTL;$(SolutionDir)\Contrib\Include\;$(SolutionDir)\Contrib\Include\pcre;$(SolutionDir)\Contrib\Include\tinyxml;$(SolutionDir)\Contrib\Include\squirrel;$(SolutionDir)\Source;$(SolutionDir)\Contrib\Include\libs;$(SolutionDir)\Contrib\Source\boost\;$(SolutionDir)\Contrib\Include\gumbo;$(SolutionDir)\Contrib\Include\win32\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;NOMINMAX;WIN32_LEAN_AND_MEAN;_WTL_NO_CSTRING;_ATL_NO_OLD_NAMES;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100;SCRAT_USE_EXCEPTIONS;IU_GUI;IU_WTL;IU_WTL_APP;ENABLE_SYNC;USE_OPENSSL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_INC_WINDOWSX;NOMINMAX;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_WTL_NO_CSTRING;_ATL_NO_OLD_NAMES;CURL_STATICLIB;PCRE_STATIC;TIXML_USE_STL;GOOGLE_GLOG_DLL_DECL=;GDIPVER=0x0100;SCRAT_USE_EXCEPTIONS;IU_GUI;IU_WTL;IU_WTL_APP;ENABLE_SYNC;USE_OPENSSL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>

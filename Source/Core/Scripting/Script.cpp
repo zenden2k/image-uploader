@@ -72,9 +72,8 @@ void Script::FlushSquirrelOutput()
 
 bool Script::preLoad()
 {
-    networkClient_.reset(new NetworkClient());
+    networkClient_ = CoreFunctions::createNetworkClient();
     networkClient_->setCurlShare(sync_->getCurlShare());
-    CoreFunctions::ConfigureProxy(networkClient_.get());
     Sqrat::RootTable& rootTable = vm_.GetRootTable();
     rootTable.SetInstance("Sync", sync_);
     rootTable.SetInstance("nm", networkClient_.get());

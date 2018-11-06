@@ -26,6 +26,7 @@
 #include <map>
 #include <string>
 #include <cmath>
+#include <cstdlib>
 
 #ifdef _WIN32
     #include <io.h>
@@ -291,26 +292,28 @@ std::string StrReplace(std::string text, std::string s, std::string d)
 bool ReadUtf8TextFile(std::string utf8Filename, std::string& data)
 {
     FILE *stream = fopen_utf8(utf8Filename.c_str(), "rb");
-    if(!stream) return false;
+    if (!stream) {
+        return false;
+    }
     int size = static_cast<int>(getFileSize(utf8Filename));
-    unsigned char buf[3];
-    fread(buf, 1, 3, stream);    
+    unsigned char buf[3]={0,0,0};
+    size_t bytesRead = fread(buf, 1, 3, stream);    
 
-    if(buf[0] == 0xEF || buf[1] == 0xBB || buf[2] == 0xBF) // UTF8 Byte Order Mark (BOM)
+    if (bytesRead == 3 && buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF) // UTF8 Byte Order Mark (BOM)
     {    
         size -= 3;    
     }
-    else if(buf[0] == 0xFF && buf[1] == 0xFE ) {
+    else if (bytesRead >=2 && buf[0] == 0xFF && buf[1] == 0xFE) {
         // UTF-16LE encoding
         size -= 2;
         fseek( stream, 2L,  SEEK_SET );
-        std::wstring res;
+        std::u16string res;
         int charCount = size/2;
         res.resize(charCount);
         size_t charsRead = fread(&res[0], 2, charCount, stream);    
         res[charsRead]=0;
         fclose(stream);
-        data = WstringToUtf8(res);
+        data = Utf16ToUtf8(res);
         return true;
     } 
     else {
@@ -325,10 +328,14 @@ bool ReadUtf8TextFile(std::string utf8Filename, std::string& data)
         return false;
     }
    
-    /*size_t bytesRead = */fread(&data[0], 1, size, stream);    
-    //data[bytesRead] = 0;
+    size_t bytesRead2 = fread(&data[0], 1, size, stream); 
+    if (bytesRead2 == size) {
+        fclose(stream);
+        return true;
+    }
+
     fclose(stream);
-    return true;
+    return false;
 }
 
 bool PutFileContents(const std::string& utf8Filename, const std::string& content)
@@ -354,7 +361,7 @@ const std::string GetFileContents(const std::string& filename) {
         return std::string();
     }
 
-    /*size_t bytesRead = */fread(&data[0], 1, size, stream);
+    /*size_t bytesRead = */(void)fread(&data[0], 1, size, stream);
     //data[bytesRead] = 0;
     fclose(stream);
     return data;
@@ -369,7 +376,7 @@ const std::string timeStampToString(time_t t)
     return buf;
 }
 
-std::string ulonglongToStr(int64_t l, int base)
+/*std::string ulonglongToStr(int64_t l, int base)
 {
     char buff[67]; // length of MAX_ULLONG in base 2
     buff[66] = 0;
@@ -409,19 +416,15 @@ std::string longlongtoStr(int64_t l, int base)
    if (l < 0)
      res = "-" + res;
    return res;
-}
+}*/
 
 
 std::string int64_tToString(int64_t value)
 {
     return std::to_string(value);
-    /*if ( !value ) {
-        return "0";
-    }
-    return longlongtoStr(value, 10);*/
 }
 
-#ifndef LLONG_MIN
+/*#ifndef LLONG_MIN
     #define LLONG_MIN (-9223372036854775807-1)
     #define LLONG_MAX (-9223372036854775807-1)
 #endif 
@@ -438,7 +441,7 @@ static int64_t zstrtoll(const char *nptr, const char **endptr, register int base
      * Skip white space and pick up leading +/- sign if any.
      * If base is 0, allow 0x for hex and 0 for octal, else
      * assume decimal; if base is already 16, allow 0x.
-     */
+     *
     s = nptr;
     do {
         c = *s++;
@@ -497,11 +500,11 @@ static int64_t zstrtoll(const char *nptr, const char **endptr, register int base
         *ok = any > 0;
 
     return acc;
-}
+}*/
 
-int64_t stringToInt64(const std::string fileName)
+int64_t stringToInt64(const std::string& str)
 {
-    return zstrtoll(fileName.c_str(), 0, 10 , 0);
+    return strtoll(str.c_str(), nullptr, 10);
 }
 
 int64_t getFileSize(std::string utf8Filename)

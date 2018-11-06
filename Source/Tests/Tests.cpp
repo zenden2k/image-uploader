@@ -1,20 +1,23 @@
+
+#include <vector>
+#include <boost/program_options.hpp>
 #include <gtest/gtest.h>
 #ifdef _MSC_VER
     #include <vld.h> //Check for memory leaks
 #endif
-
-#include "Core/Scripting/Squirrelnc.h"
+#include <boost/locale.hpp>
+#include <boost/filesystem.hpp>
 #include <sqtest/sqtest.h>
+#include "TestHelpers.h"
+#include "Core/Scripting/Squirrelnc.h"
 #include "Core/Scripting/API/ScriptAPI.h"
 #include "Core/Logging.h"
 #include "Core/Logging/ConsoleLogger.h"
 #include "Core/Upload/ConsoleUploadErrorHandler.h"
-#include <boost/locale.hpp>
-#include <boost/filesystem.hpp>
 #include "Core/Logging/MyLogSink.h"
 #include "Core/ServiceLocator.h"
-#include <vector>
-#include <memory>
+
+
 #ifdef _WIN32
 #include "atlheaders.h"
 #endif
@@ -61,21 +64,67 @@ void freeArgv(int argc, char *argv[]) {
     delete[] argv;
 }
 
+class ArgDeleter {
+public:
+    ArgDeleter(int argc, char *argv[]) : argc_(argc), argv_(argv){
+        
+    }
+    ~ArgDeleter() {
+        freeArgv(argc_, argv_);
+    }
+    DISALLOW_COPY_AND_ASSIGN(ArgDeleter);
+protected:
+    int argc_;
+    char **argv_;
+};
+
 int _tmain(int argc, _TCHAR* argvW[]) {
     char **argv = convertArgv(argc, argvW);
+    ArgDeleter deleter(argc, argv);
     //FLAGS_logtostderr = true;
 #else
 int main(int argc, char *argv[]){
 #endif
-    if (argc < 2) {
-        fprintf(stderr, "Test scripts directory is not provided as command line argument.\r\n");
-#ifdef _WIN32
-        freeArgv(argc, argv);
-#endif
+    ::testing::InitGoogleTest(&argc, argv);
+
+    std::string testDataDir, testScriptsDir;
+    try {
+        namespace po = boost::program_options;
+        po::options_description desc("General options");
+        
+        desc.add_options()
+            ("help,h", "Show help")
+            ("dir,d", po::value<std::string>(&testDataDir)->required(), "Test data directory")
+            ("sqdir,s", po::value<std::string>(&testScriptsDir)->required(), "Squirrel tests directory (containing .nut files) ")
+            ;
+
+        po::variables_map vm;
+        po::parsed_options parsed = po::command_line_parser(argc, argv).options(desc)/*.allow_unregistered()*/.run();
+        po::store(parsed, vm);
+
+        if (vm.count("help")) {
+            std::cout << desc << std::endl;
+            return 0;
+        }
+        po::notify(vm);
+    } catch (std::exception& ex) {
+        std::cout << ex.what() << std::endl;
         return 1;
     }
-    std::string rootDir = argv[1];
-    std::string testScriptsDir = rootDir + "/Source/Core/Scripting/API/Tests/";
+
+    if (!IuCoreUtils::DirectoryExists(testDataDir)) {
+        std::cout << "Directory '" << testDataDir << "' does not exist." << std::endl;
+        return 1;
+    }
+    if (!IuCoreUtils::DirectoryExists(testScriptsDir)) {
+        std::cout << "Directory '" << testScriptsDir << "' does not exist." << std::endl;
+        return 1;
+    }
+    TestHelpers::initDataPaths(testDataDir);
+    
+
+    //std::string rootDir = argv[1];
+    //std::string testScriptsDir = rootDir + "/Source/Core/Scripting/API/Tests/";
     google::InitGoogleLogging("test");
     // Create and install global locale
     std::locale::global(boost::locale::generator().generate(""));
@@ -121,15 +170,12 @@ int main(int argc, char *argv[]){
     sq_pop(vm.GetVM(), 1);
     ScriptAPI::RegisterAPI(vm);
     sqtest_addtest(vm.GetVM(), (testScriptsDir + "globals.nut").c_str());
-    ::testing::InitGoogleTest(&argc, argv);
+
 
     int res = RUN_ALL_TESTS();
 
     ScriptAPI::ClearVmData(vm);
     google::ShutdownGoogleLogging();
-#ifdef _WIN32
-    freeArgv(argc, argv);
-#endif
     return res;
 }
 

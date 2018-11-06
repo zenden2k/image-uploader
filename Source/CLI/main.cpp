@@ -24,6 +24,8 @@
 #include <fstream>
 #include <signal.h>
 #include <condition_variable>
+
+#include <boost/format.hpp>
 #include "Core/Upload/Uploader.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Network/NetworkClient.h"
@@ -342,7 +344,9 @@ bool parseCommandLine(int argc, char *argv[])
                 argv[i];
 #endif
         if ( !IuCoreUtils::FileExists(fileName) ) {
-            std::cerr << "File '" + fileName + "' doesn't exist!" << std::endl;
+            std::string errorMessage = str(boost::format("File '%s' doesn't exist!\n") % fileName);
+            ConsoleUtils::instance()->PrintUnicode(stderr, errorMessage);
+            return false;
         }
         filesToUpload.push_back(fileName);
         i++;
@@ -444,7 +448,7 @@ void OnUploadTaskStatusChanged(UploadTask* task) {
     UploadProgress* progress = task->progress();
     TaskUserData *userData = reinterpret_cast<TaskUserData*>(task->userData());
     //ConsoleUtils::instance()->SetCursorPos(55, 2 + userData->index);
-    fprintf(stderr, progress->statusText.c_str());
+    fputs(progress->statusText.c_str(), stderr);
     fprintf(stderr, "\r");
 }
 
@@ -531,7 +535,8 @@ int func() {
     for(size_t i=0; i<filesToUpload.size(); i++) {
         if(!IuCoreUtils::FileExists(filesToUpload[i]))
         {
-            std::cerr<<"File '"+ filesToUpload[i] + "' doesn't exist!"<<std::endl;
+            std::string errorMessage = str(boost::format("File '%s' doesn't exist!")%filesToUpload[i]);
+            ConsoleUtils::instance()->PrintUnicode(stderr, errorMessage);
             res++;
             continue;
         }
@@ -565,7 +570,7 @@ int func() {
 #ifdef _WIN32
 class Updater: public CUpdateStatusCallback {
 public:
-    Updater() {
+    Updater(const CString& tempDirectory) :m_UpdateManager(tempDirectory){
         m_UpdateManager.setUpdateStatusCallback(this);
     }
 
@@ -612,10 +617,11 @@ protected:
 
 void DoUpdates(bool force) {
 	if(force || time(0) - Settings.LastUpdateTime > 3600*24*7 /* 7 days */) {
-		IuCommonFunctions::CreateTempFolder();
-		Updater upd;
+        CString tempFolder, commonTempFolder; 
+        IuCommonFunctions::CreateTempFolder(tempFolder, commonTempFolder);
+        Updater upd(tempFolder);
 		upd.updateServers();
-		IuCommonFunctions::ClearTempFolder(IuCommonFunctions::IUTempFolder);
+        IuCommonFunctions::ClearTempFolder(tempFolder);
 		Settings.LastUpdateTime = time(0);
 	}
 }

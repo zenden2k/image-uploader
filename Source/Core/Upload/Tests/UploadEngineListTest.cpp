@@ -1,12 +1,15 @@
 #include <gtest/gtest.h>
 
 #include "Core/UploadEngineList.h"
+#include <Tests/TestHelpers.h>
 
-namespace {
-    const char* fileName = "TestData/servers.xml";
-}
 class UploadEngineListTest : public ::testing::Test {
+public:
+    UploadEngineListTest() : fileName(TestHelpers::resolvePath("servers.xml")) {
 
+    }
+protected:
+    const std::string fileName;
 };
 
 TEST_F(UploadEngineListTest, LenghtOfUtf8String)

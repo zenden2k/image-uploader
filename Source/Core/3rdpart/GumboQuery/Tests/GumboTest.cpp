@@ -3,6 +3,8 @@
 #include "../Node.h"
 #include <gumbo.h>
 #include "Core/Utils/CoreUtils.h"
+#include "Tests/TestHelpers.h"
+
 class GumboTest : public ::testing::Test {
 
 };
@@ -22,7 +24,7 @@ TEST_F(GumboTest, Simple2)
 {
     std::string page;
     //std::string page("<h1><a id=\"logo\">some link</a></h1>");
-    bool readResult = IuCoreUtils::ReadUtf8TextFile("TestData/test.html", page);
+    bool readResult = IuCoreUtils::ReadUtf8TextFile(TestHelpers::resolvePath("test.html"), page);
     //EXPECT_EQ(true, readResult);
     CDocument doc;
     doc.parse(page.c_str());

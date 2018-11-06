@@ -85,12 +85,25 @@ const std::string Utf8ToAnsi(const std::string &str, int codepage)
     return wstostr(strtows(str, CP_UTF8), codepage);
 }
 
+std::string Utf16ToUtf8(const std::u16string& src) {
+    std::string str;
+    int srcLen = static_cast<int>(src.size());
+    int n = WideCharToMultiByte(CP_UTF8, 0, reinterpret_cast<LPCWSTR>(src.c_str()), srcLen + 1, NULL, 0, /*defchr*/0, NULL);
+    if (n) {
+        str.reserve(n);
+        str.resize(n - 1);
+        if (WideCharToMultiByte(CP_UTF8, 0, reinterpret_cast<LPCWSTR>(src.c_str()), srcLen + 1, &str[0], n, /*defchr*/0, NULL) == 0)
+            str.clear();
+    }
+    return str;
+}
+
 
 std::string ConvertToUtf8(const std::string &text, const std::string codePage)
 {
     unsigned int codePageNum = CodepageByName(codePage.c_str());
     if(codePageNum != CP_UTF8)
-    return AnsiToUtf8(text, codePageNum);
+        return AnsiToUtf8(text, codePageNum);
     return text;
 }
 
@@ -117,7 +130,7 @@ std::string GetFileMimeType(const std::string fileName)
 
     if ( NOERROR != _Win32_FindMimeFromData(NULL, NULL, byBuff, nRead, NULL, 0, &szMimeW, 0) )
     {
-        
+        FreeLibrary(urlMonDll);
         return DefaultMimeType;
     }
 
@@ -129,7 +142,7 @@ std::string GetFileMimeType(const std::string fileName)
         result = "image/jpeg";
     else if (result == "application/octet-stream") {
         if (byBuff[0] == 'R' && byBuff[1] == 'I' &&byBuff[2] == 'F' &&byBuff[3] == 'F') {
-            return "image/webp";
+            result = "image/webp";
         }
     }
     FreeLibrary(urlMonDll);

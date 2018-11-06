@@ -45,7 +45,7 @@ set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 
 if (NOT WIN32) 
-    find_package(Boost COMPONENTS filesystem system locale thread REQUIRED)
+    find_package(Boost COMPONENTS filesystem system locale thread program_options REQUIRED)
     find_package(OpenSSL REQUIRED)
     message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
     message("OpenSSL libraries: ${OPENSSL_LIBRARIES}")

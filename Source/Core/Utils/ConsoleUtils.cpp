@@ -4,9 +4,9 @@
 #include <windows.h>
 #else
 #include <unistd.h>
-//#include <ncurses.h>
 #endif
 #include <stdio.h>
+#include "Core/Utils/CoreUtils.h"
 
 
 void ConsoleUtils::InitScreen() {
@@ -53,6 +53,14 @@ void ConsoleUtils::SetCursorPos(int x, int y) {
     fflush(stdout);
     //move(x,y);
     //refresh();
+#endif
+}
+
+void ConsoleUtils::PrintUnicode(FILE *f, const std::string& str) {
+#ifdef _WIN32
+    fwprintf(f, L"%s", IuCoreUtils::Utf8ToWstring(str).c_str());
+#else
+    fprintf(f, "%s", str.c_str());
 #endif
 }
 

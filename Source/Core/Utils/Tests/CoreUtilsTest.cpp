@@ -14,13 +14,19 @@
 #include <WinSock.h>
 #endif
 #include "Core/Utils/CryptoUtils.h"
+#include "Tests/TestHelpers.h"
 
 class CoreUtilsTest : public ::testing::Test {
+public:
+    CoreUtilsTest() : constSizeFileName(TestHelpers::resolvePath("file_with_const_size.png")) {
+ 
+    }
+protected:    
+    const std::string constSizeFileName;
+    const int64_t contSizeFileSize = 14830;
 };
- using namespace IuCoreUtils;
 
-const char * constSizeFileName = "TestData/file_with_const_size.png";
-int64_t contSizeFileSize = 14830;
+using namespace IuCoreUtils;
 
 TEST_F(CoreUtilsTest, ExtractFilePath) 
 {
@@ -109,7 +115,7 @@ TEST_F(CoreUtilsTest, int64_tToString)
 TEST_F(CoreUtilsTest, stringToint64_t) 
 {
     EXPECT_TRUE(stringToInt64("9223372036854775807")== 9223372036854775807);
-    EXPECT_TRUE(stringToInt64("-9223372036854775808")== -9223372036854775808);
+    EXPECT_TRUE(stringToInt64("-9223372036854775807") == INT64_C(-9223372036854775807));
     EXPECT_TRUE(stringToInt64("0")== 0);
 }
 
@@ -124,7 +130,7 @@ TEST_F(CoreUtilsTest, GetDefaultExtensionForMimeType)
 TEST_F(CoreUtilsTest, fileSizeToString) 
 {
     EXPECT_EQ(fileSizeToString(140*1024*1024), "140.0 MB");
-    EXPECT_EQ(fileSizeToString(25.5*1024), "26 KB");
+    EXPECT_EQ(fileSizeToString(static_cast<int64_t>(25.5*1024)), "26 KB");
     EXPECT_EQ(fileSizeToString(0), "0 bytes");
 }
 
@@ -143,6 +149,7 @@ TEST_F(CoreUtilsTest, getFileSize)
 {
     int64_t size = IuCoreUtils::getFileSize("not_existing_file22342343");
     EXPECT_EQ(size, -1);
+    ASSERT_TRUE(IuCoreUtils::FileExists(constSizeFileName));
     size = IuCoreUtils::getFileSize(constSizeFileName);
     EXPECT_EQ(size, contSizeFileSize);
 }
@@ -150,7 +157,8 @@ TEST_F(CoreUtilsTest, getFileSize)
 
 TEST_F(CoreUtilsTest, copyFile)
 {
-    const char * destFile = "TestData/AnotherFolder/new_file.png";
+    std::string destFile = TestHelpers::resolvePath("AnotherFolder/new_file.png");
+    ASSERT_TRUE(IuCoreUtils::FileExists(constSizeFileName));
     bool res = IuCoreUtils::copyFile(constSizeFileName, destFile, true);
     EXPECT_EQ(res, true);
     EXPECT_EQ(IuCoreUtils::FileExists(destFile), true);
@@ -172,18 +180,44 @@ TEST_F(CoreUtilsTest, gettimeofday)
 
 TEST_F(CoreUtilsTest, ReadUtf8TextFile)
 {
-    std::string res;
-    //ReadUtf8TextFile("d:\\Video\\Video\\Movies\\Laskovyy.may.2009.BDRip.avi", res);
+    std::string file = TestHelpers::resolvePath("utf8_text_file_with_bom.txt");
+    ASSERT_TRUE(IuCoreUtils::FileExists(file));
+    std::string data;
+    EXPECT_TRUE(ReadUtf8TextFile(file, data));
+    EXPECT_EQ("Test file with bom. \xD0\xA2\xD0\xB5\xD1\x81\xD1\x82\xD0\xBE\xD0\xB2\xD1\x8B\xD0\xB9 \xD1\x84\xD0\xB0\xD0\xB9\xD0\xBB \xD1\x81 BOM.", data);
 
-    //EXPECT_EQ(size, );
+    std::string file2 = TestHelpers::resolvePath("utf8_text_file.txt");
+    std::string data2;
+    EXPECT_TRUE(ReadUtf8TextFile(file2, data2));
+    EXPECT_EQ("Test file without bom. \xD0\xA2\xD0\xB5\xD1\x81\xD1\x82\xD0\xBE\xD0\xB2\xD1\x8B\xD0\xB9 \xD1\x84\xD0\xB0\xD0\xB9\xD0\xBB \xD0\xB1\xD0\xB5\xD0\xB7 BOM.", data2);
+    
+    std::string file3 = TestHelpers::resolvePath("file_with_zero_size.dat");
+    std::string data3;
+    EXPECT_TRUE(ReadUtf8TextFile(file3, data3));
+    EXPECT_EQ("", data3);
+
+    std::string file4 = TestHelpers::resolvePath("utf16_text_file.txt");
+    std::string data4;
+    EXPECT_TRUE(ReadUtf8TextFile(file4, data4));
+    EXPECT_EQ("Test file in UTF16-LE. \xD0\xA2\xD0\xB5\xD1\x81\xD1\x82\xD0\xBE\xD0\xB2\xD1\x8B\xD0\xB9 \xD1\x84\xD0\xB0\xD0\xB9\xD0\xBB.", data4);
+ 
+    std::string file5 = TestHelpers::resolvePath("not_existing_file226546546343");
+    std::string data5;
+    EXPECT_FALSE(ReadUtf8TextFile(file5, data5));
 }
 
 TEST_F(CoreUtilsTest, GetFileContents)
 {
+    ASSERT_TRUE(IuCoreUtils::FileExists(constSizeFileName));
     std::string data = GetFileContents(constSizeFileName);
     EXPECT_EQ(contSizeFileSize, data.size());
     std::string hash = IuCoreUtils::CryptoUtils::CalcMD5Hash(&data[0], data.size());
     EXPECT_EQ("ebbd98fc18bce0e9dd774f836b5c3bf8", hash);
+}
 
-    std::string data2 = GetFileContents("j:\\Video\\Movies\\Sem'janin.2000.HDRip.avi");
+TEST_F(CoreUtilsTest, GetFileMimeType) {
+    ASSERT_TRUE(IuCoreUtils::FileExists(constSizeFileName));
+    std::string type = GetFileMimeType(constSizeFileName);
+    ASSERT_EQ("image/png", type);
+
 }

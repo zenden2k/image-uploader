@@ -5,6 +5,7 @@
 #include "Func/GdiPlusInitializer.h"
 #include "Func/WinUtils.h"
 #include "Core/Utils/CryptoUtils.h"
+#include "Tests/TestHelpers.h"
 
 class UtilsTest : public ::testing::Test {
 private:
@@ -27,11 +28,11 @@ public:
 
 TEST_F(UtilsTest, BitmapFromMemory)
 {
-    const char* fileName = "TestData/file_with_const_size.png";
+    std::string fileName = TestHelpers::resolvePath("file_with_const_size.png");
     int fileSize = static_cast<int>(IuCoreUtils::getFileSize(fileName));
     ASSERT_GT(fileSize, 0);
     uint8_t* data = new uint8_t[fileSize];
-    FILE *f = IuCoreUtils::fopen_utf8(fileName, "rb");
+    FILE *f = IuCoreUtils::fopen_utf8(fileName.c_str(), "rb");
     size_t bytesRead = fread(data, 1, fileSize, f);
     ASSERT_EQ(fileSize, bytesRead);
     fclose(f);
@@ -49,11 +50,12 @@ TEST_F(UtilsTest, BitmapFromMemory)
 }
 
 TEST_F(UtilsTest, GetThumbnail) {
-    const char* fileName = "TestData/file_with_const_size.png";
+    std::string fileName = TestHelpers::resolvePath("file_with_const_size.png");
+    ASSERT_TRUE(IuCoreUtils::FileExists(fileName));
     int fileSize = static_cast<int>(IuCoreUtils::getFileSize(fileName));
     ASSERT_GT(fileSize, 0);
     uint8_t* data = new uint8_t[fileSize];
-    FILE *f = IuCoreUtils::fopen_utf8(fileName, "rb");
+    FILE *f = IuCoreUtils::fopen_utf8(fileName.c_str(), "rb");
     size_t bytesRead = fread(data, 1, fileSize, f);
     ASSERT_EQ(fileSize, bytesRead);
     fclose(f);
@@ -81,7 +83,7 @@ TEST_F(UtilsTest, GetThumbnail) {
     delete data;
 
     {
-        Gdiplus::Bitmap* thumb3 = GetThumbnail(L"TestData/Images/exif-rgb-thumbnail.jpg", 150, 120, &size);
+        Gdiplus::Bitmap* thumb3 = GetThumbnail(U2W(TestHelpers::resolvePath("Images/exif-rgb-thumbnail.jpg")), 150, 120, &size);
         ASSERT_TRUE(thumb3 != nullptr);
         EXPECT_EQ(293, size.Width);
         EXPECT_EQ(233, size.Height);
@@ -94,7 +96,7 @@ TEST_F(UtilsTest, GetThumbnail) {
     }
 
     {
-        Gdiplus::Bitmap* thumb4 = GetThumbnail(L"TestData/Images/poroshok.webp", 150, 120, &size);
+        Gdiplus::Bitmap* thumb4 = GetThumbnail(U2W(TestHelpers::resolvePath("Images/poroshok.webp")), 150, 120, &size);
         ASSERT_TRUE(thumb4 != nullptr);
         EXPECT_EQ(800, size.Width);
         EXPECT_EQ(322, size.Height);
@@ -107,7 +109,7 @@ TEST_F(UtilsTest, GetThumbnail) {
     }
 
      {
-         Gdiplus::Bitmap* thumb4 = GetThumbnail(L"TestData/Images/animated-webp-supported.webp", 150, 120, &size);
+         Gdiplus::Bitmap* thumb4 = GetThumbnail(U2W(TestHelpers::resolvePath("Images/animated-webp-supported.webp")), 150, 120, &size);
          ASSERT_TRUE(thumb4 != nullptr);
          EXPECT_EQ(400, size.Width);
          EXPECT_EQ(400, size.Height);
@@ -120,7 +122,8 @@ TEST_F(UtilsTest, GetThumbnail) {
      }
 
      for (int i = 1; i <= 8; i++ ) {
-         Gdiplus::Bitmap* thumb5 = GetThumbnail(L"TestData/Images/Landscape_" + WinUtils::IntToStr(i) + L".jpg", 150, 120, &size);
+         std::string fname = "Images/Landscape_" + std::to_string(i) + ".jpg";
+         Gdiplus::Bitmap* thumb5 = GetThumbnail(U2W(TestHelpers::resolvePath(fname)), 150, 120, &size);
          ASSERT_TRUE(thumb5 != nullptr);
          EXPECT_EQ(1800, size.Width);
          EXPECT_EQ(1200, size.Height);
@@ -133,7 +136,8 @@ TEST_F(UtilsTest, GetThumbnail) {
      }
 
      for (int i = 1; i <= 8; i++) {
-         Gdiplus::Bitmap* thumb6 = GetThumbnail(L"TestData/Images/Portrait_" + WinUtils::IntToStr(i) + L".jpg", 150, 120, &size);
+         std::string fname = "Images/Portrait_" + std::to_string(i) + ".jpg";
+         Gdiplus::Bitmap* thumb6 = GetThumbnail(U2W(TestHelpers::resolvePath(fname)), 150, 120, &size);
          ASSERT_TRUE(thumb6 != nullptr);
          EXPECT_EQ(1200, size.Width);
          EXPECT_EQ(1800, size.Height);
@@ -147,9 +151,9 @@ TEST_F(UtilsTest, GetThumbnail) {
 
 
 }
-
+/*
 TEST_F(UtilsTest, CopyBitmapToClipboardInDataUriFormat) {
-    const char* fileName = "TestData/file_with_const_size.png";
+    const char* fileName = "file_with_const_size.png";
     std::unique_ptr<Bitmap> bm(Bitmap::FromFile(U2W(fileName)));
     ASSERT_TRUE(bm != nullptr);
     bool res = CopyBitmapToClipboardInDataUriFormat(bm.get(), 1, 85); 
@@ -176,20 +180,24 @@ TEST_F(UtilsTest, CopyBitmapToClipboardInDataUriFormat) {
     std::string md52 = IuCoreUtils::CryptoUtils::CalcMD5HashFromString(clipboardTextA2);
     EXPECT_EQ("88d4f8b907c9b4d596a920419ccdd6f4", md52);
 }
+*/
 
 TEST_F(UtilsTest, GetImageInfo) {
-    ImageInfo ii = GetImageInfo(U2W("TestData/file_with_const_size.png"));
+    std::string fname = TestHelpers::resolvePath("file_with_const_size.png");
+    ASSERT_TRUE(IuCoreUtils::FileExists(fname));
+    ImageInfo ii = GetImageInfo(U2W(fname));
     EXPECT_EQ(251, ii.width);
     EXPECT_EQ(366, ii.height);
-    ImageInfo ii2 = GetImageInfo(U2W("TestData/notexistingfile57345345.png"));
+    ImageInfo ii2 = GetImageInfo(U2W(TestHelpers::resolvePath("notexistingfile57345345.png")));
     EXPECT_EQ(0, ii2.width);
     EXPECT_EQ(0, ii2.height);
 }
 
 TEST_F(UtilsTest, ExUtilReadFile) {
-    const char* fileName = "TestData/file_with_const_size.png";
+    std::string fileName = TestHelpers::resolvePath("file_with_const_size.png");
     uint8_t* data;
     size_t size;
+    ASSERT_TRUE(IuCoreUtils::FileExists(fileName));
     EXPECT_TRUE(ExUtilReadFile(U2W(fileName), &data, &size));
     EXPECT_EQ(14830, size);
     std::string hash = IuCoreUtils::CryptoUtils::CalcMD5Hash(data, size);
@@ -198,14 +206,14 @@ TEST_F(UtilsTest, ExUtilReadFile) {
     delete[] data;
     data = nullptr; 
     size = 0;
-    EXPECT_FALSE(ExUtilReadFile(L"TestData/notexistingfile5734533345.png", &data, &size));
+    EXPECT_FALSE(ExUtilReadFile(U2W(TestHelpers::resolvePath("notexistingfile5734533345.png")), &data, &size));
     EXPECT_EQ(nullptr, data);
     EXPECT_EQ(0, size);
 
     data = nullptr;
     size = 0;
 
-    EXPECT_TRUE(ExUtilReadFile(L"TestData/file_with_zero_size.dat", &data, &size));
+    EXPECT_TRUE(ExUtilReadFile(U2W(TestHelpers::resolvePath("file_with_zero_size.dat")), &data, &size));
     EXPECT_EQ(0, size);
     EXPECT_TRUE(data != nullptr);
     delete[] data;

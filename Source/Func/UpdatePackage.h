@@ -141,7 +141,7 @@ class CUpdateManager: public CUpdateStatusCallback
         int nCurrentIndex;
         CUpdateStatusCallback *m_statusCallback;
         
-        NetworkClient nm_;
+        std::unique_ptr<NetworkClient> nm_;
         int m_nSuccessPackageUpdates;
         std::atomic<bool> m_stop;
         int m_nCoreUpdates;

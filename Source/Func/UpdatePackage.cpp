@@ -41,41 +41,6 @@
     #define TR(str) _T(str)
 #endif
 
-BOOL CreateFolder(LPCTSTR szFolder)
-{
-    if (!szFolder || !lstrlen(szFolder))
-        return FALSE;
-
-    DWORD dwAttrib = GetFileAttributes(szFolder);
-
-    // already exists ?
-    if (dwAttrib != 0xffffffff)
-        return ((dwAttrib & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY);
-
-    // recursively create from the top down
-    TCHAR* szPath = _tcsdup(szFolder);
-    TCHAR* p = _tcsrchr(szPath, '\\');
-
-    if (p) 
-    {
-        // The parent is a dir, not a drive
-        *p = '\0';
-            
-        // if can't create parent
-        if (!CreateFolder(szPath))
-        {
-            free(szPath);
-            return FALSE;
-        }
-        free(szPath);
-
-        if (!::CreateDirectory(szFolder, NULL)) 
-            return FALSE;
-    }
-    
-    return TRUE;
-}
-
 CUpdateInfo::CUpdateInfo()
 {
 
@@ -399,19 +364,18 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 {
     CString filename = m_TempDirectory + ui.packageName() +_T(".zip");
     std::string filenamea = W2U(filename);
-    CoreFunctions::ConfigureProxy(&nm_);
-    nm_.setOutputFile( filenamea);
+    nm_->setOutputFile( filenamea);
     m_statusCallback->updateStatus(nCurrentIndex, TR("Downloading file ")+ ui.downloadUrl());
 
     try {
-        nm_.doGet(W2U(ui.downloadUrl()));
+        nm_->doGet(W2U(ui.downloadUrl()));
     } catch (NetworkClient::AbortedException&) {
         return false;
     }
     
-    if(nm_.responseCode() != 200)
+    if(nm_->responseCode() != 200)
     {
-        ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), TR("Error while updating component ") + ui.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm_.responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm_.errorString()).c_str(), CString("URL=") + ui.downloadUrl());
+        ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), TR("Error while updating component ") + ui.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm_->responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm_->errorString()).c_str(), CString("URL=") + ui.downloadUrl());
         return 0;
     }
 
@@ -576,7 +540,7 @@ bool CUpdatePackage::doUpdate()
         }
         else
         {
-            CreateFolder(buffer);
+            WinUtils::CreateFolder(buffer);
             if(m_CoreUpdate)
             {
                 
@@ -614,7 +578,8 @@ CUpdateManager::CUpdateManager(const CString& tempDirectory)
     
     m_nSuccessPackageUpdates = 0;
     m_stop = false;
-    nm_.setProgressCallback(NetworkClient::ProgressCallback(this, &CUpdateManager::progressCallback));
+    nm_ = CoreFunctions::createNetworkClient();
+    nm_->setProgressCallback(NetworkClient::ProgressCallback(this, &CUpdateManager::progressCallback));
     m_TempDirectory = tempDirectory;
 }
 

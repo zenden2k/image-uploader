@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <memory>
+
 class NetworkClient;
 
 namespace CoreFunctions {

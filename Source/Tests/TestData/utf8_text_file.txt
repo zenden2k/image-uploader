@@ -1,0 +1,1 @@
+Test file without bom. Тестовый файл без BOM.

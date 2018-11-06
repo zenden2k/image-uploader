@@ -21,19 +21,19 @@
 #define _CORE_UTILS_UTILS_UNIX_H_
 
 #include <stdio.h>
-#include <sstream>  // ostringstream
-#include <iostream>
-#include <string>
-#include "Core/3rdpart/utf8.h"
-#include "Core/Utils/StringUtils.h"
 #include <errno.h>
-#include <boost/filesystem.hpp>
 
+#include <string.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif /* HAVE_UNISTD_H */
-#include <string.h>
 #include <sys/stat.h>   
+#include <sstream>  // ostringstream
+#include <iostream>
+#include <string>
+#include <boost/filesystem.hpp>
+#include "Core/3rdpart/utf8.h"
+#include "Core/Utils/StringUtils.h"
 
 typedef struct stat Stat;
 
@@ -59,9 +59,19 @@ const std::string WstringToUtf8(const std::wstring &str) {
       if (sizeof(wchar_t) == 2)
          utf16to8(str.begin(), str.end(), back_inserter(res));
       else if (sizeof(wchar_t) == 4)
-          utf16to8(str.begin(), str.end(), back_inserter(res));
+          utf32to8(str.begin(), str.end(), back_inserter(res));
     }
     catch(...) { }
+    return res;
+}
+
+std::string Utf16ToUtf8(const std::u16string& src) {
+    using namespace utf8;
+    std::string res;
+    try {
+        utf16to8(src.begin(), src.end(), back_inserter(res));
+    } catch (...) {
+    }
     return res;
 }
 

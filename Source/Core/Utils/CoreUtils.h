@@ -57,7 +57,7 @@ namespace IuCoreUtils
     std::string Utf8ToSystemLocale(const std::string& str);
     std::string SystemLocaleToUtf8(const std::string& str);
     std::string int64_tToString(int64_t value);
-    int64_t stringToInt64(const std::string fileName);
+    int64_t stringToInt64(const std::string& str);
     std::string GetFileMimeType(const std::string);
     std::string GetDefaultExtensionForMimeType(const std::string);
     std::string StrReplace(std::string text, std::string s, std::string d);
@@ -71,6 +71,9 @@ namespace IuCoreUtils
     int64_t getFileSize(std::string utf8Filename);
     const std::wstring Utf8ToWstring(const std::string &str);
     const std::string WstringToUtf8(const std::wstring &str);
+
+    // Convert UTF16-LE encoded string to Utf-8
+    std::string Utf16ToUtf8(const std::u16string& src);
 
     const std::string timeStampToString(time_t t);
     std::string fileSizeToString(int64_t nBytes);
