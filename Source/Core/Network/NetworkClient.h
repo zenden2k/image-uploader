@@ -21,14 +21,14 @@
 #ifndef _NETWORK_CLIENT_H_
 #define _NETWORK_CLIENT_H_
 
-#include "INetworkClient.h"
+
+#include <mutex>
 #include <string>
 #include <vector>
 
 #include <curl/curl.h>
-#include <mutex>
+#include "INetworkClient.h"
 #include "Core/3rdpart/fastdelegate.h"
-
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/CoreTypes.h"
 #include "CurlShare.h"

@@ -297,11 +297,10 @@ bool CUpdateManager::internal_load_update(CString name)
 
     m_localUpdateInfo.push_back(localPackage);
     CUpdateInfo remotePackage;
-    NetworkClient nm;
-    nm.setTreatErrorsAsWarnings(true);
-    nm.enableResponseCodeChecking(false);
-    nm.setProgressCallback(NetworkClient::ProgressCallback(this,&CUpdateManager::progressCallback));
-    CoreFunctions::ConfigureProxy(&nm);
+    auto nm = CoreFunctions::createNetworkClient();
+    nm->setTreatErrorsAsWarnings(true);
+    nm->enableResponseCodeChecking(false);
+    nm->setProgressCallback(NetworkClient::ProgressCallback(this,&CUpdateManager::progressCallback));
 
     CString url = localPackage.updateUrl();
     Json::Value request;
@@ -337,28 +336,28 @@ bool CUpdateManager::internal_load_update(CString name)
     package["LocalTimestamp"] = localPackage.timeStamp();
 
     request["Package"] = package;
-    nm.addQueryHeader("Content-Type", "application/json");
+    nm->addQueryHeader("Content-Type", "application/json");
 
     Json::StreamWriterBuilder builder;
     builder["commentStyle"] = "None";
     builder["indentation"] = "   ";  
 
     std::string jsonString = Json::writeString(builder, request);
-    nm.setUserAgent("Image Uploader " + ver->FullVersion);
+    nm->setUserAgent("Image Uploader " + ver->FullVersion);
     try {
-        nm.setUrl(W2U(url));
-        nm.doPost(jsonString);
+        nm->setUrl(W2U(url));
+        nm->doPost(jsonString);
     } catch ( NetworkClient::AbortedException&) {
         return false;
     }
    
-    if (nm.responseCode() != 200 || nm.responseHeaderByName("Content-Type") != "text/xml")
+    if (nm->responseCode() != 200 || nm->responseHeaderByName("Content-Type") != "text/xml")
     {
-        ServiceLocator::instance()->logger()->write(logWarning, _T("Update Engine"), _T("Невозможно загрузить информацию о пакете обновления ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm.responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm.errorString()).c_str(), CString("URL=") + url);
+        ServiceLocator::instance()->logger()->write(logWarning, _T("Update Engine"), _T("Невозможно загрузить информацию о пакете обновления ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm->responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm->errorString()).c_str(), CString("URL=") + url);
         return false;
     }
 
-    if (!remotePackage.LoadUpdateFromBuffer(nm.responseBody()))
+    if (!remotePackage.LoadUpdateFromBuffer(nm->responseBody()))
     {
         return false;
     }

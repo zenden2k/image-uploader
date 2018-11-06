@@ -25,7 +25,6 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
-#include "Core/CoreFunctions.h"
 #include "Func/WebUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Core/Utils/StringUtils.h"
@@ -259,7 +258,6 @@ bool CImageDownloaderDlg::BeginDownloading()
         SendDlgItemMessage(IDC_DOWNLOADFILESPROGRESS, PBM_SETPOS,  0);
         m_FileDownloader.onFileFinished.bind(this, &CImageDownloaderDlg::OnFileFinished);
         m_FileDownloader.onQueueFinished.bind(this, &CImageDownloaderDlg::OnQueueFinished);
-        m_FileDownloader.onConfigureNetworkClient.bind(this, &CImageDownloaderDlg::OnConfigureNetworkClient);
         m_FileDownloader.start();
         return true;
     }
@@ -289,11 +287,6 @@ void CImageDownloaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)
         }
     }
     SetDlgItemText(IDC_FILEINFOEDIT, text);
-}
-
-void CImageDownloaderDlg::OnConfigureNetworkClient(NetworkClient* nm)
-{
-    CoreFunctions::ConfigureProxy(nm);
 }
 
 void CImageDownloaderDlg::clipboardUpdated()

@@ -28,7 +28,6 @@
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
 #include "Core/LocalFileCache.h"
-#include "Core/CoreFunctions.h"
 #include "Core/Images/Utils.h"
 #include <Core/AppParams.h>
 
@@ -805,6 +804,5 @@ void CHistoryTreeControl::ResetContent()
 }
 
 void CHistoryTreeControl::OnConfigureNetworkClient(NetworkClient* nm) {
-    CoreFunctions::ConfigureProxy(nm);
     nm->setTreatErrorsAsWarnings(true); // no need to bother user with download errors
 }

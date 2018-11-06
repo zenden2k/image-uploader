@@ -228,10 +228,3 @@ LRESULT CShortenUrlDlg::OnCtlColorMsgDlg(HDC hdc, HWND hwnd) {
     }
     return 0;
 }
-
-bool  CShortenUrlDlg::OnConfigureNetworkClient(CFileQueueUploader* ,NetworkClient* nm) {
-    CoreFunctions::ConfigureProxy(nm);
-    return true;
-}
-
-

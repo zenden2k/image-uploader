@@ -7,7 +7,6 @@
 #include "atlheaders.h"
 #include <atltheme.h>
 #include <atlmisc.h>
-#include <atlcrack.h>
 
 #include "3rdpart/thread.h"
 #include "Core/HistoryManager.h"

@@ -5,7 +5,6 @@
 #include "Core/Network/NetworkClient.h"
 #include <Winhttp.h>
 
-
 class DefaultProxyProvider : public NetworkClient::ProxyProvider {
 public:
     DefaultProxyProvider();

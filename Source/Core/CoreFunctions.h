@@ -1,11 +1,13 @@
-#ifndef IU_CORE_FUNCTIONS_H
-#define IU_CORE_FUNCTIONS_H
+#ifndef IU_CORE_COREFUNCTIONS_H
+#define IU_CORE_COREFUNCTIONS_H
 
 #pragma once
-#include "Network/NetworkClient.h"
+
+class NetworkClient;
 
 namespace CoreFunctions {
 
+std::unique_ptr<NetworkClient> createNetworkClient();
 void ConfigureProxy(NetworkClient* nm);
 
 }

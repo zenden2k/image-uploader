@@ -23,9 +23,9 @@
 #include <errno.h>
 #include <algorithm>
 
-#include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
 #include "Core/3rdpart/UriParser.h"
+#include "CoreFunctions.h"
 
 // TODO:
 // 2. remove dependency from non-core headers ( "Common.h")
@@ -77,13 +77,13 @@ bool CFileDownloader::start() {
 
 void CFileDownloader::memberThreadFunc()
 {
-    NetworkClient nm;
+    auto nm = CoreFunctions::createNetworkClient();
 
     // Providing callback function to stop downloading
-    nm.setProgressCallback(NetworkClient::ProgressCallback(this, &CFileDownloader::ProgressFunc));
+    nm->setProgressCallback(NetworkClient::ProgressCallback(this, &CFileDownloader::ProgressFunc));
     mutex_.lock();
     if (onConfigureNetworkClient)
-        onConfigureNetworkClient(&nm);
+        onConfigureNetworkClient(nm.get());
     mutex_.unlock();
 
     for (;; )
@@ -96,12 +96,12 @@ void CFileDownloader::memberThreadFunc()
         if (url.empty())
             break;
 
-        nm.setOutputFile(curItem.fileName);
+        nm->setOutputFile(curItem.fileName);
         if ( !curItem.referer.empty() ) {
-            nm.setReferer(curItem.referer);
+            nm->setReferer(curItem.referer);
         }
         try {
-            nm.doGet(url);
+            nm->doGet(url);
         } catch (NetworkClient::AbortedException&) {
             break;
         }
@@ -110,10 +110,10 @@ void CFileDownloader::memberThreadFunc()
             break;
 
         mutex_.lock();
-        bool success = nm.responseCode() >= 200 && nm.responseCode() <= 299;
+        bool success = nm->responseCode() >= 200 && nm->responseCode() <= 299;
 
         if (!onFileFinished.empty()) {
-            onFileFinished(success, nm.responseCode(), curItem);
+            onFileFinished(success, nm->responseCode(), curItem);
         }
 
         if (stopSignal_)

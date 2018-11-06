@@ -61,7 +61,6 @@ class CShortenUrlDlg:    public CDialogImpl <CShortenUrlDlg>,
         LRESULT OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);
         void OnFileFinished(UploadTask*  task, bool ok);
         void OnQueueFinished(UploadSession* session);
-        bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);
         bool ParseBuffer(const CString& text);
         void OnClose();
 

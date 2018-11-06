@@ -3,12 +3,16 @@
 #include "Core/Settings.h"
 #include "Core/Network/NetworkClient.h"
 #ifdef _WIN32
-#include "Func/WinUtils.h"
 #include "DefaultProxyProvider.h"
 #endif
-#include "CommonDefs.h"
 
 namespace CoreFunctions {
+
+std::unique_ptr<NetworkClient> createNetworkClient() {
+    std::unique_ptr<NetworkClient> cl(new NetworkClient());
+    ConfigureProxy(cl.get());
+    return cl;
+}
 
 void ConfigureProxy(NetworkClient* nm)
 {

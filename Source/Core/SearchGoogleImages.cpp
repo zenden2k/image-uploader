@@ -9,27 +9,26 @@ SearchGoogleImages::SearchGoogleImages(const std::string& fileName) :SearchByIma
 }
 
 void SearchGoogleImages::run() {
-    NetworkClient nc;
-    CoreFunctions::ConfigureProxy(&nc);
-    nc.setProgressCallback(NetworkClient::ProgressCallback(this, &SearchGoogleImages::progressCallback));
+    auto nc = CoreFunctions::createNetworkClient();
+    nc->setProgressCallback(NetworkClient::ProgressCallback(this, &SearchGoogleImages::progressCallback));
 
     try {
-        nc.setUrl("https://images.google.com/searchbyimage/upload");
-        nc.addQueryParam("filename", IuCoreUtils::ExtractFileName(fileName_));
-        nc.addQueryParam("image_content", base64EncodeCompat(fileName_));
-        nc.setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
-        nc.doUploadMultipartData();
+        nc->setUrl("https://images.google.com/searchbyimage/upload");
+        nc->addQueryParam("filename", IuCoreUtils::ExtractFileName(fileName_));
+        nc->addQueryParam("image_content", base64EncodeCompat(fileName_));
+        nc->setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
+        nc->doUploadMultipartData();
 
         if (stopSignal_) {
             finish(false, "Aborted by user.");
             return;
         }
-        if (nc.responseCode() != 302) {
+        if (nc->responseCode() != 302) {
             finish(false, "Server sent unexpected result.");
             return;
         }
 
-        std::string url = nc.responseHeaderByName("Location");
+        std::string url = nc->responseHeaderByName("Location");
 
         if (url.empty()) {
             finish(false, "Server sent unexpected result.");
