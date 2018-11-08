@@ -289,6 +289,8 @@
 #define IDC_PASSWORDEDITBOX             1043
 #define IDC_ALLTIMERADIO                1043
 #define IDC_NOPROXY                     1043
+#define IDC_SUMMARY                     1043
+#define IDC_SUMMARYRADIOBUTTON          1043
 #define IDC_RADIO2                      1044
 #define IDC_SAVEASONE                   1044
 #define IDC_HEIGHTRADIO                 1044
@@ -297,6 +299,7 @@
 #define IDC_SNAPSHOTFILENAMEEDIT        1044
 #define IDC_REMOTEDIRECTORYEDIT         1044
 #define IDC_USESYSTEMPROXY              1044
+#define IDC_FULLINFORADIOBUTTON         1044
 #define IDC_EDIT2                       1045
 #define IDC_TRANSPARENCY                1045
 #define IDC_QUALITY                     1045

@@ -19,11 +19,11 @@
 */
 #include "WelcomeDlg.h"
 
-#include "ImageDownloaderDlg.h"
 #include "HistoryWindow.h"
 #include "settingsdlg.h"
 #include "Gui/GuiTools.h"
 #include "Func/MyUtils.h"
+#include "WizardDlg.h"
 
 // CWelcomeDlg
 CWelcomeDlg::CWelcomeDlg()

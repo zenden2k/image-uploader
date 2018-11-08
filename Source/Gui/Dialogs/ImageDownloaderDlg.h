@@ -35,7 +35,8 @@
 
 // CImageDownloaderDlg
 class CImageDownloaderDlg:    public CDialogImpl <CImageDownloaderDlg>,
-                           public CDialogResize <CImageDownloaderDlg>
+                           public CDialogResize <CImageDownloaderDlg>,
+                           public CMessageFilter
 {
     public:
         enum { IDD = IDD_IMAGEDOWNLOADER };
@@ -45,8 +46,8 @@ class CImageDownloaderDlg:    public CDialogImpl <CImageDownloaderDlg>,
     protected:    
         BEGIN_MSG_MAP(CImageDownloaderDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-            COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-            COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+            COMMAND_ID_HANDLER(IDOK, OnClickedOK)
+            COMMAND_ID_HANDLER(IDCANCEL, OnClickedCancel)
             MSG_WM_DRAWCLIPBOARD(OnDrawClipboard)
             MESSAGE_HANDLER(WM_CHANGECBCHAIN, OnChangeCbChain)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
@@ -62,6 +63,8 @@ class CImageDownloaderDlg:    public CDialogImpl <CImageDownloaderDlg>,
             DLGRESIZE_CONTROL(IDC_IMAGEDOWNLOADERTIP, DLSZ_SIZE_X)
         END_DLGRESIZE_MAP()
         
+        int EmulateModal(HWND hWndParent = ::GetActiveWindow(), LPARAM dwInitParam = NULL);
+        BOOL EmulateEndDialog(int nRetCode);
         HWND PrevClipboardViewer;
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -74,14 +77,16 @@ class CImageDownloaderDlg:    public CDialogImpl <CImageDownloaderDlg>,
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClipboardUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        virtual BOOL PreTranslateMessage(MSG* pMsg) override;
         bool BeginDownloading();
         static bool LinksAvailableInText(const CString &text);
         void ParseBuffer(const CString& text, bool OnlyImages);
         void OnQueueFinished();
         bool OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it);
-
         void clipboardUpdated();
 
+        CMessageLoop m_loop;
+        int m_retCode;
         CString m_FileName;
         CFileDownloader m_FileDownloader;
         CWizardDlg * m_WizardDlg;
@@ -89,6 +94,7 @@ class CImageDownloaderDlg:    public CDialogImpl <CImageDownloaderDlg>,
         int m_nFileDownloaded;
         CString m_InitialBuffer;
         bool isVistaOrLater_;
+        CAccelerator accel_;
         typedef BOOL(WINAPI * AddClipboardFormatListenerFunc)(HWND hwnd);
         typedef BOOL(WINAPI * RemoveClipboardFormatListenerFunc)(HWND hwnd);
         RemoveClipboardFormatListenerFunc fRemoveClipboardFormatListener_;

@@ -38,6 +38,11 @@ CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &i
     fRemoveClipboardFormatListener_ = NULL;
     PrevClipboardViewer = NULL;
     m_FileDownloader.setThreadCount(1);
+    ACCEL accels[] = {
+        { FVIRTKEY|FCONTROL , VK_RETURN, IDOK },
+        { FVIRTKEY , VK_ESCAPE, IDCANCEL },
+    };
+    accel_.CreateAcceleratorTable(accels, ARRAY_SIZE(accels));
 }
 
 CImageDownloaderDlg::~CImageDownloaderDlg()
@@ -65,7 +70,8 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
  
     ::SetFocus(GetDlgItem(IDOK));
     SetWindowText(TR("Image Downloader"));
-    TRC(IDOK, "Add");
+    CString addButtonCaption = TR("Add") + CString(_T(" (Ctrl+Enter)"));
+    SetDlgItemText(IDOK, addButtonCaption);
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_WATCHCLIPBOARD, "Watch Clipboard for URLs");
     TRC(IDC_IMAGEDOWNLOADERTIP, "Enter URLs (one http:// or ftp:// link per line)");
@@ -85,7 +91,7 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
         }
     }
     ::SetFocus(GetDlgItem(IDC_FILEINFOEDIT));
-    return 1; 
+    return 0; 
 }
 
 LRESULT CImageDownloaderDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -131,7 +137,7 @@ LRESULT CImageDownloaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
     else
     {
         Settings.WatchClipboard = SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_GETCHECK) != 0;
-        EndDialog(wID);
+        EmulateEndDialog(wID);
     }
     return 0;
 }
@@ -140,6 +146,13 @@ LRESULT CImageDownloaderDlg::OnClipboardUpdate(UINT uMsg, WPARAM wParam, LPARAM 
 {
     clipboardUpdated();
     return 0;
+}
+
+BOOL CImageDownloaderDlg::PreTranslateMessage(MSG* pMsg) {
+    if (accel_.TranslateAccelerator(m_hWnd, pMsg)) {
+        return TRUE;
+    }
+    return FALSE;
 }
 
 LRESULT CImageDownloaderDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -219,7 +232,7 @@ void CImageDownloaderDlg::OnQueueFinished()
 {
     if(!m_InitialBuffer.IsEmpty())
     {
-        EndDialog(0);
+        EmulateEndDialog(0);
         WinUtils::CopyTextToClipboard("");
         return;
     }
@@ -280,7 +293,7 @@ void CImageDownloaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)
     {
         CString fileName = WinUtils::myExtractFileName(links[i]);
         if( ((!OnlyImages && CString(WinUtils::GetFileExt(fileName)).IsEmpty()) || IuCommonFunctions::IsImage(fileName)) &&  text.Find(links[i]) == -1 ) {
-            if (text.Right(1) != _T("\n")) {
+            if (!text.IsEmpty() && text.Right(1) != _T("\n")) {
                 text += "\r\n";
             }
             text+=links[i]+_T("\r\n");
@@ -301,4 +314,32 @@ void CImageDownloaderDlg::clipboardUpdated()
             ParseBuffer(str, false);
         }
     }
+}
+
+int CImageDownloaderDlg::EmulateModal(HWND hWndParent, LPARAM dwInitParam)
+{
+    ATLASSERT(!m_bModal);
+    m_retCode = 0;
+    ::EnableWindow(hWndParent, FALSE);
+    Create(hWndParent, dwInitParam);
+    ShowWindow(SW_SHOW);
+    m_loop.AddMessageFilter(this);
+    m_loop.Run();
+    ::EnableWindow(hWndParent, TRUE);
+    ShowWindow(SW_HIDE);
+    ::SetActiveWindow(hWndParent);
+    DestroyWindow();
+    return m_retCode;
+}
+
+BOOL CImageDownloaderDlg::EmulateEndDialog(int nRetCode) {
+    /*if (m_bModal) {
+        EndDialog(nRetCode);
+    }*/
+
+    m_loop.RemoveMessageFilter(this);
+    m_retCode = nRetCode;
+    PostMessage(WM_QUIT);
+    
+    return TRUE;
 }

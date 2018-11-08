@@ -26,7 +26,7 @@
 #include "Func/myutils.h"
 
 // CMediaInfoDlg
-CMediaInfoDlg::CMediaInfoDlg()
+CMediaInfoDlg::CMediaInfoDlg(InfoType type)
 {
 
 }
@@ -41,12 +41,20 @@ LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     CenterWindow(GetParent());
     GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEINFOLABEL));
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
-
+    LOGFONT logFont;
+    StringToFont(_T("Courier New,8,,204"), &logFont);
+    
+    editFont_.CreateFontIndirect(&logFont);
+    SendDlgItemMessage(IDC_FILEINFOEDIT, WM_SETFONT, (WPARAM)(HFONT)editFont_, MAKELPARAM(false, 0));
     // Translating controls' text
     TRC(IDOK, "OK");
     SetWindowText(TR("Information about file"));
     TRC(IDC_COPYALL, "Copy to clipboard");
+    TRC(IDC_SUMMARYRADIOBUTTON, "Summary");
+    TRC(IDC_FULLINFORADIOBUTTON, "Full information");
+
     SetDlgItemText(IDC_FILEINFOEDIT, TR("Loading..."));
+
     
     ::SetFocus(GetDlgItem(IDOK));
 
@@ -84,9 +92,10 @@ DWORD CMediaInfoDlg::Run()
     }
 
     SetDlgItemText(IDC_FILEINFOLABEL,CString(TR("Information about file"))+_T(" \"")+ ShortFileName+_T("\" :"));
-    CString Report;
-    MediaInfoHelper::GetMediaFileInfo(m_FileName, Report);
-    SetDlgItemText(IDC_FILEINFOEDIT, Report);
+    
+    MediaInfoHelper::GetMediaFileInfo(m_FileName, summary_, fullInfo_);
+    bool fullInfo = GuiTools::GetCheck(m_hWnd, IDC_FULLINFORADIOBUTTON);
+    SetDlgItemText(IDC_FILEINFOEDIT, fullInfo ? fullInfo_ : summary_);
     return 0;
 }
 

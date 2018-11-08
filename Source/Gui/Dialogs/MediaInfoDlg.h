@@ -39,11 +39,14 @@ class CMediaInfoDlg:        public CDialogImpl <CMediaInfoDlg>,
                                 public CThreadImpl <CMediaInfoDlg>
 {
     public:
-        CMediaInfoDlg();
+        enum InfoType { itSummary = 0, itFullInformation };
+
+        CMediaInfoDlg(InfoType type = itSummary);
         ~CMediaInfoDlg();
         void ShowInfo(LPCTSTR FileName);
 
         enum { IDD = IDD_MEDIAINFODLG };
+      
     protected:
         BEGIN_MSG_MAP(CMediaInfoDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -57,6 +60,8 @@ class CMediaInfoDlg:        public CDialogImpl <CMediaInfoDlg>,
             DLGRESIZE_CONTROL(IDC_FILEINFOEDIT, DLSZ_SIZE_X|DLSZ_SIZE_Y)
             DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X|DLSZ_MOVE_Y)
             DLGRESIZE_CONTROL(IDC_COPYALL, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_SUMMARYRADIOBUTTON, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_FULLINFORADIOBUTTON, DLSZ_MOVE_Y)
         END_DLGRESIZE_MAP()
         
         // Handler prototypes:
@@ -71,6 +76,9 @@ class CMediaInfoDlg:        public CDialogImpl <CMediaInfoDlg>,
         DWORD Run();
 
         CString m_FileName;
+        CFont editFont_;
+        InfoType infoType_;
+        CString summary_, fullInfo_;
 };
 
 

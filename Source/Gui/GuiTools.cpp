@@ -358,7 +358,7 @@ RECT AutoSizeStaticControl(HWND control) {
     SIZE textSize;
     HGDIOBJ oldFont = SelectObject(dc, font);
     GetTextExtentPoint32(dc, text, text.GetLength(), &textSize);
-    SetWindowPos(control,0, 0,0, textSize.cx, textSize.cy, SWP_NOMOVE );
+    SetWindowPos(control, nullptr, 0, 0, textSize.cx, textSize.cy, SWP_NOMOVE|SWP_NOZORDER);
     RECT controlRect;
     GetWindowRect(control, &controlRect);
     MapWindowPoints(0 /*means desktop*/, GetParent(control), reinterpret_cast<LPPOINT>(&controlRect), 2);

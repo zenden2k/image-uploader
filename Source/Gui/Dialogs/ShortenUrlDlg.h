@@ -82,4 +82,4 @@ class CShortenUrlDlg:    public CDialogImpl <CShortenUrlDlg>,
 
 
 
-#endif // IMAGEDOWNLOADERDLG_H
+#endif 

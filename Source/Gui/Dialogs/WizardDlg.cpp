@@ -133,7 +133,7 @@ bool CWizardDlg::pasteFromClipboard() {
         WinUtils::GetClipboardText(text);
         if (CImageDownloaderDlg::LinksAvailableInText(text)) {
             CImageDownloaderDlg dlg(this, CString(text));
-            dlg.DoModal(m_hWnd);
+            dlg.EmulateModal(m_hWnd);
             return true;
         }
     }
@@ -1759,7 +1759,7 @@ bool CWizardDlg::funcSettings()
 bool CWizardDlg::funcDownloadImages()
 {
     CImageDownloaderDlg dlg(this,CString());
-    dlg.DoModal(m_hWnd);
+    dlg.EmulateModal(m_hWnd);
     return true;
 }
 

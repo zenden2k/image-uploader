@@ -3,17 +3,13 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "MainDlg.h"
-#include "resource.h"
-#include "Func/Myutils.h"
-#include "Core/Upload/Uploader.h"
 
+#include "Core/Upload/Uploader.h"
 #include "Core/Settings.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "3rdpart/GdiPlusH.h"
-#include "Gui/Dialogs/InputDialog.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Gui/GuiTools.h"
-#include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
 #include "Core/Utils/CryptoUtils.h"
 #include "Core/CoreFunctions.h"
@@ -21,60 +17,36 @@
 #include "Core/Upload/UrlShorteningTask.h"
 #include "Core/Upload/UploadSession.h"
 #include "Core/Upload/UploadManager.h"
+#include "Core/AppParams.h"
 
 CString MyBytesToString(int64_t nBytes)
 {
     return IuCoreUtils::fileSizeToString(nBytes).c_str();
 }
 
-CString IU_GetFileInfo(CString fileName,MyFileInfo* mfi=0)
-{
-    CString result;
-    int fileSize = static_cast<int>(IuCoreUtils::getFileSize(W2U(fileName)));
-    result =  MyBytesToString(fileSize)+_T("(")+WinUtils::IntToStr(fileSize)+_T(" bytes);");
-    CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8(fileName)));
-    result+=mimeType+_T(";");
-    if(mfi) mfi->mimeType = mimeType;
-    if(mimeType.Find(_T("image/"))>=0)
-    {
-        Gdiplus::Image pic(fileName);
-        int width = pic.GetWidth();
-        int height = pic.GetHeight();
-        if(mfi)
-        {
-            mfi->width = width;
-            mfi->height = height;
-        }
-        result+= WinUtils::IntToStr(width)+_T("x")+WinUtils::IntToStr(height);
-    }
-    return result;
-}
-
-CMainDlg::CMainDlg(UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList) {
+CMainDlg::CMainDlg(UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList) : 
+                    m_FileDownloader(AppParams::instance()->tempDirectory()) {
     uploadEngineManager_ = uploadEngineManager;
     uploadManager_ = uploadManager;
     engineList_ = engineList;
 }
 
-//#include "../Uploader.h"
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     m_bIsRunning = false;
     contextMenuItemId = -1;
     CenterWindow(); // center the dialog on the screen
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
+    DoDataExchange(FALSE);
 
-    IuCommonFunctions::CreateTempFolder();
     // set icons
-    icon_ = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
-        IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
+    icon_ = reinterpret_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
+        IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR));
     SetIcon(icon_, TRUE);
-    iconSmall_ = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
-        IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
+    iconSmall_ = reinterpret_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
+        IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR));
     SetIcon(iconSmall_, FALSE);
-    m_ListView = GetDlgItem(IDC_TOOLSERVERLIST);
 
-    //LogWindow.Create(0);
     m_ListView.AddColumn(_T("N"), 0);
     m_ListView.AddColumn(_T("Server"), 1);
     m_ListView.AddColumn(_T("Status"), 2);
@@ -90,11 +62,10 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     m_ListView.SetColumnWidth(5, 205);
     m_ListView.SetColumnWidth(6, 50);
 
-    SendDlgItemMessage(IDC_RADIOWITHACCS, BM_SETCHECK, 1);
-    SendDlgItemMessage(IDC_CHECKIMAGESERVERS, BM_SETCHECK, 1);
+    withAccountsRadioButton_.SetCheck(BST_CHECKED);
+    checkImageServersCheckBox_.SetCheck(BST_CHECKED);
     m_ListView.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
     
-
     CString testFileName = WinUtils::GetAppFolder() + "testfile.jpg";
     CString testURL = "https://github.com/zenden2k/image-uploader/issues";
     if(xml.LoadFromFile( WCstringToUtf8((WinUtils::GetAppFolder() + "servertool.xml"))))
@@ -122,7 +93,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     m_ListView.SetImageList(m_ImageList, LVSIL_NORMAL);
     for (int i = 0; i < engineList_->count(); i++) {
         m_skipMap[i] = false;
-        m_ListView.AddItem(i, 0, WinUtils::IntToStr(i), i);
+        m_ListView.AddItem(i, 0, WinUtils::IntToStr(i+1), i);
         CString name = Utf8ToWstring(engineList_->byIndex(i)->Name).c_str();
         if (engineList_->byIndex(i)->hasType(CUploadEngineData::TypeUrlShorteningServer)) {
             name += _T("  [URL Shortener]");
@@ -196,7 +167,7 @@ LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /
     for (int i = 0; i < engineList_->count(); i++) {
         ServerData sd;
         m_CheckedServersMap[i] = sd;
-        m_ListView.AddItem(i, 0, WinUtils::IntToStr(i));
+        m_ListView.AddItem(i, 0, WinUtils::IntToStr(i+1));
         CString name = Utf8ToWstring(engineList_->byIndex(i)->Name).c_str();
         if (engineList_->byIndex(i)->hasType(CUploadEngineData::TypeUrlShorteningServer)) {
             name += _T("  [URL Shortener]");
@@ -205,13 +176,12 @@ LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /
     }
    
     m_srcFileHash = U2W(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(W2U(fileName)));
-    CString report = _T("Source file: ") + IU_GetFileInfo(fileName, &m_sourceFileInfo);
+    CString report = _T("Source file: ") + GetFileInfo(fileName, &m_sourceFileInfo);
     SetDlgItemText(IDC_TOOLSOURCEFILE, report);
     ::EnableWindow(GetDlgItem(IDOK), false);
     GuiTools::ShowDialogItem(m_hWnd, IDC_STOPBUTTON, true);
     m_NeedStop = false;
     m_bIsRunning = true;
-    //Start(); // start working thread
     Run(); 
     return 0;
 }
@@ -224,21 +194,22 @@ LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
         SimpleXml savexml;
         CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
         SimpleXmlNode root = savexml.getRoot("ServerListTool");
-        root.SetAttribute("FileName", WstrToUtf8((LPCTSTR)fileName));
-        root.SetAttribute("Time", int(GetTickCount()));
-        savexml.SaveToFile(WstrToUtf8((LPCTSTR)(WinUtils::GetAppFolder() + "servertool.xml")));
+        root.SetAttribute("FileName", W2U(fileName));
+        root.SetAttribute("Time", static_cast<int>(GetTickCount()));
+        savexml.SaveToFile(W2U(WinUtils::GetAppFolder() + "servertool.xml"));
         EndDialog(wID);
     }
     return 0;
 }
 
-DWORD CMainDlg::Run() {
-    bool useAccounts = SendDlgItemMessage(IDC_RADIOWITHACCS, BM_GETCHECK) || SendDlgItemMessage(IDC_RADIOALWAYSACCS, BM_GETCHECK);
-    bool onlyAccs = SendDlgItemMessage(IDC_RADIOALWAYSACCS, BM_GETCHECK) == BST_CHECKED;
+int CMainDlg::Run() {
+    bool useAccounts = withAccountsRadioButton_.GetCheck()==BST_CHECKED || alwaysWithAccountsRadioButton_.GetCheck()==BST_CHECKED;
+    bool onlyAccs = alwaysWithAccountsRadioButton_.GetCheck() == BST_CHECKED;
 
-    bool CheckImageServers = SendDlgItemMessage(IDC_CHECKIMAGESERVERS, BM_GETCHECK) == BST_CHECKED;
-    bool CheckFileServers = SendDlgItemMessage(IDC_CHECKFILESERVERS, BM_GETCHECK) == BST_CHECKED;
-    bool CheckURLShorteners = SendDlgItemMessage(IDC_CHECKURLSHORTENERS, BM_GETCHECK) == BST_CHECKED;
+    bool CheckImageServers = checkImageServersCheckBox_.GetCheck() == BST_CHECKED;
+    bool CheckFileServers = checkFileServersCheckBox_.GetCheck() == BST_CHECKED;
+    bool CheckURLShorteners = checkUrlShortenersCheckBox_.GetCheck() == BST_CHECKED;
+
     CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
     if (!WinUtils::FileExists(fileName)) {
         LOG(ERROR) << "File not found " << fileName;
@@ -361,7 +332,7 @@ bool CMainDlg::OnFileFinished(bool ok, int statusCode, CFileDownloader::Download
     {
         MyFileInfo mfi;
 
-        CString report =IU_GetFileInfo(fileName, &mfi);
+        CString report = GetFileInfo(fileName, &mfi);
         
         CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8((fileName))));
         if(fileId<2) // is thumb or image
@@ -458,7 +429,7 @@ LRESULT CMainDlg::OnSkip(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL&
 
 LRESULT CMainDlg::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
-    LPNMLVCUSTOMDRAW lplvcd = (LPNMLVCUSTOMDRAW) pnmh;
+    LPNMLVCUSTOMDRAW lplvcd = reinterpret_cast<LPNMLVCUSTOMDRAW>(pnmh);
 
     switch(lplvcd->nmcd.dwDrawStage) 
     {
@@ -466,10 +437,14 @@ LRESULT CMainDlg::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
             return CDRF_NOTIFYITEMDRAW;
 
         case CDDS_ITEMPREPAINT:
-            if(m_CheckedServersMap[lplvcd->nmcd.dwItemSpec].color)
-            lplvcd->clrTextBk = m_CheckedServersMap[lplvcd->nmcd.dwItemSpec].color;
-    
-        return CDRF_NEWFONT;
+        {
+            auto it = m_CheckedServersMap.find(lplvcd->nmcd.dwItemSpec);
+            if (it != m_CheckedServersMap.end() && it->second.color) {
+                lplvcd->clrTextBk = it->second.color;
+                return CDRF_NEWFONT;
+            }
+        }
+        break;
         case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
             lplvcd->clrText = RGB(255,0,0);
             return CDRF_NEWFONT;    
@@ -707,4 +682,25 @@ LRESULT CMainDlg::OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
     uploadSession_->stop();
     m_FileDownloader.stop();
     return 0;
+}
+
+CString CMainDlg::GetFileInfo(CString fileName, MyFileInfo* mfi)
+{
+    CString result;
+    int fileSize = static_cast<int>(IuCoreUtils::getFileSize(W2U(fileName)));
+    result = MyBytesToString(fileSize) + _T("(") + WinUtils::IntToStr(fileSize) + _T(" bytes);");
+    CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8(fileName)));
+    result += mimeType + _T(";");
+    if (mfi) mfi->mimeType = mimeType;
+    if (mimeType.Find(_T("image/")) >= 0) {
+        Gdiplus::Image pic(fileName);
+        int width = pic.GetWidth();
+        int height = pic.GetHeight();
+        if (mfi) {
+            mfi->width = width;
+            mfi->height = height;
+        }
+        result += WinUtils::IntToStr(width) + _T("x") + WinUtils::IntToStr(height);
+    }
+    return result;
 }

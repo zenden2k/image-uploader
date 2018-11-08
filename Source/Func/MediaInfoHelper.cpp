@@ -25,6 +25,8 @@
 #include "LangClass.h"
 #include "WinUtils.h"
 #include <boost/lexical_cast.hpp>
+#include <Core/AppParams.h>
+#include <Core/ServiceLocator.h>
 
 namespace MediaInfoHelper {
 
@@ -44,8 +46,8 @@ inline CString& replace(CString &text, CString s, CString d)
     return text;
 }
 
-#define VIDEO(a) MI.Get(Stream_Video, 0, _T(a), Info_Text, Info_Name)
-#define AUDIO(n, a) MI.Get(Stream_Audio, n, _T(a), Info_Text, Info_Name)
+#define VIDEO(a) MI.Get(Stream_Video, 0, _T(a), Info_Text, Info_Name).c_str()
+#define AUDIO(n, a) MI.Get(Stream_Audio, n, _T(a), Info_Text, Info_Name).c_str()
 
 std::string timestampToStr(int64_t duration, int64_t units) {
     int hours, mins, secs, us;
@@ -90,14 +92,28 @@ bool IsMediaInfoAvailable() {
     return *MediaInfoDllPath != _T('\0');
 }
 
-bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
+bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo)
 {
     using namespace MediaInfoDLL;
     MediaInfo MI;
-
     if (!MI.IsReady()) {
         Buffer = TR("Unable to load library MediaInfo.dll!");
-        return FALSE;
+        return false;
+    }
+    MI.Option(__T("Internet"), __T(""));
+    //MI.Option(__T("Complete"), __T("1"));
+
+    TCHAR path[MAX_PATH];
+    WinUtils::ExtractFilePath(MediaInfoDllPath, path);
+    CString langDir = path + CString(_T("MediaInfoLang\\"));
+    std::string locale = ServiceLocator::instance()->translator()->getCurrentLocale();
+    CString lang = U2W(locale).Left(2);
+    if (!lang.IsEmpty()) {
+        CString langFilePath = langDir + lang + _T(".csv");
+        std::string langFileContents;
+        if (IuCoreUtils::ReadUtf8TextFile(W2U(langFilePath), langFileContents)) {
+            MI.Option(__T("Language"), IuCoreUtils::Utf8ToWstring(langFileContents));
+        }
     }
 
     MI.Open(FileName);
@@ -109,20 +125,20 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
     int count = MI.Count_Get(Stream_Audio); //Count of audio streams in file
     int VideoCount = MI.Count_Get(Stream_Video); //Count of video streams in file
     int SubsCount = MI.Count_Get(Stream_Text);
-
+    fullInfo = MI.Inform().c_str();
     Result += CString(TR("Filename: ")) + WinUtils::myExtractFileName(FileName);
     Result += _T("\r\n");
-    CString fileSize = MI.Get(Stream_General, 0, _T("FileSize/String"), Info_Text, Info_Name);;
+    CString fileSize = MI.Get(Stream_General, 0, _T("FileSize/String"), Info_Text, Info_Name).c_str();
     fileSize.Replace(_T("iB"), _T("B")); // MiB --> MB
     Result += CString(TR("Filesize: ")) + fileSize;
     Result += _T("\r\n");
     CString Duration;
-    CString DurationStr = MI.Get(Stream_General, 0, _T("Duration"), Info_Text, Info_Name);
+    CString DurationStr = MI.Get(Stream_General, 0, _T("Duration"), Info_Text, Info_Name).c_str();
     if (!DurationStr.IsEmpty()) {
         uint64_t duration = IuCoreUtils::stringToInt64(W2U(DurationStr));
         Duration = U2W(timestampToStr(duration, 1000));
     } else {
-        Duration = MI.Get(Stream_General, 0, _T("Duration/String"), Info_Text, Info_Name);
+        Duration = MI.Get(Stream_General, 0, _T("Duration/String"), Info_Text, Info_Name).c_str();
     }
 
 
@@ -130,7 +146,7 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
 
     if (count + VideoCount > 1) // if file contains more than one audio/video stream 
     {
-        AddStr(Result, MI.Get(Stream_General, 0, _T("OverallBitRate/String"), Info_Text, Info_Name),
+        AddStr(Result, MI.Get(Stream_General, 0, _T("OverallBitRate/String"), Info_Text, Info_Name).c_str(),
             CString(_T("\r\n")), CString(TR("Overall bitrate: ")));
     }
 
@@ -145,7 +161,7 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
         CString width = VIDEO("Width");
         CString height = VIDEO("Height");
 
-        CString aspectRatio = MI.Get(Stream_Video, 0, _T("DisplayAspectRatio"), Info_Text, Info_Name);
+        CString aspectRatio = MI.Get(Stream_Video, 0, _T("DisplayAspectRatio"), Info_Text, Info_Name).c_str();
         try {
             double fAspectRatio = boost::lexical_cast<double>(LPCTSTR(aspectRatio));
             int iWidth = boost::lexical_cast<int>(LPCTSTR(width));
@@ -213,7 +229,7 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
         Result += _T("\r\n");
     }  // End of getting information about video stream
 
-    CString CountString = MI.Get(Stream_Audio, 0, _T("StreamCount"), Info_Text, Info_Name);
+    CString CountString = MI.Get(Stream_Audio, 0, _T("StreamCount"), Info_Text, Info_Name).c_str();
 
     for (int i = 0; i < count; i++) {
         CString AudioTotal;
@@ -251,8 +267,8 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer)
         CString SubsTotal;
 
         for (int i = 0; i < SubsCount; i++) {
-            CString mode = MI.Get(Stream_Text, i, _T("Language_More"), Info_Text, Info_Name);
-            AddStr(SubsTotal, MI.Get(Stream_Text, i, _T("Language/String"), Info_Text, Info_Name), CString(_T("")), CString(i ? _T(", ") : _T("")));
+            CString mode = MI.Get(Stream_Text, i, _T("Language_More"), Info_Text, Info_Name).c_str();
+            AddStr(SubsTotal, MI.Get(Stream_Text, i, _T("Language/String"), Info_Text, Info_Name).c_str(), CString(_T("")), CString(i ? _T(", ") : _T("")));
 
             if (mode == _T("Forced")) AddStr(SubsTotal, CString(_T(" (forced)")));
         }

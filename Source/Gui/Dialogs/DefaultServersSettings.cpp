@@ -63,14 +63,15 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 {
     TRC(IDC_REMEMBERIMAGESERVERSETTINGS, "Remember image server's settings in wizard");
     TRC(IDC_REMEMBERFILESERVERSETTINGS, "Remember file server's settings in wizard");
-    RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
+    RECT serverSelectorRect;
+    serverSelectorRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
     imageServerSelector_ = new CServerSelectorControl(uploadEngineManager_, true);
     if ( !imageServerSelector_->Create(m_hWnd, serverSelectorRect) ) {
         return 0;
     }
     imageServerSelector_->setTitle(TR("Default server for uploading images"));
     imageServerSelector_->ShowWindow( SW_SHOW );
-    imageServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
+    imageServerSelector_->SetWindowPos(GetDlgItem(IDC_IMAGESERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
     imageServerSelector_->setServerProfile(Settings.imageServer);
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_FILESERVERPLACEHOLDER);
@@ -80,7 +81,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     fileServerSelector_->setShowImageProcessingParams(false);
     fileServerSelector_->Create(m_hWnd, serverSelectorRect);
     fileServerSelector_->ShowWindow( SW_SHOW );
-    fileServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
+    fileServerSelector_->SetWindowPos(GetDlgItem(IDC_FILESERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
     fileServerSelector_->setServerProfile(Settings.fileServer);
     fileServerSelector_->setTitle(TR("Default server for other file types"));
 
@@ -89,7 +90,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     //trayServerSelector_->setShowDefaultServerItem(true);
     trayServerSelector_->Create(m_hWnd, serverSelectorRect);
     trayServerSelector_->ShowWindow( SW_SHOW );
-    trayServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
+    trayServerSelector_->SetWindowPos(GetDlgItem(IDC_TRAYSERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
 
     trayServerSelector_->setServerProfile(Settings.quickScreenshotServer);
     trayServerSelector_->setTitle(TR("Server for quick screenshot uploading"));
@@ -100,11 +101,22 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     //contextMenuServerSelector_->setShowDefaultServerItem(true);
     contextMenuServerSelector_->Create(m_hWnd, serverSelectorRect);
     contextMenuServerSelector_->ShowWindow( SW_SHOW );
-    contextMenuServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
+    contextMenuServerSelector_->SetWindowPos(GetDlgItem(IDC_CONTEXTMENUSERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
 
     contextMenuServerSelector_->setServerProfile(Settings.contextMenuServer);
     contextMenuServerSelector_->setTitle(TR("Server for uploading from Explorer's context menu"));
 
+
+    // Intermediate server for storing temporary images
+    serverSelectorRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_TEMPORARYSERVERPLACEHOLDER);
+    temporaryServerSelector_ = new CServerSelectorControl(uploadEngineManager_);
+    //trayServerSelector_->setShowDefaultServerItem(true);
+    temporaryServerSelector_->Create(m_hWnd, serverSelectorRect);
+    temporaryServerSelector_->ShowWindow(SW_SHOW);
+    temporaryServerSelector_->SetWindowPos(GetDlgItem(IDC_TEMPORARYSERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
+
+    temporaryServerSelector_->setServerProfile(Settings.temporaryServer);
+    temporaryServerSelector_->setTitle(TR("Server for temporary images"));
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_URLSHORTENERPLACEHOLDER);
 
@@ -114,20 +126,10 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     urlShortenerServerSelector_->setShowParamsLink(false);
     urlShortenerServerSelector_->Create(m_hWnd, serverSelectorRect);
     urlShortenerServerSelector_->ShowWindow( SW_SHOW );
-    urlShortenerServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
+    urlShortenerServerSelector_->SetWindowPos(GetDlgItem(IDC_URLSHORTENERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
     urlShortenerServerSelector_->setServerProfile(Settings.urlShorteningServer);
     urlShortenerServerSelector_->setTitle(TR("URL shortening server"));
-    
-    // Intermediate server for storing temporary images
-    serverSelectorRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_TEMPORARYSERVERPLACEHOLDER);
-    temporaryServerSelector_ = new CServerSelectorControl(uploadEngineManager_);
-    //trayServerSelector_->setShowDefaultServerItem(true);
-    temporaryServerSelector_->Create(m_hWnd, serverSelectorRect);
-    temporaryServerSelector_->ShowWindow(SW_SHOW);
-    temporaryServerSelector_->SetWindowPos(0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
 
-    temporaryServerSelector_->setServerProfile(Settings.temporaryServer);
-    temporaryServerSelector_->setTitle(TR("Server for temporary images"));
 
     GuiTools::SetCheck(m_hWnd, IDC_REMEMBERIMAGESERVERSETTINGS, Settings.RememberImageServer);
     GuiTools::SetCheck(m_hWnd, IDC_REMEMBERFILESERVERSETTINGS, Settings.RememberFileServer);

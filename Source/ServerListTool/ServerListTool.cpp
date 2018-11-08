@@ -88,10 +88,10 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     UploadEngineManager uploadEngineManager(&engineList, &uploadErrorHandler);
     uploadEngineManager.setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
     UploadManager uploadManager(&uploadEngineManager, &engineList, &scriptsManager, &uploadErrorHandler);
+    CString commonTempFolder, tempFolder;
+    IuCommonFunctions::CreateTempFolder(commonTempFolder, tempFolder);
 
-    IuCommonFunctions::CreateTempFolder();
-
-    AppParams::instance()->setTempDirectory(W2U(IuCommonFunctions::IUTempFolder));
+    AppParams::instance()->setTempDirectory(W2U(tempFolder));
 
     HRESULT hRes = ::CoInitialize(NULL);
     // If you are running on NT 4.0 or higher you can use the following call instead to
@@ -121,7 +121,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
 
     _Module.Term();
     ::CoUninitialize();
-    IuCommonFunctions::ClearTempFolder(IuCommonFunctions::IUTempFolder);
+    IuCommonFunctions::ClearTempFolder(tempFolder);
     google::ShutdownGoogleLogging();
     LogWindow.DestroyWindow();
     return nRet;

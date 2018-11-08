@@ -18,15 +18,13 @@
 
  */
 
-#ifndef INPUTDIALOG_H
-#define INPUTDIALOG_H
+#ifndef GUI_DIALOGS_INPUTDIALOG_H
+#define GUI_DIALOGS_INPUTDIALOG_H
 
 #pragma once
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include "3rdpart/ColorButton.h"
-#include "Core/Images/Thumbnail.h"
 #include "Gui/Controls/MyImage.h"
 // CInputDialog
 

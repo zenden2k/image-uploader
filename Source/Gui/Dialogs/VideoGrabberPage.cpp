@@ -393,14 +393,14 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
     using namespace Gdiplus;
     RectF TextRect;
     int infoHeight = 0;
-    CString Report;
+    CString Report, fullInfo;
 
     if (Settings.VideoSettings.ShowMediaInfo)
     {
         TCHAR buffer[256];
         GetDlgItemText(IDC_FILEEDIT, buffer, 256);
         /*bool bMediaInfoResult = */
-        MediaInfoHelper::GetMediaFileInfo(buffer, Report);
+        MediaInfoHelper::GetMediaFileInfo(buffer, Report, fullInfo);
 
         Graphics g1(m_hWnd);
 

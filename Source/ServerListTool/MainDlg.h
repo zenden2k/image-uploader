@@ -25,7 +25,6 @@
 #include <map>
 #include "atlheaders.h"
 #include "resource.h"
-#include "3rdpart/thread.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Core/FileDownloader.h"
 #include "Func/MyEngineList.h"
@@ -92,8 +91,7 @@ struct MyFileInfo
     }
 };
 class CMainDlg :
-    public CDialogImpl<CMainDlg>, public CThreadImpl<CMainDlg>, 
-     public  CDialogResize <CMainDlg>
+    public CDialogImpl<CMainDlg>, public CDialogResize<CMainDlg>, public CWinDataExchange<CMainDlg>
 {
 public:
     enum { IDD = IDD_MAINDLG };
@@ -128,6 +126,15 @@ public:
         DLGRESIZE_CONTROL(IDC_STOPBUTTON, DLSZ_MOVE_X | DLSZ_MOVE_Y)
     END_DLGRESIZE_MAP()
 
+    BEGIN_DDX_MAP(CMainDlg)
+        DDX_CONTROL_HANDLE(IDC_RADIOWITHACCS, withAccountsRadioButton_)
+        DDX_CONTROL_HANDLE(IDC_RADIOALWAYSACCS, alwaysWithAccountsRadioButton_)
+        DDX_CONTROL_HANDLE(IDC_CHECKIMAGESERVERS, checkImageServersCheckBox_)
+        DDX_CONTROL_HANDLE(IDC_CHECKFILESERVERS, checkFileServersCheckBox_)
+        DDX_CONTROL_HANDLE(IDC_CHECKURLSHORTENERS, checkUrlShortenersCheckBox_)
+        DDX_CONTROL_HANDLE(IDC_TOOLSERVERLIST, m_ListView)
+    END_DDX_MAP()
+
 // Handler prototypes (uncomment arguments if needed):
 //    LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 //    LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -145,31 +152,16 @@ public:
     LRESULT OnCopyDirectUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCopyThumbUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCopyViewUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
     CListViewCtrl m_ListView;
-    DWORD Run();
-    void stop();
-    bool m_NeedStop;
-    bool m_bIsRunning;
-    bool isRunning();
     std::map<int,ServerData> m_CheckedServersMap;
     std::map<int, bool> m_skipMap;
     int contextMenuItemId;
     CImageList m_ImageList;
     CString m_srcFileHash;
     MyFileInfo m_sourceFileInfo;
-    void OnConfigureNetworkClient(NetworkClient* nm);
-    void OnConfigureNetworkClient(CUploader* uploader, NetworkClient* nm);
-    void onTaskStatusChanged(UploadTask* task);
-    void onTaskFinished(UploadTask* task, bool ok);
-    void onSessionFinished(UploadSession* session);
-    virtual bool OnFileFinished(bool ok, int statusCode,  CFileDownloader::DownloadFileListItem it);
-    void MarkServer(int id);
-    CFileDownloader m_FileDownloader;
-    LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-    bool OnNeedStop();
-    void processFinished();
-    void checkShortUrl(UploadTask* task);
     UploadEngineManager *uploadEngineManager_;
     UploadManager* uploadManager_;
     CMyEngineList* engineList_;
@@ -177,5 +169,24 @@ public:
     std::vector<std::unique_ptr<UploadTaskUserData>> uploadTaskUserDatas_;
     SimpleXml xml;
     CIcon icon_, iconSmall_;
-    LRESULT OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    CFileDownloader m_FileDownloader;
+    CButton withAccountsRadioButton_, alwaysWithAccountsRadioButton_, checkImageServersCheckBox_,
+        checkFileServersCheckBox_, checkUrlShortenersCheckBox_;
+
+    void OnConfigureNetworkClient(NetworkClient* nm);
+    void OnConfigureNetworkClient(CUploader* uploader, NetworkClient* nm);
+    void onTaskStatusChanged(UploadTask* task);
+    void onTaskFinished(UploadTask* task, bool ok);
+    void onSessionFinished(UploadSession* session);
+    bool OnFileFinished(bool ok, int statusCode,  CFileDownloader::DownloadFileListItem it);
+    void MarkServer(int id);
+    bool OnNeedStop();
+    void processFinished();
+    void checkShortUrl(UploadTask* task);
+    int Run();
+    void stop();
+    bool m_NeedStop;
+    bool m_bIsRunning;
+    bool isRunning();
+    static CString GetFileInfo(CString fileName, MyFileInfo* mfi = nullptr);
 };

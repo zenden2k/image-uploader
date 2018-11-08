@@ -67,6 +67,12 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 {
     TranslateUI();
 
+    accountLink_.SubclassWindow(GetDlgItem(IDC_ACCOUNTINFO));
+    accountLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON;
+    accountLink_.m_clrLink = CSettings::DefaultLinkColor;
+    accountLink_.SetToolTipText(TR("User name"));
+
+
     imageProcessingParamsLink_.SubclassWindow(GetDlgItem(IDC_IMAGEPROCESSINGPARAMS));
     imageProcessingParamsLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
     imageProcessingParamsLink_.m_clrLink = CSettings::DefaultLinkColor;
@@ -74,10 +80,7 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
     imageProcessingParamsLink_.SetLabel(linkLabel);
     imageProcessingParamsLink_.SetToolTipText(linkLabel);
     imageProcessingParamsLink_.ShowWindow(showParamsLink_ ? SW_SHOW : SW_HIDE);
-    accountLink_.SubclassWindow(GetDlgItem(IDC_ACCOUNTINFO));
-    accountLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON ; 
-    accountLink_.m_clrLink = CSettings::DefaultLinkColor;
-    accountLink_.SetToolTipText(TR("User name"));
+    
 
     createSettingsButton();
     setTitle(title_);
@@ -329,7 +332,7 @@ void CServerSelectorControl::updateInfoLabel() {
     int settingsBtnPlaceHolderId = ( showFolder || showAccount ) ? IDC_SETTINGSBUTTONPLACEHOLDER : IDC_SETTINGSBUTTONPLACEHOLDER2;
     ::GetWindowRect(GetDlgItem(settingsBtnPlaceHolderId), &rect);
     ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&rect), 2);
-    settingsButtonToolbar_.SetWindowPos(0, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, 0);
+    settingsButtonToolbar_.SetWindowPos(GetDlgItem(IDC_FOLDERLABEL), rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, 0);
     settingsButtonToolbar_.ShowWindow(showServerParams ? SW_SHOW : SW_HIDE);
 
     GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERLABEL, showFolder );
