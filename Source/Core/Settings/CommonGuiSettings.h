@@ -58,6 +58,10 @@ struct VideoSettingsStruct {
     CString SnapshotFileTemplate;
 };
 
+struct MediaInfoSettingsStruct {
+    int InfoType; // 0 - short summary, 1 - full info
+};
+
 struct HistorySettingsStruct {
     bool EnableDownloading;
 };
@@ -81,6 +85,7 @@ class CommonGuiSettings : public BasicSettings {
         int ThumbsPerLine;
         TCHAR m_szLang[64];
         VideoSettingsStruct VideoSettings;
+        MediaInfoSettingsStruct MediaInfoSettings;
         ServerProfile imageServer, fileServer, quickScreenshotServer, contextMenuServer, urlShorteningServer, temporaryServer;
         HistorySettingsStruct HistorySettings;
 

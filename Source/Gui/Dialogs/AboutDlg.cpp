@@ -29,6 +29,7 @@
 #include <boost/version.hpp>
 #include <webp/decode.h>
 #include "Core/AppParams.h"
+#include "Func/MediaInfoHelper.h"
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -152,6 +153,10 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
         memoText += FFMPEG_VERSION + CString("\r\n");
     }*/
 
+    if (MediaInfoHelper::IsMediaInfoAvailable()) {
+        memoText += CString(L"MediaInfo.DLL path:\r\n") + MediaInfoHelper::GetLibraryPath() + _T("\r\n")+
+            MediaInfoHelper::GetLibraryVersion() + L"\r\n\r\n";
+    }
     SetDlgItemText(IDC_MEMO, memoText);
    
     CString buildInfo;

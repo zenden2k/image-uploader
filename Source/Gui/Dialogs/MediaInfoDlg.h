@@ -41,7 +41,7 @@ class CMediaInfoDlg:        public CDialogImpl <CMediaInfoDlg>,
     public:
         enum InfoType { itSummary = 0, itFullInformation };
 
-        CMediaInfoDlg(InfoType type = itSummary);
+        CMediaInfoDlg();
         ~CMediaInfoDlg();
         void ShowInfo(LPCTSTR FileName);
 
@@ -53,6 +53,8 @@ class CMediaInfoDlg:        public CDialogImpl <CMediaInfoDlg>,
             COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             COMMAND_HANDLER(IDC_COPYALL, BN_CLICKED, OnBnClickedCopyall)
+            COMMAND_HANDLER(IDC_FULLINFORADIOBUTTON, BN_CLICKED, OnInfoRadioButtonClicked)
+            COMMAND_HANDLER(IDC_SUMMARYRADIOBUTTON, BN_CLICKED, OnInfoRadioButtonClicked)
             CHAIN_MSG_MAP(CDialogResize<CMediaInfoDlg>)
         END_MSG_MAP()
 
@@ -73,6 +75,7 @@ class CMediaInfoDlg:        public CDialogImpl <CMediaInfoDlg>,
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnInfoRadioButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         DWORD Run();
 
         CString m_FileName;

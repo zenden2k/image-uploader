@@ -29,6 +29,8 @@ namespace MediaInfoHelper {
 bool FindMediaInfoDllPath();
 bool IsMediaInfoAvailable();
 bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo);
+CString GetLibraryVersion();
+CString GetLibraryPath();
 
 }
 

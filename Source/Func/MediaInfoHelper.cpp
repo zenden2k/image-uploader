@@ -285,4 +285,17 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo)
     return TRUE;
 }
 
+CString GetLibraryVersion() {
+    using namespace MediaInfoDLL;
+    MediaInfo MI;
+    if (!MI.IsReady()) {
+        return CString();
+    }
+    return MI.Option(__T("Info_Version")).c_str();
+}
+
+CString GetLibraryPath() {
+    return MediaInfoDllPath; 
+}
+
 }

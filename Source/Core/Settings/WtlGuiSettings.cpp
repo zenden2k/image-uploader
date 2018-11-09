@@ -20,6 +20,8 @@ limitations under the License.
 
 #include "WtlGuiSettings.h"
 
+#include <stdlib.h>
+
 #ifdef _WIN32
 #include <atlheaders.h>
 #include <Shlobj.h>
@@ -33,12 +35,7 @@ limitations under the License.
 #include "Core/Video/VideoUtils.h"
 #include "Func/WinUtils.h"
 #include "Core/AppParams.h"
-#include "Core/Images/Utils.h"
-
-#include <stdlib.h>
-
 #include "Core/Utils/StringUtils.h"
-
 #include "Gui/Dialogs/FloatingWindow.h"
 
 #ifndef CheckBounds
@@ -363,6 +360,7 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
 
     VideoSettings.Engine = IsFFmpegAvailable() ? VideoEngineAuto : VideoEngineDirectshow;
 
+    MediaInfoSettings.InfoType = 0; // generate short summary
 
     ScreenshotSettings.Format = 1;
     ScreenshotSettings.Quality = 85;
@@ -795,6 +793,9 @@ void WtlGuiSettings::BindToManager() {
     video.nm_bind(VideoSettings, Engine);
     video.nm_bind(VideoSettings, SnapshotsFolder);
     video.nm_bind(VideoSettings, SnapshotFileTemplate);
+
+    SettingsNode& mediaInfo = mgr_["MediaInfo"];
+    mediaInfo.nm_bind(MediaInfoSettings, InfoType);
 
     SettingsNode& tray = mgr_["TrayIcon"];
     tray.nm_bind(TrayIconSettings, LeftDoubleClickCommand);

@@ -24,11 +24,12 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Func/myutils.h"
+#include "Core/Settings.h"
 
 // CMediaInfoDlg
-CMediaInfoDlg::CMediaInfoDlg(InfoType type)
+CMediaInfoDlg::CMediaInfoDlg()
 {
-
+    infoType_ = static_cast<InfoType>(Settings.MediaInfoSettings.InfoType);
 }
 
 CMediaInfoDlg::~CMediaInfoDlg()
@@ -45,7 +46,7 @@ LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     StringToFont(_T("Courier New,8,,204"), &logFont);
     
     editFont_.CreateFontIndirect(&logFont);
-    SendDlgItemMessage(IDC_FILEINFOEDIT, WM_SETFONT, (WPARAM)(HFONT)editFont_, MAKELPARAM(false, 0));
+    SendDlgItemMessage(IDC_FILEINFOEDIT, WM_SETFONT, reinterpret_cast<WPARAM>(editFont_.m_hFont), MAKELPARAM(false, 0));
     // Translating controls' text
     TRC(IDOK, "OK");
     SetWindowText(TR("Information about file"));
@@ -55,7 +56,11 @@ LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
     SetDlgItemText(IDC_FILEINFOEDIT, TR("Loading..."));
 
-    
+    if (infoType_ == itFullInformation) {
+        GuiTools::SetCheck(m_hWnd, IDC_FULLINFORADIOBUTTON, true);
+    } else {
+        GuiTools::SetCheck(m_hWnd, IDC_SUMMARYRADIOBUTTON, true);
+    }
     ::SetFocus(GetDlgItem(IDOK));
 
     Start(); // Starting thread which will load in background
@@ -105,5 +110,12 @@ LRESULT CMediaInfoDlg::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     SendDlgItemMessage(IDC_FILEINFOEDIT, EM_SETSEL, 0, -1);
     SendDlgItemMessage(IDC_FILEINFOEDIT, WM_COPY, 0, 0);
     SendDlgItemMessage(IDC_FILEINFOEDIT, EM_SETSEL, static_cast<WPARAM>(-1), 0);
+    return 0;
+}
+
+LRESULT CMediaInfoDlg::OnInfoRadioButtonClicked(WORD, WORD, HWND, BOOL&) {
+    bool fullInfo = GuiTools::GetCheck(m_hWnd, IDC_FULLINFORADIOBUTTON);
+    SetDlgItemText(IDC_FILEINFOEDIT, fullInfo ? fullInfo_ : summary_);
+    Settings.MediaInfoSettings.InfoType = fullInfo ? 1 : 0;
     return 0;
 }
