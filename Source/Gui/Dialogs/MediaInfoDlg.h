@@ -55,6 +55,7 @@ class CMediaInfoDlg:        public CDialogImpl <CMediaInfoDlg>,
             COMMAND_HANDLER(IDC_COPYALL, BN_CLICKED, OnBnClickedCopyall)
             COMMAND_HANDLER(IDC_FULLINFORADIOBUTTON, BN_CLICKED, OnInfoRadioButtonClicked)
             COMMAND_HANDLER(IDC_SUMMARYRADIOBUTTON, BN_CLICKED, OnInfoRadioButtonClicked)
+            COMMAND_HANDLER(IDC_GENERATETEXTINENGLISHCHECKBOX, BN_CLICKED, OnShowInEnglishCheckboxClicked)
             CHAIN_MSG_MAP(CDialogResize<CMediaInfoDlg>)
         END_MSG_MAP()
 
@@ -64,6 +65,7 @@ class CMediaInfoDlg:        public CDialogImpl <CMediaInfoDlg>,
             DLGRESIZE_CONTROL(IDC_COPYALL, DLSZ_MOVE_Y)
             DLGRESIZE_CONTROL(IDC_SUMMARYRADIOBUTTON, DLSZ_MOVE_Y)
             DLGRESIZE_CONTROL(IDC_FULLINFORADIOBUTTON, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_GENERATETEXTINENGLISHCHECKBOX, DLSZ_MOVE_Y)
         END_DLGRESIZE_MAP()
         
         // Handler prototypes:
@@ -76,11 +78,13 @@ class CMediaInfoDlg:        public CDialogImpl <CMediaInfoDlg>,
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnInfoRadioButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnShowInEnglishCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         DWORD Run();
-
+        void GenerateInfo();
         CString m_FileName;
         CFont editFont_;
         InfoType infoType_;
+        bool generateTextInEnglish_;
         CString summary_, fullInfo_;
 };
 

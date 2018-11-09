@@ -355,7 +355,7 @@ extern "C"
                 CFStringRef app_path = CFURLCopyFileSystemPath(app_path_url, kCFURLPOSIXPathStyle);
 
                 CFMutableStringRef mut_app_path = CFStringCreateMutableCopy(NULL, NULL, app_path);
-                CFStringAppend(mut_app_path, CFSTR("/"));
+                CFStringAppend(mut_app_path, CFSTR( "/"));
                 CFStringAppend(mut_app_path, CFSTR(MEDIAINFODLL_NAME));
                 CFStringEncoding encodingMethod = CFStringGetSystemEncoding();
                 const char *fullPath = CFStringGetCStringPtr(mut_app_path, encodingMethod);

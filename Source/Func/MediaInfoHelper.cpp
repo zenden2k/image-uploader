@@ -92,7 +92,7 @@ bool IsMediaInfoAvailable() {
     return *MediaInfoDllPath != _T('\0');
 }
 
-bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo)
+bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool enableLocalization)
 {
     using namespace MediaInfoDLL;
     MediaInfo MI;
@@ -102,18 +102,21 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo)
     }
     MI.Option(__T("Internet"), __T(""));
     //MI.Option(__T("Complete"), __T("1"));
-
-    TCHAR path[MAX_PATH];
-    WinUtils::ExtractFilePath(MediaInfoDllPath, path);
-    CString langDir = path + CString(_T("MediaInfoLang\\"));
-    std::string locale = ServiceLocator::instance()->translator()->getCurrentLocale();
-    CString lang = U2W(locale).Left(2);
-    if (!lang.IsEmpty()) {
-        CString langFilePath = langDir + lang + _T(".csv");
-        std::string langFileContents;
-        if (IuCoreUtils::ReadUtf8TextFile(W2U(langFilePath), langFileContents)) {
-            MI.Option(__T("Language"), IuCoreUtils::Utf8ToWstring(langFileContents));
+    if (enableLocalization) {
+        TCHAR path[MAX_PATH];
+        WinUtils::ExtractFilePath(MediaInfoDllPath, path);
+        CString langDir = path + CString(_T("MediaInfoLang\\"));
+        std::string locale = ServiceLocator::instance()->translator()->getCurrentLocale();
+        CString lang = U2W(locale).Left(2);
+        if (!lang.IsEmpty()) {
+            CString langFilePath = langDir + lang + _T(".csv");
+            std::string langFileContents;
+            if (IuCoreUtils::ReadUtf8TextFile(W2U(langFilePath), langFileContents)) {
+                MI.Option(__T("Language"), IuCoreUtils::Utf8ToWstring(langFileContents));
+            }
         }
+    } else {
+        MI.Option(__T("Language"), _T(""));
     }
 
     MI.Open(FileName);

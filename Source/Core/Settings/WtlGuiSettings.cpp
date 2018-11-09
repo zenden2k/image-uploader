@@ -138,7 +138,8 @@ void RegisterShellExtension(bool Register) {
         TempInfo.lpVerb = _T("open");
     }
     TempInfo.lpFile = _T("regsvr32");
-    TempInfo.lpParameters = CString((Register ? _T("") : _T("/u "))) + _T("/s \"") + moduleName + _T("\"");
+    CString parameters = CString((Register ? _T("") : _T("/u "))) + _T("/s \"") + moduleName + _T("\"");
+    TempInfo.lpParameters = parameters;
     TempInfo.lpDirectory = s;
     TempInfo.nShow = SW_NORMAL;
     //MessageBox(0,TempInfo.lpParameters,0,0);
@@ -796,6 +797,7 @@ void WtlGuiSettings::BindToManager() {
 
     SettingsNode& mediaInfo = mgr_["MediaInfo"];
     mediaInfo.nm_bind(MediaInfoSettings, InfoType);
+    mediaInfo.nm_bind(MediaInfoSettings, EnableLocalization);
 
     SettingsNode& tray = mgr_["TrayIcon"];
     tray.nm_bind(TrayIconSettings, LeftDoubleClickCommand);

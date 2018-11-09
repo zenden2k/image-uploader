@@ -60,6 +60,7 @@ struct VideoSettingsStruct {
 
 struct MediaInfoSettingsStruct {
     int InfoType; // 0 - short summary, 1 - full info
+    bool EnableLocalization;
 };
 
 struct HistorySettingsStruct {

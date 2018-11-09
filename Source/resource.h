@@ -427,6 +427,8 @@
 #define IDC_ONEINSTANCE                 1142
 #define IDC_MEDIAINFOONIMAGE            1142
 #define IDC_REMOVECORNERS               1142
+#define IDC_SHOWINENGLISHCKECKBOX       1142
+#define IDC_GENERATETEXTINENGLISHCHECKBOX 1142
 #define IDC_PXLABEL                     1143
 #define IDC_TABCONTROL                  1144
 #define IDC_LANGUAGELABEL               1145

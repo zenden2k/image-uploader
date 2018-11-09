@@ -400,13 +400,13 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
         TCHAR buffer[256];
         GetDlgItemText(IDC_FILEEDIT, buffer, 256);
         /*bool bMediaInfoResult = */
-        MediaInfoHelper::GetMediaFileInfo(buffer, Report, fullInfo);
+        MediaInfoHelper::GetMediaFileInfo(buffer, Report, fullInfo, Settings.MediaInfoSettings.EnableLocalization);
 
         Graphics g1(m_hWnd);
 
         CString s;
-
-        Font font(::GetDC(0), &Settings.VideoSettings.Font);
+        CWindowDC dc(nullptr);
+        Font font(dc, &Settings.VideoSettings.Font);
 
         FontFamily ff;
         font.GetFamily(&ff);
@@ -468,7 +468,8 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
         StringFormat format;
         format.SetAlignment(StringAlignmentNear);
         format.SetLineAlignment(StringAlignmentNear);
-        Font font(::GetDC(0), &Settings.VideoSettings.Font);
+        CWindowDC dc(nullptr);
+        Font font(dc, &Settings.VideoSettings.Font);
         // Font font(L"Arial", 12, FontStyleBold);
         SolidBrush br(/*Settings.ThumbSettings.ThumbTextColor*/ MYRGB(255, Settings.VideoSettings.TextColor));
         RectF textBounds(float(gapwidth), float(gapheight), float(needwidth - gapwidth), float(infoHeight - gapheight));

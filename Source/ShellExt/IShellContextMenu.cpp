@@ -26,7 +26,6 @@
 #include "../3rdpart/Registry.h"
 #include "../Func/LangClass.h"
 #include <shlobj.h>
-#include "Core/Video/VideoUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
 HINSTANCE hDllInstance;
@@ -200,8 +199,8 @@ STDMETHODIMP CIShellContextMenu::HandleMenuMsg2(UINT uMsg, WPARAM wParam, LPARAM
 
 			DrawIconEx(lpdis->hDC,
 				lpdis->rcItem.left - 16,
-				lpdis->rcItem.top + (lpdis->rcItem.bottom - lpdis->rcItem.top - 16) / 2,
-				hIcon, 16, 16,
+				lpdis->rcItem.top + (lpdis->rcItem.bottom - lpdis->rcItem.top - h) / 2,
+				hIcon, w, h,
 				0, NULL, DI_NORMAL);
 			*pResult = TRUE;
 			DeleteObject(hIcon);

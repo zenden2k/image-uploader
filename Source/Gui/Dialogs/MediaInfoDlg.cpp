@@ -30,6 +30,7 @@
 CMediaInfoDlg::CMediaInfoDlg()
 {
     infoType_ = static_cast<InfoType>(Settings.MediaInfoSettings.InfoType);
+    generateTextInEnglish_ = !Settings.MediaInfoSettings.EnableLocalization;
 }
 
 CMediaInfoDlg::~CMediaInfoDlg()
@@ -53,6 +54,7 @@ LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     TRC(IDC_COPYALL, "Copy to clipboard");
     TRC(IDC_SUMMARYRADIOBUTTON, "Summary");
     TRC(IDC_FULLINFORADIOBUTTON, "Full information");
+    TRC(IDC_GENERATETEXTINENGLISHCHECKBOX, "Disable localization");
 
     SetDlgItemText(IDC_FILEINFOEDIT, TR("Loading..."));
 
@@ -60,11 +62,15 @@ LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
         GuiTools::SetCheck(m_hWnd, IDC_FULLINFORADIOBUTTON, true);
     } else {
         GuiTools::SetCheck(m_hWnd, IDC_SUMMARYRADIOBUTTON, true);
+        //::EnableWindow(GetDlgItem(IDC_GENERATETEXTINENGLISHCHECKBOX), false);
     }
+
+    GuiTools::SetCheck(m_hWnd, IDC_GENERATETEXTINENGLISHCHECKBOX, generateTextInEnglish_);
+
+    
     ::SetFocus(GetDlgItem(IDOK));
 
-    Start(); // Starting thread which will load in background
-                // information about file m_FileName
+    GenerateInfo(); 
     return 0; 
 }
 
@@ -98,10 +104,17 @@ DWORD CMediaInfoDlg::Run()
 
     SetDlgItemText(IDC_FILEINFOLABEL,CString(TR("Information about file"))+_T(" \"")+ ShortFileName+_T("\" :"));
     
-    MediaInfoHelper::GetMediaFileInfo(m_FileName, summary_, fullInfo_);
+    MediaInfoHelper::GetMediaFileInfo(m_FileName, summary_, fullInfo_, !generateTextInEnglish_);
     bool fullInfo = GuiTools::GetCheck(m_hWnd, IDC_FULLINFORADIOBUTTON);
     SetDlgItemText(IDC_FILEINFOEDIT, fullInfo ? fullInfo_ : summary_);
     return 0;
+}
+
+void CMediaInfoDlg::GenerateInfo() {
+    if (!IsRunning()) {
+        generateTextInEnglish_ = GuiTools::GetCheck(m_hWnd, IDC_GENERATETEXTINENGLISHCHECKBOX);
+        Start(); // Starting thread which will load in background information about file m_FileName
+    }
 }
 
 LRESULT CMediaInfoDlg::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -115,7 +128,15 @@ LRESULT CMediaInfoDlg::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT CMediaInfoDlg::OnInfoRadioButtonClicked(WORD, WORD, HWND, BOOL&) {
     bool fullInfo = GuiTools::GetCheck(m_hWnd, IDC_FULLINFORADIOBUTTON);
+    //::EnableWindow(GetDlgItem(IDC_GENERATETEXTINENGLISHCHECKBOX), fullInfo);
     SetDlgItemText(IDC_FILEINFOEDIT, fullInfo ? fullInfo_ : summary_);
     Settings.MediaInfoSettings.InfoType = fullInfo ? 1 : 0;
+    return 0;
+}
+
+LRESULT CMediaInfoDlg::OnShowInEnglishCheckboxClicked(WORD, WORD, HWND, BOOL&) {
+    generateTextInEnglish_ = GuiTools::GetCheck(m_hWnd, IDC_GENERATETEXTINENGLISHCHECKBOX);
+    Settings.MediaInfoSettings.EnableLocalization = !generateTextInEnglish_;
+    GenerateInfo();
     return 0;
 }
