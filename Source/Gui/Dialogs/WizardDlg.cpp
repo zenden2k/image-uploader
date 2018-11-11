@@ -969,7 +969,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
             CStringList Paths;
             for(size_t i=0; i<fgd->cItems; i++)
             {
-                FORMATETC tc3 = { static_cast<CLIPFORMAT>(RegisterClipboardFormat(CFSTR_FILECONTENTS)), 0, DVASPECT_CONTENT, i, TYMED_HGLOBAL };
+                FORMATETC tc3 = { static_cast<CLIPFORMAT>(RegisterClipboardFormat(CFSTR_FILECONTENTS)), 0, DVASPECT_CONTENT, static_cast<LONG>(i), TYMED_HGLOBAL };
                 if(pDataObj->QueryGetData(&tc3) == S_OK )
                 {
                     STGMEDIUM ddd2;

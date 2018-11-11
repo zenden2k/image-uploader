@@ -3,7 +3,7 @@
 #include <boost/program_options.hpp>
 #include <gtest/gtest.h>
 #ifdef _MSC_VER
-    #include <vld.h> //Check for memory leaks
+   // #include <vld.h> //Check for memory leaks
 #endif
 #include <boost/locale.hpp>
 #include <boost/filesystem.hpp>

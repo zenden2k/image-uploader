@@ -426,7 +426,7 @@ public:
       CCategoryProperty* pCategory = static_cast<CCategoryProperty*>(prop);
       if( pCategory->Expand(FindProperty(prop)) ) {
          // Let owner know
-         NMPROPERTYITEM nmh = { m_hWnd, GetDlgCtrlID(), PIN_EXPANDING, prop };
+         NMPROPERTYITEM nmh = { m_hWnd, static_cast<UINT_PTR>(GetDlgCtrlID()), PIN_EXPANDING, prop };
          ::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM) &nmh);
       }
       return TRUE;
@@ -444,7 +444,7 @@ public:
       CCategoryProperty* pCategory = static_cast<CCategoryProperty*>(prop);
       if( pCategory->Collapse(FindProperty(prop)) ) {
          // Let owner know
-         NMPROPERTYITEM nmh = { m_hWnd, GetDlgCtrlID(), PIN_COLLAPSING, prop };
+         NMPROPERTYITEM nmh = { m_hWnd, static_cast<UINT_PTR>(GetDlgCtrlID()), PIN_COLLAPSING, prop };
          ::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM) &nmh);
       }
       return TRUE;
@@ -747,7 +747,7 @@ public:
          IProperty* prop = reinterpret_cast<IProperty*>(TBase::GetItemData(idx));
          ATLASSERT(prop);
          // Ask owner first
-         NMPROPERTYITEM nmh = { m_hWnd, GetDlgCtrlID(), PIN_CLICK, prop };
+         NMPROPERTYITEM nmh = { m_hWnd, static_cast<UINT_PTR>(GetDlgCtrlID()), PIN_CLICK, prop };
          if( ::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM) &nmh) == 0 ) {
             // Translate into action
             if( (m_dwExtStyle & PLS_EX_CATEGORIZED) != 0 && GET_X_LPARAM(lParam) < CATEGORY_INDENT ) {
@@ -782,7 +782,7 @@ public:
          IProperty* prop = reinterpret_cast<IProperty*>(TBase::GetItemData(idx));
          ATLASSERT(prop);
          // Ask owner first
-         NMPROPERTYITEM nmh = { m_hWnd, GetDlgCtrlID(), PIN_DBLCLICK, prop };
+         NMPROPERTYITEM nmh = { m_hWnd, static_cast<UINT_PTR>(GetDlgCtrlID()), PIN_DBLCLICK, prop };
          if( ::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM) &nmh) == 0 ) {
             // Send DblClick action
             if( prop->IsEnabled() ) prop->Activate(PACT_DBLCLICK, lParam);
@@ -814,7 +814,7 @@ public:
       ScreenToClient(&pt);
       int iIndent = (m_dwExtStyle & PLS_EX_CATEGORIZED) != 0 ? CATEGORY_INDENT : 0;
       if( pt.x == m_iMiddle + iIndent ) {
-         ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE)));
+         ::SetCursor(::LoadCursor(NULL, IDC_SIZEWE));
          return FALSE;
       } 
       bHandled = FALSE;
@@ -882,7 +882,7 @@ public:
       ATLASSERT(prop);
       if( prop == NULL ) return 0;
       // Ask owner about change
-      NMPROPERTYITEM nmh = { m_hWnd, GetDlgCtrlID(), PIN_ITEMCHANGING, prop };
+      NMPROPERTYITEM nmh = { m_hWnd, static_cast<UINT_PTR>(GetDlgCtrlID()), PIN_ITEMCHANGING, prop };
       if( ::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM) &nmh) == 0 ) {
          // Set new value
          if( !prop->SetValue(hWnd) ) ::MessageBeep((UINT)-1);
@@ -924,7 +924,7 @@ public:
       ATLASSERT(prop && pVariant);
       if( prop == NULL || pVariant == NULL ) return 0;
       // Ask owner about change
-      NMPROPERTYITEM nmh = { m_hWnd, GetDlgCtrlID(), PIN_ITEMCHANGING, prop };
+      NMPROPERTYITEM nmh = { m_hWnd, static_cast<UINT_PTR>(GetDlgCtrlID()), PIN_ITEMCHANGING, prop };
       if( ::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM) &nmh) == 0 ) {
          // Set new value
          // NOTE: Do not call this from IProperty::SetValue(VARIANT*) = endless loop
@@ -977,7 +977,7 @@ public:
          }
       }
       // Let owner know
-      NMPROPERTYITEM nmh = { m_hWnd, GetDlgCtrlID(), PIN_SELCHANGED, prop };
+      NMPROPERTYITEM nmh = { m_hWnd, static_cast<UINT_PTR>(GetDlgCtrlID()), PIN_SELCHANGED, prop };
       ::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM) &nmh);
       // Redraw drag-band
       if( m_iPrevXGhostBar > 0 ) _DrawGhostBar(m_iPrevXGhostBar);

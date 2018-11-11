@@ -190,8 +190,14 @@ class CSampleGrabberCB : public ISampleGrabberCB
 {
 public:
     CSampleGrabberCB() {
+		directShowPrivate = nullptr;
+		Width = 0;
+		Height = 0;
+		Grab = true;
+		BufferEvent = nullptr;
+		prev = 0;
     }
-    std::mutex mutex;
+    std::mutex mutex_;
     DirectshowFrameGrabberPrivate *directShowPrivate;
     //CImgSavingThread* SavingThread;
   //  CVideoGrabberPage* vg;
@@ -571,7 +577,7 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
     d_ptr->pControl = d_ptr->pGraph;
     d_ptr->pEvent = d_ptr->pGraph;
 
-    d_ptr->CB.mutex.lock();
+    //d_ptr->CB.mutex_.lock();
     return true;
 }
 
@@ -634,7 +640,7 @@ void DirectshowFrameGrabber::abort() {
      if ( d_ptr->pControl ) {
         d_ptr->pControl->Stop();
      }
-     d_ptr->CB.mutex.unlock();
+     //d_ptr->CB.mutex_.unlock();
      delete d_ptr;
      ::CoUninitialize();
  }

@@ -20,6 +20,7 @@
 
 #include "WebBrowserPrivate_win.h"
 #include "Core/Scripting/Squirrelnc.h"
+#include "WebBrowser.h"
 
 namespace ScriptAPI {;
 

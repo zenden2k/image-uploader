@@ -341,7 +341,7 @@ bool CAddDirectoryServerDialog::LoadComputerAddresses()
                     NULL, dwRetVal, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),   
                     // Default language
                     (LPTSTR) & lpMsgBuf, 0, NULL)) {
-                        printf("\tError: %s", lpMsgBuf);
+                        //printf("\tError: %s", reinterpret_cast<>lpMsgBuf);
                         LocalFree(lpMsgBuf);
                         if (pAddresses)
                             FREE(pAddresses);

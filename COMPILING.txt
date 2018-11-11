@@ -1,10 +1,13 @@
-﻿Building on Windows:
+﻿============  Building Image Uploader on Windows ============
 
-You need Microsoft Visual Studio 2013 to build Image Uploader. 
+You need Microsoft Visual Studio 2013 or newer to build Image Uploader from source. 
 Installing Visual Studio 2013 Update 4 is strongly recommended (older versions corrupt .rc files after editing)
 If you are using a newer MSVC version, you may experience some compilation errors, which can be solved easily (if you fix these errors, please provide a patch or pull request). 
-But also you need to recompile 3rd-party 
-libraries (boost, glog, jsoncpp, etc) against your compiler version (so I recommend to use Microsoft Visual Studio 2013 Update 4 to avoid all these issues).
+But also you need to recompile 3rd-party libraries (boost, glog, jsoncpp, etc) against your compiler version (so I recommend to use Microsoft Visual Studio 2013 Update 4 to avoid all these issues).
+
+All libraries have to be built statically with static runtime. To enable Windows XP support the corresponding 
+toolset has to be chosen (for example, "v120_xp" in VS 2013, "v141_xp" in Visual Studio 2017).
+ 
 
 You can download ALL necessary libraries and headers (precompiled for MSVC 2013) by following link:
 
@@ -50,7 +53,7 @@ libwebp         https://github.com/webmproject/libwebp
 
 base64          https://github.com/aklomp/base64
 
-Libraries for Mega.nz support:
+Libraries for building Mega.nz:
 
 Mega SDK        https://github.com/meganz/sdk
 
@@ -67,10 +70,11 @@ DirectX 8 SDK
 
 DirectShow BaseClasses
 
---------------------------------------------------------------------------
-Building on Ubuntu:
 
-Before compiling IU install the following packages:
+
+============  Building console utility (imgupload) on Ubuntu ============
+
+Before compiling install the following packages:
 
 sudo apt-get install g++ cmake cmake-qt-gui autoconf automake libtool fakeroot libgtest-dev libboost-dev libboost-filesystem-dev libboost-system-dev libboost-locale-dev libboost-thread-dev libssl-dev libpcre3-dev libc-ares-dev liburiparser-dev libicu-dev libsqlite3-dev libreadline-dev libfreeimage-dev libcurl4-openssl-dev
 #libuv1-dev
@@ -79,7 +83,8 @@ sudo apt-get install g++ cmake cmake-qt-gui autoconf automake libtool fakeroot l
 #libgoogle-glog-dev
 mega:
 
-Need to build gtest:
+You have to build gtest library from source:
+
 cd /usr/src/gtest
 sudo cmake .
 sudo make
@@ -99,5 +104,5 @@ libuv1
 libsqlite3-0
 libfreeimage3
 
-glog,gflags,libuv,cryptopp,gumbo have to be statically built from source. Before building glog remove package libgflags-dev
-Also libjsoncpp need to build (from Contrib folder)
+Note that glog,gflags,libuv,cryptopp,gumbo have to be statically built from source. Before building glog remove package libgflags-dev
+Also libjsoncpp has to build (from Contrib folder)

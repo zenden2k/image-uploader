@@ -603,7 +603,7 @@ public:
       case PACT_BROWSE:
       case PACT_DBLCLICK:
          // Let control owner know
-         NMPROPERTYITEM nmh = { m_hWndOwner, ::GetDlgCtrlID(m_hWndOwner), PIN_BROWSE, this };
+         NMPROPERTYITEM nmh = { m_hWndOwner, static_cast<UINT_PTR>(::GetDlgCtrlID(m_hWndOwner)), PIN_BROWSE, this };
          ::SendMessage(::GetParent(m_hWndOwner), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM) &nmh);
          break;
       }
