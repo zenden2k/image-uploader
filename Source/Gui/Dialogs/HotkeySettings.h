@@ -59,7 +59,7 @@ class CHotkeySettingsPage :
     public:
         CHotkeySettingsPage();
         ~CHotkeySettingsPage();
-        bool Apply();
+        bool Apply() override;
         enum { IDD = IDD_HOTKEYSETTINGSPAGE};
     
     protected:

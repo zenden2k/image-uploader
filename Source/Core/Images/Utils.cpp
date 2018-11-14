@@ -73,12 +73,12 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
     return -1;  // Failure
 }
 
-Gdiplus::Bitmap* BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szResType)
+std::unique_ptr<Gdiplus::Bitmap> BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szResType)
 {
     using namespace Gdiplus;
     HRSRC hrsrc = FindResource(hInstance, szResName, szResType);
     if (!hrsrc)
-        return 0;
+        return nullptr;
     // "Fake" HGLOBAL - look at MSDN
     HGLOBAL hg1 = LoadResource(hInstance, hrsrc);
     DWORD sz = SizeofResource(hInstance, hrsrc);
@@ -92,10 +92,10 @@ Gdiplus::Bitmap* BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCT
     // TRUE means free memory at Release
     HRESULT hr = CreateStreamOnHGlobal(hg2, TRUE, &pStream);
     if (FAILED(hr))
-        return 0;
+        return nullptr;
 
     // use load from IStream
-    Gdiplus::Bitmap* image = Bitmap::FromStream(pStream);
+    std::unique_ptr<Gdiplus::Bitmap> image(Bitmap::FromStream(pStream));
     pStream->Release();
     // GlobalFree(hg2);
     return image;
@@ -230,7 +230,7 @@ bool SaveImage(Image* img, const CString& filename, SaveImageFormat format, int 
     return true;
 }
 
-Gdiplus::Bitmap* IconToBitmap(HICON ico)
+std::unique_ptr<Gdiplus::Bitmap> IconToBitmap(HICON ico)
 {
     ICONINFO ii; 
     GetIconInfo(ico, &ii);
@@ -245,12 +245,12 @@ Gdiplus::Bitmap* IconToBitmap(HICON ico)
     Gdiplus::Status st = temp.LockBits(&rc, Gdiplus::ImageLockModeRead, temp.GetPixelFormat(), &lockedBitmapData);
 
     if (st != Gdiplus::Ok) {
-        return 0;
+        return nullptr;
     }
 
-    Gdiplus::Bitmap* image = new Gdiplus::Bitmap(
+    std::unique_ptr<Gdiplus::Bitmap> image(new Gdiplus::Bitmap(
         lockedBitmapData.Width, lockedBitmapData.Height, lockedBitmapData.Stride,
-        PixelFormat32bppARGB, reinterpret_cast<BYTE *>(lockedBitmapData.Scan0));
+        PixelFormat32bppARGB, reinterpret_cast<BYTE *>(lockedBitmapData.Scan0)));
 
     temp.UnlockBits(&lockedBitmapData);
     return image;
@@ -432,14 +432,14 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
 
 }
 
-Gdiplus::Bitmap* LoadImageFromFileWithoutLocking(const WCHAR* fileName) {
+std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fileName) {
     using namespace Gdiplus;
 
     std::unique_ptr<Bitmap> src(LoadImageFromFileExtended(fileName));
     if ( !src || src->GetLastStatus() != Ok ) {
         return nullptr;
     }
-    Bitmap *dst = new Bitmap(src->GetWidth(), src->GetHeight(), PixelFormat32bppARGB);
+    std::unique_ptr<Gdiplus::Bitmap> dst = std::make_unique<Bitmap>(src->GetWidth(), src->GetHeight(), PixelFormat32bppARGB);
 
     BitmapData srcData;
     BitmapData dstData;
@@ -979,8 +979,8 @@ bool RotateAccordingToOrientation(short orient, Image* img, bool removeTag) {
     return false;
 }
 
-Bitmap* LoadImageFromFileExtended(const CString& fileName) {
-    Bitmap* bm = nullptr;
+std::unique_ptr<Bitmap> LoadImageFromFileExtended(const CString& fileName) {
+    std::unique_ptr<Bitmap>  bm;
     CString ext = WinUtils::GetFileExt(fileName);
     if (ext.MakeLower() == "webp") {
 
@@ -996,7 +996,7 @@ Bitmap* LoadImageFromFileExtended(const CString& fileName) {
         if (!ReadWebP(data.get(), dataSize, &pic)) {
             return nullptr;
         }
-        bm = new Bitmap(pic.width, pic.height, PixelFormat32bppARGB);
+        bm.reset(new Bitmap(pic.width, pic.height, PixelFormat32bppARGB));
 
         BitmapData dstData;
         Rect rc(0, 0, pic.width, pic.height);
@@ -1014,9 +1014,7 @@ Bitmap* LoadImageFromFileExtended(const CString& fileName) {
         }
 
     } else {
-        bm = new Gdiplus::Bitmap(fileName);
-
-
+        bm.reset(new Gdiplus::Bitmap(fileName));
     }
     Gdiplus::Status status = bm->GetLastStatus();
     if (bm && status != Gdiplus::Ok) {
@@ -1028,24 +1026,27 @@ Bitmap* LoadImageFromFileExtended(const CString& fileName) {
             error += L"\r\n" + WinUtils::FormatWindowsErrorMessage(lastError);
         }
         ServiceLocator::instance()->logger()->write(logWarning, _T("Image Loader"), _T("Cannot load image.") + CString(L"\r\n") + error, CString(_T("File:")) + _T(" ") + fileName);
-        delete bm;
         return nullptr;
     }
 
-    short orient = GetImageOrientation(bm); 
-    RotateAccordingToOrientation(orient, bm, true);
+    short orient = GetImageOrientation(bm.get()); 
+    RotateAccordingToOrientation(orient, bm.get(), true);
     return bm;
 }
 
-PropertyItem* GetPropertyItemFromImage(Gdiplus::Image* bm, PROPID propId) {
+using PropertyItemPtr = std::unique_ptr<PropertyItem, void(*)(PropertyItem*)>;
+
+PropertyItemPtr GetPropertyItemFromImage(Gdiplus::Image* bm, PROPID propId) {
+    auto deleter = [](PropertyItem* ptr) {
+        delete[] reinterpret_cast<uint8_t*>(ptr);
+    };
     UINT itemSize = bm->GetPropertyItemSize(propId);
     if (!itemSize) {
-        return 0;
+        return PropertyItemPtr(nullptr, deleter);
     }
-    PropertyItem* item = reinterpret_cast<PropertyItem*>(malloc(itemSize));
-    if (bm->GetPropertyItem(propId, itemSize, item) != Ok) {
-        free(item);
-        return 0;
+    PropertyItemPtr item(reinterpret_cast<PropertyItem*>(new uint8_t[itemSize]), deleter);
+    if (bm->GetPropertyItem(propId, itemSize, item.get()) != Ok) {
+        return PropertyItemPtr(nullptr, deleter);
     }
     return item;
 }
@@ -1080,7 +1081,7 @@ CComPtr<IStream>  CreateMemStream(const BYTE* pInit, UINT cbInit) {
     return res;
 }
 
-Gdiplus::Bitmap* BitmapFromMemory(BYTE* data, size_t imageSize) {
+std::unique_ptr<Gdiplus::Bitmap> BitmapFromMemory(BYTE* data, size_t imageSize) {
     if (WinUtils::IsVistaOrLater()) {
         if (!SHCreateMemStreamFunc) {
             SHCreateMemStreamFunc = shlwapiLib.GetProcAddress<SHCreateMemStreamFuncType>("SHCreateMemStream");
@@ -1089,16 +1090,15 @@ Gdiplus::Bitmap* BitmapFromMemory(BYTE* data, size_t imageSize) {
             }
         }
 
-        Gdiplus::Bitmap * bitmap;
+        std::unique_ptr<Gdiplus::Bitmap> bitmap;
         IStream* pStream = SHCreateMemStreamFunc(data, imageSize);
         if (pStream) {
-            bitmap = Gdiplus::Bitmap::FromStream(pStream);
+            bitmap.reset(Gdiplus::Bitmap::FromStream(pStream));
             pStream->Release();
             if (bitmap) {
                 if (bitmap->GetLastStatus() == Gdiplus::Ok) {
                     return bitmap;
                 }
-                delete bitmap;
             }
         }
     } else {
@@ -1106,19 +1106,17 @@ Gdiplus::Bitmap* BitmapFromMemory(BYTE* data, size_t imageSize) {
         if (buffer) {
             void* pBuffer = ::GlobalLock(buffer);
             if (pBuffer) {
-                Gdiplus::Bitmap * bitmap;
+                std::unique_ptr<Gdiplus::Bitmap> bitmap;
                 CopyMemory(pBuffer, data, imageSize);
 
-                IStream* pStream = NULL;
+                IStream* pStream = nullptr;
                 if (::CreateStreamOnHGlobal(buffer, FALSE, &pStream) == S_OK) {
-                    bitmap = Gdiplus::Bitmap::FromStream(pStream);
+                    bitmap.reset(Gdiplus::Bitmap::FromStream(pStream));
                     pStream->Release();
                     if (bitmap) {
                         if (bitmap->GetLastStatus() == Gdiplus::Ok) {
                             return bitmap;
                         }
-
-                        delete bitmap;
                     }
                 }
                 ::GlobalUnlock(buffer);
@@ -1127,19 +1125,19 @@ Gdiplus::Bitmap* BitmapFromMemory(BYTE* data, size_t imageSize) {
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 // Based on original method from http://danbystrom.se/2009/01/05/imagegetthumbnailimage-and-beyond/
-Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus::Size* realSize) {
+std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus::Size* realSize) {
     using namespace Gdiplus;
     if (realSize) {
         realSize->Width = bm->GetWidth();
         realSize->Height = bm->GetHeight();
     }
     Size sz = AdaptProportionalSize(Size(width, height), Size(bm->GetWidth(), bm->GetHeight()));
-    Bitmap* res = new Bitmap(sz.Width, sz.Height);
-    Graphics gr(res);
+    std::unique_ptr<Bitmap> res = std::make_unique<Bitmap>(sz.Width, sz.Height);
+    Graphics gr(res.get());
 
     gr.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
     UINT size = bm->GetPropertyItemSize(PropertyTagThumbnailData);
@@ -1149,12 +1147,11 @@ Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus
             compression = ThumbCompressionJPEG;
 
         short orient = 0;
-        PropertyItem* orientationItem = GetPropertyItemFromImage(bm, PropertyTagOrientation);
+        auto orientationItem = GetPropertyItemFromImage(bm, PropertyTagOrientation);
         if (orientationItem) {
             memcpy(&orient, orientationItem->value, sizeof(orient));
-            free(orientationItem);
         }
-        PropertyItem* thumbnailFormatItem = GetPropertyItemFromImage(bm, PropertyTagThumbnailFormat);
+        auto thumbnailFormatItem = GetPropertyItemFromImage(bm, PropertyTagThumbnailFormat);
         if (thumbnailFormatItem) {
             UINT format = VoidToInt(thumbnailFormatItem->value, thumbnailFormatItem->length);
             if (format == 0) {
@@ -1164,17 +1161,15 @@ Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus
             } else {
                 compression = ThumbCompressionUnknown;
             }
-            free(thumbnailFormatItem);
         } else {
-            PropertyItem* compressionItem = GetPropertyItemFromImage(bm, PropertyTagThumbnailCompression);
+            auto compressionItem = GetPropertyItemFromImage(bm, PropertyTagThumbnailCompression);
             if (compressionItem) {
                 WORD compressionTag = *reinterpret_cast<WORD*>(compressionItem->value);
                 if (compressionTag == 1) {
                     compression = ThumbCompressionRGB;
-                    PropertyItem* photometricInterpretationItem = GetPropertyItemFromImage(bm, PropertyTagPhotometricInterp);
+                    auto photometricInterpretationItem = GetPropertyItemFromImage(bm, PropertyTagPhotometricInterp);
                     if (photometricInterpretationItem) {
                         UINT photoMetricInterpretationTag = VoidToInt(photometricInterpretationItem->value, photometricInterpretationItem->length);
-                        free(photometricInterpretationItem);
                         if (photoMetricInterpretationTag == 6) {
                             compression = ThumbCompressionYCbCr;
                         }
@@ -1183,37 +1178,31 @@ Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus
                 } else if (compressionTag == 6) {
                     compression = ThumbCompressionJPEG;
                 }
-
-                free(compressionItem);
             }
         }
         
         int originalThumbWidth = 0, originalThumbHeight = 0;
         if (compression == ThumbCompressionJPEG || compression == ThumbCompressionRGB) {
-            PropertyItem* thumbDataItem = GetPropertyItemFromImage(bm, PropertyTagThumbnailData);
+            auto thumbDataItem = GetPropertyItemFromImage(bm, PropertyTagThumbnailData);
             if (thumbDataItem) {
                 if (compression == ThumbCompressionJPEG) {
-                    Bitmap* src = BitmapFromMemory(reinterpret_cast<BYTE*>(thumbDataItem->value), thumbDataItem->length);
+                    std::unique_ptr<Bitmap> src(BitmapFromMemory(reinterpret_cast<BYTE*>(thumbDataItem->value), thumbDataItem->length));
                     if (src) {
-                        RotateAccordingToOrientation(orient, src);
+                        RotateAccordingToOrientation(orient, src.get());
 
 //                        int ww = src->GetWidth();
 //                        int hh = src->GetHeight();
-                        gr.DrawImage(src, 0, 0, sz.Width, sz.Height);
-                        delete src;
-                        free(thumbDataItem);
+                        gr.DrawImage(src.get(), 0, 0, sz.Width, sz.Height);
                         return res;
                     }
                 } else if (compression == ThumbCompressionRGB) {
-                    PropertyItem* widthItem = GetPropertyItemFromImage(bm, PropertyTagThumbnailImageWidth);
+                    auto widthItem = GetPropertyItemFromImage(bm, PropertyTagThumbnailImageWidth);
                     if (widthItem) {
                         originalThumbWidth = VoidToInt(widthItem->value, widthItem->length);
-                        free(widthItem);
                     }
-                    PropertyItem* heightItem = GetPropertyItemFromImage(bm, PropertyTagThumbnailImageHeight);
+                    auto heightItem = GetPropertyItemFromImage(bm, PropertyTagThumbnailImageHeight);
                     if (heightItem) {
                         originalThumbHeight = VoidToInt(heightItem->value, heightItem->length);
-                        free(heightItem);
                     }
                     if (originalThumbWidth && originalThumbHeight) {
                         BITMAPINFOHEADER bih;
@@ -1240,7 +1229,6 @@ Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus
 
                         if (src.GetLastStatus() == Ok) {
                             gr.DrawImage(&src, 0, 0, sz.Width, sz.Height);
-                            free(thumbDataItem);
                             return res;
                         }
                         
@@ -1249,7 +1237,6 @@ Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus
                 } else {
                     // other type of compression not implemented
                 }
-                free(thumbDataItem);
             }
         }
     } 
@@ -1259,7 +1246,7 @@ Gdiplus::Bitmap* GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus
     return res;
 }
 
-Gdiplus::Bitmap* GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize) {
+std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize) {
     using namespace Gdiplus;
     std::unique_ptr<Bitmap> bm (LoadImageFromFileExtended(filename));
     if (!bm) {

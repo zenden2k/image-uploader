@@ -262,8 +262,8 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
     {
         return false;
     }
-    Bitmap *ImgBuffer=nullptr;
-    Image *bm = nullptr;
+    std::unique_ptr<Bitmap> ImgBuffer;
+    std::unique_ptr<Image> bm;
     CString filename;
     if(ItemID>=0) 
     {
@@ -306,10 +306,10 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
     if (imgwidth>maxwidth) maxwidth = imgwidth;
     if (imgheight>maxheight) maxheight = imgheight;
     Graphics g(m_hWnd,true);
-    ImgBuffer = new Bitmap(thumbwidth, thumbheight+30, &g);
+    ImgBuffer = std::make_unique<Bitmap>(thumbwidth, thumbheight+30, &g);
 
 
-    Graphics gr(ImgBuffer);
+    Graphics gr(ImgBuffer.get());
     gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
     gr.Clear(Color(255,255,255,255));
 
@@ -384,7 +384,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
 
         try{
             if(bm)
-                gr.DrawImage(/*backBuffer*/bm, (int)((width-newwidth)/2)+1, (int)((height-newheight)/2), (int)newwidth,(int)newheight);
+                gr.DrawImage(/*backBuffer*/bm.get(), (int)((width-newwidth)/2)+1, (int)((height-newheight)/2), (int)newwidth,(int)newheight);
         }
         catch(...)
         {
@@ -445,8 +445,6 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
         SetItem(ItemID, 0, LVIF_IMAGE    , 0,ItemID+1, 0, 0, 0);
     }
     DeleteObject(bmp);
-    if(Img!=bm && bm) delete bm;
-    delete ImgBuffer;
     return true;
 }
 

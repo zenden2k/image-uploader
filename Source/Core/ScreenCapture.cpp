@@ -718,18 +718,18 @@ bool AddBorderShadow(Bitmap* input, bool roundedShadowCorners, Bitmap** out)
     //bool bottomLeftRound = c.GetAlpha() < 20;
     input->GetPixel(width - 1, height - 1, &c);
     //bool bottomRightRound = c.GetAlpha() < 20;
-    Bitmap* leftShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_leftShadow), _T("PNG")); // Resources.leftShadow;
-    Bitmap* rightShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_rightShadow), _T("PNG"));
-    Bitmap* topShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_topShadow), _T("PNG"));
-    Bitmap* bottomShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomShadow), _T("PNG"));
-    Bitmap* topLeftShadow =
+    std::unique_ptr<Bitmap> leftShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_leftShadow), _T("PNG")); // Resources.leftShadow;
+    std::unique_ptr<Bitmap> rightShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_rightShadow), _T("PNG"));
+    std::unique_ptr<Bitmap> topShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_topShadow), _T("PNG"));
+    std::unique_ptr<Bitmap> bottomShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomShadow), _T("PNG"));
+    std::unique_ptr<Bitmap> topLeftShadow =
        BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(
                              topLeftRound ? IDR_topLeftShadow : IDR_topLeftShadowSquare), _T("PNG"));
-    Bitmap* topRightShadow =
+    std::unique_ptr<Bitmap> topRightShadow =
        BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(
                              topRightRound ? IDR_topRightShadow : IDR_topRightShadowSquare), _T("PNG"));
-    Bitmap* bottomLeftShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomLeftShadow), _T("PNG"));
-    Bitmap* bottomRightShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomRightShadow), _T("PNG"));
+    std::unique_ptr<Bitmap> bottomLeftShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomLeftShadow), _T("PNG"));
+    std::unique_ptr<Bitmap> bottomRightShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomRightShadow), _T("PNG"));
     int leftMargin = leftShadow->GetWidth();
     int rightMargin = rightShadow->GetWidth();
     int topMargin = topShadow->GetHeight();
@@ -745,31 +745,23 @@ bool AddBorderShadow(Bitmap* input, bool roundedShadowCorners, Bitmap** out)
     {
         Bitmap* bmpResult = new Bitmap(resultWidth, resultHeight, PixelFormat32bppARGB);
         Graphics g(bmpResult);
-        g.DrawImage(topLeftShadow, 0, 0);
-        g.DrawImage(topRightShadow, resultWidth - topRightShadow->GetWidth(), 0);
-        g.DrawImage(bottomLeftShadow, 0, resultHeight - bottomLeftShadow->GetHeight());
-        g.DrawImage(bottomRightShadow,
+        g.DrawImage(topLeftShadow.get(), 0, 0);
+        g.DrawImage(topRightShadow.get(), resultWidth - topRightShadow->GetWidth(), 0);
+        g.DrawImage(bottomLeftShadow.get(), 0, resultHeight - bottomLeftShadow->GetHeight());
+        g.DrawImage(bottomRightShadow.get(),
                     (float)resultWidth - bottomRightShadow->GetWidth(), (float)resultHeight -
                     bottomRightShadow->GetHeight());
-        DrawShadow(g, leftShadow, 0, topLeftShadow->GetHeight(),
+        DrawShadow(g, leftShadow.get(), 0, topLeftShadow->GetHeight(),
                    leftShadow->GetWidth(), resultHeight - topLeftShadow->GetHeight() - bottomLeftShadow->GetHeight());
-        DrawShadow(g, rightShadow, resultWidth - rightShadow->GetWidth(), topRightShadow->GetHeight(),
+        DrawShadow(g, rightShadow.get(), resultWidth - rightShadow->GetWidth(), topRightShadow->GetHeight(),
                    rightShadow->GetWidth(), resultHeight - topRightShadow->GetHeight() - bottomRightShadow->GetHeight());
-        DrawShadow( g, topShadow, topLeftShadow->GetWidth(), 0,
+        DrawShadow( g, topShadow.get(), topLeftShadow->GetWidth(), 0,
                     resultWidth - topLeftShadow->GetWidth() - topRightShadow->GetWidth(), topShadow->GetHeight());
-        DrawShadow(g, bottomShadow, bottomLeftShadow->GetWidth(), resultHeight - bottomShadow->GetHeight(),
+        DrawShadow(g, bottomShadow.get(), bottomLeftShadow->GetWidth(), resultHeight - bottomShadow->GetHeight(),
                    resultWidth - bottomLeftShadow->GetWidth() - bottomRightShadow->GetWidth(), bottomShadow->GetHeight());
         g.DrawImage(input, leftMargin, topMargin);
         *out = bmpResult;
     }
-    delete leftShadow ;
-    delete rightShadow ;
-    delete topShadow;
-    delete bottomShadow;
-    delete topLeftShadow ;
-    delete topRightShadow ;
-    delete bottomLeftShadow;
-    delete bottomRightShadow;
     return *out != 0;
 }
 

@@ -206,8 +206,8 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
         return ;
     CString folder = IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\");
     
-    std::auto_ptr<Thumbnail> autoPtrThumb;
-    Thumbnail * thumb = 0;
+    std::unique_ptr<Thumbnail> autoPtrThumb;
+    Thumbnail * thumb = nullptr;
     if(thumb_cache_.count(fileName))
         thumb  = thumb_cache_[fileName];
     if(!thumb)
@@ -223,11 +223,10 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
     ImageConverter conv;
     conv.setThumbCreatingParams(params_);
     conv.setThumbnail(thumb);
-    Bitmap * bm = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_PNG2),_T("PNG"));
-    if(!bm) 
-    {
+    std::unique_ptr<Bitmap> bm = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_PNG2),_T("PNG"));
+    if(!bm) {
         MessageBox(TR("Couldn't load thumbnail preset!"));
-        return ;
+        return;
     }
     
     Bitmap *toUse = bm->Clone(0,300, bm->GetWidth(), bm->GetHeight()-300, PixelFormatDontCare);
@@ -237,7 +236,6 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
         img.LoadImage(0, dynamic_cast<GdiPlusImage*>(result.get())->getBitmap());
 
     //delete toUse;
-    delete bm;
 }
 
 bool CThumbSettingsPage::CreateNewThumbnail() {

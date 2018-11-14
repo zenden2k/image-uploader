@@ -124,7 +124,7 @@ protected:
     bool trackMouse_;
     float dpiScaleX_;
     float dpiScaleY_;
-    Gdiplus::Bitmap* dropDownIcon_;
+    std::unique_ptr<Gdiplus::Bitmap> dropDownIcon_;
     int itemMargin_;
     int itemHorPadding_;
     int itemVertPadding_;

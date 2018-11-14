@@ -118,24 +118,28 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
 
     Graphics gr(BackBufferDc);
 
-    Image* bm = NULL;
+    std::unique_ptr<Image> newBm;
+    Image* bm = nullptr;
     bool WhiteBg = false;
-    if (img)
+    if (img) {
         bm = img;
-    else
-    if (FileName)
-        bm = LoadImageFromFileExtended(FileName);
-    else if (ResourceID)
-    {
+    } else if (FileName) {
+        newBm = LoadImageFromFileExtended(FileName);
+    }
+    else if (ResourceID){
         if (!Bmp)
         {
-            bm = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(ResourceID), _T("PNG"));
+            newBm = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(ResourceID), _T("PNG"));
             WhiteBg = true;
         }
         else
         {
-            bm = new Bitmap(GetModuleHandle(0), MAKEINTRESOURCE(ResourceID));
+            newBm = std::make_unique<Bitmap>(GetModuleHandle(0), MAKEINTRESOURCE(ResourceID));
         }
+    }
+
+    if (newBm) {
+        bm = newBm.get();
     }
 
     if (bm)
@@ -219,9 +223,6 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
             gr.DrawImage(bm, (int)((ResourceID) ? 0 : 1 + (width - newwidth) / 2),
                          (int)((ResourceID) ? 0 : 1 + (height - newheight) / 2), (int)newwidth, (int)newheight);
     }
-
-    if (bm && bm != img)
-        delete bm;
 
     ReleaseDC(dc);
 

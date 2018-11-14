@@ -84,7 +84,7 @@ class TextParamsWindow : public CDialogImpl<TextParamsWindow>
 
         CToolBarCtrl textToolbar_;
         void OnFontEnumerationFinished();
-        std::thread * fontEnumerationThread_;
+        std::thread fontEnumerationThread_;
         CComboBox fontComboBox_;
         CComboBox fontSizeComboBox_;
         CustomEdit fontSizeComboboxCustomEdit_;

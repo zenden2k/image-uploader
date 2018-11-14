@@ -54,6 +54,7 @@ ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvide
 
 void ImageEditorWindow::init()
 {
+    richeditLib_ = LoadLibrary(CRichEditCtrl::GetLibraryName());
 //    resultingBitmap_ = 0;
     canvas_ = 0;
     cropToolTip_ = 0;
@@ -245,6 +246,7 @@ void ImageEditorWindow::onFontChanged(LOGFONT font)
 
 ImageEditorWindow::~ImageEditorWindow()
 {
+    FreeLibrary(richeditLib_);
     delete currentDoc_;
     delete canvas_;
     delete colorsDelegate_;
@@ -480,6 +482,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     if ( parent ) {
         ::SetActiveWindow(parent);
     }
+    loop.RemoveMessageFilter(this);
     DestroyWindow();
     DestroyAcceleratorTable(accelerators_);
     accelerators_ = nullptr;
@@ -494,17 +497,11 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
 LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     SetWindowText(TR("Image Editor"));
-    richeditLib_ = LoadLibrary(CRichEditCtrl::GetLibraryName());
-
-
     return 0;
 }
 
 LRESULT ImageEditorWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-    // unregister message filtering and idle updates
-    FreeLibrary(richeditLib_);
-
     bHandled = FALSE;
     return 1;
 }

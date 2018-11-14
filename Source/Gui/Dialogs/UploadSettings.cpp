@@ -24,11 +24,9 @@
 #include "NewFolderDlg.h"
 #include "ServerParamsDlg.h"
 #include "Gui/GuiTools.h"
-#include "ConvertPresetDlg.h"
 #include "Func/MyEngineList.h"
 #include "Core/Settings.h"
 #include "Gui/Dialogs/SettingsDlg.h"
-#include "Gui/GuiTools.h"
 #include "Gui/IconBitmapUtils.h"
 #include "Func/WinUtils.h"
 #include "Func/IuCommonFunctions.h"
@@ -45,7 +43,7 @@ CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager
     m_EngineList = EngineList;
     m_ProfileChanged  = false;
     m_CatchChanges = false;
-    iconBitmapUtils_ = new IconBitmapUtils();
+    iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
     useServerThumbnailsTooltip_ = 0;
     uploadEngineManager_ = uploadEngineManager;
     Settings.addChangeCallback(CSettings::ChangeCallback(this, &CUploadSettings::settingsChanged));
@@ -53,7 +51,6 @@ CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager
 
 CUploadSettings::~CUploadSettings()
 {
-    delete iconBitmapUtils_;
 }
 
 void CUploadSettings::settingsChanged(BasicSettings* settingsBase)
@@ -212,10 +209,13 @@ LRESULT CUploadSettings::OnDrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     DRAWITEMSTRUCT* lpdis = reinterpret_cast<DRAWITEMSTRUCT*>(lParam);
     if ((lpdis == NULL) || (lpdis->CtlType != ODT_MENU))
         return S_OK; //not for a menu
+    auto it = serverMenuIcons_.find(lpdis->itemID);
+    if (it == serverMenuIcons_.end()) {
+        return 0;
+    }
+    HICON hIcon = it->second;
 
-    HICON hIcon = serverMenuIcons_[lpdis->itemID];
-
-    if (hIcon == NULL)
+    if (hIcon == nullptr)
         return 0;
     // fix from http://miranda.svn.sourceforge.net/viewvc/miranda/trunk/miranda/src/modules/clist/genmenu.cpp
     int w = GetSystemMetrics(SM_CXSMICON);

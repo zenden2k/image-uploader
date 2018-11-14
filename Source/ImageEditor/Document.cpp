@@ -31,12 +31,12 @@ namespace ImageEditor {
 
 Document::Document(int width, int height) {
     hasTransparentPixels_ = false;
-    currentImage_.reset(new Gdiplus::Bitmap( width, height, PixelFormat32bppARGB ));
+    currentImage_ = std::make_shared<Gdiplus::Bitmap>( width, height, PixelFormat32bppARGB );
     init();
 }
 
 Document::Document(const wchar_t* fileName) {
-    currentImage_.reset(LoadImageFromFileWithoutLocking(fileName));
+    currentImage_ = LoadImageFromFileWithoutLocking(fileName);
     init();
     if ( currentImage_ ) {
         checkTransparentPixels();

@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include <memory>
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Controls/MyImage.h"
@@ -117,7 +118,7 @@ private:
     void createSettingsButton();
     bool defaultServer_;
     std::vector<CString> menuOpenedUserNames_;
-    IconBitmapUtils* iconBitmapUtils_;
+    std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
     static const char kAddFtpServer[];
     static const char kAddDirectoryAsServer[];
     int previousSelectedServerIndex;

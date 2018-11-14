@@ -55,9 +55,6 @@ CHistoryTreeControl::~CHistoryTreeControl()
             DestroyIcon(it.second);
         }
     }
-    if (m_FileDownloader) {
-        delete m_FileDownloader;
-    }
 }
 
 void CHistoryTreeControl::Init()
@@ -70,7 +67,7 @@ void CHistoryTreeControl::CreateDownloader()
     //m_FileDownloader = 0;
     if(!m_FileDownloader)
     {
-        m_FileDownloader = new CFileDownloader(AppParams::instance()->tempDirectory());
+        m_FileDownloader = std::make_unique<CFileDownloader>(AppParams::instance()->tempDirectory());
         m_FileDownloader->onConfigureNetworkClient.bind(this, &CHistoryTreeControl::OnConfigureNetworkClient);
         m_FileDownloader->onFileFinished.bind(this, &CHistoryTreeControl::OnFileFinished);
         m_FileDownloader->onQueueFinished.bind(this, &CHistoryTreeControl::QueueFinishedEvent);
@@ -514,8 +511,8 @@ TreeItem * CHistoryTreeControl::selectedItem()
 bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
 {
     using namespace Gdiplus;
-    Bitmap *ImgBuffer=NULL;
-    Image *bm=NULL;
+    std::unique_ptr<Bitmap> ImgBuffer;
+    std::unique_ptr<Image> bm;
 
     CString filename ;
     if(!item->thumbnailSource.empty())
@@ -573,8 +570,8 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
     }
 
     Graphics g(m_hWnd,true);
-    ImgBuffer = new Bitmap(thumbwidth, thumbheight, &g);
-    Graphics gr(ImgBuffer);
+    ImgBuffer.reset(new Bitmap(thumbwidth, thumbheight, &g));
+    Graphics gr(ImgBuffer.get());
     gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
     gr.Clear(Color(255,255,255,255));
 
@@ -595,7 +592,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
         gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
 
         if(bm)
-                gr.DrawImage(/*backBuffer*/bm, (int)((width-newwidth)/2)+1, (int)((height-newheight)/2), (int)newwidth,(int)newheight);
+                gr.DrawImage(/*backBuffer*/bm.get(), (int)((width-newwidth)/2)+1, (int)((height-newheight)/2), (int)newwidth,(int)newheight);
     
 
         RectF bounds(0, float(height), float(width), float(20));
@@ -637,11 +634,9 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
         }
     }
 
-    HBITMAP bmp=NULL;
+    HBITMAP bmp = nullptr;
     ImgBuffer->GetHBITMAP(Color(255,255,255), &bmp);
     item->thumbnail = error?0:bmp;
-    delete bm;
-    delete ImgBuffer;
     return !error;
 }
 

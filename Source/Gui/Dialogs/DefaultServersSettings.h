@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include <memory>
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Dialogs/settingspage.h"
@@ -37,7 +38,7 @@ class CDefaultServersSettings : public CDialogImpl<CDefaultServersSettings>,
 
         CDefaultServersSettings(UploadEngineManager* uploadEngineManager);
         virtual ~CDefaultServersSettings();
-        virtual bool Apply();
+        virtual bool Apply() override;
 
     protected:
         BEGIN_MSG_MAP(CDefaultServersSettings)
@@ -52,12 +53,8 @@ class CDefaultServersSettings : public CDialogImpl<CDefaultServersSettings>,
         LRESULT OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 protected:
-    CServerSelectorControl *imageServerSelector_;
-    CServerSelectorControl *fileServerSelector_; 
-    CServerSelectorControl *trayServerSelector_;
-    CServerSelectorControl *contextMenuServerSelector_;
-    CServerSelectorControl *urlShortenerServerSelector_;
-    CServerSelectorControl *temporaryServerSelector_;
+    std::unique_ptr<CServerSelectorControl> imageServerSelector_, fileServerSelector_, trayServerSelector_, contextMenuServerSelector_,
+                    urlShortenerServerSelector_, temporaryServerSelector_;
     UploadEngineManager* uploadEngineManager_;
 
 };

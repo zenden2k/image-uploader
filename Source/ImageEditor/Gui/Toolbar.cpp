@@ -37,7 +37,6 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
 Toolbar::~Toolbar()
 {
     delete font_;
-    delete dropDownIcon_;
     if (!backBufferDc_.IsNull()) {
         backBufferDc_.SelectBitmap(oldSelectedBm_);
     }
@@ -639,9 +638,9 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 //    }
 
     if ( item.type == itComboButton ) {
-        gr->DrawImage(dropDownIcon_, bounds.X + bounds.Width - 16*dpiScaleX_+ (item.state == isDropDown ? 1 : 0), bounds.Y + (bounds.Height -16*dpiScaleY_ )/2 + (item.state == isDropDown ? 1 : 0), (int)16*dpiScaleX_, (int)16*dpiScaleY_);
+        gr->DrawImage(dropDownIcon_.get(), bounds.X + bounds.Width - 16*dpiScaleX_+ (item.state == isDropDown ? 1 : 0), bounds.Y + (bounds.Height -16*dpiScaleY_ )/2 + (item.state == isDropDown ? 1 : 0), (int)16*dpiScaleX_, (int)16*dpiScaleY_);
     } else if ( item.type == itTinyCombo ) {
-        gr->DrawImage(dropDownIcon_, bounds.X + bounds.Width - 8*dpiScaleX_+ (item.state == isDropDown ? 1 : 0), bounds.Y + bounds.Height - 8*dpiScaleY_ + (item.state == isDropDown ? 1 : 0), (int)10*dpiScaleX_, (int)10*dpiScaleY_);
+        gr->DrawImage(dropDownIcon_.get(), bounds.X + bounds.Width - 8*dpiScaleX_+ (item.state == isDropDown ? 1 : 0), bounds.Y + bounds.Height - 8*dpiScaleY_ + (item.state == isDropDown ? 1 : 0), (int)10*dpiScaleX_, (int)10*dpiScaleY_);
     }
 
     if (  item.icon ) {

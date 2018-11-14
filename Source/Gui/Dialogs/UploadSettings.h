@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <memory>
 #include "resource.h"       // main symbols
 #include "maindlg.h"
 #include "logosettings.h"
@@ -186,7 +187,7 @@ class CUploadSettings :
     void OnServerButtonContextMenu(POINT pt, bool isImageServerToolbar);
 protected:
     CMyEngineList * m_EngineList;
-    IconBitmapUtils* iconBitmapUtils_;
+    std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
     void TranslateUI();
     CIconButton m_ResizePresetIconButton;
     CIconButton m_ProfileEditButton;

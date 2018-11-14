@@ -36,7 +36,7 @@ class CGeneralSettings : public CDialogImpl<CGeneralSettings>,
 
         CGeneralSettings();
         virtual ~CGeneralSettings();
-        virtual bool Apply();
+        virtual bool Apply() override;
 
     protected:
         BEGIN_MSG_MAP(CGeneralSettings)

@@ -1227,7 +1227,6 @@
       <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ShowIncludes>
     </ClCompile>
     <ClCompile Include="Source\Gui\Dialogs\ContextMenuItemDlg.cpp" />
-    <ClCompile Include="Source\Gui\Dialogs\ConvertPresetDlg.cpp" />
     <ClCompile Include="Source\Gui\Dialogs\DefaultServersSettings.cpp" />
     <ClCompile Include="Source\Gui\Dialogs\FloatingWindow.cpp" />
     <ClCompile Include="Source\Gui\Dialogs\GeneralSettings.cpp" />

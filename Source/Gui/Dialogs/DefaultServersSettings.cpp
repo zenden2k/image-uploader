@@ -30,23 +30,11 @@
 // CDefaultServersSettings
 CDefaultServersSettings::CDefaultServersSettings(UploadEngineManager* uploadEngineManager)
 {
-    fileServerSelector_ = 0;
-    imageServerSelector_ = 0;
-    trayServerSelector_ = 0;
-    contextMenuServerSelector_ = 0;
-    urlShortenerServerSelector_ = 0;
-    temporaryServerSelector_ = 0;
     uploadEngineManager_ = uploadEngineManager;
 }
 
 CDefaultServersSettings::~CDefaultServersSettings()
 {
-    delete fileServerSelector_;
-    delete imageServerSelector_;
-    delete trayServerSelector_;
-    delete contextMenuServerSelector_;
-    delete urlShortenerServerSelector_;
-    delete temporaryServerSelector_;
 }
 
 LRESULT CDefaultServersSettings::OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -65,7 +53,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     TRC(IDC_REMEMBERFILESERVERSETTINGS, "Remember file server's settings in wizard");
     RECT serverSelectorRect;
     serverSelectorRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
-    imageServerSelector_ = new CServerSelectorControl(uploadEngineManager_, true);
+    imageServerSelector_ = std::make_unique<CServerSelectorControl>(uploadEngineManager_, true);
     if ( !imageServerSelector_->Create(m_hWnd, serverSelectorRect) ) {
         return 0;
     }
@@ -76,7 +64,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_FILESERVERPLACEHOLDER);
 
-    fileServerSelector_ = new CServerSelectorControl(uploadEngineManager_);
+    fileServerSelector_ = std::make_unique<CServerSelectorControl>(uploadEngineManager_);
     fileServerSelector_->setServersMask(CServerSelectorControl::smFileServers);
     fileServerSelector_->setShowImageProcessingParams(false);
     fileServerSelector_->Create(m_hWnd, serverSelectorRect);
@@ -86,7 +74,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     fileServerSelector_->setTitle(TR("Default server for other file types"));
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_TRAYSERVERPLACEHOLDER);
-    trayServerSelector_ = new CServerSelectorControl(uploadEngineManager_);
+    trayServerSelector_ = std::make_unique<CServerSelectorControl>(uploadEngineManager_);
     //trayServerSelector_->setShowDefaultServerItem(true);
     trayServerSelector_->Create(m_hWnd, serverSelectorRect);
     trayServerSelector_->ShowWindow( SW_SHOW );
@@ -97,7 +85,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_CONTEXTMENUSERVERPLACEHOLDER);
 
-    contextMenuServerSelector_ = new CServerSelectorControl(uploadEngineManager_);
+    contextMenuServerSelector_  = std::make_unique<CServerSelectorControl>(uploadEngineManager_);
     //contextMenuServerSelector_->setShowDefaultServerItem(true);
     contextMenuServerSelector_->Create(m_hWnd, serverSelectorRect);
     contextMenuServerSelector_->ShowWindow( SW_SHOW );
@@ -109,7 +97,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 
     // Intermediate server for storing temporary images
     serverSelectorRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_TEMPORARYSERVERPLACEHOLDER);
-    temporaryServerSelector_ = new CServerSelectorControl(uploadEngineManager_);
+    temporaryServerSelector_ = std::make_unique<CServerSelectorControl>(uploadEngineManager_);
     //trayServerSelector_->setShowDefaultServerItem(true);
     temporaryServerSelector_->Create(m_hWnd, serverSelectorRect);
     temporaryServerSelector_->ShowWindow(SW_SHOW);
@@ -120,7 +108,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_URLSHORTENERPLACEHOLDER);
 
-    urlShortenerServerSelector_ = new CServerSelectorControl(uploadEngineManager_);
+    urlShortenerServerSelector_ = std::make_unique<CServerSelectorControl>(uploadEngineManager_);
     urlShortenerServerSelector_->setServersMask(CServerSelectorControl::smUrlShorteners);
     urlShortenerServerSelector_->setShowImageProcessingParams(false);
     urlShortenerServerSelector_->setShowParamsLink(false);
@@ -139,8 +127,8 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
  
 bool CDefaultServersSettings::Apply()
 {
-    CServerSelectorControl* controls[] = { fileServerSelector_, imageServerSelector_, trayServerSelector_, 
-        contextMenuServerSelector_, urlShortenerServerSelector_, temporaryServerSelector_ };
+    CServerSelectorControl* controls[] = { fileServerSelector_.get(), imageServerSelector_.get(), trayServerSelector_.get(),
+        contextMenuServerSelector_.get(), urlShortenerServerSelector_.get(), temporaryServerSelector_.get() };
     for(int i = 0; i< ARRAY_SIZE(controls); i++ ) {
         if (controls[i]->serverProfile().serverName().empty()) {
             CString message;

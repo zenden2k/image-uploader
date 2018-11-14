@@ -44,7 +44,7 @@ CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngine
         showImageProcessingParams_ = true;
         showParamsLink_ = true;
         defaultServer_ = defaultServer;
-        iconBitmapUtils_ = new IconBitmapUtils();
+        iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
         previousSelectedServerIndex = -1;
         uploadEngineManager_ = uploadEngineManager;
         isChildWindow_ = isChildWindow;
@@ -54,7 +54,6 @@ CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngine
 
 CServerSelectorControl::~CServerSelectorControl()
 {
-    delete iconBitmapUtils_;
     if (hMyDlgTemplate_) {
         GlobalFree(hMyDlgTemplate_);
     }

@@ -2,7 +2,6 @@
 #define IU_CORE_UPLOAD_THREADSYNC_H
 
 #pragma once
-#include <mutex>
 #include <memory>
 #include "Core/Utils/CoreTypes.h"
 

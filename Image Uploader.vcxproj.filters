@@ -1413,9 +1413,6 @@
     <ClCompile Include="Source\Gui\Dialogs\ContextMenuItemDlg.cpp">
       <Filter>Source Files\Gui\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Gui\Dialogs\ConvertPresetDlg.cpp">
-      <Filter>Source Files\Gui\Dialogs</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Gui\Dialogs\DefaultServersSettings.cpp">
       <Filter>Source Files\Gui\Dialogs</Filter>
     </ClCompile>
