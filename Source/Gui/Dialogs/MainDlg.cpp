@@ -740,7 +740,7 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 LRESULT CMainDlg::OnCopyFileAsDataUri(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     CString fileName = getSelectedFileName();
     if (!fileName.IsEmpty()) {
-        if (!CopyFileToClipboardInDataUriFormat(fileName, 0, 85, false)) {
+        if (!ImageUtils::CopyFileToClipboardInDataUriFormat(fileName, 0, 85, false)) {
             MessageBox(_T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
         }
     }
@@ -750,7 +750,7 @@ LRESULT CMainDlg::OnCopyFileAsDataUri(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 LRESULT CMainDlg::OnCopyFileAsDataUriHtml(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     CString fileName = getSelectedFileName();
     if (!fileName.IsEmpty()) {
-        if (!CopyFileToClipboardInDataUriFormat(fileName, 0, 85, true)) {
+        if (!ImageUtils::CopyFileToClipboardInDataUriFormat(fileName, 0, 85, true)) {
             MessageBox(_T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
         }
     }

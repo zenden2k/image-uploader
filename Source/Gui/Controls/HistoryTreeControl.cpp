@@ -433,14 +433,12 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
 
 HICON CHistoryTreeControl::getIconForServer(const CString& serverName)
 {
-    HICON ico = 0;
-    
     auto it = m_serverIconCache.find(serverName);
     if (it != m_serverIconCache.end()) {
         return it->second;
     } 
-    else
-        ico = reinterpret_cast<HICON>(LoadImage(0,IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+serverName+_T(".ico"), IMAGE_ICON, 16, 16, LR_LOADFROMFILE));
+
+    HICON ico = reinterpret_cast<HICON>(LoadImage(0, IuCommonFunctions::GetDataFolder() + _T("Favicons\\") + serverName + _T(".ico"), IMAGE_ICON, 16, 16, LR_LOADFROMFILE));
     m_serverIconCache[serverName] = ico;
     return ico;        
 }
@@ -506,10 +504,11 @@ TreeItem * CHistoryTreeControl::selectedItem()
     return 0;
 }
 
-#define THUMBNAIL_WIDTH 54
-#define THUMBNAIL_HEIGHT 54
+
 bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
 {
+    const int THUMBNAIL_WIDTH = 54;
+    const int THUMBNAIL_HEIGHT = 54;
     using namespace Gdiplus;
     std::unique_ptr<Bitmap> ImgBuffer;
     std::unique_ptr<Image> bm;
@@ -523,7 +522,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
     bool error = false;
     if(IuCommonFunctions::IsImage(filename))
     {
-        bm = LoadImageFromFileExtended(filename);
+        bm = ImageUtils::LoadImageFromFileExtended(filename);
         if (!bm) {
             return false;
         }

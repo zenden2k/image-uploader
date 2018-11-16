@@ -1505,8 +1505,8 @@ IDB_ICONCLIPBOARDPNG    PNG                     "res\\ImageEditor\\icon_clipboar
 // Bitmap
 //
 
-IDB_BITMAP3             BITMAP                  "res\\toolbar22.bmp"
-IDB_BITMAP4             BITMAP                  "res\\toolbar11.bmp"
+IDB_UPLOADTOOLBARBMP32BIT BITMAP                  "res\\toolbar22.bmp"
+IDB_UPLOADTOOLBARBMP16BIT BITMAP                  "res\\toolbar11.bmp"
 IDB_SERVERTOOLBARBMP2   BITMAP                  "res\\server_8bit.bmp"
 
 /////////////////////////////////////////////////////////////////////////////

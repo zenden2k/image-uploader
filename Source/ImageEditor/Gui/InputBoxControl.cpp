@@ -89,7 +89,7 @@ void InputBoxControl::resize(int x, int y, int w,int h, std::vector<MovableEleme
 
 void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea)
 {
-    PrintRichEdit(m_hWnd, graphics, background, layoutArea);
+    ImageUtils::PrintRichEdit(m_hWnd, graphics, background, layoutArea);
 }
 
 bool InputBoxControl::isVisible()

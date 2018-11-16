@@ -69,7 +69,7 @@ bool GdiPlusImage::saveToFile(const std::string& fileName) const
         return false;
     }
 
-    if (GetEncoderClsid(IuCoreUtils::Utf8ToWstring(mimeType).c_str(), &clsidEncoder) != -1){
+    if (ImageUtils::GetEncoderClsid(IuCoreUtils::Utf8ToWstring(mimeType).c_str(), &clsidEncoder) != -1){
         if ( mimeType == "image/jpeg") {
             return bm_->Save(IuCoreUtils::Utf8ToWstring(fileName).c_str(), &clsidEncoder, &eps) == Ok;
         } else {

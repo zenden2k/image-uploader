@@ -68,11 +68,11 @@ class CHistoryTreeControl :
         void Clear();
         bool IsItemAtPos(int x, int y, bool& isRoot);
         TreeItem* selectedItem();
-        void TreeItemSize( TreeItem* item, SIZE* sz);
+        void TreeItemSize( TreeItem* item, SIZE* sz) override;
         DWORD Run();
         bool isRunning() const;
         void StartLoadingThumbnails();
-        void OnTreeItemDelete(TreeItem* item);
+        void OnTreeItemDelete(TreeItem* item) override;
         void CreateDownloader();
         void abortLoadingThreads();
         LRESULT ReflectContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

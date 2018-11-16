@@ -17,7 +17,7 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
     selectedItemIndex_ = -1;
     trackMouse_ = false;
     m_hWnd = 0;
-    dropDownIcon_ = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_DROPDOWNICONPNG),_T("PNG")); //(HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16,16,0);
+    dropDownIcon_ = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_DROPDOWNICONPNG),_T("PNG")); //(HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16,16,0);
     dpiScaleX_ = 1.0f;
     dpiScaleY_ = 1.0f;
     transparentColor_ = Color(255,50,56);
@@ -249,7 +249,7 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
     SolidBrush br2 (subpanelColor_);
     rect.Width--;
     rect.Height --;
-    DrawRoundedRectangle(&gr,rect,7,&p, &br2);
+    ImageUtils::DrawRoundedRectangle(&gr,rect,7,&p, &br2);
 
 
     rect = Rect( 0, 0, buttonsRect_.right, buttonsRect_.bottom);
@@ -259,7 +259,7 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
     //Gdiplus::SolidBrush br(Color(200,2,146,209));
 
     gr.SetSmoothingMode(GetStyle()&WS_CHILD ? SmoothingModeAntiAlias : SmoothingModeDefault);
-    DrawRoundedRectangle(&gr,rect,7,&p, &br);
+    ImageUtils::DrawRoundedRectangle(&gr,rect,7,&p, &br);
 
     gr.SetSmoothingMode(SmoothingModeAntiAlias);
 

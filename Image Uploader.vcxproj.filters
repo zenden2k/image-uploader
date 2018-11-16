@@ -1551,9 +1551,6 @@
     <ClCompile Include="Source\Gui\Controls\HistoryTreeControl.cpp">
       <Filter>Source Files\Gui\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Gui\Controls\HistoryTreeView.cpp">
-      <Filter>Source Files\Gui\Controls</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Gui\Controls\HyperLinkControl.cpp">
       <Filter>Source Files\Gui\Controls</Filter>
     </ClCompile>

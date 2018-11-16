@@ -718,18 +718,18 @@ bool AddBorderShadow(Bitmap* input, bool roundedShadowCorners, Bitmap** out)
     //bool bottomLeftRound = c.GetAlpha() < 20;
     input->GetPixel(width - 1, height - 1, &c);
     //bool bottomRightRound = c.GetAlpha() < 20;
-    std::unique_ptr<Bitmap> leftShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_leftShadow), _T("PNG")); // Resources.leftShadow;
-    std::unique_ptr<Bitmap> rightShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_rightShadow), _T("PNG"));
-    std::unique_ptr<Bitmap> topShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_topShadow), _T("PNG"));
-    std::unique_ptr<Bitmap> bottomShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomShadow), _T("PNG"));
+    std::unique_ptr<Bitmap> leftShadow = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_leftShadow), _T("PNG")); // Resources.leftShadow;
+    std::unique_ptr<Bitmap> rightShadow = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_rightShadow), _T("PNG"));
+    std::unique_ptr<Bitmap> topShadow = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_topShadow), _T("PNG"));
+    std::unique_ptr<Bitmap> bottomShadow = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomShadow), _T("PNG"));
     std::unique_ptr<Bitmap> topLeftShadow =
-       BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(
+        ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(
                              topLeftRound ? IDR_topLeftShadow : IDR_topLeftShadowSquare), _T("PNG"));
     std::unique_ptr<Bitmap> topRightShadow =
-       BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(
+        ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(
                              topRightRound ? IDR_topRightShadow : IDR_topRightShadowSquare), _T("PNG"));
-    std::unique_ptr<Bitmap> bottomLeftShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomLeftShadow), _T("PNG"));
-    std::unique_ptr<Bitmap> bottomRightShadow = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomRightShadow), _T("PNG"));
+    std::unique_ptr<Bitmap> bottomLeftShadow = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomLeftShadow), _T("PNG"));
+    std::unique_ptr<Bitmap> bottomRightShadow = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_bottomRightShadow), _T("PNG"));
     int leftMargin = leftShadow->GetWidth();
     int rightMargin = rightShadow->GetWidth();
     int topMargin = topShadow->GetHeight();

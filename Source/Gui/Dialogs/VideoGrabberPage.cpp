@@ -296,8 +296,8 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
     /*CString fullOutFileName = Settings.VideoSettings.SnapshotsFolder + "\\" + outFilename;
     std::string outDir = IuCoreUtils::ExtractFilePath(WCstringToUtf8(fullOutFileName));
     CString fileNameNoExt = Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(fullOutFileName)));*/
-    
-    MySaveImage(bm, outFilename, fileNameBuffer, 1, 100, !wOutDir.IsEmpty() ? static_cast<LPCTSTR>(wOutDir) : NULL);
+
+    ImageUtils::MySaveImage(bm, outFilename, fileNameBuffer, 1, 100, !wOutDir.IsEmpty() ? static_cast<LPCTSTR>(wOutDir) : NULL);
     ThumbsView.AddImage(fileNameBuffer, title, false, bm);
     grabbedFramesCount++;
     return true;
@@ -433,10 +433,10 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
 
     RECT rc;
     GetClientRect(&rc);
-    Bitmap* BackBuffer;
+    
     Graphics g(m_hWnd, true);
-    BackBuffer = new Bitmap(needwidth, needheight, &g);
-    Graphics gr(BackBuffer);
+    auto BackBuffer = std::make_unique<Bitmap>(needwidth, needheight, &g);
+    Graphics gr(BackBuffer.get());
     Image* bm = NULL;
     Rect r(0, 0, needwidth, needheight);
     gr.Clear(Color(255, 180, 180, 180));
@@ -457,7 +457,7 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
         y = infoHeight + (infoHeight ? gapheight : 0) + ((i / ncols)) * (tileheight + gapheight);
         ThumbsView.GetItemText(i, 0, buf, 256);
         gr.DrawImage(bm, (int)(x /*(tilewidth-newwidth)/2*/), (int)y, (int)tilewidth, (int)tileheight);
-        DrawStrokedText(gr, buf, RectF(float(x), float(y), float(tilewidth),
+        ImageUtils::DrawStrokedText(gr, buf, RectF(float(x), float(y), float(tilewidth),
                                        float(tileheight)), font, ColorText, ColorStroke, 3, 3);
         gr.DrawRectangle(&Framepen, Rect(x /*(tilewidth-newwidth)/2*/, (int)y, (int)tilewidth, (int)tileheight));
         delete bm;
@@ -477,8 +477,7 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
         // /DrawStrokedText(gr, Report,textBounds,font,ColorText,ColorStroke,3,3);
     }
 
-    MySaveImage(BackBuffer, _T("grab_custom"), outFileName, 1, 100);
-    delete BackBuffer;
+    ImageUtils::MySaveImage(BackBuffer.get(), _T("grab_custom"), outFileName, 1, 100);
     return 0;
 }
 

@@ -282,7 +282,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
 
             imgwidth = Img->GetWidth();
             imgheight = Img->GetHeight();
-            bm = GetThumbnail(Img, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, 0);
+            bm = ImageUtils::GetThumbnail(Img, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, 0);
             if (bm) {
                 newwidth = bm->GetWidth();
                 newheight = bm->GetHeight();
@@ -293,7 +293,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
             if(ItemID>=0) 
             {
                 Gdiplus::Size originalImageSize;
-                bm = GetThumbnail(filename, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, &originalImageSize);
+                bm = ImageUtils::GetThumbnail(filename, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, &originalImageSize);
                 if (bm) {
                     imgwidth = originalImageSize.Width;
                     imgheight = originalImageSize.Height;
@@ -640,7 +640,7 @@ CImageViewItem CThumbsView::getNextImgViewItem(CImageViewItem currentItem) {
         }
     }
 
-    for (index = 0; index <= currentItem.index, index < GetItemCount(); index++) {
+    for (index = 0; index <= currentItem.index && index < GetItemCount(); index++) {
         LPCTSTR FileName = GetFileName(index);
         if (FileName && IuCommonFunctions::IsImage(FileName)) {
             result.index = index;
@@ -665,7 +665,7 @@ CImageViewItem CThumbsView::getPrevImgViewItem(CImageViewItem currentItem) {
         }
     }
 
-    for (index = GetItemCount() - 1; index >= currentItem.index, index >= 0; index--) {
+    for (index = GetItemCount() - 1; index >= currentItem.index && index >= 0; index--) {
         LPCTSTR FileName = GetFileName(index);
         if (FileName && IuCommonFunctions::IsImage(FileName)) {
             result.index = index;

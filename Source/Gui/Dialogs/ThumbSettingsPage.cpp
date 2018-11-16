@@ -133,8 +133,6 @@ LRESULT  CThumbSettingsPage::OnBnClickedNewThumbnail(WORD wNotifyCode, WORD wID,
 
 LRESULT CThumbSettingsPage::OnThumbComboChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-
-
     showSelectedThumbnailPreview();
     return 0;
 }
@@ -204,8 +202,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
     std::string fileName = getSelectedThumbnailFileName();
     if(fileName.empty())
         return ;
-    CString folder = IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\");
-    
+
     std::unique_ptr<Thumbnail> autoPtrThumb;
     Thumbnail * thumb = nullptr;
     if(thumb_cache_.count(fileName))
@@ -223,7 +220,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
     ImageConverter conv;
     conv.setThumbCreatingParams(params_);
     conv.setThumbnail(thumb);
-    std::unique_ptr<Bitmap> bm = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_PNG2),_T("PNG"));
+    std::unique_ptr<Bitmap> bm = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_PNG2),_T("PNG"));
     if(!bm) {
         MessageBox(TR("Couldn't load thumbnail preset!"));
         return;

@@ -40,6 +40,9 @@
 #include "Func/Library.h"
 #include "Core/AppParams.h"
 
+namespace ImageUtils {
+
+
 using namespace Gdiplus;
 
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
@@ -1530,4 +1533,6 @@ ImageInfo GetImageInfo(const wchar_t* fileName) {
         res.height = bm->GetHeight();
     }
     return res;
+}
+
 }

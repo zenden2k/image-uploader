@@ -140,18 +140,18 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     Toolbar.SetImageList(m_hToolBarImageList);
     Toolbar.AddButton(IDC_COPYALL, TBSTYLE_BUTTON|BTNS_AUTOSIZE ,TBSTATE_ENABLED, 0, TR("Copy to clipboard"), 0);
     
-    bool IsLastVideo = false; 
+    //bool IsLastVideo = false; 
 
     Toolbar.AddButton(IDC_MEDIAFILEINFO, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Info about last video"), 0);
     //Toolbar.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Error log"), 0);
     Toolbar.AddButton(IDC_OPTIONSMENU, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Options"), 0);
     Toolbar.AddButton(IDC_PREVIEWBUTTON, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 4, TR("Preview"), 0);
     
-	bool isMediaInfoAvailable = MediaInfoHelper::IsMediaInfoAvailable();
+	//bool isMediaInfoAvailable = MediaInfoHelper::IsMediaInfoAvailable();
 
-	if (!IsLastVideo || !isMediaInfoAvailable) {
+	//if (!IsLastVideo || !isMediaInfoAvailable) {
 		Toolbar.HideButton(IDC_MEDIAFILEINFO);
-	}
+	//}
         
     Toolbar.AutoSize();
     Toolbar.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);

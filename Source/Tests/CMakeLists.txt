@@ -21,7 +21,6 @@ if(WIN32)
         ../Func/Tests/CmdLineTest.cpp 
         ../Func/CmdLine.cpp
         ../Core/Images/Tests/UtilsTest.cpp
-        ../Core/Images/Utils.cpp
         ../Func/GdiPlusInitializer.cpp
         ../3rdpart/QColorQuantizer.cpp
         ../3rdpart/QColorQuantizer.cpp

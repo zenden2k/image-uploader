@@ -124,12 +124,12 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
     if (img) {
         bm = img;
     } else if (FileName) {
-        newBm = LoadImageFromFileExtended(FileName);
+        newBm = ImageUtils::LoadImageFromFileExtended(FileName);
     }
     else if (ResourceID){
         if (!Bmp)
         {
-            newBm = BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(ResourceID), _T("PNG"));
+            newBm = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(ResourceID), _T("PNG"));
             WhiteBg = true;
         }
         else

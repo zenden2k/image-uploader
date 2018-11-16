@@ -7,8 +7,10 @@
 #include <windows.h>
 #include "3rdpart/GdiplusH.h"
 
+namespace ImageUtils {
+
 enum SaveImageFormat {
-    sifJPEG,sifPNG,sifGIF, sifDetectByExtension
+    sifJPEG, sifPNG, sifGIF, sifDetectByExtension
 };
 
 struct ImageInfo {
@@ -21,17 +23,17 @@ struct ImageInfo {
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 
 std::unique_ptr<Gdiplus::Bitmap> BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szResType);
-void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics,  Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea);
+void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea);
 void DrawRoundedRectangle(Gdiplus::Graphics* gr, Gdiplus::Rect r, int d, Gdiplus::Pen* p, Gdiplus::Brush*br);
 bool SaveImage(Gdiplus::Image* img, const CString& szFilename, SaveImageFormat Format, int Quality);
 std::unique_ptr<Gdiplus::Bitmap> IconToBitmap(HICON ico);
-void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radius);
+void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x, int y, int w, int h, int radius);
 void BlurCleanup();
 std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fileName);
 Gdiplus::Color StringToColor(const std::string& str);
 CComPtr<IStream> CreateMemStream(const BYTE *pInit, UINT cbInit);
 bool CopyBitmapToClipboard(HWND hwnd, HDC dc, Gdiplus::Bitmap* bm, bool preserveAlpha = true);
-void Gdip_RemoveAlpha(Gdiplus::Bitmap& source, Gdiplus::Color color );
+void Gdip_RemoveAlpha(Gdiplus::Bitmap& source, Gdiplus::Color color);
 bool MySaveImage(Gdiplus::Image* img, const CString& szFilename, CString& szBuffer, int Format, int Quality,
     LPCTSTR Folder = 0);
 bool SaveImageToFile(Gdiplus::Image* img, const CString& fileName, IStream* stream, int Format, int Quality, CString* mimeType = nullptr);
@@ -58,5 +60,7 @@ bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data
 short GetImageOrientation(Image* img);
 bool RotateAccordingToOrientation(short orient, Image* img, bool removeTag = false);
 ImageInfo GetImageInfo(const wchar_t* fileName);
+
+}
 
 #endif

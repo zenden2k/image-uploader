@@ -1273,7 +1273,6 @@
     <ClCompile Include="Source\Gui\Dialogs\WizardDlg.cpp" />
     <ClCompile Include="Source\Gui\Controls\CustomEditControl.cpp" />
     <ClCompile Include="Source\Gui\Controls\HistoryTreeControl.cpp" />
-    <ClCompile Include="Source\Gui\Controls\HistoryTreeView.cpp" />
     <ClCompile Include="Source\Gui\Controls\HyperLinkControl.cpp" />
     <ClCompile Include="Source\Gui\Controls\IconButton.cpp" />
     <ClCompile Include="Source\Gui\Controls\LogListBox.cpp" />

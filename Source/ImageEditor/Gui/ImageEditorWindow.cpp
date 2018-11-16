@@ -148,12 +148,12 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat)
     }
     if (clipboardFormat == ClipboardFormat::None) {
         if ( !outFileName_.IsEmpty() ) {
-            SaveImage(resultingBitmap_.get(), outFileName_, sifDetectByExtension, imageQuality_);
+            ImageUtils::SaveImage(resultingBitmap_.get(), outFileName_, ImageUtils::sifDetectByExtension, imageQuality_);
             canvas_->updateView();
             return true;
         } else {
             CString outFileName;
-            if (MySaveImage(resultingBitmap_.get(), "screeenshot001.png", outFileName, 0, 95)) {
+            if (ImageUtils::MySaveImage(resultingBitmap_.get(), "screeenshot001.png", outFileName, 0, 95)) {
                 outFileName_ = outFileName;
                 canvas_->updateView();
                 return true;
@@ -162,10 +162,10 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat)
         }
     } else if (clipboardFormat  == ClipboardFormat::Bitmap ) {
         CDC dc = GetDC();
-        CopyBitmapToClipboard(m_hWnd, dc, resultingBitmap_.get(), true);
+        ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, resultingBitmap_.get(), true);
         return true;
     } else if (clipboardFormat == ClipboardFormat::DataUri || clipboardFormat == ClipboardFormat::DataUriHtml) {
-        CopyBitmapToClipboardInDataUriFormat(resultingBitmap_.get(), 1, 85, clipboardFormat == ClipboardFormat::DataUriHtml);
+        ImageUtils::CopyBitmapToClipboardInDataUriFormat(resultingBitmap_.get(), 1, 85, clipboardFormat == ClipboardFormat::DataUriHtml);
         return true;
     }
     return false;
@@ -174,7 +174,7 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat)
 CString ImageEditorWindow::saveToTempFile() {
     std::shared_ptr<Gdiplus::Bitmap> bitmap = canvas_->getBitmapForExport();
     CString result;
-    if (MySaveImage(bitmap.get(), "image.png", result, 1, 95)) {
+    if (ImageUtils::MySaveImage(bitmap.get(), "image.png", result, 1, 95)) {
         return result;
     }
     return CString();
@@ -1026,7 +1026,7 @@ void ImageEditorWindow::updateSearchButton() {
 
 std::shared_ptr<Gdiplus::Bitmap>  ImageEditorWindow::loadToolbarIcon(int resource)
 {
-    return std::shared_ptr<Gdiplus::Bitmap>(BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource),_T("PNG")) );
+    return std::shared_ptr<Gdiplus::Bitmap>(ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource),_T("PNG")) );
 }
 
 void ImageEditorWindow::EndDialog(DialogResult dr)

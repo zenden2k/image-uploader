@@ -63,7 +63,9 @@
 #define IDR_PNG1                        224
 #define IDR_PNG2                        225
 #define IDB_BITMAP3                     227
+#define IDB_UPLOADTOOLBARBMP32BIT       227
 #define IDB_BITMAP4                     228
+#define IDB_UPLOADTOOLBARBMP16BIT       228
 #define IDR_REGISTRY1                   229
 #define IDI_ERRORICON                   230
 #define IDI_ICONWARNING                 231

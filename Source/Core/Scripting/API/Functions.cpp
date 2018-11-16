@@ -568,7 +568,7 @@ Sqrat::Table GetImageInfo(const std::string& fileName) {
     Sqrat::Table obj(GetCurrentThreadVM().GetVM());
     int width = 0, height = 0;
 #ifdef _WIN32    
-    ImageInfo ii = ::GetImageInfo(U2W(fileName));
+    ImageUtils::ImageInfo ii = ImageUtils::GetImageInfo(U2W(fileName));
     width = ii.width;
     height = ii.height;
 #endif

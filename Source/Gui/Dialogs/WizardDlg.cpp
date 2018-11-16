@@ -1142,7 +1142,7 @@ void CWizardDlg::PasteBitmap(HBITMAP Bmp)
     Bitmap bm(Bmp,0);
     if(bm.GetLastStatus()==Ok)
     {
-        MySaveImage(&bm,_T("clipboard"),buf2,1,100);
+        ImageUtils::MySaveImage(&bm,_T("clipboard"),buf2,1,100);
 
         CreatePage(wpMainPage);
         CMainDlg* MainDlg = (CMainDlg*) Pages[2];
@@ -2050,15 +2050,15 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
             }
             int savingFormat = Settings.ScreenshotSettings.Format;
             if(savingFormat == 0) // jpeg
-                Gdip_RemoveAlpha(*result,Color(255,255,255,255));
+                ImageUtils::Gdip_RemoveAlpha(*result,Color(255,255,255,255));
 
             CString saveFolder = IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.Folder, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
-            MySaveImage(result.get(),suggestingFileName,buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
+            ImageUtils::MySaveImage(result.get(),suggestingFileName,buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
             screenshotIndex++;
             if ( CopyToClipboard )
             {
                 CDC dc = GetDC();
-                if ( CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) { // remove alpha if saving format is JPEG
+                if (ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) { // remove alpha if saving format is JPEG
                     if (m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD 
                         && dialogResult == ImageEditorWindow::drCancel) {
                         floatWnd.ShowScreenshotCopiedToClipboardMessage();

@@ -36,7 +36,7 @@ Document::Document(int width, int height) {
 }
 
 Document::Document(const wchar_t* fileName) {
-    currentImage_ = LoadImageFromFileWithoutLocking(fileName);
+    currentImage_ = ImageUtils::LoadImageFromFileWithoutLocking(fileName);
     init();
     if ( currentImage_ ) {
         checkTransparentPixels();

@@ -98,8 +98,8 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		CString GenerateFileNameFromTemplate(const CString& templateStr, int index, const CPoint size, const CString& originalName);
 		CThumbsView ThumbsView;
 		void CheckEnableNext();
-		bool OnNext(); // Reimplemented function of CWizardPage
-		bool OnShow(); // Reimplemented function of CWizardPage
+		bool OnNext() override; // Reimplemented function of CWizardPage
+		bool OnShow() override; // Reimplemented function of CWizardPage
 		void OnFrameGrabbed(const std::string&, int64_t, AbstractImage*);
 		void OnFrameGrabbingFinished();
 

@@ -65,7 +65,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
             CRect rd(dis->rcItem);
             GuiTools::FillRectGradient(dis->hDC, rd, 0xEAE2D9, 0xD3C1AF, false);
         }
-        else if (dis->itemID != GetCount() - 1) // If it isn't last item
+        else if (static_cast<int>(dis->itemID) != GetCount() - 1) // If it isn't last item
         {
             CPen pen;
             pen.CreatePen(PS_SOLID, 1, RGB(190,190,190));

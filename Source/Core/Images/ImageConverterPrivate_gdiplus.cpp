@@ -24,7 +24,7 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
     double width, height, imgwidth, imgheight, newwidth, newheight;
     CString sourceFileW = U2W(sourceFile);
     CString imageFile = sourceFileW;
-    std::unique_ptr<Bitmap> bm(LoadImageFromFileExtended(sourceFileW));
+    std::unique_ptr<Bitmap> bm(ImageUtils::LoadImageFromFileExtended(sourceFileW));
 
     if (!bm) {
         LOG(ERROR) << "ImageConverter: unable to load source file " << sourceFileW;
@@ -159,7 +159,7 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
                     newVisibleWidth = static_cast<int>(newVisibleHeight / imgheight * imgwidth);
                 }
                 CRect r(0, 0, newVisibleWidth, newVisibleHeight);
-                CRect destRect = CenterRect(r, CRect(0, 0, static_cast<int>(newwidth), static_cast<int>(newheight)));
+                CRect destRect = ImageUtils::CenterRect(r, CRect(0, 0, static_cast<int>(newwidth), static_cast<int>(newheight)));
                 CRect croppedRect;
                 croppedRect.IntersectRect(CRect(0, 0, int(newwidth), int(newheight)), destRect);
                 CRect sourceRect = croppedRect;
@@ -193,7 +193,7 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
             SolidBrush brush2(Color(70, 0, 0, 0));
             RectF bounds2(1, 1, float(newwidth), float(newheight) + 1);
             ReleaseDC(0, dc);
-            DrawStrokedText(gr, U2W(m_imageConvertingParams.Text), bounds2, font, MYRGB(255,
+            ImageUtils::DrawStrokedText(gr, U2W(m_imageConvertingParams.Text), bounds2, font, MYRGB(255,
                 m_imageConvertingParams.TextColor),
                 MYRGB(180,
                 m_imageConvertingParams.StrokeColor), HAlign[m_imageConvertingParams.TextPosition],
@@ -233,7 +233,7 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
         }
         free(pPropBuffer);
         CString resultFileName;
-        MySaveImage(BackBuffer.get(), IuCommonFunctions::GenerateFileName(L"img%md5.jpg", 1,
+        ImageUtils::MySaveImage(BackBuffer.get(), IuCommonFunctions::GenerateFileName(L"img%md5.jpg", 1,
             CPoint()), resultFileName, fileformat,
             m_imageConvertingParams.Quality);
      //   imageFile = resultFileName;
@@ -276,7 +276,7 @@ bool ImageConverterPrivate::createThumb(Gdiplus::Bitmap* bm, const CString& imag
     std::shared_ptr<GdiPlusImage> res = std::static_pointer_cast<GdiPlusImage>(createThumbnail(&src, FileSize, fileformat));
     if (res) {
         CString thumbFileName;
-        result = MySaveImage(res->getBitmap(), IuCommonFunctions::GenerateFileName(L"thumb_%md5.jpg", 1,
+        result = ImageUtils::MySaveImage(res->getBitmap(), IuCommonFunctions::GenerateFileName(L"thumb_%md5.jpg", 1,
             CPoint()), thumbFileName, fileformat, m_thumbCreatingParams.Quality);
         thumbFileName_ = W2U(thumbFileName);
     }
@@ -420,7 +420,7 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
                 strokeColor = EvaluateColor(tokens[1]);
             RectF TextBounds((float)rc.left, (float)rc.top, (float)rc.right, (float)rc.bottom);
             thumbgr.SetPixelOffsetMode(PixelOffsetModeDefault);
-            DrawStrokedText(*gr, /* Buffer*/ textToDraw, TextBounds, font, Color(color1), Color(
+            ImageUtils::DrawStrokedText(*gr, /* Buffer*/ textToDraw, TextBounds, font, Color(color1), Color(
                 strokeColor) /*params.StrokeColor*/, 1, 1, 1);
             thumbgr.SetPixelOffsetMode(PixelOffsetModeNone);
         }
@@ -475,7 +475,7 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
                             tempGr.SetPixelOffsetMode(PixelOffsetModeHighQuality);
                             tempGr.DrawImage(image->getBitmap(), dest, (INT)0, (int)0, (int)image->getWidth(),
                                 (int)image->getHeight(), UnitPixel, &attr);
-                            changeAplhaChannel(*MaskBuffer, tempImage, 3, 3);
+                            ImageUtils::changeAplhaChannel(*MaskBuffer, tempImage, 3, 3);
                             gr->DrawImage(&tempImage, 0, 0);
                             tempGr.SetSmoothingMode(SmoothingModeNone);
                         }

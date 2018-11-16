@@ -90,7 +90,7 @@ inline std::string myToString(const Gdiplus::Color& value)
 
 inline void myFromString(const std::string& text, Gdiplus::Color& value)
 {
-    value = StringToColor(text);
+    value = ImageUtils::StringToColor(text);
 }
 
 class WtlGuiSettings : public CommonGuiSettings {

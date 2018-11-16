@@ -634,7 +634,7 @@ BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int start
 
 BlurringRectangle::~BlurringRectangle()
 {
-    BlurCleanup();
+    ImageUtils::BlurCleanup();
 }
 
 void BlurringRectangle::setBlurRadius(float radius)
@@ -674,7 +674,7 @@ void BlurringRectangle::render(Painter* gr)
 
         st = gr->DrawImage(background,  &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
         #else
-        ApplyGaussianBlur(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, static_cast<int>(blurRadius_));
+        ImageUtils::ApplyGaussianBlur(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, static_cast<int>(blurRadius_));
         #endif
     }
 }
@@ -704,7 +704,7 @@ void RoundedRectangle::render(Painter* gr)
     Region rgn(max(getX(),0),max(0,getY()), getWidth(), getHeight());
     
     gr->SetClip(rgn.toNativeRegion().get(), Gdiplus::CombineModeIntersect); // the drawed ellipse can exceed in some cases the bounding rectangle, setting the clip
-    DrawRoundedRectangle(gr, Rect(x,y,width,height), roundingRadius_ *2 , &pen, filled_ ? &br : 0);
+    ImageUtils::DrawRoundedRectangle(gr, Rect(x,y,width,height), roundingRadius_ *2 , &pen, filled_ ? &br : 0);
     gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
 }
 

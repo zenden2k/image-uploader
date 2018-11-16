@@ -66,7 +66,7 @@ LRESULT CImageView::OnKillFocus(HWND hwndNewFocus)
 
 bool CImageView::ViewImage(const CImageViewItem& item, HWND Parent){
     currentItem_ = item;
-    std::unique_ptr<Gdiplus::Bitmap> img(LoadImageFromFileExtended(item.fileName));
+    std::unique_ptr<Gdiplus::Bitmap> img(ImageUtils::LoadImageFromFileExtended(item.fileName));
     
     if (img) {
         float width = static_cast<float>(GetSystemMetrics(SM_CXSCREEN) - 12);
