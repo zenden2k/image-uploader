@@ -31,10 +31,16 @@
 #include "Core/Upload/FolderList.h"
 #include "AdvancedUploadEngine.h"
 #include "FileUploadTask.h"
-#include <megaapi.h>
+
 #include <atomic>
 class MyListener;
 class MyGfxProcessor;
+namespace mega
+{
+class MegaApi;
+class MegaProxy;
+}
+
 class CMegaNzUploadEngine : public CAdvancedUploadEngine
                     
 {
@@ -61,11 +67,11 @@ class CMegaNzUploadEngine : public CAdvancedUploadEngine
 
         
 
-        mega::MegaApi* megaApi_;
+        std::unique_ptr<mega::MegaApi> megaApi_;
 #ifdef _WIN32
-        MyGfxProcessor* proc_;
+        std::unique_ptr<MyGfxProcessor> proc_;
 #endif
-        MyListener* listener_;
+        std::unique_ptr<MyListener> listener_;
         CFolderList* folderList_;
         std::unique_ptr<mega::MegaProxy> proxy_;
         std::shared_ptr<FileUploadTask> fileTask_;

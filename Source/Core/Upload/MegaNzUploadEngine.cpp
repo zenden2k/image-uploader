@@ -20,23 +20,33 @@
 
 #include "MegaNzUploadEngine.h"
 
+#include <chrono>
+#include <thread>
+
+#include <megaapi.h>
 #include "Core/Upload/ServerSync.h"
 #include "Uploader.h"
 #include "Core/Settings.h"
 #include "FileUploadTask.h"
 #include "Core/CommonDefs.h"
-#include <chrono>
-#include <thread>
+#ifdef _WIN32
+#include "Func/IuCommonFunctions.h"
+#include "3rdpart/GdiplusH.h"
+#include "Core/Images/Utils.h"
+#endif
 
 #define APP_KEY "0dxDFKqD"
 #define USER_AGENT "Zenden2k Image Uploader"
 
+
 using namespace mega;
 
 #ifdef _WIN32
+
 class MyGfxProcessor : public mega::MegaGfxProcessor {
 public:
-    virtual bool readBitmap(const char* path) override;
+    MyGfxProcessor();
+    virtual bool readBitmap(const std::string& path) override;
     virtual int getWidth() override;
     virtual int getHeight() override;
     virtual int getBitmapDataSize(int width, int height, int px, int py, int rw, int rh) override;
@@ -44,35 +54,107 @@ public:
     virtual void freeBitmap() override;
 
     virtual ~MyGfxProcessor();
+protected:
+    std::unique_ptr<Gdiplus::Bitmap> bitmap_; 
+    HGLOBAL hGlobal_;
+    CComPtr<IStream> istream_;
 };
 
-bool MyGfxProcessor::readBitmap(const char* path) {
-    return false;
+MyGfxProcessor::MyGfxProcessor() {
+    hGlobal_ = nullptr;
+}
+bool MyGfxProcessor::readBitmap(const std::string& path) {
+    // path parameter contains utf-16 string
+    CString widePath(reinterpret_cast<const wchar_t*>(path.data()), path.size() / 2);
+
+    if (!IuCommonFunctions::IsImage(widePath)) {
+        return false;
+    }
+    bitmap_ = ImageUtils::LoadImageFromFileExtended(widePath);
+    if (!bitmap_) {
+        return false;
+    }
+    return true;
 }
 
 int MyGfxProcessor::getWidth() {
+    if (bitmap_) {
+        return bitmap_->GetWidth();
+    }
     return 0;
 }
 
 int MyGfxProcessor::getHeight() {
+    if (bitmap_) {
+        return bitmap_->GetHeight();
+    }
     return 0;
 }
 
 int MyGfxProcessor::getBitmapDataSize(int width, int height, int px, int py, int rw, int rh) {
+    if (!bitmap_) {
+        return 0;
+    }
+    std::unique_ptr<Bitmap> res = std::make_unique<Bitmap>(width, height);
+    Graphics gr(res.get());
+    gr.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
+    gr.DrawImage(bitmap_.get(), 0, 0, width, height);
+
+    std::unique_ptr<Bitmap> resultBmp;
+    if (px == 0 && py == 0 && rw == width && rh == height) {
+        resultBmp = std::move(res);
+    } else {
+        std::unique_ptr<Bitmap> buffer = std::make_unique<Bitmap>(rw, rh);
+        Graphics gr2(buffer.get());
+        gr2.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
+        gr2.DrawImage(res.get(), 0, 0, px, py, rw, rh, UnitPixel);
+        resultBmp = std::move(buffer);
+    }
+
+    if (!resultBmp) {
+        return 0;
+    }
+    
+    HRESULT hr = CreateStreamOnHGlobal(nullptr, TRUE, &istream_);
+    if (FAILED(hr)) {
+        return 0;
+    }
+
+    // Saving image in JPEG format to memory stream
+    if (ImageUtils::SaveImageToFile(resultBmp.get(), CString(), istream_, ImageUtils::sifJPEG, 85)) {
+        hr = GetHGlobalFromStream(istream_, &hGlobal_);
+        if (FAILED(hr)) {
+            return 0;
+        }
+        return GlobalSize(hGlobal_);
+    }
     return 0;
 }
 
 bool MyGfxProcessor::getBitmapData(char* bitmapData, size_t size) {
-    return false;
+    if (!hGlobal_) {
+        return false;
+    }
+    LPVOID pimage = GlobalLock(hGlobal_);
+    if (pimage == nullptr) {
+        return false;
+    }
+    memcpy(bitmapData, pimage, size);
+    GlobalUnlock(hGlobal_);
+    istream_.Release();
+    return true;
 }
 
 void MyGfxProcessor::freeBitmap() {
+    hGlobal_ = nullptr;
+    bitmap_.reset();
 }
 
 MyGfxProcessor::~MyGfxProcessor() {
 }
 
-#endif
+#endif // End of #ifdef _WIN32
+
 class MyListener : public mega::MegaListener {
 public:
     explicit MyListener(CMegaNzUploadEngine* engine) {
@@ -99,14 +181,14 @@ CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsS
     setServerSettings(settings);
     folderList_ = nullptr;
 #ifdef _WIN32
-    proc_ = new MyGfxProcessor();
-    megaApi_=new MegaApi(APP_KEY, proc_, (const char *)NULL, USER_AGENT);
+    proc_ = std::make_unique<MyGfxProcessor>();
+    megaApi_ = std::make_unique<MegaApi>(APP_KEY, proc_.get(), static_cast<const char *>(nullptr), USER_AGENT);
 #else 
-    megaApi_ = new MegaApi(APP_KEY, (const char *)NULL, USER_AGENT);
+    megaApi_ = = std::make_unique<MegaApi>(APP_KEY, (const char *)NULL, USER_AGENT);
 #endif
     megaApi_->setLogLevel(MegaApi::LOG_LEVEL_INFO);
-    listener_ = new MyListener(this);
-    megaApi_->addListener(listener_);
+    listener_ = std::make_unique<MyListener>(this);
+    megaApi_->addListener(listener_.get());
     proxy_.reset(new MegaProxy());
 
     if (Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kUserProxy) {
@@ -134,11 +216,7 @@ CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsS
 
 CMegaNzUploadEngine::~CMegaNzUploadEngine()
 {
-    megaApi_->removeListener(listener_);
-    delete megaApi_;
-#ifdef _WIN32
-    delete proc_;
-#endif
+    megaApi_->removeListener(listener_.get());
 }
 
 int CMegaNzUploadEngine::getFolderList(CFolderList& FolderList) {
@@ -425,12 +503,12 @@ void MyListener::onTransferFinish(MegaApi* api, MegaTransfer *transfer, MegaErro
         engine_->Log(ErrorInfo::mtError, "Transfer finished with error: " + std::string(error->getErrorString()));
     } else {
         MegaHandle handle = transfer->getNodeHandle();
-        MegaNode* node = api->getNodeByHandle(handle);
+        std::unique_ptr<MegaNode> node(api->getNodeByHandle(handle));
         engine_->exportFinished_ = false;
         engine_->exportSuccess_ = false;
         engine_->uploadSuccess_ = true;
         if (!engine_->needStop()) {
-            api->exportNode(node);
+            api->exportNode(node.get());
         }
     }
 

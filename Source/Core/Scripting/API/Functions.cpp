@@ -49,7 +49,6 @@
 #include "Core/3rdpart/base64.h"
 #include "Core/3rdpart/codepages.h"
 #include "Core/Utils/TextUtils.h"
-#include "versioninfo.h"
 #include "ScriptAPI.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Upload/UploadErrorHandler.h"
