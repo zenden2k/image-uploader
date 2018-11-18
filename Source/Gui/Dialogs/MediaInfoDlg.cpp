@@ -23,7 +23,6 @@
 #include "Func/MediaInfoHelper.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
-#include "Func/myutils.h"
 #include "Core/Settings.h"
 
 // CMediaInfoDlg
@@ -44,7 +43,7 @@ LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEINFOLABEL));
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     LOGFONT logFont;
-    StringToFont(_T("Courier New,8,,204"), &logFont);
+    WinUtils::StringToFont(_T("Courier New,8,,204"), &logFont);
     
     editFont_.CreateFontIndirect(&logFont);
     SendDlgItemMessage(IDC_FILEINFOEDIT, WM_SETFONT, reinterpret_cast<WPARAM>(editFont_.m_hFont), MAKELPARAM(false, 0));

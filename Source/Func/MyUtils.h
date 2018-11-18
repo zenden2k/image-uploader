@@ -28,26 +28,12 @@
 #define VIDEO_FORMATS _T("avi\0mpg\0mpeg\0vob\0divx\0flv\0wmv\0asf\0mkv\0mov\0ts\0mp2\0mp4\0") _T("3gp\0rm\0mpeg2ts\0\0")
 #define IMAGE_DIALOG_FORMATS _T("Image files (JPEG, GIF, PNG, etc)\0*.jpg;*.gif;*.png;*.bmp;*.tiff\0All files\0*.*\0\0")
 
-#ifndef IU_SHELLEXT
-const CString StringSection(const CString& str,TCHAR sep, int index);
-#endif
-
 #define xor(a,b) ((a || b) && !(a && b))    
 
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
 
-
-bool ExtractStrFromList(
-            LPCTSTR szString /* Source string */,
-            int nIndex, /* Zero based item index */
-            LPTSTR szBuffer /* Destination buffer */,
-            LONG nSize ,/* Length in characters of destionation buffer */
-            LPCTSTR szDefString = NULL,
-            TCHAR cSeparator = _T(',') /* Character to be separator in list */);
 #define LOADICO(ico) LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(ico))
 
-bool FontToString(LOGFONT const * lFont, CString &Result);
-bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont);
 int GetFontSizeInTwips(int nFontSize);
 CString myExtractFileName(const CString & FileName);
 
@@ -91,7 +77,9 @@ public:
  */
 static CGlobalAtom ga;
 #endif
+
+bool CheckFileName(const CString& fileName);
+
 #endif
 
 
-bool CheckFileName(const CString& fileName);

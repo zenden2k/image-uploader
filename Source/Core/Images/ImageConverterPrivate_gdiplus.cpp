@@ -314,12 +314,12 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     CString s;
 
     LOGFONT lf;
-    StringToFont(_T("Tahoma,7,b,204"), &lf);
+    WinUtils::StringToFont(_T("Tahoma,7,b,204"), &lf);
     if (thumbnailTemplate_->existsParam("Font"))
     {
         std::string font = thumbnailTemplate_->getParamString("Font");
         CString wide_text = U2W(font);
-        StringToFont(wide_text, &lf);
+        WinUtils::StringToFont(wide_text, &lf);
     }
     Font font(dc, &lf);
     RectF TextRect;

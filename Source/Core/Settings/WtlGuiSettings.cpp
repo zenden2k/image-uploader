@@ -345,7 +345,7 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
     AutoShowLog = true;
 
     //    StringToFont(_T("Tahoma,7,b,204"), &ThumbSettings.ThumbFont);
-    StringToFont(_T("Tahoma,8,,204"), &VideoSettings.Font);
+    WinUtils::StringToFont(_T("Tahoma,8,,204"), &VideoSettings.Font);
 
     VideoSettings.Columns = 3;
     VideoSettings.TileWidth = 200;
@@ -393,7 +393,7 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
     ImageEditorSettings.AllowAltTab = false;
     ImageEditorSettings.AllowEditingInFullscreen = false;
     ImageEditorSettings.SearchEngine = SearchByImage::seGoogle;
-    StringToFont(_T("Arial,12,b,204"), &ImageEditorSettings.Font);
+    WinUtils::StringToFont(_T("Arial,12,b,204"), &ImageEditorSettings.Font);
 
     ImageReuploaderSettings.PasteHtmlOnCtrlV = true;
     Hotkeys_changed = false;

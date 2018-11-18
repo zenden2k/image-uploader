@@ -173,8 +173,6 @@ public:
     CButton withAccountsRadioButton_, alwaysWithAccountsRadioButton_, checkImageServersCheckBox_,
         checkFileServersCheckBox_, checkUrlShortenersCheckBox_;
 
-    void OnConfigureNetworkClient(NetworkClient* nm);
-    void OnConfigureNetworkClient(CUploader* uploader, NetworkClient* nm);
     void onTaskStatusChanged(UploadTask* task);
     void onTaskFinished(UploadTask* task, bool ok);
     void onSessionFinished(UploadSession* session);
@@ -189,4 +187,5 @@ public:
     bool m_bIsRunning;
     bool isRunning();
     static CString GetFileInfo(CString fileName, MyFileInfo* mfi = nullptr);
+    static CString CMainDlg::MyBytesToString(int64_t nBytes);
 };

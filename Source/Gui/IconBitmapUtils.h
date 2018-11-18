@@ -17,10 +17,10 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
 #pragma once
+#include <map>
 #include <Uxtheme.h>
 #include "3rdpart/GdiplusH.h"
-#include <uxtheme.h>
-#include <map>
+
 /*#define STRICT_TYPED_ITEMIDS    // In case you use IDList, you want this on for better type safety.
 #include <windows.h>
 #include <windowsx.h>           // For WM_COMMAND handling macros

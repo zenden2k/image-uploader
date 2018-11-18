@@ -150,6 +150,8 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
             uparams.thumbHeight = tcParams.Size;
         }
     }
+#else
+    uparams.thumbWidth = 180;
 #endif
     /*if (task->type() == UploadTask::TypeFile) {
         FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());

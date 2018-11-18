@@ -4,7 +4,6 @@
 
 #include "MainDlg.h"
 
-#include "Core/Upload/Uploader.h"
 #include "Core/Settings.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "3rdpart/GdiPlusH.h"
@@ -18,11 +17,6 @@
 #include "Core/Upload/UploadSession.h"
 #include "Core/Upload/UploadManager.h"
 #include "Core/AppParams.h"
-
-CString MyBytesToString(int64_t nBytes)
-{
-    return IuCoreUtils::fileSizeToString(nBytes).c_str();
-}
 
 CMainDlg::CMainDlg(UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList) : 
                     m_FileDownloader(AppParams::instance()->tempDirectory()) {
@@ -94,14 +88,14 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     for (int i = 0; i < engineList_->count(); i++) {
         m_skipMap[i] = false;
         m_ListView.AddItem(i, 0, WinUtils::IntToStr(i+1), i);
-        CString name = Utf8ToWstring(engineList_->byIndex(i)->Name).c_str();
-        if (engineList_->byIndex(i)->hasType(CUploadEngineData::TypeUrlShorteningServer)) {
+        CUploadEngineData* ued = engineList_->byIndex(i);
+        CString name = Utf8ToWstring(ued->Name).c_str();
+        if (ued->hasType(CUploadEngineData::TypeUrlShorteningServer)) {
             name += _T("  [URL Shortener]");
         }
         m_ListView.SetItemText(i, 1, name);
     }
 
-    m_FileDownloader.onConfigureNetworkClient.bind(this, &CMainDlg::OnConfigureNetworkClient);
     m_FileDownloader.onFileFinished.bind(this, &CMainDlg::OnFileFinished);
     return TRUE;
 }
@@ -168,8 +162,9 @@ LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /
         ServerData sd;
         m_CheckedServersMap[i] = sd;
         m_ListView.AddItem(i, 0, WinUtils::IntToStr(i+1));
-        CString name = Utf8ToWstring(engineList_->byIndex(i)->Name).c_str();
-        if (engineList_->byIndex(i)->hasType(CUploadEngineData::TypeUrlShorteningServer)) {
+        CUploadEngineData* ued = engineList_->byIndex(i);
+        CString name = Utf8ToWstring(ued->Name).c_str();
+        if (ued->hasType(CUploadEngineData::TypeUrlShorteningServer)) {
             name += _T("  [URL Shortener]");
         }
         m_ListView.SetItemText(i, 1, name);
@@ -238,26 +233,29 @@ int CMainDlg::Run() {
         }
             
         ServerSettingsStruct  ss;
-        std::map <std::string, ServerSettingsStruct>::iterator it = Settings.ServersSettings[ue->Name].begin();
+        auto serverIt = Settings.ServersSettings.find(ue->Name);
+        if (serverIt  != Settings.ServersSettings.end()) {
+            std::map <std::string, ServerSettingsStruct>::const_iterator it = serverIt->second.begin();
 
-        if (!useAccounts) {
-            if (it != Settings.ServersSettings[ue->Name].end()) {
-                ss = it->second;
-            }
-        } else {
-            if (it != Settings.ServersSettings[ue->Name].end()) {
-                if (it->first.empty()) {
-                    ++it;
-                    if (it != Settings.ServersSettings[ue->Name].end()) {
+            if (!useAccounts) {
+                if (it != serverIt->second.end()) {
+                    ss = it->second;
+                }
+            } else {
+                if (it != serverIt->second.end()) {
+                    if (it->first.empty()) {
+                        ++it;
+                        if (it != serverIt->second.end()) {
+                            ss = it->second;
+                        }
+                    } else {
                         ss = it->second;
                     }
-                } else {
-                    ss = it->second;
                 }
             }
         }
         
-        if((ue->NeedAuthorization==2 || (onlyAccs && ue->NeedAuthorization)) && ss.authData.Login.empty())    
+        if ((ue->NeedAuthorization == CUploadEngineData::naObligatory || (onlyAccs && ue->NeedAuthorization)) && ss.authData.Login.empty())
         {
             m_ListView.SetItemText(i,2,CString(_T("No account is set")));
             continue;
@@ -270,12 +268,13 @@ int CMainDlg::Run() {
         ServerProfile serverProfile(ue->Name);
         serverProfile.setShortenLinks(false);
         serverProfile.setProfileName(ss.authData.Login);
+
         std::shared_ptr<UploadTask>  task;
         if (ue->hasType(CUploadEngineData::TypeImageServer) || ue->hasType(CUploadEngineData::TypeFileServer)) {
-            task.reset(new FileUploadTask(WCstringToUtf8(fileName), WCstringToUtf8(WinUtils::myExtractFileName(fileName))));
+            task = std::make_shared<FileUploadTask>(W2U(fileName), W2U(WinUtils::myExtractFileName(fileName)));
             
         } else if (ue->hasType(CUploadEngineData::TypeUrlShorteningServer)) {
-            task.reset(new UrlShorteningTask(WCstringToUtf8(url)));
+            task = std::make_shared<UrlShorteningTask>(W2U(url));
         }
 
         task->setServerProfile(serverProfile);
@@ -283,7 +282,6 @@ int CMainDlg::Run() {
         task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CMainDlg::onTaskFinished));
         UploadTaskUserData* userData = new UploadTaskUserData();
         userData->rowIndex = i;
-
         task->setUserData(userData);
         uploadTaskUserDatas_.push_back(std::unique_ptr<UploadTaskUserData>(userData));
         uploadSession_->addTask(task);
@@ -486,11 +484,10 @@ void CMainDlg::processFinished() {
 }
 
 void CMainDlg::checkShortUrl(UploadTask* task) {
-    NetworkClient client;
-    CoreFunctions::ConfigureProxy(&client);
+    auto client = CoreFunctions::createNetworkClient();
     UrlShorteningTask* urlTask = dynamic_cast<UrlShorteningTask*>(task);
     UploadTaskUserData* userData = reinterpret_cast<UploadTaskUserData*>(task->userData());
-    client.setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
+    client->setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
     
     bool ok = false;
     std::string targetUrl = task->uploadResult()->directUrl;
@@ -498,10 +495,10 @@ void CMainDlg::checkShortUrl(UploadTask* task) {
     if (!targetUrl.empty()) {
         int responseCode = 0;
         do {
-            client.setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
-            client.doGet(targetUrl);
-            responseCode = client.responseCode();
-            targetUrl = client.responseHeaderByName("Location");
+            client->setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
+            client->doGet(targetUrl);
+            responseCode = client->responseCode();
+            targetUrl = client->responseHeaderByName("Location");
             i++;
         } while (i < 6 && !targetUrl.empty() && (responseCode == 302 || responseCode == 301) && targetUrl != urlTask->getUrl());
 
@@ -516,15 +513,6 @@ void CMainDlg::checkShortUrl(UploadTask* task) {
     m_CheckedServersMap[userData->rowIndex].finished = true;
     MarkServer(userData->rowIndex);
 
-}
-
-void CMainDlg::OnConfigureNetworkClient(NetworkClient* nm)
-{
-    CoreFunctions::ConfigureProxy(nm);
-}
-void CMainDlg::OnConfigureNetworkClient(CUploader* uploader, NetworkClient* nm)
-{
-    CoreFunctions::ConfigureProxy(nm);
 }
 
 void CMainDlg::onTaskStatusChanged(UploadTask* task) {
@@ -689,7 +677,7 @@ CString CMainDlg::GetFileInfo(CString fileName, MyFileInfo* mfi)
     CString result;
     int fileSize = static_cast<int>(IuCoreUtils::getFileSize(W2U(fileName)));
     result = MyBytesToString(fileSize) + _T("(") + WinUtils::IntToStr(fileSize) + _T(" bytes);");
-    CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8(fileName)));
+    CString mimeType = IuCoreUtils::GetFileMimeType(W2U(fileName)).c_str();
     result += mimeType + _T(";");
     if (mfi) mfi->mimeType = mimeType;
     if (mimeType.Find(_T("image/")) >= 0) {
@@ -703,4 +691,9 @@ CString CMainDlg::GetFileInfo(CString fileName, MyFileInfo* mfi)
         result += WinUtils::IntToStr(width) + _T("x") + WinUtils::IntToStr(height);
     }
     return result;
+}
+
+CString CMainDlg::MyBytesToString(int64_t nBytes)
+{
+    return IuCoreUtils::fileSizeToString(nBytes).c_str();
 }

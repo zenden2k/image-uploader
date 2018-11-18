@@ -52,10 +52,10 @@ bool BasicSettings::LoadAccounts(SimpleXmlNode root)
     std::vector<SimpleXmlNode> servers;
     root.GetChilds("Server", servers);
 
-    for (size_t i = 0; i < servers.size(); i++) {
-        std::string server_name = servers[i].Attribute("Name");
+    for (const auto& server: servers) {
+        std::string server_name = server.Attribute("Name");
         std::vector<std::string> attribs;
-        servers[i].GetAttributes(attribs);
+        server.GetAttributes(attribs);
         ServerSettingsStruct tempSettings;
 
         for (size_t j = 0; j < attribs.size(); j++) {
@@ -64,32 +64,30 @@ bool BasicSettings::LoadAccounts(SimpleXmlNode root)
             if (attribName.empty())
                 continue;
             if (attribName.substr(0, 1) == "_") {
-                std::string value = servers[i].Attribute(attribName);
+                std::string value = server.Attribute(attribName);
                 attribName = attribName.substr(1, attribName.size() - 1);
                 if (!value.empty())
                     tempSettings.params[attribName] = value;
             }
         }
-        tempSettings.authData.DoAuth = servers[i].AttributeBool("Auth");
-#if !defined  (IU_CLI) && !defined(IU_SHELLEXT)
-
-
-        std::string encodedLogin = servers[i].Attribute("Login");
+        tempSettings.authData.DoAuth = server.AttributeBool("Auth");
+#if !defined(IU_SHELLEXT)
+        std::string encodedLogin = server.Attribute("Login");
         CEncodedPassword login;
         login.fromEncodedData(encodedLogin.c_str());
         tempSettings.authData.Login = login;
 
-        std::string encodedPass = servers[i].Attribute("Password");
+        std::string encodedPass = server.Attribute("Password");
         CEncodedPassword pass;
         pass.fromEncodedData(encodedPass.c_str());
         tempSettings.authData.Password = pass;
 #else
-        tempSettings.authData.Login = servers[i].Attribute("Login");
+        tempSettings.authData.Login = server.Attribute("Login");
 #endif
 
-        tempSettings.defaultFolder.setId(servers[i].Attribute("DefaultFolderId"));
-        tempSettings.defaultFolder.viewUrl = servers[i].Attribute("DefaultFolderUrl");
-        tempSettings.defaultFolder.setTitle(servers[i].Attribute("DefaultFolderTitle"));
+        tempSettings.defaultFolder.setId(server.Attribute("DefaultFolderId"));
+        tempSettings.defaultFolder.viewUrl = server.Attribute("DefaultFolderUrl");
+        tempSettings.defaultFolder.setTitle(server.Attribute("DefaultFolderTitle"));
 
         ServersSettings[server_name][tempSettings.authData.Login] = tempSettings;
     }
@@ -202,7 +200,7 @@ void BasicSettings::addChangeCallback(const ChangeCallback& callback)
 }
 
 void BasicSettings::removeChangeCallback(const ChangeCallback& callback) {
-    // This doesn't keep the sinks in order, but who cares?
+    // This doesn't keep the callbacks in order, but who cares?
     for (int i = changeCallbacks_.size() - 1; i >= 0; i--) {
         if (changeCallbacks_[i] == callback) {
             changeCallbacks_[i] = changeCallbacks_[changeCallbacks_.size() - 1];

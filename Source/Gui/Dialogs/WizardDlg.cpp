@@ -1428,8 +1428,8 @@ bool CWizardDlg::executeFunc(CString funcBody)
 
     if (!IsWindowEnabled())LaunchCopy = true;
 
-    CString funcName = StringSection(funcBody, _T(','), 0);
-    CString funcParam1 = StringSection(funcBody, _T(','), 1);
+    CString funcName = WinUtils::StringSection(funcBody, _T(','), 0);
+    CString funcParam1 = WinUtils::StringSection(funcBody, _T(','), 1);
 
     if (!funcParam1.IsEmpty()) {
         m_bScreenshotFromTray = _ttoi(funcParam1);
