@@ -879,6 +879,9 @@
     <ClInclude Include="Source\Gui\Components\NewStyleFileSaveDialog.h">
       <Filter>Source Files\Gui\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Gui\Controls\HyperLinkControlAccessible.h">
+      <Filter>Source Files\Gui\Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1928,6 +1931,9 @@
     </ClCompile>
     <ClCompile Include="Source\Gui\Components\NewStyleFileSaveDialog.cpp">
       <Filter>Source Files\Gui\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\Controls\HyperLinkControlAccessible.cpp">
+      <Filter>Source Files\Gui\Controls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

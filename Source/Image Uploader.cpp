@@ -71,7 +71,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
     bool BecomeTray = false;
     if ( Settings.ShowTrayIcon && !CmdLine.IsOption( _T("tray") ) ) {
-        if ( !IsRunningFloatingWnd() ) {
+        if (!CFloatingWindow::IsRunningFloatingWnd()) {
             BecomeTray = true;
             CmdLine.AddParam( _T("/tray") );
         }    
@@ -80,7 +80,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
     bool bCreateFloatingWindow = false;
 
     if ( CmdLine.IsOption( _T("tray") ) || BecomeTray ) {
-        if ( !IsRunningFloatingWnd() ) {
+        if (!CFloatingWindow::IsRunningFloatingWnd()) {
             bCreateFloatingWindow = true;
             ShowMainWindow        = BecomeTray;    
         } else {

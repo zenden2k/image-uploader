@@ -106,6 +106,7 @@ CCmdLine &CCmdLine::operator=(const CCmdLine& p)
 {
     if (this != &p) {
         params_ = p.params_;
+        onlyParams_ = p.onlyParams_;
     }
     return *this;
 }

@@ -57,6 +57,8 @@ public:
         MSG_WM_LBUTTONUP(OnLButtonUp)
         MSG_WM_KEYDOWN(OnKeyUp)
         MSG_WM_SETCURSOR(OnSetCursor)
+        MESSAGE_HANDLER_EX(WM_GETOBJECT, OnGetObject)
+        MESSAGE_HANDLER(WM_GETDLGCODE, OnGetDlgCode)
     END_MSG_MAP()
 
     // Handler prototypes:
@@ -75,24 +77,34 @@ public:
     LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     BOOL OnSetCursor(CWindow wnd, UINT nHitTest, UINT message);
     LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnGetObject(UINT, WPARAM wParam, LPARAM lParam);
+    LRESULT OnGetDlgCode(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     void Init(COLORREF BkColor=RGB(255,255,255));
+    size_t ItemCount() const;
+    CString GetItemTitle(size_t item) const;
+    CString GetItemDescription(size_t item) const;
+    CRect GetItemRect(int itemIndex) const;
+    int SelectedIndex() const;
+    int ItemFromPoint(POINT pt) const;
     int ScaleX(int x);
     int ScaleY(int y);
     bool m_bHyperLinks;
     int NotifyParent(int nItem);
+    void SelectItem(int Index);
     int Selected;
     CAtlArray<HyperLinkControlItem> Items;
 protected:
     int BottomY, SubItemRightY;
     CFont BoldFont, UnderlineFont,BoldUnderLineFont;
 
-    void SelectItem(int Index);
+   
     bool CursorHand;
     HCURSOR HandCursor;
     CFont NormalFont;
     COLORREF m_BkColor;
     int dpiX;
     int dpiY;
+    CComPtr<IAccessible> acc_;
 };
 
 

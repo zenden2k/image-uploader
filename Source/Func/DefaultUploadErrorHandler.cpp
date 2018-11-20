@@ -7,6 +7,7 @@
 
 DefaultUploadErrorHandler::DefaultUploadErrorHandler(ILogger* logger) {
     logger_ = logger;
+    responseFileIndex_ = 0;
 }
 
 
@@ -49,7 +50,7 @@ void DefaultUploadErrorHandler::ErrorMessage(ErrorInfo errorInfo)
         logger_->write(type, sender, errorMsg, infoText);
 }
 
-int responseFileIndex = 1;
+
 
 void DefaultUploadErrorHandler::DebugMessage(const std::string& msg, bool isResponseBody)
 {
@@ -63,7 +64,7 @@ void DefaultUploadErrorHandler::DebugMessage(const std::string& msg, bool isResp
         if (TextViewDlg.DoModal(GetActiveWindow()) == IDOK) {
             CFileDialog fd(false, 0, 0, 4 | 2, _T("*.html\0*.html\0\0"), GetActiveWindow());
             CString fileName;
-            fileName.Format(_T("response_%02d.html"), responseFileIndex++);
+            fileName.Format(_T("response_%02d.html"), responseFileIndex_++);
             lstrcpy(fd.m_szFileName, fileName);
             if (fd.DoModal() == IDOK) {
                 FILE* f = _tfopen(fd.m_szFileName, _T("wb"));

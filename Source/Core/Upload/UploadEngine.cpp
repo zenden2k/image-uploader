@@ -19,7 +19,9 @@
 */
 
 #include "UploadEngine.h"
+
 #include <stdlib.h>
+
 #include "Core/Utils/StringUtils.h"
 #include "Core/Upload/ServerSync.h"
 
@@ -39,9 +41,8 @@ CUploadEngineList_Base::CUploadEngineList_Base()
 CUploadEngineData* CUploadEngineList_Base::byIndex(size_t index) {
     if ( index < m_list.size() ) {
         return &m_list[index];
-    } else {
-        return NULL;
-    }
+    } 
+    return nullptr;
 }
 
 int CUploadEngineList_Base::count()
@@ -99,6 +100,13 @@ int CUploadEngineList_Base::GetUploadEngineIndex(const std::string Name)
             return i;
     }
     return -1;
+}
+
+std::vector<CUploadEngineData>::const_iterator CUploadEngineList_Base::begin() const {
+    return m_list.begin();
+}
+std::vector<CUploadEngineData>::const_iterator CUploadEngineList_Base::end() const {
+    return m_list.end();
 }
 
 /* CAbstractUploadEngine */

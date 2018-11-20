@@ -25,11 +25,12 @@
 #include <vector>
 #include <string>
 #include <map>
+
 #include "Core/3rdpart/FastDelegate.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Network/NetworkClient.h"
 #include "CommonTypes.h"
-#include <Core/Scripting/API/UploadTaskWrappers.h>
+#include "Core/Scripting/API/UploadTaskWrappers.h"
 
 class ServerSync;
 
@@ -288,6 +289,8 @@ public:
     int getRandomImageServer();
     int getRandomFileServer();
     int GetUploadEngineIndex(const std::string Name);
+    std::vector<CUploadEngineData>::const_iterator begin() const;
+    std::vector<CUploadEngineData>::const_iterator end() const;
 protected:
     std::vector<CUploadEngineData> m_list;
 private:

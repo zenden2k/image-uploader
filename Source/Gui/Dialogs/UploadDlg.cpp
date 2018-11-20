@@ -142,7 +142,7 @@ bool CUploadDlg::startUpload() {
         uploadListView_.AddItem(i, 1, TR("Queued"));
         uploadListView_.SetItemData(i, reinterpret_cast<DWORD_PTR>(fps));
         bool isImage = IuCommonFunctions::IsImage(FileName);
-        std::shared_ptr<FileUploadTask> task(new FileUploadTask(fileNameA, displayName));
+        auto task = std::make_shared<FileUploadTask>(fileNameA, displayName);
         task->OnUploadProgress.bind(this, &CUploadDlg::onTaskUploadProgress);
         task->setUserData(fps);
         task->setIndex(i);

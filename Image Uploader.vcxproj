@@ -779,6 +779,7 @@
     <ClInclude Include="Source\Gui\Components\NewStyleFileSaveDialog.h" />
     <ClInclude Include="Source\Gui\Components\NewStyleFolderDialog.h" />
     <ClInclude Include="Source\Gui\Components\OldStyleFileDialog.h" />
+    <ClInclude Include="Source\Gui\Controls\HyperLinkControlAccessible.h" />
     <ClInclude Include="Source\Gui\Controls\ImageView.h" />
     <ClInclude Include="Source\Gui\Controls\ResultsListView.h" />
     <ClInclude Include="Source\Gui\Dialogs\ClearHistoryDlg.h" />
@@ -1149,6 +1150,7 @@
     <ClCompile Include="Source\Gui\Components\NewStyleFileDialog.cpp" />
     <ClCompile Include="Source\Gui\Components\NewStyleFileSaveDialog.cpp" />
     <ClCompile Include="Source\Gui\Components\OldStyleFileDialog.cpp" />
+    <ClCompile Include="Source\Gui\Controls\HyperLinkControlAccessible.cpp" />
     <ClCompile Include="Source\Gui\Controls\ImageView.cpp" />
     <ClCompile Include="Source\Gui\Controls\ResultsListView.cpp" />
     <ClCompile Include="Source\Gui\Dialogs\ClearHistoryDlg.cpp" />

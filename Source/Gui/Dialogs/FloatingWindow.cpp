@@ -31,12 +31,11 @@
 #include "Func/WebUtils.h"
 #include "Func/WinUtils.h"
 #include "Core/Upload/UrlShorteningTask.h"
-#include "Func/IuCommonFunctions.h"
 #include "Gui/GuiTools.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Func/myutils.h"
 #include "Gui/Dialogs/WizardDlg.h"
-#include <Core/ScreenCapture/Utils.h>
+#include "Core/ScreenCapture/Utils.h"
 
 // FloatingWindow
 CFloatingWindow::CFloatingWindow()
@@ -526,18 +525,6 @@ LRESULT CFloatingWindow::OnTimer(UINT id)
     return 0;
 }
 
-inline BOOL SetOneInstance(LPCTSTR szName)
-{
-    HANDLE hMutex = NULL;
-    BOOL bFound = FALSE;
-    hMutex = ::CreateMutex(NULL, TRUE, szName);
-    if (GetLastError() == ERROR_ALREADY_EXISTS)
-        bFound = TRUE;
-    if (hMutex)
-        ::ReleaseMutex(hMutex);
-    return bFound;
-}
-
 CFloatingWindow floatWnd;
 
 void CFloatingWindow::CreateTrayIcon()
@@ -557,8 +544,7 @@ void CFloatingWindow::CreateTrayIcon()
     }
 }
 
-BOOL IsRunningFloatingWnd()
-{
+BOOL CFloatingWindow::IsRunningFloatingWnd() {
     HANDLE hMutex = NULL;
     BOOL bFound = FALSE;
     hMutex = ::CreateMutex(NULL, TRUE, _T("ImageUploader_TrayWnd_Mutex"));
@@ -666,19 +652,16 @@ LRESULT CFloatingWindow::OnScreenshotActionChanged(WORD wNotifyCode, WORD wID, H
     return 0;
 }
 
-
-
-
 void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& displayName)
 {
-    FileUploadTask *  task(new FileUploadTask(W2U(realName), W2U(displayName)));
+    auto task = std::make_shared<FileUploadTask>(W2U(realName), W2U(displayName));
     task->setIsImage(true);
     //std::shared_ptr<UploadSession> uploadSession(new UploadSession());
     task->setServerProfile(Settings.quickScreenshotServer);
     task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CFloatingWindow::OnFileFinished));
     task->setUrlShorteningServer(Settings.urlShorteningServer);
 
-    uploadManager_->addTask(std::shared_ptr<UploadTask>(task));
+    uploadManager_->addTask(task);
     uploadManager_->start();
 
     CString msg;

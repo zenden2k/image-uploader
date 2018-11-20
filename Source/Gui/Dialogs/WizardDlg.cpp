@@ -2079,7 +2079,8 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
             else if(m_bScreenshotFromTray && (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD || dialogResult == ImageEditorWindow::drUpload))
             {
                 Result = false;
-                floatWnd.UploadScreenshot(buf,buf);
+                CString displayFileName = WinUtils::myExtractFileName(buf);
+                floatWnd.UploadScreenshot(buf, displayFileName);
             }
         }
         else

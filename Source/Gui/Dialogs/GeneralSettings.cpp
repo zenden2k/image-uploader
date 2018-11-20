@@ -76,7 +76,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     TRC(IDC_CHECKUPDATES, "Automatically check for updates");
     SetDlgItemText(IDC_IMAGEEDITORPATH, Settings.ImageEditorPath);
     
-
+    GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_BROWSEBUTTON), TR("Choose executable file"));
     TCHAR buf[MAX_PATH];
     CString buf2;
 

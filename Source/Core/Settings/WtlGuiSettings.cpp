@@ -679,7 +679,7 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     if (ShowTrayIcon_changed) {
         ShowTrayIcon_changed = false;
         if (ShowTrayIcon) {
-            if (!IsRunningFloatingWnd()) {
+            if (!CFloatingWindow::IsRunningFloatingWnd()) {
                 CmdLine.AddParam(_T("/tray"));
                 floatWnd.CreateTrayIcon();
             }

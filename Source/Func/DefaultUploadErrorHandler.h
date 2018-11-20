@@ -13,5 +13,6 @@ public:
     virtual void DebugMessage(const std::string& msg, bool isResponseBody) override;
 protected:
     ILogger* logger_;
+    int responseFileIndex_;
 };
 #endif

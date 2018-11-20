@@ -30,8 +30,6 @@
 #include <memory>
 #include "Gui/Components/trayicon.h"
 #include "SettingsDlg.h"
-#include "TraySettings.h"
-#include "Core/Upload/FileQueueUploader.h"
 #include "Core/Upload/UploadManager.h"
 #include "Core/Upload/UrlShorteningTask.h"
 
@@ -205,6 +203,8 @@ public:
      void startIconAnimation();
      void stopIconAnimation();
      void showLastUploadedCode();
+     static BOOL IsRunningFloatingWnd();
+
      bool animationEnabled_;
 
      CString fileName, realFileName;
@@ -237,7 +237,7 @@ public:
 };
 extern CFloatingWindow floatWnd;
 void CreateFloatWindow();
-BOOL IsRunningFloatingWnd();
+
 
 #endif // FLOATINGWINDOW_H
 

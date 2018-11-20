@@ -22,6 +22,7 @@
 
 #include "Func/Common.h"
 #include "Gui/GuiTools.h"
+#include "HyperLinkControlAccessible.h"
 
 // CHyperLinkControl
 CHyperLinkControl::CHyperLinkControl()
@@ -61,6 +62,57 @@ void CHyperLinkControl::Init(COLORREF BkColor)
     m_BkColor = BkColor;
     OpenThemeData();
 }
+
+size_t CHyperLinkControl::ItemCount() const {
+    return Items.GetCount();
+}
+
+CString CHyperLinkControl::GetItemTitle(size_t item) const {
+    if (item >= 0 && item < Items.GetCount()) {
+        return Items[item].szTitle; 
+    }
+    return CString();
+}
+
+CString CHyperLinkControl::GetItemDescription(size_t item) const {
+    if (item >= 0 && item < Items.GetCount()) {
+        return Items[item].szTip;
+    }
+    return CString();
+}
+
+CRect CHyperLinkControl::GetItemRect(int itemIndex) const {
+    if (itemIndex >= 0 && itemIndex < Items.GetCount()) {
+        return Items[itemIndex].ItemRect;
+    }
+    return CRect();
+}
+
+int CHyperLinkControl::SelectedIndex() const {
+    return Selected;
+}
+
+int CHyperLinkControl::ItemFromPoint(POINT pt) const {
+    RECT ClientRect;
+    GetClientRect(&ClientRect);
+
+    for (size_t i = 0; i< Items.GetCount(); i++) {
+        if (!Items[i].Visible) {
+            continue;
+        }
+        CRect rc(Items[i].ItemRect);
+        if (!m_bHyperLinks && *Items[i].szTip) {
+            rc.right = ClientRect.right - 6;
+            rc.InflateRect(3, 6);
+        }
+
+        if (rc.PtInRect(pt)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 
 int GetTextWidth(HDC dc, LPCTSTR Text, HFONT Font)
 {
@@ -246,22 +298,29 @@ LRESULT CHyperLinkControl::OnLButtonUp(UINT Flags, CPoint Pt)
 
 LRESULT CHyperLinkControl::OnKeyUp(TCHAR vk, UINT cRepeat, UINT flags)
 {
-    if (vk==VK_DOWN)
+    if (vk == VK_DOWN || (vk == VK_TAB && !(GetKeyState(VK_SHIFT) & 0x80)))
     {
-        int NewSelect = (Selected+1)%Items.GetCount();
-        if(!Items[NewSelect].Visible) 
-            NewSelect = (NewSelect+1)%Items.GetCount();
-        SelectItem( NewSelect);
+        bool itemSelected = false;
+        for (int j = Selected + 1; j < Items.GetCount(); j++) {
+            if (Items[j].Visible) {
+                SelectItem(j);
+                itemSelected = true;
+                break;
+            }
+        }
+       
     }
 
-    else if (vk==VK_UP)
+    else if (vk == VK_UP || (vk == VK_TAB && (GetKeyState(VK_SHIFT) & 0x80)))
     {
-        int NewSelect=Selected-1;
-        if(NewSelect<0) NewSelect=Items.GetCount()-1;
-        if(!Items[NewSelect].Visible) NewSelect--;
-
-
-        SelectItem(NewSelect);
+        bool itemSelected = false;
+        for (int j = Selected - 1; j >=0 ; j--) {
+            if (Items[j].Visible) {
+                SelectItem(j);
+                itemSelected = true;
+                break;
+            }
+        }
     }
 
     if (vk==VK_RETURN || vk==VK_SPACE)
@@ -432,6 +491,46 @@ LRESULT CHyperLinkControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
         }
     }
     return 0;
+}
+
+LRESULT CHyperLinkControl::OnGetObject(UINT, WPARAM wParam, LPARAM lParam) {
+    if (lParam == OBJID_CLIENT) {
+        if (acc_ == nullptr) {
+            CHyperLinkControlAccessible::Create(this, &acc_);
+        }
+        return LresultFromObject(__uuidof(*acc_), wParam, acc_);
+    } else {
+        SetMsgHandled(FALSE);
+        return 0;
+    }
+}
+
+LRESULT CHyperLinkControl::OnGetDlgCode(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    LRESULT retFlags = DLGC_WANTARROWS | DLGC_DEFPUSHBUTTON;
+    if (wParam == VK_RETURN ) {
+        if (Selected != -1) {
+            //NotifyParent(Selected);
+            retFlags |= DLGC_DEFPUSHBUTTON;
+        }
+    } else if (wParam == VK_TAB ) {
+        if (!(GetKeyState(VK_SHIFT) & 0x80)) {
+            for (int j = Selected + 1; j < Items.GetCount(); j++) {
+                if (Items[j].Visible) {
+                    //SelectItem(j);
+                    retFlags |= DLGC_WANTTAB;
+                    break;
+                }
+            }
+        } else {
+            for (int j = Selected - 1; j >= 0; j--) {
+                if (Items[j].Visible) {
+                    retFlags |= DLGC_WANTTAB;
+                    break;
+                }
+            }
+        }
+    }
+    return retFlags;
 }
 
 int CHyperLinkControl::ScaleX(int x) 

@@ -42,14 +42,6 @@ class CCmdLine
         size_t GetCount() const;
         std::vector<CString>::const_iterator begin() const;
         std::vector<CString>::const_iterator end() const;
-        /**int * begin()
-        {
-            return &v[0];
-        }
-        int * end()
-        {
-            return &v[10];
-        }*/
     private:
         std::vector<CString> params_;
         CString onlyParams_;

@@ -41,8 +41,8 @@ CMyEngineList::CMyEngineList() :dllModule_(_T("comctl32.dll"))
 
 CMyEngineList::~CMyEngineList()
 {
-    for ( std::map<std::string, HICON>::iterator it = serverIcons_.begin(); it != serverIcons_.end(); ++it) {
-        DestroyIcon(it->second);
+    for ( const auto& it: serverIcons_) {
+        DestroyIcon(it.second);
     }
 }
 
@@ -74,7 +74,7 @@ bool CMyEngineList::loadFromFile(const CString& filename)
 
 
 HICON CMyEngineList::getIconForServer(const std::string& name) {
-    std::map<std::string, HICON>::iterator iconIt = serverIcons_.find(name);
+    auto iconIt = serverIcons_.find(name);
     if ( iconIt != serverIcons_.end() )
         return iconIt->second;
     
