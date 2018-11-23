@@ -60,6 +60,7 @@ class TextParamsWindow : public CDialogImpl<TextParamsWindow>
     protected:
         BEGIN_MSG_MAP(CTextParamsWindow)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
             MESSAGE_HANDLER(WM_CLOSE, OnClose)
             COMMAND_HANDLER(IDC_FONTCOMBO, CBN_SELCHANGE, OnFontSelChange);
             COMMAND_HANDLER(IDC_FONTSIZECOMBO, CBN_SELCHANGE, OnFontSizeSelChange);
@@ -81,6 +82,7 @@ class TextParamsWindow : public CDialogImpl<TextParamsWindow>
         LRESULT OnBoldClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnItalicClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnUnderlineClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
         CToolBarCtrl textToolbar_;
         void OnFontEnumerationFinished();
@@ -94,5 +96,6 @@ class TextParamsWindow : public CDialogImpl<TextParamsWindow>
         void NotifyParent(DWORD changeMask);
         std::vector<LOGFONT> fonts_;
         CIcon iconBold_, iconItalic_, iconUnderline_;
+		HDC windowDc_;
         friend class CustomEdit;
 };

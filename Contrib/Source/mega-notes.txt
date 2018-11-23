@@ -1,10 +1,29 @@
-﻿Сборка на Windows:
+﻿Необходимо пропатчить MEGA SDK перед сборкой:
+megaapi.h:123
+
+   virtual bool readBitmap(const char* path); 
+заменить на 
+   virtual bool readBitmap(const std::&string path);  
+
+megaapi.cpp
+bool MegaGfxProcessor::readBitmap(const char* /*path*/)
+заменить на
+bool MegaGfxProcessor::readBitmap(const std::string& /*path*/)
+
+external.cpp
+заменить
+bool result = processor->readBitmap(localname->c_str());
+на
+bool result = processor->readBitmap(*localname);
+
+Сборка на Windows:
 Необходимо собрать 2 версии release:
 c дефайном USE_OPENSSL и без
 (mega_openssl.lib и mega.lib)
 
 Библиотека mega должна быть собрана с выключенной опцией ENABLE_CHAT
 и с включенной опцией ENABLE_SYNC, несоответствие настроек вызовет падение
+
 
 Building on Ubuntu:
 sh autogen.sh
