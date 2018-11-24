@@ -337,7 +337,6 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
     RememberImageServer = true;
     RememberFileServer = true;
 
-    ShowUploadErrorDialog = true;
     AutomaticallyCheckUpdates = true;
 
     ImageEditorPath = _T("mspaint.exe \"%1\"");
@@ -826,7 +825,6 @@ void WtlGuiSettings::BindToManager() {
     upload.n_bind(UseTxtTemplate);
     upload.n_bind(DropVideoFilesToTheList);
     upload.n_bind(CodeType);
-    upload.n_bind(ShowUploadErrorDialog);
     upload.n_bind(MaxThreads);
     upload.n_bind(ScriptFileName);
     upload.n_bind(ExecuteScript);

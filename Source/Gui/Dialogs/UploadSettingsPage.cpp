@@ -50,7 +50,6 @@ void CUploadSettingsPage::TranslateUI()
     TRC(IDC_PASSWORDLABEL, "Password:");
     TRC(IDC_AUTOCOPYTOCLIPBOARD, "Copy automatically results to clipboard");
     TRC(IDC_UPLOADERRORLABEL, "Uploading errors");
-    TRC(IDC_IGNOREERRORS, "Show dialog box in case of error");
     TRC(IDC_RETRIES1LABEL, " Num of retries per file:");
     TRC(IDC_RETRIES2LABEL, "Num of retries per action:");
     TRC(IDC_UPLOADBUFFERLABEL, "Upload Buffer Size:");

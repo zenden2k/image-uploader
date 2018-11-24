@@ -132,7 +132,6 @@ public:
     CString getFileServerName();
     CString getSettingsFileName() const;
 
-    bool ShowUploadErrorDialog;
     CString getShellExtensionFileName() const;
 
     void ApplyRegSettingsRightNow();

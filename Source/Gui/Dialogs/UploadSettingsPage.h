@@ -57,7 +57,6 @@ virtual ~CUploadSettingsPage();
         DDX_CONTROL_HANDLE(IDC_SERVERTYPECOMBO, serverTypeCombo_)
         DDX_INT(IDC_FILERETRYLIMIT, Settings.FileRetryLimit)
         DDX_INT(IDC_ACTIONRETRYLIMIT, Settings.ActionRetryLimit)
-        DDX_CHECK(IDC_IGNOREERRORS,Settings.ShowUploadErrorDialog)
     END_DDX_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
