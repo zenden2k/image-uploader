@@ -4,6 +4,7 @@
 #pragma once
 #include <queue>
 #include <map>
+#include <mutex>
 #include "atlheaders.h"
 #include <atltheme.h>
 #include <atlmisc.h>
@@ -92,6 +93,7 @@ class CHistoryTreeControl :
         LRESULT OnLButtonDoubleClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         HBITMAP GetItemThumbnail(HistoryTreeItem* item);
         std::deque<HistoryTreeItem*> m_thumbLoadingQueue;
+        std::mutex m_thumbLoadingQueueMutex;
         std::unique_ptr<CFileDownloader> m_FileDownloader;
         bool OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it);
         void DownloadThumb(HistoryTreeItem* it);
@@ -100,4 +102,5 @@ class CHistoryTreeControl :
         void QueueFinishedEvent();
         void threadsFinished();
         void OnConfigureNetworkClient(NetworkClient* nm);
+        static void CHistoryTreeControl::DrawBitmap(HDC hdc, HBITMAP bmp, int x, int y);
 };

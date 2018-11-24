@@ -29,7 +29,7 @@
 #include "Func/WinUtils.h"
 #include "Core/LocalFileCache.h"
 #include "Core/Images/Utils.h"
-#include <Core/AppParams.h>
+#include "Core/AppParams.h"
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl()
@@ -37,7 +37,6 @@ CHistoryTreeControl::CHistoryTreeControl()
     m_thumbWidth = 56;
     m_SessionItemHeight = 0;
     m_SubItemHeight = 0;
-    m_FileDownloader = 0;
     downloading_enabled_ = true;
     m_bIsRunning = false;
 }    
@@ -82,6 +81,9 @@ LRESULT CHistoryTreeControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,B
 
 void CHistoryTreeControl::abortLoadingThreads()
 {
+    m_thumbLoadingQueueMutex.lock();
+    m_thumbLoadingQueue.clear();
+    m_thumbLoadingQueueMutex.unlock();
     if(IsRunning())
     {
         SignalStop();
@@ -104,6 +106,7 @@ void CHistoryTreeControl::abortLoadingThreads()
     if(IsRunning())
     {
         SignalStop();
+        // deadlocks
         /*if(!WaitForThread(2100))
         {
             Terminate();
@@ -129,7 +132,7 @@ void CHistoryTreeControl::Clear()
 void CHistoryTreeControl::addSubEntry(TreeItem* res, HistoryItem it, bool autoExpand)
 {
     HistoryTreeItem * it2 = new HistoryTreeItem();
-    TreeItem *item = AddSubItem(Utf8ToWCstring(IuCoreUtils:: timeStampToString(it.timeStamp)+ " "+ it.localFilePath), res, it2, autoExpand);
+    TreeItem *item = AddSubItem(Utf8ToWCstring(IuCoreUtils::timeStampToString(it.timeStamp)+ " "+ it.localFilePath), res, it2, autoExpand);
     item->setCallback(this);
     it2->hi = it;
     it2->thumbnail = 0;
@@ -150,14 +153,18 @@ HistoryItem* CHistoryTreeControl::getItemData(TreeItem* res)
     return reinterpret_cast<HistoryItem*> (res->userData());
 }
 
-HICON CHistoryTreeControl::getIconForExtension(const CString& ext)
+HICON CHistoryTreeControl::getIconForExtension(const CString& fileName)
 {
-    auto it = m_fileIconCache.find(ext);
+    CString ext = WinUtils::GetFileExt(fileName);
+    if (ext.IsEmpty()) {
+        return nullptr;
+    }
+    auto const it = m_fileIconCache.find(ext);
     if (it != m_fileIconCache.end()) {
         return it->second;
     }
 
-    HICON res = GetAssociatedIcon(ext, false);
+    HICON res = GetAssociatedIcon(fileName, false);
     if(!res) return 0;
     m_fileIconCache[ext]=res;
     return res;
@@ -185,7 +192,9 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     {
         serverName  = ses->entry(0).serverName;
     }
-        if(serverName.empty()) serverName = "unknown server";
+    if (serverName.empty()) {
+        serverName = "unknown server";
+    }
     std::string lowText = serverName+ " (" + IuCoreUtils::toString(ses->entriesCount())+" files)"; 
     CString text = Utf8ToWCstring(label);
 
@@ -329,7 +338,7 @@ int CHistoryTreeControl::CalcItemHeight(TreeItem* item)
     return res;
 }
 
-void DrawBitmap(HDC hdc, HBITMAP bmp, int x, int y)
+void CHistoryTreeControl::DrawBitmap(HDC hdc, HBITMAP bmp, int x, int y)
 {
     HDC hdcMem = CreateCompatibleDC(hdc);
     BITMAP bm;
@@ -655,7 +664,8 @@ HBITMAP CHistoryTreeControl::GetItemThumbnail(HistoryTreeItem* item)
 {
     if(item->thumbnail!=0)
         return item->thumbnail;
-    if(m_bStopped) return 0;
+
+    if (m_bStopped) return 0;
     if(item->ThumbnailRequested) return 0;
 
     item->ThumbnailRequested = true;
@@ -670,7 +680,9 @@ HBITMAP CHistoryTreeControl::GetItemThumbnail(HistoryTreeItem* item)
 
     if(IuCoreUtils::FileExists(stdLocalFileName))
     {
+        m_thumbLoadingQueueMutex.lock();
         m_thumbLoadingQueue.push_back(item);
+        m_thumbLoadingQueueMutex.unlock();
         StartLoadingThumbnails();
     }
     else
@@ -687,11 +699,13 @@ void CHistoryTreeControl::DownloadThumb(HistoryTreeItem * it)
     {
         std::string thumbUrl = it->hi.thumbUrl;
         if(thumbUrl.empty()) return ;
-        std::string cacheFile =     ServiceLocator::instance()->localFileCache()->get(thumbUrl);
+        std::string cacheFile = ServiceLocator::instance()->localFileCache()->get(thumbUrl);
         if(!cacheFile.empty() && IuCoreUtils::FileExists(cacheFile))
         {
             it->thumbnailSource = cacheFile;
+            m_thumbLoadingQueueMutex.lock();
             m_thumbLoadingQueue.push_back(it);
+            m_thumbLoadingQueueMutex.unlock();
             StartLoadingThumbnails();
             return;
         }
@@ -710,8 +724,10 @@ DWORD CHistoryTreeControl::Run()
     while(!m_thumbLoadingQueue.empty())
     {
         if(m_bStopped) break;
+        m_thumbLoadingQueueMutex.lock();
         HistoryTreeItem * it = m_thumbLoadingQueue.front();
         m_thumbLoadingQueue.pop_front();
+        m_thumbLoadingQueueMutex.unlock();
         if(!LoadThumbnail(it) && it->thumbnailSource.empty())
         {
             // Try downloading it
@@ -744,14 +760,14 @@ bool CHistoryTreeControl::OnFileFinished(bool ok, int statusCode, CFileDownloade
     if(ok && !it.fileName.empty())
     {
         HistoryTreeItem * hit = reinterpret_cast<HistoryTreeItem*> (it.id);
-        if(!hit)
-        {
-            //MessageBox(Utf8ToWCstring(it.url));
+        if(hit) {
+            hit->thumbnailSource = it.fileName;
+            ServiceLocator::instance()->localFileCache()->addFile(it.url, it.fileName);
+            m_thumbLoadingQueueMutex.lock();
+            m_thumbLoadingQueue.push_back(hit);
+            m_thumbLoadingQueueMutex.unlock();
+            StartLoadingThumbnails();
         }
-        hit->thumbnailSource = it.fileName;
-        ServiceLocator::instance()->localFileCache()->addFile(it.url, it.fileName);
-        m_thumbLoadingQueue.push_back(hit);
-        StartLoadingThumbnails();
     }
     return true;
 }
@@ -759,14 +775,25 @@ bool CHistoryTreeControl::OnFileFinished(bool ok, int statusCode, CFileDownloade
 void CHistoryTreeControl::OnTreeItemDelete(TreeItem* item)
 {
     HistoryTreeItem* hti = reinterpret_cast<HistoryTreeItem*> (item->userData());
+    if (!hti) {
+        return;
+    }
     HBITMAP bm = hti->thumbnail;
     if(bm) DeleteObject(bm);
+    if (!m_thumbLoadingQueue.empty()) {
+        LOG(WARNING) << "m_thumbLoadingQueue is not empty";
+    } 
+    item->setUserData(nullptr);
     delete hti;
+    
+    
 }
 
 void CHistoryTreeControl::threadsFinished()
 {
+    m_thumbLoadingQueueMutex.lock();
     m_thumbLoadingQueue.clear();
+    m_thumbLoadingQueueMutex.unlock();
     if(onThreadsFinished)
     onThreadsFinished();
 }
@@ -794,6 +821,9 @@ void CHistoryTreeControl::ResetContent()
         //MessageBox(_T("Cannot reset list while threads are still running!"));
         return;
     }
+    m_thumbLoadingQueueMutex.lock(); 
+    m_thumbLoadingQueue.clear();
+    m_thumbLoadingQueueMutex.unlock();
     CCustomTreeControlImpl<CHistoryTreeControl>::ResetContent();
 }
 

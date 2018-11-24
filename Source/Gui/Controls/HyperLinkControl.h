@@ -57,8 +57,8 @@ public:
         MSG_WM_LBUTTONUP(OnLButtonUp)
         MSG_WM_KEYDOWN(OnKeyUp)
         MSG_WM_SETCURSOR(OnSetCursor)
-        MESSAGE_HANDLER_EX(WM_GETOBJECT, OnGetObject)
-        MESSAGE_HANDLER(WM_GETDLGCODE, OnGetDlgCode)
+        //MESSAGE_HANDLER_EX(WM_GETOBJECT, OnGetObject)
+        //MESSAGE_HANDLER(WM_GETDLGCODE, OnGetDlgCode)
     END_MSG_MAP()
 
     // Handler prototypes:
