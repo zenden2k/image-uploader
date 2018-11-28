@@ -375,7 +375,7 @@ bool CWizardDlg::ParseCmdLine()
         if ( CurrentParam == _T("/quickshot")  ) {
             m_bShowWindow=false;
             m_bHandleCmdLineFunc = true;
-            if(!executeFunc(_T("regionscreenshot")))
+            if(!executeFunc(_T("regionscreenshot"), true))
                 PostQuitMessage(0);
             return true;
         }
@@ -384,7 +384,7 @@ bool CWizardDlg::ParseCmdLine()
             m_bShowWindow=false;
             CString cmd = CurrentParam.Right(CurrentParam.GetLength()-6);
             m_bHandleCmdLineFunc = true;
-            if(!executeFunc(cmd))
+            if(!executeFunc(cmd, true))
                 PostQuitMessage(0);
             return true;
         } else if(CurrentParam .Left(15)==_T("/serverprofile=")) {
@@ -596,6 +596,10 @@ LRESULT CWizardDlg::OnPrevBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 LRESULT CWizardDlg::OnNextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     if(!::IsWindowVisible(hWndCtl)) return 0;
+    if (CurPage < 0) {
+        LOG(ERROR) << "Impossible situation";
+        return 0;
+    }
     if(!Pages[CurPage]->OnNext()) return 0;
     if(NextPage < 0)
     {
@@ -1418,7 +1422,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
     return true;
 }
 
-bool CWizardDlg::executeFunc(CString funcBody)
+bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
 {
     bool LaunchCopy = false;
 
@@ -1472,8 +1476,8 @@ bool CWizardDlg::executeFunc(CString funcBody)
         return funcWindowScreenshot(true);
     else if (funcName == _T("addfolder"))
         return funcAddFolder();
-    else if (funcName == _T("paste"))
-        return funcPaste();
+    else if (funcName == _T("fromclipboard") || funcName == _T("paste"))
+        return funcFromClipboard(fromCmdLine);
     else if (funcName == _T("settings"))
         return funcSettings();
     else if (funcName == _T("reuploadimages"))
@@ -1482,8 +1486,6 @@ bool CWizardDlg::executeFunc(CString funcBody)
         return funcShortenUrl();
     else if (funcName == _T("mediainfo"))
         return funcMediaInfo();
-    else if (funcName == _T("fromclipboard"))
-        return funcFromClipboard();
     else if (funcName == _T("open_screenshot_folder"))
         return funcOpenScreenshotFolder();
 
@@ -1736,12 +1738,12 @@ bool CWizardDlg::UnRegisterLocalHotkeys()
     return true;
 }
 
-bool CWizardDlg::funcPaste()
+/*bool CWizardDlg::funcPaste()
 {
     BOOL b;
     OnPaste(0,0,0,b);
     return true;
-}
+}*/
 
 bool CWizardDlg::funcSettings()
 {
@@ -2159,10 +2161,14 @@ bool CWizardDlg::funcOpenScreenshotFolder() {
     return false;
 }
 
-bool CWizardDlg::funcFromClipboard() {
+bool CWizardDlg::funcFromClipboard(bool fromCmdLine) {
     if (pasteFromClipboard()) {
         ShowWindow(SW_SHOW);
-        ShowPage(wpMainPage, 0, 3);
+        if (fromCmdLine && CmdLine.IsOption(_T("quick"))) {
+            ShowPage(wpUploadPage, wpMainPage);
+        } else {
+            ShowPage(wpMainPage, 0, 3);
+        }
         m_bShowWindow = true;
         return true;
     }

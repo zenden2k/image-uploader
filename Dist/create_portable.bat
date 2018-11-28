@@ -15,6 +15,7 @@ mkdir %temp_dir%
 mkdir %temp_dir%\Lang
 mkdir %temp_dir%\Data
 mkdir %temp_dir%\Modules
+mkdir %temp_dir%\Modules\MediaInfoLang
 mkdir %temp_dir%\Data\Thumbnails\
 mkdir %temp_dir%\Data\Favicons
 mkdir %temp_dir%\Data\Scripts
@@ -30,6 +31,7 @@ Copy "..\Build\release optimized\Image Uploader.exe" %temp_dir%\
 Copy "..\Lang\*.lng" %temp_dir%\Lang\
 Copy "..\Lang\English.lng.src" %temp_dir%\Lang\
 Copy "..\Build\release optimized\Modules\*" %temp_dir%\Modules\
+Copy "..\Build\release optimized\Modules\MediaInfoLang\*.csv" %temp_dir%\Modules\MediaInfoLang\
 xcopy "..\Docs" %temp_dir%\Docs\ /s /e /y /i
 Copy "..\Data\servers.xml" %temp_dir%\Data\
 Copy "..\Data\servers.xsd" %temp_dir%\Data\

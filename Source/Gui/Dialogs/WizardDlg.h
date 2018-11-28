@@ -213,7 +213,7 @@ public:
     bool funcFreeformScreenshot();
     bool funcWindowScreenshot(bool Delay=false);
     bool funcAddFolder();
-    bool funcPaste();
+    //bool funcPaste();
     bool funcSettings();
     bool funcMediaInfo();
     bool funcAddFiles();
@@ -221,9 +221,9 @@ public:
     bool funcReuploadImages();
     bool funcShortenUrl();
     bool funcOpenScreenshotFolder();
-    bool funcFromClipboard();
+    bool funcFromClipboard(bool fromCmdLine = false);
     // end of functions
-    bool executeFunc(CString funcName);
+    bool executeFunc(CString funcName, bool fromCmdLine = false);
 
 	bool importVideoFile(const CString& fileName, int prevPage = 0);
 
