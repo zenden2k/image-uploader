@@ -195,6 +195,7 @@ CHotkeyList::CHotkeyList()
     AddItem(TR("Shorten a link"),_T("shortenurl"), IDM_SHORTENURL);
     AddItem(TR("Shorten a link from the clipboard"),_T("shortenurlclipboard"), IDM_SHORTENURLCLIPBOARD);
     AddItem(TR("Reupload images"),_T("reuploadimages"), IDM_REUPLOADIMAGES);
+    AddItem(TR("Quick upload image from clipboard"),_T("uploadfromclipboard"), IDM_QUICKUPLOADFROMCLIPBOARD);
 }
 
 CHotkeyItem& CHotkeyList::getByFunc(const CString &func)

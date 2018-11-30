@@ -125,7 +125,11 @@ LRESULT CQuickSetupDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 }
 
 LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    defer<void> d([&] { // Run at function exit
+        ::EnableWindow(GetDlgItem(IDOK), TRUE); 
+    });
 
+    ::EnableWindow(GetDlgItem(IDOK), FALSE);
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     int serverComboElementIndex = serverComboBox_.GetCurSel();
     if ( serverComboElementIndex > 0 ) {

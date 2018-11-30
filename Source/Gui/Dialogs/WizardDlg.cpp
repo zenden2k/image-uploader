@@ -46,7 +46,7 @@
 #include "Func/WinUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Gui/Dialogs/QuickSetupDlg.h"
-#include <ImageEditor/Gui/ImageEditorWindow.h>
+#include "ImageEditor/Gui/ImageEditorWindow.h"
 #include "Func/ImageEditorConfigurationProvider.h"
 #include "Core/Logging.h"
 #include "Core/Images/Utils.h"
@@ -104,7 +104,7 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
     floatWnd.setUploadManager(uploadManager_);
     floatWnd.setUploadEngineManager(uploadEngineManager_);
     Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &CWizardDlg::settingsChanged));
-	win7JumpList_.reset(new Win7JumpList);
+    win7JumpList_ = std::make_unique<Win7JumpList>();
 }
 
 void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
@@ -188,7 +188,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     MediaInfoHelper::FindMediaInfoDllPath();
     SetWindowText(APPNAME);
 
-    CDC hdc = GetDC();
+    CWindowDC hdc(m_hWnd);
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
 

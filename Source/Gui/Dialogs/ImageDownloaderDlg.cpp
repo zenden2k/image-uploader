@@ -31,7 +31,8 @@
 #include "Core/AppParams.h"
 
 // CImageDownloaderDlg
-CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &initialBuffer) :m_FileDownloader(AppParams::instance()->tempDirectory())
+CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &initialBuffer)
+                                            :m_FileDownloader(AppParams::instance()->tempDirectory())                                    
 {
     m_WizardDlg = wizardDlg;
     m_InitialBuffer = initialBuffer;
@@ -219,8 +220,15 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloade
                 ServiceLocator::instance()->logger()->write(logError, _T("Image Downloader"), errorStr);
             }
         }
-        if(add)
-            SendMessage(m_WizardDlg->m_hWnd, WM_MY_ADDIMAGE, reinterpret_cast<WPARAM>(&ais),  0);
+        if (add) {
+            if (m_WizardDlg) {
+                SendMessage(m_WizardDlg->m_hWnd, WM_MY_ADDIMAGE, reinterpret_cast<WPARAM>(&ais), 0);
+            } else {
+                m_downloadedFiles.push_back(ais.RealFileName);
+            }
+            
+        }
+           
 
     }
     m_nFileDownloaded++;
@@ -314,6 +322,10 @@ void CImageDownloaderDlg::clipboardUpdated()
             ParseBuffer(str, false);
         }
     }
+}
+
+const std::vector<CString>& CImageDownloaderDlg::getDownloadedFiles() const {
+    return m_downloadedFiles;
 }
 
 int CImageDownloaderDlg::EmulateModal(HWND hWndParent, LPARAM dwInitParam)

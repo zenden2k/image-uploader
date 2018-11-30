@@ -150,7 +150,8 @@ void DrawRoundedRectangle(Gdiplus::Graphics* gr, Gdiplus::Rect r, int d, Gdiplus
     gp.AddArc(max(r.X + r.Width - d,r.X), r.Y, d, d, 270, 90);
     gp.AddArc(max(r.X, r.X + r.Width - d), max(r.Y, r.Y + r.Height - d), d, d, 0, 90);
     gp.AddArc(r.X, max(r.Y, r.Y + r.Height - d), d, d, 90, 90);
-    gp.AddLine(r.X, max(r.Y, r.Y + r.Height - d), r.X, min(r.Y + d/2, r.GetBottom()));
+    //gp.AddLine(r.X, max(r.Y, r.Y + r.Height - d), r.X, min(r.Y + d/2, r.GetBottom()));+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
     gp.CloseFigure();
     if ( br ) {
         gr->FillPath(br, &gp);

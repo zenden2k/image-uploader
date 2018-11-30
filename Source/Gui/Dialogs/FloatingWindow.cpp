@@ -36,6 +36,7 @@
 #include "Func/myutils.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Core/ScreenCapture/Utils.h"
+#include "Gui/Dialogs/ImageDownloaderDlg.h"
 
 // FloatingWindow
 CFloatingWindow::CFloatingWindow()
@@ -259,6 +260,52 @@ LRESULT CFloatingWindow::OnPasteFromWeb(WORD wNotifyCode, WORD wID, HWND hWndCtl
     return 0;
 }
 
+LRESULT CFloatingWindow::OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    if (m_bIsUploading) {
+        return 0;
+    }
+    if (IsClipboardFormatAvailable(CF_BITMAP) != 0 && OpenClipboard()) {
+
+        HBITMAP bmp = reinterpret_cast<HBITMAP>(GetClipboardData(CF_BITMAP));
+
+        if (bmp) {
+            CString filePath;
+            SIZE dim;
+            GetBitmapDimensionEx(bmp, &dim);
+            Bitmap bm(bmp, nullptr);
+            if (bm.GetLastStatus() == Ok) {
+                if (ImageUtils::MySaveImage(&bm, _T("clipboard"), filePath, 1, 100)) {
+                    CString fileName = WinUtils::myExtractFileName(filePath);
+                    UploadScreenshot(filePath, fileName);
+                }
+            }
+        }
+        CloseClipboard();
+
+    }
+
+
+    if (IsClipboardFormatAvailable(CF_UNICODETEXT)) {
+        CString url;
+        WinUtils::GetClipboardText(url);
+
+        if (!url.IsEmpty() && WebUtils::DoesTextLookLikeUrl(url)) {
+            CImageDownloaderDlg dlg(nullptr, url);
+            dlg.EmulateModal(m_hWnd);
+            const auto& downloadedFilesList = dlg.getDownloadedFiles();
+            if (!downloadedFilesList.empty()) {
+                CString filePath = downloadedFilesList[0];
+                CString fileName = WinUtils::myExtractFileName(filePath);
+                UploadScreenshot(filePath, fileName);
+            }
+            return true;
+            
+        }
+    }
+    
+    return 0;
+}
+
 LRESULT CFloatingWindow::OnScreenshotDlg(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     wizardDlg_->executeFunc(_T("screenshotdlg,2"));
@@ -387,16 +434,22 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         MyInsertMenu(TrayMenu, i++, IDM_UPLOADFILES, ShowHotkey("addimages", TR("Upload files") + CString(_T("..."))));
         MyInsertMenu(TrayMenu, i++, IDM_ADDFOLDERS, ShowHotkey("addfolder", TR("Upload folder") + CString(_T("..."))));
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        bool IsClipboard = false;
-
-        if (OpenClipboard())
+        bool isBitmapInClipboard = false;
+        bool urlInClipboard = false;
+        //if (OpenClipboard())
         {
-            IsClipboard = IsClipboardFormatAvailable(CF_BITMAP) != 0;
-            CloseClipboard();
+            isBitmapInClipboard = IsClipboardFormatAvailable(CF_BITMAP) != 0;
+            if (IsClipboardFormatAvailable(CF_UNICODETEXT)) {
+                CString url;
+                urlInClipboard = WinUtils::GetClipboardText(url) && WebUtils::DoesTextLookLikeUrl(url);
+            }
+            //CloseClipboard();
         }
-        if (IsClipboard)
-        {
+        if (isBitmapInClipboard) {
             MyInsertMenu(TrayMenu, i++, IDM_PASTEFROMCLIPBOARD, ShowHotkey("paste", TR("Paste")));
+        }
+        if (isBitmapInClipboard || urlInClipboard) {
+            MyInsertMenu(TrayMenu, i++, IDM_QUICKUPLOADFROMCLIPBOARD, ShowHotkey("uploadfromclipboard", TR("Quick upload image from clipboard")));
             MyInsertMenu(TrayMenu, i++, 0, 0);
         }
         MyInsertMenu(TrayMenu, i++, IDM_IMPORTVIDEO, ShowHotkey("importvideo", TR("Import Video File")));

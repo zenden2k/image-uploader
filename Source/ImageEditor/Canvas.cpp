@@ -230,7 +230,7 @@ void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOff
         bi.bmiHeader.biCompression = BI_RGB;
 
         bi.bmiHeader.biWidth = buffer_->GetWidth();
-        bi.bmiHeader.biHeight = -buffer_->GetHeight();
+        bi.bmiHeader.biHeight = -static_cast<LONG>(buffer_->GetHeight());
         bi.bmiHeader.biBitCount = 32;
         // Faster than Graphics::DrawImage and there is no tearing!
         /*int res =*/ SetDIBitsToDevice (dc, rectInWindowCoordinates.left,rectInWindowCoordinates.top,rect.right - rect.left, rect.bottom - rect.top, rect.left, rect.top, rect.top, rect.bottom - rect.top, source + rect.top * stride, &bi, DIB_RGB_COLORS );
@@ -371,7 +371,7 @@ void Canvas::endRoundingRadiusChanging(int radius) {
     UndoHistoryItem uhi;
     uhi.type = uitRoundingRadiusChanged;
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
-        if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i] ->getType() == etRoundedRectangle || elementsOnCanvas_[i]->getType() == etFilledRoundedRectangle) {
+        if ( elementsOnCanvas_[i]->isSelected() && (elementsOnCanvas_[i] ->getType() == etRoundedRectangle || elementsOnCanvas_[i]->getType() == etFilledRoundedRectangle)) {
             UndoHistoryItemElement uhie;
             uhie.penSize = originalRoundingRadius_;
             RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
@@ -848,7 +848,7 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
     canvasChanged_ = false;
     fullRender_ = false;
     updatedRect_ = Rect();
-    DWORD end = GetTickCount();
+    //DWORD end = GetTickCount();
 
     //LOG(WARNING) << "Render time: " << (end - start);
     //delete bufferedGr_;

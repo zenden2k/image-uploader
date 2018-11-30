@@ -26,6 +26,7 @@
 #include <cstdio>
 #include <string>
 #include <thread>
+#include <functional>
 
 #include "CoreTypes.h"
 
@@ -36,6 +37,17 @@ long round(float number);
 #ifdef _WIN32
 int gettimeofday(struct timeval * tp, struct timezone * tzp);
 #endif
+
+template <typename T>
+class defer {
+private:
+    std::function<T()> mFunctor;
+    defer& operator=(const defer&) = delete;
+    defer(const defer&) = delete;
+public:
+    defer(std::function<T()> functor) : mFunctor(functor) {}
+    ~defer() { mFunctor(); }
+};
 
 namespace IuCoreUtils
 {

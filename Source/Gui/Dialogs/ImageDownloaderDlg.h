@@ -40,8 +40,10 @@ class CImageDownloaderDlg:    public CDialogImpl <CImageDownloaderDlg>,
 {
     public:
         enum { IDD = IDD_IMAGEDOWNLOADER };
-        CImageDownloaderDlg(CWizardDlg *wizardDlg,const CString &initialBuffer);
+        CImageDownloaderDlg(CWizardDlg *wizardDlg /* can be nullptr */, const CString &initialBuffer);
         ~CImageDownloaderDlg();
+        const std::vector<CString>& getDownloadedFiles() const;
+        int EmulateModal(HWND hWndParent = ::GetActiveWindow(), LPARAM dwInitParam = NULL);
 
     protected:    
         BEGIN_MSG_MAP(CImageDownloaderDlg)
@@ -63,7 +65,7 @@ class CImageDownloaderDlg:    public CDialogImpl <CImageDownloaderDlg>,
             DLGRESIZE_CONTROL(IDC_IMAGEDOWNLOADERTIP, DLSZ_SIZE_X)
         END_DLGRESIZE_MAP()
         
-        int EmulateModal(HWND hWndParent = ::GetActiveWindow(), LPARAM dwInitParam = NULL);
+        
         BOOL EmulateEndDialog(int nRetCode);
         HWND PrevClipboardViewer;
         // Handler prototypes:
@@ -84,12 +86,12 @@ class CImageDownloaderDlg:    public CDialogImpl <CImageDownloaderDlg>,
         void OnQueueFinished();
         bool OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it);
         void clipboardUpdated();
-
         CMessageLoop m_loop;
         int m_retCode;
         CString m_FileName;
         CFileDownloader m_FileDownloader;
         CWizardDlg * m_WizardDlg;
+        std::vector<CString> m_downloadedFiles;
         int m_nFilesCount;
         int m_nFileDownloaded;
         CString m_InitialBuffer;
