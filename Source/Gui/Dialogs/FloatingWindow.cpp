@@ -281,7 +281,7 @@ LRESULT CFloatingWindow::OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, 
             }
         }
         CloseClipboard();
-
+        return 0;
     }
 
 

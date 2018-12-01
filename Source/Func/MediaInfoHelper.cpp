@@ -104,7 +104,7 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
     //MI.Option(__T("Complete"), __T("1"));
     if (enableLocalization) {
         TCHAR path[MAX_PATH];
-        WinUtils::ExtractFilePath(MediaInfoDllPath, path);
+        WinUtils::ExtractFilePath(MediaInfoDllPath, path, MAX_PATH);
         CString langDir = path + CString(_T("MediaInfoLang\\"));
         std::string locale = ServiceLocator::instance()->translator()->getCurrentLocale();
         CString lang = U2W(locale).Left(2);

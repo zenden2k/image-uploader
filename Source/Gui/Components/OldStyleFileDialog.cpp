@@ -28,7 +28,7 @@ CString COldStyleFileDialog::getFolderPath() {
         multiDlg_->GetDirectory(buffer, sizeof(buffer) / sizeof(TCHAR));
     } else {
         if (dlg_->m_szFileName[0]) {
-            WinUtils::ExtractFilePath(dlg_->m_szFileName, buffer);
+            WinUtils::ExtractFilePath(dlg_->m_szFileName, buffer, ARRAY_SIZE(buffer));
         }
     }
     return buffer;

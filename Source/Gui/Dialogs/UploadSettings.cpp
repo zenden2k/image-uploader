@@ -1010,7 +1010,10 @@ LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, H
 
     ServerProfile& serverProfile = ImageServer ? sessionImageServer_ : sessionFileServer_;
     CUploadEngineData *ue = serverProfile.uploadEngineData();
-    if(!ue->UsingPlugin) return false;
+    if (!ue->UsingPlugin && ue->Engine.empty()) {
+        MessageBox(TR("This server doesn't have any settings."), APPNAME, MB_ICONINFORMATION);
+        return false;
+    }
 
     CServerParamsDlg dlg(serverProfile, uploadEngineManager_);
     if ( dlg.DoModal() == IDOK) {

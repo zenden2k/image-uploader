@@ -136,6 +136,9 @@ LRESULT CLoginDlg::OnClickedUseIeCookies(WORD wNotifyCode, WORD wID, HWND hWndCt
 
 LRESULT CLoginDlg::OnDeleteAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
+    if (MessageBox(TR("Are you sure you want to delete this account from Image Uploader's internal list?"), APPNAME, MB_ICONQUESTION | MB_YESNO) != IDYES) {
+        return 0;
+    }
     std::map <std::string, ServerSettingsStruct>& ss = Settings.ServersSettings[serverProfile_.serverName()];
     ss.erase(WCstringToUtf8(accountName_));
 

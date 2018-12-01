@@ -402,6 +402,11 @@
         <!-- API не загружает в аккаунт -->
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
+    <Server Name="abload.de" Authorize="2" Type="image" Plugin="abload" MaxFileSize="10485760">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
     <!--<Server Name="2i.cz" Authorize="0" Type="image" Plugin="2i">
 		<Actions>
 		</Actions>

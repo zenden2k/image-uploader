@@ -518,7 +518,7 @@ CString GetAppFolder()
     inst = GetModuleHandle(0);
 #endif
     szFileName = GetModuleFullName(inst);
-    ExtractFilePath(szFileName, szPath.GetBuffer(szFileName.GetLength() + 1));
+    ExtractFilePath(szFileName, szPath.GetBuffer(szFileName.GetLength() + 1), szFileName.GetLength() + 1);
     szPath.ReleaseBuffer();
     return szPath;
 }
@@ -551,7 +551,7 @@ CString GetAppFileName() {
     return GetModuleFullName(nullptr);
 }
 
-LPTSTR ExtractFilePath(LPCTSTR FileName, LPTSTR buf)
+LPTSTR ExtractFilePath(LPCTSTR FileName, LPTSTR buf, size_t bufferSize)
 {  
     int i, len = lstrlen(FileName);
     for(i=len; i>=0; i--)
@@ -559,18 +559,16 @@ LPTSTR ExtractFilePath(LPCTSTR FileName, LPTSTR buf)
         if (FileName[i] == _T('\\') || FileName[i] == _T('/'))
             break;
     }
-    lstrcpyn(buf, FileName, i+2);
+    lstrcpyn(buf, FileName, std::min(i + 2, static_cast<int>(bufferSize)-1));
     return buf;
 }
 
-//  Function doesn't allocate new string, it returns  pointer
-//        to a part of source string
 CString myExtractFileName(const CString & FileName)
 {  
     CString temp = FileName;
-    int Qpos = temp.ReverseFind('?');
-    if(Qpos>=0) temp = temp.Left(Qpos);
-    int i,len = lstrlen(temp);
+    //int Qpos = temp.ReverseFind('?');
+    //if(Qpos>=0) temp = temp.Left(Qpos);
+    int i,len = temp.GetLength();
     for(i=len-1; i>=0; i--)
     {
         if(temp[i] == _T('\\') || temp[i]==_T('/'))
@@ -704,10 +702,10 @@ void DeleteDir2(LPCTSTR Dir)
 
 CString GetUniqFileName(const CString& filePath)
 {
-    TCHAR path[256];
+    TCHAR path[MAX_PATH];
     if (!WinUtils::FileExists(filePath))
         return filePath;
-    WinUtils::ExtractFilePath(filePath, path);
+    WinUtils::ExtractFilePath(filePath, path, MAX_PATH);
     CString name;
     name = WinUtils::GetOnlyFileName(filePath);
     CString extension = WinUtils::GetFileExt(filePath);
@@ -918,7 +916,7 @@ lbl_allok:
     return true;
 }
 
-const CString StringSection(const CString& str,TCHAR sep, int index) {
+CString StringSection(const CString& str,TCHAR sep, int index) {
     CString result;
     ExtractStrFromList(str, index, result.GetBuffer(256),256,_T(""),sep);
     result.ReleaseBuffer();

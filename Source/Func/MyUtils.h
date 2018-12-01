@@ -35,9 +35,7 @@
 #define LOADICO(ico) LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(ico))
 
 int GetFontSizeInTwips(int nFontSize);
-CString myExtractFileName(const CString & FileName);
 
-LPCTSTR GetFileExt(LPCTSTR szFileName);
 
 bool IsVideoFile(LPCTSTR szFileName);
 int GetSavingFormat(LPCTSTR szFileName);

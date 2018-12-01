@@ -359,7 +359,7 @@ bool CWizardDlg::ParseCmdLine()
             if (dr == ImageEditorWindow::drCancel) {
                 PostQuitMessage(0);    
             } else if (dr != ImageEditorWindow::drCopiedToClipboard){
-                this->AddImage(imageFileName, myExtractFileName(imageFileName), true);
+                this->AddImage(imageFileName, WinUtils::myExtractFileName(imageFileName), true);
                 //ShowPage(1);
                 m_bShowAfter = true;
                 m_bShowWindow = true;
@@ -1507,7 +1507,7 @@ bool CWizardDlg::funcImportVideo()
         {TR("All files"), _T("*.*")}
     };
 
-    std::shared_ptr<IMyFileDialog> dlg = MyFileDialogFactory::createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose video file"), filters, false);
+    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose video file"), filters, false);
     if (dlg->DoModal(m_hWnd) != IDOK) {
         return 0;
     }
@@ -1785,7 +1785,7 @@ bool CWizardDlg::funcMediaInfo()
         return false;
     }
     TCHAR Buffer[512];
-    WinUtils::ExtractFilePath(fileName, Buffer);
+    WinUtils::ExtractFilePath(fileName, Buffer, ARRAY_SIZE(Buffer));
     Settings.VideoFolder = Buffer;
     CMediaInfoDlg dlg;
     LastVideoFile = fileName;

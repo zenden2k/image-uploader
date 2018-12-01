@@ -20,6 +20,7 @@ if(WIN32)
     list(APPEND SRC_LIST 
         ../Func/Tests/CmdLineTest.cpp 
         ../Func/CmdLine.cpp
+        ../Func/Tests/WinUtilsTest.cpp 
         ../Core/Images/Tests/UtilsTest.cpp
         ../Func/GdiPlusInitializer.cpp
         ../3rdpart/QColorQuantizer.cpp

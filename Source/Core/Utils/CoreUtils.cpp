@@ -28,6 +28,8 @@
 #include <cmath>
 #include <cstdlib>
 
+#include "Core/3rdpart/UriParser.h"
+
 #ifdef _WIN32
     #include <io.h>
     #include "Core/Utils/utils_Win.h"
@@ -49,6 +51,7 @@ long round(float number){
 #endif
 
 #ifdef _WIN32
+
 /* FILETIME of Jan 1 1970 00:00:00. */
 static const unsigned __int64 epoch = ((unsigned __int64)116444736000000000ULL);
 
@@ -242,16 +245,10 @@ const std::string ExtractFileNameNoExt(const std::string& fileName)
     return result;
 }
 
-std::string ExtractFileNameFromUrl(const std::string fileName)
+std::string ExtractFileNameFromUrl(const std::string url)
 {
-    size_t questionMarkPos = fileName.find_last_of('?');
-
-    std::string result;
-    if (questionMarkPos != std::string::npos)  {
-        return ExtractFileName(fileName.substr(0, questionMarkPos));
-    } 
-
-    return ExtractFileName(fileName);
+    uriparser::Uri uri(url);
+    return ExtractFileName(uri.path());
 }
 
 std::string incrementFileName(const std::string& originalFileName, int counter) {

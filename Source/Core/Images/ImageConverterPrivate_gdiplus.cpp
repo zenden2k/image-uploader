@@ -242,7 +242,7 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
 
     if (!processingEnabled_)
     {
-        CString Ext = GetFileExt(sourceFileW);
+        CString Ext = WinUtils::GetFileExt(sourceFileW);
         if (Ext == _T("png"))
             fileformat = 1;
         else

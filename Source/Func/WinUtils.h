@@ -41,7 +41,7 @@ namespace WinUtils {
     HICON GetAssociatedIcon (LPCTSTR filename, bool Small);
 
     // File path functions
-    LPTSTR ExtractFilePath(LPCTSTR FileName,LPTSTR buf);
+    LPTSTR ExtractFilePath(LPCTSTR FileName,LPTSTR buf, size_t bufferSize);
     CString myExtractFileName(const CString & FileName);
     LPCTSTR GetFileExt(LPCTSTR szFileName);
     CString GetOnlyFileName(const CString& szFilename);
@@ -80,7 +80,7 @@ namespace WinUtils {
         LONG nSize ,/* Length in characters of destination buffer */
         LPCTSTR szDefString = NULL,
         TCHAR cSeparator = _T(',') /* Character to be separator in list */);
-    const CString StringSection(const CString& str,TCHAR sep, int index);
+    CString StringSection(const CString& str,TCHAR sep, int index);
     bool IsWindows64Bit();
 
     void DeleteDir2(LPCTSTR Dir);

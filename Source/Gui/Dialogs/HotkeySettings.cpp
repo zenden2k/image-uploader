@@ -120,7 +120,7 @@ LRESULT CHotkeySettingsPage::OnEditHotkeyBnClicked(WORD wNotifyCode, WORD wID, H
 
 LRESULT CHotkeySettingsPage::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    HWND     hwnd = (HWND) wParam;  
+    HWND     hwnd = reinterpret_cast<HWND>(wParam);  
     POINT ClientPoint, ScreenPoint;
 
     if(lParam == -1) 
@@ -132,15 +132,18 @@ LRESULT CHotkeySettingsPage::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
     }
     else
     {
-        ScreenPoint.x = LOWORD(lParam); 
-        ScreenPoint.y = HIWORD(lParam); 
+        ScreenPoint.x = GET_X_LPARAM(lParam);
+        ScreenPoint.y = GET_Y_LPARAM(lParam);
         ClientPoint = ScreenPoint;
         ::ScreenToClient(hwnd, &ClientPoint);
     }
-    HMENU TrayMenu = ::CreatePopupMenu();
-    GuiTools::InsertMenu(TrayMenu, 0, IDM_CLEARHOTKEY, TR("Clear")); 
-    GuiTools::InsertMenu(TrayMenu, 1, IDM_CLEARALLHOTKEYS, TR("Clear all")); 
-    ::TrackPopupMenu(TrayMenu, TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, 0,m_hWnd,0);
+    CMenu contextMenu;
+    contextMenu.CreatePopupMenu();
+    GuiTools::InsertMenu(contextMenu, 0, IDC_EDITHOTKEY, TR("Change"));
+    contextMenu.SetMenuDefaultItem(IDC_EDITHOTKEY, FALSE);
+    GuiTools::InsertMenu(contextMenu, 1, IDM_CLEARHOTKEY, TR("Clear")); 
+    GuiTools::InsertMenu(contextMenu, 2, IDM_CLEARALLHOTKEYS, TR("Clear all")); 
+    contextMenu.TrackPopupMenu( TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
     return 0;
 }
 
@@ -300,6 +303,6 @@ bool CHotkeyList::DeSerialize(const CString &data)
         (*this)[cur].globalKey.DeSerialize(globalKeyStr);
         
     }
-    /* Character to be separator in list */
+
     return true;
 }

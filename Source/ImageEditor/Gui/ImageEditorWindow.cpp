@@ -43,8 +43,8 @@ ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvide
     configurationProvider_ = configurationProvider;
     askBeforeClose_ = true;
     allowAltTab_ = false;
-    suggestedFileName_ = myExtractFileName(sourceFileName_);
-    CString fileExt = GetFileExt(suggestedFileName_);
+    suggestedFileName_ = WinUtils::myExtractFileName(sourceFileName_);
+    CString fileExt = WinUtils::GetFileExt(suggestedFileName_);
     fileExt.MakeLower();
     if (fileExt != _T("png") && fileExt != _T("jpg") && fileExt != _T("jpeg")) {
         suggestedFileName_ = WinUtils::GetOnlyFileName(suggestedFileName_) + _T(".png");
@@ -1225,7 +1225,7 @@ void ImageEditorWindow::OnSaveAs()
 
     auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, CString(), CString(), filters, false, false);
     dlg->setFileName(suggestedFileName_);
-    CString ext = GetFileExt(suggestedFileName_);
+    CString ext = WinUtils::GetFileExt(suggestedFileName_);
     ext.MakeLower();
     dlg->setDefaultExtension(ext);
     dlg->setFileTypeIndex(ext == "jpg" ? 2 : 1);

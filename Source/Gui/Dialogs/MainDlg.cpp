@@ -301,7 +301,7 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, b
     fl.FileName = FileName;
 
     if(virtualFileName.IsEmpty())
-    fl.VirtualFileName = myExtractFileName(FileName);
+    fl.VirtualFileName = WinUtils::myExtractFileName(FileName);
     else
     fl.VirtualFileName = virtualFileName;
 
@@ -310,7 +310,7 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, b
     CString Buf;
     if(IuCommonFunctions::IsImage(FileName))
     Buf = WinUtils::GetOnlyFileName(FileName );
-    else Buf = myExtractFileName(FileName);
+    else Buf = WinUtils::myExtractFileName(FileName);
     if(FileName) 
         ThumbsView.AddImage(fl.FileName, fl.VirtualFileName, ensureVisible, Img);
         
@@ -469,7 +469,7 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     EditorCmdLine = WinUtils::ExpandEnvironmentStrings(EditorCmd);
     
     TCHAR FilePathBuffer[256];
-    WinUtils::ExtractFilePath(FileName, FilePathBuffer);
+    WinUtils::ExtractFilePath(FileName, FilePathBuffer, ARRAY_SIZE(FilePathBuffer));
 
     CCmdLine EditorLine(EditorCmdLine);
 
@@ -597,7 +597,7 @@ LRESULT CMainDlg::OnOpenInDefaultViewer(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
     if (!fileName.IsEmpty()) {
         SHELLEXECUTEINFO TempInfo = { 0 };
         TCHAR filePath[1024];
-        WinUtils::ExtractFilePath(fileName, filePath);
+        WinUtils::ExtractFilePath(fileName, filePath, ARRAY_SIZE(filePath));
         TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
         TempInfo.hwnd = m_hWnd;
         TempInfo.lpVerb = _T("open");

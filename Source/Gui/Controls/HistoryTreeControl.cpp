@@ -626,7 +626,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
             WCHAR buf2[25];
             WinUtils::NewBytesToString(fileSize, buf2, 25);
             WCHAR FileExt[25];
-            lstrcpy(FileExt, GetFileExt(Filename));
+            lstrcpy(FileExt, WinUtils::GetFileExt(Filename));
             if(!lstrcmpi(FileExt, _T("jpg"))) 
                 lstrcpy(FileExt,_T("JPEG"));
             if(IuCommonFunctions::IsImage(filename) && bm)

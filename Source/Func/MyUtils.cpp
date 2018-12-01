@@ -35,41 +35,6 @@ int GetFontSizeInTwips(int nFontSize)
    return MulDiv(nFontSize, 1440, 72);
 }
 
-CString myExtractFileName(const CString & FileName)
-{  
-    CString temp = FileName;
-    int Qpos = temp.ReverseFind('?');
-    if(Qpos>=0) temp = temp.Left(Qpos);
-    int i,len = lstrlen(temp);
-    for(i=len-1; i>=0; i--)
-    {
-        if(temp[i] == _T('\\') || temp[i]==_T('/'))
-            break;
-    }
-    return temp.Right(len-i-1);
-    
-}
-
-//  Function doesn't allocate new string, it returns  pointer
-//        to a part of source string
-LPCTSTR GetFileExt(LPCTSTR szFileName)
-{
-    if(!szFileName) return 0;
-    int nLen = lstrlen(szFileName);
-    
-    LPCTSTR szReturn = szFileName+nLen;
-    for( int i=nLen-1; i>=0; i-- )
-    {
-        if(szFileName[i] == '.')
-        {
-            szReturn = szFileName + i + 1;
-            break;
-        }
-        else if(szFileName[i] == '\\' || szFileName[i] == '/') break;
-    }
-    return szReturn;
-}
-
 bool IsVideoFile(LPCTSTR szFileName)
 {
     std::string ext = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt(IuCoreUtils::WstringToUtf8(szFileName)) );
@@ -84,7 +49,7 @@ bool IsVideoFile(LPCTSTR szFileName)
 int GetSavingFormat(LPCTSTR szFileName)
 {
     if(!szFileName) return -1;
-    LPCTSTR FileType = GetFileExt(szFileName);
+    LPCTSTR FileType = WinUtils::GetFileExt(szFileName);
     if(WinUtils::IsStrInList(FileType,_T("jpg\0jpeg\0\0")))
         return 0;
     else if(WinUtils::IsStrInList(FileType,_T("png\0\0")))
