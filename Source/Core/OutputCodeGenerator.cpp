@@ -56,7 +56,7 @@ std::string ZOutputCodeGenerator::generateCodeForItem(const ZUploadObject& item,
 	else
 	{
       if((m_CodeType == ctClickableThumbnails || m_CodeType == ctTableOfThumbnails) && !item.thumbUrl.empty())
-         return link(item.directUrl, image(item.thumbUrl));
+          return link(item.directUrl.empty() ? item.viewUrl : item.directUrl, image(item.thumbUrl));
       else if (m_CodeType == ctImages && !item.directUrl.empty())
          return image(item.directUrl);
       else
