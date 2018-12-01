@@ -106,7 +106,8 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
         TCHAR path[MAX_PATH];
         WinUtils::ExtractFilePath(MediaInfoDllPath, path, MAX_PATH);
         CString langDir = path + CString(_T("MediaInfoLang\\"));
-        std::string locale = ServiceLocator::instance()->translator()->getCurrentLocale();
+        auto translator = ServiceLocator::instance()->translator();
+        std::string locale = translator->getCurrentLocale();
         CString lang = U2W(locale).Left(2);
         if (!lang.IsEmpty()) {
             CString langFilePath = langDir + lang + _T(".csv");
