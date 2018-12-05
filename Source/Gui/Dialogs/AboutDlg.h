@@ -42,6 +42,7 @@ class CAboutDlg : public CDialogImpl<CAboutDlg>
         CHyperLink m_ReportBugLink;
         CHyperLink m_EmailLink;
         CHyperLink m_Documentation;
+        CHyperLink m_CommitHashLink;
         CFont thanksToLabelFont_;
         // Handler prototypes (uncomment arguments if needed):
         //    LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)

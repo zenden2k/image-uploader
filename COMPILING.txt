@@ -1,9 +1,13 @@
 ﻿============  Building Image Uploader on Windows ============
 
+Before building you should copy file "versioninfo.h.dist" to "versioninfo.h". This file will be regenerated 
+by "versioninc.py" utility and contains information about build number, version, date, git commit hash.
+
 You need Microsoft Visual Studio 2013 or newer to build Image Uploader from source. 
 Installing Visual Studio 2013 Update 4 is strongly recommended (older versions corrupt .rc files after editing)
 If you are using a newer MSVC version, you may experience some compilation errors, which can be solved easily (if you fix these errors, please provide a patch or pull request). 
 But also you need to recompile 3rd-party libraries (boost, glog, jsoncpp, etc) against your compiler version (so I recommend to use Microsoft Visual Studio 2013 Update 4 to avoid all these issues).
+
 
 All libraries have to be built statically with static runtime. To enable Windows XP support the corresponding 
 toolset has to be chosen (for example, "v120_xp" in VS 2013, "v141_xp" in Visual Studio 2017).

@@ -13,6 +13,7 @@ Data/History
 Data/.idea
 Data/settings*.xml
 Source/.idea
+Source/versioninfo.h
 Utils/Localize/.idea
 Utils/Web/.idea
 Sandbox/

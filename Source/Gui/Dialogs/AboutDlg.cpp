@@ -38,6 +38,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE );
     LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
     
+    auto ver = AppParams::instance()->GetAppVersion();
+
     m_WebSiteLink.SubclassWindow(GetDlgItem(IDC_SITELINK));
     m_WebSiteLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER; 
 
@@ -49,6 +51,12 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     m_ReportBugLink.SetLabel(TR("Found a bug? Send it to the author"));
     m_ReportBugLink.SetHyperLink(_T("https://github.com/zenden2k/image-uploader/issues"));
 
+    m_CommitHashLink.SubclassWindow(GetDlgItem(IDC_COMMITHASH));
+    m_CommitHashLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
+    m_CommitHashLink.SetLabel(CString(ver->CommitHashShort.c_str()));
+    m_CommitHashLink.SetHyperLink(CString(("https://github.com/zenden2k/image-uploader/commit/" + ver->CommitHash).c_str()));
+
+
     m_EmailLink.SubclassWindow(GetDlgItem(IDC_AUTHORNAMELABEL));
     m_EmailLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
     m_EmailLink.SetLabel((Lang.GetLanguageName() == _T("Russian") ? U2W("\xD0\xA1\xD0\xB5\xD1\x80\xD0\xB3\xD0\xB5\xD0\xB9\x20\xD0\xA1\xD0\xB2\xD0\xB8\xD1\x81\xD1\x82\xD1\x83\xD0\xBD\xD0\xBE\xD0\xB2")
@@ -59,7 +67,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     m_Documentation.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
     m_Documentation.SetLabel(TR("Documentation"));
 
-    auto ver = AppParams::instance()->GetAppVersion();
+
 
     CString memoText;
     

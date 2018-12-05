@@ -111,7 +111,7 @@ void SignalHandler (int param) {
 }
 
 void PrintWelcomeMessage() {
-    std::cerr << "imgupload v" << IU_CLI_VER << " (based on the same code as IU v" << _APP_VER << " build " << BUILD << ")" << std::endl;
+    std::cerr << "imgupload v" << IU_CLI_VER << " (based on the same code as IU v" << IU_APP_VER << " build " << IU_BUILD_NUMBER << ")" << std::endl;
 }
 
 class Translator: public ITranslator{

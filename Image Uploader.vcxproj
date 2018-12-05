@@ -473,7 +473,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'">
     <PreBuildEvent>
-      <Command>"$(SolutionDir)\Utils\Version\versioninc.exe" "$(SolutionDir)\Source\versioninfo.h"</Command>
+      <Command>python "$(SolutionDir)\Utils\Version\versioninc.py" "$(SolutionDir)\Source\versioninfo.h"</Command>
     </PreBuildEvent>
     <CustomBuildStep>
       <Command />

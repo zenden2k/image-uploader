@@ -18,6 +18,10 @@ class AppParams: public Singleton<AppParams>
             unsigned int Build;
             std::string FullVersion;
             std::string BuildDate;
+            std::string BranchName;
+            std::string CommitHash;
+            std::string CommitHashShort;
+
             bool CurlWithOpenSSL;
             AppVersionInfo() {
                 Major = 0;

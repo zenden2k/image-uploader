@@ -659,6 +659,7 @@
 #define IDC_THUMBTEMPLATECOMBO          1319
 #define IDC_COMPONENTSLABEL             1319
 #define IDC_THUMBRESIZELABEL            1320
+#define IDC_COMMITHASH                  1320
 #define IDC_WIDTHEDITUNITS              1321
 #define IDC_THUMBRESIZECOMBO            1322
 #define IDOK2                           1323
@@ -727,7 +728,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        309
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1320
+#define _APS_NEXT_CONTROL_VALUE         1321
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

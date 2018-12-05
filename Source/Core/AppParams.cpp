@@ -6,7 +6,7 @@
 
 AppParams::AppParams() {
     isGui_ = true;
-    versionInfo_.FullVersion = _APP_VER;
+    versionInfo_.FullVersion = IU_APP_VER;
     std::vector<std::string> tokens;
     IuStringUtils::Split(versionInfo_.FullVersion, ".", tokens, 3);
     if (tokens.size() >= 3) {
@@ -14,8 +14,12 @@ AppParams::AppParams() {
         versionInfo_.Minor = std::stoi(tokens[1]);
         versionInfo_.Release = std::stoi(tokens[2]);
     }
-    versionInfo_.Build = std::stoi(BUILD);
-    versionInfo_.BuildDate = TIME;
+    versionInfo_.Build = std::stoi(IU_BUILD_NUMBER);
+    versionInfo_.BuildDate = IU_BUILD_DATE;
+    versionInfo_.CommitHash = IU_COMMIT_HASH;
+    versionInfo_.CommitHashShort = IU_COMMIT_HASH_SHORT;
+    versionInfo_.BranchName = IU_BRANCH_NAME;
+
 #ifdef USE_OPENSSL
     versionInfo_.CurlWithOpenSSL = true;
 #endif
