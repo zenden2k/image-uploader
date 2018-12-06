@@ -119,7 +119,9 @@ LRESULT CVideoGrabberParams::OnVideoSnapshotsFolderButtonClicked(WORD wNotifyCod
     CString path = GuiTools::GetWindowText(GetDlgItem(IDC_VIDEOSNAPSHOTSFOLDEREDIT));
 
     CNewStyleFolderDialog fd(m_hWnd, path, TR("Select folder") );
-   
+
+    fd.SetFolder(path);
+
     if ( fd.DoModal(m_hWnd) == IDOK ) {
         SetDlgItemText(IDC_VIDEOSNAPSHOTSFOLDEREDIT,fd.GetFolderPath());
         return true;

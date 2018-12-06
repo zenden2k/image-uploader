@@ -721,6 +721,7 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
         }
     } else {
         CNewStyleFolderDialog dlg(m_hWnd, CString(), CString());
+        dlg.SetOkButtonLabel(TR("Save"));
         if (dlg.DoModal(m_hWnd) == IDOK) {
             CString newPath = dlg.GetFolderPath();
             if (!newPath.IsEmpty()) {

@@ -142,7 +142,9 @@ LRESULT CScreenshotSettingsPagePage::OnScreenshotsFolderSelect(WORD wNotifyCode,
     CString path = GuiTools::GetWindowText(GetDlgItem(IDC_SCREENSHOTFOLDEREDIT));
 
     CNewStyleFolderDialog fd(m_hWnd, path, TR("Select folder") );
-        
+
+    fd.SetFolder(path);
+
     if (fd.DoModal(m_hWnd) == IDOK)
     {
         SetDlgItemText(IDC_SCREENSHOTFOLDEREDIT, fd.GetFolderPath());
