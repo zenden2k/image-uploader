@@ -26,7 +26,7 @@ public:
     BasicSettings();
     virtual ~BasicSettings();
     void setEngineList(CUploadEngineList_Base* engineList);
-    bool LoadSettings(std::string szDir = "", std::string fileName = "", bool LoadFromRegistry = true);
+    bool LoadSettings(const std::string& szDir = "", const std::string& fileName = "", bool LoadFromRegistry = true);
     bool SaveSettings();
     void notifyChange();
     typedef fastdelegate::FastDelegate1<BasicSettings*> ChangeCallback;

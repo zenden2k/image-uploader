@@ -73,7 +73,7 @@ bool Toolbar::Create(HWND parent, bool child )
     return true;
 }
 
-int Toolbar::addButton(Item item)
+int Toolbar::addButton(const Item& item)
 {
     buttons_.push_back(item);
     return buttons_.size()-1;

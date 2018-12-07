@@ -122,7 +122,6 @@ CString FindDataFolder()
 #if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI)
     {
         CRegistry Reg;
-        CString lang;
 
         Reg.SetRootKey(HKEY_CURRENT_USER);
         if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false))
@@ -170,7 +169,7 @@ CString FindDataFolder()
     return DataFolder;
 }
 
-CString GenerateFileName(const CString& templateStr, int index, const CPoint size, const CString& originalName)
+CString GenerateFileName(const CString& templateStr, int index, const CPoint& size, const CString& originalName)
 {
     CString result = templateStr;
     time_t t = time(0);

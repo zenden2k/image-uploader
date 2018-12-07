@@ -784,7 +784,7 @@ bool SaveImageToFile(Gdiplus::Image* img, const CString& fileName, IStream* stre
     return true;
 }
 
-CRect CenterRect(CRect r1, CRect intoR2)
+CRect CenterRect(CRect r1, const CRect& intoR2)
 {
     r1.OffsetRect((intoR2.Width() - r1.Width()) / 2, (intoR2.Height() - r1.Height()) / 2);
     return r1;

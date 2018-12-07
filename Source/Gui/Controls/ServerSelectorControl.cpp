@@ -84,7 +84,6 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
     createSettingsButton();
     setTitle(title_);
     serverGroupboxFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_SERVERGROUPBOX));
-    CIcon deleteIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONDELETE));
     serverComboBox_.Attach( GetDlgItem( IDC_SERVERCOMBOBOX ) );
 
     updateServerList();
@@ -189,8 +188,7 @@ void CServerSelectorControl::addAccount()
 }
 
 void CServerSelectorControl::serverChanged() {
-    CUploadEngineData * uploadEngineData =  0;
-    CString profileName;
+    CUploadEngineData * uploadEngineData = nullptr;
     int serverComboElementIndex = serverComboBox_.GetCurSel();
     char *lpstrServerName = reinterpret_cast<char*>( serverComboBox_.GetItemData(serverComboElementIndex) );
 
@@ -637,8 +635,8 @@ void CServerSelectorControl::setShowParamsLink(bool show) {
 }
 
 LRESULT CServerSelectorControl::OnImageProcessingParamsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    int serverComboElementIndex = serverComboBox_.GetCurSel();
-    std::string serverName = reinterpret_cast<char*>( serverComboBox_.GetItemData(serverComboElementIndex) );
+    //int serverComboElementIndex = serverComboBox_.GetCurSel();
+    //std::string serverName = reinterpret_cast<char*>( serverComboBox_.GetItemData(serverComboElementIndex) );
     CUploadParamsDlg dlg(serverProfile_, showImageProcessingParams_, defaultServer_);
     if (dlg.DoModal(isChildWindow_ ? m_hWnd : GetParent()) == IDOK) {
         serverProfile_.setImageUploadParams(dlg.imageUploadParams());

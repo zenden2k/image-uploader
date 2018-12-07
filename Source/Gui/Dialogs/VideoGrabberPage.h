@@ -95,7 +95,7 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		bool OnAddImage(Gdiplus::Bitmap *bm, CString title);
 		void SavingMethodChanged(void);
 		int GenPicture(CString& outFileName);
-		CString GenerateFileNameFromTemplate(const CString& templateStr, int index, const CPoint size, const CString& originalName);
+		CString GenerateFileNameFromTemplate(const CString& templateStr, int index, const CPoint& size, const CString& originalName);
 		CThumbsView ThumbsView;
 		void CheckEnableNext();
 		bool OnNext() override; // Reimplemented function of CWizardPage

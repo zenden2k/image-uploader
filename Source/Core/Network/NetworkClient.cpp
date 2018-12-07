@@ -154,7 +154,7 @@ void NetworkClient::setProxy(const std::string &host, int port, int type)
 #endif
 } 
 
-void NetworkClient::setProxyUserPassword(const std::string &username, const std::string password) {
+void NetworkClient::setProxyUserPassword(const std::string &username, const std::string& password) {
     if (username.empty() && password.empty()) {
         curl_easy_setopt(curl_handle, CURLOPT_PROXYUSERPWD, NULL);
         curl_easy_setopt(curl_handle, CURLOPT_PROXYAUTH, NULL);
@@ -350,7 +350,7 @@ bool NetworkClient::doUploadMultipartData()
     {
         std::vector<QueryParam>::iterator it, end = m_QueryParams.end();
 
-        for(it=m_QueryParams.begin(); it!=end; it++)
+        for(it=m_QueryParams.begin(); it!=end; ++it)
         {
             if(it->isFile)
             {
@@ -548,7 +548,7 @@ void NetworkClient::private_initTransfer()
     std::vector<CustomHeaderItem>::iterator it, end = m_QueryHeaders.end();
     chunk_ = NULL; 
 
-    for(it = m_QueryHeaders.begin(); it!=end; it++)
+    for(it = m_QueryHeaders.begin(); it!=end; ++it)
     {
         if ( it->value == "\n" ) {
             chunk_ = curl_slist_append(chunk_, (it->name + ";" + it->value).c_str());
@@ -671,7 +671,7 @@ std::string nm_trimStr(const std::string& str)
     // if all spaces or empty return an empty string
     if(( std::string::npos == startpos ) || ( std::string::npos == endpos))
     {
-       res = "";
+       res.clear();
     }
    else
        res = str.substr( startpos, endpos-startpos+1 );
@@ -685,7 +685,7 @@ void NetworkClient::private_parse_headers()
     nm_splitString(m_headerBuffer, "\n",headers);
     std::vector<std::string>::iterator it;
 
-    for(it=headers.begin(); it!=headers.end(); it++)
+    for(it=headers.begin(); it!=headers.end(); ++it)
     {
         std::vector<std::string> thisHeader;
         nm_splitString(*it, ":",thisHeader, 2);
@@ -704,7 +704,7 @@ const std::string NetworkClient::responseHeaderByName(const std::string& name)
 {
     std::vector<CustomHeaderItem>::iterator it, end = m_ResponseHeaders.end();
     
-    for(it = m_ResponseHeaders.begin(); it!=end; it++)
+    for(it = m_ResponseHeaders.begin(); it!=end; ++it)
     {
         if(it->name == name)
             return it->value;
@@ -729,7 +729,7 @@ void NetworkClient::private_cleanup_before()
     std::vector<CustomHeaderItem>::iterator it, end = m_QueryHeaders.end();
 
     bool add = true;
-    for(it = m_QueryHeaders.begin(); it!=end; it++)
+    for(it = m_QueryHeaders.begin(); it!=end; ++it)
     {
         if(it->name == "Expect" ) { add = false; break; }
     }
@@ -750,7 +750,7 @@ void NetworkClient::private_cleanup_after()
         m_hOutFile = 0;
     }
     m_OutFileName.clear();
-    m_method = "";
+    m_method.clear();
     curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(-1));
 
     m_uploadData.clear();

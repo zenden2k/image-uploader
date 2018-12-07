@@ -94,7 +94,6 @@ bool CUpdateInfo::Parse( SimpleXml &xml)
     SimpleXmlNode root = xml.getRoot("UpdateInfo", false);
     if(root.IsNull()) return false;
     
-    CString packageName, UpdateUrl;
     m_PackageName = IuCoreUtils::Utf8ToWstring(root.Attribute("Name")).c_str();
     m_UpdateUrl = IuCoreUtils::Utf8ToWstring(root.Attribute("UpdateUrl")).c_str();
     m_DownloadUrl = IuCoreUtils::Utf8ToWstring(root.Attribute("DownloadUrl")).c_str();
@@ -437,7 +436,7 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
     SimpleXmlNode root = m_xml.getRoot("UpdatePackage", false);
     if(root.IsNull()) return false;
 
-    CString packageName, UpdateUrl;
+    CString packageName;
     packageName = IuCoreUtils::Utf8ToWstring(root.Attribute("Name")).c_str();
     m_TimeStamp =  root.AttributeInt("TimeStamp");
         

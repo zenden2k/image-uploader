@@ -171,7 +171,6 @@ void WtlGuiSettings::FindDataFolder()
 #if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
     {
         CRegistry Reg;
-        CString lang;
 
         Reg.SetRootKey(HKEY_CURRENT_USER);
         if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
@@ -355,7 +354,7 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
     VideoSettings.UseAviInfo = TRUE;
     VideoSettings.ShowMediaInfo = TRUE;
     VideoSettings.TextColor = RGB(0, 0, 0);
-    VideoSettings.SnapshotsFolder = /*IuCoreUtils::Utf8ToWstring(Settings.SettingsFolder).c_str() + CString(_T("Snapshots"))*/_T("");
+    VideoSettings.SnapshotsFolder.Empty();
     VideoSettings.SnapshotFileTemplate = _T("%f%_%cx%_%cy%_%uid%\\grab_%i%.png");
 
     VideoSettings.Engine = IsFFmpegAvailable() ? VideoEngineAuto : VideoEngineDirectshow;
@@ -414,7 +413,7 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
     } else if (Language == _T("Русский")) {
         Language = _T("Russian");
     }
-    std::string temp;
+
     if (!settingsNode["Image"]["Format"].IsNull()) {
         // for compatibility with old version configuration file
         LoadConvertProfile("Old profile", settingsNode);
@@ -1106,7 +1105,7 @@ ServerSettingsStruct& WtlGuiSettings::ServerByName(CString name)
     return ServersSettings[IuCoreUtils::WstringToUtf8((LPCTSTR)name)].begin()->second;
 }
 
-ServerSettingsStruct& WtlGuiSettings::ServerByUtf8Name(std::string name)
+ServerSettingsStruct& WtlGuiSettings::ServerByUtf8Name(const std::string& name)
 {
     return ServersSettings[name].begin()->second;
 }

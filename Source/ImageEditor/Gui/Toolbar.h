@@ -58,7 +58,7 @@ public:
     Toolbar(Orientation orientation); 
     ~Toolbar();
     bool Create(HWND parent, bool child = false);
-    int addButton(Item item);
+    int addButton(const Item& item);
     DECLARE_WND_CLASS(L"ImageEditor_Toolbar");
     int getItemAtPos(int clientX, int clientY);
     int getItemIndexByCommand(int command);

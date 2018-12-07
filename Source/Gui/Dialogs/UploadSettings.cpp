@@ -245,11 +245,12 @@ LRESULT CUploadSettings::OnBnClickedKeepasis(WORD /*wNotifyCode*/, WORD /*wID*/,
 
 void CUploadSettings::ShowParams(/*UPLOADPARAMS params*/)
 {
-    SendDlgItemMessage(IDC_KEEPASIS,BM_SETCHECK,sessionImageServer_.getImageUploadParams().ProcessImages);
-    SendDlgItemMessage(IDC_THUMBFORMATLIST,CB_SETCURSEL, (int)sessionImageServer_.getImageUploadParams().getThumb().Format);
-    SendDlgItemMessage(IDC_CREATETHUMBNAILS,BM_SETCHECK,sessionImageServer_.getImageUploadParams().CreateThumbs);
-    SendDlgItemMessage(IDC_ADDFILESIZE,BM_SETCHECK,sessionImageServer_.getImageUploadParams().getThumb().AddImageSize);
-    SendDlgItemMessage(IDC_USESERVERTHUMBNAILS,BM_SETCHECK,sessionImageServer_.getImageUploadParams().UseServerThumbs);
+    ImageUploadParams params = sessionImageServer_.getImageUploadParams();
+    SendDlgItemMessage(IDC_KEEPASIS, BM_SETCHECK, params.ProcessImages);
+    SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, (int)params.getThumb().Format);
+    SendDlgItemMessage(IDC_CREATETHUMBNAILS, BM_SETCHECK, params.CreateThumbs);
+    SendDlgItemMessage(IDC_ADDFILESIZE, BM_SETCHECK, params.getThumb().AddImageSize);
+    SendDlgItemMessage(IDC_USESERVERTHUMBNAILS, BM_SETCHECK, params.UseServerThumbs);
 
     bool shortenImages = sessionImageServer_.shortenLinks();
     bool shortenFiles = sessionFileServer_.shortenLinks();
@@ -942,7 +943,6 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
     CScriptUploadEngine *m_pluginLoader = uploadEngineManager_->getScriptUploadEngine(serverProfile);
     if(!m_pluginLoader) return 0;
 
-    CString title;
     std::vector<std::string> accessTypeList;
 
     m_pluginLoader->getAccessTypeList(accessTypeList);
@@ -1109,7 +1109,7 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
    SaveCurrentProfile();
    CSettingsDlg dlg(CSettingsDlg::spImages, uploadEngineManager_);
     dlg.DoModal(m_hWnd);
-   CurrentProfileName = "";
+   CurrentProfileName.Empty();
    ShowParams(U2W(sessionImageServer_.getImageUploadParamsRef().ImageProfileName));
    UpdateProfileList();
    ShowParams(U2W(sessionImageServer_.getImageUploadParamsRef().ImageProfileName));
@@ -1184,7 +1184,7 @@ void CUploadSettings::ShowParams(const ImageConvertingParams& params)
     m_CatchChanges = true;
  }
 
- void CUploadSettings::ShowParams(const CString profileName)
+ void CUploadSettings::ShowParams(const CString& profileName)
  {
     if(sessionImageServer_.getImageUploadParams().getThumb().ResizeMode!= ThumbCreatingParams::trByHeight)
    {

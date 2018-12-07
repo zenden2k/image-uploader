@@ -44,7 +44,7 @@ void DrawStrokedText(Gdiplus::Graphics& gr, LPCTSTR Text, Gdiplus::RectF Bounds,
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 void changeAplhaChannel(Bitmap& source, Bitmap& dest, int sourceChannel, int destChannel);
 Rect MeasureDisplayString(Graphics& graphics, CString text, RectF boundingRect, Gdiplus::Font& font);
-CRect CenterRect(CRect r1, CRect intoR2);
+CRect CenterRect(CRect r1, const CRect& intoR2);
 void DrawRect(Bitmap& gr, Color& color, Rect rect);
 std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus::Size* realSize = 0);
 std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize = 0);

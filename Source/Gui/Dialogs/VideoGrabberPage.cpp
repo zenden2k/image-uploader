@@ -404,7 +404,6 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
 
         Graphics g1(m_hWnd);
 
-        CString s;
         CWindowDC dc(nullptr);
         Font font(dc, &Settings.VideoSettings.Font);
 
@@ -637,7 +636,7 @@ LRESULT CVideoGrabberPage::OnBnClickedFileinfobutton(WORD /*wNotifyCode*/, WORD 
     return 0;
 }
 
-CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateStr, int index, const CPoint size, const CString& originalName)
+CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateStr, int index, const CPoint& size, const CString& originalName)
 {
     CString result = templateStr;
     time_t t = time(0);

@@ -47,7 +47,7 @@ class CDefaultUploadEngine: public CAbstractUploadEngine, public NetworkClient::
         void AddCustomHeaders(UploadAction& Action);
         void SetStatus(StatusType status, std::string param = "");
         bool needStop();
-        void UploadError(bool error, const std::string errorStr, UploadAction* m_CurrentAction, bool writeToBuffer = true);
+        void UploadError(bool error, const std::string& errorStr, UploadAction* m_CurrentAction, bool writeToBuffer = true);
         bool doUploadFile(std::shared_ptr<FileUploadTask> task, UploadParams& params);
         bool doUploadUrl(std::shared_ptr<UrlShorteningTask> task, UploadParams& params);
         void prepareUpload(UploadParams& params);

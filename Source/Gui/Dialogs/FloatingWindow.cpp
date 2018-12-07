@@ -644,8 +644,10 @@ LRESULT CFloatingWindow::OnHotKey(int HotKeyID, UINT flags, UINT vk)
     else
     {
         m_bFromHotkey = true;
-        SetActiveWindow();
-        SetForegroundWindow(m_hWnd);
+        if (m_hotkeys[HotKeyID].setForegroundWindow) {
+            SetActiveWindow();
+            SetForegroundWindow(m_hWnd);
+        }
         SendMessage(WM_COMMAND, MAKEWPARAM(m_hotkeys[HotKeyID].commandId, 0));
         m_bFromHotkey = false;
     }

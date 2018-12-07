@@ -3,7 +3,7 @@
 ConsoleUploadErrorHandler::ConsoleUploadErrorHandler() {
 }
 
-void ConsoleUploadErrorHandler::ErrorMessage(ErrorInfo errorInfo) {
+void ConsoleUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo) {
     /*std::cerr<<"---------------------"<<std::endl;
         if(ei.errorType == etUserError)
         {

@@ -73,9 +73,10 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
         std::string folderID;
         std::lock_guard<std::mutex> guard(serverSync_->folderMutex());
         CFolderItem& newFolder = m_ServersSettings->newFolder;
-        if (task->serverProfile().folderId() == CFolderItem::NewFolderMark) {
-            task->serverProfile().setFolderId(newFolder.getId());
-            task->serverProfile().setFolderTitle(newFolder.getTitle());
+        ServerProfile& serverProfile = task->serverProfile();
+        if (serverProfile.folderId() == CFolderItem::NewFolderMark) {
+            serverProfile.setFolderId(newFolder.getId());
+            serverProfile.setFolderTitle(newFolder.getTitle());
 
             if (newFolder.getId() == CFolderItem::NewFolderMark) {
                 SetStatus(stCreatingFolder, newFolder.title);

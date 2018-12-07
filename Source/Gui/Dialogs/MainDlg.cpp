@@ -105,7 +105,7 @@ bool CMainDlg::CheckEditInteger(int Control)
 {
     TCHAR Buffer[MAX_PATH];
     GetDlgItemText(Control, Buffer, sizeof(Buffer)/sizeof(TCHAR));
-    if(lstrlen(Buffer) == 0) return false;
+    if(Buffer[0] == '\0') return false;
     int n = GetDlgItemInt(Control);
     if(n) SetDlgItemInt(Control, (n<0)?(-n):n);
     else SetDlgItemText(Control, _T(""));

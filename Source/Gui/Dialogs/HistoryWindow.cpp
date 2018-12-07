@@ -361,7 +361,7 @@ void CHistoryWindow::LoadHistoryFile(CString fileName)
         m_historyReader = new CHistoryReader();
         m_historyReader->loadFromFile(WCstringToUtf8(historyFolder + fileName));
         FillList(m_historyReader);
-        m_delayedFileName = "";
+        m_delayedFileName.Empty();
     }
     else
     {

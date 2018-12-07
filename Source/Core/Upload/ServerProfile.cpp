@@ -35,7 +35,7 @@ std::string ServerProfile::folderTitle() const
     return folderTitle_;
 }
 
-void ServerProfile::setFolderTitle(std::string newTitle)
+void ServerProfile::setFolderTitle(const std::string& newTitle)
 {
     folderTitle_ = newTitle;
 }
@@ -45,7 +45,7 @@ std::string ServerProfile::folderId() const
     return folderId_;
 }
 
-void ServerProfile::setFolderId(std::string newId)
+void ServerProfile::setFolderId(const std::string& newId)
 {
     folderId_ = newId;
 }
@@ -55,7 +55,7 @@ std::string ServerProfile::folderUrl() const
     return folderUrl_;
 }
 
-void ServerProfile::setFolderUrl(std::string newUrl)
+void ServerProfile::setFolderUrl(const std::string& newUrl)
 {
     folderUrl_ = newUrl;
 }

@@ -415,7 +415,7 @@ void CPictureExWnd::UnLoad()
     };
     
     std::vector<TFrame>::iterator it;
-    for (it=m_arrFrames.begin();it<m_arrFrames.end();it++)
+    for (it=m_arrFrames.begin();it<m_arrFrames.end();++it)
         (*it).m_pPicture->Release();
     m_arrFrames.clear();
 

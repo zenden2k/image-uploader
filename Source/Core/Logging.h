@@ -16,7 +16,7 @@ std::ostream& operator<<(std::ostream& out, const wchar_t* str);
 std::ostream& operator<<(std::ostream& out, const std::wstring& str);
 
 #ifdef _WIN32
-std::ostream& operator<<(std::ostream& out, RECT rc);
+std::ostream& operator<<(std::ostream& out, const RECT& rc);
 
 #endif
 

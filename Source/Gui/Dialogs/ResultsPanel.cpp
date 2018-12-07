@@ -52,7 +52,7 @@ CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>  & urlLi
 
 CResultsPanel::~CResultsPanel()
 {
-    if(TemplateHead) delete[] TemplateHead;
+    delete[] TemplateHead;
     if (webViewWindow_ && webViewWindow_->m_hWnd)
     {
         webViewWindow_->DestroyWindow();
@@ -67,7 +67,7 @@ bool CResultsPanel::LoadTemplate()
     DWORD dwBytesRead, dwFileSize;
     CString FileName = IuCommonFunctions::GetDataFolder() + _T("template.txt");
 
-    if(TemplateHead) delete[] TemplateHead;
+    delete[] TemplateHead;
     TemplateHead = NULL;
     TemplateFoot = NULL;
     HANDLE hFile = CreateFile(FileName, GENERIC_READ, 0, 0,OPEN_EXISTING, 0, 0);
@@ -604,7 +604,7 @@ bool CResultsPanel::LoadTemplates(CString &Error)
     return true;
 }
 
-bool CResultsPanel::LoadTemplateFromFile(const CString fileName, CString &Error)
+bool CResultsPanel::LoadTemplateFromFile(const CString& fileName, CString &Error)
 {
     SimpleXml XML;
     if(!WinUtils::FileExists(fileName))

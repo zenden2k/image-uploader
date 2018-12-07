@@ -32,7 +32,7 @@ std::ostream& operator<<(std::ostream& out, const std::wstring& str) {
 }
 
 #ifdef _WIN32
-std::ostream& operator<<(std::ostream& out, RECT rc) {
+std::ostream& operator<<(std::ostream& out, const RECT& rc) {
     char buffer[100];
     sprintf(buffer, "%d %d %d %d", rc.top, rc.left, rc.right - rc.left, rc.bottom - rc.top);
     return operator<<(out, buffer);

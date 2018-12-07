@@ -226,7 +226,6 @@ std::string CHistoryManager::makeFileName() const
 
 bool CHistoryManager::clearHistory(HistoryClearPeriod period) {
     IuCoreUtils::ZGlobalMutex mutex("IuHistoryFileSessionMutex");
-    std::vector<std::string> files;
     std::string historyFolder = m_historyFilePath;
     boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
 

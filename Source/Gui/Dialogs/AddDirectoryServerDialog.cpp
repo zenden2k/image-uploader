@@ -90,8 +90,7 @@ LRESULT CAddDirectoryServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND 
         directory += _T("\\");
 
     }
-    CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDITBOX);
-    CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDITBOX);
+
     bool addFileProtocol = GuiTools::GetCheck(m_hWnd, IDC_ADDFILEPROTOCOL);
     
     ServerListManager slm(Settings.SettingsFolder + "Servers\\", uploadEngineList_, Settings.ServersSettings);

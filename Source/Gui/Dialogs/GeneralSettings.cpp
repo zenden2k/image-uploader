@@ -84,7 +84,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
     while(GetNextLngFile(buf, sizeof(buf)/sizeof(TCHAR)))
     {
-        if(lstrlen(buf) == 0 || lstrcmpi(WinUtils::GetFileExt(buf), _T("lng"))) continue;
+        if (buf[0] == '\0' || lstrcmpi(WinUtils::GetFileExt(buf), _T("lng"))) continue;
         buf2 = WinUtils::GetOnlyFileName(buf );
         if (buf2 == _T("English")) {
             continue;

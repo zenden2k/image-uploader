@@ -123,8 +123,9 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
         WinUtils::ExtractStrFromList(Buffer, 0, Name, sizeof(Name) / sizeof(TCHAR), _T(""), _T('='));
         WinUtils::ExtractStrFromList(Buffer, 1, Text, sizeof(Text) / sizeof(TCHAR), _T(""), _T('='));
 
-        if (Name[lstrlen(Name) - 1] == _T(' '))
-            Name[lstrlen(Name) - 1] = 0;
+        int len = lstrlen(Name);
+        if (len > 0 && Name[len - 1] == _T(' '))
+            Name[len - 1] = 0;
 
         CString RepText = Text;
         RepText.Replace(_T("\\n"), _T("\r\n"));

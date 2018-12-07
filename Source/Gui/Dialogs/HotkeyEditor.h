@@ -27,6 +27,7 @@
 #include "3rdpart/vkCodes.h"
 #include "HotkeySettings.h"
 #include "Func/LangClass.h"
+
 // CHotkeyEditor
 struct MYHOTKEY
 {
@@ -44,7 +45,7 @@ struct MYHOTKEY
         return res;
     }
 
-    bool DeSerialize(const CString data)
+    bool DeSerialize(const CString& data)
     {
         DWORD key = _tstoi(data);
         keyCode = LOWORD(key);
@@ -141,6 +142,8 @@ class CHotkeyItem
         CString func;
         DWORD commandId;
         CString name;
+        bool setForegroundWindow;
+
         CString GetDisplayName();
 
         void Clear()
@@ -149,6 +152,7 @@ class CHotkeyItem
             localKey.keyModifier = 0;
             globalKey.keyCode = 0;
             globalKey.keyModifier = 0;
+            setForegroundWindow = true;
         }
 
         bool IsNull() const

@@ -8,7 +8,7 @@
 class IUploadErrorHandler {
 public:
     virtual ~IUploadErrorHandler(){};
-    virtual void ErrorMessage(ErrorInfo errorInfo) = 0;
+    virtual void ErrorMessage(const ErrorInfo& errorInfo) = 0;
     virtual void DebugMessage(const std::string& msg, bool isResponseBody)=0;
 };
 

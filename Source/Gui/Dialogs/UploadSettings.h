@@ -214,7 +214,7 @@ public:
     LRESULT OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     std::map<CString, ImageConvertingParams>& convert_profiles_;
     void ShowParams(const ImageConvertingParams& params);
-    void ShowParams(const CString profileName);
+    void ShowParams(const CString& profileName);
     bool SaveParams(ImageConvertingParams& params);
     CString CurrentProfileName;
     void ProfileChanged();

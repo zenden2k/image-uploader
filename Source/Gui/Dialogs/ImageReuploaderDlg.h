@@ -116,7 +116,7 @@ class CImageReuploaderDlg:    public CDialogImpl <CImageReuploaderDlg>,
         LRESULT OnClickedCopyToClipboardButton(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnShowLogClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         
-        bool ExtractLinks(std::string text, std::vector<std::string> &result);
+        bool ExtractLinks(const std::string& text, std::vector<std::string> &result);
         bool BeginDownloading();
         static bool LinksAvailableInText(const CString &text);
         void OnQueueFinished();
@@ -132,7 +132,7 @@ class CImageReuploaderDlg:    public CDialogImpl <CImageReuploaderDlg>,
         bool pasteHtml();
         bool OnClose();
         bool tryGetFileFromCache(CFileDownloader::DownloadFileListItem it, CString& logMessage);
-        bool addUploadTask(CFileDownloader::DownloadFileListItem it, std::string localFileName );
+        bool addUploadTask(CFileDownloader::DownloadFileListItem it, const std::string& localFileName );
         //bool OnConfigureNetworkClient(NetworkClient* nm);
         // bool OnUploadProgress(UploadProgress progress, UploadTask* task, NetworkClient* nm){return true;}
 

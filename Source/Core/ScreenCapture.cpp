@@ -144,7 +144,6 @@ RECT ScreenFromRectangle(RECT rc)
 {
     monitorsRects.clear();
     EnumDisplayMonitors(0, 0, MonitorEnumProc, 0);
-    CRect result;
     int max = 0;
     size_t iMax = 0;
     for (size_t i = 0; i < monitorsRects.size(); i++)
@@ -295,7 +294,6 @@ HRGN GetWindowVisibleRegion(HWND wnd)
     while (GetWindowLong(wnd, GWL_STYLE) & WS_CHILD)
     {
         wnd = GetParent(wnd);
-        CRgn parentRgn;
         RECT rc;
         if (GetClientRect(wnd, &rc))
         {
@@ -546,7 +544,7 @@ LRESULT CALLBACK WndProcedure(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-HWND CreateDummyWindow(RECT rc)
+HWND CreateDummyWindow(const RECT& rc)
 {
     HWND hWnd;
     WNDCLASSEX WndClsEx;
@@ -765,7 +763,7 @@ bool AddBorderShadow(Bitmap* input, bool roundedShadowCorners, Bitmap** out)
     return *out != 0;
 }
 
-bool CheckRect(RECT rect, COLORREF color)
+bool CheckRect(const RECT& rect, COLORREF color)
 {
     HDC screenDC = ::GetDC(0);
     COLORREF pixel = GetPixel(screenDC, (rect.right - rect.left) / 2, (rect.bottom - rect.bottom / 2) - 1);

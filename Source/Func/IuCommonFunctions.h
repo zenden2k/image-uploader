@@ -12,7 +12,7 @@ namespace IuCommonFunctions {
     void ClearTempFolder(LPCTSTR folder);
 
     int GetNextImgFile(LPCTSTR folder, LPTSTR szBuffer, int nLength);
-    CString GenerateFileName(const CString &templateStr, int index, const CPoint size, const CString& originalName = _T(""));
+    CString GenerateFileName(const CString &templateStr, int index, const CPoint& size, const CString& originalName = _T(""));
     bool IsImage(LPCTSTR szFileName);
 
     CString FindDataFolder();

@@ -57,8 +57,6 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
 
     menuItemsListBox_.m_hWnd = GetDlgItem(IDC_CONTEXTMENUITEMSLIST);
 
-    CString buf2;
-
     SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_SETCHECK, Settings.ExplorerContextMenu);
     
     bool shellIntegrationAvailable = WinUtils::FileExists(Settings.getShellExtensionFileName())!=0;

@@ -143,7 +143,7 @@ bool CWizardDlg::pasteFromClipboard() {
 CWizardDlg::~CWizardDlg()
 {
     //Detach();
-    if(updateDlg) delete updateDlg;
+    delete updateDlg;
     for(int i=0; i<5; i++) 
     {
         CWizardPage *p = Pages[i];

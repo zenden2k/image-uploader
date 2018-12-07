@@ -11,7 +11,7 @@ DefaultUploadErrorHandler::DefaultUploadErrorHandler(ILogger* logger) {
 }
 
 
-void DefaultUploadErrorHandler::ErrorMessage(ErrorInfo errorInfo)
+void DefaultUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo)
 {
     LogMsgType type = errorInfo.messageType == (ErrorInfo::mtWarning) ? logWarning : logError;
     CString errorMsg;

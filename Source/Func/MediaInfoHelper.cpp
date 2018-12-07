@@ -123,7 +123,7 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
     MI.Open(FileName);
 
     CString Result;
-    CString VideoFormat, VideoVersion, VideoCodec, VideoWidth, VideoHeight, VideoAspectRatio, VideoFrameRate, VideoBitrate, VideoNominalBitrate, VideoBitsperPixel;
+    CString VideoFormat, VideoVersion, VideoCodec, VideoFrameRate, VideoBitrate, VideoNominalBitrate, VideoBitsperPixel;
     CString AudioFormat, AudioFormatProfile, AudioSampleRate, AudioChannels, AudioBitrate, AudioBitrateMode, AudioLanguage;
 
     int count = MI.Count_Get(Stream_Audio); //Count of audio streams in file
@@ -165,18 +165,18 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
         CString width = VIDEO("Width");
         CString height = VIDEO("Height");
 
-        CString aspectRatio = MI.Get(Stream_Video, 0, _T("DisplayAspectRatio"), Info_Text, Info_Name).c_str();
+        /*CString aspectRatio = MI.Get(Stream_Video, 0, _T("DisplayAspectRatio"), Info_Text, Info_Name).c_str();
         try {
-            double fAspectRatio = boost::lexical_cast<double>(LPCTSTR(aspectRatio));
+            //double fAspectRatio = boost::lexical_cast<double>(LPCTSTR(aspectRatio));
             int iWidth = boost::lexical_cast<int>(LPCTSTR(width));
             int iHeight = boost::lexical_cast<int>(LPCTSTR(height));
-            double physicalAspect = iWidth / static_cast<double>(iHeight);
+            //double physicalAspect = iWidth / static_cast<double>(iHeight);
             /*if (physicalAspect != fAspectRatio) {
                 //LOG(WARNING) << "physicalAspect " << physicalAspect << " != " << fAspectRatio;
-            }*/
+            }*
         } catch ( const boost::bad_lexical_cast& ex ) {
             LOG(WARNING) << ex.what();
-        }
+        }*/
 
         AddStr(VideoTotal, VideoFormat);
         replace(VideoVersion, CString(_T("Version ")), CString(_T("")));
@@ -194,7 +194,6 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
         AddStr(VideoTotal, VIDEO("Height"));
         replace(VideoTotal, CString(_T("MPEG Video")), CString(_T("MPEG")));
         CString DisplayRatio;
-        CString temp;
         replace(VideoTotal, CString(_T("MPEG-4 Visual")), CString(_T("MPEG4")));
         DisplayRatio = VIDEO("DisplayAspectRatio/String");
         if (DisplayRatio.GetLength()) {
@@ -233,7 +232,7 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
         Result += _T("\r\n");
     }  // End of getting information about video stream
 
-    CString CountString = MI.Get(Stream_Audio, 0, _T("StreamCount"), Info_Text, Info_Name).c_str();
+    //CString CountString = MI.Get(Stream_Audio, 0, _T("StreamCount"), Info_Text, Info_Name).c_str();
 
     for (int i = 0; i < count; i++) {
         CString AudioTotal;

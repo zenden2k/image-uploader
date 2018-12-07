@@ -60,11 +60,11 @@ public:
     std::string serverName() const;
 
     std::string folderTitle() const;
-    void setFolderTitle(std::string newTitle);
+    void setFolderTitle(const std::string& newTitle);
     std::string folderId() const;
-    void setFolderId(std::string newId);
+    void setFolderId(const std::string& newId);
     std::string folderUrl() const;
-    void setFolderUrl(std::string newUrl);
+    void setFolderUrl(const std::string& newUrl);
 
     bool shortenLinks() const;
     void setShortenLinks(bool shorten);

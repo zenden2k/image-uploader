@@ -156,7 +156,6 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
         std::string path = uri.path();
         NetworkClient nc;
         std::string fileName = nc.urlDecode(IuCoreUtils::ExtractFileName(path));
-        std::string ext = IuCoreUtils::ExtractFileExt(fileName);
 
         if (fileName.length() > 30) {
             fileName = fileName.substr(0, 30);

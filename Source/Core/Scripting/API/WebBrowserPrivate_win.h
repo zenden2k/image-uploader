@@ -259,7 +259,7 @@ protected:
             return;
         }
 
-        CRect r(0,0, initialWidth_, initialWidth_);
+        //CRect r(0,0, initialWidth_, initialWidth_);
         webViewWindow_.Create(parent,CWindow::rcDefault,initialTitle_, WS_POPUP | WS_OVERLAPPEDWINDOW    );
         webViewWindow_.view_.PutSilent(initialSilent_);
         CDC hdc = ::GetDC(webViewWindow_.m_hWnd);

@@ -74,12 +74,12 @@ bool BasicSettings::LoadAccounts(SimpleXmlNode root)
 #if !defined(IU_SHELLEXT)
         std::string encodedLogin = server.Attribute("Login");
         CEncodedPassword login;
-        login.fromEncodedData(encodedLogin.c_str());
+        login.fromEncodedData(encodedLogin);
         tempSettings.authData.Login = login;
 
         std::string encodedPass = server.Attribute("Password");
         CEncodedPassword pass;
-        pass.fromEncodedData(encodedPass.c_str());
+        pass.fromEncodedData(encodedPass);
         tempSettings.authData.Password = pass;
 #else
         tempSettings.authData.Login = server.Attribute("Login");
@@ -162,7 +162,7 @@ void BasicSettings::notifyChange() {
     }
 }
 
-bool BasicSettings::LoadSettings(std::string szDir, std::string fileName, bool LoadFromRegistry) {
+bool BasicSettings::LoadSettings(const std::string& szDir, const std::string& fileName, bool LoadFromRegistry) {
     loadFromRegistry_ = LoadFromRegistry;
     fileName_ = !szDir.empty() ? szDir + ((!fileName.empty()) ? fileName : "Settings.xml")
         : SettingsFolder + (!fileName.empty() ? fileName : "Settings.xml");

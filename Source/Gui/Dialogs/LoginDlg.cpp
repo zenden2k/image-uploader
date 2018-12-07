@@ -89,9 +89,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
         signupLink_.ShowWindow(SW_SHOW);
     }
 
-    CString deleteAccountLabelText;
     accountName_ = Utf8ToWCstring(li.Login);
-    //deleteAccountLabelText.Format(R( "Удалить учетную запись \"%s\" из списка"), (LPCTSTR)accountName_);
 
     SetDlgItemText(IDC_LOGINEDIT, accountName_);
     SetDlgItemText(IDC_PASSWORDEDIT, Utf8ToWCstring(li.Password));
@@ -142,7 +140,7 @@ LRESULT CLoginDlg::OnDeleteAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndC
     std::map <std::string, ServerSettingsStruct>& ss = Settings.ServersSettings[serverProfile_.serverName()];
     ss.erase(WCstringToUtf8(accountName_));
 
-    accountName_ = "";
+    accountName_.Empty();
     EndDialog(ID_DELETEACCOUNT);
     return 0;
 }

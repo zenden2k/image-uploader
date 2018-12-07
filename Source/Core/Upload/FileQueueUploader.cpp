@@ -66,7 +66,7 @@ void CFileQueueUploader::setMaxThreadCount(int threadCount) {
     _impl->threadCount_ = threadCount;
 }
 
-bool CFileQueueUploader::isSlotAvailableForServer(std::string serverName, int maxThreads) {
+bool CFileQueueUploader::isSlotAvailableForServer(const std::string& serverName, int maxThreads) {
     int threads = _impl->serverThreads_[serverName].runningThreads + _impl->serverThreads_[serverName].waitingFileCount;
     return threads < maxThreads && threads < _impl->threadCount_;
 }

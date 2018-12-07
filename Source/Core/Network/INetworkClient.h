@@ -62,7 +62,7 @@ class INetworkClient {
         virtual double getCurlInfoDouble(int option) = 0;
         virtual void setMethod(const std::string &str) = 0;
         virtual void setProxy(const std::string &host, int port = 0, int type = 0) = 0;
-        virtual void setProxyUserPassword(const std::string &username, const std::string password) = 0;
+        virtual void setProxyUserPassword(const std::string &username, const std::string& password) = 0;
         virtual void clearProxy() = 0;
         virtual void setReferer(const std::string &str) = 0;
         virtual void setOutputFile(const std::string &str) = 0;

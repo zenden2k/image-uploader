@@ -105,7 +105,7 @@ Sqrat::SqratVM& Script::getVM()
     return vm_;
 }
 
-bool Script::load(std::string fileName)
+bool Script::load(const std::string& fileName)
 {
     using namespace Sqrat;
     if (!IuCoreUtils::FileExists(fileName))

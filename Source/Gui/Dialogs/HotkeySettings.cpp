@@ -183,16 +183,16 @@ CHotkeyList::CHotkeyList()
     AddItem(TR("Upload folder"),_T("addfolder"), IDM_ADDFOLDERS);
     AddItem(TR("Import Video File"),_T("importvideo"), IDM_IMPORTVIDEO);
     AddItem(TR("Screenshot"),_T("screenshotdlg"), IDM_SCREENSHOTDLG);
-    AddItem(TR("Capture Rectangular Region"),_T("regionscreenshot"), IDM_REGIONSCREENSHOT);
-    AddItem(TR("Capture the Entire Screen"),_T("fullscreenshot"), IDM_FULLSCREENSHOT);
-    AddItem(TR("Capture the Active Window"),_T("windowscreenshot"), IDM_WINDOWSCREENSHOT);
-    AddItem(TR("Capture Selected Object"),_T("windowhandlescreenshot"), IDM_WINDOWHANDLESCREENSHOT);
-    AddItem(TR("Freehand Capture"),_T("freeformscreenshot"), IDM_FREEFORMSCREENSHOT);
+    AddItem(TR("Capture Rectangular Region"),_T("regionscreenshot"), IDM_REGIONSCREENSHOT, false);
+    AddItem(TR("Capture the Entire Screen"),_T("fullscreenshot"), IDM_FULLSCREENSHOT, false);
+    AddItem(TR("Capture the Active Window"),_T("windowscreenshot"), IDM_WINDOWSCREENSHOT, false);
+    AddItem(TR("Capture Selected Object"),_T("windowhandlescreenshot"), IDM_WINDOWHANDLESCREENSHOT, false);
+    AddItem(TR("Freehand Capture"),_T("freeformscreenshot"), IDM_FREEFORMSCREENSHOT, false);
     AddItem(TR("Show program's window"),_T("showmainwindow"), IDM_SHOWAPPWINDOW);
     AddItem(TR("Open screenshots folder"), _T("open_screenshot_folder"), IDM_OPENSCREENSHOTSFOLDER);
     AddItem(TR("Settings"),_T("settings"), IDM_SETTINGS);
-    AddItem(TR("Paste"),_T("paste"), IDM_PASTEFROMCLIPBOARD,0x56, MOD_CONTROL); // Ctrl+V keyboard shortcut
-    AddItem(TR("Images from web"),_T("downloadimages"), IDM_PASTEFROMWEB); // Ctrl+V keyboard shortcut
+    AddItem(TR("Paste"),_T("paste"), IDM_PASTEFROMCLIPBOARD,true,0x56, MOD_CONTROL); // Ctrl+V keyboard shortcut
+    AddItem(TR("Images from web"),_T("downloadimages"), IDM_PASTEFROMWEB); 
     AddItem(TR("View Media File Information"),_T("mediainfo"), IDM_MEDIAINFO);
     AddItem(TR("Exit"),_T("mediainfo"), IDM_EXIT);
     AddItem(TR("Shorten a link"),_T("shortenurl"), IDM_SHORTENURL);
@@ -230,7 +230,7 @@ bool CHotkeyList::operator==( const CHotkeyList& c)
     return false;
 }
 
-void CHotkeyList::AddItem(CString name, CString func, DWORD commandId, WORD code, WORD modif)
+void CHotkeyList::AddItem(CString name, CString func, DWORD commandId, bool setForegroundWindow, WORD code, WORD modif)
 {
     CHotkeyItem hi;
     hi.localKey.keyCode = code;
@@ -239,6 +239,7 @@ void CHotkeyList::AddItem(CString name, CString func, DWORD commandId, WORD code
     hi.func = func;
     hi.name = name;
     hi.commandId = commandId;
+    hi.setForegroundWindow = setForegroundWindow;
     push_back(hi);
 }
 

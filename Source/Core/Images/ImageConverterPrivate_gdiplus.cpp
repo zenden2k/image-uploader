@@ -311,7 +311,6 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     Graphics g1(dc);
     CString filePath = U2W(thumbnailTemplate_->getSpriteFileName());
     Image templ(filePath);
-    CString s;
 
     LOGFONT lf;
     WinUtils::StringToFont(_T("Tahoma,7,b,204"), &lf);
@@ -514,7 +513,7 @@ bool ImageConverterPrivate::EvaluateRect(const std::string& rectStr, RECT* out)
     return true;
 }
 
-Gdiplus::Brush* ImageConverterPrivate::CreateBrushFromString(const std::string& brStr, RECT rect) {
+Gdiplus::Brush* ImageConverterPrivate::CreateBrushFromString(const std::string& brStr, const RECT& rect) {
     std::vector<std::string> tokens;
     IuStringUtils::Split(brStr, ":", tokens, 10);
     if (tokens[0] == "solid") {

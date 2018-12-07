@@ -9,7 +9,7 @@
 class DefaultUploadErrorHandler : public IUploadErrorHandler {
 public:
     DefaultUploadErrorHandler(ILogger* logger);
-    virtual void ErrorMessage(ErrorInfo errorInfo) override;
+    virtual void ErrorMessage(const ErrorInfo& errorInfo) override;
     virtual void DebugMessage(const std::string& msg, bool isResponseBody) override;
 protected:
     ILogger* logger_;

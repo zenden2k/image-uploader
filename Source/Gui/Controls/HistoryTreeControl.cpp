@@ -203,7 +203,6 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     CRect calcRect;
 
     CDC dc (hdc);
-    CBrush br;
     
     dc.SetBkMode(TRANSPARENT);
     dc.SetTextColor(RGB(0,0,0));
@@ -398,8 +397,7 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
             dc.FrameRect(&thumbRect, br);
         HistoryItem * it2 = getItemData(item);
         std::string fileName = IuCoreUtils::ExtractFileName(it2->localFilePath);
-        CString ext = Utf8ToWstring(IuCoreUtils::ExtractFileExt(fileName)).c_str();
-        
+
         CString iconSourceFileName = Utf8ToWCstring(it2->localFilePath);
         if(iconSourceFileName.IsEmpty())
             iconSourceFileName = Utf8ToWCstring(it2->directUrl);

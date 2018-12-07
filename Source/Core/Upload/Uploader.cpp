@@ -269,7 +269,7 @@ void CUploader::DebugMessage(const std::string& message, bool isServerResponseBo
         onDebugMessage(this, message, isServerResponseBody);
 }
 
-void CUploader::ErrorMessage(ErrorInfo error)
+void CUploader::ErrorMessage(const ErrorInfo& error)
 {
     if (onErrorMessage)
         onErrorMessage(this, error);

@@ -120,7 +120,7 @@ bool InsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm){
     return InsertMenuItem(hMenu, pos, TRUE, &MenuItem)!=0;
 }
 
-void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, bool Horizontal) {
+void FillRectGradient(HDC hdc, const RECT& FillRect, COLORREF start, COLORREF finish, bool Horizontal) {
         RECT rectFill;          
         float fStep;            //The size of each band in pixels
         HBRUSH hBrush;

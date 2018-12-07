@@ -142,7 +142,6 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
     DrawText(dc, item->strText, item->strText.GetLength(), &Dimensions,    DT_CALCRECT);
     item->TextHeight = Dimensions.bottom - Dimensions.top;
     SelectObject(dc, NormalFont);
-    CString str;
     lpmis->itemWidth = ItemWidth;
     lpmis->itemHeight = LLB_VertMargin + item->TitleHeight + LLB_VertDivider + item->TextHeight + (item->InfoHeight?(LLB_VertDivider + item->InfoHeight):0) + LLB_VertMargin+2;
     lpmis->itemHeight = std::max(lpmis->itemHeight, static_cast<UINT>(dpiScaleY_ * 70) );

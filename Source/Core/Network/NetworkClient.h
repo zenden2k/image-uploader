@@ -115,7 +115,7 @@ class NetworkClient: public INetworkClient
         void setMethod(const std::string &str) override;
         /*! @cond PRIVATE */
         void setProxy(const std::string &host, int port = 0, int type = 0) override;
-        void setProxyUserPassword(const std::string &username, const std::string password) override;
+        void setProxyUserPassword(const std::string &username, const std::string& password) override;
         void clearProxy() override;
         /*! @endcond */
         void setReferer(const std::string &str) override;

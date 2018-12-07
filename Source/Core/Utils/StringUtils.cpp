@@ -40,7 +40,7 @@ std::string Trim(const std::string& str)
     // if all spaces or empty return an empty string
     if ((std::string::npos == startpos) || (std::string::npos == endpos))
     {
-        res = "";
+        res.clear();
     }
     else
         res = str.substr( startpos, endpos - startpos + 1 );

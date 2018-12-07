@@ -77,7 +77,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
                                         serverSelectorRect.bottom - serverSelectorRect.top, 0);
     imageServerSelector_->setServerProfile(Settings.imageServer);
     
-    CString serverName = U2W(fileTask_->serverProfile().serverName());
+    //CString serverName = U2W(fileTask_->serverProfile().serverName());
 
     GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEEXCEEDNAME));
     

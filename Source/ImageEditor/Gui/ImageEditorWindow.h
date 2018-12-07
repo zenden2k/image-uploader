@@ -231,7 +231,7 @@ public:
     void setRoundingRadius(int radius) { roundingRadius_ = radius; }
     int roundingRadius() const { return roundingRadius_;}
     bool allowAltTab() const  {  return allowAltTab_; } 
-    void setFont(LOGFONT font) { font_ = font; }
+    void setFont(const LOGFONT& font) { font_ = font; }
     LOGFONT font() const { return font_; }
     void setSearchEngine(SearchByImage::SearchEngine se) {
         searchEngine_ = se;

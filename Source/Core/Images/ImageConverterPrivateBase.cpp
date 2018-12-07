@@ -75,7 +75,6 @@ std::string ImageConverterPrivateBase::ReplaceVars(const std::string& expr)
                 pos = reg.get_match_end() + 1;
                 std::string vv = reg[1];
                 unsigned int res = strtoul(vv.c_str(), 0, 16);
-                std::string value = m_Vars[vv];
 
                 Result = IuStringUtils::Replace(Result, std::string("#") + vv, IuCoreUtils::toString(res));
             }

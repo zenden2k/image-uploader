@@ -27,7 +27,7 @@ class Script {
     protected:
         virtual void PrintCallback(const std::string& output);
         void checkCallingThread();
-        bool load(std::string fileName);
+        bool load(const std::string& fileName);
         void FlushSquirrelOutput();
         virtual bool preLoad();
         virtual bool postLoad();

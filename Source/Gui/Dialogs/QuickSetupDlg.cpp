@@ -231,7 +231,6 @@ void  CQuickSetupDlg::serverChanged() {
         if ( !uploadEngineData ) {
             return ;
         }
-        CString serverName = Utf8ToWCstring( uploadEngineData->Name );
         bool authorizationAvailable = uploadEngineData->NeedAuthorization != 0;
         showAuthorizationControls( authorizationAvailable );
         bool forceAuthorization = uploadEngineData->NeedAuthorization == 2;

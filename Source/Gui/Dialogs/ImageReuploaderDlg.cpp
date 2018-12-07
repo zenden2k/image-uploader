@@ -264,7 +264,7 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
     return success;
 }
 
-bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it, std::string localFileName ) {
+bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it, const std::string& localFileName ) {
     std::string mimeType = IuCoreUtils::GetFileMimeType(localFileName);
     if (mimeType.find("image/") == std::string::npos) {
         ServiceLocator::instance()->logger()->write(logError, LogTitle, _T("File '") + U2W(it.url) +
@@ -315,7 +315,7 @@ void CImageReuploaderDlg::OnQueueFinished()
     }
 }
 
-bool CImageReuploaderDlg::ExtractLinks(std::string text, std::vector<std::string> &result) {
+bool CImageReuploaderDlg::ExtractLinks(const std::string& text, std::vector<std::string> &result) {
     pcrepp::Pcre regExpImages("<img [^>]*src=[\"|\']([^\"|\']+)", "imcu");
     
     std::string str = text;
@@ -446,9 +446,6 @@ bool CImageReuploaderDlg::BeginDownloading()
             uriparser::Uri uri(url);
             std::string scheme = uri.scheme();
             std::string host = uri.host();
-            std::string path = uri.path();
-
-            std::string fileExt = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt( path ) );
 
             CString urlWide = Utf8ToWCstring(url);
             if ( scheme.empty() && !host.empty() /*urlWide.Left(2) == _T("//")*/) { // links without protocol

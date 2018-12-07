@@ -38,7 +38,7 @@ GdiPlusImage::~GdiPlusImage() {
 bool GdiPlusImage::saveToFile(const std::string& fileName) const
 {
     std::map<std::string, std::string> mimeTypes;
-    mimeTypes["jpg"] = "image/jpeg";
+    mimeTypes["jpg"] = "image/jpeg"; //-V691
     mimeTypes["jpeg"] = "image/jpeg";
     mimeTypes["png"] = "image/png";
     std::string ext = IuStringUtils::toLower(IuCoreUtils::ExtractFileExt(fileName));

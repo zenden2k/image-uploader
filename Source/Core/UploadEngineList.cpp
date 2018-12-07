@@ -220,7 +220,7 @@ bool CUploadEngineList::LoadFromFile(const std::string& filename, ServerSettings
                     std::vector<std::string> Vars;
                     nm_splitString(reg.AssignVars, ";", Vars);
 
-                    for (std::vector<std::string>::iterator it = Vars.begin(); it != Vars.end(); it++)
+                    for (std::vector<std::string>::iterator it = Vars.begin(); it != Vars.end(); ++it)
                     {
                         std::vector<std::string> NameAndValue;
                         //    std::cout<<"*************"<<*it<<std::endl;

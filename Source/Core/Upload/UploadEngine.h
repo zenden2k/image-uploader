@@ -217,7 +217,7 @@ public:
 
     const std::string getParam(const std::string& name)
     {
-        temp_ = "";
+        temp_.clear();
         if(name == "THUMBWIDTH")
             temp_= IuCoreUtils::toString(thumbWidth);
         else if (name == "THUMBHEIGHT")
@@ -322,7 +322,7 @@ class CAbstractUploadEngine
         fastdelegate::FastDelegate1<InfoProgress> onProgress;
         fastdelegate::FastDelegate3<StatusType, int, std::string> onStatusChanged;
         fastdelegate::FastDelegate2< const std::string&, bool> onDebugMessage;
-        typedef fastdelegate::FastDelegate1<ErrorInfo> ErrorMessageCallback;
+        typedef fastdelegate::FastDelegate1<const ErrorInfo&> ErrorMessageCallback;
         ErrorMessageCallback onErrorMessage;
         DISALLOW_COPY_AND_ASSIGN(CAbstractUploadEngine);
     protected:

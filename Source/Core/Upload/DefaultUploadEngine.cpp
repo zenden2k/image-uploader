@@ -235,7 +235,7 @@ bool CDefaultUploadEngine::DoGetAction(UploadAction& Action)
     return Result;
 }
 
-bool reg_single_match(const std::string pattern, const std::string& text, std::string& res)
+bool reg_single_match(const std::string& pattern, const std::string& text, std::string& res)
 {
     pcrepp::Pcre reg(pattern, "imc"); // Case insensitive match
     if ( reg.search(text) == true ) {
@@ -493,7 +493,6 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
         std::string NewName = VarName;
 
         NewName = ReplaceVars(NewName);
-        std::string vv = NewName;
 
         if (NewValue == "%filename%") {
             _Post += NewName + " = ** FILE CONTENTS ** \r\n";
@@ -546,7 +545,6 @@ void CDefaultUploadEngine::AddCustomHeaders(UploadAction& Action)
                 std::string NewName = VarName;
 
                 NewName = ReplaceVars(NewName);
-                std::string vv = NewName;
 
                 NewValue = ReplaceVars(NewValue);
                 m_NetworkClient->addQueryHeader(NewName, NewValue);
@@ -627,7 +625,7 @@ int CDefaultUploadEngine::RetryLimit()
     return m_UploadData->RetryLimit;
 }
 
-void CDefaultUploadEngine::UploadError(bool error, const std::string errorStr, UploadAction* m_CurrentAction,
+void CDefaultUploadEngine::UploadError(bool error, const std::string& errorStr, UploadAction* m_CurrentAction,
                                        bool writeToBuffer )
 {
     m_LastError.ServerName = m_UploadData->Name;

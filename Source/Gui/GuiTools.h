@@ -36,7 +36,7 @@ namespace GuiTools
     HFONT MakeLabelBold(HWND Label);
     void EnableNextN(HWND Control, int n, bool Enable);
     bool InsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm = 0);
-    void FillRectGradient(HDC hdc, RECT FillRect, COLORREF start, COLORREF finish, bool Horizontal);
+    void FillRectGradient(HDC hdc, const RECT& FillRect, COLORREF start, COLORREF finish, bool Horizontal);
     bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...);
     RECT GetDialogItemRect(HWND dialog, int itemId);
     void ShowDialogItem(HWND dlg, int itemId, bool show);

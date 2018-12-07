@@ -217,7 +217,7 @@ bool CThumbsView::SimpleDelete(int ItemIndex, bool DeleteThumb, bool deleteFile)
     }
 
     SetItemData(ItemIndex, 0);
-    if(TVI) delete TVI;
+    delete TVI;
 
     return true;
 }

@@ -44,8 +44,9 @@ CSettingsDlg::CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager)
 
 CSettingsDlg::~CSettingsDlg()
 {
-    for(int i=0; i<SettingsPageCount; i++)
-        if(Pages[i]) delete Pages[i];
+    for (int i = 0; i < SettingsPageCount; i++) {
+        delete Pages[i];
+    }
 }
 
 LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

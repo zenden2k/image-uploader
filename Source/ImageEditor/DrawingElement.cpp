@@ -189,7 +189,6 @@ void AffectedSegments::getRects( std::deque<RECT>& rects, int maxWidth, int maxH
     RECT bounds = { 0, 0, maxWidth, maxHeight };
     bool checkBounds = maxWidth && maxHeight;
     for( iter i = segments_.begin(); i != segments_.end(); ++i ) {
-        CRgn tempRegion;
         unsigned int index = i->first;
         int xIndex = LOWORD( index );
         int yIndex = HIWORD( index );

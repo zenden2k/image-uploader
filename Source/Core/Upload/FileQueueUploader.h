@@ -47,7 +47,7 @@ class CFileQueueUploader
         void stop();
         bool IsRunning() const;
         void setMaxThreadCount(int threadCount);
-        bool isSlotAvailableForServer(std::string serverName, int maxThreads);
+        bool isSlotAvailableForServer(const std::string& serverName, int maxThreads);
         void addUploadFilter(UploadFilter* filter);
         void removeUploadFilter(UploadFilter* filter);
         int sessionCount();

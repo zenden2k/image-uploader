@@ -376,7 +376,7 @@ void CServerFolderSelect::BuildFolderTree(std::vector<CFolderItem>& list, const 
             m_FolderMap[Utf8ToWstring(cur.id)] = res;
             if (cur.id != "")
                 BuildFolderTree(list, cur.id.c_str());
-            if (parentFolderId == _T(""))
+            if (parentFolderId.IsEmpty())
                 m_FolderTree.Expand(res);
         }
     }

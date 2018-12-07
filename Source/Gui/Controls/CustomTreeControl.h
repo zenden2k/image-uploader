@@ -639,7 +639,7 @@ public:
           lf.lfWeight += FW_BOLD;*/
       //m_di.CategoryFont = m_CategoryFont.CreateFontIndirect(&lf);
       // Text metrics
-      CClientDC dc(m_hWnd);
+      //CClientDC dc(m_hWnd);
 /*      HFONT hOldFont = dc.SelectFont(m_di.TextFont);
       dc.GetTextMetrics(&m_di.tmText);
       dc.SelectFont(hOldFont);*/
