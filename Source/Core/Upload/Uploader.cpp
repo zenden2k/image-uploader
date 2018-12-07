@@ -48,7 +48,7 @@ void CUploader::Cleanup()
     m_CurrentEngine->onErrorMessage.clear();
 }
 
-int CUploader::pluginProgressFunc (NetworkClient* nc, double dltotal, double dlnow, double ultotal, double ulnow)
+int CUploader::pluginProgressFunc (INetworkClient* nc, double dltotal, double dlnow, double ultotal, double ulnow)
 {
     CUploader* uploader = this;
 

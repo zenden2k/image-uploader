@@ -30,6 +30,7 @@
 #include "Core/LocalFileCache.h"
 #include "Core/Images/Utils.h"
 #include "Core/AppParams.h"
+#include "Core/Network/NetworkClientFactory.h"
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl()
@@ -62,13 +63,15 @@ void CHistoryTreeControl::Init()
 
 void CHistoryTreeControl::CreateDownloader()
 {
+    using namespace std::placeholders;
     //delete m_FileDownloader;
     //m_FileDownloader = 0;
     if(!m_FileDownloader)
     {
-        m_FileDownloader = std::make_unique<CFileDownloader>(AppParams::instance()->tempDirectory());
+        auto factory = std::make_shared<NetworkClientFactory>();
+        m_FileDownloader = std::make_unique<CFileDownloader>(factory, AppParams::instance()->tempDirectory());
         m_FileDownloader->onConfigureNetworkClient.bind(this, &CHistoryTreeControl::OnConfigureNetworkClient);
-        m_FileDownloader->onFileFinished.bind(this, &CHistoryTreeControl::OnFileFinished);
+        m_FileDownloader->setOnFileFinishedCallback(std::bind(&CHistoryTreeControl::OnFileFinished, this, _1, _2, _3));
         m_FileDownloader->onQueueFinished.bind(this, &CHistoryTreeControl::QueueFinishedEvent);
     }
 }
@@ -753,7 +756,7 @@ void CHistoryTreeControl::StartLoadingThumbnails()
     }
 }
 
-bool CHistoryTreeControl::OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it)
+bool CHistoryTreeControl::OnFileFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it)
 {
     if(ok && !it.fileName.empty())
     {
@@ -825,6 +828,6 @@ void CHistoryTreeControl::ResetContent()
     CCustomTreeControlImpl<CHistoryTreeControl>::ResetContent();
 }
 
-void CHistoryTreeControl::OnConfigureNetworkClient(NetworkClient* nm) {
+void CHistoryTreeControl::OnConfigureNetworkClient(INetworkClient* nm) {
     nm->setTreatErrorsAsWarnings(true); // no need to bother user with download errors
 }

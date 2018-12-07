@@ -25,6 +25,8 @@ if(WIN32)
         ../Func/GdiPlusInitializer.cpp
         ../3rdpart/QColorQuantizer.cpp
         ../3rdpart/QColorQuantizer.cpp
+		../Core/FileDownloader.cpp
+        ../Core/FileDownloaderTest.cpp
     )
 endif()
 
@@ -41,4 +43,4 @@ else()
 endif()
 
 target_link_libraries(Tests libiucore ${COMMON_LIBS_LIST} ${LIBS_LIST} )
-target_link_libraries(Tests debug gtestd optimized gtest)
+target_link_libraries(Tests debug gmockd optimized gmock)

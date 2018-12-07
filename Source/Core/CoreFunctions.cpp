@@ -14,7 +14,7 @@ std::unique_ptr<NetworkClient> createNetworkClient() {
     return cl;
 }
 
-void ConfigureProxy(NetworkClient* nm)
+void ConfigureProxy(INetworkClient* nm)
 {
 #ifdef _WIN32
     if (Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kSystemProxy) {

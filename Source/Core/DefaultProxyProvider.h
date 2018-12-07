@@ -9,7 +9,7 @@ class DefaultProxyProvider : public NetworkClient::ProxyProvider {
 public:
     DefaultProxyProvider();
     ~DefaultProxyProvider();
-    bool provideProxyForUrl(NetworkClient* client, const std::string& url) override;
+    bool provideProxyForUrl(INetworkClient* client, const std::string& url) override;
 protected:
     HINTERNET hInternet_;
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG myProxyConfig_;

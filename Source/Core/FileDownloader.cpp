@@ -25,18 +25,17 @@
 
 #include "Func/WinUtils.h"
 #include "Core/3rdpart/UriParser.h"
-#include "CoreFunctions.h"
 
 // TODO:
 // 2. remove dependency from non-core headers ( "Common.h")
 // 3. Use pimpl
-CFileDownloader::CFileDownloader(const std::string& tempDirectory)
+CFileDownloader::CFileDownloader(std::shared_ptr<INetworkClientFactory> factory, const std::string& tempDirectory, bool createFilesBeforeDownloading)
+    : tempDirectory_(tempDirectory), networkClientFactory_(factory), createFileBeforeDownloading_(createFilesBeforeDownloading)
 {
     maxThreads_ = 3;
     stopSignal_ = false;
     isRunning_ = false;
     runningThreads_ = 0;
-    tempDirectory_ = tempDirectory;
 }
 
 CFileDownloader::~CFileDownloader()
@@ -51,8 +50,9 @@ void CFileDownloader::addFile(const std::string& url, void* id, const std::strin
 
     DownloadFileListItem newItem;
     newItem.url = url;
-    newItem.id = reinterpret_cast <void*>(id);
+    newItem.id = id;
     newItem.referer = referer;
+    newItem.displayName = IuCoreUtils::ExtractFileNameFromUrl(url);
     fileList_.push_back(newItem);
 }
 
@@ -77,7 +77,7 @@ bool CFileDownloader::start() {
 
 void CFileDownloader::memberThreadFunc()
 {
-    auto nm = CoreFunctions::createNetworkClient();
+    std::unique_ptr<INetworkClient> nm(networkClientFactory_->create());
 
     // Providing callback function to stop downloading
     nm->setProgressCallback(NetworkClient::ProgressCallback(this, &CFileDownloader::ProgressFunc));
@@ -112,8 +112,8 @@ void CFileDownloader::memberThreadFunc()
         mutex_.lock();
         bool success = nm->responseCode() >= 200 && nm->responseCode() <= 299;
 
-        if (!onFileFinished.empty()) {
-            onFileFinished(success, nm->responseCode(), curItem);
+        if (onFileFinished_) {
+            onFileFinished_(success, nm->responseCode(), curItem);
         }
 
         if (stopSignal_)
@@ -169,14 +169,16 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
         CString wFileName = WinUtils::GetUniqFileName(possiblePath);
         std::string filePath = WCstringToUtf8(wFileName);
 
-        // Creating file
-        FILE* f = _tfopen(wFileName, L"wb");
-        if (f) {
-            fclose(f);
-        } else {
-            LOG(ERROR) << "Unable to create file:" << std::endl << wFileName << std::endl
-                << "Error: " << strerror(errno);
-            return false;
+        if (createFileBeforeDownloading_) {
+            // Creating file
+            FILE* f = _tfopen(wFileName, L"wb");
+            if (f) {
+                fclose(f);
+            } else {
+                LOG(ERROR) << "Unable to create file:" << std::endl << wFileName << std::endl
+                    << "Error: " << strerror(errno);
+                return false;
+            }
         }
         item.fileName = filePath;
         result = true;
@@ -195,6 +197,10 @@ bool CFileDownloader::isRunning()
     return isRunning_;
 }
 
+void CFileDownloader::setOnFileFinishedCallback(decltype(onFileFinished_) callback) {
+    onFileFinished_ = std::move(callback);
+}
+
 bool CFileDownloader::waitForFinished()
 {
     if (threads_.empty()) {
@@ -202,12 +208,14 @@ bool CFileDownloader::waitForFinished()
     }
        
     for (auto& th : threads_) {
-        th.join();
+        if (th.joinable()) {
+            th.join();
+        }
     }
     return true;
 }
 
-int CFileDownloader::ProgressFunc(NetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow) {
+int CFileDownloader::ProgressFunc(INetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow) {
     if (stopSignal_) {
         return -1;
     }

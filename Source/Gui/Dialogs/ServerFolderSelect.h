@@ -109,7 +109,7 @@ protected:
     NetworkClient m_NetworkClient;
     void BlockWindow(bool Block);
     void NewFolder(const CString& parentFolderId);
-    int progressCallback(NetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow);
+    int progressCallback(INetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow);
     //CString m_sNewFolderName, m_sNewFolderDescription;
 public:
     

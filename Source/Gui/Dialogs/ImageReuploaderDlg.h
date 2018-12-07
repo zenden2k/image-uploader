@@ -120,9 +120,8 @@ class CImageReuploaderDlg:    public CDialogImpl <CImageReuploaderDlg>,
         bool BeginDownloading();
         static bool LinksAvailableInText(const CString &text);
         void OnQueueFinished();
-        bool OnFileFinished(bool ok,  int statusCode, CFileDownloader::DownloadFileListItem it);
+        bool OnFileDownloadFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it);
         bool OnConfigureNetworkClient(CFileQueueUploader*, NetworkClient* nm);
-        void FileDownloader_OnConfigureNetworkClient(NetworkClient* nm);
         void OnFileFinished(UploadTask* task, bool ok);
         void OnQueueFinished(UploadSession* uploadSession) ;
         bool OnEditControlPaste(CCustomEditControl*);

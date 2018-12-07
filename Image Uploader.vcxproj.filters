@@ -882,6 +882,9 @@
     <ClInclude Include="Source\Gui\Controls\HyperLinkControlAccessible.h">
       <Filter>Source Files\Gui\Controls</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\Network\NetworkClientFactory.h">
+      <Filter>Source Files\Core\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\res\addition.ico">
@@ -1934,6 +1937,9 @@
     </ClCompile>
     <ClCompile Include="Source\Gui\Controls\HyperLinkControlAccessible.cpp">
       <Filter>Source Files\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Network\NetworkClientFactory.cpp">
+      <Filter>Source Files\Core\Network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

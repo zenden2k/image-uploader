@@ -883,7 +883,7 @@ void NetworkClient::setOutputFile(const std::string &str)
     m_OutFileName = str;
 }
 
-void NetworkClient::setUploadBufferSize(const int size)
+void NetworkClient::setUploadBufferSize(int size)
 {
     m_UploadBufferSize = size;
 }

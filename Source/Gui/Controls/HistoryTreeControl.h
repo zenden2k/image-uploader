@@ -95,12 +95,12 @@ class CHistoryTreeControl :
         std::deque<HistoryTreeItem*> m_thumbLoadingQueue;
         std::mutex m_thumbLoadingQueueMutex;
         std::unique_ptr<CFileDownloader> m_FileDownloader;
-        bool OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it);
+        bool OnFileFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it);
         void DownloadThumb(HistoryTreeItem* it);
         int m_SessionItemHeight;
         int m_SubItemHeight;
         void QueueFinishedEvent();
         void threadsFinished();
-        void OnConfigureNetworkClient(NetworkClient* nm);
+        void OnConfigureNetworkClient(INetworkClient* nm);
         static void CHistoryTreeControl::DrawBitmap(HDC hdc, HBITMAP bmp, int x, int y);
 };

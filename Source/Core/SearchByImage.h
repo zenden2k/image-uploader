@@ -5,7 +5,7 @@
 #include <atomic>
 #include <Core/3rdpart/FastDelegate.h>
 
-class NetworkClient;
+class INetworkClient;
 
 class SearchByImage  {
     public:
@@ -28,7 +28,7 @@ protected:
     FinishedDelegate onFinished_;
     virtual void run() = 0;
     void finish(bool success, const std::string &msg = std::string());
-    int progressCallback(NetworkClient *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
+    int progressCallback(INetworkClient *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
 };
 
 #endif

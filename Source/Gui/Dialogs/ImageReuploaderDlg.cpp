@@ -41,12 +41,13 @@
 #include "Core/CoreFunctions.h"
 #include "Core/3rdpart/UriParser.h"
 #include "Core/AppParams.h"
+#include "Core/Network/NetworkClientFactory.h"
 
 const TCHAR CImageReuploaderDlg::LogTitle[] = _T("Image Reuploader");
 
 // CImageReuploaderDlg
 CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager *  uploadManager,
-    UploadEngineManager *uploadEngineManager, const CString &initialBuffer) :m_FileDownloader(AppParams::instance()->tempDirectory())
+    UploadEngineManager *uploadEngineManager, const CString &initialBuffer) :m_FileDownloader(std::make_shared<NetworkClientFactory>(), AppParams::instance()->tempDirectory())
 {
     m_WizardDlg = wizardDlg;
     m_InitialBuffer = initialBuffer;
@@ -180,7 +181,7 @@ LRESULT CImageReuploaderDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     return 0;
 }
 
-bool CImageReuploaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it)
+bool CImageReuploaderDlg::OnFileDownloadFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it)
 {
     bool success = false;
 
@@ -491,10 +492,10 @@ bool CImageReuploaderDlg::BeginDownloading()
             CHistoryManager * mgr = ServiceLocator::instance()->historyManager();
         
             historySession_ = mgr->newSession();
+            using namespace std::placeholders;
 
-            m_FileDownloader.onFileFinished.bind(this, &CImageReuploaderDlg::OnFileFinished);
+            m_FileDownloader.setOnFileFinishedCallback(std::bind(&CImageReuploaderDlg::OnFileDownloadFinished, this, _1, _2, _3));
             m_FileDownloader.onQueueFinished.bind(this, &CImageReuploaderDlg::OnQueueFinished);
-            m_FileDownloader.onConfigureNetworkClient.bind(this, &CImageReuploaderDlg::FileDownloader_OnConfigureNetworkClient);
             m_FileDownloader.start();
             
             updateStats();
@@ -542,9 +543,7 @@ bool  CImageReuploaderDlg::OnConfigureNetworkClient(CFileQueueUploader* ,Network
     return true;
 }
 
-void CImageReuploaderDlg::FileDownloader_OnConfigureNetworkClient(NetworkClient* nm) {
-    CoreFunctions::ConfigureProxy(nm);
-}
+
 
 void CImageReuploaderDlg::generateOutputText() {
     bool showSourceCode = GuiTools::GetCheck(m_hWnd, IDC_SOURCECODERADIO);

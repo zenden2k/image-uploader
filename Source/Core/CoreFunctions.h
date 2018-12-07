@@ -4,13 +4,14 @@
 #pragma once
 
 #include <memory>
+#include "Network/NetworkClient.h"
 
-class NetworkClient;
+class INetworkClient;
 
 namespace CoreFunctions {
 
 std::unique_ptr<NetworkClient> createNetworkClient();
-void ConfigureProxy(NetworkClient* nm);
+void ConfigureProxy(INetworkClient* nm);
 
 }
 

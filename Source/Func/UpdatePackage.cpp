@@ -633,7 +633,7 @@ bool CUpdateManager::AreUpdatesAvailable()
     return (m_updateList.size() != 0);
 }
 
-int CUpdateManager::progressCallback(NetworkClient *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
+int CUpdateManager::progressCallback(INetworkClient *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
 {
     CUpdateManager * um = this;
     CString text;

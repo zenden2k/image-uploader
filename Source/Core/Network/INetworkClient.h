@@ -26,6 +26,7 @@ limitations under the License.
 //
 #include <string>
 #include <Core/Utils/CoreTypes.h>
+#include "Core/3rdpart/fastdelegate.h"
 
 typedef void CURL;
 class CurlShare;
@@ -36,6 +37,14 @@ class INetworkClient {
         /*! @cond PRIVATE */
         enum ActionType {
             atNone = 0, atPost, atUpload, atGet
+        };
+
+        typedef fastdelegate::FastDelegate5<INetworkClient*, double, double, double, double, int> ProgressCallback;
+
+        class ProxyProvider {
+        public:
+            virtual bool provideProxyForUrl(INetworkClient* client, const std::string& url) = 0;
+            virtual ~ProxyProvider(){};
         };
 
         virtual void addQueryParam(const std::string& name, const std::string& value) = 0;
@@ -52,7 +61,7 @@ class INetworkClient {
         virtual void setUserAgent(const std::string& userAgentStr) = 0;
         virtual const std::string responseHeaderText() = 0;
         virtual const std::string responseHeaderByName(const std::string& name) = 0;
-        virtual std::string responseHeaderByIndex(const int index, std::string& name) = 0;
+        virtual std::string responseHeaderByIndex(int index, std::string& name) = 0;
         virtual int responseHeaderCount() = 0;
         virtual const std::string getCurlResultString() = 0;
         virtual void setCurlOption(int option, const std::string &value) = 0;
@@ -75,6 +84,16 @@ class INetworkClient {
         virtual void setConnectionTimeout(uint32_t connection_timeout) = 0;
         virtual void enableResponseCodeChecking(bool enable) = 0;
         virtual void setErrorLogId(const std::string &str) = 0;
+        virtual void setProgressCallback(const ProgressCallback& func) = 0;
+        virtual void setTreatErrorsAsWarnings(bool treat) = 0;
+        virtual void setUploadBufferSize(int size) = 0;
+        virtual void setProxyProvider(ProxyProvider* provider) = 0;
+};
+
+class INetworkClientFactory {
+public:
+    virtual std::unique_ptr<INetworkClient> create() = 0;
+    virtual ~INetworkClientFactory() {}
 };
 
 #endif

@@ -34,7 +34,7 @@ void SearchByImage::setOnFinished(FinishedDelegate&& fd) {
     onFinished_ = std::move(fd);
 }
 
-int SearchByImage::progressCallback(NetworkClient *clientp, double dltotal, double dlnow, double ultotal, double ulnow) {
+int SearchByImage::progressCallback(INetworkClient *clientp, double dltotal, double dlnow, double ultotal, double ulnow) {
     if (stopSignal_) {
         return -1;
     }

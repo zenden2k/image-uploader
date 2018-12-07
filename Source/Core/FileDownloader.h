@@ -26,6 +26,7 @@
 #include <mutex>
 #include <atomic>
 #include <thread>
+#include <functional>
 
 #include "Core/3rdpart/FastDelegate.h"
 #include "Core/Network/NetworkClient.h"
@@ -43,8 +44,10 @@ class CFileDownloader
             std::string referer;
             void* id; // pointer to user data
         };
-
-        CFileDownloader(const std::string& tempDirectory);
+    protected:
+        std::function<bool(bool, int, const DownloadFileListItem&)> onFileFinished_;
+    public:
+        CFileDownloader(std::shared_ptr<INetworkClientFactory> factory, const std::string& tempDirectory, bool createFilesBeforeDownloading = true);
         virtual ~CFileDownloader();
         void addFile(const std::string& url,void* userData, const std::string& referer = std::string());
         bool start();
@@ -53,9 +56,11 @@ class CFileDownloader
         void stop();
         bool isRunning();
 
+        void setOnFileFinishedCallback(decltype(onFileFinished_) callback);
         fastdelegate::FastDelegate0<> onQueueFinished;
-        fastdelegate::FastDelegate1<NetworkClient*> onConfigureNetworkClient;
-        fastdelegate::FastDelegate3<bool, int, DownloadFileListItem, bool> onFileFinished;
+        fastdelegate::FastDelegate1<INetworkClient*> onConfigureNetworkClient;
+        
+        ///fastdelegate::FastDelegate3<bool, int, DownloadFileListItem, bool> onFileFinished;
     protected:
         CString errorStr_;
         std::mutex mutex_;
@@ -67,7 +72,9 @@ class CFileDownloader
         std::vector<std::thread> threads_;
         std::atomic<bool> stopSignal_;
         std::atomic<bool> isRunning_;
-        int ProgressFunc (NetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow);
+        std::shared_ptr<INetworkClientFactory> networkClientFactory_;
+        bool createFileBeforeDownloading_;
+        int ProgressFunc (INetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow);
         void memberThreadFunc();
         bool getNextJob(DownloadFileListItem& item);
 

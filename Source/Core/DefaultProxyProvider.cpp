@@ -34,7 +34,7 @@ DefaultProxyProvider::~DefaultProxyProvider() {
     }
 }
 
-bool DefaultProxyProvider::provideProxyForUrl(NetworkClient* client, const std::string& url) {
+bool DefaultProxyProvider::provideProxyForUrl(INetworkClient* client, const std::string& url) {
     bool autoProxy = false;
     bool result = false;
     WINHTTP_AUTOPROXY_OPTIONS autoProxyOptions;

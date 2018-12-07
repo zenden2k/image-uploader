@@ -220,7 +220,7 @@ void CServerFolderSelect::NewFolder(const CString& parentFolderId)
     }
 }
 
-int CServerFolderSelect::progressCallback(NetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow) {
+int CServerFolderSelect::progressCallback(INetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow) {
     if (stopSignal) {
         return -1; // abort operation
     }

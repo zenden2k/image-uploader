@@ -4,6 +4,7 @@ if (MSVC)
 endif()
 
 set(SRC_LIST Network/NetworkClient.cpp
+	Network/NetworkClientFactory.cpp
     Upload/DefaultUploadEngine.cpp
     Upload/FileUploadTask.cpp
     Upload/ScriptUploadEngine.cpp

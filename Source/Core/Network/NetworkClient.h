@@ -48,8 +48,7 @@ class NetworkClient: public INetworkClient
         enum ActionType {
             atNone = 0, atPost, atUpload, atGet
         };
-        typedef fastdelegate::FastDelegate5<NetworkClient*, double, double, double, double,int> ProgressCallback;
-
+        
         /*! @endcond */
         NetworkClient(void);
         ~NetworkClient(void);
@@ -95,10 +94,10 @@ class NetworkClient: public INetworkClient
         void setUserAgent(const std::string& userAgentStr) override;
         const std::string responseHeaderText() override;
         const std::string responseHeaderByName(const std::string& name) override;
-        std::string responseHeaderByIndex(const int index, std::string& name) override;
+        std::string responseHeaderByIndex(int index, std::string& name) override;
         int responseHeaderCount() override;
         /*! @cond PRIVATE */
-        void setProgressCallback(const ProgressCallback& func);
+        void setProgressCallback(const ProgressCallback& func) override;
         /*! @endcond */
         const std::string urlEncode(const std::string& str);
 
@@ -121,7 +120,7 @@ class NetworkClient: public INetworkClient
         void setReferer(const std::string &str) override;
         void setOutputFile(const std::string &str) override;
         /*! @cond PRIVATE */
-        void setUploadBufferSize(const int size);
+        void setUploadBufferSize(int size) override;
         /*! @endcond */
         /**
         Set the byte offset of current chunk, relative to the beginning of the full file.
@@ -135,7 +134,7 @@ class NetworkClient: public INetworkClient
         */
         void setChunkSize(double size) override;
         /*! @cond PRIVATE */
-        void setTreatErrorsAsWarnings(bool treat);
+        void setTreatErrorsAsWarnings(bool treat) override;
         /*! @endcond */
         int getCurlResult() override;
         /*! @cond PRIVATE */
@@ -157,16 +156,11 @@ class NetworkClient: public INetworkClient
             virtual ~Logger(){}
         };
 
-        class ProxyProvider {
-        public:
-            virtual bool provideProxyForUrl(NetworkClient* client, const std::string& url) = 0;
-            virtual ~ProxyProvider(){};
-        };
 
         void setLogger(Logger* logger);
 
         // provider is deleted in NetworkClient destructor
-        void setProxyProvider(ProxyProvider* provider);
+        void setProxyProvider(ProxyProvider* provider) override;
     private:
         //DISALLOW_COPY_AND_ASSIGN(NetworkClient);
         enum CallBackFuncType{funcTypeBody,funcTypeHeader};

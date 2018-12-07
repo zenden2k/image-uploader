@@ -29,10 +29,11 @@
 #include "Func/IuCommonFunctions.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/AppParams.h"
+#include "Core/Network/NetworkClientFactory.h"
 
 // CImageDownloaderDlg
 CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &initialBuffer)
-                                            :m_FileDownloader(AppParams::instance()->tempDirectory())                                    
+                                            :m_FileDownloader(std::make_shared<NetworkClientFactory>(), AppParams::instance()->tempDirectory())                                    
 {
     m_WizardDlg = wizardDlg;
     m_InitialBuffer = initialBuffer;
@@ -185,7 +186,7 @@ CString GetExtensionByMime(CString mime)
     return _T(".dat");
 }
 
-bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it)
+bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it)
 {
     if(ok)
     {
@@ -277,7 +278,8 @@ bool CImageDownloaderDlg::BeginDownloading()
         ::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS),SW_SHOW);
         SendDlgItemMessage(IDC_DOWNLOADFILESPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, m_nFilesCount));
         SendDlgItemMessage(IDC_DOWNLOADFILESPROGRESS, PBM_SETPOS,  0);
-        m_FileDownloader.onFileFinished.bind(this, &CImageDownloaderDlg::OnFileFinished);
+        using namespace std::placeholders;
+        m_FileDownloader.setOnFileFinishedCallback(std::bind(&CImageDownloaderDlg::OnFileFinished, this, _1, _2, _3)); 
         m_FileDownloader.onQueueFinished.bind(this, &CImageDownloaderDlg::OnQueueFinished);
         m_FileDownloader.start();
         return true;

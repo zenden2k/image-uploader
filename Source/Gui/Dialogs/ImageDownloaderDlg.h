@@ -84,7 +84,7 @@ class CImageDownloaderDlg:    public CDialogImpl <CImageDownloaderDlg>,
         static bool LinksAvailableInText(const CString &text);
         void ParseBuffer(const CString& text, bool OnlyImages);
         void OnQueueFinished();
-        bool OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it);
+        bool OnFileFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it);
         void clipboardUpdated();
         CMessageLoop m_loop;
         int m_retCode;
