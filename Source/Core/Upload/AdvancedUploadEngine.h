@@ -37,7 +37,7 @@ class CAdvancedUploadEngine : public CAbstractUploadEngine
         int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) override;
         CAdvancedUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings);
         ~CAdvancedUploadEngine();
-        void setNetworkClient(NetworkClient* nm) override;
+        void setNetworkClient(INetworkClient* nm) override;
         //bool load(std::string fileName, ServerSettingsStruct& params);
         virtual int getFolderList(CFolderList &FolderList)=0;
         virtual int createFolder(const CFolderItem &parent, CFolderItem &folder)=0;

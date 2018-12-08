@@ -25,14 +25,27 @@
 #include "Core/Utils/StringUtils.h"
 #include "Core/Upload/ServerSync.h"
 
+CUploadEngineData::CUploadEngineData()
+{
+    SupportsFolders = false;
+    UsingPlugin = false;
+    Debug = false;
+    SupportThumbnails = false;
+    BeforehandAuthorization = false;
+    NeedAuthorization = naNotAvailable;
+    NeedPassword = true; MaxFileSize = 0;
+    RetryLimit = 0;
+    NumOfTries = 0;
+    MaxThreads = 0;
+    TypeMask = 0;
+}
+
 bool CUploadEngineData::hasType(ServerType type)
 {
     return (TypeMask & type) == type;
 }
 
-CUploadEngineData::CUploadEngineData()
-{
-}
+
 
 CUploadEngineList_Base::CUploadEngineList_Base()
 {
@@ -138,7 +151,7 @@ void CAbstractUploadEngine::setServerSettings(ServerSettingsStruct* settings)
     m_ServersSettings = settings;
 }
 
-ServerSettingsStruct * CAbstractUploadEngine::serverSettings()
+ServerSettingsStruct * CAbstractUploadEngine::serverSettings() const
 {
     return m_ServersSettings;
 }
@@ -152,13 +165,13 @@ bool CAbstractUploadEngine::needStop()
     return m_bShouldStop;
 }
 
-void CAbstractUploadEngine::SetStatus(StatusType status, std::string param)
+void CAbstractUploadEngine::SetStatus(StatusType status, const std::string& param)
 {
     if (onStatusChanged)
         onStatusChanged(status, 0,  param);
 }
 
-void CAbstractUploadEngine::setNetworkClient(NetworkClient* nm)
+void CAbstractUploadEngine::setNetworkClient(INetworkClient* nm)
 {
     m_NetworkClient = nm;
     m_NetworkClient->setCurlShare(serverSync_->getCurlShare());
@@ -172,10 +185,11 @@ void CAbstractUploadEngine::setUploadData(CUploadEngineData* data)
 CAbstractUploadEngine::CAbstractUploadEngine(ServerSync* serverSync)
 {
     m_bShouldStop = 0;
-    m_NetworkClient = 0;
-    m_UploadData = 0;
+    m_NetworkClient = nullptr;
+    m_UploadData = nullptr;
     currUploader_ = nullptr;
     serverSync_ = serverSync;
+    m_ServersSettings = nullptr;
 }
 
 
@@ -193,7 +207,7 @@ void CAbstractUploadEngine::setCurrentUploader(CUploader* uploader) {
     currUploader_ = uploader;
 }
 
-CUploader* CAbstractUploadEngine::currentUploader() {
+CUploader* CAbstractUploadEngine::currentUploader() const{
     return currUploader_;
 }
 

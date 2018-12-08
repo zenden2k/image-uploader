@@ -42,7 +42,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) override;
         CScriptUploadEngine(std::string pluginName, ServerSync* serverSync, ServerSettingsStruct* settings);
         ~CScriptUploadEngine();
-        void setNetworkClient(NetworkClient* nm) override;
+        void setNetworkClient(INetworkClient* nm) override;
         //bool load(std::string fileName, ServerSettingsStruct& params);
         virtual int getFolderList(CFolderList &FolderList) override;
         virtual int createFolder(const CFolderItem &parent, CFolderItem &folder) override;

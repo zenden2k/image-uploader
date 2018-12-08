@@ -88,4 +88,8 @@ class MockINetworkClient : public INetworkClient {
       void(int size));
   MOCK_METHOD1(setProxyProvider,
       void(ProxyProvider* provider));
+  MOCK_METHOD1(urlEncode,
+      const std::string(const std::string& url));
+  MOCK_METHOD1(urlDecode,
+      const std::string(const std::string& url));
 };

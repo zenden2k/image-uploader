@@ -235,7 +235,7 @@ bool CDefaultUploadEngine::DoGetAction(UploadAction& Action)
     return Result;
 }
 
-bool reg_single_match(const std::string& pattern, const std::string& text, std::string& res)
+bool CDefaultUploadEngine::reg_single_match(const std::string& pattern, const std::string& text, std::string& res)
 {
     pcrepp::Pcre reg(pattern, "imc"); // Case insensitive match
     if ( reg.search(text) == true ) {
@@ -614,7 +614,7 @@ bool CDefaultUploadEngine::needStop()
     return shouldStop;
 }
 
-void CDefaultUploadEngine::SetStatus(StatusType status, std::string param)
+void CDefaultUploadEngine::SetStatus(StatusType status, const std::string& param)
 {
     if (onStatusChanged)
         onStatusChanged(status, m_CurrentActionIndex, param);

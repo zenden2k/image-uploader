@@ -17,9 +17,10 @@
 #include "Core/Upload/UploadSession.h"
 #include "Core/Upload/UploadManager.h"
 #include "Core/AppParams.h"
+#include "Core/Network/NetworkClientFactory.h"
 
 CMainDlg::CMainDlg(UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList) : 
-                    m_FileDownloader(AppParams::instance()->tempDirectory()) {
+                    m_FileDownloader(std::make_shared<NetworkClientFactory>(), AppParams::instance()->tempDirectory()) {
     uploadEngineManager_ = uploadEngineManager;
     uploadManager_ = uploadManager;
     engineList_ = engineList;
@@ -96,7 +97,9 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
         m_ListView.SetItemText(i, 1, name);
     }
 
-    m_FileDownloader.onFileFinished.bind(this, &CMainDlg::OnFileFinished);
+    using namespace std::placeholders;
+
+    m_FileDownloader.setOnFileFinishedCallback(std::bind(&CMainDlg::OnFileFinished, this, _1, _2 ,_3));
     return TRUE;
 }
 

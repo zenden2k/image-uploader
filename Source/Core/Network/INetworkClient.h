@@ -47,47 +47,56 @@ class INetworkClient {
             virtual ~ProxyProvider(){};
         };
 
-        virtual void addQueryParam(const std::string& name, const std::string& value) = 0;
-        virtual void addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName = "", const std::string& contentType = "") = 0;
-        virtual void addQueryHeader(const std::string& name, const std::string& value) = 0;
-        virtual void setUrl(const std::string& url) = 0;
-        virtual bool doPost(const std::string& data = "") = 0;
-        virtual bool doUploadMultipartData() = 0;
-        virtual bool doUpload(const std::string& fileName, const std::string &data) = 0;
-        virtual bool doGet(const std::string &url = "") = 0;
-        virtual const std::string responseBody() = 0;
-        virtual int responseCode() = 0;
-        virtual const std::string errorString() = 0;
-        virtual void setUserAgent(const std::string& userAgentStr) = 0;
-        virtual const std::string responseHeaderText() = 0;
-        virtual const std::string responseHeaderByName(const std::string& name) = 0;
-        virtual std::string responseHeaderByIndex(int index, std::string& name) = 0;
-        virtual int responseHeaderCount() = 0;
-        virtual const std::string getCurlResultString() = 0;
-        virtual void setCurlOption(int option, const std::string &value) = 0;
-        virtual void setCurlOptionInt(int option, long value) = 0;
-        virtual const std::string getCurlInfoString(int option) = 0;
-        virtual int getCurlInfoInt(int option) = 0;
-        virtual double getCurlInfoDouble(int option) = 0;
-        virtual void setMethod(const std::string &str) = 0;
-        virtual void setProxy(const std::string &host, int port = 0, int type = 0) = 0;
-        virtual void setProxyUserPassword(const std::string &username, const std::string& password) = 0;
-        virtual void clearProxy() = 0;
-        virtual void setReferer(const std::string &str) = 0;
-        virtual void setOutputFile(const std::string &str) = 0;
-        virtual void setChunkOffset(double offset) = 0;
-        virtual void setChunkSize(double size) = 0;
-        virtual int getCurlResult() = 0;
-        virtual CURL* getCurlHandle() = 0;
-        virtual void setCurlShare(CurlShare* share) = 0;
-        virtual void setTimeout(uint32_t timeout) = 0;
-        virtual void setConnectionTimeout(uint32_t connection_timeout) = 0;
-        virtual void enableResponseCodeChecking(bool enable) = 0;
-        virtual void setErrorLogId(const std::string &str) = 0;
-        virtual void setProgressCallback(const ProgressCallback& func) = 0;
-        virtual void setTreatErrorsAsWarnings(bool treat) = 0;
-        virtual void setUploadBufferSize(int size) = 0;
-        virtual void setProxyProvider(ProxyProvider* provider) = 0;
+        class Logger {
+        public:
+            virtual void logNetworkError(bool error, const std::string & msg) = 0;
+            virtual ~Logger(){}
+        };
+
+        virtual void addQueryParam(const std::string& name, const std::string& value){}
+        virtual void addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName = "", const std::string& contentType = ""){};
+        virtual void addQueryHeader(const std::string& name, const std::string& value) {};
+        virtual void setUrl(const std::string& url){};
+        virtual bool doPost(const std::string& data = "") { return false; }
+        virtual bool doUploadMultipartData(){ return false; }
+        virtual bool doUpload(const std::string& fileName, const std::string &data) { return false; }
+        virtual bool doGet(const std::string &url = ""){ return false; }
+        virtual const std::string responseBody() { return std::string(); };
+        virtual int responseCode(){ return 0; }
+        virtual const std::string errorString(){ return std::string(); }
+        virtual void setUserAgent(const std::string& userAgentStr) {}
+        virtual const std::string responseHeaderText() { return std::string(); }
+        virtual const std::string responseHeaderByName(const std::string& name){ return std::string(); }
+        virtual std::string responseHeaderByIndex(int index, std::string& name){ return std::string(); }
+        virtual int responseHeaderCount(){ return 0; }
+        virtual const std::string getCurlResultString(){ return std::string(); }
+        virtual void setCurlOption(int option, const std::string &value){}
+        virtual void setCurlOptionInt(int option, long value){}
+        virtual const std::string getCurlInfoString(int option){ return std::string(); }
+        virtual int getCurlInfoInt(int option){ return 0; };
+        virtual double getCurlInfoDouble(int option){ return 0.0; }
+        virtual void setMethod(const std::string &str){};
+        virtual void setProxy(const std::string &host, int port = 0, int type = 0){}
+        virtual void setProxyUserPassword(const std::string &username, const std::string& password){}
+        virtual void clearProxy(){};
+        virtual void setReferer(const std::string &str){}
+        virtual void setOutputFile(const std::string &str) {}
+        virtual void setChunkOffset(double offset) {}
+        virtual void setChunkSize(double size){}
+        virtual int getCurlResult(){ return 0; /* CURLE_OK */ }
+        virtual CURL* getCurlHandle() { return nullptr;  }
+        virtual void setCurlShare(CurlShare* share) {}
+        virtual void setTimeout(uint32_t timeout){}
+        virtual void setConnectionTimeout(uint32_t connection_timeout){}
+        virtual void enableResponseCodeChecking(bool enable) {}
+        virtual void setErrorLogId(const std::string &str){}
+        virtual void setProgressCallback(const ProgressCallback& func){}
+        virtual void setTreatErrorsAsWarnings(bool treat){}
+        virtual void setUploadBufferSize(int size){}
+        virtual void setProxyProvider(ProxyProvider* provider){}
+        virtual void setLogger(Logger* logger){}
+        virtual const std::string urlEncode(const std::string& str){ return std::string(); }
+        virtual const std::string urlDecode(const std::string& str){ return std::string(); }
 };
 
 class INetworkClientFactory {

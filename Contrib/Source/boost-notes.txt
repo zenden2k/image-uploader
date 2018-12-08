@@ -1,11 +1,12 @@
+Patch for utf-8 encoded error messages from boost (not critical).
 
-Boost patches:
-boost.system
-error_code.ipp line 403
+Patch in boost.system:
+File "error_code.ipp" line 403
  if (::WideCharToMultiByte(CP_UTF8, 0, buf.c_str(), -1, narrow_buffer, num_chars, NULL, NULL) == 0)
   line 417
  MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT) , 
 
+ 
 bjam --toolset=msvc -j4 debug release link=static 
 
 bjam  --with-system --toolset=msvc -j4 debug release link=static runtime-link=static 

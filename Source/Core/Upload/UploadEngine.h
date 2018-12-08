@@ -44,6 +44,12 @@ struct ActionVariable
 {
     std::string Name;
     int nIndex;
+    ActionVariable(const std::string& name, int index) :Name(name), nIndex(index) {
+
+    }
+    ActionVariable() : nIndex(0) {
+        
+    }
 };
 
 struct ActionRegExp {
@@ -52,6 +58,10 @@ struct ActionRegExp {
     std::string AssignVars;
     std::vector<ActionVariable> Variables;
     bool Required;
+
+    ActionRegExp() : Required(true) {
+        
+    }
 };
 struct UploadAction
 {
@@ -69,6 +79,14 @@ struct UploadAction
     std::vector<ActionRegExp> Regexes;
     int RetryLimit;
     int NumOfTries;
+
+    UploadAction() {
+        Index = 0; 
+        IgnoreErrors = false;
+        OnlyOnce = false;
+        RetryLimit = 1;
+        NumOfTries = 0;
+    }
 };
 
 /**
@@ -139,7 +157,12 @@ public:
             result = authData.Password;
         else if(pname == "Login" && authData.DoAuth)
             result = authData.Login;
-        else result = params[name.c_str()];
+        else {
+            auto it = params.find(name);
+            if (it != params.end()) {
+                result = it->second;
+            }        
+        }
         return result;
     }
 
@@ -307,13 +330,13 @@ class CAbstractUploadEngine
         virtual ~CAbstractUploadEngine();
         virtual int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) = 0;
         void setServerSettings(ServerSettingsStruct* settings);
-        ServerSettingsStruct * serverSettings();
+        ServerSettingsStruct * serverSettings() const;
         virtual int RetryLimit()=0;
-        virtual void setNetworkClient(NetworkClient* nm);
+        virtual void setNetworkClient(INetworkClient* nm);
         void setUploadData(CUploadEngineData* data);
         void setServerSync(ServerSync* sync);
         void setCurrentUploader(CUploader *uploader);
-        CUploader * currentUploader();
+        CUploader * currentUploader() const;
         virtual void stop();
         ServerSync* serverSync() const;
         CUploadEngineData* getUploadData() const;
@@ -327,7 +350,7 @@ class CAbstractUploadEngine
         DISALLOW_COPY_AND_ASSIGN(CAbstractUploadEngine);
     protected:
         bool m_bShouldStop;
-        NetworkClient * m_NetworkClient;
+        INetworkClient * m_NetworkClient;
         CUploadEngineData * m_UploadData;
         CUploader * currUploader_;
         ServerSettingsStruct* m_ServersSettings;
@@ -335,8 +358,8 @@ class CAbstractUploadEngine
         ServerSync* serverSync_;
         bool DebugMessage(const std::string& message, bool isServerResponseBody = false);
         bool ErrorMessage(ErrorInfo);
-        bool needStop();
-        void SetStatus(StatusType status, std::string param = "");        
+        virtual bool needStop();
+        virtual void SetStatus(StatusType status, const std::string& param = "");        
 };
 
 #endif // IU_CORE_UPLOADENGINE_H

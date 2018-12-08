@@ -14,6 +14,7 @@ set(SRC_LIST
    ../Core/Utils/Tests/StringUtilsTest.cpp
    ../Core/Utils/Tests/TextUtilsTest.cpp
    ../Core/Upload/Tests/UploadEngineListTest.cpp
+   ../Core/Upload/Tests/DefaultUploadEngineTest.cpp
    ../Core/3rdpart/GumboQuery/Tests/GumboTest.cpp
 )
 if(WIN32)

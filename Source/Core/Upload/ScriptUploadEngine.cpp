@@ -363,7 +363,7 @@ int CScriptUploadEngine::createFolder(const CFolderItem& parent, CFolderItem& fo
     return ival;
 }
 
-void CScriptUploadEngine::setNetworkClient(NetworkClient* nm)
+void CScriptUploadEngine::setNetworkClient(INetworkClient* nm)
 {
     CAbstractUploadEngine::setNetworkClient(nm);
     if (!m_UploadData->UserAgent.empty()) {

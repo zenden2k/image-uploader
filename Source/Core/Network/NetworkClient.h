@@ -99,12 +99,12 @@ class NetworkClient: public INetworkClient
         /*! @cond PRIVATE */
         void setProgressCallback(const ProgressCallback& func) override;
         /*! @endcond */
-        const std::string urlEncode(const std::string& str);
+        const std::string urlEncode(const std::string& str) override;
 
         /**
         @since 1.3.2
         */
-        const std::string urlDecode(const std::string& str);
+        const std::string urlDecode(const std::string& str) override;
         const std::string getCurlResultString() override;
         void setCurlOption(int option, const std::string &value) override;
         void setCurlOptionInt(int option, long value) override;
@@ -150,14 +150,8 @@ class NetworkClient: public INetworkClient
             AbortedException(const std::string& msg) : std::runtime_error(msg) {}
             AbortedException(const AbortedException& ex) : std::runtime_error(ex) {}
         };
-        class Logger {
-        public:
-            virtual void logNetworkError(bool error, const std::string & msg)=0;
-            virtual ~Logger(){}
-        };
 
-
-        void setLogger(Logger* logger);
+        void setLogger(Logger* logger) override;
 
         // provider is deleted in NetworkClient destructor
         void setProxyProvider(ProxyProvider* provider) override;

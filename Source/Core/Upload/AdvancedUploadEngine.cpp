@@ -41,7 +41,7 @@ int CAdvancedUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadPara
     return 0;
 }
 
-void CAdvancedUploadEngine::setNetworkClient(NetworkClient* nm)
+void CAdvancedUploadEngine::setNetworkClient(INetworkClient* nm)
 {
     CAbstractUploadEngine::setNetworkClient(nm);
 }

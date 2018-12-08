@@ -24,6 +24,9 @@
 
 #include <vector>
 #include <string>
+#include <memory>
+
+#include <atomic>
 
 #include "CommonTypes.h"
 #include "UploadEngine.h"
@@ -32,7 +35,6 @@
 #include "AdvancedUploadEngine.h"
 #include "FileUploadTask.h"
 
-#include <atomic>
 class MyListener;
 class MyGfxProcessor;
 namespace mega

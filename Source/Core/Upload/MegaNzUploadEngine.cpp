@@ -184,10 +184,10 @@ CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsS
     proc_ = std::make_unique<MyGfxProcessor>();
     megaApi_ = std::make_unique<MegaApi>(APP_KEY, proc_.get(), static_cast<const char *>(nullptr), USER_AGENT);
 #else 
-    megaApi_ = = std::make_unique<MegaApi>(APP_KEY, (const char *)NULL, USER_AGENT);
+    megaApi_.reset(new MegaApi(APP_KEY, (const char *)NULL, USER_AGENT));
 #endif
     megaApi_->setLogLevel(MegaApi::LOG_LEVEL_INFO);
-    listener_ = std::make_unique<MyListener>(this);
+    listener_.reset(new MyListener(this));
     megaApi_->addListener(listener_.get());
     proxy_.reset(new MegaProxy());
 

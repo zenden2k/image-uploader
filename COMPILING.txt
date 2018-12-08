@@ -1,21 +1,24 @@
 ﻿============  Building Image Uploader on Windows ============
 
-Before building you should copy file "versioninfo.h.dist" to "versioninfo.h". This file will be regenerated 
-by "versioninc.py" utility and contains information about build number, version, date, git commit hash.
+Before building you should copy file "Source\versioninfo.h.dist" to "Source\versioninfo.h". This file will be regenerated 
+by "versioninc.py" utility and will contain information about build number, version, date, git commit hash.
 
-You need Microsoft Visual Studio 2013 or newer to build Image Uploader from source. 
-Installing Visual Studio 2013 Update 4 is strongly recommended (older versions corrupt .rc files after editing)
-If you are using a newer MSVC version, you may experience some compilation errors, which can be solved easily (if you fix these errors, please provide a patch or pull request). 
-But also you need to recompile 3rd-party libraries (boost, glog, jsoncpp, etc) against your compiler version (so I recommend to use Microsoft Visual Studio 2013 Update 4 to avoid all these issues).
-
+You need Microsoft Visual Studio 2013 (with C++ compiler) or newer to build Image Uploader from source. 
+Installing Update 4 for Visual Studio 2013  is strongly recommended (older versions corrupt .rc files after editing)
+If you are using a newer MSVC version, you may experience some compilation errors, which can be solved easily 
+(if you fix these errors, please provide a patch or pull request). But also you need to recompile 3rd-party 
+libraries (boost, glog, jsoncpp, etc) against your compiler version.
 
 All libraries have to be built statically with static runtime. To enable Windows XP support the corresponding 
 toolset has to be chosen (for example, "v120_xp" in VS 2013, "v141_xp" in Visual Studio 2017).
  
+You can download all necessary libraries (including header-only libraries in "Include" subfolder) by following link:
 
-You can download ALL necessary libraries and headers (precompiled for MSVC 2013) by following link:
+https://drive.google.com/drive/folders/1dHjuif2sagpyNPoPs_EL63On1_A0m98N?usp=sharing
 
-mirror1 https://drive.google.com/file/d/1jJM9NLEPfdPLCjh_dOTx1O9S7bonjsr2/view?usp=drivesdk
+Precompiled libraries for MS Visual Studio 2013 (not compatible with newer MSVS versions): 
+
+https://drive.google.com/file/d/1jJM9NLEPfdPLCjh_dOTx1O9S7bonjsr2/view?usp=drivesdk
 
 Image Uploader is using the following libraries:
 
@@ -57,6 +60,8 @@ libwebp         https://github.com/webmproject/libwebp
 
 base64          https://github.com/aklomp/base64
 
+UTF8-CPP        http://utfcpp.sourceforge.net/ 
+
 Libraries for building Mega.nz:
 
 Mega SDK        https://github.com/meganz/sdk
@@ -66,6 +71,10 @@ Crypto++        https://www.cryptopp.com/
 c-ares          https://c-ares.haxx.se/
 
 libuv           https://github.com/libuv/libuv
+
+Libraries for building tests:
+
+Google Mock     https://github.com/abseil/googletest
 
 
 If you want to compile strmbase.lib by yourself you will need:
@@ -85,9 +94,8 @@ sudo apt-get install g++ cmake cmake-qt-gui autoconf automake libtool fakeroot l
 #libcrypto++-dev
 #libgumbo-dev
 #libgoogle-glog-dev
-mega:
 
-You have to build gtest library from source:
+Image Uploadeer is using Google Mock library for tests. If you want to run them, you have to build gmock library from source:
 
 cd /usr/src/gtest
 sudo cmake .
@@ -108,5 +116,6 @@ libuv1
 libsqlite3-0
 libfreeimage3
 
-Note that glog,gflags,libuv,cryptopp,gumbo have to be statically built from source. Before building glog remove package libgflags-dev
+Note that the following libraries: glog, gflags, libuv, cryptopp, gumbo have to be statically built from source. 
+Before building glog remove package libgflags-dev from your system.
 Also libjsoncpp has to build (from Contrib folder)

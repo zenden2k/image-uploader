@@ -1,4 +1,7 @@
-Squirrel MUST be compiled with 64 bit integers.
+Squirrel MUST be compiled with 64 bit integers. (define _SQ64)
+sqplus  MUST be compiled with _SQ64 defined.
+sqtest MUST be compiled with _SQ64 defined.
+
 Important patches for squirrel and sqrat:
 
 Added function sq_is_closed(HSQUIRRELVM vm) to sqapi.cpp; 

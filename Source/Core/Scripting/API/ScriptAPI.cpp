@@ -85,34 +85,34 @@ void CompilerErrorHandler(HSQUIRRELVM, const SQChar * desc, const SQChar * sourc
 
 void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
     using namespace Sqrat;
-    vm.GetRootTable().Bind("NetworkClient", Class<NetworkClient>(vm.GetVM(), "NetworkClient").
-        Func("doGet", &NetworkClient::doGet).
-        Func("responseBody", &NetworkClient::responseBody).
-        Func("responseCode", &NetworkClient::responseCode).
-        Func("setUrl", &NetworkClient::setUrl).
-        Func("doPost", &NetworkClient::doPost).
-        Func("addQueryHeader", &NetworkClient::addQueryHeader).
-        Func("addQueryParam", &NetworkClient::addQueryParam).
-        Func("addQueryParamFile", &NetworkClient::addQueryParamFile).
-        Func("responseHeaderCount", &NetworkClient::responseHeaderCount).
-        Func("urlEncode", &NetworkClient::urlEncode).
-        Func("urlDecode", &NetworkClient::urlDecode).
-        Func("errorString", &NetworkClient::errorString).
-        Func("doUpload", &NetworkClient::doUpload).
-        Func("setMethod", &NetworkClient::setMethod).
-        Func("setCurlOption", &NetworkClient::setCurlOption).
-        Func("setCurlOptionInt", &NetworkClient::setCurlOptionInt).
-        Func("doUploadMultipartData", &NetworkClient::doUploadMultipartData).
-        Func("enableResponseCodeChecking", &NetworkClient::enableResponseCodeChecking).
-        Func("setChunkSize", &NetworkClient::setChunkSize).
-        Func("setChunkOffset", &NetworkClient::setChunkOffset).
-        Func("setUserAgent", &NetworkClient::setUserAgent).
-        Func("responseHeaderText", &NetworkClient::responseHeaderText).
-        Func("responseHeaderByName", &NetworkClient::responseHeaderByName).
-        Func("getCurlInfoString", &NetworkClient::getCurlInfoString).
-        Func("getCurlInfoInt", &NetworkClient::getCurlInfoInt).
-        Func("getCurlInfoDouble", &NetworkClient::getCurlInfoDouble).
-        Func("setReferer", &NetworkClient::setReferer));
+    vm.GetRootTable().Bind("NetworkClient", Class<INetworkClient>(vm.GetVM(), "NetworkClient").
+        Func("doGet", &INetworkClient::doGet).
+        Func("responseBody", &INetworkClient::responseBody).
+        Func("responseCode", &INetworkClient::responseCode).
+        Func("setUrl", &INetworkClient::setUrl).
+        Func("doPost", &INetworkClient::doPost).
+        Func("addQueryHeader", &INetworkClient::addQueryHeader).
+        Func("addQueryParam", &INetworkClient::addQueryParam).
+        Func("addQueryParamFile", &INetworkClient::addQueryParamFile).
+        Func("responseHeaderCount", &INetworkClient::responseHeaderCount).
+        Func("urlEncode", &INetworkClient::urlEncode).
+        Func("urlDecode", &INetworkClient::urlDecode).
+        Func("errorString", &INetworkClient::errorString).
+        Func("doUpload", &INetworkClient::doUpload).
+        Func("setMethod", &INetworkClient::setMethod).
+        Func("setCurlOption", &INetworkClient::setCurlOption).
+        Func("setCurlOptionInt", &INetworkClient::setCurlOptionInt).
+        Func("doUploadMultipartData", &INetworkClient::doUploadMultipartData).
+        Func("enableResponseCodeChecking", &INetworkClient::enableResponseCodeChecking).
+        Func("setChunkSize", &INetworkClient::setChunkSize).
+        Func("setChunkOffset", &INetworkClient::setChunkOffset).
+        Func("setUserAgent", &INetworkClient::setUserAgent).
+        Func("responseHeaderText", &INetworkClient::responseHeaderText).
+        Func("responseHeaderByName", &INetworkClient::responseHeaderByName).
+        Func("getCurlInfoString", &INetworkClient::getCurlInfoString).
+        Func("getCurlInfoInt", &INetworkClient::getCurlInfoInt).
+        Func("getCurlInfoDouble", &INetworkClient::getCurlInfoDouble).
+        Func("setReferer", &INetworkClient::setReferer));
 }
 
 namespace SimpleXmlExtend
