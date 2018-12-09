@@ -1795,8 +1795,14 @@ bool CWizardDlg::funcMediaInfo()
 
 bool CWizardDlg::funcAddFiles()
 {
-    IMyFileDialog::FileFilterArray filters = { { TR("Any file"), _T("*.*") } };
+    IMyFileDialog::FileFilterArray filters = { 
+        { CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"), _T("*.jpg;*.jpeg;*.gif;*.png;*.bmp;*.tiff;*.webp") },
+        { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), Settings.prepareVideoDialogFilters(), },
+        { TR("Any file"), _T("*.*") }
+    };
     std::shared_ptr<IMyFileDialog> fileDialog(MyFileDialogFactory::createFileDialog(m_hWnd, Settings.ImagesFolder, TR("Choose files"), filters, true));
+    
+    fileDialog->setFileTypeIndex(3);
 
     if (fileDialog->DoModal(m_hWnd) != IDOK) {
         return 0;

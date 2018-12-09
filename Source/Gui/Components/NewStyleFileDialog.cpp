@@ -143,3 +143,7 @@ void CNewStyleFileDialog::getFiles(std::vector<CString>& arr) {
         }
     }
 }
+
+void CNewStyleFileDialog::setFileTypeIndex(UINT iFileType) {
+    newStyleDialog_->SetFileTypeIndex(iFileType);
+}

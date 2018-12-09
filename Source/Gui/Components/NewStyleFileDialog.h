@@ -16,6 +16,7 @@ public:
     void setDefaultExtension(LPCTSTR extension) override;
     void setFileName(LPCWSTR fileName) override;
     void getFiles(std::vector<CString>& arr) override; 
+    void setFileTypeIndex(UINT iFileType) override;
 
 protected:
     bool isVista_;
