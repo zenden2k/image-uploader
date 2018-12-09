@@ -2,10 +2,10 @@
 set zipcmd="C:/Program Files/7-Zip/7z.exe"
 
 For /F "tokens=2,3 delims= " %%i In (..\Source\VersionInfo.h) Do (set %%i=%%~j)
-echo Creating distribution archive for Image Uploader version %_APP_VER% %BUILD%
+echo Creating distribution archive for Image Uploader version %IU_APP_VER% %IU_BUILD_NUMBER%
 
 set temp_dir=portable\temp
-set filename=image-uploader-%_APP_VER%-build-%BUILD%-portable.7z
+set filename=image-uploader-%IU_APP_VER%-build-%IU_BUILD_NUMBER%-portable.7z
 echo %temp_dir%
 
 rmdir /q /s  %temp_dir%
@@ -58,7 +58,7 @@ del "%temp_dir%\Data\Scripts\test.nut"
 rem signtool sign  /t http://timestamp.digicert.com /f "d:\Backups\ImageUploader\3315593d7023a0aeb48042349dc4fd40.pem" "%temp_dir%\Image Uploader.exe" "%temp_dir%\ExplorerIntegration.dll" "%temp_dir%\ExplorerIntegration64.dll"
 
 cd %temp_dir%
-%zipcmd% a -mx9 ..\..\output\image-uploader-%_APP_VER%-build-%BUILD%-portable.7z "*"
+%zipcmd% a -mx9 ..\..\output\image-uploader-%IU_APP_VER%-build-%IU_BUILD_NUMBER%-portable.7z "*"
 cd ..\..\
 
 del "%temp_dir%\Image Uploader.exe"
@@ -66,7 +66,7 @@ Copy "..\Build\release openssl\Image Uploader.exe" %temp_dir%\
 Copy "..\Build\release openssl\curl-ca-bundle.crt" %temp_dir%\
 
 cd %temp_dir%
-%zipcmd% a -mx9 ..\..\output\image-uploader-%_APP_VER%-build-%BUILD%-openssl-portable.7z "*"
+%zipcmd% a -mx9 ..\..\output\image-uploader-%IU_APP_VER%-build-%IU_BUILD_NUMBER%-openssl-portable.7z "*"
 cd ..\..\
 
 rem rmdir /q /s  %temp_dir%

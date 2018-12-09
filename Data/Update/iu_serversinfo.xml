@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_serversinfo" TimeStamp="1458145079" Date="16.03.2016 17:17:59" UpdateUrl="http://zenden2k.atwebpages.com/updates/update.php" CoreUpdate="0" DisplayName="Servers update" Hash="c997dad2cd84a5cb50e221293bf1dd63">
-  <Info>[+] calabox.com
-[+] uploadmagnet.com
-[f] keep4u.ru ?</Info>
+<UpdateInfo Name="iu_serversinfo" DownloadUrl="http://zenden2k.atwebpages.com/updates/iu_serversinfo_1544359114.zip" TimeStamp="1544359114" Date="09.12.2018 13:38:34" UpdateUrl="http://zenden2k.atwebpages.com/updates/update.php" CoreUpdate="0" DisplayName="Servers update" Hash="6e0a013b26d39c4e19d4349a9a634a76">
+  <Info/>
 </UpdateInfo>

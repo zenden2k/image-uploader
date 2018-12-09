@@ -4,7 +4,7 @@
 
 ;#expr Exec(SourcePath + "signcode.bat")
 #define MyAppName "Image Uploader"
-#define MyAppVersion _APP_VER
+#define MyAppVersion IU_APP_VER
 #define MyAppPublisher "Sergey Svistunov"
 #define MyAppURL "http://zenden.ws/imageuploader"
 #define MyAppExeName "Image Uploader.exe"
@@ -29,12 +29,12 @@ DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=output\
 #ifdef WIN2K
-OutputBaseFilename=image-uploader-{#_APP_VER}-build-{#BUILD}-setup-win2k
+OutputBaseFilename=image-uploader-{#IU_APP_VER}-build-{#IU_BUILD_NUMBER}-setup-win2k
 #else 
 #ifdef FFMPEG
-OutputBaseFilename=image-uploader-{#_APP_VER}-build-{#BUILD}-setup-ffmpeg
+OutputBaseFilename=image-uploader-{#IU_APP_VER}-build-{#IU_BUILD_NUMBER}-setup-ffmpeg
 #else 
-OutputBaseFilename=image-uploader-{#_APP_VER}-build-{#BUILD}-setup
+OutputBaseFilename=image-uploader-{#IU_APP_VER}-build-{#IU_BUILD_NUMBER}-setup
 #endif
 #endif
 Compression=lzma/max 
