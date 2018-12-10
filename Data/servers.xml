@@ -407,6 +407,11 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
+    <Server Name="ge.tt" Authorize="2" FileHost="1" Debug="0" Plugin="gett" LoginLabel="E-mail">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub"/>
+	</Server>
     <!--<Server Name="2i.cz" Authorize="0" Type="image" Plugin="2i">
 		<Actions>
 		</Actions>
