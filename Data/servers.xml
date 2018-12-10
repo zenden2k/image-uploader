@@ -412,6 +412,11 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>
 	</Server>
+    <Server Name="lostpic.net" Plugin="lostpic" Authorize="1">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
     <!--<Server Name="2i.cz" Authorize="0" Type="image" Plugin="2i">
 		<Actions>
 		</Actions>
