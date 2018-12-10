@@ -384,19 +384,24 @@ bool CRectRegion::GetImage(HDC src, Bitmap** res)
 
 CWindowHandlesRegion::CWindowHandlesRegion()
 {
+    init();
+}
+
+CWindowHandlesRegion::CWindowHandlesRegion(HWND wnd)
+{
+    init();
+    CWindowHandlesRegionItem newItem;
+    newItem.Include = true;
+    newItem.wnd = wnd;
+    m_hWnds.push_back(newItem);
+}
+
+void CWindowHandlesRegion::init() {
     topWindow = 0;
     m_WindowHidingDelay = 0;
     m_ClearBackground = false;
     m_RemoveCorners = true;
     m_PreserveShadow = true;
-}
-
-CWindowHandlesRegion::CWindowHandlesRegion(HWND wnd)
-{
-    CWindowHandlesRegionItem newItem;
-    newItem.Include = true;
-    newItem.wnd = wnd;
-    m_hWnds.push_back(newItem);
 }
 
 void CWindowHandlesRegion::SetWindowHidingDelay(int delay)
@@ -909,6 +914,8 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
     delete redBgBitmap;
     return resultBm;
 }
+
+
 
 // TODO : fix vista maximized window capturing
 bool CWindowHandlesRegion::GetImage(HDC src, Bitmap** res)

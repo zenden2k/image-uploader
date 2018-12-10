@@ -291,11 +291,8 @@ void CServerSelectorControl::updateInfoLabel() {
         return;
     }
 
-    if ( uploadEngineData ) {
-        showServerParams = showServerParams && (uploadEngineData->UsingPlugin || uploadEngineData->NeedAuthorization);
-    }
-
-
+    showServerParams = showServerParams && (uploadEngineData->UsingPlugin || uploadEngineData->NeedAuthorization);
+    
     CString accountInfoText;
     LoginInfo loginInfo = serverProfile_.serverSettings().authData;
     
@@ -392,7 +389,7 @@ void CServerSelectorControl::updateServerList()
         if (!currentLoopMask) {
             continue;
         }
-        if ( addedItems && currentLoopMask ) {
+        if ( addedItems ) {
             serverComboBox_.AddItem(line, -1, -1, 0,  0 );
         }
         for (int i = 0; i < myEngineList->count(); i++) {

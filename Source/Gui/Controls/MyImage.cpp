@@ -26,7 +26,7 @@
 
 using namespace Gdiplus;
 // CMyImage
-CMyImage::CMyImage()
+CMyImage::CMyImage() : bm_(nullptr), BackBufferWidth(0), BackBufferHeight(0)
 {
     IsImage = false;
     BackBufferDc = NULL;
@@ -34,6 +34,7 @@ CMyImage::CMyImage()
     HideParent = false;
     ImageWidth  = 0;
     ImageHeight = 0;
+
 }
 
 CMyImage::~CMyImage()

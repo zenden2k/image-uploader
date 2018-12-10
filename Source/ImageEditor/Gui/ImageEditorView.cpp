@@ -21,6 +21,7 @@ CImageEditorView::CImageEditorView()  {
     oldPoint.x = -1;
     oldPoint.y = -1;
     mouseDown_ = false;
+    canvas_ = nullptr;
 }
 
 CImageEditorView::~CImageEditorView()

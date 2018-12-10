@@ -24,6 +24,9 @@ bool UrlShorteningFilter::PostUpload(UploadTask* task)
     }
 
     FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
+    if (!fileTask) {
+        return true;
+    }
     std::string directUrl = fileTask->uploadResult()->directUrl;
     std::string downloadUrl = fileTask->uploadResult()->downloadUrl;
     bool res = true;

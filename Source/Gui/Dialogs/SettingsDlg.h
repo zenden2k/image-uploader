@@ -74,7 +74,6 @@ class CSettingsDlg : public CDialogImpl<CSettingsDlg>
     int CurPage;
     CIcon hIcon;
     CIcon hIconSmall;
-    int PrevPage,NextPage;
     bool CreatePage(int PageID);
     CSettingsPage* Pages[SettingsPageCount];
     int PageToShow;

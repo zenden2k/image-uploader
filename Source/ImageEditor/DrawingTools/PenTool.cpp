@@ -36,7 +36,7 @@ namespace ImageEditor {
 */
 
 PenTool::PenTool( Canvas* canvas ): AbstractDrawingTool( canvas )  {
-
+    oldPoint_ = { 0, 0 };
 }
 
 void PenTool::beginDraw( int x, int y ) {

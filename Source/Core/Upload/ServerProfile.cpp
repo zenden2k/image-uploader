@@ -11,6 +11,7 @@ ServerProfile::ServerProfile() {
 ServerProfile::ServerProfile(const std::string&  newServerName){
     serverName_ = newServerName;
     UseDefaultSettings = true;
+    shortenLinks_ = false;
 }
 
 void ServerProfile::setProfileName(const std::string& newProfileName) {

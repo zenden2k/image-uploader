@@ -31,6 +31,7 @@ CContextMenuItemDlg::CContextMenuItemDlg(UploadEngineManager * uploadEngineManag
 {
     titleEdited_ = false;
     uploadEngineManager_ = uploadEngineManager;
+    ServerId = -1;
 }
 
 CContextMenuItemDlg::~CContextMenuItemDlg()

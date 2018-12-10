@@ -31,6 +31,9 @@ BasicSettings::BasicSettings()
     ExecuteScript = false;
     loadFromRegistry_ = false;
     MaxThreads = 3;
+    DeveloperMode = false;
+    AutoShowLog = true;
+    engineList_ = nullptr;
 
     ConnectionSettings.UseProxy = ConnectionSettingsStruct::kNoProxy;
 

@@ -46,6 +46,7 @@ struct HistoryItem
     HistoryItem() {
         timeStamp = 0;
         uploadFileSize = 0;
+        sortIndex = 0;
     }
 };
 

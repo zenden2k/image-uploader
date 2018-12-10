@@ -7,9 +7,15 @@
 #include <io.h>
 #include "Func/IuCommonFunctions.h"
 
-CFolderAdd::CFolderAdd(CWizardDlg *WizardDlg) : m_pWizardDlg(WizardDlg)
+CFolderAdd::CFolderAdd(CWizardDlg *WizardDlg) : 
+    m_pWizardDlg(WizardDlg), 
+    m_bImagesOnly(false),
+    findfile(nullptr),
+    count(0)
 {
     m_bSubDirs = true;
+    m_szPath[0] = '\0';
+    memset(&wfd, 0, sizeof(wfd));
 }
 
 void CFolderAdd::Do(CStringList &Paths, bool ImagesOnly, bool SubDirs)

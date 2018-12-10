@@ -48,6 +48,15 @@ CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
     uploadEngineManager_ = uploadEngineManager;
     engineComboToolTip_ = nullptr;
     ThumbsView.SetDeletePhysicalFiles(true);
+    szBufferFileName[0] = '\0';
+    IsStopTimer = false;
+    NumOfFrames = 0;
+    TimerInc = 0;
+    m_szFileName[0] = '\0';
+    CanceledByUser = false;
+    MainDlg = nullptr;
+
+
 }
 
 CVideoGrabberPage::~CVideoGrabberPage()

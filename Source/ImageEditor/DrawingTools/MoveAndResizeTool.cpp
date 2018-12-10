@@ -162,6 +162,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
                     elHeight = elY - y + elHeight;
                     elX = x;
                     elY = y;
+                    break;
                 case btLeft:
                     
                     elWidth = elX - x + elWidth;

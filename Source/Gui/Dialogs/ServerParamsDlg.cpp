@@ -32,6 +32,7 @@ CServerParamsDlg::CServerParamsDlg(ServerProfile  serverProfile, UploadEngineMan
 {
     focusOnLoginControl_ = focusOnLoginEdit;
     uploadEngineManager_ = uploadEngineManager;
+    m_pluginLoader = nullptr;
 }
 
 CServerParamsDlg::~CServerParamsDlg()

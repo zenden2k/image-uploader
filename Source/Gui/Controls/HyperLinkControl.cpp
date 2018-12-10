@@ -34,6 +34,7 @@ CHyperLinkControl::CHyperLinkControl()
     Selected = -1;
     CursorHand = false;
     m_bHyperLinks = true;
+    m_BkColor = RGB(0, 0, 0);
     HandCursor = LoadCursor(NULL, IDC_HAND); // Loading "Hand" cursor into memory
     SetThemeClassList ( L"globals" );
     HDC hdc = ::GetDC(NULL);

@@ -52,7 +52,7 @@ Sqrat::Array RegularExpression::split(const std::string& piece)
             obj.SetValue(i, res[i].c_str());
         }
         return obj;
-    } catch( Pcre::exception ex ) {
+    } catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
         return Sqrat::Array();
     }
@@ -68,7 +68,7 @@ Sqrat::Array RegularExpression::splitWithLimitOffset(const std::string& piece, i
         }
         return obj;
     }
-    catch( Pcre::exception ex ) {
+    catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
         return Sqrat::Array();
     }
@@ -84,7 +84,7 @@ Sqrat::Array RegularExpression::splitWithLimit(const std::string& piece, int lim
         }
         return obj;
     }
-    catch( Pcre::exception ex ) {
+    catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
         return Sqrat::Array();
     }
@@ -99,7 +99,7 @@ Sqrat::Array RegularExpression::splitWithLimitStartEndOffset(const std::string& 
         }
         return obj;
     }
-    catch( Pcre::exception ex ) {
+    catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
         return Sqrat::Array();
     }
@@ -110,7 +110,7 @@ const std::string RegularExpression::getMatch(int pos) const
     try {
         return pcre_->get_match(pos);
     }
-    catch( Pcre::exception ex ) {
+    catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
         return std::string();
     }
@@ -120,7 +120,7 @@ bool RegularExpression::search(const std::string& stuff)
 {
     try {
         return pcre_->search(stuff);
-    } catch( Pcre::exception ex ) {
+    } catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
         return false;
     }
@@ -130,7 +130,7 @@ bool RegularExpression::searchWithOffset(const std::string& stuff, int OffSet)
 {
     try {
         return pcre_->search(stuff, OffSet);
-    } catch( Pcre::exception ex ) {
+    } catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
         return false;
     }
@@ -140,7 +140,7 @@ const std::string RegularExpression::replace(const std::string& piece, const std
 {
     try {
         return pcre_->replace(piece, with);
-    } catch( Pcre::exception ex ) {
+    } catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
         return std::string();
     }
@@ -155,7 +155,7 @@ int RegularExpression::getMatchStart(int pos) const
 {
     try {
         return pcre_->get_match_start(pos);
-    } catch( Pcre::exception ex ) {
+    } catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
         return 0;
     }
@@ -170,7 +170,7 @@ int RegularExpression::getMatchEnd(int pos) const
 {
     try {
         return pcre_->get_match_end(pos);
-    } catch( Pcre::exception ex ) {
+    } catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
         return 0;
     }
@@ -198,7 +198,7 @@ Sqrat::Array RegularExpression::getSubStrings()
             res.SetValue(i, (*substrings)[i].c_str());
         }
         return res;
-    } catch( Pcre::exception ex ) {
+    } catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
         return Sqrat::Array();
     }
@@ -231,7 +231,7 @@ Sqrat::Array RegularExpression::findAll(const std::string& str)
             }
         }
         return res;
-    } catch( Pcre::exception ex ) {
+    } catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
         return Sqrat::Array();
     }

@@ -25,14 +25,16 @@ CNewStyleFileDialog::CNewStyleFileDialog(HWND parent, const CString& initialFold
     // Create the file-save dialog COM object.
     HRESULT hr = newStyleDialog_.CoCreateInstance(CLSID_FileOpenDialog);
 
-    if (FAILED(hr))
+    if (FAILED(hr)) {
+        delete[] fileTypes;
         return;
+    }
 
     if (fileTypes) {
         newStyleDialog_->SetFileTypes(filters.size(), fileTypes);
     }
 
-    delete fileTypes;
+    delete[] fileTypes;
 
     if (!title.IsEmpty()) {
         newStyleDialog_->SetTitle(title);
@@ -73,21 +75,21 @@ INT_PTR CNewStyleFileDialog::DoModal(HWND hWndParent) {
 
 CString CNewStyleFileDialog::getFolderPath() {
     CString result;
-    if (isVista_) {
-        CComPtr<IShellItem> pFolderItem;
-        HRESULT hr = newStyleDialog_->GetFolder(&pFolderItem);
+
+    CComPtr<IShellItem> pFolderItem;
+    HRESULT hr = newStyleDialog_->GetFolder(&pFolderItem);
+    if (SUCCEEDED(hr)) {
+        LPOLESTR pwsz = NULL;
+
+        // Get its file system path.
+        hr = pFolderItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
+
         if (SUCCEEDED(hr)) {
-            LPOLESTR pwsz = NULL;
-
-            // Get its file system path.
-            hr = pFolderItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
-
-            if (SUCCEEDED(hr)) {
-                result = pwsz;
-                CoTaskMemFree(pwsz);
-            }
+            result = pwsz;
+            CoTaskMemFree(pwsz);
         }
     }
+    
     return result;
 }
 

@@ -87,13 +87,12 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     title.Format(TR("Folder list on server %s for account '%s':"), (LPCTSTR)Utf8ToWCstring(m_UploadEngine->Name),
                  (LPCTSTR)Utf8ToWCstring(serverProfile_.serverSettings().authData.Login));
     SetDlgItemText(IDC_FOLDERLISTLABEL, title);
+
+
+    uploadScript->setNetworkClient(&m_NetworkClient);
+    uploadScript->getAccessTypeList(m_accessTypeList);
+    CreateLoadingThread();
     
-    if (uploadScript)
-    {
-        uploadScript->setNetworkClient(&m_NetworkClient);
-        uploadScript->getAccessTypeList(m_accessTypeList);
-        CreateLoadingThread();
-    }
     return 1;  // Let the system set the focus
 }
 

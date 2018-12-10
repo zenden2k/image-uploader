@@ -30,6 +30,7 @@
 CGeneralSettings::CGeneralSettings()
 {
     findfile = NULL;
+    memset(&wfd, 0, sizeof(wfd));
 }
 
 CGeneralSettings::~CGeneralSettings()

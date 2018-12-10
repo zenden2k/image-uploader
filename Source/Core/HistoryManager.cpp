@@ -76,6 +76,7 @@ CHistorySession::CHistorySession(const std::string& filename, const std::string&
 {
     m_historyXmlFileName = filename;
     m_sessId = sessionId;
+    m_timeStamp = 0;
 }
 
 void CHistorySession::loadFromXml(SimpleXmlNode& sessionNode)

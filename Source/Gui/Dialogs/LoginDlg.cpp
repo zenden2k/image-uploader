@@ -192,7 +192,7 @@ DWORD CLoginDlg::Run()
         ss.authData = li;
         CScriptUploadEngine* plugin_ = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
 
-        if ( !plugin_->supportsBeforehandAuthorization() ) {
+        if (!plugin_ || !plugin_->supportsBeforehandAuthorization()) {
             OnProcessFinished();
             return 0;
         }

@@ -150,7 +150,7 @@ LRESULT  CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, H
         }
     }
     fileName = getSelectedThumbnailFileName();
-    std::auto_ptr<Thumbnail> autoPtrThumb;
+    std::unique_ptr<Thumbnail> autoPtrThumb;
     Thumbnail * thumb = 0;
     if(thumb_cache_.count(fileName))
     thumb  = thumb_cache_[fileName];

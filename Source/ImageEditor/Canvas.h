@@ -50,6 +50,7 @@ class Canvas {
                 endPoint.x = -1;
                 endPoint.y = -1;
                 penSize = -1;
+                movableElement = nullptr;
             }
         };
         struct UndoHistoryItem {

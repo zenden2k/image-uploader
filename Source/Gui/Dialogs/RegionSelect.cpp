@@ -104,12 +104,24 @@ CRegionSelect::CRegionSelect()
     DrawingPen = 0;
     DrawingBrush = 0;
     lineType = 0;
-    
     cxOld = -1;
     cyOld = -1;
     pen = CreatePen(PS_SOLID, 2, 0); //Solid black line, width = 2 pixels
     CrossCursor = LoadCursor(NULL,IDC_CROSS);
     HandCursor = LoadCursor(NULL,IDC_HAND);
+    m_SelectionMode = smRectangles;
+    hSelWnd = nullptr;
+    m_PrevWindowRect = { 0, 0, 0, 0 };
+    m_btoolWindowTimerRunning = false;
+    Parent = nullptr;
+    m_bPainted = false;
+    m_DoubleBuffer = nullptr;
+    gdipBm = nullptr;
+    m_Width = 0;
+    m_Height = 0;
+    m_bResult = false;
+    m_brushColor = RGB(0, 0, 0);
+    m_bPictureChanged = false;
 }
 
 
@@ -140,7 +152,10 @@ LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 
     if(m_bPictureChanged)
     {
-        if(Down) return 0;
+        if (Down) {
+            EndPaint(&ps);
+            return 0;
+        }
         RECT rc;
         GetClientRect(&rc);
         CRgn newRegion;

@@ -27,8 +27,9 @@
 //#define CheckBounds(n, a, b, d) {if ((n < a) || (n > b)) n = d; }
 
 // CVideoGrabberParams
-CVideoGrabberParams::CVideoGrabberParams()
+CVideoGrabberParams::CVideoGrabberParams() : m_Font()
 {
+    memset(&m_Font, 0, sizeof(m_Font));
 }
 
 CVideoGrabberParams::~CVideoGrabberParams()

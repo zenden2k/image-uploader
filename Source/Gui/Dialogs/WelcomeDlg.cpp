@@ -30,6 +30,8 @@ CWelcomeDlg::CWelcomeDlg()
 {
     br = CreateSolidBrush(RGB(255, 255, 255));
     PrevClipboardViewer = NULL;
+    fRemoveClipboardFormatListener_ = nullptr;
+    QuickRegionPrint = false;
 }
 
 LRESULT CWelcomeDlg::OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)

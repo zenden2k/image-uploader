@@ -674,7 +674,8 @@ public:
         //window->execScript()
         spHTML->get_body(&bodyEle);
         CComBSTR code = "<div style='display:none;'>&nbsp;<script type='text/javascript'>"+ javascript +     "</script></div>";
-        return bodyEle->insertAdjacentHTML(L"afterBegin",code) == ERROR_SUCCESS;
+        CComBSTR whereStr(L"afterBegin");
+        return bodyEle->insertAdjacentHTML(whereStr, code) == ERROR_SUCCESS;
     }
 
 

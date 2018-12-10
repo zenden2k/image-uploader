@@ -68,9 +68,8 @@ struct MYHOTKEY
 
         // CString str;
         TCHAR buf[20];
-        int nLen;
 
-        nLen = ::GetKeyNameTextW(lScan, buf, sizeof(buf));
+        ::GetKeyNameTextW(lScan, buf, 20);
         return buf;  // str.c_str();
     }
 
@@ -146,6 +145,14 @@ class CHotkeyItem
 
         CString GetDisplayName();
 
+        CHotkeyItem() {
+            localKey.keyCode = 0;
+            localKey.keyModifier = 0;
+            globalKey.keyCode = 0;
+            globalKey.keyModifier = 0;
+            setForegroundWindow = true;
+            commandId = 0;
+        }
         void Clear()
         {
             localKey.keyCode = 0;

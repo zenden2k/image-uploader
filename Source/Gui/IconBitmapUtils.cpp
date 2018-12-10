@@ -119,8 +119,8 @@ HBITMAP IconBitmapUtils::IconToBitmap(HINSTANCE hInst, UINT uIcon)
     ::DeleteDC(dst_hdc);
     ::ReleaseDC(desktop, screen_dev); 
     DestroyIcon(hIcon);
-    if (bmp)
-        bitmaps.insert(bitmap_it, std::make_pair(uIcon, bmp));
+
+    bitmaps.insert(bitmap_it, std::make_pair(uIcon, bmp));
     return bmp;
 }
 

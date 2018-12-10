@@ -103,6 +103,7 @@ class CWindowHandlesRegion : public CRectRegion
         bool m_RemoveCorners;
         bool m_PreserveShadow;
         std::vector<CWindowHandlesRegionItem> m_hWnds;
+        void init();
 };
 
 class CActiveWindowRegion : public CWindowHandlesRegion

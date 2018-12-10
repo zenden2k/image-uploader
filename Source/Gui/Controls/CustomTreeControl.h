@@ -68,6 +68,7 @@ class TreeItem
             nLevel = level;
             m_isExpanded = false;
             m_callback = 0;
+            m_userData = nullptr;
         }
         virtual ~TreeItem()
         {

@@ -43,6 +43,7 @@ CThumbsView::CThumbsView() :deletePhysicalFiles_(false)
     maxheight = 0;
     m_NeedUpdate  = FALSE;
     callbackLastCallTime_ = 0;
+    ExtendedView = false;
 }
 
 CThumbsView::~CThumbsView()

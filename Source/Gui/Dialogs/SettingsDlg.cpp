@@ -36,7 +36,6 @@ CSettingsDlg::CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager)
 {
     CurPage = -1;
     PageToShow = Page;
-    PrevPage = -1;
     ZeroMemory(Pages, sizeof(Pages));
     uploadEngineManager_ = uploadEngineManager;
     backgroundBrush_.CreateSysColorBrush(COLOR_BTNFACE);

@@ -325,9 +325,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 }
 
 bool CWizardDlg::ParseCmdLine()
-{ 
-    int count = 0;
-
+{
     size_t nIndex = 0;
     bool fromContextMenu = false;
 
@@ -443,7 +441,7 @@ bool CWizardDlg::ParseCmdLine()
 		QuickUploadMarker = (fromContextMenu && Settings.QuickUpload && !CmdLine.IsOption(_T("noquick"))) || (CmdLine.IsOption(_T("quick")));	
 		FolderAdd.Do(Paths, CmdLine.IsOption(_T("imagesonly")), true);
 	}
-	return count!=0;
+    return false;
 }
 
 LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -492,8 +490,6 @@ BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
                     OnPrevBnClicked(0,0,0); 
                     return TRUE;
                 }
-                else if (pMsg->message == WM_KEYUP) 
-                    return TRUE;
             }
         }
     }
@@ -816,7 +812,10 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
         CreatePage(wpMainPage);
         FolderAdd.Do(Paths, false, true);
         ShowPage(wpMainPage);
-        if(MainDlg) MainDlg->ThumbsView.LoadThumbnails();
+        MainDlg = dynamic_cast<CMainDlg*>(Pages[wpMainPage]);
+        if (MainDlg) {
+            MainDlg->ThumbsView.LoadThumbnails();
+        }
     }
     
     DragFinish(hDrop);

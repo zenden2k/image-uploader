@@ -19,7 +19,6 @@ public:
     void setFileTypeIndex(UINT iFileType) override;
 
 protected:
-    bool isVista_;
     Library shellDll_{ L"shell32.dll" };
     CComPtr<IFileOpenDialog> newStyleDialog_;
 private:

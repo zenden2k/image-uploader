@@ -39,6 +39,10 @@ CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &i
     m_InitialBuffer = initialBuffer;
     fRemoveClipboardFormatListener_ = NULL;
     PrevClipboardViewer = NULL;
+    m_retCode = 0;
+    m_nFilesCount = 0;
+    m_nFileDownloaded = 0;
+    isVistaOrLater_ = WinUtils::IsVistaOrLater();
     m_FileDownloader.setThreadCount(1);
     ACCEL accels[] = {
         { FVIRTKEY|FCONTROL , VK_RETURN, IDOK },
@@ -55,8 +59,6 @@ CImageDownloaderDlg::~CImageDownloaderDlg()
 LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     CenterWindow(GetParent());
-
-    isVistaOrLater_ = WinUtils::IsVistaOrLater();
 
     if (isVistaOrLater_)
     {

@@ -64,6 +64,8 @@ struct ErrorInfo
     {
         RetryIndex = -1;
         ActionIndex = -1;
+        messageType = mtError;
+        errorType = etNone;
     }
 
     void Clear()

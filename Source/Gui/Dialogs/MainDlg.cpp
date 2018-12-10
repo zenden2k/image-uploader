@@ -40,7 +40,14 @@
 #include <shlobj.h>
 #include <Gui/Components/MyFileDialog.h>
 
-CMainDlg::CMainDlg() {
+CMainDlg::CMainDlg():
+    m_EditorProcess(nullptr),
+    listChanged_(false),
+    callbackLastCallTime_(0),
+    callbackLastCallType_(false),
+    hotkeys_(nullptr)
+{
+
 }
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)

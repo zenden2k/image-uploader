@@ -122,6 +122,13 @@ public:
             pFrameRGB = 0;
             pFrame = 0;
             pCodecCtx = 0;
+            videoStream = 0;
+            pFormatCtx = nullptr;
+            pCodec = nullptr;
+            frameFinished = 0;
+            ic = nullptr;
+            headerlen = 0;
+            duration_ = 0;
         }
 
           ~AvcodecFrameGrabberPrivate() {
@@ -131,10 +138,6 @@ public:
 
     bool open(const std::string& fileName) {
         int numOfFrames = 5;
-        if(numOfFrames<=0) return false;
-
-
-
 
         // Register all formats and codecs
         if (! initialized_) {
@@ -312,9 +315,8 @@ public:
     void close() {
         
         // Free the RGB image
-        if ( buffer ) {
-            free(buffer);
-        }
+        free(buffer);
+
         if ( pFrameRGB ) {
              av_frame_free(&pFrameRGB);
         }

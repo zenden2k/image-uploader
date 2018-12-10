@@ -25,14 +25,16 @@ CNewStyleFileSaveDialog::CNewStyleFileSaveDialog(HWND parent, const CString& ini
     // Create the file-save dialog COM object.
     HRESULT hr = newStyleDialog_.CoCreateInstance(CLSID_FileSaveDialog);
 
-    if (FAILED(hr))
+    if (FAILED(hr)) {
+        delete[] fileTypes;
         return;
+    }
 
     if (fileTypes) {
         newStyleDialog_->SetFileTypes(filters.size(), fileTypes);
     }
 
-    delete fileTypes;
+    delete[] fileTypes;
 
     if (!title.IsEmpty()) {
         newStyleDialog_->SetTitle(title);
@@ -70,24 +72,23 @@ INT_PTR CNewStyleFileSaveDialog::DoModal(HWND hWndParent) {
 
 CString CNewStyleFileSaveDialog::getFolderPath() {
     CString result;
-    if (isVista_) {
-        CComPtr<IShellItem> pFolderItem;
-        HRESULT hr = newStyleDialog_->GetFolder(&pFolderItem);
+
+    CComPtr<IShellItem> pFolderItem;
+    HRESULT hr = newStyleDialog_->GetFolder(&pFolderItem);
+    if (SUCCEEDED(hr)) {
+        LPOLESTR pwsz = NULL;
+
+        // Get its file system path.
+        hr = pFolderItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
+
         if (SUCCEEDED(hr)) {
-            LPOLESTR pwsz = NULL;
-
-            // Get its file system path.
-            hr = pFolderItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
-
-            if (SUCCEEDED(hr)) {
-                result = pwsz;
-                CoTaskMemFree(pwsz);
-            }
+            result = pwsz;
+            CoTaskMemFree(pwsz);
         }
     }
+    
     return result;
 }
-
 
 void CNewStyleFileSaveDialog::setTitle(LPCWSTR title) {
     newStyleDialog_->SetTitle(title);
@@ -100,8 +101,6 @@ void CNewStyleFileSaveDialog::setDefaultExtension(LPCTSTR extension) {
 void CNewStyleFileSaveDialog::setFileName(LPCWSTR fileName) {
     newStyleDialog_->SetFileName(fileName);
 }
-
-
 
 void CNewStyleFileSaveDialog::getFiles(std::vector<CString>& arr) {
     HRESULT hr;

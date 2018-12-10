@@ -18,6 +18,8 @@ CWebViewWindow::CWebViewWindow() : subclassWindow_(this), callback_(HookCallback
     messageLoopIsRunning_ = false;
     activeWindowBeforeFill_ = 0;
     urlmonDll_ = nullptr;
+    hWndClient_ = nullptr;
+    fileDialog_ = nullptr;
     //dialogHook_ = 0;
 }
 CWebViewWindow::~CWebViewWindow() {

@@ -22,7 +22,7 @@
 
 #include "Gui/GuiTools.h"
 
-CClearHistoryDlg::CClearHistoryDlg()
+CClearHistoryDlg::CClearHistoryDlg() : value_(HistoryClearPeriod::CurrentMonth)
 {
 }
 

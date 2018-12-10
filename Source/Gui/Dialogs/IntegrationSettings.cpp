@@ -34,6 +34,7 @@
 CIntegrationSettings::CIntegrationSettings(UploadEngineManager *uploadEngineManager)
 {
     uploadEngineManager_ = uploadEngineManager;
+    menuItemsChanged_ = false;
 }
 
 CIntegrationSettings::~CIntegrationSettings()
@@ -156,6 +157,8 @@ bool CIntegrationSettings::Apply()
                     if ( lid->invalid ) {
                         continue;
                     }
+                    // V1002 The 'CRegistry' class, containing pointers, constructor and destructor, 
+                    // is copied by the automatically generated copy constructor. 
                     CRegistry Reg2 = Reg;
                     CString itemNumber;
                     itemNumber.Format(_T("%04d"), i);

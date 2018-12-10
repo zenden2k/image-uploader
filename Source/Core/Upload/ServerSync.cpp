@@ -28,7 +28,7 @@ bool ServerSync::beginAuth()
     Q_D(ServerSync);
     try {
         d->loginMutex_.lock();
-    } catch (std::exception ex) {
+    } catch (std::exception& ex) {
         LOG(ERROR) << "ServerSync::beginLogin exception: " << ex.what();
         return false;
     }
@@ -46,7 +46,7 @@ bool ServerSync::endAuth()
     try
     {
         d->loginMutex_.unlock();
-    } catch (std::exception ex)
+    } catch (std::exception& ex)
     {
         LOG(ERROR) << "ServerSync::endLogin exception: " << ex.what();
         return false;

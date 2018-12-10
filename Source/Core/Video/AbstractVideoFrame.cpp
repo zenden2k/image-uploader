@@ -2,7 +2,7 @@
 #include "AbstractImage.h"
 #include "Core/logging.h"
 
-AbstractVideoFrame::AbstractVideoFrame() {
+AbstractVideoFrame::AbstractVideoFrame() : width_(0), height_(0), time_(0) {
 }
 
 int AbstractVideoFrame::getWidth() const {

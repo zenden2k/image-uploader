@@ -157,7 +157,7 @@ bool CDefaultUploadEngine::executeActions() {
                 // Prepare error string which will be displayed in Log Window
                 std::string ErrorStr = m_ErrorReason; 
                 ErrorType errorType;
-                ErrorInfo::MessageType mt = ErrorInfo::mtWarning;
+
                 if (!m_ErrorReason.empty()) {
                     ErrorStr += m_ErrorReason;
                 }
@@ -171,7 +171,7 @@ bool CDefaultUploadEngine::executeActions() {
                     ErrorStr += "(" + IuCoreUtils::toString(m_UploadData->Actions[i].NumOfTries + 1)
                         + " of " + IuCoreUtils::toString(m_UploadData->Actions[i].RetryLimit) + ")";
                 }
-                UploadError( mt == ErrorInfo::mtError, ErrorStr, 0, false );
+                UploadError( false, ErrorStr, 0, false );
             }
         }
         while (m_UploadData->Actions[i].NumOfTries < m_UploadData->Actions[i].RetryLimit && !ActionRes);
@@ -211,7 +211,7 @@ bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
 
         return ReadServerResponse(Action);
     }
-    catch (std::exception ex) {
+    catch (std::exception& ex) {
         std::cerr<<ex.what()<<std::endl;
         return false;
     }

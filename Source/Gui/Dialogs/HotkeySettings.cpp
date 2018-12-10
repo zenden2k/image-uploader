@@ -250,12 +250,13 @@ bool CHotkeyList::Changed()
 
 CHotkeyList& CHotkeyList::operator=( const CHotkeyList& c)
 {
-    clear();
-    for(size_t i=0; i<c.size(); i++)
-    {
-        push_back( c[i]);
+    if (this != &c) {
+        clear();
+        for (size_t i = 0; i < c.size(); i++) {
+            push_back(c[i]);
+        }
+        m_bChanged = true;
     }
-    m_bChanged = true;
     return *this;
 }
 

@@ -11,7 +11,7 @@ namespace bp = ::boost::process;
 
 class ProcessPrivate {
 public:
-    ProcessPrivate()
+    ProcessPrivate() :readProcessOutput_(false), hidden_(false)
     {
 #ifdef _WIN32
         outputEncoding_ = "cp_oem";

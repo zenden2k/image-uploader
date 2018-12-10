@@ -28,7 +28,7 @@
 #define VIDEO_FORMATS _T("avi\0mpg\0mpeg\0vob\0divx\0flv\0wmv\0asf\0mkv\0mov\0ts\0mp2\0mp4\0") _T("3gp\0rm\0mpeg2ts\0\0")
 #define IMAGE_DIALOG_FORMATS _T("Image files (JPEG, GIF, PNG, etc)\0*.jpg;*.gif;*.png;*.bmp;*.tiff\0All files\0*.*\0\0")
 
-#define xor(a,b) ((a || b) && !(a && b))    
+#define xor(a,b) (((a) || (b)) && !((a) && (b)))    
 
 #define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
 

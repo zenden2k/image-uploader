@@ -34,6 +34,7 @@ CUploadParamsDlg::CUploadParamsDlg(ServerProfile &serverProfile, bool showImageP
     params_ = serverProfile.getImageUploadParams();
     defaultServer_ = defaultServer;
     showImageProcessingParams_ = showImageProcessingParams;
+    m_UploadEngine = nullptr;
 }
 
 CUploadParamsDlg::~CUploadParamsDlg()
@@ -233,7 +234,7 @@ void  CUploadParamsDlg::defaultThumbSettingsCheckboxChanged() {
     std::map<int, bool> enable;
     enable[IDC_THUMBTEMPLATECOMBOLABEL] = !useServerThumbnails && !useDefaultThumbnailSettings && !useDefaultSettings;
     enable[IDC_THUMBTEMPLATECOMBO] = !useServerThumbnails && !useDefaultThumbnailSettings && !useDefaultSettings;
-    enable[IDC_THUMBRESIZECOMBO] = !useServerThumbnails && !useDefaultSettings;
+    //enable[IDC_THUMBRESIZECOMBO] = !useServerThumbnails && !useDefaultSettings;
     enable[IDC_THUMBTEXTCHECKBOX] = !useDefaultThumbnailSettings && !useDefaultSettings;
     enable[IDC_THUMBTEXT] = !useDefaultThumbnailSettings && addThumbText && !useDefaultSettings;
     enable[IDC_THUMBRESIZELABEL] = !useDefaultThumbnailSettings && !useDefaultSettings;

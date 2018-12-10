@@ -92,6 +92,7 @@ public :
         } 
         if ( !image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_,data_, dataSize_) ) {
             delete image;
+            image = nullptr;
         }
         return image;
     }

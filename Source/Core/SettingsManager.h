@@ -69,7 +69,7 @@ template<class T> class SettingsNodeVariant: public SettingsNodeBase
 {
     private:
         T* value_;
-        bool empty_;
+        //bool empty_;
     public:
         SettingsNodeVariant(T* value)
         {

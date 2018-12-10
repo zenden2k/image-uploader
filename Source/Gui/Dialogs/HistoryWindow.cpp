@@ -185,7 +185,7 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     if(!isSessionItem)
     {
         std::string fileName  = historyItem->localFilePath;
-        if(!isSessionItem && !fileName.empty() && IuCoreUtils::DirectoryExists(IuCoreUtils::ExtractFilePath(fileName)))
+        if(!fileName.empty() && IuCoreUtils::DirectoryExists(IuCoreUtils::ExtractFilePath(fileName)))
         {
             menu.AppendMenu(MF_STRING, ID_OPENFOLDER, TR("Open in folder"));
         }

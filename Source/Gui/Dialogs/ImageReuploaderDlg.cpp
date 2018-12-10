@@ -55,6 +55,11 @@ CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * 
     uploadManager_ = uploadManager;
     htmlClipboardFormatId = RegisterClipboardFormat(_T("HTML Format"));
     uploadEngineManager_ = uploadEngineManager;
+    PrevClipboardViewer = nullptr;
+    m_nFilesCount = 0;
+    m_nFilesUploaded = 0;
+    m_serverId = -1;
+    m_nFilesDownloaded = 0;
 }
 
 CImageReuploaderDlg::~CImageReuploaderDlg()
@@ -514,6 +519,9 @@ bool CImageReuploaderDlg::LinksAvailableInText(const CString &text)
 void CImageReuploaderDlg::OnFileFinished(UploadTask* task, bool ok) {
     if ( ok ) {
         FileUploadTask* fileUploadTask = dynamic_cast<FileUploadTask*>(task);
+        if (!fileUploadTask) {
+            return;
+        }
         UploadItemData* uploadItemData = reinterpret_cast<UploadItemData*>(fileUploadTask->userData());
         UploadedItem item;
         item.sourceUrl   = uploadItemData->sourceUrl;

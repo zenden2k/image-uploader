@@ -7,7 +7,7 @@
 #endif
 #include "Core/logging.h"
 
-AbstractImage::AbstractImage() {
+AbstractImage::AbstractImage(): width_(0), height_(0) {
 }
 
 int AbstractImage::getWidth() const {

@@ -26,7 +26,7 @@
 #include "Core/ScreenCapture/Utils.h"
 
 // CScreenshotDlg
-CScreenshotDlg::CScreenshotDlg()
+CScreenshotDlg::CScreenshotDlg() : m_CaptureMode(cmFullScreen)
 {
     m_WhiteBr.CreateSolidBrush(RGB(255,255,255));
 }

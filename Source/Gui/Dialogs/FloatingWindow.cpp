@@ -53,6 +53,10 @@ CFloatingWindow::CFloatingWindow()
     lastUploadedItem_ = 0;
     iconAnimationCounter_ = 0;
     animationEnabled_ = false;
+    m_hTrayIconMenu = nullptr;
+    uploadManager_ = nullptr;
+    uploadType_ = utImage;
+    wizardDlg_ = nullptr;
 }
 
 CFloatingWindow::~CFloatingWindow()

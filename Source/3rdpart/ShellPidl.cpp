@@ -12,7 +12,7 @@ CComPtr<IMalloc> CShellPidl::getMalloc() {
     return malloc_;
 }
 
-CShellPidl::CShellPidl()
+CShellPidl::CShellPidl() : m_pObj(nullptr)
 {
     ::SHGetMalloc(&m_pMalloc);
 }

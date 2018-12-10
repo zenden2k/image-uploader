@@ -136,6 +136,7 @@ void Document::saveDocumentState( /*DrawingElement* element*/ ) {
     Gdiplus::Rect r ( 0,0, currentImage_->GetWidth(), currentImage_->GetHeight() );
     
     if ( srcImage->LockBits( &r,  ImageLockModeRead, PixelFormat32bppARGB, &bdSrc) != Gdiplus::Ok ) {
+        delete[] imageData;
         return ;
     }
     

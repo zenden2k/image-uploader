@@ -27,7 +27,9 @@
 #include "ScriptUploadEngine.h"
 
 CAdvancedUploadEngine::CAdvancedUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings) : 
-                                                                                CAbstractUploadEngine(serverSync)
+                            CAbstractUploadEngine(serverSync), 
+                            m_CurrentActionIndex(0), 
+                            m_nThumbWidth(0)
 {
     setServerSettings(settings);
 }

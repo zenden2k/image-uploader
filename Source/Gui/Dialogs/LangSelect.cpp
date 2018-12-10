@@ -29,6 +29,7 @@ CLangSelect::CLangSelect()
 {
     findfile = NULL;
     *Language = 0;
+    memset(&wfd, 0, sizeof(wfd));
 }
 
 CLangSelect::~CLangSelect()

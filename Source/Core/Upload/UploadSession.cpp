@@ -8,6 +8,7 @@ UploadSession::UploadSession()
     finishedSignalSent_ = false;
     stopSignal_ = true;
     finishedCount_ = 0;
+    isStopped_ = false;
 }
 
 void UploadSession::addTask(std::shared_ptr<UploadTask> task)

@@ -2,7 +2,7 @@
 
 #include "HyperLinkControl.h"
 
-CHyperLinkControlAccessible::CHyperLinkControlAccessible() : alive_(TRUE){
+CHyperLinkControlAccessible::CHyperLinkControlAccessible() : alive_(TRUE), control_(nullptr){
     
 }
 

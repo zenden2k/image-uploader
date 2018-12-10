@@ -421,6 +421,7 @@ CUpdatePackage::CUpdatePackage()
     m_nUpdatedFiles = 0;
     m_nTotalFiles = 0;
     m_CoreUpdate = false;
+    m_TimeStamp = 0;
 }
 
 bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)

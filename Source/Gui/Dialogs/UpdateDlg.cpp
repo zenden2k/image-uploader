@@ -48,6 +48,9 @@ CUpdateDlg::CUpdateDlg() :m_UpdateManager(AppParams::instance()->tempDirectoryW(
     m_bUpdateFinished = false;
 
     m_Modal = false;
+    stop = false;
+    m_bClose = false;
+    m_InteractiveUpdate = true;
 }
 
 CUpdateDlg::~CUpdateDlg()

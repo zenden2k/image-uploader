@@ -87,17 +87,14 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
         iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\") + Utf8ToWCstring(ued->PluginName) +_T(".ico");
     }
 
-    if (!icon ) {
-        int w = GetSystemMetrics(SM_CXSMICON);
-        int h = GetSystemMetrics(SM_CYSMICON);
-        if (LoadIconWithScaleDownFunc_) {
-            LoadIconWithScaleDownFunc_(nullptr, iconFileName, w, h, &icon);
-        }
+    int w = GetSystemMetrics(SM_CXSMICON);
+    int h = GetSystemMetrics(SM_CYSMICON);
+    if (LoadIconWithScaleDownFunc_) {
+        LoadIconWithScaleDownFunc_(nullptr, iconFileName, w, h, &icon);
+    }
 
-        if (!icon) {
-            icon = reinterpret_cast<HICON>(LoadImage(0, iconFileName, IMAGE_ICON, w, h, LR_LOADFROMFILE));
-        }
-        
+    if (!icon) {
+        icon = reinterpret_cast<HICON>(LoadImage(0, iconFileName, IMAGE_ICON, w, h, LR_LOADFROMFILE));
     }
     
     if ( !icon ) {

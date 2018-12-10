@@ -41,7 +41,6 @@ void COldStyleFileDialog::getFiles(std::vector<CString>& arr) {
         multiDlg_->GetDirectory(Buffer, sizeof(Buffer) / sizeof(TCHAR));
 
         do {
-
             FileName = (FileName) ? multiDlg_->GetNextFileName() : multiDlg_->GetFirstFileName();
             if (!FileName) break;
             multiDlg_->GetDirectory(Buffer, sizeof(Buffer) / sizeof(TCHAR));
@@ -49,10 +48,8 @@ void COldStyleFileDialog::getFiles(std::vector<CString>& arr) {
             if (Buffer[lstrlen(Buffer) - 1] != '\\')
                 lstrcat(Buffer, _T("\\"));
 
-            if (FileName) {
-                lstrcat(Buffer, FileName);
-                arr.push_back(Buffer);
-            }
+            lstrcat(Buffer, FileName);
+            arr.push_back(Buffer);
         } while (FileName);
     } else {
         if (dlg_->m_szFileName[0]) {

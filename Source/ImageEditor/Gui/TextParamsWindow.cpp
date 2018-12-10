@@ -30,6 +30,7 @@
 
 TextParamsWindow::TextParamsWindow() : fontSizeComboboxCustomEdit_(this), windowDc_(nullptr)
 {
+    memset(&font_, 0, sizeof(font_));
 }
 
 TextParamsWindow::~TextParamsWindow()

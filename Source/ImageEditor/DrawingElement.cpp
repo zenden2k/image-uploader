@@ -22,7 +22,7 @@
 #include "Core/Logging.h"
 namespace ImageEditor {
 
-DrawingElement::DrawingElement(){
+DrawingElement::DrawingElement() : canvas_(nullptr) {
     startPoint_.x = 0;
     startPoint_.y = 0;
     endPoint_.x   = 0;

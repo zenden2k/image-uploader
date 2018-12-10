@@ -355,8 +355,10 @@ BOOL CUnzipper::UnzipFile(LPCTSTR szFolder, BOOL bIgnoreFilePath)
     if (INVALID_HANDLE_VALUE == hOutputFile)
         return FALSE;
 
-    if (unzOpenCurrentFile(m_uzFile) != UNZ_OK)
+    if (unzOpenCurrentFile(m_uzFile) != UNZ_OK) {
+        CloseHandle(hOutputFile);
         return FALSE;
+    }
 
     // read the file and output
     int nRet = UNZ_OK;

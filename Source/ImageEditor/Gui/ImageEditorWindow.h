@@ -217,6 +217,10 @@ class ConfigurationProvider {
 public:
     ConfigurationProvider() {
         penSize_ = 12;
+        roundingRadius_ = 5;
+        allowAltTab_ = false; 
+        searchEngine_ = SearchByImage::seGoogle;
+        memset(&font_, 0, sizeof(font_));
     }
     virtual ~ConfigurationProvider() {
 
