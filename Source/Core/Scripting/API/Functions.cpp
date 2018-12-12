@@ -75,7 +75,7 @@ const std::string GetAppLanguageFile()
 }
 
 Sqrat::Table GetAppVersion() {
-    Sqrat::Table res(GetCurrentThreadVM().GetVM());
+    Sqrat::Table res(GetCurrentThreadVM());
     auto version = AppParams::instance()->GetAppVersion();
     if (version) {
         res.SetValue("Major", static_cast<SQInteger>(version->Major));
@@ -89,7 +89,7 @@ Sqrat::Table GetAppVersion() {
 
 const std::string GetCurrentScriptFileName()
 {
-    return GetScriptName(GetCurrentThreadVM().GetVM());
+    return GetScriptName(GetCurrentThreadVM());
 }
 
 Sqrat::Object IncludeScript(const std::string& filename)
@@ -119,7 +119,7 @@ Sqrat::Object IncludeScript(const std::string& filename)
         LOG(ERROR) << "include() failed: could not read file \"" + absolutePath + "\".";
         return Sqrat::Object();
     }
-    Sqrat::Script squirrelScript(GetCurrentThreadVM().GetVM());
+    Sqrat::Script squirrelScript(GetCurrentThreadVM());
     squirrelScript.CompileString(scriptText.c_str(),IuCoreUtils::ExtractFileName(absolutePath).c_str());
     squirrelScript.Run();
     return squirrelScript;
@@ -358,8 +358,8 @@ const std::string MessageBox( const std::string& message, const std::string &tit
 #endif
 }
 
-void parseJSONObj(Json::Value root, Sqrat::Array& obj);
-void parseJSONObj(Json::Value root, Sqrat::Table& obj);
+void parseJSONObj(const Json::Value& root, Sqrat::Array& obj);
+void parseJSONObj(const Json::Value& root, Sqrat::Table& obj);
 
 template<class T,class V> void setObjValues(T key, Json::ValueIterator it, V &obj) {
     using namespace Json;
@@ -400,38 +400,38 @@ template<class T,class V> void setObjValues(T key, Json::ValueIterator it, V &ob
     }
 }
 
-void parseJSONObj(Json::Value root, Sqrat::Array& obj) {
+void parseJSONObj(const Json::Value& root, Sqrat::Array& obj) {
     Json::ValueIterator it;
-    obj = Sqrat::Array (GetCurrentThreadVM().GetVM(), root.size());
+    obj = Sqrat::Array (GetCurrentThreadVM(), root.size());
     for(it = root.begin(); it != root.end(); ++it) {
         int key = it.key().asInt();
         setObjValues(key, it, obj);
     }
 }
 
-void parseJSONObj(Json::Value root, Sqrat::Table& obj) {
+void parseJSONObj(const Json::Value& root, Sqrat::Table& obj) {
     Json::ValueIterator it;
-    obj = Sqrat::Table (GetCurrentThreadVM().GetVM());
+    obj = Sqrat::Table (GetCurrentThreadVM());
     for(it = root.begin(); it != root.end(); ++it) {
         std::string key = it.key().asString();
         setObjValues(key.data(), it, obj);
     }
 }
 
-Sqrat::Object parseJSONObj(Json::Value root) {
+Sqrat::Object parseJSONObj(const Json::Value& root) {
     Json::ValueIterator it;
     //SquirrelObject obj;
     bool isArray = root.isArray();
     
     if ( isArray ) {
-        Sqrat::Array obj(GetCurrentThreadVM().GetVM(), root.size());
+        Sqrat::Array obj(GetCurrentThreadVM(), root.size());
         for(it = root.begin(); it != root.end(); ++it) {
             int key = it.key().asInt();
             setObjValues(key, it, obj);
         }
         return obj;
     } else {
-        Sqrat::Table obj(GetCurrentThreadVM().GetVM());
+        Sqrat::Table obj(GetCurrentThreadVM());
         for(it = root.begin(); it != root.end(); ++it) {
             std::string key = it.key().asString();
             setObjValues(key.data(), it, obj);
@@ -450,7 +450,7 @@ Sqrat::Object ParseJSON(const std::string& json) {
     return sq;
 }
 
-Json::Value sqValueToJson(Sqrat::Object obj ) {
+Json::Value sqValueToJson(const Sqrat::Object& obj ) {
     switch ( obj.GetType() ) {
         case OT_NULL:
             return Json::Value(Json::nullValue);
@@ -471,8 +471,8 @@ Json::Value sqValueToJson(Sqrat::Object obj ) {
     }
     return Json::Value(Json::nullValue);
 }
-Json::Value sqObjToJson(Sqrat::Object obj ) {
-    HSQUIRRELVM vm = GetCurrentThreadVM().GetVM();
+Json::Value sqObjToJson(const Sqrat::Object& obj ) {
+    HSQUIRRELVM vm = GetCurrentThreadVM();
     Json::Value res;
     Sqrat::Object::iterator it;
     switch ( obj.GetType() ) {
@@ -499,7 +499,7 @@ Json::Value sqObjToJson(Sqrat::Object obj ) {
     return Json::Value(Json::nullValue);
 }
 
-const std::string ToJSON(Sqrat::Object  obj) {
+const std::string ToJSON(const Sqrat::Object&  obj) {
     Json::Value root = sqObjToJson(obj);
     Json::StreamWriterBuilder builder;
     builder["commentStyle"] = "None";
@@ -564,7 +564,7 @@ const std::string GetFileExtension(const std::string& path)
 }
 
 Sqrat::Table GetImageInfo(const std::string& fileName) {
-    Sqrat::Table obj(GetCurrentThreadVM().GetVM());
+    Sqrat::Table obj(GetCurrentThreadVM());
     int width = 0, height = 0;
 #ifdef _WIN32    
     ImageUtils::ImageInfo ii = ImageUtils::GetImageInfo(U2W(fileName));

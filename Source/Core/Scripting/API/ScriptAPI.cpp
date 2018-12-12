@@ -134,7 +134,7 @@ SimpleXmlNode& Each(SimpleXmlNode* pthis, Sqrat::Function callback) {
 Sqrat::Array GetChildren(SimpleXmlNode* pthis, const std::string& name) {
     std::vector<SimpleXmlNode> childs;
     pthis->GetChilds(name, childs);
-    Sqrat::Array res(GetCurrentThreadVM().GetVM(), childs.size());
+    Sqrat::Array res(GetCurrentThreadVM(), childs.size());
     res.Resize(childs.size());
     int i = 0;
     for (auto& child : childs) {
@@ -243,9 +243,9 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
 #ifndef IU_TESTS // to avoid vld memory leaks messages; We use just one thread in test cases
 __declspec(thread) 
 #endif
-Sqrat::SqratVM* threadVm;
+HSQUIRRELVM threadVm;
 #else
-thread_local  Sqrat::SqratVM* threadVm;
+thread_local  HSQUIRRELVM threadVm;
 #endif
 
 std::unordered_map<HSQUIRRELVM, std::set<WebBrowserPrivateBase*>> vmBrowsers;
@@ -270,7 +270,7 @@ void RegisterClasses(Sqrat::SqratVM& vm) {
 }
 void RegisterAPI(Sqrat::SqratVM& vm)
 {
-    threadVm = &vm;
+    threadVm = vm.GetVM();
     //sq_setcompilererrorhandler(vm_.GetVM(), CompilerErrorHandler);
     sq_setprintfunc(vm.GetVM(), printFunc, printFunc);
     RegisterFunctions(vm);
@@ -281,38 +281,38 @@ void CleanUp()
     CleanUpFunctions();
 }
 
-Sqrat::SqratVM& GetCurrentThreadVM()
+HSQUIRRELVM GetCurrentThreadVM()
 {
-    return *threadVm;
+    return threadVm;
 }
-void SetCurrentThreadVM(Sqrat::SqratVM& vm) {
-    threadVm = &vm;
+void SetCurrentThreadVM(HSQUIRRELVM vm) {
+    threadVm = vm;
 }
 
 
-void StopAssociatedBrowsers(Sqrat::SqratVM& vm)
+void StopAssociatedBrowsers(HSQUIRRELVM vm)
 {
 #ifdef IU_WTL
     std::lock_guard<std::mutex> guard(vmBrowsersMutex);
-    for ( auto& it : vmBrowsers[vm.GetVM()])
+    for ( auto& it : vmBrowsers[vm])
     {
         it->abort();
     }
 #endif
 }
 
-void AddBrowserToVM(Sqrat::SqratVM& vm, WebBrowserPrivateBase* browser)
+void AddBrowserToVM(HSQUIRRELVM vm, WebBrowserPrivateBase* browser)
 {
     std::lock_guard<std::mutex> guard(vmBrowsersMutex);
-    vmBrowsers[vm.GetVM()].insert(browser);
+    vmBrowsers[vm].insert(browser);
 }
 
-void RemoveBrowserToVM(Sqrat::SqratVM& vm, WebBrowserPrivateBase* browser)
+void RemoveBrowserToVM(HSQUIRRELVM vm, WebBrowserPrivateBase* browser)
 {
     try
     {
         std::lock_guard<std::mutex> guard(vmBrowsersMutex);
-        vmBrowsers[vm.GetVM()].erase(browser);
+        vmBrowsers[vm].erase(browser);
     } catch (std::exception& ex)
     {
         LOG(ERROR) << ex.what();
@@ -348,14 +348,14 @@ const std::string GetScriptName(HSQUIRRELVM vm)
     return scriptNames[vm];
 }
 
-void FlushSquirrelOutput(Sqrat::SqratVM& vm) {
+void FlushSquirrelOutput(HSQUIRRELVM vm) {
     std::lock_guard<std::mutex> guard(squirrelOutputMutex);
-    std::string& output = squirrelOutput[vm.GetVM()];
+    std::string& output = squirrelOutput[vm];
     std::lock_guard<std::mutex> guard2(printCallbacksMutex);
     
     if (!output.empty())
     {
-        auto it = printCallbacks.find(vm.GetVM());
+        auto it = printCallbacks.find(vm);
         if (it != printCallbacks.end())
         {
             PrintCallback& callback = it->second;
@@ -373,6 +373,6 @@ void FlushSquirrelOutput(Sqrat::SqratVM& vm) {
 
 HSQUIRRELVM GetCurrentThreadHVM()
 {
-    return ScriptAPI::GetCurrentThreadVM().GetVM();
+    return ScriptAPI::GetCurrentThreadVM();
 }
 

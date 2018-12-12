@@ -7,7 +7,7 @@
 #endif
 #include <boost/locale.hpp>
 #include <boost/filesystem.hpp>
-#include <sqtest/sqtest.h>
+#include "sqtest.h"
 #include "TestHelpers.h"
 #include "Core/Scripting/Squirrelnc.h"
 #include "Core/Scripting/API/ScriptAPI.h"
@@ -159,7 +159,6 @@ int main(int argc, char *argv[]){
     vm.SetPrintFunc(&printHandler, &errorHandler);
     sqstd_seterrorhandlers(vm.GetVM());
     ScriptAPI::SetScriptName(vm, "test.nut");
-   
     sq_pushroottable(vm.GetVM());
    
     SQRESULT result = sqtest_register_lib(vm.GetVM());

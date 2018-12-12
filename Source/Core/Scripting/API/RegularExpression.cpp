@@ -47,7 +47,7 @@ Sqrat::Array RegularExpression::split(const std::string& piece)
 {
     try {
         std::vector<std::string> res = pcre_->split(piece);
-        Sqrat::Array obj(GetCurrentThreadVM().GetVM(), res.size());
+        Sqrat::Array obj(GetCurrentThreadVM(), res.size());
         for( size_t i = 0; i  < res.size(); i++ ) {
             obj.SetValue(i, res[i].c_str());
         }
@@ -62,7 +62,7 @@ Sqrat::Array RegularExpression::splitWithLimitOffset(const std::string& piece, i
 {
     try {
         std::vector<std::string> res = pcre_->split(piece,limit,start_offset);
-        Sqrat::Array obj(GetCurrentThreadVM().GetVM(), res.size());
+        Sqrat::Array obj(GetCurrentThreadVM(), res.size());
         for( size_t i = 0; i  < res.size(); i++ ) {
             obj.SetValue(i, res[i].c_str());
         }
@@ -78,7 +78,7 @@ Sqrat::Array RegularExpression::splitWithLimit(const std::string& piece, int lim
 {
     try {
         std::vector<std::string> res = pcre_->split(piece,limit);
-        Sqrat::Array obj(GetCurrentThreadVM().GetVM(), res.size());
+        Sqrat::Array obj(GetCurrentThreadVM(), res.size());
         for( size_t i = 0; i  < res.size(); i++ ) {
             obj.SetValue(i, res[i].c_str());
         }
@@ -93,7 +93,7 @@ Sqrat::Array RegularExpression::splitWithLimitStartEndOffset(const std::string& 
 {
     try {
         std::vector<std::string> res = pcre_->split(piece,limit,start_offset,end_offset);
-        Sqrat::Array obj(GetCurrentThreadVM().GetVM(), res.size());
+        Sqrat::Array obj(GetCurrentThreadVM(), res.size());
         for( size_t i = 0; i  < res.size(); i++ ) {
             obj.SetValue(i, res[i].c_str());
         }
@@ -193,7 +193,7 @@ Sqrat::Array RegularExpression::getSubStrings()
         if ( !substrings ) {
             return Sqrat::Array();
         }
-        Sqrat::Array res(GetCurrentThreadVM().GetVM(), substrings->size());
+        Sqrat::Array res(GetCurrentThreadVM(), substrings->size());
         for ( size_t i = 0; i < substrings->size(); i++ ) {
             res.SetValue(i, (*substrings)[i].c_str());
         }
@@ -213,14 +213,14 @@ Sqrat::Array RegularExpression::findAll(const std::string& str)
 {
     try {
         size_t pos = 0;
-        Sqrat::Array res(GetCurrentThreadVM().GetVM(), 0);
+        Sqrat::Array res(GetCurrentThreadVM(), 0);
         while (pos <= str.length()) 
         {
             if ( pcre_->search(str, pos)) 
             { 
                 pos = pcre_->get_match_end()+1;
                 int count = matchesCount();
-                Sqrat::Array mat(GetCurrentThreadVM().GetVM(), count);
+                Sqrat::Array mat(GetCurrentThreadVM(), count);
                 for ( int i = 0; i < count; i++ ) {
                     mat.SetValue(i, pcre_->get_match(i).c_str());
                 }

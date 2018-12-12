@@ -724,20 +724,20 @@ public:
         return SUCCEEDED(hr);
     }
 
-    bool CallJScript(const CString strFunc,CComVariant* pVarResult)
+    bool CallJScript(const CString& strFunc,CComVariant* pVarResult)
     {
         CAtlArray<CString> paramArray;
         return CallJScript(strFunc,paramArray,pVarResult);
     }
 
-    bool CallJScript(const CString strFunc,const CString strArg1,CComVariant* pVarResult)
+    bool CallJScript(const CString& strFunc,const CString& strArg1,CComVariant* pVarResult)
     {
         CAtlArray<CString> paramArray;
         paramArray.Add(strArg1);
         return CallJScript(strFunc,paramArray,pVarResult);
     }
 
-    bool CallJScript(const CString strFunc,const CString strArg1,const CString strArg2,CComVariant* pVarResult)
+    bool CallJScript(const CString& strFunc,const CString& strArg1,const CString strArg2,CComVariant* pVarResult)
     {
         CAtlArray<CString> paramArray;
         paramArray.Add(strArg1);
@@ -745,7 +745,7 @@ public:
         return CallJScript(strFunc,paramArray,pVarResult);
     }
 
-    bool CallJScript(const CString strFunc,const CString strArg1,const CString strArg2,const CString strArg3,CComVariant* pVarResult)
+    bool CallJScript(const CString& strFunc,const CString& strArg1,const CString& strArg2,const CString& strArg3,CComVariant* pVarResult)
     {
         CAtlArray<CString> paramArray;
         paramArray.Add(strArg1);
@@ -754,7 +754,7 @@ public:
         return CallJScript(strFunc,paramArray,pVarResult);
     }
 
-    bool CallJScript(const CString strFunc, const CAtlArray<CString>& paramArray,CComVariant* pVarResult)
+    bool CallJScript(const CString& strFunc, const CAtlArray<CString>& paramArray,CComVariant* pVarResult)
     {
         CComPtr<IDispatch> spScript;
         if(!GetJScript(spScript))

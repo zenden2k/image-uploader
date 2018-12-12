@@ -318,8 +318,7 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, b
     if(IuCommonFunctions::IsImage(FileName))
     Buf = WinUtils::GetOnlyFileName(FileName );
     else Buf = WinUtils::myExtractFileName(FileName);
-    if(FileName) 
-        ThumbsView.AddImage(fl.FileName, fl.VirtualFileName, ensureVisible, Img);
+    ThumbsView.AddImage(fl.FileName, fl.VirtualFileName, ensureVisible, Img);
         
     EnableNext(FileList.GetCount()>0);
     listChanged_ = true;

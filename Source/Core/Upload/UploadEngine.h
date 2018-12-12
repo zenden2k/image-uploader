@@ -118,6 +118,7 @@ public:
     std::string getParentId() const { return (parentid);}
     int getItemCount() const { return itemCount; }
     int getAccessType() const { return accessType; }
+    std::string getViewUrl() const { return (viewUrl); }
 
     void setTitle(const std::string& str) { title = (str); }
     void setViewUrl(const std::string& str) { viewUrl = (str); }

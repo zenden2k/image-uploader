@@ -664,12 +664,12 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
     return true;
 }
 
-void CWizardDlg::setSessionImageServer(ServerProfile server)
+void CWizardDlg::setSessionImageServer(const ServerProfile& server)
 {
     sessionImageServer_ = server;
 }
 
-void CWizardDlg::setSessionFileServer(ServerProfile server)
+void CWizardDlg::setSessionFileServer(const ServerProfile& server)
 {
     sessionFileServer_ = server;
 }
@@ -1190,6 +1190,9 @@ LRESULT CWizardDlg::OnAddImages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 CMyFolderDialog::CMyFolderDialog(HWND hWnd):
                 CFolderDialogImpl(hWnd, TR("Select folder"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE|BIF_NONEWFOLDERBUTTON|BIF_VALIDATE )
 {
+    OldProc = nullptr;
+    m_bSubdirs = true;
+    SubdirsCheckbox = nullptr;
     OleInitialize(NULL);
 }
 void CMyFolderDialog::OnInitialized()

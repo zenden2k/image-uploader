@@ -19,9 +19,7 @@ public:
         ValidationError() {
             Control = nullptr;
         }
-        ValidationError(CString message, HWND control) {
-            Message = message; 
-            Control = control;
+        ValidationError(CString message, HWND control) : Message(message), Control(control) {
         }
     };
     ValidationException(CString Message, HWND Control = nullptr) : std::runtime_error("Form validation error") {

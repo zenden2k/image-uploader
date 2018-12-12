@@ -170,10 +170,11 @@ void PrintHelp() {
 void PrintServerList()
 {
 	for(int i=0; i<list.count(); i++) {
-       if ( !list.byIndex(i)->hasType(CUploadEngineData::TypeImageServer) && !list.byIndex(i)->hasType(CUploadEngineData::TypeFileServer) ) {
+        CUploadEngineData* ued = list.byIndex(i);
+        if (!ued->hasType(CUploadEngineData::TypeImageServer) && !ued->hasType(CUploadEngineData::TypeFileServer)) {
 		   continue;
-	   }
-      std::cout<<list.byIndex(i)->Name<<std::endl;
+        }
+        std::cout << ued->Name << std::endl;
    }
 }
 
@@ -355,7 +356,7 @@ bool parseCommandLine(int argc, char *argv[])
     return true;
 }
 
-CUploadEngineData* getServerByName(std::string name) {
+CUploadEngineData* getServerByName(const std::string& name) {
     CUploadEngineData*   uploadEngineData = list.byName(serverName);
     if(!uploadEngineData) {
         for(int i=0; i<list.count(); i++)

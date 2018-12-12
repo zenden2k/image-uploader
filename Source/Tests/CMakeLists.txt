@@ -9,11 +9,13 @@ endif()
 set(SRC_LIST 
     Tests.cpp
     TestHelpers.cpp
+    sqtest.cpp
    ../Core/Utils/Tests/CoreUtilsTest.cpp
    ../Core/Utils/Tests/CryptoUtilsTest.cpp
    ../Core/Utils/Tests/StringUtilsTest.cpp
    ../Core/Utils/Tests/TextUtilsTest.cpp
    ../Core/Upload/Tests/UploadEngineListTest.cpp
+   ../Core/Upload/Tests/ScriptUploadEngineTest.cpp
    ../Core/Upload/Tests/DefaultUploadEngineTest.cpp
    ../Core/3rdpart/GumboQuery/Tests/GumboTest.cpp
 )
@@ -35,7 +37,7 @@ add_executable(Tests ${SRC_LIST})
 
 set_target_properties( Tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Tests/)
 
-set(LIBS_LIST  sqtest)
+set(LIBS_LIST  "")
 
 if(WIN32)
     list(APPEND LIBS_LIST gdiplus libwebpdecoder libwebpdemux base64)

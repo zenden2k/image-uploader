@@ -54,7 +54,7 @@ namespace ScriptAPI {
     const std::string AnsiToUtf8(const std::string& str, int codepage);
     void sleep(int msec);
     const std::string JsonEscapeString(const std::string& src);
-    const std::string ToJSON(Sqrat::Object  obj);
+    const std::string ToJSON(const Sqrat::Object&  obj);
     Sqrat::Object ParseJSON(const std::string& json);
 
     int random();

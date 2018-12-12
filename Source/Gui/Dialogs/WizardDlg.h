@@ -158,8 +158,8 @@ public:
     bool CreatePage(WizardPageId PageID);
     CWizardPage* Pages[5];
     int screenshotIndex; 
-    void setSessionImageServer(ServerProfile server);
-    void setSessionFileServer(ServerProfile server);
+    void setSessionImageServer(const ServerProfile& server);
+    void setSessionFileServer(const ServerProfile& server);
     ServerProfile getSessionImageServer() const;
     ServerProfile getSessionFileServer() const;
     void setServersChanged(bool changed) override;

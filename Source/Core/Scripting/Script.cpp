@@ -67,7 +67,7 @@ void Script::DestroyScriptEngine()
 
 void Script::FlushSquirrelOutput()
 {
-    ScriptAPI::FlushSquirrelOutput(vm_);
+    ScriptAPI::FlushSquirrelOutput(vm_.GetVM());
 }
 
 bool Script::preLoad()
@@ -97,7 +97,7 @@ time_t Script::getCreationTime()
 
 void Script::switchToThisVM()
 {
-    ScriptAPI::SetCurrentThreadVM(vm_);
+    ScriptAPI::SetCurrentThreadVM(vm_.GetVM());
 }
 
 Sqrat::SqratVM& Script::getVM()

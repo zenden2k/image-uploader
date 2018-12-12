@@ -23,7 +23,7 @@ public:
         Sqrat::Array::iterator it;
         while (arguments_.Next(it))
         {
-            Sqrat::Object obj(it.getValue(), GetCurrentThreadVM().GetVM());
+            Sqrat::Object obj(it.getValue(), GetCurrentThreadVM());
             args.push_back(obj.Cast<std::string>());
         }
 

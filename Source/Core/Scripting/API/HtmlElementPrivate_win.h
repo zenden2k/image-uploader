@@ -220,7 +220,7 @@ class HtmlElementPrivate {
             if ( !SUCCEEDED(collection->get_length(&count))) {
                 return Sqrat::Array();
             }
-            Sqrat::Array res(GetCurrentThreadVM().GetVM(), count);
+            Sqrat::Array res(GetCurrentThreadVM(), count);
             for ( int i = 0; i < count; i ++ ) {
                 IDispatchPtr  disp = 0;
                 collection->item(CComVariant(i), CComVariant(0), &disp);
@@ -260,7 +260,7 @@ class HtmlElementPrivate {
             if ( !SUCCEEDED(collection->get_length(&count))) {
                 return Sqrat::Array();
             }
-            Sqrat::Array res(GetCurrentThreadVM().GetVM(), count);
+            Sqrat::Array res(GetCurrentThreadVM(), count);
             for ( int i = 0; i < count; i ++ ) {
                 IDispatchPtr  disp = 0;
                 collection->item(i,/*, CComVariant(0),*/ &disp);
@@ -281,7 +281,7 @@ class HtmlElementPrivate {
             if ( !SUCCEEDED( form_->get_length(&count) ) )  {
                 return Sqrat::Array();
             }
-            Sqrat::Array res(GetCurrentThreadVM().GetVM(), count);
+            Sqrat::Array res(GetCurrentThreadVM(), count);
             for ( int i = 0; i < count; i ++ ) {
                 IDispatchPtr  disp = 0;
                 form_->item(CComVariant(i), CComVariant(0), &disp);
