@@ -212,6 +212,7 @@ void UploadSession::taskFinished(UploadTask* task)
     ++finishedCount_;
     std::lock_guard<std::mutex> lock(finishMutex_);
     if (!finishedSignalSent_ && isFinished()) {
+        // TODO: use std::call_once
         for (const auto& it : sessionFinishedCallbacks_) {
             it(this);
         }

@@ -12,6 +12,10 @@ add_executable(ServersChecker WIN32
     MainDlg.h
     ServerListTool.rc
     resource.h
+    ServersChecker.cpp
+    ServersCheckerModel.cpp
+    Helpers.cpp
+    ServerListView.cpp
     ../Func/MyEngineList.cpp
     ../Func/WtlScriptDialogProvider.cpp
     ../Func/LangClass.cpp

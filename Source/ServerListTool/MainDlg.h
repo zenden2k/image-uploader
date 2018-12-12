@@ -25,74 +25,23 @@
 #include <map>
 #include "atlheaders.h"
 #include "resource.h"
-#include "Core/Upload/UploadEngine.h"
-#include "Core/FileDownloader.h"
 #include "Func/MyEngineList.h"
 #include "Core/Utils/SimpleXml.h"
+#include "ServerListTool/ServersCheckerModel.h"
+#include "ServersChecker.h"
+#include "Helpers.h"
+#include "ServerListView.h"
 
 class UploadManager;
 class UploadEngineManager;
 class NetworkClient;
 
-struct ServerData
-{
-    int stars[3];
-    COLORREF color;
-    int fileToCheck;
-    int filesChecked;
-    int timeElapsed;
-    bool finished;
-    CString directUrl;
-    CString directUrlInfo;
-    CString viewurl;
-    CString viewurlInfo;
-    CString thumbUrl;
-    CString thumbUrlInfo;
+namespace ServersListTool {
 
-    ServerData() {
-        memset(stars, 0, sizeof(stars));
-        color = 0;
-        fileToCheck = 0;
-        timeElapsed = 0;
-        filesChecked = 0;
-        finished = false;
+class ServersChecker;
 
-    }
-
-    void setLinkInfo(int columnId, CString info) {
-        if (columnId == 0) {
-            directUrlInfo = info;
-        } else if (columnId == 1) {
-            thumbUrlInfo = info;
-        } else if (columnId == 2) {
-            viewurlInfo = info;
-        }
-    }
-};
-
-struct UploadTaskUserData {
-    int rowIndex;
-    DWORD startTime;
-    UploadTaskUserData() {
-        rowIndex = 0;
-        startTime = 0;
-    }
-};
-struct MyFileInfo
-{
-    int width;
-    int height;
-    CString mimeType;
-    int size;
-    MyFileInfo() {
-        width = 0;
-        height = 0;
-        size = 0;
-    }
-};
 class CMainDlg :
-    public CDialogImpl<CMainDlg>, public CDialogResize<CMainDlg>, public CWinDataExchange<CMainDlg>
-{
+    public CDialogImpl<CMainDlg>, public CDialogResize<CMainDlg>, public CWinDataExchange<CMainDlg> {
 public:
     enum { IDD = IDD_MAINDLG };
     enum { ID_COPYDIRECTURL = 13000, ID_COPYTHUMBURL, ID_COPYVIEWURL };
@@ -111,18 +60,19 @@ public:
         COMMAND_ID_HANDLER(ID_COPYTHUMBURL, OnCopyThumbUrl)
         COMMAND_ID_HANDLER(ID_COPYVIEWURL, OnCopyViewUrl)
         COMMAND_HANDLER(IDC_STOPBUTTON, BN_CLICKED, OnBnClickedStopbutton)
-        NOTIFY_HANDLER(IDC_TOOLSERVERLIST, NM_CUSTOMDRAW, OnListViewNMCustomDraw)
-        CHAIN_MSG_MAP(CDialogResize<CMainDlg>) 
+        //NOTIFY_HANDLER(IDC_TOOLSERVERLIST, NM_CUSTOMDRAW, OnListViewNMCustomDraw)
+        CHAIN_MSG_MAP(CDialogResize<CMainDlg>)
+        REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
 
     BEGIN_DLGRESIZE_MAP(CMainDlg)
-        DLGRESIZE_CONTROL(IDC_TOOLSERVERLIST, DLSZ_SIZE_X|DLSZ_SIZE_Y)
+        DLGRESIZE_CONTROL(IDC_TOOLSERVERLIST, DLSZ_SIZE_X | DLSZ_SIZE_Y)
         DLGRESIZE_CONTROL(ID_APP_ABOUT, DLSZ_MOVE_X)
-        DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X|DLSZ_MOVE_Y)
+        DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X | DLSZ_MOVE_Y)
         DLGRESIZE_CONTROL(IDC_BUTTONSKIP, DLSZ_MOVE_Y)
         DLGRESIZE_CONTROL(IDC_BUTTONSKIPALL, DLSZ_MOVE_Y)
         DLGRESIZE_CONTROL(IDC_ERRORLOGBUTTON, DLSZ_MOVE_Y)
-        DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X|DLSZ_MOVE_Y)
+        DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X | DLSZ_MOVE_Y)
         DLGRESIZE_CONTROL(IDC_STOPBUTTON, DLSZ_MOVE_X | DLSZ_MOVE_Y)
     END_DLGRESIZE_MAP()
 
@@ -132,13 +82,13 @@ public:
         DDX_CONTROL_HANDLE(IDC_CHECKIMAGESERVERS, checkImageServersCheckBox_)
         DDX_CONTROL_HANDLE(IDC_CHECKFILESERVERS, checkFileServersCheckBox_)
         DDX_CONTROL_HANDLE(IDC_CHECKURLSHORTENERS, checkUrlShortenersCheckBox_)
-        DDX_CONTROL_HANDLE(IDC_TOOLSERVERLIST, m_ListView)
+        DDX_CONTROL(IDC_TOOLSERVERLIST, m_ListView)
     END_DDX_MAP()
 
-// Handler prototypes (uncomment arguments if needed):
-//    LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-//    LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-//    LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
+    // Handler prototypes (uncomment arguments if needed):
+    //    LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+    //    LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+    //    LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
 
     LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -153,39 +103,30 @@ public:
     LRESULT OnCopyThumbUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCopyViewUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    //LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
-    CListViewCtrl m_ListView;
-    std::map<int,ServerData> m_CheckedServersMap;
-    std::map<int, bool> m_skipMap;
     int contextMenuItemId;
     CImageList m_ImageList;
     CString m_srcFileHash;
-    MyFileInfo m_sourceFileInfo;
+    Helpers::MyFileInfo m_sourceFileInfo;
     UploadEngineManager *uploadEngineManager_;
     UploadManager* uploadManager_;
     CMyEngineList* engineList_;
-    std::shared_ptr<UploadSession> uploadSession_;
-    std::vector<std::unique_ptr<UploadTaskUserData>> uploadTaskUserDatas_;
+    ServersCheckerModel model_;
+    CServerListView m_ListView;
+
     SimpleXml xml;
     CIcon icon_, iconSmall_;
-    CFileDownloader m_FileDownloader;
     CButton withAccountsRadioButton_, alwaysWithAccountsRadioButton_, checkImageServersCheckBox_,
         checkFileServersCheckBox_, checkUrlShortenersCheckBox_;
 
-    void onTaskStatusChanged(UploadTask* task);
-    void onTaskFinished(UploadTask* task, bool ok);
-    void onSessionFinished(UploadSession* session);
-    bool OnFileFinished(bool ok, int statusCode,  CFileDownloader::DownloadFileListItem it);
-    void MarkServer(int id);
+    std::unique_ptr<ServersChecker> serversChecker_;
     bool OnNeedStop();
     void processFinished();
-    void checkShortUrl(UploadTask* task);
     int Run();
     void stop();
     bool m_NeedStop;
-    bool m_bIsRunning;
     bool isRunning();
-    static CString GetFileInfo(CString fileName, MyFileInfo* mfi = nullptr);
-    static CString CMainDlg::MyBytesToString(int64_t nBytes);
 };
+
+}
