@@ -97,20 +97,17 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
             task = std::make_shared<UrlShorteningTask>(testUrl);
         }
 
-        task->setServerProfile(serverProfile);
-        task->OnStatusChanged.bind(this, &ServersChecker::onTaskStatusChanged);
-        task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &ServersChecker::onTaskFinished));
-        UploadTaskUserData* userData = new UploadTaskUserData();
-        userData->rowIndex = i;
-        task->setUserData(userData);
-        uploadTaskUserDatas_.push_back(std::unique_ptr<UploadTaskUserData>(userData));
-        uploadSession_->addTask(task);
-        taskCount++;
-
-        /*if (i > 3) {
-        break;
-        }*/
-        // break;
+        if (task) {
+            task->setServerProfile(serverProfile);
+            task->OnStatusChanged.bind(this, &ServersChecker::onTaskStatusChanged);
+            task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &ServersChecker::onTaskFinished));
+            UploadTaskUserData* userData = new UploadTaskUserData();
+            userData->rowIndex = i;
+            task->setUserData(userData);
+            uploadTaskUserDatas_.push_back(std::unique_ptr<UploadTaskUserData>(userData));
+            uploadSession_->addTask(task);
+            taskCount++;
+        }
     }
     if (taskCount) {
         uploadManager_->addSession(uploadSession_);
@@ -239,7 +236,6 @@ void ServersChecker::checkShortUrl(UploadTask* task) {
     data.stars[0] = ok ? 5 : 0;
     data.finished = true;
     MarkServer(userData->rowIndex);
-
 }
 
 void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
@@ -248,7 +244,7 @@ void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
     int i = userData->rowIndex;
     ServerData& data = *model_->getDataByIndex(i);
     if (task->status() == UploadTask::StatusStopped) {
-        data.statusText = "";
+        data.statusText.clear();
         return;
     }
     if (ok) {

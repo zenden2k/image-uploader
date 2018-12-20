@@ -10,7 +10,7 @@
 class UploadManager;
 class IDialogProvider;
 class IUploadErrorHandler;
-class CUploadEngineList_Base;
+class CUploadEngineListBase;
 class LocalFileCache;
 class CHistoryManager;
 class ServiceLocatorPrivate;
@@ -21,8 +21,8 @@ class CMyEngineList;
 class ServiceLocator : public Singleton<ServiceLocator> {
 public:
     ServiceLocator();
-    void setEngineList(CUploadEngineList_Base* engineList);
-    CUploadEngineList_Base* engineList();
+    void setEngineList(CUploadEngineListBase* engineList);
+    CUploadEngineListBase* engineList();
     LocalFileCache* localFileCache();
     CHistoryManager* historyManager();
     IProgramWindow* programWindow();

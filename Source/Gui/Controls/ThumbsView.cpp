@@ -547,7 +547,7 @@ do {
     nItem = GetNextItem(nItem, LVNI_SELECTED);
     if (nItem == -1) break;
     pDataObject->AddFile(GetFileName(nItem));
-} while (nItem != -1);
+} while (true);
 
 //Disable drag-n-drop to parent window
 SendMessage(GetParent(), MYWM_ENABLEDROPTARGET, 0, 0);

@@ -41,8 +41,9 @@ Canvas::Canvas( HWND parent ) {
     previousDrawingTool_ = dtNone; 
     leftMouseDownPoint_.x = -1;
     leftMouseDownPoint_.y = -1;
+    leftMouseUpPoint_ = { -1, -1 };
 //    buffer_               = NULL;
-    inputBox_             = NULL;
+    inputBox_             = nullptr;
     currentCursor_    = ctDefault;
     scrollOffset_.x = 0;
     scrollOffset_.y = 0;
@@ -65,6 +66,9 @@ Canvas::Canvas( HWND parent ) {
     bufferedGr_ = 0;
     isDocumentModified_ = false;
     memset(&font_, 0, sizeof(font_));
+    doc_ = nullptr;
+    canvasWidth_ = 0;
+    canvasHeight_ = 0;
     createDoubleBuffer();
 }
 
@@ -524,8 +528,6 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
             type = etLine;
         } else if ( toolType == dtArrow ) {
             type = etArrow;
-        }else if ( toolType == dtCrop ) {
-            type = etCrop;
         } else if ( toolType == dtRectangle ) {
             type = etRectangle;
         } else if ( toolType == dtBlurrringRectangle ) {

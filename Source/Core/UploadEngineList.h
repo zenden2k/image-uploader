@@ -27,11 +27,11 @@
 #include "Upload/UploadEngine.h"
 #include "Core/Utils/CoreTypes.h"
 
-class CUploadEngineList: public CUploadEngineList_Base
+class CUploadEngineList: public CUploadEngineListBase
 {
     public:
         CUploadEngineList();
-        bool LoadFromFile(const std::string& filename, ServerSettingsMap&);
+        bool loadFromFile(const std::string& filename, ServerSettingsMap&);
         void setNumOfRetries(int Engine, int Action);
         bool addServer(const CUploadEngineData& data);
     protected:

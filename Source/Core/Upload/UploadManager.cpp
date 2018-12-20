@@ -104,7 +104,6 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
         return ;
     }
     
-#ifndef IU_SERVERLISTTOOL
     if (enableHistory_) {
         HistoryItem hi;
         hi.localFilePath = fileTask->originalFileName();
@@ -125,7 +124,6 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
         }
         session->addItem(hi);
     }
-#endif
 }
 
 void UploadManager::taskAdded(UploadTask* task)

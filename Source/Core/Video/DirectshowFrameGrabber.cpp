@@ -326,7 +326,10 @@ bool ShouldStop() {
     return false;
 }
 
-DirectshowFrameGrabber::DirectshowFrameGrabber(): d_ptr(new DirectshowFrameGrabberPrivate())
+DirectshowFrameGrabber::DirectshowFrameGrabber() : 
+    duration_(0),
+    d_ptr(new DirectshowFrameGrabberPrivate())
+
 {
 }
 

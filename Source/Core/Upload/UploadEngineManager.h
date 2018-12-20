@@ -2,9 +2,10 @@
 #define IU_CORE_UPLOADENGINE_MANAGER_H
 
 #pragma once
-#include "UploadEngine.h"
 #include <thread>
 #include <mutex>
+
+#include "UploadEngine.h"
 
 // Forward class declarations
 class IUploadErrorHandler;

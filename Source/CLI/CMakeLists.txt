@@ -24,6 +24,6 @@ set(LIBS_LIST )
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
 
-target_link_libraries(CLI libiucore ${LIBS_LIST} ${COMMON_LIBS_LIST})
+target_link_libraries(CLI iucore ${LIBS_LIST} ${COMMON_LIBS_LIST})
 
 #target_link_libraries(CLI optimized iucore.lib)

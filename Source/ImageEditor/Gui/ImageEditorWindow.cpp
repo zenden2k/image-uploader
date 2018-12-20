@@ -26,6 +26,7 @@ ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bo
     configurationProvider_ = configurationProvider;
     askBeforeClose_ = false;
     allowAltTab_ = false;
+
     init();
     
 }
@@ -67,6 +68,8 @@ void ImageEditorWindow::init()
     searchEngine_ = SearchByImage::seGoogle;
     currentDrawingTool_ = Canvas::dtNone;
     initialDrawingTool_ = Canvas::dtBrush;
+    displayMode_ = wdmAuto;
+    accelerators_ = nullptr;
     menuItems_[ID_PEN]             = Canvas::dtPen; 
     menuItems_[ID_LINE]            = Canvas::dtLine;
     menuItems_[ID_BRUSH]           = Canvas::dtBrush;

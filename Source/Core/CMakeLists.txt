@@ -103,10 +103,10 @@ if(WIN32)
     )
 endif()
 
-add_library(libiucore STATIC ${SRC_LIST} )
+add_library(iucore STATIC ${SRC_LIST} )
 
 if(MSVC)
-    target_compile_options(libiucore PRIVATE "/MP")
+    target_compile_options(iucore PRIVATE "/MP")
 endif()
 
-set_target_properties(libiucore PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
+set_target_properties(iucore PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)

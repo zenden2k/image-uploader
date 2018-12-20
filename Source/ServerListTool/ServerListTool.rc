@@ -106,7 +106,7 @@ CAPTION "About"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,92,126,50,14
-    CTEXT           "ServerListChecker v.1.0.2\n\nfor Image Uploader  v1.3.2\n\n(c) 2010-2017 Sergey Svistunov",IDC_STATIC,29,42,78,73
+    CTEXT           "ServerListChecker v.1.0.3\n\nfor Image Uploader  v1.3.2\n\n(c) 2010-2018 Sergey Svistunov",IDC_STATIC,29,42,78,73
     ICON            IDR_MAINFRAME,IDC_STATIC,55,18,20,20
     GROUPBOX        "",IDC_STATIC,7,7,133,116
 END
@@ -130,7 +130,7 @@ BEGIN
     CONTROL         "Check server only if account is set",IDC_RADIOALWAYSACCS,
                     "Button",BS_AUTORADIOBUTTON,202,63,125,10
     LTEXT           "",IDC_TOOLSOURCEFILE,5,76,324,8
-    CONTROL         "",IDC_TOOLSERVERLIST,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | LVS_OWNERDATA | WS_BORDER | WS_TABSTOP,3,90,605,185
+    CONTROL         "",IDC_TOOLSERVERLIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_OWNERDATA | WS_BORDER | WS_TABSTOP,3,90,605,185
     PUSHBUTTON      "Skip selected",IDC_BUTTONSKIP,3,280,50,14
     PUSHBUTTON      "Skip all",IDC_BUTTONSKIPALL,65,280,50,14
     PUSHBUTTON      "View Error Log",IDC_ERRORLOGBUTTON,165,280,81,14

@@ -45,6 +45,6 @@ set(LIBS_LIST base64 libwebpdecoder libwebpdemux)
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
 
-target_link_libraries(ServersChecker libiucore ${LIBS_LIST} ${COMMON_LIBS_LIST})
+target_link_libraries(ServersChecker iucore ${LIBS_LIST} ${COMMON_LIBS_LIST})
 
 #target_link_libraries(CLI optimized iucore.lib)

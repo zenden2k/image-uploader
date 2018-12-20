@@ -12,11 +12,11 @@ protected:
     const std::string fileName;
 };
 
-TEST_F(UploadEngineListTest, LenghtOfUtf8String)
+TEST_F(UploadEngineListTest, loadFromFile)
 {
     CUploadEngineList list;
     ServerSettingsMap settings;
-    bool res = list.LoadFromFile(fileName, settings);
+    bool res = list.loadFromFile(fileName, settings);
     // List is sorted alphabetically
     EXPECT_TRUE(res);
     EXPECT_EQ(3, list.count());
@@ -83,3 +83,33 @@ TEST_F(UploadEngineListTest, LenghtOfUtf8String)
     }
 }
 
+TEST_F(UploadEngineListTest, getByIndex)
+{
+    CUploadEngineList list;
+    ServerSettingsMap settings;
+    bool res = list.loadFromFile(fileName, settings);
+    // List is sorted alphabetically
+    EXPECT_TRUE(res);
+    EXPECT_EQ(3, list.count());
+    CUploadEngineData* ued = list.byName("fastpic.ru");
+    ASSERT_TRUE(ued != nullptr);
+    EXPECT_EQ("fastpic.ru", ued->Name);
+    CUploadEngineData* ued2 = list.firstEngineOfType(CUploadEngineData::TypeImageServer);
+    ASSERT_TRUE(ued2 != nullptr);
+    EXPECT_EQ("fastpic.ru", ued2->Name);
+
+    CUploadEngineData* ued3 = list.firstEngineOfType(CUploadEngineData::TypeFileServer);
+    EXPECT_TRUE(ued3 == nullptr);
+
+    int index = list.getRandomImageServer();
+    EXPECT_TRUE(index >= 0 && index < list.count());
+    CUploadEngineData* ued4 = list.byIndex(index);
+    ASSERT_TRUE(ued4 != nullptr);
+    ASSERT_TRUE(ued4->hasType(CUploadEngineData::TypeImageServer));
+
+    int index2 = list.getRandomFileServer();
+    EXPECT_EQ(-1, index2);
+
+    int index3 = list.getUploadEngineIndex("fastpic.ru");
+    EXPECT_TRUE(index3 >= 0 && index3 < list.count());
+}

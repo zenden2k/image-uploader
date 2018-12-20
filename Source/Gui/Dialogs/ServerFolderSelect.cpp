@@ -31,6 +31,7 @@ CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile, UploadEng
 {
     m_UploadEngine = serverProfile_.uploadEngineData();
     uploadEngineManager_ = uploadEngineManager;
+    m_FolderOperationType = foGetFolders;
     runningScript_ = nullptr;
 }
 

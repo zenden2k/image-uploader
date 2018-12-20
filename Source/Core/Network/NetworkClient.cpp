@@ -300,7 +300,6 @@ NetworkClient::~NetworkClient(void)
 #ifdef USE_OPENSSL
     ERR_remove_thread_state(0);
 #endif
-    delete proxyProvider_;
     proxyProvider_ = nullptr;
 }
 
@@ -932,7 +931,7 @@ void NetworkClient::setLogger(Logger* logger) {
     logger_ = logger;
 }
 
-void NetworkClient::setProxyProvider(ProxyProvider* provider) {
+void NetworkClient::setProxyProvider(std::shared_ptr<ProxyProvider> provider) {
     proxyProvider_ = provider;
 }
 

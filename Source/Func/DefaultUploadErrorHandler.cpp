@@ -10,7 +10,6 @@ DefaultUploadErrorHandler::DefaultUploadErrorHandler(ILogger* logger) {
     responseFileIndex_ = 0;
 }
 
-
 void DefaultUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo)
 {
     LogMsgType type = errorInfo.messageType == (ErrorInfo::mtWarning) ? logWarning : logError;
@@ -50,12 +49,10 @@ void DefaultUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo)
         logger_->write(type, sender, errorMsg, infoText);
 }
 
-
-
 void DefaultUploadErrorHandler::DebugMessage(const std::string& msg, bool isResponseBody)
 {
     if (!isResponseBody)
-        MessageBox(0, Utf8ToWCstring(msg.c_str()), _T("Uploader"), MB_ICONINFORMATION);
+        MessageBox(0, Utf8ToWCstring(msg), _T("Uploader"), MB_ICONINFORMATION);
     else {
 #ifdef IU_WTL_APP
         CTextViewDlg TextViewDlg(Utf8ToWstring(msg).c_str(), CString(_T("Server reponse")), CString(_T("Server reponse:")),

@@ -33,79 +33,88 @@ CUploadEngineData::CUploadEngineData()
     SupportThumbnails = false;
     BeforehandAuthorization = false;
     NeedAuthorization = naNotAvailable;
-    NeedPassword = true; MaxFileSize = 0;
+    NeedPassword = true; 
+    MaxFileSize = 0;
     RetryLimit = 0;
     NumOfTries = 0;
     MaxThreads = 0;
     TypeMask = 0;
 }
 
-bool CUploadEngineData::hasType(ServerType type)
+bool CUploadEngineData::hasType(ServerType type) const
 {
     return (TypeMask & type) == type;
 }
 
 
 
-CUploadEngineList_Base::CUploadEngineList_Base()
+CUploadEngineListBase::CUploadEngineListBase()
 {
 }
 
-CUploadEngineData* CUploadEngineList_Base::byIndex(size_t index) {
+CUploadEngineData* CUploadEngineListBase::byIndex(size_t index) {
     if ( index < m_list.size() ) {
         return &m_list[index];
     } 
     return nullptr;
 }
 
-int CUploadEngineList_Base::count()
+int CUploadEngineListBase::count() const
 {
     return m_list.size();
 }
 
-CUploadEngineData* CUploadEngineList_Base::byName(const std::string& name)
+CUploadEngineData* CUploadEngineListBase::byName(const std::string& name)
 {
     for (size_t i = 0; i < m_list.size(); i++)
     {
         if (!IuStringUtils::stricmp(m_list[i].Name.c_str(), name.c_str()))
             return &m_list[i];
     }
-    return 0;
+    return nullptr;
 }
 
-CUploadEngineData*  CUploadEngineList_Base::firstEngineOfType(CUploadEngineData::ServerType type) {
+CUploadEngineData*  CUploadEngineListBase::firstEngineOfType(CUploadEngineData::ServerType type) {
     for (size_t i = 0; i < m_list.size(); i++)
     {
         if ( m_list[i].hasType(type)) {
             return &m_list[i];
         }
     }
-    return 0;
+    return nullptr;
 }
 
-int CUploadEngineList_Base::getRandomImageServer()
+int CUploadEngineListBase::getRandomImageServer() const
 {
     std::vector<int> m_suitableServers;
     for (size_t i = 0; i < m_list.size(); i++)
     {
-        if (m_list[i].NeedAuthorization != 2 && m_list[i].hasType(CUploadEngineData::TypeImageServer))
+        if (m_list[i].NeedAuthorization != CUploadEngineData::naObligatory && m_list[i].hasType(CUploadEngineData::TypeImageServer)) {
             m_suitableServers.push_back(i);
+        }
+    }
+    if (m_suitableServers.empty()) {
+        return -1;
     }
     return m_suitableServers[rand() % (m_suitableServers.size())];
 }
 
-int CUploadEngineList_Base::getRandomFileServer()
+int CUploadEngineListBase::getRandomFileServer() const
 {
     std::vector<size_t> m_suitableServers;
     for (size_t i = 0; i < m_list.size(); i++)
     {
-        if (m_list[i].NeedAuthorization != 2 && !m_list[i].hasType(CUploadEngineData::TypeFileServer))
+        if (m_list[i].NeedAuthorization != CUploadEngineData::naObligatory && m_list[i].hasType(CUploadEngineData::TypeFileServer)) {
             m_suitableServers.push_back(i);
+        }
+    }
+    if (m_suitableServers.empty()) {
+        return -1;
     }
     return m_suitableServers[rand() % m_suitableServers.size()];
 }
 
-int CUploadEngineList_Base::GetUploadEngineIndex(const std::string Name)
+int CUploadEngineListBase::getUploadEngineIndex(const std::string& Name) const
 {
     for (size_t i = 0; i < m_list.size(); i++)
     {
@@ -115,10 +124,10 @@ int CUploadEngineList_Base::GetUploadEngineIndex(const std::string Name)
     return -1;
 }
 
-std::vector<CUploadEngineData>::const_iterator CUploadEngineList_Base::begin() const {
+std::vector<CUploadEngineData>::const_iterator CUploadEngineListBase::begin() const {
     return m_list.begin();
 }
-std::vector<CUploadEngineData>::const_iterator CUploadEngineList_Base::end() const {
+std::vector<CUploadEngineData>::const_iterator CUploadEngineListBase::end() const {
     return m_list.end();
 }
 

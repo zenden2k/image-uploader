@@ -25,6 +25,7 @@
 #include <mutex>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include <curl/curl.h>
 #include "INetworkClient.h"
@@ -154,7 +155,7 @@ class NetworkClient: public INetworkClient
         void setLogger(Logger* logger) override;
 
         // provider is deleted in NetworkClient destructor
-        void setProxyProvider(ProxyProvider* provider) override;
+        void setProxyProvider(std::shared_ptr<ProxyProvider> provider) override;
     private:
         //DISALLOW_COPY_AND_ASSIGN(NetworkClient);
         enum CallBackFuncType{funcTypeBody,funcTypeHeader};
@@ -231,7 +232,7 @@ class NetworkClient: public INetworkClient
         bool treatErrorsAsWarnings_;
         CurlShare* curlShare_;
         Logger * logger_;
-        ProxyProvider* proxyProvider_;
+        std::shared_ptr<ProxyProvider> proxyProvider_;
         static std::mutex _mutex;
         static bool _curl_init;
 //        static bool _is_openssl;

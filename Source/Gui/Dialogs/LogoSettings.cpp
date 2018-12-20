@@ -31,6 +31,7 @@
 CLogoSettings::CLogoSettings()
 {
     ZeroMemory(&lf, sizeof(lf));
+    memset(&ThumbFont, 0, sizeof(ThumbFont));
     m_CatchChanges = false;
     m_ProfileChanged = false;
 }

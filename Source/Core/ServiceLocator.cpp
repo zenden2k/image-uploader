@@ -17,7 +17,7 @@ public:
         uploadManager_ = nullptr;
         myEngineList_ = nullptr;
     }
-    CUploadEngineList_Base* engineList_;
+    CUploadEngineListBase* engineList_;
     CHistoryManager historyManager;
     IProgramWindow* programWindow_;
     IUploadErrorHandler* uploadErrorHandler_;
@@ -32,11 +32,11 @@ public:
 ServiceLocator::ServiceLocator() : d_ptr(new ServiceLocatorPrivate()){
 }
 
-void ServiceLocator::setEngineList(CUploadEngineList_Base* engineList) {
+void ServiceLocator::setEngineList(CUploadEngineListBase* engineList) {
     d_ptr->engineList_ = engineList;
 }
 
-CUploadEngineList_Base* ServiceLocator::engineList() {
+CUploadEngineListBase* ServiceLocator::engineList() {
     return d_ptr->engineList_;
 }
 

@@ -25,7 +25,7 @@
 #include "Func/LangClass.h"
 #include "Gui/GuiTools.h"
 // CStatusDlg
-CStatusDlg::CStatusDlg()
+CStatusDlg::CStatusDlg() : m_bNeedStop(false)
 {
         
 }

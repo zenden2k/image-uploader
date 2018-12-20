@@ -23,10 +23,12 @@ CObject::CObject()
 
 CObject::~CObject()
 {
-	if (mReferences != 1)
+	/*
+    Raising exception inside the destructor is illegal. 
+    if (mReferences != 1)
 	{
 		throw std::runtime_error("something wrong, reference count not zero");
-	}
+	}*/
 }
 
 void CObject::retain()
@@ -36,10 +38,10 @@ void CObject::retain()
 
 void CObject::release()
 {
-	if (mReferences < 0)
+	/*if (mReferences < 0)
 	{
         throw std::runtime_error("something wrong, reference count is negative");
-	}
+	}*/
 
 	if (mReferences == 1)
 	{

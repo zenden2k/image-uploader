@@ -542,14 +542,14 @@ int Toolbar::AutoSize()
             }
         }
         if ( j == 0 ) {
-            SetWindowPos(0, 0,0,width,height,SWP_NOMOVE);
+            SetWindowPos(0, 0,0,width,height,SWP_NOMOVE|SWP_NOZORDER);
         }
     }
 
     GetClientRect(&buttonsRect_);
 
     if ( orientation_ == orHorizontal ) {
-        SetWindowPos(0, 0,0,width,height + subpanelHeight_,SWP_NOMOVE);
+        SetWindowPos(0, 0,0,width,height + subpanelHeight_,SWP_NOMOVE|SWP_NOZORDER);
         penSizeSlider_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE);
         penSizeSlider_.SetRange(1,Canvas::kMaxPenSize);
         RECT penSizeSliderRect;

@@ -54,6 +54,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         virtual bool supportsSettings() override;
         /**
         Beforehand authorization - obtain access token only once then use it for all requests (before upload)
+        Return true if there is "DoLogin" function in squirrel script
         **/
         virtual bool supportsBeforehandAuthorization() override;
         std::string name();
@@ -68,7 +69,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         virtual void logNetworkError(bool error, const std::string & msg) override;
         CFolderList folderList_;
         std::string name_;
-        bool needStop();
+        bool needStop() override;
         std::string m_ErrorReason;
         std::string m_FileName;
         std::string m_displayFileName;

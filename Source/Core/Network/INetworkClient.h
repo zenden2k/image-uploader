@@ -25,6 +25,7 @@ limitations under the License.
 // NetworkClient interface
 //
 #include <string>
+#include <memory>
 #include <Core/Utils/CoreTypes.h>
 #include "Core/3rdpart/fastdelegate.h"
 
@@ -93,7 +94,7 @@ class INetworkClient {
         virtual void setProgressCallback(const ProgressCallback& func){}
         virtual void setTreatErrorsAsWarnings(bool treat){}
         virtual void setUploadBufferSize(int size){}
-        virtual void setProxyProvider(ProxyProvider* provider){}
+        virtual void setProxyProvider(std::shared_ptr<ProxyProvider> provider){}
         virtual void setLogger(Logger* logger){}
         virtual const std::string urlEncode(const std::string& str){ return std::string(); }
         virtual const std::string urlDecode(const std::string& str){ return std::string(); }

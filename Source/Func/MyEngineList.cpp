@@ -48,12 +48,12 @@ CMyEngineList::~CMyEngineList()
 
 CUploadEngineData* CMyEngineList::byName(const CString& name)
 {
-    return CUploadEngineList_Base::byName(WCstringToUtf8(name));
+    return CUploadEngineListBase::byName(WCstringToUtf8(name));
 }
 
 int CMyEngineList::getUploadEngineIndex(const CString& Name)
 {
-    return CUploadEngineList_Base::GetUploadEngineIndex(WCstringToUtf8(Name));
+    return CUploadEngineListBase::getUploadEngineIndex(WCstringToUtf8(Name));
 }
 
 CString CMyEngineList::ErrorStr() const
@@ -68,7 +68,7 @@ bool CMyEngineList::loadFromFile(const CString& filename)
         m_ErrorStr = "File not found.";
         return 0;
     }
-    return CUploadEngineList::LoadFromFile(WCstringToUtf8(filename),Settings.ServersSettings);
+    return CUploadEngineList::loadFromFile(WCstringToUtf8(filename),Settings.ServersSettings);
 }
 
 

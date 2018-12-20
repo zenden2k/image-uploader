@@ -50,7 +50,7 @@ void COldStyleFileDialog::getFiles(std::vector<CString>& arr) {
 
             lstrcat(Buffer, FileName);
             arr.push_back(Buffer);
-        } while (FileName);
+        } while (true);
     } else {
         if (dlg_->m_szFileName[0]) {
             arr.push_back(dlg_->m_szFileName);

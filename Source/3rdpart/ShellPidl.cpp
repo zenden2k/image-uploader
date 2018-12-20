@@ -159,11 +159,13 @@ LPITEMIDLIST CShellPidl::ILFromPath(LPCTSTR pszPath, HWND hOwner) {
 
 CShellPidl::CShellPidl(LPCITEMIDLIST pidl)
 {
+    m_pMalloc = nullptr;
     m_pObj = ILClone(pidl);
 }
 
 CShellPidl::CShellPidl(LPCITEMIDLIST pidlParent, LPCITEMIDLIST pidlRel)
 {
+    m_pMalloc = nullptr;
     m_pObj = ILCombine(pidlParent, pidlRel);
 }
 

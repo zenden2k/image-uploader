@@ -46,7 +46,7 @@ BasicSettings::~BasicSettings() {
 
 }
 
-void BasicSettings::setEngineList(CUploadEngineList_Base* engineList) {
+void BasicSettings::setEngineList(CUploadEngineListBase* engineList) {
     engineList_ = engineList;
 }
 

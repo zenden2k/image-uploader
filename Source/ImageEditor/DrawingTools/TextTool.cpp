@@ -36,7 +36,8 @@ TextTool::TextTool( Canvas* canvas ) : MoveAndResizeTool( canvas, etText ) {
 
 void TextTool::beginDraw( int x, int y ) {
     allowCreatingElements_ = true;
-    if ( currentElement_ && dynamic_cast<TextElement*>(currentElement_)->getInputBox()->isVisible() ) {
+    TextElement *textEl = dynamic_cast<TextElement*>(currentElement_);
+    if (textEl && textEl->getInputBox()->isVisible()) {
         allowCreatingElements_ = false;
     }
     MoveAndResizeTool::beginDraw( x, y );
@@ -44,12 +45,14 @@ void TextTool::beginDraw( int x, int y ) {
     if ( currentElement_ ) {
         TextElement* textElement = dynamic_cast<TextElement*>(currentElement_);
 
-        InputBox* input = textElement->getInputBox();
-        if ( input ) {
-            textElement->beginEdit();
-            input->show(true);
-            if ( canvas_->onTextEditStarted ) {
-                canvas_->onTextEditStarted(textElement);
+        if (textElement) {
+            InputBox* input = textElement->getInputBox();
+            if (input) {
+                textElement->beginEdit();
+                input->show(true);
+                if (canvas_->onTextEditStarted) {
+                    canvas_->onTextEditStarted(textElement);
+                }
             }
         }
     }
@@ -80,7 +83,7 @@ void TextTool::endDraw( int x, int y ) {
     RECT inputRect = {elX+3, elY+3, elX + currentElement_->getWidth()-6, elY + currentElement_->getHeight()-6 };
 
     TextElement * textElement = dynamic_cast<TextElement*>(currentElement_);
-    InputBox * inputBox = textElement->getInputBox();
+    InputBox * inputBox = textElement ? textElement->getInputBox(): nullptr;
     if ( !inputBox ) {
         inputBox = canvas_->getInputBox( inputRect );
         textElement->setInputBox(inputBox);
@@ -109,7 +112,8 @@ void TextTool::render( Painter* gr ) {
 ImageEditor::CursorType TextTool::getCursor(int x, int y)
 {
     CursorType ct = MoveAndResizeTool::getCursor(x,y);
-    InputBox* inputBox = currentElement_ ? dynamic_cast<TextElement*>(currentElement_)->getInputBox(): NULL;
+    TextElement* textElement = dynamic_cast<TextElement*>(currentElement_);
+    InputBox* inputBox = textElement ? textElement->getInputBox() : nullptr;
     if ( (ct == ctDefault || ( ct == ctMove && canvas_->getElementAtPosition(x,y)!= currentElement_)) && 
         ( !inputBox || !inputBox->isVisible() )) {
             ct = ctEdit;

@@ -33,6 +33,7 @@ QColorQuantizer::QColorQuantizer(void)
 , m_bStop(false)
 , m_pSource(NULL)
 , m_nMaxColors(0)
+,m_Mode(HalfTone)
 {
 }
 

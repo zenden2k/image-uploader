@@ -37,7 +37,6 @@ public:
 private:
     DISALLOW_COPY_AND_ASSIGN(ZGlobalMutex);
     ZGlobalMutexPrivate* d_ptr;
-    void* m_data;
 };
 }
 

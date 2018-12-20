@@ -104,6 +104,7 @@ CPictureExWnd::CPictureExWnd()
     m_pRawData           = NULL;
     m_hThread           = NULL;
     m_hBitmap          = NULL;
+    m_hOldBitmap       = nullptr;
     m_hMemDC           = NULL;
 
     m_hDispMemDC       = NULL;

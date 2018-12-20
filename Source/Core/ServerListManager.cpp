@@ -80,7 +80,7 @@ bool ServerListManager::addFtpServer(const std::string &name, const std::string 
     ss.authData.Password = password;
     ss.authData.DoAuth = !login.empty();
     createdServerName_ = newName;
-    return uploadEngineList_->LoadFromFile(outFile,serversSettings_);
+    return uploadEngineList_->loadFromFile(outFile,serversSettings_);
 }
 
 bool ServerListManager::addDirectoryAsServer(const std::string &name, const std::string &directory, const std::string &downloadUrl, bool convertUncPath)
@@ -130,7 +130,7 @@ bool ServerListManager::addDirectoryAsServer(const std::string &name, const std:
     ss.setParam("convertUncPath",IuCoreUtils::int64_tToString((int)convertUncPath));
     ss.authData.DoAuth = false;
     createdServerName_ = newName;
-    return uploadEngineList_->LoadFromFile(outFile,serversSettings_);
+    return uploadEngineList_->loadFromFile(outFile,serversSettings_);
 }
 
 std::string ServerListManager::errorMessage() const

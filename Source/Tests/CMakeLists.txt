@@ -45,5 +45,5 @@ else()
     list(APPEND LIBS_LIST icuuc icui18n)
 endif()
 
-target_link_libraries(Tests libiucore ${COMMON_LIBS_LIST} ${LIBS_LIST} )
+target_link_libraries(Tests iucore ${COMMON_LIBS_LIST} ${LIBS_LIST} )
 target_link_libraries(Tests debug gmockd optimized gmock)

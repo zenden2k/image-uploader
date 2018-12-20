@@ -172,6 +172,7 @@ TextElement::TextElement( Canvas* canvas, InputBox* inputBox, int startX, int st
     endPoint_.y   = endY;
     inputBox_ = inputBox;
     isEditing_ = false;
+    memset(&font_, 0, sizeof(font_));
 }
 
 TextElement::~TextElement()

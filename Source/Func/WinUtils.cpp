@@ -865,9 +865,9 @@ bool ExtractStrFromList(
 
     if(nStringLen<=0) goto lbl_copydef;
 
-    while(*szString==_T(' ')) szBuffer++;
+    while (*szString == _T(' ')) szString++;
 
-    if(nStringLen<=0) goto lbl_copydef;
+    //if(nStringLen<=0) goto lbl_copydef;
 
     szPrevSep=szString;
 

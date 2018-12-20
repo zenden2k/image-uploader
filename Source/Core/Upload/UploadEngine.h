@@ -205,7 +205,7 @@ class CUploadEngineData
         int NumOfTries;
         int MaxThreads;
         int TypeMask;
-        bool hasType(ServerType type);
+        bool hasType(ServerType type) const;
         CUploadEngineData();
 };
 /** 
@@ -302,23 +302,23 @@ public:
     ScriptAPI::UploadTaskWrapper getTask() { return task_; }
 };
 
-class  CUploadEngineList_Base
+class CUploadEngineListBase
 {
 public:
-    CUploadEngineList_Base();
+    CUploadEngineListBase();
     CUploadEngineData* byIndex(size_t index);
     CUploadEngineData* byName(const std::string& name);
     CUploadEngineData* firstEngineOfType(CUploadEngineData::ServerType type);
-    int count();
-    int getRandomImageServer();
-    int getRandomFileServer();
-    int GetUploadEngineIndex(const std::string Name);
+    int count() const;
+    int getRandomImageServer() const;
+    int getRandomFileServer() const;
+    int getUploadEngineIndex(const std::string& Name) const;
     std::vector<CUploadEngineData>::const_iterator begin() const;
     std::vector<CUploadEngineData>::const_iterator end() const;
 protected:
     std::vector<CUploadEngineData> m_list;
 private:
-    DISALLOW_COPY_AND_ASSIGN(CUploadEngineList_Base);
+    DISALLOW_COPY_AND_ASSIGN(CUploadEngineListBase);
 };
 
 class UploadTask;

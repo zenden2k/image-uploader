@@ -24,12 +24,12 @@ model_(engineList), m_ListView(&model_)
     uploadEngineManager_ = uploadEngineManager;
     uploadManager_ = uploadManager;
     engineList_ = engineList;
+    contextMenuItemId = -1;
+    m_NeedStop = false;
 }
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-
-    contextMenuItemId = -1;
     CenterWindow(); // center the dialog on the screen
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     DoDataExchange(FALSE);
@@ -54,11 +54,11 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
         SimpleXmlNode root = xml.getRoot("ServerListTool");
         std::string name = root.Attribute("FileName");
         if (!name.empty()) {
-            testFileName = Utf8ToWstring(name.c_str()).c_str();
+            testFileName = Utf8ToWstring(name).c_str();
         }
         std::string url = root.Attribute("URL");
         if (!url.empty()) {
-            testURL = Utf8ToWstring(url.c_str()).c_str();
+            testURL = Utf8ToWstring(url).c_str();
         }
     }
     Settings.MaxThreads = 10;
@@ -219,7 +219,6 @@ int CMainDlg::Run() {
     return 0;
 }
 
-
 LRESULT CMainDlg::OnSkip(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     int nIndex = -1;
@@ -232,40 +231,16 @@ LRESULT CMainDlg::OnSkip(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL&
             model_.notifyRowChanged(nIndex);
         }
 
-    } while (nIndex != -1);
+    } while (true);
 
     return 0;
 }
-
-/*LRESULT CMainDlg::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
-{
-    LPNMLVCUSTOMDRAW lplvcd = reinterpret_cast<LPNMLVCUSTOMDRAW>(pnmh);
-
-    switch (lplvcd->nmcd.dwDrawStage) {
-    case CDDS_PREPAINT:
-        return CDRF_NOTIFYITEMDRAW;
-
-    case CDDS_ITEMPREPAINT:
-    {
-        auto it = m_CheckedServersMap.find(lplvcd->nmcd.dwItemSpec);
-        if (it != m_CheckedServersMap.end() && it->second.color) {
-            lplvcd->clrTextBk = it->second.color;
-            return CDRF_NEWFONT;
-        }
-    }
-    break;
-    case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
-        lplvcd->clrText = RGB(255, 0, 0);
-        return CDRF_NEWFONT;
-    }
-    return 0;
-}*/
 
 LRESULT CMainDlg::OnBrowseButton(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     CFileDialog fd(true, 0, 0, 4 | 2, 0, m_hWnd);
 
-    if (fd.DoModal() != IDOK || !fd.m_szFileName) return 0;
+    if (fd.DoModal() != IDOK || !fd.m_szFileName[0]) return 0;
 
     SetDlgItemText(IDC_TOOLFILEEDIT, fd.m_szFileName);
     return 0;
@@ -344,4 +319,5 @@ LRESULT CMainDlg::OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 
     return 0;
 }
+
 }

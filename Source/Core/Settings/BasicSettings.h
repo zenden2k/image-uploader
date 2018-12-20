@@ -25,7 +25,7 @@ class BasicSettings {
 public:
     BasicSettings();
     virtual ~BasicSettings();
-    void setEngineList(CUploadEngineList_Base* engineList);
+    void setEngineList(CUploadEngineListBase* engineList);
     bool LoadSettings(const std::string& szDir = "", const std::string& fileName = "", bool LoadFromRegistry = true);
     bool SaveSettings();
     void notifyChange();
@@ -58,7 +58,7 @@ protected:
     SettingsManager mgr_;
     std::string fileName_;
   
-    CUploadEngineList_Base* engineList_;
+    CUploadEngineListBase* engineList_;
     bool loadFromRegistry_;
     bool LoadAccounts(SimpleXmlNode root);
     bool SaveAccounts(SimpleXmlNode root);

@@ -29,7 +29,6 @@ CInputDialog::CInputDialog(const CString& title, const CString& descr, const CSt
                            const CString& image)
 {
     title_ = title;
-    ;
     description_ = descr;
     value_ = defaultValue;
     image_ = image;

@@ -41,7 +41,10 @@
     #define TR(str) _T(str)
 #endif
 
-CUpdateInfo::CUpdateInfo()
+CUpdateInfo::CUpdateInfo():
+    m_CoreUpdate(false),
+    m_ManualUpdate(false),
+    m_TimeStamp(0)
 {
 
 }

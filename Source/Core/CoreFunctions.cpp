@@ -18,7 +18,7 @@ void ConfigureProxy(INetworkClient* nm)
 {
 #ifdef _WIN32
     if (Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kSystemProxy) {
-        nm->setProxyProvider(new DefaultProxyProvider());
+        nm->setProxyProvider(std::make_shared<DefaultProxyProvider>());
     } else
 #endif
     if (Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kUserProxy) {

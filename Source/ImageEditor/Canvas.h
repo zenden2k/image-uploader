@@ -23,6 +23,7 @@ class Canvas {
         class Callback {
         public:
             virtual void updateView( Canvas* canvas, Gdiplus::Rect rect ) = NULL;
+            virtual ~Callback(){};
         };
         
         enum DrawingToolType {

@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include "Core/Utils/CoreTypes.h"
 
 class CUploadEngineData;
 class CMyEngineList;
@@ -86,6 +87,7 @@ protected:
     CMyEngineList* engineList_;
     std::vector<ServerData> items_;
     std::function<void(size_t)> rowChangedCallback_;
+    DISALLOW_COPY_AND_ASSIGN(ServersCheckerModel);
 };
 
 }

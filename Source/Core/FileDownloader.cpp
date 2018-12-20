@@ -162,7 +162,7 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
         }
 
         
-        CString possiblePath = U2W(tempDirectory_) + Utf8ToWstring(fileName.c_str()).c_str();
+        CString possiblePath = U2W(tempDirectory_) + Utf8ToWstring(fileName).c_str();
         if (possiblePath.GetLength() > MAX_PATH - 4) {
             possiblePath = possiblePath.Left(MAX_PATH - 4);
         }

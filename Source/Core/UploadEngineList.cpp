@@ -33,7 +33,7 @@ CUploadEngineList::CUploadEngineList()
     m_ActionNumOfRetries = 2;
 }
 
-bool CUploadEngineList::LoadFromFile(const std::string& filename, ServerSettingsMap& serversSettings)
+bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettingsMap& serversSettings)
 {
     SimpleXml xml;
     if(!xml.LoadFromFile(filename))
