@@ -44,7 +44,6 @@ CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
 	Terminated = true;
     grabbedFramesCount = 0;
     originalGrabInfoLabelWidth_ = 0;
-    videoGrabber_ = 0;
     uploadEngineManager_ = uploadEngineManager;
     engineComboToolTip_ = nullptr;
     ThumbsView.SetDeletePhysicalFiles(true);
@@ -62,7 +61,6 @@ CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
 CVideoGrabberPage::~CVideoGrabberPage()
 {
     *m_szFileName = 0;
-    delete videoGrabber_;
 }
 
 //  Принимаем имя файла из главного окна
@@ -523,10 +521,9 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
         }
     }
 
-    delete videoGrabber_;
     Settings.VideoSettings.NumOfFrames = NumOfFrames;
 
-    videoGrabber_ = new VideoGrabber();
+    videoGrabber_ = std::make_unique<VideoGrabber>();
     videoGrabber_->setFrameCount(NumOfFrames);
     videoGrabber_->onFrameGrabbed.bind(this, &CVideoGrabberPage::OnFrameGrabbed);
     videoGrabber_->onFinished.bind(this, &CVideoGrabberPage::OnFrameGrabbingFinished);

@@ -28,6 +28,7 @@
 #include <boost/format.hpp>
 #include "Core/Upload/Uploader.h"
 #include "Core/Utils/CoreUtils.h"
+#include "Core/Network/NetworkClientFactory.h"
 #include "Core/Network/NetworkClient.h"
 #include "Core/UploadEngineList.h"
 #include "Core/Upload/UploadManager.h"
@@ -67,6 +68,7 @@
 #define IU_CLI_VER "0.2.6"
 
 #ifdef _WIN32
+
 CAppModule _Module;
 std::string dataFolder = "Data/";
 #else
@@ -111,7 +113,7 @@ void SignalHandler (int param) {
 }
 
 void PrintWelcomeMessage() {
-    std::cerr << "imgupload v" << IU_CLI_VER << " (based on core of IU v" << IU_APP_VER << " build " << IU_BUILD_NUMBER << ", Git Commit: " << IU_COMMIT_HASH_SHORT ")" << std::endl;
+    std::cerr << "imgupload v" << IU_CLI_VER << " (based on core of IU v" << IU_APP_VER << " build " << IU_BUILD_NUMBER << ")" << std::endl;
 }
 
 class Translator: public ITranslator{
@@ -571,7 +573,7 @@ int func() {
 #ifdef _WIN32
 class Updater: public CUpdateStatusCallback {
 public:
-    Updater(const CString& tempDirectory) :m_UpdateManager(tempDirectory){
+    Updater(const CString& tempDirectory) :m_UpdateManager(std::make_shared<NetworkClientFactory>(), tempDirectory){
         m_UpdateManager.setUpdateStatusCallback(this);
     }
 
@@ -701,11 +703,11 @@ int main(int argc, char *argv[]){
     params->setTempDirectory("/var/tmp/");
 #endif
     PrintWelcomeMessage();
-    if(! list.LoadFromFile(dataFolder + "servers.xml", Settings.ServersSettings)) {
+    if(! list.loadFromFile(dataFolder + "servers.xml", Settings.ServersSettings)) {
         std::cerr<<"Cannot load server list!"<<std::endl;
     }
 
-    if( IuCoreUtils::FileExists(dataFolder + "userservers.xml") && !list.LoadFromFile(dataFolder + "userservers.xml", Settings.ServersSettings)) {
+    if( IuCoreUtils::FileExists(dataFolder + "userservers.xml") && !list.loadFromFile(dataFolder + "userservers.xml", Settings.ServersSettings)) {
         std::cerr<<"Cannot load server list userservers.xml!"<<std::endl;
     }
     Settings.LoadSettings(settingsFolder,"settings_cli.xml");

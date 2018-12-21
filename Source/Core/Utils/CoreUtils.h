@@ -87,7 +87,7 @@ namespace IuCoreUtils
     // Convert UTF16-LE encoded string to Utf-8
     std::string Utf16ToUtf8(const std::u16string& src);
 
-    const std::string timeStampToString(time_t t);
+    std::string timeStampToString(time_t t);
     std::string fileSizeToString(int64_t nBytes);
     bool createDirectory(const std::string& path, unsigned int mode=0);
     bool copyFile(const std::string& src, const std::string & dest, bool overwrite = true);

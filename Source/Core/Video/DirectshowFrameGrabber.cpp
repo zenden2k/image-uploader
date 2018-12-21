@@ -74,7 +74,7 @@ public :
         delete[] data_;
     }
 
-    bool saveToFile(const std::string& fileName) const {
+    bool saveToFile(const std::string& fileName) const override {
         AbstractImage* image = AbstractImage::createImage();
         if ( !image ) {
             return false;
@@ -85,7 +85,7 @@ public :
         return image->saveToFile(fileName);
     }
 
-    AbstractImage* toImage() const  {
+    AbstractImage* toImage() const override {
         AbstractImage* image = AbstractImage::createImage();
         if ( !image ) {
             return 0;

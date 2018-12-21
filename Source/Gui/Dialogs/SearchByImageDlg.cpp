@@ -23,8 +23,9 @@
 #include "atlheaders.h"
 #include "Func/LangClass.h"
 #include "Gui/GuiTools.h"
-#include <Core/SearchByImage.h>
+#include "Core/SearchByImage.h"
 #include "Func/WinUtils.h"
+#include "Core/Network/NetworkClientFactory.h"
 
 // CSearchByImageDlg
 
@@ -53,7 +54,7 @@ LRESULT CSearchByImageDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
         //wndAnimation_.ShowWindow(SW_HIDE);
     }
 
-    seeker_ = SearchByImage::createSearchEngine(searchEngine_, W2U(fileName_));
+    seeker_ = SearchByImage::createSearchEngine(std::make_shared<NetworkClientFactory>(), searchEngine_, W2U(fileName_));
     seeker_->setOnFinished(SearchByImage::FinishedDelegate(this, &CSearchByImageDlg::onSeekerFinished));
     SetDlgItemText(IDC_TEXT, TR("Uploading image..."));
     seeker_->start();

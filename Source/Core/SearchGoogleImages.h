@@ -4,16 +4,18 @@
 #include <string>
 
 #include "SearchByImage.h"
+#include "Network/INetworkClient.h"
 
 class NetworkClient;
 
 class SearchGoogleImages: public SearchByImage  {
 
     public:
-        explicit SearchGoogleImages(const std::string& fileName);
+        explicit SearchGoogleImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, const std::string& fileName);
 protected:
     void run() override;
     static std::string base64EncodeCompat(const std::string& file);
+    std::shared_ptr<INetworkClientFactory> networkClientFactory_;
 };
 
 #endif

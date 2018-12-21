@@ -20,7 +20,6 @@
 
 #include "HyperLinkControl.h"
 
-#include "Func/Common.h"
 #include "Gui/GuiTools.h"
 #include "HyperLinkControlAccessible.h"
 
@@ -76,14 +75,14 @@ CString CHyperLinkControl::GetItemTitle(size_t item) const {
 }
 
 CString CHyperLinkControl::GetItemDescription(size_t item) const {
-    if (item >= 0 && item < Items.GetCount()) {
+    if (item < Items.GetCount()) {
         return Items[item].szTip;
     }
     return CString();
 }
 
-CRect CHyperLinkControl::GetItemRect(int itemIndex) const {
-    if (itemIndex >= 0 && itemIndex < Items.GetCount()) {
+CRect CHyperLinkControl::GetItemRect(size_t itemIndex) const {
+    if (itemIndex < Items.GetCount()) {
         return Items[itemIndex].ItemRect;
     }
     return CRect();
@@ -302,7 +301,7 @@ LRESULT CHyperLinkControl::OnKeyUp(TCHAR vk, UINT cRepeat, UINT flags)
     if (vk == VK_DOWN || (vk == VK_TAB && !(GetKeyState(VK_SHIFT) & 0x80)))
     {
         bool itemSelected = false;
-        for (int j = Selected + 1; j < Items.GetCount(); j++) {
+        for (size_t j = Selected + 1; j < Items.GetCount(); j++) {
             if (Items[j].Visible) {
                 SelectItem(j);
                 itemSelected = true;

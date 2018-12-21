@@ -25,14 +25,8 @@
 #include <cstdio>
 #include <map>
 #include <string>
-#include <cmath>
-#include <cstdlib>
-
-#include "Core/3rdpart/UriParser.h"
 
 #ifdef _WIN32
-    #include <io.h>
-    #include "Core/Utils/utils_Win.h"
     #include <WinSock.h>
 #else
     #include <boost/filesystem.hpp>
@@ -42,8 +36,12 @@
         #include <sys/io.h>
     #endif
     #include <sys/stat.h>
-    #include "Core/Utils/utils_unix.h"
+
 #endif
+
+#include "Core/3rdpart/UriParser.h"
+
+
 #if defined(_MSC_VER) && _MSC_VER < 1800 
 long round(float number){
     return number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5);
@@ -232,7 +230,7 @@ const std::string ExtractFilePath(const std::string& fileName)
         }
             
     }
-    return "";
+    return std::string();
 }
 
 const std::string ExtractFileNameNoExt(const std::string& fileName)
@@ -292,7 +290,7 @@ bool ReadUtf8TextFile(std::string utf8Filename, std::string& data)
     if (!stream) {
         return false;
     }
-    int size = static_cast<int>(getFileSize(utf8Filename));
+    size_t size = static_cast<size_t>(getFileSize(utf8Filename));
     unsigned char buf[3]={0,0,0};
     size_t bytesRead = fread(buf, 1, 3, stream);    
 
@@ -338,8 +336,10 @@ bool ReadUtf8TextFile(std::string utf8Filename, std::string& data)
 bool PutFileContents(const std::string& utf8Filename, const std::string& content)
 {
     FILE *stream = fopen_utf8(utf8Filename.c_str(), "wb");
-    if(!stream) return false;
-    fwrite(content.c_str(), content.length(),1, stream);
+    if (!stream) {
+        return false;
+    }
+    fwrite(&content[0], 1, content.length(), stream);
     fclose(stream);
     return true;
 }
@@ -348,7 +348,7 @@ const std::string GetFileContents(const std::string& filename) {
     std::string data;
     FILE *stream = IuCoreUtils::fopen_utf8(filename.c_str(), "rb");
     if (!stream) return std::string();
-    int size = static_cast<int>(IuCoreUtils::getFileSize(filename));
+    size_t size = static_cast<size_t>(IuCoreUtils::getFileSize(filename));
 
     try {
         data.resize(size);
@@ -358,13 +358,15 @@ const std::string GetFileContents(const std::string& filename) {
         return std::string();
     }
 
-    /*size_t bytesRead = */(void)fread(&data[0], 1, size, stream);
-    //data[bytesRead] = 0;
+    size_t bytesRead = fread(&data[0], 1, size, stream);
+    if (bytesRead != size) {
+        data.resize(bytesRead);
+    }
     fclose(stream);
     return data;
 }
 
-const std::string timeStampToString(time_t t)
+std::string timeStampToString(time_t t)
 {
     // TODO: add system locale support
     tm * timeinfo = localtime ( &t );
@@ -373,131 +375,10 @@ const std::string timeStampToString(time_t t)
     return buf;
 }
 
-/*std::string ulonglongToStr(int64_t l, int base)
-{
-    char buff[67]; // length of MAX_ULLONG in base 2
-    buff[66] = 0;
-    char *p = buff + 66;
-    const char _zero = '0';
-
-    if (base != 10) {
-        while (l != 0) {
-            int c = l % base;
-
-            --p;
-
-            if (c < 10)
-                *p = '0' + c;
-            else
-                *p = c - 10 + 'a';
-
-            l /= base;
-        }
-    }
-    else {
-        while (l != 0) {
-            int c = l % base;
-
-            *(--p) = _zero + c;
-
-            l /= base;
-        }
-    }
-
-    return p;
-}
-
-std::string longlongtoStr(int64_t l, int base)
-{
-   std::string res = ulonglongToStr(l<0 ? -l: l, base);
-   if (l < 0)
-     res = "-" + res;
-   return res;
-}*/
-
-
 std::string int64_tToString(int64_t value)
 {
     return std::to_string(value);
 }
-
-/*#ifndef LLONG_MIN
-    #define LLONG_MIN (-9223372036854775807-1)
-    #define LLONG_MAX (-9223372036854775807-1)
-#endif 
-
-static int64_t zstrtoll(const char *nptr, const char **endptr, register int base, bool *ok)
-{
-    register const char *s;
-    register  uint64_t acc;
-    register unsigned char c;
-    register  uint64_t qbase, cutoff;
-    register int neg, any, cutlim;
-
-    /*
-     * Skip white space and pick up leading +/- sign if any.
-     * If base is 0, allow 0x for hex and 0 for octal, else
-     * assume decimal; if base is already 16, allow 0x.
-     *
-    s = nptr;
-    do {
-        c = *s++;
-    } while (isspace(c));
-    if (c == '-') {
-        neg = 1;
-        c = *s++;
-    } else {
-        neg = 0;
-        if (c == '+')
-            c = *s++;
-    }
-    if ((base == 0 || base == 16) &&
-        c == '0' && (*s == 'x' || *s == 'X')) {
-        c = s[1];
-        s += 2;
-        base = 16;
-    }
-    if (base == 0)
-        base = c == '0' ? 8 : 10;
-
-    qbase = unsigned(base);
-    cutoff = neg ? ((int64_t)(0-(LLONG_MIN + LLONG_MAX))) + LLONG_MAX : LLONG_MAX;
-    cutlim = static_cast<int>(cutoff % qbase);
-    cutoff /= qbase;
-    for (acc = 0, any = 0;; c = *s++) {
-        if (!isascii(c))
-            break;
-        if (isdigit(c))
-            c -= '0';
-        else if (isalpha(c))
-            c -= isupper(c) ? 'A' - 10 : 'a' - 10;
-        else
-            break;
-        if (c >= base)
-            break;
-        if (any < 0 || acc > cutoff || (acc == cutoff && c > cutlim))
-            any = -1;
-        else {
-            any = 1;
-            acc *= qbase;
-            acc += c;
-        }
-    }
-    if (any < 0) {
-        acc = neg ? LLONG_MIN : LLONG_MAX;
-        if (ok != 0)
-            *ok = false;
-    } else if (neg) {
-        acc = (~acc) + 1;
-    }
-    if (endptr != 0)
-        *endptr = (any >= 0 ? s - 1 : nptr);
-
-    if (ok != 0)
-        *ok = any > 0;
-
-    return acc;
-}*/
 
 int64_t stringToInt64(const std::string& str)
 {
@@ -574,12 +455,13 @@ std::string GetDefaultExtensionForMimeType(const std::string mimeType) {
     mimeToExt["image/gif"] = "gif";
     mimeToExt["image/png"] = "png";
     mimeToExt["image/jpeg"] = "jpg";
+    mimeToExt["image/webp"] = "webp";
 
-    std::map<std::string, std::string>::iterator found = mimeToExt.find(mimeType);
+    auto found = mimeToExt.find(mimeType);
     if ( found != mimeToExt.end() ) {
         return found->second;
     }
-    return "";
+    return std::string();
 }
 
 std::string ThreadIdToString(const std::thread::id& id)

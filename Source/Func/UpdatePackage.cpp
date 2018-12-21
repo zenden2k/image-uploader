@@ -573,7 +573,8 @@ void CUpdatePackage::setStatusText(const CString& text)
         m_statusCallback->updateStatus(0, text);
 }
 
-CUpdateManager::CUpdateManager(const CString& tempDirectory)
+CUpdateManager::CUpdateManager(std::shared_ptr<INetworkClientFactory> networkClientFactory, const CString& tempDirectory) :
+    networkClientFactory_(networkClientFactory)
 {
     m_statusCallback = nullptr;
     m_nCoreUpdates = 0;
@@ -581,7 +582,7 @@ CUpdateManager::CUpdateManager(const CString& tempDirectory)
     
     m_nSuccessPackageUpdates = 0;
     m_stop = false;
-    nm_ = CoreFunctions::createNetworkClient();
+    nm_ = networkClientFactory_->create();
     nm_->setProgressCallback(NetworkClient::ProgressCallback(this, &CUpdateManager::progressCallback));
     m_TempDirectory = tempDirectory;
 }

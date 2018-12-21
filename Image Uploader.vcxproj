@@ -875,8 +875,6 @@
     <ClInclude Include="Source\Core\Utils\SimpleXml.h" />
     <ClInclude Include="Source\Core\Utils\Singleton.h" />
     <ClInclude Include="Source\Core\Utils\StringUtils.h" />
-    <ClInclude Include="Source\Core\Utils\utils_unix.h" />
-    <ClInclude Include="Source\Core\Utils\utils_win.h" />
     <ClInclude Include="Source\Core\Images\ImageConverter.h" />
     <ClInclude Include="Source\Core\Images\Thumbnail.h" />
     <ClInclude Include="Source\Core\Images\Utils.h" />
@@ -1139,9 +1137,11 @@
     <ClCompile Include="Source\Core\Upload\UploadEngineManager.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadManager.cpp" />
     <ClCompile Include="Source\Core\Upload\UploadSession.cpp" />
+    <ClCompile Include="Source\Core\Utils\CryptoUtils_win.cpp" />
     <ClCompile Include="Source\Core\Utils\DesktopUtils.cpp" />
     <ClCompile Include="Source\Core\Utils\SystemUtils.cpp" />
     <ClCompile Include="Source\Core\Utils\TextUtils.cpp" />
+    <ClCompile Include="Source\Core\Utils\Utils_win.cpp" />
     <ClCompile Include="Source\Func\CmdLine.cpp" />
     <ClCompile Include="Source\Func\DefaultLogger.cpp" />
     <ClCompile Include="Source\Func\DefaultUploadErrorHandler.cpp" />

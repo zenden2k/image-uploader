@@ -144,17 +144,24 @@ const Thumbnail::ThumbnailData* Thumbnail::getData() const
     return &data_;
 }
 
-unsigned int Thumbnail::getColor(const std::string& name)
+unsigned int Thumbnail::getColor(const std::string& name) const
 {
-    std::string res = data_.colors_[name];
-    res = IuStringUtils::Replace(res, "#", "0x");
-    return strtoul(res.c_str(), 0, 0);
+    auto it = data_.colors_.find(name);
+    if (it != data_.colors_.end()) {
+        std::string res = it->second;
+        res = IuStringUtils::Replace(res, "#", "0x");
+        return strtoul(res.c_str(), 0, 0);
+    }
+    return 0;
 }
 
-unsigned int Thumbnail::getParam(const std::string& name)
+unsigned int Thumbnail::getParam(const std::string& name) const
 {
-    std::string res = data_.colors_[name];
-    return atoi(res.c_str());
+    auto it = data_.colors_.find(name);
+    if (it != data_.colors_.end()) {
+        return atoi(it->second.c_str());
+    } 
+    return 0;
 }
 
 void Thumbnail::setColor(const std::string& name, unsigned int value)
@@ -174,9 +181,10 @@ void Thumbnail::setParamString(const std::string& name, const std::string& value
     data_.colors_[name] = value;
 }
 
-std::string Thumbnail::getParamString(const std::string& name)
+std::string Thumbnail::getParamString(const std::string& name) const
 {
-    return data_.colors_[name];
+    auto it = data_.colors_.find(name);
+    return it == data_.colors_.end() ? std::string() : it->second;
 }
 
 bool Thumbnail::existsParam(const std::string& name) const

@@ -104,7 +104,7 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		void OnFrameGrabbingFinished();
 
 		CHyperLink openInFolderLink_;
-		VideoGrabber* videoGrabber_ ;
+		std::unique_ptr<VideoGrabber> videoGrabber_ ;
 
 		TCHAR szBufferFileName[256];
 //		CImgSavingThread SavingThread;

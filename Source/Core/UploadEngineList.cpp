@@ -24,7 +24,6 @@
 #include <vector>
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/StringUtils.h"
-#include "Core/Logging.h"
 #include "AppParams.h"
 
 CUploadEngineList::CUploadEngineList()

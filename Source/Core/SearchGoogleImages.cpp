@@ -1,15 +1,16 @@
 #include "SearchGoogleImages.h"
 
-#include <Core/Network/NetworkClient.h>
-#include "CoreFunctions.h"
+#include "Core/Network/NetworkClient.h"
 #include "Utils/CryptoUtils.h"
 #include "Core/Utils/DesktopUtils.h"
 
-SearchGoogleImages::SearchGoogleImages(const std::string& fileName) :SearchByImage(fileName) {
+SearchGoogleImages::SearchGoogleImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, const std::string& fileName) :SearchByImage(fileName),
+    networkClientFactory_(networkClientFactory)
+{
 }
 
 void SearchGoogleImages::run() {
-    auto nc = CoreFunctions::createNetworkClient();
+    auto nc = networkClientFactory_->create();
     nc->setProgressCallback(NetworkClient::ProgressCallback(this, &SearchGoogleImages::progressCallback));
 
     try {

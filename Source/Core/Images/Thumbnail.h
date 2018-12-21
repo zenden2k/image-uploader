@@ -67,13 +67,13 @@ class Thumbnail
         void setSpriteFileName(const std::string& name);
 
         bool existsParam(const std::string& name) const;
-        unsigned int getColor(const std::string& name);
-        unsigned int getParam(const std::string& name);
+        unsigned int getColor(const std::string& name) const;
+        unsigned int getParam(const std::string& name) const;
 
         void setColor(const std::string& name, unsigned int value);
         void setParam(const std::string& name, unsigned int value);
         void setParamString(const std::string& name, const std::string& value);
-        std::string getParamString(const std::string& name);
+        std::string getParamString(const std::string& name) const;
         const ThumbnailData* getData() const;
     private:
         ThumbnailData data_;

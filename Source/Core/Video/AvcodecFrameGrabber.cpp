@@ -53,7 +53,7 @@ public :
         //delete[] data_;
     }
 
-    bool saveToFile(const std::string& fileName) const {
+    bool saveToFile(const std::string& fileName) const override {
         AbstractImage* img = AbstractImage::createImage();
         if ( !img ) {
             return false;
@@ -66,7 +66,7 @@ public :
         return res;
     }
 
-    AbstractImage* toImage() const  {
+    AbstractImage* toImage() const override  {
         AbstractImage* img = AbstractImage::createImage();
         if ( !img ) {
             return 0;
@@ -95,12 +95,15 @@ protected:
         AVFrame         *pFrame;
         AVFrame         *pFrameRGB;
         AVPacket        packet;
-         AVFormatContext *ic;
-          uint8_t         *buffer;
+        AVFormatContext *ic;
+        uint8_t         *buffer;
         int             frameFinished;
         int headerlen;
         struct SwsContext *img_convert_ctx;
         int             numBytes;
+        int allocatedFrameWidth_;
+        int allocatedFrameHeight_;
+        size_t allocatedBufferSize_;
         uint64_t fileSize_;
         bool NeedStop;
         bool SeekToKeyFrame;
@@ -129,6 +132,8 @@ public:
             ic = nullptr;
             headerlen = 0;
             duration_ = 0;
+            allocatedFrameWidth_ = 0;
+            allocatedFrameHeight_ = 0;
         }
 
           ~AvcodecFrameGrabberPrivate() {
@@ -212,8 +217,11 @@ public:
         memset( pFrameRGB->linesize, 0,sizeof(pFrameRGB->linesize));
 
        // Determine required buffer size and allocate buffer
+        allocatedFrameWidth_ = pCodecCtx->width;
+        allocatedFrameHeight_ = pCodecCtx->height;
         numBytes = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height) + 64;
-        buffer=/*(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));**/(uint8_t*)malloc(numBytes);
+        buffer=/*(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));**/new uint8_t[numBytes];
+        allocatedBufferSize_ = numBytes;
         memset(buffer, 0, numBytes);
         headerlen = sprintf((char *) buffer, "P6\n%d %d\n255\n", pCodecCtx->width,pCodecCtx->height);
 
@@ -232,7 +240,7 @@ public:
         //cb->Height =  pCodecCtx->height;
 
         AVRational ss =pFormatCtx->streams[videoStream]->time_base;
-        int64_t step = dur/numOfFrames;
+        //int64_t step = dur/numOfFrames;
          //CString result;//AVSEEK_FLAG_FRAME
          int64_t sec=dur/ss.den;
          int64_t min = sec/60;
@@ -258,7 +266,7 @@ public:
          }
 
 
-         step = full_sec / numOfFrames;
+         //step = full_sec / numOfFrames;
 
          AVDictionaryEntry  *tag = NULL;
          while ((tag=av_dict_get (pFormatCtx->streams[videoStream]->metadata,"",tag,AV_DICT_IGNORE_SUFFIX )) !=0 ) {
@@ -313,9 +321,8 @@ public:
     }
 
     void close() {
-        
         // Free the RGB image
-        free(buffer);
+        delete[] buffer;
 
         if ( pFrameRGB ) {
              av_frame_free(&pFrameRGB);
@@ -333,8 +340,6 @@ public:
             // Close the codec
             avcodec_close(pCodecCtx);
         }
-
-
 
         if ( pFormatCtx ) {
             // Close the video file
@@ -401,8 +406,19 @@ public:
 
 
     bool seek(int64_t time) {  
-        /*for ( int i = 0; i < numOfFrames; i++ ) */{
-
+        {
+            if (allocatedFrameWidth_ != pCodecCtx->width || allocatedFrameHeight_ != pCodecCtx->height) {  
+                numBytes = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height) + 64;
+                if (allocatedBufferSize_ < numBytes) {
+                    delete[] buffer;
+                    buffer = nullptr;
+                    buffer = new uint8_t[numBytes];
+                    numBytes = numBytes;
+                    memset(buffer, 0, numBytes);
+                }
+                allocatedFrameWidth_ = pCodecCtx->width;
+                allocatedFrameHeight_ = pCodecCtx->height;
+            }
             avpicture_fill((AVPicture *)pFrameRGB, buffer+headerlen, PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height);
             if(NeedStop) {
                 //break;

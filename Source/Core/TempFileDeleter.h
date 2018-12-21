@@ -2,9 +2,12 @@
 #define IU_CORE_TEMPFILEDELETER_H
 
 #pragma once
-#include "Core/Utils/CoreTypes.h"
+
 #include <string>
 #include <vector>
+
+#include "Core/Utils/CoreTypes.h"
+
 
 class TempFileDeleter
 {

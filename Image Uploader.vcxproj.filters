@@ -363,12 +363,6 @@
     <ClInclude Include="Source\Core\Utils\StringUtils.h">
       <Filter>Source Files\Core\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Utils\utils_unix.h">
-      <Filter>Source Files\Core\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Core\Utils\utils_win.h">
-      <Filter>Source Files\Core\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Core\Images\ImageConverter.h">
       <Filter>Source Files\Core\Images</Filter>
     </ClInclude>
@@ -1940,6 +1934,12 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Network\NetworkClientFactory.cpp">
       <Filter>Source Files\Core\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Utils\Utils_win.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Utils\CryptoUtils_win.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

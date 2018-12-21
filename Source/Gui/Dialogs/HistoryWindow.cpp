@@ -28,6 +28,7 @@
 #include "Core/3rdpart/pcreplusplus.h"
 #include "Func/WinUtils.h"
 #include "ClearHistoryDlg.h"
+#include "Core/Utils/DesktopUtils.h"
 
 // CHistoryWindow
 CHistoryWindow::CHistoryWindow(CWizardDlg* wizardDlg)
@@ -72,8 +73,6 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
             m_wndAnimation.Draw();
         m_wndAnimation.ShowWindow(SW_HIDE);
     }
-
-    std::string fName = ServiceLocator::instance()->historyManager()->makeFileName();
     
     LoadMonthList();
     
@@ -340,7 +339,7 @@ LRESULT CHistoryWindow::OnDeleteFileOnServer(WORD wNotifyCode, WORD wID, HWND hW
     TreeItem* item = m_treeView.selectedItem();
     if (!item) return 0;
     HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
-    ShellExecute(0, _T("open"), U2W(historyItem->deleteUrl), NULL, NULL, SW_SHOWNORMAL);
+    DesktopUtils::ShellOpenUrl(historyItem->deleteUrl);
     return 0;
 }
 

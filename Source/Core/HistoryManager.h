@@ -18,8 +18,8 @@
 
 */
 
-#ifndef IU_FUNC_HISTORY_MANAGER_H
-#define IU_FUNC_HISTORY_MANAGER_H
+#ifndef IU_CORE_HISTORY_MANAGER_H
+#define IU_CORE_HISTORY_MANAGER_H
 
 #pragma once
 
@@ -71,7 +71,9 @@ class CHistorySession
         std::string m_serverName;
         std::vector<HistoryItem> m_entries;
 };
+
 enum class HistoryClearPeriod { ClearAll, CurrentMonth };
+
 class CHistoryManager
 {
     public:
@@ -80,7 +82,7 @@ class CHistoryManager
         void setHistoryDirectory(const std::string& directory);
         void setHistoryFileName(const std::string& filepath, const std::string& nameprefix);
         std::shared_ptr<CHistorySession> newSession();
-        std::string makeFileName() const;
+        //std::string makeFileName() const;
         bool clearHistory(HistoryClearPeriod period);
     private:
         DISALLOW_COPY_AND_ASSIGN(CHistoryManager);
@@ -93,6 +95,7 @@ class CHistoryReader
     public:
         CHistoryReader();
         virtual ~CHistoryReader();
+        // filename must be utf-8 encoded
         bool loadFromFile(const std::string& filename);
         int getSessionCount() const;
         CHistorySession* getSession(size_t index);

@@ -20,16 +20,7 @@
 
 #include "CryptoUtils.h"
 
-#include "CoreUtils.h"
-
-#ifdef _WIN32
-#include "CryptoUtils_win.h"
-#else 
-#include "CryptoUtils_unix.h"
-#endif
-
 #include "Core/3rdpart/base64.h"
-//#include <libbase64.h>
 
 namespace IuCoreUtils {
 namespace CryptoUtils {

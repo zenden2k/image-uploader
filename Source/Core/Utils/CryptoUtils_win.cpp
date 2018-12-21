@@ -20,14 +20,16 @@
 
 #include "CryptoUtils.h"
 
-#include "CoreUtils.h"
 #include <stdio.h>
 #include <string>
-#include "Core/3rdpart/base64.h"
+#include <windows.h>
 #include <Wincrypt.h>
 
-namespace IuCoreUtils {
+#include "CoreUtils.h"
+#include "Core/3rdpart/base64.h"
 
+
+namespace IuCoreUtils {
 
 typedef struct _my_blob {
     BLOBHEADER header;

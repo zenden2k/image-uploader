@@ -30,7 +30,18 @@ if(WIN32)
         ../3rdpart/QColorQuantizer.cpp
 		../Core/FileDownloader.cpp
         ../Core/FileDownloaderTest.cpp
+        ../Core/Video/AvcodecFrameGrabber.cpp
+        ../Core/Video/AbstractFrameGrabber.cpp
+        ../Core/Video/DirectshowFrameGrabber.cpp
+        ../Core/Video/AbstractVideoFrame.cpp
+        ../Core/Video/DirectShowUtil.cpp
+        ../Core/Video/AbstractImage.cpp
+        ../Core/Video/GdiPlusImage.cpp
+        ../Core/Video/Tests/VideoGrabberTest.cpp
+        ../Core/3rdpart/dxerr.cpp
     )
+    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/BaseClasses/)
+    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
 endif()
 
 add_executable(Tests ${SRC_LIST})
@@ -40,7 +51,8 @@ set_target_properties( Tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINAR
 set(LIBS_LIST  "")
 
 if(WIN32)
-    list(APPEND LIBS_LIST gdiplus libwebpdecoder libwebpdemux base64)
+    list(APPEND LIBS_LIST gdiplus libwebpdecoder libwebpdemux base64 avformat avutil swscale avcodec winmm)
+    target_link_libraries(Tests debug strmbasd optimized strmbase)
 else()
     list(APPEND LIBS_LIST icuuc icui18n)
 endif()

@@ -79,6 +79,8 @@ set(SRC_LIST Network/NetworkClient.cpp
 
 if(WIN32)
     list(APPEND SRC_LIST 
+        Utils/Utils_win.cpp
+        Utils/CryptoUtils_win.cpp
         DefaultProxyProvider.cpp 
         3rdpart/CodePages.cpp 
         Scripting/API/HtmlDocument.cpp
@@ -101,6 +103,10 @@ if(WIN32)
         Images/Utils.cpp
         ../3rdpart/QColorQuantizer.cpp
     )
+else()
+    list(APPEND SRC_LIST  
+        Utils/Utils_unix.cpp 
+        Utils/CryptoUtils_unix.cpp)
 endif()
 
 add_library(iucore STATIC ${SRC_LIST} )

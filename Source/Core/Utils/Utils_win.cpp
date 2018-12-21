@@ -18,48 +18,44 @@
 
 */
 
-#ifndef _IU_UTILS_WIN_H
-#define _IU_UTILS_WIN_H
+#include "CoreUtils.h"
 
 #include <windows.h>
 #include <ObjIdl.h>
 #include "Core/3rdpart/codepages.h"
-#include "Core/Logging.h"
 
 namespace IuCoreUtils
 {
 
-typedef HRESULT  (STDAPICALLTYPE  *FindMimeFromDataFunc)(LPBC, LPCWSTR, LPVOID, DWORD, LPCWSTR, DWORD, LPWSTR*, DWORD);
+typedef HRESULT(STDAPICALLTYPE  *FindMimeFromDataFunc)(LPBC, LPCWSTR, LPVOID, DWORD, LPCWSTR, DWORD, LPWSTR*, DWORD);
 
 std::wstring strtows(const std::string &str, UINT codePage)
 {
-     std::wstring ws;
-     int n = MultiByteToWideChar(codePage, 0, str.c_str(), static_cast<int>(str.size()+1), /*dst*/NULL, 0);
-     if(n)
-     {
-          ws.reserve(n);
-          ws.resize(n-1);
-          if(MultiByteToWideChar(codePage, 0, str.c_str(), static_cast<int>(str.size()+1), /*dst*/&ws[0], n) == 0)
-                ws.clear();
-     }
-     return ws;
+    std::wstring ws;
+    int n = MultiByteToWideChar(codePage, 0, str.c_str(), static_cast<int>(str.size() + 1), /*dst*/NULL, 0);
+    if (n) {
+        ws.reserve(n);
+        ws.resize(n - 1);
+        if (MultiByteToWideChar(codePage, 0, str.c_str(), static_cast<int>(str.size() + 1), /*dst*/&ws[0], n) == 0)
+            ws.clear();
+    }
+    return ws;
 }
 
 std::string wstostr(const std::wstring &ws, UINT codePage)
 {
     // prior to C++11 std::string and std::wstring were not guaranteed to have their memory be contiguous,
     // although all real-world implementations make them contiguous
-     std::string str;
-     int srcLen = static_cast<int>(ws.size());
-     int n = WideCharToMultiByte(codePage, 0, ws.c_str(), srcLen+1, NULL, 0, /*defchr*/0, NULL);
-     if(n)
-     {
-          str.reserve(n);
-          str.resize(n-1);
-          if(WideCharToMultiByte(codePage, 0, ws.c_str(), srcLen+1, &str[0], n, /*defchr*/0, NULL) == 0)
-                str.clear();
-     }
-     return str;
+    std::string str;
+    int srcLen = static_cast<int>(ws.size());
+    int n = WideCharToMultiByte(codePage, 0, ws.c_str(), srcLen + 1, NULL, 0, /*defchr*/0, NULL);
+    if (n) {
+        str.reserve(n);
+        str.resize(n - 1);
+        if (WideCharToMultiByte(codePage, 0, ws.c_str(), srcLen + 1, &str[0], n, /*defchr*/0, NULL) == 0)
+            str.clear();
+    }
+    return str;
 }
 
 const std::string AnsiToUtf8(const std::string &str, int codepage)
@@ -102,7 +98,7 @@ std::string Utf16ToUtf8(const std::u16string& src) {
 std::string ConvertToUtf8(const std::string &text, const std::string codePage)
 {
     unsigned int codePageNum = CodepageByName(codePage.c_str());
-    if(codePageNum != CP_UTF8)
+    if (codePageNum != CP_UTF8)
         return AnsiToUtf8(text, codePageNum);
     return text;
 }
@@ -113,32 +109,31 @@ std::string GetFileMimeType(const std::string fileName)
     FILE * InputFile = fopen_utf8(fileName.c_str(), "rb");
     if (!InputFile) return "";
 
-    BYTE byBuff[256] ;
+    BYTE byBuff[256];
     unsigned int nRead = static_cast<unsigned int>(fread(byBuff, 1, 256, InputFile));
 
     fclose(InputFile);
 
-    PWSTR        szMimeW = NULL ;
+    PWSTR        szMimeW = NULL;
 
     HMODULE urlMonDll = LoadLibraryA("urlmon.dll");
-    if(!urlMonDll)
+    if (!urlMonDll)
         return DefaultMimeType;
-    FindMimeFromDataFunc _Win32_FindMimeFromData = reinterpret_cast<FindMimeFromDataFunc>(GetProcAddress(urlMonDll,"FindMimeFromData"));
+    FindMimeFromDataFunc _Win32_FindMimeFromData = reinterpret_cast<FindMimeFromDataFunc>(GetProcAddress(urlMonDll, "FindMimeFromData"));
 
-    if(!_Win32_FindMimeFromData)
+    if (!_Win32_FindMimeFromData)
         return DefaultMimeType;
 
-    if ( NOERROR != _Win32_FindMimeFromData(NULL, NULL, byBuff, nRead, NULL, 0, &szMimeW, 0) )
-    {
+    if (NOERROR != _Win32_FindMimeFromData(NULL, NULL, byBuff, nRead, NULL, 0, &szMimeW, 0)) {
         FreeLibrary(urlMonDll);
         return DefaultMimeType;
     }
 
     std::string result = WstringToUtf8(szMimeW);
-    
-    if(result == "image/x-png")
+
+    if (result == "image/x-png")
         result = "image/png";
-    else if(result == "image/pjpeg")
+    else if (result == "image/pjpeg")
         result = "image/jpeg";
     else if (result == "application/octet-stream") {
         if (byBuff[0] == 'R' && byBuff[1] == 'I' &&byBuff[2] == 'F' &&byBuff[3] == 'F') {
@@ -153,24 +148,24 @@ std::string GetFileMimeType(const std::string fileName)
 bool DirectoryExists(const std::string path)
 {
     DWORD dwFileAttributes = GetFileAttributes(Utf8ToWstring(path).c_str());
-    if(dwFileAttributes != INVALID_FILE_ATTRIBUTES && (dwFileAttributes &
+    if (dwFileAttributes != INVALID_FILE_ATTRIBUTES && (dwFileAttributes &
         FILE_ATTRIBUTE_DIRECTORY)) {
         return true;
     }
     return false;
 }
 
-bool createDirectory(const std::string& path_,unsigned int mode)
+bool createDirectory(const std::string& path_, unsigned int mode)
 {
-     std::string path = path_;
-    if(path.empty()) return false;
-    if ( path[path.length()-1] == '\\' ||  path[path.length()-1] == '/') {
-        path.resize(path.length()-1);
+    std::string path = path_;
+    if (path.empty()) return false;
+    if (path[path.length() - 1] == '\\' || path[path.length() - 1] == '/') {
+        path.resize(path.length() - 1);
     }
     std::wstring wstrFolder = Utf8ToWstring(path);
     //MessageBox(0,wstrFolder.c_str(),0,0);
 
-    DWORD dwAttrib = GetFileAttributes(wstrFolder.c_str()); 
+    DWORD dwAttrib = GetFileAttributes(wstrFolder.c_str());
 
     // already exists ?
     if (dwAttrib != 0xffffffff)
@@ -179,27 +174,23 @@ bool createDirectory(const std::string& path_,unsigned int mode)
     // recursively create from the top down
     char* szPath = _strdup(path.c_str());
     char * p = 0;
-    for(int i=path.length()-1; i>=0; i--)
-    {
-        if(szPath[i] == '\\' || szPath[i] == '/')
-        {
+    for (int i = path.length() - 1; i >= 0; i--) {
+        if (szPath[i] == '\\' || szPath[i] == '/') {
             p = szPath + i;
             break;
         }
     }
-    if (p) 
-    {
+    if (p) {
         // The parent is a dir, not a drive
         *p = '\0';
 
         // if can't create parent
-        if (!createDirectory(szPath))
-        {
+        if (!createDirectory(szPath)) {
             free(szPath);
             return false;
         }
         free(szPath);
-        
+
         if (!::CreateDirectory(wstrFolder.c_str(), NULL)) {
             //LOG(WARNING) << wstrFolder;
             return false;
@@ -212,19 +203,15 @@ bool createDirectory(const std::string& path_,unsigned int mode)
 
 bool copyFile(const std::string& src, const std::string & dest, bool overwrite)
 {
-    return ::CopyFile(Utf8ToWstring(src).c_str(), Utf8ToWstring(dest).c_str(), !overwrite)!=FALSE;
+    return ::CopyFile(Utf8ToWstring(src).c_str(), Utf8ToWstring(dest).c_str(), !overwrite) != FALSE;
 }
 
 bool RemoveFile(const std::string& utf8Filename) {
-    return DeleteFile(IuCoreUtils::Utf8ToWstring(utf8Filename).c_str())!=FALSE;
+    return DeleteFile(IuCoreUtils::Utf8ToWstring(utf8Filename).c_str()) != FALSE;
 }
 
-bool MoveFileOrFolder(const std::string& from ,const std::string& to) {
-    return MoveFile(IuCoreUtils::Utf8ToWstring(from).c_str() ,IuCoreUtils::Utf8ToWstring(to).c_str()) != FALSE;
+bool MoveFileOrFolder(const std::string& from, const std::string& to) {
+    return MoveFile(IuCoreUtils::Utf8ToWstring(from).c_str(), IuCoreUtils::Utf8ToWstring(to).c_str()) != FALSE;
 }
 
 }
-
-
-
-#endif

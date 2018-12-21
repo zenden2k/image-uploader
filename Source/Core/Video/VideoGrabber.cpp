@@ -20,6 +20,9 @@
 
 #include "VideoGrabber.h"
 
+#include <atomic>
+#include <boost/format.hpp>
+
 #include "AbstractFrameGrabber.h"
 #ifdef _WIN32
 #include "DirectshowFrameGrabber.h"
@@ -28,14 +31,12 @@
 #include "AvcodecFrameGrabber.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Logging.h"
-#include <atomic>
 
 class VideoGrabberRunnable {
 public:
     VideoGrabberRunnable(VideoGrabber* videoGrabber)
     {
         videoGrabber_ = videoGrabber;
-        currentGrabber_ = 0;
         canceled_ = false;
         isRunning_ = false;
     }
@@ -47,6 +48,7 @@ public:
     {
         canceled_ = true;
     }
+
     virtual void run()
     {
         isRunning_ = true;
@@ -58,7 +60,7 @@ public:
             isRunning_ = false;
             return;
         }
-        AbstractFrameGrabber* grabber = videoGrabber_->createGrabber();
+        auto grabber = videoGrabber_->createGrabber();
         if ( !grabber ) {
             return;
         }
@@ -67,11 +69,10 @@ public:
             if ( videoGrabber_->onFinished ) {
                 videoGrabber_->onFinished();
             }
-            delete grabber;
             isRunning_ = false;
             return;
         }
-        currentGrabber_ = grabber;
+
         int64_t duration = grabber->duration();
         int64_t step = duration / ( videoGrabber_->frameCount_ + 1 );
         for( int i = 0; i < videoGrabber_->frameCount_; i++ ) {
@@ -79,7 +80,6 @@ public:
                 break;
             }
             int64_t curTime = static_cast<int64_t>(( i + 0.5 ) * step);
-
             
             grabber->seek(curTime);
             AbstractVideoFrame *frame =  grabber->grabCurrentFrame();
@@ -92,18 +92,17 @@ public:
                 continue;
             }
             int64_t SampleTime = frame->getTime();
-            std::string s;
-            char buffer[100];
-            sprintf(buffer,"%02d:%02d:%02d",int(SampleTime / 3600), (int)(long(SampleTime) / 60) % 60,
-                (int)long(long(SampleTime) % 60) );
-            s = buffer;
+            int hours = int(SampleTime / 3600);
+            int minutes = int((long(SampleTime) / 60) % 60);
+            int seconds = int(long(long(SampleTime) % 60));
+            std::string s = str(boost::format("%02d:%02d:%02d") % hours % minutes % seconds);
 
             if ( /*frame && */!videoGrabber_->onFrameGrabbed.empty() ) {
                 videoGrabber_->onFrameGrabbed(s, SampleTime, frame->toImage());
             }
             delete frame;
         }
-        delete grabber;
+        grabber.reset();
         if ( videoGrabber_->onFinished ) {
             videoGrabber_->onFinished();
         }
@@ -117,7 +116,6 @@ public:
 
 protected:
     VideoGrabber* videoGrabber_;
-    AbstractFrameGrabber* currentGrabber_;
     std::atomic<bool> canceled_;
     std::atomic<bool> isRunning_;
 };
@@ -163,17 +161,15 @@ void VideoGrabber::setFrameCount(int frameCount) {
     frameCount_ = frameCount;
 }
 
-AbstractFrameGrabber* VideoGrabber::createGrabber() {
-    AbstractFrameGrabber* grabber = NULL;
+std::unique_ptr<AbstractFrameGrabber> VideoGrabber::createGrabber() {
+    std::unique_ptr<AbstractFrameGrabber> grabber;
     if ( videoEngine_ == veAvcodec ) {
-        return new AvcodecFrameGrabber();
+        grabber.reset(new AvcodecFrameGrabber());
     }
 #ifdef _WIN32
     else {
-        grabber = new DirectshowFrameGrabber();
+        grabber.reset(new DirectshowFrameGrabber());
     }
-#else
-
 #endif
     return grabber;
 }

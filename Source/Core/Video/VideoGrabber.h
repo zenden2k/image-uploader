@@ -25,7 +25,7 @@ public:
 private:
     std::string fileName_;
     //void _frameGrabbed(const std::string& fileName, AbstractImage image);
-    AbstractFrameGrabber* createGrabber();
+    std::unique_ptr<AbstractFrameGrabber> createGrabber();
     VideoEngine videoEngine_;
     int frameCount_;
     friend class VideoGrabberRunnable;

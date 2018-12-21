@@ -15,3 +15,9 @@ TEST_F(StringUtilsTest, LenghtOfUtf8String)
     EXPECT_EQ(0, LengthOfUtf8String(""));
 }
 
+TEST_F(StringUtilsTest, stricmp)
+{
+    EXPECT_EQ(0, IuStringUtils::stricmp("Hello world", "hello world"));
+    EXPECT_GT(IuStringUtils::stricmp("Yandex", "google"), 0);
+    EXPECT_LT(IuStringUtils::stricmp("some string", "test"), 0);
+}

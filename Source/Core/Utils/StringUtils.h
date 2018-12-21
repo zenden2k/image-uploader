@@ -40,6 +40,7 @@ namespace IuStringUtils
     //  ignoring the case of the characters. It returns an integer less than, 
     //     equal to, or greater than zero if s1 is found, respectively, to be less than, 
     //     to match, or be greater than s2.
+    // IT WORKS ONLY WITH ANSI STRINGS!
     int stricmp(const char *s1, const char *s2);
     std::string ConvertUnixLineEndingsToWindows(const std::string& text);
     size_t LengthOfUtf8String(const std::string &utf8_string);

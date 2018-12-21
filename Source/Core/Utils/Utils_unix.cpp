@@ -17,8 +17,8 @@
     limitations under the License.
 
 */
-#ifndef _CORE_UTILS_UTILS_UNIX_H_
-#define _CORE_UTILS_UTILS_UNIX_H_
+
+#include "CoreUtils.h"
 
 #include <stdio.h>
 #include <errno.h>
@@ -199,5 +199,3 @@ bool DirectoryExists(const std::string path)
 }
 
 }
-
-#endif  // _CORE_UTILS_UTILS_UNIX_H_

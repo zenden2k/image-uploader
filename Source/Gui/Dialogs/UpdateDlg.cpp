@@ -26,6 +26,7 @@
 #include "Core/Settings.h"
 #include "Func/WinUtils.h"
 #include "Core/AppParams.h"
+#include "Core/Network/NetworkClientFactory.h"
 
 // CUpdateDlg
 
@@ -41,7 +42,7 @@ bool CanWriteToFolder(const CString& folder)
     return true;
 }
 
-CUpdateDlg::CUpdateDlg() :m_UpdateManager(AppParams::instance()->tempDirectoryW())
+CUpdateDlg::CUpdateDlg() :m_UpdateManager(std::make_shared<NetworkClientFactory>(), AppParams::instance()->tempDirectoryW())
 {
     m_UpdateCallback = NULL;
     m_Checked = false;

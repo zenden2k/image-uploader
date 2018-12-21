@@ -25,6 +25,8 @@
 #include <algorithm>
 #ifdef _WIN32
 #include <windows.h>
+#else
+#include <strings.h>
 #endif
 #include <utf8/unchecked.h>
 
@@ -89,9 +91,10 @@ int stricmp(const char* s1, const char* s2)
 #ifdef _WIN32
     return lstrcmpiA(s1, s2);
 #else 
-    for (; *s1 && *s2 && (toupper((unsigned char)*s1) == toupper((unsigned char)*s2)); ++s1, ++s2)
+    return strcasecmp(s1, s2);
+    /*for (; *s1 && *s2 && (toupper((unsigned char)*s1) == toupper((unsigned char)*s2)); ++s1, ++s2)
         ;
-    return *s1 - *s2;
+    return *s1 - *s2;*/
 #endif
 }
 

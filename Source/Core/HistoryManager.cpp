@@ -52,7 +52,6 @@ CHistoryManager::~CHistoryManager()
 void CHistoryManager::setHistoryDirectory(const std::string& directory) {
     m_historyFilePath = directory;
     IuCoreUtils::createDirectory(m_historyFilePath);
-    makeFileName();
 }
 
 void CHistoryManager::setHistoryFileName(const std::string& filepath, const std::string& nameprefix)
@@ -217,13 +216,13 @@ time_t CHistorySession::timeStamp() const
     return m_timeStamp;
 }
 
-std::string CHistoryManager::makeFileName() const
+/*std::string CHistoryManager::makeFileName() const
 {
     time_t t = time(0);
     tm * timeinfo = localtime(&t);
     std::string fileName = m_historyFilePath + m_historyFileNamePrefix +"_" + IuCoreUtils::toString(1900+timeinfo->tm_year)+"_" + IuCoreUtils::toString(timeinfo->tm_mon+1) + ".xml";
     return fileName;
-}
+}*/
 
 bool CHistoryManager::clearHistory(HistoryClearPeriod period) {
     IuCoreUtils::ZGlobalMutex mutex("IuHistoryFileSessionMutex");
@@ -278,7 +277,6 @@ CHistorySession* CHistoryReader::getSession(size_t index)
     return &d_ptr->m_sessions[index];
 }
 
-// filename must be utf-8 encoded
 bool CHistoryReader::loadFromFile(const std::string& filename)
 {
     if(IuCoreUtils::FileExists(filename))

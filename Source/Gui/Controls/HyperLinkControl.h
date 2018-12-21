@@ -83,7 +83,7 @@ public:
     size_t ItemCount() const;
     CString GetItemTitle(size_t item) const;
     CString GetItemDescription(size_t item) const;
-    CRect GetItemRect(int itemIndex) const;
+    CRect GetItemRect(size_t itemIndex) const;
     int SelectedIndex() const;
     int ItemFromPoint(POINT pt) const;
     int ScaleX(int x);

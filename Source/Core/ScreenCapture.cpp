@@ -26,8 +26,6 @@
 
 #include <Dwmapi.h>
 #include "atlheaders.h"
-#include "Func/common.h"
-#include "Func/MyUtils.h"
 #include "Func/WinUtils.h"
 #include "resource.h"
 #include "Core/Images/Utils.h"

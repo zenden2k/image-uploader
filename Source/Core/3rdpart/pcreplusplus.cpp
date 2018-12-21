@@ -392,7 +392,7 @@ vector<string> Pcre::_split(const string& piece, int limit, int start_offset, in
     string buffer, _delimiter, _piece;
     char z;
     if(case_t) {
-      z = toupper(_expression[0]);
+      z = static_cast<char>(toupper(_expression[0]));
       for(size_t pos=0; pos < piece.length(); pos++) {
     _piece += (char)toupper(piece[pos]);
       }

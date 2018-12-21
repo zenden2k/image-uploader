@@ -2,10 +2,12 @@
 #define IU_CORE_DEFAULTPROXYPROVIDER_H
 
 #include "atlheaders.h"
-#include "Core/Network/NetworkClient.h"
 #include <Winhttp.h>
 
-class DefaultProxyProvider : public NetworkClient::ProxyProvider {
+#include "Core/Utils/CoreTypes.h"
+#include "Core/Network/INetworkClient.h"
+
+class DefaultProxyProvider : public INetworkClient::ProxyProvider {
 public:
     DefaultProxyProvider();
     ~DefaultProxyProvider();
@@ -19,5 +21,6 @@ protected:
     std::string extractProxyForUrlFromList(const std::string& list, const std::string& url);
     bool obtainProxyConfig();
     CString proxyForUrlErrorToString(DWORD errorCode) const;
+    DISALLOW_COPY_AND_ASSIGN(DefaultProxyProvider);
 };
 #endif

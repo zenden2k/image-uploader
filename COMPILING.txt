@@ -62,6 +62,8 @@ base64          https://github.com/aklomp/base64
 
 UTF8-CPP        http://utfcpp.sourceforge.net/ 
 
+DirectShow BaseClasses (strmbasd.lib, strmbase.lib) - part of Windows SDK
+
 Libraries for building Mega.nz:
 
 Mega SDK        https://github.com/meganz/sdk
@@ -75,14 +77,6 @@ libuv           https://github.com/libuv/libuv
 Libraries for building tests:
 
 Google Mock     https://github.com/abseil/googletest
-
-
-If you want to compile strmbase.lib by yourself you will need:
-
-DirectX 8 SDK
-
-DirectShow BaseClasses
-
 
 
 ============  Building console utility (imgupload) on Ubuntu ============
