@@ -21,10 +21,6 @@
 #include "AdvancedUploadEngine.h"
 
 #include "Core/Upload/ServerSync.h"
-#include "Core/ThreadSync.h"
-#include <thread>
-#include <unordered_map>
-#include "ScriptUploadEngine.h"
 
 CAdvancedUploadEngine::CAdvancedUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings) : 
                             CAbstractUploadEngine(serverSync), 

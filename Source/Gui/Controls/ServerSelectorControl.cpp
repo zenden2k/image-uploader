@@ -669,7 +669,7 @@ int CServerSelectorControl::showPopup(HWND parent, POINT pt)
     SetWindowPos(0, pt.x, pt.y, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER|SWP_NOSIZE);
     ShowWindow(SW_SHOWNOACTIVATE);
 
-    BOOL bMenuDestroyed(FALSE);
+    //BOOL bMenuDestroyed(FALSE);
     HWND hwndOwner = GetWindow(GW_OWNER);
     HWND hwndPopup = m_hWnd;
     // We want to receive all mouse messages, but since only the active
@@ -817,7 +817,8 @@ int CServerSelectorControl::showPopup(HWND parent, POINT pt)
     }
 
 
-    if (!bMenuDestroyed) DestroyWindow();
+    //if (!bMenuDestroyed)
+    DestroyWindow();
 
     return nRet;
 }

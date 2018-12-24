@@ -32,6 +32,13 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
     font_ = 0;
     textRenderingHint_ = Gdiplus::TextRenderingHintAntiAlias;
     oldSelectedBm_ = nullptr;
+    itemMargin_ = 0;
+    itemHorPadding_ = 0;
+    itemVertPadding_ = 0;
+    iconSizeX_ = 0;
+    iconSizeY_ = 0;
+    subpanelHeight_ = 0;
+    subpanelLeftOffset_ = 0;
 }
 
 Toolbar::~Toolbar()
@@ -312,11 +319,7 @@ LRESULT Toolbar::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
     if (  oldSelectedIndex != selectedItemIndex_  ) {
         if ( selectedItemIndex_ != -1 ) {
             buttons_[selectedItemIndex_].state = isHover;
-            if ( selectedItemIndex_ != -1 ) {
-                buttons_[selectedItemIndex_].state = isHover;
-                InvalidateRect(&buttons_[selectedItemIndex_].rect, false);
-                //Invalidate();
-            }
+            InvalidateRect(&buttons_[selectedItemIndex_].rect, false);  
         }
         if ( oldSelectedIndex != -1 ) {
             buttons_[oldSelectedIndex].state = isNormal;
@@ -512,40 +515,35 @@ SIZE Toolbar::CalcItemSize(int index)
     return res;
 }
 
-
 int Toolbar::AutoSize()
 {
     int x = itemMargin_;
     int y = itemMargin_;
     int width = 0;
     int height = 0;
-    for ( int j = 0; j < 1; j ++ ) {
-        x = itemMargin_;
-        y = itemMargin_;
-        for (size_t i = 0; i < buttons_.size(); i++) {
-            SIZE s = CalcItemSize(i);
-            Item& item = buttons_[i];
-            RectF bounds(static_cast<Gdiplus::REAL>(x), static_cast<Gdiplus::REAL>(y), float(s.cx), float(s.cy));
-            item.rect.left = x;
-            item.rect.top = y;
-            item.rect.right = s.cx + x;
-            item.rect.bottom = s.cy + y;
+    for (size_t i = 0; i < buttons_.size(); i++) {
+        SIZE s = CalcItemSize(i);
+        Item& item = buttons_[i];
+        RectF bounds(static_cast<Gdiplus::REAL>(x), static_cast<Gdiplus::REAL>(y), float(s.cx), float(s.cy));
+        item.rect.left = x;
+        item.rect.top = y;
+        item.rect.right = s.cx + x;
+        item.rect.bottom = s.cy + y;
 
-            if ( orientation_ == orHorizontal ) {
-                x+= s.cx + itemMargin_;
-                width = std::max<int>(x, subpanelLeftOffset_ + static_cast<int>((kSubpanelWidth + 20 )*dpiScaleX_));
-                height = std::max<int>(s.cy + itemMargin_*2, height);
-            } else {
-                y+= s.cy + itemMargin_;
-                height = y;
-                width = std::max<int>(s.cx+itemMargin_*2, width);
-            }
+        if (orientation_ == orHorizontal) {
+            x += s.cx + itemMargin_;
+            width = std::max<int>(x, subpanelLeftOffset_ + static_cast<int>((kSubpanelWidth + 20) * dpiScaleX_));
+            height = std::max<int>(s.cy + itemMargin_ * 2, height);
         }
-        if ( j == 0 ) {
-            SetWindowPos(0, 0,0,width,height,SWP_NOMOVE|SWP_NOZORDER);
+        else {
+            y += s.cy + itemMargin_;
+            height = y;
+            width = std::max<int>(s.cx + itemMargin_ * 2, width);
         }
     }
 
+    SetWindowPos(0, 0, 0, width, height,SWP_NOMOVE | SWP_NOZORDER);
+        
     GetClientRect(&buttonsRect_);
 
     if ( orientation_ == orHorizontal ) {

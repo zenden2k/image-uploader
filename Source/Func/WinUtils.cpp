@@ -650,7 +650,7 @@ bool IsElevated()
         &hToken ) )
     {
         ATLASSERT( FALSE );
-        return hResult!=0;
+        return true;
     }
 
     TOKEN_ELEVATION te = { 0 };

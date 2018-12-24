@@ -29,8 +29,7 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/CryptoUtils.h"
 #include "Utils/GlobalMutex.h"
-
-#include <Core/3rdpart/pcreplusplus.h>
+#include "Core/3rdpart/pcreplusplus.h"
 
 class CHistoryReader_impl
 {

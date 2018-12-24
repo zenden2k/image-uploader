@@ -65,7 +65,10 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
 
     currentTask_ = task;
     if (task->type() == UploadTask::TypeFile ) {
-        FileName = (dynamic_cast<FileUploadTask*>(task.get()))->getFileName();
+        FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());
+        if (fileTask) {
+            FileName = fileTask->getFileName();
+        }
     }
     CFolderItem parent;
 
@@ -122,7 +125,7 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
             std::string url = urlShorteningTask->getUrl();
             /*SharedPtr<int> ivalPtr*/ival = ScriptAPI::GetValue(func.Evaluate<int>(url.c_str(), &params));
             if ( ival > 0 ) {
-                ival = ival && !params.DirectUrl.empty();
+                ival = !params.DirectUrl.empty();
             }
         }
     }

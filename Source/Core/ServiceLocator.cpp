@@ -16,6 +16,7 @@ public:
         translator_ = nullptr;
         uploadManager_ = nullptr;
         myEngineList_ = nullptr;
+        dispatcher_ = nullptr;
     }
     CUploadEngineListBase* engineList_;
     CHistoryManager historyManager;

@@ -6,7 +6,11 @@
 // Includes
 
 #include <cmath>
+#include <boost/format.hpp>
+
 #include "parser.h"
+
+
 using namespace std;
 // Defines
 // operations...
@@ -49,15 +53,14 @@ TParserNode *TParser::CreateNode(double _value, TParserNode *_left, TParserNode 
 
 void TParser::SendError(int errNum)
 {
-   static char *errs[7] = { NULL,
-                            NULL,
+   std::string errs[7] = { "",
+                            "",
                             "Unexpected end of expression",
                             "End of expression expected",
                             "'(' or '[' expected",
                             "')' or ']' expected",
-                            NULL
+                            ""
                          };
-   static char buffer[80];
    
    int len = strlen(curToken);
    
@@ -67,18 +70,15 @@ void TParser::SendError(int errNum)
    switch(errNum)
    {
       case 0:
-         sprintf(buffer, "Unknown keyword: '%s'", curToken);
-         errs[0] = buffer;
+         errs[0] = str(boost::format("Unknown keyword: '%s'") % curToken);
          break;
 
       case 1:
-         sprintf(buffer, "Unknown symbol: '%s'", curToken);
-         errs[1] = buffer;
+         errs[1] = str(boost::format("Unknown symbol : '%s'") % curToken);
          break;
 
       case 6:
-         sprintf(buffer, "Unexpected '%s'", curToken);
-         errs[6] = buffer;
+         errs[6] = str(boost::format("Unexpected '%s'") % curToken);
          break;
    }
 
@@ -91,8 +91,6 @@ void TParser::SendError(int errNum)
    root = NULL;
 
    throw error;
-
-   return;
 }
    
 bool TParser::GetToken(void)

@@ -25,7 +25,7 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Controls/myimage.h"
-#include <Gui/Controls/ServerSelectorControl.h>
+#include "Gui/Controls/ServerSelectorControl.h"
 #include <memory>
 
 class FileUploadTask;

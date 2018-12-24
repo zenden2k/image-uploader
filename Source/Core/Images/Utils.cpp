@@ -946,6 +946,9 @@ short GetImageOrientation(Image* img) {
 
     if (totalBufferSize) {
         PropertyItem* all_items = (PropertyItem*)malloc(totalBufferSize);
+        if (!all_items) {
+            return orient;
+        }
         img->GetAllPropertyItems(totalBufferSize, numProperties, all_items);
 
         for (UINT j = 0; j < numProperties; ++j) {

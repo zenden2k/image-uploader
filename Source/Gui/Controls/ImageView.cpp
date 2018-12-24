@@ -95,11 +95,11 @@ bool CImageView::ViewImage(const CImageViewItem& item, HWND Parent){
         if (realwidth < 200) realwidth = 200;
         if (realheight < 180) realheight = 180;
         //ShowWindow(SW_HIDE);
-        if (realwidth && realheight) {
-            //MoveWindow(0, 0, realwidth, realheight);
-            Img.MoveWindow(0, 0, realwidth, realheight);
-            Img.LoadImage(item.fileName, img.get());
-        }
+
+        //MoveWindow(0, 0, realwidth, realheight);
+        Img.MoveWindow(0, 0, realwidth, realheight);
+        Img.LoadImage(item.fileName, img.get());
+        
         currentParent_ = Parent;
         MyCenterWindow(Parent, realwidth, realheight);
         if (!IsWindowVisible()) {

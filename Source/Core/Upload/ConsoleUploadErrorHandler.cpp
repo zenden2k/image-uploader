@@ -4,14 +4,6 @@ ConsoleUploadErrorHandler::ConsoleUploadErrorHandler() {
 }
 
 void ConsoleUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo) {
-    /*std::cerr<<"---------------------"<<std::endl;
-        if(ei.errorType == etUserError)
-        {
-        std::cerr<<"Error: "<<ei.error<<std::endl;
-        }
-        else std::cerr<<"Unknown error!"<<std::endl;
-        std::cerr<<"---------------------"<<std::endl;*/
-
     std::string errorMsg;
 
     std::string infoText;

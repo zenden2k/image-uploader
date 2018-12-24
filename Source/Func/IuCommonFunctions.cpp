@@ -7,7 +7,7 @@
 #include "Core/Utils/CoreUtils.h"
 #include "3rdpart/Registry.h"
 #include "Core/Utils/CryptoUtils.h"
-#include <Core/AppParams.h>
+#include "Core/AppParams.h"
 
 namespace IuCommonFunctions {
      //CString IUTempFolder;

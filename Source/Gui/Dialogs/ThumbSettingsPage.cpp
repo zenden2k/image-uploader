@@ -229,21 +229,29 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
     Bitmap *toUse = bm->Clone(0,300, bm->GetWidth(), bm->GetHeight()-300, PixelFormatDontCare);
     GdiPlusImage source(toUse);
     std::shared_ptr<AbstractImage> result = conv.createThumbnail(&source,  50 * 1024, 1);
-    if(result)    
-        img.LoadImage(0, dynamic_cast<GdiPlusImage*>(result.get())->getBitmap());
+    if (result) {
+        GdiPlusImage* resultImg = dynamic_cast<GdiPlusImage*>(result.get());
+        if (resultImg) {
+            img.LoadImage(0, resultImg->getBitmap());
+        }
+    }
 
     //delete toUse;
 }
 
 bool CThumbSettingsPage::CreateNewThumbnail() {
     std::string fileName = getSelectedThumbnailFileName();
-    if (fileName.empty())
+    if (fileName.empty()) {
         return false;
+    }
     std::string newName = IuCoreUtils::ExtractFileNameNoExt(fileName) + "_copy";
+    
     CInputDialog dlg(TR("Creating new thumbnail preset"), TR("Enter new thumbnail preset name:"), Utf8ToWCstring(newName));
     if (dlg.DoModal() == IDOK) {
         newName = WCstringToUtf8(dlg.getValue());
-    } else return 0;
+    } else {
+        return 0;
+    }
     std::string srcFolder = IuCoreUtils::ExtractFilePath(fileName) + "/";
     std::string destination = srcFolder + newName + ".xml";
     if (IuCoreUtils::FileExists(destination)) {
@@ -252,7 +260,6 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
     }
     Thumbnail * thumb = 0;
     if (thumb_cache_.count(fileName)) {
-
         thumb = thumb_cache_[fileName];
     } else {
         thumb = new Thumbnail();

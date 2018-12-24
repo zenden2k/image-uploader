@@ -37,7 +37,7 @@
 #define ID_OPENINBROWSER 10002
 #define ID_CREATENESTEDFOLDER 10003
 #include <atomic>
-#include <Core/Upload/AdvancedUploadEngine.h>
+#include "Core/Upload/AdvancedUploadEngine.h"
 
 class UploadEngineManager;
 class ServerProfile;

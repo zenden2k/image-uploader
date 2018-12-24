@@ -26,7 +26,7 @@ limitations under the License.
 //
 #include <string>
 #include <memory>
-#include <Core/Utils/CoreTypes.h>
+#include "Core/Utils/CoreTypes.h"
 #include "Core/3rdpart/fastdelegate.h"
 
 typedef void CURL;

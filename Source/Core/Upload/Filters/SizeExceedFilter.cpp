@@ -14,6 +14,9 @@ SizeExceedFilter::SizeExceedFilter(CUploadEngineList* engineList, UploadEngineMa
 bool SizeExceedFilter::PreUpload(UploadTask* task) {
     if (task->type() == UploadTask::TypeFile) {
         FileUploadTask * fileTask = dynamic_cast<FileUploadTask*>(task);
+        if (!fileTask) {
+            return true;
+        }
         CUploadEngineData* ue = fileTask->serverProfile().uploadEngineData();
         if (ue) {
             if (ue->MaxFileSize && fileTask->getFileSize() > ue->MaxFileSize) {

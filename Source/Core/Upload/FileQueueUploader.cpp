@@ -22,12 +22,6 @@
 #include "FileQueueUploader.h"
 
 #include "Core/Upload/UploadTask.h"
-
-/*#ifndef IU_CLI
-    #include "Gui/Dialogs/LogWindow.h"
-#endif*/
-//#include "Core/Upload/Uploader.h"
-
 #include "FileQueueUploaderPrivate.h"
 /* public CFileQueueUploader class */
 

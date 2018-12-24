@@ -20,14 +20,15 @@
 
 #include "MainDlg.h"
 
+#include <boost/format.hpp>
+#include <shlobj.h>
+
 #include "atlheaders.h"
 #include "Core/Settings.h"
 #include "Func/CmdLine.h"
 #include "Func/SystemUtils.h"
 #include "Func/WinUtils.h"
 #include "Func/Myutils.h"
-#include "Gui/GuiTools.h"
-#include "Core/Utils/DesktopUtils.h"
 #include "ImageEditor/Gui/ImageEditorWindow.h"
 #include "Func/ImageEditorConfigurationProvider.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
@@ -36,9 +37,7 @@
 #include "Func/IuCommonFunctions.h"
 #include "Core/SearchByImage.h"
 #include "3rdpart/ShellPidl.h"
-#include <boost/format.hpp>
-#include <shlobj.h>
-#include <Gui/Components/MyFileDialog.h>
+#include "Gui/Components/MyFileDialog.h"
 
 CMainDlg::CMainDlg():
     m_EditorProcess(nullptr),

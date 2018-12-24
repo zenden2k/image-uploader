@@ -61,7 +61,7 @@
 #include "Gui/Win7JumpList.h"
 #include "Core/AppParams.h"
 #include "Gui/Components/MyFileDialog.h"
-#include <Core/ScreenCapture/Utils.h>
+#include "Core/ScreenCapture/Utils.h"
 
 using namespace Gdiplus;
 namespace
@@ -481,16 +481,13 @@ BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
                 return FALSE;
         }
         
-        if(VK_BACK == pMsg->wParam)
+        if (VK_BACK == pMsg->wParam && Pages[CurPage] && GetForegroundWindow() == m_hWnd && lstrcmpi(Buffer, _T("Edit")))
         {
-            if(Pages[CurPage] && VK_BACK == pMsg->wParam  && GetForegroundWindow() == m_hWnd && lstrcmpi(Buffer,_T("Edit") ))
-            {
-                if(pMsg->message==WM_KEYDOWN && ::IsWindowEnabled(GetDlgItem(IDC_PREV)))
-                { 
-                    OnPrevBnClicked(0,0,0); 
-                    return TRUE;
-                }
+            if (pMsg->message == WM_KEYDOWN && ::IsWindowEnabled(GetDlgItem(IDC_PREV))) {
+                OnPrevBnClicked(0, 0, 0);
+                return TRUE;
             }
+            
         }
     }
 
@@ -1391,21 +1388,19 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
         CreatePage(wpMainPage);
         do
         {
+            FileName = (FileName) ? fd.GetNextFileName() : fd.GetFirstFileName();
+            if (!FileName) break;
+            fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
 
-        FileName = (FileName) ? fd.GetNextFileName() : fd.GetFirstFileName();
-        if (!FileName) break;
-        fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
+            if(Buffer[lstrlen(Buffer)-1] != '\\')
+            lstrcat(Buffer, _T("\\"));
 
-        if(Buffer[lstrlen(Buffer)-1] != '\\')
-        lstrcat(Buffer, _T("\\"));
 
-        if (FileName)
-        {
-        lstrcat(Buffer, FileName);
-        if (((CMainDlg*)Pages[2])->AddToFileList(Buffer))
-        nCount++;
-        }
-        } while (FileName);
+            lstrcat(Buffer, FileName);
+            if (((CMainDlg*)Pages[2])->AddToFileList(Buffer))
+            nCount++;
+        
+        } while (true);
 
 
         fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));

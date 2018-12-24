@@ -291,7 +291,7 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     assert(image);
     assert(thumbnailTemplate_);
     const Thumbnail::ThumbnailData* data = thumbnailTemplate_->getData();
-    CDC dc = ::GetDC(0);
+    CWindowDC dc(nullptr);
     int newwidth = image->getWidth();
     int newheight = image->getHeight();
     //int64_t FileSize = IuCoreUtils::getFileSize(sourceFile_);

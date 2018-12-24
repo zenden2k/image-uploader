@@ -382,8 +382,7 @@ bool CAddDirectoryServerDialog::LoadComputerAddresses()
             }else {
 
         }
-        if (pAdapterInfo)
-            FREE(pAdapterInfo);
+        FREE(pAdapterInfo);
     }
 
     TCHAR computerName[1024]=L"";

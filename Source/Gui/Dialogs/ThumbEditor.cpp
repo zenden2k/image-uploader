@@ -27,6 +27,7 @@
 CThumbEditor::CThumbEditor(Thumbnail *thumb)
 {
     thumb_ = thumb;
+    memset(&ThumbFont, 0, sizeof(ThumbFont));
 }
 
 CThumbEditor::~CThumbEditor()

@@ -171,6 +171,7 @@ CShellPidl::CShellPidl(LPCITEMIDLIST pidlParent, LPCITEMIDLIST pidlRel)
 
 CShellPidl::CShellPidl(UINT nSpecialFolder, HWND hOwner)
 {
+    m_pMalloc = nullptr;
     SHGetSpecialFolderLocation(hOwner, nSpecialFolder, &m_pObj);
 }
 

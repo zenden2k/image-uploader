@@ -1,6 +1,8 @@
 #include "SearchYandexImages.h"
 
-#include <Core/Network/NetworkClient.h>
+#include <assert.h>  
+
+#include "Core/Network/NetworkClient.h"
 #include "Core/Upload/UploadManager.h"
 #include "CoreFunctions.h"
 #include "Utils/CryptoUtils.h"
@@ -8,7 +10,7 @@
 #include "Upload/FileUploadTask.h"
 #include "Core/Settings.h"
 #include "ServiceLocator.h"
-#include <assert.h>  
+
 
 SearchYandexImages::SearchYandexImages(const std::string& fileName) :SearchByImage(fileName) {
     uploadFinished_ = false;

@@ -38,6 +38,9 @@ struct LoginInfo
 {
     std::string Login, Password, Cookies;
     bool DoAuth;
+    LoginInfo() {
+        DoAuth = false;
+    }
 };
 
 struct ActionVariable

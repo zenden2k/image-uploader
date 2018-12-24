@@ -43,15 +43,14 @@ LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
     if ( canvas_ ) {
         RECT updateRect = dc.m_ps.rcPaint;
         canvas_->render( dc, updateRect, pt,  size);
-    }
-    
-    int rightMargin = canvas_->getWidth() - pt.x;
-    int bottomMargin = canvas_->getHeigth()-pt.y;
-    RECT rightRect = {rightMargin, 0, clientRect.right,bottomMargin};
-    dc.FillRect(&rightRect, backgroundBrush_);
-    RECT bottomRect = {0, bottomMargin, clientRect.right, clientRect.bottom};
-    dc.FillRect(&bottomRect, backgroundBrush_);
 
+        int rightMargin = canvas_->getWidth() - pt.x;
+        int bottomMargin = canvas_->getHeigth()-pt.y;
+        RECT rightRect = {rightMargin, 0, clientRect.right,bottomMargin};
+        dc.FillRect(&rightRect, backgroundBrush_);
+        RECT bottomRect = {0, bottomMargin, clientRect.right, clientRect.bottom};
+        dc.FillRect(&bottomRect, backgroundBrush_);
+    }
     return 0;
 }
 
@@ -124,7 +123,7 @@ LRESULT CImageEditorView::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     cy += ptScroll.y;
     POINT pt = {cx, cy};
     RECT canvasRect = {0,0, canvas_->getWidth(), canvas_->getHeigth()};
-    if ( mouseDown_ || PtInRect(&canvasRect, pt) ){
+    if ( PtInRect(&canvasRect, pt) ){
         canvas_->mouseUp( 0, cx, cy );
     }
     ReleaseCapture();

@@ -26,15 +26,14 @@
 #include "Gui/Dialogs/LogWindow.h"
 #include "Func/LangClass.h"
 #include "Gui/GuiTools.h"
-#define THUMBNAIL_WIDTH 170   // constants
-#define THUMBNAIL_HEIGHT 120
 #include "Func/WinUtils.h"
 #include "Func/myutils.h"
-#include <Core/ServiceLocator.h>
+#include "Core/ServiceLocator.h"
 #include "Core/Images/Utils.h"
 #include <Func/IuCommonFunctions.h>
 
-bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
+#define THUMBNAIL_WIDTH 170   // constants
+#define THUMBNAIL_HEIGHT 120
 
 // CThumbsView
 CThumbsView::CThumbsView() :deletePhysicalFiles_(false)

@@ -46,6 +46,16 @@ struct ThumbCreatingParams
     uint32_t BackgroundColor;
     EnumWrapper<ThumbFormatEnum> Format;
     ThumbResizeEnum ResizeMode;
+
+    ThumbCreatingParams() {
+        Quality = 95;
+        Size = 0;
+        DrawFrame = true;
+        AddImageSize = true;
+        BackgroundColor = 0;
+        Format = tfPNG;
+        ResizeMode = trByWidth; 
+    }
 };
 
 class ImageConverterPrivate;

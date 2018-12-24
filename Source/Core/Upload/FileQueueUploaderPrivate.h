@@ -2,11 +2,12 @@
 #define IU_CORE_UPLOAD_FILEQUEUEUPLOADERPRIVATE_H
 
 #pragma once
+#include <mutex>
 #include "UploadTask.h"
 #include "FileQueueUploader.h"
 #include "ServerSync.h"
-#include <mutex>
-#include <Core/Scripting/ScriptsManager.h>
+
+#include "Core/Scripting/ScriptsManager.h"
 #include "Core/Upload/UploadErrorHandler.h"
 
 class CUploader;

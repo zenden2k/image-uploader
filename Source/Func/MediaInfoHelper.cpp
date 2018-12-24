@@ -20,13 +20,15 @@
 
 #include "MediaInfoHelper.h"
 
+#include <boost/lexical_cast.hpp>
+
 #include "Core/CommonDefs.h"
 #include "Core/3rdpart/MediaInfoDLL.h"
 #include "LangClass.h"
 #include "WinUtils.h"
-#include <boost/lexical_cast.hpp>
-#include <Core/AppParams.h>
-#include <Core/ServiceLocator.h>
+
+#include "Core/AppParams.h"
+#include "Core/ServiceLocator.h"
 
 namespace MediaInfoHelper {
 

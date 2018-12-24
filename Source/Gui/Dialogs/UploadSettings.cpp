@@ -32,7 +32,7 @@
 #include "Func/IuCommonFunctions.h"
 #include "AddFtpServerDialog.h"
 #include "AddDirectoryServerDIalog.h"
-#include <Gui/Controls/ServerSelectorControl.h>
+#include "Gui/Controls/ServerSelectorControl.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "LoginDlg.h"
 #include "Core/ServiceLocator.h"

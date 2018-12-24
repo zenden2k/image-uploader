@@ -352,7 +352,7 @@ public:
     BOOL GetToolBar()
     {
         ATLASSERT(m_pBrowser);
-        VARIANT_BOOL bResult;
+        int bResult;
         m_pBrowser->get_ToolBar(&bResult);
         return bResult ? TRUE : FALSE;
     }
