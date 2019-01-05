@@ -292,7 +292,12 @@ LRESULT CFloatingWindow::OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, 
     if (IsClipboardFormatAvailable(CF_UNICODETEXT)) {
         CString url;
         WinUtils::GetClipboardText(url);
-
+        CString outFileName;
+        if (ImageUtils::SaveImageFromCliboardDataUriFormat(url, outFileName)) {
+            CString fileName = WinUtils::myExtractFileName(outFileName);
+            UploadScreenshot(outFileName, fileName);
+            return true;
+        }
         if (!url.IsEmpty() && WebUtils::DoesTextLookLikeUrl(url)) {
             CImageDownloaderDlg dlg(nullptr, url);
             dlg.EmulateModal(m_hWnd);
@@ -446,6 +451,9 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
             if (IsClipboardFormatAvailable(CF_UNICODETEXT)) {
                 CString url;
                 urlInClipboard = WinUtils::GetClipboardText(url) && WebUtils::DoesTextLookLikeUrl(url);
+                if (url.Left(5) == _T("data:")) {
+                    isBitmapInClipboard = true;
+                }
             }
             //CloseClipboard();
         }

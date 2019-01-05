@@ -52,7 +52,7 @@ Size AdaptProportionalSize(const Size& szMax, const Size& szReal);
 std::unique_ptr<Bitmap> BitmapFromMemory(unsigned char* data, unsigned size);
 bool CopyBitmapToClipboardInDataUriFormat(Bitmap* bm, int Format, int Quality, bool html = false);
 bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int Quality, bool html);
-
+bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& fileName);
 // Load image from file with webp support
 std::unique_ptr<Bitmap> LoadImageFromFileExtended(const CString& fileName);
 CString GdiplusStatusToString(Gdiplus::Status statusID);

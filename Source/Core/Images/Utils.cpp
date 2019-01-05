@@ -1539,4 +1539,69 @@ ImageInfo GetImageInfo(const wchar_t* fileName) {
     return res;
 }
 
+bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& fileName) {
+    if (clipboardText.Left(5) != _T("data:")) {
+        return false;
+    }
+    int commaPos = clipboardText.Find(_T(","), 5);
+    if (commaPos == -1) {
+        return false;
+    }
+    CString mediaType = clipboardText.Mid(5, commaPos - 5);
+    int startPos = 0;
+    bool base64 = false;
+    CString contentType = "text/plain";
+    while (startPos != -1) {
+        CString token = mediaType.Tokenize(_T(";"), startPos);
+        if (!token.IsEmpty() && token.Find(_T("=")) == -1) {
+            if (token == _T("base64")) {
+                base64 = true;
+            } else {
+                contentType = token;
+            }
+        }
+    }
+    if (!base64 || contentType.Left(6) != _T("image/")) {
+        return false;
+    }
+    std::string encodedImg = W2U(clipboardText.Right(clipboardText.GetLength() - commaPos - 1));
+    if (encodedImg.empty()) {
+        return false;
+    }
+    try {
+        size_t outLen = 0;
+        size_t bufferLen = encodedImg.length() * 3 / 4;
+        if (!bufferLen) {
+            return false;
+        }
+        char* decodedImg = new char[bufferLen];
+        base64_decode(encodedImg.data(), encodedImg.length(), decodedImg, &outLen, 0);
+        if (!outLen) {
+            delete[] decodedImg;
+            return false;
+        }
+        CString tempDirectory = AppParams::instance()->tempDirectoryW();
+        CString extension = U2W(IuCoreUtils::GetDefaultExtensionForMimeType(W2U(contentType)));
+        if (extension.IsEmpty()) {
+            extension = _T("dat");
+        }
+        CString outFilename = WinUtils::GetUniqFileName(tempDirectory + _T("clipboard.") + extension);
+        FILE* outFile = IuCoreUtils::fopen_utf8(W2U(outFilename).c_str(), "wb");
+        if (!outFile) {
+            delete[] decodedImg;
+            return false;
+        }
+        size_t bytesWritten = fwrite(decodedImg, 1, outLen, outFile);
+        fclose(outFile);
+        delete[] decodedImg;
+        if (bytesWritten == outLen) {
+            fileName = outFilename;
+            return true;
+        }
+    } catch (std::bad_alloc& ) {
+        return false;
+    }
+    return false;
+}
+
 }

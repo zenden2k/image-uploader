@@ -295,7 +295,7 @@ LRESULT CMainDlg::OnEnableDropTarget(UINT, WPARAM wParam, LPARAM lParam, BOOL&) 
     return 0;
 }
 
-bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, bool ensureVisible, Gdiplus::Image *Img)
+bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, bool ensureVisible, Gdiplus::Image *Img, bool selectItem)
 {
     CFileListItem fl; //internal list item
     
@@ -317,9 +317,12 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, b
     if(IuCommonFunctions::IsImage(FileName))
     Buf = WinUtils::GetOnlyFileName(FileName );
     else Buf = WinUtils::myExtractFileName(FileName);
-    ThumbsView.AddImage(fl.FileName, fl.VirtualFileName, ensureVisible, Img);
+    int itemIndex = ThumbsView.AddImage(fl.FileName, fl.VirtualFileName, ensureVisible, Img);
         
     EnableNext(FileList.GetCount()>0);
+    if (selectItem && itemIndex != -1) {
+        ThumbsView.SelectItem(itemIndex);
+    }
     listChanged_ = true;
     return TRUE;
 }

@@ -208,10 +208,10 @@ LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 LRESULT CRegionSelect::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     Down = true;
-    Start.x = LOWORD(lParam); 
-    Start.y = HIWORD(lParam);
+    Start.x = GET_X_LPARAM(lParam);
+    Start.y = GET_Y_LPARAM(lParam);
 
-    POINT newPoint  = {LOWORD(lParam), HIWORD(lParam)};
+    POINT newPoint = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
     m_curvePoints.push_back(newPoint);
     return 0;
 }
@@ -219,8 +219,8 @@ LRESULT CRegionSelect::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
 LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    int cx = LOWORD(lParam); 
-    int cy = HIWORD(lParam);
+    int cx = GET_X_LPARAM(lParam);
+    int cy = GET_Y_LPARAM(lParam);
     DWORD fwKeys = wParam;
     POINT point = {cx, cy};
     HWND hNewSelWnd;
@@ -324,8 +324,8 @@ LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
                 if(End.x>-1)
                     Rectangle(dc, Start.x,Start.y, End.x, End.y);
 
-                End.x = LOWORD(lParam); 
-                End.y = HIWORD(lParam);
+                End.x = GET_X_LPARAM(lParam);
+                End.y = GET_Y_LPARAM(lParam);
 
                 bool Draw = true;
                 if(m_SelectionMode == smWindowHandles)
@@ -423,8 +423,8 @@ LRESULT CRegionSelect::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 {
     if(!Down) return 0;
     Down = false;
-    End.x = LOWORD(lParam)+1; 
-    End.y = HIWORD(lParam)+1;
+    End.x = GET_X_LPARAM(lParam) + 1;
+    End.y = GET_Y_LPARAM(lParam) + 1;
     CRgn newRegion;    RECT winRect;
     SHORT shiftState = GetAsyncKeyState(VK_SHIFT);
 
@@ -717,8 +717,8 @@ LRESULT CRegionSelect::OnMButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     HWND     hwnd = (HWND) wParam;  
     POINT ClientPoint, ScreenPoint;
 
-    ScreenPoint.x = LOWORD(lParam); 
-    ScreenPoint.y = HIWORD(lParam); 
+    ScreenPoint.x = GET_X_LPARAM(lParam);
+    ScreenPoint.y = GET_Y_LPARAM(lParam);
     ClientPoint = ScreenPoint;
     ::ScreenToClient(hwnd, &ClientPoint);
     

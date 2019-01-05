@@ -131,6 +131,16 @@ bool CWizardDlg::pasteFromClipboard() {
     if (IsClipboardFormatAvailable(CF_UNICODETEXT)) {
         CString text;
         WinUtils::GetClipboardText(text);
+        CString outFileName;
+        if (ImageUtils::SaveImageFromCliboardDataUriFormat(text, outFileName)) {
+            CreatePage(wpMainPage);
+            CMainDlg* MainDlg = dynamic_cast<CMainDlg*>(Pages[wpMainPage]);
+            if (MainDlg) {
+                MainDlg->AddToFileList(outFileName, L"", true, nullptr, true);
+                MainDlg->ThumbsView.LoadThumbnails();
+                return true;
+            }
+        } 
         if (CImageDownloaderDlg::LinksAvailableInText(text)) {
             CImageDownloaderDlg dlg(this, CString(text));
             dlg.EmulateModal(m_hWnd);
@@ -1088,7 +1098,7 @@ STDMETHODIMP CWizardDlg::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL p
 
 LRESULT CWizardDlg::OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    pasteFromClipboard();
+    funcFromClipboard(false);
     return 0;
 }
 
@@ -1146,7 +1156,7 @@ void CWizardDlg::PasteBitmap(HBITMAP Bmp)
 
         CreatePage(wpMainPage);
         CMainDlg* MainDlg = (CMainDlg*) Pages[2];
-        MainDlg->AddToFileList( buf2, L"", true);
+        MainDlg->AddToFileList( buf2, L"", true, nullptr, true);
         MainDlg->ThumbsView.LoadThumbnails();
         ShowPage(wpMainPage);
     }
@@ -2129,7 +2139,10 @@ bool CWizardDlg::IsClipboardDataAvailable()
         {
             CString text;
             WinUtils::GetClipboardText(text);
-            if(CImageDownloaderDlg::LinksAvailableInText(text))
+            if (text.Left(5) == _T("data:")) {
+                IsClipboard = true;
+            }
+            else if(CImageDownloaderDlg::LinksAvailableInText(text))
             {
                 IsClipboard = true;
             }
@@ -2165,7 +2178,7 @@ bool CWizardDlg::funcOpenScreenshotFolder() {
 }
 
 bool CWizardDlg::funcFromClipboard(bool fromCmdLine) {
-    if (pasteFromClipboard()) {
+     if (pasteFromClipboard()) {
         ShowWindow(SW_SHOW);
         if (fromCmdLine && CmdLine.IsOption(_T("quick"))) {
             ShowPage(wpUploadPage, wpMainPage);

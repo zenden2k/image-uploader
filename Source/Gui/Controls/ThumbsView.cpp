@@ -64,8 +64,10 @@ void CThumbsView::Init(bool Extended)
 
 int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, Gdiplus::Image* Img)
 {
-    if( !FileName ) return 0;
-
+    if (!FileName) {
+        return -1;
+    }
+    
     int n = GetItemCount();
 
     RECT rc;
@@ -97,7 +99,7 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, G
     }
 
     RedrawItems(n, n);
-    return 0;
+    return n;
 }
 
 bool CThumbsView::MyDeleteItem(int ItemIndex)

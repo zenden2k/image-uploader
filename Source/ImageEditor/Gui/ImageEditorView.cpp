@@ -151,8 +151,8 @@ LRESULT CImageEditorView::OnRButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM l
 
 LRESULT CImageEditorView::OnLButtonDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    int cx = LOWORD(lParam); 
-    int cy = HIWORD(lParam);
+    int cx = GET_X_LPARAM(lParam);
+    int cy = GET_Y_LPARAM(lParam);
     POINT ptScroll;
     GetScrollOffset(ptScroll);
     cx += ptScroll.x;
